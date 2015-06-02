@@ -8,7 +8,7 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_WIDGETS . 'class.Widg
 require_once PFAD_ROOT . PFAD_FLASHCHART . 'php-ofc-library/open-flash-chart.php';
 
 /**
- * Class WidgetShopStats_dani_adminwidgetshopstats
+ * Class WidgetShopStats_jtl_widgets
  */
 class WidgetShopStats_jtl_widgets extends WidgetBase
 {

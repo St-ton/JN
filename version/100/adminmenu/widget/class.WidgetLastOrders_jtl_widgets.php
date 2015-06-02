@@ -4,7 +4,7 @@ require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Bestellung.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'bestellungen_inc.php';
 
 /**
- * Class WidgetLastOrders_jtl_widget_lastorders
+ * Class WidgetLastOrders_jtl_widgets
  */
 class WidgetLastOrders_jtl_widgets extends WidgetBase
 {

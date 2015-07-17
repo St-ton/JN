@@ -9,7 +9,7 @@
 		});
 		{/literal}
 	</script>
-	<select name="kKampagne" id="select_kampagne">
+	<select name="kKampagne" id="select_kampagne" class="form-control">
 	{foreach from=$oKampagne_arr item=oKampagne}
 		<option value="{$oKampagne->kKampagne}" {if $oKampagne->kKampagne == $kKampagne}selected="selected"{/if}>{$oKampagne->cName}</option>
 	{/foreach}

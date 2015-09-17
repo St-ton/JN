@@ -5,7 +5,7 @@
 	<Author>JTL-Software-GmbH</Author>
 	<URL>http://www.jtl-software.de</URL>
 	<XMLVersion>100</XMLVersion>
-	<ShopVersion>400</ShopVersion>
+	<Shop4Version>400</Shop4Version>
 	<PluginID>jtl_widgets</PluginID>
 	<Install>
 		<Version nr="100">

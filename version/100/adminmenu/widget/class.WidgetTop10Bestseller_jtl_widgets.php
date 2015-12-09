@@ -17,7 +17,7 @@ class WidgetTop10Bestseller_jtl_widgets extends WidgetBase
      */
     public function init()
     {
-        $oTop10Bestseller_arr = Shop::DB()->query(
+        $this->oSmarty->assign('oTop10Bestseller_arr', Shop::DB()->query(
             "SELECT tbestseller.*, twarenkorbpos.cName
                 FROM tbestseller
                 JOIN twarenkorbpos ON twarenkorbpos.kArtikel = tbestseller.kArtikel
@@ -27,9 +27,7 @@ class WidgetTop10Bestseller_jtl_widgets extends WidgetBase
                 GROUP BY tbestseller.kArtikel
                 ORDER BY tbestseller.fAnzahl DESC
                 LIMIT 10", 2
-        );
-
-        $this->oSmarty->assign('oTop10Bestseller_arr', $oTop10Bestseller_arr);
+        ));
     }
 
     /**

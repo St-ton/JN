@@ -1,8 +1,23 @@
 <div class="widget-custom-data">
-    <h5>Bewertungen</h5>
-    <ul>
-        {foreach from=$oBewertung_arr item=b}
-            <li>{$b->cTitel}</li>
-        {/foreach}
-    </ul>
+    {if $kRequestCountTotal > 0}
+        <ul class="infolist">
+            {foreach from=$oUnlockRequest_arr key="i" item="oUnlockRequestGroup"}
+                {if $oUnlockRequestGroup|@count > 0}
+                    <li>
+                        <p>
+                            <strong>{$oUnlockRequestGroups_arr[$i]}:</strong>
+                            <span class="value">{$oUnlockRequestGroup|@count}</span>
+                        </p>
+                    </li>
+                {/if}
+            {/foreach}
+            <li>
+                Verwalten Sie ausstehende Anfragen in der <a href="freischalten.php">Freischaltzentrale</a>.
+            </li>
+        </ul>
+    {else}
+        <div class="alert alert-info">
+            Zur Zeit gibt es keine ausstehenden Anfragen die freigeschaltet werden m&uuml;ssen.
+        </div>
+    {/if}
 </div>

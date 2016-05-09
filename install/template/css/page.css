@@ -1,0 +1,273 @@
+/*********************************************************
+ * JTL-Shop3 Tiny stylesheet
+ * 
+ * $Id: page.css 986 2010-08-04 10:39:31Z andy $
+ *  
+ *********************************************************/
+body {
+   background-color: #f8f8f8;
+   text-align: center;
+}
+
+#page {
+   width: 950px;
+   margin: 0 auto;
+   padding: 0 10px;
+   text-align: center;
+   background-color: #fff;
+}
+
+#header {
+   height: 47px;
+   text-align: left;
+   background: url('../images/JTL-Shop3.png') center right no-repeat;
+}
+
+#header h1 {
+   line-height: 47px;
+}
+
+#content {
+   margin: 10px 0;
+   text-align: left;
+}
+
+#footer {
+   margin: 0 auto;
+   text-align: center;
+   padding: 0.5em;
+   font-size: 0.9em;
+   background-color: #f0f0f0;
+}
+
+.error_log {
+   width: 100%;
+   height: 350px;
+   overflow: scroll;
+   border: 1px solid #f0f0f0;
+}
+
+h2 {
+   font-size: 1.3em;
+}
+
+.container {
+   margin: 20px 0;
+}
+
+.green {
+   display: inline-block;
+   padding: 0.25em 0.5em;
+   margin: 1px;
+   
+   color: #fff;
+   font-weight: bold;
+   background-color: #4d951c;
+   
+   border-radius: 8px;
+   -moz-border-radius: 8px;
+   -webkit-border-radius: 8px;
+   -khtml-border-radius: 8px;
+   font-size: 0.9em;
+   height: 16px;
+   line-height: 16px;
+}
+
+.red {  
+   display: inline-block;
+   padding: 0.25em 0.5em;
+   margin: 1px;
+   
+   color: #fff;
+   font-weight: bold;
+   background-color: #b70004;
+   
+   border-radius: 8px;
+   -moz-border-radius: 8px;
+   -webkit-border-radius: 8px;
+   -khtml-border-radius: 8px;
+   height: 16px;
+   line-height: 16px;
+}
+
+fieldset {
+   padding: 10px;
+   border: 1px solid #ddd;
+}
+
+.label {
+   clear: both;
+   width: 200px;
+   line-height: 28px;
+   font-weight: bold;
+}
+
+.req li {
+   width: 100%;
+   line-height: 22px;
+   margin: 1px 0;
+   position: relative;
+}
+
+.req li span {
+   position: absolute;
+   top: 0;
+   right: 0;
+}
+
+.req li.first:hover,
+.req li.second:hover {
+   background-color: #e4e4e4;
+}
+
+.req li.first {
+   background-color: #fcfcfc;
+}
+
+.req li.second {
+   background-color: #f7f7f7;
+}
+
+/*
+ *  links
+ */
+a,
+a:visited,
+a:link {
+   color: #0000c6;
+}
+
+a:hover {
+   color: #00007b;
+}
+
+a:active {
+   color: #d00000;
+}
+
+/*
+ * inputs
+ */
+input[type="submit"],
+button[type="submit"],
+button[type="button"] {
+   cursor: pointer;
+   min-height: 24px;
+   width: auto;
+   overflow: visible;
+   padding: 0 3px;
+}
+
+/*
+ * ie6 min-height hack
+ */ 
+input[type="submit"],
+button[type="submit"],
+button[type="button"] {
+   height: 24px;
+}
+
+input[type="text"],
+input[type="password"],
+textarea, select {
+   border: 1px solid #ccc;
+   padding: 0.3em;
+}
+
+em {
+   color: #d80000;
+   font-weight: bold;
+}
+
+/*
+ *  submit button
+ */
+a.submit {
+   color: #000;
+   display: inline-block;
+}
+
+.submit {
+   margin: 0;
+   height: auto !important;
+   vertical-align: middle;
+   padding: 0.25em !important;
+   
+   border: 1px solid #FA2;
+   background: #FA2 url('../images/button_bg.png') repeat-x left top;
+   
+   /* radius 4 all */
+   border-radius: 5px;
+   -moz-border-radius: 5px;
+   -webkit-border-radius: 5px;
+   -khtml-border-radius: 5px;
+   
+   color: #333;
+   font : 1.1em "Trebuchet MS", sans-serif;
+  
+   text-align: center;
+   text-decoration: none;
+   text-shadow: #FE6 0px 1px 0px;
+}
+
+.submit:hover {
+   background-position: 0px -5px;
+   color: #111;
+}
+
+.submit:active {
+   /*background: #FA2;*/
+}
+
+.submit.disabled {
+   border: 1px solid #aeaeae;
+   background: #FA2 url('./images/button_disabled_bg.png') repeat-x top left;
+   text-shadow: #fff 0px 0px 0px;
+   color: #666;
+}
+
+.btn_alone {
+   margin: 1em 0 0 0;
+}
+
+/*
+ * message boxes
+ */
+.box_plain {
+   margin: 0 0 1em 0;
+} 
+ 
+.box_info {
+   border: 1px solid #fffcbc;
+   background-color: #fffddd;
+   padding: 0.5em;
+   margin: 0 0 1em 0;
+}
+
+.box_error {
+   border: 1px solid #ffebd2;
+   background-color: #fff3e3;
+   padding: 0.5em;
+   margin: 0 0 1em 0;
+}
+
+.box_success {
+   border: 1px solid #e1ffe2;
+   background-color: #edffee;
+   padding: 0.5em;
+   margin: 0 0 1em 0;
+}
+
+/*
+ * misc
+ */
+div.code {
+   font-family: 'Courier New';
+   margin: 5px 5px 5px 15px;
+   background-color: #f0f0f0;
+   padding: 5px;
+}
+
+li.bullet {
+   margin: 10px 0 0 15px;
+}

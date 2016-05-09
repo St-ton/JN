@@ -1,0 +1,57 @@
+#!/bin/sh
+
+PROJECT=`php -r "echo dirname(dirname(dirname(realpath('$0'))));"`
+STAGED_FILES_CMD=`git diff --cached --name-only --diff-filter=ACMR HEAD | grep \\\\.php`
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m'
+
+if [ "$#" -eq 1 ]
+then
+	oIFS=$IFS
+	IFS='
+	'
+	SFILES="$1"
+	IFS=$oIFS
+fi
+
+SFILES=${SFILES:-$STAGED_FILES_CMD}
+
+#if [ "$FILES" = "" ]
+#then
+#	exit 0
+#fi
+
+echo $YELLOW"Checking PHP Lint..."$NC
+for FILE in $SFILES
+do
+	php -l -d display_errors=0 $PROJECT/$FILE
+	if [ $? != 0 ]
+	then
+		echo $RED"Fix the error before commit."$NC
+		exit 1
+	fi
+	FILES="$FILES $PROJECT/$FILE"
+done
+
+echo $YELLOW"Running PHP CS-Fixer..."$NC
+
+for FILE in $SFILES
+do
+	FILE="$(cd "$(dirname "$FILE")"; pwd)/$(basename "$FILE")"
+	$PROJECT/includes/vendor/bin/php-cs-fixer fix "$FILE" --config-file .php_cs -q
+
+	if [ $? != 0 ]
+	then
+		echo $RED"Fixing failed for file $FILE"$NC
+		exit 1
+	else
+		echo "Fixed file $FILE"
+		git add "$FILE"
+	fi
+done
+
+echo $GREEN"Commit"$NC
+exit $?

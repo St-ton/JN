@@ -1,0 +1,9 @@
+{
+    "require": {
+        "php": ">=5.3.0",
+        "ext-curl": "*",
+        "paypal/merchant-sdk-php":"v3.9.0",
+	"paypal/permissions-sdk-php":"v3.9.0",
+	"paypal/rest-api-sdk-php": "1.6.1"
+    }
+}

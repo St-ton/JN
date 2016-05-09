@@ -1,0 +1,13 @@
+{
+    "name": "jtl/shop4",
+    "type": "library",
+    "homepage": "http://www.jtl-software.de",
+    "require": {
+        "php": ">=5.3.3",
+        "guzzlehttp/guzzle": "3.7.4",
+        "Imanee/Imanee": "dev-master",
+        "ifsnop/mysqldump-php": "^2.1",
+        "symfony/var-dumper": "^3.0",
+        "fabpot/php-cs-fixer": "^1.11"
+    }
+}

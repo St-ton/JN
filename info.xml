@@ -66,7 +66,6 @@
 				<Expanded>1</Expanded>
 				<Active>1</Active>
 			</Widget>
-
 			<Widget>
 				<Title>Anfragen für Freischaltungen</Title>
 				<Class>UnlockRequestNotifier</Class>
@@ -76,7 +75,6 @@
 				<Expanded>1</Expanded>
 				<Active>1</Active>
 			</Widget>
-
 		</AdminWidget>
 	</Install>
 </jtlshop3plugin>

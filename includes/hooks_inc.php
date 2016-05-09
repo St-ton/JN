@@ -326,7 +326,7 @@ define('HOOK_TOOLSAJAXSERVER_PAGE_KUNDENFORMULARPLZ', 43);
 define('HOOK_TOOLSAJAXSERVER_PAGE_SUCHVORSCHLAG', 44);
 
 /**
- * Kurz vor der Rückgabe der Variationskomibnation (Ajax)
+ * Kurz vor der Rückgabe der Variationskombination (Ajax)
  *
  * @file toolsajax.server.php
  * @param objResponse

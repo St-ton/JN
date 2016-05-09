@@ -538,7 +538,7 @@ function checkeWarenkorbEingang()
                     }
                     // Prüfe ob die Session ein Wunschlisten Objekt hat
                     if ($kArtikel > 0) {
-                        if (!$_SESSION['Wunschliste']->kWunschliste) {
+                        if (empty($_SESSION['Wunschliste']->kWunschliste)) {
                             $_SESSION['Wunschliste'] = new Wunschliste();
                             $_SESSION['Wunschliste']->schreibeDB();
                         }
@@ -1282,15 +1282,6 @@ function fuegeEinInWarenkorb($kArtikel, $anzahl, $oEigenschaftwerte_arr = '', $n
         }
         // Warenkorb weiterleiten
         $_SESSION['Warenkorb']->redirectTo((bool) $nWeiterleitung, $cUnique);
-        //prg @todo: validate, make option
-        if (defined('PRG') && PRG === true && !empty(Shop::$cCanonicalURL)) {
-            //store to session, read again in index.php, then destroy
-            $_SESSION['bWarenkorbHinzugefuegt'] = true;
-            $_SESSION['bWarenkorbAnzahl']       = $anzahl;
-            $_SESSION['hinweis']                = Shop::Lang()->get('basketAdded', 'messages');
-            header('Location: ' . Shop::$cCanonicalURL, true, 303);
-            exit();
-        }
 
         return true;
     }
@@ -1472,12 +1463,12 @@ function setzeSteuersaetze($steuerland = 0)
     $_SESSION['Steuersatz'] = array();
 
     $merchantCountryCode = 'DE';
-    if (defined('STEUERSATZ_STANDARD_LAND')) {
-        $merchantCountryCode = STEUERSATZ_STANDARD_LAND;
-    }
     $Firma = Shop::DB()->query("SELECT cLand FROM tfirma", 1);
     if (!empty($Firma->cLand)) {
         $merchantCountryCode = landISO($Firma->cLand);
+    }
+    if (defined('STEUERSATZ_STANDARD_LAND')) {
+        $merchantCountryCode = STEUERSATZ_STANDARD_LAND;
     }
     $deliveryCountryCode = $merchantCountryCode;
     if ($steuerland) {
@@ -2277,12 +2268,13 @@ function gibStandardWaehrung($bISO = false)
 }
 
 /**
- * @param array $Positionen
- * @param int   $Nettopreise
- * @param int   $htmlWaehrung
+ * @param array  $Positionen
+ * @param int    $Nettopreise
+ * @param int    $htmlWaehrung
+ * @param object $oWaehrung
  * @return array
  */
-function gibAlteSteuerpositionen($Positionen, $Nettopreise = -1, $htmlWaehrung = 1)
+function gibAlteSteuerpositionen($Positionen, $Nettopreise = -1, $htmlWaehrung = 1, $oWaehrung = 0)
 {
     if ($Nettopreise == -1) {
         $Nettopreise = $_SESSION['NettoPreise'];
@@ -2310,10 +2302,10 @@ function gibAlteSteuerpositionen($Positionen, $Nettopreise = -1, $htmlWaehrung =
                 $steuerpos[$i]->cName           = lang_steuerposition($position->fMwSt, $Nettopreise);
                 $steuerpos[$i]->fUst            = $position->fMwSt;
                 $steuerpos[$i]->fBetrag         = ($position->fPreis * $position->nAnzahl * $position->fMwSt) / 100.0;
-                $steuerpos[$i]->cPreisLocalized = gibPreisStringLocalized($steuerpos[$i]->fBetrag, 0, $htmlWaehrung);
+                $steuerpos[$i]->cPreisLocalized = gibPreisStringLocalized($steuerpos[$i]->fBetrag, $oWaehrung, $htmlWaehrung);
             } else {
                 $steuerpos[$i]->fBetrag += ($position->fPreis * $position->nAnzahl * $position->fMwSt) / 100.0;
-                $steuerpos[$i]->cPreisLocalized = gibPreisStringLocalized($steuerpos[$i]->fBetrag, 0, $htmlWaehrung);
+                $steuerpos[$i]->cPreisLocalized = gibPreisStringLocalized($steuerpos[$i]->fBetrag, $oWaehrung, $htmlWaehrung);
             }
         }
     }
@@ -4167,7 +4159,7 @@ function pruefeEmailblacklist($cEmail)
                         $cEmailBlackListRegEx = str_replace("*", "[a-z0-9\-\_\.\@\+]*", $oEmailBlackList->cEmail);
                         preg_match('/' . $cEmailBlackListRegEx . '/', $cEmail, $cTreffer_arr);
                         // Blocked
-                        if (strlen($cEmail) === strlen($cTreffer_arr[0])) {
+                        if (isset($cTreffer_arr[0]) && strlen($cEmail) === strlen($cTreffer_arr[0])) {
                             // Email schonmal geblockt worden?
                             $oEmailblacklistBlock = Shop::DB()->select('temailblacklistblock', 'cEmail', $cEmail);
                             if (!empty($oEmailblacklistBlock->cEmail)) {

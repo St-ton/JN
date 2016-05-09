@@ -309,6 +309,7 @@ class Warenkorb
         if ($setzePositionsPreise === true) {
             $this->setzePositionsPreise();
         }
+        $this->updateCouponValue();
         $this->sortShippingPosition();
 
         executeHook(HOOK_WARENKORB_CLASS_FUEGEEIN, array(
@@ -1313,6 +1314,7 @@ class Warenkorb
                     $Kupon = Shop::DB()->select('tkupon', 'kKupon', intval($_SESSION['Kupon']->kKupon));
                     if (isset($Kupon->kKupon) && $Kupon->kKupon > 0 && $Kupon->cKuponTyp === 'standard') {
                         $isValid = (1 === angabenKorrekt(checkeKupon($Kupon)));
+                        $this->updateCouponValue();
                     } elseif (!empty($Kupon->kKupon) && $Kupon->cKuponTyp === 'versandkupon') {
                         //@todo?
                     } else {
@@ -1348,6 +1350,30 @@ class Warenkorb
         }
 
         return $isValid;
+    }
+
+    /**
+     * update coupon value to avoid negative orders or coupon values under predefined value
+     *
+     */
+    public function updateCouponValue(){
+        if (isset($_SESSION['Kupon']) && $_SESSION['Kupon']->cWertTyp === 'festpreis') {
+            $Kupon = $_SESSION['Kupon'];
+            $maxPreisKupon = $Kupon->fWert;
+            if ($Kupon->fWert > $_SESSION['Warenkorb']->gibGesamtsummeWarenExt(array(C_WARENKORBPOS_TYP_ARTIKEL), true)) {
+                $maxPreisKupon = $_SESSION['Warenkorb']->gibGesamtsummeWarenExt(array(C_WARENKORBPOS_TYP_ARTIKEL), true);
+            }
+            if (!isset($Spezialpos)) {
+                $Spezialpos = new stdClass();
+            }
+            $Spezialpos->cName = array();
+            foreach ($_SESSION['Sprachen'] as $Sprache) {
+                $name_spr                          = Shop::DB()->select('tkuponsprache', 'kKupon', (int)$Kupon->kKupon, 'cISOSprache', $Sprache->cISO, null, null, false, 'cName');
+                $Spezialpos->cName[$Sprache->cISO] = $name_spr->cName;
+            }
+            $_SESSION['Warenkorb']->loescheSpezialPos(C_WARENKORBPOS_TYP_KUPON);
+            $_SESSION['Warenkorb']->erstelleSpezialPos($Spezialpos->cName, 1, $maxPreisKupon * -1, $Kupon->kSteuerklasse, C_WARENKORBPOS_TYP_KUPON);
+        }
     }
 
     /**

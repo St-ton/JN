@@ -451,7 +451,6 @@ class Bestellung
                 }
             }
             $this->cBestellwertLocalized = gibPreisStringLocalized((isset($warenwert->wert) ? $warenwert->wert : 0), $htmlWaehrung);
-            $this->Steuerpositionen      = gibAlteSteuerpositionen($this->Positionen, $nNettoPreis, $htmlWaehrung);
             $this->Status                = lang_bestellstatus($this->cStatus);
             if ($this->kWaehrung > 0) {
                 $this->Waehrung = Shop::DB()->query("SELECT * FROM twaehrung WHERE kWaehrung = " . (int) $this->kWaehrung, 1);
@@ -462,6 +461,7 @@ class Bestellung
                     $this->Waehrung->fFaktor = 1;
                 }
             }
+            $this->Steuerpositionen      = gibAlteSteuerpositionen($this->Positionen, $nNettoPreis, $htmlWaehrung, $this->Waehrung);
             if ($this->kZahlungsart > 0) {
                 require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
                 $this->Zahlungsart = Shop::DB()->query("SELECT * FROM tzahlungsart WHERE kZahlungsart = " . (int) $this->kZahlungsart, 1);

@@ -144,7 +144,8 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
             } else {
                 $kNews = Shop::DB()->insert('tnews', $oNews);
             }
-            $kNews = (int)$kNews;
+            $kNews           = (int)$kNews;
+            $oAlteBilder_arr = array();
             // Bilder hochladen
             if (!is_dir($cUploadVerzeichnis . $kNews)) {
                 mkdir($cUploadVerzeichnis . $kNews);

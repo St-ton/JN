@@ -67,8 +67,10 @@ function baueSeitenNavi($oUmfrageFrage_arr, $nAnzahlFragen)
 
             if ($i == (count($nSeitenAnfang_arr) - 1)) {
                 $oNavi_arr[$i]->nAnzahl = $nAnzahlFragen - $nSeitenAnfang_arr[$i];
-            } else {
+            } elseif (!empty($nSeitenAnfang_arr)) {
                 $oNavi_arr[$i]->nAnzahl = $nSeitenAnfang_arr[$i + 1] - $oNavi_arr[$i]->nVon;
+            } else {
+                $oNavi_arr[$i]->nAnzahl = 0;
             }
         }
     }

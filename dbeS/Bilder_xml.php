@@ -236,8 +236,7 @@ function bearbeite($xml, $unzipPath)
             loescheArtikelPict($img->kArtikelPict, 0);
 
             // then delete by kArtikel + nNr since Wawi > .99923 has changed all kArtikelPict keys
-            //@todo: undefined var $Artikelbild
-            if (isset($Artikelbild->nNr) && $Artikelbild->nNr > 0) {
+            if (isset($img->nNr) && $img->nNr > 0) {
                 loescheArtikelPict($img->kArtikel, $img->nNr);
             }
 
@@ -288,6 +287,7 @@ function bearbeite($xml, $unzipPath)
                 }
                 continue;
             }
+
             $Bildname = gibKategoriebildname($Kategoriebild, $Bildformat);
 
             $Kategoriebild->cPfad = $Bildname;
@@ -356,7 +356,7 @@ function bearbeite($xml, $unzipPath)
     }
     //Herstellerbilder
     foreach ($herstellerbild_arr as $Herstellerbild) {
-        $Herstellerbild->kHersteller = intval($Herstellerbild->kHersteller);
+        $Herstellerbild->kHersteller = (int) $Herstellerbild->kHersteller;
         if (strlen($Herstellerbild->cPfad) > 0 && $Herstellerbild->kHersteller > 0) {
             $imgFilename  = $Herstellerbild->cPfad;
             $Bildformat   = gibBildformat($unzipPath . $imgFilename);
@@ -373,7 +373,7 @@ function bearbeite($xml, $unzipPath)
             );
             if (isset($Hersteller->cSeo) && strlen($Hersteller->cSeo) > 0) {
                 $Herstellerbild->cPfad = $Hersteller->cSeo . '.' . $Bildformat;
-            } else {
+            } elseif (stripos(strrev($Herstellerbild->cPfad), strrev($Bildformat)) !== 0) {
                 $Herstellerbild->cPfad .= '.' . $Bildformat;
             }
             $Herstellerbild->cPfad = neuerDateiname($Herstellerbild->cPfad);
@@ -611,7 +611,7 @@ function gibEigenschaftwertbildname($Eigenschaftwertbild, $Bildformat)
     global $cSQL;
 
     if (!$GLOBALS['Einstellungen']['bilder']['bilder_variation_namen'] || !$Eigenschaftwertbild->kEigenschaftWert) {
-        return $Eigenschaftwertbild->cPfad . '.' . $Bildformat;
+        return (stripos(strrev($Eigenschaftwertbild->cPfad), strrev($Bildformat)) === 0) ? $Eigenschaftwertbild->cPfad : $Eigenschaftwertbild->cPfad . '.' . $Bildformat;
     }
     $Eigenschaftwert = Shop::DB()->query(
         "SELECT kEigenschaftWert, cArtNr, cName, kEigenschaft
@@ -683,7 +683,7 @@ function gibKategoriebildname($Kategoriebild, $Bildformat)
     global $cSQL;
 
     if (!$GLOBALS['Einstellungen']['bilder']['bilder_kategorie_namen'] || !$Kategoriebild->kKategorie) {
-        return $Kategoriebild->cPfad . '.' . $Bildformat;
+        return (stripos(strrev($Kategoriebild->cPfad), strrev($Bildformat)) === 0) ? $Kategoriebild->cPfad : $Kategoriebild->cPfad . '.' . $Bildformat;
     }
     $attr = Shop::DB()->query(
         "SELECT cWert
@@ -971,7 +971,7 @@ function erstelleThumbnail($oBranding, $imgFilename, $zielbild, $breite, $hoehe,
 }
 
 /**
- * @param $xml
+ * @param array $xml
  */
 function bearbeiteDeletes($xml)
 {

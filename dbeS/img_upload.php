@@ -21,17 +21,16 @@ if (auth()) {
             Jtllog::writeLog('Anzahl Dateien im Zip: ' . $count, JTLLOG_LEVEL_DEBUG, false, 'img_upload_xml');
         }
 
-        $newTmpDir = PFAD_SYNC_TMP . uniqid("images_") . '/';
+        $newTmpDir = PFAD_SYNC_TMP . uniqid('images_') . '/';
         mkdir($newTmpDir, 0777, true);
 
         if ($archive->extract(PCLZIP_OPT_PATH, $newTmpDir)) {
             $return = 0;
-            $found = false;
+            $found  = false;
             foreach ($list as $elem) {
                 if ($elem['filename'] === 'images.xml') {
                     $found = true;
-                }
-                elseif (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
+                } elseif (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
                     Jtllog::writeLog('Received image: ' . $newTmpDir . $elem['filename'] . ' size: ' . filesize($newTmpDir . $elem['filename']), JTLLOG_LEVEL_DEBUG, false, 'img_upload_xml');
                 }
             }
@@ -45,8 +44,7 @@ if (auth()) {
                         Jtllog::writeLog('Zip-File contains zero images', JTLLOG_LEVEL_DEBUG, false, 'img_upload_xml');
                     }
                 }
-            }
-            elseif (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
+            } elseif (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
                 Jtllog::writeLog('Missing images.xml', JTLLOG_LEVEL_DEBUG, false, 'img_upload_xml');
             }
             removeTemporaryFiles($newTmpDir);
@@ -85,8 +83,7 @@ function images_xml($tmpDir, SimpleXMLElement $xml)
             if (copy($tmpfile, PFAD_ROOT . PFAD_MEDIA_IMAGE_STORAGE . $item->cPfad)) {
                 DBUpdateInsert('tbild', array($item), 'kBild');
                 Shop::DB()->query("UPDATE tartikelpict SET cPfad = '{$item->cPfad}' WHERE kBild = " . (int)$item->kBild, 4);
-            }
-            else {
+            } else {
                 Jtllog::writeLog(sprintf('Copy "%s" to "%s"', $tmpfile, PFAD_ROOT . PFAD_MEDIA_IMAGE_STORAGE . $item->cPfad), JTLLOG_LEVEL_ERROR, false, 'img_upload_xml');
             }
         }

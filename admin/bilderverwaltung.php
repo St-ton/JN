@@ -127,9 +127,11 @@ switch ($action) {
     case 'clear':
         if ($type !== null && preg_match('/[a-z]*/', $type)) {
             MediaImage::clearCache($type);
+            if (isset($_GET['isAjax']) && $_GET['isAjax'] === 'true') {
+                makeResponse((object)['success' => 'Cache wurde erfolgreich zur&uuml;ckgesetzt']);
+            }
             $smarty->assign('success', 'Cache wurde erfolgreich zur&uuml;ckgesetzt');
         }
-        break;
 
     default:
         $smarty->assign('items', getItems())

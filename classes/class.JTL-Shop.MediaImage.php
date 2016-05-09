@@ -136,8 +136,8 @@ class MediaImage implements IMedia
     }
 
     /**
-     * @param $type
-     * @param null $id
+     * @param string   $type
+     * @param null|int $id
      */
     public static function clearCache($type, $id = null)
     {

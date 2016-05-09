@@ -261,7 +261,7 @@ class Wunschliste
                             $CWunschlistePosEigenschaft = new WunschlistePosEigenschaft(
                                 $WunschlistePosEigenschaft->kEigenschaft,
                                 $WunschlistePosEigenschaft->kEigenschaftWert,
-                                $WunschlistePosEigenschaft->cFreiFeldWert,
+                                $WunschlistePosEigenschaft->cFreifeldWert,
                                 $WunschlistePosEigenschaft->cEigenschaftName,
                                 $WunschlistePosEigenschaft->cEigenschaftWertName,
                                 $WunschlistePosEigenschaft->kWunschlistePos
@@ -388,7 +388,7 @@ class Wunschliste
                         $CWunschlistePosEigenschaft = new WunschlistePosEigenschaft(
                             $WunschlistePosEigenschaft->kEigenschaft,
                             $WunschlistePosEigenschaft->kEigenschaftWert,
-                            $WunschlistePosEigenschaft->cFreiFeldWert,
+                            $WunschlistePosEigenschaft->cFreifeldWert,
                             $WunschlistePosEigenschaft->cName,
                             $WunschlistePosEigenschaft->cWert,
                             $WunschlistePosEigenschaft->kWunschlistePos);
@@ -451,7 +451,7 @@ class Wunschliste
                                         );
 
                                         // Prüfe ob die Eigenschaft vorhanden ist
-                                        if (!$oEigenschaftWertVorhanden->kEigenschaftKombi) {
+                                        if (empty($oEigenschaftWertVorhanden->kEigenschaftKombi)) {
                                             $cArtikel_arr[] = $CWunschlistePos->cArtikelName;
                                             $hinweis .= '<br />' . Shop::Lang()->get('noProductWishlist', 'messages');
 

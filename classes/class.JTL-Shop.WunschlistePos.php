@@ -82,10 +82,10 @@ class WunschlistePos
         foreach ($oEigenschaftwerte_arr as $oEigenschaftwerte) {
             $CWunschlistePosEigenschaft = new WunschlistePosEigenschaft(
                 $oEigenschaftwerte->kEigenschaft,
-                $oEigenschaftwerte->kEigenschaftWert,
-                $oEigenschaftwerte->cFreifeldWert,
-                $oEigenschaftwerte->cEigenschaftName,
-                $oEigenschaftwerte->cEigenschaftWertName,
+                !empty($oEigenschaftwerte->kEigenschaftWert) ? $oEigenschaftwerte->kEigenschaftWert : null,
+                !empty($oEigenschaftwerte->cFreifeldWert) ? $oEigenschaftwerte->cFreifeldWert : null,
+                !empty($oEigenschaftwerte->cEigenschaftName) ? $oEigenschaftwerte->cEigenschaftName : null,
+                !empty($oEigenschaftwerte->cEigenschaftWertName) ? $oEigenschaftwerte->cEigenschaftWertName : null,
                 $this->kWunschlistePos
             );
             $CWunschlistePosEigenschaft->schreibeDB();

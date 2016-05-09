@@ -448,7 +448,7 @@ define('JTLSEPARATER_AMOUNT', 3);
 // Globale Arten von generierte Nummern (z.b. Bestellnummer)
 define('JTL_GENNUMBER_ORDERNUMBER', 1);
 define('JTL_GENNUMBER_RMANUMBER', 2);
-// Steuersatz Standardland (upper case, ISO 3166-2)
-define('STEUERSATZ_STANDARD_LAND', 'DE');
+// Steuersatz Standardland OVERRIDE - setzt ein anderes Steuerland, als im Shop angegeben (upper case, ISO 3166-2)
+// define('STEUERSATZ_STANDARD_LAND', 'DE');
 
 defined('CUSTOMER_ACCOUNT_MAX_ORDERS') || define('CUSTOMER_ACCOUNT_MAX_ORDERS', 50);

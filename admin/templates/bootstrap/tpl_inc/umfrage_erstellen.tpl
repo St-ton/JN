@@ -54,7 +54,7 @@ function clearInput(inputField) {ldelim}
                     <input type="hidden" name="umfrage" value="1" />
                     <input type="hidden" name="umfrage_speichern" value="1" />
                     <input type="hidden" name="tab" value="umfrage" />
-                    <input type="hidden" name="s1" value="{$s1}" />
+                    <input type="hidden" name="s1" value="{if !empty($s1)}{$s1}{else}0{/if}" />
                     {if isset($oUmfrage->kUmfrage) && $oUmfrage->kUmfrage > 0}
                         <input type="hidden" name="umfrage_edit_speichern" value="1" />
                         <input type="hidden" name="kUmfrage" value="{$oUmfrage->kUmfrage}" />

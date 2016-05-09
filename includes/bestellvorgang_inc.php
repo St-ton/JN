@@ -705,8 +705,10 @@ function gibStepBestaetigung($cGet_arr)
         unset($_SESSION['cPlausi_arr']);
         unset($_SESSION['cPost_arr']);
     }
+    krsort($_SESSION['Kunde']->cKundenattribut_arr);
     //falls zahlungsart extern und Einstellung, dass Bestellung für Kaufabwicklung notwendig, füllte tzahlungsession
     Shop::Smarty()->assign('Kunde', $_SESSION['Kunde'])
+        ->assign('customerAttribute_arr', $_SESSION['Kunde']->cKundenattribut_arr)
         ->assign('Lieferadresse', $_SESSION['Lieferadresse'])
         ->assign('KuponMoeglich', kuponMoeglich())
         ->assign('GuthabenMoeglich', guthabenMoeglich())

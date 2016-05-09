@@ -541,8 +541,10 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
             }
             $step                               = 'bestellung';
             $_SESSION['Kunde']->angezeigtesLand = ISO2land($_SESSION['Kunde']->cLand);
+            krsort($_SESSION['Kunde']->cKundenattribut_arr);
             $smarty->assign('Bestellung', $bestellung)
                    ->assign('Kunde', $bestellung->oRechnungsadresse)// Work Around Daten von trechnungsadresse
+                   ->assign('customerAttribute_arr', $_SESSION['Kunde']->cKundenattribut_arr)
                    ->assign('Lieferadresse', ((isset($bestellung->Lieferadresse)) ? $bestellung->Lieferadresse : null));
             if ($Einstellungen['trustedshops']['trustedshops_kundenbewertung_anzeigen'] === 'Y') {
                 $smarty->assign('oTrustedShopsBewertenButton', gibTrustedShopsBewertenButton($bestellung->oRechnungsadresse->cMail, $bestellung->cBestellNr));
@@ -628,7 +630,9 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
     }
     if ($step === 'mein Konto') {
         $Kunde->cGuthabenLocalized = gibPreisStringLocalized($Kunde->fGuthaben);
-        $smarty->assign('Kunde', $_SESSION['Kunde']);
+        krsort($_SESSION['Kunde']->cKundenattribut_arr);
+        $smarty->assign('Kunde', $_SESSION['Kunde'])
+               ->assign('customerAttribute_arr', $_SESSION['Kunde']->cKundenattribut_arr);
         // Download wurde angefordert?
         if (verifyGPCDataInteger('dl') > 0) {
             if (class_exists('Download')) {

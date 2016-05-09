@@ -4,17 +4,17 @@
     {rdelim}
 </script>
 {if $nTyp == $STATS_ADMIN_TYPE_BESUCHER}
-{assign var="cTitel" value=#statisticTitle#|cat:": "|cat:#statisticBesucher#}
-{assign var="cURL" value=#statisticBesucherURL#}
+    {assign var="cTitel" value=#statisticTitle#|cat:": "|cat:#statisticBesucher#}
+    {assign var="cURL" value=#statisticBesucherURL#}
 {elseif $nTyp == $STATS_ADMIN_TYPE_KUNDENHERKUNFT}
-{assign var="cTitel" value=#statisticTitle#|cat:": "|cat:#statisticKundenherkunft#}
-{assign var="cURL" value=#statisticKundenherkunftURL#}
+    {assign var="cTitel" value=#statisticTitle#|cat:": "|cat:#statisticKundenherkunft#}
+    {assign var="cURL" value=#statisticKundenherkunftURL#}
 {elseif $nTyp == $STATS_ADMIN_TYPE_SUCHMASCHINE}
-{assign var="cTitel" value=#statisticTitle#|cat:": "|cat:#statisticSuchmaschine#}
-{assign var="cURL" value=#statisticSuchmaschineURL#}
+    {assign var="cTitel" value=#statisticTitle#|cat:": "|cat:#statisticSuchmaschine#}
+    {assign var="cURL" value=#statisticSuchmaschineURL#}
 {elseif $nTyp == $STATS_ADMIN_TYPE_UMSATZ}
-{assign var="cTitel" value=#statisticTitle#|cat:": "|cat:#statisticUmsatz#}
-{assign var="cURL" value=#statisticUmsatzURL#}
+    {assign var="cTitel" value=#statisticTitle#|cat:": "|cat:#statisticUmsatz#}
+    {assign var="cURL" value=#statisticUmsatzURL#}
 {/if}
 {include file='tpl_inc/seite_header.tpl' cTitel=$cTitel cBeschreibung=#statisticDesc# cDokuURL=$cURL}
 <div id="content" class="container-fluid">

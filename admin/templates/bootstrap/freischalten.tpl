@@ -54,19 +54,19 @@
 
     <ul class="nav nav-tabs" role="tablist">
         <li class="tab{if !isset($cTab) || $cTab === 'bewertungen'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#bewertungen">{#freischaltenReviews#}</a>
+            <a data-toggle="tab" role="tab" href="#bewertungen">{#freischaltenReviews#} <span class="badge">{$oBewertung_arr|@count}</span></a>
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'livesearch'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#livesearch">{#freischaltenLivesearch#}</a>
+            <a data-toggle="tab" role="tab" href="#livesearch">{#freischaltenLivesearch#} <span class="badge">{$oSuchanfrage_arr|@count}</span></a>
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'tags'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#tags">{#freischaltenTags#}</a>
+            <a data-toggle="tab" role="tab" href="#tags">{#freischaltenTags#} <span class="badge">{$oTag_arr|@count}</span></a>
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'newscomments'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#newscomments">{#freischaltenNewsComments#}</a>
+            <a data-toggle="tab" role="tab" href="#newscomments">{#freischaltenNewsComments#} <span class="badge">{$oNewsKommentar_arr|@count}</span></a>
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'newsletter'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#newsletter">{#freischaltenNewsletterReceiver#}</a>
+            <a data-toggle="tab" role="tab" href="#newsletter">{#freischaltenNewsletterReceiver#} <span class="badge">{$oNewsletterEmpfaenger_arr|@count}</span></a>
         </li>
     </ul>
     <div class="tab-content">

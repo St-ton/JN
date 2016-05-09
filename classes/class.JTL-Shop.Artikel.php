@@ -1131,12 +1131,12 @@ class Artikel
                 if ($this->nIstVater == 1 || $this->kVaterArtikel > 0) {
                     continue;
                 }
-                if ($EigenschaftWert->cTyp === 'FREIFELD' || $EigenschaftWert->cTyp === 'PFLICHT-FREIFELD') {
+                if (isset($EigenschaftWert->cTyp) && ($EigenschaftWert->cTyp === 'FREIFELD' || $EigenschaftWert->cTyp === 'PFLICHT-FREIFELD')) {
                     continue;
                 }
 
                 $kEigenschaftWert = 0;
-                if ($EigenschaftWert->kEigenschaftWert > 0) {
+                if (isset($EigenschaftWert->kEigenschaftWert) && $EigenschaftWert->kEigenschaftWert > 0) {
                     $kEigenschaftWert = (int)$EigenschaftWert->kEigenschaftWert;
                 } elseif ($EigenschaftWert > 0) {
                     $kEigenschaftWert = (int)$EigenschaftWert;
@@ -1824,6 +1824,7 @@ class Artikel
         $kKundengruppe                      = (int)$kKundengruppe;
         $waehrung                           = (isset($_SESSION['Waehrung'])) ? $_SESSION['Waehrung'] : null;
         $conf                               = Shop::getSettings(array(CONF_GLOBAL, CONF_ARTIKELDETAILS));
+        $shopURL                            = Shop::getURL() . '/';
         if (!isset($waehrung->kWaehrung) || !$waehrung->kWaehrung) {
             $waehrung = Shop::DB()->query("SELECT * FROM twaehrung WHERE cStandard='Y'", 1);
         }
@@ -2100,19 +2101,27 @@ class Artikel
                         $this->Variationen[$nZaehler]->Werte[$i]->fLagerbestand <= 0 && $conf['global']['artikeldetails_variationswertlager'] == 2 &&
                         $this->nIstVater == 0 && $this->kVaterArtikel == 0
                     ) {
-                        $this->Variationen[$nZaehler]->Werte[$i]->cName .= '(' . Shop::Lang()->get('outofstock',
-                                'productDetails') . ')';
+                        $this->Variationen[$nZaehler]->Werte[$i]->cName .= '(' . Shop::Lang()->get('outofstock', 'productDetails') . ')';
                     }
                     if ($oVariationTMP->cPfad && file_exists(PFAD_ROOT . PFAD_VARIATIONSBILDER_NORMAL . $oVariationTMP->cPfad)) {
                         $this->cVariationenbilderVorhanden                       = true;
                         $this->Variationen[$nZaehler]->Werte[$i]->cBildPfadMini  = PFAD_VARIATIONSBILDER_MINI . $oVariationTMP->cPfad;
                         $this->Variationen[$nZaehler]->Werte[$i]->cBildPfad      = PFAD_VARIATIONSBILDER_NORMAL . $oVariationTMP->cPfad;
                         $this->Variationen[$nZaehler]->Werte[$i]->cBildPfadGross = PFAD_VARIATIONSBILDER_GROSS . $oVariationTMP->cPfad;
+
+                        $this->Variationen[$nZaehler]->Werte[$i]->cBildPfadMiniFull  = $shopURL . PFAD_VARIATIONSBILDER_MINI . $oVariationTMP->cPfad;
+                        $this->Variationen[$nZaehler]->Werte[$i]->cBildPfadFull      = $shopURL . PFAD_VARIATIONSBILDER_NORMAL . $oVariationTMP->cPfad;
+                        $this->Variationen[$nZaehler]->Werte[$i]->cBildPfadGrossFull = $shopURL . PFAD_VARIATIONSBILDER_GROSS . $oVariationTMP->cPfad;
                         // compatibility
                         $this->Variationen[$nZaehler]->Werte[$i]->cPfadMini   = PFAD_VARIATIONSBILDER_MINI . $oVariationTMP->cPfad;
                         $this->Variationen[$nZaehler]->Werte[$i]->cPfadKlein  = PFAD_VARIATIONSBILDER_NORMAL . $oVariationTMP->cPfad;
                         $this->Variationen[$nZaehler]->Werte[$i]->cPfadNormal = PFAD_VARIATIONSBILDER_NORMAL . $oVariationTMP->cPfad;
                         $this->Variationen[$nZaehler]->Werte[$i]->cPfadGross  = PFAD_VARIATIONSBILDER_GROSS . $oVariationTMP->cPfad;
+
+                        $this->Variationen[$nZaehler]->Werte[$i]->cPfadMiniFull   = $shopURL . PFAD_VARIATIONSBILDER_MINI . $oVariationTMP->cPfad;
+                        $this->Variationen[$nZaehler]->Werte[$i]->cPfadKleinFull  = $shopURL . PFAD_VARIATIONSBILDER_NORMAL . $oVariationTMP->cPfad;
+                        $this->Variationen[$nZaehler]->Werte[$i]->cPfadNormalFull = $shopURL . PFAD_VARIATIONSBILDER_NORMAL . $oVariationTMP->cPfad;
+                        $this->Variationen[$nZaehler]->Werte[$i]->cPfadGrossFull  = $shopURL . PFAD_VARIATIONSBILDER_GROSS . $oVariationTMP->cPfad;
                     }
                     if (!$_SESSION['Kundengruppe']->darfPreiseSehen) {
                         unset($this->Variationen[$nZaehler]->Werte[$i]->fAufpreisNetto);

@@ -89,7 +89,7 @@
   #RewriteCond %{HTTP_HOST} ^meinedomain.de
   #RewriteRule ^(.*)$ http://www.meinedomain.de/$1 [r=301,L]
 
-  #Regeln fuer das Rewrite der URLs von JTL-Shop4
+  #Rewrite der JTL-Shop-URLs
   #Aendern Sie an diesen Zeilen nichts!
   RewriteRule ^((urllist|sitemap_).*\.(xml|txt)(\.gz)?)$ includes/sitemap.php?datei=$1 [L]
   RewriteRule ^export/((sitemap_).*\.(xml|txt)(\.gz)?)$ $1 [L]

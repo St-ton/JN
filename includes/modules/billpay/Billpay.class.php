@@ -742,7 +742,7 @@ class Billpay extends PaymentMethod
             BPHelper::strEncode($oCustomer->cMobil, 50),       // cellphone
             BPHelper::fmtDate($oCustomer->dGeburtstag, true),  // birthday
             BPHelper::toISO6391(BPHelper::getLanguage()),      // language
-            BPHelper::strEncode(getRealIp(), 15),              // ip address
+            BPHelper::strEncode(getRealIp()),                  // ip address
             BPHelper::strEncode($eCustomerGroup, 1)            // customerGroup
         );
 

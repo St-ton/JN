@@ -157,7 +157,14 @@ if (isset($_POST['zuruecksetzen']) && intval($_POST['zuruecksetzen']) === 1 && v
                     Shop::DB()->query("TRUNCATE tkundenfeldwert", 4);
                     Shop::DB()->query("TRUNCATE tkundenherkunft", 4);
                     Shop::DB()->query("TRUNCATE tkundenkontodaten", 4);
+                    Shop::DB()->query("TRUNCATE tkundenwerbenkunden", 4);
                     Shop::DB()->query("TRUNCATE tlieferadresse", 4);
+                    Shop::DB()->query("TRUNCATE twarenkorbpers", 4);
+                    Shop::DB()->query("TRUNCATE twarenkorbperspos", 4);
+                    Shop::DB()->query("TRUNCATE twarenkorbpersposeigenschaft", 4);
+                    Shop::DB()->query("TRUNCATE twunschliste", 4);
+                    Shop::DB()->query("TRUNCATE twunschlistepos", 4);
+                    Shop::DB()->query("TRUNCATE twunschlisteposeigenschaft", 4);
                     break;
                 case 'kwerbenk':
                     Shop::DB()->query("TRUNCATE tkundenwerbenkunden", 4);

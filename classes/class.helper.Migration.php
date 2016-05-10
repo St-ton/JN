@@ -133,6 +133,9 @@ class MigrationHelper
         return preg_match(static::MIGRATION_FILE_NAME_PATTERN, $fileName, $matches);
     }
 
+    /**
+     * Check database integrity
+     */
     public static function verifyIntegrity()
     {
         Shop::DB()->query("CREATE TABLE IF NOT EXISTS tmigration (kMigration bigint(14) NOT NULL, nVersion int(3) NOT NULL, dExecuted datetime NOT NULL, PRIMARY KEY (kMigration)) ENGINE=InnoDB DEFAULT CHARSET=latin1", 3);

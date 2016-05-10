@@ -15,10 +15,27 @@ class Updater
     protected static $availableVersions = null;
 
     /**
+     * @var boolean
+     */
+    protected static $isVerified = false;
+
+    /**
      * Constructor
      */
     public function __construct()
     {
+        $this->verify();
+    }
+
+    /**
+     * Check database integrity
+     */
+    public function verify()
+    {
+        if (static::$isVerified !== true) {
+            MigrationHelper::verifyIntegrity();
+            static::$isVerified = true;
+        }
     }
 
     /**
@@ -85,10 +102,16 @@ class Updater
 
     /**
      * @return mixed
+     * @throws Exception
      */
     public function getVersion()
     {
-        return Shop::DB()->query("SELECT * FROM tversion", 1);
+        $v = Shop::DB()->query("SELECT * FROM tversion", 1);
+        if ($v === null) {
+            throw new \Exception('Unable to identify application version');
+        }
+
+        return $v;
     }
 
     /**
@@ -100,16 +123,13 @@ class Updater
     }
 
     /**
-     * @return int|void
+     * @return int
      */
     public function getCurrentDatabaseVersion()
     {
         $v = $this->getVersion();
-        if (is_object($v)) {
-            return (int) $v->nVersion;
-        }
 
-        return;
+        return (int) $v->nVersion;
     }
 
     /**
@@ -221,7 +241,7 @@ class Updater
     }
 
     /**
-     * @return int|mixed
+     * @return int|null
      * @throws Exception
      */
     public function update()
@@ -234,7 +254,7 @@ class Updater
     }
 
     /**
-     * @return int|mixed#
+     * @return int|mixed
      */
     protected function updateToNextVersion()
     {

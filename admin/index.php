@@ -6,9 +6,6 @@
 require_once dirname(__FILE__) . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 
-// Migration check
-MigrationHelper::verifyIntegrity();
-
 $oUpdater = new Updater();
 $cFehler  = '';
 

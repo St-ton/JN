@@ -122,7 +122,7 @@ function pruefeKundenKommentar($cKommentar, $cName = '', $cEmail = '', $kNews, $
         if (!valid_email($cEmail)) {
             $nPlausiValue_arr['cEmail'] = 1;
         }
-        if ((!isset($_SESSION['bAnti_spam_already_checked']) || $_SESSION['bAnti_spam_already_checked'] !== true) && isset($conf['news']['news_sicherheitscode']) && $conf['news']['news_sicherheitscode'] !== 'N') {
+        if (empty($_SESSION['Kunde']->kKunde) && (!isset($_SESSION['bAnti_spam_already_checked']) || $_SESSION['bAnti_spam_already_checked'] !== true) && isset($conf['news']['news_sicherheitscode']) && $conf['news']['news_sicherheitscode'] !== 'N') {
             // reCAPTCHA
             if (isset($_POST['g-recaptcha-response'])) {
                 if (!validateReCaptcha($_POST['g-recaptcha-response'])) {

@@ -42,7 +42,8 @@ function gibFehlendeEingabenKontaktformular()
     if ($conf['kontakt']['kontakt_abfragen_mobil'] === 'Y') {
         $ret['mobil'] = checkeTel($_POST['mobil']);
     }
-    if ((!isset($_SESSION['bAnti_spam_already_checked']) || $_SESSION['bAnti_spam_already_checked'] !== true) && $conf['kontakt']['kontakt_abfragen_captcha'] === 'Y' && $conf['global']['anti_spam_method'] !== 'N') {
+    if (empty($_SESSION['Kunde']->kKunde) && (!isset($_SESSION['bAnti_spam_already_checked']) || $_SESSION['bAnti_spam_already_checked'] !== true) &&
+        $conf['kontakt']['kontakt_abfragen_captcha'] === 'Y' && $conf['global']['anti_spam_method'] !== 'N') {
         // reCAPTCHA
         if (isset($_POST['g-recaptcha-response'])) {
             $ret['captcha'] = !validateReCaptcha($_POST['g-recaptcha-response']);

@@ -137,7 +137,12 @@
                 <hr>
                 <div class="row">
                     <div class="col-xs-7">
-                        {include file="productdetails/price.tpl" Artikel=$Artikel price_image=$Artikel->Preise->strPreisGrafik_Detail tplscope="detail"}
+                        {if isset($Artikel->Preise->strPreisGrafik_Detail)}
+                            {assign var=priceImage value=$Artikel->Preise->strPreisGrafik_Detail}
+                        {else}
+                            {assign var=priceImage value=null}
+                        {/if}
+                        {include file="productdetails/price.tpl" Artikel=$Artikel price_image=$priceImage tplscope="detail"}
                     </div>
                     <div class="col-xs-5 text-right">
                         {include file="productdetails/stock.tpl"}

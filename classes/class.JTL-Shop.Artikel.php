@@ -3139,10 +3139,13 @@ class Artikel
                     $this->$k = $v;
                 }
                 // Kundenrabatt beachten
-                $fMaxRabatt = (double) $this->fMaxRabatt;
-                if (($fKundenRabatt = $this->gibKundenRabatt($fMaxRabatt)) !== null) {
+                $fMaxRabatt        = (double) $this->fMaxRabatt;
+                $pricesInitialized = method_exists($this->Preise, 'rabbatierePreise');
+                if (!$pricesInitialized && $_SESSION['Kundengruppe']->darfPreiseSehen == 1) {
+                    $this->holPreise($kKundengruppe, $this);
+                }
+                if ($pricesInitialized && ($fKundenRabatt = $this->gibKundenRabatt($fMaxRabatt)) !== null) {
                     $fMaxRabatt = $fKundenRabatt;
-
                     $this->Preise->rabbatierePreise($fMaxRabatt);
                     $this->Preise->localizePreise();
                 }
@@ -5666,15 +5669,18 @@ class Artikel
     public function getTierPrices()
     {
         $tierPrices = array();
-        foreach ($this->Preise->nAnzahl_arr as $_idx => $_nAnzahl) {
-            $_v                        = array();
-            $_v['nAnzahl']             = $_nAnzahl;
-            $_v['fStaffelpreis']       = (isset($this->Preise->fStaffelpreis_arr[$_idx])) ? $this->Preise->fStaffelpreis_arr[$_idx] : null;
-            $_v['fPreis']              = (isset($this->Preise->fPreis_arr[$_idx])) ? $this->Preise->fPreis_arr[$_idx] : null;
-            $_v['cPreisLocalized']     = (isset($this->Preise->cPreisLocalized_arr[$_idx])) ? $this->Preise->cPreisLocalized_arr[$_idx] : null;
-            $_v['cBasePriceLocalized'] = (isset($this->fStaffelpreisVPE_arr[$_idx])) ? $this->fStaffelpreisVPE_arr[$_idx] : null;
-            $tierPrices[]              = $_v;
+        if (isset($this->Preise->nAnzahl_arr)) {
+            foreach ($this->Preise->nAnzahl_arr as $_idx => $_nAnzahl) {
+                $_v                        = array();
+                $_v['nAnzahl']             = $_nAnzahl;
+                $_v['fStaffelpreis']       = (isset($this->Preise->fStaffelpreis_arr[$_idx])) ? $this->Preise->fStaffelpreis_arr[$_idx] : null;
+                $_v['fPreis']              = (isset($this->Preise->fPreis_arr[$_idx])) ? $this->Preise->fPreis_arr[$_idx] : null;
+                $_v['cPreisLocalized']     = (isset($this->Preise->cPreisLocalized_arr[$_idx])) ? $this->Preise->cPreisLocalized_arr[$_idx] : null;
+                $_v['cBasePriceLocalized'] = (isset($this->fStaffelpreisVPE_arr[$_idx])) ? $this->fStaffelpreisVPE_arr[$_idx] : null;
+                $tierPrices[]              = $_v;
+            }
         }
+
 
         return $tierPrices;
     }

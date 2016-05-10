@@ -3,7 +3,8 @@
 ## [unreleased]
 
 * Bugfix: Lokalisierung in Top-Navigation direkt nach Sprachwechsel unvollständig
-* Bugfix: Server-Error in Artikel-Ansicht wenn Preise erst nach Login sichtbar sind
+* Bugfix: Server-Error in Artikel-Ansicht, wenn Preise erst nach Login sichtbar sind
+* Bugfix: DB-Update läuft in Endlosschleife, wenn das Update ohne Umweg über admin/index.php direkt im Backend angestoßen wird
 
 ## [4.03]
 

@@ -24,6 +24,9 @@
         <Version nr="104">
             <CreateDate>2016-01-18</CreateDate>
         </Version>
+        <Version nr="105">
+            <CreateDate>2016-05-10</CreateDate>
+        </Version>
         <Hooks>
             <Hook id="6">6_7_jtl_paypal.php</Hook>
             <Hook id="7">6_7_jtl_paypal.php</Hook>

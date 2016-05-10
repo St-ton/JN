@@ -34,6 +34,16 @@ class Updater
     {
         if (static::$isVerified !== true) {
             MigrationHelper::verifyIntegrity();
+
+            // While updating from 3.xx to 4.xx provide a default admin-template row
+            if ($this->getCurrentDatabaseVersion() < 400) {
+                $count = (int) Shop::DB()->query("SELECT * FROM `ttemplate` WHERE `eTyp`='admin'", 3);
+                if ($count === 0) {
+                    Shop::DB()->query("ALTER TABLE `ttemplate` CHANGE `eTyp` `eTyp` ENUM('standard','mobil','admin') NOT NULL", 3);
+                    Shop::DB()->query("INSERT INTO `ttemplate` (`cTemplate`, `eTyp`) VALUES ('bootstrap', 'admin')", 3);
+                }
+            }
+
             static::$isVerified = true;
         }
     }

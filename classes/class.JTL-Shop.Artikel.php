@@ -3130,15 +3130,10 @@ class Artikel
                     $this->$k = $v;
                 }
                 // Kundenrabatt beachten
-                $fMaxRabatt        = (double) $this->fMaxRabatt;
-                $pricesInitialized = method_exists($this->Preise, 'rabbatierePreise');
-                if (!$pricesInitialized && $_SESSION['Kundengruppe']->darfPreiseSehen == 1) {
+                $fMaxRabatt    = (double) $this->fMaxRabatt;
+                $fKundenRabatt = $this->gibKundenRabatt($fMaxRabatt);
+                if ($fKundenRabatt > 0 || $fMaxRabatt > 0) {
                     $this->holPreise($kKundengruppe, $this);
-                }
-                if ($pricesInitialized && ($fKundenRabatt = $this->gibKundenRabatt($fMaxRabatt)) !== null) {
-                    $fMaxRabatt = $fKundenRabatt;
-                    $this->Preise->rabbatierePreise($fMaxRabatt);
-                    $this->Preise->localizePreise();
                 }
                 //#7595 - do not used cached result if special price is expired
                 $return = true;
@@ -3482,11 +3477,7 @@ class Artikel
         if ($this->fPackeinheit == 0) {
             $this->fPackeinheit = 1;
         }
-        //@todo:
-        $useCacheStorage = true;
-        if ($this->holPreise($kKundengruppe, $oArtikelTMP) > (double) $oArtikelTMP->fMaxRabatt) {
-            $useCacheStorage = false;
-        }
+        $this->holPreise($kKundengruppe, $oArtikelTMP);
         //globale Einstellung
         $this->setzeSprache($kSprache);
         $this->cURL     = baueURL($this, URLART_ARTIKEL);

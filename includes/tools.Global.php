@@ -1839,7 +1839,7 @@ function checkeSpracheWaehrung($lang = '')
             if ($Sprache->cISO == $lang) {
                 $_SESSION['cISOSprache'] = $Sprache->cISO;
                 $_SESSION['kSprache']    = $Sprache->kSprache;
-                Shop::setLanguage($Sprache->kSprache);
+                Shop::setLanguage($Sprache->kSprache, $Sprache->cISO);
                 unset($_SESSION['Suche']);
                 $bSpracheDa = true;
                 setzeLinks();

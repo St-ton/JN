@@ -209,7 +209,7 @@ function gibFehlendeEingabenProduktanfrageformular()
     if ($conf['artikeldetails']['produktfrage_abfragen_mobil'] === 'Y' && !$_POST['mobil']) {
         $ret['mobil'] = 1;
     }
-    if ((!isset($_SESSION['bAnti_spam_already_checked']) || $_SESSION['bAnti_spam_already_checked'] !== true) &&
+    if (empty($_SESSION['Kunde']->kKunde) && (!isset($_SESSION['bAnti_spam_already_checked']) || $_SESSION['bAnti_spam_already_checked'] !== true) &&
         $conf['artikeldetails']['produktfrage_abfragen_captcha'] === 'Y' && $conf['global']['anti_spam_method'] !== 'N' &&
         !empty($conf['global']['global_google_recaptcha_private'])) {
         // reCAPTCHA
@@ -443,7 +443,8 @@ function gibFehlendeEingabenBenachrichtigungsformular()
     if ($conf['artikeldetails']['benachrichtigung_abfragen_nachname'] === 'Y' && !$_POST['nachname']) {
         $ret['nachname'] = 1;
     }
-    if ((!isset($_SESSION['bAnti_spam_already_checked']) || $_SESSION['bAnti_spam_already_checked'] !== true) && $conf['artikeldetails']['benachrichtigung_abfragen_captcha'] !== 'N' && !empty($conf['global']['global_google_recaptcha_private'])) {
+    if (empty($_SESSION['Kunde']->kKunde) && (!isset($_SESSION['bAnti_spam_already_checked']) || $_SESSION['bAnti_spam_already_checked'] !== true) &&
+        $conf['artikeldetails']['benachrichtigung_abfragen_captcha'] !== 'N' && !empty($conf['global']['global_google_recaptcha_private'])) {
         // reCAPTCHA
         if (isset($_POST['g-recaptcha-response'])) {
             $ret['captcha'] = !validateReCaptcha($_POST['g-recaptcha-response']);

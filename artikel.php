@@ -131,8 +131,8 @@ if ($smarty->isCached('productdetails/index.tpl', $cacheID) === true) {
         );
     }
     // Hat Artikel einen Preisverlauf?
-    $smarty->assign('bPreisverlauf', true);
-    if ($Einstellungen['preisverlauf']['preisverlauf_anzeigen'] === 'Y') {
+    $smarty->assign('bPreisverlauf', !empty($_SESSION['Kundengruppe']->darfPreiseSehen));
+    if ($Einstellungen['preisverlauf']['preisverlauf_anzeigen'] === 'Y' && !empty($_SESSION['Kundengruppe']->darfPreiseSehen)) {
         require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Preisverlauf.php';
 
         Shop::$kArtikel = Shop::$kVariKindArtikel > 0 ? Shop::$kVariKindArtikel : $AktuellerArtikel->kArtikel;

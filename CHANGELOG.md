@@ -1,5 +1,10 @@
 # JTL-Shop Changelog
 
+## [unreleased]
+
+* Bugfix: Lokalisierung in Top-Navigation direkt nach Sprachwechsel unvollständig
+* Bugfix: Server-Error in Artikel-Ansicht wenn Preise erst nach Login sichtbar sind
+
 ## [4.03]
 
 Dieses Update enthält folgende Verbesserungen und Bugfixes: 

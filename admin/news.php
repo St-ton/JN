@@ -104,7 +104,7 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
                     else {
                         $tab = verifyGPDataString('tab');
                         if ($tab == 'aktiv') {
-                            newsRedirect(true === empty($tab) ? 'inaktiv' : $tab, $cHinweis, array(
+                            newsRedirect(empty($tab) ? 'inaktiv' : $tab, $cHinweis, array(
                                 'news'  => '1',
                                 'nd'    => '1',
                                 'kNews' => verifyGPCDataInteger('kNews'),
@@ -112,7 +112,7 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
                             ));
                         }
                         else {
-                            newsRedirect(true === empty($tab) ? 'inaktiv' : $tab, $cHinweis);
+                            newsRedirect(empty($tab) ? 'inaktiv' : $tab, $cHinweis);
                         }
                     }
                 } else {
@@ -331,7 +331,7 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
             }
             else {
                 $tab = verifyGPDataString('tab');
-                newsRedirect(true === empty($tab) ? 'aktiv' : $tab, $cHinweis);
+                newsRedirect(empty($tab) ? 'aktiv' : $tab, $cHinweis);
             }
         } else {
             $step = 'news_editieren';
@@ -339,7 +339,7 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
                    ->assign('cPlausiValue_arr', $cPlausiValue_arr);
             $cFehler .= 'Fehler: Bitte f&uuml;llen Sie alle Pflichtfelder aus.<br />';
 
-            if (true === isset($_POST['kNews']) && true === is_numeric($_POST['kNews'])) {
+            if (isset($_POST['kNews']) && is_numeric($_POST['kNews'])) {
                 $continueWith = (int) $_POST['kNews'];
             }
             else {
@@ -453,7 +453,7 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
 
             $oNewsKategorie = editiereNewskategorie(verifyGPCDataInteger('kNewsKategorie'), $_SESSION['kSprache']);
 
-            if (true === isset($oNewsKategorie->kNewsKategorie) && intval($oNewsKategorie->kNewsKategorie) > 0) {
+            if (isset($oNewsKategorie->kNewsKategorie) && intval($oNewsKategorie->kNewsKategorie) > 0) {
                 $smarty->assign('oNewsKategorie', $oNewsKategorie);
             } else {
                 $step = 'news_uebersicht';
@@ -498,7 +498,7 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
 
             $cHinweis .= 'Ihre markierten Newskommentare wurden erfolgreich freigeschaltet.<br />';
             $tab = verifyGPDataString('tab');
-            newsRedirect(true === empty($tab) ? 'inaktiv' : $tab, $cHinweis);
+            newsRedirect(empty($tab) ? 'inaktiv' : $tab, $cHinweis);
         } else {
             $cFehler .= 'Fehler: Bitte markieren Sie mindestens einen Newskommentar.<br />';
         }
@@ -510,7 +510,7 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
 
             $cHinweis .= 'Ihre markierten Kommentare wurden erfolgreich gel&ouml;scht.<br />';
             $tab = verifyGPDataString('tab');
-            newsRedirect(true === empty($tab) ? 'inaktiv' : $tab, $cHinweis);
+            newsRedirect(empty($tab) ? 'inaktiv' : $tab, $cHinweis);
         } else {
             $cFehler .= 'Fehler: Sie m&uuml;ssen mindestens einen Kommentar markieren.<br />';
         }
@@ -533,7 +533,7 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
                     WHERE kNews = " . $kNews, 1
             );
 
-            if (false === empty($oNews->kNews)) {
+            if (!empty($oNews->kNews)) {
                 $oNews->kKundengruppe_arr = gibKeyArrayFuerKeyString($oNews->cKundengruppe, ';');
                 // Sollen einzelne Newsbilder geloescht werden?
                 if (strlen(verifyGPDataString('delpic')) > 0) {
@@ -595,7 +595,7 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
 
                         $cHinweis .= "Ihre markierten Kommentare wurden erfolgreich gel&ouml;scht.<br />";
                         $tab = verifyGPDataString('tab');
-                        newsRedirect(true === empty($tab) ? 'inaktiv' : $tab, $cHinweis, array(
+                        newsRedirect(empty($tab) ? 'inaktiv' : $tab, $cHinweis, array(
                             'news'  => '1',
                             'nd'    => '1',
                             'kNews' => $oNews->kNews,
@@ -653,7 +653,7 @@ if ($step === 'news_uebersicht') {
         ));
     }
 
-    if (true === is_array($oNews_arr) && count($oNews_arr) > 0) {
+    if (is_array($oNews_arr) && count($oNews_arr) > 0) {
         foreach ($oNews_arr as $i => $oNews) {
             $oNews_arr[$i]->cKundengruppe_arr = array();
             $kKundengruppe_arr                = array();
@@ -718,7 +718,7 @@ if ($step === 'news_uebersicht') {
         ));
     }
 
-    if (true === is_array($oNewsKommentar_arr) && count($oNewsKommentar_arr) > 0) {
+    if (is_array($oNewsKommentar_arr) && count($oNewsKommentar_arr) > 0) {
         foreach ($oNewsKommentar_arr as $i => $oNewsKommentar) {
             $oKunde = new Kunde($oNewsKommentar->kKunde);
 
@@ -797,7 +797,7 @@ if ($step === 'news_uebersicht') {
            ->assign('oBlaetterNaviKats', $oBlaetterNaviKats);
 }
 
-if (true === isset($_SESSION['news.cHinweis']) && false === empty($_SESSION['news.cHinweis'])) {
+if (isset($_SESSION['news.cHinweis']) && !empty($_SESSION['news.cHinweis'])) {
     $cHinweis .= $_SESSION['news.cHinweis'];
     unset($_SESSION['news.cHinweis']);
 }

@@ -255,16 +255,16 @@ function calcRatio($cDatei, $nMaxBreite, $nMaxHoehe)
  */
 function holeNewskategorie($kSprache = null, $cLimitSQL = '')
 {
-    if (false === isset($kSprache)) {
+    if (!isset($kSprache)) {
         $kSprache = $_SESSION['kSprache'];
     }
     $kSprache = (int) $kSprache;
 
     return Shop::DB()->query(
-        "SELECT" . (false === empty($cLimitSQL) ? " SQL_CALC_FOUND_ROWS" : '') . " *, DATE_FORMAT(dLetzteAktualisierung, '%d.%m.%Y %H:%i') AS dLetzteAktualisierung_de
+        "SELECT" . (!empty($cLimitSQL) ? " SQL_CALC_FOUND_ROWS" : '') . " *, DATE_FORMAT(dLetzteAktualisierung, '%d.%m.%Y %H:%i') AS dLetzteAktualisierung_de
             FROM tnewskategorie
             WHERE kSprache = " . $kSprache . "
-            ORDER BY nSort DESC" . (false === empty($cLimitSQL) ? " " . $cLimitSQL : ''), 2
+            ORDER BY nSort DESC" . (!empty($cLimitSQL) ? " " . $cLimitSQL : ''), 2
     );
 }
 
@@ -438,25 +438,25 @@ function newsRedirect($cTab = '', $cHinweis = '', $urlParams = null)
         'aktiv'      => 's2',
         'kategorien' => 's3',
     );
-    if (true === empty($cHinweis)) {
+    if (empty($cHinweis)) {
         unset($_SESSION['news.cHinweis']);
     }
     else {
         $_SESSION['news.cHinweis'] = $cHinweis;
     }
 
-    if (false === empty($cTab)) {
-        if (false === is_array($urlParams)) {
+    if (!empty($cTab)) {
+        if (!is_array($urlParams)) {
             $urlParams = array();
         }
 
         $urlParams['tab'] = $cTab;
 
-        if (true === isset($tabPageMapping[$cTab]) && verifyGPCDataInteger($tabPageMapping[$cTab]) > 1 && false === array_key_exists($tabPageMapping[$cTab], $urlParams)) {
+        if (isset($tabPageMapping[$cTab]) && verifyGPCDataInteger($tabPageMapping[$cTab]) > 1 && !array_key_exists($tabPageMapping[$cTab], $urlParams)) {
             $urlParams[$tabPageMapping[$cTab]] = verifyGPCDataInteger($tabPageMapping[$cTab]);
         }
     }
 
-    header('Location: news.php' . (true === is_array($urlParams) ? '?' . http_build_query($urlParams, '', '&') : ''));
+    header('Location: news.php' . (is_array($urlParams) ? '?' . http_build_query($urlParams, '', '&') : ''));
     exit;
 }

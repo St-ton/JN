@@ -5,6 +5,8 @@
 * Bugfix: HTTP 500, wenn Object-Cache aktiv ist und Preise erst nach Login sichtbar
 * Bugfix: DB-Update läuft in Endlosschleife, wenn das Update ohne Umweg über admin/index.php direkt im Backend angestoßen wird
 * Bugfix: reCaptcha-Validierung schlägt bei eingeloggten Kunden fehl
+* Bugfix: Konfigurator Initialisierung dauert bei größeren Konfi-Artikeln sehr lange
+* Bugfix: Banner werden nicht dargestellt, wenn Aktiv-Von/Bis-Datum fehlt
 
 ## [4.03] - 2016-05-09
 

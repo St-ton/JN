@@ -30,20 +30,20 @@ if (strlen(verifyGPDataString('tab')) > 0) {
     switch ($backTab) {
         case 'inaktiv':
             if (verifyGPCDataInteger('s1') > 1) {
-                $smarty->assign('cBackPage', 'tab=inaktiv&s1=' . verifyGPCDataInteger('s1'));
-                $smarty->assign('cSeite', verifyGPCDataInteger('s1'));
+                $smarty->assign('cBackPage', 'tab=inaktiv&s1=' . verifyGPCDataInteger('s1'))
+                       ->assign('cSeite', verifyGPCDataInteger('s1'));
             }
             break;
         case 'aktiv':
             if (verifyGPCDataInteger('s2') > 1) {
-                $smarty->assign('cBackPage', 'tab=aktiv&s2=' . verifyGPCDataInteger('s2'));
-                $smarty->assign('cSeite', verifyGPCDataInteger('s2'));
+                $smarty->assign('cBackPage', 'tab=aktiv&s2=' . verifyGPCDataInteger('s2'))
+                       ->assign('cSeite', verifyGPCDataInteger('s2'));
             }
             break;
         case 'kategorien':
             if (verifyGPCDataInteger('s3') > 1) {
-                $smarty->assign('cBackPage', 'tab=kategorien&s3=' . verifyGPCDataInteger('s3'));
-                $smarty->assign('cSeite', verifyGPCDataInteger('s3'));
+                $smarty->assign('cBackPage', 'tab=kategorien&s3=' . verifyGPCDataInteger('s3'))
+                       ->assign('cSeite', verifyGPCDataInteger('s3'));
             }
             break;
     }
@@ -100,8 +100,7 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
                     if (verifyGPCDataInteger('nFZ') === 1) {
                         header('Location: freischalten.php');
                         exit();
-                    }
-                    else {
+                    } else {
                         $tab = verifyGPDataString('tab');
                         if ($tab == 'aktiv') {
                             newsRedirect(empty($tab) ? 'inaktiv' : $tab, $cHinweis, array(
@@ -110,8 +109,7 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
                                 'kNews' => verifyGPCDataInteger('kNews'),
                                 'token' => $_SESSION['jtl_token'],
                             ));
-                        }
-                        else {
+                        } else {
                             newsRedirect(empty($tab) ? 'inaktiv' : $tab, $cHinweis);
                         }
                     }
@@ -328,8 +326,7 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
             if (isset($_POST['continue']) && $_POST['continue'] === '1') {
                 $step         = 'news_editieren';
                 $continueWith = (int)$kNews;
-            }
-            else {
+            } else {
                 $tab = verifyGPDataString('tab');
                 newsRedirect(empty($tab) ? 'aktiv' : $tab, $cHinweis);
             }
@@ -341,8 +338,7 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
 
             if (isset($_POST['kNews']) && is_numeric($_POST['kNews'])) {
                 $continueWith = (int) $_POST['kNews'];
-            }
-            else {
+            } else {
                 $oNewsKategorie_arr = holeNewskategorie($_SESSION['kSprache']);
                 $smarty->assign('oNewsKategorie_arr', $oNewsKategorie_arr);
             }

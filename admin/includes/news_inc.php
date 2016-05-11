@@ -440,8 +440,7 @@ function newsRedirect($cTab = '', $cHinweis = '', $urlParams = null)
     );
     if (empty($cHinweis)) {
         unset($_SESSION['news.cHinweis']);
-    }
-    else {
+    } else {
         $_SESSION['news.cHinweis'] = $cHinweis;
     }
 

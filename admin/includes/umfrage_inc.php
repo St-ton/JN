@@ -378,6 +378,7 @@ function holeUmfrageStatistik($kUmfrage)
                                 "SELECT cText AS cName, count(cText) AS nAnzahlAntwort
                                     FROM tumfragedurchfuehrungantwort
                                     WHERE kUmfrageFrage = " . (int)$oUmfrageFrage->kUmfrageFrage . "
+                                        AND TRIM(cText) !=''
                                     GROUP BY cText
                                     ORDER BY nAnzahlAntwort DESC
                                     LIMIT " . UMFRAGE_MAXANZAHLANZEIGEN, 2
@@ -438,7 +439,7 @@ function holeUmfrageStatistik($kUmfrage)
                                 "SELECT count(*) AS nAnzahl
                                     FROM tumfragedurchfuehrungantwort
                                     WHERE kUmfrageFrage = " . (int)$oUmfrageFrage->kUmfrageFrage . "
-                                        AND cText = ''", 1
+                                        AND kUmfrageFrageAntwort != 0", 1
                             );
                             $oUmfrageFrageAntwortFreifeld_arr = array();
                             if ($oUmfrageStats->oUmfrageFrage_arr[$i]->nFreifeld == 1) {
@@ -448,6 +449,7 @@ function holeUmfrageStatistik($kUmfrage)
                                         WHERE kUmfrageFrage = " . (int)$oUmfrageFrage->kUmfrageFrage . "
                                             AND kUmfrageFrageAntwort = 0
                                             AND kUmfrageMatrixOption = 0
+                                            AND TRIM(cText) !=''
                                         GROUP BY cText
                                         ORDER BY nAnzahlAntwort DESC", 2
                                 );

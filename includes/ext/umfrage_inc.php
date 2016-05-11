@@ -201,6 +201,7 @@ function setzeUmfrageErgebnisse()
 
         $kUmfrageDurchfuehrung = Shop::DB()->insert('tumfragedurchfuehrung', $oUmfrageDurchfuehrung);
 
+
         // Daten der Umfrage in die Datenbank (tumfragedurchfuehrungantwort) speichern
         foreach ($_SESSION['Umfrage']->oUmfrageFrage_arr as $j => $oUmfrageFrage) {
             if ($oUmfrageFrage->cTyp !== 'text_statisch' && $oUmfrageFrage->cTyp !== 'text_statisch_seitenwechsel') {
@@ -215,7 +216,7 @@ function setzeUmfrageErgebnisse()
                             if ($oUmfrageFrage->cTyp === 'text_klein' || $oUmfrageFrage->cTyp === 'text_gross') {
                                 $oUmfrageDurchfuehrungAntwort->kUmfrageFrageAntwort = 0;
                                 $oUmfrageDurchfuehrungAntwort->kUmfrageMatrixOption = 0;
-                                $oUmfrageDurchfuehrungAntwort->cText                = StringHandler::htmlentities(StringHandler::filterXSS($cUmfrageFrageAntwort));
+                                $oUmfrageDurchfuehrungAntwort->cText                = (!empty($cUmfrageFrageAntwort)) ? StringHandler::htmlentities(StringHandler::filterXSS(ltrim($cUmfrageFrageAntwort))) : '';
                             } elseif ($oUmfrageFrage->cTyp === 'matrix_single' || $oUmfrageFrage->cTyp === 'matrix_multi') {
                                 list($kUmfrageFrageAntwort, $kUmfrageMatrixOption)  = explode('_', $cUmfrageFrageAntwort);
                                 $oUmfrageDurchfuehrungAntwort->kUmfrageFrageAntwort = $kUmfrageFrageAntwort;
@@ -225,12 +226,12 @@ function setzeUmfrageErgebnisse()
                                 if ($cUmfrageFrageAntwort == '-1') {
                                     $oUmfrageDurchfuehrungAntwort->kUmfrageFrageAntwort = 0;
                                     $oUmfrageDurchfuehrungAntwort->kUmfrageMatrixOption = 0;
-                                    $oUmfrageDurchfuehrungAntwort->cText                = StringHandler::htmlentities(StringHandler::filterXSS($oUmfrageFrage->oUmfrageFrageAntwort_arr[$i + 1]));
+                                    $oUmfrageDurchfuehrungAntwort->cText                = (!empty($oUmfrageFrage->oUmfrageFrageAntwort_arr[$i + 1])) ? StringHandler::htmlentities(StringHandler::filterXSS($oUmfrageFrage->oUmfrageFrageAntwort_arr[$i + 1])) : '';
                                     array_pop($_SESSION['Umfrage']->oUmfrageFrage_arr[$j]->oUmfrageFrageAntwort_arr);
                                 } else {
                                     $oUmfrageDurchfuehrungAntwort->kUmfrageFrageAntwort = $cUmfrageFrageAntwort;
                                     $oUmfrageDurchfuehrungAntwort->kUmfrageMatrixOption = 0;
-                                    $oUmfrageDurchfuehrungAntwort->cText                = '';
+                                    $oUmfrageDurchfuehrungAntwort->cText                = ($oUmfrageFrage->nFreifeld) ? $cUmfrageFrageAntwort : '';
                                 }
                             }
 

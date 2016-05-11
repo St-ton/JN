@@ -3646,20 +3646,20 @@ function gibSprachVariablen($kPlugin)
     $kPlugin                = (int)$kPlugin;
     $oPluginSprachvariablen = Shop::DB()->query(
         "SELECT
-            tpluginsprachvariable.kpluginsprachvariable,
-            tpluginsprachvariable.kplugin,
-            tpluginsprachvariable.cname,
-            tpluginsprachvariable.cbeschreibung,
-            COALESCE(tpluginsprachvariablecustomsprache.ciso, tpluginsprachvariablesprache.ciso)  AS cISO,
-            COALESCE(tpluginsprachvariablecustomsprache.cname, tpluginsprachvariablesprache.cname) AS customValue
+            tpluginsprachvariable.kPluginSprachvariable,
+            tpluginsprachvariable.kPlugin,
+            tpluginsprachvariable.cName,
+            tpluginsprachvariable.cBeschreibung,
+            COALESCE(tpluginsprachvariablecustomsprache.cISO, tpluginsprachvariablesprache.cISO)  AS cISO,
+            COALESCE(tpluginsprachvariablecustomsprache.cName, tpluginsprachvariablesprache.cName) AS customValue
             FROM tpluginsprachvariable
                 LEFT JOIN tpluginsprachvariablecustomsprache
-                    ON tpluginsprachvariablecustomsprache.kpluginsprachvariable = tpluginsprachvariable.kpluginsprachvariable
+                    ON tpluginsprachvariablecustomsprache.kPluginSprachvariable = tpluginsprachvariable.kPluginSprachvariable
                 LEFT JOIN tpluginsprachvariablesprache
-                    ON tpluginsprachvariablesprache.kpluginsprachvariable = tpluginsprachvariable.kpluginsprachvariable
-                    AND tpluginsprachvariablesprache.ciso = COALESCE(tpluginsprachvariablecustomsprache.ciso, tpluginsprachvariablesprache.ciso)
-            WHERE tpluginsprachvariable.kplugin = " . $kPlugin . "
-            ORDER BY tpluginsprachvariable.kpluginsprachvariable", 9
+                    ON tpluginsprachvariablesprache.kPluginSprachvariable = tpluginsprachvariable.kPluginSprachvariable
+                    AND tpluginsprachvariablesprache.cISO = COALESCE(tpluginsprachvariablecustomsprache.cISO, tpluginsprachvariablesprache.cISO)
+            WHERE tpluginsprachvariable.kPlugin = " . $kPlugin . "
+            ORDER BY tpluginsprachvariable.kPluginSprachvariable", 9
     );
     if (is_array($oPluginSprachvariablen) && count($oPluginSprachvariablen) > 0) {
         $new = array();

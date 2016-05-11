@@ -1,6 +1,6 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=#newsCat#}
 <div id="content">
-    <form name="news" method="post" action="news.php">
+    <form name="news" method="post" action="news.php" enctype="multipart/form-data">
         {$jtl_token}
         <input type="hidden" name="news" value="1" />
         <input type="hidden" name="news_kategorie_speichern" value="1" />
@@ -56,6 +56,16 @@
                     <td><label for="cMetaDescription">{#newsMetaDescription#}</label></td>
                     <td>
                         <input class="form-control" id="cMetaDescription" name="cMetaDescription" type="text" value="{if isset($cPostVar_arr.cMetaDescription)}{$cPostVar_arr.cMetaDescription}{elseif isset($oNewsKategorie->cMetaDescription)}{$oNewsKategorie->cMetaDescription}{/if}" />
+                    </td>
+                </tr>
+                <tr>
+                    <td><label for="previewImage">{#newsPreview#}</label></td>
+                    <td valign="top">
+                        {if !empty($oNewsKategorie->cPreviewImage)}
+                            <img src="{$shopURL}/{$oNewsKategorie->cPreviewImage}" alt="" height="20" width="20" class="preview-image left" style="margin-right: 10px;" />
+                        {/if}
+                        <input id="previewImage" name="previewImage" type="file" maxlength="2097152" accept="image/*" />
+                        <input name="previewImage" type="hidden" value="{if !empty($oNewsKategorie->cPreviewImage)}{$oNewsKategorie->cPreviewImage}{/if}" />
                     </td>
                 </tr>
                 <tr>

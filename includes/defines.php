@@ -86,6 +86,7 @@ define('PFAD_FONTS', PFAD_INCLUDES . 'fonts/');
 define('PFAD_BILDER_INTERN', PFAD_BILDER . 'intern/');
 define('PFAD_BILDER_BANNER', PFAD_BILDER . 'banner/');
 define('PFAD_NEWSBILDER', PFAD_BILDER . 'news/');
+define('PFAD_NEWSKATEGORIEBILDER', PFAD_BILDER . 'newskategorie/');
 define('PFAD_SHOPLOGO', PFAD_BILDER_INTERN . 'shoplogo/');
 ifndef('PFAD_ADMIN', 'admin/');
 define('PFAD_EMAILVORLAGEN', PFAD_ADMIN . 'mailtemplates/');

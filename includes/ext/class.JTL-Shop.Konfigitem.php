@@ -123,7 +123,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         public function jsonSerialize()
         {
-            $override = array(
+            $result = array(
                 'cName'           => $this->getName(),
                 'cBeschreibung'   => $this->getBeschreibung(),
                 'bAnzahl'         => $this->getMin() != $this->getMax(),
@@ -140,8 +140,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                     gibPreisStringLocalized($this->getPreis(true))
                 )
             );
-
-            $result = array_merge(get_object_vars($this), $override);
 
             return utf8_convert_recursive($result);
         }

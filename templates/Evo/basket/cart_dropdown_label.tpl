@@ -1,4 +1,4 @@
-<a href="warenkorb.php" class="dropdown-toggle" data-toggle="dropdown">
+<a href="{get_standard_link id='warenkorb.php'}" class="dropdown-toggle" data-toggle="dropdown">
     <span class="fa fa-shopping-cart"></span>
     {if $WarenkorbArtikelPositionenanzahl >= 1}
         <sup class="badge">

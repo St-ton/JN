@@ -52,7 +52,7 @@
                                         {lang key="unsubscribeAnytime" section="newsletter"}
                                     </p>
                                 </div>
-                                <form method="post" action="newsletter.php" class="form col-xs-12 col-sm-6">
+                                <form method="post" action="{get_standard_link id='newsletter.php'}" class="form col-xs-12 col-sm-6">
                                     <fieldset>
                                         {$jtl_token}
                                         <input type="hidden" name="abonnieren" value="1"/>

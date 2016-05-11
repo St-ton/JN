@@ -84,7 +84,7 @@
                                 </div>
                                 <div class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3 register-or-resetpw">
                                     <small>
-                                    <a class="resetpw  pull-right" href="pass.php?exclusive_content=1" onclick="window.open(this.href,this.target,'width=640,height=430'); return false;"><span class="fa fa-question-circle"></span> {lang key="forgotPassword" section="global"}</a>
+                                    <a class="resetpw  pull-right" href="{get_standard_link id='pass.php'}?exclusive_content=1" onclick="window.open(this.href,this.target,'width=640,height=430'); return false;"><span class="fa fa-question-circle"></span> {lang key="forgotPassword" section="global"}</a>
                                     </small>
                                 </div>
                             </div>

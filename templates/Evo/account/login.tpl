@@ -27,7 +27,7 @@
         <div class="well panel-wrap">
             <div class="panel">
                 <div class="panel-body">
-                    <form id="login_form" action="jtl.php" method="post" role="form">
+                    <form id="login_form" action="{get_standard_link id='jtl.php'}" method="post" role="form">
                         {$jtl_token}
                         <fieldset>
                             <legend>{lang section="checkout" key="loginForRegisteredCustomers"}</legend>
@@ -75,8 +75,8 @@
                             <div class="clearfix"></div>
                             <div class="register-or-resetpw top15">
                                 <small>
-                                   <a class="register pull-left" href="registrieren.php"><span class="fa fa-pencil"></span> {lang key="newHere" section="global"} {lang key="registerNow" section="global"}</a>
-                                   <a class="resetpw  pull-right" href="pass.php"><span class="fa fa-question-circle"></span> {lang key="forgotPassword" section="global"}</a>
+                                   <a class="register pull-left" href="{get_standard_link id='registrieren.php'}"><span class="fa fa-pencil"></span> {lang key="newHere" section="global"} {lang key="registerNow" section="global"}</a>
+                                   <a class="resetpw  pull-right" href="{get_standard_link id='pass.php'}"><span class="fa fa-question-circle"></span> {lang key="forgotPassword" section="global"}</a>
                                 </small>
                             </div>
                         </fieldset>

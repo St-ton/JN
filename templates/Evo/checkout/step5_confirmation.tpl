@@ -205,7 +205,7 @@
                                 <strong>{lang key="shippingTime" section="global"}</strong>: {$smarty.session.Warenkorb->cEstimatedDelivery}
                             </div>
                             <input type="submit" value="{lang key="orderLiableToPay" section="checkout"}" id="complete-order-button" class="btn btn-primary btn-lg pull-right submit submit_once" />
-                            <a href="warenkorb.php" class="btn btn-default btn-lg">{lang key="modifyBasket" section="checkout"}</a>
+                            <a href="{get_standard_link id='warenkorb.php'}" class="btn btn-default btn-lg">{lang key="modifyBasket" section="checkout"}</a>
                         </div>
                     </div>
                 </div>

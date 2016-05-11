@@ -305,6 +305,8 @@ class LinkHelper
                 Kundengruppe::getDefaultGroupID();
             $Linkgruppen = Shop::DB()->query("SELECT * FROM tlinkgruppe", 2);
             $linkGroups  = new stdClass();
+            $shopURL     = Shop::getURL();
+            $shopURLSSL  = Shop::getURL(true);
             foreach ($Linkgruppen as $Linkgruppe) {
                 if (strlen(trim($Linkgruppe->cTemplatename)) === 0) {
                     continue;
@@ -361,7 +363,7 @@ class LinkHelper
                         $Links[$i]->cLocalizedSeo[$Linksprache->cISOSprache]   = $Linksprache->cSeo;
                     }
                     $Links[$i]->URL      = baueURL($Links[$i], URLART_SEITE);
-                    $Links[$i]->cURLFull = Shop::getURL() . '/' . $Links[$i]->URL;
+                    $Links[$i]->cURLFull = $shopURL . '/' . $Links[$i]->URL;
                     if (isset($Links[$i]->bSSL) && (int)$Links[$i]->bSSL === 2) {
                         //if link has forced ssl, modify cURLFull accordingly
                         $Links[$i]->cURLFull = str_replace('http://', 'https://', $Links[$i]->cURLFull);
@@ -499,6 +501,35 @@ class LinkHelper
             $linkGroups->Link_Datenschutz  = $session['Link_Datenschutz'];
             $linkGroups->Link_AGB          = $session['Link_AGB'];
             $linkGroups->Link_Versandseite = $session['Link_Versandseite'];
+
+            $standardLinks_arr = Shop::DB()->query(
+                "SELECT tspezialseite.kSpezialseite, tspezialseite.cName AS baseName, tspezialseite.cDateiname, tspezialseite.nLinkart, 
+                        tlink.kLink, tlinksprache.cName AS seoName, tlinksprache.cSeo, tsprache.cISO, tsprache.kSprache
+                    FROM tspezialseite
+                        LEFT JOIN tlink ON tlink.nLinkart = tspezialseite.nLinkart
+                        LEFT JOIN tlinksprache ON tlink.kLink = tlinksprache.kLink
+                        LEFT JOIN tsprache ON tsprache.cISO = tlinksprache.cISOSprache
+                    WHERE cDateiname IS NOT NULL AND cDateiname != ''", 2);
+
+            $linkGroups->standardLinks = array();
+            foreach ($standardLinks_arr as $link) {
+                if (empty($link->cSeo)) {
+                    continue;
+                }
+                $link->cURLFull    = $shopURL . '/' . $link->cSeo;
+                $link->cURLFullSSL = $shopURLSSL . '/' . $link->cSeo;
+                $currentIndex      = $link->cDateiname;
+                if (!isset($linkGroups->standardLinks[$link->cDateiname])) {
+                    $linkGroups->standardLinks[$currentIndex] = array();
+                }
+                unset($link->cDateiname);
+                if (!empty($link->cISO)) {
+                    $linkGroups->standardLinks[$currentIndex][$link->cISO] = $link;
+                } else {
+                    $linkGroups->standardLinks[$currentIndex][] = $link;
+                }
+            }
+
             $this->linkGroups              = $linkGroups;
             executeHook(HOOK_BUILD_LINK_GROUPS, array(
                     'linkGroups' => &$linkGroups,
@@ -912,5 +943,43 @@ class LinkHelper
         }
 
         return $oMeta;
+    }
+
+    /**
+     * @param string      $id
+     * @param bool        $full
+     * @param bool        $secure
+     * @param string|null $langISO
+     * @return string
+     */
+    public function getStandardPages($id = 'kontakt.php', $full = true, $secure = false, $langISO = null)
+    {
+        if (isset($this->linkGroups->standardLinks[$id])) {
+            $index = $this->linkGroups->standardLinks[$id];
+            if (is_array($index)) {
+                $language  = ($langISO !== null) ? $langISO : $_SESSION['cISOSprache'];
+                $localized = (isset($index[$language])) ?
+                    $index[$language] :
+                    $index[0];
+                if ($full === true) {
+                    if ($secure === true) {
+                        return (!empty($localized->cURLFullSSL)) ? $localized->cURLFullSSL : $id;
+                    }
+
+                    return (!empty($localized->cURLFull)) ? $localized->cURLFull : $id;
+                }
+                if ($secure === true) {
+                    return (!empty($localized->cURLFull)) ? $localized->cURLFull : $id;
+                }
+                return (!empty($localized->cSeo)) ? $localized->cSeo : $id;
+            }
+
+            return $index;
+        }
+        if ($full) {
+            return Shop::getURL($secure) . '/' . $id;
+        }
+
+        return $id;
     }
 }

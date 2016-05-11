@@ -13,7 +13,7 @@
     {foreach name=newsletterhistory from=$oNewsletterHistory_arr item=oNewsletterHistory}
     <tr class="content_{$smarty.foreach.newsletterhistory.iteration%2}">
         <td class="left_td">
-            <a href="newsletter.php?show={$oNewsletterHistory->kNewsletterHistory}">{$oNewsletterHistory->cBetreff}</a>
+            <a href="{get_standard_link id='newsletter.php'}?show={$oNewsletterHistory->kNewsletterHistory}">{$oNewsletterHistory->cBetreff}</a>
         </td>
         <td class="right_td">{$oNewsletterHistory->Datum}</td>
     </tr>

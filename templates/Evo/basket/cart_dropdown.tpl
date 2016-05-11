@@ -54,12 +54,12 @@
             <p class="small text-muted">{$WarenkorbVersandkostenfreiHinweis} <a href="{if !empty($oSpezialseiten_arr) && isset($oSpezialseiten_arr[6])}{$oSpezialseiten_arr[6]->cURL}{else}#{/if}" data-toggle="tooltip"  data-placement="bottom" title="{$WarenkorbVersandkostenfreiLaenderHinweis}"><i class="fa fa-info-circle"></i></a></p>
         {/if}
         <div class="btn-group btn-group-justified btn-group-full">
-            <a href="warenkorb.php" class="btn btn-primary"><i class="fa fa-shopping-cart"></i> {lang key="gotoBasket"}</a>
+            <a href="{get_standard_link id='warenkorb.php'}" class="btn btn-primary"><i class="fa fa-shopping-cart"></i> {lang key="gotoBasket"}</a>
             {*
             <a href="bestellvorgang.php" class="btn btn-primary">{lang key="checkout" section="basketpreview"}</a>
             *}
         </div>
     {else}
-        <a href="warenkorb.php">{lang section="checkout" key="emptybasket"}</a>
+        <a href="{get_standard_link id='warenkorb.php'}">{lang section="checkout" key="emptybasket"}</a>
     {/if}
 </li>

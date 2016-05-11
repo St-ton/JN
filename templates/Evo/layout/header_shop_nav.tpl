@@ -59,7 +59,7 @@
             </a>
             <ul id="login-dropdown" class="dropdown-menu dropdown-menu-right">
                 <li>
-                    <form action="{$ShopURLSSL}/jtl.php" method="post" class="form">
+                    <form action="{get_standard_link id='jtl.php' secure="true"}" method="post" class="form">
                         {$jtl_token}
                         <fieldset id="quick-login">
                             <div class="form-group">
@@ -82,9 +82,9 @@
                         </fieldset>
                     </form>
                 </li>
-                <li><a href="pass.php" rel="nofollow">{lang key="forgotPassword" section="global"}</a></li>
+                <li><a href="{get_standard_link id='pass.php'}" rel="nofollow">{lang key="forgotPassword" section="global"}</a></li>
                 <li>
-                    <a href="registrieren.php">{lang key="newHere" section="global"} {lang key="registerNow" section="global"}</a>
+                    <a href="{get_standard_link id='registrieren.php'}">{lang key="newHere" section="global"} {lang key="registerNow" section="global"}</a>
                 </li>
             </ul>
         {else}
@@ -95,10 +95,10 @@
             </a>
             <ul class="dropdown-menu dropdown-menu-right">
                 <li>
-                    <a href="jtl.php">{lang key="myAccount" section="global"}</a>
+                    <a href="{get_standard_link id='jtl.php' secure="true"}">{lang key="myAccount" section="global"}</a>
                 </li>
                 <li>
-                    <a href="jtl.php?logout=1">{lang key="logOut" section="global"}</a>
+                    <a href="{get_standard_link id='jtl.php' secure="true"}?logout=1">{lang key="logOut" section="global"}</a>
                 </li>
             </ul>
         {/if}
@@ -116,7 +116,7 @@
     {*  WISH LIST *}
     {if isset($smarty.session.Wunschliste->kWunschliste) && $smarty.session.Wunschliste->CWunschlistePos_arr|count > 0}
     <li class="hidden-xs wish-list-menu">
-        <a href="jtl.php?wl={$smarty.session.Wunschliste->kWunschliste}" title="{lang key="goToWishlist" sektion="global"}"><span class="fa fa-heart"></span><sup class="badge"><em>{$smarty.session.Wunschliste->CWunschlistePos_arr|count}</em></sup></a>
+        <a href="{get_standard_link id='jtl.php'}?wl={$smarty.session.Wunschliste->kWunschliste}" title="{lang key="goToWishlist" sektion="global"}"><span class="fa fa-heart"></span><sup class="badge"><em>{$smarty.session.Wunschliste->CWunschlistePos_arr|count}</em></sup></a>
     </li>
     {/if}
     {*  WISH LIST *}

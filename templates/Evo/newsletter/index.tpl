@@ -32,7 +32,7 @@
                         {block name="newsletter-subscribe-body"}
                         <p>{lang key="newsletterSubscribeDesc" section="newsletter"}</p>
 
-                        <form method="post" action="newsletter.php" role="form">
+                        <form method="post" action="{get_standard_link id='newsletter.php'}" role="form">
                             <fieldset>
                                 <div class="form-group float-label-control">
                                     <label for="newslettertitle" class="control-label">{lang key="newslettertitle" section="newsletter"}</label>

@@ -4,7 +4,7 @@
     </div>
     <div class="panel-body">
         {if empty($smarty.session.Kunde->kKunde)}
-            <form action="{$ShopURLSSL}/jtl.php" method="post" class="form box_login">
+            <form action="{get_standard_link id='jtl.php' secure="true"}" method="post" class="form box_login">
                 <input type="hidden" name="login" value="1" />
                 {$jtl_token}
                 <div class="form-group required">
@@ -36,7 +36,7 @@
                 </div>
                 <ul class="register-or-resetpw nav">
                     <li>
-                        <a class="resetpw pull-left btn-block" href="pass.php">
+                        <a class="resetpw pull-left btn-block" href="{get_standard_link id='pass.php' secure=true}">
                             <span class="fa fa-question-circle"></span> {lang key="forgotPassword" section="global"}
                         </a>
                     </li>
@@ -48,8 +48,8 @@
                 </ul>
             </form>
         {else}
-            <a href="jtl.php" class="btn btn-default btn-block btn-sm btn-account">{lang key="myAccount" section="global"}</a>
-            <a href="jtl.php?logout=1&token={$smarty.session.jtl_token}" class="btn btn-block btn-sm btn-warning btn-logout">{lang key="logOut" section="global"}</a>
+            <a href="{get_standard_link id='jtl.php'}" class="btn btn-default btn-block btn-sm btn-account">{lang key="myAccount" section="global"}</a>
+            <a href="{get_standard_link id='jtl.php'}?logout=1&token={$smarty.session.jtl_token}" class="btn btn-block btn-sm btn-warning btn-logout">{lang key="logOut" section="global"}</a>
         {/if}
     </div>
 </section>

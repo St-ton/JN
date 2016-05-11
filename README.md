@@ -1,6 +1,8 @@
 # JTL-Shop
 
 [![Build Status](https://jenkins.jtl-software.de/buildStatus/icon?job=JTL-Shop)](https://jenkins.jtl-software.de/job/JTL-Shop/)
+[![Dependency Status](https://www.versioneye.com/user/projects/57334a7fac902b0011f6760a/badge.svg)](https://www.versioneye.com/user/projects/57334a7fac902b0011f6760a)
+[![Build Status](https://img.shields.io/badge/release-4.03-blue.svg)](https://gitlab.jtl-software.de/jtlshop/shop4)
 
 <br>
 

@@ -27,7 +27,9 @@ class Vergleichsliste
             //new slim variant for compare list
             if (TEMPLATE_COMPATIBILITY === false) {
                 $oArtikel           = new stdClass();
+                $tmpName            = Shop::DB()->select('tartikel', 'kArtikel', $kArtikel, null, null, null, null, false, 'cName');
                 $oArtikel->kArtikel = $kArtikel;
+                $oArtikel->cName    = $tmpName->cName;
             } else {
                 //default mode
                 $oArtikel                                     = new Artikel();

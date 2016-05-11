@@ -110,7 +110,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
             $cSeo              = $_POST['cSeo'];
             $kKundengruppe_arr = $_POST['kKundengruppe'];
             $cBeschreibung     = $_POST['cBeschreibung'];
-            $fGuthaben         = (isset($_POST['fGuthaben'])) ? doubleval($_POST['fGuthaben']) : 0;
+            $fGuthaben         = (isset($_POST['fGuthaben'])) ? floatval(str_replace(',','.',$_POST['fGuthaben'])) : 0;
             if ($fGuthaben <= 0 || !isset($kKupon)) {
                 $fGuthaben = 0;
             }

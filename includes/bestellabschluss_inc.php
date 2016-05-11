@@ -182,12 +182,12 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
                         aktualisiereXselling($Position->kArtikel, $pos->kArtikel);
                     }
                 }
-                $kArtikel_arr[] = $Position->kArtikel;
+                $kArtikel_arr[] = $Position;
                 // Clear Cache
                 Shop::Cache()->flushTags(array(CACHING_GROUP_ARTICLE . '_' . $Position->kArtikel));
             } elseif ($Position->nPosTyp == C_WARENKORBPOS_TYP_GRATISGESCHENK) {
                 aktualisiereLagerbestand($Position->Artikel, $Position->nAnzahl, $Position->WarenkorbPosEigenschaftArr, $nArtikelAnzeigefilter);
-                $kArtikel_arr[] = $Position->kArtikel;
+                $kArtikel_arr[] = $Position;
                 // Clear Cache
                 Shop::Cache()->flushTags(array(CACHING_GROUP_ARTICLE . '_' . $Position->kArtikel));
             }

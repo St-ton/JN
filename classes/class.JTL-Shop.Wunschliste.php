@@ -201,9 +201,34 @@ class Wunschliste
             if (isset($oWunschzettel->kWunschliste) && $oWunschzettel->kWunschliste > 0) {
                 if (isset($oWunschzettel->CWunschlistePos_arr) && count($oWunschzettel->CWunschlistePos_arr) > 0 && is_array($kArtikel_arr) && count($kArtikel_arr) > 0) {
                     foreach ($oWunschzettel->CWunschlistePos_arr as $i => $oWunschlistePos) {
-                        foreach ($kArtikel_arr as $kArtikel) {
-                            if ($oWunschlistePos->kArtikel == $kArtikel) {
-                                $oWunschzettel->entfernePos($oWunschlistePos->kWunschlistePos);
+                        foreach ($kArtikel_arr as $oArtikel) {
+                            if ($oWunschlistePos->kArtikel == $oArtikel->kArtikel) {
+                                //mehrfache Variationen beachten
+                                if (!empty($oWunschlistePos->CWunschlistePosEigenschaft_arr) && !empty($oArtikel->WarenkorbPosEigenschaftArr)) {
+                                    $nMatchesFound = 0;
+                                    $index = 0;
+                                    foreach ($oWunschlistePos->CWunschlistePosEigenschaft_arr as $oWPEigenschaft){
+                                        if ($index === $nMatchesFound) {
+                                            foreach ($oArtikel->WarenkorbPosEigenschaftArr as $oAEigenschaft){
+                                                if ($oWPEigenschaft->kEigenschaftWert != 0 && $oWPEigenschaft->kEigenschaftWert === $oAEigenschaft->kEigenschaftWert){
+                                                    $nMatchesFound++;
+                                                    break;
+                                                } elseif ($oWPEigenschaft->kEigenschaftWert === 0 && $oAEigenschaft->kEigenschaftWert === 0 &&
+                                                    !empty($oWPEigenschaft->cFreifeldWert) && !empty($oAEigenschaft->cFreifeldWert) &&
+                                                    $oWPEigenschaft->cFreifeldWert === $oAEigenschaft->cFreifeldWert) {
+                                                    $nMatchesFound++;
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                        $index++;
+                                    }
+                                    if ($nMatchesFound === count($oArtikel->WarenkorbPosEigenschaftArr)) {
+                                        $oWunschzettel->entfernePos($oWunschlistePos->kWunschlistePos);
+                                    }
+                                } else {
+                                    $oWunschzettel->entfernePos($oWunschlistePos->kWunschlistePos);
+                                }
                                 $nCount++;
                             }
                         }

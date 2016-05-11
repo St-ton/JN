@@ -211,6 +211,7 @@
                         <thead>
                         <tr>
                             <th class="check"></th>
+                            <th class="" style="width: 32px;"></th>
                             <th class="tleft">{#newsCatName#}</th>
                             <th class="">{#newsCatSortShort#}</th>
                             <th class="th-4">{#newsActive#}</th>
@@ -224,6 +225,9 @@
                                 <tr class="tab_bg{$smarty.foreach.newskategorie.iteration%2}">
                                     <td class="check">
                                         <input type="checkbox" name="kNewsKategorie[]" value="{$oNewsKategorie->kNewsKategorie}" />
+                                    </td>
+                                    <td>
+                                        <img src="{$shopURL}/{$oNewsKategorie->cPreviewImage}" alt="" height="32" width="32" class="preview-image left">
                                     </td>
                                     <td class="TD2">{$oNewsKategorie->cName}</td>
                                     <td class="tcenter">{$oNewsKategorie->nSort}</td>

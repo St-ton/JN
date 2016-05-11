@@ -3,6 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
 require_once dirname(__FILE__) . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
 
@@ -16,6 +17,7 @@ $cHinweis           = '';
 $cFehler            = '';
 $step               = 'news_uebersicht';
 $cUploadVerzeichnis = PFAD_ROOT . PFAD_NEWSBILDER;
+$cUploadVerzeichnisKat = PFAD_ROOT . PFAD_NEWSKATEGORIEBILDER;
 $oNewsKategorie_arr = array();
 $continueWith       = false;
 setzeSprache();
@@ -358,6 +360,8 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
         $cMetaTitle       = $_POST['cMetaTitle'];
         $cMetaDescription = $_POST['cMetaDescription'];
         $cBeschreibung    = $_POST['cBeschreibung'];
+        $cPreviewImage    = $_POST['previewImage'];
+        
         $cPlausiValue_arr = pruefeNewsKategorie($_POST['cName'], (isset($_POST['newskategorie_edit_speichern'])) ? intval($_POST['newskategorie_edit_speichern']) : 0);
 
         if (is_array($cPlausiValue_arr) && count($cPlausiValue_arr) === 0) {
@@ -382,6 +386,7 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
             $oNewsKategorie->cSeo                  = (strlen($cSeo) > 0) ?
                 checkSeo(getSeo($cSeo)) :
                 checkSeo(getSeo($cName));
+            $oNewsKategorie->cPreviewImage    = $cPreviewImage;
 
             if ($kNewsKategorie > 0) {
                 $oNewsKategorie->kNewsKategorie = $kNewsKategorie;
@@ -397,6 +402,26 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
             $oSeo->kKey     = $kNewsKategorie;
             $oSeo->kSprache = $oNewsKategorie->kSprache;
             Shop::DB()->insert('tseo', $oSeo);
+
+            // Vorschaubild hochladen
+            if (!is_dir($cUploadVerzeichnisKat . $kNewsKategorie)) {
+                mkdir($cUploadVerzeichnisKat . $kNewsKategorie, 0777, true);
+            }
+            if (isset($_FILES['previewImage']['name']) && strlen($_FILES['previewImage']['name']) > 0) {
+                $extension = substr(
+                    $_FILES['previewImage']['type'],
+                    strpos($_FILES['previewImage']['type'], '/') + 1,
+                    strlen($_FILES['previewImage']['type'] - (strpos($_FILES['previewImage']['type'], '/'))) + 1
+                );
+                $cUploadDatei = $cUploadVerzeichnisKat . $kNewsKategorie . '/preview.' . $extension;
+                move_uploaded_file($_FILES['previewImage']['tmp_name'], $cUploadDatei);
+                $oNewsKategorie->cPreviewImage = PFAD_NEWSKATEGORIEBILDER . $kNewsKategorie . '/preview.' . $extension;
+                Shop::DB()->query(
+                    "UPDATE tnewskategorie
+                    SET cPreviewImage = '" . $oNewsKategorie->cPreviewImage . "'
+                    WHERE kNewsKategorie = " . $kNewsKategorie, 3
+                );
+            }
 
             $cHinweis .= 'Ihre Newskategorie "' . $cName . '" wurde erfolgreich eingetragen.<br />';
         } else {
@@ -729,6 +754,7 @@ $oKundengruppe_arr = Shop::DB()->query(
         FROM tkundengruppe
         ORDER BY cStandard DESC", 2
 );
+
 $smarty->assign('oKundengruppe_arr', $oKundengruppe_arr)
        ->assign('hinweis', $cHinweis)
        ->assign('fehler', $cFehler)

@@ -4,7 +4,18 @@
 {nocache}
     {if !empty($hinweis)}
         {if isset($bWarenkorbHinzugefuegt) && $bWarenkorbHinzugefuegt}
-            {include file='productdetails/pushed_success.tpl'}
+            <div id="popup-pushed-success" class="hidden">
+                {include file='productdetails/pushed_success.tpl'}
+            </div>
+            <script type="text/javascript">
+                $(window).load(function() {ldelim}
+                    eModal.alert({ldelim}
+                        size: 'lg',
+                        message: $('#popup-pushed-success').html(),
+                        title: '{lang key="basketAllAdded" section="messages"}'
+                    {rdelim});
+                {rdelim});
+            </script>
         {else}
             <div class="alert alert-success">
                 {$hinweis}

@@ -60,33 +60,37 @@ echo $return;
 function bearbeiteHerstellerDeletes($xml)
 {
     $cacheTags = array();
+    if (isset($xml['del_hersteller']['kHersteller']) && intval($xml['del_hersteller']['kHersteller']) > 0) {
+        $xml['del_hersteller']['kHersteller'] = array($xml['del_hersteller']['kHersteller']);
+    }
+
     if (isset($xml['del_hersteller']['kHersteller']) && is_array($xml['del_hersteller']['kHersteller'])) {
         foreach ($xml['del_hersteller']['kHersteller'] as $kHersteller) {
             $kHersteller = (int)$kHersteller;
             if ($kHersteller > 0) {
+                $affectedArticles = Shop::DB()->query("SELECT kArtikel FROM tartikel WHERE kHersteller = " . $kHersteller, 2);
                 Shop::DB()->query("DELETE FROM tseo WHERE kKey = " . $kHersteller . " AND cKey = 'kHersteller'", 4);
                 Shop::DB()->query("DELETE FROM thersteller WHERE kHersteller = " . $kHersteller, 4);
                 Shop::DB()->query("DELETE FROM therstellersprache WHERE kHersteller = " . $kHersteller, 4);
 
                 executeHook(HOOK_HERSTELLER_XML_BEARBEITEDELETES, array('kHersteller' => $kHersteller));
                 $cacheTags[] = CACHING_GROUP_MANUFACTURER . '_' . $kHersteller;
+                if (is_array($affectedArticles)) {
+                    $articleCacheTags = array();
+                    foreach ($affectedArticles as $article) {
+                        $articleCacheTags[] = CACHING_GROUP_ARTICLE . '_' . $article->kArtikel;
+                    }
+                    Shop::Cache()->flushTags($articleCacheTags);
+                }
             }
         }
-    } elseif (isset($xml['del_hersteller']['kHersteller']) && intval($xml['del_hersteller']['kHersteller']) > 0) {
-        $kHersteller = (int)$xml['del_hersteller']['kHersteller'];
-        Shop::DB()->query("DELETE FROM tseo WHERE kKey = " . $kHersteller . " AND cKey = 'kHersteller'", 4);
-        Shop::DB()->query("DELETE FROM thersteller WHERE kHersteller = " . $kHersteller, 4);
-        Shop::DB()->query("DELETE FROM therstellersprache WHERE kHersteller = " . $kHersteller, 4);
-
-        executeHook(HOOK_HERSTELLER_XML_BEARBEITEDELETES, array('kHersteller' => $kHersteller));
-        $cacheTags[] = CACHING_GROUP_MANUFACTURER . '_' . $kHersteller;
-    }
-    Shop::Cache()->flushTags($cacheTags);
-    if (Shop::Cache()->isPageCacheEnabled()) {
-        if (!isset($smarty)) {
-            $smarty = Shop::Smarty();
+        Shop::Cache()->flushTags($cacheTags);
+        if (Shop::Cache()->isPageCacheEnabled()) {
+            if (!isset($smarty)) {
+                $smarty = Shop::Smarty();
+            }
+            $smarty->clearCache(null, 'jtlc|manufacturer');
         }
-        $smarty->clearCache(null, 'jtlc|manufacturer');
     }
 }
 
@@ -95,13 +99,14 @@ function bearbeiteHerstellerDeletes($xml)
  */
 function bearbeiteHersteller($xml)
 {
-    if (is_array($xml['hersteller']['thersteller'])) {
+    if (isset($xml['hersteller']['thersteller']) && is_array($xml['hersteller']['thersteller'])) {
         $hersteller_arr = mapArray($xml['hersteller'], 'thersteller', $GLOBALS['mHersteller']);
         if (is_array($hersteller_arr)) {
             $oSprache_arr = gibAlleSprachen();
             $mfCount      = count($hersteller_arr);
             $cacheTags    = array();
             for ($i = 0; $i < $mfCount; $i++) {
+                $affectedArticles = Shop::DB()->query("SELECT kArtikel FROM tartikel WHERE kHersteller = " . (int)$hersteller_arr[$i]->kHersteller, 2);
                 Shop::DB()->query("DELETE FROM tseo WHERE kKey = " . (int)$hersteller_arr[$i]->kHersteller . " AND cKey = 'kHersteller'", 4);
                 if (!trim($hersteller_arr[$i]->cSeo)) {
                     $hersteller_arr[$i]->cSeo = getFlatSeoPath($hersteller_arr[$i]->cName);
@@ -145,6 +150,13 @@ function bearbeiteHersteller($xml)
 
                 executeHook(HOOK_HERSTELLER_XML_BEARBEITEINSERT, array('oHersteller' => $hersteller_arr[$i]));
                 $cacheTags[] = CACHING_GROUP_MANUFACTURER . '_' . (int)$hersteller_arr[$i]->kHersteller;
+                if (is_array($affectedArticles)) {
+                    $articleCacheTags = array();
+                    foreach ($affectedArticles as $article) {
+                        $articleCacheTags[] = CACHING_GROUP_ARTICLE . '_' . $article->kArtikel;
+                    }
+                    Shop::Cache()->flushTags($articleCacheTags);
+                }
             }
             Shop::Cache()->flushTags($cacheTags);
             if (Shop::Cache()->isPageCacheEnabled()) {

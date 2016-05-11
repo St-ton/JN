@@ -8,6 +8,7 @@
 * Bugfix: reCaptcha-Validierung schlägt bei eingeloggten Kunden fehl
 * Bugfix: Konfigurator Initialisierung dauert bei größeren Konfi-Artikeln sehr lange
 * Bugfix: Banner werden nicht dargestellt, wenn Aktiv-Von/Bis-Datum fehlt
+* Bugfix: Bearbeiten von Herstellern invalidiert Objektcache für Artikel nicht
 
 ## [4.03]
 

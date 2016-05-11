@@ -419,7 +419,7 @@ class Wunschliste
         if (count($this->CWunschlistePos_arr) > 0) {
             foreach ($this->CWunschlistePos_arr as $CWunschlistePos) {
                 // Hat die Position einen Artikel
-                if (intval($CWunschlistePos->kArtikel) > 0) {
+                if (isset($CWunschlistePos->kArtikel) && (int) $CWunschlistePos->kArtikel > 0) {
                     // Prüfe auf kArtikel
                     $oArtikelVorhanden = Shop::DB()->query(
                         "SELECT kArtikel, cName, kEigenschaftKombi
@@ -427,7 +427,7 @@ class Wunschliste
                             WHERE kArtikel = " . (int) $CWunschlistePos->kArtikel, 1
                     );
                     // Falls Artikel vorhanden
-                    if (intval($oArtikelVorhanden->kArtikel) > 0) {
+                    if (isset($oArtikelVorhanden->kArtikel) && (int) $oArtikelVorhanden->kArtikel > 0) {
                         // Sichtbarkeit Prüfen
                         $oSichtbarkeit = Shop::DB()->query(
                             "SELECT kArtikel
@@ -454,7 +454,6 @@ class Wunschliste
                                         if (empty($oEigenschaftWertVorhanden->kEigenschaftKombi)) {
                                             $cArtikel_arr[] = $CWunschlistePos->cArtikelName;
                                             $hinweis .= '<br />' . Shop::Lang()->get('noProductWishlist', 'messages');
-
                                             // Positionen und Eigenschaften der Wunschliste welche nicht mehr Gültig sind in der Session durchgehen, löschen und unsetten
                                             $this->delWunschlistePosSess($CWunschlistePos->kArtikel);
                                             break;
@@ -473,15 +472,14 @@ class Wunschliste
                                             if (!empty($CWunschlistePosEigenschaft->kEigenschaft)) {
                                                 $oEigenschaftWertVorhanden = Shop::DB()->query(
                                                     "SELECT kEigenschaftWert
-                                                    FROM teigenschaftwert
-                                                    WHERE kEigenschaftWert = " . (int) $CWunschlistePosEigenschaft->kEigenschaftWert . "
-                                                    AND kEigenschaft = " . (int) $CWunschlistePosEigenschaft->kEigenschaft, 1
+                                                        FROM teigenschaftwert
+                                                        WHERE kEigenschaftWert = " . (int) $CWunschlistePosEigenschaft->kEigenschaftWert . "
+                                                        AND kEigenschaft = " . (int) $CWunschlistePosEigenschaft->kEigenschaft, 1
                                                 );
                                                 if (empty($oEigenschaftWertVorhanden)) {
                                                     $oEigenschaftWertVorhanden = Shop::DB()->select('twunschlisteposeigenschaft', 'kEigenschaft', $CWunschlistePosEigenschaft->kEigenschaft, null, null, null, null, null, 'cFreifeldWert');
                                                 }
                                             }
-
                                             // Prüfe ob die Eigenschaft vorhanden ist
                                             if (empty($oEigenschaftWertVorhanden->kEigenschaftWert) && empty($oEigenschaftWertVorhanden->cFreifeldWert)) {
                                                 $cArtikel_arr[] = $CWunschlistePos->cArtikelName;

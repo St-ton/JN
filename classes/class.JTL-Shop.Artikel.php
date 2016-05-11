@@ -1047,7 +1047,7 @@ class Artikel
     /**
      * @param int     $kKundengruppe
      * @param Artikel $oArtikelTMP
-     * @return float|null
+     * @return $this
      */
     public function holPreise($kKundengruppe = 0, $oArtikelTMP)
     {
@@ -1055,15 +1055,27 @@ class Artikel
             $kKundengruppe = $_SESSION['Kundengruppe']->kKundengruppe;
         }
         if (isset($_SESSION['Kundengruppe']->darfPreiseSehen) && !$_SESSION['Kundengruppe']->darfPreiseSehen) {
-            return;
+            $this->Preise = null;
+
+            return $this;
         }
-        //$this->Preise = new Preise($kKundengruppe, 0, $oArtikelTMP);
         $this->Preise = new Preise($kKundengruppe, $oArtikelTMP->kArtikel);
-        $fMaxRabatt   = $this->gibKundenRabatt((double) $oArtikelTMP->fMaxRabatt);
+        $this->Preise->localizePreise();
 
-        $this->Preise->rabbatierePreise($fMaxRabatt)->localizePreise();
+        return $this;
+    }
 
-        return $fMaxRabatt;
+    /**
+     * @return $this
+     */
+    private function rabattierePreise()
+    {
+        if ($this->Preise !== null && method_exists($this->Preise, 'rabbatierePreise')) {
+
+            $this->Preise->rabbatierePreise($this->gibKundenRabatt((double) $this->fMaxRabatt))->localizePreise();
+        }
+
+        return $this;
     }
 
     /**
@@ -3141,8 +3153,11 @@ class Artikel
                 // Kundenrabatt beachten
                 $fMaxRabatt    = (double) $this->fMaxRabatt;
                 $fKundenRabatt = $this->gibKundenRabatt($fMaxRabatt);
-                if ($fKundenRabatt > 0 || $fMaxRabatt > 0) {
+                if ($this->Preise === null || !method_exists($this->Preise, 'rabbatierePreise')) {
                     $this->holPreise($kKundengruppe, $this);
+                }
+                if ($fKundenRabatt > 0 || $fMaxRabatt > 0) {
+                    $this->rabattierePreise();
                 }
                 //#7595 - do not used cached result if special price is expired
                 $return = true;
@@ -3751,6 +3766,7 @@ class Artikel
         if ($noCache === false) {
             Shop::Cache()->set($cacheID, $this, $cacheTags);
         }
+        $this->rabattierePreise();
 
         return $this;
     }

@@ -70,7 +70,8 @@ class ImageMap implements IExtensionPoint
                 FROM timagemap
                 WHERE kImageMap = " . $kImageMap;
         if (!$fetch_all) {
-            $cSQL .= " AND NOW() BETWEEN COALESCE(IF(vDatum=0000-00-00,NULL,vDatum),NOW()) AND DATE_ADD(COALESCE(IF(bDatum=0000-00-00,NULL,bDatum),NOW()), INTERVAL 1 DAY)";
+            // vDate und bDate sollten immer '0000-00-00 00:00:00' statt NULL enthalten
+            $cSQL .= " AND (CURDATE() >= DATE(vDatum)) AND (CURDATE() <= DATE(bDatum) OR bDatum = 0)";
         }
         $oImageMap = Shop::DB()->query($cSQL, 1);
         if (!is_object($oImageMap)) {

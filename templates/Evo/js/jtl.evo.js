@@ -320,17 +320,6 @@
             });
         },
 
-        popupImmediate: function() {
-            $('.popup-immediate').each(function() {
-                $(this).addClass('hidden');
-                eModal.alert({
-                    size: $(this).hasClass('lg') ? 'lg' : '',
-                    message: $(this).html(),
-                    title: $(this).attr('title')
-                });
-            });
-        },
-
         register: function() {
             this.addSliderTouchSupport();
             this.productTabs();
@@ -342,7 +331,6 @@
             this.imagebox();
             this.renderCaptcha();
             this.popupDep();
-            this.popupImmediate();
         },
         
         loadContent: function(url, callback, error, animation) {

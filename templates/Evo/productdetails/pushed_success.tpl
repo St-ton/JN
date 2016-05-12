@@ -26,8 +26,8 @@
                     </div>{* /product-cell *}
                     <hr>
                     <p class="btn-group btn-group-justified btn-group-full" role="group">
-                        <a href="warenkorb.php" class="btn btn-default btn-basket"><i class="fa fa-shopping-cart"></i> {lang key="gotoBasket"}</a>
-                        <a href="#" class="btn btn-primary btn-checkout" data-dismiss="modal" aria-label="Close"><i class="fa fa-arrow-circle-right"></i> {lang key="continueShopping" section="checkout"}</a>
+                        <a href="{get_static_route id='warenkorb.php'}" class="btn btn-default btn-basket"><i class="fa fa-shopping-cart"></i> {lang key="gotoBasket"}</a>
+                        <a href="#" class="btn btn-primary btn-checkout" data-dismiss="{if isset($type)}{$type}{else}modal{/if}" aria-label="Close"><i class="fa fa-arrow-circle-right"></i> {lang key="continueShopping" section="checkout"}</a>
                     </p>
 {*
                     <p class="continue-shopping">

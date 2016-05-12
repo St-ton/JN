@@ -714,11 +714,11 @@ final class Shop
                 }
                 $nMatch = preg_match('/[^_](' . SEP_SEITE . '([0-9]+))/', $seo, $cMatch_arr, PREG_OFFSET_CAPTURE);
                 if ($nMatch !== false && $nMatch == 1) {
-                    $seite = intval($cMatch_arr[2][0]);
+                    $seite = (int) $cMatch_arr[2][0];
                     $seo   = substr($seo, 0, $cMatch_arr[1][1]);
                 }
                 //double content work around
-                if (strlen($seo) > 0 && $seite == 1) {
+                if (strlen($seo) > 0 && $seite === 1) {
                     header('HTTP/1.1 301 Moved Permanently');
                     header('Location: ' . self::getURL() . '/' . $seo);
                     exit();
@@ -1011,9 +1011,59 @@ final class Shop
                 }
             }
         } else {
-            self::$fileName      = 'seite.php';
-            self::$AktuelleSeite = 'SEITE';
-            self::setPageType(PAGE_EIGENE);
+            if (!empty(self::$kLink)) {
+                $linkHelper = LinkHelper::getInstance();
+                $link       = $linkHelper->getPageLink(Shop::$kLink);
+                $oSeite     = null;
+                if (isset($link->nLinkart)) {
+                    $oSeite = Shop::DB()->query("SELECT cDateiname FROM tspezialseite WHERE nLinkart = " . (int)$link->nLinkart, 1);
+                }
+                if (!empty($oSeite->cDateiname)) {
+                    self::$fileName = $oSeite->cDateiname;
+                    switch ($oSeite->cDateiname) {
+                        case 'news.php' :
+                            self::$AktuelleSeite = 'NEWS';
+                            self::setPageType(PAGE_NEWS);
+                            break;
+                        case 'jtl.php' :
+                            self::$AktuelleSeite = 'MEIN KONTO';
+                            self::setPageType(PAGE_MEINKONTO);
+                            break;
+                        case 'kontakt.php' :
+                            self::$AktuelleSeite = 'KONTAKT';
+                            self::setPageType(PAGE_KONTAKT);
+                            break;
+                        case 'newsletter.php' :
+                            self::$AktuelleSeite = 'NEWSLETTER';
+                            self::setPageType(PAGE_NEWSLETTER);
+                            break;
+                        case 'pass.php' :
+                            self::$AktuelleSeite = 'PASSWORT VERGESSEN';
+                            self::setPageType(PAGE_PASSWORTVERGESSEN);
+                            break;
+                        case 'registrieren.php' :
+                            self::$AktuelleSeite = 'REGISTRIEREN';
+                            self::setPageType(PAGE_REGISTRIERUNG);
+                            break;
+                        case 'umfrage.php' :
+                            self::$AktuelleSeite = 'UMFRAGE';
+                            self::setPageType(PAGE_UMFRAGE);
+                            break;
+                        case 'warenkorb.php' :
+                            self::$AktuelleSeite = 'WARENKORB';
+                            self::setPageType(PAGE_WARENKORB);
+                            break;
+                        default :
+                            break;
+                    }
+                }
+            }
+            if (self::$fileName === null) {
+                self::$fileName      = 'seite.php';
+                self::$AktuelleSeite = 'SEITE';
+                self::setPageType(PAGE_EIGENE);
+            }
+
         }
     }
 

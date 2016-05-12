@@ -113,8 +113,8 @@ if (isset($_REQUEST['action']) && validateToken()) {
                 $oBoxen->sortBox($box_arr[$i], $nPage, $sort_arr[$i], @in_array($box_arr[$i], $aktiv_arr) ? true : false);
                 $oBoxen->filterBoxVisibility((int)$box_arr[$i], (int)$nPage, (isset($_POST['box-filter-' . $box_arr[$i]])) ? $_POST['box-filter-' . $box_arr[$i]] : '');
             }
-            // see jtlshop/jtl-shop/issues#544
-            if ((int)$nPage > 0) {
+            // see jtlshop/jtl-shop/issues#544 && jtlshop/shop4#41
+            if ($ePosition !== 'left' || (int)$nPage > 0) {
                 $oBoxen->setzeBoxAnzeige($nPage, $ePosition, isset($_REQUEST['box_show']));
             }
             $cHinweis = 'Die Boxen wurden aktualisiert.';

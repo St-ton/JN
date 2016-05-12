@@ -46,7 +46,7 @@
     {/if}
     {block name="basket"}
         <div class="basket_wrapper">
-            <form id="cart-form" method="post" action="warenkorb.php">
+            <form id="cart-form" method="post" action="{get_static_route id='warenkorb.php'}">
                 {$jtl_token}
                 <input type="hidden" name="wka" value="1" />
                 {if $Schnellkaufhinweis}
@@ -69,7 +69,7 @@
 
             </form>
 
-            <form id="basket-coupon-form" method="post" action="warenkorb.php">
+            <form id="basket-coupon-form" method="post" action="{get_static_route id='warenkorb.php'}">
                 {$jtl_token}
                 {if $Einstellungen.kaufabwicklung.warenkorb_kupon_anzeigen === 'Y' && $KuponMoeglich == 1}
                     {block name="basket-coupon"}
@@ -89,7 +89,7 @@
                 {/if}
             </form>
 
-            <form id="basket-shipping-estimate-form" method="post" action="warenkorb.php">
+            <form id="basket-shipping-estimate-form" method="post" action="{get_static_route id='warenkorb.php'}">
                 {$jtl_token}
                 {if $Einstellungen.kaufabwicklung.warenkorb_versandermittlung_anzeigen === 'Y'}
                     {block name="basket-shipping-estimate"}
@@ -179,7 +179,7 @@
                                                         </tr>
                                                     {/foreach}
                                                 </table>
-                                                <a href="warenkorb.php" class="btn btn-default">{lang key="newEstimation" section="checkout"}</a>
+                                                <a href="{get_static_route id='warenkorb.php'}" class="btn btn-default">{lang key="newEstimation" section="checkout"}</a>
                                             {else}
                                                 {lang key="noShippingAvailable" section="checkout"}
                                             {/if}
@@ -203,7 +203,7 @@
                         <div class="panel-heading">{block name="basket-freegift-title"}{lang key="freeGiftFromOrderValueBasket" section="global"}{/block}</div>
                         <div class="panel-body">
                             {block name="basket-freegift-body"}
-                                <form method="post" name="freegift" action="warenkorb.php">
+                                <form method="post" name="freegift" action="{get_static_route id='warenkorb.php'}">
                                     {$jtl_token}
                                     <div class="row row-eq-height">
                                         {foreach name=gratisgeschenke from=$oArtikelGeschenk_arr item=oArtikelGeschenk}

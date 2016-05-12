@@ -320,7 +320,7 @@
             });
         },
 
-        popupImediate: function() {
+        popupImmediate: function() {
             $('.popup-immediate').each(function() {
                 $(this).addClass('hidden');
                 eModal.alert({
@@ -342,7 +342,7 @@
             this.imagebox();
             this.renderCaptcha();
             this.popupDep();
-            this.popupImediate();
+            this.popupImmediate();
         },
         
         loadContent: function(url, callback, error, animation) {

@@ -12,6 +12,7 @@
 * Bugfix: Ändern von Kundengruppen-Rabatten invalidiert Objektcache für Artikel und Kategorien nicht
 * Bugfix: Thumbnail-Cache-Ordner media/images/product wurde u.U. geleert, obwohl nicht nötig
 * Bugfix: Leere Kategorien werden trotz gesetzer Einstellung nicht immer ausgeblendet
+* Bugfix: Fehlerhafte Sortierung von Kategorien
 
 ## [4.03]
 

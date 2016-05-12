@@ -394,7 +394,7 @@ class PayPalBasic extends PaymentMethod
                     'fZahlungsgebuehr' => $basket->surcharge[WarenkorbHelper::GROSS],
                     'cISO'             => $helper->getCurrencyISO(),
                     'cZahler'          => $details->PayerInfo->Payer,
-                    'cHinweis'         => $details->PaymentDetails[0]->TransactionID,
+                    'cHinweis'         => $paymentInfo->TransactionID,
                 ]);
                 $this->setOrderStatusToPaid($pseudo);
             }

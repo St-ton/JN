@@ -10,6 +10,7 @@
 * Bugfix: Banner werden nicht dargestellt, wenn Aktiv-Von/Bis-Datum fehlt
 * Bugfix: Bearbeiten von Herstellern invalidiert Objektcache für Artikel nicht
 * Bugfix: Ändern von Kundengruppen-Rabatten invalidiert Objektcache für Artikel und Kategorien nicht
+* Bugfix: Thumbnail-Cache-Ordner media/images/product wurde u.U. geleert, obwohl nicht nötig
 
 ## [4.03]
 

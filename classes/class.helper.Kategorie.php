@@ -199,8 +199,7 @@ class KategorieHelper
                 }
             }
             if ($filterEmpty) {
-                $this->filterEmpty($fullCats, true);
-                $fullCats = $this->removeRelicts($fullCats);
+                $this->filterEmpty($fullCats, true)->removeRelicts($fullCats);
             }
             executeHook(HOOK_GET_ALL_CATEGORIES, array('categories' => &$fullCats));
 
@@ -242,41 +241,20 @@ class KategorieHelper
      * @param array $catList
      * @return $this
      */
-    private function removeRelicts($catList)
+    private function removeRelicts(&$catList)
     {
-        foreach ($catList as $i => &$_cat) {
-            if ((int)$_cat->bUnterKategorien === 1 && count($_cat->Unterkategorien) === 0) {
+        foreach ($catList as $i => $_cat) {
+            if ($_cat->bUnterKategorien === 1 && count($_cat->Unterkategorien) === 0 && $_cat->cnt == 0) {
                 unset($catList[$i]);
-                $catList = $this->removeRelicts($catList);
-            } elseif ((int)$_cat->bUnterKategorien === 1) {
-                $_cat->Unterkategorien = $this->removeEmptySubCats($_cat->Unterkategorien);
-                if (empty($_cat->Unterkategorien)) {
+            } elseif ($_cat->bUnterKategorien === 1) {
+                $this->removeRelicts($_cat->Unterkategorien);
+                if (empty($_cat->Unterkategorien) && $_cat->cnt == 0) {
                     unset($catList[$i]);
                 }
             }
         }
 
-        return $catList;
-    }
-
-    /**
-     * @param array $catList
-     * @return mixed
-     */
-    private function removeEmptySubCats($catList)
-    {
-        foreach ($catList as $i => &$_cat) {
-            if ((int)$_cat->bUnterKategorien === 1 && count($_cat->Unterkategorien) === 0) {
-                unset($catList[$i]);
-            } elseif ((int)$_cat->bUnterKategorien === 1) {
-                $_cat->Unterkategorien = $this->removeEmptySubCats($_cat->Unterkategorien);
-                if (empty($_cat->Unterkategorien)) {
-                    unset($catList[$i]);
-                }
-            }
-        }
-
-        return $catList;
+        return $this;
     }
 
     /**

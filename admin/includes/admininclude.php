@@ -28,6 +28,8 @@ require PFAD_ROOT . PFAD_CLASSES_CORE . 'class.core.NiceDB.php';
 require PFAD_ROOT . PFAD_CLASSES_CORE . 'class.core.Nice.php';
 require PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'benutzerverwaltung_inc.php';
 require PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'admin_tools.php';
+require PFAD_ROOT . PFAD_ADMIN . PFAD_CLASSES . 'class.JTL-Shopadmin.Notification.php';
+require PFAD_ROOT . PFAD_ADMIN . PFAD_CLASSES . 'class.JTL-Shopadmin.NotificationEntry.php';
 // Datenbankverbindung aufbauen - ohne Debug Modus
 $DB    = new NiceDB(DB_HOST, DB_USER, DB_PASS, DB_NAME, true);
 $cache = JTLCache::getInstance();

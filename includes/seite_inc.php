@@ -116,6 +116,9 @@ function gibNews($Einstellungen)
                 count(tnewskommentar.kNewsKommentar) AS nNewsKommentarAnzahl, DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y  %H:%i') AS dErstellt_de,
                 DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y  %H:%i') AS dGueltigVon_de
                 FROM tnews
+                JOIN tnewskategorienews ON tnewskategorienews.kNews = tnews.kNews
+                JOIN tnewskategorie ON tnewskategorie.kNewsKategorie = tnewskategorienews.kNewsKategorie
+                     AND tnewskategorie.nAktiv = 1
                 LEFT JOIN tnewskommentar ON tnewskommentar.kNews = tnews.kNews
                     AND tnewskommentar.nAktiv = 1
                 LEFT JOIN tseo ON tseo.cKey = 'kNews'

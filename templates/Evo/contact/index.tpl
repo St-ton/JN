@@ -30,7 +30,7 @@
                                     {lang key="fillOut" section="global"}
                                 </div>
                             {/if}
-                            <form name="contact" action="kontakt.php" method="post">
+                            <form name="contact" action="{get_static_route id='kontakt.php'}" method="post">
                                 {$jtl_token}
                                 <fieldset>
                                     <legend>{lang key="contact" section="global"}</legend>
@@ -164,7 +164,6 @@
                                         </div>
                                     </div>
                                 </fieldset>
-
                                 {if (!isset($smarty.session.bAnti_spam_already_checked) || $smarty.session.bAnti_spam_already_checked !== true) &&
                                     isset($Einstellungen.global.anti_spam_method) && $Einstellungen.global.anti_spam_method !== 'N' && 
                                     isset($Einstellungen.kontakt.kontakt_abfragen_captcha) && $Einstellungen.kontakt.kontakt_abfragen_captcha !== 'N' && empty($smarty.session.Kunde->kKunde)}

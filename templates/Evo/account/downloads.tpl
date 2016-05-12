@@ -23,7 +23,7 @@
                 <td class="text-center dl_validuntil" valign="middle">{if isset($oDownload->dGueltigBis)}{$oDownload->dGueltigBis}{else}{lang key="unlimited" section="global"}{/if}</td>
                 <td class="text-center dl_download" valign="middle">
                     {if $Bestellung->cStatus == $BESTELLUNG_STATUS_BEZAHLT || $Bestellung->cStatus == $BESTELLUNG_STATUS_VERSANDT}
-                        <form method="post" action="jtl.php">
+                        <form method="post" action="{get_static_route id='jtl.php'}">
                             {$jtl_token}
                             <input name="a" type="hidden" value="getdl" />
                             <input name="bestellung" type="hidden" value="{$Bestellung->kBestellung}" />
@@ -57,7 +57,7 @@
                 <td class="text-center dl_limit" valign="middle">{if isset($oDownload->cLimit)}{$oDownload->cLimit}{else}{lang key="unlimited" section="global"}{/if}</td>
                 <td class="text-center dl_validuntil" valign="middle">{if isset($oDownload->dGueltigBis)}{$oDownload->dGueltigBis}{else}{lang key="unlimited" section="global"}{/if}</td>
                 <td class="text-center dl_download" valign="middle">
-                    <form method="post" action="jtl.php">
+                    <form method="post" action="{get_static_route id='jtl.php'}">
                         {$jtl_token}
                         <input name="kBestellung" type="hidden" value="{$oDownload->kBestellung}" />
                         <input name="kKunde" type="hidden" value="{$smarty.session.Kunde->kKunde}" />

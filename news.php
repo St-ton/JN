@@ -26,6 +26,7 @@ $step             = 'news_uebersicht';
 $cMetaTitle       = '';
 $cMetaDescription = '';
 $cMetaKeywords    = '';
+$AktuelleSeite    = 'NEWS';
 $Einstellungen    = Shop::getSettings(array(
     CONF_GLOBAL,
     CONF_RSS,

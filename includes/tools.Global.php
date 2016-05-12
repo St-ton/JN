@@ -22,6 +22,7 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
     $ele        = new stdClass();
     $ele->name  = Shop::Lang()->get('startpage', 'breadcrumb');
     $ele->url   = Shop::getURL();
+    $linkHelper = LinkHelper::getInstance();
     $brotnavi[] = $ele;
     switch ($seite) {
         case 'STARTSEITE':
@@ -164,10 +165,10 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
             break;
 
         case 'NEWSDETAIL':
-            $SieSindHierString .= ' &gt; <a href="news.php">' . Shop::Lang()->get('news', 'breadcrumb') . '</a>';
+            $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('news.php') . '">' . Shop::Lang()->get('news', 'breadcrumb') . '</a>';
             $ele        = new stdClass();
             $ele->name  = Shop::Lang()->get('news', 'breadcrumb');
-            $ele->url   = 'news.php';
+            $ele->url   = $linkHelper->getStaticRoute('news.php');
             $brotnavi[] = $ele;
 
             $SieSindHierString .= ' &gt; <a href="' . $linkURL . '">' . $linkname . '</a>';
@@ -179,10 +180,10 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
             break;
 
         case 'NEWSKATEGORIE':
-            $SieSindHierString .= ' &gt; <a href="news.php">' . Shop::Lang()->get('newskat', 'breadcrumb') . '</a>';
+            $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('news.php') . '">' . Shop::Lang()->get('newskat', 'breadcrumb') . '</a>';
             $ele        = new stdClass();
             $ele->name  = Shop::Lang()->get('newskat', 'breadcrumb');
-            $ele->url   = 'news.php';
+            $ele->url   = $linkHelper->getStaticRoute('news.php');
             $brotnavi[] = $ele;
 
             $SieSindHierString .= ' &gt; <a href="' . $linkURL . '">' . $linkname . '</a>';
@@ -194,10 +195,10 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
             break;
 
         case 'NEWSMONAT':
-            $SieSindHierString .= ' &gt; <a href="news.php">' . Shop::Lang()->get('newsmonat', 'breadcrumb') . '</a>';
+            $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('news.php') . '">' . Shop::Lang()->get('newsmonat', 'breadcrumb') . '</a>';
             $ele        = new stdClass();
             $ele->name  = Shop::Lang()->get('newsmonat', 'breadcrumb');
-            $ele->url   = 'news.php';
+            $ele->url   = $linkHelper->getStaticRoute('news.php');
             $brotnavi[] = $ele;
 
             $SieSindHierString .= ' &gt; <a href="' . $linkURL . '">' . $linkname . '</a>';
@@ -229,7 +230,6 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
         default:
             $SieSindHierString .= ' &gt; <a href="' . $linkURL . '">' . $linkname . '</a>';
             $SieSindHierString .= '<br />';
-            $linkHelper = LinkHelper::getInstance();
             $oLink      = $linkHelper->getLinkObject($kLink);
             $kVaterLink = (isset($oLink->kVaterLink)) ? intval($oLink->kVaterLink) : null;
             $elems      = array();
@@ -1640,20 +1640,19 @@ function baueURL($obj, $art, $row = 0, $bForceNonSeo = false, $bFull = false)
                 return $prefix . $cDatei . '?k=' . $obj->kKategorie . $lang . $sid;
                 break;
             case URLART_SEITE:
-                // Hole aktuelle Spezialseite und gib den URL Dateinamen zurück
-                $oSpezialseite = Shop::DB()->query("SELECT cDateiname FROM tspezialseite WHERE nLinkart = " . intval($obj->nLinkart), 1);
-
-                if (isset($oSpezialseite->cDateiname) && strlen($oSpezialseite->cDateiname) > 0) {
-                    if ($row) {
-                        return $prefix . $oSpezialseite->cDateiname . '?' . SID;
-                    }
-
-                    return $prefix . $oSpezialseite->cDateiname;
-                }
                 if (isset($_SESSION['cISOSprache']) && isset($obj->cLocalizedSeo[$_SESSION['cISOSprache']]) &&
                     strlen($obj->cLocalizedSeo[$_SESSION['cISOSprache']]) && !$row
                 ) {
                     return $prefix . $obj->cLocalizedSeo[$_SESSION['cISOSprache']];
+                }
+                // Hole aktuelle Spezialseite und gib den URL Dateinamen zurück
+                $oSpezialseite = Shop::DB()->query("SELECT cDateiname FROM tspezialseite WHERE nLinkart = " . intval($obj->nLinkart), 1);
+                if (isset($oSpezialseite->cDateiname) && strlen($oSpezialseite->cDateiname) > 0) {
+                    if ($row) {
+                        return $prefix . $oSpezialseite->cDateiname;
+                    }
+
+                    return $prefix . $oSpezialseite->cDateiname;
                 }
 
                 return $prefix . $cDatei . '?s=' . $obj->kLink . $lang . $sid;
@@ -3803,6 +3802,7 @@ function setzeSpracheUndWaehrungLink()
 {
     global $NaviFilter, $oZusatzFilter, $sprachURL, $AktuellerArtikel, $kSeite, $kLink, $AktuelleSeite;
     $shopURL = Shop::getURL();
+    $helper  = LinkHelper::getInstance();
     if (isset($kSeite) && $kSeite > 0) {
         $kLink = $kSeite;
     }
@@ -3817,17 +3817,21 @@ function setzeSpracheUndWaehrungLink()
             } elseif (($kLink > 0 || $kSeite > 0) && isset($sprachURL[$oSprache->cISO])) {
                 $_SESSION['Sprachen'][$i]->cURL = $sprachURL[$oSprache->cISO];
             } // Special Seiten
-            elseif ($AktuelleSeite == 'WARENKORB'
-                || $AktuelleSeite == 'KONTAKT'
-                || $AktuelleSeite == 'REGISTRIEREN'
-                || $AktuelleSeite == 'MEIN KONTO'
-                || $AktuelleSeite == 'NEWSLETTER'
-                || $AktuelleSeite == 'UMFRAGE'
-                || $AktuelleSeite == 'BESTELLVORGANG'
-                || $AktuelleSeite == 'STARTSEITE'
+            elseif ($AktuelleSeite === 'WARENKORB'
+                || $AktuelleSeite === 'KONTAKT'
+                || $AktuelleSeite === 'REGISTRIEREN'
+                || $AktuelleSeite === 'MEIN KONTO'
+                || $AktuelleSeite === 'NEWSLETTER'
+                || $AktuelleSeite === 'UMFRAGE'
+                || $AktuelleSeite === 'BESTELLVORGANG'
+                || $AktuelleSeite === 'STARTSEITE'
+                || $AktuelleSeite === 'PASSWORT VERGESSEN'
+                || $AktuelleSeite === 'NEWS'
             ) {
+
                 switch ($AktuelleSeite) {
                     case 'STARTSEITE' :
+                        $id = null;
                         $_SESSION['Sprachen'][$i]->cURL = gibNaviURL($NaviFilter, SHOP_SEO, $oZusatzFilter, $oSprache->kSprache);
                         if ($_SESSION['Sprachen'][$i]->cURL === $shopURL . '/') {
                             $_SESSION['Sprachen'][$i]->cURL .= '?lang=' . $oSprache->cISO;
@@ -3835,37 +3839,59 @@ function setzeSpracheUndWaehrungLink()
                         break;
 
                     case 'WARENKORB' :
-                        $_SESSION['Sprachen'][$i]->cURL = $shopURL . '/warenkorb.php?lang=' . $oSprache->cISO;
+                        $id = 'warenkorb.php';
                         break;
 
                     case 'KONTAKT' :
-                        $_SESSION['Sprachen'][$i]->cURL = $shopURL . '/kontakt.php?lang=' . $oSprache->cISO;
+                        $id = 'kontakt.php';
                         break;
 
                     case 'REGISTRIEREN' :
-                        $_SESSION['Sprachen'][$i]->cURL = $shopURL . '/registrieren.php?lang=' . $oSprache->cISO;
+                        $id = 'registrieren.php';
                         break;
 
                     case 'MEIN KONTO' :
-                        $_SESSION['Sprachen'][$i]->cURL = $shopURL . '/jtl.php?lang=' . $oSprache->cISO;
+                        $id = 'jtl.php';
                         break;
 
                     case 'NEWSLETTER' :
-                        $_SESSION['Sprachen'][$i]->cURL = $shopURL . '/newsletter.php?lang=' . $oSprache->cISO;
+                        $id = 'newsletter.php';
                         break;
 
                     case 'UMFRAGE' :
-                        $_SESSION['Sprachen'][$i]->cURL = $shopURL . '/umfrage.php?lang=' . $oSprache->cISO;
+                        $id = 'umfrage.php';
                         break;
 
                     case 'BESTELLVORGANG' :
-                        $_SESSION['Sprachen'][$i]->cURL = $shopURL . '/bestellvorgang.php?lang=' . $oSprache->cISO;
+                        $id = 'bestellvorgang.php';
                         break;
 
+                    case 'PASSWORT VERGESSEN' :
+                        $id = 'pass.php';
+                        break;
+
+                    case 'NEWS' :
+                        $id = 'news.php';
+                        break;
+
+                    default :
+                        $id = null;
+                        break;
                 }
+                if ($id !== null) {
+                    $url = $helper->getStaticRoute($id, false, false, $oSprache->cISO);
+                    //check if there is a SEO link for the given file
+                    if ($url === $id) { //no SEO link - fall back to php file with GET param
+                        $url = $shopURL . '/' . $id . '?lang=' . $oSprache->cISO;
+                    } else { //there is a SEO link - make it a full URL
+                        $url = $helper->getStaticRoute($id, true, false, $oSprache->cISO);
+                    }
+                    $_SESSION['Sprachen'][$i]->cURL = $url;
+                }
+
                 executeHook(HOOK_TOOLSGLOBAL_INC_SWITCH_SETZESPRACHEUNDWAEHRUNG_SPRACHE);
             } else {
-                $_SESSION['Sprachen'][$i]->cURL = gibNaviURL($NaviFilter, SHOP_SEO, $oZusatzFilter, $oSprache->kSprache);
+                $_SESSION['Sprachen'][$i]->cURL = gibNaviURL($NaviFilter, true, $oZusatzFilter, $oSprache->kSprache);
             }
         }
     }
@@ -3877,48 +3903,71 @@ function setzeSpracheUndWaehrungLink()
         foreach ($_SESSION['Waehrungen'] as $i => $oWaehrung) {
             if (isset($AktuellerArtikel->kArtikel) && $AktuellerArtikel->kArtikel > 0 && isset($_SESSION['kSprache']) && isset($AktuellerArtikel->cSprachURL_arr[$_SESSION['kSprache']])) {
                 $_SESSION['Waehrungen'][$i]->cURL = $AktuellerArtikel->cSprachURL_arr[$_SESSION['kSprache']] . '?curr=' . $oWaehrung->cISO;
-            } elseif ($kLink > 0) {
-                $_SESSION['Waehrungen'][$i]->cURL = 'navi.php?s=' . $kLink . '&amp;lang=' . $_SESSION['cISOSprache'] . '&amp;curr=' . $oWaehrung->cISO;
-            } elseif ($AktuelleSeite == 'WARENKORB' ||
-                $AktuelleSeite == 'KONTAKT' ||
-                $AktuelleSeite == 'REGISTRIEREN' ||
-                $AktuelleSeite == 'MEIN KONTO' ||
-                $AktuelleSeite == 'NEWSLETTER' ||
-                $AktuelleSeite == 'UMFRAGE' ||
-                $AktuelleSeite == 'BESTELLVORGANG'
+            } elseif ($AktuelleSeite === 'WARENKORB'
+                || $AktuelleSeite === 'KONTAKT'
+                || $AktuelleSeite === 'REGISTRIEREN'
+                || $AktuelleSeite === 'MEIN KONTO'
+                || $AktuelleSeite === 'NEWSLETTER'
+                || $AktuelleSeite === 'UMFRAGE'
+                || $AktuelleSeite === 'BESTELLVORGANG'
+                || $AktuelleSeite === 'NEWS'
+                || $AktuelleSeite === 'PASSWORT VERGESSEN'
             ) { // Special Seiten
                 switch ($AktuelleSeite) {
                     case 'WARENKORB' :
-                        $_SESSION['Waehrungen'][$i]->cURL = $shopURL . '/warenkorb.php?lang=' . $_SESSION['cISOSprache'] . '&amp;curr=' . $oWaehrung->cISO;
+                        $id = 'warenkorb.php';
                         break;
 
                     case 'KONTAKT' :
-                        $_SESSION['Waehrungen'][$i]->cURL = $shopURL . '/kontakt.php?lang=' . $_SESSION['cISOSprache'] . '&amp;curr=' . $oWaehrung->cISO;
+                        $id = 'kontakt.php';
                         break;
 
                     case 'REGISTRIEREN' :
-                        $_SESSION['Waehrungen'][$i]->cURL = $shopURL . '/registrieren.php?lang=' . $_SESSION['cISOSprache'] . '&amp;curr=' . $oWaehrung->cISO;
+                        $id = 'registrieren.php';
                         break;
 
                     case 'MEIN KONTO' :
-                        $_SESSION['Waehrungen'][$i]->cURL = $shopURL . '/jtl.php?lang=' . $_SESSION['cISOSprache'] . '&amp;curr=' . $oWaehrung->cISO;
+                        $id = 'jtl.php';
                         break;
 
                     case 'NEWSLETTER' :
-                        $_SESSION['Waehrungen'][$i]->cURL = $shopURL . '/newsletter.php?lang=' . $_SESSION['cISOSprache'] . '&amp;curr=' . $oWaehrung->cISO;
+                        $id = 'newsletter.php';
                         break;
 
                     case 'UMFRAGE' :
-                        $_SESSION['Waehrungen'][$i]->cURL = $shopURL . '/umfrage.php?lang=' . $_SESSION['cISOSprache'] . '&amp;curr=' . $oWaehrung->cISO;
+                        $id = 'umfrage.php';
                         break;
 
                     case 'BESTELLVORGANG' :
-                        $_SESSION['Waehrungen'][$i]->cURL = $shopURL . '/bestellvorgang.php?lang=' . $_SESSION['cISOSprache'] . '&amp;curr=' . $oWaehrung->cISO;
+                        $id = 'bestellvorgang.php';
                         break;
 
+                    case 'NEWS' :
+                        $id = 'news.php';
+                        break;
+
+                    case 'PASSWORT VERGESSEN' :
+                        $id = 'pass.php';
+                        break;
+
+                    default :
+                        $id = null;
+                        break;
                 }
+                if ($id !== null) {
+                    $url = $helper->getStaticRoute($id, false, false);
+                    //check if there is a SEO link for the given file
+                    if ($url === $id) { //no SEO link - fall back to php file with GET param
+                        $url = $shopURL . '/' . $id . '?lang=' . $_SESSION['cISOSprache'] . '&curr=' . $oWaehrung->cISO;
+                    } else { //there is a SEO link - make it a full URL
+                        $url = $helper->getStaticRoute($id, true, false) . '?curr=' . $oWaehrung->cISO;
+                    }
+                    $_SESSION['Waehrungen'][$i]->cURL = $url;
+                }
+            } elseif ($kLink > 0) {
+                $_SESSION['Waehrungen'][$i]->cURL = 'navi.php?s=' . $kLink . '&lang=' . $_SESSION['cISOSprache'] . '&amp;curr=' . $oWaehrung->cISO;
             } else {
-                $_SESSION['Waehrungen'][$i]->cURL = gibNaviURL($NaviFilter, false, $oZusatzFilter, $_SESSION['kSprache']) . '&amp;lang=' . $_SESSION['cISOSprache'] . '&amp;curr=' . $oWaehrung->cISO;
+                $_SESSION['Waehrungen'][$i]->cURL = gibNaviURL($NaviFilter, true, $oZusatzFilter, $_SESSION['kSprache']) . '?curr=' . $oWaehrung->cISO;
             }
         }
     }

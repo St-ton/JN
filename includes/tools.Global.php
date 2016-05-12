@@ -165,10 +165,10 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
             break;
 
         case 'NEWSDETAIL':
-            $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStandardPages('news.php') . '">' . Shop::Lang()->get('news', 'breadcrumb') . '</a>';
+            $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('news.php') . '">' . Shop::Lang()->get('news', 'breadcrumb') . '</a>';
             $ele        = new stdClass();
             $ele->name  = Shop::Lang()->get('news', 'breadcrumb');
-            $ele->url   = $linkHelper->getStandardPages('news.php');
+            $ele->url   = $linkHelper->getStaticRoute('news.php');
             $brotnavi[] = $ele;
 
             $SieSindHierString .= ' &gt; <a href="' . $linkURL . '">' . $linkname . '</a>';
@@ -180,10 +180,10 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
             break;
 
         case 'NEWSKATEGORIE':
-            $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStandardPages('news.php') . '">' . Shop::Lang()->get('newskat', 'breadcrumb') . '</a>';
+            $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('news.php') . '">' . Shop::Lang()->get('newskat', 'breadcrumb') . '</a>';
             $ele        = new stdClass();
             $ele->name  = Shop::Lang()->get('newskat', 'breadcrumb');
-            $ele->url   = $linkHelper->getStandardPages('news.php');
+            $ele->url   = $linkHelper->getStaticRoute('news.php');
             $brotnavi[] = $ele;
 
             $SieSindHierString .= ' &gt; <a href="' . $linkURL . '">' . $linkname . '</a>';
@@ -195,10 +195,10 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
             break;
 
         case 'NEWSMONAT':
-            $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStandardPages('news.php') . '">' . Shop::Lang()->get('newsmonat', 'breadcrumb') . '</a>';
+            $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('news.php') . '">' . Shop::Lang()->get('newsmonat', 'breadcrumb') . '</a>';
             $ele        = new stdClass();
             $ele->name  = Shop::Lang()->get('newsmonat', 'breadcrumb');
-            $ele->url   = $linkHelper->getStandardPages('news.php');
+            $ele->url   = $linkHelper->getStaticRoute('news.php');
             $brotnavi[] = $ele;
 
             $SieSindHierString .= ' &gt; <a href="' . $linkURL . '">' . $linkname . '</a>';
@@ -3879,12 +3879,12 @@ function setzeSpracheUndWaehrungLink()
                         break;
                 }
                 if ($id !== null) {
-                    $url = $helper->getStandardPages($id, false, false, $oSprache->cISO);
+                    $url = $helper->getStaticRoute($id, false, false, $oSprache->cISO);
                     //check if there is a SEO link for the given file
                     if ($url === $id) { //no SEO link - fall back to php file with GET param
                         $url = $shopURL . '/' . $id . '?lang=' . $oSprache->cISO;
                     } else { //there is a SEO link - make it a full URL
-                        $url = $helper->getStandardPages($id, true, false, $oSprache->cISO);
+                        $url = $helper->getStaticRoute($id, true, false, $oSprache->cISO);
                     }
                     $_SESSION['Sprachen'][$i]->cURL = $url;
                 }
@@ -3955,12 +3955,12 @@ function setzeSpracheUndWaehrungLink()
                         break;
                 }
                 if ($id !== null) {
-                    $url = $helper->getStandardPages($id, false, false);
+                    $url = $helper->getStaticRoute($id, false, false);
                     //check if there is a SEO link for the given file
                     if ($url === $id) { //no SEO link - fall back to php file with GET param
                         $url = $shopURL . '/' . $id . '?lang=' . $_SESSION['cISOSprache'] . '&curr=' . $oWaehrung->cISO;
                     } else { //there is a SEO link - make it a full URL
-                        $url = $helper->getStandardPages($id, true, false) . '?curr=' . $oWaehrung->cISO;
+                        $url = $helper->getStaticRoute($id, true, false) . '?curr=' . $oWaehrung->cISO;
                     }
                     $_SESSION['Waehrungen'][$i]->cURL = $url;
                 }

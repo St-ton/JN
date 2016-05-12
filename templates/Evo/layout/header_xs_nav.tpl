@@ -19,12 +19,12 @@
                     </li>
                 {/if}
                 <li>
-                    <a href="{get_standard_link id='jtl.php'}">
+                    <a href="{get_static_route id='jtl.php'}">
                         <span class="fa fa-user"></span>
                     </a>
                 </li>
                 <li>
-                    <a href="{get_standard_link id='warenkorb.php'}">
+                    <a href="{get_static_route id='warenkorb.php'}">
                         <span class="fa fa-shopping-cart"></span>
                         {if $WarenkorbArtikelPositionenanzahl >= 1}
                             <sup class="badge">

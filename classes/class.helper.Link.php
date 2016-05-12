@@ -502,7 +502,7 @@ class LinkHelper
             $linkGroups->Link_AGB          = $session['Link_AGB'];
             $linkGroups->Link_Versandseite = $session['Link_Versandseite'];
 
-            $standardLinks_arr = Shop::DB()->query(
+            $staticRoutes_arr = Shop::DB()->query(
                 "SELECT tspezialseite.kSpezialseite, tspezialseite.cName AS baseName, tspezialseite.cDateiname, tspezialseite.nLinkart, 
                         tlink.kLink, tlinksprache.cName AS seoName, tlinksprache.cSeo, tsprache.cISO, tsprache.kSprache
                     FROM tspezialseite
@@ -511,26 +511,26 @@ class LinkHelper
                         LEFT JOIN tsprache ON tsprache.cISO = tlinksprache.cISOSprache
                     WHERE cDateiname IS NOT NULL AND cDateiname != ''", 2);
 
-            $linkGroups->standardLinks = array();
-            foreach ($standardLinks_arr as $link) {
+            $linkGroups->staticRoutes = array();
+            foreach ($staticRoutes_arr as $link) {
                 if (empty($link->cSeo)) {
                     continue;
                 }
                 $link->cURLFull    = $shopURL . '/' . $link->cSeo;
                 $link->cURLFullSSL = $shopURLSSL . '/' . $link->cSeo;
                 $currentIndex      = $link->cDateiname;
-                if (!isset($linkGroups->standardLinks[$link->cDateiname])) {
-                    $linkGroups->standardLinks[$currentIndex] = array();
+                if (!isset($linkGroups->staticRoutes[$link->cDateiname])) {
+                    $linkGroups->staticRoutes[$currentIndex] = array();
                 }
                 unset($link->cDateiname);
                 if (!empty($link->cISO)) {
-                    $linkGroups->standardLinks[$currentIndex][$link->cISO] = $link;
+                    $linkGroups->staticRoutes[$currentIndex][$link->cISO] = $link;
                 } else {
-                    $linkGroups->standardLinks[$currentIndex][] = $link;
+                    $linkGroups->staticRoutes[$currentIndex][] = $link;
                 }
             }
 
-            $this->linkGroups              = $linkGroups;
+            $this->linkGroups = $linkGroups;
             executeHook(HOOK_BUILD_LINK_GROUPS, array(
                     'linkGroups' => &$linkGroups,
                     'cached'     => false,
@@ -952,10 +952,10 @@ class LinkHelper
      * @param string|null $langISO
      * @return string
      */
-    public function getStandardPages($id = 'kontakt.php', $full = true, $secure = false, $langISO = null)
+    public function getStaticRoute($id = 'kontakt.php', $full = true, $secure = false, $langISO = null)
     {
-        if (isset($this->linkGroups->standardLinks[$id])) {
-            $index = $this->linkGroups->standardLinks[$id];
+        if (isset($this->linkGroups->staticRoutes[$id])) {
+            $index = $this->linkGroups->staticRoutes[$id];
             if (is_array($index)) {
                 $language  = ($langISO !== null) ? $langISO : $_SESSION['cISOSprache'];
                 $localized = (isset($index[$language])) ?

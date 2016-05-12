@@ -30,7 +30,7 @@
                                     {lang key="fillOut" section="global"}
                                 </div>
                             {/if}
-                            <form name="contact" action="{get_standard_link id='kontakt.php'}" method="post">
+                            <form name="contact" action="{get_static_route id='kontakt.php'}" method="post">
                                 {$jtl_token}
                                 <fieldset>
                                     <legend>{lang key="contact" section="global"}</legend>

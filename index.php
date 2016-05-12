@@ -106,6 +106,7 @@ if ($cParameter_arr['kKategorie'] > 0 && !Kategorie::isVisible($cParameter_arr['
     Shop::$kLink                  = $kLink;
 }
 Shop::getEntryPoint();
+
 if (Shop::$is404 === true) {
     $cParameter_arr['is404'] = true;
 }

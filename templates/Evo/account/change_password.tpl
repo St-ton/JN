@@ -12,7 +12,7 @@
                 <p class="alert alert-danger">{$hinweis}</p>
             {/if}
             <div class="row">
-                <form id="password" action="{get_standard_link id='jtl.php'}" method="post" class="col-xs-8 col-xs-offset-2 col-md-5 col-md-offset-3 col-lg-4 col-lg-offset-4">
+                <form id="password" action="{get_static_route id='jtl.php'}" method="post" class="col-xs-8 col-xs-offset-2 col-md-5 col-md-offset-3 col-lg-4 col-lg-offset-4">
                     {$jtl_token}
                     <div class="form-group required">
                         <label for="currentPassword" class="control-label">{lang key="currentPassword" section="login"}</label>

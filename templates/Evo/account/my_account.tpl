@@ -59,7 +59,7 @@
                             </td>
                         {/if}
                         <td class="text-right">
-                            <a class="btn btn-default btn-xs" href="{get_standard_link id='jtl.php'}?bestellung={$Bestellung->kBestellung}" title="{lang key="showOrder" section="login"}: {lang key="orderNo" section="login"} {$Bestellung->cBestellNr}">
+                            <a class="btn btn-default btn-xs" href="{get_static_route id='jtl.php'}?bestellung={$Bestellung->kBestellung}" title="{lang key="showOrder" section="login"}: {lang key="orderNo" section="login"} {$Bestellung->cBestellNr}">
                                 <span class="fa fa-list-alt"></span> <span class="hidden-xs">{lang key="showOrder" section="login"}</span>
                             </a>
                         </td>
@@ -86,7 +86,7 @@
                 <p>
                     {include file='checkout/inc_billing_address.tpl'}
                 </p>
-                <form method="post" action="{get_standard_link id='jtl.php'}">
+                <form method="post" action="{get_static_route id='jtl.php'}">
                     {$jtl_token}
 
                     <button class="btn btn-default btn-sm btn-block" name="editRechnungsadresse" value="1">
@@ -121,10 +121,10 @@
                             <tbody>
                             {foreach name=wunschlisten from=$oWunschliste_arr item=Wunschliste}
                                 <tr>
-                                    <td><a href="{get_standard_link id='jtl.php'}?wl={$Wunschliste->kWunschliste}">{$Wunschliste->cName}</a></td>
+                                    <td><a href="{get_static_route id='jtl.php'}?wl={$Wunschliste->kWunschliste}">{$Wunschliste->cName}</a></td>
                                     <td>{if $Wunschliste->nStandard == 1}{lang key="active" section="global"}{/if} {if $Wunschliste->nStandard == 0}{lang key="inactive" section="global"}{/if}</td>
                                     <td class="text-right">
-                                        <form method="post" action="{get_standard_link id='jtl.php'}">
+                                        <form method="post" action="{get_static_route id='jtl.php'}">
                                             {$jtl_token}
                                             <span class="btn-group">
                                                 {if $Wunschliste->nStandard != 1}
@@ -153,7 +153,7 @@
                             </tbody>
                         </table>
                     {/if}
-                    <form method="post" action="{get_standard_link id='jtl.php'}" class="form form-inline">
+                    <form method="post" action="{get_static_route id='jtl.php'}" class="form form-inline">
                         {$jtl_token}
                         <input name="wlh" type="hidden" value="1" />
                         <div class="input-group">
@@ -182,14 +182,14 @@
 
 <div class="btn-group pull-right">
     {if $Einstellungen.kundenwerbenkunden.kwk_nutzen === 'Y'}
-        <a class="btn btn-default" href="{get_standard_link id='jtl.php'}?KwK=1">
+        <a class="btn btn-default" href="{get_static_route id='jtl.php'}?KwK=1">
             <span class="fa fa-comment"></span> {lang key="kwkName" section="login"}
         </a>
     {/if}
-    <a class="btn btn-default" href="{get_standard_link id='jtl.php'}?pass=1">
+    <a class="btn btn-default" href="{get_static_route id='jtl.php'}?pass=1">
         <span class="fa fa-lock"></span> {lang key="changePassword" section="login"}
     </a>
-    <a class="btn btn-danger" href="{get_standard_link id='jtl.php'}?del=1">
+    <a class="btn btn-danger" href="{get_static_route id='jtl.php'}?del=1">
         <span class="fa fa-chain-broken"></span> {lang key="deleteAccount" section="login"}
     </a>
 </div>
@@ -200,6 +200,6 @@
 {if isset($nWarenkorb2PersMerge) && $nWarenkorb2PersMerge == 1}
    <script type="text/javascript">
        var cAnwort = confirm('{lang key="basket2PersMerge" section="login"}');
-       if(cAnwort) window.location = "{get_standard_link id='jtl.php'}?basket2Pers=1";
+       if(cAnwort) window.location = "{get_static_route id='jtl.php'}?basket2Pers=1";
    </script>
 {/if}

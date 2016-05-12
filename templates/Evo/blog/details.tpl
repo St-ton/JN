@@ -61,25 +61,25 @@
                                 <li><span>&laquo; {lang key="newsNaviBack" section="news"}</span></li>
                             {else}
                                 <li>
-                                    <a href="{get_standard_link id='news.php'}?s={$oBlaetterNavi->nVoherige}&kNews={$oNewsArchiv->kNews}&n={$oNewsArchiv->kNews}"><span>&laquo; {lang key="newsNaviBack" section="news"}</span></a>
+                                    <a href="{get_static_route id='news.php'}?s={$oBlaetterNavi->nVoherige}&kNews={$oNewsArchiv->kNews}&n={$oNewsArchiv->kNews}"><span>&laquo; {lang key="newsNaviBack" section="news"}</span></a>
                                 </li>
                             {/if}
                             {if $oBlaetterNavi->nAnfang != 0}
                                 <li>
-                                    <a href="{get_standard_link id='news.php'}?s={$oBlaetterNavi->nAnfang}&kNews={$oNewsArchiv->kNews}&n={$oNewsArchiv->kNews}">{$oBlaetterNavi->nAnfang}</a>
+                                    <a href="{get_static_route id='news.php'}?s={$oBlaetterNavi->nAnfang}&kNews={$oNewsArchiv->kNews}&n={$oNewsArchiv->kNews}">{$oBlaetterNavi->nAnfang}</a>
                                 </li>
                             {/if}
                             {foreach name=blaetternavi from=$oBlaetterNavi->nBlaetterAnzahl_arr item=Blatt}
                                 {if $oBlaetterNavi->nAktuelleSeite == $Blatt}
                                     <li class="active"><span>{$Blatt}</span></li>
                                 {else}
-                                    <li><a href="{get_standard_link id='news.php'}?s={$Blatt}&kNews={$oNewsArchiv->kNews}&n={$oNewsArchiv->kNews}">{$Blatt}</a></li>
+                                    <li><a href="{get_static_route id='news.php'}?s={$Blatt}&kNews={$oNewsArchiv->kNews}&n={$oNewsArchiv->kNews}">{$Blatt}</a></li>
                                 {/if}
                             {/foreach}
 
                             {if $oBlaetterNavi->nEnde != 0}
                                 <li>
-                                    <a href="{get_standard_link id='news.php'}?s={$oBlaetterNavi->nEnde}&kNews={$oNewsArchiv->kNews}&n={$oNewsArchiv->kNews}">{$oBlaetterNavi->nEnde}</a>
+                                    <a href="{get_static_route id='news.php'}?s={$oBlaetterNavi->nEnde}&kNews={$oNewsArchiv->kNews}&n={$oNewsArchiv->kNews}">{$oBlaetterNavi->nEnde}</a>
                                 </li>
                             {/if}
 
@@ -87,7 +87,7 @@
                                 <li><span>{lang key="newsNaviNext" section="news"} &raquo;</span></li>
                             {else}
                                 <li>
-                                    <a href="{get_standard_link id='news.php'}?s={$oBlaetterNavi->nNaechste}&kNews={$oNewsArchiv->kNews}&n={$oNewsArchiv->kNews}"><span>{lang key="newsNaviNext" section="news"} &raquo;</span></a>
+                                    <a href="{get_static_route id='news.php'}?s={$oBlaetterNavi->nNaechste}&kNews={$oNewsArchiv->kNews}&n={$oNewsArchiv->kNews}"><span>{lang key="newsNaviNext" section="news"} &raquo;</span></a>
                                 </li>
                             {/if}
                         </ul>
@@ -109,7 +109,7 @@
                         <div class="panel panel-default">
                             <div class="panel-heading"><h4 class="panel-title">{lang key="newsCommentAdd" section="news"}</h4></div>
                             <div class="panel-body">
-                                <form method="post" action="{if !empty($oNewsArchiv->cSeo)}{$ShopURL}/{$oNewsArchiv->cSeo}{else}{get_standard_link id='news.php'}{/if}" class="form" id="news-addcomment">
+                                <form method="post" action="{if !empty($oNewsArchiv->cSeo)}{$ShopURL}/{$oNewsArchiv->cSeo}{else}{get_static_route id='news.php'}{/if}" class="form" id="news-addcomment">
                                     {$jtl_token}
                                     <input type="hidden" name="kNews" value="{$oNewsArchiv->kNews}" />
                                     <input type="hidden" name="kommentar_einfuegen" value="1" />

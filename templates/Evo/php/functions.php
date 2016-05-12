@@ -18,7 +18,7 @@ $smarty->registerPlugin('function', 'gibPreisStringLocalizedSmarty', 'gibPreisSt
     ->registerPlugin('function', 'prepare_image_details', 'prepare_image_details')
     ->registerPlugin('function', 'get_manufacturers', 'get_manufacturers')
     ->registerPlugin('function', 'get_cms_content', 'get_cms_content')
-    ->registerPlugin('function', 'get_standard_link', 'get_standard_link')
+    ->registerPlugin('function', 'get_static_route', 'get_static_route')
     ->registerPlugin('modifier', 'has_trans', 'has_translation')
     ->registerPlugin('modifier', 'trans', 'get_translation');
 
@@ -27,14 +27,14 @@ $smarty->registerPlugin('function', 'gibPreisStringLocalizedSmarty', 'gibPreisSt
  * @param JTLSmarty $smarty
  * @return bool|string
  */
-function get_standard_link($params, &$smarty)
+function get_static_route($params, &$smarty)
 {
     if (isset($params['id'])) {
         $helper = LinkHelper::getInstance();
         $full   = !isset($params['full']) || $params['full'] === true;
         $secure = isset($params['secure']) && $params['secure'] === true;
 
-        return $helper->getStandardPages($params['id'], $full, $secure);
+        return $helper->getStaticRoute($params['id'], $full, $secure);
     }
 
     return false;

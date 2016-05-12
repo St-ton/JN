@@ -9,6 +9,7 @@
 * Bugfix: Banner werden nicht dargestellt, wenn Aktiv-Von/Bis-Datum fehlt
 * Bugfix: Ändern von Kundengruppen-Rabatten invalidiert Objektcache für Artikel und Kategorien nicht
 * Bugfix: Leere Kategorien werden trotz gesetzer Einstellung nicht immer ausgeblendet
+* Bugfix: Fehlerhafte Sortierung von Kategorien
 
 ## [4.03] - 2016-05-09
 

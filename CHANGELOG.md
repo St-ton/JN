@@ -17,6 +17,7 @@
 * Bugfix: PayPal Basic Transaction ID wird nicht gesetzt
 * Bugfix: Artikeldetails "weiter einkaufen" führt zur Startseite
 * Bugfix: Newsbeiträge aus deaktivierten Kategorien werden auf der Startseite angezeigt
+* Bugfix: Fehlerhaftes Routing: /gibtEsNicht/index.php liefert 200 OK statt 404
 
 ## [4.03]
 

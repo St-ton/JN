@@ -7,6 +7,8 @@
 * Bugfix: reCaptcha-Validierung schlägt bei eingeloggten Kunden fehl
 * Bugfix: Konfigurator Initialisierung dauert bei größeren Konfi-Artikeln sehr lange
 * Bugfix: Banner werden nicht dargestellt, wenn Aktiv-Von/Bis-Datum fehlt
+* Bugfix: Ändern von Kundengruppen-Rabatten invalidiert Objektcache für Artikel und Kategorien nicht
+* Bugfix: Leere Kategorien werden trotz gesetzer Einstellung nicht immer ausgeblendet
 
 ## [4.03] - 2016-05-09
 

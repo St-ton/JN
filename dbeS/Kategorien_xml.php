@@ -321,7 +321,7 @@ function rebuildCategoryTree($parent_id, $left)
     // the right value of this node is the left value + 1
     $right = $left + 1;
     // get all children of this node
-    $result = Shop::DB()->query("SELECT kKategorie FROM tkategorie WHERE kOberKategorie = " . (int)$parent_id . " ORDER BY nSort", 2);
+    $result = Shop::DB()->query("SELECT kKategorie FROM tkategorie WHERE kOberKategorie = " . (int)$parent_id . " ORDER BY nSort, cName", 2);
     foreach ($result as $_res) {
         $right = rebuildCategoryTree($_res->kKategorie, $right);
     }

@@ -120,6 +120,7 @@ function bearbeiteUpdates($xml)
                     XML2DB($xml['globals']['tkundengruppe'][$i], 'tkundengruppenattribut', $GLOBALS['mKundengruppenattribut'], 0);
                 }
             }
+            Shop::Cache()->flushTags(array(CACHING_GROUP_ARTICLE, CACHING_GROUP_CATEGORY));
         }
         // Warenlager
         if (isset($xml['globals']['twarenlager']) && is_array($xml['globals']['twarenlager'])) {

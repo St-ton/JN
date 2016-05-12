@@ -31,7 +31,7 @@ if (auth()) {
                         JTLLOG_LEVEL_DEBUG, false, 'img_check_xml');
                 }
                 if ($zip['filename'] === 'bildercheck.xml') {
-                	$xml = simplexml_load_file($newTmpDir . $zip['filename']);
+                    $xml = simplexml_load_file($newTmpDir . $zip['filename']);
                     bildercheck_xml($xml);
                 }
                 removeTemporaryFiles($newTmpDir . $zip['filename']);

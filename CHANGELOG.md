@@ -12,6 +12,7 @@
 * Bugfix: Leere Kategorien werden trotz gesetzer Einstellung nicht immer ausgeblendet
 * Bugfix: Fehlerhafte Sortierung von Kategorien
 * Bugfix: PayPal Basic Transaction ID wird nicht gesetzt
+* Bugfix: Artikeldetails "weiter einkaufen" führt zur Startseite
 
 ## [4.03] - 2016-05-09
 

@@ -10,7 +10,7 @@
 {include file="snippets/extension.tpl"}
 
 <div class="well well-sm">
-    <form id="frm_filter" name="frm_filter" action="news.php" method="post" class="form-inline text-center">
+    <form id="frm_filter" name="frm_filter" action="{get_static_route id='news.php'}" method="post" class="form-inline text-center">
         {$jtl_token}
 
         <select name="nSort" onchange="this.form.submit();" class="form-control">
@@ -115,25 +115,25 @@
                 <ul class="pagination">
                     {if $oBlaetterNavi->nAktuelleSeite > 1}
                         <li>
-                            <a href="news.php?s={$oBlaetterNavi->nVoherige}">&laquo; {lang key="previous" section="productOverview"}</a>
+                            <a href="{get_static_route id='news.php'}?s={$oBlaetterNavi->nVoherige}">&laquo; {lang key="previous" section="productOverview"}</a>
                         </li>
                     {/if}
                     {if $oBlaetterNavi->nAnfang != 0}
-                        <li><a href="news.php?s={$oBlaetterNavi->nAnfang}">{$oBlaetterNavi->nAnfang}</a> ...</li>
+                        <li><a href="{get_static_route id='news.php'}?s={$oBlaetterNavi->nAnfang}">{$oBlaetterNavi->nAnfang}</a> ...</li>
                     {/if}
                     {foreach name=blaetternavi from=$oBlaetterNavi->nBlaetterAnzahl_arr item=Blatt}
                         {if $oBlaetterNavi->nAktuelleSeite == $Blatt}
                             <li class="active"><span>{$Blatt}</span></li>
                         {else}
-                            <li><a href="news.php?s={$Blatt}">{$Blatt}</a></li>
+                            <li><a href="{get_static_route id='news.php'}?s={$Blatt}">{$Blatt}</a></li>
                         {/if}
                     {/foreach}
                     {if $oBlaetterNavi->nEnde != 0}
-                        <li> ... <a href="news.php?s={$oBlaetterNavi->nEnde}">{$oBlaetterNavi->nEnde}</a></li>
+                        <li> ... <a href="{get_static_route id='news.php'}?s={$oBlaetterNavi->nEnde}">{$oBlaetterNavi->nEnde}</a></li>
                     {/if}
                     {if $oBlaetterNavi->nAktuelleSeite < $oBlaetterNavi->nSeiten}
                         <li>
-                            <a href="news.php?s={$oBlaetterNavi->nNaechste}">{lang key="next" section="productOverview"} &raquo;</a>
+                            <a href="{get_static_route id='news.php'}?s={$oBlaetterNavi->nNaechste}">{lang key="next" section="productOverview"} &raquo;</a>
                         </li>
                     {/if}
                 </ul>

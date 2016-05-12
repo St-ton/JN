@@ -16,7 +16,7 @@
                     <div class="panel-heading"><h3 class="panel-title">{block name="wishlist-email-form-title"}{$CWunschliste->cName}{/block}</h3></div>
                     <div class="panel-body">
                         {block name="wishlist-email-form-body"}
-                        <form method="post" action="jtl.php" name="Wunschliste">
+                        <form method="post" action="{get_static_route id='jtl.php'}" name="Wunschliste">
                             {$jtl_token}
                             <input type="hidden" name="wlvm" value="1" />
                             <input type="hidden" name="wl" value="{$CWunschliste->kWunschliste}" />

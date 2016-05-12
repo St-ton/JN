@@ -4,7 +4,7 @@
             <h5 class="panel-title">{lang key="quickBuy" section="global"}</h5>
         </div>{* /panel-heading *}
         <div class="panel-body box-body">
-            <form class="top10" action="warenkorb.php" method="post">
+            <form class="top10" action="{get_static_route id='warenkorb.php'}" method="post">
                 {$jtl_token}
                 <input type="hidden" name="schnellkauf" value="1">
                 <div class="input-group">

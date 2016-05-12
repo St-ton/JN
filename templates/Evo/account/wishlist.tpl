@@ -5,7 +5,7 @@
 {/if}
 
 {*
-   <form method="post" action="jtl.php" name="WunschlisteSuche" class="form">
+   <form method="post" action="{get_static_route id='jtl.php'}" name="WunschlisteSuche" class="form">
       <input type="hidden" name="wlsearch" value="1" />
       <input type="hidden" name="wl" value="{$CWunschliste->kWunschliste}" />
       <input type="hidden" name="{$session_name}" value="{$session_id}" />
@@ -15,12 +15,12 @@
          <input name="cSuche" type="text" value="{$wlsearch}" />
          <input name="submitSuche" type="submit" value="{lang key="wishlistSearchBTN" section="login"}" />
          {if $wlsearch}
-            <a href="jtl.php?wl={$CWunschliste->kWunschliste}" class="wishlistlink">{lang key="wishlistRemoveSearch" section="login"}</a>
+            <a href="{get_static_route id='jtl.php'}?wl={$CWunschliste->kWunschliste}" class="wishlistlink">{lang key="wishlistRemoveSearch" section="login"}</a>
          {/if}
       </fieldset>
    </form>
 *}
-<form method="post" action="jtl.php" name="Wunschliste" class="basket_wrapper">
+<form method="post" action="{get_static_route id='jtl.php'}" name="Wunschliste" class="basket_wrapper">
     {$jtl_token}
     {block name="wishlist"}
     <input type="hidden" name="wla" value="1" />
@@ -88,11 +88,11 @@
                                 <span class="fa fa-gears"></span>
                             </a>
                         {else}
-                            <a href="jtl.php?wl={$CWunschliste->kWunschliste}&wlph={$CWunschlistePos->kWunschlistePos}{if isset($wlsearch)}&wlsearch=1&cSuche={$wlsearch}{/if}" class="btn btn-default" title="{lang key="wishlistaddToCart" section="login"}">
+                            <a href="{get_static_route id='jtl.php'}.php?wl={$CWunschliste->kWunschliste}&wlph={$CWunschlistePos->kWunschlistePos}{if isset($wlsearch)}&wlsearch=1&cSuche={$wlsearch}{/if}" class="btn btn-default" title="{lang key="wishlistaddToCart" section="login"}">
                                 <span class="fa fa-shopping-cart"></span>
                             </a>
                         {/if}
-                        <a href="jtl.php?wl={$CWunschliste->kWunschliste}&wlplo={$CWunschlistePos->kWunschlistePos}{if isset($wlsearch)}&wlsearch=1&cSuche={$wlsearch}{/if}" class="btn btn-default" title="{lang key="wishlistremoveItem" section="login"}">
+                        <a href="{get_static_route id='jtl.php'}?wl={$CWunschliste->kWunschliste}&wlplo={$CWunschlistePos->kWunschlistePos}{if isset($wlsearch)}&wlsearch=1&cSuche={$wlsearch}{/if}" class="btn btn-default" title="{lang key="wishlistremoveItem" section="login"}">
                             <span class="fa fa-trash-o"></span>
                         </a>
                     </td>
@@ -106,8 +106,8 @@
                     <button type="submit" title="{lang key="wishlistUpdate" section="login"}" class="btn btn-default">
                         <i class="fa fa-refresh"></i>
                     </button>
-                    <a href="jtl.php?wl={$CWunschliste->kWunschliste}&wlpah=1{if isset($wlsearch)}&wlsearch=1&cSuche={$wlsearch}{/if}" class="btn btn-primary submit">{lang key="wishlistAddAllToCart" section="login"}</a>
-                    <a href="jtl.php?wl={$CWunschliste->kWunschliste}&wldl=1" class="btn btn-default submit">{lang key="wishlistDelAll" section="login"}</a>
+                    <a href="{get_static_route id='jtl.php'}?wl={$CWunschliste->kWunschliste}&wlpah=1{if isset($wlsearch)}&wlsearch=1&cSuche={$wlsearch}{/if}" class="btn btn-primary submit">{lang key="wishlistAddAllToCart" section="login"}</a>
+                    <a href="{get_static_route id='jtl.php'}?wl={$CWunschliste->kWunschliste}&wldl=1" class="btn btn-default submit">{lang key="wishlistDelAll" section="login"}</a>
                 </div>
             </div>
         </div>

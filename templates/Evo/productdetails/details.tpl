@@ -4,7 +4,9 @@
 {nocache}
     {if !empty($hinweis)}
         {if isset($bWarenkorbHinzugefuegt) && $bWarenkorbHinzugefuegt}
-            {include file='productdetails/pushed_success.tpl'}
+            <div id="popup-pushed-success" title="{lang key="basketAllAdded" section="messages"}" class="popup-immediate lg">
+                {include file='productdetails/pushed_success.tpl'}
+            </div>
         {else}
             <div class="alert alert-success">
                 {$hinweis}

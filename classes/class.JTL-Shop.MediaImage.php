@@ -155,7 +155,9 @@ class MediaImage implements IMedia
                     : @rmdir($value);
             }
 
-            @rmdir($directory);
+            if ($id !== null) {
+                @rmdir($directory);
+            }
         } catch (Exception $e) {
         }
     }

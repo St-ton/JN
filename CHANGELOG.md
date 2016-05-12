@@ -16,6 +16,7 @@
 * Bugfix: Fehlerhafte Sortierung von Kategorien
 * Bugfix: PayPal Basic Transaction ID wird nicht gesetzt
 * Bugfix: Artikeldetails "weiter einkaufen" führt zur Startseite
+* Bugfix: Newsbeiträge aus deaktivierten Kategorien werden auf der Startseite angezeigt
 
 ## [4.03]
 

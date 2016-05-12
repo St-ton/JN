@@ -8,8 +8,10 @@
 * Bugfix: Konfigurator Initialisierung dauert bei größeren Konfi-Artikeln sehr lange
 * Bugfix: Banner werden nicht dargestellt, wenn Aktiv-Von/Bis-Datum fehlt
 * Bugfix: Ändern von Kundengruppen-Rabatten invalidiert Objektcache für Artikel und Kategorien nicht
+* Bugfix: Thumbnail-Cache-Ordner media/images/product wurde u.U. geleert, obwohl nicht nötig
 * Bugfix: Leere Kategorien werden trotz gesetzer Einstellung nicht immer ausgeblendet
 * Bugfix: Fehlerhafte Sortierung von Kategorien
+* Bugfix: PayPal Basic Transaction ID wird nicht gesetzt
 
 ## [4.03] - 2016-05-09
 

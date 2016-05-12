@@ -4,7 +4,7 @@
 {nocache}
     {if !empty($hinweis)}
         {if isset($bWarenkorbHinzugefuegt) && $bWarenkorbHinzugefuegt}
-            {include file='productdetails/pushed_success.tpl'}
+            {include file='productdetails/pushed_success.tpl' type='alert'}
         {else}
             <div class="alert alert-success">
                 {$hinweis}

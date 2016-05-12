@@ -13,6 +13,7 @@
 * Bugfix: Fehlerhafte Sortierung von Kategorien
 * Bugfix: PayPal Basic Transaction ID wird nicht gesetzt
 * Bugfix: Artikeldetails "weiter einkaufen" führt zur Startseite
+* Bugfix: Fehlerhaftes Routing: /gibtEsNicht/index.php liefert 200 OK statt 404
 
 ## [4.03] - 2016-05-09
 

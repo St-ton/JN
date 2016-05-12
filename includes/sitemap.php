@@ -113,7 +113,7 @@ function sendRequestFile($cFile)
             header('Content-Transfer-Encoding: binary');
         }
 
-        ob_clean();
+        ob_end_clean();
         flush();
         readfile($cAbsoluteFile);
         exit;

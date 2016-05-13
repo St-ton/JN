@@ -4,19 +4,15 @@
 <div id="result-wrapper">
     {include file='productlist/header.tpl'}
     {assign var='style' value='list'}
+    {assign var='grid' value='col-xs-12'}
     {if isset($oErweiterteDarstellung->nDarstellung) && isset($Einstellungen.artikeluebersicht.artikeluebersicht_erw_darstellung) && $Einstellungen.artikeluebersicht.artikeluebersicht_erw_darstellung === 'Y'}
         {if $oErweiterteDarstellung->nDarstellung == 1}
             {assign var='style' value='list'}
             {assign var='grid' value='col-xs-12'}
-        {elseif $oErweiterteDarstellung->nDarstellung == 2}
+        {elseif $oErweiterteDarstellung->nDarstellung == 2 || $oErweiterteDarstellung->nDarstellung == 3}
             {assign var='style' value='gallery'}
             {assign var='grid' value='col-xs-6 col-lg-4'}
-        {elseif $oErweiterteDarstellung->nDarstellung == 3}
-            {assign var='style' value='mosaic'}
-            {assign var='grid' value='col-xs-6 col-lg-3'}
         {/if}
-    {else}
-        {assign var='grid' value='col-xs-12'}
     {/if}
     {if isset($Suchergebnisse->Fehler)}
         <p class="alert alert-danger">{$Suchergebnisse->Fehler}</p>

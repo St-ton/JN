@@ -3,8 +3,8 @@
     <Name>Evo</Name>
     <Author>JTL-Software-GmbH</Author>
     <URL>https://www.jtl-software.de</URL>
-    <Version>4.03</Version>
-    <ShopVersion>403</ShopVersion>
+    <Version>4.04</Version>
+    <ShopVersion>404</ShopVersion>
     <Preview>themes/base/images/preview.png</Preview>
     <Settings>
         <Section Name="Allgemein" Key="general">

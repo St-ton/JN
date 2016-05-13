@@ -178,9 +178,9 @@ function sendeMail($ModulId, $Object, $mail = null)
 
     $Emailvorlagesprache = Shop::DB()->query(
         "SELECT cBetreff, cPDFS, cDateiname
-			FROM " . $cTableSprache . "
-			WHERE kEmailvorlage = " . intval($Emailvorlage->kEmailvorlage) . "
-			AND kSprache=" . intval($Sprache->kSprache), 1
+            FROM " . $cTableSprache . "
+            WHERE kEmailvorlage = " . intval($Emailvorlage->kEmailvorlage) . "
+            AND kSprache=" . intval($Sprache->kSprache), 1
     );
     $Emailvorlage->cBetreff = injectSubject($Object, (isset($Emailvorlagesprache->cBetreff) ? $Emailvorlagesprache->cBetreff : null));
 

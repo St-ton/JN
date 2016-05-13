@@ -2148,8 +2148,8 @@ function pruefeZahlungsartMinBestellungen($nMinBestellungen)
         if ($_SESSION['Kunde']->kKunde > 0) {
             $anzahl_obj = Shop::DB()->query(
                 "SELECT count(*) AS anz
-					FROM tbestellung
-					WHERE kKunde = " . (int)$_SESSION['Kunde']->kKunde . "
+                    FROM tbestellung
+                    WHERE kKunde = " . (int)$_SESSION['Kunde']->kKunde . "
                         AND (cStatus = '" . BESTELLUNG_STATUS_BEZAHLT . "'
                         OR cStatus = '" . BESTELLUNG_STATUS_VERSANDT . "')", 1
             );
@@ -3188,30 +3188,30 @@ function valid_plzort($plz, $ort, $land)
     if (in_array(strtoupper($land), $cSupportedCountry_arr)) {
         $obj = Shop::DB()->query(
             "SELECT kPLZ
-				FROM tplz
-				WHERE cPLZ = '" . Shop::DB()->escape($plz) . "'
-				AND cOrt LIKE '" . Shop::DB()->escape($ort) . "'
-				AND cLandISO = '" . Shop::DB()->escape($land) . "'", 1
+                FROM tplz
+                WHERE cPLZ = '" . Shop::DB()->escape($plz) . "'
+                AND cOrt LIKE '" . Shop::DB()->escape($ort) . "'
+                AND cLandISO = '" . Shop::DB()->escape($land) . "'", 1
         );
         if (isset($obj->kPLZ) && $obj->kPLZ > 0) {
             return true;
         }
         $obj = Shop::DB()->query(
             "SELECT kPLZ
-				FROM tplz
-				WHERE cPLZ = '" . Shop::DB()->escape($plz) . "'
-				AND cOrt LIKE '" . Shop::DB()->escape(umlauteUmschreibenA2AE($ort)) . "'
-				AND cLandISO = '" . Shop::DB()->escape($land) . "'", 1
+                FROM tplz
+                WHERE cPLZ = '" . Shop::DB()->escape($plz) . "'
+                AND cOrt LIKE '" . Shop::DB()->escape(umlauteUmschreibenA2AE($ort)) . "'
+                AND cLandISO = '" . Shop::DB()->escape($land) . "'", 1
         );
         if (isset($obj->kPLZ) && $obj->kPLZ > 0) {
             return true;
         }
         $obj = Shop::DB()->query(
             "SELECT kPLZ
-				FROM tplz
-				WHERE cPLZ = '" . Shop::DB()->escape($plz) . "'
-				AND cOrt LIKE '" . Shop::DB()->escape(umlauteUmschreibenAE2A($ort)) . "'
-				AND cLandISO = '" . Shop::DB()->escape($land) . "'", 1
+                FROM tplz
+                WHERE cPLZ = '" . Shop::DB()->escape($plz) . "'
+                AND cOrt LIKE '" . Shop::DB()->escape(umlauteUmschreibenAE2A($ort)) . "'
+                AND cLandISO = '" . Shop::DB()->escape($land) . "'", 1
         );
         if (isset($obj->kPLZ) && $obj->kPLZ > 0) {
             return true;
@@ -3706,9 +3706,9 @@ function plausiLieferadresse($cPost_arr)
         //vorhandene lieferadresse
         $oLieferadresse = Shop::DB()->query(
             "SELECT kLieferadresse
-				FROM tlieferadresse
-				WHERE kKunde = " . intval($_SESSION['Kunde']->kKunde) . "
-				AND kLieferadresse = " . intval($cPost_arr['kLieferadresse']), 1
+                FROM tlieferadresse
+                WHERE kKunde = " . intval($_SESSION['Kunde']->kKunde) . "
+                AND kLieferadresse = " . intval($cPost_arr['kLieferadresse']), 1
         );
         if ($oLieferadresse->kLieferadresse > 0) {
             $oLieferadresse = new Lieferadresse($oLieferadresse->kLieferadresse);
@@ -3774,9 +3774,9 @@ function setzeSessionLieferadresse($cPost_arr)
         //vorhandene lieferadresse
         $LA = Shop::DB()->query(
             "SELECT kLieferadresse
-				FROM tlieferadresse
-				WHERE kKunde = " . (int)$_SESSION['Kunde']->kKunde . "
-				AND kLieferadresse = " . (int)$cPost_arr['kLieferadresse'], 1
+                FROM tlieferadresse
+                WHERE kKunde = " . (int)$_SESSION['Kunde']->kKunde . "
+                AND kLieferadresse = " . (int)$cPost_arr['kLieferadresse'], 1
         );
         if ($LA->kLieferadresse > 0) {
             $oLieferadresse = new Lieferadresse($LA->kLieferadresse);

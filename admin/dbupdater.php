@@ -51,9 +51,9 @@ $buildStatus = function () use ($updater, $smarty, $oTemplate) {
     $currentDatabaseVersion = $updater->getCurrentDatabaseVersion();
     $latestVersion          = $updater->getLatestVersion();
     $version                = $updater->getVersion();
-    $availableUpdate        = $updater->hasPendingUpdates();
+    $updatesAvailable       = $updater->hasPendingUpdates();
 
-    if ($availableUpdate && defined('ADMIN_MIGRATION') && ADMIN_MIGRATION) {
+    if ($updatesAvailable && defined('ADMIN_MIGRATION') && ADMIN_MIGRATION) {
         $smarty->assign('migrations', $updater->getPendingMigrations());
     }
 

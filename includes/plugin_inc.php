@@ -252,11 +252,11 @@ function gibkPluginAuscPluginID($cPluginID)
 function gibPluginExtendedTemplates()
 {
     $cTemplate_arr = array();
-    $oTemplate_arr = Shop::DB()->query(
-        'SELECT tplugintemplate.cTemplate, tplugin.cVerzeichnis, tplugin.nVersion
-			FROM tplugintemplate
-			JOIN tplugin ON tplugintemplate.kPlugin = tplugin.kPlugin
-				WHERE tplugin.nStatus = 2 ORDER BY tplugin.nPrio DESC', 2
+    $oTemplate_arr = Shop::DB()->query("
+        SELECT tplugintemplate.cTemplate, tplugin.cVerzeichnis, tplugin.nVersion
+            FROM tplugintemplate
+            JOIN tplugin ON tplugintemplate.kPlugin = tplugin.kPlugin
+                WHERE tplugin.nStatus = 2 ORDER BY tplugin.nPrio DESC", 2
     );
     foreach ($oTemplate_arr as $oTemplate) {
         $cTemplatePfad = PFAD_ROOT . PFAD_PLUGIN . $oTemplate->cVerzeichnis . '/' .

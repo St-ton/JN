@@ -574,9 +574,9 @@ function aktualisiereLagerbestand($Artikel, $nAnzahl, $WarenkorbPosEigenschaftAr
                 if ($EigenschaftWert->fPackeinheit == 0) {
                     $EigenschaftWert->fPackeinheit = 1;
                 }
-                Shop::DB()->query(
-                    'UPDATE teigenschaftwert SET fLagerbestand=fLagerbestand - ' . ($nAnzahl * $EigenschaftWert->fPackeinheit) . '
-					WHERE kEigenschaftWert = ' . intval($eWert->kEigenschaftWert), 4
+                Shop::DB()->query("
+                    UPDATE teigenschaftwert SET fLagerbestand=fLagerbestand - " . ($nAnzahl * $EigenschaftWert->fPackeinheit) . "
+                    WHERE kEigenschaftWert = " . (int) $eWert->kEigenschaftWert, 4
                 );
             }
         } elseif ($Artikel->fPackeinheit > 0) {
@@ -584,10 +584,10 @@ function aktualisiereLagerbestand($Artikel, $nAnzahl, $WarenkorbPosEigenschaftAr
             if (isset($Artikel->kStueckliste) && $Artikel->kStueckliste > 0) {
                 AktualisiereLagerStuecklisten($Artikel, $nAnzahl, true);
             } else {
-                Shop::DB()->query(
-                    'UPDATE tartikel
-						SET fLagerbestand = IF (fLagerbestand >= ' . ($nAnzahl * $Artikel->fPackeinheit) . ', (fLagerbestand - ' . ($nAnzahl * $Artikel->fPackeinheit) . '), fLagerbestand)
-						WHERE kArtikel = ' . intval($Artikel->kArtikel), 4
+                Shop::DB()->query("
+                    UPDATE tartikel
+                        SET fLagerbestand = IF (fLagerbestand >= " . ($nAnzahl * $Artikel->fPackeinheit) . ", (fLagerbestand - " . ($nAnzahl * $Artikel->fPackeinheit) . "), fLagerbestand)
+                        WHERE kArtikel = " . (int) $Artikel->kArtikel, 4
                 );
                 // Stücklisten Komponente
                 if (ArtikelHelper::isStuecklisteKomponente($Artikel->kArtikel)) {

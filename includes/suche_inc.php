@@ -245,9 +245,9 @@ function suchanfragenSpeichern($cSuche, $nAnzahlTreffer, $bEchteSuche = false, $
             $Suchausdruck_tmp_arr = explode(';', $Suchausdruck);
             $blacklist_erg        = Shop::DB()->query(
                 "SELECT kSuchanfrageBlacklist
-					FROM tsuchanfrageblacklist
-					WHERE kSprache = " . $kSprache . "
-					AND cSuche = '" . Shop::DB()->escape($Suchausdruck_tmp_arr[0]) . "'", 1
+                    FROM tsuchanfrageblacklist
+                    WHERE kSprache = " . $kSprache . "
+                    AND cSuche = '" . Shop::DB()->escape($Suchausdruck_tmp_arr[0]) . "'", 1
             );
             if (!$bSpamFilter || !isset($blacklist_erg->kSuchanfrageBlacklist) || $blacklist_erg->kSuchanfrageBlacklist == 0) {
                 // Ist MD5(IP) bereits X mal im Cache
@@ -255,9 +255,9 @@ function suchanfragenSpeichern($cSuche, $nAnzahlTreffer, $bEchteSuche = false, $
                 $max_ip_count = intval($conf['artikeluebersicht']['livesuche_max_ip_count']) * 100;
                 $ip_cache_erg = Shop::DB()->query(
                     "SELECT count(*) AS anzahl
-						FROM tsuchanfragencache
-						WHERE kSprache = " . $kSprache . "
-						AND cIP = '" . gibIP() . "'", 1
+                        FROM tsuchanfragencache
+                        WHERE kSprache = " . $kSprache . "
+                        AND cIP = '" . gibIP() . "'", 1
                 );
                 $ip_used = Shop::DB()->select('tsuchanfragencache', 'kSprache', $kSprache, 'cSuche', $Suchausdruck, 'cIP', gibIP(), false, 'kSuchanfrageCache');
                 if (!$bSpamFilter || (isset($ip_cache_erg->anzahl) && $ip_cache_erg->anzahl < $max_ip_count && (!isset($ip_used->kSuchanfrageCache) || !$ip_used->kSuchanfrageCache))) {
@@ -286,8 +286,8 @@ function suchanfragenSpeichern($cSuche, $nAnzahlTreffer, $bEchteSuche = false, $
                         if (isset($suchanfrage_old->kSuchanfrage) && $suchanfrage_old->kSuchanfrage > 0 && $bEchteSuche) {
                             Shop::DB()->query(
                                 "UPDATE tsuchanfrage
-									SET nAnzahlTreffer = $suchanfrage->nAnzahlTreffer, nAnzahlGesuche = nAnzahlGesuche+1, dZuletztGesucht = now()
-									WHERE kSuchanfrage = " . (int)$suchanfrage_old->kSuchanfrage, 4
+                                    SET nAnzahlTreffer = $suchanfrage->nAnzahlTreffer, nAnzahlGesuche = nAnzahlGesuche+1, dZuletztGesucht = now()
+                                    WHERE kSuchanfrage = " . (int)$suchanfrage_old->kSuchanfrage, 4
                             );
                         } elseif (!isset($suchanfrage_old->kSuchanfrage) || !$suchanfrage_old->kSuchanfrage) {
                             Shop::DB()->query("
@@ -311,8 +311,8 @@ function suchanfragenSpeichern($cSuche, $nAnzahlTreffer, $bEchteSuche = false, $
                         if (isset($suchanfrageerfolglos_old->kSuchanfrageErfolglos) && $suchanfrageerfolglos_old->kSuchanfrageErfolglos > 0 && $bEchteSuche) {
                             Shop::DB()->query(
                                 "UPDATE tsuchanfrageerfolglos
-									SET nAnzahlGesuche = nAnzahlGesuche+1, dZuletztGesucht = now()
-									WHERE kSuchanfrageErfolglos = " . (int)$suchanfrageerfolglos_old->kSuchanfrageErfolglos, 4
+                                    SET nAnzahlGesuche = nAnzahlGesuche+1, dZuletztGesucht = now()
+                                    WHERE kSuchanfrageErfolglos = " . (int)$suchanfrageerfolglos_old->kSuchanfrageErfolglos, 4
                             );
                         } else {
                             Shop::DB()->query("

@@ -3723,6 +3723,21 @@ function gibErweiterteDarstellung($Einstellungen, $NaviFilter, $nDarstellung = 0
                         $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = (int)$Einstellungen['artikeluebersicht']['artikeluebersicht_anzahl_darstellung3'];
                     }
                     break;
+                default: //when given invalid option from wawi attribute
+                    if (isset($Einstellungen['artikeluebersicht']['artikeluebersicht_erw_darstellung_stdansicht']) &&
+                        (int)$Einstellungen['artikeluebersicht']['artikeluebersicht_erw_darstellung_stdansicht'] > 0
+                    ) { //fallback to configured default
+                        $nDarstellung = (int)$Einstellungen['artikeluebersicht']['artikeluebersicht_erw_darstellung_stdansicht'];
+                    } else { //fallback to "liste"
+                        $nDarstellung = ERWDARSTELLUNG_ANSICHT_LISTE;
+                    }
+                    $_SESSION['oErweiterteDarstellung']->nDarstellung = $nDarstellung;
+                    if (isset($_SESSION['ArtikelProSeite'])) {
+                        $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = $_SESSION['ArtikelProSeite'];
+                    } elseif (intval($Einstellungen['artikeluebersicht']['artikeluebersicht_anzahl_darstellung1']) > 0) {
+                        $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = (int)$Einstellungen['artikeluebersicht']['artikeluebersicht_anzahl_darstellung1'];
+                    }
+                    break;
             }
         } else {
             $_SESSION['oErweiterteDarstellung']->nDarstellung = ERWDARSTELLUNG_ANSICHT_LISTE; // Std ist Listendarstellung
@@ -3769,9 +3784,9 @@ function gibErweiterteDarstellung($Einstellungen, $NaviFilter, $nDarstellung = 0
         $smarty->assign('oErweiterteDarstellung', $_SESSION['oErweiterteDarstellung']);
     }
 
-    $smarty->assign('ERWDARSTELLUNG_ANSICHT_LISTE', ERWDARSTELLUNG_ANSICHT_LISTE);
-    $smarty->assign('ERWDARSTELLUNG_ANSICHT_GALERIE', ERWDARSTELLUNG_ANSICHT_GALERIE);
-    $smarty->assign('ERWDARSTELLUNG_ANSICHT_MOSAIK', ERWDARSTELLUNG_ANSICHT_MOSAIK);
+    $smarty->assign('ERWDARSTELLUNG_ANSICHT_LISTE', ERWDARSTELLUNG_ANSICHT_LISTE)
+           ->assign('ERWDARSTELLUNG_ANSICHT_GALERIE', ERWDARSTELLUNG_ANSICHT_GALERIE)
+           ->assign('ERWDARSTELLUNG_ANSICHT_MOSAIK', ERWDARSTELLUNG_ANSICHT_MOSAIK);
 }
 
 /**

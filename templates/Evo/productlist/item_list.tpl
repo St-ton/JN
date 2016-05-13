@@ -1,6 +1,6 @@
 {* template to display products in product-lists *}
 
-<div class="product-cell thumbnail">
+<div class="product-cell">
     <div class="product-body row {if $tplscope !== 'list'} text-center{/if}">
         <div class="col-xs-3 col-sm-2 col-lg-3 text-center">
             {block name="image-wrapper"}
@@ -44,10 +44,12 @@
                                 {if $Artikel->cHerstellerHomepage}
                                     <a href="{$Artikel->cHerstellerHomepage}">
                                 {/if}
-                                {if $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen !== 'B' && !empty($Artikel->cHersteller)}
+                                {if $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen === 'BT' && !empty($Artikel->cHersteller) && !empty($Artikel->cHerstellerBildKlein)}
+                                    {$Artikel->cHersteller}<br><br>
+                                    <img src="{$Artikel->cHerstellerBildKlein}" alt="" />
+                                {elseif $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen === 'Y' && !empty($Artikel->cHersteller)}
                                     {$Artikel->cHersteller}
-                                {/if}
-                                {if $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen !== 'Y' && !empty($Artikel->cHerstellerBildKlein)}
+                                {elseif $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen === 'B' && !empty($Artikel->cHerstellerBildKlein)}
                                     <img src="{$Artikel->cHerstellerBildKlein}" alt="" />
                                 {/if}
                                 {if $Artikel->cHerstellerHomepage}

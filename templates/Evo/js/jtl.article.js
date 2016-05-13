@@ -235,7 +235,7 @@
                                 if(item.cBildPfad) {
                                     that.setConfigItemImage(grp.kKonfiggruppe, item.cBildPfad.cPfadKlein);
                                 } else {
-                                    that.setConfigItemImage(grp.kKonfiggruppe, null);
+                                    that.setConfigItemImage(grp.kKonfiggruppe, grp.cBildPfad);
                                 }
                                 enableQuantity = item.bAnzahl;
                                 if (!enableQuantity) {
@@ -280,12 +280,7 @@
         },
 
         setConfigItemImage: function (groupId, img) {
-            if(img) {
-                $('.cfg-group[data-id="' + groupId + '"] .group-image img').show();
-                $('.cfg-group[data-id="' + groupId + '"] .group-image img').attr('src', img).first();
-            } else {
-                $('.cfg-group[data-id="' + groupId + '"] .group-image img').hide();
-            }
+            $('.cfg-group[data-id="' + groupId + '"] .group-image img').attr('src', img).first();
         },
         
         setPrice: function(price, fmtPrice) {

@@ -120,7 +120,7 @@ if (!empty($_FILES['file_data'])) {
         count($PluginInstalliertByStatus_arr['status_5']) +
         count($PluginInstalliertByStatus_arr['status_6']);
 
-    $smarty->ConfigLoad('german.conf', 'pluginverwaltung')
+    $smarty->configLoad('german.conf', 'pluginverwaltung')
            ->assign('PluginInstalliertByStatus_arr', $PluginInstalliertByStatus_arr)
            ->assign('PluginErrorCount', $errorCount)
            ->assign('PluginInstalliert_arr', $PluginInstalliert_arr)

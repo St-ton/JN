@@ -235,7 +235,7 @@ if ($step === 'einstellungen bearbeiten') {
 }
 
 $k = verifyGPCDataInteger('kSektion');
-$smarty->ConfigLoad('german.conf', 'einstellungen')
+$smarty->configLoad('german.conf', 'einstellungen')
        ->assign('cPrefDesc', $smarty->getConfigVars('prefDesc' . $k))
        ->assign('cPrefURL', $smarty->getConfigVars('prefURL' . $k))
        ->assign('step', $step)

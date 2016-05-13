@@ -6010,7 +6010,7 @@ function ermittleVersandkosten($cLand, $cPLZ, &$cError = '')
  */
 function holUnterkategorien($kKategorie, $kKundengruppe, $kSprache, $all = false)
 {
-    $catList = new Kategorieliste();
+    $catList = new KategorieListe();
 
     return $catList->holUnterkategorien($kKategorie, $kKundengruppe, $kSprache);
 }

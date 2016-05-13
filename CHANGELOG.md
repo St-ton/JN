@@ -18,6 +18,7 @@
 * Bugfix: PayPal Basic Transaction ID wird nicht gesetzt
 * Bugfix: Artikeldetails "weiter einkaufen" führt zur Startseite
 * Bugfix: Fehlerhaftes Routing: /gibtEsNicht/index.php liefert 200 OK statt 404
+* Unterstützung: Konfiguratorkomponenten Bildwechsel nutzt Gruppenbild, wenn Komponente kein Bild hat
 
 ## [4.03]
 

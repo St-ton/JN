@@ -51,29 +51,10 @@ $buildStatus = function () use ($updater, $smarty, $oTemplate) {
     $currentDatabaseVersion = $updater->getCurrentDatabaseVersion();
     $latestVersion          = $updater->getLatestVersion();
     $version                = $updater->getVersion();
-    $admin                  = defined('ADMIN_MIGRATION') && ADMIN_MIGRATION;
-    $migrations             = [];
-    $updatesAvailable       = false;
+    $availableUpdate        = $updater->hasPendingUpdates();
 
-    $migrationDirs = array_filter($updater->getUpdateDirs(), function ($v) {
-        return (int) $v >= 402;
-    });
-
-    foreach ($migrationDirs as $version) {
-        $migration = new MigrationManager((int) $version);
-        if ($migration->hasMigrations()) {
-            $pending = $migration->getPendingMigrations();
-            if (count($pending)) {
-                $updatesAvailable = true;
-            }
-            if ($admin) {
-                $migrations[(int) $version] = $migration;
-            }
-        }
-    }
-
-    if ($admin) {
-        $smarty->assign('migrations', $migrations);
+    if ($availableUpdate && defined('ADMIN_MIGRATION') && ADMIN_MIGRATION) {
+        $smarty->assign('migrations', $updater->getPendingMigrations());
     }
 
     $smarty

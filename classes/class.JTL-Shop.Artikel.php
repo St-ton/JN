@@ -3633,6 +3633,9 @@ class Artikel
                 $this->cHerstellerBildKlein  = PFAD_HERSTELLERBILDER_KLEIN . $oArtikelTMP->cBildpfad_thersteller;
                 $this->cHerstellerBildNormal = PFAD_HERSTELLERBILDER_NORMAL . $oArtikelTMP->cBildpfad_thersteller;
             }
+            if (isset($this->cHerstellerHomepage) && $this->cHerstellerHomepage !== '' && strrpos($this->cHerstellerHomepage, 'http://') !== 0 && strrpos($this->cHerstellerHomepage, 'https://') !== 0) {
+                $this->cHerstellerHomepage = 'http://' . $this->cHerstellerHomepage;
+            }
         }
         //datum umformatieren
         $this->dErstellt_de = date_format(date_create($this->dErstellt), 'd.m.Y');

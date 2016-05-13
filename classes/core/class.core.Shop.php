@@ -945,8 +945,8 @@ final class Shop
             self::setPageType(PAGE_404);
             //check path
             $cPath = self::getRequestUri();
-            $cRequestFile = strtolower(ltrim($cPath, '/'));
-            if (in_array($cRequestFile, [ 'index.php', 'navi.php' ]) || strlen($cFile) === 0) {
+            $cRequestFile = '/' . ltrim($cPath, '/');
+            if (in_array($cRequestFile, [ '/', '/index.php', '/navi.php' ])) {
                 $oLink       = self::DB()->query("SELECT kLink FROM tlink WHERE nLinkart = " . LINKTYP_STARTSEITE, 1);
                 $kLink       = $oLink->kLink;
                 $linkHelper  = LinkHelper::getInstance();

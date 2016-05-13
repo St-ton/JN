@@ -248,6 +248,9 @@ class KategorieHelper
                 unset($catList[$i]);
             } elseif ($_cat->bUnterKategorien === 1) {
                 $this->removeRelicts($_cat->Unterkategorien);
+                if (empty($_cat->Unterkategorien) && $_cat->cnt == 0) {
+                    unset($catList[$i]);
+                }
             }
         }
 

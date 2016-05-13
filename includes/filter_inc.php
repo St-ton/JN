@@ -64,10 +64,10 @@ function baueArtikelAnzahl($FilterSQL, &$oSuchergebnisse, $nArtikelProSeite = 20
     //Anzahl holen
     $oAnzahl = Shop::DB()->query(
         "SELECT count(*) AS nGesamtAnzahl
-				FROM(
-					SELECT tartikel.kArtikel
-					FROM tartikel
-					" . ((isset($FilterSQL->oSuchspecialFilterSQL->cJoin)) ? $FilterSQL->oSuchspecialFilterSQL->cJoin : '') . "
+            FROM(
+                SELECT tartikel.kArtikel
+                FROM tartikel
+                " . ((isset($FilterSQL->oSuchspecialFilterSQL->cJoin)) ? $FilterSQL->oSuchspecialFilterSQL->cJoin : '') . "
             " . ((isset($FilterSQL->oKategorieFilterSQL->cJoin)) ? $FilterSQL->oKategorieFilterSQL->cJoin : '') . "
             " . ((isset($FilterSQL->oSuchFilterSQL->cJoin)) ? $FilterSQL->oSuchFilterSQL->cJoin : '') . "
             " . ((isset($FilterSQL->oMerkmalFilterSQL->cJoin)) ? $FilterSQL->oMerkmalFilterSQL->cJoin : '') . "
@@ -183,23 +183,23 @@ function gibArtikelKeys($FilterSQL, $nArtikelProSeite, $NaviFilter, $bExtern = f
         // @TODO: Join hinzufügen
         if (!isset($NaviFilter->Suchspecial->kKey) || ($NaviFilter->Suchspecial->kKey != SEARCHSPECIALS_SPECIALOFFERS && $NaviFilter->SuchspecialFilter->kKey != SEARCHSPECIALS_SPECIALOFFERS)) {
             $oSortierungsSQL->cJoin = " LEFT JOIN tartikelsonderpreis ON tartikelsonderpreis.kArtikel = tartikel.kArtikel
-										   AND tartikelsonderpreis.cAktiv='Y'
-										   AND tartikelsonderpreis.dStart <= now()
-										   AND (tartikelsonderpreis.dEnde >= CURDATE() OR tartikelsonderpreis.dEnde = '0000-00-00')
-										   AND tartikelsonderpreis.nAnzahl < tartikel.fLagerbestand
-										   LEFT JOIN tsonderpreise AS tspgak ON tartikelsonderpreis.kArtikelSonderpreis = tspgak.kArtikelSonderpreis
-										   AND tspgak.kKundengruppe = " . $kKundengruppe;
+                                           AND tartikelsonderpreis.cAktiv='Y'
+                                           AND tartikelsonderpreis.dStart <= now()
+                                           AND (tartikelsonderpreis.dEnde >= CURDATE() OR tartikelsonderpreis.dEnde = '0000-00-00')
+                                           AND tartikelsonderpreis.nAnzahl < tartikel.fLagerbestand
+                                           LEFT JOIN tsonderpreise AS tspgak ON tartikelsonderpreis.kArtikelSonderpreis = tspgak.kArtikelSonderpreis
+                                           AND tspgak.kKundengruppe = " . $kKundengruppe;
             $tsonderpreiseTable = 'tspgak';
         }
 
         $oSortierungsSQL->cJoin .= " LEFT JOIN tartikelkategorierabatt ON tartikelkategorierabatt.kArtikel = tartikel.kArtikel
-										AND tartikelkategorierabatt.kKundengruppe = " . $kKundengruppe;
+                                      AND tartikelkategorierabatt.kKundengruppe = " . $kKundengruppe;
 
         $oSortierungsSQL->cOrder = "IF (" . $tsonderpreiseTable . ".fNettoPreis < tpreise.fVKNetto, " . $tsonderpreiseTable . ".fNettoPreis, IF((tartikelkategorierabatt.fRabatt > 0 && tartikelkategorierabatt.fRabatt IS NOT NULL),
-		tpreise.fVKNetto-((tartikelkategorierabatt.fRabatt/100)*tpreise.fVKNetto), tpreise.fVKNetto))";
+        tpreise.fVKNetto-((tartikelkategorierabatt.fRabatt/100)*tpreise.fVKNetto), tpreise.fVKNetto))";
         if ($_SESSION['Usersortierung'] == SEARCH_SORT_PRICE_DESC) {
             $oSortierungsSQL->cOrder = "IF (" . $tsonderpreiseTable . ".fNettoPreis < tpreise.fVKNetto, " . $tsonderpreiseTable . ".fNettoPreis, IF((tartikelkategorierabatt.fRabatt > 0 && tartikelkategorierabatt.fRabatt IS NOT NULL),
-			tpreise.fVKNetto-((tartikelkategorierabatt.fRabatt/100)*tpreise.fVKNetto), tpreise.fVKNetto)) DESC";
+            tpreise.fVKNetto-((tartikelkategorierabatt.fRabatt/100)*tpreise.fVKNetto), tpreise.fVKNetto)) DESC";
         }
     }
     if (isset($_SESSION['Usersortierung'])) {
@@ -233,8 +233,8 @@ function gibArtikelKeys($FilterSQL, $nArtikelProSeite, $NaviFilter, $bExtern = f
     }
     $oArtikelKey_arr = Shop::DB()->query(
         "SELECT tartikel.kArtikel
-				FROM tartikel
-				" . $cSQL . "
+            FROM tartikel
+            " . $cSQL . "
             " . $FilterSQL->oSuchspecialFilterSQL->cJoin . "
             " . str_replace('jSuche', 'tsuchcachetreffer', $FilterSQL->oSuchFilterSQL->cJoin) . "
             " . $FilterSQL->oKategorieFilterSQL->cJoin . "
@@ -260,7 +260,7 @@ function gibArtikelKeys($FilterSQL, $nArtikelProSeite, $NaviFilter, $bExtern = f
             GROUP BY tartikel.kArtikel
             " . $FilterSQL->oMerkmalFilterSQL->cHaving . "
             ORDER BY " . $oSortierungsSQL->cOrder . ", tartikel.kArtikel
-			" . $cLimitSQL, 2
+            " . $cLimitSQL, 2
     );
     executeHook(
         HOOK_FILTER_INC_GIBARTIKELKEYS, array(
@@ -435,12 +435,12 @@ function gibHerstellerFilterOptionen($FilterSQL, $NaviFilter)
     if ($conf['navigationsfilter']['allgemein_herstellerfilter_benutzen'] !== 'N') {
         $oHerstellerFilterDB_arr = Shop::DB()->query(
             "SELECT tseo.cSeo, ssMerkmal.kHersteller, ssMerkmal.cName, ssMerkmal.nSortNr, COUNT(*) AS nAnzahl
-					FROM
-					(
-						SELECT thersteller.kHersteller, thersteller.cName, thersteller.nSortNr
-						FROM tartikel
-						JOIN thersteller ON tartikel.kHersteller = thersteller.kHersteller
-						" . $FilterSQL->oSuchspecialFilterSQL->cJoin . "
+                FROM
+                (
+                    SELECT thersteller.kHersteller, thersteller.cName, thersteller.nSortNr
+                    FROM tartikel
+                    JOIN thersteller ON tartikel.kHersteller = thersteller.kHersteller
+                    " . $FilterSQL->oSuchspecialFilterSQL->cJoin . "
                 " . $FilterSQL->oSuchFilterSQL->cJoin . "
                 " . $FilterSQL->oMerkmalFilterSQL->cJoin . "
                 " . $FilterSQL->oKategorieFilterSQL->cJoin . "
@@ -548,17 +548,17 @@ function gibKategorieFilterOptionen($FilterSQL, $NaviFilter)
         if (!standardspracheAktiv()) {
             $cSQLKategorieSprache->cSELECT = "IF(tkategoriesprache.cName = '', tkategorie.cName, tkategoriesprache.cName) AS cName";
             $cSQLKategorieSprache->cJOIN   = "JOIN tkategoriesprache ON tkategoriesprache.kKategorie = tkategorie.kKategorie
-													AND tkategoriesprache.kSprache = " . (int) Shop::$kSprache;
+                                                AND tkategoriesprache.kSprache = " . (int) Shop::$kSprache;
         }
 
         $oKategorieFilterDB_arr = Shop::DB()->query(
             "SELECT tseo.cSeo, ssMerkmal.kKategorie, ssMerkmal.cName, ssMerkmal.nSort, COUNT(*) AS nAnzahl
-					FROM
-					(
-						SELECT tkategorie.kKategorie, " . $cSQLKategorieSprache->cSELECT . ", tkategorie.nSort
+                FROM
+                (
+                    SELECT tkategorie.kKategorie, " . $cSQLKategorieSprache->cSELECT . ", tkategorie.nSort
                 FROM tartikel
                 " . $cSQLFilterAnzeige . "
-				" . $cSQLKategorieSprache->cJOIN . "
+                " . $cSQLKategorieSprache->cJOIN . "
                 " . $FilterSQL->oHerstellerFilterSQL->cJoin . "
                 " . $FilterSQL->oSuchspecialFilterSQL->cJoin . "
                 " . $FilterSQL->oSuchFilterSQL->cJoin . "
@@ -656,12 +656,12 @@ function gibSuchFilterOptionen($FilterSQL, $NaviFilter)
 
         $oSuchFilterDB_arr = Shop::DB()->query(
             "SELECT ssMerkmal.kSuchanfrage, ssMerkmal.cSuche, count(*) AS nAnzahl
-					FROM
-					(
-						SELECT tsuchanfrage.kSuchanfrage, tsuchanfrage.cSuche
-						FROM tartikel
-						JOIN tsuchcachetreffer ON tartikel.kArtikel = tsuchcachetreffer.kArtikel
-						" . $FilterSQL->oSuchFilterSQL->cJoin . "
+                FROM
+                (
+                    SELECT tsuchanfrage.kSuchanfrage, tsuchanfrage.cSuche
+                    FROM tartikel
+                    JOIN tsuchcachetreffer ON tartikel.kArtikel = tsuchcachetreffer.kArtikel
+                    " . $FilterSQL->oSuchFilterSQL->cJoin . "
                 JOIN tsuchcache ON tsuchcache.kSuchCache = tsuchcachetreffer.kSuchCache
                 JOIN tsuchanfrage ON tsuchanfrage.cSuche = tsuchcache.cSuche
                     AND tsuchanfrage.kSprache = " . Shop::$kSprache . "
@@ -777,11 +777,11 @@ function gibBewertungSterneFilterOptionen($FilterSQL, $NaviFilter)
     if ($conf['navigationsfilter']['bewertungsfilter_benutzen'] !== 'N') {
         $oBewertungFilterDB_arr = Shop::DB()->query(
             "SELECT ssMerkmal.nSterne, COUNT(*) AS nAnzahl
-					FROM
-					(
-						SELECT round(tartikelext.fDurchschnittsBewertung, 0) AS nSterne
-						FROM tartikel
-						" . $FilterSQL->oHerstellerFilterSQL->cJoin . "
+                FROM
+                (
+                    SELECT round(tartikelext.fDurchschnittsBewertung, 0) AS nSterne
+                    FROM tartikel
+                    " . $FilterSQL->oHerstellerFilterSQL->cJoin . "
                 " . $FilterSQL->oSuchspecialFilterSQL->cJoin . "
                 " . $FilterSQL->oSuchFilterSQL->cJoin . "
                 " . $FilterSQL->oMerkmalFilterSQL->cJoin . "
@@ -948,12 +948,12 @@ function gibPreisspannenFilterOptionen($FilterSQL, $NaviFilter, $oSuchergebnisse
             }
             $oPreisspannenFilterMaxMin = Shop::DB()->query(
                 "SELECT max(ssMerkmal.fMax) AS fMax, min(ssMerkmal.fMin) AS fMin
-							FROM (
-								SELECT ROUND(
-									LEAST(
-										(tpreise.fVKNetto * " . $_SESSION['Waehrung']->fFaktor . ") *
-										((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), " . $_SESSION['Kundengruppe']->fRabatt . ", " . $fKundenrabatt . ", 0)) / 100),
-										IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * " . $_SESSION['Waehrung']->fFaktor . "))) * ((100 + " . $fSteuersatzMax . ") / 100), 2) AS fMax,
+                    FROM (
+                        SELECT ROUND(
+                            LEAST(
+                                (tpreise.fVKNetto * " . $_SESSION['Waehrung']->fFaktor . ") *
+                                ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), " . $_SESSION['Kundengruppe']->fRabatt . ", " . $fKundenrabatt . ", 0)) / 100),
+                                IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * " . $_SESSION['Waehrung']->fFaktor . "))) * ((100 + " . $fSteuersatzMax . ") / 100), 2) AS fMax,
                      ROUND(LEAST((tpreise.fVKNetto * " . $_SESSION['Waehrung']->fFaktor . ") *
                      ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), " . $_SESSION['Kundengruppe']->fRabatt . ", " . $fKundenrabatt . ", 0)) / 100),
                      IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * " . $_SESSION['Waehrung']->fFaktor . "))) * ((100 + " . $fSteuersatzMin . ") / 100), 2) AS fMin
@@ -1023,7 +1023,7 @@ function gibPreisspannenFilterOptionen($FilterSQL, $NaviFilter, $oSuchergebnisse
                             FROM tartikel
                             JOIN tpreise ON tpreise.kArtikel = tartikel.kArtikel
                                 AND tpreise.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
-							" . $FilterSQL->oHerstellerFilterSQL->cJoin . "
+                            " . $FilterSQL->oHerstellerFilterSQL->cJoin . "
                             " . $FilterSQL->oSuchspecialFilterSQL->cJoin . "
                             " . $FilterSQL->oSuchFilterSQL->cJoin . "
                             " . $FilterSQL->oKategorieFilterSQL->cJoin . "
@@ -1126,7 +1126,7 @@ function gibPreisspannenFilterOptionen($FilterSQL, $NaviFilter, $oSuchergebnisse
                             FROM tartikel
                             JOIN tpreise ON tpreise.kArtikel = tartikel.kArtikel
                                 AND tpreise.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
-							" . $FilterSQL->oHerstellerFilterSQL->cJoin . "
+                            " . $FilterSQL->oHerstellerFilterSQL->cJoin . "
                             " . $FilterSQL->oSuchspecialFilterSQL->cJoin . "
                             " . $FilterSQL->oSuchFilterSQL->cJoin . "
                             " . $FilterSQL->oKategorieFilterSQL->cJoin . "
@@ -1228,13 +1228,13 @@ function gibTagFilterOptionen($FilterSQL, $NaviFilter)
     if ($conf['navigationsfilter']['allgemein_tagfilter_benutzen'] !== 'N') {
         $oTagFilterDB_arr = Shop::DB()->query(
             "SELECT tseo.cSeo, ssMerkmal.kTag, ssMerkmal.cName, COUNT(*) AS nAnzahl, SUM(ssMerkmal.nAnzahlTagging) AS nAnzahlTagging
-					FROM
-					(
-						SELECT ttag.kTag, ttag.cName, ttagartikel.nAnzahlTagging
-						FROM tartikel
-						JOIN ttagartikel ON ttagartikel.kArtikel = tartikel.kArtikel
-						JOIN ttag ON ttagartikel.kTag = ttag.kTag
-						" . $FilterSQL->oHerstellerFilterSQL->cJoin . "
+                FROM
+                (
+                    SELECT ttag.kTag, ttag.cName, ttagartikel.nAnzahlTagging
+                    FROM tartikel
+                    JOIN ttagartikel ON ttagartikel.kArtikel = tartikel.kArtikel
+                    JOIN ttag ON ttagartikel.kTag = ttag.kTag
+                    " . $FilterSQL->oHerstellerFilterSQL->cJoin . "
                 " . $FilterSQL->oSuchspecialFilterSQL->cJoin . "
                 " . $FilterSQL->oSuchFilterSQL->cJoin . "
                 " . $FilterSQL->oKategorieFilterSQL->cJoin . "
@@ -1386,10 +1386,10 @@ function gibMerkmalFilterOptionen($FilterSQL, $NaviFilter, $oAktuelleKategorie =
         }
         $oMerkmalFilterDB_arr = Shop::DB()->query(
             "SELECT tseo.cSeo, ssMerkmal.kMerkmal, ssMerkmal.kMerkmalWert, ssMerkmal.cMMWBildPfad, ssMerkmal.cWert, ssMerkmal.cName, ssMerkmal.cTyp, ssMerkmal.cMMBildPfad, COUNT(*) AS nAnzahl
-					FROM
-					(
-						SELECT tartikelmerkmal.kMerkmal, tartikelmerkmal.kMerkmalWert, tmerkmalwert.cBildPfad AS cMMWBildPfad,
-						tmerkmalwertsprache.cWert, tmerkmal.nSort AS nSortMerkmal, tmerkmalwert.nSort, " . $oSQLMM->cSELECT . " tmerkmal.cTyp, tmerkmal.cBildPfad AS cMMBildPfad
+                FROM
+                (
+                    SELECT tartikelmerkmal.kMerkmal, tartikelmerkmal.kMerkmalWert, tmerkmalwert.cBildPfad AS cMMWBildPfad,
+                    tmerkmalwertsprache.cWert, tmerkmal.nSort AS nSortMerkmal, tmerkmalwert.nSort, " . $oSQLMM->cSELECT . " tmerkmal.cTyp, tmerkmal.cBildPfad AS cMMBildPfad
                 FROM tartikel
                 JOIN tartikelmerkmal ON tartikel.kArtikel = tartikelmerkmal.kArtikel
                 JOIN tmerkmalwert ON tmerkmalwert.kMerkmalWert = tartikelmerkmal.kMerkmalWert
@@ -1401,7 +1401,7 @@ function gibMerkmalFilterOptionen($FilterSQL, $NaviFilter, $oAktuelleKategorie =
                 " . ((isset($FilterSQL->oSuchspecialFilterSQL->cJoin)) ? $FilterSQL->oSuchspecialFilterSQL->cJoin : '') . "
                 " . ((isset($FilterSQL->oSuchFilterSQL->cJoin)) ? $FilterSQL->oSuchFilterSQL->cJoin : '') . "
                 " . ((isset($FilterSQL->oKategorieFilterSQL->cJoin)) ? $FilterSQL->oKategorieFilterSQL->cJoin : '') . "
-				" . ((isset($FilterSQL->oMerkmalFilterSQL->cJoinMMW)) ? $FilterSQL->oMerkmalFilterSQL->cJoinMMW : '') . "
+                " . ((isset($FilterSQL->oMerkmalFilterSQL->cJoinMMW)) ? $FilterSQL->oMerkmalFilterSQL->cJoinMMW : '') . "
                 " . ((isset($FilterSQL->oTagFilterSQL->cJoin)) ? $FilterSQL->oTagFilterSQL->cJoin : '') . "
                 " . ((isset($FilterSQL->oBewertungSterneFilterSQL->cJoin)) ? $FilterSQL->oBewertungSterneFilterSQL->cJoin : '') . "
                 " . ((isset($FilterSQL->oPreisspannenFilterSQL->cJoin)) ? $FilterSQL->oPreisspannenFilterSQL->cJoin : '') . "
@@ -1634,11 +1634,11 @@ function gibSuchspecialFilterOptionen($FilterSQL, $NaviFilter)
             }
             $oSuchspecialFilterDB = Shop::DB()->query(
                 "SELECT COUNT(*) AS nAnzahl
-							FROM
-							(
-								SELECT tartikel.kArtikel
-								FROM tartikel
-								" . $oFilter->cJoin . "
+                    FROM
+                    (
+                        SELECT tartikel.kArtikel
+                        FROM tartikel
+                        " . $oFilter->cJoin . "
                     " . $FilterSQL->oHerstellerFilterSQL->cJoin . "
                     " . $FilterSQL->oSuchspecialFilterSQL->cJoin . "
                     " . $FilterSQL->oSuchFilterSQL->cJoin . "
@@ -1701,20 +1701,20 @@ function bearbeiteSuchCache($NaviFilter, $kSpracheExt = 0)
     // Suchcache wurde zwar gefunden, ist jedoch nicht mehr gültig
     Shop::DB()->query(
         "DELETE tsuchcache, tsuchcachetreffer
-			FROM tsuchcache
-			LEFT JOIN tsuchcachetreffer ON tsuchcachetreffer.kSuchCache = tsuchcache.kSuchCache
-			WHERE tsuchcache.kSprache = " . $kSprache . "
-			AND tsuchcache.dGueltigBis IS NOT NULL
-			AND DATE_ADD(tsuchcache.dGueltigBis, INTERVAL 5 MINUTE) < now()", 3
+            FROM tsuchcache
+            LEFT JOIN tsuchcachetreffer ON tsuchcachetreffer.kSuchCache = tsuchcache.kSuchCache
+            WHERE tsuchcache.kSprache = " . $kSprache . "
+            AND tsuchcache.dGueltigBis IS NOT NULL
+            AND DATE_ADD(tsuchcache.dGueltigBis, INTERVAL 5 MINUTE) < now()", 3
     );
 
     //Suchcache checken, ob bereits vorhanden
     $oSuchCache = Shop::DB()->query(
         "SELECT kSuchCache
-			FROM tsuchcache
-			WHERE kSprache =  " . $kSprache . "
+            FROM tsuchcache
+            WHERE kSprache =  " . $kSprache . "
             AND cSuche = '" . Shop::DB()->escape($cSuche) . "'
-			AND (dGueltigBis > now() OR dGueltigBis IS NULL)", 1
+            AND (dGueltigBis > now() OR dGueltigBis IS NULL)", 1
     );
 
     if (isset($oSuchCache->kSuchCache) && $oSuchCache->kSuchCache > 0) {
@@ -1756,7 +1756,7 @@ function bearbeiteSuchCache($NaviFilter, $kSpracheExt = 0)
                     $cSQL .= " 1 ";
                     if (Shop::$kSprache > 0 && !standardspracheAktiv()) {
                         $cSQL .= "  FROM tartikelsprache
-	                                LEFT JOIN tartikel ON tartikelsprache.kArtikel = tartikel.kArtikel";
+                                        LEFT JOIN tartikel ON tartikelsprache.kArtikel = tartikel.kArtikel";
                     } else {
                         $cSQL .= " FROM tartikel ";
                     }
@@ -2044,7 +2044,7 @@ function bearbeiteSuchCache($NaviFilter, $kSpracheExt = 0)
 
                     if (Shop::$kSprache > 0 && !standardspracheAktiv()) {
                         $cSQL .= "  FROM tartikelsprache
-	                                LEFT JOIN tartikel ON tartikelsprache.kArtikel = tartikel.kArtikel";
+                                   LEFT JOIN tartikel ON tartikelsprache.kArtikel = tartikel.kArtikel";
                     } else {
                         $cSQL .= " FROM tartikel ";
                     }
@@ -2322,20 +2322,20 @@ function gibMerkmalFilterSQL($NaviFilter)
     //Merkmal Filter?
     if ((is_array($kMerkmalWert_arr) && count($kMerkmalWert_arr) > 0)) {
         $oFilter->cJoin = "JOIN (
-								SELECT kArtikel
-								FROM tartikelmerkmal
-								WHERE kMerkmalWert IN (" . implode(',', $kMerkmalWert_arr) . ")
-								GROUP BY tartikelmerkmal.kArtikel
+                                SELECT kArtikel
+                                FROM tartikelmerkmal
+                                WHERE kMerkmalWert IN (" . implode(',', $kMerkmalWert_arr) . ")
+                                GROUP BY tartikelmerkmal.kArtikel
                                 HAVING count(*) = " . count($kMerkmalWert_arr) . "
-								) AS tmerkmaljoin ON tmerkmaljoin.kArtikel = tartikel.kArtikel ";
+                                ) AS tmerkmaljoin ON tmerkmaljoin.kArtikel = tartikel.kArtikel ";
 
         $oFilter->cJoinMMW = " JOIN (
-									SELECT kArtikel
-									FROM tartikelmerkmal
-									WHERE kMerkmalWert IN (" . implode(',', $kMerkmalWert_arr) . " )
-									GROUP BY kArtikel
+                                    SELECT kArtikel
+                                    FROM tartikelmerkmal
+                                    WHERE kMerkmalWert IN (" . implode(',', $kMerkmalWert_arr) . " )
+                                    GROUP BY kArtikel
                                     HAVING count(*) = " . count($kMerkmalWert_arr) . "
-									) AS ssj1 ON tartikel.kArtikel = ssj1.kArtikel";
+                                    ) AS ssj1 ON tartikel.kArtikel = ssj1.kArtikel";
 
         $oFilter->cHavingCount = count($kMerkmalWert_arr);
         $oFilter->cHavingMMW   = "HAVING count(*) >= " . count($kMerkmalWert_arr);
@@ -3549,8 +3549,7 @@ function gibNaviMetaKeywords($oArtikel_arr, $NaviFilter, $oExcludesKeywords_arr)
                     }
                 }
             }
-        } // Hat die aktuelle Kategorie eine beschreibung?
-        elseif (isset($oKategorie->cBeschreibung) && strlen($oKategorie->cBeschreibung) > 0) {
+        } elseif (isset($oKategorie->cBeschreibung) && strlen($oKategorie->cBeschreibung) > 0) { // Hat die aktuelle Kategorie eine beschreibung?
             $cKatKeywords = $oKategorie->cBeschreibung;
         }
         $cKatKeywords  = str_replace('"', '', $cKatKeywords);

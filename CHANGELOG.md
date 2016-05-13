@@ -2,9 +2,10 @@
 
 ## [unreleased]
 * Bugfix: Bearbeiten von Herstellern invalidiert Objektcache für Artikel nicht
+* Bugfix: Newsbeiträge aus deaktivierten Kategorien werden auf der Startseite angezeigt
 
 ## [4.03.1]
-* Bugfix: Sprachwechsel fehlerhaft, wenn Standardsprache "EN" eingestellt ist
+* Bugfix: Sprachwechsel in einigen Linkgruppen unvollständig
 * Bugfix: HTTP 500, wenn Object-Cache aktiv ist und Preise erst nach Login sichtbar
 * Bugfix: DB-Update läuft in Endlosschleife, wenn das Update ohne Umweg über admin/index.php direkt im Backend angestoßen wird
 * Bugfix: reCaptcha-Validierung schlägt bei eingeloggten Kunden fehl
@@ -16,7 +17,6 @@
 * Bugfix: Fehlerhafte Sortierung von Kategorien
 * Bugfix: PayPal Basic Transaction ID wird nicht gesetzt
 * Bugfix: Artikeldetails "weiter einkaufen" führt zur Startseite
-* Bugfix: Newsbeiträge aus deaktivierten Kategorien werden auf der Startseite angezeigt
 * Bugfix: Fehlerhaftes Routing: /gibtEsNicht/index.php liefert 200 OK statt 404
 
 ## [4.03]

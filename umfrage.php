@@ -80,7 +80,7 @@ if (isset($cParameter_arr['kUmfrage']) && $cParameter_arr['kUmfrage'] > 0) {
             }
         }
     } else {
-        header('Location: jtl.php?u=' . $cParameter_arr['kUmfrage'] . '&r=' . R_LOGIN_UMFRAGE);
+        header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true) . '?u=' . $cParameter_arr['kUmfrage'] . '&r=' . R_LOGIN_UMFRAGE);
         exit();
     }
 }

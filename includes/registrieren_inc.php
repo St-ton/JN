@@ -167,7 +167,8 @@ function kundeSpeichern($cPost_arr)
         }
         if ($cPost_arr['checkout'] == 1) {
             //weiterleitung zum chekout
-            header('Location: bestellvorgang.php?reg=1', true, 303);
+            $linkHelper = LinkHelper::getInstance();
+            header('Location: ' . $linkHelper->getStaticRoute('bestellvorgang.php') . '?reg=1', true, 303);
             exit;
         } elseif (isset($cPost_arr['ajaxcheckout_return']) && intval($cPost_arr['ajaxcheckout_return']) === 1) {
             return 1;

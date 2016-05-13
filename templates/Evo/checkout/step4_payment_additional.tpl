@@ -1,4 +1,4 @@
-<form id="form_payment_extra" class="form payment_extra" method="post" action="bestellvorgang.php">
+<form id="form_payment_extra" class="form payment_extra" method="post" action="{get_static_route id='bestellvorgang.php'}">
     {$jtl_token}
     <div class="row">
         <div class="col-xs-12 col-md-10 col-md-offset-1">

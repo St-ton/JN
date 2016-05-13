@@ -12,7 +12,7 @@
                 </div>
                 <div class="panel-body">
                     {block name="checkout-payment-options-body"}
-                    <form id="zahlung" method="post" action="bestellvorgang.php" class="form">
+                    <form id="zahlung" method="post" action="{get_static_route id='bestellvorgang.php'}" class="form">
                         {$jtl_token}
                         <fieldset>
                             {if empty($cFehler)}

@@ -15,7 +15,7 @@
                     </div>
                 {/if}
                 <div class="panel-body">
-                    <form method="post" action="registrieren.php">
+                    <form method="post" action="{get_static_route id='registrieren.php'}">
                         {$jtl_token}
                         {if $hinweis}
                             <div class="alert alert-info">{$hinweis}</div>{/if}

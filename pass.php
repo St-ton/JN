@@ -46,7 +46,7 @@ if (isset($_POST['passwort_vergessen']) && intval($_POST['passwort_vergessen']) 
             $verified = $oKunde->verifyResetPasswordHash($_POST['fpwh'], $_POST['fpm']);
             if ($verified === true) {
                 $oKunde->updatePassword($_POST['pw_new']);
-                header('Location: jtl.php?updated_pw=true');
+                header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true) . '?updated_pw=true');
             } else {
                 $cFehler = Shop::Lang()->get('invalidHash', 'productDetails');
             }
@@ -65,7 +65,7 @@ if (isset($_POST['passwort_vergessen']) && intval($_POST['passwort_vergessen']) 
     $step = 'confirm';
 }
 // Canonical
-$cCanonicalURL = Shop::getURL() . '/pass.php';
+$cCanonicalURL = $linkHelper->getStaticRoute('pass.php', true);
 // Metaangaben
 $oMeta            = $linkHelper->buildSpecialPageMeta(LINKTYP_PASSWORD_VERGESSEN);
 $cMetaTitle       = $oMeta->cTitle;

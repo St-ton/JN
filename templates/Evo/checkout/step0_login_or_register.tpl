@@ -4,7 +4,7 @@
  *}
 
 <div class="well">
-    <form method="post" action="bestellvorgang.php" class="form" id="order_register_or_login">
+    <form method="post" action="{get_static_route id='bestellvorgang.php'}" class="form" id="order_register_or_login">
        {if $hinweis}
             <div class="alert alert-danger">{$hinweis}</div>
        {/if}
@@ -19,13 +19,13 @@
                     <div class="panel-body">
                         {block name="checkout-new-account-body"}
                         <p>{lang key="createNewAccountDesc" section="checkout"}</p>
-                        <a class="btn btn-primary btn-block" href="registrieren.php?checkout=1" class="submit">
+                        <a class="btn btn-primary btn-block" href="{get_static_route id='registrieren.php'}?checkout=1" class="submit">
                             {lang key="createNewAccount" section="account data"}
                         </a>
                         {if $Einstellungen.kaufabwicklung.bestellvorgang_unregistriert === 'Y'}
                             <hr>
                             <p>{lang key="orderWithoutRegistrationDesc" section="checkout"}</p>
-                            <a class="btn btn-default btn-block" href="bestellvorgang.php?unreg=1" class="submit">{lang key="orderUnregistered" section="checkout"}</a>
+                            <a class="btn btn-default btn-block" href="{get_static_route id='bestellvorgang.php'}?unreg=1" class="submit">{lang key="orderUnregistered" section="checkout"}</a>
                         {/if}
                         {/block}
                     </div>

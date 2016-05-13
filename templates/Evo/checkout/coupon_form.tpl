@@ -19,7 +19,7 @@
 
 {if $KuponMoeglich == 1 || ($Kunde->fGuthaben > 0 && (!isset($smarty.session.Bestellung->GuthabenNutzen) || !$smarty.session.Bestellung->GuthabenNutzen))}
     {if $KuponMoeglich==1}
-        <form method="post" action="bestellvorgang.php" class="form form-inline">
+        <form method="post" action="{get_static_route id='bestellvorgang.php'}" class="form form-inline">
             {$jtl_token}
             <input type="hidden" name="pruefekupon" value="1" />
             <fieldset>
@@ -34,7 +34,7 @@
     {/if}
     {if $Kunde->fGuthaben > 0 && (!isset($smarty.session.Bestellung->GuthabenNutzen) || !$smarty.session.Bestellung->GuthabenNutzen)}
         <hr />
-        <form method="post" action="bestellvorgang.php">
+        <form method="post" action="{get_static_route id='bestellvorgang.php'}">
             {$jtl_token}
             <fieldset>
                 <div class="alert alert-info">

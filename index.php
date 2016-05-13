@@ -10,8 +10,8 @@ Shop::run();
 $cParameter_arr = Shop::getParameters();
 $NaviFilter     = Shop::buildNaviFilter($cParameter_arr);
 $https          = false;
+$linkHelper     = LinkHelper::getInstance();
 if (isset(Shop::$kLink) && (int)Shop::$kLink > 0) {
-    $linkHelper = LinkHelper::getInstance();
     $link       = $linkHelper->getPageLink(Shop::$kLink);
     //temp. fix for #336, #337, @todo: remove after merge
     if (isset($link->isActive) && $link->isActive === false) {
@@ -44,7 +44,7 @@ if (isset($_SESSION['bWarenkorbHinzugefuegt']) && isset($_SESSION['bWarenkorbAnz
 //wurde was in den Warenkorb gelegt?
 checkeWarenkorbEingang();
 if (!$cParameter_arr['kWunschliste'] && strlen(verifyGPDataString('wlid')) > 0) {
-    header('Location: wunschliste.php?wlid=' . verifyGPDataString('wlid') . '&error=1', true, 303);
+    header('Location: ' . $helper->getStaticRoute('wunschliste.php', true) . '?wlid=' . verifyGPDataString('wlid') . '&error=1', true, 303);
     exit();
 }
 $smarty->assign('NaviFilter', $NaviFilter);
@@ -95,7 +95,7 @@ $smarty->assign('WarenkorbArtikelanzahl', $numArticles)
 //end workaround
 if (($cParameter_arr['kArtikel'] > 0 || $cParameter_arr['kKategorie'] > 0) && !$_SESSION['Kundengruppe']->darfArtikelKategorienSehen) {
     //falls Artikel/Kategorien nicht gesehen werden duerfen -> login
-    header('Location: ' . Shop::getURL() . '/jtl.php?li=1', true, 303);
+    header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true) . '?li=1', true, 303);
     exit;
 }
 // Ticket #6498

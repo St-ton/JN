@@ -199,7 +199,7 @@ class KategorieHelper
                 }
             }
             if ($filterEmpty) {
-                $this->filterEmpty($fullCats, $extended)->removeRelicts($fullCats);
+                $this->filterEmpty($fullCats, true)->removeRelicts($fullCats);
             }
             executeHook(HOOK_GET_ALL_CATEGORIES, array('categories' => &$fullCats));
 

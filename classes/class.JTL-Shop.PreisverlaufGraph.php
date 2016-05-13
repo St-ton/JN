@@ -444,7 +444,6 @@ class PreisverlaufGraph
             $nYEnd = 0;
             $pvdc  = (count($this->oPreisverlaufData_arr) - 1);
             for ($i = 0; $i < $pvdc; $i++) {
-                $nPixelBreite = 0;
                 // Hole Y Wert für den Linienanfang
                 $nYWert = $this->holeYPreis($this->oPreisverlaufData_arr[$i]->fVKNetto);
                 // Hole Y Wert für den Linienanfang vom nächsten Preis

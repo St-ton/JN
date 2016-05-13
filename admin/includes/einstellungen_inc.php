@@ -294,6 +294,8 @@ function gibEinstellungsSektionsPfad($kEinstellungenSektion)
             return 'Einstellungen-&gt;' . $oEinstellungsSektion->cName;
         }
     }
+
+    return '';
 }
 
 /**

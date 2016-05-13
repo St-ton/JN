@@ -272,7 +272,7 @@ function bearbeiteInsert($xml, array $conf)
         loescheArtikel($Artikel->kArtikel, $isParent, true, $conf);
         if ($artikel_arr[0]->kArtikel > 0) {
             if (!$artikel_arr[0]->cSeo) {
-            	//get seo-path from productname, but replace slashes
+                //get seo-path from productname, but replace slashes
                 $artikel_arr[0]->cSeo = getFlatSeoPath($artikel_arr[0]->cName);
             }
             $artikel_arr[0]->cSeo = getSeo($artikel_arr[0]->cSeo);

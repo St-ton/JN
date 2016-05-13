@@ -1119,13 +1119,13 @@ function gibAbonnent($cPost_arr)
     }
     $oAbonnent = Shop::DB()->query(
         "SELECT tnewsletterempfaenger.kNewsletterEmpfaenger, tnewsletterempfaenger.cVorname AS newsVorname, tnewsletterempfaenger.cNachname AS newsNachname,
-			tkunde.cVorname, tkunde.cNachname, tnewsletterempfaenger.cEmail, tnewsletterempfaenger.nAktiv, DATE_FORMAT(tnewsletterempfaenger.dEingetragen,
-			'%d.%m.%Y %H:%i') AS Datum, tkunde.kKundengruppe, tkundengruppe.cName
+            tkunde.cVorname, tkunde.cNachname, tnewsletterempfaenger.cEmail, tnewsletterempfaenger.nAktiv, 
+            DATE_FORMAT(tnewsletterempfaenger.dEingetragen, '%d.%m.%Y %H:%i') AS Datum, tkunde.kKundengruppe, tkundengruppe.cName
             FROM tnewsletterempfaenger
-            JOIN tkunde ON tkunde.kKunde = tnewsletterempfaenger.kKunde
-            JOIN tkundengruppe ON tkundengruppe.kKundengruppe = tkunde.kKundengruppe
-            WHERE " . $cSQL . "
-            ORDER BY Datum DESC", 1
+                JOIN tkunde ON tkunde.kKunde = tnewsletterempfaenger.kKunde
+                JOIN tkundengruppe ON tkundengruppe.kKundengruppe = tkunde.kKundengruppe
+                  WHERE " . $cSQL . "
+                    ORDER BY Datum DESC", 1
     );
     if (isset($oAbonnent->kNewsletterEmpfaenger) && $oAbonnent->kNewsletterEmpfaenger > 0) {
         require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Kunde.php';

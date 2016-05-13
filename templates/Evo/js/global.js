@@ -156,13 +156,13 @@ $(window).load(function(){
 });
 
 $(document).ready(function () {
-	$('#complete-order-button').click(function () {
-		var commentField = $('#comment'),
-			commentFieldHidden = $('#comment-hidden');
-		if (commentField && commentFieldHidden) {
-			commentFieldHidden.val(commentField.val());
-		}
-	});
+    $('#complete-order-button').click(function () {
+        var commentField = $('#comment'),
+            commentFieldHidden = $('#comment-hidden');
+        if (commentField && commentFieldHidden) {
+            commentFieldHidden.val(commentField.val());
+        }
+    });
 
     $('.footnote-vat a, .versand, .popup').click(function(e) {
         var url = e.currentTarget.href;
@@ -265,7 +265,7 @@ $(document).ready(function () {
                 .find('> ul.nav').toggle();
             return false;
         }
-	});
+    });
 
     /*
      * show linkgroup on caret click
@@ -277,7 +277,7 @@ $(document).ready(function () {
                 .find('> ul.nav').toggle();
             return false;
         }
-	});
+    });
 
     /*
      * set bootstrap viewport

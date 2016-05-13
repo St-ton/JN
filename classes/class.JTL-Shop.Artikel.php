@@ -3632,9 +3632,6 @@ class Artikel
             if (strlen($oArtikelTMP->cBildpfad_thersteller) > 0) {
                 $this->cHerstellerBildKlein  = PFAD_HERSTELLERBILDER_KLEIN . $oArtikelTMP->cBildpfad_thersteller;
                 $this->cHerstellerBildNormal = PFAD_HERSTELLERBILDER_NORMAL . $oArtikelTMP->cBildpfad_thersteller;
-            } else {
-                $this->cHerstellerBildKlein  = BILD_KEIN_HERSTELLERBILD_VORHANDEN;
-                $this->cHerstellerBildNormal = BILD_KEIN_HERSTELLERBILD_VORHANDEN;
             }
         }
         //datum umformatieren

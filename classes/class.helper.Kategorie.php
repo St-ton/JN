@@ -83,8 +83,15 @@ class KategorieHelper
                 $select .= ", COUNT(tartikel.kArtikel) AS cnt";
                 $stockJoin = "LEFT JOIN tartikel
                         ON tkategorieartikel.kArtikel = tartikel.kArtikel " . $stockFilter;
+
+                $visibilityJoin = " LEFT JOIN tartikelsichtbarkeit
+                    ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
+                    AND tartikelsichtbarkeit.kKundengruppe = " . (int) self::$kKundengruppe;
             } else {
                 $select .= ", COUNT(tkategorieartikel.kArtikel) AS cnt";
+                $visibilityJoin = " LEFT JOIN tartikelsichtbarkeit
+                    ON tkategorieartikel.kArtikel = tartikelsichtbarkeit.kArtikel
+                    AND tartikelsichtbarkeit.kKundengruppe = " . (int) self::$kKundengruppe;
             }
             $nodes = Shop::DB()->query("
                 SELECT node.kKategorie, node.kOberKategorie, node.cName, node.cBeschreibung, tseo.cSeo, tkategoriepict.cPfad" . $select . "
@@ -102,8 +109,8 @@ class KategorieHelper
                     LEFT JOIN tkategoriepict
                         ON tkategoriepict.kKategorie = node.kKategorie
                     LEFT JOIN tkategorieartikel
-                        ON tkategorieartikel.kKategorie = node.kKategorie " . $stockJoin . "                     
-                WHERE tkategoriesichtbarkeit.kKategorie IS NULL AND node.lft BETWEEN parent.lft AND parent.rght AND parent.kOberKategorie = 0 
+                        ON tkategorieartikel.kKategorie = node.kKategorie " . $stockJoin . $visibilityJoin . "                     
+                WHERE tkategoriesichtbarkeit.kKategorie IS NULL AND node.lft BETWEEN parent.lft AND parent.rght AND parent.kOberKategorie = 0 AND tartikelsichtbarkeit.kArtikel IS NULL 
                 GROUP BY node.kKategorie
                 ORDER BY node.lft", 2);
             // Attribute holen

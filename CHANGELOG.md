@@ -1,7 +1,7 @@
 # JTL-Shop Changelog
 
 ## [4.03.1]
-* Bugfix: Sprachwechsel fehlerhaft, wenn Standardsprache "EN" eingestellt ist
+* Bugfix: Sprachwechsel in einigen Linkgruppen unvollständig
 * Bugfix: HTTP 500, wenn Object-Cache aktiv ist und Preise erst nach Login sichtbar
 * Bugfix: DB-Update läuft in Endlosschleife, wenn das Update ohne Umweg über admin/index.php direkt im Backend angestoßen wird
 * Bugfix: reCaptcha-Validierung schlägt bei eingeloggten Kunden fehl

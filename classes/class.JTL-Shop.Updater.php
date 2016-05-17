@@ -46,7 +46,7 @@ class Updater
             }
 
             if ($dbVersion < 404) {
-                Shop::DB()->query("ALTER TABLE `tversion` CHANGE `nTyp` `nTyp` TINYINT(4) UNSIGNED NOT NULL", 3);
+                Shop::DB()->query("ALTER TABLE `tversion` CHANGE `nTyp` `nTyp` INT(4) UNSIGNED NOT NULL", 3);
             }
 
             static::$isVerified = true;

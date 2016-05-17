@@ -477,7 +477,7 @@ function bearbeiteUmfrageAuswertung($oUmfrage)
                     WHERE tkupon.kKupon = " . (int) $oUmfrage->kKupon . "
                         AND tkuponsprache.cISOSprache = '" . $oSprache->cISO . "'
                         AND tkupon.cAktiv = 'Y'
-                        AND (tkupon.dGueltigAb <= now() AND tkupon.dGueltigBis >= now())
+                        AND (tkupon.dGueltigAb <= now() AND (tkupon.dGueltigBis >= now() OR tkupon.dGueltigBis = '0000-00-00 00:00:00'))
                         AND (tkupon.kKundengruppe = -1 OR tkupon.kKundengruppe = " . (int) $_SESSION['Kunde']->kKundengruppe . ")", 1
             );
 

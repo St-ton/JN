@@ -129,7 +129,6 @@ switch ($action) {
             MediaImage::clearCache($type);
             $smarty->assign('success', 'Cache wurde erfolgreich zur&uuml;ckgesetzt');
         }
-        break;
 
     default:
         $smarty->assign('items', getItems())

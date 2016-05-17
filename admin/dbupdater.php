@@ -38,6 +38,9 @@ $allMigrations = function () use ($updater) {
         return (int) $v >= 402;
     });
 
+    sort($migrationDirs, SORT_NUMERIC);
+    $migrationDirs = array_reverse($migrationDirs);
+
     foreach ($migrationDirs as $version) {
         $manager = new MigrationManager((int) $version);
         $migrations[$version] = $manager;

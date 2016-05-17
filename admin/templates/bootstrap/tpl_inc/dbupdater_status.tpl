@@ -56,12 +56,13 @@
         </tr>
         </thead>
         <tbody>
+        {$migrationIndex = 1}
         {foreach $migrations as $version => $migration}
             {$executedMigrations = $migration->getExecutedMigrations()}
             {foreach $migration->getMigrations()|@array_reverse as $m}
                 {$executed = $m->getId()|in_array:$executedMigrations}
                 <tr class="text-vcenter">
-                    <th scope="row">{$migration->getMigrations()|@count - $m@index}</th>
+                    <th scope="row">{$migrationIndex++}</th>
                     <td class="text-center">{formatVersion value=$version}</td>
                     <td>{$m->getName()}<br><small class="text-muted">{$m->getDescription()}</small></td>
                     <td class="text-center"><span class="migration-created">{if $executed}<i class="fa fa-check text-success" aria-hidden="true"></i> {/if}{if $m->getCreated()}{$m->getCreated()|date_format:"d.m.Y - H:i:s"}{/if}</span></td>

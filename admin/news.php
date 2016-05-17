@@ -3,7 +3,6 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-
 require_once dirname(__FILE__) . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
 
@@ -12,17 +11,17 @@ $oAccount->permission('CONTENT_NEWS_SYSTEM_VIEW', true, true);
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'blaetternavi.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'news_inc.php';
 
-$Einstellungen      = Shop::getSettings(array(CONF_NEWS));
-$cHinweis           = '';
-$cFehler            = '';
-$step               = 'news_uebersicht';
-$cUploadVerzeichnis = PFAD_ROOT . PFAD_NEWSBILDER;
+$Einstellungen         = Shop::getSettings(array(CONF_NEWS));
+$cHinweis              = '';
+$cFehler               = '';
+$step                  = 'news_uebersicht';
+$cUploadVerzeichnis    = PFAD_ROOT . PFAD_NEWSBILDER;
 $cUploadVerzeichnisKat = PFAD_ROOT . PFAD_NEWSKATEGORIEBILDER;
-$oNewsKategorie_arr = array();
-$continueWith       = false;
+$oNewsKategorie_arr    = array();
+$continueWith          = false;
 setzeSprache();
-$nAnzahlProSeite   = 15;
-$oBlaetterNaviConf = baueBlaetterNaviGetterSetter(3, $nAnzahlProSeite);
+$nAnzahlProSeite       = 15;
+$oBlaetterNaviConf     = baueBlaetterNaviGetterSetter(3, $nAnzahlProSeite);
 
 // Tabs
 if (strlen(verifyGPDataString('tab')) > 0) {

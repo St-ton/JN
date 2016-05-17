@@ -226,9 +226,11 @@
                                     <td class="check">
                                         <input type="checkbox" name="kNewsKategorie[]" value="{$oNewsKategorie->kNewsKategorie}" />
                                     </td>
-                                    <td>
-                                        <img src="{$shopURL}/{$oNewsKategorie->cPreviewImage}" alt="" height="32" width="32" class="preview-image left">
-                                    </td>
+                                    {if isset($oNewsKategorie->cPreviewImage) && $oNewsKategorie->cPreviewImage !== ''}
+                                        <td>
+                                            <img src="{$shopURL}/{$oNewsKategorie->cPreviewImage}" alt="" height="32" width="32" class="preview-image left">
+                                        </td>
+                                    {/if}
                                     <td class="TD2">{$oNewsKategorie->cName}</td>
                                     <td class="tcenter">{$oNewsKategorie->nSort}</td>
                                     <td class="tcenter">{if $oNewsKategorie->nAktiv === '1'}ja{else}nein{/if}</td>

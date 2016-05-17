@@ -13,7 +13,7 @@ $AktuelleSeite = 'BESTELLVORGANG';
 Shop::setPageType(PAGE_BESTELLABSCHLUSS);
 $Einstellungen = Shop::getSettings(array(CONF_GLOBAL, CONF_RSS, CONF_KUNDEN, CONF_KAUFABWICKLUNG, CONF_ZAHLUNGSARTEN));
 $kBestellung   = (int)$_REQUEST['kBestellung'];
-$helper        = LinkHelper::getInstance();
+$linkHelper    = LinkHelper::getInstance();
 $bestellung    = new Bestellung($kBestellung);
 $bestellung->fuelleBestellung();
 
@@ -21,7 +21,7 @@ $bestellung->fuelleBestellung();
 //bei Gastbestellungen ist ggf das Kundenobjekt bereits entfernt bzw nRegistriert = 0
 if (isset($bestellung->oKunde) && (int) $bestellung->oKunde->nRegistriert === 1) {
     if ((int) $bestellung->kKunde !== (int) $_SESSION['Kunde']->kKunde) {
-        header('Location: ' . $helper->getStaticRoute('jtl.php', true), true, 303);
+        header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true), true, 303);
         exit;
     }
 }
@@ -29,7 +29,7 @@ if (isset($bestellung->oKunde) && (int) $bestellung->oKunde->nRegistriert === 1)
 $bestellid         = Shop::DB()->select('tbestellid', 'kBestellung', $bestellung->kBestellung, 1);
 $successPaymentURL = Shop::getURL();
 if ($bestellid->cId) {
-    $orderCompleteURL  = $helper->getStaticRoute('bestellabschluss.php', true);
+    $orderCompleteURL  = $linkHelper->getStaticRoute('bestellabschluss.php', true);
     $successPaymentURL = $orderCompleteURL . '?i=' . $bestellid->cId;
 }
 if (!isset($obj)) {

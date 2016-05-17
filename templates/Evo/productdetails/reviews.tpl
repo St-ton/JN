@@ -10,7 +10,7 @@
                     </h3>
                 </div>
                 <div class="panel-body">
-                    <form method="post" action="bewertung.php" id="article_rating" class="row">
+                    <form method="post" action="{get_static_route id='bewertung.php'}" id="article_rating" class="row">
                         {$jtl_token}
                         {if $Artikel->Bewertungen->oBewertungGesamt->nAnzahl > 0}
                             <div id="article_votes" class="col-xs-12 col-md-6">
@@ -58,7 +58,7 @@
 
         {if isset($Artikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich) && $Artikel->HilfreichsteBewertung->oBewertung_arr|@count > 0 && $Artikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich > 0}
             <div class="review-wrapper reviews-mosthelpful panel">
-                <form method="post" action="bewertung.php">
+                <form method="post" action="{get_static_route id='bewertung.php'}">
                     {$jtl_token}
                     {block name="productdetails-review-most-helpful"}
                     <input name="bhjn" type="hidden" value="1" />
@@ -123,7 +123,7 @@
                         <div class="clearfix"></div>
                     </form>
                 </div>
-                <form method="post" action="bewertung.php" class="reviews-list">
+                <form method="post" action="{get_static_route id='bewertung.php'}" class="reviews-list">
                     {$jtl_token}
                     <input name="bhjn" type="hidden" value="1" />
                     <input name="a" type="hidden" value="{$Artikel->kArtikel}" />

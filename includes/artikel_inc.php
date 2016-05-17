@@ -718,7 +718,8 @@ function bearbeiteProdukttags($AktuellerArtikel)
             $conf = Shop::getSettings(array(CONF_ARTIKELDETAILS));
             // Prüfe ob Kunde eingeloggt
             if ($conf['artikeldetails']['tagging_freischaltung'] === 'Y' && empty($_SESSION['Kunde']->kKunde)) {
-                header('Location: jtl.php?a=' . (int)$_POST['a'] . '&tag=' . StringHandler::htmlentities(StringHandler::filterXSS($_POST['tag'])) .
+                $linkHelper = LinkHelper::getInstance();
+                header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true) . '?a=' . (int)$_POST['a'] . '&tag=' . StringHandler::htmlentities(StringHandler::filterXSS($_POST['tag'])) .
                     '&r=' . R_LOGIN_TAG . '&produktTag=1', true, 303);
                 exit();
             }
@@ -813,7 +814,8 @@ function bearbeiteProdukttags($AktuellerArtikel)
                 return Shop::Lang()->get('maxTagsExceeded', 'messages');
             }
         } elseif (isset($_POST['einloggen'])) {
-            header('Location: jtl.php?a=' . (int)$_POST['a'] . '&r=' . R_LOGIN_TAG, true, 303);
+            $linkHelper = LinkHelper::getInstance();
+            header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true) . '?a=' . (int)$_POST['a'] . '&r=' . R_LOGIN_TAG, true, 303);
             exit();
         } else {
             header('Location: index.php?a=' . (int)$_POST['a'] . '&r=' . R_EMPTY_TAG, true, 303);

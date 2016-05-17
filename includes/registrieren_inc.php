@@ -174,7 +174,8 @@ function kundeSpeichern($cPost_arr)
             return 1;
         } elseif ($GlobaleEinstellungen['global']['global_kundenkonto_aktiv'] !== 'A') {
             //weiterleitung zu mein Konto
-            header('Location: jtl.php?reg=1', true, 303);
+            $linkHelper = LinkHelper::getInstance();
+            header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true) . '?reg=1', true, 303);
             exit;
         }
     } else {

@@ -64,7 +64,7 @@
                     <th scope="row">{$migration->getMigrations()|@count - $m@index}</th>
                     <td class="text-center">{formatVersion value=$version}</td>
                     <td>{$m->getName()}<br><small class="text-muted">{$m->getDescription()}</small></td>
-                    <td class="text-center">{if $executed}<i class="fa fa-check text-success" aria-hidden="true"></i> {/if}<span class="migration-created">{if $m->getCreated()}{$m->getCreated()|date_format:"d.m.Y - H:i:s"}{/if}</span></td>
+                    <td class="text-center"><span class="migration-created">{if $executed}<i class="fa fa-check text-success" aria-hidden="true"></i> {/if}{if $m->getCreated()}{$m->getCreated()|date_format:"d.m.Y - H:i:s"}{/if}</span></td>
                     <td class="text-center">
                         <a {if $executed}style="display:none"{/if} href="dbupdater.php?action=migration" data-callback="migration" data-dir="up" data-id="{$m->getId()}" data-version="{$version}" class="btn btn-success btn-xs" {if $executed}disabled="disabled"{/if}><i class="fa fa-arrow-up"></i></a>
                         <a {if !$executed}style="display:none"{/if} href="dbupdater.php?action=migration" data-callback="migration" data-dir="down" data-id="{$m->getId()}" data-version="{$version}" class="btn btn-warning btn-xs" {if !$executed}disabled="disabled"{/if}><i class="fa fa-arrow-down"></i></a>

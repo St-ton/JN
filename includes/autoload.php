@@ -23,6 +23,15 @@ function ShopAutoload($class)
         PFAD_ROOT . PFAD_CLASSES_CORE
     );
 
+    $endsWith = function($haystack, $needle)
+    {
+        $length = strlen($needle);
+        if ($length == 0) {
+            return true;
+        }
+        return (substr($haystack, -$length) === $needle);
+    };
+
     foreach ($classPaths as $classPath) {
         $fileName = $classPath . 'class.JTL-Shop.' . $class . '.php';
         if (file_exists($fileName)) {
@@ -30,8 +39,16 @@ function ShopAutoload($class)
 
             return true;
         }
-        if (strpos($class, 'Helper') !== false) {
+        if ($endsWith($class, 'Helper') !== false) {
             $fileName = $classPath . 'class.helper.' . ucfirst(str_replace('Helper', '', $class)) . '.php';
+            if (file_exists($fileName)) {
+                require $fileName;
+
+                return true;
+            }
+        }
+        if ($endsWith($class, 'Trait') !== false) {
+            $fileName = $classPath . 'trait.JTL-Shop.' . ucfirst(str_replace('Trait', '', $class)) . '.php';
             if (file_exists($fileName)) {
                 require $fileName;
 

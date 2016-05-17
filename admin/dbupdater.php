@@ -31,7 +31,7 @@ $_smarty->clearCompiledTemplate();
 // clear data cache
 Shop::Cache()->flushAll();
 
-$pendingMigrations = function () use ($updater) {
+$allMigrations = function () use ($updater) {
     $migrations = [];
 
     $migrationDirs = array_filter($updater->getUpdateDirs(), function ($v) {
@@ -39,22 +39,22 @@ $pendingMigrations = function () use ($updater) {
     });
 
     foreach ($migrationDirs as $version) {
-        $migration            = new MigrationManager((int) $version);
-        $migrations[$version] = $migration->getPendingMigrations();
+        $manager = new MigrationManager((int) $version);
+        $migrations[$version] = $manager;
     }
 
     return $migrations;
 };
 
-$buildStatus = function () use ($updater, $smarty, $oTemplate) {
+$buildStatus = function () use ($updater, $smarty, $oTemplate, $allMigrations) {
     $currentFileVersion     = $updater->getCurrentFileVersion();
     $currentDatabaseVersion = $updater->getCurrentDatabaseVersion();
     $latestVersion          = $updater->getLatestVersion();
     $version                = $updater->getVersion();
     $updatesAvailable       = $updater->hasPendingUpdates();
 
-    if ($updatesAvailable && defined('ADMIN_MIGRATION') && ADMIN_MIGRATION) {
-        $smarty->assign('migrations', $updater->getPendingMigrations());
+    if (defined('ADMIN_MIGRATION') && ADMIN_MIGRATION) {
+        $smarty->assign('migrations', $allMigrations());
     }
 
     $smarty

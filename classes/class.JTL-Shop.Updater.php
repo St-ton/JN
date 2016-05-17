@@ -307,8 +307,8 @@ class Updater
         } catch (\PDOException $e) {
             Shop::DB()->rollback();
 
-            $code  = Shop::DB()->realEscape($e->errorInfo[1]);
-            $error = Shop::DB()->realEscape($e->errorInfo[2]);
+            $code  = Shop::DB()->pdoEscape($e->errorInfo[1]);
+            $error = Shop::DB()->pdoEscape($e->errorInfo[2]);
 
             $errorCountForLine = 1;
             $version           = $this->getVersion();

@@ -67,7 +67,13 @@ class Updater
             return true;
         }
 
-        return count($this->getPendingMigrations()) > 0;
+        foreach ($this->getPendingMigrations() as $version => $migrations) {
+            if (count($migrations) > 0) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

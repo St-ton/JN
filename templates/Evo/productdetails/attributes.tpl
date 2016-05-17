@@ -12,10 +12,7 @@
     {assign var="showShippingWeight" value=true}
 {/if}
 
-{assign var="showDimension" value=false}
-{if isset($Artikel->cDimension_arr) && $Einstellungen.artikeldetails.artikeldetails_abmessungen_anzeigen === 'Y'}
-    {assign var="showDimension" value=true}
-{/if}
+{assign var="dimension" value=$Artikel->getDimension()}
 
 {assign var="showAttributesTable" value=false}
 {if    $Einstellungen.artikeldetails.merkmale_anzeigen === 'Y' && !empty($Artikel->oMerkmale_arr)
@@ -91,10 +88,10 @@
                     </tr>
                 {/if}
 
-                {if $showDimension}
+                {if $dimension && $Einstellungen.artikeldetails.artikeldetails_abmessungen_anzeigen === 'Y'}
                     <tr class="attr-dimensions">
-                        <td class="attr-label">{if $Artikel->cDimension_arr['AnzeigeTyp'] == '3D'}{lang key="dimensions" section="productDetails"}{else}{lang key="dimensions2d" section="productDetails"}{/if}: </td>
-                        <td class="attr-value">{$Artikel->cDimension_arr['cLaenge']}{if $Artikel->cDimension_arr['AnzeigeTyp'] == '3D'} &times; {$Artikel->cDimension_arr['cBreite']}{/if} &times; {$Artikel->cDimension_arr['cHoehe']} cm</td>
+                        <td class="attr-label">{if $dimension['nAnzeigeTyp'] == 1}{lang key="dimensions" section="productDetails"}{else}{lang key="dimensions2d" section="productDetails"}{/if}: </td>
+                        <td class="attr-value">{$Artikel->getDimensionLocalized()}</td>
                     </tr>
                 {/if}
 

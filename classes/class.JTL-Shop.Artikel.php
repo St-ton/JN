@@ -3492,7 +3492,6 @@ class Artikel
         if ($this->fMassMenge != 0) {
             $this->cMassMenge = Trennzeichen::getUnit(JTLSEPARATER_WEIGHT, $kSprache, $this->fMassMenge);
         }
-        $this->cDimension_arr = $this->getDimensionLocalized();
 
         if ($this->fPackeinheit == 0) {
             $this->fPackeinheit = 1;
@@ -5875,23 +5874,15 @@ class Artikel
      */
     public function getDimension()
     {
-        $fDimension_arr = ['fLaenge' => null, 'fHoehe' => null, 'fBreite' => null];
-        // fill array with float attributes
-        if ($this->fLaenge != 0) {
-            $fDimension_arr['fLaenge'] = $this->fLaenge;
-        }
-        if ($this->fHoehe != 0) {
-            $fDimension_arr['fHoehe'] = $this->fHoehe;
-        }
-        if ($this->fBreite != 0) {
-            $fDimension_arr['fBreite'] = $this->fBreite;
+        if ((float)$this->fLaenge > 0 && (float)$this->fHoehe > 0) {
+            return ['fLaenge' => $this->fLaenge,
+                'fHoehe'      => $this->fHoehe,
+                'fBreite'     => $this->fBreite,
+                'nAnzeigeTyp' => (float)$this->fBreite > 0 ? 1 : 0
+            ];
         }
 
-        if ($fDimension_arr['fLaenge'] == null || $fDimension_arr['fHoehe'] == null) {
-            return;
-        } else {
-            return $fDimension_arr;
-        }
+        return;
     }
 
     /**
@@ -5899,34 +5890,19 @@ class Artikel
      */
     public function getDimensionLocalized()
     {
-        $kSprache = Shop::$kSprache;
-        $kSprache = (int)$kSprache;
+        if (($fDimension_arr = $this->getDimension()) !== null) {
+            $cValue_arr = [];
+            $kSprache   = Shop::$kSprache;
 
-        $cDimension_arr = ['cLaenge' => null, 'cHoehe' => null, 'cBreite' => null, 'AnzeigeTyp' => null];
+            $cValue_arr[] = Trennzeichen::getUnit(JTLSEPARATER_LENGTH, $kSprache, $fDimension_arr['fLaenge']);
+            if ($fDimension_arr['nAnzeigeTyp'] === 1) {
+                $cValue_arr[] = Trennzeichen::getUnit(JTLSEPARATER_LENGTH, $kSprache, $fDimension_arr['fBreite']);
+            }
+            $cValue_arr[] = Trennzeichen::getUnit(JTLSEPARATER_LENGTH, $kSprache, $fDimension_arr['fHoehe']);
 
-        if ($this->getDimension() !== null) {
-            // fill array with converted strings
-            if ($this->getDimension()['fLaenge'] != 0) {
-                $cDimension_arr['cLaenge'] = Trennzeichen::getUnit(JTLSEPARATER_LENGTH, $kSprache,
-                    $this->getDimension()['fLaenge']);
-            }
-            if ($this->getDimension()['fHoehe'] != 0) {
-                $cDimension_arr['cHoehe'] = Trennzeichen::getUnit(JTLSEPARATER_LENGTH, $kSprache,
-                    $this->getDimension()['fHoehe']);
-            }
-            if ($this->getDimension()['fBreite'] != 0) {
-                $cDimension_arr['cBreite'] = Trennzeichen::getUnit(JTLSEPARATER_LENGTH, $kSprache,
-                    $this->getDimension()['fBreite']);
-            }
-            if ($cDimension_arr['cBreite'] !== null) {
-                $cDimension_arr['AnzeigeTyp'] = '3D';
-            } else {
-                $cDimension_arr['AnzeigeTyp'] = '2D';
-            }
-
-            return $cDimension_arr;
-        } else {
-            return;
+            return sprintf('%s cm', implode(' x ', $cValue_arr));
         }
+
+        return;
     }
 }

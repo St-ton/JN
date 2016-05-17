@@ -18,7 +18,7 @@
 {if    $Einstellungen.artikeldetails.merkmale_anzeigen === 'Y' && !empty($Artikel->oMerkmale_arr)
     || $showProductWeight
     || $showShippingWeight
-    || $showDimension
+    || $dimension && $Einstellungen.artikeldetails.artikeldetails_abmessungen_anzeigen === 'Y'
     || isset($Artikel->cMasseinheitName) && isset($Artikel->fMassMenge) && $Artikel->fMassMenge > 0  && $Artikel->cTeilbar != 'Y' && ($Artikel->fAbnahmeintervall == 0 || $Artikel->fAbnahmeintervall == 1)
     || ($Einstellungen.artikeldetails.artikeldetails_attribute_anhaengen === 'Y' || $Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ATTRIBUTEANHAENGEN] == 1) && !empty($Artikel->Attribute)
 }

@@ -1071,7 +1071,6 @@ class Artikel
     private function rabattierePreise()
     {
         if ($this->Preise !== null && method_exists($this->Preise, 'rabbatierePreise')) {
-
             $this->Preise->rabbatierePreise($this->gibKundenRabatt((double) $this->fMaxRabatt))->localizePreise();
         }
 
@@ -3488,15 +3487,6 @@ class Artikel
         if ($this->fMassMenge != 0) {
             $this->cMassMenge = Trennzeichen::getUnit(JTLSEPARATER_WEIGHT, $kSprache, $this->fMassMenge);
         }
-        if ($this->fLaenge != 0) {
-            $this->cLaenge = Trennzeichen::getUnit(JTLSEPARATER_LENGTH, $kSprache, $this->fLaenge);
-        }
-        if ($this->fHoehe != 0) {
-            $this->cHoehe = Trennzeichen::getUnit(JTLSEPARATER_LENGTH, $kSprache, $this->fHoehe);
-        }
-        if ($this->fBreite != 0) {
-            $this->cBreite = Trennzeichen::getUnit(JTLSEPARATER_LENGTH, $kSprache, $this->fBreite);
-        }
 
         if ($this->fPackeinheit == 0) {
             $this->fPackeinheit = 1;
@@ -5688,7 +5678,6 @@ class Artikel
             }
         }
 
-
         return $tierPrices;
     }
 
@@ -5873,5 +5862,42 @@ class Artikel
         }
 
         return [];
+    }
+
+    /**
+     * @return array of float product dimension
+     */
+    public function getDimension()
+    {
+        if ((float)$this->fLaenge > 0 && (float)$this->fHoehe > 0) {
+            return ['fLaenge' => $this->fLaenge,
+                'fHoehe'      => $this->fHoehe,
+                'fBreite'     => $this->fBreite,
+                'nAnzeigeTyp' => (float)$this->fBreite > 0 ? 1 : 0
+            ];
+        }
+
+        return;
+    }
+
+    /**
+     * @return array of string Product Dimension
+     */
+    public function getDimensionLocalized()
+    {
+        if (($fDimension_arr = $this->getDimension()) !== null) {
+            $cValue_arr = [];
+            $kSprache   = Shop::$kSprache;
+
+            $cValue_arr[] = Trennzeichen::getUnit(JTLSEPARATER_LENGTH, $kSprache, $fDimension_arr['fLaenge']);
+            if ($fDimension_arr['nAnzeigeTyp'] === 1) {
+                $cValue_arr[] = Trennzeichen::getUnit(JTLSEPARATER_LENGTH, $kSprache, $fDimension_arr['fBreite']);
+            }
+            $cValue_arr[] = Trennzeichen::getUnit(JTLSEPARATER_LENGTH, $kSprache, $fDimension_arr['fHoehe']);
+
+            return sprintf('%s cm', implode(' x ', $cValue_arr));
+        }
+
+        return;
     }
 }

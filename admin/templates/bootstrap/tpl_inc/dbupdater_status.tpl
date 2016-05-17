@@ -89,6 +89,8 @@
 
 {if isset($migrations) && $migrations|@count > 0}
     <p>&nbsp;</p>
-    {migration_list list=$migrations filter=2 title='Nicht-ausgef&uuml;hrte Migrationen'}
+    {if $updatesAvailable}
+        {migration_list list=$migrations filter=2 title='Nicht-ausgef&uuml;hrte Migrationen'}
+    {/if}
     {migration_list list=$migrations filter=1 title='Erfolgreiche Migrationen'}
 {/if}

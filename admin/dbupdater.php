@@ -55,6 +55,7 @@ $buildStatus = function () use ($updater, $smarty, $oTemplate, $allMigrations) {
     $latestVersion          = $updater->getLatestVersion();
     $version                = $updater->getVersion();
     $updatesAvailable       = $updater->hasPendingUpdates();
+    $updateError            = $updater->error();
 
     if (defined('ADMIN_MIGRATION') && ADMIN_MIGRATION) {
         $smarty->assign('migrations', $allMigrations());
@@ -66,6 +67,7 @@ $buildStatus = function () use ($updater, $smarty, $oTemplate, $allMigrations) {
         ->assign('currentDatabaseVersion', $currentDatabaseVersion)
         ->assign('latestVersion', $latestVersion)
         ->assign('version', $version)
+        ->assign('updateError', $updateError)
         ->assign('currentTemplateFileVersion', $oTemplate->xmlData->cShopVersion)
         ->assign('currentTemplateDatabaseVersion', $oTemplate->shopVersion);
 };

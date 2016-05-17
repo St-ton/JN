@@ -12,7 +12,7 @@ class MigrationManager
     /**
      * @var array
      */
-    protected $migrations;
+    protected static $migrations;
 
     /**
      * @var array
@@ -30,6 +30,7 @@ class MigrationManager
      */
     public function __construct($version)
     {
+        static::$migrations = [];
         $this->version = (int) $version;
     }
 
@@ -175,7 +176,7 @@ class MigrationManager
      */
     public function setMigrations(array $migrations)
     {
-        $this->migrations = $migrations;
+        static::$migrations[$this->version] = $migrations;
 
         return $this;
     }
@@ -198,7 +199,7 @@ class MigrationManager
      */
     public function getMigrations()
     {
-        if ($this->migrations === null) {
+        if (!array_key_exists($this->version, static::$migrations) || static::$migrations[$this->version] === null) {
             $migrations = array();
             $executed   = $this->_getExecutedMigrations();
             $path       = MigrationHelper::getMigrationPath($this->version);
@@ -238,7 +239,7 @@ class MigrationManager
             $this->setMigrations($migrations);
         }
 
-        return $this->migrations;
+        return static::$migrations[$this->version];
     }
 
     /**

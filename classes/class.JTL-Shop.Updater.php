@@ -430,13 +430,31 @@ class Updater
     }
 
     /**
-     * @return string|void
+     * @return null|object
      * @throws Exception
      */
-    public function getErrorSql()
+    public function error()
     {
         $version = $this->getVersion();
-        $sqls    = $this->getSqlUpdates($version->nVersion);
+        if ((int)$version->nFehler > 0) {
+            return (object) [
+                'code' => $version->nTyp,
+                'error' => $version->cFehlerSQL,
+                'sql' => $version->nVersion < 402 ?
+                    $this->getErrorSqlByFile() : null
+            ];
+        }
+        return null;
+    }
+
+    /**
+     * @return string|null
+     * @throws Exception
+     */
+    public function getErrorSqlByFile()
+    {
+        $version = $this->getVersion();
+        $sqls = $this->getSqlUpdates($version->nVersion);
 
         if ((int) $version->nFehler > 0) {
             if (array_key_exists($version->nZeileBis, $sqls)) {
@@ -446,7 +464,7 @@ class Updater
             }
         }
 
-        return;
+        return null;
     }
 
     /**

@@ -1,5 +1,5 @@
 {if !empty($Products)}
-    <form action="index.php" method="post" id="form_bundles">
+    <form action="{if !empty($ProductMain->cURLFull)}{$ProductMain->cURLFull}{else}index.php{/if}" method="post" id="form_bundles">
         <div class="panel panel-default">
             <input type="hidden" name="a" value="{$ProductMain->kArtikel}" />
             <input type="hidden" name="addproductbundle" value="1" />

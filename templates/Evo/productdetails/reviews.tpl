@@ -87,7 +87,7 @@
                 {* only one review so far. don't display this stuff *}
             {else}
                 <div class="review-wrapper reviews-sortcontrol">
-                    <form id="sortierenID" method="get" action="index.php" class="form-inline">
+                    <form id="sortierenID" method="post" action="{if !empty($Artikel->cURLFull)}{$Artikel->cURLFull}{else}index.php{/if}" class="form-inline">
                         {$jtl_token}
                         <input name="a" type="hidden" value="{$Artikel->kArtikel}" />
                         <input name="btgsterne" type="hidden" value="{$BlaetterNavi->nSterne}" />

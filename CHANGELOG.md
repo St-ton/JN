@@ -15,6 +15,7 @@
 * Bugfix: Artikeldetails "weiter einkaufen" führt zur Startseite
 * Bugfix: Fehlerhaftes Routing: /gibtEsNicht/index.php liefert 200 OK statt 404
 * Unterstützung: Konfiguratorkomponenten Bildwechsel nutzt Gruppenbild, wenn Komponente kein Bild hat
+* Bugfix: Angepasste robots.txt wird falsch sortiert durch robots.php
 
 ## [4.03] - 2016-05-09
 

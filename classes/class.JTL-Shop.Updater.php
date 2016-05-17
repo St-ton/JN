@@ -44,7 +44,8 @@ class Updater
                     Shop::DB()->query("INSERT INTO `ttemplate` (`cTemplate`, `eTyp`) VALUES ('bootstrap', 'admin')", 3);
                 }
             }
-            elseif ($dbVersion < 404) {
+
+            if ($dbVersion < 404) {
                 Shop::DB()->query("ALTER TABLE `tversion` CHANGE `nTyp` `nTyp` TINYINT(4) UNSIGNED NOT NULL", 3);
             }
 

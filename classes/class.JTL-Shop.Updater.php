@@ -34,14 +34,19 @@ class Updater
     {
         if (static::$isVerified !== true) {
             MigrationHelper::verifyIntegrity();
+            $dbVersion = $this->getCurrentDatabaseVersion();
 
             // While updating from 3.xx to 4.xx provide a default admin-template row
-            if ($this->getCurrentDatabaseVersion() < 400) {
+            if ($dbVersion < 400) {
                 $count = (int) Shop::DB()->query("SELECT * FROM `ttemplate` WHERE `eTyp`='admin'", 3);
                 if ($count === 0) {
                     Shop::DB()->query("ALTER TABLE `ttemplate` CHANGE `eTyp` `eTyp` ENUM('standard','mobil','admin') NOT NULL", 3);
                     Shop::DB()->query("INSERT INTO `ttemplate` (`cTemplate`, `eTyp`) VALUES ('bootstrap', 'admin')", 3);
                 }
+            }
+
+            if ($dbVersion < 404) {
+                Shop::DB()->query("ALTER TABLE `tversion` CHANGE `nTyp` `nTyp` INT(4) UNSIGNED NOT NULL", 3);
             }
 
             static::$isVerified = true;
@@ -290,8 +295,8 @@ class Updater
      */
     protected function updateBySqlFile($currentVersion, $targetVersion)
     {
-        $sqls        = $this->getSqlUpdates($currentVersion);
         $currentLine = 0;
+        $sqls = $this->getSqlUpdates($currentVersion);
 
         try {
             Shop::DB()->beginTransaction();
@@ -300,31 +305,32 @@ class Updater
                 $currentLine = $i;
                 Shop::DB()->executeQuery($sql, 3);
             }
-
-            $this->setVersion($targetVersion);
-
-            return $targetVersion;
         } catch (\PDOException $e) {
-            Shop::DB()->rollback();
+            $code = (int) $e->errorInfo[1];
+            $error = Shop::DB()->escape($e->errorInfo[2]);
 
-            $code  = Shop::DB()->realEscape($e->errorInfo[1]);
-            $error = Shop::DB()->realEscape($e->errorInfo[2]);
+            if (!in_array($code, array(1062, 1060, 1267))) {
+                Shop::DB()->rollback();
 
-            $errorCountForLine = 1;
-            $version           = $this->getVersion();
+                $errorCountForLine = 1;
+                $version = $this->getVersion();
 
-            if ((int) $version->nZeileBis === $currentLine) {
-                $errorCountForLine = $version->nFehler + 1;
+                if ((int) $version->nZeileBis === $currentLine) {
+                    $errorCountForLine = $version->nFehler + 1;
+                }
+
+                Shop::DB()->executeQuery(
+                    "UPDATE tversion SET
+                     nZeileVon = 1, nZeileBis = {$currentLine}, nFehler = {$errorCountForLine},
+                     nTyp = {$code}, cFehlerSQL = '{$error}', dAktualisiert = now()", 3
+                );
+
+                throw $e;
             }
-
-            Shop::DB()->executeQuery(
-                "UPDATE tversion SET
-                nZeileVon = 1, nZeileBis = {$currentLine}, nFehler = {$errorCountForLine},
-                nTyp = {$code}, cFehlerSQL = {$error}, dAktualisiert = now()", 3
-            );
-
-            throw $e;
         }
+
+        $this->setVersion($targetVersion);
+        return $targetVersion;
     }
 
     /**

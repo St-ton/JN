@@ -163,6 +163,10 @@
                     : 'Migration wurde erfolgreich ausgef&uuml;hrt';
 
             showNotify(error ? 'danger' : 'info', 'Migration', message);
+
+            if (!error) {
+                updateStatusTpl();
+            }
         });
     }
 

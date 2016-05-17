@@ -486,6 +486,11 @@ class Artikel
     public $oVariationKombiVorschau_arr;
 
     /**
+     * @var array
+     */
+    public $cDimension_arr;
+
+    /**
      * @var
      */
     public $cVariationenbilderVorhanden;
@@ -1071,7 +1076,6 @@ class Artikel
     private function rabattierePreise()
     {
         if ($this->Preise !== null && method_exists($this->Preise, 'rabbatierePreise')) {
-
             $this->Preise->rabbatierePreise($this->gibKundenRabatt((double) $this->fMaxRabatt))->localizePreise();
         }
 
@@ -3488,15 +3492,7 @@ class Artikel
         if ($this->fMassMenge != 0) {
             $this->cMassMenge = Trennzeichen::getUnit(JTLSEPARATER_WEIGHT, $kSprache, $this->fMassMenge);
         }
-        if ($this->fLaenge != 0) {
-            $this->cLaenge = Trennzeichen::getUnit(JTLSEPARATER_LENGTH, $kSprache, $this->fLaenge);
-        }
-        if ($this->fHoehe != 0) {
-            $this->cHoehe = Trennzeichen::getUnit(JTLSEPARATER_LENGTH, $kSprache, $this->fHoehe);
-        }
-        if ($this->fBreite != 0) {
-            $this->cBreite = Trennzeichen::getUnit(JTLSEPARATER_LENGTH, $kSprache, $this->fBreite);
-        }
+        $this->cDimension_arr = $this->getDimensionLocalized();
 
         if ($this->fPackeinheit == 0) {
             $this->fPackeinheit = 1;
@@ -5688,7 +5684,6 @@ class Artikel
             }
         }
 
-
         return $tierPrices;
     }
 
@@ -5873,5 +5868,65 @@ class Artikel
         }
 
         return [];
+    }
+
+    /**
+     * @return array of float product dimension
+     */
+    public function getDimension()
+    {
+        $fDimension_arr = ['fLaenge' => null, 'fHoehe' => null, 'fBreite' => null];
+        // fill array with float attributes
+        if ($this->fLaenge != 0) {
+            $fDimension_arr['fLaenge'] = $this->fLaenge;
+        }
+        if ($this->fHoehe != 0) {
+            $fDimension_arr['fHoehe'] = $this->fHoehe;
+        }
+        if ($this->fBreite != 0) {
+            $fDimension_arr['fBreite'] = $this->fBreite;
+        }
+
+        if ($fDimension_arr['fLaenge'] == null || $fDimension_arr['fHoehe'] == null) {
+            return;
+        } else {
+            return $fDimension_arr;
+        }
+    }
+
+    /**
+     * @return array of string Product Dimension
+     */
+    public function getDimensionLocalized()
+    {
+        $kSprache = Shop::$kSprache;
+        $kSprache = (int)$kSprache;
+
+        $cDimension_arr = ['cLaenge' => null, 'cHoehe' => null, 'cBreite' => null, 'AnzeigeTyp' => null];
+
+        if ($this->getDimension() !== null) {
+            // fill array with converted strings
+            if ($this->getDimension()['fLaenge'] != 0) {
+                $cDimension_arr['cLaenge'] = Trennzeichen::getUnit(JTLSEPARATER_LENGTH, $kSprache,
+                    $this->getDimension()['fLaenge']);
+            }
+            if ($this->getDimension()['fHoehe'] != 0) {
+                $cDimension_arr['cHoehe'] = Trennzeichen::getUnit(JTLSEPARATER_LENGTH, $kSprache,
+                    $this->getDimension()['fHoehe']);
+            }
+            if ($this->getDimension()['fBreite'] != 0) {
+                $cDimension_arr['cBreite'] = Trennzeichen::getUnit(JTLSEPARATER_LENGTH, $kSprache,
+                    $this->getDimension()['fBreite']);
+            }
+            if ($cDimension_arr['cBreite'] !== null) {
+                $cDimension_arr['AnzeigeTyp'] = '3D';
+            } else {
+                $cDimension_arr['AnzeigeTyp'] = '2D';
+            }
+
+            return $cDimension_arr;
+        } else {
+            return;
+        }
     }
 }

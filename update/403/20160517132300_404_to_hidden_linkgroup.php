@@ -26,11 +26,11 @@ class Migration_20160517132300 extends Migration implements IMigration
 
     public function up()
     {
-        $this->execute("UPDATE `tlink` SET `kLinkgruppe`='8' WHERE `kLink`='72';");
+        $this->execute("UPDATE `tlink` SET `kLinkgruppe` = (SELECT `kLinkgruppe` FROM `tlinkgruppe` WHERE `cName` = 'hidden') WHERE `nLinkart`= '29';");
     }
 
     public function down()
     {
-        $this->execute("UPDATE `tlink` SET `kLinkgruppe`='0' WHERE `kLink`='72';");
+        $this->execute("UPDATE `tlink` SET `kLinkgruppe`='0' WHERE `nLinkart`= '29';");
     }
 }

@@ -486,11 +486,6 @@ class Artikel
     public $oVariationKombiVorschau_arr;
 
     /**
-     * @var array
-     */
-    public $cDimension_arr;
-
-    /**
      * @var
      */
     public $cVariationenbilderVorhanden;

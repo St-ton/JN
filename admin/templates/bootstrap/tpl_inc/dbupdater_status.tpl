@@ -2,54 +2,41 @@
 {config_load file="$lang.conf" section="shopupdate"}
 
 {function migration_list list=[] title='' filter=0} {* filter: 0 - All, 1 - Executed, 2 - Pending *}
-    {$migrationCount = 0}
-    {foreach $list as $version => $migration}
-        {$executedMigrations = $migration->getExecutedMigrations()}
-        {foreach $migration->getMigrations()|@array_reverse as $m}
-            {$executed = $m->getId()|in_array:$executedMigrations}
-            {if $filter == 0 || ($filter == 1 && $executed) || ($filter == 2 && !$executed)}
-                {$migrationCount = $migrationCount + 1}
-            {/if}
-        {/foreach}
-    {/foreach}
-
-    {if $migrationCount > 0}
-        {if $title|@count_characters > 0}
-            <h4>{$title}</h4>
-        {/if}
-        <table class="table table-hover">
-            <thead>
-            <tr>
-                <th width="5%">#</th>
-                <th width="15%" class="text-center">Version</th>
-                <th width="50%">Migration</th>
-                <th width="15%" class="text-center">{if $filter != 2}Ausgef&uuml;hrt{/if}</th>
-                <th width="15%" class="text-center"></th>
-            </tr>
-            </thead>
-            <tbody>
-            {$migrationIndex = 1}
-            {foreach $list as $version => $migration}
-                {$executedMigrations = $migration->getExecutedMigrations()}
-                {foreach $migration->getMigrations()|@array_reverse as $m}
-                    {$executed = $m->getId()|in_array:$executedMigrations}
-                    {if $filter == 0 || ($filter == 1 && $executed) || ($filter == 2 && !$executed)}
-                        <tr class="text-vcenter">
-                            <th scope="row">{$migrationIndex++}</th>
-                            <td class="text-center">{formatVersion value=$version}</td>
-                            <td>{$m->getName()}<br><small class="text-muted">{$m->getDescription()}</small></td>
-                            <td class="text-center"><span class="migration-created">{if $executed}<i class="fa fa-check text-success" aria-hidden="true"></i> {/if}{if $m->getCreated()}{$m->getCreated()|date_format:"d.m.Y - H:i:s"}{/if}</span></td>
-                            <td class="text-center">
-                                <a {if $executed}style="display:none"{/if} href="dbupdater.php?action=migration" data-callback="migration" data-dir="up" data-id="{$m->getId()}" data-version="{$version}" class="btn btn-success btn-xs" {if $executed}disabled="disabled"{/if}><i class="fa fa-arrow-up"></i></a>
-                                <a {if !$executed}style="display:none"{/if} href="dbupdater.php?action=migration" data-callback="migration" data-dir="down" data-id="{$m->getId()}" data-version="{$version}" class="btn btn-warning btn-xs" {if !$executed}disabled="disabled"{/if}><i class="fa fa-arrow-down"></i></a>
-                            </td>
-                        </tr>
-                    {/if}
-                {/foreach}
-            {/foreach}
-            </tbody>
-        </table>
+    {if $title|@count_characters > 0}
+        <h4>{$title}</h4>
     {/if}
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th width="5%">#</th>
+            <th width="15%" class="text-center">Version</th>
+            <th width="50%">Migration</th>
+            <th width="15%" class="text-center">{if $filter != 2}Ausgef&uuml;hrt{/if}</th>
+            <th width="15%" class="text-center"></th>
+        </tr>
+        </thead>
+        <tbody>
+        {$migrationIndex = 1}
+        {foreach $list as $version => $migration}
+            {$executedMigrations = $migration->getExecutedMigrations()}
+            {foreach $migration->getMigrations()|@array_reverse as $m}
+                {$executed = $m->getId()|in_array:$executedMigrations}
+                {if $filter == 0 || ($filter == 1 && $executed) || ($filter == 2 && !$executed)}
+                    <tr class="text-vcenter">
+                        <th scope="row">{$migrationIndex++}</th>
+                        <td class="text-center">{formatVersion value=$version}</td>
+                        <td>{$m->getName()}<br><small class="text-muted">{$m->getDescription()}</small></td>
+                        <td class="text-center"><span class="migration-created">{if $executed}<i class="fa fa-check text-success" aria-hidden="true"></i> {/if}{if $m->getCreated()}{$m->getCreated()|date_format:"d.m.Y - H:i:s"}{/if}</span></td>
+                        <td class="text-center">
+                            <a {if $executed}style="display:none"{/if} href="dbupdater.php?action=migration" data-callback="migration" data-dir="up" data-id="{$m->getId()}" data-version="{$version}" class="btn btn-success btn-xs" {if $executed}disabled="disabled"{/if}><i class="fa fa-arrow-up"></i></a>
+                            <a {if !$executed}style="display:none"{/if} href="dbupdater.php?action=migration" data-callback="migration" data-dir="down" data-id="{$m->getId()}" data-version="{$version}" class="btn btn-warning btn-xs" {if !$executed}disabled="disabled"{/if}><i class="fa fa-arrow-down"></i></a>
+                        </td>
+                    </tr>
+                {/if}
+            {/foreach}
+        {/foreach}
+        </tbody>
+    </table>
 {/function}
 
 <form name="updateForm" method="post" id="form-update">

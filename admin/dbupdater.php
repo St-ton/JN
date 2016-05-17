@@ -8,6 +8,7 @@ set_time_limit(0);
 
 require_once dirname(__FILE__) . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Updater.php';
+require_once PFAD_ROOT . PFAD_ADMIN . PFAD_CLASSES . 'class.JTL-Shopadmin.AjaxResponse.php';
 
 $hasPermission = $oAccount->permission('SHOP_UPDATE_VIEW', false, false);
 $action        = isset($_GET['action']) ? $_GET['action'] : null;
@@ -22,7 +23,8 @@ if ($hasPermission === false) {
 }
 
 $updater   = new Updater();
-$oTemplate = Template::getInstance();
+$response  = new AjaxResponse();
+$template  = Template::getInstance();
 
 // clear tempate cache
 $_smarty = new JTLSmarty(true, true);
@@ -42,14 +44,14 @@ $allMigrations = function () use ($updater) {
     $migrationDirs = array_reverse($migrationDirs);
 
     foreach ($migrationDirs as $version) {
-        $manager = new MigrationManager((int) $version);
+        $manager              = new MigrationManager((int) $version);
         $migrations[$version] = $manager;
     }
 
     return $migrations;
 };
 
-$buildStatus = function () use ($updater, $smarty, $oTemplate, $allMigrations) {
+$buildStatus = function () use ($updater, $smarty, $template, $allMigrations) {
     $currentFileVersion     = $updater->getCurrentFileVersion();
     $currentDatabaseVersion = $updater->getCurrentDatabaseVersion();
     $latestVersion          = $updater->getLatestVersion();
@@ -68,8 +70,8 @@ $buildStatus = function () use ($updater, $smarty, $oTemplate, $allMigrations) {
         ->assign('latestVersion', $latestVersion)
         ->assign('version', $version)
         ->assign('updateError', $updateError)
-        ->assign('currentTemplateFileVersion', $oTemplate->xmlData->cShopVersion)
-        ->assign('currentTemplateDatabaseVersion', $oTemplate->shopVersion);
+        ->assign('currentTemplateFileVersion', $template->xmlData->cShopVersion)
+        ->assign('currentTemplateDatabaseVersion', $template->shopVersion);
 };
 
 switch ($action) {
@@ -81,22 +83,22 @@ switch ($action) {
     case 'status_tpl':
         $buildStatus();
 
-        $result = $updater->buildResponse([
+        $result = $response->buildResponse([
             'tpl' => $smarty->fetch('tpl_inc/dbupdater_status.tpl')
         ]);
 
-        $updater->makeResponse($result, $action);
+        $response->makeResponse($result, $action);
         break;
 
     case 'login':
-        $result = $updater->buildError('Unauthorized', 401);
-        $updater->makeResponse($result, $action);
+        $result = $response->buildError('Unauthorized', 401);
+        $response->makeResponse($result, $action);
         break;
 
     case 'update':
         try {
-            if ($oTemplate->xmlData->cShopVersion != $oTemplate->shopVersion) {
-                if ($oTemplate->setTemplate($oTemplate->xmlData->cName, $oTemplate->xmlData->eTyp)) {
+            if ($template->xmlData->cShopVersion != $template->shopVersion) {
+                if ($template->setTemplate($template->xmlData->cName, $template->xmlData->eTyp)) {
                     unset($_SESSION['cTemplate']);
                     unset($_SESSION['template']);
                 }
@@ -114,17 +116,17 @@ switch ($action) {
                 $updateResult = sprintf('Version: %.2f', $updateResult / 100);
             }
 
-            $result = $updater->buildResponse([
+            $result = $response->buildResponse([
                 'result'          => $updateResult,
                 'currentVersion'  => $dbVersion,
                 'updatedVersion'  => $dbVersion,
                 'availableUpdate' => $availableUpdate
             ]);
         } catch (Exception $e) {
-            $result = $updater->buildError($e->getMessage());
+            $result = $response->buildError($e->getMessage());
         }
 
-        $updater->makeResponse($result, $action);
+        $response->makeResponse($result, $action);
         break;
 
     case 'backup':
@@ -143,12 +145,12 @@ switch ($action) {
                 'file' => $file
             ];
 
-            $result = $updater->buildResponse($data);
+            $result = $response->buildResponse($data);
         } catch (Exception $e) {
-            $result = $updater->buildError($e->getMessage());
+            $result = $response->buildError($e->getMessage());
         }
 
-        $updater->makeResponse($result, $action);
+        $response->makeResponse($result, $action);
         break;
 
     /*
@@ -171,10 +173,10 @@ switch ($action) {
                 'migrations' => $executed
             ]);
         } catch (Exception $e) {
-            $result = $updater->buildError($e->getMessage());
+            $result = $response->buildError($e->getMessage());
         }
 
-        $updater->makeResponse($result, $action);
+        $response->makeResponse($result, $action);
         break;
     }
     */
@@ -191,12 +193,12 @@ switch ($action) {
                 $migration->executeMigrationById($id, $direction);
             }
 
-            $result = $updater->buildResponse($id);
+            $result = $response->buildResponse($id);
         } catch (Exception $e) {
-            $result = $updater->buildError($e->getMessage());
+            $result = $response->buildError($e->getMessage());
         }
 
-        $updater->makeResponse($result, $action);
+        $response->makeResponse($result, $action);
         break;
 
     case 'download':
@@ -216,6 +218,6 @@ switch ($action) {
             return;
         }
 
-        $updater->pushFile($filePath, 'application/x-gzip');
+        $response->pushFile($filePath, 'application/x-gzip');
         break;
 }

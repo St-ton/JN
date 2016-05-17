@@ -360,7 +360,6 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
         $cMetaDescription = $_POST['cMetaDescription'];
         $cBeschreibung    = $_POST['cBeschreibung'];
         $cPreviewImage    = $_POST['previewImage'];
-        
         $cPlausiValue_arr = pruefeNewsKategorie($_POST['cName'], (isset($_POST['newskategorie_edit_speichern'])) ? intval($_POST['newskategorie_edit_speichern']) : 0);
 
         if (is_array($cPlausiValue_arr) && count($cPlausiValue_arr) === 0) {

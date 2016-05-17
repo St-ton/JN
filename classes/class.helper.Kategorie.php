@@ -206,7 +206,7 @@ class KategorieHelper
                 }
             }
             if ($filterEmpty) {
-                $this->filterEmpty($fullCats, true)->removeRelicts($fullCats);
+                $this->filterEmpty($fullCats)->removeRelicts($fullCats);
             }
             executeHook(HOOK_GET_ALL_CATEGORIES, array('categories' => &$fullCats));
 
@@ -224,16 +224,15 @@ class KategorieHelper
      * remove items from category list that have no articles and no subcategories
      *
      * @param array $catList
-     * @param bool $extended
      * @return $this
      */
-    private function filterEmpty(&$catList, $extended)
+    private function filterEmpty(&$catList)
     {
         foreach ($catList as $i => $_cat) {
-            if ($_cat->bUnterKategorien === 0 && $extended && $_cat->cnt == 0) {
+            if ($_cat->bUnterKategorien === 0 && $_cat->cnt == 0) {
                 unset($catList[$i]);
             } elseif ($_cat->bUnterKategorien === 1) {
-                $this->filterEmpty($_cat->Unterkategorien, $extended);
+                $this->filterEmpty($_cat->Unterkategorien);
             }
         }
 

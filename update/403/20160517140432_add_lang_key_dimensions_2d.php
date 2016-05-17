@@ -26,8 +26,8 @@ class Migration_20160517140432 extends Migration implements IMigration
 
     public function up()
     {
-        $this->setLocalization('ger', 'productDetails', 'dimensions2d', 'Abmessungen(L &times; H)');
-        $this->setLocalization('eng', 'productDetails', 'dimensions2d', 'Dimensions(L &times; H)');
+        $this->setLocalization('ger', 'productDetails', 'dimensions2d', 'Abmessungen (L&times;H)');
+        $this->setLocalization('eng', 'productDetails', 'dimensions2d', 'Dimensions (L&times;H)');
     }
 
     public function down()

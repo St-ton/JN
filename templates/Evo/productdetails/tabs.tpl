@@ -142,5 +142,4 @@
             </div>
         {/if}
     </div>{* /article-tabs *}
-    <hr>
 {/if}

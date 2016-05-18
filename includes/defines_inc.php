@@ -200,8 +200,8 @@ define('LINKTYP_RMA', 28);
 define('LINKTYP_404', 29);
 define('LINKTYP_BATTERIEGESETZ_HINWEISE', 30);
 define('LINKTYP_WRB_FORMULAR', 31);
-define('LINKTYP_BESTELLVORGANG', 32); //INSERT INTO `tspezialseite` (`kPlugin`, `cName`, `cDateiname`, `nLinkart`, `nSort`) VALUES ('0', 'Bestellvorgang', 'bestellvorgang.php', '32', '32');
-define('LINKTYP_BESTELLABSCHLUSS', 33); //INSERT INTO `tspezialseite` (`kPlugin`, `cName`, `cDateiname`, `nLinkart`, `nSort`) VALUES ('0', 'Bestellabschluss', 'bestellabschluss.php', '33', '33');
+define('LINKTYP_BESTELLVORGANG', 32);
+define('LINKTYP_BESTELLABSCHLUSS', 33);
 
 //Artikel
 define('INWKNICHTLEGBAR_LAGER', -1);

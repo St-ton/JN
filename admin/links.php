@@ -80,6 +80,7 @@ if (isset($_POST['neu_link']) && intval($_POST['neu_link']) === 1 && validateTok
     $oPlausiCMS->setPostVar($_POST);
     $oPlausiCMS->doPlausi('lnk');
 
+
     if (count($oPlausiCMS->getPlausiVar()) === 0) {
         if (!isset($link)) {
             $link = new stdClass();

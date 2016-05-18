@@ -56,7 +56,7 @@
         <div class="btn-group btn-group-justified btn-group-full">
             <a href="{get_static_route id='warenkorb.php'}" class="btn btn-primary"><i class="fa fa-shopping-cart"></i> {lang key="gotoBasket"}</a>
             {*
-            <a href="bestellvorgang.php" class="btn btn-primary">{lang key="checkout" section="basketpreview"}</a>
+            <a href="{get_static_route id='bestellvorgang.php'}" class="btn btn-primary">{lang key="checkout" section="basketpreview"}</a>
             *}
         </div>
     {else}

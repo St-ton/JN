@@ -16,7 +16,7 @@
                 </div>
                 <div class="panel-body">
                     {block name="checkout-proceed-as-guest-body"}
-                    <form id="neukunde" method="post" action="bestellvorgang.php">
+                    <form id="neukunde" method="post" action="{get_static_route id='bestellvorgang.php'}">
                         {$jtl_token}
                         <fieldset>
                             {include file='checkout/inc_billing_address_form.tpl'}

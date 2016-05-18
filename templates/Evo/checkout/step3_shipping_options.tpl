@@ -13,7 +13,7 @@
                 </div>
                 <div class="panel-body">
                     {block name="checkout-shipping-options-body"}
-                    <form method="post" action="bestellvorgang.php" class="form">
+                    <form method="post" action="{get_static_route id='bestellvorgang.php'}" class="form">
                         {$jtl_token}
                         <fieldset>
                             {if count($Versandarten) < 1}

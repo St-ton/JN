@@ -9,6 +9,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'trustedshops_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
 
+$linkHelper    = LinkHelper::getInstance();
 $AktuelleSeite = 'BESTELLVORGANG';
 $Einstellungen = Shop::getSettings(array(
     CONF_GLOBAL,
@@ -20,6 +21,7 @@ $Einstellungen = Shop::getSettings(array(
     CONF_ARTIKELDETAILS
 ));
 Shop::setPageType(PAGE_BESTELLVORGANG);
+$kLink   = $linkHelper->getSpecialPageLinkKey(LINKTYP_BESTELLVORGANG);
 $step    = 'accountwahl';
 $hinweis = '';
 // Kill Ajaxcheckout falls vorhanden
@@ -32,7 +34,7 @@ if (verifyGPCDataInteger('basket2Pers') === 1) {
     require_once PFAD_ROOT . PFAD_INCLUDES . 'jtl_inc.php';
 
     setzeWarenkorbPersInWarenkorb($_SESSION['Kunde']->kKunde);
-    header('Location: bestellvorgang.php?wk=1');
+    header('Location: ' . $linkHelper->getStaticRoute('bestellvorgang.php') . '?wk=1');
     exit();
 }
 // Ist Bestellung moeglich?

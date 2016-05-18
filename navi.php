@@ -11,7 +11,8 @@ $cart = (isset($_SESSION['Warenkorb'])) ?
 
 if (!$_SESSION['Kundengruppe']->darfArtikelKategorienSehen) {
     //falls Artikel/Kategorien nicht gesehen werden dürfen -> login
-    header('Location: ' . Shop::getURL() . '/jtl.php?li=1', true, 303);
+    $linkHelper = LinkHelper::getInstance();
+    header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true) . '?li=1', true, 303);
     exit;
 }
 // Wurde ein Kindartikel zum Vaterumgeleitet? Falls ja => Redirect POST Daten entpacken und zuweisen

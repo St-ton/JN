@@ -22,7 +22,7 @@
                 </div>
                 <div class="panel-body">
                     {block name="checkout-enter-shipping-address-body"}
-                    <form id="checkout-choose-deliveryaddress" method="post" action="bestellvorgang.php">
+                    <form id="checkout-choose-deliveryaddress" method="post" action="{get_static_route id='bestellvorgang.php'}">
                         {$jtl_token}
                         <fieldset>
                             <div class="radio">
@@ -53,7 +53,7 @@
                             <input type="submit" value="{lang key="continueOrder" section="account data"}" class="submit btn btn-primary{if $kLieferadresse > 0} hidden-initial{/if}" />
                         </fieldset>
                     </form>
-                    <form id="checkout-deliveryaddress" method="post" action="bestellvorgang.php" class="address{if $kLieferadresse == 0} hidden-initial{/if}">
+                    <form id="checkout-deliveryaddress" method="post" action="{get_static_route id='bestellvorgang.php'}" class="address{if $kLieferadresse == 0} hidden-initial{/if}">
                         {$jtl_token}
                         <fieldset>
                             <legend>{lang key="yourShippingAdress" section="account data"}</legend>
@@ -325,7 +325,7 @@
     <script type="text/javascript">
         var cAnwort = confirm('{lang key="basket2PersMerge" section="login"}');
         if (cAnwort) {ldelim}
-            window.location = "bestellvorgang.php?basket2Pers=1";
+            window.location = "{get_static_route id='bestellvorgang.php'}?basket2Pers=1";
         {rdelim}
     </script>
 {/if}

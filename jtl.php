@@ -209,7 +209,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
             $_SESSION['Waehrung']    = $Waehrung;
             Shop::setLanguage($kSprache, $cISOSprache);
 
-            header('Location: jtl.php?loggedout=1', true, 303);
+            header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true) . '?loggedout=1', true, 303);
             exit();
         }
     }
@@ -220,7 +220,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
     // Vorhandenen Warenkorb mit persistenten Warenkorb mergen?
     if (verifyGPCDataInteger('basket2Pers') === 1) {
         setzeWarenkorbPersInWarenkorb($_SESSION['Kunde']->kKunde);
-        header('Location: jtl.php', true, 303);
+        header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true), true, 303);
         exit();
     }
     // Wunschliste loeschen
@@ -271,7 +271,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
                 fuegeEinInWarenkorb($oWunschlistePos->kArtikel, $oWunschlistePos->fAnzahl, $oEigenschaftwerte_arr);
             }
             $cParamWLID = (strlen($cURLID) > 0) ? ('&wlid=' . $cURLID) : '';
-            header('Location: jtl.php?wl=' . $kWunschliste . '&wlidmsg=1' . $cParamWLID, true, 303);
+            header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true) . '?wl=' . $kWunschliste . '&wlidmsg=1' . $cParamWLID, true, 303);
             exit();
         }
     }
@@ -292,7 +292,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
                     fuegeEinInWarenkorb($oWunschlistePos->kArtikel, $oWunschlistePos->fAnzahl, $oEigenschaftwerte_arr);
                 }
             }
-            header('Location: jtl.php?wl=' . $kWunschliste . '&wlid=' . $cURLID . '&wlidmsg=2', true, 303);
+            header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true) . '?wl=' . $kWunschliste . '&wlid=' . $cURLID . '&wlidmsg=2', true, 303);
             exit();
         }
     }
@@ -755,7 +755,7 @@ if (strlen($cBrotNavi) === 0) {
     $cBrotNavi = createNavigation($AktuelleSeite);
 }
 // Canonical
-$cCanonicalURL = Shop::getURL() . '/jtl.php';
+$cCanonicalURL = $linkHelper->getStaticRoute('jtl.php', true);
 // Metaangaben
 $oMeta            = $linkHelper->buildSpecialPageMeta(LINKTYP_LOGIN);
 $cMetaTitle       = $oMeta->cTitle;

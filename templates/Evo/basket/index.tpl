@@ -60,7 +60,7 @@
                                 {include file="productdetails/uploads.tpl"}
 
                                 <div class="panel-note">
-                                    <a href="bestellvorgang.php?wk=1" class="submit btn btn-primary pull-right">{lang key="nextStepCheckout" section="checkout"}</a>
+                                    <a href="{get_static_route id='bestellvorgang.php'}?wk=1" class="submit btn btn-primary pull-right">{lang key="nextStepCheckout" section="checkout"}</a>
                                 </div>
                             </div>
                         </div>

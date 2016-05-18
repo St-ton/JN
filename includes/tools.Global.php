@@ -83,10 +83,10 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
             break;
 
         case 'WARENKORB':
-            $SieSindHierString .= ' &gt; <a href="warenkorb.php">' . Shop::Lang()->get('basket', 'breadcrumb') . '</a>';
+            $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('warenkorb.php') . '">' . Shop::Lang()->get('basket', 'breadcrumb') . '</a>';
             $ele        = new stdClass();
             $ele->name  = Shop::Lang()->get('basket', 'breadcrumb');
-            $ele->url   = 'warenkorb.php';
+            $ele->url   = $linkHelper->getStaticRoute('warenkorb.php');
             $brotnavi[] = $ele;
             $SieSindHierString .= '<br />';
             break;
@@ -95,44 +95,44 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
             $SieSindHierString .= ' &gt; <a href="pass.php">' . Shop::Lang()->get('forgotpassword', 'breadcrumb') . '</a>';
             $ele        = new stdClass();
             $ele->name  = Shop::Lang()->get('forgotpassword', 'breadcrumb');
-            $ele->url   = 'pass.php';
+            $ele->url   = $linkHelper->getStaticRoute('pass.php');
             $brotnavi[] = $ele;
             $SieSindHierString .= '<br />';
             break;
 
         case 'MEIN KONTO':
             $cText = (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) ? Shop::Lang()->get('account', 'breadcrumb') : Shop::Lang()->get('login', 'breadcrumb');
-            $SieSindHierString .= ' &gt; <a href="jtl.php">' . $cText . '</a>';
+            $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('jtl.php') . '">' . $cText . '</a>';
             $ele        = new stdClass();
             $ele->name  = $cText;
-            $ele->url   = 'jtl.php';
+            $ele->url   = $linkHelper->getStaticRoute('jtl.php');
             $brotnavi[] = $ele;
             $SieSindHierString .= '<br />';
             break;
 
         case 'BESTELLVORGANG':
-            $SieSindHierString .= ' &gt; <a href="bestellvorgang.php">' . Shop::Lang()->get('checkout', 'breadcrumb') . '</a>';
+            $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('bestellvorgang.php') . '">' . Shop::Lang()->get('checkout', 'breadcrumb') . '</a>';
             $ele        = new stdClass();
             $ele->name  = Shop::Lang()->get('checkout', 'breadcrumb');
-            $ele->url   = 'bestellvorgang.php';
+            $ele->url   = $linkHelper->getStaticRoute('bestellvorgang.php');
             $brotnavi[] = $ele;
             $SieSindHierString .= '<br />';
             break;
 
         case 'REGISTRIEREN':
-            $SieSindHierString .= ' &gt; <a href="registrieren.php">' . Shop::Lang()->get('register', 'breadcrumb') . '</a>';
+            $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('registrieren.php') . '">' . Shop::Lang()->get('register', 'breadcrumb') . '</a>';
             $ele        = new stdClass();
             $ele->name  = Shop::Lang()->get('register', 'breadcrumb');
-            $ele->url   = 'registrieren.php';
+            $ele->url   = $linkHelper->getStaticRoute('registrieren.php');
             $brotnavi[] = $ele;
             $SieSindHierString .= '<br />';
             break;
 
         case 'KONTAKT':
-            $SieSindHierString .= ' &gt; <a href="kontakt.php">' . Shop::Lang()->get('contact', 'breadcrumb') . '</a>';
+            $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('kontakt.php') . '">' . Shop::Lang()->get('contact', 'breadcrumb') . '</a>';
             $ele        = new stdClass();
             $ele->name  = Shop::Lang()->get('contact', 'breadcrumb');
-            $ele->url   = 'kontakt.php';
+            $ele->url   = $linkHelper->getStaticRoute('kontakt.php');
             $brotnavi[] = $ele;
             $SieSindHierString .= '<br />';
             break;
@@ -219,10 +219,10 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
             break;
 
         case 'VERGLEICHSLISTE':
-            $SieSindHierString .= ' &gt; <a href="vergleichsliste.php">' . Shop::Lang()->get('compare', 'global') . '</a>';
+            $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('vergleichsliste.php') . '">' . Shop::Lang()->get('compare', 'global') . '</a>';
             $ele        = new stdClass();
             $ele->name  = Shop::Lang()->get('compare', 'global');
-            $ele->url   = 'vergleichsliste.php';
+            $ele->url   = $linkHelper->getStaticRoute('vergleichsliste.php');
             $brotnavi[] = $ele;
             $SieSindHierString .= '<br />';
             break;
@@ -502,12 +502,13 @@ function checkeWarenkorbEingang()
     $kArtikel = verifyGPCDataInteger('a');
     $conf     = Shop::getSettings(array(CONF_GLOBAL));
     executeHook(HOOK_TOOLS_GLOBAL_CHECKEWARENKORBEINGANG_ANFANG, array('kArtikel' => $kArtikel, 'fAnzahl' => $fAnzahl));
+    $linkHelper = LinkHelper::getInstance();
     // Wunschliste?
     if ((isset($_POST['Wunschliste']) || isset($_GET['Wunschliste'])) && $conf['global']['global_wunschliste_anzeigen'] === 'Y') {
         // Prüfe ob Kunde eingeloggt
         if (!isset($_SESSION['Kunde']->kKunde)) {
             //redirekt zum artikel, um variation/en zu wählen / MBM beachten
-            header('Location: jtl.php?a=' . $kArtikel . '&n=' . $fAnzahl . '&r=' . R_LOGIN_WUNSCHLISTE, true, 302);
+            header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true) . '?a=' . $kArtikel . '&n=' . $fAnzahl . '&r=' . R_LOGIN_WUNSCHLISTE, true, 302);
             exit();
         }
 
@@ -558,7 +559,7 @@ function checkeWarenkorbEingang()
                         Shop::Smarty()->assign('hinweis', Shop::Lang()->get('wishlistProductadded', 'messages'));
                         // Weiterleiten?
                         if ($conf['global']['global_wunschliste_weiterleitung'] === 'Y') {
-                            header('Location: jtl.php?wl=' . $_SESSION['Wunschliste']->kWunschliste, true, 302);
+                            header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true) . '?wl=' . $_SESSION['Wunschliste']->kWunschliste, true, 302);
                             exit;
                         }
                     }

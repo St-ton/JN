@@ -11,12 +11,20 @@ require_once dirname(__FILE__) . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'einstellungen_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_CLASSES . 'class.JTL-Shopadmin.AjaxResponse.php';
 
+$response = new AjaxResponse();
+$hasPermission = $oAccount->permission('SETTINGS_SEARCH_VIEW', false, false);
+
+if (!$hasPermission) {
+    $result = $response->buildError('Unauthorized', 401);
+    $response->makeResponse($result, $action);
+    exit;
+}
+
 Shop::DB()->executeQuery('SET NAMES ' . str_replace('-', '', JTL_CHARSET), 3);
 
 $query = isset($_GET['query']) ? $_GET['query'] : null;
 $data = isset($_GET['data']) ? (bool)(int)$_GET['data'] : false;
 
-$response = new AjaxResponse();
 $settings = bearbeiteEinstellungsSuche(Shop::DB()->escape($query));
 
 $groupedSettings = [];

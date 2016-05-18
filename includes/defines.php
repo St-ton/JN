@@ -5,7 +5,7 @@
  */
 
 //charset
-define('JTL_CHARSET', 'iso-8859-1');
+ifndef('JTL_CHARSET', 'iso-8859-1');
 ini_set('default_charset', JTL_CHARSET);
 date_default_timezone_set('Europe/Berlin');
 //log levels

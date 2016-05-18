@@ -3,6 +3,7 @@
 ## [unreleased]
 * Bugfix: Bearbeiten von Herstellern invalidiert Objektcache für Artikel nicht
 * Bugfix: Newsbeiträge aus deaktivierten Kategorien werden auf der Startseite angezeigt
+* Bugfix: Globale Variable $AktuelleSeite zeigt bei Newsdetails falschen Typ an
 
 ## [4.03.1]
 * Bugfix: Sprachwechsel in einigen Linkgruppen unvollständig

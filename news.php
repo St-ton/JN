@@ -82,6 +82,7 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
     } else {
         if ($cParameter_arr['kNews'] > 0 || isset($kNews) && $kNews > 0) { // Detailansicht anzeigen
             Shop::$AktuelleSeite = 'NEWSDETAIL';
+            $AktuelleSeite       = 'NEWSDETAIL';
             $step                = 'news_detailansicht';
             if (!isset($kNews) || $kNews == 0) {
                 $kNews = $cParameter_arr['kNews'];

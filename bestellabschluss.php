@@ -19,8 +19,10 @@ $Einstellungen = Shop::getSettings(array(
     CONF_EMAILS,
     CONF_TRUSTEDSHOPS
 ));
+$linkHelper    = LinkHelper::getInstance();
 $AktuelleSeite = 'BESTELLVORGANG';
 Shop::setPageType(PAGE_BESTELLABSCHLUSS);
+$kLink = $linkHelper->getSpecialPageLinkKey(LINKTYP_BESTELLABSCHLUSS);
 if (isset($_GET['i'])) {
     $bestellung = null;
     $bestellid  = Shop::DB()->select('tbestellid', 'cId', Shop::DB()->escape($_GET['i']));
@@ -39,10 +41,10 @@ if (isset($_GET['i'])) {
 } else {
     $_SESSION['kommentar'] = (isset($_POST['kommentar'])) ? substr(strip_tags(Shop::DB()->escape($_POST['kommentar'])), 0, 1000) : '';
     if (pruefeEmailblacklist($_SESSION['Kunde']->cMail)) {
-        header('Location: ' . Shop::getURL() . '/bestellvorgang.php?mailBlocked=1', true, 303);
+        header('Location: ' . $linkHelper->getStaticRoute('bestellvorgang.php') . '?mailBlocked=1', true, 303);
         exit;
     } elseif (!bestellungKomplett()) {
-        header('Location: ' . Shop::getURL() . '/bestellvorgang.php?fillOut=' . gibFehlendeEingabe(), true, 303);
+        header('Location: ' . $linkHelper->getStaticRoute('bestellvorgang.php') . '?fillOut=' . gibFehlendeEingabe(), true, 303);
         exit;
     } else {
         //pruefen, ob von jedem Artikel im WK genug auf Lager sind. Wenn nicht, WK verkleinern und Redirect zum WK
@@ -62,8 +64,9 @@ if (isset($_GET['i'])) {
             if (is_null($bestellung->Lieferadresse) && isset($_SESSION['Lieferadresse']) && strlen($_SESSION['Lieferadresse']->cVorname) > 0) {
                 $bestellung->Lieferadresse = gibLieferadresseAusSession();
             }
+            $orderCompleteURL  = $linkHelper->getStaticRoute('bestellabschluss.php', true);
             $successPaymentURL = (!empty($bestellid->cId)) ?
-                (Shop::getURL() . '/bestellabschluss.php?i=' . $bestellid->cId) :
+                ($orderCompleteURL . '?i=' . $bestellid->cId) :
                 Shop::getURL();
             $smarty->assign('Bestellung', $bestellung);
         } else {

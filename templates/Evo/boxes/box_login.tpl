@@ -41,7 +41,7 @@
                         </a>
                     </li>
                     <li>
-                        <a class="register pull-left btn-block" href="registrieren.php">
+                        <a class="register pull-left btn-block" href="{get_static_route id='registrieren.php'}">
                             <span class="fa fa-pencil"></span> {lang key="newHere" section="global"} {lang key="registerNow" section="global"}
                         </a>
                     </li>

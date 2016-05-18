@@ -69,7 +69,7 @@ function bearbeiteEinstellungsSuche($cSuche, $bSpeichern = false)
                 // Suche war eine Range
                 $oSQL->nSuchModus = 2;
                 $oSQL->cSearch    = "Suche nach ID Range: " . $kEinstellungenConf_arr[0] . " - " . $kEinstellungenConf_arr[1];
-                $oSQL->cWHERE .= " AND kEinstellungenConf BETWEEN " . $kEinstellungenConf_arr[0] . " AND " . $kEinstellungenConf_arr[1];
+                $oSQL->cWHERE .= " AND ((kEinstellungenConf BETWEEN " . $kEinstellungenConf_arr[0] . " AND " . $kEinstellungenConf_arr[1] . ") AND cConf = 'Y')";
             } // Suche in cName oder kEinstellungenConf suchen
             else {
                 if (intval($cSuche) > 0) {
@@ -84,9 +84,9 @@ function bearbeiteEinstellungsSuche($cSuche, $bSpeichern = false)
                     $oSQL->cSearch    = "Suche nach Name: " . $cSuche;
 
                     if ($cSuche === $cSucheEnt) {
-                        $oSQL->cWHERE .= " AND cName LIKE '%" . $cSuche . "%'";
+                        $oSQL->cWHERE .= " AND (cName LIKE '%" . $cSuche . "%' AND cConf = 'Y')";
                     } else {
-                        $oSQL->cWHERE .= " AND (cName LIKE '%" . $cSuche . "%' OR cName LIKE '%" . $cSucheEnt . "%')";
+                        $oSQL->cWHERE .= " AND (((cName LIKE '%" . $cSuche . "%' OR cName LIKE '%" . $cSucheEnt . "%')) AND cConf = 'Y')";
                     }
                 }
             }

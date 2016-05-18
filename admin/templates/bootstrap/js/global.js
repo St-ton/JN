@@ -330,6 +330,23 @@ function ajaxCall(url, params, callback) {
     });
 }
 
+var _queryTimeout = null;
+
+/**
+ * @param url
+ * @param params
+ * @param callback
+ * @returns {*}
+ */
+function ajaxCallV2(url, params, callback) {
+    if (_queryTimeout) {
+        window.clearTimeout(_queryTimeout);
+    }
+    _queryTimeout = window.setTimeout(function() {
+        ajaxCall(url, params, callback);
+    }, 300);
+}
+
 /**
  * Format file size
  */

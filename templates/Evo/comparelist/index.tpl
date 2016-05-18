@@ -152,9 +152,7 @@
                                 {if isset($oArtikel->oVariationenNurKind_arr) && $oArtikel->oVariationenNurKind_arr|@count > 0}
                                     {foreach name=variationen from=$oArtikel->oVariationenNurKind_arr item=oVariationenArtikel}
                                         {if $oVariationen->cName == $oVariationenArtikel->cName}
-
                                             {foreach name=variationswerte from=$oVariationenArtikel->Werte item=oVariationsWerte}
-
                                                 {$oVariationsWerte->cName}
                                                 {if $oArtikel->nVariationOhneFreifeldAnzahl == 1 && ($oArtikel->kVaterArtikel > 0 || $oArtikel->nIstVater==1)}
                                                     {assign var=kEigenschaftWert value=$oVariationsWerte->kEigenschaftWert}
@@ -198,24 +196,24 @@
                                 {/foreach}
                             </tr>
                 *}
-                {if !empty($bWarenkorb)}
-            <tr>
-                <td style="min-width: {$Einstellungen_Vergleichsliste.vergleichsliste.vergleichsliste_spaltengroesseattribut}px">
-                    &nbsp;
-                </td>
-                {foreach name=vergleich from=$oVergleichsliste->oArtikel_arr item=oArtikel}
-                    <td valign="top" class="text-center" style="min-width: {$Einstellungen_Vergleichsliste.vergleichsliste.vergleichsliste_spaltengroesse}px">
-                        <!--
-                  <form action="vergleichsliste.php" method="get">
-                     <input type="hidden" name="vlph" value="1" />
-                     <input type="hidden" name="a" value="{$oArtikel->kArtikel}" />
-                     <input type="submit" value="{lang key="addToCart" section="global"}" />
-                  </form>
-               -->
-                        <button class="btn btn-default submit" onclick="window.location.href = '{$oArtikel->cURL}'">{lang key="details" section="global"}</button>
+            {if !empty($bWarenkorb)}
+                <tr>
+                    <td style="min-width: {$Einstellungen_Vergleichsliste.vergleichsliste.vergleichsliste_spaltengroesseattribut}px">
+                        &nbsp;
                     </td>
-                {/foreach}
-            </tr>
+                    {foreach name=vergleich from=$oVergleichsliste->oArtikel_arr item=oArtikel}
+                        <td valign="top" class="text-center" style="min-width: {$Einstellungen_Vergleichsliste.vergleichsliste.vergleichsliste_spaltengroesse}px">
+                            <!--
+                          <form action="{get_static_route id='vergleichsliste.php'}" method="get">
+                             <input type="hidden" name="vlph" value="1" />
+                             <input type="hidden" name="a" value="{$oArtikel->kArtikel}" />
+                             <input type="submit" value="{lang key="addToCart" section="global"}" />
+                          </form>
+                            -->
+                            <button class="btn btn-default submit" onclick="window.location.href = '{$oArtikel->cURL}'">{lang key="details" section="global"}</button>
+                        </td>
+                    {/foreach}
+                </tr>
             {/if}
         </table>
     </div>

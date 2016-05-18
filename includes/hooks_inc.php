@@ -1067,7 +1067,7 @@ define('HOOK_INDEX_SEO_404', 146);
  * triggered when checkbox has plugin special functions and is checked by a customer
  *
  * @file class.JTL-Shop.CheckBox.php
- * @params <mixed>
+ * @param Checkbox oCheckBox
  */
 define('HOOK_CHECKBOX_CLASS_TRIGGERSPECIALFUNCTION', 147);
 

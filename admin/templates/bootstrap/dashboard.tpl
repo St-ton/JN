@@ -41,30 +41,6 @@
 
     <div id="content" class="nomargin clearall">
 
-        {if $oPermissionStat->nCountInValid > 0}
-            <div class="alert alert-danger" role="alert">
-                <strong><i class="fa fa-warning"></i> Es sind {$oPermissionStat->nCountInValid} Verzeichnisse nicht beschreibbar. Eine &Uuml;bersicht finden Sie im <a href="permissioncheck.php">Verzeichnis-Check</a>.</strong>
-            </div>
-        {/if}
-
-        {if $bInstallExists && !$updateMessage}
-            <div class="alert alert-warning" role="alert">
-                <strong><i class="fa fa-warning"></i> {#deleteInstallDir#}</strong>
-            </div>
-        {/if}
-
-        {if $bProfilerActive}
-            <div class="alert alert-info" role="alert">
-                <strong><i class="fa fa-info-circle"></i> Achtung! Der {$profilerType}-Profiler ist aktiv und kann zu starken Leistungseinbu&szlig;en im Shop f&uuml;hren.</strong>
-            </div>
-        {/if}
-      
-        {if isset($bTemplateDiffers) && $bTemplateDiffers && !$updateMessage}
-            <div class="alert alert-info" role="alert">
-                <strong><i class="fa fa-info-circle"></i> {#templateDiffers#}</strong>
-            </div>
-        {/if}
-
         <div class="widget_settings_wrapper" id="settings">
             <div class="widget_settings">
                 {foreach from=$oAvailableWidget_arr item=oAvailableWidget}

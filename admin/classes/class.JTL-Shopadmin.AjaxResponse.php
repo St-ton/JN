@@ -70,10 +70,20 @@ class AjaxResponse
         }
 
         $data->type = $type;
-        $json       = json_encode($data);
+        $json = json_encode($data);
+        
+        if (json_last_error() === JSON_ERROR_UTF8) {
+            $data = utf8_convert_recursive($data);
+            $json = json_encode($data);
+        }
+        
+        if ($json === null || json_last_error() !== JSON_ERROR_NONE) {
+            $data = $this->buildError(json_last_error_msg());
+            $json = json_encode($data);
+        }
 
         echo $json;
-        exit;
+        // exit;
     }
 
     /**

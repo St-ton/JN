@@ -8,6 +8,7 @@ $templateDir               = $smarty->getTemplateDir($smarty->context);
 $template                  = AdminTemplate::getInstance();
 $Einstellungen             = Shop::getSettings(array(CONF_GLOBAL));
 $Einstellungen['template'] = $template->getConfig();
+$updater                   = new Updater();
 $currentTheme              = '';
 if (isset($Einstellungen['template']['theme_default'])) {
     $currentTheme = $Einstellungen['template']['theme_default'];
@@ -169,4 +170,5 @@ $smarty->assign('SID', (defined('SID') ? SID : null))
        ->assign('oLinkOberGruppe_arr', $oLinkOberGruppe_arr)
        ->assign('SektionenEinstellungen', $configSections)
        ->assign('kAdminmenuEinstellungen', KADMINMENU_EINSTELLUNGEN)
-       ->assign('notifications', Notification::buildDefault());
+       ->assign('notifications', Notification::buildDefault())
+       ->assign('hasUpdates', $updater->hasPendingUpdates());

@@ -687,14 +687,15 @@ function gibStepZahlungZusatzschritt($cPost_arr)
 function gibStepBestaetigung($cGet_arr)
 {
     global $hinweis;
+    $linkHelper = LinkHelper::getInstance();
     //check currenct shipping method again to avoid using invalid methods when using one click method (#9566)
     if (isset($_SESSION['Versandart']->kVersandart) && !versandartKorrekt($_SESSION['Versandart']->kVersandart)) {
-        header('Location: bestellvorgang.php?editVersandart=1', true, 303);
+        header('Location: ' . $linkHelper->getStaticRoute('bestellvorgang.php') . '?editVersandart=1', true, 303);
     }
     // Bei Standardzahlungsarten mit Zahlungsinformationen prüfen ob Daten vorhanden sind
     if (isset($_SESSION['Zahlungsart']) && in_array($_SESSION['Zahlungsart']->cModulId, array('za_lastschrift_jtl', 'za_kreditkarte_jtl'))) {
         if (!is_object($_SESSION['Zahlungsart']->ZahlungsInfo)) {
-            header('Location: bestellvorgang.php?editZahlungsart=1', true, 303);
+            header('Location: ' . $linkHelper->getStaticRoute('bestellvorgang.php') . '?editZahlungsart=1', true, 303);
         }
     }
     if (isset($cGet_arr['fillOut']) && $cGet_arr['fillOut'] > 0) {

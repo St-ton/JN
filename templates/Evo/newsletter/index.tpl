@@ -115,7 +115,7 @@
                         {block name="newsletter-unsubscribe-body"}
                         <p>{lang key="newsletterUnsubscribeDesc" section="newsletter"}</p>
 
-                        <form method="post" action="newsletter.php" name="newsletterabmelden">
+                        <form method="post" action="{get_static_route id='newsletter.php'}" name="newsletterabmelden">
                             <fieldset>
                                 <div class="form-group float-label-control required">
                                     <label for="checkOut" class="control-label">{lang key="newsletteremail" section="newsletter"}</label>

@@ -86,6 +86,7 @@ $arResultResponseCode = array(
 $strResultCode         = $_GET['tcphResultCode'];
 $strResultResponseCode = $_GET['tcphResultResponseCode'];
 $strErrDesc            = $arResultResponseCode[$strResultResponseCode];
+$helper                = LinkHelper::getInstance();
 
 $strHTML .= '<div style="font-family:arial,helvetica;text-align:middle;"><br /><br /><br />';
 
@@ -114,7 +115,8 @@ switch ($strResultResponseCode) {
 $strHTML .= "<p>In K&uuml;rze werden Sie automatisch zur&uuml;ck zum Shop geleitet.</p>";
 
 if ($_REQUEST['i'] > 0) {
-    $strHTML .= '<p><a href="' . Shop::getURL() . '/bestellabschluss.php?i=' . $_REQUEST['i'] . '">' .
+    $orderCompleteURL  = $helper->getStaticRoute('bestellabschluss.php', true);
+    $strHTML .= '<p><a href="' . $orderCompleteURL . '?i=' . $_REQUEST['i'] . '">' .
         'Zur&uuml;ck zum Shop</a></p>';
 } else {
     $strHTML .=
@@ -124,12 +126,12 @@ if ($_REQUEST['i'] > 0) {
 
 $strHTML .= '</div>';
 
-$strURL = Shop::getURL();
+$orderCompleteURL = $helper->getStaticRoute('bestellabschluss.php', true);
 
 if ($_REQUEST['i']) {
-    $url = $strURL . '/bestellabschluss.php?i=' . $_REQUEST['i'];
+    $url = $orderCompleteURL . '?i=' . $_REQUEST['i'];
 } else {
-    $url = $strURL . '/bestellabschluss.php';
+    $url = $orderCompleteURL;
 }
 $headerscript =
     "<script type=\"text/javascript\">" .
@@ -139,9 +141,7 @@ $headerscript =
     "	}" .
     "</script>";
 
-$smarty->assign('headerscript', $headerscript);
-$smarty->assign('onload', 'onload="loadshop();"');
-
-//$smarty->assign('currentTemplateDir',$server_address);
-$smarty->assign('inhalt', $strHTML);
-$smarty->display('???');
+$smarty->assign('headerscript', $headerscript)
+       ->assign('onload', 'onload="loadshop();"')
+       ->assign('inhalt', $strHTML)
+       ->display('???');

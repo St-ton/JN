@@ -42,12 +42,15 @@ function getCurrencyConversionSmarty($params, &$smarty)
  */
 function getCurrentPage($params, &$smarty)
 {
-    $pro         = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? 'https' : 'http';
-    $path        = $pro . $_SERVER['REQUEST_URI'];
-    $path        = preg_replace('/\\?.*/', '', $path);
-    $current_url = basename($path, '.php');
+    //$pro         = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? 'https' : 'http';
+    //$path        = $pro . $_SERVER['REQUEST_URI'];
+    //$path        = preg_replace('/\\?.*/', '', $path);
+    $path = $_SERVER['SCRIPT_NAME'];
+    $page = basename($path, '.php');
 
-    $smarty->assign($params['assign'], $current_url);
+    if (isset($params['assign'])) {
+        $smarty->assign($params['assign'], $page);
+    }
 }
 
 /**

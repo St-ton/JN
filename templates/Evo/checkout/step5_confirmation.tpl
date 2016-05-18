@@ -21,7 +21,7 @@
                 <div class="panel-heading">
                     <h3 class="panel-title">
                         {block name="checkout-confirmation-billing-address-title"}{lang key="billingAdress" section="account data"}
-                        <a class="btn btn-default btn-xs pull-right button_edit" href="bestellvorgang.php?editRechnungsadresse=1">
+                        <a class="btn btn-default btn-xs pull-right button_edit" href="{get_static_route id='bestellvorgang.php'}?editRechnungsadresse=1">
                         <span class="fa fa-pencil" title="{lang key="modifyBillingAdress" section="global"}"></span>
                         </a>
                         {/block}
@@ -41,7 +41,7 @@
                     <h3 class="panel-title">
                         {block name="checkout-confirmation-shipping-address-title"}
                         {lang key="shippingAdress" section="account data"}
-                        <a class="btn btn-default btn-xs pull-right button_edit" href="bestellvorgang.php?editLieferadresse=1" title="{lang key="modifyShippingAdress" section="checkout"}">
+                        <a class="btn btn-default btn-xs pull-right button_edit" href="{get_static_route id='bestellvorgang.php'}?editLieferadresse=1" title="{lang key="modifyShippingAdress" section="checkout"}">
                         <span class="fa fa-pencil"></span>
                         </a>
                         {/block}
@@ -61,7 +61,7 @@
                     <h3 class="panel-title">
                         {block name="checkout-confirmation-shipping-method-title"}
                         {lang key="shippingOptions" section="global"}
-                        <a class="btn btn-default btn-xs pull-right button_edit" href="bestellvorgang.php?editVersandart=1" title="{lang key="modifyShippingOption" section="checkout"}">
+                        <a class="btn btn-default btn-xs pull-right button_edit" href="{get_static_route id='bestellvorgang.php'}?editVersandart=1" title="{lang key="modifyShippingOption" section="checkout"}">
                         <span class="fa fa-pencil"></span>
                         </a>
                         {/block}
@@ -78,7 +78,7 @@
                     <h3 class="panel-title">
                         {block name="checkout-confirmation-payment-method-title"}
                         {lang key="paymentOptions" section="global"}
-                        <a class="btn btn-default btn-xs pull-right button_edit" href="bestellvorgang.php?editZahlungsart=1" title="{lang key="modifyPaymentOption" section="checkout"}">
+                        <a class="btn btn-default btn-xs pull-right button_edit" href="{get_static_route id='bestellvorgang.php'}?editZahlungsart=1" title="{lang key="modifyPaymentOption" section="checkout"}">
                         <span class="fa fa-pencil"></span>
                         </a>
                         {/block}
@@ -133,7 +133,7 @@
     {if isset($safetypay_form)}
         <div class="alert alert-info">{$safetypay_form}</div>
     {/if}
-    <form method="post" name="agbform" id="complete_order" action="bestellabschluss.php">
+    <form method="post" name="agbform" id="complete_order" action="{get_static_route id='bestellabschluss.php'}">
         {$jtl_token}
         {if $Einstellungen.kaufabwicklung.bestellvorgang_wrb_anzeigen==1}
             {lang key="cancellationPolicyNotice" section="checkout" assign="cancellationPolicyNotice"}

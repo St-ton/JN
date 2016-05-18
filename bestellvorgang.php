@@ -9,9 +9,6 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'trustedshops_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
 
-/* COMP MODE */
-$mode = isset($_POST['mode']) ? (int)$_POST['mode'] : 0;
-
 $AktuelleSeite = 'BESTELLVORGANG';
 $Einstellungen = Shop::getSettings(array(
     CONF_GLOBAL,
@@ -86,14 +83,10 @@ if (isset($_GET['unreg']) && (int)$_GET['unreg'] === 1 && $Einstellungen['kaufab
 if (isset($_POST['lieferdaten']) && (int)$_POST['lieferdaten'] === 1) {
     pruefeLieferdaten($_POST);
 }
-
-/*
 //autom. step ermitteln
 if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']) {
     $step = 'Lieferadresse';
 }
-*/
-
 //Download-Artikel vorhanden?
 if (class_exists('Download')) {
     if (Download::hasDownloads($_SESSION['Warenkorb'])) {
@@ -120,26 +113,15 @@ pruefeVersandartStep($_GET);
 pruefeZahlungsartStep($_GET);
 pruefeZahlungsartwahlStep($_POST);
 
-//dd($_POST);
-
 if ($step === 'accountwahl') {
     gibStepAccountwahl();
 }
-if ($mode === 1) {
-    if ($step === 'unregistriert bestellen' || $step === 'Lieferadresse') {
-        gibStepUnregistriertBestellen();
-        validateCouponInCheckout();
-        gibStepLieferadresse();
-    }
+if ($step === 'unregistriert bestellen') {
+    gibStepUnregistriertBestellen();
 }
-else {
-    if ($step === 'unregistriert bestellen') {
-        gibStepUnregistriertBestellen();
-    }
-    if ($step === 'Lieferadresse') {
-        validateCouponInCheckout();
-        gibStepLieferadresse();
-    }
+if ($step === 'Lieferadresse') {
+    validateCouponInCheckout();
+    gibStepLieferadresse();
 }
 if ($step === 'Versand') {
     gibStepVersand();

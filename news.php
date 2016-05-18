@@ -82,6 +82,7 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
     } else {
         if ($cParameter_arr['kNews'] > 0 || isset($kNews) && $kNews > 0) { // Detailansicht anzeigen
             Shop::$AktuelleSeite = 'NEWSDETAIL';
+            $AktuelleSeite       = 'NEWSDETAIL';
             $step                = 'news_detailansicht';
             if (!isset($kNews) || $kNews == 0) {
                 $kNews = $cParameter_arr['kNews'];
@@ -315,12 +316,12 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
             }
 
             $smarty->assign('oNewsUebersicht_arr', $oNewsUebersicht_arr)
-                ->assign('oNewsKategorie_arr', holeNewsKategorien($oSQL->cDatumSQL, true))
-                ->assign('oDatum_arr', baueDatum($oDatum_arr))
-                ->assign('nAnzahl', $_SESSION['NewsNaviFilter']->nAnzahl)
-                ->assign('nSort', $_SESSION['NewsNaviFilter']->nSort)
-                ->assign('cDatum', $_SESSION['NewsNaviFilter']->cDatum)
-                ->assign('nNewsKat', $_SESSION['NewsNaviFilter']->nNewsKat);
+                   ->assign('oNewsKategorie_arr', holeNewsKategorien($oSQL->cDatumSQL, true))
+                   ->assign('oDatum_arr', baueDatum($oDatum_arr))
+                   ->assign('nAnzahl', $_SESSION['NewsNaviFilter']->nAnzahl)
+                   ->assign('nSort', $_SESSION['NewsNaviFilter']->nSort)
+                   ->assign('cDatum', $_SESSION['NewsNaviFilter']->cDatum)
+                   ->assign('nNewsKat', $_SESSION['NewsNaviFilter']->nNewsKat);
 
             if (!isset($oNewsUebersicht_arr) || count($oNewsUebersicht_arr) === 0) {
                 $smarty->assign('noarchiv', 1);

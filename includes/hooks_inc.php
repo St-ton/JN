@@ -1585,3 +1585,12 @@ define('HOOK_GET_DELIVERY_TIME_ESTIMATION_TEXT', 218);
  * @param array categories
  */
 define('HOOK_GET_ALL_CATEGORIES', 219);
+
+/**
+ * @since 4.04
+ * @file seite_inc.php
+ * @param array oNews_arr
+ * @param array cacheTags
+ * @param bool  cached
+ */
+define('HOOK_GET_NEWS', 220);

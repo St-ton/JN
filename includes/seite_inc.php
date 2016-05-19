@@ -101,14 +101,14 @@ function gibNews($Einstellungen)
     $cSQL      = '';
     $oNews_arr = array();
     // Sollen keine News auf der Startseite angezeigt werden?
-    if (isset($Einstellungen['news']['news_anzahl_content']) && strlen($Einstellungen['news']['news_anzahl_content']) > 0 && intval($Einstellungen['news']['news_anzahl_content']) === 0) {
+    if (!isset($Einstellungen['news']['news_anzahl_content']) || (int) $Einstellungen['news']['news_anzahl_content'] === 0) {
         return $oNews_arr;
     }
-    $cacheID = 'news_' . md5(json_encode($Einstellungen['news']) . '_' . $_SESSION['kSprache']);
+    $cacheID = 'news_' . md5(json_encode($Einstellungen['news']) . '_' . (int) $_SESSION['kSprache']);
 
     if (($oNews_arr = Shop::Cache()->get($cacheID)) === false) {
-        if (intval($Einstellungen['news']['news_anzahl_content']) > 0) {
-            $cSQL = ' LIMIT ' . intval($Einstellungen['news']['news_anzahl_content']);
+        if ((int) $Einstellungen['news']['news_anzahl_content'] > 0) {
+            $cSQL = ' LIMIT ' . (int) $Einstellungen['news']['news_anzahl_content'];
         }
         $oNews_arr = Shop::DB()->query(
             "SELECT tnews.kNews, tnews.kSprache, tnews.cKundengruppe, tnews.cBetreff, tnews.cText, tnews.cVorschauText, tnews.cMetaTitle,
@@ -123,25 +123,29 @@ function gibNews($Einstellungen)
                     AND tnewskommentar.nAktiv = 1
                 LEFT JOIN tseo ON tseo.cKey = 'kNews'
                     AND tseo.kKey = tnews.kNews
-                    AND tseo.kSprache = " . intval($_SESSION['kSprache']) . "
-                WHERE tnews.kSprache = " . intval($_SESSION['kSprache']) . "
+                    AND tseo.kSprache = " . (int) $_SESSION['kSprache'] . "
+                WHERE tnews.kSprache = " . (int) $_SESSION['kSprache'] . "
                     AND tnews.nAktiv = 1
                     AND tnews.dGueltigVon <= now()
-                    AND (tnews.cKundengruppe LIKE '%;-1;%' OR tnews.cKundengruppe LIKE '%;" . $_SESSION['Kundengruppe']->kKundengruppe . ";%')
+                    AND (tnews.cKundengruppe LIKE '%;-1;%' OR tnews.cKundengruppe LIKE '%;" . (int) $_SESSION['Kundengruppe']->kKundengruppe . ";%')
                 GROUP BY tnews.kNews
                 ORDER BY tnews.dGueltigVon DESC" . $cSQL, 2
         );
         // URLs bauen
-        if (count($oNews_arr) > 0) {
-            if (is_array($oNews_arr) && count($oNews_arr) > 0) {
-                foreach ($oNews_arr as $i => $oNews) {
-                    $oNews_arr[$i]->cText    = parseNewsText($oNews_arr[$i]->cText);
-                    $oNews_arr[$i]->cURL     = baueURL($oNews, URLART_NEWS);
-                    $oNews_arr[$i]->cMehrURL = '<a href="' . $oNews_arr[$i]->cURL . '">' . Shop::Lang()->get('moreLink', 'news') . '</a>';
-                }
+        if (is_array($oNews_arr) && count($oNews_arr) > 0) {
+            foreach ($oNews_arr as $i => $oNews) {
+                $oNews_arr[$i]->cText    = parseNewsText($oNews_arr[$i]->cText);
+                $oNews_arr[$i]->cURL     = baueURL($oNews, URLART_NEWS);
+                $oNews_arr[$i]->cMehrURL = '<a href="' . $oNews_arr[$i]->cURL . '">' . Shop::Lang()->get('moreLink', 'news') . '</a>';
             }
         }
-        Shop::Cache()->set($cacheID, $oNews_arr, array(CACHING_GROUP_NEWS, CACHING_GROUP_OPTION));
+        $cacheTags = array(CACHING_GROUP_NEWS, CACHING_GROUP_OPTION);
+        executeHook(HOOK_GET_NEWS, array(
+            'cached'    => true,
+            'cacheTags' => $cacheTags,
+            'oNews_arr' => $oNews_arr
+        ));
+        Shop::Cache()->set($cacheID, $oNews_arr, $cacheTags);
     }
 
     return $oNews_arr;

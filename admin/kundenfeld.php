@@ -32,6 +32,8 @@ if (isset($_POST['einstellungen']) && intval($_POST['einstellungen']) > 0) {
         if (is_array($kKundenfeld_arr) && count($kKundenfeld_arr) > 0) {
             foreach ($kKundenfeld_arr as $kKundenfeld) {
                 Shop::DB()->delete('tkundenfeld', 'kKundenfeld', (int)$kKundenfeld);
+                Shop::DB()->delete('tkundenfeldwert', 'kKundenfeld', (int)$kKundenfeld);
+                Shop::DB()->delete('tkundenattribut', 'kKundenfeld', (int)$kKundenfeld);
             }
             $cHinweis .= "Die ausgew&auml;hlten Kundenfelder wurden erfolgreich gel&ouml;scht.<br />";
         } else {
@@ -76,11 +78,19 @@ if (isset($_POST['einstellungen']) && intval($_POST['einstellungen']) > 0) {
             // Update?
             if (verifyGPCDataInteger('kKundenfeld') > 0) {
                 Shop::DB()->query(
-                    "DELETE tkundenfeld, tkundenfeldwert
+                    "DELETE
                       FROM tkundenfeld
-                      LEFT JOIN tkundenfeldwert ON tkundenfeldwert.kKundenfeld = tkundenfeld.kKundenfeld
-                      WHERE tkundenfeld.kKundenfeld = " . verifyGPCDataInteger('kKundenfeld') . "
-                          AND tkundenfeld.kSprache = " . (int)$_SESSION['kSprache'], 3
+                      WHERE tkundenfeld.kKundenfeld = " . verifyGPCDataInteger('kKundenfeld'), 3
+                );
+                Shop::DB()->query(
+                    "DELETE
+                       FROM tkundenfeldwert
+                       WHERE tkundenfeldwert.kKundenfeld = " . verifyGPCDataInteger('kKundenfeld'), 3
+                );
+                Shop::DB()->query(
+                    "DELETE
+                       FROM tkundenattribut
+                       WHERE tkundenattribut.kKundenfeld = " . verifyGPCDataInteger('kKundenfeld'), 3
                 );
             }
 

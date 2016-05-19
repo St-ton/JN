@@ -469,15 +469,29 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
                 }
                 Shop::DB()->query("DELETE FROM tkundenattribut WHERE kKunde = " . (int)$_SESSION['Kunde']->kKunde . $cSQL, 3);
 
-                $nKundenattributKey_arr = array_keys($cKundenattribut_arr);
-                foreach ($nKundenattributKey_arr as $kKundenfeld) {
-                    $oKundenattribut              = new stdClass();
-                    $oKundenattribut->kKunde      = (int)$_SESSION['Kunde']->kKunde;
-                    $oKundenattribut->kKundenfeld = (int)$cKundenattribut_arr[$kKundenfeld]->kKundenfeld;
-                    $oKundenattribut->cName       = $cKundenattribut_arr[$kKundenfeld]->cWawi;
-                    $oKundenattribut->cWert       = $cKundenattribut_arr[$kKundenfeld]->cWert;
+                $nKundenattributKey_arr             = array_keys($cKundenattribut_arr);
+                $oKundenAttributNichtEditierbar_arr = getNonEditableCustomerFields();
+                if (is_array($oKundenAttributNichtEditierbar_arr) && count($oKundenAttributNichtEditierbar_arr) > 0) {
+                    $nKundenAttributNichtEditierbarKey_arr = array_keys($oKundenAttributNichtEditierbar_arr);
+                    foreach (array_diff($nKundenattributKey_arr, $nKundenAttributNichtEditierbarKey_arr) as $kKundenfeld) {
+                        $oKundenattribut              = new stdClass();
+                        $oKundenattribut->kKunde      = (int)$_SESSION['Kunde']->kKunde;
+                        $oKundenattribut->kKundenfeld = (int)$cKundenattribut_arr[$kKundenfeld]->kKundenfeld;
+                        $oKundenattribut->cName       = $cKundenattribut_arr[$kKundenfeld]->cWawi;
+                        $oKundenattribut->cWert       = $cKundenattribut_arr[$kKundenfeld]->cWert;
 
-                    Shop::DB()->insert('tkundenattribut', $oKundenattribut);
+                        Shop::DB()->insert('tkundenattribut', $oKundenattribut);
+                    }
+                } else {
+                    foreach ($nKundenattributKey_arr as $kKundenfeld) {
+                        $oKundenattribut              = new stdClass();
+                        $oKundenattribut->kKunde      = (int)$_SESSION['Kunde']->kKunde;
+                        $oKundenattribut->kKundenfeld = (int)$cKundenattribut_arr[$kKundenfeld]->kKundenfeld;
+                        $oKundenattribut->cName       = $cKundenattribut_arr[$kKundenfeld]->cWawi;
+                        $oKundenattribut->cWert       = $cKundenattribut_arr[$kKundenfeld]->cWert;
+
+                        Shop::DB()->insert('tkundenattribut', $oKundenattribut);
+                    }
                 }
             }
             $step = 'mein Konto';

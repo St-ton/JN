@@ -500,9 +500,9 @@ function getNewsCategory($kNews)
             LEFT JOIN tseo ON tseo.cKey = 'kNewsKategorie'
                 AND tseo.kKey = tnewskategorie.kNewsKategorie
                 AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
-            WHERE tnewskategorie.kSprache=" . (int)$_SESSION['kSprache'] . "
+            WHERE tnewskategorie.kSprache = " . (int)$_SESSION['kSprache'] . "
                 AND tnewskategorienews.kNewsKategorie IN (" . $cSQL . ")
-                AND tnewskategorie.nAktiv=1
+                AND tnewskategorie.nAktiv = 1
             GROUP BY tnewskategorie.kNewsKategorie
             ORDER BY tnewskategorie.nSort DESC", 2
     );

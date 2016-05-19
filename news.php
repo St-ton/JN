@@ -106,7 +106,7 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
                     }
                 }
                 $smarty->assign('R_LOGIN_NEWSCOMMENT', R_LOGIN_NEWSCOMMENT)
-                    ->assign('oNewsKategorie_arr', $oNewsKategorie_arr);
+                       ->assign('oNewsKategorie_arr', $oNewsKategorie_arr);
 
                 // Kommentar hinzufügen
                 if (isset($_POST['kommentar_einfuegen']) && intval($_POST['kommentar_einfuegen']) > 0 &&
@@ -146,7 +146,7 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
                         } else {
                             $cFehler .= gibNewskommentarFehler($nPlausiValue_arr);
                             $smarty->assign('nPlausiValue_arr', $nPlausiValue_arr)
-                                ->assign('cPostVar_arr', StringHandler::filterXSS($_POST));
+                                   ->assign('cPostVar_arr', StringHandler::filterXSS($_POST));
                         }
                     } elseif ($Einstellungen['news']['news_kommentare_eingeloggt'] === 'N') {
                         if (is_array($nPlausiValue_arr) && count($nPlausiValue_arr) === 0) {
@@ -184,7 +184,7 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
                         } else {
                             $cFehler .= gibNewskommentarFehler($nPlausiValue_arr);
                             $smarty->assign('nPlausiValue_arr', $nPlausiValue_arr)
-                                ->assign('cPostVar_arr', StringHandler::filterXSS($_POST));
+                                   ->assign('cPostVar_arr', StringHandler::filterXSS($_POST));
                         }
                     }
                 }

@@ -120,10 +120,31 @@ class VersandartHelper
     public static function normalerArtikelversand($cLand)
     {
         $bNoetig = false;
-        if (is_array($_SESSION['Warenkorb']->PositionenArr)) {
+        if (isset($_SESSION['Warenkorb']->PositionenArr) && is_array($_SESSION['Warenkorb']->PositionenArr)) {
             foreach ($_SESSION['Warenkorb']->PositionenArr as $Pos) {
                 if ($Pos->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL) {
                     if (!self::gibArtikelabhaengigeVersandkosten($cLand, $Pos->Artikel, $Pos->nAnzahl)) {
+                        $bNoetig = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        return $bNoetig;
+    }
+
+    /**
+     * @param string $cLand
+     * @return bool
+     */
+    public static function VersandArtikelabhaengigeVersandkosten($cLand)
+    {
+        $bNoetig = false;
+        if (isset($_SESSION['Warenkorb']->PositionenArr) && is_array($_SESSION['Warenkorb']->PositionenArr)) {
+            foreach ($_SESSION['Warenkorb']->PositionenArr as $Pos) {
+                if ($Pos->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL) {
+                    if (self::gibArtikelabhaengigeVersandkosten($cLand, $Pos->Artikel, $Pos->nAnzahl)) {
                         $bNoetig = true;
                         break;
                     }
@@ -144,12 +165,16 @@ class VersandartHelper
      */
     public static function getPossibleShippingMethods($lieferland, $plz, $versandklassen, $kKundengruppe)
     {
-        $moeglicheVersandarten    = array();
-        $minVersand               = 10000;
-        $cISO                     = $lieferland;
-        $cNurAbhaengigeVersandart = 'N';
-        if (self::normalerArtikelversand($lieferland) == false) {
+        $moeglicheVersandarten        = array();
+        $minVersand                   = 10000;
+        $cISO                         = $lieferland;
+        $cNurAbhaengigeVersandart     = 'N';
+        $cArtikelabhaengigeVersandart = 'N';
+        if (self::normalerArtikelversand($lieferland) === false) {
             $cNurAbhaengigeVersandart = 'Y';
+        }
+        if (self::VersandArtikelabhaengigeVersandkosten($lieferland) === true) {
+            $cArtikelabhaengigeVersandkosten = 'Y';
         }
         $versandarten = Shop::DB()->query(
             "SELECT * FROM tversandart
@@ -170,8 +195,9 @@ class VersandartHelper
             $steuerSatz  = $steuerDaten->fSteuersatz;
         }
         for ($i = 0; $i < $cnt; $i++) {
-            $versandarten[$i]->Zuschlag  = gibVersandZuschlag($versandarten[$i], $cISO, $plz);
-            $versandarten[$i]->fEndpreis = berechneVersandpreis($versandarten[$i], $cISO, null);
+            $versandarten[$i]->Zuschlag                 = gibVersandZuschlag($versandarten[$i], $cISO, $plz);
+            $versandarten[$i]->fEndpreis                = berechneVersandpreis($versandarten[$i], $cISO, null);
+            $ArtikelabhaengigerVersandkostenGesamtpreis = 0;
             if ($versandarten[$i]->fEndpreis == -1) {
                 unset($versandarten[$i]);
                 continue;
@@ -197,7 +223,7 @@ class VersandartHelper
                 $minVersand = $versandarten[$i]->fEndpreis;
             }
             //lokalisieren
-            if ($isNettoKunde === true) {
+            /*if ($isNettoKunde === true) {
                 $versandarten[$i]->cPreisLocalized = gibPreisStringLocalized(berechneNetto(floatval($versandarten[$i]->fEndpreis), $steuerSatz)) . ' ' . Shop::Lang()->get('plus', 'productDetails') . ' ' . Shop::Lang()->get('vat', 'productDetails');
             } else {
                 $versandarten[$i]->cPreisLocalized = gibPreisStringLocalized($versandarten[$i]->fEndpreis);
@@ -207,6 +233,37 @@ class VersandartHelper
                     $versandarten[$i]->cPreisLocalized = Shop::Lang()->get('lookAtTop', 'global');
                 } else {
                     $versandarten[$i]->cPreisLocalized = Shop::Lang()->get('freeshipping', 'global');
+                }
+            }*/
+            $versandarten[$i]->cPreisLocalized = gibPreisStringLocalized($versandarten[$i]->fEndpreis);
+            // Versandart Versandkostenfrei + Artikelabhängigen Versandkostenpreis
+            if ($versandarten[$i]->fEndpreis == 0) {
+                // Abfrage ob ein Artikel Artikelabhängige Versandkosten besitzt
+                if ($cArtikelabhaengigeVersandkosten === 'Y') {
+                    if (isset($_SESSION['Warenkorb']->PositionenArr) && is_array($_SESSION['Warenkorb']->PositionenArr)) {
+                        foreach ($_SESSION['Warenkorb']->PositionenArr as $Pos) {
+                            if ($Pos->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL) {
+                                $ArtikelabhaengigerVersandkostenGesamtpreis += self::gibArtikelabhaengigeVersandkosten($lieferland, $Pos->Artikel, $Pos->nAnzahl)->fKosten;
+                            }
+                        }
+                    }
+                    $versandarten[$i]->cPreisLocalized = gibPreisStringLocalized($ArtikelabhaengigerVersandkostenGesamtpreis);
+                } else {
+                    $versandarten[$i]->cPreisLocalized = Shop::Lang()->get('freeshipping', 'global');
+                }
+                // Versandartkosten + Artikelabhängigen Versandkostenpreis
+            } else {
+                // Abfrage ob ein Artikel Artikelabhängige Versandkosten besitzt
+                $ArtikelabhaengigerVersandkostenGesamtpreis = $versandarten[$i]->cPreisLocalized;
+                if ($cArtikelabhaengigeVersandkosten === 'Y') {
+                    if (isset($_SESSION['Warenkorb']->PositionenArr) && is_array($_SESSION['Warenkorb']->PositionenArr)) {
+                        foreach ($_SESSION['Warenkorb']->PositionenArr as $Pos) {
+                            if ($Pos->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL) {
+                                $ArtikelabhaengigerVersandkostenGesamtpreis += self::gibArtikelabhaengigeVersandkosten($lieferland, $Pos->Artikel, $Pos->nAnzahl)->fKosten;
+                            }
+                        }
+                    }
+                    $versandarten[$i]->cPreisLocalized = gibPreisStringLocalized($ArtikelabhaengigerVersandkostenGesamtpreis);
                 }
             }
         }

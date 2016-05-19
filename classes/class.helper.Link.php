@@ -504,11 +504,12 @@ class LinkHelper
 
             $staticRoutes_arr = Shop::DB()->query(
                 "SELECT tspezialseite.kSpezialseite, tspezialseite.cName AS baseName, tspezialseite.cDateiname, tspezialseite.nLinkart, 
-                        tlink.kLink, tlinksprache.cName AS seoName, tlinksprache.cSeo, tsprache.cISO, tsprache.kSprache
+                        tlink.kLink, tlinksprache.cName AS seoName, tseo.cSeo, tsprache.cISO, tsprache.kSprache
                     FROM tspezialseite
                         LEFT JOIN tlink ON tlink.nLinkart = tspezialseite.nLinkart
                         LEFT JOIN tlinksprache ON tlink.kLink = tlinksprache.kLink
                         LEFT JOIN tsprache ON tsprache.cISO = tlinksprache.cISOSprache
+                        LEFT JOIN tseo ON tseo.cKey = 'kLink' AND tseo.kKey = tlink.kLink AND tseo.kSprache = tsprache.kSprache
                     WHERE cDateiname IS NOT NULL AND cDateiname != ''", 2);
 
             $linkGroups->staticRoutes = array();
@@ -960,17 +961,15 @@ class LinkHelper
                 $language  = ($langISO !== null) ? $langISO : $_SESSION['cISOSprache'];
                 $localized = (isset($index[$language])) ?
                     $index[$language] :
-                    $index[0];
+                    null;
                 if ($full === true) {
                     if ($secure === true) {
-                        return (!empty($localized->cURLFullSSL)) ? $localized->cURLFullSSL : $id;
+                        return (!empty($localized->cURLFullSSL)) ? $localized->cURLFullSSL : (Shop::getURL(true) . '/' . $id);
                     }
 
-                    return (!empty($localized->cURLFull)) ? $localized->cURLFull : $id;
+                    return (!empty($localized->cURLFull)) ? $localized->cURLFull : (Shop::getURL() . '/' . $id);
                 }
-                if ($secure === true) {
-                    return (!empty($localized->cURLFull)) ? $localized->cURLFull : $id;
-                }
+
                 return (!empty($localized->cSeo)) ? $localized->cSeo : $id;
             }
 

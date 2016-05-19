@@ -60,3 +60,4 @@
 !/media/image/storage/.gitkeep
 bootstrap/*
 includes/vendor/*
+node_modules/

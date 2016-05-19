@@ -6,6 +6,7 @@
 * Bugfix: Globale Variable $AktuelleSeite zeigt bei Newsdetails falschen Typ an
 * Verbesserung: Neuer Hook 220 HOOK_GET_NEWS in gibNews()
 * Verbesserung: Neuer Hook 221 HOOK_STOCK_FILTER in gibLagerFilter()
+* Bugfix: Newskategorien-Box verschwindet bei aktiviertem Objektcache
 
 ## [4.03.1]
 * Bugfix: Sprachwechsel in einigen Linkgruppen unvollständig

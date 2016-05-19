@@ -35,6 +35,8 @@
                             <img src="{$oPosition->Artikel->cVorschaubild}" alt="{$oPosition->cName|trans}" class="img-responsive-height" />
                         </a>
                     </td>
+                {elseif $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y'}
+                    <td class="hidden-xs"></td>
                 {/if}
                 <td>
                     {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL}

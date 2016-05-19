@@ -328,7 +328,7 @@ define('HOOK_TOOLSAJAXSERVER_PAGE_SUCHVORSCHLAG', 44);
 /**
  * Kurz vor der Rückgabe der Variationskombination (Ajax)
  *
- * @file toolsajax.server.php
+ * @file toolsajax.server.php/io_inc.php
  * @param objResponse
  * @param oArtikel
  */

@@ -160,6 +160,8 @@ class Session
         if (isset($_GET['lang']) && (!isset($_SESSION['cISOSprache']) || $_GET['lang'] != $_SESSION['cISOSprache'])) {
             $globalsAktualisieren = true;
         }
+        $lang = (isset($_GET['lang'])) ? $_GET['lang'] : '';
+        checkeSpracheWaehrung($lang);
         if ($globalsAktualisieren || !isset($_SESSION['cISOSprache']) || !isset($_SESSION['kSprache']) || !isset($_SESSION['Kundengruppe'])) {
             //Kategorie
             unset($_SESSION['cTemplate']);
@@ -267,11 +269,6 @@ class Session
             Shop::Lang()->reset();
         }
         getFsession();
-        $lang = '';
-        if (isset($_GET['lang'])) {
-            $lang = $_GET['lang'];
-        }
-        checkeSpracheWaehrung($lang);
         $this->checkWishlistDeletes()->checkComparelistDeletes();
         // Kampagnen in die Session laden
         Kampagne::getAvailable();

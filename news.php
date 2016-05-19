@@ -215,12 +215,14 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
                 executeHook(HOOK_NEWS_PAGE_DETAILANSICHT);
             } else {
                 Shop::$AktuelleSeite = 'NEWS';
+                $AktuelleSeite = 'NEWS';
                 $smarty->assign('cNewsErr', 1);
                 baueNewsKruemel($smarty, Shop::$AktuelleSeite, $cCanonicalURL);
             }
         } else { // Beitragsübersicht anzeigen
             if ($cParameter_arr['kNewsKategorie'] > 0) { // NewsKategorie Übersicht
                 Shop::$AktuelleSeite = 'NEWSKATEGORIE';
+                $AktuelleSeite  = 'NEWSKATEGORIE';
                 $kNewsKategorie = (int)$cParameter_arr['kNewsKategorie'];
                 $oNewsKategorie = getCurrentNewsCategory($kNewsKategorie, true);
 
@@ -253,6 +255,7 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
                 }
             } elseif ($cParameter_arr['kNewsMonatsUebersicht'] > 0) { // Monatsuebersicht
                 Shop::$AktuelleSeite = 'NEWSMONAT';
+                $AktuelleSeite         = 'NEWSMONAT';
                 $kNewsMonatsUebersicht = (int)$cParameter_arr['kNewsMonatsUebersicht'];
                 $oNewsMonatsUebersicht = getMonthOverview($kNewsMonatsUebersicht);
 
@@ -270,6 +273,7 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
                 $_SESSION['NewsNaviFilter']->nNewsKat = -1;
             } else { // Startseite News Übersicht
                 Shop::$AktuelleSeite = 'NEWS';
+                $AktuelleSeite = 'NEWS';
                 baueNewsKruemel($smarty, Shop::$AktuelleSeite, $cCanonicalURL);
             }
 

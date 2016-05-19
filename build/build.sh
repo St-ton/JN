@@ -4,6 +4,8 @@ REL_SCRIPT_DIR="`dirname \"$0\"`"
 SCRIPT_DIR="`( cd \"$REL_SCRIPT_DIR\" && pwd )`"
 PROJECT_DIR="`( cd \"$SCRIPT_DIR/..\" && pwd )`"
 
+# https://docs.npmjs.com/getting-started/installing-node
+
 build_help()
 {
     echo "$(tput setaf 3)Usage:$(tput sgr0)"
@@ -20,7 +22,7 @@ build_check()
 {
     echo "Checking dependencies..."
 
-    for cmd in "curl" "nodejs" "npm" "composer"; do
+    for cmd in "wget" "npm" "node"; do
         printf "%-10s" "$cmd"
         if hash "$cmd" 2>/dev/null;
         then
@@ -34,20 +36,10 @@ build_check()
 build_deps()
 {
     echo "Installing dependencies..."
-    
-    # curl
-    sudo apt-get install curl -yqq
-    
-    # nodejs / npm
-    curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
-    sudo apt-get install -y nodejs
-    sudo npm install npm -g
-    
+
     # composer
-    curl -sS https://getcomposer.org/installer | php
-    sudo mkdir -p /usr/local/bin
-    sudo mv composer.phar /usr/local/bin/composer
-    sudo composer self-update
+    wget http://getcomposer.org/composer.phar -O $SCRIPT_DIR/composer.phar
+    php $SCRIPT_DIR/composer.phar self-update
 }
 
 build_init()
@@ -56,10 +48,10 @@ build_init()
 
     # composer (composer.json)
     cd $PROJECT_DIR/includes
-    composer install
+    php $SCRIPT_DIR/composer.phar install
     
     # npm (package.json)
-    cd $PROJECT_DIR/build/scripts
+    cd $SCRIPT_DIR/scripts
     npm install
 }
 
@@ -72,7 +64,6 @@ main() {
     else
         build_help
     fi
-
 }
 
 (main $*)

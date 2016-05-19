@@ -9,7 +9,7 @@
             <span class="status status-1"><i class="fa fa-truck"></i> {lang key="productInflowing" section="productDetails" printf=$cZulauf}</span>
         {elseif $anzeige !== 'nichts' && $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen !== 'N' && $Artikel->cLagerBeachten === 'Y' &&
         $Artikel->fLagerbestand <= 0 && $Artikel->fLieferantenlagerbestand > 0 && $Artikel->fLieferzeit > 0 &&
-        ($Artikel->cLagerKleinerNull === 'N' || $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen === 'U')}
+        ($Artikel->cLagerKleinerNull === 'N' && $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen === 'I' || $Artikel->cLagerKleinerNull === 'Y' && $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen === 'U')}
             <span class="status status-1"><i class="fa fa-truck"></i> {lang key="supplierStockNotice" section="global" printf=$Artikel->fLieferzeit}</span>
         {elseif $anzeige=='verfuegbarkeit' || $anzeige === 'genau'}
             <span class="status status-{$Artikel->Lageranzeige->nStatus}"><i class="fa fa-truck"></i> {$Artikel->Lageranzeige->cLagerhinweis[$anzeige]}</span>

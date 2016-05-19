@@ -141,12 +141,19 @@ function gibNews($Einstellungen)
         }
         $cacheTags = array(CACHING_GROUP_NEWS, CACHING_GROUP_OPTION);
         executeHook(HOOK_GET_NEWS, array(
-            'cached'    => true,
+            'cached'    => false,
             'cacheTags' => &$cacheTags,
             'oNews_arr' => &$oNews_arr
         ));
         Shop::Cache()->set($cacheID, $oNews_arr, $cacheTags);
+
+        return $oNews_arr;
     }
+    executeHook(HOOK_GET_NEWS, array(
+        'cached'    => true,
+        'cacheTags' => array(),
+        'oNews_arr' => &$oNews_arr
+    ));
 
     return $oNews_arr;
 }

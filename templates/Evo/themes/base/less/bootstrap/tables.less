@@ -58,17 +58,14 @@ th {
     border-top: 2px solid @table-border-color;
   }
 
-  > tbody td{
-    word-wrap: break-word;
-    -webkit-hyphens: auto;
-    -moz-hyphens: auto;
-    -ms-hyphens: auto;
-    hyphens: auto;
-  }
   // Nesting
   .table {
     background-color: @body-bg;
   }
+}
+
+.table.hyphens > tbody td{
+  .hyphens;
 }
 
 .layout-fixed{

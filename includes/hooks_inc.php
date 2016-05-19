@@ -1594,3 +1594,11 @@ define('HOOK_GET_ALL_CATEGORIES', 219);
  * @param bool  cached
  */
 define('HOOK_GET_NEWS', 220);
+
+/**
+ * @since 4.04
+ * @file tools.Global.php
+ * @param string filterSQL
+ * @param int    conf
+ */
+define('HOOK_STOCK_FILTER', 221);

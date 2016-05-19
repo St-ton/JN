@@ -1384,15 +1384,19 @@ function checkeKuponWKPos($oWKPosition, $Kupon)
  */
 function gibLagerfilter()
 {
-    $conf = Shop::getSettings(array(CONF_GLOBAL));
-    if ($conf['global']['artikel_artikelanzeigefilter'] == EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER) {
-        return "AND (NOT (tartikel.fLagerbestand <= 0 AND tartikel.cLagerBeachten = 'Y') OR tartikel.cLagerVariation = 'Y')";
+    $conf      = Shop::getSettings(array(CONF_GLOBAL));
+    $filterSQL = '';
+    if ((int) $conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER) {
+        $filterSQL =  "AND (NOT (tartikel.fLagerbestand <= 0 AND tartikel.cLagerBeachten = 'Y') OR tartikel.cLagerVariation = 'Y')";
+    } elseif ((int) $conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL) {
+        $filterSQL = "AND (NOT (tartikel.fLagerbestand <= 0 AND tartikel.cLagerBeachten = 'Y') OR tartikel.cLagerKleinerNull = 'Y' OR tartikel.cLagerVariation = 'Y')";
     }
-    if ($conf['global']['artikel_artikelanzeigefilter'] == EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL) {
-        return "AND (NOT (tartikel.fLagerbestand <= 0 AND tartikel.cLagerBeachten = 'Y') OR tartikel.cLagerKleinerNull = 'Y' OR tartikel.cLagerVariation = 'Y')";
-    }
+    executeHook(HOOK_STOCK_FILTER, array(
+        'conf'      => (int) $conf['global']['artikel_artikelanzeigefilter'],
+        'filterSQL' => &$filterSQL
+    ));    
 
-    return '';
+    return $filterSQL;
 }
 
 /**

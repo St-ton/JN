@@ -160,8 +160,12 @@ class Session
         if (isset($_GET['lang']) && (!isset($_SESSION['cISOSprache']) || $_GET['lang'] != $_SESSION['cISOSprache'])) {
             $globalsAktualisieren = true;
         }
-        $lang = (isset($_GET['lang'])) ? $_GET['lang'] : '';
-        checkeSpracheWaehrung($lang);
+        $lang    = (isset($_GET['lang'])) ? $_GET['lang'] : '';
+        $checked = false;
+        if (isset($_SESSION['kSprache'])) {
+            checkeSpracheWaehrung($lang);
+            $checked = true;
+        }
         if ($globalsAktualisieren || !isset($_SESSION['cISOSprache']) || !isset($_SESSION['kSprache']) || !isset($_SESSION['Kundengruppe'])) {
             //Kategorie
             unset($_SESSION['cTemplate']);
@@ -267,6 +271,9 @@ class Session
             setzeSteuersaetze();
             // sprache neu laden
             Shop::Lang()->reset();
+        }
+        if (!$checked) {
+            checkeSpracheWaehrung($lang);
         }
         getFsession();
         $this->checkWishlistDeletes()->checkComparelistDeletes();

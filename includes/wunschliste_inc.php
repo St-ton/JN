@@ -13,7 +13,7 @@ function setzeWunschlisteInSession()
         $oWunschliste = Shop::DB()->query("
             SELECT kWunschliste
                 FROM twunschliste
-                WHERE kKunde = " . intval($_SESSION['Kunde']->kKunde) . "
+                WHERE kKunde = " . (int) $_SESSION['Kunde']->kKunde . "
                 AND nStandard = 1", 1
         );
         if (isset($oWunschliste->kWunschliste)) {
@@ -30,7 +30,7 @@ function setzeWunschlisteInSession()
 function wunschlisteLoeschen($kWunschliste)
 {
     $hinweis      = '';
-    $kWunschliste = intval($kWunschliste);
+    $kWunschliste = (int) $kWunschliste;
     if ($kWunschliste > 0) {
         // Prüfe ob die Wunschliste dem eingeloggten Kunden gehört
         $oWunschliste = Shop::DB()->query("SELECT kKunde, nStandard FROM twunschliste WHERE kWunschliste = " . $kWunschliste, 1);
@@ -160,8 +160,6 @@ function wunschlisteSpeichern($cWunschlisteName)
 
         Shop::DB()->insert('twunschliste', $CWunschliste);
 
-        unset($CWunschliste);
-
         $hinweis = Shop::Lang()->get('wishlistAdd', 'messages');
     }
 
@@ -176,7 +174,7 @@ function wunschlisteSpeichern($cWunschlisteName)
 function wunschlisteSenden($cEmail_arr, $kWunschliste)
 {
     $hinweis      = '';
-    $kWunschliste = intval($kWunschliste);
+    $kWunschliste = (int) $kWunschliste;
     // Wurden Emails übergeben?
     if (count($cEmail_arr) > 0) {
         $conf = Shop::getSettings(array(CONF_GLOBAL));
@@ -257,8 +255,8 @@ function wunschlisteSenden($cEmail_arr, $kWunschliste)
  */
 function gibEigenschaftenZuWunschliste($kWunschliste, $kWunschlistePos)
 {
-    $kWunschliste    = intval($kWunschliste);
-    $kWunschlistePos = intval($kWunschlistePos);
+    $kWunschliste    = (int) $kWunschliste;
+    $kWunschlistePos = (int) $kWunschlistePos;
     if ($kWunschliste > 0 && $kWunschlistePos > 0) {
         // $oEigenschaftwerte_arr anlegen
         $oEigenschaftwerte_arr          = array();
@@ -293,7 +291,7 @@ function gibEigenschaftenZuWunschliste($kWunschliste, $kWunschlistePos)
  */
 function giboWunschlistePos($kWunschlistePos)
 {
-    $kWunschlistePos = intval($kWunschlistePos);
+    $kWunschlistePos = (int) $kWunschlistePos;
     if ($kWunschlistePos > 0) {
         $oWunschlistePos = Shop::DB()->query(
             "SELECT *

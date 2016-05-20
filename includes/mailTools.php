@@ -28,8 +28,8 @@ function includeMailTemplate($params, &$smarty)
             $res = Shop::DB()->query(
                 "SELECT " . $row . " AS content
                     FROM temailvorlagesprache
-                    WHERE kSprache = " . intval($currenLanguage->kSprache) . "
-                    AND kEmailvorlage = " . intval($vorlage->kEmailvorlage), 1
+                    WHERE kSprache = " . (int) $currenLanguage->kSprache . "
+                    AND kEmailvorlage = " . (int) $vorlage->kEmailvorlage, 1
             );
         }
         if (isset($res->content)) {
@@ -103,7 +103,7 @@ function sendeMail($ModulId, $Object, $mail = null)
         $Sprache = Shop::DB()->query("SELECT * FROM tsprache WHERE kSprache = " . (int)$Object->tkunde->kSprache, 1);
     }
     if (isset($Object->NewsletterEmpfaenger->kSprache) && $Object->NewsletterEmpfaenger->kSprache > 0) {
-        $Sprache = Shop::DB()->query("SELECT * FROM tsprache WHERE kSprache=" . $Object->NewsletterEmpfaenger->kSprache, 1);
+        $Sprache = Shop::DB()->query("SELECT * FROM tsprache WHERE kSprache = " . $Object->NewsletterEmpfaenger->kSprache, 1);
     }
     if (!isset($Sprache) || !$Sprache) {
         $Sprache = Shop::DB()->query("SELECT * FROM tsprache WHERE cShopStandard = 'Y'", 1);
@@ -179,8 +179,8 @@ function sendeMail($ModulId, $Object, $mail = null)
     $Emailvorlagesprache = Shop::DB()->query(
         "SELECT cBetreff, cPDFS, cDateiname
             FROM " . $cTableSprache . "
-            WHERE kEmailvorlage = " . intval($Emailvorlage->kEmailvorlage) . "
-            AND kSprache=" . intval($Sprache->kSprache), 1
+            WHERE kEmailvorlage = " . (int) $Emailvorlage->kEmailvorlage . "
+            AND kSprache = " . (int) $Sprache->kSprache, 1
     );
     $Emailvorlage->cBetreff = injectSubject($Object, (isset($Emailvorlagesprache->cBetreff) ? $Emailvorlagesprache->cBetreff : null));
 
@@ -560,11 +560,7 @@ function sendeMail($ModulId, $Object, $mail = null)
  */
 function pruefeGlobaleEmailBlacklist($cEmail)
 {
-    $oEmailBlacklist = Shop::DB()->query(
-        "SELECT cEmail
-            FROM temailblacklist
-            WHERE cEmail='" . Shop::DB()->escape($cEmail) . "'", 1
-    );
+    $oEmailBlacklist = Shop::DB()->select('temailblacklist', 'cEmail', Shop::DB()->escape($cEmail));
 
     if (isset($oEmailBlacklist->cEmail) && strlen($oEmailBlacklist->cEmail) > 0) {
         $oEmailBlacklistBlock                = new stdClass();
@@ -611,28 +607,28 @@ function verschickeMail($mail)
         //phpmailer
         $phpmailer = new PHPMailer();
         $lang      = ($mail->lang === 'DE' || $mail->lang === 'ger') ? 'de' : 'end';
-        $phpmailer->SetLanguage($lang, PFAD_ROOT . PFAD_PHPMAILER . 'language/');
+        $phpmailer->setLanguage($lang, PFAD_ROOT . PFAD_PHPMAILER . 'language/');
         $phpmailer->Timeout  = SOCKET_TIMEOUT;
         $phpmailer->From     = $mail->fromEmail;
         $phpmailer->Sender   = $mail->fromEmail;
         $phpmailer->FromName = $mail->fromName;
-        $phpmailer->AddAddress($mail->toEmail, (!empty($mail->toName) ? $mail->toName : ''));
-        $phpmailer->AddReplyTo($mail->replyToEmail, $mail->replyToName);
+        $phpmailer->addAddress($mail->toEmail, (!empty($mail->toName) ? $mail->toName : ''));
+        $phpmailer->addReplyTo($mail->replyToEmail, $mail->replyToName);
         $phpmailer->Subject = $mail->subject;
 
         switch ($mail->methode) {
             case 'mail':
-                $phpmailer->IsMail();
+                $phpmailer->isMail();
                 break;
             case 'sendmail':
-                $phpmailer->IsSendmail();
+                $phpmailer->isSendmail();
                 $phpmailer->Sendmail = $mail->sendmail_pfad;
                 break;
             case 'qmail':
-                $phpmailer->IsQmail();
+                $phpmailer->isQmail();
                 break;
             case 'smtp':
-                $phpmailer->IsSMTP();
+                $phpmailer->isSMTP();
                 $phpmailer->Host          = $mail->smtp_hostname;
                 $phpmailer->Port          = $mail->smtp_port;
                 $phpmailer->SMTPKeepAlive = true;
@@ -643,18 +639,18 @@ function verschickeMail($mail)
                 break;
         }
         if ($mail->bodyHtml) {
-            $phpmailer->IsHTML(true);
+            $phpmailer->isHTML(true);
             $phpmailer->Body    = $mail->bodyHtml;
             $phpmailer->AltBody = $mail->bodyText;
         } else {
-            $phpmailer->IsHTML(false);
+            $phpmailer->isHTML(false);
             $phpmailer->Body = $mail->bodyText;
         }
         if (isset($mail->cPDFS_arr) && count($mail->cPDFS_arr) > 0 && isset($mail->cDateiname_arr) && count($mail->cDateiname_arr) > 0) {
             $cUploadVerzeichnis = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_EMAILPDFS;
 
             foreach ($mail->cPDFS_arr as $i => $cPDFS) {
-                $phpmailer->AddAttachment($cUploadVerzeichnis . $cPDFS, $mail->cDateiname_arr[$i] . '.pdf', 'base64', 'application/pdf');
+                $phpmailer->addAttachment($cUploadVerzeichnis . $cPDFS, $mail->cDateiname_arr[$i] . '.pdf', 'base64', 'application/pdf');
             }
         }
         if (isset($mail->oAttachment_arr) && count($mail->oAttachment_arr) > 0) {
@@ -665,11 +661,11 @@ function verschickeMail($mail)
                 if (empty($oAttachment->cType)) {
                     $oAttachment->cType = 'application/octet-stream';
                 }
-                $phpmailer->AddAttachment($oAttachment->cFilePath, $oAttachment->cName, $oAttachment->cEncoding, $oAttachment->cType);
+                $phpmailer->addAttachment($oAttachment->cFilePath, $oAttachment->cName, $oAttachment->cEncoding, $oAttachment->cType);
             }
         }
 
-        $bSent         = $phpmailer->Send();
+        $bSent         = $phpmailer->send();
         $mail->cFehler = $phpmailer->ErrorInfo;
     }
     // Emailhistory
@@ -750,7 +746,7 @@ function row_get_template($tpl_name, &$tpl_source, $smarty)
                 FROM temailvorlageoriginal tevo
                 JOIN temailvorlagesprache tevs
                     ON tevs.kEmailVorlage = tevo.kEmailvorlage
-                    AND tevs.kSprache = '" . $pcs[4] . "'
+                    AND tevs.kSprache = " . (int) $pcs[4] . "
                 WHERE tevo.cModulId = 'core_jtl_anbieterkennzeichnung'
                 LIMIT 1", 1
         );
@@ -760,7 +756,11 @@ function row_get_template($tpl_name, &$tpl_source, $smarty)
         if (isset($pcs[3]) && intval($pcs[3]) > 0) {
             $cTableSprache = 'tpluginemailvorlagesprache';
         }
-        $vl = Shop::DB()->query("SELECT cContentHtml, cContentText FROM " . $cTableSprache . " WHERE kEmailvorlage=" . $pcs[1] . " AND kSprache=" . $pcs[2], 1);
+        $vl = Shop::DB()->query("
+            SELECT cContentHtml, cContentText 
+              FROM " . $cTableSprache . " 
+              WHERE kEmailvorlage = " . (int) $pcs[1] . " AND kSprache = " . (int) $pcs[2], 1
+        );
     }
     if ($vl !== false) {
         if ($pcs[0] === 'html') {

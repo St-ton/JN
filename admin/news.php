@@ -455,6 +455,14 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
     if ((isset($_GET['news_editieren']) && intval($_GET['news_editieren']) === 1) || ($continueWith !== false && $continueWith > 0)) { // News editieren
         $oNewsKategorie_arr = holeNewskategorie();
         $kNews              = ($continueWith !== false && $continueWith > 0) ? $continueWith : (int)$_GET['kNews'];
+        // Sollen einzelne Newsbilder geloescht werden?
+        if (strlen(verifyGPDataString('delpic')) > 0) {
+            if (loescheNewsBild(verifyGPDataString('delpic'), $kNews, $cUploadVerzeichnis)) {
+                $cHinweis .= 'Ihr ausgew&auml;hltes Newsbild wurde erfolgreich gel&ouml;scht.';
+            } else {
+                $cFehler .= 'Fehler: Ihr ausgew&auml;hltes Newsbild konnte nicht gel&ouml;scht werden.';
+            }
+        }
 
         if ($kNews > 0 && count($oNewsKategorie_arr) > 0) {
             $smarty->assign('oNewsKategorie_arr', $oNewsKategorie_arr);
@@ -472,14 +480,6 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
 
             if (!empty($oNews->kNews)) {
                 $oNews->kKundengruppe_arr = gibKeyArrayFuerKeyString($oNews->cKundengruppe, ';');
-                // Sollen einzelne Newsbilder geloescht werden?
-                if (strlen(verifyGPDataString('delpic')) > 0) {
-                    if (loescheNewsBild(verifyGPDataString('delpic'), $oNews->kNews, $cUploadVerzeichnis)) {
-                        $cHinweis .= 'Ihr ausgew&auml;hltes Newsbild wurde erfolgreich gel&ouml;scht.';
-                    } else {
-                        $cFehler .= 'Fehler: Ihr ausgew&auml;hltes Newsbild konnte nicht gel&ouml;scht werden.';
-                    }
-                }
                 // Hole Bilder
                 if (is_dir($cUploadVerzeichnis . $oNews->kNews)) {
                     $smarty->assign('oDatei_arr', holeNewsBilder($oNews->kNews, $cUploadVerzeichnis));

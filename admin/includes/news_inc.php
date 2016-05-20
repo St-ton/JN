@@ -407,7 +407,9 @@ function loescheNewsBild($cBildname, $kNews, $cUploadVerzeichnis)
                 if ($Datei !== '.' && $Datei !== '..' && substr($Datei, 0, strpos($Datei, '.')) == $cBildname) {
                     unlink($cUploadVerzeichnis . $kNews . '/' . $Datei);
                     closedir($DirHandle);
-
+                    if ($cBildname === 'preview') {
+                        Shop::DB()->query("UPDATE tnews SET cPreviewImage = '' WHERE kNews = " . $kNews, 3);
+                    }
                     return true;
                 }
             }

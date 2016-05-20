@@ -26,11 +26,11 @@ class Migration_20160520142100 extends Migration implements IMigration
 
     public function up()
     {
-        $this->execute("ALTER TABLE `tplugineinstellungenconf` ADD COLUMN `cSourceFile` VARCHAR(255) NULL DEFAULT NULL, ADD COLUMN `cSourceFunction` VARCHAR(255) NULL DEFAULT NULL");
+        $this->execute("ALTER TABLE `tplugineinstellungenconf` ADD COLUMN `cSourceFile` VARCHAR(255) NULL DEFAULT NULL");
     }
 
     public function down()
     {
-        $this->execute("ALTER TABLE `tplugineinstellungenconf` DROP COLUMN `cSourceFile`, DROP COLUMN `cSourceFunction`");
+        $this->execute("ALTER TABLE `tplugineinstellungenconf` DROP COLUMN `cSourceFile`");
     }
 }

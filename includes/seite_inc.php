@@ -173,7 +173,7 @@ function gibNextBoxPrio($search, $Einstellungen)
         !in_array('Bestseller', $search)
     ) {
         $obj->name   = 'Bestseller';
-        $obj->anzahl = (int) Einstellungen['startseite']['startseite_bestseller_anzahl'];
+        $obj->anzahl = (int) $Einstellungen['startseite']['startseite_bestseller_anzahl'];
         $obj->sort   = (int) $Einstellungen['startseite']['startseite_bestseller_sortnr'];
         $max         = (int) $Einstellungen['startseite']['startseite_bestseller_sortnr'];
     }

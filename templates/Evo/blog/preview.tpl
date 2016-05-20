@@ -27,7 +27,7 @@
                 </a>
             </div>
         {/if}
-        <div class="news-preview panel-strap"">
+        <div class="news-preview panel-strap">
             {if $oNewsUebersicht->cVorschauText|count_characters > 0}
                 {$oNewsUebersicht->cVorschauText}<span class="read-more">{$oNewsUebersicht->cMehrURL}</span>
             {elseif $oNewsUebersicht->cText|strip_tags|count_characters > 200}

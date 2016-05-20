@@ -1560,7 +1560,8 @@ span.success {
   content: "\f0c0";
 }
 
-#widget-umsatz .widget-head h4:before {
+#widget-umsatz .widget-head h4:before,
+#widget-shop-statistiken .widget-head h4:before {
   content: "\f080";
 }
 
@@ -1589,7 +1590,24 @@ span.success {
 }
 
 #widget-wussten-sie-schon .widget-head h4:before {
+  content: "\f0eb";
+}
+
+#widget-letzte-bestellungen .widget-head h4:before {
+  content: "\f022";
+}
+
+#widget-kampagnen .widget-head h4:before {
+  content: "\f1a0";
+}
+
+#widget-anfragen-fr-freischaltungen .widget-head h4:before {
   content: "\f164";
+}
+
+#widget-letzte-suchanfragen .widget-head h4:before,
+#widget-top10-suchanfragen .widget-head h4:before {
+  content: "\f002";
 }
 
 #widget-server-informationen .widget-head h4:before {

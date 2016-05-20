@@ -402,6 +402,10 @@ function pluginPlausi($kPlugin, $cVerzeichnis = '')
 // 124 	= Templatedatei existiert nicht
 // 125  = Uninstall File existiert nicht
 // 126  = Nicht Shop4-kompatibel, aber evtl. lauffähig
+// 127  = Plugin benoetig Ioncube
+// 128  = OptionsSource-Datei existiert nicht
+// 129  = OptionsSource-Function ist nicht callbar
+// 130  = OptionsSource-Datei/-Function fehlen
 */
 
 /**
@@ -665,7 +669,19 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
                                                 // Ist der Typ eine Selectbox => Es müssen SelectboxOptionen vorhanden sein
                                                 if ($cTyp === 'selectbox') {
                                                     // SelectboxOptions prüfen
-                                                    if (isset($Setting_arr['SelectboxOptions']) && is_array($Setting_arr['SelectboxOptions']) && count($Setting_arr['SelectboxOptions']) > 0) {
+                                                    if (isset($Setting_arr['OptionsSource']) && is_array($Setting_arr['OptionsSource']) && count($Setting_arr['OptionsSource']) > 0) {
+                                                        if (empty($Setting_arr['OptionsSource'][0]['File']) || empty($Setting_arr['OptionsSource'][0]['Function'])) {
+                                                            return 130;
+                                                        }
+                                                        if (file_exists($cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $cVersionsnummer . '/' . PFAD_PLUGIN_ADMINMENU . $Setting_arr['OptionsSource'][0]['File'])) {
+                                                            require_once $cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $cVersionsnummer . '/' . PFAD_PLUGIN_ADMINMENU . $Setting_arr['OptionsSource'][0]['File'];
+                                                            if (!is_callable($Setting_arr['OptionsSource'][0]['Function'])) {
+                                                                return 129;
+                                                            }
+                                                        } else {
+                                                            return 128;
+                                                        }
+                                                    } elseif (isset($Setting_arr['SelectboxOptions']) && is_array($Setting_arr['SelectboxOptions']) && count($Setting_arr['SelectboxOptions']) > 0) {
                                                         // Es gibt mehr als 1 Option
                                                         if (count($Setting_arr['SelectboxOptions'][0]) === 1) {
                                                             foreach ($Setting_arr['SelectboxOptions'][0]['Option'] as $y => $Option_arr) {
@@ -708,7 +724,9 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
                                                     }
                                                 } elseif ($cTyp === 'radio') {
                                                     //radioOptions prüfen
-                                                    if (isset($Setting_arr['RadioOptions']) && is_array($Setting_arr['RadioOptions']) && count($Setting_arr['RadioOptions']) > 0) {
+                                                    if (isset($Setting_arr['OptionsSource']) && is_array($Setting_arr['OptionsSource']) && count($Setting_arr['OptionsSource']) > 0) {
+                                                        //do nothing for now
+                                                    } elseif (isset($Setting_arr['RadioOptions']) && is_array($Setting_arr['RadioOptions']) && count($Setting_arr['RadioOptions']) > 0) {
                                                         // Es gibt mehr als 1 Option
                                                         if (count($Setting_arr['RadioOptions'][0]) === 1) {
                                                             foreach ($Setting_arr['RadioOptions'][0]['Option'] as $y => $Option_arr) {
@@ -1853,15 +1871,20 @@ function installierePlugin($XML_arr, $cVerzeichnis, $oPluginOld)
                                     $oPluginEinstellungenConf->cInputTyp = $cTyp;
                                     $oPluginEinstellungenConf->nSort     = $nSort;
                                     $oPluginEinstellungenConf->cConf     = $cConf;
-
+                                    //dynamic data source for selectbox/radio
+                                    if (($cTyp === 'selectbox' || $cTyp === 'radio') && isset($Setting_arr['OptionsSource'][0]['File']) && isset($Setting_arr['OptionsSource'][0]['Function'])) {
+                                        $oPluginEinstellungenConf->cSourceFile     = $Setting_arr['OptionsSource'][0]['File'];
+                                        $oPluginEinstellungenConf->cSourceFunction = $Setting_arr['OptionsSource'][0]['Function'];
+                                    }
                                     $kPluginEinstellungenConf = Shop::DB()->insert('tplugineinstellungenconf', $oPluginEinstellungenConf);
                                     // tplugineinstellungenconfwerte füllen
                                     if ($kPluginEinstellungenConf > 0) {
                                         $nSort = 0;
                                         // Ist der Typ eine Selectbox => Es müssen SelectboxOptionen vorhanden sein
                                         if ($cTyp === 'selectbox') {
-                                            // Es gibt mehr als 1 Option
-                                            if (count($Setting_arr['SelectboxOptions'][0]) === 1) {
+                                            if (isset($Setting_arr['OptionsSource']) && is_array($Setting_arr['OptionsSource']) && count($Setting_arr['OptionsSource']) > 0) {
+                                                //do nothing for now
+                                            } elseif (count($Setting_arr['SelectboxOptions'][0]) === 1) { // Es gibt mehr als 1 Option
                                                 foreach ($Setting_arr['SelectboxOptions'][0]['Option'] as $y => $Option_arr) {
                                                     preg_match("/[0-9]+\sattr/", $y, $cTreffer6_arr);
 
@@ -1891,8 +1914,9 @@ function installierePlugin($XML_arr, $cVerzeichnis, $oPluginOld)
                                                 Shop::DB()->insert('tplugineinstellungenconfwerte', $oPluginEinstellungenConfWerte);
                                             }
                                         } elseif ($cTyp === 'radio') {
-                                            // Es gibt mehr als eine Option
-                                            if (count($Setting_arr['RadioOptions'][0]) === 1) {
+                                            if (isset($Setting_arr['OptionsSource']) && is_array($Setting_arr['OptionsSource']) && count($Setting_arr['OptionsSource']) > 0) {
+
+                                            } elseif (count($Setting_arr['RadioOptions'][0]) === 1) { // Es gibt mehr als eine Option
                                                 foreach ($Setting_arr['RadioOptions'][0]['Option'] as $y => $Option_arr) {
                                                     preg_match("/[0-9]+\sattr/", $y, $cTreffer6_arr);
                                                     if (isset($cTreffer6_arr[0]) && strlen($cTreffer6_arr[0]) === strlen($y)) {
@@ -2281,8 +2305,9 @@ function installierePlugin($XML_arr, $cVerzeichnis, $oPluginOld)
                                     if ($kPluginEinstellungenConf > 0) {
                                         // Ist der Typ eine Selectbox => Es müssen SelectboxOptionen vorhanden sein
                                         if ($cTyp === 'selectbox') {
-                                            // Es gibt mehr als eine Option
-                                            if (count($Setting_arr['SelectboxOptions'][0]) === 1) {
+                                            if (isset($Setting_arr['OptionsSource']) && is_array($Setting_arr['OptionsSource']) && count($Setting_arr['OptionsSource']) > 0) {
+                                                //do nothing for now
+                                            } elseif (count($Setting_arr['SelectboxOptions'][0]) === 1) { // Es gibt mehr als eine Option
                                                 foreach ($Setting_arr['SelectboxOptions'][0]['Option'] as $y => $Option_arr) {
                                                     preg_match('/[0-9]+\sattr/', $y, $cTreffer6_arr);
 
@@ -2312,8 +2337,9 @@ function installierePlugin($XML_arr, $cVerzeichnis, $oPluginOld)
                                                 Shop::DB()->insert('tplugineinstellungenconfwerte', $oPluginEinstellungenConfWerte);
                                             }
                                         } elseif ($cTyp === 'radio') {
-                                            // Es gibt mehr als eine Option
-                                            if (count($Setting_arr['RadioOptions'][0]) === 1) {
+                                            if (isset($Setting_arr['OptionsSource']) && is_array($Setting_arr['OptionsSource']) && count($Setting_arr['OptionsSource']) > 0) {
+                                                //do nothing for now
+                                            } elseif (count($Setting_arr['RadioOptions'][0]) === 1) { // Es gibt mehr als eine Option
                                                 foreach ($Setting_arr['RadioOptions'][0]['Option'] as $y => $Option_arr) {
                                                     preg_match('/[0-9]+\sattr/', $y, $cTreffer6_arr);
                                                     if (strlen($cTreffer6_arr[0]) === strlen($y)) {
@@ -3860,6 +3886,9 @@ function gibSprachVariablenALT($kPlugin)
 // 124 	= Templatedatei existiert nicht
 // 125  = Uninstall File existiert nicht
 // 127  = Benoetigt ionCube, Extension wurde aber nicht geladen
+// 128  = OptionsSource-Datei existiert nicht
+// 129  = OptionsSource-Function ist nicht callbar
+// 130  = OptionsSource-Datei/-Function fehlen
 */
 
 /**
@@ -4245,6 +4274,15 @@ function mappePlausiFehler($nFehlerCode)
                 break;
             case 127:
                 $return = 'Fehler: Das Plugin ben&ouml;tigt ionCube';
+                break;
+            case 128:
+                $return = 'Fehler: OptionsSource-Datei existiert nicht';
+                break;
+            case 129:
+                $return = 'Fehler: OptionsSource-Function ist nicht callbar';
+                break;
+            case 130:
+                $return = 'Fehler: OptionsSource-Datei/-Function fehlen';
                 break;
         }
     }

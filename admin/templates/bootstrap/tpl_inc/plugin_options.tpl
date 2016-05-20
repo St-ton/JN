@@ -56,8 +56,9 @@
                         </div>
                         {elseif $oPluginEinstellungConf->cInputTyp === 'radio'}
                             <div class="input-group-checkbox-wrap">
-                            {foreach name="plugineinstellungenconfwerte" from=$oPluginEinstellungConf->oPluginEinstellungenConfWerte_arr item=oPluginEinstellungenConfWerte}
-                                <input type="radio" name="{$oPluginEinstellungConf->cWertName}[]" value="{$oPluginEinstellungenConfWerte->cWert}"{if $cEinstellungWert == $oPluginEinstellungenConfWerte->cWert} checked="checked"{/if} /> {$oPluginEinstellungenConfWerte->cName} <br />
+                            {foreach name="plugineinstellungenconfwerte" from=$oPluginEinstellungConf->oPluginEinstellungenConfWerte_arr item=oPluginEinstellungenConfWerte key=i}
+                                <input id="opt-{$oPluginEinstellungenConfWerte->kPluginEinstellungenConf}-{$i}" type="radio" name="{$oPluginEinstellungConf->cWertName}[]" value="{$oPluginEinstellungenConfWerte->cWert}"{if $cEinstellungWert == $oPluginEinstellungenConfWerte->cWert} checked="checked"{/if} />
+                                <label for="opt-{$oPluginEinstellungenConfWerte->kPluginEinstellungenConf}-{$i}">{$oPluginEinstellungenConfWerte->cName}</label> <br />
                             {/foreach}
                         </div>
                         {else}

@@ -90,16 +90,17 @@ function uebernehmeWarenkorbAenderungen()
     $drop = null;
     $post = false;
     if (isset($_POST['dropPos'])) {
-        $drop = intval($_POST['dropPos']);
+        $drop = (int) $_POST['dropPos'];
         $post = true;
     } elseif (isset($_GET['dropPos'])) {
-        $drop = intval($_GET['dropPos']);
+        $drop = (int) $_GET['dropPos'];
     }
     if ($drop !== null) {
         loescheWarenkorbPosition($drop);
         if ($post) {
             //prg
-            header('Location: ' . Shop::getURL(true) . '/warenkorb.php', true, 303);
+            $linkHelper = LinkHelper::getInstance();
+            header('Location: ' . $linkHelper->getStaticRoute('warenkorb.php', true, true), true, 303);
         }
 
         return;

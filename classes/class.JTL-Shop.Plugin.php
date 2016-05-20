@@ -369,7 +369,7 @@ class Plugin
             foreach ($oPluginEinstellungConfTMP_arr as $i => $oPluginEinstellungConfTMP) {
                 $oPluginEinstellungConfTMP_arr[$i]->oPluginEinstellungenConfWerte_arr = array();
                 if ($oPluginEinstellungConfTMP->cInputTyp === 'selectbox' || $oPluginEinstellungConfTMP->cInputTyp === 'radio') {
-                    if (!empty($oPluginEinstellungConfTMP->cSourceFile) && !empty($oPluginEinstellungConfTMP->cSourceFunction)) {
+                    if (!empty($oPluginEinstellungConfTMP->cSourceFile)) {
                         $oPluginEinstellungConfTMP_arr[$i]->oPluginEinstellungenConfWerte_arr = $this->getDynamicOptions($oPluginEinstellungConfTMP);
                     } else {
                         $oPluginEinstellungConfTMP_arr[$i]->oPluginEinstellungenConfWerte_arr = Shop::DB()->query(
@@ -766,10 +766,8 @@ class Plugin
     public function getDynamicOptions($conf)
     {
         $dynamicOptions = null;
-        if (!empty($conf->cSourceFile) && !empty($conf->cSourceFunction)) {
-            require_once $this->cAdminmenuPfad . $conf->cSourceFile;
-
-            $dynamicOptions = call_user_func($conf->cSourceFunction);
+        if (!empty($conf->cSourceFile) && file_exists($this->cAdminmenuPfad . $conf->cSourceFile)) {
+            $dynamicOptions = include $this->cAdminmenuPfad . $conf->cSourceFile;
             foreach ($dynamicOptions as $option) {
                 $option->kPluginEinstellungenConf = $conf->kPluginEinstellungenConf;
                 if (!isset($option->nSort)) {

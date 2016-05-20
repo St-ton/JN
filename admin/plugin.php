@@ -76,7 +76,7 @@ if ($step === 'plugin_uebersicht') {
         $oPlugin = new Plugin($kPlugin, $invalidateCache);
         if (!$invalidateCache) { //make sure dynamic options are reloaded
             foreach ($oPlugin->oPluginEinstellungConf_arr as $option) {
-                if (!empty($option->cSourceFile) && !empty($option->cSourceFunction)) {
+                if (!empty($option->cSourceFile)) {
                     $option->oPluginEinstellungenConfWerte_arr = $oPlugin->getDynamicOptions($option);
                 }
             }

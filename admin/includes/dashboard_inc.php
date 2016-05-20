@@ -14,10 +14,15 @@ function getWidgets($bActive = true)
     if ($bActive && is_array($oWidget_arr) && count($oWidget_arr) > 0) {
         foreach ($oWidget_arr as $i => $oWidget) {
             $oWidget_arr[$i]->cContent = '';
-
             $cClass     = 'Widget' . $oWidget->cClass;
             $cClassFile = 'class.' . $cClass . '.php';
             $cClassPath = PFAD_ROOT . PFAD_ADMIN . 'includes/widgets/' . $cClassFile;
+            $oWidget->cNiceTitle = str_replace(array('--', ' '), '-', $oWidget->cTitle);
+            $oWidget->cNiceTitle = strtolower(str_replace(
+                array('ä', 'Ä', 'ü', 'Ü', 'ö', 'Ö', 'ß', utf8_decode('ü'), utf8_decode('Ü'), utf8_decode('ä'), utf8_decode('Ä'), utf8_decode('ö'), utf8_decode('Ö'), '(', ')', '/', '\\'),
+                '',
+                $oWidget->cNiceTitle)
+            );
             // Plugin?
             $oPlugin = null;
             if (isset($oWidget->kPlugin) && $oWidget->kPlugin > 0) {

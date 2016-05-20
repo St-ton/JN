@@ -82,7 +82,7 @@ function pruefeVersandartWahl($Versandart, $aFormValues = 0, $bMsg = true)
 {
     global $hinweis, $step;
 
-    $nReturnValue = versandartKorrekt(intval($Versandart), $aFormValues);
+    $nReturnValue = versandartKorrekt($Versandart, $aFormValues);
     executeHook(HOOK_BESTELLVORGANG_PAGE_STEPVERSAND_PLAUSI);
 
     if ($nReturnValue) {
@@ -2212,7 +2212,7 @@ function pruefeZahlungsartMaxBestellwert($fMaxBestellwert)
  */
 function versandartKorrekt($kVersandart, $aFormValues = 0)
 {
-    $kVersandart = intval($kVersandart);
+    $kVersandart = (int) $kVersandart;
     //Verpackung beachten
     $kVerpackung_arr = (isset($_POST['kVerpackung']) && is_array($_POST['kVerpackung']) && count($_POST['kVerpackung']) > 0) ?
         $_POST['kVerpackung'] :

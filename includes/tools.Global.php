@@ -715,7 +715,7 @@ function checkeWarenkorbEingang()
                                 }
                             }
                             if ($oTmpArtikel->cTeilbar !== 'Y' && intval($fAnzahl) != $fAnzahl) {
-                                $fAnzahl = intval($fAnzahl);
+                                $fAnzahl = (int) $fAnzahl;
                             }
                             $redirectParam = pruefeFuegeEinInWarenkorb(
                                 $oKonfigitem->getArtikel(),
@@ -835,8 +835,8 @@ function fuegeVariBoxInWK($variBoxAnzahl_arr, $kArtikel, $bIstVater, $bExtern = 
                     $oVariKombi                                 = new stdClass();
                     $oVariKombi->fAnzahl                        = doubleval($variBoxAnzahl_arr[$cKeys]);
                     $oVariKombi->cVariation0                    = StringHandler::filterXSS($cVariation0);
-                    $oVariKombi->kEigenschaft0                  = intval($kEigenschaft0);
-                    $oVariKombi->kEigenschaftWert0              = intval($kEigenschaftWert0);
+                    $oVariKombi->kEigenschaft0                  = (int) $kEigenschaft0;
+                    $oVariKombi->kEigenschaftWert0              = (int) $kEigenschaftWert0;
                     $_SESSION['variBoxAnzahl_arr'][$cKeys]      = $oVariKombi;
                     $_POST['eigenschaftwert_' . $kEigenschaft0] = $kEigenschaftWert0;
                 } else {
@@ -862,10 +862,10 @@ function fuegeVariBoxInWK($variBoxAnzahl_arr, $kArtikel, $bIstVater, $bExtern = 
                         $oVariKombi->fAnzahl                        = doubleval($variBoxAnzahl_arr[$cKeys]);
                         $oVariKombi->cVariation0                    = StringHandler::filterXSS($cVariation0);
                         $oVariKombi->cVariation1                    = StringHandler::filterXSS($cVariation1);
-                        $oVariKombi->kEigenschaft0                  = intval($kEigenschaft0);
-                        $oVariKombi->kEigenschaftWert0              = intval($kEigenschaftWert0);
-                        $oVariKombi->kEigenschaft1                  = intval($kEigenschaft1);
-                        $oVariKombi->kEigenschaftWert1              = intval($kEigenschaftWert1);
+                        $oVariKombi->kEigenschaft0                  = (int) $kEigenschaft0;
+                        $oVariKombi->kEigenschaftWert0              = (int) $kEigenschaftWert0;
+                        $oVariKombi->kEigenschaft1                  = (int) $kEigenschaft1;
+                        $oVariKombi->kEigenschaftWert1              = (int) $kEigenschaftWert1;
                         $_SESSION['variBoxAnzahl_arr'][$cKeys]      = $oVariKombi;
                         $_POST['eigenschaftwert_' . $kEigenschaft0] = $kEigenschaftWert0;
                         $_POST['eigenschaftwert_' . $kEigenschaft1] = $kEigenschaftWert1;
@@ -976,7 +976,7 @@ function fuegeEinInWarenkorbPers($kArtikel, $fAnzahl, $oEigenschaftwerte_arr, $c
     if (!isset($_SESSION['Kunde']->kKunde)) {
         return;
     }
-    $kArtikel = intval($kArtikel);
+    $kArtikel = (int) $kArtikel;
     // Pruefe Einstellungen fuer persistenten Warenkorb
     $conf = Shop::getSettings(array(CONF_GLOBAL));
     if ($conf['global']['warenkorbpers_nutzen'] === 'Y') {
@@ -987,7 +987,7 @@ function fuegeEinInWarenkorbPers($kArtikel, $fAnzahl, $oEigenschaftwerte_arr, $c
             // Falls Artikel vorhanden
             if (isset($oArtikelVorhanden->kArtikel)) {
                 // Sichtbarkeit pruefen
-                $oSichtbarkeit = Shop::DB()->select('tartikelsichtbarkeit', 'kArtikel', $kArtikel, 'kKundengruppe', intval($_SESSION['Kundengruppe']->kKundengruppe), null, null, false, 'kArtikel');
+                $oSichtbarkeit = Shop::DB()->select('tartikelsichtbarkeit', 'kArtikel', $kArtikel, 'kKundengruppe', (int) $_SESSION['Kundengruppe']->kKundengruppe, null, null, false, 'kArtikel');
                 if (empty($oSichtbarkeit) || !isset($oSichtbarkeit->kArtikel) || !$oSichtbarkeit->kArtikel) {
                     $oWarenkorbPers = new WarenkorbPers($_SESSION['Kunde']->kKunde);
                     $oWarenkorbPers->fuegeEin($kArtikel, $oArtikelVorhanden->cName, $oEigenschaftwerte_arr, $fAnzahl, $cUnique, $kKonfigitem);
@@ -3315,7 +3315,7 @@ function gibKeyArrayFuerKeyString($cKeys, $cSeperator)
     if (is_array($cTMP_arr) && count($cTMP_arr) > 0) {
         foreach ($cTMP_arr as $cTMP) {
             if (strlen($cTMP) > 0) {
-                $kKey_arr[] = intval($cTMP);
+                $kKey_arr[] = (int) $cTMP;
             }
         }
     }
@@ -3388,7 +3388,7 @@ function parseNewsText($cText)
             //switch($cURLArt_arr[$i])
             switch ($cParameter_arr[$cParameter]) {
                 case URLART_ARTIKEL :
-                    $oObjekt->kArtikel = intval($cKey);
+                    $oObjekt->kArtikel = (int) $cKey;
                     $oObjekt->cKey     = 'kArtikel';
                     $cTabellenname     = 'tartikel';
                     $cSpracheSQL       = '';
@@ -3415,7 +3415,7 @@ function parseNewsText($cText)
                     break;
 
                 case URLART_KATEGORIE :
-                    $oObjekt->kKategorie = intval($cKey);
+                    $oObjekt->kKategorie = (int) $cKey;
                     $oObjekt->cKey       = 'kKategorie';
                     $cTabellenname       = 'tkategorie';
                     $cSpracheSQL         = '';
@@ -4503,11 +4503,7 @@ function pruefeSOAP($cURL = '')
             return false;
         }
     }
-    if (class_exists('SoapClient')) {
-        return true;
-    }
-
-    return false;
+    return class_exists('SoapClient');
 }
 
 /**
@@ -4521,11 +4517,7 @@ function pruefeCURL($cURL = '')
             return false;
         }
     }
-    if (function_exists('curl_init')) {
-        return true;
-    }
-
-    return false;
+    return function_exists('curl_init');
 }
 
 /**
@@ -4533,11 +4525,7 @@ function pruefeCURL($cURL = '')
  */
 function pruefeALLOWFOPEN()
 {
-    if (intval(ini_get('allow_url_fopen')) === 1) {
-        return true;
-    }
-
-    return false;
+    return (intval(ini_get('allow_url_fopen')) === 1);
 }
 
 /**

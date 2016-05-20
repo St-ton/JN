@@ -28,8 +28,8 @@ function includeMailTemplate($params, &$smarty)
             $res = Shop::DB()->query(
                 "SELECT " . $row . " AS content
                     FROM temailvorlagesprache
-                    WHERE kSprache = " . intval($currenLanguage->kSprache) . "
-                    AND kEmailvorlage = " . intval($vorlage->kEmailvorlage), 1
+                    WHERE kSprache = " . (int) $currenLanguage->kSprache . "
+                    AND kEmailvorlage = " . (int) $vorlage->kEmailvorlage, 1
             );
         }
         if (isset($res->content)) {
@@ -103,7 +103,7 @@ function sendeMail($ModulId, $Object, $mail = null)
         $Sprache = Shop::DB()->query("SELECT * FROM tsprache WHERE kSprache = " . (int)$Object->tkunde->kSprache, 1);
     }
     if (isset($Object->NewsletterEmpfaenger->kSprache) && $Object->NewsletterEmpfaenger->kSprache > 0) {
-        $Sprache = Shop::DB()->query("SELECT * FROM tsprache WHERE kSprache=" . $Object->NewsletterEmpfaenger->kSprache, 1);
+        $Sprache = Shop::DB()->query("SELECT * FROM tsprache WHERE kSprache = " . $Object->NewsletterEmpfaenger->kSprache, 1);
     }
     if (!isset($Sprache) || !$Sprache) {
         $Sprache = Shop::DB()->query("SELECT * FROM tsprache WHERE cShopStandard = 'Y'", 1);
@@ -179,8 +179,8 @@ function sendeMail($ModulId, $Object, $mail = null)
     $Emailvorlagesprache = Shop::DB()->query(
         "SELECT cBetreff, cPDFS, cDateiname
             FROM " . $cTableSprache . "
-            WHERE kEmailvorlage = " . intval($Emailvorlage->kEmailvorlage) . "
-            AND kSprache=" . intval($Sprache->kSprache), 1
+            WHERE kEmailvorlage = " . (int) $Emailvorlage->kEmailvorlage . "
+            AND kSprache = " . (int) $Sprache->kSprache, 1
     );
     $Emailvorlage->cBetreff = injectSubject($Object, (isset($Emailvorlagesprache->cBetreff) ? $Emailvorlagesprache->cBetreff : null));
 

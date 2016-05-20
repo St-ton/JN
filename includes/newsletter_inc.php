@@ -65,7 +65,7 @@ function fuegeNewsletterEmpfaengerEin($oKunde, $bPruefeDaten = false)
             $oNewsletterEmpfaenger = Shop::DB()->query(
                 "SELECT *, DATE_FORMAT(dEingetragen, '%d.%m.%Y %H:%i') AS Datum
                     FROM tnewsletterempfaenger
-                    WHERE cEmail='" . $oKunde->cEmail . "'", 1
+                    WHERE cEmail = '" . $oKunde->cEmail . "'", 1
             );
 
             // Prüfen ob Kunde bereits eingetragen
@@ -73,7 +73,7 @@ function fuegeNewsletterEmpfaengerEin($oKunde, $bPruefeDaten = false)
                 $oNewsletterEmpfaengerKunde = Shop::DB()->query(
                     "SELECT kKunde
                         FROM tnewsletterempfaenger
-                        WHERE kKunde = " . intval($_SESSION['Kunde']->kKunde), 1
+                        WHERE kKunde = " . (int) $_SESSION['Kunde']->kKunde, 1
                 );
             }
             if ((isset($oNewsletterEmpfaenger->cEmail) && strlen($oNewsletterEmpfaenger->cEmail) > 0) ||
@@ -168,7 +168,8 @@ function newsletterAnmeldungPlausi($oKunde)
     global $cFehler, $Einstellungen;
 
     $nPlausi_arr = array();
-    if ((!isset($_SESSION['bAnti_spam_already_checked']) || $_SESSION['bAnti_spam_already_checked'] !== true) && isset($Einstellungen['newsletter']['newsletter_sicherheitscode']) && $Einstellungen['newsletter']['newsletter_sicherheitscode'] !== 'N' && empty($_SESSION['Kunde']->kKunde)) {
+    if ((!isset($_SESSION['bAnti_spam_already_checked']) || $_SESSION['bAnti_spam_already_checked'] !== true) && isset($Einstellungen['newsletter']['newsletter_sicherheitscode']) &&
+        $Einstellungen['newsletter']['newsletter_sicherheitscode'] !== 'N' && empty($_SESSION['Kunde']->kKunde)) {
         if ($Einstellungen['newsletter']['newsletter_sicherheitscode'] !== 'N') {
             // reCAPTCHA
             if (isset($_POST['g-recaptcha-response'])) {
@@ -203,7 +204,7 @@ function pruefeObBereitsAbonnent($kKunde)
         $oNewsletterEmpfaenger = Shop::DB()->query(
             "SELECT kKunde
                 FROM tnewsletterempfaenger
-                WHERE kKunde = " . intval($kKunde), 1
+                WHERE kKunde = " . (int) $kKunde, 1
         );
 
         return (isset($oNewsletterEmpfaenger->kKunde) && $oNewsletterEmpfaenger->kKunde > 0);
@@ -225,7 +226,7 @@ function pruefeNLHistoryKundengruppe($kKundengruppe, $cKundengruppeKey)
         if (is_array($cKundengruppeKey_arr) && count($cKundengruppeKey_arr) > 0) {
             foreach ($cKundengruppeKey_arr as $cKundengruppeKey) {
                 if (intval($cKundengruppeKey) > 0 || (strlen($cKundengruppeKey) > 0 && intval($cKundengruppeKey) === 0)) {
-                    $kKundengruppe_arr[] = intval($cKundengruppeKey);
+                    $kKundengruppe_arr[] = (int) $cKundengruppeKey;
                 }
             }
         }

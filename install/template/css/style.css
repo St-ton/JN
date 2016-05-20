@@ -90,3 +90,7 @@ ul .fa-check-circle-o, ul.fa-exclamation-circle {
 #content2 .panel .table {
     margin-bottom: 0;
 }
+
+.backend-wrapper.container {
+    padding: 40px;
+}

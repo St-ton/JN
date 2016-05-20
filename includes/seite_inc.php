@@ -322,7 +322,7 @@ function gibTagging($Einstellungen)
             WHERE ttag.nAktiv = 1
                 AND ttag.kSprache = " . (int) $_SESSION['kSprache'] . "
             GROUP BY ttag.cName
-            ORDER BY Anzahl DESC" . $limit, 2
+            ORDER BY Anzahl" . $limit, 2
     );
     // Priorität berechnen
     $count        = count($tagwolke_objs);

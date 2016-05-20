@@ -30,7 +30,7 @@ if ($step === 'plugin_uebersicht') {
                         WHERE kPluginAdminMenu != 0
                             AND kPlugin = " . $kPlugin . "
                             AND cConf = 'Y'
-                            AND kPluginAdminMenu = " . intval($_POST['kPluginAdminMenu']), 2
+                            AND kPluginAdminMenu = " . (int) $_POST['kPluginAdminMenu'], 2
                 );
                 $bError = false;
                 if (count($oPluginEinstellungConf_arr) > 0) {

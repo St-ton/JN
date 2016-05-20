@@ -128,19 +128,6 @@
                                     </div>
                                     <div class="panel-body">
                                         {block name="basket-shipping-estimated-body"}
-                                            {if count($ArtikelabhaengigeVersandarten)>0}
-                                                <strong>{lang key="productShippingDesc" section="checkout"}:</strong>
-                                                <table class="table table-striped">
-                                                    {foreach name=artikelversandliste from=$ArtikelabhaengigeVersandarten item=artikelversand}
-                                                        <tr>
-                                                            <td>{$artikelversand->cName|trans}</td>
-                                                            <td class="text-right"><strong>{$artikelversand->cPreisLocalized}</strong>
-                                                            </td>
-                                                        </tr>
-                                                    {/foreach}
-                                                </table>
-                                            {/if}
-
                                             {if !empty($Versandarten)}
                                                 <table class="table table-striped">
                                                     {foreach name=versand from=$Versandarten item=versandart}
@@ -168,13 +155,18 @@
                                                                         <small>{lang key="shippingTimeLP" section="global"}: {$versandart->cLieferdauer|trans}</small>
                                                                     </p>
                                                                 {/if}
+                                                                {if isset($versandart->ArtikelabhaengigeVersandkosten)}
+                                                                    <ul>
+                                                                        {foreach name=artikelabhaengigekosten from=$versandart->ArtikelabhaengigeVersandkosten item=artikelabhaengigeversandkosten}
+                                                                            <li>
+                                                                                <small>{$artikelabhaengigeversandkosten->cName|trans}</small>
+                                                                            </li>
+                                                                        {/foreach}
+                                                                    </ul>
+                                                                {/if}
                                                             </td>
                                                             <td class="text-right">
-                                                                {if $versandart->fEndpreis == 0}
-                                                                    <strong>{lang key="freeshipping" section="global"}</strong>
-                                                                {else}
-                                                                    <strong>{$versandart->cPreisLocalized}</strong>
-                                                                {/if}
+                                                                <strong>{$versandart->cPreisLocalized}</strong>
                                                             </td>
                                                         </tr>
                                                     {/foreach}

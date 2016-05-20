@@ -35,21 +35,6 @@
                         <b>{lang key="estimateShippingCostsTo" section="checkout"} {$Versandland}, {lang key="plz" section="forgot password"} {$VersandPLZ}</b>
                     </td>
                 </tr>
-                {if isset($ArtikelabhaengigeVersandarten) && $ArtikelabhaengigeVersandarten|@count > 0}
-                    <tr>
-                        <td colspan="2">{lang key="productShippingDesc" section="checkout"}:</td>
-                    </tr>
-                    {foreach name=artikelversandliste from=$ArtikelabhaengigeVersandarten item=artikelversand}
-                        <tr>
-                            <td>
-                                {$artikelversand->cName|trans}
-                            </td>
-                            <td>
-                                <b>{$artikelversand->cPreisLocalized}</b>
-                            </td>
-                        </tr>
-                    {/foreach}
-                {/if}
                 {if isset($Versandarten) && $Versandarten|@count > 0}
                     {foreach name=versand from=$Versandarten item=versandart}
                         <tr>
@@ -72,13 +57,18 @@
                                     <br>
                                     <span class="small">{lang key="shippingTimeLP" section="global"}: {$versandart->cLieferdauer|trans}</span>
                                 {/if}
+                                {if isset($versandart->ArtikelabhaengigeVersandkosten)}
+                                    <ul>
+                                        {foreach name=artikelabhaengigekosten from=$versandart->ArtikelabhaengigeVersandkosten item=artikelabhaengigeversandkosten}
+                                            <li>
+                                                <small>{$artikelabhaengigeversandkosten->cName|trans}</small>
+                                            </li>
+                                        {/foreach}
+                                    </ul>
+                                {/if}
                             </td>
                             <td>
-                                {if $versandart->fEndpreis == 0}
-                                    <b>{lang key="freeshipping" section="global"}</b>
-                                {else}
-                                    <b>{$versandart->cPreisLocalized}</b>
-                                {/if}
+                                <b>{$versandart->cPreisLocalized}</b>
                             </td>
                         </tr>
                     {/foreach}

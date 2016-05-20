@@ -311,9 +311,9 @@ function gibLivesucheLast($Einstellungen)
 function gibTagging($Einstellungen)
 {
     $limit = (isset($Einstellungen['sonstiges']['sonstiges_tagging_all_count']) && intval($Einstellungen['sonstiges']['sonstiges_tagging_all_count']) > 0) ?
-        intval($Einstellungen['sonstiges']['sonstiges_tagging_all_count']) :
+        (int) $Einstellungen['sonstiges']['sonstiges_tagging_all_count'] :
         100;
-    $limit         = ' limit ' . $limit;
+    $limit         = ' LIMIT ' . $limit;
     $tagwolke_objs = Shop::DB()->query(
         "SELECT ttag.kTag, ttag.cName, tseo.cSeo, sum(ttagartikel.nAnzahlTagging) AS Anzahl
             FROM ttag

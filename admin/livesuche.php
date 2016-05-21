@@ -127,7 +127,7 @@ if (isset($_POST['livesuche']) && intval($_POST['livesuche']) === 1) { //Formula
                     SET cSeo = ''
                     WHERE kSuchanfrage" . $cSQLDel, 3
             );
-            if (is_array($_POST['nAktiv'])) {
+            if (isset($_POST['nAktiv']) && is_array($_POST['nAktiv'])) {
                 foreach ($_POST['nAktiv'] as $i => $nAktiv) {
                     $oSuchanfrage = Shop::DB()->query(
                         "SELECT cSuche
@@ -258,6 +258,7 @@ if (isset($_POST['livesuche']) && intval($_POST['livesuche']) === 1) { //Formula
         if (is_array($_POST['kSuchanfrage'])) {
             foreach ($_POST['kSuchanfrage'] as $kSuchanfrage) {
                 $kSuchanfrage_obj = Shop::DB()->select('tsuchanfrage', 'kSuchanfrage', (int)$kSuchanfrage);
+                $obj              = new stdClass();
                 $obj->kSprache    = (int)$kSuchanfrage_obj->kSprache;
                 $obj->cSuche      = $kSuchanfrage_obj->cSuche;
 

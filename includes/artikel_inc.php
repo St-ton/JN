@@ -402,7 +402,9 @@ function bearbeiteBenachrichtigung()
                 $Benachrichtigung->nStatus   = 0;
                 executeHook(HOOK_ARTIKEL_INC_BENACHRICHTIGUNG);
 
-                $kVerfuegbarkeitsbenachrichtigung = Shop::DB()->insert('tverfuegbarkeitsbenachrichtigung', $Benachrichtigung);
+                $kVerfuegbarkeitsbenachrichtigung = Shop::DB()->queryPrepared('INSERT INTO tverfuegbarkeitsbenachrichtigung (cVorname, cNachname, cMail, kSprache, kArtikel, cIP, dErstellt, nStatus) 
+                     VALUES (:cVorname, :cNachname, :cMail, :kSprache, :kArtikel, :cIP, now(), :nStatus)
+                     ON DUPLICATE KEY UPDATE cVorname = :cVorname, cNachname = :cNachname, ksprache = :kSprache, cIP = :cIP, dErstellt = now(), nStatus = :nStatus', get_object_vars($Benachrichtigung), 7);
                 // Kampagne
                 if (isset($_SESSION['Kampagnenbesucher'])) {
                     setzeKampagnenVorgang(KAMPAGNE_DEF_VERFUEGBARKEITSANFRAGE, $kVerfuegbarkeitsbenachrichtigung, 1.0); // Verfügbarkeitsbenachrichtigung

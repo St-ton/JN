@@ -980,6 +980,9 @@ class NiceDB
             }
         } elseif ($return === 3) {
             $ret = $s->rowCount();
+        }  elseif ($return === 7) {
+            $id = $this->pdo->lastInsertId();
+            $ret = ($id > 0) ? $id : 1;
         } elseif ($return === 8) {
             $ret = $s->fetchAll(PDO::FETCH_NAMED);
             if (is_array($ret) && isset($ret[0])) {

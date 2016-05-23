@@ -3246,7 +3246,7 @@ function baueVersandkostenfreiString($oVersandart, $fWarenkorbSumme)
 function baueVersandkostenfreiLaenderString($oVersandart, $fWarenkorbSumme = 0.0)
 {
     if (is_object($oVersandart) && floatval($oVersandart->fVersandkostenfreiAbX) > 0) {
-        $cacheID = 'bvkfls_' . $oVersandart->fVersandkostenfreiAbX . strlen($oVersandart->cLaender);
+        $cacheID = 'bvkfls_' . $oVersandart->fVersandkostenfreiAbX . strlen($oVersandart->cLaender) . '_' . (int) $_SESSION['kSprache'];
         if (($vkfls = Shop::Cache()->get($cacheID)) === false) {
             $cLaender_arr = explode(' ', $oVersandart->cLaender);
             if (strlen($cLaender_arr[count($cLaender_arr) - 1]) === 0) {

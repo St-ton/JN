@@ -808,6 +808,14 @@ final class Shop
                 }
                 //EXPERIMENTAL_MULTILANG_SHOP END
 
+                //Link active?
+                if ($oSeo->cKey === 'kLink') {
+                    $bIsActive = self::DB()->select('tlink', 'kLink', $oSeo->kKey,null, null, null, null, false);
+                    if ($bIsActive->bIsActive === '0') {
+                        $oSeo = false;
+                    }
+                }
+
                 //mainwords
                 if (isset($oSeo->kKey) && strcasecmp($oSeo->cSeo, $seo) === 0) {
                     //canonical

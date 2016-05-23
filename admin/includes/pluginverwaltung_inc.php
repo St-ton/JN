@@ -3360,6 +3360,11 @@ function aktivierePlugin($kPlugin)
                         SET bActive = 1
                         WHERE kPlugin = " . $kPlugin, 3
                 );
+                Shop::DB()->query(
+                    "UPDATE tlink
+                         SET bIsActive = 1
+                         WHERE kPlugin = " . $kPlugin, 3
+                );
 
                 if ($nRow > 0) {
                     return 1; // Alles O.K.
@@ -3396,6 +3401,11 @@ function deaktivierePlugin($kPlugin)
             "UPDATE tadminwidgets
                 SET bActive = 0
                 WHERE kPlugin = " . $kPlugin, 3
+        );
+        Shop::DB()->query(
+            "UPDATE tlink
+                 SET bIsActive = 0
+                 WHERE kPlugin = " . $kPlugin, 3
         );
         Shop::Cache()->flushTags(array(CACHING_GROUP_PLUGIN . '_' . $kPlugin));
 

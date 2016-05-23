@@ -244,7 +244,11 @@
                                         .attr('max', item.fInitial)
                                         .val(item.fInitial)
                                         .attr('disabled', true)
-                                    quantityWrapper.slideUp(200);
+                                    if(item.fInitial == 1){
+                                        quantityWrapper.slideUp(200);
+                                    }else{
+                                        quantityWrapper.slideDown(200);
+                                    }
                                 }
                                 else {
                                     quantityWrapper.slideDown(200);

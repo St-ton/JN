@@ -129,48 +129,58 @@
                                     <div class="panel-body">
                                         {block name="basket-shipping-estimated-body"}
                                             {if !empty($Versandarten)}
-                                                <table class="table table-striped">
-                                                    {foreach name=versand from=$Versandarten item=versandart}
-                                                        <tr id="shipment_{$versandart->kVersandart}">
-                                                            <td>
-                                                                {if $versandart->cBild}
-                                                                    <img src="{$versandart->cBild}" alt="{$versandart->angezeigterName|trans}">
-                                                                {else}
-                                                                    {$versandart->angezeigterName|trans}
-                                                                {/if}
-                                                                {if $versandart->angezeigterHinweistext|trans}
-                                                                    <p>
-                                                                        <small>{$versandart->angezeigterHinweistext|trans}</small>
-                                                                    </p>
-                                                                {/if}
-                                                                {if isset($versandart->Zuschlag) && $versandart->Zuschlag->fZuschlag != 0}
-                                                                    <p>
-                                                                        <small>{$versandart->Zuschlag->angezeigterName|trans}
-                                                                            (+{$versandart->Zuschlag->cPreisLocalized})
-                                                                        </small>
-                                                                    </p>
-                                                                {/if}
-                                                                {if $versandart->cLieferdauer|trans && $Einstellungen.global.global_versandermittlung_lieferdauer_anzeigen === 'Y'}
-                                                                    <p>
-                                                                        <small>{lang key="shippingTimeLP" section="global"}: {$versandart->cLieferdauer|trans}</small>
-                                                                    </p>
-                                                                {/if}
-                                                                {if isset($versandart->ArtikelabhaengigeVersandkosten)}
+                                                {foreach name=versand from=$Versandarten item=versandart}
+                                                    <div class="row">
+                                                        <div class="col-xs-8 col-md-10 col-lg-10">
+                                                            {if !empty($versandart->cBild)}
+                                                                <img src="{$versandart->cBild}" alt="{$versandart->angezeigterName|trans}" />
+                                                            {else}
+                                                                <p>{$versandart->angezeigterName|trans}</p>
+                                                            {/if}
+                                                        </div>
+                                                        <div class="col-xs-4 col-md-2 col-lg-2">
+                                                            <b><small>{$versandart->cPreisLocalized}</small></b>
+                                                        </div>
+                                                    </div>
+                                                    {if isset($versandart->ArtikelabhaengigeVersandkosten)}
+                                                        {foreach name=artikelabhaengigekosten from=$versandart->ArtikelabhaengigeVersandkosten item=artikelabhaengigeversandkosten}
+                                                            <div class="row">
+                                                                <div class="col-xs-8 col-md-10 col-lg-10">
                                                                     <ul>
-                                                                        {foreach name=artikelabhaengigekosten from=$versandart->ArtikelabhaengigeVersandkosten item=artikelabhaengigeversandkosten}
-                                                                            <li>
-                                                                                <small>{$artikelabhaengigeversandkosten->cName|trans}</small>
-                                                                            </li>
-                                                                        {/foreach}
+                                                                        <li>
+                                                                            <small>{$artikelabhaengigeversandkosten->cName|trans}</small>
+                                                                        </li>
                                                                     </ul>
-                                                                {/if}
-                                                            </td>
-                                                            <td class="text-right">
-                                                                <strong>{$versandart->cPreisLocalized}</strong>
-                                                            </td>
-                                                        </tr>
-                                                    {/foreach}
-                                                </table>
+                                                                </div>
+                                                                <div class="col-xs-4 col-md-2 col-lg-2">
+                                                                    <small>
+                                                                        {$artikelabhaengigeversandkosten->cPreisLocalized}
+                                                                    </small>
+                                                                </div>
+                                                            </div>
+                                                        {/foreach}
+                                                    {/if}
+                                                    {if !empty($versandart->angezeigterHinweistext|trans) && $versandart->angezeigterHinweistext|has_trans}
+                                                        <p>
+                                                            <small>{$versandart->angezeigterHinweistext|trans}</small>
+                                                        </p>
+                                                    {/if}
+                                                    {if isset($versandart->Zuschlag) && $versandart->Zuschlag->fZuschlag != 0}
+                                                        <p>
+                                                            <small>{$versandart->Zuschlag->angezeigterName|trans}
+                                                                (+{$versandart->Zuschlag->cPreisLocalized})
+                                                            </small>
+                                                        </p>
+                                                    {/if}
+                                                    {if !empty($versandart->cLieferdauer|trans) && $Einstellungen.global.global_versandermittlung_lieferdauer_anzeigen === 'Y'}
+                                                        <p>
+                                                            <small>{lang key="shippingTimeLP" section="global"}: {$versandart->cLieferdauer|trans}</small>
+                                                        </p>
+                                                    {/if}
+                                                    {if !$smarty.foreach.versand.last}
+                                                        <hr>
+                                                    {/if}
+                                                {/foreach}
                                                 <a href="{get_static_route id='warenkorb.php'}" class="btn btn-default">{lang key="newEstimation" section="checkout"}</a>
                                             {else}
                                                 {lang key="noShippingAvailable" section="checkout"}

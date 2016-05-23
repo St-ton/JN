@@ -197,7 +197,6 @@ class VersandartHelper
         for ($i = 0; $i < $cnt; $i++) {
             $versandarten[$i]->Zuschlag                 = gibVersandZuschlag($versandarten[$i], $cISO, $plz);
             $versandarten[$i]->fEndpreis                = berechneVersandpreis($versandarten[$i], $cISO, null);
-            $ArtikelabhaengigerVersandkostenGesamtpreis = 0;
             if ($versandarten[$i]->fEndpreis == -1) {
                 unset($versandarten[$i]);
                 continue;
@@ -233,18 +232,7 @@ class VersandartHelper
             if ($versandarten[$i]->fEndpreis == 0) {
                 // Abfrage ob ein Artikel Artikelabhängige Versandkosten besitzt
                 if ($cArtikelabhaengigeVersandkosten === 'Y') {
-                    if (isset($_SESSION['Warenkorb']->PositionenArr) && is_array($_SESSION['Warenkorb']->PositionenArr)) {
-                        foreach ($_SESSION['Warenkorb']->PositionenArr as $Pos) {
-                            if ($Pos->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL) {
-                                $ArtikelabhaengigerVersandkostenGesamtpreis += self::gibArtikelabhaengigeVersandkosten($lieferland, $Pos->Artikel, $Pos->nAnzahl)->fKosten;
-                            }
-                        }
-                    }
-                    if ($isNettoKunde === true) {
-                        $versandarten[$i]->cPreisLocalized = gibPreisStringLocalized(berechneNetto(floatval($ArtikelabhaengigerVersandkostenGesamtpreis), $steuerSatz)) . ' ' . Shop::Lang()->get('plus', 'productDetails') . ' ' . Shop::Lang()->get('vat', 'productDetails');
-                    } else {
-                        $versandarten[$i]->cPreisLocalized = gibPreisStringLocalized($ArtikelabhaengigerVersandkostenGesamtpreis);
-                    }
+                    $versandarten[$i]->cPreisLocalized                = Shop::Lang()->get('freeshipping', 'global');
                     $versandarten[$i]->ArtikelabhaengigeVersandkosten = self::gibArtikelabhaengigeVersandkostenImWK($lieferland, $_SESSION['Warenkorb']->PositionenArr);
                 } else {
                     $versandarten[$i]->cPreisLocalized = Shop::Lang()->get('freeshipping', 'global');
@@ -252,19 +240,11 @@ class VersandartHelper
             // Versandartkosten + Artikelabhängigen Versandkostenpreis
             } else {
                 // Abfrage ob ein Artikel Artikelabhängige Versandkosten besitzt
-                $ArtikelabhaengigerVersandkostenGesamtpreis = $versandarten[$i]->fEndpreis;
                 if ($cArtikelabhaengigeVersandkosten === 'Y') {
-                    if (isset($_SESSION['Warenkorb']->PositionenArr) && is_array($_SESSION['Warenkorb']->PositionenArr)) {
-                        foreach ($_SESSION['Warenkorb']->PositionenArr as $Pos) {
-                            if ($Pos->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL) {
-                                $ArtikelabhaengigerVersandkostenGesamtpreis += self::gibArtikelabhaengigeVersandkosten($lieferland, $Pos->Artikel, $Pos->nAnzahl)->fKosten;
-                            }
-                        }
-                    }
                     if ($isNettoKunde === true) {
-                        $versandarten[$i]->cPreisLocalized = gibPreisStringLocalized(berechneNetto(floatval($ArtikelabhaengigerVersandkostenGesamtpreis), $steuerSatz)) . ' ' . Shop::Lang()->get('plus', 'productDetails') . ' ' . Shop::Lang()->get('vat', 'productDetails');
+                        $versandarten[$i]->cPreisLocalized = gibPreisStringLocalized(berechneNetto(floatval($versandarten[$i]->fEndpreis), $steuerSatz)) . ' ' . Shop::Lang()->get('plus', 'productDetails') . ' ' . Shop::Lang()->get('vat', 'productDetails');
                     } else {
-                        $versandarten[$i]->cPreisLocalized = gibPreisStringLocalized($ArtikelabhaengigerVersandkostenGesamtpreis);
+                        $versandarten[$i]->cPreisLocalized = gibPreisStringLocalized($versandarten[$i]->fEndpreis);
                     }
                     $versandarten[$i]->ArtikelabhaengigeVersandkosten = self::gibArtikelabhaengigeVersandkostenImWK($lieferland, $_SESSION['Warenkorb']->PositionenArr);
                 }

@@ -27,31 +27,59 @@
                                     <li id="shipment_{$versandart->kVersandart}" class="list-group-item">
                                         <div class="radio">
                                             <label for="del{$versandart->kVersandart}" class="btn-block">
-                                                <input name="Versandart" value="{$versandart->kVersandart}" type="radio" id="del{$versandart->kVersandart}"{if $Versandarten|@count == 1} checked{/if}{if $smarty.foreach.shipment.first} required{/if}>
-                                                &nbsp;{if $versandart->cBild}
-                                                    <img src="{$versandart->cBild}" alt="{$versandart->angezeigterName|trans}">
-                                                {else}
-                                                    <strong>{$versandart->angezeigterName|trans}</strong>
+                                                <div class="row">
+                                                    <div class="col-xs-7 col-md-9 col-lg-9">
+                                                        <p>
+                                                            <input name="Versandart" value="{$versandart->kVersandart}" type="radio" id="del{$versandart->kVersandart}"{if $Versandarten|@count == 1} checked{/if}{if $smarty.foreach.shipment.first} required{/if}>
+                                                            &nbsp;{if $versandart->cBild}
+                                                                <img src="{$versandart->cBild}" alt="{$versandart->angezeigterName|trans}">
+                                                            {else}
+                                                                <strong>{$versandart->angezeigterName|trans}</strong>
+                                                            {/if}
+                                                        </p>
+                                                    </div>
+                                                    <div class="col-xs-5 col-md-3 col-lg-3">
+                                                        <span class="badge pull-right">{$versandart->cPreisLocalized}</span>
+                                                    </div>
+                                                </div>
+                                                {if isset($versandart->ArtikelabhaengigeVersandkosten)}
+                                                        {*{lang key="shippingInfo" section="login"}*}
+                                                        {foreach name=artikelabhaengigekosten from=$versandart->ArtikelabhaengigeVersandkosten item=artikelabhaengigeversandkosten}
+                                                            <div class="row">
+                                                                <div class="col-xs-8 col-md-9 col-lg-9">
+                                                                    <ul>
+                                                                        <li>
+                                                                            <small>{$artikelabhaengigeversandkosten->cName|trans}</small>
+                                                                        </li>
+                                                                    </ul>
+                                                                </div>
+                                                                <div class="col-xs-4 col-md-3 col-lg-3 text-right">
+                                                                    <small>
+                                                                        {$artikelabhaengigeversandkosten->cPreisLocalized}
+                                                                    </small>
+                                                                </div>
+                                                            </div>
+                                                        {/foreach}
                                                 {/if}
-                                                <span class="badge pull-right">{$versandart->cPreisLocalized}</span>{if $versandart->angezeigterHinweistext|has_trans}
-                                                    <p>
-                                                        <small>{$versandart->angezeigterHinweistext|trans}</small>
-                                                    </p>
-                                                {/if}
-                                                {if !empty($versandart->Zuschlag->fZuschlag)}
-                                                    <p>
-                                                        <small>{$versandart->Zuschlag->angezeigterName|trans}
-                                                            (+{$versandart->Zuschlag->cPreisLocalized})
-                                                        </small>
-                                                    </p>
-                                                {/if}
+                                                    {if !empty($versandart->angezeigterHinweistext|trans) && $versandart->angezeigterHinweistext|has_trans}
+                                                        <p>
+                                                            <small>{$versandart->angezeigterHinweistext|trans}</small>
+                                                        </p>
+                                                    {/if}
+                                                    {if !empty($versandart->Zuschlag->fZuschlag)}
+                                                        <p>
+                                                            <small>{$versandart->Zuschlag->angezeigterName|trans}
+                                                                (+{$versandart->Zuschlag->cPreisLocalized})
+                                                            </small>
+                                                        </p>
+                                                    {/if}
 
-                                                {if $versandart->cLieferdauer|has_trans && $Einstellungen.global.global_versandermittlung_lieferdauer_anzeigen === 'Y'}
-                                                    <p>
-                                                        <small>{lang key="shippingTimeLP" section="global"}
-                                                            : {$versandart->cLieferdauer|trans}</small>
-                                                    </p>
-                                                {/if}
+                                                    {if !empty($versandart->cLieferdauer|trans) && $Einstellungen.global.global_versandermittlung_lieferdauer_anzeigen === 'Y'}
+                                                        <p>
+                                                            <small>{lang key="shippingTimeLP" section="global"}
+                                                                : {$versandart->cLieferdauer|trans}</small>
+                                                        </p>
+                                                    {/if}
                                             </label>
                                         </div>
                                     </li>

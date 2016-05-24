@@ -1,6 +1,9 @@
 # JTL-Shop Changelog
 
-## [4.03.1]
+## [4.03.2]
+* Bugfix: robots.txt fehlendes "Sitemap: " vor der Sitemap-URL
+
+## [4.03.1] - 2016-05-17
 * Bugfix: Sprachwechsel in einigen Linkgruppen unvollständig
 * Bugfix: HTTP 500, wenn Object-Cache aktiv ist und Preise erst nach Login sichtbar
 * Bugfix: DB-Update läuft in Endlosschleife, wenn das Update ohne Umweg über admin/index.php direkt im Backend angestoßen wird

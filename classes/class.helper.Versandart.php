@@ -172,10 +172,10 @@ class VersandartHelper
                     OR cKundengruppen LIKE '%;" . $kKundengruppe . ";%')
                 ORDER BY nSort", 2
         );
-        $cnt          = count($versandarten);
-        $isNettoKunde = $_SESSION['Kundengruppe']->nNettoPreise === '1';
+        $cnt             = count($versandarten);
+        $netPricesActive = $_SESSION['Kundengruppe']->nNettoPreise === '1';
         // Steuersatz nur benötigt, wenn Nettokunde
-        if ($isNettoKunde === true) {
+        if ($netPricesActive === true) {
             $steuerDaten = Shop::DB()->select('tsteuersatz', 'kSteuerklasse', (int)$_SESSION['Warenkorb']->gibVersandkostenSteuerklasse());
             $steuerSatz  = $steuerDaten->fSteuersatz;
         }
@@ -186,11 +186,11 @@ class VersandartHelper
                 unset($versandarten[$i]);
                 continue;
             }
-            if ($isNettoKunde === true) {
-                $shippingCost = berechneNetto(floatval($versandarten[$i]->fEndpreis), $steuerSatz);
-                $speak        = ' ' . Shop::Lang()->get('plus', 'productDetails') . ' ' . Shop::Lang()->get('vat', 'productDetails');
+            if ($netPricesActive === true) {
+                $shippingCosts = berechneNetto(floatval($versandarten[$i]->fEndpreis), $steuerSatz);
+                $vatNote       = ' ' . Shop::Lang()->get('plus', 'productDetails') . ' ' . Shop::Lang()->get('vat', 'productDetails');
             } else {
-                $shippingCost = $versandarten[$i]->fEndpreis;
+                $shippingCosts = $versandarten[$i]->fEndpreis;
             }
             //posname lokalisiert ablegen
             $versandarten[$i]->angezeigterName           = array();
@@ -217,20 +217,16 @@ class VersandartHelper
             // Versandart Versandkostenfrei
             if ($versandarten[$i]->fEndpreis == 0) {
                 // Abfrage ob ein Artikel Artikelabhängige Versandkosten besitzt
+                $versandarten[$i]->cPreisLocalized = Shop::Lang()->get('freeshipping', 'global');
                 if ($hasSpecificShippingcosts === true) {
-                    $versandarten[$i]->cPreisLocalized           = Shop::Lang()->get('freeshipping', 'global');
                     $versandarten[$i]->specificShippingcosts_arr = self::gibArtikelabhaengigeVersandkostenImWK($lieferland, $_SESSION['Warenkorb']->PositionenArr);
-                } else {
-                    $versandarten[$i]->cPreisLocalized = Shop::Lang()->get('freeshipping', 'global');
                 }
             // Versandartkosten
             } else {
                 // Abfrage ob ein Artikel Artikelabhängige Versandkosten besitzt
+                $versandarten[$i]->cPreisLocalized = gibPreisStringLocalized($shippingCosts) . $vatNote ?: '';
                 if ($hasSpecificShippingcosts === true) {
-                    $versandarten[$i]->cPreisLocalized           = gibPreisStringLocalized($shippingCost) . $speak ?: '';
                     $versandarten[$i]->specificShippingcosts_arr = self::gibArtikelabhaengigeVersandkostenImWK($lieferland, $_SESSION['Warenkorb']->PositionenArr);
-                } else {
-                    $versandarten[$i]->cPreisLocalized = gibPreisStringLocalized($shippingCost) . $speak ?: '';
                 }
             }
         }
@@ -653,9 +649,9 @@ class VersandartHelper
         if ($bHookReturn) {
             return false;
         }
-        $isNettoKunde = $_SESSION['Kundengruppe']->nNettoPreise === '1';
+        $netPricesActive = $_SESSION['Kundengruppe']->nNettoPreise === '1';
         // Steuersatz nur benötigt, wenn Nettokunde
-        if ($isNettoKunde === true) {
+        if ($netPricesActive === true) {
             $steuerDaten = Shop::DB()->select('tsteuersatz', 'kSteuerklasse', (int)$_SESSION['Warenkorb']->gibVersandkostenSteuerklasse());
             $steuerSatz  = $steuerDaten->fSteuersatz;
         }
@@ -679,7 +675,7 @@ class VersandartHelper
                                     $oVersandPos->cName[$Sprache->cISO] = Shop::Lang()->get('shippingFor', 'checkout') . ' ' . $Artikel->cName . ' (' . $cLandAttr . ')';
                                 }
                                 $oVersandPos->fKosten         = $fPreis;
-                                if ($isNettoKunde === true) {
+                                if ($netPricesActive === true) {
                                     $oVersandPos->cPreisLocalized = gibPreisStringLocalized(berechneNetto(floatval($oVersandPos->fKosten), $steuerSatz)) . ' ' . Shop::Lang()->get('plus', 'productDetails') . ' ' . Shop::Lang()->get('vat', 'productDetails');
                                 } else {
                                     $oVersandPos->cPreisLocalized = gibPreisStringLocalized($oVersandPos->fKosten);
@@ -706,7 +702,7 @@ class VersandartHelper
                             $oVersandPos->cName[$Sprache->cISO] = Shop::Lang()->get('shippingFor', 'checkout') . ' ' . $Artikel->cName . ' (' . $cLandAttr . ')';
                         }
                         $oVersandPos->fKosten         = floatval(str_replace(',', '.', $fKosten)) * $nAnzahl;
-                        if ($isNettoKunde === true) {
+                        if ($netPricesActive === true) {
                             $oVersandPos->cPreisLocalized = gibPreisStringLocalized(berechneNetto(floatval($oVersandPos->fKosten), $steuerSatz)) . ' ' . Shop::Lang()->get('plus', 'productDetails') . ' ' . Shop::Lang()->get('vat', 'productDetails');
                         } else {
                             $oVersandPos->cPreisLocalized = gibPreisStringLocalized($oVersandPos->fKosten);

@@ -211,6 +211,7 @@
                         <thead>
                         <tr>
                             <th class="check"></th>
+                            <th class="" style="width: 32px;"></th>
                             <th class="tleft">{#newsCatName#}</th>
                             <th class="">{#newsCatSortShort#}</th>
                             <th class="th-4">{#newsActive#}</th>
@@ -225,6 +226,11 @@
                                     <td class="check">
                                         <input type="checkbox" name="kNewsKategorie[]" value="{$oNewsKategorie->kNewsKategorie}" />
                                     </td>
+                                    {if isset($oNewsKategorie->cPreviewImage) && $oNewsKategorie->cPreviewImage !== ''}
+                                        <td>
+                                            <img src="{$shopURL}/{$oNewsKategorie->cPreviewImage}" alt="" height="32" width="32" class="preview-image left">
+                                        </td>
+                                    {/if}
                                     <td class="TD2">{$oNewsKategorie->cName}</td>
                                     <td class="tcenter">{$oNewsKategorie->nSort}</td>
                                     <td class="tcenter">{if $oNewsKategorie->nAktiv === '1'}ja{else}nein{/if}</td>

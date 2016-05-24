@@ -9,7 +9,10 @@
 * Bugfix: Newskategorien-Box verschwindet bei aktiviertem Objektcache
 * Bugfix: URL_SHOP in Exportformaten nicht definiert
 
-## [4.03.1]
+## [4.03.2]
+* Bugfix: robots.txt fehlendes "Sitemap: " vor der Sitemap-URL
+
+## [4.03.1] - 2016-05-17
 * Bugfix: Sprachwechsel in einigen Linkgruppen unvollständig
 * Bugfix: HTTP 500, wenn Object-Cache aktiv ist und Preise erst nach Login sichtbar
 * Bugfix: DB-Update läuft in Endlosschleife, wenn das Update ohne Umweg über admin/index.php direkt im Backend angestoßen wird
@@ -26,7 +29,7 @@
 * Unterstützung: Konfiguratorkomponenten Bildwechsel nutzt Gruppenbild, wenn Komponente kein Bild hat
 * Bugfix: Angepasste robots.txt wird falsch sortiert durch robots.php
 
-## [4.03]
+## [4.03] - 2016-05-09
 
 Dieses Update enthält folgende Verbesserungen und Bugfixes: 
 

@@ -2542,10 +2542,10 @@ function checkKundenFormular($kundenaccount, $checkpass = 1)
             foreach ($oKundenfeld_arr as $oKundenfeld) {
                 // Kundendaten ändern?
                 if (intval($_POST['editRechnungsadresse']) === 1) {
-                    if (!$_POST['custom_' . $oKundenfeld->kKundenfeld] && $oKundenfeld->nPflicht == 1 && $oKundenfeld->nEditierbar == 1) {
+                    if (!isset($_POST['custom_' . $oKundenfeld->kKundenfeld]) && $oKundenfeld->nPflicht == 1 && $oKundenfeld->nEditierbar == 1) {
                         $ret['custom'][$oKundenfeld->kKundenfeld] = 1;
                     } else {
-                        if ($_POST['custom_' . $oKundenfeld->kKundenfeld]) {
+                        if (isset($_POST['custom_' . $oKundenfeld->kKundenfeld]) && $_POST['custom_' . $oKundenfeld->kKundenfeld]) {
                             // Datum
                             // 1 = leer
                             // 2 = falsches Format
@@ -2994,14 +2994,10 @@ function getKundendaten($post, $kundenaccount, $htmlentities = 1)
 function getKundenattribute($cPost_arr)
 {
     $cKundenattribut_arr = array();
-    $cSQL                = '';
-    if (intval($cPost_arr['editRechnungsadresse']) === 1) {
-        $cSQL = " AND nEditierbar=1";
-    }
-    $oKundenfeld_arr = Shop::DB()->query(
+    $oKundenfeld_arr     = Shop::DB()->query(
         "SELECT kKundenfeld, cName, cWawi
             FROM tkundenfeld
-            WHERE kSprache = " . (int)Shop::$kSprache . $cSQL, 2
+            WHERE kSprache = " . (int)Shop::$kSprache, 2
     );
     if (is_array($oKundenfeld_arr) && count($oKundenfeld_arr) > 0) {
         foreach ($oKundenfeld_arr as $oKundenfeldTMP) {
@@ -3032,6 +3028,30 @@ function getKundenattributeNichtEditierbar()
     );
 
     return $oKundenfeld_arr;
+}
+
+/**
+ * @return non editable customer fields
+ */
+function getNonEditableCustomerFields()
+{
+    $cKundenAttribute_arr = array();
+    $oKundenattribute_arr = Shop::DB()->query(
+        "SELECT ka.kKundenfeld
+             FROM tkundenattribut AS ka
+             LEFT JOIN tkundenfeld AS kf ON ka.kKundenfeld = kf.kKundenfeld 
+             WHERE kKunde = " . (int)$_SESSION['Kunde']->kKunde . "
+             AND kf.nEditierbar = 0", 2
+    );
+    if (is_array($oKundenattribute_arr) && count($oKundenattribute_arr) > 0) {
+        foreach ($oKundenattribute_arr as $oKundenattribute) {
+            $oKundenfeldAttribut                                  = new stdClass();
+            $oKundenfeldAttribut->kKundenfeld                     = $oKundenattribute->kKundenfeld;
+            $cKundenAttribute_arr[$oKundenattribute->kKundenfeld] = $oKundenfeldAttribut;
+        }
+    }
+
+    return $cKundenAttribute_arr;
 }
 
 /**

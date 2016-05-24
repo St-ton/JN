@@ -319,7 +319,7 @@ class Plugin
                 $this->$k = $v;
             }
         } else {
-            return;
+            return null;
         }
         $_shopURL    = Shop::getURL();
         $_shopURLSSL = Shop::getURL(true);
@@ -369,12 +369,16 @@ class Plugin
             foreach ($oPluginEinstellungConfTMP_arr as $i => $oPluginEinstellungConfTMP) {
                 $oPluginEinstellungConfTMP_arr[$i]->oPluginEinstellungenConfWerte_arr = array();
                 if ($oPluginEinstellungConfTMP->cInputTyp === 'selectbox' || $oPluginEinstellungConfTMP->cInputTyp === 'radio') {
-                    $oPluginEinstellungConfTMP_arr[$i]->oPluginEinstellungenConfWerte_arr = Shop::DB()->query(
-                        "SELECT *
-                            FROM tplugineinstellungenconfwerte
-                            WHERE kPluginEinstellungenConf = " . (int)$oPluginEinstellungConfTMP->kPluginEinstellungenConf . "
-                            ORDER BY nSort", 2
-                    );
+                    if (!empty($oPluginEinstellungConfTMP->cSourceFile)) {
+                        $oPluginEinstellungConfTMP_arr[$i]->oPluginEinstellungenConfWerte_arr = $this->getDynamicOptions($oPluginEinstellungConfTMP);
+                    } else {
+                        $oPluginEinstellungConfTMP_arr[$i]->oPluginEinstellungenConfWerte_arr = Shop::DB()->query(
+                            "SELECT *
+                                FROM tplugineinstellungenconfwerte
+                                WHERE kPluginEinstellungenConf = " . (int)$oPluginEinstellungConfTMP->kPluginEinstellungenConf . "
+                                ORDER BY nSort", 2
+                        );
+                    }
                 }
             }
         }
@@ -753,5 +757,25 @@ class Plugin
         self::$hookList = $hookList;
 
         return true;
+    }
+
+    /**
+     * @param array $conf
+     * @return array
+     */
+    public function getDynamicOptions($conf)
+    {
+        $dynamicOptions = null;
+        if (!empty($conf->cSourceFile) && file_exists($this->cAdminmenuPfad . $conf->cSourceFile)) {
+            $dynamicOptions = include $this->cAdminmenuPfad . $conf->cSourceFile;
+            foreach ($dynamicOptions as $option) {
+                $option->kPluginEinstellungenConf = $conf->kPluginEinstellungenConf;
+                if (!isset($option->nSort)) {
+                    $option->nSort = 0;
+                }
+            }
+        }
+
+        return $dynamicOptions;
     }
 }

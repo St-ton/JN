@@ -140,19 +140,7 @@ class VersandartHelper
      */
     public static function hasSpecificShippingcosts($cLand)
     {
-        $hasSpecificShippingcosts = false;
-        if (isset($_SESSION['Warenkorb']->PositionenArr) && is_array($_SESSION['Warenkorb']->PositionenArr)) {
-            foreach ($_SESSION['Warenkorb']->PositionenArr as $Pos) {
-                if ($Pos->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL) {
-                    if (self::gibArtikelabhaengigeVersandkosten($cLand, $Pos->Artikel, $Pos->nAnzahl)) {
-                        $hasSpecificShippingcosts = true;
-                        break;
-                    }
-                }
-            }
-        }
-
-        return $hasSpecificShippingcosts;
+        return !empty(self::gibArtikelabhaengigeVersandkostenImWK($cLand, $_SESSION['Warenkorb']->PositionenArr));
     }
 
     /**
@@ -169,12 +157,12 @@ class VersandartHelper
         $minVersand                      = 10000;
         $cISO                            = $lieferland;
         $cNurAbhaengigeVersandart        = 'N';
-        $cArtikelabhaengigeVersandkosten = 'N';
+        $cArtikelabhaengigeVersandkosten = false;
         if (self::normalerArtikelversand($lieferland) === false) {
             $cNurAbhaengigeVersandart = 'Y';
         }
         if (self::hasSpecificShippingcosts($lieferland) === true) {
-            $cArtikelabhaengigeVersandkosten = 'Y';
+            $cArtikelabhaengigeVersandkosten = true;
         }
         $versandarten = Shop::DB()->query(
             "SELECT * FROM tversandart
@@ -232,7 +220,7 @@ class VersandartHelper
             // Versandart Versandkostenfrei
             if ($versandarten[$i]->fEndpreis == 0) {
                 // Abfrage ob ein Artikel Artikelabhängige Versandkosten besitzt
-                if ($cArtikelabhaengigeVersandkosten === 'Y') {
+                if ($cArtikelabhaengigeVersandkosten === true) {
                     $versandarten[$i]->cPreisLocalized           = Shop::Lang()->get('freeshipping', 'global');
                     $versandarten[$i]->specificShippingcosts_arr = self::gibArtikelabhaengigeVersandkostenImWK($lieferland, $_SESSION['Warenkorb']->PositionenArr);
                 } else {
@@ -241,7 +229,7 @@ class VersandartHelper
             // Versandartkosten
             } else {
                 // Abfrage ob ein Artikel Artikelabhängige Versandkosten besitzt
-                if ($cArtikelabhaengigeVersandkosten === 'Y') {
+                if ($cArtikelabhaengigeVersandkosten === true) {
                     $versandarten[$i]->cPreisLocalized           = gibPreisStringLocalized($shippingCost) . $speak ?: '';
                     $versandarten[$i]->specificShippingcosts_arr = self::gibArtikelabhaengigeVersandkostenImWK($lieferland, $_SESSION['Warenkorb']->PositionenArr);
                 } else {

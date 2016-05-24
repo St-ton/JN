@@ -120,7 +120,7 @@ class VersandartHelper
     public static function normalerArtikelversand($cLand)
     {
         $bNoetig = false;
-        if (is_array($_SESSION['Warenkorb']->PositionenArr)) {
+        if (isset($_SESSION['Warenkorb']->PositionenArr) && is_array($_SESSION['Warenkorb']->PositionenArr)) {
             foreach ($_SESSION['Warenkorb']->PositionenArr as $Pos) {
                 if ($Pos->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL) {
                     if (!self::gibArtikelabhaengigeVersandkosten($cLand, $Pos->Artikel, $Pos->nAnzahl)) {
@@ -132,6 +132,15 @@ class VersandartHelper
         }
 
         return $bNoetig;
+    }
+
+    /**
+     * @param string $cLand
+     * @return bool
+     */
+    public static function hasSpecificShippingcosts($cLand)
+    {
+        return !empty(self::gibArtikelabhaengigeVersandkostenImWK($cLand, $_SESSION['Warenkorb']->PositionenArr));
     }
 
     /**
@@ -148,7 +157,8 @@ class VersandartHelper
         $minVersand               = 10000;
         $cISO                     = $lieferland;
         $cNurAbhaengigeVersandart = 'N';
-        if (self::normalerArtikelversand($lieferland) == false) {
+        $hasSpecificShippingcosts = self::hasSpecificShippingcosts($lieferland);
+        if (self::normalerArtikelversand($lieferland) === false) {
             $cNurAbhaengigeVersandart = 'Y';
         }
         $versandarten = Shop::DB()->query(
@@ -162,10 +172,10 @@ class VersandartHelper
                     OR cKundengruppen LIKE '%;" . $kKundengruppe . ";%')
                 ORDER BY nSort", 2
         );
-        $cnt          = count($versandarten);
-        $isNettoKunde = $_SESSION['Kundengruppe']->nNettoPreise === '1';
+        $cnt             = count($versandarten);
+        $netPricesActive = $_SESSION['Kundengruppe']->nNettoPreise === '1';
         // Steuersatz nur benötigt, wenn Nettokunde
-        if ($isNettoKunde === true) {
+        if ($netPricesActive === true) {
             $steuerDaten = Shop::DB()->select('tsteuersatz', 'kSteuerklasse', (int)$_SESSION['Warenkorb']->gibVersandkostenSteuerklasse());
             $steuerSatz  = $steuerDaten->fSteuersatz;
         }
@@ -176,10 +186,17 @@ class VersandartHelper
                 unset($versandarten[$i]);
                 continue;
             }
+            if ($netPricesActive === true) {
+                $shippingCosts = berechneNetto(floatval($versandarten[$i]->fEndpreis), $steuerSatz);
+                $vatNote       = ' ' . Shop::Lang()->get('plus', 'productDetails') . ' ' . Shop::Lang()->get('vat', 'productDetails');
+            } else {
+                $shippingCosts = $versandarten[$i]->fEndpreis;
+            }
             //posname lokalisiert ablegen
-            $versandarten[$i]->angezeigterName        = array();
-            $versandarten[$i]->angezeigterHinweistext = array();
-            $versandarten[$i]->cLieferdauer           = array();
+            $versandarten[$i]->angezeigterName           = array();
+            $versandarten[$i]->angezeigterHinweistext    = array();
+            $versandarten[$i]->cLieferdauer              = array();
+            $versandarten[$i]->specificShippingcosts_arr = null;
             foreach ($_SESSION['Sprachen'] as $Sprache) {
                 $name_spr = Shop::DB()->query(
                     "SELECT cName, cLieferdauer, cHinweistext
@@ -196,17 +213,20 @@ class VersandartHelper
             if ($versandarten[$i]->fEndpreis < $minVersand) {
                 $minVersand = $versandarten[$i]->fEndpreis;
             }
-            //lokalisieren
-            if ($isNettoKunde === true) {
-                $versandarten[$i]->cPreisLocalized = gibPreisStringLocalized(berechneNetto(floatval($versandarten[$i]->fEndpreis), $steuerSatz)) . ' ' . Shop::Lang()->get('plus', 'productDetails') . ' ' . Shop::Lang()->get('vat', 'productDetails');
-            } else {
-                $versandarten[$i]->cPreisLocalized = gibPreisStringLocalized($versandarten[$i]->fEndpreis);
-            }
+            // lokalisieren
+            // Versandart Versandkostenfrei
             if ($versandarten[$i]->fEndpreis == 0) {
-                if ($cNurAbhaengigeVersandart === 'Y') {
-                    $versandarten[$i]->cPreisLocalized = Shop::Lang()->get('lookAtTop', 'global');
-                } else {
-                    $versandarten[$i]->cPreisLocalized = Shop::Lang()->get('freeshipping', 'global');
+                // Abfrage ob ein Artikel Artikelabhängige Versandkosten besitzt
+                $versandarten[$i]->cPreisLocalized = Shop::Lang()->get('freeshipping', 'global');
+                if ($hasSpecificShippingcosts === true) {
+                    $versandarten[$i]->specificShippingcosts_arr = self::gibArtikelabhaengigeVersandkostenImWK($lieferland, $_SESSION['Warenkorb']->PositionenArr);
+                }
+            // Versandartkosten
+            } else {
+                // Abfrage ob ein Artikel Artikelabhängige Versandkosten besitzt
+                $versandarten[$i]->cPreisLocalized = gibPreisStringLocalized($shippingCosts) . $vatNote ?: '';
+                if ($hasSpecificShippingcosts === true) {
+                    $versandarten[$i]->specificShippingcosts_arr = self::gibArtikelabhaengigeVersandkostenImWK($lieferland, $_SESSION['Warenkorb']->PositionenArr);
                 }
             }
         }
@@ -629,6 +649,12 @@ class VersandartHelper
         if ($bHookReturn) {
             return false;
         }
+        $netPricesActive = $_SESSION['Kundengruppe']->nNettoPreise === '1';
+        // Steuersatz nur benötigt, wenn Nettokunde
+        if ($netPricesActive === true) {
+            $steuerDaten = Shop::DB()->select('tsteuersatz', 'kSteuerklasse', (int)$_SESSION['Warenkorb']->gibVersandkostenSteuerklasse());
+            $steuerSatz  = $steuerDaten->fSteuersatz;
+        }
         //gestaffelte
         if (isset($Artikel->FunktionsAttribute[FKT_ATTRIBUT_VERSANDKOSTEN_GESTAFFELT]) && $Artikel->FunktionsAttribute[FKT_ATTRIBUT_VERSANDKOSTEN_GESTAFFELT]) {
             $arrVersand = explode(';', $Artikel->FunktionsAttribute[FKT_ATTRIBUT_VERSANDKOSTEN_GESTAFFELT]);
@@ -649,7 +675,11 @@ class VersandartHelper
                                     $oVersandPos->cName[$Sprache->cISO] = Shop::Lang()->get('shippingFor', 'checkout') . ' ' . $Artikel->cName . ' (' . $cLandAttr . ')';
                                 }
                                 $oVersandPos->fKosten         = $fPreis;
-                                $oVersandPos->cPreisLocalized = gibPreisStringLocalized($oVersandPos->fKosten);
+                                if ($netPricesActive === true) {
+                                    $oVersandPos->cPreisLocalized = gibPreisStringLocalized(berechneNetto(floatval($oVersandPos->fKosten), $steuerSatz)) . ' ' . Shop::Lang()->get('plus', 'productDetails') . ' ' . Shop::Lang()->get('vat', 'productDetails');
+                                } else {
+                                    $oVersandPos->cPreisLocalized = gibPreisStringLocalized($oVersandPos->fKosten);
+                                }
 
                                 return $oVersandPos;
                             }
@@ -672,7 +702,11 @@ class VersandartHelper
                             $oVersandPos->cName[$Sprache->cISO] = Shop::Lang()->get('shippingFor', 'checkout') . ' ' . $Artikel->cName . ' (' . $cLandAttr . ')';
                         }
                         $oVersandPos->fKosten         = floatval(str_replace(',', '.', $fKosten)) * $nAnzahl;
-                        $oVersandPos->cPreisLocalized = gibPreisStringLocalized($oVersandPos->fKosten);
+                        if ($netPricesActive === true) {
+                            $oVersandPos->cPreisLocalized = gibPreisStringLocalized(berechneNetto(floatval($oVersandPos->fKosten), $steuerSatz)) . ' ' . Shop::Lang()->get('plus', 'productDetails') . ' ' . Shop::Lang()->get('vat', 'productDetails');
+                        } else {
+                            $oVersandPos->cPreisLocalized = gibPreisStringLocalized($oVersandPos->fKosten);
+                        }
 
                         return $oVersandPos;
                     }

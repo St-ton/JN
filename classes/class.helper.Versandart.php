@@ -195,8 +195,8 @@ class VersandartHelper
             $steuerSatz  = $steuerDaten->fSteuersatz;
         }
         for ($i = 0; $i < $cnt; $i++) {
-            $versandarten[$i]->Zuschlag                 = gibVersandZuschlag($versandarten[$i], $cISO, $plz);
-            $versandarten[$i]->fEndpreis                = berechneVersandpreis($versandarten[$i], $cISO, null);
+            $versandarten[$i]->Zuschlag  = gibVersandZuschlag($versandarten[$i], $cISO, $plz);
+            $versandarten[$i]->fEndpreis = berechneVersandpreis($versandarten[$i], $cISO, null);
             if ($versandarten[$i]->fEndpreis == -1) {
                 unset($versandarten[$i]);
                 continue;

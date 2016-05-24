@@ -3669,16 +3669,16 @@ function gibSprachVariablen($kPlugin)
             tpluginsprachvariable.kPlugin,
             tpluginsprachvariable.cName,
             tpluginsprachvariable.cBeschreibung,
-            tpluginsprachvariablesprache.cISO,
-            IF (tpluginsprachvariablecustomsprache.cName IS NOT NULL, tpluginsprachvariablecustomsprache.cName, tpluginsprachvariablesprache.cName) AS customValue
+            COALESCE(tpluginsprachvariablecustomsprache.cISO, tpluginsprachvariablesprache.cISO)  AS cISO,
+            COALESCE(tpluginsprachvariablecustomsprache.cName, tpluginsprachvariablesprache.cName) AS customValue
             FROM tpluginsprachvariable
-                LEFT JOIN tpluginsprachvariablesprache
-                    ON  tpluginsprachvariable.kPluginSprachvariable = tpluginsprachvariablesprache.kPluginSprachvariable
                 LEFT JOIN tpluginsprachvariablecustomsprache
-                    ON tpluginsprachvariablecustomsprache.kPlugin = tpluginsprachvariable.kPlugin
-                        AND tpluginsprachvariablecustomsprache.kPluginSprachvariable = tpluginsprachvariable.kPluginSprachvariable
-                        AND tpluginsprachvariablesprache.cISO = tpluginsprachvariablecustomsprache.cISO
-                WHERE tpluginsprachvariable.kPlugin = " . $kPlugin, 9
+                    ON tpluginsprachvariablecustomsprache.kPluginSprachvariable = tpluginsprachvariable.kPluginSprachvariable
+                LEFT JOIN tpluginsprachvariablesprache
+                    ON tpluginsprachvariablesprache.kPluginSprachvariable = tpluginsprachvariable.kPluginSprachvariable
+                    AND tpluginsprachvariablesprache.cISO = COALESCE(tpluginsprachvariablecustomsprache.cISO, tpluginsprachvariablesprache.cISO)
+            WHERE tpluginsprachvariable.kPlugin = " . $kPlugin . "
+            ORDER BY tpluginsprachvariable.kPluginSprachvariable", 9
     );
     if (is_array($oPluginSprachvariablen) && count($oPluginSprachvariablen) > 0) {
         $new = array();

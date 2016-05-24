@@ -9,6 +9,8 @@
 * Bugfix: Newskategorien-Box verschwindet bei aktiviertem Objektcache
 * Bugfix: URL_SHOP in Exportformaten nicht definiert
 * Verbesserung: DB-Wartungsfunktionen in Backend integriert
+* Bugfix: Plugin-Sprachvariablen lassen sich nicht aktualisieren, wenn zwischenzeitlich neue Sprache im Webshop aktiviert wurde
+* Bugfix: Speichern von Newsbeiträgen in deaktivierter Newskategorie schlägt fehl bzw. erzeugt Duplikat des Beitrags
 
 ## [4.03.2]
 * Bugfix: robots.txt fehlendes "Sitemap: " vor der Sitemap-URL

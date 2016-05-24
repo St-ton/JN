@@ -160,7 +160,7 @@ class Billpay extends PaymentMethod
                         $oIncomingPayment          = new stdClass();
                         $oIncomingPayment->fBetrag = $oBasketInfo->fTotal[AMT_GROSS];
                         $oIncomingPayment->cISO    = $oBasketInfo->cCurrency->cISO;
-                        //$this->addIncomingPayment($oOrder, $oIncomingPayment);
+                        $this->addIncomingPayment($oOrder, $oIncomingPayment);
                         $this->setOrderStatusToPaid($oOrder);
                     }
                     // additional payment information

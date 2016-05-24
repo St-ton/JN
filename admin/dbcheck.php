@@ -14,6 +14,11 @@ $cFehler           = '';
 $cDBStruct_arr     = getDBStruct();
 $cDBFileStruct_arr = getDBFileStruct();
 $cDBError_arr      = array();
+$maintenanceResult = null;
+
+if (!empty($_POST['action']) && !empty($_POST['check'])) {
+    $maintenanceResult = doDBMaintenance($_POST['action'], $_POST['check']);
+}
 
 if (!is_array($cDBFileStruct_arr)) {
     $cFehler = 'Fehler beim Lesen der Struktur-Datei.';
@@ -38,4 +43,5 @@ $smarty->assign('cFehler', $cFehler)
        ->assign('cDBFileStruct_arr', $cDBFileStruct_arr)
        ->assign('cDBError_arr', $cDBError_arr)
        ->assign('JTL_VERSION', JTL_VERSION)
+       ->assign('maintenanceResult', $maintenanceResult)
        ->display('dbcheck.tpl');

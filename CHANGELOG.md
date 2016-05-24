@@ -8,6 +8,7 @@
 * Verbesserung: Neuer Hook 221 HOOK_STOCK_FILTER in gibLagerFilter()
 * Bugfix: Newskategorien-Box verschwindet bei aktiviertem Objektcache
 * Bugfix: URL_SHOP in Exportformaten nicht definiert
+* Verbesserung: DB-Wartungsfunktionen in Backend integriert
 
 ## [4.03.2]
 * Bugfix: robots.txt fehlendes "Sitemap: " vor der Sitemap-URL

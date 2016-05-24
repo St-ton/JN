@@ -43,3 +43,32 @@ function getDBFileStruct()
 
     return $oDBFileStruct;
 }
+
+/**
+ * @param string $action
+ * @param array  $tables
+ * @return array|bool
+ */
+function doDBMaintenance($action, array $tables)
+{
+    $tables = implode(', ', $tables);
+
+    switch ($action) {
+        case 'optimize' :
+            $cmd = 'OPTIMIZE TABLE ';
+            break;
+        case 'analyze' :
+            $cmd = 'ANALYZE TABLE ';
+            break;
+        case 'repair' :
+            $cmd = 'REPAIR TABLE ';
+            break;
+        case 'check' :
+            $cmd = 'CHECK TABLE ';
+            break;
+        default :
+            return false;
+    }
+
+    return (count($tables) > 0) ? Shop::DB()->query($cmd . $tables, 2) : false;
+}

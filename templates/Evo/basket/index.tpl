@@ -142,19 +142,19 @@
                                                             <b><small>{$versandart->cPreisLocalized}</small></b>
                                                         </div>
                                                     </div>
-                                                    {if isset($versandart->ArtikelabhaengigeVersandkosten)}
-                                                        {foreach name=artikelabhaengigekosten from=$versandart->ArtikelabhaengigeVersandkosten item=artikelabhaengigeversandkosten}
+                                                    {if isset($versandart->specificShippingcosts_arr)}
+                                                        {foreach name=specificShippingcosts from=$versandart->specificShippingcosts_arr item=specificShippingcosts}
                                                             <div class="row">
                                                                 <div class="col-xs-8 col-md-10 col-lg-10">
                                                                     <ul>
                                                                         <li>
-                                                                            <small>{$artikelabhaengigeversandkosten->cName|trans}</small>
+                                                                            <small>{$specificShippingcosts->cName|trans}</small>
                                                                         </li>
                                                                     </ul>
                                                                 </div>
                                                                 <div class="col-xs-4 col-md-2 col-lg-2">
                                                                     <small>
-                                                                        {$artikelabhaengigeversandkosten->cPreisLocalized}
+                                                                        {$specificShippingcosts->cPreisLocalized}
                                                                     </small>
                                                                 </div>
                                                             </div>

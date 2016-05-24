@@ -42,20 +42,19 @@
                                                         <span class="badge pull-right">{$versandart->cPreisLocalized}</span>
                                                     </div>
                                                 </div>
-                                                {if isset($versandart->ArtikelabhaengigeVersandkosten)}
-                                                        {*{lang key="shippingInfo" section="login"}*}
-                                                        {foreach name=artikelabhaengigekosten from=$versandart->ArtikelabhaengigeVersandkosten item=artikelabhaengigeversandkosten}
+                                                {if isset($versandart->specificShippingcosts_arr)}
+                                                        {foreach name=specificShippingcosts from=$versandart->specificShippingcosts_arr item=specificShippingcosts}
                                                             <div class="row">
                                                                 <div class="col-xs-8 col-md-9 col-lg-9">
                                                                     <ul>
                                                                         <li>
-                                                                            <small>{$artikelabhaengigeversandkosten->cName|trans}</small>
+                                                                            <small>{$specificShippingcosts->cName|trans}</small>
                                                                         </li>
                                                                     </ul>
                                                                 </div>
                                                                 <div class="col-xs-4 col-md-3 col-lg-3 text-right">
                                                                     <small>
-                                                                        {$artikelabhaengigeversandkosten->cPreisLocalized}
+                                                                        {$specificShippingcosts->cPreisLocalized}
                                                                     </small>
                                                                 </div>
                                                             </div>

@@ -459,7 +459,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
                 foreach ($oKundenfeldNichtEditierbar_arr as $i => $oKundenfeldNichtEditierbar) {
                     $nonEditableCustomerfields_arr[] = 'kKundenfeld != ' . (int)$oKundenfeldNichtEditierbar->kKundenfeld;
                 }
-                if (is_array($nonEditableCustomerfields_arr)) {
+                if (is_array($nonEditableCustomerfields_arr) && count($nonEditableCustomerfields_arr) > 0) {
                     $cSQL = ' AND ' . implode(' AND ', $nonEditableCustomerfields_arr);
                 } else {
                     $cSQL = '';

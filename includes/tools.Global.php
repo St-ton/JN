@@ -505,7 +505,7 @@ function checkeWarenkorbEingang()
     // Wunschliste?
     if ((isset($_POST['Wunschliste']) || isset($_GET['Wunschliste'])) && $conf['global']['global_wunschliste_anzeigen'] === 'Y') {
         // Prüfe ob Kunde eingeloggt
-        if (!isset($_SESSION['Kunde']->kKunde)) {
+        if (!isset($_SESSION['Kunde']->kKunde) && !isset($_POST['login'])) {
             //redirekt zum artikel, um variation/en zu wählen / MBM beachten
             header('Location: jtl.php?a=' . $kArtikel . '&n=' . $fAnzahl . '&r=' . R_LOGIN_WUNSCHLISTE, true, 302);
             exit();

@@ -138,6 +138,10 @@ if (isset($ExportEinstellungen['exportformate_semikolon']) && $ExportEinstellung
 }
 $waehrung = (isset($_SESSION['Waehrung']->kWaehrung)) ? $_SESSION['Waehrung'] : Shop::DB()->query("SELECT * FROM twaehrung WHERE cStandard='Y'", 1);
 
+$smarty->assign('URL_SHOP', $shopURL)
+       ->assign('Waehrung', $waehrung)
+       ->assign('Einstellungen', $ExportEinstellungen);
+
 $oArtikelOptionen                            = new stdClass();
 $oArtikelOptionen->nMerkmale                 = 1;
 $oArtikelOptionen->nAttribute                = 1;
@@ -194,9 +198,7 @@ foreach ($res as $tartikel) {
         $Artikel->Lieferbar_01          = ($Artikel->fLagerbestand <= 0) ? 0 : 1;
         $Artikel->Verfuegbarkeit_kelkoo = ($Artikel->fLagerbestand > 0) ? '001' : '003';
 
-        $smarty->assign('Artikel', $Artikel)
-               ->assign('Waehrung', $waehrung)
-               ->assign('Einstellungen', $ExportEinstellungen);
+        $smarty->assign('Artikel', $Artikel);
 
         $cOutput = $smarty->fetch('db:' . $exportformat->kExportformat);
 

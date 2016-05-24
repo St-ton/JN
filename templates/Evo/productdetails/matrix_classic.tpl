@@ -93,7 +93,7 @@
                                                     {/if}
                                                     {include file="productdetails/warehouse.tpl" tplscope="detail"}
                                                 {else}
-                                                    {if $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige === 'verfuegbarkeit' || $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige === 'genau' && ((isset($child->fLagerbestand) && $child->fLagerbestand > 0) || (isset($child->cLagerKleinerNull) && $child->cLagerKleinerNull === 'Y'))}
+                                                    {if $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige=='verfuegbarkeit' || $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige === 'genau' && ((isset($child->fLagerbestand) && $child->fLagerbestand > 0) || (isset($child->cLagerKleinerNull) && $child->cLagerKleinerNull === 'Y'))}
                                                         <span class="status status-{$child->Lageranzeige->nStatus}"><i class="fa fa-truck"></i> {$child->Lageranzeige->cLagerhinweis[$Einstellungen.artikeldetails.artikel_lagerbestandsanzeige]}</span>
                                                     {elseif $Einstellungen.artikeldetails.artikel_lagerbestandsanzeige === 'ampel' && ((isset($child->fLagerbestand) && $child->fLagerbestand > 0) || (isset($child->cLagerKleinerNull) && $child->cLagerKleinerNull === 'Y'))}
                                                         <span class="status status-{$child->Lageranzeige->nStatus}"><i class="fa fa-truck"></i> {$child->Lageranzeige->AmpelText}</span>

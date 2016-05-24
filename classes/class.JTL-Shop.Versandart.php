@@ -56,11 +56,6 @@ class Versandart
     public $cNurAbhaengigeVersandart;
 
     /**
-     * @var string
-     */
-    public $cArtikelabhaengigeVersandart;
-
-    /**
      * @var int
      */
     public $nSort;

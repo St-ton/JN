@@ -440,10 +440,11 @@ class Image
 
         $imanee = new Imanee();
         $imanee->newImage($size->getWidth(), $size->getHeight(), '#bc3726');
+        $imanee->setFormat('jpg');
+        $imanee->getResource()->mime='image/jpg';
 
         $drawer = clone $imanee->getDrawer();
         $drawer->setFontColor('white');
-        $imanee->setFormat('jpg');
 
         $imanee->setDrawer($drawer);
         $imanee->placeText($error, Imanee::IM_POS_MID_CENTER, $size->getWidth() * 0.9);

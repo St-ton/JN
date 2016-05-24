@@ -209,25 +209,8 @@ function gibFehlendeEingabenProduktanfrageformular()
     if ($conf['artikeldetails']['produktfrage_abfragen_mobil'] === 'Y' && !$_POST['mobil']) {
         $ret['mobil'] = 1;
     }
-    if (empty($_SESSION['Kunde']->kKunde) && (!isset($_SESSION['bAnti_spam_already_checked']) || $_SESSION['bAnti_spam_already_checked'] !== true) &&
-        $conf['artikeldetails']['produktfrage_abfragen_captcha'] === 'Y' && $conf['global']['anti_spam_method'] !== 'N' &&
-        !empty($conf['global']['global_google_recaptcha_private'])) {
-        // reCAPTCHA
-        if (isset($_POST['g-recaptcha-response'])) {
-            $ret['captcha'] = !validateReCaptcha($_POST['g-recaptcha-response']);
-        } else {
-            if (empty($_POST['captcha'])) {
-                $ret['captcha'] = 1;
-            } elseif (empty($_POST['md5']) || ($_POST['md5'] !== md5(PFAD_ROOT . $_POST['captcha']))) {
-                $ret['captcha'] = 2;
-            }
-            if ($conf['artikeldetails']['produktfrage_abfragen_captcha'] == 5) { //Prüfen ob der Token und der Name korrekt sind
-                $ret['captcha'] = 2;
-                if (validToken()) {
-                    unset($ret['captcha']);
-                }
-            }
-        }
+    if ($conf['artikeldetails']['produktfrage_abfragen_captcha'] !== 'N' && !validateCaptcha($_POST)) {
+        $ret['captcha'] = 2;
     }
 
     return $ret;
@@ -443,24 +426,8 @@ function gibFehlendeEingabenBenachrichtigungsformular()
     if ($conf['artikeldetails']['benachrichtigung_abfragen_nachname'] === 'Y' && !$_POST['nachname']) {
         $ret['nachname'] = 1;
     }
-    if (empty($_SESSION['Kunde']->kKunde) && (!isset($_SESSION['bAnti_spam_already_checked']) || $_SESSION['bAnti_spam_already_checked'] !== true) &&
-        $conf['artikeldetails']['benachrichtigung_abfragen_captcha'] !== 'N' && !empty($conf['global']['global_google_recaptcha_private'])) {
-        // reCAPTCHA
-        if (isset($_POST['g-recaptcha-response'])) {
-            $ret['captcha'] = !validateReCaptcha($_POST['g-recaptcha-response']);
-        } else {
-            if (empty($_POST['captcha'])) {
-                $ret['captcha'] = 1;
-            } elseif (!$_POST['md5'] || ($_POST['md5'] !== md5(PFAD_ROOT . $_POST['captcha']))) {
-                $ret['captcha'] = 2;
-            }
-            if ($conf['artikeldetails']['benachrichtigung_abfragen_captcha'] == 5) { //Prüfen ob der Token und der Name korrekt sind
-                $ret['captcha'] = 2;
-                if (validToken()) {
-                    unset($ret['captcha']);
-                }
-            }
-        }
+    if ($conf['artikeldetails']['benachrichtigung_abfragen_captcha'] !== 'N' && !validateCaptcha($_POST)) {
+        $ret['captcha'] = 2;
     }
 
     return $ret;

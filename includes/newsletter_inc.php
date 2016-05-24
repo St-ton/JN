@@ -168,27 +168,8 @@ function newsletterAnmeldungPlausi($oKunde)
     global $cFehler, $Einstellungen;
 
     $nPlausi_arr = array();
-    if ((!isset($_SESSION['bAnti_spam_already_checked']) || $_SESSION['bAnti_spam_already_checked'] !== true) && isset($Einstellungen['newsletter']['newsletter_sicherheitscode']) &&
-        $Einstellungen['newsletter']['newsletter_sicherheitscode'] !== 'N' && empty($_SESSION['Kunde']->kKunde)) {
-        if ($Einstellungen['newsletter']['newsletter_sicherheitscode'] !== 'N') {
-            // reCAPTCHA
-            if (isset($_POST['g-recaptcha-response'])) {
-                if (!validateReCaptcha($_POST['g-recaptcha-response'])) {
-                    $nPlausi_arr['captcha'] = true;
-                }
-            } else {
-                if (!isset($_POST['captcha'])) {
-                    $nPlausi_arr['captcha'] = 1;
-                    $cFehler                = Shop::Lang()->get('newsletterCaptcha', 'errorMessages');
-                }
-                if ($Einstellungen['global']['anti_spam_method'] == 5) { //Prüfen ob der Token und der Name korrekt sind
-                    $nPlausi_arr['captcha'] = 2;
-                    if (validToken()) {
-                        unset($nPlausi_arr['captcha']);
-                    }
-                }
-            }
-        }
+    if ($Einstellungen['newsletter']['newsletter_sicherheitscode'] !== 'N' && !validateCaptcha($_POST)) {
+        $nPlausi_arr['captcha'] = 2;
     }
 
     return $nPlausi_arr;

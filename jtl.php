@@ -455,17 +455,14 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
             // Update Kundenattribute
             if (is_array($cKundenattribut_arr) && count($cKundenattribut_arr) > 0) {
                 $oKundenfeldNichtEditierbar_arr = getKundenattributeNichtEditierbar();
-                $cSQL                           = '';
-                if (is_array($oKundenfeldNichtEditierbar_arr) && count($oKundenfeldNichtEditierbar_arr) > 0) {
-                    $cSQL .= ' AND (';
-                    foreach ($oKundenfeldNichtEditierbar_arr as $i => $oKundenfeldNichtEditierbar) {
-                        if ($i == 0) {
-                            $cSQL .= 'kKundenfeld != ' . (int)$oKundenfeldNichtEditierbar->kKundenfeld;
-                        } else {
-                            $cSQL .= ' AND kKundenfeld != ' . (int)$oKundenfeldNichtEditierbar->kKundenfeld;
-                        }
-                    }
-                    $cSQL .= ')';
+                $nonEditableCustomerfields_arr  = array();
+                foreach ($oKundenfeldNichtEditierbar_arr as $i => $oKundenfeldNichtEditierbar) {
+                    $nonEditableCustomerfields_arr[] = 'kKundenfeld != ' . (int)$oKundenfeldNichtEditierbar->kKundenfeld;
+                }
+                if (is_array($nonEditableCustomerfields_arr)) {
+                    $cSQL = ' AND ' . implode(' AND ', $nonEditableCustomerfields_arr);
+                } else {
+                    $cSQL = '';
                 }
                 Shop::DB()->query("DELETE FROM tkundenattribut WHERE kKunde = " . (int)$_SESSION['Kunde']->kKunde . $cSQL, 3);
 

@@ -76,21 +76,21 @@ if (isset($_POST['einstellungen']) && intval($_POST['einstellungen']) > 0) {
 
         if (count($oPlausi->getPlausiVar()) === 0) {
             // Update?
-            if (verifyGPCDataInteger('kKundenfeld') > 0) {
+            if (isset($_POST['kKundenfeld']) && (int)$_POST['kKundenfeld'] > 0) {
                 Shop::DB()->query(
                     "DELETE
                       FROM tkundenfeld
-                      WHERE tkundenfeld.kKundenfeld = " . verifyGPCDataInteger('kKundenfeld'), 3
+                      WHERE tkundenfeld.kKundenfeld = " . (int)$_POST['kKundenfeld'], 3
                 );
                 Shop::DB()->query(
                     "DELETE
                        FROM tkundenfeldwert
-                       WHERE tkundenfeldwert.kKundenfeld = " . verifyGPCDataInteger('kKundenfeld'), 3
+                       WHERE tkundenfeldwert.kKundenfeld = " . (int)$_POST['kKundenfeld'], 3
                 );
                 Shop::DB()->query(
                     "DELETE
                        FROM tkundenattribut
-                       WHERE tkundenattribut.kKundenfeld = " . verifyGPCDataInteger('kKundenfeld'), 3
+                       WHERE tkundenattribut.kKundenfeld = " . (int)$_POST['kKundenfeld'], 3
                 );
             }
 
@@ -102,7 +102,7 @@ if (isset($_POST['einstellungen']) && intval($_POST['einstellungen']) > 0) {
             $oKundenfeld->nSort       = $nSort;
             $oKundenfeld->nPflicht    = (int)$nPflicht;
             $oKundenfeld->nEditierbar = (int)$nEdit;
-            if (isset($_POST['kKundenfeld']) && intval($_POST['kKundenfeld']) > 0) {
+            if (isset($_POST['kKundenfeld']) && (int)$_POST['kKundenfeld'] > 0) {
                 $oKundenfeld->kKundenfeld = (int)$_POST['kKundenfeld'];
             }
 

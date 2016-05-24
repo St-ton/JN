@@ -4,9 +4,14 @@
         {$jtl_token}
         <input type="hidden" name="news" value="1" />
         <input type="hidden" name="nkedit" value="1" />
-        <input type="hidden" name="tab" value="inaktiv" />
+        {if isset($cTab)}
+            <input type="hidden" name="tab" value="{$cTab}" />
+        {/if}
         {if isset($nFZ) && $nFZ == 1}
             <input name="nFZ" type="hidden" value="1">
+        {/if}
+        {if isset($cSeite)}
+            <input type="hidden" name="{if isset($cTab) && $cTab == 'aktiv'}s2{else}s1{/if}" value="{$cSeite}" />
         {/if}
         <input type="hidden" name="kNews" value="{$oNewsKommentar->kNews}" />
         <input type="hidden" name="kNewsKommentar" value="{$oNewsKommentar->kNewsKommentar}" />
@@ -27,7 +32,10 @@
                 </tr>
             </table>
             <div class="panel-footer">
-                <button name="newskommentarsavesubmit" type="submit" value="{#newsSave#}" class="btn btn-primary"><i class="fa fa-save"></i> {#newsSave#}</button>
+                <span class="btn-group">
+                    <button name="newskommentarsavesubmit" type="submit" value="{#newsSave#}" class="btn btn-primary"><i class="fa fa-save"></i> {#newsSave#}</button>
+                    <a class="btn btn-danger" href="news.php{if isset($cBackPage)}?{$cBackPage}{elseif isset($cTab)}?tab={$cTab}{/if}"><i class="fa fa-exclamation"></i> Abbrechen</a>
+                </span>
             </div>
         </div>
     </form>

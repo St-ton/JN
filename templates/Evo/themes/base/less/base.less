@@ -2811,6 +2811,14 @@ div#add-to-cart {
 #evo-main-nav {
     margin-bottom: 0;
     z-index: 20;
+
+    .dropdown-cart-items .item-name {
+        max-width: 200px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+        vertical-align: middle;
+    }
 }
 
 //fixed navbar start
@@ -2942,6 +2950,10 @@ header.fixed-navbar {
 #pushed-success {
     .panel h4 {
         color: @text-color;
+    }
+    .product-cell .caption{
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 }
 

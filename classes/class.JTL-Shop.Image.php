@@ -442,7 +442,8 @@ class Image
         $imanee->newImage($size->getWidth(), $size->getHeight(), '#bc3726');
 
         $drawer = clone $imanee->getDrawer();
-        $drawer->setFontColor('#fff');
+        $drawer->setFontColor('white');
+        $imanee->setFormat('jpg');
 
         $imanee->setDrawer($drawer);
         $imanee->placeText($error, Imanee::IM_POS_MID_CENTER, $size->getWidth() * 0.9);

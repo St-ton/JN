@@ -82,7 +82,7 @@
                                                                     {get_category_array categoryId=$sub->kKategorie assign='subsub_categories'}
                                                                 {/if}
                                                                 <hr class="hr-sm">
-                                                                <ul class="list-unstyled small subsub text-center">
+                                                                <ul class="list-unstyled small subsub">
                                                                     {foreach name='subsub_categories' from=$subsub_categories item='subsub'}
                                                                         {if $smarty.foreach.subsub_categories.iteration <= $max_subsub_items}
                                                                             <li{if $subsub->kKategorie == $activeId || (isset($activeParents[2]) && $activeParents[2]->kKategorie == $subsub->kKategorie)} class="active"{/if}>

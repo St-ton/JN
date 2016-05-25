@@ -216,7 +216,7 @@
 
                 // global price
                 var nNetto = result.nNettoPreise;
-                that.setPrice(result.fGesamtpreis[nNetto], result.cPreisLocalized[nNetto]);
+                that.setPrice(result.fGesamtpreis[nNetto], result.cPreisLocalized[nNetto], result.cPreisString);
 
                 $('#content .summary').html(result.cTemplate);
 
@@ -283,8 +283,11 @@
             $('.cfg-group[data-id="' + groupId + '"] .group-image img').attr('src', img).first();
         },
         
-        setPrice: function(price, fmtPrice) {
+        setPrice: function(price, fmtPrice, priceLabel) {
             $('#product-offer .price').html(fmtPrice);
+            if (!!priceLabel) {
+                $('#product-offer .price_label').html(priceLabel);
+            }
         },
 
         setUnitWeight: function(UnitWeight, newUnitWeight) {

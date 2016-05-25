@@ -154,7 +154,7 @@
                                         {if $oVariationen->cName == $oVariationenArtikel->cName}
                                             {foreach name=variationswerte from=$oVariationenArtikel->Werte item=oVariationsWerte}
                                                 {$oVariationsWerte->cName}
-                                                {if $oArtikel->nVariationOhneFreifeldAnzahl == 1 && ($oArtikel->kVaterArtikel > 0 || $oArtikel->nIstVater==1)}
+                                                {if $oArtikel->nVariationOhneFreifeldAnzahl == 1 && ($oArtikel->kVaterArtikel > 0 || $oArtikel->nIstVater == 1)}
                                                     {assign var=kEigenschaftWert value=$oVariationsWerte->kEigenschaftWert}
                                                     ({$oArtikel->oVariationDetailPreisKind_arr[$kEigenschaftWert]->Preise->cVKLocalized[$NettoPreise]}{if !empty($oArtikel->oVariationDetailPreisKind_arr[$kEigenschaftWert]->Preise->PreisecPreisVPEWertInklAufpreis[$NettoPreise])}, {$oArtikel->oVariationDetailPreisKind_arr[$kEigenschaftWert]->Preise->PreisecPreisVPEWertInklAufpreis[$NettoPreise]}{/if})
                                                 {/if}
@@ -166,9 +166,9 @@
                                         {if $oVariationen->cName == $oVariationenArtikel->cName}
                                             {foreach name=variationswerte from=$oVariationenArtikel->Werte item=oVariationsWerte}
                                                 {$oVariationsWerte->cName}
-                                                {if $Einstellungen_Vergleichsliste.artikeldetails.artikel_variationspreisanzeige==1 && $oVariationsWerte->fAufpreisNetto!=0}
+                                                {if $Einstellungen_Vergleichsliste.artikeldetails.artikel_variationspreisanzeige == 1 && $oVariationsWerte->fAufpreisNetto != 0}
                                                     ({$oVariationsWerte->cAufpreisLocalized[$NettoPreise]}{if !empty($oVariationsWerte->cPreisVPEWertAufpreis[$NettoPreise])}, {$oVariationsWerte->cPreisVPEWertAufpreis[$NettoPreise]}{/if})
-                                                {elseif $Einstellungen_Vergleichsliste.artikeldetails.artikel_variationspreisanzeige==2 && $oVariationsWerte->fAufpreisNetto!=0}
+                                                {elseif $Einstellungen_Vergleichsliste.artikeldetails.artikel_variationspreisanzeige == 2 && $oVariationsWerte->fAufpreisNetto != 0}
                                                     ({$oVariationsWerte->cPreisInklAufpreis[$NettoPreise]}{if !empty($oVariationsWerte->cPreisVPEWertInklAufpreis[$NettoPreise])}, {$oVariationsWerte->cPreisVPEWertInklAufpreis[$NettoPreise]}{/if})
                                                 {/if}
                                                 {if !$smarty.foreach.variationswerte.last},{/if}

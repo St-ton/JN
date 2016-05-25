@@ -22,10 +22,10 @@
                         {if !empty($fehlendeAngaben) && !$hinweis}
                             <div class="alert alert-danger">{lang key="yourDataDesc" section="account data"}</div>
                         {/if}
-                        {if isset($fehlendeAngaben.email_vorhanden) && $fehlendeAngaben.email_vorhanden==1}
+                        {if isset($fehlendeAngaben.email_vorhanden) && $fehlendeAngaben.email_vorhanden == 1}
                             <div class="alert alert-danger">{lang key="emailAlreadyExists" section="account data"}</div>
                         {/if}
-                        {if isset($fehlendeAngaben.formular_zeit) && $fehlendeAngaben.formular_zeit==1}
+                        {if isset($fehlendeAngaben.formular_zeit) && $fehlendeAngaben.formular_zeit == 1}
                             <div class="alert alert-danger">{lang key="formToFast" section="account data"}</div>
                         {/if}
 
@@ -39,7 +39,8 @@
                                         <label for="password" class="control-label">{lang key="password" section="account data"}</label>
                                         <input type="password" name="pass" maxlength="20" id="password" class="form-control" placeholder="{lang key="password" section="account data"}" required>
                                         {if isset($fehlendeAngaben.pass_zu_kurz)}
-                                            <div class="alert alert-danger">{$warning_passwortlaenge}</div>{/if}
+                                            <div class="alert alert-danger">{$warning_passwortlaenge}</div>
+                                        {/if}
                                     </div>
                                 </div>
                                 <div class="col-xs-6">

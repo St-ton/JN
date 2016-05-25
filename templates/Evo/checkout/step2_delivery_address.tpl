@@ -26,7 +26,7 @@
                         {$jtl_token}
                         <fieldset>
                             <div class="radio">
-                                <label class="control-label" for="delivery0"><input type="radio" name="kLieferadresse" onclick="changeState('0')" value="0" id="delivery0" {if $kLieferadresse==0}checked{/if}>
+                                <label class="control-label" for="delivery0"><input type="radio" name="kLieferadresse" onclick="changeState('0')" value="0" id="delivery0" {if $kLieferadresse == 0}checked{/if}>
                                     {lang key="shippingAdressEqualBillingAdress" section="account data"}
                                 </label>
                             </div>
@@ -43,7 +43,7 @@
                                 {/foreach}
                             {/if}
                             <div class="radio">
-                                <label class="control-label" for="delivery_new"><input type="radio" name="kLieferadresse" onclick="changeState('-1')" value="-1" id="delivery_new" {if $kLieferadresse==-1}checked{/if}>
+                                <label class="control-label" for="delivery_new"><input type="radio" name="kLieferadresse" onclick="changeState('-1')" value="-1" id="delivery_new" {if $kLieferadresse == -1}checked{/if}>
                                     {lang key="createNewShippingAdress" section="account data"}
                                 </label>
                             </div>

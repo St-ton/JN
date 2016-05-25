@@ -78,7 +78,7 @@
                                         <label class="control-label" for="question_email">{lang key="email" section="account data"}</label>
                                         <input class="form-control" type="email" name="email" value="{if isset($Anfrage)}{$Anfrage->cMail}{/if}" id="question_email" required>
                                         {if isset($fehlendeAngaben_fragezumprodukt.email) && $fehlendeAngaben_fragezumprodukt.email > 0}
-                                            <div class="alert alert-danger">{if $fehlendeAngaben_fragezumprodukt.email==1}{lang key="fillOut" section="global"}{elseif $fehlendeAngaben_fragezumprodukt.email==2}{lang key="invalidEmail" section="global"}{elseif $fehlendeAngaben_fragezumprodukt.email==3}{lang key="blockedEmail" section="global"}{/if}</div>
+                                            <div class="alert alert-danger">{if $fehlendeAngaben_fragezumprodukt.email == 1}{lang key="fillOut" section="global"}{elseif $fehlendeAngaben_fragezumprodukt.email == 2}{lang key="invalidEmail" section="global"}{elseif $fehlendeAngaben_fragezumprodukt.email==3}{lang key="blockedEmail" section="global"}{/if}</div>
                                         {/if}
                                     </div>
                                 </div>
@@ -93,9 +93,9 @@
                                                 <input class="form-control" type="text" name="tel" value="{if isset($Anfrage)}{$Anfrage->cTel}{/if}" id="tel"{if $Einstellungen.artikeldetails.produktfrage_abfragen_tel === 'Y'} required{/if}>
                                                 {if isset($fehlendeAngaben_fragezumprodukt.tel) && $fehlendeAngaben_fragezumprodukt.tel > 0}
                                                     <div class="alert alert-danger">
-                                                        {if $fehlendeAngaben_fragezumprodukt.tel==1}
+                                                        {if $fehlendeAngaben_fragezumprodukt.tel == 1}
                                                             {lang key="fillOut" section="global"}
-                                                        {elseif $fehlendeAngaben_fragezumprodukt.tel==2}
+                                                        {elseif $fehlendeAngaben_fragezumprodukt.tel == 2}
                                                             {lang key="invalidTel" section="global"}
                                                         {/if}
                                                     </div>
@@ -111,9 +111,9 @@
                                                 <input class="form-control" type="text" name="mobil" value="{if isset($Anfrage)}{$Anfrage->cMobil}{/if}" id="mobile"{if $Einstellungen.artikeldetails.produktfrage_abfragen_mobil === 'Y'} required{/if}>
                                                 {if isset($fehlendeAngaben_fragezumprodukt.mobil) && $fehlendeAngaben_fragezumprodukt.mobil > 0}
                                                     <div class="alert alert-danger">
-                                                        {if $fehlendeAngaben_fragezumprodukt.mobil==1}
+                                                        {if $fehlendeAngaben_fragezumprodukt.mobil == 1}
                                                             {lang key="fillOut" section="global"}
-                                                        {elseif $fehlendeAngaben_fragezumprodukt.mobil==2}
+                                                        {elseif $fehlendeAngaben_fragezumprodukt.mobil == 2}
                                                             {lang key="invalidTel" section="global"}
                                                         {/if}
                                                     </div>
@@ -132,9 +132,9 @@
                                             <input class="form-control" type="text" name="fax" value="{if isset($Anfrage)}{$Anfrage->cFax}{/if}" id="fax"{if $Einstellungen.artikeldetails.produktfrage_abfragen_fax === 'Y'} required{/if}>
                                             {if isset($fehlendeAngaben_fragezumprodukt.fax) && $fehlendeAngaben_fragezumprodukt.fax > 0}
                                                 <div class="alert alert-danger">
-                                                    {if $fehlendeAngaben_fragezumprodukt.fax==1}
+                                                    {if $fehlendeAngaben_fragezumprodukt.fax == 1}
                                                         {lang key="fillOut" section="global"}
-                                                    {elseif $fehlendeAngaben_fragezumprodukt.fax==2}
+                                                    {elseif $fehlendeAngaben_fragezumprodukt.fax == 2}
                                                         {lang key="invalidTel" section="global"}
                                                     {/if}
                                                 </div>

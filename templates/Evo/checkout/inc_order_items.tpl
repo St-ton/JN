@@ -30,9 +30,9 @@
             <tr class="type-{$oPosition->nPosTyp}">
                 <td></td>
                 {if $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y' && !empty($oPosition->Artikel->cVorschaubild)}
-                    <td class="img-col hidden-xs text-center">
-                        <a href="{$oPosition->Artikel->cURL}" title="{$oPosition->cName|trans}" class="pull-left">
-                            <img src="{$oPosition->Artikel->cVorschaubild}" alt="{$oPosition->cName|trans}" class="img-responsive-height" />
+                    <td class="img-col hidden-xs text-center vcenter">
+                        <a href="{$oPosition->Artikel->cURL}" title="{$oPosition->cName|trans}">
+                            <img src="{$oPosition->Artikel->cVorschaubild}" alt="{$oPosition->cName|trans}" class="img-responsive-width" />
                         </a>
                     </td>
                 {elseif $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y'}

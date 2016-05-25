@@ -2284,7 +2284,7 @@ class Artikel
 
                 // needed for matrix in tiny tpl
                 $this->nVariationKombiNichtMoeglich_arr = array();
-                if ($nVariationKombi == 1) {
+                if ($nVariationKombi == 1 && (!defined('TEMPLATE_COMPATIBILITY') || TEMPLATE_COMPATIBILITY === true)) {
                     $this->nVariationKombiNichtMoeglich_arr = $this->baueVariationKombiHilfe($kKundengruppe);
                 }
 

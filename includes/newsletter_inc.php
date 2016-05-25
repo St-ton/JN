@@ -73,7 +73,7 @@ function fuegeNewsletterEmpfaengerEin($oKunde, $bPruefeDaten = false)
                 $oNewsletterEmpfaengerKunde = Shop::DB()->query(
                     "SELECT kKunde
                         FROM tnewsletterempfaenger
-                        WHERE kKunde = " . (int) $_SESSION['Kunde']->kKunde, 1
+                        WHERE kKunde = " . (int)$_SESSION['Kunde']->kKunde, 1
                 );
             }
             if ((isset($oNewsletterEmpfaenger->cEmail) && strlen($oNewsletterEmpfaenger->cEmail) > 0) ||
@@ -185,7 +185,7 @@ function pruefeObBereitsAbonnent($kKunde)
         $oNewsletterEmpfaenger = Shop::DB()->query(
             "SELECT kKunde
                 FROM tnewsletterempfaenger
-                WHERE kKunde = " . (int) $kKunde, 1
+                WHERE kKunde = " . (int)$kKunde, 1
         );
 
         return (isset($oNewsletterEmpfaenger->kKunde) && $oNewsletterEmpfaenger->kKunde > 0);
@@ -207,7 +207,7 @@ function pruefeNLHistoryKundengruppe($kKundengruppe, $cKundengruppeKey)
         if (is_array($cKundengruppeKey_arr) && count($cKundengruppeKey_arr) > 0) {
             foreach ($cKundengruppeKey_arr as $cKundengruppeKey) {
                 if (intval($cKundengruppeKey) > 0 || (strlen($cKundengruppeKey) > 0 && intval($cKundengruppeKey) === 0)) {
-                    $kKundengruppe_arr[] = (int) $cKundengruppeKey;
+                    $kKundengruppe_arr[] = (int)$cKundengruppeKey;
                 }
             }
         }

@@ -53,15 +53,15 @@ $Sektion          = null;
 $step             = 'uebersicht';
 if (verifyGPCDataInteger('kSektion') > 0) {
     $step    = 'einstellungen bearbeiten';
-    $Sektion = Shop::DB()->query("
-        SELECT *
+    $Sektion = Shop::DB()->query(
+        "SELECT *
             FROM teinstellungensektion
             WHERE kEinstellungenSektion = " . verifyGPCDataInteger('kSektion'), 1
     );
     $smarty->assign('kEinstellungenSektion', $Sektion->kEinstellungenSektion);
 } else {
-    $Sektion = Shop::DB()->query("
-        SELECT *
+    $Sektion = Shop::DB()->query(
+        "SELECT *
             FROM teinstellungensektion
             WHERE kEinstellungenSektion = 1", 1
     );
@@ -87,13 +87,13 @@ if (isset($_POST['einstellungen_bearbeiten']) && intval($_POST['einstellungen_be
         $Conf = $oSQL->oEinstellung_arr;
         $smarty->assign('cSearch', $oSQL->cSearch);
     } else {
-        $Sektion = Shop::DB()->query("
-            SELECT *
+        $Sektion = Shop::DB()->query(
+            "SELECT *
                 FROM teinstellungensektion
                 WHERE kEinstellungenSektion = " . verifyGPCDataInteger('kSektion'), 1
         );
-        $Conf = Shop::DB()->query("
-            SELECT *
+        $Conf = Shop::DB()->query(
+            "SELECT *
                 FROM teinstellungenconf
                 WHERE kEinstellungenSektion = " . (int)$Sektion->kEinstellungenSektion . "
                     AND cConf = 'Y'
@@ -109,7 +109,7 @@ if (isset($_POST['einstellungen_bearbeiten']) && intval($_POST['einstellungen_be
             $aktWert->kEinstellungenSektion = $Conf[$i]->kEinstellungenSektion;
             switch ($Conf[$i]->cInputTyp) {
                 case 'kommazahl':
-                    $aktWert->cWert = floatval(str_replace(',','.',$aktWert->cWert));
+                    $aktWert->cWert = floatval(str_replace(',', '.', $aktWert->cWert));
                     break;
                 case 'zahl':
                 case 'number':
@@ -122,8 +122,8 @@ if (isset($_POST['einstellungen_bearbeiten']) && intval($_POST['einstellungen_be
                     $aktWert->cWert = substr($aktWert->cWert, 0, 255);
                     break;
             }
-            Shop::DB()->query("
-                DELETE
+            Shop::DB()->query(
+                "DELETE
                     FROM teinstellungen
                     WHERE kEinstellungenSektion=" . $Conf[$i]->kEinstellungenSektion . "
                         AND cName='" . $Conf[$i]->cWertName . "'", 4
@@ -162,8 +162,8 @@ if ($step === 'uebersicht') {
     $Sektionen    = Shop::DB()->query("SELECT * FROM teinstellungensektion ORDER BY kEinstellungenSektion", 2);
     $sectionCount = count($Sektionen);
     for ($i = 0; $i < $sectionCount; $i++) {
-        $anz_einstellunen = Shop::DB()->query("
-            SELECT count(*) AS anz
+        $anz_einstellunen = Shop::DB()->query(
+            "SELECT count(*) AS anz
                 FROM teinstellungenconf
                 WHERE kEinstellungenSektion = " . (int)$Sektionen[$i]->kEinstellungenSektion . "
                     AND cConf = 'Y'
@@ -189,8 +189,8 @@ if ($step === 'einstellungen bearbeiten') {
         $smarty->assign('cSearch', $oSQL->cSearch)
                ->assign('cSuche', $oSQL->cSuche);
     } else {
-        $Conf = Shop::DB()->query("
-            SELECT *
+        $Conf = Shop::DB()->query(
+            "SELECT *
                 FROM teinstellungenconf
                 WHERE nModul = 0 AND kEinstellungenSektion = " . (int)$Sektion->kEinstellungenSektion . " " . $oSQL->cWHERE . "
                 ORDER BY nSort", 2
@@ -207,8 +207,8 @@ if ($step === 'einstellungen bearbeiten') {
                     ORDER BY cStandard DESC", 2
             );
         } elseif (in_array($Conf[$i]->cInputTyp, array('selectbox', 'listbox'), true)) {
-            $Conf[$i]->ConfWerte = Shop::DB()->query("
-                SELECT *
+            $Conf[$i]->ConfWerte = Shop::DB()->query(
+                "SELECT *
                     FROM teinstellungenconfwerte
                     WHERE kEinstellungenConf = " . (int)$Conf[$i]->kEinstellungenConf . "
                     ORDER BY nSort", 2
@@ -224,8 +224,8 @@ if ($step === 'einstellungen bearbeiten') {
             );
             $Conf[$i]->gesetzterWert = $setValue;
         } else {
-            $setValue = Shop::DB()->query("
-                SELECT cWert
+            $setValue = Shop::DB()->query(
+                "SELECT cWert
                     FROM teinstellungen
                     WHERE kEinstellungenSektion = " . (int)$Conf[$i]->kEinstellungenSektion . "
                     AND cName = '" . $Conf[$i]->cWertName . "'", 1

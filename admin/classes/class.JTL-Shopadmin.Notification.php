@@ -39,7 +39,7 @@ class Notification implements IteratorAggregate, Countable
     }
     
     /**
-     * @return highest type in record
+     * @return mixed  - highest type in record
      */
     public function getHighestType()
     {
@@ -55,15 +55,16 @@ class Notification implements IteratorAggregate, Countable
     /**
      * @return int
      */
-    public function count() 
-    { 
+    public function count()
+    {
         return count($this->array);
     }
 
     /**
      * @return ArrayIterator
      */
-    public function getIterator() {
+    public function getIterator()
+    {
         return new ArrayIterator($this->array);
     }
 
@@ -78,12 +79,12 @@ class Notification implements IteratorAggregate, Countable
         require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dashboard_inc.php';
         require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'permissioncheck_inc.php';
 
-        $notify = new Notification();
-        $updater = new Updater();
-        $template = Template::getInstance();
-        $writeableDirs = checkWriteables();
+        $notify         = new Notification();
+        $updater        = new Updater();
+        $template       = Template::getInstance();
+        $writeableDirs  = checkWriteables();
         $permissionStat = getPermissionStats($writeableDirs);
-        $confGlobal = Shop::getSettings(array(CONF_GLOBAL));
+        $confGlobal     = Shop::getSettings(array(CONF_GLOBAL));
         
         if ($updater->hasPendingUpdates()) {
             $notify->add(NotificationEntry::TYPE_DANGER, "Systemupdate", "Ein Datenbank-Update ist zwingend notwendig", "dbupdater.php");

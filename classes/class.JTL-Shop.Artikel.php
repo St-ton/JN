@@ -3151,12 +3151,17 @@ class Artikel
                 if ($fKundenRabatt > 0 || $fMaxRabatt > 0) {
                     $this->rabattierePreise();
                 }
-                //#7595 - do not used cached result if special price is expired
+                //#7595 - do not use cached result if special price is expired
                 $return = true;
                 if ($this->cAktivSonderpreis === 'Y' && $this->dSonderpreisEnde_en !== '0000-00-00' && $this->dSonderpreisEnde_en !== null) {
                     $endDate = new DateTime($this->dSonderpreisEnde_en);
                     $endDate->modify('+1 days');
                     $return = ($endDate >= new DateTime());
+                } elseif ($this->cAktivSonderpreis === 'N' && $this->dSonderpreisStart_en !== '0000-00-00' && $this->dSonderpreisStart_en !== null) {
+                    //do not use cached result if a special price started in the mean time
+                    $startDate = new DateTime($this->dSonderpreisStart_en);
+                    $today     = new DateTime();
+                    $return    = ($startDate > $today);
                 }
                 if ($return === true) {
                     // Warenkorbmatrix Variationskinder holen?
@@ -3451,7 +3456,7 @@ class Artikel
         }
         // Datumsrelevante Abhängigkeiten beachten
         $this->checkDateDependencies();
-        //wenn ja fMaxRabatt darauf setzen
+        //wenn ja fMaxRabatt setzen
         // fMaxRabatt = 0, wenn Sonderpreis aktiv
         if ($this->cAktivSonderpreis === 'Y' && (double) $this->fNettoPreis > 0) {
             $this->fMaxRabatt = $oArtikelTMP->fMaxRabatt = 0;
@@ -3932,16 +3937,9 @@ class Artikel
         if (!$bZulaufDatum) {
             $this->dZulaufDatum_de = null;
         }
-        if ($specialPriceStartDate <= $now && ($this->dSonderpreisEnde_en === '0000-00-00' || $specialPriceEndDate >= $now)) {
-            $this->cAktivSonderpreis = 'Y';
-        } else {
-            $this->cAktivSonderpreis    = null;
-            $this->dSonderpreisStart_en = null;
-            $this->dSonderpreisEnde_en  = null;
-            $this->dSonderpreisStart_de = null;
-            $this->dSonderpreisEnde_de  = null;
-            $this->fNettoPreis          = null;
-        }
+        $this->cAktivSonderpreis = ($specialPriceStartDate <= $now && ($this->dSonderpreisEnde_en === '0000-00-00' || $specialPriceEndDate >= $now)) ?
+            'Y' :
+            'N';
 
         return $this->baueSuchspecialBildoverlay();
     }

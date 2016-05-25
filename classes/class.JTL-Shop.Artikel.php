@@ -3100,16 +3100,9 @@ class Artikel
         if (!$kArtikel) {
             return;
         }
-        $conf = Shop::getSettings(array(
-            CONF_GLOBAL,
-            CONF_ARTIKELDETAILS,
-            CONF_PREISVERLAUF,
-            CONF_BEWERTUNG,
-            CONF_BOXEN,
-            CONF_ARTIKELUEBERSICHT
-        ));
         if (!$kKundengruppe) {
             if (!isset($_SESSION['Kundengruppe']) || !$_SESSION['Kundengruppe']->kKundengruppe) {
+                $conf = Shop::getSettings(array(CONF_GLOBAL));
                 $_SESSION['Kundengruppe']                             = Kundengruppe::getDefault();
                 $_SESSION['Kundengruppe']->darfPreiseSehen            = 1;
                 $_SESSION['Kundengruppe']->darfArtikelKategorienSehen = 1;
@@ -3166,6 +3159,13 @@ class Artikel
                     $return = ($endDate >= new DateTime());
                 }
                 if ($return === true) {
+                    // Warenkorbmatrix Variationskinder holen?
+                    if (((isset($oArtikelOptionen->nWarenkorbmatrix) && $oArtikelOptionen->nWarenkorbmatrix == 1) ||
+                            (isset($this->FunktionsAttribute[FKT_ATTRIBUT_WARENKORBMATRIX]) && (int) $this->FunktionsAttribute[FKT_ATTRIBUT_WARENKORBMATRIX] === 1 &&
+                                isset($oArtikelOptionen->nMain) && $oArtikelOptionen->nMain == 1))
+                    ) {
+                        $this->oVariationKombiKinderAssoc_arr = $this->holeVariationKombiKinderAssoc($kKundengruppe, $kSprache);
+                    }
                     executeHook(HOOK_ARTIKEL_CLASS_FUELLEARTIKEL, array(
                             'oArtikel'  => &$this,
                             'cacheTags' => array(),
@@ -3177,6 +3177,12 @@ class Artikel
                 }
             }
         }
+        $conf = Shop::getSettings(array(
+            CONF_GLOBAL,
+            CONF_ARTIKELDETAILS,
+            CONF_BOXEN,
+            CONF_ARTIKELUEBERSICHT
+        ));
         $this->cCachedCountryCode = (isset($_SESSION['cLieferlandISO'])) ? $_SESSION['cLieferlandISO'] : null;
         $nSchwelleBestseller      = (isset($conf['boxen']['boxen_bestseller_minanzahl'])) ? doubleval($conf['boxen']['boxen_bestseller_minanzahl']) : 10;
         $nSchwelleTopBewertet     = (isset($conf['boxen']['boxen_topbewertet_minsterne'])) ? (int)$conf['boxen']['boxen_topbewertet_minsterne'] : 4;
@@ -3582,8 +3588,8 @@ class Artikel
         }
         // Warenkorbmatrix Variationskinder holen?
         if (((isset($oArtikelOptionen->nWarenkorbmatrix) && $oArtikelOptionen->nWarenkorbmatrix == 1) ||
-                (isset($this->FunktionsAttribute[FKT_ATTRIBUT_WARENKORBMATRIX]) && (int) $this->FunktionsAttribute[FKT_ATTRIBUT_WARENKORBMATRIX] === 1 &&
-                    isset($oArtikelOptionen->nMain) && $oArtikelOptionen->nMain == 1)) && Shop::getPageType() === PAGE_ARTIKEL
+            (isset($this->FunktionsAttribute[FKT_ATTRIBUT_WARENKORBMATRIX]) && (int) $this->FunktionsAttribute[FKT_ATTRIBUT_WARENKORBMATRIX] === 1 &&
+                isset($oArtikelOptionen->nMain) && $oArtikelOptionen->nMain == 1))
         ) {
             $this->oVariationKombiKinderAssoc_arr = $this->holeVariationKombiKinderAssoc($kKundengruppe, $kSprache);
         }
@@ -3754,7 +3760,12 @@ class Artikel
         );
 
         if ($noCache === false) {
+            //oVariationKombiKinderAssoc_arr can contain a lot of article objects - do not save to cache
+            $children                             = $this->oVariationKombiKinderAssoc_arr;
+            $this->oVariationKombiKinderAssoc_arr = null;
             Shop::Cache()->set($cacheID, $this, $cacheTags);
+            //restore oVariationKombiKinderAssoc_arr to class instance
+            $this->oVariationKombiKinderAssoc_arr = $children;
         }
         $this->rabattierePreise();
 

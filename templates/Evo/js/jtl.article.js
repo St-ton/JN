@@ -119,12 +119,12 @@
 
             $('.variations .bootstrap-select .dropdown-menu li').hover(function() {
                 var tmp_idx = parseInt($(this).attr('data-original-index')) + 1;
-                var sel = $(this).parent().parent().parent().find('select option:nth-child(' + tmp_idx + ')');
+                var sel = $(this).closest('.bootstrap-select').find('select option:nth-child(' + tmp_idx + ')');
                 inner(sel);
 
             }, function() {
                 var tmp_idx = parseInt($(this).attr('data-original-index')) + 1,
-                    p = $(this).parent().parent().parent().find('select option:nth-child(' + tmp_idx + ')'),
+                    p = $(this).closest('.bootstrap-select').find('select option:nth-child(' + tmp_idx + ')'),
                     id = $(p).attr('data-key'),
                     data  = $(p).data('list');
 

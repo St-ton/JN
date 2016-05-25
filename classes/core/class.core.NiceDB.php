@@ -920,6 +920,7 @@ class NiceDB
      * 1  - single fetched object
      * 2  - array of fetched objects
      * 3  - affected rows
+     * 7  - last inserted id
      * 8  - fetched assoc array
      * 9  - array of fetched assoc arrays
      * 10 - result of querysingle

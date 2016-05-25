@@ -24,6 +24,8 @@
                                             data-key="{$Variationswert->kEigenschaft}"
                                             data-value="{$Variationswert->kEigenschaftWert}"
                                             data-content="{$cVariationsWert|escape:'html'}"
+                                            data-list='{prepare_image_details item=$Variationswert json=true}'
+                                            data-title='{$Variationswert->cName}'
                                             {if $bSelected}selected="selected"{/if}>
                                         {$cVariationsWert|trim}
                                     </option>
@@ -44,7 +46,9 @@
                                        data-type="radio"
                                        data-original="{$Variationswert->cName}"
                                        data-key="{$Variationswert->kEigenschaft}"
-                                       data-value="{$Variationswert->kEigenschaftWert}">
+                                       data-value="{$Variationswert->kEigenschaftWert}"
+                                       data-list='{prepare_image_details item=$Variationswert json=true}'
+                                       data-title='{$Variationswert->cName}'>
                                     <input type="radio"
                                            name="eigenschaftwert[{$Variation->kEigenschaft}]"
                                            id="vt{$Variationswert->kEigenschaftWert}"
@@ -73,7 +77,9 @@
                                             data-original="{$Variationswert->cName}"
                                             data-key="{$Variationswert->kEigenschaft}"
                                             data-value="{$Variationswert->kEigenschaftWert}"
-                                            for="vt{$Variationswert->kEigenschaftWert}">
+                                            for="vt{$Variationswert->kEigenschaftWert}"
+                                            data-list='{prepare_image_details item=$Variationswert json=true}'
+                                            data-title='{$Variationswert->cName}'>
                                         <input type="radio"
                                                class="control-hidden"
                                                name="eigenschaftwert[{$Variation->kEigenschaft}]"

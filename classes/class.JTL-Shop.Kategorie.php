@@ -103,14 +103,15 @@ class Kategorie
      * Konstruktor
      *
      * @access public
-     * @param int $kKategorie Falls angegeben, wird der Kategorie mit angegebenem kKategorie aus der DB geholt
-     * @param int $kSprache
-     * @param int $kKundengruppe
+     * @param int  $kKategorie Falls angegeben, wird der Kategorie mit angegebenem kKategorie aus der DB geholt
+     * @param int  $kSprache
+     * @param int  $kKundengruppe
+     * @param bool $noCache
      */
-    public function __construct($kKategorie = 0, $kSprache = 0, $kKundengruppe = 0)
+    public function __construct($kKategorie = 0, $kSprache = 0, $kKundengruppe = 0, $noCache = false)
     {
         if ((int)$kKategorie > 0) {
-            $this->loadFromDB((int)$kKategorie, (int)$kSprache, (int)$kKundengruppe);
+            $this->loadFromDB((int)$kKategorie, (int)$kSprache, (int)$kKundengruppe, $noCache);
         }
     }
 
@@ -122,9 +123,10 @@ class Kategorie
      * @param int $kSprache
      * @param int $kKundengruppe
      * @param bool $recall - used for internal hacking only
+     * @param bool $noCache
      * @return $this
      */
-    public function loadFromDB($kKategorie, $kSprache = 0, $kKundengruppe = 0, $recall = false)
+    public function loadFromDB($kKategorie, $kSprache = 0, $kKundengruppe = 0, $recall = false, $noCache = false)
     {
         if (!$kKundengruppe && isset($_SESSION['Kundengruppe']->kKundengruppe)) {
             $kKundengruppe = $_SESSION['Kundengruppe']->kKundengruppe;
@@ -148,15 +150,8 @@ class Kategorie
         $kKategorie    = (int)$kKategorie;
         //exculpate session
         $cacheID = 'cl_l_' . $kSprache . '_cg_' . $kKundengruppe . '_ssl_' . pruefeSSL();
-        if (($oKategorie_arr = Shop::Cache()->get($cacheID)) !== false && isset($oKategorie_arr[$kKategorie]) && !isset($_SESSION['AdminAccount'])) {
+        if (!$noCache && ($oKategorie_arr = Shop::Cache()->get($cacheID)) !== false && isset($oKategorie_arr[$kKategorie])) {
             foreach (get_object_vars($oKategorie_arr[$kKategorie]) as $k => $v) {
-                $this->$k = $v;
-            }
-            executeHook(HOOK_KATEGORIE_CLASS_LOADFROMDB, array('oKategorie' => &$this, 'cacheTags' => array(), 'cached' => true));
-
-            return $this;
-        } elseif (false && isset($_SESSION['oKategorie_arr'][$kKategorie]) && !isset($_SESSION['AdminAccount'])) {
-            foreach (get_object_vars($_SESSION['oKategorie_arr'][$kKategorie]) as $k => $v) {
                 $this->$k = $v;
             }
             executeHook(HOOK_KATEGORIE_CLASS_LOADFROMDB, array('oKategorie' => &$this, 'cacheTags' => array(), 'cached' => true));
@@ -294,7 +289,9 @@ class Kategorie
         $oKategorie_arr[$kKategorie] = $this;
         $cacheTags                   = array(CACHING_GROUP_CATEGORY . '_' . $kKategorie, CACHING_GROUP_CATEGORY);
         executeHook(HOOK_KATEGORIE_CLASS_LOADFROMDB, array('oKategorie' => &$this, 'cacheTags' => &$cacheTags, 'cached' => false));
-        Shop::Cache()->set($cacheID, $oKategorie_arr, $cacheTags);
+        if (!$noCache) {
+            Shop::Cache()->set($cacheID, $oKategorie_arr, $cacheTags);
+        }
 
         return $this;
     }

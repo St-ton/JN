@@ -31,7 +31,7 @@
             {if $oNewsUebersicht->cVorschauText|count_characters > 0}
                 {$oNewsUebersicht->cVorschauText}<span class="read-more">{$oNewsUebersicht->cMehrURL}</span>
             {elseif $oNewsUebersicht->cText|strip_tags|count_characters > 200}
-                {$oNewsUebersicht->cText|strip_tags|truncate:200:""}<span class="read-more">{$oNewsUebersicht->cMehrURL}</span>
+                {$oNewsUebersicht->cText|strip_tags|truncate:200:""} <span class="read-more">{$oNewsUebersicht->cMehrURL}</span>
             {else}
                 {$oNewsUebersicht->cText}
             {/if}

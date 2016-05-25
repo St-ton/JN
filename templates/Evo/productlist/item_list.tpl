@@ -45,12 +45,12 @@
                                     <a href="{$Artikel->cHerstellerHomepage}">
                                 {/if}
                                 {if $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen === 'BT' && !empty($Artikel->cHersteller) && !empty($Artikel->cHerstellerBildKlein)}
-                                    {$Artikel->cHersteller}<br><br>
-                                    <img src="{$Artikel->cHerstellerBildKlein}" alt="" />
+                                    <img src="{$Artikel->cHerstellerBildKlein}" alt="" class="img-sm">
+                                    {$Artikel->cHersteller}
                                 {elseif $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen === 'Y' && !empty($Artikel->cHersteller)}
                                     {$Artikel->cHersteller}
                                 {elseif $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen === 'B' && !empty($Artikel->cHerstellerBildKlein)}
-                                    <img src="{$Artikel->cHerstellerBildKlein}" alt="" />
+                                    <img src="{$Artikel->cHerstellerBildKlein}" alt="" class="img-sm">
                                 {/if}
                                 {if $Artikel->cHerstellerHomepage}
                                     </a>

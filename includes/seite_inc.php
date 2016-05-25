@@ -619,7 +619,7 @@ function gibSitemapNews()
  */
 function gibNewsKategorie()
 {
-    $cacheID = 'news_category_' . $_SESSION['kSprache'] . '_' . $_SESSION['Kundengruppe']->kKundengruppe;
+    $cacheID = 'news_category_' . (int) $_SESSION['kSprache'] . '_' . (int) $_SESSION['Kundengruppe']->kKundengruppe;
     if (($oNewsKategorie_arr = Shop::Cache()->get($cacheID)) === false) {
         $oNewsKategorie_arr = Shop::DB()->query(
             "SELECT tnewskategorie.kNewsKategorie, tnewskategorie.kSprache, tnewskategorie.cName,

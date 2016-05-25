@@ -23,6 +23,7 @@ ifndef('PROFILE_SHOP', false);
 ifndef('PROFILE_QUERIES', false);
 ifndef('PROFILE_QUERIES_ECHO', false);
 ifndef('SHOW_PAGE_CACHE', false);
+ifndef('IO_LOG_CONSOLE', false);
 //PHP memory_limit work around
 if (intval(str_replace('M', '', ini_get('memory_limit'))) < 64) {
     ini_set('memory_limit', '64M');

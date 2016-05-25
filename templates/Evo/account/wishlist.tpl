@@ -52,7 +52,7 @@
                     </td>
                     <td>
                         <a href="{$CWunschlistePos->Artikel->cURL}">{$CWunschlistePos->cArtikelName}</a>
-                        {if $CWunschlistePos->Artikel->Preise->fVKNetto==0 && $Einstellungen.global.global_preis0 === 'N'}
+                        {if $CWunschlistePos->Artikel->Preise->fVKNetto == 0 && $Einstellungen.global.global_preis0 === 'N'}
                             <p>{lang key="priceOnApplication" section="global"}</p>
                         {else}
                             <p><b>{lang key="price"}:</b> {$CWunschlistePos->cPreis}</p>

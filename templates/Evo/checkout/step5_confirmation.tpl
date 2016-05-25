@@ -129,7 +129,7 @@
             </div>
         {/if}
         {block name="checkout-confirmation-comment"}
-            <div class="col-xs-12 col-md-{if $KuponMoeglich==1}6{else}12{/if}">
+            <div class="col-xs-12 col-md-{if $KuponMoeglich == 1}6{else}12{/if}">
                 <div class="panel panel-default" id="panel-edit-comment">
                     <div class="panel-heading">
                         <h3 class="panel-title">{block name="checkout-confirmation-comment-title"}{lang key="comment" section="product rating"}{/block}</h3>
@@ -150,7 +150,7 @@
     {/if}
     <form method="post" name="agbform" id="complete_order" action="{get_static_route id='bestellabschluss.php'}">
         {$jtl_token}
-        {if $Einstellungen.kaufabwicklung.bestellvorgang_wrb_anzeigen==1}
+        {if $Einstellungen.kaufabwicklung.bestellvorgang_wrb_anzeigen == 1}
             {lang key="cancellationPolicyNotice" section="checkout" assign="cancellationPolicyNotice"}
             {lang key="wrb" section="checkout" assign="wrb"}
             {if isset($AGB->kLinkWRB) && $AGB->kLinkWRB > 0}

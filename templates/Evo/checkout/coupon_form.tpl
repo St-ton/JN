@@ -17,7 +17,7 @@
     {/if}
 {/if}
 
-{if $KuponMoeglich==1}
+{if $KuponMoeglich == 1}
     <form method="post" action="{get_static_route id='bestellvorgang.php'}" class="form form-inline">
         {$jtl_token}
         <input type="hidden" name="pruefekupon" value="1" />

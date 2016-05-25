@@ -53,6 +53,7 @@ if (isset($_POST['neu_export']) && (int)$_POST['neu_export'] === 1 && validateTo
         $exportformat->cKodierung      = Shop::DB()->escape($_POST['cKodierung']);
         $exportformat->nVarKombiOption = (int)$_POST['nVarKombiOption'];
         $exportformat->nSplitgroesse   = (int)$_POST['nSplitgroesse'];
+        $exportformat->nUseCache       = (int)$_POST['nUseCache'];
         $kExportformat                 = null;
 
         if ((int)$_POST['kExportformat'] > 0) {

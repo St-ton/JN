@@ -77,6 +77,15 @@
                             </select>
                         </span>
                     </li>
+                    <li class="input-group item">
+                        <span class="input-group-addon"><label for="nUseCache">Cache nutzen?</label></span>
+                        <span class="input-group-wrap">
+                            <select class="form-control" name="nUseCache" id="nUseCache">
+                                <option value="1" {if (isset($Exportformat->nUseCache) && $Exportformat->nUseCache === '1')}selected{/if}>Ja</option>
+                                <option value="0" {if (!isset($Exportformat->nUseCache) || $Exportformat->nUseCache === '0')}selected{/if}>Nein</option>
+                            </select>
+                        </span>
+                    </li>
 
                     <li class="input-group item">
                         <span class="input-group-addon"><label for="nVarKombiOption">{#varikombiOption#}</label></span>

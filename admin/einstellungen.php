@@ -152,6 +152,10 @@ if (isset($_POST['einstellungen_bearbeiten']) && intval($_POST['einstellungen_be
         $_smarty = new JTLSmarty(true, false, true, 'cache');
         $_smarty->setCachingParams(true)->clearCache(null, 'jtlc');
     }
+
+    // Einstellungen zurücksetzen und Notifications neu laden
+    Shopsetting::getInstance()->reset();
+    $smarty->assign('notifications', Notification::buildDefault());
 }
 
 if ($step === 'uebersicht') {

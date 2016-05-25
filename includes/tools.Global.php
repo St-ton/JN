@@ -5730,6 +5730,7 @@ function validateReCaptcha($response)
 function validateCaptcha(array $requestData)
 {
     $confGlobal = Shop::getSettings(array(CONF_GLOBAL));
+    $reCaptcha  = reCaptchaConfigured();
     $valid      = false;
 
     // Captcha Prüfung ist bei eingeloggtem Kunden, bei bereits erfolgter Prüfung
@@ -5740,9 +5741,14 @@ function validateCaptcha(array $requestData)
         return true;
     }
 
+    // Captcha Prüfung für reCaptcha ist nicht möglich, wenn keine Konfiguration hinterlegt ist
+    if ($confGlobal['global']['anti_spam_method'] == 7 && !$reCaptcha) {
+        return true;
+    }
+
     // Wenn reCaptcha konfiguriert ist, wird davon ausgegangen, dass reCaptcha verwendet wird, egal was in
     // $confGlobal['global']['anti_spam_method'] angegeben ist.
-     if (reCaptchaConfigured()) {
+     if ($reCaptcha) {
         $valid = validateReCaptcha($requestData['g-recaptcha-response']);
     } elseif ($confGlobal['global']['anti_spam_method'] == 5) {
         $valid = validToken();

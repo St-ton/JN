@@ -83,6 +83,7 @@ class Notification implements IteratorAggregate, Countable
         $template = Template::getInstance();
         $writeableDirs = checkWriteables();
         $permissionStat = getPermissionStats($writeableDirs);
+        $confGlobal = Shop::getSettings(array(CONF_GLOBAL));
         
         if ($updater->hasPendingUpdates()) {
             $notify->add(NotificationEntry::TYPE_DANGER, "Systemupdate", "Ein Datenbank-Update ist zwingend notwendig", "dbupdater.php");
@@ -102,6 +103,10 @@ class Notification implements IteratorAggregate, Countable
         
         if (Profiler::getIsActive() !== 0) {
             $notify->add(NotificationEntry::TYPE_WARNING, "Plugin", "Der Profiler ist aktiv und kann zu starken Leistungseinbu&szlig;en im Shop f&uuml;hren.");
+        }
+
+        if ($confGlobal['global']['anti_spam_method'] == 7 && !reCaptchaConfigured()) {
+            $notify->add(NotificationEntry::TYPE_WARNING, "Konfiguration", "Sie haben Google reCaptcha als Spamschutz-Methode gew&auml;hlt, aber Website- und/oder Geheimer Schl&uuml;ssel nicht angegeben.", 'einstellungen.php?kSektion=1#anti_spam_method');
         }
 
         return $notify;

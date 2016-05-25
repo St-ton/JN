@@ -10,10 +10,11 @@
             <tr>
                 <td class="name"><strong>{$oWarenlager->cName}</strong></td>
                 <td class="delivery-status">
-                {if $anzeige !== 'nichts' && $Artikel->cLagerBeachten === 'Y' && ($Artikel->cLagerKleinerNull === 'N' || $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen === 'U') && $oWarenlager->fBestand <= 0 && $oWarenlager->fZulauf > 0 && isset($oWarenlager->dZulaufDatum)}
+                {if $anzeige !== 'nichts' && $Artikel->cLagerBeachten === 'Y' && ($Artikel->cLagerKleinerNull === 'N' ||
+                $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen === 'U') && $oWarenlager->fBestand <= 0 && $oWarenlager->fZulauf > 0 && isset($oWarenlager->dZulaufDatum)}
                     {assign var=cZulauf value=$oWarenlager->fZulauf|cat:':::'|cat:$oWarenlager->dZulaufDatum_de}
                     <span class="signal_image status-1"><span>{lang key="productInflowing" section="productDetails" printf=$cZulauf}</span></span>
-                {elseif $anzeige=='verfuegbarkeit'}
+                {elseif $anzeige === 'verfuegbarkeit'}
                     <span class="signal_image status-{$oWarenlager->oLageranzeige->nStatus}">{$oWarenlager->oLageranzeige->cLagerhinweis[$anzeige]}</span>
                 {else}
                     <span><span class="signal_image status-{$oWarenlager->oLageranzeige->nStatus}">{$oWarenlager->oLageranzeige->AmpelText}</span></span>

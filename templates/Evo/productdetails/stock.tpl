@@ -11,16 +11,16 @@
         $Artikel->fLagerbestand <= 0 && $Artikel->fLieferantenlagerbestand > 0 && $Artikel->fLieferzeit > 0 &&
         ($Artikel->cLagerKleinerNull === 'N' && $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen === 'I' || $Artikel->cLagerKleinerNull === 'Y' && $Einstellungen.artikeldetails.artikeldetails_lieferantenbestand_anzeigen === 'U')}
             <span class="status status-1"><i class="fa fa-truck"></i> {lang key="supplierStockNotice" section="global" printf=$Artikel->fLieferzeit}</span>
-        {elseif $anzeige=='verfuegbarkeit' || $anzeige === 'genau'}
+        {elseif $anzeige === 'verfuegbarkeit' || $anzeige === 'genau'}
             <span class="status status-{$Artikel->Lageranzeige->nStatus}"><i class="fa fa-truck"></i> {$Artikel->Lageranzeige->cLagerhinweis[$anzeige]}</span>
-        {elseif $anzeige=='ampel'}
+        {elseif $anzeige === 'ampel'}
             <span class="status status-{$Artikel->Lageranzeige->nStatus}"><i class="fa fa-truck"></i> {$Artikel->Lageranzeige->AmpelText}</span>
         {/if}
         {include file="productdetails/warehouse.tpl" tplscope="detail"}
     {else}
-        {if $anzeige=='verfuegbarkeit' || $anzeige === 'genau' && $Artikel->fLagerbestand > 0}
+        {if $anzeige === 'verfuegbarkeit' || $anzeige === 'genau' && $Artikel->fLagerbestand > 0}
             <span class="status status-{$Artikel->Lageranzeige->nStatus}"><i class="fa fa-truck"></i> {$Artikel->Lageranzeige->cLagerhinweis[$anzeige]}</span>
-        {elseif $anzeige=='ampel' && $Artikel->fLagerbestand > 0}
+        {elseif $anzeige === 'ampel' && $Artikel->fLagerbestand > 0}
             <span class="status status-{$Artikel->Lageranzeige->nStatus}"><i class="fa fa-truck"></i> {$Artikel->Lageranzeige->AmpelText}</span>
         {/if}
     {/if}

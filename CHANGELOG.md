@@ -12,6 +12,7 @@
 * Verbesserung: Bilder für Newskategorien können im Backend angegeben werden 
 * Bugfix: Plugin-Sprachvariablen lassen sich nicht aktualisieren, wenn zwischenzeitlich neue Sprache im Webshop aktiviert wurde
 * Bugfix: Speichern von Newsbeiträgen in deaktivierter Newskategorie schlägt fehl bzw. erzeugt Duplikat des Beitrags
+* Bugfix: Varkombis können in Fremdsprachen bei fehlender Übersetzung Sprachvariablen nicht nachgeladen werden
 
 ## [4.03.2]
 * Bugfix: robots.txt fehlendes "Sitemap: " vor der Sitemap-URL

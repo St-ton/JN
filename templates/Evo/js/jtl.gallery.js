@@ -182,7 +182,8 @@
                     options = {
                         index: index,
                         mouseUsed: true,
-                        closeOnScroll: false
+                        closeOnScroll: false,
+                        history: false
                     };
 
                     gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, pswpItems, options);

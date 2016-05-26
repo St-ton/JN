@@ -13,6 +13,10 @@
 * Bugfix: Plugin-Sprachvariablen lassen sich nicht aktualisieren, wenn zwischenzeitlich neue Sprache im Webshop aktiviert wurde
 * Bugfix: Speichern von Newsbeiträgen in deaktivierter Newskategorie schlägt fehl bzw. erzeugt Duplikat des Beitrags
 * Bugfix: Varkombis können in Fremdsprachen bei fehlender Übersetzung Sprachvariablen nicht nachgeladen werden
+* Bugfix: In Zukunft startende Sonderpreise werden bei aktiviertem Objektcache nicht berücksichtig
+* Verbesserung: Speicheroptimierung bei aktiviertem Objektcache und gleichzeitiger Verwendung der Warenkorbmatrix
+* Verbesserung: Speicheroptimierung bei aktiviertem Objektcache und TopArtikeln/Bestsellern/Neuen Artikeln
+* Bugfix: TopArtikel werden bei aktiviertem Objektcache nicht aktualisiert 
 
 ## [4.03.2]
 * Bugfix: robots.txt fehlendes "Sitemap: " vor der Sitemap-URL

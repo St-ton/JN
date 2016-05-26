@@ -3384,8 +3384,7 @@ function gibNaviMetaDescription($oArtikel_arr, $NaviFilter, $oSuchergebnisse, $G
             // Hat die aktuelle Kategorie eine beschreibung?
             if (isset($oKategorie->cBeschreibung) && strlen($oKategorie->cBeschreibung) > 0) {
                 $cKatDescription = strip_tags(str_replace(array('<br>', '<br />'), array(' ', ' '), $oKategorie->cBeschreibung));
-            } // Hat die aktuelle Kategorie, Unterkategorien
-            elseif ($oKategorie->bUnterKategorien) {
+            } elseif ($oKategorie->bUnterKategorien) { // Hat die aktuelle Kategorie, Unterkategorien
                 $oKategorieListe = new KategorieListe();
                 $oKategorieListe->getAllCategoriesOnLevel($oKategorie->kKategorie);
 

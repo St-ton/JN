@@ -1237,11 +1237,11 @@ function fuegeEinInWarenkorb($kArtikel, $anzahl, $oEigenschaftwerte_arr = '', $n
 
             if ($nWeiterleitung == 0) {
                 if ($Artikel->nIstVater == 1) {
-                    header('Location: navi.php?a=' . $Artikel->kArtikel . '&n=' . $anzahl . '&r=' . implode(',', $redirectParam), true, 302);
+                    header('Location: ' . Shop::getURL() . '/navi.php?a=' . $Artikel->kArtikel . '&n=' . $anzahl . '&r=' . implode(',', $redirectParam), true, 302);
                 } elseif ($Artikel->kEigenschaftKombi > 0) {
-                    header('Location: navi.php?a=' . $Artikel->kVaterArtikel . '&a2=' . $Artikel->kArtikel . '&n=' . $anzahl . '&r=' . implode(',', $redirectParam), true, 302);
+                    header('Location: ' . Shop::getURL() . '/navi.php?a=' . $Artikel->kVaterArtikel . '&a2=' . $Artikel->kArtikel . '&n=' . $anzahl . '&r=' . implode(',', $redirectParam), true, 302);
                 } else {
-                    header('Location: index.php?a=' . $Artikel->kArtikel . '&n=' . $anzahl . '&r=' . implode(',', $redirectParam), true, 302);
+                    header('Location: ' . Shop::getURL() . '/index.php?a=' . $Artikel->kArtikel . '&n=' . $anzahl . '&r=' . implode(',', $redirectParam), true, 302);
                 }
                 exit;
             } else {
@@ -4597,11 +4597,7 @@ function gibKategoriepfad($Kategorie, $kKundengruppe, $kSprache, $bString = true
         }
     }
 
-    if ($bString) {
-        return $pfad;
-    }
-
-    return $cPfad_arr;
+    return ($bString) ? $pfad : $cPfad_arr;
 }
 
 /**

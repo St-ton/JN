@@ -363,18 +363,28 @@ function exportformatQueueActionLoeschen(JTLSmarty $smarty, array &$messages)
  */
 function exportformatQueueActionTriggern(JTLSmarty $smarty, array &$messages)
 {
-    global $bCronManuell, $oCron_arr;
+    global $bCronManuell, $oCron_arr, $oJobQueue_arr;
     $bCronManuell = true;
 
     require_once PFAD_ROOT . PFAD_INCLUDES . 'cron_inc.php';
 
-    $jobCount = count($oCron_arr);
-    if ($jobCount === 0) {
-        $messages['error'] .= 'Es wurde kein Cron-Job gestartet.<br />';
-    } elseif ($jobCount === 1) {
-        $messages['notice'] .= 'Es wurde ein Cron-Job gestartet.<br />';
-    } else {
-        $messages['notice'] .= 'Es wurden ' . $jobCount . ' Cron-Jobs gestartet.<br />';
+    if (is_array($oCron_arr) && is_array($oJobQueue_arr)) {
+        $cronCount = count($oCron_arr);
+        $jobCount  = count($oJobQueue_arr);
+
+        if ($cronCount === 0 && $jobCount === 0) {
+            $messages['error'] .= 'Es wurde kein Cron-Job gestartet.<br />';
+        } elseif ($cronCount === 1) {
+            $messages['notice'] .= 'Es wurde ein Cron-Job gestartet.<br />';
+        } elseif ($cronCount > 1) {
+            $messages['notice'] .= 'Es wurden ' . $cronCount . ' Cron-Jobs gestartet.<br />';
+        }
+
+        if ($jobCount === 1) {
+            $messages['notice'] .= 'Es wurde eine Job-Queue abgearbeitet.<br />';
+        } elseif ($jobCount > 1) {
+            $messages['notice'] .= 'Es wurden ' . $jobCount . ' Job-Queues abgearbeitet.<br />';
+        }
     }
 
     return 'triggern';

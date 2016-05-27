@@ -13,13 +13,13 @@
         <div id="aktiv" class="tab-pane fade{if !isset($cTab) || empty($cTab) || $cTab === 'aktiv'} active in{/if}">
             <form method="post" action="exportformat_queue.php">
                 {$jtl_token}
-                {if $oExportformatCron_arr|@count > 0 && $oExportformatCron_arr}
-                    <div id="payment">
-                        <div id="tabellenLivesuche">
-                            <div class="panel panel-default">
-                                <div class="panel-heading">
-                                    <h3 class="panel-title">{#exportformatQueue#}</h3>
-                                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">{#exportformatQueue#}</h3>
+                    </div>
+                    {if $oExportformatCron_arr|@count > 0 && $oExportformatCron_arr}
+                        <div id="payment">
+                            <div id="tabellenLivesuche">
                                 <table class="table">
                                     <tr>
                                         <th class="tleft" style="width: 10px;">&nbsp;</th>
@@ -59,27 +59,27 @@
                                         <td colspan="8" class="TD7"><label for="ALLMSGS">{#globalSelectAll#}</label></td>
                                     </tr>
                                 </table>
-                                <div class="panel-footer">
-                                    <div class="btn-group">
-                                        <button name="action[erstellen]" type="submit" value="1" class="btn btn-primary add"><i class="fa fa-share"></i> {#exportformatAdd#}</button>
-                                        <button name="action[loeschen]" type="submit" value="1" class="btn btn-danger"><i class="fa fa-trash"></i> {#exportformatDelete#}</button>
-                                        <button name="action[triggern]" type="submit" value="1" class="btn btn-default"><i class="fa fa-play-circle-o"></i> {#exportformatTriggerCron#}</button>
-                                        <button name="action[uebersicht]" type="submit" value="1" class="btn btn-default"><i class="fa fa-refresh"></i> {#exportformatRefresh#}</button>
-                                    </div>
-                                </div>
                             </div>
                         </div>
-                    </div>
-                {else}
-                    <div class="alert alert-info" role="alert">{#noDataAvailable#}</div>
-                    <div class="panel panel-default">
+                        <div class="panel-footer">
+                            <div class="btn-group">
+                                <button name="action[erstellen]" type="submit" value="1" class="btn btn-primary add"><i class="fa fa-share"></i> {#exportformatAdd#}</button>
+                                <button name="action[loeschen]" type="submit" value="1" class="btn btn-danger"><i class="fa fa-trash"></i> {#exportformatDelete#}</button>
+                                <button name="action[triggern]" type="submit" value="1" class="btn btn-default"><i class="fa fa-play-circle-o"></i> {#exportformatTriggerCron#}</button>
+                                <button name="action[uebersicht]" type="submit" value="1" class="btn btn-default"><i class="fa fa-refresh"></i> {#exportformatRefresh#}</button>
+                            </div>
+                        </div>
+                    {else}
+                        <div class="panel-body">
+                            <div class="alert alert-info" role="alert">{#noDataAvailable#}</div>
+                        </div>
                         <div class="panel-footer">
                             <div class="btn-group">
                                 <button name="action[erstellen]" type="submit" value="1" class="btn btn-primary add"><i class="fa fa-share"></i> {#exportformatAdd#}</button>
                             </div>
                         </div>
-                    </div>
-                {/if}
+                    {/if}
+                </div>
             </form>
         </div>
         <div id="fertig" class="tab-pane fade{if isset($cTab) && $cTab === 'fertig'} active in{/if}">
@@ -102,11 +102,11 @@
                     </div>
                 </div>
             </form>
-            {if $oExportformatQueueBearbeitet_arr|@count > 0}
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">{#exportformatTodaysWork#}</h3>
-                    </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">{#exportformatTodaysWork#}</h3>
+                </div>
+                {if $oExportformatQueueBearbeitet_arr|@count > 0}
                     <div id="payment">
                         <div id="tabellenLivesuche">
                             <table class="table">
@@ -131,12 +131,12 @@
                             </table>
                         </div>
                     </div>
-                </div>
-            {else}
-                <div class="alert alert-info">
-                    {#exportformatNoTodaysWork#}
-                </div>
-            {/if}
+                {else}
+                    <div class="panel-body">
+                        <div class="alert alert-info">{#exportformatNoTodaysWork#}</div>
+                    </div>
+                {/if}
+            </div>
         </div>
     </div>
 </div>

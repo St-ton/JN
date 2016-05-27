@@ -66,7 +66,12 @@ if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && 
         $cKey          = $_POST['cKey'];
         $cKeyValue     = '';
         $cValue        = '';
-        if ($nSeite === 2) {
+
+        if ($nSeite === 1) {
+            $cKey      = 'kArtikel';
+            $cKeyValue = 'article_key';
+            $cValue    = $_POST[$cKeyValue];
+        } elseif ($nSeite === 2) {
             // data mapping
             $aFilter_arr = array(
                 'kTag'         => 'tag_key',
@@ -77,7 +82,16 @@ if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && 
             );
             $cKeyValue = $aFilter_arr[$cKey];
             $cValue    = $_POST[$cKeyValue];
+        } elseif ($nSeite === 24) {
+            $cKey      = 'kHersteller';
+            $cKeyValue = 'manufacturer_key';
+            $cValue    = $_POST[$cKeyValue];
+        } elseif ($nSeite === 31) {
+            $cKey      = 'kLink';
+            $cKeyValue = 'link_key';
+            $cValue    = $_POST[$cKeyValue];
         }
+
         Shop::DB()->delete('textensionpoint', array('cClass', 'kInitial'), array('ImageMap', $kImageMap));
         // save extensionpoint
         $oExtension                = new stdClass();

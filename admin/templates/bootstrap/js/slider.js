@@ -236,12 +236,23 @@ function typeChanged(type) {
     $('.custom').hide();
     $('#type' + type).show();
 
-    if (type != 2) {
-        $('select[name="cKey"]').val('');
-        $('.nl .key').hide();
-        $('.nl input[type="text"], .nl input[type="hidden"]').each(function() {
-            $(this).val('');
-        });
+    switch (type) {
+        case '1':
+            keyChanged('kArtikel');
+            break;
+        case '24':
+            keyChanged('kHersteller');
+            break;
+        case '31':
+            keyChanged('kLink');
+            break;
+        default:
+            $('select[name="cKey"]').val('');
+            $('.nl .key').hide();
+            $('.nl input[type="text"], .nl input[type="hidden"]').each(function () {
+                $(this).val('');
+            });
+            break;
     }
 }
 

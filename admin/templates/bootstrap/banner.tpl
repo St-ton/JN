@@ -67,12 +67,23 @@
             $('.custom').hide();
             $('#type' + type).show();
 
-            if (type != 2) {
-                $('select[name="cKey"]').val('');
-                $('.nl .key').hide();
-                $('.nl input[type="text"], .nl input[type="hidden"]').each(function () {
-                    $(this).val('');
-                });
+            switch (type) {
+                case '1':
+                    keyChanged('kArtikel');
+                    break;
+                case '24':
+                    keyChanged('kHersteller');
+                    break;
+                case '31':
+                    keyChanged('kLink');
+                    break;
+                default:
+                    $('select[name="cKey"]').val('');
+                    $('.nl .key').hide();
+                    $('.nl input[type="text"], .nl input[type="hidden"]').each(function () {
+                        $(this).val('');
+                    });
+                    break;
             }
         }
 
@@ -210,6 +221,16 @@
                     </div>
                     {include file="tpl_inc/single_search_browser.tpl"}
                     <div class="nl">
+                        <div id="keykArtikel" class="key">
+                            <input type="hidden" name="article_key" value="{if (isset($cKey) && $cKey === 'kArtikel') || (isset($oExtension->cKey) && $oExtension->cKey === 'kArtikel')}{$oExtension->cValue}{/if}" />
+                            <input class="form-control" type="text" name="article_name" disabled="disabled" value="{if (isset($cKey) && $cKey === 'kArtikel') || (isset($oExtension->cKey) && $oExtension->cKey === 'kArtikel')}{if isset($article_key) && $article_key !== ''}{$article_key}{elseif isset($oExtension->cValue) && $oExtension->cValue !== ''}{$oExtension->cValue}{else}Kein Artikel ausgew&auml;hlt{/if}{/if}" />
+                            <a href="#" class="btn btn-success" id="article">Artikel suchen</a>
+                        </div>
+                        <div id="keykLink" class="key">
+                            <input type="hidden" name="link_key" value="{if (isset($cKey) && $cKey === 'kLink') || (isset($oExtension->cKey) && $oExtension->cKey === 'kLink')}{$oExtension->cValue}{/if}" />
+                            <input class="form-control" type="text" name="link_name" disabled="disabled" value="{if (isset($cKey) && $cKey === 'kLink') || (isset($oExtension->cKey) && $oExtension->cKey === 'kLink')}{if isset($link_key) && $link_key !== ''}{$link_key}{elseif isset($oExtension->cValue) && $oExtension->cValue !== ''}{$oExtension->cValue}{else}Kein Seite ausgew&auml;hlt{/if}{/if}" />
+                            <a href="#" class="btn btn-success" id="link">Eigene Seite suchen</a>
+                        </div>
                         <div id="keykTag" class="key">
                             <input type="hidden" name="tag_key" value="{if (isset($cKey) && $cKey === 'kTag') || (isset($oExtension->cKey) && $oExtension->cKey === 'kTag')}{$oExtension->cValue}{/if}" />
                             <input class="form-control" type="text" name="tag_name" disabled="disabled" value="{if (isset($cKey) && $cKey === 'kTag') || (isset($oExtension->cKey) && $oExtension->cKey === 'kTag')}{if isset($tag_key) && $tag_key !== ''}{$tag_key}{elseif isset($oExtension->cValue) && $oExtension->cValue !== ''}{$oExtension->cValue}{else}Kein Tag ausgew&auml;hlt{/if}{/if}" />

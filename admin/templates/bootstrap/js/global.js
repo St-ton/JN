@@ -131,6 +131,9 @@ function get_list_callback(type, id) {
         case 'attribute':
             return (id == 0) ? 'getAttributeList' :
                 'getAttributeListFromString';
+        case 'link':
+            return (id == 0) ? 'getLinkList' :
+                'getLinkListFromString';
     }
     return false;
 }

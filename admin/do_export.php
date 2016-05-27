@@ -225,12 +225,11 @@ if ($max_artikel->nAnzahl > $queue->nLimit_n + $queue->nLimit_m) {
         $oCallback->bFirst        = ($queue->nLimit_n == 0);
         $oCallback->cURL          = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'];
         echo json_encode($oCallback);
-        exit;
     } else {
         $cURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'] . '?e=' . (int)$queue->kExportqueue . '&back=admin&token=' . $_SESSION['jtl_token'];
         header('Location: ' . $cURL);
-        exit;
     }
+    exit;
 } else {
     // Versucht (falls so eingestellt) die erstellte Exportdatei in mehrere Dateien zu splitten
     splitteExportDatei($exportformat);
@@ -250,11 +249,10 @@ if ($max_artikel->nAnzahl > $queue->nLimit_n + $queue->nLimit_m) {
             $oCallback->bFinished     = true;
 
             echo json_encode($oCallback);
-            exit;
         } else {
             header('Location: exportformate.php?action=exported&token=' . $_SESSION['jtl_token'] . '&kExportformat=' . (int)$queue->kExportformat);
-            exit;
         }
+        exit;
     }
 }
 /**

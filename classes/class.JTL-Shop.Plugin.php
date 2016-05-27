@@ -148,37 +148,37 @@ class Plugin
     /**
      * @var array
      */
-    public $oPluginHook_arr;
+    public $oPluginHook_arr = array();
 
     /**
      * @var array
      */
-    public $oPluginAdminMenu_arr;
+    public $oPluginAdminMenu_arr = array();
 
     /**
      * @var array
      */
-    public $oPluginEinstellung_arr;
+    public $oPluginEinstellung_arr = array();
 
     /**
      * @var array
      */
-    public $oPluginEinstellungConf_arr;
+    public $oPluginEinstellungConf_arr = array();
 
     /**
      * @var array
      */
-    public $oPluginEinstellungAssoc_arr;
+    public $oPluginEinstellungAssoc_arr = array();
 
     /**
      * @var array
      */
-    public $oPluginSprachvariable_arr;
+    public $oPluginSprachvariable_arr = array();
 
     /**
      * @var array
      */
-    public $oPluginSprachvariableAssoc_arr;
+    public $oPluginSprachvariableAssoc_arr = array();
 
     /**
      * @var array
@@ -188,37 +188,37 @@ class Plugin
     /**
      * @var array
      */
-    public $oPluginZahlungsmethode_arr;
+    public $oPluginZahlungsmethode_arr = array();
 
     /**
      * @var array
      */
-    public $oPluginZahlungsmethodeAssoc_arr;
+    public $oPluginZahlungsmethodeAssoc_arr = array();
 
     /**
      * @var array
      */
-    public $oPluginZahlungsKlasseAssoc_arr;
+    public $oPluginZahlungsKlasseAssoc_arr = array();
 
     /**
      * @var array
      */
-    public $oPluginEmailvorlage_arr;
+    public $oPluginEmailvorlage_arr = array();
 
     /**
      * @var array
      */
-    public $oPluginEmailvorlageAssoc_arr;
+    public $oPluginEmailvorlageAssoc_arr = array();
 
     /**
      * @var array
      */
-    public $oPluginAdminWidget_arr;
+    public $oPluginAdminWidget_arr = array();
 
     /**
      * @var array
      */
-    public $oPluginAdminWidgetAssoc_arr;
+    public $oPluginAdminWidgetAssoc_arr = array();
 
     /**
      * @var stdClass

@@ -44,11 +44,11 @@
                                 <hr class="hr-sm">
                                 <div class="row">
                                     {assign var=hasInfoColumn value=false}
-                                    {if isset($Einstellungen.template.megamenu.show_maincategory_info) && $Einstellungen.template.megamenu.show_maincategory_info != 'N' && ($category->cBildURL != 'gfx/keinBild.gif' || !empty($category->cBeschreibung))}
+                                    {if isset($Einstellungen.template.megamenu.show_maincategory_info) && $Einstellungen.template.megamenu.show_maincategory_info !== 'N' && ($category->cBildURL !== 'gfx/keinBild.gif' || !empty($category->cBeschreibung))}
                                         {assign var=hasInfoColumn value=true}
                                         <div class="col-lg-3 visible-lg">
                                             <div class="mega-info-lg top15">
-                                                {if $category->cBildURL != 'gfx/keinBild.gif'}
+                                                {if $category->cBildURL !== 'gfx/keinBild.gif'}
                                                     <a href="{$category->cURL}"><img src="{$category->cBildURLFull}" class="img-responsive" alt="{$category->cName|escape:'quotes'}"></a>
                                                     <div class="clearall top15"></div>
                                                 {/if}

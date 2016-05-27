@@ -1834,13 +1834,15 @@ function installierePlugin($XML_arr, $cVerzeichnis, $oPluginOld)
                             $cInitialValue = '';
                             $nSort         = 0;
                             $cConf         = 'Y';
+                            $multiple      = false;
                             foreach ($Settingslink_arr['Setting'] as $j => $Setting_arr) {
                                 preg_match("/[0-9]+\sattr/", $j, $cTreffer3_arr);
                                 preg_match("/[0-9]+/", $j, $cTreffer4_arr);
 
                                 if (isset($cTreffer3_arr[0]) && strlen($cTreffer3_arr[0]) === strlen($j)) {
                                     $cTyp          = $Setting_arr['type'];
-                                    $cInitialValue = $Setting_arr['initialValue'];
+                                    $multiple      = (isset($Setting_arr['multiple']) && $Setting_arr['multiple'] === 'Y' && $cTyp === 'selectbox');
+                                    $cInitialValue = ($multiple === true) ? serialize(array($Setting_arr['initialValue'])) : $Setting_arr['initialValue'];
                                     $nSort         = $Setting_arr['sort'];
                                     $cConf         = $Setting_arr['conf'];
                                 } elseif (strlen($cTreffer4_arr[0]) === strlen($j)) {
@@ -1856,18 +1858,21 @@ function installierePlugin($XML_arr, $cVerzeichnis, $oPluginOld)
                                     $oPluginEinstellungenConf->kPlugin          = $kPlugin;
                                     $oPluginEinstellungenConf->kPluginAdminMenu = $kPluginAdminMenu;
                                     $oPluginEinstellungenConf->cName            = $Setting_arr['Name'];
-                                    if (isset($Setting_arr['Description']) && is_array($Setting_arr['Description'])) {
-                                        $oPluginEinstellungenConf->cBeschreibung = '';
-                                    } else {
-                                        $oPluginEinstellungenConf->cBeschreibung = $Setting_arr['Description'];
-                                    }
+                                    $oPluginEinstellungenConf->cBeschreibung    = (!isset($Setting_arr['Description']) || is_array($Setting_arr['Description'])) ?
+                                        '' :
+                                        $Setting_arr['Description'];
                                     $oPluginEinstellungenConf->cWertName = (is_array($Setting_arr['ValueName'])) ? $Setting_arr['ValueName']['0'] : $Setting_arr['ValueName'];
                                     $oPluginEinstellungenConf->cInputTyp = $cTyp;
                                     $oPluginEinstellungenConf->nSort     = $nSort;
                                     $oPluginEinstellungenConf->cConf     = $cConf;
                                     //dynamic data source for selectbox/radio
-                                    if (($cTyp === 'selectbox' || $cTyp === 'radio') && isset($Setting_arr['OptionsSource'][0]['File'])) {
-                                        $oPluginEinstellungenConf->cSourceFile     = $Setting_arr['OptionsSource'][0]['File'];
+                                    if (($cTyp === 'selectbox' || $cTyp === 'radio')) {
+                                        if (isset($Setting_arr['OptionsSource'][0]['File'])) {
+                                            $oPluginEinstellungenConf->cSourceFile = $Setting_arr['OptionsSource'][0]['File'];
+                                        }
+                                        if ($multiple === true) {
+                                            $oPluginEinstellungenConf->cConf = 'M';
+                                        }
                                     }
                                     $kPluginEinstellungenConf = Shop::DB()->insert('tplugineinstellungenconf', $oPluginEinstellungenConf);
                                     // tplugineinstellungenconfwerte füllen
@@ -2262,13 +2267,15 @@ function installierePlugin($XML_arr, $cVerzeichnis, $oPluginOld)
                             $cInitialValue = '';
                             $nSort         = 0;
                             $cConf         = 'Y';
+                            $multiple      = false;
                             foreach ($Method_arr['Setting'] as $j => $Setting_arr) {
                                 preg_match('/[0-9]+\sattr/', $j, $cTreffer3_arr);
                                 preg_match('/[0-9]+/', $j, $cTreffer4_arr);
 
                                 if (isset($cTreffer3_arr[0]) && strlen($cTreffer3_arr[0]) === strlen($j)) {
                                     $cTyp          = $Setting_arr['type'];
-                                    $cInitialValue = $Setting_arr['initialValue'];
+                                    $multiple      = (isset($Setting_arr['multiple']) && $Setting_arr['multiple'] === 'Y' && $cTyp === 'selectbox');
+                                    $cInitialValue = ($multiple === true) ? serialize(array($Setting_arr['initialValue'])) : $Setting_arr['initialValue'];
                                     $nSort         = $Setting_arr['sort'];
                                     $cConf         = $Setting_arr['conf'];
                                 } elseif (strlen($cTreffer4_arr[0]) === strlen($j)) {
@@ -2285,13 +2292,13 @@ function installierePlugin($XML_arr, $cVerzeichnis, $oPluginOld)
                                     $oPluginEinstellungenConf->kPlugin          = $kPlugin;
                                     $oPluginEinstellungenConf->kPluginAdminMenu = 0;
                                     $oPluginEinstellungenConf->cName            = $Setting_arr['Name'];
-                                    $oPluginEinstellungenConf->cBeschreibung    = (isset($Setting_arr['Description']) && is_array($Setting_arr['Description'])) ?
+                                    $oPluginEinstellungenConf->cBeschreibung    = (!isset($Setting_arr['Description']) || is_array($Setting_arr['Description'])) ?
                                         '' :
                                         $Setting_arr['Description'];
                                     $oPluginEinstellungenConf->cWertName = $cModulId . '_' . $Setting_arr['ValueName'];
                                     $oPluginEinstellungenConf->cInputTyp = $cTyp;
                                     $oPluginEinstellungenConf->nSort     = $nSort;
-                                    $oPluginEinstellungenConf->cConf     = $cConf;
+                                    $oPluginEinstellungenConf->cConf     = ($cTyp === 'selectbox' && $multiple === true) ? 'M' : $cConf;
 
                                     $kPluginEinstellungenConf = Shop::DB()->insert('tplugineinstellungenconf', $oPluginEinstellungenConf);
                                     // tplugineinstellungenconfwerte füllen

@@ -29,7 +29,7 @@ if ($step === 'plugin_uebersicht') {
                         FROM tplugineinstellungenconf
                         WHERE kPluginAdminMenu != 0
                             AND kPlugin = " . $kPlugin . "
-                            AND cConf = 'Y'
+                            AND cConf != 'N'
                             AND kPluginAdminMenu = " . (int) $_POST['kPluginAdminMenu'], 2
                 );
                 $bError = false;
@@ -41,8 +41,13 @@ if ($step === 'plugin_uebersicht') {
                         $oPluginEinstellung->cName   = $oPluginEinstellungConf->cWertName;
                         if (isset($_POST[$oPluginEinstellungConf->cWertName])) {
                             if (is_array($_POST[$oPluginEinstellungConf->cWertName])) {
-                                //radio buttons
-                                $oPluginEinstellung->cWert = $_POST[$oPluginEinstellungConf->cWertName][0];
+                                if ($oPluginEinstellungConf->cConf === 'M') {
+                                    //selectbox with "multiple" attribute
+                                    $oPluginEinstellung->cWert = serialize($_POST[$oPluginEinstellungConf->cWertName]);
+                                } else {
+                                    //radio buttons
+                                    $oPluginEinstellung->cWert = $_POST[$oPluginEinstellungConf->cWertName][0];
+                                }
                             } else {
                                 //textarea/text
                                 $oPluginEinstellung->cWert = $_POST[$oPluginEinstellungConf->cWertName];

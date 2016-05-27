@@ -984,40 +984,38 @@ class Artikel
     public function gibKategorie()
     {
         if ($this->kArtikel > 0) {
-            $kArtikel = (int)$this->kArtikel;
+            $kArtikel = (int) $this->kArtikel;
             // Ist der Artikel in Variationskombi Kind? Falls ja, hol den Vater und die Kategorie von ihm
             if ($this->kEigenschaftKombi > 0) {
-                $kArtikel = (int)$this->kVaterArtikel;
-            }
-            if (isset($_SESSION['LetzteKategorie'])) {
-                $oKategorieartikel = Shop::DB()->query(
-                    "SELECT tkategorieartikel.kKategorie
-                        FROM tkategorieartikel
-                        LEFT JOIN tkategoriesichtbarkeit ON tkategoriesichtbarkeit.kKategorie = tkategorieartikel.kKategorie
-                            AND tkategoriesichtbarkeit.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
-                        JOIN tkategorie ON tkategorie.kKategorie = tkategorieartikel.kKategorie
-                        WHERE tkategoriesichtbarkeit.kKategorie IS NULL
-                            AND kArtikel = " . $kArtikel . "
-                            AND tkategorieartikel.kKategorie = " . (int)$_SESSION['LetzteKategorie'] . "
-                        LIMIT 1", 1
-                );
-                if (isset($oKategorieartikel->kKategorie)) {
-                    return $oKategorieartikel->kKategorie;
+                $kArtikel = (int) $this->kVaterArtikel;
+            } elseif (!empty($this->oKategorie_arr)) {
+                //oKategorie_arr already has all categories for this article in it
+                if (isset($_SESSION['LetzteKategorie'])) {
+                    foreach ($this->oKategorie_arr as $category) {
+                        if ($category->kKategorie == (int) $_SESSION['LetzteKategorie']) {
+                            return (int) $category->kKategorie;
+                        }
+                    }
+                } else {
+                    return $this->oKategorie_arr[0]->kKategorie;
                 }
             }
+            $categoryFilter = (isset($_SESSION['LetzteKategorie'])) ?
+                " AND tkategorieartikel.kKategorie = " . (int) $_SESSION['LetzteKategorie'] :
+                '';
             $oKategorieartikel = Shop::DB()->query(
                 "SELECT tkategorieartikel.kKategorie
                     FROM tkategorieartikel
                     LEFT JOIN tkategoriesichtbarkeit ON tkategoriesichtbarkeit.kKategorie = tkategorieartikel.kKategorie
-                        AND tkategoriesichtbarkeit.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
+                        AND tkategoriesichtbarkeit.kKundengruppe = " . (int) $_SESSION['Kundengruppe']->kKundengruppe . "
                     JOIN tkategorie ON tkategorie.kKategorie = tkategorieartikel.kKategorie
                     WHERE tkategoriesichtbarkeit.kKategorie IS NULL
-                        AND kArtikel = " . $kArtikel . "
+                        AND kArtikel = " . $kArtikel . $categoryFilter . "
                     ORDER BY tkategorie.nSort
                     LIMIT 1", 1
             );
             if (isset($oKategorieartikel->kKategorie) && $oKategorieartikel->kKategorie > 0) {
-                return $oKategorieartikel->kKategorie;
+                return (int) $oKategorieartikel->kKategorie;
             }
         }
 

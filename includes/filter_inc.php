@@ -292,6 +292,7 @@ function gibArtikelKeys($FilterSQL, $nArtikelProSeite, $NaviFilter, $bExtern = f
                 $oArtikel                                = new Artikel();
                 $oArtikelOptionen                        = new stdClass();
                 $oArtikelOptionen->nMerkmale             = 1;
+                $oArtikelOptionen->nKategorie            = 1;
                 $oArtikelOptionen->nAttribute            = 1;
                 $oArtikelOptionen->nArtikelAttribute     = 1;
                 $oArtikelOptionen->nVariationKombiKinder = 1;

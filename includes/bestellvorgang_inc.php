@@ -1455,7 +1455,7 @@ function zahlungsartGueltig($Zahlungsart)
             return false;
         }
 
-        return VersandartHelper::versandzahlungsartGueltig($Zahlungsart);
+        return VersandartHelper::shippingMethodWithValidPaymentMethod($Zahlungsart);
     }
 
     return false;

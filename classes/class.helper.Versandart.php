@@ -147,7 +147,7 @@ class VersandartHelper
      * @param Zahlungsart $Zahlungsart
      * @return bool
      */
-    public static function versandzahlungsartGueltig($Zahlungsart)
+    public static function shippingMethodWithValidPaymentMethod($Zahlungsart)
     {
         if (!isset($Zahlungsart->cModulId)) {
             return false;
@@ -932,7 +932,7 @@ class VersandartHelper
             );
             $bVersandGueltig = false;
             foreach ($zahlungsarten as $zahlungsart) {
-                if (self::versandzahlungsartGueltig($zahlungsart)) {
+                if (self::shippingMethodWithValidPaymentMethod($zahlungsart)) {
                     $bVersandGueltig = true;
                     break;
                 }

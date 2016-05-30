@@ -24,8 +24,10 @@
                                             data-key="{$Variationswert->kEigenschaft}"
                                             data-value="{$Variationswert->kEigenschaftWert}"
                                             data-content="{$cVariationsWert|escape:'html'}"
-                                            data-list='{prepare_image_details item=$Variationswert json=true}'
-                                            data-title='{$Variationswert->cName}'
+                                            {if !empty($Variationswert->cBildPfadMini)}
+                                                data-list='{prepare_image_details item=$Variationswert json=true}'
+                                                data-title='{$Variationswert->cName}'
+                                            {/if}>
                                             {if $bSelected}selected="selected"{/if}>
                                         {$cVariationsWert|trim}
                                     </option>
@@ -47,8 +49,10 @@
                                        data-original="{$Variationswert->cName}"
                                        data-key="{$Variationswert->kEigenschaft}"
                                        data-value="{$Variationswert->kEigenschaftWert}"
-                                       data-list='{prepare_image_details item=$Variationswert json=true}'
-                                       data-title='{$Variationswert->cName}'>
+                                       {if !empty($Variationswert->cBildPfadMini)}
+                                            data-list='{prepare_image_details item=$Variationswert json=true}'
+                                            data-title='{$Variationswert->cName}'
+                                       {/if}>
                                     <input type="radio"
                                            name="eigenschaftwert[{$Variation->kEigenschaft}]"
                                            id="vt{$Variationswert->kEigenschaftWert}"
@@ -78,8 +82,10 @@
                                             data-key="{$Variationswert->kEigenschaft}"
                                             data-value="{$Variationswert->kEigenschaftWert}"
                                             for="vt{$Variationswert->kEigenschaftWert}"
-                                            data-list='{prepare_image_details item=$Variationswert json=true}'
-                                            data-title='{$Variationswert->cName}'>
+                                            {if !empty($Variationswert->cBildPfadMini)}
+                                                data-list='{prepare_image_details item=$Variationswert json=true}'
+                                                data-title='{$Variationswert->cName}'
+                                            {/if}>
                                         <input type="radio"
                                                class="control-hidden"
                                                name="eigenschaftwert[{$Variation->kEigenschaft}]"

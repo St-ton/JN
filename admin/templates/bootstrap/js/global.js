@@ -541,4 +541,11 @@ $(document).ready(function () {
             $(item).prop("checked", activitem);
         });
     });
+
+    $('[data-toggle="active"]').click(function () {
+        var target = $(this).data('target');
+        if ($(target).length > 0) {
+            $(target).toggleClass('active');
+        }
+    });
 });

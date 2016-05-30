@@ -762,17 +762,34 @@ ul.linklist li a {
 }
 
 #login_wrapper {
-  max-width: 375px;
+  max-width: 290px;
+  padding: 0;
+  margin: 0 auto 0 auto;
+}
+
+#login_wrapper .panel-heading {
+  background-color: #e7e7e7;
+  border-radius: 0;
+  padding: 0;
+  margin: 0;
+}
+
+#login_wrapper .panel-body {
   padding: 20px;
-  margin: -100px auto 0 auto;
 }
 
-#login_logo {
-  margin-bottom: 30px;
+#login_wrapper .input-group {
+  margin: 18px 0 24px;
 }
 
-#login_logo, #login_logo img {
+#login_wrapper img.logo {
   text-align: center;
+  height: 40px;
+}
+
+#login_wrapper a.captcha {
+  padding: 15px;
+  display: block;
 }
 
 #login_wrapper .form-control {

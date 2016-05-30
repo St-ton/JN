@@ -25,14 +25,14 @@
     <script type="text/javascript">
         {literal}
         $(document).ready(function () {
-            $("select[name='nSeitenTyp']").change(function () {
-                var selected = $("select[name='nSeitenTyp'] option:selected");
-                typeChanged($(selected).val());
-            }).change();
-
             $("select[name='cKey']").change(function () {
                 var selected = $("select[name='cKey'] option:selected");
                 keyChanged($(selected).val());
+            }).change();
+
+            $("select[name='nSeitenTyp']").change(function () {
+                var selected = $("select[name='nSeitenTyp'] option:selected");
+                typeChanged($(selected).val());
             }).change();
 
             $('.nl').find('a').each(function () {
@@ -88,11 +88,6 @@
         }
 
         function keyChanged(key) {
-            // reset keys
-            $('.key[id!="key' + key + '"]').find('input').each(function () {
-                $(this).val('');
-            });
-
             $('.key').hide();
             $('#key' + key).show();
         }

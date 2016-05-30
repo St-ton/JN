@@ -207,17 +207,17 @@ $(document).ready(function() {
             $(this).remove();
         });
     });
-
-    $("select[name='nSeitenTyp']").change(function () {
-        var selected = $("select[name='nSeitenTyp'] option:selected");
-        typeChanged($(selected).val());
-    }).change();
      
     $("select[name='cKey']").change(function () {
         var selected = $("select[name='cKey'] option:selected");
         keyChanged($(selected).val());
     }).change();
-     
+    
+    $("select[name='nSeitenTyp']").change(function () {
+        var selected = $("select[name='nSeitenTyp'] option:selected");
+        typeChanged($(selected).val());
+    }).change();
+
     $('.nl').find('a').each(function() {
         var type = $(this).attr('id');
         $(this).click(function() {
@@ -257,10 +257,6 @@ function typeChanged(type) {
 }
 
 function keyChanged(key) {
-    $('.key[id!="key'+key+'"]').find('input').each(function() {
-        $(this).val('');
-    });
-
     $('.key').hide();
     $('#key' + key).show();
 }

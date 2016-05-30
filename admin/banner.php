@@ -67,11 +67,11 @@ if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && 
         $cKeyValue     = '';
         $cValue        = '';
 
-        if ($nSeite === 1) {
+        if ($nSeite === PAGE_ARTIKEL) {
             $cKey      = 'kArtikel';
             $cKeyValue = 'article_key';
             $cValue    = $_POST[$cKeyValue];
-        } elseif ($nSeite === 2) {
+        } elseif ($nSeite === PAGE_ARTIKELLISTE) {
             // data mapping
             $aFilter_arr = array(
                 'kTag'         => 'tag_key',
@@ -82,11 +82,11 @@ if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && 
             );
             $cKeyValue = $aFilter_arr[$cKey];
             $cValue    = $_POST[$cKeyValue];
-        } elseif ($nSeite === 24) {
+        } elseif ($nSeite === PAGE_HERSTELLER) {
             $cKey      = 'kHersteller';
             $cKeyValue = 'manufacturer_key';
             $cValue    = $_POST[$cKeyValue];
-        } elseif ($nSeite === 31) {
+        } elseif ($nSeite === PAGE_EIGENE) {
             $cKey      = 'kLink';
             $cKeyValue = 'link_key';
             $cValue    = $_POST[$cKeyValue];

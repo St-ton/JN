@@ -36,32 +36,21 @@
 
     <div id="switcher">
         <div class="switcher" id="dashboard-config">
-            <a href="#" data-toggle="active" data-target="#dashboard-config" class="btn-toggle"><i class="fa fa-gear"></i></a>
-            <div class="switcher-header">
-                <h2>Widgets</h2>
-            </div>
-            <div class="switcher-content">
-                <div id="settings">
-                    {foreach from=$oAvailableWidget_arr item=oAvailableWidget}
-                        <div class="media">
-                            <div class="media-body">
-                                <h4 class="media-heading">{$oAvailableWidget->cTitle}</h4>
-                                {$oAvailableWidget->cDescription}
-                            </div>
-                            <div class="media-right">
-                                <a href="#" data-widget="add" data-id="{$oAvailableWidget->kWidget}"><i class="fa fa-plus-square"></i></a>
-                            </div>
-                        </div>
-                    {/foreach}
-                    {if $oAvailableWidget_arr|@count == 0}
-                        <div class="widget_item">
-                            <p class="title">Keine weiteren Widgets vorhanden.</p>
-                        </div>
-                    {/if}
+            {*<a href="#" data-toggle="active" data-target="#dashboard-config" class="btn-toggle"><i class="fa fa-gear"></i></a>*}
+            
+            <a href="#" class="dropdown-toggle parent btn-toggle" data-toggle="dropdown">
+                <i class="fa fa-gear"></i>
+            </a>
+            <div class="switcher-wrapper">
+                <div class="switcher-header">
+                    <h2>Widgets</h2>
+                </div>
+                <div class="switcher-content">
+                    <div id="settings">
+                        {include file='tpl_inc/widget_selector.tpl' oAvailableWidget_arr=$oAvailableWidget_arr}
+                    </div>
                 </div>
             </div>
-
-
         </div>
     </div>
 

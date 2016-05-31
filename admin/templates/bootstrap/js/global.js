@@ -542,10 +542,30 @@ $(document).ready(function () {
         });
     });
 
-    $('[data-toggle="active"]').click(function () {
-        var target = $(this).data('target');
-        if ($(target).length > 0) {
-            $(target).toggleClass('active');
-        }
+    $('.switcher .switcher-wrapper').on('click', function(e) {
+        e.stopPropagation();
+    });
+    $('.switcher').on('show.bs.dropdown', function () {
+        showBackdrop();
+        xajax_getAvailableWidgetsAjax();
+    }).on('hide.bs.dropdown', function () {
+        hideBackdrop();
+    });
+    
+    $('#nbc-1 .dropdown').on('show.bs.dropdown', function () {
+        showBackdrop();
+    }).on('hide.bs.dropdown', function () {
+        hideBackdrop();
     });
 });
+
+function showBackdrop() {
+    $backdrop = $('<div class="menu-backdrop fade" />')
+        .appendTo($(document.body));
+    $backdrop[0].offsetWidth;
+    $backdrop.addClass('in');
+}
+
+function hideBackdrop() {
+    $('.menu-backdrop').remove();
+}

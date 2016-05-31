@@ -154,10 +154,10 @@
     {getCurrentPage assign="currentPage"}
     {$fluid = ['index', 'marktplatz', 'banner']}
     <div class="backend-wrapper {if $currentPage|in_array:$fluid}container-fluid{else}container{/if}{if $currentPage === 'index'} dashboard{/if}{if $currentPage === 'marktplatz'} marktplatz{/if}">
-        <nav class="navbar navbar-default navbar-fixed-top yamm" role="navigation">
+        <nav class="navbar navbar-inverse navbar-fixed-top yamm" role="navigation">
             <div class="container-fluid">
                 <div class="navbar-header">
-                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#nbc-1" aria-expanded="false" aria-controls="navbar">
                         <span class="sr-only">Toggle navigation</span>
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
@@ -165,7 +165,7 @@
                     </button>
                     <a class="navbar-brand" href="index.php"><img src="{$currentTemplateDir}gfx/shop-logo.png" alt="JTL-Shop" /></a>
                 </div>
-                <div class="navbar-collapse collapse" id="nbc-1">
+                <div class="navbar-collapse collapse" id="nbc-1">   
                     <ul class="nav navbar-nav">
                         {foreach name=linkobergruppen from=$oLinkOberGruppe_arr item=oLinkOberGruppe}
                             {if $oLinkOberGruppe->oLinkGruppe_arr|@count === 0 && $oLinkOberGruppe->oLink_arr|@count === 1}
@@ -244,7 +244,7 @@
                         {/if}
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle parent" data-toggle="dropdown">
-                                Hilfe <span class="caret"></span>
+                                <i class="fa fa-medkit" aria-hidden="true"></i>
                             </a>
                             <ul class="dropdown-menu" role="main">
                                 <li>
@@ -261,6 +261,22 @@
                                 <a class="link-search" data-toggle="modal" href="#main-search" title="Suche"><i class="fa fa-search"></i></a>
                             </li>
                         {/if}
+                        
+                        <!--
+                        <li>
+                            <a class="link-shop" href="{$URL_SHOP}" title="Zum Shop"><i class="fa fa-shopping-cart"></i> Zum Shop</a>
+                        </li>
+                        -->
+                        {if permission('DASHBOARD_VIEW')}
+                            <li>
+                                <a class="link-dashboard" href="index.php" title="Dashboard"><i class="fa fa-home"></i> Dashboard</a>
+                            </li>
+                        {/if}
+                        <li>
+                            <a class="link-logout" href="logout.php?token={$smarty.session.jtl_token}" title="Abmelden"><i class="fa fa-sign-out"></i> Abmelden</a>
+                        </li>
+                        
+                        {*
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle parent" data-toggle="dropdown">
                                 <i class="fa fa-bars" aria-hidden="true"></i>
@@ -279,6 +295,7 @@
                                 </li>
                             </ul>
                         </li>
+                        *}
                     </ul>
                 </div>
             </div>

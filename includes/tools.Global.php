@@ -496,7 +496,7 @@ function checkeWarenkorbEingang()
     }
     if (isset($_POST['n']) && doubleval($_POST['n']) > 0) {
         $fAnzahl = doubleval($_POST['n']);
-    } elseif (isset($_POST['n']) && doubleval($_GET['n']) > 0) {
+    } elseif (isset($_GET['n']) && doubleval($_GET['n']) > 0) {
         $fAnzahl = doubleval($_GET['n']);
     }
     $kArtikel = verifyGPCDataInteger('a');

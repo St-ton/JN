@@ -71,51 +71,6 @@
     {/if}
 {/function}
 
-<style type="text/css">
-th {
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    -o-text-overflow: ellipsis;
-}
-
-.systemcheck2 {
-    margin-top: -45px;
-}
-
-.systemcheck .page-header {
-    border-color: #dddddd;
-}
-
-.systemcheck .page-header h1 {
-    font-size: 30px;
-}
-
-.systemcheck .table>thead>tr>th {
-    color: #999;
-    font-weight: 600;
-    border-width: 1px;
-    font-size: 1.2em;
-}
-
-.systemcheck .test-name {
-    color: #444;
-}
-
-.systemcheck table td {
-    vertical-align: middle !important;
-}
-
-.systemcheck h4.label-wrap i {
-    width: 12px;
-    max-width: 12px;
-}
-
-.systemcheck .label {
-    padding: .4em .6em;
-    border-radius: 0;
-}
-</style>
-
 <div id="content" class="container-fluid">
     <div class="systemcheck">
         {*
@@ -290,7 +245,7 @@ th {
                 <thead>
                     <tr>
                         <th class="col-xs-7">Einstellung</th>
-                        <th class="col-xs-3 text-center">Benötigter Wert</th>
+                        <th class="col-xs-3 text-center">Ben&ouml;tigter Wert</th>
                         <th class="col-xs-2 text-center">Ihr System</th>
                     </tr>
                 </thead>

@@ -1894,11 +1894,6 @@ select.form-control {
     margin-bottom: 0;
 }
 
-.settings .input-group-wrap:last-child,.input-group .input-group-wrap:last-child,.input-group .input-group-wrap:last-child select {
-    border-top-right-radius: 5px;
-    border-bottom-right-radius: 5px;
-}
-
 .settings .input-group .btn-file {
     margin-right: -1px;
 }
@@ -2042,7 +2037,7 @@ pre#debug b {
 
 .backend-wrapper .navbar-default > .container-fluid {
 /*padding-right: 45px;
-  padding-left: 45px;*/
+    padding-left: 45px;*/
 }
 
 .backend-wrapper .navbar-brand img {
@@ -2421,30 +2416,65 @@ body.modal-open nav {
 }
 
 .btn-group-plain .btn:hover {
-  color: #E04000;
+    color: #E04000;
 }
 
-
 .content-header .actions {
-  float: right;
-  opacity: 0.25;
-  transition: opacity 300ms ease-in-out;
-  -webkit-transition: opacity 300ms ease-in-out;
+    opacity: 0.25;
+    transition: opacity 300ms ease-in-out;
+    -webkit-transition: opacity 300ms ease-in-out;
 }
 
 .content-header:hover .actions {
-  opacity: 1;
+    opacity: 1;
 }
 
 .dropdown.avatar {
-  line-height: 50px;
+    line-height: 50px;
 }
 
 .dropdown.avatar > a {
-  padding: 0;
+    padding: 0;
 }
 
 .dropdown.avatar img {
-  max-height: 34px;
-  margin: 8px;
+    max-height: 34px;
+    margin: 8px;
+}
+
+.systemcheck2 {
+    margin-top: -45px;
+}
+
+.systemcheck .page-header {
+    border-color: #dddddd;
+}
+
+.systemcheck .page-header h1 {
+    font-size: 30px;
+}
+
+.systemcheck .table>thead>tr>th {
+    color: #999;
+    font-weight: 600;
+    border-width: 1px;
+    font-size: 1.2em;
+}
+
+.systemcheck .test-name {
+    color: #444;
+}
+
+.systemcheck table td {
+    vertical-align: middle !important;
+}
+
+.systemcheck h4.label-wrap i {
+    width: 12px;
+    max-width: 12px;
+}
+
+.systemcheck .label {
+    padding: .4em .6em;
+    border-radius: 0;
 }

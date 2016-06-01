@@ -1,6 +1,6 @@
 <div class="content-header well">
-    <div class="clearfix">
-        <div class="pull-left">
+    <div class="row">
+        <div class="col-md-11">
             <h1 class="{if isset($cBeschreibung) && $cBeschreibung|@count_characters == 0}nospacing{/if}">{if $cTitel|@count_characters > 0}{$cTitel}{else}Unbekannt{/if}</h1>
             {if isset($cBeschreibung) && $cBeschreibung|@count_characters > 0}
                 <p class="description {if isset($cClass)}{$cClass}{/if}">
@@ -9,7 +9,7 @@
                 </p>
             {/if}
         </div>
-        <div class="actions">
+        <div class="col-md-1 actions text-right">
             <div class="btn-group btn-group-plain btn-group-vertical" role="group">
                 {if isset($cDokuURL) && $cDokuURL|@count_characters > 0}
                     <a href="{$cDokuURL}" class="btn btn-default" data-toggle="tooltip" data-container="body" data-placement="left" title="Zur Dokumentation"><i class="fa fa-medkit" aria-hidden="true"></i></a>

@@ -239,7 +239,7 @@ div.category {
 }
 
 #settings .input-group-addon:last-child,.settings .input-group-addon:last-child {
-    width: 10%;
+    width: 52px;
     text-align: right;
 }
 
@@ -895,7 +895,12 @@ img.slide-image {
 }
 
 .highlight .input-group-addon,.highlight .input-group-wrap {
-    border-color: red;
+    color: #fff;
+    border-color: #5CBCF6;
+}
+
+.highlight .input-group-addon:first-child {
+    background: #5CBCF6;
 }
 
 .input-group-wrap.last {

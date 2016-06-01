@@ -37,7 +37,7 @@ a {
 .nav-tabs > li > a {
     background: #eee none repeat scroll 0 0;
     border: 1px solid transparent;
-    border-radius: 4px 4px 0 0;
+    border-radius: 0;
     color: #333;
     line-height: 1.5;
     margin-right: 2px;
@@ -2055,9 +2055,18 @@ pre#debug b {
 }
 
 .badge-notify {
+    display: inline-block;
+    min-width: 10px;
+    font-size: 12px;
+    font-weight: bold;
+    color: #fff;
+    line-height: 1;
+    vertical-align: middle;
+    white-space: nowrap;
+    text-align: center;
     float: left;
     border-radius: 0;
-    background: #E04000;
+    /*background: #E04000;*/
     padding: 5px 8px;
     margin-top: -1px;
     margin-right: 5px;
@@ -2395,4 +2404,42 @@ body.modal-open nav {
     border-radius: 0;
     background: #E04000;
     padding: 8px 10px;
+}
+
+.label {
+    border-radius: 0;
+}
+
+.btn-group-plain .btn {
+    border: 0;
+    background-color: transparent;
+}
+
+.btn-group-plain .btn:hover {
+  color: #E04000;
+}
+
+
+.content-header .actions {
+  float: right;
+  opacity: 0.25;
+  transition: opacity 300ms ease-in-out;
+  -webkit-transition: opacity 300ms ease-in-out;
+}
+
+.content-header:hover .actions {
+  opacity: 1;
+}
+
+.dropdown.avatar {
+  line-height: 50px;
+}
+
+.dropdown.avatar > a {
+  padding: 0;
+}
+
+.dropdown.avatar img {
+  max-height: 34px;
+  margin: 8px;
 }

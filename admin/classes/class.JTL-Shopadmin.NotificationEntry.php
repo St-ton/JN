@@ -71,23 +71,6 @@ class NotificationEntry
     {
         return $this->type;
     }
-    
-    /**
-     * @return string
-     */
-    public function getTypeName()
-    {
-        switch ($this->type) {
-            default:
-                return 'default';
-            case self::TYPE_INFO:
-                return 'info';
-            case self::TYPE_WARNING:
-                return 'warning';
-            case self::TYPE_DANGER:
-                return 'danger';
-        }
-    }
 
     /**
      * @param int $type

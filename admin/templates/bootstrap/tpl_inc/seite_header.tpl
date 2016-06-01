@@ -1,16 +1,23 @@
-<div class="clearall well">
-    <h1 {if isset($cBeschreibung) && $cBeschreibung|@count_characters == 0}class="nospacing"{/if}>{if $cTitel|@count_characters > 0}{$cTitel}{else}Unbekannt{/if}</h1>
-    {if isset($cDokuURL) && $cDokuURL|@count_characters > 0}
-        <div class="documentation">
-            <a href="{$cDokuURL}" class="btn btn-default" title="Dokumentation" target="_blank"><i class="fa fa-external-link"></i> Dokumentation zu {$cTitel}</a>
+<div class="content-header well">
+    <div class="clearfix">
+        <div class="pull-left">
+            <h1 class="{if isset($cBeschreibung) && $cBeschreibung|@count_characters == 0}nospacing{/if}">{if $cTitel|@count_characters > 0}{$cTitel}{else}Unbekannt{/if}</h1>
+            {if isset($cBeschreibung) && $cBeschreibung|@count_characters > 0}
+                <p class="description {if isset($cClass)}{$cClass}{/if}">
+                    <span><!-- right border --></span>
+                    {if isset($onClick)}<a href="#" onclick="{$onClick}">{/if}{$cBeschreibung}{if isset($onClick)}</a>{/if}
+                </p>
+            {/if}
         </div>
-    {/if}
-    {if isset($cBeschreibung) && $cBeschreibung|@count_characters > 0}
-        <p class="description {if isset($cClass)}{$cClass}{/if}">
-            <span><!-- right border --></span>
-            {if isset($onClick)}<a href="#" onclick="{$onClick}">{/if}{$cBeschreibung}{if isset($onClick)}</a>{/if}
-        </p>
-    {/if}
+        <div class="actions">
+            <div class="btn-group btn-group-plain btn-group-vertical" role="group">
+                {if isset($cDokuURL) && $cDokuURL|@count_characters > 0}
+                    <a href="{$cDokuURL}" class="btn btn-default" data-toggle="tooltip" data-container="body" data-placement="left" title="Zur Dokumentation"><i class="fa fa-medkit" aria-hidden="true"></i></a>
+                {/if}
+                <a href="#" class="btn btn-default" data-toggle="tooltip" data-container="body" data-placement="left" title="Zu Favoriten hinzuf&uuml;gen"><i class="fa fa-star" aria-hidden="true"></i></a>
+            </div>
+        </div>
+    </div>
     {if isset($oPlugin)}
         <p><strong>{#pluginAuthor#}:</strong> {$oPlugin->cAutor}</p>
         <p><strong>{#pluginHomepage#}:</strong> <a href="{$oPlugin->cURL}" target="_blank"><i class="fa fa-external-link"></i> {$oPlugin->cURL}</a></p>

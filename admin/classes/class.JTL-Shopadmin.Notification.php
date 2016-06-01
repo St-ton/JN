@@ -77,6 +77,7 @@ class Notification implements IteratorAggregate, Countable
     {
         require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dashboard_inc.php';
         require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'permissioncheck_inc.php';
+        require_once PFAD_ROOT . PFAD_CLASSES_CORE . 'class.core.jtlAPI.php';
 
         $notify = new Notification();
         $updater = new Updater();
@@ -84,16 +85,21 @@ class Notification implements IteratorAggregate, Countable
         $writeableDirs = checkWriteables();
         $permissionStat = getPermissionStats($writeableDirs);
         
+        if (($subscription = $_SESSION['subscription']) === null) {
+            $subscription = jtlAPI::getSubscription();
+            $_SESSION['subscription'] = $subscription;
+        }
+        
         if ($updater->hasPendingUpdates()) {
             $notify->add(NotificationEntry::TYPE_DANGER, "Systemupdate", "Ein Datenbank-Update ist zwingend notwendig", "dbupdater.php");
         }
 
         if ($permissionStat->nCountInValid > 0) {
-            $notify->add(NotificationEntry::TYPE_WARNING, "Dateisystem", "Es sind {$permissionStat->nCountInValid} Verzeichnisse nicht beschreibbar.", "permissioncheck.php");
+            $notify->add(NotificationEntry::TYPE_DANGER, "Dateisystem", "Es sind {$permissionStat->nCountInValid} Verzeichnisse nicht beschreibbar.", "permissioncheck.php");
         }
 
         if (is_dir(PFAD_ROOT . 'install')) {
-            $notify->add(NotificationEntry::TYPE_DANGER, "System", "Bitte l&ouml;schen Sie das Installationsverzeichnis \"/install/\" im Shop-Wurzelverzeichnis.");
+            $notify->add(NotificationEntry::TYPE_WARNING, "System", "Bitte l&ouml;schen Sie das Installationsverzeichnis \"/install/\" im Shop-Wurzelverzeichnis.");
         }
 
         if (JTL_VERSION != $template->getShopVersion()) {
@@ -102,6 +108,16 @@ class Notification implements IteratorAggregate, Countable
         
         if (Profiler::getIsActive() !== 0) {
             $notify->add(NotificationEntry::TYPE_WARNING, "Plugin", "Der Profiler ist aktiv und kann zu starken Leistungseinbu&szlig;en im Shop f&uuml;hren.");
+        }
+        
+        if (is_object($subscription) && isset($subscription->kShop) && (int) $subscription->kShop > 0) {
+            if ((int) $subscription->bUpdate === 1) {
+                if ((int) $subscription->nDayDiff <= 0) {
+                    $notify->add(NotificationEntry::TYPE_WARNING, "Subscription", "Ihre Subscription ist abgelaufen. Jetzt erneuern.", "http://jtl-url.de/subscription");
+                } else {
+                    $notify->add(NotificationEntry::TYPE_INFO, "Subscription", "Ihre Subscription l&auml;uft in {$subscription->nDayDiff} Tagen ab.", "http://jtl-url.de/subscription");
+                }
+            }
         }
 
         return $notify;

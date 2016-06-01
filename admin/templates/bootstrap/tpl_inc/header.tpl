@@ -219,10 +219,13 @@
                             <li><a href="dbupdater.php"><i class="fa fa-refresh" aria-hidden="true"></i> Updates</a></li>
                         {/if}
                         *}
+                        
+                        {$notifyTypes = [0 => 'info', 1 => 'warning', 2 => 'danger']}
+
                         {if $notifications->count() > 0}
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle parent" data-toggle="dropdown">
-                                    <span class="badge badge-notify badge-type-{$notifications->count()}">{$notifications->count()}</span>
+                                    <span class="badge-notify btn-{$notifyTypes[$notifications->getHighestType()]}">{$notifications->count()}</span>
                                     <!--span class="glyphicon glyphicon-bell"></span>-->
                                     Mitteilungen
                                     <span class="caret"></span>
@@ -230,7 +233,7 @@
                                 <ul class="dropdown-menu" role="main">
                                     {foreach $notifications as $notify}
                                         <li class="nag">
-                                            <div class="nag-split btn-{$notify->getTypeName()}"><i class="fa fa-angle-right" aria-hidden="true"></i></div>
+                                            <div class="nag-split btn-{$notifyTypes[$notify->getType()]}"><i class="fa fa-angle-right" aria-hidden="true"></i></div>
                                             <div class="nag-content">
                                                 <a href="{$notify->getUrl()}">
                                                     <div class="nag-title">{$notify->getTitle()}</div>
@@ -242,8 +245,18 @@
                                 </ul>
                             </li>
                         {/if}
+                        {if permission('DASHBOARD_VIEW')}
+                            <li>
+                                <a class="link-dashboard" href="index.php" title="Dashboard"><i class="fa fa-home"></i></a>
+                            </li>
+                        {/if}
+                        {if permission('SETTINGS_SEARCH_VIEW')}
+                            <li>
+                                <a class="link-search" data-toggle="modal" href="#main-search" title="Suche"><i class="fa fa-search"></i></a>
+                            </li>
+                        {/if}
                         <li class="dropdown">
-                            <a href="#" class="dropdown-toggle parent" data-toggle="dropdown">
+                            <a href="#" class="dropdown-toggle parent" data-toggle="dropdown" title="Hilfe">
                                 <i class="fa fa-medkit" aria-hidden="true"></i>
                             </a>
                             <ul class="dropdown-menu" role="main">
@@ -256,24 +269,19 @@
                                 </li>
                             </ul>
                         </li>
-                        {if permission('SETTINGS_SEARCH_VIEW')}
-                            <li>
-                                <a class="link-search" data-toggle="modal" href="#main-search" title="Suche"><i class="fa fa-search"></i></a>
-                            </li>
-                        {/if}
-                        
-                        <!--
-                        <li>
-                            <a class="link-shop" href="{$URL_SHOP}" title="Zum Shop"><i class="fa fa-shopping-cart"></i> Zum Shop</a>
-                        </li>
-                        -->
-                        {if permission('DASHBOARD_VIEW')}
-                            <li>
-                                <a class="link-dashboard" href="index.php" title="Dashboard"><i class="fa fa-home"></i> Dashboard</a>
-                            </li>
-                        {/if}
-                        <li>
-                            <a class="link-logout" href="logout.php?token={$smarty.session.jtl_token}" title="Abmelden"><i class="fa fa-sign-out"></i> Abmelden</a>
+                        <li class="dropdown avatar">
+                            <a href="#" class="dropdown-toggle parent" data-toggle="dropdown">
+                                <img src="{gravatarImage email=$account->cMail}" title="{$account->cMail}" class="img-circle" />
+                            </a>
+                            <ul class="dropdown-menu" role="main">
+                                <li>
+                                    {*if permission('ACCOUNT_VIEW')}
+                                        <a class="link-profile" href="benutzerverwaltung.php" title="Profil"><i class="fa fa-user"></i> Profil</a>
+                                    {/if*}
+                                    <a class="link-shop" href="{$URL_SHOP}" title="Zum Shop"><i class="fa fa-shopping-cart"></i> Zum Shop</a>
+                                    <a class="link-logout" href="logout.php?token={$smarty.session.jtl_token}" title="Abmelden"><i class="fa fa-sign-out"></i> Abmelden</a>
+                                </li>
+                            </ul>
                         </li>
                         
                         {*
@@ -287,7 +295,7 @@
                                 </li>
                                 {if permission('DASHBOARD_VIEW')}
                                     <li>
-                                        <a class="link-dashboard" href="index.php" title="Dashboard"><i class="fa fa-home"></i> Dashboard</a>
+                                        <a class="link-dashboard" href="index.php" title="Dashboard"><i class="fa fa-tachometer"></i> Dashboard</a>
                                     </li>
                                 {/if}
                                 <li>

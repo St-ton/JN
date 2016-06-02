@@ -145,6 +145,16 @@ if (isset($_POST['login']) && intval($_POST['login']) === 1 && isset($_POST['ema
                         }
                     }
                 }
+
+                // setzte Sprache auf Sprache des Kunden
+                $oISOSprache = Shop::Lang()->getIsoFromLangID($Kunde->kSprache);
+                if ((int)$_SESSION['kSprache'] !== (int)$Kunde->kSprache && !empty($oISOSprache->cISO)) {
+                    $_SESSION['kSprache']        = (int)$Kunde->kSprache;
+                    $_SESSION['cISOSprache']     = $oISOSprache->cISO;
+                    $_SESSION['currentLanguage'] = gibAlleSprachen(1)[$Kunde->kSprache];
+                    Shop::setLanguage($Kunde->kSprache, $oISOSprache->cISO);
+                    Shop::Lang()->setzeSprache($oISOSprache->cISO);
+                }
             } else {
                 $cHinweis .= Shop::Lang()->get('loginNotActivated', 'global');
             }

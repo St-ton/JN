@@ -105,6 +105,11 @@ class Zahlungsart extends MainModel
     public $cGebuehrname;
 
     /**
+     * @var array
+     */
+    public $einstellungen;
+
+    /**
      * @return int
      */
     public function getZahlungsart()
@@ -488,8 +493,8 @@ class Zahlungsart extends MainModel
 
             $oObj = Shop::DB()->query(
                 "SELECT *
-                    FROM tzahlungsart as z
-                    LEFT JOIN tzahlungsartsprache as s ON s.kZahlungsart = z.kZahlungsart
+                    FROM tzahlungsart AS z
+                    LEFT JOIN tzahlungsartsprache AS s ON s.kZahlungsart = z.kZahlungsart
                         AND s.cISOSprache = '{$iso}'
                     WHERE z.kZahlungsart = {$kKey}
                     LIMIT 1", 1

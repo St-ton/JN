@@ -224,10 +224,32 @@ class VersandartHelper
             // Versandartkosten
             } else {
                 // Abfrage ob ein Artikel Artikelabhängige Versandkosten besitzt
-                $versandarten[$i]->cPreisLocalized = gibPreisStringLocalized($shippingCosts) . $vatNote ?: '';
+                $versandarten[$i]->cPreisLocalized = gibPreisStringLocalized($shippingCosts) . (isset($vatNote) ? $vatNote : '');
                 if ($hasSpecificShippingcosts === true) {
                     $versandarten[$i]->specificShippingcosts_arr = self::gibArtikelabhaengigeVersandkostenImWK($lieferland, $_SESSION['Warenkorb']->PositionenArr);
                 }
+            }
+            //Abfrage ob die Zahlungsart/en zur Versandart gesetzt ist/sind
+            $zahlungsarten = Shop::DB()->query(
+                "SELECT tversandartzahlungsart.*, tzahlungsart.*
+                     FROM tversandartzahlungsart, tzahlungsart
+                     WHERE tversandartzahlungsart.kVersandart = " . $versandarten[$i]->kVersandart . "
+                         AND tversandartzahlungsart.kZahlungsart=tzahlungsart.kZahlungsart
+                         AND (tzahlungsart.cKundengruppen IS NULL OR tzahlungsart.cKundengruppen=''
+                         OR tzahlungsart.cKundengruppen LIKE '%;" . $kKundengruppe . ";%')
+                         AND tzahlungsart.nActive = 1
+                         AND tzahlungsart.nNutzbar = 1
+                     ORDER BY tzahlungsart.nSort", 2
+            );
+            $bVersandGueltig = false;
+            foreach ($zahlungsarten as $zahlungsart) {
+                if (ZahlungsartHelper::shippingMethodWithValidPaymentMethod($zahlungsart)) {
+                    $bVersandGueltig = true;
+                    break;
+                }
+            }
+            if (!$bVersandGueltig) {
+                unset($versandarten[$i]);
             }
         }
         $versandarten = array_merge($versandarten);

@@ -354,10 +354,20 @@ class Plugin
         );
         // Plugin Einstellungen holen
         $this->oPluginEinstellung_arr = Shop::DB()->query(
-            "SELECT *
+            "SELECT tplugineinstellungen.*, tplugineinstellungenconf.cConf
                 FROM tplugineinstellungen
-                WHERE kPlugin = " . $kPlugin, 2
+                LEFT JOIN tplugineinstellungenconf ON tplugineinstellungenconf.kPlugin = tplugineinstellungen.kPlugin 
+                    AND tplugineinstellungen.cName = tplugineinstellungenconf.cWertName
+                WHERE tplugineinstellungen.kPlugin = " . $kPlugin, 2
         );
+        if (is_array($this->oPluginEinstellung_arr)) {
+            foreach ($this->oPluginEinstellung_arr as $conf) {
+                if ($conf->cConf === 'M') {
+                    $conf->cWert = unserialize($conf->cWert);
+                }
+                unset($conf->cConf);
+            }
+        }
         // Plugin Einstellungen Conf holen
         $oPluginEinstellungConfTMP_arr = Shop::DB()->query(
             "SELECT *
@@ -369,6 +379,7 @@ class Plugin
             foreach ($oPluginEinstellungConfTMP_arr as $i => $oPluginEinstellungConfTMP) {
                 $oPluginEinstellungConfTMP_arr[$i]->oPluginEinstellungenConfWerte_arr = array();
                 if ($oPluginEinstellungConfTMP->cInputTyp === 'selectbox' || $oPluginEinstellungConfTMP->cInputTyp === 'radio') {
+
                     if (!empty($oPluginEinstellungConfTMP->cSourceFile)) {
                         $oPluginEinstellungConfTMP_arr[$i]->oPluginEinstellungenConfWerte_arr = $this->getDynamicOptions($oPluginEinstellungConfTMP);
                     } else {

@@ -97,9 +97,8 @@
             var inner = function(context) {
                 var id = $(context).attr('data-key'),
                     value = $(context).attr('data-value'),
-                    img = $(context).find('img'),
-                    data = $(img).data('list'),
-                    title = $(img).attr('title'),
+                    data  = $(context).data('list'),
+                    title = $(context).attr('data-title'),
                     gallery = $.evo.article().gallery;
 
                 $.evo.article().galleryIndex = gallery.index;
@@ -112,19 +111,43 @@
                     }
                 }
             };
+
+            $('.variations .bootstrap-select select').change(function() {
+                var tmp_idx = parseInt($('.variations .bootstrap-select li.selected').attr('data-original-index')) + 1;
+                inner($(this).find('option:nth-child(' + tmp_idx + ')'));
+            });
+
+            $('.variations .bootstrap-select .dropdown-menu li').hover(function() {
+                var tmp_idx = parseInt($(this).attr('data-original-index')) + 1;
+                var sel = $(this).closest('.bootstrap-select').find('select option:nth-child(' + tmp_idx + ')');
+                inner(sel);
+
+            }, function() {
+                var tmp_idx = parseInt($(this).attr('data-original-index')) + 1,
+                    p = $(this).closest('.bootstrap-select').find('select option:nth-child(' + tmp_idx + ')'),
+                    id = $(p).attr('data-key'),
+                    data  = $(p).data('list');
+
+                if (!!data) {
+                    var scope = '_',
+                        gallery = $.evo.article().gallery,
+                        active = $(p).find('.variation.active');
+
+                    gallery.render($.evo.article().galleryLastIdent);
+                    gallery.activate($.evo.article().galleryIndex);
+                }
+            });
             
-            $('.variations .swatches .variation').click(function() {
+            $('.variations .variation').click(function() {
                 inner(this);
             });
             
-            $('.variations .swatches .variation').hover(function() {
+            $('.variations .variation').hover(function() {
                 inner(this);
             }, function() {
-                var p = $(this).closest('.swatches'),
+                var p = $(this).closest('.variation'),
                     id = $(this).attr('data-key'),
-                    img = $(this).find('img'),
-                    data = $(img).data('list');
-
+                    data  = $(this).data('list');
                 if (!!data) {
                     var scope = '_',
                         gallery = $.evo.article().gallery,

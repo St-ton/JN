@@ -55,15 +55,19 @@ Long description is optional. If needed, place a new line between summary and lo
 Summary (first line): 
 
 Start your commit message with "Fix" or "Re" or "Unfix" followed by the issue referenced. 
-Next, provide a short description about the change and use words like "Improve, Fix, Add, Remove, Shorten" e.g. to keep a good readability. 
+Next, provide a short description about the change and use words like "Improve, Fix, Add, Remove, Shorten, Update" e.g. to keep a good readability. 
 
 Good: 
+```
 git commit -m "Fix #1234 - Fix wrong comparison operator"
 git commit -m "Re #1234 - Add required attribute to mandatory fields"
 git commit -m "Unfix jtlshop/shop4#12345 - Roll back last changes because jtlshop/shop4#12346 already solves this issue"
+```
 
 Bad: 
+```
 git commit -m ""
 git commit -m "sql"
 git commit -m "Schönheitskorrektur"
 git commit -m "wrong comparison operator used"
+```

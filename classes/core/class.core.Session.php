@@ -241,8 +241,8 @@ class Session
                     $oKundengruppeSprache = Shop::DB()->query(
                         "SELECT cName
                           FROM tkundengruppensprache
-                          WHERE kKundengruppe = " . $_SESSION['Kundengruppe']->kKundengruppe . "
-                            AND kSprache = " . $_SESSION['kSprache'], 1
+                          WHERE kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
+                            AND kSprache = " . (int)$_SESSION['kSprache'], 1
                     );
                     if (isset($oKundengruppeSprache->cName)) {
                         $_SESSION['Kundengruppe']->cNameLocalized = $oKundengruppeSprache->cName;

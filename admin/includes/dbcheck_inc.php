@@ -44,6 +44,24 @@ function getDBFileStruct()
     return $oDBFileStruct;
 }
 
+function compareDBStruct($cDBFileStruct_arr, $cDBStruct_arr)
+{
+    $cDBError_arr = array();
+    foreach ($cDBFileStruct_arr as $cTable => $cColumn_arr) {
+        if (!array_key_exists($cTable, $cDBStruct_arr)) {
+            $cDBError_arr[$cTable] = 'Tabelle nicht vorhanden';
+        } else {
+            foreach ($cColumn_arr as $cColumn) {
+                if (!in_array($cColumn, $cDBStruct_arr[$cTable])) {
+                    $cDBError_arr[$cTable] = "Spalte $cColumn in $cTable nicht vorhanden";
+                    break;
+                }
+            }
+        }
+    }
+    return $cDBError_arr;
+}
+
 /**
  * @param string $action
  * @param array  $tables

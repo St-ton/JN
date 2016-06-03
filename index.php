@@ -124,9 +124,10 @@ if ($cParameter_arr['is404'] === true) {
         $kLink       = $oLink->kLink;
         Shop::$kLink = $kLink;
     }
-    if (isset($seo) && strlen($seo) > 0) {
-        executeHook(HOOK_INDEX_SEO_404, array('seo' => $seo));
+    if (!isset($seo)) {
+        $seo = null;
     }
+    executeHook(HOOK_INDEX_SEO_404, array('seo' => $seo));
     if (!Shop::$kLink) {
         $hookInfos     = urlNotFoundRedirect(array('key' => 'kLink', 'value' => $cParameter_arr['kLink']));
         $kLink         = $hookInfos['value'];

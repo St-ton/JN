@@ -192,8 +192,7 @@ function gravatarImage($params, &$smarty)
         unset($params['email']);
     }
 
-    $default = Shop::getAdminURL() . '/gfx/no-avatar.png';
-    $params = array_merge([ 'email' => null, 's' => 40, 'd' => $default, 'r' => 'g' ], $params);
+    $params = array_merge([ 'email' => null, 's' => 80, 'd' => 'mm', 'r' => 'g' ], $params);
     
     $url  = 'https://www.gravatar.com/avatar/';
     $url .= md5(strtolower(trim($email)));

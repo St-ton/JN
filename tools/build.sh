@@ -2,7 +2,7 @@
 
 REL_SCRIPT_DIR="`dirname \"$0\"`"
 
-export SCRIPT_DIR="`( cd \"$REL_SCRIPT_DIR\" && pwd )`"
+export SCRIPT_DIR="`( cd \"${REL_SCRIPT_DIR}\" && pwd )`"
 export PROJECT_DIR="`( cd \"${SCRIPT_DIR}/..\" && pwd )`"
 
 source ${SCRIPT_DIR}/scripts/tools.sh
@@ -16,6 +16,7 @@ build_help()
     echo "${fgYellow}Actions:${C}"
     echo "  ${fgGreen}check${C}             - Check dependencies"
     echo "  ${fgGreen}deps${C}              - Install dependencies"
+	echo "  ${fgGreen}ide_meta${C}          - Create metadata"
     echo "  ${fgGreen}deploy <archive>${C}  - Deploy"
     echo ""
 }
@@ -60,7 +61,15 @@ build_deps()
 
 build_fixcs()
 {
-    php ${SCRIPT_DIR}/bin/php-cs-fixer --config-file="$PROJECT_DIR/.php_cs" fix $PROJECT_DIR -vvv --dry-run
+    php ${SCRIPT_DIR}/bin/php-cs-fixer --config-file="${PROJECT_DIR}/.php_cs" fix ${PROJECT_DIR} -vvv --dry-run
+}
+
+build_ide_meta()
+{
+    META_FILE="${PROJECT_DIR}/.phpstorm.meta.php"
+
+    echo "<?php" > ${META_FILE}
+	deploy_ide_meta >> ${META_FILE}
 }
 
 build_init()
@@ -68,7 +77,7 @@ build_init()
     msg "Initializing..."
 
     # composer (composer.json)
-    php ${SCRIPT_DIR}/bin/composer install --working-dir=$PROJECT_DIR/includes || exit 1
+    php ${SCRIPT_DIR}/bin/composer install --working-dir=${PROJECT_DIR}/includes || exit 1
 }
 
 # $1 archive filepath
@@ -78,11 +87,11 @@ build_deploy()
 }
 
 main() {
-    cd $PROJECT_DIR
+    cd ${PROJECT_DIR}
     local ACTION=build_${1:-full}
 
-    if [ -n "$(type -t $ACTION)" ] && [ "$(type -t $ACTION)" = "function" ]; then
-        $ACTION ${*:2}
+    if [ -n "$(type -t ${ACTION})" ] && [ "$(type -t ${ACTION})" = "function" ]; then
+        ${ACTION} ${*:2}
     else
         build_help
     fi

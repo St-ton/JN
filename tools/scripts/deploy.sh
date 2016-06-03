@@ -161,6 +161,21 @@ deploy_create_zip()
     cd $OLDPWD
 }
 
+deploy_ide_meta()
+{
+	FILE="${PROJECT_DIR}/includes/defines.php"
+	PATTERN="^\s*ifndef\('(.*)'\s*,\s*(.*)\);"
+	cat $FILE | while read LINE
+	do
+		[[ $LINE =~ $PATTERN ]]
+		if [[ ${BASH_REMATCH[0]} ]]
+		then
+			META="define(${BASH_REMATCH[1]}, ${BASH_REMATCH[2]});"
+			echo $META
+		fi
+	done
+}
+
 # $1 database name
 deploy_clean()
 {

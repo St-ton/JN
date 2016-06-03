@@ -100,6 +100,8 @@ main() {
     else
         build_help
     fi
+
+    return 0
 }
 
 (main $*)

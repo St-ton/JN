@@ -27,7 +27,7 @@ Merging into master branch is only permitted to developers with master permissio
 
 ## Coding Guidelines
 
-We basically follow [http://www.php-fig.org/psr/psr-2/](PSR-2) with some extra rules, specified in /.php-cs. 
+We basically follow [PSR-2](http://www.php-fig.org/psr/psr-2/) with some extra rules, specified in /.php-cs. 
 
 Grab and install php-cs-fixer to fix php-style in jtl-shop automatically: 
 

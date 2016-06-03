@@ -140,21 +140,7 @@ ifndef('PFAD_MEDIA_IMAGE', 'media/image/');
 ifndef('PFAD_MEDIA_IMAGE_STORAGE', PFAD_MEDIA_IMAGE . 'storage/');
 // Plugins
 ifndef('PFAD_PLUGIN', PFAD_INCLUDES . 'plugins/');
-ifndef('PFAD_PLUGIN_VERSION', 'version/');
-ifndef('PFAD_PLUGIN_SQL', 'sql/');
-ifndef('PFAD_PLUGIN_FRONTEND', 'frontend/');
-ifndef('PFAD_PLUGIN_ADMINMENU', 'adminmenu/');
-ifndef('PFAD_PLUGIN_LICENCE', 'licence/');
-ifndef('PFAD_PLUGIN_PAYMENTMETHOD', 'paymentmethod/');
-ifndef('PFAD_PLUGIN_TEMPLATE', 'template/');
-ifndef('PFAD_PLUGIN_BOXEN', 'boxen/');
-ifndef('PFAD_PLUGIN_WIDGET', 'widget/');
-ifndef('PFAD_PLUGIN_EXPORTFORMAT', 'exportformat/');
-ifndef('PFAD_PLUGIN_UNINSTALL', 'uninstall/');
-ifndef('PLUGIN_INFO_FILE', 'info.xml');
-ifndef('PLUGIN_LICENCE_METHODE', 'checkLicence');
-ifndef('PLUGIN_LICENCE_CLASS', 'PluginLicence');
-ifndef('PLUGIN_EXPORTFORMAT_CONTENTFILE', 'PluginContentFile_');
+// dbeS
 ifndef('PFAD_SYNC_TMP', 'tmp/'); //rel zu dbeS
 ifndef('PFAD_SYNC_LOGS', PFAD_ROOT . 'dbeS/logs/');
 // Dateien

@@ -256,7 +256,22 @@ define('SEARCHSPECIALS_PREORDER', 9);
 // Adminmenu (Backend)
 define('LINKTYP_BACKEND_PLUGINS', 5);
 define('LINKTYP_BACKEND_MODULE', 7);
-// Seite Plugin Handler
+// Plugin
+define('PFAD_PLUGIN_VERSION', 'version/');
+define('PFAD_PLUGIN_SQL', 'sql/');
+define('PFAD_PLUGIN_FRONTEND', 'frontend/');
+define('PFAD_PLUGIN_ADMINMENU', 'adminmenu/');
+define('PFAD_PLUGIN_LICENCE', 'licence/');
+define('PFAD_PLUGIN_PAYMENTMETHOD', 'paymentmethod/');
+define('PFAD_PLUGIN_TEMPLATE', 'template/');
+define('PFAD_PLUGIN_BOXEN', 'boxen/');
+define('PFAD_PLUGIN_WIDGET', 'widget/');
+define('PFAD_PLUGIN_EXPORTFORMAT', 'exportformat/');
+define('PFAD_PLUGIN_UNINSTALL', 'uninstall/');
+define('PLUGIN_INFO_FILE', 'info.xml');
+define('PLUGIN_LICENCE_METHODE', 'checkLicence');
+define('PLUGIN_LICENCE_CLASS', 'PluginLicence');
+define('PLUGIN_EXPORTFORMAT_CONTENTFILE', 'PluginContentFile_');
 define('PLUGIN_SEITENHANDLER', 'seite_plugin.php');
 // Red. Param
 define('R_MINDESTMENGE', 1);

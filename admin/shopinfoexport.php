@@ -49,11 +49,11 @@ $strSQL = "SELECT  k.kKategorie AS katID, k.cName AS katName, m.cName AS mapName
 $objKategorien = Shop::DB()->query($strSQL, 2);
 
 if (isset($_GET['bWrite']) && $_GET['bWrite'] === '0') {
-    $smarty->assign('errorNoWrite', "'" . PFAD_ROOT . "shopinfo.xml' konnte nicht gespeichert werden. Bitte achten Sie darauf, dass diese Datei ausreichende Schreibrechte besitzt.");
+    $smarty->assign('errorNoWrite', PFAD_ROOT . FILE_SHOP_FEED. "' konnte nicht gespeichert werden. Bitte achten Sie darauf, dass diese Datei ausreichende Schreibrechte besitzt.");
 }
 
 $smarty->assign('arMapping', $arMapping)
        ->assign('objShopInfo', $objShopInfo)
        ->assign('objKategorien', $objKategorien)
-       ->assign('URL', Shop::getURL() . '/shopinfo.xml')
+       ->assign('URL', Shop::getURL() . '/' . FILE_SHOP_FEED)
        ->display('shopinfoexport.tpl');

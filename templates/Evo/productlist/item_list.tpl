@@ -22,6 +22,12 @@
         </div>
         <div class="col-xs-6 col-sm-6 col-lg-5">
             {block name="product-title"}<h4 class="title"><a href="{$Artikel->cURL}">{$Artikel->cName}</a></h4>{/block}
+            {block name="product-manufacturer"}
+                <h5 class="manufacturer text-uppercase">
+                    <img src="{$Artikel->cHerstellerBildKlein}" alt="" class="img-xs">
+                    <a href="{$Artikel->cHersteller}">{$Artikel->cHersteller}</a>
+                </h5>
+            {/block}
 
             <div class="product-info hidden-xs">
                 {block name="product-info"}
@@ -37,7 +43,7 @@
                                 <span class="attr-label col-sm-5">{lang key="productMHD" section="global"}: </span> <span class="value col-sm-7">{$Artikel->dMHD_de}</span>
                             </li>
                         {/if}
-                        {if $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen !== 'N' && !empty($Artikel->cHersteller)}
+                        {*if $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen !== 'N' && !empty($Artikel->cHersteller)}
                             <li class="item row attr-manufacturer">
                                 <span class="attr-label col-sm-5">{lang key="manufacturerSingle" section="productOverview"}: </span>
                                 <span class="value col-sm-7">
@@ -57,7 +63,7 @@
                                 {/if}
                                 </span>
                             </li>
-                        {/if}
+                        {/if*}
                         {if isset($Artikel->cGewicht) && $Einstellungen.artikeluebersicht.artikeluebersicht_gewicht_anzeigen === 'Y' && $Artikel->fGewicht > 0}
                             <li class="item row attr-weight">
                                 <span class="attr-label col-sm-5">{lang key="shippingWeight" section="global"}: </span>

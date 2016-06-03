@@ -16,7 +16,7 @@
         $('#lang').change(function () {
             var iso = $('#lang option:selected').val();
             $('.iso_wrapper').slideUp();
-            $('#iso_' + iso).slideDown();
+            $('#iso_' + iso).removeClass('hidden').slideDown();
             return false;
         });
 
@@ -220,7 +220,7 @@
 
             {foreach name=sprachen from=$sprachen item=sprache}
                 {assign var="cISO" value=$sprache->cISO}
-                <div id="iso_{$cISO}" class="iso_wrapper {if $sprache->cShopStandard!="Y"}hidden{/if}">
+                <div id="iso_{$cISO}" class="iso_wrapper{if $sprache->cShopStandard!="Y"} hidden{/if}">
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <h3 class="panel-title">Meta/Seo ({$sprache->cNameDeutsch})</h3>

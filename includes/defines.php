@@ -159,6 +159,7 @@ ifndef('PFAD_SYNC_TMP', 'tmp/'); //rel zu dbeS
 ifndef('PFAD_SYNC_LOGS', PFAD_ROOT . 'dbeS/logs/');
 // Dateien
 ifndef('FILE_RSS_FEED', 'rss.xml');
+ifndef('FILE_SHOP_FEED', 'shopinfo.xml');
 ifndef('FILE_PHPFEHLER', PFAD_LOGFILES . 'phperror.log');
 // StandardBilder
 ifndef('BILD_KEIN_KATEGORIEBILD_VORHANDEN', PFAD_GFX . 'keinBild.gif');
@@ -177,6 +178,64 @@ ifndef('CUSTOMER_ACCOUNT_MAX_ORDERS', 50);
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 function ifndef($constant, $value) {
     defined($constant) || define($constant, $value);
+}
+
+function shop_writeable_paths() {
+    $paths = array(
+        // Directories
+        // PFAD_BILDER_SLIDER,
+        PFAD_GFX_TRUSTEDSHOPS,
+        PFAD_NEWSBILDER,
+        PFAD_SHOPLOGO,
+        PFAD_MEDIAFILES.'Bilder',
+        PFAD_MEDIAFILES.'Musik',
+        PFAD_MEDIAFILES.'Sonstiges',
+        PFAD_MEDIAFILES.'Videos',
+        PFAD_IMAGEMAP,
+        PFAD_PRODUKTBILDER_MINI,
+        PFAD_PRODUKTBILDER_KLEIN,
+        PFAD_PRODUKTBILDER_NORMAL,
+        PFAD_PRODUKTBILDER_GROSS,
+        PFAD_KATEGORIEBILDER,
+        PFAD_VARIATIONSBILDER_MINI,
+        PFAD_VARIATIONSBILDER_NORMAL,
+        PFAD_VARIATIONSBILDER_GROSS,
+        PFAD_HERSTELLERBILDER_NORMAL,
+        PFAD_HERSTELLERBILDER_KLEIN,
+        PFAD_MERKMALBILDER_NORMAL,
+        PFAD_MERKMALBILDER_KLEIN,
+        PFAD_MERKMALWERTBILDER_NORMAL,
+        PFAD_MERKMALWERTBILDER_KLEIN,
+        PFAD_BRANDINGBILDER,
+        PFAD_SUCHSPECIALOVERLAY_KLEIN,
+        PFAD_SUCHSPECIALOVERLAY_NORMAL,
+        PFAD_SUCHSPECIALOVERLAY_GROSS,
+        PFAD_KONFIGURATOR_KLEIN,
+        PFAD_BILDER.PFAD_LINKBILDER,
+        PFAD_BILDER.PFAD_NEWSLETTERBILDER,
+        PFAD_LOGFILES,
+        PFAD_EXPORT,
+        PFAD_EXPORT_BACKUP,
+        PFAD_EXPORT_YATEGO,
+        PFAD_COMPILEDIR,
+        PFAD_DBES_TMP,
+        PFAD_UPLOADS,
+        PFAD_MEDIA_IMAGE,
+        PFAD_MEDIA_IMAGE_STORAGE,
+        PFAD_SYNC_LOGS,
+        PFAD_ADMIN . PFAD_COMPILEDIR,
+        PFAD_ADMIN . PFAD_INCLUDES . PFAD_EMAILPDFS,
+        // Files
+        FILE_RSS_FEED,
+        FILE_SHOP_FEED
+    );
+
+    return array_map(function($v) {
+        if (strpos($v, PFAD_ROOT) === 0) {
+            $v = substr($v, strlen(PFAD_ROOT));
+        }
+        return trim($v, '/\\');
+    }, $paths);
 }
 
 // Static defines (do not edit)

@@ -54,7 +54,7 @@ if (isset($_GET['return']) && $_GET['return'] === '1') {
         $_POST['firma'] = 'NOCOMPANY';
     }
 
-    if ($conf['kunden']['kundenregistrierung_abfragen_ustid'] !== 'N') {
+    if ($conf['kunden']['kundenregistrierung_abfragen_ustid'] === 'Y') {
         $_POST['ustid'] = 'NOVATID';
     }
 

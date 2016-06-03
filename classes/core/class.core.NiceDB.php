@@ -14,7 +14,7 @@
  * @method null|object select(string $tablename, string $keyname, int $keyvalue, string|null $keyname1 = null, string|int $keyvalue1 = null, string|null $keyname2 = null, string|int $keyvalue2 = null, bool $echo = false, string $select = '*')
  * @method int insert(string $tablename, object $object, int|bool $echo = false, bool $bExecuteHook = false)
  * @method int delete(string $tablename, string|array $keyname, string|int|array $keyvalue, bool|int $echo = false)
- * @method int update(string $tablename, string $keyname, int $keyvalue, object $object, int|bool $echo = false)
+ * @method int update(string $tablename, string|array $keyname, string|int|array $keyvalue, object $object, int|bool $echo = false)
  * @method string realEscape($string)
  * @method string pdoEscape($string)
  * @method string info()

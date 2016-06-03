@@ -17,6 +17,7 @@
 * Verbesserung: Speicheroptimierung bei aktiviertem Objektcache und gleichzeitiger Verwendung der Warenkorbmatrix
 * Verbesserung: Speicheroptimierung bei aktiviertem Objektcache und TopArtikeln/Bestsellern/Neuen Artikeln
 * Bugfix: TopArtikel werden bei aktiviertem Objektcache nicht aktualisiert 
+* Bugfix: Ändern von Bildeinstellungen invalidiert Objektcache nicht 
 
 ## [4.03.2]
 * Bugfix: robots.txt fehlendes "Sitemap: " vor der Sitemap-URL

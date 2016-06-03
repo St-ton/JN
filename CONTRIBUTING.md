@@ -1,11 +1,11 @@
 # How to contribute
 
-JTL-Shop is a commercial open source software. Read LICENSE.md for further information. 
+JTL-Shop is a commercial open source software. Read [LICENSE.md](LICENSE.md) for further information. 
 
 Git Repository: git@gitlab.jtl-software.de:jtlshop/shop4.git
 
 Contribute your changes by adding a new branch and creating a merge request in gitlab. 
-You need to have developer permissions in order to be able to create and commit branches. 
+External developers: fork shop project master in your namespace and create the merge request.  
 
 Merging into master branch is only permitted to developers with master permission. 
 
@@ -27,7 +27,7 @@ Merging into master branch is only permitted to developers with master permissio
 
 ## Coding Guidelines
 
-We basically follow PSR-2 with some extra rules, specified in /.php-cs. 
+We basically follow [PSR-2](http://www.php-fig.org/psr/psr-2/) with some extra rules, specified in /.php-cs. 
 
 Grab and install php-cs-fixer to fix php-style in jtl-shop automatically: 
 
@@ -37,14 +37,14 @@ sudo chmod a+x php-cs-fixer
 sudo mv php-cs-fixer /usr/local/bin/php-cs-fixer
 ```
 
-Fix 1 File: 
-```
-php-cs-fixer fix admin/includes/dashboard_inc.php -vvv  --config-file .php_cs
-```
-
 Fix all php Files but not the exluded ones: 
 ```
 php-cs-fixer fix .
+```
+
+Fix 1 File: 
+```
+php-cs-fixer fix admin/includes/dashboard_inc.php --config-file .php_cs
 ```
 
 ## Commit Messages
@@ -60,14 +60,24 @@ Next, provide a short description about the change and use words like "Improve, 
 Good: 
 ```
 git commit -m "Fix #1234 - Fix wrong comparison operator"
+```
+```
 git commit -m "Re #1234 - Add required attribute to mandatory fields"
+```
+```
 git commit -m "Unfix jtlshop/shop4#12345 - Roll back last changes because jtlshop/shop4#12346 already solves this issue"
 ```
 
 Bad: 
 ```
 git commit -m ""
+```
+```
 git commit -m "sql"
+```
+```
 git commit -m "Schönheitskorrektur"
+```
+```
 git commit -m "wrong comparison operator used"
 ```

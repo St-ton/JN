@@ -71,7 +71,33 @@
     {/if}
 {/function}
 
+<style type="text/css">
+{literal}
+    .phpinfo pre {margin: 0; font-family: monospace;}
+    .phpinfo a, .phpinfo a:link {color: #000; text-decoration: none;}
+    .phpinfo a:hover {text-decoration: none;}
+    .phpinfo table {width: 100%; max-width: 100%; margin-bottom: 20px;}
+    .phpinfo .center {text-align: center;}
+    .phpinfo .center table {margin: 1em auto; text-align: left;}
+    .phpinfo .center th {text-align: center !important;}
+    .phpinfo td, .phpinfo th {padding: 8px; line-height: 1.42857143; vertical-align: top; border-top: 1px solid #ddd;}
+    .phpinfo h1 {font-size: 150%;}
+    .phpinfo h2 {font-size: 125%;}
+    .phpinfo .p {text-align: left;}
+    .phpinfo .e {background-color: #f9f9f9; width: 300px; font-weight: bold;}
+    .phpinfo .h {background-color: #ddd; font-weight: bold;}
+    .phpinfo .v {max-width: 300px; overflow-x: auto;}
+    .phpinfo .v i {color: #999;}
+    .phpinfo img {float: right; border: 0;}
+    .phpinfo hr {}
+{/literal}
+</style>
+
 <div id="content" class="container-fluid">
+    {if isset($phpinfo)}
+        <div class="phpinfo">{$phpinfo}</div>
+    {/if}
+
     <div class="systemcheck">
         {*
         <div class="form-horizontal">

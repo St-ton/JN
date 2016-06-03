@@ -23,6 +23,13 @@ error()
     exit -1
 }
 
+# $1 text
+success()
+{
+    printf "${fgGreen}Ξ${C} $1\n"
+    exit -1
+}
+
 # $1 path to append
 pathadd()
 {

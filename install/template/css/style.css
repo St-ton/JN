@@ -1,3 +1,7 @@
+html {
+    background-color: #5cbcf6;
+}
+
 @media print
 {    
     .no-print, .no-print *
@@ -92,5 +96,6 @@ ul .fa-check-circle-o, ul.fa-exclamation-circle {
 }
 
 .backend-wrapper.container {
-    padding: 40px;
+    margin: 0 auto;
+    padding: 50px 15px 20px;
 }

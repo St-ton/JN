@@ -37,7 +37,7 @@ class Notification implements IteratorAggregate, Countable
     {
         $this->array[] = $notify;
     }
-    
+
     /**
      * @return highest type in record
      */
@@ -49,21 +49,23 @@ class Notification implements IteratorAggregate, Countable
                 $type = $notify->getType();
             }
         }
+
         return $type;
     }
 
     /**
      * @return int
      */
-    public function count() 
-    { 
+    public function count()
+    {
         return count($this->array);
     }
 
     /**
      * @return ArrayIterator
      */
-    public function getIterator() {
+    public function getIterator()
+    {
         return new ArrayIterator($this->array);
     }
 
@@ -79,17 +81,17 @@ class Notification implements IteratorAggregate, Countable
         require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'permissioncheck_inc.php';
         require_once PFAD_ROOT . PFAD_CLASSES_CORE . 'class.core.jtlAPI.php';
 
-        $notify = new Notification();
-        $updater = new Updater();
-        $template = Template::getInstance();
-        $writeableDirs = checkWriteables();
+        $notify         = new self();
+        $updater        = new Updater();
+        $template       = Template::getInstance();
+        $writeableDirs  = checkWriteables();
         $permissionStat = getPermissionStats($writeableDirs);
-        
-        if (($subscription = $_SESSION['subscription']) === null) {
-            $subscription = jtlAPI::getSubscription();
-            $_SESSION['subscription'] = $subscription;
+
+        $subscription = null;
+        if (!isset($_SESSION['subscription']) || $_SESSION['subscription'] === null) {
+            $_SESSION['subscription'] = $subscription = jtlAPI::getSubscription();
         }
-        
+
         if ($updater->hasPendingUpdates()) {
             $notify->add(NotificationEntry::TYPE_DANGER, "Systemupdate", "Ein Datenbank-Update ist zwingend notwendig", "dbupdater.php");
         }
@@ -105,11 +107,11 @@ class Notification implements IteratorAggregate, Countable
         if (JTL_VERSION != $template->getShopVersion()) {
             $notify->add(NotificationEntry::TYPE_WARNING, "Template", "Ihre Template-Version unterscheidet sich von Ihrer Shop-Version.<br />Weitere Hilfe zu Template-Updates finden Sie im <i class=\"fa fa-external-link\"></i> Wiki", "shoptemplate.php");
         }
-        
+
         if (Profiler::getIsActive() !== 0) {
             $notify->add(NotificationEntry::TYPE_WARNING, "Plugin", "Der Profiler ist aktiv und kann zu starken Leistungseinbu&szlig;en im Shop f&uuml;hren.");
         }
-        
+
         if (is_object($subscription) && isset($subscription->kShop) && (int) $subscription->kShop > 0) {
             if ((int) $subscription->bUpdate === 1) {
                 if ((int) $subscription->nDayDiff <= 0) {

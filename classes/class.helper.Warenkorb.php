@@ -45,7 +45,8 @@ class WarenkorbHelper
             $amountGross = $amount * ((100 + gibUst($oPosition->kSteuerklasse)) / 100);
 
             switch ($oPosition->nPosTyp) {
-                case C_WARENKORBPOS_TYP_ARTIKEL: {
+                case C_WARENKORBPOS_TYP_ARTIKEL:
+                case C_WARENKORBPOS_TYP_GRATISGESCHENK: {
                     $item = (object) [
                         'name'     => '',
                         'quantity' => 1,

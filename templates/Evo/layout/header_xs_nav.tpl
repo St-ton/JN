@@ -13,7 +13,7 @@
             <ul class="nav navbar-nav navbar-right force-float action-nav">
                 {if isset($smarty.session.Kunde) && isset($smarty.session.Kunde->kKunde) && $smarty.session.Kunde->kKunde > 0}
                     <li>
-                        <a href="jtl.php?logout=1">
+                        <a href="{get_static_route id='jtl.php'}?logout=1">
                             <span class="fa fa-sign-out"></span>
                         </a>
                     </li>

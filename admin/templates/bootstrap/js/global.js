@@ -330,6 +330,23 @@ function ajaxCall(url, params, callback) {
     });
 }
 
+var _queryTimeout = null;
+
+/**
+ * @param url
+ * @param params
+ * @param callback
+ * @returns {*}
+ */
+function ajaxCallV2(url, params, callback) {
+    if (_queryTimeout) {
+        window.clearTimeout(_queryTimeout);
+    }
+    _queryTimeout = window.setTimeout(function() {
+        ajaxCall(url, params, callback);
+    }, 300);
+}
+
 /**
  * Format file size
  */
@@ -524,4 +541,31 @@ $(document).ready(function () {
             $(item).prop("checked", activitem);
         });
     });
+
+    $('.switcher .switcher-wrapper').on('click', function(e) {
+        e.stopPropagation();
+    });
+    $('.switcher').on('show.bs.dropdown', function () {
+        showBackdrop();
+        xajax_getAvailableWidgetsAjax();
+    }).on('hide.bs.dropdown', function () {
+        hideBackdrop();
+    });
+    
+    $('#nbc-1 .dropdown').on('show.bs.dropdown', function () {
+        showBackdrop();
+    }).on('hide.bs.dropdown', function () {
+        hideBackdrop();
+    });
 });
+
+function showBackdrop() {
+    $backdrop = $('<div class="menu-backdrop fade" />')
+        .appendTo($(document.body));
+    $backdrop[0].offsetWidth;
+    $backdrop.addClass('in');
+}
+
+function hideBackdrop() {
+    $('.menu-backdrop').remove();
+}

@@ -13,52 +13,79 @@
                 </div>
                 <div class="panel-body">
                     {block name="checkout-shipping-options-body"}
-                    <form method="post" action="bestellvorgang.php" class="form">
+                    <form method="post" action="{get_static_route id='bestellvorgang.php'}" class="form">
                         {$jtl_token}
                         <fieldset>
-                            {if count($Versandarten) < 1}
+                            {if !isset($Versandarten)}
                                 <div class="alert alert-danger">{lang key="noShippingMethodsAvailable" section="checkout"}</div>
                             {else}
                                 <div class="alert alert-info">{lang key="shippingOptionsDesc" section="shipping payment"}</div>
+
+                                <ul class="list-group">
+                                    {foreach name=shipment from=$Versandarten item=versandart}
+                                        <li id="shipment_{$versandart->kVersandart}" class="list-group-item">
+                                            <div class="radio">
+                                                <label for="del{$versandart->kVersandart}" class="btn-block">
+                                                    <div class="row">
+                                                        <div class="col-xs-7 col-md-9 col-lg-9">
+                                                            <p>
+                                                                <input name="Versandart" value="{$versandart->kVersandart}" type="radio" id="del{$versandart->kVersandart}"{if $Versandarten|@count == 1} checked{/if}{if $smarty.foreach.shipment.first} required{/if}>
+                                                                &nbsp;{if $versandart->cBild}
+                                                                    <img src="{$versandart->cBild}" alt="{$versandart->angezeigterName|trans}">
+                                                                {else}
+                                                                    <strong>{$versandart->angezeigterName|trans}</strong>
+                                                                {/if}
+                                                            </p>
+                                                        </div>
+                                                        <div class="col-xs-5 col-md-3 col-lg-3">
+                                                            <span class="badge pull-right">{$versandart->cPreisLocalized}</span>
+                                                        </div>
+                                                    </div>
+                                                    {if isset($versandart->specificShippingcosts_arr)}
+                                                            {foreach name=specificShippingcosts from=$versandart->specificShippingcosts_arr item=specificShippingcosts}
+                                                                <div class="row">
+                                                                    <div class="col-xs-8 col-md-9 col-lg-9">
+                                                                        <ul>
+                                                                            <li>
+                                                                                <small>{$specificShippingcosts->cName|trans}</small>
+                                                                            </li>
+                                                                        </ul>
+                                                                    </div>
+                                                                    <div class="col-xs-4 col-md-3 col-lg-3 text-right">
+                                                                        <small>
+                                                                            {$specificShippingcosts->cPreisLocalized}
+                                                                        </small>
+                                                                    </div>
+                                                                </div>
+                                                            {/foreach}
+                                                    {/if}
+                                                        {if !empty($versandart->angezeigterHinweistext|trans) && $versandart->angezeigterHinweistext|has_trans}
+                                                            <p>
+                                                                <small>{$versandart->angezeigterHinweistext|trans}</small>
+                                                            </p>
+                                                        {/if}
+                                                        {if !empty($versandart->Zuschlag->fZuschlag)}
+                                                            <p>
+                                                                <small>{$versandart->Zuschlag->angezeigterName|trans}
+                                                                    (+{$versandart->Zuschlag->cPreisLocalized})
+                                                                </small>
+                                                            </p>
+                                                        {/if}
+
+                                                        {if !empty($versandart->cLieferdauer|trans) && $Einstellungen.global.global_versandermittlung_lieferdauer_anzeigen === 'Y'}
+                                                            <p>
+                                                                <small>{lang key="shippingTimeLP" section="global"}
+                                                                    : {$versandart->cLieferdauer|trans}</small>
+                                                            </p>
+                                                        {/if}
+                                                </label>
+                                            </div>
+                                        </li>
+                                    {/foreach}
+                                </ul>
                             {/if}
 
-                            <ul class="list-group">
-                                {foreach name=shipment from=$Versandarten item=versandart}
-                                    <li id="shipment_{$versandart->kVersandart}" class="list-group-item">
-                                        <div class="radio">
-                                            <label for="del{$versandart->kVersandart}" class="btn-block">
-                                                <input name="Versandart" value="{$versandart->kVersandart}" type="radio" id="del{$versandart->kVersandart}"{if $Versandarten|@count == 1} checked{/if}{if $smarty.foreach.shipment.first} required{/if}>
-                                                &nbsp;{if $versandart->cBild}
-                                                    <img src="{$versandart->cBild}" alt="{$versandart->angezeigterName|trans}">
-                                                {else}
-                                                    <strong>{$versandart->angezeigterName|trans}</strong>
-                                                {/if}
-                                                <span class="badge pull-right">{$versandart->cPreisLocalized}</span>{if $versandart->angezeigterHinweistext|has_trans}
-                                                    <p>
-                                                        <small>{$versandart->angezeigterHinweistext|trans}</small>
-                                                    </p>
-                                                {/if}
-                                                {if !empty($versandart->Zuschlag->fZuschlag)}
-                                                    <p>
-                                                        <small>{$versandart->Zuschlag->angezeigterName|trans}
-                                                            (+{$versandart->Zuschlag->cPreisLocalized})
-                                                        </small>
-                                                    </p>
-                                                {/if}
-
-                                                {if $versandart->cLieferdauer|has_trans && $Einstellungen.global.global_versandermittlung_lieferdauer_anzeigen === 'Y'}
-                                                    <p>
-                                                        <small>{lang key="shippingTimeLP" section="global"}
-                                                            : {$versandart->cLieferdauer|trans}</small>
-                                                    </p>
-                                                {/if}
-                                            </label>
-                                        </div>
-                                    </li>
-                                {/foreach}
-                            </ul>
-
-                            {if $Verpackungsarten|@count > 0}
+                            {if isset($Verpackungsarten) && $Verpackungsarten|@count > 0}
                                 <div class="form-group">
                                     {foreach name=zusatzverpackungen from=$Verpackungsarten item=oVerpackung}
                                         <div class="checkbox">
@@ -77,9 +104,11 @@
                             {/if}
                         </fieldset>
 
-                        <input type="hidden" name="versandartwahl" value="1" />
+                        {if isset($Versandarten)}
+                            <input type="hidden" name="versandartwahl" value="1" />
 
-                        <input type="submit" value="{lang key="continueOrder" section="account data"}" class="submit btn btn-primary" />
+                            <input type="submit" value="{lang key="continueOrder" section="account data"}" class="submit btn btn-primary" />
+                        {/if}
                     </form>
                     {/block}
                 </div>

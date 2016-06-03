@@ -11,7 +11,8 @@ $cart = (isset($_SESSION['Warenkorb'])) ?
 
 if (!$_SESSION['Kundengruppe']->darfArtikelKategorienSehen) {
     //falls Artikel/Kategorien nicht gesehen werden dürfen -> login
-    header('Location: ' . Shop::getURL() . '/jtl.php?li=1', true, 303);
+    $linkHelper = LinkHelper::getInstance();
+    header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true) . '?li=1', true, 303);
     exit;
 }
 // Wurde ein Kindartikel zum Vaterumgeleitet? Falls ja => Redirect POST Daten entpacken und zuweisen
@@ -381,12 +382,11 @@ if ($smarty->isCached('productlist/index.tpl', $cacheID) === true) {
         );
         // Verfügbarkeitsbenachrichtigung pro Artikel
         if (is_array($oSuchergebnisse->Artikel->elemente)) {
+            if (!isset($Einstellungen['artikeldetails']['benachrichtigung_nutzen'])) {
+                $Einstellungen['artikeldetails']['benachrichtigung_nutzen'] = null;
+            }
             foreach ($oSuchergebnisse->Artikel->elemente as $Artikel) {
-                if (!isset($Einstellungen['artikeldetails']['benachrichtigung_nutzen'])) {
-                    $Einstellungen['artikeldetails']['benachrichtigung_nutzen'] = null;
-                }
-                $n                                        = gibVerfuegbarkeitsformularAnzeigen($Artikel, $Einstellungen['artikeldetails']['benachrichtigung_nutzen']);
-                $Artikel->verfuegbarkeitsBenachrichtigung = $n;
+                $Artikel->verfuegbarkeitsBenachrichtigung = gibVerfuegbarkeitsformularAnzeigen($Artikel, $Einstellungen['artikeldetails']['benachrichtigung_nutzen']);
             }
         }
         if (count($oSuchergebnisse->Artikel->elemente) === 0) {

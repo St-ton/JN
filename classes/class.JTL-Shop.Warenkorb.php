@@ -57,7 +57,7 @@ class Warenkorb
      */
     public function __construct($kWarenkorb = 0)
     {
-        $kWarenkorb = intval($kWarenkorb);
+        $kWarenkorb = (int) $kWarenkorb;
         if ($kWarenkorb > 0) {
             $this->loadFromDB($kWarenkorb);
         }
@@ -409,7 +409,7 @@ class Warenkorb
      */
     public function erstelleSpezialPos($name, $anzahl, $preis, $kSteuerklasse, $typ, $delSamePosType = true, $brutto = true, $hinweis = '', $cUnique = false, $kKonfigitem = 0, $kArtikel = 0)
     {
-        $kArtikel = intval($kArtikel);
+        $kArtikel = (int) $kArtikel;
         if ($delSamePosType) {
             $this->loescheSpezialPos($typ);
         }
@@ -604,7 +604,7 @@ class Warenkorb
         if (!$kArtikel) {
             return 0;
         }
-        $kArtikel = intval($kArtikel);
+        $kArtikel = (int) $kArtikel;
         $anz      = 0;
         foreach ($this->PositionenArr as $i => $Position) {
             if ($Position->kArtikel == $kArtikel && $exclude_pos !== $i) {
@@ -1156,7 +1156,7 @@ class Warenkorb
      */
     public function loadFromDB($kWarenkorb)
     {
-        $obj     = Shop::DB()->select('twarenkorb', 'kWarenkorb', intval($kWarenkorb));
+        $obj     = Shop::DB()->select('twarenkorb', 'kWarenkorb', (int) $kWarenkorb);
         $members = array_keys(get_object_vars($obj));
         foreach ($members as $member) {
             $this->$member = $obj->$member;
@@ -1311,7 +1311,7 @@ class Warenkorb
             if ($this->posTypEnthalten(C_WARENKORBPOS_TYP_KUPON)) {
                 // Kupon darf nicht im leeren Warenkorb eingelöst werden
                 if (isset($_SESSION['Warenkorb']) && $this->gibAnzahlArtikelExt(array(C_WARENKORBPOS_TYP_ARTIKEL)) > 0) {
-                    $Kupon = Shop::DB()->select('tkupon', 'kKupon', intval($_SESSION['Kupon']->kKupon));
+                    $Kupon = Shop::DB()->select('tkupon', 'kKupon', (int) $_SESSION['Kupon']->kKupon);
                     if (isset($Kupon->kKupon) && $Kupon->kKupon > 0 && $Kupon->cKuponTyp === 'standard') {
                         $isValid = (1 === angabenKorrekt(checkeKupon($Kupon)));
                         $this->updateCouponValue();
@@ -1329,7 +1329,7 @@ class Warenkorb
             } elseif (isset($_SESSION['Kupon']->nGanzenWKRabattieren) && $_SESSION['Kupon']->nGanzenWKRabattieren === '0' &&
                 $_SESSION['Kupon']->cKuponTyp === 'standard' && $_SESSION['Kupon']->cWertTyp === 'prozent') {
                 if (isset($_SESSION['Warenkorb']) && $this->gibAnzahlArtikelExt(array(C_WARENKORBPOS_TYP_ARTIKEL)) > 0) {
-                    $Kupon = Shop::DB()->select('tkupon', 'kKupon', intval($_SESSION['Kupon']->kKupon));
+                    $Kupon = Shop::DB()->select('tkupon', 'kKupon', (int) $_SESSION['Kupon']->kKupon);
                     if (isset($Kupon->kKupon) && $Kupon->kKupon > 0 && $Kupon->cKuponTyp === 'standard') {
                         $isValid = (1 === angabenKorrekt(checkeKupon($Kupon)));
                     } else {

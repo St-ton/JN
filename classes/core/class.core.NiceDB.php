@@ -525,7 +525,7 @@ class NiceDB
             return 0;
         } else {
             $id = $this->pdo->lastInsertId();
-            if ($this->debug === true || $this->collectData === true) {
+            if (($this->debug === true || $this->collectData === true) && strpos($tablename, 'tprofiler') !== 0) {
                 $end       = microtime(true);
                 $backtrace = null;
                 if ($this->debugLevel > 2) {
@@ -627,10 +627,10 @@ class NiceDB
 
                 return 0;
             }
-            $keyname = array_map(function ($_v) {
+            $keynamePrepared = array_map(function ($_v) {
                 return $_v . '=?';
             }, $keyname);
-            $where   = ' WHERE ' . implode(' AND ', $keyname);
+            $where   = ' WHERE ' . implode(' AND ', $keynamePrepared);
             foreach ($keyvalue as $_v) {
                 $assigns[] = $_v;
             }
@@ -667,47 +667,32 @@ class NiceDB
             $ret = $s->rowCount();
         }
 
-        if ($this->debug === true || $this->collectData === true) {
+        if (($this->debug === true || $this->collectData === true) && strpos($tablename, 'tprofiler') !== 0) {
             $end       = microtime(true);
             $backtrace = null;
             if ($this->debugLevel > 2) {
                 $backtrace = debug_backtrace();
             }
-            $arr = get_object_vars($object);
-            if (!is_array($arr)) {
-                if ($this->logErrors && $this->logfileName) {
-                    $this->writeLog('updateRow: Objekt enthaelt nichts! - Tablename:' . $tablename);
+            $arr     = get_object_vars($object);
+            $updates = array();
+            foreach ($arr as $_key => $_val) {
+                if ($_val === '_DBNULL_') {
+                    $_val = null;
+                } elseif ($_val === null) {
+                    $_val = '';
                 }
-
-                return 0;
+                $updates[] = $_key . '="' . $_val . '"';
             }
-            if (!$keyname || !$keyvalue) {
-                if ($this->logErrors && $this->logfileName) {
-                    $this->writeLog('updateRow: Kein keyname oder keyvalue! - Tablename:' . $tablename . ' Keyname: ' . $keyname . ' - Keyvalue: ' . $keyvalue);
+            if (is_array($keyname) && is_array($keyvalue)) {
+                $combined = array();
+                foreach ($keyname as $i => $key) {
+                    $combined[] = $key . '=' . $keyvalue[$i];
                 }
-
-                return 0;
+                $where = ' WHERE ' . implode(' AND ', $combined);
+            } else {
+                $where = ' WHERE ' . $keyname . '=' . $keyvalue;
             }
-            $keys         = array_keys($arr);
-            $updateString = '';
-            $keyCount     = count($keys);
-            for ($i = 0; $i < $keyCount; $i++) {
-                $property = $keys[$i];
-                if ($i == count($keys) - 1) {
-                    if ($object->$property === 'now()') {
-                        $updateString .= $property . '=' . $object->$property;
-                    } else {
-                        $updateString .= $property . '=' . $this->pdoEscape($object->$property) . '';
-                    }
-                } else {
-                    if ($object->$property === 'now()') {
-                        $updateString .= $property . '=' . $object->$keys[$i] . ', ';
-                    } else {
-                        $updateString .= $property . '=' . $this->pdoEscape($object->$property) . ', ';
-                    }
-                }
-            }
-            $stmt = 'UPDATE ' . $tablename . ' SET ' . $updateString . ' WHERE ' . $keyname . '=' . $this->pdoEscape($keyvalue) . '';
+            $stmt = 'UPDATE ' . $tablename . ' SET ' . implode(',', $updates) . $where;
             $this->analyzeQuery('update', $stmt, ($end - $start), $backtrace);
         }
 

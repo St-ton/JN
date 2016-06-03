@@ -133,7 +133,7 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
     $_SESSION['Warenkorb']->kWarenkorb = $_SESSION['Warenkorb']->insertInDB();
     //füge alle Warenkorbpositionen ein
     if (is_array($_SESSION['Warenkorb']->PositionenArr) && count($_SESSION['Warenkorb']->PositionenArr) > 0) {
-        $nArtikelAnzeigefilter = intval($conf['global']['artikel_artikelanzeigefilter']);
+        $nArtikelAnzeigefilter = (int) $conf['global']['artikel_artikelanzeigefilter'];
         $kArtikel_arr          = array();
         foreach ($_SESSION['Warenkorb']->PositionenArr as $i => $Position) {
             if ($Position->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL) {
@@ -244,7 +244,7 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
     $Bestellung->dErstellt         = 'now()';
     if (isset($_SESSION['Bestellung']->GuthabenNutzen) && $_SESSION['Bestellung']->GuthabenNutzen == 1) {
         $Bestellung->fGuthaben = -$_SESSION['Bestellung']->fGuthabenGenutzt;
-        Shop::DB()->query('UPDATE tkunde SET fGuthaben = fGuthaben-' . $_SESSION['Bestellung']->fGuthabenGenutzt . ' WHERE kKunde = ' . intval($Bestellung->kKunde), 4);
+        Shop::DB()->query("UPDATE tkunde SET fGuthaben = fGuthaben-" . $_SESSION['Bestellung']->fGuthabenGenutzt . " WHERE kKunde = " . (int) $Bestellung->kKunde, 4);
         $_SESSION['Kunde']->fGuthaben -= $_SESSION['Bestellung']->fGuthabenGenutzt;
     }
     // Gesamtsumme entspricht 0

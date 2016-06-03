@@ -1108,7 +1108,6 @@ function syncException($msg, $wawiExceptionCode = null) {
  */
 function flushCategoryTreeCache()
 {
-    error_log('######FLUSHING!!!!');
     return Shop::Cache()->flushTags('jtl_category_tree');
 }
 

@@ -299,7 +299,6 @@ class SimpleXML
         $php_errormsg   = '';
         $this->result   = '';
         $this->evalCode = '';
-        $values         = '';
         $data           = file_get_contents($file);
         if (!$data) {
             return 'Cannot open xml document: ' . (isset($php_errormsg) ? $php_errormsg : $file);

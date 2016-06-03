@@ -109,23 +109,23 @@ if (strlen($cSh) > 0) {
                 }
             } else {
                 Jtllog::writeLog('finalizeOrder failed -> zurueck zur Zahlungsauswahl.', JTLLOG_LEVEL_DEBUG, false, 'Notify');
-
+                $linkHelper = LinkHelper::getInstance();
                 // UOS Work Around
                 if ($paymentMethod->redirectOnCancel() || strpos($_SESSION['Zahlungsart']->cModulId, 'za_uos_') !== false ||
                     strpos($_SESSION['Zahlungsart']->cModulId, 'za_ut_') !== false || $_SESSION['Zahlungsart']->cModulId === 'za_sofortueberweisung_jtl'
                 ) {
                     // Go to 'Edit PaymentMethod' Page
-                    $header = 'Location: ' . Shop::getURL() . '/bestellvorgang.php?editZahlungsart=1';
+                    $header = 'Location: ' . $linkHelper->getStaticRoute('bestellvorgang.php') . '?editZahlungsart=1';
                     if (strlen($cEditZahlungHinweis) > 0) {
-                        $header = 'Location: ' . Shop::getURL() . '/bestellvorgang.php?editZahlungsart=1&nHinweis=' . $cEditZahlungHinweis;
+                        $header = 'Location: ' . $linkHelper->getStaticRoute('bestellvorgang.php') . '?editZahlungsart=1&nHinweis=' . $cEditZahlungHinweis;
                     }
                     header($header);
                     exit();
                 } else {
                     if (strlen($cEditZahlungHinweis) > 0) {
-                        echo Shop::getURL() . '/bestellvorgang.php?editZahlungsart=1&nHinweis=' . $cEditZahlungHinweis;
+                        echo $linkHelper->getStaticRoute('bestellvorgang.php') . '?editZahlungsart=1&nHinweis=' . $cEditZahlungHinweis;
                     } else {
-                        echo Shop::getURL() . '/bestellvorgang.php?editZahlungsart=1';
+                        echo $linkHelper->getStaticRoute('bestellvorgang.php') . '?editZahlungsart=1';
                     }
                 }
             }

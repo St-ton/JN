@@ -1,6 +1,6 @@
 <li>
     {if $smarty.session.Warenkorb->PositionenArr|@count > 0}
-        <table class="table table-striped dropdown-cart-items">
+        <table class="table table-striped dropdown-cart-items hyphens">
             <tbody>
             {foreach from=$smarty.session.Warenkorb->PositionenArr item=oPosition}
                 {if $oPosition->nPosTyp == 1 && !$oPosition->istKonfigKind()}
@@ -14,8 +14,8 @@
                             {$oPosition->nAnzahl|replace_delim} {if $oPosition->cEinheit|strlen > 0} {$oPosition->cEinheit}{else} &times; {/if}
                         </td>
                         <td class="item-name">
-                            <a href="{$oPosition->Artikel->cURL}" title="{$oPosition->Artikel->cName|escape:'quotes'}">
-                                {$oPosition->Artikel->cName}
+                            <a href="{$oPosition->Artikel->cURL}" title="{$oPosition->cName|trans|escape:"quotes"}">
+                                {$oPosition->cName|trans}
                             </a>
                         </td>
                         <td class="item-price">
@@ -56,7 +56,7 @@
         <div class="btn-group btn-group-justified btn-group-full">
             <a href="{get_static_route id='warenkorb.php'}" class="btn btn-primary"><i class="fa fa-shopping-cart"></i> {lang key="gotoBasket"}</a>
             {*
-            <a href="bestellvorgang.php" class="btn btn-primary">{lang key="checkout" section="basketpreview"}</a>
+            <a href="{get_static_route id='bestellvorgang.php'}" class="btn btn-primary">{lang key="checkout" section="basketpreview"}</a>
             *}
         </div>
     {else}

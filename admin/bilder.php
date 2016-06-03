@@ -14,6 +14,8 @@ $cFehler       = '';
 if (isset($_POST['speichern'])) {
     $cHinweis .= saveAdminSectionSettings(CONF_BILDER, $_POST);
     MediaImage::clearCache('product');
+    Shop::Cache()->flushTags(array(CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE, CACHING_GROUP_CATEGORY));
+    $shopSettings->reset();
 }
 
 $oConfig_arr = Shop::DB()->query(
@@ -40,8 +42,6 @@ for ($i = 0; $i < $configCount; $i++) {
     );
     $oConfig_arr[$i]->gesetzterWert = (isset($oSetValue->cWert)) ? $oSetValue->cWert : null;
 }
-Shop::Cache()->flushTags(array(CACHING_GROUP_OPTION));
-$shopSettings->reset();
 $Einstellungen = Shop::getSettings(array(CONF_BILDER));
 
 $smarty->assign('oConfig_arr', $oConfig_arr)

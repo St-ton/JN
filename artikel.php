@@ -52,6 +52,7 @@ if (verifyGPCDataInteger('addproductbundle') === 1 && isset($_POST['a'])) {
 $AktuellerArtikel                        = new Artikel();
 $oArtikelOptionen                        = new stdClass();
 $oArtikelOptionen->nMerkmale             = 1;
+$oArtikelOptionen->nKategorie            = 1;
 $oArtikelOptionen->nAttribute            = 1;
 $oArtikelOptionen->nArtikelAttribute     = 1;
 $oArtikelOptionen->nMedienDatei          = 1;

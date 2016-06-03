@@ -5,9 +5,9 @@
  */
 
 /**
- * Class Notification
+ * Class Notification.
  */
-class Notification implements IteratorAggregate
+class Notification implements IteratorAggregate, Countable
 {
     private $array;
 
@@ -20,13 +20,14 @@ class Notification implements IteratorAggregate
     }
 
     /**
-     * @param int $type
-     * @param string $title
+     * @param int         $type
+     * @param string      $title
      * @param string|null $description
+     * @param string|null $url
      */
-    public function add($type, $title, $description = null)
+    public function add($type, $title, $description = null, $url = null)
     {
-        $this->addNotify(new NotificationEntry($type, $title, $description));
+        $this->addNotify(new NotificationEntry($type, $title, $description, $url));
     }
 
     /**
@@ -38,14 +39,39 @@ class Notification implements IteratorAggregate
     }
 
     /**
+     * @return highest type in record
+     */
+    public function getHighestType()
+    {
+        $type = NotificationEntry::TYPE_NONE;
+        foreach ($this as $notify) {
+            if ($notify->getType() > $type) {
+                $type = $notify->getType();
+            }
+        }
+
+        return $type;
+    }
+
+    /**
+     * @return int
+     */
+    public function count()
+    {
+        return count($this->array);
+    }
+
+    /**
      * @return ArrayIterator
      */
-    public function getIterator() {
+    public function getIterator()
+    {
         return new ArrayIterator($this->array);
     }
 
     /**
-     * Build default system notifications
+     * Build default system notifications.
+     *
      * @todo Remove translated messages
      *
      * @return Notification
@@ -54,22 +80,47 @@ class Notification implements IteratorAggregate
     {
         require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dashboard_inc.php';
         require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'permissioncheck_inc.php';
+        require_once PFAD_ROOT . PFAD_CLASSES_CORE . 'class.core.jtlAPI.php';
 
-        $notify = new Notification();
-        $template = Template::getInstance();
-        $writeableDirs = checkWriteables();
+        $notify         = new self();
+        $updater        = new Updater();
+        $template       = Template::getInstance();
+        $writeableDirs  = checkWriteables();
         $permissionStat = getPermissionStats($writeableDirs);
 
+        $subscription = null;
+        if (!isset($_SESSION['subscription']) || $_SESSION['subscription'] === null) {
+            $_SESSION['subscription'] = $subscription = jtlAPI::getSubscription();
+        }
+
+        if ($updater->hasPendingUpdates()) {
+            $notify->add(NotificationEntry::TYPE_DANGER, 'Systemupdate', 'Ein Datenbank-Update ist zwingend notwendig', 'dbupdater.php');
+        }
+
         if ($permissionStat->nCountInValid > 0) {
-            $notify->add(NotificationEntry::TYPE_WARNING, "Verzeichnis-Check", "Es sind {$permissionStat->nCountInValid} Verzeichnisse nicht beschreibbar. Eine &Uuml;bersicht finden Sie im <a href=\"permissioncheck.php\">Verzeichnis-Check</a>");
+            $notify->add(NotificationEntry::TYPE_DANGER, 'Dateisystem', "Es sind {$permissionStat->nCountInValid} Verzeichnisse nicht beschreibbar.", 'permissioncheck.php');
         }
 
         if (is_dir(PFAD_ROOT . 'install')) {
-            $notify->add(NotificationEntry::TYPE_WARNING, "Install-Verzeichnis", "Bitte l&ouml;schen Sie das Installationsverzeichnis \"/install/\" im Shop-Wurzelverzeichnis.");
+            $notify->add(NotificationEntry::TYPE_WARNING, 'System', 'Bitte l&ouml;schen Sie das Installationsverzeichnis "/install/" im Shop-Wurzelverzeichnis.');
         }
 
         if (JTL_VERSION != $template->getShopVersion()) {
-            $notify->add(NotificationEntry::TYPE_WARNING, "Template-Version", "Achtung, Ihre Template-Version unterscheidet sich von Ihrer Shop-Version.<br />Bitte aktualisieren Sie Ihr Template bzw. aktivieren Sie die aktuelle Template-Version unter <a href=\"shoptemplate.php\">Darstellung > Template</a>. Weitere Hilfe zu Template-Updates finden Sie im <a href=\"http://developer.jtl-software.de/projects/template-dev/wiki/Template_Updates\" title=\"Wiki\"><i class=\"fa fa-external-link\"></i> Wiki</a>");
+            $notify->add(NotificationEntry::TYPE_WARNING, 'Template', 'Ihre Template-Version unterscheidet sich von Ihrer Shop-Version.<br />Weitere Hilfe zu Template-Updates finden Sie im <i class="fa fa-external-link"></i> Wiki', 'shoptemplate.php');
+        }
+
+        if (Profiler::getIsActive() !== 0) {
+            $notify->add(NotificationEntry::TYPE_WARNING, 'Plugin', 'Der Profiler ist aktiv und kann zu starken Leistungseinbu&szlig;en im Shop f&uuml;hren.');
+        }
+
+        if (is_object($subscription) && isset($subscription->kShop) && (int) $subscription->kShop > 0) {
+            if ((int) $subscription->bUpdate === 1) {
+                if ((int) $subscription->nDayDiff <= 0) {
+                    $notify->add(NotificationEntry::TYPE_WARNING, 'Subscription', 'Ihre Subscription ist abgelaufen. Jetzt erneuern.', 'http://jtl-url.de/subscription');
+                } else {
+                    $notify->add(NotificationEntry::TYPE_INFO, 'Subscription', "Ihre Subscription l&auml;uft in {$subscription->nDayDiff} Tagen ab.", 'http://jtl-url.de/subscription');
+                }
+            }
         }
 
         return $notify;

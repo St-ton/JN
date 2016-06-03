@@ -156,13 +156,13 @@ $(window).load(function(){
 });
 
 $(document).ready(function () {
-	$('#complete-order-button').click(function () {
-		var commentField = $('#comment'),
-			commentFieldHidden = $('#comment-hidden');
-		if (commentField && commentFieldHidden) {
-			commentFieldHidden.val(commentField.val());
-		}
-	});
+    $('#complete-order-button').click(function () {
+        var commentField = $('#comment'),
+            commentFieldHidden = $('#comment-hidden');
+        if (commentField && commentFieldHidden) {
+            commentFieldHidden.val(commentField.val());
+        }
+    });
 
     $('.footnote-vat a, .versand, .popup').click(function(e) {
         var url = e.currentTarget.href;
@@ -228,20 +228,6 @@ $(document).ready(function () {
             $(this).trigger('click');
         });
     }
-
-    /*
-     * popovers
-     * <a data-toggle="popover" data-ref="#popover-content123">Click me</a>
-     * <div id="popover-content123" class="popover">content here</div> 
-     */
-    $('[data-toggle="popover"]').popover({
-        trigger: 'hover',
-        html: true,
-        content: function() {
-            var ref = $(this).attr('data-ref');
-            return $(ref).html();
-        }
-    });
     
     /*
      * activate category parents of active child
@@ -265,7 +251,7 @@ $(document).ready(function () {
                 .find('> ul.nav').toggle();
             return false;
         }
-	});
+    });
 
     /*
      * show linkgroup on caret click
@@ -277,7 +263,7 @@ $(document).ready(function () {
                 .find('> ul.nav').toggle();
             return false;
         }
-	});
+    });
 
     /*
      * set bootstrap viewport

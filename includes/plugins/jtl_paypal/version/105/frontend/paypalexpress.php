@@ -31,7 +31,7 @@ if (isset($_GET['return']) && $_GET['return'] === '1') {
     $name   = PayPalHelper::extractName(StringHandler::convertISO($response->PayerInfo->Address->Name));
     $street = PayPalHelper::extractStreet(StringHandler::convertISO($response->PayerInfo->Address->Street1));
 
-    $_POST['anrede']     = 'm';
+    $_POST['anrede']     = '';
     $_POST['vorname']    = $name->first;
     $_POST['nachname']   = $name->last;
     $_POST['strasse']    = $street->name;
@@ -45,6 +45,10 @@ if (isset($_GET['return']) && $_GET['return'] === '1') {
     $_POST['tel']          = StringHandler::convertISO($response->PayerInfo->Address->Phone);
 
     $_POST['email'] = StringHandler::convertISO($response->PayerInfo->Payer);
+
+    if ($conf['kunden']['kundenregistrierung_abfragen_anrede'] === 'Y') {
+        $_POST['anrede'] = 'm';
+    }
 
     if ($conf['kunden']['kundenregistrierung_abfragen_firma'] === 'Y') {
         $_POST['firma'] = 'NOCOMPANY';

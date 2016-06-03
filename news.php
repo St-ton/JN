@@ -82,6 +82,7 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
     } else {
         if ($cParameter_arr['kNews'] > 0 || isset($kNews) && $kNews > 0) { // Detailansicht anzeigen
             Shop::$AktuelleSeite = 'NEWSDETAIL';
+            $AktuelleSeite       = 'NEWSDETAIL';
             $step                = 'news_detailansicht';
             if (!isset($kNews) || $kNews == 0) {
                 $kNews = $cParameter_arr['kNews'];
@@ -105,7 +106,7 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
                     }
                 }
                 $smarty->assign('R_LOGIN_NEWSCOMMENT', R_LOGIN_NEWSCOMMENT)
-                    ->assign('oNewsKategorie_arr', $oNewsKategorie_arr);
+                       ->assign('oNewsKategorie_arr', $oNewsKategorie_arr);
 
                 // Kommentar hinzufügen
                 if (isset($_POST['kommentar_einfuegen']) && intval($_POST['kommentar_einfuegen']) > 0 &&
@@ -145,7 +146,7 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
                         } else {
                             $cFehler .= gibNewskommentarFehler($nPlausiValue_arr);
                             $smarty->assign('nPlausiValue_arr', $nPlausiValue_arr)
-                                ->assign('cPostVar_arr', StringHandler::filterXSS($_POST));
+                                   ->assign('cPostVar_arr', StringHandler::filterXSS($_POST));
                         }
                     } elseif ($Einstellungen['news']['news_kommentare_eingeloggt'] === 'N') {
                         if (is_array($nPlausiValue_arr) && count($nPlausiValue_arr) === 0) {
@@ -183,7 +184,7 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
                         } else {
                             $cFehler .= gibNewskommentarFehler($nPlausiValue_arr);
                             $smarty->assign('nPlausiValue_arr', $nPlausiValue_arr)
-                                ->assign('cPostVar_arr', StringHandler::filterXSS($_POST));
+                                   ->assign('cPostVar_arr', StringHandler::filterXSS($_POST));
                         }
                     }
                 }
@@ -214,12 +215,14 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
                 executeHook(HOOK_NEWS_PAGE_DETAILANSICHT);
             } else {
                 Shop::$AktuelleSeite = 'NEWS';
+                $AktuelleSeite = 'NEWS';
                 $smarty->assign('cNewsErr', 1);
                 baueNewsKruemel($smarty, Shop::$AktuelleSeite, $cCanonicalURL);
             }
         } else { // Beitragsübersicht anzeigen
             if ($cParameter_arr['kNewsKategorie'] > 0) { // NewsKategorie Übersicht
                 Shop::$AktuelleSeite = 'NEWSKATEGORIE';
+                $AktuelleSeite  = 'NEWSKATEGORIE';
                 $kNewsKategorie = (int)$cParameter_arr['kNewsKategorie'];
                 $oNewsKategorie = getCurrentNewsCategory($kNewsKategorie, true);
 
@@ -252,6 +255,7 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
                 }
             } elseif ($cParameter_arr['kNewsMonatsUebersicht'] > 0) { // Monatsuebersicht
                 Shop::$AktuelleSeite = 'NEWSMONAT';
+                $AktuelleSeite         = 'NEWSMONAT';
                 $kNewsMonatsUebersicht = (int)$cParameter_arr['kNewsMonatsUebersicht'];
                 $oNewsMonatsUebersicht = getMonthOverview($kNewsMonatsUebersicht);
 
@@ -269,6 +273,7 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
                 $_SESSION['NewsNaviFilter']->nNewsKat = -1;
             } else { // Startseite News Übersicht
                 Shop::$AktuelleSeite = 'NEWS';
+                $AktuelleSeite = 'NEWS';
                 baueNewsKruemel($smarty, Shop::$AktuelleSeite, $cCanonicalURL);
             }
 
@@ -315,12 +320,12 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
             }
 
             $smarty->assign('oNewsUebersicht_arr', $oNewsUebersicht_arr)
-                ->assign('oNewsKategorie_arr', holeNewsKategorien($oSQL->cDatumSQL, true))
-                ->assign('oDatum_arr', baueDatum($oDatum_arr))
-                ->assign('nAnzahl', $_SESSION['NewsNaviFilter']->nAnzahl)
-                ->assign('nSort', $_SESSION['NewsNaviFilter']->nSort)
-                ->assign('cDatum', $_SESSION['NewsNaviFilter']->cDatum)
-                ->assign('nNewsKat', $_SESSION['NewsNaviFilter']->nNewsKat);
+                   ->assign('oNewsKategorie_arr', holeNewsKategorien($oSQL->cDatumSQL, true))
+                   ->assign('oDatum_arr', baueDatum($oDatum_arr))
+                   ->assign('nAnzahl', $_SESSION['NewsNaviFilter']->nAnzahl)
+                   ->assign('nSort', $_SESSION['NewsNaviFilter']->nSort)
+                   ->assign('cDatum', $_SESSION['NewsNaviFilter']->cDatum)
+                   ->assign('nNewsKat', $_SESSION['NewsNaviFilter']->nNewsKat);
 
             if (!isset($oNewsUebersicht_arr) || count($oNewsUebersicht_arr) === 0) {
                 $smarty->assign('noarchiv', 1);

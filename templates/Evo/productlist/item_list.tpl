@@ -118,9 +118,9 @@
                         $Artikel->fLagerbestand <= 0 && $Artikel->fLieferantenlagerbestand > 0 && $Artikel->fLieferzeit > 0 &&
                         ($Artikel->cLagerKleinerNull === 'N' || $Einstellungen.artikeluebersicht.artikeluebersicht_lagerbestandanzeige_anzeigen === 'U')}
                             <div class="signal_image status-1"><small>{lang key="supplierStockNotice" section="global" printf=$Artikel->fLieferzeit}</small></div>
-                        {elseif $anzeige=='verfuegbarkeit' || $anzeige === 'genau'}
+                        {elseif $anzeige === 'verfuegbarkeit' || $anzeige === 'genau'}
                             <div class="signal_image status-{$Artikel->Lageranzeige->nStatus}"><small>{$Artikel->Lageranzeige->cLagerhinweis[$anzeige]}</small></div>
-                        {elseif $anzeige=='ampel'}
+                        {elseif $anzeige === 'ampel'}
                             <div class="signal_image status-{$Artikel->Lageranzeige->nStatus}"><small>{$Artikel->Lageranzeige->AmpelText}</small></div>
                         {/if}
                         {if $Artikel->cEstimatedDelivery}
@@ -228,7 +228,7 @@
                         {/if}
                         {if $Artikel->verfuegbarkeitsBenachrichtigung == 3 && (($Artikel->cLagerBeachten === 'Y' && $Artikel->cLagerKleinerNull !== 'Y') || $Artikel->cLagerBeachten !== 'Y')}
                             <div class="btn-group btn-group-xs" role="group">
-                                <button type="button" id="n{$Artikel->kArtikel}" class="popup notification btn btn-default btn-left" title="{lang key="requestNotification" section="global"}">
+                                <button type="button" id="n{$Artikel->kArtikel}" class="popup-dep notification btn btn-default btn-left" title="{lang key="requestNotification" section="global"}">
                                     <span class="fa fa-bell"></span>
                                 </button>
                             </div>

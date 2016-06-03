@@ -37,8 +37,9 @@ if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
     speicherHilfreich($cParameter_arr['kArtikel'], $_SESSION['Kunde']->kKunde, Shop::$kSprache, $bewertung_seite, $bewertung_sterne);
 } elseif (verifyGPCDataInteger('bfa') === 1) {
     // Prüfe ob Kunde eingeloggt
-    if (!$_SESSION['Kunde']->kKunde) {
-        header('Location: jtl.php?a=' . verifyGPCDataInteger('a') . '&bfa=1&r=' . R_LOGIN_BEWERTUNG . '&', true, 303);
+    if (empty($_SESSION['Kunde']->kKunde)) {
+        $helper = LinkHelper::getInstance();
+        header('Location: ' . $helper->getStaticRoute('jtl.php', true) . '?a=' . verifyGPCDataInteger('a') . '&bfa=1&r=' . R_LOGIN_BEWERTUNG . '&', true, 303);
         exit();
     }
     //hole aktuellen Artikel

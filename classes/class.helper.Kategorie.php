@@ -73,6 +73,8 @@ class KategorieHelper
         $extended    = !empty($stockFilter);
         if (false === ($fullCats = Shop::Cache()->get(self::$cacheID))) {
             if (!empty($_SESSION['oKategorie_arr_new'])) {
+                self::$fullCategories = $_SESSION['oKategorie_arr_new'];
+
                 return $_SESSION['oKategorie_arr_new'];
             }
             $isDefaultLang = standardspracheAktiv();
@@ -83,8 +85,15 @@ class KategorieHelper
                 $select .= ", COUNT(tartikel.kArtikel) AS cnt";
                 $stockJoin = "LEFT JOIN tartikel
                         ON tkategorieartikel.kArtikel = tartikel.kArtikel " . $stockFilter;
+
+                $visibilityJoin = " LEFT JOIN tartikelsichtbarkeit
+                    ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
+                    AND tartikelsichtbarkeit.kKundengruppe = " . (int) self::$kKundengruppe;
             } else {
                 $select .= ", COUNT(tkategorieartikel.kArtikel) AS cnt";
+                $visibilityJoin = " LEFT JOIN tartikelsichtbarkeit
+                    ON tkategorieartikel.kArtikel = tartikelsichtbarkeit.kArtikel
+                    AND tartikelsichtbarkeit.kKundengruppe = " . (int) self::$kKundengruppe;
             }
             $nodes = Shop::DB()->query("
                 SELECT node.kKategorie, node.kOberKategorie, node.cName, node.cBeschreibung, tseo.cSeo, tkategoriepict.cPfad" . $select . "
@@ -102,8 +111,8 @@ class KategorieHelper
                     LEFT JOIN tkategoriepict
                         ON tkategoriepict.kKategorie = node.kKategorie
                     LEFT JOIN tkategorieartikel
-                        ON tkategorieartikel.kKategorie = node.kKategorie " . $stockJoin . "                     
-                WHERE tkategoriesichtbarkeit.kKategorie IS NULL AND node.lft BETWEEN parent.lft AND parent.rght AND parent.kOberKategorie = 0 
+                        ON tkategorieartikel.kKategorie = node.kKategorie " . $stockJoin . $visibilityJoin . "                     
+                WHERE tkategoriesichtbarkeit.kKategorie IS NULL AND node.lft BETWEEN parent.lft AND parent.rght AND parent.kOberKategorie = 0 AND tartikelsichtbarkeit.kArtikel IS NULL 
                 GROUP BY node.kKategorie
                 ORDER BY node.lft", 2);
             // Attribute holen
@@ -199,7 +208,7 @@ class KategorieHelper
                 }
             }
             if ($filterEmpty) {
-                $this->filterEmpty($fullCats, true)->removeRelicts($fullCats);
+                $this->filterEmpty($fullCats)->removeRelicts($fullCats);
             }
             executeHook(HOOK_GET_ALL_CATEGORIES, array('categories' => &$fullCats));
 
@@ -217,16 +226,15 @@ class KategorieHelper
      * remove items from category list that have no articles and no subcategories
      *
      * @param array $catList
-     * @param bool $extended
      * @return $this
      */
-    private function filterEmpty(&$catList, $extended)
+    private function filterEmpty(&$catList)
     {
         foreach ($catList as $i => $_cat) {
-            if ($_cat->bUnterKategorien === 0 && $extended && $_cat->cnt == 0) {
+            if ($_cat->bUnterKategorien === 0 && $_cat->cnt == 0) {
                 unset($catList[$i]);
             } elseif ($_cat->bUnterKategorien === 1) {
-                $this->filterEmpty($_cat->Unterkategorien, $extended);
+                $this->filterEmpty($_cat->Unterkategorien);
             }
         }
 
@@ -266,5 +274,54 @@ class KategorieHelper
     public static function categoryExists($id)
     {
         return Shop::DB()->select('tkategorie', 'kKategorie', (int) $id) !== null;
+    }
+
+    /**
+     * @param int $id
+     * @return null|object
+     */
+    public function getCategoryById($id)
+    {
+        if (self::$fullCategories === null) {
+            self::$fullCategories = $this->combinedGetAll();
+        }
+
+        return $this->findCategoryInList((int) $id, self::$fullCategories);
+    }
+
+    /**
+     * @param int $id
+     * @return array
+     */
+    public function getChildCategoriesById($id)
+    {
+        $current = $this->getCategoryById((int) $id);
+
+        return (isset($current->Unterkategorien)) ? array_values($current->Unterkategorien) : array();
+    }
+
+
+    /**
+     * @param int          $id
+     * @param array|object $haystack
+     * @return bool
+     */
+    public function findCategoryInList($id, $haystack)
+    {
+        if (isset($haystack->kKategorie) && (int) $haystack->kKategorie === $id) {
+            return $haystack;
+        }
+        if (isset($haystack->Unterkategorien)) {
+            return $this->findCategoryInList($id, $haystack->Unterkategorien);
+        }
+        if (is_array($haystack)) {
+            foreach ($haystack as $obj) {
+                if (($result = $this->findCategoryInList($id, $obj)) !== false) {
+                    return $result;
+                }
+            }
+        }
+
+        return false;
     }
 }

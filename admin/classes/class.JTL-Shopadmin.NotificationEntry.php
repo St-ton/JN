@@ -10,6 +10,11 @@
 class NotificationEntry
 {
     /**
+     * None
+     */
+    const TYPE_NONE = -1;
+    
+    /**
      * Information type
      */
     const TYPE_INFO = 0;
@@ -22,7 +27,7 @@ class NotificationEntry
     /**
      * Error type
      */
-    const TYPE_ERROR = 2;
+    const TYPE_DANGER = 2;
 
     /**
      * @var int
@@ -38,18 +43,25 @@ class NotificationEntry
      * @var string
      */
     protected $description;
+    
+    /**
+     * @var string
+     */
+    protected $url;
 
     /**
      * NotificationEntry constructor.
      * @param int $type
      * @param string $title
      * @param null|string $description
+     * @param null|string $url
      */
-    public function __construct($type, $title, $description = null)
+    public function __construct($type, $title, $description = null, $url = null)
     {
         $this->setType($type);
         $this->setTitle($title);
         $this->setDescription($description);
+        $this->setUrl($url);
     }
 
     /**
@@ -106,5 +118,29 @@ class NotificationEntry
     public function hasDescription()
     {
         return $this->description !== null && strlen($this->description) > 0;
+    }
+    
+    /**
+     * @return string
+     */
+    public function getUrl()
+    {
+        return $this->url;
+    }
+
+    /**
+     * @param string $url
+     */
+    public function setUrl($url)
+    {
+        $this->url = $url;
+    }
+    
+    /**
+     * @return boolean
+     */
+    public function hasUrl()
+    {
+        return $this->url !== null && strlen($this->url) > 0;
     }
 }

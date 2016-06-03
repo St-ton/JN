@@ -157,7 +157,7 @@ if (isset($_POST['neueZuschlagPLZ']) && intval($_POST['neueZuschlagPLZ']) === 1 
         }
         if ((isset($plz_x->cPLZ) && $plz_x->cPLZ) || (isset($plz_x->cPLZAb) && $plz_x->cPLZAb)) {
             $hinweis .= "<p>Die PLZ $ZuschlagPLZ->cPLZ bzw der PLZ Bereich $ZuschlagPLZ->cPLZAb - $ZuschlagPLZ->cPLZBis &uuml;berscheidet sich mit PLZ $plz_x->cPLZ bzw.
-				PLZ-Bereichen $plz_x->cPLZAb - $plz_x->cPLZBis einer anderen Zuschlagsliste! Bitte geben Sie eine andere PLZ / PLZ Bereich an.</p>";
+               PLZ-Bereichen $plz_x->cPLZAb - $plz_x->cPLZBis einer anderen Zuschlagsliste! Bitte geben Sie eine andere PLZ / PLZ Bereich an.</p>";
         } elseif (Shop::DB()->insert('tversandzuschlagplz', $ZuschlagPLZ)) {
             $hinweis .= "PLZ wurde erfolgreich hinzugef&uuml;gt.";
         }
@@ -482,9 +482,9 @@ if ($step === 'uebersicht') {
         for ($o = 0; $o < count($versandarten[$i]->versandartzahlungsarten); $o++) {
             $versandarten[$i]->versandartzahlungsarten[$o]->zahlungsart = Shop::DB()->query(
                 "SELECT *
-					FROM tzahlungsart
-					WHERE kZahlungsart = " . (int)$versandarten[$i]->versandartzahlungsarten[$o]->kZahlungsart . "
-					AND nActive = 1", 1
+                    FROM tzahlungsart
+                    WHERE kZahlungsart = " . (int)$versandarten[$i]->versandartzahlungsarten[$o]->kZahlungsart . "
+                    AND nActive = 1", 1
             );
             if ($versandarten[$i]->versandartzahlungsarten[$o]->cAufpreisTyp === 'prozent') {
                 $versandarten[$i]->versandartzahlungsarten[$o]->cAufpreisTyp = '%';

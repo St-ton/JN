@@ -211,6 +211,7 @@
                         <thead>
                         <tr>
                             <th class="check"></th>
+                            <th class="" style="width: 32px;"></th>
                             <th class="tleft">{#newsCatName#}</th>
                             <th class="">{#newsCatSortShort#}</th>
                             <th class="th-4">{#newsActive#}</th>
@@ -225,12 +226,17 @@
                                     <td class="check">
                                         <input type="checkbox" name="kNewsKategorie[]" value="{$oNewsKategorie->kNewsKategorie}" />
                                     </td>
+                                    {if isset($oNewsKategorie->cPreviewImage) && $oNewsKategorie->cPreviewImage !== ''}
+                                        <td>
+                                            <img src="{$shopURL}/{$oNewsKategorie->cPreviewImage}" alt="" height="32" width="32" class="preview-image left">
+                                        </td>
+                                    {/if}
                                     <td class="TD2">{$oNewsKategorie->cName}</td>
                                     <td class="tcenter">{$oNewsKategorie->nSort}</td>
                                     <td class="tcenter">{if $oNewsKategorie->nAktiv === '1'}ja{else}nein{/if}</td>
                                     <td class="tcenter">{$oNewsKategorie->dLetzteAktualisierung_de}</td>
                                     <td class="tcenter">
-                                        <a href="news.php?news=1{if isset($oNewsKategorie->nAktuelleSeite) && $oNewsKategorie->nAktuelleSeite}&s3={$oNewsKategorie->nAktuelleSeite}{/if}&newskategorie_editieren=1&kNewsKategorie={$oNewsKategorie->kNewsKategorie}&tab=kategorien&token={$smarty.session.jtl_token}" class="btn btn-default">
+                                        <a href="news.php?news=1{if isset($oBlaetterNaviKats->nAktuelleSeite) && $oBlaetterNaviKats->nAktuelleSeite}&s3={$oBlaetterNaviKats->nAktuelleSeite}{/if}&newskategorie_editieren=1&kNewsKategorie={$oNewsKategorie->kNewsKategorie}&tab=kategorien&token={$smarty.session.jtl_token}" class="btn btn-default">
                                             <i class="fa fa-edit"></i>
                                         </a>
                                     </td>

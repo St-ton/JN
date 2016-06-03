@@ -320,6 +320,21 @@
             });
         },
 
+        popover: function() {
+            /*
+             * <a data-toggle="popover" data-ref="#popover-content123">Click me</a>
+             * <div id="popover-content123" class="popover">content here</div> 
+             */
+            $('[data-toggle="popover"]').popover({
+                trigger: 'hover',
+                html: true,
+                content: function() {
+                    var ref = $(this).attr('data-ref');
+                    return $(ref).html();
+                }
+            });
+        },
+
         register: function() {
             this.addSliderTouchSupport();
             this.productTabs();
@@ -331,6 +346,7 @@
             this.imagebox();
             this.renderCaptcha();
             this.popupDep();
+            this.popover();
         },
         
         loadContent: function(url, callback, error, animation) {

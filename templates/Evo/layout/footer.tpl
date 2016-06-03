@@ -128,14 +128,14 @@
                     </p>
                 {/block}
             </div>
-        {if isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout != 'fluid'}
+        {if isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout !== 'fluid'}
             </div>
         {/if}
         </div>{* /container *}
-        <div id="copyright" {if isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout != 'boxed'} class="container-block"{/if}>
+        <div id="copyright" {if isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout !== 'boxed'} class="container-block"{/if}>
             {block name="footer-copyright"}
                 <div class="container{if $Einstellungen.template.theme.pagelayout === 'full-width'}-fluid{/if}">
-                    {if isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout != 'fluid'}
+                    {if isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout !== 'fluid'}
                         <div class="container-block clearfix">
                     {/if}
                     <ul class="row list-unstyled">
@@ -152,7 +152,7 @@
                             Powered by <a href="http://jtl-url.de/jtlshop" title="JTL-Shop" target="_blank" rel="nofollow">JTL-Shop</a>
                         </li>
                     </ul>
-                     {if isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout != 'fluid'}
+                     {if isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout !== 'fluid'}
                         </div>
                     {/if}
                 </div>

@@ -402,6 +402,9 @@ function pluginPlausi($kPlugin, $cVerzeichnis = '')
 // 124 	= Templatedatei existiert nicht
 // 125  = Uninstall File existiert nicht
 // 126  = Nicht Shop4-kompatibel, aber evtl. lauffähig
+// 127  = Plugin benoetig Ioncube
+// 128  = OptionsSource-Datei wurde nicht angegeben
+// 129  = OptionsSource-Datei existiert nicht
 */
 
 /**
@@ -665,7 +668,14 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
                                                 // Ist der Typ eine Selectbox => Es müssen SelectboxOptionen vorhanden sein
                                                 if ($cTyp === 'selectbox') {
                                                     // SelectboxOptions prüfen
-                                                    if (isset($Setting_arr['SelectboxOptions']) && is_array($Setting_arr['SelectboxOptions']) && count($Setting_arr['SelectboxOptions']) > 0) {
+                                                    if (isset($Setting_arr['OptionsSource']) && is_array($Setting_arr['OptionsSource']) && count($Setting_arr['OptionsSource']) > 0) {
+                                                        if (empty($Setting_arr['OptionsSource'][0]['File'])) {
+                                                            return 128;
+                                                        }
+                                                        if (!file_exists($cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $cVersionsnummer . '/' . PFAD_PLUGIN_ADMINMENU . $Setting_arr['OptionsSource'][0]['File'])) {
+                                                            return 129;
+                                                        }
+                                                    } elseif (isset($Setting_arr['SelectboxOptions']) && is_array($Setting_arr['SelectboxOptions']) && count($Setting_arr['SelectboxOptions']) > 0) {
                                                         // Es gibt mehr als 1 Option
                                                         if (count($Setting_arr['SelectboxOptions'][0]) === 1) {
                                                             foreach ($Setting_arr['SelectboxOptions'][0]['Option'] as $y => $Option_arr) {
@@ -708,7 +718,9 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
                                                     }
                                                 } elseif ($cTyp === 'radio') {
                                                     //radioOptions prüfen
-                                                    if (isset($Setting_arr['RadioOptions']) && is_array($Setting_arr['RadioOptions']) && count($Setting_arr['RadioOptions']) > 0) {
+                                                    if (isset($Setting_arr['OptionsSource']) && is_array($Setting_arr['OptionsSource']) && count($Setting_arr['OptionsSource']) > 0) {
+                                                        //do nothing for now
+                                                    } elseif (isset($Setting_arr['RadioOptions']) && is_array($Setting_arr['RadioOptions']) && count($Setting_arr['RadioOptions']) > 0) {
                                                         // Es gibt mehr als 1 Option
                                                         if (count($Setting_arr['RadioOptions'][0]) === 1) {
                                                             foreach ($Setting_arr['RadioOptions'][0]['Option'] as $y => $Option_arr) {
@@ -1822,13 +1834,15 @@ function installierePlugin($XML_arr, $cVerzeichnis, $oPluginOld)
                             $cInitialValue = '';
                             $nSort         = 0;
                             $cConf         = 'Y';
+                            $multiple      = false;
                             foreach ($Settingslink_arr['Setting'] as $j => $Setting_arr) {
                                 preg_match("/[0-9]+\sattr/", $j, $cTreffer3_arr);
                                 preg_match("/[0-9]+/", $j, $cTreffer4_arr);
 
                                 if (isset($cTreffer3_arr[0]) && strlen($cTreffer3_arr[0]) === strlen($j)) {
                                     $cTyp          = $Setting_arr['type'];
-                                    $cInitialValue = $Setting_arr['initialValue'];
+                                    $multiple      = (isset($Setting_arr['multiple']) && $Setting_arr['multiple'] === 'Y' && $cTyp === 'selectbox');
+                                    $cInitialValue = ($multiple === true) ? serialize(array($Setting_arr['initialValue'])) : $Setting_arr['initialValue'];
                                     $nSort         = $Setting_arr['sort'];
                                     $cConf         = $Setting_arr['conf'];
                                 } elseif (strlen($cTreffer4_arr[0]) === strlen($j)) {
@@ -1844,24 +1858,31 @@ function installierePlugin($XML_arr, $cVerzeichnis, $oPluginOld)
                                     $oPluginEinstellungenConf->kPlugin          = $kPlugin;
                                     $oPluginEinstellungenConf->kPluginAdminMenu = $kPluginAdminMenu;
                                     $oPluginEinstellungenConf->cName            = $Setting_arr['Name'];
-                                    if (isset($Setting_arr['Description']) && is_array($Setting_arr['Description'])) {
-                                        $oPluginEinstellungenConf->cBeschreibung = '';
-                                    } else {
-                                        $oPluginEinstellungenConf->cBeschreibung = $Setting_arr['Description'];
-                                    }
+                                    $oPluginEinstellungenConf->cBeschreibung    = (!isset($Setting_arr['Description']) || is_array($Setting_arr['Description'])) ?
+                                        '' :
+                                        $Setting_arr['Description'];
                                     $oPluginEinstellungenConf->cWertName = (is_array($Setting_arr['ValueName'])) ? $Setting_arr['ValueName']['0'] : $Setting_arr['ValueName'];
                                     $oPluginEinstellungenConf->cInputTyp = $cTyp;
                                     $oPluginEinstellungenConf->nSort     = $nSort;
                                     $oPluginEinstellungenConf->cConf     = $cConf;
-
+                                    //dynamic data source for selectbox/radio
+                                    if (($cTyp === 'selectbox' || $cTyp === 'radio')) {
+                                        if (isset($Setting_arr['OptionsSource'][0]['File'])) {
+                                            $oPluginEinstellungenConf->cSourceFile = $Setting_arr['OptionsSource'][0]['File'];
+                                        }
+                                        if ($multiple === true) {
+                                            $oPluginEinstellungenConf->cConf = 'M';
+                                        }
+                                    }
                                     $kPluginEinstellungenConf = Shop::DB()->insert('tplugineinstellungenconf', $oPluginEinstellungenConf);
                                     // tplugineinstellungenconfwerte füllen
                                     if ($kPluginEinstellungenConf > 0) {
                                         $nSort = 0;
                                         // Ist der Typ eine Selectbox => Es müssen SelectboxOptionen vorhanden sein
                                         if ($cTyp === 'selectbox') {
-                                            // Es gibt mehr als 1 Option
-                                            if (count($Setting_arr['SelectboxOptions'][0]) === 1) {
+                                            if (isset($Setting_arr['OptionsSource']) && is_array($Setting_arr['OptionsSource']) && count($Setting_arr['OptionsSource']) > 0) {
+                                                //do nothing for now
+                                            } elseif (count($Setting_arr['SelectboxOptions'][0]) === 1) { // Es gibt mehr als 1 Option
                                                 foreach ($Setting_arr['SelectboxOptions'][0]['Option'] as $y => $Option_arr) {
                                                     preg_match("/[0-9]+\sattr/", $y, $cTreffer6_arr);
 
@@ -1891,8 +1912,9 @@ function installierePlugin($XML_arr, $cVerzeichnis, $oPluginOld)
                                                 Shop::DB()->insert('tplugineinstellungenconfwerte', $oPluginEinstellungenConfWerte);
                                             }
                                         } elseif ($cTyp === 'radio') {
-                                            // Es gibt mehr als eine Option
-                                            if (count($Setting_arr['RadioOptions'][0]) === 1) {
+                                            if (isset($Setting_arr['OptionsSource']) && is_array($Setting_arr['OptionsSource']) && count($Setting_arr['OptionsSource']) > 0) {
+
+                                            } elseif (count($Setting_arr['RadioOptions'][0]) === 1) { // Es gibt mehr als eine Option
                                                 foreach ($Setting_arr['RadioOptions'][0]['Option'] as $y => $Option_arr) {
                                                     preg_match("/[0-9]+\sattr/", $y, $cTreffer6_arr);
                                                     if (isset($cTreffer6_arr[0]) && strlen($cTreffer6_arr[0]) === strlen($y)) {
@@ -2245,13 +2267,15 @@ function installierePlugin($XML_arr, $cVerzeichnis, $oPluginOld)
                             $cInitialValue = '';
                             $nSort         = 0;
                             $cConf         = 'Y';
+                            $multiple      = false;
                             foreach ($Method_arr['Setting'] as $j => $Setting_arr) {
                                 preg_match('/[0-9]+\sattr/', $j, $cTreffer3_arr);
                                 preg_match('/[0-9]+/', $j, $cTreffer4_arr);
 
                                 if (isset($cTreffer3_arr[0]) && strlen($cTreffer3_arr[0]) === strlen($j)) {
                                     $cTyp          = $Setting_arr['type'];
-                                    $cInitialValue = $Setting_arr['initialValue'];
+                                    $multiple      = (isset($Setting_arr['multiple']) && $Setting_arr['multiple'] === 'Y' && $cTyp === 'selectbox');
+                                    $cInitialValue = ($multiple === true) ? serialize(array($Setting_arr['initialValue'])) : $Setting_arr['initialValue'];
                                     $nSort         = $Setting_arr['sort'];
                                     $cConf         = $Setting_arr['conf'];
                                 } elseif (strlen($cTreffer4_arr[0]) === strlen($j)) {
@@ -2268,21 +2292,22 @@ function installierePlugin($XML_arr, $cVerzeichnis, $oPluginOld)
                                     $oPluginEinstellungenConf->kPlugin          = $kPlugin;
                                     $oPluginEinstellungenConf->kPluginAdminMenu = 0;
                                     $oPluginEinstellungenConf->cName            = $Setting_arr['Name'];
-                                    $oPluginEinstellungenConf->cBeschreibung    = (isset($Setting_arr['Description']) && is_array($Setting_arr['Description'])) ?
+                                    $oPluginEinstellungenConf->cBeschreibung    = (!isset($Setting_arr['Description']) || is_array($Setting_arr['Description'])) ?
                                         '' :
                                         $Setting_arr['Description'];
                                     $oPluginEinstellungenConf->cWertName = $cModulId . '_' . $Setting_arr['ValueName'];
                                     $oPluginEinstellungenConf->cInputTyp = $cTyp;
                                     $oPluginEinstellungenConf->nSort     = $nSort;
-                                    $oPluginEinstellungenConf->cConf     = $cConf;
+                                    $oPluginEinstellungenConf->cConf     = ($cTyp === 'selectbox' && $multiple === true) ? 'M' : $cConf;
 
                                     $kPluginEinstellungenConf = Shop::DB()->insert('tplugineinstellungenconf', $oPluginEinstellungenConf);
                                     // tplugineinstellungenconfwerte füllen
                                     if ($kPluginEinstellungenConf > 0) {
                                         // Ist der Typ eine Selectbox => Es müssen SelectboxOptionen vorhanden sein
                                         if ($cTyp === 'selectbox') {
-                                            // Es gibt mehr als eine Option
-                                            if (count($Setting_arr['SelectboxOptions'][0]) === 1) {
+                                            if (isset($Setting_arr['OptionsSource']) && is_array($Setting_arr['OptionsSource']) && count($Setting_arr['OptionsSource']) > 0) {
+                                                //do nothing for now
+                                            } elseif (count($Setting_arr['SelectboxOptions'][0]) === 1) { // Es gibt mehr als eine Option
                                                 foreach ($Setting_arr['SelectboxOptions'][0]['Option'] as $y => $Option_arr) {
                                                     preg_match('/[0-9]+\sattr/', $y, $cTreffer6_arr);
 
@@ -2312,8 +2337,9 @@ function installierePlugin($XML_arr, $cVerzeichnis, $oPluginOld)
                                                 Shop::DB()->insert('tplugineinstellungenconfwerte', $oPluginEinstellungenConfWerte);
                                             }
                                         } elseif ($cTyp === 'radio') {
-                                            // Es gibt mehr als eine Option
-                                            if (count($Setting_arr['RadioOptions'][0]) === 1) {
+                                            if (isset($Setting_arr['OptionsSource']) && is_array($Setting_arr['OptionsSource']) && count($Setting_arr['OptionsSource']) > 0) {
+                                                //do nothing for now
+                                            } elseif (count($Setting_arr['RadioOptions'][0]) === 1) { // Es gibt mehr als eine Option
                                                 foreach ($Setting_arr['RadioOptions'][0]['Option'] as $y => $Option_arr) {
                                                     preg_match('/[0-9]+\sattr/', $y, $cTreffer6_arr);
                                                     if (strlen($cTreffer6_arr[0]) === strlen($y)) {
@@ -3650,16 +3676,16 @@ function gibSprachVariablen($kPlugin)
             tpluginsprachvariable.kPlugin,
             tpluginsprachvariable.cName,
             tpluginsprachvariable.cBeschreibung,
-            tpluginsprachvariablesprache.cISO,
-            IF (tpluginsprachvariablecustomsprache.cName IS NOT NULL, tpluginsprachvariablecustomsprache.cName, tpluginsprachvariablesprache.cName) AS customValue
+            COALESCE(tpluginsprachvariablecustomsprache.cISO, tpluginsprachvariablesprache.cISO)  AS cISO,
+            COALESCE(tpluginsprachvariablecustomsprache.cName, tpluginsprachvariablesprache.cName) AS customValue
             FROM tpluginsprachvariable
-                LEFT JOIN tpluginsprachvariablesprache
-                    ON  tpluginsprachvariable.kPluginSprachvariable = tpluginsprachvariablesprache.kPluginSprachvariable
                 LEFT JOIN tpluginsprachvariablecustomsprache
-                    ON tpluginsprachvariablecustomsprache.kPlugin = tpluginsprachvariable.kPlugin
-                        AND tpluginsprachvariablecustomsprache.kPluginSprachvariable = tpluginsprachvariable.kPluginSprachvariable
-                        AND tpluginsprachvariablesprache.cISO = tpluginsprachvariablecustomsprache.cISO
-                WHERE tpluginsprachvariable.kPlugin = " . $kPlugin, 9
+                    ON tpluginsprachvariablecustomsprache.kPluginSprachvariable = tpluginsprachvariable.kPluginSprachvariable
+                LEFT JOIN tpluginsprachvariablesprache
+                    ON tpluginsprachvariablesprache.kPluginSprachvariable = tpluginsprachvariable.kPluginSprachvariable
+                    AND tpluginsprachvariablesprache.cISO = COALESCE(tpluginsprachvariablecustomsprache.cISO, tpluginsprachvariablesprache.cISO)
+            WHERE tpluginsprachvariable.kPlugin = " . $kPlugin . "
+            ORDER BY tpluginsprachvariable.kPluginSprachvariable", 9
     );
     if (is_array($oPluginSprachvariablen) && count($oPluginSprachvariablen) > 0) {
         $new = array();
@@ -3860,6 +3886,8 @@ function gibSprachVariablenALT($kPlugin)
 // 124 	= Templatedatei existiert nicht
 // 125  = Uninstall File existiert nicht
 // 127  = Benoetigt ionCube, Extension wurde aber nicht geladen
+// 128  = OptionsSource-Datei wurde nicht angegeben
+// 129  = OptionsSource-Datei existiert nicht
 */
 
 /**
@@ -4245,6 +4273,12 @@ function mappePlausiFehler($nFehlerCode)
                 break;
             case 127:
                 $return = 'Fehler: Das Plugin ben&ouml;tigt ionCube';
+                break;
+            case 128:
+                $return = 'Fehler: OptionsSource-Datei wurde nicht angegeben';
+                break;
+            case 129:
+                $return = 'Fehler: OptionsSource-Datei existiert nicht';
                 break;
         }
     }

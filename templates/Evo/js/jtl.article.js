@@ -97,9 +97,8 @@
             var inner = function(context) {
                 var id = $(context).attr('data-key'),
                     value = $(context).attr('data-value'),
-                    img = $(context).find('img'),
-                    data = $(img).data('list'),
-                    title = $(img).attr('title'),
+                    data  = $(context).data('list'),
+                    title = $(context).attr('data-title'),
                     gallery = $.evo.article().gallery;
 
                 $.evo.article().galleryIndex = gallery.index;
@@ -112,19 +111,43 @@
                     }
                 }
             };
+
+            $('.variations .bootstrap-select select').change(function() {
+                var tmp_idx = parseInt($('.variations .bootstrap-select li.selected').attr('data-original-index')) + 1;
+                inner($(this).find('option:nth-child(' + tmp_idx + ')'));
+            });
+
+            $('.variations .bootstrap-select .dropdown-menu li').hover(function() {
+                var tmp_idx = parseInt($(this).attr('data-original-index')) + 1;
+                var sel = $(this).closest('.bootstrap-select').find('select option:nth-child(' + tmp_idx + ')');
+                inner(sel);
+
+            }, function() {
+                var tmp_idx = parseInt($(this).attr('data-original-index')) + 1,
+                    p = $(this).closest('.bootstrap-select').find('select option:nth-child(' + tmp_idx + ')'),
+                    id = $(p).attr('data-key'),
+                    data  = $(p).data('list');
+
+                if (!!data) {
+                    var scope = '_',
+                        gallery = $.evo.article().gallery,
+                        active = $(p).find('.variation.active');
+
+                    gallery.render($.evo.article().galleryLastIdent);
+                    gallery.activate($.evo.article().galleryIndex);
+                }
+            });
             
-            $('.variations .swatches .variation').click(function() {
+            $('.variations .variation').click(function() {
                 inner(this);
             });
             
-            $('.variations .swatches .variation').hover(function() {
+            $('.variations .variation').hover(function() {
                 inner(this);
             }, function() {
-                var p = $(this).closest('.swatches'),
+                var p = $(this).closest('.variation'),
                     id = $(this).attr('data-key'),
-                    img = $(this).find('img'),
-                    data = $(img).data('list');
-
+                    data  = $(this).data('list');
                 if (!!data) {
                     var scope = '_',
                         gallery = $.evo.article().gallery,
@@ -216,7 +239,7 @@
 
                 // global price
                 var nNetto = result.nNettoPreise;
-                that.setPrice(result.fGesamtpreis[nNetto], result.cPreisLocalized[nNetto]);
+                that.setPrice(result.fGesamtpreis[nNetto], result.cPreisLocalized[nNetto], result.cPreisString);
 
                 $('#content .summary').html(result.cTemplate);
 
@@ -235,7 +258,7 @@
                                 if(item.cBildPfad) {
                                     that.setConfigItemImage(grp.kKonfiggruppe, item.cBildPfad.cPfadKlein);
                                 } else {
-                                    that.setConfigItemImage(grp.kKonfiggruppe, null);
+                                    that.setConfigItemImage(grp.kKonfiggruppe, grp.cBildPfad);
                                 }
                                 enableQuantity = item.bAnzahl;
                                 if (!enableQuantity) {
@@ -244,9 +267,12 @@
                                         .attr('max', item.fInitial)
                                         .val(item.fInitial)
                                         .attr('disabled', true)
-                                    quantityWrapper.slideUp(200);
-                                }
-                                else {
+                                    if (item.fInitial == 1) {
+                                        quantityWrapper.slideUp(200);
+                                    } else {
+                                        quantityWrapper.slideDown(200);
+                                    }
+                                } else {
                                     quantityWrapper.slideDown(200);
                                     quantityInput
                                         .attr('disabled', false)
@@ -280,16 +306,14 @@
         },
 
         setConfigItemImage: function (groupId, img) {
-            if(img) {
-                $('.cfg-group[data-id="' + groupId + '"] .group-image img').show();
-                $('.cfg-group[data-id="' + groupId + '"] .group-image img').attr('src', img).first();
-            } else {
-                $('.cfg-group[data-id="' + groupId + '"] .group-image img').hide();
-            }
+            $('.cfg-group[data-id="' + groupId + '"] .group-image img').attr('src', img).first();
         },
         
-        setPrice: function(price, fmtPrice) {
+        setPrice: function(price, fmtPrice, priceLabel) {
             $('#product-offer .price').html(fmtPrice);
+            if (!!priceLabel) {
+                $('#product-offer .price_label').html(priceLabel);
+            }
         },
 
         setUnitWeight: function(UnitWeight, newUnitWeight) {

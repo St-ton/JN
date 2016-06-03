@@ -117,7 +117,7 @@ abstract class JTLCacheHelper
      * check if data has to be serialized before storing
      * can be used by caching methods that don't support storing of native php objects/arrays
      *
-     * @param $data
+     * @param mixed $data
      * @return bool
      */
     public function must_be_serialized($data)
@@ -198,7 +198,7 @@ abstract class JTLCacheHelper
      * check if key exists - defaults to false
      * but methods can implement this to allow saving of boolean values
      *
-     * @param $key
+     * @param string $key
      * @return bool
      */
     public function keyExists($key)
@@ -210,7 +210,7 @@ abstract class JTLCacheHelper
      * add cache tags to cached value
      *
      * @param string|array $tags
-     * @param              $cacheID
+     * @param string       $cacheID
      *
      * @return bool
      */
@@ -222,7 +222,7 @@ abstract class JTLCacheHelper
     /**
      * removes cache IDs associated with tag from cache
      *
-     * @param $tags
+     * @param array $tags
      *
      * @return int
      */
@@ -316,7 +316,7 @@ abstract class JTLCacheHelper
     /**
      * removes prefixes from result array of cached keys/values
      *
-     * @param $array
+     * @param array $array
      * @return array
      */
     protected function dePrefixArray($array)
@@ -334,7 +334,7 @@ abstract class JTLCacheHelper
     /**
      * more readable output for uptime stats
      *
-     * @param $seconds
+     * @param int $seconds
      * @return string
      */
     protected function secondsToTime($seconds)

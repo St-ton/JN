@@ -11,7 +11,7 @@
     <div class="well panel-wrap">
         <div class="panel panel-default">
             <div class="panel-body">
-                <form method="post" action="bewertung.php">
+                <form method="post" action="{get_static_route id='bewertung.php'}">
                     {$jtl_token}
                     {if isset($BereitsBewertet) && $BereitsBewertet == 1}
                         <div class="alert alert-danger">{lang key="allreadyWroteReview" section="product rating"}</div>

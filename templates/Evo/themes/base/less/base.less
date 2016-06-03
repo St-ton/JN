@@ -23,13 +23,12 @@ body.no-bg {
 }
 
 .img-responsive-width {
-    display: block;
-    width: 100%;
+    max-width: 100%;
     height: auto;
 }
 
 .img-responsive-height {
-    height: 100%;
+    max-height: 100%;
     width: auto;
 }
 
@@ -620,17 +619,17 @@ ul.filter_state li a.active:before {
 
 /* SIGNAL */
 .delivery-status {
-	.status-0 {
-		color: #B80000; /* red */
-	}
+    .status-0 {
+        color: #B80000; /* red */
+    }
 
-	.status-1 {
-		color: #2896ec; /* blue */
-	}
+    .status-1 {
+        color: #2896ec; /* blue */
+    }
 
-	.status-2 {
-		color: #007C00; /* green */
-	}
+    .status-2 {
+        color: #007C00; /* green */
+    }
 }
 
 /* product-cell */
@@ -2161,12 +2160,12 @@ div#add-to-cart {
 }
 
 .variations .variation > * {
-	vertical-align: middle;
+    vertical-align: middle;
 }
 
 .bootstrap-select span.label,
 .variations .variation > span.label, .variations .variation > span.label-variation {
-	margin-left: 4px;
+    margin-left: 4px;
 }
 
 .variations .variation.label-variation {
@@ -2174,7 +2173,7 @@ div#add-to-cart {
 }
 
 .variations .variation input[type="radio"], .variations .variation input[type="checkbox"] {
-	margin: 0 !important;
+    margin: 0 !important;
 }
 
 .swatches .variation > span.label-variation {
@@ -2183,7 +2182,7 @@ div#add-to-cart {
 
 .swatches .variation > span.label-variation {
     overflow: hidden;
-	white-space: nowrap;
+    white-space: nowrap;
     text-overflow: ellipsis;
     max-width: 50px;
     display: inline-block;
@@ -2811,6 +2810,14 @@ div#add-to-cart {
 #evo-main-nav {
     margin-bottom: 0;
     z-index: 20;
+
+    .dropdown-cart-items .item-name {
+        max-width: 200px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+        vertical-align: middle;
+    }
 }
 
 //fixed navbar start
@@ -2943,10 +2950,14 @@ header.fixed-navbar {
     .panel h4 {
         color: @text-color;
     }
+    .product-cell .caption{
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
 }
 
 .group-image {
-	padding-right: 0 !important;
+    padding-right: 0 !important;
 }
 
 .summary {
@@ -3001,7 +3012,7 @@ header.fixed-navbar {
 .btn-gallery-up {top:0px;z-index:5;position:absolute;transform:rotate(90deg);}
 .btn-gallery-down {bottom:0px;z-index:5;position:absolute;transform:rotate(90deg);}
 .thumbs {display:block;top:0;}
-.thumbs-box	{position:relative;margin:auto;}
+.thumbs-box {position:relative;margin:auto;}
 @media (max-width: @screen-sm-min) {
     .thumbs {display:none;}
 }

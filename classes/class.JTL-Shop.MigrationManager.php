@@ -12,7 +12,7 @@ class MigrationManager
     /**
      * @var array
      */
-    protected $migrations;
+    protected static $migrations;
 
     /**
      * @var array
@@ -30,6 +30,7 @@ class MigrationManager
      */
     public function __construct($version)
     {
+        static::$migrations = [];
         $this->version = (int) $version;
     }
 
@@ -41,33 +42,22 @@ class MigrationManager
      */
     public function migrate($identifier = null)
     {
-        $exception = null;
-        $history   = [];
-
         $migrations         = $this->getMigrations();
         $executedMigrations = $this->getExecutedMigrations();
         $currentId          = $this->getCurrentId();
 
         if (empty($executedMigrations) && empty($migrations)) {
-            return $history;
+            return [];
         }
 
         if ($identifier == null) {
             $identifier = max(array_merge($executedMigrations, array_keys($migrations)));
         }
 
-        $buildResult = function (IMigration $migration, $direction, $error = null) {
-            return (object) [
-                'id'        => $migration->getId(),
-                'name'      => $migration->getName(),
-                'author'    => $migration->getAuthor(),
-                'direction' => $direction,
-                'error'     => $error
-            ];
-        };
-
         $direction = $identifier > $currentId ?
             IMigration::UP : IMigration::DOWN;
+
+        $executed = [];
 
         try {
             if ($direction === IMigration::DOWN) {
@@ -77,7 +67,7 @@ class MigrationManager
                         break;
                     }
                     if (in_array($migration->getId(), $executedMigrations)) {
-                        $history[] = $buildResult($migration, IMigration::DOWN);
+                        $executed[] = $migration;
                         $this->executeMigration($migration, IMigration::DOWN);
                     }
                 }
@@ -88,24 +78,20 @@ class MigrationManager
                     break;
                 }
                 if (!in_array($migration->getId(), $executedMigrations)) {
-                    $history[] = $buildResult($migration, IMigration::UP);
+                    $executed[] = $migration;
                     $this->executeMigration($migration, IMigration::UP);
                 }
             }
         } catch (PDOException $e) {
-            $exception                     = $e;
             @list($code, $state, $message) = $e->errorInfo;
             $this->log($migration, $direction, $code, $message);
+            throw $e;
         } catch (Exception $e) {
-            $exception = $e;
             $this->log($migration, $direction, 'JTL01', $e->getMessage());
+            throw $e;
         }
 
-        if ($exception !== null && count($history) > 0) {
-            $history[count($history) - 1]->error = $exception->getMessage();
-        }
-
-        return $history;
+        return $executed;
     }
 
     /**
@@ -175,7 +161,7 @@ class MigrationManager
      */
     public function setMigrations(array $migrations)
     {
-        $this->migrations = $migrations;
+        static::$migrations[$this->version] = $migrations;
 
         return $this;
     }
@@ -198,7 +184,7 @@ class MigrationManager
      */
     public function getMigrations()
     {
-        if ($this->migrations === null) {
+        if (!array_key_exists($this->version, static::$migrations) || static::$migrations[$this->version] === null) {
             $migrations = array();
             $executed   = $this->_getExecutedMigrations();
             $path       = MigrationHelper::getMigrationPath($this->version);
@@ -238,7 +224,7 @@ class MigrationManager
             $this->setMigrations($migrations);
         }
 
-        return $this->migrations;
+        return static::$migrations[$this->version];
     }
 
     /**

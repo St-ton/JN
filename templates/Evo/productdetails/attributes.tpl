@@ -12,13 +12,15 @@
     {assign var="showShippingWeight" value=true}
 {/if}
 
+{assign var="dimension" value=$Artikel->getDimension()}
+
 {assign var="showAttributesTable" value=false}
 {if    $Einstellungen.artikeldetails.merkmale_anzeigen === 'Y' && !empty($Artikel->oMerkmale_arr)
     || $showProductWeight
     || $showShippingWeight
-    || isset($Artikel->cMasseinheitName) && isset($Artikel->fMassMenge) && $Artikel->fMassMenge > 0  && $Artikel->cTeilbar != 'Y' && ($Artikel->fAbnahmeintervall == 0 || $Artikel->fAbnahmeintervall == 1)
-    || isset($Artikel->fBreite) && isset($Artikel->fHoehe) && isset($Artikel->fLaenge) && $Artikel->fBreite > 0 && $Artikel->fHoehe > 0 && $Artikel->fLaenge > 0
-    || $Einstellungen.artikeldetails.artikeldetails_attribute_anhaengen === 'Y' || $Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ATTRIBUTEANHAENGEN] == 1 && !empty($Artikel->Attribute)
+    || $dimension && $Einstellungen.artikeldetails.artikeldetails_abmessungen_anzeigen === 'Y'
+    || isset($Artikel->cMasseinheitName) && isset($Artikel->fMassMenge) && $Artikel->fMassMenge > 0  && $Artikel->cTeilbar !== 'Y' && ($Artikel->fAbnahmeintervall == 0 || $Artikel->fAbnahmeintervall == 1)
+    || ($Einstellungen.artikeldetails.artikeldetails_attribute_anhaengen === 'Y' || $Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ATTRIBUTEANHAENGEN] == 1) && !empty($Artikel->Attribute)
 }
     {assign var="showAttributesTable" value=true}
 {/if}
@@ -79,17 +81,17 @@
                     </tr>
                 {/if}
 
-                {if isset($Artikel->cMasseinheitName) && isset($Artikel->fMassMenge) && $Artikel->fMassMenge > 0 && $Artikel->cTeilbar != 'Y' && ($Artikel->fAbnahmeintervall == 0 || $Artikel->fAbnahmeintervall == 1) && isset($Artikel->cMassMenge)}
+                {if isset($Artikel->cMasseinheitName) && isset($Artikel->fMassMenge) && $Artikel->fMassMenge > 0 && $Artikel->cTeilbar !== 'Y' && ($Artikel->fAbnahmeintervall == 0 || $Artikel->fAbnahmeintervall == 1) && isset($Artikel->cMassMenge)}
                     <tr class="attr-contents">
                         <td class="attr-label">{lang key="contents" section="productDetails"}: </td>
                         <td class="attr-value">{$Artikel->cMassMenge} {$Artikel->cMasseinheitName}</td>
                     </tr>
                 {/if}
 
-                {if isset($Artikel->fBreite) && isset($Artikel->fHoehe) && isset($Artikel->fLaenge) && isset($Artikel->cBreite) && isset($Artikel->cHoehe) && isset($Artikel->cLaenge) && $Artikel->fBreite > 0 && $Artikel->fHoehe > 0 && $Artikel->fLaenge > 0}
+                {if $dimension && $Einstellungen.artikeldetails.artikeldetails_abmessungen_anzeigen === 'Y'}
                     <tr class="attr-dimensions">
-                        <td class="attr-label">{lang key="dimensions" section="productDetails"}: </td>
-                        <td class="attr-value">{$Artikel->cLaenge} &times; {$Artikel->cBreite} &times; {$Artikel->cHoehe} cm</td>
+                        <td class="attr-label">{if $dimension['nAnzeigeTyp'] == 1}{lang key="dimensions" section="productDetails"}{else}{lang key="dimensions2d" section="productDetails"}{/if}: </td>
+                        <td class="attr-value">{$Artikel->getDimensionLocalized()}</td>
                     </tr>
                 {/if}
 

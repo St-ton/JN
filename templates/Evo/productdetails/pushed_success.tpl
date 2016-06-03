@@ -31,7 +31,7 @@
                     </p>
 {*
                     <p class="continue-shopping">
-                        <a href="bestellvorgang.php">{lang key="checkout" section="basketpreview"}</a>
+                        <a href="{get_static_route id='bestellvorgang.php'}">{lang key="checkout" section="basketpreview"}</a>
                     </p>
 *}
                 </div>

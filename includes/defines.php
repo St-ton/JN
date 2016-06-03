@@ -5,7 +5,7 @@
  */
 
 //charset
-define('JTL_CHARSET', 'iso-8859-1');
+ifndef('JTL_CHARSET', 'iso-8859-1');
 ini_set('default_charset', JTL_CHARSET);
 date_default_timezone_set('Europe/Berlin');
 //log levels
@@ -23,6 +23,7 @@ ifndef('PROFILE_SHOP', false);
 ifndef('PROFILE_QUERIES', false);
 ifndef('PROFILE_QUERIES_ECHO', false);
 ifndef('SHOW_PAGE_CACHE', false);
+ifndef('IO_LOG_CONSOLE', false);
 //PHP memory_limit work around
 if (intval(str_replace('M', '', ini_get('memory_limit'))) < 64) {
     ini_set('memory_limit', '64M');
@@ -86,6 +87,7 @@ define('PFAD_FONTS', PFAD_INCLUDES . 'fonts/');
 define('PFAD_BILDER_INTERN', PFAD_BILDER . 'intern/');
 define('PFAD_BILDER_BANNER', PFAD_BILDER . 'banner/');
 define('PFAD_NEWSBILDER', PFAD_BILDER . 'news/');
+define('PFAD_NEWSKATEGORIEBILDER', PFAD_BILDER . 'newskategorie/');
 define('PFAD_SHOPLOGO', PFAD_BILDER_INTERN . 'shoplogo/');
 ifndef('PFAD_ADMIN', 'admin/');
 define('PFAD_EMAILVORLAGEN', PFAD_ADMIN . 'mailtemplates/');

@@ -512,8 +512,8 @@ class Boxen
                 if ((int)$this->boxConfig['news']['news_anzahl_box'] > 0) {
                     $cSQL = " LIMIT " . (int)$this->boxConfig['news']['news_anzahl_box'];
                 }
-                $cacheID = 'bnk_' . (int)Shop::$kSprache . '_' . $_SESSION['Kundengruppe']->kKundengruppe . '_' . md5($cSQL);
-                if (($oNewsKategorie_arr = Shop::Cache()->get($cacheID)) === false) {
+                $cacheID = 'bnk_' . (int)Shop::$kSprache . '_' . (int) $_SESSION['Kundengruppe']->kKundengruppe . '_' . md5($cSQL);
+                if (($oBoxCached = Shop::Cache()->get($cacheID)) === false) {
                     $oNewsKategorie_arr = Shop::DB()->query(
                         "SELECT tnewskategorie.kNewsKategorie, tnewskategorie.kSprache, tnewskategorie.cName,
                             tnewskategorie.cBeschreibung, tnewskategorie.cMetaTitle, tnewskategorie.cMetaDescription,
@@ -524,8 +524,8 @@ class Boxen
                             LEFT JOIN tnews ON tnews.kNews = tnewskategorienews.kNews
                             LEFT JOIN tseo ON tseo.cKey = 'kNewsKategorie'
                                 AND tseo.kKey = tnewskategorie.kNewsKategorie
-                                AND tseo.kSprache = " . (int)Shop::$kSprache . "
-                            WHERE tnewskategorie.kSprache = " . (int)Shop::$kSprache . "
+                                AND tseo.kSprache = " . (int) Shop::$kSprache . "
+                            WHERE tnewskategorie.kSprache = " . (int) Shop::$kSprache . "
                                 AND tnewskategorie.nAktiv = 1
                                 AND tnews.nAktiv = 1
                                 AND tnews.dGueltigVon <= now()
@@ -544,6 +544,8 @@ class Boxen
                     $cacheTags                = array(CACHING_GROUP_BOX, CACHING_GROUP_NEWS);
                     executeHook(HOOK_BOXEN_INC_NEWSKATEGORIE, array('box' => &$oBox, 'cache_tags' => &$cacheTags));
                     Shop::Cache()->set($cacheID, $oBox, $cacheTags);
+                } else {
+                    $oBox = $oBoxCached;
                 }
                 break;
 

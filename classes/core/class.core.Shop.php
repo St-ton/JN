@@ -872,6 +872,7 @@ final class Shop
                     $cLang = (isset($spr->cISO)) ? $spr->cISO : null;
                     if ($cLang !== $_SESSION['cISOSprache']) {
                         checkeSpracheWaehrung($cLang);
+                        setzeSteuersaetze();
                     }
                 }
             }

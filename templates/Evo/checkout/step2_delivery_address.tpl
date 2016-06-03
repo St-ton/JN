@@ -22,11 +22,11 @@
                 </div>
                 <div class="panel-body">
                     {block name="checkout-enter-shipping-address-body"}
-                    <form id="checkout-choose-deliveryaddress" method="post" action="bestellvorgang.php">
+                    <form id="checkout-choose-deliveryaddress" method="post" action="{get_static_route id='bestellvorgang.php'}">
                         {$jtl_token}
                         <fieldset>
                             <div class="radio">
-                                <label class="control-label" for="delivery0"><input type="radio" name="kLieferadresse" onclick="changeState('0')" value="0" id="delivery0" {if $kLieferadresse==0}checked{/if}>
+                                <label class="control-label" for="delivery0"><input type="radio" name="kLieferadresse" onclick="changeState('0')" value="0" id="delivery0" {if $kLieferadresse == 0}checked{/if}>
                                     {lang key="shippingAdressEqualBillingAdress" section="account data"}
                                 </label>
                             </div>
@@ -43,7 +43,7 @@
                                 {/foreach}
                             {/if}
                             <div class="radio">
-                                <label class="control-label" for="delivery_new"><input type="radio" name="kLieferadresse" onclick="changeState('-1')" value="-1" id="delivery_new" {if $kLieferadresse==-1}checked{/if}>
+                                <label class="control-label" for="delivery_new"><input type="radio" name="kLieferadresse" onclick="changeState('-1')" value="-1" id="delivery_new" {if $kLieferadresse == -1}checked{/if}>
                                     {lang key="createNewShippingAdress" section="account data"}
                                 </label>
                             </div>
@@ -53,7 +53,7 @@
                             <input type="submit" value="{lang key="continueOrder" section="account data"}" class="submit btn btn-primary{if $kLieferadresse > 0} hidden-initial{/if}" />
                         </fieldset>
                     </form>
-                    <form id="checkout-deliveryaddress" method="post" action="bestellvorgang.php" class="address{if $kLieferadresse == 0} hidden-initial{/if}">
+                    <form id="checkout-deliveryaddress" method="post" action="{get_static_route id='bestellvorgang.php'}" class="address{if $kLieferadresse == 0} hidden-initial{/if}">
                         {$jtl_token}
                         <fieldset>
                             <legend>{lang key="yourShippingAdress" section="account data"}</legend>
@@ -325,7 +325,7 @@
     <script type="text/javascript">
         var cAnwort = confirm('{lang key="basket2PersMerge" section="login"}');
         if (cAnwort) {ldelim}
-            window.location = "bestellvorgang.php?basket2Pers=1";
+            window.location = "{get_static_route id='bestellvorgang.php'}?basket2Pers=1";
         {rdelim}
     </script>
 {/if}

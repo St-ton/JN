@@ -59,7 +59,7 @@
             <div class="panel-heading"><h3 class="panel-title">{block name="order-details-payment-title"}{lang key="paymentOptions" section="global"}: {$Bestellung->cZahlungsartName}{/block}</h3></div>
             <div class="panel-body">
             {block name="order-details-payment-body"}
-            {if $Bestellung->cStatus>=3}
+            {if $Bestellung->cStatus >= 3}
                 {if $Bestellung->dBezahldatum_de !== '00.00.0000'}
                     {lang key="payedOn" section="login"} {$Bestellung->dBezahldatum_de}
                 {else}
@@ -83,9 +83,9 @@
             <div class="panel-heading"><h3 class="panel-title">{block name="order-details-shipping-title"}{lang key="shippingOptions" section="global"}: {$Bestellung->cVersandartName}{/block}</h3></div>
             <div class="panel-body">
             {block name="order-details-shipping-body"}
-            {if $Bestellung->cStatus==4}
+            {if $Bestellung->cStatus == 4}
                 {lang key="shippedOn" section="login"} {$Bestellung->dVersanddatum_de}
-            {elseif $Bestellung->cStatus==5}
+            {elseif $Bestellung->cStatus == 5}
                 {$Bestellung->Status}
             {else}
                 {lang key="notShippedYet" section="login"}

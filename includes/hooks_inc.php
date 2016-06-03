@@ -328,7 +328,7 @@ define('HOOK_TOOLSAJAXSERVER_PAGE_SUCHVORSCHLAG', 44);
 /**
  * Kurz vor der Rückgabe der Variationskombination (Ajax)
  *
- * @file toolsajax.server.php
+ * @file toolsajax.server.php/io_inc.php
  * @param objResponse
  * @param oArtikel
  */
@@ -1067,7 +1067,7 @@ define('HOOK_INDEX_SEO_404', 146);
  * triggered when checkbox has plugin special functions and is checked by a customer
  *
  * @file class.JTL-Shop.CheckBox.php
- * @params <mixed>
+ * @param Checkbox oCheckBox
  */
 define('HOOK_CHECKBOX_CLASS_TRIGGERSPECIALFUNCTION', 147);
 
@@ -1585,3 +1585,20 @@ define('HOOK_GET_DELIVERY_TIME_ESTIMATION_TEXT', 218);
  * @param array categories
  */
 define('HOOK_GET_ALL_CATEGORIES', 219);
+
+/**
+ * @since 4.04
+ * @file seite_inc.php
+ * @param array oNews_arr
+ * @param array cacheTags
+ * @param bool  cached
+ */
+define('HOOK_GET_NEWS', 220);
+
+/**
+ * @since 4.04
+ * @file tools.Global.php
+ * @param string filterSQL
+ * @param int    conf
+ */
+define('HOOK_STOCK_FILTER', 221);

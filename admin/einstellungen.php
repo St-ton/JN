@@ -6,8 +6,10 @@
 require_once dirname(__FILE__) . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'einstellungen_inc.php';
 
-$kSektion = verifyGPCDataInteger('kSektion');
-$bSuche   = verifyGPCDataInteger('einstellungen_suchen');
+$kSektion = isset($_REQUEST['kSektion']) ? (int)$_REQUEST['kSektion'] : 0;
+
+$bSuche = isset($_REQUEST['einstellungen_suchen']) && 
+	(int)$_REQUEST['einstellungen_suchen'] === 1;
 
 if ($bSuche) {
     $oAccount->permission('SETTINGS_SEARCH_VIEW', true, true);
@@ -51,12 +53,12 @@ $cHinweis         = '';
 $cFehler          = '';
 $Sektion          = null;
 $step             = 'uebersicht';
-if (verifyGPCDataInteger('kSektion') > 0) {
+if ($kSektion > 0) {
     $step    = 'einstellungen bearbeiten';
     $Sektion = Shop::DB()->query("
         SELECT *
             FROM teinstellungensektion
-            WHERE kEinstellungenSektion = " . verifyGPCDataInteger('kSektion'), 1
+            WHERE kEinstellungenSektion = " . $kSektion, 1
     );
     $smarty->assign('kEinstellungenSektion', $Sektion->kEinstellungenSektion);
 } else {
@@ -68,15 +70,15 @@ if (verifyGPCDataInteger('kSektion') > 0) {
     $smarty->assign('kEinstellungenSektion', 1);
 }
 
-if (verifyGPCDataInteger('einstellungen_suchen') === 1) {
+if ($bSuche) {
     $step = 'einstellungen bearbeiten';
 }
 
-if (isset($_POST['einstellungen_bearbeiten']) && intval($_POST['einstellungen_bearbeiten']) === 1 && verifyGPCDataInteger('kSektion') > 0 && validateToken()) {
+if (isset($_POST['einstellungen_bearbeiten']) && intval($_POST['einstellungen_bearbeiten']) === 1 && $kSektion > 0 && validateToken()) {
     // Einstellungssuche
     $oSQL = new stdClass();
-    if (verifyGPCDataInteger('einstellungen_suchen') === 1) {
-        $oSQL = bearbeiteEinstellungsSuche(verifyGPDataString('cSuche'), true);
+    if ($bSuche) {
+        $oSQL = bearbeiteEinstellungsSuche($_REQUEST['cSuche'], true);
     }
     if (!isset($oSQL->cWHERE)) {
         $oSQL->cWHERE = '';
@@ -90,7 +92,7 @@ if (isset($_POST['einstellungen_bearbeiten']) && intval($_POST['einstellungen_be
         $Sektion = Shop::DB()->query("
             SELECT *
                 FROM teinstellungensektion
-                WHERE kEinstellungenSektion = " . verifyGPCDataInteger('kSektion'), 1
+                WHERE kEinstellungenSektion = " . $kSektion, 1
         );
         $Conf = Shop::DB()->query("
             SELECT *
@@ -173,8 +175,8 @@ if ($step === 'einstellungen bearbeiten') {
     // Einstellungssuche
     $Conf = array();
     $oSQL = new stdClass();
-    if (verifyGPCDataInteger('einstellungen_suchen') === 1) {
-        $oSQL = bearbeiteEinstellungsSuche(verifyGPDataString('cSuche'));
+    if ($bSuche) {
+        $oSQL = bearbeiteEinstellungsSuche($_REQUEST['cSuche']);
     }
     if (!isset($oSQL->cWHERE)) {
         $oSQL->cWHERE = '';
@@ -234,10 +236,9 @@ if ($step === 'einstellungen bearbeiten') {
            ->assign('Conf', $Conf);
 }
 
-$k = verifyGPCDataInteger('kSektion');
-$smarty->ConfigLoad('german.conf', 'einstellungen')
-       ->assign('cPrefDesc', $smarty->getConfigVars('prefDesc' . $k))
-       ->assign('cPrefURL', $smarty->getConfigVars('prefURL' . $k))
+$smarty->configLoad('german.conf', 'einstellungen')
+       ->assign('cPrefDesc', $smarty->getConfigVars('prefDesc' . $kSektion))
+       ->assign('cPrefURL', $smarty->getConfigVars('prefURL' . $kSektion))
        ->assign('step', $step)
        ->assign('cHinweis', $cHinweis)
        ->assign('cFehler', $cFehler)

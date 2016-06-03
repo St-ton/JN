@@ -18,13 +18,14 @@ $Einstellungen = Shop::getSettings(array(
 );
 $hinweis    = '';
 $requestURL = '';
+$linkHelper = LinkHelper::getInstance();
 
 pruefeHttps();
 
 if (strlen($_GET['uid']) === 40) {
     $status = Shop::DB()->query("SELECT kBestellung FROM tbestellstatus WHERE dDatum >= date_sub(now(), INTERVAL 30 DAY) AND cUID = '" . Shop::DB()->escape($_GET['uid']) . "'", 1);
     if (empty($status->kBestellung)) {
-        header('Location: ' . Shop::getURL() . '/jtl.php', true, 303);
+        header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true), true, 303);
         exit;
     } else {
         $bestellung = new Bestellung($status->kBestellung);
@@ -35,7 +36,7 @@ if (strlen($_GET['uid']) === 40) {
                ->assign('Lieferadresse', $bestellung->Lieferadresse);
     }
 } else {
-    header('Location: jtl.php', true, 303);
+    header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true), true, 303);
     exit;
 }
 

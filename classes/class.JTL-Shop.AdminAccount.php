@@ -281,6 +281,7 @@ class AdminAccount
             $_SESSION['AdminAccount']->cURL        = Shop::getURL();
             $_SESSION['AdminAccount']->kAdminlogin = $oAdmin->kAdminlogin;
             $_SESSION['AdminAccount']->cLogin      = $oAdmin->cLogin;
+            $_SESSION['AdminAccount']->cMail       = $oAdmin->cMail;
             $_SESSION['AdminAccount']->cPass       = $oAdmin->cPass;
 
             $_SESSION['KCFINDER']             = array();

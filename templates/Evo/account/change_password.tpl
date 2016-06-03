@@ -21,7 +21,7 @@
 
                     <div class="form-group required">
                         <label for="newPassword" class="control-label">{lang key="newPassword" section="login"}</label>
-                            <input type="password" name="neuesPasswort1" id="newPassword" class="form-control" required>
+                        <input type="password" name="neuesPasswort1" id="newPassword" class="form-control" required>
                     </div>
 
                     <div class="form-group required">

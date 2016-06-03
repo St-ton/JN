@@ -5,8 +5,10 @@
  */
 require_once dirname(__FILE__) . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
+
+$linkHelper = LinkHelper::getInstance();
 if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0 && verifyGPCDataInteger('editRechnungsadresse') === 0) {
-    header('Location: jtl.php?', true, 301);
+    header('Location: ' , $linkHelper->getStaticRoute('jtl.php', true), true, 301);
 }
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
@@ -27,7 +29,6 @@ $Einstellungen = Shop::getSettings(
 );
 pruefeHttps();
 Shop::setPageType(PAGE_REGISTRIERUNG);
-$linkHelper           = LinkHelper::getInstance();
 $kLink                = $linkHelper->getSpecialPageLinkKey(LINKTYP_REGISTRIEREN);
 $step                 = 'formular';
 $hinweis              = '';
@@ -64,7 +65,7 @@ $smarty->assign('Navigation', createNavigation($AktuelleSeite))
        ->assign('nAnzeigeOrt', CHECKBOX_ORT_REGISTRIERUNG)
        ->assign('code_registrieren', generiereCaptchaCode($Einstellungen['kunden']['registrieren_captcha']));
 
-$cCanonicalURL = Shop::getURL() . '/registrieren.php';
+$cCanonicalURL = $linkHelper->getStaticRoute('registrieren.php', true);;
 // Metaangaben
 $oMeta            = $linkHelper->buildSpecialPageMeta(LINKTYP_REGISTRIEREN);
 $cMetaTitle       = $oMeta->cTitle;

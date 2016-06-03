@@ -7,7 +7,7 @@
         <div class="well panel-wrap">
             <div class="panel panel-default">
                 <div class="panel-body">
-                    <form action="index.php" method="post" id="article_availability">
+                    <form action="{if !empty($Artikel->cURLFull)}{$Artikel->cURLFull}{else}index.php{/if}" method="post" id="article_availability">
                         {$jtl_token}
                         <div class="row">
                             <div class="col-xs-12 col-md-6 col-md-push-3">

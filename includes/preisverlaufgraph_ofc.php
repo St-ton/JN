@@ -36,10 +36,10 @@ function expandPriceArray($data, $max)
 if (isset($_GET['kArtikel'])) {
     $session       = Session::getInstance();
     $Einstellungen = Shop::getSettings(array(CONF_PREISVERLAUF));
-    $kArtikel      = intval($_GET['kArtikel']);
-    $kKundengruppe = intval($_GET['kKundengruppe']);
-    $kSteuerklasse = intval($_GET['kSteuerklasse']);
-    $nMonat        = intval($Einstellungen['preisverlauf']['preisverlauf_anzahl_monate']);
+    $kArtikel      = (int) $_GET['kArtikel'];
+    $kKundengruppe = (int) $_GET['kKundengruppe'];
+    $kSteuerklasse = (int) $_GET['kSteuerklasse'];
+    $nMonat        = (int) $Einstellungen['preisverlauf']['preisverlauf_anzahl_monate'];
 
     if (count($Einstellungen) > 0) {
         $oPreisConfig           = new stdClass();

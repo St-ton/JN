@@ -66,10 +66,15 @@ build_fixcs()
 
 build_ide_meta()
 {
-    META_FILE="${PROJECT_DIR}/.phpstorm.meta.php"
+    META_FILE=".phpstorm.meta.php"
+    META_HEADER="<?php // `date '+%Y-%m-%d %H:%M:%S'`"
+    META_DATA=`deploy_ide_meta`
 
-    echo "<?php" > ${META_FILE}
-	deploy_ide_meta >> ${META_FILE}
+    msg "Generating '${META_FILE}'"
+
+    echo -e "${META_HEADER}\n\n${META_DATA}" > ${PROJECT_DIR}/${META_FILE} || exit 1
+
+    success "... done"
 }
 
 build_init()
@@ -95,6 +100,8 @@ main() {
     else
         build_help
     fi
+
+    return 0
 }
 
 (main $*)

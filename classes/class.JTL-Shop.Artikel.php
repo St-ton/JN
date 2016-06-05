@@ -3159,7 +3159,10 @@ class Artikel
                     //do not use cached result if a special price started in the mean time
                     $startDate = new DateTime($this->dSonderpreisStart_en);
                     $today     = new DateTime();
-                    $return    = ($startDate > $today);
+                    $endDate   = ($this->dSonderpreisEnde_en !== null && $this->dSonderpreisEnde_en !== '0000-00-00') ?
+                        new DateTime($this->dSonderpreisEnde_en) :
+                        $today;
+                    $return    = ($startDate > $today || $endDate < $today);
                 }
                 if ($return === true) {
                     // Warenkorbmatrix Variationskinder holen?

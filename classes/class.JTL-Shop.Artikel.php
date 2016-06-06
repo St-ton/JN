@@ -3622,7 +3622,7 @@ class Artikel
             $this->cHersteller                = $oArtikelTMP->cName_thersteller;
             $this->cHerstellerSeo             = (isset($oHersteller->cSeo)) ? $oHersteller->cSeo : null;
             $this->cHerstellerURL             = baueURL($oHersteller, URLART_HERSTELLER);
-            $this->cHerstellerHomepage        = $oArtikelTMP->cHomepage;
+            $this->cHerstellerHomepage        = filter_var($oArtikelTMP->cHomepage, FILTER_VALIDATE_URL);
             $this->cHerstellerMetaTitle       = $oArtikelTMP->cMetaTitle_spr;
             $this->cHerstellerMetaKeywords    = $oArtikelTMP->cMetaKeywords_spr;
             $this->cHerstellerMetaDescription = $oArtikelTMP->cMetaDescription_spr;
@@ -3631,9 +3631,6 @@ class Artikel
             if (strlen($oArtikelTMP->cBildpfad_thersteller) > 0) {
                 $this->cHerstellerBildKlein  = PFAD_HERSTELLERBILDER_KLEIN . $oArtikelTMP->cBildpfad_thersteller;
                 $this->cHerstellerBildNormal = PFAD_HERSTELLERBILDER_NORMAL . $oArtikelTMP->cBildpfad_thersteller;
-            }
-            if (isset($this->cHerstellerHomepage) && $this->cHerstellerHomepage !== '' && strrpos($this->cHerstellerHomepage, 'http://') !== 0 && strrpos($this->cHerstellerHomepage, 'https://') !== 0) {
-                $this->cHerstellerHomepage = 'http://' . $this->cHerstellerHomepage;
             }
         }
         //datum umformatieren

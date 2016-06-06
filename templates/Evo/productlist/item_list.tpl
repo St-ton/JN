@@ -23,10 +23,18 @@
         <div class="col-xs-6 col-sm-6 col-lg-5">
             {block name="product-title"}<h4 class="title"><a href="{$Artikel->cURL}">{$Artikel->cName}</a></h4>{/block}
             {block name="product-manufacturer"}
-                <h5 class="manufacturer text-uppercase">
-                    <img src="{$Artikel->cHerstellerBildKlein}" alt="" class="img-xs">
-                    <a href="{$Artikel->cHersteller}">{$Artikel->cHersteller}</a>
-                </h5>
+                {if $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen !== 'N'}
+                    <h5 class="manufacturer text-uppercase">
+                        <a href="{$Artikel->cHerstellerURL}">
+                            {if ($Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen === 'BT' || $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen === 'B') && !empty($Artikel->cHerstellerBildKlein)}
+                                <img src="{$Artikel->cHerstellerBildKlein}" alt="" class="img-xs">
+                            {/if}
+                            {if ($Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen === 'BT' || $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen === 'Y') && !empty($Artikel->cHersteller)}
+                                {$Artikel->cHersteller}
+                            {/if}
+                        </a>
+                    </h5>
+                {/if}
             {/block}
 
             <div class="product-info hidden-xs">
@@ -43,27 +51,6 @@
                                 <span class="attr-label col-sm-5">{lang key="productMHD" section="global"}: </span> <span class="value col-sm-7">{$Artikel->dMHD_de}</span>
                             </li>
                         {/if}
-                        {*if $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen !== 'N' && !empty($Artikel->cHersteller)}
-                            <li class="item row attr-manufacturer">
-                                <span class="attr-label col-sm-5">{lang key="manufacturerSingle" section="productOverview"}: </span>
-                                <span class="value col-sm-7">
-                                {if $Artikel->cHerstellerHomepage}
-                                    <a href="{$Artikel->cHerstellerHomepage}">
-                                {/if}
-                                {if $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen === 'BT' && !empty($Artikel->cHersteller) && !empty($Artikel->cHerstellerBildKlein)}
-                                    <img src="{$Artikel->cHerstellerBildKlein}" alt="" class="img-sm">
-                                    {$Artikel->cHersteller}
-                                {elseif $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen === 'Y' && !empty($Artikel->cHersteller)}
-                                    {$Artikel->cHersteller}
-                                {elseif $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen === 'B' && !empty($Artikel->cHerstellerBildKlein)}
-                                    <img src="{$Artikel->cHerstellerBildKlein}" alt="" class="img-sm">
-                                {/if}
-                                {if $Artikel->cHerstellerHomepage}
-                                    </a>
-                                {/if}
-                                </span>
-                            </li>
-                        {/if*}
                         {if isset($Artikel->cGewicht) && $Einstellungen.artikeluebersicht.artikeluebersicht_gewicht_anzeigen === 'Y' && $Artikel->fGewicht > 0}
                             <li class="item row attr-weight">
                                 <span class="attr-label col-sm-5">{lang key="shippingWeight" section="global"}: </span>

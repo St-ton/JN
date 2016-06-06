@@ -263,8 +263,8 @@ class JTLSmarty extends SmartyBC
             $this->setUseSubDirs(SMARTY_USE_SUB_DIRS);
         }
         $this->setErrorReporting(SMARTY_LOG_LEVEL)
-            ->setForceCompile(SMARTY_FORCE_COMPILE ? true : false)
-            ->setDebugging(SMARTY_DEBUG_CONSOLE ? true : false);
+             ->setForceCompile(SMARTY_FORCE_COMPILE ? true : false)
+             ->setDebugging(SMARTY_DEBUG_CONSOLE ? true : false);
 
         $this->config = Shop::getSettings(array(CONF_TEMPLATE, CONF_CACHING));
         $template     = ($isAdmin) ? AdminTemplate::getInstance() : Template::getInstance();
@@ -277,15 +277,15 @@ class JTLSmarty extends SmartyBC
                 mkdir($_compileDir);
             }
             $this->setTemplateDir(array($this->context => PFAD_ROOT . PFAD_TEMPLATES . $cTemplate . '/'))
-                ->setCompileDir($_compileDir)
-                ->setCacheDir(PFAD_ROOT . PFAD_COMPILEDIR . $cTemplate . '/' . 'page_cache/')
-                ->setPluginsDir(SMARTY_PLUGINS_DIR);
+                 ->setCompileDir($_compileDir)
+                 ->setCacheDir(PFAD_ROOT . PFAD_COMPILEDIR . $cTemplate . '/' . 'page_cache/')
+                 ->setPluginsDir(SMARTY_PLUGINS_DIR);
 
             if ($parent !== null) {
                 self::$isChildTemplate = true;
                 $this->addTemplateDir(PFAD_ROOT . PFAD_TEMPLATES . $parent, $parent . '/')
-                    ->assign('parent_template_path', PFAD_ROOT . PFAD_TEMPLATES . $parent . '/')
-                    ->assign('parentTemplateDir', PFAD_TEMPLATES . $parent . '/');
+                     ->assign('parent_template_path', PFAD_ROOT . PFAD_TEMPLATES . $parent . '/')
+                     ->assign('parentTemplateDir', PFAD_TEMPLATES . $parent . '/');
             }
         } else {
             $_compileDir = PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR;
@@ -294,23 +294,23 @@ class JTLSmarty extends SmartyBC
             }
             $this->context = 'backend';
             $this->setCaching(false)
-                ->setDebugging(SMARTY_DEBUG_CONSOLE ? true : false)
-                ->setTemplateDir(array($this->context => PFAD_ROOT . PFAD_ADMIN . PFAD_TEMPLATES . $cTemplate))
-                ->setCompileDir($_compileDir)
-                ->setConfigDir(PFAD_ROOT . PFAD_ADMIN . PFAD_TEMPLATES . $cTemplate . '/lang/')
-                ->setPluginsDir(SMARTY_PLUGINS_DIR)
-                ->configLoad('german.conf', 'global');
+                 ->setDebugging(SMARTY_DEBUG_CONSOLE ? true : false)
+                 ->setTemplateDir(array($this->context => PFAD_ROOT . PFAD_ADMIN . PFAD_TEMPLATES . $cTemplate))
+                 ->setCompileDir($_compileDir)
+                 ->setConfigDir(PFAD_ROOT . PFAD_ADMIN . PFAD_TEMPLATES . $cTemplate . '/lang/')
+                 ->setPluginsDir(SMARTY_PLUGINS_DIR)
+                 ->configLoad('german.conf', 'global');
             unset($this->config['caching']['page_cache']);
         }
         $this->template = $template;
 
         if ($fast_init === false) {
             $this->registerPlugin('function', 'lang', array($this, '__gibSprachWert'))
-                ->registerPlugin('modifier', 'replace_delim', array($this, 'replaceDelimiters'))
-                ->registerPlugin('modifier', 'count_characters', array($this, 'countCharacters'))
-                ->registerPlugin('modifier', 'string_format', array($this, 'stringFormat'))
-                ->registerPlugin('modifier', 'string_date_format', array($this, 'dateFormat'))
-                ->registerPlugin('modifier', 'truncate', array($this, 'truncate'));
+                 ->registerPlugin('modifier', 'replace_delim', array($this, 'replaceDelimiters'))
+                 ->registerPlugin('modifier', 'count_characters', array($this, 'countCharacters'))
+                 ->registerPlugin('modifier', 'string_format', array($this, 'stringFormat'))
+                 ->registerPlugin('modifier', 'string_date_format', array($this, 'dateFormat'))
+                 ->registerPlugin('modifier', 'truncate', array($this, 'truncate'));
 
             if ($isAdmin === false) {
                 $this->cache_lifetime = (isset($cacheOptions['expiration']) && ((int) $cacheOptions['expiration'] > 0)) ? $cacheOptions['expiration'] : 86400;
@@ -326,7 +326,7 @@ class JTLSmarty extends SmartyBC
                 $manufacturerHelper = HerstellerHelper::getInstance();
                 $manufacturers      = $manufacturerHelper->getManufacturers();
                 $this->assign('linkgroups', $linkGroups)
-                    ->assign('manufacturers', $manufacturers);
+                     ->assign('manufacturers', $manufacturers);
                 $this->template_class = 'jtlTplClass';
             }
             if (!$isAdmin) {
@@ -393,7 +393,7 @@ class JTLSmarty extends SmartyBC
             $caching = self::CACHING_LIFETIME_CURRENT;
         }
         $this->setCaching($caching)
-            ->setCompileCheck($compileCheck);
+             ->setCompileCheck($compileCheck);
 
         return $this;
     }
@@ -981,22 +981,7 @@ class jtlTplClass extends Smarty_Internal_Template
      */
     public function _subTemplateRender($template, $cache_id, $compile_id, $caching, $cache_lifetime, $data, $scope, $forceTplCache, $uid = null, $content_func = null)
     {
-//        Shop::dbg($template, false, 'sub:');
-//        Shop::dbg($this->smarty->getResourceName($template), false, 'custom:');
         return parent::_subTemplateRender($this->smarty->getResourceName($template), $cache_id, $compile_id, $caching, $cache_lifetime, $data, $scope, $forceTplCache, $uid, $content_func);
-    }
-
-    /**
-     * fetches rendered template
-     * rewritten with the second param ($no_output_filter) set to true to avoid running the output filter
-     *
-     * @throws Exception
-     * @throws SmartyException
-     * @return string rendered template output
-     */
-    public function fetch2()
-    {
-        return $this->render(true, true, false);
     }
 }
 

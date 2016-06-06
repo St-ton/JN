@@ -106,7 +106,7 @@ class ZahlungsartHelper
                 break;
             default:
                 require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
-                $paymentMethod = PaymenttMethod::create($Zahlungsart->cModulId);
+                $paymentMethod = PaymentMethod::create($Zahlungsart->cModulId);
                 if ($paymentMethod !== null) {
                     return $paymentMethod->isValid($_SESSION['Kunde'], $_SESSION['Warenkorb']);
                 }

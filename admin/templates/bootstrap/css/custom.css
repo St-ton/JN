@@ -248,6 +248,10 @@ div.category {
     width: 100%;
 }
 
+.settings-content .input-group-wrap textarea {
+    min-height: 90px;
+}
+
 .input-group {
     margin-bottom: 15px;
 }

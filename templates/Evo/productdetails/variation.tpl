@@ -27,7 +27,7 @@
                                             {if !empty($Variationswert->cBildPfadMini)}
                                                 data-list='{prepare_image_details item=$Variationswert json=true}'
                                                 data-title='{$Variationswert->cName}'
-                                            {/if}>
+                                            {/if}
                                             {if $bSelected}selected="selected"{/if}>
                                         {$cVariationsWert|trim}
                                     </option>

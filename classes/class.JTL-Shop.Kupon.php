@@ -801,7 +801,7 @@ class Kupon
     public function generateCode($stellen = 7)
     {
         $nResult = strtoupper(substr(time() / 1000 + rand(123, 9999999), 0, $stellen));
-        while (Shop::DB()->query("SELECT COUNT(*) FROM tkupon WHERE cCode = '" . $nResult . "'", 1)) {
+        while (Shop::DB()->select('tkupon', 'cCode', $nResult)) {
             $nResult = strtoupper(substr(time() / 1000 + rand(123, 9999999), 0, $stellen));
         }
 

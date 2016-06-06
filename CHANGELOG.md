@@ -18,6 +18,7 @@
 * Verbesserung: Speicheroptimierung bei aktiviertem Objektcache und TopArtikeln/Bestsellern/Neuen Artikeln
 * Bugfix: TopArtikel werden bei aktiviertem Objektcache nicht aktualisiert 
 * Bugfix: Ändern von Bildeinstellungen invalidiert Objektcache nicht 
+* Bugfix: Varkombi Dropdown-Auswahl wird bei Auswahl Nachladen der Kombination zurückgesetzt
 
 ## [4.03.2]
 * Bugfix: robots.txt fehlendes "Sitemap: " vor der Sitemap-URL

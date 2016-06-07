@@ -23,18 +23,24 @@
         <div class="col-xs-6 col-sm-6 col-lg-5">
             {block name="product-title"}<h4 class="title"><a href="{$Artikel->cURL}">{$Artikel->cName}</a></h4>{/block}
             {block name="product-manufacturer"}
-                <div class="row">
-                    {if $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen !== 'N'}
-                        <a href="{$Artikel->cHerstellerURL}">
-                            {if ($Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen === 'BT' || $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen === 'B') && !empty($Artikel->cHerstellerBildKlein)}
-                                <div class="col-md-1"><img src="{$Artikel->cHerstellerBildKlein}" alt="" class="img-xs"></div>
-                            {/if}
-                            {if ($Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen === 'BT' || $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen === 'Y') && !empty($Artikel->cHersteller)}
-                                <div class="col-md-10"><span class="small text-uppercase">{$Artikel->cHersteller}</span></div>
-                            {/if}
-                        </a>
-                    {/if}
-                </div>
+                {if $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen !== 'N'}
+                    <div class="media hidden-xs top0 bottom5">
+                        {if ($Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen === 'BT'
+                        || $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen === 'B') && !empty($Artikel->cHerstellerBildKlein)}
+                            <div class="media-left">
+                                <a href="{$Artikel->cHerstellerURL}">
+                                    <img src="{$Artikel->cHerstellerBildKlein}" alt="" class="img-xs">
+                                </a>
+                            </div>
+                        {/if}
+                        {if ($Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen === 'BT'
+                        || $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen === 'Y') && !empty($Artikel->cHersteller)}
+                            <div class="media-body">
+                                <span class="small text-uppercase"><a href="{$Artikel->cHerstellerURL}">{$Artikel->cHersteller}</a></span>
+                            </div>
+                        {/if}
+                    </div>
+                {/if}
             {/block}
 
             <div class="product-info hidden-xs">

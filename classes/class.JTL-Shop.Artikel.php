@@ -3622,7 +3622,13 @@ class Artikel
             $this->cHersteller                = $oArtikelTMP->cName_thersteller;
             $this->cHerstellerSeo             = (isset($oHersteller->cSeo)) ? $oHersteller->cSeo : null;
             $this->cHerstellerURL             = baueURL($oHersteller, URLART_HERSTELLER);
-            $this->cHerstellerHomepage        = filter_var($oArtikelTMP->cHomepage, FILTER_VALIDATE_URL);
+            $this->cHerstellerHomepage        = $oArtikelTMP->cHomepage;
+            if (filter_var($this->cHerstellerHomepage, FILTER_VALIDATE_URL) === false) {
+                $this->cHerstellerHomepage = 'http://' . $oArtikelTMP->cHomepage;
+                if (filter_var($this->cHerstellerHomepage, FILTER_VALIDATE_URL) === false) {
+                    $this->cHerstellerHomepage = $this->cHerstellerURL;
+                }
+            }
             $this->cHerstellerMetaTitle       = $oArtikelTMP->cMetaTitle_spr;
             $this->cHerstellerMetaKeywords    = $oArtikelTMP->cMetaKeywords_spr;
             $this->cHerstellerMetaDescription = $oArtikelTMP->cMetaDescription_spr;

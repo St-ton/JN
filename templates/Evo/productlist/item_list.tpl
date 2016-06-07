@@ -23,18 +23,18 @@
         <div class="col-xs-6 col-sm-6 col-lg-5">
             {block name="product-title"}<h4 class="title"><a href="{$Artikel->cURL}">{$Artikel->cName}</a></h4>{/block}
             {block name="product-manufacturer"}
-                {if $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen !== 'N'}
-                    <h5 class="manufacturer text-uppercase">
+                <div class="row">
+                    {if $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen !== 'N'}
                         <a href="{$Artikel->cHerstellerURL}">
                             {if ($Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen === 'BT' || $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen === 'B') && !empty($Artikel->cHerstellerBildKlein)}
-                                <img src="{$Artikel->cHerstellerBildKlein}" alt="" class="img-xs">
+                                <div class="col-md-1"><img src="{$Artikel->cHerstellerBildKlein}" alt="" class="img-xs"></div>
                             {/if}
                             {if ($Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen === 'BT' || $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen === 'Y') && !empty($Artikel->cHersteller)}
-                                {$Artikel->cHersteller}
+                                <div class="col-md-10"><span class="small text-uppercase">{$Artikel->cHersteller}</span></div>
                             {/if}
                         </a>
-                    </h5>
-                {/if}
+                    {/if}
+                </div>
             {/block}
 
             <div class="product-info hidden-xs">

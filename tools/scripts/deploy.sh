@@ -170,7 +170,7 @@ deploy_ide_meta()
 		[[ $LINE =~ $PATTERN ]]
 		if [[ ${BASH_REMATCH[0]} ]]
 		then
-			META="define(${BASH_REMATCH[1]}, ${BASH_REMATCH[2]});"
+			META="define('${BASH_REMATCH[1]}', ${BASH_REMATCH[2]});"
 			echo $META
 		fi
 	done

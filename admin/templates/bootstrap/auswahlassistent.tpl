@@ -72,8 +72,12 @@
                                                 {/foreach}
                                             </td>
                                             <td class="tcenter">{$oAuswahlAssistentGruppe->cSprache}</td>
-                                            <td class="tcenter">{if $oAuswahlAssistentGruppe->nAktiv}
-                                                    <span class="success">{#yes#}</span>{else}<span class="error">{#no#}</span>{/if}
+                                            <td class="tcenter">
+                                                {if $oAuswahlAssistentGruppe->nAktiv}
+                                                    <i class="fa fa-check"></i>
+                                                {else}
+                                                    <i class="fa fa-ban"></i>
+                                                {/if}
                                             </td>
                                             <td class="tright" width="265">
                                                 {if isset($oAuswahlAssistentGruppe->oAuswahlAssistentFrage_arr) && $oAuswahlAssistentGruppe->oAuswahlAssistentFrage_arr|@count > 0}
@@ -282,7 +286,8 @@
                         <div class="input-group">
                             <span class="input-group-addon">
                                 <label for="kLink_arr">{#aaSpecialSite#}{if isset($cPlausi_arr.cOrt)} <span class="fillout">{#FillOut#}</span>{/if}
-                                    {if isset($cPlausi_arr.kLink_arr)} <span class="fillout">{#aaLinkTaken#}</span>{/if}</label>
+                                    {if isset($cPlausi_arr.kLink_arr)} <span class="fillout">{#aaLinkTaken#}</span>{/if}
+                                </label>
                             </span>
                             <span class="input-group-wrap">
                                 {if $oLink_arr|count > 0}

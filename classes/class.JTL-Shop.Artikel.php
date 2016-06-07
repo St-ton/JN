@@ -3626,7 +3626,7 @@ class Artikel
             if (filter_var($this->cHerstellerHomepage, FILTER_VALIDATE_URL) === false) {
                 $this->cHerstellerHomepage = 'http://' . $oArtikelTMP->cHomepage;
                 if (filter_var($this->cHerstellerHomepage, FILTER_VALIDATE_URL) === false) {
-                    $this->cHerstellerHomepage = $this->cHerstellerURL;
+                    $this->cHerstellerHomepage = $oArtikelTMP->cHomepage;
                 }
             }
             $this->cHerstellerMetaTitle       = $oArtikelTMP->cMetaTitle_spr;

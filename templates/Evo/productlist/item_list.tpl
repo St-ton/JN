@@ -28,7 +28,7 @@
                         {if ($Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen === 'BT'
                         || $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen === 'B') && !empty($Artikel->cHerstellerBildKlein)}
                             <div class="media-left">
-                                <a href="{$Artikel->cHerstellerURL}">
+                                <a href="{$Artikel->cHerstellerHomepage}">
                                     <img src="{$Artikel->cHerstellerBildKlein}" alt="" class="img-xs">
                                 </a>
                             </div>
@@ -36,7 +36,7 @@
                         {if ($Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen === 'BT'
                         || $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen === 'Y') && !empty($Artikel->cHersteller)}
                             <div class="media-body">
-                                <span class="small text-uppercase"><a href="{$Artikel->cHerstellerURL}">{$Artikel->cHersteller}</a></span>
+                                <span class="small text-uppercase"><a href="{$Artikel->cHerstellerHomepage}">{$Artikel->cHersteller}</a></span>
                             </div>
                         {/if}
                     </div>

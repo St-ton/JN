@@ -3100,7 +3100,7 @@ class Artikel
         }
         if (!$kKundengruppe) {
             if (!isset($_SESSION['Kundengruppe']) || !$_SESSION['Kundengruppe']->kKundengruppe) {
-                $conf = Shop::getSettings(array(CONF_GLOBAL));
+                $conf                                                 = Shop::getSettings(array(CONF_GLOBAL));
                 $_SESSION['Kundengruppe']                             = Kundengruppe::getDefault();
                 $_SESSION['Kundengruppe']->darfPreiseSehen            = 1;
                 $_SESSION['Kundengruppe']->darfArtikelKategorienSehen = 1;
@@ -3259,7 +3259,7 @@ class Artikel
                             thersteller.cName AS cName_thersteller, thersteller.cHomepage, thersteller.nSortNr AS nSortNr_thersteller,
                             thersteller.cBildpfad AS cBildpfad_thersteller,
                             therstellersprache.cMetaTitle AS cMetaTitle_spr, therstellersprache.cMetaKeywords AS cMetaKeywords_spr,
-                            therstellersprache.cMetaDescription AS cMetaDescription_spr, therstellersprache.cBeschreibung AS cBeschreibung_spr,
+                            therstellersprache.cMetaDescription AS cMetaDescription_spr, therstellersprache.cBeschreibung AS cBeschreibung_hersteller_spr,
                             tsonderpreise.fNettoPreis, tartikelext.fDurchschnittsBewertung, tlieferstatus.cName AS cName_tlieferstatus, teinheit.cName AS teinheitcName,
                             tartikelkategorierabatt.fRabatt AS fMaxRabatt, tartikelsonderpreis.cAktiv AS cAktivSonderpreis, tartikelsonderpreis.dStart AS dStart_en,
                             DATE_FORMAT(tartikelsonderpreis.dStart, '%d.%m.%Y') AS dStart_de, tartikelsonderpreis.dEnde AS dEnde_en,
@@ -3474,11 +3474,6 @@ class Artikel
         }
         // Lokalisieren
         if ($kSprache > 0 && !standardspracheAktiv()) {
-            // Artikel
-            if (strlen(trim($oArtikelTMP->cName_spr)) > 0) {
-                $this->cBeschreibung = parseNewsText($oArtikelTMP->cBeschreibung_spr);
-                $this->cName         = $oArtikelTMP->cName_spr;
-            }
             //VPE-Einheit
             $oVPEEinheitRes = Shop::DB()->query("
                 SELECT cName
@@ -3629,7 +3624,7 @@ class Artikel
             $this->cHerstellerMetaTitle       = $oArtikelTMP->cMetaTitle_spr;
             $this->cHerstellerMetaKeywords    = $oArtikelTMP->cMetaKeywords_spr;
             $this->cHerstellerMetaDescription = $oArtikelTMP->cMetaDescription_spr;
-            $this->cHerstellerBeschreibung    = parseNewsText($oArtikelTMP->cBeschreibung_spr);
+            $this->cHerstellerBeschreibung    = parseNewsText($oArtikelTMP->cBeschreibung_hersteller_spr);
             $this->cHerstellerSortNr          = $oArtikelTMP->nSortNr_thersteller;
             if (strlen($oArtikelTMP->cBildpfad_thersteller) > 0) {
                 $this->cHerstellerBildKlein  = PFAD_HERSTELLERBILDER_KLEIN . $oArtikelTMP->cBildpfad_thersteller;

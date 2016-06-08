@@ -75,6 +75,7 @@ class MediaImageCompatibility implements IMedia
             $number = isset($req['number']) ? (int)$req['number'] : 1;
             $thumbUrl = Shop::getURL() . '/' . MediaImage::getThumb(Image::TYPE_PRODUCT, $fallback->kArtikel, $fallback, Image::mapSize($req['size']), $number);
 
+            http_response_code(301);
             header("location: {$thumbUrl}");
             exit;
         }

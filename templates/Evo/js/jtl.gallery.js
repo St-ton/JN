@@ -29,7 +29,8 @@
             fullscreen: '<div class="fullscreen image-gallery has-thumbs">' +
             '<ul class="image-container box-expanded"></ul>' +
             '<ul class="image-thumbs carousel vertical"></ul>' +
-            '</div>'
+            '</div>',
+            indicator: '<div class="pswp-indicator nivo-controlNav carousel-indicators bottom17"></div>'
         }
     };
 
@@ -194,6 +195,26 @@
 
                     gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, pswpItems, options);
                     gallery.init();
+                    if (pswpItems.length > 1) {
+                        var indicator = $(self.options.template.indicator);
+                        $(gallery.container).parent().addClass('theme-default');
+                        $(gallery.container).parent().append(indicator);
+                        
+                        for (i = 0; i < pswpItems.length; i++) {
+                            indicator.append($('<a />')
+                                .attr('src', '#')
+                                .attr('rel', i)
+                                .addClass(gallery.getCurrentIndex() == i ? 'nivo-control active' : 'nivo-control')
+                                .click(function (e) {
+                                    gallery.goTo(parseInt($(this).attr('rel')));
+                                })
+                            );
+                        }
+                        gallery.listen('beforeChange', function () {
+                            $(this.container).parent().find('a.nivo-control').removeClass('active');
+                            $(this.container).parent().find('a.nivo-control[rel="' + this.getCurrentIndex() + '"]').addClass('active');
+                        });
+                    }
 
                     return false;
                 });

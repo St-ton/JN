@@ -356,7 +356,7 @@ if (isset($_POST['kopiere_in_linkgruppe']) && intval($_POST['kopiere_in_linkgrup
                     ->save();
                 // Kinder auch umziehen
                 if (isset($oLink->oSub_arr) && count($oLink->oSub_arr) > 0) {
-                    kopiereLinkgruppeRek($oLink->oSub_arr, $_POST['kLinkgruppe']);
+                    copyIntoLinkgroupRec($oLink->oSub_arr, $_POST['kLinkgruppe']);
                 }
                 $hinweis .= 'Sie haben den Link "' . $oLink->cName . '" erfolgreich in die Linkgruppe "' . $oLinkgruppe->cName . '" kopiert.';
                 $step       = 'uebersicht';

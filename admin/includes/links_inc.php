@@ -261,13 +261,13 @@ function aenderLinkgruppeRek($oSub_arr, $kLinkgruppe)
  * @param array $oSub_arr
  * @param int   $kLinkgruppe
  */
-function kopiereLinkgruppeRek($oSub_arr, $kLinkgruppe)
+function copyIntoLinkgroupRec($oSub_arr, $kLinkgruppe)
 {
     if (is_array($oSub_arr) && count($oSub_arr) > 0) {
         foreach ($oSub_arr as $oSub) {
             $oSub->setLinkgruppe($kLinkgruppe);
             $oSub->save();
-            kopiereLinkgruppeRek($oSub->oSub_arr, $kLinkgruppe);
+            copyIntoLinkgroupRec($oSub->oSub_arr, $kLinkgruppe);
         }
     }
 }

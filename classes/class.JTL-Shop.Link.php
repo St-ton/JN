@@ -523,14 +523,14 @@ class Link extends MainModel
         $nRows = 0;
         if ($this->kLink > 0) {
             if (!empty($kLinkgruppe)) {
-                $nRows = Shop::DB()->query("DELETE FROM tlink WHERE kLink = " . $this->getLink() . " AND kLinkgruppe = " . $kLinkgruppe, 3);
+                $nRows = Shop::DB()->delete('tlink', ['kLink', 'kLinkgruppe'], [$this->getLink(), $kLinkgruppe]);
             } else {
-                $nRows = Shop::DB()->query("DELETE FROM tlink WHERE kLink = " . $this->getLink(), 3);
+                $nRows = Shop::DB()->delete('tlink', 'kLink', $this->getLink());
             }
             $nLinkAnz = Shop::DB()->query("SELECT * FROM tlink WHERE kLink = " . $this->getLink(), 2);
             if (count($nLinkAnz) === 0) {
                 Shop::DB()->delete('tlinksprache', 'kLink', $this->getLink());
-                Shop::DB()->query("DELETE FROM tseo WHERE kKey = " . $this->getLink() . " AND cKey = 'kLink'", 4);
+                Shop::DB()->delete('tseo',['kKey','cKey'] , [$this->getLink(), 'kLink']);
 
                 $cDir = PFAD_ROOT . PFAD_BILDER . PFAD_LINKBILDER . $this->getLink();
                 if (is_dir($cDir) && $this->getLink() > 0) {

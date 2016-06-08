@@ -10,11 +10,18 @@
     <link type="image/x-icon" href="favicon.ico" rel="shortcut icon" />
     {$admin_css}
     <link type="text/css" rel="stylesheet" href="{$PFAD_CODEMIRROR}lib/codemirror.css" />
+    <link type="text/css" rel="stylesheet" href="{$PFAD_CODEMIRROR}addon/hint/show-hint.css" />
     <link type="text/css" rel="stylesheet" href="{$PFAD_CODEMIRROR}addon/display/fullscreen.css" />
     <link type="text/css" rel="stylesheet" href="{$PFAD_CODEMIRROR}addon/scroll/simplescrollbars.css" />
     {$admin_js}
     <script type="text/javascript" src="{$PFAD_CKEDITOR}ckeditor.js"></script>
     <script type="text/javascript" src="{$PFAD_CODEMIRROR}lib/codemirror.js"></script>
+    
+    <script type="text/javascript" src="{$PFAD_CODEMIRROR}addon/hint/show-hint.js"></script>
+    <script type="text/javascript" src="{$PFAD_CODEMIRROR}addon/hint/sql-hint.js"></script>
+    <script type="text/javascript" src="{$PFAD_CODEMIRROR}addon/scroll/simplescrollbars.js"></script>
+    <script type="text/javascript" src="{$PFAD_CODEMIRROR}addon/display/fullscreen.js"></script>
+    
     <script type="text/javascript" src="{$PFAD_CODEMIRROR}mode/css/css.js"></script>
     <script type="text/javascript" src="{$PFAD_CODEMIRROR}mode/javascript/javascript.js"></script>
     <script type="text/javascript" src="{$PFAD_CODEMIRROR}mode/xml/xml.js"></script>
@@ -22,8 +29,8 @@
     <script type="text/javascript" src="{$PFAD_CODEMIRROR}mode/htmlmixed/htmlmixed.js"></script>
     <script type="text/javascript" src="{$PFAD_CODEMIRROR}mode/smarty/smarty.js"></script>
     <script type="text/javascript" src="{$PFAD_CODEMIRROR}mode/smartymixed/smartymixed.js"></script>
-    <script type="text/javascript" src="{$PFAD_CODEMIRROR}addon/scroll/simplescrollbars.js"></script>
-    <script type="text/javascript" src="{$PFAD_CODEMIRROR}addon/display/fullscreen.js"></script>
+    <script type="text/javascript" src="{$PFAD_CODEMIRROR}mode/sql/sql.js"></script>
+
     <script type="text/javascript" src="{$URL_SHOP}/{$PFAD_ADMIN}{$currentTemplateDir}js/codemirror_init.js"></script>
     <script type="text/javascript">
         var bootstrapButton = $.fn.button.noConflict();

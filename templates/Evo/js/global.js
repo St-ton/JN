@@ -169,7 +169,8 @@ $(document).ready(function () {
         url += (url.indexOf('?') === -1) ? '?isAjax=true' : '&isAjax=true';
         eModal.ajax({
             'size': 'lg',
-            'url': url
+            'url': url,
+            'title': typeof e.currentTarget.title != 'undefined' ? e.currentTarget.title : '{lang key="ajaxLoading" section="global"}'
         });
         e.stopPropagation();
         return false;

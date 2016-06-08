@@ -19,6 +19,7 @@
 * Bugfix: TopArtikel werden bei aktiviertem Objektcache nicht aktualisiert 
 * Bugfix: Ändern von Bildeinstellungen invalidiert Objektcache nicht 
 * Bugfix: Varkombi Dropdown-Auswahl wird bei Auswahl Nachladen der Kombination zurückgesetzt
+* Verbesserung: Bildpfad-Änderungen (/bilder/... --> /media/image/...) werden nun via 301 weitergeleitet. 
 
 ## [4.03.2]
 * Bugfix: robots.txt fehlendes "Sitemap: " vor der Sitemap-URL

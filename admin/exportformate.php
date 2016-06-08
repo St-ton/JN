@@ -111,6 +111,9 @@ if (isset($_POST['neu_export']) && (int)$_POST['neu_export'] === 1 && validateTo
         }
         $step = ($error) ? $step : 'uebersicht';
     } else {
+        $_POST['cContent']   = str_replace("<tab>", "\t", $_POST['cContent']);
+        $_POST['cKopfzeile'] = str_replace("<tab>", "\t", $_POST['cKopfzeile']);
+        $_POST['cFusszeile'] = str_replace("<tab>", "\t", $_POST['cFusszeile']);
         $smarty->assign('cPlausiValue_arr', $cPlausiValue_arr)
                ->assign('cPostVar_arr', StringHandler::filterXSS($_POST));
         $step   = 'neuer Export';
@@ -220,6 +223,7 @@ if ($step === 'neuer Export') {
         $exportformat             = Shop::DB()->select('texportformat', 'kExportformat', (int)$_POST['kExportformat']);
         $exportformat->cKopfzeile = str_replace("\t", "<tab>", $exportformat->cKopfzeile);
         $exportformat->cContent   = str_replace("\t", "<tab>", $exportformat->cContent);
+        $exportformat->cFusszeile = str_replace("\t", "<tab>", $exportformat->cFusszeile);
         if ($exportformat->kPlugin > 0 && strpos($exportformat->cContent, PLUGIN_EXPORTFORMAT_CONTENTFILE) !== false) {
             $exportformat->bPluginContentFile = true;
         }

@@ -26,9 +26,12 @@ class Migration_20160607140140 extends Migration implements IMigration
 
     public function up()
     {
+        $this->execute('CREATE TABLE IF NOT EXISTS `tartikelpicthistory` (`kArtikel` int(10) unsigned NOT NULL, `cPfad` varchar(255) NOT NULL, `nNr` tinyint(3) unsigned NOT NULL DEFAULT \'1\', UNIQUE KEY `UNIQUE` (`kArtikel`,`nNr`,`cPfad`)) ENGINE=MyISAM DEFAULT CHARSET=latin1');
+        $this->execute('REPLACE INTO `tartikelpicthistory` (SELECT `kArtikel`, `cPfad`, `nNr` FROM `tartikelpict` WHERE `kBild` = 0)');
     }
 
     public function down()
     {
+        $this->execute('DROP TABLE IF NOT EXISTS `tartikelpicthistory`');
     }
 }

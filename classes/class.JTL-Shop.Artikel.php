@@ -4711,6 +4711,31 @@ class Artikel
 
             return $estimatedDelivery;
         }
+        if ($this->bHasKonfig && !empty($this->oKonfig_arr)) {
+            $allMaxDeliveryDays = $maxDeliveryDays;
+            $allMinDeliveryDays = $minDeliveryDays;
+            foreach ($this->oKonfig_arr as $gruppe) {
+                foreach ($gruppe->oItem_arr as $piece) {
+                    $konfigItemArticle = $piece->getArtikel();
+                    if (!empty($konfigItemArticle)) {
+                        $konfigItemArticle->getDeliveryTime($countryCode,
+                            $purchaseQuantity * floatval($piece->getInitial()), null, null, $shippingID);
+                        if (isset($konfigItemArticle->nMaxDeliveryDays)) {
+                            $allMaxDeliveryDays = max($allMaxDeliveryDays, $konfigItemArticle->nMaxDeliveryDays);
+                        }
+                        if (isset($konfigItemArticle->nMinDeliveryDays)) {
+                            $allMinDeliveryDays = max($allMinDeliveryDays, $konfigItemArticle->nMinDeliveryDays);
+                        }
+                    }
+                }
+            }
+            $estimatedDelivery      = getDeliverytimeEstimationText($allMinDeliveryDays, $allMaxDeliveryDays);
+            $this->nMinDeliveryDays = $allMinDeliveryDays;
+            $this->nMaxDeliveryDays = $allMaxDeliveryDays;
+
+            return $estimatedDelivery;
+        }
+
         if ($this->nBearbeitungszeit > 0 || isset($this->FunktionsAttribute['processingtime']) && $this->FunktionsAttribute['processingtime'] > 0) {
             $processingTime = ($this->nBearbeitungszeit > 0) ? $this->nBearbeitungszeit : (int) $this->FunktionsAttribute['processingtime'];
             $minDeliveryDays += $processingTime;

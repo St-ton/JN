@@ -170,7 +170,7 @@ $(document).ready(function () {
         eModal.ajax({
             'size': 'lg',
             'url': url,
-            'title': typeof e.currentTarget.title != 'undefined' ? e.currentTarget.title : '{lang key="ajaxLoading" section="global"}'
+            'title': typeof e.currentTarget.title != 'undefined' ? e.currentTarget.title : ''
         });
         e.stopPropagation();
         return false;

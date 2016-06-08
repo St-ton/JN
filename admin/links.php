@@ -30,9 +30,12 @@ if (isset($_POST['addlink']) && intval($_POST['addlink']) > 0) {
 
 if (isset($_POST['dellink']) && intval($_POST['dellink']) > 0 && validateToken()) {
     $kLink = (int)$_POST['dellink'];
-    removeLink($kLink);
+    $kLinkgruppe = (int)$_POST['kLinkgruppe'];
+    removeLink($kLink, $kLinkgruppe);
     $hinweis .= 'Link erfolgreich gel&ouml;scht!';
     $clearCache = true;
+    $step = 'uebersicht';
+    $_POST = array();
 }
 
 if (isset($_POST['loesch_linkgruppe']) && intval($_POST['loesch_linkgruppe']) === 1 && validateToken()) {
@@ -326,6 +329,36 @@ if (isset($_POST['aender_linkgruppe']) && intval($_POST['aender_linkgruppe']) ==
                     aenderLinkgruppeRek($oLink->oSub_arr, $_POST['kLinkgruppe']);
                 }
                 $hinweis .= 'Sie haben den Link "' . $oLink->cName . '" erfolgreich in die Linkgruppe "' . $oLinkgruppe->cName . '" verschoben.';
+                $step       = 'uebersicht';
+                $clearCache = true;
+            } else {
+                $fehler .= 'Fehler: Es konnte keine Linkgruppe mit Ihrem Key gefunden werden.';
+            }
+        } else {
+            $fehler .= 'Fehler: Es konnte kein Link mit Ihrem Key gefunden werden.';
+        }
+    }
+}
+if (isset($_POST['kopiere_in_linkgruppe']) && intval($_POST['kopiere_in_linkgruppe']) === 1 && validateToken()) {
+    if (intval($_POST['kLink']) > 0 && intval($_POST['kLinkgruppe']) > 0) {
+        $oLink = new Link((int)$_POST['kLink'], null, true);
+
+        if ($oLink->getLink() > 0) {
+            $oLinkgruppe = Shop::DB()->query(
+                "SELECT kLinkgruppe, cName
+                    FROM tlinkgruppe
+                    WHERE kLinkgruppe = " . (int)$_POST['kLinkgruppe'], 1
+            );
+
+            if ($oLinkgruppe->kLinkgruppe > 0) {
+                $oLink->setLinkgruppe($_POST['kLinkgruppe'])
+                    ->setVaterLink(0)
+                    ->save();
+                // Kinder auch umziehen
+                if (isset($oLink->oSub_arr) && count($oLink->oSub_arr) > 0) {
+                    kopiereLinkgruppeRek($oLink->oSub_arr, $_POST['kLinkgruppe']);
+                }
+                $hinweis .= 'Sie haben den Link "' . $oLink->cName . '" erfolgreich in die Linkgruppe "' . $oLinkgruppe->cName . '" kopiert.';
                 $step       = 'uebersicht';
                 $clearCache = true;
             } else {

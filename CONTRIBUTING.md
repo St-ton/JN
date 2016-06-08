@@ -47,6 +47,20 @@ Fix 1 File:
 php-cs-fixer fix admin/includes/dashboard_inc.php --config-file .php_cs
 ```
 
+
+
+## How to write good issues
+
+Always explain the conditions which led you to write this issue. 
+Any reader must be able to understand your idea or reproduce a bug without having to ask for examples, use cases or sample-data.  
+
+German language is preferred for issues + changelog because JTL primary addresses the german-speaking market
+
+* Keep your issue titles short and descriptive
+* Format your description with [Gitlab flavoured markdown](https://gitlab.jtl-software.de/help/markdown/markdown): Make use of syntax highlighting, lists, links and images
+
+
+
 ## Commit Messages
 
 Always provide a short summary of your Codechange in the first line. 
@@ -54,18 +68,29 @@ Long description is optional. If needed, place a new line between summary and lo
 
 Summary (first line): 
 
-Start your commit message with "Fix" or "Re" or "Unfix" followed by the issue referenced. 
-Next, provide a short description about the change and use words like "Improve, Fix, Add, Remove, Shorten, Update" e.g. to keep a good readability. 
+Provide a short description about the change and use words like "Improve, Fix, Add, Remove, Shorten, Update" e.g. to keep a good readability.
+
+
+Issue References: 
+
+End your commit message with "Fix" or "Re" or "Unfix" followed by the issue referenced. 
+If your commit message is 1 line only, feel free to place your issue reference at the end of that line. 
+Otherwise place a new line above the reference.  
 
 Good: 
 ```
-git commit -m "Fix #1234 - Fix wrong comparison operator"
+Fix wrong comparison operator. Fix #1234 and #1236
 ```
 ```
-git commit -m "Re #1234 - Add required attribute to mandatory fields"
+Add required attribute to mandatory fields. 
+
+Re #1234
+Re #1236"
 ```
 ```
-git commit -m "Unfix jtlshop/shop4#12345 - Roll back last changes because jtlshop/shop4#12346 already solves this issue"
+Roll back last changes because jtlshop/shop4#12346 already solves this issue. 
+
+Unfix jtlshop/shop4#12345"
 ```
 
 Bad: 
@@ -81,3 +106,5 @@ git commit -m "Schönheitskorrektur"
 ```
 git commit -m "wrong comparison operator used"
 ```
+
+Also check out this [article about writing good commit messages](http://chris.beams.io/posts/git-commit/)

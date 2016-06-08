@@ -125,12 +125,13 @@ function calcRatio($cDatei, $nMaxBreite, $nMaxHoehe)
 
 /**
  * @param int $kLink
+ * @param int $kLinkgruppe
  */
-function removeLink($kLink)
+function removeLink($kLink, $kLinkgruppe)
 {
     $oLink = new Link($kLink, null, true);
-    $oLink->delete();
-
+    $oLink->kLinkgruppe = $kLinkgruppe;
+    $oLink->delete(true, $kLinkgruppe);
     // Bilderverzeichnis loeschen
     if (isset($cUploadVerzeichnis) && is_dir($cUploadVerzeichnis . $kLink)) {
         $DirHandle = opendir($cUploadVerzeichnis . $kLink);
@@ -252,6 +253,21 @@ function aenderLinkgruppeRek($oSub_arr, $kLinkgruppe)
             $oSub->setLinkgruppe($kLinkgruppe);
             $oSub->update();
             aenderLinkgruppeRek($oSub->oSub_arr, $kLinkgruppe);
+        }
+    }
+}
+
+/**
+ * @param array $oSub_arr
+ * @param int   $kLinkgruppe
+ */
+function copyIntoLinkgroupRec($oSub_arr, $kLinkgruppe)
+{
+    if (is_array($oSub_arr) && count($oSub_arr) > 0) {
+        foreach ($oSub_arr as $oSub) {
+            $oSub->setLinkgruppe($kLinkgruppe);
+            $oSub->save();
+            copyIntoLinkgroupRec($oSub->oSub_arr, $kLinkgruppe);
         }
     }
 }

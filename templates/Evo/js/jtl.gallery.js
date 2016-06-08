@@ -116,7 +116,11 @@
                     .append(image);
 
                 thumb = $('<li />').addClass('item').append(
-                    $('<img />').attr('src', item.xs.src).attr('alt', alt)
+                    $('<img />')
+                        .attr('src', item.xs.src)
+                        .attr('alt', alt)
+                        .attr('width', item.xs.size.width)
+                        .attr('height', item.xs.size.height)
                 );
 
                 $(template).find('.image-thumbs')

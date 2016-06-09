@@ -1331,7 +1331,7 @@ class Artikel
                 'height' => $height
             ),
             'type' => $type,
-            'alt'  => utf8_encode(htmlentities($image->cAltAttribut))
+            'alt'  => utf8_encode($image->cAltAttribut)
         );
     }
 

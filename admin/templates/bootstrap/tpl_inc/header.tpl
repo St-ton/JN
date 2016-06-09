@@ -159,7 +159,7 @@
         </script>
     {/if}
     {getCurrentPage assign="currentPage"}
-    {$fluid = ['index', 'marktplatz', 'banner']}
+    {$fluid = ['index', 'marktplatz', 'banner', 'dbmanager']}
     <div class="backend-wrapper {if $currentPage|in_array:$fluid}container-fluid{else}container{/if}{if $currentPage === 'index'} dashboard{/if}{if $currentPage === 'marktplatz'} marktplatz{/if}">
         <nav class="navbar navbar-inverse navbar-fixed-top yamm" role="navigation">
             <div class="container-fluid">

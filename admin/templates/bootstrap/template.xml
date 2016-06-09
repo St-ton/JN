@@ -35,6 +35,7 @@
             <File Path="js/bootstrap-ladda.js"/>
             <File Path="js/bootstrap-notify.min.js"/>
             <File Path="js/humanize-duration.js"/>
+            <File Path="js/jquery.stickytableheaders.min.js"/>
         </JS>
     </Minify>
 </Template>

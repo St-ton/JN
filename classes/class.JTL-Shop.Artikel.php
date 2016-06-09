@@ -3100,7 +3100,7 @@ class Artikel
         }
         if (!$kKundengruppe) {
             if (!isset($_SESSION['Kundengruppe']) || !$_SESSION['Kundengruppe']->kKundengruppe) {
-                $conf = Shop::getSettings(array(CONF_GLOBAL));
+                $conf                                                 = Shop::getSettings(array(CONF_GLOBAL));
                 $_SESSION['Kundengruppe']                             = Kundengruppe::getDefault();
                 $_SESSION['Kundengruppe']->darfPreiseSehen            = 1;
                 $_SESSION['Kundengruppe']->darfArtikelKategorienSehen = 1;
@@ -3543,7 +3543,7 @@ class Artikel
         if (isset($oArtikelOptionen->nProductBundle) && $oArtikelOptionen->nProductBundle) {
             $this->holeProductBundle();
         }
-        if ($this->cVPE === 'Y' && $this->fVPEWert > 0 && $this->cVPEEinheit) {
+        if ($this->cVPE === 'Y' && $this->fVPEWert > 0 && $this->cVPEEinheit && $this->Preise != null) {
             // Grundpreis beim Artikelpreis
             $this->baueVPE();
             // Grundpreis bei Staffelpreise

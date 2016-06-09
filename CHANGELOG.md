@@ -22,6 +22,7 @@
 * Verbesserung: Bildpfad-Änderungen (/bilder/... --> /media/image/...) werden nun via 301 weitergeleitet. 
 * Bugfix PayPal-Plugin (v1.05): Gratisgeschenke werden nicht als Item gelistet
 * Bugfix PayPal-Plugin (v1.05): TLS-Check liefert teilweise falsche Ergebnisse, da Version nicht festgelegt
+* Bugfix Fehlerhafte Kategorie-/Merkmalfilter-URLs erzeugen keinen 404-Statuscode
 
 ## [4.03.2]
 * Bugfix: robots.txt fehlendes "Sitemap: " vor der Sitemap-URL

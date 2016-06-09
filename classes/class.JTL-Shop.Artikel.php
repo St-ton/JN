@@ -3626,6 +3626,12 @@ class Artikel
             $this->cHerstellerSeo             = (isset($oHersteller->cSeo)) ? $oHersteller->cSeo : null;
             $this->cHerstellerURL             = baueURL($oHersteller, URLART_HERSTELLER);
             $this->cHerstellerHomepage        = $oArtikelTMP->cHomepage;
+            if (filter_var($this->cHerstellerHomepage, FILTER_VALIDATE_URL) === false) {
+                $this->cHerstellerHomepage = 'http://' . $oArtikelTMP->cHomepage;
+                if (filter_var($this->cHerstellerHomepage, FILTER_VALIDATE_URL) === false) {
+                    $this->cHerstellerHomepage = $oArtikelTMP->cHomepage;
+                }
+            }
             $this->cHerstellerMetaTitle       = $oArtikelTMP->cMetaTitle_spr;
             $this->cHerstellerMetaKeywords    = $oArtikelTMP->cMetaKeywords_spr;
             $this->cHerstellerMetaDescription = $oArtikelTMP->cMetaDescription_spr;
@@ -3634,9 +3640,6 @@ class Artikel
             if (strlen($oArtikelTMP->cBildpfad_thersteller) > 0) {
                 $this->cHerstellerBildKlein  = PFAD_HERSTELLERBILDER_KLEIN . $oArtikelTMP->cBildpfad_thersteller;
                 $this->cHerstellerBildNormal = PFAD_HERSTELLERBILDER_NORMAL . $oArtikelTMP->cBildpfad_thersteller;
-            } else {
-                $this->cHerstellerBildKlein  = BILD_KEIN_HERSTELLERBILD_VORHANDEN;
-                $this->cHerstellerBildNormal = BILD_KEIN_HERSTELLERBILD_VORHANDEN;
             }
         }
         //datum umformatieren

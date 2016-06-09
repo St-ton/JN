@@ -20,7 +20,7 @@
             {/block}
             {include file='productdetails/rating.tpl' stars=$Artikel->fDurchschnittsBewertung}
         </div>
-        <div class="col-xs-6 col-sm-6 col-lg-5">
+        <div class="col-xs-6 col-lg-5">
             {block name="product-title"}<h4 class="title"><a href="{$Artikel->cURL}">{$Artikel->cName}</a></h4>{/block}
             {block name="product-manufacturer"}
                 {if $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen !== 'N'}

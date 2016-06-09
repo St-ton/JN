@@ -1,82 +1,6 @@
 {include file='tpl_inc/header.tpl'}
 {config_load file="$lang.conf" section="dbcheck"}
 {include file='tpl_inc/seite_header.tpl' cTitel="Datenbank-Manager" cBeschreibung="<kbd>Tabellen und Views ({$tables|@count})</kbd>" cDokuURL=#dbcheckURL#}
-<style type="text/css">
-.CodeMirror {
-    background: #f7f7f7;
-    font-size: 12px;
-    height: 260px;
-}
-
-.code-inline {
-    background-color: #eee;
-    padding: 0 5px;
-    margin: 0;
-}
-
-.code-inline pre {
-    display: table-cell;
-    white-space: nowrap;
-    background-color: transparent !important;
-    border: 0;
-    padding: 0;
-    margin: 0;
-}
-
-.nowrap td, .nowrap th, td.nowrap {
-    white-space: pre;
-}
-
-.table-sql {
-    background-color: #fff;
-    font: 90%/1.25 Verdana,Arial,Helvetica,sans-serif;
-}
-
-.table-sticky-header thead {
-    background-color: #fff;
-}
-
-.table>thead>tr>th, .table>thead>tr>td {
-    border-bottom-width: 1px;
-}
-
-.table-sql td.data {
-    font-family: monospace;
-}
-
-.table-sql td.data-str {
-    color: #0005CC;
-}
-
-.table-sql td.data-int,
-.table-sql td.data-float {
-    color: #3A9A00;
-}
-
-.table-sql td.data-date {
-    color: #A500D8;
-}
-
-.table-sql td.data-char {
-    text-align: center;
-}
-
-.table-sql td.data-char span {
-    background-color: #999;
-    display: inline;
-    padding: .1em .4em;
-    color: #fff;
-    text-align: center;
-    white-space: nowrap;
-    vertical-align: baseline;
-}
-
-.table-sql td.data-null {
-    color: #999;
-    font-style: italic;
-}
-</style>
-
 <script>
 {literal}
 $(function() {
@@ -101,14 +25,21 @@ $(function() {
 
 function filter_tables(value) {
     var rex = new RegExp(value, 'i');
-    var $items = $('.db-sidenav li');
+    var $nav = $('.db-sidenav');
+    var $items = $nav.find('li');
     
     $items.hide();
+    $nav.unhighlight();
+
     var $found = $items.filter(function () {
         return rex.test($(this).text());
     });
     
     $found.show();
+    if ($found.length > 0) {
+        $nav.highlight(value);
+    }
+    
     return $found.length;
 }
 {/literal}

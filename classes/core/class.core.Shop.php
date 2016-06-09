@@ -912,8 +912,8 @@ final class Shop
 
             self::setPageType(PAGE_ARTIKEL);
             self::$fileName = 'artikel.php';
-        } elseif ((!isset($bSEOMerkmalNotFound) || $bSEOMerkmalNotFound === false) &&
-            (!isset($bKatFilterNotFound) || $bKatFilterNotFound === false) &&
+        } elseif ((!isset(self::$bSEOMerkmalNotFound) || self::$bSEOMerkmalNotFound === false) &&
+            (!isset(self::$bKatFilterNotFound) || self::$bKatFilterNotFound === false) &&
             ((self::$isSeoMainword || self::$NaviFilter->nAnzahlFilter == 0) || !self::$bSeo) &&
             (self::$kHersteller > 0 || self::$kSuchanfrage > 0 || self::$kMerkmalWert > 0 || self::$kTag > 0 || self::$kKategorie > 0 ||
                 (isset(self::$cPreisspannenFilter) && self::$cPreisspannenFilter > 0) ||

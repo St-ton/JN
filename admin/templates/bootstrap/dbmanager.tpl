@@ -220,7 +220,7 @@ function filter_tables(value) {
                                 {$class = 'none'}
                                 {$info = $columns[$h]->Type_info}
 
-                                {if $info->Name|in_array:['text', 'varchar']}
+                                {if $info->Name|in_array:['varchar', 'tinytext', 'text', 'mediumtext', 'longtext']}
                                     {$class = 'str'}
                                     {$value = $value|escape:'html'|truncate:100:'...'}
                                 {else if $info->Name|in_array:['float', 'decimal']}
@@ -230,12 +230,12 @@ function filter_tables(value) {
                                 {else if $info->Name|in_array:['double']}
                                     {$class = 'float'}
                                     {$value = $value|number_format:2}
-                                {else if $info->Name|in_array:['int', 'tinyint', 'bigint', 'smallint']}
+                                {else if $info->Name|in_array:['tinyint', 'smallint', 'mediumint', 'int', 'bigint']}
                                     {$class = 'int'}
-                                {else if $info->Name|in_array:['date', 'datetime']}
+                                {else if $info->Name|in_array:['date', 'datetime', 'time', 'timestamp', 'year']}
                                     {$class = 'date'}
                                     {*$default = ($value == '0000-00-00' || $value == '0000-00-00 00-00-00')*}
-                                {else if $info->Name|in_array:['char']}
+                                {else if $info->Name|in_array:['bit', 'char']}
                                     {$class = 'char'}
                                 {/if}
 

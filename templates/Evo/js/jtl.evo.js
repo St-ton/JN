@@ -370,7 +370,7 @@
             $(document).delegate('a[href^="#"]', 'click', function(e) {
                 var elem = e.target;
                 if (!e.isDefaultPrevented()) {
-                    // only runs if no other cklick event is fired
+                    // only runs if no other click event is fired
                     if (that.smoothScrollToAnchor(elem.getAttribute('href'), supportHistory)) {
                         e.preventDefault();
                     }

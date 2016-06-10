@@ -2588,3 +2588,14 @@ h2 .btn-group {
     color: #000 !important;
     background-color: #FFFF88 !important;
 }
+
+.panel-danger {
+    background-color: #C82E29;
+    color: #ffffff;
+}
+
+.border-right {
+    border-right-style: solid !important;
+    border-right-width: 1px !important;
+    border-color: rgba(0, 0, 0, 0.07) !important;
+}

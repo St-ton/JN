@@ -159,8 +159,8 @@
         </script>
     {/if}
     {getCurrentPage assign="currentPage"}
-    {$fluid = ['index', 'marktplatz', 'banner', 'dbmanager']}
-    <div class="backend-wrapper {if $currentPage|in_array:$fluid}container-fluid{else}container{/if}{if $currentPage === 'index'} dashboard{/if}{if $currentPage === 'marktplatz'} marktplatz{/if}">
+    {$fluid = ['index', 'marktplatz', 'banner', 'dbmanager', 'status']}
+    <div class="backend-wrapper {if $currentPage|in_array:$fluid}container-fluid{else}container{/if}{if $currentPage === 'index' || $currentPage === 'status'} dashboard{/if}{if $currentPage === 'marktplatz'} marktplatz{/if}">
         <nav class="navbar navbar-inverse navbar-fixed-top yamm" role="navigation">
             <div class="container-fluid">
                 <div class="navbar-header">
@@ -221,37 +221,7 @@
                         {/foreach}
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
-                        {*
-                        {if $hasUpdates && permission('SHOP_UPDATE_VIEW')}
-                            <li><a href="dbupdater.php"><i class="fa fa-refresh" aria-hidden="true"></i> Updates</a></li>
-                        {/if}
-                        *}
-                        
-                        {$notifyTypes = [0 => 'info', 1 => 'warning', 2 => 'danger']}
-
-                        {if $notifications->count() > 0}
-                            <li class="dropdown">
-                                <a href="#" class="dropdown-toggle parent" data-toggle="dropdown">
-                                    <span class="badge-notify btn-{$notifyTypes[$notifications->getHighestType()]}">{$notifications->count()}</span>
-                                    <!--span class="glyphicon glyphicon-bell"></span>-->
-                                    Mitteilungen
-                                    <span class="caret"></span>
-                                </a>
-                                <ul class="dropdown-menu" role="main">
-                                    {foreach $notifications as $notify}
-                                        <li class="nag">
-                                            <div class="nag-split btn-{$notifyTypes[$notify->getType()]}"><i class="fa fa-angle-right" aria-hidden="true"></i></div>
-                                            <div class="nag-content">
-                                                <a href="{$notify->getUrl()}">
-                                                    <div class="nag-title">{$notify->getTitle()}</div>
-                                                    <div class="nag-text">{$notify->getDescription()}</div>
-                                                </a>
-                                            </div>
-                                        </li>
-                                    {/foreach}
-                                </ul>
-                            </li>
-                        {/if}
+                        <li class="dropdown" id="notify-drop">{include file="tpl_inc/notify_drop.tpl"}</li>
                         {if permission('DASHBOARD_VIEW')}
                             <li>
                                 <a class="link-dashboard" href="index.php" title="Dashboard"><i class="fa fa-home"></i></a>

@@ -49,7 +49,7 @@ class AjaxResponse
      * @param string $type
      * @throws Exception
      */
-    public function makeResponse($data, $type)
+    public function makeResponse($data, $type = null)
     {
         if (!is_object($data)) {
             throw new Exception('Unexpected data type');

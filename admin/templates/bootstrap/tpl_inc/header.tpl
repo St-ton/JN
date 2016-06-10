@@ -197,7 +197,7 @@
                                                                 {$oLinkGruppe->cName}
                                                             </li>
                                                             {foreach name=linkgruppenlinks from=$oLinkGruppe->oLink_arr item=oLink}
-                                                                <li class="{if $smarty.foreach.linkgruppenlinks.first}subfirst {if !$oLink->cRecht|permission}noperm{/if}{/if}">
+                                                                <li class="{if $smarty.foreach.linkgruppenlinks.first}subfirst{/if}{if !$oLink->cRecht|permission} noperm{/if}">
                                                                     <a href="{$oLink->cURL}">{$oLink->cLinkname}</a>
                                                                 </li>
                                                             {/foreach}

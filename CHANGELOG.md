@@ -26,6 +26,7 @@
 
 ## [4.03.2]
 * Bugfix: robots.txt fehlendes "Sitemap: " vor der Sitemap-URL
+* Bugfix: Billpay Zahlungseingang wird nicht gesetzt
 
 ## [4.03.1] - 2016-05-17
 * Bugfix: Sprachwechsel in einigen Linkgruppen unvollständig

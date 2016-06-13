@@ -1696,7 +1696,7 @@ class Boxen
      */
     public function gibBoxenFilterNach($NaviFilter, $oSuchergebnisse)
     {
-        $confglobal = Shop::getSettings(array(CONF_GLOBAL));
+        $conf = Shop::getSettings(array(CONF_GLOBAL));
 
         return ((isset($NaviFilter->KategorieFilter->kKategorie) && $NaviFilter->KategorieFilter->kKategorie > 0 &&
                 $this->boxConfig['navigationsfilter']['allgemein_kategoriefilter_benutzen'] === 'Y')
@@ -1705,7 +1705,7 @@ class Boxen
             || (isset($NaviFilter->PreisspannenFilter->fBis) && ($NaviFilter->PreisspannenFilter->fVon >= 0 &&
                     $NaviFilter->PreisspannenFilter->fBis > 0) &&
                 $this->boxConfig['navigationsfilter']['preisspannenfilter_benutzen'] !== 'N' &&
-                $confglobal['global']['global_sichtbarkeit'] == 1)
+                $conf['global']['global_sichtbarkeit'] == 1)
             || (isset($NaviFilter->BewertungFilter->nSterne) && $NaviFilter->BewertungFilter->nSterne > 0 &&
                 $this->boxConfig['navigationsfilter']['bewertungsfilter_benutzen'] !== 'N')
             || (isset($NaviFilter->TagFilter) && count($NaviFilter->TagFilter) > 0 && $this->boxConfig['navigationsfilter']['allgemein_tagfilter_benutzen'] === 'Y')
@@ -1717,7 +1717,7 @@ class Boxen
                 count($oSuchergebnisse->Bewertung) > 0 && $this->boxConfig['navigationsfilter']['bewertungsfilter_benutzen'] === 'box')
             || (isset($oSuchergebnisse->Preisspanne) &&
                 count($oSuchergebnisse->Preisspanne) > 0 && $this->boxConfig['navigationsfilter']['preisspannenfilter_benutzen'] === 'box' &&
-                $confglobal['global']['global_sichtbarkeit'] == 1)
+                $conf['global']['global_sichtbarkeit'] == 1)
             || (isset($NaviFilter->SuchspecialFilter->kKey) &&
                 $NaviFilter->SuchspecialFilter->kKey > 0 && $this->boxConfig['navigationsfilter']['allgemein_suchspecialfilter_benutzen'] === 'Y')
             || (isset($NaviFilter->SuchFilter) && count($NaviFilter->SuchFilter) > 0 &&

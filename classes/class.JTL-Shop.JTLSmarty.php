@@ -5,7 +5,6 @@
  */
 require_once PFAD_ROOT . PFAD_INCLUDES . 'browsererkennung.php';
 require_once PFAD_ROOT . PFAD_PHPQUERY . 'phpquery.class.php';
-require_once PFAD_ROOT . PFAD_SMARTY . 'SmartyBC.class.php';
 
 /**
  * Class JTLSmarty

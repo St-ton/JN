@@ -140,6 +140,7 @@ class Session
     public function setStandardSessionVars()
     {
         $globalsAktualisieren = true;
+        $updateLanguage       = false;
         Shop::Lang()->autoload();
         $_SESSION['FremdParameter'] = array();
 
@@ -159,6 +160,7 @@ class Session
         }
         if (isset($_GET['lang']) && (!isset($_SESSION['cISOSprache']) || $_GET['lang'] != $_SESSION['cISOSprache'])) {
             $globalsAktualisieren = true;
+            $updateLanguage       = true;
         }
         $lang    = (isset($_GET['lang'])) ? $_GET['lang'] : '';
         $checked = false;
@@ -248,7 +250,7 @@ class Session
                         $_SESSION['Kundengruppe']->cNameLocalized = $oKundengruppeSprache->cName;
                     }
                 }
-            } elseif ($globalsAktualisieren) {
+            } elseif ($globalsAktualisieren && $updateLanguage) {
                 // Kundensprache ändern, wenn im eingeloggten Zustand die Sprache geändert wird
                 $_SESSION['Kunde']->kSprache = $_SESSION['kSprache'];
                 $_SESSION['Kunde']->updateInDB();

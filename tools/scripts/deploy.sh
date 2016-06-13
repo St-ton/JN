@@ -85,7 +85,7 @@ deploy_build_info()
 
 deploy_vendors()
 {
-    ${SCRIPT_DIR}/bin/composer install --working-dir=${BUILD_DIR}/includes -q || exit 1
+    composer install --working-dir=${BUILD_DIR}/includes -q || exit 1
 }
 
 # $1 database name

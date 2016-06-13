@@ -11,6 +11,7 @@
  * @method static Sprache Lang()
  * @method static JTLSmarty Smarty(bool $fast_init = false, bool $isAdmin = false)
  * @method static Media Media()
+ * @method static EventDispatcher Event()
  * @method static bool has(string $key)
  * @method static Shop set(string $key, mixed $value)
  * @method static null|mixed get($key)
@@ -385,6 +386,7 @@ final class Shop
             'Lang'     => '_Language',
             'Smarty'   => '_Smarty',
             'Media'    => '_Media',
+            'Event'    => '_Event',
             'has'      => '_has',
             'set'      => '_set',
             'get'      => '_get'
@@ -486,6 +488,16 @@ final class Shop
     }
 
     /**
+     * get event instance
+     *
+     * @return EventDispatcher
+     */
+    public function _Event()
+    {
+        return EventDispatcher::getInstance();
+    }
+
+    /**
      * quick&dirty debugging
      *
      * @param mixed       $var - the variable to debug
@@ -556,6 +568,53 @@ final class Shop
     }
 
     /**
+     * Load plugin event driven system
+     */
+    public static function bootstrap()
+    {
+        foreach (self::DB()->executeQuery("SELECT cVerzeichnis, nVersion, cPluginID, bBootstrap FROM tplugin WHERE nStatus = 2 AND bBootstrap = 1 ORDER BY nPrio ASC", 2) as $p) {
+            try {
+                $plugin = new Plugin();
+                foreach (get_object_vars($p) as $key => $value) {
+                    $plugin->{$key} = $value;
+                }
+
+                if ($plugin->hasBootstrapper()) {
+                    $file = $plugin->getBootstrapper();
+                    $class = sprintf('%s\\%s', $plugin->cPluginID, 'Bootstrap');
+
+                    require_once $file;
+
+                    if (!class_exists($class)) {
+                        throw new \InvalidArgumentException(sprintf(
+                            'Could not find class "%s" in file "%s"',
+                            $class,
+                            $file
+                        ));
+                    }
+
+                    $bootstrapper = new $class();
+
+                    if (!is_subclass_of($bootstrapper, 'IPlugin')) {
+                        throw new \InvalidArgumentException(sprintf(
+                            'The class "%s" in file "%s" must implement IPlugin interface',
+                            $class,
+                            $file
+                        ));
+                    }
+
+                    $bootstrapper->boot(self::Event());
+                }
+            }
+            catch (Exception $e) {
+                // TODO: single log
+            }
+        }
+
+        self::Event()->fire('shop.bootstrap');
+    }
+
+    /**
      *
      */
     public static function run()
@@ -619,6 +678,8 @@ final class Shop
         self::$isInitialized = true;
 
         $_SESSION['cTemplate'] = Template::$cTemplate;
+
+        self::Event()->fire('shop.run');
     }
 
     /**

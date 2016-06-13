@@ -268,6 +268,11 @@ class Plugin
     /**
      * @var int
      */
+    public $bBootstrap;
+
+    /**
+     * @var int
+     */
     public $nCalledHook;
 
     /**
@@ -576,6 +581,7 @@ class Plugin
         $obj->dZuletztAktualisiert = $this->dZuletztAktualisiert;
         $obj->dInstalliert         = $this->dInstalliert;
         $obj->dErstellt            = $this->dErstellt;
+        $obj->bBootstrap           = $this->bBootstrap ? 1 : 0;
 
         return Shop::DB()->update('tplugin', 'kPlugin', $obj->kPlugin, $obj);
     }
@@ -788,5 +794,16 @@ class Plugin
         }
 
         return $dynamicOptions;
+    }
+
+    public function hasBootstrapper()
+    {
+        return (bool)$this->bBootstrap && $this->getBootstrapper() !== null;
+    }
+
+    public function getBootstrapper()
+    {
+        $file = PFAD_ROOT . PFAD_PLUGIN . $this->cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $this->nVersion . '/' . 'bootstrap.php';
+        return file_exists($file) ? $file : null;
     }
 }

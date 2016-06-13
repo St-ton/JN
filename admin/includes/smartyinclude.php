@@ -149,6 +149,9 @@ if (is_array($currentTemplateDir)) {
     $currentTemplateDir = $currentTemplateDir[$smarty->context];
 }
 
+$notify = Notification::buildDefault();
+Shop::Event()->fire('backend.notification', [&$notify]);
+
 $smarty->assign('SID', (defined('SID') ? SID : null))
        ->assign('URL_SHOP', $shopURL)
        ->assign('jtl_token', getTokenInput())
@@ -170,5 +173,5 @@ $smarty->assign('SID', (defined('SID') ? SID : null))
        ->assign('oLinkOberGruppe_arr', $oLinkOberGruppe_arr)
        ->assign('SektionenEinstellungen', $configSections)
        ->assign('kAdminmenuEinstellungen', KADMINMENU_EINSTELLUNGEN)
-       ->assign('notifications', Notification::buildDefault())
+       ->assign('notifications', $notify)
        ->assign('hasUpdates', $updater->hasPendingUpdates());

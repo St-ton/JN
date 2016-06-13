@@ -41,4 +41,6 @@ $nSystemlogFlag      = getSytemlogFlag();
 $oGlobaleEinstellung = Shop::getSettings(array(CONF_GLOBAL));
 $oAccount            = new AdminAccount();
 
+Shop::bootstrap();
+
 require PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'smartyinclude.php';

@@ -20,9 +20,12 @@ if ($oAccount->logged() !== true) {
 
 switch ($action) {
     case 'notify': {
+        $notify = Notification::buildDefault();
+        Shop::Event()->fire('backend.notification', [&$notify]);
+
         $result = $response->buildResponse([
             'tpl' => $smarty
-                ->assign('notifications', Notification::buildDefault())
+                ->assign('notifications', $notify)
                 ->fetch('tpl_inc/notify_drop.tpl')
         ]);
 

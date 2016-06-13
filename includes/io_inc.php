@@ -441,7 +441,7 @@ function checkVarkombiDependencies($aValues, $kEigenschaft = 0, $kEigenschaftWer
                         'value' => $cValue
                     ];
                 }
-                $cUrl = baueURL($oArtikelTMP, URLART_ARTIKEL, 0, false, true);
+                $cUrl = baueURL($oArtikelTMP, URLART_ARTIKEL, 0, empty($oArtikelTMP->kSeoKey) ? true : false, true);
                 $objResponse->jsfunc('$.evo.article().setArticleContent', $kVaterArtikel, $oArtikelTMP->kArtikel, $cUrl, $oGesetzteEigeschaftWerte_arr);
 
                 executeHook(HOOK_TOOLSAJAXSERVER_PAGE_TAUSCHEVARIATIONKOMBI, array('objResponse' => &$objResponse, 'oArtikel' => &$oArtikel, 'bIO' => true));
@@ -525,7 +525,7 @@ function getArticleByVariations($kArtikel, $kVariationKombi_arr)
 
     $kSprache    = Shop::getLanguage();
     $oArtikelTMP = Shop::DB()->query(
-        "SELECT a.kArtikel, IF (tseo.cSeo IS NULL, a.cSeo, tseo.cSeo) AS cSeo, a.fLagerbestand, a.cLagerBeachten, a.cLagerKleinerNull
+        "SELECT a.kArtikel, tseo.kKey AS kSeoKey, IF (tseo.cSeo IS NULL, a.cSeo, tseo.cSeo) AS cSeo, a.fLagerbestand, a.cLagerBeachten, a.cLagerKleinerNull
             FROM teigenschaftkombiwert
             JOIN tartikel a ON a.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
             LEFT JOIN tseo ON tseo.cKey = 'kArtikel' AND tseo.kKey = a.kArtikel AND tseo.kSprache = " . $kSprache .  "

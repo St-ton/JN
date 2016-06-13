@@ -572,7 +572,9 @@ final class Shop
      */
     public static function bootstrap()
     {
-        foreach (self::DB()->executeQuery("SELECT cVerzeichnis, nVersion, cPluginID, bBootstrap FROM tplugin WHERE nStatus = 2 AND bBootstrap = 1 ORDER BY nPrio ASC", 2) as $p) {
+        $plugins = self::DB()->executeQuery("SELECT cVerzeichnis, nVersion, cPluginID, bBootstrap FROM tplugin WHERE nStatus = 2 AND bBootstrap = 1 ORDER BY nPrio ASC", 2) ?: [];
+
+        foreach ($plugins as $p) {
             try {
                 $plugin = new Plugin();
                 foreach (get_object_vars($p) as $key => $value) {

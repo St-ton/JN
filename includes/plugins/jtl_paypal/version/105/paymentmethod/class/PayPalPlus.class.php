@@ -187,7 +187,7 @@ class PayPalPlus extends PaymentMethod
 
             $presentation = new \PayPal\Api\Presentation();
             $presentation->setLogoImage($shoplogo)
-                ->setBrandName($this->settings['brand'])
+                ->setBrandName(utf8_encode($this->settings['brand']))
                 ->setLocaleCode($this->languageIso);
 
             $inputFields = new \PayPal\Api\InputFields();

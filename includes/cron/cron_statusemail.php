@@ -17,6 +17,9 @@ function bearbeiteStatusemail($oJobQueue)
     $bAusgefuehrt = false;
 
     $oStatusemail                 = $oJobQueue->holeJobArt();
+    if ($oStatusemail === null) {
+        return;
+    }
     $oStatusemail->nIntervall_arr = gibKeyArrayFuerKeyString($oStatusemail->cIntervall, ';');
     $oStatusemail->nInhalt_arr    = gibKeyArrayFuerKeyString($oStatusemail->cInhalt, ';');
     // Laufe alle Intervalle durch

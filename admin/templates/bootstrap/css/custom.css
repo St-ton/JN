@@ -2599,3 +2599,32 @@ h2 .btn-group {
     border-right-width: 1px !important;
     border-color: rgba(0, 0, 0, 0.07) !important;
 }
+
+.panel-body >*:last-child {
+    margin: auto 0px;
+}
+
+.panel-heading .heading-body,
+.panel-heading .heading-right {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.panel-heading .heading-right > .btn-group {
+    border-collapse: collapse;
+}
+
+.panel-heading .heading-right > .btn-group > .btn {
+    display: table-cell;
+    float: none;
+    /*width: 1%;*/
+}
+
+.panel-heading .heading-body {
+    width: 10000px;
+}
+
+
+.table-blank {
+  
+}

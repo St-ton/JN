@@ -1914,6 +1914,13 @@ tr.text-vtop > td,tr.text-vtop > th {
     vertical-align: top !important;
 }
 
+.row.vertical-align {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+}
+
 .cache-row .file-path {
     word-break: break-all;
     max-width: 100%;
@@ -1978,6 +1985,22 @@ tr.text-vtop > td,tr.text-vtop > th {
 
 .text-x4 {
     font-size: 140%;
+}
+
+.text-twice {
+    font-size: 2em;
+}
+
+.text-three-times {
+    font-size: 3em;
+}
+
+.text-four-times {
+    font-size: 4em;
+}
+
+.text-five-times {
+    font-size: 5em;
 }
 
 .last-child {
@@ -2600,8 +2623,8 @@ h2 .btn-group {
     border-color: rgba(0, 0, 0, 0.07) !important;
 }
 
-.panel-body >*:last-child {
-    margin: auto 0px;
+.panel-body > *:last-child {
+    margin-bottom: 0;
 }
 
 .panel-heading .heading-body,
@@ -2624,7 +2647,51 @@ h2 .btn-group {
     width: 10000px;
 }
 
+.table.table-blank>thead>tr>th,
+.table.table-blank>tbody>tr>th,
+.table.table-blank>tfoot>tr>th,
+.table.table-blank>thead>tr>td,
+.table.table-blank>tbody>tr>td,
+.table.table-blank>tfoot>tr>td {
+    border-top-width: 0;
+}
 
-.table-blank {
-  
+.alert {
+    border: 0;
+}
+
+.alert i.fa {
+    padding: 0 3px;
+}
+
+.alert-sm {
+    padding: 10px;
+}
+
+.alert-xs {
+    padding: 5px 10px;
+}
+
+.alert-success {
+    color: #fff;
+    background-color: #3c763d;
+}
+
+.alert-info {
+    color: #fff;
+    background-color: #31708f;
+}
+
+.alert-warning {
+    color: #fff;
+    background-color: #f3940e;
+}
+
+.alert-danger {
+    color: #fff;
+    background-color: #a94442;
+}
+
+.widget-content .alert {
+    margin-bottom: 0;
 }

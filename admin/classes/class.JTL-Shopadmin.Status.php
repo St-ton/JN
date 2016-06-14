@@ -142,4 +142,9 @@ class Status
         $systemcheck = new Systemcheck_Environment();
         return $systemcheck->executeTestGroup('Shop4');
     }
+
+    protected function getPlatform()
+    {
+        return new Systemcheck_Platform_Hosting();
+    }
 }

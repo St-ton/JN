@@ -61,12 +61,6 @@
                                 {assign var=priceImage value=null}
                             {/if}
                             {include file="productdetails/price.tpl" Artikel=$CWunschlistePos->Artikel price_image=$priceImage tplscope="wishlist"}
-                            {*<p><b>{lang key="price"}:</b> {$CWunschlistePos->cPreis}</p>
-                            {if $CWunschlistePos->Artikel->cLocalizedVPE}
-                                <p>
-                                    <small><b>{lang key="basePrice" section="global"}:</b> {$CWunschlistePos->Artikel->cLocalizedVPE[$NettoPreise]}</small>
-                                </p>
-                            {/if}*}
                         {/if}
                         {*<p><span class="vat_info">{include file='snippets/shipping_tax_info.tpl' taxdata=$WunschlistePos->Artikel->taxData}</span></p>*}
                         {foreach name=eigenschaft from=$CWunschlistePos->CWunschlistePosEigenschaft_arr item=CWunschlistePosEigenschaft}

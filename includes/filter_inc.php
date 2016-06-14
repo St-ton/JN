@@ -894,6 +894,9 @@ function gibBewertungSterneFilterOptionen($FilterSQL, $NaviFilter)
  */
 function gibPreisspannenFilterOptionen($FilterSQL, $NaviFilter, $oSuchergebnisse)
 {
+    if (!$_SESSION['Kundengruppe']->darfPreiseSehen) {
+        return array();
+    }
     if (isset(Shop::$kSprache)) {
         $kSprache = (int) Shop::$kSprache;
     } else {
@@ -918,8 +921,8 @@ function gibPreisspannenFilterOptionen($FilterSQL, $NaviFilter, $oSuchergebnisse
     if ($oSuchergebnisse->GesamtanzahlArtikel == 1 && !isset($NaviFilter->PreisspannenFilter->fVon) && !isset($NaviFilter->PreisspannenFilter->fBis)) {
         return $oPreisspanne_arr;
     }
-    $conf       = Shop::getSettings(array(CONF_NAVIGATIONSFILTER, CONF_GLOBAL));
-    if ($conf['navigationsfilter']['preisspannenfilter_benutzen'] !== 'N' && $conf['global']['global_sichtbarkeit'] == 1) {
+    $conf       = Shop::getSettings(array(CONF_NAVIGATIONSFILTER));
+    if ($conf['navigationsfilter']['preisspannenfilter_benutzen'] !== 'N') {
         $cPreisspannenJOIN = "LEFT JOIN tartikelkategorierabatt ON tartikelkategorierabatt.kKundengruppe = " . (int) $_SESSION['Kundengruppe']->kKundengruppe . "
                                     AND tartikelkategorierabatt.kArtikel = tartikel.kArtikel
                                 LEFT JOIN tartikelsonderpreis ON tartikelsonderpreis.kArtikel = tartikel.kArtikel

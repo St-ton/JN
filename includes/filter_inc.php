@@ -921,7 +921,7 @@ function gibPreisspannenFilterOptionen($FilterSQL, $NaviFilter, $oSuchergebnisse
     if ($oSuchergebnisse->GesamtanzahlArtikel == 1 && !isset($NaviFilter->PreisspannenFilter->fVon) && !isset($NaviFilter->PreisspannenFilter->fBis)) {
         return $oPreisspanne_arr;
     }
-    $conf       = Shop::getSettings(array(CONF_NAVIGATIONSFILTER));
+    $conf = Shop::getSettings(array(CONF_NAVIGATIONSFILTER));
     if ($conf['navigationsfilter']['preisspannenfilter_benutzen'] !== 'N') {
         $cPreisspannenJOIN = "LEFT JOIN tartikelkategorierabatt ON tartikelkategorierabatt.kKundengruppe = " . (int) $_SESSION['Kundengruppe']->kKundengruppe . "
                                     AND tartikelkategorierabatt.kArtikel = tartikel.kArtikel

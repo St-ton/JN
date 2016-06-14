@@ -1847,7 +1847,7 @@ class Artikel
             $oSQLEigenschaftWert->cJOIN   = '';
             if ($kSprache > 0 && !standardspracheAktiv()) {
                 $oSQLEigenschaft->cSELECT = "teigenschaftsprache.cName AS cName_teigenschaftsprache, ";
-                $oSQLEigenschaft->cJOIN   = " JOIN teigenschaftsprache ON teigenschaftsprache.kEigenschaft = teigenschaft.kEigenschaft
+                $oSQLEigenschaft->cJOIN   = " LEFT JOIN teigenschaftsprache ON teigenschaftsprache.kEigenschaft = teigenschaft.kEigenschaft
                                                 AND teigenschaftsprache.kSprache = " . $kSprache;
 
                 $oSQLEigenschaftWert->cSELECT = "teigenschaftwertsprache.cName AS cName_teigenschaftwertsprache, ";

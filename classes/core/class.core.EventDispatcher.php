@@ -62,9 +62,8 @@ final class EventDispatcher
      * @param mixed $arguments
      * @return array|null
      */
-    public function fire($eventName, $arguments = [])
+    public function fire($eventName, array $arguments = [])
     {
-        $arguments = array_merge((array)$eventName, $arguments);
         foreach ($this->getListeners($eventName) as $listener) {
             call_user_func_array($listener, $arguments);
         }

@@ -279,6 +279,11 @@ class Plugin
      * @var null|array
      */
     private static $hookList = null;
+    
+    /**
+     * @var array
+     */
+    private static $bootstrapper = [];
 
     /**
      * Konstruktor
@@ -795,15 +800,38 @@ class Plugin
 
         return $dynamicOptions;
     }
-
-    public function hasBootstrapper()
+    
+    public static function bootstrapper($kPlugin)
     {
-        return (bool)$this->bBootstrap && $this->getBootstrapper() !== null;
-    }
+        if (!isset(self::$bootstrapper[$kPlugin])) {
+            $plugin = Shop::DB()->select('tplugin', 'kPlugin', $kPlugin);
 
-    public function getBootstrapper()
-    {
-        $file = PFAD_ROOT . PFAD_PLUGIN . $this->cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $this->nVersion . '/' . 'bootstrap.php';
-        return file_exists($file) ? $file : null;
+            if ((bool)$plugin->bBootstrap === false) {
+                return null;
+            }
+
+            $file = PFAD_ROOT . PFAD_PLUGIN . $plugin->cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $plugin->nVersion . '/' . PLUGIN_BOOTSTRAPPER;
+            $class = sprintf('%s\\%s', $plugin->cPluginID, 'Bootstrap');
+            
+            if (!is_file($file)) {
+                return null;
+            }
+
+            require_once $file;
+
+            if (!class_exists($class)) {
+                return null;
+            }
+
+            $bootstrapper = new $class($plugin->cPluginID);
+
+            if (!is_subclass_of($bootstrapper, 'AbstractPlugin')) {
+                return null;
+            }
+            
+            self::$bootstrapper[$kPlugin] = $bootstrapper;
+        }
+
+        return self::$bootstrapper[$kPlugin];
     }
 }

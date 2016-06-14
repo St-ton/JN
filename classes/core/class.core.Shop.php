@@ -496,6 +496,11 @@ final class Shop
     {
         return EventDispatcher::getInstance();
     }
+    
+    public static function fire($eventName, array $arguments = [])
+    {
+        return self::Event()->fire($eventName, $arguments);
+    }
 
     /**
      * quick&dirty debugging
@@ -572,48 +577,13 @@ final class Shop
      */
     public static function bootstrap()
     {
-        $plugins = self::DB()->executeQuery("SELECT cVerzeichnis, nVersion, cPluginID, bBootstrap FROM tplugin WHERE nStatus = 2 AND bBootstrap = 1 ORDER BY nPrio ASC", 2) ?: [];
+        $plugins = self::DB()->executeQuery("SELECT kPlugin FROM tplugin WHERE nStatus = 2 AND bBootstrap = 1 ORDER BY nPrio ASC", 2) ?: [];
 
-        foreach ($plugins as $p) {
-            try {
-                $plugin = new Plugin();
-                foreach (get_object_vars($p) as $key => $value) {
-                    $plugin->{$key} = $value;
-                }
-
-                if ($plugin->hasBootstrapper()) {
-                    $file = $plugin->getBootstrapper();
-                    $class = sprintf('%s\\%s', $plugin->cPluginID, 'Bootstrap');
-
-                    require_once $file;
-
-                    if (!class_exists($class)) {
-                        throw new \InvalidArgumentException(sprintf(
-                            'Could not find class "%s" in file "%s"',
-                            $class,
-                            $file
-                        ));
-                    }
-
-                    $bootstrapper = new $class();
-
-                    if (!is_subclass_of($bootstrapper, 'IPlugin')) {
-                        throw new \InvalidArgumentException(sprintf(
-                            'The class "%s" in file "%s" must implement IPlugin interface',
-                            $class,
-                            $file
-                        ));
-                    }
-
-                    $bootstrapper->boot(self::Event());
-                }
-            }
-            catch (Exception $e) {
-                // TODO: single log
+        foreach ($plugins as $plugin) {
+            if ($p = Plugin::bootstrapper($plugin->kPlugin)) {
+                $p->boot(EventDispatcher::getInstance());
             }
         }
-
-        self::Event()->fire('shop.bootstrap');
     }
 
     /**

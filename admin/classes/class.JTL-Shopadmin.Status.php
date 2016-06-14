@@ -9,41 +9,31 @@
  */
 class Status
 {
-    private $array;
-
-    /**
-     * Status constructor.
-     */
-    public function __construct()
+    use SingletonTrait;
+    
+    protected $cache = [];
+    
+    public function __call($name, $arguments)
     {
+        if (!isset($this->cache[$name]) || $this->cache[$name] !== null) {
+            $this->cache[$name] = call_user_func_array([&$this, $name], $arguments);
+        }
+        return $this->cache[$name];
     }
-    
-    // data cache
-    // image cache
-    // database check
-    // permission check
-    // file modifications
-    // log level
-    // plugin shared hooks
-    // platform
-    // profiler
-    // dbupdate
-    // last sync - 
-    // phpinfo() 
-    
-    public function getObjectCache()
+
+    protected function getObjectCache()
     {
         $cache = JTLCache::getInstance();
         $cache->setJtlCacheConfig();
         return $cache;
     }
     
-    public function getImageCache()
+    protected function getImageCache()
     {
         return MediaImage::getStats(Image::TYPE_PRODUCT, false);
     }
     
-    public function getSystemLogInfo()
+    protected function getSystemLogInfo()
     {
         $flags = getSytemlogFlag(false);
         return (object)[
@@ -53,7 +43,7 @@ class Status
         ];
     }
     
-    public function validDatabateStruct()
+    protected function validDatabateStruct()
     {
         require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dbcheck_inc.php';
         
@@ -67,7 +57,7 @@ class Status
         return false;
     }
     
-    public function validFileStruct()
+    protected function validFileStruct()
     {
         require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'filecheck_inc.php';
 
@@ -78,7 +68,7 @@ class Status
         return false;
     }
     
-    public function validFolderPermissions()
+    protected function validFolderPermissions()
     {
         require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'permissioncheck_inc.php';
 
@@ -88,7 +78,7 @@ class Status
         return $permissionStat->nCountInValid === 0;
     }
     
-    public function getPluginSharedHooks()
+    protected function getPluginSharedHooks()
     {
         $sharedPlugins = [];
         $sharedHookIds = Shop::DB()->executeQuery("SELECT nHook FROM tpluginhook GROUP BY nHook HAVING COUNT(DISTINCT kPlugin) > 1", 2);
@@ -106,5 +96,50 @@ class Status
         }
         
         return $sharedPlugins;
+    }
+
+    protected function hasPendingUpdates()
+    {
+        $updater = new Updater();
+        return $updater->hasPendingUpdates();
+    }
+    
+    protected function hasActiveProfiler()
+    {
+        return Profiler::getIsActive() !== 0;
+    }
+
+    protected function hasInstallDir()
+    {
+        return is_dir(PFAD_ROOT . 'install');
+    }
+    
+    protected function hasDifferentTemplateVersion()
+    {
+        $template = Template::getInstance();
+        return JTL_VERSION != $template->getShopVersion();
+    }
+    
+    protected function getSubscription()
+    {
+        if (!isset($_SESSION['subscription']) || $_SESSION['subscription'] === null) {
+            $_SESSION['subscription'] = jtlAPI::getSubscription();
+        }
+        if (is_object($_SESSION['subscription']) && isset($_SESSION['subscription']->kShop) && (int) $_SESSION['subscription']->kShop > 0) {
+            return $_SESSION['subscription'];
+        }
+        return null;
+    }
+    
+    protected function hasValidEnvironment()
+    {
+        $systemcheck = new Systemcheck_Environment();
+        return $systemcheck->getIsPassed();
+    }
+    
+    protected function getEnvironmentTests()
+    {
+        $systemcheck = new Systemcheck_Environment();
+        return $systemcheck->executeTestGroup('Shop4');
     }
 }

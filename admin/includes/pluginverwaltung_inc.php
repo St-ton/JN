@@ -405,6 +405,8 @@ function pluginPlausi($kPlugin, $cVerzeichnis = '')
 // 127  = Plugin benoetig Ioncube
 // 128  = OptionsSource-Datei wurde nicht angegeben
 // 129  = OptionsSource-Datei existiert nicht
+// 130  = Bootstrap-Klasse existiert nicht
+// 131  = Bootstrap-Klasse muss das Interface IPlugin implementieren
 */
 
 /**
@@ -480,10 +482,11 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
                 return 90; //PluginID bereits in der Datenbank vorhanden
             }
 
+            //Finde aktuelle Version
+            $nLastVersionKey    = count($XML_arr['jtlshop3plugin'][0]['Install'][0]['Version']) / 2 - 1;
+            $nLastPluginVersion = intval($XML_arr['jtlshop3plugin'][0]['Install'][0]['Version'][$nLastVersionKey . ' attr']['nr']);
+
             if (isset($XML_arr['jtlshop3plugin'][0]['LicenceClassFile']) && strlen($XML_arr['jtlshop3plugin'][0]['LicenceClassFile']) > 0) {
-                //Finde aktuelle Version
-                $nLastVersionKey    = count($XML_arr['jtlshop3plugin'][0]['Install'][0]['Version']) / 2 - 1;
-                $nLastPluginVersion = intval($XML_arr['jtlshop3plugin'][0]['Install'][0]['Version'][$nLastVersionKey . ' attr']['nr']);
                 //Existiert die Lizenzdatei?
                 if (!file_exists($cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $nLastPluginVersion . '/' . PFAD_PLUGIN_LICENCE . $XML_arr['jtlshop3plugin'][0]['LicenceClassFile'])) {
                     return 86; //Datei der Lizenzklasse existiert nicht
@@ -516,6 +519,27 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
                     return 89;// Methode checkLicence in der Lizenzklasse ist nicht definiert
                 }
             }
+
+            //Prüfe Bootstrapper
+            $cBootstrapNamespace = $XML_arr['jtlshop3plugin'][0]['PluginID'];
+            $cBootstrapClassFile = $cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $nLastPluginVersion . '/' . PLUGIN_BOOTSTRAPPER;
+
+            if (is_file($cBootstrapClassFile)) {
+                $cClass = sprintf('%s\\%s', $cBootstrapNamespace, 'Bootstrap');
+
+                require_once $cBootstrapClassFile;
+
+                if (!class_exists($cClass)) {
+                    return 130;
+                }
+
+                $bootstrapper = new $cClass($cBootstrapNamespace);
+
+                if (!is_subclass_of($bootstrapper, 'AbstractPlugin')) {
+                    return 131;
+                }
+            }
+
             //Prüfe Install Knoten
             if (isset($XML_arr['jtlshop3plugin'][0]['Install']) && is_array($XML_arr['jtlshop3plugin'][0]['Install'])) {
                 //Gibts Versionen
@@ -1683,9 +1707,16 @@ function installierePlugin($XML_arr, $cVerzeichnis, $oPluginOld)
     $oPlugin->nPrio                = 0;
     $oPlugin->dZuletztAktualisiert = 'now()';
     $oPlugin->dErstellt            = $XML_arr['jtlshop3plugin'][0]['Install'][0]['Version'][$nLastVersionKey]['CreateDate'];
+    $oPlugin->bBootstrap           = 0;
+
+    if (is_file(PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $oPlugin->nVersion . '/' . 'bootstrap.php')) {
+        $oPlugin->bBootstrap = 1;
+    }
+    
     if (!empty($XML_arr['jtlshop3plugin'][0]['Install'][0]['FlushTags'])) {
         $_tags = explode(',', $XML_arr['jtlshop3plugin'][0]['Install'][0]['FlushTags']);
     }
+
     foreach ($_tags as $_tag) {
         if (defined(trim($_tag))) {
             $tagsToFlush[] = constant(trim($_tag));
@@ -2832,6 +2863,13 @@ function installierePlugin($XML_arr, $cVerzeichnis, $oPluginOld)
         if ($bSQLFehler) {
             deinstallierePlugin($oPlugin->kPlugin, $nXMLVersion);
         }
+
+        if ($nReturnValue === 1) {
+            if ($p = Plugin::bootstrapper($oPlugin->kPlugin)) {
+                $p->installed();
+            }
+        }
+
         // Installation von höheren XML Versionen
         if ($nXMLVersion > 100 && ($nReturnValue === 126 || $nReturnValue === 1)) {
             $nReturnValue = installierePluginVersion($XML_arr, $cVerzeichnis, $oPluginOld, $nXMLVersion);
@@ -2842,8 +2880,6 @@ function installierePlugin($XML_arr, $cVerzeichnis, $oPluginOld)
                 $nSQLFehlerCode_arr = array(1 => 1, 2 => 27, 3 => 28);
                 $nReturnValue       = $nSQLFehlerCode_arr[$nReturnValue];
             }
-
-            return $nReturnValue;
         } else {
             if (isset($oPluginOld->kPlugin) && $oPluginOld->kPlugin && ($nReturnValue === 126 || $nReturnValue === 1)) {
                 // Update erfolgreich => sync neue Version auf altes Plugin
@@ -2851,10 +2887,11 @@ function installierePlugin($XML_arr, $cVerzeichnis, $oPluginOld)
                 $nSQLFehlerCode_arr = array(1 => 1, 2 => 27, 3 => 28);
                 $nReturnValue       = $nSQLFehlerCode_arr[$nReturnValue];
             }
-
-            return $nReturnValue;
         }
-    } else {
+        
+        return $nReturnValue;
+    }
+    else {
         return 2; // Main Plugindaten nicht korrekt
     }
 }
@@ -3192,6 +3229,10 @@ function deinstallierePlugin($kPlugin, $nXMLVersion, $bUpdate = false, $kPluginN
                 return deinstallierePluginVersion($kPlugin, $nXMLVersion, $bUpdate);
             }
 
+            if ($p = Plugin::bootstrapper($kPlugin)) {
+                $p->uninstalled();
+            }
+
             return 1; // Alles O.K.
         }
 
@@ -3381,11 +3422,16 @@ function aktivierePlugin($kPlugin)
                         SET nStatus = 2
                         WHERE kPlugin = " . $kPlugin, 3
                 );
+
                 Shop::DB()->query(
                     "UPDATE tadminwidgets
                         SET bActive = 1
                         WHERE kPlugin = " . $kPlugin, 3
                 );
+                
+                if ($p = Plugin::bootstrapper($kPlugin)) {
+                    $p->enabled();
+                }
 
                 if ($nRow > 0) {
                     return 1; // Alles O.K.
@@ -3413,16 +3459,22 @@ function deaktivierePlugin($kPlugin)
 {
     $kPlugin = (int)$kPlugin;
     if ($kPlugin > 0) {
+        if ($p = Plugin::bootstrapper($kPlugin)) {
+            $p->disabled();
+        }
+
         Shop::DB()->query(
             "UPDATE tplugin
                 SET nStatus = 1
                 WHERE kPlugin = " . $kPlugin, 3
         );
+
         Shop::DB()->query(
             "UPDATE tadminwidgets
                 SET bActive = 0
                 WHERE kPlugin = " . $kPlugin, 3
         );
+
         Shop::Cache()->flushTags(array(CACHING_GROUP_PLUGIN . '_' . $kPlugin));
 
         return 1;
@@ -3458,15 +3510,17 @@ function makeXMLToObj($XML)
         $oObj->cName           = $XML['jtlshop3plugin'][0]['Name'];
         $oObj->cDescription    = $XML['jtlshop3plugin'][0]['Description'];
         $oObj->cAuthor         = $XML['jtlshop3plugin'][0]['Author'];
+        $oObj->cPluginID       = $XML['jtlshop3plugin'][0]['PluginID'];
         $oObj->cIcon           = (isset($XML['jtlshop3plugin'][0]['Icon'])) ? $XML['jtlshop3plugin'][0]['Icon'] : null;
         $oObj->cVerzeichnis    = $XML['cVerzeichnis'];
         $oObj->shop4compatible = (!empty($XML['shop4compatible'])) ? $XML['shop4compatible'] : false;
+        $oObj->nVersion        = intval($XML['jtlshop3plugin'][0]['Install'][0]['Version'][$nLastVersionKey . ' attr']['nr']);
+        $oObj->cVersion        = number_format($oObj->nVersion / 100, 2);
 
         if (isset($XML['cFehlercode']) && strlen($XML['cFehlercode']) > 0) {
             $oObj->cFehlercode         = $XML['cFehlercode'];
-            $oObj->cFehlerBeschreibung = mappePlausiFehler($XML['cFehlercode']);
+            $oObj->cFehlerBeschreibung = mappePlausiFehler($XML['cFehlercode'], $oObj);
         }
-        $oObj->cVersion = number_format(doubleval($XML['jtlshop3plugin'][0]['Install'][0]['Version'][$nLastVersionKey . ' attr']['nr']) / 100, 2);
     }
 
     return $oObj;
@@ -3894,7 +3948,7 @@ function gibSprachVariablenALT($kPlugin)
  * @param int $nFehlerCode
  * @return string
  */
-function mappePlausiFehler($nFehlerCode)
+function mappePlausiFehler($nFehlerCode, $oPlugin)
 {
     $return = '';
     if ($nFehlerCode > 0) {
@@ -4280,8 +4334,21 @@ function mappePlausiFehler($nFehlerCode)
             case 129:
                 $return = 'Fehler: OptionsSource-Datei existiert nicht';
                 break;
+            case 130:
+                $return = 'Fehler: Bootstrap-Klasse "%cPluginID%\\Bootstrap" existiert nicht';
+                break;                
+            case 131:
+                $return = 'Fehler: Bootstrap-Klasse "%cPluginID%\\Bootstrap" muss das Interface "IPlugin" implementieren';
+                break;
         }
     }
+    
+    $search = array_map(function($val) {
+        return sprintf('%%%s%%', $val);
+    }, array_keys((array)$oPlugin));
+    
+    $replace = array_values((array)$oPlugin);
+    $return = str_replace($search, $replace, $return);
 
     return utf8_decode($return);
 }

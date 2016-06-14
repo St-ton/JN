@@ -273,6 +273,7 @@ define('PLUGIN_LICENCE_METHODE', 'checkLicence');
 define('PLUGIN_LICENCE_CLASS', 'PluginLicence');
 define('PLUGIN_EXPORTFORMAT_CONTENTFILE', 'PluginContentFile_');
 define('PLUGIN_SEITENHANDLER', 'seite_plugin.php');
+define('PLUGIN_BOOTSTRAPPER', 'bootstrap.php');
 // Red. Param
 define('R_MINDESTMENGE', 1);
 define('R_LAGER', 2);

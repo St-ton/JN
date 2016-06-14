@@ -68,39 +68,59 @@ function gibArtikelXSelling($kArtikel)
     if (isset($config['artikeldetails_xselling_kauf_anzeigen']) && $config['artikeldetails_xselling_kauf_anzeigen'] === 'Y') {
         $anzahl = (int)$config['artikeldetails_xselling_kauf_anzahl'];
         if (ArtikelHelper::isParent($kArtikel)) {
-            $inArray = array($kArtikel);
-            $tmps    = ArtikelHelper::getChildren($kArtikel);
-            foreach ($tmps as $_article) {
-                $inArray[] = (int)$_article->kArtikel;
+            if (isset($config['artikeldetails_xselling_kauf_parent']) && $config['artikeldetails_xselling_kauf_parent'] === 'Y') {
+                $selectorXSellArtikel     = 'IF(tartikel.kVaterArtikel = 0, txsellkauf.kXSellArtikel, tartikel.kVaterArtikel)';
+                $filterXSellParentArtikel = 'IF(tartikel.kVaterArtikel = 0, txsellkauf.kXSellArtikel, tartikel.kVaterArtikel)';
+            } else {
+                $selectorXSellArtikel     = 'txsellkauf.kXSellArtikel';
+                $filterXSellParentArtikel = 'tartikel.kVaterArtikel';
             }
             $xsell = Shop::DB()->query(
-                "SELECT *
+                "SELECT {$kArtikel} AS kArtikel,
+                        {$selectorXSellArtikel} AS kXSellArtikel,
+                        SUM(txsellkauf.nAnzahl) nAnzahl
                     FROM txsellkauf
-                    WHERE kArtikel IN (" . implode(', ', $inArray) . ")
-                    GROUP BY kXSellArtikel
-                    ORDER BY nAnzahl DESC, rand()
+                    JOIN tartikel ON tartikel.kArtikel = txsellkauf.kXSellArtikel
+                    WHERE txsellkauf.kArtikel IN (
+                            SELECT {$kArtikel}
+                            UNION ALL
+                            SELECT tartikel.kArtikel
+                            FROM tartikel
+                            WHERE tartikel.kVaterArtikel = {$kArtikel}
+                        ) AND {$filterXSellParentArtikel} != {$kArtikel}
+                    GROUP BY 1, 2
+                    ORDER BY SUM(txsellkauf.nAnzahl) DESC, rand()
                     LIMIT {$anzahl}", 2
             );
-            $xsellCount = (is_array($xsell)) ? count($xsell) : 0;
-            if ($xsellCount > 0 && count($tmps) > 0) {
-                $children = array();
-                foreach ($tmps as $child) {
-                    $children[] = $child->kArtikel;
-                }
-                for ($i = 0; $i < $xsellCount; $i++) {
-                    if (in_array($xsell[$i]->kArtikel, $children) && in_array($xsell[$i]->kXSellArtikel, $children)) {
-                        unset($xsell[$i]);
-                    }
-                }
-            }
         } else {
-            $xsell = Shop::DB()->query(
-                "SELECT *
-                    FROM txsellkauf
-                    WHERE kArtikel = {$kArtikel}
-                    ORDER BY nAnzahl DESC, rand()
-                    LIMIT {$anzahl}", 2
-            );
+            if (isset($config['artikeldetails_xselling_kauf_parent']) && $config['artikeldetails_xselling_kauf_parent'] === 'Y') {
+                $xsell = Shop::DB()->query(
+                    "SELECT txsellkauf.kArtikel,
+                            IF(tartikel.kVaterArtikel = 0, txsellkauf.kXSellArtikel, tartikel.kVaterArtikel) AS kXSellArtikel,
+                            SUM(txsellkauf.nAnzahl) nAnzahl
+                        FROM txsellkauf
+                        JOIN tartikel ON tartikel.kArtikel = txsellkauf.kXSellArtikel
+                        WHERE txsellkauf.kArtikel = {$kArtikel}
+                            AND tartikel.kVaterArtikel != (
+                                SELECT tartikel.kVaterArtikel
+                                FROM tartikel
+                                WHERE tartikel.kArtikel = {$kArtikel}
+                            )
+                        GROUP BY 1, 2
+                        ORDER BY SUM(txsellkauf.nAnzahl) DESC, rand()
+                        LIMIT {$anzahl}", 2
+                );
+            } else {
+                $xsell = Shop::DB()->query(
+                    "SELECT txsellkauf.kArtikel,
+                            txsellkauf.kXSellArtikel,
+                            txsellkauf.nAnzahl
+                        FROM txsellkauf
+                        WHERE kArtikel = {$kArtikel}
+                        ORDER BY nAnzahl DESC, rand()
+                        LIMIT {$anzahl}", 2
+                );
+            }
         }
         $xsellCount2 = (is_array($xsell)) ? count($xsell) : 0;
         if ($xsellCount2 > 0) {
@@ -489,8 +509,8 @@ function floodSchutzBenachrichtigung($min)
     if (!$min) {
         return false;
     }
-    $history = Shop::DB()->query('
-        SELECT kVerfuegbarkeitsbenachrichtigung
+    $history = Shop::DB()->query(
+        'SELECT kVerfuegbarkeitsbenachrichtigung
             FROM tverfuegbarkeitsbenachrichtigung
             WHERE cIP = "' . gibIP() . '"
             AND date_sub(now(), interval ' . $min . ' minute) < dErstellt', 1
@@ -644,9 +664,9 @@ function baueArtikelhinweise($cRedirectParam = null, $bRenew = false, $oArtikel 
         $GLOBALS['PositiveFeedback'] = array();
     }
     if ($cRedirectParam) {
-        $hin_arr = (is_array($cRedirectParam)) ?
-            $cRedirectParam :
-            explode(',', $cRedirectParam);
+        $hin_arr = is_array($cRedirectParam)
+            ? $cRedirectParam
+            : explode(',', $cRedirectParam);
         $hin_arr = array_unique($hin_arr);
 
         foreach ($hin_arr as $hin) {
@@ -757,7 +777,8 @@ function bearbeiteProdukttags($AktuellerArtikel)
                         "SELECT cNameNeu
                             FROM ttagmapping
                             WHERE kSprache = " . (int)Shop::$kSprache . "
-                                AND cName = '" . Shop::DB()->escape($tag) . "'", 1);
+                                AND cName = '" . Shop::DB()->escape($tag) . "'", 1
+                    );
                     $tagmapping_obj = $tagmapping_objTMP;
                     if (isset($tagmapping_obj->cNameNeu) && strlen($tagmapping_obj->cNameNeu) > 0) {
                         $tag = $tagmapping_obj->cNameNeu;
@@ -947,7 +968,6 @@ function mappingFehlerCode($cCode, $fGuthaben = 0.0)
             break;
         default:
             $error = '';
-
     }
     executeHook(HOOK_ARTIKEL_INC_BEWERTUNGHINWEISSWITCH, array('error' => $error));
 
@@ -1234,7 +1254,7 @@ function buildConfig($kArtikel, $fAnzahl, $nVariation_arr, $nKonfiggruppe_arr, $
     $oKonfig->oKonfig_arr = $oArtikel->oKonfig_arr;
 
     foreach ($nKonfiggruppe_arr as $i => $nKonfiggruppe) {
-        $nKonfiggruppe_arr[$i] = (array) $nKonfiggruppe;
+        $nKonfiggruppe_arr[$i] = (array)$nKonfiggruppe;
     }
     foreach ($oKonfig->oKonfig_arr as $i => &$oKonfiggruppe) {
         $oKonfiggruppe->bAktiv = false;
@@ -1244,8 +1264,9 @@ function buildConfig($kArtikel, $fAnzahl, $nVariation_arr, $nKonfiggruppe_arr, $
         foreach ($oKonfiggruppe->oItem_arr as $j => &$oKonfigitem) {
             $kKonfigitem          = $oKonfigitem->getKonfigitem();
             $oKonfigitem->fAnzahl = floatval(
-                isset($nKonfiggruppeAnzahl_arr[$oKonfigitem->getKonfiggruppe()]) ?
-                    $nKonfiggruppeAnzahl_arr[$oKonfigitem->getKonfiggruppe()] : $oKonfigitem->getInitial()
+                isset($nKonfiggruppeAnzahl_arr[$oKonfigitem->getKonfiggruppe()])
+                    ? $nKonfiggruppeAnzahl_arr[$oKonfigitem->getKonfiggruppe()]
+                    : $oKonfigitem->getInitial()
             );
             if ($oKonfigitem->fAnzahl > $oKonfigitem->getMax() || $oKonfigitem->fAnzahl < $oKonfigitem->getMin()) {
                 $oKonfigitem->fAnzahl = $oKonfigitem->getInitial();

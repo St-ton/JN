@@ -62,7 +62,6 @@
                             {/if}
                             {include file="productdetails/price.tpl" Artikel=$CWunschlistePos->Artikel price_image=$priceImage tplscope="wishlist"}
                         {/if}
-                        {*<p><span class="vat_info">{include file='snippets/shipping_tax_info.tpl' taxdata=$WunschlistePos->Artikel->taxData}</span></p>*}
                         {foreach name=eigenschaft from=$CWunschlistePos->CWunschlistePosEigenschaft_arr item=CWunschlistePosEigenschaft}
                             {if $CWunschlistePosEigenschaft->cFreifeldWert}
                                 <p>

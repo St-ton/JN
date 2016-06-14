@@ -44,8 +44,8 @@ if (isset($_POST['neu_export']) && (int)$_POST['neu_export'] === 1 && validateTo
         $exportformat->cName           = $_POST['cName'];
         $exportformat->cContent        = str_replace("<tab>", "\t", $_POST['cContent']);
         $exportformat->cDateiname      = $_POST['cDateiname'];
-        $exportformat->cKopfzeile      = str_replace("<tab>", "\t", $_POST['cKopfzeile']);
-        $exportformat->cFusszeile      = str_replace("<tab>", "\t", $_POST['cFusszeile']);
+        $exportformat->cKopfzeile      = (isset($_POST['cKopfzeile'])) ? str_replace("<tab>", "\t", $_POST['cKopfzeile']) : '';
+        $exportformat->cFusszeile      = (isset($_POST['cFusszeile'])) ? str_replace("<tab>", "\t", $_POST['cFusszeile']) : '';
         $exportformat->kSprache        = (int)$_POST['kSprache'];
         $exportformat->kWaehrung       = (int)$_POST['kWaehrung'];
         $exportformat->kKampagne       = ((int)$_POST['kKampagne'] > 0) ? (int)$_POST['kKampagne'] : 0;

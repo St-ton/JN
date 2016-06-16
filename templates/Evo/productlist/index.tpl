@@ -3,21 +3,12 @@
 {/if}
 <div id="result-wrapper">
     {include file='productlist/header.tpl'}
-    {assign var='style' value='list'}
-    {assign var='grid' value='col-xs-12'}
-    {if isset($oErweiterteDarstellung->nDarstellung) && isset($Einstellungen.artikeluebersicht.artikeluebersicht_erw_darstellung) && $Einstellungen.artikeluebersicht.artikeluebersicht_erw_darstellung === 'Y'}
-        {if $oErweiterteDarstellung->nDarstellung == 1}
-            {assign var='style' value='list'}
-            {assign var='grid' value='col-xs-12'}
-        {elseif $oErweiterteDarstellung->nDarstellung == 2 || $oErweiterteDarstellung->nDarstellung == 3}
-            {assign var='style' value='gallery'}
-            {assign var='grid' value='col-xs-6 col-lg-4'}
-        {/if}
-    {else}
-        {if isset($Einstellungen.artikeluebersicht.artikeluebersicht_erw_darstellung_stdansicht) && $Einstellungen.artikeluebersicht.artikeluebersicht_erw_darstellung_stdansicht == 2 || $Einstellungen.artikeluebersicht.artikeluebersicht_erw_darstellung_stdansicht == 3}
-            {assign var='style' value='gallery'}
-            {assign var='grid' value='col-xs-6 col-lg-4'}
-        {/if}
+    {assign var='style' value='gallery'}
+    {assign var='grid' value='col-xs-6 col-lg-4'}
+    {if isset($oErweiterteDarstellung->nDarstellung) && isset($Einstellungen.artikeluebersicht.artikeluebersicht_erw_darstellung) && $Einstellungen.artikeluebersicht.artikeluebersicht_erw_darstellung === 'Y'  && $oErweiterteDarstellung->nDarstellung == 1 
+    || isset($Einstellungen.artikeluebersicht.artikeluebersicht_erw_darstellung_stdansicht) && $Einstellungen.artikeluebersicht.artikeluebersicht_erw_darstellung_stdansicht == 1}
+        {assign var='style' value='list'}
+        {assign var='grid' value='col-xs-12'}
     {/if}
     {if isset($Suchergebnisse->Fehler)}
         <p class="alert alert-danger">{$Suchergebnisse->Fehler}</p>

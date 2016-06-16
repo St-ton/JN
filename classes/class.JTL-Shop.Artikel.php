@@ -3543,7 +3543,7 @@ class Artikel
         if (isset($oArtikelOptionen->nProductBundle) && $oArtikelOptionen->nProductBundle) {
             $this->holeProductBundle();
         }
-        if ($this->cVPE === 'Y' && $this->fVPEWert > 0 && $this->cVPEEinheit && $this->Preise != null) {
+        if ($this->cVPE === 'Y' && $this->fVPEWert > 0 && $this->cVPEEinheit && !empty($this->Preise)) {
             // Grundpreis beim Artikelpreis
             $this->baueVPE();
             // Grundpreis bei Staffelpreise

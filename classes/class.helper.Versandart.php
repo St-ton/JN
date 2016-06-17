@@ -140,7 +140,9 @@ class VersandartHelper
      */
     public static function hasSpecificShippingcosts($cLand)
     {
-        return !empty(self::gibArtikelabhaengigeVersandkostenImWK($cLand, $_SESSION['Warenkorb']->PositionenArr));
+        $result = self::gibArtikelabhaengigeVersandkostenImWK($cLand, $_SESSION['Warenkorb']->PositionenArr);
+
+        return !empty($result);
     }
 
     /**

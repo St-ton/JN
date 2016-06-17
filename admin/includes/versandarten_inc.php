@@ -236,9 +236,10 @@ function getShippingByName($cSearch)
         trim($cSearchPos);
         if (strlen($cSearchPos) > 2) {
             $shippingByName_arr = Shop::DB()->query(
-                "SELECT *
-                    FROM tversandart
-                    WHERE cName LIKE '%" . $cSearchPos . "%'", 2
+                "SELECT va.*, vs.*
+                    FROM tversandart AS va
+                    JOIN tversandartsprache AS vs ON vs.kVersandart = va.kVersandart
+                    WHERE va.cName LIKE '%" . Shop::DB()->escape($cSearchPos) . "%' OR vs.cName LIKE '%" . Shop::DB()->escape($cSearchPos) . "%'", 2
             );
             if (!empty($shippingByName_arr)) {
                 if (count($shippingByName_arr) > 1) {

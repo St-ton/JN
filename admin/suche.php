@@ -29,8 +29,8 @@ $suggest = isset($_GET['suggest']) ? true : false;
 $data    = isset($_GET['data']) ? (bool)(int)$_GET['data'] : false;
 
 $settings       = bearbeiteEinstellungsSuche(Shop::DB()->escape($query));
-$shippings      = getShippingByName(Shop::DB()->escape($query));
-$paymentMethods = getPaymentMethodsByName(Shop::DB()->escape($query));
+$shippings      = getShippingByName($query);
+$paymentMethods = getPaymentMethodsByName($query);
 
 $groupedSettings = [];
 $currentGroup    = null;

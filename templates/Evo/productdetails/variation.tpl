@@ -4,11 +4,13 @@
         <div class="col-xs-12">
             <dl>
             {foreach name=Variationen from=$Artikel->Variationen key=i item=Variation}
+            {strip}
                 <dt>{$Variation->cName}{if $Variation->cTyp === 'IMGSWATCHES'} <span class="swatches-selected text-muted" data-id="{$Variation->kEigenschaft}"></span>{/if}</dt>
                 <dd class="form-group{if $Variation->cTyp !== 'FREIFELD' && !$showMatrix} required{/if}">
                     {if $Variation->cTyp === 'SELECTBOX'}
                         <select class="form-control" title="{lang key="pleaseChooseVariation" section="productDetails"}" name="eigenschaftwert[{$Variation->kEigenschaft}]"{if !$showMatrix} required{/if}>
                             {foreach name=Variationswerte from=$Variation->Werte key=y item=Variationswert}
+                            
                                 {assign var="bSelected" value=false}
                                 {if isset($oVariationKombi_arr[$Variationswert->kEigenschaft])}
                                    {assign var="bSelected" value=in_array($Variationswert->kEigenschaftWert, $oVariationKombi_arr[$Variationswert->kEigenschaft])}
@@ -24,7 +26,11 @@
                                             data-key="{$Variationswert->kEigenschaft}"
                                             data-value="{$Variationswert->kEigenschaftWert}"
                                             data-content="{$cVariationsWert|escape:'html'}"
-                                            {if $bSelected}selected="selected"{/if}>
+                                            {if !empty($Variationswert->cBildPfadMini)}
+                                                data-list='{prepare_image_details item=$Variationswert json=true}'
+                                                data-title='{$Variationswert->cName}'
+                                            {/if}
+                                            {if $bSelected} selected="selected"{/if}>
                                         {$cVariationsWert|trim}
                                     </option>
                                 {/if}
@@ -44,7 +50,11 @@
                                        data-type="radio"
                                        data-original="{$Variationswert->cName}"
                                        data-key="{$Variationswert->kEigenschaft}"
-                                       data-value="{$Variationswert->kEigenschaftWert}">
+                                       data-value="{$Variationswert->kEigenschaftWert}"
+                                       {if !empty($Variationswert->cBildPfadMini)}
+                                            data-list='{prepare_image_details item=$Variationswert json=true}'
+                                            data-title='{$Variationswert->cName}'
+                                       {/if}>
                                     <input type="radio"
                                            name="eigenschaftwert[{$Variation->kEigenschaft}]"
                                            id="vt{$Variationswert->kEigenschaftWert}"
@@ -73,7 +83,11 @@
                                             data-original="{$Variationswert->cName}"
                                             data-key="{$Variationswert->kEigenschaft}"
                                             data-value="{$Variationswert->kEigenschaftWert}"
-                                            for="vt{$Variationswert->kEigenschaftWert}">
+                                            for="vt{$Variationswert->kEigenschaftWert}"
+                                            {if !empty($Variationswert->cBildPfadMini)}
+                                                data-list='{prepare_image_details item=$Variationswert json=true}'
+                                                data-title='{$Variationswert->cName}'
+                                            {/if}>
                                         <input type="radio"
                                                class="control-hidden"
                                                name="eigenschaftwert[{$Variation->kEigenschaft}]"
@@ -103,6 +117,7 @@
                            data-key="{$Variation->kEigenschaft}"{if $Variation->cTyp === 'PFLICHT-FREIFELD'} required{/if}>
                     {/if}
                 </dd>
+            {/strip}
             {/foreach}
             </dl>
         </div>

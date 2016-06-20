@@ -269,6 +269,7 @@ function bearbeiteInsert($xml, array $conf)
                 flushCategoryTreeCache();
             }
         }
+        $downloadKeys = getDownloadKeys($Artikel->kArtikel);
         loescheArtikel($Artikel->kArtikel, $isParent, true, $conf);
         if ($artikel_arr[0]->kArtikel > 0) {
             if (!$artikel_arr[0]->cSeo) {
@@ -424,15 +425,18 @@ function bearbeiteInsert($xml, array $conf)
         //Downloadmodul
         if (isset($xml['tartikel']['tArtikelDownload']) && is_array($xml['tartikel']['tArtikelDownload'])) {
             $oDownload_arr = array();
+            loescheDownload($Artikel->kArtikel);
             if (isset($xml['tartikel']['tArtikelDownload']['kDownload']) && is_array($xml['tartikel']['tArtikelDownload']['kDownload'])) {
                 $kDownload_arr = $xml['tartikel']['tArtikelDownload']['kDownload'];
                 foreach ($kDownload_arr as $kDownload) {
                     $oArtikelDownload            = new stdClass();
                     $oArtikelDownload->kDownload = (int)$kDownload;
-                    $oArtikelDownload->kArtikel  = (int)$Artikel->kArtikel;
+                    $oArtikelDownload->kArtikel  = $Artikel->kArtikel;
                     $oDownload_arr[]             = $oArtikelDownload;
 
-                    loescheDownload($oArtikelDownload->kArtikel, $oArtikelDownload->kDownload);
+                    if (($idx = array_search($oArtikelDownload->kDownload, $downloadKeys)) !== false) {
+                        unset($downloadKeys[$idx]);
+                    }
                 }
             } else {
                 $oArtikelDownload            = new stdClass();
@@ -440,9 +444,18 @@ function bearbeiteInsert($xml, array $conf)
                 $oArtikelDownload->kArtikel  = $Artikel->kArtikel;
                 $oDownload_arr[]             = $oArtikelDownload;
 
-                loescheDownload($oArtikelDownload->kArtikel, $oArtikelDownload->kDownload);
+                if (($idx = array_search($oArtikelDownload->kDownload, $downloadKeys)) !== false) {
+                    unset($downloadKeys[$idx]);
+                }
             }
+
             DBUpdateInsert('tartikeldownload', $oDownload_arr, 'kArtikel', 'kDownload');
+        }
+        // Nicht übertragene Downloads löschen
+        if (is_array($downloadKeys) && count($downloadKeys)) {
+            foreach ($downloadKeys as $kDownload) {
+                loescheDownload($Artikel->kArtikel, $kDownload);
+            }
         }
         // Stückliste
         if (isset($xml['tartikel']['tstueckliste']) && is_array($xml['tartikel']['tstueckliste'])) {
@@ -579,7 +592,7 @@ function bearbeiteInsert($xml, array $conf)
                         $cDel_arr = str_replace(array('(', ')'), '', explode('),(', $cDel));
                         $kKey_arr = array();
                         foreach ($cDel_arr as $cDel) {
-                            $kKey_arr[] = (int)substr($cDel, 0, strpos($cDel, ","));
+                            $kKey_arr[] = (int) substr($cDel, 0, strpos($cDel, ","));
                         }
                         Shop::DB()->query("DELETE FROM teigenschaftkombiwert WHERE kEigenschaftKombi IN (" . implode(',', $kKey_arr) . ")", 4);
                     }
@@ -849,15 +862,20 @@ function loescheArtikel($kArtikel, $nIstVater = 0, $bForce = false, $conf = null
         Shop::DB()->query("DELETE FROM tkategorieartikel WHERE kArtikel = " . $kArtikel, 4);
         Shop::DB()->query("DELETE FROM tartikelsprache WHERE kArtikel = " . $kArtikel, 4);
         Shop::DB()->query("DELETE FROM tartikelattribut WHERE kArtikel = " . $kArtikel, 4);
-        Shop::DB()->query("DELETE FROM tattribut WHERE kArtikel = " . $kArtikel, 4);
-        Shop::DB()->query("DELETE FROM teigenschaft WHERE kArtikel = " . $kArtikel, 4);
+        loescheArtikelAttribute($kArtikel);
+        loescheArtikelEigenschaftWert($kArtikel);
+        loescheArtikelEigenschaft($kArtikel);
         Shop::DB()->query("DELETE FROM txsell WHERE kArtikel = " . $kArtikel, 4);
         Shop::DB()->query("DELETE FROM tartikelmerkmal WHERE kArtikel = " . $kArtikel, 4);
         Shop::DB()->query("DELETE FROM tartikelsichtbarkeit WHERE kArtikel = " . $kArtikel, 4);
-        Shop::DB()->query("DELETE FROM tmediendatei WHERE kArtikel = " . $kArtikel, 4);
-        Shop::DB()->query("DELETE FROM tartikeldownload WHERE kArtikel = " . $kArtikel, 4);
-        Shop::DB()->query("DELETE FROM tuploadschemasprache WHERE kArtikelUpload IN (SELECT kUploadSchema FROM tuploadschema WHERE kCustomID='{$kArtikel}' AND nTyp = 3)", 4);
-        Shop::DB()->query("DELETE FROM tuploadschema WHERE kCustomID='{$kArtikel}' AND nTyp = 3", 4);
+        loescheArtikelMediendateien($kArtikel);
+        if ($bForce === false) {
+            loescheArtikelDownload($kArtikel);
+        } else {
+            loescheDownload($kArtikel, null);
+        }
+        loescheArtikelUpload($kArtikel);
+        loescheKonfig($kArtikel);
         if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
             Jtllog::writeLog('Artikel geloescht: ' . $kArtikel, JTLLOG_LEVEL_DEBUG, false, 'Artikel_xml');
         }
@@ -879,6 +897,26 @@ function loescheEigenschaft($kEigenschaft)
 }
 
 /**
+ * @param int $kArtikel
+ */
+function loescheArtikelEigenschaft($kArtikel)
+{
+    $kArtikel = (int)$kArtikel;
+    if ($kArtikel > 0) {
+        $eigenschaft_arr = Shop::DB()->query(
+            "SELECT kEigenschaft
+                FROM teigenschaft
+                WHERE kArtikel = $kArtikel", 2);
+
+        if (is_array($eigenschaft_arr) && count($eigenschaft_arr)) {
+            foreach ($eigenschaft_arr as $oEigenschaft) {
+                loescheEigenschaft($oEigenschaft->kEigenschaft);
+            }
+        }
+    }
+}
+
+/**
  * @param int $kEigenschaftWert
  */
 function loescheEigenschaftWert($kEigenschaftWert)
@@ -890,6 +928,28 @@ function loescheEigenschaftWert($kEigenschaftWert)
         Shop::DB()->query("DELETE FROM teigenschaftwertsichtbarkeit WHERE kEigenschaftWert = " . $kEigenschaftWert, 4);
         Shop::DB()->query("DELETE FROM teigenschaftwertsprache WHERE kEigenschaftWert = " . $kEigenschaftWert, 4);
         Shop::DB()->query("DELETE FROM teigenschaftwertabhaengigkeit WHERE kEigenschaftWert = " . $kEigenschaftWert, 4);
+    }
+}
+
+/**
+ * @param int $kArtikel
+ */
+function loescheArtikelEigenschaftWert($kArtikel)
+{
+    $kArtikel = (int)$kArtikel;
+    if ($kArtikel > 0) {
+        $eigenschaftWert_arr = Shop::DB()->query(
+            "SELECT teigenschaftwert.kEigenschaftWert
+                FROM teigenschaftwert
+                JOIN teigenschaft
+                    ON teigenschaft.kEigenschaft = teigenschaftwert.kEigenschaft
+                WHERE teigenschaft.kArtikel = $kArtikel", 2);
+
+        if (is_array($eigenschaftWert_arr) && count($eigenschaftWert_arr)) {
+            foreach ($eigenschaftWert_arr as $oEigenschaftWert) {
+                loescheEigenschaftWert($oEigenschaftWert->kEigenschaftWert);
+            }
+        }
     }
 }
 
@@ -906,14 +966,55 @@ function loescheAttribute($kAttribut)
 }
 
 /**
+ * @param int $kArtikel
+ */
+function loescheArtikelAttribute($kArtikel)
+{
+    $kArtikel = (int)$kArtikel;
+    if ($kArtikel > 0) {
+        $attribute_arr = Shop::DB()->query(
+            "SELECT tattribut.kAttribut
+                FROM tattribut
+                WHERE tattribut.kArtikel = $kArtikel", 2);
+
+        if (is_array($attribute_arr) && count($attribute_arr)) {
+            foreach ($attribute_arr as $oAttribut) {
+                loescheAttribute($oAttribut->kAttribut);
+            }
+        }
+    }
+}
+
+/**
  * @param int $kMedienDatei
  */
 function loescheMediendateien($kMedienDatei)
 {
     $kMedienDatei = (int)$kMedienDatei;
     if ($kMedienDatei > 0) {
+        Shop::DB()->query("DELETE FROM tmediendatei WHERE kMedienDatei = " . $kMedienDatei, 4);
         Shop::DB()->query("DELETE FROM tmediendateisprache WHERE kMedienDatei = " . $kMedienDatei, 4);
         Shop::DB()->query("DELETE FROM tmediendateiattribut WHERE kMedienDatei = " . $kMedienDatei, 4);
+    }
+}
+
+/**
+ * @param int $kArtikel
+ */
+function loescheArtikelMediendateien($kArtikel)
+{
+    $kArtikel = (int)$kArtikel;
+    if ($kArtikel > 0) {
+        $mediendateien_arr = Shop::DB()->query(
+            "SELECT tmediendatei.kMedienDatei
+                FROM tmediendatei
+                WHERE tmediendatei.kArtikel = $kArtikel", 2);
+
+        if (is_array($mediendateien_arr) && count($mediendateien_arr)) {
+            foreach ($mediendateien_arr as $oMediendatei) {
+                loescheMediendateien($oMediendatei->kMedienDatei);
+            }
+        }
     }
 }
 
@@ -932,11 +1033,20 @@ function loescheUpload($kUploadSchema)
 /**
  * @param int $kArtikel
  */
-function loescheKonfig($kArtikel)
+function loescheArtikelUpload($kArtikel)
 {
     $kArtikel = (int)$kArtikel;
     if ($kArtikel > 0) {
-        Shop::DB()->query("DELETE FROM tartikelkonfiggruppe WHERE kArtikel = " . $kArtikel, 4);
+        $uploadschema_arr = Shop::DB()->query(
+            "SELECT tuploadschema.kUploadSchema
+                FROM tuploadschema
+                WHERE tuploadschema.kCustomID = $kArtikel", 2);
+
+        if (is_array($uploadschema_arr) && count($uploadschema_arr)) {
+            foreach ($uploadschema_arr as $oUploadschema) {
+                loescheUpload($oUploadschema->kUploadSchema);
+            }
+        }
     }
 }
 
@@ -944,7 +1054,7 @@ function loescheKonfig($kArtikel)
  * @param int $kArtikel
  * @param int $kDownload
  */
-function loescheDownload($kArtikel, $kDownload)
+function loescheDownload($kArtikel, $kDownload = null)
 {
     $kArtikel  = (int)$kArtikel;
     $kDownload = (int)$kDownload;
@@ -953,6 +1063,38 @@ function loescheDownload($kArtikel, $kDownload)
     }
     if ($kArtikel > 0 && $kDownload > 0) {
         Shop::DB()->query("DELETE FROM tartikeldownload WHERE kArtikel = " . $kArtikel . " AND kDownload = " . $kDownload, 4);
+    } else if ($kArtikel > 0) {
+        Shop::DB()->query("DELETE FROM tartikeldownload WHERE kArtikel = " . $kArtikel, 4);
+    }
+    if ($kDownload > 0) {
+        Shop::DB()->query("DELETE FROM tdownload WHERE kDownload = " . $kDownload, 4);
+        Shop::DB()->query("DELETE FROM tdownloadsprache WHERE kDownload = " . $kDownload, 4);
+    }
+}
+
+/**
+ * @param int $kArtikel
+ */
+function loescheArtikelDownload($kArtikel)
+{
+    $kArtikel  = (int)$kArtikel;
+    if ($kArtikel > 0) {
+        $downloadKeys = getDownloadKeys($kArtikel);
+
+        foreach($downloadKeys as $kDownload) {
+            loescheDownload($kArtikel, $kDownload);
+        }
+    }
+}
+
+/**
+ * @param int $kArtikel
+ */
+function loescheKonfig($kArtikel)
+{
+    $kArtikel = (int)$kArtikel;
+    if ($kArtikel > 0) {
+        Shop::DB()->query("DELETE FROM tartikelkonfiggruppe WHERE kArtikel = " . $kArtikel, 4);
     }
 }
 
@@ -1079,6 +1221,27 @@ function getConfigParents($kArtikel)
     }
 
     return $parentProductIDs;
+}
+
+/**
+ * @param  int $kArtikel
+ * @return array
+ */
+function getDownloadKeys($kArtikel) {
+    $kArtikel = (int)$kArtikel;
+    if ($kArtikel > 0) {
+        $download_arr = Shop::DB()->query(
+            "SELECT tartikeldownload.kDownload
+                FROM tartikeldownload
+                WHERE tartikeldownload.kArtikel = $kArtikel", 2);
+        array_walk($download_arr, function(&$item, $key){
+            $item = (int)$item->kDownload;
+        });
+
+        return $download_arr;
+    }
+
+    return array();
 }
 
 /**

@@ -11,6 +11,7 @@
  * @method static Sprache Lang()
  * @method static JTLSmarty Smarty(bool $fast_init = false, bool $isAdmin = false)
  * @method static Media Media()
+ * @method static EventDispatcher Event()
  * @method static bool has(string $key)
  * @method static Shop set(string $key, mixed $value)
  * @method static null|mixed get($key)
@@ -385,6 +386,7 @@ final class Shop
             'Lang'     => '_Language',
             'Smarty'   => '_Smarty',
             'Media'    => '_Media',
+            'Event'    => '_Event',
             'has'      => '_has',
             'set'      => '_set',
             'get'      => '_get'
@@ -486,6 +488,21 @@ final class Shop
     }
 
     /**
+     * get event instance
+     *
+     * @return EventDispatcher
+     */
+    public function _Event()
+    {
+        return EventDispatcher::getInstance();
+    }
+    
+    public static function fire($eventName, array $arguments = [])
+    {
+        return self::Event()->fire($eventName, $arguments);
+    }
+
+    /**
      * quick&dirty debugging
      *
      * @param mixed       $var - the variable to debug
@@ -556,6 +573,20 @@ final class Shop
     }
 
     /**
+     * Load plugin event driven system
+     */
+    public static function bootstrap()
+    {
+        $plugins = self::DB()->executeQuery("SELECT kPlugin FROM tplugin WHERE nStatus = 2 AND bBootstrap = 1 ORDER BY nPrio ASC", 2) ?: [];
+
+        foreach ($plugins as $plugin) {
+            if ($p = Plugin::bootstrapper($plugin->kPlugin)) {
+                $p->boot(EventDispatcher::getInstance());
+            }
+        }
+    }
+
+    /**
      *
      */
     public static function run()
@@ -619,6 +650,8 @@ final class Shop
         self::$isInitialized = true;
 
         $_SESSION['cTemplate'] = Template::$cTemplate;
+
+        self::Event()->fire('shop.run');
     }
 
     /**
@@ -912,8 +945,8 @@ final class Shop
 
             self::setPageType(PAGE_ARTIKEL);
             self::$fileName = 'artikel.php';
-        } elseif ((!isset($bSEOMerkmalNotFound) || $bSEOMerkmalNotFound === false) &&
-            (!isset($bKatFilterNotFound) || $bKatFilterNotFound === false) &&
+        } elseif ((!isset(self::$bSEOMerkmalNotFound) || self::$bSEOMerkmalNotFound === false) &&
+            (!isset(self::$bKatFilterNotFound) || self::$bKatFilterNotFound === false) &&
             ((self::$isSeoMainword || self::$NaviFilter->nAnzahlFilter == 0) || !self::$bSeo) &&
             (self::$kHersteller > 0 || self::$kSuchanfrage > 0 || self::$kMerkmalWert > 0 || self::$kTag > 0 || self::$kKategorie > 0 ||
                 (isset(self::$cPreisspannenFilter) && self::$cPreisspannenFilter > 0) ||

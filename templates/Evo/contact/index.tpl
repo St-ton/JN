@@ -85,11 +85,11 @@
                                         <div class="col-xs-12 col-md-6">
                                             {assign var='invalidReason' value=null}
                                             {if isset($fehlendeAngaben.email)}
-                                                {if $fehlendeAngaben.email==1}{lang assign="invalidReason" key="fillOut" section="global"}
-                                                {elseif $fehlendeAngaben.email==2}{lang assign="invalidReason" key="invalidEmail" section="global"}
-                                                {elseif $fehlendeAngaben.email==3}{lang assign="invalidReason" key="blockedEmail" section="global"}
-                                                {elseif $fehlendeAngaben.email==4}{lang assign="invalidReason" key="noDnsEmail" section="account data"}
-                                                {elseif $fehlendeAngaben.email==5}{lang assign="invalidReason" key="emailNotAvailable" section="account data"}{/if}
+                                                {if $fehlendeAngaben.email == 1}{lang assign="invalidReason" key="fillOut" section="global"}
+                                                {elseif $fehlendeAngaben.email == 2}{lang assign="invalidReason" key="invalidEmail" section="global"}
+                                                {elseif $fehlendeAngaben.email == 3}{lang assign="invalidReason" key="blockedEmail" section="global"}
+                                                {elseif $fehlendeAngaben.email == 4}{lang assign="invalidReason" key="noDnsEmail" section="account data"}
+                                                {elseif $fehlendeAngaben.email == 5}{lang assign="invalidReason" key="emailNotAvailable" section="account data"}{/if}
                                             {/if}
                                             {include    file="snippets/form_group_simple.tpl"
                                                 options=[ "email" , "email", "email", {$Vorgaben->cMail}, {lang key="email" section="account data"}, true, {$invalidReason}]}

@@ -19,7 +19,7 @@
     || $showProductWeight
     || $showShippingWeight
     || $dimension && $Einstellungen.artikeldetails.artikeldetails_abmessungen_anzeigen === 'Y'
-    || isset($Artikel->cMasseinheitName) && isset($Artikel->fMassMenge) && $Artikel->fMassMenge > 0  && $Artikel->cTeilbar != 'Y' && ($Artikel->fAbnahmeintervall == 0 || $Artikel->fAbnahmeintervall == 1)
+    || isset($Artikel->cMasseinheitName) && isset($Artikel->fMassMenge) && $Artikel->fMassMenge > 0  && $Artikel->cTeilbar !== 'Y' && ($Artikel->fAbnahmeintervall == 0 || $Artikel->fAbnahmeintervall == 1)
     || ($Einstellungen.artikeldetails.artikeldetails_attribute_anhaengen === 'Y' || $Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ATTRIBUTEANHAENGEN] == 1) && !empty($Artikel->Attribute)
 }
     {assign var="showAttributesTable" value=true}
@@ -81,7 +81,7 @@
                     </tr>
                 {/if}
 
-                {if isset($Artikel->cMasseinheitName) && isset($Artikel->fMassMenge) && $Artikel->fMassMenge > 0 && $Artikel->cTeilbar != 'Y' && ($Artikel->fAbnahmeintervall == 0 || $Artikel->fAbnahmeintervall == 1) && isset($Artikel->cMassMenge)}
+                {if isset($Artikel->cMasseinheitName) && isset($Artikel->fMassMenge) && $Artikel->fMassMenge > 0 && $Artikel->cTeilbar !== 'Y' && ($Artikel->fAbnahmeintervall == 0 || $Artikel->fAbnahmeintervall == 1) && isset($Artikel->cMassMenge)}
                     <tr class="attr-contents">
                         <td class="attr-label">{lang key="contents" section="productDetails"}: </td>
                         <td class="attr-value">{$Artikel->cMassMenge} {$Artikel->cMasseinheitName}</td>

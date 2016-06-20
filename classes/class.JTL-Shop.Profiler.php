@@ -236,7 +236,7 @@ class Profiler
     public static function saveSQLProfile()
     {
         self::$stopProfiling = true;
-        if (count(self::$sqlProfile) > 0) {
+        if (count(self::$sqlProfile) > 0 && PROFILE_QUERIES_ECHO !== true) {
             //create run object
             $run        = new stdClass();
             $run->url   = (isset($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : '';

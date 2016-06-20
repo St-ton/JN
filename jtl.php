@@ -145,6 +145,16 @@ if (isset($_POST['login']) && intval($_POST['login']) === 1 && isset($_POST['ema
                         }
                     }
                 }
+
+                // setzte Sprache auf Sprache des Kunden
+                $oISOSprache = Shop::Lang()->getIsoFromLangID($Kunde->kSprache);
+                if ((int)$_SESSION['kSprache'] !== (int)$Kunde->kSprache && !empty($oISOSprache->cISO)) {
+                    $_SESSION['kSprache']        = (int)$Kunde->kSprache;
+                    $_SESSION['cISOSprache']     = $oISOSprache->cISO;
+                    $_SESSION['currentLanguage'] = gibAlleSprachen(1)[$Kunde->kSprache];
+                    Shop::setLanguage($Kunde->kSprache, $oISOSprache->cISO);
+                    Shop::Lang()->setzeSprache($oISOSprache->cISO);
+                }
             } else {
                 $cHinweis .= Shop::Lang()->get('loginNotActivated', 'global');
             }
@@ -302,7 +312,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
         $kWunschliste = verifyGPCDataInteger('wl');
         if ($kWunschliste) {
             // Prüfe ob die Wunschliste dem eingeloggten Kunden gehört
-            $oWunschliste = Shop::DB()->select('twunschliste', 'kWunschliste', (int)$kWunschliste);
+            $oWunschliste = Shop::DB()->select('twunschliste', 'kWunschliste', $kWunschliste);
             if (!empty($oWunschliste->kKunde) && $oWunschliste->kKunde == $_SESSION['Kunde']->kKunde) {
                 $step = 'wunschliste anzeigen';
                 $cHinweis .= wunschlisteAktualisieren($kWunschliste);
@@ -327,7 +337,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
         $step         = (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) ? 'mein Konto' : 'login';
         // Pruefen, ob der MD5 vorhanden ist
         if (intval($kWunschliste) > 0) {
-            $oWunschliste = Shop::DB()->select('twunschliste', 'kWunschliste', (int)$kWunschliste, 'kKunde', (int)$_SESSION['Kunde']->kKunde, null, null, false, 'kWunschliste, cURLID');
+            $oWunschliste = Shop::DB()->select('twunschliste', 'kWunschliste', $kWunschliste, 'kKunde', (int)$_SESSION['Kunde']->kKunde, null, null, false, 'kWunschliste, cURLID');
             if (isset($oWunschliste->kWunschliste) && $oWunschliste->kWunschliste > 0 && strlen($oWunschliste->cURLID) > 0) {
                 $step = 'wunschliste anzeigen';
                 // Soll die Wunschliste nun an die Emailempfaenger geschickt werden?
@@ -395,8 +405,11 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
                     $nOeffentlich = verifyGPCDataInteger('nstd');
                     // Wurde nstd auf 1 oder 0 gesetzt?
                     if ($nOeffentlich === 0) {
+                        $upd               = new stdClass();
+                        $upd->nOeffentlich = 0;
+                        $upd->cURLID       = '';
                         // nOeffentlich der Wunschliste updaten zu Privat
-                        Shop::DB()->query("UPDATE twunschliste SET nOeffentlich = 0, cURLID = '' WHERE kWunschliste = " . intval($kWunschliste), 3);
+                        Shop::DB()->update('twunschliste', 'kWunschliste', $kWunschliste, $upd);
                         $cHinweis .= Shop::Lang()->get('wishlistSetPrivate', 'messages');
                     } elseif ($nOeffentlich === 1) {
                         $cURLID = gibUID(32, substr(md5($kWunschliste), 0, 16) . time());
@@ -406,11 +419,10 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
                             $cURLID .= '&' . $oKampagne->cParameter . '=' . $oKampagne->cWert;
                         }
                         // nOeffentlich der Wunschliste updaten zu öffentlich
-                        Shop::DB()->query(
-                            "UPDATE twunschliste
-                                SET nOeffentlich = 1, cURLID = '" . $cURLID . "'
-                                WHERE kWunschliste = " . intval($kWunschliste), 3
-                        );
+                        $upd               = new stdClass();
+                        $upd->nOeffentlich = 1;
+                        $upd->cURLID       = $cURLID;
+                        Shop::DB()->update('twunschliste', 'kWunschliste', $kWunschliste, $upd);
                         $cHinweis .= Shop::Lang()->get('wishlistSetPublic', 'messages');
                     }
                 }
@@ -455,29 +467,40 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
             // Update Kundenattribute
             if (is_array($cKundenattribut_arr) && count($cKundenattribut_arr) > 0) {
                 $oKundenfeldNichtEditierbar_arr = getKundenattributeNichtEditierbar();
-                $cSQL                           = '';
-                if (is_array($oKundenfeldNichtEditierbar_arr) && count($oKundenfeldNichtEditierbar_arr) > 0) {
-                    $cSQL .= ' AND (';
-                    foreach ($oKundenfeldNichtEditierbar_arr as $i => $oKundenfeldNichtEditierbar) {
-                        if ($i == 0) {
-                            $cSQL .= 'kKundenfeld != ' . (int)$oKundenfeldNichtEditierbar->kKundenfeld;
-                        } else {
-                            $cSQL .= ' AND kKundenfeld != ' . (int)$oKundenfeldNichtEditierbar->kKundenfeld;
-                        }
-                    }
-                    $cSQL .= ')';
+                $nonEditableCustomerfields_arr  = array();
+                foreach ($oKundenfeldNichtEditierbar_arr as $i => $oKundenfeldNichtEditierbar) {
+                    $nonEditableCustomerfields_arr[] = 'kKundenfeld != ' . (int)$oKundenfeldNichtEditierbar->kKundenfeld;
+                }
+                if (is_array($nonEditableCustomerfields_arr) && count($nonEditableCustomerfields_arr) > 0) {
+                    $cSQL = ' AND ' . implode(' AND ', $nonEditableCustomerfields_arr);
+                } else {
+                    $cSQL = '';
                 }
                 Shop::DB()->query("DELETE FROM tkundenattribut WHERE kKunde = " . (int)$_SESSION['Kunde']->kKunde . $cSQL, 3);
 
-                $nKundenattributKey_arr = array_keys($cKundenattribut_arr);
-                foreach ($nKundenattributKey_arr as $kKundenfeld) {
-                    $oKundenattribut              = new stdClass();
-                    $oKundenattribut->kKunde      = (int)$_SESSION['Kunde']->kKunde;
-                    $oKundenattribut->kKundenfeld = (int)$cKundenattribut_arr[$kKundenfeld]->kKundenfeld;
-                    $oKundenattribut->cName       = $cKundenattribut_arr[$kKundenfeld]->cWawi;
-                    $oKundenattribut->cWert       = $cKundenattribut_arr[$kKundenfeld]->cWert;
+                $nKundenattributKey_arr             = array_keys($cKundenattribut_arr);
+                $oKundenAttributNichtEditierbar_arr = getNonEditableCustomerFields();
+                if (is_array($oKundenAttributNichtEditierbar_arr) && count($oKundenAttributNichtEditierbar_arr) > 0) {
+                    $nKundenAttributNichtEditierbarKey_arr = array_keys($oKundenAttributNichtEditierbar_arr);
+                    foreach (array_diff($nKundenattributKey_arr, $nKundenAttributNichtEditierbarKey_arr) as $kKundenfeld) {
+                        $oKundenattribut              = new stdClass();
+                        $oKundenattribut->kKunde      = (int)$_SESSION['Kunde']->kKunde;
+                        $oKundenattribut->kKundenfeld = (int)$cKundenattribut_arr[$kKundenfeld]->kKundenfeld;
+                        $oKundenattribut->cName       = $cKundenattribut_arr[$kKundenfeld]->cWawi;
+                        $oKundenattribut->cWert       = $cKundenattribut_arr[$kKundenfeld]->cWert;
 
-                    Shop::DB()->insert('tkundenattribut', $oKundenattribut);
+                        Shop::DB()->insert('tkundenattribut', $oKundenattribut);
+                    }
+                } else {
+                    foreach ($nKundenattributKey_arr as $kKundenfeld) {
+                        $oKundenattribut              = new stdClass();
+                        $oKundenattribut->kKunde      = (int)$_SESSION['Kunde']->kKunde;
+                        $oKundenattribut->kKundenfeld = (int)$cKundenattribut_arr[$kKundenfeld]->kKundenfeld;
+                        $oKundenattribut->cName       = $cKundenattribut_arr[$kKundenfeld]->cWawi;
+                        $oKundenattribut->cWert       = $cKundenattribut_arr[$kKundenfeld]->cWert;
+
+                        Shop::DB()->insert('tkundenattribut', $oKundenattribut);
+                    }
                 }
             }
             $step = 'mein Konto';
@@ -598,22 +621,22 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
                 Shop::DB()->delete('tlieferadresse', 'kKunde', (int)$_SESSION['Kunde']->kKunde);
                 Shop::DB()->query(
                     "DELETE twarenkorb, twarenkorbpos, twarenkorbposeigenschaft, twarenkorbpers, twarenkorbperspos, twarenkorbpersposeigenschaft
-                    FROM twarenkorb
-                    LEFT JOIN twarenkorbpos ON twarenkorbpos.kWarenkorb = twarenkorb.kWarenkorb
-                    LEFT JOIN twarenkorbposeigenschaft ON twarenkorbposeigenschaft.kWarenkorbPos = twarenkorbpos.kWarenkorbPos
-                    LEFT JOIN twarenkorbpers ON twarenkorbpers.kKunde = " . (int)$_SESSION['Kunde']->kKunde . "
-                    LEFT JOIN twarenkorbperspos ON twarenkorbperspos.kWarenkorbPers = twarenkorbpers.kWarenkorbPers
-                    LEFT JOIN twarenkorbpersposeigenschaft ON twarenkorbpersposeigenschaft.kWarenkorbPersPos = twarenkorbperspos.kWarenkorbPersPos
-                    WHERE twarenkorb.kKunde = " . (int)$_SESSION['Kunde']->kKunde, 4
+                        FROM twarenkorb
+                        LEFT JOIN twarenkorbpos ON twarenkorbpos.kWarenkorb = twarenkorb.kWarenkorb
+                        LEFT JOIN twarenkorbposeigenschaft ON twarenkorbposeigenschaft.kWarenkorbPos = twarenkorbpos.kWarenkorbPos
+                        LEFT JOIN twarenkorbpers ON twarenkorbpers.kKunde = " . (int)$_SESSION['Kunde']->kKunde . "
+                        LEFT JOIN twarenkorbperspos ON twarenkorbperspos.kWarenkorbPers = twarenkorbpers.kWarenkorbPers
+                        LEFT JOIN twarenkorbpersposeigenschaft ON twarenkorbpersposeigenschaft.kWarenkorbPersPos = twarenkorbperspos.kWarenkorbPersPos
+                        WHERE twarenkorb.kKunde = " . (int)$_SESSION['Kunde']->kKunde, 4
                 );
                 Shop::DB()->delete('tkundenattribut', 'kKunde', (int)$_SESSION['Kunde']->kKunde);
                 Shop::DB()->query(
                     "DELETE twunschliste, twunschlistepos, twunschlisteposeigenschaft, twunschlisteversand
-                    FROM twunschliste
-                    LEFT JOIN twunschlistepos ON twunschliste.kWunschliste = twunschlistepos.kWunschliste
-                    LEFT JOIN twunschlisteposeigenschaft ON twunschlisteposeigenschaft.kWunschlistePos = twunschlistepos.kWunschlistePos
-                    LEFT JOIN twunschlisteversand ON twunschlisteversand.kWunschliste = twunschliste.kWunschliste
-                    WHERE twunschliste.kKunde = " . (int)$_SESSION['Kunde']->kKunde, 4
+                        FROM twunschliste
+                        LEFT JOIN twunschlistepos ON twunschliste.kWunschliste = twunschlistepos.kWunschliste
+                        LEFT JOIN twunschlisteposeigenschaft ON twunschlisteposeigenschaft.kWunschlistePos = twunschlistepos.kWunschlistePos
+                        LEFT JOIN twunschlisteversand ON twunschlisteversand.kWunschliste = twunschliste.kWunschliste
+                        WHERE twunschliste.kKunde = " . (int)$_SESSION['Kunde']->kKunde, 4
                 );
                 $obj->tkunde = $_SESSION['Kunde'];
                 sendeMail(MAILTEMPLATE_KUNDENACCOUNT_GELOESCHT, $obj);

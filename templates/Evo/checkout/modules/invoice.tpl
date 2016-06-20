@@ -59,11 +59,11 @@
                             <input type="text" name="dGeburtstag" value="{$cData_arr.dGeburtstag}" id="dGeburtstag" class="form-control birthday" />
                             {if $cMissing_arr.dGeburtstag>0}
                                 <div class="alert alert-danger">
-                                    {if $cMissing_arr.dGeburtstag==1}
+                                    {if $cMissing_arr.dGeburtstag == 1}
                                         {lang key="fillOut" section="global"}
-                                    {elseif $cMissing_arr.dGeburtstag==2}
+                                    {elseif $cMissing_arr.dGeburtstag == 2}
                                         {lang key="invalidDateformat" section="global"}
-                                    {elseif $cMissing_arr.dGeburtstag==3}
+                                    {elseif $cMissing_arr.dGeburtstag == 3}
                                         {lang key="invalidDate" section="global"}
                                     {/if}
                                 </div>

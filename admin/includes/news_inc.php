@@ -249,14 +249,22 @@ function calcRatio($cDatei, $nMaxBreite, $nMaxHoehe)
 }
 
 /**
+ * @param  int    $kSprache
+ * @param  string $cLimitSQL
  * @return mixed
  */
-function holeNewskategorie()
+function holeNewskategorie($kSprache = null, $cLimitSQL = '')
 {
+    if (!isset($kSprache)) {
+        $kSprache = $_SESSION['kSprache'];
+    }
+    $kSprache = (int) $kSprache;
+
     return Shop::DB()->query(
-        "SELECT *, DATE_FORMAT(dLetzteAktualisierung, '%d.%m.%Y %H:%i') AS dLetzteAktualisierung_de
+        "SELECT" . (!empty($cLimitSQL) ? " SQL_CALC_FOUND_ROWS" : '') . " *, DATE_FORMAT(dLetzteAktualisierung, '%d.%m.%Y %H:%i') AS dLetzteAktualisierung_de
             FROM tnewskategorie
-            WHERE kSprache = " . (int)$_SESSION['kSprache'], 2
+            WHERE kSprache = " . $kSprache . "
+            ORDER BY nSort DESC" . (!empty($cLimitSQL) ? " " . $cLimitSQL : ''), 2
     );
 }
 
@@ -348,7 +356,8 @@ function editiereNewskategorie($kNewsKategorie, $kSprache)
         $oNewsKategorie = Shop::DB()->query(
             "SELECT tnewskategorie.kNewsKategorie, tnewskategorie.kSprache, tnewskategorie.cName,
                 tnewskategorie.cBeschreibung, tnewskategorie.cMetaTitle, tnewskategorie.cMetaDescription,
-                tnewskategorie.nSort, tnewskategorie.nAktiv, tnewskategorie.dLetzteAktualisierung, tseo.cSeo,
+                tnewskategorie.nSort, tnewskategorie.nAktiv, tnewskategorie.dLetzteAktualisierung,
+                tnewskategorie.cPreviewImage, tseo.cSeo,
                 DATE_FORMAT(tnewskategorie.dLetzteAktualisierung, '%d.%m.%Y %H:%i') AS dLetzteAktualisierung_de
                 FROM tnewskategorie
                 LEFT JOIN tseo ON tseo.cKey = 'kNewsKategorie'
@@ -417,4 +426,39 @@ function loescheNewsBild($cBildname, $kNews, $cUploadVerzeichnis)
     }
 
     return false;
+}
+
+/**
+ * @param string $cTab
+ * @param string $cHinweis
+ * @param array  $urlParams
+ * @return bool
+ */
+function newsRedirect($cTab = '', $cHinweis = '', $urlParams = null) 
+{
+    $tabPageMapping = array(
+        'inaktiv'    => 's1',
+        'aktiv'      => 's2',
+        'kategorien' => 's3',
+    );
+    if (empty($cHinweis)) {
+        unset($_SESSION['news.cHinweis']);
+    } else {
+        $_SESSION['news.cHinweis'] = $cHinweis;
+    }
+
+    if (!empty($cTab)) {
+        if (!is_array($urlParams)) {
+            $urlParams = array();
+        }
+
+        $urlParams['tab'] = $cTab;
+
+        if (isset($tabPageMapping[$cTab]) && verifyGPCDataInteger($tabPageMapping[$cTab]) > 1 && !array_key_exists($tabPageMapping[$cTab], $urlParams)) {
+            $urlParams[$tabPageMapping[$cTab]] = verifyGPCDataInteger($tabPageMapping[$cTab]);
+        }
+    }
+
+    header('Location: news.php' . (is_array($urlParams) ? '?' . http_build_query($urlParams, '', '&') : ''));
+    exit;
 }

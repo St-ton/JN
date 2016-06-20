@@ -22,22 +22,23 @@ require PFAD_ROOT . PFAD_INCLUDES . 'error_handler.php';
 require PFAD_ROOT . PFAD_INCLUDES . 'plugin_inc.php';
 require PFAD_ROOT . PFAD_INCLUDES . 'autoload.php';
 require PFAD_ROOT . PFAD_INCLUDES . 'tools.Global.php';
-$shop = Shop::getInstance();
 require PFAD_ROOT . PFAD_BLOWFISH . 'xtea.class.php';
 require PFAD_ROOT . PFAD_CLASSES_CORE . 'class.core.NiceDB.php';
 require PFAD_ROOT . PFAD_CLASSES_CORE . 'class.core.Nice.php';
+require PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'permissioncheck_inc.php';
 require PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'benutzerverwaltung_inc.php';
 require PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'admin_tools.php';
-require PFAD_ROOT . PFAD_ADMIN . PFAD_CLASSES . 'class.JTL-Shopadmin.Notification.php';
-require PFAD_ROOT . PFAD_ADMIN . PFAD_CLASSES . 'class.JTL-Shopadmin.NotificationEntry.php';
+
 // Datenbankverbindung aufbauen - ohne Debug Modus
-$DB    = new NiceDB(DB_HOST, DB_USER, DB_PASS, DB_NAME, true);
+$DB = new NiceDB(DB_HOST, DB_USER, DB_PASS, DB_NAME, true);
+
 $cache = JTLCache::getInstance();
 $cache->setJtlCacheConfig();
 
-$oSprache            = Sprache::getInstance(true);
-$nSystemlogFlag      = getSytemlogFlag();
-$oGlobaleEinstellung = Shop::getSettings(array(CONF_GLOBAL));
-$oAccount            = new AdminAccount();
+$notify = Notification::getInstance();
+$notify->buildDefault();
+
+Shop::bootstrap();
+Shop::fire('backend.notification', [&$notify]);
 
 require PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'smartyinclude.php';

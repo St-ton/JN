@@ -7,7 +7,7 @@
 /**
  * Class Lieferadresse
  */
-class Lieferadresse
+class Lieferadresse extends Adresse
 {
     /**
      * @var int
@@ -18,91 +18,6 @@ class Lieferadresse
      * @var int
      */
     public $kKunde;
-
-    /**
-     * @var string
-     */
-    public $cAnrede;
-
-    /**
-     * @var string
-     */
-    public $cVorname;
-
-    /**
-     * @var string
-     */
-    public $cNachname;
-
-    /**
-     * @var string
-     */
-    public $cTitel;
-
-    /**
-     * @var string
-     */
-    public $cFirma;
-
-    /**
-     * @var string
-     */
-    public $cStrasse;
-
-    /**
-     * @var string
-     */
-    public $cAdressZusatz;
-
-    /**
-     * @var string
-     */
-    public $cPLZ;
-
-    /**
-     * @var string
-     */
-    public $cOrt;
-
-    /**
-     * @var string
-     */
-    public $cBundesland;
-
-    /**
-     * @var string
-     */
-    public $cLand;
-
-    /**
-     * @var string
-     */
-    public $cTel;
-
-    /**
-     * @var string
-     */
-    public $cMobil;
-
-    /**
-     * @var string
-     */
-    public $cFax;
-
-    /**
-     * @var string
-     */
-    public $cMail;
-
-    /**
-     * @var string
-     */
-    public $cHausnummer;
-
-    /**
-     * @var string
-     */
-    public $cZusatz;
 
     /**
      * @var string
@@ -129,36 +44,6 @@ class Lieferadresse
     }
 
     /**
-     * encrypt shipping address
-     *
-     * @return $this
-     */
-    public function verschluesselLieferadresse()
-    {
-        $this->cNachname = verschluesselXTEA(trim($this->cNachname));
-        $this->cFirma    = verschluesselXTEA(trim($this->cFirma));
-        $this->cZusatz   = verschluesselXTEA(trim($this->cZusatz));
-        $this->cStrasse  = verschluesselXTEA(trim($this->cStrasse));
-
-        return $this;
-    }
-
-    /**
-     * decrypt shipping address
-     *
-     * @return $this
-     */
-    public function entschluesselLieferadresse()
-    {
-        $this->cNachname = trim(entschluesselXTEA($this->cNachname));
-        $this->cFirma    = trim(entschluesselXTEA($this->cFirma));
-        $this->cZusatz   = trim(entschluesselXTEA($this->cZusatz));
-        $this->cStrasse  = trim(entschluesselXTEA($this->cStrasse));
-
-        return $this;
-    }
-
-    /**
      * Setzt Lieferadresse mit Daten aus der DB mit spezifiziertem Primary Key
      *
      * @access public
@@ -173,15 +58,14 @@ class Lieferadresse
         if (!isset($obj->kLieferadresse)) {
             return 0;
         }
-        $members = array_keys(get_object_vars($obj));
-        foreach ($members as $member) {
-            $this->$member = $obj->$member;
-        }
+
+        $this->fromObject($obj);
+
         // Anrede mappen
         $this->cAnredeLocalized = mappeKundenanrede($this->cAnrede, 0, $this->kKunde);
         $this->angezeigtesLand  = ISO2land($this->cLand);
         if ($this->kLieferadresse > 0) {
-            $this->entschluesselLieferadresse();
+            $this->decrypt();
         }
 
         executeHook(HOOK_LIEFERADRESSE_CLASS_LOADFROMDB);
@@ -197,21 +81,20 @@ class Lieferadresse
      */
     public function insertInDB()
     {
-        $this->verschluesselLieferadresse();
-        $obj = kopiereMembers($this);
+        $this->encrypt();
+        $obj = $this->toObject();
+
+        $obj->cLand = $this->pruefeLandISO($obj->cLand);
 
         unset($obj->kLieferadresse);
         unset($obj->angezeigtesLand);
         unset($obj->cAnredeLocalized);
+
         $this->kLieferadresse = Shop::DB()->insert('tlieferadresse', $obj);
-        $this->entschluesselLieferadresse();
+        $this->decrypt();
 
         // Anrede mappen
-        if ($this->cAnrede === 'm') {
-            $this->cAnredeLocalized = Shop::Lang()->get('salutationM', 'global');
-        } elseif ($this->cAnrede === 'w') {
-            $this->cAnredeLocalized = Shop::Lang()->get('salutationW', 'global');
-        }
+        $this->cAnredeLocalized = $this->mappeAnrede($this->cAnrede);
 
         return $this->kLieferadresse;
     }
@@ -224,20 +107,19 @@ class Lieferadresse
      */
     public function updateInDB()
     {
-        $this->verschluesselLieferadresse();
-        $obj = kopiereMembers($this);
+        $this->encrypt();
+        $obj = $this->toObject();
+
+        $obj->cLand = $this->pruefeLandISO($obj->cLand);
 
         unset($obj->angezeigtesLand);
         unset($obj->cAnredeLocalized);
+
         $cReturn = Shop::DB()->update('tlieferadresse', 'kLieferadresse', $obj->kLieferadresse, $obj);
-        $this->entschluesselLieferadresse();
+        $this->decrypt();
 
         // Anrede mappen
-        if ($this->cAnrede === 'm') {
-            $this->cAnredeLocalized = Shop::Lang()->get('salutationM', 'global');
-        } elseif ($this->cAnrede === 'w') {
-            $this->cAnredeLocalized = Shop::Lang()->get('salutationW', 'global');
-        }
+        $this->cAnredeLocalized = $this->mappeAnrede($this->cAnrede);
 
         return $cReturn;
     }
@@ -249,16 +131,9 @@ class Lieferadresse
      */
     public function gibLieferadresseAssoc()
     {
-        $LieferadresseAssoc_arr = array();
         if ($this->kLieferadresse > 0) {
-            $cMember_arr = array_keys(get_object_vars($this));
-            if (is_array($cMember_arr) && count($cMember_arr) > 0) {
-                foreach ($cMember_arr as $cMember) {
-                    $LieferadresseAssoc_arr[$cMember] = $this->$cMember;
-                }
-            }
+            return $this->toArray();
         }
-
-        return $LieferadresseAssoc_arr;
+        return [];
     }
 }

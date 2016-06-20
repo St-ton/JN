@@ -5,23 +5,17 @@
  */
 
 /**
- * Class Notification
+ * Class Notification.
  */
 class Notification implements IteratorAggregate, Countable
 {
-    private $array;
+    use SingletonTrait;
+    
+    private $array = [];
 
     /**
-     * Notification constructor.
-     */
-    public function __construct()
-    {
-        $this->array = [];
-    }
-
-    /**
-     * @param int $type
-     * @param string $title
+     * @param int         $type
+     * @param string      $title
      * @param string|null $description
      * @param string|null $url
      */
@@ -37,9 +31,9 @@ class Notification implements IteratorAggregate, Countable
     {
         $this->array[] = $notify;
     }
-    
+
     /**
-     * @return mixed  - highest type in record
+     * @return highest type in record
      */
     public function getHighestType()
     {
@@ -49,6 +43,7 @@ class Notification implements IteratorAggregate, Countable
                 $type = $notify->getType();
             }
         }
+
         return $type;
     }
 
@@ -65,51 +60,61 @@ class Notification implements IteratorAggregate, Countable
      */
     public function getIterator()
     {
+        usort($this->array, function($a, $b)
+        {
+            if ($a->getType() > $b->getType()) {
+                return -1;
+            }
+            elseif ($a->getType() < $b->getType()) {             
+                return 1;
+            }
+            return 0;
+        });
+        
         return new ArrayIterator($this->array);
     }
 
     /**
-     * Build default system notifications
+     * Build default system notifications.
      * @todo Remove translated messages
-     *
-     * @return Notification
      */
-    public static function buildDefault()
+    public function buildDefault()
     {
-        require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dashboard_inc.php';
-        require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'permissioncheck_inc.php';
+        $status     = Status::getInstance();
+        $confGlobal = Shop::getSettings(array(CONF_GLOBAL));
 
-        $notify         = new Notification();
-        $updater        = new Updater();
-        $template       = Template::getInstance();
-        $writeableDirs  = checkWriteables();
-        $permissionStat = getPermissionStats($writeableDirs);
-        $confGlobal     = Shop::getSettings(array(CONF_GLOBAL));
-        
-        if ($updater->hasPendingUpdates()) {
-            $notify->add(NotificationEntry::TYPE_DANGER, "Systemupdate", "Ein Datenbank-Update ist zwingend notwendig", "dbupdater.php");
+        if ($status->hasPendingUpdates()) {
+            $this->add(NotificationEntry::TYPE_DANGER, 'Systemupdate', 'Ein Datenbank-Update ist zwingend notwendig', 'dbupdater.php');
         }
 
-        if ($permissionStat->nCountInValid > 0) {
-            $notify->add(NotificationEntry::TYPE_WARNING, "Dateisystem", "Es sind {$permissionStat->nCountInValid} Verzeichnisse nicht beschreibbar.", "permissioncheck.php");
+        if (!$status->validFolderPermissions()) {
+            $this->add(NotificationEntry::TYPE_DANGER, 'Dateisystem', "Es sind Verzeichnisse nicht beschreibbar.", 'permissioncheck.php');
         }
 
-        if (is_dir(PFAD_ROOT . 'install')) {
-            $notify->add(NotificationEntry::TYPE_DANGER, "System", "Bitte l&ouml;schen Sie das Installationsverzeichnis \"/install/\" im Shop-Wurzelverzeichnis.");
+        if ($status->hasInstallDir()) {
+            $this->add(NotificationEntry::TYPE_WARNING, 'System', 'Bitte l&ouml;schen Sie das Installationsverzeichnis "/install/" im Shop-Wurzelverzeichnis.');
         }
 
-        if (JTL_VERSION != $template->getShopVersion()) {
-            $notify->add(NotificationEntry::TYPE_WARNING, "Template", "Ihre Template-Version unterscheidet sich von Ihrer Shop-Version.<br />Weitere Hilfe zu Template-Updates finden Sie im <i class=\"fa fa-external-link\"></i> Wiki", "shoptemplate.php");
+        if ($status->hasDifferentTemplateVersion()) {
+            $this->add(NotificationEntry::TYPE_WARNING, 'Template', 'Ihre Template-Version unterscheidet sich von Ihrer Shop-Version.<br />Weitere Hilfe zu Template-Updates finden Sie im <i class="fa fa-external-link"></i> Wiki', 'shoptemplate.php');
         }
-        
-        if (Profiler::getIsActive() !== 0) {
-            $notify->add(NotificationEntry::TYPE_WARNING, "Plugin", "Der Profiler ist aktiv und kann zu starken Leistungseinbu&szlig;en im Shop f&uuml;hren.");
+
+        if ($status->hasActiveProfiler()) {
+            $this->add(NotificationEntry::TYPE_WARNING, 'Plugin', 'Der Profiler ist aktiv und kann zu starken Leistungseinbu&szlig;en im Shop f&uuml;hren.');
         }
 
         if ($confGlobal['global']['anti_spam_method'] == 7 && !reCaptchaConfigured()) {
-            $notify->add(NotificationEntry::TYPE_WARNING, "Konfiguration", "Sie haben Google reCaptcha als Spamschutz-Methode gew&auml;hlt, aber Website- und/oder Geheimer Schl&uuml;ssel nicht angegeben.", 'einstellungen.php?kSektion=1#anti_spam_method');
+            $this->add(NotificationEntry::TYPE_WARNING, 'Konfiguration', 'Sie haben Google reCaptcha als Spamschutz-Methode gew&auml;hlt, aber Website- und/oder Geheimer Schl&uuml;ssel nicht angegeben.', 'einstellungen.php?kSektion=1#anti_spam_method');
         }
 
-        return $notify;
+        if ($subscription = $status->getSubscription()) {
+            if ((int) $subscription->bUpdate === 1) {
+                if ((int) $subscription->nDayDiff <= 0) {
+                    $this->add(NotificationEntry::TYPE_WARNING, 'Subscription', 'Ihre Subscription ist abgelaufen. Jetzt erneuern.', 'http://jtl-url.de/subscription');
+                } else {
+                    $this->add(NotificationEntry::TYPE_INFO, 'Subscription', "Ihre Subscription l&auml;uft in {$subscription->nDayDiff} Tagen ab.", 'http://jtl-url.de/subscription');
+                }
+            }
+        }
     }
 }

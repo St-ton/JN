@@ -1,6 +1,6 @@
 <li>
     {if $smarty.session.Warenkorb->PositionenArr|@count > 0}
-        <table class="table table-striped dropdown-cart-items">
+        <table class="table table-striped dropdown-cart-items hyphens">
             <tbody>
             {foreach from=$smarty.session.Warenkorb->PositionenArr item=oPosition}
                 {if $oPosition->nPosTyp == 1 && !$oPosition->istKonfigKind()}

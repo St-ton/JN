@@ -496,7 +496,7 @@ function checkeWarenkorbEingang()
     }
     if (isset($_POST['n']) && doubleval($_POST['n']) > 0) {
         $fAnzahl = doubleval($_POST['n']);
-    } elseif (isset($_POST['n']) && doubleval($_GET['n']) > 0) {
+    } elseif (isset($_GET['n']) && doubleval($_GET['n']) > 0) {
         $fAnzahl = doubleval($_GET['n']);
     }
     $kArtikel = verifyGPCDataInteger('a');
@@ -505,7 +505,7 @@ function checkeWarenkorbEingang()
     // Wunschliste?
     if ((isset($_POST['Wunschliste']) || isset($_GET['Wunschliste'])) && $conf['global']['global_wunschliste_anzeigen'] === 'Y') {
         // Prüfe ob Kunde eingeloggt
-        if (!isset($_SESSION['Kunde']->kKunde)) {
+        if (!isset($_SESSION['Kunde']->kKunde) && !isset($_POST['login'])) {
             //redirekt zum artikel, um variation/en zu wählen / MBM beachten
             header('Location: jtl.php?a=' . $kArtikel . '&n=' . $fAnzahl . '&r=' . R_LOGIN_WUNSCHLISTE, true, 302);
             exit();
@@ -1237,11 +1237,11 @@ function fuegeEinInWarenkorb($kArtikel, $anzahl, $oEigenschaftwerte_arr = '', $n
 
             if ($nWeiterleitung == 0) {
                 if ($Artikel->nIstVater == 1) {
-                    header('Location: navi.php?a=' . $Artikel->kArtikel . '&n=' . $anzahl . '&r=' . implode(',', $redirectParam), true, 302);
+                    header('Location: ' . Shop::getURL() . '/navi.php?a=' . $Artikel->kArtikel . '&n=' . $anzahl . '&r=' . implode(',', $redirectParam), true, 302);
                 } elseif ($Artikel->kEigenschaftKombi > 0) {
-                    header('Location: navi.php?a=' . $Artikel->kVaterArtikel . '&a2=' . $Artikel->kArtikel . '&n=' . $anzahl . '&r=' . implode(',', $redirectParam), true, 302);
+                    header('Location: ' . Shop::getURL() . '/navi.php?a=' . $Artikel->kVaterArtikel . '&a2=' . $Artikel->kArtikel . '&n=' . $anzahl . '&r=' . implode(',', $redirectParam), true, 302);
                 } else {
-                    header('Location: index.php?a=' . $Artikel->kArtikel . '&n=' . $anzahl . '&r=' . implode(',', $redirectParam), true, 302);
+                    header('Location: ' . Shop::getURL() . '/index.php?a=' . $Artikel->kArtikel . '&n=' . $anzahl . '&r=' . implode(',', $redirectParam), true, 302);
                 }
                 exit;
             } else {
@@ -4597,11 +4597,7 @@ function gibKategoriepfad($Kategorie, $kKundengruppe, $kSprache, $bString = true
         }
     }
 
-    if ($bString) {
-        return $pfad;
-    }
-
-    return $cPfad_arr;
+    return ($bString) ? $pfad : $cPfad_arr;
 }
 
 /**
@@ -4767,15 +4763,12 @@ function pruefeKampagnenParameter()
                 ) {
                     $referrer = gibReferer();
                     //wurde der HIT für diesen Besucher schon gezaehlt?
-                    $oVorgang = Shop::DB()->query(
-                        "SELECT kKampagneVorgang
-                            FROM tkampagnevorgang
-                            WHERE kKampagneDef = " . KAMPAGNE_DEF_HIT . "
-                                AND kKampagne = " . (int) $oKampagne->kKampagne . "
-                                AND kKey = " . (int) $_SESSION['oBesucher']->kBesucher . "
-                                AND cCustomData = '" . (StringHandler::filterXSS(Shop::DB()->escape($_SERVER['REQUEST_URI'])) . ';' . $referrer) . "'
-                            LIMIT 1", 1
-                    ); //#3622 - added cCustomData to where clause
+                    $oVorgang = Shop::DB()->select(
+                        'tkampagnevorgang',
+                        array('kKampagneDef', 'kKampagne', 'kKey', 'cCustomData'),
+                        array(KAMPAGNE_DEF_HIT, (int) $oKampagne->kKampagne, (int) $_SESSION['oBesucher']->kBesucher), (StringHandler::filterXSS(Shop::DB()->escape($_SERVER['REQUEST_URI'])) . ';' . $referrer)
+                    );
+
                     if (!isset($oVorgang->kKampagneVorgang)) {
                         $oKampagnenVorgang               = new stdClass();
                         $oKampagnenVorgang->kKampagne    = $oKampagne->kKampagne;
@@ -4802,13 +4795,10 @@ function pruefeKampagnenParameter()
             if (!$bKampagnenHit) { // Kein Kampagnentreffer
                 // Besucher kommt von Google und hat vorher keine Kampagne getroffen?
                 if (isset($_SERVER['HTTP_REFERER']) && strpos($_SERVER['HTTP_REFERER'], '.google.') !== false) {
-                    $oVorgang = Shop::DB()->query(
-                        "SELECT tkampagnevorgang.kKampagneVorgang
-                            FROM tkampagnevorgang
-                            WHERE tkampagnevorgang.kKampagneDef = " . KAMPAGNE_DEF_HIT . "
-                                AND tkampagnevorgang.kKampagne = " . KAMPAGNE_INTERN_GOOGLE . "
-                                AND tkampagnevorgang.kKey = " . (int) $_SESSION['oBesucher']->kBesucher . "
-                            LIMIT 1", 1
+                    $oVorgang = Shop::DB()->select(
+                        'tkampagnevorgang',
+                        array('kKampagneDef', 'kKampagne', 'kKey'),
+                        array(KAMPAGNE_DEF_HIT, KAMPAGNE_INTERN_GOOGLE, (int) $_SESSION['oBesucher']->kBesucher)
                     );
 
                     if (!isset($oVorgang->kKampagneVorgang)) {

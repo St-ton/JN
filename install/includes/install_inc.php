@@ -60,56 +60,10 @@ function pruefeBereitsInstalliert()
  */
 function gibBeschreibbareVerzeichnisse()
 {
-    $cVerzeichnis_arr = array(
-        'includes/config.JTL-Shop.ini.php',
-        'bilder/brandingbilder',
-        'bilder/hersteller/klein',
-        'bilder/hersteller/normal',
-        'bilder/intern/shoplogo',
-        'bilder/intern/trustedshops',
-        'bilder/kategorien',
-        'bilder/links',
-        'bilder/merkmale/klein',
-        'bilder/merkmale/normal',
-        'bilder/merkmalwerte/klein',
-        'bilder/merkmalwerte/normal',
-        'bilder/news',
-        'bilder/newsletter',
-        'bilder/produkte/mini',
-        'bilder/produkte/klein',
-        'bilder/produkte/normal',
-        'bilder/produkte/gross',
-        'bilder/suchspecialoverlay/klein',
-        'bilder/suchspecialoverlay/normal',
-        'bilder/suchspecialoverlay/gross',
-        'bilder/variationen/mini',
-        'bilder/variationen/normal',
-        'bilder/variationen/gross',
-        'bilder/suchspecialoverlay/klein',
-        'bilder/suchspecialoverlay/normal',
-        'bilder/suchspecialoverlay/gross',
-        'bilder/konfigurator/klein',
-        'mediafiles/Bilder',
-        'mediafiles/Musik',
-        'mediafiles/Sonstiges',
-        'mediafiles/Videos',
-        'media/image/product',
-        'media/image/storage',
-        'export',
-        'export/yatego',
-        'jtllogs',
-        'templates_c',
-        PFAD_ADMIN . 'templates_c',
-        PFAD_ADMIN . 'includes/emailpdfs',
-        'dbeS/logs',
-        'dbeS/tmp',
-        'install/logs',
-        'shopinfo.xml',
-        'rss.xml',
-        'uploads/'
+    return array_merge(
+        array('includes/config.JTL-Shop.ini.php'),
+        shop_writeable_paths()
     );
-
-    return $cVerzeichnis_arr;
 }
 
 /**

@@ -30,6 +30,11 @@ class NotificationEntry
     const TYPE_DANGER = 2;
 
     /**
+     * @var string
+     */
+    protected $pluginId;
+
+    /**
      * @var int
      */
     protected $type;
@@ -63,6 +68,22 @@ class NotificationEntry
         $this->setDescription($description);
         $this->setUrl($url);
     }
+    
+    /**
+     * @return string
+     */
+    public function getPluginId()
+    {
+        return $this->pluginId;
+    }
+
+    /**
+     * @param string $pluginId
+     */
+    public function setPluginId($pluginId)
+    {
+        $this->pluginId = $pluginId;
+    }
 
     /**
      * @return int
@@ -70,23 +91,6 @@ class NotificationEntry
     public function getType()
     {
         return $this->type;
-    }
-    
-    /**
-     * @return string
-     */
-    public function getTypeName()
-    {
-        switch ($this->type) {
-            default:
-                return 'default';
-            case self::TYPE_INFO:
-                return 'info';
-            case self::TYPE_WARNING:
-                return 'warning';
-            case self::TYPE_DANGER:
-                return 'danger';
-        }
     }
 
     /**

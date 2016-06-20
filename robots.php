@@ -8,9 +8,9 @@ require_once dirname(__FILE__) . '/includes/globalinclude.php';
 
 $robotsContent = file_get_contents(PFAD_ROOT . 'robots.txt');
 
-if (file_exists(PFAD_ROOT . '/export/sitemap_index.xml')) {
-    $robotsContent .= PHP_EOL . 'Sitemap: ' . Shop::getURL() . '/export/sitemap_index.xml';
-}
+if (file_exists(PFAD_ROOT . '/export/sitemap_index.xml') && strpos($robotsContent, 'Sitemap: ') === false) {
+    $robotsContent .= PHP_EOL . 'Sitemap: ' . Shop::getURL() . '/sitemap_index.xml';
+} 
 
 ob_end_clean();
 header('Content-Type: text/plain', true, 200);

@@ -505,9 +505,10 @@ function gibYategoExport($exportformat, $oJobQueue, $ExportEinstellungen)
     );
 
     if (is_array($oArtikel_arr) && count($oArtikel_arr) > 0) {
+        $oArtikelOptionen = Artikel::getDefaultOptions();
         foreach ($oArtikel_arr as $i => $tartikel) {
             $Artikel = new Artikel();
-            $Artikel->fuelleArtikel($tartikel->kArtikel, Artikel::getDefaultOptions(), $exportformat->kKundengruppe, $exportformat->kSprache);
+            $Artikel->fuelleArtikel($tartikel->kArtikel, $oArtikelOptionen, $exportformat->kKundengruppe, $exportformat->kSprache);
 
             verarbeiteYategoExport($Artikel, $exportformat, $ExportEinstellungen, $KategorieListe, $oGlobal_arr);
 

@@ -19,6 +19,7 @@ function ShopAutoload($class)
 {
     $classPaths = array(
         PFAD_ROOT . PFAD_CLASSES,
+        PFAD_ROOT . PFAD_ADMIN . PFAD_CLASSES,
         PFAD_ROOT . PFAD_INCLUDES_EXT,
         PFAD_ROOT . PFAD_CLASSES_CORE
     );
@@ -34,6 +35,12 @@ function ShopAutoload($class)
 
     foreach ($classPaths as $classPath) {
         $fileName = $classPath . 'class.JTL-Shop.' . $class . '.php';
+        if (file_exists($fileName)) {
+            require $fileName;
+
+            return true;
+        }
+        $fileName = $classPath . 'class.JTL-Shopadmin.' . $class . '.php';
         if (file_exists($fileName)) {
             require $fileName;
 

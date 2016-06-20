@@ -17,34 +17,17 @@
     {/if}
 {/if}
 
-{if $KuponMoeglich == 1 || ($Kunde->fGuthaben > 0 && (!isset($smarty.session.Bestellung->GuthabenNutzen) || !$smarty.session.Bestellung->GuthabenNutzen))}
-    {if $KuponMoeglich==1}
-        <form method="post" action="{get_static_route id='bestellvorgang.php'}" class="form form-inline">
-            {$jtl_token}
-            <input type="hidden" name="pruefekupon" value="1" />
-            <fieldset>
-                <div class="input-group">
-                    <input type="text" name="Kuponcode" value="{if !empty($Kuponcode)}{$Kuponcode}{/if}" id="kupon" class="form-control" placeholder="{lang key="couponCode" section="account data"}" />
-                    <div class="input-group-btn">
-                        <input type="submit" value="{lang key="useCoupon" section="checkout"}" class="submit btn btn-default" />
-                    </div>
+{if $KuponMoeglich == 1}
+    <form method="post" action="{get_static_route id='bestellvorgang.php'}" class="form form-inline">
+        {$jtl_token}
+        <input type="hidden" name="pruefekupon" value="1" />
+        <fieldset>
+            <div class="input-group">
+                <input type="text" name="Kuponcode" value="{if !empty($Kuponcode)}{$Kuponcode}{/if}" id="kupon" class="form-control" placeholder="{lang key="couponCode" section="account data"}" />
+                <div class="input-group-btn">
+                    <input type="submit" value="{lang key="useCoupon" section="checkout"}" class="submit btn btn-default" />
                 </div>
-            </fieldset>
-        </form>
-    {/if}
-    {if $Kunde->fGuthaben > 0 && (!isset($smarty.session.Bestellung->GuthabenNutzen) || !$smarty.session.Bestellung->GuthabenNutzen)}
-        <hr />
-        <form method="post" action="{get_static_route id='bestellvorgang.php'}">
-            {$jtl_token}
-            <fieldset>
-                <div class="alert alert-info">
-                    <p class="credit-description">{lang key="creditDesc" section="account data"}</p>
-                    <p class="credit-amount-description">{lang key="yourCreditIs" section="account data"} <span class="credit-amount"><strong>{$GuthabenLocalized}</strong></span></p>
-                </div>
-                <input type="hidden" name="guthabenVerrechnen" value="1" />
-                <input type="hidden" name="guthaben" value="1" />
-                <input type="submit" value="{lang key="useCredits" section="checkout"}" class="submit btn btn-default" />
-            </fieldset>
-        </form>
-    {/if}
+            </div>
+        </fieldset>
+    </form>
 {/if}

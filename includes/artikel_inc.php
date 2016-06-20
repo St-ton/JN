@@ -1163,6 +1163,7 @@ function buildConfig($kArtikel, $fAnzahl, $nVariation_arr, $nKonfiggruppe_arr, $
     $oKonfig                  = new stdClass;
     $oKonfig->fGesamtpreis    = array(0.0, 0.0);
     $oKonfig->cPreisLocalized = array();
+    $oKonfig->cPreisString    = Shop::Lang()->get('priceAsConfigured', 'productDetails');
 
     if (!class_exists('Konfigurator') || !Konfigurator::validateKonfig($kArtikel)) {
         return;

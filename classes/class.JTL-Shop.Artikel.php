@@ -984,40 +984,38 @@ class Artikel
     public function gibKategorie()
     {
         if ($this->kArtikel > 0) {
-            $kArtikel = (int)$this->kArtikel;
+            $kArtikel = (int) $this->kArtikel;
             // Ist der Artikel in Variationskombi Kind? Falls ja, hol den Vater und die Kategorie von ihm
             if ($this->kEigenschaftKombi > 0) {
-                $kArtikel = (int)$this->kVaterArtikel;
-            }
-            if (isset($_SESSION['LetzteKategorie'])) {
-                $oKategorieartikel = Shop::DB()->query(
-                    "SELECT tkategorieartikel.kKategorie
-                        FROM tkategorieartikel
-                        LEFT JOIN tkategoriesichtbarkeit ON tkategoriesichtbarkeit.kKategorie = tkategorieartikel.kKategorie
-                            AND tkategoriesichtbarkeit.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
-                        JOIN tkategorie ON tkategorie.kKategorie = tkategorieartikel.kKategorie
-                        WHERE tkategoriesichtbarkeit.kKategorie IS NULL
-                            AND kArtikel = " . $kArtikel . "
-                            AND tkategorieartikel.kKategorie = " . (int)$_SESSION['LetzteKategorie'] . "
-                        LIMIT 1", 1
-                );
-                if (isset($oKategorieartikel->kKategorie)) {
-                    return $oKategorieartikel->kKategorie;
+                $kArtikel = (int) $this->kVaterArtikel;
+            } elseif (!empty($this->oKategorie_arr)) {
+                //oKategorie_arr already has all categories for this article in it
+                if (isset($_SESSION['LetzteKategorie'])) {
+                    foreach ($this->oKategorie_arr as $category) {
+                        if ($category->kKategorie == (int) $_SESSION['LetzteKategorie']) {
+                            return (int) $category->kKategorie;
+                        }
+                    }
+                } else {
+                    return $this->oKategorie_arr[0]->kKategorie;
                 }
             }
+            $categoryFilter = (isset($_SESSION['LetzteKategorie'])) ?
+                " AND tkategorieartikel.kKategorie = " . (int) $_SESSION['LetzteKategorie'] :
+                '';
             $oKategorieartikel = Shop::DB()->query(
                 "SELECT tkategorieartikel.kKategorie
                     FROM tkategorieartikel
                     LEFT JOIN tkategoriesichtbarkeit ON tkategoriesichtbarkeit.kKategorie = tkategorieartikel.kKategorie
-                        AND tkategoriesichtbarkeit.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
+                        AND tkategoriesichtbarkeit.kKundengruppe = " . (int) $_SESSION['Kundengruppe']->kKundengruppe . "
                     JOIN tkategorie ON tkategorie.kKategorie = tkategorieartikel.kKategorie
                     WHERE tkategoriesichtbarkeit.kKategorie IS NULL
-                        AND kArtikel = " . $kArtikel . "
+                        AND kArtikel = " . $kArtikel . $categoryFilter . "
                     ORDER BY tkategorie.nSort
                     LIMIT 1", 1
             );
             if (isset($oKategorieartikel->kKategorie) && $oKategorieartikel->kKategorie > 0) {
-                return $oKategorieartikel->kKategorie;
+                return (int) $oKategorieartikel->kKategorie;
             }
         }
 
@@ -1333,7 +1331,7 @@ class Artikel
                 'height' => $height
             ),
             'type' => $type,
-            'alt'  => utf8_encode(htmlentities($image->cAltAttribut))
+            'alt'  => utf8_encode($image->cAltAttribut)
         );
     }
 
@@ -1849,7 +1847,7 @@ class Artikel
             $oSQLEigenschaftWert->cJOIN   = '';
             if ($kSprache > 0 && !standardspracheAktiv()) {
                 $oSQLEigenschaft->cSELECT = "teigenschaftsprache.cName AS cName_teigenschaftsprache, ";
-                $oSQLEigenschaft->cJOIN   = " JOIN teigenschaftsprache ON teigenschaftsprache.kEigenschaft = teigenschaft.kEigenschaft
+                $oSQLEigenschaft->cJOIN   = " LEFT JOIN teigenschaftsprache ON teigenschaftsprache.kEigenschaft = teigenschaft.kEigenschaft
                                                 AND teigenschaftsprache.kSprache = " . $kSprache;
 
                 $oSQLEigenschaftWert->cSELECT = "teigenschaftwertsprache.cName AS cName_teigenschaftwertsprache, ";
@@ -2284,7 +2282,7 @@ class Artikel
 
                 // needed for matrix in tiny tpl
                 $this->nVariationKombiNichtMoeglich_arr = array();
-                if ($nVariationKombi == 1) {
+                if ($nVariationKombi == 1 && (!defined('TEMPLATE_COMPATIBILITY') || TEMPLATE_COMPATIBILITY === true)) {
                     $this->nVariationKombiNichtMoeglich_arr = $this->baueVariationKombiHilfe($kKundengruppe);
                 }
 
@@ -3100,16 +3098,9 @@ class Artikel
         if (!$kArtikel) {
             return;
         }
-        $conf = Shop::getSettings(array(
-            CONF_GLOBAL,
-            CONF_ARTIKELDETAILS,
-            CONF_PREISVERLAUF,
-            CONF_BEWERTUNG,
-            CONF_BOXEN,
-            CONF_ARTIKELUEBERSICHT
-        ));
         if (!$kKundengruppe) {
             if (!isset($_SESSION['Kundengruppe']) || !$_SESSION['Kundengruppe']->kKundengruppe) {
+                $conf                                                 = Shop::getSettings(array(CONF_GLOBAL));
                 $_SESSION['Kundengruppe']                             = Kundengruppe::getDefault();
                 $_SESSION['Kundengruppe']->darfPreiseSehen            = 1;
                 $_SESSION['Kundengruppe']->darfArtikelKategorienSehen = 1;
@@ -3158,14 +3149,29 @@ class Artikel
                 if ($fKundenRabatt > 0 || $fMaxRabatt > 0) {
                     $this->rabattierePreise();
                 }
-                //#7595 - do not used cached result if special price is expired
+                //#7595 - do not use cached result if special price is expired
                 $return = true;
                 if ($this->cAktivSonderpreis === 'Y' && $this->dSonderpreisEnde_en !== '0000-00-00' && $this->dSonderpreisEnde_en !== null) {
                     $endDate = new DateTime($this->dSonderpreisEnde_en);
                     $endDate->modify('+1 days');
                     $return = ($endDate >= new DateTime());
+                } elseif ($this->cAktivSonderpreis === 'N' && $this->dSonderpreisStart_en !== '0000-00-00' && $this->dSonderpreisStart_en !== null) {
+                    //do not use cached result if a special price started in the mean time
+                    $startDate = new DateTime($this->dSonderpreisStart_en);
+                    $today     = new DateTime();
+                    $endDate   = ($this->dSonderpreisEnde_en !== null && $this->dSonderpreisEnde_en !== '0000-00-00') ?
+                        new DateTime($this->dSonderpreisEnde_en) :
+                        $today;
+                    $return    = ($startDate > $today || $endDate < $today);
                 }
                 if ($return === true) {
+                    // Warenkorbmatrix Variationskinder holen?
+                    if (((isset($oArtikelOptionen->nWarenkorbmatrix) && $oArtikelOptionen->nWarenkorbmatrix == 1) ||
+                            (isset($this->FunktionsAttribute[FKT_ATTRIBUT_WARENKORBMATRIX]) && (int) $this->FunktionsAttribute[FKT_ATTRIBUT_WARENKORBMATRIX] === 1 &&
+                                isset($oArtikelOptionen->nMain) && $oArtikelOptionen->nMain == 1))
+                    ) {
+                        $this->oVariationKombiKinderAssoc_arr = $this->holeVariationKombiKinderAssoc($kKundengruppe, $kSprache);
+                    }
                     executeHook(HOOK_ARTIKEL_CLASS_FUELLEARTIKEL, array(
                             'oArtikel'  => &$this,
                             'cacheTags' => array(),
@@ -3177,6 +3183,12 @@ class Artikel
                 }
             }
         }
+        $conf = Shop::getSettings(array(
+            CONF_GLOBAL,
+            CONF_ARTIKELDETAILS,
+            CONF_BOXEN,
+            CONF_ARTIKELUEBERSICHT
+        ));
         $this->cCachedCountryCode = (isset($_SESSION['cLieferlandISO'])) ? $_SESSION['cLieferlandISO'] : null;
         $nSchwelleBestseller      = (isset($conf['boxen']['boxen_bestseller_minanzahl'])) ? doubleval($conf['boxen']['boxen_bestseller_minanzahl']) : 10;
         $nSchwelleTopBewertet     = (isset($conf['boxen']['boxen_topbewertet_minsterne'])) ? (int)$conf['boxen']['boxen_topbewertet_minsterne'] : 4;
@@ -3247,7 +3259,7 @@ class Artikel
                             thersteller.cName AS cName_thersteller, thersteller.cHomepage, thersteller.nSortNr AS nSortNr_thersteller,
                             thersteller.cBildpfad AS cBildpfad_thersteller,
                             therstellersprache.cMetaTitle AS cMetaTitle_spr, therstellersprache.cMetaKeywords AS cMetaKeywords_spr,
-                            therstellersprache.cMetaDescription AS cMetaDescription_spr, therstellersprache.cBeschreibung AS cBeschreibung_spr,
+                            therstellersprache.cMetaDescription AS cMetaDescription_spr, therstellersprache.cBeschreibung AS cBeschreibung_hersteller_spr,
                             tsonderpreise.fNettoPreis, tartikelext.fDurchschnittsBewertung, tlieferstatus.cName AS cName_tlieferstatus, teinheit.cName AS teinheitcName,
                             tartikelkategorierabatt.fRabatt AS fMaxRabatt, tartikelsonderpreis.cAktiv AS cAktivSonderpreis, tartikelsonderpreis.dStart AS dStart_en,
                             DATE_FORMAT(tartikelsonderpreis.dStart, '%d.%m.%Y') AS dStart_de, tartikelsonderpreis.dEnde AS dEnde_en,
@@ -3445,7 +3457,7 @@ class Artikel
         }
         // Datumsrelevante Abhängigkeiten beachten
         $this->checkDateDependencies();
-        //wenn ja fMaxRabatt darauf setzen
+        //wenn ja fMaxRabatt setzen
         // fMaxRabatt = 0, wenn Sonderpreis aktiv
         if ($this->cAktivSonderpreis === 'Y' && (double) $this->fNettoPreis > 0) {
             $this->fMaxRabatt = $oArtikelTMP->fMaxRabatt = 0;
@@ -3462,11 +3474,6 @@ class Artikel
         }
         // Lokalisieren
         if ($kSprache > 0 && !standardspracheAktiv()) {
-            // Artikel
-            if (strlen(trim($oArtikelTMP->cName_spr)) > 0) {
-                $this->cBeschreibung = parseNewsText($oArtikelTMP->cBeschreibung_spr);
-                $this->cName         = $oArtikelTMP->cName_spr;
-            }
             //VPE-Einheit
             $oVPEEinheitRes = Shop::DB()->query("
                 SELECT cName
@@ -3582,8 +3589,8 @@ class Artikel
         }
         // Warenkorbmatrix Variationskinder holen?
         if (((isset($oArtikelOptionen->nWarenkorbmatrix) && $oArtikelOptionen->nWarenkorbmatrix == 1) ||
-                (isset($this->FunktionsAttribute[FKT_ATTRIBUT_WARENKORBMATRIX]) && (int) $this->FunktionsAttribute[FKT_ATTRIBUT_WARENKORBMATRIX] === 1 &&
-                    isset($oArtikelOptionen->nMain) && $oArtikelOptionen->nMain == 1)) && Shop::getPageType() === PAGE_ARTIKEL
+            (isset($this->FunktionsAttribute[FKT_ATTRIBUT_WARENKORBMATRIX]) && (int) $this->FunktionsAttribute[FKT_ATTRIBUT_WARENKORBMATRIX] === 1 &&
+                isset($oArtikelOptionen->nMain) && $oArtikelOptionen->nMain == 1))
         ) {
             $this->oVariationKombiKinderAssoc_arr = $this->holeVariationKombiKinderAssoc($kKundengruppe, $kSprache);
         }
@@ -3614,17 +3621,20 @@ class Artikel
             $this->cHerstellerSeo             = (isset($oHersteller->cSeo)) ? $oHersteller->cSeo : null;
             $this->cHerstellerURL             = baueURL($oHersteller, URLART_HERSTELLER);
             $this->cHerstellerHomepage        = $oArtikelTMP->cHomepage;
+            if (filter_var($this->cHerstellerHomepage, FILTER_VALIDATE_URL) === false) {
+                $this->cHerstellerHomepage = 'http://' . $oArtikelTMP->cHomepage;
+                if (filter_var($this->cHerstellerHomepage, FILTER_VALIDATE_URL) === false) {
+                    $this->cHerstellerHomepage = $oArtikelTMP->cHomepage;
+                }
+            }
             $this->cHerstellerMetaTitle       = $oArtikelTMP->cMetaTitle_spr;
             $this->cHerstellerMetaKeywords    = $oArtikelTMP->cMetaKeywords_spr;
             $this->cHerstellerMetaDescription = $oArtikelTMP->cMetaDescription_spr;
-            $this->cHerstellerBeschreibung    = parseNewsText($oArtikelTMP->cBeschreibung_spr);
+            $this->cHerstellerBeschreibung    = parseNewsText($oArtikelTMP->cBeschreibung_hersteller_spr);
             $this->cHerstellerSortNr          = $oArtikelTMP->nSortNr_thersteller;
             if (strlen($oArtikelTMP->cBildpfad_thersteller) > 0) {
                 $this->cHerstellerBildKlein  = PFAD_HERSTELLERBILDER_KLEIN . $oArtikelTMP->cBildpfad_thersteller;
                 $this->cHerstellerBildNormal = PFAD_HERSTELLERBILDER_NORMAL . $oArtikelTMP->cBildpfad_thersteller;
-            } else {
-                $this->cHerstellerBildKlein  = BILD_KEIN_HERSTELLERBILD_VORHANDEN;
-                $this->cHerstellerBildNormal = BILD_KEIN_HERSTELLERBILD_VORHANDEN;
             }
         }
         //datum umformatieren
@@ -3754,7 +3764,12 @@ class Artikel
         );
 
         if ($noCache === false) {
+            //oVariationKombiKinderAssoc_arr can contain a lot of article objects - do not save to cache
+            $children                             = $this->oVariationKombiKinderAssoc_arr;
+            $this->oVariationKombiKinderAssoc_arr = null;
             Shop::Cache()->set($cacheID, $this, $cacheTags);
+            //restore oVariationKombiKinderAssoc_arr to class instance
+            $this->oVariationKombiKinderAssoc_arr = $children;
         }
         $this->rabattierePreise();
 
@@ -3921,16 +3936,9 @@ class Artikel
         if (!$bZulaufDatum) {
             $this->dZulaufDatum_de = null;
         }
-        if ($specialPriceStartDate <= $now && ($this->dSonderpreisEnde_en === '0000-00-00' || $specialPriceEndDate >= $now)) {
-            $this->cAktivSonderpreis = 'Y';
-        } else {
-            $this->cAktivSonderpreis    = null;
-            $this->dSonderpreisStart_en = null;
-            $this->dSonderpreisEnde_en  = null;
-            $this->dSonderpreisStart_de = null;
-            $this->dSonderpreisEnde_de  = null;
-            $this->fNettoPreis          = null;
-        }
+        $this->cAktivSonderpreis = ($specialPriceStartDate <= $now && ($this->dSonderpreisEnde_en === '0000-00-00' || $specialPriceEndDate >= $now)) ?
+            'Y' :
+            'N';
 
         return $this->baueSuchspecialBildoverlay();
     }
@@ -4701,6 +4709,31 @@ class Artikel
 
             return $estimatedDelivery;
         }
+        if ($this->bHasKonfig && !empty($this->oKonfig_arr)) {
+            $allMaxDeliveryDays = $maxDeliveryDays;
+            $allMinDeliveryDays = $minDeliveryDays;
+            foreach ($this->oKonfig_arr as $gruppe) {
+                foreach ($gruppe->oItem_arr as $piece) {
+                    $konfigItemArticle = $piece->getArtikel();
+                    if (!empty($konfigItemArticle)) {
+                        $konfigItemArticle->getDeliveryTime($countryCode,
+                            $purchaseQuantity * floatval($piece->getInitial()), null, null, $shippingID);
+                        if (isset($konfigItemArticle->nMaxDeliveryDays)) {
+                            $allMaxDeliveryDays = max($allMaxDeliveryDays, $konfigItemArticle->nMaxDeliveryDays);
+                        }
+                        if (isset($konfigItemArticle->nMinDeliveryDays)) {
+                            $allMinDeliveryDays = max($allMinDeliveryDays, $konfigItemArticle->nMinDeliveryDays);
+                        }
+                    }
+                }
+            }
+            $estimatedDelivery      = getDeliverytimeEstimationText($allMinDeliveryDays, $allMaxDeliveryDays);
+            $this->nMinDeliveryDays = $allMinDeliveryDays;
+            $this->nMaxDeliveryDays = $allMaxDeliveryDays;
+
+            return $estimatedDelivery;
+        }
+
         if ($this->nBearbeitungszeit > 0 || isset($this->FunktionsAttribute['processingtime']) && $this->FunktionsAttribute['processingtime'] > 0) {
             $processingTime = ($this->nBearbeitungszeit > 0) ? $this->nBearbeitungszeit : (int) $this->FunktionsAttribute['processingtime'];
             $minDeliveryDays += $processingTime;

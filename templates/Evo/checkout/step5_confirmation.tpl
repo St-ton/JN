@@ -97,9 +97,24 @@
         </div>
     </div>{* /row *}
 
-
+    {if $GuthabenMoeglich}
+        <div class="row">
+            <div class="col-xs-12 col-md-12">
+                {block name="checkout-confirmation-credit"}
+                    <div class="panel panel-default" id="panel-edit-credit">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">{block name="checkout-confirmation-credit-title"}{lang key="credit" section="account data"}{/block}</h3>
+                        </div>
+                        <div class="panel-body">
+                            {include file='checkout/credit_form.tpl'}
+                        </div>
+                    </div>
+                {/block}
+            </div>
+        </div>
+    {/if}
     <div class="row">
-        {if $KuponMoeglich || $GuthabenMoeglich}
+        {if $KuponMoeglich}
             <div class="col-xs-12 col-md-6">
                 {block name="checkout-confirmation-coupon"}
                 <div class="panel panel-default" id="panel-edit-coupon">
@@ -113,21 +128,21 @@
                 {/block}
             </div>
         {/if}
-        <div class="col-xs-12 col-md-6">
-            {block name="checkout-confirmation-comment"}
-            <div class="panel panel-default" id="panel-edit-comment">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{block name="checkout-confirmation-comment-title"}{lang key="comment" section="product rating"}{/block}</h3>
-                </div>
-                <div class="panel-body">
-                    {block name="checkout-confirmation-comment-body"}
-                    {lang assign="orderCommentsTitle" key="orderComments" section="shipping payment"}
-                    <textarea class="form-control" title="{$orderCommentsTitle|escape:"html"}" name="kommentar" cols="50" rows="3" id="comment" placeholder="{lang key="comment" section="product rating"}">{if isset($smarty.session.kommentar)}{$smarty.session.kommentar}{/if}</textarea>
-                    {/block}
+        {block name="checkout-confirmation-comment"}
+            <div class="col-xs-12 col-md-{if $KuponMoeglich == 1}6{else}12{/if}">
+                <div class="panel panel-default" id="panel-edit-comment">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">{block name="checkout-confirmation-comment-title"}{lang key="comment" section="product rating"}{/block}</h3>
+                    </div>
+                    <div class="panel-body">
+                        {block name="checkout-confirmation-comment-body"}
+                            {lang assign="orderCommentsTitle" key="orderComments" section="shipping payment"}
+                            <textarea class="form-control" title="{$orderCommentsTitle|escape:"html"}" name="kommentar" cols="50" rows="3" id="comment" placeholder="{lang key="comment" section="product rating"}">{if isset($smarty.session.kommentar)}{$smarty.session.kommentar}{/if}</textarea>
+                        {/block}
+                    </div>
                 </div>
             </div>
-            {/block}
-        </div>
+        {/block}
     </div>{* /row *}
 
     {if isset($safetypay_form)}
@@ -135,7 +150,7 @@
     {/if}
     <form method="post" name="agbform" id="complete_order" action="{get_static_route id='bestellabschluss.php'}">
         {$jtl_token}
-        {if $Einstellungen.kaufabwicklung.bestellvorgang_wrb_anzeigen==1}
+        {if $Einstellungen.kaufabwicklung.bestellvorgang_wrb_anzeigen == 1}
             {lang key="cancellationPolicyNotice" section="checkout" assign="cancellationPolicyNotice"}
             {lang key="wrb" section="checkout" assign="wrb"}
             {if isset($AGB->kLinkWRB) && $AGB->kLinkWRB > 0}

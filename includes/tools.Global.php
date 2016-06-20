@@ -3113,18 +3113,13 @@ function checkeWunschlisteParameter()
 
     if (strlen($cURLID) > 0) {
         // Kampagne
-        $cKampagneSQL = "cURLID='" . $cURLID . "'";
         $oKampagne    = new Kampagne(KAMPAGNE_INTERN_OEFFENTL_WUNSCHZETTEL);
-        if (isset($oKampagne->kKampagne) && $oKampagne->kKampagne > 0) {
-            $cKampagneSQL = "cURLID = '" . $cURLID . "&" . $oKampagne->cParameter . "=" . $oKampagne->cWert . "'";
-        }
-
-        $oWunschliste = Shop::DB()->query(
-            "SELECT kWunschliste
-                FROM twunschliste
-                WHERE " . $cKampagneSQL . "
-                    AND nOeffentlich = 1", 1
-        );
+        $id           = (isset($oKampagne->kKampagne) && $oKampagne->kKampagne > 0) ?
+            ($cURLID . '&' . $oKampagne->cParameter . '=' . $oKampagne->cWert) :
+            $cURLID;
+        $keys         = array('nOeffentlich', 'cURLID');
+        $values       = array(1, $id);
+        $oWunschliste = Shop::DB()->select('twunschliste', $keys, $values);
 
         if (isset($oWunschliste->kWunschliste) && $oWunschliste->kWunschliste > 0) {
             return $oWunschliste->kWunschliste;

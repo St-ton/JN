@@ -403,7 +403,7 @@ p.submit {
 }
 
 #content_wrapper {
-    padding-top: 45px;
+    padding: 45px 30px;
 }
 
 .backend-wrapper.dashboard #content_wrapper {

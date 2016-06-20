@@ -32,6 +32,6 @@ class Migration_20160607140140 extends Migration implements IMigration
 
     public function down()
     {
-        $this->execute('DROP TABLE IF NOT EXISTS `tartikelpicthistory`');
+        $this->execute('DROP TABLE IF EXISTS `tartikelpicthistory`');
     }
 }

@@ -19,7 +19,6 @@
 * Bugfix: TopArtikel werden bei aktiviertem Objektcache nicht aktualisiert 
 * Bugfix: Ändern von Bildeinstellungen invalidiert Objektcache nicht 
 * Bugfix: Varkombi Dropdown-Auswahl wird bei Auswahl Nachladen der Kombination zurückgesetzt
-* Verbesserung: Bildpfad-Änderungen (/bilder/... --> /media/image/...) werden nun via 301 weitergeleitet. 
 * Bugfix PayPal-Plugin (v1.05): Gratisgeschenke werden nicht als Item gelistet
 * Bugfix PayPal-Plugin (v1.05): TLS-Check liefert teilweise falsche Ergebnisse, da Version nicht festgelegt
 * Bugfix Fehlerhafte Kategorie-/Merkmalfilter-URLs erzeugen keinen 404-Statuscode

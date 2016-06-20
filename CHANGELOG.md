@@ -24,10 +24,11 @@
 * Bugfix PayPal-Plugin (v1.05): TLS-Check liefert teilweise falsche Ergebnisse, da Version nicht festgelegt
 * Bugfix Fehlerhafte Kategorie-/Merkmalfilter-URLs erzeugen keinen 404-Statuscode
 
-## [4.03.2]
-* Bugfix: robots.txt fehlendes "Sitemap: " vor der Sitemap-URL
-* Bugfix: Billpay Zahlungseingang wird nicht gesetzt
-* Bugfix: Newsletter Abmelden unsichtbar für nicht-angemeldete Besucher
+## [4.04]
+* Bugfix: robots.txt fehlendes "Sitemap: " vor der Sitemap-URL (#83)
+* Bugfix: Billpay Zahlungseingang wird nicht gesetzt (#96)
+* Bugfix: Newsletter Abmelden unsichtbar für nicht-angemeldete Besucher (#77)
+* Verbesserung: Alte Bildpfade müssen bei Änderung von /bilder/ auf /media/ via 301 weitergeleitet werden (#189)
 
 ## [4.03.1] - 2016-05-17
 * Bugfix: Sprachwechsel in einigen Linkgruppen unvollständig

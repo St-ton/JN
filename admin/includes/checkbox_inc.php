@@ -86,7 +86,11 @@ function plausiCheckBox($cPost_arr, $oSprache_arr)
  */
 function speicherCheckBox($cPost_arr, $oSprache_arr)
 {
-    $oCheckBox = new CheckBox();
+    if (isset($cPost_arr['kCheckBox']) && intval($cPost_arr['kCheckBox']) > 0) {
+        $oCheckBox = new CheckBox(intval($cPost_arr['kCheckBox']));
+    } else {
+        $oCheckBox = new CheckBox();
+    }
     if (isset($cPost_arr['kCheckBox']) && intval($cPost_arr['kCheckBox']) > 0) {
         $oCheckBox->deleteCheckBox(array(intval($cPost_arr['kCheckBox'])));
     }

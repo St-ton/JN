@@ -52,11 +52,7 @@
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <form method="post" action="einstellungen.php" role="search">
-                            {$jtl_token}
-                            <input type="hidden" name="einstellungen_suchen" value="1" />
-                            <input placeholder="Suchbegriff" name="cSuche" type="search" value="" autocomplete="off" />
-                        </form>
+                        <input placeholder="Suchbegriff" name="cSuche" type="search" value="" autocomplete="off" />
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     </div>
                     <div class="modal-body">
@@ -97,7 +93,7 @@
                 }
                 else if(query != lastQuery) {
                     lastQuery = query;
-                    ajaxCallV2('suche.php', { query: query }, function(result, error) {
+                    ajaxCallV2('suche.php', { query: query, suggest: true }, function(result, error) {
                         if (error) {
                             setResult(null);
                         }

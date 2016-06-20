@@ -24,7 +24,7 @@
             var lnk = $('input[name="nLinkart"]:checked').val();
             if (lnk == '1') {
                 $('#option_isActive').slideDown("slow");
-            }else{
+            } else {
                 $('#option_isActive').slideUp("slow");
                 $('#option_isActive select').val(1);
             }

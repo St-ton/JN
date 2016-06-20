@@ -329,7 +329,7 @@ class LinkHelper
                         FROM tlink
                         LEFT JOIN tplugin
                             ON tplugin.kPlugin = tlink.kPlugin
-                        WHERE tlink.kLinkgruppe=" . $Linkgruppe->kLinkgruppe . " " . $loginSichtbarkeit . " ". $active ."
+                        WHERE tlink.kLinkgruppe = " . $Linkgruppe->kLinkgruppe . " " . $loginSichtbarkeit . " " . $active . "
                             AND (tlink.cKundengruppen IS NULL
                             OR tlink.cKundengruppen = 'NULL'
                             OR tlink.cKundengruppen LIKE '" . $customerGroupID . ";%'

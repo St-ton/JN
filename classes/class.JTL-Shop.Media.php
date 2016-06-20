@@ -34,6 +34,7 @@ class Media
     {
         self::$_instance = $this;
         $this->register(new MediaImage());
+        $this->register(new MediaImageCompatibility());
     }
 
     /**

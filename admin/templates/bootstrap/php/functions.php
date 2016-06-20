@@ -9,6 +9,7 @@ $smarty->register_function('SmartyConvertDate', 'SmartyConvertDate');
 $smarty->register_function('getHelpDesc', 'getHelpDesc');
 $smarty->register_function('getExtensionCategory', 'getExtensionCategory');
 $smarty->register_function('formatVersion', 'formatVersion');
+$smarty->register_function('gravatarImage', 'gravatarImage');
 $smarty->register_modifier('permission', 'permission');
 
 /**
@@ -93,7 +94,16 @@ function permission($cRecht)
     global $smarty;
 
     if (isset($_SESSION['AdminAccount'])) {
-        $bOkay = (in_array($cRecht, $_SESSION['AdminAccount']->oGroup->oPermission_arr) || $_SESSION['AdminAccount']->oGroup->kAdminlogingruppe == 1);
+        if ($_SESSION['AdminAccount']->oGroup->kAdminlogingruppe == 1) {
+            $bOkay = true;
+        }
+        else {
+            $orExpressions = explode('|', $cRecht);
+            foreach ($orExpressions as $flag) {
+                $bOkay = in_array($flag, $_SESSION['AdminAccount']->oGroup->oPermission_arr);
+                if ($bOkay) break;
+            }
+        }
     }
 
     if (!$bOkay) {
@@ -170,4 +180,32 @@ function formatVersion($params, &$smarty)
     $version = (int) $params['value'];
 
     return substr_replace($version, '.', 1, 0);
+}
+
+/**
+ * Get either a Gravatar URL or complete image tag for a specified email address.
+ *
+ * @param string $email The email address
+ * @param string $s Size in pixels, defaults to 80px [ 1 - 2048 ]
+ * @param string $d Default imageset to use [ 404 | mm | identicon | monsterid | wavatar ]
+ * @param string $r Maximum rating (inclusive) [ g | pg | r | x ]
+ * @source https://gravatar.com/site/implement/images/php/
+ */
+function gravatarImage($params, &$smarty)
+{
+    $email = isset($params['email']) ? $params['email'] : null;
+    if ($email === null) {
+        $email = JTLSUPPORT_EMAIL;
+    }
+    else {
+        unset($params['email']);
+    }
+
+    $params = array_merge([ 'email' => null, 's' => 80, 'd' => 'mm', 'r' => 'g' ], $params);
+    
+    $url  = 'https://www.gravatar.com/avatar/';
+    $url .= md5(strtolower(trim($email)));
+    $url .= '?' . http_build_query($params, '', '&');
+
+    return $url;
 }

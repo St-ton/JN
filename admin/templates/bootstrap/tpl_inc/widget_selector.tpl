@@ -1,14 +1,16 @@
-<div class="widget_settings list-group">
-    {foreach from=$oAvailableWidget_arr item=oAvailableWidget}
-        <div class="widget_item list-group-item">
-            <p class="title">{$oAvailableWidget->cTitle}</p>
-            <p class="desc">{$oAvailableWidget->cDescription}</p>
-            <a href="#" class="add" ref="{$oAvailableWidget->kWidget}"><i class="fa fa-plus-square fa-2x"></i></a>
+{foreach from=$oAvailableWidget_arr item=oAvailableWidget}
+    <div class="media widget">
+        <div class="media-body">
+            <h4 class="media-heading">{$oAvailableWidget->cTitle}</h4>
+            <span class="text-muted">{$oAvailableWidget->cDescription}</span>
         </div>
-    {/foreach}
-    {if $oAvailableWidget_arr|@count == 0}
-        <div class="widget_item">
-            <p class="title">Keine weiteren Widgets vorhanden.</p>
+        <div class="media-right text-vcenter">
+            <a href="#" data-widget="add" data-id="{$oAvailableWidget->kWidget}" class="badge badge-widget"><i class="fa fa-plus"></i></a>
         </div>
-    {/if}
-</div>
+    </div>
+{/foreach}
+{if $oAvailableWidget_arr|@count == 0}
+    <div class="widget_item">
+        <p class="title">Keine weiteren Widgets vorhanden.</p>
+    </div>
+{/if}

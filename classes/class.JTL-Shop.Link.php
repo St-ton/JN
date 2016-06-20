@@ -427,7 +427,9 @@ class Link extends MainModel
 
             if (is_array($oLink_arr) && count($oLink_arr) > 0) {
                 foreach ($oLink_arr as &$oLink) {
+                    $kLinkgruppe = $oLink->kLinkgruppe;
                     $oLink = new self($oLink->kLink, null, true);
+                    $oLink->kLinkgruppe = (int)$kLinkgruppe;
                 }
             }
 
@@ -519,27 +521,35 @@ class Link extends MainModel
 
     /**
      * @param bool $bSub
+     * @param int  $kLinkgruppe
      * @return int
      */
-    public function delete($bSub = true)
+    public function delete($bSub = true, $kLinkgruppe = null)
     {
         $nRows = 0;
         if ($this->kLink > 0) {
-            $nRows = Shop::DB()->query("DELETE FROM tlink WHERE kLink = " . $this->getLink(), 3);
-            Shop::DB()->delete('tlinksprache', 'kLink', $this->getLink());
-            Shop::DB()->query("DELETE FROM tseo WHERE kKey = " . $this->getLink() . " AND cKey = 'kLink'", 4);
+            if (!empty($kLinkgruppe)) {
+                $nRows = Shop::DB()->delete('tlink', ['kLink', 'kLinkgruppe'], [$this->getLink(), $kLinkgruppe]);
+            } else {
+                $nRows = Shop::DB()->delete('tlink', 'kLink', $this->getLink());
+            }
+            $nLinkAnz = Shop::DB()->query("SELECT * FROM tlink WHERE kLink = " . $this->getLink(), 2);
+            if (count($nLinkAnz) === 0) {
+                Shop::DB()->delete('tlinksprache', 'kLink', $this->getLink());
+                Shop::DB()->delete('tseo',['kKey','cKey'] , [$this->getLink(), 'kLink']);
 
-            $cDir = PFAD_ROOT . PFAD_BILDER . PFAD_LINKBILDER . $this->getLink();
-            if (is_dir($cDir) && $this->getLink() > 0) {
-                if (delDirRecursively($cDir)) {
-                    rmdir($cDir);
+                $cDir = PFAD_ROOT . PFAD_BILDER . PFAD_LINKBILDER . $this->getLink();
+                if (is_dir($cDir) && $this->getLink() > 0) {
+                    if (delDirRecursively($cDir)) {
+                        rmdir($cDir);
+                    }
                 }
             }
 
             if ($bSub) {
                 if (isset($this->oSub_arr) && count($this->oSub_arr) > 0) {
                     foreach ($this->oSub_arr as $oSub) {
-                        $oSub->delete();
+                        $oSub->delete(true, $kLinkgruppe);
                     }
                 }
             }

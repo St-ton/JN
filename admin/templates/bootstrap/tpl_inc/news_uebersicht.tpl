@@ -230,7 +230,7 @@
                                     <td class="tcenter">{if $oNewsKategorie->nAktiv === '1'}ja{else}nein{/if}</td>
                                     <td class="tcenter">{$oNewsKategorie->dLetzteAktualisierung_de}</td>
                                     <td class="tcenter">
-                                        <a href="news.php?news=1{if isset($oNewsKategorie->nAktuelleSeite) && $oNewsKategorie->nAktuelleSeite}&s3={$oNewsKategorie->nAktuelleSeite}{/if}&newskategorie_editieren=1&kNewsKategorie={$oNewsKategorie->kNewsKategorie}&tab=kategorien&token={$smarty.session.jtl_token}" class="btn btn-default">
+                                        <a href="news.php?news=1{if isset($oBlaetterNaviKats->nAktuelleSeite) && $oBlaetterNaviKats->nAktuelleSeite}&s3={$oBlaetterNaviKats->nAktuelleSeite}{/if}&newskategorie_editieren=1&kNewsKategorie={$oNewsKategorie->kNewsKategorie}&tab=kategorien&token={$smarty.session.jtl_token}" class="btn btn-default">
                                             <i class="fa fa-edit"></i>
                                         </a>
                                     </td>

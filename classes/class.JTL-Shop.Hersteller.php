@@ -136,12 +136,12 @@ class Hersteller
                         therstellersprache.cMetaTitle, therstellersprache.cMetaKeywords, therstellersprache.cMetaDescription, therstellersprache.cBeschreibung,
                         tseo.cSeo
                     FROM thersteller
-                    LEFT JOIN therstellersprache ON therstellersprache.kHersteller=thersteller.kHersteller
-                        AND therstellersprache.kSprache=" . $kSprache . "
+                    LEFT JOIN therstellersprache ON therstellersprache.kHersteller = thersteller.kHersteller
+                        AND therstellersprache.kSprache = " . $kSprache . "
                     LEFT JOIN tseo ON tseo.kKey = thersteller.kHersteller
                         AND tseo.cKey = 'kHersteller'
                         AND tseo.kSprache = " . $kSprache . "
-                    WHERE thersteller.kHersteller=" . $kHersteller, 1
+                    WHERE thersteller.kHersteller = " . $kHersteller, 1
             );
             $cached = false;
             executeHook(HOOK_HERSTELLER_CLASS_LOADFROMDB, array(

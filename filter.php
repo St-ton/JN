@@ -151,8 +151,7 @@ if ($smarty->isCached('productlist/index.tpl', $cacheID) === true) {
     // Verfügbarkeitsbenachrichtigung pro Artikel
     if (is_array($oSuchergebnisse->Artikel->elemente)) {
         foreach ($oSuchergebnisse->Artikel->elemente as $Artikel) {
-            $n                                        = gibVerfuegbarkeitsformularAnzeigen($Artikel, $Einstellungen['artikeldetails']['benachrichtigung_nutzen']);
-            $Artikel->verfuegbarkeitsBenachrichtigung = $n;
+            $Artikel->verfuegbarkeitsBenachrichtigung = gibVerfuegbarkeitsformularAnzeigen($Artikel, $Einstellungen['artikeldetails']['benachrichtigung_nutzen']);
         }
     }
     if (count($oSuchergebnisse->Artikel->elemente) === 0) {

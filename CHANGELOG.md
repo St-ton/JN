@@ -7,8 +7,29 @@
 * Verbesserung: Neuer Hook 220 HOOK_GET_NEWS in gibNews()
 * Verbesserung: Neuer Hook 221 HOOK_STOCK_FILTER in gibLagerFilter()
 * Bugfix: Newskategorien-Box verschwindet bei aktiviertem Objektcache
+* Bugfix: URL_SHOP in Exportformaten nicht definiert
+* Verbesserung: DB-Wartungsfunktionen in Backend integriert
+* Verbesserung: Bilder für Newskategorien können im Backend angegeben werden 
+* Bugfix: Plugin-Sprachvariablen lassen sich nicht aktualisieren, wenn zwischenzeitlich neue Sprache im Webshop aktiviert wurde
+* Bugfix: Speichern von Newsbeiträgen in deaktivierter Newskategorie schlägt fehl bzw. erzeugt Duplikat des Beitrags
+* Bugfix: Varkombis können in Fremdsprachen bei fehlender Übersetzung Sprachvariablen nicht nachgeladen werden
+* Bugfix: In Zukunft startende Sonderpreise werden bei aktiviertem Objektcache nicht berücksichtig
+* Verbesserung: Speicheroptimierung bei aktiviertem Objektcache und gleichzeitiger Verwendung der Warenkorbmatrix
+* Verbesserung: Speicheroptimierung bei aktiviertem Objektcache und TopArtikeln/Bestsellern/Neuen Artikeln
+* Bugfix: TopArtikel werden bei aktiviertem Objektcache nicht aktualisiert 
+* Bugfix: Ändern von Bildeinstellungen invalidiert Objektcache nicht 
+* Bugfix: Varkombi Dropdown-Auswahl wird bei Auswahl Nachladen der Kombination zurückgesetzt
+* Verbesserung: Bildpfad-Änderungen (/bilder/... --> /media/image/...) werden nun via 301 weitergeleitet. 
+* Bugfix PayPal-Plugin (v1.05): Gratisgeschenke werden nicht als Item gelistet
+* Bugfix PayPal-Plugin (v1.05): TLS-Check liefert teilweise falsche Ergebnisse, da Version nicht festgelegt
+* Bugfix Fehlerhafte Kategorie-/Merkmalfilter-URLs erzeugen keinen 404-Statuscode
 
-## [4.03.1]
+## [4.03.2]
+* Bugfix: robots.txt fehlendes "Sitemap: " vor der Sitemap-URL
+* Bugfix: Billpay Zahlungseingang wird nicht gesetzt
+* Bugfix: Newsletter Abmelden unsichtbar für nicht-angemeldete Besucher
+
+## [4.03.1] - 2016-05-17
 * Bugfix: Sprachwechsel in einigen Linkgruppen unvollständig
 * Bugfix: HTTP 500, wenn Object-Cache aktiv ist und Preise erst nach Login sichtbar
 * Bugfix: DB-Update läuft in Endlosschleife, wenn das Update ohne Umweg über admin/index.php direkt im Backend angestoßen wird
@@ -25,7 +46,7 @@
 * Unterstützung: Konfiguratorkomponenten Bildwechsel nutzt Gruppenbild, wenn Komponente kein Bild hat
 * Bugfix: Angepasste robots.txt wird falsch sortiert durch robots.php
 
-## [4.03]
+## [4.03] - 2016-05-09
 
 Dieses Update enthält folgende Verbesserungen und Bugfixes: 
 

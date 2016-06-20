@@ -1,4 +1,4 @@
-{if $Position->nPosTyp==1}
+{if $Position->nPosTyp == 1}
     <p><a href="{$Position->Artikel->cURL}">{$Position->cName}</a></p>
     {* Seriennummer *}
     {if !empty($Position->cSeriennummer)}

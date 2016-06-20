@@ -49,7 +49,7 @@ class AjaxResponse
      * @param string $type
      * @throws Exception
      */
-    public function makeResponse($data, $type)
+    public function makeResponse($data, $type = null)
     {
         if (!is_object($data)) {
             throw new Exception('Unexpected data type');
@@ -83,7 +83,19 @@ class AjaxResponse
         }
 
         echo $json;
-        // exit;
+        exit;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isAjax()
+    {
+        if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strcasecmp($_SERVER['HTTP_X_REQUESTED_WITH'], 'xmlhttprequest') === 0) {
+            return true;
+        }
+        $accept = explode(',', getallheaders()['Accept']);
+        return in_array('application/json', $accept);
     }
 
     /**

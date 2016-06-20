@@ -197,7 +197,8 @@ class MediaImageRequest
             ? '~' . $this->getNumber()
             : '';
 
-        $thumb = sprintf('%s/%d/%s/%s%s.%s', self::getCachePath($this->getType()), $this->getId(), $size, $this->getName(), $number, $this->getExt());
+        $thumb = sprintf('%s/%d/%s/%s%s.%s', self::getCachePath($this->getType()),
+            $this->getId(), $size, $this->getName(), $number, $this->getExt());
 
         if ($absolute === true) {
             $thumb = PFAD_ROOT . $thumb;
@@ -217,8 +218,9 @@ class MediaImageRequest
             : $this->getSize();
 
         $size  = Image::mapSize($size, true);
-        $type  = 'produkte'; // Image::mapType($this->getType());
-        $thumb = sprintf('%s/%s/%s/%s', 'bilder', $type, $size, $this->getPath());
+        $type  = rtrim(PFAD_PRODUKTBILDER, '/');
+        $thumb = sprintf('%s/%s/%s/%s', rtrim(PFAD_BILDER, '/'),
+            $type, $size, $this->getPath());
 
         return $thumb;
     }

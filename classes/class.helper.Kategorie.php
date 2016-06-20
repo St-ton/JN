@@ -73,6 +73,8 @@ class KategorieHelper
         $extended    = !empty($stockFilter);
         if (false === ($fullCats = Shop::Cache()->get(self::$cacheID))) {
             if (!empty($_SESSION['oKategorie_arr_new'])) {
+                self::$fullCategories = $_SESSION['oKategorie_arr_new'];
+
                 return $_SESSION['oKategorie_arr_new'];
             }
             $isDefaultLang = standardspracheAktiv();
@@ -272,5 +274,54 @@ class KategorieHelper
     public static function categoryExists($id)
     {
         return Shop::DB()->select('tkategorie', 'kKategorie', (int) $id) !== null;
+    }
+
+    /**
+     * @param int $id
+     * @return null|object
+     */
+    public function getCategoryById($id)
+    {
+        if (self::$fullCategories === null) {
+            self::$fullCategories = $this->combinedGetAll();
+        }
+
+        return $this->findCategoryInList((int) $id, self::$fullCategories);
+    }
+
+    /**
+     * @param int $id
+     * @return array
+     */
+    public function getChildCategoriesById($id)
+    {
+        $current = $this->getCategoryById((int) $id);
+
+        return (isset($current->Unterkategorien)) ? array_values($current->Unterkategorien) : array();
+    }
+
+
+    /**
+     * @param int          $id
+     * @param array|object $haystack
+     * @return bool
+     */
+    public function findCategoryInList($id, $haystack)
+    {
+        if (isset($haystack->kKategorie) && (int) $haystack->kKategorie === $id) {
+            return $haystack;
+        }
+        if (isset($haystack->Unterkategorien)) {
+            return $this->findCategoryInList($id, $haystack->Unterkategorien);
+        }
+        if (is_array($haystack)) {
+            foreach ($haystack as $obj) {
+                if (($result = $this->findCategoryInList($id, $obj)) !== false) {
+                    return $result;
+                }
+            }
+        }
+
+        return false;
     }
 }

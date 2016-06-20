@@ -148,37 +148,37 @@ class Plugin
     /**
      * @var array
      */
-    public $oPluginHook_arr;
+    public $oPluginHook_arr = array();
 
     /**
      * @var array
      */
-    public $oPluginAdminMenu_arr;
+    public $oPluginAdminMenu_arr = array();
 
     /**
      * @var array
      */
-    public $oPluginEinstellung_arr;
+    public $oPluginEinstellung_arr = array();
 
     /**
      * @var array
      */
-    public $oPluginEinstellungConf_arr;
+    public $oPluginEinstellungConf_arr = array();
 
     /**
      * @var array
      */
-    public $oPluginEinstellungAssoc_arr;
+    public $oPluginEinstellungAssoc_arr = array();
 
     /**
      * @var array
      */
-    public $oPluginSprachvariable_arr;
+    public $oPluginSprachvariable_arr = array();
 
     /**
      * @var array
      */
-    public $oPluginSprachvariableAssoc_arr;
+    public $oPluginSprachvariableAssoc_arr = array();
 
     /**
      * @var array
@@ -188,37 +188,37 @@ class Plugin
     /**
      * @var array
      */
-    public $oPluginZahlungsmethode_arr;
+    public $oPluginZahlungsmethode_arr = array();
 
     /**
      * @var array
      */
-    public $oPluginZahlungsmethodeAssoc_arr;
+    public $oPluginZahlungsmethodeAssoc_arr = array();
 
     /**
      * @var array
      */
-    public $oPluginZahlungsKlasseAssoc_arr;
+    public $oPluginZahlungsKlasseAssoc_arr = array();
 
     /**
      * @var array
      */
-    public $oPluginEmailvorlage_arr;
+    public $oPluginEmailvorlage_arr = array();
 
     /**
      * @var array
      */
-    public $oPluginEmailvorlageAssoc_arr;
+    public $oPluginEmailvorlageAssoc_arr = array();
 
     /**
      * @var array
      */
-    public $oPluginAdminWidget_arr;
+    public $oPluginAdminWidget_arr = array();
 
     /**
      * @var array
      */
-    public $oPluginAdminWidgetAssoc_arr;
+    public $oPluginAdminWidgetAssoc_arr = array();
 
     /**
      * @var stdClass
@@ -268,12 +268,22 @@ class Plugin
     /**
      * @var int
      */
+    public $bBootstrap;
+
+    /**
+     * @var int
+     */
     public $nCalledHook;
 
     /**
      * @var null|array
      */
     private static $hookList = null;
+    
+    /**
+     * @var array
+     */
+    private static $bootstrapper = [];
 
     /**
      * Konstruktor
@@ -319,7 +329,7 @@ class Plugin
                 $this->$k = $v;
             }
         } else {
-            return;
+            return null;
         }
         $_shopURL    = Shop::getURL();
         $_shopURLSSL = Shop::getURL(true);
@@ -354,10 +364,20 @@ class Plugin
         );
         // Plugin Einstellungen holen
         $this->oPluginEinstellung_arr = Shop::DB()->query(
-            "SELECT *
+            "SELECT tplugineinstellungen.*, tplugineinstellungenconf.cConf
                 FROM tplugineinstellungen
-                WHERE kPlugin = " . $kPlugin, 2
+                LEFT JOIN tplugineinstellungenconf ON tplugineinstellungenconf.kPlugin = tplugineinstellungen.kPlugin 
+                    AND tplugineinstellungen.cName = tplugineinstellungenconf.cWertName
+                WHERE tplugineinstellungen.kPlugin = " . $kPlugin, 2
         );
+        if (is_array($this->oPluginEinstellung_arr)) {
+            foreach ($this->oPluginEinstellung_arr as $conf) {
+                if ($conf->cConf === 'M') {
+                    $conf->cWert = unserialize($conf->cWert);
+                }
+                unset($conf->cConf);
+            }
+        }
         // Plugin Einstellungen Conf holen
         $oPluginEinstellungConfTMP_arr = Shop::DB()->query(
             "SELECT *
@@ -369,12 +389,17 @@ class Plugin
             foreach ($oPluginEinstellungConfTMP_arr as $i => $oPluginEinstellungConfTMP) {
                 $oPluginEinstellungConfTMP_arr[$i]->oPluginEinstellungenConfWerte_arr = array();
                 if ($oPluginEinstellungConfTMP->cInputTyp === 'selectbox' || $oPluginEinstellungConfTMP->cInputTyp === 'radio') {
-                    $oPluginEinstellungConfTMP_arr[$i]->oPluginEinstellungenConfWerte_arr = Shop::DB()->query(
-                        "SELECT *
-                            FROM tplugineinstellungenconfwerte
-                            WHERE kPluginEinstellungenConf = " . (int)$oPluginEinstellungConfTMP->kPluginEinstellungenConf . "
-                            ORDER BY nSort", 2
-                    );
+
+                    if (!empty($oPluginEinstellungConfTMP->cSourceFile)) {
+                        $oPluginEinstellungConfTMP_arr[$i]->oPluginEinstellungenConfWerte_arr = $this->getDynamicOptions($oPluginEinstellungConfTMP);
+                    } else {
+                        $oPluginEinstellungConfTMP_arr[$i]->oPluginEinstellungenConfWerte_arr = Shop::DB()->query(
+                            "SELECT *
+                                FROM tplugineinstellungenconfwerte
+                                WHERE kPluginEinstellungenConf = " . (int)$oPluginEinstellungConfTMP->kPluginEinstellungenConf . "
+                                ORDER BY nSort", 2
+                        );
+                    }
                 }
             }
         }
@@ -561,6 +586,7 @@ class Plugin
         $obj->dZuletztAktualisiert = $this->dZuletztAktualisiert;
         $obj->dInstalliert         = $this->dInstalliert;
         $obj->dErstellt            = $this->dErstellt;
+        $obj->bBootstrap           = $this->bBootstrap ? 1 : 0;
 
         return Shop::DB()->update('tplugin', 'kPlugin', $obj->kPlugin, $obj);
     }
@@ -753,5 +779,59 @@ class Plugin
         self::$hookList = $hookList;
 
         return true;
+    }
+
+    /**
+     * @param array $conf
+     * @return array
+     */
+    public function getDynamicOptions($conf)
+    {
+        $dynamicOptions = null;
+        if (!empty($conf->cSourceFile) && file_exists($this->cAdminmenuPfad . $conf->cSourceFile)) {
+            $dynamicOptions = include $this->cAdminmenuPfad . $conf->cSourceFile;
+            foreach ($dynamicOptions as $option) {
+                $option->kPluginEinstellungenConf = $conf->kPluginEinstellungenConf;
+                if (!isset($option->nSort)) {
+                    $option->nSort = 0;
+                }
+            }
+        }
+
+        return $dynamicOptions;
+    }
+    
+    public static function bootstrapper($kPlugin)
+    {
+        if (!isset(self::$bootstrapper[$kPlugin])) {
+            $plugin = Shop::DB()->select('tplugin', 'kPlugin', $kPlugin);
+
+            if ((bool)$plugin->bBootstrap === false) {
+                return null;
+            }
+
+            $file = PFAD_ROOT . PFAD_PLUGIN . $plugin->cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $plugin->nVersion . '/' . PLUGIN_BOOTSTRAPPER;
+            $class = sprintf('%s\\%s', $plugin->cPluginID, 'Bootstrap');
+            
+            if (!is_file($file)) {
+                return null;
+            }
+
+            require_once $file;
+
+            if (!class_exists($class)) {
+                return null;
+            }
+
+            $bootstrapper = new $class($plugin->cPluginID);
+
+            if (!is_subclass_of($bootstrapper, 'AbstractPlugin')) {
+                return null;
+            }
+            
+            self::$bootstrapper[$kPlugin] = $bootstrapper;
+        }
+
+        return self::$bootstrapper[$kPlugin];
     }
 }

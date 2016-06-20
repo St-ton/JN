@@ -8,7 +8,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
 
 $linkHelper = LinkHelper::getInstance();
 if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0 && verifyGPCDataInteger('editRechnungsadresse') === 0) {
-    header('Location: ' , $linkHelper->getStaticRoute('jtl.php', true), true, 301);
+    header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true), true, 301);
 }
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';

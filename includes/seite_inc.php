@@ -601,11 +601,13 @@ function gibSitemapNews()
                 // cURL bauen
                 if (is_array($oNews_arr) && count($oNews_arr) > 0) {
                     foreach ($oNews_arr as $j => $oNews) {
-                        $oNews_arr[$j]->cURL = baueURL($oNews, URLART_NEWS);
+                        $oNews_arr[$j]->cURL     = baueURL($oNews, URLART_NEWS);
+                        $oNews_arr[$j]->cURLFull = baueURL($oNews, URLART_NEWS, 0, false, true);
                     }
                 }
                 $oNewsMonatsUebersicht_arr[$i]->oNews_arr = $oNews_arr;
                 $oNewsMonatsUebersicht_arr[$i]->cURL      = baueURL($oNewsMonatsUebersicht, URLART_NEWSMONAT);
+                $oNewsMonatsUebersicht_arr[$i]->cURLFull  = baueURL($oNewsMonatsUebersicht, URLART_NEWSMONAT, 0, false, true);
             }
         }
         Shop::Cache()->set($cacheID, $oNewsMonatsUebersicht_arr, array(CACHING_GROUP_NEWS));
@@ -619,12 +621,13 @@ function gibSitemapNews()
  */
 function gibNewsKategorie()
 {
-    $cacheID = 'news_category_' . $_SESSION['kSprache'] . '_' . $_SESSION['Kundengruppe']->kKundengruppe;
+    $cacheID = 'news_category_' . (int) $_SESSION['kSprache'] . '_' . (int) $_SESSION['Kundengruppe']->kKundengruppe;
     if (($oNewsKategorie_arr = Shop::Cache()->get($cacheID)) === false) {
         $oNewsKategorie_arr = Shop::DB()->query(
             "SELECT tnewskategorie.kNewsKategorie, tnewskategorie.kSprache, tnewskategorie.cName,
                 tnewskategorie.cBeschreibung, tnewskategorie.cMetaTitle, tnewskategorie.cMetaDescription,
-                tnewskategorie.nSort, tnewskategorie.nAktiv, tnewskategorie.dLetzteAktualisierung, tseo.cSeo,
+                tnewskategorie.nSort, tnewskategorie.nAktiv, tnewskategorie.dLetzteAktualisierung, 
+                tnewskategorie.cPreviewImage, tseo.cSeo,
                 count(DISTINCT(tnewskategorienews.kNews)) AS nAnzahlNews
                 FROM tnewskategorie
                 LEFT JOIN tnewskategorienews ON tnewskategorienews.kNewsKategorie = tnewskategorie.kNewsKategorie
@@ -644,6 +647,7 @@ function gibNewsKategorie()
             foreach ($oNewsKategorie_arr as $i => $oNewsKategorie) {
                 $oNewsKategorie_arr[$i]->oNews_arr = array();
                 $oNewsKategorie_arr[$i]->cURL      = baueURL($oNewsKategorie, URLART_NEWSKATEGORIE);
+                $oNewsKategorie_arr[$i]->cURLFull  = baueURL($oNewsKategorie, URLART_NEWSKATEGORIE, 0, false, true);
 
                 $oNews_arr = Shop::DB()->query(
                     "SELECT tnews.kNews, tnews.kSprache, tnews.cKundengruppe, tnews.cBetreff, tnews.cText, tnews.cVorschauText, tnews.cMetaTitle,
@@ -665,7 +669,8 @@ function gibNewsKategorie()
                 // Baue cURL
                 if (is_array($oNews_arr) && count($oNews_arr) > 0) {
                     foreach ($oNews_arr as $j => $oNews) {
-                        $oNews_arr[$j]->cURL = baueURL($oNews, URLART_NEWS);
+                        $oNews_arr[$j]->cURL     = baueURL($oNews, URLART_NEWS);
+                        $oNews_arr[$j]->cURLFull = baueURL($oNews, URLART_NEWS, 0, false, true);
                     }
                 }
 

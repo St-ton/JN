@@ -28,7 +28,8 @@ if (intval($_SERVER['SERVER_PORT']) !== 80) {
 $host     = !empty($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : $_SERVER['HTTP_HOST'];
 $cShopURL = $protocol . $host . $cShopPort . substr($cREQUEST_URI, 0, strlen($cREQUEST_URI) - 8);
 
-define('PFAD_ROOT', substr(dirname(__FILE__), 0, strlen(dirname(__FILE__)) - 7));
+//define('PFAD_ROOT', substr(dirname(__FILE__), 0, strlen(dirname(__FILE__)) - 7));
+define('PFAD_ROOT', realpath(__DIR__ . '/..') . '/');
 define('URL_SHOP', $cShopURL);
 define('SHOP_LOG_LEVEL', E_ALL);
 define('SMARTY_LOG_LEVEL', E_ALL);

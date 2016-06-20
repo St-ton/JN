@@ -6,7 +6,7 @@
         <ul>
         {foreach $setting->oEinstellung_arr as $s}
             <li>
-                <a href="#" class="value">
+                <a href="einstellungen.php?cSuche={$s->kEinstellungenConf}&einstellungen_suchen=1" class="value">
                     <p>{$s->cName}</p>
                     <small>{$s->cBeschreibung}</small>
                 </a>

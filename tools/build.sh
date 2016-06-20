@@ -1,125 +1,109 @@
 #!/bin/bash
 
 REL_SCRIPT_DIR="`dirname \"$0\"`"
-SCRIPT_DIR="`( cd \"$REL_SCRIPT_DIR\" && pwd )`"
-PROJECT_DIR="`( cd \"$SCRIPT_DIR/..\" && pwd )`"
 
-# https://docs.npmjs.com/getting-started/installing-node
+export SCRIPT_DIR="`( cd \"${REL_SCRIPT_DIR}\" && pwd )`"
+export PROJECT_DIR="`( cd \"${SCRIPT_DIR}/..\" && pwd )`"
+
+source ${SCRIPT_DIR}/scripts/tools.sh
+source ${SCRIPT_DIR}/scripts/deploy.sh
 
 build_help()
 {
-    echo "$(tput setaf 3)Usage:$(tput sgr0)"
+    echo "${fgYellow}Usage:${C}"
     echo "  build.sh <action>"
     echo ""
-    echo "$(tput setaf 3)Actions:$(tput sgr0)"
-    echo "  $(tput setaf 2)check$(tput sgr0)      - Check dependencies"
-    echo "  $(tput setaf 2)deps$(tput sgr0)       - Install dependencies"
-    echo "  $(tput setaf 2)init$(tput sgr0)       - Initialize repository"
-    echo "  $(tput setaf 2)clean$(tput sgr0)      - Clean up"
+    echo "${fgYellow}Actions:${C}"
+    echo "  ${fgGreen}check${C}             - Check dependencies"
+    echo "  ${fgGreen}deps${C}              - Install dependencies"
+	echo "  ${fgGreen}ide_meta${C}          - Create metadata"
+    echo "  ${fgGreen}deploy <archive>${C}  - Deploy"
     echo ""
 }
 
 build_check()
 {
-    echo "Checking dependencies..."
+    msg "Checking dependencies..."
 
-    for cmd in "wget" "npm" "node"; do
-        printf "%-10s" "$cmd"
+    pathadd ${SCRIPT_DIR}/bin
+
+    for cmd in "composer" "php-cs-fixer" "phpcs" "zip"; do
         if hash "$cmd" 2>/dev/null;
         then
-            printf "$(tput setaf 2) Ok $(tput sgr0)\n"
+            printf "${fgGreen}  Y  ${C}"
         else
-            printf "$(tput setaf 1) Not found $(tput sgr0)\n"
+            printf "${fgRed}  N  ${C}"
         fi
+        printf "$cmd\n"
     done
 }
 
 build_deps()
 {
-    echo "Installing dependencies..."
+    msg "Installing dependencies..."
 
     # composer
-    wget http://getcomposer.org/composer.phar -O $SCRIPT_DIR/composer.phar
-    php $SCRIPT_DIR/composer.phar self-update
+    wget http://getcomposer.org/composer.phar -O ${SCRIPT_DIR}/bin/composer -q --show-progress || exit 1
+    chmod u+x ${SCRIPT_DIR}/bin/composer
+
+    # php-cs-fixer
+    wget http://get.sensiolabs.org/php-cs-fixer.phar -O ${SCRIPT_DIR}/bin/php-cs-fixer -q --show-progress || exit 1
+    chmod u+x ${SCRIPT_DIR}/bin/php-cs-fixer
+
+    # phpcs
+    wget https://squizlabs.github.io/PHP_CodeSniffer/phpcs.phar -O ${SCRIPT_DIR}/bin/phpcs -q --show-progress || exit 1
+    chmod u+x ${SCRIPT_DIR}/bin/phpcs
+
+    # phpcbf
+    wget https://squizlabs.github.io/PHP_CodeSniffer/phpcbf.phar -O ${SCRIPT_DIR}/bin/phpcbf -q --show-progress || exit 1
+    chmod u+x ${SCRIPT_DIR}/bin/phpcbf
+
+    success "... done"
+}
+
+build_fixcs()
+{
+    php ${SCRIPT_DIR}/bin/php-cs-fixer --config-file="${PROJECT_DIR}/.php_cs" fix ${PROJECT_DIR} -vvv --dry-run
+}
+
+build_ide_meta()
+{
+    META_FILE=".phpstorm.meta.php"
+    META_HEADER="<?php // `date '+%Y-%m-%d %H:%M:%S'`"
+    META_DATA=`deploy_ide_meta`
+
+    msg "Generating '${META_FILE}'"
+
+    echo -e "${META_HEADER}\n\n${META_DATA}" > ${PROJECT_DIR}/${META_FILE} || exit 1
+
+    success "... done"
 }
 
 build_init()
 {
-    echo "Initializing..."
+    msg "Initializing..."
 
     # composer (composer.json)
-    cd $PROJECT_DIR/includes
-    php $SCRIPT_DIR/composer.phar install
-
-    # npm (package.json)
-    cd $SCRIPT_DIR/scripts
-    npm install
+    composer install --working-dir=${PROJECT_DIR}/includes || exit 1
 }
 
-build_all()
+# $1 archive filepath
+build_deploy()
 {
-    BUILD_DIR=`mktemp -d`
-    BRANCH=master
-
-    echo "Temporary directory: $BUILD_DIR"
-
-    git clone git@gitlab.jtl-software.de:jtlshop/shop4.git $BUILD_DIR || exit 1
-    git -C $BUILD_DIR checkout $BRANCH || exit 1
-
-    echo "Executing composer"
-    composer install --working-dir=$BUILD_DIR/includes -q || exit 1
-
-    INITIALSCHEMA=$BUILD_DIR/install/initial_schema.sql
-    TEMPCONFIG=$BUILD_DIR/includes/config.JTL-Shop.ini.php
-    TEMPDB=shop_${BASHPID}
-
-    echo "Creating database: $TEMPDB"
-    mysql -uroot -pjtlgmbh -e"CREATE DATABASE IF NOT EXISTS $TEMPDB" || exit 1
-
-    echo "Importing initial schema: $INITIALSCHEMA"
-    mysql -uroot -pjtlgmbh $TEMPDB < $INITIALSCHEMA || exit 1
-
-    echo "<?php define('PFAD_ROOT', '${BUILD_DIR}/'); \
-    define('URL_SHOP', 'http://jenkins'); \
-    define('DB_HOST', 'localhost'); \
-    define('DB_NAME', '${TEMPDB}'); \
-    define('DB_USER', 'root'); \
-    define('DB_PASS', 'jtlgmbh'); \
-    define('BLOWFISH_KEY', 'BLOWFISH_KEY');" > $TEMPCONFIG
-
-    echo "Running updates"
-
-    php -r "
-        require_once '${BUILD_DIR}/includes/globalinclude.php'; \
-        \$updater = new Updater(); \
-        while (\$updater->hasPendingUpdates()) { \
-            \$updater->update(); \
-        } \
-    "
-}
-
-build_clean()
-{
-    if [ -d "$BUILD_DIR" ]; then
-        echo "Removing directory: $BUILD_DIR"
-        rm -rf $BUILD_DIR
-    fi
-
-    TEMPDB=shop_${BASHPID}
-    echo "Removing dababase: $TEMPDB"
-    mysql -uroot -pjtlgmbh -e"DROP DATABASE IF EXISTS $TEMPDB" || exit 1
+    deploy_create $1
 }
 
 main() {
-    cd $PROJECT_DIR
+    cd ${PROJECT_DIR}
     local ACTION=build_${1:-full}
 
-    if [ -n "$(type -t $ACTION)" ] && [ "$(type -t $ACTION)" = "function" ]; then
-        trap build_clean exit
-        $ACTION
+    if [ -n "$(type -t ${ACTION})" ] && [ "$(type -t ${ACTION})" = "function" ]; then
+        ${ACTION} ${*:2}
     else
         build_help
     fi
+
+    return 0
 }
 
 (main $*)

@@ -5146,7 +5146,7 @@ class Artikel
             }
         }
         // Existiert für diese Kundengruppe ein Rabatt?
-        $kdgrp = Shop::DB()->select('tkundengruppe', 'kKundengruppe', $kKundengruppe, null, null, null, null,  false, 'fRabatt');
+        $kdgrp = Shop::DB()->select('tkundengruppe', 'kKundengruppe', $kKundengruppe, null, null, null, null, false, 'fRabatt');
         if (isset($kdgrp->fRabatt) && $kdgrp->fRabatt > 0) {
             $Rabatt_arr[] = $kdgrp->fRabatt;
         }

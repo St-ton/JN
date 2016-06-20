@@ -2185,11 +2185,15 @@ body.modal-open nav {
     color: rgba(255,255,255,0.3);
 }
 
-#main-search.modal .modal-body .grid {
+.grid {
 }
 
-#main-search.modal .modal-body .grid-item {
+.grid-item {
     width: 33%;
+}
+
+.grid-item .panel {
+    margin: 10px;
 }
 
 .modal-backdrop.in {

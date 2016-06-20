@@ -31,6 +31,8 @@
     <script type="text/javascript" src="{$PFAD_CODEMIRROR}mode/smartymixed/smartymixed.js"></script>
     <script type="text/javascript" src="{$PFAD_CODEMIRROR}mode/sql/sql.js"></script>
 
+    <script src="//npmcdn.com/masonry-layout@4.0/dist/masonry.pkgd.min.js"></script>
+
     <script type="text/javascript" src="{$URL_SHOP}/{$PFAD_ADMIN}{$currentTemplateDir}js/codemirror_init.js"></script>
     <script type="text/javascript">
         var bootstrapButton = $.fn.button.noConflict();
@@ -60,7 +62,6 @@
                 </div>
             </div>
         </div>
-        <script src="//npmcdn.com/masonry-layout@4.0/dist/masonry.pkgd.min.js"></script>
         <script>
         var $grid = null;
         

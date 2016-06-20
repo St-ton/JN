@@ -988,7 +988,7 @@ class Artikel
             // Ist der Artikel in Variationskombi Kind? Falls ja, hol den Vater und die Kategorie von ihm
             if ($this->kEigenschaftKombi > 0) {
                 $kArtikel = (int) $this->kVaterArtikel;
-            } elseif (!empty($this->oKategorie_arr)) {
+            } elseif (!empty($this->oKategorie_arr) && count(($this->oKategorie_arr) > 0)) {
                 //oKategorie_arr already has all categories for this article in it
                 if (isset($_SESSION['LetzteKategorie'])) {
                     foreach ($this->oKategorie_arr as $category) {
@@ -996,9 +996,9 @@ class Artikel
                             return (int) $category->kKategorie;
                         }
                     }
-                } else {
-                    return $this->oKategorie_arr[0]->kKategorie;
                 }
+
+                return $this->oKategorie_arr[0]->kKategorie;
             }
             $categoryFilter = (isset($_SESSION['LetzteKategorie'])) ?
                 " AND tkategorieartikel.kKategorie = " . (int) $_SESSION['LetzteKategorie'] :

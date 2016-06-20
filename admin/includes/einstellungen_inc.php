@@ -42,10 +42,10 @@ function bearbeiteEinstellungsSuche($cSuche, $bSpeichern = false)
             foreach ($kEinstellungenConf_arr as $i => $kEinstellungenConf) {
                 if ($kEinstellungenConf > 0) {
                     if ($i > 0) {
-                        $oSQL->cSearch .= ", " . Shop::DB()->escape($kEinstellungenConf);
+                        $oSQL->cSearch .= ", " . $kEinstellungenConf;
                         $oSQL->cWHERE .= ", " . Shop::DB()->escape($kEinstellungenConf);
                     } else {
-                        $oSQL->cSearch .= Shop::DB()->escape($kEinstellungenConf);
+                        $oSQL->cSearch .= $kEinstellungenConf;
                         $oSQL->cWHERE .= Shop::DB()->escape($kEinstellungenConf);
                     }
                 }
@@ -68,20 +68,20 @@ function bearbeiteEinstellungsSuche($cSuche, $bSpeichern = false)
             if ($bRange) {
                 // Suche war eine Range
                 $oSQL->nSuchModus = 2;
-                $oSQL->cSearch    = "Suche nach ID Range: " . Shop::DB()->escape($kEinstellungenConf_arr[0]) . " - " . Shop::DB()->escape($kEinstellungenConf_arr[1]);
+                $oSQL->cSearch    = "Suche nach ID Range: " . $kEinstellungenConf_arr[0] . " - " . $kEinstellungenConf_arr[1];
                 $oSQL->cWHERE .= " AND ((kEinstellungenConf BETWEEN " . Shop::DB()->escape($kEinstellungenConf_arr[0]) . " AND " . Shop::DB()->escape($kEinstellungenConf_arr[1]) . ") AND cConf = 'Y')";
             } // Suche in cName oder kEinstellungenConf suchen
             else {
                 if (intval($cSuche) > 0) {
                     $oSQL->nSuchModus = 3;
-                    $oSQL->cSearch    = "Suche nach ID: " . Shop::DB()->escape($cSuche);
+                    $oSQL->cSearch    = "Suche nach ID: " . $cSuche;
                     $oSQL->cWHERE .= " AND kEinstellungenConf = '" . Shop::DB()->escape($cSuche) . "'";
                 } else {
                     $cSuche    = strtolower($cSuche);
                     $cSucheEnt = StringHandler::htmlentities($cSuche);    // HTML Entities
 
                     $oSQL->nSuchModus = 4;
-                    $oSQL->cSearch    = "Suche nach Name: " . Shop::DB()->escape($cSuche);
+                    $oSQL->cSearch    = "Suche nach Name: " . $cSuche;
 
                     if ($cSuche === $cSucheEnt) {
                         $oSQL->cWHERE .= " AND (cName LIKE '%" . Shop::DB()->escape($cSuche) . "%' AND cConf = 'Y')";

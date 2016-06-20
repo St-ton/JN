@@ -109,7 +109,6 @@ function getPaymentMethodsByName($cSearch)
             );
             // Berücksichtige keine fehlerhaften Eingaben
             if (!empty($paymentMethodsByName_arr)) {
-                echo "not empty";
                 if (count($paymentMethodsByName_arr) > 1) {
                     foreach ($paymentMethodsByName_arr as $paymentMethodByName) {
                         $allPaymentMethodsByName[$paymentMethodByName->kZahlungsart] = $paymentMethodByName;

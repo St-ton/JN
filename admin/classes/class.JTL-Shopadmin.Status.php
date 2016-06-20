@@ -134,6 +134,7 @@ class Status
     protected function hasValidEnvironment()
     {
         $systemcheck = new Systemcheck_Environment();
+        $systemcheck->executeTestGroup('Shop4');
         return $systemcheck->getIsPassed();
     }
     
@@ -146,5 +147,21 @@ class Status
     protected function getPlatform()
     {
         return new Systemcheck_Platform_Hosting();
+    }
+
+    protected function getMySQLStats()
+    {
+        $stats = Shop::DB()->stats();
+        $info = Shop::DB()->info();
+        $lines = explode('  ', $stats);
+
+        $lines = array_map(function($v) {
+            @list($key, $value) = @explode(':', $v, 2);
+            return ['key' => trim($key), 'value' => trim($value)];
+        }, $lines);
+
+        $lines = array_merge([['key' => 'Version', 'value' => $info]], $lines);
+
+        return $lines;
     }
 }

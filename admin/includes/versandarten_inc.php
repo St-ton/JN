@@ -236,7 +236,7 @@ function getShippingByName($cSearch)
         trim($cSearchPos);
         if (strlen($cSearchPos) > 2) {
             $shippingByName_arr = Shop::DB()->query(
-                "SELECT COALESCE(vs.kVersandart, va.kVersandart) AS kVersandart, COALESCE(vs.cName, va.cName) AS cName
+                "SELECT va.kVersandart, va.cName
                     FROM tversandart AS va
                     LEFT JOIN tversandartsprache AS vs ON vs.kVersandart = va.kVersandart
                         AND vs.cName LIKE '%" . Shop::DB()->escape($cSearchPos) . "%'

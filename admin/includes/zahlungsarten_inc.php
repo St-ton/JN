@@ -101,7 +101,7 @@ function getPaymentMethodsByName($cSearch)
         // Nur Eingaben mit mehr als 2 Zeichen
         if (strlen($cSearchPos) > 2) {
             $paymentMethodsByName_arr = Shop::DB()->query(
-                "SELECT COALESCE(zs.kZahlungsart, za.kZahlungsart) AS kVersandart, COALESCE(zs.cName, za.cName) AS cName
+                "SELECT za.kZahlungsart, za.cName
                     FROM tzahlungsart AS za
                     LEFT JOIN tzahlungsartsprache AS zs ON zs.kZahlungsart = za.kZahlungsart
                         AND zs.cName LIKE '%" . Shop::DB()->escape($cSearchPos) . "%'

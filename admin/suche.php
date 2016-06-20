@@ -28,7 +28,7 @@ $query   = isset($_GET['query']) ? $_GET['query'] : null;
 $suggest = isset($_GET['suggest']) ? true : false;
 $data    = isset($_GET['data']) ? (bool)(int)$_GET['data'] : false;
 
-$settings       = bearbeiteEinstellungsSuche(Shop::DB()->escape($query));
+$settings       = bearbeiteEinstellungsSuche($query);
 $shippings      = getShippingByName($query);
 $paymentMethods = getPaymentMethodsByName($query);
 

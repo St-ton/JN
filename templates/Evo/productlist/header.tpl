@@ -143,7 +143,7 @@
             <strong>{lang key="page" section="productOverview"} {$Suchergebnisse->Seitenzahlen->AktuelleSeite}</strong> {lang key="of" section="productOverview"} {$Suchergebnisse->Seitenzahlen->MaxSeiten}
         </div>
         <div class="col-xs-8 page-total text-right">
-            {$Suchergebnisse->GesamtanzahlArtikel} {if $Suchergebnisse->GesamtanzahlArtikel>0}{lang key="products" section="global"}{else}{lang key="product" section="global"}{/if} {lang key="found" section="global"}, {lang key="showProducts" section="global"} {$Suchergebnisse->ArtikelVon} - {$Suchergebnisse->ArtikelBis}
+            {lang key="products" section="global"} {$Suchergebnisse->ArtikelVon} - {$Suchergebnisse->ArtikelBis} {lang key="of" section="productOverview"} {$Suchergebnisse->GesamtanzahlArtikel}
         </div>
     </div>
 {/if}

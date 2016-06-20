@@ -5135,28 +5135,18 @@ class Artikel
         $Rabatt_arr    = [];
         // Existiert für diese Kundengruppe ein Kategorierabatt?
         if (isset($this->kEigenschaftKombi) && $this->kEigenschaftKombi > 0) {
-            $oArtikelKatRabatt = Shop::DB()->query(
-                "SELECT *
-                     FROM tartikelkategorierabatt
-                     WHERE kArtikel = " . $this->kVaterArtikel . "
-                         AND kKundengruppe = " . $kKundengruppe, 1
-            );
+            $oArtikelKatRabatt = Shop::DB()->select('tartikelkategorierabatt', 'kArtikel', $this->kVaterArtikel, 'kKundengruppe', $kKundengruppe);
             if (isset($oArtikelKatRabatt->kArtikel) && $oArtikelKatRabatt->kArtikel > 0) {
                 $Rabatt_arr[] = $oArtikelKatRabatt->fRabatt;
             }
         } else {
-            $oArtikelKatRabatt = Shop::DB()->query(
-                "SELECT *
-                     FROM tartikelkategorierabatt
-                     WHERE kArtikel = " . $kArtikel . "
-                         AND kKundengruppe = " . $kKundengruppe, 1
-            );
+            $oArtikelKatRabatt = Shop::DB()->select('tartikelkategorierabatt', 'kArtikel', $kArtikel, 'kKundengruppe', $kKundengruppe);
             if (isset($oArtikelKatRabatt->kArtikel) && $oArtikelKatRabatt->kArtikel > 0) {
                 $Rabatt_arr[] = $oArtikelKatRabatt->fRabatt;
             }
         }
         // Existiert für diese Kundengruppe ein Rabatt?
-        $kdgrp = Shop::DB()->query("SELECT fRabatt FROM tkundengruppe WHERE kKundengruppe = " . $kKundengruppe, 1);
+        $kdgrp = Shop::DB()->select('tkundengruppe', 'kKundengruppe', $kKundengruppe, null, null, null, null,  false, 'fRabatt');
         if (isset($kdgrp->fRabatt) && $kdgrp->fRabatt > 0) {
             $Rabatt_arr[] = $kdgrp->fRabatt;
         }

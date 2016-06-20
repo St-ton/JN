@@ -2171,7 +2171,7 @@ body.modal-open nav {
     display: block;
 }
 
-#main-search.modal .modal-body ul li a {
+#main-search a, #main-search button {
     color: rgba(255,255,255,1);
 }
 

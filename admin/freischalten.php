@@ -76,30 +76,37 @@ $cTagSQL->cWhere                  = '';
 $cNewskommentarSQL->cWhere        = '';
 $cNewsletterempfaengerSQL->cWhere = '';
 $cNewsletterempfaengerSQL->cOrder = ' tnewsletterempfaenger.dEingetragen DESC';
+$cTab                             = verifyGPDataString('tab');
+
 if (verifyGPCDataInteger('Suche') === 1) {
     $cSuche = Shop::DB()->escape(StringHandler::filterXSS(verifyGPDataString('cSuche')));
 
     if (strlen($cSuche) > 0) {
         switch (verifyGPDataString('cSuchTyp')) {
             case 'Bewertung':
+                $cTab                  = 'bewertungen';
                 $cBewertungSQL->cWhere = " AND (tbewertung.cName LIKE '%" . $cSuche . "%'
                                             OR tbewertung.cTitel LIKE '%" . $cSuche . "%'
                                             OR tartikel.cName LIKE '%" . $cSuche . "%')";
                 break;
             case 'Livesuche':
+                $cTab                  = 'livesearch';
                 $cLivesucheSQL->cWhere = " AND tsuchanfrage.cSuche LIKE '%" . $cSuche . "%'";
                 break;
             case 'Tag':
+                $cTab            = 'tags';
                 $cTagSQL->cWhere = " AND (ttag.cName LIKE '%" . $cSuche . "%'
                                         OR tartikel.cName LIKE '%" . $cSuche . "%')";
                 break;
             case 'Newskommentar':
+                $cTab                      = 'newscomments';
                 $cNewskommentarSQL->cWhere = " AND (tnewskommentar.cKommentar LIKE '%" . $cSuche . "%'
                                                 OR tkunde.cVorname LIKE '%" . $cSuche . "%'
                                                 OR tkunde.cNachname LIKE '%" . $cSuche . "%'
                                                 OR tnews.cBetreff LIKE '%" . $cSuche . "%')";
                 break;
             case 'Newsletterempfaenger':
+                $cTab                             = 'newsletter';
                 $cNewsletterempfaengerSQL->cWhere = " AND (tnewsletterempfaenger.cVorname LIKE '%" . $cSuche . "%'
                                                         OR tnewsletterempfaenger.cNachname LIKE '%" . $cSuche . "%'
                                                         OR tnewsletterempfaenger.cEmail LIKE '%" . $cSuche . "%')";
@@ -288,4 +295,5 @@ $smarty->assign('hinweis', $cHinweis)
        ->assign('fehler', $cFehler)
        ->assign('step', $step)
        ->assign('Sprachen', gibAlleSprachen())
+       ->assign('cTab', $cTab)
        ->display('freischalten.tpl');

@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 require_once dirname(__FILE__) . '/hooks_inc.php';
-define('JTL_VERSION', 403);
+define('JTL_VERSION', 404);
 define('JTL_MIN_WAWI_VERSION', 99713);
 define('JTL_MINOR_VERSION', '#JTL_MINOR_VERSION#');
 define('JTL_BUILD_TIMESTAMP', '#JTL_BUILD_TIMESTAMP#');

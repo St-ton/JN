@@ -10,11 +10,18 @@
     <link type="image/x-icon" href="favicon.ico" rel="shortcut icon" />
     {$admin_css}
     <link type="text/css" rel="stylesheet" href="{$PFAD_CODEMIRROR}lib/codemirror.css" />
+    <link type="text/css" rel="stylesheet" href="{$PFAD_CODEMIRROR}addon/hint/show-hint.css" />
     <link type="text/css" rel="stylesheet" href="{$PFAD_CODEMIRROR}addon/display/fullscreen.css" />
     <link type="text/css" rel="stylesheet" href="{$PFAD_CODEMIRROR}addon/scroll/simplescrollbars.css" />
     {$admin_js}
     <script type="text/javascript" src="{$PFAD_CKEDITOR}ckeditor.js"></script>
     <script type="text/javascript" src="{$PFAD_CODEMIRROR}lib/codemirror.js"></script>
+    
+    <script type="text/javascript" src="{$PFAD_CODEMIRROR}addon/hint/show-hint.js"></script>
+    <script type="text/javascript" src="{$PFAD_CODEMIRROR}addon/hint/sql-hint.js"></script>
+    <script type="text/javascript" src="{$PFAD_CODEMIRROR}addon/scroll/simplescrollbars.js"></script>
+    <script type="text/javascript" src="{$PFAD_CODEMIRROR}addon/display/fullscreen.js"></script>
+    
     <script type="text/javascript" src="{$PFAD_CODEMIRROR}mode/css/css.js"></script>
     <script type="text/javascript" src="{$PFAD_CODEMIRROR}mode/javascript/javascript.js"></script>
     <script type="text/javascript" src="{$PFAD_CODEMIRROR}mode/xml/xml.js"></script>
@@ -22,8 +29,10 @@
     <script type="text/javascript" src="{$PFAD_CODEMIRROR}mode/htmlmixed/htmlmixed.js"></script>
     <script type="text/javascript" src="{$PFAD_CODEMIRROR}mode/smarty/smarty.js"></script>
     <script type="text/javascript" src="{$PFAD_CODEMIRROR}mode/smartymixed/smartymixed.js"></script>
-    <script type="text/javascript" src="{$PFAD_CODEMIRROR}addon/scroll/simplescrollbars.js"></script>
-    <script type="text/javascript" src="{$PFAD_CODEMIRROR}addon/display/fullscreen.js"></script>
+    <script type="text/javascript" src="{$PFAD_CODEMIRROR}mode/sql/sql.js"></script>
+
+    <script src="//npmcdn.com/masonry-layout@4.0/dist/masonry.pkgd.min.js"></script>
+
     <script type="text/javascript" src="{$URL_SHOP}/{$PFAD_ADMIN}{$currentTemplateDir}js/codemirror_init.js"></script>
     <script type="text/javascript">
         var bootstrapButton = $.fn.button.noConflict();
@@ -45,11 +54,7 @@
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <form method="post" action="einstellungen.php" role="search">
-                            {$jtl_token}
-                            <input type="hidden" name="einstellungen_suchen" value="1" />
-                            <input placeholder="Suchbegriff" name="cSuche" type="search" value="" autocomplete="off" />
-                        </form>
+                        <input placeholder="Suchbegriff" name="cSuche" type="search" value="" autocomplete="off" />
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     </div>
                     <div class="modal-body">
@@ -57,7 +62,6 @@
                 </div>
             </div>
         </div>
-        <script src="//npmcdn.com/masonry-layout@4.0/dist/masonry.pkgd.min.js"></script>
         <script>
         var $grid = null;
         
@@ -90,7 +94,7 @@
                 }
                 else if(query != lastQuery) {
                     lastQuery = query;
-                    ajaxCallV2('suche.php', { query: query }, function(result, error) {
+                    ajaxCallV2('suche.php', { query: query, suggest: true }, function(result, error) {
                         if (error) {
                             setResult(null);
                         }
@@ -152,8 +156,8 @@
         </script>
     {/if}
     {getCurrentPage assign="currentPage"}
-    {$fluid = ['index', 'marktplatz', 'banner']}
-    <div class="backend-wrapper {if $currentPage|in_array:$fluid}container-fluid{else}container{/if}{if $currentPage === 'index'} dashboard{/if}{if $currentPage === 'marktplatz'} marktplatz{/if}">
+    {$fluid = ['index', 'marktplatz', 'banner', 'dbmanager', 'status']}
+    <div class="backend-wrapper {if $currentPage|in_array:$fluid}container-fluid{else}container{/if}{if $currentPage === 'index' || $currentPage === 'status'} dashboard{/if}{if $currentPage === 'marktplatz'} marktplatz{/if}">
         <nav class="navbar navbar-inverse navbar-fixed-top yamm" role="navigation">
             <div class="container-fluid">
                 <div class="navbar-header">
@@ -190,7 +194,7 @@
                                                                 {$oLinkGruppe->cName}
                                                             </li>
                                                             {foreach name=linkgruppenlinks from=$oLinkGruppe->oLink_arr item=oLink}
-                                                                <li class="{if $smarty.foreach.linkgruppenlinks.first}subfirst {if !$oLink->cRecht|permission}noperm{/if}{/if}">
+                                                                <li class="{if $smarty.foreach.linkgruppenlinks.first}subfirst{/if}{if !$oLink->cRecht|permission} noperm{/if}">
                                                                     <a href="{$oLink->cURL}">{$oLink->cLinkname}</a>
                                                                 </li>
                                                             {/foreach}
@@ -214,37 +218,7 @@
                         {/foreach}
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
-                        {*
-                        {if $hasUpdates && permission('SHOP_UPDATE_VIEW')}
-                            <li><a href="dbupdater.php"><i class="fa fa-refresh" aria-hidden="true"></i> Updates</a></li>
-                        {/if}
-                        *}
-                        
-                        {$notifyTypes = [0 => 'info', 1 => 'warning', 2 => 'danger']}
-
-                        {if $notifications->count() > 0}
-                            <li class="dropdown">
-                                <a href="#" class="dropdown-toggle parent" data-toggle="dropdown">
-                                    <span class="badge-notify btn-{$notifyTypes[$notifications->getHighestType()]}">{$notifications->count()}</span>
-                                    <!--span class="glyphicon glyphicon-bell"></span>-->
-                                    Mitteilungen
-                                    <span class="caret"></span>
-                                </a>
-                                <ul class="dropdown-menu" role="main">
-                                    {foreach $notifications as $notify}
-                                        <li class="nag">
-                                            <div class="nag-split btn-{$notifyTypes[$notify->getType()]}"><i class="fa fa-angle-right" aria-hidden="true"></i></div>
-                                            <div class="nag-content">
-                                                <a href="{$notify->getUrl()}">
-                                                    <div class="nag-title">{$notify->getTitle()}</div>
-                                                    <div class="nag-text">{$notify->getDescription()}</div>
-                                                </a>
-                                            </div>
-                                        </li>
-                                    {/foreach}
-                                </ul>
-                            </li>
-                        {/if}
+                        <li class="dropdown" id="notify-drop">{include file="tpl_inc/notify_drop.tpl"}</li>
                         {if permission('DASHBOARD_VIEW')}
                             <li>
                                 <a class="link-dashboard" href="index.php" title="Dashboard"><i class="fa fa-home"></i></a>

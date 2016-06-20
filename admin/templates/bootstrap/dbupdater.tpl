@@ -102,6 +102,9 @@
                  init_bindings();
              }
         });
+
+        // update notifications
+        updateNotifyDrop();
     }
 
     function toggleDirection($element)

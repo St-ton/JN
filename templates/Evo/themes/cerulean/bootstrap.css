@@ -8529,6 +8529,9 @@ ul.vlist li {
 .padded-lg-bottom {
   padding-bottom: 30px;
 }
+.top0 {
+  margin-top: 0;
+}
 .top5 {
   margin-top: 5px;
 }

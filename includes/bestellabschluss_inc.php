@@ -442,6 +442,9 @@ function unhtmlSession()
     if ($_SESSION['Kunde']->cAbgeholt) {
         $knd->cAbgeholt = $_SESSION['Kunde']->cAbgeholt;
     }
+    if (isset($_SESSION['Kunde']->nRegistriert)) {
+        $knd->nRegistriert = $_SESSION['Kunde']->nRegistriert;
+    }
     $knd->cAnrede       = StringHandler::unhtmlentities($_SESSION['Kunde']->cAnrede);
     $knd->cVorname      = StringHandler::unhtmlentities($_SESSION['Kunde']->cVorname);
     $knd->cNachname     = StringHandler::unhtmlentities($_SESSION['Kunde']->cNachname);

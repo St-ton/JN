@@ -529,7 +529,8 @@ function verarbeiteYategoExport(&$Artikel, $exportformat, $ExportEinstellungen, 
             $cVarianten = implode(',', $oVariationsListe_arr);
         }
 
-        $cBacklink = '<h1 style="font-size: 100%;"><a href="' . getURL($Artikel->cURL) . '" target="_blank">' . $Artikel->cName . '</a></h1>';
+        //do not use double quotes here to keep csv column order (https://gitlab.jtl-software.de/jtlshop/shop4/issues/166)
+        $cBacklink = "<a href='" . getURL($Artikel->cURL) . "' target='_blank'>{$Artikel->cName}</a>";
 
         $oGlobal_arr['artikel'][] = array(
             'foreign_id'         => $Artikel->kArtikel,

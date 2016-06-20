@@ -364,12 +364,15 @@ class LinkHelper
                     }
                     $Links[$i]->URL      = baueURL($Links[$i], URLART_SEITE);
                     $Links[$i]->cURLFull = $shopURL . '/' . $Links[$i]->URL;
+
                     if (isset($Links[$i]->bSSL) && (int)$Links[$i]->bSSL === 2) {
                         //if link has forced ssl, modify cURLFull accordingly
                         $Links[$i]->cURLFull = str_replace('http://', 'https://', $Links[$i]->cURLFull);
                     }
+                    //reset if external link
                     if ($Links[$i]->nLinkart == 2) {
-                        $Links[$i]->URL = $Links[$i]->cURL;
+                        $Links[$i]->URL      = $Links[$i]->cURL;
+                        $Links[$i]->cURLFull = $Links[$i]->cURL;
                     }
                 }
                 $Links                                           = array_merge($Links);

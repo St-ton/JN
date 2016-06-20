@@ -30,6 +30,11 @@ class NotificationEntry
     const TYPE_DANGER = 2;
 
     /**
+     * @var string
+     */
+    protected $pluginId;
+
+    /**
      * @var int
      */
     protected $type;
@@ -62,6 +67,22 @@ class NotificationEntry
         $this->setTitle($title);
         $this->setDescription($description);
         $this->setUrl($url);
+    }
+    
+    /**
+     * @return string
+     */
+    public function getPluginId()
+    {
+        return $this->pluginId;
+    }
+
+    /**
+     * @param string $pluginId
+     */
+    public function setPluginId($pluginId)
+    {
+        $this->pluginId = $pluginId;
     }
 
     /**

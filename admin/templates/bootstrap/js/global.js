@@ -456,6 +456,19 @@ function createNotify(options, settings) {
     return $.notify(options, settings);
 }
 
+function updateNotifyDrop() {
+    ajaxCall('status.php', { action: 'notify' }, function(result, xhr) {
+        if (xhr && xhr.error && xhr.error.code == 401) {
+            // auth session expired
+        }
+        else if(!result.error) {
+            if (result.data.tpl) {
+                $('#notify-drop').html(result.data.tpl);
+            }
+        }
+    });
+}
+
 /**
  * document ready
  */

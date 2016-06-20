@@ -1,5 +1,6 @@
 # JTL-Shop Changelog
 
+
 ## [unreleased]
 * Bugfix: Bearbeiten von Herstellern invalidiert Objektcache für Artikel nicht
 * Bugfix: Newsbeiträge aus deaktivierten Kategorien werden auf der Startseite angezeigt
@@ -19,9 +20,22 @@
 * Bugfix: TopArtikel werden bei aktiviertem Objektcache nicht aktualisiert 
 * Bugfix: Ändern von Bildeinstellungen invalidiert Objektcache nicht 
 * Bugfix: Varkombi Dropdown-Auswahl wird bei Auswahl Nachladen der Kombination zurückgesetzt
+* Bugfix: PayPal-Plugin (v1.05): Gratisgeschenke werden nicht als Item gelistet
+* Bugfix: PayPal-Plugin (v1.05): TLS-Check liefert teilweise falsche Ergebnisse, da Version nicht festgelegt
+* Bugfix: Fehlerhafte Kategorie-/Merkmalfilter-URLs erzeugen keinen 404-Statuscode
+* Bugfix: Bei Klick auf Sortierung in Freischaltzentrale unter Livesuche erfolgt Weiterleitung zum Reiter "Bewertungen" (#100)
+* Bugfix: Aufgabenplaner: Bei Klick auf "Zuletzt fertiggestellt" verschwinden Buttons (#98)
+* Bugfix: Mailversand erfolgt immer in zum Registrierungszeitpunkt eingestellter Sprache (#63)
+* Bugfix: "<tab>" wird aus Exportformaten gelöscht, wenn beim Speichern Angaben fehlen (#136)
+* Verbesserung: Links können nun dupliziert werden und in mehreren Linkgruppen gleichzeitig vorhande sein (#159)
+* Bugfix: Koupon::generateCode() erzeugt Endlosrekursion
+* Verbesserung: HOOK_INDEX_SEO_404 wird nun auch ausgeführt, wenn cSeo nicht leer ist 
 
-## [4.03.2]
-* Bugfix: robots.txt fehlendes "Sitemap: " vor der Sitemap-URL
+## [4.04]
+* Bugfix: robots.txt fehlendes "Sitemap: " vor der Sitemap-URL (#83)
+* Bugfix: Billpay Zahlungseingang wird nicht gesetzt (#96)
+* Bugfix: Newsletter Abmelden unsichtbar für nicht-angemeldete Besucher (#77)
+* Verbesserung: Alte Bildpfade müssen bei Änderung von /bilder/ auf /media/ via 301 weitergeleitet werden (#189)
 
 ## [4.03.1] - 2016-05-17
 * Bugfix: Sprachwechsel in einigen Linkgruppen unvollständig

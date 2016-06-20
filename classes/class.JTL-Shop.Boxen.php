@@ -517,7 +517,8 @@ class Boxen
                     $oNewsKategorie_arr = Shop::DB()->query(
                         "SELECT tnewskategorie.kNewsKategorie, tnewskategorie.kSprache, tnewskategorie.cName,
                             tnewskategorie.cBeschreibung, tnewskategorie.cMetaTitle, tnewskategorie.cMetaDescription,
-                            tnewskategorie.nSort, tnewskategorie.nAktiv, tnewskategorie.dLetzteAktualisierung, tseo.cSeo,
+                            tnewskategorie.nSort, tnewskategorie.nAktiv, tnewskategorie.dLetzteAktualisierung,
+                            tnewskategorie.cPreviewImage, tseo.cSeo,
                             count(DISTINCT(tnewskategorienews.kNews)) AS nAnzahlNews
                             FROM tnewskategorie
                             LEFT JOIN tnewskategorienews ON tnewskategorienews.kNewsKategorie = tnewskategorie.kNewsKategorie

@@ -1,6 +1,6 @@
 {* template to display products in product-lists *}
 
-<div class="product-cell thumbnail">
+<div class="product-cell">
     <div class="product-body row {if $tplscope !== 'list'} text-center{/if}">
         <div class="col-xs-3 col-sm-2 col-lg-3 text-center">
             {block name="image-wrapper"}
@@ -20,8 +20,28 @@
             {/block}
             {include file='productdetails/rating.tpl' stars=$Artikel->fDurchschnittsBewertung}
         </div>
-        <div class="col-xs-6 col-sm-6 col-lg-5">
+        <div class="col-xs-6 col-lg-5">
             {block name="product-title"}<h4 class="title"><a href="{$Artikel->cURL}">{$Artikel->cName}</a></h4>{/block}
+            {block name="product-manufacturer"}
+                {if $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen !== 'N'}
+                    <div class="media hidden-xs top0 bottom5">
+                        {if ($Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen === 'BT'
+                        || $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen === 'B') && !empty($Artikel->cHerstellerBildKlein)}
+                            <div class="media-left">
+                                <a href="{$Artikel->cHerstellerHomepage}">
+                                    <img src="{$Artikel->cHerstellerBildKlein}" alt="" class="img-xs">
+                                </a>
+                            </div>
+                        {/if}
+                        {if ($Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen === 'BT'
+                        || $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen === 'Y') && !empty($Artikel->cHersteller)}
+                            <div class="media-body">
+                                <span class="small text-uppercase"><a href="{$Artikel->cHerstellerHomepage}">{$Artikel->cHersteller}</a></span>
+                            </div>
+                        {/if}
+                    </div>
+                {/if}
+            {/block}
 
             <div class="product-info hidden-xs">
                 {block name="product-info"}
@@ -35,25 +55,6 @@
                         {if isset($Artikel->dMHD) && isset($Artikel->dMHD_de)}
                             <li class="item row attr-best-before" title="{lang key='productMHDTool' section='global'}">
                                 <span class="attr-label col-sm-5">{lang key="productMHD" section="global"}: </span> <span class="value col-sm-7">{$Artikel->dMHD_de}</span>
-                            </li>
-                        {/if}
-                        {if $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen !== 'N' && !empty($Artikel->cHersteller)}
-                            <li class="item row attr-manufacturer">
-                                <span class="attr-label col-sm-5">{lang key="manufacturerSingle" section="productOverview"}: </span>
-                                <span class="value col-sm-7">
-                                {if $Artikel->cHerstellerHomepage}
-                                    <a href="{$Artikel->cHerstellerHomepage}">
-                                {/if}
-                                {if $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen !== 'B' && !empty($Artikel->cHersteller)}
-                                    {$Artikel->cHersteller}
-                                {/if}
-                                {if $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen !== 'Y' && !empty($Artikel->cHerstellerBildKlein)}
-                                    <img src="{$Artikel->cHerstellerBildKlein}" alt="" />
-                                {/if}
-                                {if $Artikel->cHerstellerHomepage}
-                                    </a>
-                                {/if}
-                                </span>
                             </li>
                         {/if}
                         {if isset($Artikel->cGewicht) && $Einstellungen.artikeluebersicht.artikeluebersicht_gewicht_anzeigen === 'Y' && $Artikel->fGewicht > 0}

@@ -3,26 +3,31 @@
     "type": "library",
     "homepage": "http://www.jtl-software.de",
     "require": {
-        "php": ">=5.3.3",
-        "guzzlehttp/guzzle": "3.7.4",
+        "php": ">=5.4",
         "Imanee/Imanee": "dev-master",
         "ifsnop/mysqldump-php": "^2.1",
         "symfony/var-dumper": "^3.0",
-        "fabpot/php-cs-fixer": "^1.11",
-        "andyftw/ssllabs-php": "^1.2",
         "jtlshop/shop4-systemcheck": "^1.0",
-        "smarty/smarty": "~3.1@dev"
+        "smarty/smarty": "~3.1@dev",
+        "jdorn/sql-formatter": "^1.2",
+        "andyftw/ssllabs-php": "^1.2",
+        "phpmyadmin/sql-parser": "^3.4"
+    },
+    "require_dev": {
+        "phpunit/php-token-stream": "~1.2",
+        "nikic/php-parser": "^2.1",
+        "Symfony/Finder": "^2.8"
     },
     "repositories": [
         {
             "type": "package",
             "package": {
                 "name": "jtlshop/shop4-systemcheck",
-                "version": "1.0.7",
+                "version": "1.0.8",
                 "source": {
                     "url": "https://gitlab.jtl-software.de/jtlshop/shop4-systemcheck.git",
                     "type": "git",
-                    "reference": "1.0.7"
+                    "reference": "1.0.8"
                 }
             }
         }

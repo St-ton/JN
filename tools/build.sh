@@ -27,7 +27,7 @@ build_check()
 
     pathadd ${SCRIPT_DIR}/bin
 
-    for cmd in "composer" "php-cs-fixer" "phpcs" "phpcbf" "zip"; do
+    for cmd in "composer" "php-cs-fixer" "phpcs" "zip"; do
         if hash "$cmd" 2>/dev/null;
         then
             printf "${fgGreen}  Y  ${C}"
@@ -57,6 +57,8 @@ build_deps()
     # phpcbf
     wget https://squizlabs.github.io/PHP_CodeSniffer/phpcbf.phar -O ${SCRIPT_DIR}/bin/phpcbf -q --show-progress || exit 1
     chmod u+x ${SCRIPT_DIR}/bin/phpcbf
+
+    success "... done"
 }
 
 build_fixcs()
@@ -82,7 +84,7 @@ build_init()
     msg "Initializing..."
 
     # composer (composer.json)
-    php ${SCRIPT_DIR}/bin/composer install --working-dir=${PROJECT_DIR}/includes || exit 1
+    composer install --working-dir=${PROJECT_DIR}/includes || exit 1
 }
 
 # $1 archive filepath

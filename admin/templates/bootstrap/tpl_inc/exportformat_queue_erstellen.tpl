@@ -50,7 +50,10 @@
                     </tr>
                 </table>
                 <div class="panel-footer">
-                    <button name="speichern" type="submit" value="{#exportformatAdd#}" class="btn btn-primary">{if isset($oCron->kCron) && $oCron->kCron > 0}{#save#}{else}{#exportformatAdd#}{/if}</button>
+                    <div class="btn-group">
+                        <button name="action[erstellen_eintragen]" type="submit" value="1" class="btn btn-primary"><i class="fa fa-save"></i> {if isset($oCron->kCron) && $oCron->kCron > 0}{#save#}{else}{#exportformatAdd#}{/if}</button>
+                        <a class="btn btn-danger" href="exportformat_queue.php"><i class="fa fa-exclamation"></i> Abbrechen</a>
+                    </div>
                 </div>
             </div>
         {else}

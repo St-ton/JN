@@ -94,7 +94,16 @@ function permission($cRecht)
     global $smarty;
 
     if (isset($_SESSION['AdminAccount'])) {
-        $bOkay = (in_array($cRecht, $_SESSION['AdminAccount']->oGroup->oPermission_arr) || $_SESSION['AdminAccount']->oGroup->kAdminlogingruppe == 1);
+        if ($_SESSION['AdminAccount']->oGroup->kAdminlogingruppe == 1) {
+            $bOkay = true;
+        }
+        else {
+            $orExpressions = explode('|', $cRecht);
+            foreach ($orExpressions as $flag) {
+                $bOkay = in_array($flag, $_SESSION['AdminAccount']->oGroup->oPermission_arr);
+                if ($bOkay) break;
+            }
+        }
     }
 
     if (!$bOkay) {

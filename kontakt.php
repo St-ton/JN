@@ -56,7 +56,7 @@ if (pruefeBetreffVorhanden()) {
     $Contents = Shop::DB()->query("
         SELECT *
             FROM tspezialcontentsprache
-            WHERE nSpezialContent = '" . SC_KONTAKTFORMULAR . "'
+            WHERE nSpezialContent = " . (int) SC_KONTAKTFORMULAR . "
             AND cISOSprache = '" . $lang . "'", 2
     );
     $SpezialContent = new stdClass();
@@ -66,7 +66,7 @@ if (pruefeBetreffVorhanden()) {
     $betreffs = Shop::DB()->query(
         "SELECT *
             FROM tkontaktbetreff
-            WHERE (cKundengruppen=0
+            WHERE (cKundengruppen = 0
             OR cKundengruppen LIKE '" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";') ORDER BY nSort", 2
     );
     $bCount = count($betreffs);

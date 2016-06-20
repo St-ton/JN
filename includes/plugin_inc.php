@@ -12,6 +12,10 @@ require_once PFAD_ROOT . PFAD_CLASSES . 'interface.JTL-Shop.PluginLizenz.php';
 function executeHook($nHook, $args_arr = array())
 {
     global $smarty;
+    
+    $dispatcher = EventDispatcher::getInstance();
+    $dispatcher->fire("shop.hook.{$nHook}", array_merge((array)$nHook, $args_arr));
+    
     $hookList = Plugin::getHookList();
     if (!empty($hookList[$nHook]) && is_array($hookList[$nHook])) {
         foreach ($hookList[$nHook] as $oPluginTmp) {

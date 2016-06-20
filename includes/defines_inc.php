@@ -5,7 +5,7 @@
  */
 
 // Version
-define('JTL_VERSION', 404);
+define('JTL_VERSION', 405);
 define('JTL_MIN_WAWI_VERSION', 99713);
 define('JTL_MINOR_VERSION', '#JTL_MINOR_VERSION#');
 define('JTL_BUILD_TIMESTAMP', '#JTL_BUILD_TIMESTAMP#');
@@ -273,6 +273,7 @@ define('PLUGIN_LICENCE_METHODE', 'checkLicence');
 define('PLUGIN_LICENCE_CLASS', 'PluginLicence');
 define('PLUGIN_EXPORTFORMAT_CONTENTFILE', 'PluginContentFile_');
 define('PLUGIN_SEITENHANDLER', 'seite_plugin.php');
+define('PLUGIN_BOOTSTRAPPER', 'bootstrap.php');
 // Red. Param
 define('R_MINDESTMENGE', 1);
 define('R_LAGER', 2);

@@ -2695,3 +2695,76 @@ h2 .btn-group {
 .widget-content .alert {
     margin-bottom: 0;
 }
+
+.form-group label {
+  margin: 0 5px;
+  vertical-align: middle;
+}
+
+.pagination-static {
+  position: fixed;
+  bottom: -5px;
+}
+
+.pagination-static .pagination {
+  margin: 0;
+}
+
+.query {
+  margin: 10px 0;
+}
+
+.input-xs {
+  padding: 1px 5px;
+  font-size: 12px;
+  line-height: 1;
+  border-radius: 0;
+}
+
+#filter form {
+  margin: 0;
+}
+
+#filter fieldset {
+  display: inline-block;
+  border: 1px solid #ccc;
+  vertical-align: top;
+}
+
+#filter fieldset+fieldset {
+  margin-left: 10px;
+}
+
+#filter legend {
+  font-size: 14px;
+  margin: 0 10px -6px 10px;
+  width: auto;
+  padding: 0;
+  border: 0;
+}
+
+#filter fieldset .form-control {
+  width: auto;
+  display: inline-block;
+}
+
+#filter .fieldset-body {
+  padding: 10px;
+}
+
+#filter .fieldset-body .fieldset-row > * {
+  vertical-align: middle;
+}
+
+#filter .fieldset-body .fieldset-row > a {
+  margin-left: 5px;
+}
+
+#filter .fieldset-body .fieldset-row+.fieldset-row {
+  padding: 10px 0 0 0;
+}
+
+#filter .input-xs,
+#filter .btn-xs {
+  height: 23px;
+}

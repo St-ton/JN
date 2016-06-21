@@ -343,6 +343,18 @@ CREATE TABLE `tartikelpict` (
 /*!40000 ALTER TABLE `tartikelpict` ENABLE KEYS */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tartikelpicthistory` (
+  `kArtikel` int(10) unsigned NOT NULL,
+  `cPfad` varchar(255) NOT NULL,
+  `nNr` tinyint(3) unsigned NOT NULL DEFAULT '1',
+  UNIQUE KEY `UNIQUE` (`kArtikel`,`nNr`,`cPfad`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+/*!40000 ALTER TABLE `tartikelpicthistory` DISABLE KEYS */;
+/*!40000 ALTER TABLE `tartikelpicthistory` ENABLE KEYS */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `tartikelsichtbarkeit` (
   `kArtikel` int(10) unsigned NOT NULL DEFAULT '0',
   `kKundengruppe` tinyint(3) unsigned NOT NULL DEFAULT '0',
@@ -1536,7 +1548,7 @@ CREATE TABLE `tglobals` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40000 ALTER TABLE `tglobals` DISABLE KEYS */;
-INSERT INTO `tglobals` VALUES ('2016-04-27 12:52:49');
+INSERT INTO `tglobals` VALUES ('2016-06-21 10:31:59');
 /*!40000 ALTER TABLE `tglobals` ENABLE KEYS */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
@@ -2618,7 +2630,7 @@ CREATE TABLE `tmigration` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40000 ALTER TABLE `tmigration` DISABLE KEYS */;
-INSERT INTO `tmigration` VALUES (20160205105322,402,'2016-05-04 16:35:11'),(20160209145631,402,'2016-05-04 16:35:11'),(20160217115435,402,'2016-05-04 16:35:11'),(20160222135131,402,'2016-05-04 16:35:11'),(20160229111811,402,'2016-05-04 16:35:11'),(20160303095445,402,'2016-05-04 16:35:11'),(20160303095736,402,'2016-05-04 16:35:11'),(20160311144122,402,'2016-05-04 16:35:11'),(20160318101947,402,'2016-05-04 16:35:11'),(20160322163610,402,'2016-05-04 16:35:11'),(20160406092155,402,'2016-05-04 16:35:11'),(20160406093712,402,'2016-05-04 16:35:11'),(20160407111423,402,'2016-05-04 16:35:11'),(20160407125733,402,'2016-05-04 16:35:11'),(20160411093113,402,'2016-05-04 16:35:11'),(20160411171610,402,'2016-05-04 16:35:11'),(20160412094100,402,'2016-05-04 16:35:11'),(20160412095929,402,'2016-05-04 16:35:11'),(20160415120218,402,'2016-05-04 16:35:11'),(20160419114335,402,'2016-05-04 16:35:11'),(20160425091420,402,'2016-05-04 16:35:11'),(20160425155133,402,'2016-05-04 16:35:11'),(20160428162706,402,'2016-05-04 16:35:11');
+INSERT INTO `tmigration` VALUES (20160205105322,402,'2016-06-21 10:32:45'),(20160209145631,402,'2016-06-21 10:32:45'),(20160217115435,402,'2016-06-21 10:32:45'),(20160222135131,402,'2016-06-21 10:32:45'),(20160229111811,402,'2016-06-21 10:32:45'),(20160303095445,402,'2016-06-21 10:32:45'),(20160303095736,402,'2016-06-21 10:32:45'),(20160311144122,402,'2016-06-21 10:32:45'),(20160318101947,402,'2016-06-21 10:32:45'),(20160322163610,402,'2016-06-21 10:32:45'),(20160406092155,402,'2016-06-21 10:32:45'),(20160406093712,402,'2016-06-21 10:32:45'),(20160407111423,402,'2016-06-21 10:32:45'),(20160407125733,402,'2016-06-21 10:32:45'),(20160411093113,402,'2016-06-21 10:32:45'),(20160411171610,402,'2016-06-21 10:32:45'),(20160412094100,402,'2016-06-21 10:32:45'),(20160412095929,402,'2016-06-21 10:32:45'),(20160415120218,402,'2016-06-21 10:32:45'),(20160419114335,402,'2016-06-21 10:32:45'),(20160425091420,402,'2016-06-21 10:32:45'),(20160425155133,402,'2016-06-21 10:32:45'),(20160428162706,402,'2016-06-21 10:32:45'),(20160607140140,403,'2016-06-21 10:32:45');
 /*!40000 ALTER TABLE `tmigration` ENABLE KEYS */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
@@ -4118,7 +4130,7 @@ CREATE TABLE `ttemplate` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40000 ALTER TABLE `ttemplate` DISABLE KEYS */;
-INSERT INTO `ttemplate` VALUES ('Evo','standard',NULL,'Evo','JTL-Software-GmbH','https://www.jtl-software.de',4.03,403,'themes/base/images/preview.png'),('bootstrap','admin',NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+INSERT INTO `ttemplate` VALUES ('Evo','standard',NULL,'Evo','JTL-Software-GmbH','https://www.jtl-software.de',4.04,404,'themes/base/images/preview.png'),('bootstrap','admin',NULL,NULL,NULL,NULL,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `ttemplate` ENABLE KEYS */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
@@ -4653,14 +4665,14 @@ CREATE TABLE `tversion` (
   `nZeileBis` int(10) unsigned NOT NULL,
   `nInArbeit` tinyint(4) NOT NULL,
   `nFehler` tinyint(3) unsigned NOT NULL,
-  `nTyp` tinyint(3) unsigned NOT NULL,
+  `nTyp` int(4) unsigned NOT NULL,
   `cFehlerSQL` varchar(255) NOT NULL,
   `dAktualisiert` datetime DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40000 ALTER TABLE `tversion` DISABLE KEYS */;
-INSERT INTO `tversion` VALUES (403,1,0,0,0,1,'','2016-03-31 16:25:16');
+INSERT INTO `tversion` VALUES (404,1,0,0,0,1,'','2016-06-21 10:10:29');
 /*!40000 ALTER TABLE `tversion` ENABLE KEYS */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;

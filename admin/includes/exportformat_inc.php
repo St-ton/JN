@@ -441,7 +441,7 @@ function verarbeiteYategoExport(&$Artikel, $exportformat, $ExportEinstellungen, 
                                 );
                                 $fLagerbestand = -1;
                                 $nAktiv        = 1;
-                                if ($oVariationsKind->cLagerBeachten === 'Y') {
+                                if ($oVariationsKind->cLagerBeachten === 'Y' && $oVariationsKind->cLagerKleinerNull === 'N') {
                                     $fLagerbestand = $oVariationsKind->fLagerbestand;
                                     if ($oVariationsKind->fLagerbestand <= 0) {
                                         $nAktiv = 0;
@@ -562,7 +562,7 @@ function verarbeiteYategoExport(&$Artikel, $exportformat, $ExportEinstellungen, 
             $fVPEWert      = (isset($Artikel->fVPEWert) && $Artikel->fVPEWert > 0) ? $Artikel->fVPEWert : 1;
             $fLagerbestand = -1;
             $nAktiv        = 1;
-            if ($Artikel->cLagerBeachten === 'Y') {
+            if ($Artikel->cLagerBeachten === 'Y' && $Artikel->cLagerKleinerNull === 'N') {
                 $fLagerbestand = $oWert->fLagerbestand;
                 if ($Artikel->fLagerbestand <= 0) {
                     $nAktiv = 0;

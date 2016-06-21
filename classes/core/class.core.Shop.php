@@ -206,6 +206,11 @@ final class Shop
     /**
      * @var bool
      */
+    public static $bHerstellerFilterNotFound;
+
+    /**
+     * @var bool
+     */
     public static $isSeoMainword;
 
     /**
@@ -496,7 +501,7 @@ final class Shop
     {
         return EventDispatcher::getInstance();
     }
-    
+
     public static function fire($eventName, array $arguments = [])
     {
         return self::Event()->fire($eventName, $arguments);
@@ -726,9 +731,10 @@ final class Shop
         if (isset($_SERVER['HTTP_X_REWRITE_URL'])) {
             $uri = $_SERVER['HTTP_X_REWRITE_URL'];
         }
-        self::$uri                 = $uri;
-        self::$bSEOMerkmalNotFound = false;
-        self::$bKatFilterNotFound  = false;
+        self::$uri                       = $uri;
+        self::$bSEOMerkmalNotFound       = false;
+        self::$bKatFilterNotFound        = false;
+        self::$bHerstellerFilterNotFound = false;
 
         if (strpos($uri, 'index.php') === false) {
             executeHook(HOOK_SEOCHECK_ANFANG, array('uri' => &$uri));
@@ -804,7 +810,9 @@ final class Shop
                     );
 
                     if (isset($oSeo->kKey) && strcasecmp($oSeo->cSeo, $hstseo) === 0) {
-                        self::$kHerstellerFilter = $oSeo->kKey;
+                        self::$kHerstellerFilter         = $oSeo->kKey;
+                    } else {
+                        self::$bHerstellerFilterNotFound = true;
                     }
                 }
                 //attribute filter
@@ -947,6 +955,7 @@ final class Shop
             self::$fileName = 'artikel.php';
         } elseif ((!isset(self::$bSEOMerkmalNotFound) || self::$bSEOMerkmalNotFound === false) &&
             (!isset(self::$bKatFilterNotFound) || self::$bKatFilterNotFound === false) &&
+            (!isset(self::$bHerstellerFilterNotFound) || self::$bHerstellerFilterNotFound === false) &&
             ((self::$isSeoMainword || self::$NaviFilter->nAnzahlFilter == 0) || !self::$bSeo) &&
             (self::$kHersteller > 0 || self::$kSuchanfrage > 0 || self::$kMerkmalWert > 0 || self::$kTag > 0 || self::$kKategorie > 0 ||
                 (isset(self::$cPreisspannenFilter) && self::$cPreisspannenFilter > 0) ||

@@ -27,8 +27,8 @@
 * Bugfix: Aufgabenplaner: Bei Klick auf "Zuletzt fertiggestellt" verschwinden Buttons (#98)
 * Bugfix: Mailversand erfolgt immer in zum Registrierungszeitpunkt eingestellter Sprache (#63)
 * Bugfix: "<tab>" wird aus Exportformaten gelöscht, wenn beim Speichern Angaben fehlen (#136)
-* Verbesserung: Links können nun dupliziert werden und in mehreren Linkgruppen gleichzeitig vorhande sein (#159)
-* Bugfix: Koupon::generateCode() erzeugt Endlosrekursion
+* Verbesserung: Links können nun dupliziert werden und in mehreren Linkgruppen gleichzeitig vorhanden sein (#159)
+* Bugfix: Kupon::generateCode() erzeugt Endlosrekursion
 * Verbesserung: HOOK_INDEX_SEO_404 wird nun auch ausgeführt, wenn cSeo nicht leer ist 
 
 ## [4.04]

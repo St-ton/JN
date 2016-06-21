@@ -26,8 +26,8 @@
     {rdelim});
     </script>
 
-    <div id="content" class="nomargin clearall">
-        <div class='column_wrapper clear'>
+    <div id="content" class="nomargin">
+        <div class="row">
             {include file='tpl_inc/widget_container.tpl' eContainer='left'}
             {include file='tpl_inc/widget_container.tpl' eContainer='center'}
             {include file='tpl_inc/widget_container.tpl' eContainer='right'}

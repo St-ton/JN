@@ -37,7 +37,7 @@ $(document).ready(function() {
                             <span class="input-group-addon">
                             <label for="cName">Vor- und Nachname</label></span>
                             <input id="cName" class="form-control" type="text" name="cName" value="{if isset($oAccount->cName)}{$oAccount->cName}{/if}" />
-                            {if isset($cError_arr.cName)}<span class="input-group-addon error">Bitte ausf&uuml;llen</span>{/if}
+                            {if isset($cError_arr.cName)}<span class="input-group-addon error" title="Bitte ausf&uuml;llen"><i class="fa fa-exclamation-triangle"></i></span>{/if}
                         </div>
                     </div>
                     <div class="item">
@@ -46,7 +46,7 @@ $(document).ready(function() {
                                 <label for="cMail">E-Mail Adresse</label>
                             </span>
                             <input id="cMail" class="form-control" type="text" name="cMail" value="{if isset($oAccount->cMail)}{$oAccount->cMail}{/if}" />
-                            {if isset($cError_arr.cMail)}<span class="input-group-addon error">Bitte ausf&uuml;llen</span>{/if}
+                            {if isset($cError_arr.cMail)}<span class="input-group-addon error" title="Bitte ausf&uuml;llen"><i class="fa fa-exclamation-triangle"></i></span>{/if}
                         </div>
                     </div>
                 </div>
@@ -64,9 +64,10 @@ $(document).ready(function() {
                             </span>
                             <input id="cLogin" class="form-control" type="text" name="cLogin" value="{if isset($oAccount->cLogin)}{$oAccount->cLogin}{/if}" />
                             {if isset($cError_arr.cLogin) && $cError_arr.cLogin == 1}
-                                <span class="input-group-addon error">Bitte ausf&uuml;llen</span>
+                                <span class="input-group-addon error" title="Bitte ausf&uuml;llen"><i class="fa fa-exclamation-triangle"></i></span>
                             {elseif isset($cError_arr.cLogin) && $cError_arr.cLogin == 2}
                                 <span class="input-group-addon error">Benutzername <strong>'{$oAccount->cLogin}'</strong> bereits vergeben</span>
+                                <span class="input-group-addon error" title="Benutzername bereits vergeben"><i class="fa fa-exclamation-triangle"></i></span>
                             {/if}
                         </div>
                     </div>
@@ -78,9 +79,9 @@ $(document).ready(function() {
                             </span>
                             <input id="cPass" class="form-control" type="text" name="cPass" autocomplete="off" />
                             <span class="input-group-addon">
-                                <a href="#" onclick="xajax_getRandomPassword();return false;" class="button generate"><i class="fa fa-lock"></i> Passwort generieren</a>
+                                <a href="#" onclick="xajax_getRandomPassword();return false;" class="button generate" title="">Passwort generieren</a>
                             </span>
-                            {if isset($cError_arr.cPass)}<span class="input-group-addon error">Bitte ausf&uuml;llen</span>{/if}
+                            {if isset($cError_arr.cPass)}<span class="input-group-addon error" title="Bitte ausf&uuml;llen"><i class="fa fa-exclamation-triangle"></i></span>{else}<span class="input-group-addon"><i class="fa fa-wrench"></i></span>{/if}
                         </div>
                     </div>
 
@@ -104,7 +105,7 @@ $(document).ready(function() {
                                     <label for="dGueltigBis">... bis einschlie&szlig;lich</label>
                                 </span>
                                 <input class="form-control" type="text" name="dGueltigBis" value="{if $oAccount->dGueltigBis}{$oAccount->dGueltigBis|date_format:"%d.%m.%Y %H:%M:%S"}{/if}" id="dGueltigBis" />
-                                {if !empty($cError_arr.dGueltigBis)}<span class="input-group-addon error">Bitte ausf&uuml;llen</span>{/if}
+                                {if !empty($cError_arr.dGueltigBis)}<span class="input-group-addon error" title="Bitte ausf&uuml;llen"><i class="fa fa-exclamation-triangle"></i></span>{/if}
                             </div>
                         </div>
                     {/if}
@@ -136,13 +137,23 @@ $(document).ready(function() {
             {else}
                 <input type="hidden" name="kAdminlogingruppe" value="1" />
             {/if}
-        <div class="save_wrapper">
-            <input type="hidden" name="action" value="account_edit" />
-            {if isset($oAccount) && $oAccount->kAdminlogin > 0}
-                <input type="hidden" name="kAdminlogin" value="{$oAccount->kAdminlogin}" />
+
+            {if !empty($extContent)}
+                {$extContent}
             {/if}
-            <input type="hidden" name="save" value="1" />
-            <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> {#save#}</button>
+            <input type="hidden" name="extAttribs[test1]" value="Hallo">
+            <input type="hidden" name="extAttribs[test2]" value="Hallöle übsrtrag <script>alert('test');</script>">
+        </div>
+        <div class="panel-footer">
+            <div class="btn-group">
+                <input type="hidden" name="action" value="account_edit" />
+                {if isset($oAccount) && $oAccount->kAdminlogin > 0}
+                    <input type="hidden" name="kAdminlogin" value="{$oAccount->kAdminlogin}" />
+                {/if}
+                <input type="hidden" name="save" value="1" />
+                <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> {#save#}</button>
+                <a class="btn btn-danger" href="benutzerverwaltung.php"><i class="fa fa-exclamation"></i> Abbrechen</a>
+            </div>
         </div>
     </form>
 </div>

@@ -122,7 +122,7 @@
                 <div class="row">
                     <div class="col-xs-12">
                         <div class="input-group">
-                            <input type="text" name="wishlist-url" disabled="disabled" value="{$ShopURL}/index.php?wlid={$CWunschliste->cURLID}" class="form-control">
+                            <input type="text" name="wishlist-url" readonly="readonly" value="{$ShopURL}/index.php?wlid={$CWunschliste->cURLID}" class="form-control">
                             <span class="input-group-btn">
                                 {if $Einstellungen.global.global_wunschliste_freunde_aktiv === 'Y'}
                                    <button type="submit" name="wlvm" value="1" class="btn btn-default" title="{lang key="wishlistViaEmail" section="login"}">

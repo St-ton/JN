@@ -3113,18 +3113,13 @@ function checkeWunschlisteParameter()
 
     if (strlen($cURLID) > 0) {
         // Kampagne
-        $cKampagneSQL = "cURLID='" . $cURLID . "'";
         $oKampagne    = new Kampagne(KAMPAGNE_INTERN_OEFFENTL_WUNSCHZETTEL);
-        if (isset($oKampagne->kKampagne) && $oKampagne->kKampagne > 0) {
-            $cKampagneSQL = "cURLID = '" . $cURLID . "&" . $oKampagne->cParameter . "=" . $oKampagne->cWert . "'";
-        }
-
-        $oWunschliste = Shop::DB()->query(
-            "SELECT kWunschliste
-                FROM twunschliste
-                WHERE " . $cKampagneSQL . "
-                    AND nOeffentlich = 1", 1
-        );
+        $id           = (isset($oKampagne->kKampagne) && $oKampagne->kKampagne > 0) ?
+            ($cURLID . '&' . $oKampagne->cParameter . '=' . $oKampagne->cWert) :
+            $cURLID;
+        $keys         = array('nOeffentlich', 'cURLID');
+        $values       = array(1, $id);
+        $oWunschliste = Shop::DB()->select('twunschliste', $keys, $values);
 
         if (isset($oWunschliste->kWunschliste) && $oWunschliste->kWunschliste > 0) {
             return $oWunschliste->kWunschliste;
@@ -4763,15 +4758,12 @@ function pruefeKampagnenParameter()
                 ) {
                     $referrer = gibReferer();
                     //wurde der HIT für diesen Besucher schon gezaehlt?
-                    $oVorgang = Shop::DB()->query(
-                        "SELECT kKampagneVorgang
-                            FROM tkampagnevorgang
-                            WHERE kKampagneDef = " . KAMPAGNE_DEF_HIT . "
-                                AND kKampagne = " . (int) $oKampagne->kKampagne . "
-                                AND kKey = " . (int) $_SESSION['oBesucher']->kBesucher . "
-                                AND cCustomData = '" . (StringHandler::filterXSS(Shop::DB()->escape($_SERVER['REQUEST_URI'])) . ';' . $referrer) . "'
-                            LIMIT 1", 1
-                    ); //#3622 - added cCustomData to where clause
+                    $oVorgang = Shop::DB()->select(
+                        'tkampagnevorgang',
+                        array('kKampagneDef', 'kKampagne', 'kKey', 'cCustomData'),
+                        array(KAMPAGNE_DEF_HIT, (int) $oKampagne->kKampagne, (int) $_SESSION['oBesucher']->kBesucher), (StringHandler::filterXSS(Shop::DB()->escape($_SERVER['REQUEST_URI'])) . ';' . $referrer)
+                    );
+
                     if (!isset($oVorgang->kKampagneVorgang)) {
                         $oKampagnenVorgang               = new stdClass();
                         $oKampagnenVorgang->kKampagne    = $oKampagne->kKampagne;
@@ -4798,13 +4790,10 @@ function pruefeKampagnenParameter()
             if (!$bKampagnenHit) { // Kein Kampagnentreffer
                 // Besucher kommt von Google und hat vorher keine Kampagne getroffen?
                 if (isset($_SERVER['HTTP_REFERER']) && strpos($_SERVER['HTTP_REFERER'], '.google.') !== false) {
-                    $oVorgang = Shop::DB()->query(
-                        "SELECT tkampagnevorgang.kKampagneVorgang
-                            FROM tkampagnevorgang
-                            WHERE tkampagnevorgang.kKampagneDef = " . KAMPAGNE_DEF_HIT . "
-                                AND tkampagnevorgang.kKampagne = " . KAMPAGNE_INTERN_GOOGLE . "
-                                AND tkampagnevorgang.kKey = " . (int) $_SESSION['oBesucher']->kBesucher . "
-                            LIMIT 1", 1
+                    $oVorgang = Shop::DB()->select(
+                        'tkampagnevorgang',
+                        array('kKampagneDef', 'kKampagne', 'kKey'),
+                        array(KAMPAGNE_DEF_HIT, KAMPAGNE_INTERN_GOOGLE, (int) $_SESSION['oBesucher']->kBesucher)
                     );
 
                     if (!isset($oVorgang->kKampagneVorgang)) {

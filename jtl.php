@@ -312,7 +312,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
         $kWunschliste = verifyGPCDataInteger('wl');
         if ($kWunschliste) {
             // Prüfe ob die Wunschliste dem eingeloggten Kunden gehört
-            $oWunschliste = Shop::DB()->select('twunschliste', 'kWunschliste', (int)$kWunschliste);
+            $oWunschliste = Shop::DB()->select('twunschliste', 'kWunschliste', $kWunschliste);
             if (!empty($oWunschliste->kKunde) && $oWunschliste->kKunde == $_SESSION['Kunde']->kKunde) {
                 $step = 'wunschliste anzeigen';
                 $cHinweis .= wunschlisteAktualisieren($kWunschliste);
@@ -337,7 +337,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
         $step         = (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) ? 'mein Konto' : 'login';
         // Pruefen, ob der MD5 vorhanden ist
         if (intval($kWunschliste) > 0) {
-            $oWunschliste = Shop::DB()->select('twunschliste', 'kWunschliste', (int)$kWunschliste, 'kKunde', (int)$_SESSION['Kunde']->kKunde, null, null, false, 'kWunschliste, cURLID');
+            $oWunschliste = Shop::DB()->select('twunschliste', 'kWunschliste', $kWunschliste, 'kKunde', (int)$_SESSION['Kunde']->kKunde, null, null, false, 'kWunschliste, cURLID');
             if (isset($oWunschliste->kWunschliste) && $oWunschliste->kWunschliste > 0 && strlen($oWunschliste->cURLID) > 0) {
                 $step = 'wunschliste anzeigen';
                 // Soll die Wunschliste nun an die Emailempfaenger geschickt werden?
@@ -405,8 +405,11 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
                     $nOeffentlich = verifyGPCDataInteger('nstd');
                     // Wurde nstd auf 1 oder 0 gesetzt?
                     if ($nOeffentlich === 0) {
+                        $upd               = new stdClass();
+                        $upd->nOeffentlich = 0;
+                        $upd->cURLID       = '';
                         // nOeffentlich der Wunschliste updaten zu Privat
-                        Shop::DB()->query("UPDATE twunschliste SET nOeffentlich = 0, cURLID = '' WHERE kWunschliste = " . intval($kWunschliste), 3);
+                        Shop::DB()->update('twunschliste', 'kWunschliste', $kWunschliste, $upd);
                         $cHinweis .= Shop::Lang()->get('wishlistSetPrivate', 'messages');
                     } elseif ($nOeffentlich === 1) {
                         $cURLID = gibUID(32, substr(md5($kWunschliste), 0, 16) . time());
@@ -416,11 +419,10 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
                             $cURLID .= '&' . $oKampagne->cParameter . '=' . $oKampagne->cWert;
                         }
                         // nOeffentlich der Wunschliste updaten zu öffentlich
-                        Shop::DB()->query(
-                            "UPDATE twunschliste
-                                SET nOeffentlich = 1, cURLID = '" . $cURLID . "'
-                                WHERE kWunschliste = " . intval($kWunschliste), 3
-                        );
+                        $upd               = new stdClass();
+                        $upd->nOeffentlich = 1;
+                        $upd->cURLID       = $cURLID;
+                        Shop::DB()->update('twunschliste', 'kWunschliste', $kWunschliste, $upd);
                         $cHinweis .= Shop::Lang()->get('wishlistSetPublic', 'messages');
                     }
                 }
@@ -619,22 +621,22 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
                 Shop::DB()->delete('tlieferadresse', 'kKunde', (int)$_SESSION['Kunde']->kKunde);
                 Shop::DB()->query(
                     "DELETE twarenkorb, twarenkorbpos, twarenkorbposeigenschaft, twarenkorbpers, twarenkorbperspos, twarenkorbpersposeigenschaft
-                    FROM twarenkorb
-                    LEFT JOIN twarenkorbpos ON twarenkorbpos.kWarenkorb = twarenkorb.kWarenkorb
-                    LEFT JOIN twarenkorbposeigenschaft ON twarenkorbposeigenschaft.kWarenkorbPos = twarenkorbpos.kWarenkorbPos
-                    LEFT JOIN twarenkorbpers ON twarenkorbpers.kKunde = " . (int)$_SESSION['Kunde']->kKunde . "
-                    LEFT JOIN twarenkorbperspos ON twarenkorbperspos.kWarenkorbPers = twarenkorbpers.kWarenkorbPers
-                    LEFT JOIN twarenkorbpersposeigenschaft ON twarenkorbpersposeigenschaft.kWarenkorbPersPos = twarenkorbperspos.kWarenkorbPersPos
-                    WHERE twarenkorb.kKunde = " . (int)$_SESSION['Kunde']->kKunde, 4
+                        FROM twarenkorb
+                        LEFT JOIN twarenkorbpos ON twarenkorbpos.kWarenkorb = twarenkorb.kWarenkorb
+                        LEFT JOIN twarenkorbposeigenschaft ON twarenkorbposeigenschaft.kWarenkorbPos = twarenkorbpos.kWarenkorbPos
+                        LEFT JOIN twarenkorbpers ON twarenkorbpers.kKunde = " . (int)$_SESSION['Kunde']->kKunde . "
+                        LEFT JOIN twarenkorbperspos ON twarenkorbperspos.kWarenkorbPers = twarenkorbpers.kWarenkorbPers
+                        LEFT JOIN twarenkorbpersposeigenschaft ON twarenkorbpersposeigenschaft.kWarenkorbPersPos = twarenkorbperspos.kWarenkorbPersPos
+                        WHERE twarenkorb.kKunde = " . (int)$_SESSION['Kunde']->kKunde, 4
                 );
                 Shop::DB()->delete('tkundenattribut', 'kKunde', (int)$_SESSION['Kunde']->kKunde);
                 Shop::DB()->query(
                     "DELETE twunschliste, twunschlistepos, twunschlisteposeigenschaft, twunschlisteversand
-                    FROM twunschliste
-                    LEFT JOIN twunschlistepos ON twunschliste.kWunschliste = twunschlistepos.kWunschliste
-                    LEFT JOIN twunschlisteposeigenschaft ON twunschlisteposeigenschaft.kWunschlistePos = twunschlistepos.kWunschlistePos
-                    LEFT JOIN twunschlisteversand ON twunschlisteversand.kWunschliste = twunschliste.kWunschliste
-                    WHERE twunschliste.kKunde = " . (int)$_SESSION['Kunde']->kKunde, 4
+                        FROM twunschliste
+                        LEFT JOIN twunschlistepos ON twunschliste.kWunschliste = twunschlistepos.kWunschliste
+                        LEFT JOIN twunschlisteposeigenschaft ON twunschlisteposeigenschaft.kWunschlistePos = twunschlistepos.kWunschlistePos
+                        LEFT JOIN twunschlisteversand ON twunschlisteversand.kWunschliste = twunschliste.kWunschliste
+                        WHERE twunschliste.kKunde = " . (int)$_SESSION['Kunde']->kKunde, 4
                 );
                 $obj->tkunde = $_SESSION['Kunde'];
                 sendeMail(MAILTEMPLATE_KUNDENACCOUNT_GELOESCHT, $obj);

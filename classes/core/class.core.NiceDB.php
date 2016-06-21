@@ -11,7 +11,7 @@
  * @method int|object|array query(string $stmt, int $return, int|bool $echo = false, bool $bExecuteHook = false)
  * @method int|object|array queryPrepared(string $stmt, array $params, int $return, int|bool $echo = false, bool $bExecuteHook = false)
  * @method PDOStatement|int exQuery(string $stmt)
- * @method null|object select(string $tablename, string $keyname, int $keyvalue, string|null $keyname1 = null, string|int $keyvalue1 = null, string|null $keyname2 = null, string|int $keyvalue2 = null, bool $echo = false, string $select = '*')
+ * @method null|object select(string $tablename, string|array $keyname, string|int|array $keyvalue, string|null $keyname1 = null, string|int $keyvalue1 = null, string|null $keyname2 = null, string|int $keyvalue2 = null, bool $echo = false, string $select = '*')
  * @method int insert(string $tablename, object $object, int|bool $echo = false, bool $bExecuteHook = false)
  * @method int delete(string $tablename, string|array $keyname, string|int|array $keyvalue, bool|int $echo = false)
  * @method int update(string $tablename, string|array $keyname, string|int|array $keyvalue, object $object, int|bool $echo = false)
@@ -597,14 +597,14 @@ class NiceDB
                 $this->writeLog('updateRow: Objekt enthaelt nichts! - Tablename:' . $tablename);
             }
 
-            return 0;
+            return -1;
         }
         if (!$keyname || !$keyvalue) {
             if ($this->logErrors && $this->logfileName) {
                 $this->writeLog('updateRow: Kein keyname oder keyvalue! - Tablename:' . $tablename . ' Keyname: ' . $keyname . ' - Keyvalue: ' . $keyvalue);
             }
 
-            return 0;
+            return -1;
         }
         foreach ($arr as $_key => $_val) {
             if ($_val === '_DBNULL_') {
@@ -625,7 +625,7 @@ class NiceDB
                     $this->writeLog('updateRow: Anzahl an Schluesseln passt nicht zu Anzahl an Werten - Tablename:' . $tablename);
                 }
 
-                return 0;
+                return -1;
             }
             $keynamePrepared = array_map(function ($_v) {
                 return $_v . '=?';
@@ -656,7 +656,7 @@ class NiceDB
                 Shop::dbg(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS), false, 'Backtrace:');
             }
 
-            return 0;
+            return -1;
         }
         if (!$res) {
             if ($this->logErrors && $this->logfileName) {
@@ -703,15 +703,15 @@ class NiceDB
      * selects all (*) values in a single row from a table - gives just one row back!
      *
      * @access public
-     * @param string      $tablename - Tabellenname
-     * @param string      $keyname - Name of Key which should be compared
-     * @param int         $keyvalue - Value of Key which should be compared
-     * @param string|null $keyname1 - Name of Key which should be compared
-     * @param string|int  $keyvalue1 - Value of Key which should be compared
-     * @param string|null $keyname2 - Name of Key which should be compared
-     * @param string|int  $keyvalue2 - Value of Key which should be compared
-     * @param bool        $echo - true -> print statement
-     * @param string      $select - the key to select
+     * @param string           $tablename - Tabellenname
+     * @param string|array     $keyname - Name of Key which should be compared
+     * @param string|int|array $keyvalue - Value of Key which should be compared
+     * @param string|null      $keyname1 - Name of Key which should be compared
+     * @param string|int       $keyvalue1 - Value of Key which should be compared
+     * @param string|null      $keyname2 - Name of Key which should be compared
+     * @param string|int       $keyvalue2 - Value of Key which should be compared
+     * @param bool             $echo - true -> print statement
+     * @param string           $select - the key to select
      * @return null|object - null if fails, resultObejct if successful
      */
     public function selectSingleRow($tablename, $keyname, $keyvalue, $keyname1 = null, $keyvalue1 = null, $keyname2 = null, $keyvalue2 = null, $echo = false, $select = '*')
@@ -719,8 +719,8 @@ class NiceDB
         if ($this->debug === true || $this->collectData === true) {
             $start = microtime(true);
         }
-        $keys    = array($keyname, $keyname1, $keyname2);
-        $values  = array($keyvalue, $keyvalue1, $keyvalue2);
+        $keys    = (is_array($keyname)) ? $keyname : array($keyname, $keyname1, $keyname2);
+        $values  = (is_array($keyvalue)) ? $keyvalue : array($keyvalue, $keyvalue1, $keyvalue2);
         $assigns = array();
         $i       = 0;
         foreach ($keys as &$_key) {
@@ -1013,7 +1013,7 @@ class NiceDB
                     $this->writeLog('deleteRow: Anzahl an Schluesseln passt nicht zu Anzahl an Werten - Tablename:' . $tablename);
                 }
 
-                return 0;
+                return -1;
             }
             $keyname = array_map(function ($_v) {
                 return $_v . '=?';

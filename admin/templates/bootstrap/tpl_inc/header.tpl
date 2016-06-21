@@ -31,6 +31,8 @@
     <script type="text/javascript" src="{$PFAD_CODEMIRROR}mode/smartymixed/smartymixed.js"></script>
     <script type="text/javascript" src="{$PFAD_CODEMIRROR}mode/sql/sql.js"></script>
 
+    <script src="//npmcdn.com/masonry-layout@4.0/dist/masonry.pkgd.min.js"></script>
+
     <script type="text/javascript" src="{$URL_SHOP}/{$PFAD_ADMIN}{$currentTemplateDir}js/codemirror_init.js"></script>
     <script type="text/javascript">
         var bootstrapButton = $.fn.button.noConflict();
@@ -52,11 +54,7 @@
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <form method="post" action="einstellungen.php" role="search">
-                            {$jtl_token}
-                            <input type="hidden" name="einstellungen_suchen" value="1" />
-                            <input placeholder="Suchbegriff" name="cSuche" type="search" value="" autocomplete="off" />
-                        </form>
+                        <input placeholder="Suchbegriff" name="cSuche" type="search" value="" autocomplete="off" />
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     </div>
                     <div class="modal-body">
@@ -64,7 +62,6 @@
                 </div>
             </div>
         </div>
-        <script src="//npmcdn.com/masonry-layout@4.0/dist/masonry.pkgd.min.js"></script>
         <script>
         var $grid = null;
         
@@ -97,7 +94,7 @@
                 }
                 else if(query != lastQuery) {
                     lastQuery = query;
-                    ajaxCallV2('suche.php', { query: query }, function(result, error) {
+                    ajaxCallV2('suche.php', { query: query, suggest: true }, function(result, error) {
                         if (error) {
                             setResult(null);
                         }

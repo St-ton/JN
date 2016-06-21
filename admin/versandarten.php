@@ -255,7 +255,7 @@ if (isset($_POST['neueVersandart']) && intval($_POST['neueVersandart']) > 0 && v
             $versandartzahlungsart               = new stdClass();
             $versandartzahlungsart->kZahlungsart = $kZahlungsart;
             if ($_POST['fAufpreis_' . $kZahlungsart] != 0) {
-                $versandartzahlungsart->fAufpreis    = floatval($_POST['fAufpreis_' . $kZahlungsart]);
+                $versandartzahlungsart->fAufpreis    = (float)str_replace(',', '.', $_POST['fAufpreis_' . $kZahlungsart]);
                 $versandartzahlungsart->cAufpreisTyp = $_POST['cAufpreisTyp_' . $kZahlungsart];
             }
             $VersandartZahlungsarten[] = $versandartzahlungsart;

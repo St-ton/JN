@@ -529,9 +529,9 @@ class Template
         $cSkin = Shop::DB()->query("
             SELECT cWert
                 FROM ttemplateeinstellungen
-                WHERE cName='theme_default'
-                    AND cSektion='theme'
-                    AND cTemplate='" . self::$cTemplate . "'", 1
+                WHERE cName = 'theme_default'
+                    AND cSektion = 'theme'
+                    AND cTemplate = '" . self::$cTemplate . "'", 1
         );
 
         return (isset($cSkin->cWert)) ? $cSkin->cWert : null;
@@ -568,11 +568,13 @@ class Template
         if ($parent !== null) {
             $folder[] = $parent;
         }
-        $oSection_arr = array();
+        $oSection_arr    = array();
+        $ignoredSettings = array(); //list of settings that are overridden by child
         foreach ($folder as $cOrdner) {
             $oXML = self::$helper->getXML($cOrdner);
             if ($oXML && isset($oXML->Settings) && isset($oXML->Settings->Section)) {
                 foreach ($oXML->Settings->Section as $oXMLSection) {
+                    $oSection  = null;
                     $sectionID = (string) $oXMLSection->attributes()->Key;
                     $exists    = false;
                     foreach ($oSection_arr as &$_section) {
@@ -589,20 +591,26 @@ class Template
                         $oSection->oSettings_arr = array();
                     }
                     foreach ($oXMLSection->Setting as $XMLSetting) {
+                        $key                     = (string) $XMLSetting->attributes()->Key;
                         $oSetting                = new stdClass();
                         $oSetting->rawAttributes = array();
+                        $settingExists           = false;
                         $atts                    = $XMLSetting->attributes();
+                        if (in_array($key, $ignoredSettings)) {
+                            continue;
+                        }
                         foreach ($atts as $_k => $_attr) {
                             $oSetting->rawAttributes[$_k] = (string) $_attr;
                         }
+                        if ((string) $XMLSetting->attributes()->override === 'true') {
+                            $ignoredSettings[] = $key;
+                        }
                         $oSetting->cName        = utf8_decode((string) $XMLSetting->attributes()->Description);
-                        $oSetting->cKey         = utf8_decode((string) $XMLSetting->attributes()->Key);
+                        $oSetting->cKey         = utf8_decode($key);
                         $oSetting->cType        = (string) $XMLSetting->attributes()->Type;
                         $oSetting->cValue       = (string) $XMLSetting->attributes()->Value;
                         $oSetting->bEditable    = (string) $XMLSetting->attributes()->Editable;
                         $oSetting->cPlaceholder = (string) $XMLSetting->attributes()->Placeholder;
-
-                        $settingExists = false;
                         foreach ($oSection->oSettings_arr as $_setting) {
                             if ($_setting->cKey === $oSetting->cKey) {
                                 $settingExists = true;

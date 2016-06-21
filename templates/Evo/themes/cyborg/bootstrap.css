@@ -8380,6 +8380,9 @@ label.variation {
 .input-group input[type="text"].form-control {
   min-width: 3em;
 }
+.input-group input[type="text"].form-control[readonly] {
+  cursor: auto;
+}
 .input-group input[type="number"].form-control {
   min-width: 4em;
 }
@@ -10487,11 +10490,6 @@ fieldset[disabled] .twitter-typeahead .tt-input {
   max-width: 44px;
   max-height: 44px;
 }
-@media (max-width: 768px) {
-  .image-gallery.has-thumbs ul.image-thumbs {
-    display: none;
-  }
-}
 @media (min-width: 992px) {
   .image-gallery {
     position: relative;
@@ -11030,11 +11028,6 @@ header.fixed-navbar .visible-affix .cart-dropdown {
 .thumbs-box {
   position: relative;
   margin: auto;
-}
-@media (max-width: 768px) {
-  .thumbs {
-    display: none;
-  }
 }
 @media (min-width: 992px) {
   .thumbs-box {

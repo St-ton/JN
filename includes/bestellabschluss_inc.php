@@ -770,6 +770,10 @@ function KuponVerwendungen()
         Shop::DB()->query('DELETE FROM tkuponkunde WHERE kKunde = ' . (int) $KuponKunde->kKunde . ' AND kKupon = ' . $kKupon, 4);
         Shop::DB()->insert('tkuponkunde', $KuponKunde);
 
+        if (isset($_SESSION['NeukundenKupon']->kKupon) && $_SESSION['NeukundenKupon']->kKupon > 0) {
+            Shop::DB()->query('DELETE FROM tkuponneukunde WHERE kKupon = ' . $kKupon . ' AND cEmail = "' . $_SESSION['Kunde']->cMail . '";', 4);
+        }
+
         if (isset($_SESSION['kBestellung']) && $_SESSION['kBestellung'] > 0) {
             $kBestellung = (int) $_SESSION['kBestellung'];
         } elseif (isset($_SESSION['oBesucher']->kBestellung) && $_SESSION['oBesucher']->kBestellung > 0) {

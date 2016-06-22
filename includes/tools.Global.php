@@ -5561,9 +5561,6 @@ function convertCurrency($price, $iso = null, $id = null, $useRounding = true, $
  */
 function resetNeuKundenKupon()
 {
-    if (isset($_SESSION['NeukundenKupon']->kKupon)) {
-        Shop::DB()->delete('tkuponneukunde', 'kKupon', $_SESSION['NeukundenKupon']->kKupon);
-    }
     unset($_SESSION['NeukundenKupon']);
     unset($_SESSION['NeukundenKuponAngenommen']);
     $_SESSION['Warenkorb']->loescheSpezialPos(C_WARENKORBPOS_TYP_NEUKUNDENKUPON)

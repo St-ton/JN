@@ -829,30 +829,40 @@ function plausiNeukundenKupon()
                         OR tkunde.kKunde = " . (int)$_SESSION['Kunde']->kKunde . "
                     LIMIT 1", 1
             );
-            if ($oBestellung === false || !empty($oBestellung->kBestellung)) {
+            
+            $verwendet = Shop::DB()->query(
+                "SELECT cVerwendet 
+                    FROM tkuponneukunde
+                    WHERE cEmail = '" . StringHandler::filterXSS($_SESSION['Kunde']->cMail) . "'
+                    LIMIT 1", 1
+            );
+            $verwendet = !empty($verwendet) ? $verwendet->cVerwendet : null;
+            if ($oBestellung === false || (!empty($oBestellung->kBestellung) && $verwendet === 'N')) {
                 $NeukundenKupons = Shop::DB()->query("SELECT * FROM tkupon WHERE cKuponTyp = 'neukundenkupon' AND cAktiv = 'Y' ORDER BY fWert DESC", 2);
                 foreach ($NeukundenKupons as $NeukundenKupon) {
-                    if (angabenKorrekt(checkeKupon($NeukundenKupon))) {
+                    if (angabenKorrekt(checkeKupon($NeukundenKupon)) && (empty($verwendet) || $verwendet === 'N')) {
                         kuponAnnehmen($NeukundenKupon);
-                        $hash = Kuponneukunde::Hash(
-                            null,
-                            trim($_SESSION['Kunde']->cNachname),
-                            trim($_SESSION['Kunde']->cStrasse),
-                            null,
-                            trim($_SESSION['Kunde']->cPLZ),
-                            trim($_SESSION['Kunde']->cOrt),
-                            trim($_SESSION['Kunde']->cLand)
-                        );
-                        $Options = array(
-                            'Kupon'     => $NeukundenKupon->kKupon,
-                            'Email'     => $_SESSION['Kunde']->cMail,
-                            'DatenHash' => $hash,
-                            'Erstellt'  => 'now()'
-                        );
-                        $Kuponneukunde = new Kuponneukunde();
-                        $Kuponneukunde->setOptions($Options);
-                        $Kuponneukunde->Save();
-
+                        if (empty($verwendet)) {
+                            $hash = Kuponneukunde::Hash(
+                                null,
+                                trim($_SESSION['Kunde']->cNachname),
+                                trim($_SESSION['Kunde']->cStrasse),
+                                null,
+                                trim($_SESSION['Kunde']->cPLZ),
+                                trim($_SESSION['Kunde']->cOrt),
+                                trim($_SESSION['Kunde']->cLand)
+                            );
+                            $Options = array(
+                                'Kupon'     => $NeukundenKupon->kKupon,
+                                'Email'     => $_SESSION['Kunde']->cMail,
+                                'DatenHash' => $hash,
+                                'Erstellt'  => 'now()',
+                                'Verwendet' => 'N'
+                            );
+                            $Kuponneukunde = new Kuponneukunde();
+                            $Kuponneukunde->setOptions($Options);
+                            $Kuponneukunde->Save();
+                        }
                         break;
                     }
                 }
@@ -881,19 +891,28 @@ function plausiNeukundenKupon()
                      WHERE cKuponTyp = 'neukundenkupon'
                          AND cAktiv = 'Y'", 2
             );
+            $verwendet = Shop::DB()->query(
+                "SELECT cVerwendet 
+                    FROM tkuponneukunde
+                    WHERE cEmail = '" . StringHandler::filterXSS($_SESSION['Kunde']->cMail) . "'
+                    LIMIT 1", 1
+            );
+            $verwendet = !empty($verwendet) ? $verwendet->cVerwendet : null;
             foreach ($NeukundenKupons as $NeukundenKupon) {
-                if (angabenKorrekt(checkeKupon($NeukundenKupon))) {
+                if (angabenKorrekt(checkeKupon($NeukundenKupon)) && (empty($verwendet) || $verwendet === 'N')) {
                     kuponAnnehmen($NeukundenKupon);
-
-                    $Options = array(
-                        'Kupon'     => $NeukundenKupon->kKupon,
-                        'Email'     => $_SESSION['Kunde']->cMail,
-                        'DatenHash' => $hash,
-                        'Erstellt'  => 'now()'
-                    );
-                    $Kuponneukunde = new Kuponneukunde();
-                    $Kuponneukunde->setOptions($Options);
-                    $Kuponneukunde->Save();
+                    if (empty($verwendet)) {
+                        $Options = array(
+                            'Kupon' => $NeukundenKupon->kKupon,
+                            'Email' => $_SESSION['Kunde']->cMail,
+                            'DatenHash' => $hash,
+                            'Erstellt' => 'now()',
+                            'Verwendet' => 'N'
+                        );
+                        $Kuponneukunde = new Kuponneukunde();
+                        $Kuponneukunde->setOptions($Options);
+                        $Kuponneukunde->Save();
+                    }
                     break;
                 }
             }
@@ -2079,7 +2098,7 @@ function checkeKupon($Kupon)
             trim($_SESSION['Kunde']->cLand)
         );
         $Kuponneukunde = Kuponneukunde::Load($_SESSION['Kunde']->cMail, $Hash);
-        if ($Kuponneukunde !== null) {
+        if ($Kuponneukunde !== null && $Kuponneukunde->cVerwendet === 'Y') {
             $ret['ungueltig'] = 11;
         }
     }
@@ -2153,6 +2172,7 @@ function kuponAnnehmen($Kupon)
         $_SESSION['Warenkorb']->loescheSpezialPos(C_WARENKORBPOS_TYP_NEUKUNDENKUPON);
         $_SESSION['NeukundenKupon']           = $Kupon;
         $_SESSION['NeukundenKuponAngenommen'] = true;
+        //@todo: erst loggen wenn wirklich bestellt wird. hier kann noch abgebrochen werden
         if (Jtllog::doLog(JTLLOG_LEVEL_NOTICE)) {
             Jtllog::writeLog('Der Neukundenkupon' . print_r($Kupon, true) . ' wurde genutzt.', JTLLOG_LEVEL_NOTICE, false, 'kKupon', $Kupon->kKupon);
         }

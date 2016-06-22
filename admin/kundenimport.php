@@ -82,6 +82,8 @@ function checkformat($data)
     for ($i = 0; $i < $cnt; $i++) {
         if (in_array($data[$i], $GLOBALS['format'])) {
             $fmt[$i] = $data[$i];
+        } else {
+            $fmt[$i] = '';
         }
     }
 

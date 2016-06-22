@@ -119,12 +119,12 @@ function benutzerverwaltungSaveAttributes(stdClass $oAccount, array $extAttribs,
     if (isset($extAttribs) && is_array($extAttribs)) {
         $handledKeys = array();
         foreach ($extAttribs as $key => $value) {
-            $key   = strtolower(StringHandler::filterXSS($key));
+            $key   = StringHandler::filterXSS($key);
             $value = StringHandler::filterXSS($value);
             if (!Shop::DB()->query(
                 "INSERT INTO tadminloginattribut (kAdminlogin, cName, cAttribValue)
                     VALUES (" . (int)$oAccount->kAdminlogin . ", '" . $key . "', '" . $value . "')
-                ON DUPLICATE KEY UPDATE
+                    ON DUPLICATE KEY UPDATE
                     cAttribValue = '" . $value . "'", 4
             )) {
                 $messages['error'] .= $key . ' konnte nicht geändert werden!';

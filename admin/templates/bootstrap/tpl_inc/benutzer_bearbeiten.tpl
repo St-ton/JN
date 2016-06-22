@@ -141,8 +141,6 @@ $(document).ready(function() {
             {if !empty($extContent)}
                 {$extContent}
             {/if}
-            <input type="hidden" name="extAttribs[test1]" value="Hallo">
-            <input type="hidden" name="extAttribs[test2]" value="Hallöle übsrtrag <script>alert('test');</script>">
         </div>
         <div class="panel-footer">
             <div class="btn-group">

@@ -36,6 +36,7 @@
 * Bugfix: Billpay Zahlungseingang wird nicht gesetzt (#96)
 * Bugfix: Newsletter Abmelden unsichtbar für nicht-angemeldete Besucher (#77)
 * Verbesserung: Alte Bildpfade müssen bei Änderung von /bilder/ auf /media/ via 301 weitergeleitet werden (#189)
+* Bugfix: Kundenimport Fehler bei unbekannten Spalten (#214)
 
 ## [4.03.1] - 2016-05-17
 * Bugfix: Sprachwechsel in einigen Linkgruppen unvollständig

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<jtlshop3plugin>
+	<Name>JTL Backend-User Extension</Name>
+	<Description>Dieses Plugin erweitert Backend Nutzeraccounts um weitere Felder</Description>
+	<Author>JTL-Software-GmbH</Author>
+	<URL>http://www.jtl-software.de</URL>
+	<PluginID>jtl_backenduser_extension</PluginID>
+	<XMLVersion>100</XMLVersion>
+	<Shop4Version>403</Shop4Version>
+	<Install>
+		<Version nr="100">
+			<CreateDate>2016-06-21</CreateDate>
+		</Version>
+		<Hooks>
+			<Hook id="222">222_jtl_backend_account_edit.php</Hook>
+			<Hook id="223">223_jtl_backend_account_prepare_edit.php</Hook>
+		</Hooks>
+		<Adminmenu>
+            <Settingslink sort="1">
+                <Name>Zusätzliche Felder</Name>
+                <Setting type="text" initialValue="" sort="0" conf="N">
+                    <Name>Persönlich</Name>
+                    <ValueName>Spacer</ValueName>
+                    <Description></Description>
+                </Setting>
+                <Setting type="selectbox" initialValue="N" sort="10" conf="Y">
+                    <Name>Benutzerbild verwenden?</Name>
+                    <Description>Stellt eine Auswahl für Benutzerbilder (Upload, Gravatar) zur Verfügung.</Description>
+                    <ValueName>use_avatar</ValueName>
+                    <SelectboxOptions>
+                        <Option value="Y" sort="0">Ja</Option>
+                        <Option value="N" sort="1">Nein</Option>
+                    </SelectboxOptions>
+                </Setting>
+            </Settingslink>
+		</Adminmenu>
+	</Install>
+</jtlshop3plugin>

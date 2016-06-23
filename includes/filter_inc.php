@@ -894,6 +894,9 @@ function gibBewertungSterneFilterOptionen($FilterSQL, $NaviFilter)
  */
 function gibPreisspannenFilterOptionen($FilterSQL, $NaviFilter, $oSuchergebnisse)
 {
+    if (!$_SESSION['Kundengruppe']->darfPreiseSehen) {
+        return array();
+    }
     if (isset(Shop::$kSprache)) {
         $kSprache = (int) Shop::$kSprache;
     } else {

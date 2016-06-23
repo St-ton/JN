@@ -27,8 +27,8 @@
 * Bugfix: Aufgabenplaner: Bei Klick auf "Zuletzt fertiggestellt" verschwinden Buttons (#98)
 * Bugfix: Mailversand erfolgt immer in zum Registrierungszeitpunkt eingestellter Sprache (#63)
 * Bugfix: "<tab>" wird aus Exportformaten gelöscht, wenn beim Speichern Angaben fehlen (#136)
-* Verbesserung: Links können nun dupliziert werden und in mehreren Linkgruppen gleichzeitig vorhande sein (#159)
-* Bugfix: Koupon::generateCode() erzeugt Endlosrekursion
+* Verbesserung: Links können nun dupliziert werden und in mehreren Linkgruppen gleichzeitig vorhanden sein (#159)
+* Bugfix: Kupon::generateCode() erzeugt Endlosrekursion
 * Verbesserung: HOOK_INDEX_SEO_404 wird nun auch ausgeführt, wenn cSeo nicht leer ist 
 
 ## [4.04]
@@ -36,6 +36,7 @@
 * Bugfix: Billpay Zahlungseingang wird nicht gesetzt (#96)
 * Bugfix: Newsletter Abmelden unsichtbar für nicht-angemeldete Besucher (#77)
 * Verbesserung: Alte Bildpfade müssen bei Änderung von /bilder/ auf /media/ via 301 weitergeleitet werden (#189)
+* Bugfix: Kundenimport Fehler bei unbekannten Spalten (#214)
 
 ## [4.03.1] - 2016-05-17
 * Bugfix: Sprachwechsel in einigen Linkgruppen unvollständig

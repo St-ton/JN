@@ -806,7 +806,7 @@ class Plugin
         if (!isset(self::$bootstrapper[$kPlugin])) {
             $plugin = Shop::DB()->select('tplugin', 'kPlugin', $kPlugin);
 
-            if ((bool)$plugin->bBootstrap === false) {
+            if ($plugin === null || (bool)$plugin->bBootstrap === false) {
                 return null;
             }
 

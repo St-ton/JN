@@ -17,7 +17,7 @@
             <tr>
                 <td>&nbsp;</td>
                 {foreach name=vergleich from=$oVergleichsliste->oArtikel_arr item=oArtikel}
-                    <td style="vertical-align:bottom; width:{$Einstellungen_Vergleichsliste.vergleichsliste.vergleichsliste_spaltengroesse}px;" class="text-center">
+                    <td style="width:{$Einstellungen_Vergleichsliste.vergleichsliste.vergleichsliste_spaltengroesse}px;" class="text-center">
                         <div class="thumbnail">
                             <a href="{$oArtikel->cURL}">
                                 {image src=$oArtikel->cVorschaubild alt=$oArtikel->cName class="image"}
@@ -27,15 +27,18 @@
                             <a href="{$oArtikel->cURL}">{$oArtikel->cName}</a>
                         </p>
 
-                        <p>
-                            <strong class="price text-nowrap">{$oArtikel->Preise->cVKLocalized[$NettoPreise]}</strong
-                        {*
-                        {if $oArtikel->cLocalizedVPE}
-                        <br/><small><b>{lang key="basePrice" section="global"}:</b> {$oArtikel->cLocalizedVPE[$NettoPreise]}</small>
+                        {if $oArtikel->Preise->fVKNetto == 0 && $Einstellungen.global.global_preis0 === 'N'}
+                            <p>{lang key="priceOnApplication" section="global"}</p>
+                        {else}
+                            <p>
+                                {if isset($oArtikel->Preise->strPreisGrafik_Detail)}
+                                    {assign var=priceImage value=$oArtikel->Preise->strPreisGrafik_Detail}
+                                {else}
+                                    {assign var=priceImage value=null}
+                                {/if}
+                                {include file="productdetails/price.tpl" Artikel=$oArtikel price_image=$priceImage tplscope="detail"}
+                            </p>
                         {/if}
-                        <br /><span class="vat_info">{include file='snippets/shipping_tax_info.tpl' taxdata=$oArtikel->taxData}</span>
-                        *}
-                        </p>
                         <p>
                             <a href="{$oArtikel->cURLDEL}" class="remove"><span class="fa fa-trash-o"></span></a>
                         </p>

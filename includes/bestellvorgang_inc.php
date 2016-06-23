@@ -1357,7 +1357,7 @@ function gibZahlungsarten($kVersandart, $kKundengruppe)
         if (!zahlungsartGueltig($Zahlungsarten[$i])) {
             continue;
         }
-        $Zahlungsarten[$i]->Specials = gibSpecials($Zahlungsarten[$i]);
+        $Zahlungsarten[$i]->Specials = null;
         //evtl. Versandkupon anwenden / Nur Nachname fällt weg
         if (isset($_SESSION['VersandKupon']->cZusatzgebuehren) && $_SESSION['VersandKupon']->cZusatzgebuehren === 'Y' && $Zahlungsarten[$i]->fAufpreis > 0) {
             if ($Zahlungsarten[$i]->cName === 'Nachnahme') {
@@ -3497,21 +3497,6 @@ function convertDate2German($datum)
 
 /**
  * @param Zahlungsart $Zahlungsart
- * @return null
- */
-function gibSpecials($Zahlungsart)
-{
-    $specials = null;
-    switch ($Zahlungsart->cModulId) {
-        case 'externesModul':
-            break;
-    }
-
-    return $specials;
-}
-
-/**
- * @param Zahlungsart $Zahlungsart
  * @return int|mixed
  * @deprecated since 4.0
  */
@@ -3579,4 +3564,14 @@ function gibFehlendeAngabenZahlungsart($Zahlungsart)
  */
 function setzeSessionZahlungsart($Zahlungsart)
 {
+}
+
+/**
+ * @param Zahlungsart $Zahlungsart
+ * @return null
+ * @deprecated since 4.0.5
+ */
+function gibSpecials($Zahlungsart)
+{
+    return null;
 }

@@ -830,12 +830,7 @@ function plausiNeukundenKupon()
                     LIMIT 1", 1
             );
             
-            $verwendet = Shop::DB()->query(
-                "SELECT cVerwendet 
-                    FROM tkuponneukunde
-                    WHERE cEmail = '" . StringHandler::filterXSS($_SESSION['Kunde']->cMail) . "'
-                    LIMIT 1", 1
-            );
+            $verwendet = Shop::DB()->queryPrepared("SELECT cVerwendet FROM tkuponneukunde WHERE cEmail = :email LIMIT 1", [':email' => StringHandler::filterXSS($_SESSION['Kunde']->cMail)], 1);
             $verwendet = !empty($verwendet) ? $verwendet->cVerwendet : null;
             if ($oBestellung === false || (!empty($oBestellung->kBestellung) && $verwendet === 'N')) {
                 $NeukundenKupons = Shop::DB()->query("SELECT * FROM tkupon WHERE cKuponTyp = 'neukundenkupon' AND cAktiv = 'Y' ORDER BY fWert DESC", 2);
@@ -891,12 +886,7 @@ function plausiNeukundenKupon()
                      WHERE cKuponTyp = 'neukundenkupon'
                          AND cAktiv = 'Y'", 2
             );
-            $verwendet = Shop::DB()->query(
-                "SELECT cVerwendet 
-                    FROM tkuponneukunde
-                    WHERE cEmail = '" . StringHandler::filterXSS($_SESSION['Kunde']->cMail) . "'
-                    LIMIT 1", 1
-            );
+            $verwendet = Shop::DB()->queryPrepared("SELECT cVerwendet FROM tkuponneukunde WHERE cEmail = :email LIMIT 1", ['email' => StringHandler::filterXSS($_SESSION['Kunde']->cMail)], 1);
             $verwendet = !empty($verwendet) ? $verwendet->cVerwendet : null;
             foreach ($NeukundenKupons as $NeukundenKupon) {
                 if (angabenKorrekt(checkeKupon($NeukundenKupon)) && (empty($verwendet) || $verwendet === 'N')) {

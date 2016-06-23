@@ -763,15 +763,15 @@ function KuponVerwendungen()
         $KuponKunde->kKunde        = $_SESSION['Warenkorb']->kKunde;
         $KuponKunde->dErstellt     = 'now()';
         $KuponKunde->nVerwendungen = 1;
-        $KuponKundeBisher          = Shop::DB()->query('SELECT nVerwendungen FROM tkuponkunde WHERE kKupon = ' . $kKupon, 1);
+        $KuponKundeBisher          = Shop::DB()->select('tkuponkunde', 'kKupon', $kKupon, null, null, null, null, false, 'nVerwendungen' );
         if (isset($KuponKundeBisher->nVerwendungen) && $KuponKundeBisher->nVerwendungen > 0) {
             $KuponKunde->nVerwendungen += $KuponKundeBisher->nVerwendungen;
         }
-        Shop::DB()->query('DELETE FROM tkuponkunde WHERE kKunde = ' . (int) $KuponKunde->kKunde . ' AND kKupon = ' . $kKupon, 4);
+        Shop::DB()->delete('tkuponkunde', ['kKunde', 'kKupon'], [(int) $KuponKunde->kKunde, $kKupon]);
         Shop::DB()->insert('tkuponkunde', $KuponKunde);
 
         if (isset($_SESSION['NeukundenKupon']->kKupon) && $_SESSION['NeukundenKupon']->kKupon > 0) {
-            Shop::DB()->query('DELETE FROM tkuponneukunde WHERE kKupon = ' . $kKupon . ' AND cEmail = "' . $_SESSION['Kunde']->cMail . '";', 4);
+            Shop::DB()->delete('tkuponneukunde',['kKupon', 'cEmail'], [$kKupon, $_SESSION['Kunde']->cMail]);
         }
 
         if (isset($_SESSION['kBestellung']) && $_SESSION['kBestellung'] > 0) {

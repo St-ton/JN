@@ -68,7 +68,8 @@ function fuehreLoginAus($userLogin, $passLogin)
  */
 function pruefeBestellungMoeglich()
 {
-    header('Location: warenkorb.php?fillOut=' . $_SESSION['Warenkorb']->istBestellungMoeglich(), true, 303);
+    $linkHelper = LinkHelper::getInstance();
+    header('Location: ' . $linkHelper->getStaticRoute('warenkorb.php', true) . '?fillOut=' . $_SESSION['Warenkorb']->istBestellungMoeglich(), true, 303);
     exit;
 }
 
@@ -118,7 +119,6 @@ function pruefeUnregistriertBestellen($cPost_arr)
     $cKundenattribut_arr = getKundenattribute($cPost_arr);
     $kKundengruppe       = Kundengruppe::getCurrent();
     // CheckBox Plausi
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.CheckBox.php';
     $oCheckBox       = new CheckBox();
     $fehlendeAngaben = array_merge($fehlendeAngaben, $oCheckBox->validateCheckBox(CHECKBOX_ORT_REGISTRIERUNG, $kKundengruppe, $cPost_arr, true));
     $nReturnValue    = angabenKorrekt($fehlendeAngaben);
@@ -222,10 +222,7 @@ function pruefeLieferdaten($cPost_arr)
     setzeSteuersaetze();
     //lieferland hat sich geändert und versandart schon gewählt?
     if (isset($_SESSION['Lieferadresse']) && isset($_SESSION['Versandart']) && $_SESSION['Lieferadresse'] && $_SESSION['Versandart']) {
-        $delVersand = false;
-        if (!stristr($_SESSION['Versandart']->cLaender, $_SESSION['Lieferadresse']->cLand)) {
-            $delVersand = true;
-        }
+        $delVersand = (!stristr($_SESSION['Versandart']->cLaender, $_SESSION['Lieferadresse']->cLand));
         //ist die plz im zuschlagsbereich?
         $plz   = Shop::DB()->escape($_SESSION['Lieferadresse']->cPLZ);
         $plz_x = Shop::DB()->query(
@@ -340,8 +337,9 @@ function pruefeRechnungsadresseStep($cGet_arr)
     if (isset($cGet_arr['editRechnungsadresse']) && $cGet_arr['editRechnungsadresse'] == 1 && $_SESSION['Kunde']) {
         resetNeuKundenKupon();
         if ($_SESSION['Kunde']->kKunde > 0) {
+            $linkHelper = LinkHelper::getInstance();
             //weiterleitung zur Rechnungsänderung eines bestehenden Kunden
-            header('Location: registrieren.php?checkout=1&editRechnungsadresse=1', true, 303);
+            header('Location: ' . $linkHelper->getStaticRoute('registrieren.php', true) . '?checkout=1&editRechnungsadresse=1', true, 303);
             exit;
         } else {
             $Kunde = $_SESSION['Kunde'];
@@ -560,7 +558,8 @@ function validateCouponInCheckout()
             $_SESSION['Warenkorb']->loescheSpezialPos(C_WARENKORBPOS_TYP_KUPON);
             $_SESSION['checkCouponResult'] = $checkCouponResult;
             unset($_SESSION['Kupon']);
-            header('Location: ' . Shop::getURL() . '/warenkorb.php');
+            $linkHelper = LinkHelper::getInstance();
+            header('Location: ' . $linkHelper->getStaticRoute('warenkorb.php', true));
             exit(0);
         }
     }
@@ -2353,7 +2352,7 @@ function getKundenattributeNichtEditierbar()
 }
 
 /**
- * @return non editable customer fields
+ * @return array - non editable customer fields
  */
 function getNonEditableCustomerFields()
 {
@@ -2442,6 +2441,9 @@ function getArtikelQry($PositionenArr)
     return $ret;
 }
 
+/**
+ * @return bool
+ */
 function guthabenMoeglich()
 {
     return ($_SESSION['Kunde']->fGuthaben > 0 && (empty($_SESSION['Bestellung']->GuthabenNutzen) || !$_SESSION['Bestellung']->GuthabenNutzen))
@@ -2910,25 +2912,6 @@ function setzeFehlerSmartyAccountwahl($cFehler)
 
 /**
  * @param array $cPost_arr
- * @param int   $nUnreg
- * @return array
- */
-function plausiRechnungsadresse($cPost_arr, $nUnreg = 0)
-{
-    if ($nUnreg) {
-        $cFehlendeEingaben_arr = checkKundenFormular(0);
-    } else {
-        $cFehlendeEingaben_arr = checkKundenFormular(0, 1);
-    }
-    if (angabenKorrekt($cFehlendeEingaben_arr)) {
-        return $cFehlendeEingaben_arr;
-    }
-
-    return $cFehlendeEingaben_arr;
-}
-
-/**
- * @param array $cPost_arr
  * @param array $cFehlendeEingaben_arr
  * @return bool
  */
@@ -3042,10 +3025,11 @@ function plausiLieferadresse($cPost_arr)
         $cFehlendeAngaben_arr = checkLieferFormular();
         if (angabenKorrekt($cFehlendeAngaben_arr)) {
             return $cFehlendeEingaben_arr;
-        } else {
-            return $cFehlendeAngaben_arr;
         }
-    } elseif (intval($cPost_arr['kLieferadresse']) > 0) {
+
+        return $cFehlendeAngaben_arr;
+    }
+    if (intval($cPost_arr['kLieferadresse']) > 0) {
         //vorhandene lieferadresse
         $oLieferadresse = Shop::DB()->query(
             "SELECT kLieferadresse
@@ -3574,4 +3558,15 @@ function setzeSessionZahlungsart($Zahlungsart)
 function gibSpecials($Zahlungsart)
 {
     return null;
+}
+
+/**
+ * @param array $cPost_arr
+ * @param int   $nUnreg
+ * @return array
+ * @deprecated since 4.05
+ */
+function plausiRechnungsadresse($cPost_arr, $nUnreg = 0)
+{
+    return ($nUnreg) ? checkKundenFormular(0) : checkKundenFormular(0, 1);
 }

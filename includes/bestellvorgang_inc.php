@@ -829,8 +829,7 @@ function plausiNeukundenKupon()
                         OR tkunde.kKunde = " . (int)$_SESSION['Kunde']->kKunde . "
                     LIMIT 1", 1
             );
-            
-            $verwendet = Shop::DB()->queryPrepared("SELECT cVerwendet FROM tkuponneukunde WHERE cEmail = :email LIMIT 1", [':email' => StringHandler::filterXSS($_SESSION['Kunde']->cMail)], 1);
+            $verwendet = Shop::DB()->select('tkuponneukunde', 'cEmail', StringHandler::filterXSS($_SESSION['Kunde']->cMail), null, null, null, null, false, 'cVerwendet');
             $verwendet = !empty($verwendet) ? $verwendet->cVerwendet : null;
             if ($oBestellung === false || (!empty($oBestellung->kBestellung) && $verwendet === 'N')) {
                 $NeukundenKupons = Shop::DB()->query("SELECT * FROM tkupon WHERE cKuponTyp = 'neukundenkupon' AND cAktiv = 'Y' ORDER BY fWert DESC", 2);
@@ -886,7 +885,7 @@ function plausiNeukundenKupon()
                      WHERE cKuponTyp = 'neukundenkupon'
                          AND cAktiv = 'Y'", 2
             );
-            $verwendet = Shop::DB()->queryPrepared("SELECT cVerwendet FROM tkuponneukunde WHERE cEmail = :email LIMIT 1", ['email' => StringHandler::filterXSS($_SESSION['Kunde']->cMail)], 1);
+            $verwendet = Shop::DB()->select('tkuponneukunde', 'cEmail', StringHandler::filterXSS($_SESSION['Kunde']->cMail), null, null, null, null, false, 'cVerwendet');
             $verwendet = !empty($verwendet) ? $verwendet->cVerwendet : null;
             foreach ($NeukundenKupons as $NeukundenKupon) {
                 if (angabenKorrekt(checkeKupon($NeukundenKupon)) && (empty($verwendet) || $verwendet === 'N')) {
@@ -2088,7 +2087,7 @@ function checkeKupon($Kupon)
             trim($_SESSION['Kunde']->cLand)
         );
         $Kuponneukunde = Kuponneukunde::Load($_SESSION['Kunde']->cMail, $Hash);
-        if ($Kuponneukunde !== null && $Kuponneukunde->cVerwendet === 'Y') {
+        if ($Kuponneukunde !== null) {
             $ret['ungueltig'] = 11;
         }
     }

@@ -763,7 +763,7 @@ function KuponVerwendungen()
         $KuponKunde->kKunde        = $_SESSION['Warenkorb']->kKunde;
         $KuponKunde->dErstellt     = 'now()';
         $KuponKunde->nVerwendungen = 1;
-        $KuponKundeBisher          = Shop::DB()->select('tkuponkunde', 'kKupon', $kKupon, null, null, null, null, false, 'nVerwendungen' );
+        $KuponKundeBisher          = Shop::DB()->select('tkuponkunde', 'kKupon', $kKupon, 'kKunde', $KuponKunde->kKunde, null, null, false, 'nVerwendungen' );
         if (isset($KuponKundeBisher->nVerwendungen) && $KuponKundeBisher->nVerwendungen > 0) {
             $KuponKunde->nVerwendungen += $KuponKundeBisher->nVerwendungen;
         }

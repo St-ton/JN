@@ -3472,11 +3472,8 @@ function mappeBestellvorgangZahlungshinweis($nHinweisCode)
  */
 function isEmailAvailable($email)
 {
-    $email = StringHandler::filterXSS(Shop::DB()->escape($email));
     if (strlen($email) > 0) {
-        $obj = Shop::DB()->query("SELECT count(*) AS count FROM tkunde WHERE cMail = '{$email}' AND cPasswort != ''", 1);
-
-        return ($obj->count == 0);
+        return (Shop::DB()->select('tkunde', 'cMail', $email, 'nRegistriert', 1) === null);
     }
 
     return false;

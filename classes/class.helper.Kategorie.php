@@ -119,7 +119,7 @@ class KategorieHelper
             $current       = null;
             $currentParent = null;
             $hierarchy     = array();
-            $shopURL       = Shop::getURL();
+            $shopURL       = Shop::getURL(true);
             if ($nodes === false) {
                 $nodes = array();
             }

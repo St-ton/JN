@@ -1607,10 +1607,10 @@ define('HOOK_STOCK_FILTER', 221);
  * @since 4.05
  * @file admin/includes/benutzerverwaltung_inc.php
  * @param Account    - oAccount
- * @param string     - type - SAVE|LOCK|UNLOCK|DELETE
- * @param array      - attribs - extended attributes (only used if type == SAVE)
- * @param array      - messages
- * @param bool|array - result - true if success otherwise errormap
+ * @param string     - type - VALIDATE|SAVE|LOCK|UNLOCK|DELETE
+ * @param array      - &attribs - extended attributes (only used if type == SAVE)
+ * @param array      - &messages
+ * @param bool|array - &result - true if success otherwise errormap
  */
 define('HOOK_BACKEND_ACCOUNT_EDIT', 222);
 
@@ -1620,6 +1620,6 @@ define('HOOK_BACKEND_ACCOUNT_EDIT', 222);
  * @param Account   - oAccount
  * @param JTLSmarty - smarty
  * @param array     - attribs - extended attributes
- * @param string    - content
+ * @param string    - &content
  */
 define('HOOK_BACKEND_ACCOUNT_PREPARE_EDIT', 223);

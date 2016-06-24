@@ -3,19 +3,51 @@
  * @license http://jtl-url.de/jtlshoplicense
  *}
 {if $sectionPersonal === true}
-    <script type="text/javascript">
+    {if $showAvatar === true}
+        <script type="text/javascript">
         {literal}
-        $(document).ready(function() {
-            $('#useGravatar').bind('click', function() {
-                if ($(this).is(':checked')) {
-                    $('#useGravatarDetails').show();
-                } else {
-                    $('#useGravatarDetails').hide();
+            $(document).ready(function() {
+                var useAvatar = $('#useAvatar');
+                if (useAvatar.val() === 'U') {
+                    useAvatar[0].form.enctype = 'multipart/form-data';
                 }
+                useAvatar.bind('change', function() {
+                    var useGravatarDetails = $('#useGravatarDetails');
+                    var useUploadDetails   = $('#useUploadDetails');
+                    switch ($(this).val()) {
+                        case 'G':
+                            useGravatarDetails.css('display', 'table-cell');
+                            useUploadDetails.hide();
+                            break;
+                        case 'U':
+                            this.form.enctype = 'multipart/form-data';
+                            useUploadDetails.css('display', 'table-cell');
+                            useGravatarDetails.hide();
+                            break;
+                        default:
+                            useGravatarDetails.hide();
+                            useUploadDetails.hide();
+                    }
+                });
             });
-        });
         {/literal}
-    </script>
+        </script>
+    {/if}
+    {if $showVita === true}
+        <script type="text/javascript">
+        {literal}
+            $(document).ready(function() {
+                $('#selectVitaLang').change(function () {
+                    var iso = $('#selectVitaLang option:selected').val();
+                    $('.iso_wrapper').hide();
+                    $('#isoVita_' + iso).show();
+
+                    return false;
+                });
+            });
+        {/literal}
+        </script>
+    {/if}
     <div class="panel panel-default">
         <div class="panel-heading">
             <h3 class="panel-title">Pers&ouml;nliche Angaben</h3>
@@ -25,14 +57,16 @@
                 <div class="item">
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <label for="useGravatar">Gravatar benutzen</label>
+                            <label for="useAvatar">Benutzerbild</label>
                         </span>
                         <span class="input-group-wrap">
-                            <span class="input-group-checkbox-wrap">
-                                <input class="" type="checkbox" id="useGravatar" name="extAttribs[useGravatar]" value="Y" {if isset($attribValues.useGravatar) && $attribValues.useGravatar->cAttribValue === 'Y'}checked {/if}/>
-                            </span>
+                            <select class="form-control" id="useAvatar" name="extAttribs[useAvatar]">
+                                <option value="N">Nein</option>
+                                <option value="G"{if $attribValues.useAvatar->cAttribValue == 'G'} selected="selected"{/if}>Gravatar benutzen</option>
+                                <option value="U"{if $attribValues.useAvatar->cAttribValue == 'U'} selected="selected"{/if}>Bild hochladen</option>
+                            </select>
                         </span>
-                        <div id="useGravatarDetails"{if !isset($attribValues.useGravatar) || $attribValues.useGravatar->cAttribValue !== 'Y'} class="hidden-soft"{/if}>
+                        <div id="useGravatarDetails"{if !isset($attribValues.useAvatar) || $attribValues.useAvatar->cAttribValue !== 'G'} class="hidden-soft"{/if}>
                             <span class="input-group-addon">
                                 <label for="useGravatarEmail">Abweichende E-Mail Adresse</label>
                             </span>
@@ -42,6 +76,48 @@
                             <span class="input-group-wrap dropdown avatar">
                                 <img src="{gravatarImage email=$gravatarEmail}" title="{$oAccount->cMail}" class="img-circle" />
                             </span>
+                        </div>
+                        <div id="useUploadDetails"{if !isset($attribValues.useAvatar) || $attribValues.useAvatar->cAttribValue !== 'U'} class="hidden-soft"{else}{if isset($cError_arr.useAvatarUpload)} class="error"{/if}{/if}>
+                            <span class="input-group-addon">
+                                <label for="useAvatarUpload">Bild</label>
+                            </span>
+                            <div class="input-group-wrap">
+                                <div class="multi_input">
+                                    <input id="useAvatarUpload" class="form-control-upload" name="extAttribs[useAvatarUpload]" type="file" maxlength="2097152" accept="image/*" />
+                                </div>
+                            </div>
+                            <span class="input-group-wrap dropdown avatar">
+                                <input type="hidden" name="extAttribs[useAvatarUpload]" value="{$attribValues.useAvatarUpload->cAttribValue}" />
+                                {if isset($uploadImage)}
+                                    <img src="{$uploadImage}" title="{if !empty($attribValues.useAvatarUpload->cAttribValue)}{$attribValues.useAvatarUpload->cAttribValue}{else}{$oAccount->cMail}{/if}" class="img-circle" />
+                                {/if}
+                            </span>
+                        </div>
+                        {if isset($cError_arr.useAvatarUpload)}
+                            <span class="input-group-addon error" title="Bitte ein Bild angeben"><i class="fa fa-exclamation-triangle"></i></span>
+                        {/if}
+                    </div>
+                </div>
+            {/if}
+            {if $showVita === true}
+                <div class="item">
+                    <div class="input-group">
+                        <span class="input-group-addon">
+                            <label for="useVita">Vita</label>
+                        </span>
+                        <div class="input-group-wrap">
+                            <select class="form-control" id="selectVitaLang">
+                                {foreach name=sprachen from=$sprachen item=sprache}
+                                    <option value="{$sprache->cISO}"{if $sprache->cShopStandard === 'Y'} selected="selected"{/if}>{$sprache->cNameDeutsch} {if $sprache->cShopStandard === 'Y'}(Standard){/if}</option>
+                                {/foreach}
+                            </select>
+                            {foreach name=sprachen from=$sprachen item=sprache}
+                                {assign var="cISO" value=$sprache->cISO}
+                                {assign var="useVita_ISO" value="useVita_"|cat:$cISO}
+                                <div id="isoVita_{$cISO}" class="iso_wrapper{if $sprache->cShopStandard != 'Y'} hidden-soft{/if}">
+                                    <textarea class="form-control ckeditor" id="useVita_{$cISO}" name="extAttribs[useVita_{$cISO}]" rows="10" cols="40">{$attribValues.$useVita_ISO->cAttribText}</textarea>
+                                </div>
+                            {/foreach}
                         </div>
                     </div>
                 </div>

@@ -13,3 +13,11 @@
  */
 
 require_once $oPlugin->cAdminmenuPfad . 'include/backend_account_helper.php';
+
+switch ($args_arr['type']) {
+    case 'VALIDATE':
+        $args_arr['result'] = BackendAccountHelper::getInstance($oPlugin)->validateAccount($args_arr['oAccount'], $args_arr['attribs'], $args_arr['messages']);
+        break;
+    default:
+        $args_arr['result'] = true;
+}

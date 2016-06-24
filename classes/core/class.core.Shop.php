@@ -567,7 +567,7 @@ final class Shop
     }
 
     /**
-     * @param array $config
+     * @param array|int $config
      * @return array
      */
     public static function getSettings($config)

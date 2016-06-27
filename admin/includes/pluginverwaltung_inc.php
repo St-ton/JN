@@ -3417,23 +3417,17 @@ function aktivierePlugin($kPlugin)
             $nReturnValue = pluginPlausi(0, $cPfad . $oPlugin->cVerzeichnis);
 
             if ($nReturnValue === 1 || $nReturnValue === 90 || $nReturnValue === 126) {
-                $nRow = Shop::DB()->query(
-                    "UPDATE tplugin
-                        SET nStatus = 2
-                        WHERE kPlugin = " . $kPlugin, 3
-                );
+                $_upd_plg          = new stdClass();
+                $_upd_plg->nStatus = 2;
+                $nRow              = Shop::DB()->update('tplugin', 'kPlugin', (int)$kPlugin, $_upd_plg);
 
-                Shop::DB()->query(
-                    "UPDATE tadminwidgets
-                        SET bActive = 1
-                        WHERE kPlugin = " . $kPlugin, 3
-                );
+                $_upd_wdg          = new stdClass();
+                $_upd_wdg->bActive = 1;
+                Shop::DB()->update('tadminwidgets', 'kPlugin', (int)$kPlugin, $_upd_wdg);
 
-                Shop::DB()->query(
-                    "UPDATE tlink
-                         SET bIsActive = 1
-                         WHERE kPlugin = " . $kPlugin, 3
-                );
+                $_upd_lnk            = new stdClass();
+                $_upd_lnk->bIsActive = 1;
+                Shop::DB()->update('tlink', 'kPlugin', (int)$kPlugin, $_upd_lnk);
 
                 if ($p = Plugin::bootstrapper($kPlugin)) {
                     $p->enabled();

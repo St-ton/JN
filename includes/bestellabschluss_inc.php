@@ -761,9 +761,10 @@ function KuponVerwendungen()
         $KuponKunde                = new stdClass();
         $KuponKunde->kKupon        = $kKupon;
         $KuponKunde->kKunde        = $_SESSION['Warenkorb']->kKunde;
+        $KuponKunde->cMail         = StringHandler::filterXSS($_SESSION['Kunde']->cMail);
         $KuponKunde->dErstellt     = 'now()';
         $KuponKunde->nVerwendungen = 1;
-        $KuponKundeBisher          = Shop::DB()->select('tkuponkunde', 'kKupon', $kKupon, 'kKunde', $KuponKunde->kKunde, null, null, false, 'nVerwendungen' );
+        $KuponKundeBisher          = Shop::DB()->query('SELECT SUM(nVerwendungen) AS nVerwendungen FROM tkuponkunde WHERE cMail = "' . $KuponKunde->cMail . '";',1);
         if (isset($KuponKundeBisher->nVerwendungen) && $KuponKundeBisher->nVerwendungen > 0) {
             $KuponKunde->nVerwendungen += $KuponKundeBisher->nVerwendungen;
         }

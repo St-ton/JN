@@ -841,7 +841,7 @@ function plausiNeukundenKupon()
                                 null,
                                 trim($_SESSION['Kunde']->cNachname),
                                 trim($_SESSION['Kunde']->cStrasse),
-                                null,
+                                trim(StringHandler::filterXSS($_SESSION['Kunde']->cMail)),
                                 trim($_SESSION['Kunde']->cPLZ),
                                 trim($_SESSION['Kunde']->cOrt),
                                 trim($_SESSION['Kunde']->cLand)
@@ -870,7 +870,7 @@ function plausiNeukundenKupon()
                 null,
                 trim($_SESSION['Kunde']->cNachname),
                 trim($_SESSION['Kunde']->cStrasse),
-                null,
+                trim(StringHandler::filterXSS($_SESSION['Kunde']->cMail)),
                 trim($_SESSION['Kunde']->cPLZ),
                 trim($_SESSION['Kunde']->cOrt),
                 trim($_SESSION['Kunde']->cLand)

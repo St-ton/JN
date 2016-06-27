@@ -103,6 +103,7 @@
                         {*<button name="aktivieren" type="submit" class="btn btn-primary">{#pluginBtnActivate#}</button>*}
                         <button name="deaktivieren" type="submit" class="btn btn-warning"><i class="fa fa-close"></i> {#pluginBtnDeActivate#}</button>
                         <button name="deinstallieren" type="submit" class="btn btn-danger"><i class="fa fa-trash"></i> {#pluginBtnDeInstall#}</button>
+                        <button name="reload" type="submit" class="btn btn-primary"><i class="fa fa-refresh"></i> Reload</button>
                     </div>
                 </div>
             </div>

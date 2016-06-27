@@ -2913,6 +2913,17 @@ function installierePluginVersion($XML_arr, $cVerzeichnis, $oPluginOld, $nXMLVer
 }
 
 /**
+ * Laedt das Plugin neu, d.h. liest die XML Struktur neu ein, fuehrt neue SQLs aus.
+ *
+ * @param int $kPlugin
+ * @return int
+ */
+function reloadPlugin($oPlugin)
+{
+    return installierePluginVorbereitung($oPlugin->cVerzeichnis, $oPlugin);
+}
+
+/**
  * Wenn ein Update erfolgreich mit neuer kPlugin in der Datenbank ist
  * wird der alte kPlugin auf die neue Version übertragen und
  * die alte Plugin-Version deinstalliert.

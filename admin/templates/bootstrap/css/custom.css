@@ -191,6 +191,10 @@ a {
     overflow: hidden;
 }
 
+.hidden-soft {
+    display: none;
+}
+
 h1.label-wrap,h2.label-wrap,h3.label-wrap,h4.label-wrap,h5.label-wrap {
     margin: 0 0 6px;
 }

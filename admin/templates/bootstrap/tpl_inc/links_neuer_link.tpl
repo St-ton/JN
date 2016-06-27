@@ -175,9 +175,9 @@
                             </div>
                         </span>
                         <span class="input-group-btn input-group-addon">
-                            <input name="hinzufuegen" type="button" value="{#linkPicAdd#}" onclick="return append_file_selector();" class="btn btn-info" />
+                            <button title="{#linkPicAdd#}" name="hinzufuegen" value="{#linkPicAdd#}" onclick="return append_file_selector();" class="btn btn-info"><i class="fa fa-plus"></i></button>
                         </span>
-                        <span class="input-group-addon">{getHelpDesc cDesc=#titleDesc#}</span>
+
                     </div>
                     <div class="input-group">
                         <span class="input-group-addon"><label>{#linkPics#}</label></span>
@@ -220,7 +220,7 @@
 
             {foreach name=sprachen from=$sprachen item=sprache}
                 {assign var="cISO" value=$sprache->cISO}
-                <div id="iso_{$cISO}" class="iso_wrapper {if $sprache->cShopStandard!="Y"}hidden{/if}">
+                <div id="iso_{$cISO}" class="iso_wrapper{if $sprache->cShopStandard != "Y"} hidden-soft{/if}">
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <h3 class="panel-title">Meta/Seo ({$sprache->cNameDeutsch})</h3>
@@ -280,7 +280,7 @@
                     </div>
                 </div>
             {/foreach}
-            <div class="{if isset($Link->kLink)} btn-group{/if}">
+            <div class="panel{if isset($Link->kLink)} btn-group{/if}">
                 <button type="submit" value="{#newLinksSave#}" class="btn btn-primary"><i class="fa fa-save"></i> {#newLinksSave#}</button>
                 {if isset($Link->kLink)}<button type="submit" name="continue" value="1" class="btn btn-default" id="save-and-continue">{#newLinksSave#} und weiter bearbeiten</button>{/if}
             </div>

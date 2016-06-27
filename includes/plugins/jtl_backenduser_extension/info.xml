@@ -43,6 +43,15 @@
 						<Option value="N" sort="1">Nein</Option>
 					</SelectboxOptions>
 				</Setting>
+				<Setting type="selectbox" initialValue="N" sort="30" conf="Y">
+					<Name>Google+ verwenden?</Name>
+					<Description>Stellt ein Eingabefeld für eine URL zum Google+ Profil zur Verfügung.</Description>
+					<ValueName>use_gplus</ValueName>
+					<SelectboxOptions>
+						<Option value="Y" sort="0">Ja</Option>
+						<Option value="N" sort="1">Nein</Option>
+					</SelectboxOptions>
+				</Setting>
             </Settingslink>
 		</Adminmenu>
 	</Install>

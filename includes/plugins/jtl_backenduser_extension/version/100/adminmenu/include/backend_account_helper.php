@@ -97,6 +97,7 @@ class BackendAccountHelper
                 $author = ContentAuthor::getInstance()->getAuthor($realm, $content->$contentKey);
 
                 if (isset($author->kAdminlogin) && $author->kAdminlogin > 0) {
+                    // Avatar benutzen?
                     if ($this->getConfigParam('use_avatar', 'N') === 'Y' && isset($author->extAttribs['useAvatar'])) {
                         if ($author->extAttribs['useAvatar']->cAttribValue === 'G') {
                             $params = ['email' => null, 's' => 80, 'd' => 'mm', 'r' => 'g'];
@@ -116,6 +117,7 @@ class BackendAccountHelper
                     unset($author->extAttribs['useAvatarUpload']);
                     unset($author->extAttribs['useGravatarEmail']);
 
+                    // Vita benutzen?
                     if ($this->getConfigParam('use_vita', 'N') === 'Y') {
                         if (isset($author->extAttribs['useVita_' . $_SESSION['cISOSprache']])) {
                             $author->cVitaShort = $author->extAttribs['useVita_' . $_SESSION['cISOSprache']]->cAttribValue;
@@ -125,6 +127,12 @@ class BackendAccountHelper
                     foreach (gibAlleSprachen() as $sprache) {
                         unset($author->extAttribs['useVita_' . $sprache->cISO]);
                     }
+
+                    // Google+ benutzen?
+                    if ($this->getConfigParam('use_gplus', 'N') === 'Y' && !empty($author->extAttribs['useGPlus']->cAttribValue)) {
+                        $author->gplusProfile = $author->extAttribs['useGPlus']->cAttribValue;
+                    }
+                    unset ($author->extAttribs['useGPlus']);
 
                     $contentArr[$key]->oAuthor = $author;
                 }
@@ -143,7 +151,8 @@ class BackendAccountHelper
     {
         $showAvatar          = $this->getConfigParam('use_avatar', 'N') === 'Y' ? true : false;
         $showVita            = $this->getConfigParam('use_vita', 'N') === 'Y' ? true : false;
-        $showSectionPersonal = $showAvatar || $showVita;
+        $showGPlus           = $this->getConfigParam('use_gplus', 'N') === 'Y' ? true : false;
+        $showSectionPersonal = $showAvatar || $showVita || $showGPlus;
         $gravatarEmail       = !empty($attribs['useGravatarEmail']->cAttribValue) ? $attribs['useGravatarEmail']->cAttribValue : $oAccount->cMail;
         $uploadImage         = $attribs['useAvatar']->cAttribValue === 'U' && !empty($attribs['useAvatarUpload']->cAttribValue) ? $attribs['useAvatarUpload']->cAttribValue : '/' . BILD_UPLOAD_ZUGRIFF_VERWEIGERT;
 
@@ -151,6 +160,7 @@ class BackendAccountHelper
             ->assign('oAccount', $oAccount)
             ->assign('showAvatar', $showAvatar)
             ->assign('showVita', $showVita)
+            ->assign('showGPlus', $showGPlus)
             ->assign('sectionPersonal', $showSectionPersonal)
             ->assign('gravatarEmail', $gravatarEmail)
             ->assign('uploadImage', $uploadImage)

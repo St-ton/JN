@@ -99,6 +99,18 @@
                     </div>
                 </div>
             {/if}
+            {if $showGPlus === true}
+                <div class="item">
+                    <div class="input-group">
+                        <span class="input-group-addon">
+                            <label for="useGPlus">Link zum Google+ Profil</label>
+                        </span>
+                        <span class="input-group-wrap">
+                            <input id="useGPlus" class="form-control" type="text" name="extAttribs[useGPlus]" value="{if isset($attribValues.useGPlus)}{$attribValues.useGPlus->cAttribValue}{/if}" />
+                        </span>
+                    </div>
+                </div>
+            {/if}
             {if $showVita === true}
                 <div class="item">
                     <div class="input-group">

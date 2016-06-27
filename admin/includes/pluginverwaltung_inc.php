@@ -2920,7 +2920,6 @@ function installierePluginVersion($XML_arr, $cVerzeichnis, $oPluginOld, $nXMLVer
  */
 function reloadPlugin($oPlugin)
 {
-    $oPlugin        = new Plugin($oPlugin->kPlugin);
     $cXMLPath       = PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/' . PLUGIN_INFO_FILE;
     $oLastUpdate    = new DateTimeImmutable($oPlugin->dZuletztAktualisiert);
     $nLastUpdate    = $oLastUpdate->getTimestamp();
@@ -3203,7 +3202,7 @@ function deinstallierePlugin($kPlugin, $nXMLVersion, $bUpdate = false, $kPluginN
 {
     $kPlugin = (int)$kPlugin;
     if ($kPlugin > 0) {
-        $oPlugin = new Plugin($kPlugin);
+        $oPlugin = new Plugin($kPlugin, false, true);
         if ($oPlugin->kPlugin > 0) {
             if (!$bUpdate) {
                 // Plugin wird vollständig deinstalliert

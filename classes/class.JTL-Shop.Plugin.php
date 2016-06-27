@@ -292,11 +292,16 @@ class Plugin
      * @param bool $invalidateCache - set to true to clear plugin cache
      * @return Plugin
      */
-    public function __construct($kPlugin = 0, $invalidateCache = false)
+    public function __construct($kPlugin = 0, $invalidateCache = false, $suppressReload = false)
     {
         $kPlugin = (int)$kPlugin;
         if ($kPlugin > 0) {
             $this->loadFromDB($kPlugin, $invalidateCache);
+
+            if (defined('PLUGIN_DEV_MODE') && PLUGIN_DEV_MODE && !$suppressReload) {
+                reloadPlugin($this);
+                $this->loadFromDB($kPlugin, $invalidateCache);
+            }
         }
     }
 

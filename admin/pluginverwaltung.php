@@ -252,7 +252,7 @@ if (verifyGPCDataInteger('pluginverwaltung_uebersicht') === 1 && validateToken()
                 $oPlugin = Shop::DB()->select('tplugin', 'kPlugin', $kPlugin);
 
                 if (isset($oPlugin->kPlugin) && $oPlugin->kPlugin > 0) {
-                    $nReturnValue = reloadPlugin($kPlugin);
+                    $nReturnValue = reloadPlugin($oPlugin);
 
                     if ($nReturnValue === 1 || $nReturnValue === 126) {
                         $cHinweis = 'Ihre ausgew&auml;hlten Plugins wurden erfolgreich neu geladen.';

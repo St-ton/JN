@@ -84,7 +84,7 @@ class PremiumPlugin
     /**
      * @var array
      */
-    private $screeShots = array();
+    private $screenShots = array();
 
     /**
      * PremiumPlugin constructor.
@@ -144,7 +144,7 @@ class PremiumPlugin
      * @param stdClass $sp
      * @return $this
      */
-    public function setservicePartner($sp)
+    public function setServicePartner($sp)
     {
         $this->servicePartner = $sp;
         
@@ -160,12 +160,12 @@ class PremiumPlugin
     }
 
     /**
-     * @param array $screnShots
+     * @param array $screenShots
      * @return $this
      */
-    public function setScreenshots(array $screnShots)
+    public function setScreenshots(array $screenShots)
     {
-        $this->screeShots = $screnShots;
+        $this->screenShots = $screenShots;
 
         return $this;
     }
@@ -176,7 +176,7 @@ class PremiumPlugin
      */
     public function addScreenShot(stdClass $screenShot)
     {
-        $this->screeShots[] = $screenShot;
+        $this->screenShots[] = $screenShot;
 
         return $this;
     }
@@ -186,7 +186,7 @@ class PremiumPlugin
      */
     public function getScreenShots()
     {
-        return $this->screeShots;
+        return $this->screenShots;
     }
 
     /**

@@ -67,7 +67,7 @@ if (!empty($pluginID)) {
     $sp->cAdresszusatz         = '';
     $sp->cLandName             = 'Deutschland';
 
-    $pp->setservicePartner($sp);
+    $pp->setServicePartner($sp);
 
     $pp->addBadge('AmazonPayments_PartnerLogos_Black_Premier_Partner.png', true);
 }

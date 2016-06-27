@@ -115,7 +115,7 @@
                                 {assign var="cISO" value=$sprache->cISO}
                                 {assign var="useVita_ISO" value="useVita_"|cat:$cISO}
                                 <div id="isoVita_{$cISO}" class="iso_wrapper{if $sprache->cShopStandard != 'Y'} hidden-soft{/if}">
-                                    <textarea class="form-control ckeditor" id="useVita_{$cISO}" name="extAttribs[useVita_{$cISO}]" rows="10" cols="40">{$attribValues.$useVita_ISO->cAttribText}</textarea>
+                                    <textarea class="form-control ckeditor" id="useVita_{$cISO}" name="extAttribs[useVita_{$cISO}]" rows="10" cols="40">{if !empty($attribValues.$useVita_ISO->cAttribText)}{$attribValues.$useVita_ISO->cAttribText}{else}{$attribValues.$useVita_ISO->cAttribValue}{/if}</textarea>
                                 </div>
                             {/foreach}
                         </div>

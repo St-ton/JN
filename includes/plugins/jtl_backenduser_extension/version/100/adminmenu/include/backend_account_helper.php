@@ -52,7 +52,7 @@ class BackendAccountHelper
         ));
 
         if ($imgType !== false) {
-            $imagePath = PFAD_BILDER . 'avatare/';
+            $imagePath = PFAD_MEDIA_IMAGE . 'avatare/';
             $imageName = pathinfo($tmpFile['name'][$attribName], PATHINFO_FILENAME) . image_type_to_extension($imgType);
 
             if (is_dir(PFAD_ROOT . $imagePath) || mkdir(PFAD_ROOT . $imagePath, 0755)) {
@@ -86,12 +86,50 @@ class BackendAccountHelper
     }
 
     /**
-     * @return void
+     * @param array $contentArr
+     * @param string $realm
+     * @param string $contentKey
      */
-    public function getFrontend()
+    public function getFrontend($contentArr, $realm, $contentKey)
     {
-        $smarty  = $GLOBALS['smarty'];
-        $newsArr = $smarty->getVariable('oNewsUebersicht_arr');
+        if (isset($contentArr) && is_array($contentArr)) {
+            foreach ($contentArr as $key => $content) {
+                $author = ContentAuthor::getInstance()->getAuthor($realm, $content->$contentKey);
+
+                if (isset($author->kAdminlogin) && $author->kAdminlogin > 0) {
+                    if ($this->getConfigParam('use_avatar', 'N') === 'Y' && isset($author->extAttribs['useAvatar'])) {
+                        if ($author->extAttribs['useAvatar']->cAttribValue === 'G') {
+                            $params = ['email' => null, 's' => 80, 'd' => 'mm', 'r' => 'g'];
+                            $url    = 'https://www.gravatar.com/avatar/';
+                            $url   .= md5(!empty($author->extAttribs['useGravatarEmail']) ? strtolower(trim($author->extAttribs['useGravatarEmail'])) : strtolower(trim($author->cMail)));
+                            $url   .= '?' . http_build_query($params, '', '&');
+                            $author->cAvatarImgSrc = $url;
+                        }
+                        if ($author->extAttribs['useAvatar']->cAttribValue === 'U') {
+                            $author->cAvatarImgSrc = $author->extAttribs['useAvatarUpload']->cAttribValue;
+                        }
+                    } else {
+                        if (isset($author->extAttribs['useAvatar'])) {
+                            $author->extAttribs['useAvatar']->cAttribValue = 'N';
+                        }
+                    }
+                    unset($author->extAttribs['useAvatarUpload']);
+                    unset($author->extAttribs['useGravatarEmail']);
+
+                    if ($this->getConfigParam('use_vita', 'N') === 'Y') {
+                        if (isset($author->extAttribs['useVita_' . $_SESSION['cISOSprache']])) {
+                            $author->cVitaShort = $author->extAttribs['useVita_' . $_SESSION['cISOSprache']]->cAttribValue;
+                            $author->cVitaLong  = $author->extAttribs['useVita_' . $_SESSION['cISOSprache']]->cAttribText;
+                        }
+                    }
+                    foreach (gibAlleSprachen() as $sprache) {
+                        unset($author->extAttribs['useVita_' . $sprache->cISO]);
+                    }
+
+                    $contentArr[$key]->oAuthor = $author;
+                }
+            }
+        }
     }
 
     /**
@@ -132,6 +170,8 @@ class BackendAccountHelper
      */
     public function validateAccount(stdClass $oAccount, array &$attribs, array &$messages)
     {
+        $result = true;
+
         if ($this->getConfigParam('use_avatar', 'N') === 'Y') {
             if (!$attribs['useAvatar']) {
                 $attribs['useAvatar'] = 'N';
@@ -150,17 +190,17 @@ class BackendAccountHelper
                     if (isset($_FILES['extAttribs']) && !empty($_FILES['extAttribs']['name']['useAvatarUpload'])) {
                         $attribs['useAvatarUpload'] = $this->uploadImage($_FILES['extAttribs'], 'useAvatarUpload');
 
-                        if ($attribs['useAvatarUpload'] !== false) {
-                            return true;
+                        if ($attribs['useAvatarUpload'] === false) {
+                            $messages['error'] .= 'Fehler beim Bilupload!';
+                            $result = array('useAvatarUpload' => 1);
                         }
                     } else {
-                        if (!empty($attribs['useAvatarUpload'])) {
-                            return true;
+                        if (empty($attribs['useAvatarUpload'])) {
+                            $messages['error'] .= 'Bitte geben Sie ein Bild an!';
+                            $result = array('useAvatarUpload' => 1);
                         }
                     }
 
-                    $messages['error'] .= 'Bitte geben Sie ein Bild an.';
-                    return array('useAvatarUpload' => 1);
                     break;
                 default:
                     $attribs['useGravatarEmail'] = '';
@@ -189,6 +229,6 @@ class BackendAccountHelper
             }
         }
 
-        return true;
+        return $result;
     }
 }

@@ -59,7 +59,14 @@ class ContentAuthor
      */
     public function getAuthor($realm, $contentID)
     {
-        $author  = Shop::DB()->select('tcontentauthor', 'cRealm', $realm, 'kContentId', $contentID);
+        $author  = Shop::DB()->query(
+            "SELECT tcontentauthor.kContentAuthor, tcontentauthor.cRealm, tcontentauthor.kAdminlogin, tcontentauthor.kContentId,
+                    tadminlogin.cName, tadminlogin.cMail
+                FROM tcontentauthor
+                INNER JOIN tadminlogin ON tadminlogin.kAdminlogin = tcontentauthor.kAdminlogin
+                WHERE tcontentauthor.cRealm = '" . $realm . "'
+                    AND tcontentauthor.kContentId = " . (int)$contentID, 1
+        );
         $attribs = Shop::DB()->query(
             "SELECT tadminloginattribut.kAttribut, tadminloginattribut.cName, tadminloginattribut.cAttribValue, tadminloginattribut.cAttribText
                 FROM tadminloginattribut

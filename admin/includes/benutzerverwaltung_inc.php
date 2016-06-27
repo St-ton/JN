@@ -158,6 +158,7 @@ function benutzerverwaltungSaveAttributes(stdClass $oAccount, array $extAttribs,
             }
             $handledKeys[] = $key;
         }
+        // nicht (mehr) vorhandene Attribute löschen
         Shop::DB()->query(
             "DELETE FROM tadminloginattribut
                 WHERE kAdminlogin = " . (int)$oAccount->kAdminlogin . "

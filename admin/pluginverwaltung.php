@@ -249,7 +249,7 @@ if (verifyGPCDataInteger('pluginverwaltung_uebersicht') === 1 && validateToken()
                     $cFehler = 'Fehler: Ein oder mehrere Plugins wurden nicht in der Datenbank gefunden.';
                 }
             } elseif (isset($_POST['reload'])) { // Reload
-                $oPlugin = Shop::DB()->select('tplugin', 'kPlugin', $kPlugin);
+                $oPlugin = Shop::DB()->query( "SELECT kPlugin FROM tplugin WHERE kPlugin = " . $kPlugin, 1);
 
                 if (isset($oPlugin->kPlugin) && $oPlugin->kPlugin > 0) {
                     $nReturnValue = reloadPlugin($oPlugin);
@@ -257,6 +257,8 @@ if (verifyGPCDataInteger('pluginverwaltung_uebersicht') === 1 && validateToken()
                     if ($nReturnValue === 1 || $nReturnValue === 126) {
                         $cHinweis = 'Ihre ausgew&auml;hlten Plugins wurden erfolgreich neu geladen.';
                         $reload = true;
+                    } elseif ($nReturnValue === 200) {
+                        $cHinweis = 'Ihre ausgew&auml;hlten Plugins sind aktuell.';
                     } else {
                         $cFehler = 'Fehler: Ein Plugin konnte nicht neu geladen werden.';
                     }

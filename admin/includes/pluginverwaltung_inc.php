@@ -1745,7 +1745,7 @@ function installierePlugin($XML_arr, $cVerzeichnis, $oPluginOld)
     $oPlugin->kPlugin = $kPlugin;
 
     if ($kPlugin > 0) {
-        $res = installPluginTables ($XML_arr, $oPlugin, $oPluginOld);
+        $res = installPluginTables($XML_arr, $oPlugin, $oPluginOld);
 
         if ($res > 0) {
             deinstallierePlugin($kPlugin, $nXMLVersion);
@@ -1841,9 +1841,9 @@ function installierePlugin($XML_arr, $cVerzeichnis, $oPluginOld)
  */
 function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
 {
-    $kPlugin = $oPlugin->kPlugin;
+    $kPlugin      = $oPlugin->kPlugin;
     $cVerzeichnis = $oPlugin->cVerzeichnis;
-    $nVersion = $oPlugin->nVersion;
+    $nVersion     = $oPlugin->nVersion;
 
     // used in ExportFormate
     $kKundengruppeStd = Kundengruppe::getDefaultGroupID();
@@ -2920,7 +2920,17 @@ function installierePluginVersion($XML_arr, $cVerzeichnis, $oPluginOld, $nXMLVer
  */
 function reloadPlugin($oPlugin)
 {
-    return installierePluginVorbereitung($oPlugin->cVerzeichnis, $oPlugin);
+    $oPlugin        = new Plugin($oPlugin->kPlugin);
+    $cXMLPath       = PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/' . PLUGIN_INFO_FILE;
+    $oLastUpdate    = new DateTimeImmutable($oPlugin->dZuletztAktualisiert);
+    $nLastUpdate    = $oLastUpdate->getTimestamp();
+    $nLastXMLChange = filemtime($cXMLPath);
+
+    if ($nLastXMLChange > $nLastUpdate) {
+        return installierePluginVorbereitung($oPlugin->cVerzeichnis, $oPlugin);
+    } else {
+        return 200;
+    }
 }
 
 /**

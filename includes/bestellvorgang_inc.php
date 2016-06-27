@@ -1496,7 +1496,7 @@ function pruefeZahlungsartMinBestellungen($nMinBestellungen)
  */
 function pruefeZahlungsartMinBestellwert($fMinBestellwert)
 {
-    if ($fMinBestellwert > 0 && $_SESSION['Warenkorb']->gibGesamtsummeWaren(1) < $fMinBestellwert) {
+    if ($fMinBestellwert > 0 && $_SESSION['Warenkorb']->gibGesamtsummeWarenOhne(array(C_WARENKORBPOS_TYP_VERSANDPOS), true) < $fMinBestellwert) {
         if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
             Jtllog::writeLog('pruefeZahlungsartMinBestellwert Bestellwert zu niedrig: Wert ' . $_SESSION['Warenkorb']->gibGesamtsummeWaren(true) . ' < ' . $fMinBestellwert,
                 JTLLOG_LEVEL_DEBUG, false);
@@ -1514,7 +1514,7 @@ function pruefeZahlungsartMinBestellwert($fMinBestellwert)
  */
 function pruefeZahlungsartMaxBestellwert($fMaxBestellwert)
 {
-    if ($fMaxBestellwert > 0 && $_SESSION['Warenkorb']->gibGesamtsummeWaren(1) >= $fMaxBestellwert) {
+    if ($fMaxBestellwert > 0 && $_SESSION['Warenkorb']->gibGesamtsummeWarenOhne(array(C_WARENKORBPOS_TYP_VERSANDPOS), true) >= $fMaxBestellwert) {
         if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
             Jtllog::writeLog('pruefeZahlungsartMaxBestellwert Bestellwert zu hoch: Wert ' . $_SESSION['Warenkorb']->gibGesamtsummeWaren(true) . ' > ' . $fMaxBestellwert,
                 JTLLOG_LEVEL_DEBUG, false);
@@ -3557,7 +3557,7 @@ function setzeSessionZahlungsart($Zahlungsart)
  */
 function gibSpecials($Zahlungsart)
 {
-    return null;
+    return;
 }
 
 /**

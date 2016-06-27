@@ -2917,6 +2917,8 @@ function installierePluginVersion($XML_arr, $cVerzeichnis, $oPluginOld, $nXMLVer
  *
  * @param int $kPlugin
  * @return int
+ * 200 = kein Reload nötig, da info file älter als dZuletztAktualisiert
+ * siehe return Codes von installierePluginVorbereitung()
  */
 function reloadPlugin($oPlugin)
 {
@@ -2927,9 +2929,9 @@ function reloadPlugin($oPlugin)
 
     if ($nLastXMLChange > $nLastUpdate) {
         return installierePluginVorbereitung($oPlugin->cVerzeichnis, $oPlugin);
-    } else {
-        return 200;
     }
+
+    return 200; // kein Reload nötig, da info file älter als dZuletztAktualisiert
 }
 
 /**
@@ -3202,7 +3204,7 @@ function deinstallierePlugin($kPlugin, $nXMLVersion, $bUpdate = false, $kPluginN
 {
     $kPlugin = (int)$kPlugin;
     if ($kPlugin > 0) {
-        $oPlugin = new Plugin($kPlugin, false, true);
+        $oPlugin = new Plugin($kPlugin, false, true); // suppress reload = true um Endlosrekursion zu verhindern
         if ($oPlugin->kPlugin > 0) {
             if (!$bUpdate) {
                 // Plugin wird vollständig deinstalliert

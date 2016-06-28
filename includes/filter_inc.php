@@ -506,10 +506,23 @@ function gibHerstellerFilterOptionen($FilterSQL, $NaviFilter)
  */
 function gibKategorieFilterOptionen($FilterSQL, $NaviFilter)
 {
+    //build simple string from non-empty values of $FilterSQL
+    $filterString = '';
+    if (is_object($FilterSQL)) {
+        foreach (get_object_vars($FilterSQL) as $outerKey => $outerValue) {
+            if (is_object($outerValue)) {
+                foreach (get_object_vars($outerValue) as $key => $val) {
+                    if (!empty($val)) {
+                        $filterString .= $outerKey . $key . $val;
+                    }
+                }
+            }
+        }
+    }
     $cacheID = 'filter_kfo_' . md5(
             json_encode($_SESSION['Kundengruppe']) .
             serialize($NaviFilter) .
-            json_encode($FilterSQL) .
+            $filterString .
             Shop::$kSprache
         );
     if (($oKategorieFilterDB_arr = Shop::Cache()->get($cacheID)) !== false) {

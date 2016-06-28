@@ -2086,20 +2086,17 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
             preg_match("/[0-9]+\sattr/", $u, $cTreffer1_arr);
             preg_match("/[0-9]+/", $u, $cTreffer2_arr);
             $oLink       = new stdClass();
-            $oLinkgruppe = null;
-            // configured link group
-            if (!empty($Link_arr['LinkGroup'])) {
-                $_lg = Shop::DB()->select('tlinkgruppe', 'cName', $Link_arr['LinkGroup']);
-                if (!empty($_lg->kLinkgruppe)) {
-                    $oLinkgruppe = $_lg;
-                }
+            if (empty($Link_arr['LinkGroup'])) {
+                // linkgroup not set? default to 'hidden'
+                $Link_arr['LinkGroup'] = 'hidden';
             }
+            $oLinkgruppe = Shop::DB()->select('tlinkgruppe', 'cName', $Link_arr['LinkGroup']);
             if ($oLinkgruppe === null) {
-                // try linkgroup named "hidden" - fallback to first one
-                $_hiddenLinkGroup = Shop::DB()->query("SELECT kLinkgruppe FROM tlinkgruppe WHERE cName = 'hidden' LIMIT 1", 1);
-                $oLinkgruppe      = (!empty($_hiddenLinkGroup->kLinkgruppe)) ?
-                    $_hiddenLinkGroup :
-                    Shop::DB()->query("SELECT kLinkgruppe FROM tlinkgruppe LIMIT 1", 1);
+                // linkgroup not in database? create it anew
+                $oLinkgruppe = new stdClass();
+                $oLinkgruppe->cName = $Link_arr['LinkGroup'];
+                $oLinkgruppe->cTemplatename = $Link_arr['LinkGroup'];
+                $oLinkgruppe->kLinkgruppe = Shop::DB()->insert('tlinkgruppe', $oLinkgruppe);
             }
             if (isset($oLinkgruppe->kLinkgruppe) && $oLinkgruppe->kLinkgruppe > 0) {
                 $kLinkgruppe = $oLinkgruppe->kLinkgruppe;

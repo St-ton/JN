@@ -847,7 +847,7 @@ function generateSitemapXML()
         }
     }
     baueSitemap($nDatei, $sitemap_data);
-    writeLog(PFAD_ROOT . 'jtllogs/sitemap.log', print_r($nStat_arr, true), 1);
+    writeLog(PFAD_LOGFILES . 'sitemap.log', print_r($nStat_arr, true), 1);
     // XML ablegen + ausgabe an user
     $datei = PFAD_ROOT . PFAD_EXPORT . 'sitemap_index.xml';
     if (is_writable($datei) || !is_file($datei)) {
@@ -956,7 +956,7 @@ function baueSitemapReport($nAnzahlURL_arr, $fTotalZeit)
 
         $kSitemapReport = Shop::DB()->insert('tsitemapreport', $oSitemapReport);
         $bGZ            = function_exists('gzopen');
-        writeLog(PFAD_ROOT . 'jtllogs/sitemap.log', 'Sitemaps Report: ' . var_export($nAnzahlURL_arr, true), 1);
+        writeLog(PFAD_LOGFILES . 'sitemap.log', 'Sitemaps Report: ' . var_export($nAnzahlURL_arr, true), 1);
         foreach ($nAnzahlURL_arr as $i => $nAnzahlURL) {
             if ($nAnzahlURL > 0) {
                 $oSitemapReportFile                 = new stdClass();

@@ -371,13 +371,7 @@ function bearbeiteInsert($xml, array $conf)
                 $artikelsprache_arr[$i]->cSeo = getSeo($artikelsprache_arr[$i]->cSeo);
                 $artikelsprache_arr[$i]->cSeo = checkSeo($artikelsprache_arr[$i]->cSeo);
                 DBUpdateInsert('tartikelsprache', array($artikelsprache_arr[$i]), 'kArtikel', 'kSprache');
-                Shop::DB()->query(
-                    "DELETE FROM tseo
-                        WHERE cKey = 'kArtikel'
-                            AND kKey = " . (int)$artikelsprache_arr[$i]->kArtikel . "
-                            AND kSprache = " . (int)$artikelsprache_arr[$i]->kSprache, 4
-                );
-
+                Shop::DB()->delete('tseo', array('cKey', 'kKey', 'kSprache'), array('kArtikel', (int) $artikelsprache_arr[$i]->kArtikel, (int) $artikelsprache_arr[$i]->kSprache));
                 $oSeo           = new stdClass();
                 $oSeo->cSeo     = $artikelsprache_arr[$i]->cSeo;
                 $oSeo->cKey     = 'kArtikel';
@@ -594,7 +588,6 @@ function bearbeiteInsert($xml, array $conf)
                         }
                         Shop::DB()->query("DELETE FROM teigenschaftkombiwert WHERE kEigenschaftKombi IN (" . implode(',', $kKey_arr) . ")", 4);
                     }
-
                     Shop::DB()->query($cSQL, 4);
                 }
             }
@@ -854,19 +847,19 @@ function loescheArtikel($kArtikel, $nIstVater = 0, $bForce = false, $conf = null
         Jtllog::writeLog('kArtikel: ' . $kArtikel . ' - nIstVater: ' . $nIstVater, JTLLOG_LEVEL_DEBUG, false, 'Artikel_xml loescheArtikel');
     }
     if ($kArtikel > 0) {
-        Shop::DB()->query("DELETE FROM tseo WHERE kKey = " . $kArtikel . " AND cKey = 'kArtikel'", 4);
-        Shop::DB()->query("DELETE FROM tartikel WHERE kArtikel = " . $kArtikel, 4);
-        Shop::DB()->query("DELETE FROM tpreise WHERE kArtikel = " . $kArtikel, 4);
-        Shop::DB()->query("DELETE FROM tartikelsonderpreis WHERE kArtikel = " . $kArtikel, 4);
-        Shop::DB()->query("DELETE FROM tkategorieartikel WHERE kArtikel = " . $kArtikel, 4);
-        Shop::DB()->query("DELETE FROM tartikelsprache WHERE kArtikel = " . $kArtikel, 4);
-        Shop::DB()->query("DELETE FROM tartikelattribut WHERE kArtikel = " . $kArtikel, 4);
+        Shop::DB()->delete('tseo', array('cKey', 'kKey'), array('kArtikel', (int) $kArtikel));
+        Shop::DB()->delete('tartikel', 'kArtikel', $kArtikel);
+        Shop::DB()->delete('tpreise', 'kArtikel', $kArtikel);
+        Shop::DB()->delete('tartikelsonderpreis', 'kArtikel', $kArtikel);
+        Shop::DB()->delete('tkategorieartikel', 'kArtikel', $kArtikel);
+        Shop::DB()->delete('tartikelsprache', 'kArtikel', $kArtikel);
+        Shop::DB()->delete('tartikelattribut', 'kArtikel', $kArtikel);
         loescheArtikelAttribute($kArtikel);
         loescheArtikelEigenschaftWert($kArtikel);
         loescheArtikelEigenschaft($kArtikel);
-        Shop::DB()->query("DELETE FROM txsell WHERE kArtikel = " . $kArtikel, 4);
-        Shop::DB()->query("DELETE FROM tartikelmerkmal WHERE kArtikel = " . $kArtikel, 4);
-        Shop::DB()->query("DELETE FROM tartikelsichtbarkeit WHERE kArtikel = " . $kArtikel, 4);
+        Shop::DB()->delete('txsell', 'kArtikel', $kArtikel);
+        Shop::DB()->delete('tartikelmerkmal', 'kArtikel', $kArtikel);
+        Shop::DB()->delete('tartikelsichtbarkeit', 'kArtikel', $kArtikel);
         loescheArtikelMediendateien($kArtikel);
         if ($bForce === false) {
             loescheArtikelDownload($kArtikel);
@@ -888,10 +881,10 @@ function loescheEigenschaft($kEigenschaft)
 {
     $kEigenschaft = (int)$kEigenschaft;
     if ($kEigenschaft > 0) {
-        Shop::DB()->query("DELETE FROM teigenschaft WHERE kEigenschaft = " . $kEigenschaft, 4);
-        Shop::DB()->query("DELETE FROM teigenschaftsprache WHERE kEigenschaft = " . $kEigenschaft, 4);
-        Shop::DB()->query("DELETE FROM teigenschaftsichtbarkeit WHERE kEigenschaft = " . $kEigenschaft, 4);
-        Shop::DB()->query("DELETE FROM teigenschaftwert WHERE kEigenschaft = " . $kEigenschaft, 4);
+        Shop::DB()->delete('teigenschaft', 'kEigenschaft', $kEigenschaft);
+        Shop::DB()->delete('teigenschaftsprache', 'kEigenschaft', $kEigenschaft);
+        Shop::DB()->delete('teigenschaftsichtbarkeit', 'kEigenschaft', $kEigenschaft);
+        Shop::DB()->delete('teigenschaftwert', 'kEigenschaft', $kEigenschaft);
     }
 }
 
@@ -922,11 +915,11 @@ function loescheEigenschaftWert($kEigenschaftWert)
 {
     $kEigenschaftWert = (int) $kEigenschaftWert;
     if ($kEigenschaftWert > 0) {
-        Shop::DB()->query("DELETE FROM teigenschaftwert WHERE kEigenschaftWert = " . $kEigenschaftWert, 4);
-        Shop::DB()->query("DELETE FROM teigenschaftwertaufpreis WHERE kEigenschaftWert = " . $kEigenschaftWert, 4);
-        Shop::DB()->query("DELETE FROM teigenschaftwertsichtbarkeit WHERE kEigenschaftWert = " . $kEigenschaftWert, 4);
-        Shop::DB()->query("DELETE FROM teigenschaftwertsprache WHERE kEigenschaftWert = " . $kEigenschaftWert, 4);
-        Shop::DB()->query("DELETE FROM teigenschaftwertabhaengigkeit WHERE kEigenschaftWert = " . $kEigenschaftWert, 4);
+        Shop::DB()->delete('teigenschaftwert', 'kEigenschaftWert', $kEigenschaftWert);
+        Shop::DB()->delete('teigenschaftwertaufpreis', 'kEigenschaftWert', $kEigenschaftWert);
+        Shop::DB()->delete('teigenschaftwertsichtbarkeit', 'kEigenschaftWert', $kEigenschaftWert);
+        Shop::DB()->delete('teigenschaftwertsprache', 'kEigenschaftWert', $kEigenschaftWert);
+        Shop::DB()->delete('teigenschaftwertabhaengigkeit', 'kEigenschaftWert', $kEigenschaftWert);
     }
 }
 
@@ -959,8 +952,8 @@ function loescheAttribute($kAttribut)
 {
     $kAttribut = (int)$kAttribut;
     if ($kAttribut > 0) {
-        Shop::DB()->query("DELETE FROM tattribut WHERE kAttribut = " . $kAttribut, 4);
-        Shop::DB()->query("DELETE FROM tattributsprache WHERE kAttribut = " . $kAttribut, 4);
+        Shop::DB()->delete('tattribut', 'kAttribut', $kAttribut);
+        Shop::DB()->delete('tattributsprache', 'kAttribut', $kAttribut);
     }
 }
 
@@ -1118,25 +1111,18 @@ function fuelleKategorieGesamt($oKategorieArtikel_arr)
         // Laufe jeden KategorieArtikel Eintrag durch
         foreach ($oKategorieArtikel_arr as $oKategorieArtikel) {
             // Lösche aktuellen KategorieArtikel
-            Shop::DB()->query("DELETE FROM tkategorieartikelgesamt WHERE kArtikel = " . (int)$oKategorieArtikel->kArtikel, 3);
+            Shop::DB()->delete('tkategorieartikelgesamt', 'kArtikel', (int) $oKategorieArtikel->kArtikel);
             $oOberKategorie_arr = array();
             // Hole die Kategorie vom aktuellen KategorieArtikel
-            $oKategorie = Shop::DB()->query("SELECT * FROM tkategorie WHERE kKategorie = " . (int)$oKategorieArtikel->kKategorie, 1);
+            $oKategorie = Shop::DB()->query("SELECT * FROM tkategorie WHERE kKategorie = " . (int) $oKategorieArtikel->kKategorie, 1);
 
             $oOberKategorie_arr[] = $oKategorie;
-            Shop::Cache()->flushTags(array(CACHING_GROUP_CATEGORY . '_' . $oKategorieArtikel->kKategorie));
-            if ($isPageCacheEnabled === true) {
-                if (!isset($smarty)) {
-                    $smarty = Shop::Smarty();
-                }
-                $smarty->clearCache(null, 'jtlc|category|cid' . $oKategorieArtikel->kKategorie);
-            }
-
+            Shop::Cache()->flushTags(array(CACHING_GROUP_CATEGORY . '_' . (int) $oKategorieArtikel->kKategorie));
             // Laufe solange bis es keine OberKategorie mehr zum aktuellen KategorieArtikel gibt
             // Falls es zum aktuellen KategorieArtikel keine OberKategorie gibt, wird die schleife nicht betreten
             while (isset($oKategorie->kOberKategorie) && $oKategorie->kOberKategorie > 0) {
                 // Hole OberKategorie
-                $oKategorie = Shop::DB()->query("SELECT * FROM tkategorie WHERE kKategorie = " . (int)$oKategorie->kOberKategorie, 1);
+                $oKategorie = Shop::DB()->query("SELECT * FROM tkategorie WHERE kKategorie = " . (int) $oKategorie->kOberKategorie, 1);
                 if (isset($oKategorie->kKategorie)) {
                     $oOberKategorie_arr[] = $oKategorie;
                 }

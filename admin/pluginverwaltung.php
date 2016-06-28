@@ -249,8 +249,7 @@ if (verifyGPCDataInteger('pluginverwaltung_uebersicht') === 1 && validateToken()
                     $cFehler = 'Fehler: Ein oder mehrere Plugins wurden nicht in der Datenbank gefunden.';
                 }
             } elseif (isset($_POST['reload'])) { // Reload
-                //$oPlugin = Shop::DB()->query( "SELECT kPlugin FROM tplugin WHERE kPlugin = " . $kPlugin, 1);
-                $oPlugin = Shop::DB()->query( "SELECT * FROM tplugin WHERE kPlugin = " . $kPlugin, 1);
+                $oPlugin = Shop::DB()->select ('tplugin', 'kPlugin', $kPlugin);
 
                 if (isset($oPlugin->kPlugin) && $oPlugin->kPlugin > 0) {
                     $nReturnValue = reloadPlugin($oPlugin);

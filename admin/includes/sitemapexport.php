@@ -11,19 +11,19 @@ require_once PFAD_ROOT . PFAD_CLASSES_CORE . 'class.core.Shop.php';
  */
 function baueSitemap($nDatei, $data)
 {
-    writeLog(PFAD_ROOT . 'jtllogs/sitemap.log', 'Baue "/export/sitemap_' . $nDatei . '.xml", Datenlänge "' . strlen($data) . '"', 1);
+    writeLog(PFAD_ROOT . 'jtllogs/sitemap.log', 'Baue "' . PFAD_EXPORT . 'sitemap_' . $nDatei . '.xml", Datenlänge "' . strlen($data) . '"', 1);
     $conf = Shop::getSettings(array(CONF_SITEMAP));
     if (!empty($data)) {
         if (function_exists('gzopen')) {
             // Sitemap-Dateien anlegen
-            $gz = gzopen(PFAD_ROOT . '/export/sitemap_' . $nDatei . '.xml.gz', 'w9');
+            $gz = gzopen(PFAD_ROOT . PFAD_EXPORT . 'sitemap_' . $nDatei . '.xml.gz', 'w9');
             fputs($gz, getXMLHeader($conf['sitemap']['sitemap_googleimage_anzeigen']) . "\n");
             fputs($gz, $data);
             fputs($gz, '</urlset>');
             gzclose($gz);
         } else {
             // Sitemap-Dateien anlegen
-            $file = fopen(PFAD_ROOT . '/export/sitemap_' . $nDatei . '.xml', 'w+');
+            $file = fopen(PFAD_ROOT . PFAD_EXPORT . 'sitemap_' . $nDatei . '.xml', 'w+');
             fputs($file, getXMLHeader($conf['sitemap']['sitemap_googleimage_anzeigen']) . "\n");
             fputs($file, $data);
             fputs($file, '</urlset>');

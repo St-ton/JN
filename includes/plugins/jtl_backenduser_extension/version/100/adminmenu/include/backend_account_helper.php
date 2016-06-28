@@ -94,7 +94,7 @@ class BackendAccountHelper
     {
         if (isset($contentArr) && is_array($contentArr)) {
             foreach ($contentArr as $key => $content) {
-                $author = ContentAuthor::getInstance()->getAuthor($realm, $content->$contentKey);
+                $author = ContentAuthor::getInstance()->getAuthor($realm, $content->$contentKey, true);
 
                 if (isset($author->kAdminlogin) && $author->kAdminlogin > 0) {
                     // Avatar benutzen?

@@ -55,26 +55,34 @@ class ContentAuthor
     /**
      * @param string $realm
      * @param int $contentID
+     * @param boolean $activeOnly
      * @return object
      */
-    public function getAuthor($realm, $contentID)
+    public function getAuthor($realm, $contentID, $activeOnly = false)
     {
+        $filter = $activeOnly ? 'AND tadminlogin.bAktiv = 1
+                    AND COALESCE(tadminlogin.dGueltigBis, NOW()) >= NOW()' : '';
+
         $author  = Shop::DB()->query(
             "SELECT tcontentauthor.kContentAuthor, tcontentauthor.cRealm, tcontentauthor.kAdminlogin, tcontentauthor.kContentId,
                     tadminlogin.cName, tadminlogin.cMail
                 FROM tcontentauthor
                 INNER JOIN tadminlogin ON tadminlogin.kAdminlogin = tcontentauthor.kAdminlogin
                 WHERE tcontentauthor.cRealm = '" . $realm . "'
-                    AND tcontentauthor.kContentId = " . (int)$contentID, 1
+                    AND tcontentauthor.kContentId = " . (int)$contentID . "
+                    $filter", 1
         );
-        $attribs = Shop::DB()->query(
-            "SELECT tadminloginattribut.kAttribut, tadminloginattribut.cName, tadminloginattribut.cAttribValue, tadminloginattribut.cAttribText
-                FROM tadminloginattribut
-                WHERE tadminloginattribut.kAdminlogin = " . (int)$author->kAdminlogin, 2
-        );
-        $author->extAttribs = array();
-        foreach ($attribs as $attrib) {
-            $author->extAttribs[$attrib->cName] = $attrib;
+
+        if (is_object($author) && (int)$author->kAdminlogin > 0) {
+            $attribs = Shop::DB()->query(
+                "SELECT tadminloginattribut.kAttribut, tadminloginattribut.cName, tadminloginattribut.cAttribValue, tadminloginattribut.cAttribText
+                    FROM tadminloginattribut
+                    WHERE tadminloginattribut.kAdminlogin = " . (int)$author->kAdminlogin, 2
+            );
+            $author->extAttribs = array();
+            foreach ($attribs as $attrib) {
+                $author->extAttribs[$attrib->cName] = $attrib;
+            }
         }
 
         return $author;

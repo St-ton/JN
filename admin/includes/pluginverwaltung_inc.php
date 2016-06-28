@@ -1756,7 +1756,7 @@ function installierePlugin($XML_arr, $cVerzeichnis, $oPluginOld)
         $bSQLFehler   = false;
         $nReturnValue = 1;
         foreach ($XML_arr['jtlshop3plugin'][0]['Install'][0]['Version'] as $i => $Version_arr) {
-            if (isset($oPluginOld->kPlugin) && $nVersion && isset($Version_arr['nr']) && $oPluginOld->nVersion >= intval($Version_arr['nr']) && $nVersion != 100) {
+            if (isset($oPluginOld->kPlugin) && $nVersion && isset($Version_arr['nr']) && $oPluginOld->nVersion >= intval($Version_arr['nr'])) {
                 continue;
             }
             preg_match('/[0-9]+\sattr/', $i, $cTreffer1_arr);

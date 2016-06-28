@@ -148,7 +148,7 @@ function bearbeiteInsert($xml, array $conf)
     $Artikel->kArtikel = 0;
 
     if (is_array($xml['tartikel attr'])) {
-        $Artikel->kArtikel = intval($xml['tartikel attr']['kArtikel']);
+        $Artikel->kArtikel = (int) $xml['tartikel attr']['kArtikel'];
     }
     if (!$Artikel->kArtikel) {
         if (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
@@ -160,7 +160,7 @@ function bearbeiteInsert($xml, array $conf)
     if (is_array($xml['tartikel'])) {
         $artikel_arr = mapArray($xml, 'tartikel', $GLOBALS['mArtikel']);
         // Alten SEO-Pfad merken. Eintrag in tredirect, wenn sich der Pfad geändert hat. 
-        $oSeoOld       = Shop::DB()->query("SELECT cSeo FROM tartikel WHERE kArtikel = " . (int)$Artikel->kArtikel, 1);
+        $oSeoOld       = Shop::DB()->query("SELECT cSeo FROM tartikel WHERE kArtikel = " . (int) $Artikel->kArtikel, 1);
         $oSeoAssoc_arr = getSeoFromDB($Artikel->kArtikel, 'kArtikel', null, 'kSprache');
         $isParent      = (isset($artikel_arr[0]->nIstVater)) ? 1 : 0;
 
@@ -169,14 +169,14 @@ function bearbeiteInsert($xml, array $conf)
             $newArticleCategories     = array();
             $flush                    = false;
             // get list of all categories the article is currently associated with
-            $currentArticleCategoriesObject = Shop::DB()->query("SELECT kKategorie FROM tkategorieartikel WHERE kArtikel = " . $Artikel->kArtikel, 2);
+            $currentArticleCategoriesObject = Shop::DB()->query("SELECT kKategorie FROM tkategorieartikel WHERE kArtikel = " . (int) $Artikel->kArtikel, 2);
             foreach ($currentArticleCategoriesObject as $obj) {
-                $currentArticleCategories[] = (int)$obj->kKategorie;
+                $currentArticleCategories[] = (int) $obj->kKategorie;
             }
             // get list of all categories the article will be associated with after this update
             $newArticleCategoriesObject = mapArray($xml['tartikel'], 'tkategorieartikel', $GLOBALS['mKategorieArtikel']);
             foreach ($newArticleCategoriesObject as $newArticleCategory) {
-                $newArticleCategories[] = (int)$newArticleCategory->kKategorie;
+                $newArticleCategories[] = (int) $newArticleCategory->kKategorie;
             }
             foreach ($newArticleCategories as $newArticleCategory) {
                 if (!in_array($newArticleCategory, $currentArticleCategories)) {
@@ -516,7 +516,6 @@ function bearbeiteInsert($xml, array $conf)
         }
         // Konfig
         loescheKonfig($Artikel->kArtikel);
-        clearProductCaches($Artikel->kArtikel);
         if (isset($xml['tartikel']['tartikelkonfiggruppe']) && is_array($xml['tartikel']['tartikelkonfiggruppe'])) {
             $oArtikelKonfig_arr = mapArray($xml['tartikel'], 'tartikelkonfiggruppe', $GLOBALS['mArtikelkonfiggruppe']);
             if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
@@ -524,7 +523,6 @@ function bearbeiteInsert($xml, array $conf)
             }
             DBUpdateInsert('tartikelkonfiggruppe', $oArtikelKonfig_arr, 'kArtikel', 'kKonfiggruppe');
         }
-
         // Sonderpreise
         Shop::DB()->delete('tsonderpreise', 'kArtikelSonderpreis', $artikel_arr[0]->kArtikel);
         if (isset($xml['tartikel']['tartikelsonderpreis'])) {
@@ -817,6 +815,7 @@ function bearbeiteInsert($xml, array $conf)
         // Alle Shop Kundengruppen holen
         $oKundengruppe_arr = Shop::DB()->query("SELECT kKundengruppe FROM tkundengruppe", 2);
         fuelleArtikelKategorieRabatt($artikel_arr[0], $oKundengruppe_arr);
+        clearProductCaches($Artikel->kArtikel);
         //emailbenachrichtigung, wenn verfügbar
         versendeVerfuegbarkeitsbenachrichtigung($artikel_arr[0]);
     }
@@ -921,7 +920,7 @@ function loescheArtikelEigenschaft($kArtikel)
  */
 function loescheEigenschaftWert($kEigenschaftWert)
 {
-    $kEigenschaftWert = (int)$kEigenschaftWert;
+    $kEigenschaftWert = (int) $kEigenschaftWert;
     if ($kEigenschaftWert > 0) {
         Shop::DB()->query("DELETE FROM teigenschaftwert WHERE kEigenschaftWert = " . $kEigenschaftWert, 4);
         Shop::DB()->query("DELETE FROM teigenschaftwertaufpreis WHERE kEigenschaftWert = " . $kEigenschaftWert, 4);
@@ -992,9 +991,9 @@ function loescheMediendateien($kMedienDatei)
 {
     $kMedienDatei = (int)$kMedienDatei;
     if ($kMedienDatei > 0) {
-        Shop::DB()->query("DELETE FROM tmediendatei WHERE kMedienDatei = " . $kMedienDatei, 4);
-        Shop::DB()->query("DELETE FROM tmediendateisprache WHERE kMedienDatei = " . $kMedienDatei, 4);
-        Shop::DB()->query("DELETE FROM tmediendateiattribut WHERE kMedienDatei = " . $kMedienDatei, 4);
+        Shop::DB()->delete('tmediendatei', 'kMedienDatei', $kMedienDatei);
+        Shop::DB()->delete('tmediendateisprache', 'kMedienDatei', $kMedienDatei);
+        Shop::DB()->delete('tmediendateiattribut', 'kMedienDatei', $kMedienDatei);
     }
 }
 
@@ -1006,9 +1005,9 @@ function loescheArtikelMediendateien($kArtikel)
     $kArtikel = (int)$kArtikel;
     if ($kArtikel > 0) {
         $mediendateien_arr = Shop::DB()->query(
-            "SELECT tmediendatei.kMedienDatei
+            "SELECT kMedienDatei
                 FROM tmediendatei
-                WHERE tmediendatei.kArtikel = $kArtikel", 2);
+                WHERE kArtikel = $kArtikel", 2);
 
         if (is_array($mediendateien_arr) && count($mediendateien_arr)) {
             foreach ($mediendateien_arr as $oMediendatei) {
@@ -1023,10 +1022,10 @@ function loescheArtikelMediendateien($kArtikel)
  */
 function loescheUpload($kUploadSchema)
 {
-    $kUploadSchema = (int)$kUploadSchema;
+    $kUploadSchema = (int) $kUploadSchema;
     if ($kUploadSchema > 0) {
-        Shop::DB()->query("DELETE FROM tuploadschema WHERE kUploadSchema = " . $kUploadSchema, 4);
-        Shop::DB()->query("DELETE FROM tuploadschemasprache WHERE kArtikelUpload = " . $kUploadSchema, 4);
+        Shop::DB()->delete('tuploadschema', 'kUploadSchema', $kUploadSchema);
+        Shop::DB()->delete('tuploadschemasprache', 'kArtikelUpload', $kUploadSchema);
     }
 }
 
@@ -1035,12 +1034,12 @@ function loescheUpload($kUploadSchema)
  */
 function loescheArtikelUpload($kArtikel)
 {
-    $kArtikel = (int)$kArtikel;
+    $kArtikel = (int) $kArtikel;
     if ($kArtikel > 0) {
         $uploadschema_arr = Shop::DB()->query(
-            "SELECT tuploadschema.kUploadSchema
+            "SELECT kUploadSchema
                 FROM tuploadschema
-                WHERE tuploadschema.kCustomID = $kArtikel", 2);
+                WHERE kCustomID = $kArtikel", 2);
 
         if (is_array($uploadschema_arr) && count($uploadschema_arr)) {
             foreach ($uploadschema_arr as $oUploadschema) {
@@ -1062,13 +1061,13 @@ function loescheDownload($kArtikel, $kDownload = null)
         Jtllog::writeLog('loescheDownload: kArtikel:' . var_export($kArtikel, true) . '- kDownload:' . var_export($kDownload, true), JTLLOG_LEVEL_DEBUG, false, 'Artikel_xml');
     }
     if ($kArtikel > 0 && $kDownload > 0) {
-        Shop::DB()->query("DELETE FROM tartikeldownload WHERE kArtikel = " . $kArtikel . " AND kDownload = " . $kDownload, 4);
+        Shop::DB()->delete('tartikeldownload', array('kArtikel', 'kDownload'), array($kArtikel, $kDownload));
     } else if ($kArtikel > 0) {
-        Shop::DB()->query("DELETE FROM tartikeldownload WHERE kArtikel = " . $kArtikel, 4);
+        Shop::DB()->delete('tartikeldownload', 'kArtikel', $kArtikel);
     }
     if ($kDownload > 0) {
-        Shop::DB()->query("DELETE FROM tdownload WHERE kDownload = " . $kDownload, 4);
-        Shop::DB()->query("DELETE FROM tdownloadsprache WHERE kDownload = " . $kDownload, 4);
+        Shop::DB()->delete('tdownload', 'kDownload', $kDownload);
+        Shop::DB()->delete('tdownloadsprache', 'kDownload', $kDownload);
     }
 }
 
@@ -1092,9 +1091,9 @@ function loescheArtikelDownload($kArtikel)
  */
 function loescheKonfig($kArtikel)
 {
-    $kArtikel = (int)$kArtikel;
+    $kArtikel = (int) $kArtikel;
     if ($kArtikel > 0) {
-        Shop::DB()->query("DELETE FROM tartikelkonfiggruppe WHERE kArtikel = " . $kArtikel, 4);
+        Shop::DB()->delete('tartikelkonfiggruppe', 'kArtikel', $kArtikel);
     }
 }
 
@@ -1103,9 +1102,9 @@ function loescheKonfig($kArtikel)
  */
 function loescheStueckliste($kStueckliste)
 {
-    $kStueckliste = (int)$kStueckliste;
+    $kStueckliste = (int) $kStueckliste;
     if ($kStueckliste > 0) {
-        Shop::DB()->query("DELETE FROM tstueckliste WHERE kStueckliste = " . $kStueckliste, 4);
+        Shop::DB()->delete('tstueckliste', 'kStueckliste', $kStueckliste);
     }
 }
 
@@ -1252,20 +1251,11 @@ function getDownloadKeys($kArtikel) {
  */
 function clearProductCaches($kArtikel)
 {
-    $kArtikel = (int)$kArtikel;
-    //flush config parents cache
+    $kArtikel  = (int) $kArtikel;
     $parentIDs = getConfigParents($kArtikel);
-    foreach ($parentIDs as $_parentID) {
-        Shop::Cache()->flushTags(array(CACHING_GROUP_ARTICLE . '_' . $_parentID));
-    }
-    //flush article cache
-    Shop::Cache()->flushTags(array(CACHING_GROUP_ARTICLE . '_' . $kArtikel));
-    if (Shop::Cache()->isPageCacheEnabled()) {
-        if (!isset($smarty)) {
-            $smarty = Shop::Smarty();
-        }
-        $smarty->clearCache(null, 'jtlc|article|aid' . $kArtikel);
-    }
+    array_walk($parentIDs,  function(&$i) { $i = CACHING_GROUP_ARTICLE . '_' . $i; });
+    //flush config parents cache
+    Shop::Cache()->flushTags($parentIDs);
     //flush cache tags associated with the article's manufacturer ID
     $oArticleManufacturer = Shop::DB()->query("SELECT kHersteller FROM tartikel WHERE kArtikel = " . $kArtikel, 1);
     if (isset($oArticleManufacturer->kHersteller) && intval($oArticleManufacturer->kHersteller) > 0) {
@@ -1276,14 +1266,8 @@ function clearProductCaches($kArtikel)
     if (is_array($oArticleCategories)) {
         foreach ($oArticleCategories as $_articleCategory) {
             Shop::Cache()->flushTags(array(CACHING_GROUP_CATEGORY . '_' . (int)$_articleCategory->kKategorie));
-            if (Shop::Cache()->isPageCacheEnabled()) {
-                if (!isset($smarty)) {
-                    $smarty = Shop::Smarty();
-                }
-                $smarty->clearCache(null, 'jtlc|category|cid' . (int)$_articleCategory->kKategorie);
-            }
         }
     }
-    //clear cache for gibMerkmalFilterOptionen() and mega menu/category boxes
-    Shop::Cache()->flushTags(array('jtl_mmf'));
+    //flush article cache and cache for gibMerkmalFilterOptionen() and mega menu/category boxes
+    Shop::Cache()->flushTags(array(CACHING_GROUP_ARTICLE . '_' . $kArtikel, 'jtl_mmf'));
 }

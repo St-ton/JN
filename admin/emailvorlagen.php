@@ -497,6 +497,7 @@ if (isset($_POST['preview']) && intval($_POST['preview']) > 0) {
         }
 
         $kunde->kSprache                       = $Sprache->kSprache;
+        $NewsletterEmpfaenger->kSprache        = $Sprache->kSprache;
         $obj                                   = new stdClass();
         $obj->tkunde                           = $kunde;
         $obj->tkunde->cPasswortKlartext        = 'superGeheim';

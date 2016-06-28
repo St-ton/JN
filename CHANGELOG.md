@@ -29,7 +29,8 @@
 * Bugfix: "<tab>" wird aus Exportformaten gelöscht, wenn beim Speichern Angaben fehlen (#136)
 * Verbesserung: Links können nun dupliziert werden und in mehreren Linkgruppen gleichzeitig vorhanden sein (#159)
 * Bugfix: Kupon::generateCode() erzeugt Endlosrekursion
-* Verbesserung: HOOK_INDEX_SEO_404 wird nun auch ausgeführt, wenn cSeo nicht leer ist 
+* Verbesserung: HOOK_INDEX_SEO_404 wird nun auch ausgeführt, wenn cSeo nicht leer ist
+* Verbesserung: HOOK_WARENKORB_PAGE_KUPONANNEHMEN_PLAUSI wird wieder früher ausgeführt und enthält Parameter 
 
 ## [4.04]
 * Bugfix: robots.txt fehlendes "Sitemap: " vor der Sitemap-URL (#83)

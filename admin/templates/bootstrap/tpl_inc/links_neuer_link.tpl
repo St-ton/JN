@@ -139,12 +139,14 @@
                         </select>
                         <span class="input-group-addon">{getHelpDesc cDesc=#multipleChoice#}</span>
                     </div>
+                    {if $Link->nLinkart != LINKTYP_LOGIN}
                     <div class="input-group">
                         <span class="input-group-addon"><label for="cSichtbarNachLogin">{#visibleAfterLogin#}</label></span>
                         <div class="input-group-wrap">
                             <input class="form-control2" type="checkbox" name="cSichtbarNachLogin" id="cSichtbarNachLogin" value="Y" {if (isset($Link->cSichtbarNachLogin) && $Link->cSichtbarNachLogin === 'Y') || (isset($xPostVar_arr.cSichtbarNachLogin) && $xPostVar_arr.cSichtbarNachLogin)}checked{/if} />
                         </div>
                     </div>
+                    {/if}
                     <div class="input-group">
                         <span class="input-group-addon"><label for="bSSL">SSL</label></span>
                         <span class="input-group-wrap">

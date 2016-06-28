@@ -297,7 +297,7 @@ function suchanfragenSpeichern($cSuche, $nAnzahlTreffer, $bEchteSuche = false, $
                                 AND cSuche='" . Shop::DB()->realEscape($Suchausdruck) . "'", 4
                             );
                             $kSuchanfrage = Shop::DB()->insert('tsuchanfrage', $suchanfrage);
-                            writeLog(PFAD_ROOT . 'jtllogs/suchanfragen.log', print_r($suchanfrage, true), 1);
+                            writeLog(PFAD_LOGFILES . 'suchanfragen.log', print_r($suchanfrage, true), 1);
 
                             return $kSuchanfrage;
                         }

@@ -7,7 +7,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
 // Debug
 define('NO_MODE', 0); // 1 = An / 0 = Aus
-define('NO_PFAD', PFAD_ROOT . 'jtllogs/notify.log');
+define('NO_PFAD', PFAD_LOGFILES . 'notify.log');
 
 $Sprache             = Shop::DB()->query("SELECT cISO FROM tsprache WHERE cShopStandard='Y'", 1);
 $Einstellungen       = Shop::getSettings(array(CONF_GLOBAL, CONF_KUNDEN, CONF_KAUFABWICKLUNG, CONF_ZAHLUNGSARTEN));

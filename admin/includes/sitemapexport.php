@@ -11,7 +11,7 @@ require_once PFAD_ROOT . PFAD_CLASSES_CORE . 'class.core.Shop.php';
  */
 function baueSitemap($nDatei, $data)
 {
-    writeLog(PFAD_ROOT . 'jtllogs/sitemap.log', 'Baue "' . PFAD_EXPORT . 'sitemap_' . $nDatei . '.xml", Datenlänge "' . strlen($data) . '"', 1);
+    writeLog(PFAD_LOGFILES . 'sitemap.log', 'Baue "' . PFAD_EXPORT . 'sitemap_' . $nDatei . '.xml", Datenlänge "' . strlen($data) . '"', 1);
     $conf = Shop::getSettings(array(CONF_SITEMAP));
     if (!empty($data)) {
         if (function_exists('gzopen')) {

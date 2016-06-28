@@ -178,9 +178,22 @@
                 <hr>
                 <div class="row" id="plugin-screenshots">
                     {foreach from=$pp->getScreenShots() item=screenShot}
-                        <a href="{$screenShot->full}">
+                        <a href="#" data-toggle="modal" data-target="#screenshot-{$screenShot@iteration}">
                             <img class="img-responsive col-md-4" src="{$screenShot->preview}" />
                         </a>
+                        <div class="modal fade" id="screenshot-{$screenShot@iteration}" tabindex="-1" role="dialog">
+                            <div class="modal-dialog modal-lg" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                        <h4 class="modal-title">Screenshot {$screenShot@iteration}</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <img class="img-responsive" src="{$screenShot->preview}" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     {/foreach}
                 </div>
             </div>

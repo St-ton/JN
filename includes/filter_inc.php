@@ -542,7 +542,7 @@ function gibKategorieFilterOptionen($FilterSQL, $NaviFilter)
                                     " . $kKatFilter . "
                                     JOIN tkategorie ON tkategorie.kKategorie = tkategorieartikelgesamt.kKategorie";
         }
-        // nicht Standardsprache? Dann hole nicht aus tkategorie den Namne sondern aus tkategoriesprache
+        // nicht Standardsprache? Dann hole Namen nicht aus tkategorie sondern aus tkategoriesprache
         $cSQLKategorieSprache          = new stdClass();
         $cSQLKategorieSprache->cSELECT = "tkategorie.cName";
         $cSQLKategorieSprache->cJOIN   = '';
@@ -614,7 +614,13 @@ function gibKategorieFilterOptionen($FilterSQL, $NaviFilter)
     }
     $tagArray = array(CACHING_GROUP_CATEGORY);
     if (isset($NaviFilter->Kategorie->kKategorie)) {
-        $tagArray[] = CACHING_GROUP_CATEGORY . '_' . $NaviFilter->Kategorie->kKategorie;
+        $tagArray[] = CACHING_GROUP_CATEGORY . '_' . (int) $NaviFilter->Kategorie->kKategorie;
+    } else {
+        foreach ($oKategorieFilterDB_arr as $filter) {
+            if (isset($filter->kKategorie)) {
+                $tagArray[] = CACHING_GROUP_CATEGORY . '_' . (int) $filter->kKategorie;
+            }
+        }
     }
     Shop::Cache()->set($cacheID, $oKategorieFilterDB_arr, $tagArray);
 

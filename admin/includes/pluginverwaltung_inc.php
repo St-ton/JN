@@ -2916,18 +2916,19 @@ function installierePluginVersion($XML_arr, $cVerzeichnis, $oPluginOld, $nXMLVer
  * Laedt das Plugin neu, d.h. liest die XML Struktur neu ein, fuehrt neue SQLs aus.
  *
  * @param int $kPlugin
+ * @param bool $forceReload
  * @return int
  * 200 = kein Reload nötig, da info file älter als dZuletztAktualisiert
  * siehe return Codes von installierePluginVorbereitung()
  */
-function reloadPlugin($oPlugin)
+function reloadPlugin($oPlugin, $forceReload = false)
 {
     $cXMLPath       = PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/' . PLUGIN_INFO_FILE;
     $oLastUpdate    = new DateTimeImmutable($oPlugin->dZuletztAktualisiert);
     $nLastUpdate    = $oLastUpdate->getTimestamp();
     $nLastXMLChange = filemtime($cXMLPath);
 
-    if ($nLastXMLChange > $nLastUpdate) {
+    if ($nLastXMLChange > $nLastUpdate || $forceReload === true) {
         return installierePluginVorbereitung($oPlugin->cVerzeichnis, $oPlugin);
     }
 

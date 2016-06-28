@@ -252,13 +252,11 @@ if (verifyGPCDataInteger('pluginverwaltung_uebersicht') === 1 && validateToken()
                 $oPlugin = Shop::DB()->select ('tplugin', 'kPlugin', $kPlugin);
 
                 if (isset($oPlugin->kPlugin) && $oPlugin->kPlugin > 0) {
-                    $nReturnValue = reloadPlugin($oPlugin);
+                    $nReturnValue = reloadPlugin($oPlugin, true);
 
                     if ($nReturnValue === 1 || $nReturnValue === 126) {
                         $cHinweis = 'Ihre ausgew&auml;hlten Plugins wurden erfolgreich neu geladen.';
                         $reload = true;
-                    } elseif ($nReturnValue === 200) {
-                        $cHinweis = 'Ihre ausgew&auml;hlten Plugins sind aktuell.';
                     } else {
                         $cFehler = 'Fehler: Ein Plugin konnte nicht neu geladen werden.';
                     }

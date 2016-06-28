@@ -669,7 +669,8 @@ function AktualisiereStueckliste($kStueckliste, $fPackeinheitSt, $fLagerbestandS
             "SELECT (IFNULL(FLOOR(MIN(tartikel.fLagerbestand / tstueckliste.fAnzahl)), 999999)) AS fMin
                 FROM tartikel
                 JOIN tstueckliste ON tstueckliste.kArtikel = tartikel.kArtikel
-                AND tstueckliste.kStueckliste = {$kStueckliste}", 1
+                AND tstueckliste.kStueckliste = {$kStueckliste}
+                AND tartikel.cLagerKleinerNull = 'N'", 1
         );
 
         if (isset($ofMin->fMin)) {
@@ -684,7 +685,8 @@ function AktualisiereStueckliste($kStueckliste, $fPackeinheitSt, $fLagerbestandS
             "SELECT LEAST(IFNULL(FLOOR(MIN(tartikel.fLagerbestand / tstueckliste.fAnzahl)), 999999), {$fStuecklisteLagerbestand}) AS fMin
                 FROM tartikel
                 JOIN tstueckliste ON tstueckliste.kArtikel = tartikel.kArtikel
-                AND tstueckliste.kStueckliste = {$kStueckliste}", 1
+                AND tstueckliste.kStueckliste = {$kStueckliste}
+                AND tartikel.cLagerKleinerNull = 'N'", 1
         );
         if (isset($ofMin->fMin)) {
             $fLagerbestand = $ofMin->fMin;

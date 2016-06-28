@@ -102,7 +102,7 @@ class BackendAccountHelper
                         if ($author->extAttribs['useAvatar']->cAttribValue === 'G') {
                             $params = ['email' => null, 's' => 80, 'd' => 'mm', 'r' => 'g'];
                             $url    = 'https://www.gravatar.com/avatar/';
-                            $url   .= md5(!empty($author->extAttribs['useGravatarEmail']) ? strtolower(trim($author->extAttribs['useGravatarEmail'])) : strtolower(trim($author->cMail)));
+                            $url   .= md5(!empty($author->extAttribs['useGravatarEmail']->cAttribValue) ? strtolower(trim($author->extAttribs['useGravatarEmail']->cAttribValue)) : strtolower(trim($author->cMail)));
                             $url   .= '?' . http_build_query($params, '', '&');
                             $author->cAvatarImgSrc = $url;
                         }
@@ -130,9 +130,9 @@ class BackendAccountHelper
 
                     // Google+ benutzen?
                     if ($this->getConfigParam('use_gplus', 'N') === 'Y' && !empty($author->extAttribs['useGPlus']->cAttribValue)) {
-                        $author->gplusProfile = $author->extAttribs['useGPlus']->cAttribValue;
+                        $author->cGplusProfile = $author->extAttribs['useGPlus']->cAttribValue;
                     }
-                    unset ($author->extAttribs['useGPlus']);
+                    unset($author->extAttribs['useGPlus']);
 
                     $contentArr[$key]->oAuthor = $author;
                 }

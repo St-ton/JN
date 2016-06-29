@@ -4698,6 +4698,7 @@ class Artikel
             // we don't have loaded the list of pieces yet, do so!
         if (!empty($this->kStueckliste) && empty($this->oStueckliste_arr) || !empty($this->oStueckliste_arr) && count($this->oStueckliste_arr) !== $nAllPieces) {
             $resetArray = true;
+            $tmp_oStueckliste_arr = $this->oStueckliste_arr;
             unset($this->oStueckliste_arr);
             $this->holeStueckliste($_SESSION['Kundengruppe']->kKundengruppe, true);
         }
@@ -4718,7 +4719,7 @@ class Artikel
             $this->nMaxDeliveryDays = $allMaxDeliveryDays;
             if (!empty($resetArray)) {
                 unset($this->oStueckliste_arr);
-                $this->holeStueckliste($_SESSION['Kundengruppe']->kKundengruppe);
+                $this->oStueckliste_arr = $tmp_oStueckliste_arr;
             }
 
             return $estimatedDelivery;

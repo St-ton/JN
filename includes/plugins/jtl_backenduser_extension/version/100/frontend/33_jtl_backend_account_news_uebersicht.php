@@ -11,7 +11,6 @@
  * @global array $args_arr
  * @global Plugin $oPlugin
  */
-
 require_once $oPlugin->cAdminmenuPfad . 'include/backend_account_helper.php';
 
 $smarty  = $GLOBALS['smarty'];

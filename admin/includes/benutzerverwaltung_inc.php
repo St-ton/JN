@@ -18,7 +18,10 @@ function getAdmin($kAdminlogin)
  */
 function getAdminList()
 {
-    return Shop::DB()->query("SELECT * FROM tadminlogin LEFT JOIN tadminlogingruppe ON tadminlogin.kAdminlogingruppe = tadminlogingruppe.kAdminlogingruppe", 2);
+    return Shop::DB()->query(
+        "SELECT * FROM tadminlogin 
+            LEFT JOIN tadminlogingruppe ON tadminlogin.kAdminlogingruppe = tadminlogingruppe.kAdminlogingruppe", 2
+    );
 }
 
 /**
@@ -64,7 +67,8 @@ function getAdminGroup($kAdminlogingruppe)
 function getAdminGroupPermissions($kAdminlogingruppe)
 {
     $oPerm_arr         = array();
-    $oPermission_arr   = Shop::DB()->query("SELECT * FROM tadminrechtegruppe WHERE kAdminlogingruppe = " . (int)$kAdminlogingruppe, 2);
+    $oPermission_arr   = Shop::DB()->select('tadminrechtegruppe', 'kAdminlogingruppe', (int)$kAdminlogingruppe);
+
     foreach ($oPermission_arr as $oPermission) {
         $oPerm_arr[] = $oPermission->cRecht;
     }
@@ -257,14 +261,14 @@ function benutzerverwaltungActionAccountEdit(JTLSmarty $smarty, array &$messages
     $kAdminlogin = (isset($_POST['id']) ? (int)$_POST['id'] : null);
 
     if (isset($_POST['save'])) {
-        $cError_arr = array();
-        $oTmpAcc = new stdClass();
+        $cError_arr           = array();
+        $oTmpAcc              = new stdClass();
         $oTmpAcc->kAdminlogin = (isset($_POST['kAdminlogin'])) ? (int)$_POST['kAdminlogin'] : 0;
-        $oTmpAcc->cName = trim($_POST['cName']);
-        $oTmpAcc->cMail = trim($_POST['cMail']);
-        $oTmpAcc->cLogin = trim($_POST['cLogin']);
-        $oTmpAcc->cPass = trim($_POST['cPass']);
-        $tmpAttribs     = isset($_POST['extAttribs']) ? $_POST['extAttribs'] : array();
+        $oTmpAcc->cName       = trim($_POST['cName']);
+        $oTmpAcc->cMail       = trim($_POST['cMail']);
+        $oTmpAcc->cLogin      = trim($_POST['cLogin']);
+        $oTmpAcc->cPass       = trim($_POST['cPass']);
+        $tmpAttribs           = isset($_POST['extAttribs']) ? $_POST['extAttribs'] : array();
 
         $dGueltigBisAktiv = (isset($_POST['dGueltigBisAktiv']) && ($_POST['dGueltigBisAktiv'] === '1'));
         if ($dGueltigBisAktiv) {
@@ -346,7 +350,7 @@ function benutzerverwaltungActionAccountEdit(JTLSmarty $smarty, array &$messages
                 }
             } else {
                 unset($oTmpAcc->kAdminlogin);
-                $oTmpAcc->bAktiv = 1;
+                $oTmpAcc->bAktiv        = 1;
                 $oTmpAcc->nLoginVersuch = 0;
                 $oTmpAcc->dLetzterLogin = '_DBNULL_';
                 if (!isset($oTmpAcc->dGueltigBis) || strlen($oTmpAcc->dGueltigBis) === 0) {

@@ -2074,7 +2074,7 @@ function installierePlugin($XML_arr, $cVerzeichnis, $oPluginOld)
                                     Shop::DB()->query(
                                         "DELETE FROM tseo
                                             WHERE cKey = 'kLink'
-                                                AND kKey = " . (int)$kLink . $or . "
+                                                AND (kKey = " . (int)$kLink . $or . ")
                                                 AND kSprache = " . (int)$oSprachAssoc_arr[$oLinkSprache->cISOSprache]->kSprache, 4
                                     );
                                     // tseo füllen

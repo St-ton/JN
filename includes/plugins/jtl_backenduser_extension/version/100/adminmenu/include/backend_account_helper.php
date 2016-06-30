@@ -153,8 +153,29 @@ class BackendAccountHelper
         $showVita            = $this->getConfigParam('use_vita', 'N') === 'Y' ? true : false;
         $showGPlus           = $this->getConfigParam('use_gplus', 'N') === 'Y' ? true : false;
         $showSectionPersonal = $showAvatar || $showVita || $showGPlus;
-        $gravatarEmail       = !empty($attribs['useGravatarEmail']->cAttribValue) ? $attribs['useGravatarEmail']->cAttribValue : $oAccount->cMail;
-        $uploadImage         = $attribs['useAvatar']->cAttribValue === 'U' && !empty($attribs['useAvatarUpload']->cAttribValue) ? $attribs['useAvatarUpload']->cAttribValue : '/' . BILD_UPLOAD_ZUGRIFF_VERWEIGERT;
+
+        if ($showAvatar) {
+            $gravatarEmail = !empty($attribs['useGravatarEmail']->cAttribValue) ? $attribs['useGravatarEmail']->cAttribValue : $oAccount->cMail;
+            $uploadImage   = isset($attribs['useAvatar']->cAttribValue) && $attribs['useAvatar']->cAttribValue === 'U' && !empty($attribs['useAvatarUpload']->cAttribValue) ? $attribs['useAvatarUpload']->cAttribValue : '/' . BILD_UPLOAD_ZUGRIFF_VERWEIGERT;
+        } else {
+            $gravatarEmail = '';
+            $uploadImage   = '';
+        }
+
+        $sprachen       = gibAlleSprachen();
+        $defaultAttribs = [
+            'useGravatarEmail' => (object)['cAttribValue' => ''],
+            'useAvatar'        => (object)['cAttribValue' => ''],
+            'useAvatarUpload'  => (object)['cAttribValue' => ''],
+            'useGPlus'         => (object)['cAttribValue' => ''],
+        ];
+        foreach ($sprachen as $sprache) {
+            $defaultAttribs['useVita_' . $sprache->cISO] = (object)[
+                'cAttribValue' => '',
+                'cAttribText'  => '',
+            ];
+        }
+        $attribs = array_merge($defaultAttribs, $attribs);
 
         $result = $smarty
             ->assign('oAccount', $oAccount)
@@ -165,7 +186,7 @@ class BackendAccountHelper
             ->assign('gravatarEmail', $gravatarEmail)
             ->assign('uploadImage', $uploadImage)
             ->assign('attribValues', $attribs)
-            ->assign('sprachen', gibAlleSprachen())
+            ->assign('sprachen', $sprachen)
             ->fetch($this->plugin->cAdminmenuPfad . 'templates/userextension_index.tpl');
 
         return $result;

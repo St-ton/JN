@@ -117,7 +117,7 @@ function processImport($fmt, $data)
     $kunde->dErstellt     = 'now()';
     $cnt                  = count($data);
     for ($i = 0; $i < $cnt; $i++) {
-        if ($fmt[$i] !== '') {
+        if (!empty($fmt[$i])) {
             $kunde->{$fmt[$i]} = $data[$i];
         }
     }

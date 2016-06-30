@@ -114,7 +114,7 @@
     }
 </style>
 <div id="content">
-    {if $pp === null}
+    {if $pp === null || $pp->getPluginID() === null}
         <div class="alert alert-danger">Plugin konnte nicht gefunden werden.</div>
     {else}
         {assign var=ld value=$pp->getLongDescription()}
@@ -157,8 +157,7 @@
                                 <button class="btn btn-default disabled">bereits aktiviert</button>
                             {/if}
                         {else}
-                            <button class="btn btn-default disabled">Plugin muss zun&auml;chst heruntergeladen werden
-                            </button>
+                            <a class="btn btn-default" href="{$pp->getDownloadLink()}" target="_blank"><i class="fa fa-external-link"></i> Plugin herunterladen</a>
                         {/if}
                     </div>
                 </div>
@@ -297,7 +296,7 @@
                                     <button class="btn btn-default disabled">bereits aktiviert</button>
                                 {/if}
                             {else}
-                                <button class="btn btn-default disabled">Plugin muss zun&auml;chst heruntergeladen werden</button>
+                                <a class="btn btn-default" href="{$pp->getDownloadLink()}" target="_blank"><i class="fa fa-external-link"></i> Plugin herunterladen</a>
                             {/if}
                             {foreach from=$pp->getButtons() item=btn}
                                 <a{if $btn->external === true} target="_blank"{/if} class="{$btn->class}" href="{$btn->link}" title="{$btn->caption}">

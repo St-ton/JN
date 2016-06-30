@@ -48,6 +48,8 @@ if (!empty($pluginID)) {
         $ss->full    = 'https://bilder.jtl-software.de/erweiterungen/1165396.png';
         $pp->addScreenShot($ss);
 
+        $pp->setDownloadLink('https://shop.solution360.de/Login-und-Bezahlen-mit-Amazon-JTL-Shop4-Plugin');
+
         $sp                        = new stdClass();
         $sp->kServiceParnter       = 519;
         $sp->marketPlaceURL        = 'https://www.jtl-software.de/Servicepartner-Detailansicht?id=' . $sp->kServiceParnter;
@@ -113,6 +115,8 @@ if (!empty($pluginID)) {
         $ss->full    = $baseURL . 'agws_ts_features_03.png';
         $pp->addScreenShot($ss);
 
+        $pp->setDownloadLink('http://www.trustedshops.de/shopbetreiber/integration/shopsoftware-integration/jtl/?shop_id=&variant=&yOffset=');
+
         $sp                        = new stdClass();
         $sp->kServiceParnter       = 169;
         $sp->marketPlaceURL        = 'https://www.jtl-software.de/Servicepartner-Detailansicht?id=' . $sp->kServiceParnter;
@@ -133,6 +137,8 @@ if (!empty($pluginID)) {
         $pp->setServicePartner($sp);
 
         $pp->setHeaderColor('#FFDC0F');
+    } else {
+        $pp->setPluginID(null);
     }
 }
 

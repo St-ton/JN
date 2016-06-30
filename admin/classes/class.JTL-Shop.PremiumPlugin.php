@@ -92,6 +92,11 @@ class PremiumPlugin
     private $headerColor = '#313131';
 
     /**
+     * @var null|string
+     */
+    private $downloadLink = null;
+    
+    /**
      * PremiumPlugin constructor.
      * @param string $pluginID
      */
@@ -103,6 +108,36 @@ class PremiumPlugin
         $this->isInstalled = (isset($plugin->kPlugin) && $plugin->kPlugin > 0);
         $this->isActivated = ($this->isInstalled && (int)$plugin->nStatus === 2);
         $this->kPlugin     = ($this->isInstalled) ? (int)$plugin->kPlugin : 0;
+    }
+
+    /**
+     * @param string $id
+     * @return $this
+     */
+    public function setPluginID($id)
+    {
+        $this->pluginID = $id;
+
+        return $this;
+    }
+
+    /**
+     * @param $link
+     * @return $this
+     */
+    public function setDownloadLink($link)
+    {
+        $this->downloadLink = $link;
+        
+        return $this;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getDownloadLink()
+    {
+        return $this->downloadLink;
     }
 
     /**

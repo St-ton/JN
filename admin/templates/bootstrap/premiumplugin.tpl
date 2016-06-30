@@ -42,7 +42,7 @@
         top: 0;
         width: 100%;
         height: 15.5em;
-        background-color: #313131;
+        background-color: {$pp->getHeaderColor()};
         overflow: hidden;
         color: #fff;
     }

@@ -131,6 +131,8 @@ if (!empty($pluginID)) {
         $sp->cLandName             = 'Deutschland';
 
         $pp->setServicePartner($sp);
+
+        $pp->setHeaderColor('#FFDC0F');
     }
 }
 

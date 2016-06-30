@@ -87,6 +87,11 @@ class PremiumPlugin
     private $screenShots = array();
 
     /**
+     * @var string
+     */
+    private $headerColor = '#313131';
+
+    /**
      * PremiumPlugin constructor.
      * @param string $pluginID
      */
@@ -98,6 +103,25 @@ class PremiumPlugin
         $this->isInstalled = (isset($plugin->kPlugin) && $plugin->kPlugin > 0);
         $this->isActivated = ($this->isInstalled && (int)$plugin->nStatus === 2);
         $this->kPlugin     = ($this->isInstalled) ? (int)$plugin->kPlugin : 0;
+    }
+
+    /**
+     * @param string $color
+     * @return $this
+     */
+    public function setHeaderColor($color)
+    {
+        $this->headerColor = $color;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getHeaderColor()
+    {
+        return $this->headerColor;
     }
 
     /**

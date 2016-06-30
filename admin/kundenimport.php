@@ -19,13 +19,14 @@ $format = array(
 
 if (isset($_POST['kundenimport']) && $_POST['kundenimport'] == 1 && $_FILES['csv'] && validateToken()) {
     if (isset($_FILES['csv']['tmp_name']) && strlen($_FILES['csv']['tmp_name']) > 0) {
+        $delimiter = guessCsvDelimiter($_FILES['csv']['tmp_name']);
         $file = fopen($_FILES['csv']['tmp_name'], 'r');
         if ($file !== false) {
             $row      = 0;
             $fmt      = 0;
             $formatId = -1;
             $hinweis  = '';
-            while ($data = fgetcsv($file, 2000, ';', '"')) {
+            while ($data = fgetcsv($file, 2000, $delimiter, '"')) {
                 if ($row === 0) {
                     $hinweis .= 'Checke Kopfzeile ...';
                     $fmt = checkformat($data);
@@ -51,6 +52,27 @@ $smarty->assign('sprachen', gibAlleSprachen())
        ->assign('step', (isset($step) ? $step : null))
        ->assign('hinweis', (isset($hinweis) ? $hinweis : null))
        ->display('kundenimport.tpl');
+
+/**
+ * @param string $filename
+ * @return string delimiter guess
+ */
+function guessCsvDelimiter($filename)
+{
+    $csvText = file_get_contents($filename);
+    $charRates = count_chars($csvText);
+    $max = 0;
+
+    foreach (array(';', ',', '|', '\t') as $delim) {
+        $count = $charRates[ord($delim)];
+        if ($count > $max) {
+            $bestDelim = $delim;
+            $max = $count;
+        }
+    }
+
+    return isset($bestDelim) ? $bestDelim : ';';
+}
 
 /**
  * @param int $length

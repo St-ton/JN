@@ -1608,7 +1608,7 @@ define('HOOK_STOCK_FILTER', 221);
  * @file admin/includes/benutzerverwaltung_inc.php
  * @param Account    - oAccount
  * @param string     - type - VALIDATE|SAVE|LOCK|UNLOCK|DELETE
- * @param array      - &attribs - extended attributes (only used if type == SAVE)
+ * @param array      - &attribs - extended attributes (only used if type == VALIDATE or SAVE)
  * @param array      - &messages
  * @param bool|array - &result - true if success otherwise errormap
  */

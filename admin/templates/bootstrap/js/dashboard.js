@@ -1,5 +1,6 @@
 $(function () {
-    sortable('.column', {
+    // make each column sortable
+    var cols = sortable('.column', {
         items: '.widget',
         handle: '.widget-head',
         forcePlaceholderSize: true,
@@ -7,24 +8,44 @@ $(function () {
         placeholder: '<li class="widget-placeholder"></li>'
     });
 
+    // add listeners for each column for a sortupdate event
+    cols.forEach(function (col, i) {
+        col.addEventListener('sortupdate', function (e) {
+            var item = e.detail.item;
+            var id = $(item).attr('ref');
+            var container = e.detail.endparent;
+            var containerName = $(container).attr('id');
+
+            $(container).children().each(function (i, widget) {
+                var id = $(widget).attr('ref');
+                xajax_setWidgetPositionAjax(id, containerName, i);
+            });
+        });
+    });
+
     $('.widget').each(function (i, widget) {
         var widgetId = $(widget).attr('ref');
         var $widgetContent = $('.widget-content', widget);
         var $widget = $(widget);
+        var hidden = $('.widget-hidden', widget).length > 0;
 
-        $('<a href="#"><i class="fa fa-chevron-circle-up"></li></a>')
+        // add click handler for widgets collapse button
+        $('<a href="#"><i class="fa fa-chevron-circle-' + (hidden ? 'down' : 'up') + '"></li></a>')
             .click(function (e) {
                 if ($widgetContent.is(':hidden')) {
                     xajax_expandWidgetAjax(widgetId, 1);
                     $widgetContent.slideDown('fast');
+                    $('i', this).attr('class', 'fa fa-chevron-circle-up');
                 } else {
                     xajax_expandWidgetAjax(widgetId, 0);
                     $widgetContent.slideUp('fast');
+                    $('i', this).attr('class', 'fa fa-chevron-circle-down');
                 }
                 e.preventDefault();
             })
             .appendTo($('.options', widget));
 
+        // add click handler for widgets close button
         $('<a href="#"><i class="fa fa-times"></li></a>')
             .click(function (e) {
                 xajax_closeWidgetAjax(widgetId);

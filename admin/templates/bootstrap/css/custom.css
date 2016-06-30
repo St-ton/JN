@@ -570,7 +570,7 @@ body {
     right: 10px;
 }
 
-.column { /*.ui-sortable {*/
+.column {
     margin: 0;
     padding: 0;
 }
@@ -1561,7 +1561,7 @@ span.success {
     background: transparent;
 }
 
-.widget-head.panel-heading { /*.ui-sortable-handle {*/
+.widget-head.panel-heading {
     padding: 2px 15px;
 }
 

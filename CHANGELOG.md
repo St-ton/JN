@@ -33,6 +33,7 @@
 * Verbesserung: HOOK_WARENKORB_PAGE_KUPONANNEHMEN_PLAUSI wird wieder früher ausgeführt und enthält Parameter  (#234)
 * Verbesserung: Vermeiden mehrfacher Cache-Einträge mit demselben Inhalt in gibKategorieFilterOptionen() (#244)
 * Bugfix: Testmails werden nur noch auf Deutsch versendet (#241)
+* Bugfix: Internal Server Error wenn mod_deflate nicht aktiviert ist (#235)
 
 ## [4.04]
 * Bugfix: robots.txt fehlendes "Sitemap: " vor der Sitemap-URL (#83)

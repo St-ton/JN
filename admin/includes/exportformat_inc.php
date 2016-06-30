@@ -289,11 +289,11 @@ function verarbeiteYategoExport(&$Artikel, $exportformat, $ExportEinstellungen, 
         $Artikel->cName                 = StringHandler::unhtmlentities($Artikel->cName);
         $Artikel->cBeschreibung         = StringHandler::unhtmlentities($Artikel->cBeschreibung);
         $Artikel->cKurzBeschreibung     = StringHandler::unhtmlentities($Artikel->cKurzBeschreibung);
-        $Artikel->cName                 = StringHandler::removeDoubleSpaces(str_replace($find, $replace, $Artikel->cName));
-        $Artikel->cBeschreibung         = StringHandler::removeDoubleSpaces(str_replace($find, $replace, $Artikel->cBeschreibung));
-        $Artikel->cKurzBeschreibung     = StringHandler::removeDoubleSpaces(str_replace($find, $replace, $Artikel->cKurzBeschreibung));
-        $Artikel->cBeschreibungHTML     = StringHandler::removeDoubleSpaces(str_replace($find, $replace, $Artikel->cBeschreibungHTML));
-        $Artikel->cKurzBeschreibungHTML = StringHandler::removeDoubleSpaces(str_replace($find, $replace, $Artikel->cKurzBeschreibungHTML));
+        $Artikel->cName                 = StringHandler::removeWhitespace(str_replace($find, $replace, $Artikel->cName));
+        $Artikel->cBeschreibung         = StringHandler::removeWhitespace(str_replace($find, $replace, $Artikel->cBeschreibung));
+        $Artikel->cKurzBeschreibung     = StringHandler::removeWhitespace(str_replace($find, $replace, $Artikel->cKurzBeschreibung));
+        $Artikel->cBeschreibungHTML     = StringHandler::removeWhitespace(str_replace($find, $replace, $Artikel->cBeschreibungHTML));
+        $Artikel->cKurzBeschreibungHTML = StringHandler::removeWhitespace(str_replace($find, $replace, $Artikel->cKurzBeschreibungHTML));
         $Artikel->Preise->fVKBrutto     = berechneBrutto($Artikel->Preise->fVKNetto, gibUst($Artikel->kSteuerklasse));
         //Kategoriepfad
         $Artikel->Kategorie     = new Kategorie($Artikel->gibKategorie());

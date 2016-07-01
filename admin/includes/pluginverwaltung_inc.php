@@ -1753,16 +1753,19 @@ function installierePlugin($XML_arr, $cVerzeichnis, $oPluginOld)
         if (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['Hooks']) && is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['Hooks'])) {
             if (count($XML_arr['jtlshop3plugin'][0]['Install'][0]['Hooks'][0]) === 1) {
                 // Es gibt mehr als einen Hook
-                $nHookID = 0;
+                $nHookID   = 0;
+                $nPriority = 5;
                 foreach ($XML_arr['jtlshop3plugin'][0]['Install'][0]['Hooks'][0]['Hook'] as $i => $Hook_arr) {
                     preg_match("/[0-9]+\sattr/", $i, $cTreffer1_arr);
                     preg_match("/[0-9]+/", $i, $cTreffer2_arr);
                     if (isset($cTreffer1_arr[0]) && strlen($cTreffer1_arr[0]) === strlen($i)) {
-                        $nHookID = intval($Hook_arr['id']);
+                        $nHookID   = (int) $Hook_arr['id'];
+                        $nPriority = (isset($Hook_arr['priority'])) ? (int) $Hook_arr['priority'] : 5;
                     } elseif (isset($cTreffer2_arr[0]) && strlen($cTreffer2_arr[0]) === strlen($i)) {
                         $oPluginHook             = new stdClass();
                         $oPluginHook->kPlugin    = $kPlugin;
                         $oPluginHook->nHook      = $nHookID;
+                        $oPluginHook->nPriority  = $nPriority;
                         $oPluginHook->cDateiname = $Hook_arr;
 
                         $kPluginHook = Shop::DB()->insert('tpluginhook', $oPluginHook);
@@ -1781,6 +1784,7 @@ function installierePlugin($XML_arr, $cVerzeichnis, $oPluginOld)
                 $oPluginHook             = new stdClass();
                 $oPluginHook->kPlugin    = $kPlugin;
                 $oPluginHook->nHook      = intval($Hook_arr['Hook attr']['id']);
+                $oPluginHook->nPriority  = (isset($Hook_arr['Hook attr']['priority'])) ? (int) $Hook_arr['Hook attr']['priority'] : 5;
                 $oPluginHook->cDateiname = $Hook_arr['Hook'];
 
                 $kPluginHook = Shop::DB()->insert('tpluginhook', $oPluginHook);

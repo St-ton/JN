@@ -34,6 +34,8 @@
 * Verbesserung: Vermeiden mehrfacher Cache-Einträge mit demselben Inhalt in gibKategorieFilterOptionen() (#244)
 * Bugfix: Testmails werden nur noch auf Deutsch versendet (#241)
 * Bugfix: Internal Server Error wenn mod_deflate nicht aktiviert ist (#235)
+* Verbesserung: Prioritäten für Plugin-Hooks (#45)
+* Bugfix: Abnahmeintervall wird bei Konfigurationsartikel nicht beachtet, Hinweis auf Mindestbestellmenge/Abnahmeintervall fehlt (#259)
 
 ## [4.04]
 * Bugfix: robots.txt fehlendes "Sitemap: " vor der Sitemap-URL (#83)

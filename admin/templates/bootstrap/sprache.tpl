@@ -32,7 +32,7 @@
                     <select class="form-control" name="cISO" id="{#lang#}" onchange="document.sprache.submit();">
                         <option value="">Bitte w&auml;hlen</option>
                         {foreach from=$oInstallierteSprachen item=oSprache}
-                            <option value="{$oSprache->cISO}" {if $cISO == $oSprache->cISO}selected="selected"{/if}>{$oSprache->cNameDeutsch} {if $oSprache->cShopStandard === 'Y'}(Standard){/if}</option>
+                            <option value="{$oSprache->cISO}" {if $cISO === $oSprache->cISO}selected="selected"{/if}>{$oSprache->cNameDeutsch} {if $oSprache->cShopStandard === 'Y'}(Standard){/if}</option>
                         {/foreach}
                     </select>
                 </span>
@@ -62,7 +62,7 @@
             </li>
         </ul>
         <div class="tab-content">
-            <div id="sprachvariablen" class="tab-pane fade{if !isset($cTab) || $cTab == 'sprachvariablen'} active in{/if}">
+            <div id="sprachvariablen" class="tab-pane fade{if !isset($cTab) || $cTab === 'sprachvariablen'} active in{/if}">
                 <div class="block tcenter">
                     <div class="input-group p25 left">
                         <span class="input-group-addon">
@@ -216,7 +216,7 @@
                                     <span class="input-group-wrap">
                                         <select class="form-control" id="kSprachsektion" name="kSprachsektion" onchange="showSection(options[selectedIndex].value);">
                                             {foreach from=$oWerte_arr item=oSektion}
-                                                <option value="{$oSektion->kSprachsektion}"{if isset($cPostArr.kSprachsektion)}{if $oSektion->kSprachsektion == $cPostArr.kSprachsektion} selected="selected"{/if}{else}{if ($oSektion->cName == "custom")} selected="selected"{/if}{/if}>{$oSektion->cName}</option>
+                                                <option value="{$oSektion->kSprachsektion}"{if isset($cPostArr.kSprachsektion)}{if $oSektion->kSprachsektion === $cPostArr.kSprachsektion} selected="selected"{/if}{else}{if ($oSektion->cName === "custom")} selected="selected"{/if}{/if}>{$oSektion->cName}</option>
                                             {/foreach}
                                         </select>
                                     </span>
@@ -324,7 +324,7 @@
                     </form>
                 </div>
             </div>
-            <div id="import" class="tab-pane fade{if isset($cTab) && $cTab == 'import'} active in{/if}">
+            <div id="import" class="tab-pane fade{if isset($cTab) && $cTab === 'import'} active in{/if}">
                 <form action="sprache.php" method="post" enctype="multipart/form-data">
                     {$jtl_token}
                     <div id="settings">
@@ -340,7 +340,7 @@
                                     <span class="input-group-wrap">
                                         <select name="cSprachISO" class="form-control selectBox" id="cSprachISO">
                                             {foreach from=$oVerfuegbareSprachen item=oSprache}
-                                                <option value="{$oSprache->cISO}" {if $oSprache->cISO == $cISO}selected="selected"{/if}>{$oSprache->cNameDeutsch}</option>
+                                                <option value="{$oSprache->cISO}" {if $oSprache->cISO === $cISO}selected="selected"{/if}>{$oSprache->cNameDeutsch}</option>
                                             {/foreach}
                                         </select>
                                     </span>

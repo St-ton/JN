@@ -2,7 +2,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  *}
-{if isset($position) && $position == 'popup'}
+{if isset($position) && $position === 'popup'}
 <div class="well panel-wrap">
 {else}
 <div class="row">
@@ -10,7 +10,7 @@
 {/if}
     <div class="panel panel-default">
         <div class="panel-body">
-            {if isset($position) && $position == 'popup'}
+            {if isset($position) && $position === 'popup'}
                 {if count($Artikelhinweise) > 0}
                     <div class="alert alert-danger alert-dismissible">
                         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -84,7 +84,11 @@
                         </div>
                     </div>
 
-                    {include file='snippets/checkbox.tpl' nAnzeigeOrt=CHECKBOX_ORT_FRAGE_VERFUEGBARKEIT cPlausi_arr=$fehlendeAngaben_fragezumprodukt cPost_arr=null}
+                    {if isset($fehlendeAngaben_benachrichtigung)}
+                        {include file='snippets/checkbox.tpl' nAnzeigeOrt=CHECKBOX_ORT_FRAGE_VERFUEGBARKEIT cPlausi_arr=$fehlendeAngaben_benachrichtigung cPost_arr=null}
+                    {else}
+                        {include file='snippets/checkbox.tpl' nAnzeigeOrt=CHECKBOX_ORT_FRAGE_VERFUEGBARKEIT cPlausi_arr=null cPost_arr=null}
+                    {/if}
 
                 </fieldset>
                 {if (!isset($smarty.session.bAnti_spam_already_checked) || $smarty.session.bAnti_spam_already_checked !== true) &&
@@ -109,7 +113,7 @@
             </form>
         </div>
     </div>
-{if isset($position) && $position == 'popup'}
+{if isset($position) && $position === 'popup'}
 </div>
 {else}
     </div>

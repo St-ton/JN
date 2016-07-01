@@ -233,6 +233,18 @@ class Sprache
     }
 
     /**
+     * @param int $kSektion
+     * @param mixed null|string $default
+     * @return string
+     */
+    public function getSectionName($kSektion, $default = null)
+    {
+        $section = Shop::DB()->select('tsprachsektion', 'kSprachsektion', (int)$kSektion);
+
+        return is_object($section) ? $section->cName : $default;
+    }
+
+    /**
      * generate all available lang vars for the current language
      * this saves some sql statements and is called by JTLCache only if the objekct cache is available
      *

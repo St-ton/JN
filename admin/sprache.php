@@ -68,7 +68,7 @@ if ($oSprache->gueltig() || (isset($_REQUEST['action']) && $_REQUEST['action'] =
 
             case 'export':
                 $cTab = 'export';
-                $nTyp = (int) $_POST['nTyp'];
+                $nTyp = (int)$_POST['nTyp'];
 
                 $cFileName = $oSprache->export($nTyp);
                 if (file_exists($cFileName)) {
@@ -84,7 +84,7 @@ if ($oSprache->gueltig() || (isset($_REQUEST['action']) && $_REQUEST['action'] =
 
             case 'import':
                 $cTab       = 'import';
-                $nTyp       = (int) $_POST['nTyp'];
+                $nTyp       = (int)$_POST['nTyp'];
                 $cSprachISO = $_POST['cSprachISO'];
 
                 if (isset($_FILES['langfile']) && $_FILES['langfile']['error'] == 0) {
@@ -121,7 +121,7 @@ if ($oSprache->gueltig() || (isset($_REQUEST['action']) && $_REQUEST['action'] =
                 $cName          = $_POST['cName'];
                 $cSprachISO_arr = $_POST['cSprachISO'];
                 $cWert_arr      = $_POST['cWert'];
-                $bForceInsert   = (int)$_POST['forceInsert'] === 1 ? true : false;
+                $bForceInsert   = isset($_POST['forceInsert']) && (int)$_POST['forceInsert'] === 1 ? true : false;
 
                 if (!preg_match('/([\w\d]+)/', $cName)) {
                     $cFehler = 'Die Variable darf nur aus Buchstaben und Zahlen bestehen.';

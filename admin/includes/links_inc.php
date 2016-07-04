@@ -129,7 +129,7 @@ function calcRatio($cDatei, $nMaxBreite, $nMaxHoehe)
  */
 function removeLink($kLink, $kLinkgruppe)
 {
-    $oLink = new Link($kLink, null, true);
+    $oLink              = new Link($kLink, null, true);
     $oLink->kLinkgruppe = $kLinkgruppe;
     $oLink->delete(true, $kLinkgruppe);
     // Bilderverzeichnis loeschen

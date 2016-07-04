@@ -27,24 +27,25 @@ if ($hasPermission === false) {
 $response  = new AjaxResponse();
 \Doctrine\Common\Annotations\AnnotationRegistry::registerLoader('class_exists');
 
-$getData = function() {
+$getData = function () {
     $host = 'andyfront.de'; // Shop::getUrl()
-    $api = new \Andyftw\SSLLabs\Api();
+    $api  = new \Andyftw\SSLLabs\Api();
     $info = $api->analyze($host);
-    
+
     if ($info->getStatus() === 'READY' && $endpoints = $info->getEndpoints()) {
         if (count($endpoints) > 0) {
             $endpoint = $endpoints[0];
-            $details = $api->getEndpointData($host, $endpoint->getIpAddress());
+            $details  = $api->getEndpointData($host, $endpoint->getIpAddress());
             $info->setEndpoints([$details]);
         }
     }
-    
+
     return $info;
 };
 
-$rebuildData = function($data) {
+$rebuildData = function ($data) {
     $serializer = SerializerBuilder::create()->build();
+
     return json_decode($serializer->serialize($data, 'json'));
 };
 
@@ -61,7 +62,7 @@ switch ($action) {
             $smarty->assign('data', $data);
             $content = $smarty->fetch('tpl_inc/sslcheck.tpl');
 
-            $res = (object)[ 'tpl' => $content, 'data' =>  $rebuildData($data) ];
+            $res    = (object)['tpl' => $content, 'data' =>  $rebuildData($data)];
             $result = $response->buildResponse($res);
         } catch (\Andyftw\SSLLabs\Exception\ApiException $e) {
             $result = $response->buildError($e->getMessage());

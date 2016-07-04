@@ -1712,7 +1712,7 @@ function installierePlugin($XML_arr, $cVerzeichnis, $oPluginOld)
     if (is_file(PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $oPlugin->nVersion . '/' . 'bootstrap.php')) {
         $oPlugin->bBootstrap = 1;
     }
-    
+
     if (!empty($XML_arr['jtlshop3plugin'][0]['Install'][0]['FlushTags'])) {
         $_tags = explode(',', $XML_arr['jtlshop3plugin'][0]['Install'][0]['FlushTags']);
     }
@@ -1944,7 +1944,6 @@ function installierePlugin($XML_arr, $cVerzeichnis, $oPluginOld)
                                             }
                                         } elseif ($cTyp === 'radio') {
                                             if (isset($Setting_arr['OptionsSource']) && is_array($Setting_arr['OptionsSource']) && count($Setting_arr['OptionsSource']) > 0) {
-
                                             } elseif (count($Setting_arr['RadioOptions'][0]) === 1) { // Es gibt mehr als eine Option
                                                 foreach ($Setting_arr['RadioOptions'][0]['Option'] as $y => $Option_arr) {
                                                     preg_match("/[0-9]+\sattr/", $y, $cTreffer6_arr);
@@ -2888,10 +2887,9 @@ function installierePlugin($XML_arr, $cVerzeichnis, $oPluginOld)
                 $nReturnValue       = $nSQLFehlerCode_arr[$nReturnValue];
             }
         }
-        
+
         return $nReturnValue;
-    }
-    else {
+    } else {
         return 2; // Main Plugindaten nicht korrekt
     }
 }
@@ -3428,7 +3426,7 @@ function aktivierePlugin($kPlugin)
                         SET bActive = 1
                         WHERE kPlugin = " . $kPlugin, 3
                 );
-                
+
                 if ($p = Plugin::bootstrapper($kPlugin)) {
                     $p->enabled();
                 }
@@ -4336,19 +4334,19 @@ function mappePlausiFehler($nFehlerCode, $oPlugin)
                 break;
             case 130:
                 $return = 'Fehler: Bootstrap-Klasse "%cPluginID%\\Bootstrap" existiert nicht';
-                break;                
+                break;
             case 131:
                 $return = 'Fehler: Bootstrap-Klasse "%cPluginID%\\Bootstrap" muss das Interface "IPlugin" implementieren';
                 break;
         }
     }
-    
-    $search = array_map(function($val) {
+
+    $search = array_map(function ($val) {
         return sprintf('%%%s%%', $val);
     }, array_keys((array)$oPlugin));
-    
+
     $replace = array_values((array)$oPlugin);
-    $return = str_replace($search, $replace, $return);
+    $return  = str_replace($search, $replace, $return);
 
     return utf8_decode($return);
 }

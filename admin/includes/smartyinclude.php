@@ -3,7 +3,6 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
- 
 $smarty                    = JTLSmarty::getInstance(false, true);
 $templateDir               = $smarty->getTemplateDir($smarty->context);
 $template                  = AdminTemplate::getInstance();
@@ -13,7 +12,7 @@ $currentTheme              = isset($Einstellungen['template']['theme_default']) 
 $shopURL                   = Shop::getURL();
 $currentTemplateDir        = str_replace(PFAD_ROOT . PFAD_ADMIN, '', $templateDir);
 $resourcePaths             = $template->getResources(isset($Einstellungen['template']['general']['use_minify']) && $Einstellungen['template']['general']['use_minify'] === 'Y');
-$oAccount                  = new AdminAccount(); 
+$oAccount                  = new AdminAccount();
 // Account
 if (!isset($oAccount) || get_class_methods($oAccount) === null) {
     require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'benutzerverwaltung_inc.php';

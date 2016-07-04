@@ -161,7 +161,7 @@ function bauerfc2822datum($dErstellt)
             return date('r', mktime(0, 0, 0, $dMonat, $dTag, $dJahr));
         }
     }
-    
+
     return false;
 }
 

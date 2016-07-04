@@ -39,6 +39,9 @@ function ackCheck(kPlugin, hash) {ldelim}
                 <li class="tab{if isset($cTab) && $cTab === 'upload'} active{/if}">
                     <a data-toggle="tab" role="tab" href="#upload">Upload</a>
                 </li>
+                <li class="tab">
+                    <a href="marktplatz.php">Marktplatz</a>
+                </li>
             </ul>
             <div class="tab-content">
                 {include file='tpl_inc/pluginverwaltung_uebersicht_aktiviert.tpl'}

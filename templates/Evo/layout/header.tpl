@@ -2,7 +2,7 @@
 <html lang="{$meta_language}">
 <head>
     {block name="head-meta"}
-        <meta http-equiv="content-type" content="text/html; charset=windows-1252">
+        <meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
         <meta name="description" content={block name="head-meta-description"}"{$meta_description|truncate:1000:"":true}{/block}">
         <meta name="keywords" content="{block name="head-meta-keywords"}{$meta_keywords|truncate:255:"":true}{/block}">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">

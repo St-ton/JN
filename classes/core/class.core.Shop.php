@@ -567,7 +567,7 @@ final class Shop
     }
 
     /**
-     * @param array $config
+     * @param array|int $config
      * @return array
      */
     public static function getSettings($config)
@@ -823,7 +823,7 @@ final class Shop
                             $oSeo = self::DB()->query(
                                 "SELECT kKey, kSprache, cKey, cSeo
                                     FROM tseo
-                                    WHERE cSeo='" . $cSEOMerkmal . "'", 1
+                                    WHERE cSeo = '" . $cSEOMerkmal . "'", 1
                             );
 
                             if (isset($oSeo->kKey) && strcasecmp($oSeo->cSeo, $cSEOMerkmal) === 0) {
@@ -1231,7 +1231,7 @@ final class Shop
             $oSeo_arr                              = self::DB()->query("
                 SELECT cSeo, kSprache
                     FROM tseo
-                    WHERE cKey='kMerkmalWert' AND kKey = " . $NaviFilter->MerkmalWert->kMerkmalWert . "
+                    WHERE cKey = 'kMerkmalWert' AND kKey = " . $NaviFilter->MerkmalWert->kMerkmalWert . "
                     ORDER BY kSprache", 2
             );
             if ($bSprache) {

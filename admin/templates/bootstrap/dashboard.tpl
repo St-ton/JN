@@ -5,6 +5,8 @@
 {if permission('DASHBOARD_VIEW')}
     <script type="text/javascript" src="../includes/libs/flashchart/js/json/json2.js"></script>
     <script type="text/javascript" src="../includes/libs/flashchart/js/swfobject.js"></script>
+    <script type="text/javascript" src="{$currentTemplateDir}js/html.sortable.js"></script>
+    <script type="text/javascript" src="{$currentTemplateDir}js/dashboard.js"></script>
     <script type="text/javascript">
 
     // xajax_getAvailableWidgetsAjax();
@@ -53,8 +55,6 @@
             </div>
         </div>
     </div>
-
-    <script type="text/javascript" src="{$currentTemplateDir}js/inettuts.js"></script>
 {else}
     {include file='tpl_inc/seite_header.tpl' cTitel=#dashboard#}
     <div class="alert alert-success">

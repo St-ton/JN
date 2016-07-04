@@ -402,6 +402,8 @@ define('HOOK_WARENKORB_PAGE_KUPONANNEHMEN', 54);
  * Plausibilitätsprüfung für die Annahme eines Kupons im Warenkorb
  *
  * @file warenkorb.php
+ * @param array error
+ * @param int nReturnValue
  */
 define('HOOK_WARENKORB_PAGE_KUPONANNEHMEN_PLAUSI', 55);
 

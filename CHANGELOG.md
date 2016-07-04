@@ -29,7 +29,13 @@
 * Bugfix: "<tab>" wird aus Exportformaten gelöscht, wenn beim Speichern Angaben fehlen (#136)
 * Verbesserung: Links können nun dupliziert werden und in mehreren Linkgruppen gleichzeitig vorhanden sein (#159)
 * Bugfix: Kupon::generateCode() erzeugt Endlosrekursion
-* Verbesserung: HOOK_INDEX_SEO_404 wird nun auch ausgeführt, wenn cSeo nicht leer ist 
+* Verbesserung: HOOK_INDEX_SEO_404 wird nun auch ausgeführt, wenn cSeo nicht leer ist
+* Verbesserung: HOOK_WARENKORB_PAGE_KUPONANNEHMEN_PLAUSI wird wieder früher ausgeführt und enthält Parameter  (#234)
+* Verbesserung: Vermeiden mehrfacher Cache-Einträge mit demselben Inhalt in gibKategorieFilterOptionen() (#244)
+* Bugfix: Testmails werden nur noch auf Deutsch versendet (#241)
+* Bugfix: Internal Server Error wenn mod_deflate nicht aktiviert ist (#235)
+* Verbesserung: Prioritäten für Plugin-Hooks (#45)
+* Bugfix: Abnahmeintervall wird bei Konfigurationsartikel nicht beachtet, Hinweis auf Mindestbestellmenge/Abnahmeintervall fehlt (#259)
 
 ## [4.04]
 * Bugfix: robots.txt fehlendes "Sitemap: " vor der Sitemap-URL (#83)

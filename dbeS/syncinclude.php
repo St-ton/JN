@@ -161,6 +161,9 @@ function checkFile()
  */
 function auth()
 {
+    if (!isset($_POST['userID']) || !isset($_POST['userPWD'])) {
+        return false;
+    }
     $cName      = $_POST['userID'];
     $cPass      = $_POST['userPWD'];
     $loginDaten = Shop::DB()->query("SELECT * FROM tsynclogin", 1);

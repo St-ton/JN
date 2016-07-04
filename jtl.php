@@ -596,7 +596,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
                 if (count($oBestellung_arr) > 0) {
                     $cText .= "\n" . print_r($oBestellung_arr, true);
                 }
-                writeLog(PFAD_ROOT . '/jtllogs/geloeschteKundenkontos.log', $cText, 1);
+                writeLog(PFAD_LOGFILES . 'geloeschteKundenkontos.log', $cText, 1);
 
                 // Newsletter
                 Shop::DB()->delete('tnewsletterempfaenger', 'cEmail', $_SESSION['Kunde']->cMail);

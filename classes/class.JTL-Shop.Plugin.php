@@ -729,7 +729,8 @@ class Plugin
             "SELECT tpluginhook.nHook, tplugin.kPlugin, tplugin.cVerzeichnis, tplugin.nVersion, tpluginhook.cDateiname
                 FROM tplugin
                 JOIN tpluginhook ON tpluginhook.kPlugin = tplugin.kPlugin
-                WHERE tplugin.nStatus = 2", 2
+                WHERE tplugin.nStatus = 2
+                ORDER BY tpluginhook.nPriority, tplugin.kPlugin", 2
         );
         if (is_array($oPluginHook_arr) && count($oPluginHook_arr) > 0) {
             foreach ($oPluginHook_arr as $oPluginHook) {

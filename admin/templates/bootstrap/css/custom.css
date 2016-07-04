@@ -191,6 +191,10 @@ a {
     overflow: hidden;
 }
 
+.hidden-soft {
+    display: none;
+}
+
 h1.label-wrap,h2.label-wrap,h3.label-wrap,h4.label-wrap,h5.label-wrap {
     margin: 0 0 6px;
 }
@@ -566,7 +570,7 @@ body {
     right: 10px;
 }
 
-.column.ui-sortable {
+.column {
     margin: 0;
     padding: 0;
 }
@@ -1557,7 +1561,7 @@ span.success {
     background: transparent;
 }
 
-.widget-head.panel-heading.ui-sortable-handle {
+.widget-head.panel-heading {
     padding: 2px 15px;
 }
 

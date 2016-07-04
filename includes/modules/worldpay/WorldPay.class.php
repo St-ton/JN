@@ -3,17 +3,17 @@
 include_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
 
 // Mode
-define("WP_MODE", 0); // 1 = Test / 0 = Live
+define('WP_MODE', 0); // 1 = Test / 0 = Live
 
 // Debug
-define("WP_D_MODE", 1); // 1 = An / 0 = Aus
-define("WP_D_PFAD", PFAD_ROOT . "jtllogs/worldpay.log");
+define('WP_D_MODE', 1); // 1 = An / 0 = Aus
+define('WP_D_PFAD', PFAD_LOGFILES . 'worldpay.log');
 
 // Sandbox
-define("WP_URL_TEST", "https://select-test.wp3.rbsworldpay.com/wcc/purchase");
+define('WP_URL_TEST', 'https://select-test.wp3.rbsworldpay.com/wcc/purchase');
 
 // Live
-define("WP_URL_LIVE", "https://select.wp3.rbsworldpay.com/wcc/purchase");
+define('WP_URL_LIVE', 'https://select.wp3.rbsworldpay.com/wcc/purchase');
 
 /**
  * WorldPay
@@ -52,7 +52,7 @@ class WorldPay extends PaymentMethod
                         <input type="hidden" name="amount"  value="' . round($order->fGesamtsummeKundenwaehrung, 2) . '">
                         <input type="hidden" name="desc" value="' . $order->cBestellNr . '">
                         <input type="hidden" name="testMode" value="' . $worldpay_modus . '">
-						' . $cHidden . '
+                        ' . $cHidden . '
                         <input type="hidden" name="name" value="">
                         <input type="hidden" name="adress" value="">
                         <input type="hidden" name="postcode" value="">

@@ -172,7 +172,7 @@ function load_boxes($params, &$smarty)
         if (isset($_sBoxes[$cType]) && isset($oBoxen_arr[$cType]) && is_array($oBoxen_arr[$cType])) {
             foreach ($oBoxen_arr[$cType] as $oBox) {
                 $oPluginVar = '';
-                $cTemplate = 'tpl_inc/boxes/' . $oBox->cTemplate;
+                $cTemplate  = 'tpl_inc/boxes/' . $oBox->cTemplate;
                 if ($oBox->eTyp === 'plugin') {
                     $oPlugin = new Plugin($oBox->kCustomID);
                     if ($oPlugin->kPlugin > 0 && $oPlugin->nStatus == 2) {
@@ -267,7 +267,7 @@ function gibPreisStringLocalizedSmarty($params, &$smarty)
         $fVPEWert               = doubleval($params['fVPEWert']);
         $cVPEEinheit            = $params['cVPEEinheit'];
         $FunktionsAttribute_arr = $params['FunktionsAttribute'];
-        $nGenauigkeit = (isset($FunktionsAttribute_arr[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT]) && intval($FunktionsAttribute_arr[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT]) > 0) ?
+        $nGenauigkeit           = (isset($FunktionsAttribute_arr[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT]) && intval($FunktionsAttribute_arr[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT]) > 0) ?
             intval($FunktionsAttribute_arr[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT]) :
             2;
 
@@ -480,7 +480,7 @@ function build_navigation_subs($oLink_arr, $kVaterLink = 0)
                     $cTitle = StringHandler::htmlentities($oLink->cLocalizedTitle[$cISO], ENT_QUOTES);
                 }
                 $oLink->cTitle = $cTitle;
-                $oNew_arr[] = $oLink;
+                $oNew_arr[]    = $oLink;
             }
         }
     }
@@ -546,7 +546,7 @@ function get_image_size($image)
         $req = MediaImage::toRequest($image);
 
         if (!is_object($req)) {
-            return null;
+            return;
         }
 
         $settings = Image::getSettings();
@@ -570,7 +570,7 @@ function get_image_size($image)
     return (object)[
         'src'  => $image,
         'size' => (object)[
-            'width' => $width,
+            'width'  => $width,
             'height' => $height
         ],
         'type' => $type
@@ -612,7 +612,8 @@ function get_translation($mixed, $to = null)
         return is_string($mixed)
             ? $mixed : $mixed[$to];
     }
-    return null;
+
+    return;
 }
 
 /**

@@ -1243,7 +1243,7 @@ function gibArtikelByVariationen($kArtikel, $kVariationKombi_arr)
             $j++;
         }
     } else {
-        return null;
+        return;
     }
     $oArtikelTMP = Shop::DB()->query(
         "SELECT tartikel.kArtikel

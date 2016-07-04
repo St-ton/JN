@@ -1394,7 +1394,7 @@ function gibLagerfilter()
     executeHook(HOOK_STOCK_FILTER, array(
         'conf'      => (int) $conf['global']['artikel_artikelanzeigefilter'],
         'filterSQL' => &$filterSQL
-    ));    
+    ));
 
     return $filterSQL;
 }
@@ -1467,7 +1467,7 @@ function setzeSteuersaetze($steuerland = 0)
     $_SESSION['Steuersatz'] = array();
 
     $merchantCountryCode = 'DE';
-    $Firma = Shop::DB()->query("SELECT cLand FROM tfirma", 1);
+    $Firma               = Shop::DB()->query("SELECT cLand FROM tfirma", 1);
     if (!empty($Firma->cLand)) {
         $merchantCountryCode = landISO($Firma->cLand);
     }
@@ -3827,10 +3827,9 @@ function setzeSpracheUndWaehrungLink()
                 || $AktuelleSeite === 'PASSWORT VERGESSEN'
                 || $AktuelleSeite === 'NEWS'
             ) {
-
                 switch ($AktuelleSeite) {
                     case 'STARTSEITE' :
-                        $id = null;
+                        $id                             = null;
                         $_SESSION['Sprachen'][$i]->cURL = gibNaviURL($NaviFilter, SHOP_SEO, $oZusatzFilter, $oSprache->kSprache);
                         if ($_SESSION['Sprachen'][$i]->cURL === $shopURL . '/') {
                             $_SESSION['Sprachen'][$i]->cURL .= '?lang=' . $oSprache->cISO;
@@ -4498,6 +4497,7 @@ function pruefeSOAP($cURL = '')
             return false;
         }
     }
+
     return class_exists('SoapClient');
 }
 
@@ -4512,6 +4512,7 @@ function pruefeCURL($cURL = '')
             return false;
         }
     }
+
     return function_exists('curl_init');
 }
 

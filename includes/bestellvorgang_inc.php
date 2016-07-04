@@ -3557,7 +3557,7 @@ function setzeSessionZahlungsart($Zahlungsart)
  */
 function gibSpecials($Zahlungsart)
 {
-    return null;
+    return;
 }
 
 /**

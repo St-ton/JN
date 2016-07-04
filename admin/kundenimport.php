@@ -9,6 +9,7 @@ $oAccount->permission('IMPORT_CUSTOMER_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
+require_once PFAD_ROOT . PFAD_INCLUDES . 'tools.Global.php';
 
 //jtl2
 $format = array(
@@ -53,26 +54,6 @@ $smarty->assign('sprachen', gibAlleSprachen())
        ->assign('hinweis', (isset($hinweis) ? $hinweis : null))
        ->display('kundenimport.tpl');
 
-/**
- * @param string $filename
- * @return string delimiter guess
- */
-function guessCsvDelimiter($filename)
-{
-    $csvText = file_get_contents($filename);
-    $charRates = count_chars($csvText);
-    $max = 0;
-
-    foreach (array(';', ',', '|', '\t') as $delim) {
-        $count = $charRates[ord($delim)];
-        if ($count > $max) {
-            $bestDelim = $delim;
-            $max = $count;
-        }
-    }
-
-    return isset($bestDelim) ? $bestDelim : ';';
-}
 
 /**
  * @param int $length

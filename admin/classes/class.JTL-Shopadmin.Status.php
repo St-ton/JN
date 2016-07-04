@@ -174,4 +174,31 @@ class Status
 
         return $lines;
     }
+
+    protected function getPaymentMethodsWithError()
+    {
+        $incorrectPaymentMethods = [];
+        $paymentMethods          = Shop::DB()->query("SELECT * FROM tzahlungsart WHERE nActive = 1 ORDER BY cAnbieter, cName, nSort, kZahlungsart", 2);
+
+        if (is_array($paymentMethods)) {
+            foreach ($paymentMethods as $i => $method) {
+                $log  = new ZahlungsLog($method->cModulId);
+                $logs = $log->holeLog();
+
+                if (!is_array($logs)) {
+                    continue;
+                }
+
+                foreach ($logs as $entry) {
+                    if (intval($entry->nLevel) === JTLLOG_LEVEL_ERROR) {
+                        $method->logs              = $logs;
+                        $incorrectPaymentMethods[] = $method;
+                        break;
+                    }
+                }
+            }
+        }
+
+        return $incorrectPaymentMethods;
+    }
 }

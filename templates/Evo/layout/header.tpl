@@ -22,7 +22,6 @@
 
     {block name="head-icons"}
         <link type="image/x-icon" href="{$currentTemplateDir}themes/base/images/{if !empty($Einstellungen.template.theme.favicon)}{$Einstellungen.template.theme.favicon}{else}favicon-jtl.ico{/if}" rel="shortcut icon">
-        <link href="{$currentTemplateDir}themes/base/images/apple-touch-icon.png" rel="apple-touch-icon">
         {if $nSeitenTyp == 1 && isset($Artikel) && !empty($Artikel->Bilder)}
             <link rel="image_src" href="{$ShopURL}/{$Artikel->Bilder[0]->cPfadGross}">
             <meta property="og:image" content="{$ShopURL}/{$Artikel->Bilder[0]->cPfadGross}">

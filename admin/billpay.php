@@ -117,7 +117,7 @@ if (isset($_POST['einstellungen_bearbeiten'])) {
             $aktWert->kEinstellungenSektion = $Conf[$i]->kEinstellungenSektion;
             switch ($Conf[$i]->cInputTyp) {
                 case 'kommazahl':
-                    $aktWert->cWert = floatval($aktWert->cWert);
+                    $aktWert->cWert = floatval(str_replace(',', '.', $aktWert->cWert));
                     break;
                 case 'zahl':
                 case 'number':

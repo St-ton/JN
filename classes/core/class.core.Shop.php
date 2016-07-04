@@ -987,9 +987,9 @@ final class Shop
             self::$AktuelleSeite = '404';
             self::setPageType(PAGE_404);
             //check path
-            $cPath = self::getRequestUri();
+            $cPath        = self::getRequestUri();
             $cRequestFile = '/' . ltrim($cPath, '/');
-            if (in_array($cRequestFile, [ '/', '/index.php', '/navi.php' ])) {
+            if (in_array($cRequestFile, ['/', '/index.php', '/navi.php'])) {
                 $oLink       = self::DB()->query("SELECT kLink FROM tlink WHERE nLinkart = " . LINKTYP_STARTSEITE, 1);
                 $kLink       = $oLink->kLink;
                 $linkHelper  = LinkHelper::getInstance();
@@ -1056,10 +1056,10 @@ final class Shop
         } else {
             if (!empty(self::$kLink)) {
                 $linkHelper = LinkHelper::getInstance();
-                $link       = $linkHelper->getPageLink(Shop::$kLink);
+                $link       = $linkHelper->getPageLink(self::$kLink);
                 $oSeite     = null;
                 if (isset($link->nLinkart)) {
-                    $oSeite = Shop::DB()->query("SELECT cDateiname FROM tspezialseite WHERE nLinkart = " . (int)$link->nLinkart, 1);
+                    $oSeite = self::DB()->query("SELECT cDateiname FROM tspezialseite WHERE nLinkart = " . (int)$link->nLinkart, 1);
                 }
                 if (!empty($oSeite->cDateiname)) {
                     self::$fileName = $oSeite->cDateiname;
@@ -1106,7 +1106,6 @@ final class Shop
                 self::$AktuelleSeite = 'SEITE';
                 self::setPageType(PAGE_EIGENE);
             }
-
         }
     }
 

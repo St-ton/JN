@@ -134,6 +134,7 @@ class Lieferadresse extends Adresse
         if ($this->kLieferadresse > 0) {
             return $this->toArray();
         }
+
         return [];
     }
 }

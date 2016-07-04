@@ -9,7 +9,7 @@ interface IPlugin
 
     public function installed();
     public function uninstalled();
-    
+
     public function enabled();
     public function disabled();
 

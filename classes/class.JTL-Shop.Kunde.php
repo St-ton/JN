@@ -572,9 +572,9 @@ class Kunde
             $obj->dGeburtstag = '0000-00-00';
         }
 
-        $obj->cLand = $this->pruefeLandISO($obj->cLand);
+        $obj->cLand       = $this->pruefeLandISO($obj->cLand);
         $obj->dVeraendert = 'now()';
-        $cReturn    = Shop::DB()->update('tkunde', 'kKunde', $obj->kKunde, $obj);
+        $cReturn          = Shop::DB()->update('tkunde', 'kKunde', $obj->kKunde, $obj);
         if (is_array($cKundenattribut_arr) && count($cKundenattribut_arr) > 0) {
             $obj->cKundenattribut_arr = $cKundenattribut_arr;
         }

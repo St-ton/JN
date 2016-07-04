@@ -83,24 +83,24 @@ class TemplateHelper
     public function getStoredTemplates()
     {
         $storedTemplates = [];
-        
-        $subTemplateDir = 'original'.DIRECTORY_SEPARATOR;
+
+        $subTemplateDir   = 'original' . DIRECTORY_SEPARATOR;
         $storeTemplateDir = PFAD_ROOT . PFAD_TEMPLATES . $subTemplateDir;
-        
-        $folders = $this->getFrontendTemplateFolders();
+
+        $folders      = $this->getFrontendTemplateFolders();
         $childFolders = $this->getFolders($storeTemplateDir, 2);
 
         foreach ($childFolders as $version => $dirs) {
             $intersect = array_intersect(
                 array_values($folders), array_keys($dirs));
             foreach ($intersect as $dir) {
-                $d = $subTemplateDir.$version.DIRECTORY_SEPARATOR.$dir;
+                $d = $subTemplateDir . $version . DIRECTORY_SEPARATOR . $dir;
                 if ($data = $this->getData($d, false)) {
                     $storedTemplates[$dir][] = $data;
                 }
             }
         }
-        
+
         return $storedTemplates;
     }
 
@@ -135,26 +135,27 @@ class TemplateHelper
 
         return $templates;
     }
-    
-    function getFolders($path, $depht = 0)
+
+    public function getFolders($path, $depht = 0)
     {
         $result = array();
-        $cdir = scandir($path); 
+        $cdir   = scandir($path);
         foreach ($cdir as $key => $value) {
-            if (!in_array($value,array('.', '..'))) {
+            if (!in_array($value, array('.', '..'))) {
                 if (is_dir($path . DIRECTORY_SEPARATOR . $value)) {
                     $result[$value] = $depht > 1 ?
                         $this->getFolders($path . DIRECTORY_SEPARATOR . $value, $depht - 1) : array();
                 }
             }
         }
+
         return $result;
-    } 
-    
+    }
+
     public function getFrontendOriginalTemplates($path = false)
     {
         $cOrdner = PFAD_ROOT . PFAD_TEMPLATES . 'original/';
-        $x = scandir($cOrdner);
+        $x       = scandir($cOrdner);
         dd($x);
     }
 

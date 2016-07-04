@@ -859,8 +859,8 @@ class NiceDB
      * @throws InvalidArgumentException
      */
     protected function _execute($type, $stmt, $params, $return, $echo = false, $bExecuteHook = false, $fnInfo = null)
-    {       
-        $type = (int) $type;
+    {
+        $type   = (int) $type;
         $return = (int) $return;
         $params = is_array($params) ? $params : [];
 
@@ -871,7 +871,7 @@ class NiceDB
         if ($return <= 0 || $return > 11) {
             throw new InvalidArgumentException("\$return parameter must be between 1 - 11, given '{$return}'");
         }
-        
+
         if ($fnInfo !== null && !is_callable($fnInfo)) {
             $t = gettype($fnInfo);
             throw new InvalidArgumentException("\$fnInfo parameter is not callable, given type '{$t}'");
@@ -880,7 +880,7 @@ class NiceDB
         if ($echo) {
             echo $stmt;
         }
-        
+
         if ($this->debug === true || $this->collectData === true || $bExecuteHook === true || $fnInfo !== null) {
             $start = microtime(true);
         }
@@ -888,10 +888,15 @@ class NiceDB
         try {
             if ($type === 0) {
                 $res = $this->pdo->query($stmt);
-            }
-            else {
-                $s = $this->pdo->prepare($stmt);
-                $res = $s->execute($params);
+            } else {
+                $res  = $this->pdo->prepare($stmt);
+                $stmt = $this->readableQuery($stmt, $params);
+                foreach ($params as $k => $v) {
+                    $this->_bind($res, $k, $v);
+                }
+                if ($res->execute() === false) {
+                    return 0;
+                }
             }
         } catch (PDOException $e) {
             if (defined('NICEDB_EXCEPTION_ECHO') && NICEDB_EXCEPTION_ECHO === true) {
@@ -933,7 +938,7 @@ class NiceDB
 
             return 0;
         }
-        
+
         switch ($return) {
             case 1: {
                 $ret = $res->fetchObject();
@@ -1243,5 +1248,72 @@ class NiceDB
         $this->transactionCount = 0;
 
         return $result;
+    }
+
+    /**
+     *
+     */
+    protected function _bind(PDOStatement &$stmt, $parameter, $value, $type = null)
+    {
+        $parameter = $this->_bindName($parameter);
+
+        if (is_null($type)) {
+            switch (true) {
+                case is_bool($value):
+                    $type = PDO::PARAM_BOOL;
+                    break;
+                case is_int($value):
+                    $type = PDO::PARAM_INT;
+                    break;
+                case is_null($value):
+                    $type = PDO::PARAM_NULL;
+                    break;
+                default:
+                    $type = PDO::PARAM_STR;
+            }
+        }
+
+        $stmt->bindValue($parameter, $value, $type);
+    }
+
+    /**
+     *
+     */
+    protected function _bindName($name)
+    {
+        if (is_string($name)) {
+            return ':' . ltrim($name, ':');
+        }
+
+        return $name;
+    }
+
+    /**
+     *
+     */
+    public function readableQuery($query, $params)
+    {
+        $keys   = [];
+        $values = [];
+
+        foreach ($params as $key => $value) {
+            if (is_string($key)) {
+                $key = $this->_bindName($key);
+            } else {
+                $key = '[?]';
+            }
+
+            $keys[] = '/' . $key . '/';
+
+            if (is_int($value)) {
+                $value = (int)$value;
+            } else {
+                $value = $this->quote($value);
+            }
+
+            $values[] = $value;
+        }
+
+        return preg_replace($keys, $values, $query, 1, $count);
     }
 }

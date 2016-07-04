@@ -29,18 +29,17 @@ class MediaImageCompatibility implements IMedia
     {
         $req = $this->parse($request);
 
-        $path = strtolower(Shop::DB()->escape($req['path']));
+        $path     = strtolower(Shop::DB()->escape($req['path']));
         $fallback = Shop::DB()->executeQuery("SELECT h.kArtikel, h.nNr, a.cSeo, a.cName, a.cArtNr, a.cBarcode FROM tartikelpicthistory h INNER JOIN tartikel a ON h.kArtikel = a.kArtikel WHERE LOWER(h.cPfad) = '{$path}'", 1);
 
         if (is_object($fallback)) {
             $req['number'] = (int)$fallback->nNr;
-        }
-        elseif ((int)IMAGE_COMPATIBILITY_LEVEL === 2) {
+        } elseif ((int)IMAGE_COMPATIBILITY_LEVEL === 2) {
             $name = $req['name'];
 
             // remove number
             if (preg_match('/^(.*)_b?(\d+)$/', $name, $matches)) {
-                $name = $matches[1];
+                $name          = $matches[1];
                 $req['number'] = (int)$matches[2];
             }
 
@@ -50,19 +49,19 @@ class MediaImageCompatibility implements IMedia
             $exploded = explode('_', $name, 2);
             if (count($exploded) === 2) {
                 $articleNumber = $exploded[0];
-                $barcode = $seo = $name = $exploded[1];
+                $barcode       = $seo       = $name       = $exploded[1];
             }
 
             // replace vowel mutation
-            $name = str_replace('-', ' ', $this->replaceVowelMutation($name));
+            $name          = str_replace('-', ' ', $this->replaceVowelMutation($name));
             $articleNumber = $this->replaceVowelMutation($articleNumber);
-            $barcode = $this->replaceVowelMutation($barcode);
+            $barcode       = $this->replaceVowelMutation($barcode);
 
             // lowercase + escape
-            $name = strtolower(Shop::DB()->escape($name));
+            $name          = strtolower(Shop::DB()->escape($name));
             $articleNumber = strtolower(Shop::DB()->escape($articleNumber));
-            $barcode = strtolower(Shop::DB()->escape($barcode));
-            $seo = strtolower(Shop::DB()->escape($seo));
+            $barcode       = strtolower(Shop::DB()->escape($barcode));
+            $seo           = strtolower(Shop::DB()->escape($seo));
 
             $fallback = Shop::DB()->executeQuery("SELECT a.kArtikel, a.cSeo, a.cName, a.cArtNr, a.cBarcode FROM tartikel a WHERE 
               LOWER(a.cName) = '{$name}' OR 
@@ -72,7 +71,7 @@ class MediaImageCompatibility implements IMedia
         }
 
         if (is_object($fallback) && (int) $fallback->kArtikel > 0) {
-            $number = isset($req['number']) ? (int)$req['number'] : 1;
+            $number   = isset($req['number']) ? (int)$req['number'] : 1;
             $thumbUrl = Shop::getURL() . '/' . MediaImage::getThumb(Image::TYPE_PRODUCT, $fallback->kArtikel, $fallback, Image::mapSize($req['size']), $number);
 
             http_response_code(301);

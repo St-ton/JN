@@ -31,7 +31,7 @@ class MigrationManager
     public function __construct($version)
     {
         static::$migrations = [];
-        $this->version = (int) $version;
+        $this->version      = (int) $version;
     }
 
     /**

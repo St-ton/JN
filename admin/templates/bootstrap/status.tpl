@@ -193,12 +193,12 @@ $(function() {
                         <table class="table table-condensed table-hover table-striped table-blank last-child">
                             <tbody>
                             {foreach $incorrectPaymentMethods as $s}
-                                <tr>
-                                    <td class="text-muted" width="40%"><strong>{$s->cName}</strong></td>
-                                    <td class="text-center" width="40%">
+                                <tr class="text-vcenter">
+                                    <td class="text-left" width="55">
                                         <h4 class="label-wrap"><span class="label label-danger" style="display:inline-block;width:3em">{$s->logs|@count}</span></h4>
                                     </td>
-                                    <td class="text-right" width="20%">
+                                    <td class="text-muted"><strong>{$s->cName}</strong></td>
+                                    <td class="text-right">
                                         <a class="btn btn-default btn-xs text-uppercase" href="zahlungsarten.php?a=log&kZahlungsart={$s->kZahlungsart}">Details</a>
                                     </td>
                                 </tr>

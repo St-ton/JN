@@ -1898,7 +1898,13 @@ select.form-control {
     padding-left: 30px;
 }
 
-.text-vcenter {
+.text-vcenter,
+.table>thead>tr>th.text-vcenter, 
+.table>tbody>tr>th.text-vcenter, 
+.table>tfoot>tr>th.text-vcenter, 
+.table>thead>tr>td.text-vcenter, 
+.table>tbody>tr>td.text-vcenter, 
+.table>tfoot>tr>td.text-vcenter {
     vertical-align: middle;
 }
 
@@ -2715,7 +2721,27 @@ h2 .btn-group {
 }
 
 .query {
-  margin: 10px 0;
+  margin: 20px 0;
+}
+
+.query-code {
+  padding: 10px;
+  background-color: #f0f0f0;
+  margin-bottom: 10px;
+}
+
+.query-code code {
+  padding: 0;
+  background: transparent;
+}
+
+.query-sub > * {
+  vertical-align: middle;
+}
+
+.query-sub > *+* {
+  margin-left: 10px;
+  display: inline-block;
 }
 
 .input-xs {
@@ -2771,4 +2797,87 @@ h2 .btn-group {
 #filter .input-xs,
 #filter .btn-xs {
   height: 23px;
+}
+
+.paginator {
+  padding: 10px 20px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  text-align: center;
+  width: 100%;
+}
+
+.paginator .slider.slider-horizontal {
+  width: 400px;
+  margin-left: -200px;
+}
+
+.paginator-bottom {
+  border-bottom: 0;
+  position: fixed;
+  bottom: 0
+}
+
+.paginator .slider-handle {
+  background: #333333;
+}
+
+.paginator .slider-selection {
+  background-image: none;
+  background-color: #ddd;
+
+  filter: none;
+  box-shadow: none;
+  -webkit-box-shadow: none;
+}
+
+.paginator .slider-track-low, 
+.paginator .slider-track-high {
+  background: #ddd;
+}
+
+.paginator .slider-track-low, 
+.paginator .slider-track-high,
+.paginator .slider-selection {
+  border-radius: 0;
+}
+
+.thumb-box {
+  margin:auto;
+  position: relative;
+}
+
+.thumb-box .thumb {
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  position: absolute;
+  /*background-size: cover;*/
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+
+.thumb-box.thumb-lg {
+  height: 333px;
+  width: 500px;
+}
+
+.thumb-box.thumb-md {
+  height: 160px;
+  width: 250px;
+}
+
+.thumb-box.thumb-sm {
+  height: 80px;
+  width: 120px;
+}
+
+.thumb-box.thumb-xs {
+  height: 50px;
+  width: 75px;
+}
+
+.label abbr {
+  border: none;
 }

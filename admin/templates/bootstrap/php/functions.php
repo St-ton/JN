@@ -10,6 +10,7 @@ $smarty->register_function('getHelpDesc', 'getHelpDesc');
 $smarty->register_function('getExtensionCategory', 'getExtensionCategory');
 $smarty->register_function('formatVersion', 'formatVersion');
 $smarty->register_function('gravatarImage', 'gravatarImage');
+$smarty->register_function('paginate', 'paginate');
 $smarty->register_modifier('permission', 'permission');
 
 /**
@@ -208,4 +209,34 @@ function gravatarImage($params, &$smarty)
     $url .= '?' . http_build_query($params, '', '&');
 
     return $url;
+}
+
+/**
+ * @param array $params
+ * @param JTLSmarty $smarty
+ * @return string
+ */
+function paginate($params, &$smarty)
+{
+    $p = new Paginate();
+    $p->reset();
+    $p->connect();
+    
+    $p->setUrlVar('page');
+
+    if (isset($params['limit'])) {
+        $p->setLimit((int)$params['limit']);
+    }
+    
+    if (isset($params['total'])) {
+        $p->setTotal((int)$params['total']);
+    }
+    
+    if (isset($params['url'])) {
+        $p->setUrl($params['url']);
+    }
+    
+    $d = $p->getData();
+    
+    dd($d);
 }

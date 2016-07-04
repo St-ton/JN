@@ -238,6 +238,7 @@ if (isset($_GET['settings']) && strlen($_GET['settings']) > 0 && validateToken()
 $smarty->assign('admin', ($admin === true) ? 1 : 0)
        ->assign('oTemplate_arr', $templateHelper->getFrontendTemplates())
        ->assign('oAdminTemplate_arr', $templateHelper->getAdminTemplates())
+       ->assign('oStoredTemplate_arr', $templateHelper->getStoredTemplates())
        ->assign('cFehler', $cFehler)
        ->assign('cHinweis', $cHinweis)
        ->display('shoptemplate.tpl');

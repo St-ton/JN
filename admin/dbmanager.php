@@ -12,6 +12,7 @@ $tables = DBManager::getStatus(DB_NAME);
 $smarty->assign('tables', $tables);
 
 ////////////////////////////////////////////////////////////////////////////
+
 $restrictedTables = ['tadminlogin', 'tbrocken', 'tsession', 'tsynclogin'];
 
 function exec_query($query) {
@@ -26,6 +27,24 @@ function exec_query($query) {
         throw $e;
     }
 }
+
+/*
+$str = 'select=tadminlogin&filter[where][col][]=kAdminlogin&filter[where][op][]=<&filter[where][val][]=2&filter[limit]=50';
+$output = [];
+parse_str($str, $output);
+dd($output);
+*/
+
+////////////////////////////////////////////////////////////////////////////
+
+$jsTypo = (object)['tables' => []];
+foreach ($tables as $table => $info) {
+    $columns = DBManager::getColumns($table);
+    $columns = array_map(create_function('$n', 'return null;'), $columns);
+    $jsTypo->tables[$table] = $columns;
+}
+$smarty->assign('jsTypo', $jsTypo);
+
 ////////////////////////////////////////////////////////////////////////////
 
 switch (true) {
@@ -46,16 +65,94 @@ switch (true) {
     
     case isset($_GET['select']): {
         $table = $_GET['select'];
+        
+        if (!preg_match('/^\w+$/i', $table, $m)) {
+            die('no no no');
+        }
+        
         $status = DBManager::getStatus(DB_NAME, $table);
         $columns = DBManager::getColumns($table);
         $indexes = DBManager::getIndexes($table);
+        
+        $defaultFilter = [
+            'limit' => 50,
+            'offset' => 0,
+            'where' => []
+        ];
+        
+        $filter = isset($_GET['filter']) ? $_GET['filter'] : [];
+        $filter = array_merge($defaultFilter, $filter);
+        
+        // validate filter
+        $filter['limit'] = (int) $filter['limit'];
+        $page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
+        
+        if ($page < 1) {
+            $page = 1;
+        }
+        
+        if ($filter['limit'] < 1) {
+            $filter['limit'] = 1;
+        }
+        
+        $filter['offset'] = ($page - 1) * $filter['limit'];
+        
+        $baseQuery = "SELECT * FROM `{$table}`";
+        
+        // query parts
+        $queryParams = [];
+        $queryParts = [ 'select' => $baseQuery ];
 
-        $table_ = Shop::DB()->escape($table);
-        $data = Shop::DB()->executeQuery("SELECT * FROM `{$table_}` LIMIT 50", 9);
+        // where
+        if (isset($filter['where']['col'])) {
+            $whereParts = [];
+            for ($i = 0; $i < count($filter['where']['col']); $i++) {
+                if (!@empty($filter['where']['col'][$i]) && !@empty($filter['where']['op'][$i])) {
+                    $col = $filter['where']['col'][$i];
+                    $val = $filter['where']['val'][$i];
+                    $op = strtoupper($filter['where']['op'][$i]);
+                    if ($op === 'LIKE %%') {
+                        $op = 'LIKE';
+                        $val = sprintf('%%%s%%', trim($val, '%'));
+                    }
+                    $whereParts[] = sprintf('`%s` %s :where_%d_val', $col, $op, $i);
+                    $queryParams["where_{$i}_val"] = $val;
+                }
+            }
+            if (count($whereParts) > 0) {
+                $queryParts['where'] = 'WHERE ' . implode(' AND ', $whereParts);
+            }
+        }
+        
+        // count without limit
+        $query = implode(' ', $queryParts);
+        $count = Shop::DB()->executeQueryPrepared($query, $queryParams, 3);
+        $pages = (int) ceil($count / $filter['limit']);
+
+        // limit
+        $queryParams['limit_count'] = $filter['limit'];
+        $queryParams['limit_offset'] = $filter['offset'];
+        $queryParts['limit'] = "LIMIT :limit_offset, :limit_count";
+
+        $query = implode(' ', $queryParts);
+
+        //$q = Shop::DB()->readableQuery($query, $queryParams);
+        //dd($q, $query, $queryParts, $queryParams);
+
+        $info = null;
+        $data = Shop::DB()->executeQueryPrepared($query, $queryParams, 9, false, false, function($o) use (&$info) { 
+            $info = $o;
+        });
 
         $smarty->assign('selectedTable', $table)
                ->assign('data', $data)
+               ->assign('page', $page)
+               ->assign('query', $query)
+               ->assign('count', $count)
+               ->assign('pages', $pages)
+               ->assign('filter', $filter)
                ->assign('columns', $columns)
+               ->assign('info', $info)
                ->assign('sub', 'select')
                ->display('dbmanager.tpl');
         break;
@@ -64,13 +161,6 @@ switch (true) {
     case isset($_GET['command']): {
         $command = $_GET['command'];
 
-        $jsTypo = (object)['tables' => []];
-        foreach ($tables as $table => $info) {
-            $columns = DBManager::getColumns($table);
-            $columns = array_map(create_function('$n', 'return null;'), $columns);
-            $jsTypo->tables[$table] = $columns;
-        }
-        
         if (isset($_POST['query'])) {
             $query = $_POST['query'];
             
@@ -117,25 +207,19 @@ switch (true) {
 
             $smarty->assign('query', $query);
         }
+        elseif (isset($_GET['query'])) {
+            $smarty->assign('query', $_GET['query']);
+        }
 
-        $smarty->assign('jsTypo', $jsTypo)
-               ->assign('sub', 'command')
+        $smarty->assign('sub', 'command')
                ->display('dbmanager.tpl');
         break;
     }
     
     default: {
-        $jsTypo = (object)['tables' => []];
-        $definedTables = array_keys(getDBFileStruct() ?: array());
-
-        foreach ($tables as $table => $info) {
-            $columns = DBManager::getColumns($table);
-            $columns = array_map(create_function('$n', 'return null;'), $columns);
-            $jsTypo->tables[$table] = $columns;
-        }
+        $definedTables = array_keys(getDBFileStruct() ?: []);
 
         $smarty->assign('definedTables', $definedTables)
-               ->assign('jsTypo', $jsTypo)
                ->assign('sub', 'default')
                ->display('dbmanager.tpl');
         break;

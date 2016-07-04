@@ -37,6 +37,7 @@
             <File Path="js/humanize-duration.js"/>
             <File Path="js/jquery.highlight.js"/>
             <File Path="js/jquery.stickytableheaders.min.js"/>
+            <File Path="js/jquery.bootpag.js"/>
         </JS>
     </Minify>
 </Template>

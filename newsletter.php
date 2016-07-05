@@ -50,13 +50,9 @@ $cOption              = 'eintragen';
 if (isset($_GET['fc']) && strlen($_GET['fc']) > 0) {
     $cOption               = 'freischalten';
     $cFreischaltCode       = StringHandler::htmlentities(StringHandler::filterXSS(Shop::DB()->escape(strip_tags($_GET['fc']))));
-    $oNewsletterEmpfaenger = Shop::DB()->query(
-        "SELECT *
-            FROM tnewsletterempfaenger
-            WHERE cOptCode='" . $cFreischaltCode . "'", 1
-    );
+    $oNewsletterEmpfaenger = Shop::DB()->select('tnewsletterempfaenger', 'cOptCode', $cFreischaltCode);
 
-    if ($oNewsletterEmpfaenger->kNewsletterEmpfaenger > 0) {
+    if (isset($oNewsletterEmpfaenger->kNewsletterEmpfaenger) && $oNewsletterEmpfaenger->kNewsletterEmpfaenger > 0) {
         executeHook(HOOK_NEWSLETTER_PAGE_EMPFAENGERFREISCHALTEN, array('oNewsletterEmpfaenger' => $oNewsletterEmpfaenger));
         // Newsletterempfaenger freischalten
         Shop::DB()->query(
@@ -86,13 +82,9 @@ if (isset($_GET['fc']) && strlen($_GET['fc']) > 0) {
 } elseif (isset($_GET['lc']) && strlen($_GET['lc']) > 0) { // Loeschcode wurde uebergeben
     $cOption               = 'loeschen';
     $cLoeschCode           = StringHandler::htmlentities(StringHandler::filterXSS(Shop::DB()->escape(strip_tags($_GET['lc']))));
-    $oNewsletterEmpfaenger = Shop::DB()->query(
-        "SELECT *
-            FROM tnewsletterempfaenger
-            WHERE cLoeschCode='" . $cLoeschCode . "'", 1
-    );
+    $oNewsletterEmpfaenger = Shop::DB()->select('tnewsletterempfaenger', 'cLoeschCode', $cLoeschCode);
 
-    if (isset($oNewsletterEmpfaenger->cLoeschCode) && strlen($oNewsletterEmpfaenger->cLoeschCode) > 0) {
+    if (!empty($oNewsletterEmpfaenger->cLoeschCode)) {
         executeHook(HOOK_NEWSLETTER_PAGE_EMPFAENGERLOESCHEN, array('oNewsletterEmpfaenger' => $oNewsletterEmpfaenger));
 
         Shop::DB()->delete('tnewsletterempfaenger', 'cLoeschCode', $cLoeschCode);

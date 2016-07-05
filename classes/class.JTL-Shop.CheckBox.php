@@ -454,7 +454,6 @@ class CheckBox
             unset($oCheckBox->cKundengruppeAssoc_arr);
             unset($oCheckBox->oCheckBoxSprache_arr);
             unset($oCheckBox->cLink);
-            unset($oCheckBox->kCheckBox);
 
             $kCheckBox       = Shop::DB()->insert('tcheckbox', $oCheckBox);
             $this->kCheckBox = !empty($oCheckBox->kCheckBox) ? $oCheckBox->kCheckBox : $kCheckBox;

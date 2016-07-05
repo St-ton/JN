@@ -419,6 +419,7 @@ function loescheNewsBild($cBildname, $kNews, $cUploadVerzeichnis)
                     if ($cBildname === 'preview') {
                         Shop::DB()->query("UPDATE tnews SET cPreviewImage = '' WHERE kNews = " . $kNews, 3);
                     }
+
                     return true;
                 }
             }
@@ -434,7 +435,7 @@ function loescheNewsBild($cBildname, $kNews, $cUploadVerzeichnis)
  * @param array  $urlParams
  * @return bool
  */
-function newsRedirect($cTab = '', $cHinweis = '', $urlParams = null) 
+function newsRedirect($cTab = '', $cHinweis = '', $urlParams = null)
 {
     $tabPageMapping = array(
         'inaktiv'    => 's1',

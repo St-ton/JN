@@ -14,8 +14,7 @@ if (Shop::$directEntry === true) {
     $cParameter_arr = Shop::getParameters();
     $NaviFilter     = Shop::buildNaviFilter($cParameter_arr);
     Shop::setPageType(PAGE_NEWS);
-}
-else {
+} else {
     $cParameter_arr = array();
 }
 
@@ -215,16 +214,16 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
                 executeHook(HOOK_NEWS_PAGE_DETAILANSICHT);
             } else {
                 Shop::$AktuelleSeite = 'NEWS';
-                $AktuelleSeite = 'NEWS';
+                $AktuelleSeite       = 'NEWS';
                 $smarty->assign('cNewsErr', 1);
                 baueNewsKruemel($smarty, Shop::$AktuelleSeite, $cCanonicalURL);
             }
         } else { // Beitragsübersicht anzeigen
             if ($cParameter_arr['kNewsKategorie'] > 0) { // NewsKategorie Übersicht
                 Shop::$AktuelleSeite = 'NEWSKATEGORIE';
-                $AktuelleSeite  = 'NEWSKATEGORIE';
-                $kNewsKategorie = (int)$cParameter_arr['kNewsKategorie'];
-                $oNewsKategorie = getCurrentNewsCategory($kNewsKategorie, true);
+                $AktuelleSeite       = 'NEWSKATEGORIE';
+                $kNewsKategorie      = (int)$cParameter_arr['kNewsKategorie'];
+                $oNewsKategorie      = getCurrentNewsCategory($kNewsKategorie, true);
 
                 if (!isset($oNewsKategorie) || !is_object($oNewsKategorie)) {
                     Shop::$AktuelleSeite = 'NEWS';
@@ -251,10 +250,10 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
                         $_SESSION['NewsNaviFilter'] = new stdClass();
                     }
                     $_SESSION['NewsNaviFilter']->nNewsKat = $kNewsKategorie;
-                    $_SESSION['NewsNaviFilter']->cDatum = -1;
+                    $_SESSION['NewsNaviFilter']->cDatum   = -1;
                 }
             } elseif ($cParameter_arr['kNewsMonatsUebersicht'] > 0) { // Monatsuebersicht
-                Shop::$AktuelleSeite = 'NEWSMONAT';
+                Shop::$AktuelleSeite   = 'NEWSMONAT';
                 $AktuelleSeite         = 'NEWSMONAT';
                 $kNewsMonatsUebersicht = (int)$cParameter_arr['kNewsMonatsUebersicht'];
                 $oNewsMonatsUebersicht = getMonthOverview($kNewsMonatsUebersicht);
@@ -273,7 +272,7 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
                 $_SESSION['NewsNaviFilter']->nNewsKat = -1;
             } else { // Startseite News Übersicht
                 Shop::$AktuelleSeite = 'NEWS';
-                $AktuelleSeite = 'NEWS';
+                $AktuelleSeite       = 'NEWS';
                 baueNewsKruemel($smarty, Shop::$AktuelleSeite, $cCanonicalURL);
             }
 
@@ -330,7 +329,7 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
             if (!isset($oNewsUebersicht_arr) || count($oNewsUebersicht_arr) === 0) {
                 $smarty->assign('noarchiv', 1);
                 $_SESSION['NewsNaviFilter']->nNewsKat = -1;
-                $_SESSION['NewsNaviFilter']->cDatum = -1;
+                $_SESSION['NewsNaviFilter']->cDatum   = -1;
             }
 
             executeHook(HOOK_NEWS_PAGE_NEWSUEBERSICHT);

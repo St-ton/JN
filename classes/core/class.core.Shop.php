@@ -206,6 +206,11 @@ final class Shop
     /**
      * @var bool
      */
+    public static $bHerstellerFilterNotFound;
+
+    /**
+     * @var bool
+     */
     public static $isSeoMainword;
 
     /**
@@ -496,7 +501,7 @@ final class Shop
     {
         return EventDispatcher::getInstance();
     }
-    
+
     public static function fire($eventName, array $arguments = [])
     {
         return self::Event()->fire($eventName, $arguments);
@@ -562,7 +567,7 @@ final class Shop
     }
 
     /**
-     * @param array $config
+     * @param array|int $config
      * @return array
      */
     public static function getSettings($config)
@@ -726,9 +731,10 @@ final class Shop
         if (isset($_SERVER['HTTP_X_REWRITE_URL'])) {
             $uri = $_SERVER['HTTP_X_REWRITE_URL'];
         }
-        self::$uri                 = $uri;
-        self::$bSEOMerkmalNotFound = false;
-        self::$bKatFilterNotFound  = false;
+        self::$uri                       = $uri;
+        self::$bSEOMerkmalNotFound       = false;
+        self::$bKatFilterNotFound        = false;
+        self::$bHerstellerFilterNotFound = false;
 
         if (strpos($uri, 'index.php') === false) {
             executeHook(HOOK_SEOCHECK_ANFANG, array('uri' => &$uri));
@@ -804,7 +810,9 @@ final class Shop
                     );
 
                     if (isset($oSeo->kKey) && strcasecmp($oSeo->cSeo, $hstseo) === 0) {
-                        self::$kHerstellerFilter = $oSeo->kKey;
+                        self::$kHerstellerFilter         = $oSeo->kKey;
+                    } else {
+                        self::$bHerstellerFilterNotFound = true;
                     }
                 }
                 //attribute filter
@@ -815,7 +823,7 @@ final class Shop
                             $oSeo = self::DB()->query(
                                 "SELECT kKey, kSprache, cKey, cSeo
                                     FROM tseo
-                                    WHERE cSeo='" . $cSEOMerkmal . "'", 1
+                                    WHERE cSeo = '" . $cSEOMerkmal . "'", 1
                             );
 
                             if (isset($oSeo->kKey) && strcasecmp($oSeo->cSeo, $cSEOMerkmal) === 0) {
@@ -947,6 +955,7 @@ final class Shop
             self::$fileName = 'artikel.php';
         } elseif ((!isset(self::$bSEOMerkmalNotFound) || self::$bSEOMerkmalNotFound === false) &&
             (!isset(self::$bKatFilterNotFound) || self::$bKatFilterNotFound === false) &&
+            (!isset(self::$bHerstellerFilterNotFound) || self::$bHerstellerFilterNotFound === false) &&
             ((self::$isSeoMainword || self::$NaviFilter->nAnzahlFilter == 0) || !self::$bSeo) &&
             (self::$kHersteller > 0 || self::$kSuchanfrage > 0 || self::$kMerkmalWert > 0 || self::$kTag > 0 || self::$kKategorie > 0 ||
                 (isset(self::$cPreisspannenFilter) && self::$cPreisspannenFilter > 0) ||
@@ -978,9 +987,9 @@ final class Shop
             self::$AktuelleSeite = '404';
             self::setPageType(PAGE_404);
             //check path
-            $cPath = self::getRequestUri();
+            $cPath        = self::getRequestUri();
             $cRequestFile = '/' . ltrim($cPath, '/');
-            if (in_array($cRequestFile, [ '/', '/index.php', '/navi.php' ])) {
+            if (in_array($cRequestFile, ['/', '/index.php', '/navi.php'])) {
                 $oLink       = self::DB()->query("SELECT kLink FROM tlink WHERE nLinkart = " . LINKTYP_STARTSEITE, 1);
                 $kLink       = $oLink->kLink;
                 $linkHelper  = LinkHelper::getInstance();
@@ -1047,10 +1056,10 @@ final class Shop
         } else {
             if (!empty(self::$kLink)) {
                 $linkHelper = LinkHelper::getInstance();
-                $link       = $linkHelper->getPageLink(Shop::$kLink);
+                $link       = $linkHelper->getPageLink(self::$kLink);
                 $oSeite     = null;
                 if (isset($link->nLinkart)) {
-                    $oSeite = Shop::DB()->query("SELECT cDateiname FROM tspezialseite WHERE nLinkart = " . (int)$link->nLinkart, 1);
+                    $oSeite = self::DB()->query("SELECT cDateiname FROM tspezialseite WHERE nLinkart = " . (int)$link->nLinkart, 1);
                 }
                 if (!empty($oSeite->cDateiname)) {
                     self::$fileName = $oSeite->cDateiname;
@@ -1097,7 +1106,6 @@ final class Shop
                 self::$AktuelleSeite = 'SEITE';
                 self::setPageType(PAGE_EIGENE);
             }
-
         }
     }
 
@@ -1223,7 +1231,7 @@ final class Shop
             $oSeo_arr                              = self::DB()->query("
                 SELECT cSeo, kSprache
                     FROM tseo
-                    WHERE cKey='kMerkmalWert' AND kKey = " . $NaviFilter->MerkmalWert->kMerkmalWert . "
+                    WHERE cKey = 'kMerkmalWert' AND kKey = " . $NaviFilter->MerkmalWert->kMerkmalWert . "
                     ORDER BY kSprache", 2
             );
             if ($bSprache) {

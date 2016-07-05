@@ -441,7 +441,7 @@ class Image
         $imanee = new Imanee();
         $imanee->newImage($size->getWidth(), $size->getHeight(), '#bc3726');
         $imanee->setFormat('jpg');
-        $imanee->getResource()->mime='image/jpg';
+        $imanee->getResource()->mime = 'image/jpg';
 
         $drawer = clone $imanee->getDrawer();
         $drawer->setFontColor('white');

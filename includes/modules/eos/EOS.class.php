@@ -10,7 +10,7 @@ define('EOS_PP_MODE', 0); // 1 = Test / 0 = Live
 
 // Debug
 define('EOS_D_MODE', 1); // 1 = An / 0 = Aus
-define('EOS_D_PFAD', PFAD_ROOT . 'jtllogs/eos.log');
+define('EOS_D_PFAD', PFAD_LOGFILES . 'eos.log');
 
 // EOS ErgebnisURLs
 define('EOS_BACKURL_CODE', 1);

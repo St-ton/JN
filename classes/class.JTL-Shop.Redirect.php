@@ -306,7 +306,6 @@ class Redirect
             $seoPath  = Shop::DB()->select('tseo', 'cSeo', $lastPath);
             if ((isset($seoPath->cSeo) && strlen($seoPath->cSeo) > 0) || $filename === 'jtl.php' ||
                 $filename === 'warenkorb.php' || $filename === 'kontakt.php' || $filename === 'news.php') {
-                
                 return $lastPath;
             }
         }

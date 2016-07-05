@@ -398,7 +398,7 @@ function baueNewsMetaStart($oNewsNaviFilter)
 /**
  *
  */
-function baueNewsKruemel($smarty, $AktuelleSeite , &$cCanonicalURL)
+function baueNewsKruemel($smarty, $AktuelleSeite, &$cCanonicalURL)
 {
     $oLink = Shop::DB()->query("SELECT kLink FROM tlink WHERE nLinkart = " . LINKTYP_NEWS, 1);
 
@@ -445,7 +445,7 @@ function getNewsArchive($kNews, $bActiveOnly = false)
                 AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
             WHERE tnews.kNews = " . (int)$kNews . " AND (tnews.cKundengruppe LIKE '%;-1;%' OR tnews.cKundengruppe LIKE '%;" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";%')
                 AND tnews.kSprache = " . (int)$_SESSION['kSprache']
-                .$activeFilter, 1
+                . $activeFilter, 1
     );
 }
 
@@ -465,7 +465,7 @@ function getCurrentNewsCategory($kNewsKategorie, $bActiveOnly = false)
                 AND tseo.kKey = " . (int)$kNewsKategorie . "
             AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
             WHERE tnewskategorie.kNewsKategorie = " . (int)$kNewsKategorie
-                .$activeFilter, 1
+                . $activeFilter, 1
     );
 }
 

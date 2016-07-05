@@ -272,7 +272,7 @@ class TrustedShops
     public function sendeBuchung()
     {
         if ($this->pruefeZertifikat(StringHandler::convertISO2ISO639($_SESSION['cISOSprache'])) != 1) {
-            writeLog(PFAD_ROOT . '/jtllogs/tskaeuferscgutz.log', 'TS certificate is invalid.', 1);
+            writeLog(PFAD_LOGFILES . 'tskaeuferscgutz.log', 'TS certificate is invalid.', 1);
 
             return false;
         }
@@ -288,22 +288,22 @@ class TrustedShops
             $returnValue = $client->requestForProtectionV2($this->tsId, $this->tsProductId, doubleval($this->amount), $this->currency, $this->paymentType, $this->buyerEmail, $this->shopCustomerID, $this->shopOrderID, $this->orderDate, $this->shopSystemVersion, $this->wsUser, $this->wsPassword);
             if (is_soap_fault($returnValue)) {
                 $errorText = "SOAP Fault: (faultcode: {$returnValue->faultcode}, faultstring: {$returnValue->faultstring})";
-                writeLog(PFAD_ROOT . "/jtllogs/trustedshops.log", $errorText, 1);
+                writeLog(PFAD_LOGFILES . 'trustedshops.log', $errorText, 1);
             }
         } else {
-            writeLog(PFAD_ROOT . "/jtllogs/trustedshops.log", "SOAP could not be loaded.", 1);
+            writeLog(PFAD_LOGFILES . 'trustedshops.log', 'SOAP could not be loaded.', 1);
         }
         //check return value
         //negative return value is an error code, positive value is the protection number
         if ($returnValue == SOAP_ERROR) {
-            writeLog(PFAD_ROOT . "/jtllogs/trustedshops.log", SOAP_ERROR, 1);
+            writeLog(PFAD_LOGFILES . 'trustedshops.log', SOAP_ERROR, 1);
         } elseif ($returnValue < 0) {
             switch ($returnValue) {
                 case -10001 :
                     break;
             }
         } else {
-            writeLog(PFAD_ROOT . "/jtllogs/tskaeuferschutz.log", "TS Web Service has successfully protected transaction, protectioner is " . $returnValue . " - Amount: " . doubleval($this->amount), 1);
+            writeLog(PFAD_LOGFILES . 'tskaeuferschutz.log', 'TS Web Service has successfully protected transaction, protectioner is ' . $returnValue . ' - Amount: ' . doubleval($this->amount), 1);
         }
 
         return true;
@@ -328,10 +328,10 @@ class TrustedShops
             $returnValue = $client->getRequestState($this->tsId);
             if (is_soap_fault($returnValue)) {
                 $errorText = "SOAP Fault: (faultcode: {$Result->faultcode}, faultstring: {$Result->faultstring})";
-                writeLog(PFAD_ROOT . '/jtllogs/trustedshops.log', $errorText, 1);
+                writeLog(PFAD_LOGFILES . 'trustedshops.log', $errorText, 1);
             }
         } else {
-            writeLog(PFAD_ROOT . '/jtllogs/trustedshops.log', 'SOAP could not be loaded.', 1);
+            writeLog(PFAD_LOGFILES . 'trustedshops.log', 'SOAP could not be loaded.', 1);
         }
         // Geaendert aufgrund Mail von Herrn van der Wielen
         // Quote: 'Tatsächlich jedoch sollten Zertifikate mit den Status 'PRODUCTION', 'INTEGRATION' (und 'TEST') akzeptiert werden.'
@@ -364,10 +364,10 @@ class TrustedShops
 
             if (is_soap_fault($returnValue)) {
                 $errorText = "SOAP Fault: (faultcode: {$returnValue->faultcode}, faultstring: {$returnValue->faultstring})";
-                writeLog(PFAD_ROOT . '/jtllogs/trustedshops.log', $errorText, 1);
+                writeLog(PFAD_LOGFILES . 'trustedshops.log', $errorText, 1);
             }
         } else {
-            writeLog(PFAD_ROOT . '/jtllogs/trustedshops.log', 'SOAP could not be loaded.', 1);
+            writeLog(PFAD_LOGFILES . 'trustedshops.log', 'SOAP could not be loaded.', 1);
         }
 
         if (isset($returnValue->item) && is_object($returnValue->item)) {
@@ -571,12 +571,12 @@ class TrustedShops
                 $returnValue = $client->checkCertificate($cTSID);
                 if (is_soap_fault($returnValue)) {
                     $errorText = "SOAP Fault: (faultcode: {$returnValue->faultcode}, faultstring: {$returnValue->faultstring})";
-                    writeLog(PFAD_ROOT . '/jtllogs/trustedshops.log', $errorText, 1);
+                    writeLog(PFAD_LOGFILES . 'trustedshops.log', $errorText, 1);
                     Jtllog::writeLog(utf8_decode('Bei der Zertifikatsprüfung von TrustedShops ist ein Fehler aufgetreten! Error: ') . $errorText, JTLLOG_LEVEL_ERROR);
 
                     return 11; // SOAP Fehler
                 } else {
-                    writeLog(PFAD_ROOT . '/jtllogs/trustedshops.log', print_r($returnValue, 1), 1);
+                    writeLog(PFAD_LOGFILES . 'trustedshops.log', print_r($returnValue, 1), 1);
                     Jtllog::writeLog(utf8_decode('Die Zertifikatsprüfung von TrustedShops ergab folgendes Ergebnis: ') . print_r($returnValue, 1), JTLLOG_LEVEL_NOTICE);
 
                     $this->dChecked = date('Y-m-d H:i:s');
@@ -585,7 +585,7 @@ class TrustedShops
                     }
                 }
             } else {
-                writeLog(PFAD_ROOT . '/jtllogs/trustedshops.log', 'SOAP could not be loaded.', 1);
+                writeLog(PFAD_LOGFILES . 'trustedshops.log', 'SOAP could not be loaded.', 1);
                 Jtllog::writeLog(utf8_decode('Es ist kein SOAP möglich um eine Zertifikatsprüfung von TrustedShops durchzuführen!'), JTLLOG_LEVEL_ERROR);
 
                 return 11; // SOAP Fehler
@@ -650,10 +650,10 @@ class TrustedShops
 
             if (is_soap_fault($returnValue)) {
                 $errorText = "SOAP Fault: (faultcode: {$Result->faultcode}, faultstring: {$Result->faultstring})";
-                writeLog(PFAD_ROOT . '/jtllogs/trustedshops.log', $errorText, 1);
+                writeLog(PFAD_LOGFILES . 'trustedshops.log', $errorText, 1);
             }
         } else {
-            writeLog(PFAD_ROOT . '/jtllogs/trustedshops.log', 'SOAP could not be loaded.', 1);
+            writeLog(PFAD_LOGFILES . 'trustedshops.log', 'SOAP could not be loaded.', 1);
         }
 
         if ($returnValue == 1) {
@@ -993,12 +993,12 @@ class TrustedShops
             $returnValue = $client->updateRatingWidgetState($cTSID, $nStatus, 'jtl-software', 'eKgxL2vm', 'JTL');
             if (is_soap_fault($returnValue)) {
                 $errorText = "SOAP Fault: (faultcode: {$returnValue->faultcode}, faultstring: {$returnValue->faultstring})";
-                writeLog(PFAD_ROOT . "/jtllogs/trustedshops.log", $errorText, 1);
+                writeLog(PFAD_LOGFILES . 'trustedshops.log', $errorText, 1);
             } else {
-                writeLog(PFAD_ROOT . "/jtllogs/trustedshops.log", "Der Kundenbewertungsstatus ('TSID: " . $cTSID . "') wurde versucht zu ändern, ReturnCode: " . $returnValue, 1);
+                writeLog(PFAD_LOGFILES . 'trustedshops.log', "Der Kundenbewertungsstatus ('TSID: " . $cTSID . "') wurde versucht zu ändern, ReturnCode: " . $returnValue, 1);
             }
         } else {
-            writeLog(PFAD_ROOT . "/jtllogs/trustedshops.log", "SOAP could not be loaded.", 1);
+            writeLog(PFAD_LOGFILES . 'trustedshops.log', 'SOAP could not be loaded.', 1);
         }
 
         if ($returnValue == 'OK') {

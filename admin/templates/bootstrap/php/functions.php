@@ -96,12 +96,13 @@ function permission($cRecht)
     if (isset($_SESSION['AdminAccount'])) {
         if ($_SESSION['AdminAccount']->oGroup->kAdminlogingruppe == 1) {
             $bOkay = true;
-        }
-        else {
+        } else {
             $orExpressions = explode('|', $cRecht);
             foreach ($orExpressions as $flag) {
                 $bOkay = in_array($flag, $_SESSION['AdminAccount']->oGroup->oPermission_arr);
-                if ($bOkay) break;
+                if ($bOkay) {
+                    break;
+                }
             }
         }
     }
@@ -196,13 +197,12 @@ function gravatarImage($params, &$smarty)
     $email = isset($params['email']) ? $params['email'] : null;
     if ($email === null) {
         $email = JTLSUPPORT_EMAIL;
-    }
-    else {
+    } else {
         unset($params['email']);
     }
 
-    $params = array_merge([ 'email' => null, 's' => 80, 'd' => 'mm', 'r' => 'g' ], $params);
-    
+    $params = array_merge(['email' => null, 's' => 80, 'd' => 'mm', 'r' => 'g'], $params);
+
     $url  = 'https://www.gravatar.com/avatar/';
     $url .= md5(strtolower(trim($email)));
     $url .= '?' . http_build_query($params, '', '&');

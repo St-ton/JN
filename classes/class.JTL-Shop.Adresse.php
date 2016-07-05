@@ -160,6 +160,7 @@ class Adresse
                 $this->{$key} = $value;
             }
         }
+
         return $this;
     }
 
@@ -182,7 +183,7 @@ class Adresse
                 Shop::Lang()->get('salutationW', 'global');
                 break;
             default:
-                return null;
+                return;
         }
     }
 
@@ -195,6 +196,7 @@ class Adresse
                 $iso = $o;
             }
         }
+
         return $iso;
     }
 }

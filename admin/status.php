@@ -18,10 +18,10 @@ switch ($action) {
         if ($response->isAjax()) {
             $result = $response->buildError('Unauthorized', 401);
             $response->makeResponse($result);
-        }
-        else {
+        } else {
             $oAccount->redirectOnFailure();
         }
+
         return;
     }
     case 'notify': {
@@ -33,7 +33,7 @@ switch ($action) {
         $response->makeResponse($result, $action);
         break;
     }
-    
+
     default: {
         $smarty->assign('status', Status::getInstance())
             ->display('status.tpl');

@@ -10,7 +10,7 @@
 class Notification implements IteratorAggregate, Countable
 {
     use SingletonTrait;
-    
+
     private $array = [];
 
     /**
@@ -60,17 +60,16 @@ class Notification implements IteratorAggregate, Countable
      */
     public function getIterator()
     {
-        usort($this->array, function($a, $b)
-        {
+        usort($this->array, function ($a, $b) {
             if ($a->getType() > $b->getType()) {
                 return -1;
-            }
-            elseif ($a->getType() < $b->getType()) {             
+            } elseif ($a->getType() < $b->getType()) {
                 return 1;
             }
+
             return 0;
         });
-        
+
         return new ArrayIterator($this->array);
     }
 

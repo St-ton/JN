@@ -20,7 +20,11 @@
     <div class="caption">
         <h4 class="title"><a href="{$Artikel->cURL}">{$Artikel->cName}</a></h4>
         {if $Artikel->fDurchschnittsBewertung > 0}{include file='productdetails/rating.tpl' stars=$Artikel->fDurchschnittsBewertung}<br>{/if}
-        {include file="productdetails/price.tpl" Artikel=$Artikel price_image=$Artikel->Preise->strPreisGrafik_Suche tplscope=$tplscope}
+        {assign var=price_image value=""}
+        {if isset($Artikel->Preise->strPreisGrafik_Suche)}
+            {assign var=$price_image value=$Artikel->Preise->strPreisGrafik_Suche}
+        {/if}
+        {include file="productdetails/price.tpl" Artikel=$Artikel price_image=$price_image tplscope=$tplscope}
     </div>{* /caption *}
     {/block}
     <form action="navi.php" method="post" class="form form-basket" data-toggle="basket-add">

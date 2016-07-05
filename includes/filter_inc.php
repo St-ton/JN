@@ -506,10 +506,23 @@ function gibHerstellerFilterOptionen($FilterSQL, $NaviFilter)
  */
 function gibKategorieFilterOptionen($FilterSQL, $NaviFilter)
 {
+    //build simple string from non-empty values of $FilterSQL
+    $filterString = '';
+    if (is_object($FilterSQL)) {
+        foreach (get_object_vars($FilterSQL) as $outerKey => $outerValue) {
+            if (is_object($outerValue)) {
+                foreach (get_object_vars($outerValue) as $key => $val) {
+                    if (!empty($val)) {
+                        $filterString .= $outerKey . $key . $val;
+                    }
+                }
+            }
+        }
+    }
     $cacheID = 'filter_kfo_' . md5(
             json_encode($_SESSION['Kundengruppe']) .
             serialize($NaviFilter) .
-            json_encode($FilterSQL) .
+            $filterString .
             Shop::$kSprache
         );
     if (($oKategorieFilterDB_arr = Shop::Cache()->get($cacheID)) !== false) {
@@ -542,7 +555,7 @@ function gibKategorieFilterOptionen($FilterSQL, $NaviFilter)
                                     " . $kKatFilter . "
                                     JOIN tkategorie ON tkategorie.kKategorie = tkategorieartikelgesamt.kKategorie";
         }
-        // nicht Standardsprache? Dann hole nicht aus tkategorie den Namne sondern aus tkategoriesprache
+        // nicht Standardsprache? Dann hole Namen nicht aus tkategorie sondern aus tkategoriesprache
         $cSQLKategorieSprache          = new stdClass();
         $cSQLKategorieSprache->cSELECT = "tkategorie.cName";
         $cSQLKategorieSprache->cJOIN   = '';
@@ -614,7 +627,13 @@ function gibKategorieFilterOptionen($FilterSQL, $NaviFilter)
     }
     $tagArray = array(CACHING_GROUP_CATEGORY);
     if (isset($NaviFilter->Kategorie->kKategorie)) {
-        $tagArray[] = CACHING_GROUP_CATEGORY . '_' . $NaviFilter->Kategorie->kKategorie;
+        $tagArray[] = CACHING_GROUP_CATEGORY . '_' . (int) $NaviFilter->Kategorie->kKategorie;
+    } else {
+        foreach ($oKategorieFilterDB_arr as $filter) {
+            if (isset($filter->kKategorie)) {
+                $tagArray[] = CACHING_GROUP_CATEGORY . '_' . (int) $filter->kKategorie;
+            }
+        }
     }
     Shop::Cache()->set($cacheID, $oKategorieFilterDB_arr, $tagArray);
 
@@ -894,6 +913,9 @@ function gibBewertungSterneFilterOptionen($FilterSQL, $NaviFilter)
  */
 function gibPreisspannenFilterOptionen($FilterSQL, $NaviFilter, $oSuchergebnisse)
 {
+    if (!$_SESSION['Kundengruppe']->darfPreiseSehen) {
+        return array();
+    }
     if (isset(Shop::$kSprache)) {
         $kSprache = (int) Shop::$kSprache;
     } else {

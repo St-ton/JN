@@ -164,21 +164,23 @@ ifndef('CUSTOMER_ACCOUNT_MAX_ORDERS', 50);
 // ifndef('STEUERSATZ_STANDARD_LAND', 'DE')
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-function ifndef($constant, $value) {
+function ifndef($constant, $value)
+{
     defined($constant) || define($constant, $value);
 }
 
-function shop_writeable_paths() {
+function shop_writeable_paths()
+{
     $paths = array(
         // Directories
         // PFAD_BILDER_SLIDER,
         PFAD_GFX_TRUSTEDSHOPS,
         PFAD_NEWSBILDER,
         PFAD_SHOPLOGO,
-        PFAD_MEDIAFILES.'Bilder',
-        PFAD_MEDIAFILES.'Musik',
-        PFAD_MEDIAFILES.'Sonstiges',
-        PFAD_MEDIAFILES.'Videos',
+        PFAD_MEDIAFILES . 'Bilder',
+        PFAD_MEDIAFILES . 'Musik',
+        PFAD_MEDIAFILES . 'Sonstiges',
+        PFAD_MEDIAFILES . 'Videos',
         PFAD_IMAGEMAP,
         PFAD_PRODUKTBILDER_MINI,
         PFAD_PRODUKTBILDER_KLEIN,
@@ -199,8 +201,8 @@ function shop_writeable_paths() {
         PFAD_SUCHSPECIALOVERLAY_NORMAL,
         PFAD_SUCHSPECIALOVERLAY_GROSS,
         PFAD_KONFIGURATOR_KLEIN,
-        PFAD_BILDER.PFAD_LINKBILDER,
-        PFAD_BILDER.PFAD_NEWSLETTERBILDER,
+        PFAD_BILDER . PFAD_LINKBILDER,
+        PFAD_BILDER . PFAD_NEWSLETTERBILDER,
         PFAD_LOGFILES,
         PFAD_EXPORT,
         PFAD_EXPORT_BACKUP,
@@ -218,10 +220,11 @@ function shop_writeable_paths() {
         FILE_SHOP_FEED
     );
 
-    return array_map(function($v) {
+    return array_map(function ($v) {
         if (strpos($v, PFAD_ROOT) === 0) {
             $v = substr($v, strlen(PFAD_ROOT));
         }
+
         return trim($v, '/\\');
     }, $paths);
 }

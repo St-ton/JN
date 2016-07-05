@@ -8,8 +8,8 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'einstellungen_inc.php';
 
 $kSektion = isset($_REQUEST['kSektion']) ? (int)$_REQUEST['kSektion'] : 0;
 
-$bSuche = isset($_REQUEST['einstellungen_suchen']) && 
-	(int)$_REQUEST['einstellungen_suchen'] === 1;
+$bSuche = isset($_REQUEST['einstellungen_suchen']) &&
+    (int)$_REQUEST['einstellungen_suchen'] === 1;
 
 if ($bSuche) {
     $oAccount->permission('SETTINGS_SEARCH_VIEW', true, true);
@@ -111,7 +111,7 @@ if (isset($_POST['einstellungen_bearbeiten']) && intval($_POST['einstellungen_be
             $aktWert->kEinstellungenSektion = $Conf[$i]->kEinstellungenSektion;
             switch ($Conf[$i]->cInputTyp) {
                 case 'kommazahl':
-                    $aktWert->cWert = floatval(str_replace(',','.',$aktWert->cWert));
+                    $aktWert->cWert = floatval(str_replace(',', '.', $aktWert->cWert));
                     break;
                 case 'zahl':
                 case 'number':

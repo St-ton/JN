@@ -102,19 +102,16 @@ if ($smarty->isCached('productlist/index.tpl', $cacheID) === true) {
     if (isset($Einstellungen['artikeluebersicht']['artikelubersicht_bestseller_gruppieren']) && $Einstellungen['artikeluebersicht']['artikelubersicht_bestseller_gruppieren'] === 'Y') {
         $products = array();
         foreach ($oSuchergebnisse->Artikel->elemente as $product) {
-            $products[] = $product->kArtikel;
+            $products[] = (int) $product->kArtikel;
         }
-        $limit = 3;
-        if (isset($Einstellungen['artikeluebersicht']['artikeluebersicht_bestseller_anzahl'])) {
-            $limit = (int) $Einstellungen['artikeluebersicht']['artikeluebersicht_bestseller_anzahl'];
-        }
-        $minsells = 10;
-        if (isset($Einstellungen['boxen']['boxen_bestseller_minanzahl'])) {
-            $minsells = $Einstellungen['boxen']['boxen_bestseller_minanzahl'];
-        }
+        $limit       = (isset($Einstellungen['artikeluebersicht']['artikeluebersicht_bestseller_anzahl'])) ?
+            (int) $Einstellungen['artikeluebersicht']['artikeluebersicht_bestseller_anzahl'] :
+            3;
+        $minsells    = (isset($Einstellungen['boxen']['boxen_bestseller_minanzahl'])) ?
+            (int) $Einstellungen['boxen']['boxen_bestseller_minanzahl'] :
+            10;
         $bestsellers = Bestseller::buildBestsellers($products, $_SESSION['Kundengruppe']->kKundengruppe, $_SESSION['Kundengruppe']->darfArtikelKategorienSehen, false, $limit, $minsells);
         Bestseller::ignoreProducts($oSuchergebnisse->Artikel->elemente, $bestsellers);
-
         $smarty->assign('oBestseller_arr', $bestsellers);
     }
     // Schauen ob die maximale Anzahl der Artikel >= der max. Anzahl die im Backend eingestellt wurde

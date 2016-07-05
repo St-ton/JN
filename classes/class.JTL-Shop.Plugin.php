@@ -279,7 +279,7 @@ class Plugin
      * @var null|array
      */
     private static $hookList = null;
-    
+
     /**
      * @var array
      */
@@ -329,7 +329,7 @@ class Plugin
                 $this->$k = $v;
             }
         } else {
-            return null;
+            return;
         }
         $_shopURL    = Shop::getURL();
         $_shopURLSSL = Shop::getURL(true);
@@ -389,7 +389,6 @@ class Plugin
             foreach ($oPluginEinstellungConfTMP_arr as $i => $oPluginEinstellungConfTMP) {
                 $oPluginEinstellungConfTMP_arr[$i]->oPluginEinstellungenConfWerte_arr = array();
                 if ($oPluginEinstellungConfTMP->cInputTyp === 'selectbox' || $oPluginEinstellungConfTMP->cInputTyp === 'radio') {
-
                     if (!empty($oPluginEinstellungConfTMP->cSourceFile)) {
                         $oPluginEinstellungConfTMP_arr[$i]->oPluginEinstellungenConfWerte_arr = $this->getDynamicOptions($oPluginEinstellungConfTMP);
                     } else {
@@ -730,7 +729,8 @@ class Plugin
             "SELECT tpluginhook.nHook, tplugin.kPlugin, tplugin.cVerzeichnis, tplugin.nVersion, tpluginhook.cDateiname
                 FROM tplugin
                 JOIN tpluginhook ON tpluginhook.kPlugin = tplugin.kPlugin
-                WHERE tplugin.nStatus = 2", 2
+                WHERE tplugin.nStatus = 2
+                ORDER BY tpluginhook.nPriority, tplugin.kPlugin", 2
         );
         if (is_array($oPluginHook_arr) && count($oPluginHook_arr) > 0) {
             foreach ($oPluginHook_arr as $oPluginHook) {
@@ -800,35 +800,35 @@ class Plugin
 
         return $dynamicOptions;
     }
-    
+
     public static function bootstrapper($kPlugin)
     {
         if (!isset(self::$bootstrapper[$kPlugin])) {
             $plugin = Shop::DB()->select('tplugin', 'kPlugin', $kPlugin);
 
-            if ((bool)$plugin->bBootstrap === false) {
-                return null;
+            if ($plugin === null || (bool)$plugin->bBootstrap === false) {
+                return;
             }
 
-            $file = PFAD_ROOT . PFAD_PLUGIN . $plugin->cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $plugin->nVersion . '/' . PLUGIN_BOOTSTRAPPER;
+            $file  = PFAD_ROOT . PFAD_PLUGIN . $plugin->cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $plugin->nVersion . '/' . PLUGIN_BOOTSTRAPPER;
             $class = sprintf('%s\\%s', $plugin->cPluginID, 'Bootstrap');
-            
+
             if (!is_file($file)) {
-                return null;
+                return;
             }
 
             require_once $file;
 
             if (!class_exists($class)) {
-                return null;
+                return;
             }
 
             $bootstrapper = new $class($plugin->cPluginID);
 
             if (!is_subclass_of($bootstrapper, 'AbstractPlugin')) {
-                return null;
+                return;
             }
-            
+
             self::$bootstrapper[$kPlugin] = $bootstrapper;
         }
 

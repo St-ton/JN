@@ -76,6 +76,35 @@ class TemplateHelper
     }
 
     /**
+     * todo
+     *
+     * @return array
+     */
+    public function getStoredTemplates()
+    {
+        $storedTemplates = [];
+
+        $subTemplateDir   = 'original' . DIRECTORY_SEPARATOR;
+        $storeTemplateDir = PFAD_ROOT . PFAD_TEMPLATES . $subTemplateDir;
+
+        $folders      = $this->getFrontendTemplateFolders();
+        $childFolders = $this->getFolders($storeTemplateDir, 2);
+
+        foreach ($childFolders as $version => $dirs) {
+            $intersect = array_intersect(
+                array_values($folders), array_keys($dirs));
+            foreach ($intersect as $dir) {
+                $d = $subTemplateDir . $version . DIRECTORY_SEPARATOR . $dir;
+                if ($data = $this->getData($d, false)) {
+                    $storedTemplates[$dir][] = $data;
+                }
+            }
+        }
+
+        return $storedTemplates;
+    }
+
+    /**
      * get list of all frontend templates
      *
      * @return array
@@ -90,8 +119,9 @@ class TemplateHelper
                 $templates[] = $oTemplate;
             }
         }
-        //check if given parent template is available
+
         foreach ($templates as $template) {
+            //check if given parent template is available
             if ($template->bChild === true) {
                 $template->bHasError = true;
                 foreach ($templates as $_template) {
@@ -104,6 +134,29 @@ class TemplateHelper
         }
 
         return $templates;
+    }
+
+    public function getFolders($path, $depht = 0)
+    {
+        $result = array();
+        $cdir   = scandir($path);
+        foreach ($cdir as $key => $value) {
+            if (!in_array($value, array('.', '..'))) {
+                if (is_dir($path . DIRECTORY_SEPARATOR . $value)) {
+                    $result[$value] = $depht > 1 ?
+                        $this->getFolders($path . DIRECTORY_SEPARATOR . $value, $depht - 1) : array();
+                }
+            }
+        }
+
+        return $result;
+    }
+
+    public function getFrontendOriginalTemplates($path = false)
+    {
+        $cOrdner = PFAD_ROOT . PFAD_TEMPLATES . 'original/';
+        $x       = scandir($cOrdner);
+        dd($x);
     }
 
     /**

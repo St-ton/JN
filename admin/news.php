@@ -485,7 +485,7 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
                 $step = 'news_uebersicht';
                 $cFehler .= 'Fehler: Die Newskategorie mit der ID "' . $kNewsKategorie . '" konnte nicht gefunden werden.<br />';
             }
-            
+
             $smarty->assign('cPlausiValue_arr', $cPlausiValue_arr)
                    ->assign('cPostVar_arr', $_POST);
         }

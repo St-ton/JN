@@ -1712,7 +1712,7 @@ function installierePlugin($XML_arr, $cVerzeichnis, $oPluginOld)
     if (is_file(PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $oPlugin->nVersion . '/' . 'bootstrap.php')) {
         $oPlugin->bBootstrap = 1;
     }
-    
+
     if (!empty($XML_arr['jtlshop3plugin'][0]['Install'][0]['FlushTags'])) {
         $_tags = explode(',', $XML_arr['jtlshop3plugin'][0]['Install'][0]['FlushTags']);
     }
@@ -1753,16 +1753,19 @@ function installierePlugin($XML_arr, $cVerzeichnis, $oPluginOld)
         if (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['Hooks']) && is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['Hooks'])) {
             if (count($XML_arr['jtlshop3plugin'][0]['Install'][0]['Hooks'][0]) === 1) {
                 // Es gibt mehr als einen Hook
-                $nHookID = 0;
+                $nHookID   = 0;
+                $nPriority = 5;
                 foreach ($XML_arr['jtlshop3plugin'][0]['Install'][0]['Hooks'][0]['Hook'] as $i => $Hook_arr) {
                     preg_match("/[0-9]+\sattr/", $i, $cTreffer1_arr);
                     preg_match("/[0-9]+/", $i, $cTreffer2_arr);
                     if (isset($cTreffer1_arr[0]) && strlen($cTreffer1_arr[0]) === strlen($i)) {
-                        $nHookID = intval($Hook_arr['id']);
+                        $nHookID   = (int) $Hook_arr['id'];
+                        $nPriority = (isset($Hook_arr['priority'])) ? (int) $Hook_arr['priority'] : 5;
                     } elseif (isset($cTreffer2_arr[0]) && strlen($cTreffer2_arr[0]) === strlen($i)) {
                         $oPluginHook             = new stdClass();
                         $oPluginHook->kPlugin    = $kPlugin;
                         $oPluginHook->nHook      = $nHookID;
+                        $oPluginHook->nPriority  = $nPriority;
                         $oPluginHook->cDateiname = $Hook_arr;
 
                         $kPluginHook = Shop::DB()->insert('tpluginhook', $oPluginHook);
@@ -1781,6 +1784,7 @@ function installierePlugin($XML_arr, $cVerzeichnis, $oPluginOld)
                 $oPluginHook             = new stdClass();
                 $oPluginHook->kPlugin    = $kPlugin;
                 $oPluginHook->nHook      = intval($Hook_arr['Hook attr']['id']);
+                $oPluginHook->nPriority  = (isset($Hook_arr['Hook attr']['priority'])) ? (int) $Hook_arr['Hook attr']['priority'] : 5;
                 $oPluginHook->cDateiname = $Hook_arr['Hook'];
 
                 $kPluginHook = Shop::DB()->insert('tpluginhook', $oPluginHook);
@@ -1944,7 +1948,6 @@ function installierePlugin($XML_arr, $cVerzeichnis, $oPluginOld)
                                             }
                                         } elseif ($cTyp === 'radio') {
                                             if (isset($Setting_arr['OptionsSource']) && is_array($Setting_arr['OptionsSource']) && count($Setting_arr['OptionsSource']) > 0) {
-
                                             } elseif (count($Setting_arr['RadioOptions'][0]) === 1) { // Es gibt mehr als eine Option
                                                 foreach ($Setting_arr['RadioOptions'][0]['Option'] as $y => $Option_arr) {
                                                     preg_match("/[0-9]+\sattr/", $y, $cTreffer6_arr);
@@ -2074,7 +2077,7 @@ function installierePlugin($XML_arr, $cVerzeichnis, $oPluginOld)
                                     Shop::DB()->query(
                                         "DELETE FROM tseo
                                             WHERE cKey = 'kLink'
-                                                AND kKey = " . (int)$kLink . $or . "
+                                                AND (kKey = " . (int)$kLink . $or . ")
                                                 AND kSprache = " . (int)$oSprachAssoc_arr[$oLinkSprache->cISOSprache]->kSprache, 4
                                     );
                                     // tseo füllen
@@ -2888,10 +2891,9 @@ function installierePlugin($XML_arr, $cVerzeichnis, $oPluginOld)
                 $nReturnValue       = $nSQLFehlerCode_arr[$nReturnValue];
             }
         }
-        
+
         return $nReturnValue;
-    }
-    else {
+    } else {
         return 2; // Main Plugindaten nicht korrekt
     }
 }
@@ -3428,7 +3430,7 @@ function aktivierePlugin($kPlugin)
                         SET bActive = 1
                         WHERE kPlugin = " . $kPlugin, 3
                 );
-                
+
                 if ($p = Plugin::bootstrapper($kPlugin)) {
                     $p->enabled();
                 }
@@ -4336,19 +4338,19 @@ function mappePlausiFehler($nFehlerCode, $oPlugin)
                 break;
             case 130:
                 $return = 'Fehler: Bootstrap-Klasse "%cPluginID%\\Bootstrap" existiert nicht';
-                break;                
+                break;
             case 131:
                 $return = 'Fehler: Bootstrap-Klasse "%cPluginID%\\Bootstrap" muss das Interface "IPlugin" implementieren';
                 break;
         }
     }
-    
-    $search = array_map(function($val) {
+
+    $search = array_map(function ($val) {
         return sprintf('%%%s%%', $val);
     }, array_keys((array)$oPlugin));
-    
+
     $replace = array_values((array)$oPlugin);
-    $return = str_replace($search, $replace, $return);
+    $return  = str_replace($search, $replace, $return);
 
     return utf8_decode($return);
 }

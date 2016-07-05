@@ -128,7 +128,7 @@ class KategorieHelper
             $current       = null;
             $currentParent = null;
             $hierarchy     = array();
-            $shopURL       = Shop::getURL();
+            $shopURL       = Shop::getURL(true);
             if ($nodes === false) {
                 $nodes = array();
             }
@@ -299,7 +299,6 @@ class KategorieHelper
 
         return (isset($current->Unterkategorien)) ? array_values($current->Unterkategorien) : array();
     }
-
 
     /**
      * @param int          $id

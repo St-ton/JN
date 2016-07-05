@@ -21,34 +21,41 @@ use_colors()
     return 1
 }
 
-# $1 color
-# $2 text
+# $1 colored
+# $2 noncolor
 echo_colored()
 {
     use_colors
     if [ $? == 0 ]
     then
-        printf "$1 "
+        printf "$1\n"
+    else
+        printf "$2\n"
     fi
-    printf "$2\n"
+}
+
+# $1 text
+text()
+{
+    echo_colored "${fgMagenta}$1${C}" "$1"
 }
 
 # $1 text
 msg()
 {
-    echo_colored "${fgYellow}Ξ${C}" "$1"
+    echo_colored " ${fgYellow}•${C} $1" " - $1"
 }
 
 # $1 text
 success()
 {
-    echo_colored "${fgGreen}Ξ${C}" "$1"
+    echo_colored " ${fgGreen}•${C} $1" " - $1"
 }
 
 # $1 text
 error()
 {
-    echo_colored "${fgRed}Ξ${C}" "$1"
+    echo_colored " ${fgRed}•${C} $1" " - $1"
     exit -1
 }
 

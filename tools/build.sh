@@ -88,9 +88,10 @@ build_init()
 }
 
 # $1 branch/tag
+# $2 build number
 build_deploy()
 {
-    deploy_create $1
+    deploy_create $1 $2
 }
 
 main() {

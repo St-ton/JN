@@ -6,6 +6,7 @@ source ${SCRIPT_DIR}/scripts/ini_parser.sh
 MYCNF=~/.my.cnf
 
 # $1 branch/tag
+# $2 build number
 deploy_create()
 {
     source ${SCRIPT_DIR}/version.conf
@@ -15,6 +16,8 @@ deploy_create()
     export BUILD_DIR=`mktemp -d`
 
     local VCS_BRANCH=$1
+    local VCS_BUILD_NUMBER=$2
+    
     local TARGET_FILE="shop"
     local DB_NAME=$(deploy_db_name)
 
@@ -49,7 +52,7 @@ deploy_create()
     TARGET_PATH="${SCRIPT_DIR}/dist/${VCS_TYPE}"
     TARGET_FULLPATH="${TARGET_PATH}/${TARGET_FILE}"
 
-    success "Deploying ${VCS_TYPE} '${VCS_REF}' to ${TARGET_FULLPATH}"
+    text "Deploying #${VCS_BUILD_NUMBER} ${VCS_TYPE} '${VCS_REF}' to ${TARGET_FILE}"
 
     mkdir -p ${TARGET_PATH}
 

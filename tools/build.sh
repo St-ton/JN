@@ -17,7 +17,7 @@ build_help()
     echo "  ${fgGreen}check${C}             - Check dependencies"
     echo "  ${fgGreen}deps${C}              - Install dependencies"
 	echo "  ${fgGreen}ide_meta${C}          - Create metadata"
-    echo "  ${fgGreen}deploy <archive>${C}  - Deploy"
+    echo "  ${fgGreen}deploy <branch>${C}   - Deploy branch/tag"
     echo ""
 }
 
@@ -27,7 +27,7 @@ build_check()
 
     pathadd ${SCRIPT_DIR}/bin
 
-    for cmd in "composer" "php-cs-fixer" "phpcs" "zip" "realpath"; do
+    for cmd in "composer" "php-cs-fixer" "phpcs" "zip"; do
         if hash "$cmd" 2>/dev/null;
         then
             printf "${fgGreen}  Y  ${C}"
@@ -87,7 +87,7 @@ build_init()
     composer install --working-dir=${PROJECT_DIR}/includes || exit 1
 }
 
-# $1 archive filepath
+# $1 branch/tag
 build_deploy()
 {
     deploy_create $1

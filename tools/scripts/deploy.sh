@@ -5,48 +5,26 @@ source ${SCRIPT_DIR}/scripts/ini_parser.sh
 # database credentials
 MYCNF=~/.my.cnf
 
+# $1 branch/tag
 deploy_create()
 {
-    if [ ! -f ${MYCNF} ]; then
-        error "Config file '${MYCNF}' does not exist"
-    fi
-
     source ${SCRIPT_DIR}/version.conf
+
     export SHOP_VERSION SHOP_BUILD DB_PREFIX
-
-    deploy_ini_values ~/.my.cnf custom
-
-    if [ -z "${dbprefix}" ]; then
-        dbprefix="shop"
-    fi
-
-    local DB_NAME="${dbprefix}_${BASHPID}"
-
-    local VCS_BRANCH=$(deploy_branch_name)
-    local VCS_REVISION=$(git rev-parse HEAD)
-
-    local TARGET=""
-    local BUILD_TIMESTAMP=`date +%Y%m%d%H%M%S`
-
-    if [ $VCS_BRANCH == "develop" ]; then
-        TARGET="jtlshop_devel"
-    else
-        TARGET="jtlshop_release"
-    fi
-
-    TARGET="${TARGET}_${SHOP_VERSION:0:1}.${SHOP_VERSION:1:2}.${SHOP_BUILD}_${BUILD_TIMESTAMP}"
-    
-    if [ $VCS_BRANCH != "master" ]; then
-        TARGET="${TARGET}_${VCS_REVISION:0:9}"
-    fi
-
-    TARGET="${SCRIPT_DIR}/dist/${TARGET}.zip"
-
-    msg "Archive file: ${TARGET}"
-
     export BUILD_DIR=`mktemp -d`
 
-    msg "Build directory: ${BUILD_DIR}"
+    local VCS_BRANCH=$1
+    local TARGET="jtlshop"
+    local DB_NAME=$(deploy_db_name)
+
+    if [ -z "${VCS_BRANCH}" ]; then
+        VCS_BRANCH=$(deploy_branch_name)
+    fi
+
+    TARGET="${TARGET}_${SHOP_VERSION:0:1}.${SHOP_VERSION:1:2}.${SHOP_BUILD}"
+    TARGET="${SCRIPT_DIR}/dist/${TARGET}.zip"
+    
+    msg "Deploying ${fgGreen}${VCS_BRANCH}${C} to ${TARGET}\n"
 
     msg "Cloning repository"
     deploy_checkout ${VCS_BRANCH}
@@ -54,7 +32,7 @@ deploy_create()
     msg "Creating additional files"
     deploy_additional_files
 
-    deploy_build_info ${SHOP_BUILD} ${BUILD_TIMESTAMP}
+    deploy_build_info ${SHOP_BUILD}
 
     msg "Executing composer"
     deploy_vendors
@@ -79,6 +57,21 @@ deploy_create()
 
     msg "Cleaning workspace"
     deploy_clean ${DB_NAME}
+}
+
+deploy_db_name()
+{
+    if [ ! -f ${MYCNF} ]; then
+        error "Config file '${MYCNF}' does not exist"
+    fi
+
+    deploy_ini_values ~/.my.cnf custom
+
+    if [ -z "${dbprefix}" ]; then
+        dbprefix="build"
+    fi
+
+    echo "${dbprefix}_${BASHPID}"
 }
 
 deploy_branch_name()
@@ -106,11 +99,11 @@ deploy_additional_files()
 }
 
 # $1 target build version
-# $2 target timestamp
 deploy_build_info()
 {
+    local TIMESTAMP=`date +%Y%m%d%H%M%S`
     sed -i "s/#JTL_MINOR_VERSION#/$1/g" ${BUILD_DIR}/includes/defines_inc.php
-    sed -i "s/#JTL_BUILD_TIMESTAMP#/$2/g" ${BUILD_DIR}/includes/defines_inc.php
+    sed -i "s/#JTL_BUILD_TIMESTAMP#/$TIMESTAMP/g" ${BUILD_DIR}/includes/defines_inc.php
 }
 
 deploy_vendors()

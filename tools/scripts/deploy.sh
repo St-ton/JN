@@ -10,21 +10,48 @@ deploy_create()
 {
     source ${SCRIPT_DIR}/version.conf
 
+    export VCS_TYPE="head"
     export SHOP_VERSION SHOP_BUILD DB_PREFIX
     export BUILD_DIR=`mktemp -d`
 
     local VCS_BRANCH=$1
-    local TARGET="jtlshop"
+    local TARGET_FILE="shop"
     local DB_NAME=$(deploy_db_name)
 
     if [ -z "${VCS_BRANCH}" ]; then
         VCS_BRANCH=$(deploy_branch_name)
     fi
 
-    TARGET="${TARGET}_${SHOP_VERSION:0:1}.${SHOP_VERSION:1:2}.${SHOP_BUILD}"
-    TARGET="${SCRIPT_DIR}/dist/${TARGET}.zip"
+    local VCS_REG="refs\\/(head|tag)s\\/(.+)"
+    local VCS_REG_TAG="v([0-9])\\.([0-9]{2})\\.([0-9])"
+    local VCS_REF=$VCS_BRANCH
     
-    msg "Deploying ${fgGreen}${VCS_BRANCH}${C} to ${TARGET}\n"
+    if [[ $VCS_BRANCH =~ $VCS_REG ]]; then
+        VCS_TYPE=${BASH_REMATCH[1]}
+        VCS_REF=${BASH_REMATCH[2]}
+    fi
+
+    local SHOP_VERSION_MAJOR=${SHOP_VERSION:0:1}
+    local SHOP_VERSION_MINOR=${SHOP_VERSION:1:2}
+
+    if [ "$VCS_TYPE" = "tag" ]
+    then
+        if [[ $VCS_REF =~ $VCS_REG_TAG ]]; then
+            SHOP_VERSION_MAJOR=${BASH_REMATCH[1]}
+            SHOP_VERSION_MINOR=${BASH_REMATCH[2]}
+            SHOP_BUILD=${BASH_REMATCH[3]}
+        fi
+    fi
+
+    TARGET_FILE="${TARGET_FILE}_${SHOP_VERSION_MAJOR}.${SHOP_VERSION_MINOR}.${SHOP_BUILD}.zip"
+    TARGET_FILE="$(echo $TARGET_FILE | sed -e 's/[^A-Za-z0-9._-]/_/g')"
+
+    TARGET_PATH="${SCRIPT_DIR}/dist/${VCS_TYPE}"
+    TARGET_FULLPATH="${TARGET_PATH}/${TARGET_FILE}"
+
+    mkdir -p ${TARGET_PATH}
+
+    success "Deploying ${VCS_TYPE} '${VCS_REF}' to ${TARGET_FILE}"
 
     msg "Cloning repository"
     deploy_checkout ${VCS_BRANCH}
@@ -53,7 +80,7 @@ deploy_create()
     deploy_db_struct ${DB_NAME} ${SHOP_VERSION}
 
     msg "Creating archive"
-    deploy_create_zip ${TARGET}
+    deploy_create_zip ${TARGET_FULLPATH}
 
     msg "Cleaning workspace"
     deploy_clean ${DB_NAME}

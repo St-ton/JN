@@ -22,3 +22,6 @@
 [submodule "includes/plugins/evo_editor"]
 	path = includes/plugins/evo_editor
 	url = git@gitlab.jtl-software.de:jtlshop/evo-editor.git
+[submodule "includes/plugins/agws_ts_features"]
+	path = includes/plugins/agws_ts_features
+	url = https://gitlab.ag-websolutions.de/plugins/agws_trustedshops.git

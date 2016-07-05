@@ -7,27 +7,27 @@ MYCNF=~/.my.cnf
 
 deploy_create()
 {
+    if [ ! -f ${MYCNF} ]; then
+        error "Config file '${MYCNF}' does not exist"
+    fi
+
     source ${SCRIPT_DIR}/version.conf
-    export SHOP_VERSION SHOP_BUILD
+    export SHOP_VERSION SHOP_BUILD DB_PREFIX
+
+    deploy_ini_values ~/.my.cnf custom
+
+    if [ -z "${dbprefix}" ]; then
+        dbprefix="shop"
+    fi
+
+    local DB_NAME="${dbprefix}_${BASHPID}"
 
     local VCS_BRANCH=$(deploy_branch_name)
     local VCS_REVISION=$(git rev-parse HEAD)
 
     local TARGET=""
-    local DB_NAME=shop_${BASHPID}
     local BUILD_TIMESTAMP=`date +%Y%m%d%H%M%S`
 
-    if [ ! -f ${MYCNF} ]; then
-        error "Config file '${MYCNF}' does not exist"
-    fi
-
-    #if [ -z "${FILE_ARCHIVE}" ]; then
-    #    FILE_ARCHIVE="shop${SHOP_VERSION}.${SHOP_BUILD}.zip"
-    #fi
-
-    #FILE_ARCHIVE=`realpath ${FILE_ARCHIVE} -m`
-    #FILE_ARCHIVE=`realpath -s "${FILE_ARCHIVE}"`
-    
     if [ $VCS_BRANCH == "develop" ]; then
         TARGET="jtlshop_devel"
     else

@@ -27,7 +27,7 @@ build_check()
 
     pathadd ${SCRIPT_DIR}/bin
 
-    for cmd in "composer" "php-cs-fixer" "phpcs" "zip"; do
+    for cmd in "composer" "php-cs-fixer" "phpcs" "zip" "realpath"; do
         if hash "$cmd" 2>/dev/null;
         then
             printf "${fgGreen}  Y  ${C}"

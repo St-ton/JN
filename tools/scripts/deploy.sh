@@ -5,42 +5,62 @@ source ${SCRIPT_DIR}/scripts/ini_parser.sh
 # database credentials
 MYCNF=~/.my.cnf
 
-# $1 archive filepath
 deploy_create()
 {
-    local BRANCH=master
-    local TARGET_VERSION=404
-    local TARGET_BUILD=0
+    source ${SCRIPT_DIR}/version.conf
+    export SHOP_VERSION SHOP_BUILD
+
+    local VCS_BRANCH=$(deploy_branch_name)
+    local VCS_REVISION=$(git rev-parse HEAD)
+
+    local TARGET=""
     local DB_NAME=shop_${BASHPID}
-    local ARCHIVE=$1
+    local BUILD_TIMESTAMP=`date +%Y%m%d%H%M%S`
 
     if [ ! -f ${MYCNF} ]; then
         error "Config file '${MYCNF}' does not exist"
     fi
 
-    if [ -z "${ARCHIVE}" ]; then
-        ARCHIVE="shop${TARGET_VERSION}.${TARGET_BUILD}.zip"
+    #if [ -z "${FILE_ARCHIVE}" ]; then
+    #    FILE_ARCHIVE="shop${SHOP_VERSION}.${SHOP_BUILD}.zip"
+    #fi
+
+    #FILE_ARCHIVE=`realpath ${FILE_ARCHIVE} -m`
+    #FILE_ARCHIVE=`realpath -s "${FILE_ARCHIVE}"`
+    
+    if [ $VCS_BRANCH == "develop" ]; then
+        TARGET="jtlshop_devel"
+    else
+        TARGET="jtlshop_release"
+    fi
+    
+    TARGET="${TARGET}_${SHOP_VERSION}.${SHOP_BUILD}_${BUILD_TIMESTAMP}"
+    
+    if [ $VCS_BRANCH != "master" ]; then
+        TARGET="${TARGET}_${VCS_REVISION:0:9}"
     fi
 
-    ARCHIVE=`realpath ${ARCHIVE} -m`
+    TARGET="${SCRIPT_DIR}/dist/${TARGET}.zip"
+
+    msg "Archive file: ${TARGET}"
 
     export BUILD_DIR=`mktemp -d`
 
     msg "Build directory: ${BUILD_DIR}"
 
     msg "Cloning repository"
-    deploy_checkout ${BRANCH}
+    deploy_checkout ${VCS_BRANCH}
 
     msg "Creating additional files"
     deploy_additional_files
 
-    deploy_build_info ${TARGET_BUILD} `date +%Y%m%d%H%M%S`
+    deploy_build_info ${SHOP_BUILD} ${BUILD_TIMESTAMP}
 
     msg "Executing composer"
     deploy_vendors
 
     msg "Creating md5 hashfile"
-    deploy_md5_hashfile ${TARGET_VERSION}
+    deploy_md5_hashfile ${SHOP_VERSION}
 
     msg "Importing initial schema"
     deploy_initial_schema ${DB_NAME}
@@ -49,16 +69,24 @@ deploy_create()
     deploy_config_file ${DB_NAME}
 
     msg "Executing migrations"
-    deploy_migrate ${DB_NAME} ${TARGET_VERSION}
+    deploy_migrate ${DB_NAME} ${SHOP_VERSION}
 
     msg "Creating database struct"
-    deploy_db_struct ${DB_NAME} ${TARGET_VERSION}
+    deploy_db_struct ${DB_NAME} ${SHOP_VERSION}
 
     msg "Creating archive"
-    deploy_create_zip ${ARCHIVE}
+    deploy_create_zip ${TARGET}
 
     msg "Cleaning workspace"
     deploy_clean ${DB_NAME}
+}
+
+deploy_branch_name()
+{
+    BRANCH=$(git symbolic-ref -q HEAD)
+    BRANCH=${BRANCH##refs/heads/}
+    BRANCH=${BRANCH:-HEAD}
+    echo ${BRANCH}
 }
 
 # $1 branch
@@ -66,7 +94,9 @@ deploy_checkout()
 {
     git clone git@gitlab.jtl-software.de:jtlshop/shop4.git ${BUILD_DIR} -q || exit 1
     git -C ${BUILD_DIR} checkout $1 -q || exit 1
+
     rm -rf ${BUILD_DIR}/.git*
+    rm -rf ${BUILD_DIR}/tools
 }
 
 deploy_additional_files()
@@ -137,7 +167,7 @@ deploy_md5_hashfile()
     local MD5_DB_FILENAME="${BUILD_DIR}/admin/includes/shopmd5files/$1.csv"
 
     cd ${BUILD_DIR}
-    find . -type f ! -name robots.txt ! -name rss.xml ! -name shopinfo.xml ! -name .htaccess ! -samefile includes/defines.php ! -samefile includes/defines_inc.php ! -samefile includes/config.JTL-Shop.ini.initial.php -printf '"%P"\n' | grep -v -E '.git/|/.gitkeep|admin/gfx|admin/includes/emailpdfs|admin/includes/shopmd5files|admin/templates/gfx|admin/templates_c/|bilder/|downloads/|gfx/|includes/plugins|install/|jtllogs/|mediafiles/|templates/|templates_c/|uploads/|export/|shopinfo.xml|sitemap_index.xml' | xargs md5sum | awk '{ print $2";"$1; }' | sort > ${MD5_DB_FILENAME}
+    find . -type f ! -name robots.txt ! -name rss.xml ! -name shopinfo.xml ! -name .htaccess ! -samefile includes/defines.php ! -samefile includes/defines_inc.php ! -samefile includes/config.JTL-Shop.ini.initial.php -printf '"%P"\n' | grep -v -E '.git/|/.gitkeep|tools/|admin/gfx|admin/includes/emailpdfs|admin/includes/shopmd5files|admin/templates/gfx|admin/templates_c/|bilder/|downloads/|gfx/|includes/plugins|install/|jtllogs/|mediafiles/|templates/|templates_c/|uploads/|export/|shopinfo.xml|sitemap_index.xml' | xargs md5sum | awk '{ print $2";"$1; }' | sort > ${MD5_DB_FILENAME}
 
     cd $OLDPWD
 }
@@ -154,11 +184,9 @@ deploy_initial_schema()
 # $1 archive name
 deploy_create_zip()
 {
-    local OLDPWD=`pwd`
-
-    cd ${BUILD_DIR}
+    pushd ${BUILD_DIR} >> /dev/null 2>&1
     zip -r $1 . -q || exit 1
-    cd $OLDPWD
+    popd >> /dev/null 2>&1
 }
 
 deploy_ide_meta()

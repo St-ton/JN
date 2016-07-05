@@ -3,7 +3,6 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-
 require_once dirname(__FILE__) . '/syncinclude.php';
 //smarty lib
 global $smarty;
@@ -229,7 +228,7 @@ function bearbeiteInsert($xml)
             if (is_array($oAttribute_arr) && count($oAttribute_arr)) {
                 // Jenachdem ob es ein oder mehrere Attribute gibt, unterscheidet sich die Struktur des XML-Arrays
                 $single = isset($xml['tkategorie']['tattribut attr']) && is_array($xml['tkategorie']['tattribut attr']);
-                $i = 0;
+                $i      = 0;
                 foreach ($oAttribute_arr as $oAttribut) {
                     $parentXML = $single ? $xml['tkategorie']['tattribut'] : $xml['tkategorie']['tattribut'][$i++];
                     saveKategorieAttribut($parentXML, $oAttribut);

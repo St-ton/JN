@@ -304,7 +304,6 @@ class KategorieHelper
         return (isset($current->Unterkategorien)) ? array_values($current->Unterkategorien) : array();
     }
 
-
     /**
      * @param int          $id
      * @param array|object $haystack

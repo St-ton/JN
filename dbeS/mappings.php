@@ -186,7 +186,7 @@ $mArtikel = array(
     'fMindestbestellmenge',
     'fLieferantenlagerbestand',
     'fLieferzeit',
-    'fStandardpreisNetto', 
+    'fStandardpreisNetto',
     'cBarcode',
     'cTopArtikel',
     'fGewicht',

@@ -36,19 +36,19 @@ echo_colored()
 # $1 text
 msg()
 {
-    echo_colored "${fgYellow}Ξ${C}" $1
+    echo_colored "${fgYellow}Ξ${C}" "$1"
 }
 
 # $1 text
 success()
 {
-    echo_colored "${fgGreen}Ξ${C}" $1
+    echo_colored "${fgGreen}Ξ${C}" "$1"
 }
 
 # $1 text
 error()
 {
-    echo_colored "${fgRed}Ξ${C}" $1
+    echo_colored "${fgRed}Ξ${C}" "$1"
     exit -1
 }
 

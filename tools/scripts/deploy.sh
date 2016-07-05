@@ -49,9 +49,9 @@ deploy_create()
     TARGET_PATH="${SCRIPT_DIR}/dist/${VCS_TYPE}"
     TARGET_FULLPATH="${TARGET_PATH}/${TARGET_FILE}"
 
-    mkdir -p ${TARGET_PATH}
+    success "Deploying ${VCS_TYPE} '${VCS_REF}' to ${TARGET_FULLPATH}"
 
-    success "Deploying ${VCS_TYPE} '${VCS_REF}' to ${TARGET_FILE}"
+    mkdir -p ${TARGET_PATH}
 
     msg "Cloning repository"
     deploy_checkout ${VCS_BRANCH}

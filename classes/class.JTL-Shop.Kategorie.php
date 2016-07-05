@@ -169,7 +169,8 @@ class Kategorie
             $oSQLKategorie->cJOIN  = ' JOIN tkategoriesprache ON tkategoriesprache.kKategorie = tkategorie.kKategorie';
             $oSQLKategorie->cWHERE = ' AND tkategoriesprache.kSprache = ' . $kSprache;
         }
-        $oKategorie = Shop::DB()->query("SELECT tkategorie.kKategorie, " . $oSQLKategorie->cSELECT . " tkategorie.kOberKategorie, tkategorie.nSort, tkategorie.dLetzteAktualisierung,
+        $oKategorie = Shop::DB()->query(
+            "SELECT tkategorie.kKategorie, " . $oSQLKategorie->cSELECT . " tkategorie.kOberKategorie, tkategorie.nSort, tkategorie.dLetzteAktualisierung,
                 tkategorie.cName, tkategorie.cBeschreibung, tseo.cSeo, tkategoriepict.cPfad, tkategoriepict.cType
                 FROM tkategorie
                 " . $oSQLKategorie->cJOIN . "
@@ -203,14 +204,14 @@ class Kategorie
 
         //EXPERIMENTAL_MULTILANG_SHOP
         if ((!isset($oKategorie->cSeo) || $oKategorie->cSeo === null || $oKategorie->cSeo === '') && defined('EXPERIMENTAL_MULTILANG_SHOP') && EXPERIMENTAL_MULTILANG_SHOP === true) {
-            $kDefaultLang = $oSpracheTmp->kSprache;
+            $kDefaultLang = isset($oSpracheTmp) ? $oSpracheTmp->kSprache : gibStandardsprache()->kSprache;
             if ($kSprache != $kDefaultLang) {
-                $oSeo = Shop::DB()->query("
-                  SELECT cSeo 
-                    FROM tseo 
-                    WHERE cKey = 'kKategorie' 
-                      AND kSprache = " . (int)$kDefaultLang . " 
-                      AND kKey = " . (int) $oKategorie->kKategorie, 1
+                $oSeo = Shop::DB()->query(
+                    "SELECT cSeo
+                        FROM tseo
+                        WHERE cKey = 'kKategorie'
+                          AND kSprache = " . (int)$kDefaultLang . "
+                          AND kKey = " . (int)$oKategorie->kKategorie, 1
                 );
                 if (isset($oSeo->cSeo)) {
                     $oKategorie->cSeo = $oSeo->cSeo;
@@ -240,7 +241,14 @@ class Kategorie
         // Attribute holen
         $this->KategorieAttribute = array();
         if ($this->kKategorie > 0) {
-            $oKategorieAttribut_arr = Shop::DB()->query("SELECT cName, cWert FROM tkategorieattribut WHERE kKategorie = " . (int) $this->kKategorie, 2);
+            $oKategorieAttribut_arr = Shop::DB()->query(
+                "SELECT COALESCE(tkategorieattributsprache.cName, tkategorieattribut.cName) cName,
+                        COALESCE(tkategorieattributsprache.cWert, tkategorieattribut.cWert) cWert
+                    FROM tkategorieattribut
+                    LEFT JOIN tkategorieattributsprache ON tkategorieattributsprache.kAttribut = tkategorieattribut.kKategorieAttribut
+                        AND tkategorieattributsprache.kSprache = " . (int)Shop::getLanguage() . "
+                    WHERE kKategorie = " . (int)$this->kKategorie, 2
+            );
         }
         if (isset($oKategorieAttribut_arr) && is_array($oKategorieAttribut_arr) && count($oKategorieAttribut_arr) > 0) {
             foreach ($oKategorieAttribut_arr as $oKategorieAttribut) {
@@ -382,16 +390,14 @@ class Kategorie
             $cacheID = 'gkb_' . $this->kKategorie;
             if (($res = Shop::Cache()->get($cacheID)) === false) {
                 $resObj = Shop::DB()->query("SELECT cPfad FROM tkategoriepict WHERE kKategorie = " . (int)$this->kKategorie, 1);
-                $res    = (isset($resObj->cPfad) && $resObj->cPfad) ?
-                    PFAD_KATEGORIEBILDER . $resObj->cPfad :
-                    BILD_KEIN_KATEGORIEBILD_VORHANDEN;
+                $res    = (isset($resObj->cPfad) && $resObj->cPfad) ? PFAD_KATEGORIEBILDER . $resObj->cPfad : BILD_KEIN_KATEGORIEBILD_VORHANDEN;
                 Shop::Cache()->set($cacheID, $res, array(CACHING_GROUP_CATEGORY . '_' . $this->kKategorie, CACHING_GROUP_CATEGORY));
             }
 
             return $res;
         }
 
-        return;
+        return null;
     }
 
     /**
@@ -406,7 +412,8 @@ class Kategorie
                 "SELECT kOberKategorie
                     FROM tkategorie
                     WHERE kOberKategorie > 0
-                        AND kKategorie = " . (int)$this->kKategorie, 1);
+                        AND kKategorie = " . (int)$this->kKategorie, 1
+            );
 
             return (isset($oObj->kOberKategorie)) ? (int)$oObj->kOberKategorie : false;
         }
@@ -442,7 +449,7 @@ class Kategorie
         $obj = Shop::DB()->query(
             "SELECT kKategorie
                 FROM tkategoriesichtbarkeit
-                WHERE kKategorie = " . (int)$categoryId . " 
+                WHERE kKategorie = " . (int)$categoryId . "
                     AND kKundengruppe = " . (int)$customerGroupId, 1
         );
 

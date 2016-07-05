@@ -55,6 +55,18 @@ $mKategorieAttribut = array(
     'cWert'
 );
 
+$mNormalKategorieAttribut = array(
+    'cName'               => null,
+    'cWert'               => null,
+    'nSort'               => 0,
+    'bIsFunctionAttribut' => 0,
+);
+
+$mKategorieAttributSprache = array(
+    'cName',
+    'cWert',
+);
+
 $mKategorieSichtbarkeit = array();
 
 $mLieferadresse = array(

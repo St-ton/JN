@@ -249,7 +249,7 @@ class KategorieListe
      */
     public function holUnterkategorien($kKategorie, $kKundengruppe, $kSprache)
     {
-        $kKategorie = (int) $kKategorie;
+        $kKategorie = (int)$kKategorie;
         if (!$_SESSION['Kundengruppe']->darfArtikelKategorienSehen) {
             return array();
         }
@@ -262,16 +262,12 @@ class KategorieListe
         $kSprache      = (int)$kSprache;
         $kKundengruppe = (int)$kKundengruppe;
         $categoryList  = self::getCategoryList($kKundengruppe, $kSprache);
-        $subCategories = (isset($categoryList['kKategorieVonUnterkategorien_arr'][$kKategorie])) ?
-            $categoryList['kKategorieVonUnterkategorien_arr'][$kKategorie] :
-            null;
+        $subCategories = (isset($categoryList['kKategorieVonUnterkategorien_arr'][$kKategorie])) ? $categoryList['kKategorieVonUnterkategorien_arr'][$kKategorie] : null;
 
         if (isset($subCategories) && is_array($subCategories)) {
             //nimm kats aus session
             foreach ($subCategories as $kUnterKategorie) {
-                $oKategorie_arr[$kUnterKategorie] = (!isset($categoryList['oKategorie_arr'][$kUnterKategorie])) ?
-                    new Kategorie($kUnterKategorie) :
-                    $categoryList['oKategorie_arr'][$kUnterKategorie];
+                $oKategorie_arr[$kUnterKategorie] = !isset($categoryList['oKategorie_arr'][$kUnterKategorie]) ? new Kategorie($kUnterKategorie) : $categoryList['oKategorie_arr'][$kUnterKategorie];
             }
         } else {
             if ($kKategorie > 0) {
@@ -328,12 +324,12 @@ class KategorieListe
                         defined('EXPERIMENTAL_MULTILANG_SHOP') && EXPERIMENTAL_MULTILANG_SHOP === true) {
                         $kDefaultLang = $oSpracheTmp->kSprache;
                         if ($kSprache != $kDefaultLang) {
-                            $oSeo = Shop::DB()->query("
-                                SELECT cSeo
+                            $oSeo = Shop::DB()->query(
+                                "SELECT cSeo
                                     FROM tseo
                                     WHERE cKey = 'kKategorie'
-                                        AND kSprache = " . (int) $kDefaultLang . "
-                                        AND kKey = " . (int) $oKategorie->kKategorie, 1
+                                        AND kSprache = " . (int)$kDefaultLang . "
+                                        AND kKey = " . (int)$oKategorie->kKategorie, 1
                             );
                             if (isset($oSeo->cSeo)) {
                                 $oKategorie->cSeo = $oSeo->cSeo;
@@ -361,9 +357,12 @@ class KategorieListe
                     unset($oKategorie->cName_spr);
                     // Attribute holen
                     $oKategorie->KategorieAttribute = array();
-                    $oKategorieAttribut_arr         = Shop::DB()->query("
-                        SELECT cName, cWert
+                    $oKategorieAttribut_arr         = Shop::DB()->query(
+                        "SELECT COALESCE(tkategorieattributsprache.cName, tkategorieattribut.cName) cName,
+                                COALESCE(tkategorieattributsprache.cWert, tkategorieattribut.cWert) cWert
                             FROM tkategorieattribut
+                            LEFT JOIN tkategorieattributsprache ON tkategorieattributsprache.kAttribut = tkategorieattribut.kKategorieAttribut
+                                AND tkategorieattributsprache.kSprache = " . (int)Shop::getLanguage() . "
                             WHERE kKategorie = " . (int)$oKategorie->kKategorie, 2
                     );
                     foreach ($oKategorieAttribut_arr as $oKategorieAttribut) {
@@ -372,8 +371,8 @@ class KategorieListe
                     //hat die Kat Unterkategorien?
                     $oKategorie->bUnterKategorien = 0;
                     if (isset($oKategorie->kKategorie) && $oKategorie->kKategorie > 0) {
-                        $oUnterkategorien = Shop::DB()->query("
-                            SELECT kKategorie
+                        $oUnterkategorien = Shop::DB()->query(
+                            "SELECT kKategorie
                                 FROM tkategorie
                                 WHERE kOberKategorie = {$oKategorie->kKategorie} LIMIT 1", 1
                         );

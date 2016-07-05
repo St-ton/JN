@@ -33,8 +33,8 @@ deploy_create()
     else
         TARGET="jtlshop_release"
     fi
-    
-    TARGET="${TARGET}_${SHOP_VERSION}.${SHOP_BUILD}_${BUILD_TIMESTAMP}"
+
+    TARGET="${TARGET}_${SHOP_VERSION:0:1}.${SHOP_VERSION:1:2}.${SHOP_BUILD}_${BUILD_TIMESTAMP}"
     
     if [ $VCS_BRANCH != "master" ]; then
         TARGET="${TARGET}_${VCS_REVISION:0:9}"

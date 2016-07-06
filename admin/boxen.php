@@ -177,5 +177,5 @@ $smarty->assign('hinweis', $cHinweis)
        ->assign('oVorlagen_arr', $oVorlagen_arr)
        ->assign('oBoxenContainer', $oBoxenContainer)
        ->assign('nPage', $nPage)
-       ->assign('invisbleBoxes', $oBoxen->getInvisibleBoxes())
+       ->assign('invisibleBoxes', $oBoxen->getInvisibleBoxes())
        ->display('boxen.tpl');

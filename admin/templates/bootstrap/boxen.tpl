@@ -61,7 +61,7 @@ function onBlur(obj) {
 <!-- Modal -->
 
 <div id="content">
-    {if $invisbleBoxes|count > 0}
+    {if $invisibleBoxes|count > 0}
         <div class="alert alert-danger">{#warningInvisibleBoxes#}</div>
         <form action="boxen.php" method="post">
             {$jtl_token}
@@ -85,7 +85,7 @@ function onBlur(obj) {
                             <strong>Position</strong>
                         </th>
                     </tr>
-                    {foreach from=$invisbleBoxes item=invisibleBox name=invisibleBoxList}
+                    {foreach from=$invisibleBoxes item=invisibleBox name=invisibleBoxList}
                         <tr>
                             <td class="check">
                                 <input name="kInvisibleBox[]" type="checkbox" value="{$invisibleBox->kBox}" id="kInvisibleBox-{$smarty.foreach.invisibleBoxList.index}">

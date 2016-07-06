@@ -36,19 +36,19 @@ class Migration_20160704110244 extends Migration implements IMigration
 
         $this->execute(
             "ALTER TABLE `tkategorieattribut` 
-                ADD COLUMN `nSort`               INT          NOT NULL DEFAULT 0 AFTER `cWert`,
-                ADD COLUMN `bIsFunctionAttribut` INT UNSIGNED NOT NULL DEFAULT 1 AFTER `nSort`"
+                ADD COLUMN `nSort`                 INT          NOT NULL DEFAULT 0 AFTER `cWert`,
+                ADD COLUMN `bIstFunktionsAttribut` INT UNSIGNED NOT NULL DEFAULT 1 AFTER `nSort`"
         );
     }
 
     public function down()
     {
         $this->execute(
-            "DELETE FROM `tkategorieattribut` WHERE bIsFunctionAttribut = 0"
+            "DELETE FROM `tkategorieattribut` WHERE bIstFunktionsAttribut = 0"
         );
         $this->execute(
             "ALTER TABLE `tkategorieattribut` 
-                DROP COLUMN `bIsFunctionAttribut`,
+                DROP COLUMN `bIstFunktionsAttribut`,
                 DROP COLUMN `nSort`"
         );
         $this->execute("DROP TABLE IF EXISTS `tkategorieattributsprache`");

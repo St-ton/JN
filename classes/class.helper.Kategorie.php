@@ -118,14 +118,22 @@ class KategorieHelper
             $_catAttribut_arr = Shop::DB()->query(
                 "SELECT tkategorieattribut.kKategorie, 
                         COALESCE(tkategorieattributsprache.cName, tkategorieattribut.cName) cName, 
-                        COALESCE(tkategorieattributsprache.cWert, tkategorieattribut.cWert) cWert
+                        COALESCE(tkategorieattributsprache.cWert, tkategorieattribut.cWert) cWert,
+                        tkategorieattribut.bIstFunktionsAttribut, tkategorieattribut.nSort
                     FROM tkategorieattribut 
                     LEFT JOIN tkategorieattributsprache ON tkategorieattributsprache.kAttribut = tkategorieattribut.kKategorieAttribut
-                        AND tkategorieattributsprache.kSprache = " . (int)self::$kSprache, 2
+                        AND tkategorieattributsprache.kSprache = " . (int)self::$kSprache . "
+                    ORDER BY tkategorieattribut.kKategorie, tkategorieattribut.bIstFunktionsAttribut DESC, tkategorieattribut.nSort", 2
             );
-            $att = array();
+            $functionAttributes  = array();
+            $localizedAttributes = array();
             foreach ($_catAttribut_arr as $_catAttribut) {
-                $att[(int)$_catAttribut->kKategorie][strtolower($_catAttribut->cName)] = $_catAttribut->cWert;
+                $catID = (int)$_catAttribut->kKategorie;
+                if ($_catAttribut->bIstFunktionsAttribut) {
+                    $functionAttributes[$catID][strtolower($_catAttribut->cName)] = $_catAttribut->cWert;
+                } else {
+                    $localizedAttributes[$catID][strtolower($_catAttribut->cName)] = $_catAttribut;
+                }
             }
 
             $fullCats      = array();
@@ -162,8 +170,13 @@ class KategorieHelper
                 }
                 unset($_cat->cBeschreibung_spr);
                 unset($_cat->cName_spr);
+
                 // Attribute holen
-                $_cat->KategorieAttribute = (isset($att[$_cat->kKategorie])) ? $att[$_cat->kKategorie] : array();
+                $_cat->categoryFunctionAttributes = (isset($functionAttributes[$_cat->kKategorie])) ? $functionAttributes[$_cat->kKategorie] : array();
+                $_cat->categoryAttributes         = (isset($localizedAttributes[$_cat->kKategorie])) ? $localizedAttributes[$_cat->kKategorie] : array();
+                /** @deprecated since version 4.05 - usage of KategorieAttribute is deprecated, use categoryFunctionAttributes instead */
+                $_cat->KategorieAttribute         = &$_cat->categoryFunctionAttributes;
+
                 //interne Verlinkung $#k:X:Y#$
                 $_cat->cBeschreibung    = parseNewsText($_cat->cBeschreibung);
                 $_cat->bUnterKategorien = 0;

@@ -2042,7 +2042,7 @@ function gibAlleKategorienNoHTML($nKategorieBox = 0)
         foreach ($oKategorien->elemente as $oKategorie) {
             //Kategoriebox Filter
             if ($nKategorieBox > 0 && $nTiefe == 0) {
-                if ($oKategorie->KategorieAttribute[KAT_ATTRIBUT_KATEGORIEBOX] != $nKategorieBox) {
+                if ($oKategorie->CategoryFunctionAttributes[KAT_ATTRIBUT_KATEGORIEBOX] != $nKategorieBox) {
                     continue;
                 }
             }

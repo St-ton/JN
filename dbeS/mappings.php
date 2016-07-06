@@ -56,10 +56,10 @@ $mKategorieAttribut = array(
 );
 
 $mNormalKategorieAttribut = array(
-    'cName'               => null,
-    'cWert'               => null,
-    'nSort'               => 0,
-    'bIsFunctionAttribut' => 0,
+    'cName'                 => null,
+    'cWert'                 => null,
+    'nSort'                 => 0,
+    'bIstFunktionsAttribut' => 0,
 );
 
 $mKategorieAttributSprache = array(

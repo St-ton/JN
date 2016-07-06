@@ -76,8 +76,19 @@ class Kategorie
 
     /**
      * @var array
+     * @deprecated since version 4.05 - usage of KategorieAttribute is deprecated, use categoryFunctionAttributes instead
      */
     public $KategorieAttribute;
+
+    /**
+     * @var array - value/key pair
+     */
+    public $categoryFunctionAttributes;
+
+    /**
+     * @var array of objects
+     */
+    public $categoryAttributes;
 
     /**
      * @var int
@@ -239,19 +250,23 @@ class Kategorie
             $this->nBildVorhanden = 1;
         }
         // Attribute holen
-        $this->KategorieAttribute = array();
+        $this->categoryFunctionAttributes = array();
+        $this->categoryAttributes         = array();
         if ($this->kKategorie > 0) {
             $oKategorieAttribut_arr = Shop::DB()->query(
                 "SELECT COALESCE(tkategorieattributsprache.cName, tkategorieattribut.cName) cName,
-                        COALESCE(tkategorieattributsprache.cWert, tkategorieattribut.cWert) cWert
+                        COALESCE(tkategorieattributsprache.cWert, tkategorieattribut.cWert) cWert,
+                        tkategorieattribut.bIstFunktionsAttribut, tkategorieattribut.nSort
                     FROM tkategorieattribut
                     LEFT JOIN tkategorieattributsprache ON tkategorieattributsprache.kAttribut = tkategorieattribut.kKategorieAttribut
                         AND tkategorieattributsprache.kSprache = " . (int)Shop::getLanguage() . "
-                    WHERE kKategorie = " . (int)$this->kKategorie, 2
+                    WHERE kKategorie = " . (int)$this->kKategorie . "
+                    ORDER BY tkategorieattribut.bIstFunktionsAttribut DESC, tkategorieattribut.nSort", 2
             );
         }
         if (isset($oKategorieAttribut_arr) && is_array($oKategorieAttribut_arr) && count($oKategorieAttribut_arr) > 0) {
             foreach ($oKategorieAttribut_arr as $oKategorieAttribut) {
+                // Aus Kompatibilitätsgründen findet hier KEINE Trennung zwischen Funktions- und Lokalisierten Attributen statt
                 if ($oKategorieAttribut->cName === 'meta_title') {
                     $this->cTitleTag = $oKategorieAttribut->cWert;
                 } elseif ($oKategorieAttribut->cName === 'meta_description') {
@@ -259,9 +274,15 @@ class Kategorie
                 } elseif ($oKategorieAttribut->cName === 'meta_keywords') {
                     $this->cMetaKeywords = $oKategorieAttribut->cWert;
                 }
-                $this->KategorieAttribute[strtolower($oKategorieAttribut->cName)] = $oKategorieAttribut->cWert;
+                if ($oKategorieAttribut->bIstFunktionsAttribut) {
+                    $this->categoryFunctionAttributes[strtolower($oKategorieAttribut->cName)] = $oKategorieAttribut->cWert;
+                } else {
+                    $this->categoryAttributes[strtolower($oKategorieAttribut->cName)] = $oKategorieAttribut;
+                }
             }
         }
+        /** @deprecated since version 4.05 - usage of KategorieAttribute is deprecated, use categoryFunctionAttributes instead */
+        $this->KategorieAttribute = &$this->categoryFunctionAttributes;
         // lokalisieren
         if ($kSprache > 0 && !standardspracheAktiv()) {
             if (isset($oKategorie->cName_spr) && strlen($oKategorie->cName_spr) > 0) {

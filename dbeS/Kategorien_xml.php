@@ -223,16 +223,14 @@ function bearbeiteInsert($xml)
         updateXMLinDB($xml['tkategorie'], 'tkategorieattribut', $GLOBALS['mKategorieAttribut'], 'kKategorieAttribut');
         updateXMLinDB($xml['tkategorie'], 'tkategoriesichtbarkeit', $GLOBALS['mKategorieSichtbarkeit'], 'kKundengruppe', 'kKategorie');
 
-        if (JTL_VERSION > 404) {
-            $oAttribute_arr    = mapArray($xml['tkategorie'], 'tattribut', $GLOBALS['mNormalKategorieAttribut']);
-            if (is_array($oAttribute_arr) && count($oAttribute_arr)) {
-                // Jenachdem ob es ein oder mehrere Attribute gibt, unterscheidet sich die Struktur des XML-Arrays
-                $single = isset($xml['tkategorie']['tattribut attr']) && is_array($xml['tkategorie']['tattribut attr']);
-                $i      = 0;
-                foreach ($oAttribute_arr as $oAttribut) {
-                    $parentXML = $single ? $xml['tkategorie']['tattribut'] : $xml['tkategorie']['tattribut'][$i++];
-                    saveKategorieAttribut($parentXML, $oAttribut);
-                }
+        $oAttribute_arr = mapArray($xml['tkategorie'], 'tattribut', $GLOBALS['mNormalKategorieAttribut']);
+        if (is_array($oAttribute_arr) && count($oAttribute_arr)) {
+            // Jenachdem ob es ein oder mehrere Attribute gibt, unterscheidet sich die Struktur des XML-Arrays
+            $single = isset($xml['tkategorie']['tattribut attr']) && is_array($xml['tkategorie']['tattribut attr']);
+            $i      = 0;
+            foreach ($oAttribute_arr as $oAttribut) {
+                $parentXML = $single ? $xml['tkategorie']['tattribut'] : $xml['tkategorie']['tattribut'][$i++];
+                saveKategorieAttribut($parentXML, $oAttribut);
             }
         }
 

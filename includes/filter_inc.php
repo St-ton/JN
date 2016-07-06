@@ -328,9 +328,7 @@ function gibArtikelKeys($FilterSQL, $nArtikelProSeite, $NaviFilter, $bExtern = f
     ) {
         header(makeHTTPHeader(301));
         // Weiterleitung zur Artikeldetailansicht da nur ein Artikel gefunden wurde und die Einstellung gesetzt ist.
-        $url = (isset($oArtikel_arr[0]->cURL) && strlen($oArtikel_arr[0]->cURL) > 0) ?
-            Shop::getURL() . '/' . $oArtikel_arr[0]->cURL :
-            Shop::getURL() . '/index.php?a=' . $oArtikel_arr[0]->kArtikel;
+        $url = (isset($oArtikel_arr[0]->cURL) && strlen($oArtikel_arr[0]->cURL) > 0) ? Shop::getURL() . '/' . $oArtikel_arr[0]->cURL : Shop::getURL() . '/index.php?a=' . $oArtikel_arr[0]->kArtikel;
         header('Location: ' . $url);
         exit;
     }
@@ -423,11 +421,11 @@ function gibAnzahlFilter($NaviFilter)
 function gibHerstellerFilterOptionen($FilterSQL, $NaviFilter)
 {
     $cacheID = 'filter_hfo_' . md5(
-            json_encode($_SESSION['Kundengruppe']) .
-            serialize($NaviFilter) .
-            json_encode($FilterSQL) .
-            json_encode(Shop::$kSprache)
-        );
+        json_encode($_SESSION['Kundengruppe']) .
+        serialize($NaviFilter) .
+        json_encode($FilterSQL) .
+        json_encode(Shop::$kSprache)
+    );
     if (($oHerstellerFilterDB_arr = Shop::Cache()->get($cacheID)) !== false) {
         return $oHerstellerFilterDB_arr;
     }
@@ -520,11 +518,11 @@ function gibKategorieFilterOptionen($FilterSQL, $NaviFilter)
         }
     }
     $cacheID = 'filter_kfo_' . md5(
-            json_encode($_SESSION['Kundengruppe']) .
-            serialize($NaviFilter) .
-            $filterString .
-            Shop::$kSprache
-        );
+        json_encode($_SESSION['Kundengruppe']) .
+        serialize($NaviFilter) .
+        $filterString .
+        Shop::$kSprache
+    );
     if (($oKategorieFilterDB_arr = Shop::Cache()->get($cacheID)) !== false) {
         return $oKategorieFilterDB_arr;
     }
@@ -786,9 +784,9 @@ function gibBewertungSterneFilterOptionen($FilterSQL, $NaviFilter)
         $kSprache = (int) $oSprache->kSprache;
     }
     $cacheID = 'filter_ps_' . md5(
-            serialize($NaviFilter) .
-            json_encode($FilterSQL)
-        ) . '_' . $kSprache . '_' . (int) $_SESSION['Kundengruppe']->kKundengruppe;
+        serialize($NaviFilter) .
+        json_encode($FilterSQL)
+    ) . '_' . $kSprache . '_' . (int)$_SESSION['Kundengruppe']->kKundengruppe;
     if (($oBewertungFilter_arr = Shop::Cache()->get($cacheID)) !== false) {
         return $oBewertungFilter_arr;
     }
@@ -923,13 +921,13 @@ function gibPreisspannenFilterOptionen($FilterSQL, $NaviFilter, $oSuchergebnisse
         $kSprache = (int) $oSprache->kSprache;
     }
     $cacheID = 'filter_ps_' . md5(
-            json_encode($_SESSION['Kundengruppe']->kKundengruppe) .
-            ((isset($NaviFilter->PreisspannenFilter->fVon)) ? json_encode($NaviFilter->PreisspannenFilter->fVon) : '') .
-            ((isset($NaviFilter->PreisspannenFilter->fBis)) ? json_encode($NaviFilter->PreisspannenFilter->fBis) : '') .
-            json_encode($FilterSQL) .
-            $oSuchergebnisse->GesamtanzahlArtikel .
-            json_encode($_SESSION['Steuersatz'])
-        ) . '_' . $kSprache;
+        json_encode($_SESSION['Kundengruppe']->kKundengruppe) .
+        ((isset($NaviFilter->PreisspannenFilter->fVon)) ? json_encode($NaviFilter->PreisspannenFilter->fVon) : '') .
+        ((isset($NaviFilter->PreisspannenFilter->fBis)) ? json_encode($NaviFilter->PreisspannenFilter->fBis) : '') .
+        json_encode($FilterSQL) .
+        $oSuchergebnisse->GesamtanzahlArtikel .
+        json_encode($_SESSION['Steuersatz'])
+    ) . '_' . $kSprache;
     if (($oPreisspanne_arr = Shop::Cache()->get($cacheID)) !== false) {
         return $oPreisspanne_arr;
     }
@@ -1386,11 +1384,11 @@ function gibMerkmalFilterOptionen($FilterSQL, $NaviFilter, $oAktuelleKategorie =
     $cKatAttribMerkmalFilter_arr = array();
     $conf                        = Shop::getSettings(array(CONF_NAVIGATIONSFILTER));
     if (isset($conf['navigationsfilter']['merkmalfilter_verwenden']) && $conf['navigationsfilter']['merkmalfilter_verwenden'] !== 'N' || $bForce) {
-        // Ist Kategorie Mainword, dann prüfe die Kategorieattribute auf merkmalfilter
+        // Ist Kategorie Mainword, dann prüfe die Kategorie-Funktionsattribute auf merkmalfilter
         if (isset($NaviFilter->Kategorie->kKategorie) && $NaviFilter->Kategorie->kKategorie > 0) {
-            if (isset($oAktuelleKategorie->KategorieAttribute) && is_array($oAktuelleKategorie->KategorieAttribute) && count($oAktuelleKategorie->KategorieAttribute) > 0) {
-                if (isset($oAktuelleKategorie->KategorieAttribute[KAT_ATTRIBUT_MERKMALFILTER]) && strlen($oAktuelleKategorie->KategorieAttribute[KAT_ATTRIBUT_MERKMALFILTER]) > 0) {
-                    $cKatAttribMerkmalFilter_arr = explode(';', $oAktuelleKategorie->KategorieAttribute[KAT_ATTRIBUT_MERKMALFILTER]);
+            if (isset($oAktuelleKategorie->categoryFunctionAttributes) && is_array($oAktuelleKategorie->categoryFunctionAttributes) && count($oAktuelleKategorie->categoryFunctionAttributes) > 0) {
+                if (!empty($oAktuelleKategorie->categoryFunctionAttributes[KAT_ATTRIBUT_MERKMALFILTER])) {
+                    $cKatAttribMerkmalFilter_arr = explode(';', $oAktuelleKategorie->categoryFunctionAttributes[KAT_ATTRIBUT_MERKMALFILTER]);
                 }
             }
         }
@@ -3335,8 +3333,13 @@ function gibNaviMetaTitle($NaviFilter, $oSuchergebnisse, $GlobaleMetaAngaben_arr
             $cMetaTitle = strip_tags($oKategorie->cTitleTag);
             $cMetaTitle = str_replace('"', "'", $cMetaTitle);
             $cMetaTitle = StringHandler::htmlentitydecode($cMetaTitle, ENT_NOQUOTES);
-        } elseif (isset($oKategorie->KategorieAttribute['meta_title']) && strlen($oKategorie->KategorieAttribute['meta_title']) > 0) {
+        } elseif (!empty($oKategorie->categoryAttributes['meta_title']->cWert)) {
             // Hat die aktuelle Kategorie als Kategorieattribut einen Meta Title gesetzt?
+            $cMetaTitle = strip_tags($oKategorie->categoryAttributes['meta_title']->cWert);
+            $cMetaTitle = str_replace('"', "'", $cMetaTitle);
+            $cMetaTitle = StringHandler::htmlentitydecode($cMetaTitle, ENT_NOQUOTES);
+        } elseif (!empty($oKategorie->KategorieAttribute['meta_title'])) {
+            /** @deprecated since 4.05 - this is for compatibilty only! */
             $cMetaTitle = strip_tags($oKategorie->KategorieAttribute['meta_title']);
             $cMetaTitle = str_replace('"', "'", $cMetaTitle);
             $cMetaTitle = StringHandler::htmlentitydecode($cMetaTitle, ENT_NOQUOTES);
@@ -3381,8 +3384,13 @@ function gibNaviMetaDescription($oArtikel_arr, $NaviFilter, $oSuchergebnisse, $G
             $cKatDescription = strip_tags($oKategorie->cMetaDescription);
 
             return truncateMetaDescription($cKatDescription);
-        } elseif (isset($oKategorie->KategorieAttribute['meta_description']) && strlen($oKategorie->KategorieAttribute['meta_description']) > 0) {
+        } elseif (!empty($oKategorie->categoryAttributes['meta_description']->cWert)) {
             // Hat die aktuelle Kategorie als Kategorieattribut eine Meta Description gesetzt?
+            $cKatDescription = strip_tags($oKategorie->categoryAttributes['meta_description']->cWert);
+
+            return truncateMetaDescription($cKatDescription);
+        } elseif (!empty($oKategorie->KategorieAttribute['meta_description'])) {
+            /** @deprecated since 4.05 - this is for compatibilty only! */
             $cKatDescription = strip_tags($oKategorie->KategorieAttribute['meta_description']);
 
             return truncateMetaDescription($cKatDescription);
@@ -3484,8 +3492,13 @@ function gibNaviMetaKeywords($oArtikel_arr, $NaviFilter, $oExcludesKeywords_arr)
             $cKatKeywords = strip_tags($oKategorie->cMetaKeywords);
 
             return $cKatKeywords;
-        } elseif (isset($oKategorie->KategorieAttribute['meta_keywords']) && strlen($oKategorie->KategorieAttribute['meta_keywords']) > 0) {
+        } elseif (!empty($oKategorie->categoryAttributes['meta_keywords']->cWert)) {
             // Hat die aktuelle Kategorie als Kategorieattribut einen Meta Keywords gesetzt?
+            $cKatKeywords = strip_tags($oKategorie->categoryAttributes['meta_keywords']->cWert);
+
+            return $cKatKeywords;
+        } elseif (!empty($oKategorie->KategorieAttribute['meta_keywords'])) {
+            /** @deprecated since 4.05 - this is for compatibilty only! */
             $cKatKeywords = strip_tags($oKategorie->KategorieAttribute['meta_keywords']);
 
             return $cKatKeywords;
@@ -3692,8 +3705,8 @@ function gibErweiterteDarstellung($Einstellungen, $NaviFilter, $nDarstellung = 0
             $oKategorie = new Kategorie($NaviFilter->Kategorie->kKategorie);
         }
 
-        if (isset($oKategorie->KategorieAttribute[KAT_ATTRIBUT_DARSTELLUNG]) && strlen($oKategorie->KategorieAttribute[KAT_ATTRIBUT_DARSTELLUNG]) > 0) {
-            $nStdDarstellung = (int)$oKategorie->KategorieAttribute[KAT_ATTRIBUT_DARSTELLUNG];
+        if (!empty($oKategorie->categoryFunctionAttributes[KAT_ATTRIBUT_DARSTELLUNG])) {
+            $nStdDarstellung = (int)$oKategorie->categoryFunctionAttributes[KAT_ATTRIBUT_DARSTELLUNG];
         } elseif (isset($Einstellungen['artikeluebersicht']['artikeluebersicht_erw_darstellung_stdansicht']) &&
             (int)$Einstellungen['artikeluebersicht']['artikeluebersicht_erw_darstellung_stdansicht'] > 0
         ) {
@@ -3821,8 +3834,8 @@ function setzeUsersortierung($NaviFilter)
         $_SESSION['Usersortierung']         = SEARCH_SORT_STANDARD;
     }
     // Kategorie Funktionsattribut
-    if (isset($AktuelleKategorie->KategorieAttribute[KAT_ATTRIBUT_ARTIKELSORTIERUNG]) && strlen($AktuelleKategorie->KategorieAttribute[KAT_ATTRIBUT_ARTIKELSORTIERUNG]) > 0) {
-        $_SESSION['Usersortierung'] = $AktuelleKategorie->KategorieAttribute[KAT_ATTRIBUT_ARTIKELSORTIERUNG];
+    if (!empty($AktuelleKategorie->categoryFunctionAttributes[KAT_ATTRIBUT_ARTIKELSORTIERUNG])) {
+        $_SESSION['Usersortierung'] = $AktuelleKategorie->categoryFunctionAttributes[KAT_ATTRIBUT_ARTIKELSORTIERUNG];
     }
     // Wurde zuvor etwas gesucht? Dann die Einstellung des Users vor der Suche wiederherstellen
     if (isset($_SESSION['UsersortierungVorSuche']) && intval($_SESSION['UsersortierungVorSuche']) > 0) {

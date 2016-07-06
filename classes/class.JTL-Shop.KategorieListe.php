@@ -356,18 +356,29 @@ class KategorieListe
                     unset($oKategorie->cBeschreibung_spr);
                     unset($oKategorie->cName_spr);
                     // Attribute holen
-                    $oKategorie->KategorieAttribute = array();
-                    $oKategorieAttribut_arr         = Shop::DB()->query(
+
+                    $oKategorie->categoryFunctionAttributes = array();
+                    $oKategorie->categoryAttributes         = array();
+                    $oKategorieAttribut_arr                 = Shop::DB()->query(
                         "SELECT COALESCE(tkategorieattributsprache.cName, tkategorieattribut.cName) cName,
-                                COALESCE(tkategorieattributsprache.cWert, tkategorieattribut.cWert) cWert
+                                COALESCE(tkategorieattributsprache.cWert, tkategorieattribut.cWert) cWert,
+                                tkategorieattribut.bIstFunktionsAttribut, tkategorieattribut.nSort
                             FROM tkategorieattribut
                             LEFT JOIN tkategorieattributsprache ON tkategorieattributsprache.kAttribut = tkategorieattribut.kKategorieAttribut
                                 AND tkategorieattributsprache.kSprache = " . (int)Shop::getLanguage() . "
-                            WHERE kKategorie = " . (int)$oKategorie->kKategorie, 2
+                            WHERE kKategorie = " . (int)$oKategorie->kKategorie . "
+                            ORDER BY tkategorieattribut.bIstFunktionsAttribut DESC, tkategorieattribut.nSort", 2
                     );
                     foreach ($oKategorieAttribut_arr as $oKategorieAttribut) {
-                        $oKategorie->KategorieAttribute[strtolower($oKategorieAttribut->cName)] = $oKategorieAttribut->cWert;
+                        if ($oKategorieAttribut->bIstFunktionsAttribut) {
+                            $oKategorie->categoryFunctionAttributes[strtolower($oKategorieAttribut->cName)] = $oKategorieAttribut->cWert;
+                        } else {
+                            $oKategorie->categoryAttributes[strtolower($oKategorieAttribut->cName)] = $oKategorieAttribut;
+                        }
                     }
+                    /** @deprecated since version 4.05 - usage of KategorieAttribute is deprecated, use categoryFunctionAttributes instead */
+                    $oKategorie->KategorieAttribute = &$oKategorie->categoryFunctionAttributes;
+
                     //hat die Kat Unterkategorien?
                     $oKategorie->bUnterKategorien = 0;
                     if (isset($oKategorie->kKategorie) && $oKategorie->kKategorie > 0) {

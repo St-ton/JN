@@ -92,7 +92,7 @@ function get_category_array($params = array(), &$smarty)
     if (isset($params['categoryBoxNumber']) && (int)$params['categoryBoxNumber'] > 0) {
         $list2 = array();
         foreach ($list as $key => $oList) {
-            if (isset($oList->KategorieAttribute[KAT_ATTRIBUT_KATEGORIEBOX]) && $oList->KategorieAttribute[KAT_ATTRIBUT_KATEGORIEBOX] == $params['categoryBoxNumber']) {
+            if (isset($oList->categoryFunctionAttributes[KAT_ATTRIBUT_KATEGORIEBOX]) && $oList->categoryFunctionAttributes[KAT_ATTRIBUT_KATEGORIEBOX] == $params['categoryBoxNumber']) {
                 $list2[$key] = $oList;
             }
         }

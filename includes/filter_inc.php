@@ -16,13 +16,13 @@ function buildSearchResults($FilterSQL, $NaviFilter)
     $nArtikelProSeite = 20;
     $conf             = Shop::getSettings(array(CONF_ARTIKELUEBERSICHT));
     if (intval($conf['artikeluebersicht']['artikeluebersicht_artikelproseite']) > 0) {
-        $nArtikelProSeite = (int) $conf['artikeluebersicht']['artikeluebersicht_artikelproseite'];
+        $nArtikelProSeite = (int)$conf['artikeluebersicht']['artikeluebersicht_artikelproseite'];
     }
     if (isset($_SESSION['ArtikelProSeite']) && $_SESSION['ArtikelProSeite'] > 0) {
-        $nArtikelProSeite = (int) $_SESSION['ArtikelProSeite'];
+        $nArtikelProSeite = (int)$_SESSION['ArtikelProSeite'];
     }
     if ($_SESSION['oErweiterteDarstellung']->nAnzahlArtikel > 0) {
-        $nArtikelProSeite = (int) $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel;
+        $nArtikelProSeite = (int)$_SESSION['oErweiterteDarstellung']->nAnzahlArtikel;
     }
     // $nArtikelProSeite auf max. ARTICLES_PER_PAGE_HARD_LIMIT beschränken
     $nArtikelProSeite = min($nArtikelProSeite, ARTICLES_PER_PAGE_HARD_LIMIT);
@@ -52,10 +52,10 @@ function buildSearchResults($FilterSQL, $NaviFilter)
  */
 function baueArtikelAnzahl($FilterSQL, &$oSuchergebnisse, $nArtikelProSeite = 20, $nLimitN)
 {
-    $kKundengruppe = (isset($_SESSION['Kundengruppe']->kKundengruppe)) ? (int) $_SESSION['Kundengruppe']->kKundengruppe : null;
+    $kKundengruppe = (isset($_SESSION['Kundengruppe']->kKundengruppe)) ? (int)$_SESSION['Kundengruppe']->kKundengruppe : null;
     if (!$kKundengruppe) {
         $oKundengruppe = Shop::DB()->query("SELECT kKundengruppe FROM tkundengruppe WHERE cStandard = 'Y'", 1);
-        $kKundengruppe = (int) $oKundengruppe->kKundengruppe;
+        $kKundengruppe = (int)$oKundengruppe->kKundengruppe;
         if (!isset($_SESSION['Kundengruppe'])) {
             $_SESSION['Kundengruppe'] = new stdClass();
         }
@@ -155,16 +155,16 @@ function buildSearchResultPage(&$oSearchResult, $nProductCount, $nLimitN, $nPage
  * @param stdClass $oSuchergebnisse
  * @return array
  */
-function gibArtikelKeys($FilterSQL, $nArtikelProSeite, $NaviFilter, $bExtern = false, $oSuchergebnisse)
+function gibArtikelKeys($FilterSQL, $nArtikelProSeite, $NaviFilter, $bExtern, $oSuchergebnisse)
 {
     $oArtikel_arr = array();
     $conf         = Shop::getSettings(array(CONF_ARTIKELUEBERSICHT, CONF_BOXEN, CONF_NAVIGATIONSFILTER));
     //Sortierung
     $cSortSQL      = gibArtikelsortierung($NaviFilter);
-    $kKundengruppe = (int) $_SESSION['Kundengruppe']->kKundengruppe;
+    $kKundengruppe = (int)$_SESSION['Kundengruppe']->kKundengruppe;
     if (!$kKundengruppe) {
         $oKundengruppe                           = Shop::DB()->query("SELECT kKundengruppe FROM tkundengruppe WHERE cStandard = 'Y'", 1);
-        $kKundengruppe                           = (int) $oKundengruppe->kKundengruppe;
+        $kKundengruppe                           = (int)$oKundengruppe->kKundengruppe;
         $_SESSION['Kundengruppe']->kKundengruppe = $oKundengruppe->kKundengruppe;
     }
     // Work around Preissortierung
@@ -447,7 +447,7 @@ function gibHerstellerFilterOptionen($FilterSQL, $NaviFilter)
                 " . $FilterSQL->oBewertungSterneFilterSQL->cJoin . "
                 " . $FilterSQL->oPreisspannenFilterSQL->cJoin . "
                 LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                    AND tartikelsichtbarkeit.kKundengruppe = " . (int) $_SESSION['Kundengruppe']->kKundengruppe . "
+                    AND tartikelsichtbarkeit.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
                     AND tartikel.kVaterArtikel = 0
                     " . gibLagerfilter() . "
@@ -536,19 +536,17 @@ function gibKategorieFilterOptionen($FilterSQL, $NaviFilter)
             $_SESSION['Kundengruppe']->kKundengruppe = $oKundengruppe->kKundengruppe;
         }
 
-        $kSprache = (int) Shop::$kSprache;
+        $kSprache = (int)Shop::$kSprache;
         if (!$kSprache) {
             $oSprache = gibStandardsprache(true);
-            $kSprache = (int) $oSprache->kSprache;
+            $kSprache = (int)$oSprache->kSprache;
         }
         // Kategoriefilter anzeige
         $cSQLFilterAnzeige = "JOIN tkategorieartikel ON tartikel.kArtikel = tkategorieartikel.kArtikel
                                 JOIN tkategorie ON tkategorie.kKategorie = tkategorieartikel.kKategorie";
 
         if ($conf['navigationsfilter']['kategoriefilter_anzeigen_als'] === 'HF' && (!isset($NaviFilter->Kategorie->kKategorie) || !$NaviFilter->Kategorie->kKategorie)) {
-            $kKatFilter        = (isset($NaviFilter->KategorieFilter->kKategorie) && $NaviFilter->KategorieFilter->kKategorie > 0) ?
-                '' :
-                "AND tkategorieartikelgesamt.kOberKategorie = 0";
+            $kKatFilter = (isset($NaviFilter->KategorieFilter->kKategorie) && $NaviFilter->KategorieFilter->kKategorie > 0) ? '' : "AND tkategorieartikelgesamt.kOberKategorie = 0";
             $cSQLFilterAnzeige = "JOIN tkategorieartikelgesamt ON tartikel.kArtikel = tkategorieartikelgesamt.kArtikel
                                     " . $kKatFilter . "
                                     JOIN tkategorie ON tkategorie.kKategorie = tkategorieartikelgesamt.kKategorie";
@@ -560,7 +558,7 @@ function gibKategorieFilterOptionen($FilterSQL, $NaviFilter)
         if (!standardspracheAktiv()) {
             $cSQLKategorieSprache->cSELECT = "IF(tkategoriesprache.cName = '', tkategorie.cName, tkategoriesprache.cName) AS cName";
             $cSQLKategorieSprache->cJOIN   = "JOIN tkategoriesprache ON tkategoriesprache.kKategorie = tkategorie.kKategorie
-                                                AND tkategoriesprache.kSprache = " . (int) Shop::$kSprache;
+                                                AND tkategoriesprache.kSprache = " . (int)Shop::$kSprache;
         }
 
         $oKategorieFilterDB_arr = Shop::DB()->query(
@@ -579,7 +577,7 @@ function gibKategorieFilterOptionen($FilterSQL, $NaviFilter)
                 " . $FilterSQL->oBewertungSterneFilterSQL->cJoin . "
                 " . $FilterSQL->oPreisspannenFilterSQL->cJoin . "
                 LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                    AND tartikelsichtbarkeit.kKundengruppe = " . (int) $_SESSION['Kundengruppe']->kKundengruppe . "
+                    AND tartikelsichtbarkeit.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
                     AND tartikel.kVaterArtikel = 0
                     " . gibLagerfilter() . "
@@ -596,7 +594,7 @@ function gibKategorieFilterOptionen($FilterSQL, $NaviFilter)
             ) AS ssMerkmal
             LEFT JOIN tseo ON tseo.kKey = ssMerkmal.kKategorie
                 AND tseo.cKey = 'kKategorie'
-                AND tseo.kSprache = " . (int) Shop::$kSprache . "
+                AND tseo.kSprache = " . (int)Shop::$kSprache . "
             GROUP BY ssMerkmal.kKategorie
             ORDER BY ssMerkmal.nSort, ssMerkmal.cName", 2
         );
@@ -625,11 +623,11 @@ function gibKategorieFilterOptionen($FilterSQL, $NaviFilter)
     }
     $tagArray = array(CACHING_GROUP_CATEGORY);
     if (isset($NaviFilter->Kategorie->kKategorie)) {
-        $tagArray[] = CACHING_GROUP_CATEGORY . '_' . (int) $NaviFilter->Kategorie->kKategorie;
+        $tagArray[] = CACHING_GROUP_CATEGORY . '_' . (int)$NaviFilter->Kategorie->kKategorie;
     } else {
         foreach ($oKategorieFilterDB_arr as $filter) {
             if (isset($filter->kKategorie)) {
-                $tagArray[] = CACHING_GROUP_CATEGORY . '_' . (int) $filter->kKategorie;
+                $tagArray[] = CACHING_GROUP_CATEGORY . '_' . (int)$filter->kKategorie;
             }
         }
     }
@@ -656,10 +654,10 @@ function sortierKategoriepfade($a, $b)
 function gibSuchFilterOptionen($FilterSQL, $NaviFilter)
 {
     if (Shop::$kSprache > 0) {
-        $kSprache = (int) Shop::$kSprache;
+        $kSprache = (int)Shop::$kSprache;
     } else {
         $oSprache = gibStandardsprache(true);
-        $kSprache = (int) $oSprache->kSprache;
+        $kSprache = (int)$oSprache->kSprache;
     }
     $cacheID = 'sfo_' . md5(json_encode($FilterSQL)) . '_' . ((isset($_SESSION['Kundengruppe']->kKundengruppe)) ? $_SESSION['Kundengruppe']->kKundengruppe : '0') . '_' . $kSprache;
     if (($oSuchFilterDB_arr = Shop::Cache()->get($cacheID)) !== false) {
@@ -668,9 +666,8 @@ function gibSuchFilterOptionen($FilterSQL, $NaviFilter)
     $oSuchFilterDB_arr = array();
     $conf              = Shop::getSettings(array(CONF_NAVIGATIONSFILTER));
     if ($conf['navigationsfilter']['suchtrefferfilter_nutzen'] !== 'N') {
-        $nLimit = (isset($conf['navigationsfilter']['suchtrefferfilter_anzahl']) && intval($conf['navigationsfilter']['suchtrefferfilter_anzahl']) > 0) ?
-            " LIMIT " . (int) $conf['navigationsfilter']['suchtrefferfilter_anzahl'] :
-            '';
+        $nLimit = (isset($conf['navigationsfilter']['suchtrefferfilter_anzahl'])
+                && intval($conf['navigationsfilter']['suchtrefferfilter_anzahl']) > 0) ? " LIMIT " . (int)$conf['navigationsfilter']['suchtrefferfilter_anzahl'] : '';
 
         $oSuchFilterDB_arr = Shop::DB()->query(
             "SELECT ssMerkmal.kSuchanfrage, ssMerkmal.cSuche, count(*) AS nAnzahl
@@ -691,7 +688,7 @@ function gibSuchFilterOptionen($FilterSQL, $NaviFilter)
                 " . $FilterSQL->oBewertungSterneFilterSQL->cJoin . "
                 " . $FilterSQL->oPreisspannenFilterSQL->cJoin . "
                 LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                    AND tartikelsichtbarkeit.kKundengruppe = " . (int) $_SESSION['Kundengruppe']->kKundengruppe . "
+                    AND tartikelsichtbarkeit.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
                     AND tartikel.kVaterArtikel = 0
                     " . gibLagerfilter() . "
@@ -778,10 +775,10 @@ function gibSuchFilterOptionen($FilterSQL, $NaviFilter)
 function gibBewertungSterneFilterOptionen($FilterSQL, $NaviFilter)
 {
     if (isset(Shop::$kSprache)) {
-        $kSprache = (int) Shop::$kSprache;
+        $kSprache = (int)Shop::$kSprache;
     } else {
         $oSprache = gibStandardsprache(true);
-        $kSprache = (int) $oSprache->kSprache;
+        $kSprache = (int)$oSprache->kSprache;
     }
     $cacheID = 'filter_ps_' . md5(
         serialize($NaviFilter) .
@@ -915,10 +912,10 @@ function gibPreisspannenFilterOptionen($FilterSQL, $NaviFilter, $oSuchergebnisse
         return array();
     }
     if (isset(Shop::$kSprache)) {
-        $kSprache = (int) Shop::$kSprache;
+        $kSprache = (int)Shop::$kSprache;
     } else {
         $oSprache = gibStandardsprache(true);
-        $kSprache = (int) $oSprache->kSprache;
+        $kSprache = (int)$oSprache->kSprache;
     }
     $cacheID = 'filter_ps_' . md5(
         json_encode($_SESSION['Kundengruppe']->kKundengruppe) .
@@ -940,14 +937,14 @@ function gibPreisspannenFilterOptionen($FilterSQL, $NaviFilter, $oSuchergebnisse
     }
     $conf = Shop::getSettings(array(CONF_NAVIGATIONSFILTER));
     if ($conf['navigationsfilter']['preisspannenfilter_benutzen'] !== 'N') {
-        $cPreisspannenJOIN = "LEFT JOIN tartikelkategorierabatt ON tartikelkategorierabatt.kKundengruppe = " . (int) $_SESSION['Kundengruppe']->kKundengruppe . "
+        $cPreisspannenJOIN = "LEFT JOIN tartikelkategorierabatt ON tartikelkategorierabatt.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
                                     AND tartikelkategorierabatt.kArtikel = tartikel.kArtikel
                                 LEFT JOIN tartikelsonderpreis ON tartikelsonderpreis.kArtikel = tartikel.kArtikel
                                     AND tartikelsonderpreis.cAktiv='Y'
                                     AND tartikelsonderpreis.dStart <= now()
                                     AND (tartikelsonderpreis.dEnde >= CURDATE() OR tartikelsonderpreis.dEnde = '0000-00-00')
                                 LEFT JOIN tsonderpreise ON tartikelsonderpreis.kArtikelSonderpreis = tsonderpreise.kArtikelSonderpreis
-                                    AND tsonderpreise.kKundengruppe = " . (int) $_SESSION['Kundengruppe']->kKundengruppe;
+                                    AND tsonderpreise.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe;
 
         // Automatisch
         if ($conf['navigationsfilter']['preisspannenfilter_anzeige_berechnung'] === 'A') {
@@ -1235,10 +1232,10 @@ function gibPreisspannenFilterOptionen($FilterSQL, $NaviFilter, $oSuchergebnisse
 function gibTagFilterOptionen($FilterSQL, $NaviFilter)
 {
     if (isset(Shop::$kSprache)) {
-        $kSprache = (int) Shop::$kSprache;
+        $kSprache = (int)Shop::$kSprache;
     } else {
         $oSprache = gibStandardsprache(true);
-        $kSprache = (int) $oSprache->kSprache;
+        $kSprache = (int)$oSprache->kSprache;
     }
     $cacheID = 'gtfo_' . md5(json_encode($FilterSQL) . serialize($NaviFilter)) . '_' . (int)$_SESSION['Kundengruppe']->kKundengruppe . '_' . $kSprache;
     if (($oTagFilter_arr = Shop::Cache()->get($cacheID)) !== false) {
@@ -1263,7 +1260,7 @@ function gibTagFilterOptionen($FilterSQL, $NaviFilter)
                 " . $FilterSQL->oBewertungSterneFilterSQL->cJoin . "
                 " . $FilterSQL->oPreisspannenFilterSQL->cJoin . "
                 LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                    AND tartikelsichtbarkeit.kKundengruppe = " . (int) $_SESSION['Kundengruppe']->kKundengruppe . "
+                    AND tartikelsichtbarkeit.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
                     AND tartikel.kVaterArtikel = 0
                     AND ttag.nAktiv = 1
@@ -1284,7 +1281,7 @@ function gibTagFilterOptionen($FilterSQL, $NaviFilter)
                 AND tseo.cKey = 'kTag'
                 AND tseo.kSprache = " . Shop::$kSprache . "
             GROUP BY ssMerkmal.kTag
-            ORDER BY nAnzahl DESC LIMIT 0 , " . (int) $conf['navigationsfilter']['tagfilter_max_anzeige'], 2
+            ORDER BY nAnzahl DESC LIMIT 0 , " . (int)$conf['navigationsfilter']['tagfilter_max_anzeige'], 2
         );
 
         if (is_array($oTagFilterDB_arr)) {
@@ -1399,7 +1396,7 @@ function gibMerkmalFilterOptionen($FilterSQL, $NaviFilter, $oAktuelleKategorie =
         if (Shop::$kSprache > 0 && !standardspracheAktiv()) {
             $oSQLMM->cSELECT = "tmerkmalsprache.cName, ";
             $oSQLMM->cJOIN   = " JOIN tmerkmalsprache ON tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal
-                                    AND tmerkmalsprache.kSprache = " . (int) Shop::$kSprache;
+                                    AND tmerkmalsprache.kSprache = " . (int)Shop::$kSprache;
         }
         if (!isset($FilterSQL->oMerkmalFilterSQL->cJoinMMW)) {
             $FilterSQL->oMerkmalFilterSQL->cJoinMMW  = null;
@@ -1415,7 +1412,7 @@ function gibMerkmalFilterOptionen($FilterSQL, $NaviFilter, $oAktuelleKategorie =
                 JOIN tartikelmerkmal ON tartikel.kArtikel = tartikelmerkmal.kArtikel
                 JOIN tmerkmalwert ON tmerkmalwert.kMerkmalWert = tartikelmerkmal.kMerkmalWert
                 JOIN tmerkmalwertsprache ON tmerkmalwertsprache.kMerkmalWert = tartikelmerkmal.kMerkmalWert
-                    AND tmerkmalwertsprache.kSprache = " . (int) Shop::$kSprache . "
+                    AND tmerkmalwertsprache.kSprache = " . (int)Shop::$kSprache . "
                 JOIN tmerkmal ON tmerkmal.kMerkmal = tartikelmerkmal.kMerkmal
                 " . $oSQLMM->cJOIN . "
                 " . ((isset($FilterSQL->oHerstellerFilterSQL->cJoin)) ? $FilterSQL->oHerstellerFilterSQL->cJoin : '') . "
@@ -1427,7 +1424,7 @@ function gibMerkmalFilterOptionen($FilterSQL, $NaviFilter, $oAktuelleKategorie =
                 " . ((isset($FilterSQL->oBewertungSterneFilterSQL->cJoin)) ? $FilterSQL->oBewertungSterneFilterSQL->cJoin : '') . "
                 " . ((isset($FilterSQL->oPreisspannenFilterSQL->cJoin)) ? $FilterSQL->oPreisspannenFilterSQL->cJoin : '') . "
                 LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                    AND tartikelsichtbarkeit.kKundengruppe = " . (int) $_SESSION['Kundengruppe']->kKundengruppe . "
+                    AND tartikelsichtbarkeit.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
                     AND tartikel.kVaterArtikel = 0
                     " . gibLagerfilter() . "
@@ -1443,7 +1440,7 @@ function gibMerkmalFilterOptionen($FilterSQL, $NaviFilter, $oAktuelleKategorie =
             ) AS ssMerkmal
             LEFT JOIN tseo ON tseo.kKey = ssMerkmal.kMerkmalWert
                 AND tseo.cKey = 'kMerkmalWert'
-                AND tseo.kSprache = " . (int) Shop::$kSprache . "
+                AND tseo.kSprache = " . (int)Shop::$kSprache . "
             GROUP BY ssMerkmal.kMerkmalWert
             ORDER BY ssMerkmal.nSortMerkmal, ssMerkmal.nSort, ssMerkmal.cWert", 2
         );
@@ -1565,10 +1562,10 @@ function gibMerkmalFilterOptionen($FilterSQL, $NaviFilter, $oAktuelleKategorie =
     $tagArray = array(CACHING_GROUP_CATEGORY, 'jtl_mmf');
     //the cache depends on article attributes - so it has to be invalidated on every product update...
     if (isset($NaviFilter->Kategorie->kKategorie)) {
-        $tagArray[] = CACHING_GROUP_CATEGORY . '_' . (int) $NaviFilter->Kategorie->kKategorie;
+        $tagArray[] = CACHING_GROUP_CATEGORY . '_' . (int)$NaviFilter->Kategorie->kKategorie;
     }
     if (isset($oAktuelleKategorie->kKategorie)) {
-        $tagArray[] = CACHING_GROUP_CATEGORY . '_' . (int) $oAktuelleKategorie->kKategorie;
+        $tagArray[] = CACHING_GROUP_CATEGORY . '_' . (int)$oAktuelleKategorie->kKategorie;
     }
     Shop::Cache()->set($cacheID, $oMerkmalFilter_arr, $tagArray);
 
@@ -1596,7 +1593,7 @@ function sortierMerkmalWerteNumerisch($a, $b)
  */
 function gibSuchspecialFilterOptionen($FilterSQL, $NaviFilter)
 {
-    $cacheID = 'gssfo_' . md5(json_encode($FilterSQL)) . '_' . (int) $_SESSION['Kundengruppe']->kKundengruppe;
+    $cacheID = 'gssfo_' . md5(json_encode($FilterSQL)) . '_' . (int)$_SESSION['Kundengruppe']->kKundengruppe;
     if (($oSuchspecialFilterDB_arr = Shop::Cache()->get($cacheID)) !== false) {
         return $oSuchspecialFilterDB_arr;
     }
@@ -1625,7 +1622,7 @@ function gibSuchspecialFilterOptionen($FilterSQL, $NaviFilter)
                     }
                     $oFilter->cWhere = " AND tartikelsonderpreis.cAktiv='Y' AND tartikelsonderpreis.dStart <= now()
                                             AND (tartikelsonderpreis.dEnde >= CURDATE() OR tartikelsonderpreis.dEnde = '0000-00-00')
-                                            AnD " . $tsonderpreise . ".kKundengruppe = " . (int) $_SESSION['Kundengruppe']->kKundengruppe;
+                                            AnD " . $tsonderpreise . ".kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe;
                     break;
                 case SEARCHSPECIALS_NEWPRODUCTS:
                     $alter_tage = 30;
@@ -1647,7 +1644,7 @@ function gibSuchspecialFilterOptionen($FilterSQL, $NaviFilter)
                     if (!isset($NaviFilter->BewertungFilter->nSterne)) {
                         $oFilter->cJoin = "JOIN tartikelext ON tartikelext.kArtikel = tartikel.kArtikel";
                     }
-                    $oFilter->cWhere = " AND round(tartikelext.fDurchschnittsBewertung) >= " . (int) $conf['boxen']['boxen_topbewertet_minsterne'];
+                    $oFilter->cWhere = " AND round(tartikelext.fDurchschnittsBewertung) >= " . (int)$conf['boxen']['boxen_topbewertet_minsterne'];
                     break;
             }
             if (!isset($oFilter->cJoin)) {
@@ -1669,7 +1666,7 @@ function gibSuchspecialFilterOptionen($FilterSQL, $NaviFilter)
                     " . $FilterSQL->oBewertungSterneFilterSQL->cJoin . "
                     " . $FilterSQL->oPreisspannenFilterSQL->cJoin . "
                     LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                        AND tartikelsichtbarkeit.kKundengruppe = " . (int) $_SESSION['Kundengruppe']->kKundengruppe . "
+                        AND tartikelsichtbarkeit.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
                     WHERE tartikelsichtbarkeit.kArtikel IS NULL
                         AND tartikel.kVaterArtikel = 0
                         " . gibLagerfilter() . "
@@ -1718,7 +1715,7 @@ function bearbeiteSuchCache($NaviFilter, $kSpracheExt = 0)
     // Mapping beachten
     $cSuche                    = mappingBeachten($NaviFilter->Suche->cSuche, $kSpracheExt);
     $NaviFilter->Suche->cSuche = $cSuche;
-    $kSprache                  = ($kSpracheExt !== 0 && $kSpracheExt !== null) ? (int) $kSpracheExt : (int) Shop::$kSprache;
+    $kSprache                  = ($kSpracheExt !== 0 && $kSpracheExt !== null) ? (int)$kSpracheExt : (int)Shop::$kSprache;
     // Suchcache wurde zwar gefunden, ist jedoch nicht mehr gültig
     Shop::DB()->query(
         "DELETE tsuchcache, tsuchcachetreffer
@@ -2088,7 +2085,7 @@ function bearbeiteSuchCache($NaviFilter, $kSpracheExt = 0)
                         $cSQL .= ")";
                     }
                 }
-                Shop::DB()->query("INSERT INTO tsuchcachetreffer " . $cSQL . " GROUP BY kArtikelTMP LIMIT " . (int) $conf['artikeluebersicht']['suche_max_treffer'], 3);
+                Shop::DB()->query("INSERT INTO tsuchcachetreffer " . $cSQL . " GROUP BY kArtikelTMP LIMIT " . (int)$conf['artikeluebersicht']['suche_max_treffer'], 3);
             }
 
             return $kSuchCache;
@@ -2150,11 +2147,11 @@ function gibHerstellerFilterSQL($NaviFilter)
     $oFilter->cWhere = '';
     // Hersteller Mainword?
     if (isset($NaviFilter->Hersteller->kHersteller) && $NaviFilter->Hersteller->kHersteller > 0) {
-        $oFilter->cWhere = ' AND tartikel.kHersteller = ' . (int) $NaviFilter->Hersteller->kHersteller;
+        $oFilter->cWhere = ' AND tartikel.kHersteller = ' . (int)$NaviFilter->Hersteller->kHersteller;
     }
     // Hersteller Filter?
     if (isset($NaviFilter->HerstellerFilter->kHersteller) && $NaviFilter->HerstellerFilter->kHersteller > 0) {
-        $oFilter->cWhere = ' AND tartikel.kHersteller = ' . (int) $NaviFilter->HerstellerFilter->kHersteller;
+        $oFilter->cWhere = ' AND tartikel.kHersteller = ' . (int)$NaviFilter->HerstellerFilter->kHersteller;
     }
 
     return $oFilter;
@@ -2173,15 +2170,15 @@ function gibKategorieFilterSQL($NaviFilter)
     // Kategorie Mainword?
     if (isset($NaviFilter->Kategorie->kKategorie) && $NaviFilter->Kategorie->kKategorie > 0) {
         $oFilter->cJoin  = 'JOIN tkategorieartikel ON tartikel.kArtikel = tkategorieartikel.kArtikel';
-        $oFilter->cWhere = ' AND tkategorieartikel.kKategorie = ' . (int) $NaviFilter->Kategorie->kKategorie;
+        $oFilter->cWhere = ' AND tkategorieartikel.kKategorie = ' . (int)$NaviFilter->Kategorie->kKategorie;
     }
     // Kategorie Filter?
     if (isset($NaviFilter->KategorieFilter->kKategorie) && $NaviFilter->KategorieFilter->kKategorie > 0) {
         $oFilter->cJoin  = 'JOIN tkategorieartikel ON tartikel.kArtikel = tkategorieartikel.kArtikel';
-        $oFilter->cWhere = ' AND tkategorieartikel.kKategorie = ' . (int) $NaviFilter->KategorieFilter->kKategorie;
+        $oFilter->cWhere = ' AND tkategorieartikel.kKategorie = ' . (int)$NaviFilter->KategorieFilter->kKategorie;
         if ($conf['navigationsfilter']['kategoriefilter_anzeigen_als'] === 'HF') {
             $oFilter->cJoin  = 'JOIN tkategorieartikelgesamt ON tartikel.kArtikel = tkategorieartikelgesamt.kArtikel';
-            $oFilter->cWhere = ' AND (tkategorieartikelgesamt.kOberKategorie = ' . (int) $NaviFilter->KategorieFilter->kKategorie . ' OR tkategorieartikelgesamt.kKategorie = ' . (int) $NaviFilter->KategorieFilter->kKategorie . ') ';
+            $oFilter->cWhere = ' AND (tkategorieartikelgesamt.kOberKategorie = ' . (int)$NaviFilter->KategorieFilter->kKategorie . ' OR tkategorieartikelgesamt.kKategorie = ' . (int)$NaviFilter->KategorieFilter->kKategorie . ') ';
         }
     }
 
@@ -2200,7 +2197,7 @@ function gibBewertungSterneFilterSQL($NaviFilter)
     // BewertungSterne Filter?
     if (isset($NaviFilter->BewertungFilter->nSterne) && $NaviFilter->BewertungFilter->nSterne > 0) {
         $oFilter->cJoin  = 'JOIN tartikelext ON tartikel.kArtikel = tartikelext.kArtikel';
-        $oFilter->cWhere = ' AND round(tartikelext.fDurchschnittsBewertung, 0) >= ' . (int) $NaviFilter->BewertungFilter->nSterne;
+        $oFilter->cWhere = ' AND round(tartikelext.fDurchschnittsBewertung, 0) >= ' . (int)$NaviFilter->BewertungFilter->nSterne;
     }
 
     return $oFilter;
@@ -2217,15 +2214,15 @@ function gibPreisspannenFilterSQL($NaviFilter)
     $oFilter->cWhere = '';
     // Preisspannen Filter?
     if (isset($NaviFilter->PreisspannenFilter->fVon) && $NaviFilter->PreisspannenFilter->fVon >= 0 && isset($NaviFilter->PreisspannenFilter->fBis) && $NaviFilter->PreisspannenFilter->fBis > 0) {
-        $oFilter->cJoin = "JOIN tpreise ON tartikel.kArtikel = tpreise.kArtikel AND tpreise.kKundengruppe = " . (int) $_SESSION['Kundengruppe']->kKundengruppe . "
-                            LEFT JOIN tartikelkategorierabatt ON tartikelkategorierabatt.kKundengruppe = " . (int) $_SESSION['Kundengruppe']->kKundengruppe . "
+        $oFilter->cJoin = "JOIN tpreise ON tartikel.kArtikel = tpreise.kArtikel AND tpreise.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
+                            LEFT JOIN tartikelkategorierabatt ON tartikelkategorierabatt.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
                                 AND tartikelkategorierabatt.kArtikel = tartikel.kArtikel
                             LEFT JOIN tartikelsonderpreis ON tartikelsonderpreis.kArtikel = tartikel.kArtikel
                                 AND tartikelsonderpreis.cAktiv = 'Y'
                                 AND tartikelsonderpreis.dStart <= now()
                                 AND (tartikelsonderpreis.dEnde >= CURDATE() OR tartikelsonderpreis.dEnde = '0000-00-00')
                             LEFT JOIN tsonderpreise ON tartikelsonderpreis.kArtikelSonderpreis = tsonderpreise.kArtikelSonderpreis
-                                AND tsonderpreise.kKundengruppe = " . (int) $_SESSION['Kundengruppe']->kKundengruppe;
+                                AND tsonderpreise.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe;
         $oFilter->cWhere .= " AND";
 
         $fKundenrabatt = 0.0;
@@ -2300,13 +2297,13 @@ function gibTagFilterSQL($NaviFilter)
         $oFilter->cJoin = "    JOIN ttagartikel ON tartikel.kArtikel = ttagartikel.kArtikel
                             JOIN ttag ON ttagartikel.kTag = ttag.kTag";
         $oFilter->cWhere = "    AND ttag.nAktiv = 1
-                                AND ttagartikel.kTag = " . (int) $NaviFilter->Tag->kTag;
+                                AND ttagartikel.kTag = " . (int)$NaviFilter->Tag->kTag;
     }
     // Tag Filter?
     if (isset($NaviFilter->TagFilter) && is_array($NaviFilter->TagFilter) && count($NaviFilter->TagFilter) > 0) {
         $kTag_arr = array();
         foreach ($NaviFilter->TagFilter as $oTag) {
-            $kTag_arr[] = (int) $oTag->kTag;
+            $kTag_arr[] = (int)$oTag->kTag;
         }
         $oFilter->cJoin = "    JOIN ttagartikel ON tartikel.kArtikel = ttagartikel.kArtikel
                             JOIN ttag ON ttagartikel.kTag = ttag.kTag";
@@ -2335,7 +2332,7 @@ function gibMerkmalFilterSQL($NaviFilter)
             }
         }
         if ((isset($NaviFilter->MerkmalWert->kMerkmalWert) && $NaviFilter->MerkmalWert->kMerkmalWert > 0) && !in_array($NaviFilter->MerkmalWert->kMerkmalWert, $kMerkmalWert_arr)) {
-            $kMerkmalWert_arr[] = (int) $NaviFilter->MerkmalWert->kMerkmalWert;
+            $kMerkmalWert_arr[] = (int)$NaviFilter->MerkmalWert->kMerkmalWert;
         }
     }
     // Merkmal Filter?
@@ -2380,15 +2377,14 @@ function gibSuchspecialFilterSQL($NaviFilter)
         }
         $conf = Shop::getSettings(array(CONF_BOXEN));
         switch ($kKey) {
-            case SEARCHSPECIALS_BESTSELLER :
-                $nAnzahl = (isset($conf['boxen']['boxen_bestseller_minanzahl']) && intval($conf['boxen']['boxen_bestseller_minanzahl'] > 0)) ?
-                    (int) $conf['boxen']['boxen_bestseller_minanzahl'] :
-                    100;
+            case SEARCHSPECIALS_BESTSELLER:
+                $nAnzahl = (isset($conf['boxen']['boxen_bestseller_minanzahl'])
+                    && intval($conf['boxen']['boxen_bestseller_minanzahl'] > 0)) ? (int)$conf['boxen']['boxen_bestseller_minanzahl'] : 100;
                 $oFilter->cJoin  = "JOIN tbestseller ON tbestseller.kArtikel = tartikel.kArtikel";
                 $oFilter->cWhere = " AND round(tbestseller.fAnzahl) >= " . $nAnzahl;
                 break;
 
-            case SEARCHSPECIALS_SPECIALOFFERS :
+            case SEARCHSPECIALS_SPECIALOFFERS:
                 $tasp = 'tartikelsonderpreis';
                 $tsp  = 'tsonderpreise';
                 if ((!isset($NaviFilter->PreisspannenFilter->fVon) || !isset($NaviFilter->PreisspannenFilter->fBis)) ||
@@ -2401,42 +2397,38 @@ function gibSuchspecialFilterSQL($NaviFilter)
                 $oFilter->cWhere = " AND " . $tasp . " .kArtikel = tartikel.kArtikel
                                     AND " . $tasp . ".cAktiv='Y' AND " . $tasp . ".dStart <= now()
                                     AND (" . $tasp . ".dEnde >= now() OR " . $tasp . ".dEnde = '0000-00-00')
-                                    AND " . $tsp . " .kKundengruppe = " . (int) $_SESSION['Kundengruppe']->kKundengruppe;
+                                    AND " . $tsp . " .kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe;
                 $oFilter->tasp = $tasp;
                 $oFilter->tsp  = $tsp;
 
                 break;
 
-            case SEARCHSPECIALS_NEWPRODUCTS :
-                $alter_tage = ($conf['boxen']['box_neuimsortiment_alter_tage'] > 0) ?
-                    (int) $conf['boxen']['box_neuimsortiment_alter_tage'] :
-                    30;
+            case SEARCHSPECIALS_NEWPRODUCTS:
+                $alter_tage = ($conf['boxen']['box_neuimsortiment_alter_tage'] > 0) ? (int)$conf['boxen']['box_neuimsortiment_alter_tage'] : 30;
                 $oFilter->cJoin  = '';
                 $oFilter->cWhere = " AND tartikel.cNeu='Y' AND DATE_SUB(now(),INTERVAL $alter_tage DAY) < tartikel.dErstellt
                                     AND tartikel.cNeu='Y'";
                 break;
 
-            case SEARCHSPECIALS_TOPOFFERS :
+            case SEARCHSPECIALS_TOPOFFERS:
                 $oFilter->cJoin  = '';
                 $oFilter->cWhere = " AND tartikel.cTopArtikel = 'Y'";
                 break;
 
-            case SEARCHSPECIALS_UPCOMINGPRODUCTS :
+            case SEARCHSPECIALS_UPCOMINGPRODUCTS:
                 $oFilter->cJoin  = '';
                 $oFilter->cWhere = " AND now() < tartikel.dErscheinungsdatum";
                 break;
 
-            case SEARCHSPECIALS_TOPREVIEWS :
+            case SEARCHSPECIALS_TOPREVIEWS:
                 if (!isset($NaviFilter->BewertungFilter->nSterne) || !$NaviFilter->BewertungFilter->nSterne) {
-                    $nMindestSterne = (intval($conf['boxen']['boxen_topbewertet_minsterne'] > 0)) ?
-                        (int) $conf['boxen']['boxen_topbewertet_minsterne'] :
-                        4;
+                    $nMindestSterne = (intval($conf['boxen']['boxen_topbewertet_minsterne'] > 0)) ? (int)$conf['boxen']['boxen_topbewertet_minsterne'] : 4;
                     $oFilter->cJoin  = "JOIN tartikelext AS taex ON taex.kArtikel = tartikel.kArtikel";
                     $oFilter->cWhere = " AnD round(taex.fDurchschnittsBewertung) >= " . $nMindestSterne;
                 }
                 break;
 
-            default :
+            default:
                 break;
         }
     }
@@ -2525,43 +2517,43 @@ function gibArtikelsortierung($NaviFilter)
                 $sort = 'tartikel.nSort, tartikel.cName';
             }
             break;
-        case SEARCH_SORT_NAME_ASC :
+        case SEARCH_SORT_NAME_ASC:
             $sort = 'tartikel.cName';
             break;
-        case SEARCH_SORT_NAME_DESC :
+        case SEARCH_SORT_NAME_DESC:
             $sort = 'tartikel.cName DESC';
             break;
-        case SEARCH_SORT_PRICE_ASC :
+        case SEARCH_SORT_PRICE_ASC:
             $sort = 'tpreise.fVKNetto, tartikel.cName';
             break;
-        case SEARCH_SORT_PRICE_DESC :
+        case SEARCH_SORT_PRICE_DESC:
             $sort = 'tpreise.fVKNetto DESC, tartikel.cName';
             break;
-        case SEARCH_SORT_EAN :
+        case SEARCH_SORT_EAN:
             $sort = 'tartikel.cBarcode, tartikel.cName';
             break;
-        case SEARCH_SORT_NEWEST_FIRST :
+        case SEARCH_SORT_NEWEST_FIRST:
             $sort = 'tartikel.dErstellt DESC, tartikel.cName';
             break;
-        case SEARCH_SORT_PRODUCTNO :
+        case SEARCH_SORT_PRODUCTNO:
             $sort = 'tartikel.cArtNr, tartikel.cName';
             break;
-        case SEARCH_SORT_AVAILABILITY :
+        case SEARCH_SORT_AVAILABILITY:
             $sort = 'tartikel.fLagerbestand DESC, tartikel.cLagerKleinerNull DESC, tartikel.cName';
             break;
-        case SEARCH_SORT_WEIGHT :
+        case SEARCH_SORT_WEIGHT:
             $sort = 'tartikel.fGewicht, tartikel.cName';
             break;
-        case SEARCH_SORT_DATEOFISSUE :
+        case SEARCH_SORT_DATEOFISSUE:
             $sort = 'tartikel.dErscheinungsdatum DESC, tartikel.cName';
             break;
-        case SEARCH_SORT_BESTSELLER :
+        case SEARCH_SORT_BESTSELLER:
             $sort = 'tbestseller.fAnzahl DESC, tartikel.cName';
             break;
-        case SEARCH_SORT_RATING :
+        case SEARCH_SORT_RATING:
             $sort = 'tbewertung.nSterne DESC, tartikel.cName';
             break;
-        default :
+        default:
             break;
     }
 
@@ -2583,62 +2575,62 @@ function mappeUsersortierung($nUsersortierung)
     }
     // Usersortierung ist ein String aus einem Kategorieattribut
     switch (strtolower($nUsersortierung)) {
-        case SEARCH_SORT_CRITERION_NAME :
+        case SEARCH_SORT_CRITERION_NAME:
             return SEARCH_SORT_NAME_ASC;
             break;
 
-        case SEARCH_SORT_CRITERION_NAME_ASC :
+        case SEARCH_SORT_CRITERION_NAME_ASC:
             return SEARCH_SORT_NAME_ASC;
             break;
 
-        case SEARCH_SORT_CRITERION_NAME_DESC :
+        case SEARCH_SORT_CRITERION_NAME_DESC:
             return SEARCH_SORT_NAME_DESC;
             break;
 
-        case SEARCH_SORT_CRITERION_PRODUCTNO :
+        case SEARCH_SORT_CRITERION_PRODUCTNO:
             return SEARCH_SORT_PRODUCTNO;
             break;
 
-        case SEARCH_SORT_CRITERION_AVAILABILITY :
+        case SEARCH_SORT_CRITERION_AVAILABILITY:
             return SEARCH_SORT_AVAILABILITY;
             break;
 
-        case SEARCH_SORT_CRITERION_WEIGHT :
+        case SEARCH_SORT_CRITERION_WEIGHT:
             return SEARCH_SORT_WEIGHT;
             break;
 
-        case SEARCH_SORT_CRITERION_PRICE :
+        case SEARCH_SORT_CRITERION_PRICE:
             return SEARCH_SORT_PRICE_ASC;
             break;
 
-        case SEARCH_SORT_CRITERION_PRICE_ASC :
+        case SEARCH_SORT_CRITERION_PRICE_ASC:
             return SEARCH_SORT_PRICE_ASC;
             break;
 
-        case SEARCH_SORT_CRITERION_PRICE_DESC :
+        case SEARCH_SORT_CRITERION_PRICE_DESC:
             return SEARCH_SORT_PRICE_DESC;
             break;
 
-        case SEARCH_SORT_CRITERION_EAN :
+        case SEARCH_SORT_CRITERION_EAN:
             return SEARCH_SORT_EAN;
             break;
 
-        case SEARCH_SORT_CRITERION_NEWEST_FIRST :
+        case SEARCH_SORT_CRITERION_NEWEST_FIRST:
             return SEARCH_SORT_NEWEST_FIRST;
             break;
 
-        case SEARCH_SORT_CRITERION_DATEOFISSUE :
+        case SEARCH_SORT_CRITERION_DATEOFISSUE:
             return SEARCH_SORT_DATEOFISSUE;
             break;
 
-        case SEARCH_SORT_CRITERION_BESTSELLER :
+        case SEARCH_SORT_CRITERION_BESTSELLER:
             return SEARCH_SORT_BESTSELLER;
             break;
 
-        case SEARCH_SORT_CRITERION_RATING :
+        case SEARCH_SORT_CRITERION_RATING:
             return SEARCH_SORT_RATING;
 
-        default :
+        default:
             return SEARCH_SORT_STANDARD;
             break;
     }
@@ -2665,7 +2657,7 @@ function gibNaviURL($NaviFilter, $bSeo, $oZusatzFilter, $kSprache = 0, $bCanonic
         );
         $kSprache = $oSprache->kSprache;
     }
-    $kSprache = (int) $kSprache;
+    $kSprache = (int)$kSprache;
     $cSEOURL  = Shop::getURL() . '/';
     // Gibt es zu der Suche bereits eine Suchanfrage?
     if (isset($NaviFilter->Suche->cSuche) && strlen($NaviFilter->Suche->cSuche) > 0) {
@@ -2677,7 +2669,7 @@ function gibNaviURL($NaviFilter, $bSeo, $oZusatzFilter, $kSprache = 0, $bCanonic
             $oSeo_arr     = Shop::DB()->query(
                 "SELECT cSeo, kSprache
                     FROM tseo
-                    WHERE cKey = 'kSuchanfrage' AND kKey = " . (int) $oSuchanfrage->kSuchanfrage . "
+                    WHERE cKey = 'kSuchanfrage' AND kKey = " . (int)$oSuchanfrage->kSuchanfrage . "
                     ORDER BY kSprache", 2
             );
 
@@ -3628,31 +3620,31 @@ function gibMetaStart($NaviFilter, $oSuchergebnisse)
     // Suchspecialfilter
     if ($NaviFilter->SuchspecialFilter->kKey > 0) {
         switch ($NaviFilter->SuchspecialFilter->kKey) {
-            case SEARCHSPECIALS_BESTSELLER :
+            case SEARCHSPECIALS_BESTSELLER:
                 $cMetaTitle .= ' ' . Shop::Lang()->get('bestsellers', 'global');
                 break;
 
-            case SEARCHSPECIALS_SPECIALOFFERS :
+            case SEARCHSPECIALS_SPECIALOFFERS:
                 $cMetaTitle .= ' ' . Shop::Lang()->get('specialOffers', 'global');
                 break;
 
-            case SEARCHSPECIALS_NEWPRODUCTS :
+            case SEARCHSPECIALS_NEWPRODUCTS:
                 $cMetaTitle .= ' ' . Shop::Lang()->get('newProducts', 'global');
                 break;
 
-            case SEARCHSPECIALS_TOPOFFERS :
+            case SEARCHSPECIALS_TOPOFFERS:
                 $cMetaTitle .= ' ' . Shop::Lang()->get('topOffers', 'global');
                 break;
 
-            case SEARCHSPECIALS_UPCOMINGPRODUCTS :
+            case SEARCHSPECIALS_UPCOMINGPRODUCTS:
                 $cMetaTitle .= ' ' . Shop::Lang()->get('upcomingProducts', 'global');
                 break;
 
-            case SEARCHSPECIALS_TOPREVIEWS :
+            case SEARCHSPECIALS_TOPREVIEWS:
                 $cMetaTitle .= ' ' . Shop::Lang()->get('topReviews', 'global');
                 break;
 
-            default :
+            default:
                 break;
         }
     }
@@ -3676,10 +3668,10 @@ function gibMetaStart($NaviFilter, $oSuchergebnisse)
 function gibSuchanfrageKey($cSuche, $kSprache)
 {
     if (strlen($cSuche) > 0 && $kSprache > 0) {
-        $oSuchanfrage = Shop::DB()->select('tsuchanfrage', 'cSuche', Shop::DB()->escape($cSuche), 'kSprache', (int) $kSprache);
+        $oSuchanfrage = Shop::DB()->select('tsuchanfrage', 'cSuche', Shop::DB()->escape($cSuche), 'kSprache', (int)$kSprache);
 
         if (isset($oSuchanfrage->kSuchanfrage) && $oSuchanfrage->kSuchanfrage > 0) {
-            return (int) $oSuchanfrage->kSuchanfrage;
+            return (int)$oSuchanfrage->kSuchanfrage;
         }
     }
 
@@ -3703,13 +3695,12 @@ function gibErweiterteDarstellung($Einstellungen, $NaviFilter, $nDarstellung = 0
 
         if (isset($NaviFilter->Kategorie->kKategorie) && $NaviFilter->Kategorie->kKategorie > 0) {
             $oKategorie = new Kategorie($NaviFilter->Kategorie->kKategorie);
-        }
 
-        if (!empty($oKategorie->categoryFunctionAttributes[KAT_ATTRIBUT_DARSTELLUNG])) {
-            $nStdDarstellung = (int)$oKategorie->categoryFunctionAttributes[KAT_ATTRIBUT_DARSTELLUNG];
+            if (!empty($oKategorie->categoryFunctionAttributes[KAT_ATTRIBUT_DARSTELLUNG])) {
+                $nStdDarstellung = (int)$oKategorie->categoryFunctionAttributes[KAT_ATTRIBUT_DARSTELLUNG];
+            }
         } elseif (isset($Einstellungen['artikeluebersicht']['artikeluebersicht_erw_darstellung_stdansicht']) &&
-            (int)$Einstellungen['artikeluebersicht']['artikeluebersicht_erw_darstellung_stdansicht'] > 0
-        ) {
+            (int)$Einstellungen['artikeluebersicht']['artikeluebersicht_erw_darstellung_stdansicht'] > 0) {
             $nStdDarstellung = (int)$Einstellungen['artikeluebersicht']['artikeluebersicht_erw_darstellung_stdansicht'];
         }
 
@@ -3868,7 +3859,7 @@ function setzeUsersortierung($NaviFilter)
  * @param string $cFilterShopURL
  * @return array
  */
-function baueSeitenNaviURL($NaviFilter, $bSeo = true, $oSeitenzahlen, $nMaxAnzeige = 7, $cFilterShopURL = '')
+function baueSeitenNaviURL($NaviFilter, $bSeo, $oSeitenzahlen, $nMaxAnzeige = 7, $cFilterShopURL = '')
 {
     if (strlen($cFilterShopURL) > 0) {
         $bSeo = false;

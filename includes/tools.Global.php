@@ -356,17 +356,18 @@ function getCurrencyConversion($fPreisNetto, $fPreisBrutto, $cClass = '', $bForc
                 // Wurde geändert weil der Preis nun als Betrag gesehen wird und die Steuer direkt in der Versandart als eSteuer Flag eingestellt wird
                 if ($i > 0) {
                     $cString .= ($bForceSteuer) ?
-                        (' &#x2259; <strong>' . $cPreisBruttoLocalized . '</strong>' . ' (<em>' . $cPreisLocalized . '</em>)') :
-                        (' &#x2259; ' . $cPreisBruttoLocalized);
+                        (' &#x2259; <br> <strong>' . $cPreisBruttoLocalized . '</strong>' . ' (<em>' . $cPreisLocalized . ' Netto</em>)') :
+                        (' &#x2259; <br> ' . $cPreisBruttoLocalized);
                 } else {
                     $cString .= ($bForceSteuer) ?
-                        ('<strong>' . $cPreisBruttoLocalized . '</strong>' . ' (<em>' . $cPreisLocalized . '</em>)') :
+                        ('<strong>' . $cPreisBruttoLocalized . '</strong>' . ' (<em>' . $cPreisLocalized . ' Netto</em>)') :
                         '<strong>' . $cPreisBruttoLocalized . '</strong>';
                 }
             }
-            $cString .= ($bForceSteuer) ?
+            $cString .= '</span>';
+            /*$cString .= ($bForceSteuer) ?
                 ' (<strong>Brutto</strong> / Netto)</span>' :
-                '</span>';
+                '</span>';*/
         }
     }
 

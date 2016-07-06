@@ -798,7 +798,7 @@ class Kupon
      * @param int $stellen
      * @return string
      */
-    public function generateCode($stellen = 7)
+    public static function generateCode($stellen = 7)
     {
         $nResult = strtoupper(substr(time() / 1000 + rand(123, 9999999), 0, $stellen));
         while (Shop::DB()->select('tkupon', 'cCode', $nResult)) {

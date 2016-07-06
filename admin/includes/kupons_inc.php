@@ -15,10 +15,14 @@ function loescheKupons($kKupon_arr)
             $kKupon_arr[$i] = (int)$kKupon;
         }
         $nRows = Shop::DB()->query(
-            "DELETE tkupon, tkuponsprache
+            "DELETE
                 FROM tkupon
-                JOIN tkuponsprache ON tkuponsprache.kKupon = tkupon.kKupon
-                WHERE tkupon.kKupon IN(" . implode(',', $kKupon_arr) . ")", 3
+                WHERE kKupon IN(" . implode(',', $kKupon_arr) . ")", 3
+        );
+        Shop::DB()->query(
+            "DELETE
+                FROM tkuponsprache
+                WHERE kKupon IN(" . implode(',', $kKupon_arr) . ")", 3
         );
 
         return ($nRows >= count($kKupon_arr));
@@ -74,6 +78,28 @@ function getCategories($selKats = '', $kKategorie = 0, $tiefe = 0)
 }
 
 /**
+ * @param string $selKats
+ * @param int    $kKategorie
+ * @param int    $tiefe
+ * @return array
+ */
+function getCustomers($selCustomers = '')
+{
+    $selected    = explode(';', $selCustomers);
+    $customers   = Shop::DB()->query("SELECT kKunde FROM tkunde", 2);
+
+    foreach ($customers as $i => $customer) {
+        $oKunde = new Kunde($customer->kKunde);
+        $customers[$i]->cVorname    = $oKunde->cVorname;
+        $customers[$i]->cNachname   = $oKunde->cNachname;
+        $customers[$i]->selected    = in_array($customers[$i]->kKunde, $selected) ? 1 : 0;
+        unset($oKunde);
+    }
+
+    return $customers;
+}
+
+/**
  * @param string $string
  * @return string
  */
@@ -88,10 +114,41 @@ function convertDate($string)
 }
 
 /**
+ * @return array
+ */
+function getCoupons()
+{
+    $oKuponDB_arr = Shop::DB()->query("SELECT kKupon FROM tkupon", 2);
+    $oKupon_arr   = array();
+
+    foreach ($oKuponDB_arr as $oKuponDB) {
+        $oKupon = new Kupon($oKuponDB->kKupon);
+
+        if ((int)$oKupon->kKundengruppe == -1) {
+            $oKupon->cKundengruppe = 'Alle';
+        } else {
+            $oKundengruppe = Shop::DB()->query("SELECT cName FROM tkundengruppe WHERE kKundengruppe = " . $oKupon->kKundengruppe, 1);
+            $oKupon->cKundengruppe = $oKundengruppe->cName;
+        }
+
+        if ($oKupon->cArtikel === '') {
+            $oKupon->ArtikelInfo = 'Alle';
+        } else {
+            $oKupon->ArtikelInfo = 'eingeschr&auml;nkt';
+        }
+
+        $oKupon_arr[] = $oKupon;
+    }
+
+    return $oKupon_arr;
+}
+
+/**
  * @param bool   $bNew
  * @param string $cLimitSQL
  * @return array
  */
+/*
 function getCoupons($bNew = true, $cLimitSQL = '')
 {
     $cWhere = " WHERE cAktiv='Y'
@@ -152,6 +209,7 @@ function getCoupons($bNew = true, $cLimitSQL = '')
 
     return $oCoupon_arr;
 }
+*/
 
 /**
  * @param bool $bNew

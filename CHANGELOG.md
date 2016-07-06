@@ -36,6 +36,7 @@
 * Bugfix: Internal Server Error wenn mod_deflate nicht aktiviert ist (#235)
 * Verbesserung: Prioritäten für Plugin-Hooks (#45)
 * Bugfix: Abnahmeintervall wird bei Konfigurationsartikel nicht beachtet, Hinweis auf Mindestbestellmenge/Abnahmeintervall fehlt (#259)
+* Verbesserung: Anzeige von Boxen in nicht-sichtbaren Positionen im Backend mitsamt Warnhinweis(#252)
 
 ## [4.04]
 * Bugfix: robots.txt fehlendes "Sitemap: " vor der Sitemap-URL (#83)

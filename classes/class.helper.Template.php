@@ -139,8 +139,12 @@ class TemplateHelper
     public function getFolders($path, $depht = 0)
     {
         $result = array();
-        $cdir   = scandir($path);
-        foreach ($cdir as $key => $value) {
+
+        if (!is_dir($path)) {
+            return $result;
+        }
+
+        foreach (scandir($path) as $key => $value) {
             if (!in_array($value, array('.', '..'))) {
                 if (is_dir($path . DIRECTORY_SEPARATOR . $value)) {
                     $result[$value] = $depht > 1 ?
@@ -150,13 +154,6 @@ class TemplateHelper
         }
 
         return $result;
-    }
-
-    public function getFrontendOriginalTemplates($path = false)
-    {
-        $cOrdner = PFAD_ROOT . PFAD_TEMPLATES . 'original/';
-        $x       = scandir($cOrdner);
-        dd($x);
     }
 
     /**

@@ -20,6 +20,18 @@ if (isset($_REQUEST['page'])) {
 }
 if (isset($_REQUEST['action']) && validateToken()) {
     switch ($_REQUEST['action']) {
+        case 'delete-invisible':
+            if (!empty($_POST['kInvisibleBox']) && count($_POST['kInvisibleBox']) > 0) {
+                $cnt = 0;
+                foreach ($_POST['kInvisibleBox'] as $box) {
+                    $bOk = $oBoxen->loescheBox((int)$box);
+                    if ($box) {
+                        ++$cnt;
+                    }
+                }
+                $cHinweis = $cnt . ' Box(en) wurde(n) erfolgreich gel&ouml;scht.';
+            }
+            break;
         case 'new':
             $kBox       = $_REQUEST['item'];
             $ePosition  = $_REQUEST['position'];
@@ -165,4 +177,5 @@ $smarty->assign('hinweis', $cHinweis)
        ->assign('oVorlagen_arr', $oVorlagen_arr)
        ->assign('oBoxenContainer', $oBoxenContainer)
        ->assign('nPage', $nPage)
+       ->assign('invisbleBoxes', $oBoxen->getInvisibleBoxes())
        ->display('boxen.tpl');

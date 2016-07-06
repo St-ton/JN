@@ -1837,4 +1837,33 @@ class Boxen
 
         return $class;
     }
+
+    /**
+     * @return array
+     */
+    public function getInvisibleBoxes()
+    {
+        $tpl            = Template::getInstance();
+        $layout         = $tpl->getBoxLayoutXML();
+        $invisibleBoxes = array();
+        foreach ($layout as $position => $isAvailable) {
+            if ($isAvailable === false) {
+                $box = Shop::DB()->select('tboxen', 'ePosition', $position);
+                if ($box !== null && isset($box->kBox)) {
+                    $boxes = Shop::DB()->query("
+                        SELECT tboxen.*, tboxvorlage.eTyp, tboxvorlage.cName, tboxvorlage.cTemplate 
+                          FROM tboxen 
+                            LEFT JOIN tboxvorlage
+                              ON tboxen.kBoxvorlage = tboxvorlage.kBoxvorlage
+                          WHERE ePosition = '" . $position . "'", 2
+                    );
+                    foreach ($boxes as $box) {
+                        $invisibleBoxes[] = $box;
+                    }
+                }
+            }
+        }
+
+        return $invisibleBoxes;
+    }
 }

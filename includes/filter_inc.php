@@ -2717,10 +2717,8 @@ function gibNaviURL($NaviFilter, $bSeo, $oZusatzFilter, $kSprache = 0, $bCanonic
             (isset($oZusatzFilter->SuchFilter->kSuchanfrage) && $oZusatzFilter->SuchFilter->kSuchanfrage > 0))
     ) {
         $bSeo = false;
-        $cURL = Shop::getURL() . '/navi.php?';
-    } else {
-        $cURL = Shop::getURL() . '/navi.php?';
     }
+    $cURL = $cSEOURL . 'navi.php?';
     // Mainwords
     if (isset($NaviFilter->Kategorie->kKategorie) && $NaviFilter->Kategorie->kKategorie > 0) {
         if (!isset($NaviFilter->Kategorie->cSeo[$kSprache]) || strlen($NaviFilter->Kategorie->cSeo[$kSprache]) === 0) {
@@ -2795,7 +2793,12 @@ function gibNaviURL($NaviFilter, $bSeo, $oZusatzFilter, $kSprache = 0, $bCanonic
                 if (strlen($NaviFilter->KategorieFilter->cSeo[$kSprache]) === 0) {
                     $bSeo = false;
                 }
-                $cURL .= '&amp;kf=' . (int)$NaviFilter->KategorieFilter->kKategorie;
+                $conf = Shop::getConfig(array(CONF_NAVIGATIONSFILTER));
+                if ($conf['navigationsfilter']['kategoriefilter_anzeigen_als'] === 'HF' && !empty($oZusatzFilter->KategorieFilter->kKategorie)) {
+                    $cURL .= '&amp;kf=' . (int)$oZusatzFilter->KategorieFilter->kKategorie;
+                } else {
+                    $cURL .= '&amp;kf=' . (int)$NaviFilter->KategorieFilter->kKategorie;
+                }
             }
         } elseif ((isset($oZusatzFilter->KategorieFilter->kKategorie) && $oZusatzFilter->KategorieFilter->kKategorie > 0) &&
             (!isset($NaviFilter->Kategorie->kKategorie) || $NaviFilter->Kategorie->kKategorie != $oZusatzFilter->KategorieFilter->kKategorie)
@@ -2940,7 +2943,7 @@ function gibNaviURL($NaviFilter, $bSeo, $oZusatzFilter, $kSprache = 0, $bCanonic
         }
         // Zusatz Tagfilter
         if (isset($oZusatzFilter->TagFilter->kTag) && $oZusatzFilter->TagFilter->kTag > 0 && !$bZusatzTagEnthalten) {
-            //$cURL .= "&tf" . $nLetzterTagFilter . "=" . $oZusatzFilter->TagFilter->kTag;
+            //$cURL .= "&amp;tf" . $nLetzterTagFilter . "=" . $oZusatzFilter->TagFilter->kTag;
             $nPos = count($oTag_arr);
             if (!isset($oTag_arr[$nPos])) {
                 $oTag_arr[$nPos] = new stdClass();

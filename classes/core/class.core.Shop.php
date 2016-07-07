@@ -779,7 +779,7 @@ final class Shop
                     $seo = $oKategorie_arr[0];
                 }
                 if (intval($seite) > 0) {
-                    $_GET['seite'] = intval($seite);
+                    $_GET['seite'] = (int)$seite;
                 }
                 //split attribute/attribute value
                 $oMerkmal_arr = explode(SEP_MM_MMW, $seo);
@@ -789,12 +789,7 @@ final class Shop
                 }
                 //category filter
                 if (strlen($katseo) > 0) {
-                    $oSeo = self::DB()->query(
-                        "SELECT kKey, cSeo
-                            FROM tseo
-                            WHERE cSeo = '" . $katseo . "'", 1
-                    );
-
+                    $oSeo = self::DB()->select('tseo', 'cKey', 'kKategorie', 'cSeo', $katseo);
                     if (isset($oSeo->kKey) && strcasecmp($oSeo->cSeo, $katseo) === 0) {
                         self::$kKategorieFilter = $oSeo->kKey;
                     } else {
@@ -803,14 +798,9 @@ final class Shop
                 }
                 //manufacturer filter
                 if (strlen($hstseo) > 0) {
-                    $oSeo = self::DB()->query(
-                        "SELECT kKey, cSeo
-                            FROM tseo
-                            WHERE cSeo = '" . $hstseo . "'", 1
-                    );
-
+                    $oSeo = self::DB()->select('tseo', 'cKey', 'kHersteller', 'cSeo', $hstseo);
                     if (isset($oSeo->kKey) && strcasecmp($oSeo->cSeo, $hstseo) === 0) {
-                        self::$kHerstellerFilter         = $oSeo->kKey;
+                        self::$kHerstellerFilter = $oSeo->kKey;
                     } else {
                         self::$bHerstellerFilterNotFound = true;
                     }
@@ -820,12 +810,7 @@ final class Shop
                     $nMerkmalZaehler = 1;
                     foreach ($cSEOMerkmal_arr as $i => $cSEOMerkmal) {
                         if (strlen($cSEOMerkmal) > 0 && $i > 0) {
-                            $oSeo = self::DB()->query(
-                                "SELECT kKey, kSprache, cKey, cSeo
-                                    FROM tseo
-                                    WHERE cSeo = '" . $cSEOMerkmal . "'", 1
-                            );
-
+                            $oSeo = self::DB()->select('tseo', 'cKey', 'kMerkmalWert', 'cSeo', $cSEOMerkmal);
                             if (isset($oSeo->kKey) && strcasecmp($oSeo->cSeo, $cSEOMerkmal) === 0) {
                                 //hänge an GET, damit baueMerkmalFilter die Merkmalfilter setzen kann im NAvifilter.
                                 $_GET['mf' . $nMerkmalZaehler] = $oSeo->kKey;
@@ -837,12 +822,7 @@ final class Shop
                         }
                     }
                 }
-                $oSeo = self::DB()->query(
-                    "SELECT kKey, kSprache, cKey, cSeo
-                        FROM tseo
-                        WHERE cSeo = '" . $seo . "'", 1
-                );
-
+                $oSeo = self::DB()->select('tseo', 'cSeo', $seo);
                 //EXPERIMENTAL_MULTILANG_SHOP
                 if (isset($oSeo->kSprache) && self::$kSprache !== $oSeo->kSprache && defined('EXPERIMENTAL_MULTILANG_SHOP') && EXPERIMENTAL_MULTILANG_SHOP === true) {
                     $oSeo->kSprache = self::$kSprache;
@@ -906,10 +886,10 @@ final class Shop
                     }
                 }
                 if (isset($oSeo->kSprache) && $oSeo->kSprache > 0) {
-                    $kSprache = $oSeo->kSprache;
+                    $kSprache = (int)$oSeo->kSprache;
                     $spr      = (class_exists('Sprache')) ?
                         self::Lang()->getIsoFromLangID($kSprache) :
-                        self::DB()->query("SELECT cISO FROM tsprache WHERE kSprache = " . intval($kSprache), 1);
+                        self::DB()->query("SELECT cISO FROM tsprache WHERE kSprache = " . $kSprache, 1);
                     $cLang = (isset($spr->cISO)) ? $spr->cISO : null;
                     if ($cLang !== $_SESSION['cISOSprache']) {
                         checkeSpracheWaehrung($cLang);

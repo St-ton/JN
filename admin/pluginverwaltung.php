@@ -540,11 +540,17 @@ if ($step === 'pluginverwaltung_uebersicht') {
            ->assign('kPlugin', $kPlugin)
            ->assign('oPluginSprachvariable_arr', gibSprachVariablen($kPlugin));
 }
+
 if ($reload === true) {
     $_SESSION['plugin_msg'] = $cHinweis;
     header('Location: ' . Shop::getURL() . '/' . PFAD_ADMIN . 'pluginverwaltung.php', true, 303);
     exit();
 }
+
+if (defined('PLUGIN_DEV_MODE') && PLUGIN_DEV_MODE === true) {
+    $cHinweis = 'Achtung: Ihr Shop befindet sich im Plugin-Dev-Mode! &Auml;nderungen der XML-Datei eines aktivierten Plugins bewirken deren automatisches Update.<br><br>' . $cHinweis;
+}
+
 $smarty->assign('hinweis', $cHinweis)
        ->assign('hinweis64', base64_encode($cHinweis))
        ->assign('fehler', $cFehler)

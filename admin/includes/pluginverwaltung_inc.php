@@ -958,7 +958,8 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
                                 preg_match('/[A-Z_]+/', $Method_arr['TSCode'], $cTreffer1_arr);
                                 if (strlen($cTreffer1_arr[0]) === strlen($Method_arr['TSCode'])) {
                                     $cTSCode_arr = array(
-                                        'DIRECT_DEBIT', 'CREDIT_CARD', 'INVOICE', 'CASH_ON_DELIVERY', 'PREPAYMENT', 'CHEQUE', 'PAYBOX', 'PAYPAL', 'CASH_ON_PICKUP', 'FINANCING', 'LEASING', 'T_PAY', 'CLICKANDBUY', 'GIROPAY', 'GOOGLE_CHECKOUT', 'SHOP_CARD', 'DIRECT_E_BANKING', 'OTHER');
+                                        'DIRECT_DEBIT', 'CREDIT_CARD', 'INVOICE', 'CASH_ON_DELIVERY', 'PREPAYMENT', 'CHEQUE', 'PAYBOX', 'PAYPAL', 'CASH_ON_PICKUP', 
+                                        'FINANCING', 'LEASING', 'T_PAY', 'CLICKANDBUY', 'GIROPAY', 'GOOGLE_CHECKOUT', 'SHOP_CARD', 'DIRECT_E_BANKING', 'OTHER');
 
                                     if (!in_array($Method_arr['TSCode'], $cTSCode_arr)) {
                                         return 52;// TSCode in den Zahlungsmethoden entspricht nicht der Konvention

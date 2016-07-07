@@ -551,6 +551,9 @@ function get_image_size($image)
 
         $settings = Image::getSettings();
         $refImage = $req->getRaw();
+        if ($refImage === null) {
+            return;
+        }
 
         list($width, $height, $type, $attr) = getimagesize($refImage);
 

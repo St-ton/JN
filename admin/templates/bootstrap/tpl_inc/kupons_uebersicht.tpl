@@ -1,5 +1,27 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=#coupons# cBeschreibung=#couponsDesc# cDokuURL=#couponsURL#}
+
 <div id="content" class="container-fluid">
+    <ul class="nav nav-tabs" role="tablist">
+        <li class="tab">
+            <a data-toggle="tab" role="tab" href="#standard" aria-expanded="true">{#standardCoupon#}s</a>
+        </li>
+        <li class="tab">
+            <a data-toggle="tab" role="tab" href="#versandkupon" aria-expanded="true">{#shippingCoupon#}s</a>
+        </li>
+        <li class="tab">
+            <a data-toggle="tab" role="tab" href="#neukundenkupon" aria-expanded="true">{#newCustomerCoupon#}s</a>
+        </li>
+    </ul>
+    <div class="tab-content">
+        <div id="standard" class="tab-pane fade in">
+            Hello
+        </div>
+    </div>
+    <div class="tab-content">
+        <div id="standard" class="tab-pane fade in">
+            Hello
+        </div>
+    </div>
     <form method="post" action="kupons.php">
         {$jtl_token}
         <div class="panel panel-default">
@@ -35,7 +57,7 @@
                             </td>
                             <td>{$oKupon->cCode}</td>
                             <td>{getCurrencyConversionSmarty fPreisBrutto=$oKupon->fMindestbestellwert}</td>
-                            <td>{$oKupon->nVerwendungenBisher}/{$oKupon->nVerwendungen}</td>
+                            <td>{$oKupon->nVerwendungenBisher} von {$oKupon->nVerwendungen}</td>
                             <td>{$oKupon->cKundengruppe}</td>
                             <td>{$oKupon->ArtikelInfo}</td>
                             <td>

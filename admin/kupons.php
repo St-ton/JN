@@ -8,6 +8,7 @@ require_once dirname(__FILE__) . '/includes/admininclude.php';
 $oAccount->permission('ORDER_COUPON_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'kupons_inc.php';
+require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 
 $cHinweis     = '';
 $cFehler      = '';
@@ -19,18 +20,23 @@ $oSprache_arr = gibAlleSprachen();
 // Aktion ausgeloest?
 if (validateToken()) {
     if (isset($_POST['kKuponBearbeiten'])) {
+        // vorhandenen Kupon bearbeiten
         $action = 'bearbeiten';
         $step   = 'bearbeiten';
     } elseif (isset($_POST['action'])) {
         if ($_POST['action'] === 'speichern') {
             if (isset($_POST['kKupon'])) {
+                // vorhandenen Kupon speichern
                 $action = 'updaten';
             } else {
+                // neuen Kupon speichern
                 $action = 'speichern';
             }
         } elseif ($_POST['action'] === 'loeschen') {
+            // vorhandene Kupons loeschen
             $action = 'loeschen';
         } elseif ($_POST['action'] === 'erstellen') {
+            // neuen Kupon bearbeiten
             $action = 'erstellen';
             $step   = 'bearbeiten';
         }
@@ -80,7 +86,8 @@ if ($action == 'updaten' || $action == 'speichern') {
     if ($oKupon->cKuponTyp == 'versandkupon' && $oKupon->cLieferlaender == '') {
         $cFehler_arr[] = 'Bitte geben Sie die L&auml;nderk&uuml;rzel (ISO-Codes) unter "Lieferl&auml;nder" an, f&uuml;r die dieser Versandkupon gelten soll!';
     }
-    $queryRes = Shop::DB()->query("SELECT kKupon
+    $queryRes = Shop::DB()->query("
+        SELECT kKupon
             FROM tkupon
             WHERE cCode = '" . $oKupon->cCode . "'" . ($action == 'updaten' ? " AND kKupon != " . $oKupon->kKupon : ''),
         1);

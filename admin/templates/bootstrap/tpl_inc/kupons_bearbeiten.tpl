@@ -3,7 +3,30 @@
 {else}
     {assign var=cTitel value=#modifyCoupon#}
 {/if}
+
+{if $oKupon->cKuponTyp == 'standard'}
+    {assign var=cTitel value="$cTitel : Standardkupon"}
+{elseif $oKupon->cKuponTyp == 'versandkupon'}
+    {assign var=cTitel value="$cTitel : Versandkostenfrei-Kupon"}
+{elseif $oKupon->cKuponTyp == 'neukundenkupon'}
+    {assign var=cTitel value="$cTitel : Neukunden-/Begr&uuml;&szlig;ungskupon"}
+{/if}
+
 {include file='tpl_inc/seite_header.tpl' cTitel=$cTitel cBeschreibung=#couponsDesc# cDokuURL=#couponsURL#}
+
+<script>
+    {literal}
+        $(function () {
+            $('#fWertTooltip').on('inserted.bs.tooltip', function () {
+                setzePreisAjax(false, 'fWertTooltipTitle', $('#fWert')[0]);
+            });
+            $('#fMindestbestellwertTooltip').on('inserted.bs.tooltip', function () {
+                setzePreisAjax(false, 'fMindestbestellwertTooltipTitle', $('#fMindestbestellwert')[0]);
+            });
+        })
+    {/literal}
+</script>
+
 <div id="content" class="container-fluid">
     <form method="post" action="kupons.php">
         {$jtl_token}
@@ -50,16 +73,24 @@
                             <label for="fWert">{#value#} ({#gross#})</label>
                         </span>
                         <span class="input-group-wrap">
-                            <input type="text" class="form-control" name="fWert" id="fWert" value="{$oKupon->fWert}">
+                            <input type="text" class="form-control" name="fWert" id="fWert" value="{$oKupon->fWert}"> <!-- onKeyUp="setzePreisAjax(false, 'ajaxWert', this)" -->
                         </span>
-                        <select name="cWertTyp" id="cWertTyp" class="form-control combo">
-                            <option value="festpreis"{if $oKupon->cWertTyp === 'festpreis'} selected{/if}>
-                                Betrag
-                            </option>
-                            <option value="prozent"{if $oKupon->cWertTyp === 'prozent'} selected{/if}>
-                                %
-                            </option>
-                        </select>
+                        <span class="input-group-wrap">
+                            <select name="cWertTyp" id="cWertTyp" class="form-control combo">
+                                <option value="festpreis"{if $oKupon->cWertTyp === 'festpreis'} selected{/if}>
+                                    Betrag
+                                </option>
+                                <option value="prozent"{if $oKupon->cWertTyp === 'prozent'} selected{/if}>
+                                    %
+                                </option>
+                            </select>
+                        </span>
+                        <span class="input-group-addon">
+                            <button class="btn btn-tooltip btn-info" id="fWertTooltip" data-html="true" data-toggle="tooltip" data-placement="left"
+                                    data-original-title="<span id='fWertTooltipTitle'></span>">
+                                <i class="fa fa-eur"></i>
+                            </button>
+                        </span>
                     </div>
                     <div class="input-group">
                         <span class="input-group-addon">
@@ -107,6 +138,11 @@
                     </span>
                     <span class="input-group-wrap">
                         <input type="text" class="form-control" name="fMindestbestellwert" id="fMindestbestellwert" value="{$oKupon->fMindestbestellwert}">
+                    </span>
+                    <span class="input-group-addon">
+                        <button class="btn btn-tooltip btn-info" data-html="true" data-toggle="tooltip" data-placement="left" data-original-title="Hello">
+                            <i class="fa fa-eur"></i>
+                        </button>
                     </span>
                 </div>
                 {if $oKupon->cKuponTyp === 'standard' || $oKupon->cKuponTyp === 'versandkupon'}

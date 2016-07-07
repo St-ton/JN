@@ -14,6 +14,7 @@ $cHinweis     = '';
 $cFehler      = '';
 $step         = 'uebersicht';
 $action       = '';
+$tab          = 'standard';
 $cFehler_arr  = array();
 $oSprache_arr = gibAlleSprachen();
 
@@ -174,8 +175,14 @@ if ($action == 'updaten' || $action == 'speichern') {
 
 if ($step == 'uebersicht') {
     // Seite: Uebersicht
-    $oKupon_arr = getCoupons();
-    $smarty->assign('oKupon_arr', $oKupon_arr);
+    $oKuponStandard_arr = getCoupons('standard');
+    $oKuponVersandkupon_arr = getCoupons('versandkupon');
+    $oKuponNeukundenkupon_arr = getCoupons('neukundenkupon');
+    $smarty
+        ->assign('oKuponStandard_arr', $oKuponStandard_arr)
+        ->assign('oKuponVersandkupon_arr', $oKuponVersandkupon_arr)
+        ->assign('oKuponNeukundenkupon_arr', $oKuponNeukundenkupon_arr)
+    ;
 } elseif ($step == 'bearbeiten') {
     // Seite: Bearbeiten
     $oSteuerklasse_arr = Shop::DB()->query("SELECT kSteuerklasse, cName FROM tsteuerklasse", 2);
@@ -194,6 +201,7 @@ if ($step == 'uebersicht') {
 
 $smarty->assign('step', $step)
     ->assign('action', $action)
+    ->assign('tab', $tab)
     ->assign('cHinweis', $cHinweis)
     ->assign('cFehler', $cFehler)
     ->display('kupons.tpl');

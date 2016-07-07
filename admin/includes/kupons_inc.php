@@ -116,9 +116,9 @@ function convertDate($string)
 /**
  * @return array
  */
-function getCoupons()
+function getCoupons($cKuponTyp = 'standard')
 {
-    $oKuponDB_arr = Shop::DB()->query("SELECT kKupon FROM tkupon", 2);
+    $oKuponDB_arr = Shop::DB()->query("SELECT kKupon FROM tkupon WHERE cKuponTyp = '" . $cKuponTyp . "'", 2);
     $oKupon_arr   = array();
 
     foreach ($oKuponDB_arr as $oKuponDB) {

@@ -1270,10 +1270,16 @@ function buildConfig($kArtikel, $fAnzahl, $nVariation_arr, $nKonfiggruppe_arr, $
         }
         $oKonfiggruppe->oItem_arr = array_values($oKonfiggruppe->oItem_arr);
     }
-    $oKonfig->cPreisLocalized = array(
-        gibPreisStringLocalized($oKonfig->fGesamtpreis[0]),
-        gibPreisStringLocalized($oKonfig->fGesamtpreis[1])
-    );
+    if ($_SESSION['Kundengruppe']->darfPreiseSehen) {
+        $oKonfig->cPreisLocalized = array(
+            gibPreisStringLocalized($oKonfig->fGesamtpreis[0]),
+            gibPreisStringLocalized($oKonfig->fGesamtpreis[1])
+        );
+    } else {
+        $oKonfig->cPreisLocalized = array(
+            Shop::Lang()->get('priceHidden', 'global'),
+        );
+    }
     $oKonfig->nNettoPreise = $_SESSION['Kundengruppe']->nNettoPreise;
 
     return $oKonfig;

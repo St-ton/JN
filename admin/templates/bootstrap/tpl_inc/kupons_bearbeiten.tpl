@@ -16,9 +16,33 @@
 
 <script>
     {literal}
+        function pad (num, size) {
+            var res = num + '';
+            while (res.length < size) {
+                res = '0' + res;
+            }
+            return res;
+        }
+
         function changeTooltipText (sourceId) {
             var sourceInput = $('#' + sourceId)[0];
             setzePreisTooltipAjax(false, sourceId + 'Tooltip', sourceInput);
+        }
+
+        function calcRelativeValidity () {
+            var validStartDate = new Date($('#dGueltigAb').val());
+            var validEndDate   = new Date($('#dGueltigBis').val());
+            var deltaDays      = Math.floor((validEndDate - validStartDate) / (1000 * 60 * 60 * 24));
+            $('#dDauerTage').val(deltaDays);
+        }
+
+        function calcValidityEnd () {
+            var date      = new Date($('#dGueltigAb').val());
+            var validDays = parseInt($('#dDauerTage').val()) || 0;
+            date.setTime(date.getTime() + validDays * 24 * 60 * 60 * 1000);
+            var endDateString = date.getFullYear() + '-' + pad(date.getMonth() + 1, 2) + '-' + pad(date.getDate(), 2) +
+                ' ' + pad(date.getHours(), 2) + ':' + pad(date.getMinutes(), 2);
+            $('#dGueltigBis').val(endDateString);
         }
 
         $(function () {
@@ -26,7 +50,12 @@
                 changeTooltipText (sourceId);
                 $('#' + sourceId).keyup(function (e) { changeTooltipText (sourceId); });
             });
+            calcRelativeValidity();
+            $('#dGueltigAb').keyup(calcRelativeValidity);
+            $('#dGueltigBis').keyup(calcRelativeValidity);
+            $('#dDauerTage').keyup(calcValidityEnd);
         });
+
     {/literal}
 </script>
 
@@ -233,6 +262,14 @@
                     </span>
                     <span class="input-group-wrap">
                         <input type="text" class="form-control" name="dGueltigBis" id="dGueltigBis" value="{$oKupon->dGueltigBis}">
+                    </span>
+                </div>
+                <div class="input-group">
+                    <span class="input-group-addon">
+                        <label for="dGueltigBis">G&uuml;tigkeitsdauer (Tage)</label>
+                    </span>
+                    <span class="input-group-wrap">
+                        <input type="text" class="form-control" name="dDauerTage" id="dDauerTage" value="">
                     </span>
                 </div>
                 <div class="input-group">

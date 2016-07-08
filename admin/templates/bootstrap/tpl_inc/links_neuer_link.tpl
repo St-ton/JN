@@ -139,7 +139,7 @@
                         </select>
                         <span class="input-group-addon">{getHelpDesc cDesc=#multipleChoice#}</span>
                     </div>
-                    {if $Link->nLinkart != LINKTYP_LOGIN}
+                    {if !isset($Link->nLinkart) || $Link->nLinkart != LINKTYP_LOGIN}
                     <div class="input-group">
                         <span class="input-group-addon"><label for="cSichtbarNachLogin">{#visibleAfterLogin#}</label></span>
                         <div class="input-group-wrap">

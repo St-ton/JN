@@ -16,14 +16,17 @@
 
 <script>
     {literal}
+        function changeTooltipText (sourceId) {
+            var sourceInput = $('#' + sourceId)[0];
+            setzePreisTooltipAjax(false, sourceId + 'Tooltip', sourceInput);
+        }
+
         $(function () {
-            $('#fWertTooltip').on('inserted.bs.tooltip', function () {
-                setzePreisAjax(false, 'fWertTooltipTitle', $('#fWert')[0]);
+            ['fWert', 'fMindestbestellwert'].forEach(function (sourceId) {
+                changeTooltipText (sourceId);
+                $('#' + sourceId).keyup(function (e) { changeTooltipText (sourceId); });
             });
-            $('#fMindestbestellwertTooltip').on('inserted.bs.tooltip', function () {
-                setzePreisAjax(false, 'fMindestbestellwertTooltipTitle', $('#fMindestbestellwert')[0]);
-            });
-        })
+        });
     {/literal}
 </script>
 
@@ -73,7 +76,7 @@
                             <label for="fWert">{#value#} ({#gross#})</label>
                         </span>
                         <span class="input-group-wrap">
-                            <input type="text" class="form-control" name="fWert" id="fWert" value="{$oKupon->fWert}"> <!-- onKeyUp="setzePreisAjax(false, 'ajaxWert', this)" -->
+                            <input type="text" class="form-control" name="fWert" id="fWert" value="{$oKupon->fWert}">
                         </span>
                         <span class="input-group-wrap">
                             <select name="cWertTyp" id="cWertTyp" class="form-control combo">
@@ -86,10 +89,7 @@
                             </select>
                         </span>
                         <span class="input-group-addon">
-                            <button class="btn btn-tooltip btn-info" id="fWertTooltip" data-html="true" data-toggle="tooltip" data-placement="left"
-                                    data-original-title="<span id='fWertTooltipTitle'></span>">
-                                <i class="fa fa-eur"></i>
-                            </button>
+                            {getCurrencyConversionTooltipButton inputId='fWert'}
                         </span>
                     </div>
                     <div class="input-group">
@@ -140,9 +140,7 @@
                         <input type="text" class="form-control" name="fMindestbestellwert" id="fMindestbestellwert" value="{$oKupon->fMindestbestellwert}">
                     </span>
                     <span class="input-group-addon">
-                        <button class="btn btn-tooltip btn-info" data-html="true" data-toggle="tooltip" data-placement="left" data-original-title="Hello">
-                            <i class="fa fa-eur"></i>
-                        </button>
+                        {getCurrencyConversionTooltipButton inputId='fMindestbestellwert'}
                     </span>
                 </div>
                 {if $oKupon->cKuponTyp === 'standard' || $oKupon->cKuponTyp === 'versandkupon'}
@@ -190,12 +188,18 @@
                 <h3 class="panel-title">Einschr&auml;nkungen</h3>
             </div>
             <div class="panel-body">
+                <div id="ajax_list_picker" class="ajax_list_picker article">{include file="tpl_inc/popup_artikelsuche.tpl"}</div>
                 <div class="input-group">
                     <span class="input-group-addon">
-                        <label for="cArtikel">{#productRestrictions#}</label>
+                        <label for="assign_article_list">{#productRestrictions#}</label>
                     </span>
                     <span class="input-group-wrap">
-                        <input type="text" class="form-control" name="cArtikel" id="cArtikel" value="{$oKupon->cArtikel}">
+                        <input type="text" class="form-control" name="cArtikel" id="assign_article_list" value="{$oKupon->cArtikel}">
+                    </span>
+                    <span class="input-group-addon">
+                        <button class="btn btn-info btn-xs" id="show_article_list">
+                            <i class="fa fa-edit"></i>
+                        </button>
                     </span>
                 </div>
                 <div class="input-group">
@@ -255,6 +259,7 @@
                             {/foreach}
                         </select>
                     </span>
+                    <span class="input-group-addon">{getHelpDesc cDesc=#multipleChoice#}</span>
                 </div>
                 {if $oKupon->cKuponTyp === 'standard' || $oKupon->cKuponTyp === 'versandkupon'}
                     <div class="input-group">
@@ -273,6 +278,7 @@
                                 {/foreach}
                             </select>
                         </span>
+                        <span class="input-group-addon">{getHelpDesc cDesc=#multipleChoice#}</span>
                     </div>
                     <div class="input-group">
                         <span class="input-group-addon">

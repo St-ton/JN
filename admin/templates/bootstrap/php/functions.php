@@ -4,6 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 $smarty->register_function('getCurrencyConversionSmarty', 'getCurrencyConversionSmarty');
+$smarty->register_function('getCurrencyConversionTooltipButton', 'getCurrencyConversionTooltipButton');
 $smarty->register_function('getCurrentPage', 'getCurrentPage');
 $smarty->register_function('SmartyConvertDate', 'SmartyConvertDate');
 $smarty->register_function('getHelpDesc', 'getHelpDesc');
@@ -34,6 +35,30 @@ function getCurrencyConversionSmarty($params, &$smarty)
     }
 
     return getCurrencyConversion($params['fPreisNetto'], $params['fPreisBrutto'], $params['cClass'], $bForceSteuer);
+}
+
+/**
+ * @param array $params
+ * @param JTLSmarty $smarty
+ * @return string
+ */
+function getCurrencyConversionTooltipButton($params, &$smarty)
+{
+    $placement = 'left';
+
+    if (isset($params['placement'])) {
+        $placement = $params['placement'];
+    }
+
+    if (isset($params['inputId'])) {
+        $inputId = $params['inputId'];
+        $button = '<button class="btn btn-tooltip btn-info" id="' . $inputId . 'Tooltip" data-html="true"';
+        $button .= ' data-toggle="tooltip" data-placement="' . $placement . '">';
+        $button .= '<i class="fa fa-eur"></i></button>';
+        return $button;
+    }
+
+    return '';
 }
 
 /**

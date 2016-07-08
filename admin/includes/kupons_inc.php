@@ -123,6 +123,8 @@ function getCoupons($cKuponTyp = 'standard')
 
     foreach ($oKuponDB_arr as $oKuponDB) {
         $oKupon = new Kupon($oKuponDB->kKupon);
+        $oKupon->dGueltigAbFormatted = date_create($oKupon->dGueltigAb)->format('d.m.Y');
+        $oKupon->dGueltigBisFormatted = date_create($oKupon->dGueltigBis)->format('d.m.Y');
 
         if ((int)$oKupon->kKundengruppe == -1) {
             $oKupon->cKundengruppe = 'Alle';

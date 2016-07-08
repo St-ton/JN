@@ -351,8 +351,7 @@ class Image
      */
     public static function render(MediaImageRequest $req, Imanee $rawImage = null)
     {
-        $rawPath   = $req->getRaw(true);
-        $thumbnail = $req->getThumb(null, true);
+        $rawPath = $req->getRaw(true);
 
         if (!is_file($rawPath)) {
             throw new Exception(sprintf('Image "%s" does not exist', $rawPath));
@@ -403,8 +402,9 @@ class Image
             $imanee->watermark($containerImage, $branding->position, $branding->transparency);
         }
 
-        $pathinfo  = pathinfo($thumbnail);
-        $directory = $pathinfo['dirname'];
+        $req->ext  = $settings['format'];
+        $thumbnail = $req->getThumb(null, true);
+        $directory  = pathinfo($thumbnail, PATHINFO_DIRNAME);
 
         if (!is_dir($directory)) {
             if (!mkdir($directory, 0777, true)) {
@@ -416,6 +416,7 @@ class Image
             }
         }
 
+        $imanee->setFormat($settings['format']);
         $imanee->write($thumbnail, $settings['quality']);
 
         executeHook(HOOK_IMAGE_RENDER, array(

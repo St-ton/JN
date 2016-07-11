@@ -4692,8 +4692,7 @@ class Artikel
         // get all pieces (even invisible) to calc delivery
         $nAllPieces = Shop::DB()->query("SELECT tartikel.kArtikel, tstueckliste.fAnzahl
                       FROM tartikel
-                      JOIN tstueckliste ON tstueckliste.kArtikel = tartikel.kArtikel AND tstueckliste.kStueckliste = " . (int)$this->kStueckliste . "
-                      LEFT JOIN tartikelsichtbarkeit ON tstueckliste.kArtikel = tartikelsichtbarkeit.kArtikel AND tartikelsichtbarkeit.kKundengruppe = " . $_SESSION['Kundengruppe']->kKundengruppe, 3);
+                      JOIN tstueckliste ON tstueckliste.kArtikel = tartikel.kArtikel AND tstueckliste.kStueckliste = " . (int)$this->kStueckliste, 3);
         // check if this is a set article - if so, calculate the delivery time from the set of articles
             // we don't have loaded the list of pieces yet, do so!
         if (!empty($this->kStueckliste) && empty($this->oStueckliste_arr) || !empty($this->oStueckliste_arr) && count($this->oStueckliste_arr) !== $nAllPieces) {

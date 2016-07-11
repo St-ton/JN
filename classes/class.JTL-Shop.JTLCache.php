@@ -360,6 +360,10 @@ class JTLCache
             $this->options['lifetime'] = self::DEFAULT_LIFETIME;
         } else {
             $this->options['lifetime'] = (int) $this->options['lifetime'];
+            $maxLifeTime = 60*60*24*30;
+            if ($this->options['lifetime'] > $maxLifeTime) {
+                $this->options['lifetime'] = $maxLifeTime;
+            }
         }
         if ($this->options['types_disabled'] === null) {
             $this->options['types_disabled'] = array();
@@ -1015,8 +1019,9 @@ class JTLCache
         }
         if (is_array($methods)) {
             foreach ($methods as $method) {
+                Shop::dbg($method, false, 'benchmarking method ');
                 if ($method !== 'null') {
-                    $results[] = $this->benchmark($method, $testData, $runCount, $repeat, $echo, $format);
+                    $results[] = $this->_benchmark($method, $testData, $runCount, $repeat, $echo, $format);
                 }
             }
         } else {

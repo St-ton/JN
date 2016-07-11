@@ -2729,7 +2729,9 @@ class Artikel
                 $cSQL .= ')';
             }
             $oVariationKombiVorschau_arr = Shop::DB()->query(
-                "SELECT tartikel.kArtikel, tartikelpict.cPfad, tartikel.cName, tartikel.cSeo, tartikel.cArtNr, tartikel.cBarcode, tpreisdetail.fVKNetto, teigenschaftkombiwert.kEigenschaft
+                "SELECT tartikel.kArtikel, tartikelpict.cPfad, tartikel.cName, tartikel.cSeo, tartikel.cArtNr, tartikel.cBarcode, tartikel.cLagerBeachten, tartikel.cLagerKleinerNull,
+                    tartikel.fLagerbestand, tartikel.fZulauf, DATE_FORMAT(tartikel.dZulaufDatum, '%d.%m.%Y') AS dZulaufDatum_de, tartikel.fLieferzeit, tartikel.fLieferantenlagerbestand,
+                    DATE_FORMAT(tartikel.dErscheinungsdatum,'%d.%m.%Y') AS Erscheinungsdatum_de, tartikel.dErscheinungsdatum, tartikel.cLagerVariation, tpreisdetail.fVKNetto, teigenschaftkombiwert.kEigenschaft
                     FROM teigenschaftkombiwert
                     JOIN tartikel ON tartikel.kVaterArtikel = " . (int)$this->kArtikel . "
                         AND tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
@@ -2784,21 +2786,47 @@ class Artikel
 
                 $imageHashes = array(); // Nur Bilder die max. 1x vorhanden sind
                 foreach ($oVariationKombiVorschau_arr as $i => $oVariationKombiVorschau) {
-                    $req   = MediaImage::getRequest(Image::TYPE_PRODUCT, $oVariationKombiVorschau->kArtikel, $oVariationKombiVorschau, Image::SIZE_XS, 0);
-                    $thumb = PFAD_ROOT . $req->getRaw();
-                    if (file_exists($thumb)) {
-                        $fileHash = md5_file($thumb);
-                        if (!in_array($fileHash, $imageHashes)) {
-                            $varKombiPreview                     = new stdClass();
-                            $varKombiPreview->cURL               = baueURL($oVariationKombiVorschau, URLART_ARTIKEL);
-                            $varKombiPreview->cURLFull           = baueURL($oVariationKombiVorschau, URLART_ARTIKEL, 0, false, true);
-                            $varKombiPreview->cName              = $oVariationKombiVorschau->cName;
-                            $varKombiPreview->cBildMini          = $req->getThumb(Image::SIZE_XS);
-                            $varKombiPreview->cBildKlein         = $req->getThumb(Image::SIZE_SM);
-                            $varKombiPreview->cBildNormal        = $req->getThumb(Image::SIZE_MD);
-                            $varKombiPreview->cBildGross         = $req->getThumb(Image::SIZE_LG);
-                            $this->oVariationKombiVorschau_arr[] = $varKombiPreview;
-                            $imageHashes[]                       = $fileHash;
+                    $releaseDate                                    = new DateTime($oVariationKombiVorschau->dErscheinungsdatum);
+                    $now                                            = new DateTime();
+                    $conf                                           = Shop::getSettings(array(CONF_GLOBAL));
+                    $oVariationKombiVorschau->nErscheinendesProdukt = ($releaseDate > $now) ? 1 : 0;
+                    $oVariationKombiVorschau->inWarenkorbLegbar     = 0;
+                    if ($oVariationKombiVorschau->nErscheinendesProdukt && $conf['global']['global_erscheinende_kaeuflich'] !== 'Y') {
+                        $oVariationKombiVorschau->inWarenkorbLegbar = INWKNICHTLEGBAR_NICHTVORBESTELLBAR;
+                    }
+                    if ($oVariationKombiVorschau->fLagerbestand <= 0 && $oVariationKombiVorschau->cLagerBeachten === 'Y' && $oVariationKombiVorschau->cLagerKleinerNull !== 'Y' && $oVariationKombiVorschau->cLagerVariation !== 'Y') {
+                        $oVariationKombiVorschau->inWarenkorbLegbar = INWKNICHTLEGBAR_LAGER;
+                    }
+                    if (isset($oVariationKombiVorschau->FunktionsAttribute[FKT_ATTRIBUT_UNVERKAEUFLICH]) && $oVariationKombiVorschau->FunktionsAttribute[FKT_ATTRIBUT_UNVERKAEUFLICH]) {
+                        $oVariationKombiVorschau->inWarenkorbLegbar = INWKNICHTLEGBAR_UNVERKAEUFLICH;
+                    }
+                    if (isset($oVariationKombiVorschau->inWarenkorbLegbar) && $oVariationKombiVorschau->inWarenkorbLegbar == 0 && ($conf['global']['artikel_artikelanzeigefilter'] === '1' || $conf['global']['artikel_artikelanzeigefilter'] === '1' && $oVariationKombiVorschau->fLagerbestand > 0 || $conf['global']['artikel_artikelanzeigefilter'] === '3' && ($oVariationKombiVorschau->cLagerKleinerNull === "Y" || $oVariationKombiVorschau->fLagerbestand > 0))) {
+                        $oVariationKombiVorschau->inWarenkorbLegbar = 1;
+                    }
+                    if ($oVariationKombiVorschau->inWarenkorbLegbar == 1) {
+                        $req = MediaImage::getRequest(Image::TYPE_PRODUCT, $oVariationKombiVorschau->kArtikel,
+                            $oVariationKombiVorschau, Image::SIZE_XS, 0);
+                        $req->getRaw();
+                        if (!in_array($req->path, $imageHashes)) {
+                            $varKombiPreview           = new stdClass();
+                            $varKombiPreview->cURL     = baueURL($oVariationKombiVorschau, URLART_ARTIKEL);
+                            $varKombiPreview->cURLFull = baueURL($oVariationKombiVorschau, URLART_ARTIKEL, 0, false,
+                                true);
+                            $varKombiPreview->cName                    = $oVariationKombiVorschau->cName;
+                            $varKombiPreview->cLagerBeachten           = $oVariationKombiVorschau->cLagerBeachten;
+                            $varKombiPreview->cLagerKleinerNull        = $oVariationKombiVorschau->cLagerKleinerNull;
+                            $varKombiPreview->fLagerbestand            = $oVariationKombiVorschau->fLagerbestand;
+                            $varKombiPreview->fZulauf                  = $oVariationKombiVorschau->fZulauf;
+                            $varKombiPreview->fLieferzeit              = $oVariationKombiVorschau->fLieferzeit;
+                            $varKombiPreview->fLieferantenlagerbestand = $oVariationKombiVorschau->fLieferantenlagerbestand;
+                            $varKombiPreview->Erscheinungsdatum_de     = $oVariationKombiVorschau->Erscheinungsdatum_de;
+                            $varKombiPreview->dZulaufDatum_de          = $oVariationKombiVorschau->dZulaufDatum_de;
+                            $varKombiPreview->cBildMini                = $req->getThumb(Image::SIZE_XS);
+                            $varKombiPreview->cBildKlein               = $req->getThumb(Image::SIZE_SM);
+                            $varKombiPreview->cBildNormal              = $req->getThumb(Image::SIZE_MD);
+                            $varKombiPreview->cBildGross               = $req->getThumb(Image::SIZE_LG);
+                            $this->oVariationKombiVorschau_arr[]       = $varKombiPreview;
+                            $imageHashes[]                             = $req->path;
                         }
                         if (count($this->oVariationKombiVorschau_arr) == $nLimit) {
                             break;
@@ -3628,10 +3656,6 @@ class Artikel
         }
         if (isset($this->FunktionsAttribute[FKT_ATTRIBUT_UNVERKAEUFLICH]) && $this->FunktionsAttribute[FKT_ATTRIBUT_UNVERKAEUFLICH]) {
             $this->inWarenkorbLegbar = INWKNICHTLEGBAR_UNVERKAEUFLICH;
-        }
-        // VRRL - Lieferzeit für käufliche Artikel berechnen
-        if ($this->inWarenkorbLegbar >= 1 && $this->nIstVater != 1) {
-            $this->cEstimatedDelivery = $this->getDeliveryTime($_SESSION['cLieferlandISO']);
         }
         if (isset($this->Preise->cVKLocalized[0]) && $this->Preise->cVKLocalized[0]) {
             // Preisanzeige Einstellungen holen

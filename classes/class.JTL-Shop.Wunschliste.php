@@ -188,10 +188,10 @@ class Wunschliste
      * Artikel vom aktuellen Wunschzettel gekauft wurden, sollen diese vom Wunschzettel geloescht werden
      *
      * @param int   $kWunschliste
-     * @param array $kArtikel_arr
+     * @param array $oWarenkorbpositionen_arr
      * @return bool|int
      */
-    public static function pruefeArtikelnachBestellungLoeschen($kWunschliste, $kArtikel_arr)
+    public static function pruefeArtikelnachBestellungLoeschen($kWunschliste, $oWarenkorbpositionen_arr)
     {
         $kWunschliste = intval($kWunschliste);
         $conf         = Shop::getSettings(array(CONF_GLOBAL));
@@ -199,9 +199,9 @@ class Wunschliste
             $nCount        = 0;
             $oWunschzettel = new self($kWunschliste);
             if (isset($oWunschzettel->kWunschliste) && $oWunschzettel->kWunschliste > 0) {
-                if (isset($oWunschzettel->CWunschlistePos_arr) && count($oWunschzettel->CWunschlistePos_arr) > 0 && is_array($kArtikel_arr) && count($kArtikel_arr) > 0) {
+                if (isset($oWunschzettel->CWunschlistePos_arr) && count($oWunschzettel->CWunschlistePos_arr) > 0 && is_array($oWarenkorbpositionen_arr) && count($oWarenkorbpositionen_arr) > 0) {
                     foreach ($oWunschzettel->CWunschlistePos_arr as $i => $oWunschlistePos) {
-                        foreach ($kArtikel_arr as $oArtikel) {
+                        foreach ($oWarenkorbpositionen_arr as $oArtikel) {
                             if ($oWunschlistePos->kArtikel == $oArtikel->kArtikel) {
                                 //mehrfache Variationen beachten
                                 if (!empty($oWunschlistePos->CWunschlistePosEigenschaft_arr) && !empty($oArtikel->WarenkorbPosEigenschaftArr)) {

@@ -182,12 +182,12 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
                         aktualisiereXselling($Position->kArtikel, $pos->kArtikel);
                     }
                 }
-                $kArtikel_arr[] = $Position;
+                $oWarenkorbpositionen_arr[] = $Position;
                 // Clear Cache
                 Shop::Cache()->flushTags(array(CACHING_GROUP_ARTICLE . '_' . $Position->kArtikel));
             } elseif ($Position->nPosTyp == C_WARENKORBPOS_TYP_GRATISGESCHENK) {
                 aktualisiereLagerbestand($Position->Artikel, $Position->nAnzahl, $Position->WarenkorbPosEigenschaftArr, $nArtikelAnzeigefilter);
-                $kArtikel_arr[] = $Position;
+                $oWarenkorbpositionen_arr[] = $Position;
                 // Clear Cache
                 Shop::Cache()->flushTags(array(CACHING_GROUP_ARTICLE . '_' . $Position->kArtikel));
             }
@@ -196,7 +196,7 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
         // Artikel vom aktuellen Wunschzettel gekauft wurden, sollen diese vom Wunschzettel geloescht werden
         if (isset($_SESSION['Wunschliste']->kWunschliste) && $_SESSION['Wunschliste']->kWunschliste > 0) {
             require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Wunschliste.php';
-            Wunschliste::pruefeArtikelnachBestellungLoeschen($_SESSION['Wunschliste']->kWunschliste, $kArtikel_arr);
+            Wunschliste::pruefeArtikelnachBestellungLoeschen($_SESSION['Wunschliste']->kWunschliste, $oWarenkorbpositionen_arr);
         }
     }
     // trechnungsadresse füllen

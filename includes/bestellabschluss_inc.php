@@ -670,7 +670,8 @@ function AktualisiereStueckliste($kStueckliste, $fPackeinheitSt, $fLagerbestandS
                 FROM tartikel
                 JOIN tstueckliste ON tstueckliste.kArtikel = tartikel.kArtikel
                 AND tstueckliste.kStueckliste = {$kStueckliste}
-                AND tartikel.cLagerKleinerNull = 'N'", 1
+                AND tartikel.cLagerKleinerNull = 'N'
+                AND tartikel.cLagerBeachten = 'Y'", 1
         );
 
         if (isset($ofMin->fMin)) {
@@ -686,7 +687,8 @@ function AktualisiereStueckliste($kStueckliste, $fPackeinheitSt, $fLagerbestandS
                 FROM tartikel
                 JOIN tstueckliste ON tstueckliste.kArtikel = tartikel.kArtikel
                 AND tstueckliste.kStueckliste = {$kStueckliste}
-                AND tartikel.cLagerKleinerNull = 'N'", 1
+                AND tartikel.cLagerKleinerNull = 'N'
+                AND tartikel.cLagerBeachten = 'Y'", 1
         );
         if (isset($ofMin->fMin)) {
             $fLagerbestand = $ofMin->fMin;
@@ -713,7 +715,8 @@ function AktualisiereLagerStuecklisten($oArtikel, $nAnzahl = null, $bStueckliste
                     "SELECT tstueckliste.kArtikel, tstueckliste.fAnzahl
                         FROM tstueckliste
                         JOIN tartikel ON tartikel.kArtikel = tstueckliste.kArtikel
-                        WHERE tstueckliste.kStueckliste = {$oArtikel->kStueckliste}", 2
+                        WHERE tstueckliste.kStueckliste = {$oArtikel->kStueckliste}
+                        AND tartikel.cLagerBeachten = 'Y'", 2
                 );
                 // Sind Komponenten im Shop?
                 if (is_array($oKomponente_arr) && count($oKomponente_arr) > 0) {

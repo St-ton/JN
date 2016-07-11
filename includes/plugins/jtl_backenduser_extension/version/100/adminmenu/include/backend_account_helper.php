@@ -155,7 +155,14 @@ class BackendAccountHelper
         $showSectionPersonal = $showAvatar || $showVita || $showGPlus;
 
         if ($showAvatar) {
-            $gravatarEmail = !empty($attribs['useGravatarEmail']->cAttribValue) ? $attribs['useGravatarEmail']->cAttribValue : $oAccount->cMail;
+            if (!empty($attribs['useGravatarEmail']->cAttribValue)) {
+                $gravatarEmail = $attribs['useGravatarEmail']->cAttribValue;
+            } else if (isset($oAccount->cMail)) {
+                $gravatarEmail = $oAccount->cMail;
+            } else {
+                $gravatarEmail = '';
+            }
+
             $uploadImage   = isset($attribs['useAvatar']->cAttribValue) && $attribs['useAvatar']->cAttribValue === 'U' && !empty($attribs['useAvatarUpload']->cAttribValue) ? $attribs['useAvatarUpload']->cAttribValue : '/' . BILD_UPLOAD_ZUGRIFF_VERWEIGERT;
         } else {
             $gravatarEmail = '';

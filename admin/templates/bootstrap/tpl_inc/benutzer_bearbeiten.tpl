@@ -18,7 +18,7 @@ $(document).ready(function() {
 </script>
 
 {assign var="cTitel" value=#benutzerNeu#}
-{if isset($oAccount) && $oAccount->kAdminlogin > 0}
+{if isset($oAccount->kAdminlogin) && $oAccount->kAdminlogin > 0}
     {assign var="cTitel" value=#benutzerBearbeiten#}
 {/if}
 
@@ -145,7 +145,7 @@ $(document).ready(function() {
         <div class="panel-footer">
             <div class="btn-group">
                 <input type="hidden" name="action" value="account_edit" />
-                {if isset($oAccount) && $oAccount->kAdminlogin > 0}
+                {if isset($oAccount->kAdminlogin) && $oAccount->kAdminlogin > 0}
                     <input type="hidden" name="kAdminlogin" value="{$oAccount->kAdminlogin}" />
                 {/if}
                 <input type="hidden" name="save" value="1" />

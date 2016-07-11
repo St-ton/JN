@@ -13,9 +13,6 @@ $cFehler      = '';
 $cHinweis     = '';
 $_kSlider     = 0;
 $cRedirectUrl = Shop::getURL() . '/' . PFAD_ADMIN . 'slider.php';
-
-
-
 $cAction = ((isset($_REQUEST['action']) && validateToken()) ? $_REQUEST['action'] : 'view');
 $kSlider = (isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0);
 

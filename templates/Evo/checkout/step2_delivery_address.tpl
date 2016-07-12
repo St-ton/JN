@@ -190,7 +190,7 @@
                                         <select name="land" id="country" class="country_input form-control">
                                             <option value="" selected disabled>{lang key="country" section="account data"}*</option>
                                             {foreach name=land from=$laender item=land}
-                                                <option value="{$land->cISO}" {if (isset($Lieferadresse->cLand) && !$Lieferadresse->cLand && $Einstellungen.kunden.kundenregistrierung_standardland == $land->cISO) || (isset($Lieferadresse->cLand) && $Lieferadresse->cLand==$land->cISO)}selected="selected"{/if}>{$land->cName}</option>
+                                                <option value="{$land->cISO}" {if empty($Lieferadresse->cLand) && $Einstellungen.kunden.kundenregistrierung_standardland == $land->cISO) || (isset($Lieferadresse->cLand) && $Lieferadresse->cLand==$land->cISO)}selected="selected"{/if}>{$land->cName}</option>
                                             {/foreach}
                                         </select>
                                     </div>

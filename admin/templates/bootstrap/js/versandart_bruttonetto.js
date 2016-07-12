@@ -76,3 +76,13 @@ function setzeAufpreisTyp(elem, bruttoElemID, nettoElemID)
    else
       document.getElementById(bruttoElemID).style.visibility = 'hidden';             
 }
+
+function makeCurrencyTooltip (sourceId) {
+   changeCurrencyTooltipText (sourceId);
+   $('#' + sourceId).keyup(function (e) { changeCurrencyTooltipText (sourceId); });
+}
+
+function changeCurrencyTooltipText (sourceId) {
+   var sourceInput = $('#' + sourceId)[0];
+   setzePreisTooltipAjax(false, sourceId + 'Tooltip', sourceInput);
+}

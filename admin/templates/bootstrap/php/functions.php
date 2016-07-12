@@ -52,7 +52,7 @@ function getCurrencyConversionTooltipButton($params, &$smarty)
 
     if (isset($params['inputId'])) {
         $inputId = $params['inputId'];
-        $button = '<button class="btn btn-tooltip btn-info" id="' . $inputId . 'Tooltip" data-html="true"';
+        $button = '<button type="button" class="btn btn-tooltip btn-info" id="' . $inputId . 'Tooltip" data-html="true"';
         $button .= ' data-toggle="tooltip" data-placement="' . $placement . '">';
         $button .= '<i class="fa fa-eur"></i></button>';
         return $button;

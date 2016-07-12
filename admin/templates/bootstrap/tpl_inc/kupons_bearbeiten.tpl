@@ -16,6 +16,21 @@
 
 <script>
     {literal}
+        $(function () {
+            ['fWert', 'fMindestbestellwert'].forEach(makeCurrencyTooltip);
+            $('#dGueltigAb').keyup(calcRelativeValidity);
+            $('#dGueltigBis').keyup(calcRelativeValidity);
+            $('#dDauerTage').keyup(calcValidityEnd);
+            $('#bEwig').change(onEternalCheckboxChange);
+            $('#btnValidFromNow').click(function () {
+                var date = new Date();
+                var dateString = dateToString(date);
+                $('#dGueltigAb').val(dateString);
+            });
+            calcRelativeValidity();
+            onEternalCheckboxChange();
+        });
+
         function pad (num, size) {
             var res = num + '';
             while (res.length < size) {
@@ -24,47 +39,65 @@
             return res;
         }
 
-        function changeTooltipText (sourceId) {
-            var sourceInput = $('#' + sourceId)[0];
-            setzePreisTooltipAjax(false, sourceId + 'Tooltip', sourceInput);
+        function dateToString (date) {
+            return pad(date.getDate(), 2) + '.' + pad(date.getMonth() + 1, 2) + '.' + date.getFullYear() +
+                ' ' + pad(date.getHours(), 2) + ':' + pad(date.getMinutes(), 2);
+        }
+
+        function stringToDate (str) {
+            var date = new Date();
+            var strMatch = str.match(/^ *([0-9]{0,2})\.([0-9]{0,2})\.([0-9]{0,4}) +([0-9]{0,2}):([0-9]{0,2}) *$/);
+            if (strMatch !== null) {
+                date.setFullYear(parseInt(strMatch[3]), parseInt(strMatch[2]) - 1, parseInt(strMatch[1]));
+                date.setHours(parseInt(strMatch[4]), parseInt(strMatch[5]), 0);
+            } else {
+                var strMatch = str.match(/^ *([0-9]{0,2})\.([0-9]{0,2})\.([0-9]{0,4}) *$/);
+                if (strMatch !== null) {
+                    date.setFullYear(parseInt(strMatch[3]), parseInt(strMatch[2]) - 1, parseInt(strMatch[1]));
+                    date.setHours(0, 0, 0);
+                }
+            }
+            return date;
         }
 
         function calcRelativeValidity () {
-            var validStartDate = new Date($('#dGueltigAb').val());
-            var validEndDate   = new Date($('#dGueltigBis').val());
-            var deltaDays      = Math.floor((validEndDate - validStartDate) / (1000 * 60 * 60 * 24));
-            $('#dDauerTage').val(deltaDays);
+            if ($('#bEwig').prop('checked')) {
+                $('#dDauerTage').val('ewig');
+            } else {
+                var validStartDate = stringToDate($('#dGueltigAb').val());
+                var validEndDate   = stringToDate($('#dGueltigBis').val());
+                var deltaDays      = Math.floor((validEndDate - validStartDate) / (1000 * 60 * 60 * 24)) || 0;
+                $('#dDauerTage').val(deltaDays);
+            }
         }
 
         function calcValidityEnd () {
-            var date      = new Date($('#dGueltigAb').val());
-            var validDays = parseInt($('#dDauerTage').val()) || 0;
-            date.setTime(date.getTime() + validDays * 24 * 60 * 60 * 1000);
-            var endDateString = date.getFullYear() + '-' + pad(date.getMonth() + 1, 2) + '-' + pad(date.getDate(), 2) +
-                ' ' + pad(date.getHours(), 2) + ':' + pad(date.getMinutes(), 2);
-            $('#dGueltigBis').val(endDateString);
+            if ($('#bEwig').prop('checked')) {
+                $('#dGueltigBis').val('');
+            } else {
+                var date = stringToDate($('#dGueltigAb').val());
+                var validDays = parseInt($('#dDauerTage').val()) || 0;
+                date.setTime(date.getTime() + validDays * 24 * 60 * 60 * 1000);
+                var endDateString = dateToString(date);
+                $('#dGueltigBis').val(endDateString);
+            }
         }
 
-        $(function () {
-            ['fWert', 'fMindestbestellwert'].forEach(function (sourceId) {
-                changeTooltipText (sourceId);
-                $('#' + sourceId).keyup(function (e) { changeTooltipText (sourceId); });
-            });
-            calcRelativeValidity();
-            $('#dGueltigAb').keyup(calcRelativeValidity);
-            $('#dGueltigBis').keyup(calcRelativeValidity);
-            $('#dDauerTage').keyup(calcValidityEnd);
-        });
-
+        function onEternalCheckboxChange () {
+            var elem = $('#bEwig');
+            var bEwig = elem[0].checked;
+            $('#dGueltigBis').prop('disabled', bEwig);
+            $('#dDauerTage').prop('disabled', bEwig);
+            calcRelativeValidity ();
+            calcValidityEnd ();
+        }
     {/literal}
 </script>
 
 <div id="content" class="container-fluid">
     <form method="post" action="kupons.php">
         {$jtl_token}
-        {if isset($oKupon->kKupon)}
-            <input type="hidden" name="kKupon" value="{$oKupon->kKupon}">
-        {/if}
+        <input type="hidden" name="kKuponBearbeiten" value="{$oKupon->kKupon}">
         <input type="hidden" name="cKuponTyp" value="{$oKupon->cKuponTyp}">
         <div class="panel panel-default settings">
             <div class="panel-heading">
@@ -214,6 +247,51 @@
         </div>
         <div class="panel panel-default settings">
             <div class="panel-heading">
+                <h3 class="panel-title">G&uuml;ltigkeitszeitraum</h3>
+            </div>
+            <div class="panel-body">
+                <div class="input-group">
+                    <span class="input-group-addon">
+                        <label for="dGueltigAb">{#validity#} {#from#}</label>
+                    </span>
+                    <span class="input-group-wrap">
+                        <input type="text" class="form-control" name="dGueltigAb" id="dGueltigAb" value="{$oKupon->cGueltigAbLong}">
+                    </span>
+                    <span class="input-group-addon">
+                        <button type="button" class="btn btn-info btn-xs btn-tooltip" id="btnValidFromNow" data-html="true"
+                                data-toggle="tooltip" data-placement="left" data-original-title="ab jetzt">
+                            <i class="fa fa-calendar-plus-o"></i>
+                        </button>
+                    </span>
+                </div>
+                <div class="input-group">
+                    <span class="input-group-addon">
+                        <label for="dGueltigBis">{#validity#} {#to#}</label>
+                    </span>
+                    <span class="input-group-wrap">
+                        <input type="text" class="form-control" name="dGueltigBis" id="dGueltigBis" value="{$oKupon->cGueltigBisLong}">
+                    </span>
+                </div>
+                <div class="input-group">
+                    <span class="input-group-addon">
+                        <label for="dDauerTage">G&uuml;tigkeitsdauer (Tage)</label>
+                    </span>
+                    <span class="input-group-wrap">
+                        <input type="text" class="form-control" name="dDauerTage" id="dDauerTage" value="">
+                    </span>
+                </div>
+                <div class="input-group">
+                    <span class="input-group-addon">
+                        <label for="cEternal">Ewig g&uuml;ltig</label>
+                    </span>
+                    <span class="input-group-wrap">
+                        <input type="checkbox" class="checkfield" name="bEwig" id="bEwig" value="Y"{if $oKupon->bEwig} checked{/if}>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default settings">
+            <div class="panel-heading">
                 <h3 class="panel-title">Einschr&auml;nkungen</h3>
             </div>
             <div class="panel-body">
@@ -226,7 +304,8 @@
                         <input type="text" class="form-control" name="cArtikel" id="assign_article_list" value="{$oKupon->cArtikel}">
                     </span>
                     <span class="input-group-addon">
-                        <button class="btn btn-info btn-xs" id="show_article_list">
+                        <button class="btn btn-info btn-xs btn-tooltip" id="show_article_list" data-html="true"
+                                data-toggle="tooltip" data-placement="left" data-original-title="Artikel verwalten">
                             <i class="fa fa-edit"></i>
                         </button>
                     </span>
@@ -246,30 +325,6 @@
                                 </option>
                             {/foreach}
                         </select>
-                    </span>
-                </div>
-                <div class="input-group">
-                    <span class="input-group-addon">
-                        <label for="dGueltigAb">{#validity#} {#from#}</label>
-                    </span>
-                    <span class="input-group-wrap">
-                        <input type="text" class="form-control" name="dGueltigAb" id="dGueltigAb" value="{$oKupon->dGueltigAb}">
-                    </span>
-                </div>
-                <div class="input-group">
-                    <span class="input-group-addon">
-                        <label for="dGueltigBis">{#validity#} {#to#}</label>
-                    </span>
-                    <span class="input-group-wrap">
-                        <input type="text" class="form-control" name="dGueltigBis" id="dGueltigBis" value="{$oKupon->dGueltigBis}">
-                    </span>
-                </div>
-                <div class="input-group">
-                    <span class="input-group-addon">
-                        <label for="dGueltigBis">G&uuml;tigkeitsdauer (Tage)</label>
-                    </span>
-                    <span class="input-group-wrap">
-                        <input type="text" class="form-control" name="dDauerTage" id="dDauerTage" value="">
                     </span>
                 </div>
                 <div class="input-group">

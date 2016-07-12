@@ -49,8 +49,8 @@
                             <td>{$oKupon->cKundengruppe}</td>
                             <td>{$oKupon->ArtikelInfo}</td>
                             <td>
-                                <strong>vom:</strong> {$oKupon->dGueltigAbFormatted}<br>
-                                <strong>bis:</strong> {$oKupon->dGueltigBisFormatted}
+                                <strong>vom:</strong> {$oKupon->cGueltigAbShort}<br>
+                                <strong>bis:</strong> {$oKupon->cGueltigBisShort}
                             </td>
                             <td>
                                 <button type="submit" class="btn btn-default" name="kKuponBearbeiten" value="{$oKupon->kKupon}">
@@ -77,7 +77,7 @@
                     {if $oKupon_arr|@count > 0}
                         <button type="submit" class="btn btn-danger" name="action" value="loeschen"><i class="fa fa-trash"></i> Markierte l&ouml;schen</button>
                     {/if}
-                    <button type="submit" class="btn btn-primary" name="action" value="erstellen"><i class="fa fa-share"></i> Neuen Kupon erstellen</button>
+                    <button type="submit" class="btn btn-primary" name="kKuponBearbeiten" value="0"><i class="fa fa-share"></i> {$cKuponTypName} erstellen</button>
                 </div>
             </div>
         </div>

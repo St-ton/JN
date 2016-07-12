@@ -7,8 +7,9 @@ require_once dirname(__FILE__) . '/includes/admininclude.php';
 
 $oAccount->permission('ORDER_COUPON_VIEW', true, true);
 
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'kupons_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
+require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'kupons_inc.php';
+require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'blaetternavi.php';
 
 $cHinweis     = '';
 $cFehler      = '';
@@ -36,6 +37,7 @@ if ($action == 'bearbeiten') {
     // Kupon bearbeiten
     $kKupon = (int)$_POST['kKuponBearbeiten'];
     $cKuponTyp = $_POST['cKuponTyp'];
+
     if ($kKupon > 0) {
         $oKupon = getCoupon($kKupon);
     } else {
@@ -49,14 +51,14 @@ if ($action == 'bearbeiten') {
     if (count($cFehler_arr) > 0) {
         // Es gab Fehler bei der Validierung => weiter bearbeiten
         $cFehler = 'Bitte &uuml;berpr&uuml;fen Sie folgende Eingaben:<ul>';
-        
+
         foreach ($cFehler_arr as $fehler) {
             $cFehler .= '<li>' . $fehler . '</li>';
         }
         
         $cFehler .= '</ul>';
+        $action   = 'bearbeiten';
         augmentCoupon($oKupon);
-        $action = 'bearbeiten';
     } else {
         // Validierung erfolgreich => Kupon speichern
         if (saveCoupon($oKupon, $oSprache_arr) > 0) {
@@ -85,6 +87,7 @@ if ($action == 'bearbeiten') {
     $oKategorie_arr    = getCategories($oKupon->cKategorien);
     $oKunde_arr        = getCustomers($oKupon->cKunden);
     $oKuponName_arr    = getCouponNames($oKupon->kKupon);
+
     $smarty->assign('oSteuerklasse_arr', $oSteuerklasse_arr)
         ->assign('oKundengruppe_arr', $oKundengruppe_arr)
         ->assign('oKategorie_arr', $oKategorie_arr)
@@ -94,10 +97,28 @@ if ($action == 'bearbeiten') {
         ->assign('oKupon', $oKupon);
 } else {
     // Seite: Uebersicht
-    $oKuponStandard_arr       = getCoupons('standard');
-    $oKuponVersandkupon_arr   = getCoupons('versandkupon');
-    $oKuponNeukundenkupon_arr = getCoupons('neukundenkupon');
+    if (hasGPCDataInteger('tab')) {
+        $tab = verifyGPDataString('tab');
+    } elseif (hasGPCDataInteger('cKuponTyp')) {
+        $tab = verifyGPDataString('cKuponTyp');
+    }
+
+    $nAnzahlProSeite             = 2;
+    $nStandardAnzahl             = getCouponCount('standard');
+    $nVersandkuponAnzahl         = getCouponCount('versandkupon');
+    $nNeukundenkuponAnzahl       = getCouponCount('neukundenkupon');
+    $oBlaetterNaviConf           = baueBlaetterNaviGetterSetter(3, $nAnzahlProSeite);
+    $oBlaetterNaviStandard       = baueBlaetterNavi($oBlaetterNaviConf->nAktuelleSeite1, $nStandardAnzahl, $nAnzahlProSeite);
+    $oBlaetterNaviVersandkupon   = baueBlaetterNavi($oBlaetterNaviConf->nAktuelleSeite2, $nVersandkuponAnzahl, $nAnzahlProSeite);
+    $oBlaetterNaviNeukundenkupon = baueBlaetterNavi($oBlaetterNaviConf->nAktuelleSeite3, $nNeukundenkuponAnzahl, $nAnzahlProSeite);
+    $oKuponStandard_arr          = getCoupons('standard', $oBlaetterNaviConf->cSQL1);
+    $oKuponVersandkupon_arr      = getCoupons('versandkupon', $oBlaetterNaviConf->cSQL2);
+    $oKuponNeukundenkupon_arr    = getCoupons('neukundenkupon', $oBlaetterNaviConf->cSQL3);
+
     $smarty->assign('tab', $tab)
+        ->assign('oBlaetterNaviStandard', $oBlaetterNaviStandard)
+        ->assign('oBlaetterNaviVersandkupon', $oBlaetterNaviVersandkupon)
+        ->assign('oBlaetterNaviNeukundenkupon', $oBlaetterNaviNeukundenkupon)
         ->assign('oKuponStandard_arr', $oKuponStandard_arr)
         ->assign('oKuponVersandkupon_arr', $oKuponVersandkupon_arr)
         ->assign('oKuponNeukundenkupon_arr', $oKuponNeukundenkupon_arr);

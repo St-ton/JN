@@ -175,14 +175,11 @@ function benutzerverwaltungSaveAttributes(stdClass $oAccount, array $extAttribs,
 
 /**
  * @param stdClass $oAccount
- * @return array|int|object
+ * @return boolean
  */
 function benutzerverwaltungDeleteAttributes(stdClass $oAccount)
 {
-    return Shop::DB()->query(
-        "DELETE FROM tadminloginattribut
-            WHERE kAdminlogin = " . (int)$oAccount->kAdminlogin, 4
-    );
+    return Shop::DB()->delete('tadminloginattribut', 'kAdminlogin', (int)$oAccount->kAdminlogin) < 0 ? false : true;
 }
 
 /**
@@ -202,7 +199,7 @@ function benutzerverwaltungActionAccountLock(JTLSmarty $smarty, array &$messages
             $messages['error'] .= 'Administratoren k&ouml;nnen nicht gesperrt werden.';
         } else {
             $result = true;
-            Shop::DB()->query("UPDATE tadminlogin SET bAktiv = 0 WHERE kAdminlogin = " . $kAdminlogin, 4);
+            Shop::DB()->update('tadminlogin', 'kAdminlogin', $kAdminlogin, (object)['bAktiv' => 0]);
             executeHook(HOOK_BACKEND_ACCOUNT_EDIT, array(
                 'oAccount' => $oAccount,
                 'type'     => 'LOCK',
@@ -233,7 +230,7 @@ function benutzerverwaltungActionAccountUnLock(JTLSmarty $smarty, array &$messag
 
     if (is_object($oAccount)) {
         $result = true;
-        Shop::DB()->query("UPDATE tadminlogin SET bAktiv = '1' WHERE kAdminlogin = " . $kAdminlogin, 4);
+        Shop::DB()->update('tadminlogin', 'kAdminlogin', $kAdminlogin, (object)['bAktiv' => 1]);
         executeHook(HOOK_BACKEND_ACCOUNT_EDIT, array(
             'oAccount' => $oAccount,
             'type'     => 'UNLOCK',

@@ -27,13 +27,15 @@ class ContentAuthor
             }
         }
 
-        $authorID = (int)$authorID;
+        $authorID  = (int)$authorID;
+        $contentID = (int)$contentID;
 
         if ($authorID > 0) {
-            return Shop::DB()->query(
-                "INSERT INTO tcontentauthor (cRealm, kAdminlogin, kContentId)
-                VALUES('" . $realm . "', " . (int)$authorID . ", " . (int)$contentID . ")", 4
-            );
+            return Shop::DB()->insert('tcontentauthor', (object)[
+                'cRealm'      => $realm,
+                'kAdminlogin' => $authorID,
+                'kContentId'  => $contentID,
+            ]);
         }
 
         return false;
@@ -45,11 +47,7 @@ class ContentAuthor
      */
     public function clearAuthor($realm, $contentID)
     {
-        Shop::DB()->query(
-            "DELETE FROM tcontentauthor
-                WHERE cRealm = '" . $realm . "'
-                    AND kContentId = " . (int)$contentID, 4
-        );
+        Shop::DB()->delete('tcontentauthor', ['cRealm', 'kContentId'], [$realm, (int)$contentID]);
     }
 
     /**

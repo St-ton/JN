@@ -841,6 +841,11 @@ final class Shop
                             break;
 
                         case 'kHersteller':
+                            if (self::$kHerstellerFilter > 0 && !empty($oSeo->cSeo)) {
+                                http_response_code(301);
+                                header('Location: ' . Shop::getURL() . '/' . $oSeo->cSeo);
+                                exit();
+                            }
                             self::$kHersteller = $oSeo->kKey;
                             break;
 

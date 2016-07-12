@@ -261,8 +261,9 @@
           if (el) {
             el.removeClass('in');
             return $('body').css({
-              overflow: '',
-              position: ''
+              'overflow': '',
+              'position': '',
+              'max-width': ''
             });
           }
         }

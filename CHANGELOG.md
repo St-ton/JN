@@ -5,6 +5,7 @@
 * Verbesserung: Vermeiden mehrfacher Cache-Einträge mit demselben Inhalt in gibKategorieFilterOptionen() (#244)
 * Bugfix: Mixed-Content-Warnungen (Megamenü-Kategoriebilder via http) bei Teilverschlüsselung und Wechsel auf https (#211)
 * Bugfix: Frontendlinks verschwinden aus tseo bei Plugin-Updates in mehrsprachiger Umgebung (#258)
+* Bugfix: jtl_token wird sporadisch in der Session überschrieben (#306)
 
 ## [4.04] - 2016-06-22
 * Bugfix: robots.txt fehlendes "Sitemap: " vor der Sitemap-URL (#83)

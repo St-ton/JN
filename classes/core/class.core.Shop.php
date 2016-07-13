@@ -1720,7 +1720,7 @@ final class Shop
                     exit();
                 }
             } elseif (!empty($NaviFilter->Hersteller->kHersteller) && !empty($NaviFilter->HerstellerFilter->kHersteller) && !empty($NaviFilter->Hersteller->cSeo[Shop::$kSprache])) {
-                //we have a manufacturere page with some manufacturer filter
+                //we have a manufacturer page with some manufacturer filter
                 http_response_code(301);
                 header('Location: ' . Shop::getURL() . '/' . $NaviFilter->Hersteller->cSeo[Shop::$kSprache]);
                 exit();

@@ -577,6 +577,8 @@ class CheckBox
             CHECKBOX_ORT_BESTELLABSCHLUSS     => 'Bestellabschluss',
             CHECKBOX_ORT_NEWSLETTERANMELDUNG  => 'Newsletteranmeldung',
             CHECKBOX_ORT_KUNDENDATENEDITIEREN => 'Editieren von Kundendaten',
-            CHECKBOX_ORT_KONTAKT              => 'Kontaktformular');
+            CHECKBOX_ORT_KONTAKT              => 'Kontaktformular',
+            CHECKBOX_ORT_FRAGE_ZUM_PRODUKT    => 'Frage zum Produkt',
+            CHECKBOX_ORT_FRAGE_VERFUEGBARKEIT => 'Verf&uuml;gbarkeitsanfrage');
     }
 }

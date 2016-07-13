@@ -138,7 +138,24 @@ function bearbeiteFrageZumProdukt()
 
         if ($nReturnValue) {
             if (!floodSchutzProduktanfrage(intval($conf['artikeldetails']['produktfrage_sperre_minuten']))) {
+                $oCheckBox     = new CheckBox();
+                $kKundengruppe = Kundengruppe::getCurrent();
+                $oAnfrage      = baueProduktanfrageFormularVorgaben();
+
                 executeHook(HOOK_ARTIKEL_INC_FRAGEZUMPRODUKT);
+
+                // Bei anonymen Anfragen die E-Mail-Adresse als Name verwenden
+                if (empty($oAnfrage->cNachname)) {
+                    $oAnfrage->cNachname = $oAnfrage->cMail;
+                }
+                if (!isset($oAnfrage->cVorname)) {
+                    $oAnfrage->cVorname = '';
+                }
+                // CheckBox Spezialfunktion ausfuehren
+                $oCheckBox->triggerSpecialFunction(
+                    CHECKBOX_ORT_FRAGE_ZUM_PRODUKT, $kKundengruppe, true, $_POST,
+                    array('oKunde' => $oAnfrage, 'oNachricht' => $oAnfrage)
+                )->checkLogging(CHECKBOX_ORT_FRAGE_ZUM_PRODUKT, $kKundengruppe, $_POST, true);
                 sendeProduktanfrage();
             } else {
                 $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('questionNotPossible', 'messages');
@@ -229,6 +246,10 @@ function gibFehlendeEingabenProduktanfrageformular()
             }
         }
     }
+    // CheckBox Plausi
+    $oCheckBox     = new CheckBox();
+    $kKundengruppe = Kundengruppe::getCurrent();
+    $ret           = array_merge($ret, $oCheckBox->validateCheckBox(CHECKBOX_ORT_FRAGE_ZUM_PRODUKT, $kKundengruppe, $_POST, true));
 
     return $ret;
 }
@@ -400,7 +421,23 @@ function bearbeiteBenachrichtigung()
                 $Benachrichtigung->cIP       = gibIP();
                 $Benachrichtigung->dErstellt = 'now()';
                 $Benachrichtigung->nStatus   = 0;
+                $oCheckBox                   = new CheckBox();
+                $kKundengruppe               = Kundengruppe::getCurrent();
+
                 executeHook(HOOK_ARTIKEL_INC_BENACHRICHTIGUNG);
+
+                // Bei anonymen Anfragen die E-Mail-Adresse als Name verwenden
+                if (empty($Benachrichtigung->cNachname)) {
+                    $Benachrichtigung->cNachname = $Benachrichtigung->cMail;
+                }
+                if (!isset($Benachrichtigung->cVorname)) {
+                    $Benachrichtigung->cVorname = '';
+                }
+                // CheckBox Spezialfunktion ausfuehren
+                $oCheckBox->triggerSpecialFunction(
+                    CHECKBOX_ORT_FRAGE_VERFUEGBARKEIT, $kKundengruppe, true, $_POST,
+                    array('oKunde' => $Benachrichtigung, 'oNachricht' => $Benachrichtigung)
+                )->checkLogging(CHECKBOX_ORT_FRAGE_VERFUEGBARKEIT, $kKundengruppe, $_POST, true);
 
                 $kVerfuegbarkeitsbenachrichtigung = Shop::DB()->insert('tverfuegbarkeitsbenachrichtigung', $Benachrichtigung);
                 // Kampagne
@@ -462,6 +499,10 @@ function gibFehlendeEingabenBenachrichtigungsformular()
             }
         }
     }
+    // CheckBox Plausi
+    $oCheckBox     = new CheckBox();
+    $kKundengruppe = Kundengruppe::getCurrent();
+    $ret           = array_merge($ret, $oCheckBox->validateCheckBox(CHECKBOX_ORT_FRAGE_VERFUEGBARKEIT, $kKundengruppe, $_POST, true));
 
     return $ret;
 }

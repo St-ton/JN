@@ -79,7 +79,7 @@
                 </div>
                 <div class="tab-content-wrapper">
                     <div class="panel-body">
-                        {include file='productdetails/question_on_item.tpl'}
+                        {include file='productdetails/question_on_item.tpl' position="tab"}
                     </div>
                 </div>
             </div>
@@ -105,7 +105,7 @@
                 </div>
                 <div class="tab-content-wrapper">
                     <div class="panel-body">
-                        {include file='productdetails/availability_notification_form.tpl' tplscope='artikeldetails'}
+                        {include file='productdetails/availability_notification_form.tpl' position="tab" tplscope='artikeldetails'}
                     </div>
                 </div>
             </div>

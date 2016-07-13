@@ -282,7 +282,7 @@
                 </div>
                 <div class="input-group">
                     <span class="input-group-addon">
-                        <label for="cEternal">Ewig g&uuml;ltig</label>
+                        <label for="bEwig">Ewig g&uuml;ltig</label>
                     </span>
                     <span class="input-group-wrap">
                         <input type="checkbox" class="checkfield" name="bEwig" id="bEwig" value="Y"{if $oKupon->bEwig} checked{/if}>

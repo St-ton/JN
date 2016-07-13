@@ -85,7 +85,7 @@ function getCategories($selKats = '', $kKategorie = 0, $tiefe = 0)
  */
 function getCustomers($selCustomers = '')
 {
-    $selected    = explode(';', $selCustomers);
+    $selected    = array_filter(explode(';', $selCustomers));
     $customers   = Shop::DB()->query("SELECT kKunde FROM tkunde", 2);
 
     foreach ($customers as $i => $customer) {
@@ -467,4 +467,92 @@ function saveCoupon ($oKupon, $oSprache_arr)
     }
 
     return $res;
+}
+
+/**
+ * Send notification emails to all customers admitted to this Kupon
+ * @param Kupon $oKupon
+ */
+function informCouponCustomers ($oKupon)
+{
+    // Standard-Sprache
+    $oStdSprache = Shop::DB()->select('tsprache', 'cShopStandard', 'Y');
+
+    // Standard-Waehrung
+    $oStdWaehrung = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
+
+    // Artikel Default Optionen
+    $oArtikelOptions = Artikel::getDefaultOptions();
+
+    // lokalisierter Kuponwert und MBW
+    $oKupon->cLocalizedWert = ($oKupon->cWertTyp === 'festpreis') ?
+        gibPreisStringLocalized($oKupon->fWert, $oStdWaehrung, 0) :
+        $oKupon->fWert . ' %';
+    $oKupon->cLocalizedMBW = gibPreisStringLocalized($oKupon->fMindestbestellwert, $oStdWaehrung, 0);
+
+    // kKunde-array aller Kunden
+    if ($oKupon->cKunden === '-1') {
+        $oKundeDB_arr = Shop::DB()->query("
+            SELECT kKunde
+                FROM tkunde" .
+                ((int)$oKupon->kKundengruppe == -1 ? "" : " WHERE kKundengruppe = " . (int)$oKupon->kKundengruppe),
+            2);
+    } else {
+        $oKundeDB_arr = getCustomers($oKupon->cKunden);
+    }
+
+    // Artikel-Nummern
+    $oArtikelDB_arr = array();
+    $cArtNr_arr = array_map('intval', array_filter(explode(';', $oKupon->cArtikel)));
+
+    if (count($cArtNr_arr) > 0) {
+        $oArtikelDB_arr = Shop::DB()->query("
+            SELECT kArtikel
+                FROM tartikel
+                WHERE cArtNr IN (" . implode(',', $cArtNr_arr) . ")",
+            2);
+    }
+
+    foreach ($oKundeDB_arr as $oKundeDB) {
+        $oKunde = new Kunde($oKundeDB->kKunde);
+
+        // Sprache
+        $oSprache = Shop::Lang()->getIsoFromLangID($oKunde->kSprache);
+        if (!$oSprache) {
+            $oSprache = $oStdSprache;
+        }
+
+        // Kuponsprache
+        $oKuponsprache = Shop::DB()->select('tkuponsprache', array('kKupon', 'cISOSprache'), array($oKupon->kKupon, $oSprache->cISO));
+
+        // Kategorien
+        $oKategorie_arr = array();
+        if ($oKupon->cKategorien != '-1') {
+            $kKategorie_arr = array_map('intval', array_filter(explode(';', $oKupon->cKategorien)));
+            foreach ($kKategorie_arr as $kKategorie) {
+                if ($kKategorie > 0) {
+                    $oKategorie = new Kategorie($kKategorie, $oKunde->kSprache, $oKunde->kKundengruppe);
+                    $oKategorie->cURL = $oKategorie->cURLFull;
+                    $oKategorie_arr[] = $oKategorie;
+                }
+            }
+        }
+
+        // Artikel
+        $oArtikel_arr = array();
+        foreach($oArtikelDB_arr as $oArtikelDB) {
+            $oArtikel = new Artikel();
+            $oArtikel->fuelleArtikel($oArtikelDB->kArtikel, $oArtikelOptions, $oKunde->kKundengruppe, $oKunde->kSprache, true);
+            $oArtikel_arr[] = $oArtikel;
+        }
+
+        // put all together
+        $oKupon->Kategorien      = $oKategorie_arr;
+        $oKupon->Artikel         = $oArtikel_arr;
+        $oKupon->AngezeigterName = $oKuponsprache->cName;
+        $obj                     = new stdClass();
+        $obj->tkupon             = $oKupon;
+        $obj->tkunde             = $oKunde;
+        sendeMail(MAILTEMPLATE_KUPON, $obj);
+    }
 }

@@ -11,11 +11,12 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'kupons_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'blaetternavi.php';
 
-$cHinweis     = '';
-$cFehler      = '';
-$action       = '';
-$tab          = 'standard';
-$oSprache_arr = gibAlleSprachen();
+$cHinweis        = '';
+$cFehler         = '';
+$action          = '';
+$tab             = 'standard';
+$oSprache_arr    = gibAlleSprachen();
+$nAnzahlProSeite = 10;
 
 // Aktion ausgeloest?
 if (validateToken()) {
@@ -35,7 +36,7 @@ if (validateToken()) {
 
 if ($action == 'bearbeiten') {
     // Kupon bearbeiten
-    $kKupon = (int)$_POST['kKuponBearbeiten'];
+    $kKupon    = (int)$_POST['kKuponBearbeiten'];
     $cKuponTyp = $_POST['cKuponTyp'];
 
     if ($kKupon > 0) {
@@ -55,7 +56,7 @@ if ($action == 'bearbeiten') {
         foreach ($cFehler_arr as $fehler) {
             $cFehler .= '<li>' . $fehler . '</li>';
         }
-        
+
         $cFehler .= '</ul>';
         $action   = 'bearbeiten';
         augmentCoupon($oKupon);
@@ -63,8 +64,8 @@ if ($action == 'bearbeiten') {
         // Validierung erfolgreich => Kupon speichern
         if (saveCoupon($oKupon, $oSprache_arr) > 0) {
             // erfolgreich gespeichert => evtl. Emails versenden
-            if(isset($_POST['informieren']) && $_POST['informieren'] === 'Y') {
-                informCouponCustomers ($oKupon);
+            if (isset($_POST['informieren']) && $_POST['informieren'] === 'Y') {
+                informCouponCustomers($oKupon);
             }
             $cHinweis = 'Der Kupon wurde erfolgreich gespeichert.';
         } else {
@@ -107,7 +108,6 @@ if ($action == 'bearbeiten') {
         $tab = verifyGPDataString('cKuponTyp');
     }
 
-    $nAnzahlProSeite             = 2;
     $nStandardAnzahl             = getCouponCount('standard');
     $nVersandkuponAnzahl         = getCouponCount('versandkupon');
     $nNeukundenkuponAnzahl       = getCouponCount('neukundenkupon');

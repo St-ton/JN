@@ -462,7 +462,7 @@ class StringHandler
     public static function parseSSK($ssk)
     {
         if (is_string($ssk)) {
-            return array_filter(explode(';', $ssk))
+            return array_filter(explode(';', $ssk));
         }
 
         return array();

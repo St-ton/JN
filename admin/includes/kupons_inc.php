@@ -3,6 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
 /**
  * @param array $kKupon_arr
@@ -33,7 +34,7 @@ function loescheKupons($kKupon_arr)
 
 /**
  * @param int $kKupon
- * @return array
+ * @return array - key = lang-iso ; value = localized coupon name
  */
 function getCouponNames($kKupon)
 {
@@ -89,7 +90,7 @@ function getCustomers($selCustomers = '')
     $customers   = Shop::DB()->query("SELECT kKunde FROM tkunde", 2);
 
     foreach ($customers as $i => $customer) {
-        $oKunde = new Kunde($customer->kKunde);
+        $oKunde                     = new Kunde($customer->kKunde);
         $customers[$i]->cVorname    = $oKunde->cVorname;
         $customers[$i]->cNachname   = $oKunde->cNachname;
         $customers[$i]->selected    = in_array($customers[$i]->kKunde, $selected) ? 1 : 0;
@@ -100,6 +101,7 @@ function getCustomers($selCustomers = '')
 }
 
 /**
+ * Parse Datumsstring und formatiere ihn im DB-kompatiblen Standardformat
  * @param string $string
  * @return string
  */
@@ -119,6 +121,7 @@ function normalizeDate($string)
 }
 
 /**
+ * Get instances of existing coupons, each with some enhanced information that can be displayed
  * @return array
  */
 function getCoupons($cKuponTyp = 'standard', $cLimitSQL = '', $cOrderBy = 'kKupon')
@@ -130,7 +133,7 @@ function getCoupons($cKuponTyp = 'standard', $cLimitSQL = '', $cOrderBy = 'kKupo
             ORDER BY " . $cOrderBy . " " .
             $cLimitSQL,
         2);
-    $oKupon_arr   = array();
+    $oKupon_arr = array();
 
     foreach ($oKuponDB_arr as $oKuponDB) {
         $oKupon_arr[] = getCoupon($oKuponDB->kKupon);
@@ -140,7 +143,7 @@ function getCoupons($cKuponTyp = 'standard', $cLimitSQL = '', $cOrderBy = 'kKupo
 }
 
 /**
- * Get instance of an existing Kupon with some enhanced information to display
+ * Get an instance of an existing coupon with some enhanced information that can be displayed
  * @param int $kKupon
  * @return Kupon $oKupon
  */
@@ -148,11 +151,12 @@ function getCoupon($kKupon)
 {
     $oKupon = new Kupon($kKupon);
     augmentCoupon($oKupon);
+
     return $oKupon;
 }
 
 /**
- * Enhance an existing Kupon instance with some information to display
+ * Enhance an existing Kupon instance with some extra information that can be displayed
  * @param Kupon $oKupon
  */
 function augmentCoupon($oKupon)
@@ -174,14 +178,14 @@ function augmentCoupon($oKupon)
         $oKupon->cGueltigBisShort = 'ung&uuml;ltig';
         $oKupon->cGueltigBisLong  = 'ung&uuml;ltig';
     } else {
-        $oKupon->cGueltigBisShort = date_create($oKupon->dGueltigBis)->format('d.m.Y');
+        $oKupon->cGueltigBisShort  = date_create($oKupon->dGueltigBis)->format('d.m.Y');
         $oKupon->cGueltigBisLong   = date_create($oKupon->dGueltigBis)->format('d.m.Y H:i');
     }
 
     if ((int)$oKupon->kKundengruppe == -1) {
         $oKupon->cKundengruppe = 'Alle';
     } else {
-        $oKundengruppe = Shop::DB()->query("SELECT cName FROM tkundengruppe WHERE kKundengruppe = " . $oKupon->kKundengruppe, 1);
+        $oKundengruppe         = Shop::DB()->query("SELECT cName FROM tkundengruppe WHERE kKundengruppe = " . $oKupon->kKundengruppe, 1);
         $oKupon->cKundengruppe = $oKundengruppe->cName;
     }
 
@@ -197,7 +201,7 @@ function augmentCoupon($oKupon)
  * @param $cKuponTyp - 'standard', 'versandkupon', 'neukundenkupon'
  * @return Kupon
  */
-function createNewCoupon ($cKuponTyp)
+function createNewCoupon($cKuponTyp)
 {
     $oKupon                        = new Kupon();
     $oKupon->cKuponTyp             = $cKuponTyp;
@@ -222,10 +226,15 @@ function createNewCoupon ($cKuponTyp)
     $oKupon->kKupon                = 0;
 
     augmentCoupon($oKupon);
+
     return $oKupon;
 }
 
-function createCouponFromInput ()
+/**
+ * Read coupon settings from the edit page form and create a Kupon instance of it
+ * @return Kupon
+ */
+function createCouponFromInput()
 {
     $oKupon                        = new Kupon((int)$_POST['kKuponBearbeiten']);
     $oKupon->cKuponTyp             = $_POST['cKuponTyp'];
@@ -265,96 +274,10 @@ function createCouponFromInput ()
 }
 
 /**
- * @param bool   $bNew
- * @param string $cLimitSQL
- * @return array
- */
-/*
-function getCoupons($bNew = true, $cLimitSQL = '')
-{
-    $cWhere = " WHERE cAktiv='Y'
-				  	AND (dGueltigBis > now() OR dGueltigBis = '0000-00-00 00:00:00')
-				  	AND (nVerwendungen = 0 OR nVerwendungenBisher <= nVerwendungen)
-					AND dGueltigAb <= now()";
-
-    if (!$bNew) {
-        $cWhere = " WHERE cAktiv='N'
-						OR (dGueltigBis < now() AND dGueltigBis != '0000-00-00 00:00:00')
-						OR (nVerwendungen > 0 AND nVerwendungenBisher > nVerwendungen)
-						OR dGueltigAb > now()";
-    }
-
-    $oCoupon_arr = Shop::DB()->query(
-        "SELECT *, DATE_FORMAT(dGueltigAb, '%d.%m.%Y') AS GueltigAb, DATE_FORMAT(dGueltigBis, '%d.%m.%Y') AS GueltigBis
-            FROM tkupon
-            {$cWhere}
-            ORDER BY dGueltigBis DESC
-            {$cLimitSQL}", 2
-    );
-
-    if (is_array($oCoupon_arr) && count($oCoupon_arr) > 0) {
-        foreach ($oCoupon_arr as $i => $oCoupon) {
-            $oCoupon_arr[$i]->Gueltigkeit = "{$oCoupon_arr[$i]->GueltigAb} - {$oCoupon_arr[$i]->GueltigBis}";
-
-            $oKundengruppe = Shop::DB()->query(
-                "SELECT cName
-                    FROM tkundengruppe
-                    WHERE kKundengruppe = {$oCoupon_arr[$i]->kKundengruppe}", 1
-            );
-            if (isset($oKundengruppe->cName)) {
-                $oCoupon_arr[$i]->Kundengruppe = $oKundengruppe->cName;
-            } else {
-                $oCoupon_arr[$i]->Kundengruppe = 'Alle';
-            }
-            if ($oCoupon_arr[$i]->cArtikel) {
-                $oCoupon_arr[$i]->Artikel = 'eingeschr&auml;nkt';
-            } else {
-                $oCoupon_arr[$i]->Artikel = 'Alle';
-            }
-            $oVerwendungen = Shop::DB()->query(
-                "SELECT nVerwendungen
-                    FROM tkupon
-                    WHERE kKupon = " . (int)$oCoupon_arr[$i]->kKupon, 1
-            );
-            $oVerwendungenBisher = Shop::DB()->query(
-                "SELECT nVerwendungenBisher
-                    FROM tkupon
-                    WHERE kKupon = " . (int)$oCoupon_arr[$i]->kKupon, 1
-            );
-            $oCoupon_arr[$i]->Verwendungen       = (isset($oVerwendungen->nVerwendungen)) ? $oVerwendungen->nVerwendungen : 0;
-            $oCoupon_arr[$i]->VerwendungenBisher = (isset($oVerwendungenBisher->nVerwendungenBisher)) ? $oVerwendungenBisher->nVerwendungenBisher : 0;
-        }
-    } else {
-        $oCoupon_arr = array();
-    }
-
-    return $oCoupon_arr;
-}
-*/
-
-/**
- * @param bool $bNew
+ * Get the number of existing coupons of type $cKuponTyp
+ * @param string $cKuponTyp
  * @return int
  */
-/*
-function getCouponCount($bNew = true)
-{
-    if ($bNew) {
-        $cWhere = "cAktiv='Y' 
-                   AND (dGueltigBis > now() OR dGueltigBis = '0000-00-00 00:00:00')
-                   AND (nVerwendungen = 0 OR nVerwendungenBisher <= nVerwendungen)
-                   AND dGueltigAb <= now()";
-    } else {
-        $cWhere = "cAktiv='N'
-                   OR (dGueltigBis < now() AND dGueltigBis != '0000-00-00 00:00:00')
-                   OR (nVerwendungen > 0 AND nVerwendungenBisher > nVerwendungen)
-                   OR dGueltigAb > now()";
-    }
-    $oCoupon = Shop::DB()->query("SELECT count(*) AS count FROM tkupon WHERE {$cWhere}", 1);
-
-    return (isset($oCoupon->count)) ? (int)$oCoupon->count : 0;
-}
-*/
 function getCouponCount($cKuponTyp = 'standard')
 {
     $oKuponDB = Shop::DB()->query("
@@ -362,6 +285,7 @@ function getCouponCount($cKuponTyp = 'standard')
             FROM tkupon
             WHERE cKuponTyp = '" . $cKuponTyp . "'",
         1);
+
     return $oKuponDB->count;
 }
 
@@ -415,7 +339,7 @@ function validateCoupon($oKupon)
         }
     }
 
-    $dGueltigAb = date_create($oKupon->dGueltigAb);
+    $dGueltigAb  = date_create($oKupon->dGueltigAb);
     $dGueltigBis = date_create($oKupon->dGueltigBis);
 
     if ($dGueltigAb === false) {
@@ -434,7 +358,13 @@ function validateCoupon($oKupon)
     return $cFehler_arr;
 }
 
-function saveCoupon ($oKupon, $oSprache_arr)
+/**
+ * Save a new or already existing coupon in the DB
+ * @param $oKupon
+ * @param $oSprache_arr
+ * @return int - 0 on failure ; nonzero on success
+ */
+function saveCoupon($oKupon, $oSprache_arr)
 {
     if ((int)$oKupon->kKupon > 0) {
         // vorhandener Kupon
@@ -444,7 +374,7 @@ function saveCoupon ($oKupon, $oSprache_arr)
         $oKupon->nVerwendungenBisher = 0;
         $oKupon->dErstellt           = 'now()';
         $oKupon->kKupon              = (int)$oKupon->save();
-        $res = $oKupon->kKupon;
+        $res                         = $oKupon->kKupon;
     }
 
     if ($res > 0) {
@@ -473,7 +403,7 @@ function saveCoupon ($oKupon, $oSprache_arr)
  * Send notification emails to all customers admitted to this Kupon
  * @param Kupon $oKupon
  */
-function informCouponCustomers ($oKupon)
+function informCouponCustomers($oKupon)
 {
     // Standard-Sprache
     $oStdSprache = Shop::DB()->select('tsprache', 'cShopStandard', 'Y');
@@ -503,7 +433,7 @@ function informCouponCustomers ($oKupon)
 
     // Artikel-Nummern
     $oArtikelDB_arr = array();
-    $cArtNr_arr = StringHandler::parseSSK($oKupon->cArtikel);
+    $cArtNr_arr     = StringHandler::parseSSK($oKupon->cArtikel);
 
     if (count($cArtNr_arr) > 0) {
         $oArtikelDB_arr = Shop::DB()->query("
@@ -531,7 +461,7 @@ function informCouponCustomers ($oKupon)
             $kKategorie_arr = array_map('intval', StringHandler::parseSSK($oKupon->cKategorien));
             foreach ($kKategorie_arr as $kKategorie) {
                 if ($kKategorie > 0) {
-                    $oKategorie = new Kategorie($kKategorie, $oKunde->kSprache, $oKunde->kKundengruppe);
+                    $oKategorie       = new Kategorie($kKategorie, $oKunde->kSprache, $oKunde->kKundengruppe);
                     $oKategorie->cURL = $oKategorie->cURLFull;
                     $oKategorie_arr[] = $oKategorie;
                 }
@@ -540,7 +470,7 @@ function informCouponCustomers ($oKupon)
 
         // Artikel
         $oArtikel_arr = array();
-        foreach($oArtikelDB_arr as $oArtikelDB) {
+        foreach ($oArtikelDB_arr as $oArtikelDB) {
             $oArtikel = new Artikel();
             $oArtikel->fuelleArtikel($oArtikelDB->kArtikel, $oArtikelOptions, $oKunde->kKundengruppe, $oKunde->kSprache, true);
             $oArtikel_arr[] = $oArtikel;

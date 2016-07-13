@@ -178,7 +178,9 @@ class Session
             $_SESSION['ks']                               = array();
             $_SESSION['Waehrungen']                       = Shop::DB()->query("SELECT * FROM twaehrung", 2);
             $_SESSION['Sprachen']                         = Sprache::getInstance(false)->gibInstallierteSprachen();
-            $_SESSION['jtl_token']                        = generateCSRFToken();
+            if (!isset($_SESSION['jtl_token'])) {
+                $_SESSION['jtl_token'] = generateCSRFToken();
+            }
             // Sprache anhand der Browsereinstellung ermitteln
             $cLangDefault = '';
             $cAllowed_arr = array();

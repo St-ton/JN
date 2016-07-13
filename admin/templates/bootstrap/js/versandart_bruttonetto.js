@@ -52,10 +52,18 @@ function setzeNettoAjax(cTargetID, elem, targetElemID, fSteuersatz)
 
 function setzePreisAjax(bNetto, cTargetID, elem)
 {
-	if(bNetto)
-		xajax_getCurrencyConversionAjax(parseFloat(elem.value), 0, cTargetID);
-	else
-		xajax_getCurrencyConversionAjax(0, parseFloat(elem.value), cTargetID);
+   if(bNetto)
+      xajax_getCurrencyConversionAjax(parseFloat(elem.value), 0, cTargetID);
+   else
+      xajax_getCurrencyConversionAjax(0, parseFloat(elem.value), cTargetID);
+}
+
+function setzePreisTooltipAjax(bNetto, cTooltipID, sourceElem)
+{
+   if(bNetto)
+      xajax_setCurrencyConversionAjaxTooltip(parseFloat($(sourceElem).val().replace(',', '.')), 0, cTooltipID);
+   else
+      xajax_setCurrencyConversionAjaxTooltip(0, parseFloat($(sourceElem).val().replace(',', '.')), cTooltipID);
 }
 
 function setzeAufpreisTyp(elem, bruttoElemID, nettoElemID)
@@ -67,4 +75,14 @@ function setzeAufpreisTyp(elem, bruttoElemID, nettoElemID)
    }
    else
       document.getElementById(bruttoElemID).style.visibility = 'hidden';             
+}
+
+function makeCurrencyTooltip (sourceId) {
+   changeCurrencyTooltipText (sourceId);
+   $('#' + sourceId).keyup(function (e) { changeCurrencyTooltipText (sourceId); });
+}
+
+function changeCurrencyTooltipText (sourceId) {
+   var sourceInput = $('#' + sourceId)[0];
+   setzePreisTooltipAjax(false, sourceId + 'Tooltip', sourceInput);
 }

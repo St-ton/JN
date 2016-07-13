@@ -9,6 +9,7 @@ require PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
 Shop::run();
 $cParameter_arr = Shop::getParameters();
 $NaviFilter     = Shop::buildNaviFilter($cParameter_arr);
+Shop::checkNaviFilter($NaviFilter);
 $https          = false;
 $linkHelper     = LinkHelper::getInstance();
 if (isset(Shop::$kLink) && (int)Shop::$kLink > 0) {

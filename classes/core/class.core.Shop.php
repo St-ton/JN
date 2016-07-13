@@ -765,6 +765,7 @@ final class Shop
                 $cSEOMerkmal_arr = explode(SEP_MERKMAL, $seo);
                 $seo             = $cSEOMerkmal_arr[0];
                 $oHersteller_arr = explode(SEP_HST, $seo);
+                $nMerkmalZaehler = 0;
                 if (is_array($oHersteller_arr) && count($oHersteller_arr) > 1) {
                     $seo    = $oHersteller_arr[0];
                     $hstseo = $oHersteller_arr[1];
@@ -814,7 +815,7 @@ final class Shop
                             if (isset($oSeo->kKey) && strcasecmp($oSeo->cSeo, $cSEOMerkmal) === 0) {
                                 //hänge an GET, damit baueMerkmalFilter die Merkmalfilter setzen kann im NAvifilter.
                                 $_GET['mf' . $nMerkmalZaehler] = $oSeo->kKey;
-                                $nMerkmalZaehler++;
+                                ++$nMerkmalZaehler;
                                 self::$bSEOMerkmalNotFound = false;
                             } else {
                                 self::$bSEOMerkmalNotFound = true;
@@ -1258,16 +1259,16 @@ final class Shop
                         $NaviFilter->MerkmalWert = new stdClass();
                     }
                     if (isset($oMerkmalWert->cName) && strlen($oMerkmalWert->cName) > 0) {
-                        $NaviFilter->MerkmalWert->cName = $oMerkmalWert->cName . ": " . $oMerkmalWert->cWert;
+                        $NaviFilter->MerkmalWert->cName = $oMerkmalWert->cName . ': ' . $oMerkmalWert->cWert;
                     } elseif (isset($oMerkmalWert->cMMName) && strlen($oMerkmalWert->cMMName) > 0) {
-                        $NaviFilter->MerkmalWert->cName = $oMerkmalWert->cMMName . ": " . $oMerkmalWert->cWert;
+                        $NaviFilter->MerkmalWert->cName = $oMerkmalWert->cMMName . ': ' . $oMerkmalWert->cWert;
                     }
                     if (count($oMerkmalWert_arr) > 0) {
                         foreach ($oMerkmalWert_arr as $oTmpMerkmal) {
                             if (isset($oTmpMerkmal->cName) && strlen($oTmpMerkmal->cName) > 0) {
-                                $NaviFilter->MerkmalWert->cName .= ", " . $oTmpMerkmal->cName . ": " . $oTmpMerkmal->cWert;
+                                $NaviFilter->MerkmalWert->cName .= ', ' . $oTmpMerkmal->cName . ': ' . $oTmpMerkmal->cWert;
                             } elseif (isset($oTmpMerkmal->cMMName) && strlen($oTmpMerkmal->cMMName) > 0) {
-                                $NaviFilter->MerkmalWert->cName .= ", " . $oTmpMerkmal->cMMName . ": " . $oTmpMerkmal->cWert;
+                                $NaviFilter->MerkmalWert->cName .= ', ' . $oTmpMerkmal->cMMName . ': ' . $oTmpMerkmal->cWert;
                             }
                         }
                     }
@@ -1691,9 +1692,40 @@ final class Shop
             require_once PFAD_ROOT . PFAD_INCLUDES . 'filter_inc.php';
         }
         $NaviFilter->nAnzahlFilter = gibAnzahlFilter($NaviFilter);
-        self::$NaviFilter          = $NaviFilter;
+        self::$NaviFilter = $NaviFilter;
 
         return $NaviFilter;
+    }
+
+    /**
+     * @param stdClass $NaviFilter
+     */
+    public static function checkNaviFilter($NaviFilter)
+    {
+        if ($NaviFilter->nAnzahlFilter > 0) {
+            if (empty($NaviFilter->Hersteller->kHersteller) && empty($NaviFilter->Kategorie->kKategorie) &&
+                empty($NaviFilter->Tag->kTag) && empty($NaviFilter->Suchanfrage->kSuchanfrage) && empty($NaviFilter->News->kNews) &&
+                empty($NaviFilter->Newsmonat->kNewsMonatsUebersicht) && empty($NaviFilter->NewsKategorie->kNewsKategorie) &&
+                !isset($NaviFilter->Suche->cSuche) && empty($NaviFilter->MerkmalWert->kMerkmalWert) && empty($NaviFilter->Suchspecial->kKey)) {
+                //we have a manufacturer filter that doesn't filter anything
+                if (!empty($NaviFilter->HerstellerFilter->cSeo[Shop::$kSprache])) {
+                    http_response_code(301);
+                    header('Location: ' . Shop::getURL() . '/' . $NaviFilter->HerstellerFilter->cSeo[Shop::$kSprache]);
+                    exit();
+                }
+                //we have a category filter that doesn't filter anything
+                if (!empty($NaviFilter->KategorieFilter->cSeo[Shop::$kSprache])) {
+                    http_response_code(301);
+                    header('Location: ' . Shop::getURL() . '/' . $NaviFilter->KategorieFilter->cSeo[Shop::$kSprache]);
+                    exit();
+                }
+            } elseif (!empty($NaviFilter->Hersteller->kHersteller) && !empty($NaviFilter->HerstellerFilter->kHersteller) && !empty($NaviFilter->Hersteller->cSeo[Shop::$kSprache])) {
+                //we have a manufacturer page with some manufacturer filter
+                http_response_code(301);
+                header('Location: ' . Shop::getURL() . '/' . $NaviFilter->Hersteller->cSeo[Shop::$kSprache]);
+                exit();
+            }
+        }
     }
 
     /**

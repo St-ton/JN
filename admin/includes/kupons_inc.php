@@ -264,6 +264,9 @@ function createCouponFromInput()
     $oKupon->cKategorien           = '-1';
     $oKupon->cKunden               = '-1';
 
+    if ($oKupon->dGueltigAb === '0000-00-00 00:00:00') {
+        $oKupon->dGueltigAb = date_create()->format('Y-m-d H:i') . ':00';
+    }
     if (isset($_POST['bOpenEnd']) && $_POST['bOpenEnd'] === 'Y') {
         $oKupon->dGueltigBis = '0000-00-00 00:00:00';
     }

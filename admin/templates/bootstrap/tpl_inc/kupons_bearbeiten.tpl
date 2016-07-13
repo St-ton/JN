@@ -22,11 +22,6 @@
             $('#dGueltigBis').keyup(calcRelativeValidity);
             $('#dDauerTage').keyup(calcValidityEnd);
             $('#bOpenEnd').change(onEternalCheckboxChange);
-            $('#btnValidFromNow').click(function () {
-                var date = new Date();
-                var dateString = dateToString(date);
-                $('#dGueltigAb').val(dateString);
-            });
             calcRelativeValidity();
             onEternalCheckboxChange();
         });
@@ -256,12 +251,6 @@
                     </span>
                     <span class="input-group-wrap">
                         <input type="text" class="form-control" name="dGueltigAb" id="dGueltigAb" value="{$oKupon->cGueltigAbLong}">
-                    </span>
-                    <span class="input-group-addon">
-                        <button type="button" class="btn btn-info btn-xs btn-tooltip" id="btnValidFromNow" data-html="true"
-                                data-toggle="tooltip" data-placement="left" data-original-title="ab jetzt">
-                            <i class="fa fa-calendar-plus-o"></i>
-                        </button>
                     </span>
                 </div>
                 <div class="input-group">

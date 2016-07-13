@@ -16,7 +16,7 @@ $cFehler         = '';
 $action          = '';
 $tab             = 'standard';
 $oSprache_arr    = gibAlleSprachen();
-$nAnzahlProSeite = 10;
+$nAnzahlProSeite = 100;
 $oKupon          = null;
 
 // Aktion ausgeloest?

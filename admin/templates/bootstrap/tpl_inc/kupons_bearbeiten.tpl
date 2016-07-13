@@ -21,7 +21,7 @@
             $('#dGueltigAb').keyup(calcRelativeValidity);
             $('#dGueltigBis').keyup(calcRelativeValidity);
             $('#dDauerTage').keyup(calcValidityEnd);
-            $('#bEwig').change(onEternalCheckboxChange);
+            $('#bOpenEnd').change(onEternalCheckboxChange);
             $('#btnValidFromNow').click(function () {
                 var date = new Date();
                 var dateString = dateToString(date);
@@ -61,8 +61,8 @@
         }
 
         function calcRelativeValidity () {
-            if ($('#bEwig').prop('checked')) {
-                $('#dDauerTage').val('ewig');
+            if ($('#bOpenEnd').prop('checked')) {
+                $('#dDauerTage').val('Ende offen');
             } else {
                 var validStartDate = stringToDate($('#dGueltigAb').val());
                 var validEndDate   = stringToDate($('#dGueltigBis').val());
@@ -72,7 +72,7 @@
         }
 
         function calcValidityEnd () {
-            if ($('#bEwig').prop('checked')) {
+            if ($('#bOpenEnd').prop('checked')) {
                 $('#dGueltigBis').val('');
             } else {
                 var date = stringToDate($('#dGueltigAb').val());
@@ -84,10 +84,10 @@
         }
 
         function onEternalCheckboxChange () {
-            var elem = $('#bEwig');
-            var bEwig = elem[0].checked;
-            $('#dGueltigBis').prop('disabled', bEwig);
-            $('#dDauerTage').prop('disabled', bEwig);
+            var elem = $('#bOpenEnd');
+            var bOpenEnd = elem[0].checked;
+            $('#dGueltigBis').prop('disabled', bOpenEnd);
+            $('#dDauerTage').prop('disabled', bOpenEnd);
             calcRelativeValidity ();
             calcValidityEnd ();
         }
@@ -282,10 +282,10 @@
                 </div>
                 <div class="input-group">
                     <span class="input-group-addon">
-                        <label for="bEwig">Ewig g&uuml;ltig</label>
+                        <label for="bOpenEnd">Ende offen</label>
                     </span>
                     <span class="input-group-wrap">
-                        <input type="checkbox" class="checkfield" name="bEwig" id="bEwig" value="Y"{if $oKupon->bEwig} checked{/if}>
+                        <input type="checkbox" class="checkfield" name="bOpenEnd" id="bOpenEnd" value="Y"{if $oKupon->bOpenEnd} checked{/if}>
                     </span>
                 </div>
             </div>
@@ -304,7 +304,7 @@
                         <input type="text" class="form-control" name="cArtikel" id="assign_article_list" value="{$oKupon->cArtikel}">
                     </span>
                     <span class="input-group-addon">
-                        <button class="btn btn-info btn-xs btn-tooltip" id="show_article_list" data-html="true"
+                        <button type="button" class="btn btn-info btn-xs btn-tooltip" id="show_article_list" data-html="true"
                                 data-toggle="tooltip" data-placement="left" data-original-title="Artikel verwalten">
                             <i class="fa fa-edit"></i>
                         </button>

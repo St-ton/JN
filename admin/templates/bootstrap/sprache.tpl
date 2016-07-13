@@ -32,7 +32,7 @@
                     <select class="form-control" name="cISO" id="{#lang#}" onchange="document.sprache.submit();">
                         <option value="">Bitte w&auml;hlen</option>
                         {foreach from=$oInstallierteSprachen item=oSprache}
-                            <option value="{$oSprache->cISO}" {if $cISO == $oSprache->cISO}selected="selected"{/if}>{$oSprache->cNameDeutsch} {if $oSprache->cShopStandard === 'Y'}(Standard){/if}</option>
+                            <option value="{$oSprache->cISO}" {if $cISO === $oSprache->cISO}selected="selected"{/if}>{$oSprache->cNameDeutsch} {if $oSprache->cShopStandard === 'Y'}(Standard){/if}</option>
                         {/foreach}
                     </select>
                 </span>
@@ -62,7 +62,7 @@
             </li>
         </ul>
         <div class="tab-content">
-            <div id="sprachvariablen" class="tab-pane fade{if !isset($cTab) || $cTab == 'sprachvariablen'} active in{/if}">
+            <div id="sprachvariablen" class="tab-pane fade{if !isset($cTab) || $cTab === 'sprachvariablen'} active in{/if}">
                 <div class="block tcenter">
                     <div class="input-group p25 left">
                         <span class="input-group-addon">
@@ -216,7 +216,7 @@
                                     <span class="input-group-wrap">
                                         <select class="form-control" id="kSprachsektion" name="kSprachsektion" onchange="showSection(options[selectedIndex].value);">
                                             {foreach from=$oWerte_arr item=oSektion}
-                                                <option value="{$oSektion->kSprachsektion}" {if $oSektion->cName == "custom"}selected="selected"{/if}>{$oSektion->cName}</option>
+                                                <option value="{$oSektion->kSprachsektion}"{if isset($cPostArr.kSprachsektion)}{if $oSektion->kSprachsektion === $cPostArr.kSprachsektion} selected="selected"{/if}{else}{if ($oSektion->cName === "custom")} selected="selected"{/if}{/if}>{$oSektion->cName}</option>
                                             {/foreach}
                                         </select>
                                     </span>
@@ -226,16 +226,25 @@
                                     <span class="input-group-addon">
                                         <label for="cName">Variable</label>
                                     </span>
-                                    <input class="form-control" type="text" name="cName" id="cName" />
+                                    <input class="form-control" type="text" name="cName" id="cName" value="{if isset($cPostArr.cName)}{$cPostArr.cName}{/if}" />
                                 </div>
 
                                 {foreach from=$oInstallierteSprachen item=oSprache}
+                                    {assign var="cISO" value=$oSprache->cISO}
                                     <div class="item input-group">
                                         <span class="input-group-addon">
                                             <label for="lang_{$oSprache->cISO}">{$oSprache->cNameDeutsch}</label>
                                         </span>
-                                        <input type="hidden" name="cSprachISO[]" value="{$oSprache->cISO}" />
-                                        <input class="form-control" type="text" name="cWert[]" id="lang_{$oSprache->cISO}" />
+                                        <input type="hidden" name="cSprachISO[]" value="{$cISO}" />
+                                        <input class="form-control" type="text" name="cWert[]" id="lang_{$oSprache->cISO}" value="{if isset($cPostArr.cWert.$cISO)}{$cPostArr.cWert.$cISO}{/if}" />
+                                        {if isset($cPostArr.cExist)}
+                                            {if !empty($cPostArr.cExist.$cISO)}
+                                                <span class="input-group-wrap form_inline"><span class="form-control">{$cPostArr.cExist.$cISO}</span></span>
+                                                <span class="input-group-addon"><i class="fa fa-exclamation-triangle error"></i></span>
+                                            {else}
+                                                <span class="input-group-addon"><i class="fa fa-check success"></i></span>
+                                            {/if}
+                                        {/if}
                                     </div>
                                 {/foreach}
                             </div>
@@ -243,7 +252,15 @@
                             <div class="panel-footer">
                                 <input type="hidden" name="action" value="add" />
                                 <input type="hidden" name="cISO" value="{$cISO}" />
-                                <button type="submit" value="{#add#}" class="btn btn-primary"><i class="fa fa-share"></i> {#add#}</button>
+                                {if isset($forceInsert) && $forceInsert}
+                                    <input type="hidden" name="forceInsert" value="1" />
+                                    <div class="btn-group">
+                                        <button type="submit" value="{#add_force#}" class="btn btn-danger"><i class="fa fa-share"></i> {#add_force#} <i class="fa fa-exclamation-triangle"></i></button>
+                                        <a href="sprache.php" class="btn btn-primary" onclick="document.sprache.submit();return false"><i class="fa fa-mail-reply"></i> Abbrechen</a>
+                                    </div>
+                                {else}
+                                    <button type="submit" value="{#add#}" class="btn btn-primary"><i class="fa fa-share"></i> {#add#}</button>
+                                {/if}
                             </div>
                         </div>
                     </div>
@@ -307,7 +324,7 @@
                     </form>
                 </div>
             </div>
-            <div id="import" class="tab-pane fade{if isset($cTab) && $cTab == 'import'} active in{/if}">
+            <div id="import" class="tab-pane fade{if isset($cTab) && $cTab === 'import'} active in{/if}">
                 <form action="sprache.php" method="post" enctype="multipart/form-data">
                     {$jtl_token}
                     <div id="settings">
@@ -323,7 +340,7 @@
                                     <span class="input-group-wrap">
                                         <select name="cSprachISO" class="form-control selectBox" id="cSprachISO">
                                             {foreach from=$oVerfuegbareSprachen item=oSprache}
-                                                <option value="{$oSprache->cISO}" {if $oSprache->cISO == $cISO}selected="selected"{/if}>{$oSprache->cNameDeutsch}</option>
+                                                <option value="{$oSprache->cISO}" {if $oSprache->cISO === $cISO}selected="selected"{/if}>{$oSprache->cNameDeutsch}</option>
                                             {/foreach}
                                         </select>
                                     </span>

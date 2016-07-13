@@ -1342,6 +1342,28 @@ define('HOOK_NEWSLETTER_PAGE_HISTORYEMPFAENGEREINTRAGEN', 176);
  */
 define('HOOK_FILTER_INC_BAUEARTIKELANZAHL', 177);
 
+
+/**
+ * inside gibArtikelKeys() just before the SQL is being executed
+ *
+ * @file filter_inc.php
+ * @param cSQL
+ * @param FilterSQL
+ * @param NaviFilter
+ * @param SortierungsSQL
+ * @param cLimitSQL
+ */
+define('HOOK_FILTER_INC_GIBARTIKELKEYS_SQL', 183);
+
+/**
+ * at the end of bauFilterSQL() just before returning the build FilterSQL object
+ *
+ * @file filter_inc.php
+ * @param FilterSQL
+ * @param NaviFilter
+ */
+define('HOOK_FILTER_INC_BAUFILTERSQL', 184);
+
 /**
  * at the end of gibArtikelKeys()
  *

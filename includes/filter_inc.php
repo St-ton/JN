@@ -4014,13 +4014,15 @@ function bauFilterSQL($NaviFilter)
         $FilterSQL->oSuchFilterSQL            = gibSuchFilterSQL($NaviFilter);
         $FilterSQL->oSuchspecialFilterSQL     = gibSuchspecialFilterSQL($NaviFilter);
         $FilterSQL->oArtikelAttributFilterSQL = gibArtikelAttributFilterSQL($NaviFilter);
+
+        executeHook(HOOK_FILTER_INC_BAUFILTERSQL, array(
+            'NaviFilter' => &$NaviFilter,
+            'FilterSQL' => &$FilterSQL)
+        );
+
         Shop::Cache()->set($cacheID, $FilterSQL, array(CACHING_GROUP_CATEGORY));
     }
 
-    executeHook(HOOK_FILTER_INC_BAUFILTERSQL, array(
-        'NaviFilter' => &$NaviFilter,
-        'FilterSQL' => &$FilterSQL)
-    );
 
     return $FilterSQL;
 }

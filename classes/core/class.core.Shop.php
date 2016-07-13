@@ -841,11 +841,6 @@ final class Shop
                             break;
 
                         case 'kHersteller':
-                            if (self::$kHerstellerFilter > 0 && !empty($oSeo->cSeo)) {
-                                http_response_code(301);
-                                header('Location: ' . Shop::getURL() . '/' . $oSeo->cSeo);
-                                exit();
-                            }
                             self::$kHersteller = $oSeo->kKey;
                             break;
 
@@ -1697,27 +1692,40 @@ final class Shop
             require_once PFAD_ROOT . PFAD_INCLUDES . 'filter_inc.php';
         }
         $NaviFilter->nAnzahlFilter = gibAnzahlFilter($NaviFilter);
-        //sanitize
-        if ($NaviFilter->nAnzahlFilter > 0 && empty($NaviFilter->Hersteller->kHersteller) && empty($NaviFilter->Kategorie->kKategorie) &&
-            empty($NaviFilter->Tag->kTag) && empty($NaviFilter->Suchanfrage->kSuchanfrage) && empty($NaviFilter->News->kNews) &&
-            empty($NaviFilter->Newsmonat->kNewsMonatsUebersicht) && empty($NaviFilter->NewsKategorie->kNewsKategorie) &&
-            !isset($NaviFilter->Suche->cSuche) && empty($NaviFilter->MerkmalWert->kMerkmalWert) && empty($NaviFilter->Suchspecial->kKey)) {
-            //we have a manufacturer filter that doesn't filter anything
-            if (!empty($NaviFilter->HerstellerFilter->cSeo[Shop::$kSprache])) {
-                http_response_code(301);
-                header('Location: ' . Shop::getURL() . '/' . $NaviFilter->HerstellerFilter->cSeo[Shop::$kSprache]);
-                exit();
-            }
-            //we have a category filter that doesn't filter anything
-            if (!empty($NaviFilter->KategorieFilter->cSeo[Shop::$kSprache])) {
-                http_response_code(301);
-                header('Location: ' . Shop::getURL() . '/' . $NaviFilter->KategorieFilter->cSeo[Shop::$kSprache]);
-                exit();
-            }
-        }
         self::$NaviFilter = $NaviFilter;
 
         return $NaviFilter;
+    }
+
+    /**
+     * @param stdClass $NaviFilter
+     */
+    public static function checkNaviFilter($NaviFilter)
+    {
+        if ($NaviFilter->nAnzahlFilter > 0) {
+            if (empty($NaviFilter->Hersteller->kHersteller) && empty($NaviFilter->Kategorie->kKategorie) &&
+                empty($NaviFilter->Tag->kTag) && empty($NaviFilter->Suchanfrage->kSuchanfrage) && empty($NaviFilter->News->kNews) &&
+                empty($NaviFilter->Newsmonat->kNewsMonatsUebersicht) && empty($NaviFilter->NewsKategorie->kNewsKategorie) &&
+                !isset($NaviFilter->Suche->cSuche) && empty($NaviFilter->MerkmalWert->kMerkmalWert) && empty($NaviFilter->Suchspecial->kKey)) {
+                //we have a manufacturer filter that doesn't filter anything
+                if (!empty($NaviFilter->HerstellerFilter->cSeo[Shop::$kSprache])) {
+                    http_response_code(301);
+                    header('Location: ' . Shop::getURL() . '/' . $NaviFilter->HerstellerFilter->cSeo[Shop::$kSprache]);
+                    exit();
+                }
+                //we have a category filter that doesn't filter anything
+                if (!empty($NaviFilter->KategorieFilter->cSeo[Shop::$kSprache])) {
+                    http_response_code(301);
+                    header('Location: ' . Shop::getURL() . '/' . $NaviFilter->KategorieFilter->cSeo[Shop::$kSprache]);
+                    exit();
+                }
+            } elseif (!empty($NaviFilter->Hersteller->kHersteller) && !empty($NaviFilter->HerstellerFilter->kHersteller) && !empty($NaviFilter->Hersteller->cSeo[Shop::$kSprache])) {
+                //we have a manufacturere page with some manufacturer filter
+                http_response_code(301);
+                header('Location: ' . Shop::getURL() . '/' . $NaviFilter->Hersteller->cSeo[Shop::$kSprache]);
+                exit();
+            }
+        }
     }
 
     /**

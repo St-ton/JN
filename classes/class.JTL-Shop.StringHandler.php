@@ -454,6 +454,21 @@ class StringHandler
     }
 
     /**
+     * Parse a semicolon separated key string to an array
+     *
+     * @param string $ssk
+     * @return array
+     */
+    public static function parseSSK($ssk)
+    {
+        if (is_string($ssk)) {
+            return array_filter(explode(';', $ssk))
+        }
+
+        return array();
+    }
+
+    /**
      * @note PHP's FILTER_SANITIZE_EMAIL cannot handle unicode -
      * without idn_to_ascii (PECL) this will fail with umlaut domains
      *

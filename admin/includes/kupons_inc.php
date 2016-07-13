@@ -58,7 +58,7 @@ function getCouponNames($kKupon)
  */
 function getCategories($selKats = '', $kKategorie = 0, $tiefe = 0)
 {
-    $selected = explode(';', $selKats);
+    $selected = StringHandler::parseSSK($selKats);
     $arr      = array();
     $kats     = Shop::DB()->query("SELECT kKategorie, cName FROM tkategorie WHERE kOberKategorie = " . (int)$kKategorie, 2);
     $kCount   = count($kats);
@@ -85,7 +85,7 @@ function getCategories($selKats = '', $kKategorie = 0, $tiefe = 0)
  */
 function getCustomers($selCustomers = '')
 {
-    $selected    = array_filter(explode(';', $selCustomers));
+    $selected    = StringHandler::parseSSK($selCustomers);
     $customers   = Shop::DB()->query("SELECT kKunde FROM tkunde", 2);
 
     foreach ($customers as $i => $customer) {
@@ -397,7 +397,7 @@ function validateCoupon($oKupon)
         }
     }
 
-    $cArtNr_arr = array_filter(explode(';', $oKupon->cArtikel));
+    $cArtNr_arr = StringHandler::parseSSK($oKupon->cArtikel);
     foreach ($cArtNr_arr as $cArtNr) {
         $res = Shop::DB()->select('tartikel', 'cArtNr', $cArtNr);
         if ($res === null) {
@@ -406,7 +406,7 @@ function validateCoupon($oKupon)
     }
 
     if ($oKupon->cKuponTyp === 'versandkupon') {
-        $cLandISO_arr = array_filter(explode(';', $oKupon->cLieferlaender));
+        $cLandISO_arr = StringHandler::parseSSK($oKupon->cLieferlaender);
         foreach ($cLandISO_arr as $cLandISO) {
             $res = Shop::DB()->select('tland', 'cISO', $cLandISO);
             if ($res === null) {
@@ -503,7 +503,7 @@ function informCouponCustomers ($oKupon)
 
     // Artikel-Nummern
     $oArtikelDB_arr = array();
-    $cArtNr_arr = array_map('intval', array_filter(explode(';', $oKupon->cArtikel)));
+    $cArtNr_arr = StringHandler::parseSSK($oKupon->cArtikel);
 
     if (count($cArtNr_arr) > 0) {
         $oArtikelDB_arr = Shop::DB()->query("
@@ -528,7 +528,7 @@ function informCouponCustomers ($oKupon)
         // Kategorien
         $oKategorie_arr = array();
         if ($oKupon->cKategorien != '-1') {
-            $kKategorie_arr = array_map('intval', array_filter(explode(';', $oKupon->cKategorien)));
+            $kKategorie_arr = array_map('intval', StringHandler::parseSSK($oKupon->cKategorien));
             foreach ($kKategorie_arr as $kKategorie) {
                 if ($kKategorie > 0) {
                     $oKategorie = new Kategorie($kKategorie, $oKunde->kSprache, $oKunde->kKundengruppe);

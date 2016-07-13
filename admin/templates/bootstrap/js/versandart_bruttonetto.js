@@ -61,9 +61,9 @@ function setzePreisAjax(bNetto, cTargetID, elem)
 function setzePreisTooltipAjax(bNetto, cTooltipID, sourceElem)
 {
    if(bNetto)
-      xajax_setCurrencyConversionAjaxTooltip(parseFloat($(sourceElem).val()), 0, cTooltipID);
+      xajax_setCurrencyConversionAjaxTooltip(parseFloat($(sourceElem).val().replace(',', '.')), 0, cTooltipID);
    else
-      xajax_setCurrencyConversionAjaxTooltip(0, parseFloat($(sourceElem).val()), cTooltipID);
+      xajax_setCurrencyConversionAjaxTooltip(0, parseFloat($(sourceElem).val().replace(',', '.')), cTooltipID);
 }
 
 function setzeAufpreisTyp(elem, bruttoElemID, nettoElemID)

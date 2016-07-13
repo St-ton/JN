@@ -122,6 +122,9 @@ function normalizeDate($string)
 
 /**
  * Get instances of existing coupons, each with some enhanced information that can be displayed
+ * @param string $cKuponTyp
+ * @param string $cLimitSQL - an SQL LIMIT clause
+ * @param string $cOrderBy - a column that should be sorted by
  * @return array
  */
 function getCoupons($cKuponTyp = 'standard', $cLimitSQL = '', $cOrderBy = 'kKupon')

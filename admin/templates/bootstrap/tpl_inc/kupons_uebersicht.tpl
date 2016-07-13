@@ -60,7 +60,7 @@
                         <tfoot>
                             <tr>
                                 <td><input type="checkbox" name="ALLMSGS" id="ALLMSGS_{$cKuponTyp}" onclick="AllMessages(this.form);"></td>
-                                <td colspan="8"><label for="ALLMSGS_{$cKuponTyp}">Alle ausw&auml;hlen</td>
+                                <td colspan="9"><label for="ALLMSGS_{$cKuponTyp}">Alle ausw&auml;hlen</label></td>
                             </tr>
                         </tfoot>
                     </table>

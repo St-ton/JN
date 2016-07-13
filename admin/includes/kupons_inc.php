@@ -102,6 +102,7 @@ function getCustomers($selCustomers = '')
 
 /**
  * Parse Datumsstring und formatiere ihn im DB-kompatiblen Standardformat
+ * 
  * @param string $string
  * @return string
  */
@@ -122,6 +123,7 @@ function normalizeDate($string)
 
 /**
  * Get instances of existing coupons, each with some enhanced information that can be displayed
+ * 
  * @param string $cKuponTyp
  * @param string $cLimitSQL - an SQL LIMIT clause
  * @param string $cOrderBy - a column that should be sorted by
@@ -147,6 +149,7 @@ function getCoupons($cKuponTyp = 'standard', $cLimitSQL = '', $cOrderBy = 'kKupo
 
 /**
  * Get an instance of an existing coupon with some enhanced information that can be displayed
+ *
  * @param int $kKupon
  * @return Kupon $oKupon
  */
@@ -160,6 +163,7 @@ function getCoupon($kKupon)
 
 /**
  * Enhance an existing Kupon instance with some extra information that can be displayed
+ *
  * @param Kupon $oKupon
  */
 function augmentCoupon($oKupon)
@@ -201,6 +205,7 @@ function augmentCoupon($oKupon)
 
 /**
  * Create a fresh Kupon instance with default values to be edited
+ * 
  * @param $cKuponTyp - 'standard', 'versandkupon', 'neukundenkupon'
  * @return Kupon
  */
@@ -235,6 +240,7 @@ function createNewCoupon($cKuponTyp)
 
 /**
  * Read coupon settings from the edit page form and create a Kupon instance of it
+ * 
  * @return Kupon
  */
 function createCouponFromInput()
@@ -260,7 +266,7 @@ function createCouponFromInput()
     $oKupon->cKategorien           = '-1';
     $oKupon->cKunden               = '-1';
 
-    if (isset($_POST['bEwig']) && $_POST['bEwig'] == 'Y') {
+    if (isset($_POST['bEwig']) && $_POST['bEwig'] === 'Y') {
         $oKupon->dGueltigBis = '0000-00-00 00:00:00';
     }
     if ($oKupon->cKuponTyp !== 'neukundenkupon' && $oKupon->cCode === '') {
@@ -278,6 +284,7 @@ function createCouponFromInput()
 
 /**
  * Get the number of existing coupons of type $cKuponTyp
+ * 
  * @param string $cKuponTyp
  * @return int
  */
@@ -294,6 +301,7 @@ function getCouponCount($cKuponTyp = 'standard')
 
 /**
  * Validates the fields of a given Kupon instance
+ * 
  * @param Kupon $oKupon
  * @return array - list of error messages
  */
@@ -313,7 +321,7 @@ function validateCoupon($oKupon)
     if ($oKupon->cKuponTyp === 'versandkupon' && $oKupon->cLieferlaender === '') {
         $cFehler_arr[] = 'Bitte geben Sie die L&auml;nderk&uuml;rzel (ISO-Codes) unter "Lieferl&auml;nder" an, f&uuml;r die dieser Versandkupon gelten soll!';
     }
-    if ($oKupon->cKuponTyp == 'standard' || $oKupon->cKuponTyp == 'versandkupon') {
+    if ($oKupon->cKuponTyp == 'standard' || $oKupon->cKuponTyp === 'versandkupon') {
         $queryRes = Shop::DB()->query("
         SELECT kKupon
             FROM tkupon
@@ -363,9 +371,10 @@ function validateCoupon($oKupon)
 
 /**
  * Save a new or already existing coupon in the DB
- * @param $oKupon
- * @param $oSprache_arr
- * @return int - 0 on failure ; nonzero on success
+ * 
+ * @param Kupon $oKupon
+ * @param array $oSprache_arr
+ * @return int - 0 on failure ; kKupon on success
  */
 function saveCoupon($oKupon, $oSprache_arr)
 {
@@ -385,11 +394,10 @@ function saveCoupon($oKupon, $oSprache_arr)
         Shop::DB()->delete('tkuponsprache', 'kKupon', $oKupon->kKupon);
 
         foreach ($oSprache_arr as $oSprache) {
-            if (isset($_POST['cName_' . $oSprache->cISO]) && $_POST['cName_' . $oSprache->cISO] !== '') {
-                $cKuponSpracheName = $_POST['cName_' . $oSprache->cISO];
-            } else {
-                $cKuponSpracheName = $oKupon->cName;
-            }
+            $cKuponSpracheName =
+                (isset($_POST['cName_' . $oSprache->cISO]) && $_POST['cName_' . $oSprache->cISO] !== '')
+                ? $_POST['cName_' . $oSprache->cISO]
+                : $oKupon->cName;
 
             $kuponSprache              = new stdClass();
             $kuponSprache->kKupon      = $oKupon->kKupon;
@@ -404,6 +412,7 @@ function saveCoupon($oKupon, $oSprache_arr)
 
 /**
  * Send notification emails to all customers admitted to this Kupon
+ * 
  * @param Kupon $oKupon
  */
 function informCouponCustomers($oKupon)
@@ -460,7 +469,7 @@ function informCouponCustomers($oKupon)
 
         // Kategorien
         $oKategorie_arr = array();
-        if ($oKupon->cKategorien != '-1') {
+        if ($oKupon->cKategorien !== '-1') {
             $kKategorie_arr = array_map('intval', StringHandler::parseSSK($oKupon->cKategorien));
             foreach ($kKategorie_arr as $kKategorie) {
                 if ($kKategorie > 0) {

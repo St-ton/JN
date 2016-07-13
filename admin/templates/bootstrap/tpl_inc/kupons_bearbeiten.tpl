@@ -1,14 +1,14 @@
-{if $action == 'erstellen'}
+{if $action === 'erstellen'}
     {assign var=cTitel value=#newCoupon#}
 {else}
     {assign var=cTitel value=#modifyCoupon#}
 {/if}
 
-{if $oKupon->cKuponTyp == 'standard'}
+{if $oKupon->cKuponTyp === 'standard'}
     {assign var=cTitel value="$cTitel : Standardkupon"}
-{elseif $oKupon->cKuponTyp == 'versandkupon'}
+{elseif $oKupon->cKuponTyp === 'versandkupon'}
     {assign var=cTitel value="$cTitel : Versandkostenfrei-Kupon"}
-{elseif $oKupon->cKuponTyp == 'neukundenkupon'}
+{elseif $oKupon->cKuponTyp === 'neukundenkupon'}
     {assign var=cTitel value="$cTitel : Neukunden-/Begr&uuml;&szlig;ungskupon"}
 {/if}
 
@@ -341,7 +341,7 @@
                     </span>
                     <span class="input-group-wrap">
                         <select multiple size="10" name="kKategorien[]" id="kKategorien" class="form-control combo">
-                            <option value="-1"{if $oKupon->cKategorien == '-1'} selected{/if}>
+                            <option value="-1"{if $oKupon->cKategorien === '-1'} selected{/if}>
                                 Alle Kategorien
                             </option>
                             {foreach $oKategorie_arr as $oKategorie}
@@ -360,7 +360,7 @@
                         </span>
                         <span class="input-group-wrap">
                             <select multiple name="kKunden[]" id="kKunden" class="form-control combo">
-                                <option value="-1"{if $oKupon->cKunden == '-1'} selected{/if}>
+                                <option value="-1"{if $oKupon->cKunden === '-1'} selected{/if}>
                                     {#allCustomers#}
                                 </option>
                                 {foreach $oKunde_arr as $oKunde}

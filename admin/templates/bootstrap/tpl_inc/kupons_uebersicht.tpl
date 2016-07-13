@@ -1,7 +1,7 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=#coupons# cBeschreibung=#couponsDesc# cDokuURL=#couponsURL#}
 
 {function kupons_uebersicht_tab}
-    <div id="{$cKuponTyp}" class="tab-pane fade{if $tab == $cKuponTyp} active in{/if}">
+    <div id="{$cKuponTyp}" class="tab-pane fade{if $tab === $cKuponTyp} active in{/if}">
         {include file='pagination.tpl' cSite=$nSeite cUrl='kupons.php' oBlaetterNavi=$oBlaetterNavi cParams='&tab='|cat:$cKuponTyp}
         <form method="post" action="kupons.php">
             {$jtl_token}
@@ -16,8 +16,8 @@
                             <tr>
                                 <th></th>
                                 <th>{#name#}</th>
-                                {if $cKuponTyp == 'standard' || $cKuponTyp == 'neukundenkupon'}<th>{#value#}</th>{/if}
-                                {if $cKuponTyp == 'standard' || $cKuponTyp == 'versandkupon'}<th>{#code#}</th>{/if}
+                                {if $cKuponTyp === 'standard' || $cKuponTyp === 'neukundenkupon'}<th>{#value#}</th>{/if}
+                                {if $cKuponTyp === 'standard' || $cKuponTyp === 'versandkupon'}<th>{#code#}</th>{/if}
                                 <th>{#mbw#}</th>
                                 <th>{#curmaxusage#}</th>
                                 <th>{#customerGroup#}</th>
@@ -31,16 +31,16 @@
                                 <tr>
                                     <td><input type="checkbox" name="kKupon_arr[]" id="kupon-{$oKupon->kKupon}" value="{$oKupon->kKupon}"></td>
                                     <td><label for="kupon-{$oKupon->kKupon}">{$oKupon->cName}</label></td>
-                                    {if $cKuponTyp == 'standard' || $cKuponTyp == 'neukundenkupon'}
+                                    {if $cKuponTyp === 'standard' || $cKuponTyp === 'neukundenkupon'}
                                         <td>
-                                            {if $oKupon->cWertTyp == 'festpreis'}
+                                            {if $oKupon->cWertTyp === 'festpreis'}
                                                 {getCurrencyConversionSmarty fPreisBrutto=$oKupon->fWert}
                                             {else}
                                                 {$oKupon->fWert} %
                                             {/if}
                                         </td>
                                     {/if}
-                                    {if $cKuponTyp == 'standard' || $cKuponTyp == 'versandkupon'}<td>{$oKupon->cCode}</td>{/if}
+                                    {if $cKuponTyp === 'standard' || $cKuponTyp v== 'versandkupon'}<td>{$oKupon->cCode}</td>{/if}
                                     <td>{getCurrencyConversionSmarty fPreisBrutto=$oKupon->fMindestbestellwert}</td>
                                     <td>{$oKupon->nVerwendungenBisher} von {$oKupon->nVerwendungen}</td>
                                     <td>{$oKupon->cKundengruppe}</td>
@@ -84,13 +84,13 @@
 
 <div id="content" class="container-fluid">
     <ul class="nav nav-tabs" role="tablist">
-        <li class="tab{if $tab == 'standard'} active{/if}">
+        <li class="tab{if $tab === 'standard'} active{/if}">
             <a data-toggle="tab" role="tab" href="#standard" aria-expanded="true">{#standardCoupon#}s</a>
         </li>
-        <li class="tab{if $tab == 'versandkupon'} active{/if}">
+        <li class="tab{if $tab === 'versandkupon'} active{/if}">
             <a data-toggle="tab" role="tab" href="#versandkupon" aria-expanded="true">{#shippingCoupon#}s</a>
         </li>
-        <li class="tab{if $tab == 'neukundenkupon'} active{/if}">
+        <li class="tab{if $tab === 'neukundenkupon'} active{/if}">
             <a data-toggle="tab" role="tab" href="#neukundenkupon" aria-expanded="true">{#newCustomerCoupon#}s</a>
         </li>
     </ul>

@@ -34,7 +34,7 @@ if (validateToken()) {
     }
 }
 
-if ($action == 'bearbeiten') {
+if ($action === 'bearbeiten') {
     // Kupon bearbeiten
     $kKupon    = (int)$_POST['kKuponBearbeiten'];
     $cKuponTyp = $_POST['cKuponTyp'];
@@ -44,7 +44,7 @@ if ($action == 'bearbeiten') {
     } else {
         $oKupon = createNewCoupon($cKuponTyp);
     }
-} elseif ($action == 'speichern') {
+} elseif ($action === 'speichern') {
     // Kupon speichern
     $oKupon      = createCouponFromInput();
     $cFehler_arr = validateCoupon($oKupon);
@@ -72,7 +72,7 @@ if ($action == 'bearbeiten') {
             $cFehler = 'Der Kupon konnte nicht gespeichert werden.';
         }
     }
-} elseif ($action == 'loeschen') {
+} elseif ($action === 'loeschen') {
     // Kupons loeschen
     if (isset($_POST['kKupon_arr']) && is_array($_POST['kKupon_arr']) && count($_POST['kKupon_arr']) > 0) {
         if (loescheKupons($_POST['kKupon_arr'])) {
@@ -85,7 +85,7 @@ if ($action == 'bearbeiten') {
     }
 }
 
-if ($action == 'bearbeiten') {
+if ($action === 'bearbeiten') {
     // Seite: Bearbeiten
     $oSteuerklasse_arr = Shop::DB()->query("SELECT kSteuerklasse, cName FROM tsteuerklasse", 2);
     $oKundengruppe_arr = Shop::DB()->query("SELECT kKundengruppe, cName FROM tkundengruppe", 2);

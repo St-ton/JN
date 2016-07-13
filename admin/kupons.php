@@ -75,7 +75,7 @@ if ($action === 'bearbeiten') {
 } elseif ($action === 'loeschen') {
     // Kupons loeschen
     if (isset($_POST['kKupon_arr']) && is_array($_POST['kKupon_arr']) && count($_POST['kKupon_arr']) > 0) {
-        if (loescheKupons($_POST['kKupon_arr'])) {
+        if (loescheKupons($kKupon_arr)) {
             $cHinweis = 'Ihre markierten Kupons wurden erfolgreich gel&ouml;scht.';
         } else {
             $cFehler = 'Fehler: Ein oder mehrere Kupons konnten nicht gel&ouml;scht werden.';
@@ -91,7 +91,7 @@ if ($action === 'bearbeiten') {
     $oKundengruppe_arr = Shop::DB()->query("SELECT kKundengruppe, cName FROM tkundengruppe", 2);
     $oKategorie_arr    = getCategories($oKupon->cKategorien);
     $oKunde_arr        = getCustomers($oKupon->cKunden);
-    $oKuponName_arr    = getCouponNames($oKupon->kKupon);
+    $oKuponName_arr    = getCouponNames((int)$oKupon->kKupon);
 
     $smarty->assign('oSteuerklasse_arr', $oSteuerklasse_arr)
         ->assign('oKundengruppe_arr', $oKundengruppe_arr)

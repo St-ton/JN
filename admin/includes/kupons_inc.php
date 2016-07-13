@@ -12,9 +12,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 function loescheKupons($kKupon_arr)
 {
     if (is_array($kKupon_arr) && count($kKupon_arr) > 0) {
-        foreach ($kKupon_arr as $i => $kKupon) {
-            $kKupon_arr[$i] = (int)$kKupon;
-        }
+        $kKupon_arr = array_map('intval', $kKupon_arr);
         $nRows = Shop::DB()->query(
             "DELETE
                 FROM tkupon
@@ -141,7 +139,7 @@ function getCoupons($cKuponTyp = 'standard', $cLimitSQL = '', $cOrderBy = 'kKupo
     $oKupon_arr = array();
 
     foreach ($oKuponDB_arr as $oKuponDB) {
-        $oKupon_arr[] = getCoupon($oKuponDB->kKupon);
+        $oKupon_arr[] = getCoupon((int)$oKuponDB->kKupon);
     }
 
     return $oKupon_arr;
@@ -168,7 +166,7 @@ function getCoupon($kKupon)
  */
 function augmentCoupon($oKupon)
 {
-    $oKupon->bEwig = $oKupon->dGueltigBis === '0000-00-00 00:00:00';
+    $oKupon->bOpenEnd = $oKupon->dGueltigBis === '0000-00-00 00:00:00';
 
     if (date_create($oKupon->dGueltigAb) === false) {
         $oKupon->cGueltigAbShort = 'ung&uuml;ltig';
@@ -178,7 +176,7 @@ function augmentCoupon($oKupon)
         $oKupon->cGueltigAbLong  = date_create($oKupon->dGueltigAb)->format('d.m.Y H:i');
     }
 
-    if ($oKupon->bEwig) {
+    if ($oKupon->bOpenEnd) {
         $oKupon->cGueltigBisShort = 'open-end';
         $oKupon->cGueltigBisLong  = 'open-end';
     } elseif (date_create($oKupon->dGueltigBis) === false) {
@@ -266,7 +264,7 @@ function createCouponFromInput()
     $oKupon->cKategorien           = '-1';
     $oKupon->cKunden               = '-1';
 
-    if (isset($_POST['bEwig']) && $_POST['bEwig'] === 'Y') {
+    if (isset($_POST['bOpenEnd']) && $_POST['bOpenEnd'] === 'Y') {
         $oKupon->dGueltigBis = '0000-00-00 00:00:00';
     }
     if ($oKupon->cKuponTyp !== 'neukundenkupon' && $oKupon->cCode === '') {
@@ -325,7 +323,7 @@ function validateCoupon($oKupon)
         $queryRes = Shop::DB()->query("
         SELECT kKupon
             FROM tkupon
-            WHERE cCode = '" . $oKupon->cCode . "'" . ((int)$oKupon->kKupon > 0 ? " AND kKupon != " . $oKupon->kKupon : ''),
+            WHERE cCode = '" . $oKupon->cCode . "'" . ((int)$oKupon->kKupon > 0 ? " AND kKupon != " . (int)$oKupon->kKupon : ''),
             1);
         if (is_object($queryRes)) {
             $cFehler_arr[] = 'Der angegeben Kuponcode wird bereits von einem anderen Kupon verwendet. Bitte w&auml;hlen Sie einen anderen Code!';
@@ -360,9 +358,9 @@ function validateCoupon($oKupon)
         $cFehler_arr[] = 'Bitte geben sie das Ende des G&uuml;ltigkeitszeitraumes im Format (<strong>tt.mm.yyyy ss:mm</strong>) an!';
     }
 
-    $bEwig = $oKupon->dGueltigBis === '0000-00-00 00:00:00';
+    $bOpenEnd = $oKupon->dGueltigBis === '0000-00-00 00:00:00';
 
-    if ($dGueltigAb !== false && $dGueltigBis !== false && $dGueltigAb > $dGueltigBis && $bEwig === false) {
+    if ($dGueltigAb !== false && $dGueltigBis !== false && $dGueltigAb > $dGueltigBis && $bOpenEnd === false) {
         $cFehler_arr[] = 'Das Ende des G&uuml;ltigkeitszeitraumes muss nach dem Beginn des G&uuml;ltigkeitszeitraumes liegen!';
     }
 

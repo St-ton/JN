@@ -9,7 +9,7 @@
             <div class="panel panel-default">
                 {if $oKupon_arr|@count > 0}
                     <div class="panel-heading">
-                        <h3 class="panel-title">Alle {$cKuponTypName}s</h3>
+                        <h3 class="panel-title">{#all#} {$cKuponTypName}s</h3>
                     </div>
                     <table class="list table">
                         <thead>
@@ -46,8 +46,8 @@
                                     <td>{$oKupon->cKundengruppe}</td>
                                     <td>{$oKupon->ArtikelInfo}</td>
                                     <td>
-                                        <strong>vom:</strong> {$oKupon->cGueltigAbShort}<br>
-                                        <strong>bis:</strong> {$oKupon->cGueltigBisShort}
+                                        <strong>{#from#}:</strong> {$oKupon->cGueltigAbShort}<br>
+                                        <strong>{#to#}:</strong> {$oKupon->cGueltigBisShort}
                                     </td>
                                     <td>
                                         <button type="submit" class="btn btn-default" name="kKuponBearbeiten" value="{$oKupon->kKupon}">
@@ -66,15 +66,15 @@
                     </table>
                 {else}
                     <div class="alert alert-info" role="alert">
-                        Zurzeit sind keine {$cKuponTypName}s vorhanden.
+                        {#emptySetMessage1#} {$cKuponTypName}s {#emptySetMessage2#}
                     </div>
                 {/if}
                 <div class="panel-footer">
                     <div class="btn-group">
                         {if $oKupon_arr|@count > 0}
-                            <button type="submit" class="btn btn-danger" name="action" value="loeschen"><i class="fa fa-trash"></i> Markierte l&ouml;schen</button>
+                            <button type="submit" class="btn btn-danger" name="action" value="loeschen"><i class="fa fa-trash"></i> {#delete#}</button>
                         {/if}
-                        <button type="submit" class="btn btn-primary" name="kKuponBearbeiten" value="0"><i class="fa fa-share"></i> {$cKuponTypName} erstellen</button>
+                        <button type="submit" class="btn btn-primary" name="kKuponBearbeiten" value="0"><i class="fa fa-share"></i> {$cKuponTypName} {#create#}</button>
                     </div>
                 </div>
             </div>

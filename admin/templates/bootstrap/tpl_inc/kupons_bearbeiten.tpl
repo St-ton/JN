@@ -17,7 +17,10 @@
 <script>
     {literal}
         $(function () {
-            ['fWert', 'fMindestbestellwert'].forEach(makeCurrencyTooltip);
+            {/literal}{if $oKupon->cKuponTyp == 'standard' || $oKupon->cKuponTyp == 'neukundenkupon'}
+                makeCurrencyTooltip('fWert');
+            {/if}{literal}
+            makeCurrencyTooltip('fMindestbestellwert');
             $('#dGueltigAb').keyup(calcRelativeValidity);
             $('#dGueltigBis').keyup(calcRelativeValidity);
             $('#dDauerTage').keyup(calcValidityEnd);
@@ -96,7 +99,7 @@
         <input type="hidden" name="cKuponTyp" value="{$oKupon->cKuponTyp}">
         <div class="panel panel-default settings">
             <div class="panel-heading">
-                <h3 class="panel-title">Namen</h3>
+                <h3 class="panel-title">{#names#}</h3>
             </div>
             <div class="panel-body">
                 <div class="input-group">
@@ -124,7 +127,7 @@
         </div>
         <div class="panel panel-default settings">
             <div class="panel-heading">
-                <h3 class="panel-title">Allgemein</h3>
+                <h3 class="panel-title">{#general#}</h3>
             </div>
             <div class="panel-body">
                 {if $oKupon->cKuponTyp === 'standard' || $oKupon->cKuponTyp === 'neukundenkupon'}
@@ -187,6 +190,7 @@
                         <div class="input-group-wrap">
                             <input type="checkbox" class="checkfield" name="cZusatzgebuehren" id="cZusatzgebuehren" value="Y"{if $oKupon->cZusatzgebuehren === 'Y'} checked{/if}>
                         </div>
+                        <span class="input-group-addon">{getHelpDesc cDesc=#additionalShippingCostsHint#}</span>
                     </div>
                 {/if}
                 <div class="input-group">
@@ -208,6 +212,7 @@
                         <span class="input-group-wrap">
                             <input type="text" class="form-control" name="cCode" id="cCode" value="{$oKupon->cCode}">
                         </span>
+                        <span class="input-group-addon">{getHelpDesc cDesc=#codeHint#}</span>
                     </div>
                 {/if}
                 {if $oKupon->cKuponTyp === 'versandkupon'}
@@ -218,6 +223,7 @@
                         <span class="input-group-wrap">
                             <input type="text" class="form-control" name="cLieferlaender" id="cLieferlaender" value="{$oKupon->cLieferlaender}">
                         </span>
+                        <span class="input-group-addon">{getHelpDesc cDesc=#shippingCountriesHint#}</span>
                     </div>
                 {/if}
                 <div class="input-group">
@@ -242,7 +248,7 @@
         </div>
         <div class="panel panel-default settings">
             <div class="panel-heading">
-                <h3 class="panel-title">G&uuml;ltigkeitszeitraum</h3>
+                <h3 class="panel-title">{#validityPeriod#}</h3>
             </div>
             <div class="panel-body">
                 <div class="input-group">
@@ -281,7 +287,7 @@
         </div>
         <div class="panel panel-default settings">
             <div class="panel-heading">
-                <h3 class="panel-title">Einschr&auml;nkungen</h3>
+                <h3 class="panel-title">{#restrictions#}</h3>
             </div>
             <div class="panel-body">
                 <div id="ajax_list_picker" class="ajax_list_picker article">{include file="tpl_inc/popup_artikelsuche.tpl"}</div>
@@ -294,7 +300,7 @@
                     </span>
                     <span class="input-group-addon">
                         <button type="button" class="btn btn-info btn-xs btn-tooltip" id="show_article_list" data-html="true"
-                                data-toggle="tooltip" data-placement="left" data-original-title="Artikel verwalten">
+                                data-toggle="tooltip" data-placement="left" data-original-title="{#manageArticlesHint#}">
                             <i class="fa fa-edit"></i>
                         </button>
                     </span>
@@ -373,7 +379,7 @@
             </div>
         </div>
         <button type="submit" class="btn btn-primary" name="action" value="speichern">
-            <i class="fa fa-share"></i> Speichern
+            <i class="fa fa-share"></i> {#save#}
         </button>
     </form>
 </div>

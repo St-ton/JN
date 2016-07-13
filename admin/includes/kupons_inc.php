@@ -218,7 +218,7 @@ function createNewCoupon($cKuponTyp)
     $oKupon->nGanzenWKRabattieren  = 1;
     $oKupon->kSteuerklasse         = 1;
     $oKupon->fMindestbestellwert   = 0.0;
-    $oKupon->cCode                 = Kupon::generateCode();
+    $oKupon->cCode                 = $oKupon->generateCode();
     $oKupon->cLieferlaender        = '';
     $oKupon->nVerwendungen         = 1;
     $oKupon->nVerwendungenProKunde = 1;
@@ -271,7 +271,7 @@ function createCouponFromInput()
         $oKupon->dGueltigBis = '0000-00-00 00:00:00';
     }
     if ($oKupon->cKuponTyp !== 'neukundenkupon' && $oKupon->cCode === '') {
-        $oKupon->cCode = Kupon::generateCode();
+        $oKupon->cCode = $oKupon->generateCode();
     }
     if (isset($_POST['kKategorien']) && is_array($_POST['kKategorien']) && count($_POST['kKategorien']) > 0 && !in_array('-1', $_POST['kKategorien'])) {
         $oKupon->cKategorien = StringHandler::createSSK($_POST['kKategorien']);

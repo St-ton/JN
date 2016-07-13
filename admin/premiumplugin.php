@@ -28,7 +28,7 @@ if (!empty($pluginID)) {
 
         $pp->setAuthor('Solution 360 GmbH');
 
-        $pp->addButton('Jetzt registrieren', 'https://payments.amazon.de/', 'btn btn-primary', 'sign-in')
+        $pp->addButton('Jetzt registrieren', 'https://payments.amazon.de/?ld=SPEXDEAPA-JTL-CP-DP-2016-07', 'btn btn-primary', 'sign-in')
            ->addButton('Dokumentation', 'https://shop.solution360.de/downloads/dokus/Plugin_Doku_AmazonLogin&Pay-Shop4.pdf', 'btn btn-default', null, true);
 
         $pp->addAdvantage('Neukundengewinnung und verbessertes Einkaufserlebnis - Chance auf höhere Konversion und mehr Umsatz Online-Shop durch vereinfachten Bezahlprozess. Käufer werden zu Ihren Kunden und Sie können Ihre Produkte direkt an sie vermarkten.')
@@ -38,7 +38,7 @@ if (!empty($pluginID)) {
            ->addAdvantage('Schutz vor Zahlungsausfall und Betrugsversuchen')
            ->addAdvantage('Kostensenkung durch transaktionsbasiertes Preismodell ohne Grundgebühren, Vorauszahlungen o.Ä.');
 
-        $pp->addHowTo('Registrieren Sie sich bei Amazon Payments unter <a title="Amazon Payments" href="https://payments.amazon.de/" target="_blank"><i class="fa fa-external-link"></i> https://payments.amazon.de/</a>')
+        $pp->addHowTo('Registrieren Sie sich bei Amazon Payments unter <a title="Amazon Payments" href="https://payments.amazon.de/?ld=SPEXDEAPA-JTL-CP-DP-2016-07" target="_blank"><i class="fa fa-external-link"></i> https://payments.amazon.de/</a>')
            ->addHowTo('Aktivieren Sie das Amazon Payments Plugin in Ihrem JTL-Shop 4')
            ->addHowTo('Konfigurieren Sie das Amazon Payments Plugin mit Hilfe der Dokumentation von Solution 360. Diese finden Sie unter diesem <a title="Dokumentation" href="https://shop.solution360.de/downloads/dokus/Plugin_Doku_AmazonLogin&Pay-Shop4.pdf" target="_blank"><i class="fa fa-external-link"></i> Link</a>.')
            ->addHowTo('Fertig!');

@@ -231,6 +231,16 @@ function gibArtikelKeys($FilterSQL, $nArtikelProSeite, $NaviFilter, $bExtern = f
     if (strlen($FilterSQL->oPreisspannenFilterSQL->cJoin) === 0) {
         $cSQL .= " JOIN tpreise ON tartikel.kArtikel = tpreise.kArtikel AND tpreise.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe;
     }
+    
+    executeHook(
+        HOOK_FILTER_INC_GIBARTIKELKEYS_SQL, array(
+            'cSQL'           => &$cSQL,
+            'FilterSQL'      => &$FilterSQL,
+            'NaviFilter'     => &$NaviFilter,
+            'SortierungsSQL' => &$oSortierungsSQL,
+            'cLimitSQL'      => &$cLimitSQL)
+    );
+    
     $oArtikelKey_arr = Shop::DB()->query(
         "SELECT tartikel.kArtikel
             FROM tartikel
@@ -4004,6 +4014,12 @@ function bauFilterSQL($NaviFilter)
         $FilterSQL->oSuchFilterSQL            = gibSuchFilterSQL($NaviFilter);
         $FilterSQL->oSuchspecialFilterSQL     = gibSuchspecialFilterSQL($NaviFilter);
         $FilterSQL->oArtikelAttributFilterSQL = gibArtikelAttributFilterSQL($NaviFilter);
+
+        executeHook(HOOK_FILTER_INC_BAUFILTERSQL, array(
+            'NaviFilter' => &$NaviFilter,
+            'FilterSQL'  => &$FilterSQL)
+        );
+
         Shop::Cache()->set($cacheID, $FilterSQL, array(CACHING_GROUP_CATEGORY));
     }
 

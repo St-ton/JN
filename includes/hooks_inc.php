@@ -1395,6 +1395,29 @@ define('HOOK_BESTELLUNGEN_XML_BESTELLSTATUS', 181);
 define('HOOK_SMARTY_OUTPUTFILTER_MOBILE', 182);
 
 /**
+ * inside gibArtikelKeys() just before the SQL is being executed
+ *
+ * @file filter_inc.php
+ * @since 4.0.5
+ * @param cSQL
+ * @param FilterSQL
+ * @param NaviFilter
+ * @param SortierungsSQL
+ * @param cLimitSQL
+ */
+define('HOOK_FILTER_INC_GIBARTIKELKEYS_SQL', 183);
+
+/**
+ * at the end of bauFilterSQL() just before returning the build FilterSQL object
+ *
+ * @file filter_inc.php
+ * @since 4.0.5
+ * @param FilterSQL
+ * @param NaviFilter
+ */
+define('HOOK_FILTER_INC_BAUFILTERSQL', 184);
+
+/**
  * after flushing cache ID/tag
  *
  * @since 4.0

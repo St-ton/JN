@@ -66,8 +66,8 @@ function getAdminGroup($kAdminlogingruppe)
  */
 function getAdminGroupPermissions($kAdminlogingruppe)
 {
-    $oPerm_arr         = array();
-    $oPermission_arr   = Shop::DB()->select('tadminrechtegruppe', 'kAdminlogingruppe', (int)$kAdminlogingruppe);
+    $oPerm_arr       = array();
+    $oPermission_arr = Shop::DB()->query("SELECT * FROM tadminrechtegruppe WHERE kAdminlogingruppe = " . (int)$kAdminlogingruppe, 2);
 
     foreach ($oPermission_arr as $oPermission) {
         $oPerm_arr[] = $oPermission->cRecht;

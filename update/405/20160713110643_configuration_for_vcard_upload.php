@@ -33,7 +33,7 @@ class Migration_20160713110643 extends Migration implements IMigration
         ]);
 
         $this->setLocalization('ger', 'account data', 'uploadVCard', 'vCard hochladen');
-        $this->setLocalization('eng', 'account data', 'uploadVCard', 'upload vCard');
+        $this->setLocalization('eng', 'account data', 'uploadVCard', 'Upload vCard');
     }
 
     public function down()

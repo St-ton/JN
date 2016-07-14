@@ -383,6 +383,7 @@ function saveCoupon($oKupon, $oSprache_arr)
         // vorhandener Kupon
         $res = $oKupon->update() === -1 ? 0 : $oKupon->kKupon;
     } else {
+        echo "<pre> neuer Kupon unter saveCoupon </pre>";
         // neuer Kupon
         $oKupon->nVerwendungenBisher = 0;
         $oKupon->dErstellt           = 'now()';
@@ -390,7 +391,7 @@ function saveCoupon($oKupon, $oSprache_arr)
         $res                         = $oKupon->kKupon;
     }
 
-    if ($res > 0) {
+    if ($res > 0) {echo "<pre> neuer Kupon unter saveCoupon mit res </pre>";
         // Kupon-Sprachen aktualisieren
         Shop::DB()->delete('tkuponsprache', 'kKupon', $oKupon->kKupon);
 

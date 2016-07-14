@@ -795,16 +795,23 @@ class Kupon
     }
 
     /**
-     * @param int $stellen
+     * @param int $hashLength
+     * @param boolean $lowerCase
+     * @param boolean $upperCase
+     * @param boolean $numberHash
      * @return string
      */
-    public function generateCode($stellen = 7)
+    public function generateCode($hashLength = 7, $lowerCase = true, $upperCase = true, $numberHash = true)
     {
-        $nResult = strtoupper(substr(time() / 1000 + rand(123, 9999999), 0, $stellen));
-        while (Shop::DB()->select('tkupon', 'cCode', $nResult)) {
-            $nResult = strtoupper(substr(time() / 1000 + rand(123, 9999999), 0, $stellen));
+        $lowerCaseString  = $lowerCase ? 'abcdefghijklmnopqrstuvwxyz' : null;
+        $upperCaseString  = $upperCase ? 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' : null;
+        $numberHashString = $numberHash ? '0123456789' : null;
+
+        $cCode = substr(str_shuffle(str_repeat($lowerCaseString . $upperCaseString . $numberHashString, $hashLength)), 0, $hashLength);
+        while (Shop::DB()->select('tkupon', 'cCode', $cCode)) {
+            $cCode = substr(str_shuffle(str_repeat($lowerCaseString . $upperCaseString . $numberHashString, $hashLength)), 0, $hashLength);
         }
 
-        return $nResult;
+        return $cCode;
     }
 }

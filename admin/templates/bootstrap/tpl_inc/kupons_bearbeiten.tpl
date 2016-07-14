@@ -125,6 +125,63 @@
                 {/foreach}
             </div>
         </div>
+        {if empty($oKupon->kKupon) && isset($oKupon->cKuponTyp) && $oKupon->cKuponTyp !== 'neukundenkupon'}
+            <div class="panel panel-default settings">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><input type="checkbox" name="couponCreation" id="couponCreation" class="checkfield" />{#couponsCreation#}</h3>
+                </div>
+                <div class="panel-body hidden" id="massCreationCouponsBody">
+                    <div class="input-group">
+                                 <span class="input-group-addon">
+                                     <label for="numberCoupons">{#numberCoupons#}</label>
+                                 </span>
+                        <input class="form-control" type="number" name="numberOfCoupons" id="numberOfCoupons" min="2" step="1" value="2"/>
+                    </div>
+                    <div class="input-group">
+                                 <span class="input-group-addon">
+                                     <label for="lowerCase">{#lowerCase#}</label>
+                                 </span>
+                        <div class="input-group-wrap">
+                            <input type="checkbox" name="lowerCase" id="lowerCase" class="checkfield" checked />
+                        </div>
+                    </div>
+                    <div class="input-group">
+                                 <span class="input-group-addon">
+                                     <label for="upperCase">{#upperCase#}</label>
+                                 </span>
+                        <div class="input-group-wrap">
+                            <input type="checkbox" name="upperCase" id="upperCase" class="checkfield" checked />
+                        </div>
+                    </div>
+                    <div class="input-group">
+                                 <span class="input-group-addon">
+                                     <label for="numbersHash">{#numbersHash#}</label>
+                                 </span>
+                        <div class="input-group-wrap">
+                            <input type="checkbox" name="numbersHash" id="numbersHash" class="checkfield" checked />
+                        </div>
+                    </div>
+                    <div class="input-group">
+                                 <span class="input-group-addon">
+                                     <label for="hashLength">{#hashLength#}</label>
+                                 </span>
+                        <input class="form-control" type="number" name="hashLength" id="hashLength" min="2" max="16" step="1" value="2"/>
+                    </div>
+                    <div class="input-group">
+                                 <span class="input-group-addon">
+                                     <label for="praefixHash">{#praefixHash#}</label>
+                                 </span>
+                        <input class="form-control" type="text" name="praefixHash" id="praefixHash" placeholder="Summersales_" />
+                    </div>
+                    <div class="input-group">
+                                 <span class="input-group-addon">
+                                     <label for="suffixHash">{#suffixHash#}</label>
+                                 </span>
+                        <input class="form-control" type="text" name="suffixHash" id="suffixHash" placeholder="_2016" />
+                    </div>
+                </div>
+            </div>
+        {/if}
         <div class="panel panel-default settings">
             <div class="panel-heading">
                 <h3 class="panel-title">{#general#}</h3>
@@ -205,7 +262,7 @@
                     </span>
                 </div>
                 {if $oKupon->cKuponTyp === 'standard' || $oKupon->cKuponTyp === 'versandkupon'}
-                    <div class="input-group">
+                    <div class="input-group" id="singleCouponCode">
                         <span class="input-group-addon">
                             <label for="cCode">{#code#}</label>
                         </span>
@@ -349,7 +406,7 @@
                     <span class="input-group-addon">{getHelpDesc cDesc=#multipleChoice#}</span>
                 </div>
                 {if $oKupon->cKuponTyp === 'standard' || $oKupon->cKuponTyp === 'versandkupon'}
-                    <div class="input-group">
+                    <div class="input-group" id="limitedByCustomers">
                         <span class="input-group-addon">
                             <label for="kKunden">{#restrictedToCustomers#}</label>
                         </span>
@@ -367,7 +424,7 @@
                         </span>
                         <span class="input-group-addon">{getHelpDesc cDesc=#multipleChoice#}</span>
                     </div>
-                    <div class="input-group">
+                    <div class="input-group" id="informCustomers">
                         <span class="input-group-addon">
                             <label for="informieren">{#informCustomers#}</label>
                         </span>

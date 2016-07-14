@@ -34,3 +34,6 @@
 [submodule "includes/plugins/s360_amazon_lpa_shop4"]
 	path = includes/plugins/s360_amazon_lpa_shop4
 	url = git@gitlab.jtl-software.de:Pluginzertifizierungen/pluginzertifizierung-amazon-payments.git
+[submodule "includes/plugins/agws_ts_features"]
+	path = includes/plugins/agws_ts_features
+	url = https://gitlab.ag-websolutions.de/plugins/agws_trustedshops.git

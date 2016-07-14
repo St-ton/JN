@@ -1,4 +1,8 @@
 <?php
+/**
+ * @copyright (c) JTL-Software-GmbH
+ * @license http://jtl-url.de/jtlshoplicense
+ */
 
 /**
  * Class VersandartHelper
@@ -457,7 +461,7 @@ class VersandartHelper
                     }
                 } elseif ($oArtikelTMP->nIstVater > 0) { // Variationskombination (Vater)
                     $oArtikelKind = new Artikel();
-                    if ($oArtikel['cInputData']{0} == '_') {
+                    if ($oArtikel['cInputData']{0} === '_') {
                         // 1D
                         $cVariation0                             = substr($oArtikel['cInputData'], 1);
                         list($kEigenschaft0, $kEigenschaftWert0) = explode(':', $cVariation0);

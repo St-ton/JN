@@ -92,10 +92,10 @@ if ($smarty->isCached('productdetails/index.tpl', $cacheID) === true) {
     }
     //404
     if (!$AktuellerArtikel->kArtikel) {
-        //#6317 - send 307 redirect when filtered
+        //#6317 - send 301 redirect when filtered
         if (($Einstellungen['global']['artikel_artikelanzeigefilter'] == EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER) ||
             ($Einstellungen['global']['artikel_artikelanzeigefilter'] == EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL)) {
-            header('HTTP/1.1 301 Moved Permanently');
+            http_response_code(301);
             header('Location: ' . Shop::getURL());
             exit;
         }

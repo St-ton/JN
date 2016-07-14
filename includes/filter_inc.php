@@ -234,11 +234,11 @@ function gibArtikelKeys($FilterSQL, $nArtikelProSeite, $NaviFilter, $bExtern = f
     
     executeHook(
         HOOK_FILTER_INC_GIBARTIKELKEYS_SQL, array(
-            'cSQL' => &$cSQL,
-            'FilterSQL' => &$FilterSQL,
-            'NaviFilter'      => &$NaviFilter,
+            'cSQL'           => &$cSQL,
+            'FilterSQL'      => &$FilterSQL,
+            'NaviFilter'     => &$NaviFilter,
             'SortierungsSQL' => &$oSortierungsSQL,
-            'cLimitSQL' => &$cLimitSQL)
+            'cLimitSQL'      => &$cLimitSQL)
     );
     
     $oArtikelKey_arr = Shop::DB()->query(
@@ -4017,12 +4017,11 @@ function bauFilterSQL($NaviFilter)
 
         executeHook(HOOK_FILTER_INC_BAUFILTERSQL, array(
             'NaviFilter' => &$NaviFilter,
-            'FilterSQL' => &$FilterSQL)
+            'FilterSQL'  => &$FilterSQL)
         );
 
         Shop::Cache()->set($cacheID, $FilterSQL, array(CACHING_GROUP_CATEGORY));
     }
-
 
     return $FilterSQL;
 }

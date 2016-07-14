@@ -518,7 +518,11 @@ function bearbeiteInsert($xml, array $conf)
             DBUpdateInsert('tartikelkonfiggruppe', $oArtikelKonfig_arr, 'kArtikel', 'kKonfiggruppe');
         }
         // Sonderpreise
-        Shop::DB()->delete('tsonderpreise', 'kArtikelSonderpreis', $artikel_arr[0]->kArtikel);
+        Shop::DB()->query("
+            DELETE asp, sp
+                FROM tartikelsonderpreis asp LEFT JOIN tsonderpreis sp ON sp.kArtikelSonderpreis = asp.kArtikelSonderpreis
+                WHERE asp.kArtikel = " . $artikel_arr[0]->kArtikel,
+            4);
         if (isset($xml['tartikel']['tartikelsonderpreis'])) {
             updateXMLinDB($xml['tartikel']['tartikelsonderpreis'], 'tsonderpreise', $GLOBALS['mSonderpreise'], 'kArtikelSonderpreis', 'kKundengruppe');
         }

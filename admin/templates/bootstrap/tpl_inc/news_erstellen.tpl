@@ -115,7 +115,7 @@
                     <tr>
                         <td><label for="dGueltigVon">{#newsValidation#} *</label></td>
                         <td>
-                            <input class="form-control" id="dGueltigVon" name="dGueltigVon" type="text" value="{if isset($cPostVar_arr.dGueltigVon) && $cPostVar_arr.dGueltigVon}{$cPostVar_arr.dGueltigVon}{elseif isset($oNews->dGueltigVon_de) && $oNews->dGueltigVon_de|count_characters > 0}{$oNews->dGueltigVon_de}{else}{$smarty.now|date_format:'%d.%m.%Y %H:%M'}{/if}" />
+                            <input class="form-control" id="dGueltigVon" name="dGueltigVon" type="text" value="{if isset($cPostVar_arr.dGueltigVon) && $cPostVar_arr.dGueltigVon}{$cPostVar_arr.dGueltigVon}{elseif isset($oNews->dGueltigVon_de) && $oNews->dGueltigVon_de|strlen > 0}{$oNews->dGueltigVon_de}{else}{$smarty.now|date_format:'%d.%m.%Y %H:%M'}{/if}" />
                         </td>
                     </tr>
                     <tr>

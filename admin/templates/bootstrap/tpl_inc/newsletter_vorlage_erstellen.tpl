@@ -176,7 +176,7 @@ function checkNewsletterSend() {ldelim}
                         <span class="input-group-addon">
                             <label for="assign_article_list">{#newsletterartnr#}</label>
                         </span>
-                        <input class="form-control" name="cArtikel" id="assign_article_list" type="text" value="{if isset($cPostVar_arr.cArtikel) && $cPostVar_arr.cArtikel|count_characters > 0}{$cPostVar_arr.cArtikel}{elseif isset($oNewsletterVorlage->cArtikel)}{$oNewsletterVorlage->cArtikel}{/if}" />
+                        <input class="form-control" name="cArtikel" id="assign_article_list" type="text" value="{if isset($cPostVar_arr.cArtikel) && $cPostVar_arr.cArtikel|strlen > 0}{$cPostVar_arr.cArtikel}{elseif isset($oNewsletterVorlage->cArtikel)}{$oNewsletterVorlage->cArtikel}{/if}" />
                         <span class="input-group-btn">
                             <a href="#" class="btn btn-default btn-info" id="show_article_list">Artikel verwalten</a>
                         </span>
@@ -185,7 +185,7 @@ function checkNewsletterSend() {ldelim}
                         <span class="input-group-addon">
                             <label for="assign_manufacturer_list">{#newslettermanufacturer#}</label>
                         </span>
-                        <input class="form-control" name="cHersteller" id="assign_manufacturer_list" type="text" value="{if isset($cPostVar_arr.cHersteller) && $cPostVar_arr.cHersteller|count_characters > 0}{$cPostVar_arr.cHersteller}{elseif isset($oNewsletterVorlage->cHersteller)}{$oNewsletterVorlage->cHersteller}{/if}" />
+                        <input class="form-control" name="cHersteller" id="assign_manufacturer_list" type="text" value="{if isset($cPostVar_arr.cHersteller) && $cPostVar_arr.cHersteller|strlen > 0}{$cPostVar_arr.cHersteller}{elseif isset($oNewsletterVorlage->cHersteller)}{$oNewsletterVorlage->cHersteller}{/if}" />
                         <span class="input-group-btn">
                             <a href="#" class="btn btn-default btn-info" id="show_manufacturer_list">Hersteller verwalten</a>
                         </span>
@@ -195,7 +195,7 @@ function checkNewsletterSend() {ldelim}
                         <span class="input-group-addon">
                             <label for="assign_categories_list">{#newslettercategory#}</label>
                         </span>
-                        <input class="form-control" name="cKategorie" id="assign_categories_list" type="text" value="{if isset($cPostVar_arr.cKategorie) && $cPostVar_arr.cKategorie|count_characters > 0}{$cPostVar_arr.cKategorie}{elseif isset($oNewsletterVorlage->cKategorie)}{$oNewsletterVorlage->cKategorie}{/if}" />
+                        <input class="form-control" name="cKategorie" id="assign_categories_list" type="text" value="{if isset($cPostVar_arr.cKategorie) && $cPostVar_arr.cKategorie|strlen > 0}{$cPostVar_arr.cKategorie}{elseif isset($oNewsletterVorlage->cKategorie)}{$oNewsletterVorlage->cKategorie}{/if}" />
                         <span class="input-group-btn">
                             <a href="#" class="btn btn-default btn-info" id="show_categories_list">Kategorien verwalten</a>
                         </span>

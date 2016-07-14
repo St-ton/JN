@@ -37,7 +37,7 @@
                                 <td>{$oSprache->cNameDeutsch}</td>
                                 <td>
                                     {assign var=cISOSprache value=$oSprache->cISO|upper}
-                                    {if isset($oPluginSprachvariable->oPluginSprachvariableSprache_arr[$cISOSprache]) && $oPluginSprachvariable->oPluginSprachvariableSprache_arr[$cISOSprache]|count_characters > 0}
+                                    {if isset($oPluginSprachvariable->oPluginSprachvariableSprache_arr[$cISOSprache]) && $oPluginSprachvariable->oPluginSprachvariableSprache_arr[$cISOSprache]|strlen > 0}
                                         <input class="form-control" style="width: 300px;" name="{$oPluginSprachvariable->kPluginSprachvariable}_{$cISOSprache}" type="text" value="{$oPluginSprachvariable->oPluginSprachvariableSprache_arr[$cISOSprache]|escape:'html'}" />
                                     {else}
                                         <input class="form-control" style="width: 300px;" name="{$oPluginSprachvariable->kPluginSprachvariable}_{$cISOSprache}" type="text" value="" />

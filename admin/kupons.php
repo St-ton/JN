@@ -64,6 +64,9 @@ if ($action === 'bearbeiten') {
     } else {
         // Validierung erfolgreich => Kupon speichern
         if (saveCoupon($oKupon, $oSprache_arr) > 0) {
+            echo "<pre>";
+            var_dump($oKupon);
+            echo "</pre>";
             // erfolgreich gespeichert => evtl. Emails versenden
             if (isset($_POST['informieren']) && $_POST['informieren'] === 'Y') {
                 informCouponCustomers($oKupon);

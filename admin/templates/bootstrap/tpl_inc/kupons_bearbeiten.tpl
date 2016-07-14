@@ -128,7 +128,7 @@
         {if empty($oKupon->kKupon) && isset($oKupon->cKuponTyp) && $oKupon->cKuponTyp !== 'neukundenkupon'}
             <div class="panel panel-default settings">
                 <div class="panel-heading">
-                    <h3 class="panel-title"><input type="checkbox" name="couponCreation" id="couponCreation" class="checkfield" />{#couponsCreation#}</h3>
+                    <h3 class="panel-title"><input type="checkbox" name="couponCreation" id="couponCreation" class="checkfield" value="1" />{#couponsCreation#}</h3>
                 </div>
                 <div class="panel-body hidden" id="massCreationCouponsBody">
                     <div class="input-group">

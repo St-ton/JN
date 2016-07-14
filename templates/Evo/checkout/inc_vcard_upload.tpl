@@ -8,11 +8,11 @@
 
 {if $Einstellungen.kunden.kundenregistrierung_vcardupload === 'Y'}
 <div class="dropdown nav-toggle">
-    <a href="#" class="dropdown-toggle btn btn-default" title="{lang key="uploadVCard" section="account data"}" data-toggle="dropdown"><i class="fa fa-file-text-o"></i>&nbsp;<span class="caret"></span></a>
+    <a href="#" class="dropdown-toggle btn btn-default{if isset($panel_heading)} heading{/if}" title="{lang key="uploadVCard" section="account data"}" data-toggle="dropdown"><i class="fa fa-file-text-o"></i>&nbsp;<span class="caret"></span></a>
     <ul class="dropdown-menu dropdown-menu-right">
         <li>
             <div class="panel">
-                <form class="form panel-body" enctype="multipart/form-data" method="post" action="{get_static_route id=$id}">
+                <form class="form panel-body" enctype="multipart/form-data" method="post" action="{get_static_route id=$id}{if isset($checkout)}?checkout={$checkout}{/if}">
                     {$jtl_token}
                     <fieldset>
                         <legend>{lang key="uploadVCard" section="account data"}</legend>

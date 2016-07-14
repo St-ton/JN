@@ -1724,6 +1724,11 @@ final class Shop
                 http_response_code(301);
                 header('Location: ' . Shop::getURL() . '/' . $NaviFilter->Hersteller->cSeo[Shop::$kSprache]);
                 exit();
+            } elseif (!empty($NaviFilter->Kategorie->kKategorie) && !empty($NaviFilter->KategorieFilter->kKategorie) && !empty($NaviFilter->Kategorie->cSeo[Shop::$kSprache])) {
+                //we have a category page with some category filter
+                http_response_code(301);
+                header('Location: ' . Shop::getURL() . '/' . $NaviFilter->Kategorie->cSeo[Shop::$kSprache]);
+                exit();
             }
         }
     }

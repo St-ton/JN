@@ -437,7 +437,7 @@ function getNewsArchive($kNews, $bActiveOnly = false)
 
     return Shop::DB()->query(
         "SELECT tnews.kNews, tnews.kSprache, tnews.cKundengruppe, tnews.cBetreff, tnews.cText, tnews.cVorschauText, tnews.cPreviewImage, tnews.cMetaTitle,
-            tnews.cMetaDescription, tnews.cMetaKeywords, tnews.nAktiv, tnews.dErstellt, tseo.cSeo,
+            tnews.cMetaDescription, tnews.cMetaKeywords, tnews.nAktiv, tnews.dErstellt, tnews.dGueltigVon, tseo.cSeo,
             DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y %H:%i') AS Datum, DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y %H:%i') AS dGueltigVon_de
             FROM tnews
             LEFT JOIN tseo ON tseo.cKey = 'kNews'

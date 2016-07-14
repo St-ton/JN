@@ -147,6 +147,17 @@
                         </td>
                     </tr>
                     <tr>
+                        <td><label for="kAuthor">{#newsAuthor#}</label></td>
+                        <td>
+                            <select class="form-control" id="kAuthor" name="kAuthor">
+                                <option value="0">Autor ausw&auml;hlen</option>
+                                {foreach name=author from=$oPossibleAuthors_arr item=oPossibleAuthor}
+                                    <option value="{$oPossibleAuthor->kAdminlogin}"{if isset($cPostVar_arr.nAuthor)}{if $cPostVar_arr.nAuthor == $oPossibleAuthor->kAdminlogin} selected="selected"{/if}{elseif isset($oAuthor) && $oAuthor->kAdminlogin == $oPossibleAuthor->kAdminlogin} selected="selected"{/if}>{$oPossibleAuthor->cName}</option>
+                                {/foreach}
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
                         <td><label for="previewImage">{#newsPreview#}</label></td>
                         <td valign="top">
                             {if !empty($oNews->cPreviewImage)}

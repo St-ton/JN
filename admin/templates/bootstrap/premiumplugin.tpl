@@ -204,7 +204,7 @@
                             <img src="{$sp->cLogoPfad}" style="max-width: 100px" alt="{$sp->cFirma}" />
                         </p>
                         <hr>
-                        <h4>Solution 360 GmbH</h4>
+                        <h4>{$sp->cFirma}</h4>
                         <p>
                             <span class="sp-street">{$sp->cStrasse}</span><br>
                             <span class="sp-plz">{$sp->cPLZ} {$sp->cOrt}</span><br>

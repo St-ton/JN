@@ -83,7 +83,7 @@ class JTLCache
     /**
      * currently active caching method
      *
-     * @var ICachingMethod
+     * @var JTLCacheTrait
      */
     private $_method = null;
 
@@ -360,7 +360,7 @@ class JTLCache
             $this->options['lifetime'] = self::DEFAULT_LIFETIME;
         } else {
             $this->options['lifetime'] = (int) $this->options['lifetime'];
-            $maxLifeTime = 60*60*24*30;
+            $maxLifeTime = 60 * 60 * 24 * 30;
             if ($this->options['lifetime'] > $maxLifeTime) {
                 //@see http://php.net/manual/de/memcached.expiration.php
                 $this->options['lifetime'] = $maxLifeTime;
@@ -410,7 +410,7 @@ class JTLCache
     /**
      * set caching method
      *
-     * @param ICachingMethod $method
+     * @param JTLCacheTrait $method
      *
      * @return $this
      */

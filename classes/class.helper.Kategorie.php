@@ -303,7 +303,7 @@ class KategorieHelper
     /**
      * @param int          $id
      * @param array|object $haystack
-     * @return bool
+     * @return object|bool
      */
     public function findCategoryInList($id, $haystack)
     {

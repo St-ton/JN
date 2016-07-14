@@ -12,10 +12,20 @@
         this.init();
     };
 
+    ArticleClass.DEFAULTS = {
+        input: {
+            id: 'a'
+        },
+        action: {
+            compareList: 'Vergleichsliste'
+        }
+    };
+
     ArticleClass.prototype = {
         constructor: ArticleClass,
 
         init: function () {
+            this.options = ArticleClass.DEFAULTS;
         },
         
         onLoad: function() {
@@ -165,6 +175,52 @@
             if ($('.switch-variations').length == 1) {
                 this.variationSwitch();
             }
+
+            $('*[data-toggle="product-actions"] button').on('click', function(event) {
+                if ($.evo.article().handleProductAction(this, $(this.form))) {
+                    event.preventDefault();
+                }
+            });
+        },
+
+        addToComparelist: function(data) {
+            var productId = parseInt(data[this.options.input.id]);
+            if (productId > 0) {
+                var that = this;
+                $.evo.io().call('pushToComparelist', [productId], that, function(error, data) {
+                    if (error) {
+                        return;
+                    }
+
+                    var response = data.response;
+
+                    if (response) {
+                        switch (response.nType) {
+                            case 0: // error
+                                var errorlist = '<ul><li>' + response.cHints.join('</li><li>') + '</li></ul>';
+                                eModal.alert({
+                                    title: response.cTitle,
+                                    message: errorlist
+                                });
+                                break;
+                            case 1: // forwarding
+                                window.location.href = response.cLocation;
+                                break;
+                            case 2: // added to comparelist
+                                that.updateComparelist(response.nCount);
+                                eModal.alert({
+                                    title: response.cTitle,
+                                    message: response.cNotification
+                                });
+                                break;
+                        }
+                    }
+                });
+
+                return true;
+            }
+
+            return false;
         },
 
         configurator: function (init) {
@@ -305,6 +361,16 @@
             return $('.cfg-group[data-id="' + groupId + '"] .group-image img');
         },
 
+        handleProductAction: function(action, $form) {
+            var data = $form.serializeObject();
+            switch (action.name) {
+                case this.options.action.compareList:
+                    return this.addToComparelist(data);
+            }
+
+            return false;
+        },
+
         setConfigItemImage: function (groupId, img) {
             $('.cfg-group[data-id="' + groupId + '"] .group-image img').attr('src', img).first();
         },
@@ -335,6 +401,10 @@
             }, function() {
                 $.evo.error('Error loading ' + url);
             });
+        },
+
+        updateComparelist: function(compareCount) {
+            //alert(compareCount);
         },
 
         variationResetAll: function() {

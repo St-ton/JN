@@ -10,6 +10,7 @@ $io = new IO();
 
 $io->register('suggestions')
     ->register('pushToBasket')
+    ->register('pushToComparelist')
     ->register('checkDependencies')
     ->register('checkVarkombiDependencies')
     ->register('generateToken')
@@ -173,6 +174,37 @@ function pushToBasket($kArtikel, $anzahl, $oEigenschaftwerte_arr = '')
             return $objResponse;
         }
     }
+
+    return $objResponse;
+}
+
+function pushToComparelist($kArtikel)
+{
+    $oResponse   = new stdClass();
+    $objResponse = new IOResponse();
+
+    $_POST['Vergleichsliste'] = 1;
+    $_POST['a']               = $kArtikel;
+
+    checkeWarenkorbEingang();
+    $error  = Shop::Smarty()->getTemplateVars('fehler');
+    $notice = Shop::Smarty()->getTemplateVars('hinweis');
+
+    $oResponse->nType         = 2;
+    $oResponse->nCount        = count($_SESSION['Vergleichsliste']->oArtikel_arr);
+    $oResponse->cNotification = utf8_encode(
+        Shop::Smarty()
+            ->assign('type', empty($error) ? 'info' : 'danger')
+            ->assign('body', empty($error) ? $notice : $error)
+            ->assign('buttons', [
+                (object)['href' => 'vergleichsliste.php', 'fa' => 'fa-tasks', 'title' => Shop::Lang()->get('compare', 'global')],
+                (object)['href' => '#', 'fa' => 'fa fa-arrow-circle-right', 'title' => Shop::Lang()->get('continueShopping', 'checkout'), 'primary' => true, 'dismiss' => 'modal'],
+            ])
+            ->fetch('snippets/notification.tpl')
+    );
+
+    $oResponse->cTitle = utf8_encode(Shop::Lang()->get('compare', 'global'));
+    $objResponse->script('this.response = ' . json_encode($oResponse) . ';');
 
     return $objResponse;
 }

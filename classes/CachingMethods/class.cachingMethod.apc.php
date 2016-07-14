@@ -8,8 +8,10 @@
  * Class cache_apc
  * implements the APC Opcode Cache
  */
-class cache_apc extends JTLCacheHelper implements ICachingMethod
+class cache_apc implements ICachingMethod
 {
+    use JTLCacheTrait;
+    
     /**
      * @var cache_apc|null
      */
@@ -26,17 +28,6 @@ class cache_apc extends JTLCacheHelper implements ICachingMethod
         self::$instance      = $this;
 
         return $this;
-    }
-
-    /**
-     * @param array $options
-     *
-     * @return cache_apc
-     */
-    public static function getInstance($options)
-    {
-        //check if class was initialized before
-        return (self::$instance !== null) ? self::$instance : new self($options);
     }
 
     /**

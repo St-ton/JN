@@ -55,10 +55,10 @@ $section          = null;
 $step             = 'uebersicht';
 if ($kSektion > 0) {
     $step    = 'einstellungen bearbeiten';
-    $section = Shop::DB()->query('teinstellungensektion', 'kEinstellungenSektion', $kSektion);
+    $section = Shop::DB()->select('teinstellungensektion', 'kEinstellungenSektion', $kSektion);
     $smarty->assign('kEinstellungenSektion', $section->kEinstellungenSektion);
 } else {
-    $section = Shop::DB()->query('teinstellungensektion', 'kEinstellungenSektion', 1);
+    $section = Shop::DB()->select('teinstellungensektion', 'kEinstellungenSektion', 1);
     $smarty->assign('kEinstellungenSektion', 1);
 }
 
@@ -81,7 +81,7 @@ if (isset($_POST['einstellungen_bearbeiten']) && (int)$_POST['einstellungen_bear
         $Conf = $oSQL->oEinstellung_arr;
         $smarty->assign('cSearch', $oSQL->cSearch);
     } else {
-        $section = Shop::DB()->query('teinstellungensektion', 'kEinstellungenSektion', $kSektion);
+        $section = Shop::DB()->select('teinstellungensektion', 'kEinstellungenSektion', $kSektion);
         $Conf    = Shop::DB()->query(
             "SELECT *
                 FROM teinstellungenconf

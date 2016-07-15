@@ -231,4 +231,28 @@
     </div>
 {/if}
 
+{if isset($bAjaxRequest) && $bAjaxRequest}
+    <script type="text/javascript">
+        $('a.remove').click(function(e) {
+            eModal.ajax({
+                'size': 'lg',
+                'url': e.currentTarget.href,
+                'title': '{lang key="compare" section="global"}'
+            });
+
+            return false;
+        });
+        new function(){
+            var clCount = {if isset($oVergleichsliste->oArtikel_arr)}{$oVergleichsliste->oArtikel_arr|count}{else}0{/if};
+            if (clCount > 1) {
+                $('.navbar-nav .compare-list-menu .badge em').html(clCount);
+            }
+            else {
+                $('.navbar-nav .compare-list-menu').addClass('hidden');
+                eModal.close();
+            }
+        }();
+    </script>
+{/if}
+
 {include file='layout/footer.tpl'}

@@ -10,7 +10,10 @@
 class Notification implements IteratorAggregate, Countable
 {
     use SingletonTrait;
-    
+
+    /**
+     * @var array
+     */
     private $array = [];
 
     /**
@@ -33,7 +36,7 @@ class Notification implements IteratorAggregate, Countable
     }
 
     /**
-     * @return highest type in record
+     * @return int - highest type in record
      */
     public function getHighestType()
     {
@@ -65,7 +68,7 @@ class Notification implements IteratorAggregate, Countable
             if ($a->getType() > $b->getType()) {
                 return -1;
             }
-            elseif ($a->getType() < $b->getType()) {             
+            if ($a->getType() < $b->getType()) {
                 return 1;
             }
             return 0;
@@ -103,7 +106,7 @@ class Notification implements IteratorAggregate, Countable
             $this->add(NotificationEntry::TYPE_WARNING, 'Plugin', 'Der Profiler ist aktiv und kann zu starken Leistungseinbu&szlig;en im Shop f&uuml;hren.');
         }
 
-        if ($confGlobal['global']['anti_spam_method'] == 7 && !reCaptchaConfigured()) {
+        if ((int)$confGlobal['global']['anti_spam_method'] === 7 && !reCaptchaConfigured()) {
             $this->add(NotificationEntry::TYPE_WARNING, 'Konfiguration', 'Sie haben Google reCaptcha als Spamschutz-Methode gew&auml;hlt, aber Website- und/oder Geheimer Schl&uuml;ssel nicht angegeben.', 'einstellungen.php?kSektion=1#anti_spam_method');
         }
 

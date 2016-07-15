@@ -5,24 +5,27 @@
  */
 
 /**
- * Create a new filter object
+ * Create a new empty filter object
+ *
+ * @return object - filter object
  */
 function createFilter()
 {
     $oFilter              = new stdClass();
     $oFilter->oField_arr  = array();
     $oFilter->cWhereSQL   = "";
-    $oFilter->cGetVar_arr = $_GET;
-
-    if (isset($oFilter->cGetVar_arr['action'])) {
-        unset ($oFilter->cGetVar_arr['action']);
-    }
+    $oFilter->cAddGetVar_arr = $_GET;
 
     return $oFilter;
 }
 
 /**
  * Add a text field to a filter object
+ *
+ * @param object $oFilter
+ * @param string $cTitle - the label/title for this field
+ * @param string $cColumn - the column name to be compared
+ * @param bool $bExact - exact match or substring search
  */
 function addFilterTextfield($oFilter, $cTitle, $cColumn, $bExact)
 {
@@ -31,41 +34,61 @@ function addFilterTextfield($oFilter, $cTitle, $cColumn, $bExact)
     $oField->cTitle        = $cTitle;
     $oField->cColumn       = $cColumn;
     $oField->bExact        = $bExact;
-    $oField->cValue        = isset($oFilter->cGetVar_arr[$cColumn]) ? $oFilter->cGetVar_arr[$cColumn] : '';
+    $oField->cValue        = isset($oFilter->cAddGetVar_arr[$cColumn]) ? $oFilter->cAddGetVar_arr[$cColumn] : '';
     $oFilter->oField_arr[] = $oField;
 
-    if (isset($oFilter->cGetVar_arr[$cColumn])) {
-        unset ($oFilter->cGetVar_arr[$cColumn]);
+    if (isset($oFilter->cAddGetVar_arr[$cColumn])) {
+        unset($oFilter->cAddGetVar_arr[$cColumn]);
     }
 }
 
 /**
- * Add a select field to a filter object
+ * Add a select field to a filter object. Options can be added with addFilterSelectOption() to this select field
+ *
+ * @param string $cTitle - the label/title for this field
+ * @param string $cColumn - the column name to be compared
+ * @param array $cOptionTitle_arr - array of options titles
+ * @param array $cOptionCond_arr - array of options conditional right parts (e.g. "= 'Y'" or "> 10")
+ * @return object - the filter select field object
  */
-function addFilterSelect($oFilter, $cTitle, $cColumn, $cOptionTitle_arr, $cOptionCond_arr)
+function addFilterSelect($oFilter, $cTitle, $cColumn)
 {
-    $oField          = new stdClass();
-    $oField->cType   = 'select';
-    $oField->cTitle  = $cTitle;
-    $oField->cColumn = $cColumn;
-
-    $oField->oOption_arr = array_map(function ($cTitle, $cCond) {
-        $oOption         = new stdClass();
-        $oOption->cTitle = $cTitle;
-        $oOption->cCond  = $cCond;
-        return $oOption;
-    }, $cOptionTitle_arr, $cOptionCond_arr);
-
-    $oField->cValue        = isset($oFilter->cGetVar_arr[$cColumn]) ? $oFilter->cGetVar_arr[$cColumn] : '0';
+    $oField                = new stdClass();
+    $oField->cType         = 'select';
+    $oField->cTitle        = $cTitle;
+    $oField->cColumn       = $cColumn;
+    $oField->oOption_arr   = array();
+    $oField->cValue        = isset($oFilter->cAddGetVar_arr[$cColumn]) ? $oFilter->cAddGetVar_arr[$cColumn] : '0';
     $oFilter->oField_arr[] = $oField;
 
-    if (isset($oFilter->cGetVar_arr[$cColumn])) {
-        unset ($oFilter->cGetVar_arr[$cColumn]);
+    if (isset($oFilter->cAddGetVar_arr[$cColumn])) {
+        unset($oFilter->cAddGetVar_arr[$cColumn]);
     }
+
+    return $oField;
 }
 
 /**
- * assemble filter object ready for display
+ * Add a select option to a filter select field
+ *
+ * @param object $oFilter
+ * @param string $cTitle - the label/title for this field
+ * @param string $cColumn - the column name to be compared
+ * @param array $cOptionTitle_arr - array of options titles
+ * @param array $cOptionCond_arr - array of options conditional right parts (e.g. "= 'Y'" or "> 10")
+ */
+function addFilterSelectOption($oField, $cTitle, $cCond)
+{
+    $oOption               = new stdClass();
+    $oOption->cTitle       = $cTitle;
+    $oOption->cCond        = $cCond;
+    $oField->oOption_arr[] = $oOption;
+}
+
+/**
+ * Assemble filter object to be ready for display and use
+ *
+ * @param object $oFilter
  */
 function assembleFilter($oFilter)
 {

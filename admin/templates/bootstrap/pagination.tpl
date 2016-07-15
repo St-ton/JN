@@ -1,49 +1,33 @@
-{if !isset($hash)}
-    {assign var=hash value=''}
-{/if}
-
-{if !isset($cParams)}
-    {assign var=cParams value=''}
-{/if}
-
-{if isset($oBlaetterNavi->nAktiv) && $oBlaetterNavi->nAktiv == 1}
-    <div class="block clearall">
-        <div class="pages tleft">
-            <span class="pageinfo">
-                Eintrag: <strong>{$oBlaetterNavi->nVon}</strong> - {$oBlaetterNavi->nBis} von {$oBlaetterNavi->nAnzahl}
-            </span>
-            <ul class="pagination">
-                {if $oBlaetterNavi->nAktuelleSeite == 1}
-                    <li class="pagination-item"><span class="page">&laquo;</span></li>
-                {else}
-                    <li class="pagination-item"><a class="back" href="{$cUrl}?s{$cSite}={$oBlaetterNavi->nVoherige}{$cParams}{$hash}">&laquo;</a></li>
-                {/if}
-
-                {if $oBlaetterNavi->nAnfang != 0}
-                    <li class="pagination-item">
-                        <a class="page" href="{$cUrl}?s{$cSite}={$oBlaetterNavi->nAnfang}{$cParams}{$hash}">{$oBlaetterNavi->nAnfang}</a>
-                    </li>
-                    <li class="pagination-item"><span class="page">...</span></li>
-                {/if}
-                {foreach name=blaetternavi from=$oBlaetterNavi->nBlaetterAnzahl_arr item=Blatt}
-                    <li class="pagination-item{if $oBlaetterNavi->nAktuelleSeite == $Blatt} active{/if}">
-                        <a class="page" href="{$cUrl}?s{$cSite}={$Blatt}{$cParams}{$hash}">{$Blatt}</a>
-                    </li>
+<div class="block">
+    <form method="get" class="form-inline">
+        {foreach $oPagination->cAddGetVar_arr as $cGetVarName => $cGetVarValue}
+            <input type="hidden" name="{$cGetVarName}" value="{$cGetVarValue}">
+        {/foreach}
+        <div class="form-group">
+            {if $oPagination->nPageCount > 1}
+                <label>
+                    Eintr&auml;ge {$oPagination->nFirstItem + 1}
+                    - {$oPagination->nFirstItem + $oPagination->nPageItemCount}
+                    von {$oPagination->nItemCount}
+                </label>
+                <button type="submit" class="btn btn-sm btn-link" name="{$oPagination->cID}_nPage" value="{$oPagination->nPrevPage}"
+                    {if $oPagination->nPrevPage == $oPagination->nPage} disabled="disabled"{/if}>&laquo;</button>
+                {for $i=0 to $oPagination->nPageCount-1}
+                    <button type="submit" class="btn btn-sm{if $oPagination->nPage == $i} btn-primary{else} btn-default{/if}" name="{$oPagination->cID}_nPage" value="{$i}">{$i+1}</button>
+                {/for}
+                <button type="submit" class="btn btn-sm btn-link" name="{$oPagination->cID}_nPage" value="{$oPagination->nNextPage}"
+                    {if $oPagination->nNextPage == $oPagination->nPage} disabled="disabled"{/if}>&raquo;</button>
+            {/if}
+            <label for="{$oPagination->cID}_nItemsPerPage">
+                Eintr&auml;ge pro Seite
+            </label>
+            <select class="form-control" name="{$oPagination->cID}_nItemsPerPage" id="{$oPagination->cID}_nItemsPerPage" onchange="this.form.submit();">
+                {foreach $oPagination->nItemsPerPageOption_arr as $nItemsPerPageOption}
+                    <option value="{$nItemsPerPageOption}"{if $oPagination->nItemsPerPage == $nItemsPerPageOption} selected="selected"{/if}>
+                        {$nItemsPerPageOption}
+                    </option>
                 {/foreach}
-
-                {if $oBlaetterNavi->nEnde != 0}
-                    <li class="pagination-item"><span class="page">...</span></li>
-                    <li class="pagination-item">
-                        <a class="page" href="{$cUrl}?s{$cSite}={$oBlaetterNavi->nEnde}{$cParams}{$hash}">{$oBlaetterNavi->nEnde}</a>
-                    </li>
-                {/if}
-
-                {if $oBlaetterNavi->nAktuelleSeite == $oBlaetterNavi->nSeiten}
-                    <li class="pagination-item"><span class="page">&raquo;</span></li>
-                {else}
-                    <li class="pagination-item"><a class="next" href="{$cUrl}?s{$cSite}={$oBlaetterNavi->nNaechste}{$cParams}{$hash}">&raquo;</a></li>
-                {/if}
-            </ul>
+            </select>
         </div>
-    </div>
-{/if}
+    </form>
+</div>

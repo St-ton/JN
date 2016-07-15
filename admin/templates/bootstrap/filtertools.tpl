@@ -1,6 +1,6 @@
 <div class="block">
     <form method="get" class="form-inline">
-        {foreach $oFilter->cGetVar_arr as $cGetVarName => $cGetVarValue}
+        {foreach $oFilter->cAddGetVar_arr as $cGetVarName => $cGetVarValue}
             <input type="hidden" name="{$cGetVarName}" value="{$cGetVarValue}">
         {/foreach}
         {foreach $oFilter->oField_arr as $oField}

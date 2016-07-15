@@ -127,14 +127,13 @@ function normalizeDate($string)
  * @param string $cOrderBy - a column that should be sorted by
  * @return array
  */
-function getCoupons($cKuponTyp = 'standard', $cLimitSQL = '', $cOrderBy = 'kKupon', $cWhereSQL = '')
+function getCoupons($cKuponTyp = 'standard', $cOrderBy = 'kKupon', $cWhereSQL = '')
 {
     $oKuponDB_arr = Shop::DB()->query("
         SELECT kKupon
             FROM tkupon
             WHERE cKuponTyp = '" . $cKuponTyp . "'" . ($cWhereSQL !== '' ? " AND " . $cWhereSQL : "") .
-            "ORDER BY " . $cOrderBy . " " .
-            $cLimitSQL,
+            "ORDER BY " . $cOrderBy,
         2);
     $oKupon_arr = array();
 

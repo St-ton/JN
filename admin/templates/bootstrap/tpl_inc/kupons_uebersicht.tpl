@@ -3,7 +3,7 @@
 {function kupons_uebersicht_tab}
     <div id="{$cKuponTyp}" class="tab-pane fade{if $tab === $cKuponTyp} active in{/if}">
         {include file='filtertools.tpl' oFilter=$oFilter}
-        {include file='pagination.tpl' cSite=$nSeite cUrl='kupons.php' oBlaetterNavi=$oBlaetterNavi cParams='&tab='|cat:$cKuponTyp}
+        {include file='pagination.tpl' oPagination=$oPagination}
         <form method="post" action="kupons.php">
             {$jtl_token}
             <input type="hidden" name="cKuponTyp" id="cKuponTyp" value="{$cKuponTyp}">
@@ -100,22 +100,22 @@
             cKuponTyp='standard'
             cKuponTypName=#standardCoupon#
             oKupon_arr=$oKuponStandard_arr
+            oPagination=$oPaginationStandard
             nSeite=1
-            oBlaetterNavi=$oBlaetterNaviStandard
         }
         {kupons_uebersicht_tab
             cKuponTyp='versandkupon'
             cKuponTypName=#shippingCoupon#
             oKupon_arr=$oKuponVersandkupon_arr
+            oPagination=$oPaginationVersandkupon
             nSeite=2
-            oBlaetterNavi=$oBlaetterNaviVersandkupon
         }
         {kupons_uebersicht_tab
             cKuponTyp='neukundenkupon'
             cKuponTypName=#newCustomerCoupon#
             oKupon_arr=$oKuponNeukundenkupon_arr
+            oPagination=$oPaginationNeukundenkupon
             nSeite=3
-            oBlaetterNavi=$oBlaetterNaviNeukundenkupon
         }
     </div>
 </div>

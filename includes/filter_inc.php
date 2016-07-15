@@ -231,6 +231,16 @@ function gibArtikelKeys($FilterSQL, $nArtikelProSeite, $NaviFilter, $bExtern = f
     if (strlen($FilterSQL->oPreisspannenFilterSQL->cJoin) === 0) {
         $cSQL .= " JOIN tpreise ON tartikel.kArtikel = tpreise.kArtikel AND tpreise.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe;
     }
+    
+    executeHook(
+        HOOK_FILTER_INC_GIBARTIKELKEYS_SQL, array(
+            'cSQL'           => &$cSQL,
+            'FilterSQL'      => &$FilterSQL,
+            'NaviFilter'     => &$NaviFilter,
+            'SortierungsSQL' => &$oSortierungsSQL,
+            'cLimitSQL'      => &$cLimitSQL)
+    );
+    
     $oArtikelKey_arr = Shop::DB()->query(
         "SELECT tartikel.kArtikel
             FROM tartikel
@@ -506,10 +516,23 @@ function gibHerstellerFilterOptionen($FilterSQL, $NaviFilter)
  */
 function gibKategorieFilterOptionen($FilterSQL, $NaviFilter)
 {
+    //build simple string from non-empty values of $FilterSQL
+    $filterString = '';
+    if (is_object($FilterSQL)) {
+        foreach (get_object_vars($FilterSQL) as $outerKey => $outerValue) {
+            if (is_object($outerValue)) {
+                foreach (get_object_vars($outerValue) as $key => $val) {
+                    if (!empty($val)) {
+                        $filterString .= $outerKey . $key . $val;
+                    }
+                }
+            }
+        }
+    }
     $cacheID = 'filter_kfo_' . md5(
             json_encode($_SESSION['Kundengruppe']) .
             serialize($NaviFilter) .
-            json_encode($FilterSQL) .
+            $filterString .
             Shop::$kSprache
         );
     if (($oKategorieFilterDB_arr = Shop::Cache()->get($cacheID)) !== false) {
@@ -542,7 +565,7 @@ function gibKategorieFilterOptionen($FilterSQL, $NaviFilter)
                                     " . $kKatFilter . "
                                     JOIN tkategorie ON tkategorie.kKategorie = tkategorieartikelgesamt.kKategorie";
         }
-        // nicht Standardsprache? Dann hole nicht aus tkategorie den Namne sondern aus tkategoriesprache
+        // nicht Standardsprache? Dann hole Namen nicht aus tkategorie sondern aus tkategoriesprache
         $cSQLKategorieSprache          = new stdClass();
         $cSQLKategorieSprache->cSELECT = "tkategorie.cName";
         $cSQLKategorieSprache->cJOIN   = '';
@@ -614,7 +637,13 @@ function gibKategorieFilterOptionen($FilterSQL, $NaviFilter)
     }
     $tagArray = array(CACHING_GROUP_CATEGORY);
     if (isset($NaviFilter->Kategorie->kKategorie)) {
-        $tagArray[] = CACHING_GROUP_CATEGORY . '_' . $NaviFilter->Kategorie->kKategorie;
+        $tagArray[] = CACHING_GROUP_CATEGORY . '_' . (int) $NaviFilter->Kategorie->kKategorie;
+    } else {
+        foreach ($oKategorieFilterDB_arr as $filter) {
+            if (isset($filter->kKategorie)) {
+                $tagArray[] = CACHING_GROUP_CATEGORY . '_' . (int) $filter->kKategorie;
+            }
+        }
     }
     Shop::Cache()->set($cacheID, $oKategorieFilterDB_arr, $tagArray);
 
@@ -894,6 +923,9 @@ function gibBewertungSterneFilterOptionen($FilterSQL, $NaviFilter)
  */
 function gibPreisspannenFilterOptionen($FilterSQL, $NaviFilter, $oSuchergebnisse)
 {
+    if (!$_SESSION['Kundengruppe']->darfPreiseSehen) {
+        return array();
+    }
     if (isset(Shop::$kSprache)) {
         $kSprache = (int) Shop::$kSprache;
     } else {
@@ -2695,10 +2727,8 @@ function gibNaviURL($NaviFilter, $bSeo, $oZusatzFilter, $kSprache = 0, $bCanonic
             (isset($oZusatzFilter->SuchFilter->kSuchanfrage) && $oZusatzFilter->SuchFilter->kSuchanfrage > 0))
     ) {
         $bSeo = false;
-        $cURL = Shop::getURL() . '/navi.php?';
-    } else {
-        $cURL = Shop::getURL() . '/navi.php?';
     }
+    $cURL = $cSEOURL . 'navi.php?';
     // Mainwords
     if (isset($NaviFilter->Kategorie->kKategorie) && $NaviFilter->Kategorie->kKategorie > 0) {
         if (!isset($NaviFilter->Kategorie->cSeo[$kSprache]) || strlen($NaviFilter->Kategorie->cSeo[$kSprache]) === 0) {
@@ -2773,7 +2803,12 @@ function gibNaviURL($NaviFilter, $bSeo, $oZusatzFilter, $kSprache = 0, $bCanonic
                 if (strlen($NaviFilter->KategorieFilter->cSeo[$kSprache]) === 0) {
                     $bSeo = false;
                 }
-                $cURL .= '&amp;kf=' . (int)$NaviFilter->KategorieFilter->kKategorie;
+                $conf = Shop::getConfig(array(CONF_NAVIGATIONSFILTER));
+                if ($conf['navigationsfilter']['kategoriefilter_anzeigen_als'] === 'HF' && !empty($oZusatzFilter->KategorieFilter->kKategorie)) {
+                    $cURL .= '&amp;kf=' . (int)$oZusatzFilter->KategorieFilter->kKategorie;
+                } else {
+                    $cURL .= '&amp;kf=' . (int)$NaviFilter->KategorieFilter->kKategorie;
+                }
             }
         } elseif ((isset($oZusatzFilter->KategorieFilter->kKategorie) && $oZusatzFilter->KategorieFilter->kKategorie > 0) &&
             (!isset($NaviFilter->Kategorie->kKategorie) || $NaviFilter->Kategorie->kKategorie != $oZusatzFilter->KategorieFilter->kKategorie)
@@ -2918,7 +2953,7 @@ function gibNaviURL($NaviFilter, $bSeo, $oZusatzFilter, $kSprache = 0, $bCanonic
         }
         // Zusatz Tagfilter
         if (isset($oZusatzFilter->TagFilter->kTag) && $oZusatzFilter->TagFilter->kTag > 0 && !$bZusatzTagEnthalten) {
-            //$cURL .= "&tf" . $nLetzterTagFilter . "=" . $oZusatzFilter->TagFilter->kTag;
+            //$cURL .= "&amp;tf" . $nLetzterTagFilter . "=" . $oZusatzFilter->TagFilter->kTag;
             $nPos = count($oTag_arr);
             if (!isset($oTag_arr[$nPos])) {
                 $oTag_arr[$nPos] = new stdClass();
@@ -3979,6 +4014,12 @@ function bauFilterSQL($NaviFilter)
         $FilterSQL->oSuchFilterSQL            = gibSuchFilterSQL($NaviFilter);
         $FilterSQL->oSuchspecialFilterSQL     = gibSuchspecialFilterSQL($NaviFilter);
         $FilterSQL->oArtikelAttributFilterSQL = gibArtikelAttributFilterSQL($NaviFilter);
+
+        executeHook(HOOK_FILTER_INC_BAUFILTERSQL, array(
+            'NaviFilter' => &$NaviFilter,
+            'FilterSQL'  => &$FilterSQL)
+        );
+
         Shop::Cache()->set($cacheID, $FilterSQL, array(CACHING_GROUP_CATEGORY));
     }
 

@@ -1,9 +1,9 @@
 <?php
 /**
- * add news category image row
+ * moves the 404 page into the hidden linkgroup
  *
- * @author dr
- * @created Thu, 28 Apr 2016 16:27:06 +0200
+ * @author ms
+ * @created Tue, 17 May 2016 13:23:00 +0200
  */
 
 /**
@@ -20,17 +20,17 @@
  * setConfig          - add / update config property
  * removeConfig       - remove config property
  */
-class Migration_20160510150906 extends Migration implements IMigration
+class Migration_20160517132300 extends Migration implements IMigration
 {
-    protected $author = 'dr';
+    protected $author = 'ms';
 
     public function up()
     {
-        $this->execute("ALTER TABLE tnewskategorie ADD `cPreviewImage` VARCHAR(255)");
+        $this->execute("UPDATE `tlink` SET `kLinkgruppe` = (SELECT `kLinkgruppe` FROM `tlinkgruppe` WHERE `cName` = 'hidden') WHERE `nLinkart`= '29';");
     }
 
     public function down()
     {
-        $this->dropColumn('tnewskategorie', 'cPreviewImage');
+        $this->execute("UPDATE `tlink` SET `kLinkgruppe`='0' WHERE `nLinkart`= '29';");
     }
 }

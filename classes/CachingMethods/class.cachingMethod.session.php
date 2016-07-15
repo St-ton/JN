@@ -8,8 +8,10 @@
  * Class cache_session
  * Implements caching via PHP $_SESSION object
  */
-class cache_session extends JTLCacheHelper implements ICachingMethod
+class cache_session implements ICachingMethod
 {
+    use JTLCacheTrait;
+
     /**
      * @var cache_session|null
      */
@@ -23,17 +25,6 @@ class cache_session extends JTLCacheHelper implements ICachingMethod
         $this->isInitialized = true;
         $this->journalID     = 'session_journal';
         $this->options       = $options;
-    }
-
-    /**
-     * @param array $options
-     *
-     * @return cache_session
-     */
-    public static function getInstance($options)
-    {
-        //check if class was initialized before
-        return (self::$instance !== null) ? self::$instance : new self($options);
     }
 
     /**

@@ -48,8 +48,7 @@ final class EventDispatcher
         foreach ((array) $eventNames as $event) {
             if (strpos($event, '*') !== false) {
                 $this->wildcards[$event][] = $listener;
-            }
-            else {
+            } else {
                 $this->listeners[$event][] = $listener;
             }
         }
@@ -81,8 +80,7 @@ final class EventDispatcher
             if (isset($this->wildcards[$eventName])) {
                 unset($this->wildcards[$eventName]);
             }
-        }
-        else {
+        } else {
             if (isset($this->listeners[$eventName])) {
                 unset($this->listeners[$eventName]);
             }
@@ -102,6 +100,7 @@ final class EventDispatcher
             $listeners = array_merge($listeners,
                 $this->listeners[$eventName]);
         }
+
         return $listeners;
     }
 
@@ -119,6 +118,7 @@ final class EventDispatcher
                 $wildcards = array_merge($wildcards, $listeners);
             }
         }
+
         return $wildcards;
     }
 }

@@ -104,7 +104,7 @@
                                 <label for="cBrandingBild">{#brandingFileName#}</label>
                             </span>
                             <span class="input-group-wrap">
-                                <input class="form-control" type="file" name="cBrandingBild" maxlength="2097152" accept="image/jpeg,image/gif,image/png,image/bmp" id="cBrandingBild" value="" tabindex="1" {if !$oBranding->cBrandingBild|count_characters > 0}required{/if}/>
+                                <input class="form-control" type="file" name="cBrandingBild" maxlength="2097152" accept="image/jpeg,image/gif,image/png,image/bmp" id="cBrandingBild" value="" tabindex="1" {if !$oBranding->cBrandingBild|strlen > 0}required{/if}/>
                             </span>
                             <span class="input-group-addon">{getHelpDesc cDesc=#brandingFileNameDesc#}</span>
                         </div>

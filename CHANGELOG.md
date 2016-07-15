@@ -1,5 +1,6 @@
 # JTL-Shop Changelog
 
+
 ## [unreleased]
 * Bugfix: Bearbeiten von Herstellern invalidiert Objektcache für Artikel nicht
 * Bugfix: Newsbeiträge aus deaktivierten Kategorien werden auf der Startseite angezeigt
@@ -19,15 +20,43 @@
 * Bugfix: TopArtikel werden bei aktiviertem Objektcache nicht aktualisiert 
 * Bugfix: Ändern von Bildeinstellungen invalidiert Objektcache nicht 
 * Bugfix: Varkombi Dropdown-Auswahl wird bei Auswahl Nachladen der Kombination zurückgesetzt
-* Verbesserung: Bildpfad-Änderungen (/bilder/... --> /media/image/...) werden nun via 301 weitergeleitet. 
-* Bugfix PayPal-Plugin (v1.05): Gratisgeschenke werden nicht als Item gelistet
-* Bugfix PayPal-Plugin (v1.05): TLS-Check liefert teilweise falsche Ergebnisse, da Version nicht festgelegt
-* Bugfix Fehlerhafte Kategorie-/Merkmalfilter-URLs erzeugen keinen 404-Statuscode
+* Bugfix: PayPal-Plugin (v1.05): Gratisgeschenke werden nicht als Item gelistet
+* Bugfix: PayPal-Plugin (v1.05): TLS-Check liefert teilweise falsche Ergebnisse, da Version nicht festgelegt
+* Bugfix: Fehlerhafte Kategorie-/Merkmalfilter-URLs erzeugen keinen 404-Statuscode
+* Bugfix: Bei Klick auf Sortierung in Freischaltzentrale unter Livesuche erfolgt Weiterleitung zum Reiter "Bewertungen" (#100)
+* Bugfix: Aufgabenplaner: Bei Klick auf "Zuletzt fertiggestellt" verschwinden Buttons (#98)
+* Bugfix: Mailversand erfolgt immer in zum Registrierungszeitpunkt eingestellter Sprache (#63)
+* Bugfix: "<tab>" wird aus Exportformaten gelöscht, wenn beim Speichern Angaben fehlen (#136)
+* Verbesserung: Links können nun dupliziert werden und in mehreren Linkgruppen gleichzeitig vorhanden sein (#159)
+* Bugfix: Kupon::generateCode() erzeugt Endlosrekursion
+* Verbesserung: HOOK_INDEX_SEO_404 wird nun auch ausgeführt, wenn cSeo nicht leer ist
+* Verbesserung: HOOK_WARENKORB_PAGE_KUPONANNEHMEN_PLAUSI wird wieder früher ausgeführt und enthält Parameter  (#234)
+* Bugfix: Internal Server Error wenn mod_deflate nicht aktiviert ist (#235)
+* Verbesserung: Prioritäten für Plugin-Hooks (#45)
+* Bugfix: Abnahmeintervall wird bei Konfigurationsartikel nicht beachtet, Hinweis auf Mindestbestellmenge/Abnahmeintervall fehlt (#259)
+* Verbesserung: Anzeige von Boxen in nicht-sichtbaren Positionen im Backend mitsamt Warnhinweis(#252)
+* Verbesserung: Neue Hooks HOOK_FILTER_INC_GIBARTIKELKEYS_SQL und HOOK_FILTER_INC_BAUFILTERSQL (#310)
+* Bugfix: apple-touch-icon.png in header.tpl verlinket, obwohl Datei nicht vorhanden ist (#278)
+* Verbesserung: Kupon-Backend komplett überarbeitet, Validierung verbessert (#275)
+* Bugfix: Fehlerhafte URLs in $Suchergebnisse->Kategorieauswahl bei hierarchischer Filterung (#273)
 
-## [4.03.2]
-* Bugfix: robots.txt fehlendes "Sitemap: " vor der Sitemap-URL
-* Bugfix: Billpay Zahlungseingang wird nicht gesetzt
-* Bugfix: Newsletter Abmelden unsichtbar für nicht-angemeldete Besucher
+## [4.04.1]
+* Neues Premium-Plugin: Login und Bezahlen mit Amazon (von Solution360)
+* Neues Premium-Plugin: TrustedShops Trustbade (von AG-Websolutions)
+* Update: Google Shopping Plugin v1.05 (Bugfix: Unter Umständen doppelte IDs bei Varkombi-Kindartikeln)
+* Bugfix: Testmails werden nur noch auf Deutsch versendet (#241)
+* Verbesserung: Vermeiden mehrfacher Cache-Einträge mit demselben Inhalt in gibKategorieFilterOptionen() (#244)
+* Bugfix: Mixed-Content-Warnungen (Megamenü-Kategoriebilder via http) bei Teilverschlüsselung und Wechsel auf https (#211)
+* Bugfix: Frontendlinks verschwinden aus tseo bei Plugin-Updates in mehrsprachiger Umgebung (#258)
+* Bugfix: jtl_token wird sporadisch in der Session überschrieben (#306)
+* Bugfix: Boxenverwaltung: Footer für alle Seiten aktivieren geht nicht
+
+## [4.04] - 2016-06-22
+* Bugfix: robots.txt fehlendes "Sitemap: " vor der Sitemap-URL (#83)
+* Bugfix: Billpay Zahlungseingang wird nicht gesetzt (#96)
+* Bugfix: Newsletter Abmelden unsichtbar für nicht-angemeldete Besucher (#77)
+* Verbesserung: Alte Bildpfade müssen bei Änderung von /bilder/ auf /media/ via 301 weitergeleitet werden (#189)
+* Bugfix: Kundenimport Fehler bei unbekannten Spalten (#214)
 
 ## [4.03.1] - 2016-05-17
 * Bugfix: Sprachwechsel in einigen Linkgruppen unvollständig

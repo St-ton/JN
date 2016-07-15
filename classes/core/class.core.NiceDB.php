@@ -798,99 +798,21 @@ class NiceDB
      * @access public
      * @param string   $stmt - Statement to be executed
      * @param int      $return - what should be returned.
-     * @param int|bool $echo print current stmt
-     * @param bool     $bExecuteHook should function executeHook be executed
      * 1  - single fetched object
      * 2  - array of fetched objects
      * 3  - affected rows
      * 8  - fetched assoc array
      * 9  - array of fetched assoc arrays
      * 10 - result of querysingle
+     * @param int|bool $echo print current stmt
+     * @param bool     $bExecuteHook should function executeHook be executed
+     * @param callable $fnInfo statistic callback
      * @return array|object|int - 0 if fails, 1 if successful or LastInsertID if specified
      * @throws InvalidArgumentException
      */
-    public function executeQuery($stmt, $return, $echo = false, $bExecuteHook = false)
+    public function executeQuery($stmt, $return, $echo = false, $bExecuteHook = false, $fnInfo = null)
     {
-        if ($this->debug === true || $this->collectData === true || $bExecuteHook === true) {
-            $start = microtime(true);
-        }
-        $return = intval($return);
-        if ($return <= 0 || $return > 11) {
-            throw new InvalidArgumentException('Second parameter must be betweeen 1 - 11');
-        }
-
-        if ($echo) {
-            echo $stmt;
-        }
-        try {
-            $res = $this->pdo->query($stmt);
-        } catch (PDOException $e) {
-            if (defined('NICEDB_EXCEPTION_ECHO') && NICEDB_EXCEPTION_ECHO === true) {
-                Shop::dbg($stmt, false, 'Exception when trying to execute query: ');
-                Shop::dbg($e->getMessage(), false, 'Exception:');
-            }
-            if (defined('NICEDB_EXCEPTION_BACKTRACE') && NICEDB_EXCEPTION_BACKTRACE === true) {
-                Shop::dbg(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS), false, 'Backtrace:');
-            }
-            if ($this->transactionCount > 0) {
-                throw $e;
-            }
-
-            return 0;
-        }
-
-        if ($bExecuteHook) {
-            $fEndzeit       = microtime(true);
-            $fZeitBenoetigt = $fEndzeit - $start;
-            executeHook(HOOK_NICEDB_CLASS_EXECUTEQUERY, array(
-                    'mysqlerrno' => $this->pdo->errorCode(),
-                    'statement'  => $stmt,
-                    'time'       => $fZeitBenoetigt
-                )
-            );
-        }
-        if (!$res) {
-            if ($this->logErrors && $this->logfileName) {
-                $this->writeLog($stmt . "\n" . $this->pdo->errorCode() . ': ' . $this->pdo->errorInfo() . "\n\nBacktrace: " . print_r(debug_backtrace(), true));
-            }
-
-            return false;
-        }
-        if ($return === 1) {
-            $ret = $res->fetchObject();
-        } elseif ($return === 2) {
-            $ret = array();
-            while ($row = $res->fetchObject()) {
-                $ret[] = $row;
-            }
-        } elseif ($return === 3) {
-            $ret = $res->rowCount();
-        } elseif ($return === 8) {
-            $ret = $res->fetchAll(PDO::FETCH_NAMED);
-            if (is_array($ret) && isset($ret[0])) {
-                $ret = $ret[0];
-            } else {
-                $ret = null;
-            }
-        } elseif ($return === 9) {
-            $ret = $res->fetchAll(PDO::FETCH_ASSOC);
-        } elseif ($return === 10) {
-            $ret = $res;
-        } elseif ($return === 11) {
-            $ret = $res->fetchAll(PDO::FETCH_BOTH);
-        } else {
-            $ret = true;
-        }
-        if ($this->debug === true || $this->collectData === true) {
-            $end       = microtime(true);
-            $backtrace = null;
-            if ($this->debugLevel > 2) {
-                $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
-            }
-            $this->analyzeQuery('executeQuery', $stmt, ($end - $start), $backtrace);
-        }
-
-        return $ret;
+        return $this->_execute(0, $stmt, null, $return, $echo, $bExecuteHook, $fnInfo);
     }
 
     /**
@@ -898,7 +820,32 @@ class NiceDB
      *
      * @access public
      * @param string   $stmt - Statement to be executed
-     * @param array    $params
+     * @param array    $params - An array of values with as many elements as there are bound parameters in the SQL statement being executed
+     * @param int      $return - what should be returned.
+     * 1  - single fetched object
+     * 2  - array of fetched objects
+     * 3  - affected rows
+     * 8  - fetched assoc array
+     * 9  - array of fetched assoc arrays
+     * 10 - result of querysingle
+     * @param int|bool $echo print current stmt
+     * @param bool     $bExecuteHook should function executeHook be executed
+     * @param callable $fnInfo statistic callback
+     * @return array|object|int - 0 if fails, 1 if successful or LastInsertID if specified
+     * @throws InvalidArgumentException
+     */
+    public function executeQueryPrepared($stmt, array $params, $return, $echo = false, $bExecuteHook = false, $fnInfo = null)
+    {
+        return $this->_execute(1, $stmt, $params, $return, $echo, $bExecuteHook, $fnInfo);
+    }
+
+    /**
+     * executes query and returns misc data
+     *
+     * @access protected
+     * @param int      $type - Type [0 => query, 1 => prepared]
+     * @param string   $stmt - Statement to be executed
+     * @param array    $params - An array of values with as many elements as there are bound parameters in the SQL statement being executed
      * @param int      $return - what should be returned.
      * @param int|bool $echo print current stmt
      * @param bool     $bExecuteHook should function executeHook be executed
@@ -911,84 +858,139 @@ class NiceDB
      * @return array|object|int - 0 if fails, 1 if successful or LastInsertID if specified
      * @throws InvalidArgumentException
      */
-    public function executeQueryPrepared($stmt, array $params, $return, $echo = false, $bExecuteHook = false)
+    protected function _execute($type, $stmt, $params, $return, $echo = false, $bExecuteHook = false, $fnInfo = null)
     {
-        if ($this->debug === true || $this->collectData === true || $bExecuteHook === true) {
-            $start = microtime(true);
+        $type   = (int) $type;
+        $return = (int) $return;
+        $params = is_array($params) ? $params : [];
+
+        if (!in_array($type, [0, 1])) {
+            throw new InvalidArgumentException("\$type parameter must be 0 or 1, given '{$type}'");
         }
-        $return = intval($return);
+
         if ($return <= 0 || $return > 11) {
-            throw new InvalidArgumentException('Second parameter must be betweeen 1 - 11');
+            throw new InvalidArgumentException("\$return parameter must be between 1 - 11, given '{$return}'");
+        }
+
+        if ($fnInfo !== null && !is_callable($fnInfo)) {
+            $t = gettype($fnInfo);
+            throw new InvalidArgumentException("\$fnInfo parameter is not callable, given type '{$t}'");
         }
 
         if ($echo) {
             echo $stmt;
         }
+
+        if ($this->debug === true || $this->collectData === true || $bExecuteHook === true || $fnInfo !== null) {
+            $start = microtime(true);
+        }
+
         try {
-            $s   = $this->pdo->prepare($stmt);
-            $res = $s->execute($params);
+            if ($type === 0) {
+                $res = $this->pdo->query($stmt);
+            } else {
+                $res  = $this->pdo->prepare($stmt);
+                $stmt = $this->readableQuery($stmt, $params);
+                foreach ($params as $k => $v) {
+                    $this->_bind($res, $k, $v);
+                }
+                if ($res->execute() === false) {
+                    return 0;
+                }
+            }
         } catch (PDOException $e) {
             if (defined('NICEDB_EXCEPTION_ECHO') && NICEDB_EXCEPTION_ECHO === true) {
                 Shop::dbg($stmt, false, 'Exception when trying to execute query: ');
                 Shop::dbg($e->getMessage(), false, 'Exception:');
             }
+
             if (defined('NICEDB_EXCEPTION_BACKTRACE') && NICEDB_EXCEPTION_BACKTRACE === true) {
                 Shop::dbg(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS), false, 'Backtrace:');
+            }
+
+            if ($this->transactionCount > 0) {
+                throw $e;
             }
 
             return 0;
         }
 
-        if ($bExecuteHook) {
-            $fEndzeit       = microtime(true);
-            $fZeitBenoetigt = $fEndzeit - $start;
-            executeHook(HOOK_NICEDB_CLASS_EXECUTEQUERY, array(
-                    'mysqlerrno' => $this->pdo->errorCode(),
-                    'statement'  => $stmt,
-                    'time'       => $fZeitBenoetigt
-                )
-            );
+        if ($bExecuteHook || $fnInfo !== null) {
+            $info = [
+                'mysqlerrno' => $this->pdo->errorCode(),
+                'statement'  => $stmt,
+                'time'       => microtime(true) - $start
+            ];
+
+            if ($bExecuteHook) {
+                executeHook(HOOK_NICEDB_CLASS_EXECUTEQUERY, $info);
+            }
+
+            if ($fnInfo !== null) {
+                call_user_func($fnInfo, $info);
+            }
         }
+
         if (!$res) {
             if ($this->logErrors && $this->logfileName) {
                 $this->writeLog($stmt . "\n" . $this->pdo->errorCode() . ': ' . $this->pdo->errorInfo() . "\n\nBacktrace: " . print_r(debug_backtrace(), true));
             }
 
-            return false;
+            return 0;
         }
-        if ($return === 1) {
-            $ret = $s->fetchObject();
-        } elseif ($return === 2) {
-            $ret = array();
-            while ($row = $s->fetchObject()) {
-                $ret[] = $row;
+
+        switch ($return) {
+            case 1: {
+                $ret = $res->fetchObject();
+                break;
             }
-        } elseif ($return === 3) {
-            $ret = $s->rowCount();
-        } elseif ($return === 8) {
-            $ret = $s->fetchAll(PDO::FETCH_NAMED);
-            if (is_array($ret) && isset($ret[0])) {
-                $ret = $ret[0];
-            } else {
-                $ret = null;
+            case 2: {
+                $ret = array();
+                while ($row = $res->fetchObject()) {
+                    $ret[] = $row;
+                }
+                break;
             }
-        } elseif ($return === 9) {
-            $ret = $s->fetchAll(PDO::FETCH_ASSOC);
-        } elseif ($return === 10) {
-            $ret = $s;
-        } elseif ($return === 11) {
-            $ret = $s->fetchAll(PDO::FETCH_BOTH);
-        } else {
-            $ret = true;
+            case 3: {
+                $ret = $res->rowCount();
+                break;
+            }
+            case 8: {
+                $ret = $res->fetchAll(PDO::FETCH_NAMED);
+                if (is_array($ret) && isset($ret[0])) {
+                    $ret = $ret[0];
+                } else {
+                    $ret = null;
+                }
+                break;
+            }
+            case 9: {
+                $ret = $res->fetchAll(PDO::FETCH_ASSOC);
+                break;
+            }
+            case 10: {
+                $ret = $res;
+                break;
+            }
+            case 11: {
+                $ret = $res->fetchAll(PDO::FETCH_BOTH);
+                break;
+            }
+            default: {
+                $ret = true;
+                break;
+            }
         }
+
         if ($this->debug === true || $this->collectData === true) {
-            //@todo
-//            $end       = microtime(true);
-//            $backtrace = null;
-//            if ($this->debugLevel > 2) {
-//                $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
-//            }
-//            $this->analyzeQuery('executeQuery', $stmt, ($end - $start), $backtrace);
+            // @todo
+            if ($type === 0) {
+                $backtrace = null;
+                if ($this->debugLevel > 2) {
+                    $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+                }
+                $this->analyzeQuery('_execute', $stmt, microtime(true) - $start, $backtrace);
+            }
         }
 
         return $ret;
@@ -1246,5 +1248,72 @@ class NiceDB
         $this->transactionCount = 0;
 
         return $result;
+    }
+
+    /**
+     *
+     */
+    protected function _bind(PDOStatement &$stmt, $parameter, $value, $type = null)
+    {
+        $parameter = $this->_bindName($parameter);
+
+        if (is_null($type)) {
+            switch (true) {
+                case is_bool($value):
+                    $type = PDO::PARAM_BOOL;
+                    break;
+                case is_int($value):
+                    $type = PDO::PARAM_INT;
+                    break;
+                case is_null($value):
+                    $type = PDO::PARAM_NULL;
+                    break;
+                default:
+                    $type = PDO::PARAM_STR;
+            }
+        }
+
+        $stmt->bindValue($parameter, $value, $type);
+    }
+
+    /**
+     *
+     */
+    protected function _bindName($name)
+    {
+        if (is_string($name)) {
+            return ':' . ltrim($name, ':');
+        }
+
+        return $name;
+    }
+
+    /**
+     *
+     */
+    public function readableQuery($query, $params)
+    {
+        $keys   = [];
+        $values = [];
+
+        foreach ($params as $key => $value) {
+            if (is_string($key)) {
+                $key = $this->_bindName($key);
+            } else {
+                $key = '[?]';
+            }
+
+            $keys[] = '/' . $key . '/';
+
+            if (is_int($value)) {
+                $value = (int)$value;
+            } else {
+                $value = $this->quote($value);
+            }
+
+            $values[] = $value;
+        }
+
+        return preg_replace($keys, $values, $query, 1, $count);
     }
 }

@@ -3,7 +3,6 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-
 trait MigrationTableTrait
 {
     /**
@@ -76,7 +75,7 @@ trait MigrationTableTrait
             cWert = '{$value}', 
             cStandard = '{$value}', 
             bSystem = '{$system}' 
-            on duplicate key update cStandard=VALUES(cStandard), cWert=IF(cWert = cStandard, VALUES(cStandard), cWert)", 3);
+            on duplicate key update cWert=IF(cWert = cStandard, VALUES(cStandard), cWert), cStandard=VALUES(cStandard)", 3);
     }
 
     /**

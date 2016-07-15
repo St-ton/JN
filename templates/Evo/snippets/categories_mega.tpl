@@ -69,7 +69,7 @@
                                                         <div class="category-wrapper top15{if $sub->kKategorie == $activeId || (isset($activeParents[1]) && $activeParents[1]->kKategorie == $sub->kKategorie)} active{/if}">
                                                             {if isset($Einstellungen.template.megamenu.show_category_images) && $Einstellungen.template.megamenu.show_category_images !== 'N'}
                                                                 <div class="img text-center">
-                                                                    <a href="{$sub->cURL}"><img src="{$sub->cBildURLFull}" class=image alt="{$sub->cName|escape:'quotes'}"></a>
+                                                                    <a href="{$sub->cURL}"><img src="{$sub->cBildURLFull}" class="image" alt="{$sub->cName|escape:'quotes'}"></a>
                                                                 </div>
                                                             {/if}
                                                             <div class="caption{if isset($Einstellungen.template.megamenu.show_category_images) && $Einstellungen.template.megamenu.show_category_images !== 'N'} text-center{/if}">

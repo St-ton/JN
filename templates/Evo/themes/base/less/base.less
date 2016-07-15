@@ -68,6 +68,9 @@ body.no-bg {
 
 .input-group input[type="text"].form-control {
     min-width: 3em;
+    &[readonly] {
+        cursor: auto;
+    }
 }
 
 .input-group input[type="number"].form-control {
@@ -548,6 +551,21 @@ ul.filter_state li a.active:before {
     margin-bottom: @margin-base;
 }
 
+#panel-register-form {
+    position: relative;
+
+    .nav-toggle {
+        width: auto;
+        top: @caret-width-base;
+        right: @caret-width-base;
+
+        > .btn.heading {
+            background-color: @brand-secondary;
+            color: @panel-default-text;
+        }
+    }
+}
+
 // Slider
 
 #content {
@@ -699,6 +717,11 @@ aside .box {
 
 aside .badge {
     float: right;
+}
+
+.dropdown-menu {
+    padding: 0;
+    position: absolute;
 }
 
 .nav-list .dropdown-menu {

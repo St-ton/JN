@@ -82,7 +82,7 @@ if (isset($_GET['fc']) && strlen($_GET['fc']) > 0) {
 } elseif (isset($_GET['lc']) && strlen($_GET['lc']) > 0) { // Loeschcode wurde uebergeben
     $cOption               = 'loeschen';
     $cLoeschCode           = StringHandler::htmlentities(StringHandler::filterXSS(Shop::DB()->escape(strip_tags($_GET['lc']))));
-    $oNewsletterEmpfaenger = Shop::DB()->select('tnewsletterempfaenger', 'cLoeschCode', $cLoeschCode);    
+    $oNewsletterEmpfaenger = Shop::DB()->select('tnewsletterempfaenger', 'cLoeschCode', $cLoeschCode);
 
     if (!empty($oNewsletterEmpfaenger->cLoeschCode)) {
         executeHook(HOOK_NEWSLETTER_PAGE_EMPFAENGERLOESCHEN, array('oNewsletterEmpfaenger' => $oNewsletterEmpfaenger));

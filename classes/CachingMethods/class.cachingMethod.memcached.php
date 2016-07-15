@@ -10,8 +10,10 @@
  *
  * @warning Untested
  */
-class cache_memcached extends JTLCacheHelper implements ICachingMethod
+class cache_memcached implements ICachingMethod
 {
+    use JTLCacheTrait;
+    
     /**
      * @var cache_memcached|null
      */
@@ -33,17 +35,6 @@ class cache_memcached extends JTLCacheHelper implements ICachingMethod
             $this->journalID     = 'memcached_journal';
             $this->options       = $options;
         }
-    }
-
-    /**
-     * @param array $options
-     *
-     * @return cache_memcached
-     */
-    public static function getInstance($options)
-    {
-        //check if class was initialized before
-        return (self::$instance !== null) ? self::$instance : new self($options);
     }
 
     /**

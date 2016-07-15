@@ -59,6 +59,7 @@ function compareDBStruct($cDBFileStruct_arr, $cDBStruct_arr)
             }
         }
     }
+
     return $cDBError_arr;
 }
 

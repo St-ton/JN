@@ -29,13 +29,13 @@ if (isset($_POST['addlink']) && intval($_POST['addlink']) > 0) {
 }
 
 if (isset($_POST['dellink']) && intval($_POST['dellink']) > 0 && validateToken()) {
-    $kLink = (int)$_POST['dellink'];
+    $kLink       = (int)$_POST['dellink'];
     $kLinkgruppe = (int)$_POST['kLinkgruppe'];
     removeLink($kLink, $kLinkgruppe);
     $hinweis .= 'Link erfolgreich gel&ouml;scht!';
     $clearCache = true;
-    $step = 'uebersicht';
-    $_POST = array();
+    $step       = 'uebersicht';
+    $_POST      = array();
 }
 
 if (isset($_POST['loesch_linkgruppe']) && intval($_POST['loesch_linkgruppe']) === 1 && validateToken()) {
@@ -82,7 +82,6 @@ if (isset($_POST['neu_link']) && intval($_POST['neu_link']) === 1 && validateTok
     $oPlausiCMS = new PlausiCMS();
     $oPlausiCMS->setPostVar($_POST);
     $oPlausiCMS->doPlausi('lnk');
-
 
     if (count($oPlausiCMS->getPlausiVar()) === 0) {
         if (!isset($link)) {

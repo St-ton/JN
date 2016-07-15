@@ -1356,9 +1356,10 @@ class Warenkorb
      * update coupon value to avoid negative orders or coupon values under predefined value
      *
      */
-    public function updateCouponValue(){
+    public function updateCouponValue()
+    {
         if (isset($_SESSION['Kupon']) && $_SESSION['Kupon']->cWertTyp === 'festpreis') {
-            $Kupon = $_SESSION['Kupon'];
+            $Kupon         = $_SESSION['Kupon'];
             $maxPreisKupon = $Kupon->fWert;
             if ($Kupon->fWert > $_SESSION['Warenkorb']->gibGesamtsummeWarenExt(array(C_WARENKORBPOS_TYP_ARTIKEL), true)) {
                 $maxPreisKupon = $_SESSION['Warenkorb']->gibGesamtsummeWarenExt(array(C_WARENKORBPOS_TYP_ARTIKEL), true);

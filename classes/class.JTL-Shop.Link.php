@@ -427,8 +427,8 @@ class Link extends MainModel
 
             if (is_array($oLink_arr) && count($oLink_arr) > 0) {
                 foreach ($oLink_arr as &$oLink) {
-                    $kLinkgruppe = $oLink->kLinkgruppe;
-                    $oLink = new self($oLink->kLink, null, true);
+                    $kLinkgruppe        = $oLink->kLinkgruppe;
+                    $oLink              = new self($oLink->kLink, null, true);
                     $oLink->kLinkgruppe = (int)$kLinkgruppe;
                 }
             }
@@ -536,7 +536,7 @@ class Link extends MainModel
             $nLinkAnz = Shop::DB()->query("SELECT * FROM tlink WHERE kLink = " . $this->getLink(), 2);
             if (count($nLinkAnz) === 0) {
                 Shop::DB()->delete('tlinksprache', 'kLink', $this->getLink());
-                Shop::DB()->delete('tseo',['kKey','cKey'] , [$this->getLink(), 'kLink']);
+                Shop::DB()->delete('tseo', ['kKey', 'cKey'], [$this->getLink(), 'kLink']);
 
                 $cDir = PFAD_ROOT . PFAD_BILDER . PFAD_LINKBILDER . $this->getLink();
                 if (is_dir($cDir) && $this->getLink() > 0) {

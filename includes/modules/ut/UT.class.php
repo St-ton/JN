@@ -7,7 +7,7 @@ define('PP_MODE', 0); // 1 = Test / 0 = Live
 
 // Debug
 define('D_MODE', 1); // 1 = An / 0 = Aus
-define('D_PFAD', PFAD_ROOT . 'jtllogs/ut.log');
+define('D_PFAD', PFAD_LOGFILES . 'ut.log');
 
 // Sandbox
 define('URL_TEST', 'http://transfer.uos-test.com/interfaces/payment.php');

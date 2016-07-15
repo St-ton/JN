@@ -68,7 +68,8 @@ function fuehreLoginAus($userLogin, $passLogin)
  */
 function pruefeBestellungMoeglich()
 {
-    header('Location: warenkorb.php?fillOut=' . $_SESSION['Warenkorb']->istBestellungMoeglich(), true, 303);
+    $linkHelper = LinkHelper::getInstance();
+    header('Location: ' . $linkHelper->getStaticRoute('warenkorb.php', true) . '?fillOut=' . $_SESSION['Warenkorb']->istBestellungMoeglich(), true, 303);
     exit;
 }
 
@@ -118,7 +119,6 @@ function pruefeUnregistriertBestellen($cPost_arr)
     $cKundenattribut_arr = getKundenattribute($cPost_arr);
     $kKundengruppe       = Kundengruppe::getCurrent();
     // CheckBox Plausi
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.CheckBox.php';
     $oCheckBox       = new CheckBox();
     $fehlendeAngaben = array_merge($fehlendeAngaben, $oCheckBox->validateCheckBox(CHECKBOX_ORT_REGISTRIERUNG, $kKundengruppe, $cPost_arr, true));
     $nReturnValue    = angabenKorrekt($fehlendeAngaben);
@@ -222,10 +222,7 @@ function pruefeLieferdaten($cPost_arr)
     setzeSteuersaetze();
     //lieferland hat sich geändert und versandart schon gewählt?
     if (isset($_SESSION['Lieferadresse']) && isset($_SESSION['Versandart']) && $_SESSION['Lieferadresse'] && $_SESSION['Versandart']) {
-        $delVersand = false;
-        if (!stristr($_SESSION['Versandart']->cLaender, $_SESSION['Lieferadresse']->cLand)) {
-            $delVersand = true;
-        }
+        $delVersand = (!stristr($_SESSION['Versandart']->cLaender, $_SESSION['Lieferadresse']->cLand));
         //ist die plz im zuschlagsbereich?
         $plz   = Shop::DB()->escape($_SESSION['Lieferadresse']->cPLZ);
         $plz_x = Shop::DB()->query(
@@ -340,8 +337,9 @@ function pruefeRechnungsadresseStep($cGet_arr)
     if (isset($cGet_arr['editRechnungsadresse']) && $cGet_arr['editRechnungsadresse'] == 1 && $_SESSION['Kunde']) {
         resetNeuKundenKupon();
         if ($_SESSION['Kunde']->kKunde > 0) {
+            $linkHelper = LinkHelper::getInstance();
             //weiterleitung zur Rechnungsänderung eines bestehenden Kunden
-            header('Location: registrieren.php?checkout=1&editRechnungsadresse=1', true, 303);
+            header('Location: ' . $linkHelper->getStaticRoute('registrieren.php', true) . '?checkout=1&editRechnungsadresse=1', true, 303);
             exit;
         } else {
             $Kunde = $_SESSION['Kunde'];
@@ -560,7 +558,8 @@ function validateCouponInCheckout()
             $_SESSION['Warenkorb']->loescheSpezialPos(C_WARENKORBPOS_TYP_KUPON);
             $_SESSION['checkCouponResult'] = $checkCouponResult;
             unset($_SESSION['Kupon']);
-            header('Location: ' . Shop::getURL() . '/warenkorb.php');
+            $linkHelper = LinkHelper::getInstance();
+            header('Location: ' . $linkHelper->getStaticRoute('warenkorb.php', true));
             exit(0);
         }
     }
@@ -1357,7 +1356,7 @@ function gibZahlungsarten($kVersandart, $kKundengruppe)
         if (!zahlungsartGueltig($Zahlungsarten[$i])) {
             continue;
         }
-        $Zahlungsarten[$i]->Specials = gibSpecials($Zahlungsarten[$i]);
+        $Zahlungsarten[$i]->Specials = null;
         //evtl. Versandkupon anwenden / Nur Nachname fällt weg
         if (isset($_SESSION['VersandKupon']->cZusatzgebuehren) && $_SESSION['VersandKupon']->cZusatzgebuehren === 'Y' && $Zahlungsarten[$i]->fAufpreis > 0) {
             if ($Zahlungsarten[$i]->cName === 'Nachnahme') {
@@ -1497,7 +1496,7 @@ function pruefeZahlungsartMinBestellungen($nMinBestellungen)
  */
 function pruefeZahlungsartMinBestellwert($fMinBestellwert)
 {
-    if ($fMinBestellwert > 0 && $_SESSION['Warenkorb']->gibGesamtsummeWaren(1) < $fMinBestellwert) {
+    if ($fMinBestellwert > 0 && $_SESSION['Warenkorb']->gibGesamtsummeWarenOhne(array(C_WARENKORBPOS_TYP_VERSANDPOS), true) < $fMinBestellwert) {
         if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
             Jtllog::writeLog('pruefeZahlungsartMinBestellwert Bestellwert zu niedrig: Wert ' . $_SESSION['Warenkorb']->gibGesamtsummeWaren(true) . ' < ' . $fMinBestellwert,
                 JTLLOG_LEVEL_DEBUG, false);
@@ -1515,7 +1514,7 @@ function pruefeZahlungsartMinBestellwert($fMinBestellwert)
  */
 function pruefeZahlungsartMaxBestellwert($fMaxBestellwert)
 {
-    if ($fMaxBestellwert > 0 && $_SESSION['Warenkorb']->gibGesamtsummeWaren(1) >= $fMaxBestellwert) {
+    if ($fMaxBestellwert > 0 && $_SESSION['Warenkorb']->gibGesamtsummeWarenOhne(array(C_WARENKORBPOS_TYP_VERSANDPOS), true) >= $fMaxBestellwert) {
         if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
             Jtllog::writeLog('pruefeZahlungsartMaxBestellwert Bestellwert zu hoch: Wert ' . $_SESSION['Warenkorb']->gibGesamtsummeWaren(true) . ' > ' . $fMaxBestellwert,
                 JTLLOG_LEVEL_DEBUG, false);
@@ -1946,24 +1945,8 @@ function checkKundenFormular($kundenaccount, $checkpass = 1)
         }
     }
 
-    if ((!isset($_SESSION['bAnti_spam_already_checked']) || $_SESSION['bAnti_spam_already_checked'] !== true) && isset($conf['kunden']['registrieren_captcha']) && $conf['kunden']['registrieren_captcha'] !== 'N' && $conf['global']['anti_spam_method'] !== 'N' && empty($_SESSION['Kunde']->kKunde)) {
-        // reCAPTCHA
-        if (isset($_POST['g-recaptcha-response'])) {
-            $ret['captcha'] = !validateReCaptcha($_POST['g-recaptcha-response']);
-        } else {
-            if (empty($_POST['captcha'])) {
-                $ret['captcha'] = 1;
-            }
-            if (empty($_POST['md5']) || ($_POST['md5'] !== md5(PFAD_ROOT . strtoupper($_POST['captcha'])))) {
-                $ret['captcha'] = 2;
-            }
-            if ($conf['kunden']['registrieren_captcha'] == 5) { //Prüfen ob der Token und der Name korrekt sind
-                $ret['captcha'] = 2;
-                if (validToken()) {
-                    unset($ret['captcha']);
-                }
-            }
-        }
+    if (isset($conf['kunden']['registrieren_captcha']) && $conf['kunden']['registrieren_captcha'] !== 'N' && !validateCaptcha($_POST)) {
+        $ret['captcha'] = 2;
     }
 
     return $ret;
@@ -2353,7 +2336,7 @@ function getKundenattributeNichtEditierbar()
 }
 
 /**
- * @return non editable customer fields
+ * @return array - non editable customer fields
  */
 function getNonEditableCustomerFields()
 {
@@ -2442,6 +2425,9 @@ function getArtikelQry($PositionenArr)
     return $ret;
 }
 
+/**
+ * @return bool
+ */
 function guthabenMoeglich()
 {
     return ($_SESSION['Kunde']->fGuthaben > 0 && (empty($_SESSION['Bestellung']->GuthabenNutzen) || !$_SESSION['Bestellung']->GuthabenNutzen))
@@ -2910,25 +2896,6 @@ function setzeFehlerSmartyAccountwahl($cFehler)
 
 /**
  * @param array $cPost_arr
- * @param int   $nUnreg
- * @return array
- */
-function plausiRechnungsadresse($cPost_arr, $nUnreg = 0)
-{
-    if ($nUnreg) {
-        $cFehlendeEingaben_arr = checkKundenFormular(0);
-    } else {
-        $cFehlendeEingaben_arr = checkKundenFormular(0, 1);
-    }
-    if (angabenKorrekt($cFehlendeEingaben_arr)) {
-        return $cFehlendeEingaben_arr;
-    }
-
-    return $cFehlendeEingaben_arr;
-}
-
-/**
- * @param array $cPost_arr
  * @param array $cFehlendeEingaben_arr
  * @return bool
  */
@@ -3042,10 +3009,11 @@ function plausiLieferadresse($cPost_arr)
         $cFehlendeAngaben_arr = checkLieferFormular();
         if (angabenKorrekt($cFehlendeAngaben_arr)) {
             return $cFehlendeEingaben_arr;
-        } else {
-            return $cFehlendeAngaben_arr;
         }
-    } elseif (intval($cPost_arr['kLieferadresse']) > 0) {
+
+        return $cFehlendeAngaben_arr;
+    }
+    if (intval($cPost_arr['kLieferadresse']) > 0) {
         //vorhandene lieferadresse
         $oLieferadresse = Shop::DB()->query(
             "SELECT kLieferadresse
@@ -3472,11 +3440,8 @@ function mappeBestellvorgangZahlungshinweis($nHinweisCode)
  */
 function isEmailAvailable($email)
 {
-    $email = StringHandler::filterXSS(Shop::DB()->escape($email));
     if (strlen($email) > 0) {
-        $obj = Shop::DB()->query("SELECT count(*) AS count FROM tkunde WHERE cMail = '{$email}' AND cPasswort != ''", 1);
-
-        return ($obj->count == 0);
+        return (Shop::DB()->select('tkunde', 'cMail', $email, 'nRegistriert', 1) === null);
     }
 
     return false;
@@ -3496,21 +3461,6 @@ function convertDate2German($datum)
     }
 
     return $datum;
-}
-
-/**
- * @param Zahlungsart $Zahlungsart
- * @return null
- */
-function gibSpecials($Zahlungsart)
-{
-    $specials = null;
-    switch ($Zahlungsart->cModulId) {
-        case 'externesModul':
-            break;
-    }
-
-    return $specials;
 }
 
 /**
@@ -3582,4 +3532,25 @@ function gibFehlendeAngabenZahlungsart($Zahlungsart)
  */
 function setzeSessionZahlungsart($Zahlungsart)
 {
+}
+
+/**
+ * @param Zahlungsart $Zahlungsart
+ * @return null
+ * @deprecated since 4.0.5
+ */
+function gibSpecials($Zahlungsart)
+{
+    return;
+}
+
+/**
+ * @param array $cPost_arr
+ * @param int   $nUnreg
+ * @return array
+ * @deprecated since 4.05
+ */
+function plausiRechnungsadresse($cPost_arr, $nUnreg = 0)
+{
+    return ($nUnreg) ? checkKundenFormular(0) : checkKundenFormular(0, 1);
 }

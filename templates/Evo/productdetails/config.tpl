@@ -65,9 +65,11 @@
                                                                        {if (!empty($aKonfigerror_arr) && isset($smarty.post.item) && isset($smarty.post.item[$oGruppe->getKonfiggruppe()]) && $oItem->getKonfigitem()|in_array:$smarty.post.item[$oGruppe->getKonfiggruppe()]) || ($oItem->getSelektiert() && (!isset($aKonfigerror_arr) || !$aKonfigerror_arr))} checked="checked"{/if}{/if} />
                                                                 {if $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_CHECKBOX}{$oItem->getInitial()}x {/if}
                                                                 {$oItem->getName()}
-                                                                <span class="badge pull-right">{if $oItem->hasRabatt() && $oItem->showRabatt()}
+                                                                {if $smarty.session.Kundengruppe->darfPreiseSehen}
+                                                                    <span class="badge pull-right">{if $oItem->hasRabatt() && $oItem->showRabatt()}
                                                                     <span class="discount">{$oItem->getRabattLocalized()} {lang key="discount"}</span>{elseif $oItem->hasZuschlag() && $oItem->showZuschlag()}
                                                                     <span class="additional">{$oItem->getZuschlagLocalized()} {lang key="additionalCharge"}</span>{/if}{$oItem->getPreisLocalized()}</span>
+                                                                {/if}
                                                             </label>
                                                         </div>
                                                     {elseif $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN || $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN_MULTI}
@@ -78,9 +80,11 @@
                                                                 {else}{if $oItem->getSelektiert() && (!isset($aKonfigerror_arr) || !$aKonfigerror_arr)}selected="selected"{/if}{/if}>
                                                             {if $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN_MULTI}{$oItem->getInitial()} &times; {/if}
                                                             {$oItem->getName()}
-                                                            &nbsp;&nbsp;&nbsp;&nbsp;
-                                                            {if $oItem->hasRabatt() && $oItem->showRabatt()}({$oItem->getRabattLocalized()} {lang key="discount"})&nbsp;{elseif $oItem->hasZuschlag() && $oItem->showZuschlag()}({$oItem->getZuschlagLocalized()} {lang key="additionalCharge"})&nbsp;{/if}
-                                                            {$oItem->getPreisLocalized()}
+                                                            {if $smarty.session.Kundengruppe->darfPreiseSehen}
+                                                                &nbsp;&nbsp;&nbsp;&nbsp;
+                                                                {if $oItem->hasRabatt() && $oItem->showRabatt()}({$oItem->getRabattLocalized()} {lang key="discount"})&nbsp;{elseif $oItem->hasZuschlag() && $oItem->showZuschlag()}({$oItem->getZuschlagLocalized()} {lang key="additionalCharge"})&nbsp;{/if}
+                                                                {$oItem->getPreisLocalized()}
+                                                            {/if}
                                                         </option>
                                                     {/if}
                                                     {if $smarty.foreach.konfigitem.last}
@@ -140,10 +144,9 @@
                         </p>
                         {if $Artikel->inWarenkorbLegbar == 1}
                             <div id="quantity-grp" class="choose_quantity input-group">
-                                <input type="number"{if $Artikel->fAbnahmeintervall > 0} required
-                                       step="{$Artikel->fAbnahmeintervall > 0}"{/if}" id="quantity" class="quantity form-control
-                                text-right" name="anzahl"
-                                value="{if $Artikel->fAbnahmeintervall > 0}{$Artikel->fAbnahmeintervall}{else}{if isset($fAnzahl)}{$fAnzahl}{else}1{/if}{/if}" />
+                                <input type="number"{if $Artikel->fAbnahmeintervall > 0} required step="{$Artikel->fAbnahmeintervall}"{/if} id="quantity"
+                                       class="quantity form-control text-right" name="anzahl"
+                                       value="{if $Artikel->fAbnahmeintervall > 0}{if $Artikel->fMindestbestellmenge > $Artikel->fAbnahmeintervall}{$Artikel->fMindestbestellmenge}{else}{$Artikel->fAbnahmeintervall}{/if}{elseif isset($fAnzahl)}{$fAnzahl}}{else}1{/if}" />
                                 <span class="input-group-btn">
                                     <button name="inWarenkorb" type="submit" value="{lang key="addToCart" section="global"}"
                                             class="submit btn btn-primary">

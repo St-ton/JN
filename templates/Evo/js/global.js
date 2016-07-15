@@ -76,6 +76,15 @@ function categoryMenu(rootcategory) {
     });
 }
 
+function compatibility() {
+    var __enforceFocus = $.fn.modal.Constructor.prototype.enforceFocus;
+    $.fn.modal.Constructor.prototype.enforceFocus = function () {
+        if ($('.modal-body .g-recaptcha').length == 0) {
+            __enforceFocus();
+        }
+    };
+}
+
 function regionsToState() {
     if ($('#state').length == 0)
         return;
@@ -169,7 +178,8 @@ $(document).ready(function () {
         url += (url.indexOf('?') === -1) ? '?isAjax=true' : '&isAjax=true';
         eModal.ajax({
             'size': 'lg',
-            'url': url
+            'url': url,
+            'title': typeof e.currentTarget.title != 'undefined' ? e.currentTarget.title : ''
         });
         e.stopPropagation();
         return false;
@@ -279,4 +289,5 @@ $(document).ready(function () {
 
     categoryMenu();
     regionsToState();
+    compatibility();
 });

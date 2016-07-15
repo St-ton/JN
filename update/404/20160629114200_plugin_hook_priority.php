@@ -1,9 +1,9 @@
 <?php
 /**
- * moves the 404 page into the hidden linkgroup
+ * Add plugin hook priority
  *
- * @author ms
- * @created Tue, 17 May 2016 13:23:00 +0200
+ * @author fm
+ * @created Wed, 29 Jun 2016 11:42:00 +0200
  */
 
 /**
@@ -20,17 +20,17 @@
  * setConfig          - add / update config property
  * removeConfig       - remove config property
  */
-class Migration_20160517132300 extends Migration implements IMigration
+class Migration_20160629114200 extends Migration implements IMigration
 {
-    protected $author = 'ms';
+    protected $author = 'fm';
 
     public function up()
     {
-        $this->execute("UPDATE `tlink` SET `kLinkgruppe` = (SELECT `kLinkgruppe` FROM `tlinkgruppe` WHERE `cName` = 'hidden') WHERE `nLinkart`= '29';");
+        $this->execute("ALTER TABLE `tpluginhook` ADD COLUMN `nPriority` INT(10) NULL DEFAULT 5");
     }
 
     public function down()
     {
-        $this->execute("UPDATE `tlink` SET `kLinkgruppe`='0' WHERE `nLinkart`= '29';");
+        $this->execute("ALTER TABLE `tpluginhook` DROP COLUMN `nPriority`");
     }
 }

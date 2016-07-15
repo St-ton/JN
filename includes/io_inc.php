@@ -216,7 +216,8 @@ function getBasketItems($nTyp)
                 ->assign('WarenkorbArtikelPositionenanzahl', $nAnzahl)
                 ->assign('NettoPreise', $_SESSION['Kundengruppe']->nNettoPreise)
                 ->assign('WarenkorbVersandkostenfreiHinweis', baueVersandkostenfreiString($versandkostenfreiAb, $_SESSION['Warenkorb']->gibGesamtsummeWaren(true, true)))
-                ->assign('WarenkorbVersandkostenfreiLaenderHinweis', baueVersandkostenfreiLaenderString($versandkostenfreiAb));
+                ->assign('WarenkorbVersandkostenfreiLaenderHinweis', baueVersandkostenfreiLaenderString($versandkostenfreiAb))
+                ->assign('oSpezialseiten_arr', LinkHelper::getInstance()->getSpecialPages());
 
             VersandartHelper::getShippingCosts($cLand, $cPLZ, $error);
             $oResponse->cTemplate = utf8_encode($smarty->fetch('basket/cart_dropdown_label.tpl'));

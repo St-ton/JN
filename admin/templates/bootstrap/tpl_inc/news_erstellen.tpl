@@ -115,7 +115,7 @@
                     <tr>
                         <td><label for="dGueltigVon">{#newsValidation#} *</label></td>
                         <td>
-                            <input class="form-control" id="dGueltigVon" name="dGueltigVon" type="text" value="{if isset($cPostVar_arr.dGueltigVon) && $cPostVar_arr.dGueltigVon}{$cPostVar_arr.dGueltigVon}{elseif isset($oNews->dGueltigVon_de) && $oNews->dGueltigVon_de|count_characters > 0}{$oNews->dGueltigVon_de}{else}{$smarty.now|date_format:'%d.%m.%Y %H:%M'}{/if}" />
+                            <input class="form-control" id="dGueltigVon" name="dGueltigVon" type="text" value="{if isset($cPostVar_arr.dGueltigVon) && $cPostVar_arr.dGueltigVon}{$cPostVar_arr.dGueltigVon}{elseif isset($oNews->dGueltigVon_de) && $oNews->dGueltigVon_de|strlen > 0}{$oNews->dGueltigVon_de}{else}{$smarty.now|date_format:'%d.%m.%Y %H:%M'}{/if}" />
                         </td>
                     </tr>
                     <tr>
@@ -146,6 +146,19 @@
                             <input class="form-control" id="cMetaKeywords" name="cMetaKeywords" type="text" value="{if isset($cPostVar_arr.cMetaKeywords) && $cPostVar_arr.cMetaKeywords}{$cPostVar_arr.cMetaKeywords}{elseif isset($oNews->cMetaKeywords)}{$oNews->cMetaKeywords}{/if}" />
                         </td>
                     </tr>
+                    {if $oPossibleAuthors_arr|count > 0}
+                        <tr>
+                            <td><label for="kAuthor">{#newsAuthor#}</label></td>
+                            <td>
+                                <select class="form-control" id="kAuthor" name="kAuthor">
+                                    <option value="0">Autor ausw&auml;hlen</option>
+                                    {foreach name=author from=$oPossibleAuthors_arr item=oPossibleAuthor}
+                                        <option value="{$oPossibleAuthor->kAdminlogin}"{if isset($cPostVar_arr.nAuthor)}{if isset($cPostVar_arr.nAuthor) && $cPostVar_arr.nAuthor == $oPossibleAuthor->kAdminlogin} selected="selected"{/if}{elseif isset($oAuthor->kAdminlogin) && $oAuthor->kAdminlogin == $oPossibleAuthor->kAdminlogin} selected="selected"{/if}>{$oPossibleAuthor->cName}</option>
+                                    {/foreach}
+                                </select>
+                            </td>
+                        </tr>
+                    {/if}
                     <tr>
                         <td><label for="previewImage">{#newsPreview#}</label></td>
                         <td valign="top">

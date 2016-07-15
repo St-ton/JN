@@ -124,7 +124,7 @@ class Rechnungsadresse extends Adresse
 
         unset($obj->angezeigtesLand);
         unset($obj->cAnredeLocalized);
-        
+
         $cReturn = Shop::DB()->update('trechnungsadresse', 'kRechnungsadresse', $obj->kRechnungsadresse, $obj);
         $this->decrypt();
 
@@ -142,6 +142,7 @@ class Rechnungsadresse extends Adresse
         if ($this->kRechnungsadresse > 0) {
             return $this->toArray();
         }
+
         return [];
     }
 }

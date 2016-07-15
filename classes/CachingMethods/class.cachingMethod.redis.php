@@ -10,8 +10,10 @@
  *
  * @see https://github.com/nicolasff/phpredis
  */
-class cache_redis extends JTLCacheHelper implements ICachingMethod
+class cache_redis implements ICachingMethod
 {
+    use JTLCacheTrait;
+    
     /**
      * @var cache_redis|null
      */
@@ -42,17 +44,6 @@ class cache_redis extends JTLCacheHelper implements ICachingMethod
     }
 
     /**
-     * @param array $options
-     *
-     * @return cache_redis
-     */
-    public static function getInstance($options)
-    {
-        //check if class was initialized before
-        return (self::$instance !== null) ? self::$instance : new self($options);
-    }
-
-    /**
      * @param string|null $host
      * @param int|null    $port
      * @param string|null $pass
@@ -66,11 +57,17 @@ class cache_redis extends JTLCacheHelper implements ICachingMethod
         $redis   = new Redis();
         $connect = ($persist === false) ? 'connect' : 'pconnect';
         if ($host !== null) {
-            $res = ($port !== null && $host[0] !== '/') ?
-                $redis->$connect($host, $port) :
-                $redis->$connect($host); //for connecting to socket
-            if ($res !== false && $database !== null && $database !== '') {
-                $res = $redis->select($database);
+            try {
+                $res = ($port !== null && $host[0] !== '/') ?
+                    $redis->$connect($host, $port) :
+                    $redis->$connect($host); //for connecting to socket
+                if ($res !== false && $database !== null && $database !== '') {
+                    $res = $redis->select(0);
+                }
+            } catch (RedisException $e) {
+                Jtllog::writeLog('RedisException: ' . $e->getMessage(), JTLLOG_LEVEL_ERROR);
+
+                return false;
             }
             if ($res !== false && $pass !== null && $pass !== '') {
                 $res = $redis->auth($pass);
@@ -166,7 +163,7 @@ class cache_redis extends JTLCacheHelper implements ICachingMethod
             $return = array();
             foreach ($res as $_idx => $_val) {
                 $return[$cacheIDs[$i]] = $_val;
-                $i++;
+                ++$i;
             }
 
             return $return;

@@ -44,7 +44,7 @@
                     {$jtl_token}
                     <input type="hidden" name="Suche" value="1" />
                     <input type="hidden" name="tab" value="suchanfrage" />
-                    {if isset($cSuche) && $cSuche|count_characters > 0}
+                    {if isset($cSuche) && $cSuche|strlen > 0}
                         <input name="cSuche" type="hidden" value="{$cSuche}" />
                     {/if}
 
@@ -53,7 +53,7 @@
                             <span class="input-group-addon">
                                 <label for="cSuche">{#livesucheSearchItem#}:</label>
                             </span>
-                            <input class="form-control" id="cSuche" name="cSuche" type="text" value="{if isset($cSuche) && $cSuche|count_characters > 0}{$cSuche}{/if}" />
+                            <input class="form-control" id="cSuche" name="cSuche" type="text" value="{if isset($cSuche) && $cSuche|strlen > 0}{$cSuche}{/if}" />
                             <span class="input-group-btn">
                                 <button name="submitSuche" type="submit" value="{#livesucheSearchBTN#}" class="btn btn-primary"><i class="fa fa-search"></i> {#livesucheSearchBTN#}</button>
                             </span>
@@ -67,7 +67,7 @@
                     <input type="hidden" name="cSuche" value="{if isset($cSuche)}{$cSuche}{/if}" />
                     <input type="hidden" name="nSort" value="{$nSort}" />
                     <input type="hidden" name="tab" value="suchanfrage" />
-                    {if isset($cSuche) && $cSuche|count_characters > 0}
+                    {if isset($cSuche) && $cSuche|strlen > 0}
                         {assign var=pAdditional value="cSuche="|cat:$cSuche}
                     {else}
                         {assign var=pAdditional value=''}

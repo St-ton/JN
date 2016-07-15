@@ -150,7 +150,7 @@ final class Shopsetting implements ArrayAccess
     }
 
     /**
-     * @param array $sektionen_arr
+     * @param array|int $sektionen_arr
      * @return array
      */
     public function getSettings($sektionen_arr)

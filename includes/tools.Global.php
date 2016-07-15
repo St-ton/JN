@@ -356,17 +356,15 @@ function getCurrencyConversion($fPreisNetto, $fPreisBrutto, $cClass = '', $bForc
                 // Wurde geändert weil der Preis nun als Betrag gesehen wird und die Steuer direkt in der Versandart als eSteuer Flag eingestellt wird
                 if ($i > 0) {
                     $cString .= ($bForceSteuer) ?
-                        (' &#x2259; <strong>' . $cPreisBruttoLocalized . '</strong>' . ' (<em>' . $cPreisLocalized . '</em>)') :
-                        (' &#x2259; ' . $cPreisBruttoLocalized);
+                        ('<br><strong>' . $cPreisBruttoLocalized . '</strong>' . ' (<em>' . $cPreisLocalized . ' ' . Shop::Lang()->get('net') . '</em>)') :
+                        ('<br> ' . $cPreisBruttoLocalized);
                 } else {
                     $cString .= ($bForceSteuer) ?
-                        ('<strong>' . $cPreisBruttoLocalized . '</strong>' . ' (<em>' . $cPreisLocalized . '</em>)') :
+                        ('<strong>' . $cPreisBruttoLocalized . '</strong>' . ' (<em>' . $cPreisLocalized . ' ' . Shop::Lang()->get('net') . '</em>)') :
                         '<strong>' . $cPreisBruttoLocalized . '</strong>';
                 }
             }
-            $cString .= ($bForceSteuer) ?
-                ' (<strong>Brutto</strong> / Netto)</span>' :
-                '</span>';
+            $cString .= '</span>';
         }
     }
 
@@ -1394,7 +1392,7 @@ function gibLagerfilter()
     executeHook(HOOK_STOCK_FILTER, array(
         'conf'      => (int) $conf['global']['artikel_artikelanzeigefilter'],
         'filterSQL' => &$filterSQL
-    ));    
+    ));
 
     return $filterSQL;
 }
@@ -1467,7 +1465,7 @@ function setzeSteuersaetze($steuerland = 0)
     $_SESSION['Steuersatz'] = array();
 
     $merchantCountryCode = 'DE';
-    $Firma = Shop::DB()->query("SELECT cLand FROM tfirma", 1);
+    $Firma               = Shop::DB()->query("SELECT cLand FROM tfirma", 1);
     if (!empty($Firma->cLand)) {
         $merchantCountryCode = landISO($Firma->cLand);
     }
@@ -3113,18 +3111,13 @@ function checkeWunschlisteParameter()
 
     if (strlen($cURLID) > 0) {
         // Kampagne
-        $cKampagneSQL = "cURLID='" . $cURLID . "'";
         $oKampagne    = new Kampagne(KAMPAGNE_INTERN_OEFFENTL_WUNSCHZETTEL);
-        if (isset($oKampagne->kKampagne) && $oKampagne->kKampagne > 0) {
-            $cKampagneSQL = "cURLID = '" . $cURLID . "&" . $oKampagne->cParameter . "=" . $oKampagne->cWert . "'";
-        }
-
-        $oWunschliste = Shop::DB()->query(
-            "SELECT kWunschliste
-                FROM twunschliste
-                WHERE " . $cKampagneSQL . "
-                    AND nOeffentlich = 1", 1
-        );
+        $id           = (isset($oKampagne->kKampagne) && $oKampagne->kKampagne > 0) ?
+            ($cURLID . '&' . $oKampagne->cParameter . '=' . $oKampagne->cWert) :
+            $cURLID;
+        $keys         = array('nOeffentlich', 'cURLID');
+        $values       = array(1, $id);
+        $oWunschliste = Shop::DB()->select('twunschliste', $keys, $values);
 
         if (isset($oWunschliste->kWunschliste) && $oWunschliste->kWunschliste > 0) {
             return $oWunschliste->kWunschliste;
@@ -3832,10 +3825,9 @@ function setzeSpracheUndWaehrungLink()
                 || $AktuelleSeite === 'PASSWORT VERGESSEN'
                 || $AktuelleSeite === 'NEWS'
             ) {
-
                 switch ($AktuelleSeite) {
                     case 'STARTSEITE' :
-                        $id = null;
+                        $id                             = null;
                         $_SESSION['Sprachen'][$i]->cURL = gibNaviURL($NaviFilter, SHOP_SEO, $oZusatzFilter, $oSprache->kSprache);
                         if ($_SESSION['Sprachen'][$i]->cURL === $shopURL . '/') {
                             $_SESSION['Sprachen'][$i]->cURL .= '?lang=' . $oSprache->cISO;
@@ -4503,6 +4495,7 @@ function pruefeSOAP($cURL = '')
             return false;
         }
     }
+
     return class_exists('SoapClient');
 }
 
@@ -4517,6 +4510,7 @@ function pruefeCURL($cURL = '')
             return false;
         }
     }
+
     return function_exists('curl_init');
 }
 
@@ -5670,6 +5664,21 @@ function getDeliverytimeEstimationText($minDeliveryDays, $maxDeliveryDays)
 }
 
 /**
+ * Prüft ob reCaptcha mit private und public key konfiguriert ist
+ *
+ * @return bool
+ */
+function reCaptchaConfigured()
+{
+    $settings = Shop::getSettings(array(CONF_GLOBAL));
+
+    return isset($settings['global']['global_google_recaptcha_private'])
+        && isset($settings['global']['global_google_recaptcha_public'])
+        && !empty($settings['global']['global_google_recaptcha_private'])
+        && !empty($settings['global']['global_google_recaptcha_public']);
+}
+
+/**
  * @param string $response
  * @return bool
  */
@@ -5696,6 +5705,46 @@ function validateReCaptcha($response)
     }
 
     return false;
+}
+
+/**
+ * @param array $requestData
+ * @return bool
+ */
+function validateCaptcha(array $requestData)
+{
+    $confGlobal = Shop::getSettings(array(CONF_GLOBAL));
+    $reCaptcha  = reCaptchaConfigured();
+    $valid      = false;
+
+    // Captcha Prüfung ist bei eingeloggtem Kunden, bei bereits erfolgter Prüfung
+    // oder ausgeschaltetem Captcha nicht notwendig
+    if (!empty($_SESSION['Kunde']->kKunde)
+        || (isset($_SESSION['bAnti_spam_already_checked']) && $_SESSION['bAnti_spam_already_checked'] === true)
+        || $confGlobal['global']['anti_spam_method'] === 'N') {
+        return true;
+    }
+
+    // Captcha Prüfung für reCaptcha ist nicht möglich, wenn keine Konfiguration hinterlegt ist
+    if ($confGlobal['global']['anti_spam_method'] == 7 && !$reCaptcha) {
+        return true;
+    }
+
+    // Wenn reCaptcha konfiguriert ist, wird davon ausgegangen, dass reCaptcha verwendet wird, egal was in
+    // $confGlobal['global']['anti_spam_method'] angegeben ist.
+     if ($reCaptcha) {
+        $valid = validateReCaptcha($requestData['g-recaptcha-response']);
+    } elseif ($confGlobal['global']['anti_spam_method'] == 5) {
+        $valid = validToken();
+    } elseif (isset($requestData['captcha']) && isset($requestData['md5'])) {
+        $valid = $requestData['md5'] == md5(PFAD_ROOT . $requestData['captcha']);
+    }
+
+    if ($valid) {
+        $_SESSION['bAnti_spam_already_checked'] = true;
+    }
+
+    return $valid;
 }
 
 /**
@@ -5764,6 +5813,26 @@ function validateToken()
 function isAjaxRequest()
 {
     return isset($_REQUEST['isAjax']) || (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest');
+}
+
+/**
+ * @param string $filename
+ * @return string delimiter guess
+ */
+function guessCsvDelimiter($filename)
+{
+    $file      = fopen($filename, 'r');
+    $firstLine = fgets($file);
+
+    foreach (array(';', ',', '|', '\t') as $delim) {
+        if (strpos($firstLine, $delim) !== false) {
+            fclose($file);
+            return $delim;
+        }
+    }
+
+    fclose($file);
+    return ';';
 }
 
 /**

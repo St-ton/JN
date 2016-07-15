@@ -9,7 +9,7 @@ abstract class AbstractPlugin implements IPlugin
      * @var string
      */
     private $pluginId;
-    
+
     /**
      * @var array
      */
@@ -22,7 +22,7 @@ abstract class AbstractPlugin implements IPlugin
 
     public function boot(EventDispatcher $dispatcher)
     {
-        $dispatcher->listen('backend.notification', function(\Notification $notify) use(&$dispatcher) {
+        $dispatcher->listen('backend.notification', function (\Notification $notify) use (&$dispatcher) {
             $dispatcher->forget('backend.notification');
             if (count($this->notifications) > 0) {
                 foreach ($this->notifications as $n) {
@@ -39,9 +39,17 @@ abstract class AbstractPlugin implements IPlugin
         $this->notifications[] = $notify;
     }
 
-    public function installed() { }
-    public function uninstalled() { }
+    public function installed()
+    {
+    }
+    public function uninstalled()
+    {
+    }
 
-    public function enabled() { }
-    public function disabled() { }
+    public function enabled()
+    {
+    }
+    public function disabled()
+    {
+    }
 }

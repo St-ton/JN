@@ -8,8 +8,10 @@
  * Class cache_memcache
  * Implements the Memcache memory object caching system - no "d" at the end
  */
-class cache_memcache extends JTLCacheHelper implements ICachingMethod
+class cache_memcache implements ICachingMethod
 {
+    use JTLCacheTrait;
+    
     /**
      * @var cache_memcache|null
      */
@@ -31,17 +33,6 @@ class cache_memcache extends JTLCacheHelper implements ICachingMethod
             $this->journalID     = 'memcache_journal';
             $this->options       = $options;
         }
-    }
-
-    /**
-     * @param array $options
-     *
-     * @return cache_memcache
-     */
-    public static function getInstance($options)
-    {
-        //check if class was initialized before
-        return (self::$instance !== null) ? self::$instance : new self($options);
     }
 
     /**

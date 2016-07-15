@@ -201,7 +201,6 @@ function setzeUmfrageErgebnisse()
 
         $kUmfrageDurchfuehrung = Shop::DB()->insert('tumfragedurchfuehrung', $oUmfrageDurchfuehrung);
 
-
         // Daten der Umfrage in die Datenbank (tumfragedurchfuehrungantwort) speichern
         foreach ($_SESSION['Umfrage']->oUmfrageFrage_arr as $j => $oUmfrageFrage) {
             if ($oUmfrageFrage->cTyp !== 'text_statisch' && $oUmfrageFrage->cTyp !== 'text_statisch_seitenwechsel') {

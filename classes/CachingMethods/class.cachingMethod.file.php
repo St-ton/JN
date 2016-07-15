@@ -8,8 +8,10 @@
  * Class cache_file
  * Implements caching via filesystem
  */
-class cache_file extends JTLCacheHelper implements ICachingMethod
+class cache_file implements ICachingMethod
 {
+    use JTLCacheTrait;
+    
     /**
      * @var cache_file|null
      */
@@ -26,17 +28,6 @@ class cache_file extends JTLCacheHelper implements ICachingMethod
         self::$instance      = $this;
 
         return $this;
-    }
-
-    /**
-     * @param array $options
-     *
-     * @return cache_file
-     */
-    public static function getInstance($options)
-    {
-        //check if class was initialized before
-        return (self::$instance !== null) ? self::$instance : new self($options);
     }
 
     /**

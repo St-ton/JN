@@ -185,7 +185,7 @@
                                         <div class="form-group">
                                             <div class="col-xs-3 group-radio">
                                                 <label>
-                                                <input id="nLink" name="nLink" type="radio" class="{if isset($cPlausi_arr.kLink)} fieldfillout{/if}" value="-1" onClick="aenderAnzeigeLinks(false);"{if (!isset($cPlausi_arr.kLink) && (!isset($oCheckBox->kLink) || !$oCheckBox->kLink)) || $cPost_arr.nLink == -1} checked="checked"{/if} />
+                                                <input id="nLink" name="nLink" type="radio" class="{if isset($cPlausi_arr.kLink)} fieldfillout{/if}" value="-1" onClick="aenderAnzeigeLinks(false);"{if (!isset($cPlausi_arr.kLink) && (!isset($oCheckBox->kLink) || !$oCheckBox->kLink)) || isset($cPlausi_arr.kLink) && $cPost_arr.nLink == -1} checked="checked"{/if} />
                                                 Kein Link
                                                 </label>
                                             </div>

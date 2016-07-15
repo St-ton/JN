@@ -98,7 +98,11 @@
         <div class="col-xs-3 col-sm-4">
             <form action="navi.php" method="post" class="form form-basket" data-toggle="basket-add">
                 {block name="form-basket"}
-                    {include file="productdetails/price.tpl" Artikel=$Artikel price_image=$Artikel->Preise->strPreisGrafik_Suche tplscope=$tplscope}
+                    {assign var=price_image value=""}
+                    {if isset($Artikel->Preise->strPreisGrafik_Suche)}
+                        {assign var=$price_image value=$Artikel->Preise->strPreisGrafik_Suche}
+                    {/if}
+                    {include file="productdetails/price.tpl" Artikel=$Artikel price_image=$price_image tplscope=$tplscope}
                     <div class="delivery-status">
                     {block name="delivery-status"}
                         {assign var=anzeige value=$Einstellungen.artikeluebersicht.artikeluebersicht_lagerbestandsanzeige}
@@ -244,6 +248,6 @@
 {* popup-content *}
 {if $Artikel->verfuegbarkeitsBenachrichtigung == 3}
     <div id="popupn{$Artikel->kArtikel}" class="hidden">
-        {include file='productdetails/availability_notification_form.tpl' tplscope='artikeldetails'}
+        {include file='productdetails/availability_notification_form.tpl' position="popup" tplscope='artikeldetails'}
     </div>
 {/if}

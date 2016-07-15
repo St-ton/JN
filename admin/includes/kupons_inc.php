@@ -127,13 +127,13 @@ function normalizeDate($string)
  * @param string $cOrderBy - a column that should be sorted by
  * @return array
  */
-function getCoupons($cKuponTyp = 'standard', $cLimitSQL = '', $cOrderBy = 'kKupon')
+function getCoupons($cKuponTyp = 'standard', $cLimitSQL = '', $cOrderBy = 'kKupon', $cWhereSQL = '')
 {
     $oKuponDB_arr = Shop::DB()->query("
         SELECT kKupon
             FROM tkupon
-            WHERE cKuponTyp = '" . $cKuponTyp . "'
-            ORDER BY " . $cOrderBy . " " .
+            WHERE cKuponTyp = '" . $cKuponTyp . "'" . ($cWhereSQL !== '' ? " AND " . $cWhereSQL : "") .
+            "ORDER BY " . $cOrderBy . " " .
             $cLimitSQL,
         2);
     $oKupon_arr = array();
@@ -289,12 +289,12 @@ function createCouponFromInput()
  * @param string $cKuponTyp
  * @return int
  */
-function getCouponCount($cKuponTyp = 'standard')
+function getCouponCount($cKuponTyp = 'standard', $cWhereSQL = '')
 {
     $oKuponDB = Shop::DB()->query("
         SELECT count(kKupon) AS count
             FROM tkupon
-            WHERE cKuponTyp = '" . $cKuponTyp . "'",
+            WHERE cKuponTyp = '" . $cKuponTyp . "'" . ($cWhereSQL !== '' ? " AND " . $cWhereSQL : ""),
         1);
 
     return $oKuponDB->count;

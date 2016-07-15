@@ -2,6 +2,7 @@
 
 {function kupons_uebersicht_tab}
     <div id="{$cKuponTyp}" class="tab-pane fade{if $tab === $cKuponTyp} active in{/if}">
+        {include file='filtertools.tpl' oFilter=$oFilter}
         {include file='pagination.tpl' cSite=$nSeite cUrl='kupons.php' oBlaetterNavi=$oBlaetterNavi cParams='&tab='|cat:$cKuponTyp}
         <form method="post" action="kupons.php">
             {$jtl_token}
@@ -11,7 +12,7 @@
                     <div class="panel-heading">
                         <h3 class="panel-title">{#all#} {$cKuponTypName}s</h3>
                     </div>
-                    <table class="list table">
+                    <table class="list table table-striped">
                         <thead>
                             <tr>
                                 <th></th>

@@ -3428,21 +3428,15 @@ function aktivierePlugin($kPlugin)
             if ($nReturnValue === 1 || $nReturnValue === 90 || $nReturnValue === 126) {
                 $_upd_plg          = new stdClass();
                 $_upd_plg->nStatus = 2;
-                $nRow              = Shop::DB()->update('tplugin', 'kPlugin', (int)$kPlugin, $_upd_plg);
+                $nRow              = Shop::DB()->update('tplugin', 'kPlugin', $kPlugin, $_upd_plg);
 
                 $_upd_wdg          = new stdClass();
                 $_upd_wdg->bActive = 1;
-                Shop::DB()->update('tadminwidgets', 'kPlugin', (int)$kPlugin, $_upd_wdg);
+                Shop::DB()->update('tadminwidgets', 'kPlugin', $kPlugin, $_upd_wdg);
 
                 $_upd_lnk            = new stdClass();
                 $_upd_lnk->bIsActive = 1;
-                Shop::DB()->update('tlink', 'kPlugin', (int)$kPlugin, $_upd_lnk);
-
-                Shop::DB()->query(
-                    "UPDATE tadminwidgets
-                        SET bActive = 1
-                        WHERE kPlugin = " . $kPlugin, 3
-                );
+                Shop::DB()->update('tlink', 'kPlugin', $kPlugin, $_upd_lnk);
 
                 if ($p = Plugin::bootstrapper($kPlugin)) {
                     $p->enabled();
@@ -3478,23 +3472,17 @@ function deaktivierePlugin($kPlugin)
             $p->disabled();
         }
 
-        Shop::DB()->query(
-            "UPDATE tplugin
-                SET nStatus = 1
-                WHERE kPlugin = " . $kPlugin, 3
-        );
+        $_upd_plg          = new stdClass();
+        $_upd_plg->nStatus = 1;
+        Shop::DB()->update('tplugin', 'kPlugin', $kPlugin, $_upd_plg);
 
-        Shop::DB()->query(
-            "UPDATE tadminwidgets
-                SET bActive = 0
-                WHERE kPlugin = " . $kPlugin, 3
-        );
+        $_upd_wdg          = new stdClass();
+        $_upd_wdg->bActive = 0;
+        Shop::DB()->update('tadminwidgets', 'kPlugin', $kPlugin, $_upd_wdg);
 
-        Shop::DB()->query(
-            "UPDATE tlink
-                 SET bIsActive = 0
-                 WHERE kPlugin = " . $kPlugin, 3
-        );
+        $_upd_lnk            = new stdClass();
+        $_upd_lnk->bIsActive = 0;
+        Shop::DB()->update('tlink', 'kPlugin', $kPlugin, $_upd_lnk);
 
         Shop::Cache()->flushTags(array(CACHING_GROUP_PLUGIN . '_' . $kPlugin));
 

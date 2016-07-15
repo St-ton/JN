@@ -375,7 +375,7 @@
                 // this.setMaxHeight(height);
                 this.resetMaxHeight();
             } else {
-                this.setMaxHeight(height);
+                this.setMaxHeight(height, img_h);
             }
         },
 
@@ -398,8 +398,10 @@
             return newMaxHeight;
         },
 
-        setMaxHeight: function(height) {
-            $(this.element).find('.image-gallery, ul.image-container > li img')
+        setMaxHeight: function(height, thumb_height) {
+            $(this.element).find('.image-gallery')
+                .css('max-height', height+thumb_height);
+            $(this.element).find('ul.image-container > li img')
                 .css('max-height', height);
 
             $(this.element).find('ul.image-container')

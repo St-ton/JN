@@ -23,7 +23,7 @@
     <div class="container-fluid2">
         <div class="tab-content">
             <div id="overview" class="tab-pane fade{if isset($cTab) && $cTab === 'uebersicht'} active in{/if}">
-                {if isset($cFehlerBillpay) && $cFehlerBillpay|count_characters > 0}
+                {if isset($cFehlerBillpay) && $cFehlerBillpay|strlen > 0}
                     <div class="alert alert-danger">{$cFehlerBillpay}</div>
                 {else}
                     <div id="settings">
@@ -68,24 +68,24 @@
                                 <tr class="text-vcenter">
                                     <td>{$oLog->cLog}</td>
                                     <td class="text-center">
-										<h4 class="label-wrap">
-										{if $oLog->nLevel == 1}
-											<span class="label label-danger logError">{#logError#}</span>
-										{elseif $oLog->nLevel == 2}
-											<span class="label label-info logNotice">{#logNotice#}</span>
-										{else}
-											<span class="label label-default logDebug">{#logDebug#}</span>
-										{/if}
-										</h4>
+                                        <h4 class="label-wrap">
+                                        {if $oLog->nLevel == 1}
+                                            <span class="label label-danger logError">{#logError#}</span>
+                                        {elseif $oLog->nLevel == 2}
+                                            <span class="label label-info logNotice">{#logNotice#}</span>
+                                        {else}
+                                            <span class="label label-default logDebug">{#logDebug#}</span>
+                                        {/if}
+                                        </h4>
                                     </td>
                                     <td class="text-center">{$oLog->dDatum|date_format:"%d.%m.%Y - %H:%M:%S"}</td>
                                     <td class="text-center" style="width:24px">
-                                        {if $oLog->cLogData|count_characters > 0}
+                                        {if $oLog->cLogData|strlen > 0}
                                             <a href="#" onclick="$('#data{$oLog->kZahlunglog}').toggle();return false;" class="btn btn-default btn-sm"><i class="fa fa-bars"></i></a>
                                         {/if}
                                     </td>
                                 </tr>
-                                {if $oLog->cLogData|count_characters > 0}
+                                {if $oLog->cLogData|strlen > 0}
                                     {assign var="oKunde" value=$oLog->cLogData|unserialize}
                                     <tr class="hidden" id="data{$oLog->kZahlunglog}">
                                         <td colspan="4">

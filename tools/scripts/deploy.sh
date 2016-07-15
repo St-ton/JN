@@ -17,7 +17,7 @@ deploy_create()
 
     local VCS_BRANCH=$1
     local VCS_BUILD_NUMBER=$2
-    
+
     local TARGET_FILE="shop"
     local DB_NAME=$(deploy_db_name)
 
@@ -28,7 +28,7 @@ deploy_create()
     local VCS_REG="refs\\/(head|tag)s\\/(.+)"
     local VCS_REG_TAG="v([0-9])\\.([0-9]{2})\\.([0-9])"
     local VCS_REF=$VCS_BRANCH
-    
+
     if [[ $VCS_BRANCH =~ $VCS_REG ]]; then
         VCS_TYPE=${BASH_REMATCH[1]}
         VCS_REF=${BASH_REMATCH[2]}
@@ -117,6 +117,10 @@ deploy_checkout()
 {
     git clone git@gitlab.jtl-software.de:jtlshop/shop4.git ${BUILD_DIR} -q || exit 1
     git -C ${BUILD_DIR} checkout $1 -q || exit 1
+
+    git -C ${BUILD_DIR} submodule init -q || exit 1
+    git -C ${BUILD_DIR} submodule sync -q || exit 1
+    git -C ${BUILD_DIR} submodule update -q || exit 1
 
     rm -rf ${BUILD_DIR}/.git*
     rm -rf ${BUILD_DIR}/tools

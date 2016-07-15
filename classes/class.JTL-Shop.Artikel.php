@@ -60,7 +60,7 @@ class Artikel
     public $kWarengruppe;
 
     /**
-     * @var int Spiegelt in JTL-Wawi die Beschaffungszeit vom Lieferanten zum Händler wieder. 
+     * @var int Spiegelt in JTL-Wawi die Beschaffungszeit vom Lieferanten zum Händler wieder.
      * Darf nur dann berücksichtigt werden, wenn $nAutomatischeLiefertageberechnung == 0 (also fixe Beschaffungszeit)
      */
     public $nLiefertageWennAusverkauft;
@@ -3555,6 +3555,7 @@ class Artikel
             $oArtikelOptionen->nVariationKombi = 0;
         }
         $this->holVariationen($kKundengruppe, $kSprache, $oArtikelOptionen->nVariationKombi);
+
         //Artikel mit Variationen, bei denen der Lagerbestand gesetzt und 0 ist, werden entsprechend der globalen Einstellung angezeigt
         $tmpBestandVariationen = 0;
         foreach( $this->Variationen as $tmpVari) {
@@ -3566,8 +3567,11 @@ class Artikel
             unset($this->kArtikel);
             return;
         }
-        // Sobald ein KindArtikel teurer ist als der Vaterartikel, muss nVariationsAufpreisVorhanden auf 1 gesetzt werden damit in der Artikelvorschau ein "Preis ab ..." erscheint
-        if ($oArtikelTMP->kVaterArtikel == 0 && $oArtikelTMP->nIstVater == 1) {
+
+        /* Sobald ein KindArtikel teurer ist als der Vaterartikel, muss nVariationsAufpreisVorhanden auf 1 gesetzt werden damit in der Artikelvorschau ein "Preis ab ..." erscheint
+           aber nur wenn auch Preise angezeigt werden, this->Preise also auch vorhanden ist */
+        if (is_object($this->Preise) && $oArtikelTMP->kVaterArtikel == 0 && $oArtikelTMP->nIstVater == 1) {
+
             $fVKNetto         = ($this->Preise->fVKNetto !== null) ? $this->Preise->fVKNetto : 0.0;
             $fMaxRabatt       = $this->getDiscount($kKundengruppe, $oArtikelTMP->kArtikel);
             $oKindSonderpreis = Shop::DB()->query(
@@ -4560,17 +4564,19 @@ class Artikel
             if (!isset($this->SieSparenX)) {
                 $this->SieSparenX = new stdClass();
             }
-            if ($_SESSION['Kundengruppe']->nNettoPreise) {
-                $this->fUVP                             = $this->fUVP / (1 + gibUst($this->kSteuerklasse) / 100);
-                $this->SieSparenX->anzeigen             = $anzeigen;
-                $this->SieSparenX->nProzent             = round((($this->fUVP - $this->Preise->fVKNetto) * 100) / $this->fUVP, 2);
-                $this->SieSparenX->fSparbetrag          = $this->fUVP - $this->Preise->fVKNetto;
-                $this->SieSparenX->cLocalizedSparbetrag = gibPreisStringLocalized($this->SieSparenX->fSparbetrag);
-            } else {
-                $this->SieSparenX->anzeigen             = $anzeigen;
-                $this->SieSparenX->nProzent             = round((($this->fUVP - berechneBrutto($this->Preise->fVKNetto, gibUst($this->kSteuerklasse))) * 100) / $this->fUVP, 2);
-                $this->SieSparenX->fSparbetrag          = $this->fUVP - berechneBrutto($this->Preise->fVKNetto, gibUst($this->kSteuerklasse));
-                $this->SieSparenX->cLocalizedSparbetrag = gibPreisStringLocalized($this->SieSparenX->fSparbetrag);
+            if ($_SESSION['Kundengruppe']->darfPreiseSehen) {
+                if ($_SESSION['Kundengruppe']->nNettoPreise) {
+                    $this->fUVP                             = $this->fUVP / (1 + gibUst($this->kSteuerklasse) / 100);
+                    $this->SieSparenX->anzeigen             = $anzeigen;
+                    $this->SieSparenX->nProzent             = round((($this->fUVP - $this->Preise->fVKNetto) * 100) / $this->fUVP, 2);
+                    $this->SieSparenX->fSparbetrag          = $this->fUVP - $this->Preise->fVKNetto;
+                    $this->SieSparenX->cLocalizedSparbetrag = gibPreisStringLocalized($this->SieSparenX->fSparbetrag);
+                } else {
+                    $this->SieSparenX->anzeigen             = $anzeigen;
+                    $this->SieSparenX->nProzent             = round((($this->fUVP - berechneBrutto($this->Preise->fVKNetto, gibUst($this->kSteuerklasse))) * 100) / $this->fUVP, 2);
+                    $this->SieSparenX->fSparbetrag          = $this->fUVP - berechneBrutto($this->Preise->fVKNetto, gibUst($this->kSteuerklasse));
+                    $this->SieSparenX->cLocalizedSparbetrag = gibPreisStringLocalized($this->SieSparenX->fSparbetrag);
+                }
             }
         }
 

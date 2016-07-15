@@ -11,6 +11,9 @@ class Notification implements IteratorAggregate, Countable
 {
     use SingletonTrait;
 
+    /**
+     * @var array
+     */
     private $array = [];
 
     /**
@@ -33,7 +36,7 @@ class Notification implements IteratorAggregate, Countable
     }
 
     /**
-     * @return highest type in record
+     * @return int - highest type in record
      */
     public function getHighestType()
     {
@@ -63,7 +66,8 @@ class Notification implements IteratorAggregate, Countable
         usort($this->array, function ($a, $b) {
             if ($a->getType() > $b->getType()) {
                 return -1;
-            } elseif ($a->getType() < $b->getType()) {
+            }
+            if ($a->getType() < $b->getType()) {
                 return 1;
             }
 
@@ -79,7 +83,8 @@ class Notification implements IteratorAggregate, Countable
      */
     public function buildDefault()
     {
-        $status = Status::getInstance();
+        $status     = Status::getInstance();
+        $confGlobal = Shop::getSettings(array(CONF_GLOBAL));
 
         if ($status->hasPendingUpdates()) {
             $this->add(NotificationEntry::TYPE_DANGER, 'Systemupdate', 'Ein Datenbank-Update ist zwingend notwendig', 'dbupdater.php');
@@ -99,6 +104,10 @@ class Notification implements IteratorAggregate, Countable
 
         if ($status->hasActiveProfiler()) {
             $this->add(NotificationEntry::TYPE_WARNING, 'Plugin', 'Der Profiler ist aktiv und kann zu starken Leistungseinbu&szlig;en im Shop f&uuml;hren.');
+        }
+
+        if ((int)$confGlobal['global']['anti_spam_method'] === 7 && !reCaptchaConfigured()) {
+            $this->add(NotificationEntry::TYPE_WARNING, 'Konfiguration', 'Sie haben Google reCaptcha als Spamschutz-Methode gew&auml;hlt, aber Website- und/oder Geheimer Schl&uuml;ssel nicht angegeben.', 'einstellungen.php?kSektion=1#anti_spam_method');
         }
 
         if ($subscription = $status->getSubscription()) {

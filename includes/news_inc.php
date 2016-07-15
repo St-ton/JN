@@ -122,26 +122,8 @@ function pruefeKundenKommentar($cKommentar, $cName = '', $cEmail = '', $kNews, $
         if (!valid_email($cEmail)) {
             $nPlausiValue_arr['cEmail'] = 1;
         }
-        if (empty($_SESSION['Kunde']->kKunde) && (!isset($_SESSION['bAnti_spam_already_checked']) || $_SESSION['bAnti_spam_already_checked'] !== true) && isset($conf['news']['news_sicherheitscode']) && $conf['news']['news_sicherheitscode'] !== 'N') {
-            // reCAPTCHA
-            if (isset($_POST['g-recaptcha-response'])) {
-                if (!validateReCaptcha($_POST['g-recaptcha-response'])) {
-                    $nPlausiValue_arr['captcha'] = 1;
-                }
-            } else {
-                if (empty($_POST['captcha'])) {
-                    $nPlausiValue_arr['captcha'] = 1;
-                }
-                if (!isset($_POST['md5']) || !$_POST['md5'] || ($_POST['md5'] !== md5(PFAD_ROOT . $_POST['captcha']))) {
-                    $nPlausiValue_arr['captcha'] = 2;
-                }
-                if ($conf['news']['news_sicherheitscode'] == 5) {
-                    $nPlausiValue_arr['captcha'] = 2;
-                    if (validToken()) {
-                        unset($nPlausiValue_arr['captcha']);
-                    }
-                }
-            }
+        if (isset($conf['news']['news_sicherheitscode']) && $conf['news']['news_sicherheitscode'] !== 'N' && !validateCaptcha($_POST)) {
+            $nPlausiValue_arr['captcha'] = 2;
         }
     }
     if ((!isset($nPlausiValue_arr['cName']) || !$nPlausiValue_arr['cName']) && pruefeEmailblacklist($cEmail)) {
@@ -437,7 +419,7 @@ function getNewsArchive($kNews, $bActiveOnly = false)
 
     return Shop::DB()->query(
         "SELECT tnews.kNews, tnews.kSprache, tnews.cKundengruppe, tnews.cBetreff, tnews.cText, tnews.cVorschauText, tnews.cPreviewImage, tnews.cMetaTitle,
-            tnews.cMetaDescription, tnews.cMetaKeywords, tnews.nAktiv, tnews.dErstellt, tseo.cSeo,
+            tnews.cMetaDescription, tnews.cMetaKeywords, tnews.nAktiv, tnews.dErstellt, tnews.dGueltigVon, tseo.cSeo,
             DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y %H:%i') AS Datum, DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y %H:%i') AS dGueltigVon_de
             FROM tnews
             LEFT JOIN tseo ON tseo.cKey = 'kNews'

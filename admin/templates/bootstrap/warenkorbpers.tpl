@@ -18,7 +18,7 @@
                     <input type="hidden" name="Suche" value="1" />
                     <input type="hidden" name="tab" value="warenkorbpers" />
                     <input type="hidden" name="s1" value="{$oBlaetterNaviKunde->nAktuelleSeite}" />
-                    {if isset($cSuche) && $cSuche|count_characters > 0}
+                    {if isset($cSuche) && $cSuche|strlen > 0}
                         <input type="hidden" name="cSuche" value="{$cSuche}" />
                     {/if}
 
@@ -26,7 +26,7 @@
                         <span class="input-group-addon">
                             <label for="cSuche">{#warenkorbpersClientName#}:</label>
                         </span>
-                        <input class="form-control" id="cSuche" name="cSuche" type="text" value="{if isset($cSuche) && $cSuche|count_characters > 0}{$cSuche}{/if}" />
+                        <input class="form-control" id="cSuche" name="cSuche" type="text" value="{if isset($cSuche) && $cSuche|strlen > 0}{$cSuche}{/if}" />
                         <span class="input-group-btn">
                             <button name="submitSuche" type="submit" value="{#warenkorbpersSearchBTN#}" class="btn btn-info"><i class="fa fa-search"></i> {#warenkorbpersSearchBTN#}</button>
                         </span>
@@ -34,7 +34,7 @@
                 </form>
 
                 {if isset($oKunde_arr) && $oKunde_arr|@count > 0}
-                    {if isset($cSuche) && $cSuche|count_characters > 0}
+                    {if isset($cSuche) && $cSuche|strlen > 0}
                         {assign var=pAdditional value="&cSuche="|cat:$cSuche}
                     {else}
                         {assign var=pAdditional value=''}

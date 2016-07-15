@@ -223,8 +223,9 @@
       this._sendEventsAfter();
 
       return $("body").css({
-        overflow: this.target.hasClass('in') ? 'hidden' : '',
-        position: this.target.hasClass('in') ? 'fixed' : ''
+        'overflow': this.target.hasClass('in') ? 'hidden' : '',
+        'position': this.target.hasClass('in') ? 'fixed' : '',
+        'max-width': this.target.hasClass('in') ? '100%' : ''
       });
 
     };
@@ -260,8 +261,9 @@
           if (el) {
             el.removeClass('in');
             return $('body').css({
-              overflow: '',
-              position: ''
+              'overflow': '',
+              'position': '',
+              'max-width': ''
             });
           }
         }

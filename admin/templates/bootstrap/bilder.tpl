@@ -201,7 +201,7 @@
                         <div class="panel-heading">
                             <h3 class="panel-title">{$cnf->cName}
                             <span class="pull-right">{getHelpDesc cID=$cnf->kEinstellungenConf}</span>
-                            {if isset($cnf->cSektionsPfad) && $cnf->cSektionsPfad|count_characters > 0}
+                            {if isset($cnf->cSektionsPfad) && $cnf->cSektionsPfad|strlen > 0}
                                 <span class="path"><strong>{#settingspath#}:</strong> {$cnf->cSektionsPfad}</span>
                             {/if}
                             </h3>

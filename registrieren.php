@@ -2,6 +2,8 @@
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
+ *
+ * @global $smarty
  */
 require_once dirname(__FILE__) . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
@@ -47,6 +49,10 @@ if (isset($_GET['editRechnungsadresse']) && intval($_GET['editRechnungsadresse']
 }
 if ($step === 'formular') {
     gibFormularDaten(verifyGPCDataInteger('checkout'));
+}
+if (isset($_FILES['vcard']) && $Einstellungen['kunden']['kundenregistrierung_vcardupload'] === 'Y' && validateToken()) {
+    gibKundeFromVCard($_FILES['vcard']['tmp_name']);
+    @unlink($_FILES['vcard']['tmp_name']);
 }
 //hole aktuelle Kategorie, falls eine gesetzt
 $AktuelleKategorie      = new Kategorie(verifyGPCDataInteger('kategorie'));

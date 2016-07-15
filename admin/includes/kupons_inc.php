@@ -211,7 +211,7 @@ function createNewCoupon($cKuponTyp)
 {
     $oKupon                        = new Kupon();
     $oKupon->cKuponTyp             = $cKuponTyp;
-    $oKupon->cName                 = 'neuerkupon';
+    $oKupon->cName                 = '';
     $oKupon->fWert                 = 0.0;
     $oKupon->cWertTyp              = 'festpreis';
     $oKupon->cZusatzgebuehren      = 'N';
@@ -265,7 +265,10 @@ function createCouponFromInput()
     if ($oKupon->cKuponTyp !== "neukundenkupon") {
         $oKupon->cKunden               = '-1';
     }
-    if ($oKupon->dGueltigAb === '0000-00-00 00:00:00') {
+    echo "<pre>";
+    var_dump($oKupon->dGueltigAb);
+    echo "</pre>";
+    if ($oKupon->dGueltigAb == 0) {
         $oKupon->dGueltigAb = date_create()->format('Y-m-d H:i') . ':00';
     }
     if (isset($_POST['bOpenEnd']) && $_POST['bOpenEnd'] === 'Y') {
@@ -292,7 +295,7 @@ function createCouponFromInput()
     if (isset($oKupon->massCreationCoupon) && $oKupon->massCreationCoupon->cActiv == 1 && $oKupon->cKuponTyp !== 'neukundenkupon') {
         $oKupon->cCode = array();
         for ((int)$i = 1; (int)$i <= (int)$oKupon->massCreationCoupon->numberOfCoupons; (int)$i++) {
-            $oKupon->cCode[] = $oKupon->generateCode($oKupon->massCreationCoupon->hashLength, $oKupon->massCreationCoupon->lowerCase, $oKupon->massCreationCoupon->upperCase, $oKupon->massCreationCoupon->numbersHash);
+            $oKupon->cCode[] = $oKupon->generateCode($oKupon->massCreationCoupon->hashLength, $oKupon->massCreationCoupon->lowerCase, $oKupon->massCreationCoupon->upperCase, $oKupon->massCreationCoupon->numbersHash, $oKupon->massCreationCoupon->praefixHash, $oKupon->massCreationCoupon->suffixHash);
         }
     } elseif (!isset($oKupon->massCreationCoupon) && $oKupon->cKuponTyp !== 'neukundenkupon' && $oKupon->cCode === '') {
         $oKupon->cCode = $oKupon->generateCode();
@@ -340,11 +343,20 @@ function validateCoupon($oKupon)
     if ($oKupon->cKuponTyp === 'versandkupon' && $oKupon->cLieferlaender === '') {
         $cFehler_arr[] = 'Bitte geben Sie die L&auml;nderk&uuml;rzel (ISO-Codes) unter "Lieferl&auml;nder" an, f&uuml;r die dieser Versandkupon gelten soll!';
     }
-    if (!isset($oKupon->massCreationCoupon) && $oKupon->cKuponTyp == 'standard' || $oKupon->cKuponTyp === 'versandkupon') {
+    if (isset($oKupon->massCreationCoupon)) {
+        foreach ($oKupon->cCode as $cCode) {
+            if (strlen($cCode) > 32) {
+                $cFehler_arr[] = 'Der zu generiende Code ist l&auml;nger als 32 Zeichen. Bitte verringern Sie die Menge der Zeichen in Pr&auml;fix, Suffix oder geben eine kleinere Zahl bei der L&auml;nge des Zufallcodes an.';
+            }
+        }
+    } elseif (strlen($oKupon->cCode) > 32) {
+        $cFehler_arr[] = 'Bitte geben Sie einen k&uuml;rzeren Code ein. Es sind maximal 32 Zeichen erlaubt.';
+    }
+    if (!isset($oKupon->massCreationCoupon) && ($oKupon->cKuponTyp == 'standard' || $oKupon->cKuponTyp === 'versandkupon')) {
         $queryRes = Shop::DB()->query("
         SELECT kKupon
             FROM tkupon
-            WHERE cCode = '" . $oKupon->cCode . "'" . ((int)$oKupon->kKupon > 0 ? " AND kKupon != " . (int)$oKupon->kKupon : ''),
+            WHERE cCode = '" . Shop::DB()->escape($oKupon->cCode) . "'" . ((int)$oKupon->kKupon > 0 ? " AND kKupon != " . (int)$oKupon->kKupon : ''),
             1);
         if (is_object($queryRes)) {
             $cFehler_arr[] = 'Der angegeben Kuponcode wird bereits von einem anderen Kupon verwendet. Bitte w&auml;hlen Sie einen anderen Code!';
@@ -405,11 +417,10 @@ function saveCoupon($oKupon, $oSprache_arr)
         $oKupon->nVerwendungenBisher = 0;
         $oKupon->dErstellt           = 'now()';
         if (isset($oKupon->massCreationCoupon)) {
-            $massCreationCoupon = $oKupon->massCreationCoupon;
             $cCode_arr          = $oKupon->cCode;
-            unset($oKupon->massCreationCoupon, $oKupon->cCode);
+            unset($oKupon->massCreationCoupon, $oKupon->cCode, $oKupon->cKunden, $_POST['informieren']);
             foreach ($cCode_arr as $cCode) {
-                $oKupon->cCode  = $massCreationCoupon->praefixHash . $cCode . $massCreationCoupon->suffixHash;
+                $oKupon->cCode  = $cCode;
                 $oKupon->kKupon = (int)$oKupon->save();
             }
         } else {

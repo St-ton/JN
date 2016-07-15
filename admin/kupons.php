@@ -64,11 +64,8 @@ if ($action === 'bearbeiten') {
     } else {
         // Validierung erfolgreich => Kupon speichern
         if (saveCoupon($oKupon, $oSprache_arr) > 0) {
-            echo "<pre>";
-            var_dump($oKupon);
-            echo "</pre>";
             // erfolgreich gespeichert => evtl. Emails versenden
-            if (isset($_POST['informieren']) && $_POST['informieren'] === 'Y') {
+            if (isset($_POST['informieren']) && $_POST['informieren'] === 'Y' && ($oKupon->cKuponTyp === 'standard' || $oKupon->cKuponTyp === 'versandkupon') && $oKupon->cAktiv === 'Y') {
                 informCouponCustomers($oKupon);
             }
             $cHinweis = 'Der Kupon wurde erfolgreich gespeichert.';
@@ -96,7 +93,16 @@ if ($action === 'bearbeiten') {
     $oKundengruppe_arr = Shop::DB()->query("SELECT kKundengruppe, cName FROM tkundengruppe", 2);
     $oKategorie_arr    = getCategories($oKupon->cKategorien);
     $oKunde_arr        = getCustomers($oKupon->cKunden);
-    $oKuponName_arr    = getCouponNames((int)$oKupon->kKupon);
+    if ($oKupon->kKupon > 0) {
+        $oKuponName_arr    = getCouponNames((int)$oKupon->kKupon);
+    } else {
+        foreach ($oSprache_arr as $oSprache) {
+            $oKuponName_arr[$oSprache->cISO] =
+                (isset($_POST['cName_' . $oSprache->cISO]) && $_POST['cName_' . $oSprache->cISO] !== '')
+                    ? $_POST['cName_' . $oSprache->cISO]
+                    : $oKupon->cName;
+        }
+    }
 
     $smarty->assign('oSteuerklasse_arr', $oSteuerklasse_arr)
         ->assign('oKundengruppe_arr', $oKundengruppe_arr)

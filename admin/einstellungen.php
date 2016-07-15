@@ -7,9 +7,7 @@ require_once dirname(__FILE__) . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'einstellungen_inc.php';
 
 $kSektion = isset($_REQUEST['kSektion']) ? (int)$_REQUEST['kSektion'] : 0;
-
-$bSuche = isset($_REQUEST['einstellungen_suchen']) &&
-    (int)$_REQUEST['einstellungen_suchen'] === 1;
+$bSuche   = isset($_REQUEST['einstellungen_suchen']) && (int)$_REQUEST['einstellungen_suchen'] === 1;
 
 if ($bSuche) {
     $oAccount->permission('SETTINGS_SEARCH_VIEW', true, true);
@@ -140,7 +138,6 @@ if (isset($_POST['einstellungen_bearbeiten']) && (int)$_POST['einstellungen_bear
 
     // Einstellungen zurücksetzen und Notifications neu laden
     Shopsetting::getInstance()->reset();
-    $smarty->assign('notifications', Notification::buildDefault());
 }
 
 if ($step === 'uebersicht') {

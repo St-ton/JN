@@ -1,11 +1,15 @@
 # JTL-Shop Changelog
 
 ## [4.04.1]
+* Neues Premium-Plugin: Login und Bezahlen mit Amazon (von Solution360)
+* Neues Premium-Plugin: TrustedShops Trustbade (von AG-Websolutions)
+* Update: Google Shopping Plugin v1.05 (Bugfix: Unter Umständen doppelte IDs bei Varkombi-Kindartikeln)
 * Bugfix: Testmails werden nur noch auf Deutsch versendet (#241)
 * Verbesserung: Vermeiden mehrfacher Cache-Einträge mit demselben Inhalt in gibKategorieFilterOptionen() (#244)
 * Bugfix: Mixed-Content-Warnungen (Megamenü-Kategoriebilder via http) bei Teilverschlüsselung und Wechsel auf https (#211)
 * Bugfix: Frontendlinks verschwinden aus tseo bei Plugin-Updates in mehrsprachiger Umgebung (#258)
 * Bugfix: jtl_token wird sporadisch in der Session überschrieben (#306)
+* Bugfix: Boxenverwaltung: Footer für alle Seiten aktivieren geht nicht
 
 ## [4.04] - 2016-06-22
 * Bugfix: robots.txt fehlendes "Sitemap: " vor der Sitemap-URL (#83)

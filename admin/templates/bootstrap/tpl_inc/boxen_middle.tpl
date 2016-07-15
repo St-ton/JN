@@ -150,9 +150,20 @@
                     <hr>
                 </div><!-- .panel-heading -->
                 <div class="panel-heading">
-                    <span class="boxShow">
-                        <label style="margin:0;" for="box_bottom_show"><input type="checkbox" name="box_show" id="box_bottom_show" {if $bBoxenAnzeigen.bottom}checked="checked"{/if} /> Footer anzeigen</label>
-                    </span>
+                    <div class="boxShow">
+                        {if $nPage > 0}
+                            <input type="checkbox" name="box_show" id="box_bottom_show"{if isset($bBoxenAnzeigen.bottom) && $bBoxenAnzeigen.bottom} checked="checked"{/if} />
+                            <label for="box_left_show">Container anzeigen</label>
+                    {else}
+                        {if isset($bBoxenAnzeigen.bottom) && $bBoxenAnzeigen.bottom}
+                            <a href="boxen.php?action=container&position=bottom&value=0&token={$smarty.session.jtl_token}" title="Auf jeder Seite deaktivieren"><i class="fa fa-lg fa-eye-slash"></i></a>
+                            <span>Footer ausblenden</span>
+                        {else}
+                            <a href="boxen.php?action=container&position=bottom&value=1&token={$smarty.session.jtl_token}" title="Auf jeder Seite aktivieren"><i class="fa fa-lg fa-eye"></i></a>
+                            <span>Footer auf jeder Seite anzeigen</span>
+                        {/if}
+                    {/if}
+                    </div>
                 </div><!-- .panel-heading -->
                 <ul class="list-group">
                     {if $oBoxenBottom_arr|@count > 0}

@@ -5664,6 +5664,21 @@ function getDeliverytimeEstimationText($minDeliveryDays, $maxDeliveryDays)
 }
 
 /**
+ * Prüft ob reCaptcha mit private und public key konfiguriert ist
+ *
+ * @return bool
+ */
+function reCaptchaConfigured()
+{
+    $settings = Shop::getSettings(array(CONF_GLOBAL));
+
+    return isset($settings['global']['global_google_recaptcha_private'])
+        && isset($settings['global']['global_google_recaptcha_public'])
+        && !empty($settings['global']['global_google_recaptcha_private'])
+        && !empty($settings['global']['global_google_recaptcha_public']);
+}
+
+/**
  * @param string $response
  * @return bool
  */
@@ -5690,6 +5705,46 @@ function validateReCaptcha($response)
     }
 
     return false;
+}
+
+/**
+ * @param array $requestData
+ * @return bool
+ */
+function validateCaptcha(array $requestData)
+{
+    $confGlobal = Shop::getSettings(array(CONF_GLOBAL));
+    $reCaptcha  = reCaptchaConfigured();
+    $valid      = false;
+
+    // Captcha Prüfung ist bei eingeloggtem Kunden, bei bereits erfolgter Prüfung
+    // oder ausgeschaltetem Captcha nicht notwendig
+    if (!empty($_SESSION['Kunde']->kKunde)
+        || (isset($_SESSION['bAnti_spam_already_checked']) && $_SESSION['bAnti_spam_already_checked'] === true)
+        || $confGlobal['global']['anti_spam_method'] === 'N') {
+        return true;
+    }
+
+    // Captcha Prüfung für reCaptcha ist nicht möglich, wenn keine Konfiguration hinterlegt ist
+    if ($confGlobal['global']['anti_spam_method'] == 7 && !$reCaptcha) {
+        return true;
+    }
+
+    // Wenn reCaptcha konfiguriert ist, wird davon ausgegangen, dass reCaptcha verwendet wird, egal was in
+    // $confGlobal['global']['anti_spam_method'] angegeben ist.
+     if ($reCaptcha) {
+        $valid = validateReCaptcha($requestData['g-recaptcha-response']);
+    } elseif ($confGlobal['global']['anti_spam_method'] == 5) {
+        $valid = validToken();
+    } elseif (isset($requestData['captcha']) && isset($requestData['md5'])) {
+        $valid = $requestData['md5'] == md5(PFAD_ROOT . $requestData['captcha']);
+    }
+
+    if ($valid) {
+        $_SESSION['bAnti_spam_already_checked'] = true;
+    }
+
+    return $valid;
 }
 
 /**

@@ -197,7 +197,10 @@ class MediaImageRequest
             ? '~' . $this->getNumber()
             : '';
 
-        $thumb = sprintf('%s/%d/%s/%s%s.%s', self::getCachePath($this->getType()), $this->getId(), $size, $this->getName(), $number, $this->getExt());
+        $settings = Image::getSettings();
+        $ext = $this->ext ?: $settings['format'];
+
+        $thumb = sprintf('%s/%d/%s/%s%s.%s', self::getCachePath($this->getType()), $this->getId(), $size, $this->getName(), $number, $ext);
 
         if ($absolute === true) {
             $thumb = PFAD_ROOT . $thumb;

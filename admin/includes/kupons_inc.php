@@ -265,9 +265,6 @@ function createCouponFromInput()
     if ($oKupon->cKuponTyp !== "neukundenkupon") {
         $oKupon->cKunden               = '-1';
     }
-    echo "<pre>";
-    var_dump($oKupon->dGueltigAb);
-    echo "</pre>";
     if ($oKupon->dGueltigAb == 0) {
         $oKupon->dGueltigAb = date_create()->format('Y-m-d H:i') . ':00';
     }
@@ -417,11 +414,12 @@ function saveCoupon($oKupon, $oSprache_arr)
         $oKupon->nVerwendungenBisher = 0;
         $oKupon->dErstellt           = 'now()';
         if (isset($oKupon->massCreationCoupon)) {
-            $cCode_arr          = $oKupon->cCode;
-            unset($oKupon->massCreationCoupon, $oKupon->cCode, $oKupon->cKunden, $_POST['informieren']);
+            $cCode_arr      = $oKupon->cCode;
+            $oKupon->kKupon = array();
+            unset($oKupon->massCreationCoupon, $oKupon->cCode, $_POST['informieren']);
             foreach ($cCode_arr as $cCode) {
-                $oKupon->cCode  = $cCode;
-                $oKupon->kKupon = (int)$oKupon->save();
+                $oKupon->cCode    = $cCode;
+                $oKupon->kKupon[] = (int)$oKupon->save();
             }
         } else {
             $oKupon->kKupon = (int)$oKupon->save();
@@ -431,19 +429,38 @@ function saveCoupon($oKupon, $oSprache_arr)
 
     if ($res > 0) {
         // Kupon-Sprachen aktualisieren
-        Shop::DB()->delete('tkuponsprache', 'kKupon', $oKupon->kKupon);
+        if (is_array($oKupon->kKupon)) {
+            foreach ($oKupon->kKupon as $kKupon) {
+                Shop::DB()->delete('tkuponsprache', 'kKupon', $kKupon);
 
-        foreach ($oSprache_arr as $oSprache) {
-            $cKuponSpracheName =
-                (isset($_POST['cName_' . $oSprache->cISO]) && $_POST['cName_' . $oSprache->cISO] !== '')
-                ? $_POST['cName_' . $oSprache->cISO]
-                : $oKupon->cName;
+                foreach ($oSprache_arr as $oSprache) {
+                    $cKuponSpracheName =
+                        (isset($_POST['cName_' . $oSprache->cISO]) && $_POST['cName_' . $oSprache->cISO] !== '')
+                            ? $_POST['cName_' . $oSprache->cISO]
+                            : $oKupon->cName;
 
-            $kuponSprache              = new stdClass();
-            $kuponSprache->kKupon      = $oKupon->kKupon;
-            $kuponSprache->cISOSprache = $oSprache->cISO;
-            $kuponSprache->cName       = $cKuponSpracheName;
-            Shop::DB()->insert('tkuponsprache', $kuponSprache);
+                    $kuponSprache              = new stdClass();
+                    $kuponSprache->kKupon      = $kKupon;
+                    $kuponSprache->cISOSprache = $oSprache->cISO;
+                    $kuponSprache->cName       = $cKuponSpracheName;
+                    Shop::DB()->insert('tkuponsprache', $kuponSprache);
+                }
+            }
+        } else {
+            Shop::DB()->delete('tkuponsprache', 'kKupon', $oKupon->kKupon);
+
+            foreach ($oSprache_arr as $oSprache) {
+                $cKuponSpracheName =
+                    (isset($_POST['cName_' . $oSprache->cISO]) && $_POST['cName_' . $oSprache->cISO] !== '')
+                        ? $_POST['cName_' . $oSprache->cISO]
+                        : $oKupon->cName;
+
+                $kuponSprache              = new stdClass();
+                $kuponSprache->kKupon      = $oKupon->kKupon;
+                $kuponSprache->cISOSprache = $oSprache->cISO;
+                $kuponSprache->cName       = $cKuponSpracheName;
+                Shop::DB()->insert('tkuponsprache', $kuponSprache);
+            }
         }
     }
 

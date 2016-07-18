@@ -19,7 +19,7 @@ function getSmarty()
            ->setTemplateDir(PFAD_ROOT . PFAD_ADMIN . PFAD_TEMPLATES)
            ->setCompileDir(PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR)
            ->setConfigDir($smarty->getTemplateDir($smarty->context) . 'lang/')
-           ->register_resource('db', array('db_get_template', 'db_get_timestamp', 'db_get_secure', 'db_get_trusted'));
+           ->registerResource('db', array('db_get_template', 'db_get_timestamp', 'db_get_secure', 'db_get_trusted'));
 
     return $smarty;
 }
@@ -34,12 +34,7 @@ function bearbeiteExportformate($oJobQueue)
     $oExportformat        = $oJobQueue->holeJobArt();
     // Kampagne
     if (isset($oExportformat->kKampagne) && $oExportformat->kKampagne > 0) {
-        $oKampagne = Shop::DB()->query(
-            "SELECT kKampagne, cParameter, cWert
-                FROM tkampagne
-                WHERE kKampagne = " . intval($oExportformat->kKampagne) . "
-                    AND nAktiv = 1", 1
-        );
+        $oKampagne = Shop::DB()->select('tkampagne', ['kKampagne', 'nAktiv'], [(int)$oExportformat->kKampagne, 1]);
         if (isset($oKampagne->kKampagne) && $oKampagne->kKampagne > 0) {
             $oExportformat->tkampagne_cParameter = $oKampagne->cParameter;
             $oExportformat->tkampagne_cWert      = $oKampagne->cWert;
@@ -111,16 +106,17 @@ function bearbeiteExportformate($oJobQueue)
                 ORDER BY kArtikel
                 LIMIT " . $oJobQueue->nLimitN . ", " . $oJobQueue->nLimitM, 2
         );
+        $shopURL     = Shop::getURL();
         if (is_array($oArtikel_arr) && count($oArtikel_arr) > 0) {
+            $oArtikelOptionen                            = new stdClass();
+            $oArtikelOptionen->nMerkmale                 = 1;
+            $oArtikelOptionen->nAttribute                = 1;
+            $oArtikelOptionen->nArtikelAttribute         = 1;
+            $oArtikelOptionen->nKategorie                = 1;
+            $oArtikelOptionen->nKeinLagerbestandBeachten = 1;
+            $oArtikelOptionen->nMedienDatei              = 1;
             foreach ($oArtikel_arr as $tartikel) {
-                $Artikel                                     = new Artikel();
-                $oArtikelOptionen                            = new stdClass();
-                $oArtikelOptionen->nMerkmale                 = 1;
-                $oArtikelOptionen->nAttribute                = 1;
-                $oArtikelOptionen->nArtikelAttribute         = 1;
-                $oArtikelOptionen->nKategorie                = 1;
-                $oArtikelOptionen->nKeinLagerbestandBeachten = 1;
-                $oArtikelOptionen->nMedienDatei              = 1;
+                $Artikel = new Artikel();
                 $Artikel->fuelleArtikel($tartikel->kArtikel, $oArtikelOptionen, $exportformat->kKundengruppe, $exportformat->kSprache);
 
                 if ($Artikel->kArtikel > 0) {
@@ -203,34 +199,30 @@ function bearbeiteExportformate($oJobQueue)
                         }
                         $Artikel->cURL .= $cSep . $exportformat->tkampagne_cParameter . '=' . $exportformat->tkampagne_cWert;
                     }
-                    $Artikel->cDeeplink   = Shop::getURL() . '/' . $Artikel->cURL;
+                    $Artikel->cDeeplink   = $shopURL . '/' . $Artikel->cURL;
                     $Artikel->Artikelbild = '';
                     if ($Artikel->Bilder[0]->cPfadGross) {
-                        $Artikel->Artikelbild = Shop::getURL() . '/' . $Artikel->Bilder[0]->cPfadGross;
+                        $Artikel->Artikelbild = $shopURL . '/' . $Artikel->Bilder[0]->cPfadGross;
                     }
-                    $Artikel->Lieferbar = 'Y';
-                    if ($Artikel->fLagerbestand <= 0) {
-                        $Artikel->Lieferbar = 'N';
-                    }
-                    $Artikel->Lieferbar_01 = 1;
-                    if ($Artikel->fLagerbestand <= 0) {
-                        $Artikel->Lieferbar_01 = 0;
-                    }
-                    $Artikel->Verfuegbarkeit_kelkoo = '003';
-                    if ($Artikel->fLagerbestand > 0) {
-                        $Artikel->Verfuegbarkeit_kelkoo = "001";
-                    }
-                    $smarty->assign('Artikel', $Artikel);
-                    $smarty->assign('URL_SHOP', Shop::getURL());
-                    $smarty->assign('Waehrung', $Waehrung);
-                    $smarty->assign('Einstellungen', $ExportEinstellungen);
-
-                    $cOutput = $smarty->fetch('db:' . $exportformat->kExportformat);
+                    $Artikel->Lieferbar = ($Artikel->fLagerbestand <= 0) ?
+                        'N' :
+                        'Y';
+                    $Artikel->Lieferbar_01 = ($Artikel->fLagerbestand <= 0) ?
+                        0 :
+                        1;
+                    $Artikel->Verfuegbarkeit_kelkoo = ($Artikel->fLagerbestand > 0) ?
+                        '001' :
+                        '003';
+                    $cOutput = $smarty->assign('Artikel', $Artikel)
+                                      ->assign('URL_SHOP', $shopURL)
+                                      ->assign('Waehrung', $Waehrung)
+                                      ->assign('Einstellungen', $ExportEinstellungen)
+                                      ->fetch('db:' . $exportformat->kExportformat);
 
                     executeHook(HOOK_CRON_EXPORTFORMATE_OUTPUT_FETCHED);
 
                     if (strlen($cOutput) > 0) {
-                        if ($exportformat->cKodierung == 'UTF-8') {
+                        if ($exportformat->cKodierung === 'UTF-8') {
                             fwrite($datei, utf8_encode($cOutput . "\n"));
                         } else {
                             fwrite($datei, $cOutput . "\n");
@@ -247,7 +239,7 @@ function bearbeiteExportformate($oJobQueue)
             $oJobQueue->nInArbeit = 0;
             $oJobQueue->updateJobInDB();
         } else {
-            Shop::DB()->query("UPDATE texportformat SET dZuletztErstellt=now() WHERE kExportformat = " . (int)$oJobQueue->kKey, 4);
+            Shop::DB()->query("UPDATE texportformat SET dZuletztErstellt = now() WHERE kExportformat = " . (int)$oJobQueue->kKey, 4);
             $oJobQueue->deleteJobInDB();
 
             if (file_exists(PFAD_ROOT . PFAD_EXPORT . $exportformat->cDateiname)) {
@@ -271,16 +263,13 @@ function bearbeiteExportformate($oJobQueue)
 }
 
 /**
- * @param $oJobQueue
+ * @param object $oJobQueue
  * @return bool
  */
 function updateExportformatQueueBearbeitet($oJobQueue)
 {
     if ($oJobQueue->kJobQueue > 0) {
-        Shop::DB()->query(
-            "DELETE FROM texportformatqueuebearbeitet
-                WHERE kJobQueue = " . $oJobQueue->kJobQueue, 4
-        );
+        Shop::DB()->delete('texportformatqueuebearbeitet', 'kJobQueue', (int)$oJobQueue->kJobQueue);
 
         $oExportformatQueueBearbeitet                   = new stdClass();
         $oExportformatQueueBearbeitet->kJobQueue        = $oJobQueue->kJobQueue;
@@ -300,7 +289,7 @@ function updateExportformatQueueBearbeitet($oJobQueue)
 }
 
 /**
- * @param $n
+ * @param string $n
  * @return mixed
  */
 function getNum($n)
@@ -318,8 +307,8 @@ function getURL($img)
 }
 
 /**
- * @param $file
- * @param $data
+ * @param string $file
+ * @param string $data
  */
 function writeFile($file, $data)
 {
@@ -363,7 +352,7 @@ function db_get_template($tpl_name, &$tpl_source, $smarty)
 {
     $exportformat = Shop::DB()->query("SELECT * FROM texportformat WHERE kExportformat=" . $tpl_name, 1);
 
-    if (!$exportformat->kExportformat > 0) {
+    if (empty($exportformat->kExportformat) || !$exportformat->kExportformat > 0) {
         return false;
     }
     $tpl_source = $exportformat->cContent;
@@ -440,7 +429,7 @@ function getCats($catlist)
 function writeLogTMP($entry)
 {
     $logfile = fopen(PFAD_LOGFILES . 'exportformat.log', 'a');
-    fwrite($logfile, "\n[" . date('m.d.y H:i:s') . " " . microtime() . "] " . $_SERVER['SCRIPT_NAME'] . "\n" . $entry);
+    fwrite($logfile, "\n[" . date('m.d.y H:i:s') . ' ' . microtime() . '] ' . $_SERVER['SCRIPT_NAME'] . "\n" . $entry);
     fclose($logfile);
 }
 

@@ -10,6 +10,7 @@
 * Bugfix: Frontendlinks verschwinden aus tseo bei Plugin-Updates in mehrsprachiger Umgebung (#258)
 * Bugfix: jtl_token wird sporadisch in der Session überschrieben (#306)
 * Bugfix: Boxenverwaltung: Footer für alle Seiten aktivieren geht nicht
+* Bugfix: Produktbilder-Encoding bei Dateityp "PNG" fehlerhaft
 
 ## [4.04] - 2016-06-22
 * Bugfix: robots.txt fehlendes "Sitemap: " vor der Sitemap-URL (#83)

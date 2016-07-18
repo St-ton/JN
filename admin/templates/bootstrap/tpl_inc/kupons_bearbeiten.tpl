@@ -21,73 +21,21 @@
                 makeCurrencyTooltip('fWert');
             {/if}{literal}
             makeCurrencyTooltip('fMindestbestellwert');
-            $('#dGueltigAb').keyup(calcRelativeValidity);
-            $('#dGueltigBis').keyup(calcRelativeValidity);
-            $('#dDauerTage').keyup(calcValidityEnd);
             $('#bOpenEnd').change(onEternalCheckboxChange);
-            calcRelativeValidity();
             onEternalCheckboxChange();
         });
-
-        function pad (num, size) {
-            var res = num + '';
-            while (res.length < size) {
-                res = '0' + res;
-            }
-            return res;
-        }
-
-        function dateToString (date) {
-            return pad(date.getDate(), 2) + '.' + pad(date.getMonth() + 1, 2) + '.' + date.getFullYear() +
-                ' ' + pad(date.getHours(), 2) + ':' + pad(date.getMinutes(), 2);
-        }
-
-        function stringToDate (str) {
-            var date = new Date();
-            var strMatch = str.match(/^ *([0-9]{0,2})\.([0-9]{0,2})\.([0-9]{0,4}) +([0-9]{0,2}):([0-9]{0,2}) *$/);
-            if (strMatch !== null) {
-                date.setFullYear(parseInt(strMatch[3]), parseInt(strMatch[2]) - 1, parseInt(strMatch[1]));
-                date.setHours(parseInt(strMatch[4]), parseInt(strMatch[5]), 0);
-            } else {
-                var strMatch = str.match(/^ *([0-9]{0,2})\.([0-9]{0,2})\.([0-9]{0,4}) *$/);
-                if (strMatch !== null) {
-                    date.setFullYear(parseInt(strMatch[3]), parseInt(strMatch[2]) - 1, parseInt(strMatch[1]));
-                    date.setHours(0, 0, 0);
-                }
-            }
-            return date;
-        }
-
-        function calcRelativeValidity () {
-            if ($('#bOpenEnd').prop('checked')) {
-                $('#dDauerTage').val('Ende offen');
-            } else {
-                var validStartDate = stringToDate($('#dGueltigAb').val());
-                var validEndDate   = stringToDate($('#dGueltigBis').val());
-                var deltaDays      = Math.floor((validEndDate - validStartDate) / (1000 * 60 * 60 * 24)) || 0;
-                $('#dDauerTage').val(deltaDays);
-            }
-        }
-
-        function calcValidityEnd () {
-            if ($('#bOpenEnd').prop('checked')) {
-                $('#dGueltigBis').val('');
-            } else {
-                var date = stringToDate($('#dGueltigAb').val());
-                var validDays = parseInt($('#dDauerTage').val()) || 0;
-                date.setTime(date.getTime() + validDays * 24 * 60 * 60 * 1000);
-                var endDateString = dateToString(date);
-                $('#dGueltigBis').val(endDateString);
-            }
-        }
 
         function onEternalCheckboxChange () {
             var elem = $('#bOpenEnd');
             var bOpenEnd = elem[0].checked;
             $('#dGueltigBis').prop('disabled', bOpenEnd);
             $('#dDauerTage').prop('disabled', bOpenEnd);
-            calcRelativeValidity ();
-            calcValidityEnd ();
+            if ($('#bOpenEnd').prop('checked')) {
+                $('#dDauerTage').val('Ende offen');
+                $('#dGueltigBis').val('');
+            } else {
+                $('#dDauerTage').val('');
+            }
         }
     {/literal}
 </script>
@@ -315,6 +263,7 @@
                     <span class="input-group-wrap">
                         <input type="datetime" class="form-control" name="dGueltigAb" id="dGueltigAb" value="{$oKupon->cGueltigAbLong}">
                     </span>
+                    <span class="input-group-addon">{getHelpDesc cDesc=#validityFrom#}</span>
                 </div>
                 <div class="input-group">
                     <span class="input-group-addon">
@@ -323,6 +272,7 @@
                     <span class="input-group-wrap">
                         <input type="datetime" class="form-control" name="dGueltigBis" id="dGueltigBis" value="{$oKupon->cGueltigBisLong}">
                     </span>
+                    <span class="input-group-addon">{getHelpDesc cDesc=#validityTo#}</span>
                 </div>
                 <div class="input-group">
                     <span class="input-group-addon">
@@ -331,6 +281,7 @@
                     <span class="input-group-wrap">
                         <input type="text" class="form-control" name="dDauerTage" id="dDauerTage" value="">
                     </span>
+                    <span class="input-group-addon">{getHelpDesc cDesc=#periodOfValidityHelp#}</span>
                 </div>
                 <div class="input-group">
                     <span class="input-group-addon">

@@ -225,7 +225,7 @@ function createNewCoupon($cKuponTyp)
     $oKupon->cArtikel              = '';
     $oKupon->kKundengruppe         = -1;
     $oKupon->dGueltigAb            = date_create()->format('Y-m-d H:i');
-    $oKupon->dGueltigBis           = $oKupon->dGueltigAb;
+    $oKupon->dGueltigBis           = '';
     $oKupon->cAktiv                = 'Y';
     $oKupon->cKategorien           = '-1';
     $oKupon->cKunden               = '-1';
@@ -270,6 +270,12 @@ function createCouponFromInput()
     }
     if (isset($_POST['bOpenEnd']) && $_POST['bOpenEnd'] === 'Y') {
         $oKupon->dGueltigBis = '0000-00-00 00:00:00';
+    } elseif (isset($_POST['dDauerTage']) && $_POST['dDauerTage'] > 0) {
+        $oKupon->dGueltigBis     = '';
+        $actualTimestamp         = date_create();
+        $actualTimestampEndofDay = date_time_set($actualTimestamp, 23, 59, 59);
+        $setDays                 = new DateInterval('P' . $_POST['dDauerTage'] . 'D');
+        $oKupon->dGueltigBis     = date_add($actualTimestampEndofDay, $setDays)->format('Y-m-d H:i:s');
     }
     if (isset($_POST['kKategorien']) && is_array($_POST['kKategorien']) && count($_POST['kKategorien']) > 0 && !in_array('-1', $_POST['kKategorien'])) {
         $oKupon->cKategorien = StringHandler::createSSK($_POST['kKategorien']);

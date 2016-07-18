@@ -171,13 +171,13 @@
                                  <span class="input-group-addon">
                                      <label for="praefixHash">{#praefixHash#}</label>
                                  </span>
-                        <input class="form-control" type="text" name="praefixHash" id="praefixHash" placeholder="Summersales_"{if isset($oKupon->massCreationCoupon->praefixHash)} value="{$oKupon->massCreationCoupon->praefixHash}"{/if} />
+                        <input class="form-control" type="text" name="praefixHash" id="praefixHash" placeholder="SUMMER"{if isset($oKupon->massCreationCoupon->praefixHash)} value="{$oKupon->massCreationCoupon->praefixHash}"{/if} />
                     </div>
                     <div class="input-group">
                                  <span class="input-group-addon">
                                      <label for="suffixHash">{#suffixHash#}</label>
                                  </span>
-                        <input class="form-control" type="text" name="suffixHash" id="suffixHash" placeholder="_2016"{if isset($oKupon->massCreationCoupon->suffixHash)} value="{$oKupon->massCreationCoupon->suffixHash}"{/if} />
+                        <input class="form-control" type="text" name="suffixHash" id="suffixHash"{if isset($oKupon->massCreationCoupon->suffixHash)} value="{$oKupon->massCreationCoupon->suffixHash}"{/if} />
                     </div>
                 </div>
             </div>
@@ -310,7 +310,7 @@
             <div class="panel-body">
                 <div class="input-group">
                     <span class="input-group-addon">
-                        <label for="dGueltigAb">{#validity#} {#from#}</label>
+                        <label for="dGueltigAb">{#validity#}{#from#}</label>
                     </span>
                     <span class="input-group-wrap">
                         <input type="datetime" class="form-control" name="dGueltigAb" id="dGueltigAb" value="{$oKupon->cGueltigAbLong}">
@@ -318,7 +318,7 @@
                 </div>
                 <div class="input-group">
                     <span class="input-group-addon">
-                        <label for="dGueltigBis">{#validity#} {#to#}</label>
+                        <label for="dGueltigBis">{#validity#}{#to#}</label>
                     </span>
                     <span class="input-group-wrap">
                         <input type="datetime" class="form-control" name="dGueltigBis" id="dGueltigBis" value="{$oKupon->cGueltigBisLong}">

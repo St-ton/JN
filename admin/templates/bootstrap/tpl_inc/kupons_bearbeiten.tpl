@@ -326,7 +326,7 @@
                 </div>
                 <div class="input-group">
                     <span class="input-group-addon">
-                        <label for="dDauerTage">G&uuml;tigkeitsdauer (Tage)</label>
+                        <label for="dDauerTage">{#periodOfValidity#}</label>
                     </span>
                     <span class="input-group-wrap">
                         <input type="text" class="form-control" name="dDauerTage" id="dDauerTage" value="">
@@ -334,7 +334,7 @@
                 </div>
                 <div class="input-group">
                     <span class="input-group-addon">
-                        <label for="bOpenEnd">Ende offen</label>
+                        <label for="bOpenEnd">{#openEnd#}</label>
                     </span>
                     <span class="input-group-wrap">
                         <input type="checkbox" class="checkfield" name="bOpenEnd" id="bOpenEnd" value="Y"{if $oKupon->bOpenEnd} checked{/if}>

@@ -124,11 +124,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         public function delete()
         {
-            return Shop::DB()->query(
-                "DELETE FROM tkonfigitempreis
-                   WHERE kKonfigitem = " . (int) $this->kKonfigitem . "
-                     AND kKundengruppe = " . (int) $this->kKundengruppe, 3
-            );
+            return Shop::DB()->delete('tkonfigitempreis', ['kKonfigitem', 'kKundengruppe'], [(int)$this->kKonfigitem, (int)$this->kKundengruppe]);
         }
 
         /**
@@ -232,7 +228,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
             if ($bConvertCurrency && $fPreis > 0) {
                 $oWaehrung = $_SESSION['Waehrung'];
                 if (!$oWaehrung->kWaehrung) {
-                    $oWaehrung = Shop::DB()->query("SELECT * FROM twaehrung WHERE cStandard='Y'", 1);
+                    $oWaehrung = Shop::DB()->query("SELECT * FROM twaehrung WHERE cStandard = 'Y'", 1);
                 }
                 $fPreis *= floatval($oWaehrung->fFaktor);
             }

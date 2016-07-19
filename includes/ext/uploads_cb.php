@@ -9,7 +9,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES_EXT . 'class.JTL-Shop.UploadDatei.php';
 /**
  * output
  *
- * @param $bOk
+ * @param int $bOk
  */
 function retCode($bOk)
 {
@@ -29,14 +29,14 @@ if (!validateToken()) {
 }
 // upload file
 if (!empty($_FILES)) {
-    $cUnique = (isset($_REQUEST['uniquename'])) ?
+    $cUnique     = (isset($_REQUEST['uniquename'])) ?
         $_REQUEST['uniquename'] :
         null;
     $cTargetFile = PFAD_UPLOADS . $cUnique;
     $fileData    = (isset($_FILES['Filedata']['tmp_name'])) ?
         $_FILES['Filedata'] :
         $_FILES['file_data'];
-    $cTempFile = $fileData['tmp_name'];
+    $cTempFile   = $fileData['tmp_name'];
 
     if (isset($fileData['error']) && $fileData['error'] == 0) {
         if (move_uploaded_file($cTempFile, $cTargetFile)) {

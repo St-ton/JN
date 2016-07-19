@@ -1,7 +1,11 @@
+{if !isset($cParam_arr)}
+    {assign var=cParam_arr value=[]}
+{/if}
+
 <div class="block">
     <form method="get" class="form-inline">
-        {foreach $oFilter->cAddGetVar_arr as $cGetVarName => $cGetVarValue}
-            <input type="hidden" name="{$cGetVarName}" value="{$cGetVarValue}">
+        {foreach $cParam_arr as $cParamName => $cParamValue}
+            <input type="hidden" name="{$cParamName}" value="{$cParamValue}">
         {/foreach}
         {foreach $oFilter->oField_arr as $oField}
             <div class="form-group">
@@ -17,8 +21,13 @@
                 {/if}
             </div>
         {/foreach}
-        <button type="submit" class="btn btn-primary">
-            <i class="fa fa-search"></i> Filtern
-        </button>
+        <div class="btn-group">
+            <button type="submit" class="btn btn-primary" name="action" value="filter">
+                <i class="fa fa-search"></i>
+            </button>
+            <button type="submit" class="btn btn-danger" name="action" value="resetfilter">
+                <i class="fa fa-eraser"></i>
+            </button>
+        </div>
     </form>
 </div>

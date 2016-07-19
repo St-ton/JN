@@ -1,7 +1,11 @@
+{if !isset($cParam_arr)}
+    {assign var=cParam_arr value=[]}
+{/if}
+
 <div class="block">
     <form method="get" class="form-inline">
-        {foreach $oPagination->cAddGetVar_arr as $cGetVarName => $cGetVarValue}
-            <input type="hidden" name="{$cGetVarName}" value="{$cGetVarValue}">
+        {foreach $cParam_arr as $cParamName => $cParamValue}
+            <input type="hidden" name="{$cParamName}" value="{$cParamValue}">
         {/foreach}
         <div class="form-group">
             {if $oPagination->nPageCount > 1}
@@ -23,13 +27,32 @@
             <label for="{$oPagination->cID}_nItemsPerPage">
                 Eintr&auml;ge pro Seite
             </label>
-            <select class="form-control" name="{$oPagination->cID}_nItemsPerPage" id="{$oPagination->cID}_nItemsPerPage" onchange="this.form.submit();">
+            <select class="form-control" name="{$oPagination->cID}_nItemsPerPage" id="{$oPagination->cID}_nItemsPerPage" {*onchange="this.form.submit();"*}>
                 {foreach $oPagination->nItemsPerPageOption_arr as $nItemsPerPageOption}
                     <option value="{$nItemsPerPageOption}"{if $oPagination->nItemsPerPage == $nItemsPerPageOption} selected="selected"{/if}>
                         {$nItemsPerPageOption}
                     </option>
                 {/foreach}
             </select>
+            {if $oPagination->cSortByOption_arr|@count > 0}
+                <label for="{$oPagination->cID}_nSortBy">
+                    Sortieren nach
+                </label>
+                <select class="form-control" name="{$oPagination->cID}_nSortBy" id="{$oPagination->cID}_nSortBy" {*onchange="this.form.submit();"*}>
+                    {foreach $oPagination->cSortByOption_arr as $i => $cSortByOption}
+                        <option value="{$i}"{if $i === (int)$oPagination->nSortBy} selected="selected"{/if}>
+                            {$cSortByOption[1]}
+                        </option>
+                    {/foreach}
+                </select>
+                <select class="form-control" name="{$oPagination->cID}_cSortDir" id="{$oPagination->cID}_cSortDir" {*onchange="this.form.submit();"*}>
+                    <option value="asc">aufsteigend</option>
+                    <option value="desc">absteigend</option>
+                </select>
+            {/if}
+            <button type="submit" class="btn btn-primary">
+                <i class="fa fa-refresh"></i>
+            </button>
         </div>
     </form>
 </div>

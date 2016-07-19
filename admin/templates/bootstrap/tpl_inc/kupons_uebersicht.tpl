@@ -2,8 +2,8 @@
 
 {function kupons_uebersicht_tab}
     <div id="{$cKuponTyp}" class="tab-pane fade{if $tab === $cKuponTyp} active in{/if}">
-        {include file='filtertools.tpl' oFilter=$oFilter}
-        {include file='pagination.tpl' oPagination=$oPagination}
+        {include file='filtertools.tpl' oFilter=$oFilter cParam_arr=['tab'=>$cKuponTyp]}
+        {include file='pagination.tpl' oPagination=$oPagination cParam_arr=['tab'=>$cKuponTyp]}
         <form method="post" action="kupons.php">
             {$jtl_token}
             <input type="hidden" name="cKuponTyp" id="cKuponTyp" value="{$cKuponTyp}">
@@ -12,7 +12,7 @@
                     <div class="panel-heading">
                         <h3 class="panel-title">{#all#} {$cKuponTypName}s</h3>
                     </div>
-                    <table class="list table table-striped">
+                    <table class="list table">
                         <thead>
                             <tr>
                                 <th></th>
@@ -29,7 +29,7 @@
                         </thead>
                         <tbody>
                             {foreach $oKupon_arr as $oKupon}
-                                <tr>
+                                <tr{if $oKupon->cAktiv === 'N'} class="bg-danger"{/if}>
                                     <td><input type="checkbox" name="kKupon_arr[]" id="kupon-{$oKupon->kKupon}" value="{$oKupon->kKupon}"></td>
                                     <td><label for="kupon-{$oKupon->kKupon}">{$oKupon->cName}</label></td>
                                     {if $cKuponTyp === 'standard' || $cKuponTyp === 'neukundenkupon'}
@@ -93,10 +93,10 @@
             <a data-toggle="tab" role="tab" href="#standard" aria-expanded="true">{#standardCoupon#}s</a>
         </li>
         <li class="tab{if $tab === 'versandkupon'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#versandkupon" aria-expanded="true">{#shippingCoupon#}s</a>
+            <a data-toggle="tab" role="tab" href="#versandkupon" aria-expanded="false">{#shippingCoupon#}s</a>
         </li>
         <li class="tab{if $tab === 'neukundenkupon'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#neukundenkupon" aria-expanded="true">{#newCustomerCoupon#}s</a>
+            <a data-toggle="tab" role="tab" href="#neukundenkupon" aria-expanded="false">{#newCustomerCoupon#}s</a>
         </li>
     </ul>
     <div class="tab-content">

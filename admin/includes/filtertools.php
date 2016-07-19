@@ -14,7 +14,9 @@ function createFilter()
     $oFilter                 = new stdClass();
     $oFilter->oField_arr     = array();
     $oFilter->cWhereSQL      = "";
-    $oFilter->cAddGetVar_arr = $_GET;
+    $oFilter->cAction        = isset($_GET['action']) ? $_GET['action'] : '';
+    $oFilter->cSession_arr   = isset($_SESSION['filtertools']) ? $_SESSION['filtertools'] : array();
+    $oFilter->cGetVar_arr    = $_GET;
 
     return $oFilter;
 }
@@ -35,12 +37,16 @@ function addFilterTextfield($oFilter, $cTitle, $cColumn, $bExact)
     $oField->cTitle        = $cTitle;
     $oField->cColumn       = $cColumn;
     $oField->bExact        = $bExact;
-    $oField->cValue        = isset($oFilter->cAddGetVar_arr[$cColumn]) ? $oFilter->cAddGetVar_arr[$cColumn] : '';
-    $oFilter->oField_arr[] = $oField;
+    $oField->cValue        = isset($oFilter->cSession_arr[$cColumn]) ? $oFilter->cSession_arr[$cColumn] : '';
 
-    if (isset($oFilter->cAddGetVar_arr[$cColumn])) {
-        unset($oFilter->cAddGetVar_arr[$cColumn]);
+    if ($oFilter->cAction === 'filter') {
+        $oField->cValue = $oFilter->cGetVar_arr[$cColumn];
+    } elseif ($oFilter->cAction === 'resetfilter') {
+        $oField->cValue = '';
     }
+
+    $oFilter->cSession_arr[$cColumn] = $oField->cValue;
+    $oFilter->oField_arr[]       = $oField;
     
     return $oField;
 }
@@ -61,12 +67,18 @@ function addFilterSelect($oFilter, $cTitle, $cColumn)
     $oField->cTitle        = $cTitle;
     $oField->cColumn       = $cColumn;
     $oField->oOption_arr   = array();
-    $oField->cValue        = isset($oFilter->cAddGetVar_arr[$cColumn]) ? $oFilter->cAddGetVar_arr[$cColumn] : '0';
-    $oFilter->oField_arr[] = $oField;
+    $oField->cValue        = isset($oFilter->cSession_arr[$cColumn]) ? $oFilter->cSession_arr[$cColumn] : '0';
 
-    if (isset($oFilter->cAddGetVar_arr[$cColumn])) {
-        unset($oFilter->cAddGetVar_arr[$cColumn]);
+    if ($oFilter->cAction === 'filter') {
+        $oField->cValue = $oFilter->cGetVar_arr[$cColumn];
+    } elseif ($oFilter->cAction === 'resetfilter') {
+        $oField->cValue = '0';
     }
+
+    $oFilter->cSession_arr[$cColumn] = $oField->cValue;
+    $oFilter->oField_arr[]           = $oField;
+
+    unset($oFilter->cAddGetVar_arr[$cColumn]);
 
     return $oField;
 }
@@ -92,7 +104,7 @@ function addFilterSelectOption($oField, $cTitle, $cCond)
 }
 
 /**
- * Assemble filter object to be ready for display and use
+ * Assemble filter object to be ready for display and use. Save session information for the filter
  *
  * @param object $oFilter
  */
@@ -117,5 +129,6 @@ function assembleFilter($oFilter)
         }
     }
 
-    $oFilter->cWhereSQL = implode(" AND ", $cWhereClause_arr);
+    $oFilter->cWhereSQL      = implode(" AND ", $cWhereClause_arr);
+    $_SESSION['filtertools'] = $oFilter->cSession_arr;
 }

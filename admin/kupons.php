@@ -129,9 +129,11 @@ if ($action === 'bearbeiten') {
     $oKuponVersandkupon_arr      = getCoupons('versandkupon', 'kKupon', $oFilter->cWhereSQL);
     $oKuponNeukundenkupon_arr    = getCoupons('neukundenkupon', 'kKupon', $oFilter->cWhereSQL);
 
-    $oPaginationStandard       = createPagination('standard', $oKuponStandard_arr, array(1, 2, 5, 10));
-    $oPaginationVersandkupon   = createPagination('versandkupon', $oKuponVersandkupon_arr, array(1, 2, 5, 10));
-    $oPaginationNeukundenkupon = createPagination('neukundenkupon', $oKuponNeukundenkupon_arr, array(1, 2, 5, 10));
+    $nItemsPerPageOption_arr = [1,2,5,10];
+    $cSortByOption_arr = [['cName', 'Name'], ['cCode', 'Code'], ['nVerwendungenBisher', 'Verwendungen']];
+    $oPaginationStandard       = createPagination('standard', $oKuponStandard_arr, $nItemsPerPageOption_arr, $cSortByOption_arr);
+    $oPaginationVersandkupon   = createPagination('versandkupon', $oKuponVersandkupon_arr, $nItemsPerPageOption_arr, $cSortByOption_arr);
+    $oPaginationNeukundenkupon = createPagination('neukundenkupon', $oKuponNeukundenkupon_arr, $nItemsPerPageOption_arr, $cSortByOption_arr);
 
     $oPaginationStandard->cAddGetVar_arr['tab'] = 'standard';
     $oPaginationVersandkupon->cAddGetVar_arr['tab'] = 'versandkupon';

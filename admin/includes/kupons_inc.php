@@ -291,14 +291,14 @@ function createCouponFromInput()
         $massCreationCoupon->upperCase       = ($massCreationCoupon->cActiv == 1 && isset($_POST['upperCase'])) ? true : false;
         $massCreationCoupon->numbersHash     = ($massCreationCoupon->cActiv == 1 && isset($_POST['numbersHash'])) ? true : false;
         $massCreationCoupon->hashLength      = ($massCreationCoupon->cActiv == 1 && isset($_POST['hashLength'])) ? $_POST['hashLength'] : null;
-        $massCreationCoupon->praefixHash     = ($massCreationCoupon->cActiv == 1 && isset($_POST['praefixHash'])) ? $_POST['praefixHash'] : null;
+        $massCreationCoupon->prefixHash      = ($massCreationCoupon->cActiv == 1 && isset($_POST['prefixHash'])) ? $_POST['prefixHash'] : null;
         $massCreationCoupon->suffixHash      = ($massCreationCoupon->cActiv == 1 && isset($_POST['suffixHash'])) ? $_POST['suffixHash'] : null;
         $oKupon->massCreationCoupon          = $massCreationCoupon;
     }
     if (isset($oKupon->massCreationCoupon) && $oKupon->massCreationCoupon->cActiv == 1 && $oKupon->cKuponTyp !== 'neukundenkupon') {
         $oKupon->cCode = array();
         for ((int)$i = 1; (int)$i <= (int)$oKupon->massCreationCoupon->numberOfCoupons; (int)$i++) {
-            $oKupon->cCode[] = $oKupon->generateCode($oKupon->massCreationCoupon->hashLength, $oKupon->massCreationCoupon->lowerCase, $oKupon->massCreationCoupon->upperCase, $oKupon->massCreationCoupon->numbersHash, $oKupon->massCreationCoupon->praefixHash, $oKupon->massCreationCoupon->suffixHash);
+            $oKupon->cCode[] = $oKupon->generateCode($oKupon->massCreationCoupon->hashLength, $oKupon->massCreationCoupon->lowerCase, $oKupon->massCreationCoupon->upperCase, $oKupon->massCreationCoupon->numbersHash, $oKupon->massCreationCoupon->prefixHash, $oKupon->massCreationCoupon->suffixHash);
         }
     } elseif (!isset($oKupon->massCreationCoupon) && $oKupon->cKuponTyp !== 'neukundenkupon' && $oKupon->cCode === '') {
         $oKupon->cCode = $oKupon->generateCode();

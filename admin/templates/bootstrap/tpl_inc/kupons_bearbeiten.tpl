@@ -81,13 +81,13 @@
                 <div class="panel-body{if !isset($oKupon->massCreationCoupon)} hidden{/if}" id="massCreationCouponsBody">
                     <div class="input-group">
                                  <span class="input-group-addon">
-                                     <label for="numberCoupons">{#numberCoupons#}</label>
+                                     <label for="numberCoupons">{#numberCouponsDesc#}</label>
                                  </span>
                         <input class="form-control" type="number" name="numberOfCoupons" id="numberOfCoupons" min="2" step="1" {if isset($oKupon->massCreationCoupon->numberOfCoupons)}value="{$oKupon->massCreationCoupon->numberOfCoupons}"{else}value="2"{/if}/>
                     </div>
                     <div class="input-group">
                                  <span class="input-group-addon">
-                                     <label for="lowerCase">{#lowerCase#}</label>
+                                     <label for="lowerCase">{#lowerCaseDesc#}</label>
                                  </span>
                         <div class="input-group-wrap">
                             <input type="checkbox" name="lowerCase" id="lowerCase" class="checkfield" {if isset($oKupon->massCreationCoupon->lowerCase) && $oKupon->massCreationCoupon->lowerCase == true}checked{elseif isset($oKupon->massCreationCoupon->lowerCase) && $oKupon->massCreationCoupon->lowerCase == false}unchecked{else}checked{/if} />
@@ -95,7 +95,7 @@
                     </div>
                     <div class="input-group">
                                  <span class="input-group-addon">
-                                     <label for="upperCase">{#upperCase#}</label>
+                                     <label for="upperCase">{#upperCaseDesc#}</label>
                                  </span>
                         <div class="input-group-wrap">
                             <input type="checkbox" name="upperCase" id="upperCase" class="checkfield" {if isset($oKupon->massCreationCoupon->upperCase) && $oKupon->massCreationCoupon->upperCase == true}checked{elseif isset($oKupon->massCreationCoupon->upperCase) && $oKupon->massCreationCoupon->upperCase == false}unchecked{else}checked{/if} />
@@ -103,7 +103,7 @@
                     </div>
                     <div class="input-group">
                                  <span class="input-group-addon">
-                                     <label for="numbersHash">{#numbersHash#}</label>
+                                     <label for="numbersHash">{#numbersHashDesc#}</label>
                                  </span>
                         <div class="input-group-wrap">
                             <input type="checkbox" name="numbersHash" id="numbersHash" class="checkfield" {if isset($oKupon->massCreationCoupon->numbersHash) && $oKupon->massCreationCoupon->numbersHash == true}checked{elseif isset($oKupon->massCreationCoupon->numbersHash) && $oKupon->massCreationCoupon->numbersHash == false}unchecked{else}checked{/if} />
@@ -111,19 +111,19 @@
                     </div>
                     <div class="input-group">
                                  <span class="input-group-addon">
-                                     <label for="hashLength">{#hashLength#}</label>
+                                     <label for="hashLength">{#hashLengthDesc#}</label>
                                  </span>
                         <input class="form-control" type="number" name="hashLength" id="hashLength" min="2" max="16" step="1" {if isset($oKupon->massCreationCoupon->hashLength)}value="{$oKupon->massCreationCoupon->hashLength}"{else}value="2"{/if} />
                     </div>
                     <div class="input-group">
                                  <span class="input-group-addon">
-                                     <label for="praefixHash">{#praefixHash#}</label>
+                                     <label for="prefixHash">{#prefixHashDesc#}</label>
                                  </span>
-                        <input class="form-control" type="text" name="praefixHash" id="praefixHash" placeholder="SUMMER"{if isset($oKupon->massCreationCoupon->praefixHash)} value="{$oKupon->massCreationCoupon->praefixHash}"{/if} />
+                        <input class="form-control" type="text" name="prefixHash" id="prefixHash" placeholder="SUMMER"{if isset($oKupon->massCreationCoupon->prefixHash)} value="{$oKupon->massCreationCoupon->prefixHash}"{/if} />
                     </div>
                     <div class="input-group">
                                  <span class="input-group-addon">
-                                     <label for="suffixHash">{#suffixHash#}</label>
+                                     <label for="suffixHash">{#suffixHashDesc#}</label>
                                  </span>
                         <input class="form-control" type="text" name="suffixHash" id="suffixHash"{if isset($oKupon->massCreationCoupon->suffixHash)} value="{$oKupon->massCreationCoupon->suffixHash}"{/if} />
                     </div>
@@ -258,21 +258,21 @@
             <div class="panel-body">
                 <div class="input-group">
                     <span class="input-group-addon">
-                        <label for="dGueltigAb">{#validity#}{#from#}</label>
+                        <label for="dGueltigAb">{#validFrom#}</label>
                     </span>
                     <span class="input-group-wrap">
                         <input type="datetime" class="form-control" name="dGueltigAb" id="dGueltigAb" value="{$oKupon->cGueltigAbLong}">
                     </span>
-                    <span class="input-group-addon">{getHelpDesc cDesc=#validityFrom#}</span>
+                    <span class="input-group-addon">{getHelpDesc cDesc=#validFromHelp#}</span>
                 </div>
                 <div class="input-group">
                     <span class="input-group-addon">
-                        <label for="dGueltigBis">{#validity#}{#to#}</label>
+                        <label for="dGueltigBis">{#validUntil#}</label>
                     </span>
                     <span class="input-group-wrap">
                         <input type="datetime" class="form-control" name="dGueltigBis" id="dGueltigBis" value="{$oKupon->cGueltigBisLong}">
                     </span>
-                    <span class="input-group-addon">{getHelpDesc cDesc=#validityTo#}</span>
+                    <span class="input-group-addon">{getHelpDesc cDesc=#validUntilHelp#}</span>
                 </div>
                 <div class="input-group">
                     <span class="input-group-addon">

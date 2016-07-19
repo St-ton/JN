@@ -53,7 +53,7 @@ ifndef('PFAD_EMAILPDFS', 'emailpdfs/');
 ifndef('PFAD_NEWSLETTERBILDER', 'newsletter/');
 ifndef('PFAD_LINKBILDER', 'links/');
 ifndef('PFAD_INCLUDES_LIBS', PFAD_INCLUDES . 'libs/');
-ifndef('PFAD_MINIFY', PFAD_INCLUDES . 'libs/minify');
+ifndef('PFAD_MINIFY', PFAD_INCLUDES_LIBS . 'minify');
 ifndef('PFAD_CKEDITOR', PFAD_INCLUDES_LIBS . 'ckeditor/');
 ifndef('PFAD_CODEMIRROR', PFAD_INCLUDES_LIBS . 'codemirror-5.8.0/');
 ifndef('PFAD_INCLUDES_TOOLS', PFAD_INCLUDES . 'tools/');
@@ -82,7 +82,7 @@ ifndef('PFAD_GFX_BEWERTUNG_STERNE', PFAD_GFX . 'bewertung_sterne/');
 ifndef('PFAD_DBES', 'dbeS/');
 ifndef('PFAD_DBES_TMP', PFAD_DBES . 'tmp/');
 ifndef('PFAD_BILDER', 'bilder/');
-ifndef('PFAD_BILDER_SLIDER', 'bilder/slider/');
+ifndef('PFAD_BILDER_SLIDER', PFAD_BILDER . 'slider/');
 ifndef('PFAD_CRON', 'cron/');
 ifndef('PFAD_FONTS', PFAD_INCLUDES . 'fonts/');
 ifndef('PFAD_BILDER_INTERN', PFAD_BILDER . 'intern/');
@@ -115,9 +115,9 @@ ifndef('PFAD_MERKMALWERTBILDER_NORMAL', PFAD_MERKMALWERTBILDER . 'normal/');
 ifndef('PFAD_MERKMALWERTBILDER_KLEIN', PFAD_MERKMALWERTBILDER . 'klein/');
 ifndef('PFAD_BRANDINGBILDER', PFAD_BILDER . 'brandingbilder/');
 ifndef('PFAD_SUCHSPECIALOVERLAY', PFAD_BILDER . 'suchspecialoverlay/');
-ifndef('PFAD_SUCHSPECIALOVERLAY_KLEIN', PFAD_BILDER . 'suchspecialoverlay/klein/');
-ifndef('PFAD_SUCHSPECIALOVERLAY_NORMAL', PFAD_BILDER . 'suchspecialoverlay/normal/');
-ifndef('PFAD_SUCHSPECIALOVERLAY_GROSS', PFAD_BILDER . 'suchspecialoverlay/gross/');
+ifndef('PFAD_SUCHSPECIALOVERLAY_KLEIN', PFAD_SUCHSPECIALOVERLAY . 'klein/');
+ifndef('PFAD_SUCHSPECIALOVERLAY_NORMAL', PFAD_SUCHSPECIALOVERLAY . 'normal/');
+ifndef('PFAD_SUCHSPECIALOVERLAY_GROSS', PFAD_SUCHSPECIALOVERLAY . 'gross/');
 ifndef('PFAD_KONFIGURATOR_KLEIN', PFAD_BILDER . 'konfigurator/klein/');
 ifndef('PFAD_LOGFILES', PFAD_ROOT . 'jtllogs/');
 ifndef('PFAD_EXPORT', 'export/');
@@ -130,7 +130,7 @@ ifndef('PFAD_SHOPMD5', 'shopmd5files/');
 ifndef('PFAD_NUSOAP', 'nusoap/');
 ifndef('PFAD_UPLOADS', PFAD_ROOT . 'uploads/');
 ifndef('PFAD_DOWNLOADS_REL', 'downloads/');
-ifndef('PFAD_DOWNLOADS_PREVIEW_REL', 'downloads/vorschau/');
+ifndef('PFAD_DOWNLOADS_PREVIEW_REL', PFAD_DOWNLOADS_REL . 'vorschau/');
 ifndef('PFAD_DOWNLOADS', PFAD_ROOT . PFAD_DOWNLOADS_REL);
 ifndef('PFAD_DOWNLOADS_PREVIEW', PFAD_ROOT . PFAD_DOWNLOADS_PREVIEW_REL);
 ifndef('PFAD_UPLOADIFY', PFAD_INCLUDES_LIBS . 'uploadify/');
@@ -144,7 +144,7 @@ ifndef('PFAD_MEDIA_IMAGE_STORAGE', PFAD_MEDIA_IMAGE . 'storage/');
 ifndef('PFAD_PLUGIN', PFAD_INCLUDES . 'plugins/');
 // dbeS
 ifndef('PFAD_SYNC_TMP', 'tmp/'); //rel zu dbeS
-ifndef('PFAD_SYNC_LOGS', PFAD_ROOT . 'dbeS/logs/');
+ifndef('PFAD_SYNC_LOGS', PFAD_ROOT . PFAD_DBES . 'logs/');
 // Dateien
 ifndef('FILE_RSS_FEED', 'rss.xml');
 ifndef('FILE_SHOP_FEED', 'shopinfo.xml');
@@ -163,12 +163,18 @@ ifndef('CUSTOMER_ACCOUNT_MAX_ORDERS', 50);
 // Steuersatz Standardland OVERRIDE - setzt ein anderes Steuerland, als im Shop angegeben (upper case, ISO 3166-2)
 // ifndef('STEUERSATZ_STANDARD_LAND', 'DE')
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
+/**
+ * @param string     $constant
+ * @param string|int $value
+ */
 function ifndef($constant, $value)
 {
     defined($constant) || define($constant, $value);
 }
 
+/**
+ * @return array
+ */
 function shop_writeable_paths()
 {
     $paths = array(

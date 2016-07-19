@@ -43,7 +43,11 @@
                                     {/if}
                                     {if $cKuponTyp === 'standard' || $cKuponTyp === 'versandkupon'}<td>{$oKupon->cCode}</td>{/if}
                                     <td>{getCurrencyConversionSmarty fPreisBrutto=$oKupon->fMindestbestellwert}</td>
-                                    <td>{$oKupon->nVerwendungenBisher} von {$oKupon->nVerwendungen}</td>
+                                    <td>
+                                        {$oKupon->nVerwendungenBisher}
+                                        {if $oKupon->nVerwendungen > 0}
+                                            von {$oKupon->nVerwendungen}</td>
+                                        {/if}
                                     <td>{$oKupon->cKundengruppe}</td>
                                     <td>{$oKupon->ArtikelInfo}</td>
                                     <td>

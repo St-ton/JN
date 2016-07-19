@@ -11,9 +11,9 @@
  */
 function createFilter()
 {
-    $oFilter              = new stdClass();
-    $oFilter->oField_arr  = array();
-    $oFilter->cWhereSQL   = "";
+    $oFilter                 = new stdClass();
+    $oFilter->oField_arr     = array();
+    $oFilter->cWhereSQL      = "";
     $oFilter->cAddGetVar_arr = $_GET;
 
     return $oFilter;
@@ -26,6 +26,7 @@ function createFilter()
  * @param string $cTitle - the label/title for this field
  * @param string $cColumn - the column name to be compared
  * @param bool $bExact - exact match or substring search
+ * @return object - the text field object
  */
 function addFilterTextfield($oFilter, $cTitle, $cColumn, $bExact)
 {
@@ -40,6 +41,8 @@ function addFilterTextfield($oFilter, $cTitle, $cColumn, $bExact)
     if (isset($oFilter->cAddGetVar_arr[$cColumn])) {
         unset($oFilter->cAddGetVar_arr[$cColumn]);
     }
+    
+    return $oField;
 }
 
 /**
@@ -76,6 +79,7 @@ function addFilterSelect($oFilter, $cTitle, $cColumn)
  * @param string $cColumn - the column name to be compared
  * @param array $cOptionTitle_arr - array of options titles
  * @param array $cOptionCond_arr - array of options conditional right parts (e.g. "= 'Y'" or "> 10")
+ * @return object - the select option object
  */
 function addFilterSelectOption($oField, $cTitle, $cCond)
 {
@@ -83,6 +87,8 @@ function addFilterSelectOption($oField, $cTitle, $cCond)
     $oOption->cTitle       = $cTitle;
     $oOption->cCond        = $cCond;
     $oField->oOption_arr[] = $oOption;
+    
+    return $oOption;
 }
 
 /**

@@ -7,8 +7,8 @@
 /**
  * Create a pagination for an array of items
  *
- * @param $oItem_arr
- * @param $nItemsPerPage
+ * @param array $oItem_arr
+ * @param int   $nItemsPerPage
  * @return object - pagination object
  */
 function createPagination($cID, $oItem_arr, $nItemsPerPageOption_arr = array(10, 20, 50, 100))

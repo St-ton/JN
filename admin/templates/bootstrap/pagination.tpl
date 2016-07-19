@@ -13,7 +13,9 @@
                 <button type="submit" class="btn btn-sm btn-link" name="{$oPagination->cID}_nPage" value="{$oPagination->nPrevPage}"
                     {if $oPagination->nPrevPage == $oPagination->nPage} disabled="disabled"{/if}>&laquo;</button>
                 {for $i=0 to $oPagination->nPageCount-1}
-                    <button type="submit" class="btn btn-sm{if $oPagination->nPage == $i} btn-primary{else} btn-default{/if}" name="{$oPagination->cID}_nPage" value="{$i}">{$i+1}</button>
+                    <button type="{if $oPagination->nPage == $i}button{else}submit{/if}"
+                            class="btn btn-sm{if $oPagination->nPage == $i} btn-primary{else} btn-default{/if}"
+                            name="{$oPagination->cID}_nPage" value="{$i}">{$i+1}</button>
                 {/for}
                 <button type="submit" class="btn btn-sm btn-link" name="{$oPagination->cID}_nPage" value="{$oPagination->nNextPage}"
                     {if $oPagination->nNextPage == $oPagination->nPage} disabled="disabled"{/if}>&raquo;</button>

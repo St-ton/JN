@@ -39,6 +39,8 @@
 * Bugfix: apple-touch-icon.png in header.tpl verlinket, obwohl Datei nicht vorhanden ist (#278)
 * Verbesserung: Kupon-Backend komplett überarbeitet, Validierung verbessert (#275)
 * Bugfix: Fehlerhafte URLs in $Suchergebnisse->Kategorieauswahl bei hierarchischer Filterung (#273)
+* Bugfix: Mehrdeutige Verwendung von GET-Parameter "n" (#321)
+* Bugfix: Weiterleitung zum Login bei Artikel mit Slash in SEO-URL fehlerhaft (#322)
 
 ## [4.04.1]
 * Neues Premium-Plugin: Login und Bezahlen mit Amazon (von Solution360)

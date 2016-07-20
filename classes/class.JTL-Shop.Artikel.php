@@ -1370,7 +1370,7 @@ class Artikel
                     $Attribut->cWert = $att->cTextWert;
                 }
                 if ($att->kAttribut > 0 && $kSprache > 0 && !standardspracheAktiv()) {
-                    $attributsprache = Shop::DB()->query("SELECT * FROM tattributsprache WHERE kAttribut = " . (int)$att->kAttribut . " AND kSprache = " . $kSprache, 1);
+                    $attributsprache = Shop::DB()->select('tattributsprache', 'kAttribut', (int)$att->kAttribut, 'kSprache', $kSprache);
                     if (isset($attributsprache->cName) && $attributsprache->cName) {
                         $Attribut->cName = $attributsprache->cName;
                         if ($attributsprache->cStringWert) {
@@ -1834,7 +1834,7 @@ class Artikel
         $conf                               = Shop::getSettings(array(CONF_GLOBAL, CONF_ARTIKELDETAILS));
         $shopURL                            = Shop::getURL() . '/';
         if (!isset($waehrung->kWaehrung) || !$waehrung->kWaehrung) {
-            $waehrung = Shop::DB()->query("SELECT * FROM twaehrung WHERE cStandard='Y'", 1);
+            $waehrung = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
         }
         if ($this->kArtikel > 0) {
             // Nicht Standardsprache?
@@ -4110,7 +4110,7 @@ class Artikel
 
         $currency = (isset($_SESSION['Waehrung'])) ? $_SESSION['Waehrung'] : null;
         if (!isset($currency->kWaehrung) || !$currency->kWaehrung) {
-            $currency = Shop::DB()->query("SELECT * FROM twaehrung WHERE cStandard = 'Y'", 1);
+            $currency = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
         }
 
         $this->cLocalizedVPE[0] = gibPreisStringLocalized(
@@ -4158,7 +4158,7 @@ class Artikel
         }
         $currency = (isset($_SESSION['Waehrung'])) ? $_SESSION['Waehrung'] : null;
         if (!isset($currency->kWaehrung) || !$currency->kWaehrung) {
-            $currency = Shop::DB()->query("SELECT * FROM twaehrung WHERE cStandard = 'Y'", 1);
+            $currency = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
         }
         $this->cStaffelpreisLocalizedVPE1[0] = gibPreisStringLocalized(
                 berechneBrutto(
@@ -4365,9 +4365,9 @@ class Artikel
         }
         $kSprache = (int)$kSprache;
         if ($this->kArtikel > 0) {
-            $att = Shop::DB()->query("SELECT * FROM tattribut WHERE kArtikel = " . (int)$this->kArtikel . " AND cName = '" . $name . "'", 1);
+            $att = Shop::DB()->select('tattribut', 'kArtikel', (int)$this->kArtikel, 'cName', $name);
             if ((isset($att->kAttribut) && $att->kAttribut > 0) && (isset($kSprache) && $kSprache > 0) && !standardspracheAktiv()) {
-                $att  = Shop::DB()->query("SELECT * FROM tattributsprache WHERE kAttribut = " . $att->kAttribut . " AND kSprache = " . $kSprache, 1);
+                $att  = Shop::DB()->select('tattributsprache', 'kAttribut', $att->kAttribut, 'kSprache', $kSprache);
                 $wert = $att->cStringWert;
                 if ($att->cTextWert) {
                     $wert = $att->cTextWert;

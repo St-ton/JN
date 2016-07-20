@@ -223,7 +223,7 @@ class Sprache
         if (!isset($this->idAssociation[$cISO])) {
             $cacheID = 'lang_id_ks';
             if (($this->idAssociation = Shop::Cache()->get($cacheID)) === false || !isset($this->idAssociation[$cISO])) {
-                $lang                       = Shop::DB()->query("SELECT kSprachISO FROM tsprachiso WHERE cISO = '" . Shop::DB()->escape($cISO) . "'", 1);
+                $lang                       = Shop::DB()->select('tsprachiso', 'cISO', Shop::DB()->escape($cISO));
                 $this->idAssociation[$cISO] = $lang;
                 Shop::Cache()->set($cacheID, $this->idAssociation, array(CACHING_GROUP_LANGUAGE));
             }

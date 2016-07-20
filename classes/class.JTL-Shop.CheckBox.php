@@ -138,7 +138,7 @@ class CheckBox
                 // Falls mal kCheckBoxFunktion gesetzt war aber diese Funktion nicht mehr existiert (deinstallation vom Plugin)
                 // wird kCheckBoxFunktion auf 0 gesetzt
                 if ($this->kCheckBoxFunktion > 0) {
-                    $oCheckBoxFunktion = Shop::DB()->query("SELECT * FROM tcheckboxfunktion WHERE kCheckBoxFunktion = " . (int)$this->kCheckBoxFunktion, 1);
+                    $oCheckBoxFunktion = Shop::DB()->select('tcheckboxfunktion', 'kCheckBoxFunktion', (int)$this->kCheckBoxFunktion);
                     if (isset($oCheckBoxFunktion->kCheckBoxFunktion) && $oCheckBoxFunktion->kCheckBoxFunktion > 0) {
                         $this->oCheckBoxFunktion = $oCheckBoxFunktion;
                     } else {

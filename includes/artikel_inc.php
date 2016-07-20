@@ -761,11 +761,7 @@ function bearbeiteProdukttags($AktuellerArtikel)
                         return Shop::Lang()->get('pleaseLoginToAddTags', 'messages');
                     }
                     // Prüfe ob der Tag bereits gemappt wurde
-                    $tagmapping_objTMP = Shop::DB()->query(
-                        "SELECT cNameNeu
-                            FROM ttagmapping
-                            WHERE kSprache = " . (int)Shop::$kSprache . "
-                                AND cName = '" . Shop::DB()->escape($tag) . "'", 1);
+                    $tagmapping_objTMP = Shop::DB()->select('ttagmapping', 'kSprache', (int)Shop::$kSprache, 'cName', Shop::DB()->escape($tag));
                     $tagmapping_obj = $tagmapping_objTMP;
                     if (isset($tagmapping_obj->cNameNeu) && strlen($tagmapping_obj->cNameNeu) > 0) {
                         $tag = $tagmapping_obj->cNameNeu;

@@ -228,7 +228,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
             if ($bConvertCurrency && $fPreis > 0) {
                 $oWaehrung = $_SESSION['Waehrung'];
                 if (!$oWaehrung->kWaehrung) {
-                    $oWaehrung = Shop::DB()->query("SELECT * FROM twaehrung WHERE cStandard = 'Y'", 1);
+                    $oWaehrung = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
                 }
                 $fPreis *= floatval($oWaehrung->fFaktor);
             }

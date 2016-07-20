@@ -9,7 +9,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 define('NO_MODE', 0); // 1 = An / 0 = Aus
 define('NO_PFAD', PFAD_LOGFILES . 'notify.log');
 
-$Sprache             = Shop::DB()->query("SELECT cISO FROM tsprache WHERE cShopStandard='Y'", 1);
+$Sprache             = Shop::DB()->select('tsprache', 'cShopStandard', 'Y');
 $Einstellungen       = Shop::getSettings(array(CONF_GLOBAL, CONF_KUNDEN, CONF_KAUFABWICKLUNG, CONF_ZAHLUNGSARTEN));
 $cEditZahlungHinweis = '';
 //Session Hash

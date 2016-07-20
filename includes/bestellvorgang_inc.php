@@ -1845,7 +1845,7 @@ function checkKundenFormular($kundenaccount, $checkpass = 1)
         }
         if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
             //emailadresse anders und existiert dennoch?
-            $mail = Shop::DB()->query("SELECT cMail FROM tkunde WHERE kKunde = " . intval($_SESSION['Kunde']->kKunde), 1);
+            $mail = Shop::DB()->select('tkunde', 'kKunde', (int)$_SESSION['Kunde']->kKunde);
             if ($_POST['email'] == $mail->cMail) {
                 unset($ret['email_vorhanden']);
             }

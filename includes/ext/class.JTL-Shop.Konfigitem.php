@@ -513,7 +513,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 if (isset($_SESSION['Waehrung'])) {
                     $waehrung = $_SESSION['Waehrung'];
                 } else {
-                    $waehrung = Shop::DB()->query("SELECT * FROM twaehrung WHERE cStandard='Y'", 1);
+                    $waehrung = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
                 }
                 $fVKPreis = $fVKPreis * floatval($waehrung->fFaktor);
             }

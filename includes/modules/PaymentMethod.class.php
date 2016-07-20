@@ -116,7 +116,7 @@ class PaymentMethod
         if (!isset($_SESSION['Zahlungsart']->nWaehrendBestellung) || $_SESSION['Zahlungsart']->nWaehrendBestellung == 0) {
             global $Einstellungen;
             if ($Einstellungen['kaufabwicklung']['bestellabschluss_abschlussseite'] === 'A') { // Abschlussseite
-                $oZahlungsID = Shop::DB()->query("SELECT cId FROM tbestellid WHERE kBestellung = " . intval($order->kBestellung), 1);
+                $oZahlungsID = Shop::DB()->query("SELECT cId FROM tbestellid WHERE kBestellung = " . (int)$order->kBestellung, 1);
                 if (is_object($oZahlungsID)) {
                     return Shop::getURL() . '/bestellabschluss.php?i=' . $oZahlungsID->cId;
                 }

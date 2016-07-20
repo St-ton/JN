@@ -177,7 +177,7 @@ function pruefeBetreffVorhanden()
 function bearbeiteNachricht()
 {
     $betreff = (isset($_POST['subject'])) ?
-        Shop::DB()->query("SELECT * FROM tkontaktbetreff WHERE kKontaktBetreff = " . intval($_POST['subject']), 1) :
+        Shop::DB()->select('tkontaktbetreff', 'kKontaktBetreff', (int)$_POST['subject']) :
         null;
     if (!empty($betreff->kKontaktBetreff)) {
         $betreffSprache               = Shop::DB()->select('tkontaktbetreffsprache', 'kKontaktBetreff', (int)$betreff->kKontaktBetreff, 'cISOSprache', $_SESSION['cISOSprache']);

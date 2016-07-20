@@ -169,7 +169,7 @@ function bearbeiteExportformate($oJobQueue)
 
                     $waehrung = $_SESSION['Waehrung'];
                     if (!isset($waehrung->kWaehrung)) {
-                        $waehrung = Shop::DB()->query("SELECT * FROM twaehrung WHERE cStandard='Y'", 1);
+                        $waehrung = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
                     }
 
                     $Artikel->fUst              = gibUst($Artikel->kSteuerklasse);
@@ -350,7 +350,7 @@ function makecsv($cGlobalAssoc_arr, $nLimitN = 0)
  */
 function db_get_template($tpl_name, &$tpl_source, $smarty)
 {
-    $exportformat = Shop::DB()->query("SELECT * FROM texportformat WHERE kExportformat=" . $tpl_name, 1);
+    $exportformat = Shop::DB()->select('texportformat', 'kExportformat', $tpl_name);
 
     if (empty($exportformat->kExportformat) || !$exportformat->kExportformat > 0) {
         return false;

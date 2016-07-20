@@ -733,7 +733,7 @@ function pruefeSpezialseite($nLinkart)
     if (intval($nLinkart) > 0) {
         $cacheID = 'special_page_n_' . $nLinkart;
         if (($oSeite = Shop::Cache()->get($cacheID)) === false) {
-            $oSeite = Shop::DB()->query("SELECT * FROM tspezialseite WHERE nLinkart = " . (int) $nLinkart, 1);
+            $oSeite = Shop::DB()->select('tspezialseite', 'nLinkart', (int)$nLinkart);
             Shop::Cache()->set($cacheID, $oSeite, array(CACHING_GROUP_CORE));
         }
         if (isset($oSeite->cDateiname) && strlen($oSeite->cDateiname) > 0) {

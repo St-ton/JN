@@ -1158,7 +1158,7 @@ class Billpay extends PaymentMethod
             $cCurrency = $oBasket->Waehrung;
         }
         if (is_null($cCurrency) || !isset($cCurrency->kWaehrung)) {
-            $cCurrency = Shop::DB()->query("SELECT * FROM twaehrung WHERE cStandard='Y'", 1);
+            $cCurrency = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
         }
 
         $oBasketInfo->cCurrency = $cCurrency;

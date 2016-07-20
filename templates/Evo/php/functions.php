@@ -2,6 +2,8 @@
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
+ *
+ * @global JTLSmarty $smarty
  */
 $smarty->registerPlugin('function', 'gibPreisStringLocalizedSmarty', 'gibPreisStringLocalizedSmarty')
     ->registerPlugin('function', 'load_boxes', 'load_boxes')
@@ -51,6 +53,7 @@ function get_manufacturers($params, &$smarty)
     $manufacturers = $helper->getManufacturers();
     if (isset($params['assign'])) {
         $smarty->assign($params['assign'], $manufacturers);
+        return;
     } else {
         return $manufacturers;
     }
@@ -76,11 +79,9 @@ function load_boxes_raw($params, &$smarty)
  * @param JTLSmarty $smarty
  * @return array|void
  */
-function get_category_array($params = array(), &$smarty)
+function get_category_array($params, &$smarty)
 {
-    $id = (isset($params['categoryId'])) ?
-        (int)$params['categoryId'] :
-        0;
+    $id = (isset($params['categoryId'])) ? (int)$params['categoryId'] : 0;
     if ($id === 0) {
         $categories = KategorieHelper::getInstance();
         $list       = $categories->combinedGetAll();
@@ -92,7 +93,7 @@ function get_category_array($params = array(), &$smarty)
     if (isset($params['categoryBoxNumber']) && (int)$params['categoryBoxNumber'] > 0) {
         $list2 = array();
         foreach ($list as $key => $oList) {
-            if (isset($oList->KategorieAttribute[KAT_ATTRIBUT_KATEGORIEBOX]) && $oList->KategorieAttribute[KAT_ATTRIBUT_KATEGORIEBOX] == $params['categoryBoxNumber']) {
+            if (isset($oList->categoryFunctionAttributes[KAT_ATTRIBUT_KATEGORIEBOX]) && $oList->categoryFunctionAttributes[KAT_ATTRIBUT_KATEGORIEBOX] == $params['categoryBoxNumber']) {
                 $list2[$key] = $oList;
             }
         }
@@ -101,6 +102,7 @@ function get_category_array($params = array(), &$smarty)
 
     if (isset($params['assign'])) {
         $smarty->assign($params['assign'], $list);
+        return;
     } else {
         return $list;
     }
@@ -111,11 +113,9 @@ function get_category_array($params = array(), &$smarty)
  * @param JTLSmarty $smarty
  * @return array|void
  */
-function get_category_parents($params = array(), &$smarty)
+function get_category_parents($params, &$smarty)
 {
-    $id         = (isset($params['categoryId'])) ?
-        (int)$params['categoryId'] :
-        0;
+    $id         = (isset($params['categoryId'])) ? (int)$params['categoryId'] : 0;
     $category   = new Kategorie($id);
     $categories = new KategorieListe();
     $list       = $categories->getOpenCategories($category);
@@ -125,6 +125,7 @@ function get_category_parents($params = array(), &$smarty)
 
     if (isset($params['assign'])) {
         $smarty->assign($params['assign'], $list);
+        return;
     } else {
         return $list;
     }
@@ -221,6 +222,7 @@ function load_boxes($params, &$smarty)
     }
     if (isset($params['assign'])) {
         $smarty->assign($params['assign'], $cTplData);
+        return;
     } else {
         return $cTplData;
     }
@@ -267,30 +269,27 @@ function gibPreisStringLocalizedSmarty($params, &$smarty)
         $fVPEWert               = doubleval($params['fVPEWert']);
         $cVPEEinheit            = $params['cVPEEinheit'];
         $FunktionsAttribute_arr = $params['FunktionsAttribute'];
-        $nGenauigkeit           = (isset($FunktionsAttribute_arr[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT]) && intval($FunktionsAttribute_arr[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT]) > 0) ?
-            intval($FunktionsAttribute_arr[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT]) :
-            2;
+        $nGenauigkeit = (isset($FunktionsAttribute_arr[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT])
+            && intval($FunktionsAttribute_arr[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT]) > 0) ? intval($FunktionsAttribute_arr[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT]) : 2;
 
         if (intval($params['nNettoPreise']) === 1) {
             $oAufpreis->cAufpreisLocalized = gibPreisStringLocalized($fAufpreisNetto);
             $oAufpreis->cPreisInklAufpreis = gibPreisStringLocalized($fAufpreisNetto + $fVKNetto);
-            $oAufpreis->cAufpreisLocalized = ($fAufpreisNetto > 0) ?
-                ('+ ' . $oAufpreis->cAufpreisLocalized) :
-                (str_replace('-', '- ', $oAufpreis->cAufpreisLocalized));
+            $oAufpreis->cAufpreisLocalized = ($fAufpreisNetto > 0) ? ('+ ' . $oAufpreis->cAufpreisLocalized) : (str_replace('-', '- ', $oAufpreis->cAufpreisLocalized));
 
             if ($fVPEWert > 0) {
                 $oAufpreis->cPreisVPEWertAufpreis = gibPreisStringLocalized(
-                        $fAufpreisNetto / $fVPEWert,
-                        $_SESSION['Waehrung'],
-                        1,
-                        $nGenauigkeit
-                    ) . ' ' . Shop::Lang()->get('vpePer', 'global') . ' ' . $cVPEEinheit;
+                    $fAufpreisNetto / $fVPEWert,
+                    $_SESSION['Waehrung'],
+                    1,
+                    $nGenauigkeit
+                ) . ' ' . Shop::Lang()->get('vpePer', 'global') . ' ' . $cVPEEinheit;
                 $oAufpreis->cPreisVPEWertInklAufpreis = gibPreisStringLocalized(
-                        ($fAufpreisNetto + $fVKNetto) / $fVPEWert,
-                        $_SESSION['Waehrung'],
-                        1,
-                        $nGenauigkeit
-                    ) . ' ' . Shop::Lang()->get('vpePer', 'global') . ' ' . $cVPEEinheit;
+                    ($fAufpreisNetto + $fVKNetto) / $fVPEWert,
+                    $_SESSION['Waehrung'],
+                    1,
+                    $nGenauigkeit
+                ) . ' ' . Shop::Lang()->get('vpePer', 'global') . ' ' . $cVPEEinheit;
 
                 $oAufpreis->cAufpreisLocalized = $oAufpreis->cAufpreisLocalized . ', ' . $oAufpreis->cPreisVPEWertAufpreis;
                 $oAufpreis->cPreisInklAufpreis = $oAufpreis->cPreisInklAufpreis . ', ' . $oAufpreis->cPreisVPEWertInklAufpreis;
@@ -298,23 +297,23 @@ function gibPreisStringLocalizedSmarty($params, &$smarty)
         } else {
             $oAufpreis->cAufpreisLocalized = gibPreisStringLocalized(berechneBrutto($fAufpreisNetto, $_SESSION['Steuersatz'][$kSteuerklasse]));
             $oAufpreis->cPreisInklAufpreis = gibPreisStringLocalized(berechneBrutto($fAufpreisNetto + $fVKNetto, $_SESSION['Steuersatz'][$kSteuerklasse]));
-            $oAufpreis->cAufpreisLocalized = ($fAufpreisNetto > 0) ?
-                ('+ ' . $oAufpreis->cAufpreisLocalized) :
-                (str_replace('-', '- ', $oAufpreis->cAufpreisLocalized));
+            $oAufpreis->cAufpreisLocalized = ($fAufpreisNetto > 0) ? ('+ ' . $oAufpreis->cAufpreisLocalized) : (str_replace('-', '- ', $oAufpreis->cAufpreisLocalized));
 
             if ($fVPEWert > 0) {
                 $oAufpreis->cPreisVPEWertAufpreis = gibPreisStringLocalized(
-                        berechneBrutto($fAufpreisNetto / $fVPEWert, $_SESSION['Steuersatz'][$kSteuerklasse]),
-                        $_SESSION['Waehrung'],
-                        1, $nGenauigkeit
-                    ) . ' ' . Shop::Lang()->get('vpePer', 'global') . ' ' . $cVPEEinheit;
+                    berechneBrutto($fAufpreisNetto / $fVPEWert, $_SESSION['Steuersatz'][$kSteuerklasse]),
+                    $_SESSION['Waehrung'],
+                    1, $nGenauigkeit
+                ) . ' ' . Shop::Lang()->get('vpePer', 'global') . ' ' . $cVPEEinheit;
                 $oAufpreis->cPreisVPEWertInklAufpreis = gibPreisStringLocalized(
-                        berechneBrutto(($fAufpreisNetto + $fVKNetto) / $fVPEWert,
-                            $_SESSION['Steuersatz'][$kSteuerklasse]),
-                        $_SESSION['Waehrung'],
-                        1,
-                        $nGenauigkeit
-                    ) . ' ' . Shop::Lang()->get('vpePer', 'global') . ' ' . $cVPEEinheit;
+                    berechneBrutto(
+                        ($fAufpreisNetto + $fVKNetto) / $fVPEWert,
+                        $_SESSION['Steuersatz'][$kSteuerklasse]
+                    ),
+                    $_SESSION['Waehrung'],
+                    1,
+                    $nGenauigkeit
+                ) . ' ' . Shop::Lang()->get('vpePer', 'global') . ' ' . $cVPEEinheit;
 
                 $oAufpreis->cAufpreisLocalized = $oAufpreis->cAufpreisLocalized . ', ' . $oAufpreis->cPreisVPEWertAufpreis;
                 $oAufpreis->cPreisInklAufpreis = $oAufpreis->cPreisInklAufpreis . ', ' . $oAufpreis->cPreisVPEWertInklAufpreis;
@@ -322,9 +321,7 @@ function gibPreisStringLocalizedSmarty($params, &$smarty)
         }
     }
 
-    return (isset($params['bAufpreise']) && (int)$params['bAufpreise'] > 0) ?
-        $oAufpreis->cAufpreisLocalized :
-        $oAufpreis->cPreisInklAufpreis;
+    return (isset($params['bAufpreise']) && (int)$params['bAufpreise'] > 0) ? $oAufpreis->cAufpreisLocalized : $oAufpreis->cPreisInklAufpreis;
 }
 
 /**
@@ -446,9 +443,7 @@ function get_navigation($params, &$smarty)
     if (strlen($linkgroupIdentifier) > 0) {
         $LinkHelper  = LinkHelper::getInstance();
         $linkGroups  = $LinkHelper->getLinkGroups();
-        $oLinkGruppe = (isset($linkGroups->{$linkgroupIdentifier})) ?
-            $linkGroups->{$linkgroupIdentifier} :
-            null;
+        $oLinkGruppe = (isset($linkGroups->{$linkgroupIdentifier})) ? $linkGroups->{$linkgroupIdentifier} : null;
     }
 
     if (is_object($oLinkGruppe) && isset($params['assign'])) {
@@ -527,7 +522,7 @@ function prepare_image_details($params, &$smarty)
         }
     }
 
-    $result = (object) $result;
+    $result = (object)$result;
 
     if (isset($params['json']) && $params['json']) {
         return json_encode($result, JSON_FORCE_OBJECT);
@@ -598,6 +593,8 @@ function get_cms_content($params, &$smarty)
             return $oLink->Sprache->cContent;
         }
     }
+
+    return;
 }
 
 /**
@@ -612,8 +609,7 @@ function get_translation($mixed, $to = null)
     $to = $to ?: Shop::getLanguage(true);
 
     if (has_translation($mixed, $to)) {
-        return is_string($mixed)
-            ? $mixed : $mixed[$to];
+        return is_string($mixed) ? $mixed : $mixed[$to];
     }
 
     return;

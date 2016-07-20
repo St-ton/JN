@@ -238,8 +238,8 @@ class Kategorie
         $this->cURL     = baueURL($this, URLART_KATEGORIE);
         $this->cURLFull = baueURL($this, URLART_KATEGORIE, 0, false, true);
         // Baue Kategoriepfad
-        $this->cKategoriePfad     = gibKategoriepfad($this, $kKundengruppe, $kSprache);
         $this->cKategoriePfad_arr = gibKategoriepfad($this, $kKundengruppe, $kSprache, false);
+        $this->cKategoriePfad     = implode(' > ', $this->cKategoriePfad_arr);
         // Bild holen
         $this->cBildURL       = BILD_KEIN_KATEGORIEBILD_VORHANDEN;
         $this->cBild          = Shop::getURL() . '/' . BILD_KEIN_KATEGORIEBILD_VORHANDEN;

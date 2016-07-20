@@ -286,7 +286,7 @@ function gibPreisStringLocalized($preis, $waehrung = 0, $html = 1, $nNachkommast
         $waehrung = $_SESSION['Waehrung'];
     }
     if (!isset($waehrung->kWaehrung) || !$waehrung->kWaehrung) {
-        $waehrung = Shop::DB()->query("SELECT * FROM twaehrung WHERE cStandard = 'Y'", 1);
+        $waehrung = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
     }
     $preis        = number_format($preis * $waehrung->fFaktor, $nNachkommastellen, $waehrung->cTrennzeichenCent, $waehrung->cTrennzeichenTausend);
     $waherungname = (!$html) ? $waehrung->cName : $waehrung->cNameHTML;
@@ -2245,7 +2245,7 @@ function gibStandardWaehrung($bISO = false)
     if (isset($_SESSION['Waehrung']) && $_SESSION['Waehrung']->kWaehrung > 0) {
         return $bISO === true ? $_SESSION['Waehrung']->cISO : $_SESSION['Waehrung']->kWaehrung;
     }
-    $oWaehrung = Shop::DB()->query("SELECT kWaehrung, cISO FROM twaehrung WHERE cStandard = 'Y'", 1);
+    $oWaehrung = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
 
     return ($bISO === true) ? $oWaehrung->cISO : $oWaehrung->kWaehrung;
 }
@@ -2538,7 +2538,7 @@ function gibGuenstigsteVersandkosten($cISO, $Artikel, $barzahlungZulassen, $kKun
     $cnt = count($versandarten);
     for ($i = 0; $i < $cnt; $i++) {
         if (!$barzahlungZulassen) {
-            $za_bar = Shop::DB()->query("SELECT * FROM tversandartzahlungsart WHERE kZahlungsart = 6 AND kVersandart = " . (int)$versandarten[$i]->kVersandart, 1);
+            $za_bar = Shop::DB()->select('tversandartzahlungsart', 'kZahlungsart', 6, 'kVersandart', (int)$versandarten[$i]->kVersandart);
             if (isset($za_bar->kVersandartZahlungsart) && $za_bar->kVersandartZahlungsart > 0) {
                 continue;
             }
@@ -3257,7 +3257,7 @@ function gibPreisLocalizedOhneFaktor($preis, $waehrung = 0, $html = 1)
         $waehrung = $_SESSION['Waehrung'];
     }
     if (!isset($waehrung->kWaehrung)) {
-        $waehrung = Shop::DB()->query("SELECT * FROM twaehrung WHERE cStandard = 'Y'", 1);
+        $waehrung = Shop::DB()->select('twaehrung WHERE cStandard = 'Y'", 1);
     }
     $preis        = number_format($preis, 2, $waehrung->cTrennzeichenCent, $waehrung->cTrennzeichenTausend);
     $waherungname = (!$html) ? $waehrung->cName : $waehrung->cNameHTML;

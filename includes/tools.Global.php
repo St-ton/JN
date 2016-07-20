@@ -3560,7 +3560,7 @@ function gibAGBWRB($kSprache, $kKundengruppe)
 
             return $oAGBWRB;
         }
-        $oAGBWRB = Shop::DB()->select('ttext', 'nStandard', = 1", 1);
+        $oAGBWRB = Shop::DB()->select('ttext', 'nStandard', 1);
         if (!empty($oAGBWRB->kText)) {
             $oAGBWRB->kLinkAGB = 0;
             $oAGBWRB->kLinkWRB = 0;

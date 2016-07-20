@@ -41,6 +41,7 @@
 * Bugfix: Fehlerhafte URLs in $Suchergebnisse->Kategorieauswahl bei hierarchischer Filterung (#273)
 * Bugfix: Mehrdeutige Verwendung von GET-Parameter "n" (#321)
 * Bugfix: Weiterleitung zum Login bei Artikel mit Slash in SEO-URL fehlerhaft (#322)
+* Bugfix: Fehlerhafter Kategoriefilter, wenn Einstellung 1321 auf "Hierarchische Filterung" gestellt ist (#185)
 
 ## [4.04.1]
 * Neues Premium-Plugin: Login und Bezahlen mit Amazon (von Solution360)

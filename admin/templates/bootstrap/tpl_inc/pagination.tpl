@@ -79,7 +79,7 @@
         </button>
         {if $oPagination->nPageCount == 1}
             <div class="form-group">
-                <label>Eintr&auml;ge gesamt: {$oPagination->nPageCount}</label>
+                <label>Eintr&auml;ge gesamt: {$oPagination->nItemCount}</label>
             </div>
         {/if}
     </form>

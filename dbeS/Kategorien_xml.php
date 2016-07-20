@@ -299,7 +299,6 @@ function loescheKategorie($kKategorie)
 //    }
     //@todo: the above does not really work on parent categories when adding/deleting child categories - because of class.helper.KategorieListe getter/setter
 
-
     $deleteAttributes_arr = Shop::DB()->query(
         "SELECT kKategorieAttribut
             FROM tkategorieattribut
@@ -393,8 +392,8 @@ function deleteKategorieAttribut($kKategorieAttribut)
 {
     $kKategorieAttribut = (int)$kKategorieAttribut;
 
-    Shop::DB()->query("DELETE FROM tkategorieattributsprache WHERE kAttribut = " . $kKategorieAttribut, 4);
-    Shop::DB()->query("DELETE FROM tkategorieattribut WHERE kKategorieAttribut = " . $kKategorieAttribut, 4);
+    Shop::DB()->delete('tkategorieattributsprache', 'kAttribut', $kKategorieAttribut);
+    Shop::DB()->delete('tkategorieattribut', 'kKategorieAttribut', $kKategorieAttribut);
 }
 
 /**

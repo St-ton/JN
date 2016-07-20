@@ -244,7 +244,7 @@ class PaymentMethod
             $oZahlungsID->dDatum       = 'now()';
             Shop::DB()->insert('tzahlungsid', $oZahlungsID);
         } else {
-            Shop::DB()->query("DELETE FROM tzahlungsession WHERE cSID='" . session_id() . "' AND kBestellung=0", 4);
+            Shop::DB()->delete('tzahlungsession', ['cSID', 'kBestellung'], [session_id(), 0]);
             $oZahlungSession               = new stdClass();
             $oZahlungSession->cSID         = session_id();
             $oZahlungSession->cNotifyID    = '';

@@ -107,7 +107,7 @@ function bearbeiteHersteller($xml)
             $cacheTags    = array();
             for ($i = 0; $i < $mfCount; $i++) {
                 $affectedArticles = Shop::DB()->query("SELECT kArtikel FROM tartikel WHERE kHersteller = " . (int)$hersteller_arr[$i]->kHersteller, 2);
-                Shop::DB()->query("DELETE FROM tseo WHERE kKey = " . (int)$hersteller_arr[$i]->kHersteller . " AND cKey = 'kHersteller'", 4);
+                Shop::DB()->delete('tseo', ['kKey', 'cKey'], [(int)$hersteller_arr[$i]->kHersteller,'kHersteller']);
                 if (!trim($hersteller_arr[$i]->cSeo)) {
                     $hersteller_arr[$i]->cSeo = getFlatSeoPath($hersteller_arr[$i]->cName);
                 }

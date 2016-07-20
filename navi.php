@@ -183,7 +183,7 @@ if ($smarty->isCached('productlist/index.tpl', $cacheID) === true) {
         if (is_array($NaviFilter->SuchFilter) && count($NaviFilter->SuchFilter) > 0) {
             $sfCount = count($NaviFilter->SuchFilter);
             for ($i = 0; $i < $sfCount; $i++) {
-                $oSuchanfrage = Shop::DB()->query("SELECT cSuche FROM tsuchanfrage WHERE kSuchanfrage = " . (int)$NaviFilter->SuchFilter[$i]->kSuchanfrage, 1);
+                $oSuchanfrage = Shop::DB()->select('tsuchanfrage', 'kSuchanfrage', (int)$NaviFilter->SuchFilter[$i]->kSuchanfrage);
                 if (strlen($oSuchanfrage->cSuche) > 0) {
                     // Nicht vorhandene Suchcaches werden hierdurch neu generiert
                     if (!isset($NaviFilter->Suche)) {
@@ -199,7 +199,7 @@ if ($smarty->isCached('productlist/index.tpl', $cacheID) === true) {
             }
         }
         if ($cParameter_arr['kSuchanfrage'] > 0) {
-            $oSuchanfrage = Shop::DB()->query("SELECT cSuche FROM tsuchanfrage WHERE kSuchanfrage = " . (int)$cParameter_arr['kSuchanfrage'], 1);
+            $oSuchanfrage = Shop::DB()->select('tsuchanfrage', 'kSuchanfrage', (int)$cParameter_arr['kSuchanfrage']);
 
             if (isset($oSuchanfrage->cSuche) && strlen($oSuchanfrage->cSuche) > 0) {
                 if (!isset($NaviFilter->Suche)) {

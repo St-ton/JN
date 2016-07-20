@@ -3,7 +3,6 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-
 require_once dirname(__FILE__) . '/syncinclude.php';
 //smarty lib
 global $smarty;
@@ -224,6 +223,17 @@ function bearbeiteInsert($xml)
         updateXMLinDB($xml['tkategorie'], 'tkategorieattribut', $GLOBALS['mKategorieAttribut'], 'kKategorieAttribut');
         updateXMLinDB($xml['tkategorie'], 'tkategoriesichtbarkeit', $GLOBALS['mKategorieSichtbarkeit'], 'kKundengruppe', 'kKategorie');
 
+        $oAttribute_arr = mapArray($xml['tkategorie'], 'tattribut', $GLOBALS['mNormalKategorieAttribut']);
+        if (is_array($oAttribute_arr) && count($oAttribute_arr)) {
+            // Jenachdem ob es ein oder mehrere Attribute gibt, unterscheidet sich die Struktur des XML-Arrays
+            $single = isset($xml['tkategorie']['tattribut attr']) && is_array($xml['tkategorie']['tattribut attr']);
+            $i      = 0;
+            foreach ($oAttribute_arr as $oAttribut) {
+                $parentXML = $single ? $xml['tkategorie']['tattribut'] : $xml['tkategorie']['tattribut'][$i++];
+                saveKategorieAttribut($parentXML, $oAttribut);
+            }
+        }
+
         $cache = Shop::Cache();
 //        $flushArray = array();
 //        $flushArray[] = CACHING_GROUP_CATEGORY . '_' . $Kategorie->kKategorie;
@@ -257,7 +267,6 @@ function bearbeiteInsert($xml)
 function loescheKategorie($kKategorie)
 {
     $kKategorie = (int)$kKategorie;
-//    error_log('deleting category ' . $kKategorie);
 //    $category = Shop::DB()->query("SELECT * FROM tkategorie WHERE kKategorie = " . $kKategorie, 2);
 //    if (is_array($category)) {
 //        foreach ($category as $_category) {
@@ -290,9 +299,19 @@ function loescheKategorie($kKategorie)
 //    }
     //@todo: the above does not really work on parent categories when adding/deleting child categories - because of class.helper.KategorieListe getter/setter
 
+
+    $deleteAttributes_arr = Shop::DB()->query(
+        "SELECT kKategorieAttribut
+            FROM tkategorieattribut
+            WHERE kKategorie = " . $kKategorie, 2
+    );
+    if (is_array($deleteAttributes_arr)) {
+        foreach ($deleteAttributes_arr as $deleteAttribute) {
+            deleteKategorieAttribut($deleteAttribute->kKategorieAttribut);
+        }
+    }
     Shop::DB()->delete('tseo', ['kKey', 'cKey'], [$kKategorie, 'kKategorie']);
     Shop::DB()->delete('tkategorie', 'kKategorie', $kKategorie);
-    Shop::DB()->delete('tkategorieattribut', 'kKategorie', $kKategorie);
     Shop::DB()->delete('tkategoriekundengruppe', 'kKategorie', $kKategorie);
     Shop::DB()->delete('tkategoriesichtbarkeit', 'kKategorie', $kKategorie);
     Shop::DB()->delete('tkategoriesprache', 'kKategorie', $kKategorie);
@@ -365,4 +384,49 @@ function updateKategorieLevel(array $kOberKategorie_arr = null, $nLevel = 1)
 
         updateKategorieLevel($kKategorie_arr, $nLevel + 1);
     }
+}
+
+/**
+ * @param int $kKategorieAttribut
+ */
+function deleteKategorieAttribut($kKategorieAttribut)
+{
+    $kKategorieAttribut = (int)$kKategorieAttribut;
+
+    Shop::DB()->query("DELETE FROM tkategorieattributsprache WHERE kAttribut = " . $kKategorieAttribut, 4);
+    Shop::DB()->query("DELETE FROM tkategorieattribut WHERE kKategorieAttribut = " . $kKategorieAttribut, 4);
+}
+
+/**
+ * @param array $xmlParent
+ * @param object $oAttribut
+ * @return int
+ */
+function saveKategorieAttribut($xmlParent, $oAttribut)
+{
+    // Fix: die Wawi überträgt für die normalen Attribute die ID in kAttribut statt in kKategorieAttribut
+    if (!isset($oAttribut->kKategorieAttribut) && isset($oAttribut->kAttribut)) {
+        $oAttribut->kKategorieAttribut = (int)$oAttribut->kAttribut;
+        unset($oAttribut->kAttribut);
+    }
+
+    Jtllog::writeLog('Speichere Kategorieattribut: ' . var_export($oAttribut, true), JTLLOG_LEVEL_DEBUG);
+
+    DBUpdateInsert('tkategorieattribut', [$oAttribut], 'kKategorieAttribut', 'kKategorie');
+    $oAttribSprache_arr = mapArray($xmlParent, 'tattributsprache', $GLOBALS['mKategorieAttributSprache']);
+
+    if (is_array($oAttribSprache_arr)) {
+        // Die Standardsprache wird nicht separat übertragen und wird deshalb aus den Attributwerten gesetzt
+        array_unshift($oAttribSprache_arr, (object)[
+            'kAttribut' => $oAttribut->kKategorieAttribut,
+            'kSprache'  => Shop::DB()->select('tsprache', 'cShopStandard', 'Y')->kSprache,
+            'cName'     => $oAttribut->cName,
+            'cWert'     => $oAttribut->cWert,
+        ]);
+
+        Jtllog::writeLog('Speichere Kategorieattributsprache: ' . var_export($oAttribSprache_arr, true), JTLLOG_LEVEL_DEBUG);
+        DBUpdateInsert('tkategorieattributsprache', $oAttribSprache_arr, 'kAttribut', 'kSprache');
+    }
+
+    return $oAttribut->kKategorieAttribut;
 }

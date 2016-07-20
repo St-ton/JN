@@ -42,6 +42,7 @@ if (isset($_POST['zuruecksetzen']) && intval($_POST['zuruecksetzen']) === 1 && v
                     Shop::DB()->query("TRUNCATE tkategorie", 4);
                     Shop::DB()->query("TRUNCATE tkategorieartikel", 4);
                     Shop::DB()->query("TRUNCATE tkategorieattribut", 4);
+                    Shop::DB()->query("TRUNCATE tkategorieattributsprache", 4);
                     Shop::DB()->query("TRUNCATE tkategoriekundengruppe", 4);
                     Shop::DB()->query("TRUNCATE tkategoriemapping", 4);
                     Shop::DB()->query("TRUNCATE tkategoriepict", 4);

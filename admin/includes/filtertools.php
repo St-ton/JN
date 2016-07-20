@@ -16,7 +16,6 @@ function createFilter()
     $oFilter->cWhereSQL      = "";
     $oFilter->cAction        = isset($_GET['action']) ? $_GET['action'] : '';
     $oFilter->cSession_arr   = isset($_SESSION['filtertools']) ? $_SESSION['filtertools'] : array();
-    $oFilter->cGetVar_arr    = $_GET;
 
     return $oFilter;
 }
@@ -40,7 +39,7 @@ function addFilterTextfield($oFilter, $cTitle, $cColumn, $bExact)
     $oField->cValue        = isset($oFilter->cSession_arr[$cColumn]) ? $oFilter->cSession_arr[$cColumn] : '';
 
     if ($oFilter->cAction === 'filter') {
-        $oField->cValue = $oFilter->cGetVar_arr[$cColumn];
+        $oField->cValue = $_GET[$cColumn];
     } elseif ($oFilter->cAction === 'resetfilter') {
         $oField->cValue = '';
     }
@@ -68,7 +67,7 @@ function addFilterSelect($oFilter, $cTitle, $cColumn)
     $oField->cValue        = isset($oFilter->cSession_arr[$cColumn]) ? $oFilter->cSession_arr[$cColumn] : '0';
 
     if ($oFilter->cAction === 'filter') {
-        $oField->cValue = $oFilter->cGetVar_arr[$cColumn];
+        $oField->cValue = $_GET[$cColumn];
     } elseif ($oFilter->cAction === 'resetfilter') {
         $oField->cValue = '0';
     }
@@ -111,9 +110,9 @@ function assembleFilter($oFilter)
         if ($oField->cType === 'text') {
             if ($oField->cValue !== '') {
                 if ($oField->bExact === true) {
-                    $cWhereClause_arr[] = $oField->cColumn . " = '" . $oField->cValue . "'";
+                    $cWhereClause_arr[] = $oField->cColumn . " = '" . Shop::DB()->escape($oField->cValue) . "'";
                 } else {
-                    $cWhereClause_arr[] = $oField->cColumn . " LIKE '%" . $oField->cValue . "%'";
+                    $cWhereClause_arr[] = $oField->cColumn . " LIKE '%" . Shop::DB()->escape($oField->cValue) . "%'";
                 }
             }
         } elseif ($oField->cType === 'select') {

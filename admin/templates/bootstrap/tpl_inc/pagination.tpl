@@ -17,11 +17,25 @@
                 <div class="btn-group">
                     <button type="submit" class="btn btn-sm btn-link" name="{$oPagination->cID}_nPage" value="{$oPagination->nPrevPage}"
                         {if $oPagination->nPrevPage == $oPagination->nPage} disabled="disabled"{/if}>&laquo;</button>
-                    {for $i=0 to $oPagination->nPageCount-1}
+                    {if $oPagination->nLeftRangePage > 0}
+                        <button type="submit" class="btn btn-sm btn-default" name="{$oPagination->cID}_nPage" value="0">1</button>
+                    {/if}
+                    {if $oPagination->nLeftRangePage > 1}
+                        </div><label>...</label><div class="btn-group">
+                    {/if}
+                    {for $i=$oPagination->nLeftRangePage to $oPagination->nRightRangePage}
                         <button type="{if $oPagination->nPage == $i}button{else}submit{/if}"
                                 class="btn btn-sm{if $oPagination->nPage == $i} btn-primary{else} btn-default{/if}"
                                 name="{$oPagination->cID}_nPage" value="{$i}">{$i+1}</button>
                     {/for}
+                    {if $oPagination->nRightRangePage < $oPagination->nPageCount - 2}
+                        </div><label>...</label><div class="btn-group">
+                    {/if}
+                    {if $oPagination->nRightRangePage < $oPagination->nPageCount - 1}
+                        <button type="submit" class="btn btn-sm btn-default" name="{$oPagination->cID}_nPage" value="{$oPagination->nPageCount - 1}">
+                            {$oPagination->nPageCount}
+                        </button>
+                    {/if}
                     <button type="submit" class="btn btn-sm btn-link" name="{$oPagination->cID}_nPage" value="{$oPagination->nNextPage}"
                         {if $oPagination->nNextPage == $oPagination->nPage} disabled="disabled"{/if}>&raquo;</button>
                 </div>
@@ -37,6 +51,9 @@
                         {$nItemsPerPageOption}
                     </option>
                 {/foreach}
+                <option value="-1"{if $oPagination->nItemsPerPage == -1} selected="selected"{/if}>
+                    alle
+                </option>
             </select>
         </div>
         {if $oPagination->cSortByOption_arr|@count > 0}
@@ -60,5 +77,10 @@
         <button type="submit" class="btn btn-primary">
             <i class="fa fa-refresh"></i>
         </button>
+        {if $oPagination->nPageCount == 1}
+            <div class="form-group">
+                <label>Eintr&auml;ge gesamt: {$oPagination->nPageCount}</label>
+            </div>
+        {/if}
     </form>
 </div>

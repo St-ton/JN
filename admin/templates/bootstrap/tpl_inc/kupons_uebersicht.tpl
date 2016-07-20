@@ -2,8 +2,8 @@
 
 {function kupons_uebersicht_tab}
     <div id="{$cKuponTyp}" class="tab-pane fade{if $tab === $cKuponTyp} active in{/if}">
-        {include file='filtertools.tpl' oFilter=$oFilter cParam_arr=['tab'=>$cKuponTyp]}
-        {include file='newpagination.tpl' oPagination=$oPagination cParam_arr=['tab'=>$cKuponTyp]}
+        {include file='tpl_inc/filtertools.tpl' oFilter=$oFilter cParam_arr=['tab'=>$cKuponTyp]}
+        {include file='tpl_inc/pagination.tpl' oPagination=$oPagination cParam_arr=['tab'=>$cKuponTyp]}
         <form method="post" action="kupons.php">
             {$jtl_token}
             <input type="hidden" name="cKuponTyp" id="cKuponTyp" value="{$cKuponTyp}">
@@ -15,6 +15,7 @@
                     <table class="list table">
                         <thead>
                             <tr>
+                                <th title="Aktiv"></th>
                                 <th></th>
                                 <th>{#name#}</th>
                                 {if $cKuponTyp === 'standard' || $cKuponTyp === 'neukundenkupon'}<th>{#value#}</th>{/if}
@@ -29,9 +30,14 @@
                         </thead>
                         <tbody>
                             {foreach $oKupon_arr as $oKupon}
-                                <tr{if $oKupon->cAktiv === 'N'} class="bg-danger"{/if}>
+                                <tr{if $oKupon->cAktiv === 'N'} class="text-danger"{/if}>
+                                    <td>{if $oKupon->cAktiv === 'N'}<i class="fa fa-times"></i>{/if}</td>
                                     <td><input type="checkbox" name="kKupon_arr[]" id="kupon-{$oKupon->kKupon}" value="{$oKupon->kKupon}"></td>
-                                    <td><label for="kupon-{$oKupon->kKupon}">{$oKupon->cName}</label></td>
+                                    <td>
+                                        <label for="kupon-{$oKupon->kKupon}">
+                                            {$oKupon->cName}
+                                        </label>
+                                    </td>
                                     {if $cKuponTyp === 'standard' || $cKuponTyp === 'neukundenkupon'}
                                         <td>
                                             {if $oKupon->cWertTyp === 'festpreis'}
@@ -64,6 +70,7 @@
                         </tbody>
                         <tfoot>
                             <tr>
+                                <td></td>
                                 <td><input type="checkbox" name="ALLMSGS" id="ALLMSGS_{$cKuponTyp}" onclick="AllMessages(this.form);"></td>
                                 <td colspan="9"><label for="ALLMSGS_{$cKuponTyp}">Alle ausw&auml;hlen</label></td>
                             </tr>

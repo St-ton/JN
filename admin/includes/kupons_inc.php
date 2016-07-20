@@ -199,19 +199,12 @@ function augmentCoupon($oKupon)
         $oKupon->cArtikelInfo = 'eingeschr&auml;nkt';
     }
 
-    if ($oKupon->cKuponTyp === 'neukundenkupon') {
-        $oMaxErstelltDB = Shop::DB()->query("
+    $oMaxErstelltDB = Shop::DB()->query("
         SELECT max(dErstellt) as dLastUse
-            FROM tkuponkunde
-            WHERE kKupon = " . (int)$oKupon->kKupon, 1);
-    } else {
-        $oMaxErstelltDB = Shop::DB()->query("
-        SELECT max(dErstellt) as dLastUse
-            FROM tkuponneukunde
-            WHERE kKupon = " . (int)$oKupon->kKupon, 1);
-    }
-
-    $oKupon->dLastUse = is_object($oMaxErstelltDB) ? $oMaxErstelltDB->dLastUse : '0000-00-00 00:00:00';
+            FROM " . ($oKupon->cKuponTyp === 'neukundenkupon' ? "tkuponneukunde" : "tkuponkunde") . "
+            WHERE kKupon = " . (int)$oKupon->kKupon,
+        1);
+    $oKupon->dLastUse = date_create(is_string($oMaxErstelltDB->dLastUse) ? $oMaxErstelltDB->dLastUse : '0000-00-00 00:00:00');
 }
 
 /**
@@ -516,7 +509,7 @@ function informCouponCustomers($oKupon)
 /**
  * Set all Coupons with an outdated dGueltigBis to cAktiv = 'N'
  */
-function disableOutdatedCoupons()
+function deactivateOutdatedCoupons()
 {
     $oKuponDB_arr = Shop::DB()->query("
         SELECT kKupon, dGueltigAb, dGueltigBis
@@ -540,7 +533,7 @@ function disableOutdatedCoupons()
 /**
  * Set all Coupons that reached nVerwendungenBisher to nVerwendungen to cAktiv = 'N'
  */
-function disableExhaustedCoupons()
+function deactivateExhaustedCoupons()
 {
     $oKuponDB_arr = Shop::DB()->query("
         SELECT kKupon, nVerwendungen, nVerwendungenBisher

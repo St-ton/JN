@@ -43,19 +43,19 @@ build_deps()
     msg "Installing dependencies..."
 
     # composer
-    wget http://getcomposer.org/composer.phar -O ${SCRIPT_DIR}/bin/composer -q --show-progress || exit 1
+    wget http://getcomposer.org/composer.phar -O ${SCRIPT_DIR}/bin/composer || exit 1
     chmod u+x ${SCRIPT_DIR}/bin/composer
 
     # php-cs-fixer
-    wget http://get.sensiolabs.org/php-cs-fixer.phar -O ${SCRIPT_DIR}/bin/php-cs-fixer -q --show-progress || exit 1
+    wget http://get.sensiolabs.org/php-cs-fixer.phar -O ${SCRIPT_DIR}/bin/php-cs-fixer || exit 1
     chmod u+x ${SCRIPT_DIR}/bin/php-cs-fixer
 
     # phpcs
-    wget https://squizlabs.github.io/PHP_CodeSniffer/phpcs.phar -O ${SCRIPT_DIR}/bin/phpcs -q --show-progress || exit 1
+    wget https://squizlabs.github.io/PHP_CodeSniffer/phpcs.phar -O ${SCRIPT_DIR}/bin/phpcs || exit 1
     chmod u+x ${SCRIPT_DIR}/bin/phpcs
 
     # phpcbf
-    wget https://squizlabs.github.io/PHP_CodeSniffer/phpcbf.phar -O ${SCRIPT_DIR}/bin/phpcbf -q --show-progress || exit 1
+    wget https://squizlabs.github.io/PHP_CodeSniffer/phpcbf.phar -O ${SCRIPT_DIR}/bin/phpcbf || exit 1
     chmod u+x ${SCRIPT_DIR}/bin/phpcbf
 
     success "... done"

@@ -183,7 +183,9 @@ function bearbeiteExportformate($oJobQueue)
                     //Kategoriepfad
                     $iso                    = (isset($ExportEinstellungen['exportformate_lieferland'])) ? $ExportEinstellungen['exportformate_lieferland'] : '';
                     $Artikel->Kategorie     = new Kategorie($Artikel->gibKategorie(), $exportformat->kSprache, $exportformat->kKundengruppe);
-                    $Artikel->Kategoriepfad = gibKategoriepfad($Artikel->Kategorie, $exportformat->kKundengruppe, $exportformat->kSprache);
+                    $Artikel->Kategoriepfad = (isset($Artikel->Kategorie->cKategoriePfad)) ?
+                        $Artikel->Kategorie->cKategoriePfad : // calling gibKategoriepfad() should not be necessary since it has already been called in Kategorie::loadFromDB()
+                        gibKategoriepfad($Artikel->Kategorie, $exportformat->kKundengruppe, $exportformat->kSprache);
                     $Artikel->Versandkosten = gibGuenstigsteVersandkosten($iso, $Artikel, 0, $exportformat->kKundengruppe);
                     if ($Artikel->Versandkosten != -1) {
                         $price = convertCurrency($Artikel->Versandkosten, null, $exportformat->kWaehrung);

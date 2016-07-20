@@ -3257,7 +3257,7 @@ function gibPreisLocalizedOhneFaktor($preis, $waehrung = 0, $html = 1)
         $waehrung = $_SESSION['Waehrung'];
     }
     if (!isset($waehrung->kWaehrung)) {
-        $waehrung = Shop::DB()->select('twaehrung WHERE cStandard = 'Y'", 1);
+        $waehrung = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
     }
     $preis        = number_format($preis, 2, $waehrung->cTrennzeichenCent, $waehrung->cTrennzeichenTausend);
     $waherungname = (!$html) ? $waehrung->cName : $waehrung->cNameHTML;
@@ -3560,7 +3560,7 @@ function gibAGBWRB($kSprache, $kKundengruppe)
 
             return $oAGBWRB;
         }
-        $oAGBWRB = Shop::DB()->query("SELECT * FROM ttext WHERE nStandard = 1", 1);
+        $oAGBWRB = Shop::DB()->select('ttext', 'nStandard', = 1", 1);
         if (!empty($oAGBWRB->kText)) {
             $oAGBWRB->kLinkAGB = 0;
             $oAGBWRB->kLinkWRB = 0;

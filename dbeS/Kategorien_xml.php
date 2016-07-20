@@ -290,12 +290,12 @@ function loescheKategorie($kKategorie)
 //    }
     //@todo: the above does not really work on parent categories when adding/deleting child categories - because of class.helper.KategorieListe getter/setter
 
-    Shop::DB()->query("DELETE FROM tseo WHERE kKey = " . $kKategorie . " AND cKey = 'kKategorie'", 4);
-    Shop::DB()->query("DELETE FROM tkategorie WHERE kKategorie = " . $kKategorie, 4);
-    Shop::DB()->query("DELETE FROM tkategorieattribut WHERE kKategorie = " . $kKategorie, 4);
-    Shop::DB()->query("DELETE FROM tkategoriekundengruppe WHERE kKategorie = " . $kKategorie, 4);
-    Shop::DB()->query("DELETE FROM tkategoriesichtbarkeit WHERE kKategorie = " . $kKategorie, 4);
-    Shop::DB()->query("DELETE FROM tkategoriesprache WHERE kKategorie = " . $kKategorie, 4);
+    Shop::DB()->delete('tseo', ['kKey', 'cKey'], [$kKategorie, 'kKategorie']);
+    Shop::DB()->delete('tkategorie', 'kKategorie', $kKategorie);
+    Shop::DB()->delete('tkategorieattribut', 'kKategorie', $kKategorie);
+    Shop::DB()->delete('tkategoriekundengruppe', 'kKategorie', $kKategorie);
+    Shop::DB()->delete('tkategoriesichtbarkeit', 'kKategorie', $kKategorie);
+    Shop::DB()->delete('tkategoriesprache', 'kKategorie', $kKategorie);
     if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
         Jtllog::writeLog('Kategorie geloescht: ' . $kKategorie, JTLLOG_LEVEL_DEBUG, false, 'Kategorien_xml');
     }

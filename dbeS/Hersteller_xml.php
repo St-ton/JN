@@ -69,9 +69,9 @@ function bearbeiteHerstellerDeletes($xml)
             $kHersteller = (int)$kHersteller;
             if ($kHersteller > 0) {
                 $affectedArticles = Shop::DB()->query("SELECT kArtikel FROM tartikel WHERE kHersteller = " . $kHersteller, 2);
-                Shop::DB()->query("DELETE FROM tseo WHERE kKey = " . $kHersteller . " AND cKey = 'kHersteller'", 4);
-                Shop::DB()->query("DELETE FROM thersteller WHERE kHersteller = " . $kHersteller, 4);
-                Shop::DB()->query("DELETE FROM therstellersprache WHERE kHersteller = " . $kHersteller, 4);
+                Shop::DB()->delete('tseo', ['kKey', 'cKey'], [$kHersteller, 'kHersteller']);
+                Shop::DB()->delete('thersteller', 'kHersteller', $kHersteller);
+                Shop::DB()->delete('therstellersprache', 'kHersteller', $kHersteller);
 
                 executeHook(HOOK_HERSTELLER_XML_BEARBEITEDELETES, array('kHersteller' => $kHersteller));
                 $cacheTags[] = CACHING_GROUP_MANUFACTURER . '_' . $kHersteller;

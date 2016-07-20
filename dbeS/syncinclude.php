@@ -223,10 +223,10 @@ function DBUpdateInsert($tablename, $object_arr, $pk1, $pk2 = 0)
     if (is_array($object_arr)) {
         foreach ($object_arr as $object) {
             if (isset($object->$pk1) && !$pk2 && $pk1 && $object->$pk1) {
-                Shop::DB()->query("DELETE FROM $tablename WHERE $pk1=" . $object->$pk1, 4);
+                Shop::DB()->delete($tablename, $pk1, $object->$pk1);
             }
             if (isset($object->$pk2) && $pk1 && $pk2 && $object->$pk1 && $object->$pk2) {
-                Shop::DB()->query("DELETE FROM $tablename WHERE $pk1=" . $object->$pk1 . " AND $pk2=" . $object->$pk2, 4);
+                Shop::DB()->delete($tablename, [$pk1, $pk2], [$object->$pk1, $object->$pk2]);
             }
             $key = Shop::DB()->insert($tablename, $object);
             if (!$key && Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
@@ -500,10 +500,7 @@ function updateXMLinDB($xml, $tabelle, $map, $pk1, $pk2 = 0)
  */
 function fuelleArtikelKategorieRabatt($oArtikel, $oKundengruppe_arr)
 {
-    Shop::DB()->query(
-        "DELETE FROM tartikelkategorierabatt
-          WHERE kArtikel = " . intval($oArtikel->kArtikel), 3
-    );
+    Shop::DB()->delete('tartikelkategorierabatt', 'kArtikel', (int)$oArtikel->kArtikel);
     if (is_array($oKundengruppe_arr) && count($oKundengruppe_arr) > 0) {
         foreach ($oKundengruppe_arr as $oKundengruppe) {
             $oMaxRabatt = Shop::DB()->query(
@@ -747,10 +744,7 @@ function deleteArticleImage($oArtikelPict = null, $kArtikel = 0, $kArtikelPict =
                 @unlink(PFAD_ROOT . PFAD_PRODUKTBILDER_NORMAL . $oArtikelPict->cPfad);
                 @unlink(PFAD_ROOT . PFAD_PRODUKTBILDER_GROSS . $oArtikelPict->cPfad);
                 // Bild vom Main aus DB löschen
-                Shop::DB()->query(
-                    "DELETE FROM tartikelpict
-                        WHERE kArtikelPict = " . (int)$oArtikelPict->kMainArtikelBild, 3
-                );
+                Shop::DB()->delete('tartikelpict', 'kArtikelPict', (int)$oArtikelPict->kMainArtikelBild);
             }
         }
         // Bildverknüpfung aus DB löschen
@@ -763,8 +757,8 @@ function deleteArticleImage($oArtikelPict = null, $kArtikel = 0, $kArtikelPict =
                 WHERE kMainArtikelBild =
                 (
                     SELECT kArtikelPict
-                    FROM tartikelpict
-                    WHERE kArtikelPict = " . (int)$oArtikelPict->kArtikelPict . "
+                        FROM tartikelpict
+                        WHERE kArtikelPict = " . (int)$oArtikelPict->kArtikelPict . "
                 )", 2
         );
         if (count($oVerknuepfteArtikel_arr) === 0) {

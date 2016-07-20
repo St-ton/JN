@@ -1086,12 +1086,12 @@ function bearbeiteDeletes($xml)
             foreach ($xml['del_bilder']['kMerkmalWert'] as $kMerkmalWert) {
                 if ((int)$kMerkmalWert > 0) {
                     Shop::DB()->query("UPDATE tmerkmalwert SET cBildPfad = '' WHERE kMerkmalWert = " . (int)$kMerkmalWert, 4);
-                    Shop::DB()->query("DELETE FROM tmerkmalwertbild WHERE kMerkmalWert = " . (int)$kMerkmalWert, 4);
+                    Shop::DB()->delete('tmerkmalwertbild', 'kMerkmalWert', (int)$kMerkmalWert);
                 }
             }
         } elseif ((int)$xml['del_bilder']['kMerkmalWert'] > 0) {
-            Shop::DB()->query("UPDATE tmerkmalwert SET cBildPfad = '' WHERE kMerkmalWert = " . intval($xml['del_bilder']['kMerkmalWert']), 4);
-            Shop::DB()->query("DELETE FROM tmerkmalwertbild WHERE kMerkmalWert = " . intval($xml['del_bilder']['kMerkmalWert']), 4);
+            Shop::DB()->query("UPDATE tmerkmalwert SET cBildPfad = '' WHERE kMerkmalWert = " . (int)$xml['del_bilder']['kMerkmalWert'], 4);
+            Shop::DB()->delete('tmerkmalwertbild', 'kMerkmalWert', (int)$xml['del_bilder']['kMerkmalWert']);
         }
     }
 }

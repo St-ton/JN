@@ -337,11 +337,7 @@ function speicherKundenattribut($kKunde, $kSprache, $oKundenattribut_arr, $bNeu)
                     continue;
                 }
                 if (!$bNeu) {
-                    Shop::DB()->query(
-                        "DELETE FROM tkundenattribut
-                            WHERE kKunde = " . $kKunde . "
-                                AND kKundenfeld = " . (int)$oKundenfeld->kKundenfeld, 4
-                    );
+                    Shop::DB()->delete('tkundenattribut', ['kKunde', 'kKundenfeld'], [$kKunde, (int)$oKundenfeld->kKundenfeld]);
                 }
                 $oKundenattributTMP              = new stdClass();
                 $oKundenattributTMP->kKunde      = $kKunde;

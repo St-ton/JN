@@ -5113,7 +5113,7 @@ class Artikel
             $cSQL = ((int) $nArtikelAnzeigefilter !== 1) ?
                 " AND (tartikel.fLagerbestand > 0 OR tartikel.cLagerBeachten = 'N' OR tartikel.cLagerKleinerNull = 'Y')" :
                 '';
-            Shop::DB()->query("DELETE FROM tartikelmerkmal WHERE kArtikel = " . $kVaterArtikel, 3);
+            Shop::DB()->delete('tartikelmerkmal', 'kArtikel', $kVaterArtikel);
 
             return Shop::DB()->query(
                 "INSERT INTO tartikelmerkmal

@@ -245,7 +245,7 @@ class Slider implements IExtensionPoint
         $kSlider = (int)$kSlider;
         if ($kSlider !== 0) {
             $bSuccess = Shop::DB()->delete('tslider', 'kSlider', $kSlider);
-            Shop::DB()->query("DELETE FROM textensionpoint WHERE cClass = 'Slider' AND kInitial = " . $kSlider, 4);
+            Shop::DB()->delete('textensionpoint', ['cClass', 'kInitial'], ['Slider', $kSlider]);
 
             if ($bSuccess == true) {
                 if (!empty($this->oSlide_arr)) {

@@ -104,14 +104,14 @@ function bearbeiteDelete($oXml)
     }
     foreach ($kLieferschein_arr as $kLieferschein) {
         $kLieferschein = intval($kLieferschein);
-        Shop::DB()->query("DELETE FROM tversand WHERE kLieferschein = " . $kLieferschein, 4);
-        Shop::DB()->query("DELETE FROM tlieferschein WHERE kLieferschein = " . $kLieferschein, 4);
+        Shop::DB()->delete('tversand', 'kLieferschein', $kLieferschein);
+        Shop::DB()->delete('tlieferschein', 'kLieferschein', $kLieferschein);
 
         $oLieferscheinPos_arr = Shop::DB()->query("SELECT kLieferscheinPos FROM tlieferscheinpos WHERE kLieferschein = " . $kLieferschein, 2);
         if (is_array($oLieferscheinPos_arr)) {
             foreach ($oLieferscheinPos_arr as $oLieferscheinPos) {
-                Shop::DB()->query("DELETE FROM tlieferscheinpos WHERE kLieferscheinPos = " . intval($oLieferscheinPos->kLieferscheinPos), 4);
-                Shop::DB()->query("DELETE FROM tlieferscheinposinfo WHERE kLieferscheinPos = " . intval($oLieferscheinPos->kLieferscheinPos), 4);
+                Shop::DB()->delete('tlieferscheinpos', 'kLieferscheinPos', (int)$oLieferscheinPos->kLieferscheinPos);
+                Shop::DB()->delete('tlieferscheinposinfo', 'kLieferscheinPos', (int)$oLieferscheinPos->kLieferscheinPos);
             }
         }
     }

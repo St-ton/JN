@@ -113,7 +113,7 @@ if (isset($_POST['zuruecksetzen']) && intval($_POST['zuruecksetzen']) === 1 && v
                     Shop::DB()->query("TRUNCATE tumfragefrageantwort", 4);
                     Shop::DB()->query("TRUNCATE tumfragematrixoption", 4);
 
-                    Shop::DB()->query("DELETE FROM tseo WHERE cKey = 'kUmfrage'", 4);
+                    Shop::DB()->delete('tseo', 'cKey', 'kUmfrage');
                     break;
 
                 case 'verfuegbarkeitsbenachrichtigungen':
@@ -129,7 +129,7 @@ if (isset($_POST['zuruecksetzen']) && intval($_POST['zuruecksetzen']) === 1 && v
                     Shop::DB()->query("TRUNCATE tsuchcache", 4);
                     Shop::DB()->query("TRUNCATE tsuchcachetreffer", 4);
 
-                    Shop::DB()->query("DELETE FROM tseo WHERE cKey = 'kSuchanfrage'", 4);
+                    Shop::DB()->delete('tseo', 'cKey', 'kSuchanfrage');
                     break;
 
                 case 'tags':
@@ -138,7 +138,7 @@ if (isset($_POST['zuruecksetzen']) && intval($_POST['zuruecksetzen']) === 1 && v
                     Shop::DB()->query("TRUNCATE ttagartikel", 4);
                     Shop::DB()->query("TRUNCATE ttagkunde", 4);
 
-                    Shop::DB()->query("DELETE FROM tseo WHERE cKey = 'kTag'", 4);
+                    Shop::DB()->delete('tseo', 'cKey', 'kTag');
                     break;
 
                 case 'bewertungen':

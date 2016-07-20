@@ -168,7 +168,7 @@ function bearbeiteUpdates($xml)
 function loescheWarengruppe($kWarengruppe)
 {
     $kWarengruppe = (int)$kWarengruppe;
-    Shop::DB()->query("DELETE FROM twarengruppe WHERE kWarengruppe = " . $kWarengruppe, 4);
+    Shop::DB()->delete('twarengruppe', 'kWarengruppe', $kWarengruppe);
     if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
         Jtllog::writeLog('Warengruppe geloescht: ' . $kWarengruppe, JTLLOG_LEVEL_DEBUG, false, 'Globals_xml');
     }

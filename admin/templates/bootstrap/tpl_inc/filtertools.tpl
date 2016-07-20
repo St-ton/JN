@@ -25,7 +25,7 @@
             <button type="submit" class="btn btn-primary" name="action" value="filter">
                 <i class="fa fa-search"></i>
             </button>
-            <button type="submit" class="btn btn-danger" name="action" value="resetfilter">
+            <button type="submit" class="btn btn-default" name="action" value="resetfilter">
                 <i class="fa fa-eraser"></i>
             </button>
         </div>

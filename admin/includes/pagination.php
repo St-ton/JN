@@ -21,42 +21,38 @@ function createPagination($cID, $oItem_arr, $nItemsPerPageOption_arr = [10, 20, 
     $oPagination->nItemsPerPageOption_arr = $nItemsPerPageOption_arr;
     $oPagination->cSortByOption_arr       = $cSortByOption_arr;
 
-    if (isset($_GET[$cID . '_nItemsPerPage'])) {
-        $oPagination->nItemsPerPage = (int)$_GET[$cID . '_nItemsPerPage'];
-    } elseif (isset($_SESSION[$cID . '_nItemsPerPage'])) {
-        $oPagination->nItemsPerPage = (int)$_SESSION[$cID . '_nItemsPerPage'];
-    } else {
-        $oPagination->nItemsPerPage = $nItemsPerPageOption_arr[0];
-    }
+    $oPagination->nItemsPerPage = isset($_GET[$cID . '_nItemsPerPage'])
+        ? (int)$_GET[$cID . '_nItemsPerPage']
+        : (isset($_SESSION[$cID . '_nItemsPerPage'])
+            ? (int)$_SESSION[$cID . '_nItemsPerPage']
+            : $nItemsPerPageOption_arr[0]
+        );
 
-    if (isset($_GET[$cID . '_nSortBy'])) {
-        $oPagination->nSortBy = (int)$_GET[$cID . '_nSortBy'];
-    } elseif (isset($_SESSION[$cID . '_nSortBy'])) {
-        $oPagination->nSortBy = (int)$_SESSION[$cID . '_nSortBy'];
-    } else {
-        $oPagination->nSortBy = 0;
-    }
+    $oPagination->nSortBy = isset($_GET[$cID . '_nSortBy'])
+        ? (int)$_GET[$cID . '_nSortBy']
+        : (isset($_SESSION[$cID . '_nSortBy'])
+            ? (int)$_SESSION[$cID . '_nSortBy']
+            : 0
+        );
 
-    if (isset($_GET[$cID . '_cSortDir'])) {
-        $oPagination->cSortDir = $_GET[$cID . '_cSortDir'];
-    } elseif (isset($_SESSION[$cID . '_cSortDir'])) {
-        $oPagination->cSortDir = $_SESSION[$cID . '_cSortDir'];
-    } else {
-        $oPagination->cSortDir = 'asc';
-    }
+    $oPagination->cSortDir = isset($_GET[$cID . '_cSortDir'])
+        ? $_GET[$cID . '_cSortDir']
+        : (isset($_SESSION[$cID . '_cSortDir'])
+            ? $_SESSION[$cID . '_cSortDir']
+            : 0
+        );
 
-    if (isset($_GET[$cID . '_nPage'])) {
-        $oPagination->nPage = (int)$_GET[$cID . '_nPage'];
-    } elseif (isset($_SESSION[$cID . '_nPage'])) {
-        $oPagination->nPage = (int)$_SESSION[$cID . '_nPage'];
-    } else {
-        $oPagination->nPage = 0;
-    }
+    $oPagination->nPage = isset($_GET[$cID . '_nPage'])
+        ? (int)$_GET[$cID . '_nPage']
+        : (isset($_SESSION[$cID . '_nPage'])
+            ? (int)$_SESSION[$cID . '_nPage']
+            : 0
+        );
 
     if (count($cSortByOption_arr) > 0) {
-        $cSortBy = $cSortByOption_arr[$oPagination->nSortBy][0];
+        $cSortBy  = $cSortByOption_arr[$oPagination->nSortBy][0];
         $nSortAsc = $oPagination->cSortDir === 'asc' ? +1 : -1;
-        usort ($oPagination->oItem_arr, function ($a, $b) use ($cSortBy, $nSortAsc) {
+        usort($oPagination->oItem_arr, function ($a, $b) use ($cSortBy, $nSortAsc) {
             return $a->$cSortBy == $b->$cSortBy ? 0 : ($a->$cSortBy < $b->$cSortBy ? -$nSortAsc : +$nSortAsc);
         });
     }

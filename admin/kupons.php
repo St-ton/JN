@@ -116,6 +116,9 @@ if ($action === 'bearbeiten') {
         $tab = verifyGPDataString('cKuponTyp');
     }
 
+    disableOutdatedCoupons();
+    disableExhaustedCoupons();
+
     $oFilter = createFilter();
     addFilterTextfield($oFilter, 'Name', 'cName', false);
     addFilterTextfield($oFilter, 'Code', 'cCode', false);
@@ -129,14 +132,14 @@ if ($action === 'bearbeiten') {
     $oKuponVersandkupon_arr      = getCoupons('versandkupon', 'kKupon', $oFilter->cWhereSQL);
     $oKuponNeukundenkupon_arr    = getCoupons('neukundenkupon', 'kKupon', $oFilter->cWhereSQL);
 
-    $nItemsPerPageOption_arr = [1,2,5,10];
-    $cSortByOption_arr = [['cName', 'Name'], ['cCode', 'Code'], ['nVerwendungenBisher', 'Verwendungen']];
+    $nItemsPerPageOption_arr   = [1, 2, 5, 10];
+    $cSortByOption_arr         = [['cName', 'Name'], ['cCode', 'Code'], ['nVerwendungenBisher', 'Verwendungen']];
     $oPaginationStandard       = createPagination('standard', $oKuponStandard_arr, $nItemsPerPageOption_arr, $cSortByOption_arr);
     $oPaginationVersandkupon   = createPagination('versandkupon', $oKuponVersandkupon_arr, $nItemsPerPageOption_arr, $cSortByOption_arr);
     $oPaginationNeukundenkupon = createPagination('neukundenkupon', $oKuponNeukundenkupon_arr, $nItemsPerPageOption_arr, $cSortByOption_arr);
 
-    $oPaginationStandard->cAddGetVar_arr['tab'] = 'standard';
-    $oPaginationVersandkupon->cAddGetVar_arr['tab'] = 'versandkupon';
+    $oPaginationStandard->cAddGetVar_arr['tab']       = 'standard';
+    $oPaginationVersandkupon->cAddGetVar_arr['tab']   = 'versandkupon';
     $oPaginationNeukundenkupon->cAddGetVar_arr['tab'] = 'neukundenkupon';
 
     $smarty->assign('tab', $tab)

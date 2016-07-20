@@ -46,8 +46,8 @@ function addFilterTextfield($oFilter, $cTitle, $cColumn, $bExact)
     }
 
     $oFilter->cSession_arr[$cColumn] = $oField->cValue;
-    $oFilter->oField_arr[]       = $oField;
-    
+    $oFilter->oField_arr[]           = $oField;
+
     return $oField;
 }
 
@@ -56,8 +56,6 @@ function addFilterTextfield($oFilter, $cTitle, $cColumn, $bExact)
  *
  * @param string $cTitle - the label/title for this field
  * @param string $cColumn - the column name to be compared
- * @param array $cOptionTitle_arr - array of options titles
- * @param array $cOptionCond_arr - array of options conditional right parts (e.g. "= 'Y'" or "> 10")
  * @return object - the filter select field object
  */
 function addFilterSelect($oFilter, $cTitle, $cColumn)
@@ -86,11 +84,8 @@ function addFilterSelect($oFilter, $cTitle, $cColumn)
 /**
  * Add a select option to a filter select field
  *
- * @param object $oFilter
  * @param string $cTitle - the label/title for this field
- * @param string $cColumn - the column name to be compared
- * @param array $cOptionTitle_arr - array of options titles
- * @param array $cOptionCond_arr - array of options conditional right parts (e.g. "= 'Y'" or "> 10")
+ * @param string $cCond - options conditional right part (e.g. "= 'Y'" or "> 10")
  * @return object - the select option object
  */
 function addFilterSelectOption($oField, $cTitle, $cCond)
@@ -99,7 +94,7 @@ function addFilterSelectOption($oField, $cTitle, $cCond)
     $oOption->cTitle       = $cTitle;
     $oOption->cCond        = $cCond;
     $oField->oOption_arr[] = $oOption;
-    
+
     return $oOption;
 }
 

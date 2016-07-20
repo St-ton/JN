@@ -13,7 +13,7 @@ function loescheKupons($kKupon_arr)
 {
     if (is_array($kKupon_arr) && count($kKupon_arr) > 0) {
         $kKupon_arr = array_map('intval', $kKupon_arr);
-        $nRows = Shop::DB()->query(
+        $nRows      = Shop::DB()->query(
             "DELETE
                 FROM tkupon
                 WHERE kKupon IN(" . implode(',', $kKupon_arr) . ")", 3
@@ -194,10 +194,24 @@ function augmentCoupon($oKupon)
     }
 
     if ($oKupon->cArtikel === '') {
-        $oKupon->ArtikelInfo = 'Alle';
+        $oKupon->cArtikelInfo = 'Alle';
     } else {
-        $oKupon->ArtikelInfo = 'eingeschr&auml;nkt';
+        $oKupon->cArtikelInfo = 'eingeschr&auml;nkt';
     }
+
+    if ($oKupon->cKuponTyp === 'neukundenkupon') {
+        $oMaxErstelltDB = Shop::DB()->query("
+        SELECT max(dErstellt) as dLastUse
+            FROM tkuponkunde
+            WHERE kKupon = " . (int)$oKupon->kKupon, 1);
+    } else {
+        $oMaxErstelltDB = Shop::DB()->query("
+        SELECT max(dErstellt) as dLastUse
+            FROM tkuponneukunde
+            WHERE kKupon = " . (int)$oKupon->kKupon, 1);
+    }
+
+    $oKupon->dLastUse = is_object($oMaxErstelltDB) ? $oMaxErstelltDB->dLastUse : '0000-00-00 00:00:00';
 }
 
 /**
@@ -496,5 +510,48 @@ function informCouponCustomers($oKupon)
         $obj->tkupon             = $oKupon;
         $obj->tkunde             = $oKunde;
         sendeMail(MAILTEMPLATE_KUPON, $obj);
+    }
+}
+
+/**
+ * Set all Coupons with an outdated dGueltigBis to cAktiv = 'N'
+ */
+function disableOutdatedCoupons()
+{
+    $oKuponDB_arr = Shop::DB()->query("
+        SELECT kKupon, dGueltigAb, dGueltigBis
+            FROM tkupon
+            WHERE cAktiv = 'Y'",
+        2);
+    $dNow = date_create();
+
+    foreach ($oKuponDB_arr as $oKuponDB) {
+        if ($oKuponDB->dGueltigBis !== '0000-00-00 00:00:00') {
+            $dGueltigBis = date_create($oKuponDB->dGueltigBis);
+            if ($dNow > $dGueltigBis) {
+                $oKuponDB->cAktiv = 'N';
+                Shop::DB()->update('tkupon', 'kKupon', $oKuponDB->kKupon, $oKuponDB);
+            }
+        }
+    }
+}
+
+
+/**
+ * Set all Coupons that reached nVerwendungenBisher to nVerwendungen to cAktiv = 'N'
+ */
+function disableExhaustedCoupons()
+{
+    $oKuponDB_arr = Shop::DB()->query("
+        SELECT kKupon, nVerwendungen, nVerwendungenBisher
+            FROM tkupon
+            WHERE cAktiv = 'Y'",
+        2);
+
+    foreach ($oKuponDB_arr as $oKuponDB) {
+        if ((int)$oKuponDB->nVerwendungen > 0 && (int)$oKuponDB->nVerwendungenBisher >= (int)$oKuponDB->nVerwendungen) {
+            $oKuponDB->cAktiv = 'N';
+            Shop::DB()->update('tkupon', 'kKupon', $oKuponDB->kKupon, $oKuponDB);
+        }
     }
 }

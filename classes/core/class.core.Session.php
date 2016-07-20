@@ -300,7 +300,7 @@ Wenn Sie bereits eine Komplettübertragung mit JTL-Wawi durchgeführt haben und 
             $Kunde = Shop::DB()->query(
                 "SELECT kKunde
                     FROM tkunde
-                    WHERE kKunde=" . $_SESSION['Kunde']->kKunde . "
+                    WHERE kKunde = " . (int)$_SESSION['Kunde']->kKunde . "
                         AND date_sub(now(), INTERVAL 3 HOUR) < dVeraendert", 1
             );
             if (isset($Kunde->kKunde) && $Kunde->kKunde > 0) {
@@ -440,7 +440,7 @@ Wenn Sie bereits eine Komplettübertragung mit JTL-Wawi durchgeführt haben und 
     {
         $Kunde->angezeigtesLand                               = ISO2land($Kunde->cLand);
         $_SESSION['Kunde']                                    = $Kunde;
-        $_SESSION['Kundengruppe']                             = Shop::DB()->query("SELECT * FROM tkundengruppe WHERE kKundengruppe=" . $Kunde->kKundengruppe, 1);
+        $_SESSION['Kundengruppe']                             = Shop::DB()->select('tkundengruppe', 'kKundengruppe', (int)$Kunde->kKundengruppe);
         $_SESSION['Kundengruppe']->darfPreiseSehen            = 1;
         $_SESSION['Kundengruppe']->darfArtikelKategorienSehen = 1;
         $_SESSION['Kundengruppe']->Attribute                  = Kundengruppe::getAttributes($_SESSION['Kundengruppe']->kKundengruppe);

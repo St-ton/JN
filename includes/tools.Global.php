@@ -502,10 +502,11 @@ function checkeWarenkorbEingang()
     executeHook(HOOK_TOOLS_GLOBAL_CHECKEWARENKORBEINGANG_ANFANG, array('kArtikel' => $kArtikel, 'fAnzahl' => $fAnzahl));
     // Wunschliste?
     if ((isset($_POST['Wunschliste']) || isset($_GET['Wunschliste'])) && $conf['global']['global_wunschliste_anzeigen'] === 'Y') {
+        $linkHelper = LinkHelper::getInstance();
         // Prüfe ob Kunde eingeloggt
         if (!isset($_SESSION['Kunde']->kKunde) && !isset($_POST['login'])) {
             //redirekt zum artikel, um variation/en zu wählen / MBM beachten
-            header('Location: jtl.php?a=' . $kArtikel . '&n=' . $fAnzahl . '&r=' . R_LOGIN_WUNSCHLISTE, true, 302);
+            header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true) . '?a=' . $kArtikel . '&n=' . $fAnzahl . '&r=' . R_LOGIN_WUNSCHLISTE, true, 302);
             exit();
         }
 
@@ -556,7 +557,7 @@ function checkeWarenkorbEingang()
                         Shop::Smarty()->assign('hinweis', Shop::Lang()->get('wishlistProductadded', 'messages'));
                         // Weiterleiten?
                         if ($conf['global']['global_wunschliste_weiterleitung'] === 'Y') {
-                            header('Location: jtl.php?wl=' . $_SESSION['Wunschliste']->kWunschliste, true, 302);
+                            header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true) . '?wl=' . (int)$_SESSION['Wunschliste']->kWunschliste, true, 302);
                             exit;
                         }
                     }
@@ -1870,7 +1871,7 @@ function checkeSpracheWaehrung($lang = '')
             $kUmfrage              = verifyGPCDataInteger('u');
             $cSeo                  = '';
             //redirect per 301
-            header('HTTP/1.1 301 Moved Permanently');
+            http_response_code(301);
             if ($kArtikel > 0) {
                 $dbRes = Shop::DB()->query(
                     "SELECT tseo.cSeo
@@ -5622,11 +5623,11 @@ function urlNotFoundRedirect(array $hookInfos = null, $forceExit = false)
                 Shop::getURL() . $redirectUrl :
                 Shop::getURL() . '/' . $redirectUrl;
         }
-        header('HTTP/1.1 301 Moved Permanently');
+        http_response_code(301);
         header('Location: ' . $redirectUrl);
         exit;
     }
-    header('HTTP/1.0 404 Not Found');
+    http_response_code(404);
 
     if ($forceExit || !$redirect->isValid($url)) {
         exit;

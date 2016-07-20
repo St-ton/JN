@@ -654,6 +654,13 @@ final class Shop
 
         self::$isInitialized = true;
 
+        $redirect = verifyGPDataString('r');
+        if (self::$kNews > 0 && self::$kArtikel > 0 && !empty($redirect)) {
+            //login redirect on wishlist add when not logged in uses get param "n" as amount
+            self::$kNews    = 0;
+            self::$kArtikel = 0;
+        }
+
         $_SESSION['cTemplate'] = Template::$cTemplate;
 
         self::Event()->fire('shop.run');
@@ -758,7 +765,7 @@ final class Shop
                 }
                 //double content work around
                 if (strlen($seo) > 0 && $seite === 1) {
-                    header('HTTP/1.1 301 Moved Permanently');
+                    http_response_code(301);
                     header('Location: ' . self::getURL() . '/' . $seo);
                     exit();
                 }
@@ -925,9 +932,9 @@ final class Shop
                         $cRP .= '&' . $cMember . '=' . $_POST[$cMember];
                     }
                     // Redirect POST
-                    $cRP = ' &cRP=' . base64_encode($cRP);
+                    $cRP = '&cRP=' . base64_encode($cRP);
                 }
-                header('HTTP/1.1 301 Moved Permanently');
+                http_response_code(301);
                 header('Location: ' . self::getURL() . '/navi.php?a=' . $kArtikel . $cRP);
                 exit();
             }

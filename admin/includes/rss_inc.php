@@ -16,9 +16,9 @@ function generiereRSSXML()
         if ($Einstellungen['rss']['rss_nutzen'] !== 'Y') {
             return false;
         }
-        $Sprache = Shop::DB()->query("SELECT * FROM tsprache WHERE cShopStandard = 'Y'", 1);
+        $Sprache = Shop::DB()->select('tsprache', 'cShopStandard', 'Y');
         //$seoAktiv = pruefeSeo();
-        $stdKundengruppe         = Shop::DB()->query("SELECT kKundengruppe FROM tkundengruppe WHERE cStandard = 'Y'", 1);
+        $stdKundengruppe         = Shop::DB()->select('tkundengruppe', 'cStandard', 'Y');
         $_SESSION['kSprache']    = $Sprache->kSprache;
         $_SESSION['cISOSprache'] = $Sprache->cISO;
 

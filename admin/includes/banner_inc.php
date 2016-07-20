@@ -32,7 +32,7 @@ function holeBanner($kImageMap, $fill = true)
  */
 function holeExtension($kImageMap)
 {
-    return Shop::DB()->query("SELECT * FROM textensionpoint WHERE cClass = 'ImageMap' AND kInitial = " . (int)$kImageMap . " LIMIT 1", 1);
+    return Shop::DB()->select('textensionpoint', 'cClass', 'ImageMap', 'kInitial', (int)$kImageMap);
 }
 
 /**

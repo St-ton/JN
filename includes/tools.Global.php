@@ -4529,24 +4529,16 @@ function phpLinkCheck($url)
  */
 function gibKategoriepfad($Kategorie, $kKundengruppe, $kSprache, $bString = true)
 {
-    $pfad                   = '';
     $cPfad_arr              = array();
     $AufgeklappteKategorien = new KategorieListe();
     $AufgeklappteKategorien->getOpenCategories($Kategorie, $kKundengruppe, $kSprache);
     if (is_array($AufgeklappteKategorien->elemente)) {
         for ($i = count($AufgeklappteKategorien->elemente) - 1; $i >= 0; $i--) {
-            if ($bString) {
-                $pfad .= $AufgeklappteKategorien->elemente[$i]->cName;
-                if ($i > 0) {
-                    $pfad .= ' > ';
-                }
-            } else {
-                $cPfad_arr[] = $AufgeklappteKategorien->elemente[$i]->cName;
-            }
+            $cPfad_arr[] = $AufgeklappteKategorien->elemente[$i]->cName;
         }
     }
 
-    return ($bString) ? $pfad : $cPfad_arr;
+    return ($bString) ? implode(' > ', $cPfad_arr) : $cPfad_arr;
 }
 
 /**

@@ -161,13 +161,12 @@ function bearbeiteExportformate($oJobQueue)
             foreach ($oArtikel_arr as $tartikel) {
                 $Artikel = new Artikel();
                 $Artikel->fuelleArtikel($tartikel->kArtikel, $oArtikelOptionen, (int)$exportformat->kKundengruppe, (int)$exportformat->kSprache);
-                if ($Artikel->cacheHit === true) {
-                    ++$cacheHits;
-                } else {
-                    ++$cacheMisses;
-                }
-
                 if ($Artikel->kArtikel > 0) {
+                    if ($Artikel->cacheHit === true) {
+                        ++$cacheHits;
+                    } else {
+                        ++$cacheMisses;
+                    }
                     $Artikel->cBeschreibungHTML     = str_replace('"', '&quot;', $Artikel->cBeschreibung);
                     $Artikel->cKurzBeschreibungHTML = str_replace('"', '&quot;', $Artikel->cKurzBeschreibung);
 

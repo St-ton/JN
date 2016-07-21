@@ -248,6 +248,6 @@
 {* popup-content *}
 {if $Artikel->verfuegbarkeitsBenachrichtigung == 3}
     <div id="popupn{$Artikel->kArtikel}" class="hidden">
-        {include file='productdetails/availability_notification_form.tpl' tplscope='artikeldetails'}
+        {include file='productdetails/availability_notification_form.tpl' position="popup" tplscope='artikeldetails'}
     </div>
 {/if}

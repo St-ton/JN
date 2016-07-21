@@ -5761,6 +5761,26 @@ function isAjaxRequest()
 }
 
 /**
+ * @param string $filename
+ * @return string delimiter guess
+ */
+function guessCsvDelimiter($filename)
+{
+    $file      = fopen($filename, 'r');
+    $firstLine = fgets($file);
+
+    foreach (array(';', ',', '|', '\t') as $delim) {
+        if (strpos($firstLine, $delim) !== false) {
+            fclose($file);
+            return $delim;
+        }
+    }
+
+    fclose($file);
+    return ';';
+}
+
+/**
  * @deprecated since 4.0
  * @return int
  */

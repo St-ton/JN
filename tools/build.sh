@@ -17,7 +17,7 @@ build_help()
     echo "  ${fgGreen}check${C}             - Check dependencies"
     echo "  ${fgGreen}deps${C}              - Install dependencies"
 	echo "  ${fgGreen}ide_meta${C}          - Create metadata"
-    echo "  ${fgGreen}deploy <archive>${C}  - Deploy"
+    echo "  ${fgGreen}deploy <branch>${C}   - Deploy branch/tag"
     echo ""
 }
 
@@ -87,10 +87,11 @@ build_init()
     composer install --working-dir=${PROJECT_DIR}/includes || exit 1
 }
 
-# $1 archive filepath
+# $1 branch/tag
+# $2 build number
 build_deploy()
 {
-    deploy_create $1
+    deploy_create $1 $2
 }
 
 main() {

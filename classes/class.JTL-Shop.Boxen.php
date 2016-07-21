@@ -1222,7 +1222,9 @@ class Boxen
                             } else {
                                 $smarty->assign('oBox', $_cbox);
                             }
-                            $_box->innerHTML .= trim(($_cbox->eTyp === 'plugin') ? $smarty->fetch($_cbox->cTemplate) : $smarty->fetch($path . $_cbox->cTemplate));
+                            if (!empty($_cbox->cTemplate)) {
+                                $_box->innerHTML .= trim(($_cbox->eTyp === 'plugin') ? $smarty->fetch($_cbox->cTemplate) : $smarty->fetch($path . $_cbox->cTemplate));
+                            }
                             $_box->children[] = array('obj' => $_cbox, 'tpl' => $path . $_cbox->cTemplate);
                         }
                     }
@@ -1245,7 +1247,9 @@ class Boxen
                         $_oldPlugin = $smarty->getTemplateVars('oPlugin');
                         $smarty->assign('oPlugin', $_box->oPlugin);
                     }
-                    $htmlArray[$_position] .= trim(($_box->eTyp === 'plugin') ? $smarty->fetch($_box->cTemplate) : $smarty->fetch($path . $_box->cTemplate));
+                    if (!empty($_box->cTemplate)) {
+                        $htmlArray[$_position] .= trim(($_box->eTyp === 'plugin') ? $smarty->fetch($_box->cTemplate) : $smarty->fetch($path . $_box->cTemplate));
+                    }
                     if ($_oldPlugin !== null) {
                         $smarty->assign('oPlugin', $_oldPlugin);
                     }
@@ -1836,5 +1840,34 @@ class Boxen
         }
 
         return $class;
+    }
+
+    /**
+     * @return array
+     */
+    public function getInvisibleBoxes()
+    {
+        $tpl            = Template::getInstance();
+        $layout         = $tpl->getBoxLayoutXML();
+        $invisibleBoxes = array();
+        foreach ($layout as $position => $isAvailable) {
+            if ($isAvailable === false) {
+                $box = Shop::DB()->select('tboxen', 'ePosition', $position);
+                if ($box !== null && isset($box->kBox)) {
+                    $boxes = Shop::DB()->query("
+                        SELECT tboxen.*, tboxvorlage.eTyp, tboxvorlage.cName, tboxvorlage.cTemplate 
+                          FROM tboxen 
+                            LEFT JOIN tboxvorlage
+                              ON tboxen.kBoxvorlage = tboxvorlage.kBoxvorlage
+                          WHERE ePosition = '" . $position . "'", 2
+                    );
+                    foreach ($boxes as $box) {
+                        $invisibleBoxes[] = $box;
+                    }
+                }
+            }
+        }
+
+        return $invisibleBoxes;
     }
 }

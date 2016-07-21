@@ -360,6 +360,11 @@ class JTLCache
             $this->options['lifetime'] = self::DEFAULT_LIFETIME;
         } else {
             $this->options['lifetime'] = (int) $this->options['lifetime'];
+            $maxLifeTime = 60*60*24*30;
+            if ($this->options['lifetime'] > $maxLifeTime) {
+                //@see http://php.net/manual/de/memcached.expiration.php
+                $this->options['lifetime'] = $maxLifeTime;
+            }
         }
         if ($this->options['types_disabled'] === null) {
             $this->options['types_disabled'] = array();
@@ -1016,7 +1021,7 @@ class JTLCache
         if (is_array($methods)) {
             foreach ($methods as $method) {
                 if ($method !== 'null') {
-                    $results[] = $this->benchmark($method, $testData, $runCount, $repeat, $echo, $format);
+                    $results[] = $this->_benchmark($method, $testData, $runCount, $repeat, $echo, $format);
                 }
             }
         } else {

@@ -31,13 +31,18 @@
 * Bugfix: Kupon::generateCode() erzeugt Endlosrekursion
 * Verbesserung: HOOK_INDEX_SEO_404 wird nun auch ausgeführt, wenn cSeo nicht leer ist
 * Verbesserung: HOOK_WARENKORB_PAGE_KUPONANNEHMEN_PLAUSI wird wieder früher ausgeführt und enthält Parameter  (#234)
-* Verbesserung: Vermeiden mehrfacher Cache-Einträge mit demselben Inhalt in gibKategorieFilterOptionen() (#244)
-* Bugfix: Testmails werden nur noch auf Deutsch versendet (#241)
 * Bugfix: Internal Server Error wenn mod_deflate nicht aktiviert ist (#235)
 * Verbesserung: Prioritäten für Plugin-Hooks (#45)
 * Bugfix: Abnahmeintervall wird bei Konfigurationsartikel nicht beachtet, Hinweis auf Mindestbestellmenge/Abnahmeintervall fehlt (#259)
+* Verbesserung: Anzeige von Boxen in nicht-sichtbaren Positionen im Backend mitsamt Warnhinweis(#252)
 
-## [4.04]
+## [4.04.1]
+* Bugfix: Testmails werden nur noch auf Deutsch versendet (#241)
+* Verbesserung: Vermeiden mehrfacher Cache-Einträge mit demselben Inhalt in gibKategorieFilterOptionen() (#244)
+* Bugfix: Mixed-Content-Warnungen (Megamenü-Kategoriebilder via http) bei Teilverschlüsselung und Wechsel auf https (#211)
+* Bugfix: Frontendlinks verschwinden aus tseo bei Plugin-Updates in mehrsprachiger Umgebung (#258)
+
+## [4.04] - 2016-06-22
 * Bugfix: robots.txt fehlendes "Sitemap: " vor der Sitemap-URL (#83)
 * Bugfix: Billpay Zahlungseingang wird nicht gesetzt (#96)
 * Bugfix: Newsletter Abmelden unsichtbar für nicht-angemeldete Besucher (#77)

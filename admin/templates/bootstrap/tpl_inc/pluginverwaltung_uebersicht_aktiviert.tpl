@@ -100,7 +100,6 @@
                 </div>
                 <div class="panel-footer">
                     <div class="save btn-group">
-                        {*<button name="aktivieren" type="submit" class="btn btn-primary">{#pluginBtnActivate#}</button>*}
                         <button name="deaktivieren" type="submit" class="btn btn-warning"><i class="fa fa-close"></i> {#pluginBtnDeActivate#}</button>
                         <button name="deinstallieren" type="submit" class="btn btn-danger"><i class="fa fa-trash"></i> {#pluginBtnDeInstall#}</button>
                     </div>

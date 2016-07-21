@@ -76,6 +76,15 @@ function categoryMenu(rootcategory) {
     });
 }
 
+function compatibility() {
+    var __enforceFocus = $.fn.modal.Constructor.prototype.enforceFocus;
+    $.fn.modal.Constructor.prototype.enforceFocus = function () {
+        if ($('.modal-body .g-recaptcha').length == 0) {
+            __enforceFocus();
+        }
+    };
+}
+
 function regionsToState() {
     if ($('#state').length == 0)
         return;
@@ -279,4 +288,5 @@ $(document).ready(function () {
 
     categoryMenu();
     regionsToState();
+    compatibility();
 });

@@ -194,7 +194,7 @@ class KategorieListe
             if (isset($allCategories['oKategorie_arr'][$AktuellekOberkategorie])) {
                 $oKategorie = $allCategories['oKategorie_arr'][$AktuellekOberkategorie];
             } else {
-                $oKategorie = new Kategorie($AktuellekOberkategorie, $kSprache);
+                $oKategorie = new Kategorie($AktuellekOberkategorie, $kSprache, $kKundengruppe);
             }
             $this->elemente[]       = $oKategorie;
             $AktuellekOberkategorie = $oKategorie->kOberKategorie;

@@ -10,23 +10,53 @@ bgWhite=$(tput setab 7)   ; bgBlack=$(tput setab 0)
 
 B=$(tput bold) ; U=$(tput smul) ; C=$(tput sgr0)
 
-# $1 text
-msg()
+use_colors()
 {
-    printf "${fgYellow}Ξ${C} $1\n"
+    if test -t 1; then
+        ncolors=$(tput colors)
+        if test -n "$ncolors" && test $ncolors -ge 8; then
+            return 0
+        fi
+    fi
+    return 1
+}
+
+# $1 colored
+# $2 noncolor
+echo_colored()
+{
+    use_colors
+    if [ $? == 0 ]
+    then
+        printf "$1\n"
+    else
+        printf "$2\n"
+    fi
 }
 
 # $1 text
-error()
+text()
 {
-    printf "${fgRed}Ξ${C} $1\n"
-    exit -1
+    echo_colored "${fgMagenta}$1${C}" "$1"
+}
+
+# $1 text
+msg()
+{
+    echo_colored " ${fgYellow}•${C} $1" " - $1"
 }
 
 # $1 text
 success()
 {
-    printf "${fgGreen}Ξ${C} $1\n"
+    echo_colored " ${fgGreen}•${C} $1" " - $1"
+}
+
+# $1 text
+error()
+{
+    echo_colored " ${fgRed}•${C} $1" " - $1"
+    exit -1
 }
 
 # $1 path to append

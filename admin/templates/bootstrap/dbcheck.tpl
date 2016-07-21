@@ -83,7 +83,7 @@
                 </div>
             </form>
         {else}
-            {if isset($cFehler) && $cFehler|count_characters > 0}
+            {if isset($cFehler) && $cFehler|strlen > 0}
                 <div class="alert alert-danger">{$cFehler}</div>
             {/if}
         {/if}

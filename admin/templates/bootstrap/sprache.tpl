@@ -26,6 +26,7 @@
             <div class="input-group p25 left">
                 <span class="input-group-addon">
                     <label for="{#lang#}">Installierte Sprachen:</label>
+                    {$cISO}
                 </span>
                 <input type="hidden" name="sprache" value="1" />
                 <span class="input-group-wrap last">
@@ -230,16 +231,15 @@
                                 </div>
 
                                 {foreach from=$oInstallierteSprachen item=oSprache}
-                                    {assign var="cISO" value=$oSprache->cISO}
                                     <div class="item input-group">
                                         <span class="input-group-addon">
                                             <label for="lang_{$oSprache->cISO}">{$oSprache->cNameDeutsch}</label>
                                         </span>
-                                        <input type="hidden" name="cSprachISO[]" value="{$cISO}" />
-                                        <input class="form-control" type="text" name="cWert[]" id="lang_{$oSprache->cISO}" value="{if isset($cPostArr.cWert.$cISO)}{$cPostArr.cWert.$cISO}{/if}" />
+                                        <input type="hidden" name="cSprachISO[]" value="{$oSprache->cISO}" />
+                                        <input class="form-control" type="text" name="cWert[]" id="lang_{$oSprache->cISO}" value="{if isset($cPostArr.cWert.$oSprache->cISO)}{$cPostArr.cWert.$oSprache->cISO}{/if}" />
                                         {if isset($cPostArr.cExist)}
-                                            {if !empty($cPostArr.cExist.$cISO)}
-                                                <span class="input-group-wrap form_inline"><span class="form-control">{$cPostArr.cExist.$cISO}</span></span>
+                                            {if !empty($cPostArr.cExist.$oSprache->cISO)}
+                                                <span class="input-group-wrap form_inline"><span class="form-control">{$cPostArr.cExist.$oSprache->cISO}</span></span>
                                                 <span class="input-group-addon"><i class="fa fa-exclamation-triangle error"></i></span>
                                             {else}
                                                 <span class="input-group-addon"><i class="fa fa-check success"></i></span>

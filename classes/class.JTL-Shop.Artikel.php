@@ -60,7 +60,7 @@ class Artikel
     public $kWarengruppe;
 
     /**
-     * @var int Spiegelt in JTL-Wawi die Beschaffungszeit vom Lieferanten zum Händler wieder. 
+     * @var int Spiegelt in JTL-Wawi die Beschaffungszeit vom Lieferanten zum Händler wieder.
      * Darf nur dann berücksichtigt werden, wenn $nAutomatischeLiefertageberechnung == 0 (also fixe Beschaffungszeit)
      */
     public $nLiefertageWennAusverkauft;
@@ -1370,7 +1370,7 @@ class Artikel
                     $Attribut->cWert = $att->cTextWert;
                 }
                 if ($att->kAttribut > 0 && $kSprache > 0 && !standardspracheAktiv()) {
-                    $attributsprache = Shop::DB()->query("SELECT * FROM tattributsprache WHERE kAttribut = " . (int)$att->kAttribut . " AND kSprache = " . $kSprache, 1);
+                    $attributsprache = Shop::DB()->select('tattributsprache', 'kAttribut', (int)$att->kAttribut, 'kSprache', $kSprache);
                     if (isset($attributsprache->cName) && $attributsprache->cName) {
                         $Attribut->cName = $attributsprache->cName;
                         if ($attributsprache->cStringWert) {
@@ -1834,7 +1834,7 @@ class Artikel
         $conf                               = Shop::getSettings(array(CONF_GLOBAL, CONF_ARTIKELDETAILS));
         $shopURL                            = Shop::getURL() . '/';
         if (!isset($waehrung->kWaehrung) || !$waehrung->kWaehrung) {
-            $waehrung = Shop::DB()->query("SELECT * FROM twaehrung WHERE cStandard='Y'", 1);
+            $waehrung = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
         }
         if ($this->kArtikel > 0) {
             // Nicht Standardsprache?
@@ -3555,8 +3555,9 @@ class Artikel
             $oArtikelOptionen->nVariationKombi = 0;
         }
         $this->holVariationen($kKundengruppe, $kSprache, $oArtikelOptionen->nVariationKombi);
-        // Sobald ein KindArtikel teurer ist als der Vaterartikel, muss nVariationsAufpreisVorhanden auf 1 gesetzt werden damit in der Artikelvorschau ein "Preis ab ..." erscheint
-        if ($oArtikelTMP->kVaterArtikel == 0 && $oArtikelTMP->nIstVater == 1) {
+        /* Sobald ein KindArtikel teurer ist als der Vaterartikel, muss nVariationsAufpreisVorhanden auf 1 gesetzt werden damit in der Artikelvorschau ein "Preis ab ..." erscheint
+           aber nur wenn auch Preise angezeigt werden, this->Preise also auch vorhanden ist */
+        if (is_object($this->Preise) && $oArtikelTMP->kVaterArtikel == 0 && $oArtikelTMP->nIstVater == 1) {
             $fVKNetto         = ($this->Preise->fVKNetto !== null) ? $this->Preise->fVKNetto : 0.0;
             $fMaxRabatt       = $this->getDiscount($kKundengruppe, $oArtikelTMP->kArtikel);
             $oKindSonderpreis = Shop::DB()->query(
@@ -4109,7 +4110,7 @@ class Artikel
 
         $currency = (isset($_SESSION['Waehrung'])) ? $_SESSION['Waehrung'] : null;
         if (!isset($currency->kWaehrung) || !$currency->kWaehrung) {
-            $currency = Shop::DB()->query("SELECT * FROM twaehrung WHERE cStandard = 'Y'", 1);
+            $currency = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
         }
 
         $this->cLocalizedVPE[0] = gibPreisStringLocalized(
@@ -4157,7 +4158,7 @@ class Artikel
         }
         $currency = (isset($_SESSION['Waehrung'])) ? $_SESSION['Waehrung'] : null;
         if (!isset($currency->kWaehrung) || !$currency->kWaehrung) {
-            $currency = Shop::DB()->query("SELECT * FROM twaehrung WHERE cStandard = 'Y'", 1);
+            $currency = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
         }
         $this->cStaffelpreisLocalizedVPE1[0] = gibPreisStringLocalized(
                 berechneBrutto(
@@ -4364,9 +4365,9 @@ class Artikel
         }
         $kSprache = (int)$kSprache;
         if ($this->kArtikel > 0) {
-            $att = Shop::DB()->query("SELECT * FROM tattribut WHERE kArtikel = " . (int)$this->kArtikel . " AND cName = '" . $name . "'", 1);
+            $att = Shop::DB()->select('tattribut', 'kArtikel', (int)$this->kArtikel, 'cName', $name);
             if ((isset($att->kAttribut) && $att->kAttribut > 0) && (isset($kSprache) && $kSprache > 0) && !standardspracheAktiv()) {
-                $att  = Shop::DB()->query("SELECT * FROM tattributsprache WHERE kAttribut = " . $att->kAttribut . " AND kSprache = " . $kSprache, 1);
+                $att  = Shop::DB()->select('tattributsprache', 'kAttribut', $att->kAttribut, 'kSprache', $kSprache);
                 $wert = $att->cStringWert;
                 if ($att->cTextWert) {
                     $wert = $att->cTextWert;
@@ -4549,17 +4550,19 @@ class Artikel
             if (!isset($this->SieSparenX)) {
                 $this->SieSparenX = new stdClass();
             }
-            if ($_SESSION['Kundengruppe']->nNettoPreise) {
-                $this->fUVP                             = $this->fUVP / (1 + gibUst($this->kSteuerklasse) / 100);
-                $this->SieSparenX->anzeigen             = $anzeigen;
-                $this->SieSparenX->nProzent             = round((($this->fUVP - $this->Preise->fVKNetto) * 100) / $this->fUVP, 2);
-                $this->SieSparenX->fSparbetrag          = $this->fUVP - $this->Preise->fVKNetto;
-                $this->SieSparenX->cLocalizedSparbetrag = gibPreisStringLocalized($this->SieSparenX->fSparbetrag);
-            } else {
-                $this->SieSparenX->anzeigen             = $anzeigen;
-                $this->SieSparenX->nProzent             = round((($this->fUVP - berechneBrutto($this->Preise->fVKNetto, gibUst($this->kSteuerklasse))) * 100) / $this->fUVP, 2);
-                $this->SieSparenX->fSparbetrag          = $this->fUVP - berechneBrutto($this->Preise->fVKNetto, gibUst($this->kSteuerklasse));
-                $this->SieSparenX->cLocalizedSparbetrag = gibPreisStringLocalized($this->SieSparenX->fSparbetrag);
+            if ($_SESSION['Kundengruppe']->darfPreiseSehen) {
+                if ($_SESSION['Kundengruppe']->nNettoPreise) {
+                    $this->fUVP                             = $this->fUVP / (1 + gibUst($this->kSteuerklasse) / 100);
+                    $this->SieSparenX->anzeigen             = $anzeigen;
+                    $this->SieSparenX->nProzent             = round((($this->fUVP - $this->Preise->fVKNetto) * 100) / $this->fUVP, 2);
+                    $this->SieSparenX->fSparbetrag          = $this->fUVP - $this->Preise->fVKNetto;
+                    $this->SieSparenX->cLocalizedSparbetrag = gibPreisStringLocalized($this->SieSparenX->fSparbetrag);
+                } else {
+                    $this->SieSparenX->anzeigen             = $anzeigen;
+                    $this->SieSparenX->nProzent             = round((($this->fUVP - berechneBrutto($this->Preise->fVKNetto, gibUst($this->kSteuerklasse))) * 100) / $this->fUVP, 2);
+                    $this->SieSparenX->fSparbetrag          = $this->fUVP - berechneBrutto($this->Preise->fVKNetto, gibUst($this->kSteuerklasse));
+                    $this->SieSparenX->cLocalizedSparbetrag = gibPreisStringLocalized($this->SieSparenX->fSparbetrag);
+                }
             }
         }
 
@@ -5110,7 +5113,7 @@ class Artikel
             $cSQL = ((int) $nArtikelAnzeigefilter !== 1) ?
                 " AND (tartikel.fLagerbestand > 0 OR tartikel.cLagerBeachten = 'N' OR tartikel.cLagerKleinerNull = 'Y')" :
                 '';
-            Shop::DB()->query("DELETE FROM tartikelmerkmal WHERE kArtikel = " . $kVaterArtikel, 3);
+            Shop::DB()->delete('tartikelmerkmal', 'kArtikel', $kVaterArtikel);
 
             return Shop::DB()->query(
                 "INSERT INTO tartikelmerkmal

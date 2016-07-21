@@ -51,8 +51,8 @@ if (!empty($pluginID)) {
         $pp->setDownloadLink('https://shop.solution360.de/Login-und-Bezahlen-mit-Amazon-JTL-Shop4-Plugin');
 
         $sp                        = new stdClass();
-        $sp->kServiceParnter       = 519;
-        $sp->marketPlaceURL        = 'https://www.jtl-software.de/Servicepartner-Detailansicht?id=' . $sp->kServiceParnter;
+        $sp->kServicePartner       = 519;
+        $sp->marketPlaceURL        = 'https://www.jtl-software.de/Servicepartner-Detailansicht?id=' . $sp->kServicePartner;
         $sp->oZertifizierungen_arr = array(
             'https://bilder.jtl-software.de/zertifikat/jtl_premium_sp_280.png',
             'https://bilder.jtl-software.de/zertifikat/jtl_cert_badge_1_280.png',
@@ -81,7 +81,7 @@ if (!empty($pluginID)) {
             'Für JTL-Shop 4 steht Ihnen "Trustbadge Reviews" als zertifiziertes Plugin direkt im Backend zur Verfügung.');
         $pp->setTitle('Trustbadge Reviews (JTL Shop 4)');
 
-        $pp->setAuthor('ag-websolutions.de');
+        $pp->setAuthor('Trusted Shops GmbH');
 
         $pp->addButton('Jetzt registrieren', 'http://www.trustbadge.com/de/bewertungen?utm_source=jtl&utm_medium=software-app&utm_content=marketing-page&utm_campaign=jtl-app', 'btn btn-primary', 'sign-in')
            ->addButton('Dokumentation', 'http://www.trustedshops.de/shopbetreiber/integration/shopsoftware-integration/jtl/?shop_id=&variant=&yOffset=', 'btn btn-default', null, true);
@@ -118,19 +118,16 @@ if (!empty($pluginID)) {
         $pp->setDownloadLink('http://www.trustedshops.de/shopbetreiber/integration/shopsoftware-integration/jtl/?shop_id=&variant=&yOffset=');
 
         $sp                        = new stdClass();
-        $sp->kServiceParnter       = 169;
-        $sp->marketPlaceURL        = 'https://www.jtl-software.de/Servicepartner-Detailansicht?id=' . $sp->kServiceParnter;
-        $sp->oZertifizierungen_arr = array(
-            'https://bilder.jtl-software.de/zertifikat/jtl_premium_sp_280.png',
-            'https://bilder.jtl-software.de/zertifikat/jtl_cert_badge_6_280.png'
-        );
-        $sp->cLogoPfad             = 'https://bilder.jtl-software.de/servicepartner/kServicepartner_169.jpg';
-        $sp->cFirma                = 'ag-websolutions.de';
-        $sp->cPLZ                  = '50181';
-        $sp->cOrt                  = 'Bedburg';
-        $sp->cStrasse              = 'Pannengasse 24';
-        $sp->cWWW                  = 'http://www.ag-websolutions.de';
-        $sp->cMail                 = 'info@ag-websolutions.de';
+        $sp->kServicePartner       = 0;
+        $sp->marketPlaceURL        = null;
+        $sp->oZertifizierungen_arr = array();
+        $sp->cLogoPfad             = $baseURL . 'agws_ts_features_logo.png';;
+        $sp->cFirma                = 'Trusted Shops GmbH';
+        $sp->cPLZ                  = '50823';
+        $sp->cOrt                  = utf8_decode('Köln');
+        $sp->cStrasse              = utf8_decode('Subbelrather Straße 15c');
+        $sp->cWWW                  = 'http://www.trustbadge.com/de/';
+        $sp->cMail                 = 'welcome@trustbadge.com';
         $sp->cAdresszusatz         = '';
         $sp->cLandName             = 'Deutschland';
 

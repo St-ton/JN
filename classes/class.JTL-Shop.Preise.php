@@ -363,7 +363,7 @@ class Preise
     {
         $kKundengruppe = (int)$kKundengruppe;
         $kArtikel      = (int)$kArtikel;
-        $obj           = Shop::DB()->query("SELECT * FROM tpreise WHERE kArtikel = $kArtikel AND kKundengruppe = " . $kKundengruppe, 1);
+        $obj           = Shop::DB()->select('tpreise', 'kArtikel', $kArtikel, 'kKundengruppe', $kKundengruppe);
         if (!empty($obj->kArtikel)) {
             $members = array_keys(get_object_vars($obj));
             foreach ($members as $member) {
@@ -483,7 +483,7 @@ class Preise
     {
         $waehrung = (isset($_SESSION['Waehrung'])) ? $_SESSION['Waehrung'] : null;
         if (!isset($waehrung->kWaehrung)) {
-            $waehrung = Shop::DB()->query("SELECT * FROM twaehrung WHERE cStandard='Y'", 1);
+            $waehrung = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
         }
 
         $this->fVKBrutto = berechneBrutto($this->fVKNetto, $this->fUst);

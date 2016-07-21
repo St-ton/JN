@@ -50,7 +50,7 @@
             <div class="clearall">
                 <div class="no_overflow panel panel-default" id="settings">
                     <div class="panel-body">
-                        {if $oSuchspecialOverlay->cBildPfad|count_characters > 0}
+                        {if $oSuchspecialOverlay->cBildPfad|strlen > 0}
                             <img src="{$shopURL}/{$PFAD_SUCHSPECIALOVERLAY}{$oSuchspecialOverlay->cBildPfad}?rnd={$cRnd}" style="margin-bottom: 15px;" />
                         {/if}
                         <div class="input-group">

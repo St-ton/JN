@@ -1,4 +1,8 @@
 <?php
+/**
+ * @copyright (c) JTL-Software-GmbH
+ * @license http://jtl-url.de/jtlshoplicense
+ */
 
 /**
  * Class VersandartHelper
@@ -200,13 +204,8 @@ class VersandartHelper
             $versandarten[$i]->cLieferdauer              = array();
             $versandarten[$i]->specificShippingcosts_arr = null;
             foreach ($_SESSION['Sprachen'] as $Sprache) {
-                $name_spr = Shop::DB()->query(
-                    "SELECT cName, cLieferdauer, cHinweistext
-                        FROM tversandartsprache
-                        WHERE kVersandart = " . (int)$versandarten[$i]->kVersandart . "
-                            AND cISOSprache = '" . $Sprache->cISO . "'", 1
-                );
-                if ($name_spr !== null && $name_spr !== false) {
+                $name_spr = Shop::DB()->select('tversandartsprache', 'kVersandart', (int)$versandarten[$i]->kVersandart, 'cISOSprache', $Sprache->cISO);
+                if (isset($name_spr->cName)) {
                     $versandarten[$i]->angezeigterName[$Sprache->cISO]        = $name_spr->cName;
                     $versandarten[$i]->angezeigterHinweistext[$Sprache->cISO] = $name_spr->cHinweistext;
                     $versandarten[$i]->cLieferdauer[$Sprache->cISO]           = $name_spr->cLieferdauer;
@@ -235,8 +234,8 @@ class VersandartHelper
             $zahlungsarten = Shop::DB()->query(
                 "SELECT tversandartzahlungsart.*, tzahlungsart.*
                      FROM tversandartzahlungsart, tzahlungsart
-                     WHERE tversandartzahlungsart.kVersandart = " . $versandarten[$i]->kVersandart . "
-                         AND tversandartzahlungsart.kZahlungsart=tzahlungsart.kZahlungsart
+                     WHERE tversandartzahlungsart.kVersandart = " . (int)$versandarten[$i]->kVersandart . "
+                         AND tversandartzahlungsart.kZahlungsart = tzahlungsart.kZahlungsart
                          AND (tzahlungsart.cKundengruppen IS NULL OR tzahlungsart.cKundengruppen=''
                          OR tzahlungsart.cKundengruppen LIKE '%;" . $kKundengruppe . ";%')
                          AND tzahlungsart.nActive = 1
@@ -462,7 +461,7 @@ class VersandartHelper
                     }
                 } elseif ($oArtikelTMP->nIstVater > 0) { // Variationskombination (Vater)
                     $oArtikelKind = new Artikel();
-                    if ($oArtikel['cInputData']{0} == '_') {
+                    if ($oArtikel['cInputData']{0} === '_') {
                         // 1D
                         $cVariation0                             = substr($oArtikel['cInputData'], 1);
                         list($kEigenschaft0, $kEigenschaftWert0) = explode(':', $cVariation0);

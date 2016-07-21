@@ -51,7 +51,7 @@
                     {$jtl_token}
                     <input type="hidden" name="inaktiveabonnenten" value="1" />
                     <input type="hidden" name="tab" value="inaktiveabonnenten" />
-                    {if isset($cSucheInaktiv) && $cSucheInaktiv|count_characters > 0}
+                    {if isset($cSucheInaktiv) && $cSucheInaktiv|strlen > 0}
                         <input type="hidden" name="cSucheInaktiv" value="{$cSucheInaktiv}" />
                     {/if}
                     <input type="hidden" name="s1" value="{$oBlaetterNaviInaktiveAbonnenten->nAktuelleSeite}" />
@@ -64,7 +64,7 @@
                                         <span class="input-group-addon">
                                             <label for="cSucheInaktiv">{#newslettersubscriberSearch#}:</label>
                                         </span>
-                                        <input class="form-control" id="cSucheInaktiv" name="cSucheInaktiv" type="text" value="{if isset($cSucheInaktiv) && $cSucheInaktiv|count_characters > 0}{$cSucheInaktiv}{/if}" />
+                                        <input class="form-control" id="cSucheInaktiv" name="cSucheInaktiv" type="text" value="{if isset($cSucheInaktiv) && $cSucheInaktiv|strlen > 0}{$cSucheInaktiv}{/if}" />
                                         <span class="input-group-btn">
                                             <button name="submitInaktiveAbonnentenSuche" type="submit" class="btn btn-primary" value="{#newsletterSearchBTN#}"><i class="fa fa-search"></i> {#newsletterSearchBTN#}</button>
                                         </span>
@@ -80,7 +80,7 @@
                         {$jtl_token}
                         <input type="hidden" name="inaktiveabonnenten" value="1" />
                         <input type="hidden" name="tab" value="inaktiveabonnenten" />
-                        {if isset($cSucheInaktiv) && $cSucheInaktiv|count_characters > 0}
+                        {if isset($cSucheInaktiv) && $cSucheInaktiv|strlen > 0}
                             <input type="hidden" name="cSucheInaktiv" value="{$cSucheInaktiv}" />
                         {/if}
                         <input type="hidden" name="s1" value="{$oBlaetterNaviInaktiveAbonnenten->nAktuelleSeite}" />
@@ -101,7 +101,7 @@
                                         </td>
                                         <td class="tleft">{if $oNewsletterEmpfaenger->cVorname != ""}{$oNewsletterEmpfaenger->cVorname}{else}{$oNewsletterEmpfaenger->newsVorname}{/if}</td>
                                         <td class="tleft">{if $oNewsletterEmpfaenger->cNachname != ""}{$oNewsletterEmpfaenger->cNachname}{else}{$oNewsletterEmpfaenger->newsNachname}{/if}</td>
-                                        <td class="tleft">{if isset($oNewsletterEmpfaenger->cName) && $oNewsletterEmpfaenger->cName|count_characters > 0}{$oNewsletterEmpfaenger->cName}{else}{#NotAvailable#}{/if}</td>
+                                        <td class="tleft">{if isset($oNewsletterEmpfaenger->cName) && $oNewsletterEmpfaenger->cName|strlen > 0}{$oNewsletterEmpfaenger->cName}{else}{#NotAvailable#}{/if}</td>
                                         <td class="tleft">{$oNewsletterEmpfaenger->cEmail}{if $oNewsletterEmpfaenger->nAktiv == 0} *{/if}</td>
                                         <td class="tcenter">{$oNewsletterEmpfaenger->Datum}</td>
                                     </tr>
@@ -133,7 +133,7 @@
                     <input type="hidden" name="Suche" value="1" />
                     <input type="hidden" name="tab" value="alleabonnenten" />
                     <input type="hidden" name="s5" value="{$oBlaetterNaviAlleAbonnenten->nAktuelleSeite}" />
-                    {if isset($cSucheAktiv) && $cSucheAktiv|count_characters > 0}
+                    {if isset($cSucheAktiv) && $cSucheAktiv|strlen > 0}
                         <input type="hidden" name="cSucheAktiv" value="{$cSucheAktiv}" />
                     {/if}
                     <div id="newsletter-all-search">
@@ -144,7 +144,7 @@
                                         <span class="input-group-addon">
                                             <label for="cSucheAktiv">{#newslettersubscriberSearch#}</label>
                                         </span>
-                                        <input id="cSucheAktiv" name="cSucheAktiv" class="form-control" type="text" value="{if isset($cSucheAktiv) && $cSucheAktiv|count_characters > 0}{$cSucheAktiv}{/if}" />
+                                        <input id="cSucheAktiv" name="cSucheAktiv" class="form-control" type="text" value="{if isset($cSucheAktiv) && $cSucheAktiv|strlen > 0}{$cSucheAktiv}{/if}" />
                                         <span class="input-group-btn">
                                             <button name="submitSuche" type="submit" value="{#newsletterSearchBTN#}" class="btn btn-info"><i class="fa fa-search"></i> {#newsletterSearchBTN#}</button>
                                         </span>
@@ -202,7 +202,7 @@
                 </form>
             {else}
                 <div class="alert alert-info" role="alert">{#noDataAvailable#}</div>
-                {if isset($cSucheAktiv) && $cSucheAktiv|count_characters > 0}
+                {if isset($cSucheAktiv) && $cSucheAktiv|strlen > 0}
                     <form method="post" action="newsletter.php">
                         {$jtl_token}
                         <input name="tab" type="hidden" value="alleabonnenten" />

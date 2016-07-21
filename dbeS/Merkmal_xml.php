@@ -140,12 +140,7 @@ function bearbeiteInsert($xml)
                             $MerkmalWertSprache_arr = mapArray($xml['merkmale']['tmerkmal']['tmerkmalwert'], 'tmerkmalwertsprache', $GLOBALS['mMerkmalWertSprache']);
                             $mmwsCount              = count($MerkmalWertSprache_arr);
                             for ($j = 0; $j < $mmwsCount; $j++) {
-                                Shop::DB()->query(
-                                    "DELETE FROM tseo
-                                        WHERE kKey = " . (int)$MerkmalWertSprache_arr[$j]->kMerkmalWert . "
-                                        AND cKey = 'kMerkmalWert'
-                                        AND kSprache = " . (int)$MerkmalWertSprache_arr[$j]->kSprache, 4
-                                );
+                                Shop::DB()->delete('tseo', ['kKey', 'cKey', 'kSprache'], [(int)$MerkmalWertSprache_arr[$j]->kMerkmalWert, 'kMerkmalWert', (int)$MerkmalWertSprache_arr[$j]->kSprache]);
                                 if (trim($MerkmalWertSprache_arr[$j]->cSeo)) {
                                     $cSeo = getFlatSeoPath($MerkmalWertSprache_arr[$j]->cSeo);
                                 } else {
@@ -182,12 +177,7 @@ function bearbeiteInsert($xml)
                             $MerkmalWertSprache_arr = mapArray($xml['merkmale']['tmerkmal']['tmerkmalwert'][$o], 'tmerkmalwertsprache', $GLOBALS['mMerkmalWertSprache']);
                             $mmwsaCount             = count($MerkmalWertSprache_arr);
                             for ($j = 0; $j < $mmwsaCount; $j++) {
-                                Shop::DB()->query(
-                                    "DELETE FROM tseo
-                                        WHERE kKey = " . (int)$MerkmalWertSprache_arr[$j]->kMerkmalWert . "
-                                        AND cKey = 'kMerkmalWert'
-                                        AND kSprache = " . (int)$MerkmalWertSprache_arr[$j]->kSprache, 4
-                                );
+                                Shop::DB()->delete('tseo', ['kKey', 'cKey', 'kSprache'], [(int)$MerkmalWertSprache_arr[$j]->kMerkmalWert, 'kMerkmalWert', (int)$MerkmalWertSprache_arr[$j]->kSprache]);
                                 if (trim($MerkmalWertSprache_arr[$j]->cSeo)) {
                                     $cSeo = getFlatSeoPath($MerkmalWertSprache_arr[$j]->cSeo);
                                 } else {
@@ -243,12 +233,7 @@ function bearbeiteInsert($xml)
                         if (count($MerkmalWert_arr) < 2) {
                             $MerkmalWertSprache_arr = mapArray($xml['merkmale']['tmerkmal'][$i]['tmerkmalwert'], 'tmerkmalwertsprache', $GLOBALS['mMerkmalWertSprache']);
                             for ($j = 0; $j < count($MerkmalWertSprache_arr); $j++) {
-                                Shop::DB()->query(
-                                    "DELETE FROM tseo
-                                        WHERE kKey = " . (int)$MerkmalWertSprache_arr[$j]->kMerkmalWert . "
-                                        AND cKey = 'kMerkmalWert'
-                                        AND kSprache = " . (int)$MerkmalWertSprache_arr[$j]->kSprache, 4
-                                );
+                                Shop::DB()->delete('tseo', ['kKey', 'cKey', 'kSprache'], [(int)$MerkmalWertSprache_arr[$j]->kMerkmalWert, 'kMerkmalWert', (int)$MerkmalWertSprache_arr[$j]->kSprache]);
                                 if (trim($MerkmalWertSprache_arr[$j]->cSeo)) {
                                     $cSeo = getFlatSeoPath($MerkmalWertSprache_arr[$j]->cSeo);
                                 } else {
@@ -286,11 +271,7 @@ function bearbeiteInsert($xml)
                             $MerkmalWertSprache_arr = mapArray($xml['merkmale']['tmerkmal'][$i]['tmerkmalwert'][$o], 'tmerkmalwertsprache', $GLOBALS['mMerkmalWertSprache']);
                             $mmwsaCount             = count($MerkmalWertSprache_arr);
                             for ($j = 0; $j < $mmwsaCount; $j++) {
-                                Shop::DB()->query(
-                                    "DELETE FROM tseo
-                                        WHERE kKey = " . (int)$MerkmalWertSprache_arr[$j]->kMerkmalWert . "
-                                            AND cKey = 'kMerkmalWert' AND kSprache = " . (int)$MerkmalWertSprache_arr[$j]->kSprache, 4
-                                );
+                                Shop::DB()->delete('tseo', ['kKey', 'cKey', 'kSprache'], [(int)$MerkmalWertSprache_arr[$j]->kMerkmalWert, 'kMerkmalWert', (int)$MerkmalWertSprache_arr[$j]->kSprache]);
                                 if (trim($MerkmalWertSprache_arr[$j]->cSeo)) {
                                     $cSeo = getFlatSeoPath($MerkmalWertSprache_arr[$j]->cSeo);
                                 } else {
@@ -358,12 +339,7 @@ function bearbeiteInsert($xml)
             }
             $mmwsaCount = count($MerkmalWertSprache_arr);
             for ($j = 0; $j < $mmwsaCount; $j++) {
-                Shop::DB()->query(
-                    "DELETE FROM tseo
-                        WHERE kKey = " . (int)$MerkmalWertSprache_arr[$j]->kMerkmalWert . "
-                            AND cKey = 'kMerkmalWert'
-                            AND kSprache = " . (int)$MerkmalWertSprache_arr[$j]->kSprache, 4
-                );
+                Shop::DB()->delete('tseo', ['kKey', 'cKey', 'kSprache'], [(int)$MerkmalWertSprache_arr[$j]->kMerkmalWert, 'kMerkmalWert', (int)$MerkmalWertSprache_arr[$j]->kSprache]);
                 if (trim($MerkmalWertSprache_arr[$j]->cSeo)) {
                     $cSeo = getFlatSeoPath($MerkmalWertSprache_arr[$j]->cSeo);
                 } else {
@@ -543,13 +519,8 @@ function loescheMerkmalWert($kMerkmalWert, $isInsert = false)
 {
     $kMerkmalWert = (int)$kMerkmalWert;
     if ($kMerkmalWert > 0) {
-        Shop::DB()->query(
-            "DELETE FROM tseo
-                WHERE cKey = 'kMerkmalWert'
-                    AND kKey = " . $kMerkmalWert, 3
-        );
-
-        // Hat das Merkmal vor dem loeschen noch mehr als ein Wert?
+        Shop::DB()->delete('tseo', ['cKey', 'kKey'], ['kMerkmalWert', $kMerkmalWert]);
+        // Hat das Merkmal vor dem Loeschen noch mehr als einen Wert?
         // Wenn nein => nach dem Loeschen auch das Merkmal loeschen
         $oAnzahl = Shop::DB()->query(
             "SELECT count(*) AS nAnzahl, kMerkmal

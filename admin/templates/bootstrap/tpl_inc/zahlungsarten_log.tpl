@@ -1,6 +1,6 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=#paymentmethods# cBeschreibung=#log# cDokuURL=#paymentmethodsURL#}
 <div id="content">
-    {if isset($cHinweis) && $cHinweis|count_characters > 0}
+    {if isset($cHinweis) && $cHinweis|strlen > 0}
         <div class="alert alert-info">{$cHinweis}</div>
     {/if}
     {if !empty($oLog_arr)}

@@ -3,9 +3,9 @@
         <ul class="infolist clearall">
             {foreach name="bots" from=$oBots_arr item=oBots}
                 <li {if $smarty.foreach.bots.first}class="first" {elseif $smarty.foreach.bots.last}class="last"{/if}>
-                    {if isset($oBots->cName) && $oBots->cName|count_characters > 0}
+                    {if isset($oBots->cName) && $oBots->cName|strlen > 0}
                         <strong>{$oBots->cName}:</strong>
-                    {elseif isset($oBots->cUserAgent) && $oBots->cUserAgent|count_characters > 0}
+                    {elseif isset($oBots->cUserAgent) && $oBots->cUserAgent|strlen > 0}
                         <strong>{$oBots->cUserAgent}:</strong>
                     {else}
                         <strong>Unbekannt:</strong>

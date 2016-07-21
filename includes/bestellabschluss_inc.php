@@ -506,13 +506,13 @@ function unhtmlSession()
  */
 function aktualisiereBestseller($kArtikel, $Anzahl)
 {
-    $kArtikel = (int) $kArtikel;
+    $kArtikel = (int)$kArtikel;
     if (!$kArtikel || !$Anzahl) {
         return;
     }
-    $best_obj = Shop::DB()->query('SELECT kArtikel FROM tbestseller WHERE kArtikel = ' . $kArtikel, 1);
+    $best_obj = Shop::DB()->select('tbestseller', 'kArtikel', $kArtikel);
     if (isset($best_obj->kArtikel) && $best_obj->kArtikel > 0) {
-        Shop::DB()->query('UPDATE tbestseller SET fAnzahl=fAnzahl+' . $Anzahl . ' WHERE kArtikel = ' . $kArtikel, 4);
+        Shop::DB()->query("UPDATE tbestseller SET fAnzahl = fAnzahl+" . $Anzahl . " WHERE kArtikel = " . $kArtikel, 4);
     } else {
         $Bestseller           = new stdClass();
         $Bestseller->kArtikel = $kArtikel;
@@ -527,9 +527,9 @@ function aktualisiereBestseller($kArtikel, $Anzahl)
         if (!$kArtikel || !$Anzahl) {
             return;
         }
-        $best_obj = Shop::DB()->query('SELECT kArtikel FROM tbestseller WHERE kArtikel = ' . $kArtikel, 1);
+        $best_obj = Shop::DB()->select('tbestseller', 'kArtikel', $kArtikel);
         if (isset($best_obj->kArtikel) && $best_obj->kArtikel > 0) {
-            Shop::DB()->query('UPDATE tbestseller SET fAnzahl = fAnzahl+' . $Anzahl . ' WHERE kArtikel = ' . $kArtikel, 4);
+            Shop::DB()->query("UPDATE tbestseller SET fAnzahl = fAnzahl+" . $Anzahl . " WHERE kArtikel = " . $kArtikel, 4);
         } else {
             $Bestseller           = new stdClass();
             $Bestseller->kArtikel = $kArtikel;
@@ -545,14 +545,14 @@ function aktualisiereBestseller($kArtikel, $Anzahl)
  */
 function aktualisiereXselling($kArtikel, $kZielArtikel)
 {
-    $kArtikel     = (int) $kArtikel;
-    $kZielArtikel = (int) $kZielArtikel;
+    $kArtikel     = (int)$kArtikel;
+    $kZielArtikel = (int)$kZielArtikel;
     if (!$kArtikel || !$kZielArtikel) {
         return;
     }
-    $obj = Shop::DB()->query("SELECT nAnzahl FROM txsellkauf WHERE kArtikel = $kArtikel AND kXSellArtikel = " . $kZielArtikel, 1);
+    $obj = Shop::DB()->select('txsellkauf', 'kArtikel', $kArtikel, 'kXSellArtikel', $kZielArtikel);
     if (isset($obj->nAnzahl) && $obj->nAnzahl > 0) {
-        Shop::DB()->query("UPDATE txsellkauf SET nAnzahl = nAnzahl+1 WHERE kArtikel = $kArtikel AND kXSellArtikel = " . $kZielArtikel, 4);
+        Shop::DB()->query("UPDATE txsellkauf SET nAnzahl = nAnzahl+1 WHERE kArtikel = " . $kArtikel . " AND kXSellArtikel = " . $kZielArtikel, 4);
     } else {
         $xs                = new stdClass();
         $xs->kArtikel      = $kArtikel;
@@ -578,8 +578,9 @@ function aktualisiereLagerbestand($Artikel, $nAnzahl, $WarenkorbPosEigenschaftAr
                     $EigenschaftWert->fPackeinheit = 1;
                 }
                 Shop::DB()->query("
-                    UPDATE teigenschaftwert SET fLagerbestand=fLagerbestand - " . ($nAnzahl * $EigenschaftWert->fPackeinheit) . "
-                    WHERE kEigenschaftWert = " . (int) $eWert->kEigenschaftWert, 4
+                    UPDATE teigenschaftwert 
+                        SET fLagerbestand = fLagerbestand - " . ($nAnzahl * $EigenschaftWert->fPackeinheit) . "
+                        WHERE kEigenschaftWert = " . (int)$eWert->kEigenschaftWert, 4
                 );
             }
         } elseif ($Artikel->fPackeinheit > 0) {
@@ -621,9 +622,9 @@ function AktualisiereAndereStuecklisten($kArtikelKomponente, $nAnzahl, $kStueckl
         }
         $oStueckliste_arr = Shop::DB()->query(
             "SELECT tstueckliste.kStueckliste, tartikel.fLagerbestand, tartikel.fPackeinheit
-                FROM
-                tstueckliste
-                JOIN tartikel ON tartikel.kStueckliste = tstueckliste.kStueckliste
+                FROM tstueckliste
+                JOIN tartikel 
+                  ON tartikel.kStueckliste = tstueckliste.kStueckliste
                 WHERE tstueckliste.kArtikel = {$kArtikelKomponente}
                 {$cSql}", 2
         );
@@ -652,7 +653,8 @@ function AktualisiereStueckliste($kStueckliste, $fPackeinheitSt, $fLagerbestandS
     $oKomponente_arr = Shop::DB()->query(
         "SELECT tstueckliste.kArtikel, tartikel.kArtikel AS kArtikelMain
             FROM tstueckliste
-            LEFT JOIN tartikel ON tartikel.kArtikel = tstueckliste.kArtikel
+            LEFT JOIN tartikel 
+              ON tartikel.kArtikel = tstueckliste.kArtikel
             WHERE tstueckliste.kStueckliste = {$kStueckliste}", 2
     );
     $bFull = true;
@@ -668,7 +670,8 @@ function AktualisiereStueckliste($kStueckliste, $fPackeinheitSt, $fLagerbestandS
         $ofMin = Shop::DB()->query(
             "SELECT (IFNULL(FLOOR(MIN(tartikel.fLagerbestand / tstueckliste.fAnzahl)), 999999)) AS fMin
                 FROM tartikel
-                JOIN tstueckliste ON tstueckliste.kArtikel = tartikel.kArtikel
+                JOIN tstueckliste 
+                  ON tstueckliste.kArtikel = tartikel.kArtikel
                 AND tstueckliste.kStueckliste = {$kStueckliste}", 1
         );
 
@@ -683,7 +686,8 @@ function AktualisiereStueckliste($kStueckliste, $fPackeinheitSt, $fLagerbestandS
         $ofMin                    = Shop::DB()->query(
             "SELECT LEAST(IFNULL(FLOOR(MIN(tartikel.fLagerbestand / tstueckliste.fAnzahl)), 999999), {$fStuecklisteLagerbestand}) AS fMin
                 FROM tartikel
-                JOIN tstueckliste ON tstueckliste.kArtikel = tartikel.kArtikel
+                JOIN tstueckliste 
+                  ON tstueckliste.kArtikel = tartikel.kArtikel
                 AND tstueckliste.kStueckliste = {$kStueckliste}", 1
         );
         if (isset($ofMin->fMin)) {
@@ -710,15 +714,16 @@ function AktualisiereLagerStuecklisten($oArtikel, $nAnzahl = null, $bStueckliste
                 $oKomponente_arr = Shop::DB()->query(
                     "SELECT tstueckliste.kArtikel, tstueckliste.fAnzahl
                         FROM tstueckliste
-                        JOIN tartikel ON tartikel.kArtikel = tstueckliste.kArtikel
+                        JOIN tartikel 
+                          ON tartikel.kArtikel = tstueckliste.kArtikel
                         WHERE tstueckliste.kStueckliste = {$oArtikel->kStueckliste}", 2
                 );
                 // Sind Komponenten im Shop?
                 if (is_array($oKomponente_arr) && count($oKomponente_arr) > 0) {
                     foreach ($oKomponente_arr as $oKomponente) {
                         Shop::DB()->query(
-                            'UPDATE tartikel
-                                SET fLagerbestand = fLagerbestand - ' . ($oKomponente->fAnzahl * $nAnzahl * $oArtikel->fPackeinheit) . "
+                            "UPDATE tartikel
+                                SET fLagerbestand = fLagerbestand - " . ($oKomponente->fAnzahl * $nAnzahl * $oArtikel->fPackeinheit) . "
                                 WHERE kArtikel = {$oKomponente->kArtikel}", 4
                         );
 
@@ -728,8 +733,8 @@ function AktualisiereLagerStuecklisten($oArtikel, $nAnzahl = null, $bStueckliste
                     AktualisiereStueckliste($oArtikel->kStueckliste, $oArtikel->fPackeinheit, $oArtikel->fLagerbestand, $nAnzahl);
                 } else { // Es sind keine Komponenten im Shop
                     Shop::DB()->query(
-                        'UPDATE tartikel
-                            SET fLagerbestand = fLagerbestand - ' . ($nAnzahl * $oArtikel->fPackeinheit) . "
+                        "UPDATE tartikel
+                            SET fLagerbestand = fLagerbestand - " . ($nAnzahl * $oArtikel->fPackeinheit) . "
                             WHERE kArtikel = {$oArtikel->kArtikel}", 4
                     );
                 }
@@ -755,19 +760,19 @@ function KuponVerwendungen()
     if (isset($_SESSION['Kupon']->kKupon) && $_SESSION['Kupon']->kKupon > 0) {
         $kKupon = $_SESSION['Kupon']->kKupon;
     }
-    $kKupon = (int) $kKupon;
+    $kKupon = (int)$kKupon;
     if ($kKupon > 0) {
-        Shop::DB()->query('UPDATE tkupon SET nVerwendungenBisher=nVerwendungenBisher+1 WHERE kKupon = ' . $kKupon, 4);
+        Shop::DB()->query("UPDATE tkupon SET nVerwendungenBisher = nVerwendungenBisher+1 WHERE kKupon = " . $kKupon, 4);
         $KuponKunde                = new stdClass();
         $KuponKunde->kKupon        = $kKupon;
         $KuponKunde->kKunde        = $_SESSION['Warenkorb']->kKunde;
         $KuponKunde->dErstellt     = 'now()';
         $KuponKunde->nVerwendungen = 1;
-        $KuponKundeBisher          = Shop::DB()->query('SELECT nVerwendungen FROM tkuponkunde WHERE kKupon = ' . $kKupon, 1);
+        $KuponKundeBisher          = Shop::DB()->select('tkuponkunde', 'kKupon', $kKupon);
         if (isset($KuponKundeBisher->nVerwendungen) && $KuponKundeBisher->nVerwendungen > 0) {
             $KuponKunde->nVerwendungen += $KuponKundeBisher->nVerwendungen;
         }
-        Shop::DB()->query('DELETE FROM tkuponkunde WHERE kKunde = ' . (int) $KuponKunde->kKunde . ' AND kKupon = ' . $kKupon, 4);
+        Shop::DB()->delete('tkuponkunde', ['kKunde', 'kKupon'], [(int)$KuponKunde->kKunde, $kKupon]);
         Shop::DB()->insert('tkuponkunde', $KuponKunde);
 
         if (isset($_SESSION['kBestellung']) && $_SESSION['kBestellung'] > 0) {

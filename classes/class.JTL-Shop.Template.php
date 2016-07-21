@@ -171,7 +171,7 @@ class Template
      */
     public function getFrontendTemplate()
     {
-        $frontendTemplate = Shop::DB()->query("SELECT * FROM ttemplate WHERE eTyp = 'standard'", 1);
+        $frontendTemplate = Shop::DB()->select('ttemplate', 'eTyp', 'standard');
         self::$cTemplate  = (!empty($frontendTemplate->cTemplate)) ? $frontendTemplate->cTemplate : null;
         self::$parent     = (!empty($frontendTemplate->parent)) ? $frontendTemplate->parent : null;
 
@@ -477,7 +477,7 @@ class Template
     {
         $cacheID = 'mobile_template';
         if (($oTemplate = Shop::Cache()->get($cacheID)) === false) {
-            $oTemplate = Shop::DB()->query("SELECT cTemplate FROM ttemplate WHERE eTyp='mobil'", 1);
+            $oTemplate = Shop::DB()->select('ttemplate', 'eTyp', 'mobil');
             if ($oTemplate === false) {
                 Shop::Cache()->set($cacheID, 'false', array(CACHING_GROUP_TEMPLATE));
             } else {

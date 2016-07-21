@@ -164,7 +164,7 @@
                         <button name="submitSearch" type="submit" value="{#ratingSearch#}" class="btn btn-info"><i class="fa fa-search"></i> {#ratingSearch#}</button>
                     </span>
                 </div>
-                {if isset($cArtNr) && $cArtNr|count_characters > 0}
+                {if isset($cArtNr) && $cArtNr|strlen > 0}
                     <div class="alert alert-info">{#ratingSearchedFor#}: {$cArtNr}</div>
                 {/if}
                 {if $oBewertungAktiv_arr && $oBewertungAktiv_arr|@count > 0}

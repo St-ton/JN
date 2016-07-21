@@ -99,7 +99,7 @@ class Lieferschein
     private function loadFromDB($kLieferschein = 0, $oData = null)
     {
         $kLieferschein = intval($kLieferschein);
-        $oObj          = Shop::DB()->query("SELECT * FROM tlieferschein WHERE kLieferschein = " . $kLieferschein, 1);
+        $oObj          = Shop::DB()->select('tlieferschein', 'kLieferschein', $kLieferschein);
         if ($oObj->kLieferschein > 0) {
             $cMember_arr = array_keys(get_object_vars($oObj));
             foreach ($cMember_arr as $cMember) {

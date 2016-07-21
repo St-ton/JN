@@ -122,7 +122,7 @@
                         <select name="cKundengruppen[]" class="form-control{if isset($xPlausiVar_arr.cKundengruppen)} fieldfillout{/if}" multiple="multiple" size="6" id="cKundengruppen">
                             <option value="-1"{if isset($Link->kLink) && $Link->kLink > 0 && isset($gesetzteKundengruppen[0]) && $gesetzteKundengruppen[0]} selected{elseif isset($xPostVar_arr.cKundengruppen)}
                                 {foreach name=postkndgrp from=$xPostVar_arr.cKundengruppen item=cPostKndGrp}
-                                    {if $cPostKndGrp|count_characters > 0 && $cPostKndGrp == "-1"}selected{/if}
+                                    {if $cPostKndGrp|strlen > 0 && $cPostKndGrp == "-1"}selected{/if}
                                 {/foreach}
                                     {elseif !isset($Link->kLink) || !$Link->kLink}selected{/if}>{#all#}</option>
 

@@ -12,7 +12,7 @@
     </ul>
     <div class="tab-content">
         <div id="log" class="tab-pane fade {if !isset($cTab) || $cTab === 'log'} active in{/if}">
-            {if isset($cSuche) && $cSuche|count_characters > 0}
+            {if isset($cSuche) && $cSuche|strlen > 0}
                 {assign var=pAdditional value="&cSucheEncode="|cat:$cSuche}
             {else}
                 {assign var=pAdditional value=''}

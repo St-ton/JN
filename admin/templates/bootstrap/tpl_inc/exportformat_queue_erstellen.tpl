@@ -29,20 +29,20 @@
                     <tr>
                         <td><label for="dStart">{#exportformatStart#}</label></td>
                         <td>
-                            <input id="dStart" name="dStart" type="text" class="form-control" value="{if isset($oFehler->dStart) && $oFehler->dStart|count_characters > 0}{$oFehler->dStart}{elseif isset($oCron->dStart_de) && $oCron->dStart_de|count_characters > 0}{$oCron->dStart_de}{else}{$smarty.now|date_format:'%d.%m.%Y %H:%M'}{/if}" />
+                            <input id="dStart" name="dStart" type="text" class="form-control" value="{if isset($oFehler->dStart) && $oFehler->dStart|strlen > 0}{$oFehler->dStart}{elseif isset($oCron->dStart_de) && $oCron->dStart_de|strlen > 0}{$oCron->dStart_de}{else}{$smarty.now|date_format:'%d.%m.%Y %H:%M'}{/if}" />
                         </td>
                     </tr>
                     <tr>
                         <td><label for="nAlleXStunden">{#exportformatEveryXHour#}</label></td>
                         <td>
                             <select id="nAlleXStunden" name="nAlleXStunden" class="form-control">
-                                <option value="24"{if (isset($oFehler->nAlleXStunden) && $oFehler->nAlleXStunden|count_characters > 0 && $oFehler->nAlleXStunden == 24) || (isset($oCron->nAlleXStd) && $oCron->nAlleXStd|count_characters > 0 && $oCron->nAlleXStd == 24)} selected{/if}>
+                                <option value="24"{if (isset($oFehler->nAlleXStunden) && $oFehler->nAlleXStunden|strlen > 0 && $oFehler->nAlleXStunden == 24) || (isset($oCron->nAlleXStd) && $oCron->nAlleXStd|strlen > 0 && $oCron->nAlleXStd == 24)} selected{/if}>
                                     24 Stunden
                                 </option>
-                                <option value="48"{if (isset($oFehler->nAlleXStunden) && $oFehler->nAlleXStunden|count_characters > 0 && $oFehler->nAlleXStunden == 48) || (isset($oCron->nAlleXStd) && $oCron->nAlleXStd|count_characters > 0 && $oCron->nAlleXStd == 48)} selected{/if}>
+                                <option value="48"{if (isset($oFehler->nAlleXStunden) && $oFehler->nAlleXStunden|strlen > 0 && $oFehler->nAlleXStunden == 48) || (isset($oCron->nAlleXStd) && $oCron->nAlleXStd|strlen > 0 && $oCron->nAlleXStd == 48)} selected{/if}>
                                     48 Stunden
                                 </option>
-                                <option value="168"{if (isset($oFehler->nAlleXStunden) && $oFehler->nAlleXStunden|count_characters > 0 && $oFehler->nAlleXStunden == 168) || (isset($oCron->nAlleXStd) && $oCron->nAlleXStd|count_characters > 0 && $oCron->nAlleXStd == 168)} selected{/if}>
+                                <option value="168"{if (isset($oFehler->nAlleXStunden) && $oFehler->nAlleXStunden|strlen > 0 && $oFehler->nAlleXStunden == 168) || (isset($oCron->nAlleXStd) && $oCron->nAlleXStd|strlen > 0 && $oCron->nAlleXStd == 168)} selected{/if}>
                                     1 Woche
                                 </option>
                             </select>

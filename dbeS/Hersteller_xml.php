@@ -69,9 +69,9 @@ function bearbeiteHerstellerDeletes($xml)
             $kHersteller = (int)$kHersteller;
             if ($kHersteller > 0) {
                 $affectedArticles = Shop::DB()->query("SELECT kArtikel FROM tartikel WHERE kHersteller = " . $kHersteller, 2);
-                Shop::DB()->query("DELETE FROM tseo WHERE kKey = " . $kHersteller . " AND cKey = 'kHersteller'", 4);
-                Shop::DB()->query("DELETE FROM thersteller WHERE kHersteller = " . $kHersteller, 4);
-                Shop::DB()->query("DELETE FROM therstellersprache WHERE kHersteller = " . $kHersteller, 4);
+                Shop::DB()->delete('tseo', ['kKey', 'cKey'], [$kHersteller, 'kHersteller']);
+                Shop::DB()->delete('thersteller', 'kHersteller', $kHersteller);
+                Shop::DB()->delete('therstellersprache', 'kHersteller', $kHersteller);
 
                 executeHook(HOOK_HERSTELLER_XML_BEARBEITEDELETES, array('kHersteller' => $kHersteller));
                 $cacheTags[] = CACHING_GROUP_MANUFACTURER . '_' . $kHersteller;
@@ -107,7 +107,7 @@ function bearbeiteHersteller($xml)
             $cacheTags    = array();
             for ($i = 0; $i < $mfCount; $i++) {
                 $affectedArticles = Shop::DB()->query("SELECT kArtikel FROM tartikel WHERE kHersteller = " . (int)$hersteller_arr[$i]->kHersteller, 2);
-                Shop::DB()->query("DELETE FROM tseo WHERE kKey = " . (int)$hersteller_arr[$i]->kHersteller . " AND cKey = 'kHersteller'", 4);
+                Shop::DB()->delete('tseo', ['kKey', 'cKey'], [(int)$hersteller_arr[$i]->kHersteller,'kHersteller']);
                 if (!trim($hersteller_arr[$i]->cSeo)) {
                     $hersteller_arr[$i]->cSeo = getFlatSeoPath($hersteller_arr[$i]->cName);
                 }

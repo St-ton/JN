@@ -2,7 +2,7 @@
 {config_load file="$lang.conf" section="shopupdate"}
 
 {function migration_list list=[] title='' filter=0} {* filter: 0 - All, 1 - Executed, 2 - Pending *}
-    {if $title|@count_characters > 0}
+    {if $title|strlen > 0}
         <h4>{$title}</h4>
     {/if}
     <table class="table table-hover">

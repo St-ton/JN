@@ -86,7 +86,7 @@ function sendeMail($ModulId, $Object, $mail = null)
         $Object->tkunde->kKundengruppe = Kundengruppe::getDefaultGroupID();
     }
     $Object->tfirma        = Shop::DB()->query("SELECT * FROM tfirma", 1);
-    $Object->tkundengruppe = Shop::DB()->query("SELECT * FROM tkundengruppe WHERE kKundengruppe = " . (int)$Object->tkunde->kKundengruppe, 1);
+    $Object->tkundengruppe = Shop::DB()->select('tkundengruppe', 'kKundengruppe', (int)$Object->tkunde->kKundengruppe);
     if (isset($Object->tkunde->kSprache) && $Object->tkunde->kSprache > 0) {
         $kundengruppensprache = Shop::DB()->query(
             "SELECT *
@@ -100,13 +100,13 @@ function sendeMail($ModulId, $Object, $mail = null)
     }
 
     if (isset($Object->tkunde->kSprache) && $Object->tkunde->kSprache > 0) {
-        $Sprache = Shop::DB()->query("SELECT * FROM tsprache WHERE kSprache = " . (int)$Object->tkunde->kSprache, 1);
+        $Sprache = Shop::DB()->select('tsprache', 'kSprache', (int)$Object->tkunde->kSprache);
     }
     if (isset($Object->NewsletterEmpfaenger->kSprache) && $Object->NewsletterEmpfaenger->kSprache > 0) {
-        $Sprache = Shop::DB()->query("SELECT * FROM tsprache WHERE kSprache = " . $Object->NewsletterEmpfaenger->kSprache, 1);
+        $Sprache = Shop::DB()->select('tsprache', 'kSprache', $Object->NewsletterEmpfaenger->kSprache);
     }
     if (!isset($Sprache) || !$Sprache) {
-        $Sprache = Shop::DB()->query("SELECT * FROM tsprache WHERE cShopStandard = 'Y'", 1);
+        $Sprache = Shop::DB()->select('tsprache', 'cShopStandard', 'Y');
     }
     $oKunde = lokalisiereKunde($Sprache, $Object->tkunde);
 
@@ -393,7 +393,7 @@ function sendeMail($ModulId, $Object, $mail = null)
             $mailSmarty->assign('oRMA', $Object->oRMA);
             break;
         case MAILTEMPLATE_BEWERTUNG_GUTHABEN:
-            $waehrung                                                 = Shop::DB()->query("SELECT * FROM twaehrung WHERE cStandard='Y'", 1);
+            $waehrung                                                 = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
             $Object->oBewertungGuthabenBonus->fGuthabenBonusLocalized = gibPreisStringLocalized($Object->oBewertungGuthabenBonus->fGuthabenBonus, $waehrung, 0);
             $mailSmarty->assign('oKunde', $Object->tkunde)
                        ->assign('oBewertungGuthabenBonus', $Object->oBewertungGuthabenBonus);

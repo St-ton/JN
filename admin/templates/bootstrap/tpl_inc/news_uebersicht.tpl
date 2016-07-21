@@ -68,7 +68,7 @@
                                         <input type="checkbox" name="kNewsKommentar[]" value="{$oNewsKommentar->kNewsKommentar}" />
                                     </td>
                                     <td class="TD2">
-                                        {if $oNewsKommentar->cVorname|count_characters > 0}
+                                        {if $oNewsKommentar->cVorname|strlen > 0}
                                             {$oNewsKommentar->cVorname} {$oNewsKommentar->cNachname}
                                         {else}
                                             {$oNewsKommentar->cName}

@@ -18,7 +18,7 @@
     </ul>
     <div class="tab-content">
         <div id="export" class="tab-pane fade {if !isset($cTab) || $cTab === 'export'} active in{/if}">
-            {if isset($errorNoWrite) && $errorNoWrite|count_characters > 0}
+            {if isset($errorNoWrite) && $errorNoWrite|strlen > 0}
                 <div class="alert alert-danger">{$errorNoWrite}</div>
             {/if}
 
@@ -26,7 +26,6 @@
 
             <div class="alert alert-info">
                 <p>{#searchEngines#}</p>
-
                 <p>{#download#} <a href="{$URL}">{#xml#}</a></p>
             </div>
 
@@ -67,7 +66,7 @@
                                         <td><a href="{Shop::getURL()}/{$oSitemapDownload->cSitemap}" target="_blank">{$oSitemapDownload->cSitemap}</a></td>
                                         <td>
                                             <strong>{#sitemapIP#}</strong>: {$oSitemapDownload->cIP}<br />
-                                            {if $oSitemapDownload->cBot|count_characters > 0}
+                                            {if $oSitemapDownload->cBot|strlen > 0}
                                                 <strong>{#sitemapBot#}</strong>: {$oSitemapDownload->cBot}
                                             {else}
                                                 <strong>{#sitemapUserAgent#}</strong>: <abbr title="{$oSitemapDownload->cUserAgent}">{$oSitemapDownload->cUserAgent|truncate:60}</abbr>

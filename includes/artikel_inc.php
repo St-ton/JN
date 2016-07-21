@@ -226,25 +226,8 @@ function gibFehlendeEingabenProduktanfrageformular()
     if ($conf['artikeldetails']['produktfrage_abfragen_mobil'] === 'Y' && !$_POST['mobil']) {
         $ret['mobil'] = 1;
     }
-    if (empty($_SESSION['Kunde']->kKunde) && (!isset($_SESSION['bAnti_spam_already_checked']) || $_SESSION['bAnti_spam_already_checked'] !== true) &&
-        $conf['artikeldetails']['produktfrage_abfragen_captcha'] === 'Y' && $conf['global']['anti_spam_method'] !== 'N' &&
-        !empty($conf['global']['global_google_recaptcha_private'])) {
-        // reCAPTCHA
-        if (isset($_POST['g-recaptcha-response'])) {
-            $ret['captcha'] = !validateReCaptcha($_POST['g-recaptcha-response']);
-        } else {
-            if (empty($_POST['captcha'])) {
-                $ret['captcha'] = 1;
-            } elseif (empty($_POST['md5']) || ($_POST['md5'] !== md5(PFAD_ROOT . $_POST['captcha']))) {
-                $ret['captcha'] = 2;
-            }
-            if ($conf['artikeldetails']['produktfrage_abfragen_captcha'] == 5) { //Prüfen ob der Token und der Name korrekt sind
-                $ret['captcha'] = 2;
-                if (validToken()) {
-                    unset($ret['captcha']);
-                }
-            }
-        }
+    if ($conf['artikeldetails']['produktfrage_abfragen_captcha'] !== 'N' && !validateCaptcha($_POST)) {
+        $ret['captcha'] = 2;
     }
     // CheckBox Plausi
     $oCheckBox     = new CheckBox();
@@ -480,24 +463,8 @@ function gibFehlendeEingabenBenachrichtigungsformular()
     if ($conf['artikeldetails']['benachrichtigung_abfragen_nachname'] === 'Y' && !$_POST['nachname']) {
         $ret['nachname'] = 1;
     }
-    if (empty($_SESSION['Kunde']->kKunde) && (!isset($_SESSION['bAnti_spam_already_checked']) || $_SESSION['bAnti_spam_already_checked'] !== true) &&
-        $conf['artikeldetails']['benachrichtigung_abfragen_captcha'] !== 'N' && !empty($conf['global']['global_google_recaptcha_private'])) {
-        // reCAPTCHA
-        if (isset($_POST['g-recaptcha-response'])) {
-            $ret['captcha'] = !validateReCaptcha($_POST['g-recaptcha-response']);
-        } else {
-            if (empty($_POST['captcha'])) {
-                $ret['captcha'] = 1;
-            } elseif (!$_POST['md5'] || ($_POST['md5'] !== md5(PFAD_ROOT . $_POST['captcha']))) {
-                $ret['captcha'] = 2;
-            }
-            if ($conf['artikeldetails']['benachrichtigung_abfragen_captcha'] == 5) { //Prüfen ob der Token und der Name korrekt sind
-                $ret['captcha'] = 2;
-                if (validToken()) {
-                    unset($ret['captcha']);
-                }
-            }
-        }
+    if ($conf['artikeldetails']['benachrichtigung_abfragen_captcha'] !== 'N' && !validateCaptcha($_POST)) {
+        $ret['captcha'] = 2;
     }
     // CheckBox Plausi
     $oCheckBox     = new CheckBox();
@@ -794,11 +761,7 @@ function bearbeiteProdukttags($AktuellerArtikel)
                         return Shop::Lang()->get('pleaseLoginToAddTags', 'messages');
                     }
                     // Prüfe ob der Tag bereits gemappt wurde
-                    $tagmapping_objTMP = Shop::DB()->query(
-                        "SELECT cNameNeu
-                            FROM ttagmapping
-                            WHERE kSprache = " . (int)Shop::$kSprache . "
-                                AND cName = '" . Shop::DB()->escape($tag) . "'", 1);
+                    $tagmapping_objTMP = Shop::DB()->select('ttagmapping', 'kSprache', (int)Shop::$kSprache, 'cName', Shop::DB()->escape($tag));
                     $tagmapping_obj = $tagmapping_objTMP;
                     if (isset($tagmapping_obj->cNameNeu) && strlen($tagmapping_obj->cNameNeu) > 0) {
                         $tag = $tagmapping_obj->cNameNeu;
@@ -1311,10 +1274,16 @@ function buildConfig($kArtikel, $fAnzahl, $nVariation_arr, $nKonfiggruppe_arr, $
         }
         $oKonfiggruppe->oItem_arr = array_values($oKonfiggruppe->oItem_arr);
     }
-    $oKonfig->cPreisLocalized = array(
-        gibPreisStringLocalized($oKonfig->fGesamtpreis[0]),
-        gibPreisStringLocalized($oKonfig->fGesamtpreis[1])
-    );
+    if ($_SESSION['Kundengruppe']->darfPreiseSehen) {
+        $oKonfig->cPreisLocalized = array(
+            gibPreisStringLocalized($oKonfig->fGesamtpreis[0]),
+            gibPreisStringLocalized($oKonfig->fGesamtpreis[1])
+        );
+    } else {
+        $oKonfig->cPreisLocalized = array(
+            Shop::Lang()->get('priceHidden', 'global'),
+        );
+    }
     $oKonfig->nNettoPreise = $_SESSION['Kundengruppe']->nNettoPreise;
 
     return $oKonfig;

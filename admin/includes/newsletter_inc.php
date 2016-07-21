@@ -1416,11 +1416,8 @@ if (!function_exists('unique_NewsletterCode')) {
      */
     function unique_NewsletterCode($dbfeld, $code)
     {
-        $res = Shop::DB()->query("SELECT * FROM tnewsletterempfaenger WHERE " . $dbfeld . "='" . $code . "'", 1);
-        if (isset($res->kNewsletterEmpfaenger) && $res->kNewsletterEmpfaenger > 0) {
-            return false;
-        }
+        $res = Shop::DB()->select('tnewsletterempfaenger', $dbfeld, $code);
 
-        return true;
+        return !(isset($res->kNewsletterEmpfaenger) && $res->kNewsletterEmpfaenger > 0);
     }
 }

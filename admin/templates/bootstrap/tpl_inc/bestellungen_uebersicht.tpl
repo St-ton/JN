@@ -22,7 +22,7 @@
         <form name="bestellungen" method="post" action="bestellungen.php">
             {$jtl_token}
             <input type="hidden" name="zuruecksetzen" value="1" />
-            {if isset($cSuche) && $cSuche|count_characters > 0}
+            {if isset($cSuche) && $cSuche|strlen > 0}
                 <input type="hidden" name="cSuche" value="{$cSuche}" />
             {/if}
             <div class="panel panel-default">
@@ -49,7 +49,7 @@
                                 <input type="checkbox" name="kBestellung[]" value="{$oBestellung->kBestellung}" />{/if}
                             </td>
                             <td>{$oBestellung->cBestellNr}</td>
-                            <td>{if isset($oBestellung->oKunde->cVorname) || isset($oBestellung->oKunde->cNachname) || isset($oBestellung->oKunde->cFirma)}{$oBestellung->oKunde->cVorname} {$oBestellung->oKunde->cNachname}{if isset($oBestellung->oKunde->cFirma) && $oBestellung->oKunde->cFirma|count_characters > 0} ({$oBestellung->oKunde->cFirma}){/if}{else}{#noAccount#}{/if}</td>
+                            <td>{if isset($oBestellung->oKunde->cVorname) || isset($oBestellung->oKunde->cNachname) || isset($oBestellung->oKunde->cFirma)}{$oBestellung->oKunde->cVorname} {$oBestellung->oKunde->cNachname}{if isset($oBestellung->oKunde->cFirma) && $oBestellung->oKunde->cFirma|strlen > 0} ({$oBestellung->oKunde->cFirma}){/if}{else}{#noAccount#}{/if}</td>
                             <td>{$oBestellung->cVersandartName}</td>
                             <td>{$oBestellung->cZahlungsartName}</td>
                             <td class="tcenter">{if $oBestellung->cAbgeholt === 'Y'}{#yes#}{else}{#no#}{/if}</td>

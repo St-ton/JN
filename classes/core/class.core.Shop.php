@@ -654,6 +654,13 @@ final class Shop
 
         self::$isInitialized = true;
 
+        $redirect = verifyGPDataString('r');
+        if (self::$kNews > 0 && self::$kArtikel > 0 && !empty($redirect)) {
+            //login redirect on wishlist add when not logged in uses get param "n" as amount
+            self::$kNews    = 0;
+            self::$kArtikel = 0;
+        }
+
         $_SESSION['cTemplate'] = Template::$cTemplate;
 
         self::Event()->fire('shop.run');
@@ -758,7 +765,7 @@ final class Shop
                 }
                 //double content work around
                 if (strlen($seo) > 0 && $seite === 1) {
-                    header('HTTP/1.1 301 Moved Permanently');
+                    http_response_code(301);
                     header('Location: ' . self::getURL() . '/' . $seo);
                     exit();
                 }
@@ -925,9 +932,9 @@ final class Shop
                         $cRP .= '&' . $cMember . '=' . $_POST[$cMember];
                     }
                     // Redirect POST
-                    $cRP = ' &cRP=' . base64_encode($cRP);
+                    $cRP = '&cRP=' . base64_encode($cRP);
                 }
-                header('HTTP/1.1 301 Moved Permanently');
+                http_response_code(301);
                 header('Location: ' . self::getURL() . '/navi.php?a=' . $kArtikel . $cRP);
                 exit();
             }
@@ -1723,6 +1730,11 @@ final class Shop
                 //we have a manufacturer page with some manufacturer filter
                 http_response_code(301);
                 header('Location: ' . Shop::getURL() . '/' . $NaviFilter->Hersteller->cSeo[Shop::$kSprache]);
+                exit();
+            } elseif (!empty($NaviFilter->Kategorie->kKategorie) && !empty($NaviFilter->KategorieFilter->kKategorie) && !empty($NaviFilter->Kategorie->cSeo[Shop::$kSprache])) {
+                //we have a category page with some category filter
+                http_response_code(301);
+                header('Location: ' . Shop::getURL() . '/' . $NaviFilter->Kategorie->cSeo[Shop::$kSprache]);
                 exit();
             }
         }

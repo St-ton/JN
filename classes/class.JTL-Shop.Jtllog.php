@@ -300,7 +300,7 @@ class Jtllog
      */
     public function delete()
     {
-        return Shop::DB()->query("DELETE FROM tjtllog WHERE kLog = " . $this->getkLog(), 3);
+        return Shop::DB()->delete('tjtllog', 'kLog', $this->getkLog());
     }
 
     /**

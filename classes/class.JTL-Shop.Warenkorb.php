@@ -832,7 +832,7 @@ class Warenkorb
             $waehrung = $this->Waehrung;
         }
         if (is_null($waehrung) || !isset($waehrung->kWaehrung)) {
-            $waehrung = Shop::DB()->query("SELECT * FROM twaehrung WHERE cStandard='Y'", 1);
+            $waehrung = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
         }
         $gesamtsumme = 0;
         foreach ($this->PositionenArr as $i => $Position) {
@@ -877,7 +877,7 @@ class Warenkorb
             $waehrung = $this->Waehrung;
         }
         if (is_null($waehrung) || !isset($waehrung->kWaehrung)) {
-            $waehrung = Shop::DB()->query("SELECT * FROM twaehrung WHERE cStandard='Y'", 1);
+            $waehrung = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
         }
         foreach ($this->PositionenArr as $i => $Position) {
             if (in_array($Position->nPosTyp, $postyp_arr)) {
@@ -916,7 +916,7 @@ class Warenkorb
             $waehrung = $this->Waehrung;
         }
         if (is_null($waehrung) || !isset($waehrung->kWaehrung)) {
-            $waehrung = Shop::DB()->query("SELECT * FROM twaehrung WHERE cStandard='Y'", 1);
+            $waehrung = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
         }
         foreach ($this->PositionenArr as $i => $Position) {
             if (!in_array($Position->nPosTyp, $postyp_arr)) {
@@ -949,7 +949,7 @@ class Warenkorb
                 $waehrung = $this->Waehrung;
             }
             if (is_null($waehrung) || !isset($waehrung->kWaehrung)) {
-                $waehrung = Shop::DB()->query("SELECT * FROM twaehrung WHERE cStandard='Y'", 1);
+                $waehrung = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
             }
             $faktor = $waehrung->fFaktor;
             $gesamtsumme *= $faktor;

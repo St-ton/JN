@@ -26,7 +26,7 @@ $oCron_arr = Shop::DB()->query(
     "SELECT tcron.*
         FROM tcron
         LEFT JOIN tjobqueue ON tjobqueue.kCron = tcron.kCron
-        WHERE (tcron.dLetzterStart='0000-00-00 00:00:00' OR (UNIX_TIMESTAMP(now()) > (UNIX_TIMESTAMP(tcron.dLetzterStart) + (3600 * tcron.nAlleXStd))))
+        WHERE (tcron.dLetzterStart = '0000-00-00 00:00:00' OR (UNIX_TIMESTAMP(now()) > (UNIX_TIMESTAMP(tcron.dLetzterStart) + (3600 * tcron.nAlleXStd))))
             AND tcron.dStart < now()
             AND tjobqueue.kJobQueue IS NULL", 2
 );

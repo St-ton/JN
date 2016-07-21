@@ -83,7 +83,7 @@ function bearbeiteAck($xml)
                         WHERE cStatus = '" . BESTELLUNG_STATUS_OFFEN . "'
                             AND kBestellung = " . $kBestellung, 4
                 );
-                Shop::DB()->query("DELETE FROM tzahlungsinfo WHERE kBestellung = " . $kBestellung, 4);
+                Shop::DB()->delete('tzahlungsinfo', 'kBestellung', $kBestellung);
             }
         }
     } else {
@@ -99,10 +99,7 @@ function bearbeiteAck($xml)
                     WHERE cStatus = '" . BESTELLUNG_STATUS_OFFEN . "'
                         AND kBestellung = " . intval($xml['ack_bestellungen']['kBestellung']), 4
             );
-            Shop::DB()->query(
-                "DELETE FROM tzahlungsinfo
-                    WHERE kBestellung = " . intval($xml['ack_bestellungen']['kBestellung']), 4
-            );
+            Shop::DB()->delete('tzahlungsinfo', 'kBestellung', (int)$xml['ack_bestellungen']['kBestellung']);
         }
     }
 }
@@ -144,8 +141,8 @@ function bearbeiteDel($xml)
 
                 Shop::DB()->delete('tbestellung', 'kBestellung', $kBestellung);
                 //uploads (bestellungen)
-                Shop::DB()->query("DELETE FROM tuploadschema WHERE kCustomID = " . $kBestellung . " AND nTyp = 2", 4);
-                Shop::DB()->query("DELETE FROM tuploaddatei WHERE kCustomID = " . $kBestellung . " AND nTyp = 2", 4);
+                Shop::DB()->delete('tuploadschema', ['kCustomID', 'nTyp'], [$kBestellung, 2]);
+                Shop::DB()->delete('tuploaddatei', ['kCustomID', 'nTyp'], [$kBestellung, 2]);
                 //uploads (artikel der bestellung)
                 //todo...
                 //wenn unreg kunde, dann kunden auch löschen

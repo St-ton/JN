@@ -453,7 +453,7 @@ class Bestellung
             $this->cBestellwertLocalized = gibPreisStringLocalized((isset($warenwert->wert) ? $warenwert->wert : 0), $htmlWaehrung);
             $this->Status                = lang_bestellstatus($this->cStatus);
             if ($this->kWaehrung > 0) {
-                $this->Waehrung = Shop::DB()->query("SELECT * FROM twaehrung WHERE kWaehrung = " . (int) $this->kWaehrung, 1);
+                $this->Waehrung = Shop::DB()->select('twaehrung', 'kWaehrung', (int)$this->kWaehrung);
                 if (isset($this->fWaehrungsFaktor) && $this->fWaehrungsFaktor !== 1 && isset($this->Waehrung->fFaktor)) {
                     $this->Waehrung->fFaktor = $this->fWaehrungsFaktor;
                 }
@@ -464,7 +464,7 @@ class Bestellung
             $this->Steuerpositionen      = gibAlteSteuerpositionen($this->Positionen, $nNettoPreis, $htmlWaehrung, $this->Waehrung);
             if ($this->kZahlungsart > 0) {
                 require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
-                $this->Zahlungsart = Shop::DB()->query("SELECT * FROM tzahlungsart WHERE kZahlungsart = " . (int) $this->kZahlungsart, 1);
+                $this->Zahlungsart = Shop::DB()->select('tzahlungsart', 'kZahlungsart', (int)$this->kZahlungsart);
                 if ($this->Zahlungsart !== false) {
                     $oPaymentMethod = new PaymentMethod($this->Zahlungsart->cModulId, 1);
                     $oZahlungsart   = $oPaymentMethod->create($this->Zahlungsart->cModulId);
@@ -910,7 +910,7 @@ class Bestellung
             $longestMinDeliveryDays = 0;
             $longestMaxDeliveryDays = 0;
             //Lookup language iso
-            $lang = Shop::DB()->query("SELECT * FROM tsprache WHERE kSprache = " . (int)$this->kSprache, 1);
+            $lang = Shop::DB()->select('tsprache', 'kSprache', (int)$this->kSprache);
             foreach ($this->Positionen as $i => $oPosition) {
                 if ($oPosition->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL && isset($oPosition->Artikel) && get_class($oPosition->Artikel) === 'Artikel') {
                     $oPosition->cEstimatedDelivery = $oPosition->Artikel->getDeliveryTime(

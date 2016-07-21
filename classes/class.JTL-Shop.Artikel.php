@@ -967,6 +967,11 @@ class Artikel
     public $cHoehe = '';
 
     /**
+     * @var bool
+     */
+    public $cacheHit = false;
+
+    /**
      * Konstruktor
      *
      * @param int $kArtikel
@@ -3187,6 +3192,7 @@ class Artikel
                     $return    = ($startDate > $today || $endDate < $today);
                 }
                 if ($return === true) {
+                    $this->cacheHit = true;
                     // Warenkorbmatrix Variationskinder holen?
                     if (((isset($oArtikelOptionen->nWarenkorbmatrix) && $oArtikelOptionen->nWarenkorbmatrix == 1) ||
                             (isset($this->FunktionsAttribute[FKT_ATTRIBUT_WARENKORBMATRIX]) && (int) $this->FunktionsAttribute[FKT_ATTRIBUT_WARENKORBMATRIX] === 1 &&

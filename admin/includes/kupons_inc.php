@@ -123,22 +123,27 @@ function normalizeDate($string)
  * Get instances of existing coupons, each with some enhanced information that can be displayed
  * 
  * @param string $cKuponTyp
- * @param string $cLimitSQL - an SQL LIMIT clause
- * @param string $cOrderBy - a column that should be sorted by
+ * @param string $cWhereSQL - an SQL WHERE clause (col1 = val1 AND vol2 LIKE ...)
+ * @param string $cOrderSQL - an SQL ORDER BY clause (cName DESC)
+ * @param string $cLimitSQL - an SQL LIMIT clause  (10,20)
  * @return array
  */
-function getCoupons($cKuponTyp = 'standard', $cOrderBy = 'kKupon', $cWhereSQL = '')
+function getCoupons($cKuponTyp = 'standard', $cWhereSQL = '', $cOrderSQL = '', $cLimitSQL = '')
 {
     $oKuponDB_arr = Shop::DB()->query("
         SELECT kKupon
             FROM tkupon
-            WHERE cKuponTyp = '" . $cKuponTyp . "'" . ($cWhereSQL !== '' ? " AND " . $cWhereSQL : "") .
-            "ORDER BY " . $cOrderBy,
+            WHERE cKuponTyp = '" . Shop::DB()->escape($cKuponTyp) . "'" .
+            ($cWhereSQL !== '' ? " AND " . $cWhereSQL : "") .
+            ($cOrderSQL !== '' ? " ORDER BY " . $cOrderSQL : "") .
+            ($cLimitSQL !== '' ? " LIMIT " . $cLimitSQL : ""),
         2);
     $oKupon_arr = array();
 
-    foreach ($oKuponDB_arr as $oKuponDB) {
-        $oKupon_arr[] = getCoupon((int)$oKuponDB->kKupon);
+    if (is_array($oKuponDB_arr)) {
+        foreach ($oKuponDB_arr as $oKuponDB) {
+            $oKupon_arr[] = getCoupon((int)$oKuponDB->kKupon);
+        }
     }
 
     return $oKupon_arr;
@@ -303,7 +308,7 @@ function getCouponCount($cKuponTyp = 'standard', $cWhereSQL = '')
             WHERE cKuponTyp = '" . $cKuponTyp . "'" . ($cWhereSQL !== '' ? " AND " . $cWhereSQL : ""),
         1);
 
-    return $oKuponDB->count;
+    return (int)$oKuponDB->count;
 }
 
 /**

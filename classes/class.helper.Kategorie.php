@@ -43,16 +43,26 @@ class KategorieHelper
     }
 
     /**
+     * @param int $kSprache
+     * @param int $kKundengruppe
      * @return KategorieHelper
      */
-    public static function getInstance()
+    public static function getInstance($kSprache = 0, $kKundengruppe = 0)
     {
-        if (self::$instance !== null && self::$kSprache !== (int)Shop::$kSprache) {
+        if ($kSprache === 0) {
+            $kSprache = Shop::$kSprache;
+        }
+        if ($kKundengruppe === 0) {
+            $kKundengruppe = $_SESSION['Kundengruppe']->kKundengruppe;
+        }
+        $kSprache      = (int)$kSprache;
+        $kKundengruppe = (int)$kKundengruppe;
+        if (self::$instance !== null && self::$kSprache !== $kSprache) {
             //reset cached categories when language was changed
             self::$fullCategories = null;
         }
-        self::$kSprache      = (int)Shop::$kSprache;
-        self::$kKundengruppe = (int)$_SESSION['Kundengruppe']->kKundengruppe;
+        self::$kSprache      = $kSprache;
+        self::$kKundengruppe = $kKundengruppe;
         self::$cacheID       = 'allcategories_' . self::$kKundengruppe . '_' . self::$kSprache;
 
         return (self::$instance === null) ? new self() : self::$instance;

@@ -222,7 +222,7 @@
                                 </button>
                             </div>
                         {/if}
-                        {if $Einstellungen.artikeluebersicht.artikeluebersicht_wunschzettel_anzeigen === 'Y'}
+                        {if $Einstellungen.global.global_wunschliste_anzeigen === 'Y' && $Einstellungen.artikeluebersicht.artikeluebersicht_wunschzettel_anzeigen === 'Y'}
                             <div class="btn-group btn-group-xs" role="group">
                                 <button name="Wunschliste" type="submit" class="wishlist btn btn-default" title="{lang key="addToWishlist" section="productDetails"}">
                                     <span class="fa fa-heart"></span>

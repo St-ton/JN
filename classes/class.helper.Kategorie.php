@@ -127,12 +127,14 @@ class KategorieHelper
             );
             $functionAttributes  = array();
             $localizedAttributes = array();
-            foreach ($_catAttribut_arr as $_catAttribut) {
-                $catID = (int)$_catAttribut->kKategorie;
-                if ($_catAttribut->bIstFunktionsAttribut) {
-                    $functionAttributes[$catID][strtolower($_catAttribut->cName)] = $_catAttribut->cWert;
-                } else {
-                    $localizedAttributes[$catID][strtolower($_catAttribut->cName)] = $_catAttribut;
+            if (is_array($_catAttribut_arr)) {
+                foreach ($_catAttribut_arr as $_catAttribut) {
+                    $catID = (int)$_catAttribut->kKategorie;
+                    if ($_catAttribut->bIstFunktionsAttribut) {
+                        $functionAttributes[$catID][strtolower($_catAttribut->cName)] = $_catAttribut->cWert;
+                    } else {
+                        $localizedAttributes[$catID][strtolower($_catAttribut->cName)] = $_catAttribut;
+                    }
                 }
             }
 
@@ -318,11 +320,50 @@ class KategorieHelper
     }
 
     /**
+     * retrieves a list of categories from a given category ID's furthest ancestor to the category itself
+     *
+     * @param int  $id - the base category ID
+     * @param bool $noChildren - remove child categories from array?
+     * @return array
+     */
+    public function getFlatTree($id, $noChildren = true)
+    {
+        if (self::$fullCategories === null) {
+            self::$fullCategories = $this->combinedGetAll();
+        }
+        $tree = array();
+        $next = $this->getCategoryById($id);
+        if (isset($next->kKategorie)) {
+            if ($noChildren === true) {
+                $cat                  = clone $next;
+                $cat->Unterkategorien = array();
+            } else {
+                $cat = $next;
+            }
+            $tree[] = $cat;
+            while (!empty($next->kOberKategorie)) {
+                $next = $this->getCategoryById($next->kOberKategorie);
+                if (isset($next->kOberKategorie)) {
+                    if ($noChildren === true) {
+                        $cat                  = clone $next;
+                        $cat->Unterkategorien = array();
+                    } else {
+                        $cat = $next;
+                    }
+                    $tree[] = $cat;
+                }
+            }
+        }
+
+        return array_reverse($tree);
+    }
+
+    /**
      * @param int          $id
      * @param array|object $haystack
      * @return object|bool
      */
-    public function findCategoryInList($id, $haystack)
+    private function findCategoryInList($id, $haystack)
     {
         if (isset($haystack->kKategorie) && (int)$haystack->kKategorie === $id) {
             return $haystack;

@@ -7,10 +7,10 @@ require_once dirname(__FILE__) . '/includes/admininclude.php';
 
 $oAccount->permission('MODULE_VOTESYSTEM_VIEW', true, true);
 
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'blaetternavi.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bewertung_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'bewertung_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
+require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'pagination.php';
 
 $Einstellungen = Shop::getSettings(array(CONF_BEWERTUNG));
 $cHinweis      = '';
@@ -151,19 +151,6 @@ if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_ed
         }
     }
 
-    $nBewertungenProSeite = 15;
-    $nAktuelleSeite1      = 1;
-    $nAktuelleSeite2      = 1;
-    $cSQL1                = " LIMIT " . $nBewertungenProSeite;
-    $cSQL2                = " LIMIT " . $nBewertungenProSeite;
-    if (verifyGPCDataInteger('s1') > 0) {
-        $cSQL1           = " LIMIT " . ((intval(verifyGPCDataInteger('s1')) - 1) * $nBewertungenProSeite) . ", " . $nBewertungenProSeite;
-        $nAktuelleSeite1 = verifyGPCDataInteger('s1');
-    }
-    if (verifyGPCDataInteger('s2') > 0) {
-        $cSQL2           = " LIMIT " . ((intval(verifyGPCDataInteger('s2')) - 1) * $nBewertungenProSeite) . ", " . $nBewertungenProSeite;
-        $nAktuelleSeite2 = verifyGPCDataInteger('s2');
-    }
     // Bewertungen holen
     $oBewertung_arr = Shop::DB()->query(
         "SELECT tbewertung.*, DATE_FORMAT(tbewertung.dDatum, '%d.%m.%Y') AS Datum, tartikel.cName AS ArtikelName
@@ -171,7 +158,7 @@ if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_ed
             LEFT JOIN tartikel ON tbewertung.kArtikel = tartikel.kArtikel
             WHERE tbewertung.kSprache = " . (int)$_SESSION['kSprache'] . "
                 AND tbewertung.nAktiv = 0
-            ORDER BY tbewertung.kArtikel, tbewertung.dDatum DESC" . $cSQL1, 2
+            ORDER BY tbewertung.kArtikel, tbewertung.dDatum DESC", 2
     );
     // Aktive Bewertungen
     $oBewertungLetzten50_arr = Shop::DB()->query(
@@ -180,7 +167,7 @@ if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_ed
             LEFT JOIN tartikel ON tbewertung.kArtikel = tartikel.kArtikel
             WHERE tbewertung.kSprache = " . (int)$_SESSION['kSprache'] . "
                 AND tbewertung.nAktiv = 1
-            ORDER BY tbewertung.dDatum DESC" . $cSQL2, 2
+            ORDER BY tbewertung.dDatum DESC", 2
     );
     // Bewertungen Anzahl holen
     $oBewertung = Shop::DB()->query(
@@ -197,16 +184,16 @@ if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_ed
                 AND nAktiv = 1", 1
     );
 
-    $oBlaetterNaviInaktiv = baueBlaetterNavi($nAktuelleSeite1, $oBewertung->nAnzahl, $nBewertungenProSeite);
-    $oBlaetterNaviAktiv   = baueBlaetterNavi($nAktuelleSeite2, $oBewertungAktiv->nAnzahl, $nBewertungenProSeite);
+    $oPagiInaktiv = createPagination('inactive', $oBewertung_arr);
+    $oPageAktiv   = createPagination('active', $oBewertungLetzten50_arr);
 
-    $smarty->assign('oBlaetterNaviInaktiv', $oBlaetterNaviInaktiv)
-           ->assign('oBlaetterNaviAktiv', $oBlaetterNaviAktiv)
-           ->assign('oBewertung_arr', $oBewertung_arr)
-           ->assign('oBewertungLetzten50_arr', $oBewertungLetzten50_arr)
-           ->assign('oBewertungAktiv_arr', (isset($oBewertungAktiv_arr) ? $oBewertungAktiv_arr : null))
-           ->assign('oConfig_arr', $oConfig_arr)
-           ->assign('Sprachen', gibAlleSprachen());
+    $smarty->assign('oPagiInaktiv', $oPagiInaktiv)
+        ->assign('oPagiAktiv', $oPageAktiv)
+        ->assign('oBewertung_arr', $oPagiInaktiv->oPageItem_arr)
+        ->assign('oBewertungLetzten50_arr', $oPageAktiv->oPageItem_arr)
+        ->assign('oBewertungAktiv_arr', (isset($oBewertungAktiv_arr) ? $oBewertungAktiv_arr : null))
+        ->assign('oConfig_arr', $oConfig_arr)
+        ->assign('Sprachen', gibAlleSprachen());
 }
 
 $smarty->assign('hinweis', $cHinweis)

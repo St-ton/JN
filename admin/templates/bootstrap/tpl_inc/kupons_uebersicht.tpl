@@ -97,7 +97,7 @@
 <div id="content" class="container-fluid">
     <ul class="nav nav-tabs" role="tablist">
         <li class="tab{if $tab === 'standard'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#standard" aria-expanded="true">{#standardCoupon#}s</a>
+            <a data-toggle="tab" role="tab" href="#standard" aria-expanded="false">{#standardCoupon#}s</a>
         </li>
         <li class="tab{if $tab === 'versandkupon'} active{/if}">
             <a data-toggle="tab" role="tab" href="#versandkupon" aria-expanded="false">{#shippingCoupon#}s</a>

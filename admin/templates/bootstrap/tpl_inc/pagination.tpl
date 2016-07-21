@@ -3,7 +3,7 @@
 {/if}
 
 <div class="block">
-    <form method="get" class="form-inline">
+    <form  action="{if isset($cAnchor)}#{$cAnchor}{/if}" method="get" class="form-inline">
         {foreach $cParam_arr as $cParamName => $cParamValue}
             <input type="hidden" name="{$cParamName}" value="{$cParamValue}">
         {/foreach}

@@ -32,6 +32,13 @@ function bearbeiteExportformate($oJobQueue)
     $smarty               = getSmarty();
     $oJobQueue->nInArbeit = 1;
     $oExportformat        = $oJobQueue->holeJobArt();
+    $max                  = holeMaxExportArtikelAnzahl($oExportformat);
+    $start                = microtime(true);
+    $cacheHits            = 0;
+    $cacheMisses          = 0;
+    Jtllog::cronLog('Starting exportformat "' . $oExportformat->cName . '" for language ' . (int)$oExportformat->kSprache .
+        ' and customer group ' . (int)$oExportformat->kKundengruppe . ' - ' . $oJobQueue->nLimitN . '/' . $max->nAnzahl . ' products exported');
+    Jtllog::cronLog('Caching enabled? ' . ((Shop::Cache()->isActive()) ? 'Yes' : 'No'), 2);
     // Kampagne
     if (isset($oExportformat->kKampagne) && $oExportformat->kKampagne > 0) {
         $oKampagne = Shop::DB()->select('tkampagne', ['kKampagne', 'nAktiv'], [(int)$oExportformat->kKampagne, 1]);
@@ -48,18 +55,18 @@ function bearbeiteExportformate($oJobQueue)
     if ($oExportformat->nSpecial == SPECIAL_EXPORTFORMAT_YATEGO) {
         gibYategoExport($exportformat, $oJobQueue, $ExportEinstellungen);
     } else {
-        if ($exportformat->kWaehrung > 0) {
-            $Waehrung = Shop::DB()->select('twaehrung', 'kWaehrung', (int)$exportformat->kWaehrung);
-        }
+        $Waehrung = ($exportformat->kWaehrung > 0) ?
+            Shop::DB()->select('twaehrung', 'kWaehrung', (int)$exportformat->kWaehrung) :
+            null;
         setzeSteuersaetze();
         if (!isset($_SESSION['Kundengruppe'])) {
             $_SESSION['Kundengruppe'] = new stdClass();
         }
         $_SESSION['Kundengruppe']->darfPreiseSehen            = 1;
         $_SESSION['Kundengruppe']->darfArtikelKategorienSehen = 1;
-        $_SESSION['kSprache']                                 = $exportformat->kSprache;
-        $_SESSION['kKundengruppe']                            = $exportformat->kKundengruppe;
-        $_SESSION['Kundengruppe']->kKundengruppe              = $exportformat->kKundengruppe;
+        $_SESSION['kSprache']                                 = (int)$exportformat->kSprache;
+        $_SESSION['kKundengruppe']                            = (int)$exportformat->kKundengruppe;
+        $_SESSION['Kundengruppe']->kKundengruppe              = (int)$exportformat->kKundengruppe;
         $_SESSION['Sprachen']                                 = Shop::DB()->query("SELECT * FROM tsprache", 2);
         $_SESSION['Waehrung']                                 = $Waehrung;
 
@@ -70,7 +77,7 @@ function bearbeiteExportformate($oJobQueue)
 
             return;
         }
-        //falls datei existiert, löschen
+        //falls datei existiert, loeschen
         if ($oJobQueue->nLimitN == 0 && file_exists(PFAD_ROOT . PFAD_EXPORT . $cTMPDatei)) {
             unlink(PFAD_ROOT . PFAD_EXPORT . $cTMPDatei);
         }
@@ -99,7 +106,7 @@ function bearbeiteExportformate($oJobQueue)
                     AND tartikelattribut.cName = '" . FKT_ATTRIBUT_KEINE_PREISSUCHMASCHINEN . "'
                 " . $cSQL_arr['Join'] . "
                 LEFT JOIN tartikelsichtbarkeit ON tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
-                    AND tartikelsichtbarkeit.kKundengruppe = " . $exportformat->kKundengruppe . "
+                    AND tartikelsichtbarkeit.kKundengruppe = " . (int)$exportformat->kKundengruppe . "
                 WHERE tartikelattribut.kArtikelAttribut IS NULL" . $cSQL_arr['Where'] . "
                     AND tartikelsichtbarkeit.kArtikel IS NULL
                     {$sql}
@@ -117,7 +124,12 @@ function bearbeiteExportformate($oJobQueue)
             $oArtikelOptionen->nMedienDatei              = 1;
             foreach ($oArtikel_arr as $tartikel) {
                 $Artikel = new Artikel();
-                $Artikel->fuelleArtikel($tartikel->kArtikel, $oArtikelOptionen, $exportformat->kKundengruppe, $exportformat->kSprache);
+                $Artikel->fuelleArtikel($tartikel->kArtikel, $oArtikelOptionen, (int)$exportformat->kKundengruppe, (int)$exportformat->kSprache);
+                if ($Artikel->cacheHit === true) {
+                    ++$cacheHits;
+                } else {
+                    ++$cacheMisses;
+                }
 
                 if ($Artikel->kArtikel > 0) {
                     $Artikel->cBeschreibungHTML     = str_replace('"', '&quot;', $Artikel->cBeschreibung);
@@ -256,12 +268,12 @@ function bearbeiteExportformate($oJobQueue)
                     unlink(PFAD_ROOT . PFAD_EXPORT . $cTMPDatei);
                 }
             }
-            // Versucht (falls so eingestellt) die erstellte Exportdatei zu in mehrere Dateien zu splitten
+            // Versucht (falls so eingestellt) die erstellte Exportdatei in mehrere Dateien zu splitten
             splitteExportDatei($exportformat);
-
             unset($oJobQueue);
         }
     }
+    Jtllog::cronLog('Finished after ' . round(microtime(true) - $start, 4) . 's. Article cache hits: ' . $cacheHits . ', misses: ' . $cacheMisses);
 }
 
 /**

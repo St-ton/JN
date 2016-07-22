@@ -218,8 +218,8 @@ class NiceDB
      * object wrapper
      * this allows to call NiceDB->query() etc.
      *
-     * @param $method
-     * @param $arguments
+     * @param string $method
+     * @param array  $arguments
      * @return mixed
      */
     public function __call($method, $arguments)
@@ -233,8 +233,8 @@ class NiceDB
      * static wrapper
      * this allows to call NiceShop::DB()->query() etc.
      *
-     * @param $method
-     * @param $arguments
+     * @param string $method
+     * @param array  $arguments
      * @return mixed
      */
     public static function __callStatic($method, $arguments)
@@ -247,7 +247,7 @@ class NiceDB
     /**
      * map function calls to real functions
      *
-     * @param $method
+     * @param string $method
      * @return string|null
      */
     private static function map($method)
@@ -278,10 +278,10 @@ class NiceDB
      * collect data
      * enrich with backtrace
      *
-     * @param string $type
-     * @param string $stmt
-     * @param int    $time
-     * @param null   $backtrace
+     * @param string     $type
+     * @param string     $stmt
+     * @param int        $time
+     * @param null|array $backtrace
      * @return $this
      */
     private function analyzeQuery($type = '', $stmt, $time = 0, $backtrace = null)
@@ -843,12 +843,13 @@ class NiceDB
      * executes query and returns misc data
      *
      * @access protected
-     * @param int      $type - Type [0 => query, 1 => prepared]
-     * @param string   $stmt - Statement to be executed
-     * @param array    $params - An array of values with as many elements as there are bound parameters in the SQL statement being executed
-     * @param int      $return - what should be returned.
-     * @param int|bool $echo print current stmt
-     * @param bool     $bExecuteHook should function executeHook be executed
+     * @param int           $type - Type [0 => query, 1 => prepared]
+     * @param string        $stmt - Statement to be executed
+     * @param array         $params - An array of values with as many elements as there are bound parameters in the SQL statement being executed
+     * @param int           $return - what should be returned.
+     * @param int|bool      $echo print current stmt
+     * @param bool          $bExecuteHook should function executeHook be executed
+     * @param null|callable $fnInfo
      * 1  - single fetched object
      * 2  - array of fetched objects
      * 3  - affected rows
@@ -860,8 +861,8 @@ class NiceDB
      */
     protected function _execute($type, $stmt, $params, $return, $echo = false, $bExecuteHook = false, $fnInfo = null)
     {
-        $type   = (int) $type;
-        $return = (int) $return;
+        $type   = (int)$type;
+        $return = (int)$return;
         $params = is_array($params) ? $params : [];
 
         if (!in_array($type, [0, 1])) {
@@ -1130,7 +1131,7 @@ class NiceDB
     /**
      * Quotes a string with outer quotes for use in a query.
      *
-     * @param $string
+     * @param string $string
      * @return string
      */
     public function quote($string)
@@ -1145,7 +1146,7 @@ class NiceDB
     /**
      * Quotes a string for use in a query.
      *
-     * @param $string
+     * @param string $string
      * @return string
      */
     public function escape($string)
@@ -1161,7 +1162,6 @@ class NiceDB
     /**
      * logger
      *
-     * @access public
      * @param string $entry - entry to log
      * @return $this
      */
@@ -1220,7 +1220,7 @@ class NiceDB
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function commit()
     {
@@ -1237,7 +1237,7 @@ class NiceDB
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function rollback()
     {
@@ -1251,7 +1251,10 @@ class NiceDB
     }
 
     /**
-     *
+     * @param PDOStatement $stmt
+     * @param string       $parameter
+     * @param mixed        $value
+     * @param null         $type
      */
     protected function _bind(PDOStatement &$stmt, $parameter, $value, $type = null)
     {
@@ -1277,7 +1280,8 @@ class NiceDB
     }
 
     /**
-     *
+     * @param string $name
+     * @return string
      */
     protected function _bindName($name)
     {
@@ -1289,7 +1293,9 @@ class NiceDB
     }
 
     /**
-     *
+     * @param string $query
+     * @param array  $params
+     * @return string
      */
     public function readableQuery($query, $params)
     {

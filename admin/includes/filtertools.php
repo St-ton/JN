@@ -26,7 +26,7 @@ function createFilter()
  * @param object $oFilter
  * @param string $cTitle - the label/title for this field
  * @param string $cColumn - the column name to be compared
- * @param bool $bExact - exact match or substring search
+ * @param bool   $bExact - exact match or substring search
  * @return object - the text field object
  */
 function addFilterTextfield($oFilter, $cTitle, $cColumn, $bExact)
@@ -53,6 +53,7 @@ function addFilterTextfield($oFilter, $cTitle, $cColumn, $bExact)
 /**
  * Add a select field to a filter object. Options can be added with addFilterSelectOption() to this select field
  *
+ * @param object $oFilter
  * @param string $cTitle - the label/title for this field
  * @param string $cColumn - the column name to be compared
  * @return object - the filter select field object
@@ -83,6 +84,7 @@ function addFilterSelect($oFilter, $cTitle, $cColumn)
 /**
  * Add a select option to a filter select field
  *
+ * @param object $oField - select field object to add the option to
  * @param string $cTitle - the label/title for this field
  * @param string $cCond - options conditional right part (e.g. "= 'Y'" or "> 10")
  * @return object - the select option object

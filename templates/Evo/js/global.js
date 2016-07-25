@@ -149,11 +149,14 @@ function loadContent(url)
     });
 }
 
-$(window).load(function(){
+function navigation()
+{
     var navWrapper = $('#evo-main-nav-wrapper'),
         stickyWrapperParent = navWrapper.parent();
 
-    stickyWrapperParent.css('height', stickyWrapperParent.outerHeight());
+    stickyWrapperParent.css('height', 'auto');
+    var outerHeight = stickyWrapperParent.outerHeight();
+    stickyWrapperParent.css('height', outerHeight);
 
     if (navWrapper.hasClass('do-affix')) {
         navWrapper.affix({
@@ -162,6 +165,14 @@ $(window).load(function(){
             }
         });
     }
+}
+
+$(window).load(function(){
+    navigation();
+});
+
+$(window).resize(function(){
+    navigation();
 });
 
 $(document).ready(function () {

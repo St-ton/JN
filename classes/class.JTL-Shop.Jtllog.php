@@ -485,4 +485,21 @@ class Jtllog
     {
         return ($nVal & $nFlag);
     }
+
+    /**
+     * @param string $string
+     * @param int    $level
+     * @return bool
+     */
+    public static function cronLog($string, $level = 1)
+    {
+        if (php_sapi_name() === 'cli' && defined('VERBOSE_CRONJOBS') && (int)VERBOSE_CRONJOBS >= $level) {
+            $now = new DateTime();
+            echo $now->format('Y-m-d H:i:s') . ' ' . $string . PHP_EOL;
+
+            return true;
+        }
+
+        return false;
+    }
 }

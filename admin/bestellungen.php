@@ -8,7 +8,6 @@ require_once dirname(__FILE__) . '/includes/admininclude.php';
 $oAccount->permission('ORDER_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'bestellungen_inc.php';
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'pagination.php';
 
 $cHinweis          = '';
 $cFehler           = '';
@@ -36,7 +35,10 @@ if (verifyGPCDataInteger('zuruecksetzen') === 1 && validateToken()) {
 }
 
 if ($step === 'bestellungen_uebersicht') {
-    $oPagination = createPagination('bestellungen', gibBestellungsUebersicht('', $cSuchFilter));
+    $oPagination = (new Pagination('bestellungen'))
+        ->setItemArray(gibBestellungsUebersicht('', $cSuchFilter))
+        ->storeParameters()
+        ->assemble();
     $smarty->assign('oBestellung_arr', $oPagination->oPageItem_arr)
            ->assign('oPagination', $oPagination);
 }

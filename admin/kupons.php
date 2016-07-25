@@ -9,7 +9,6 @@ $oAccount->permission('ORDER_COUPON_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'kupons_inc.php';
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'pagination.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'filtertools.php';
 
 $cHinweis        = '';
@@ -127,39 +126,41 @@ if ($action === 'bearbeiten') {
     addFilterSelectOption($oAktivSelect, 'inaktiv', "= 'N'");
     assembleFilter($oFilter);
 
-    $nItemsPerPageOption_arr   = [10, 20, 50, 100];
-    $cSortByOption_arr         = [['cName', 'Name'], ['cCode', 'Code'], ['nVerwendungenBisher', 'Verwendungen'], ['dLastUse', 'Zuletzt verwendet']];
+    $cSortByOption_arr   = [['cName', 'Name'], ['cCode', 'Code'], ['nVerwendungenBisher', 'Verwendungen'], ['dLastUse', 'Zuletzt verwendet']];
+    $oKuponStandard_arr  = getCoupons('standard', $oFilter->cWhereSQL);
+    $oKuponVersand_arr   = getCoupons('versandkupon', $oFilter->cWhereSQL);
+    $oKuponNeukunden_arr = getCoupons('neukundenkupon', $oFilter->cWhereSQL);
 
-    /*// this variant would use sql pagination instead
-    $nKuponStandardCount       = getCouponCount('standard', $oFilter->cWhereSQL);
-    $nKuponVersandCount        = getCouponCount('versandkupon', $oFilter->cWhereSQL);
-    $nKuponNeukundenCount      = getCouponCount('neukundenkupon', $oFilter->cWhereSQL);
-    $oPaginationStandard       = createPaginationSQL('standard', $nKuponStandardCount, 2, $nItemsPerPageOption_arr, $cSortByOption_arr);
-    $oPaginationVersandkupon   = createPaginationSQL('versandkupon', $nKuponVersandCount, 2, $nItemsPerPageOption_arr, $cSortByOption_arr);
-    $oPaginationNeukundenkupon = createPaginationSQL('neukundenkupon', $nKuponNeukundenCount, 2, $nItemsPerPageOption_arr, $cSortByOption_arr);
-    $oKuponStandard_arr        = getCoupons('standard', $oFilter->cWhereSQL, $oPaginationStandard->cOrderSQL, $oPaginationStandard->cLimitSQL);
-    $oKuponVersandkupon_arr    = getCoupons('versandkupon', $oFilter->cWhereSQL, $oPaginationVersandkupon->cOrderSQL, $oPaginationVersandkupon->cLimitSQL);
-    $oKuponNeukundenkupon_arr  = getCoupons('neukundenkupon', $oFilter->cWhereSQL, $oPaginationNeukundenkupon->cOrderSQL, $oPaginationNeukundenkupon->cLimitSQL);
-    */
+    $oPaginationStandard = (new Pagination('standard'))
+        ->setSortByOptions($cSortByOption_arr)
+        ->setItemArray($oKuponStandard_arr)
+        ->storeParameters()
+        ->assemble();
 
-    $oKuponStandard_arr        = getCoupons('standard', $oFilter->cWhereSQL);
-    $oKuponVersandkupon_arr    = getCoupons('versandkupon', $oFilter->cWhereSQL);
-    $oKuponNeukundenkupon_arr  = getCoupons('neukundenkupon', $oFilter->cWhereSQL);
-    $oPaginationStandard       = createPagination('standard', $oKuponStandard_arr, 2, $nItemsPerPageOption_arr, $cSortByOption_arr);
-    $oPaginationVersandkupon   = createPagination('versandkupon', $oKuponVersandkupon_arr, 2, $nItemsPerPageOption_arr, $cSortByOption_arr);
-    $oPaginationNeukundenkupon = createPagination('neukundenkupon', $oKuponNeukundenkupon_arr, 2, $nItemsPerPageOption_arr, $cSortByOption_arr);
-    $oKuponStandard_arr        = $oPaginationStandard->oPageItem_arr;
-    $oKuponVersandkupon_arr    = $oPaginationVersandkupon->oPageItem_arr;
-    $oKuponNeukundenkupon_arr  = $oPaginationNeukundenkupon->oPageItem_arr;
+    $oPaginationVersand = (new Pagination('versand'))
+        ->setSortByOptions($cSortByOption_arr)
+        ->setItemArray($oKuponVersand_arr)
+        ->storeParameters()
+        ->assemble();
+
+    $oPaginationNeukunden = (new Pagination('neukunden'))
+        ->setSortByOptions($cSortByOption_arr)
+        ->setItemArray($oKuponNeukunden_arr)
+        ->storeParameters()
+        ->assemble();
+
+    $oKuponStandard_arr  = $oPaginationStandard->oPageItem_arr;
+    $oKuponVersand_arr   = $oPaginationVersand->oPageItem_arr;
+    $oKuponNeukunden_arr = $oPaginationNeukunden->oPageItem_arr;
 
     $smarty->assign('tab', $tab)
         ->assign('oFilter', $oFilter)
         ->assign('oPaginationStandard', $oPaginationStandard)
-        ->assign('oPaginationVersandkupon', $oPaginationVersandkupon)
-        ->assign('oPaginationNeukundenkupon', $oPaginationNeukundenkupon)
+        ->assign('oPaginationVersandkupon', $oPaginationVersand)
+        ->assign('oPaginationNeukundenkupon', $oPaginationNeukunden)
         ->assign('oKuponStandard_arr', $oKuponStandard_arr)
-        ->assign('oKuponVersandkupon_arr', $oKuponVersandkupon_arr)
-        ->assign('oKuponNeukundenkupon_arr', $oKuponNeukundenkupon_arr);
+        ->assign('oKuponVersandkupon_arr', $oKuponVersand_arr)
+        ->assign('oKuponNeukundenkupon_arr', $oKuponNeukunden_arr);
 }
 
 $smarty->assign('action', $action)

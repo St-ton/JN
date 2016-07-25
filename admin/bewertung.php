@@ -10,7 +10,6 @@ $oAccount->permission('MODULE_VOTESYSTEM_VIEW', true, true);
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bewertung_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'bewertung_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'pagination.php';
 
 $Einstellungen = Shop::getSettings(array(CONF_BEWERTUNG));
 $cHinweis      = '';
@@ -184,8 +183,14 @@ if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_ed
                 AND nAktiv = 1", 1
     );
 
-    $oPagiInaktiv = createPagination('inactive', $oBewertung_arr);
-    $oPageAktiv   = createPagination('active', $oBewertungLetzten50_arr);
+    $oPagiInaktiv = (new Pagination('inactive'))
+        ->setItemArray($oBewertung_arr)
+        ->storeParameters()
+        ->assemble();
+    $oPageAktiv   = (new Pagination('active'))
+        ->setItemArray($oBewertungLetzten50_arr)
+        ->storeParameters()
+        ->assemble();
 
     $smarty->assign('oPagiInaktiv', $oPagiInaktiv)
         ->assign('oPagiAktiv', $oPageAktiv)

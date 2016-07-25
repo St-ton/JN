@@ -15,6 +15,7 @@
  * @method int insert(string $tablename, object $object, int|bool $echo = false, bool $bExecuteHook = false)
  * @method int delete(string $tablename, string|array $keyname, string|int|array $keyvalue, bool|int $echo = false)
  * @method int update(string $tablename, string|array $keyname, string|int|array $keyvalue, object $object, int|bool $echo = false)
+ * @method int|array selectAll(string $tablename, string|array $keys, string|int|array $values, string $select = '*', string $orderBy = '')
  * @method string realEscape($string)
  * @method string pdoEscape($string)
  * @method string info()
@@ -267,6 +268,7 @@ class NiceDB
             'getErrorCode'    => '_getErrorCode',
             'getErrorMessage' => '_getErrorMessage',
             'getError'        => '_getError',
+            'selectAll'       => 'selectArray',
             'isConnected'     => 'isConnected'
         );
 
@@ -793,6 +795,36 @@ class NiceDB
     }
 
     /**
+     * @param string       $tablename
+     * @param string|array $keys
+     * @param string|array $values
+     * @param string       $select
+     * @param string       $orderBy
+     * @return array|int|object
+     * @throws InvalidArgumentException
+     */
+    public function selectArray($tablename, $keys, $values, $select = '*', $orderBy = '')
+    {
+        $keys         = (is_array($keys)) ? $keys : array($keys);
+        $values       = (is_array($values)) ? $values : array($values);
+        $kv           = array();
+        if (count($keys) !== count($values)) {
+            throw new InvalidArgumentException('Number of keys must be equal to number of given keys. Got ' . count($keys) . ' key(s) and ' . count($values) . ' value(s).');
+        }
+        foreach ($keys as $_key) {
+            $kv[] = $_key . '=:' . $_key;
+        }
+        $stmt = 'SELECT ' . $select . ' FROM ' . $tablename .
+            ((count($keys) > 0) ?
+                (' WHERE ' . implode(' AND ', $kv)) :
+                ''
+            ) .
+            ((!empty($orderBy)) ? (' ORDER BY ' . $orderBy) : '');
+
+        return $this->executeQueryPrepared($stmt, array_combine($keys, $values), 2);
+    }
+
+    /**
      * executes query and returns misc data
      *
      * @access public
@@ -864,7 +896,6 @@ class NiceDB
         $type   = (int)$type;
         $return = (int)$return;
         $params = is_array($params) ? $params : [];
-
         if (!in_array($type, [0, 1])) {
             throw new InvalidArgumentException("\$type parameter must be 0 or 1, given '{$type}'");
         }
@@ -1273,6 +1304,7 @@ class NiceDB
                     break;
                 default:
                     $type = PDO::PARAM_STR;
+                    break;
             }
         }
 

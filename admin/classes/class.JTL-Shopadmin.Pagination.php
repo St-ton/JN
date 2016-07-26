@@ -198,7 +198,7 @@ class Pagination
     }
 
     /**
-     * Store the custom back parameters in the SESSION store
+     * Store the custom parameters back into the SESSION store
      * @return $this
      */
     public function storeParameters()

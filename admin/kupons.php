@@ -134,19 +134,16 @@ if ($action === 'bearbeiten') {
     $oPaginationStandard = (new Pagination('standard'))
         ->setSortByOptions($cSortByOption_arr)
         ->setItemArray($oKuponStandard_arr)
-        ->storeParameters()
         ->assemble();
 
     $oPaginationVersand = (new Pagination('versand'))
         ->setSortByOptions($cSortByOption_arr)
         ->setItemArray($oKuponVersand_arr)
-        ->storeParameters()
         ->assemble();
 
     $oPaginationNeukunden = (new Pagination('neukunden'))
         ->setSortByOptions($cSortByOption_arr)
         ->setItemArray($oKuponNeukunden_arr)
-        ->storeParameters()
         ->assemble();
 
     $oKuponStandard_arr  = $oPaginationStandard->oPageItem_arr;

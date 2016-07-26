@@ -37,7 +37,6 @@ if (verifyGPCDataInteger('zuruecksetzen') === 1 && validateToken()) {
 if ($step === 'bestellungen_uebersicht') {
     $oPagination = (new Pagination('bestellungen'))
         ->setItemArray(gibBestellungsUebersicht('', $cSuchFilter))
-        ->storeParameters()
         ->assemble();
     $smarty->assign('oBestellung_arr', $oPagination->oPageItem_arr)
            ->assign('oPagination', $oPagination);

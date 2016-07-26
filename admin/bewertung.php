@@ -185,11 +185,9 @@ if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_ed
 
     $oPagiInaktiv = (new Pagination('inactive'))
         ->setItemArray($oBewertung_arr)
-        ->storeParameters()
         ->assemble();
     $oPageAktiv   = (new Pagination('active'))
         ->setItemArray($oBewertungLetzten50_arr)
-        ->storeParameters()
         ->assemble();
 
     $smarty->assign('oPagiInaktiv', $oPagiInaktiv)

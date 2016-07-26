@@ -49,6 +49,7 @@ class Pagination
     {
         $this->cId = $cId;
         $this->loadParameters();
+        $this->storeParameters();
 
         return $this;
     }

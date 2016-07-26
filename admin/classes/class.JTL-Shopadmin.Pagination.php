@@ -37,8 +37,11 @@ class Pagination
     public function __construct($cId = null)
     {
         if ($cId) {
-            $this->setId($cId);
+            $this->cId = $cId;
         }
+        
+        $this->loadParameters();
+        $this->storeParameters();
     }
 
     /**
@@ -93,7 +96,7 @@ class Pagination
      */
     public function setItemCount($nItemCount)
     {
-        $this->nItemCount = $nItemCount;
+        $this->nItemCount = (int)$nItemCount;
 
         return $this;
     }

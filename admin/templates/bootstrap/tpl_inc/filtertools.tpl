@@ -7,15 +7,15 @@
         {foreach $cParam_arr as $cParamName => $cParamValue}
             <input type="hidden" name="{$cParamName}" value="{$cParamValue}">
         {/foreach}
-        {foreach $oFilter->oField_arr as $oField}
+        {foreach $oFilter->getFields() as $oField}
             <div class="form-group">
-                <label class="sr-only" for="{$oField->cColumn}">{$oField->cTitle}</label>
-                {if $oField->cType === 'text'}
-                    <input type="text" class="form-control" name="{$oField->cColumn}" id="{$oField->cColumn}" value="{$oField->cValue}" placeholder="{$oField->cTitle}">
-                {elseif $oField->cType === 'select'}
-                    <select class="form-control" name="{$oField->cColumn}" id="{$oField->cColumn}">
-                        {foreach $oField->oOption_arr as $i => $oOption}
-                            <option value="{$i}"{if $i == (int)$oField->cValue} selected{/if}>{$oOption->cTitle}</option>
+                <label class="sr-only" for="{$oField->getColumn()}">{$oField->getTitle()}</label>
+                {if $oField->getType() === 'text'}
+                    <input type="text" class="form-control" name="{$oField->getColumn()}" id="{$oField->getColumn()}" value="{$oField->getValue()}" placeholder="{$oField->getTitle()}">
+                {elseif $oField->getType() === 'select'}
+                    <select class="form-control" name="{$oField->getColumn()}" id="{$oField->getColumn()}">
+                        {foreach $oField->getOptions() as $i => $oOption}
+                            <option value="{$i}"{if $i == (int)$oField->getValue()} selected{/if}>{$oOption->getTitle()}</option>
                         {/foreach}
                     </select>
                 {/if}

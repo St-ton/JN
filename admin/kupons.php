@@ -9,7 +9,6 @@ $oAccount->permission('ORDER_COUPON_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'kupons_inc.php';
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'filtertools.php';
 
 $cHinweis        = '';
 $cFehler         = '';
@@ -116,20 +115,20 @@ if ($action === 'bearbeiten') {
 
     deactivateOutdatedCoupons();
     deactivateExhaustedCoupons();
-
-    $oFilter = createFilter();
-    addFilterTextfield($oFilter, 'Name', 'cName', false);
-    addFilterTextfield($oFilter, 'Code', 'cCode', false);
-    $oAktivSelect = addFilterSelect($oFilter, 'Status', 'cAktiv');
-    addFilterSelectOption($oAktivSelect, 'alle', "");
-    addFilterSelectOption($oAktivSelect, 'aktiv', "= 'Y'");
-    addFilterSelectOption($oAktivSelect, 'inaktiv', "= 'N'");
-    assembleFilter($oFilter);
+    
+    $oFilter = new Filter();
+    $oFilter->addTextfield('Name', 'cName', false);
+    $oFilter->addTextfield('Code', 'cCode', false);
+    $oAktivSelect = $oFilter->addSelectfield('Status', 'cAktiv');
+    $oAktivSelect->addSelectOption('alle', "");
+    $oAktivSelect->addSelectOption('aktiv', "= 'Y'");
+    $oAktivSelect->addSelectOption('inaktiv', "= 'N'");
+    $oFilter->assemble();
 
     $cSortByOption_arr   = [['cName', 'Name'], ['cCode', 'Code'], ['nVerwendungenBisher', 'Verwendungen'], ['dLastUse', 'Zuletzt verwendet']];
-    $oKuponStandard_arr  = getCoupons('standard', $oFilter->cWhereSQL);
-    $oKuponVersand_arr   = getCoupons('versandkupon', $oFilter->cWhereSQL);
-    $oKuponNeukunden_arr = getCoupons('neukundenkupon', $oFilter->cWhereSQL);
+    $oKuponStandard_arr  = getCoupons('standard', $oFilter->getWhereSQL());
+    $oKuponVersand_arr   = getCoupons('versandkupon', $oFilter->getWhereSQL());
+    $oKuponNeukunden_arr = getCoupons('neukundenkupon', $oFilter->getWhereSQL());
 
     $oPaginationStandard = (new Pagination('standard'))
         ->setSortByOptions($cSortByOption_arr)

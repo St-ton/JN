@@ -181,8 +181,8 @@ class Pagination
 
             if (is_array($this->oItem_arr)) {
                 usort($this->oItem_arr, function ($a, $b) use ($cSortBy, $nSortFac) {
-                    $valueA = strtolower($a->$cSortBy);
-                    $valueB = strtolower($b->$cSortBy);
+                    $valueA = is_string($a->$cSortBy) ? strtolower($a->$cSortBy) : $a->$cSortBy;
+                    $valueB = is_string($b->$cSortBy) ? strtolower($b->$cSortBy) : $b->$cSortBy;
 
                     return $valueA == $valueB ? 0 : ($valueA < $valueB ? -$nSortFac : +$nSortFac);
                 });

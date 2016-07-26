@@ -192,8 +192,8 @@ if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_ed
 
     $smarty->assign('oPagiInaktiv', $oPagiInaktiv)
         ->assign('oPagiAktiv', $oPageAktiv)
-        ->assign('oBewertung_arr', $oPagiInaktiv->oPageItem_arr)
-        ->assign('oBewertungLetzten50_arr', $oPageAktiv->oPageItem_arr)
+        ->assign('oBewertung_arr', $oPagiInaktiv->getPageItems())
+        ->assign('oBewertungLetzten50_arr', $oPageAktiv->getPageItems())
         ->assign('oBewertungAktiv_arr', (isset($oBewertungAktiv_arr) ? $oBewertungAktiv_arr : null))
         ->assign('oConfig_arr', $oConfig_arr)
         ->assign('Sprachen', gibAlleSprachen());

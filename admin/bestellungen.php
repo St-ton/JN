@@ -38,7 +38,7 @@ if ($step === 'bestellungen_uebersicht') {
     $oPagination = (new Pagination('bestellungen'))
         ->setItemArray(gibBestellungsUebersicht('', $cSuchFilter))
         ->assemble();
-    $smarty->assign('oBestellung_arr', $oPagination->oPageItem_arr)
+    $smarty->assign('oBestellung_arr', $oPagination->getPageItems())
            ->assign('oPagination', $oPagination);
 }
 

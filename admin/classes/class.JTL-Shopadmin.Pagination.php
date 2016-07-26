@@ -9,26 +9,26 @@
  */
 class Pagination
 {
-    public $cId                     = 'pagi';
-    public $nDispPagesRadius        = 2;
-    public $nItemsPerPageOption_arr = [10, 20, 50, 100];
-    public $cSortByOption_arr       = [];
-    public $nItemCount              = 0;
-    public $nItemsPerPage           = 10;
-    public $nSortBy                 = 0;
-    public $nSortDir                = 0;
-    public $nPage                   = 0;
-    public $nPageCount              = 0;
-    public $nPrevPage               = 0;
-    public $nNextPage               = 0;
-    public $nLeftRangePage          = 0;
-    public $nRightRangePage         = 0;
-    public $nFirstPageItem          = 0;
-    public $nPageItemCount          = 0;
-    public $cLimitSQL               = '';
-    public $cOrderSQL               = '';
-    public $oItem_arr               = null;
-    public $oPageItem_arr           = null;
+    private $cId                     = 'pagi';
+    private $nDispPagesRadius        = 2;
+    private $nItemsPerPageOption_arr = [10, 20, 50, 100];
+    private $cSortByOption_arr       = [];
+    private $nItemCount              = 0;
+    private $nItemsPerPage           = 10;
+    private $nSortBy                 = 0;
+    private $nSortDir                = 0;
+    private $nPage                   = 0;
+    private $nPageCount              = 0;
+    private $nPrevPage               = 0;
+    private $nNextPage               = 0;
+    private $nLeftRangePage          = 0;
+    private $nRightRangePage         = 0;
+    private $nFirstPageItem          = 0;
+    private $nPageItemCount          = 0;
+    private $cLimitSQL               = '';
+    private $cOrderSQL               = '';
+    private $oItem_arr               = null;
+    private $oPageItem_arr           = null;
 
     /**
      * Pagination constructor.
@@ -210,5 +210,149 @@ class Pagination
         $_SESSION[$this->cId . '_nPage']         = $this->nPage;
 
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getId()
+    {
+        return $this->cId;
+    }
+
+    /**
+     * @return array
+     */
+    public function getItemsPerPageOptions()
+    {
+        return $this->nItemsPerPageOption_arr;
+    }
+
+    /**
+     * @return array
+     */
+    public function getSortByOptions()
+    {
+        return $this->cSortByOption_arr;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLimitSQL()
+    {
+        return $this->cLimitSQL;
+    }
+
+    /**
+     * @return string
+     */
+    public function getOrderSQL()
+    {
+        return $this->cOrderSQL;
+    }
+
+    /**
+     * @return int
+     */
+    public function getItemCount()
+    {
+        return $this->nItemCount;
+    }
+
+    /**
+     * @return int
+     */
+    public function getItemsPerPage()
+    {
+        return $this->nItemsPerPage;
+    }
+
+    /**
+     * @return int
+     */
+    public function getSortBy()
+    {
+        return $this->nSortBy;
+    }
+
+    /**
+     * @return int
+     */
+    public function getSortDir()
+    {
+        return $this->nSortDir;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPage()
+    {
+        return $this->nPage;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPageCount()
+    {
+        return $this->nPageCount;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPrevPage()
+    {
+        return $this->nPrevPage;
+    }
+
+    /**
+     * @return int
+     */
+    public function getNextPage()
+    {
+        return $this->nNextPage;
+    }
+
+    /**
+     * @return int
+     */
+    public function getLeftRangePage()
+    {
+        return $this->nLeftRangePage;
+    }
+
+    /**
+     * @return int
+     */
+    public function getRightRangePage()
+    {
+        return $this->nRightRangePage;
+    }
+
+    /**
+     * @return int
+     */
+    public function getFirstPageItem()
+    {
+        return $this->nFirstPageItem;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPageItemCount()
+    {
+        return $this->nPageItemCount;
+    }
+
+    /**
+     * @return array
+     */
+    public function getPageItems()
+    {
+        return $this->oPageItem_arr;
     }
 }

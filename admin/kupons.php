@@ -146,9 +146,9 @@ if ($action === 'bearbeiten') {
         ->setItemArray($oKuponNeukunden_arr)
         ->assemble();
 
-    $oKuponStandard_arr  = $oPaginationStandard->oPageItem_arr;
-    $oKuponVersand_arr   = $oPaginationVersand->oPageItem_arr;
-    $oKuponNeukunden_arr = $oPaginationNeukunden->oPageItem_arr;
+    $oKuponStandard_arr  = $oPaginationStandard->getPageItems();
+    $oKuponVersand_arr   = $oPaginationVersand->getPageItems();
+    $oKuponNeukunden_arr = $oPaginationNeukunden->getPageItems();
 
     $smarty->assign('tab', $tab)
         ->assign('oFilter', $oFilter)

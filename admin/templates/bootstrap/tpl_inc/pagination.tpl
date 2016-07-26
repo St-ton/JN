@@ -9,45 +9,45 @@
 {/if}
 
 <div class="block">
-    {if $oPagination->nPageCount > 1}
+    {if $oPagination->getPageCount() > 1}
         <div class="form-group">
             <label>
-                Eintr&auml;ge {$oPagination->nFirstPageItem + 1}
-                - {$oPagination->nFirstPageItem + $oPagination->nPageItemCount}
-                von {$oPagination->nItemCount}
+                Eintr&auml;ge {$oPagination->getFirstPageItem() + 1}
+                - {$oPagination->getFirstPageItem() + $oPagination->getPageItemCount()}
+                von {$oPagination->getItemCount()}
             </label>
 
             <ul class="pagination btn-group">
                 <li>
-                    <a {if $oPagination->nPrevPage != $oPagination->nPage}href="?{$oPagination->cId}_nPage={$oPagination->nPrevPage}&{$cUrlAppend}"{/if}>&laquo;</a>
+                    <a {if $oPagination->getPrevPage() != $oPagination->getPage()}href="?{$oPagination->getId()}_nPage={$oPagination->getPrevPage()}&{$cUrlAppend}"{/if}>&laquo;</a>
                 </li>
-                {if $oPagination->nLeftRangePage > 0}
+                {if $oPagination->getLeftRangePage() > 0}
                     <li>
-                        <a href="?{$oPagination->cId}_nPage=0&{$cUrlAppend}">1</a>
+                        <a href="?{$oPagination->getId()}_nPage=0&{$cUrlAppend}">1</a>
                     </li>
                 {/if}
-                {if $oPagination->nLeftRangePage > 1}
+                {if $oPagination->getLeftRangePage() > 1}
                     <li>
                         <a>&hellip;</a>
                     </li>
                 {/if}
-                {for $i=$oPagination->nLeftRangePage to $oPagination->nRightRangePage}
-                    <li class="{if $oPagination->nPage == $i}active{/if}">
-                        <a href="?{$oPagination->cId}_nPage={$i}&{$cUrlAppend}">{$i+1}</a>
+                {for $i=$oPagination->getLeftRangePage() to $oPagination->getRightRangePage()}
+                    <li class="{if $oPagination->getPage() == $i}active{/if}">
+                        <a href="?{$oPagination->getId()}_nPage={$i}&{$cUrlAppend}">{$i+1}</a>
                     </li>
                 {/for}
-                {if $oPagination->nRightRangePage < $oPagination->nPageCount - 2}
+                {if $oPagination->getRightRangePage() < $oPagination->getPageCount() - 2}
                     <li>
                         <a>&hellip;</a>
                     </li>
                 {/if}
-                {if $oPagination->nRightRangePage < $oPagination->nPageCount - 1}
+                {if $oPagination->getRightRangePage() < $oPagination->getPageCount() - 1}
                     <li>
-                        <a href="?{$oPagination->cId}_nPage={$oPagination->nPageCount - 1}&{$cUrlAppend}">{$oPagination->nPageCount}</a>
+                        <a href="?{$oPagination->getId()}_nPage={$oPagination->getPageCount() - 1}&{$cUrlAppend}">{$oPagination->getPageCount()}</a>
                     </li>
                 {/if}
                 <li>
-                    <a {if $oPagination->nNextPage != $oPagination->nPage}href="?{$oPagination->cId}_nPage={$oPagination->nNextPage}&{$cUrlAppend}"{/if}>&raquo;</a>
+                    <a {if $oPagination->getNextPage() != $oPagination->getPage()}href="?{$oPagination->getId()}_nPage={$oPagination->getNextPage()}&{$cUrlAppend}"{/if}>&raquo;</a>
                 </li>
             </ul>
         </div>
@@ -58,44 +58,44 @@
             <input type="hidden" name="{$cParamName}" value="{$cParamValue}">
         {/foreach}
         <div class="form-group">
-            <label for="{$oPagination->cId}_nItemsPerPage">
+            <label for="{$oPagination->getId()}_nItemsPerPage">
                 Eintr&auml;ge/Seite
             </label>
-            <select class="form-control" name="{$oPagination->cId}_nItemsPerPage" id="{$oPagination->cId}_nItemsPerPage">
-                {foreach $oPagination->nItemsPerPageOption_arr as $nItemsPerPageOption}
-                    <option value="{$nItemsPerPageOption}"{if $oPagination->nItemsPerPage == $nItemsPerPageOption} selected="selected"{/if}>
+            <select class="form-control" name="{$oPagination->getId()}_nItemsPerPage" id="{$oPagination->getId()}_nItemsPerPage">
+                {foreach $oPagination->getItemsPerPageOptions() as $nItemsPerPageOption}
+                    <option value="{$nItemsPerPageOption}"{if $oPagination->getItemsPerPage() == $nItemsPerPageOption} selected="selected"{/if}>
                         {$nItemsPerPageOption}
                     </option>
                 {/foreach}
-                <option value="-1"{if $oPagination->nItemsPerPage == -1} selected="selected"{/if}>
+                <option value="-1"{if $oPagination->getItemsPerPage() == -1} selected="selected"{/if}>
                     alle
                 </option>
             </select>
         </div>
-        {if $oPagination->cSortByOption_arr|@count > 0}
+        {if $oPagination->getSortByOptions()|@count > 0}
             <div class="form-group">
-                <label for="{$oPagination->cId}_nSortBy">
+                <label for="{$oPagination->getId()}_nSortBy">
                     Sortierung
                 </label>
-                <select class="form-control" name="{$oPagination->cId}_nSortBy" id="{$oPagination->cId}_nSortBy">
-                    {foreach $oPagination->cSortByOption_arr as $i => $cSortByOption}
-                        <option value="{$i}"{if $i === (int)$oPagination->nSortBy} selected="selected"{/if}>
+                <select class="form-control" name="{$oPagination->getId()}_nSortBy" id="{$oPagination->getId()}_nSortBy">
+                    {foreach $oPagination->getSortByOptions() as $i => $cSortByOption}
+                        <option value="{$i}"{if $i == $oPagination->getSortBy()} selected="selected"{/if}>
                             {$cSortByOption[1]}
                         </option>
                     {/foreach}
                 </select>
-                <select class="form-control" name="{$oPagination->cId}_nSortDir" id="{$oPagination->cId}_nSortDir">
-                    <option value="0"{if $oPagination->nSortDir == 0} selected{/if}>aufsteigend</option>
-                    <option value="1"{if $oPagination->nSortDir == 1} selected{/if}>absteigend</option>
+                <select class="form-control" name="{$oPagination->getId()}_nSortDir" id="{$oPagination->getId()}_nSortDir">
+                    <option value="0"{if $oPagination->getSortDir() == 0} selected{/if}>aufsteigend</option>
+                    <option value="1"{if $oPagination->getSortDir() == 1} selected{/if}>absteigend</option>
                 </select>
             </div>
         {/if}
         <button type="submit" class="btn btn-primary">
             <i class="fa fa-refresh"></i>
         </button>
-        {if $oPagination->nPageCount == 1}
+        {if $oPagination->getPageCount() == 1}
             <div class="form-group">
-                <label>Eintr&auml;ge gesamt: {$oPagination->nItemCount}</label>
+                <label>Eintr&auml;ge gesamt: {$oPagination->getItemCount()}</label>
             </div>
         {/if}
     </form>

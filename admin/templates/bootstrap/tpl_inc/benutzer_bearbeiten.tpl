@@ -13,9 +13,63 @@ $(document).ready(function() {
         timeFormat: 'hh:mm:ss',
         dateFormat: 'dd.mm.yy'
     });
+
+    /** bring the 2FA-canvas in a defined position depending on the state of the 2FA */
+    if ('nein' == $('#b2FAauth option:selected').text().toLowerCase()) {
+        $('[id$=TwoFAwrapper]').hide();
+    } else {
+        $('[id$=TwoFAwrapper]').show();
+    }
+
+    /** install a "toggle-event-handler" to fold or unfold the 2FA-canvas, via the "Ja/Nein"-select */
+    $('[id$=b2FAauth]').on('change', function(e) {
+        e.stopImmediatePropagation(); // stop this event during page-load
+        if('none' == $('[id$=TwoFAwrapper]').css('display')) {
+            $('[id$=TwoFAwrapper]').slideDown();
+        } else {
+            $('[id$=TwoFAwrapper]').slideUp();
+        }
+    });
 });
 {/literal}
 </script>
+
+{literal}
+<style>
+    /* CONSIDER: styles ar mandatory for the QR-code! */
+
+    /* a small space arround the whole code (not mandatory) */
+    div.qrcode{
+        /* margin: 0 5px; */
+        margin: 5px
+    }
+
+    /* row element */
+    div.qrcode > p {
+        margin: 0;
+        padding: 0;
+        height: 5px;
+    }
+
+    /* column element(s) */
+    div.qrcode > p > b,
+    div.qrcode > p > i {
+        display: inline-block;
+        width: 5px;
+        height: 5px;
+    }
+
+    /* color of 'on-elements' - "the color of the QR" */
+    div.qrcode > p > b {
+        background-color: #000;
+    }
+
+    /* color of 'off-elements' - "the color of the background" */
+    div.qrcode > p > i {
+        background-color: #fff;
+    }
+</style>
+{/literal}
 
 {assign var="cTitel" value=#benutzerNeu#}
 {if isset($oAccount) && $oAccount->kAdminlogin > 0}
@@ -110,7 +164,64 @@ $(document).ready(function() {
                     {/if}
                 </div>
             </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">2-Faktor-Authentifizierung</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="item">
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <label for="b2FAauth">Aktivieren</label>
+                            </span>
+                            <span class="input-group-wrap">
+                                <select id="b2FAauth" class="form-control" name="b2FAauth">
+                                    <option value="0"{if !isset($oAccount->b2FAauth) || (isset($oAccount->b2FAauth) && $oAccount->b2FAauth == 0)} selected="selected"{/if}>Nein</option>
+                                    <option value="1"{if isset($oAccount->b2FAauth) && $oAccount->b2FAauth == 1} selected="selected"{/if}>Ja</option>
+                                </select>
+                            </span>
+                        </div>
 
+                        {literal}
+                        <script>
+                            function createNewSecret() {
+                                if(confirm("Das bisherige 'Authentication Secret' wird ersetzt!\nWirklich fortfahren?")) {
+                                    $.ajax({
+                                          method: 'get'
+                                        , url: 'ajax.php?type=TwoFA&token=' + $('[name$=jtl_token]').val()
+                                        , data: {
+                                              userName: $('[id$=cLogin]').val()
+                                            , query: '_dummy'
+                                            , type: 'TwoFA'
+                                          }
+                                    })
+                                    .done(function(msg) {
+                                        // display the new RQ-code
+                                        $('[id$=QRcode]').html(msg);
+
+                                        // toggle code-canvas
+                                        if('none' == $('[id$=QRcodeCanvas]').css('display')) {
+                                            $('[id$=QRcodeCanvas]').css('display','block');
+                                        }
+                                    });
+                                }
+                            }
+                        </script>
+                        {/literal}
+                        <div id="TwoFAwrapper" style="border:1px solid lightgrey;padding:10px;">
+                            <div id="QRcodeCanvas" style="display:{if '' !== $QRcodeString }block{else}none{/if}">
+                                Scannen Sie den hier abgebildeten QR-Code mit der "Googel-Authenticator"-app auf Ihrem Handy.<br>
+                                <div id="QRcode" class="qrcode">{$QRcodeString}</div><br>
+                                <br>
+                            </div>
+                            Um einen neuen QR-Code zu erzeugen, klicken Sie bitte hier:<br>
+                            <br>
+                            <input type="button" value="create new code" onclick="createNewSecret();" />
+                        </div>
+
+                    </div>
+                </div>
+            </div>
             {if !isset($oAccount->kAdminlogingruppe) || (isset($nAdminCount) && !($oAccount->kAdminlogingruppe == 1 && $nAdminCount <= 1))}
                 <div class="panel panel-default">
                     <div class="panel-heading">
@@ -136,13 +247,17 @@ $(document).ready(function() {
             {else}
                 <input type="hidden" name="kAdminlogingruppe" value="1" />
             {/if}
-        <div class="save_wrapper">
-            <input type="hidden" name="action" value="account_edit" />
-            {if isset($oAccount) && $oAccount->kAdminlogin > 0}
-                <input type="hidden" name="kAdminlogin" value="{$oAccount->kAdminlogin}" />
-            {/if}
-            <input type="hidden" name="save" value="1" />
-            <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> {#save#}</button>
+            <div class="save_wrapper">
+                <input type="hidden" name="action" value="account_edit" />
+                {if isset($oAccount) && $oAccount->kAdminlogin > 0}
+                    <input type="hidden" name="kAdminlogin" value="{$oAccount->kAdminlogin}" />
+                {/if}
+                <input type="hidden" name="save" value="1" />
+                <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> {#save#}</button>
+            </div>
         </div>
     </form>
 </div>
+
+{* vim:set foldmethod=manual:foldcolumn=2:expandtab:sw=4:tw=4: *}
+

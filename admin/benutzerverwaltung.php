@@ -3,6 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
 require_once dirname(__FILE__) . '/includes/admininclude.php';
 
 $oAccount->permission('ACCOUNT_VIEW', true, true);
@@ -63,6 +64,21 @@ switch ($cAction) {
         break;
 
     case 'account_edit':
+        $_SESSION['AdminAccount']->TwoFA_valid = true;
+
+        // find out, if 2FA ist active and if there is a known secret
+        $szQRcodeString = '';
+        if(isset($_SESSION['AdminAccount'])) {
+            $oTwoFA = new TwoFA();
+            $oTwoFA->setUser($_SESSION['AdminAccount']->cLogin);
+
+            if(true === $oTwoFA->is2FAauthSecretExist()) {
+                $szQRcodeString = $oTwoFA->getQRcode();
+            }
+        }
+        $smarty->assign('QRcodeString', $szQRcodeString); // transfer via smarty-var (to prevent session-pollution)
+
+
         $kAdminlogin = (isset($_POST['id']) ? (int)$_POST['id'] : null);
         if (isset($_POST['save'])) {
             $cError_arr           = array();
@@ -72,6 +88,7 @@ switch ($cAction) {
             $oTmpAcc->cMail       = trim($_POST['cMail']);
             $oTmpAcc->cLogin      = trim($_POST['cLogin']);
             $oTmpAcc->cPass       = trim($_POST['cPass']);
+            $oTmpAcc->b2FAauth    = (int)$_POST['b2FAauth'];
 
             $dGueltigBisAktiv = (isset($_POST['dGueltigBisAktiv']) && ($_POST['dGueltigBisAktiv'] === '1'));
             if ($dGueltigBisAktiv) {
@@ -253,3 +270,6 @@ $smarty->assign('oAdminList_arr', getAdminList())
        ->assign('fehler', (isset($cFehler) ? $cFehler : null))
        ->assign('action', $cAction)
        ->display('benutzer.tpl');
+
+// vim:set foldmethod=manual:foldcolumn=2:expandtab:sw=4:tw=4:
+

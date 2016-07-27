@@ -1903,11 +1903,11 @@ select.form-control {
 }
 
 .text-vcenter,
-.table>thead>tr>th.text-vcenter, 
-.table>tbody>tr>th.text-vcenter, 
-.table>tfoot>tr>th.text-vcenter, 
-.table>thead>tr>td.text-vcenter, 
-.table>tbody>tr>td.text-vcenter, 
+.table>thead>tr>th.text-vcenter,
+.table>tbody>tr>th.text-vcenter,
+.table>tfoot>tr>th.text-vcenter,
+.table>thead>tr>td.text-vcenter,
+.table>tbody>tr>td.text-vcenter,
 .table>tfoot>tr>td.text-vcenter {
     vertical-align: middle;
 }
@@ -2835,12 +2835,12 @@ h2 .btn-group {
   -webkit-box-shadow: none;
 }
 
-.paginator .slider-track-low, 
+.paginator .slider-track-low,
 .paginator .slider-track-high {
   background: #ddd;
 }
 
-.paginator .slider-track-low, 
+.paginator .slider-track-low,
 .paginator .slider-track-high,
 .paginator .slider-selection {
   border-radius: 0;

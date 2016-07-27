@@ -245,8 +245,7 @@
             {/if}
         ]{/strip});
         {if (!isset($Einstellungen.template.general.use_cron) || $Einstellungen.template.general.use_cron === 'Y') && $smarty.now % 10 === 0}
-            var cronBlindImage = new Image();
-            cronBlindImage.src = 'includes/cron_inc.php';
+            $.get('includes/cron_inc.php');
         {/if}
     </script>
 {/block}

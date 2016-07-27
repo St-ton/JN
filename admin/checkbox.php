@@ -14,7 +14,6 @@ $cHinweis          = '';
 $cFehler           = '';
 $cStep             = 'uebersicht';
 $nAnzahlProSeite   = 15;
-$oBlaetterNaviConf = baueBlaetterNaviGetterSetter(1, $nAnzahlProSeite);
 $oSprach_arr       = gibAlleSprachen();
 $oCheckBox         = new CheckBox();
 $cTab              = $cStep;

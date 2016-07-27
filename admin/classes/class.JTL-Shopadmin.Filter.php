@@ -58,11 +58,11 @@ class Filter
     }
 
     /**
-     * Assemble filter object to be ready for display and use.
+     * Assemble filter object to be ready for use. Build WHERE clause.
      */
     public function assemble()
     {
-        $this->cWhereSQL = implode(
+        $this->cWhereSQL = implode(' AND ',
             array_filter(
                 array_map(function (FilterField $oField) {
                     return $oField->getWhereClause();

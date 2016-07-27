@@ -32,7 +32,7 @@ class Pagination
 
     /**
      * Pagination constructor.
-     * @param null $cId
+     * @param string $cId
      */
     public function __construct($cId = null)
     {
@@ -58,12 +58,12 @@ class Pagination
     }
 
     /**
-     * @param int $nDispPagesRadius - number of page buttons to be displayed before and after the active page button
+     * @param int $nRange - number of page buttons to be displayed before and after the active page button
      * @return $this
      */
-    public function setDispPageRadius($nDispPagesRadius)
+    public function setRange($nRange)
     {
-        $this->nDispPagesRadius = $nDispPagesRadius;
+        $this->nDispPagesRadius = $nRange;
 
         return $this;
     }

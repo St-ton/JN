@@ -32,7 +32,7 @@
                     </li>
                 {/if}
                 {for $i=$oPagination->getLeftRangePage() to $oPagination->getRightRangePage()}
-                    <li class="{if $oPagination->getPage() == $i}active{/if}">
+                    <li{if $oPagination->getPage() == $i} class="active"{/if}>
                         <a href="?{$oPagination->getId()}_nPage={$i}&{$cUrlAppend}">{$i+1}</a>
                     </li>
                 {/for}

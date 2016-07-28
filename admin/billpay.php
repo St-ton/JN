@@ -93,7 +93,10 @@ if (strlen($oBillpay->getSetting('pid')) > 0 && strlen($oBillpay->getSetting('mi
         header('location: billpay.php?tab=log');
     }
     */
-    $oLog_arr      = ZahlungsLog::getLog(['za_billpay_invoice_jtl', 'za_billpay_direct_debit_jtl', 'za_billpay_rate_payment_jtl', 'za_billpay_paylater_jtl'], $oBlaetterNaviConf->cLimit1, $nAnzahlProSeite);
+    $oLog_arr      = ZahlungsLog::getLog(
+        ['za_billpay_invoice_jtl', 'za_billpay_direct_debit_jtl', 'za_billpay_rate_payment_jtl', 'za_billpay_paylater_jtl'],
+        $oBlaetterNaviConf->cLimit1,
+        $nAnzahlProSeite);
     $nLogCount     = count($oLog_arr);
     $oBlaetterNavi = baueBlaetterNavi($oBlaetterNaviConf->nAktuelleSeite1, $nLogCount, $nAnzahlProSeite);
 

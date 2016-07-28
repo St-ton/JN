@@ -92,8 +92,3 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'jobqueue_inc.php';
 if (file_exists(JOBQUEUE_LOCKFILE)) {
     unlink(JOBQUEUE_LOCKFILE);
 }
-
-if (php_sapi_name() !== 'cli' && (!isset($bCronManuell) || !$bCronManuell)) {
-    header('Content-type: image/gif');
-    echo base64_decode('R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==');
-}

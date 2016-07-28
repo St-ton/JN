@@ -138,8 +138,18 @@ function bearbeiteDel($xml)
                 if ($oModule) {
                     $oModule->cancelOrder($kBestellung, true);
                 }
-
+                $kWarenkorb = Shop::DB()->select('tbestellung', 'kBestellung', $kBestellung, null, null, null, null, false, 'kWarenkorb');
                 Shop::DB()->delete('tbestellung', 'kBestellung', $kBestellung);
+                Shop::DB()->delete('tbestellid', 'kBestellung', $kBestellung);
+                Shop::DB()->delete('tbestellstatus', 'kBestellung', $kBestellung);
+                if ((int)$kWarenkorb->kWarenkorb > 0) {
+                    Shop::DB()->delete('twarenkorb', 'kWarenkorb', $kWarenkorb);
+                    $kWarenkorbPos = Shop::DB()->select('twarenkorbpos', 'kWarenkorb', (int)$kWarenkorb->kWarenkorb, null, null, null, null, false, 'kWarenkorbPos');
+                    Shop::DB()->delete('twarenkorbpos', 'kWarenkorb', (int)$kWarenkorb->kWarenkorb);
+                    if ((int)$kWarenkorbPos->kWarenkorbPos > 0) {
+                        Shop::DB()->delete('twarenkorbposeigenschaft', 'kWarenkorbPos', (int)$kWarenkorbPos->kWarenkorbPos);
+                    }
+                }
                 //uploads (bestellungen)
                 Shop::DB()->delete('tuploadschema', ['kCustomID', 'nTyp'], [$kBestellung, 2]);
                 Shop::DB()->delete('tuploaddatei', ['kCustomID', 'nTyp'], [$kBestellung, 2]);
@@ -165,7 +175,18 @@ function bearbeiteDel($xml)
             if ($oModule) {
                 $oModule->cancelOrder($kBestellung, true);
             }
+            $kWarenkorb = Shop::DB()->select('tbestellung', 'kBestellung', $kBestellung, null, null, null, null, false, 'kWarenkorb');
             Shop::DB()->delete('tbestellung', 'kBestellung', $kBestellung);
+            Shop::DB()->delete('tbestellid', 'kBestellung', $kBestellung);
+            Shop::DB()->delete('tbestellstatus', 'kBestellung', $kBestellung);
+            if ((int)$kWarenkorb->kWarenkorb > 0) {
+                Shop::DB()->delete('twarenkorb', 'kWarenkorb', (int)$kWarenkorb->kWarenkorb);
+                $kWarenkorbPos = Shop::DB()->select('twarenkorbpos', 'kWarenkorb', (int)$kWarenkorb->kWarenkorb, null, null, null, null, false, 'kWarenkorbPos');
+                Shop::DB()->delete('twarenkorbpos', 'kWarenkorb', (int)$kWarenkorb->kWarenkorb);
+                if ((int)$kWarenkorbPos->kWarenkorbPos > 0) {
+                    Shop::DB()->delete('twarenkorbposeigenschaft', 'kWarenkorbPos', (int)$kWarenkorbPos->kWarenkorbPos);
+                }
+            }
             //wenn unreg kunde, dann kunden auch löschen
             $b = Shop::DB()->query("SELECT kKunde FROM tbestellung WHERE kBestellung = " . $kBestellung, 1);
             if (isset($b->kKunde) && $b->kKunde > 0) {
@@ -194,7 +215,18 @@ function bearbeiteDelOnly($xml)
                 if ($oModule) {
                     $oModule->cancelOrder($kBestellung, true);
                 }
+                $kWarenkorb = Shop::DB()->select('tbestellung', 'kBestellung', $kBestellung, null, null, null, null, false, 'kWarenkorb');
                 Shop::DB()->delete('tbestellung', 'kBestellung', $kBestellung);
+                Shop::DB()->delete('tbestellid', 'kBestellung', $kBestellung);
+                Shop::DB()->delete('tbestellstatus', 'kBestellung', $kBestellung);
+                if ((int)$kWarenkorb->kWarenkorb > 0) {
+                    Shop::DB()->delete('twarenkorb', 'kWarenkorb', (int)$kWarenkorb->kWarenkorb);
+                    $kWarenkorbPos = Shop::DB()->select('twarenkorbpos', 'kWarenkorb', (int)$kWarenkorb->kWarenkorb, null, null, null, null, false, 'kWarenkorbPos');
+                    Shop::DB()->delete('twarenkorbpos', 'kWarenkorb', (int)$kWarenkorb->kWarenkorb);
+                    if ((int)$kWarenkorbPos->kWarenkorbPos > 0) {
+                        Shop::DB()->delete('twarenkorbposeigenschaft', 'kWarenkorbPos', (int)$kWarenkorbPos->kWarenkorbPos);
+                    }
+                }
             }
         }
     } else {
@@ -204,7 +236,19 @@ function bearbeiteDelOnly($xml)
             if ($oModule) {
                 $oModule->cancelOrder($kBestellung, true);
             }
+
+            $kWarenkorb = Shop::DB()->select('tbestellung', 'kBestellung', $kBestellung, null, null, null, null, false, 'kWarenkorb');
             Shop::DB()->delete('tbestellung', 'kBestellung', $kBestellung);
+            Shop::DB()->delete('tbestellid', 'kBestellung', $kBestellung);
+            Shop::DB()->delete('tbestellstatus', 'kBestellung', $kBestellung);
+            if ((int)$kWarenkorb->kWarenkorb > 0) {
+                Shop::DB()->delete('twarenkorb', 'kWarenkorb', (int)$kWarenkorb->kWarenkorb);
+                $kWarenkorbPos = Shop::DB()->select('twarenkorbpos', 'kWarenkorb', (int)$kWarenkorb->kWarenkorb, null, null, null, null, false, 'kWarenkorbPos');
+                Shop::DB()->delete('twarenkorbpos', 'kWarenkorb', (int)$kWarenkorb->kWarenkorb);
+                if ((int)$kWarenkorbPos->kWarenkorbPos > 0) {
+                    Shop::DB()->delete('twarenkorbposeigenschaft', 'kWarenkorbPos', (int)$kWarenkorbPos->kWarenkorbPos);
+                }
+            }
         }
     }
 }

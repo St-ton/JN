@@ -1025,6 +1025,15 @@ class NiceDB
             }
         }
 
+        ob_start();
+        echo "\n";
+        echo $stmt. "\n";
+        echo "ret" . $return. "\n";
+        debug_print_backtrace();
+        echo "\n";
+        print_r($ret);
+        file_put_contents('loglog.txt', ob_get_clean() . "\n", FILE_APPEND);
+
         return $ret;
     }
 

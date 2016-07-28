@@ -513,7 +513,7 @@ class Warenlager extends MainModel
                         }
                     }
                     if (is_array($xOption_arr)) {
-                        $oWarenlager->buildWarehouseInfo($oWarenlager->fBestand, $oWarenlager->fZulauf, $xOption_arr);
+                        $oWarenlager->buildWarehouseInfo($oWarenlager->fBestand, $xOption_arr);
                     }
                     $oWarenlager_arr[] = $oWarenlager;
                 }
@@ -525,11 +525,10 @@ class Warenlager extends MainModel
 
     /**
      * @param float $fBestand
-     * @param float $fZulauf
      * @param array $xOption_arr
      * @return $this
      */
-    public function buildWarehouseInfo($fBestand, $fZulauf, array $xOption_arr)
+    public function buildWarehouseInfo($fBestand, array $xOption_arr)
     {
         $this->oLageranzeige                = new stdClass();
         $this->oLageranzeige->cLagerhinweis = array();

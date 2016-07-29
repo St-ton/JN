@@ -52,7 +52,7 @@
                 {if !isset($oLog_arr) || $oLog_arr|@count === 0}
                     <div class="alert alert-info" role="alert">{#noDataAvailable#}</div>
                 {else}
-                    {include file='pagination.tpl' cSite=1 cUrl='billpay.php' oBlaetterNavi=$oBlaetterNavi hash='#log'}
+                    {include file='tpl_inc/pagination.tpl' oPagination=$oPagiLog cAnchor='log'}
                     <div class="container-fluid2">
                         <table class="list table">
                             <thead>

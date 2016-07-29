@@ -149,10 +149,9 @@ function loadContent(url)
     });
 }
 
-function navigation(context)
+function navigation()
 {
-    var c = context || document;
-    var navWrapper = $('#evo-main-nav-wrapper', c),
+    var navWrapper = $('#evo-main-nav-wrapper'),
         stickyWrapperParent = navWrapper.parent();
 
     stickyWrapperParent.css('height', 'auto');
@@ -166,7 +165,6 @@ function navigation(context)
             }
         });
     }
-    return navWrapper;
 }
 
 $(window).load(function(){

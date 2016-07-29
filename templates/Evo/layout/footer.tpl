@@ -157,9 +157,6 @@
                     {/if}
                 </div>
             {/block}
-            {if (!isset($Einstellungen.template.general.use_cron) || $Einstellungen.template.general.use_cron === 'Y') && $smarty.now % 10 === 0}
-                <img src="includes/cron_inc.php" width="0" height="0" alt="" />
-            {/if}
         </div>
     </footer>
 {/if}
@@ -247,6 +244,9 @@
                 "{$customJSPath}?v={$nTemplateVersion}",
             {/if}
         ]{/strip});
+        {if (!isset($Einstellungen.template.general.use_cron) || $Einstellungen.template.general.use_cron === 'Y') && $smarty.now % 10 === 0}
+            $.get('includes/cron_inc.php');
+        {/if}
     </script>
 {/block}
 </body>

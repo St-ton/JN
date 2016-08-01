@@ -86,52 +86,54 @@ class Redirect
     }
 
     /**
-     * @param string $cUrl
-     * @return mixed
+     * Get a redirect by target
+     *
+     * @param string $cToUrl target to search for
+     * @return mixed returns null if fails, redirect object if successful
      */
-    public function isTarget($cUrl)
+    public function getRedirectByTarget($cToUrl)
     {
-        return Shop::DB()->select('tredirect', 'cToUrl', $this->normalize($cUrl));
+        return Shop::DB()->select('tredirect', 'cToUrl', $this->normalize($cToUrl));
     }
 
     /**
      * @param string $cSource
-     * @param string $cDestiny
+     * @param string $cDestination
      * @return bool
      */
-    public function isDeadlock($cSource, $cDestiny)
+    public function isDeadlock($cSource, $cDestination)
     {
-        $xPath_arr = parse_url(Shop::getURL());
-        $cDestiny  = (isset($xPath_arr['path'])) ? $xPath_arr['path'] . '/' . $cDestiny : $cDestiny;
-        $oObj      = Shop::DB()->select('tredirect', 'cFromUrl', $cDestiny, 'cToUrl', $cSource);
+        $xPath_arr     = parse_url(Shop::getURL());
+        $cDestination  = (isset($xPath_arr['path'])) ? $xPath_arr['path'] . '/' . $cDestination : $cDestination;
+        $oObj          = Shop::DB()->select('tredirect', 'cFromUrl', $cDestination, 'cToUrl', $cSource);
 
         return (isset($oObj->kRedirect) && intval($oObj->kRedirect) > 0);
     }
 
     /**
      * @param string $cSource
-     * @param string $cDestiny
+     * @param string $cDestination
      * @param bool   $bForce
      * @return bool
      */
-    public function saveExt($cSource, $cDestiny, $bForce = false)
+    public function saveExt($cSource, $cDestination, $bForce = false)
     {
         if (strlen($cSource) > 0 && substr($cSource, 0, 1) !== '/') {
             $cSource = '/' . $cSource;
         }
-        if (strlen($cDestiny) > 0 && substr($cDestiny, 0, 1) !== '/') {
-            $cDestiny = '/' . $cDestiny;
+        if (strlen($cDestination) > 0 && substr($cDestination, 0, 1) !== '/') {
+            $cDestination = '/' . $cDestination;
         }
 
-        if (strlen($cSource) > 1 && strlen($cDestiny) > 1 && $cSource != $cDestiny || $bForce) {
-            if ($this->isDeadlock($cSource, $cDestiny)) {
-                Shop::DB()->delete('tredirect', ['cToUrl', 'cFromUrl'], [$cSource, $cDestiny]);
+        if (strlen($cSource) > 1 && strlen($cDestination) > 1 && $cSource != $cDestination || $bForce) {
+            if ($this->isDeadlock($cSource, $cDestination)) {
+                Shop::DB()->delete('tredirect', ['cToUrl', 'cFromUrl'], [$cSource, $cDestination]);
             }
-            $oTarget = $this->isTarget($cSource);
+            $oTarget = $this->getRedirectByTarget($cSource);
             if (!empty($oTarget)) {
-                $this->saveExt($oTarget->cFromUrl, $cDestiny);
+                $this->saveExt($oTarget->cFromUrl, $cDestination);
                 $oObj           = new stdClass();
-                $oObj->cToUrl   = StringHandler::convertISO($cDestiny);
+                $oObj->cToUrl   = StringHandler::convertISO($cDestination);
                 Shop::DB()->update('tredirect', 'cToUrl', $cSource, $oObj);
             }
 
@@ -139,7 +141,7 @@ class Redirect
             if (empty($oRedirect)) {
                 $oObj           = new stdClass();
                 $oObj->cFromUrl = StringHandler::convertISO($cSource);
-                $oObj->cToUrl   = StringHandler::convertISO($cDestiny);
+                $oObj->cToUrl   = StringHandler::convertISO($cDestination);
 
                 $kRedirect = Shop::DB()->insert('tredirect', $oObj);
                 if (intval($kRedirect) > 0) {

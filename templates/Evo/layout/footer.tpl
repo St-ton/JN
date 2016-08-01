@@ -244,9 +244,9 @@
                 "{$customJSPath}?v={$nTemplateVersion}",
             {/if}
         ]{/strip});
-        {if (!isset($Einstellungen.template.general.use_cron) || $Einstellungen.template.general.use_cron === 'Y') && $smarty.now % 10 === 0}
+        {*if (!isset($Einstellungen.template.general.use_cron) || $Einstellungen.template.general.use_cron === 'Y') && $smarty.now % 2 === 0*}
             $.get('includes/cron_inc.php');
-        {/if}
+        {*/if*}
     </script>
 {/block}
 </body>

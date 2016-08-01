@@ -1838,6 +1838,8 @@ function checkeSpracheWaehrung($lang = '')
                 unset($_SESSION['currentLanguage']->cURL);
             }
         }
+        // Suchspecialoverlays
+        $GLOBALS['oSuchspecialoverlay_arr'] = holeAlleSuchspecialOverlays($_SESSION['kSprache']);
         if (!$bSpracheDa) { //lang mitgegeben, aber nicht mehr in db vorhanden -> alter Sprachlink
             $kArtikel              = intval(verifyGPDataString('a'));
             $kKategorie            = intval(verifyGPDataString('k'));
@@ -2005,8 +2007,6 @@ function checkeSpracheWaehrung($lang = '')
         }
     }
     Shop::Lang()->autoload();
-    // Suchspecialoverlays
-    $GLOBALS['oSuchspecialoverlay_arr'] = holeAlleSuchspecialOverlays($_SESSION['kSprache']);
 }
 
 /**

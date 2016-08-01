@@ -18,6 +18,11 @@
         },
         action: {
             compareList: 'Vergleichsliste'
+        },
+        selector: {
+            navBadgeUpdate: '#shop-nav li.compare-list-menu',
+            navBadgeAppend: '#shop-nav li.cart-menu',
+            boxContainer: 'section.box-compare'
         }
     };
 
@@ -207,7 +212,7 @@
                                 window.location.href = response.cLocation;
                                 break;
                             case 2: // added to comparelist
-                                that.updateComparelist(response.nCount);
+                                that.updateComparelist(response);
                                 eModal.alert({
                                     title: response.cTitle,
                                     message: response.cNotification
@@ -403,8 +408,36 @@
             });
         },
 
-        updateComparelist: function(compareCount) {
-            //alert(compareCount);
+        updateComparelist: function(response) {
+            if (response.nCount > 1) {
+                if (response.cNavBadge.length) {
+                    var badge    = $(response.cNavBadge);
+                    var badgeUpd = $(this.options.selector.navBadgeUpdate);
+                    if (badgeUpd.size() > 0) {
+                        badgeUpd.replaceWith(badge);
+                    } else {
+                        $(this.options.selector.navBadgeAppend).before(badge);
+                    }
+
+                    badge.on('click', '.popup', function (e) {
+                        var url = e.currentTarget.href;
+                        url += (url.indexOf('?') === -1) ? '?isAjax=true' : '&isAjax=true';
+                        eModal.ajax({
+                            'size': 'lg',
+                            'url': url
+                        });
+                        e.stopPropagation();
+                        return false;
+                    });
+                }
+
+                if (response.cBoxContainer.length) {
+                    var list = $(this.options.selector.boxContainer);
+                    if (list.size() > 0) {
+                        list.replaceWith(response.cBoxContainer);
+                    }
+                }
+            }
         },
 
         variationResetAll: function() {

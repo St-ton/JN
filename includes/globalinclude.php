@@ -113,10 +113,9 @@ if (!JTL_INCLUDE_ONLY_DB) {
     // Boxen
     $oBoxen = Boxen::getInstance();
     // Session
-    /*$session = (defined('JTLCRON') && JTLCRON === true) ?
+    $session = (defined('JTLCRON') && JTLCRON === true) ?
         Session::getInstance(true, true, 'JTLCRON') :
-        Session::getInstance();*/
-    $session = Session::getInstance();
+        Session::getInstance();
     //Wartungsmodus aktiviert?
     $bAdminWartungsmodus = false;
     if ($GlobaleEinstellungen['global']['wartungsmodus_aktiviert'] === 'Y' && basename($_SERVER['SCRIPT_FILENAME']) !== 'wartung.php') {
@@ -126,6 +125,13 @@ if (!JTL_INCLUDE_ONLY_DB) {
             exit;
         } else {
             $bAdminWartungsmodus = true;
+        }
+        // Workaround to fix issue #314 :
+        // Da Shop::isAdmin() im Endeffekt den aktuellen Session-Namen wieder auf JTLSHOP setzt, wird er an dieser
+        // Stelle manuell auf JTLCRON zurückgesetzt. Ansonsten wird ein Set-Cookie abgesetzt, der die JTLSHOP
+        // Session-ID mit der JTLCRON Session-ID gleichsetzt und damit den Nutzer rauskickt.
+        if (defined('JTLCRON') && JTLCRON === true) {
+            session_name('JTLCRON');
         }
     }
     $GLOBALS['oSprache'] = Sprache::getInstance();

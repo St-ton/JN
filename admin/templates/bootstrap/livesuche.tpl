@@ -40,6 +40,7 @@
     <div class="tab-content">
         <div id="suchanfrage" class="tab-pane fade {if !isset($tab) || $tab === 'suchanfrage'} active in{/if}">
             {if isset($Suchanfragen) && $Suchanfragen|@count > 0}
+                {include file='pagination.tpl' oPagination=$oPagiSuchanfragen cAnchor='suchanfrage'}
                 <form name="suche" method="post" action="livesuche.php">
                     {$jtl_token}
                     <input type="hidden" name="Suche" value="1" />
@@ -72,7 +73,6 @@
                     {else}
                         {assign var=pAdditional value=''}
                     {/if}
-                    {include file='pagination.tpl' cSite=1 cUrl='livesuche.php' oBlaetterNavi=$oBlaetterNaviSuchanfragen cParams=$pAdditional hash='#suchanfrage'}
                     {if isset($cSuche)}
                         {assign var=cSuchStr value="&Suche=1&cSuche="|cat:$cSuche|cat:"&"}
                     {else}
@@ -146,13 +146,13 @@
         </div>
         <div id="erfolglos" class="tab-pane fade {if isset($tab) && $tab === 'erfolglos'} active in{/if}">
             {if $Suchanfragenerfolglos && $Suchanfragenerfolglos|@count > 0}
+                {include file='pagination.tpl' oPagination=$oPagiErfolglos cAnchor='erfolglos'}
                 <form name="login" method="post" action="livesuche.php">
                     {$jtl_token}
                     <input type="hidden" name="livesuche" value="2">
                     <input type="hidden" name="s2" value="{$oBlaetterNaviSuchanfrageerfolglos->nAktuelleSeite}">
                     <input type="hidden" name="tab" value="erfolglos">
                     <input type="hidden" name="nErfolglosEditieren" value="{if isset($nErfolglosEditieren)}{$nErfolglosEditieren}{/if}">
-                    {include file='pagination.tpl' cSite=2 cUrl='livesuche.php' oBlaetterNavi=$oBlaetterNaviSuchanfrageerfolglos hash='#erfolglos'}
                     <div class="panel panel-default settings">
                         <div class="panel-heading">
                             <h3 class="panel-title">{#searchmiss#}</h3>
@@ -208,12 +208,12 @@
         </div>
         <div id="mapping" class="tab-pane fade {if isset($tab) && $tab === 'mapping'} active in{/if}">
             {if $Suchanfragenmapping && $Suchanfragenmapping|@count > 0}
+                {include file='pagination.tpl' oPagination=$oPagiMapping cAnchor='mapping'}
                 <form name="login" method="post" action="livesuche.php">
                     {$jtl_token}
                     <input type="hidden" name="livesuche" value="4" />
                     <input type="hidden" name="tab" value="mapping" />
                     <input type="hidden" name="s3" value="{$oBlaetterNaviSuchanfragenMapping->nAktuelleSeite}" />
-                    {include file='pagination.tpl' cSite=3 cUrl='livesuche.php' oBlaetterNavi=$oBlaetterNaviSuchanfrageerfolglos hash='#mapping'}
                     <div class="panel panel-default settings">
                         <div class="panel-heading">
                             <h3 class="panel-title">{#mapping#}</h3>

@@ -83,15 +83,15 @@ class ZahlungsartHelper
                 }
                 break;
             case 'za_barzahlung_jtl':
-                if (!pruefeZahlungsartMinBestellungen(!empty($Zahlungsart->einstellungen['zahlungsart_barzahlung_min_bestellungen'])) ? $Zahlungsart->einstellungen['zahlungsart_barzahlung_min_bestellungen'] : 0) {
+                if (!pruefeZahlungsartMinBestellungen(!empty($Zahlungsart->einstellungen['zahlungsart_barzahlung_min_bestellungen']) ? $Zahlungsart->einstellungen['zahlungsart_barzahlung_min_bestellungen'] : 0)) {
                     return false;
                 }
 
-                if (!pruefeZahlungsartMinBestellwert(!empty($Zahlungsart->einstellungen['zahlungsart_barzahlung_min'])) ? $Zahlungsart->einstellungen['zahlungsart_barzahlung_min'] : 0) {
+                if (!pruefeZahlungsartMinBestellwert(!empty($Zahlungsart->einstellungen['zahlungsart_barzahlung_min']) ? $Zahlungsart->einstellungen['zahlungsart_barzahlung_min'] : 0)) {
                     return false;
                 }
 
-                if (!pruefeZahlungsartMaxBestellwert(!empty($Zahlungsart->einstellungen['zahlungsart_barzahlung_max'])) ? $Zahlungsart->einstellungen['zahlungsart_barzahlung_max'] : 0) {
+                if (!pruefeZahlungsartMaxBestellwert(!empty($Zahlungsart->einstellungen['zahlungsart_barzahlung_max']) ? $Zahlungsart->einstellungen['zahlungsart_barzahlung_max'] : 0)) {
                     return false;
                 }
                 break;

@@ -93,7 +93,7 @@ class VCard
      */
     protected function createInstance($vcardData)
     {
-        $className = self::class;
+        $className = get_called_class();
 
         return new $className($vcardData, $this->options);
     }
@@ -419,10 +419,11 @@ class VCard
 
                 foreach ($result as $key => $value) {
                     if (stripos($value['Value'], 'uri:') === 0) {
-                        $result[$key]['Value'] = substr($value, 4);
+                        $result[$key]['Value']    = substr($value, 4);
                         $result[$key]['Encoding'] = 'uri';
                     }
                 }
+
                 return $result;
             }
 
@@ -489,6 +490,14 @@ class VCard
     public static function getValue($item, array $subset, $default = null, $checkSelf = true)
     {
         foreach ($subset as $sub) {
+            if ($sub === '*' && (is_array($item) || is_object($item))) {
+                foreach ($item as $key => $value) {
+                    // nur den ersten Eintrag zurückgeben
+                    $sub  = $key;
+                    break;
+                }
+            }
+
             if (isset($item->$sub)) {
                 if (isset($item->$sub->Value)) {
                     return $item->$sub->Value;
@@ -497,6 +506,9 @@ class VCard
                     return $item->$sub[0];
                 }
                 if (is_string($item->$sub)) {
+                    return $item->$sub;
+                }
+                if (isset($item->$sub) && $checkSelf) {
                     return $item->$sub;
                 }
             }
@@ -530,7 +542,7 @@ class VCard
         } else {
             $this->iVCard = 0;
         }
-        
+
         return $this;
     }
 
@@ -559,7 +571,7 @@ class VCard
         }
 
         if (isset($this->ADR)) {
-            $adr = isset($this->ADR->home) ? $this->ADR->home : $this->ADR;
+            $adr = self::getValue($this->ADR, ['home', 'work', '*'], null, true);
 
             $Kunde->cStrasse      = isset($adr->StreetAddress) ? $adr->StreetAddress : '';
             $Kunde->cAdressZusatz = isset($adr->ExtendedAddress) ? $adr->ExtendedAddress : '';
@@ -578,16 +590,16 @@ class VCard
 
         if (isset($this->TEL)) {
             $Kunde->cMobil = self::getValue($this->TEL, ['cell'], '', false);
-            $Kunde->cFax   = self::getValue($this->TEL, ['fax', 'home_fax', 'work_fax'], '', false);
-            $Kunde->cTel   = self::getValue($this->TEL, ['home', 'work'], '', true);
+            $Kunde->cFax   = self::getValue($this->TEL, ['fax', 'home_fax', 'fax_home', 'work_fax', 'fax_work'], '', false);
+            $Kunde->cTel   = self::getValue($this->TEL, ['home', 'work', '*'], '', true);
         }
 
         if (isset($this->EMAIL)) {
-            $Kunde->cMail = self::getValue($this->EMAIL, ['home', 'work'], '', true);
+            $Kunde->cMail = self::getValue($this->EMAIL, ['home', 'work', '*'], '', true);
         }
 
         if (isset($this->URL)) {
-            $Kunde->cWWW = self::getValue($this->URL, ['home', 'work'], '', true);
+            $Kunde->cWWW = self::getValue($this->URL, ['home', 'work', '*'], '', true);
         }
 
         if (isset($this->BDAY)) {

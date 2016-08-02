@@ -16,7 +16,7 @@
 
     <div id="payment">
         {if isset($oKampagneStat_arr) && $oKampagneStat_arr|@count > 0 && isset($oKampagneDef->kKampagneDef) && $oKampagneDef->kKampagneDef > 0}
-            {include file='pagination.tpl' cSite=1 cUrl='kampagne.php' oBlaetterNavi=$oBlaetterNaviDefDetail hash=''}
+            {include file='pagination.tpl' oPagination=$oPagiDefDetail}
             <div id="tabellenLivesuche">
                 <table class="table">
                     <tr>

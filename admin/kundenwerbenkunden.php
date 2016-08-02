@@ -5,7 +5,6 @@
  */
 require_once dirname(__FILE__) . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'blaetternavi.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 
 $oAccount->permission('MODULE_CAC_VIEW', true, true);
@@ -16,9 +15,6 @@ $cFehler       = '';
 $step          = 'kwk_uebersicht';
 
 setzeSprache();
-
-$nAnzahlProSeite   = 15;
-$oBlaetterNaviConf = baueBlaetterNaviGetterSetter(3, $nAnzahlProSeite);
 
 // Tabs
 if (strlen(verifyGPDataString('tab')) > 0) {
@@ -90,6 +86,34 @@ if ($step === 'kwk_uebersicht') {
             $oConfig_arr[$i]->gesetzterWert = (isset($oSetValue->cWert)) ? $oSetValue->cWert : null;
         }
     }
+
+    // Anzahl
+    $oAnzahlReg = Shop::DB()->query(
+        "SELECT count(*) AS nAnzahl
+            FROM tkundenwerbenkunden
+            WHERE nRegistriert = 0", 1
+    );
+    $oAnzahlNichtReg = Shop::DB()->query(
+        "SELECT count(*) AS nAnzahl
+            FROM tkundenwerbenkunden
+            WHERE nRegistriert = 1", 1
+    );
+    $oAnzahlPraemie = Shop::DB()->query(
+        "SELECT count(*) AS nAnzahl
+            FROM tkundenwerbenkundenbonus", 1
+    );
+
+    // Paginationen
+    $oPagiNichtReg = (new Pagination('nichtreg'))
+        ->setItemCount($oAnzahlReg->nAnzahl)
+        ->assemble();
+    $oPagiReg = (new Pagination('reg'))
+        ->setItemCount($oAnzahlNichtReg->nAnzahl)
+        ->assemble();
+    $oPagiPraemie = (new Pagination('praemie'))
+        ->setItemCount($oAnzahlPraemie->nAnzahl)
+        ->assemble();
+
     // tkundenwerbenkunden Nicht registrierte Kunden
     $oKwKNichtReg_arr = Shop::DB()->query(
         "SELECT tkundenwerbenkunden.*, DATE_FORMAT(tkundenwerbenkunden.dErstellt, '%d.%m.%Y %H:%i') AS dErstellt_de,
@@ -97,7 +121,7 @@ if ($step === 'kwk_uebersicht') {
             FROM tkundenwerbenkunden
             JOIN tkunde ON tkunde.kKunde = tkundenwerbenkunden.kKunde
             WHERE tkundenwerbenkunden.nRegistriert=0
-            ORDER BY tkundenwerbenkunden.dErstellt DESC" . $oBlaetterNaviConf->cSQL1, 2
+            ORDER BY tkundenwerbenkunden.dErstellt DESC LIMIT " . $oPagiNichtReg->getLimitSQL(), 2
     );
     if (is_array($oKwKNichtReg_arr) && count($oKwKNichtReg_arr) > 0) {
         foreach ($oKwKNichtReg_arr as $i => $oKwKNichtReg) {
@@ -113,7 +137,7 @@ if ($step === 'kwk_uebersicht') {
             FROM tkundenwerbenkunden
             JOIN tkunde ON tkunde.cMail = tkundenwerbenkunden.cEmail
             WHERE tkundenwerbenkunden.nRegistriert = 1
-            ORDER BY tkundenwerbenkunden.dErstellt DESC" . $oBlaetterNaviConf->cSQL2, 2
+            ORDER BY tkundenwerbenkunden.dErstellt DESC LIMIT " . $oPagiReg->getLimitSQL(), 2
     );
     if (is_array($oKwKReg_arr) && count($oKwKReg_arr) > 0) {
         foreach ($oKwKReg_arr as $i => $oKwKReg) {
@@ -130,7 +154,7 @@ if ($step === 'kwk_uebersicht') {
             tkunde.kKunde AS kKundeBestand, tkunde.cVorname AS cBestandVorname, tkunde.cNachname AS cBestandNachname, tkunde.cMail
             FROM tkundenwerbenkundenbonus
             JOIN tkunde ON tkunde.kKunde = tkundenwerbenkundenbonus.kKunde
-            ORDER BY dErhalten DESC" . $oBlaetterNaviConf->cSQL3, 2
+            ORDER BY dErhalten DESC LIMIT " . $oPagiPraemie->getLimitSQL(), 2
     );
 
     if (is_array($oKwKBestandBonus_arr) && count($oKwKBestandBonus_arr) > 0) {
@@ -140,32 +164,14 @@ if ($step === 'kwk_uebersicht') {
             $oKwKBestandBonus_arr[$i]->cBestandNachname = $oKunde->cNachname;
         }
     }
-    // Anzahl
-    $oAnzahl1 = Shop::DB()->query(
-        "SELECT count(*) AS nAnzahl
-            FROM tkundenwerbenkunden
-            WHERE nRegistriert = 0", 1
-    );
-    $oAnzahl2 = Shop::DB()->query(
-        "SELECT count(*) AS nAnzahl
-            FROM tkundenwerbenkunden
-            WHERE nRegistriert = 1", 1
-    );
-    $oAnzahl3 = Shop::DB()->query(
-        "SELECT count(*) AS nAnzahl
-            FROM tkundenwerbenkundenbonus", 1
-    );
-    $oBlaetterNaviNichtReg = baueBlaetterNavi($oBlaetterNaviConf->nAktuelleSeite1, $oAnzahl1->nAnzahl, $nAnzahlProSeite);
-    $oBlaetterNaviReg      = baueBlaetterNavi($oBlaetterNaviConf->nAktuelleSeite2, $oAnzahl2->nAnzahl, $nAnzahlProSeite);
-    $oBlaetterNaviPraemie  = baueBlaetterNavi($oBlaetterNaviConf->nAktuelleSeite3, $oAnzahl3->nAnzahl, $nAnzahlProSeite);
 
     $smarty->assign('oConfig_arr', $oConfig_arr)
-           ->assign('oKwKNichtReg_arr', $oKwKNichtReg_arr)
-           ->assign('oKwKReg_arr', $oKwKReg_arr)
-           ->assign('oKwKBestandBonus_arr', $oKwKBestandBonus_arr)
-           ->assign('oBlaetterNaviNichtReg', $oBlaetterNaviNichtReg)
-           ->assign('oBlaetterNaviReg', $oBlaetterNaviReg)
-           ->assign('oBlaetterNaviPraemie', $oBlaetterNaviPraemie);
+        ->assign('oKwKNichtReg_arr', $oKwKNichtReg_arr)
+        ->assign('oKwKReg_arr', $oKwKReg_arr)
+        ->assign('oKwKBestandBonus_arr', $oKwKBestandBonus_arr)
+        ->assign('oPagiNichtReg', $oPagiNichtReg)
+        ->assign('oPagiReg', $oPagiReg)
+        ->assign('oPagiPraemie', $oPagiPraemie);
 }
 $smarty->assign('Sprachen', gibAlleSprachen())
        ->assign('kSprache', $_SESSION['kSprache'])

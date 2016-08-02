@@ -88,7 +88,7 @@ if (isset($_POST['livesuche']) && intval($_POST['livesuche']) === 1) { //Formula
             "SELECT *
                 FROM tsuchanfrage
                 WHERE kSprache = " . (int)$_SESSION['kSprache'] . "
-                ORDER BY nAnzahlGesuche DESC" . $oBlaetterNaviConf->cSQL1, 2
+                ORDER BY nAnzahlGesuche DESC", 2
         );
         // Wurde ein Mapping durchgefuehrt
         $nMappingVorhanden = 0;
@@ -278,7 +278,7 @@ if (isset($_POST['livesuche']) && intval($_POST['livesuche']) === 1) { //Formula
             SELECT *
                 FROM tsuchanfrageerfolglos
                 WHERE kSprache = " . (int)$_SESSION['kSprache'] . "
-                ORDER BY nAnzahlGesuche DESC" . $oBlaetterNaviConf->cSQL2, 2
+                ORDER BY nAnzahlGesuche DESC", 2
         );
         if (count($Suchanfragenerfolglos) > 0) {
             foreach ($Suchanfragenerfolglos as $Suchanfrageerfolglos) {

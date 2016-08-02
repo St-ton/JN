@@ -40,7 +40,7 @@
     <div class="tab-content">
         <div id="suchanfrage" class="tab-pane fade {if !isset($tab) || $tab === 'suchanfrage'} active in{/if}">
             {if isset($Suchanfragen) && $Suchanfragen|@count > 0}
-                {include file='pagination.tpl' oPagination=$oPagiSuchanfragen cAnchor='suchanfrage'}
+                {include file='tpl_inc/pagination.tpl' oPagination=$oPagiSuchanfragen cAnchor='suchanfrage'}
                 <form name="suche" method="post" action="livesuche.php">
                     {$jtl_token}
                     <input type="hidden" name="Suche" value="1" />
@@ -146,7 +146,7 @@
         </div>
         <div id="erfolglos" class="tab-pane fade {if isset($tab) && $tab === 'erfolglos'} active in{/if}">
             {if $Suchanfragenerfolglos && $Suchanfragenerfolglos|@count > 0}
-                {include file='pagination.tpl' oPagination=$oPagiErfolglos cAnchor='erfolglos'}
+                {include file='tpl_inc/pagination.tpl' oPagination=$oPagiErfolglos cAnchor='erfolglos'}
                 <form name="login" method="post" action="livesuche.php">
                     {$jtl_token}
                     <input type="hidden" name="livesuche" value="2">
@@ -208,7 +208,7 @@
         </div>
         <div id="mapping" class="tab-pane fade {if isset($tab) && $tab === 'mapping'} active in{/if}">
             {if $Suchanfragenmapping && $Suchanfragenmapping|@count > 0}
-                {include file='pagination.tpl' oPagination=$oPagiMapping cAnchor='mapping'}
+                {include file='tpl_inc/pagination.tpl' oPagination=$oPagiMapping cAnchor='mapping'}
                 <form name="login" method="post" action="livesuche.php">
                     {$jtl_token}
                     <input type="hidden" name="livesuche" value="4" />

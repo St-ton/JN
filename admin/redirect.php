@@ -8,7 +8,6 @@ require_once dirname(__FILE__) . '/includes/admininclude.php';
 
 $oAccount->permission('REDIRECT_VIEW', true, true);
 
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'blaetternavi.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 
 $aData           = (isset($_POST['aData'])) ? $_POST['aData'] : null;
@@ -19,7 +18,6 @@ $cFehler         = '';
 $cParams_arr     = array(
     'cSortierFeld'     => 'nCount',
     'cSortierung'      => 'DESC',
-    'nAnzahlProSeite'  => 50,
     'bUmgeleiteteUrls' => 0,
     'cSuchbegriff'     => ''
 );
@@ -108,13 +106,19 @@ foreach ($cParams_arr as $cKey => $cVal) {
     }
 }
 
-$oBlaetterNaviConf = baueBlaetterNaviGetterSetter(1, $cParams_arr['nAnzahlProSeite']);
 $cParams           = '';
 foreach ($cParams_arr as $key => $val) {
     $cParams .= $key . '=' . $val . '&';
 }
-$oRedirect_arr = $oRedirect->getList($oBlaetterNaviConf->cLimit1, $cParams_arr['nAnzahlProSeite'], $cParams_arr['bUmgeleiteteUrls'], $cParams_arr['cSortierFeld'], $cParams_arr['cSortierung'], $cParams_arr['cSuchbegriff']);
-$oBlaetterNavi = baueBlaetterNavi($oBlaetterNaviConf->nAktuelleSeite1, $oRedirect->getCount($cParams_arr['bUmgeleiteteUrls'], $cParams_arr['cSuchbegriff']), $cParams_arr['nAnzahlProSeite']);
+
+$oPagination = (new Pagination())
+    ->setItemCount($oRedirect->getCount($cParams_arr['bUmgeleiteteUrls'], $cParams_arr['cSuchbegriff']))
+    ->assemble();
+
+$oRedirect_arr = $oRedirect->getList($oPagination->getFirstPageItem(), $oPagination->getPageItemCount(),
+    $cParams_arr['bUmgeleiteteUrls'], $cParams_arr['cSortierFeld'], $cParams_arr['cSortierung'],
+    $cParams_arr['cSuchbegriff']);
+
 if (!empty($oRedirect_arr) && !empty($urls)) {
     foreach ($oRedirect_arr as &$kRedirect) {
         if (array_key_exists($kRedirect->kRedirect, $urls)) {
@@ -127,9 +131,9 @@ if (!empty($oRedirect_arr) && !empty($urls)) {
 }
 
 $smarty->assign('aData', $aData)
-       ->assign('cParams', $cParams)
-       ->assign('oBlaetterNavi', $oBlaetterNavi)
-       ->assign('oRedirect_arr', $oRedirect_arr)
-       ->assign('cHinweis', $cHinweis)
-       ->assign('cFehler', $cFehler)
-       ->display('redirect.tpl');
+    ->assign('cParams', $cParams)
+    ->assign('oPagination', $oPagination)
+    ->assign('oRedirect_arr', $oRedirect_arr)
+    ->assign('cHinweis', $cHinweis)
+    ->assign('cFehler', $cFehler)
+    ->display('redirect.tpl');

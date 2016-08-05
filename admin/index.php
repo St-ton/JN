@@ -92,6 +92,7 @@ if (isset($_POST['adminlogin']) && intval($_POST['adminlogin']) === 1) {
                 }
                 if ($oAccount->permission('SHOP_UPDATE_VIEW')) {
                     if ($oUpdater->hasPendingUpdates()) {
+                        $_SESSION['loginIsValid'] = true; // "enable" the "header.tpl"-navigation again
                         header('Location: ' . Shop::getURL(true) . '/' . PFAD_ADMIN . 'dbupdater.php');
                         exit;
                     }

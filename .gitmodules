@@ -28,3 +28,7 @@
 [submodule "includes/plugins/agws_ts_features"]
 	path = includes/plugins/agws_ts_features
 	url = https://gitlab.ag-websolutions.de/plugins/agws_trustedshops.git
+[submodule "includes/plugins/agws_ts_features"]
+        path = includes/plugins/jtl_themebar
+        url = git@gitlab.jtl-software.de:mirko/jtl_themebar.git
+

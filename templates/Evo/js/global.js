@@ -157,8 +157,6 @@ function navigation()
         navWrapper.affix({
             offset: {
                 top: function() {
-                    var x = navWrapper.height();
-                    console.log(x);
                     return navWrapper.height();
                 }
             }

@@ -151,17 +151,16 @@ function loadContent(url)
 
 function navigation()
 {
-    var navWrapper = $('#evo-main-nav-wrapper'),
-        stickyWrapperParent = navWrapper.parent();
-
-    stickyWrapperParent.css('height', 'auto');
-    var outerHeight = stickyWrapperParent.outerHeight();
-    stickyWrapperParent.css('height', outerHeight);
+    var navWrapper = $('#evo-main-nav-wrapper');
 
     if (navWrapper.hasClass('do-affix')) {
         navWrapper.affix({
             offset: {
-                top: navWrapper.offset().top + navWrapper.height()
+                top: function() {
+                    var x = navWrapper.height();
+                    console.log(x);
+                    return navWrapper.height();
+                }
             }
         });
     }

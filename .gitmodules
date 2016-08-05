@@ -30,4 +30,4 @@
 	url = https://gitlab.ag-websolutions.de/plugins/agws_trustedshops.git
 [submodule "includes/plugins/jtl_themebar"]
         path = includes/plugins/jtl_themebar
-        url = git@gitlab.jtl-software.de:mirko/jtl_themebar.git
+        url = git@gitlab.jtl-software.de:jtlshop/jtl_themebar.git

@@ -68,7 +68,9 @@
                     </h3>
                 </div>
                 <div class="panel-body">
-                {$smarty.session.Versandart->angezeigterName|trans}
+                <p>
+                    {$smarty.session.Versandart->angezeigterName|trans}
+                </p>
                 <p>
                     <strong>{lang key="shippingTime" section="global"}</strong>: {$smarty.session.Warenkorb->cEstimatedDelivery}
                 </p>

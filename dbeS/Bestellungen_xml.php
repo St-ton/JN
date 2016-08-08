@@ -692,7 +692,7 @@ function deleteOrder($kBestellung)
     Shop::DB()->delete('tbestellid', 'kBestellung', $kBestellung);
     Shop::DB()->delete('tbestellstatus', 'kBestellung', $kBestellung);
     Shop::DB()->delete('tkuponbestellung', 'kBestellung', $kBestellung);
-    Shop::DB()->delete('tuploaddatei', 'kCustomID', $kBestellung);
+    Shop::DB()->delete('tuploaddatei', ['kCustomID', 'nTyp'], [$kBestellung, UPLOAD_TYP_BESTELLUNG]);
     Shop::DB()->delete('tuploadqueue', 'kBestellung', $kBestellung);
     if ((int)$kWarenkorb->kWarenkorb > 0) {
         Shop::DB()->delete('twarenkorb', 'kWarenkorb', (int)$kWarenkorb->kWarenkorb);

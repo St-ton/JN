@@ -326,12 +326,11 @@
                     </span>
                     <input type="hidden" name="article" id="article" value="{if isset($oBanner->kArtikel)}{$oBanner->kArtikel}{/if}" />
                 </div>
-                <a href="#" class="btn btn-default" id="article_browser">Artikel w&auml;hlen</a>
-                <a href="#" class="btn btn-default" id="article_unlink">Artikel L&ouml;sen</a>
-
                 <input type="hidden" name="id" id="id" />
                 <div class="save_wrapper btn-group">
-                    <button type="button" class="btn btn-danger" id="remove"><i class="fa fa-trash"></i>Zone l&ouml;schen</button>
+                    <a href="#" class="btn btn-default" id="article_browser">Artikel w&auml;hlen</a>
+                    <a href="#" class="btn btn-default" id="article_unlink">Artikel L&ouml;sen</a>
+                    <button type="button" class="btn btn-danger" id="remove"><i class="fa fa-trash"></i> Zone l&ouml;schen</button>
                 </div>
             </div>
         </div>

@@ -1648,3 +1648,10 @@ define('HOOK_BACKEND_ACCOUNT_EDIT', 222);
  * @param string    - &content
  */
 define('HOOK_BACKEND_ACCOUNT_PREPARE_EDIT', 223);
+
+/**
+ * @since 4.05
+ * @file seite_inc.php
+ * @param boxes - list of boxes for the home page
+ */
+define('HOOK_BOXEN_HOME', 224);

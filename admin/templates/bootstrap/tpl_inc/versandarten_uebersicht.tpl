@@ -1,7 +1,7 @@
 <script type="text/javascript">
     {literal}
     function confirmDelete(cName) {
-        return confirm('Sind Sie sicher, dass Sie die Versandart "' + cName + '" löschen möchten?');
+        return confirm('Sind Sie sicher, dass Sie die Versandart "' + cName + '" lï¿½schen mï¿½chten?');
     }
     {/literal}
 </script>
@@ -60,7 +60,7 @@
                         <td>
                             {foreach name=zahlungsarten from=$versandart->versandartzahlungsarten item=zahlungsart}
                                 {$zahlungsart->zahlungsart->cName}{if isset($zahlungsart->zahlungsart->cAnbieter) &&
-                                    $zahlungsart->zahlungsart->cAnbieter|count_characters > 0} ({$zahlungsart->zahlungsart->cAnbieter}){/if} {if $zahlungsart->fAufpreis!=0}{if $zahlungsart->cAufpreisTyp != "%"}{getCurrencyConversionSmarty fPreisBrutto=$zahlungsart->fAufpreis bSteuer=false}{else}{$zahlungsart->fAufpreis}%{/if}{/if}
+                                    $zahlungsart->zahlungsart->cAnbieter|strlen > 0} ({$zahlungsart->zahlungsart->cAnbieter}){/if} {if $zahlungsart->fAufpreis!=0}{if $zahlungsart->cAufpreisTyp != "%"}{getCurrencyConversionSmarty fPreisBrutto=$zahlungsart->fAufpreis bSteuer=false}{else}{$zahlungsart->fAufpreis}%{/if}{/if}
                                 <br />
                             {/foreach}
                         </td>

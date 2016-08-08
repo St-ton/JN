@@ -56,11 +56,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
          */
         public function loadFromDB($kUpload)
         {
-            $oUpload = Shop::DB()->query(
-                "SELECT * FROM tuploaddatei
-                  WHERE kUpload = " . intval($kUpload), 1
-            );
-
+            $oUpload = Shop::DB()->select('tuploaddatei', 'kUpload', (int)$kUpload);
             if (isset($oUpload->kUpload) && intval($oUpload->kUpload) > 0) {
                 self::copyMembers($oUpload, $this);
 
@@ -103,8 +99,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
         {
             $oUploadDatei_arr = Shop::DB()->query(
                 "SELECT * FROM tuploaddatei
-                   WHERE kCustomID = '" . intval($kCustomID) . "'
-                   AND nTyp = '" . intval($nTyp) . "'", 2
+                   WHERE kCustomID = '" . (int)$kCustomID . "'
+                   AND nTyp = '" . (int)$nTyp . "'", 2
             );
 
             if (is_array($oUploadDatei_arr)) {

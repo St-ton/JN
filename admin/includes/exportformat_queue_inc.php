@@ -132,9 +132,9 @@ function holeAlleExportformate()
 
     if (is_array($oExportformat_arr) && count($oExportformat_arr) > 0) {
         foreach ($oExportformat_arr as $i => $oExportformat) {
-            $oExportformat_arr[$i]->Sprache      = Shop::DB()->query("SELECT * FROM tsprache WHERE kSprache = " . (int)$oExportformat->kSprache, 1);
-            $oExportformat_arr[$i]->Waehrung     = Shop::DB()->query("SELECT * FROM twaehrung WHERE kWaehrung = " . (int)$oExportformat->kWaehrung, 1);
-            $oExportformat_arr[$i]->Kundengruppe = Shop::DB()->query("SELECT * FROM tkundengruppe WHERE kKundengruppe = " . (int)$oExportformat->kKundengruppe, 1);
+            $oExportformat_arr[$i]->Sprache      = Shop::DB()->select('tsprache', 'kSprache', (int)$oExportformat->kSprache);
+            $oExportformat_arr[$i]->Waehrung     = Shop::DB()->select('twaehrung', 'kWaehrung', (int)$oExportformat->kWaehrung);
+            $oExportformat_arr[$i]->Kundengruppe = Shop::DB()->select('tkundengruppe', 'kKundengruppe', (int)$oExportformat->kKundengruppe);
         }
 
         return $oExportformat_arr;

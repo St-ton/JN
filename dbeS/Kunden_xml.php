@@ -107,9 +107,9 @@ function bearbeiteDeletes($xml)
             foreach ($xml['del_kunden']['kKunde'] as $kKunde) {
                 $kKunde = (int)$kKunde;
                 if ($kKunde > 0) {
-                    Shop::DB()->query("DELETE FROM tkunde WHERE kKunde = " . $kKunde, 4);
-                    Shop::DB()->query("DELETE FROM tlieferadresse WHERE kKunde = " . $kKunde, 4);
-                    Shop::DB()->query("DELETE FROM tkundenattribut WHERE kKunde = " . $kKunde, 4);
+                    Shop::DB()->delete('tkunde', 'kKunde', $kKunde);
+                    Shop::DB()->delete('tlieferadresse', 'kKunde', $kKunde);
+                    Shop::DB()->delete('tkundenattribut', 'kKunde', $kKunde);
                     if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
                         Jtllog::writeLog('Kunde geloescht: ' . $kKunde, JTLLOG_LEVEL_DEBUG, false, 'Kunden_xml');
                     }
@@ -117,9 +117,9 @@ function bearbeiteDeletes($xml)
             }
         } elseif ((int)$xml['del_kunden']['kKunde'] > 0) {
             $kKunde = (int)$xml['del_kunden']['kKunde'];
-            Shop::DB()->query("DELETE FROM tkunde WHERE kKunde = " . $kKunde, 4);
-            Shop::DB()->query("DELETE FROM tlieferadresse WHERE kKunde = " . $kKunde, 4);
-            Shop::DB()->query("DELETE FROM tkundenattribut WHERE kKunde = " . $kKunde, 4);
+            Shop::DB()->delete('tkunde', 'kKunde', $kKunde);
+            Shop::DB()->delete('tlieferadresse', 'kKunde', $kKunde);
+            Shop::DB()->delete('tkundenattribut', 'kKunde', $kKunde);
             if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
                 Jtllog::writeLog('Kunde geloescht: ' . $kKunde, JTLLOG_LEVEL_DEBUG, false, 'Kunden_xml');
             }

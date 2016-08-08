@@ -144,7 +144,7 @@ class GrafikFont
         $strHTML  = '<div class="grafikpreis">';
         $Waehrung = $_SESSION['Waehrung'];
         if (!$Waehrung->kWaehrung) {
-            $Waehrung = Shop::DB()->query("SELECT * FROM twaehrung WHERE cStandard = 'Y'", 1);
+            $Waehrung = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
         }
         $strTrennzeichenCent = $Waehrung->cTrennzeichenCent;
         $nLength             = strlen($strInputString);

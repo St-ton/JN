@@ -2633,7 +2633,7 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
                 if (isset($Variable_arr['Description']) && is_array($Variable_arr['Description'])) {
                     $oPluginSprachVariable->cBeschreibung = '';
                 } else {
-                    $oPluginSprachVariable->cBeschreibung = $Variable_arr['Description'];
+                    $oPluginSprachVariable->cBeschreibung = preg_replace('/\s+/', ' ', $Variable_arr['Description']);
                 }
 
                 $kPluginSprachvariable = Shop::DB()->insert('tpluginsprachvariable', $oPluginSprachVariable);
@@ -2650,7 +2650,7 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
                         $oPluginSprachVariableSprache                        = new stdClass();
                         $oPluginSprachVariableSprache->kPluginSprachvariable = $kPluginSprachvariable;
                         $oPluginSprachVariableSprache->cISO                  = $Variable_arr['VariableLocalized attr']['iso'];
-                        $oPluginSprachVariableSprache->cName                 = $Variable_arr['VariableLocalized'];
+                        $oPluginSprachVariableSprache->cName                 = preg_replace('/\s+/', ' ', $Variable_arr['VariableLocalized']);
 
                         Shop::DB()->insert('tpluginsprachvariablesprache', $oPluginSprachVariableSprache);
 
@@ -2678,7 +2678,7 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
                                 $oPluginSprachVariableSprache                        = new stdClass();
                                 $oPluginSprachVariableSprache->kPluginSprachvariable = $kPluginSprachvariable;
                                 $oPluginSprachVariableSprache->cISO                  = $cISO;
-                                $oPluginSprachVariableSprache->cName                 = $cName;
+                                $oPluginSprachVariableSprache->cName                 = preg_replace('/\s+/', ' ', $cName);
 
                                 Shop::DB()->insert('tpluginsprachvariablesprache', $oPluginSprachVariableSprache);
                                 // Erste PluginSprachVariableSprache vom Plugin als Standard setzen

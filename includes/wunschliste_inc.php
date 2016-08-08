@@ -30,10 +30,10 @@ function setzeWunschlisteInSession()
 function wunschlisteLoeschen($kWunschliste)
 {
     $hinweis      = '';
-    $kWunschliste = (int) $kWunschliste;
+    $kWunschliste = (int)$kWunschliste;
     if ($kWunschliste > 0) {
         // Prüfe ob die Wunschliste dem eingeloggten Kunden gehört
-        $oWunschliste = Shop::DB()->query("SELECT kKunde, nStandard FROM twunschliste WHERE kWunschliste = " . $kWunschliste, 1);
+        $oWunschliste = Shop::DB()->select('twunschliste', 'kWunschliste', $kWunschliste);
         if (isset($oWunschliste->kKunde) && $oWunschliste->kKunde == $_SESSION['Kunde']->kKunde) {
             // Hole alle Positionen der Wunschliste
             $oWunschlistePos_arr = Shop::DB()->query("SELECT kWunschlistePos FROM twunschlistepos WHERE kWunschliste = " . $kWunschliste, 2);

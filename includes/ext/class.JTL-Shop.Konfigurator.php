@@ -32,7 +32,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
             $oGruppen_arr = Shop::DB()->query(
                 "SELECT kArtikel, kKonfigGruppe
                     FROM tartikelkonfiggruppe
-                    WHERE tartikelkonfiggruppe.kArtikel = '" . intval($kArtikel) . "'
+                    WHERE tartikelkonfiggruppe.kArtikel = " . (int)$kArtikel . "
                     ORDER BY tartikelkonfiggruppe.nSort
                     ASC", 2
             );
@@ -61,7 +61,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
             $oGruppen_arr = Shop::DB()->query(
                 "SELECT kArtikel, kKonfigGruppe
                     FROM tartikelkonfiggruppe
-                    WHERE tartikelkonfiggruppe.kArtikel = " . intval($kArtikel) . "
+                    WHERE tartikelkonfiggruppe.kArtikel = " . (int)$kArtikel . "
                     ORDER BY tartikelkonfiggruppe.nSort
                     ASC", 2
             );

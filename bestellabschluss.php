@@ -39,7 +39,11 @@ if (isset($_GET['i'])) {
     Shop::DB()->query("DELETE FROM tbestellid WHERE dDatum < date_sub(now(),INTERVAL 30 DAY)", 4);
     $smarty->assign('abschlussseite', 1);
 } else {
-    $_SESSION['kommentar'] = (isset($_POST['kommentar'])) ? substr(strip_tags(Shop::DB()->escape($_POST['kommentar'])), 0, 1000) : '';
+    if (isset($_POST['kommentar'])) {
+        $_SESSION['kommentar'] = substr(strip_tags(Shop::DB()->escape($_POST['kommentar'])), 0, 1000);
+    } elseif (!isset($_SESSION['kommentar'])) {
+        $_SESSION['kommentar'] = '';
+    }
     if (pruefeEmailblacklist($_SESSION['Kunde']->cMail)) {
         header('Location: ' . $linkHelper->getStaticRoute('bestellvorgang.php') . '?mailBlocked=1', true, 303);
         exit;
@@ -58,16 +62,12 @@ if (isset($_GET['i'])) {
 
         if (!isset($_SESSION['Zahlungsart']->nWaehrendBestellung) || $_SESSION['Zahlungsart']->nWaehrendBestellung == 0) {
             $bestellung = finalisiereBestellung();
-            $bestellid  = (isset($bestellung->kBestellung) && $bestellung->kBestellung > 0) ?
-                Shop::DB()->select('tbestellid', 'kBestellung', $bestellung->kBestellung) :
-                false;
+            $bestellid  = (isset($bestellung->kBestellung) && $bestellung->kBestellung > 0) ? Shop::DB()->select('tbestellid', 'kBestellung', $bestellung->kBestellung) : false;
             if (is_null($bestellung->Lieferadresse) && isset($_SESSION['Lieferadresse']) && strlen($_SESSION['Lieferadresse']->cVorname) > 0) {
                 $bestellung->Lieferadresse = gibLieferadresseAusSession();
             }
             $orderCompleteURL  = $linkHelper->getStaticRoute('bestellabschluss.php', true);
-            $successPaymentURL = (!empty($bestellid->cId)) ?
-                ($orderCompleteURL . '?i=' . $bestellid->cId) :
-                Shop::getURL();
+            $successPaymentURL = (!empty($bestellid->cId)) ? ($orderCompleteURL . '?i=' . $bestellid->cId) : Shop::getURL();
             $smarty->assign('Bestellung', $bestellung);
         } else {
             $bestellung = fakeBestellung();

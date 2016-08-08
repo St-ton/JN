@@ -11,8 +11,10 @@
  * @warning Untested
  * @warning Does not support caching groups
  */
-class cache_xcache extends JTLCacheHelper implements ICachingMethod
+class cache_xcache implements ICachingMethod
 {
+    use JTLCacheTrait;
+
     /**
      * @var cache_xcache|null
      */
@@ -28,17 +30,6 @@ class cache_xcache extends JTLCacheHelper implements ICachingMethod
             $this->options       = $options;
             $this->isInitialized = true;
         }
-    }
-
-    /**
-     * @param array $options
-     *
-     * @return cache_xcache
-     */
-    public static function getInstance($options)
-    {
-        //check if class was initialized before
-        return (self::$instance !== null) ? self::$instance : new self($options);
     }
 
     /**

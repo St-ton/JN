@@ -24,7 +24,7 @@ class WidgetSalesVolume extends WidgetBase
      */
     public function init()
     {
-        $this->oWaehrung = Shop::DB()->query("SELECT * FROM twaehrung WHERE cStandard = 'Y'", 1);
+        $this->oWaehrung = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
     }
 
     /**

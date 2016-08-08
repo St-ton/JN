@@ -83,7 +83,7 @@ function bearbeiteAck($xml)
                         WHERE cStatus = '" . BESTELLUNG_STATUS_OFFEN . "'
                             AND kBestellung = " . $kBestellung, 4
                 );
-                Shop::DB()->query("DELETE FROM tzahlungsinfo WHERE kBestellung = " . $kBestellung, 4);
+                Shop::DB()->delete('tzahlungsinfo', 'kBestellung', $kBestellung);
             }
         }
     } else {
@@ -99,10 +99,7 @@ function bearbeiteAck($xml)
                     WHERE cStatus = '" . BESTELLUNG_STATUS_OFFEN . "'
                         AND kBestellung = " . intval($xml['ack_bestellungen']['kBestellung']), 4
             );
-            Shop::DB()->query(
-                "DELETE FROM tzahlungsinfo
-                    WHERE kBestellung = " . intval($xml['ack_bestellungen']['kBestellung']), 4
-            );
+            Shop::DB()->delete('tzahlungsinfo', 'kBestellung', (int)$xml['ack_bestellungen']['kBestellung']);
         }
     }
 }
@@ -141,11 +138,10 @@ function bearbeiteDel($xml)
                 if ($oModule) {
                     $oModule->cancelOrder($kBestellung, true);
                 }
-
-                Shop::DB()->delete('tbestellung', 'kBestellung', $kBestellung);
+                deleteOrder($kBestellung);
                 //uploads (bestellungen)
-                Shop::DB()->query("DELETE FROM tuploadschema WHERE kCustomID = " . $kBestellung . " AND nTyp = 2", 4);
-                Shop::DB()->query("DELETE FROM tuploaddatei WHERE kCustomID = " . $kBestellung . " AND nTyp = 2", 4);
+                Shop::DB()->delete('tuploadschema', ['kCustomID', 'nTyp'], [$kBestellung, 2]);
+                Shop::DB()->delete('tuploaddatei', ['kCustomID', 'nTyp'], [$kBestellung, 2]);
                 //uploads (artikel der bestellung)
                 //todo...
                 //wenn unreg kunde, dann kunden auch löschen
@@ -168,7 +164,7 @@ function bearbeiteDel($xml)
             if ($oModule) {
                 $oModule->cancelOrder($kBestellung, true);
             }
-            Shop::DB()->delete('tbestellung', 'kBestellung', $kBestellung);
+            deleteOrder($kBestellung);
             //wenn unreg kunde, dann kunden auch löschen
             $b = Shop::DB()->query("SELECT kKunde FROM tbestellung WHERE kBestellung = " . $kBestellung, 1);
             if (isset($b->kKunde) && $b->kKunde > 0) {
@@ -197,7 +193,7 @@ function bearbeiteDelOnly($xml)
                 if ($oModule) {
                     $oModule->cancelOrder($kBestellung, true);
                 }
-                Shop::DB()->delete('tbestellung', 'kBestellung', $kBestellung);
+                deleteOrder($kBestellung);
             }
         }
     } else {
@@ -207,7 +203,7 @@ function bearbeiteDelOnly($xml)
             if ($oModule) {
                 $oModule->cancelOrder($kBestellung, true);
             }
-            Shop::DB()->delete('tbestellung', 'kBestellung', $kBestellung);
+            deleteOrder($kBestellung);
         }
     }
 }
@@ -682,6 +678,27 @@ function bearbeiteSet($xml)
                 }
             }
             executeHook(HOOK_BESTELLUNGEN_XML_BEARBEITESET, array('oBestellung' => &$oBestellungShop, 'oKunde' => &$kunde, 'oBestellungWawi' => &$oBestellungWawi));
+        }
+    }
+}
+
+/**
+ * @param $kBestellung
+ */
+function deleteOrder($kBestellung)
+{
+    $kWarenkorb = Shop::DB()->select('tbestellung', 'kBestellung', $kBestellung, null, null, null, null, false, 'kWarenkorb');
+    Shop::DB()->delete('tbestellung', 'kBestellung', $kBestellung);
+    Shop::DB()->delete('tbestellid', 'kBestellung', $kBestellung);
+    Shop::DB()->delete('tbestellstatus', 'kBestellung', $kBestellung);
+    if ((int)$kWarenkorb->kWarenkorb > 0) {
+        Shop::DB()->delete('twarenkorb', 'kWarenkorb', (int)$kWarenkorb->kWarenkorb);
+        $kWarenkorbPos_arr = Shop::DB()->selectAll('twarenkorbpos', 'kWarenkorb', (int)$kWarenkorb->kWarenkorb, 'kWarenkorbPos');
+        Shop::DB()->delete('twarenkorbpos', 'kWarenkorb', (int)$kWarenkorb->kWarenkorb);
+        if (is_array($kWarenkorbPos_arr)) {
+            foreach ($kWarenkorbPos_arr as $kWarenkorbPos) {
+                Shop::DB()->delete('twarenkorbposeigenschaft', 'kWarenkorbPos', (int)$kWarenkorbPos->kWarenkorbPos);
+            }
         }
     }
 }

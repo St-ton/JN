@@ -208,7 +208,7 @@
                                         </td>
                                         <td>
                                             <label for="kZahlungsart{$smarty.foreach.zahlungsarten.index}">
-                                                {$zahlungsart->cName}{if isset($zahlungsart->cAnbieter) && $zahlungsart->cAnbieter|count_characters > 0} ({$zahlungsart->cAnbieter}){/if}
+                                                {$zahlungsart->cName}{if isset($zahlungsart->cAnbieter) && $zahlungsart->cAnbieter|strlen > 0} ({$zahlungsart->cAnbieter}){/if}
                                             </label>
                                         </td>
                                         <td>{#discount#}</td>

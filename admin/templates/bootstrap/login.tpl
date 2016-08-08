@@ -39,7 +39,7 @@
                     <form method="post" action="index.php" class="form-horizontal" role="form">
                         {$jtl_token}
                         <input id="benutzer" type="hidden" name="adminlogin" value="1" />
-                        {if isset($uri) && $uri|count_characters > 0}
+                        {if isset($uri) && $uri|strlen > 0}
                             <input type="hidden" name="uri" value="{$uri}" />
                         {/if}
                         {if isset($code_adminlogin) && $code_adminlogin}

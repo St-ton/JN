@@ -109,9 +109,10 @@ class Emailvorlage
      */
     private function loadFromDB($kEmailvorlage, $bPlugin)
     {
+        $kEmailvorlage = (int)$kEmailvorlage;
         $cTable        = $bPlugin ? 'tpluginemailvorlage' : 'temailvorlage';
         $cTableSetting = $bPlugin ? 'tpluginemailvorlageeinstellungen' : 'temailvorlageeinstellungen';
-        $oObj          = Shop::DB()->query("SELECT * FROM {$cTable} WHERE kEmailvorlage = " . intval($kEmailvorlage), 1);
+        $oObj          = Shop::DB()->select($cTable, 'kEmailvorlage', $kEmailvorlage);
 
         if (isset($oObj->kEmailvorlage) && $oObj->kEmailvorlage > 0) {
             $cMember_arr = array_keys(get_object_vars($oObj));

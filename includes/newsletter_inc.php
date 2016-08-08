@@ -73,7 +73,7 @@ function fuegeNewsletterEmpfaengerEin($oKunde, $bPruefeDaten = false)
                 $oNewsletterEmpfaengerKunde = Shop::DB()->query(
                     "SELECT kKunde
                         FROM tnewsletterempfaenger
-                        WHERE kKunde = " . (int) $_SESSION['Kunde']->kKunde, 1
+                        WHERE kKunde = " . (int)$_SESSION['Kunde']->kKunde, 1
                 );
             }
             if ((isset($oNewsletterEmpfaenger->cEmail) && strlen($oNewsletterEmpfaenger->cEmail) > 0) ||
@@ -168,27 +168,8 @@ function newsletterAnmeldungPlausi($oKunde)
     global $cFehler, $Einstellungen;
 
     $nPlausi_arr = array();
-    if ((!isset($_SESSION['bAnti_spam_already_checked']) || $_SESSION['bAnti_spam_already_checked'] !== true) && isset($Einstellungen['newsletter']['newsletter_sicherheitscode']) &&
-        $Einstellungen['newsletter']['newsletter_sicherheitscode'] !== 'N' && empty($_SESSION['Kunde']->kKunde)) {
-        if ($Einstellungen['newsletter']['newsletter_sicherheitscode'] !== 'N') {
-            // reCAPTCHA
-            if (isset($_POST['g-recaptcha-response'])) {
-                if (!validateReCaptcha($_POST['g-recaptcha-response'])) {
-                    $nPlausi_arr['captcha'] = true;
-                }
-            } else {
-                if (!isset($_POST['captcha'])) {
-                    $nPlausi_arr['captcha'] = 1;
-                    $cFehler                = Shop::Lang()->get('newsletterCaptcha', 'errorMessages');
-                }
-                if ($Einstellungen['global']['anti_spam_method'] == 5) { //Prüfen ob der Token und der Name korrekt sind
-                    $nPlausi_arr['captcha'] = 2;
-                    if (validToken()) {
-                        unset($nPlausi_arr['captcha']);
-                    }
-                }
-            }
-        }
+    if ($Einstellungen['newsletter']['newsletter_sicherheitscode'] !== 'N' && !validateCaptcha($_POST)) {
+        $nPlausi_arr['captcha'] = 2;
     }
 
     return $nPlausi_arr;
@@ -204,7 +185,7 @@ function pruefeObBereitsAbonnent($kKunde)
         $oNewsletterEmpfaenger = Shop::DB()->query(
             "SELECT kKunde
                 FROM tnewsletterempfaenger
-                WHERE kKunde = " . (int) $kKunde, 1
+                WHERE kKunde = " . (int)$kKunde, 1
         );
 
         return (isset($oNewsletterEmpfaenger->kKunde) && $oNewsletterEmpfaenger->kKunde > 0);
@@ -226,7 +207,7 @@ function pruefeNLHistoryKundengruppe($kKundengruppe, $cKundengruppeKey)
         if (is_array($cKundengruppeKey_arr) && count($cKundengruppeKey_arr) > 0) {
             foreach ($cKundengruppeKey_arr as $cKundengruppeKey) {
                 if (intval($cKundengruppeKey) > 0 || (strlen($cKundengruppeKey) > 0 && intval($cKundengruppeKey) === 0)) {
-                    $kKundengruppe_arr[] = (int) $cKundengruppeKey;
+                    $kKundengruppe_arr[] = (int)$cKundengruppeKey;
                 }
             }
         }

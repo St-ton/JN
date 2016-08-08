@@ -90,7 +90,7 @@ class Merkmal
     {
         $kSprache = Shop::$kSprache;
         if (!$kSprache) {
-            $oSprache = Shop::DB()->query("SELECT kSprache FROM tsprache WHERE cShopStandard = 'Y'", 1);
+            $oSprache = Shop::DB()->select('tsprache', 'cShopStandard', 'Y');
             if ($oSprache->kSprache > 0) {
                 $kSprache = $oSprache->kSprache;
             }

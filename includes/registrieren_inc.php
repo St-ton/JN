@@ -94,7 +94,7 @@ function kundeSpeichern($cPost_arr)
                 isset($Einstellungen['kundenwerbenkunden']['kwk_kundengruppen']) &&
                 intval($Einstellungen['kundenwerbenkunden']['kwk_kundengruppen']) > 0
             ) {
-                $kKundengruppe = (int) $Einstellungen['kundenwerbenkunden']['kwk_kundengruppen'];
+                $kKundengruppe = (int)$Einstellungen['kundenwerbenkunden']['kwk_kundengruppen'];
             }
 
             $knd->kKundengruppe = $kKundengruppe;
@@ -184,6 +184,8 @@ function kundeSpeichern($cPost_arr)
 
         return $fehlendeAngaben;
     }
+
+    return [];
 }
 
 /**
@@ -230,4 +232,22 @@ function gibKunde()
         $Kunde->dGeburtstag       = $tag . '.' . $monat . '.' . $jahr;
     }
     $titel = Shop::Lang()->get('editData', 'login');
+}
+
+/**
+ * @param string $vCardFile
+ */
+function gibKundeFromVCard($vCardFile)
+{
+    if (is_file($vCardFile)) {
+        global $smarty, $Kunde, $hinweis;
+
+        try {
+            $vCard = new VCard(file_get_contents($vCardFile), ['handling' => VCard::OPT_ERR_RAISE]);
+            $Kunde = $vCard->selectVCard(0)->asKunde();
+            $smarty->assign('Kunde', $Kunde);
+        } catch (Exception $e) {
+            $hinweis = Shop::Lang()->get('uploadError', 'global');
+        }
+    }
 }

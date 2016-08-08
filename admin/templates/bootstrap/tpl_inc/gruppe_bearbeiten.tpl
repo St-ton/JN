@@ -7,6 +7,7 @@
 <div id="content" class="container-fluid">
     <form class="settings navbar-form" action="benutzerverwaltung.php" method="post">
         {$jtl_token}
+        <input type="hidden" name="tab" value="group_view" />
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h3 class="panel-title">Allgemein</h3>
@@ -15,12 +16,12 @@
                 <div class="input-group{if isset($cError_arr.cGruppe)} error{/if}">
                     <span class="input-group-addon"><label for="cGruppe">Name</label></span>
                     <input class="form-control" type="text" name="cGruppe" id="cGruppe" value="{if isset($oAdminGroup->cGruppe)}{$oAdminGroup->cGruppe}{/if}" />
-                    {if isset($cError_arr.cGruppe)}<span class="input-group-addon error">Bitte ausf&uuml;llen</span>{/if}
+                    {if isset($cError_arr.cGruppe)}<span class="input-group-addon error" title="Bitte ausf&uuml;llen"><i class="fa fa-exclamation-triangle"></i></span>{/if}
                 </div>
                 <div class="input-group{if isset($cError_arr.cBeschreibung)} error{/if}">
                     <span class="input-group-addon"><label for="cBeschreibung">Beschreibung</label></span>
                     <input class="form-control" type="text" id="cBeschreibung" name="cBeschreibung" value="{if isset($oAdminGroup->cBeschreibung)}{$oAdminGroup->cBeschreibung}{/if}" />
-                    {if isset($cError_arr.cBeschreibung)}<span class="input-group-addon error">Bitte ausf&uuml;llen</span>{/if}
+                    {if isset($cError_arr.cBeschreibung)}<span class="input-group-addon error" title="Bitte ausf&uuml;llen"><i class="fa fa-exclamation-triangle"></i></span>{/if}
                 </div>
             </div>
         </div>
@@ -39,7 +40,7 @@
                                     <div class="input">
                                     <input type="checkbox" name="perm[]" value="{$oPerm->cRecht}" id="{$oPerm->cRecht}" {if isset($cAdminGroupPermission_arr) && is_array($cAdminGroupPermission_arr)}{if $oPerm->cRecht|in_array:$cAdminGroupPermission_arr}checked="checked"{/if}{/if} />
                                     <label for="{$oPerm->cRecht}" class="perm">
-                                        {if $oPerm->cBeschreibung|count_characters > 0}{$oPerm->cBeschreibung}{if isset($bDebug) && $bDebug} - {$oPerm->cRecht}{/if}{else}{$oPerm->cRecht}{/if}
+                                        {if $oPerm->cBeschreibung|strlen > 0}{$oPerm->cBeschreibung}{if isset($bDebug) && $bDebug} - {$oPerm->cRecht}{/if}{else}{$oPerm->cRecht}{/if}
                                     </label>
                                     </div>
                                 {/foreach}
@@ -56,15 +57,17 @@
             </div>
         </div>
 
-        <div class="save_wrapper">
-            <input type="hidden" name="action" value="group_edit" />
-            {if isset($oAdminGroup) && $oAdminGroup->kAdminlogingruppe > 0}
-                <input type="hidden" name="kAdminlogingruppe" value="{$oAdminGroup->kAdminlogingruppe}" />
-            {/if}
-            <input type="hidden" name="save" value="1" />
-            <button type="submit" value="{$cTitel}" class="btn btn-primary"><i class="fa fa-save"></i> {$cTitel}</button>
+        <div class="panel-footer">
+            <div class="btn-group">
+                <input type="hidden" name="action" value="group_edit" />
+                {if isset($oAdminGroup) && $oAdminGroup->kAdminlogingruppe > 0}
+                    <input type="hidden" name="kAdminlogingruppe" value="{$oAdminGroup->kAdminlogingruppe}" />
+                {/if}
+                <input type="hidden" name="save" value="1" />
+                <button type="submit" value="{$cTitel}" class="btn btn-primary"><i class="fa fa-save"></i> Speichern</button>
+                <a class="btn btn-danger" href="benutzerverwaltung.php?tab=group_view"><i class="fa fa-exclamation"></i> Abbrechen</a>
+            </div>
         </div>
-
     </form>
 </div>
 

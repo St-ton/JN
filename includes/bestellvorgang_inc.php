@@ -1845,7 +1845,7 @@ function checkKundenFormular($kundenaccount, $checkpass = 1)
         }
         if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
             //emailadresse anders und existiert dennoch?
-            $mail = Shop::DB()->query("SELECT cMail FROM tkunde WHERE kKunde = " . intval($_SESSION['Kunde']->kKunde), 1);
+            $mail = Shop::DB()->select('tkunde', 'kKunde', (int)$_SESSION['Kunde']->kKunde);
             if ($_POST['email'] == $mail->cMail) {
                 unset($ret['email_vorhanden']);
             }
@@ -1945,24 +1945,8 @@ function checkKundenFormular($kundenaccount, $checkpass = 1)
         }
     }
 
-    if ((!isset($_SESSION['bAnti_spam_already_checked']) || $_SESSION['bAnti_spam_already_checked'] !== true) && isset($conf['kunden']['registrieren_captcha']) && $conf['kunden']['registrieren_captcha'] !== 'N' && $conf['global']['anti_spam_method'] !== 'N' && empty($_SESSION['Kunde']->kKunde)) {
-        // reCAPTCHA
-        if (isset($_POST['g-recaptcha-response'])) {
-            $ret['captcha'] = !validateReCaptcha($_POST['g-recaptcha-response']);
-        } else {
-            if (empty($_POST['captcha'])) {
-                $ret['captcha'] = 1;
-            }
-            if (empty($_POST['md5']) || ($_POST['md5'] !== md5(PFAD_ROOT . strtoupper($_POST['captcha'])))) {
-                $ret['captcha'] = 2;
-            }
-            if ($conf['kunden']['registrieren_captcha'] == 5) { //Prüfen ob der Token und der Name korrekt sind
-                $ret['captcha'] = 2;
-                if (validToken()) {
-                    unset($ret['captcha']);
-                }
-            }
-        }
+    if (isset($conf['kunden']['registrieren_captcha']) && $conf['kunden']['registrieren_captcha'] !== 'N' && !validateCaptcha($_POST)) {
+        $ret['captcha'] = 2;
     }
 
     return $ret;

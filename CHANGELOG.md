@@ -35,12 +35,25 @@
 * Verbesserung: Prioritäten für Plugin-Hooks (#45)
 * Bugfix: Abnahmeintervall wird bei Konfigurationsartikel nicht beachtet, Hinweis auf Mindestbestellmenge/Abnahmeintervall fehlt (#259)
 * Verbesserung: Anzeige von Boxen in nicht-sichtbaren Positionen im Backend mitsamt Warnhinweis(#252)
+* Verbesserung: Neue Hooks HOOK_FILTER_INC_GIBARTIKELKEYS_SQL und HOOK_FILTER_INC_BAUFILTERSQL (#310)
+* Bugfix: apple-touch-icon.png in header.tpl verlinket, obwohl Datei nicht vorhanden ist (#278)
+* Verbesserung: Kupon-Backend komplett überarbeitet, Validierung verbessert (#275)
+* Bugfix: Fehlerhafte URLs in $Suchergebnisse->Kategorieauswahl bei hierarchischer Filterung (#273)
+* Bugfix: Mehrdeutige Verwendung von GET-Parameter "n" (#321)
+* Bugfix: Weiterleitung zum Login bei Artikel mit Slash in SEO-URL fehlerhaft (#322)
+* Bugfix: Fehlerhafter Kategoriefilter, wenn Einstellung 1321 auf "Hierarchische Filterung" gestellt ist (#185)
 
 ## [4.04.1]
+* Neues Premium-Plugin: Login und Bezahlen mit Amazon (von Solution360)
+* Neues Premium-Plugin: TrustedShops Trustbade (von AG-Websolutions)
+* Update: Google Shopping Plugin v1.05 (Bugfix: Unter Umständen doppelte IDs bei Varkombi-Kindartikeln)
 * Bugfix: Testmails werden nur noch auf Deutsch versendet (#241)
 * Verbesserung: Vermeiden mehrfacher Cache-Einträge mit demselben Inhalt in gibKategorieFilterOptionen() (#244)
 * Bugfix: Mixed-Content-Warnungen (Megamenü-Kategoriebilder via http) bei Teilverschlüsselung und Wechsel auf https (#211)
 * Bugfix: Frontendlinks verschwinden aus tseo bei Plugin-Updates in mehrsprachiger Umgebung (#258)
+* Bugfix: jtl_token wird sporadisch in der Session überschrieben (#306)
+* Bugfix: Boxenverwaltung: Footer für alle Seiten aktivieren geht nicht
+* Bugfix: Produktbilder-Encoding bei Dateityp "PNG" fehlerhaft
 
 ## [4.04] - 2016-06-22
 * Bugfix: robots.txt fehlendes "Sitemap: " vor der Sitemap-URL (#83)

@@ -36,7 +36,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
 
         /**
          * @access protected
-         * @var integer
+         * @var int
          */
         protected $nTyp;
 
@@ -180,7 +180,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         public function delete()
         {
-            return Shop::DB()->delete('tkonfiggruppe', 'kKonfiggruppe', (int) $this->kKonfiggruppe);
+            return Shop::DB()->delete('tkonfiggruppe', 'kKonfiggruppe', (int)$this->kKonfiggruppe);
         }
 
         /**
@@ -269,7 +269,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          * Gets the nMin
          *
          * @access public
-         * @return integer
+         * @return int
          */
         public function getMin()
         {
@@ -280,7 +280,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          * Gets the nMax
          *
          * @access public
-         * @return integer
+         * @return int
          */
         public function getMax()
         {
@@ -341,9 +341,15 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         public function getItemCount()
         {
-            $oCount = Shop::DB()->query("SELECT COUNT(*) AS nCount FROM tkonfigitem WHERE kKonfiggruppe = " . (int) $this->kKonfiggruppe, 1);
+            $oCount = Shop::DB()->query("
+                SELECT COUNT(*) AS nCount 
+                  FROM tkonfigitem 
+                  WHERE kKonfiggruppe = " . (int) $this->kKonfiggruppe, 1
+            );
 
-            return (int) $oCount->nCount;
+            return (isset($oCount->nCount)) ?
+                (int)$oCount->nCount :
+                0;
         }
 
         /**

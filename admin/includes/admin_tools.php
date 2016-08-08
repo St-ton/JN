@@ -320,7 +320,7 @@ function setzeSprache()
     }
     //setze explizit ausgewählte Sprache
     if (isset($_POST['sprachwechsel']) && intval($_POST['sprachwechsel']) === 1) {
-        $StdSprache = Shop::DB()->query("SELECT kSprache, cISO FROM tsprache WHERE kSprache = " . intval($_POST['kSprache']), 1);
+        $StdSprache = Shop::DB()->select('tsprache', 'kSprache', (int)$_POST['kSprache']);
         if ($StdSprache->kSprache > 0) {
             $_SESSION['kSprache']    = $StdSprache->kSprache;
             $_SESSION['cISOSprache'] = $StdSprache->cISO;

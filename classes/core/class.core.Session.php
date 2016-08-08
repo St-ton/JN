@@ -178,7 +178,9 @@ class Session
             $_SESSION['ks']                               = array();
             $_SESSION['Waehrungen']                       = Shop::DB()->query("SELECT * FROM twaehrung", 2);
             $_SESSION['Sprachen']                         = Sprache::getInstance(false)->gibInstallierteSprachen();
-            $_SESSION['jtl_token']                        = generateCSRFToken();
+            if (!isset($_SESSION['jtl_token'])) {
+                $_SESSION['jtl_token'] = generateCSRFToken();
+            }
             // Sprache anhand der Browsereinstellung ermitteln
             $cLangDefault = '';
             $cAllowed_arr = array();
@@ -287,10 +289,7 @@ class Session
         Kampagne::getAvailable();
         if (!isset($_SESSION['cISOSprache'])) {
             session_destroy();
-            die(utf8_decode('<h1>Der Shop wurde korrekt installiert. Bitte nun in den Webshopeinstellungen der JTL-WAWI der Sprache, Kundengruppe und Währung jeweils einen Standardwert zuweisen,
-die Lizenzen aktivieren und anschließend einen Komplettabgleich mit globalen Daten durchführen, damit der Shop betrieben werden kann. Wie Sie die Standards setzen, finden Sie hier erklärt:
-<a href="http://guide.jtl-software.de/jtl/JTL-Shop_2_FAQ#Standards_f.C3.BCr_Sprache.2C_W.C3.A4hrung_und_Kundengruppe_setzen">Standards setzen</a></h1>
-Wenn Sie bereits eine Komplettübertragung mit JTL-Wawi durchgeführt haben und diese Seite immernoch erscheint, dann drücken Sie F5 (Seite aktualisieren) bzw. leeren Sie den Browsercache.'));
+            die(utf8_decode('<h1>Ihr Shop wurde installiert. Lesen Sie in unserem Guide <a href="https://guide.jtl-software.de/jtl/JTL-Shop:Installation:Erste_Schritte#Einrichtung_und_Grundkonfiguration">mehr zu ersten Schritten mit JTL-Shop, der Grundkonfiguration und dem erstem Abgleich mit JTL-Wawi</a>.</h1>'));
         }
 
         //wurde kunde über wawi aktualisiert?
@@ -298,7 +297,7 @@ Wenn Sie bereits eine Komplettübertragung mit JTL-Wawi durchgeführt haben und 
             $Kunde = Shop::DB()->query(
                 "SELECT kKunde
                     FROM tkunde
-                    WHERE kKunde=" . $_SESSION['Kunde']->kKunde . "
+                    WHERE kKunde = " . (int)$_SESSION['Kunde']->kKunde . "
                         AND date_sub(now(), INTERVAL 3 HOUR) < dVeraendert", 1
             );
             if (isset($Kunde->kKunde) && $Kunde->kKunde > 0) {
@@ -438,7 +437,7 @@ Wenn Sie bereits eine Komplettübertragung mit JTL-Wawi durchgeführt haben und 
     {
         $Kunde->angezeigtesLand                               = ISO2land($Kunde->cLand);
         $_SESSION['Kunde']                                    = $Kunde;
-        $_SESSION['Kundengruppe']                             = Shop::DB()->query("SELECT * FROM tkundengruppe WHERE kKundengruppe=" . $Kunde->kKundengruppe, 1);
+        $_SESSION['Kundengruppe']                             = Shop::DB()->select('tkundengruppe', 'kKundengruppe', (int)$Kunde->kKundengruppe);
         $_SESSION['Kundengruppe']->darfPreiseSehen            = 1;
         $_SESSION['Kundengruppe']->darfArtikelKategorienSehen = 1;
         $_SESSION['Kundengruppe']->Attribute                  = Kundengruppe::getAttributes($_SESSION['Kundengruppe']->kKundengruppe);

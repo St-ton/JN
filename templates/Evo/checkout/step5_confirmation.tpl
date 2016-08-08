@@ -68,12 +68,17 @@
                     </h3>
                 </div>
                 <div class="panel-body">
-                <p>
+                {$cEstimatedDelivery = $smarty.session.Warenkorb->getEstimatedDeliveryTime()}
+                {if $cEstimatedDelivery|@count_characters > 0}
+                    <p>
+                        {$smarty.session.Versandart->angezeigterName|trans}
+                    </p>
+                    <p>
+                        <strong>{lang key="shippingTime" section="global"}</strong>: {$cEstimatedDelivery}
+                    </p>
+                {else}
                     {$smarty.session.Versandart->angezeigterName|trans}
-                </p>
-                <p>
-                    <strong>{lang key="shippingTime" section="global"}</strong>: {$smarty.session.Warenkorb->cEstimatedDelivery}
-                </p>
+                {/if}
                 </div>
             </div>
             {/block}

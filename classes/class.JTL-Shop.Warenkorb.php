@@ -871,27 +871,18 @@ class Warenkorb
             return 0;
         }
         $gesamtsumme = 0;
-        $waehrung    = (isset($_SESSION['Waehrung'])) ? $_SESSION['Waehrung'] : null;
-        if (is_null($waehrung) || !isset($waehrung->kWaehrung)) {
-            $waehrung = $this->Waehrung;
-        }
-        if (is_null($waehrung) || !isset($waehrung->kWaehrung)) {
-            $waehrung = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
-        }
         foreach ($this->PositionenArr as $i => $Position) {
             if (in_array($Position->nPosTyp, $postyp_arr)) {
                 if ($Brutto) {
-                    $gesamtsumme += $Position->fPreis * $waehrung->fFaktor * $Position->nAnzahl * ((100 + gibUst($Position->kSteuerklasse)) / 100);
+                    $gesamtsumme += $Position->fPreis * $Position->nAnzahl * ((100 + gibUst($Position->kSteuerklasse)) / 100);
                 } else {
-                    $gesamtsumme += $Position->fPreis * $waehrung->fFaktor * $Position->nAnzahl;
+                    $gesamtsumme += $Position->fPreis * $Position->nAnzahl;
                 }
             }
         }
         if ($Brutto) {
             $gesamtsumme = round($gesamtsumme, 2);
         }
-        // Lokalisierung aufheben
-        $gesamtsumme /= $waehrung->fFaktor;
         $this->useSummationRounding();
 
         return $this->optionaleRundung($gesamtsumme);

@@ -69,6 +69,9 @@
                 </div>
                 <div class="panel-body">
                 {$smarty.session.Versandart->angezeigterName|trans}
+                <p>
+                    <strong>{lang key="shippingTime" section="global"}</strong>: {$smarty.session.Warenkorb->cEstimatedDelivery}
+                </p>
                 </div>
             </div>
             {/block}
@@ -216,9 +219,6 @@
                             <input type="hidden" name="abschluss" value="1" />
                             <input type="hidden" id="comment-hidden" name="kommentar" value="" />
                             {include file="checkout/inc_order_items.tpl" tplscope="confirmation"}
-                            <div class="table left shippingTime">
-                                <strong>{lang key="shippingTime" section="global"}</strong>: {$smarty.session.Warenkorb->cEstimatedDelivery}
-                            </div>
                             <input type="submit" value="{lang key="orderLiableToPay" section="checkout"}" id="complete-order-button" class="btn btn-primary btn-lg pull-right submit submit_once" />
                             <a href="{get_static_route id='warenkorb.php'}" class="btn btn-default btn-lg">{lang key="modifyBasket" section="checkout"}</a>
                         </div>

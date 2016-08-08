@@ -76,7 +76,7 @@ if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && 
                 'cSuche'       => 'keycSuche'
             );
             $cKeyValue = $aFilter_arr[$cKey];
-            $cValue    = $_POST[$cKeyValue];
+            $cValue    = (isset($_POST[$cKeyValue])) ? $_POST[$cKeyValue] : null;
         }
         Shop::DB()->delete('textensionpoint', array('cClass', 'kInitial'), array('ImageMap', $kImageMap));
         // save extensionpoint

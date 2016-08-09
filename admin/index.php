@@ -61,7 +61,7 @@ if (isset($_POST['adminlogin']) && intval($_POST['adminlogin']) === 1) {
 
             case -3:
             case -1:
-                if( true === $_SESSION['AdminAccount']->TwoFA_expired) {
+                if( isset($_SESSION['AdminAccount']->TwoFA_expired) && true === $_SESSION['AdminAccount']->TwoFA_expired) {
                     $cFehler = '2-Faktor-Auth-Code abgelaufen';
                 } else {
                     $cFehler = 'Benutzername oder Passwort falsch';
@@ -154,13 +154,12 @@ $smarty->assign('bProfilerActive', $profilerState !== 0)
 
 /**
  * opens the dashboard
- * (prevents code-doubling)
+ * (prevents code duplication)
  */
 function openDashboard() {
     global $oAccount , $smarty;
 
     $_SESSION['loginIsValid'] = true;
-    //
     if ($oAccount->permission('DASHBOARD_VIEW')) {
         require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dashboard_inc.php';
         require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'permissioncheck_inc.php';
@@ -181,18 +180,10 @@ function openDashboard() {
 unset($_SESSION['AdminAccount']->TwoFA_active);
 if ($oAccount->getIsAuthenticated()) {
     // at this point, the user is logged in with his regular credentials
-
-    // BEGIN 2FA
-    // here starts the "2FA" ("2 Factor Authentication")
-    //
     if (!$oAccount->getIsTwoFaAuthenticated()) {
-
         // activate the 2FA-code input-field in the login-template(-page)
-        //
         $_SESSION['AdminAccount']->TwoFA_active = true;
-
         // if our check failed, we redirect to login
-        //
         if (isset($_POST['TwoFA_code']) && '' !== $_POST['TwoFA_code']) {
 
             if ($oAccount->doTwoFA()) {
@@ -203,10 +194,8 @@ if ($oAccount->getIsAuthenticated()) {
         } else {
             $_SESSION['AdminAccount']->TwoFA_expired = true;
         }
-
         // "redirect" to the "login not valid"
         // (we've received a wrong code and give the user the chance to retry)
-        //
         $oAccount->redirectOnUrl();
         if (isset($_REQUEST['uri']) && strlen(trim($_REQUEST['uri'])) > 0) {
             $smarty->assign('uri', trim($_REQUEST['uri']));
@@ -214,11 +203,7 @@ if ($oAccount->getIsAuthenticated()) {
         $smarty->display('login.tpl');
         exit();
     }
-    //
-    // END 2FA
-
     openDashboard();
-
 } else {
     $oAccount->redirectOnUrl();
     if (isset($_REQUEST['uri']) && strlen(trim($_REQUEST['uri'])) > 0) {
@@ -226,5 +211,3 @@ if ($oAccount->getIsAuthenticated()) {
     }
     $smarty->display('login.tpl');
 }
-
-// vim: set expandtab:tw=4:sw=4

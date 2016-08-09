@@ -61,8 +61,8 @@ class TwoFA
     {
         $this->szUserName = $szUserName;
 
-        $oTupel = Shop::DB()->select('tadminlogin', 'cLogin', $this->szUserName);
-        $this->TwoFAauth = (boolean)$oTupel->b2FAauth;
+        $oTupel                = Shop::DB()->select('tadminlogin', 'cLogin', $this->szUserName);
+        $this->TwoFAauth       = (boolean)$oTupel->b2FAauth;
         $this->TwoFAauthSecret = $oTupel->c2FAauthSecret;
 
         return $this;
@@ -90,8 +90,7 @@ class TwoFA
 
 
     /**
-     *
-     * @return
+     * @return $this
      */
     public function createNewSecret()
     {
@@ -99,10 +98,12 @@ class TwoFA
         // (only when we check any credential! (something like lazy loading))
         $this->oGA = new PHPGangsta_GoogleAuthenticator();
 
-        $szNewSecret = $this->oGA->createSecret();
-        Shop::DB()->query('UPDATE tadminlogin SET c2FAauthSecret="'.$szNewSecret.'" WHERE cLogin="'.$this->szUserName.'"', 3);
+        $szNewSecret         = $this->oGA->createSecret();
+        $upd                 = new stdClass();
+        $upd->c2FAauthSecret = $szNewSecret;
+        Shop::DB()->update('tadminlogin', 'cLogin', $this->szUserName, $upd);
 
-        $this->setUser($this->szUserName); // update our object-properties
+        return $this->setUser($this->szUserName); // update our object-properties
     }
 
 
@@ -127,32 +128,27 @@ class TwoFA
     /**
      * deliver a QR-code for the given user and his secret
      *
-     * @param $szQRString string - generated QR-code
+     * @return string - generated QR-code
      */
     public function getQRcode()
     {
-        if('' !== $this->TwoFAauthSecret) {
-
+        if ('' !== $this->TwoFAauthSecret) {
             // find out the global shop-name, if anyone administer more than one shop
-            //
             $vResult = Shop::DB()->select('teinstellungen', 'cName', 'global_shopname');
-            $szShopName = ('' !== $vResult->cWert) ? $vResult->cWert : '';
+            $szShopName = ('' !== $vResult->cWert) ? urlencode($vResult->cWert) : '';
 
             // create the QR-code
             //
-            $szQRString = new QRCode('otpauth://totp/JTL-Shop%20Admin%20'.$szShopName.'?'
-                                        .'secret='.$this->TwoFAauthSecret
-                                        .'&issuer=JTL-Software'
-                                    , new QRString()
-                                )
+            $szQRString = new QRCode('otpauth://totp/JTL-Shop%20Admin%20' . $szShopName . '?'
+                . 'secret=' . $this->TwoFAauthSecret
+                . '&issuer=JTL-Software'
+                , new QRString()
+            )
             ;
 
             return $szQRString->output();
-        } else {
-            return ''; // better return a empty string instead of a bar-code with empty secret!
         }
 
+        return ''; // better return a empty string instead of a bar-code with empty secret!
     }
-
 }
-// vi: set expandtab:tw=4:sw=4:

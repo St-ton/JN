@@ -217,7 +217,7 @@ $(document).ready(function() {
                             </div>
                             Um einen neuen QR-Code zu erzeugen, klicken Sie bitte hier:<br>
                             <br>
-                            <input type="button" value="create new code" onclick="createNewSecret();" />
+                            <button class="btn btn-primary" type="button" onclick="createNewSecret();">Code erstellen</button>
                         </div>
 
                     </div>

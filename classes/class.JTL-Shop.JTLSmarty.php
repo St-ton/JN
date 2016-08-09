@@ -699,7 +699,16 @@ class JTLSmarty extends SmartyBC
      */
     public function fetch($template = null, $cache_id = null, $compile_id = null, $parent = null)
     {
-        return parent::fetch($this->getResourceName($template), $cache_id, $compile_id, $parent);
+        $_debug = (!empty($this->_debug->template_data)) ?
+            $this->_debug->template_data :
+            null;
+        $res = parent::fetch($this->getResourceName($template), $cache_id, $compile_id, $parent);
+        if ($_debug !== null) {
+            //fetch overwrites the old debug data so we have to merge it with our previously saved data
+            $this->_debug->template_data = array_merge($_debug, $this->_debug->template_data);
+        }
+
+        return $res;
     }
 
     /**
@@ -715,6 +724,7 @@ class JTLSmarty extends SmartyBC
         if ($this->context === 'frontend') {
             $this->registerFilter('output', array($this, '__outputFilter'));
         }
+
         return parent::display($this->getResourceName($template), $cache_id, $compile_id, $parent);
     }
 

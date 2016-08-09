@@ -3,16 +3,17 @@
     "type": "library",
     "homepage": "http://www.jtl-software.de",
     "require": {
-          "php": ">=5.4"
-        , "Imanee/Imanee": "dev-master"
-        , "ifsnop/mysqldump-php": "^2.1"
-        , "symfony/var-dumper": "^3.0"
-        , "jtlshop/shop4-systemcheck": "^1.0"
-        , "jdorn/sql-formatter": "^1.2"
-        , "andyftw/ssllabs-php": "^1.2"
-        , "phpmyadmin/sql-parser": "^3.4"
-		, "phpgangsta/googleauthenticator": "dev-master"
-		, "chillerlan/php-qrcode": "dev-master"
+        "php": ">=5.4",
+        "Imanee/Imanee": "dev-master",
+        "ifsnop/mysqldump-php": "^2.1",
+        "symfony/var-dumper": "^3.0",
+        "jtlshop/shop4-systemcheck": "^1.0",
+        "smarty/smarty": "~3.1",
+        "jdorn/sql-formatter": "^1.2",
+        "andyftw/ssllabs-php": "^1.2",
+        "phpmyadmin/sql-parser": "^3.4",
+        "phpgangsta/googleauthenticator": "dev-master",
+        "chillerlan/php-qrcode": "dev-master"
     },
     "require_dev": {
         "phpunit/php-token-stream": "~1.2",

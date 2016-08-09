@@ -237,9 +237,9 @@
                             </a>
                             <ul class="dropdown-menu" role="main">
                                 <li>
-                                    <a href="http://guide.jtl-software.de/jtl/JTL-Shop:Installation:Erste_Schritte" target="_blank">Erste Schritte</a>
-                                    <a href="http://guide.jtl-software.de/jtl/JTL-Shop" target="_blank">JTL Guide</a>
-                                    <a href="http://forum.jtl-software.de/forum.php" target="_blank">JTL Forum</a>
+                                    <a href="https://guide.jtl-software.de/jtl/JTL-Shop:Installation:Erste_Schritte" target="_blank">Erste Schritte</a>
+                                    <a href="https://guide.jtl-software.de/jtl/JTL-Shop" target="_blank">JTL Guide</a>
+                                    <a href="https://forum.jtl-software.de" target="_blank">JTL Forum</a>
                                     <a href="https://www.jtl-software.de/Training" target="_blank">Training</a>
                                     <a href="https://www.jtl-software.de/Servicepartner" target="_blank">Servicepartner</a>
                                 </li>

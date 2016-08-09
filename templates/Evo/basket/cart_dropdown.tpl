@@ -14,7 +14,7 @@
                             {$oPosition->nAnzahl|replace_delim} {if $oPosition->cEinheit|strlen > 0} {$oPosition->cEinheit}{else} &times; {/if}
                         </td>
                         <td class="item-name">
-                            <a href="{$oPosition->Artikel->cURL}" title="{$oPosition->cName|trans|escape:"quotes"}">
+                            <a href="{$oPosition->Artikel->cURL}" title={$oPosition->cName|trans|json_encode}>
                                 {$oPosition->cName|trans}
                             </a>
                         </td>

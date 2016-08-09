@@ -2,8 +2,8 @@
     {block name="product-image"}
     {foreach $Artikel->Bilder as $image}
         {strip}
-            <a itemprop="image" href="{$image->cPfadGross}" title='{$image->cAltAttribut|escape:"quotes"}'>
-                <img src="{$image->cPfadNormal}" alt='{$image->cAltAttribut|escape:"quotes"}' data-list='{$image->galleryJSON}' />
+            <a itemprop="image" href="{$image->cPfadGross}" title={$image->cAltAttribut|json_encode}>
+                <img src="{$image->cPfadNormal}" alt={$image->cAltAttribut|json_encode} data-list='{$image->galleryJSON|replace:"'":""}' />
             </a>
         {/strip}
     {/foreach}

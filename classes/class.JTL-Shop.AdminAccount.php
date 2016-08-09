@@ -297,12 +297,11 @@ class AdminAccount
         $this->_bLogged = false;
         if (isset($_SESSION['AdminAccount']->cLogin) && isset($_SESSION['AdminAccount']->cPass) && isset($_SESSION['AdminAccount']->cURL) &&
             $_SESSION['AdminAccount']->cURL == Shop::getURL()) {
-            $oAccount = Shop::DB()->select('tadminlogin', 'cLogin', $_SESSION['AdminAccount']->cLogin, 'cPass', $_SESSION['AdminAccount']->cPass, null, null, false, 'cLogin, b2FAauth');
-            if (isset($oAccount->b2FAauth) && $oAccount->b2FAauth === '1') {
-                $this->twoFaAuthenticated = (isset($_SESSION['AdminAccount']->TwoFA_valid) && true === $_SESSION['AdminAccount']->TwoFA_valid);
-            } else {
-                $this->twoFaAuthenticated = true;
-            }
+
+            $oAccount = Shop::DB()->select('tadminlogin', 'cLogin', $_SESSION['AdminAccount']->cLogin, 'cPass', $_SESSION['AdminAccount']->cPass);
+            $this->twoFaAuthenticated = (isset($oAccount->b2FAauth) && $oAccount->b2FAauth === '1') ?
+                (isset($_SESSION['AdminAccount']->TwoFA_valid) && true === $_SESSION['AdminAccount']->TwoFA_valid) :
+                true;
             $this->_bLogged = isset($oAccount->cLogin);
         }
 
@@ -322,6 +321,7 @@ class AdminAccount
 
             return $_SESSION['AdminAccount']->TwoFA_valid;
         }
+
         return false;
     }
 

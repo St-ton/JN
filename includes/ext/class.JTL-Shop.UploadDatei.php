@@ -140,7 +140,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
          * @param string $mimetype
          * @param bool $bEncode
          */
-        public static function send_file_to_browser($filename, $mimetype, $bEncode = false, $outputName)
+        public static function send_file_to_browser($filename, $mimetype, $bEncode = false, $downloadName)
         {
             if ($bEncode) {
                 $file     = basename($filename);
@@ -182,10 +182,10 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
             header('Content-Transfer-Encoding: none');
             if ($browser_agent === 'ie') {
                 header('Content-Type: ' . $mimetype);
-                header('Content-Disposition: inline; filename="' . $outputName . '"');
+                header('Content-Disposition: inline; filename="' . $downloadName . '"');
             } else {
                 header('Content-Type: ' . $mimetype . '; name="' . basename($filename) . '"');
-                header('Content-Disposition: attachment; filename="' . $outputName . '"');
+                header('Content-Disposition: attachment; filename="' . $downloadName . '"');
             }
 
             $size = @filesize($filename);

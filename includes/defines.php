@@ -66,7 +66,7 @@ ifndef('PFAD_FLASHCHART', PFAD_INCLUDES_LIBS . 'flashchart/');
 ifndef('PFAD_FLASHCLOUD', PFAD_INCLUDES_LIBS . 'flashcloud/');
 ifndef('PFAD_PHPQUERY', PFAD_INCLUDES_LIBS . 'phpQuery/');
 ifndef('PFAD_PCLZIP', PFAD_INCLUDES_LIBS . 'pclzip-2-8-2/');
-ifndef('PFAD_PHPMAILER', PFAD_INCLUDES_LIBS . 'PHPMailer-5.2.14/');
+ifndef('PFAD_PHPMAILER', PFAD_INCLUDES . 'vendor/phpmailer/phpmailer/');
 ifndef('PFAD_GRAPHCLASS', PFAD_INCLUDES_LIBS . 'graph-2005-08-28/');
 ifndef('PFAD_AJAXCHECKOUT', PFAD_INCLUDES_LIBS . 'ajaxcheckout/');
 ifndef('PFAD_AJAXSUGGEST', PFAD_INCLUDES_LIBS . 'ajaxsuggest/');

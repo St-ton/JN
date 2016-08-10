@@ -13,6 +13,7 @@
         "andyftw/ssllabs-php": "^1.2",
         "phpmyadmin/sql-parser": "^3.4",
         "phpgangsta/googleauthenticator": "dev-master",
+        "phpmailer/phpmailer": "~5.2",
         "chillerlan/php-qrcode": "dev-master"
     },
     "require_dev": {

@@ -52,7 +52,7 @@ if (isset($_SESSION['JTL_REDIRECT']) || verifyGPCDataInteger('r') > 0) {
 }
 pruefeHttps();
 // Upload zum Download freigeben
-if(isset($_POST['kUpload']) && (int)$_POST['kUpload'] > 0 && isset($_SESSION['Kunde']->kKunde)) {
+if(isset($_POST['kUpload']) && (int)$_POST['kUpload'] > 0 && isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0 && isset($_POST['jtl_token']) && $_POST['jtl_token'] === $_SESSION['jtl_token']) {
     $kUpload      = (int)$_POST['kUpload'];
     $oUploadDatei = new UploadDatei($kUpload);
     UploadDatei::send_file_to_browser(PFAD_UPLOADS . $oUploadDatei->cPfad, 'application/octet-stream', true, $oUploadDatei->cName);

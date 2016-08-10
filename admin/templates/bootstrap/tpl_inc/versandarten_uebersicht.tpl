@@ -27,7 +27,7 @@
                         <td>{#countries#}</td>
                         <td>
                             {foreach name=laender from=$versandart->land_arr item=land}
-                                <a href="versandarten.php?zuschlag=1&kVersandart={$versandart->kVersandart}&cISO={$land}&token={$smarty.session.jtl_token}" class="country {if isset($versandart->zuschlag_arr[$land])}addition{/if}">{$land}</a>
+                                <a href="versandarten.php?zuschlag=1&kVersandart={$versandart->kVersandart}&cISO={$land}&token={$smarty.session.jtl_token}"><span class="label label-{if isset($versandart->zuschlag_arr[$land])}success{else}default{/if}">{$land}</span></a>
                             {/foreach}
                         </td>
                     </tr>

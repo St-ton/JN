@@ -31,10 +31,11 @@ abstract class phpQueryObjectPlugin_example
      * @var array|null
      */
     public static $phpQueryMethods = null;
+
     /**
-     * Enter description here...
-     *
-     * @param phpQueryObject $self
+     * @param $self
+     * @param $arg1
+     * @return mixed
      */
     public static function example($self, $arg1)
     {
@@ -46,6 +47,10 @@ abstract class phpQueryObjectPlugin_example
         // change stack of result object
         return $self->find('div');
     }
+
+    /**
+     *
+     */
     protected static function helperFunction()
     {
         // this method WONT be avaible as phpQuery method,
@@ -71,6 +76,10 @@ abstract class phpQueryPlugin_example
      * @var array|null
      */
     public static $phpQueryMethods = null;
+
+    /**
+     *
+     */
     public static function staticMethod()
     {
         // this method can be called within phpQuery class namespace, like this:

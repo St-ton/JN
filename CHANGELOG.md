@@ -43,6 +43,13 @@
 * Bugfix: Weiterleitung zum Login bei Artikel mit Slash in SEO-URL fehlerhaft (#322)
 * Bugfix: Fehlerhafter Kategoriefilter, wenn Einstellung 1321 auf "Hierarchische Filterung" gestellt ist (#185)
 * Update: Smarty auf Version 3.1.30 aktualisiert
+* Verbesserung: SEO-URLs für warenkorb.php, bestellvorgang.php, bestellabschluss.php, pass.php, newsletter.php, wunschliste.php und jtl.php (#31)
+* Verbesserung: optionale 2-Faktor-Authentifizierung im Backend (#276)
+* Bugfix: Prozent-Kupon-Preis in Standardwährung ändert sich abhängig von der Währung beim Einlösen (#366)
+* Verbesserung: Neuer Hook HOOK_BOXEN_HOME bei Erstellung der Startseiten-Boxen (#371)
+* Bugfix: Bestellkommentar wird nicht zur Wawi übertragen, wenn "Zahlung vor Bestellabschluss" auf "Ja" steht (#356)
+* Verbesserung: NiceDB::selectAll() zur Abfrage mehrere Spalten als Prepared Statement implementiert (#334)
+* Verbesserung: Registrierung per vCard-Upload statt manueller Dateneingabe ermöglicht (#307)
 
 ## [4.04.1]
 * Neues Premium-Plugin: Login und Bezahlen mit Amazon (von Solution360)

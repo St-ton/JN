@@ -88,7 +88,8 @@
             {elseif $Bestellung->cStatus == 5}
                 {$Bestellung->Status}
             {else}
-                {lang key="notShippedYet" section="login"}
+                <p>{lang key="notShippedYet" section="login"}</p>
+                <p><strong>{lang key="shippingTime" section="global"}</strong>: {if isset($cEstimatedDeliveryEx)}{$cEstimatedDeliveryEx}{else}{$Bestellung->cEstimatedDelivery}{/if}</p>
             {/if}
             {/block}
             </div>

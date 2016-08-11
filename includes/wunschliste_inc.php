@@ -10,10 +10,10 @@
 function setzeWunschlisteInSession()
 {
     if (!empty($_SESSION['Kunde']->kKunde)) {
-        $oWunschliste = Shop::DB()->query("
-            SELECT kWunschliste
+        $oWunschliste = Shop::DB()->query(
+            "SELECT kWunschliste
                 FROM twunschliste
-                WHERE kKunde = " . (int) $_SESSION['Kunde']->kKunde . "
+                WHERE kKunde = " . (int)$_SESSION['Kunde']->kKunde . "
                 AND nStandard = 1", 1
         );
         if (isset($oWunschliste->kWunschliste)) {
@@ -174,7 +174,7 @@ function wunschlisteSpeichern($cWunschlisteName)
 function wunschlisteSenden($cEmail_arr, $kWunschliste)
 {
     $hinweis      = '';
-    $kWunschliste = (int) $kWunschliste;
+    $kWunschliste = (int)$kWunschliste;
     // Wurden Emails übergeben?
     if (count($cEmail_arr) > 0) {
         $conf = Shop::getSettings(array(CONF_GLOBAL));
@@ -255,8 +255,8 @@ function wunschlisteSenden($cEmail_arr, $kWunschliste)
  */
 function gibEigenschaftenZuWunschliste($kWunschliste, $kWunschlistePos)
 {
-    $kWunschliste    = (int) $kWunschliste;
-    $kWunschlistePos = (int) $kWunschlistePos;
+    $kWunschliste    = (int)$kWunschliste;
+    $kWunschlistePos = (int)$kWunschlistePos;
     if ($kWunschliste > 0 && $kWunschlistePos > 0) {
         // $oEigenschaftwerte_arr anlegen
         $oEigenschaftwerte_arr          = array();
@@ -287,11 +287,11 @@ function gibEigenschaftenZuWunschliste($kWunschliste, $kWunschlistePos)
 
 /**
  * @param int $kWunschlistePos
- * @return bool
+ * @return object|bool
  */
 function giboWunschlistePos($kWunschlistePos)
 {
-    $kWunschlistePos = (int) $kWunschlistePos;
+    $kWunschlistePos = (int)$kWunschlistePos;
     if ($kWunschlistePos > 0) {
         $oWunschlistePos = Shop::DB()->query(
             "SELECT *
@@ -348,13 +348,9 @@ function bauecPreis($oWunschliste)
     if (is_array($oWunschliste->CWunschlistePos_arr) && count($oWunschliste->CWunschlistePos_arr) > 0) {
         foreach ($oWunschliste->CWunschlistePos_arr as $oWunschlistePos) {
             if (intval($_SESSION['Kundengruppe']->nNettoPreise) > 0) {
-                $fPreis = (isset($oWunschlistePos->Artikel->Preise->fVKNetto)) ?
-                    intval($oWunschlistePos->fAnzahl) * $oWunschlistePos->Artikel->Preise->fVKNetto :
-                    0;
+                $fPreis = (isset($oWunschlistePos->Artikel->Preise->fVKNetto)) ? intval($oWunschlistePos->fAnzahl) * $oWunschlistePos->Artikel->Preise->fVKNetto : 0;
             } else {
-                $fPreis = (isset($oWunschlistePos->Artikel->Preise->fVKNetto)) ?
-                    intval($oWunschlistePos->fAnzahl) * ($oWunschlistePos->Artikel->Preise->fVKNetto * (100 + $_SESSION['Steuersatz'][$oWunschlistePos->Artikel->kSteuerklasse]) / 100) :
-                0;
+                $fPreis = (isset($oWunschlistePos->Artikel->Preise->fVKNetto)) ? intval($oWunschlistePos->fAnzahl) * ($oWunschlistePos->Artikel->Preise->fVKNetto * (100 + $_SESSION['Steuersatz'][$oWunschlistePos->Artikel->kSteuerklasse]) / 100) : 0;
             }
             $oWunschlistePos->cPreis = gibPreisStringLocalized($fPreis, $_SESSION['Waehrung']);
         }

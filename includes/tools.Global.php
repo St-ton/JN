@@ -2793,7 +2793,8 @@ function generiereCaptchaCode($sec)
                 break;
 
         }
-    } elseif ($sec == 5) { //Neuer unsichtbarer Token
+    } elseif ($sec == 5) { //unsichtbarer Token
+        $code->code              = '';
         $_SESSION['xcrsf_token'] = null;
     } else {
         $code->code    = gibCaptchaCode($sec);

@@ -22,7 +22,7 @@
  */
 class Migration_20160715113229 extends Migration implements IMigration
 {
-    protected $author = 'Mirko Schmidt';
+    protected $author = 'msc';
 
     public function up()
     {

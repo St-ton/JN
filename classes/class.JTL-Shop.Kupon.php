@@ -796,9 +796,9 @@ class Kupon
 
     /**
      * @param int $hashLength
-     * @param boolean $lowerCase
-     * @param boolean $upperCase
-     * @param boolean $numberHash
+     * @param bool $lowerCase
+     * @param bool $upperCase
+     * @param bool $numberHash
      * @return string
      */
     public function generateCode($hashLength = 7, $lowerCase = true, $upperCase = true, $numberHash = true, $prefix = '', $suffix = '')

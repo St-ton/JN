@@ -92,7 +92,9 @@
                                                     {if $smarty.foreach.konfigitem.last}
                                                         {if $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN || $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN_MULTI}
                                                             </select>
+                                                            test außerhalb des ifs
                                                             {if !empty($cKurzBeschreibung) && $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN}
+                                                                test innerhalb des ifs
                                                                 <a class="small filter-collapsible-control" data-toggle="collapse" href="#filter-collapsible_dropdown_{$oGruppe->getKonfiggruppe()}" aria-expanded="false" aria-controls="filter-collapsible">
                                                                     {lang key="showDescription"} <i class="caret"></i>
                                                                 </a>

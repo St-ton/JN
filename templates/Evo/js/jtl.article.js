@@ -260,6 +260,7 @@
                                 } else {
                                     that.setConfigItemImage(grp.kKonfiggruppe, grp.cBildPfad);
                                 }
+                                that.setConfigItemId(grp.kKonfiggruppe, item.cKurzBeschreibung);
                                 enableQuantity = item.bAnzahl;
                                 if (!enableQuantity) {
                                     quantityInput
@@ -307,6 +308,10 @@
 
         setConfigItemImage: function (groupId, img) {
             $('.cfg-group[data-id="' + groupId + '"] .group-image img').attr('src', img).first();
+        },
+
+        setConfigItemId: function (groupId, itemKurzBeschreibung) {
+            $('.cfg-group[data-id="' + groupId + '"] .group-items .list-group .list-group-item #filter-collapsible_dropdown_' + groupId).replaceWith('<div id="filter-collapsible_dropdown_' + groupId + '" class="collapse top10">' + itemKurzBeschreibung + '</div>');
         },
         
         setPrice: function(price, fmtPrice, priceLabel) {

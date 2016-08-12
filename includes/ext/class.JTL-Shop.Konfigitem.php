@@ -127,14 +127,15 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 'bAktiv' => $this->{"bAktiv"}
             );
             $override = array(
-                'cName'           => $this->getName(),
-                'cBeschreibung'   => $this->getBeschreibung(),
-                'bAnzahl'         => $this->getMin() != $this->getMax(),
-                'fInitial'        => (float) $this->getInitial(),
-                'fMin'            => (float) $this->getMin(),
-                'fMax'            => (float) $this->getMax(),
-                'cBildPfad'       => $this->getBildPfad(),
-                'fPreis'          => array(
+                'cName'             => $this->getName(),
+                'cBeschreibung'     => $this->getBeschreibung(),
+                'cKurzBeschreibung' => $this->getKurzBeschreibung(),
+                'bAnzahl'           => $this->getMin() != $this->getMax(),
+                'fInitial'          => (float) $this->getInitial(),
+                'fMin'              => (float) $this->getMin(),
+                'fMax'              => (float) $this->getMax(),
+                'cBildPfad'         => $this->getBildPfad(),
+                'fPreis'            => array(
                     (float) $this->getPreis(),
                     (float) $this->getPreis(true)
                 ),

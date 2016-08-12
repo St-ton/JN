@@ -52,11 +52,8 @@
                                                         {/if}
                                                     {/if}
                                                     {if $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_CHECKBOX || $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_RADIO}
-                                                        <div class="radio checkbox">
-                                                            <label class="btn-block"
-                                                                   {if !empty($cKurzBeschreibung)}title="{$cKurzBeschreibung|escape:'html'}"{/if}
-                                                                   data-trigger="hover" data-placement="left"
-                                                                   data-container="#tooltip{$oItem->getKonfigitem()}">
+                                                        <div class="{if $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_CHECKBOX}checkbox{else}radio{/if}">
+                                                            <label class="btn-block">
                                                                 <input type="{if $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_CHECKBOX}checkbox{else}radio{/if}"
                                                                        name="item[{$oGruppe->getKonfiggruppe()}][]"
                                                                        id="item{$oItem->getKonfigitem()}"
@@ -70,12 +67,17 @@
                                                                     <span class="discount">{$oItem->getRabattLocalized()} {lang key="discount"}</span>{elseif $oItem->hasZuschlag() && $oItem->showZuschlag()}
                                                                     <span class="additional">{$oItem->getZuschlagLocalized()} {lang key="additionalCharge"}</span>{/if}{$oItem->getPreisLocalized()}</span>
                                                                 {/if}
+                                                                {if !empty($cKurzBeschreibung)}
+                                                                    <br>
+                                                                    <a class="small filter-collapsible-control" data-toggle="collapse" href="#filter-collapsible_{$oItem->getKonfigitem()}" aria-expanded="false" aria-controls="filter-collapsible">
+                                                                        {lang key="showDescription"} <i class="caret"></i>
+                                                                    </a>
+                                                                {/if}
                                                             </label>
                                                         </div>
                                                     {elseif $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN || $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN_MULTI}
                                                         <option value="{$oItem->getKonfigitem()}"
                                                                 id="item{$oItem->getKonfigitem()}"
-                                                                {if !empty($cKurzBeschreibung)}title="{$cKurzBeschreibung|escape:'html'}"{/if}
                                                                 {if isset($nKonfigitem_arr)} data-selected="{if in_array($oItem->getKonfigitem(), $nKonfigitem_arr)}true{else}false{/if}"
                                                                 {else}{if $oItem->getSelektiert() && (!isset($aKonfigerror_arr) || !$aKonfigerror_arr)}selected="selected"{/if}{/if}>
                                                             {if $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN_MULTI}{$oItem->getInitial()} &times; {/if}
@@ -90,11 +92,27 @@
                                                     {if $smarty.foreach.konfigitem.last}
                                                         {if $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN || $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN_MULTI}
                                                             </select>
+                                                            {if !empty($cKurzBeschreibung) && $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN}
+                                                                <a class="small filter-collapsible-control" data-toggle="collapse" href="#filter-collapsible_dropdown_{$oGruppe->getKonfiggruppe()}" aria-expanded="false" aria-controls="filter-collapsible">
+                                                                    {lang key="showDescription"} <i class="caret"></i>
+                                                                </a>
+                                                            {/if}
                                                         </div>
                                                         {/if}
                                                     {/if}
                                                     {if isset($aKonfigitemerror_arr[$kKonfigitem]) && $aKonfigitemerror_arr[$kKonfigitem]}
                                                         <p class="box_error alert alert-danger">{$aKonfigitemerror_arr[$kKonfigitem]}</p>
+                                                    {/if}
+                                                    {if !empty($cKurzBeschreibung)}
+                                                        {if $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN}
+                                                        <div id="filter-collapsible_dropdown_{$oGruppe->getKonfiggruppe()}" class="collapse top10 panel-body">
+                                                            {$cKurzBeschreibung}
+                                                        </div>
+                                                        {elseif $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_CHECKBOX || $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_RADIO}
+                                                        <div id="filter-collapsible_{$oItem->getKonfigitem()}" class="collapse top10 panel-body">
+                                                            {$cKurzBeschreibung}
+                                                        </div>
+                                                        {/if}
                                                     {/if}
                                                 </li>
                                             {/foreach}

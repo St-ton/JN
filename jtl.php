@@ -573,13 +573,11 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
                 $smarty->assign('oTrustedShopsBewertenButton', gibTrustedShopsBewertenButton($bestellung->oRechnungsadresse->cMail, $bestellung->cBestellNr));
             }
             if (isset($bestellung->oEstimatedDelivery->longestMin) && isset($bestellung->oEstimatedDelivery->longestMax)) {
-                $date = strtotime($bestellung->dErstellt);
-                $date = $date + ((date('G', $date) > 12 ? 1 : 0) * 24 * 60 * 60);
                 $smarty->assign(
                     'cEstimatedDeliveryEx',
-                    date('d.m.Y', strtotime($bestellung->oEstimatedDelivery->longestMin . 'weekday', $date))
+                    dateAddWeekday($bestellung->dErstellt, $bestellung->oEstimatedDelivery->longestMin)->format('d.m.Y')
                     . ' - ' .
-                    date('d.m.Y', strtotime($bestellung->oEstimatedDelivery->longestMax . 'weekday', $date))
+                    dateAddWeekday($bestellung->dErstellt, $bestellung->oEstimatedDelivery->longestMax)->format('d.m.Y')
                 );
             }
         } else {

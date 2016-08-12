@@ -1163,11 +1163,9 @@ function finalisiereBestellung($cBestellNr = '', $bSendeMail = true)
     $obj->tbestellung = $bestellung;
 
     if (isset($bestellung->oEstimatedDelivery->longestMin) && isset($bestellung->oEstimatedDelivery->longestMax)) {
-        $date = strtotime($bestellung->dErstellt);
-        $date = $date + ((date('G', $date) > 12 ? 1 : 0) * 24 * 60 * 60);
-        $obj->tbestellung->cEstimatedDeliveryEx = date('d.m.Y', strtotime($bestellung->oEstimatedDelivery->longestMin . 'weekday', $date))
+        $obj->tbestellung->cEstimatedDeliveryEx = dateAddWeekday($bestellung->dErstellt, $bestellung->oEstimatedDelivery->longestMin)->format('d.m.Y')
             . ' - ' .
-            date('d.m.Y', strtotime($bestellung->oEstimatedDelivery->longestMax . 'weekday', $date));
+            dateAddWeekday($bestellung->dErstellt, $bestellung->oEstimatedDelivery->longestMax)->format('d.m.Y');
     }
 
     // Work Around cLand

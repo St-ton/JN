@@ -504,13 +504,10 @@ if (isset($_POST['preview']) && intval($_POST['preview']) > 0) {
             $cModulId = 'kPlugin_' . verifyGPCDataInteger('kPlugin') . '_' . $cModulId;
         }
 
-        $date = strtotime($bestellung->dErstellt);
-        $date = $date + ((date('G', $date) > 12 ? 1 : 0) * 24 * 60 * 60);
-
         $bestellung->oEstimatedDelivery->localized = getDeliverytimeEstimationText($bestellung->oEstimatedDelivery->longestMin, $bestellung->oEstimatedDelivery->longestMax);
-        $bestellung->cEstimatedDeliveryEx          = date('d.m.Y', strtotime($bestellung->oEstimatedDelivery->longestMin . 'weekday', $date))
+        $bestellung->cEstimatedDeliveryEx          = dateAddWeekday($bestellung->dErstellt, $bestellung->oEstimatedDelivery->longestMin)->format('d.m.Y')
             . ' - ' .
-            date('d.m.Y', strtotime($bestellung->oEstimatedDelivery->longestMax . 'weekday', $date));
+            dateAddWeekday($bestellung->dErstellt, $bestellung->oEstimatedDelivery->longestMax)->format('d.m.Y');
 
         $kunde->kSprache                       = $Sprache->kSprache;
         $NewsletterEmpfaenger->kSprache        = $Sprache->kSprache;

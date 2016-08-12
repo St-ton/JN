@@ -6,12 +6,11 @@ Your order dated {$Bestellung->dErstelldatum_de} mit Bestellnummer {$Bestellung-
 <br>
 {foreach name=pos from=$Bestellung->oLieferschein_arr item=oLieferschein}
     {if $oLieferschein->oVersand_arr|count > 1}
-        You can track the status of your shipments via the following link:<br>
-        <br>
+        You can track the status of your shipments via the following link:
     {else}
-        You can track the status of your shipment via the following link:<br>
-        <br>
-    {/if}
+        You can track the status of your shipment via the following link:
+    {/if}<br>
+    <br>
     {foreach from=$oLieferschein->oVersand_arr item=oVersand}
         {if $oVersand->getIdentCode()|@count_characters > 0}
             <strong>Tracking URL:</strong> <a href="{$oVersand->getLogistikVarUrl()}">{$oVersand->getIdentCode()}</a><br>

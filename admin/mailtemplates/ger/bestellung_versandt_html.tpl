@@ -6,12 +6,11 @@ Ihre Bestellung vom {$Bestellung->dErstelldatum_de} mit Bestellnummer {$Bestellu
 <br>
 {foreach name=pos from=$Bestellung->oLieferschein_arr item=oLieferschein}
     {if $oLieferschein->oVersand_arr|count > 1}
-        Mit den nachfolgenden Links können Sie sich über den Status Ihrer Sendungen informieren:<br>
-        <br>
+        Mit den nachfolgenden Links können Sie sich über den Status Ihrer Sendungen informieren:
     {else}
-        Mit dem nachfolgenden Link können Sie sich über den Status Ihrer Sendung informieren:<br>
-        <br>
-    {/if}
+        Mit dem nachfolgenden Link können Sie sich über den Status Ihrer Sendung informieren:
+    {/if}<br>
+    <br>
     {foreach from=$oLieferschein->oVersand_arr item=oVersand}
         {if $oVersand->getIdentCode()|@count_characters > 0}
             <strong>Tracking-Url:</strong> <a href="{$oVersand->getLogistikVarUrl()}">{$oVersand->getIdentCode()}</a><br>

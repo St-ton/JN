@@ -8,26 +8,18 @@ Ihre Bestellung vom {$Bestellung->dErstelldatum_de} mit Bestellnummer {$Bestellu
     {if $oLieferschein->oVersand_arr|count > 1}
         Mit den nachfolgenden Links können Sie sich über den Status Ihrer Sendungen informieren:
 
-        {foreach from=$oLieferschein->oVersand_arr item=oVersand}
-            {if $oVersand->getIdentCode()|@count_characters > 0}
-                Tracking-Url: {$oVersand->getLogistikVarUrl()}
-                {if $oVersand->getHinweis()|@count_characters > 0}
-                    Tracking-Hinweis: {$oVersand->getHinweis()}
-                {/if}
-            {/if}
-        {/foreach}
     {else}
         Mit dem nachfolgendem Link können Sie sich über den Status Ihrer Sendung informieren:
 
-        {foreach from=$oLieferschein->oVersand_arr item=oVersand}
-            {if $oVersand->getIdentCode()|@count_characters > 0}
-                Tracking-Url: {$oVersand->getLogistikVarUrl()}
-                {if $oVersand->getHinweis()|@count_characters > 0}
-                    Tracking-Hinweis: {$oVersand->getHinweis()}
-                {/if}
-            {/if}
-        {/foreach}
     {/if}
+    {foreach from=$oLieferschein->oVersand_arr item=oVersand}
+        {if $oVersand->getIdentCode()|@count_characters > 0}
+            Tracking-Url: {$oVersand->getLogistikVarUrl()}
+            {if $oVersand->getHinweis()|@count_characters > 0}
+                Tracking-Hinweis: {$oVersand->getHinweis()}
+            {/if}
+        {/if}
+    {/foreach}
 {/foreach}
 
 Wir wünschen Ihnen viel Spaß mit der Ware und bedanken für Ihren Einkauf und Ihr Vertrauen.

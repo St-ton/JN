@@ -8,26 +8,18 @@ Ihre Bestellung vom {$Bestellung->dErstelldatum_de} mit Bestellnummer {$Bestellu
     {if $oLieferschein->oVersand_arr|count > 1}
         Mit den nachfolgenden Links können Sie sich über den Status Ihrer Sendungen informieren:<br>
         <br>
-        {foreach from=$oLieferschein->oVersand_arr item=oVersand}
-            {if $oVersand->getIdentCode()|@count_characters > 0}
-                <strong>Tracking-Url:</strong> <a href="{$oVersand->getLogistikVarUrl()}">{$oVersand->getIdentCode()}</a><br>
-                {if $oVersand->getHinweis()|@count_characters > 0}
-                    <strong>Tracking-Hinweis:</strong> {$oVersand->getHinweis()}<br>
-                {/if}
-            {/if}
-        {/foreach}
     {else}
         Mit dem nachfolgenden Link können Sie sich über den Status Ihrer Sendung informieren:<br>
         <br>
-        {foreach from=$oLieferschein->oVersand_arr item=oVersand}
-            {if $oVersand->getIdentCode()|@count_characters > 0}
-                <strong>Tracking-Url:</strong> <a href="{$oVersand->getLogistikVarUrl()}">{$oVersand->getIdentCode()}</a><br>
-                {if $oVersand->getHinweis()|@count_characters > 0}
-                    <strong>Tracking-Hinweis:</strong> {$oVersand->getHinweis()}<br>
-                {/if}
-            {/if}
-        {/foreach}
     {/if}
+    {foreach from=$oLieferschein->oVersand_arr item=oVersand}
+        {if $oVersand->getIdentCode()|@count_characters > 0}
+            <strong>Tracking-Url:</strong> <a href="{$oVersand->getLogistikVarUrl()}">{$oVersand->getIdentCode()}</a><br>
+            {if $oVersand->getHinweis()|@count_characters > 0}
+                <strong>Tracking-Hinweis:</strong> {$oVersand->getHinweis()}<br>
+            {/if}
+        {/if}
+    {/foreach}
 {/foreach}
 <br>
 Wir wünschen Ihnen viel Spaß mit der Ware und bedanken uns für Ihren Einkauf und Ihr Vertrauen.<br>

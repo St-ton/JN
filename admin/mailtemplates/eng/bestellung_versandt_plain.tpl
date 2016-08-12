@@ -8,26 +8,18 @@ Your order dated {$Bestellung->dErstelldatum_de} mit Bestellnummer {$Bestellung-
     {if $oLieferschein->oVersand_arr|count > 1}
         You can track the status of your shipments via the following link:
 
-        {foreach from=$oLieferschein->oVersand_arr item=oVersand}
-            {if $oVersand->getIdentCode()|@count_characters > 0}
-                Tracking URL: {$oVersand->getLogistikVarUrl()}
-                {if $oVersand->getHinweis()|@count_characters > 0}
-                    Tracking notice: {$oVersand->getHinweis()}
-                {/if}
-            {/if}
-        {/foreach}
     {else}
         You can track the status of your shipment via the following link:
 
-        {foreach from=$oLieferschein->oVersand_arr item=oVersand}
-            {if $oVersand->getIdentCode()|@count_characters > 0}
-                Tracking URL: {$oVersand->getLogistikVarUrl()}
-                {if $oVersand->getHinweis()|@count_characters > 0}
-                    Tracking notice: {$oVersand->getHinweis()}
-                {/if}
-            {/if}
-        {/foreach}
     {/if}
+    {foreach from=$oLieferschein->oVersand_arr item=oVersand}
+        {if $oVersand->getIdentCode()|@count_characters > 0}
+            Tracking URL: {$oVersand->getLogistikVarUrl()}
+            {if $oVersand->getHinweis()|@count_characters > 0}
+                Tracking notice: {$oVersand->getHinweis()}
+            {/if}
+        {/if}
+    {/foreach}
 {/foreach}
 
 We hope the merchandise meets with your full satisfaction and thank you for your purchase.

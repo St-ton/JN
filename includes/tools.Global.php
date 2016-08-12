@@ -381,13 +381,13 @@ function hasGPCDataInteger($var)
  */
 function verifyGPCDataInteger($var)
 {
-    if (isset($_POST[$var])) {
-        return (int)$_POST[$var];
-    }
-    if (isset($_GET[$var])) {
+    if (isset($_GET[$var]) && is_numeric($_GET[$var])) {
         return (int)$_GET[$var];
     }
-    if (isset($_COOKIE[$var])) {
+    if (isset($_POST[$var]) && is_numeric($_POST[$var])) {
+        return (int)$_POST[$var];
+    }
+    if (isset($_COOKIE[$var]) && is_numeric($_COOKIE[$var])) {
         return (int)$_COOKIE[$var];
     }
 

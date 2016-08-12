@@ -6,7 +6,7 @@ Ihre Bestellung vom {$Bestellung->dErstelldatum_de} mit Bestellnummer {$Bestellu
 
 {foreach name=pos from=$Bestellung->oLieferschein_arr item=oLieferschein}
     {if $oLieferschein->oVersand_arr|count > 1}
-        Mit den nachfolgenden Links können Sie sich über den Status Ihrer Sendungen informieren:
+        Mit den nachfolgenden Links kÃ¶nnen Sie sich Ã¼ber den Status Ihrer Sendungen informieren:
 
         {foreach from=$oLieferschein->oVersand_arr item=oVersand}
             {if $oVersand->getIdentCode()|@count_characters > 0}
@@ -17,7 +17,7 @@ Ihre Bestellung vom {$Bestellung->dErstelldatum_de} mit Bestellnummer {$Bestellu
             {/if}
         {/foreach}
     {else}
-        Mit dem nachfolgendem Link können Sie sich über den Status Ihrer Sendung informieren:
+        Mit dem nachfolgendem Link kÃ¶nnen Sie sich Ã¼ber den Status Ihrer Sendung informieren:
 
         {foreach from=$oLieferschein->oVersand_arr item=oVersand}
             {if $oVersand->getIdentCode()|@count_characters > 0}
@@ -30,9 +30,9 @@ Ihre Bestellung vom {$Bestellung->dErstelldatum_de} mit Bestellnummer {$Bestellu
     {/if}
 {/foreach}
 
-Wir wünschen Ihnen viel Spaß mit der Ware und bedanken für Ihren Einkauf und Ihr Vertrauen.
+Wir wÃ¼nschen Ihnen viel SpaÃŸ mit der Ware und bedanken uns fÃ¼r Ihren Einkauf und Ihr Vertrauen.
 
-Mit freundlichem Gruß,
+Mit freundlichem GruÃŸ,
 Ihr Team von {$Firma->cName}
 
 {includeMailTemplate template=footer type=plain}

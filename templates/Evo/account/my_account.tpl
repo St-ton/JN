@@ -195,7 +195,6 @@
 </div>
 
 {include file="account/downloads.tpl"}
-{include file="account/uploads.tpl"}
 
 {if isset($nWarenkorb2PersMerge) && $nWarenkorb2PersMerge == 1}
    <script type="text/javascript">

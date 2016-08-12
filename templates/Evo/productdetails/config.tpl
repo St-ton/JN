@@ -69,7 +69,7 @@
                                                                 {/if}
                                                                 {if !empty($cKurzBeschreibung)}
                                                                     <br>
-                                                                    <a class="small filter-collapsible-control" data-toggle="collapse" href="#filter-collapsible_{$oItem->getKonfigitem()}" aria-expanded="false" aria-controls="filter-collapsible">
+                                                                    <a class="small filter-collapsible-control" data-toggle="collapse" href="#filter-collapsible_checkdio_{$oItem->getKonfigitem()}" aria-expanded="false" aria-controls="filter-collapsible">
                                                                         {lang key="showDescription"} <i class="caret"></i>
                                                                     </a>
                                                                 {/if}
@@ -92,9 +92,7 @@
                                                     {if $smarty.foreach.konfigitem.last}
                                                         {if $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN || $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN_MULTI}
                                                             </select>
-                                                            test außerhalb des ifs
                                                             {if !empty($cKurzBeschreibung) && $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_DROPDOWN}
-                                                                test innerhalb des ifs
                                                                 <a class="small filter-collapsible-control" data-toggle="collapse" href="#filter-collapsible_dropdown_{$oGruppe->getKonfiggruppe()}" aria-expanded="false" aria-controls="filter-collapsible">
                                                                     {lang key="showDescription"} <i class="caret"></i>
                                                                 </a>
@@ -111,7 +109,7 @@
                                                             {$cKurzBeschreibung}
                                                         </div>
                                                         {elseif $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_CHECKBOX || $oGruppe->getAnzeigeTyp() == $KONFIG_ANZEIGE_TYP_RADIO}
-                                                        <div id="filter-collapsible_{$oItem->getKonfigitem()}" class="collapse top10 panel-body">
+                                                        <div id="filter-collapsible_checkdio_{$oItem->getKonfigitem()}" class="collapse top10 panel-body">
                                                             {$cKurzBeschreibung}
                                                         </div>
                                                         {/if}

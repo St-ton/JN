@@ -128,6 +128,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
             );
             $override = array(
                 'cName'             => $this->getName(),
+                'kArtikel'          => $this->getArtikelKey(),
                 'cBeschreibung'     => $this->getBeschreibung(),
                 'cKurzBeschreibung' => $this->getKurzBeschreibung(),
                 'bAnzahl'           => $this->getMin() != $this->getMax(),

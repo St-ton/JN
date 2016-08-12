@@ -221,6 +221,7 @@
                     i,
                     j,
                     item,
+                    cBeschreibung,
                     quantityWrapper,
                     grp,
                     value,
@@ -260,7 +261,13 @@
                                 } else {
                                     that.setConfigItemImage(grp.kKonfiggruppe, grp.cBildPfad);
                                 }
-                                that.setConfigItemId(grp.kKonfiggruppe, item.cKurzBeschreibung);
+
+                                if(item.kArtikel) {
+                                    cBeschreibung = item.cKurzBeschreibung;
+                                } else {
+                                    cBeschreibung = item.cBeschreibung;
+                                }
+                                that.setConfigItemDescription(grp.kKonfiggruppe, cBeschreibung);
                                 enableQuantity = item.bAnzahl;
                                 if (!enableQuantity) {
                                     quantityInput
@@ -310,8 +317,19 @@
             $('.cfg-group[data-id="' + groupId + '"] .group-image img').attr('src', img).first();
         },
 
-        setConfigItemId: function (groupId, itemKurzBeschreibung) {
-            $('.cfg-group[data-id="' + groupId + '"] .group-items .list-group .list-group-item #filter-collapsible_dropdown_' + groupId).replaceWith('<div id="filter-collapsible_dropdown_' + groupId + '" class="collapse top10">' + itemKurzBeschreibung + '</div>');
+        setConfigItemDescription: function (groupId, itemBeschreibung) {
+            var groupItems                 = $('.cfg-group[data-id="' + groupId + '"] .group-items');
+            var descriptionDropdownContent = groupItems.find('#filter-collapsible_dropdown_' + groupId);
+            var descriptionCheckdioContent = groupItems.find('div[id^="filter-collapsible_checkdio"]');
+            //  select abfragen ob es multiple ist
+            if (descriptionDropdownContent.length == 0 && descriptionCheckdioContent.length == 0 && itemBeschreibung.length > 0) {
+                console.log(groupId, 'No Area but description');
+            } else if (descriptionDropdownContent.length > 0 && descriptionCheckdioContent.length == 0 && itemBeschreibung.length == 0) {
+                console.log(groupId, 'Area but no description');
+            } else if (descriptionDropdownContent.length > 0 && descriptionCheckdioContent.length == 0 && itemBeschreibung.length > 0) {
+                console.log(groupId, 'Area and description');
+                descriptionDropdownContent.replaceWith('<div id="filter-collapsible_dropdown_' + groupId + '" class="collapse top10">' + itemBeschreibung + '</div>');
+            }
         },
         
         setPrice: function(price, fmtPrice, priceLabel) {

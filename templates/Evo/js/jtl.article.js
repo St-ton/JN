@@ -262,7 +262,7 @@
                                     that.setConfigItemImage(grp.kKonfiggruppe, grp.cBildPfad);
                                 }
 
-                                if(item.kArtikel) {
+                                if(item.kArtikel > 0) {
                                     cBeschreibung = item.cKurzBeschreibung;
                                 } else {
                                     cBeschreibung = item.cBeschreibung;
@@ -321,13 +321,17 @@
             var groupItems                 = $('.cfg-group[data-id="' + groupId + '"] .group-items');
             var descriptionDropdownContent = groupItems.find('#filter-collapsible_dropdown_' + groupId);
             var descriptionCheckdioContent = groupItems.find('div[id^="filter-collapsible_checkdio"]');
-            //  select abfragen ob es multiple ist
-            if (descriptionDropdownContent.length == 0 && descriptionCheckdioContent.length == 0 && itemBeschreibung.length > 0) {
-                console.log(groupId, 'No Area but description');
-            } else if (descriptionDropdownContent.length > 0 && descriptionCheckdioContent.length == 0 && itemBeschreibung.length == 0) {
-                console.log(groupId, 'Area but no description');
-            } else if (descriptionDropdownContent.length > 0 && descriptionCheckdioContent.length == 0 && itemBeschreibung.length > 0) {
-                console.log(groupId, 'Area and description');
+            var multiselect                = groupItems.find('select').attr("multiple");
+            //  Bisher kein Content mit einer Beschreibung vorhanden, aber ein Artikel mit Beschreibung ausgewählt
+            if (descriptionDropdownContent.length == 0 && descriptionCheckdioContent.length == 0 && itemBeschreibung.length > 0 && multiselect !== "multiple") {
+                groupItems.find('.item').append('<a class="small filter-collapsible-control" data-toggle="collapse" href="#filter-collapsible_dropdown_' + groupId + '" aria-expanded="false" aria-controls="filter-collapsible">Beschreibung anzeigen <i class="caret"></i></a>');
+                groupItems.find('.list-group-item').append('<div id="filter-collapsible_dropdown_' + groupId + '" class="collapse top10">' + itemBeschreibung + '</div>');
+            //  Bisher Content mit einer Beschreibung vorhanden, aber ein Artikel ohne Beschreibung ausgewählt
+            } else if (descriptionDropdownContent.length > 0 && descriptionCheckdioContent.length == 0 && itemBeschreibung.length == 0 && multiselect !== "multiple") {
+                groupItems.find('a[href="#filter-collapsible_dropdown_' + groupId + '"]').remove();
+                groupItems.find('#filter-collapsible_dropdown_' + groupId).remove();
+            //  Bisher Content mit einer Beschreibung vorhanden und ein Artikel mit Beschreibung ausgewählt
+            } else if (descriptionDropdownContent.length > 0 && descriptionCheckdioContent.length == 0 && itemBeschreibung.length > 0 && multiselect !== "multiple") {
                 descriptionDropdownContent.replaceWith('<div id="filter-collapsible_dropdown_' + groupId + '" class="collapse top10">' + itemBeschreibung + '</div>');
             }
         },

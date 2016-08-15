@@ -221,6 +221,7 @@
                     i,
                     j,
                     item,
+                    itemarr_inactiv,
                     cBeschreibung,
                     quantityWrapper,
                     grp,
@@ -256,13 +257,13 @@
                         for (j = 0; j < grp.oItem_arr.length; j++) {
                             item = grp.oItem_arr[j];
                             if (item.bAktiv) {
-                                if(item.cBildPfad) {
+                                if (item.cBildPfad) {
                                     that.setConfigItemImage(grp.kKonfiggruppe, item.cBildPfad.cPfadKlein);
                                 } else {
                                     that.setConfigItemImage(grp.kKonfiggruppe, grp.cBildPfad);
                                 }
 
-                                if(item.kArtikel > 0) {
+                                if (item.kArtikel > 0) {
                                     cBeschreibung = item.cKurzBeschreibung;
                                 } else {
                                     cBeschreibung = item.cBeschreibung;
@@ -274,7 +275,7 @@
                                         .attr('min', item.fInitial)
                                         .attr('max', item.fInitial)
                                         .val(item.fInitial)
-                                        .attr('disabled', true)
+                                        .attr('disabled', true);
                                     if (item.fInitial == 1) {
                                         quantityWrapper.slideUp(200);
                                     } else {
@@ -294,7 +295,8 @@
                         }
                     }
                     else {
-                        quantityInput.attr('disabled', true)
+                        that.setConfigItemDescription(grp.kKonfiggruppe, '');
+                        quantityInput.attr('disabled', true);
                         quantityWrapper.slideUp(200);
                     }
                 }
@@ -318,21 +320,23 @@
         },
 
         setConfigItemDescription: function (groupId, itemBeschreibung) {
-            var groupItems                 = $('.cfg-group[data-id="' + groupId + '"] .group-items');
-            var descriptionDropdownContent = groupItems.find('#filter-collapsible_dropdown_' + groupId);
-            var descriptionCheckdioContent = groupItems.find('div[id^="filter-collapsible_checkdio"]');
-            var multiselect                = groupItems.find('select').attr("multiple");
+            var groupItems                       = $('.cfg-group[data-id="' + groupId + '"] .group-items');
+            var descriptionDropdownContent       = groupItems.find('#filter-collapsible_dropdown_' + groupId + '');
+            var descriptionDropdownContentHidden = groupItems.find('.hidden');
+            var descriptionCheckdioContent       = groupItems.find('div[id^="filter-collapsible_checkdio"]');
+            var multiselect                      = groupItems.find('select').attr("multiple");
+
             //  Bisher kein Content mit einer Beschreibung vorhanden, aber ein Artikel mit Beschreibung ausgewählt
-            if (descriptionDropdownContent.length == 0 && descriptionCheckdioContent.length == 0 && itemBeschreibung.length > 0 && multiselect !== "multiple") {
-                groupItems.find('.item').append('<a class="small filter-collapsible-control" data-toggle="collapse" href="#filter-collapsible_dropdown_' + groupId + '" aria-expanded="false" aria-controls="filter-collapsible">Beschreibung anzeigen <i class="caret"></i></a>');
-                groupItems.find('.list-group-item').append('<div id="filter-collapsible_dropdown_' + groupId + '" class="collapse top10">' + itemBeschreibung + '</div>');
+            if (descriptionDropdownContentHidden.length > 0 && descriptionCheckdioContent.length == 0 && itemBeschreibung.length > 0 && multiselect !== "multiple") {
+                groupItems.find('a[href="#filter-collapsible_dropdown_' + groupId + '"]').removeClass('hidden');
+                descriptionDropdownContent.replaceWith('<div id="filter-collapsible_dropdown_' + groupId + '" class="collapse top10 panel-body">' + itemBeschreibung + '</div>');
             //  Bisher Content mit einer Beschreibung vorhanden, aber ein Artikel ohne Beschreibung ausgewählt
-            } else if (descriptionDropdownContent.length > 0 && descriptionCheckdioContent.length == 0 && itemBeschreibung.length == 0 && multiselect !== "multiple") {
-                groupItems.find('a[href="#filter-collapsible_dropdown_' + groupId + '"]').remove();
-                groupItems.find('#filter-collapsible_dropdown_' + groupId).remove();
+            } else if (descriptionDropdownContentHidden.length == 0 && descriptionCheckdioContent.length == 0 && itemBeschreibung.length == 0 && multiselect !== "multiple") {
+                groupItems.find('a[href="#filter-collapsible_dropdown_' + groupId + '"]').addClass('hidden');
+                descriptionDropdownContent.addClass('hidden');
             //  Bisher Content mit einer Beschreibung vorhanden und ein Artikel mit Beschreibung ausgewählt
-            } else if (descriptionDropdownContent.length > 0 && descriptionCheckdioContent.length == 0 && itemBeschreibung.length > 0 && multiselect !== "multiple") {
-                descriptionDropdownContent.replaceWith('<div id="filter-collapsible_dropdown_' + groupId + '" class="collapse top10">' + itemBeschreibung + '</div>');
+            } else if (descriptionDropdownContentHidden.length == 0 && descriptionCheckdioContent.length == 0 && itemBeschreibung.length > 0 && multiselect !== "multiple") {
+                descriptionDropdownContent.replaceWith('<div id="filter-collapsible_dropdown_' + groupId + '" class="collapse top10 panel-body">' + itemBeschreibung + '</div>');
             }
         },
         

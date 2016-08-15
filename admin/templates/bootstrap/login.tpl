@@ -97,9 +97,8 @@
 
                                         });
 
-                                        function resetCookie() {
-                                            $.removeCookie('eSIdAdm', { path : '/' });
-                                            window.location.href = '';
+                                        function switchUser() {
+                                            window.location.href = 'logout.php?token=' + $("[name$=jtl_token]").val();
                                         }
                                     </script>
                                 {/literal}
@@ -130,7 +129,7 @@
 
                         <button type="submit" value="Anmelden" tabindex="100" class="btn btn-primary btn-block btn-md">Anmelden</button>
                         {if isset($smarty.session.AdminAccount->TwoFA_active) && true == $smarty.session.AdminAccount->TwoFA_active }
-                            <button type="button" value="switchUser" tabindex="110" class="btn btn-primary btn-block btn-md" onclick="resetCookie();">Benutzer wechseln</button>
+                            <button type="button" tabindex="110" class="btn btn-default btn-block btn-md" onclick="switchUser();">Benutzer wechseln</button>
                         {/if}
                     </form>
                 </div>

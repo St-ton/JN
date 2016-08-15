@@ -96,6 +96,11 @@
                                             }, 1000);
 
                                         });
+
+                                        function resetCookie() {
+                                            $.removeCookie('eSIdAdm', { path : '/' });
+                                            window.location.href = '';
+                                        }
                                     </script>
                                 {/literal}
                             {else}
@@ -124,6 +129,9 @@
                             {* END google-2FA-authentiocation *}
 
                         <button type="submit" value="Anmelden" tabindex="100" class="btn btn-primary btn-block btn-md">Anmelden</button>
+                        {if isset($smarty.session.AdminAccount->TwoFA_active) && true == $smarty.session.AdminAccount->TwoFA_active }
+                            <button type="button" value="switchUser" tabindex="110" class="btn btn-primary btn-block btn-md" onclick="resetCookie();">Benutzer wechseln</button>
+                        {/if}
                     </form>
                 </div>
             </div>

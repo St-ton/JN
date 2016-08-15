@@ -28,9 +28,9 @@ class FilterField
         $this->cTitle  = $cTitle;
         $this->cColumn = $cColumn;
 
-        if ($oFilter->getAction() === 'filter') {
-            $this->cValue = $_GET[$cColumn];
-        } elseif ($oFilter->getAction() === 'resetfilter') {
+        if ($oFilter->getAction() === $oFilter->getId() . '_filter') {
+            $this->cValue = $_GET[$oFilter->getId() . '_' . $cColumn];
+        } elseif ($oFilter->getAction() === $oFilter->getId() . '_resetfilter') {
             $this->cValue = $cDefValue;
         } elseif ($oFilter->hasSessionField($cColumn)) {
             $this->cValue = $oFilter->getSessionField($cColumn);

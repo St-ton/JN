@@ -11,9 +11,14 @@
             <div class="form-group">
                 <label class="sr-only" for="{$oField->getColumn()}">{$oField->getTitle()}</label>
                 {if $oField->getType() === 'text'}
-                    <input type="text" class="form-control" name="{$oField->getColumn()}" id="{$oField->getColumn()}" value="{$oField->getValue()}" placeholder="{$oField->getTitle()}">
+                    <input type="text" class="form-control"
+                           name="{$oFilter->getId()}_{$oField->getColumn()}"
+                           id="{$oFilter->getId()}_{$oField->getColumn()}"
+                           value="{$oField->getValue()}" placeholder="{$oField->getTitle()}">
                 {elseif $oField->getType() === 'select'}
-                    <select class="form-control" name="{$oField->getColumn()}" id="{$oField->getColumn()}">
+                    <select class="form-control"
+                            name="{$oFilter->getId()}_{$oField->getColumn()}"
+                            id="{$oFilter->getId()}_{$oField->getColumn()}">
                         {foreach $oField->getOptions() as $i => $oOption}
                             <option value="{$i}"{if $i == (int)$oField->getValue()} selected{/if}>{$oOption->getTitle()}</option>
                         {/foreach}
@@ -22,10 +27,10 @@
             </div>
         {/foreach}
         <div class="btn-group">
-            <button type="submit" class="btn btn-primary" name="action" value="filter">
+            <button type="submit" class="btn btn-primary" name="action" value="{$oFilter->getId()}_filter">
                 <i class="fa fa-search"></i>
             </button>
-            <button type="submit" class="btn btn-default" name="action" value="resetfilter">
+            <button type="submit" class="btn btn-default" name="action" value="{$oFilter->getId()}_resetfilter">
                 <i class="fa fa-eraser"></i>
             </button>
         </div>

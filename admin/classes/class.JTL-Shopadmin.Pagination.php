@@ -36,7 +36,7 @@ class Pagination
      */
     public function __construct($cId = null)
     {
-        if ($cId) {
+        if (is_string($cId)) {
             $this->cId = $cId;
         }
         

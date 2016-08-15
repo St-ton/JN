@@ -967,6 +967,11 @@ class Artikel
     public $cHoehe = '';
 
     /**
+     * @var bool
+     */
+    public $cacheHit = false;
+
+    /**
      * Konstruktor
      *
      * @param int $kArtikel
@@ -1439,22 +1444,25 @@ class Artikel
 
     /**
      * @param int $kKundengruppe
+     * @param bool $bGetInvisibleParts
      * @return $this
      */
-    public function holeStueckliste($kKundengruppe = 0)
+    public function holeStueckliste($kKundengruppe = 0, $bGetInvisibleParts = false)
     {
         $kKundengruppe = (int)$kKundengruppe;
         if ($this->kArtikel > 0 && $this->kStueckliste > 0) {
-            $oStueckliste_arr = Shop::DB()->query(
-                "SELECT tartikel.kArtikel, tstueckliste.fAnzahl
+            $query = "SELECT tartikel.kArtikel, tstueckliste.fAnzahl
                       FROM tartikel
                       JOIN tstueckliste ON tstueckliste.kArtikel = tartikel.kArtikel AND tstueckliste.kStueckliste = " . (int)$this->kStueckliste . "
-                      LEFT JOIN tartikelsichtbarkeit ON tstueckliste.kArtikel = tartikelsichtbarkeit.kArtikel AND tartikelsichtbarkeit.kKundengruppe = {$kKundengruppe}
-                      WHERE tartikelsichtbarkeit.kArtikel IS NULL", 2
-            );
+                      LEFT JOIN tartikelsichtbarkeit ON tstueckliste.kArtikel = tartikelsichtbarkeit.kArtikel AND tartikelsichtbarkeit.kKundengruppe = {$kKundengruppe}";
+            if (!$bGetInvisibleParts) {
+                $query .= " WHERE tartikelsichtbarkeit.kArtikel IS NULL";
+            }
+            $oStueckliste_arr = Shop::DB()->query($query, 2);
 
             if (is_array($oStueckliste_arr) && count($oStueckliste_arr) > 0) {
                 $oArtikelOptionen = self::getDefaultOptions();
+                $oArtikelOptionen->nKeineSichtbarkeitBeachten = $bGetInvisibleParts ? 1 : 0;
                 foreach ($oStueckliste_arr as $i => $oStueckliste) {
                     //@todo: Lager beachten
                     $oArtikel = new self();
@@ -3187,6 +3195,7 @@ class Artikel
                     $return    = ($startDate > $today || $endDate < $today);
                 }
                 if ($return === true) {
+                    $this->cacheHit = true;
                     // Warenkorbmatrix Variationskinder holen?
                     if (((isset($oArtikelOptionen->nWarenkorbmatrix) && $oArtikelOptionen->nWarenkorbmatrix == 1) ||
                             (isset($this->FunktionsAttribute[FKT_ATTRIBUT_WARENKORBMATRIX]) && (int) $this->FunktionsAttribute[FKT_ATTRIBUT_WARENKORBMATRIX] === 1 &&
@@ -4085,7 +4094,10 @@ class Artikel
             'artikel_lagerampel_rot'        => $conf['global']['artikel_lagerampel_rot'],
             'artikel_lagerampel_gruen'      => $conf['global']['artikel_lagerampel_gruen'],
             'artikel_lagerampel_keinlager'  => $conf['global']['artikel_lagerampel_keinlager'],
-            'artikel_ampel_lagernull_gruen' => $conf['global']['artikel_ampel_lagernull_gruen']
+            'artikel_ampel_lagernull_gruen' => $conf['global']['artikel_ampel_lagernull_gruen'],
+            'attribut_ampeltext_gelb'       => (!empty($this->AttributeAssoc[ART_ATTRIBUT_AMPELTEXT_GELB])) ? $this->AttributeAssoc[ART_ATTRIBUT_AMPELTEXT_GELB] : Shop::Lang()->get('ampelGelb', 'global'),
+            'attribut_ampeltext_gruen'      => (!empty($this->AttributeAssoc[ART_ATTRIBUT_AMPELTEXT_GRUEN])) ? $this->AttributeAssoc[ART_ATTRIBUT_AMPELTEXT_GRUEN] : Shop::Lang()->get('ampelGruen', 'global'),
+            'attribut_ampeltext_rot'        => (!empty($this->AttributeAssoc[ART_ATTRIBUT_AMPELTEXT_ROT])) ? $this->AttributeAssoc[ART_ATTRIBUT_AMPELTEXT_ROT] : Shop::Lang()->get('ampelRot', 'global')
         );
         $this->oWarenlager_arr = Warenlager::getByProduct($this->kArtikel, $_SESSION['kSprache'], $xOption_arr);
 
@@ -4686,10 +4698,17 @@ class Artikel
         //set default values
         $minDeliveryDays = (strlen(trim($favShipping->nMinLiefertage)) > 0) ? (int)$favShipping->nMinLiefertage : 2;
         $maxDeliveryDays = (strlen(trim($favShipping->nMaxLiefertage)) > 0) ? (int)$favShipping->nMaxLiefertage : 3;
+        // get all pieces (even invisible) to calc delivery
+        $nAllPieces = Shop::DB()->query("SELECT tartikel.kArtikel, tstueckliste.fAnzahl
+                      FROM tartikel
+                      JOIN tstueckliste ON tstueckliste.kArtikel = tartikel.kArtikel AND tstueckliste.kStueckliste = " . (int)$this->kStueckliste, 3);
         // check if this is a set article - if so, calculate the delivery time from the set of articles
-        if (!empty($this->kStueckliste) && empty($this->oStueckliste_arr)) {
             // we don't have loaded the list of pieces yet, do so!
-            $this->holeStueckliste($_SESSION['Kundengruppe']->kKundengruppe);
+        if (!empty($this->kStueckliste) && empty($this->oStueckliste_arr) || !empty($this->oStueckliste_arr) && count($this->oStueckliste_arr) !== $nAllPieces) {
+            $resetArray = true;
+            $tmp_oStueckliste_arr = $this->oStueckliste_arr;
+            unset($this->oStueckliste_arr);
+            $this->holeStueckliste($_SESSION['Kundengruppe']->kKundengruppe, true);
         }
         if (!empty($this->oStueckliste_arr) && !empty($this->kStueckliste)) {
             $allMaxDeliveryDays = $maxDeliveryDays;
@@ -4706,6 +4725,10 @@ class Artikel
             $estimatedDelivery      = getDeliverytimeEstimationText($allMinDeliveryDays, $allMaxDeliveryDays);
             $this->nMinDeliveryDays = $allMinDeliveryDays;
             $this->nMaxDeliveryDays = $allMaxDeliveryDays;
+            if (!empty($resetArray)) {
+                unset($this->oStueckliste_arr);
+                $this->oStueckliste_arr = $tmp_oStueckliste_arr;
+            }
 
             return $estimatedDelivery;
         }

@@ -33,6 +33,11 @@ class cache_memcached implements ICachingMethod
             $this->setMemcached($options['memcache_host'], $options['memcache_port']);
             $this->isInitialized = true;
             $this->journalID     = 'memcached_journal';
+            $maxLifeTime         = 60 * 60 * 24 * 30;
+            if ($options['lifetime'] > $maxLifeTime) {
+                //@see http://php.net/manual/de/memcached.expiration.php
+                $options['lifetime'] = $maxLifeTime;
+            }
             $this->options       = $options;
         }
     }

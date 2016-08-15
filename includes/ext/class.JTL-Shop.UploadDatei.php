@@ -134,5 +134,67 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
 
             return $objTo;
         }
+
+        /**
+         * @param string $filename
+         * @param string $mimetype
+         * @param bool $bEncode
+         */
+        public static function send_file_to_browser($filename, $mimetype, $bEncode = false, $downloadName)
+        {
+            if ($bEncode) {
+                $file     = basename($filename);
+                $filename = str_replace($file, '', $filename);
+                $filename .= utf8_encode($file);
+            }
+            if (!empty($_SERVER['HTTP_USER_AGENT'])) {
+                $HTTP_USER_AGENT = $_SERVER['HTTP_USER_AGENT'];
+            } else {
+                $HTTP_USER_AGENT = '';
+            }
+            if (preg_match('/Opera\/([0-9].[0-9]{1,2})/', $HTTP_USER_AGENT, $log_version)) {
+                $browser_agent = 'opera';
+            } elseif (preg_match('/MSIE ([0-9].[0-9]{1,2})/', $HTTP_USER_AGENT, $log_version)) {
+                $browser_agent = 'ie';
+            } elseif (preg_match('/OmniWeb\/([0-9].[0-9]{1,2})/', $HTTP_USER_AGENT, $log_version)) {
+                $browser_agent = 'omniweb';
+            } elseif (preg_match('/Netscape([0-9]{1})/', $HTTP_USER_AGENT, $log_version)) {
+                $browser_agent = 'netscape';
+            } elseif (preg_match('/Mozilla\/([0-9].[0-9]{1,2})/', $HTTP_USER_AGENT, $log_version)) {
+                $browser_agent = 'mozilla';
+            } elseif (preg_match('/Konqueror\/([0-9].[0-9]{1,2})/', $HTTP_USER_AGENT, $log_version)) {
+                $browser_agent = 'konqueror';
+            } else {
+                $browser_agent = 'other';
+            }
+            if (($mimetype === 'application/octet-stream') || ($mimetype === 'application/octetstream')) {
+                if (($browser_agent === 'ie') || ($browser_agent === 'opera')) {
+                    $mimetype = 'application/octetstream';
+                } else {
+                    $mimetype = 'application/octet-stream';
+                }
+            }
+
+            @ob_end_clean();
+            @ini_set('zlib.output_compression', 'Off');
+
+            header('Pragma: public');
+            header('Content-Transfer-Encoding: none');
+            if ($browser_agent === 'ie') {
+                header('Content-Type: ' . $mimetype);
+                header('Content-Disposition: inline; filename="' . $downloadName . '"');
+            } else {
+                header('Content-Type: ' . $mimetype . '; name="' . basename($filename) . '"');
+                header('Content-Disposition: attachment; filename="' . $downloadName . '"');
+            }
+
+            $size = @filesize($filename);
+            if ($size) {
+                header("Content-length: $size");
+            }
+
+            readfile($filename);
+            exit;
+        }
     }
 }

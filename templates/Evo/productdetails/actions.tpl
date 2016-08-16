@@ -1,4 +1,4 @@
-<div id="product-actions" class="btn-group btn-group-md product-actions" role="group">
+<div id="product-actions" class="btn-group btn-group-md product-actions hidden-print" role="group">
     {assign var=kArtikel value=$Artikel->kArtikel}
 
     {if $Artikel->kArtikelVariKombi > 0}
@@ -29,6 +29,6 @@
         </button>
     {/if}
 </div>
-<div class="visible-xs clearfix">
+<div class="visible-xs clearfix hidden-print">
     <hr>
 </div>

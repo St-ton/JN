@@ -714,7 +714,7 @@ class NiceDB
      * @param string|int       $keyvalue2 - Value of Key which should be compared
      * @param bool             $echo - true -> print statement
      * @param string           $select - the key to select
-     * @return null|object - null if fails, resultObejct if successful
+     * @return null|object - null if fails, resultObject if successful
      */
     public function selectSingleRow($tablename, $keyname, $keyvalue, $keyname1 = null, $keyvalue1 = null, $keyname2 = null, $keyvalue2 = null, $echo = false, $select = '*')
     {

@@ -48,9 +48,11 @@ if (isset($_POST['adminlogin']) && intval($_POST['adminlogin']) === 1) {
             }
         }
     }
-    if ($ret['captcha'] == 0 && $ret['csrf'] === 0) {
+
+    if ($ret['captcha'] === 0 && $ret['csrf'] === 0) {
         $cLogin  = $_POST['benutzer'];
         $cPass   = $_POST['passwort'];
+
         $nReturn = $oAccount->login($cLogin, $cPass);
         switch ($nReturn) {
             case -2:
@@ -59,7 +61,11 @@ if (isset($_POST['adminlogin']) && intval($_POST['adminlogin']) === 1) {
 
             case -3:
             case -1:
-                $cFehler = 'Benutzername oder Passwort falsch';
+                if( isset($_SESSION['AdminAccount']->TwoFA_expired) && true === $_SESSION['AdminAccount']->TwoFA_expired) {
+                    $cFehler = '2-Faktor-Auth-Code abgelaufen';
+                } else {
+                    $cFehler = 'Benutzername oder Passwort falsch';
+                }
                 break;
 
             case -4:
@@ -68,6 +74,12 @@ if (isset($_POST['adminlogin']) && intval($_POST['adminlogin']) === 1) {
 
             case -5:
                 $cFehler = 'Anmeldedaten nicht mehr g&uuml;ltig';
+                break;
+
+            case -6:
+                if (isset($_SESSION['AdminAccount']->TwoFA_expired) && true == $_SESSION['AdminAccount']->TwoFA_expired) {
+                    $cFehler = '2-Faktor-Authentifizierungs-Code abgelaufen';
+                }
                 break;
 
             case 0:
@@ -80,6 +92,7 @@ if (isset($_POST['adminlogin']) && intval($_POST['adminlogin']) === 1) {
                 }
                 if ($oAccount->permission('SHOP_UPDATE_VIEW')) {
                     if ($oUpdater->hasPendingUpdates()) {
+                        $_SESSION['loginIsValid'] = true; // "enable" the "header.tpl"-navigation again
                         header('Location: ' . Shop::getURL(true) . '/' . PFAD_ADMIN . 'dbupdater.php');
                         exit;
                     }
@@ -137,7 +150,16 @@ $smarty->assign('bProfilerActive', $profilerState !== 0)
        ->assign('pw_updated', (isset($_GET['pw_updated']) && $_GET['pw_updated'] === 'true'))
        ->assign('cFehler', $cFehler)
        ->assign('updateMessage', (isset($updateMessage) ? $updateMessage : null));
-if ($oAccount->logged()) {
+
+
+/**
+ * opens the dashboard
+ * (prevents code duplication)
+ */
+function openDashboard() {
+    global $oAccount , $smarty;
+
+    $_SESSION['loginIsValid'] = true;
     if ($oAccount->permission('DASHBOARD_VIEW')) {
         require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dashboard_inc.php';
         require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'permissioncheck_inc.php';
@@ -153,6 +175,35 @@ if ($oAccount->logged()) {
                ->assign('bInstallExists', is_dir(PFAD_ROOT . 'install'));
     }
     $smarty->display('dashboard.tpl');
+}
+
+unset($_SESSION['AdminAccount']->TwoFA_active);
+if ($oAccount->getIsAuthenticated()) {
+    // at this point, the user is logged in with his regular credentials
+    if (!$oAccount->getIsTwoFaAuthenticated()) {
+        // activate the 2FA-code input-field in the login-template(-page)
+        $_SESSION['AdminAccount']->TwoFA_active = true;
+        // if our check failed, we redirect to login
+        if (isset($_POST['TwoFA_code']) && '' !== $_POST['TwoFA_code']) {
+
+            if ($oAccount->doTwoFA()) {
+                $_SESSION['AdminAccount']->TwoFA_expired = false;
+                openDashboard();
+                exit();
+            }
+        } else {
+            $_SESSION['AdminAccount']->TwoFA_expired = true;
+        }
+        // "redirect" to the "login not valid"
+        // (we've received a wrong code and give the user the chance to retry)
+        $oAccount->redirectOnUrl();
+        if (isset($_REQUEST['uri']) && strlen(trim($_REQUEST['uri'])) > 0) {
+            $smarty->assign('uri', trim($_REQUEST['uri']));
+        }
+        $smarty->display('login.tpl');
+        exit();
+    }
+    openDashboard();
 } else {
     $oAccount->redirectOnUrl();
     if (isset($_REQUEST['uri']) && strlen(trim($_REQUEST['uri'])) > 0) {

@@ -13,7 +13,7 @@ function loescheKupons($kKupon_arr)
 {
     if (is_array($kKupon_arr) && count($kKupon_arr) > 0) {
         $kKupon_arr = array_map('intval', $kKupon_arr);
-        $nRows = Shop::DB()->query(
+        $nRows      = Shop::DB()->query(
             "DELETE
                 FROM tkupon
                 WHERE kKupon IN(" . implode(',', $kKupon_arr) . ")", 3
@@ -123,23 +123,27 @@ function normalizeDate($string)
  * Get instances of existing coupons, each with some enhanced information that can be displayed
  * 
  * @param string $cKuponTyp
- * @param string $cLimitSQL - an SQL LIMIT clause
- * @param string $cOrderBy - a column that should be sorted by
+ * @param string $cWhereSQL - an SQL WHERE clause (col1 = val1 AND vol2 LIKE ...)
+ * @param string $cOrderSQL - an SQL ORDER BY clause (cName DESC)
+ * @param string $cLimitSQL - an SQL LIMIT clause  (10,20)
  * @return array
  */
-function getCoupons($cKuponTyp = 'standard', $cLimitSQL = '', $cOrderBy = 'kKupon')
+function getCoupons($cKuponTyp = 'standard', $cWhereSQL = '', $cOrderSQL = '', $cLimitSQL = '')
 {
     $oKuponDB_arr = Shop::DB()->query("
         SELECT kKupon
             FROM tkupon
-            WHERE cKuponTyp = '" . $cKuponTyp . "'
-            ORDER BY " . $cOrderBy . " " .
-            $cLimitSQL,
+            WHERE cKuponTyp = '" . Shop::DB()->escape($cKuponTyp) . "'" .
+            ($cWhereSQL !== '' ? " AND " . $cWhereSQL : "") .
+            ($cOrderSQL !== '' ? " ORDER BY " . $cOrderSQL : "") .
+            ($cLimitSQL !== '' ? " LIMIT " . $cLimitSQL : ""),
         2);
     $oKupon_arr = array();
 
-    foreach ($oKuponDB_arr as $oKuponDB) {
-        $oKupon_arr[] = getCoupon((int)$oKuponDB->kKupon);
+    if (is_array($oKuponDB_arr)) {
+        foreach ($oKuponDB_arr as $oKuponDB) {
+            $oKupon_arr[] = getCoupon((int)$oKuponDB->kKupon);
+        }
     }
 
     return $oKupon_arr;
@@ -195,10 +199,17 @@ function augmentCoupon($oKupon)
     }
 
     if ($oKupon->cArtikel === '') {
-        $oKupon->ArtikelInfo = 'Alle';
+        $oKupon->cArtikelInfo = 'Alle';
     } else {
-        $oKupon->ArtikelInfo = 'eingeschr&auml;nkt';
+        $oKupon->cArtikelInfo = 'eingeschr&auml;nkt';
     }
+
+    $oMaxErstelltDB = Shop::DB()->query("
+        SELECT max(dErstellt) as dLastUse
+            FROM " . ($oKupon->cKuponTyp === 'neukundenkupon' ? "tkuponneukunde" : "tkuponkunde") . "
+            WHERE kKupon = " . (int)$oKupon->kKupon,
+        1);
+    $oKupon->dLastUse = date_create(is_string($oMaxErstelltDB->dLastUse) ? $oMaxErstelltDB->dLastUse : '0000-00-00 00:00:00');
 }
 
 /**
@@ -289,15 +300,15 @@ function createCouponFromInput()
  * @param string $cKuponTyp
  * @return int
  */
-function getCouponCount($cKuponTyp = 'standard')
+function getCouponCount($cKuponTyp = 'standard', $cWhereSQL = '')
 {
     $oKuponDB = Shop::DB()->query("
         SELECT count(kKupon) AS count
             FROM tkupon
-            WHERE cKuponTyp = '" . $cKuponTyp . "'",
+            WHERE cKuponTyp = '" . $cKuponTyp . "'" . ($cWhereSQL !== '' ? " AND " . $cWhereSQL : ""),
         1);
 
-    return $oKuponDB->count;
+    return (int)$oKuponDB->count;
 }
 
 /**
@@ -498,4 +509,29 @@ function informCouponCustomers($oKupon)
         $obj->tkunde             = $oKunde;
         sendeMail(MAILTEMPLATE_KUPON, $obj);
     }
+}
+
+/**
+ * Set all Coupons with an outdated dGueltigBis to cAktiv = 'N'
+ */
+function deactivateOutdatedCoupons()
+{
+    Shop::DB()->query("
+        UPDATE tkupon
+            SET cAktiv = 'N'
+            WHERE dGueltigBis > 0 AND dGueltigBis <= now()",
+        10);
+}
+
+
+/**
+ * Set all Coupons that reached nVerwendungenBisher to nVerwendungen to cAktiv = 'N'
+ */
+function deactivateExhaustedCoupons()
+{
+    Shop::DB()->query("
+        UPDATE tkupon
+            SET cAktiv = 'N'
+            WHERE nVerwendungen > 0 AND nVerwendungenBisher >= nVerwendungen",
+        10);
 }

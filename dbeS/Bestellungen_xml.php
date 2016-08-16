@@ -138,8 +138,7 @@ function bearbeiteDel($xml)
                 if ($oModule) {
                     $oModule->cancelOrder($kBestellung, true);
                 }
-
-                Shop::DB()->delete('tbestellung', 'kBestellung', $kBestellung);
+                deleteOrder($kBestellung);
                 //uploads (bestellungen)
                 Shop::DB()->delete('tuploadschema', ['kCustomID', 'nTyp'], [$kBestellung, 2]);
                 Shop::DB()->delete('tuploaddatei', ['kCustomID', 'nTyp'], [$kBestellung, 2]);
@@ -165,7 +164,7 @@ function bearbeiteDel($xml)
             if ($oModule) {
                 $oModule->cancelOrder($kBestellung, true);
             }
-            Shop::DB()->delete('tbestellung', 'kBestellung', $kBestellung);
+            deleteOrder($kBestellung);
             //wenn unreg kunde, dann kunden auch löschen
             $b = Shop::DB()->query("SELECT kKunde FROM tbestellung WHERE kBestellung = " . $kBestellung, 1);
             if (isset($b->kKunde) && $b->kKunde > 0) {
@@ -194,7 +193,7 @@ function bearbeiteDelOnly($xml)
                 if ($oModule) {
                     $oModule->cancelOrder($kBestellung, true);
                 }
-                Shop::DB()->delete('tbestellung', 'kBestellung', $kBestellung);
+                deleteOrder($kBestellung);
             }
         }
     } else {
@@ -204,7 +203,7 @@ function bearbeiteDelOnly($xml)
             if ($oModule) {
                 $oModule->cancelOrder($kBestellung, true);
             }
-            Shop::DB()->delete('tbestellung', 'kBestellung', $kBestellung);
+            deleteOrder($kBestellung);
         }
     }
 }
@@ -243,8 +242,7 @@ function bearbeiteStorno($xml)
                     'oBestellung' => &$bestellungTmp,
                     'oKunde'      => &$kunde,
                     'oModule'     => $oModule
-                )
-            );
+                ));
         }
     } else {
         $kBestellung = intval($xml['storno_bestellungen']['kBestellung']);
@@ -275,8 +273,7 @@ function bearbeiteStorno($xml)
                     'oBestellung' => &$bestellungTmp,
                     'oKunde'      => &$kunde,
                     'oModule'     => $oModule
-                )
-            );
+                ));
         }
     }
 }
@@ -425,7 +422,7 @@ function bearbeiteUpdate($xml)
         $defaultCurrency = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
         if (isset($currentCurrency->kWaehrung) && isset($defaultCurrency->kWaehrung)) {
             $correctionFactor = floatval($currentCurrency->fFaktor);
-            $oBestellung->fGesamtsumme = $oBestellung->fGesamtsumme/$correctionFactor;
+            $oBestellung->fGesamtsumme = $oBestellung->fGesamtsumme / $correctionFactor;
         }
     }
     //aktualisiere bestellung
@@ -470,9 +467,13 @@ function bearbeiteUpdate($xml)
     $oRechnungsadresse->updateInDB();
     //loesche alte positionen
     $WarenkorbposAlt_arr = Shop::DB()->query("SELECT * FROM twarenkorbpos WHERE kWarenkorb = " . (int)$oBestellungAlt->kWarenkorb, 2);
+    $WarenkorbposAlt_map = array();
     //loesche poseigenschaften
-    foreach ($WarenkorbposAlt_arr as $WarenkorbposAlt) {
+    foreach ($WarenkorbposAlt_arr as $key => $WarenkorbposAlt) {
         Shop::DB()->delete('twarenkorbposeigenschaft', 'kWarenkorbPos', (int)$WarenkorbposAlt->kWarenkorbPos);
+        if ($WarenkorbposAlt->kArtikel > 0) {
+            $WarenkorbposAlt_map[$WarenkorbposAlt->kArtikel] = $key;
+        }
     }
     //loesche positionen
     Shop::DB()->delete('twarenkorbpos', 'kWarenkorb', (int)$oBestellungAlt->kWarenkorb);
@@ -481,10 +482,18 @@ function bearbeiteUpdate($xml)
     $positionCount    = count($Warenkorbpos_arr);
     for ($i = 0; $i < $positionCount; $i++) {
         //füge wkpos ein
+        $oWarenkorbposAlt = array_key_exists($Warenkorbpos_arr[$i]->kArtikel, $WarenkorbposAlt_map) ? $WarenkorbposAlt_arr[$WarenkorbposAlt_map[$Warenkorbpos_arr[$i]->kArtikel]] : null;
         unset($Warenkorbpos_arr[$i]->kWarenkorbPos);
-        $Warenkorbpos_arr[$i]->kWarenkorb    = $oBestellungAlt->kWarenkorb;
-        $Warenkorbpos_arr[$i]->fPreis /= $correctionFactor;
-        $Warenkorbpos_arr[$i]->fPreisEinzelNetto /= $correctionFactor;
+        $Warenkorbpos_arr[$i]->kWarenkorb          = $oBestellungAlt->kWarenkorb;
+        $Warenkorbpos_arr[$i]->fPreis             /= $correctionFactor;
+        $Warenkorbpos_arr[$i]->fPreisEinzelNetto  /= $correctionFactor;
+        // persistiere nLongestMin/MaxDelivery wenn nicht von Wawi übetragen
+        if (!isset($Warenkorbpos_arr[$i]->nLongestMinDelivery)) {
+            $Warenkorbpos_arr[$i]->nLongestMinDelivery = isset($oWarenkorbposAlt) ? $oWarenkorbposAlt->nLongestMinDelivery : 0;
+        }
+        if (!isset($Warenkorbpos_arr[$i]->nLongestMaxDelivery)) {
+            $Warenkorbpos_arr[$i]->nLongestMaxDelivery = isset($oWarenkorbposAlt) ? $oWarenkorbposAlt->nLongestMaxDelivery : 0;
+        }
         $Warenkorbpos_arr[$i]->kWarenkorbPos = Shop::DB()->insert('twarenkorbpos', $Warenkorbpos_arr[$i]);
 
         if (count($Warenkorbpos_arr) < 2) { // nur eine pos
@@ -526,8 +535,7 @@ function bearbeiteUpdate($xml)
             'oBestellung'    => &$oBestellung,
             'oBestellungAlt' => &$oBestellungAlt,
             'oKunde'         => &$kunde
-        )
-    );
+        ));
 }
 
 /**
@@ -557,7 +565,7 @@ function bearbeiteSet($xml)
             
             if ($oBestellungShop->cStatus === BESTELLUNG_STATUS_STORNO) {
                 $status = BESTELLUNG_STATUS_STORNO;    // fixes jtlshop/jtl-shop#42
-            } else {    
+            } else {
                 $status = BESTELLUNG_STATUS_IN_BEARBEITUNG;
                 if (isset($oBestellungWawi->cBezahlt) && $oBestellungWawi->cBezahlt === 'Y') {
                     $status = BESTELLUNG_STATUS_BEZAHLT;
@@ -573,7 +581,7 @@ function bearbeiteSet($xml)
                     (isset($oBestellungWawi->nKomplettAusgeliefert) && intval($oBestellungWawi->nKomplettAusgeliefert) === 0)) {
                     $status = BESTELLUNG_STATUS_TEILVERSANDT;
                 }
-            }            
+            }
             
 
             executeHook(HOOK_BESTELLUNGEN_XML_BESTELLSTATUS, array('status' => &$status, 'oBestellung' => &$oBestellungShop));
@@ -641,6 +649,7 @@ function bearbeiteSet($xml)
                         sendeMail($cMailType, $oMail);
                     }
                 }
+                /** @var Lieferschein $oLieferschein */
                 foreach ($oBestellungUpdated->oLieferschein_arr as $oLieferschein) {
                     $oLieferschein->setEmailVerschickt(true);
                     $oLieferschein->update();
@@ -679,6 +688,30 @@ function bearbeiteSet($xml)
                 }
             }
             executeHook(HOOK_BESTELLUNGEN_XML_BEARBEITESET, array('oBestellung' => &$oBestellungShop, 'oKunde' => &$kunde, 'oBestellungWawi' => &$oBestellungWawi));
+        }
+    }
+}
+
+/**
+ * @param $kBestellung
+ */
+function deleteOrder($kBestellung)
+{
+    $kWarenkorb = Shop::DB()->select('tbestellung', 'kBestellung', $kBestellung, null, null, null, null, false, 'kWarenkorb');
+    Shop::DB()->delete('tbestellung', 'kBestellung', $kBestellung);
+    Shop::DB()->delete('tbestellid', 'kBestellung', $kBestellung);
+    Shop::DB()->delete('tbestellstatus', 'kBestellung', $kBestellung);
+    Shop::DB()->delete('tkuponbestellung', 'kBestellung', $kBestellung);
+    Shop::DB()->delete('tuploaddatei', ['kCustomID', 'nTyp'], [$kBestellung, UPLOAD_TYP_BESTELLUNG]);
+    Shop::DB()->delete('tuploadqueue', 'kBestellung', $kBestellung);
+    if ((int)$kWarenkorb->kWarenkorb > 0) {
+        Shop::DB()->delete('twarenkorb', 'kWarenkorb', (int)$kWarenkorb->kWarenkorb);
+        $kWarenkorbPos_arr = Shop::DB()->selectAll('twarenkorbpos', 'kWarenkorb', (int)$kWarenkorb->kWarenkorb, 'kWarenkorbPos');
+        Shop::DB()->delete('twarenkorbpos', 'kWarenkorb', (int)$kWarenkorb->kWarenkorb);
+        if (is_array($kWarenkorbPos_arr)) {
+            foreach ($kWarenkorbPos_arr as $kWarenkorbPos) {
+                Shop::DB()->delete('twarenkorbposeigenschaft', 'kWarenkorbPos', (int)$kWarenkorbPos->kWarenkorbPos);
+            }
         }
     }
 }

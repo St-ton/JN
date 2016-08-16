@@ -61,25 +61,25 @@
 
     <ul class="nav nav-tabs" role="tablist">
         <li class="tab{if !isset($cTab) || empty($cTab) || $cTab === 'bewertungen'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#bewertungen">{#freischaltenReviews#} <span class="badge">{$oBewertung_arr|@count}</span></a>
+            <a data-toggle="tab" role="tab" href="#bewertungen">{#freischaltenReviews#} <span class="badge">{$oPagiBewertungen->getItemCount()}</span></a>
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'livesearch'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#livesearch">{#freischaltenLivesearch#} <span class="badge">{$oSuchanfrage_arr|@count}</span></a>
+            <a data-toggle="tab" role="tab" href="#livesearch">{#freischaltenLivesearch#} <span class="badge">{$oPagiSuchanfragen->getItemCount()}</span></a>
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'tags'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#tags">{#freischaltenTags#} <span class="badge">{$oTag_arr|@count}</span></a>
+            <a data-toggle="tab" role="tab" href="#tags">{#freischaltenTags#} <span class="badge">{$oPagiTags->getItemCount()}</span></a>
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'newscomments'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#newscomments">{#freischaltenNewsComments#} <span class="badge">{$oNewsKommentar_arr|@count}</span></a>
+            <a data-toggle="tab" role="tab" href="#newscomments">{#freischaltenNewsComments#} <span class="badge">{$oPagiNewskommentare->getItemCount()}</span></a>
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'newsletter'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#newsletter">{#freischaltenNewsletterReceiver#} <span class="badge">{$oNewsletterEmpfaenger_arr|@count}</span></a>
+            <a data-toggle="tab" role="tab" href="#newsletter">{#freischaltenNewsletterReceiver#} <span class="badge">{$oPagiNewsletterEmpfaenger->getItemCount()}</span></a>
         </li>
     </ul>
     <div class="tab-content">
-        <div id="bewertungen" class="tab-pane fade {if !isset($cTab) || $cTab === 'bewertungen'} active in{/if}">
+        <div id="bewertungen" class="tab-pane fade {if !isset($cTab) || empty($cTab) || $cTab === 'bewertungen'} active in{/if}">
             {if $oBewertung_arr|@count > 0 && $oBewertung_arr}
-                {include file='pagination.tpl' cSite=1 cUrl='freischalten.php' oBlaetterNavi=$oBlaetterNaviBewertungen cParams='' hash='#bewertungen'}
+                {include file='tpl_inc/pagination.tpl' oPagination=$oPagiBewertungen cAnchor='bewertungen'}
                 <form method="post" action="freischalten.php">
                     {$jtl_token}
                     <input type="hidden" name="freischalten" value="1" />
@@ -146,7 +146,7 @@
         </div>
         <div id="livesearch" class="tab-pane fade {if isset($cTab) && $cTab === 'livesearch'} active in{/if}">
             {if $oSuchanfrage_arr|@count > 0 && $oSuchanfrage_arr}
-                {include file='pagination.tpl' cSite=2 cUrl='freischalten.php' oBlaetterNavi=$oBlaetterNaviSuchanfrage cParams='' hash='#livesearch'}
+                {include file='tpl_inc/pagination.tpl' oPagination=$oPagiSuchanfragen cAnchor='livesearch'}
                 <form method="post" action="freischalten.php">
                     {$jtl_token}
                     <input type="hidden" name="freischalten" value="1" />
@@ -210,7 +210,7 @@
         </div>
         <div id="tags" class="tab-pane fade {if isset($cTab) && $cTab === 'tags'} active in{/if}">
             {if $oTag_arr|@count > 0 && $oTag_arr}
-                {include file='pagination.tpl' cSite=3 cUrl='freischalten.php' oBlaetterNavi=$oBlaetterNaviTag cParams='' hash='#tags'}
+                {include file='tpl_inc/pagination.tpl' oPagination=$oPagiTags cAnchor='tags'}
                 <form method="post" action="freischalten.php">
                     {$jtl_token}
                     <input type="hidden" name="freischalten" value="1" />
@@ -253,7 +253,7 @@
         </div>
         <div id="newscomments" class="tab-pane fade {if isset($cTab) && $cTab === 'newscomments'} active in{/if}">
             {if $oNewsKommentar_arr|@count > 0 && $oNewsKommentar_arr}
-                {include file='pagination.tpl' cSite=4 cUrl='freischalten.php' oBlaetterNavi=$oBlaetterNaviTag cParams='' hash='#newscomments'}
+                {include file='tpl_inc/pagination.tpl' oPagination=$oPagiNewskommentare cAnchor='newscomments'}
                 <form method="post" action="freischalten.php">
                     {$jtl_token}
                     <input type="hidden" name="freischalten" value="1" />
@@ -308,10 +308,9 @@
                 <div class="alert alert-info" role="alert">{#noDataAvailable#}</div>
             {/if}
         </div>
-
         <div id="newsletter" class="tab-pane fade {if isset($cTab) && $cTab === 'newsletter'} active in{/if}">
             {if $oNewsletterEmpfaenger_arr|@count > 0 && $oNewsletterEmpfaenger_arr}
-                {include file='pagination.tpl' cSite=5 cUrl='freischalten.php' oBlaetterNavi=$oBlaetterNaviNewsKommentar cParams='' hash='#newsletter'}
+                {include file='tpl_inc/pagination.tpl' oPagination=$oPagiNewsletterEmpfaenger cAnchor='newsletter'}
                 <form method="post" action="freischalten.php">
                     {$jtl_token}
                     <input type="hidden" name="freischalten" value="1" />

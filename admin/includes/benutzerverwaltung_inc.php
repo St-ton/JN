@@ -19,7 +19,7 @@ function getAdmin($kAdminlogin)
 function getAdminList()
 {
     return Shop::DB()->query(
-        "SELECT * FROM tadminlogin 
+        "SELECT * FROM tadminlogin
             LEFT JOIN tadminlogingruppe ON tadminlogin.kAdminlogingruppe = tadminlogingruppe.kAdminlogingruppe", 2
     );
 }
@@ -96,7 +96,7 @@ function benutzerverwaltungGetAttributes($kAdminlogin)
 {
     $extAttribs = Shop::DB()->query(
         'SELECT kAttribut, cName, cAttribValue, cAttribText
-            FROM tadminloginattribut 
+            FROM tadminloginattribut
             WHERE kAdminlogin = ' . (int)$kAdminlogin . ' ORDER BY cName ASC', 2
     );
 
@@ -255,6 +255,20 @@ function benutzerverwaltungActionAccountUnLock(JTLSmarty $smarty, array &$messag
  */
 function benutzerverwaltungActionAccountEdit(JTLSmarty $smarty, array &$messages)
 {
+	$_SESSION['AdminAccount']->TwoFA_valid = true;
+
+	// find out, if 2FA ist active and if there is a known secret
+	$szQRcodeString = '';
+	if(isset($_SESSION['AdminAccount'])) {
+		$oTwoFA = new TwoFA();
+		$oTwoFA->setUser($_SESSION['AdminAccount']->cLogin);
+
+		if(true === $oTwoFA->is2FAauthSecretExist()) {
+			$szQRcodeString = $oTwoFA->getQRcode();
+		}
+	}
+	$smarty->assign('QRcodeString', $szQRcodeString); // transfer via smarty-var (to prevent session-pollution)
+
     $kAdminlogin = (isset($_POST['id']) ? (int)$_POST['id'] : null);
 
     if (isset($_POST['save'])) {
@@ -265,6 +279,7 @@ function benutzerverwaltungActionAccountEdit(JTLSmarty $smarty, array &$messages
         $oTmpAcc->cMail       = trim($_POST['cMail']);
         $oTmpAcc->cLogin      = trim($_POST['cLogin']);
         $oTmpAcc->cPass       = trim($_POST['cPass']);
+		$oTmpAcc->b2FAauth    = (int)$_POST['b2FAauth'];
         $tmpAttribs           = isset($_POST['extAttribs']) ? $_POST['extAttribs'] : array();
 
         $dGueltigBisAktiv = (isset($_POST['dGueltigBisAktiv']) && ($_POST['dGueltigBisAktiv'] === '1'));

@@ -83,15 +83,15 @@ class ZahlungsartHelper
                 }
                 break;
             case 'za_barzahlung_jtl':
-                if (!pruefeZahlungsartMinBestellungen(!empty($Zahlungsart->einstellungen['zahlungsart_barzahlung_min_bestellungen'])) ? $Zahlungsart->einstellungen['zahlungsart_barzahlung_min_bestellungen'] : 0) {
+                if (!pruefeZahlungsartMinBestellungen(!empty($Zahlungsart->einstellungen['zahlungsart_barzahlung_min_bestellungen']) ? $Zahlungsart->einstellungen['zahlungsart_barzahlung_min_bestellungen'] : 0)) {
                     return false;
                 }
 
-                if (!pruefeZahlungsartMinBestellwert(!empty($Zahlungsart->einstellungen['zahlungsart_barzahlung_min'])) ? $Zahlungsart->einstellungen['zahlungsart_barzahlung_min'] : 0) {
+                if (!pruefeZahlungsartMinBestellwert(!empty($Zahlungsart->einstellungen['zahlungsart_barzahlung_min']) ? $Zahlungsart->einstellungen['zahlungsart_barzahlung_min'] : 0)) {
                     return false;
                 }
 
-                if (!pruefeZahlungsartMaxBestellwert(!empty($Zahlungsart->einstellungen['zahlungsart_barzahlung_max'])) ? $Zahlungsart->einstellungen['zahlungsart_barzahlung_max'] : 0) {
+                if (!pruefeZahlungsartMaxBestellwert(!empty($Zahlungsart->einstellungen['zahlungsart_barzahlung_max']) ? $Zahlungsart->einstellungen['zahlungsart_barzahlung_max'] : 0)) {
                     return false;
                 }
                 break;
@@ -103,13 +103,13 @@ class ZahlungsartHelper
                 require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
                 $paymentMethod = PaymentMethod::create($Zahlungsart->cModulId);
 
-                return $paymentMethod->isValid($_SESSION['Kunde'], $_SESSION['Warenkorb']);
+                return $paymentMethod->isValid(((isset($_SESSION['Kunde'])) ? $_SESSION['Kunde'] : null), $_SESSION['Warenkorb']);
                 break;
             default:
                 require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
                 $paymentMethod = PaymentMethod::create($Zahlungsart->cModulId);
                 if ($paymentMethod !== null) {
-                    return $paymentMethod->isValid($_SESSION['Kunde'], $_SESSION['Warenkorb']);
+                    return $paymentMethod->isValid(((isset($_SESSION['Kunde'])) ? $_SESSION['Kunde'] : null), $_SESSION['Warenkorb']);
                 }
                 break;
         }

@@ -5,7 +5,6 @@
  */
 require_once PFAD_ROOT . PFAD_INCLUDES . 'browsererkennung.php';
 require_once PFAD_ROOT . PFAD_PHPQUERY . 'phpquery.class.php';
-require_once PFAD_ROOT . PFAD_SMARTY . 'SmartyBC.class.php';
 
 /**
  * Class JTLSmarty
@@ -243,11 +242,6 @@ class JTLSmarty extends SmartyBC
     private static $isCached = false;
 
     /**
-     * @var string
-     */
-    public $template_dir;
-
-    /**
      * @var bool
      */
     public static $isChildTemplate = false;
@@ -292,8 +286,6 @@ class JTLSmarty extends SmartyBC
                      ->assign('parent_template_path', PFAD_ROOT . PFAD_TEMPLATES . $parent . '/')
                      ->assign('parentTemplateDir', PFAD_TEMPLATES . $parent . '/');
             }
-
-            $this->template_dir = PFAD_ROOT . PFAD_TEMPLATES . $cTemplate . '/';
         } else {
             $_compileDir = PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR;
             if (!file_exists($_compileDir)) {
@@ -302,7 +294,6 @@ class JTLSmarty extends SmartyBC
             $this->context = 'backend';
             $this->setCaching(false)
                  ->setDebugging(SMARTY_DEBUG_CONSOLE ? true : false)
-                 ->setCompileCheck(SMARTY_FORCE_COMPILE ? true : false) //work-around for smarty 3.1.27 - templates always get parsed when configLoad() is called, @todo: removed when using fixed smarty version
                  ->setTemplateDir(array($this->context => PFAD_ROOT . PFAD_ADMIN . PFAD_TEMPLATES . $cTemplate))
                  ->setCompileDir($_compileDir)
                  ->setConfigDir(PFAD_ROOT . PFAD_ADMIN . PFAD_TEMPLATES . $cTemplate . '/lang/')
@@ -321,8 +312,6 @@ class JTLSmarty extends SmartyBC
                  ->registerPlugin('modifier', 'truncate', array($this, 'truncate'));
 
             if ($isAdmin === false) {
-                $this->registerFilter('output', array($this, '__outputFilter'))
-                     ->registerFilter('output', array($this, '__cacheOutputFilter'));
                 $this->cache_lifetime = (isset($cacheOptions['expiration']) && ((int) $cacheOptions['expiration'] > 0)) ? $cacheOptions['expiration'] : 86400;
                 //assign variables moved from $_SESSION to cache to smarty
                 $linkHelper = LinkHelper::getInstance();
@@ -337,7 +326,6 @@ class JTLSmarty extends SmartyBC
                 $manufacturers      = $manufacturerHelper->getManufacturers();
                 $this->assign('linkgroups', $linkGroups)
                      ->assign('manufacturers', $manufacturers);
-
                 $this->template_class = 'jtlTplClass';
             }
             if (!$isAdmin) {
@@ -440,7 +428,6 @@ class JTLSmarty extends SmartyBC
             } else {
                 executeHook(HOOK_SMARTY_OUTPUTFILTER);
             }
-            $this->registerFilter('output', array($this, '__outputFilter'));
             $tplOutput = $GLOBALS['doc']->htmlOuter();
         }
         if (isset($this->config['template']['general']['minify_html']) && $this->config['template']['general']['minify_html'] === 'Y') {
@@ -679,11 +666,8 @@ class JTLSmarty extends SmartyBC
         } else {
             $cCustomFile = $cSubPath . '/' . $cFile . '_custom.tpl';
         }
-        if (file_exists($cCustomFile)) {
-            $cFilename = $cCustomFile;
-        }
 
-        return $cFilename;
+        return (file_exists($cCustomFile)) ? $cCustomFile : $cFilename;
     }
 
     /**
@@ -693,7 +677,7 @@ class JTLSmarty extends SmartyBC
     public function getFallbackFile($cFilename)
     {
         if (!self::$isChildTemplate && TEMPLATE_COMPATIBILITY === true && !file_exists($this->getTemplateDir($this->context) . $cFilename)) {
-            if (array_key_exists($cFilename, self::$_replacer)) {
+            if (isset(self::$_replacer[$cFilename])) {
                 $cFilename = self::$_replacer[$cFilename];
             }
         }
@@ -704,49 +688,44 @@ class JTLSmarty extends SmartyBC
     /**
      * fetches a rendered Smarty template
      *
-     * @param  string $template the resource handle of the template file or template object
-     * @param  mixed  $cache_id cache id to be used with this template
+     * @param  string $template   the resource handle of the template file or template object
+     * @param  mixed  $cache_id   cache id to be used with this template
      * @param  mixed  $compile_id compile id to be used with this template
-     * @param  object $parent next higher level of Smarty variables
-     * @param  bool   $display true: display, false: fetch
-     * @param  bool   $merge_tpl_vars not used - left for BC
-     * @param  bool   $no_output_filter not used - left for BC
+     * @param  object $parent     next higher level of Smarty variables
      *
      * @throws Exception
      * @throws SmartyException
      * @return string rendered template output
      */
-    public function fetch($template = null, $cache_id = null, $compile_id = null, $parent = null, $display = false, $merge_tpl_vars = true, $no_output_filter = true)
+    public function fetch($template = null, $cache_id = null, $compile_id = null, $parent = null)
     {
-        $template = $this->getResourceName($template);
-        //disable caching when we don't have a valid cache ID
-        if ($display && $cache_id === null) {
-            $this->caching = self::CACHING_OFF;
+        $_debug = (!empty($this->_debug->template_data)) ?
+            $this->_debug->template_data :
+            null;
+        $res = parent::fetch($this->getResourceName($template), $cache_id, $compile_id, $parent);
+        if ($_debug !== null) {
+            //fetch overwrites the old debug data so we have to merge it with our previously saved data
+            $this->_debug->template_data = array_merge($_debug, $this->_debug->template_data);
         }
-        //disable outputfilter when just including/fetching and not displaying
-        if ($display) {
-            $no_output_filter = false;
-            if (self::$isCached) {
-                //do not execute normal output filter when the template is cached
-                $this->unregisterFilter('output', array($this, '__outputFilter'));
-            } else {
-                //do not execute cache output filter when template is not cached
-                $this->unregisterFilter('output', array($this, '__cacheOutputFilter'));
-            }
-        }
-        if ($cache_id !== null && is_object($cache_id)) {
-            $parent   = $cache_id;
-            $cache_id = null;
-        }
-        if ($parent === null) {
-            $parent = $this;
-        }
-        // get template object
-        $_template = is_object($template) ? $template : $this->createTemplate($template, $cache_id, $compile_id, $parent, false);
-        // set caching in template object
-        $_template->caching = $this->caching;
 
-        return $_template->render(true, $no_output_filter, $display);
+        return $res;
+    }
+
+    /**
+     * displays a Smarty template
+     *
+     * @param string $template   the resource handle of the template file or template object
+     * @param mixed  $cache_id   cache id to be used with this template
+     * @param mixed  $compile_id compile id to be used with this template
+     * @param object $parent     next higher level of Smarty variables
+     */
+    public function display($template = null, $cache_id = null, $compile_id = null, $parent = null)
+    {
+        if ($this->context === 'frontend') {
+            $this->registerFilter('output', array($this, '__outputFilter'));
+        }
+
+        return parent::display($this->getResourceName($template), $cache_id, $compile_id, $parent);
     }
 
     /**
@@ -914,18 +893,24 @@ class JTLSmarty extends SmartyBC
      */
     public function getResourceName($resource_name)
     {
+        $transform = false;
+        if (strpos($resource_name, 'file:') === 0) {
+            $resource_name = str_replace('file:', '', $resource_name);
+            $transform     = true;
+        }
         $resource_custom_name   = $this->getCustomFile($resource_name);
         $resource_fallback_name = $this->getFallbackFile($resource_custom_name);
         $resource_cfb_name      = $this->getCustomFile($resource_fallback_name);
 
         executeHook(HOOK_SMARTY_FETCH_TEMPLATE, array(
-            'original' => &$resource_name,
-            'custom'   => &$resource_custom_name,
-            'fallback' => &$resource_fallback_name,
-            'out'      => &$resource_cfb_name
+            'original'  => &$resource_name,
+            'custom'    => &$resource_custom_name,
+            'fallback'  => &$resource_fallback_name,
+            'out'       => &$resource_cfb_name,
+            'transform' => $transform
         ));
 
-        return $resource_cfb_name;
+        return ($transform) ? ('file:' . $resource_cfb_name) : $resource_cfb_name;
     }
 
     /**
@@ -981,39 +966,31 @@ class JTLSmarty extends SmartyBC
     }
 }
 
+
+
 /**
  * Class jtlTplClass
  */
 class jtlTplClass extends Smarty_Internal_Template
 {
     /**
-     * {include} override for _custom files
+     * Runtime function to render sub-template
      *
-     * @param string $template
-     * @param mixed  $cache_id
-     * @param mixed  $compile_id
-     * @param int    $caching
-     * @param int    $cache_lifetime
-     * @param mixed  $data
-     * @param int    $parent_scope
-     * @return string
-     */
-    public function getSubTemplate($template, $cache_id, $compile_id, $caching, $cache_lifetime, $data, $parent_scope)
-    {
-        return parent::getSubTemplate($this->smarty->getResourceName($template), $cache_id, $compile_id, $caching, $cache_lifetime, $data, $parent_scope);
-    }
-
-    /**
-     * fetches rendered template
-     * rewritten with the second param ($no_output_filter) set to true to avoid running the output filter
+     * @param string  $template       template name
+     * @param mixed   $cache_id       cache id
+     * @param mixed   $compile_id     compile id
+     * @param integer $caching        cache mode
+     * @param integer $cache_lifetime life time of cache data
+     * @param array   $data           passed parameter template variables
+     * @param int     $scope          scope in which {include} should execute
+     * @param bool    $forceTplCache  cache template object
+     * @param string  $uid            file dependency uid
+     * @param string  $content_func   function name
      *
-     * @throws Exception
-     * @throws SmartyException
-     * @return string rendered template output
      */
-    public function fetch()
+    public function _subTemplateRender($template, $cache_id, $compile_id, $caching, $cache_lifetime, $data, $scope, $forceTplCache, $uid = null, $content_func = null)
     {
-        return $this->render(true, true, false);
+        return parent::_subTemplateRender($this->smarty->getResourceName($template), $cache_id, $compile_id, $caching, $cache_lifetime, $data, $scope, $forceTplCache, $uid, $content_func);
     }
 }
 

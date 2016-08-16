@@ -220,7 +220,7 @@ function generateSitemapXML()
     $Sprachen                = gibAlleSprachen();
     $oSpracheAssoc_arr       = gibAlleSprachenAssoc($Sprachen);
     $seoAktiv                = true;
-    $Sprache                 = Shop::DB()->select('tSprache', 'cShopStandard', 'Y');
+    $Sprache                 = Shop::DB()->select('tsprache', 'cShopStandard', 'Y');
     $_SESSION['kSprache']    = $Sprache->kSprache;
     $_SESSION['cISOSprache'] = $Sprache->cISO;
     if (!isset($_SESSION['Kundengruppe'])) {

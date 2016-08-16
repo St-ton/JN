@@ -7,7 +7,6 @@ require_once dirname(__FILE__) . '/includes/admininclude.php';
 
 $oAccount->permission('CHECKBOXES_VIEW', true, true);
 
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'blaetternavi.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'checkbox_inc.php';
 
 $Einstellungen     = Shop::getSettings(array(CONF_CHECKBOX));
@@ -15,7 +14,6 @@ $cHinweis          = '';
 $cFehler           = '';
 $cStep             = 'uebersicht';
 $nAnzahlProSeite   = 15;
-$oBlaetterNaviConf = baueBlaetterNaviGetterSetter(1, $nAnzahlProSeite);
 $oSprach_arr       = gibAlleSprachen();
 $oCheckBox         = new CheckBox();
 $cTab              = $cStep;
@@ -60,8 +58,13 @@ if (isset($_POST['erstellenShowButton'])) {
     $cTab = $cStep;
 }
 
-$smarty->assign('oCheckBox_arr', $oCheckBox->getAllCheckBox($oBlaetterNaviConf->cSQL1))
-       ->assign('oBlaetterNavi', baueBlaetterNavi($oBlaetterNaviConf->nAktuelleSeite1, $oCheckBox->getAllCheckBoxCount(), $nAnzahlProSeite))
+$oPagination = (new Pagination())
+    ->setItemCount($oCheckBox->getAllCheckBoxCount())
+    ->assemble();
+$oCheckBox_arr = $oCheckBox->getAllCheckBox('LIMIT ' . $oPagination->getLimitSQL());
+
+$smarty->assign('oCheckBox_arr', $oCheckBox_arr)
+       ->assign('oPagination', $oPagination)
        ->assign('cAnzeigeOrt_arr', CheckBox::gibCheckBoxAnzeigeOrte())
        ->assign('CHECKBOX_ORT_REGISTRIERUNG', CHECKBOX_ORT_REGISTRIERUNG)
        ->assign('CHECKBOX_ORT_BESTELLABSCHLUSS', CHECKBOX_ORT_BESTELLABSCHLUSS)

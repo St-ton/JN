@@ -17,7 +17,7 @@
 {if !$bExclusive}
     <div class="clearfix"></div>
     <footer id="footer"{if isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout === 'fluid'} class="container-block"{/if}>
-        <div class="container{if $Einstellungen.template.theme.pagelayout === 'full-width'}-fluid{/if}">
+        <div class="hidden-print container{if $Einstellungen.template.theme.pagelayout === 'full-width'}-fluid{/if}">
             {if isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout !== 'fluid'}
                 <div class="container-block clearfix">
             {/if}
@@ -163,7 +163,7 @@
 </div> {* /mainwrapper *}
 
 {* JavaScripts *}
-{block name="footer-js"}   
+{block name="footer-js"}
     {assign var="isFluidContent" value=false}
     {if isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout === 'fluid' && isset($Link) && $Link->bIsFluid}
         {assign var="isFluidContent" value=true}
@@ -186,7 +186,7 @@
               document.cookie = disableStr + '=true; expires=Thu, 31 Dec 2099 23:59:59 UTC; path=/';
               window[disableStr] = true;
             }
-            
+
             var gaProperty = '{$Einstellungen.global.global_google_analytics_id}';
             var disableStr = 'ga-disable-' + gaProperty;
             if (document.cookie.indexOf(disableStr + '=true') > -1) {

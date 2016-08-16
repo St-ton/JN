@@ -84,7 +84,7 @@
                         <span itemprop="ratingValue"
                               class="hidden">{$Artikel->Bewertungen->oBewertungGesamt->fDurchschnitt}</span>
                         <span itemprop="reviewCount" class="hidden">{$Artikel->Bewertungen->oBewertungGesamt->nAnzahl}</span>
-                        <a href="{$Artikel->cURLFull}#tab-votes" id="jump-to-votes-tab">
+                        <a href="{$Artikel->cURLFull}#tab-votes" id="jump-to-votes-tab" class="hidden-print">
                             {include file='productdetails/rating.tpl' stars=$Artikel->Bewertungen->oBewertungGesamt->fDurchschnitt total=$Artikel->Bewertungen->oBewertungGesamt->nAnzahl}
                         </a>
                         </div>{* /rating-wrapper*}
@@ -199,7 +199,7 @@
     {/if}
 
     {if isset($Xselling->Standard) || isset($Xselling->Kauf) || isset($oAehnlicheArtikel_arr)}
-        <div class="recommendations">
+        <div class="recommendations hidden-print">
             {block name="productdetails-recommendations"}
             {if isset($Xselling->Standard->XSellGruppen) && count($Xselling->Standard->XSellGruppen) > 0}
                 {foreach name=Xsell_gruppen from=$Xselling->Standard->XSellGruppen item=Gruppe}

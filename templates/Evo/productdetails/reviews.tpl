@@ -9,7 +9,7 @@
                         {lang key="averageProductRating" section="product rating"}
                     </h3>
                 </div>
-                <div class="panel-body">
+                <div class="panel-body hidden-print">
                     <form method="post" action="{get_static_route id='bewertung.php'}" id="article_rating" class="row">
                         {$jtl_token}
                         {if $Artikel->Bewertungen->oBewertungGesamt->nAnzahl > 0}
@@ -86,7 +86,7 @@
             {if $Artikel->Bewertungen->oBewertung_arr|@count == 1 && $Artikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich > 0 && $Artikel->HilfreichsteBewertung->oBewertung_arr[0]->kBewertung == $oBewertung->kBewertung}
                 {* only one review so far. don't display this stuff *}
             {else}
-                <div class="review-wrapper reviews-sortcontrol">
+                <div class="review-wrapper reviews-sortcontrol hidden-print">
                     <form id="sortierenID" method="post" action="{if !empty($Artikel->cURLFull)}{$Artikel->cURLFull}{else}index.php{/if}" class="form-inline">
                         {$jtl_token}
                         <input name="a" type="hidden" value="{$Artikel->kArtikel}" />

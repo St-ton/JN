@@ -172,8 +172,10 @@ foreach ($res as $tartikel) {
         unset($_SESSION['oKategorie_arr_new']);
         unset($_SESSION['kKategorieVonUnterkategorien_arr']);
         //Kategoriepfad
-        $Artikel->Kategorie     = new Kategorie($Artikel->gibKategorie(), $exportformat->kSprache, $exportformat->kKundengruppe, false, $exportformat->nUseCache === '0');
-        $Artikel->Kategoriepfad = gibKategoriepfad($Artikel->Kategorie, $exportformat->kKundengruppe, $exportformat->kSprache);
+        $Artikel->Kategorie     = new Kategorie($Artikel->gibKategorie(), $exportformat->kSprache, $exportformat->kKundengruppe, $exportformat->nUseCache === '0');
+        $Artikel->Kategoriepfad = (isset($Artikel->Kategorie->cKategoriePfad)) ?
+            $Artikel->Kategorie->cKategoriePfad : // calling gibKategoriepfad() should not be necessary since it has already been called in Kategorie::loadFromDB()
+            gibKategoriepfad($Artikel->Kategorie, $exportformat->kKundengruppe, $exportformat->kSprache);
         $Artikel->Versandkosten = gibGuenstigsteVersandkosten(
             (isset($ExportEinstellungen['exportformate_lieferland'])) ? $ExportEinstellungen['exportformate_lieferland'] : null,
             $Artikel,

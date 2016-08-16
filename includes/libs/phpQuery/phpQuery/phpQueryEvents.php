@@ -12,8 +12,9 @@ abstract class phpQueryEvents
      * Trigger a type of event on every matched element.
      *
      * @param DOMNode|phpQueryObject|string $document
-     * @param unknown_type                  $type
-     * @param unknown_type                  $data
+     * @param string                        $type
+     * @param mixed                         $data
+     * @param mixed                         $node
      *
      * @TODO exclusive events (with !)
      * @TODO global events (test)
@@ -96,9 +97,10 @@ abstract class phpQueryEvents
      * Can also bind custom events.
      *
      * @param DOMNode|phpQueryObject|string $document
-     * @param unknown_type                  $type
-     * @param unknown_type                  $data Optional
-     * @param unknown_type                  $callback
+     * @param                               $node
+     * @param                               $type
+     * @param                               $data
+     * @param                               $callback
      *
      * @TODO support '!' (exclusive) events
      * @TODO support more than event in $type (space-separated)
@@ -124,8 +126,9 @@ abstract class phpQueryEvents
      * Enter description here...
      *
      * @param DOMNode|phpQueryObject|string $document
-     * @param unknown_type                  $type
-     * @param unknown_type                  $callback
+     * @param                               $node
+     * @param                               $type
+     * @param                               $callback
      *
      * @TODO namespace events
      * @TODO support more than event in $type (space-separated)
@@ -147,6 +150,11 @@ abstract class phpQueryEvents
         }
     }
 
+    /**
+     * @param $documentID
+     * @param $node
+     * @return mixed
+     */
     protected static function getNode($documentID, $node)
     {
         foreach (phpQuery::$documents[$documentID]->eventsNodes as $eventNode) {
@@ -156,6 +164,11 @@ abstract class phpQueryEvents
         }
     }
 
+    /**
+     * @param $documentID
+     * @param $node
+     * @return mixed
+     */
     protected static function setNode($documentID, $node)
     {
         phpQuery::$documents[$documentID]->eventsNodes[] = $node;
@@ -163,6 +176,11 @@ abstract class phpQueryEvents
         return phpQuery::$documents[$documentID]->eventsNodes[count(phpQuery::$documents[$documentID]->eventsNodes) - 1];
     }
 
+    /**
+     * @param $documentID
+     * @param $type
+     * @return bool
+     */
     protected static function issetGlobal($documentID, $type)
     {
         return isset(phpQuery::$documents[$documentID])

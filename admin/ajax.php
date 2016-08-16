@@ -21,7 +21,13 @@ if (isset($_GET['query']) && isset($_GET['type']) && validateToken()) {
             die($jsonAPI->getPages());
         case 'manufacturer':
             die($jsonAPI->getManufacturers());
+        case 'TwoFA':
+            $oTwoFA = new TwoFA();
+            $oTwoFA->setUser($_GET['userName']);
+            $oTwoFA->createNewSecret(); // create a new secret for that user
+            die($oTwoFA->getQRcode()); // fetch the QR-code for that new secret to display it direkt in the page
         default :
             die();
     }
 }
+

@@ -266,15 +266,22 @@ class Session
                 $manufacturers           = $manufacturerHelper->getManufacturers();
                 $_SESSION['Hersteller']  = $manufacturers;
             }
-            //@todo: new in 319, check if movable to cache.
-            // Zahlungsarten Ticket #6042
-            $_SESSION['Zahlungsarten'] = Zahlungsart::loadAll();
-            // Lieferlaender Ticket #6042
-            $_SESSION['Lieferlaender'] = Shop::DB()->query(
-                "SELECT l.* FROM tland AS l
-                    JOIN tversandart AS v ON v.cLaender LIKE CONCAT('%', l.cISO, '%')
-                    GROUP BY l.cISO", 2
-            );
+            if (TEMPLATE_COMPATIBILITY === true) {
+                /**
+                 * Zahlungsarten Ticket #6042
+                 * @depcrecated since 4.05
+                 */
+                $_SESSION['Zahlungsarten'] = Zahlungsart::loadAll();
+                /**
+                 * Lieferlaender Ticket #6042
+                 * @depcrecated since 4.05
+                 */
+                $_SESSION['Lieferlaender'] = Shop::DB()->query(
+                    "SELECT l.* FROM tland AS l
+                        JOIN tversandart AS v ON v.cLaender LIKE CONCAT('%', l.cISO, '%')
+                        GROUP BY l.cISO", 2
+                );
+            }
             $_SESSION['Warenkorb']->loescheDeaktiviertePositionen();
             setzeSteuersaetze();
             // sprache neu laden
@@ -289,10 +296,7 @@ class Session
         Kampagne::getAvailable();
         if (!isset($_SESSION['cISOSprache'])) {
             session_destroy();
-            die(utf8_decode('<h1>Der Shop wurde korrekt installiert. Bitte nun in den Webshopeinstellungen der JTL-WAWI der Sprache, Kundengruppe und Währung jeweils einen Standardwert zuweisen,
-die Lizenzen aktivieren und anschließend einen Komplettabgleich mit globalen Daten durchführen, damit der Shop betrieben werden kann. Wie Sie die Standards setzen, finden Sie hier erklärt:
-<a href="http://guide.jtl-software.de/jtl/JTL-Shop_2_FAQ#Standards_f.C3.BCr_Sprache.2C_W.C3.A4hrung_und_Kundengruppe_setzen">Standards setzen</a></h1>
-Wenn Sie bereits eine Komplettübertragung mit JTL-Wawi durchgeführt haben und diese Seite immernoch erscheint, dann drücken Sie F5 (Seite aktualisieren) bzw. leeren Sie den Browsercache.'));
+            die(utf8_decode('<h1>Ihr Shop wurde installiert. Lesen Sie in unserem Guide <a href="https://guide.jtl-software.de/jtl/JTL-Shop:Installation:Erste_Schritte#Einrichtung_und_Grundkonfiguration">mehr zu ersten Schritten mit JTL-Shop, der Grundkonfiguration und dem erstem Abgleich mit JTL-Wawi</a>.</h1>'));
         }
 
         //wurde kunde über wawi aktualisiert?

@@ -385,13 +385,13 @@ function hasGPCDataInteger($var)
  */
 function verifyGPCDataInteger($var)
 {
-    if (isset($_POST[$var])) {
-        return (int)$_POST[$var];
-    }
-    if (isset($_GET[$var])) {
+    if (isset($_GET[$var]) && is_numeric($_GET[$var])) {
         return (int)$_GET[$var];
     }
-    if (isset($_COOKIE[$var])) {
+    if (isset($_POST[$var]) && is_numeric($_POST[$var])) {
+        return (int)$_POST[$var];
+    }
+    if (isset($_COOKIE[$var]) && is_numeric($_COOKIE[$var])) {
         return (int)$_COOKIE[$var];
     }
 
@@ -1842,6 +1842,8 @@ function checkeSpracheWaehrung($lang = '')
                 unset($_SESSION['currentLanguage']->cURL);
             }
         }
+        // Suchspecialoverlays
+        $GLOBALS['oSuchspecialoverlay_arr'] = holeAlleSuchspecialOverlays($_SESSION['kSprache']);
         if (!$bSpracheDa) { //lang mitgegeben, aber nicht mehr in db vorhanden -> alter Sprachlink
             $kArtikel              = intval(verifyGPDataString('a'));
             $kKategorie            = intval(verifyGPDataString('k'));
@@ -2009,8 +2011,6 @@ function checkeSpracheWaehrung($lang = '')
         }
     }
     Shop::Lang()->autoload();
-    // Suchspecialoverlays
-    $GLOBALS['oSuchspecialoverlay_arr'] = holeAlleSuchspecialOverlays($_SESSION['kSprache']);
 }
 
 /**
@@ -2797,7 +2797,8 @@ function generiereCaptchaCode($sec)
                 break;
 
         }
-    } elseif ($sec == 5) { //Neuer unsichtbarer Token
+    } elseif ($sec == 5) { //unsichtbarer Token
+        $code->code              = '';
         $_SESSION['xcrsf_token'] = null;
     } else {
         $code->code    = gibCaptchaCode($sec);
@@ -4533,24 +4534,14 @@ function phpLinkCheck($url)
  */
 function gibKategoriepfad($Kategorie, $kKundengruppe, $kSprache, $bString = true)
 {
-    $pfad                   = '';
-    $cPfad_arr              = array();
-    $AufgeklappteKategorien = new KategorieListe();
-    $AufgeklappteKategorien->getOpenCategories($Kategorie, $kKundengruppe, $kSprache);
-    if (is_array($AufgeklappteKategorien->elemente)) {
-        for ($i = count($AufgeklappteKategorien->elemente) - 1; $i >= 0; $i--) {
-            if ($bString) {
-                $pfad .= $AufgeklappteKategorien->elemente[$i]->cName;
-                if ($i > 0) {
-                    $pfad .= ' > ';
-                }
-            } else {
-                $cPfad_arr[] = $AufgeklappteKategorien->elemente[$i]->cName;
-            }
-        }
+    $h     = KategorieHelper::getInstance($kSprache, $kKundengruppe);
+    $tree  = $h->getFlatTree($Kategorie->kKategorie);
+    $names = array();
+    foreach ($tree as $item) {
+        $names[] = $item->cName;
     }
 
-    return ($bString) ? $pfad : $cPfad_arr;
+    return ($bString) ? implode(' > ', $names) : $names;
 }
 
 /**

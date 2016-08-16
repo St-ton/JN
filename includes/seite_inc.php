@@ -14,6 +14,7 @@ function gibStartBoxen()
     if (!$kKundengruppe || !$_SESSION['Kundengruppe']->darfArtikelKategorienSehen) {
         return array();
     }
+    $cURL          = 0;
     $Boxliste      = array();
     $schon_drin    = array();
     $Einstellungen = Shop::getSettings(array(CONF_STARTSEITE));
@@ -68,6 +69,7 @@ function gibStartBoxen()
             $Boxliste[$i]->Artikel->getArtikelByKeys($kArtikel_arr, 0, count($kArtikel_arr));
         }
     }
+    executeHook(HOOK_BOXEN_HOME, array('boxes' => &$Boxliste));
 
     return $Boxliste;
 }

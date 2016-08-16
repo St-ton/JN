@@ -82,6 +82,9 @@ deploy_create()
     msg "Creating database struct"
     deploy_db_struct ${DB_NAME} ${SHOP_VERSION}
 
+    msg "Preparing archive"
+    deploy_prepare_zip
+
     msg "Creating archive"
     deploy_create_zip ${TARGET_FULLPATH}
 
@@ -206,6 +209,11 @@ deploy_initial_schema()
 
     mysql -e "CREATE DATABASE IF NOT EXISTS $1" || exit 1
     mysql $1 < ${INITIALSCHEMA} || exit 1
+}
+
+deploy_prepare_zip()
+{
+    rm ${BUILD_DIR}/includes/config.JTL-Shop.ini.php
 }
 
 # $1 archive name

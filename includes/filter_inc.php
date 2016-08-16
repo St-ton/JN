@@ -1632,7 +1632,7 @@ function gibSuchspecialFilterOptionen($FilterSQL, $NaviFilter)
                     }
                     $oFilter->cWhere = " AND tartikelsonderpreis.cAktiv='Y' AND tartikelsonderpreis.dStart <= now()
                                             AND (tartikelsonderpreis.dEnde >= CURDATE() OR tartikelsonderpreis.dEnde = '0000-00-00')
-                                            AnD " . $tsonderpreise . ".kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe;
+                                            AND " . $tsonderpreise . ".kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe;
                     break;
                 case SEARCHSPECIALS_NEWPRODUCTS:
                     $alter_tage = 30;

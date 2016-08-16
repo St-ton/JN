@@ -149,19 +149,27 @@ function loadContent(url)
     });
 }
 
-$(window).load(function(){
-    var navWrapper = $('#evo-main-nav-wrapper'),
-        stickyWrapperParent = navWrapper.parent();
-
-    stickyWrapperParent.css('height', stickyWrapperParent.outerHeight());
+function navigation()
+{
+    var navWrapper = $('#evo-main-nav-wrapper');
 
     if (navWrapper.hasClass('do-affix')) {
         navWrapper.affix({
             offset: {
-                top: navWrapper.offset().top + navWrapper.height()
+                top: function() {
+                    return navWrapper.height();
+                }
             }
         });
     }
+}
+
+$(window).load(function(){
+    navigation();
+});
+
+$(window).resize(function(){
+    navigation();
 });
 
 $(document).ready(function () {

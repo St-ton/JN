@@ -344,7 +344,7 @@ class JTLCache
             'collect_stats'    => false, //used to tell caching methods to collect statistical data or not (if not provided transparently)
             'debug'            => false, //enable or disable collecting of debug data
             'debug_method'     => 'echo', //'ssd'/'jtld' for SmarterSmartyDebug/JTLDebug, 'echo' for direct echo
-            'cache_dir'        => (defined('PFAD_ROOT') && defined('PFAD_COMPILEDIR')) ? (PFAD_ROOT . PFAD_COMPILEDIR . 'filecache/') : '/tmp', //file cache directory
+            'cache_dir'        => (defined('PFAD_ROOT') && defined('PFAD_COMPILEDIR')) ? (PFAD_ROOT . PFAD_COMPILEDIR . 'filecache/') : sys_get_temp_dir(), //file cache directory
             'file_extension'   => '.fcache', //file extension for file cache
             'page_cache'       => false, //smarty page cache switch
             'types_disabled'   => array() //disabled cache groups
@@ -356,16 +356,9 @@ class JTLCache
             $this->options['cache_dir'] .= '/';
         }
         //accept only valid integer lifetime values
-        if ($this->options['lifetime'] === '' || (int) $this->options['lifetime'] <= 0) {
-            $this->options['lifetime'] = self::DEFAULT_LIFETIME;
-        } else {
-            $this->options['lifetime'] = (int) $this->options['lifetime'];
-            $maxLifeTime = 60 * 60 * 24 * 30;
-            if ($this->options['lifetime'] > $maxLifeTime) {
-                //@see http://php.net/manual/de/memcached.expiration.php
-                $this->options['lifetime'] = $maxLifeTime;
-            }
-        }
+        $this->options['lifetime'] = ($this->options['lifetime'] === '' || (int) $this->options['lifetime'] <= 0) ?
+            self::DEFAULT_LIFETIME :
+            (int)$this->options['lifetime'];
         if ($this->options['types_disabled'] === null) {
             $this->options['types_disabled'] = array();
         }

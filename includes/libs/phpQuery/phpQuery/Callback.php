@@ -1,9 +1,18 @@
 <?php
 
+/**
+ * Interface ICallbackNamed
+ */
 interface ICallbackNamed
 {
+    /**
+     * @return mixed
+     */
     public function hasName();
 
+    /**
+     * @return mixed
+     */
     public function getName();
 }
 
@@ -30,15 +39,31 @@ interface ICallbackNamed
  * @TODO??? return fake forwarding function created via create_function
  * @TODO honor paramStructure
  */
-class Callback
-    implements ICallbackNamed
+class Callback implements ICallbackNamed
 {
+    /**
+     * @var null
+     */
     public $callback = null;
-    public $params = null;
-    protected $name;
 
-    public function __construct($callback, $param1 = null, $param2 = null,
-        $param3 = null)
+    /**
+     * @var array|null
+     */
+    public $params = null;
+
+    /**
+     * @var
+     */
+    public $name;
+
+    /**
+     * Callback constructor.
+     * @param      $callback
+     * @param null $param1
+     * @param null $param2
+     * @param null $param3
+     */
+    public function __construct($callback, $param1 = null, $param2 = null, $param3 = null)
     {
         $params = func_get_args();
         $params = array_slice($params, 1);
@@ -50,11 +75,17 @@ class Callback
         }
     }
 
+    /**
+     * @return string
+     */
     public function getName()
     {
         return 'Callback: ' . $this->name;
     }
 
+    /**
+     * @return bool
+     */
     public function hasName()
     {
         return isset($this->name) && $this->name;
@@ -80,8 +111,15 @@ class Callback
  */
 class CallbackBody extends Callback
 {
-    public function __construct($paramList, $code, $param1 = null, $param2 = null,
-        $param3 = null)
+    /**
+     * CallbackBody constructor.
+     * @param      $paramList
+     * @param null $code
+     * @param null $param1
+     * @param null $param2
+     * @param null $param3
+     */
+    public function __construct($paramList, $code, $param1 = null, $param2 = null, $param3 = null)
     {
         $params         = func_get_args();
         $params         = array_slice($params, 2);
@@ -95,27 +133,43 @@ class CallbackBody extends Callback
  *
  * @author Tobiasz Cudnik <tobiasz.cudnik/gmail.com>
  */
-class CallbackReturnReference extends Callback
-    implements ICallbackNamed
+class CallbackReturnReference extends Callback implements ICallbackNamed
 {
+    /**
+     * @var
+     */
     protected $reference;
 
+    /**
+     * CallbackReturnReference constructor.
+     * @param      $reference
+     * @param null $name
+     */
     public function __construct(&$reference, $name = null)
     {
         $this->reference =& $reference;
         $this->callback  = array($this, 'callback');
     }
 
+    /**
+     * @return mixed
+     */
     public function callback()
     {
         return $this->reference;
     }
 
+    /**
+     * @return string
+     */
     public function getName()
     {
         return 'Callback: ' . $this->name;
     }
 
+    /**
+     * @return bool
+     */
     public function hasName()
     {
         return isset($this->name) && $this->name;
@@ -127,12 +181,19 @@ class CallbackReturnReference extends Callback
  *
  * @author Tobiasz Cudnik <tobiasz.cudnik/gmail.com>
  */
-class CallbackReturnValue extends Callback
-    implements ICallbackNamed
+class CallbackReturnValue extends Callback implements ICallbackNamed
 {
+    /**
+     * @var
+     */
     protected $value;
-    protected $name;
+    public $name;
 
+    /**
+     * CallbackReturnValue constructor.
+     * @param      $value
+     * @param null $name
+     */
     public function __construct($value, $name = null)
     {
         $this->value    =& $value;
@@ -140,21 +201,33 @@ class CallbackReturnValue extends Callback
         $this->callback = array($this, 'callback');
     }
 
+    /**
+     * @return mixed
+     */
     public function callback()
     {
         return $this->value;
     }
 
+    /**
+     * @return mixed|string
+     */
     public function __toString()
     {
         return $this->getName();
     }
 
+    /**
+     * @return string
+     */
     public function getName()
     {
         return 'Callback: ' . $this->name;
     }
 
+    /**
+     * @return bool
+     */
     public function hasName()
     {
         return isset($this->name) && $this->name;
@@ -181,17 +254,9 @@ class CallbackParameterToReference extends Callback
     }
 }
 
-//class CallbackReference extends Callback {
-//	/**
-//	 *
-//	 * @param $reference
-//	 * @param $paramIndex
-//	 * @todo implement $paramIndex; param index choose which callback param will be passed to reference
-//	 */
-//	public function __construct(&$reference, $name = null){
-//		$this->callback =& $reference;
-//	}
-//}
+/**
+ * Class CallbackParam
+ */
 class CallbackParam
 {
 }

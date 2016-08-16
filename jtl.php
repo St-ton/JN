@@ -51,6 +51,12 @@ if (isset($_SESSION['JTL_REDIRECT']) || verifyGPCDataInteger('r') > 0) {
     executeHook(HOOK_JTL_PAGE_REDIRECT_DATEN);
 }
 pruefeHttps();
+// Upload zum Download freigeben
+if(isset($_POST['kUpload']) && (int)$_POST['kUpload'] > 0 && isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0 && isset($_POST['jtl_token']) && $_POST['jtl_token'] === $_SESSION['jtl_token']) {
+    $kUpload      = (int)$_POST['kUpload'];
+    $oUploadDatei = new UploadDatei($kUpload);
+    UploadDatei::send_file_to_browser(PFAD_UPLOADS . $oUploadDatei->cPfad, 'application/octet-stream', true, $oUploadDatei->cName);
+}
 
 unset($_SESSION['JTL_REDIRECT']);
 
@@ -682,7 +688,6 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
             }
         }
 
-        $smarty->assign('Lieferadressen', $Lieferadressen);
         $Bestellungen     = array();
         $oWunschliste_arr = array();
         if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
@@ -699,6 +704,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
                         foreach ($oDownload_arr as $oDownload) {
                             if ($oBestellung->kBestellung == $oDownload->kBestellung) {
                                 $Bestellungen[$i]->bDownload = true;
+                                break;
                             }
                         }
                     }
@@ -706,9 +712,15 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
             }
         }
         $orderCount = count($Bestellungen);
+        $currencies = array();
         for ($i = 0; $i < $orderCount; $i++) {
             if ($Bestellungen[$i]->kWaehrung > 0) {
-                $Bestellungen[$i]->Waehrung = Shop::DB()->select('twaehrung', 'kWaehrung', (int)$Bestellungen[$i]->kWaehrung);
+                if (isset($currencies[(int)$Bestellungen[$i]->kWaehrung])) {
+                    $Bestellungen[$i]->Waehrung = $currencies[(int)$Bestellungen[$i]->kWaehrung];
+                } else {
+                    $Bestellungen[$i]->Waehrung = Shop::DB()->select('twaehrung', 'kWaehrung', (int)$Bestellungen[$i]->kWaehrung);
+                    $currencies[(int)$Bestellungen[$i]->kWaehrung] = $Bestellungen[$i]->Waehrung;
+                }
                 if (isset($Bestellungen[$i]->fWaehrungsFaktor) && $Bestellungen[$i]->fWaehrungsFaktor !== 1 && isset($Bestellungen[$i]->Waehrung->fFaktor)) {
                     $Bestellungen[$i]->Waehrung->fFaktor = $Bestellungen[$i]->fWaehrungsFaktor;
                 }
@@ -729,7 +741,8 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
         if (count($oWunschliste_arr) > 0) {
             $smarty->assign('oWunschliste_arr', $oWunschliste_arr);
         }
-        $smarty->assign('Bestellungen', $Bestellungen);
+        $smarty->assign('Bestellungen', $Bestellungen)
+               ->assign('Lieferadressen', $Lieferadressen);
 
         executeHook(HOOK_JTL_PAGE_MEINKKONTO);
     }

@@ -520,8 +520,8 @@ function bearbeiteInsert($xml, array $conf)
         // Sonderpreise
         Shop::DB()->query("
             DELETE asp, sp
-                FROM tartikelsonderpreis asp LEFT JOIN tsonderpreis sp ON sp.kArtikelSonderpreis = asp.kArtikelSonderpreis
-                WHERE asp.kArtikel = " . $artikel_arr[0]->kArtikel,
+                FROM tartikelsonderpreis asp LEFT JOIN tsonderpreise sp ON sp.kArtikelSonderpreis = asp.kArtikelSonderpreis
+                WHERE asp.kArtikel = " . (int)$artikel_arr[0]->kArtikel,
             4);
         if (isset($xml['tartikel']['tartikelsonderpreis'])) {
             updateXMLinDB($xml['tartikel']['tartikelsonderpreis'], 'tsonderpreise', $GLOBALS['mSonderpreise'], 'kArtikelSonderpreis', 'kKundengruppe');
@@ -606,12 +606,13 @@ function bearbeiteInsert($xml, array $conf)
         // Artikel Warenlager
         if (isset($xml['tartikel']['tartikelwarenlager']) && is_array($xml['tartikel']['tartikelwarenlager'])) {
             $oArtikelWarenlager_arr = mapArray($xml['tartikel'], 'tartikelwarenlager', $GLOBALS['mArtikelWarenlager']);
-            foreach ($oArtikelWarenlager_arr as $_oawl) {
-                if (isset($_oawl->dZulaufDatum) && $_oawl->dZulaufDatum === '') {
-                    $_oawl->dZulaufDatum = '0000-00-00 00:00:00';
+            Shop::DB()->delete('tartikelwarenlager', 'kArtikel', (int)$xml['tartikel attr']['kArtikel']);
+            foreach ($oArtikelWarenlager_arr as $oArtikelWarenlager) {
+                if (isset($oArtikelWarenlager->dZulaufDatum) && $oArtikelWarenlager->dZulaufDatum === '') {
+                    $oArtikelWarenlager->dZulaufDatum = '0000-00-00 00:00:00';
                 }
+                Shop::DB()->insert('tartikelwarenlager', $oArtikelWarenlager);
             }
-            DBUpdateInsert('tartikelwarenlager', $oArtikelWarenlager_arr, 'kArtikel', 'kWarenlager');
         }
         if (isset($xml['tartikel']['tartikelsonderpreis']) && is_array($xml['tartikel']['tartikelsonderpreis'])) {
             $ArtikelSonderpreis_arr = mapArray($xml['tartikel'], 'tartikelsonderpreis', $GLOBALS['mArtikelSonderpreis']);

@@ -1,6 +1,6 @@
 $(function () {
     // make each column sortable
-    var cols = sortable('.column', {
+    var cols = sortable('.dashboard-col', {
         items: '.widget',
         handle: '.widget-head',
         forcePlaceholderSize: true,

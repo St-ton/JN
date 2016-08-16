@@ -158,7 +158,7 @@
             {/if}
         </div>{* /product-info *}
         {if $Artikel->bHasKonfig}
-            <div id="product-configurator" class="product-actions top10{if $hasLeftBox} col-sm-7{else} col-sm-12{/if}">
+            <div id="product-configurator" class="product-actions top10 col-sm-12">
                 <!-- KONFIGURATOR -->
                 {if isset($Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ARTIKELKONFIG_TPL]) && file_exists("tpl_inc/{$Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ARTIKELKONFIG_TPL]}")}
                     {include file='tpl_inc/'|cat:$Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ARTIKELKONFIG_TPL]}

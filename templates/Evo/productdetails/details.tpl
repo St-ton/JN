@@ -41,10 +41,10 @@
 <form id="buy_form" method="post" action="{$Artikel->cURLFull}">
     {$jtl_token}
     <div class="row product-primary" itemscope itemtype="http://schema.org/Product" id="product-offer">
-        <div class="product-gallery {if $hasLeftBox}col-sm-5{else}col-sm-6{/if}">
+        <div class="product-gallery{if $hasLeftBox} col-sm-5{else} col-sm-6{/if}">
             {include file="productdetails/image.tpl"}
         </div>
-        <div class="product-info {if $hasLeftBox}col-sm-7{else}col-sm-6{/if}">
+        <div class="product-info{if $hasLeftBox} col-sm-7{else} col-sm-6{/if}">
             {block name="productdetails-info"}
             {if $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen !== 'N' && isset($Artikel->cHersteller)}
                 {block name="product-info-manufacturer"}
@@ -158,7 +158,7 @@
             {/if}
         </div>{* /product-info *}
         {if $Artikel->bHasKonfig}
-            <div id="product-configurator" class="product-actions top10">
+            <div id="product-configurator" class="product-actions top10 col-sm-12">
                 <!-- KONFIGURATOR -->
                 {if isset($Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ARTIKELKONFIG_TPL]) && file_exists("tpl_inc/{$Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ARTIKELKONFIG_TPL]}")}
                     {include file='tpl_inc/'|cat:$Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ARTIKELKONFIG_TPL]}

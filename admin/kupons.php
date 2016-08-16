@@ -115,20 +115,37 @@ if ($action === 'bearbeiten') {
 
     deactivateOutdatedCoupons();
     deactivateExhaustedCoupons();
-    
-    $oFilter = new Filter();
-    $oFilter->addTextfield('Name', 'cName', false);
-    $oFilter->addTextfield('Code', 'cCode', false);
-    $oAktivSelect = $oFilter->addSelectfield('Status', 'cAktiv');
-    $oAktivSelect->addSelectOption('alle', "");
-    $oAktivSelect->addSelectOption('aktiv', "= 'Y'");
-    $oAktivSelect->addSelectOption('inaktiv', "= 'N'");
-    $oFilter->assemble();
+
+    $oFilterStandard = new Filter('standard');
+    $oFilterStandard->addTextfield('Name', 'cName');
+    $oFilterStandard->addTextfield('Code', 'cCode');
+    $oAktivSelect = $oFilterStandard->addSelectfield('Status', 'cAktiv');
+    $oAktivSelect->addSelectOption('alle', '', 0);
+    $oAktivSelect->addSelectOption('aktiv', 'Y', 4);
+    $oAktivSelect->addSelectOption('inaktiv', 'N', 4);
+    $oFilterStandard->assemble();
+
+    $oFilterVersand = new Filter('versand');
+    $oFilterVersand->addTextfield('Name', 'cName');
+    $oFilterVersand->addTextfield('Code', 'cCode');
+    $oAktivSelect = $oFilterVersand->addSelectfield('Status', 'cAktiv');
+    $oAktivSelect->addSelectOption('alle', '', 0);
+    $oAktivSelect->addSelectOption('aktiv', 'Y', 4);
+    $oAktivSelect->addSelectOption('inaktiv', 'N', 4);
+    $oFilterVersand->assemble();
+
+    $oFilterNeukunden = new Filter('neukunden');
+    $oFilterNeukunden->addTextfield('Name', 'cName');
+    $oAktivSelect = $oFilterNeukunden->addSelectfield('Status', 'cAktiv');
+    $oAktivSelect->addSelectOption('alle', '', 0);
+    $oAktivSelect->addSelectOption('aktiv', 'Y', 4);
+    $oAktivSelect->addSelectOption('inaktiv', 'N', 4);
+    $oFilterNeukunden->assemble();
 
     $cSortByOption_arr   = [['cName', 'Name'], ['cCode', 'Code'], ['nVerwendungenBisher', 'Verwendungen'], ['dLastUse', 'Zuletzt verwendet']];
-    $oKuponStandard_arr  = getCoupons('standard', $oFilter->getWhereSQL());
-    $oKuponVersand_arr   = getCoupons('versandkupon', $oFilter->getWhereSQL());
-    $oKuponNeukunden_arr = getCoupons('neukundenkupon', $oFilter->getWhereSQL());
+    $oKuponStandard_arr  = getCoupons('standard', $oFilterStandard->getWhereSQL());
+    $oKuponVersand_arr   = getCoupons('versandkupon', $oFilterVersand->getWhereSQL());
+    $oKuponNeukunden_arr = getCoupons('neukundenkupon', $oFilterNeukunden->getWhereSQL());
 
     $oPaginationStandard = (new Pagination('standard'))
         ->setSortByOptions($cSortByOption_arr)
@@ -150,7 +167,9 @@ if ($action === 'bearbeiten') {
     $oKuponNeukunden_arr = $oPaginationNeukunden->getPageItems();
 
     $smarty->assign('tab', $tab)
-        ->assign('oFilter', $oFilter)
+        ->assign('oFilterStandard', $oFilterStandard)
+        ->assign('oFilterVersand', $oFilterVersand)
+        ->assign('oFilterNeukunden', $oFilterNeukunden)
         ->assign('oPaginationStandard', $oPaginationStandard)
         ->assign('oPaginationVersandkupon', $oPaginationVersand)
         ->assign('oPaginationNeukundenkupon', $oPaginationNeukunden)

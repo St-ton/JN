@@ -112,6 +112,7 @@
             cKuponTypName=#standardCoupon#
             oKupon_arr=$oKuponStandard_arr
             oPagination=$oPaginationStandard
+            oFilter=$oFilterStandard
             nSeite=1
         }
         {kupons_uebersicht_tab
@@ -119,6 +120,7 @@
             cKuponTypName=#shippingCoupon#
             oKupon_arr=$oKuponVersandkupon_arr
             oPagination=$oPaginationVersandkupon
+            oFilter=$oFilterVersand
             nSeite=2
         }
         {kupons_uebersicht_tab
@@ -126,6 +128,7 @@
             cKuponTypName=#newCustomerCoupon#
             oKupon_arr=$oKuponNeukundenkupon_arr
             oPagination=$oPaginationNeukundenkupon
+            oFilter=$oFilterNeukunden
             nSeite=3
         }
     </div>

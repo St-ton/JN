@@ -6202,6 +6202,40 @@ function formatSize($size)
     return isset($res) ? $res : '';
 }
 
+/**
+ * @param DateTime|string|int $date
+ * @param int $weekdays
+ * @return DateTime
+ */
+function dateAddWeekday($date, $weekdays)
+{
+    try {
+        if (is_string($date)) {
+            $resDate = new DateTime($date);
+        } else if (is_numeric($date)) {
+            $resDate = new DateTime();
+            $resDate->setTimestamp($date);
+        } else if (is_object($date) && is_a($date, 'DateTime')) {
+            /** @var DateTime $date */
+            $resDate = new DateTime($date->format(DateTime::ISO8601));
+        } else {
+            $resDate = new DateTime();
+        }
+    } catch (Exception $e) {
+        Jtllog::writeLog($e->getMessage(), JTLLOG_LEVEL_ERROR);
+        $resDate = new DateTime();
+    }
+
+    $weekend = ((int)$resDate->format('w') + 1) % 6 == 1;
+    $pm      = (int)$resDate->format('G') > 12;
+
+    if ($weekend || $pm) {
+        $resDate->add(DateInterval::createFromDateString('1 weekday'));
+    }
+
+    return $resDate->add(DateInterval::createFromDateString($weekdays . ' weekday'));
+}
+
 if (!function_exists('dd')) {
     /**
      * Dump the passed variables and end the script.

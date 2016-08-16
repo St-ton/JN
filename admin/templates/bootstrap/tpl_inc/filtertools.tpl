@@ -9,11 +9,32 @@
         {/foreach}
         {foreach $oFilter->getFields() as $oField}
             <div class="form-group">
-                <label class="sr-only" for="{$oField->getColumn()}">{$oField->getTitle()}</label>
+                <label for="{$oFilter->getId()}_{$oField->getColumn()}">
+                    {$oField->getTitle()}
+                </label>
                 {if $oField->getType() === 'text'}
-                    <input type="text" class="form-control" name="{$oField->getColumn()}" id="{$oField->getColumn()}" value="{$oField->getValue()}" placeholder="{$oField->getTitle()}">
+                    {if $oField->isCustomTestOp()}
+                        <select class="form-control"
+                                name="{$oFilter->getId()}_{$oField->getColumn()}_op"
+                                id="{$oFilter->getId()}_{$oField->getColumn()}_op">
+                            <option value="1"{if $oField->getTestOp() == 1} selected{/if}>enth&auml;lt</option>
+                            <option value="2"{if $oField->getTestOp() == 2} selected{/if}>beginnt mit</option>
+                            <option value="3"{if $oField->getTestOp() == 3} selected{/if}>endet mit</option>
+                            <option value="4"{if $oField->getTestOp() == 4} selected{/if}>=</option>
+                            <option value="5"{if $oField->getTestOp() == 5} selected{/if}>&lt;</option>
+                            <option value="6"{if $oField->getTestOp() == 6} selected{/if}>&gt;</option>
+                            <option value="7"{if $oField->getTestOp() == 7} selected{/if}>&lt;=</option>
+                            <option value="8"{if $oField->getTestOp() == 8} selected{/if}>&gt;=</option>
+                        </select>
+                    {/if}
+                    <input type="text" class="form-control"
+                           name="{$oFilter->getId()}_{$oField->getColumn()}"
+                           id="{$oFilter->getId()}_{$oField->getColumn()}"
+                           value="{$oField->getValue()}" placeholder="{$oField->getTitle()}">
                 {elseif $oField->getType() === 'select'}
-                    <select class="form-control" name="{$oField->getColumn()}" id="{$oField->getColumn()}">
+                    <select class="form-control"
+                            name="{$oFilter->getId()}_{$oField->getColumn()}"
+                            id="{$oFilter->getId()}_{$oField->getColumn()}">
                         {foreach $oField->getOptions() as $i => $oOption}
                             <option value="{$i}"{if $i == (int)$oField->getValue()} selected{/if}>{$oOption->getTitle()}</option>
                         {/foreach}
@@ -22,10 +43,10 @@
             </div>
         {/foreach}
         <div class="btn-group">
-            <button type="submit" class="btn btn-primary" name="action" value="filter">
+            <button type="submit" class="btn btn-primary" name="action" value="{$oFilter->getId()}_filter">
                 <i class="fa fa-search"></i>
             </button>
-            <button type="submit" class="btn btn-default" name="action" value="resetfilter">
+            <button type="submit" class="btn btn-default" name="action" value="{$oFilter->getId()}_resetfilter">
                 <i class="fa fa-eraser"></i>
             </button>
         </div>

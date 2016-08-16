@@ -59,6 +59,9 @@ function gibFehlendeEingabe()
  */
 function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
 {
+    /** @var array('Warenkorb' => Warenkorb) $_SESSION */
+    /** @var array('Kunde' => Kunde) $_SESSION */
+
     //für saubere DB Einträge
     unhtmlSession();
     //erstelle neue Bestellung
@@ -135,9 +138,10 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
     if (is_array($_SESSION['Warenkorb']->PositionenArr) && count($_SESSION['Warenkorb']->PositionenArr) > 0) {
         $nArtikelAnzeigefilter = (int)$conf['global']['artikel_artikelanzeigefilter'];
         $kArtikel_arr          = array();
+        /** @var WarenkorbPos $Position */
         foreach ($_SESSION['Warenkorb']->PositionenArr as $i => $Position) {
             if ($Position->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL) {
-                $Position->fLagerbestandVorAbschluss = (isset($Position->Artikel->fLagerbestand)) ? (double) $Position->Artikel->fLagerbestand : 0;
+                $Position->fLagerbestandVorAbschluss = (isset($Position->Artikel->fLagerbestand)) ? (double)$Position->Artikel->fLagerbestand : 0;
             }
             $Position->cName         = StringHandler::unhtmlentities(is_array($Position->cName) ? $Position->cName[$_SESSION['cISOSprache']] : $Position->cName);
             $Position->cLieferstatus = (isset($Position->cLieferstatus[$_SESSION['cISOSprache']])) ? StringHandler::unhtmlentities($Position->cLieferstatus[$_SESSION['cISOSprache']]) : '';
@@ -191,6 +195,8 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
                 // Clear Cache
                 Shop::Cache()->flushTags(array(CACHING_GROUP_ARTICLE . '_' . $Position->kArtikel));
             }
+
+            $Bestellung->Positionen[] = $Position;
         }
         // Falls die Einstellung global_wunschliste_artikel_loeschen_nach_kauf auf Y (Ja) steht und
         // Artikel vom aktuellen Wunschzettel gekauft wurden, sollen diese vom Wunschzettel geloescht werden
@@ -248,6 +254,7 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
     $Bestellung->cAbgeholt         = 'N';
     $Bestellung->cStatus           = BESTELLUNG_STATUS_OFFEN;
     $Bestellung->dErstellt         = 'now()';
+    $Bestellung->berechneEstimatedDelivery();
     if (isset($_SESSION['Bestellung']->GuthabenNutzen) && $_SESSION['Bestellung']->GuthabenNutzen == 1) {
         $Bestellung->fGuthaben = -$_SESSION['Bestellung']->fGuthabenGenutzt;
         Shop::DB()->query("UPDATE tkunde SET fGuthaben = fGuthaben-" . $_SESSION['Bestellung']->fGuthabenGenutzt . " WHERE kKunde = " . (int)$Bestellung->kKunde, 4);
@@ -324,8 +331,7 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
             'oBestellung'   => &$Bestellung,
             'bestellID'     => &$bestellid,
             'bestellstatus' => &$bestellstatus,
-        )
-    );
+        ));
 }
 
 /**
@@ -337,6 +343,8 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
  */
 function saveZahlungsInfo($kKunde, $kBestellung, $bZahlungAgain = false)
 {
+    /** @var array('Warenkorb' => Warenkorb) $_SESSION */
+
     if (!$kKunde || !$kBestellung) {
         return false;
     }
@@ -986,6 +994,8 @@ function setzeSmartyWeiterleitung($bestellung)
  */
 function fakeBestellung()
 {
+    /** @var array('Warenkorb' => Warenkorb) $_SESSION */
+
     if (isset($_POST['kommentar'])) {
         $_SESSION['kommentar'] = substr(strip_tags(Shop::DB()->escape($_POST['kommentar'])), 0, 1000);
     }
@@ -1151,6 +1161,13 @@ function finalisiereBestellung($cBestellNr = '', $bSendeMail = true)
     //mail versenden
     $obj->tkunde      = $_SESSION['Kunde'];
     $obj->tbestellung = $bestellung;
+
+    if (isset($bestellung->oEstimatedDelivery->longestMin) && isset($bestellung->oEstimatedDelivery->longestMax)) {
+        $obj->tbestellung->cEstimatedDeliveryEx = dateAddWeekday($bestellung->dErstellt, $bestellung->oEstimatedDelivery->longestMin)->format('d.m.Y')
+            . ' - ' .
+            dateAddWeekday($bestellung->dErstellt, $bestellung->oEstimatedDelivery->longestMax)->format('d.m.Y');
+    }
+
     // Work Around cLand
     $oKunde = new Kunde();
     $oKunde->kopiereSession();
@@ -1186,7 +1203,7 @@ function pruefeEOSServerCom($cSh)
         Shop::DB()->insert('tzahlungbackground', $oZahlungbackground);
 
         if (NO_MODE === 1) {
-            writeLog(NO_PFAD, 'pruefeEOSServerCom Hash ' . $cSh . ' ergab ' . print_r($oZahlungbackground, true), 1);
+            Jtllog::writeLog(NO_PFAD, 'pruefeEOSServerCom Hash ' . $cSh . ' ergab ' . print_r($oZahlungbackground, true), 1);
         }
         die();
     }

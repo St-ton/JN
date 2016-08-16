@@ -342,7 +342,7 @@
         
         setPrice: function(price, fmtPrice, priceLabel) {
             $('#product-offer .price').html(fmtPrice);
-            if (!!priceLabel) {
+            if (priceLabel.length > 0) {
                 $('#product-offer .price_label').html(priceLabel);
             }
         },

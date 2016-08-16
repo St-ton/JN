@@ -117,29 +117,29 @@ if ($action === 'bearbeiten') {
     deactivateExhaustedCoupons();
 
     $oFilterStandard = new Filter('standard');
-    $oFilterStandard->addTextfield('Name', 'cName', false);
-    $oFilterStandard->addTextfield('Code', 'cCode', false);
+    $oFilterStandard->addTextfield('Name', 'cName');
+    $oFilterStandard->addTextfield('Code', 'cCode');
     $oAktivSelect = $oFilterStandard->addSelectfield('Status', 'cAktiv');
-    $oAktivSelect->addSelectOption('alle', "");
-    $oAktivSelect->addSelectOption('aktiv', "= 'Y'");
-    $oAktivSelect->addSelectOption('inaktiv', "= 'N'");
+    $oAktivSelect->addSelectOption('alle', '', 0);
+    $oAktivSelect->addSelectOption('aktiv', 'Y', 4);
+    $oAktivSelect->addSelectOption('inaktiv', 'N', 4);
     $oFilterStandard->assemble();
 
     $oFilterVersand = new Filter('versand');
-    $oFilterVersand->addTextfield('Name', 'cName', false);
-    $oFilterVersand->addTextfield('Code', 'cCode', false);
+    $oFilterVersand->addTextfield('Name', 'cName');
+    $oFilterVersand->addTextfield('Code', 'cCode');
     $oAktivSelect = $oFilterVersand->addSelectfield('Status', 'cAktiv');
-    $oAktivSelect->addSelectOption('alle', "");
-    $oAktivSelect->addSelectOption('aktiv', "= 'Y'");
-    $oAktivSelect->addSelectOption('inaktiv', "= 'N'");
+    $oAktivSelect->addSelectOption('alle', '', 0);
+    $oAktivSelect->addSelectOption('aktiv', 'Y', 4);
+    $oAktivSelect->addSelectOption('inaktiv', 'N', 4);
     $oFilterVersand->assemble();
 
     $oFilterNeukunden = new Filter('neukunden');
-    $oFilterNeukunden->addTextfield('Name', 'cName', false);
+    $oFilterNeukunden->addTextfield('Name', 'cName');
     $oAktivSelect = $oFilterNeukunden->addSelectfield('Status', 'cAktiv');
-    $oAktivSelect->addSelectOption('alle', "");
-    $oAktivSelect->addSelectOption('aktiv', "= 'Y'");
-    $oAktivSelect->addSelectOption('inaktiv', "= 'N'");
+    $oAktivSelect->addSelectOption('alle', '', 0);
+    $oAktivSelect->addSelectOption('aktiv', 'Y', 4);
+    $oAktivSelect->addSelectOption('inaktiv', 'N', 4);
     $oFilterNeukunden->assemble();
 
     $cSortByOption_arr   = [['cName', 'Name'], ['cCode', 'Code'], ['nVerwendungenBisher', 'Verwendungen'], ['dLastUse', 'Zuletzt verwendet']];

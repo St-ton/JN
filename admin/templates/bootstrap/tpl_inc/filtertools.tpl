@@ -9,8 +9,24 @@
         {/foreach}
         {foreach $oFilter->getFields() as $oField}
             <div class="form-group">
-                <label class="sr-only" for="{$oField->getColumn()}">{$oField->getTitle()}</label>
+                <label for="{$oFilter->getId()}_{$oField->getColumn()}">
+                    {$oField->getTitle()}
+                </label>
                 {if $oField->getType() === 'text'}
+                    {if $oField->isCustomTestOp()}
+                        <select class="form-control"
+                                name="{$oFilter->getId()}_{$oField->getColumn()}_op"
+                                id="{$oFilter->getId()}_{$oField->getColumn()}_op">
+                            <option value="1"{if $oField->getTestOp() == 1} selected{/if}>enth&auml;lt</option>
+                            <option value="2"{if $oField->getTestOp() == 2} selected{/if}>beginnt mit</option>
+                            <option value="3"{if $oField->getTestOp() == 3} selected{/if}>endet mit</option>
+                            <option value="4"{if $oField->getTestOp() == 4} selected{/if}>=</option>
+                            <option value="5"{if $oField->getTestOp() == 5} selected{/if}>&lt;</option>
+                            <option value="6"{if $oField->getTestOp() == 6} selected{/if}>&gt;</option>
+                            <option value="7"{if $oField->getTestOp() == 7} selected{/if}>&lt;=</option>
+                            <option value="8"{if $oField->getTestOp() == 8} selected{/if}>&gt;=</option>
+                        </select>
+                    {/if}
                     <input type="text" class="form-control"
                            name="{$oFilter->getId()}_{$oField->getColumn()}"
                            id="{$oFilter->getId()}_{$oField->getColumn()}"

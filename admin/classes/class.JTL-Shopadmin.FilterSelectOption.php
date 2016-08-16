@@ -6,19 +6,22 @@
 
 class FilterSelectOption
 {
-    protected $cTitle = '';
-    protected $cCond  = '';
+    protected $cTitle  = '';
+    protected $cValue  = '';
+    protected $nTestOp = 0;
 
     /**
      * FilterSelectOption constructor.
      * 
      * @param string $cTitle
-     * @param string $cCond
+     * @param string $cValue
+     * @param int    $nTestOp
      */
-    public function __construct($cTitle, $cCond)
+    public function __construct($cTitle, $cValue, $nTestOp)
     {
-        $this->cTitle = $cTitle;
-        $this->cCond  = $cCond;
+        $this->cTitle  = $cTitle;
+        $this->cValue  = $cValue;
+        $this->nTestOp = $nTestOp;
     }
 
     /**
@@ -32,8 +35,16 @@ class FilterSelectOption
     /**
      * @return string
      */
-    public function getCond()
+    public function getValue()
     {
-        return $this->cCond;
+        return $this->cValue;
+    }
+
+    /**
+     * @return int
+     */
+    public function getTestOp()
+    {
+        return $this->nTestOp;
     }
 }

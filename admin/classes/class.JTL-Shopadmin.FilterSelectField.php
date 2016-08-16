@@ -24,12 +24,21 @@ class FilterSelectField extends FilterField
      * Add a select option to a filter select field
      *
      * @param string $cTitle - the label/title for this option
-     * @param string $cCond - options conditional right part (e.g. "= 'Y'" or "> 10")
+     * @param string $cValue
+     * @param int    $nTestOp
+     *  1 = contains
+     *  2 = begins with
+     *  3 = ends with
+     *  4 = equals
+     *  5 = lower than
+     *  6 = greater than
+     *  7 = lower than or equal
+     *  8 = greater than or equal
      * @return FilterSelectOption
      */
-    public function addSelectOption($cTitle, $cCond)
+    public function addSelectOption($cTitle, $cValue, $nTestOp = 0)
     {
-        $oOption             = new FilterSelectOption($cTitle, $cCond);
+        $oOption             = new FilterSelectOption($cTitle, $cValue, $nTestOp);
         $this->oOption_arr[] = $oOption;
 
         return $oOption;
@@ -48,9 +57,20 @@ class FilterSelectField extends FilterField
      */
     public function getWhereClause()
     {
-        $cCond = $this->oOption_arr[(int)$this->cValue]->getCond();
-        if ($cCond !== '') {
-            return $this->cColumn . " " . $cCond;
+        $cValue  = $this->oOption_arr[(int)$this->cValue]->getValue();
+        $nTestOp = $this->oOption_arr[(int)$this->cValue]->getTestOp();
+
+        if ($cValue !== '' || $nTestOp == 4) {
+            switch ($nTestOp) {
+                case 1: return $this->cColumn . " LIKE '%" . Shop::DB()->escape($cValue) . "%'";
+                case 2: return $this->cColumn . " LIKE '" . Shop::DB()->escape($cValue) . "%'";
+                case 3: return $this->cColumn . " LIKE '%" . Shop::DB()->escape($cValue) . "'";
+                case 4: return $this->cColumn . " = '" . Shop::DB()->escape($cValue) . "'";
+                case 5: return $this->cColumn . " < '" . Shop::DB()->escape($cValue) . "'";
+                case 6: return $this->cColumn . " > '" . Shop::DB()->escape($cValue) . "'";
+                case 7: return $this->cColumn . " <= '" . Shop::DB()->escape($cValue) . "'";
+                case 8: return $this->cColumn . " >= '" . Shop::DB()->escape($cValue) . "'";
+            }
         }
 
         return null;

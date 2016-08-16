@@ -126,13 +126,6 @@ if (!JTL_INCLUDE_ONLY_DB) {
         } else {
             $bAdminWartungsmodus = true;
         }
-        // Workaround to fix issue #314 :
-        // Da Shop::isAdmin() im Endeffekt den aktuellen Session-Namen wieder auf JTLSHOP setzt, wird er an dieser
-        // Stelle manuell auf JTLCRON zurückgesetzt. Ansonsten wird ein Set-Cookie abgesetzt, der die JTLSHOP
-        // Session-ID mit der JTLCRON Session-ID gleichsetzt und damit den Nutzer rauskickt.
-        if (defined('JTLCRON') && JTLCRON === true) {
-            session_name('JTLCRON');
-        }
     }
     $GLOBALS['oSprache'] = Sprache::getInstance();
 }

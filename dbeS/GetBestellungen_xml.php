@@ -15,7 +15,7 @@ if (auth()) {
             tbestellung.kZahlungsart, tbestellung.kVersandart, tbestellung.kSprache, tbestellung.kWaehrung, '0' AS nZahlungsTyp, tbestellung.fGuthaben, 
             tbestellung.cSession, tbestellung.cZahlungsartName, tbestellung.cBestellNr, tbestellung.cVersandInfo, tbestellung.dVersandDatum, tbestellung.cTracking, 
             tbestellung.cKommentar, tbestellung.cAbgeholt, tbestellung.cStatus, date_format(tbestellung.dErstellt, \"%d.%m.%Y\") AS dErstellt_formatted, 
-            tbestellung.dErstellt, tzahlungsart.cModulId, tbestellung.cPUIZahlungsdaten
+            tbestellung.dErstellt, tzahlungsart.cModulId, tbestellung.cPUIZahlungsdaten, tbestellung.nLongestMinDelivery, tbestellung.nLongestMaxDelivery
             FROM tbestellung
             LEFT JOIN tzahlungsart
                 ON tzahlungsart.kZahlungsart = tbestellung.kZahlungsart

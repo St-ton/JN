@@ -3,7 +3,6 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-
 class Filter
 {
     protected $cId          = 'filter';
@@ -22,23 +21,29 @@ class Filter
             $this->cId = $cId;
         }
 
-        $this->cAction      = isset($_GET['action']) ? $_GET['action'] : '';
+        $this->cAction = isset($_GET['action']) ? $_GET['action'] : '';
         $this->loadSessionStore();
     }
-    
+
     /**
      * Add a text field to a filter object
      *
      * @param string $cTitle - the label/title for this field
      * @param string $cColumn - the column name to be compared
-     * @param bool   $bExact - true for exact match or false for substring search
+     * @param int    $nTestOp
+     *  0 = custom
+     *  1 = contains
+     *  2 = begins with
+     *  3 = ends with
+     *  4 = exact match
      * @return FilterTextField
      */
-    public function addTextfield($cTitle, $cColumn, $bExact)
+    public function addTextfield($cTitle, $cColumn, $nTestOp = 0)
     {
-        $oField                       = new FilterTextField($this, $cTitle, $cColumn, $bExact);
-        $this->oField_arr[]           = $oField;
-        $this->cSession_arr[$cColumn] = $oField->getValue();
+        $oField                               = new FilterTextField($this, $cTitle, $cColumn, $nTestOp);
+        $this->oField_arr[]                   = $oField;
+        $this->cSession_arr[$cColumn]         = $oField->getValue();
+        $this->cSession_arr[$cColumn . '_op'] = $oField->getTestOp();
 
         return $oField;
     }

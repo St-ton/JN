@@ -6,9 +6,9 @@ Your order dated {$Bestellung->dErstelldatum_de} mit Bestellnummer {$Bestellung-
 
 {foreach name=pos from=$Bestellung->oLieferschein_arr item=oLieferschein}
     {if $oLieferschein->oVersand_arr|count > 1}
-        You may track the shipping status by clicking on the link below:
-    {else}
         You may track the shipping status by clicking on the links below:
+    {else}
+        You may track the shipping status by clicking on the link below:
     {/if}
 
     {foreach from=$oLieferschein->oVersand_arr item=oVersand}

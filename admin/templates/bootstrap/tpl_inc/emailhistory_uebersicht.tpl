@@ -1,7 +1,7 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=#emailhistory# cBeschreibung=#emailhistoryDesc# cDokuURL="#emailhistoryURL#"}
 <div id="content" class="container-fluid">
     {if $oEmailhistory_arr|@count > 0 && $oEmailhistory_arr}
-        {include file='pagination.tpl' cSite=1 cUrl='emailhistory.php' oBlaetterNavi=$oBlaetterNaviUebersicht hash=''}
+        {include file='tpl_inc/pagination.tpl' oPagination=$oPagination}
         <form name="emailhistory" method="post" action="emailhistory.php">
             {$jtl_token}
             <input name="a" type="hidden" value="delete" />

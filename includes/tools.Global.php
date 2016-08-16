@@ -354,12 +354,16 @@ function getCurrencyConversion($fPreisNetto, $fPreisBrutto, $cClass = '', $bForc
                 }
                 // Wurde geändert weil der Preis nun als Betrag gesehen wird und die Steuer direkt in der Versandart als eSteuer Flag eingestellt wird
                 if ($i > 0) {
-                    $cString .= ($bForceSteuer) ? (' &#x2259; <strong>' . $cPreisBruttoLocalized . '</strong>' . ' (<em>' . $cPreisLocalized . '</em>)') : (' &#x2259; ' . $cPreisBruttoLocalized);
+                    $cString .= ($bForceSteuer) ?
+                        ('<br><strong>' . $cPreisBruttoLocalized . '</strong>' . ' (<em>' . $cPreisLocalized . ' ' . Shop::Lang()->get('net') . '</em>)') :
+                        ('<br> ' . $cPreisBruttoLocalized);
                 } else {
-                    $cString .= ($bForceSteuer) ? ('<strong>' . $cPreisBruttoLocalized . '</strong>' . ' (<em>' . $cPreisLocalized . '</em>)') : '<strong>' . $cPreisBruttoLocalized . '</strong>';
+                    $cString .= ($bForceSteuer) ?
+                        ('<strong>' . $cPreisBruttoLocalized . '</strong>' . ' (<em>' . $cPreisLocalized . ' ' . Shop::Lang()->get('net') . '</em>)') :
+                        '<strong>' . $cPreisBruttoLocalized . '</strong>';
                 }
             }
-            $cString .= ($bForceSteuer) ? ' (<strong>Brutto</strong> / Netto)</span>' : '</span>';
+            $cString .= '</span>';
         }
     }
 

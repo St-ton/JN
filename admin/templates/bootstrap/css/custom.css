@@ -1846,8 +1846,8 @@ input[type="number"][size="3"] {
 }
 
 select.form-control {
-    padding-left: 0;
-    text-indent: 4px;
+    padding-left: 4px;
+    text-indent: 0;
 }
 
 .accordion-heading {

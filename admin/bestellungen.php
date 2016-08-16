@@ -7,7 +7,6 @@ require_once dirname(__FILE__) . '/includes/admininclude.php';
 
 $oAccount->permission('ORDER_VIEW', true, true);
 
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'blaetternavi.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'bestellungen_inc.php';
 
 $cHinweis          = '';
@@ -15,7 +14,6 @@ $cFehler           = '';
 $step              = 'bestellungen_uebersicht';
 $cSuchFilter       = '';
 $nAnzahlProSeite   = 15;
-$oBlaetterNaviConf = baueBlaetterNaviGetterSetter(1, $nAnzahlProSeite);
 
 // Bestellung Wawi Abholung zuruecksetzen
 if (verifyGPCDataInteger('zuruecksetzen') === 1 && validateToken()) {
@@ -37,9 +35,11 @@ if (verifyGPCDataInteger('zuruecksetzen') === 1 && validateToken()) {
 }
 
 if ($step === 'bestellungen_uebersicht') {
-    $oBlaetterNaviUebersicht = baueBlaetterNavi($oBlaetterNaviConf->nAktuelleSeite1, gibAnzahlBestellungen($cSuchFilter), $nAnzahlProSeite);
-    $smarty->assign('oBlaetterNaviUebersicht', $oBlaetterNaviUebersicht)
-           ->assign('oBestellung_arr', gibBestellungsUebersicht($oBlaetterNaviConf->cSQL1, $cSuchFilter));
+    $oPagination = (new Pagination('bestellungen'))
+        ->setItemArray(gibBestellungsUebersicht('', $cSuchFilter))
+        ->assemble();
+    $smarty->assign('oBestellung_arr', $oPagination->getPageItems())
+           ->assign('oPagination', $oPagination);
 }
 
 $smarty->assign('cHinweis', $cHinweis)

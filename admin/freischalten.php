@@ -8,42 +8,8 @@ require_once dirname(__FILE__) . '/includes/admininclude.php';
 $oAccount->permission('UNLOCK_CENTRAL_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'freischalten_inc.php';
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'blaetternavi.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bewertung_inc.php';
 require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
-
-$nAnzahlProSeite = 15;
-$cSQL1           = ' LIMIT ' . $nAnzahlProSeite;
-$cSQL2           = ' LIMIT ' . $nAnzahlProSeite;
-$cSQL3           = ' LIMIT ' . $nAnzahlProSeite;
-$cSQL4           = ' LIMIT ' . $nAnzahlProSeite;
-$cSQL5           = ' LIMIT ' . $nAnzahlProSeite;
-$nAktuelleSeite1 = 1;
-$nAktuelleSeite2 = 1;
-$nAktuelleSeite3 = 1;
-$nAktuelleSeite4 = 1;
-$nAktuelleSeite5 = 1;
-if (verifyGPCDataInteger('s1') > 0) {
-    $s1              = verifyGPCDataInteger('s1');
-    $cSQL1           = " LIMIT " . (($s1 - 1) * $nAnzahlProSeite) . ", " . $nAnzahlProSeite;
-    $nAktuelleSeite1 = $s1;
-} elseif (verifyGPCDataInteger('s2') > 0) {
-    $s2              = verifyGPCDataInteger('s2');
-    $cSQL2           = " LIMIT " . (($s2 - 1) * $nAnzahlProSeite) . ", " . $nAnzahlProSeite;
-    $nAktuelleSeite2 = $s2;
-} elseif (verifyGPCDataInteger('s3') > 0) {
-    $s3              = verifyGPCDataInteger('s3');
-    $cSQL3           = " LIMIT " . (($s3 - 1) * $nAnzahlProSeite) . ", " . $nAnzahlProSeite;
-    $nAktuelleSeite3 = $s3;
-} elseif (verifyGPCDataInteger('s4') > 0) {
-    $s4              = verifyGPCDataInteger('s4');
-    $cSQL4           = " LIMIT " . (($s4 - 1) * $nAnzahlProSeite) . ", " . $nAnzahlProSeite;
-    $nAktuelleSeite4 = $s4;
-} elseif (verifyGPCDataInteger('s5') > 0) {
-    $s5              = verifyGPCDataInteger('s5');
-    $cSQL5           = " LIMIT " . (($s5 - 1) * $nAnzahlProSeite) . ", " . $nAnzahlProSeite;
-    $nAktuelleSeite5 = $s5;
-}
 
 setzeSprache();
 
@@ -279,16 +245,36 @@ if (verifyGPCDataInteger('freischalten') === 1 && validateToken()) {
 }
 
 if ($step === 'freischalten_uebersicht') {
-    $smarty->assign('oBewertung_arr', gibBewertungFreischalten($cSQL1, $cBewertungSQL))
-           ->assign('oSuchanfrage_arr', gibSuchanfrageFreischalten($cSQL2, $cLivesucheSQL))
-           ->assign('oTag_arr', gibTagFreischalten($cSQL3, $cTagSQL))
-           ->assign('oNewsKommentar_arr', gibNewskommentarFreischalten($cSQL4, $cNewskommentarSQL))
-           ->assign('oNewsletterEmpfaenger_arr', gibNewsletterEmpfaengerFreischalten($cSQL5, $cNewsletterempfaengerSQL))
-           ->assign('oBlaetterNaviBewertungen', baueBlaetterNavi($nAktuelleSeite1, gibMaxBewertungen(), $nAnzahlProSeite))
-           ->assign('oBlaetterNaviSuchanfrage', baueBlaetterNavi($nAktuelleSeite2, gibMaxSuchanfragen(), $nAnzahlProSeite))
-           ->assign('oBlaetterNaviTag', baueBlaetterNavi($nAktuelleSeite3, gibMaxTags(), $nAnzahlProSeite))
-           ->assign('oBlaetterNaviNewsKommentar', baueBlaetterNavi($nAktuelleSeite4, gibMaxNewskommentare(), $nAnzahlProSeite))
-           ->assign('oBlaetterNaviNewsletterEmpfaenger', baueBlaetterNavi($nAktuelleSeite5, gibMaxNewsletterEmpfaenger(), $nAnzahlProSeite));
+    $oPagiBewertungen = (new Pagination('bewertungen'))
+        ->setItemCount(gibMaxBewertungen())
+        ->assemble();
+    $oPagiSuchanfragen = (new Pagination('suchanfragen'))
+        ->setItemCount(gibMaxSuchanfragen())
+        ->assemble();
+    $oPagiTags = (new Pagination('tags'))
+        ->setItemCount(gibMaxTags())
+        ->assemble();
+    $oPagiNewskommentare = (new Pagination('newskommentare'))
+        ->setItemCount(gibMaxNewskommentare())
+        ->assemble();
+    $oPagiNewsletterEmpfaenger = (new Pagination('newsletter'))
+        ->setItemCount(gibMaxNewsletterEmpfaenger())
+        ->assemble();
+    $oBewertung_arr            = gibBewertungFreischalten(' LIMIT ' . $oPagiBewertungen->getLimitSQL(), $cBewertungSQL);
+    $oSuchanfrage_arr          = gibSuchanfrageFreischalten(' LIMIT ' . $oPagiSuchanfragen->getLimitSQL(), $cLivesucheSQL);
+    $oTag_arr                  = gibTagFreischalten( ' LIMIT ' . $oPagiTags->getLimitSQL(), $cTagSQL);
+    $oNewsKommentar_arr        = gibNewskommentarFreischalten(' LIMIT ' . $oPagiNewskommentare->getLimitSQL(), $cNewskommentarSQL);
+    $oNewsletterEmpfaenger_arr = gibNewsletterEmpfaengerFreischalten(' LIMIT ' . $oPagiNewsletterEmpfaenger->getLimitSQL(), $cNewsletterempfaengerSQL);
+    $smarty->assign('oBewertung_arr', $oBewertung_arr)
+           ->assign('oSuchanfrage_arr', $oSuchanfrage_arr)
+           ->assign('oTag_arr', $oTag_arr)
+           ->assign('oNewsKommentar_arr', $oNewsKommentar_arr)
+           ->assign('oNewsletterEmpfaenger_arr', $oNewsletterEmpfaenger_arr)
+           ->assign('oPagiBewertungen', $oPagiBewertungen)
+           ->assign('oPagiSuchanfragen', $oPagiSuchanfragen)
+           ->assign('oPagiTags', $oPagiTags)
+           ->assign('oPagiNewskommentare', $oPagiNewskommentare)
+           ->assign('oPagiNewsletterEmpfaenger', $oPagiNewsletterEmpfaenger);
 }
 
 $smarty->assign('hinweis', $cHinweis)

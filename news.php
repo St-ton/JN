@@ -179,23 +179,23 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
                         }
                     }
                 }
-                
+
                 $oNewsKommentarAnzahl = getCommentCount($kNews);
 
                 if ((int)$Einstellungen['news']['news_kommentare_anzahlproseite'] > 0) {
-                    $nCountPerPagePref = (int)$Einstellungen['news']['news_kommentare_anzahlproseite'];
+                    $nCountPerPagePref   = (int)$Einstellungen['news']['news_kommentare_anzahlproseite'];
                     $itemsPerPageOptions = [$nCountPerPagePref, $nCountPerPagePref * 2, $nCountPerPagePref * 5];
                 } else {
                     $itemsPerPageOptions = [10, 20, 50];
                 }
-                
+
                 $oPagiComments = (new Pagination('comments'))
                     ->setItemsPerPageOptions($itemsPerPageOptions)
                     ->setItemCount($oNewsKommentarAnzahl->nAnzahl)
                     ->assemble();
 
                 $oNewsKommentar_arr = getNewsComments($kNews, $oPagiComments->getLimitSQL());
-                
+
                 $smarty->assign('oNewsKommentar_arr', $oNewsKommentar_arr)
                     ->assign('oPagiComments', $oPagiComments);
 
@@ -291,7 +291,7 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
             $oNewsUebersichtAll  = getFullNewsOverview($oSQL);
             // Pagination
             $oPagination = (new Pagination())
-                ->setItemsPerPageOptions([2,5,10])
+                ->setItemsPerPageOptions([2, 5, 10])
                 ->setItemCount($oNewsUebersichtAll->nAnzahl)
                 ->assemble();
             // Get filtered news of current page

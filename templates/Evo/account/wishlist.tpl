@@ -98,7 +98,7 @@
                                         <span class="fa fa-gears"></span>
                                     </a>
                                 {else}
-                                    <a href="{get_static_route id='jtl.php'}.php?wl={$CWunschliste->kWunschliste}&wlph={$CWunschlistePos->kWunschlistePos}{if isset($wlsearch)}&wlsearch=1&cSuche={$wlsearch}{/if}" class="btn btn-primary" title="{lang key="wishlistaddToCart" section="login"}">
+                                    <a href="{get_static_route id='jtl.php'}?wl={$CWunschliste->kWunschliste}&wlph={$CWunschlistePos->kWunschlistePos}{if isset($wlsearch)}&wlsearch=1&cSuche={$wlsearch}{/if}" class="btn btn-primary" title="{lang key="wishlistaddToCart" section="login"}">
                                         <span class="fa fa-shopping-cart"></span>
                                     </a>
                                 {/if}

@@ -8,6 +8,12 @@
     {assign var=cUrlAppend value=$cUrlAppend|cat:'#'|cat:$cAnchor}
 {/if}
 
+{if !isset($cThisUrl)}
+    {assign var=cThisUrl value=''}
+{/if}
+
+{get_static_route id=$cThisUrl assign=cThisUrl}
+
 <div class="block">
     {if $oPagination->getPageCount() > 1}
         <div class="form-group">
@@ -20,12 +26,12 @@
             <ul class="pagination btn-group">
                 <li>
                     <a {if $oPagination->getPrevPage() != $oPagination->getPage()}
-                        href="{$smarty.server.SCRIPT_NAME}?{$oPagination->getId()}_nPage={$oPagination->getPrevPage()}&{$cUrlAppend}"
+                        href="{$cThisUrl}?{$oPagination->getId()}_nPage={$oPagination->getPrevPage()}&{$cUrlAppend}"
                     {/if}>&laquo;</a>
                 </li>
                 {if $oPagination->getLeftRangePage() > 0}
                     <li>
-                        <a href="{$smarty.server.SCRIPT_NAME}?{$oPagination->getId()}_nPage=0&{$cUrlAppend}">1</a>
+                        <a href="{$cThisUrl}?{$oPagination->getId()}_nPage=0&{$cUrlAppend}">1</a>
                     </li>
                 {/if}
                 {if $oPagination->getLeftRangePage() > 1}
@@ -35,7 +41,7 @@
                 {/if}
                 {for $i=$oPagination->getLeftRangePage() to $oPagination->getRightRangePage()}
                     <li{if $oPagination->getPage() == $i} class="active"{/if}>
-                        <a href="{$smarty.server.SCRIPT_NAME}?{$oPagination->getId()}_nPage={$i}&{$cUrlAppend}">{$i+1}</a>
+                        <a href="{$cThisUrl}?{$oPagination->getId()}_nPage={$i}&{$cUrlAppend}">{$i+1}</a>
                     </li>
                 {/for}
                 {if $oPagination->getRightRangePage() < $oPagination->getPageCount() - 2}
@@ -45,19 +51,19 @@
                 {/if}
                 {if $oPagination->getRightRangePage() < $oPagination->getPageCount() - 1}
                     <li>
-                        <a href="{$smarty.server.SCRIPT_NAME}?{$oPagination->getId()}_nPage={$oPagination->getPageCount() - 1}&{$cUrlAppend}">{$oPagination->getPageCount()}</a>
+                        <a href="{$cThisUrl}?{$oPagination->getId()}_nPage={$oPagination->getPageCount() - 1}&{$cUrlAppend}">{$oPagination->getPageCount()}</a>
                     </li>
                 {/if}
                 <li>
                     <a {if $oPagination->getNextPage() != $oPagination->getPage()}
-                        href="{$smarty.server.SCRIPT_NAME}?{$oPagination->getId()}_nPage={$oPagination->getNextPage()}&{$cUrlAppend}"
+                        href="{$cThisUrl}?{$oPagination->getId()}_nPage={$oPagination->getNextPage()}&{$cUrlAppend}"
                     {/if}>&raquo;</a>
                 </li>
             </ul>
         </div>
     {/if}
 
-    <form action="{if isset($cAnchor)}#{$cAnchor}{/if}" method="get" class="form-inline">
+    <form action="{$cThisUrl}{if isset($cAnchor)}#{$cAnchor}{/if}" method="get" class="form-inline">
         {foreach $cParam_arr as $cParamName => $cParamValue}
             <input type="hidden" name="{$cParamName}" value="{$cParamValue}">
         {/foreach}

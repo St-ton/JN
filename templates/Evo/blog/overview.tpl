@@ -70,41 +70,5 @@
         </div>
     {/if}
 
-    {if isset($oBlaetterNavi->nAktiv) && $oBlaetterNavi->nAktiv == 1}
-        <div class="row">
-            <div class="col-xs-7 col-md-8 col-lg-9">
-                <ul class="pagination">
-                    {if $oBlaetterNavi->nAktuelleSeite > 1}
-                        <li>
-                            <a href="{get_static_route id='news.php'}?s={$oBlaetterNavi->nVoherige}">&laquo; {lang key="previous" section="productOverview"}</a>
-                        </li>
-                    {/if}
-                    {if $oBlaetterNavi->nAnfang != 0}
-                        <li><a href="{get_static_route id='news.php'}?s={$oBlaetterNavi->nAnfang}">{$oBlaetterNavi->nAnfang}</a> ...</li>
-                    {/if}
-                    {foreach name=blaetternavi from=$oBlaetterNavi->nBlaetterAnzahl_arr item=Blatt}
-                        {if $oBlaetterNavi->nAktuelleSeite == $Blatt}
-                            <li class="active"><span>{$Blatt}</span></li>
-                        {else}
-                            <li><a href="{get_static_route id='news.php'}?s={$Blatt}">{$Blatt}</a></li>
-                        {/if}
-                    {/foreach}
-                    {if $oBlaetterNavi->nEnde != 0}
-                        <li> ... <a href="{get_static_route id='news.php'}?s={$oBlaetterNavi->nEnde}">{$oBlaetterNavi->nEnde}</a></li>
-                    {/if}
-                    {if $oBlaetterNavi->nAktuelleSeite < $oBlaetterNavi->nSeiten}
-                        <li>
-                            <a href="{get_static_route id='news.php'}?s={$oBlaetterNavi->nNaechste}">{lang key="next" section="productOverview"} &raquo;</a>
-                        </li>
-                    {/if}
-                </ul>
-            </div>
-            <div class="col-xs-6 col-md-4 col-lg-3 text-right">
-                <div class="pagination pagination-text">
-                    {$oBlaetterNavi->nVon}
-                    - {$oBlaetterNavi->nBis} {lang key="from" section="product rating"} {$oBlaetterNavi->nAnzahl}
-                </div>
-            </div>
-        </div>
-    {/if}
+    {include file='snippets/pagination.tpl' oPagination=$oPagination cThisUrl='news.php'}
 {/if}

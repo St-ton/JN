@@ -830,6 +830,8 @@ if (isset($_SESSION['news.cHinweis']) && !empty($_SESSION['news.cHinweis'])) {
     unset($_SESSION['news.cHinweis']);
 }
 
+$nMaxFileSize  = getMaxFileSize(ini_get('upload_max_filesize'));
+
 $oKundengruppe_arr = Shop::DB()->query(
     "SELECT kKundengruppe, cName
         FROM tkundengruppe
@@ -841,6 +843,7 @@ $smarty->assign('oKundengruppe_arr', $oKundengruppe_arr)
        ->assign('fehler', $cFehler)
        ->assign('step', $step)
        ->assign('Sprachen', $Sprachen)
+       ->assign('nMaxFileSize', $nMaxFileSize)
        ->assign('kSprache', (int)$_SESSION['kSprache'])
        ->assign('shopURL', Shop::getURL())
        ->display('news.tpl');

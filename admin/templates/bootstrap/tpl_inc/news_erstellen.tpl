@@ -1,6 +1,7 @@
 <script type="text/javascript">
     var i = 10,
-        j = 2;
+        j = 2,
+        file2large = false;
 
     function addInputRow() {ldelim}
         var row = document.getElementById('formtable').insertRow(i),
@@ -30,6 +31,34 @@
         i += 1;
         j += 1;
     {rdelim}
+    {literal}
+
+    $(document).ready(function () {
+
+        $('form input[type=file]').change(function(e){
+            $('form div.alert').slideUp();
+            var filesize= this.files[0].size;
+            {/literal}
+            var maxsize = {$nMaxFileSize};
+            {literal}
+            if (filesize >= maxsize) {
+                $(this).after('<div class="alert alert-danger"><i class="fa fa-warning"></i> Die Datei ist gr&ouml;&szlig;er als das Uploadlimit des Servers.</div>').slideDown();
+                file2large = true;
+            } else {
+                $(this).closest('div.alert').slideUp();
+                file2large = false;
+            }
+        });
+
+    });
+
+    function checkfile(e){
+        e.preventDefault();
+        if (!file2large){
+            document.news.submit();
+        }
+    }
+    {/literal}
 </script>
 
 {include file='tpl_inc/seite_header.tpl' cTitel=#news# cBeschreibung=#newsDesc#}
@@ -219,7 +248,7 @@
                 </div>
                 <div class="panel-footer">
                     <span class="btn-group">
-                        <button name="speichern" type="button" value="{#newsSave#}" onclick="document.news.submit();" class="btn btn-primary"><i class="fa fa-save"></i> {#newsSave#}</button>
+                        <button name="speichern" type="button" value="{#newsSave#}" onclick="checkfile(event);" class="btn btn-primary"><i class="fa fa-save"></i> {#newsSave#}</button>
                         {if isset($oNews->kNews) && $oNews->kNews > 0}
                             <button type="submit" name="continue" value="1" class="btn btn-default" id="save-and-continue">{#newsSave#} und weiter bearbeiten</button>
                         {/if}

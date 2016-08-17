@@ -142,7 +142,7 @@ switch ($cAction) {
         $oExtension    = holeExtension($id);
         $oSprache      = Sprache::getInstance(false);
         $oSprachen_arr = $oSprache->gibInstallierteSprachen();
-        $nMaxFileSize  = return_bytes(ini_get('upload_max_filesize'));
+        $nMaxFileSize  = getMaxFileSize(ini_get('upload_max_filesize'));
 
         $smarty->assign('oExtension', $oExtension)
                ->assign('cBannerFile_arr', holeBannerDateien())
@@ -160,7 +160,7 @@ switch ($cAction) {
     case 'new':
         $oSprache      = Sprache::getInstance(false);
         $oSprachen_arr = $oSprache->gibInstallierteSprachen();
-        $nMaxFileSize  = return_bytes(ini_get('upload_max_filesize'));
+        $nMaxFileSize  = getMaxFileSize(ini_get('upload_max_filesize'));
         $smarty->assign('oBanner', (isset($oBanner) ? $oBanner : null))
                ->assign('oSprachen_arr', $oSprachen_arr)
                ->assign('oKundengruppe_arr', Kundengruppe::getGroups())

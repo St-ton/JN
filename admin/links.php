@@ -95,6 +95,7 @@ if (isset($_POST['neu_link']) && intval($_POST['neu_link']) === 1 && validateTok
         $link->cURL               = (isset($_POST['cURL'])) ? $_POST['cURL'] : null;
         $link->nSort              = !empty($_POST['nSort']) ? $_POST['nSort'] : 0;
         $link->bSSL               = (int)$_POST['bSSL'];
+        $link->bIsActive          = 1;
         $link->cSichtbarNachLogin = 'N';
         $link->cNoFollow          = 'N';
         $link->cIdentifier        = $_POST['cIdentifier'];
@@ -104,6 +105,9 @@ if (isset($_POST['neu_link']) && intval($_POST['neu_link']) === 1 && validateTok
         }
         if (is_array($_POST['cKundengruppen']) && in_array('-1', $_POST['cKundengruppen'])) {
             $link->cKundengruppen = 'NULL';
+        }
+        if (isset($_POST['bIsActive']) && intval($_POST['bIsActive']) !== 1) {
+            $link->bIsActive = 0;
         }
         if (isset($_POST['cSichtbarNachLogin']) && $_POST['cSichtbarNachLogin'] === 'Y') {
             $link->cSichtbarNachLogin = 'Y';

@@ -320,6 +320,7 @@ class LinkHelper
                     $linkGroups->{$Linkgruppe->cTemplatename}->cLocalizedName[$Linkgruppesprache->cISOSprache] = $Linkgruppesprache->cName;
                 }
 
+                $active = " AND tlink.bIsActive = 1 ";
                 $loginSichtbarkeit = (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) ?
                     '' :
                     " AND tlink.cSichtbarNachLogin = 'N' ";
@@ -328,7 +329,7 @@ class LinkHelper
                         FROM tlink
                         LEFT JOIN tplugin
                             ON tplugin.kPlugin = tlink.kPlugin
-                        WHERE tlink.kLinkgruppe = " . (int)$Linkgruppe->kLinkgruppe . " " . $loginSichtbarkeit . "
+                        WHERE tlink.kLinkgruppe = " . $Linkgruppe->kLinkgruppe . " " . $loginSichtbarkeit . " " . $active . "
                             AND (tlink.cKundengruppen IS NULL
                             OR tlink.cKundengruppen = 'NULL'
                             OR tlink.cKundengruppen LIKE '" . $customerGroupID . ";%'
@@ -792,6 +793,7 @@ class LinkHelper
         $Link = new stdClass();
         if ($kLink > 0) {
             //hole Link
+            $active = " AND tlink.bIsActive = 1 ";
             $loginSichtbarkeit = " AND tlink.cSichtbarNachLogin = 'N' ";
             if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
                 $loginSichtbarkeit = '';
@@ -804,6 +806,7 @@ class LinkHelper
                         AND tseo.kKey = " . $kLink . "
                         AND tseo.kSprache = " . (int)Shop::$kSprache . "
                     WHERE tlink.kLink = " . $kLink . "
+                        " . $active . "
                         " . $loginSichtbarkeit . "
                         AND (tlink.cKundengruppen IS NULL
                         OR tlink.cKundengruppen = 'NULL'

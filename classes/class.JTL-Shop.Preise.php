@@ -20,6 +20,11 @@ class Preise
     public $kArtikel;
 
     /**
+     * @var int
+     */
+    public $kKunde;
+
+    /**
      * @var string
      */
     public $cPreis1Localized;
@@ -289,30 +294,40 @@ class Preise
      *
      * @param int $kKundengruppe
      * @param int $kArtikel
+     * @param int $kKunde
      *
      * @return Preise Object
      */
-    public function __construct($kKundengruppe, $kArtikel)
+    public function __construct($kKundengruppe, $kArtikel, $kKunde = 0)
     {
         $kKundengruppe = (int)$kKundengruppe;
         $kArtikel      = (int)$kArtikel;
+        $kKunde        = (int)$kKunde;
         $prices        = Shop::DB()->query("
             SELECT *
                 FROM tpreis AS p
                 JOIN tpreisdetail AS d ON d.kPreis = p.kPreis
                 WHERE p.kArtikel = {$kArtikel}
                     AND p.kKundengruppe = {$kKundengruppe}
+                    AND IFNULL(p.kKunde, 0) = (
+						SELECT max(IFNULL(p1.kKunde, 0))
+						FROM tpreis AS p1
+						WHERE p1.kArtikel = p.kArtikel
+							AND p1.kKundengruppe = p.kKundengruppe
+							AND (p1.kKunde = {$kKunde} OR p1.kKunde IS NULL)
+                    )
                 ORDER BY d.nAnzahlAb", 2);
         if (count($prices) > 0) {
             $tax                 = Shop::DB()->query("SELECT kSteuerklasse FROM tartikel WHERE kArtikel = " . $kArtikel, 1);
             $this->fUst          = gibUst($tax->kSteuerklasse);
             $this->kArtikel      = $kArtikel;
             $this->kKundengruppe = $kKundengruppe;
+            $this->kKunde        = $kKunde;
             $specialPriceValue   = null;
             foreach ($prices as $i => $price) {
                 // Standardpreis
                 if ($price->nAnzahlAb < 1) {
-                    $this->fVKNetto = (float) $price->fVKNetto;
+                    $this->fVKNetto = (float)$price->fVKNetto;
                     $specialPrice   = Shop::DB()->query("
                         SELECT tsonderpreise.fNettoPreis, tartikelsonderpreis.dEnde AS dEnde_en,
                             DATE_FORMAT(tartikelsonderpreis.dEnde, '%d.%m.%Y') AS dEnde_de
@@ -326,9 +341,10 @@ class Preise
                                 AND (tartikelsonderpreis.nAnzahl <= tartikel.fLagerbestand OR tartikelsonderpreis.nIstAnzahl = 0)
                             WHERE tsonderpreise.kKundengruppe = {$kKundengruppe}", 1);
 
-                    if (isset($specialPrice->fNettoPreis) && (double) $specialPrice->fNettoPreis < $this->fVKNetto) {
+                    if (isset($specialPrice->fNettoPreis) && (double)$specialPrice->fNettoPreis < $this->fVKNetto) {
+                        $specialPriceValue       = (double)$specialPrice->fNettoPreis;
                         $this->alterVKNetto      = $this->fVKNetto;
-                        $this->fVKNetto          = $specialPriceValue          = (double) $specialPrice->fNettoPreis;
+                        $this->fVKNetto          = $specialPriceValue;
                         $this->Sonderpreis_aktiv = 1;
                         $this->SonderpreisBis_de = $specialPrice->dEnde_de;
                         $this->SonderpreisBis_en = $specialPrice->dEnde_en;
@@ -339,12 +355,12 @@ class Preise
                         $scaleGetter = "nAnzahl{$i}";
                         $priceGetter = "fPreis{$i}";
 
-                        $this->{$scaleGetter} = (int) $price->nAnzahlAb;
-                        $this->{$priceGetter} = ($specialPriceValue !== null) ? $specialPriceValue : (double) $price->fVKNetto;
+                        $this->{$scaleGetter} = (int)$price->nAnzahlAb;
+                        $this->{$priceGetter} = ($specialPriceValue !== null) ? $specialPriceValue : (double)$price->fVKNetto;
                     }
 
-                    $this->nAnzahl_arr[] = (int) $price->nAnzahlAb;
-                    $this->fPreis_arr[]  = ($specialPriceValue !== null && $specialPriceValue < (double) $price->fVKNetto) ? $specialPriceValue : (double) $price->fVKNetto;
+                    $this->nAnzahl_arr[] = (int)$price->nAnzahlAb;
+                    $this->fPreis_arr[]  = ($specialPriceValue !== null && $specialPriceValue < (double)$price->fVKNetto) ? $specialPriceValue : (double)$price->fVKNetto;
                 }
             }
         }
@@ -571,7 +587,7 @@ class Preise
      */
     public static function getPriceJoinSql($kKundengruppe, $priceAlias = 'tpreis', $detailAlias = 'tpreisdetail', $productAlias = 'tartikel')
     {
-        $kKundengruppe = (int) $kKundengruppe;
+        $kKundengruppe = (int)$kKundengruppe;
 
         return "JOIN tpreis AS {$priceAlias} ON {$priceAlias}.kArtikel = {$productAlias}.kArtikel
                     AND {$priceAlias}.kKundengruppe = {$kKundengruppe}

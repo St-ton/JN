@@ -1088,7 +1088,7 @@ function pruefeFuegeEinInWarenkorb($Artikel, $anzahl, $oEigenschaftwerte_arr, $n
         $redirectParam[] = R_UNVERKAEUFLICH;
     }
     // Preis auf Anfrage
-    // Workaround um Konfigartikel mit preis=0 kaufbar zu machen
+    // Workaround um Konfigartikel mit Preis=0 kaufbar zu machen
     if(($Artikel->bHasKonfig === false && !empty($Artikel->isKonfigItem) && $Artikel->inWarenkorbLegbar === INWKNICHTLEGBAR_PREISAUFANFRAGE)){
         $Artikel->inWarenkorbLegbar = 1;
     }
@@ -1227,7 +1227,7 @@ function fuegeEinInWarenkorb($kArtikel, $anzahl, $oEigenschaftwerte_arr = '', $n
 
         // Prüfung
         $redirectParam = pruefeFuegeEinInWarenkorb($Artikel, $anzahl, $oEigenschaftwerte_arr);
-        //Woraround Kongiitems mit Preis=0 kaufbar machen
+        //Workaround Konfigitems mit Preis=0 kaufbar machen
         if(!empty($kKonfigitem) && $redirectParam[0] === 16){
             unset($redirectParam[0]);
         }

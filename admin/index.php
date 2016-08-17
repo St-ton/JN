@@ -87,20 +87,18 @@ if (isset($_POST['adminlogin']) && intval($_POST['adminlogin']) === 1) {
                 break;
 
             case 1:
+				$_SESSION['loginIsValid'] = true; // "enable" the "header.tpl"-navigation again
                 if (file_exists(CAPTCHA_LOCKFILE)) {
                     unlink(CAPTCHA_LOCKFILE);
                 }
                 if ($oAccount->permission('SHOP_UPDATE_VIEW')) {
                     if ($oUpdater->hasPendingUpdates()) {
-                        $_SESSION['loginIsValid'] = true; // "enable" the "header.tpl"-navigation again
                         header('Location: ' . Shop::getURL(true) . '/' . PFAD_ADMIN . 'dbupdater.php');
                         exit;
                     }
                 }
                 if (isset($_REQUEST['uri']) && strlen(trim($_REQUEST['uri'])) > 0) {
-                    $url = base64_decode(trim($_REQUEST['uri']));
-                    header('Location: ' . Shop::getURL(true) . '/' . PFAD_ADMIN . $url);
-                    exit;
+                    redirectToURI($_REQUEST['uri']);
                 }
                 header('Location: ' . Shop::getURL(true) . '/' . PFAD_ADMIN . 'index.php');
                 exit;
@@ -175,7 +173,19 @@ function openDashboard() {
                ->assign('bInstallExists', is_dir(PFAD_ROOT . 'install'));
     }
     $smarty->display('dashboard.tpl');
+    exit();
 }
+
+/**
+ * redirects to a given (base64-encoded) URI
+ * (prevents code duplication)
+ */
+function redirectToURI($szURI) {
+    $url = base64_decode(trim($_REQUEST['uri']));
+    header('Location: ' . Shop::getURL(true) . '/' . PFAD_ADMIN . $url);
+    exit;
+}
+
 
 unset($_SESSION['AdminAccount']->TwoFA_active);
 if ($oAccount->getIsAuthenticated()) {
@@ -183,13 +193,18 @@ if ($oAccount->getIsAuthenticated()) {
     if (!$oAccount->getIsTwoFaAuthenticated()) {
         // activate the 2FA-code input-field in the login-template(-page)
         $_SESSION['AdminAccount']->TwoFA_active = true;
+        $_SESSION['jtl_token'] = isset($_POST['jtl_token']) ? $_POST['jtl_token'] : ''; // restore first generated token from POST!
         // if our check failed, we redirect to login
         if (isset($_POST['TwoFA_code']) && '' !== $_POST['TwoFA_code']) {
 
             if ($oAccount->doTwoFA()) {
                 $_SESSION['AdminAccount']->TwoFA_expired = false;
+				$_SESSION['loginIsValid'] = true; // "enable" the "header.tpl"-navigation again
+
+                if (isset($_REQUEST['uri']) && strlen(trim($_REQUEST['uri'])) > 0) {
+                    redirectToURI($_REQUEST['uri']);
+                }
                 openDashboard();
-                exit();
             }
         } else {
             $_SESSION['AdminAccount']->TwoFA_expired = true;

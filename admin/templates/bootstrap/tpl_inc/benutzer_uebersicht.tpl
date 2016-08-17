@@ -19,6 +19,7 @@
                     <tr>
                         <th class="tleft">#</th>
                         <th class="tcenter">{#benutzerLogin#}</th>
+                        <th class="tcenter">{#benutzer2FA#}</th>
                         <th class="tcenter">{#benutzerMail#}</th>
                         <th class="tcenter">{#benutzerGruppe#}</th>
                         <th class="tcenter">{#benutzerLoginVersuche#}</th>
@@ -32,6 +33,7 @@
                         <tr>
                             <td class="tleft">{$oAdmin->kAdminlogin}</td>
                             <td class="tcenter">{$oAdmin->cLogin}</td>
+                            <td class="tcenter">{if $oAdmin->b2FAauth}{#stateON#}{else}{#stateOFF#}{/if}</td>
                             <td class="tcenter">{$oAdmin->cMail}</td>
                             <td class="tcenter">
                                 {if $oAdmin->kAdminlogingruppe > 1}

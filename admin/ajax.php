@@ -23,9 +23,14 @@ if (isset($_GET['query']) && isset($_GET['type']) && validateToken()) {
             die($jsonAPI->getManufacturers());
         case 'TwoFA':
             $oTwoFA = new TwoFA();
-            $oTwoFA->setUser($_GET['userName']);
-            $oTwoFA->createNewSecret(); // create a new secret for that user
-            die($oTwoFA->getQRcode()); // fetch the QR-code for that new secret to display it direkt in the page
+            $oTwoFA->setUserByName($_GET['userName']);
+
+            $oUserData = new stdClass();
+            $oUserData->szSecret = $oTwoFA->createNewSecret()->getSecret();
+            $oUserData->szQRcode = $oTwoFA->getQRcode();
+            $szJSONuserData = json_encode($oUserData);
+
+            die($szJSONuserData);
         default :
             die();
     }

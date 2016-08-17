@@ -43,14 +43,6 @@
             {/if}
         </select>
 
-        <select name="nAnzahl" onchange="this.form.submit();" class="form-control">
-            <option value="-1"{if $smarty.session.NewsNaviFilter->nAnzahl == -1} selected{/if}>{lang key="newsPerSite" section="news"}</option>
-            <option value="2"{if $smarty.session.NewsNaviFilter->nAnzahl == 2} selected{/if}>2</option>
-            <option value="5"{if $smarty.session.NewsNaviFilter->nAnzahl == 5} selected{/if}>5</option>
-            <option value="10"{if $smarty.session.NewsNaviFilter->nAnzahl == 10} selected{/if}>10</option>
-            <option value="20"{if $smarty.session.NewsNaviFilter->nAnzahl == 20} selected{/if}>20</option>
-        </select>
-
         <input name="submitGo" type="submit" value="{lang key="filterGo" section="global"}" class="btn btn-default" />
     </form>
 </div>

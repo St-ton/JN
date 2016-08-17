@@ -5,7 +5,6 @@
  */
 require_once dirname(__FILE__) . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'blaetternavi.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'news_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'seite_inc.php';
 
@@ -41,7 +40,6 @@ $startKat               = new Kategorie();
 $startKat->kKategorie   = 0;
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 
-$nAnzahlProSeite     = 2;
 $nAktuelleSeite      = (isset(Shop::$kSeite) && Shop::$kSeite > 0) ? Shop::$kSeite : 1;
 $oNewsUebersicht_arr = array();
 
@@ -55,11 +53,6 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
     } elseif (verifyGPCDataInteger('nSort') === -1) {
         $_SESSION['NewsNaviFilter']->nSort = -1;
     }
-    if ($cParameter_arr['nAnzahl'] > 0) {
-        $_SESSION['NewsNaviFilter']->nAnzahl = $cParameter_arr['nAnzahl'];
-    } elseif ($cParameter_arr['nAnzahl'] === -1) {
-        $_SESSION['NewsNaviFilter']->nAnzahl = -1;
-    }
     if (strlen($cParameter_arr['cDatum']) > 0) {
         $_date                              = explode('-', $cParameter_arr['cDatum']);
         $_SESSION['NewsNaviFilter']->cDatum = (count($_date) > 1) ? StringHandler::filterXSS($cParameter_arr['cDatum']) : -1;
@@ -72,7 +65,6 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
         $_SESSION['NewsNaviFilter']->nNewsKat = -1;
     }
 
-    $nAnzahlProSeite = (isset($_SESSION['NewsNaviFilter']->nAnzahl)) ? $_SESSION['NewsNaviFilter']->nAnzahl : null;
     $cacheID         = $smarty->getCacheID('blog/index.tpl', array('news' => $cParameter_arr));
 
     if ($smarty->isCached('blog/index.tpl', $cacheID)) {
@@ -286,9 +278,6 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
             if (!isset($_SESSION['NewsNaviFilter']->nSort)) {
                 $_SESSION['NewsNaviFilter']->nSort = -1;
             }
-            if (!isset($_SESSION['NewsNaviFilter']->nAnzahl)) {
-                $_SESSION['NewsNaviFilter']->nAnzahl = -1;
-            }
             if (!isset($_SESSION['NewsNaviFilter']->cDatum)) {
                 $_SESSION['NewsNaviFilter']->cDatum = -1;
             }
@@ -328,7 +317,6 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
             $smarty->assign('oNewsUebersicht_arr', $oNewsUebersicht_arr)
                    ->assign('oNewsKategorie_arr', holeNewsKategorien($oSQL->cDatumSQL, true))
                    ->assign('oDatum_arr', baueDatum($oDatum_arr))
-                   ->assign('nAnzahl', $_SESSION['NewsNaviFilter']->nAnzahl)
                    ->assign('nSort', $_SESSION['NewsNaviFilter']->nSort)
                    ->assign('cDatum', $_SESSION['NewsNaviFilter']->cDatum)
                    ->assign('nNewsKat', $_SESSION['NewsNaviFilter']->nNewsKat)

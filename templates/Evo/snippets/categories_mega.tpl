@@ -69,7 +69,7 @@
                                                         <div class="category-wrapper top15{if $sub->kKategorie == $activeId || (isset($activeParents[1]) && $activeParents[1]->kKategorie == $sub->kKategorie)} active{/if}">
                                                             {if isset($Einstellungen.template.megamenu.show_category_images) && $Einstellungen.template.megamenu.show_category_images !== 'N'}
                                                                 <div class="img text-center">
-                                                                    <a href="{$sub->cURL}"><img src="{$sub->cBildURLFull}" class="image" alt="{$sub->cName|escape:'quotes'}"></a>
+                                                                    <a href="{$sub->cURL}"><img src="{$sub->cBildURLFull}" class="image" alt="{$sub->cName|escape:'html'}"></a>
                                                                 </div>
                                                             {/if}
                                                             <div class="caption{if isset($Einstellungen.template.megamenu.show_category_images) && $Einstellungen.template.megamenu.show_category_images !== 'N'} text-center{/if}">
@@ -157,7 +157,7 @@
                                             <div class="category-wrapper manufacturer top15{if isset($NaviFilter->Hersteller) && $NaviFilter->Hersteller->kHersteller == $hst->kHersteller} active{/if}">
                                                 {if isset($Einstellungen.template.megamenu.show_category_images) && $Einstellungen.template.megamenu.show_category_images !== 'N'}
                                                     <div class="img text-center">
-                                                        <a href="{$hst->cSeo}"><img src="{$hst->cBildpfadNormal}" class=image alt="{$hst->cName|escape:'quotes'}"></a>
+                                                        <a href="{$hst->cSeo}"><img src="{$hst->cBildpfadNormal}" class=image alt="{$hst->cName|escape:'html'}"></a>
                                                     </div>
                                                 {/if}
                                                 <div class="caption{if isset($Einstellungen.template.megamenu.show_category_images) && $Einstellungen.template.megamenu.show_category_images !== 'N'} text-center{/if}">

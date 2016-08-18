@@ -9,7 +9,7 @@
     {/if}
 
     {get_category_array categoryId=0 assign='categories'}
-    {if !empty($categories)}    
+    {if !empty($categories)}
         {if !isset($activeId)}
             {if isset($NaviFilter->Kategorie) && intval($NaviFilter->Kategorie->kKategorie) > 0}
                 {$activeId = $NaviFilter->Kategorie->kKategorie}
@@ -49,7 +49,7 @@
                                         <div class="col-lg-3 visible-lg">
                                             <div class="mega-info-lg top15">
                                                 {if $category->cBildURL !== 'gfx/keinBild.gif'}
-                                                    <a href="{$category->cURL}"><img src="{$category->cBildURLFull}" class="img-responsive" alt="{$category->cName|escape:'quotes'}"></a>
+                                                    <a href="{$category->cURL}"><img src="{$category->cBildURLFull}" class="img-responsive" alt="{$category->cName|escape:'html'}"></a>
                                                     <div class="clearall top15"></div>
                                                 {/if}
                                                 <div class="description text-muted small">{$category->cBeschreibung}</div>

@@ -41,8 +41,12 @@ class Session
      * @param string $sessionName
      * @return Session
      */
-    public static function getInstance($start = true, $force = false, $sessionName = self::DefaultSession)
+    public static function getInstance($start = true, $force = false, $sessionName = null)
     {
+        if (!isset($sessionName)) {
+            $sessionName = self::$_sessionName;
+        }
+        
         if (self::$_sessionName !== $sessionName) {
             $force = true;
         }

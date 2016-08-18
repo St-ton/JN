@@ -1880,15 +1880,13 @@ final class Shop
         };
         if (isset($_COOKIE['eSIdAdm'])) {
             if (session_name() !== 'eSIdAdm') {
-                $oldSessName = session_name();
-                $oldID       = session_id();
+                $oldID = session_id();
                 session_write_close();
                 session_id($_COOKIE['eSIdAdm']);
                 $result = $isLogged();
                 session_write_close();
-                session_name($oldSessName);
                 session_id($oldID);
-                new Session(true, $oldSessName);
+                Session::getInstance(true, true);
             } else {
                 $result = $isLogged();
             }

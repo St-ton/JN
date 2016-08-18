@@ -354,6 +354,37 @@ function checkDependencies($aValues)
 
         $objResponse->jsfunc('$.evo.article().setPrice', $fVK[$nNettoPreise], $cVKLocalized[$nNettoPreise], $cPriceLabel);
         $objResponse->jsfunc('$.evo.article().setUnitWeight', $oArtikel->fGewicht, $weightTotal . ' ' . $cUnitWeightLabel);
+
+        if (!empty($oArtikel->staffelPreis_arr)) {
+            $fStaffelVK = [0 => [], 1 => []];
+            $cStaffelVK = [0 => [], 1 => []];
+            foreach ($oArtikel->staffelPreis_arr as $staffelPreis) {
+                $nAnzahl                 = &$staffelPreis['nAnzahl'];
+                $fStaffelVKNetto         = $oArtikel->gibPreis($nAnzahl, $valueID_arr, Kundengruppe::getCurrent());
+                $fStaffelVK[0][$nAnzahl] = berechneBrutto($fStaffelVKNetto, $_SESSION['Steuersatz'][$oArtikel->kSteuerklasse]);
+                $fStaffelVK[1][$nAnzahl] = $fStaffelVKNetto;
+                $cStaffelVK[0][$nAnzahl] = gibPreisStringLocalized($fStaffelVK[0][$nAnzahl]);
+                $cStaffelVK[1][$nAnzahl] = gibPreisStringLocalized($fStaffelVK[1][$nAnzahl]);
+            }
+
+            $objResponse->jsfunc('$.evo.article().setStaffelPrice', $fStaffelVK[$nNettoPreise], $cStaffelVK[$nNettoPreise]);
+        }
+
+        if ($oArtikel->cVPE === 'Y' && $oArtikel->fVPEWert > 0 && $oArtikel->cVPEEinheit && !empty($oArtikel->Preise)) {
+            $oArtikel->baueVPE($fVKNetto);
+            $fStaffelVPE = [0 => [], 1 => []];
+            $cStaffelVPE = [0 => [], 1 => []];
+            foreach ($oArtikel->staffelPreis_arr as $staffelPreis) {
+                $nAnzahl                  = &$staffelPreis['nAnzahl'];
+                $fStaffelVPENetto         = $oArtikel->gibPreis($nAnzahl, $valueID_arr, Kundengruppe::getCurrent());
+                $fStaffelVPE[0][$nAnzahl] = berechneBrutto($fStaffelVPENetto / $oArtikel->fVPEWert, $_SESSION['Steuersatz'][$oArtikel->kSteuerklasse]);
+                $fStaffelVPE[1][$nAnzahl] = $fStaffelVPENetto / $oArtikel->fVPEWert;
+                $cStaffelVPE[0][$nAnzahl] = gibPreisStringLocalized($fStaffelVPE[0][$nAnzahl]);
+                $cStaffelVPE[1][$nAnzahl] = gibPreisStringLocalized($fStaffelVPE[1][$nAnzahl]);
+            }
+
+            $objResponse->jsfunc('$.evo.article().setVPEPrice', $oArtikel->cLocalizedVPE[$nNettoPreise], $fStaffelVPE[$nNettoPreise], $cStaffelVPE[$nNettoPreise]);
+        }
     }
 
     return $objResponse;

@@ -107,10 +107,10 @@
                             <tbody>
                                 {foreach $Artikel->staffelPreis_arr as $differentialPrice}
                                     {if $differentialPrice.nAnzahl > 0}
-                                        <tr>
+                                        <tr class="differential-price-{$differentialPrice.nAnzahl}">
                                             <td class="text-right">{$differentialPrice.nAnzahl}</td>
-                                            <td class="text-right">{$differentialPrice.cPreisLocalized[$NettoPreise]}</td>
-                                            {if !empty($differentialPrice.cBasePriceLocalized)}<td class="text-muted">{$differentialPrice.cBasePriceLocalized[$NettoPreise]}</td>{/if}
+                                            <td class="text-right differential-price">{$differentialPrice.cPreisLocalized[$NettoPreise]}</td>
+                                            {if !empty($differentialPrice.cBasePriceLocalized)}<td class="text-muted differential-vpe-price">{$differentialPrice.cBasePriceLocalized[$NettoPreise]}</td>{/if}
                                         </tr>
                                     {/if}
                                 {/foreach}

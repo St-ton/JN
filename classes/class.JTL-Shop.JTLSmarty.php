@@ -992,6 +992,20 @@ class jtlTplClass extends Smarty_Internal_Template
     {
         return parent::_subTemplateRender($this->smarty->getResourceName($template), $cache_id, $compile_id, $caching, $cache_lifetime, $data, $scope, $forceTplCache, $uid, $content_func);
     }
+
+    /**
+     * @param bool $no_output_filter
+     * @param null|int $display
+     * @return string
+     */
+    public function render($no_output_filter = true, $display = null)
+    {
+        if ($no_output_filter === false && $display !== 1) {
+            $no_output_filter = true;
+        }
+
+        return parent::render($no_output_filter, $display);
+    }
 }
 
 /**

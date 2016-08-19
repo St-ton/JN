@@ -993,7 +993,7 @@ class Artikel
             // Ist der Artikel in Variationskombi Kind? Falls ja, hol den Vater und die Kategorie von ihm
             if ($this->kEigenschaftKombi > 0) {
                 $kArtikel = (int)$this->kVaterArtikel;
-            } elseif (!empty($this->oKategorie_arr) && count($this->oKategorie_arr) > 0) {
+            } elseif (!empty($this->oKategorie_arr)) {
                 //oKategorie_arr already has all categories for this article in it
                 if (isset($_SESSION['LetzteKategorie'])) {
                     foreach ($this->oKategorie_arr as $category) {
@@ -3152,8 +3152,9 @@ class Artikel
         // Work Around -.- wenn Einstellung global_sichtbarkeit aktiv ist
         if ($noCache === false) {
             $baseID        = Shop::Cache()->getBaseID();
-            $taxClass      = (isset($_SESSION['Steuersatz'])) ? implode('_', $_SESSION['Steuersatz']) : '';
-            $productHash   = md5($baseID . $this->getOptionsHash($oArtikelOptionen) . $taxClass);
+            $taxClass      = isset($_SESSION['Steuersatz']) ? implode('_', $_SESSION['Steuersatz']) : '';
+            $kKunde        = isset($_SESSION['Kunde']) ? (int)$_SESSION['Kunde']->kKunde : 0;
+            $productHash   = md5($baseID . $this->getOptionsHash($oArtikelOptionen) . $taxClass . $kKunde);
             $cacheID       = 'fa_' . '_' . $kArtikel . '_' . $productHash;
             $this->cacheID = $cacheID;
             if (($artikel = Shop::Cache()->get($cacheID)) !== false) {

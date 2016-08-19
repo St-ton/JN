@@ -28,7 +28,7 @@ class AdminSession
      */
     public function __construct()
     {
-        session_write_close(); // save any previous session data
+        session_write_close(); // save previously created session
         self::$_instance = $this;
         session_name('eSIdAdm');
 

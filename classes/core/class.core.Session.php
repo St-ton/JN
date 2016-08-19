@@ -64,7 +64,7 @@ class Session
      */
     public function __construct($start = true, $sessionName = self::DefaultSession)
     {
-        session_write_close(); // save any previous session data
+        session_write_close(); // save previously created session
         self::$_instance    = $this;
         self::$_sessionName = $sessionName;
         $bot                = false;

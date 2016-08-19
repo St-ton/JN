@@ -234,7 +234,7 @@ function bearbeiteExportformate($oJobQueue)
                     executeHook(HOOK_CRON_EXPORTFORMATE_OUTPUT_FETCHED);
 
                     if (strlen($cOutput) > 0) {
-                        if ($exportformat->cKodierung === 'UTF-8') {
+                        if ($exportformat->cKodierung === 'UTF-8' || $exportformat->cKodierung === 'UTF-8noBOM') {
                             fwrite($datei, utf8_encode($cOutput . "\n"));
                         } else {
                             fwrite($datei, $cOutput . "\n");
@@ -519,8 +519,10 @@ function gibYategoExport($exportformat, $oJobQueue, $ExportEinstellungen)
         $KategorieListe                = array_keys($KategorieListe);
         $oGlobal_arr['shopkategorien'] = getCats($KategorieListe);
 
-        if ($exportformat->cKodierung === 'UTF-8') {
-            $cHeader = "\xEF\xBB\xBF";
+        if ($exportformat->cKodierung === 'UTF-8' || $exportformat->cKodierung === 'UTF-8noBOM') {
+            if ($exportformat->cKodierung === 'UTF-8') {
+                $cHeader = "\xEF\xBB\xBF";
+            }
             writeFile(PATH . 'varianten.csv', $cHeader . utf8_encode(makecsv($oGlobal_arr['varianten'], $oJobQueue->nLimitN) . CRLF . makecsv($oGlobal_arr['variantenwerte'], $oJobQueue->nLimitN)));
             writeFile(PATH . 'artikel.csv', $cHeader . utf8_encode(makecsv($oGlobal_arr['artikel'], $oJobQueue->nLimitN)));
             writeFile(PATH . 'shopkategorien.csv', $cHeader . utf8_encode(makecsv($oGlobal_arr['shopkategorien'], $oJobQueue->nLimitN)));

@@ -303,20 +303,27 @@ class Preise
         $kKundengruppe = (int)$kKundengruppe;
         $kArtikel      = (int)$kArtikel;
         $kKunde        = (int)$kKunde;
-        $prices        = Shop::DB()->query("
+        $filterKunde   = 'AND p.kKunde IS NULL';
+
+        if ($kKunde > 0 && $this->hasCustomPrice($kKunde)) {
+            $filterKunde   = "
+                AND IFNULL(p.kKunde, 0) = (
+                    SELECT max(IFNULL(p1.kKunde, 0))
+                    FROM tpreis AS p1
+                    WHERE p1.kArtikel = p.kArtikel
+                        AND p1.kKundengruppe = p.kKundengruppe
+                        AND (p1.kKunde = {$kKunde} OR p1.kKunde IS NULL)
+                )";
+        }
+
+        $prices = Shop::DB()->query("
             SELECT *
                 FROM tpreis AS p
                 JOIN tpreisdetail AS d ON d.kPreis = p.kPreis
                 WHERE p.kArtikel = {$kArtikel}
-                    AND p.kKundengruppe = {$kKundengruppe}
-                    AND IFNULL(p.kKunde, 0) = (
-						SELECT max(IFNULL(p1.kKunde, 0))
-						FROM tpreis AS p1
-						WHERE p1.kArtikel = p.kArtikel
-							AND p1.kKundengruppe = p.kKundengruppe
-							AND (p1.kKunde = {$kKunde} OR p1.kKunde IS NULL)
-                    )
+                    AND p.kKundengruppe = {$kKundengruppe} {$filterKunde}
                 ORDER BY d.nAnzahlAb", 2);
+
         if (count($prices) > 0) {
             $tax                 = Shop::DB()->query("SELECT kSteuerklasse FROM tartikel WHERE kArtikel = " . $kArtikel, 1);
             $this->fUst          = gibUst($tax->kSteuerklasse);
@@ -365,6 +372,35 @@ class Preise
             }
         }
         $this->berechneVKs();
+    }
+
+    /**
+     * @param int $kKunde
+     * @return bool
+     */
+    protected function hasCustomPrice($kKunde)
+    {
+        $kKunde = (int)$kKunde;
+        if ($kKunde > 0) {
+            $cacheID = 'custprice_' . $kKunde;
+            if (($oCustomPrice = Shop::Cache()->get($cacheID)) === false) {
+                $oCustomPrice = Shop::DB()->query(
+                    "SELECT count(kPreis) AS nAnzahl 
+                        FROM tpreis
+                        WHERE kKunde = {$kKunde}",
+                    1
+                );
+
+                if (is_object($oCustomPrice)) {
+                    $cacheTags = [CACHING_GROUP_ARTICLE];
+                    Shop::Cache()->set($cacheID, $oCustomPrice, $cacheTags);
+                }
+            }
+
+            return is_object($oCustomPrice) && $oCustomPrice->nAnzahl > 0;
+        }
+
+        return false;
     }
 
     /**

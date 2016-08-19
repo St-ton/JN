@@ -921,6 +921,7 @@ function handlePriceFormat($kArtikel, $kKundengruppe, $kKunde = null)
 
     if ($kKunde !== null && intval($kKunde) > 0) {
         $o->kKunde = (int)$kKunde;
+        flushCustomerPriceCache($o->kKunde);
     }
 
     return Shop::DB()->insert('tpreis', $o);
@@ -1108,6 +1109,16 @@ function syncException($msg, $wawiExceptionCode = null)
 function flushCategoryTreeCache()
 {
     return Shop::Cache()->flushTags('jtl_category_tree');
+}
+
+/**
+ * @param int $kKunde
+ * @return bool|int
+ */
+function flushCustomerPriceCache($kKunde)
+{
+    $cacheID = 'custprice_' . (int)$kKunde;
+    return Shop::Cache()->flush($cacheID);
 }
 
 ob_start('handleError');

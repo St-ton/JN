@@ -569,18 +569,20 @@ class LinkHelper
         }
         $oSpeziallinks            = array();
         $_SESSION['Speziallinks'] = array();
-        $oLink_arr                = Shop::DB()->query("SELECT kLink, nLinkart FROM tlink WHERE nLinkart >= 5", 2);
+        $oLink_arr                = Shop::DB()->query("SELECT kLink, nLinkart, cName FROM tlink WHERE nLinkart >= 5 ORDER BY nLinkart", 2);
         foreach ($oLink_arr as &$oLink) {
-            $oLink       = $this->findCMSLinkInSession($oLink->kLink);
-            $oObj        = new stdClass();
-            $oObj->cName = '';
-            if (isset($oLink->cLocalizedName) && array_key_exists($cISO, $oLink->cLocalizedName)) {
-                $oObj->cName = $oLink->cLocalizedName[$cISO];
-            }
-            $oObj->cURL = (isset($oLink->cURLFull)) ? $oLink->cURLFull : '';
-            if (isset($oLink->nLinkart)) {
-                $oSpeziallinks[$oLink->nLinkart] = $oObj;
-            }
+            $oObj           = new stdClass();
+            $oObj->kLink    = (int)$oLink->kLink;
+            $oObj->nLinkart = (int)$oLink->nLinkart;
+            $oLink          = $this->findCMSLinkInSession($oLink->kLink);
+            $oObj->cName    = (isset($oLink->cLocalizedName) && array_key_exists($cISO, $oLink->cLocalizedName)) ?
+                $oLink->cLocalizedName[$cISO] :
+                $oLink->cName;
+            $oObj->cURL     = (isset($oLink->cURLFull)) ?
+                $oLink->cURLFull :
+                '';
+
+            $oSpeziallinks[$oObj->nLinkart] = $oObj;
         }
         Shop::Cache()->set($cacheID, $oSpeziallinks, array(CACHING_GROUP_CORE));
 
@@ -905,7 +907,10 @@ class LinkHelper
     {
         $nLinkart = (int)$nLinkart;
         if ($nLinkart > 0) {
-            $oLink = Shop::DB()->query("SELECT kLink FROM tlink WHERE nLinkart = " . (int)$nLinkart, 1);
+            $allLinks = $this->getSpecialPages();
+            $oLink    = (isset($allLinks[$nLinkart]->kLink)) ?
+                $allLinks[$nLinkart] :
+                Shop::DB()->query("SELECT kLink FROM tlink WHERE nLinkart = " . (int)$nLinkart, 1);
 
             return (isset($oLink->kLink) && $oLink->kLink > 0) ? (int)$oLink->kLink : false;
         }

@@ -595,6 +595,10 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
                                 if (strlen($Hook_arr) === 0) {
                                     return 14;//Die Hook-Werte entsprechen nicht den Konventionen
                                 }
+                                //Hook include Datei vorhanden?
+                                if (!file_exists($cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $cVersionsnummer . '/' . PFAD_PLUGIN_FRONTEND . $Hook_arr)) {
+                                    return 31;// Die Hook-Datei ist nicht vorhanden
+                                }
                             }
                         }
                     } elseif (count($XML_arr['jtlshop3plugin'][0]['Install'][0]['Hooks'][0]) > 1) { //Es gibt nur einen Hook

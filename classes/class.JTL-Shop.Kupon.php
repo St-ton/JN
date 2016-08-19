@@ -799,6 +799,8 @@ class Kupon
      * @param bool $lowerCase
      * @param bool $upperCase
      * @param bool $numberHash
+     * @param string $prefix
+     * @param string $suffix
      * @return string
      */
     public function generateCode($hashLength = 7, $lowerCase = true, $upperCase = true, $numberHash = true, $prefix = '', $suffix = '')
@@ -807,8 +809,8 @@ class Kupon
         $upperCaseString  = $upperCase ? 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' : null;
         $numberHashString = $numberHash ? '0123456789' : null;
 
-        $cCode = $prefix . substr(str_shuffle(str_repeat($lowerCaseString . $upperCaseString . $numberHashString, $hashLength)), 0, $hashLength) . $suffix;
-        while (Shop::DB()->select('tkupon', 'cCode', $cCode)) {
+        $cCode = '';
+        while (empty($cCode) && Shop::DB()->select('tkupon', 'cCode', $cCode)) {
             $cCode = $prefix . substr(str_shuffle(str_repeat($lowerCaseString . $upperCaseString . $numberHashString, $hashLength)), 0, $hashLength) . $suffix;
         }
 

@@ -574,14 +574,14 @@ class LinkHelper
             $oObj           = new stdClass();
             $oObj->kLink    = (int)$oLink->kLink;
             $oObj->nLinkart = (int)$oLink->nLinkart;
+            $oObj->cName    = $oLink->cName;
             $oLink          = $this->findCMSLinkInSession($oLink->kLink);
-            $oObj->cName    = (isset($oLink->cLocalizedName) && array_key_exists($cISO, $oLink->cLocalizedName)) ?
-                $oLink->cLocalizedName[$cISO] :
-                $oLink->cName;
             $oObj->cURL     = (isset($oLink->cURLFull)) ?
                 $oLink->cURLFull :
                 '';
-
+            if (isset($oLink->cLocalizedName) && array_key_exists($cISO, $oLink->cLocalizedName)) {
+                $oLink->cName = $oLink->cLocalizedName[$cISO];
+            }
             $oSpeziallinks[$oObj->nLinkart] = $oObj;
         }
         Shop::Cache()->set($cacheID, $oSpeziallinks, array(CACHING_GROUP_CORE));

@@ -836,10 +836,9 @@ final class Shop
                     $oSeo->kSprache = self::$kSprache;
                 }
                 //EXPERIMENTAL_MULTILANG_SHOP END
-
                 //Link active?
-                if ($oSeo->cKey === 'kLink') {
-                    $bIsActive = self::DB()->select('tlink', 'kLink', $oSeo->kKey,null, null, null, null, false);
+                if (isset($oSeo->cKey) && $oSeo->cKey === 'kLink') {
+                    $bIsActive = self::DB()->select('tlink', 'kLink', $oSeo->kKey);
                     if ($bIsActive->bIsActive === '0') {
                         $oSeo = false;
                     }

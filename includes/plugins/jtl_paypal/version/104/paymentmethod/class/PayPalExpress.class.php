@@ -123,14 +123,14 @@ class PayPalExpress extends PaymentMethod
         }
         $this->config = [
             'mode'            => $this->mode,
+            
             'acct1.UserName'  => $this->benutzer,
             'acct1.Password'  => $this->passwort,
             'acct1.Signature' => $this->signatur,
+            
+            'cache.enabled'   => true,
+            'cache.FileName'  => PFAD_ROOT . PFAD_COMPILEDIR . 'paypalexpress.auth.cache'
         ];
-
-        //$x = PayPalHelper::getStateISO($_SESSION['Lieferadresse']);
-        //die(Var_dump($x));
-
         parent::__construct($this->pluginbez);
     }
 

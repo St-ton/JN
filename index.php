@@ -121,8 +121,7 @@ if ($cParameter_arr['is404'] === true) {
     }
     $parsed = parse_url($uri);
     if (isset($parsed['path']) && (in_array($parsed['path'], array('index.php', 'navi.php')))) {
-        $oLink       = Shop::DB()->query("SELECT kLink FROM tlink WHERE nLinkart = " . LINKTYP_STARTSEITE, 1);
-        $kLink       = $oLink->kLink;
+        $kLink       = $linkHelper->getSpecialPageLinkKey(LINKTYP_STARTSEITE);
         Shop::$kLink = $kLink;
     }
     if (!isset($seo)) {
@@ -134,8 +133,7 @@ if ($cParameter_arr['is404'] === true) {
         $kLink         = $hookInfos['value'];
         $bFileNotFound = $hookInfos['isFileNotFound'];
         if (!$kLink) {
-            $oLink       = Shop::DB()->query("SELECT kLink FROM tlink WHERE nLinkart = " . LINKTYP_404, 1);
-            $kLink       = $oLink->kLink;
+            $kLink       = $linkHelper->getSpecialPageLinkKey(LINKTYP_404);
             Shop::$kLink = $kLink;
         }
     }

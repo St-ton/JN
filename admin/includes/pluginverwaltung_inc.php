@@ -1041,18 +1041,27 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
                                             }
                                         } elseif (isset($cTreffer2_arr[0]) && strlen($cTreffer2_arr[0]) === strlen($l)) {
                                             // Name prüfen
+                                            if (!isset($MethodLanguage_arr['Name'])) {
+                                                return 60;// Der Name in den Zahlungsmethoden Sprache entspricht nicht der Konvention
+                                            }
                                             preg_match("/[a-zA-Z0-9äÄöÖüÜß" . utf8_decode('äÄüÜöÖß') . "\.\,\!\"\§\$\%\&\/\(\)\=\`\´\+\~\*\'\;\-\_\?\{\}\[\] ]+/", $MethodLanguage_arr['Name'], $cTreffer1_arr);
-                                            if (strlen($cTreffer1_arr[0]) != strlen($MethodLanguage_arr['Name'])) {
+                                            if (strlen($cTreffer1_arr[0]) !== strlen($MethodLanguage_arr['Name'])) {
                                                 return 60;// Der Name in den Zahlungsmethoden Sprache entspricht nicht der Konvention
                                             }
                                             // ChargeName prüfen
+                                            if (!isset($MethodLanguage_arr['ChargeName'])) {
+                                                return 61;// Der ChargeName in den Zahlungsmethoden Sprache entspricht nicht der Konvention
+                                            }
                                             preg_match("/[a-zA-Z0-9äÄöÖüÜß" . utf8_decode('äÄüÜöÖß') . "\.\,\!\"\§\$\%\&\/\(\)\=\`\´\+\~\*\'\;\-\_\?\{\}\[\] ]+/", $MethodLanguage_arr['ChargeName'], $cTreffer1_arr);
-                                            if (strlen($cTreffer1_arr[0]) != strlen($MethodLanguage_arr['ChargeName'])) {
+                                            if (strlen($cTreffer1_arr[0]) !== strlen($MethodLanguage_arr['ChargeName'])) {
                                                 return 61;// Der ChargeName in den Zahlungsmethoden Sprache entspricht nicht der Konvention
                                             }
                                             // InfoText prüfen
+                                            if (!isset($MethodLanguage_arr['InfoText'])) {
+                                                return 62;// Der InfoText in den Zahlungsmethoden Sprache entspricht nicht der Konvention
+                                            }
                                             preg_match("/[a-zA-Z0-9äÄöÖüÜß" . utf8_decode('äÄüÜöÖß') . "\.\,\!\"\§\$\%\&\/\(\)\=\`\´\+\~\*\'\;\-\_\?\{\}\[\] ]+/", $MethodLanguage_arr['InfoText'], $cTreffer1_arr);
-                                            if (strlen($cTreffer1_arr[0]) != strlen($MethodLanguage_arr['InfoText'])) {
+                                            if (isset($cTreffer1_arr[0]) && strlen($cTreffer1_arr[0]) !== strlen($MethodLanguage_arr['InfoText'])) {
                                                 return 62;// Der InfoText in den Zahlungsmethoden Sprache entspricht nicht der Konvention
                                             }
                                         }

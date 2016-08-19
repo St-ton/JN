@@ -582,7 +582,11 @@ final class Shop
      */
     public static function bootstrap()
     {
-        $plugins = self::DB()->executeQuery("SELECT kPlugin FROM tplugin WHERE nStatus = 2 AND bBootstrap = 1 ORDER BY nPrio ASC", 2) ?: [];
+        $cacheID = 'plgnbtsrp';
+        if (($plugins = Shop::Cache()->get($cacheID)) === false) {
+            $plugins = self::DB()->executeQuery("SELECT kPlugin FROM tplugin WHERE nStatus = 2 AND bBootstrap = 1 ORDER BY nPrio ASC", 2) ?: [];
+            Shop::Cache()->set($cacheID, $plugins, array(CACHING_GROUP_PLUGIN));
+        }
 
         foreach ($plugins as $plugin) {
             if ($p = Plugin::bootstrapper($plugin->kPlugin)) {
@@ -985,9 +989,8 @@ final class Shop
             $cPath        = self::getRequestUri();
             $cRequestFile = '/' . ltrim($cPath, '/');
             if (in_array($cRequestFile, ['/', '/index.php', '/navi.php'])) {
-                $oLink       = self::DB()->query("SELECT kLink FROM tlink WHERE nLinkart = " . LINKTYP_STARTSEITE, 1);
-                $kLink       = $oLink->kLink;
                 $linkHelper  = LinkHelper::getInstance();
+                $kLink       = $linkHelper->getSpecialPageLinkKey(LINKTYP_STARTSEITE);
                 $Link        = $linkHelper->getPageLink($kLink);
                 self::$kLink = $kLink;
                 if (isset($Link->nLinkart)) {

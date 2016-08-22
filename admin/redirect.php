@@ -113,10 +113,11 @@ foreach ($cParams_arr as $key => $val) {
 
 $oPagination = (new Pagination())
     ->setItemCount($oRedirect->getCount($cParams_arr['bUmgeleiteteUrls'], $cParams_arr['cSuchbegriff']))
+    ->setSortByOptions([['cFromUrl', 'Url'], ['cToUrl', 'Weiterleitung nach'], ['nCount', 'Aufrufe']])
     ->assemble();
 
 $oRedirect_arr = $oRedirect->getList($oPagination->getFirstPageItem(), $oPagination->getPageItemCount(),
-    $cParams_arr['bUmgeleiteteUrls'], $cParams_arr['cSortierFeld'], $cParams_arr['cSortierung'],
+    $cParams_arr['bUmgeleiteteUrls'], $oPagination->getSortByCol(), $oPagination->getSortDirSpecifier(),
     $cParams_arr['cSuchbegriff']);
 
 if (!empty($oRedirect_arr) && !empty($urls)) {

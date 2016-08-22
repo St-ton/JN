@@ -25,6 +25,8 @@ class Pagination
     private $nRightRangePage         = 0;
     private $nFirstPageItem          = 0;
     private $nPageItemCount          = 0;
+    private $cSortBy                 = '';
+    private $cSortDir                = '';
     private $cLimitSQL               = '';
     private $cOrderSQL               = '';
     private $oItem_arr               = null;
@@ -177,10 +179,11 @@ class Pagination
         }
 
         if (count($this->cSortByOption_arr)) {
-            $cSortBy         = $this->cSortByOption_arr[$this->nSortBy][0];
-            $cSortDir        = $this->nSortDir == 0 ? 'ASC' : 'DESC';
-            $this->cOrderSQL = $cSortBy . ' ' . $cSortDir;
+            $this->cSortBy   = $this->cSortByOption_arr[$this->nSortBy][0];
+            $this->cSortDir  = $this->nSortDir == 0 ? 'ASC' : 'DESC';
+            $this->cOrderSQL = $this->cSortBy . ' ' . $this->cSortDir;
             $nSortFac        = $this->nSortDir == 0 ? +1 : -1;
+            $cSortBy         = $this->cSortBy;
 
             if (is_array($this->oItem_arr)) {
                 usort($this->oItem_arr, function ($a, $b) use ($cSortBy, $nSortFac) {
@@ -357,5 +360,21 @@ class Pagination
     public function getPageItems()
     {
         return $this->oPageItem_arr;
+    }
+
+    /**
+     * @return string - 'ASC' or 'DESC'
+     */
+    public function getSortDirSpecifier()
+    {
+        return $this->cSortDir;
+    }
+
+    /**
+     * @return string - just the column name to sort by
+     */
+    public function getSortByCol()
+    {
+        return $this->cSortBy;
     }
 }

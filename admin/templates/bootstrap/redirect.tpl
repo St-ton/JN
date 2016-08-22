@@ -171,7 +171,7 @@
                             <tbody>
                             {foreach from=$oRedirect_arr item="oRedirect"}
                                 <tr>
-                                    {assign var=redirectCount value=$oRedirect->oRedirectReferer_arr|@count}
+                                    {assign var=redirectCount value=$oRedirect->nCount}
                                     <td class="tcenter" style="vertical-align:middle;">
                                         <input type="checkbox"  name="aData[redirect][{$oRedirect->kRedirect}][active]" value="1" />
                                     </td>

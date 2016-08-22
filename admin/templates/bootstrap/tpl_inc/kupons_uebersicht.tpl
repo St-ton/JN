@@ -2,8 +2,12 @@
 
 {function kupons_uebersicht_tab}
     <div id="{$cKuponTyp}" class="tab-pane fade{if $tab === $cKuponTyp} active in{/if}">
-        {include file='tpl_inc/filtertools.tpl' oFilter=$oFilter cParam_arr=['tab'=>$cKuponTyp]}
-        {include file='tpl_inc/pagination.tpl' oPagination=$oPagination cParam_arr=['tab'=>$cKuponTyp]}
+        {if $nKuponCount > 0}
+            {include file='tpl_inc/filtertools.tpl' oFilter=$oFilter cParam_arr=['tab'=>$cKuponTyp]}
+        {/if}
+        {if $oKupon_arr|@count > 0}
+            {include file='tpl_inc/pagination.tpl' oPagination=$oPagination cParam_arr=['tab'=>$cKuponTyp]}
+        {/if}
         <form method="post" action="kupons.php">
             {$jtl_token}
             <input type="hidden" name="cKuponTyp" id="cKuponTyp" value="{$cKuponTyp}">
@@ -111,6 +115,7 @@
             cKuponTyp='standard'
             cKuponTypName=#standardCoupon#
             oKupon_arr=$oKuponStandard_arr
+            nKuponCount=$nKuponStandardCount
             oPagination=$oPaginationStandard
             oFilter=$oFilterStandard
             nSeite=1
@@ -119,6 +124,7 @@
             cKuponTyp='versandkupon'
             cKuponTypName=#shippingCoupon#
             oKupon_arr=$oKuponVersandkupon_arr
+            nKuponCount=$nKuponVersandCount
             oPagination=$oPaginationVersandkupon
             oFilter=$oFilterVersand
             nSeite=2
@@ -127,6 +133,7 @@
             cKuponTyp='neukundenkupon'
             cKuponTypName=#newCustomerCoupon#
             oKupon_arr=$oKuponNeukundenkupon_arr
+            nKuponCount=$nKuponNeukundenCount
             oPagination=$oPaginationNeukundenkupon
             oFilter=$oFilterNeukunden
             nSeite=3

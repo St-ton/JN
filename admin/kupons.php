@@ -142,10 +142,13 @@ if ($action === 'bearbeiten') {
     $oAktivSelect->addSelectOption('inaktiv', 'N', 4);
     $oFilterNeukunden->assemble();
 
-    $cSortByOption_arr   = [['cName', 'Name'], ['cCode', 'Code'], ['nVerwendungenBisher', 'Verwendungen'], ['dLastUse', 'Zuletzt verwendet']];
-    $oKuponStandard_arr  = getCoupons('standard', $oFilterStandard->getWhereSQL());
-    $oKuponVersand_arr   = getCoupons('versandkupon', $oFilterVersand->getWhereSQL());
-    $oKuponNeukunden_arr = getCoupons('neukundenkupon', $oFilterNeukunden->getWhereSQL());
+    $cSortByOption_arr    = [['cName', 'Name'], ['cCode', 'Code'], ['nVerwendungenBisher', 'Verwendungen'], ['dLastUse', 'Zuletzt verwendet']];
+    $oKuponStandard_arr   = getCoupons('standard', $oFilterStandard->getWhereSQL());
+    $oKuponVersand_arr    = getCoupons('versandkupon', $oFilterVersand->getWhereSQL());
+    $oKuponNeukunden_arr  = getCoupons('neukundenkupon', $oFilterNeukunden->getWhereSQL());
+    $nKuponStandardCount  = getCouponCount('standard');
+    $nKuponVersandCount   = getCouponCount('versandkupon');
+    $nKuponNeukundenCount = getCouponCount('neukundenkupon');
 
     $oPaginationStandard = (new Pagination('standard'))
         ->setSortByOptions($cSortByOption_arr)
@@ -175,7 +178,10 @@ if ($action === 'bearbeiten') {
         ->assign('oPaginationNeukundenkupon', $oPaginationNeukunden)
         ->assign('oKuponStandard_arr', $oKuponStandard_arr)
         ->assign('oKuponVersandkupon_arr', $oKuponVersand_arr)
-        ->assign('oKuponNeukundenkupon_arr', $oKuponNeukunden_arr);
+        ->assign('oKuponNeukundenkupon_arr', $oKuponNeukunden_arr)
+        ->assign('nKuponStandardCount', $nKuponStandardCount)
+        ->assign('nKuponVersandCount', $nKuponVersandCount)
+        ->assign('nKuponNeukundenCount', $nKuponNeukundenCount);
 }
 
 $smarty->assign('action', $action)

@@ -162,6 +162,7 @@ ifndef('SUCHCACHE_LEBENSDAUER', 60);
 ifndef('CUSTOMER_ACCOUNT_MAX_ORDERS', 50);
 // Steuersatz Standardland OVERRIDE - setzt ein anderes Steuerland, als im Shop angegeben (upper case, ISO 3166-2)
 // ifndef('STEUERSATZ_STANDARD_LAND', 'DE')
+ifndef('JTLLOG_MAX_LOGSIZE', 200000);
 
 /**
  * @param string     $constant

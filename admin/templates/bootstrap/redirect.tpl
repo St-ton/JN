@@ -108,8 +108,6 @@
                 <div class="panel panel-default">
                     <form id="frmFilter" action="redirect.php" method="post">
                         {$jtl_token}
-                        <input type="hidden" name="cSortierFeld" value="{$cSortierFeld}">
-                        <input type="hidden" name="cSortierung" value="{$cSortierung}">
 
                         <div class="panel-heading">
                             <h3 class="panel-title">Redirects</h3>
@@ -145,24 +143,30 @@
                             <tr>
                                 <th class="tcenter" style="width:24px"></th>
                                 <th class="tleft" style="width:35%;">Url
-                                    {if $cSortierFeld == 'cFromUrl' && $cSortierung == 'DESC'}
-                                    <a href="#" onclick="$('[name=\'cSortierFeld\']').val('cFromUrl');$('[name=\'cSortierung\']').val('ASC');$('#frmFilter').submit();return false;"><i class="fa fa-sort-asc"></i></a>
-                                    {else}
-                                    <a href="#" onclick="$('[name=\'cSortierFeld\']').val('cFromUrl');$('[name=\'cSortierung\']').val('DESC');$('#frmFilter').submit();return false;"><i class="fa fa-sort-desc"></i></a>
+                                    {if $oPagination->getSortBy() !== 0}
+                                        <a href="#" onclick="pagiResort('{$oPagination->getId()}', 0, 0);return false;"><i class="fa fa-unsorted"></i></a>
+                                    {elseif $oPagination->getSortDirSpecifier() === 'DESC'}
+                                        <a href="#" onclick="pagiResort('{$oPagination->getId()}', 0, 0);return false;"><i class="fa fa-sort-desc"></i></a>
+                                    {elseif $oPagination->getSortDirSpecifier() === 'ASC'}
+                                        <a href="#" onclick="pagiResort('{$oPagination->getId()}', 0, 1);return false;"><i class="fa fa-sort-asc"></i></a>
                                     {/if}
                                 </th>
                                 <th class="tleft">Wird weitergeleitet nach
-                                    {if $cSortierFeld == 'cToUrl' && $cSortierung == 'DESC'}
-                                        <a href="#" onclick="$('[name=\'cSortierFeld\']').val('cToUrl');$('[name=\'cSortierung\']').val('ASC');$('#frmFilter').submit();return false;"><i class="fa fa-sort-asc"></i></a>
-                                    {else}
-                                        <a href="#" onclick="$('[name=\'cSortierFeld\']').val('cToUrl');$('[name=\'cSortierung\']').val('DESC');$('#frmFilter').submit();return false;"><i class="fa fa-sort-desc"></i></a>
+                                    {if $oPagination->getSortBy() !== 1}
+                                        <a href="#" onclick="pagiResort('{$oPagination->getId()}', 1, 0);return false;"><i class="fa fa-unsorted"></i></a>
+                                    {elseif $oPagination->getSortDirSpecifier() === 'DESC'}
+                                        <a href="#" onclick="pagiResort('{$oPagination->getId()}', 1, 0);return false;"><i class="fa fa-sort-desc"></i></a>
+                                    {elseif $oPagination->getSortDirSpecifier() === 'ASC'}
+                                        <a href="#" onclick="pagiResort('{$oPagination->getId()}', 1, 1);return false;"><i class="fa fa-sort-asc"></i></a>
                                     {/if}
                                 </th>
                                 <th class="tright" style="width:85px">Aufrufe
-                                    {if $cSortierFeld == 'nCount' && $cSortierung == 'DESC'}
-                                        <a href="#" onclick="$('[name=\'cSortierFeld\']').val('nCount');$('[name=\'cSortierung\']').val('ASC');$('#frmFilter').submit();return false;"><i class="fa fa-sort-asc"></i></a>
-                                    {else}
-                                        <a href="#" onclick="$('[name=\'cSortierFeld\']').val('nCount');$('[name=\'cSortierung\']').val('DESC');$('#frmFilter').submit();return false;"><i class="fa fa-sort-desc"></i></a>
+                                    {if $oPagination->getSortBy() !== 2}
+                                        <a href="#" onclick="pagiResort('{$oPagination->getId()}', 2, 0);return false;"><i class="fa fa-unsorted"></i></a>
+                                    {elseif $oPagination->getSortDirSpecifier() === 'DESC'}
+                                        <a href="#" onclick="pagiResort('{$oPagination->getId()}', 2, 0);return false;"><i class="fa fa-sort-desc"></i></a>
+                                    {elseif $oPagination->getSortDirSpecifier() === 'ASC'}
+                                        <a href="#" onclick="pagiResort('{$oPagination->getId()}', 2, 1);return false;"><i class="fa fa-sort-asc"></i></a>
                                     {/if}
                                 </th>
                                 <th class="tcenter">Optionen</th>

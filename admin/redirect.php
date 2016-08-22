@@ -16,8 +16,6 @@ $urls            = array();
 $cHinweis        = '';
 $cFehler         = '';
 $cParams_arr     = array(
-    'cSortierFeld'     => 'nCount',
-    'cSortierung'      => 'DESC',
     'bUmgeleiteteUrls' => 0,
     'cSuchbegriff'     => ''
 );
@@ -113,7 +111,9 @@ foreach ($cParams_arr as $key => $val) {
 
 $oPagination = (new Pagination())
     ->setItemCount($oRedirect->getCount($cParams_arr['bUmgeleiteteUrls'], $cParams_arr['cSuchbegriff']))
-    ->setSortByOptions([['cFromUrl', 'Url'], ['cToUrl', 'Weiterleitung nach'], ['nCount', 'Aufrufe']])
+    ->setSortByOptions([['cFromUrl', 'Url'],
+                        ['cToUrl', 'Weiterleitung nach'],
+                        ['nCount', 'Aufrufe']])
     ->assemble();
 
 $oRedirect_arr = $oRedirect->getList($oPagination->getFirstPageItem(), $oPagination->getPageItemCount(),

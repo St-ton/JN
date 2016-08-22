@@ -53,7 +53,7 @@
         </div>
     {/if}
 
-    <form action="{if isset($cAnchor)}#{$cAnchor}{/if}" method="get" class="form-inline">
+    <form action="{if isset($cAnchor)}#{$cAnchor}{/if}" method="get" class="form-inline" name="{$oPagination->getId()}" id="{$oPagination->getId()}">
         {foreach $cParam_arr as $cParamName => $cParamValue}
             <input type="hidden" name="{$cParamName}" value="{$cParamValue}">
         {/foreach}
@@ -100,3 +100,14 @@
         {/if}
     </form>
 </div>
+
+<script>
+    {literal}
+        function pagiResort (pagiId, nSortBy, nSortDir)
+        {
+            $('#' + pagiId + '_nSortBy').val(nSortBy);
+            $('#' + pagiId + '_nSortDir').val(nSortDir);
+            $('#' + pagiId).submit();
+        }
+    {/literal}
+</script>

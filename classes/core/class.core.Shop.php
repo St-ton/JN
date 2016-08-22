@@ -1631,7 +1631,7 @@ final class Shop
             $NaviFilter->PreisspannenFilter->cBisLocalized = gibPreisLocalizedOhneFaktor($NaviFilter->PreisspannenFilter->fBis);
         }
         //search special filter
-        if (isset($cParameter_arr['kSuchspecialFilter']) && strlen($cParameter_arr['kSuchspecialFilter']) > 0) {
+        if (!empty($cParameter_arr['kSuchspecialFilter'])) {
             if (!isset($NaviFilter->SuchspecialFilter)) {
                 $NaviFilter->SuchspecialFilter = new stdClass();
             }

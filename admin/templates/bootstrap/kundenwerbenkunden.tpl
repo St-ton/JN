@@ -26,7 +26,6 @@
                     {$jtl_token}
                     <input type="hidden" name="KwK" value="1" />
                     <input type="hidden" name="nichtreggt_loeschen" value="1" />
-                    <input type="hidden" name="s1" value="{$oBlaetterNaviNichtReg->nAktuelleSeite}" />
                     <input type="hidden" name="tab" value="einladungen" />
                     <div id="payment">
                         <div id="tabellenLivesuche">

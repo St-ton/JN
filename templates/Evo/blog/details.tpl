@@ -80,7 +80,6 @@
                                         {$jtl_token}
                                         <input type="hidden" name="kNews" value="{$oNewsArchiv->kNews}" />
                                         <input type="hidden" name="kommentar_einfuegen" value="1" />
-                                        <input type="hidden" name="s" value="{if isset($oBlaetterNavi->nAktuelleSeite)}{$oBlaetterNavi->nAktuelleSeite}{/if}" />
                                         <input type="hidden" name="n" value="{$oNewsArchiv->kNews}" />
 
                                         <fieldset>

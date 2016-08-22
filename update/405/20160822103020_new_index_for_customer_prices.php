@@ -25,7 +25,7 @@ class Migration_20160822103020 extends Migration implements IMigration
     public function up()
     {
         $this->execute(
-            "CREATE INDEX idx_tpreis_kKunde  ON tpreis (kKunde)"
+            "CREATE INDEX idx_tpreis_kKunde ON tpreis (kKunde)"
         );
     }
 

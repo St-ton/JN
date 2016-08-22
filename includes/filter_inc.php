@@ -3205,7 +3205,7 @@ function erstelleFilterLoesenURLs($bSeo, $oSuchergebnisse)
 {
     global $NaviFilter;
 
-    if ($NaviFilter->SuchspecialFilter->kKey > 0) {
+    if (isset($NaviFilter->SuchspecialFilter->kKey) && $NaviFilter->SuchspecialFilter->kKey > 0) {
         $bSeo = false;
     }
     // URLs bauen, die Filter lösen
@@ -3631,7 +3631,7 @@ function gibMetaStart($NaviFilter, $oSuchergebnisse)
         }
     }
     // Suchspecialfilter
-    if ($NaviFilter->SuchspecialFilter->kKey > 0) {
+    if (isset($NaviFilter->SuchspecialFilter->kKey) && $NaviFilter->SuchspecialFilter->kKey > 0) {
         switch ($NaviFilter->SuchspecialFilter->kKey) {
             case SEARCHSPECIALS_BESTSELLER:
                 $cMetaTitle .= ' ' . Shop::Lang()->get('bestsellers', 'global');

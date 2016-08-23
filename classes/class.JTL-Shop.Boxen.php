@@ -60,6 +60,7 @@ class Boxen
     public function __construct()
     {
         $this->boxConfig = Shop::getConfig(array(
+            CONF_GLOBAL,
             CONF_BOXEN,
             CONF_VERGLEICHSLISTE,
             CONF_NAVIGATIONSFILTER,

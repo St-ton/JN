@@ -11,6 +11,7 @@ abstract class FilterField
     protected $cTitle  = '';
     protected $cColumn = '';
     protected $cValue  = '';
+    protected $cId     = '';
 
     /**
      * FilterField constructor.
@@ -27,11 +28,11 @@ abstract class FilterField
         $this->cType   = $cType;
         $this->cTitle  = $cTitle;
         $this->cColumn = $cColumn;
-
-        $this->cValue =
-            $oFilter->getAction() === $oFilter->getId() . '_filter'      ? $_GET[$oFilter->getId() . '_' . $cColumn] : (
+        $this->cId     = preg_replace('/[^a-zA-Z0-9_]+/', '', $cTitle);
+        $this->cValue  =
+            $oFilter->getAction() === $oFilter->getId() . '_filter'      ? $_GET[$oFilter->getId() . '_' . $this->cId] : (
             $oFilter->getAction() === $oFilter->getId() . '_resetfilter' ? $cDefValue : (
-            $oFilter->hasSessionField($cColumn)                          ? $oFilter->getSessionField($cColumn) :
+            $oFilter->hasSessionField($cColumn)                          ? $oFilter->getSessionField($this->cId) :
                                                                            $cDefValue
             ));
     }
@@ -66,6 +67,14 @@ abstract class FilterField
     public function getTitle()
     {
         return $this->cTitle;
+    }
+
+    /**
+     * @return string
+     */
+    public function getId()
+    {
+        return $this->cId;
     }
 
     /**

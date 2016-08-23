@@ -35,15 +35,20 @@ class Filter
      *  1 = contains
      *  2 = begins with
      *  3 = ends with
-     *  4 = exact match
+     *  4 = equals
+     *  5 = lower than
+     *  6 = greater than
+     *  7 = lower than or equal
+     *  8 = greater than or equal
+     *  9 = equals not
      * @return FilterTextField
      */
     public function addTextfield($cTitle, $cColumn, $nTestOp = 0)
     {
-        $oField                               = new FilterTextField($this, $cTitle, $cColumn, $nTestOp);
-        $this->oField_arr[]                   = $oField;
-        $this->cSession_arr[$cColumn]         = $oField->getValue();
-        $this->cSession_arr[$cColumn . '_op'] = $oField->getTestOp();
+        $oField                                       = new FilterTextField($this, $cTitle, $cColumn, $nTestOp);
+        $this->oField_arr[]                           = $oField;
+        $this->cSession_arr[$oField->getId()]         = $oField->getValue();
+        $this->cSession_arr[$oField->getId() . '_op'] = $oField->getTestOp();
 
         return $oField;
     }
@@ -58,9 +63,9 @@ class Filter
      */
     public function addSelectfield($cTitle, $cColumn)
     {
-        $oField                       = new FilterSelectField($this, $cTitle, $cColumn);
-        $this->oField_arr[]           = $oField;
-        $this->cSession_arr[$cColumn] = $oField->getValue();
+        $oField                               = new FilterSelectField($this, $cTitle, $cColumn);
+        $this->oField_arr[]                   = $oField;
+        $this->cSession_arr[$oField->getId()] = $oField->getValue();
 
         return $oField;
     }
@@ -121,7 +126,7 @@ class Filter
     }
 
     /**
-     * @return array
+     * @return bool
      */
     public function hasSessionField($cField)
     {
@@ -129,7 +134,7 @@ class Filter
     }
 
     /**
-     * @return array
+     * @return mixed
      */
     public function getSessionField($cField)
     {

@@ -97,46 +97,18 @@
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'new_redirect'} active{/if}">
             <a data-toggle="tab" role="tab" href="#new_redirect">Neuer Redirect</a>
-        </li>{*
-        <li class="tab{if isset($cTab) && $cTab === 'config'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#config">Einstellungen</a>
-        </li>*}
+        </li>
     </ul>
     <div class="tab-content">
         <div id="redirects" class="tab-pane fade {if !isset($cTab) || $cTab === 'redirects'} active in{/if}">
+            {if $nRedirectCount > 0}
+                {include file='tpl_inc/filtertools.tpl' oFilter=$oFilter}
+            {/if}
+            {if $oRedirect_arr|@count > 0}
+                {include file='tpl_inc/pagination.tpl' oPagination=$oPagination cAnchor='redirects'}
+            {/if}
             {if $oRedirect_arr|@count > 0}
                 <div class="panel panel-default">
-                    <form id="frmFilter" action="redirect.php" method="post">
-                        {$jtl_token}
-                        <input type="hidden" name="cSortierFeld" value="{$cSortierFeld}">
-                        <input type="hidden" name="cSortierung" value="{$cSortierung}">
-
-                        <div class="panel-heading">
-                            <h3 class="panel-title">Redirects</h3>
-                        </div>
-                        <div class="panel-body">
-                            <div class="pull-right p50">
-                                <div class="input-group item">
-                                    <span class="input-group-addon">
-                                        <label for="bUmgeleiteteUrls"> Filter</label>
-                                    </span>
-                                    <span class="input-group-wrap">
-                                        <select class="form-control" id="bUmgeleiteteUrls" name="bUmgeleiteteUrls">
-                                            <option value="0"{if $bUmgeleiteteUrls == '0'} selected="selected"{/if}>alle</option>
-                                            <option value="1"{if $bUmgeleiteteUrls == '1'} selected="selected"{/if}>nur umgeleitet</option>
-                                            <option value="2"{if $bUmgeleiteteUrls == '2'} selected="selected"{/if}>nur ohne Umleitung
-                                            </option>
-                                        </select>
-                                    </span>
-                                    <input type="text" class="form-control" name="cSuchbegriff" value="{$cSuchbegriff}" />
-                                    <span class="input-group-btn">
-                                        <button class="btn btn-default" type="submit"><i class="fa fa-search"></i>&nbsp;</button>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                    {include file='tpl_inc/pagination.tpl' oPagination=$oPagination cAnchor='redirects'}
                     <form id="frmRedirect" action="redirect.php" method="post">
                         {$jtl_token}
                         <input type="hidden" name="aData[action]" value="save">
@@ -145,24 +117,30 @@
                             <tr>
                                 <th class="tcenter" style="width:24px"></th>
                                 <th class="tleft" style="width:35%;">Url
-                                    {if $cSortierFeld == 'cFromUrl' && $cSortierung == 'DESC'}
-                                    <a href="#" onclick="$('[name=\'cSortierFeld\']').val('cFromUrl');$('[name=\'cSortierung\']').val('ASC');$('#frmFilter').submit();return false;"><i class="fa fa-sort-asc"></i></a>
-                                    {else}
-                                    <a href="#" onclick="$('[name=\'cSortierFeld\']').val('cFromUrl');$('[name=\'cSortierung\']').val('DESC');$('#frmFilter').submit();return false;"><i class="fa fa-sort-desc"></i></a>
+                                    {if $oPagination->getSortBy() !== 0}
+                                        <a href="#" onclick="pagiResort('{$oPagination->getId()}', 0, 0);return false;"><i class="fa fa-unsorted"></i></a>
+                                    {elseif $oPagination->getSortDirSpecifier() === 'DESC'}
+                                        <a href="#" onclick="pagiResort('{$oPagination->getId()}', 0, 0);return false;"><i class="fa fa-sort-desc"></i></a>
+                                    {elseif $oPagination->getSortDirSpecifier() === 'ASC'}
+                                        <a href="#" onclick="pagiResort('{$oPagination->getId()}', 0, 1);return false;"><i class="fa fa-sort-asc"></i></a>
                                     {/if}
                                 </th>
                                 <th class="tleft">Wird weitergeleitet nach
-                                    {if $cSortierFeld == 'cToUrl' && $cSortierung == 'DESC'}
-                                        <a href="#" onclick="$('[name=\'cSortierFeld\']').val('cToUrl');$('[name=\'cSortierung\']').val('ASC');$('#frmFilter').submit();return false;"><i class="fa fa-sort-asc"></i></a>
-                                    {else}
-                                        <a href="#" onclick="$('[name=\'cSortierFeld\']').val('cToUrl');$('[name=\'cSortierung\']').val('DESC');$('#frmFilter').submit();return false;"><i class="fa fa-sort-desc"></i></a>
+                                    {if $oPagination->getSortBy() !== 1}
+                                        <a href="#" onclick="pagiResort('{$oPagination->getId()}', 1, 0);return false;"><i class="fa fa-unsorted"></i></a>
+                                    {elseif $oPagination->getSortDirSpecifier() === 'DESC'}
+                                        <a href="#" onclick="pagiResort('{$oPagination->getId()}', 1, 0);return false;"><i class="fa fa-sort-desc"></i></a>
+                                    {elseif $oPagination->getSortDirSpecifier() === 'ASC'}
+                                        <a href="#" onclick="pagiResort('{$oPagination->getId()}', 1, 1);return false;"><i class="fa fa-sort-asc"></i></a>
                                     {/if}
                                 </th>
                                 <th class="tright" style="width:85px">Aufrufe
-                                    {if $cSortierFeld == 'nCount' && $cSortierung == 'DESC'}
-                                        <a href="#" onclick="$('[name=\'cSortierFeld\']').val('nCount');$('[name=\'cSortierung\']').val('ASC');$('#frmFilter').submit();return false;"><i class="fa fa-sort-asc"></i></a>
-                                    {else}
-                                        <a href="#" onclick="$('[name=\'cSortierFeld\']').val('nCount');$('[name=\'cSortierung\']').val('DESC');$('#frmFilter').submit();return false;"><i class="fa fa-sort-desc"></i></a>
+                                    {if $oPagination->getSortBy() !== 2}
+                                        <a href="#" onclick="pagiResort('{$oPagination->getId()}', 2, 0);return false;"><i class="fa fa-unsorted"></i></a>
+                                    {elseif $oPagination->getSortDirSpecifier() === 'DESC'}
+                                        <a href="#" onclick="pagiResort('{$oPagination->getId()}', 2, 0);return false;"><i class="fa fa-sort-desc"></i></a>
+                                    {elseif $oPagination->getSortDirSpecifier() === 'ASC'}
+                                        <a href="#" onclick="pagiResort('{$oPagination->getId()}', 2, 1);return false;"><i class="fa fa-sort-asc"></i></a>
                                     {/if}
                                 </th>
                                 <th class="tcenter">Optionen</th>
@@ -171,7 +149,7 @@
                             <tbody>
                             {foreach from=$oRedirect_arr item="oRedirect"}
                                 <tr>
-                                    {assign var=redirectCount value=$oRedirect->oRedirectReferer_arr|@count}
+                                    {assign var=redirectCount value=$oRedirect->nCount}
                                     <td class="tcenter" style="vertical-align:middle;">
                                         <input type="checkbox"  name="aData[redirect][{$oRedirect->kRedirect}][active]" value="1" />
                                     </td>

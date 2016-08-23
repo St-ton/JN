@@ -9,14 +9,14 @@
         {/foreach}
         {foreach $oFilter->getFields() as $oField}
             <div class="form-group">
-                <label for="{$oFilter->getId()}_{$oField->getColumn()}">
+                <label for="{$oFilter->getId()}_{$oField->getId()}">
                     {$oField->getTitle()}
                 </label>
                 {if $oField->getType() === 'text'}
                     {if $oField->isCustomTestOp()}
                         <select class="form-control"
-                                name="{$oFilter->getId()}_{$oField->getColumn()}_op"
-                                id="{$oFilter->getId()}_{$oField->getColumn()}_op">
+                                name="{$oFilter->getId()}_{$oField->getId()}_op"
+                                id="{$oFilter->getId()}_{$oField->getId()}_op">
                             <option value="1"{if $oField->getTestOp() == 1} selected{/if}>enth&auml;lt</option>
                             <option value="2"{if $oField->getTestOp() == 2} selected{/if}>beginnt mit</option>
                             <option value="3"{if $oField->getTestOp() == 3} selected{/if}>endet mit</option>
@@ -28,13 +28,13 @@
                         </select>
                     {/if}
                     <input type="text" class="form-control"
-                           name="{$oFilter->getId()}_{$oField->getColumn()}"
-                           id="{$oFilter->getId()}_{$oField->getColumn()}"
+                           name="{$oFilter->getId()}_{$oField->getId()}"
+                           id="{$oFilter->getId()}_{$oField->getId()}"
                            value="{$oField->getValue()}" placeholder="{$oField->getTitle()}">
                 {elseif $oField->getType() === 'select'}
                     <select class="form-control"
-                            name="{$oFilter->getId()}_{$oField->getColumn()}"
-                            id="{$oFilter->getId()}_{$oField->getColumn()}">
+                            name="{$oFilter->getId()}_{$oField->getId()}"
+                            id="{$oFilter->getId()}_{$oField->getId()}">
                         {foreach $oField->getOptions() as $i => $oOption}
                             <option value="{$i}"{if $i == (int)$oField->getValue()} selected{/if}>{$oOption->getTitle()}</option>
                         {/foreach}

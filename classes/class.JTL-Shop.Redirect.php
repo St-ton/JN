@@ -500,43 +500,61 @@ class Redirect
      * @param string $cSuchbegriff
      * @param bool   $cMitVerweis
      * @return mixed
+     * @deprecated since 4.05 - use Redirect::getRedirects()
      */
     public function getList($nStart, $nLimit, $bUmgeleiteteUrls, $cSortierFeld, $cSortierung, $cSuchbegriff, $cMitVerweis = true)
     {
-        $cSub_arr = array(
-            'dFirst',
-            'dLast'
-        );
-        if (in_array($cSortierFeld, $cSub_arr)) {
-            $cSortierFeld = "tredirectreferer.{$cSortierFeld}";
+        $cWhereSQL_arr = array();
+        $cOrderSQL = $cSortierFeld . ' ' . $cSortierung;
+        $cLimitSQL = (int)$nStart . ',' . (int)$nLimit;
+
+        if ($cSuchbegriff != '') {
+            $cWhereSQL_arr[] = "cFromUrl LIKE '%" . $cSuchbegriff . "%'";
         }
 
-        $where = '';
-        if ($bUmgeleiteteUrls == '1' || $bUmgeleiteteUrls == '2' || !empty($cSuchbegriff)) {
-            $where .= 'WHERE ';
-        }
         if ($bUmgeleiteteUrls == '1') {
-            $where .= ' cToUrl != ""';
+            $cWhereSQL_arr[] = "cToUrl != ''";
+            if ($cSuchbegriff != '') {
+                $cWhereSQL_arr[] = "cToUrl LIKE '%" . $cSuchbegriff . "%'";
+            }
         } elseif ($bUmgeleiteteUrls === '2') {
-            $where .= ' cToUrl = ""';
+            $cWhereSQL_arr[] = "cToUrl = ''";
         }
-        if (!empty($cSuchbegriff) && $bUmgeleiteteUrls == '1') {
-            $where .= ' AND ';
-        }
-        if (!empty($cSuchbegriff)) {
-            $where .= "cFromUrl LIKE '%{$cSuchbegriff}%'";
-        }
-        $oRedirect_arr = Shop::DB()->query(
-            "SELECT tredirect.kRedirect, tredirect.cFromUrl, tredirect.cToUrl, tredirect.nCount
-                FROM tredirect {$where}
-                ORDER BY {$cSortierFeld} {$cSortierung} LIMIT {$nStart},{$nLimit}", 2
-        );
 
-        if ($cMitVerweis) {
-            if (is_array($oRedirect_arr) && count($oRedirect_arr)) {
-                foreach ($oRedirect_arr as &$oRedirect) {
-                    $oRedirect->oRedirectReferer_arr = $this->getVerweise($oRedirect->kRedirect);
-                }
+        $cWhereSQL = implode(' AND ', $cWhereSQL_arr);
+
+        return self::getRedirects($cWhereSQL, $cOrderSQL, $cLimitSQL);
+    }
+
+    /**
+     * @param int $kRedirect
+     * @return mixed
+     * @deprecated since 4.05 - use Redirect::getReferers()
+     */
+    public function getVerweise($kRedirect)
+    {
+        return self::getReferers($kRedirect);
+    }
+
+    /**
+     * @param $cWhereSQL
+     * @param $cOrderSQL
+     * @param $cLimitSQL
+     * @return array
+     */
+    public static function getRedirects ($cWhereSQL, $cOrderSQL, $cLimitSQL)
+    {
+        $oRedirect_arr = Shop::DB()->query("
+            SELECT *
+                FROM tredirect
+                " . ($cWhereSQL != '' ? "WHERE " . $cWhereSQL : "") . "
+                ORDER BY " . $cOrderSQL . "
+                LIMIT " . $cLimitSQL,
+            2);
+
+        if (is_array($oRedirect_arr) && count($oRedirect_arr) > 0) {
+            foreach ($oRedirect_arr as &$oRedirect) {
+                $oRedirect->oRedirectReferer_arr = self::getReferers($oRedirect->kRedirect);
             }
         }
 
@@ -545,17 +563,27 @@ class Redirect
 
     /**
      * @param int $kRedirect
-     * @return mixed
+     * @param int $nLimit
+     * @return array
      */
-    public function getVerweise($kRedirect)
+    public static function getReferers($kRedirect, $nLimit = 100)
     {
         return Shop::DB()->query(
             "SELECT tredirectreferer.*, tbesucherbot.cName AS cBesucherBotName, tbesucherbot.cUserAgent AS cBesucherBotAgent
                 FROM tredirectreferer
                 LEFT JOIN tbesucherbot
                     ON tredirectreferer.kBesucherBot = tbesucherbot.kBesucherBot
-                    WHERE kRedirect = " . intval($kRedirect) . "
-                ORDER BY dDate ASC LIMIT 100", 2
-        );
+                    WHERE kRedirect = " . (int)$kRedirect . "
+                ORDER BY dDate ASC
+                LIMIT " . (int)$nLimit,
+            2);
+    }
+
+    /**
+     * @return int
+     */
+    public static function getTotalRedirectCount()
+    {
+        return Shop::DB()->query("SELECT count(kRedirect) AS nCount FROM tredirect", 1)->nCount;
     }
 }

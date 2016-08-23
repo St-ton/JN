@@ -1461,7 +1461,7 @@ class Artikel
             $oStueckliste_arr = Shop::DB()->query($query, 2);
 
             if (is_array($oStueckliste_arr) && count($oStueckliste_arr) > 0) {
-                $oArtikelOptionen = self::getDefaultOptions();
+                $oArtikelOptionen                             = self::getDefaultOptions();
                 $oArtikelOptionen->nKeineSichtbarkeitBeachten = $bGetInvisibleParts ? 1 : 0;
                 foreach ($oStueckliste_arr as $i => $oStueckliste) {
                     //@todo: Lager beachten
@@ -3221,7 +3221,7 @@ class Artikel
             CONF_ARTIKELUEBERSICHT
         ));
         $this->cCachedCountryCode = (isset($_SESSION['cLieferlandISO'])) ? $_SESSION['cLieferlandISO'] : null;
-        $nSchwelleBestseller      = (isset($conf['boxen']['boxen_bestseller_minanzahl'])) ? doubleval($conf['boxen']['boxen_bestseller_minanzahl']) : 10;
+        $nSchwelleBestseller      = (isset($conf['global']['global_bestseller_minanzahl'])) ? doubleval($conf['global']['global_bestseller_minanzahl']) : 10;
         $nSchwelleTopBewertet     = (isset($conf['boxen']['boxen_topbewertet_minsterne'])) ? (int)$conf['boxen']['boxen_topbewertet_minsterne'] : 4;
         $kKundengruppe            = (int)$kKundengruppe;
         // Nicht Standardsprache?
@@ -3979,10 +3979,10 @@ class Artikel
     /**
      * check if current article is a bestseller
      *
-     * @param array $oBoxenEinstellung_arr
+     * @param array $oGlobalEinstellung_arr
      * @return bool
      */
-    public function istBestseller($oBoxenEinstellung_arr = null)
+    public function istBestseller($oGlobalEinstellung_arr = null)
     {
         if (isset($this->bIsBestseller)) {
             return $this->bIsBestseller;
@@ -3990,11 +3990,11 @@ class Artikel
         if (!isset($this->kArtikel) || !$this->kArtikel) {
             return false;
         }
-        if ($oBoxenEinstellung_arr === null) {
-            $oBoxenEinstellung_arr = Shop::getSettings(array(CONF_BOXEN));
+        if ($oGlobalEinstellung_arr === null) {
+            $oGlobalEinstellung_arr = Shop::getSettings(array(CONF_GLOBAL));
         }
-        $nSchwelleBestseller = (isset($oBoxenEinstellung_arr['boxen']['boxen_bestseller_minanzahl'])) ?
-            doubleval($oBoxenEinstellung_arr['boxen']['boxen_bestseller_minanzahl']) :
+        $nSchwelleBestseller = (isset($oGlobalEinstellung_arr['global']['global_bestseller_minanzahl'])) ?
+            doubleval($oGlobalEinstellung_arr['global']['global_bestseller_minanzahl']) :
             10;
         $oBestseller = Shop::DB()->query(
             "SELECT round(fAnzahl) >= " . $nSchwelleBestseller . " AS bIsBestseller
@@ -4705,7 +4705,7 @@ class Artikel
         // check if this is a set article - if so, calculate the delivery time from the set of articles
             // we don't have loaded the list of pieces yet, do so!
         if (!empty($this->kStueckliste) && empty($this->oStueckliste_arr) || !empty($this->oStueckliste_arr) && count($this->oStueckliste_arr) !== $nAllPieces) {
-            $resetArray = true;
+            $resetArray           = true;
             $tmp_oStueckliste_arr = $this->oStueckliste_arr;
             unset($this->oStueckliste_arr);
             $this->holeStueckliste($_SESSION['Kundengruppe']->kKundengruppe, true);

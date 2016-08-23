@@ -24,6 +24,7 @@ class FilterTextField extends FilterField
      *  6 = greater than
      *  7 = lower than or equal
      *  8 = greater than or equal
+     *  9 = equals not
      */
     public function __construct($oFilter, $cTitle, $cColumn, $nTestOp = 0)
     {
@@ -34,8 +35,8 @@ class FilterTextField extends FilterField
 
         if ($this->bCustomTestOp) {
             $this->nTestOp =
-                $oFilter->getAction() === $oFilter->getId() . '_filter' ? (int)$_GET[$oFilter->getId() . '_' . $cColumn . '_op'] : (
-                $oFilter->hasSessionField($cColumn . '_op')             ? (int)$oFilter->getSessionField($cColumn . '_op') :
+                $oFilter->getAction() === $oFilter->getId() . '_filter' ? (int)$_GET[$oFilter->getId() . '_' . $this->cId . '_op'] : (
+                $oFilter->hasSessionField($cColumn . '_op')             ? (int)$oFilter->getSessionField($this->cId . '_op') :
                                                                           1
                 );
         }
@@ -46,7 +47,7 @@ class FilterTextField extends FilterField
      */
     public function getWhereClause()
     {
-        if ($this->cValue !== '' || $this->nTestOp == 4) {
+        if ($this->cValue !== '' || $this->nTestOp == 4 || $this->nTestOp == 9) {
             switch ($this->nTestOp) {
                 case 1: return $this->cColumn . " LIKE '%" . Shop::DB()->escape($this->cValue) . "%'";
                 case 2: return $this->cColumn . " LIKE '" . Shop::DB()->escape($this->cValue) . "%'";
@@ -56,6 +57,7 @@ class FilterTextField extends FilterField
                 case 6: return $this->cColumn . " > '" . Shop::DB()->escape($this->cValue) . "'";
                 case 7: return $this->cColumn . " <= '" . Shop::DB()->escape($this->cValue) . "'";
                 case 8: return $this->cColumn . " >= '" . Shop::DB()->escape($this->cValue) . "'";
+                case 9: return $this->cColumn . " != '" . Shop::DB()->escape($this->cValue) . "'";
             }
         }
 

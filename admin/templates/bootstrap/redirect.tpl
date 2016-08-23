@@ -97,44 +97,18 @@
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'new_redirect'} active{/if}">
             <a data-toggle="tab" role="tab" href="#new_redirect">Neuer Redirect</a>
-        </li>{*
-        <li class="tab{if isset($cTab) && $cTab === 'config'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#config">Einstellungen</a>
-        </li>*}
+        </li>
     </ul>
     <div class="tab-content">
         <div id="redirects" class="tab-pane fade {if !isset($cTab) || $cTab === 'redirects'} active in{/if}">
+            {if $nRedirectCount > 0}
+                {include file='tpl_inc/filtertools.tpl' oFilter=$oFilter}
+            {/if}
+            {if $oRedirect_arr|@count > 0}
+                {include file='tpl_inc/pagination.tpl' oPagination=$oPagination cAnchor='redirects'}
+            {/if}
             {if $oRedirect_arr|@count > 0}
                 <div class="panel panel-default">
-                    <form id="frmFilter" action="redirect.php" method="post">
-                        {$jtl_token}
-
-                        <div class="panel-heading">
-                            <h3 class="panel-title">Redirects</h3>
-                        </div>
-                        <div class="panel-body">
-                            <div class="pull-right p50">
-                                <div class="input-group item">
-                                    <span class="input-group-addon">
-                                        <label for="bUmgeleiteteUrls"> Filter</label>
-                                    </span>
-                                    <span class="input-group-wrap">
-                                        <select class="form-control" id="bUmgeleiteteUrls" name="bUmgeleiteteUrls">
-                                            <option value="0"{if $bUmgeleiteteUrls == '0'} selected="selected"{/if}>alle</option>
-                                            <option value="1"{if $bUmgeleiteteUrls == '1'} selected="selected"{/if}>nur umgeleitet</option>
-                                            <option value="2"{if $bUmgeleiteteUrls == '2'} selected="selected"{/if}>nur ohne Umleitung
-                                            </option>
-                                        </select>
-                                    </span>
-                                    <input type="text" class="form-control" name="cSuchbegriff" value="{$cSuchbegriff}" />
-                                    <span class="input-group-btn">
-                                        <button class="btn btn-default" type="submit"><i class="fa fa-search"></i>&nbsp;</button>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                    {include file='tpl_inc/pagination.tpl' oPagination=$oPagination cAnchor='redirects'}
                     <form id="frmRedirect" action="redirect.php" method="post">
                         {$jtl_token}
                         <input type="hidden" name="aData[action]" value="save">

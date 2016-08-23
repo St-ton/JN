@@ -15,10 +15,6 @@ $oRedirect       = new Redirect();
 $urls            = array();
 $cHinweis        = '';
 $cFehler         = '';
-$cParams_arr     = array(
-    'bUmgeleiteteUrls' => 0,
-    'cSuchbegriff'     => ''
-);
 
 switch ($aData['action']) {
     case 'search':
@@ -95,30 +91,23 @@ switch ($aData['action']) {
         break;
 }
 
-foreach ($cParams_arr as $cKey => $cVal) {
-    if (isset($_POST[$cKey]) && !empty($_POST[$cKey])) {
-        $cParams_arr[$cKey] = $_POST[$cKey];
-        $smarty->assign($cKey, $_POST[$cKey]);
-    } else {
-        $smarty->assign($cKey, $cVal);
-    }
-}
-
-$cParams           = '';
-foreach ($cParams_arr as $key => $val) {
-    $cParams .= $key . '=' . $val . '&';
-}
+$oFilter = new Filter();
+$oFilter->addTextfield('URL', 'cFromUrl', 1);
+$oFilter->addTextfield('Ziel-URL', 'cToUrl', 1);
+$oSelect = $oFilter->addSelectfield('Umleitung', 'cToUrl');
+$oSelect->addSelectOption('alle', '', 0);
+$oSelect->addSelectOption('vorhanden', '', 9);
+$oSelect->addSelectOption('fehlend', '', 4);
+$oFilter->assemble();
 
 $oPagination = (new Pagination())
-    ->setItemCount($oRedirect->getCount($cParams_arr['bUmgeleiteteUrls'], $cParams_arr['cSuchbegriff']))
+    ->setItemCount(Redirect::getTotalRedirectCount())
     ->setSortByOptions([['cFromUrl', 'Url'],
                         ['cToUrl', 'Weiterleitung nach'],
                         ['nCount', 'Aufrufe']])
     ->assemble();
 
-$oRedirect_arr = $oRedirect->getList($oPagination->getFirstPageItem(), $oPagination->getPageItemCount(),
-    $cParams_arr['bUmgeleiteteUrls'], $oPagination->getSortByCol(), $oPagination->getSortDirSpecifier(),
-    $cParams_arr['cSuchbegriff']);
+$oRedirect_arr = Redirect::getRedirects($oFilter->getWhereSQL(), $oPagination->getOrderSQL(), $oPagination->getLimitSQL());
 
 if (!empty($oRedirect_arr) && !empty($urls)) {
     foreach ($oRedirect_arr as &$kRedirect) {
@@ -132,9 +121,10 @@ if (!empty($oRedirect_arr) && !empty($urls)) {
 }
 
 $smarty->assign('aData', $aData)
-    ->assign('cParams', $cParams)
     ->assign('oPagination', $oPagination)
+    ->assign('oFilter', $oFilter)
     ->assign('oRedirect_arr', $oRedirect_arr)
+    ->assign('nRedirectCount', Redirect::getTotalRedirectCount())
     ->assign('cHinweis', $cHinweis)
     ->assign('cFehler', $cFehler)
     ->display('redirect.tpl');

@@ -125,10 +125,11 @@ if (isset($_POST['einstellungen_bearbeiten']) && (int)$_POST['einstellungen_bear
     Shop::DB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
     $cHinweis    = 'Die Einstellungen wurden erfolgreich gespeichert.';
     $tagsToFlush = array(CACHING_GROUP_OPTION);
-    if ($kSektion === 1 || $kSektion === 4 || $kSektion === 5) {
+    if ($kSektion === 1 || $kSektion === 4 || $kSektion === 5 || $kSektion === 8) {
         $tagsToFlush[] = CACHING_GROUP_CORE;
         $tagsToFlush[] = CACHING_GROUP_ARTICLE;
         $tagsToFlush[] = CACHING_GROUP_CATEGORY;
+        $tagsToFlush[] = CACHING_GROUP_BOX;
     }
     Shop::Cache()->flushTags($tagsToFlush);
     if (Shop::Cache()->isPageCacheEnabled()) {
@@ -198,10 +199,10 @@ if ($step === 'einstellungen bearbeiten') {
         }
 
         if ($Conf[$i]->cInputTyp === 'listbox') {
-            $setValue = Shop::DB()->select('teinstellungen', 'kEinstellungenSektion', CONF_BEWERTUNG, 'cName', $Conf[$i]->cWertName);
+            $setValue                = Shop::DB()->select('teinstellungen', 'kEinstellungenSektion', CONF_BEWERTUNG, 'cName', $Conf[$i]->cWertName);
             $Conf[$i]->gesetzterWert = $setValue;
         } else {
-            $setValue = Shop::DB()->select('teinstellungen', 'kEinstellungenSektion', (int)$Conf[$i]->kEinstellungenSektion, 'cName', $Conf[$i]->cWertName);
+            $setValue                = Shop::DB()->select('teinstellungen', 'kEinstellungenSektion', (int)$Conf[$i]->kEinstellungenSektion, 'cName', $Conf[$i]->cWertName);
             $Conf[$i]->gesetzterWert = (isset($setValue->cWert)) ? StringHandler::htmlentities($setValue->cWert) : null;
         }
     }

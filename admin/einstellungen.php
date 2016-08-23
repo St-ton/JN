@@ -125,10 +125,11 @@ if (isset($_POST['einstellungen_bearbeiten']) && (int)$_POST['einstellungen_bear
     Shop::DB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
     $cHinweis    = 'Die Einstellungen wurden erfolgreich gespeichert.';
     $tagsToFlush = array(CACHING_GROUP_OPTION);
-    if ($kSektion === 1 || $kSektion === 4 || $kSektion === 5 || $kSektion === 8) {
+    if ($kSektion === 1 || $kSektion === 4 || $kSektion === 5) {
         $tagsToFlush[] = CACHING_GROUP_CORE;
         $tagsToFlush[] = CACHING_GROUP_ARTICLE;
         $tagsToFlush[] = CACHING_GROUP_CATEGORY;
+    } elseif ($kSektion === 8) {
         $tagsToFlush[] = CACHING_GROUP_BOX;
     }
     Shop::Cache()->flushTags($tagsToFlush);

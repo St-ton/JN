@@ -50,6 +50,7 @@
 * Bugfix: Bestellkommentar wird nicht zur Wawi übertragen, wenn "Zahlung vor Bestellabschluss" auf "Ja" steht (#356)
 * Verbesserung: NiceDB::selectAll() zur Abfrage mehrere Spalten als Prepared Statement implementiert (#334)
 * Verbesserung: Registrierung per vCard-Upload statt manueller Dateneingabe ermöglicht (#307)
+* Bugfix: Weiterleitungen im Backend werden manchmal nicht richtig nach der Anzahl der Aufrufe sortiert (#368)
 
 ## [4.04.1]
 * Neues Premium-Plugin: Login und Bezahlen mit Amazon (von Solution360)

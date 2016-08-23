@@ -125,12 +125,15 @@ if ($step === 'Lieferadresse') {
 }
 if ($step === 'Versand') {
     gibStepVersand();
+    Warenkorb::refreshChecksum($_SESSION['Warenkorb']);
 }
 if ($step === 'Zahlung') {
     gibStepZahlung();
+    Warenkorb::refreshChecksum($_SESSION['Warenkorb']);
 }
 if ($step === 'ZahlungZusatzschritt') {
     gibStepZahlungZusatzschritt($_POST);
+    Warenkorb::refreshChecksum($_SESSION['Warenkorb']);
 }
 if ($step === 'Bestaetigung') {
     plausiGuthaben($_POST);
@@ -139,6 +142,7 @@ if ($step === 'Bestaetigung') {
     pruefeGuthabenNutzen();
     gibStepBestaetigung($_GET);
     $_SESSION['Warenkorb']->cEstimatedDelivery = $_SESSION['Warenkorb']->getEstimatedDeliveryTime();
+    Warenkorb::refreshChecksum($_SESSION['Warenkorb']);
 }
 //SafetyPay Work Around
 if (isset($_SESSION['Zahlungsart']->cModulId) && $_SESSION['Zahlungsart']->cModulId === 'za_safetypay' && $step === 'Bestaetigung') {

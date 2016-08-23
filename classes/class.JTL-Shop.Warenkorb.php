@@ -40,6 +40,11 @@ class Warenkorb
     public $cEstimatedDelivery = '';
 
     /**
+     * @var string
+     */
+    public $cChecksumme = '';
+
+    /**
      * @var array
      */
     public static $updatedPositions = array();
@@ -1396,5 +1401,43 @@ class Warenkorb
                 $cumulatedDeltaNet += ($netAmount - $roundedNetAmount);
             }
         }
+    }
+
+    /**
+     * @param object $oWarenkorb
+     * @return string
+     */
+    public static function getChecksum($oWarenkorb)
+    {
+        $checks = [
+            'EstimatedDelivery' => isset($oWarenkorb->cEstimatedDelivery) ? $oWarenkorb->cEstimatedDelivery : '',
+            'PositionenCount'   => isset($oWarenkorb->PositionenArr) ? count($oWarenkorb->PositionenArr) : 0,
+            'PositionenArr'     => [],
+        ];
+
+        if (is_array($oWarenkorb->PositionenArr)) {
+            foreach ($oWarenkorb->PositionenArr as $wkPos) {
+                $checks['PositionenArr'][] = [
+                    'kArtikel'          => isset($wkPos->kArtikel) ? $wkPos->kArtikel : 0,
+                    'nAnzahl'           => isset($wkPos->nAnzahl) ? $wkPos->nAnzahl : 0,
+                    'kVersandklasse'    => isset($wkPos->kVersandklasse) ? $wkPos->kVersandklasse : 0,
+                    'nPosTyp'           => isset($wkPos->nPosTyp) ? $wkPos->nPosTyp : 0,
+                    'fPreisEinzelNetto' => isset($wkPos->fPreisEinzelNetto) ? $wkPos->fPreisEinzelNetto : 0.0,
+                    'fPreis'            => isset($wkPos->fPreis) ? $wkPos->fPreis : 0.0,
+                    'cHinweis'          => isset($wkPos->cHinweis) ? $wkPos->cHinweis : '',
+                ];
+            }
+        }
+
+        return md5(serialize($checks));
+    }
+
+    /**
+     * refresh internal wk-checksum
+     * @param object $oWarenkorb
+     */
+    public static function refreshChecksum($oWarenkorb)
+    {
+        $oWarenkorb->cChecksumme = self::getChecksum($oWarenkorb);
     }
 }

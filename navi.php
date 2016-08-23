@@ -315,8 +315,8 @@ if ($smarty->isCached('productlist/index.tpl', $cacheID) === true) {
             $limit = (isset($Einstellungen['artikeluebersicht']['artikeluebersicht_bestseller_anzahl'])) ?
                 (int)$Einstellungen['artikeluebersicht']['artikeluebersicht_bestseller_anzahl'] :
                 3;
-            $minsells = (isset($Einstellungen['boxen']['boxen_bestseller_minanzahl'])) ?
-                (int)$Einstellungen['boxen']['boxen_bestseller_minanzahl'] :
+            $minsells = (isset($Einstellungen['global']['global_bestseller_minanzahl'])) ?
+                (int)$Einstellungen['global']['global_bestseller_minanzahl'] :
                 10;
             $bestsellers = Bestseller::buildBestsellers($products, $_SESSION['Kundengruppe']->kKundengruppe, $_SESSION['Kundengruppe']->darfArtikelKategorienSehen, false, $limit, $minsells);
             Bestseller::ignoreProducts($oSuchergebnisse->Artikel->elemente, $bestsellers);

@@ -231,7 +231,7 @@ function gibArtikelKeys($FilterSQL, $nArtikelProSeite, $NaviFilter, $bExtern, $o
     if (strlen($FilterSQL->oPreisspannenFilterSQL->cJoin) === 0) {
         $cSQL .= " JOIN tpreise ON tartikel.kArtikel = tpreise.kArtikel AND tpreise.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe;
     }
-    
+
     executeHook(
         HOOK_FILTER_INC_GIBARTIKELKEYS_SQL, array(
             'cSQL'           => &$cSQL,
@@ -240,7 +240,7 @@ function gibArtikelKeys($FilterSQL, $nArtikelProSeite, $NaviFilter, $bExtern, $o
             'SortierungsSQL' => &$oSortierungsSQL,
             'cLimitSQL'      => &$cLimitSQL)
     );
-    
+
     $oArtikelKey_arr = Shop::DB()->query(
         "SELECT tartikel.kArtikel
             FROM tartikel
@@ -556,7 +556,7 @@ function gibKategorieFilterOptionen($FilterSQL, $NaviFilter)
                                 JOIN tkategorie ON tkategorie.kKategorie = tkategorieartikel.kKategorie";
 
         if ($conf['navigationsfilter']['kategoriefilter_anzeigen_als'] === 'HF' && (!isset($NaviFilter->Kategorie->kKategorie) || !$NaviFilter->Kategorie->kKategorie)) {
-            $kKatFilter = (isset($NaviFilter->KategorieFilter->kKategorie) && $NaviFilter->KategorieFilter->kKategorie > 0) ? '' : "AND tkategorieartikelgesamt.kOberKategorie = 0";
+            $kKatFilter        = (isset($NaviFilter->KategorieFilter->kKategorie) && $NaviFilter->KategorieFilter->kKategorie > 0) ? '' : "AND tkategorieartikelgesamt.kOberKategorie = 0";
             $cSQLFilterAnzeige = "JOIN tkategorieartikelgesamt ON tartikel.kArtikel = tkategorieartikelgesamt.kArtikel
                                     " . $kKatFilter . "
                                     JOIN tkategorie ON tkategorie.kKategorie = tkategorieartikelgesamt.kKategorie";
@@ -1608,15 +1608,15 @@ function gibSuchspecialFilterOptionen($FilterSQL, $NaviFilter)
         return $oSuchspecialFilterDB_arr;
     }
     $oSuchspecialFilterDB_arr = array();
-    $conf                     = Shop::getSettings(array(CONF_NAVIGATIONSFILTER, CONF_BOXEN));
+    $conf                     = Shop::getSettings(array(CONF_NAVIGATIONSFILTER, CONF_BOXEN, CONF_GLOBAL));
     if ($conf['navigationsfilter']['allgemein_suchspecialfilter_benutzen'] === 'Y') {
         for ($i = 1; $i < 7; $i++) {
             $oFilter = new stdClass();
             switch ($i) {
                 case SEARCHSPECIALS_BESTSELLER:
                     $nAnzahl = 100;
-                    if ($conf['boxen']['boxen_bestseller_minanzahl'] > 0) {
-                        $nAnzahl = (int)$conf['boxen']['boxen_bestseller_minanzahl'];
+                    if ($conf['global']['global_bestseller_minanzahl'] > 0) {
+                        $nAnzahl = (int)$conf['global']['global_bestseller_minanzahl'];
                     }
 
                     $oFilter->cJoin  = 'JOIN tbestseller ON tbestseller.kArtikel = tartikel.kArtikel';
@@ -2385,11 +2385,11 @@ function gibSuchspecialFilterSQL($NaviFilter)
         if (isset($NaviFilter->SuchspecialFilter->kKey) && $NaviFilter->SuchspecialFilter->kKey > 0) {
             $kKey = $NaviFilter->SuchspecialFilter->kKey;
         }
-        $conf = Shop::getSettings(array(CONF_BOXEN));
+        $conf = Shop::getSettings(array(CONF_BOXEN, CONF_GLOBAL));
         switch ($kKey) {
             case SEARCHSPECIALS_BESTSELLER:
-                $nAnzahl = (isset($conf['boxen']['boxen_bestseller_minanzahl'])
-                    && intval($conf['boxen']['boxen_bestseller_minanzahl'] > 0)) ? (int)$conf['boxen']['boxen_bestseller_minanzahl'] : 100;
+                $nAnzahl = (isset($conf['global']['global_bestseller_minanzahl'])
+                    && intval($conf['global']['global_bestseller_minanzahl'] > 0)) ? (int)$conf['global']['global_bestseller_minanzahl'] : 100;
                 $oFilter->cJoin  = "JOIN tbestseller ON tbestseller.kArtikel = tartikel.kArtikel";
                 $oFilter->cWhere = " AND round(tbestseller.fAnzahl) >= " . $nAnzahl;
                 break;
@@ -2414,7 +2414,7 @@ function gibSuchspecialFilterSQL($NaviFilter)
                 break;
 
             case SEARCHSPECIALS_NEWPRODUCTS:
-                $alter_tage = ($conf['boxen']['box_neuimsortiment_alter_tage'] > 0) ? (int)$conf['boxen']['box_neuimsortiment_alter_tage'] : 30;
+                $alter_tage      = ($conf['boxen']['box_neuimsortiment_alter_tage'] > 0) ? (int)$conf['boxen']['box_neuimsortiment_alter_tage'] : 30;
                 $oFilter->cJoin  = '';
                 $oFilter->cWhere = " AND tartikel.cNeu='Y' AND DATE_SUB(now(),INTERVAL $alter_tage DAY) < tartikel.dErstellt
                                     AND tartikel.cNeu='Y'";
@@ -2432,7 +2432,7 @@ function gibSuchspecialFilterSQL($NaviFilter)
 
             case SEARCHSPECIALS_TOPREVIEWS:
                 if (!isset($NaviFilter->BewertungFilter->nSterne) || !$NaviFilter->BewertungFilter->nSterne) {
-                    $nMindestSterne = (intval($conf['boxen']['boxen_topbewertet_minsterne'] > 0)) ? (int)$conf['boxen']['boxen_topbewertet_minsterne'] : 4;
+                    $nMindestSterne  = (intval($conf['boxen']['boxen_topbewertet_minsterne'] > 0)) ? (int)$conf['boxen']['boxen_topbewertet_minsterne'] : 4;
                     $oFilter->cJoin  = "JOIN tartikelext AS taex ON taex.kArtikel = tartikel.kArtikel";
                     $oFilter->cWhere = " AnD round(taex.fDurchschnittsBewertung) >= " . $nMindestSterne;
                 }

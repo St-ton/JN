@@ -40,6 +40,7 @@
     <div class="tab-content">
         <div id="suchanfrage" class="tab-pane fade {if !isset($tab) || $tab === 'suchanfrage'} active in{/if}">
             {if isset($Suchanfragen) && $Suchanfragen|@count > 0}
+                {include file='tpl_inc/pagination.tpl' oPagination=$oPagiSuchanfragen cAnchor='suchanfrage'}
                 <form name="suche" method="post" action="livesuche.php">
                     {$jtl_token}
                     <input type="hidden" name="Suche" value="1" />
@@ -63,7 +64,6 @@
                 <form name="login" method="post" action="livesuche.php">
                     {$jtl_token}
                     <input type="hidden" name="livesuche" value="1" />
-                    <input type="hidden" name="s1" value="{$oBlaetterNaviSuchanfragen->nAktuelleSeite}" />
                     <input type="hidden" name="cSuche" value="{if isset($cSuche)}{$cSuche}{/if}" />
                     <input type="hidden" name="nSort" value="{$nSort}" />
                     <input type="hidden" name="tab" value="suchanfrage" />
@@ -72,7 +72,6 @@
                     {else}
                         {assign var=pAdditional value=''}
                     {/if}
-                    {include file='pagination.tpl' cSite=1 cUrl='livesuche.php' oBlaetterNavi=$oBlaetterNaviSuchanfragen cParams=$pAdditional hash='#suchanfrage'}
                     {if isset($cSuche)}
                         {assign var=cSuchStr value="&Suche=1&cSuche="|cat:$cSuche|cat:"&"}
                     {else}
@@ -86,13 +85,13 @@
                             <tr>
                                 <th class="th-1"></th>
                                 <th class="tleft">
-                                    (<a href="livesuche.php?{$cSuchStr}nSort=1{if $nSort == 1}1{/if}&tab=suchanfrage{if $oBlaetterNaviSuchanfragen->nAktuelleSeite > 0}&s1={$oBlaetterNaviSuchanfragen->nAktuelleSeite}{/if}">{if $nSort == 1}Z...A{else}A...Z{/if}</a>) {#search#}
+                                    (<a href="livesuche.php?{$cSuchStr}nSort=1{if $nSort == 1}1{/if}&tab=suchanfrage">{if $nSort == 1}Z...A{else}A...Z{/if}</a>) {#search#}
                                 </th>
                                 <th class="tleft">
-                                    (<a href="livesuche.php?{$cSuchStr}nSort=2{if $nSort == 2 || $nSort == -1}2{/if}&tab=suchanfrage{if $oBlaetterNaviSuchanfragen->nAktuelleSeite > 0}&s1={$oBlaetterNaviSuchanfragen->nAktuelleSeite}{/if}">{if $nSort == 2 || $nSort == -1}1...9{else}9...1{/if}</a>) {#searchcount#}
+                                    (<a href="livesuche.php?{$cSuchStr}nSort=2{if $nSort == 2 || $nSort == -1}2{/if}&tab=suchanfrage">{if $nSort == 2 || $nSort == -1}1...9{else}9...1{/if}</a>) {#searchcount#}
                                 </th>
                                 <th class="th-4">
-                                    (<a href="livesuche.php?{$cSuchStr}nSort=3{if $nSort == 3 || $nSort == -1}3{/if}&tab=suchanfrage{if $oBlaetterNaviSuchanfragen->nAktuelleSeite > 0}&s1={$oBlaetterNaviSuchanfragen->nAktuelleSeite}{/if}">{if $nSort == 3 || $nSort == -1}0...1{else}1...0{/if}</a>) {#active#}
+                                    (<a href="livesuche.php?{$cSuchStr}nSort=3{if $nSort == 3 || $nSort == -1}3{/if}&tab=suchanfrage">{if $nSort == 3 || $nSort == -1}0...1{else}1...0{/if}</a>) {#active#}
                                 </th>
                                 <th class="th-5">{#mapping#}</th>
                             </tr>
@@ -146,13 +145,12 @@
         </div>
         <div id="erfolglos" class="tab-pane fade {if isset($tab) && $tab === 'erfolglos'} active in{/if}">
             {if $Suchanfragenerfolglos && $Suchanfragenerfolglos|@count > 0}
+                {include file='tpl_inc/pagination.tpl' oPagination=$oPagiErfolglos cAnchor='erfolglos'}
                 <form name="login" method="post" action="livesuche.php">
                     {$jtl_token}
                     <input type="hidden" name="livesuche" value="2">
-                    <input type="hidden" name="s2" value="{$oBlaetterNaviSuchanfrageerfolglos->nAktuelleSeite}">
                     <input type="hidden" name="tab" value="erfolglos">
                     <input type="hidden" name="nErfolglosEditieren" value="{if isset($nErfolglosEditieren)}{$nErfolglosEditieren}{/if}">
-                    {include file='pagination.tpl' cSite=2 cUrl='livesuche.php' oBlaetterNavi=$oBlaetterNaviSuchanfrageerfolglos hash='#erfolglos'}
                     <div class="panel panel-default settings">
                         <div class="panel-heading">
                             <h3 class="panel-title">{#searchmiss#}</h3>
@@ -208,12 +206,11 @@
         </div>
         <div id="mapping" class="tab-pane fade {if isset($tab) && $tab === 'mapping'} active in{/if}">
             {if $Suchanfragenmapping && $Suchanfragenmapping|@count > 0}
+                {include file='tpl_inc/pagination.tpl' oPagination=$oPagiMapping cAnchor='mapping'}
                 <form name="login" method="post" action="livesuche.php">
                     {$jtl_token}
                     <input type="hidden" name="livesuche" value="4" />
                     <input type="hidden" name="tab" value="mapping" />
-                    <input type="hidden" name="s3" value="{$oBlaetterNaviSuchanfragenMapping->nAktuelleSeite}" />
-                    {include file='pagination.tpl' cSite=3 cUrl='livesuche.php' oBlaetterNavi=$oBlaetterNaviSuchanfrageerfolglos hash='#mapping'}
                     <div class="panel panel-default settings">
                         <div class="panel-heading">
                             <h3 class="panel-title">{#mapping#}</h3>

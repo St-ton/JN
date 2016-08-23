@@ -136,7 +136,8 @@
                             </div>
                         </div>
                     </form>
-                    <form id="frmRedirect" action="redirect.php?s1={$oBlaetterNavi->nAktuelleSeite}" method="post">
+                    {include file='tpl_inc/pagination.tpl' oPagination=$oPagination cAnchor='redirects'}
+                    <form id="frmRedirect" action="redirect.php" method="post">
                         {$jtl_token}
                         <input type="hidden" name="aData[action]" value="save">
                         <table class="list table">
@@ -251,8 +252,6 @@
                             </div>
 
                             <div class="pull-right">
-                            <!--  Pagination unten -->
-                            {include file='pagination.tpl' cSite=1 cUrl='redirect.php' oBlaetterNavi=$oBlaetterNavi hash='#redirects'}
                             </div>
                         </div>
                     </form>

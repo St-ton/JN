@@ -21,13 +21,12 @@
     <div class="tab-content">
         <div id="einladungen" class="tab-pane fade {if !isset($cTab) || $cTab === 'einladungen'} active in{/if}">
             {if $oKwKNichtReg_arr|@count > 0 && $oKwKNichtReg_arr}
+                {include file='tpl_inc/pagination.tpl' oPagination=$oPagiNichtReg cAnchor='einladungen'}
                 <form name="umfrage" method="post" action="kundenwerbenkunden.php">
                     {$jtl_token}
                     <input type="hidden" name="KwK" value="1" />
                     <input type="hidden" name="nichtreggt_loeschen" value="1" />
-                    <input type="hidden" name="s1" value="{$oBlaetterNaviNichtReg->nAktuelleSeite}" />
                     <input type="hidden" name="tab" value="einladungen" />
-                    {include file='pagination.tpl' cSite=1 cUrl='kundenwerbenkunden.php' oBlaetterNavi=$oBlaetterNaviNichtReg cParams='' hash='#einladungen'}
                     <div id="payment">
                         <div id="tabellenLivesuche">
                             <table class="table">
@@ -66,7 +65,7 @@
         </div>
         <div id="registrierung" class="tab-pane fade {if isset($cTab) && $cTab === 'registrierung'} active in{/if}">
             {if $oKwKReg_arr && $oKwKReg_arr|@count > 0}
-                {include file='pagination.tpl' cSite=2 cUrl='kundenwerbenkunden.php' oBlaetterNavi=$oBlaetterNaviReg cParams='' hash='#registrierung'}
+                {include file='tpl_inc/pagination.tpl' oPagination=$oPagiReg cAnchor='registrierung'}
                 <div id="payment">
                     <div id="tabellenLivesuche">
                         <table class="table">
@@ -97,7 +96,7 @@
         </div>
         <div id="praemie" class="tab-pane fade {if isset($cTab) && $cTab === 'praemie'} active in{/if}">
             {if $oKwKBestandBonus_arr|@count > 0 && $oKwKBestandBonus_arr}
-                {include file='pagination.tpl' cSite=3 cUrl='kundenwerbenkunden.php' oBlaetterNavi=$oBlaetterNaviPraemie cParams='' hash='#praemie'}
+                {include file='tpl_inc/pagination.tpl' oPagination=$oPagiPraemie cAnchor='praemie'}
                 <div id="payment">
                     <div id="tabellenLivesuche">
                         <table class="table">

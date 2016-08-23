@@ -8,7 +8,6 @@ require_once dirname(__FILE__) . '/includes/admininclude.php';
 $oAccount->permission('MODULE_PRODUCTTAGS_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'blaetternavi.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'tagging_inc.php';
 
 setzeSprache();
@@ -17,8 +16,6 @@ $cHinweis          = '';
 $cFehler           = '';
 $step              = 'uebersicht';
 $settingsIDs       = array(427, 428, 431, 433, 434, 435, 430);
-$nAnzahlProSeite   = 15;
-$oBlaetterNaviConf = baueBlaetterNaviGetterSetter(2, $nAnzahlProSeite);
 // Tabs
 if (strlen(verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', verifyGPDataString('tab'));
@@ -84,7 +81,7 @@ if (isset($_POST['tagging']) && intval($_POST['tagging']) === 1 && validateToken
             "SELECT ttag.kTag,ttag.cName,ttag.nAktiv,sum(ttagartikel.nAnzahlTagging) AS Anzahl FROM ttag
                 JOIN ttagartikel ON ttagartikel.kTag = ttag.kTag
                 WHERE ttag.kSprache = " . (int)$_SESSION['kSprache'] . " GROUP BY ttag.cName
-                ORDER BY Anzahl DESC" . $oBlaetterNaviConf->cSQL1, 2
+                ORDER BY Anzahl DESC", 2
         );
         if (is_array($Tags) && count($Tags) > 0) {
             foreach ($Tags as $tag) {
@@ -192,6 +189,11 @@ if (isset($_POST['tagging']) && intval($_POST['tagging']) === 1 && validateToken
 // Tagdetail
 if (verifyGPCDataInteger('kTag') > 0 && verifyGPCDataInteger('tagdetail') === 1) {
     $step = 'detail';
+    // Pagination
+    $nTagDetailAnzahl = holeTagDetailAnzahl(verifyGPCDataInteger('kTag'), $_SESSION['kSprache']);
+    $oPagiTagDetail   = (new Pagination('detail'))
+        ->setItemCount($nTagDetailAnzahl)
+        ->assemble();
     // Tag von einem odere mehreren Artikeln loesen
     if (!empty($_POST['kArtikel_arr']) && is_array($_POST['kArtikel_arr']) && count($_POST['kArtikel_arr']) && verifyGPCDataInteger('detailloeschen') === 1) {
         if (loescheTagsVomArtikel($_POST['kArtikel_arr'], verifyGPCDataInteger('kTag'))) {
@@ -201,32 +203,49 @@ if (verifyGPCDataInteger('kTag') > 0 && verifyGPCDataInteger('tagdetail') === 1)
             $cFehler = 'Fehler: Ihre markierten Artikel zum Produkttag konnten nicht gel&ouml;scht werden.';
         }
     }
-    $oTagArtikel_arr = holeTagDetail(verifyGPCDataInteger('kTag'), (int)$_SESSION['kSprache'], $oBlaetterNaviConf->cSQL2);
-    // Baue Blaetternavigation
-    $oBlaetterNaviTagsDetail = baueBlaetterNavi($oBlaetterNaviConf->nAktuelleSeite2, holeTagDetailAnzahl(verifyGPCDataInteger('kTag'), $_SESSION['kSprache']), $nAnzahlProSeite);
+    $oTagArtikel_arr = holeTagDetail(verifyGPCDataInteger('kTag'), (int)$_SESSION['kSprache'], ' LIMIT ' . $oPagiTagDetail->getLimitSQL());
     $smarty->assign('oTagArtikel_arr', $oTagArtikel_arr)
-           ->assign('oBlaetterNaviTagsDetail', $oBlaetterNaviTagsDetail)
-           ->assign('kTag', verifyGPCDataInteger('kTag'))
-           ->assign('cTagName', (isset($oTagArtikel_arr[0]->cName)) ? $oTagArtikel_arr[0]->cName : '');
+        ->assign('oPagiTagDetail', $oPagiTagDetail)
+        ->assign('kTag', verifyGPCDataInteger('kTag'))
+        ->assign('cTagName', (isset($oTagArtikel_arr[0]->cName)) ? $oTagArtikel_arr[0]->cName : '');
 } else {
-    // Anzahl Suchanfrageerfolglos
+    // Anzahl Tags fuer diese Sprache
     $nAnzahlTags = Shop::DB()->query(
         "SELECT count(*) AS nAnzahl
             FROM ttag
             WHERE kSprache=" . $_SESSION['kSprache'], 1
     );
-    // Baue Blaetternavigation
-    $oBlaetterNaviTags = baueBlaetterNavi($oBlaetterNaviConf->nAktuelleSeite1, $nAnzahlTags->nAnzahl, $nAnzahlProSeite);
-    $Sprachen          = gibAlleSprachen();
-    $Tags              = Shop::DB()->query(
-        "SELECT ttag.kTag,ttag.cName,ttag.nAktiv,sum(ttagartikel.nAnzahlTagging) AS Anzahl FROM ttag
+    // Anzahl Tag Mappings fuer diese Sprache
+    $nAnzahlTagMappings = Shop::DB()->query(
+        "SELECT count(*) AS nAnzahl
+            FROM ttagmapping
+            WHERE kSprache=" . $_SESSION['kSprache'], 1
+    );
+
+    // Paginationen
+    $oPagiTags = (new Pagination('tags'))
+        ->setItemCount($nAnzahlTags->nAnzahl)
+        ->assemble();
+    $oPagiTagMappings = (new Pagination('mappings'))
+        ->setItemCount($nAnzahlTagMappings->nAnzahl)
+        ->assemble();
+
+    $Sprachen = gibAlleSprachen();
+    $Tags     = Shop::DB()->query("
+        SELECT ttag.kTag,ttag.cName,ttag.nAktiv,sum(ttagartikel.nAnzahlTagging) AS Anzahl FROM ttag
             JOIN ttagartikel ON ttagartikel.kTag = ttag.kTag
             WHERE ttag.kSprache = " . (int)$_SESSION['kSprache'] . "
             GROUP BY ttag.cName
-            ORDER BY Anzahl DESC" . $oBlaetterNaviConf->cSQL1, 2
-    );
+            ORDER BY Anzahl DESC
+            LIMIT " . $oPagiTags->getLimitSQL(),
+        2);
+    $Tagmapping = Shop::DB()->query("
+        SELECT *
+            FROM ttagmapping
+            WHERE kSprache = " . (int)$_SESSION['kSprache'] . "
+            LIMIT " . $oPagiTagMappings->getLimitSQL(),
+        2);
 
-    $Tagmapping = Shop::DB()->query("SELECT * FROM ttagmapping WHERE kSprache = " . (int)$_SESSION['kSprache'], 2);
     // Config holen
     $oConfig_arr = Shop::DB()->query(
         "SELECT *
@@ -252,10 +271,11 @@ if (verifyGPCDataInteger('kTag') > 0 && verifyGPCDataInteger('tagdetail') === 1)
     }
 
     $smarty->assign('oConfig_arr', $oConfig_arr)
-           ->assign('oBlaetterNaviTags', $oBlaetterNaviTags)
-           ->assign('Sprachen', $Sprachen)
-           ->assign('Tags', $Tags)
-           ->assign('Tagmapping', $Tagmapping);
+        ->assign('oPagiTags', $oPagiTags)
+        ->assign('oPagiTagMappings', $oPagiTagMappings)
+        ->assign('Sprachen', $Sprachen)
+        ->assign('Tags', $Tags)
+        ->assign('Tagmapping', $Tagmapping);
 }
 $smarty->assign('hinweis', $cHinweis)
        ->assign('fehler', $cFehler)

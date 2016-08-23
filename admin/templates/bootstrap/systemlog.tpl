@@ -12,15 +12,7 @@
     </ul>
     <div class="tab-content">
         <div id="log" class="tab-pane fade {if !isset($cTab) || $cTab === 'log'} active in{/if}">
-            {if isset($cSuche) && $cSuche|strlen > 0}
-                {assign var=pAdditional value="&cSucheEncode="|cat:$cSuche}
-            {else}
-                {assign var=pAdditional value=''}
-            {/if}
-            {if isset($nLevel)}
-                {assign var=pAdditional value=$pAdditional|cat:"&nLevel="|cat:$nLevel}
-            {/if}
-            {include file='pagination.tpl' cSite=1 cUrl='systemlog.php' oBlaetterNavi=$oBlaetterNavi hash='' cParams=$pAdditional}
+            {include file='tpl_inc/pagination.tpl' oPagination=$oPagination cParam_arr=['cSucheEncode'=>$cSuche,'nLevel'=>$nLevel]}
             <div class="block container2 clearall">
                 <div class="left p50">
                     <form method="post" action="systemlog.php">

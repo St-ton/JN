@@ -10,7 +10,6 @@ require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
 
 $oAccount->permission('CONTENT_NEWS_SYSTEM_VIEW', true, true);
 
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'blaetternavi.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'news_inc.php';
 
 $Einstellungen         = Shop::getSettings(array(CONF_NEWS));
@@ -22,8 +21,6 @@ $cUploadVerzeichnisKat = PFAD_ROOT . PFAD_NEWSKATEGORIEBILDER;
 $oNewsKategorie_arr    = array();
 $continueWith          = false;
 setzeSprache();
-$nAnzahlProSeite       = 15;
-$oBlaetterNaviConf     = baueBlaetterNaviGetterSetter(3, $nAnzahlProSeite);
 
 // Tabs
 if (strlen(verifyGPDataString('tab')) > 0) {
@@ -668,18 +665,11 @@ if ($step === 'news_uebersicht') {
             LEFT JOIN tnewskommentar ON tnewskommentar.kNews = tnews.kNews
             WHERE tnews.kSprache = " . (int)$_SESSION['kSprache'] . "
             GROUP BY tnews.kNews
-            ORDER BY tnews.dGueltigVon DESC" . $oBlaetterNaviConf->cSQL2, 2
+            ORDER BY tnews.dGueltigVon DESC", 2
     );
     $oNewsAnzahl = Shop::DB()->query(
         "SELECT FOUND_ROWS() AS nAnzahl", 1
     );
-
-    if (0 === count($oNews_arr) && $oNewsAnzahl->nAnzahl > 0 && $oBlaetterNaviConf->nAktuelleSeite2 > 1) {
-        // leere Seite angefordert -> Redirect zu Seite 1
-        newsRedirect(verifyGPDataString('tab'), '', array(
-            's2' => 1,
-        ));
-    }
 
     if (is_array($oNews_arr) && count($oNews_arr) > 0) {
         foreach ($oNews_arr as $i => $oNews) {
@@ -733,18 +723,11 @@ if ($step === 'news_uebersicht') {
             JOIN tnews ON tnews.kNews = tnewskommentar.kNews
             LEFT JOIN tkunde ON tkunde.kKunde = tnewskommentar.kKunde
             WHERE tnewskommentar.nAktiv=0
-                AND tnews.kSprache = " . (int)$_SESSION['kSprache'] . $oBlaetterNaviConf->cSQL1, 2
+                AND tnews.kSprache = " . (int)$_SESSION['kSprache'], 2
     );
     $oNewsKommentarAnzahl = Shop::DB()->query(
         "SELECT FOUND_ROWS() AS nAnzahl", 1
     );
-
-    if (0 === count($oNewsKommentar_arr) && $oNewsKommentarAnzahl->nAnzahl > 0 && $oBlaetterNaviConf->nAktuelleSeite1 > 1) {
-        // leere Seite angefordert -> Redirect zu Seite 1
-        newsRedirect(verifyGPDataString('tab'), '', array(
-            's1' => 1,
-        ));
-    }
 
     if (is_array($oNewsKommentar_arr) && count($oNewsKommentar_arr) > 0) {
         foreach ($oNewsKommentar_arr as $i => $oNewsKommentar) {
@@ -753,8 +736,6 @@ if ($step === 'news_uebersicht') {
             $oNewsKommentar_arr[$i]->cNachname = $oKunde->cNachname;
         }
     }
-    $smarty->assign('oNews_arr', $oNews_arr)
-           ->assign('oNewsKommentar_arr', $oNewsKommentar_arr);
     // Einstellungen
     $oConfig_arr = Shop::DB()->query(
         "SELECT *
@@ -801,28 +782,29 @@ if ($step === 'news_uebersicht') {
         $smarty->assign('oNewsMonatsPraefix_arr', $oNewsMonatsPraefix_arr);
     }
     // Newskategorie
-    $oNewsKategorie_arr = holeNewskategorie($_SESSION['kSprache'], $oBlaetterNaviConf->cSQL3);
+    $oNewsKategorie_arr = holeNewskategorie($_SESSION['kSprache']);
     $oNewsKatsAnzahl    = Shop::DB()->query(
         "SELECT FOUND_ROWS() as nAnzahl", 1
     );
 
-    if (0 === count($oNewsKategorie_arr) && $oNewsKatsAnzahl->nAnzahl > 0 && $oBlaetterNaviConf->nAktuelleSeite3 > 1) {
-        // leere Seite angefordert -> Redirect zu Seite 1
-        newsRedirect(verifyGPDataString('tab'), '', array(
-            's3' => 1,
-        ));
-    }
-
-    // Baue Blaetternavigation
-    $oBlaetterNaviKommentar = baueBlaetterNavi($oBlaetterNaviConf->nAktuelleSeite1, $oNewsKommentarAnzahl->nAnzahl, $nAnzahlProSeite);
-    $oBlaetterNaviNews      = baueBlaetterNavi($oBlaetterNaviConf->nAktuelleSeite2, $oNewsAnzahl->nAnzahl, $nAnzahlProSeite);
-    $oBlaetterNaviKats      = baueBlaetterNavi($oBlaetterNaviConf->nAktuelleSeite3, $oNewsKatsAnzahl->nAnzahl, $nAnzahlProSeite);
+    // Paginationen
+    $oPagiKommentar = (new Pagination('kommentar'))
+        ->setItemArray($oNewsKommentar_arr)
+        ->assemble();
+    $oPagiNews = (new Pagination('news'))
+        ->setItemArray($oNews_arr)
+        ->assemble();
+    $oPagiKats = (new Pagination('kats'))
+        ->setItemArray($oNewsKategorie_arr)
+        ->assemble();
 
     $smarty->assign('oConfig_arr', $oConfig_arr)
-           ->assign('oNewsKategorie_arr', $oNewsKategorie_arr)
-           ->assign('oBlaetterNaviKommentar', $oBlaetterNaviKommentar)
-           ->assign('oBlaetterNaviNews', $oBlaetterNaviNews)
-           ->assign('oBlaetterNaviKats', $oBlaetterNaviKats);
+        ->assign('oNewsKommentar_arr', $oPagiKommentar->getPageItems())
+        ->assign('oNews_arr', $oPagiNews->getPageItems())
+        ->assign('oNewsKategorie_arr', $oPagiKats->getPageItems())
+        ->assign('oPagiKommentar', $oPagiKommentar)
+        ->assign('oPagiNews', $oPagiNews)
+        ->assign('oPagiKats', $oPagiKats);
 }
 
 if (isset($_SESSION['news.cHinweis']) && !empty($_SESSION['news.cHinweis'])) {

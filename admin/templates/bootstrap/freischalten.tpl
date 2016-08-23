@@ -165,9 +165,9 @@
                         <thead>
                         <tr>
                             <th class="check">&nbsp;</th>
-                            <th class="tleft">(<a href="freischalten.php?tab=livesearch&{$cSuchStr}nSort=1{if !isset($nSort) || $nSort != 11}1{/if}{if isset($oBlaetterNaviSuchanfragen->nAktuelleSeite) && $oBlaetterNaviSuchanfragen->nAktuelleSeite > 0}&s1={$oBlaetterNaviSuchanfragen->nAktuelleSeite}{/if}&token={$smarty.session.jtl_token}" style="text-decoration: underline;">{if !isset($nSort) || $nSort != 11}Z...A{else}A...Z{/if}</a>) {#freischaltenLivesearchSearch#}</th>
-                            <th>(<a href="freischalten.php?tab=livesearch&{$cSuchStr}nSort=2{if !isset($nSort) || $nSort != 22}2{/if}{if isset($oBlaetterNaviSuchanfragen->nAktuelleSeite) && $oBlaetterNaviSuchanfragen->nAktuelleSeite > 0}&s1={$oBlaetterNaviSuchanfragen->nAktuelleSeite}{/if}&token={$smarty.session.jtl_token}" style="text-decoration: underline;">{if !isset($nSort) || $nSort != 22}1...9{else}9...1{/if}</a>) {#freischaltenLivesearchCount#}</th>
-                            <th>(<a href="freischalten.php?tab=livesearch&{$cSuchStr}nSort=3{if !isset($nSort) || $nSort != 33}3{/if}{if isset($oBlaetterNaviSuchanfragen->nAktuelleSeite) && $oBlaetterNaviSuchanfragen->nAktuelleSeite > 0}&s1={$oBlaetterNaviSuchanfragen->nAktuelleSeite}{/if}&token={$smarty.session.jtl_token}" style="text-decoration: underline;">{if !isset($nSort) || $nSort != 33}0...1{else}1...0{/if}</a>) {#freischaltenLivesearchHits#}</th>
+                            <th class="tleft">(<a href="freischalten.php?tab=livesearch&{$cSuchStr}nSort=1{if !isset($nSort) || $nSort != 11}1{/if}&token={$smarty.session.jtl_token}" style="text-decoration: underline;">{if !isset($nSort) || $nSort != 11}Z...A{else}A...Z{/if}</a>) {#freischaltenLivesearchSearch#}</th>
+                            <th>(<a href="freischalten.php?tab=livesearch&{$cSuchStr}nSort=2{if !isset($nSort) || $nSort != 22}2{/if}&token={$smarty.session.jtl_token}" style="text-decoration: underline;">{if !isset($nSort) || $nSort != 22}1...9{else}9...1{/if}</a>) {#freischaltenLivesearchCount#}</th>
+                            <th>(<a href="freischalten.php?tab=livesearch&{$cSuchStr}nSort=3{if !isset($nSort) || $nSort != 33}3{/if}&token={$smarty.session.jtl_token}" style="text-decoration: underline;">{if !isset($nSort) || $nSort != 33}0...1{else}1...0{/if}</a>) {#freischaltenLivesearchHits#}</th>
                             <th>{#freischaltenLiveseachDate#}</th>
                         </tr>
                         </thead>
@@ -326,7 +326,7 @@
                             <th class="tleft">{#freischaltenNewsletterReceiverEmail#}</th>
                             <th class="tleft">{#freischaltenNewsletterReceiverFirstName#}</th>
                             <th class="tleft">{#freischaltenNewsletterReceiverLastName#}</th>
-                            <th>(<a href="freischalten.php?tab=newsletter&{$cSuchStr}nSort=4{if !isset($nSort) || $nSort != 44}4{/if}{if $oBlaetterNaviNewsletterEmpfaenger->nAktuelleSeite > 0}&s1={$oBlaetterNaviNewsletterEmpfaenger->nAktuelleSeite}{/if}&token={$smarty.session.jtl_token}">{if !isset($nSort) || $nSort != 44}Alt...Neu{elseif isset($nSort) && $nSort == 44}Neu...Alt{/if}</a>) {#freischaltenNewsletterReceiverDate#}</th>
+                            <th>(<a href="freischalten.php?tab=newsletter&{$cSuchStr}nSort=4{if !isset($nSort) || $nSort != 44}4{/if}&token={$smarty.session.jtl_token}">{if !isset($nSort) || $nSort != 44}Alt...Neu{elseif isset($nSort) && $nSort == 44}Neu...Alt{/if}</a>) {#freischaltenNewsletterReceiverDate#}</th>
                         </tr>
                         </thead>
                         <tbody>

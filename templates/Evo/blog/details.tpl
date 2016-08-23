@@ -62,52 +62,10 @@
                     {/foreach}
                 </div>
 
-                {if isset($oBlaetterNavi->nAktiv) && $oBlaetterNavi->nAktiv == 1}
-                    <div class="row">
-                        <div class="col-xs-7 col-md-8 col-lg-9">
-                            <ul class="pagination">
-                                {if $oBlaetterNavi->nAktuelleSeite == 1}
-                                    <li><span>&laquo; {lang key="newsNaviBack" section="news"}</span></li>
-                                {else}
-                                    <li>
-                                        <a href="{get_static_route id='news.php'}?s={$oBlaetterNavi->nVoherige}&kNews={$oNewsArchiv->kNews}&n={$oNewsArchiv->kNews}"><span>&laquo; {lang key="newsNaviBack" section="news"}</span></a>
-                                    </li>
-                                {/if}
-                                {if $oBlaetterNavi->nAnfang != 0}
-                                    <li>
-                                        <a href="{get_static_route id='news.php'}?s={$oBlaetterNavi->nAnfang}&kNews={$oNewsArchiv->kNews}&n={$oNewsArchiv->kNews}">{$oBlaetterNavi->nAnfang}</a>
-                                    </li>
-                                {/if}
-                                {foreach name=blaetternavi from=$oBlaetterNavi->nBlaetterAnzahl_arr item=Blatt}
-                                    {if $oBlaetterNavi->nAktuelleSeite == $Blatt}
-                                        <li class="active"><span>{$Blatt}</span></li>
-                                    {else}
-                                        <li><a href="{get_static_route id='news.php'}?s={$Blatt}&kNews={$oNewsArchiv->kNews}&n={$oNewsArchiv->kNews}">{$Blatt}</a></li>
-                                    {/if}
-                                {/foreach}
-
-                                {if $oBlaetterNavi->nEnde != 0}
-                                    <li>
-                                        <a href="{get_static_route id='news.php'}?s={$oBlaetterNavi->nEnde}&kNews={$oNewsArchiv->kNews}&n={$oNewsArchiv->kNews}">{$oBlaetterNavi->nEnde}</a>
-                                    </li>
-                                {/if}
-
-                                {if $oBlaetterNavi->nAktuelleSeite == $oBlaetterNavi->nSeiten}
-                                    <li><span>{lang key="newsNaviNext" section="news"} &raquo;</span></li>
-                                {else}
-                                    <li>
-                                        <a href="{get_static_route id='news.php'}?s={$oBlaetterNavi->nNaechste}&kNews={$oNewsArchiv->kNews}&n={$oNewsArchiv->kNews}"><span>{lang key="newsNaviNext" section="news"} &raquo;</span></a>
-                                    </li>
-                                {/if}
-                            </ul>
-                        </div>
-                        <div class="col-xs-6 col-md-4 col-lg-3 text-right">
-                            <div class="pagination pagination-text">
-                                {$oBlaetterNavi->nVon} - {$oBlaetterNavi->nBis} {lang key="from" section="product rating"} {$oBlaetterNavi->nAnzahl}
-                            </div>
-                        </div>
-                    </div>
-                {/if}
+                {include file='snippets/pagination.tpl'
+                    oPagination=$oPagiComments
+                    cThisUrl='news.php'
+                    cParam_arr=['kNews'=>$oNewsArchiv->kNews,'n'=>$oNewsArchiv->kNews]}
             {/if}
 
             {if ($Einstellungen.news.news_kommentare_eingeloggt === 'Y' && !empty($smarty.session.Kunde->kKunde)) || $Einstellungen.news.news_kommentare_eingeloggt !== 'Y'}
@@ -122,7 +80,6 @@
                                         {$jtl_token}
                                         <input type="hidden" name="kNews" value="{$oNewsArchiv->kNews}" />
                                         <input type="hidden" name="kommentar_einfuegen" value="1" />
-                                        <input type="hidden" name="s" value="{if isset($oBlaetterNavi->nAktuelleSeite)}{$oBlaetterNavi->nAktuelleSeite}{/if}" />
                                         <input type="hidden" name="n" value="{$oNewsArchiv->kNews}" />
 
                                         <fieldset>

@@ -4,8 +4,8 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/admininclude.php';
 
+require_once dirname(__FILE__) . '/includes/admininclude.php';
 $oAccount->permission('REDIRECT_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
@@ -54,12 +54,11 @@ switch ($aData['action']) {
         break;
     case 'delete':
         if (validateToken()) {
-            $kRedirect = array_keys($aData['redirect']);
-            for ($i = 0; $i < count($kRedirect); $i++) {
-                if ($aData['redirect'][$kRedirect[$i]]['active'] == 1) {
-                    $oRedirect->delete(intval($kRedirect[$i]));
+            foreach($aData['redirect'] as $kRedirect => $redirectEntry) {
+                if (isset($redirectEntry['active']) && $redirectEntry['active'] == 1) {
+                    $oRedirect->delete((int)$kRedirect);
                 }
-            };
+            }
         }
         break;
     case 'delete_all':

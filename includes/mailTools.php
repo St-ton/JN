@@ -418,9 +418,6 @@ function sendeMail($ModulId, $Object, $mail = null)
         $bodyHtml = $mailSmarty->fetch('row:html_' . $Emailvorlage->kEmailvorlage . '_' . $Sprache->kSprache . $cPluginBody);
     }
     $bodyText = $mailSmarty->fetch('row:text_' . $Emailvorlage->kEmailvorlage . '_' . $Sprache->kSprache . $cPluginBody);
-    if (empty($bodyText)) {
-        return null;
-    }
     // AKZ, AGB und WRB anhängen falls eingestellt
     if ($Emailvorlage->nAKZ == 1) {
         if (!isset($akzHtml)) {

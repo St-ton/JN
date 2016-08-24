@@ -33,10 +33,9 @@ switch ($aData['action']) {
     case 'save' :
         if (validateToken()) {
             $shopURL   = Shop::getURL();
-            $kRedirect = array_keys($aData['redirect']);
-            for ($i = 0; $i < count($kRedirect); $i++) {
-                $cToUrl = $aData['redirect'][$kRedirect[$i]]['url'];
-                $oItem  = new Redirect($kRedirect[$i]);
+            foreach($aData['redirect'] as $kRedirect => $redirectEntry) {
+                $cToUrl = $redirectEntry['url'];
+                $oItem  = new Redirect($kRedirect);
                 if (!empty($cToUrl)) {
                     $urls[$oItem->kRedirect] = $cToUrl;
                 }
@@ -49,7 +48,9 @@ switch ($aData['action']) {
                     }
                 }
             }
-            $cHinweis = 'Daten wurden erfolgreich aktualisiert.';
+            if($cFehler == '') {
+                $cHinweis = 'Daten wurden erfolgreich aktualisiert.';
+            }
         }
         break;
     case 'delete':

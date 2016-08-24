@@ -1444,7 +1444,7 @@ function zahlungsartGueltig($Zahlungsart)
             return false;
         }
         if ($oZahlungsart && !$oZahlungsart->isValidIntern()) {
-            Jtllog::writeLog('Die Zahlungsartprüfung (' . $Zahlungsart->cModulId . ') wurde nicht erfolgreich validiert (isValidIntern).',
+            Jtllog::writeLog(utf8_decode('Die Zahlungsartprüfung (' . $Zahlungsart->cModulId . ') wurde nicht erfolgreich validiert (isValidIntern).'),
                 JTLLOG_LEVEL_DEBUG,
                 false,
                 'cModulId',

@@ -2406,7 +2406,7 @@ function gibSuchspecialFilterSQL($NaviFilter)
                 }
                 $oFilter->cWhere = " AND " . $tasp . " .kArtikel = tartikel.kArtikel
                                     AND " . $tasp . ".cAktiv='Y' AND " . $tasp . ".dStart <= now()
-                                    AND (" . $tasp . ".dEnde >= now() OR " . $tasp . ".dEnde = '0000-00-00')
+                                    AND (" . $tasp . ".dEnde >= curdate() OR " . $tasp . ".dEnde = '0000-00-00')
                                     AND " . $tsp . " .kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe;
                 $oFilter->tasp = $tasp;
                 $oFilter->tsp  = $tsp;

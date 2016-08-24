@@ -2405,7 +2405,7 @@ function gibSuchspecialFilterSQL($NaviFilter)
                     $tsp  = 'tsp';
                 }
                 $oFilter->cWhere = " AND " . $tasp . " .kArtikel = tartikel.kArtikel
-                                    AND " . $tasp . ".cAktiv='Y' AND " . $tasp . ".dStart <= now()
+                                    AND " . $tasp . ".cAktiv = 'Y' AND " . $tasp . ".dStart <= now()
                                     AND (" . $tasp . ".dEnde >= curdate() OR " . $tasp . ".dEnde = '0000-00-00')
                                     AND " . $tsp . " .kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe;
                 $oFilter->tasp = $tasp;
@@ -2416,8 +2416,8 @@ function gibSuchspecialFilterSQL($NaviFilter)
             case SEARCHSPECIALS_NEWPRODUCTS:
                 $alter_tage      = ($conf['boxen']['box_neuimsortiment_alter_tage'] > 0) ? (int)$conf['boxen']['box_neuimsortiment_alter_tage'] : 30;
                 $oFilter->cJoin  = '';
-                $oFilter->cWhere = " AND tartikel.cNeu='Y' AND DATE_SUB(now(),INTERVAL $alter_tage DAY) < tartikel.dErstellt
-                                    AND tartikel.cNeu='Y'";
+                $oFilter->cWhere = " AND tartikel.cNeu = 'Y' AND DATE_SUB(now(),INTERVAL $alter_tage DAY) < tartikel.dErstellt
+                                    AND tartikel.cNeu = 'Y'";
                 break;
 
             case SEARCHSPECIALS_TOPOFFERS:
@@ -2434,7 +2434,7 @@ function gibSuchspecialFilterSQL($NaviFilter)
                 if (!isset($NaviFilter->BewertungFilter->nSterne) || !$NaviFilter->BewertungFilter->nSterne) {
                     $nMindestSterne  = (intval($conf['boxen']['boxen_topbewertet_minsterne'] > 0)) ? (int)$conf['boxen']['boxen_topbewertet_minsterne'] : 4;
                     $oFilter->cJoin  = "JOIN tartikelext AS taex ON taex.kArtikel = tartikel.kArtikel";
-                    $oFilter->cWhere = " AnD round(taex.fDurchschnittsBewertung) >= " . $nMindestSterne;
+                    $oFilter->cWhere = " AND round(taex.fDurchschnittsBewertung) >= " . $nMindestSterne;
                 }
                 break;
 

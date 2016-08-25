@@ -15,6 +15,7 @@ $oRedirect       = new Redirect();
 $urls            = array();
 $cHinweis        = '';
 $cFehler         = '';
+$shopURL         = Shop::getURL();
 
 switch ($aData['action']) {
     case 'search':
@@ -26,13 +27,10 @@ switch ($aData['action']) {
         exit(json_encode($ret));
         break;
     case 'check_url':
-        $shopURL = Shop::getURL();
-        $check   = (($aData['url'] != '' && $oRedirect->isAvailable($shopURL . $aData['url'])) ? '1' : '0');
-        exit($check);
+        exit($aData['url'] != '' && Redirect::checkAvailability($shopURL . $aData['url']) ? '1' : '0');
         break;
     case 'save' :
         if (validateToken()) {
-            $shopURL   = Shop::getURL();
             foreach($aData['redirect'] as $kRedirect => $redirectEntry) {
                 $cToUrl = $redirectEntry['url'];
                 $oItem  = new Redirect($kRedirect);

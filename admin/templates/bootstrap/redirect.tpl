@@ -68,6 +68,12 @@
     };
     
     check_url = function(id,url) {
+        var stateChecking = $('#frm_' + id + ' .state-checking');
+        var stateAvailable = $('#frm_' + id + ' .state-available');
+        var stateUnavailable = $('#frm_' + id + ' .state-unavailable');
+        stateChecking.show();
+        stateAvailable.hide();
+        stateUnavailable.hide();
         $.ajax({
             type: 'POST',
             url: 'redirect.php',
@@ -76,17 +82,23 @@
                 'aData[url]': url
             },
             success: function (data, textStatus, jqXHR) {
-                $('#frm_' + id + ' .alert-success').hide();
-                $('#frm_' + id + ' .alert-danger').hide();
-
-                if (data == 1) {
-                    $('#frm_' + id + ' .alert-success').show();
+                stateChecking.hide();
+                stateAvailable.hide();
+                stateUnavailable.hide();
+                if (data == '1') {
+                    stateAvailable.show();
                 } else {
-                    $('#frm_' + id + ' .alert-danger').show();
+                    stateUnavailable.show();
                 }
             }
         });
     };
+
+    $(function () {
+        {foreach $oRedirect_arr as $oRedirect}
+            check_url({$oRedirect->kRedirect}, '{$oRedirect->cToUrl}');
+        {/foreach}
+    });
 
 </script>
 
@@ -158,9 +170,15 @@
                                     </td>
                                     <td class="tleft">
                                         <div id="frm_{$oRedirect->kRedirect}" class="input-group input-group-sm" style="margin-right:30px;">
-                                            <span class="input-group-addon alert-success" {if $oRedirect->cToUrl == ''}style="display:none;"{/if}><i class="fa fa-check"></i></span>
-                                            <span class="input-group-addon alert-danger" {if $oRedirect->cToUrl != ''}style="display:none;"{/if}><i class="fa fa-warning"></i></span>
-                                            <input id="url{$oRedirect->kRedirect}" name="aData[redirect][{$oRedirect->kRedirect}][url]" type="text" class="form-control cToUrl" autocomplete="off" onblur="check_url('{$oRedirect->kRedirect}',this.value);" onkeyup="redirect_search('{$oRedirect->kRedirect}', this.value );" value="{$oRedirect->cToUrl}"  />
+                                            <span class="input-group-addon alert-info state-checking"><i class="fa fa-spinner"></i></span>
+                                            <span class="input-group-addon alert-success state-available" style="display:none;"><i class="fa fa-check"></i></span>
+                                            <span class="input-group-addon alert-danger state-unavailable" style="display:none;"><i class="fa fa-warning"></i></span>
+                                            <input id="url{$oRedirect->kRedirect}"
+                                                   name="aData[redirect][{$oRedirect->kRedirect}][url]" type="text"
+                                                   class="form-control cToUrl" autocomplete="off"
+                                                   value="{$oRedirect->cToUrl}"
+                                                   onblur="check_url('{$oRedirect->kRedirect}',this.value);"
+                                                   onkeyup="redirect_search('{$oRedirect->kRedirect}',this.value);">
                                             <div class="input-group-btn" style="width:100%;display:block;top:100%;">
                                                 <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="caret"></span></button>
                                                 <ul class="dropdown-menu" style="min-width:100%;" id="resSearch{$oRedirect->kRedirect}"></ul>

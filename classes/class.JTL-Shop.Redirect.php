@@ -428,22 +428,11 @@ class Redirect
     /**
      * @param string $cUrl
      * @return bool
+     * @deprecated since 4.05 - use Redirect::checkAvailability()
      */
     public function isAvailable($cUrl)
     {
-        $sep = (parse_url($cUrl, PHP_URL_QUERY) === null) ? '?' : '&';
-        $cUrl .= $sep . 'notrack';
-        $cHeader_arr = @get_headers($cUrl);
-        if (empty($cHeader_arr)) {
-            return false;
-        }
-        foreach ($cHeader_arr as $head) { //Nur der letzte Status Code ist relevant (Redirects werden übersprungen)
-            if (preg_match('/^HTTP\\/\\d+\\.\\d+\\s+2\\d\\d\\s+.*$/', $head)) {
-                return true;
-            }
-        }
-
-        return false;
+        return self::checkAvailability($cUrl);
     }
 
     /**
@@ -585,5 +574,26 @@ class Redirect
     public static function getTotalRedirectCount()
     {
         return Shop::DB()->query("SELECT count(kRedirect) AS nCount FROM tredirect", 1)->nCount;
+    }
+
+    /**
+     * @param $cUrl
+     * @return bool
+     */
+    public static function checkAvailability($cUrl)
+    {
+        $sep = (parse_url($cUrl, PHP_URL_QUERY) === null) ? '?' : '&';
+        $cUrl .= $sep . 'notrack';
+        $cHeader_arr = @get_headers($cUrl);
+        if (empty($cHeader_arr)) {
+            return false;
+        }
+        foreach ($cHeader_arr as $head) { //Nur der letzte Status Code ist relevant (Redirects werden übersprungen)
+            if (preg_match('/^HTTP\\/\\d+\\.\\d+\\s+2\\d\\d\\s+.*$/', $head)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

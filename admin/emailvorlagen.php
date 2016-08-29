@@ -11,6 +11,7 @@ $oAccount->permission('CONTENT_EMAIL_TEMPLATE_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
+$Emailvorlage          = null;
 $hinweis               = '';
 $cHinweis              = '';
 $cFehler               = '';
@@ -697,6 +698,7 @@ if (isset($_POST['Aendern']) && isset($_POST['kEmailvorlage']) && intval($_POST[
     $_upd->nAKZ     = (isset($_POST['nAKZ'])) ? (int)$_POST['nAKZ'] : 0;
     $_upd->nAGB     = (isset($_POST['nAGB'])) ? (int)$_POST['nAGB'] : 0;
     $_upd->nWRB     = (isset($_POST['nWRB'])) ? (int)$_POST['nWRB'] : 0;
+    $_upd->nWRBForm = (isset($_POST['nWRBForm'])) ? (int)$_POST['nWRBForm'] : 0;
     Shop::DB()->update($cTable, 'kEmailvorlage', $kEmailvorlage, $_upd);
 
     // Einstellungen
@@ -813,7 +815,7 @@ if ((isset($_POST['kEmailvorlage']) && intval($_POST['kEmailvorlage']) > 0 && $c
 
 if ($step === 'uebersicht') {
     $emailvorlagen = Shop::DB()->query(
-        "SELECT kEmailvorlage, cName, cModulId, cMailTyp, cAktiv, cDateiname, nAKZ, nAGB, nWRB, nFehlerhaft
+        "SELECT kEmailvorlage, cName, cModulId, cMailTyp, cAktiv, cDateiname, nAKZ, nAGB, nWRB, nWRBForm, nFehlerhaft
             FROM temailvorlage
             ORDER BY cModulId", 2
     );

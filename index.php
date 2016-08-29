@@ -45,7 +45,7 @@ if (isset($_SESSION['bWarenkorbHinzugefuegt']) && isset($_SESSION['bWarenkorbAnz
 //wurde was in den Warenkorb gelegt?
 checkeWarenkorbEingang();
 if (!$cParameter_arr['kWunschliste'] && strlen(verifyGPDataString('wlid')) > 0) {
-    header('Location: ' . $helper->getStaticRoute('wunschliste.php', true) . '?wlid=' . verifyGPDataString('wlid') . '&error=1', true, 303);
+    header('Location: ' . $linkHelper->getStaticRoute('wunschliste.php', true) . '?wlid=' . verifyGPDataString('wlid') . '&error=1', true, 303);
     exit();
 }
 $smarty->assign('NaviFilter', $NaviFilter);
@@ -82,7 +82,6 @@ if (isset($_SESSION['Kunde']->cLand) && strlen($_SESSION['Kunde']->cLand) > 0) {
     $cKundenherkunft = $_SESSION['Kunde']->cLand;
 }
 $oVersandartKostenfrei = gibVersandkostenfreiAb($kKundengruppe, $cKundenherkunft);
-
 $smarty->assign('WarenkorbArtikelanzahl', $numArticles)
        ->assign('WarenkorbArtikelPositionenanzahl', $warenpositionenanzahl)
        ->assign('WarenkorbWarensumme', $warensumme)

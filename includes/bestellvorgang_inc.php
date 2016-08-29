@@ -828,7 +828,7 @@ function plausiNeukundenKupon()
                         OR tkunde.kKunde = " . (int)$_SESSION['Kunde']->kKunde . "
                     LIMIT 1", 1
             );
-            if ($oBestellung === false || !empty($oBestellung->kBestellung)) {
+            if (empty($oBestellung->kBestellung)) {
                 $NeukundenKupons = Shop::DB()->query("SELECT * FROM tkupon WHERE cKuponTyp = 'neukundenkupon' AND cAktiv = 'Y' ORDER BY fWert DESC", 2);
                 foreach ($NeukundenKupons as $NeukundenKupon) {
                     if (angabenKorrekt(checkeKupon($NeukundenKupon))) {

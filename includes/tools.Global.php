@@ -4710,7 +4710,7 @@ function pruefeKampagnenParameter()
                     $oVorgang = Shop::DB()->select(
                         'tkampagnevorgang',
                         array('kKampagneDef', 'kKampagne', 'kKey', 'cCustomData'),
-                        array(KAMPAGNE_DEF_HIT, (int)$oKampagne->kKampagne, (int)$_SESSION['oBesucher']->kBesucher), (StringHandler::filterXSS(Shop::DB()->escape($_SERVER['REQUEST_URI'])) . ';' . $referrer)
+                        array(KAMPAGNE_DEF_HIT, (int)$oKampagne->kKampagne, (int)$_SESSION['oBesucher']->kBesucher, (StringHandler::filterXSS(Shop::DB()->escape($_SERVER['REQUEST_URI'])) . ';' . $referrer))
                     );
 
                     if (!isset($oVorgang->kKampagneVorgang)) {

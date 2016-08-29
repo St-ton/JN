@@ -579,21 +579,43 @@ class Redirect
     }
 
     /**
-     * @param $cUrl
+     * @param $cUrl - full URL (http://www.shop.com/path/to/page) or url path (/path/to/page)
      * @return bool
      */
     public static function checkAvailability($cUrl)
     {
-        $sep = (parse_url($cUrl, PHP_URL_QUERY) === null) ? '?' : '&';
-        $cUrl .= $sep . 'notrack';
-        $cHeader_arr = @get_headers($cUrl);
+        $parsedUrl = parse_url($cUrl);
+
+        if (!isset($parsedUrl['host'])) {
+            $parsedShopUrl = parse_url(Shop::getURL());
+            $parsedUrl['scheme'] = $parsedShopUrl['scheme'];
+            $parsedUrl['host'] = $parsedShopUrl['host'];
+            if (!isset($parsedUrl['path'])) {
+                $parsedUrl['path'] = '/';
+            }
+            if ($parsedUrl['path'][0] != '/') {
+                $parsedUrl['path'] = '/' . $parsedUrl['path'];
+            }
+            if (false === StringHandler::beginsWith($parsedUrl['path'], $parsedShopUrl['path'])) {
+                $parsedUrl['path'] = $parsedShopUrl['path'] . $parsedUrl['path'];
+            }
+        }
+
+        if (isset($parsedUrl['query'])) {
+            $parsedUrl['query'] .= '&notrack';
+        } else {
+            $parsedUrl['query'] = 'notrack';
+        }
+
+        $rebuildUrl = StringHandler::buildUrl($parsedUrl);
+
+        $cHeader_arr = @get_headers($rebuildUrl);
         if (empty($cHeader_arr)) {
             return false;
         }
-        foreach ($cHeader_arr as $head) { //Nur der letzte Status Code ist relevant (Redirects werden übersprungen)
-            if (preg_match('/^HTTP\\/\\d+\\.\\d+\\s+2\\d\\d\\s+.*$/', $head)) {
-                return true;
-            }
+        //Nur der letzte Status Code ist relevant (Redirects werden übersprungen)
+        if (preg_match('/^HTTP\\/\\d+\\.\\d+\\s+2\\d\\d\\s+.*$/', $cHeader_arr[0])) {
+            return true;
         }
 
         return false;

@@ -509,4 +509,31 @@ class StringHandler
             filter_var($sanitized, FILTER_VALIDATE_URL) :
             $sanitized;
     }
+
+    /**
+     * Build an URL string from a given associative array of parts according to PHP's parse_url()
+     *
+     * @param array $parts
+     * @return string - the resulting URL
+     */
+    public static function buildUrl($parts)
+    {
+        return (isset($parts['scheme']) ? $parts['scheme'] . '://' : '') .
+            (isset($parts['user']) ? $parts['user'] . (isset($parts['pass']) ? ':' . $parts['pass'] : '') . '@' : '') .
+            (isset($parts['host']) ? $parts['host'] : '') .
+            (isset($parts['port']) ? ':' . $parts['port'] : '') .
+            (isset($parts['path']) ? $parts['path'] : '') .
+            (isset($parts['query']) ? '?' . $parts['query'] : '') .
+            (isset($parts['fragment']) ? '#' . $parts['fragment'] : '');
+    }
+
+    /**
+     * @param $subject
+     * @param $query
+     * @return bool - true if $subject begins with $query, false otherwise
+     */
+    public static function beginsWith($subject, $query)
+    {
+        return substr($subject, 0, strlen($query)) === $query;
+    }
 }

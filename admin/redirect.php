@@ -27,7 +27,7 @@ switch ($aData['action']) {
         exit(json_encode($ret));
         break;
     case 'check_url':
-        exit($aData['url'] != '' && Redirect::checkAvailability($shopURL . $aData['url']) ? '1' : '0');
+        exit($aData['url'] != '' && Redirect::checkAvailability($aData['url']) ? '1' : '0');
         break;
     case 'save' :
         if (validateToken()) {

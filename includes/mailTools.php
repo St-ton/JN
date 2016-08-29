@@ -120,19 +120,23 @@ function sendeMail($ModulId, $Object, $mail = null)
 
     $AGB     = new stdClass();
     $WRB     = new stdClass();
+    $WRBForm = new stdClass();
     $oAGBWRB = Shop::DB()->query(
         "SELECT *
             FROM ttext
             WHERE kSprache = " . (int)$Sprache->kSprache . "
             AND kKundengruppe = " . (int)$Object->tkunde->kKundengruppe, 1
     );
-    $AGB->cContentText = isset($oAGBWRB->cAGBContentText) ? $oAGBWRB->cAGBContentText : '';
-    $AGB->cContentHtml = isset($oAGBWRB->cAGBContentHtml) ? $oAGBWRB->cAGBContentHtml : '';
-    $WRB->cContentText = isset($oAGBWRB->cWRBContentText) ? $oAGBWRB->cWRBContentText : '';
-    $WRB->cContentHtml = isset($oAGBWRB->cWRBContentHtml) ? $oAGBWRB->cWRBContentHtml : '';
+    $AGB->cContentText     = isset($oAGBWRB->cAGBContentText) ? $oAGBWRB->cAGBContentText : '';
+    $AGB->cContentHtml     = isset($oAGBWRB->cAGBContentHtml) ? $oAGBWRB->cAGBContentHtml : '';
+    $WRB->cContentText     = isset($oAGBWRB->cWRBContentText) ? $oAGBWRB->cWRBContentText : '';
+    $WRB->cContentHtml     = isset($oAGBWRB->cWRBContentHtml) ? $oAGBWRB->cWRBContentHtml : '';
+    $WRBForm->cContentHtml = isset($oAGBWRB->cWRBFormContentHtml) ? $oAGBWRB->cWRBFormContentHtml : '';
+    $WRBForm->cContentText = isset($oAGBWRB->cWRBFormContentText) ? $oAGBWRB->cWRBFormContentText : '';
 
     $mailSmarty->assign('AGB', $AGB)
                ->assign('WRB', $WRB)
+               ->assign('WRBForm', $WRBForm)
                ->assign('IP', StringHandler::htmlentities(StringHandler::filterXSS(gibIP())));
 
     $Object = lokalisiereInhalt($Object);
@@ -436,6 +440,13 @@ function sendeMail($ModulId, $Object, $mail = null)
             $bodyHtml .= "<br /><br /><h3>{$cUeberschrift}</h3>" . $WRB->cContentHtml;
         }
         $bodyText .= "\n\n" . $cUeberschrift . "\n\n" . $WRB->cContentText;
+    }
+    if ($Emailvorlage->nWRBForm == 1) {
+        $cUeberschrift = Shop::Lang()->get('wrbform', 'global');
+        if (strlen($bodyHtml) > 0) {
+            $bodyHtml .= "<br /><br /><h3>{$cUeberschrift}</h3>" . $WRBForm->cContentHtml;
+        }
+        $bodyText .= "\n\n" . $cUeberschrift . "\n\n" . $WRBForm->cContentText;
     }
     if ($Emailvorlage->nAGB == 1) {
         $cUeberschrift = Shop::Lang()->get('agb', 'global');

@@ -110,8 +110,8 @@ class Slider implements IExtensionPoint
 
             if ($this->load($kSlider, 'AND bAktiv = 1') === true) {
                 if ($this->bAktiv == 1) {
-                    $smarty->assign('PFAD_SLIDER', Shop::getURL() . '/' . PFAD_BILDER_SLIDER);
-                    $smarty->assign('oSlider', $this);
+                    $smarty->assign('PFAD_SLIDER', Shop::getURL() . '/' . PFAD_BILDER_SLIDER)
+                           ->assign('oSlider', $this);
                 }
             }
         }

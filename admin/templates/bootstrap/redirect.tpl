@@ -98,6 +98,7 @@
         {foreach $oRedirect_arr as $oRedirect}
             check_url({$oRedirect->kRedirect}, '{$oRedirect->cToUrl}');
         {/foreach}
+        check_url('cDestiny', '{if isset($cPost_arr.cDestiny)}{$cPost_arr.cDestiny}{/if}');
     });
 
 </script>
@@ -276,7 +277,7 @@
                     </table>
                 </form>
             </div>
-            <form method="post">
+            <form method="post" action="#new_redirect">
                 {$jtl_token}
                 <div class="panel panel-default">
                     <div class="panel-heading">
@@ -294,9 +295,14 @@
                             <span class="input-group-addon">
                                 <label for="cDestiny">Ziel-URL:</label>
                             </span>
-                            <span class="input-group-addon alert-success"><i class="fa fa-check"></i></span>
-                            <span class="input-group-addon alert-danger" style="display:none;"><i class="fa fa-warning"></i></span>
-                            <input id="urlcDestiny" name="cDestiny" type="text" class="form-control cToUrl" autocomplete="off" onblur="check_url('cDestiny',this.value);" onkeyup="redirect_search('cDestiny', this.value );" placeholder="Ziel-URL" value="{if isset($cPost_arr.cDestiny)}{$cPost_arr.cDestiny}{/if}" />
+                            <span class="input-group-addon alert-info state-checking"><i class="fa fa-spinner"></i></span>
+                            <span class="input-group-addon alert-success state-available" style="display:none;"><i class="fa fa-check"></i></span>
+                            <span class="input-group-addon alert-danger state-unavailable" style="display:none;"><i class="fa fa-warning"></i></span>
+                            <input id="urlcDestiny" name="cDestiny" type="text" class="form-control cToUrl"
+                                   autocomplete="off" onblur="check_url('cDestiny',this.value);"
+                                   onkeyup="redirect_search('cDestiny', this.value );"
+                                   placeholder="Ziel-URL"
+                                   value="{if isset($cPost_arr.cDestiny)}{$cPost_arr.cDestiny}{/if}">
                             <div class="input-group-btn" style="min-width:100%;display:block;top:100%;">
                                 <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="caret"></span></button>
                                 <ul class="dropdown-menu" style="min-width:100%;" id="resSearchcDestiny"></ul>

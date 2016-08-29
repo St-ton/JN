@@ -39,7 +39,7 @@ switch ($aData['action']) {
                 }
                 if ($oItem->kRedirect > 0) {
                     $oItem->cToUrl = $cToUrl;
-                    if ($oRedirect->isAvailable($shopURL . $cToUrl)) {
+                    if (Redirect::checkAvailability($shopURL . $cToUrl)) {
                         Shop::DB()->update('tredirect', 'kRedirect', $oItem->kRedirect, $oItem);
                     } else {
                         $cFehler .= "&Auml;nderungen konnten nicht gespeichert werden, da die weiterzuleitende URL {$cToUrl} nicht erreichbar ist.<br />";

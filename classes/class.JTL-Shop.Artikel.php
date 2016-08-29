@@ -5158,7 +5158,7 @@ class Artikel
       * @deprecated since 4.03, use getDiscount
       * @param int $kKundengruppe
       * @param int $kArtikel
-      * @return max discount
+      * @return float - max discount
       */
     public function gibRabatt4Artikel($kKundengruppe = 0, $kArtikel = 0)
     {

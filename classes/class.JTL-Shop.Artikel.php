@@ -3558,7 +3558,7 @@ class Artikel
 
         //Artikel mit Variationen, bei denen der Lagerbestand gesetzt und 0 ist, werden entsprechend der globalen Einstellung angezeigt
         $tmpBestandVariationen = 0;
-        foreach( $this->Variationen as $tmpVari) {
+        foreach ($this->Variationen as $tmpVari) {
             $tmpBestandVariationen += $tmpVari->nLieferbareVariationswerte;
         }
         if (((int) $conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER ||

@@ -38,14 +38,13 @@
     <div class="tab-content">
         <div id="inaktiv" class="tab-pane fade{if !isset($cTab) || $cTab === 'inaktiv'} active in{/if}">
             {if $oNewsKommentar_arr && $oNewsKommentar_arr|@count > 0}
+                {include file='tpl_inc/pagination.tpl' oPagination=$oPagiKommentar cAnchor='inaktiv'}
                 <form method="post" action="news.php">
                     {$jtl_token}
                     <input type="hidden" name="news" value="1" />
                     <input type="hidden" name="newskommentar_freischalten" value="1" />
                     <input type="hidden" name="nd" value="1" />
                     <input type="hidden" name="tab" value="inaktiv" />
-                    <input type="hidden" name="s1" value="{$oBlaetterNaviKommentar->nAktuelleSeite}" />
-                    {include file='pagination.tpl' cSite=1 cUrl='news.php' oBlaetterNavi=$oBlaetterNaviKommentar hash='#inaktiv'}
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <h3 class="panel-title">{#newsCommentActivate#}</h3>
@@ -78,7 +77,7 @@
                                     <td class="TD4">{$oNewsKommentar->cKommentar|truncate:150:"..."}</td>
                                     <td class="tcenter">{$oNewsKommentar->dErstellt_de}</td>
                                     <td class="tcenter">
-                                        <a href="news.php?news=1{if isset($oBlaetterNaviKommentar->nAktuelleSeite) && $oBlaetterNaviKommentar->nAktuelleSeite}&s1={$oBlaetterNaviKommentar->nAktuelleSeite}{/if}&kNews={$oNewsKommentar->kNews}&kNewsKommentar={$oNewsKommentar->kNewsKommentar}&nkedit=1&tab=inaktiv&token={$smarty.session.jtl_token}" class="btn btn-default">
+                                        <a href="news.php?news=1&kNews={$oNewsKommentar->kNews}&kNewsKommentar={$oNewsKommentar->kNewsKommentar}&nkedit=1&tab=inaktiv&token={$smarty.session.jtl_token}" class="btn btn-default">
                                             <i class="fa fa-edit"></i>
                                         </a>
                                     </td>
@@ -106,13 +105,12 @@
         </div>
         <!-- #inaktiv -->
         <div id="aktiv" class="tab-pane fade{if isset($cTab) && $cTab === 'aktiv'} active in{/if}">
+            {include file='tpl_inc/pagination.tpl' oPagination=$oPagiNews cAnchor='aktiv'}
             <form name="news" method="post" action="news.php">
                 {$jtl_token}
                 <input type="hidden" name="news" value="1" />
                 <input type="hidden" name="news_loeschen" value="1" />
                 <input type="hidden" name="tab" value="aktiv" />
-                <input type="hidden" name="s2" value="{$oBlaetterNaviNews->nAktuelleSeite}" />
-                {include file='pagination.tpl' cSite=2 cUrl='news.php' oBlaetterNavi=$oBlaetterNaviNews hash='#aktiv'}
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h3 class="panel-title">{#newsOverview#}</h3>
@@ -147,7 +145,7 @@
                                     <td class="tcenter">{$oNews->nAktiv}</td>
                                     <td class="tcenter">
                                         {if $oNews->nNewsKommentarAnzahl > 0}
-                                            <a href="news.php?news=1{if $oBlaetterNaviNews->nAktuelleSeite}&s2={$oBlaetterNaviNews->nAktuelleSeite}{/if}&nd=1&kNews={$oNews->kNews}&tab=aktiv&token={$smarty.session.jtl_token}">{$oNews->nNewsKommentarAnzahl}</a>
+                                            <a href="news.php?news=1&nd=1&kNews={$oNews->kNews}&tab=aktiv&token={$smarty.session.jtl_token}">{$oNews->nNewsKommentarAnzahl}</a>
                                         {else}
                                             {$oNews->nNewsKommentarAnzahl}
                                         {/if}
@@ -155,8 +153,8 @@
                                     <td class="tcenter">{$oNews->Datum}</td>
                                     <td class="tcenter">
                                         <div class="btn-group">
-                                            <a href="news.php?news=1{if $oBlaetterNaviNews->nAktuelleSeite}&s2={$oBlaetterNaviNews->nAktuelleSeite}{/if}&news_editieren=1&kNews={$oNews->kNews}&tab=aktiv&token={$smarty.session.jtl_token}" class="btn btn-default"><i class="fa fa-edit"></i></a>
-                                            <a href="news.php?news=1{if $oBlaetterNaviNews->nAktuelleSeite}&s2={$oBlaetterNaviNews->nAktuelleSeite}{/if}&nd=1&kNews={$oNews->kNews}&tab=aktiv&token={$smarty.session.jtl_token}" class="btn btn-default">{#newsPreview#}</a>
+                                            <a href="news.php?news=1&news_editieren=1&kNews={$oNews->kNews}&tab=aktiv&token={$smarty.session.jtl_token}" class="btn btn-default"><i class="fa fa-edit"></i></a>
+                                            <a href="news.php?news=1&nd=1&kNews={$oNews->kNews}&tab=aktiv&token={$smarty.session.jtl_token}" class="btn btn-default">{#newsPreview#}</a>
                                         </div>
                                     </td>
                                 </tr>
@@ -179,7 +177,6 @@
                     <input type="hidden" name="news" value="1" />
                     <input type="hidden" name="erstellen" value="1" />
                     <input type="hidden" name="tab" value="aktiv" />
-                    <input type="hidden" name="s2" value="{$oBlaetterNaviNews->nAktuelleSeite}" />
                     <div class="panel-footer">
                         <div class="btn-group">
                             <button name="news_erstellen" type="submit" value="{#newAdd#}" class="btn btn-primary"><i class="fa fa-share"></i> {#newAdd#}</button>
@@ -196,13 +193,12 @@
         </div>
         <!-- #inaktiv -->
         <div id="kategorien" class="tab-pane fade{if isset($cTab) && $cTab === 'kategorien'} active in{/if}">
+            {include file='tpl_inc/pagination.tpl' oPagination=$oPagiKats cAnchor='kategorien'}
             <form name="news" method="post" action="news.php">
                 {$jtl_token}
                 <input type="hidden" name="news" value="1" />
                 <input type="hidden" name="news_kategorie_loeschen" value="1" />
                 <input type="hidden" name="tab" value="kategorien" />
-                <input type="hidden" name="s3" value="{$oBlaetterNaviKats->nAktuelleSeite}" />
-                {include file='pagination.tpl' cSite=3 cUrl='news.php' oBlaetterNavi=$oBlaetterNaviKats hash='#kategorien'}
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h3 class="panel-title">{#newsCatOverview#}</h3>
@@ -230,7 +226,7 @@
                                     <td class="tcenter">{if $oNewsKategorie->nAktiv === '1'}ja{else}nein{/if}</td>
                                     <td class="tcenter">{$oNewsKategorie->dLetzteAktualisierung_de}</td>
                                     <td class="tcenter">
-                                        <a href="news.php?news=1{if isset($oBlaetterNaviKats->nAktuelleSeite) && $oBlaetterNaviKats->nAktuelleSeite}&s3={$oBlaetterNaviKats->nAktuelleSeite}{/if}&newskategorie_editieren=1&kNewsKategorie={$oNewsKategorie->kNewsKategorie}&tab=kategorien&token={$smarty.session.jtl_token}" class="btn btn-default">
+                                        <a href="news.php?news=1&newskategorie_editieren=1&kNewsKategorie={$oNewsKategorie->kNewsKategorie}&tab=kategorien&token={$smarty.session.jtl_token}" class="btn btn-default">
                                             <i class="fa fa-edit"></i>
                                         </a>
                                     </td>
@@ -254,7 +250,6 @@
                     <input type="hidden" name="news" value="1" />
                     <input type="hidden" name="erstellen" value="1" />
                     <input type="hidden" name="tab" value="kategorien" />
-                    <input type="hidden" name="s3" value="{$oBlaetterNaviKats->nAktuelleSeite}" />
                     <div class="panel-footer">
                         <div class="btn-group">
                             <button name="news_kategorie_erstellen" type="submit" value="{#newsCatAdd#}" class="btn btn-primary"><i class="fa fa-share"></i> {#newsCatAdd#}</button>

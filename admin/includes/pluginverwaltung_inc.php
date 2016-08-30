@@ -595,6 +595,10 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
                                 if (strlen($Hook_arr) === 0) {
                                     return 14;//Die Hook-Werte entsprechen nicht den Konventionen
                                 }
+                                //Hook include Datei vorhanden?
+                                if (!file_exists($cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $cVersionsnummer . '/' . PFAD_PLUGIN_FRONTEND . $Hook_arr)) {
+                                    return 31;// Die Hook-Datei ist nicht vorhanden
+                                }
                             }
                         }
                     } elseif (count($XML_arr['jtlshop3plugin'][0]['Install'][0]['Hooks'][0]) > 1) { //Es gibt nur einen Hook
@@ -1041,18 +1045,27 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
                                             }
                                         } elseif (isset($cTreffer2_arr[0]) && strlen($cTreffer2_arr[0]) === strlen($l)) {
                                             // Name prüfen
+                                            if (!isset($MethodLanguage_arr['Name'])) {
+                                                return 60;// Der Name in den Zahlungsmethoden Sprache entspricht nicht der Konvention
+                                            }
                                             preg_match("/[a-zA-Z0-9äÄöÖüÜß" . utf8_decode('äÄüÜöÖß') . "\.\,\!\"\§\$\%\&\/\(\)\=\`\´\+\~\*\'\;\-\_\?\{\}\[\] ]+/", $MethodLanguage_arr['Name'], $cTreffer1_arr);
-                                            if (strlen($cTreffer1_arr[0]) != strlen($MethodLanguage_arr['Name'])) {
+                                            if (strlen($cTreffer1_arr[0]) !== strlen($MethodLanguage_arr['Name'])) {
                                                 return 60;// Der Name in den Zahlungsmethoden Sprache entspricht nicht der Konvention
                                             }
                                             // ChargeName prüfen
+                                            if (!isset($MethodLanguage_arr['ChargeName'])) {
+                                                return 61;// Der ChargeName in den Zahlungsmethoden Sprache entspricht nicht der Konvention
+                                            }
                                             preg_match("/[a-zA-Z0-9äÄöÖüÜß" . utf8_decode('äÄüÜöÖß') . "\.\,\!\"\§\$\%\&\/\(\)\=\`\´\+\~\*\'\;\-\_\?\{\}\[\] ]+/", $MethodLanguage_arr['ChargeName'], $cTreffer1_arr);
-                                            if (strlen($cTreffer1_arr[0]) != strlen($MethodLanguage_arr['ChargeName'])) {
+                                            if (strlen($cTreffer1_arr[0]) !== strlen($MethodLanguage_arr['ChargeName'])) {
                                                 return 61;// Der ChargeName in den Zahlungsmethoden Sprache entspricht nicht der Konvention
                                             }
                                             // InfoText prüfen
+                                            if (!isset($MethodLanguage_arr['InfoText'])) {
+                                                return 62;// Der InfoText in den Zahlungsmethoden Sprache entspricht nicht der Konvention
+                                            }
                                             preg_match("/[a-zA-Z0-9äÄöÖüÜß" . utf8_decode('äÄüÜöÖß') . "\.\,\!\"\§\$\%\&\/\(\)\=\`\´\+\~\*\'\;\-\_\?\{\}\[\] ]+/", $MethodLanguage_arr['InfoText'], $cTreffer1_arr);
-                                            if (strlen($cTreffer1_arr[0]) != strlen($MethodLanguage_arr['InfoText'])) {
+                                            if (isset($cTreffer1_arr[0]) && strlen($cTreffer1_arr[0]) !== strlen($MethodLanguage_arr['InfoText'])) {
                                                 return 62;// Der InfoText in den Zahlungsmethoden Sprache entspricht nicht der Konvention
                                             }
                                         }
@@ -2545,6 +2558,7 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
                 $oTemplate->nAKZ          = (isset($Template_arr['AKZ'])) ? $Template_arr['AKZ'] : 0;
                 $oTemplate->nAGB          = (isset($Template_arr['AGB'])) ? $Template_arr['AGB'] : 0;
                 $oTemplate->nWRB          = (isset($Template_arr['WRB'])) ? $Template_arr['WRB'] : 0;
+                $oTemplate->nWRBForm      = (isset($Template_arr['WRBForm'])) ? $Template_arr['WRBForm'] : 0;
                 // tpluginemailvorlage füllen
                 $kEmailvorlage = Shop::DB()->insert('tpluginemailvorlage', $oTemplate);
 
@@ -3426,17 +3440,17 @@ function aktivierePlugin($kPlugin)
             $nReturnValue = pluginPlausi(0, $cPfad . $oPlugin->cVerzeichnis);
 
             if ($nReturnValue === 1 || $nReturnValue === 90 || $nReturnValue === 126) {
-                $nRow = Shop::DB()->query(
-                    "UPDATE tplugin
-                        SET nStatus = 2
-                        WHERE kPlugin = " . $kPlugin, 3
-                );
+                $_upd_plg          = new stdClass();
+                $_upd_plg->nStatus = 2;
+                $nRow              = Shop::DB()->update('tplugin', 'kPlugin', $kPlugin, $_upd_plg);
 
-                Shop::DB()->query(
-                    "UPDATE tadminwidgets
-                        SET bActive = 1
-                        WHERE kPlugin = " . $kPlugin, 3
-                );
+                $_upd_wdg          = new stdClass();
+                $_upd_wdg->bActive = 1;
+                Shop::DB()->update('tadminwidgets', 'kPlugin', $kPlugin, $_upd_wdg);
+
+                $_upd_lnk            = new stdClass();
+                $_upd_lnk->bIsActive = 1;
+                Shop::DB()->update('tlink', 'kPlugin', $kPlugin, $_upd_lnk);
 
                 if ($p = Plugin::bootstrapper($kPlugin)) {
                     $p->enabled();
@@ -3472,17 +3486,17 @@ function deaktivierePlugin($kPlugin)
             $p->disabled();
         }
 
-        Shop::DB()->query(
-            "UPDATE tplugin
-                SET nStatus = 1
-                WHERE kPlugin = " . $kPlugin, 3
-        );
+        $_upd_plg          = new stdClass();
+        $_upd_plg->nStatus = 1;
+        Shop::DB()->update('tplugin', 'kPlugin', $kPlugin, $_upd_plg);
 
-        Shop::DB()->query(
-            "UPDATE tadminwidgets
-                SET bActive = 0
-                WHERE kPlugin = " . $kPlugin, 3
-        );
+        $_upd_wdg          = new stdClass();
+        $_upd_wdg->bActive = 0;
+        Shop::DB()->update('tadminwidgets', 'kPlugin', $kPlugin, $_upd_wdg);
+
+        $_upd_lnk            = new stdClass();
+        $_upd_lnk->bIsActive = 0;
+        Shop::DB()->update('tlink', 'kPlugin', $kPlugin, $_upd_lnk);
 
         Shop::Cache()->flushTags(array(CACHING_GROUP_PLUGIN . '_' . $kPlugin));
 

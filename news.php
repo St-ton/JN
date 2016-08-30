@@ -5,7 +5,6 @@
  */
 require_once dirname(__FILE__) . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'blaetternavi.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'news_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'seite_inc.php';
 
@@ -41,7 +40,6 @@ $startKat               = new Kategorie();
 $startKat->kKategorie   = 0;
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 
-$nAnzahlProSeite     = 2;
 $nAktuelleSeite      = (isset(Shop::$kSeite) && Shop::$kSeite > 0) ? Shop::$kSeite : 1;
 $oNewsUebersicht_arr = array();
 
@@ -55,11 +53,6 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
     } elseif (verifyGPCDataInteger('nSort') === -1) {
         $_SESSION['NewsNaviFilter']->nSort = -1;
     }
-    if ($cParameter_arr['nAnzahl'] > 0) {
-        $_SESSION['NewsNaviFilter']->nAnzahl = $cParameter_arr['nAnzahl'];
-    } elseif ($cParameter_arr['nAnzahl'] === -1) {
-        $_SESSION['NewsNaviFilter']->nAnzahl = -1;
-    }
     if (strlen($cParameter_arr['cDatum']) > 0) {
         $_date                              = explode('-', $cParameter_arr['cDatum']);
         $_SESSION['NewsNaviFilter']->cDatum = (count($_date) > 1) ? StringHandler::filterXSS($cParameter_arr['cDatum']) : -1;
@@ -72,7 +65,6 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
         $_SESSION['NewsNaviFilter']->nNewsKat = -1;
     }
 
-    $nAnzahlProSeite = (isset($_SESSION['NewsNaviFilter']->nAnzahl)) ? $_SESSION['NewsNaviFilter']->nAnzahl : null;
     $cacheID         = $smarty->getCacheID('blog/index.tpl', array('news' => $cParameter_arr));
 
     if ($smarty->isCached('blog/index.tpl', $cacheID)) {
@@ -187,22 +179,26 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
                         }
                     }
                 }
+
                 $oNewsKommentarAnzahl = getCommentCount($kNews);
-                $oNewsKommentar_arr   = array();
-                if (isset($oNewsKommentarAnzahl->nAnzahl) && $oNewsKommentarAnzahl->nAnzahl > 0) {
-                    // Baue Blätter Navigation
-                    $nAnzahlProSeite = 10;
-                    $from            = null;
-                    $to              = null;
-                    if ((int)$Einstellungen['news']['news_kommentare_anzahlproseite'] > 0) {
-                        $nAnzahlProSeite = (int)$Einstellungen['news']['news_kommentare_anzahlproseite'];
-                        $from            = (($nAktuelleSeite - 1) * $nAnzahlProSeite);
-                        $to              = $nAnzahlProSeite;
-                    }
-                    $smarty->assign('oBlaetterNavi', baueBlaetterNavi($nAktuelleSeite, $oNewsKommentarAnzahl->nAnzahl, $nAnzahlProSeite));
-                    $oNewsKommentar_arr = getNewsComments($kNews, $nAnzahlProSeite, $from, $to);
+
+                if ((int)$Einstellungen['news']['news_kommentare_anzahlproseite'] > 0) {
+                    $nCountPerPagePref   = (int)$Einstellungen['news']['news_kommentare_anzahlproseite'];
+                    $itemsPerPageOptions = [$nCountPerPagePref, $nCountPerPagePref * 2, $nCountPerPagePref * 5];
+                } else {
+                    $itemsPerPageOptions = [10, 20, 50];
                 }
-                $smarty->assign('oNewsKommentar_arr', $oNewsKommentar_arr);
+
+                $oPagiComments = (new Pagination('comments'))
+                    ->setItemsPerPageOptions($itemsPerPageOptions)
+                    ->setItemCount($oNewsKommentarAnzahl->nAnzahl)
+                    ->assemble();
+
+                $oNewsKommentar_arr = getNewsComments($kNews, $oPagiComments->getLimitSQL());
+
+                $smarty->assign('oNewsKommentar_arr', $oNewsKommentar_arr)
+                    ->assign('oPagiComments', $oPagiComments);
+
                 // Canonical
                 if (strpos(baueURL($oNewsArchiv, URLART_NEWS), '.php') === false || !SHOP_SEO) {
                     $cCanonicalURL = Shop::getURL() . '/' . baueURL($oNewsArchiv, URLART_NEWS);
@@ -282,9 +278,6 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
             if (!isset($_SESSION['NewsNaviFilter']->nSort)) {
                 $_SESSION['NewsNaviFilter']->nSort = -1;
             }
-            if (!isset($_SESSION['NewsNaviFilter']->nAnzahl)) {
-                $_SESSION['NewsNaviFilter']->nAnzahl = -1;
-            }
             if (!isset($_SESSION['NewsNaviFilter']->cDatum)) {
                 $_SESSION['NewsNaviFilter']->cDatum = -1;
             }
@@ -293,9 +286,16 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
             }
 
             // Baut den NewsNaviFilter SQL
-            $oSQL                = baueFilterSQL($nAktuelleSeite, true);
-            $oNewsUebersicht_arr = getNewsOverview($oSQL);
+            $oSQL                = baueFilterSQL(true);
+            // News total count
             $oNewsUebersichtAll  = getFullNewsOverview($oSQL);
+            // Pagination
+            $oPagination = (new Pagination())
+                ->setItemsPerPageOptions([2, 5, 10])
+                ->setItemCount($oNewsUebersichtAll->nAnzahl)
+                ->assemble();
+            // Get filtered news of current page
+            $oNewsUebersicht_arr = getNewsOverview($oSQL, $oPagination->getLimitSQL());
             $oDatum_arr          = getNewsDateArray($oSQL);
             $cKeywords           = '';
             if (is_array($oNewsUebersicht_arr) && count($oNewsUebersicht_arr) > 0) {
@@ -313,18 +313,14 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
             $cMetaTitle       = (strlen($cMetaDescription) < 1) ? baueNewsMetaTitle($_SESSION['NewsNaviFilter'], $oNewsUebersicht_arr) : $cMetaTitle;
             $cMetaDescription = (strlen($cMetaDescription) < 1) ? baueNewsMetaDescription($_SESSION['NewsNaviFilter'], $oNewsUebersicht_arr) : $cMetaDescription;
             $cMetaKeywords    = (strlen($cMetaKeywords) < 1) ? baueNewsMetaKeywords($_SESSION['NewsNaviFilter'], $oNewsUebersicht_arr) : $cMetaKeywords;
-            if ($nAnzahlProSeite > 0) {
-                $oBlaetterNavi = baueBlaetterNavi($nAktuelleSeite, $oNewsUebersichtAll->nAnzahl, $nAnzahlProSeite);
-                $smarty->assign('oBlaetterNavi', $oBlaetterNavi);
-            }
 
             $smarty->assign('oNewsUebersicht_arr', $oNewsUebersicht_arr)
                    ->assign('oNewsKategorie_arr', holeNewsKategorien($oSQL->cDatumSQL, true))
                    ->assign('oDatum_arr', baueDatum($oDatum_arr))
-                   ->assign('nAnzahl', $_SESSION['NewsNaviFilter']->nAnzahl)
                    ->assign('nSort', $_SESSION['NewsNaviFilter']->nSort)
                    ->assign('cDatum', $_SESSION['NewsNaviFilter']->cDatum)
-                   ->assign('nNewsKat', $_SESSION['NewsNaviFilter']->nNewsKat);
+                   ->assign('nNewsKat', $_SESSION['NewsNaviFilter']->nNewsKat)
+                   ->assign('oPagination', $oPagination);
 
             if (!isset($oNewsUebersicht_arr) || count($oNewsUebersicht_arr) === 0) {
                 $smarty->assign('noarchiv', 1);

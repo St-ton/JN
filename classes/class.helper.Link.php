@@ -320,6 +320,7 @@ class LinkHelper
                     $linkGroups->{$Linkgruppe->cTemplatename}->cLocalizedName[$Linkgruppesprache->cISOSprache] = $Linkgruppesprache->cName;
                 }
 
+                $active = " AND tlink.bIsActive = 1 ";
                 $loginSichtbarkeit = (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) ?
                     '' :
                     " AND tlink.cSichtbarNachLogin = 'N' ";
@@ -328,7 +329,7 @@ class LinkHelper
                         FROM tlink
                         LEFT JOIN tplugin
                             ON tplugin.kPlugin = tlink.kPlugin
-                        WHERE tlink.kLinkgruppe = " . (int)$Linkgruppe->kLinkgruppe . " " . $loginSichtbarkeit . "
+                        WHERE tlink.kLinkgruppe = " . $Linkgruppe->kLinkgruppe . " " . $loginSichtbarkeit . " " . $active . "
                             AND (tlink.cKundengruppen IS NULL
                             OR tlink.cKundengruppen = 'NULL'
                             OR tlink.cKundengruppen LIKE '" . $customerGroupID . ";%'
@@ -568,18 +569,20 @@ class LinkHelper
         }
         $oSpeziallinks            = array();
         $_SESSION['Speziallinks'] = array();
-        $oLink_arr                = Shop::DB()->query("SELECT kLink, nLinkart FROM tlink WHERE nLinkart >= 5", 2);
+        $oLink_arr                = Shop::DB()->query("SELECT kLink, nLinkart, cName FROM tlink WHERE nLinkart >= 5 ORDER BY nLinkart", 2);
         foreach ($oLink_arr as &$oLink) {
-            $oLink       = $this->findCMSLinkInSession($oLink->kLink);
-            $oObj        = new stdClass();
-            $oObj->cName = '';
+            $oObj           = new stdClass();
+            $oObj->kLink    = (int)$oLink->kLink;
+            $oObj->nLinkart = (int)$oLink->nLinkart;
+            $oObj->cName    = $oLink->cName;
+            $oLink          = $this->findCMSLinkInSession($oLink->kLink);
+            $oObj->cURL     = (isset($oLink->cURLFull)) ?
+                $oLink->cURLFull :
+                '';
             if (isset($oLink->cLocalizedName) && array_key_exists($cISO, $oLink->cLocalizedName)) {
-                $oObj->cName = $oLink->cLocalizedName[$cISO];
+                $oLink->cName = $oLink->cLocalizedName[$cISO];
             }
-            $oObj->cURL = (isset($oLink->cURLFull)) ? $oLink->cURLFull : '';
-            if (isset($oLink->nLinkart)) {
-                $oSpeziallinks[$oLink->nLinkart] = $oObj;
-            }
+            $oSpeziallinks[$oObj->nLinkart] = $oObj;
         }
         Shop::Cache()->set($cacheID, $oSpeziallinks, array(CACHING_GROUP_CORE));
 
@@ -792,6 +795,7 @@ class LinkHelper
         $Link = new stdClass();
         if ($kLink > 0) {
             //hole Link
+            $active = " AND tlink.bIsActive = 1 ";
             $loginSichtbarkeit = " AND tlink.cSichtbarNachLogin = 'N' ";
             if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
                 $loginSichtbarkeit = '';
@@ -804,6 +808,7 @@ class LinkHelper
                         AND tseo.kKey = " . $kLink . "
                         AND tseo.kSprache = " . (int)Shop::$kSprache . "
                     WHERE tlink.kLink = " . $kLink . "
+                        " . $active . "
                         " . $loginSichtbarkeit . "
                         AND (tlink.cKundengruppen IS NULL
                         OR tlink.cKundengruppen = 'NULL'
@@ -902,7 +907,10 @@ class LinkHelper
     {
         $nLinkart = (int)$nLinkart;
         if ($nLinkart > 0) {
-            $oLink = Shop::DB()->query("SELECT kLink FROM tlink WHERE nLinkart = " . (int)$nLinkart, 1);
+            $allLinks = $this->getSpecialPages();
+            $oLink    = (isset($allLinks[$nLinkart]->kLink)) ?
+                $allLinks[$nLinkart] :
+                Shop::DB()->query("SELECT kLink FROM tlink WHERE nLinkart = " . (int)$nLinkart, 1);
 
             return (isset($oLink->kLink) && $oLink->kLink > 0) ? (int)$oLink->kLink : false;
         }

@@ -2,7 +2,12 @@
 
 {function kupons_uebersicht_tab}
     <div id="{$cKuponTyp}" class="tab-pane fade{if $tab === $cKuponTyp} active in{/if}">
-        {include file='pagination.tpl' cSite=$nSeite cUrl='kupons.php' oBlaetterNavi=$oBlaetterNavi cParams='&tab='|cat:$cKuponTyp}
+        {if $nKuponCount > 0}
+            {include file='tpl_inc/filtertools.tpl' oFilter=$oFilter cParam_arr=['tab'=>$cKuponTyp]}
+        {/if}
+        {if $oKupon_arr|@count > 0}
+            {include file='tpl_inc/pagination.tpl' oPagination=$oPagination cParam_arr=['tab'=>$cKuponTyp]}
+        {/if}
         <form method="post" action="kupons.php">
             {$jtl_token}
             <input type="hidden" name="cKuponTyp" id="cKuponTyp" value="{$cKuponTyp}">
@@ -14,6 +19,7 @@
                     <table class="list table">
                         <thead>
                             <tr>
+                                <th title="Aktiv"></th>
                                 <th></th>
                                 <th>{#name#}</th>
                                 {if $cKuponTyp === 'standard' || $cKuponTyp === 'neukundenkupon'}<th>{#value#}</th>{/if}
@@ -28,9 +34,14 @@
                         </thead>
                         <tbody>
                             {foreach $oKupon_arr as $oKupon}
-                                <tr>
+                                <tr{if $oKupon->cAktiv === 'N'} class="text-danger"{/if}>
+                                    <td>{if $oKupon->cAktiv === 'N'}<i class="fa fa-times"></i>{/if}</td>
                                     <td><input type="checkbox" name="kKupon_arr[]" id="kupon-{$oKupon->kKupon}" value="{$oKupon->kKupon}"></td>
-                                    <td><label for="kupon-{$oKupon->kKupon}">{$oKupon->cName}</label></td>
+                                    <td>
+                                        <label for="kupon-{$oKupon->kKupon}">
+                                            {$oKupon->cName}
+                                        </label>
+                                    </td>
                                     {if $cKuponTyp === 'standard' || $cKuponTyp === 'neukundenkupon'}
                                         <td>
                                             {if $oKupon->cWertTyp === 'festpreis'}
@@ -42,9 +53,13 @@
                                     {/if}
                                     {if $cKuponTyp === 'standard' || $cKuponTyp === 'versandkupon'}<td>{$oKupon->cCode}</td>{/if}
                                     <td>{getCurrencyConversionSmarty fPreisBrutto=$oKupon->fMindestbestellwert}</td>
-                                    <td>{$oKupon->nVerwendungenBisher} von {$oKupon->nVerwendungen}</td>
+                                    <td>
+                                        {$oKupon->nVerwendungenBisher}
+                                        {if $oKupon->nVerwendungen > 0}
+                                            von {$oKupon->nVerwendungen}</td>
+                                        {/if}
                                     <td>{$oKupon->cKundengruppe}</td>
-                                    <td>{$oKupon->ArtikelInfo}</td>
+                                    <td>{$oKupon->cArtikelInfo}</td>
                                     <td>
                                         <strong>{#from#}:</strong> {$oKupon->cGueltigAbShort}<br>
                                         <strong>{#to#}:</strong> {$oKupon->cGueltigBisShort}
@@ -59,6 +74,7 @@
                         </tbody>
                         <tfoot>
                             <tr>
+                                <td></td>
                                 <td><input type="checkbox" name="ALLMSGS" id="ALLMSGS_{$cKuponTyp}" onclick="AllMessages(this.form);"></td>
                                 <td colspan="9"><label for="ALLMSGS_{$cKuponTyp}">Alle ausw&auml;hlen</label></td>
                             </tr>
@@ -85,13 +101,13 @@
 <div id="content" class="container-fluid">
     <ul class="nav nav-tabs" role="tablist">
         <li class="tab{if $tab === 'standard'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#standard" aria-expanded="true">{#standardCoupon#}s</a>
+            <a data-toggle="tab" role="tab" href="#standard" aria-expanded="false">{#standardCoupon#}s</a>
         </li>
         <li class="tab{if $tab === 'versandkupon'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#versandkupon" aria-expanded="true">{#shippingCoupon#}s</a>
+            <a data-toggle="tab" role="tab" href="#versandkupon" aria-expanded="false">{#shippingCoupon#}s</a>
         </li>
         <li class="tab{if $tab === 'neukundenkupon'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#neukundenkupon" aria-expanded="true">{#newCustomerCoupon#}s</a>
+            <a data-toggle="tab" role="tab" href="#neukundenkupon" aria-expanded="false">{#newCustomerCoupon#}s</a>
         </li>
     </ul>
     <div class="tab-content">
@@ -99,22 +115,28 @@
             cKuponTyp='standard'
             cKuponTypName=#standardCoupon#
             oKupon_arr=$oKuponStandard_arr
+            nKuponCount=$nKuponStandardCount
+            oPagination=$oPaginationStandard
+            oFilter=$oFilterStandard
             nSeite=1
-            oBlaetterNavi=$oBlaetterNaviStandard
         }
         {kupons_uebersicht_tab
             cKuponTyp='versandkupon'
             cKuponTypName=#shippingCoupon#
             oKupon_arr=$oKuponVersandkupon_arr
+            nKuponCount=$nKuponVersandCount
+            oPagination=$oPaginationVersandkupon
+            oFilter=$oFilterVersand
             nSeite=2
-            oBlaetterNavi=$oBlaetterNaviVersandkupon
         }
         {kupons_uebersicht_tab
             cKuponTyp='neukundenkupon'
             cKuponTypName=#newCustomerCoupon#
             oKupon_arr=$oKuponNeukundenkupon_arr
+            nKuponCount=$nKuponNeukundenCount
+            oPagination=$oPaginationNeukundenkupon
+            oFilter=$oFilterNeukunden
             nSeite=3
-            oBlaetterNavi=$oBlaetterNaviNeukundenkupon
         }
     </div>
 </div>

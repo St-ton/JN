@@ -582,7 +582,11 @@ final class Shop
      */
     public static function bootstrap()
     {
-        $plugins = self::DB()->executeQuery("SELECT kPlugin FROM tplugin WHERE nStatus = 2 AND bBootstrap = 1 ORDER BY nPrio ASC", 2) ?: [];
+        $cacheID = 'plgnbtsrp';
+        if (($plugins = Shop::Cache()->get($cacheID)) === false) {
+            $plugins = self::DB()->executeQuery("SELECT kPlugin FROM tplugin WHERE nStatus = 2 AND bBootstrap = 1 ORDER BY nPrio ASC", 2) ?: [];
+            Shop::Cache()->set($cacheID, $plugins, array(CACHING_GROUP_PLUGIN));
+        }
 
         foreach ($plugins as $plugin) {
             if ($p = Plugin::bootstrapper($plugin->kPlugin)) {
@@ -836,6 +840,13 @@ final class Shop
                     $oSeo->kSprache = self::$kSprache;
                 }
                 //EXPERIMENTAL_MULTILANG_SHOP END
+                //Link active?
+                if (isset($oSeo->cKey) && $oSeo->cKey === 'kLink') {
+                    $bIsActive = self::DB()->select('tlink', 'kLink', $oSeo->kKey);
+                    if ($bIsActive->bIsActive === '0') {
+                        $oSeo = false;
+                    }
+                }
 
                 //mainwords
                 if (isset($oSeo->kKey) && strcasecmp($oSeo->cSeo, $seo) === 0) {
@@ -978,9 +989,8 @@ final class Shop
             $cPath        = self::getRequestUri();
             $cRequestFile = '/' . ltrim($cPath, '/');
             if (in_array($cRequestFile, ['/', '/index.php', '/navi.php'])) {
-                $oLink       = self::DB()->query("SELECT kLink FROM tlink WHERE nLinkart = " . LINKTYP_STARTSEITE, 1);
-                $kLink       = $oLink->kLink;
                 $linkHelper  = LinkHelper::getInstance();
+                $kLink       = $linkHelper->getSpecialPageLinkKey(LINKTYP_STARTSEITE);
                 $Link        = $linkHelper->getPageLink($kLink);
                 self::$kLink = $kLink;
                 if (isset($Link->nLinkart)) {
@@ -1621,7 +1631,7 @@ final class Shop
             $NaviFilter->PreisspannenFilter->cBisLocalized = gibPreisLocalizedOhneFaktor($NaviFilter->PreisspannenFilter->fBis);
         }
         //search special filter
-        if (isset($cParameter_arr['kSuchspecialFilter']) && strlen($cParameter_arr['kSuchspecialFilter']) > 0) {
+        if (!empty($cParameter_arr['kSuchspecialFilter'])) {
             if (!isset($NaviFilter->SuchspecialFilter)) {
                 $NaviFilter->SuchspecialFilter = new stdClass();
             }
@@ -1880,13 +1890,8 @@ final class Shop
         };
         if (isset($_COOKIE['eSIdAdm'])) {
             if (session_name() !== 'eSIdAdm') {
-                $oldID = session_id();
-                session_write_close();
-                session_id($_COOKIE['eSIdAdm']);
                 $result = $isLogged();
-                session_write_close();
-                session_id($oldID);
-                new Session();
+                Session::getInstance(true, true);
             } else {
                 $result = $isLogged();
             }

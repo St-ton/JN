@@ -3,7 +3,6 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-define('JTLLOG_MAX_LOGSIZE', 200000);
 
 /**
  * Class Jtllol
@@ -100,7 +99,7 @@ class Jtllog
         unset($oObj->kLog);
         $this->setErstellt(date('Y-m-d H:i:s'));
 
-        $kPrim = Shop::DB()->insert('tjtllog', $oObj, 0, false);
+        $kPrim = Shop::DB()->insert('tjtllog', $oObj);
         if ($kPrim > 0) {
             return $bPrim ? $kPrim : true;
         }

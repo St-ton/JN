@@ -22,7 +22,7 @@
     <div class="tab-content">
         <div id="aktivegeschenke" class="tab-pane fade {if !isset($cTab) || $cTab === 'aktivegeschenke'} active in{/if}">
             {if isset($oAktiveGeschenk_arr) && $oAktiveGeschenk_arr|@count > 0}
-                {include file='pagination.tpl' cSite=1 cUrl='gratisgeschenk.php' oBlaetterNavi=$oBlaetterNaviNewsKommentar cParams='' hash='#aktivegeschenke'}
+                {include file='tpl_inc/pagination.tpl' oPagination=$oPagiAktiv cAnchor='aktivegeschenke'}
                 <div class="settings panel panel-default">
                     <table class="table">
                         <thead>
@@ -51,7 +51,7 @@
         </div>
         <div id="haeufigegeschenke" class="tab-pane fade {if isset($cTab) && $cTab === 'haeufigegeschenke'} active in{/if}">
             {if isset($oHaeufigGeschenk_arr) && $oHaeufigGeschenk_arr|@count > 0}
-                {include file='pagination.tpl' cSite=1 cUrl='gratisgeschenk.php' oBlaetterNavi=$oBlaetterNaviHaeufig cParams='' hash='#haeufigegeschenke'}
+                {include file='tpl_inc/pagination.tpl' oPagination=$oPagiHaeufig cAnchor='haeufigegeschenke'}
                 <div class="settings panel panel-default">
                     <table class="table">
                         <thead>
@@ -82,7 +82,7 @@
         </div>
         <div id="letzten100geschenke" class="tab-pane fade {if isset($cTab) && $cTab === 'letzten100geschenke'} active in{/if}">
             {if isset($oLetzten100Geschenk_arr) && $oLetzten100Geschenk_arr|@count > 0}
-                {include file='pagination.tpl' cSite=3 cUrl='gratisgeschenk.php' oBlaetterNavi=$oBlaetterNaviLetzten100 cParams='' hash='#letzten100geschenke'}
+                {include file='tpl_inc/pagination.tpl' oPagination=$oPagiLetzte100 cAnchor='letzten100geschenke'}
                 <div class="settings panel panel-default">
                     <table class="table">
                         <thead>

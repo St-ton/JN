@@ -64,9 +64,15 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         private function loadFromDB($kKonfigitem = 0, $kSprache = 0)
         {
             $oObj = Shop::DB()->select('tkonfigitemsprache', 'kKonfigitem', (int)$kKonfigitem, 'kSprache', (int)$kSprache);
-            if (empty($oObj->cName)) {
-                $kSprache = gibStandardsprache();
-                $oObj     = Shop::DB()->select('tkonfigitemsprache', 'kKonfigitem', (int)$kKonfigitem, 'kSprache', (int)$kSprache->kSprache);
+            if (isset($oObj) && empty($oObj->cName)) {
+                $kSprache         = gibStandardsprache();
+                $StandardLanguage = Shop::DB()->select('tkonfigitemsprache', 'kKonfigitem', (int)$kKonfigitem, 'kSprache', (int)$kSprache->kSprache, null, null, false, 'cName');
+                $oObj->cName      = $StandardLanguage->cName;
+            }
+            if (isset($oObj) && empty($oObj->cBeschreibung)) {
+                $kSprache            = gibStandardsprache();
+                $StandardLanguage    = Shop::DB()->select('tkonfigitemsprache', 'kKonfigitem', (int)$kKonfigitem, 'kSprache', (int)$kSprache->kSprache, null, null, false, 'cBeschreibung');
+                $oObj->cBeschreibung = $StandardLanguage->cBeschreibung;
             }
 
             if (isset($oObj->kKonfigitem) && isset($oObj->kSprache) && $oObj->kKonfigitem > 0 && $oObj->kSprache > 0) {

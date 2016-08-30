@@ -1,14 +1,7 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=#order# cBeschreibung=#orderDesc# cDokuURL=#orderURL#}
 <div id="content" class="container-fluid">
+    {include file='tpl_inc/pagination.tpl' oPagination=$oPagination cParam_arr=['cSuche'=>$cSuche]}
     <div class=" block clearall">
-        <div class="left">
-            {if isset($cSuche) && $cSuche|strlen > 0}
-                {assign var=pAdditional value="&cSuche="|cat:$cSuche}
-            {else}
-                {assign var=pAdditional value=''}
-            {/if}
-            {include file='pagination.tpl' cSite=1 cUrl='bestellungen.php' oBlaetterNavi=$oBlaetterNaviUebersicht cParams=$pAdditional hash=''}
-        </div>
         <div class="right">
             <form name="bestellungen" method="post" action="bestellungen.php">
                 {$jtl_token}

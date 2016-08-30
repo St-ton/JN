@@ -315,7 +315,7 @@ class AdminAccount
     {
         if (isset($_SESSION['AdminAccount']->cLogin) && isset($_POST['TwoFA_code'])) {
             $oTwoFA = new TwoFA();
-            $oTwoFA->setUser($_SESSION['AdminAccount']->cLogin);
+            $oTwoFA->setUserByName($_SESSION['AdminAccount']->cLogin);
             // check the 2fa-code here really
             $_SESSION['AdminAccount']->TwoFA_valid = $oTwoFA->isCodeValid($_POST['TwoFA_code']);
 

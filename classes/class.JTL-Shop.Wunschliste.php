@@ -64,12 +64,12 @@ class Wunschliste
      */
     public function __construct($kWunschliste = 0)
     {
-        $kWunschliste = intval($kWunschliste);
+        $kWunschliste = (int)$kWunschliste;
         if ($kWunschliste > 0) {
             $this->kWunschliste = $kWunschliste;
             $this->ladeWunschliste();
         } else {
-            $this->kKunde       = $_SESSION['Kunde']->kKunde;
+            $this->kKunde       = (isset($_SESSION['Kunde']->kKunde)) ? (int)$_SESSION['Kunde']->kKunde : 0;
             $this->nStandard    = 1;
             $this->nOeffentlich = 0;
             $this->cName        = Shop::Lang()->get('wishlist', 'global');

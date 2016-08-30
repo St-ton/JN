@@ -3211,7 +3211,7 @@ class Artikel
             CONF_ARTIKELUEBERSICHT
         ));
         $this->cCachedCountryCode = (isset($_SESSION['cLieferlandISO'])) ? $_SESSION['cLieferlandISO'] : null;
-        $nSchwelleBestseller      = (isset($conf['boxen']['boxen_bestseller_minanzahl'])) ? doubleval($conf['boxen']['boxen_bestseller_minanzahl']) : 10;
+        $nSchwelleBestseller      = (isset($conf['global']['global_bestseller_minanzahl'])) ? doubleval($conf['global']['global_bestseller_minanzahl']) : 10;
         $nSchwelleTopBewertet     = (isset($conf['boxen']['boxen_topbewertet_minsterne'])) ? (int)$conf['boxen']['boxen_topbewertet_minsterne'] : 4;
         $kKundengruppe            = (int)$kKundengruppe;
         // Nicht Standardsprache?
@@ -3962,10 +3962,10 @@ class Artikel
     /**
      * check if current article is a bestseller
      *
-     * @param array $oBoxenEinstellung_arr
+     * @param array $oGlobalEinstellung_arr
      * @return bool
      */
-    public function istBestseller($oBoxenEinstellung_arr = null)
+    public function istBestseller($oGlobalEinstellung_arr = null)
     {
         if (isset($this->bIsBestseller)) {
             return $this->bIsBestseller;
@@ -3973,10 +3973,10 @@ class Artikel
         if (!isset($this->kArtikel) || !$this->kArtikel) {
             return false;
         }
-        if ($oBoxenEinstellung_arr === null) {
-            $oBoxenEinstellung_arr = Shop::getSettings(array(CONF_BOXEN));
+        if ($oGlobalEinstellung_arr === null) {
+            $oGlobalEinstellung_arr = Shop::getSettings(array(CONF_GLOBAL));
         }
-        $nSchwelleBestseller = (isset($oBoxenEinstellung_arr['boxen']['boxen_bestseller_minanzahl'])) ? doubleval($oBoxenEinstellung_arr['boxen']['boxen_bestseller_minanzahl']) : 10;
+        $nSchwelleBestseller = (isset($oGlobalEinstellung_arr['global']['global_bestseller_minanzahl'])) ? doubleval($oGlobalEinstellung_arr['global']['global_bestseller_minanzahl']) : 10;
         $oBestseller         = Shop::DB()->query(
             "SELECT round(fAnzahl) >= " . $nSchwelleBestseller . " AS bIsBestseller
                 FROM tbestseller
@@ -5162,7 +5162,7 @@ class Artikel
       * @deprecated since 4.03, use getDiscount
       * @param int $kKundengruppe
       * @param int $kArtikel
-      * @return int max discount
+      * @return float - max discount
       */
     public function gibRabatt4Artikel($kKundengruppe = 0, $kArtikel = 0)
     {

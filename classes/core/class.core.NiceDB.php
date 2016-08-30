@@ -767,27 +767,27 @@ class NiceDB
             if ($this->debugLevel > 2) {
                 $backtrace = debug_backtrace();
             }
-
             if ($this->debug === true || $this->collectData === true) {
                 $start = microtime(true);
             }
-            if (!is_int($keyvalue)) {
-                $keyvalue = "'" . $keyvalue . "'";
+            $keys    = (is_array($keyname)) ? $keyname : array($keyname, $keyname1, $keyname2);
+            $values  = (is_array($keyvalue)) ? $keyvalue : array($keyvalue, $keyvalue1, $keyvalue2);
+            $assigns = array();
+            $i       = 0;
+            foreach ($keys as &$_key) {
+                if ($_key !== null) {
+                    $_key .= '=';
+                    if (is_string($values[$i])) {
+                        $_key .= '\'' . $values[$i] . '\'';
+                    } else {
+                        $_key .= $values[$i];
+                    }
+                } else {
+                    unset($keys[$i]);
+                }
+                $i++;
             }
-            if (!is_int($keyvalue1)) {
-                $keyvalue1 = "'" . $keyvalue1 . "'";
-            }
-            if (!is_int($keyvalue2)) {
-                $keyvalue1 = "'" . $keyvalue2 . "'";
-            }
-            $stmt = 'SELECT * FROM ' . $tablename . ' WHERE ' . $keyname . '=' . $keyvalue;
-            if ($keyname1 && $keyvalue1) {
-                $stmt .= ' AND ' . $keyname1 . '=' . $keyvalue1;
-            }
-            if ($keyname2 && $keyvalue2) {
-                $stmt .= ' AND ' . $keyname2 . '=' . $keyvalue2;
-            }
-
+            $stmt = 'SELECT ' . $select . ' FROM ' . $tablename . ((count($keys) > 0) ? (' WHERE ' . implode(' AND ', $keys)) : '');
             $this->analyzeQuery('select', $stmt, ($end - $start), $backtrace);
         }
 

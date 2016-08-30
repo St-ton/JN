@@ -20,7 +20,8 @@ function getAdminList()
 {
     return Shop::DB()->query(
         "SELECT * FROM tadminlogin
-            LEFT JOIN tadminlogingruppe ON tadminlogin.kAdminlogingruppe = tadminlogingruppe.kAdminlogingruppe", 2
+            LEFT JOIN tadminlogingruppe ON tadminlogin.kAdminlogingruppe = tadminlogingruppe.kAdminlogingruppe
+         ORDER BY kAdminlogin", 2
     );
 }
 
@@ -257,11 +258,13 @@ function benutzerverwaltungActionAccountEdit(JTLSmarty $smarty, array &$messages
 {
 	$_SESSION['AdminAccount']->TwoFA_valid = true;
 
-	// find out, if 2FA ist active and if there is a known secret
+    $kAdminlogin = (isset($_POST['id']) ? (int)$_POST['id'] : null);
+
+	// find out, if 2FA ist active and if there is a secret
 	$szQRcodeString = '';
-	if(isset($_SESSION['AdminAccount'])) {
+	if(null !== $kAdminlogin) {
 		$oTwoFA = new TwoFA();
-		$oTwoFA->setUser($_SESSION['AdminAccount']->cLogin);
+		$oTwoFA->setUserByID($_POST['id']);
 
 		if(true === $oTwoFA->is2FAauthSecretExist()) {
 			$szQRcodeString = $oTwoFA->getQRcode();
@@ -269,18 +272,17 @@ function benutzerverwaltungActionAccountEdit(JTLSmarty $smarty, array &$messages
 	}
 	$smarty->assign('QRcodeString', $szQRcodeString); // transfer via smarty-var (to prevent session-pollution)
 
-    $kAdminlogin = (isset($_POST['id']) ? (int)$_POST['id'] : null);
-
     if (isset($_POST['save'])) {
-        $cError_arr           = array();
-        $oTmpAcc              = new stdClass();
-        $oTmpAcc->kAdminlogin = (isset($_POST['kAdminlogin'])) ? (int)$_POST['kAdminlogin'] : 0;
-        $oTmpAcc->cName       = trim($_POST['cName']);
-        $oTmpAcc->cMail       = trim($_POST['cMail']);
-        $oTmpAcc->cLogin      = trim($_POST['cLogin']);
-        $oTmpAcc->cPass       = trim($_POST['cPass']);
-		$oTmpAcc->b2FAauth    = (int)$_POST['b2FAauth'];
-        $tmpAttribs           = isset($_POST['extAttribs']) ? $_POST['extAttribs'] : array();
+        $cError_arr              = array();
+        $oTmpAcc                 = new stdClass();
+        $oTmpAcc->kAdminlogin    = (isset($_POST['kAdminlogin'])) ? (int)$_POST['kAdminlogin'] : 0;
+        $oTmpAcc->cName          = trim($_POST['cName']);
+        $oTmpAcc->cMail          = trim($_POST['cMail']);
+        $oTmpAcc->cLogin         = trim($_POST['cLogin']);
+        $oTmpAcc->cPass          = trim($_POST['cPass']);
+		$oTmpAcc->b2FAauth       = (int)$_POST['b2FAauth'];
+		(0 < strlen($_POST['c2FAsecret'])) ? $oTmpAcc->c2FAauthSecret = trim($_POST['c2FAsecret']) : null;
+        $tmpAttribs              = isset($_POST['extAttribs']) ? $_POST['extAttribs'] : array();
 
         $dGueltigBisAktiv = (isset($_POST['dGueltigBisAktiv']) && ($_POST['dGueltigBisAktiv'] === '1'));
         if ($dGueltigBisAktiv) {
@@ -295,6 +297,9 @@ function benutzerverwaltungActionAccountEdit(JTLSmarty $smarty, array &$messages
         }
         $oTmpAcc->kAdminlogingruppe = (int)$_POST['kAdminlogingruppe'];
 
+        if((bool)$oTmpAcc->b2FAauth && isset($oTmpAcc->c2FAauthSecret) && 0 === strlen($oTmpAcc->c2FAauthSecret)) {
+            $cError_arr['c2FAsecret'] = 1;
+        }
         if (strlen($oTmpAcc->cName) === 0) {
             $cError_arr['cName'] = 1;
         }

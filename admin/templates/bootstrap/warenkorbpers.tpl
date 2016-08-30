@@ -17,7 +17,6 @@
                     {$jtl_token}
                     <input type="hidden" name="Suche" value="1" />
                     <input type="hidden" name="tab" value="warenkorbpers" />
-                    <input type="hidden" name="s1" value="{$oBlaetterNaviKunde->nAktuelleSeite}" />
                     {if isset($cSuche) && $cSuche|strlen > 0}
                         <input type="hidden" name="cSuche" value="{$cSuche}" />
                     {/if}
@@ -34,12 +33,11 @@
                 </form>
 
                 {if isset($oKunde_arr) && $oKunde_arr|@count > 0}
-                    {if isset($cSuche) && $cSuche|strlen > 0}
-                        {assign var=pAdditional value="&cSuche="|cat:$cSuche}
-                    {else}
-                        {assign var=pAdditional value=''}
+                    {assign var="cParam_arr" value=[]}
+                    {if isset($cSuche)}
+                        {append var="cParam_arr" index='cSuche' value=$cSuche}
                     {/if}
-                    {include file='pagination.tpl' cSite=1 cUrl='warenkorbpers.php' oBlaetterNavi=$oBlaetterNaviKunde cParams=$pAdditional hash='#massaction'}
+                    {include file='tpl_inc/pagination.tpl' oPagination=$oPagiKunden cParam_arr=$cParam_arr cAnchor='massaction'}
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <h3 class="panel-title">{#warenkorbpers#}</h3>
@@ -63,8 +61,8 @@
                                     <td class="tcenter">{$oKunde->Datum}</td>
                                     <td class="tcenter">
                                         <div class="btn-group">
-                                            <a href="warenkorbpers.php?a={$oKunde->kKunde}{if $oBlaetterNaviKunde->nAktiv == 1}&s1={$oBlaetterNaviKunde->nAktuelleSeite}{/if}&token={$smarty.session.jtl_token}" class="btn btn-default">{#warenkorbpersShow#}</a>
-                                            <a href="warenkorbpers.php?l={$oKunde->kKunde}{if $oBlaetterNaviKunde->nAktiv == 1}&s1={$oBlaetterNaviKunde->nAktuelleSeite}{/if}&token={$smarty.session.jtl_token}" class="btn btn-danger"><i class="fa fa-trash"></i></a>
+                                            <a href="warenkorbpers.php?a={$oKunde->kKunde}&token={$smarty.session.jtl_token}" class="btn btn-default">{#warenkorbpersShow#}</a>
+                                            <a href="warenkorbpers.php?l={$oKunde->kKunde}&token={$smarty.session.jtl_token}" class="btn btn-danger"><i class="fa fa-trash"></i></a>
                                         </div>
                                     </td>
                                 </tr>
@@ -82,7 +80,7 @@
         </div>
     {elseif $step === 'anzeigen'}
         {assign var=pAdditional value="&a="|cat:$kKunde}
-        {include file='pagination.tpl' cSite=2 cUrl='warenkorbpers.php' oBlaetterNavi=$oBlaetterNavi cParams=$pAdditional hash=''}
+        {include file='tpl_inc/pagination.tpl' oPagination=$oPagiWarenkorb cParam_arr=['a'=>$kKunde]}
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h3 class="panel-title">{#warenkorbpersClient#} {$oWarenkorbPersPos_arr[0]->cVorname} {$oWarenkorbPersPos_arr[0]->cNachname}</h3>

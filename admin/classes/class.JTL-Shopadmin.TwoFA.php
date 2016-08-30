@@ -22,90 +22,79 @@ use chillerlan\QRCode\Output\QRStringOptions;
 class TwoFA
 {
     /**
-     * @var string
-     */
-    private $szUserName = '';
-
-    /**
      * @var null|PHPGangsta_GoogleAuthenticator
      */
     private $oGA = null;
 
     /**
-     * @var bool
+     * @var object
      */
-    public $TwoFAauth = false;
-
-    /**
-     * CONSIDER: never give this to the world outside the application!
-     * @var string
-     */
-    private $TwoFAauthSecret = '';
+    private $oUserTupel;
 
     /**
      * constructor
      */
     public function __construct()
     {
-        // nothing to be done here, for the moment
+        $this->oUserTupel                 = new stdClass();
+        $this->oUserTupel->cLogin         = '';
+        $this->oUserTupel->b2FAauth       = false;
+        $this->oUserTupel->c2FAauthSecret = '';
     }
 
     /**
-     * store the users name in our properties.
-     * we need this name to find the appropriate user (and his secret) in the DB.
+     * tell the asker if 2FA is active for the "object-known" user
      *
-     * @param string $szUserName - the name of our user
-     * @return $this
-     */
-    public function setUser($szUserName)
-    {
-        $this->szUserName = $szUserName;
-
-        $oTupel                = Shop::DB()->select('tadminlogin', 'cLogin', $this->szUserName);
-        $this->TwoFAauth       = (boolean)$oTupel->b2FAauth;
-        $this->TwoFAauthSecret = $oTupel->c2FAauthSecret;
-
-        return $this;
-    }
-
-    /**
-     * tell the asker if 2FA is active for that user
-     *
+     * @param void
      * @return bool - true="2FA is active"|false="2FA inactive"
      */
     public function is2FAauth()
     {
-        return $this->TwoFAauth;
+        return (bool)$this->oUserTupel->b2FAauth;;
     }
 
     /**
      * tell the asker if a secret exists for that user
      *
+     * @param void
      * @return bool - true="secret is there"|false="no secret"
      */
     public function is2FAauthSecretExist()
     {
-        return ('' !== $this->TwoFAauthSecret);
+        return ('' !== $this->oUserTupel->c2FAauthSecret);
     }
 
-
     /**
+     * generate a new secret
+     *
+     * @param void
      * @return $this
      */
     public function createNewSecret()
     {
         // store a google-authenticator-object instance
-        // (only when we check any credential! (something like lazy loading))
+        // (only if we want a new secret! (something like lazy loading))
         $this->oGA = new PHPGangsta_GoogleAuthenticator();
 
-        $szNewSecret         = $this->oGA->createSecret();
-        $upd                 = new stdClass();
-        $upd->c2FAauthSecret = $szNewSecret;
-        Shop::DB()->update('tadminlogin', 'cLogin', $this->szUserName, $upd);
+        if(null === $this->oUserTupel) {
+            $this->oUserTupel = new stdClass();
+        }
 
-        return $this->setUser($this->szUserName); // update our object-properties
+        $this->oUserTupel->c2FAauthSecret = $this->oGA->createSecret();
+
+        return $this;
     }
 
+    /**
+     * to save this secret, if the user decides to save the new admin-credetials
+     *
+     * @param void
+     * @return string - something like "2BHAADRCQLA7IMH7"
+     */
+    public function getSecret()
+    {
+        return $this->oUserTupel->c2FAauthSecret;
+    }
 
     /**
      * instantiate a authenticator-object and try to verify the given code
@@ -117,38 +106,87 @@ class TwoFA
     public function isCodeValid($szCode)
     {
         // store a google-authenticator-object instance
-        // (only when we check any credential! (something like lazy loading))
+        // (only if we check any credential! (something like lazy loading))
+        //
         $this->oGA = new PHPGangsta_GoogleAuthenticator();
 
-        $szSecret = $this->TwoFAauthSecret; // fetch the known secret of our user
-
-        return $this->oGA->verifyCode($szSecret, $szCode);
+        return $this->oGA->verifyCode($this->oUserTupel->c2FAauthSecret, $szCode);
     }
 
     /**
      * deliver a QR-code for the given user and his secret
+     * (fetch only the name of the current shop from the DB too)
      *
+     * @param void
      * @return string - generated QR-code
      */
     public function getQRcode()
     {
-        if ('' !== $this->TwoFAauthSecret) {
+        if ('' !== $this->oUserTupel->c2FAauthSecret) {
+
             // find out the global shop-name, if anyone administer more than one shop
-            $vResult = Shop::DB()->select('teinstellungen', 'cName', 'global_shopname');
-            $szShopName = ('' !== $vResult->cWert) ? urlencode($vResult->cWert) : '';
+            //
+            $oResult = Shop::DB()->select('teinstellungen', 'cName', 'global_shopname');
+            $szShopName = ('' !== $oResult->cWert) ? $oResult->cWert : '';
 
             // create the QR-code
             //
-            $szQRString = new QRCode('otpauth://totp/JTL-Shop%20Admin%20' . $szShopName . '?'
-                . 'secret=' . $this->TwoFAauthSecret
+            $szQRString = new QRCode(
+                  'otpauth://totp/'.rawurlencode('JTL-Shop ' . $this->oUserTupel->cLogin . '@' . $szShopName)
+                . '?secret=' . $this->oUserTupel->c2FAauthSecret
                 . '&issuer=JTL-Software'
                 , new QRString()
-            )
-            ;
+            );
 
             return $szQRString->output();
         }
 
         return ''; // better return a empty string instead of a bar-code with empty secret!
     }
+
+    /**
+     * fetch a tupel of user-data from the DB, by his ID(`kAdminlogin`)
+     * (store the fetched data in this object)
+     *
+     * @param integer - the (DB-)id of this user-account
+     * @return void
+     */
+    public function setUserByID($iID)
+    {
+        $this->oUserTupel = Shop::DB()->select('tadminlogin', 'kAdminlogin', (int)$iID);
+    }
+
+    /**
+     * fetch  a tupel of user-data from the DB, by his name(`cLogin`)
+     * this setter can called too, if the user is unknown yet
+     * (store the fetched data in this object)
+     *
+     * @param string - the users login-name
+     * @return void
+     */
+    public function setUserByName($szUserName)
+    {
+        // write at least the users name we get via e.g. ajax
+        //
+        $this->oUserTupel->cLogin = $szUserName;
+
+        // look if we know that user yet
+        //
+        if($oTupel = Shop::DB()->select('tadminlogin', 'cLogin', $szUserName)) {
+            $this->oUserTupel = $oTupel;
+        }
+    }
+
+    /**
+     * serialize this objects data into a string,
+     * mostly for debugging and logging
+     *
+     * @param void
+     * @return string - object-data
+     */
+    public function __toString()
+    {
+        return print_r($this->oUserTupel, true);
+    }
+
 }

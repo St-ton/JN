@@ -35,6 +35,8 @@ $DB = new NiceDB(DB_HOST, DB_USER, DB_PASS, DB_NAME, true);
 $cache = JTLCache::getInstance();
 $cache->setJtlCacheConfig();
 
+$session = AdminSession::getInstance();
+
 $notify = Notification::getInstance();
 $notify->buildDefault();
 

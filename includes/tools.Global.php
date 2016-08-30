@@ -354,12 +354,16 @@ function getCurrencyConversion($fPreisNetto, $fPreisBrutto, $cClass = '', $bForc
                 }
                 // Wurde geändert weil der Preis nun als Betrag gesehen wird und die Steuer direkt in der Versandart als eSteuer Flag eingestellt wird
                 if ($i > 0) {
-                    $cString .= ($bForceSteuer) ? (' &#x2259; <strong>' . $cPreisBruttoLocalized . '</strong>' . ' (<em>' . $cPreisLocalized . '</em>)') : (' &#x2259; ' . $cPreisBruttoLocalized);
+                    $cString .= ($bForceSteuer) ?
+                        ('<br><strong>' . $cPreisBruttoLocalized . '</strong>' . ' (<em>' . $cPreisLocalized . ' ' . Shop::Lang()->get('net') . '</em>)') :
+                        ('<br> ' . $cPreisBruttoLocalized);
                 } else {
-                    $cString .= ($bForceSteuer) ? ('<strong>' . $cPreisBruttoLocalized . '</strong>' . ' (<em>' . $cPreisLocalized . '</em>)') : '<strong>' . $cPreisBruttoLocalized . '</strong>';
+                    $cString .= ($bForceSteuer) ?
+                        ('<strong>' . $cPreisBruttoLocalized . '</strong>' . ' (<em>' . $cPreisLocalized . ' ' . Shop::Lang()->get('net') . '</em>)') :
+                        '<strong>' . $cPreisBruttoLocalized . '</strong>';
                 }
             }
-            $cString .= ($bForceSteuer) ? ' (<strong>Brutto</strong> / Netto)</span>' : '</span>';
+            $cString .= '</span>';
         }
     }
 
@@ -4706,7 +4710,7 @@ function pruefeKampagnenParameter()
                     $oVorgang = Shop::DB()->select(
                         'tkampagnevorgang',
                         array('kKampagneDef', 'kKampagne', 'kKey', 'cCustomData'),
-                        array(KAMPAGNE_DEF_HIT, (int)$oKampagne->kKampagne, (int)$_SESSION['oBesucher']->kBesucher), (StringHandler::filterXSS(Shop::DB()->escape($_SERVER['REQUEST_URI'])) . ';' . $referrer)
+                        array(KAMPAGNE_DEF_HIT, (int)$oKampagne->kKampagne, (int)$_SESSION['oBesucher']->kBesucher, (StringHandler::filterXSS(Shop::DB()->escape($_SERVER['REQUEST_URI'])) . ';' . $referrer))
                     );
 
                     if (!isset($oVorgang->kKampagneVorgang)) {
@@ -6196,6 +6200,40 @@ function formatSize($size)
     }
 
     return isset($res) ? $res : '';
+}
+
+/**
+ * @param DateTime|string|int $date
+ * @param int $weekdays
+ * @return DateTime
+ */
+function dateAddWeekday($date, $weekdays)
+{
+    try {
+        if (is_string($date)) {
+            $resDate = new DateTime($date);
+        } else if (is_numeric($date)) {
+            $resDate = new DateTime();
+            $resDate->setTimestamp($date);
+        } else if (is_object($date) && is_a($date, 'DateTime')) {
+            /** @var DateTime $date */
+            $resDate = new DateTime($date->format(DateTime::ISO8601));
+        } else {
+            $resDate = new DateTime();
+        }
+    } catch (Exception $e) {
+        Jtllog::writeLog($e->getMessage(), JTLLOG_LEVEL_ERROR);
+        $resDate = new DateTime();
+    }
+
+    $weekend = ((int)$resDate->format('w') + 1) % 6 == 1;
+    $pm      = (int)$resDate->format('G') > 12;
+
+    if ($weekend || $pm) {
+        $resDate->add(DateInterval::createFromDateString('1 weekday'));
+    }
+
+    return $resDate->add(DateInterval::createFromDateString($weekdays . ' weekday'));
 }
 
 if (!function_exists('dd')) {

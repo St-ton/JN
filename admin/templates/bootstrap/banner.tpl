@@ -24,6 +24,15 @@
     {if $cAction === 'edit' || $cAction === 'new'}
     <script type="text/javascript">
         {literal}
+        var file2large = false;
+
+        function checkfile(e){
+            e.preventDefault();
+            if (!file2large){
+                document.banner.submit();
+            }
+        }
+
         $(document).ready(function () {
             $("select[name='nSeitenTyp']").change(function () {
                 var selected = $("select[name='nSeitenTyp'] option:selected");
@@ -56,8 +65,10 @@
                 {literal}
                 if (filesize >= maxsize) {
                     $('.input-group.file-input').after('<div class="alert alert-danger"><i class="fa fa-warning"></i> Die Datei ist gr&ouml;&szlig;er als das Uploadlimit des Servers.</div>').slideDown();
+                    file2large = true;
                 } else {
                     $('form div.alert').slideUp();
+                    file2large = false;
                 }
             });
 
@@ -90,7 +101,7 @@
         {/literal}
     </script>
     <div id="settings">
-        <form action="banner.php" method="post" enctype="multipart/form-data">
+        <form name="banner" action="banner.php" method="post" enctype="multipart/form-data" onsubmit="checkfile(event);">
             {$jtl_token}
             <input type="hidden" name="action" value="{$cAction}" />
             {if $cAction === 'edit'}

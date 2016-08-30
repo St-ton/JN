@@ -2,6 +2,8 @@
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
+ *
+ * @global JTLSmarty $smarty
  */
 require_once dirname(__FILE__) . '/includes/admininclude.php';
 
@@ -9,6 +11,7 @@ $oAccount->permission('CONTENT_EMAIL_TEMPLATE_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
+$Emailvorlage          = null;
 $hinweis               = '';
 $cHinweis              = '';
 $cFehler               = '';
@@ -141,6 +144,12 @@ if (isset($_POST['preview']) && intval($_POST['preview']) > 0) {
     $bestellung->nZahlungsTyp           = 0;
     $bestellung->WarensummeLocalized[0] = '511,00 EUR';
     $bestellung->WarensummeLocalized[1] = '429,41 EUR';
+    $bestellung->oEstimatedDelivery     = (object)[
+        'localized'  => '',
+        'longestMin' => 3,
+        'longestMax' => 6,
+    ];
+    $bestellung->cEstimatedDelivery     = &$bestellung->oEstimatedDelivery->localized;
 
     $bestellung->Positionen                              = array();
     $bestellung->Positionen[0]                           = new stdClass();
@@ -496,6 +505,11 @@ if (isset($_POST['preview']) && intval($_POST['preview']) > 0) {
             $cModulId = 'kPlugin_' . verifyGPCDataInteger('kPlugin') . '_' . $cModulId;
         }
 
+        $bestellung->oEstimatedDelivery->localized = getDeliverytimeEstimationText($bestellung->oEstimatedDelivery->longestMin, $bestellung->oEstimatedDelivery->longestMax);
+        $bestellung->cEstimatedDeliveryEx          = dateAddWeekday($bestellung->dErstellt, $bestellung->oEstimatedDelivery->longestMin)->format('d.m.Y')
+            . ' - ' .
+            dateAddWeekday($bestellung->dErstellt, $bestellung->oEstimatedDelivery->longestMax)->format('d.m.Y');
+
         $kunde->kSprache                       = $Sprache->kSprache;
         $NewsletterEmpfaenger->kSprache        = $Sprache->kSprache;
         $obj                                   = new stdClass();
@@ -554,9 +568,7 @@ if (isset($_POST['Aendern']) && isset($_POST['kEmailvorlage']) && intval($_POST[
         $cDateiname_arr    = array();
         $cPDFS_arr         = array();
         $cPDFSTMP_arr      = (isset($oEmailvorlageSprache_arr[$Sprache->kSprache]->cPDFS)) ? bauePDFArray($oEmailvorlageSprache_arr[$Sprache->kSprache]->cPDFS) : array();
-        $cDateinameTMP_arr = (isset($oEmailvorlageSprache_arr[$Sprache->kSprache]->cDateiname)) ?
-            baueDateinameArray($oEmailvorlageSprache_arr[$Sprache->kSprache]->cDateiname) :
-            array();
+        $cDateinameTMP_arr = (isset($oEmailvorlageSprache_arr[$Sprache->kSprache]->cDateiname)) ? baueDateinameArray($oEmailvorlageSprache_arr[$Sprache->kSprache]->cDateiname) : array();
         if (!isset($oEmailvorlageSprache_arr[$Sprache->kSprache]->cPDFS) || strlen($oEmailvorlageSprache_arr[$Sprache->kSprache]->cPDFS) === 0 || count($cPDFSTMP_arr) < 3) {
             if (count($cPDFSTMP_arr) < 3) {
                 foreach ($cPDFSTMP_arr as $i => $cPDFSTMP) {
@@ -686,6 +698,7 @@ if (isset($_POST['Aendern']) && isset($_POST['kEmailvorlage']) && intval($_POST[
     $_upd->nAKZ     = (isset($_POST['nAKZ'])) ? (int)$_POST['nAKZ'] : 0;
     $_upd->nAGB     = (isset($_POST['nAGB'])) ? (int)$_POST['nAGB'] : 0;
     $_upd->nWRB     = (isset($_POST['nWRB'])) ? (int)$_POST['nWRB'] : 0;
+    $_upd->nWRBForm = (isset($_POST['nWRBForm'])) ? (int)$_POST['nWRBForm'] : 0;
     Shop::DB()->update($cTable, 'kEmailvorlage', $kEmailvorlage, $_upd);
 
     // Einstellungen
@@ -756,9 +769,7 @@ if ((isset($_POST['kEmailvorlage']) && intval($_POST['kEmailvorlage']) > 0 && $c
     }
 
     $step       = 'bearbeiten';
-    $cFromTable = (isset($_REQUEST['kPlugin'])) ?
-        $cTablePluginSetting :
-        $cTableSetting;
+    $cFromTable = (isset($_REQUEST['kPlugin'])) ? $cTablePluginSetting : $cTableSetting;
 
     $Sprachen                   = gibAlleSprachen();
     $Emailvorlage               = Shop::DB()->select($cTable, 'kEmailvorlage', (int)$_POST['kEmailvorlage']);
@@ -804,7 +815,7 @@ if ((isset($_POST['kEmailvorlage']) && intval($_POST['kEmailvorlage']) > 0 && $c
 
 if ($step === 'uebersicht') {
     $emailvorlagen = Shop::DB()->query(
-        "SELECT kEmailvorlage, cName, cModulId, cMailTyp, cAktiv, cDateiname, nAKZ, nAGB, nWRB, nFehlerhaft
+        "SELECT kEmailvorlage, cName, cModulId, cMailTyp, cAktiv, cDateiname, nAKZ, nAGB, nWRB, nWRBForm, nFehlerhaft
             FROM temailvorlage
             ORDER BY cModulId", 2
     );
@@ -894,9 +905,7 @@ function setzeFehler($kEmailvorlage, $bFehler = true, $bForce = false)
 function xrow_get_template($tpl_name, &$tpl_source, $smarty)
 {
     $x             = explode('_', $tpl_name);
-    $obj           = ($x[0] === 'html') ?
-        'cContentHtml' :
-        'cContentText';
+    $obj           = ($x[0] === 'html') ? 'cContentHtml' : 'cContentText';
     $kEmailvorlage = (int)$x[1];
     $kSprache      = (int)$x[2];
     $cTable        = $x[3];

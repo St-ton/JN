@@ -60,6 +60,7 @@ class Boxen
     public function __construct()
     {
         $this->boxConfig = Shop::getConfig(array(
+            CONF_GLOBAL,
             CONF_BOXEN,
             CONF_VERGLEICHSLISTE,
             CONF_NAVIGATIONSFILTER,
@@ -333,8 +334,8 @@ class Boxen
                 $limit        = (int)$this->boxConfig['boxen']['box_bestseller_anzahl_basis'];
                 $anzahl       = (int)$this->boxConfig['boxen']['box_bestseller_anzahl_anzeige'];
                 $nAnzahl      = 100;
-                if ((int)$this->boxConfig['boxen']['boxen_bestseller_minanzahl'] > 0) {
-                    $nAnzahl = (int)$this->boxConfig['boxen']['boxen_bestseller_minanzahl'];
+                if ((int)$this->boxConfig['global']['global_bestseller_minanzahl'] > 0) {
+                    $nAnzahl = (int)$this->boxConfig['global']['global_bestseller_minanzahl'];
                 }
                 if ($limit < 1) {
                     $limit = 10;

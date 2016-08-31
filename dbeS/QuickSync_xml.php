@@ -125,21 +125,19 @@ function bearbeiteInsert($xml)
             if ($oArtikel->fLagerbestand < 0) {
                 $oArtikel->fLagerbestand = 0;
             }
-            Shop::DB()->query("UPDATE tartikel SET fLagerbestand = " . $oArtikel->fLagerbestand . " WHERE kArtikel = " . (int)$oArtikel->kArtikel, 4);
-
-            // Clear Artikel Cache
-            $clearTags[] = CACHING_GROUP_ARTICLE . '_' . (int)$oArtikel->kArtikel;
-            if (Shop::Cache()->isPageCacheEnabled()) {
-                if (!isset($smarty)) {
-                    $smarty = Shop::Smarty();
-                }
-                if (isset($smarty)) {
-                    //@todo: smarty is null...
-                    $smarty->clearCache(null, 'jtlc|article|aid' . (int)$oArtikel->kArtikel);
-                }
+            $upd = new stdClass();
+            $upd->fLagerbestand = $oArtikel->fLagerbestand;
+            Shop::DB()->update('tartikel', 'kArtikel', (int)$oArtikel->kArtikel, $upd);
+            // clear object cache for this article and its parent if there is any
+            $parentArticle = Shop::DB()->select('tartikel', 'kArtikel', $oArtikel->kArtikel, null, null, null, null, false, 'kVaterArtikel');
+            if (!empty($parentArticle->kVaterArtikel)) {
+                $clearTags[] = (int)$parentArticle->kVaterArtikel;
             }
+            $clearTags[] = (int)$oArtikel->kArtikel;
             versendeVerfuegbarkeitsbenachrichtigung($oArtikel);
         }
+        $clearTags = array_unique($clearTags);
+        array_walk($clearTags,  function(&$i) { $i = CACHING_GROUP_ARTICLE . '_' . $i; });
         Shop::Cache()->flushTags($clearTags);
     }
 }

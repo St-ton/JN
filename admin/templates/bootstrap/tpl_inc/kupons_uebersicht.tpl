@@ -3,10 +3,12 @@
 {function kupons_uebersicht_tab}
     <div id="{$cKuponTyp}" class="tab-pane fade{if $tab === $cKuponTyp} active in{/if}">
         {if $nKuponCount > 0}
-            {include file='tpl_inc/filtertools.tpl' oFilter=$oFilter cParam_arr=['tab'=>$cKuponTyp]}
-        {/if}
-        {if $oKupon_arr|@count > 0}
-            {include file='tpl_inc/pagination.tpl' oPagination=$oPagination cParam_arr=['tab'=>$cKuponTyp]}
+            <div class="well well-sm">
+                {include file='tpl_inc/filtertools.tpl' oFilter=$oFilter cParam_arr=['tab'=>$cKuponTyp]}
+                {if $oKupon_arr|@count > 0}
+                    {include file='tpl_inc/pagination.tpl' oPagination=$oPagination cParam_arr=['tab'=>$cKuponTyp]}
+                {/if}
+            </div>
         {/if}
         <form method="post" action="kupons.php">
             {$jtl_token}
@@ -45,14 +47,22 @@
                                     {if $cKuponTyp === 'standard' || $cKuponTyp === 'neukundenkupon'}
                                         <td>
                                             {if $oKupon->cWertTyp === 'festpreis'}
-                                                {getCurrencyConversionSmarty fPreisBrutto=$oKupon->fWert}
+                                                <span data-toggle="tooltip" data-placement="right" data-html="true"
+                                                      title='{getCurrencyConversionSmarty fPreisBrutto=$oKupon->fWert}'>
+                                                    {$oKupon->cLocalizedValue}
+                                                </span>
                                             {else}
                                                 {$oKupon->fWert} %
                                             {/if}
                                         </td>
                                     {/if}
                                     {if $cKuponTyp === 'standard' || $cKuponTyp === 'versandkupon'}<td>{$oKupon->cCode}</td>{/if}
-                                    <td>{getCurrencyConversionSmarty fPreisBrutto=$oKupon->fMindestbestellwert}</td>
+                                    <td>
+                                        <span data-toggle="tooltip" data-placement="right" data-html="true"
+                                              title='{getCurrencyConversionSmarty fPreisBrutto=$oKupon->fMindestbestellwert}'>
+                                            {$oKupon->cLocalizedMbw}
+                                        </span>
+                                    </td>
                                     <td>
                                         {$oKupon->nVerwendungenBisher}
                                         {if $oKupon->nVerwendungen > 0}
@@ -61,8 +71,8 @@
                                     <td>{$oKupon->cKundengruppe}</td>
                                     <td>{$oKupon->cArtikelInfo}</td>
                                     <td>
-                                        <strong>{#from#}:</strong> {$oKupon->cGueltigAbShort}<br>
-                                        <strong>{#to#}:</strong> {$oKupon->cGueltigBisShort}
+                                        {#from#}: {$oKupon->cGueltigAbShort}<br>
+                                        {#to#}: {$oKupon->cGueltigBisShort}
                                     </td>
                                     <td>
                                         <button type="submit" class="btn btn-default" name="kKuponBearbeiten" value="{$oKupon->kKupon}">

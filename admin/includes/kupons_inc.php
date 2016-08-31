@@ -170,7 +170,9 @@ function getCoupon($kKupon)
  */
 function augmentCoupon($oKupon)
 {
-    $oKupon->bOpenEnd = $oKupon->dGueltigBis === '0000-00-00 00:00:00';
+    $oKupon->cLocalizedValue = $oKupon->cWertTyp == 'festpreis' ? gibPreisStringLocalized($oKupon->fWert) : '';
+    $oKupon->cLocalizedMbw   = isset($oKupon->fMindestbestellwert) ? gibPreisStringLocalized($oKupon->fMindestbestellwert) : '';
+    $oKupon->bOpenEnd        = $oKupon->dGueltigBis === '0000-00-00 00:00:00';
 
     if (date_create($oKupon->dGueltigAb) === false) {
         $oKupon->cGueltigAbShort = 'ung&uuml;ltig';

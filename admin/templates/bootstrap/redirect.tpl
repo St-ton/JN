@@ -118,7 +118,7 @@
                             <thead>
                             <tr>
                                 <th class="tcenter" style="width:24px"></th>
-                                <th class="tleft" style="width:35%;">Url
+                                <th class="tleft" style="width:35%;">URL
                                     {if $oPagination->getSortBy() !== 0}
                                         <a href="#" onclick="pagiResort('{$oPagination->getId()}', 0, 0);return false;"><i class="fa fa-unsorted"></i></a>
                                     {elseif $oPagination->getSortDirSpecifier() === 'DESC'}

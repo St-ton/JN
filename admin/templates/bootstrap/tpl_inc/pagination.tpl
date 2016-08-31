@@ -107,7 +107,7 @@
         {
             $('#' + pagiId + '_nSortBy').val(nSortBy);
             $('#' + pagiId + '_nSortDir').val(nSortDir);
-            $('#' + pagiId).submit();
+            $('form#' + pagiId).submit();
         }
     {/literal}
 </script>

@@ -23,11 +23,38 @@
                             <tr>
                                 <th title="Aktiv"></th>
                                 <th></th>
-                                <th>{#name#}</th>
+                                <th>
+                                    {#name#}
+                                    {if $oPagination->getSortBy() !== 0}
+                                        <a href="#" onclick="pagiResort('{$oPagination->getId()}', 0, 0);return false;"><i class="fa fa-unsorted"></i></a>
+                                    {elseif $oPagination->getSortDirSpecifier() === 'DESC'}
+                                        <a href="#" onclick="pagiResort('{$oPagination->getId()}', 0, 0);return false;"><i class="fa fa-sort-desc"></i></a>
+                                    {elseif $oPagination->getSortDirSpecifier() === 'ASC'}
+                                        <a href="#" onclick="pagiResort('{$oPagination->getId()}', 0, 1);return false;"><i class="fa fa-sort-asc"></i></a>
+                                    {/if}
+                                </th>
                                 {if $cKuponTyp === 'standard' || $cKuponTyp === 'neukundenkupon'}<th>{#value#}</th>{/if}
-                                {if $cKuponTyp === 'standard' || $cKuponTyp === 'versandkupon'}<th>{#code#}</th>{/if}
+                                {if $cKuponTyp === 'standard' || $cKuponTyp === 'versandkupon'}<th>
+                                    {#code#}
+                                    {if $oPagination->getSortBy() !== 1}
+                                        <a href="#" onclick="pagiResort('{$oPagination->getId()}', 1, 0);return false;"><i class="fa fa-unsorted"></i></a>
+                                    {elseif $oPagination->getSortDirSpecifier() === 'DESC'}
+                                        <a href="#" onclick="pagiResort('{$oPagination->getId()}', 1, 0);return false;"><i class="fa fa-sort-desc"></i></a>
+                                    {elseif $oPagination->getSortDirSpecifier() === 'ASC'}
+                                        <a href="#" onclick="pagiResort('{$oPagination->getId()}', 1, 1);return false;"><i class="fa fa-sort-asc"></i></a>
+                                    {/if}
+                                </th>{/if}
                                 <th>{#mbw#}</th>
-                                <th>{#curmaxusage#}</th>
+                                <th>
+                                    {#curmaxusage#}
+                                    {if $oPagination->getSortBy() !== 2}
+                                        <a href="#" onclick="pagiResort('{$oPagination->getId()}', 2, 0);return false;"><i class="fa fa-unsorted"></i></a>
+                                    {elseif $oPagination->getSortDirSpecifier() === 'DESC'}
+                                        <a href="#" onclick="pagiResort('{$oPagination->getId()}', 2, 0);return false;"><i class="fa fa-sort-desc"></i></a>
+                                    {elseif $oPagination->getSortDirSpecifier() === 'ASC'}
+                                        <a href="#" onclick="pagiResort('{$oPagination->getId()}', 2, 1);return false;"><i class="fa fa-sort-asc"></i></a>
+                                    {/if}
+                                </th>
                                 <th>{#customerGroup#}</th>
                                 <th>{#restrictions#}</th>
                                 <th>{#validity#}</th>

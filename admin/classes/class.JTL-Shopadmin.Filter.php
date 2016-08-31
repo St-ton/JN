@@ -41,11 +41,14 @@ class Filter
      *  7 = lower than or equal
      *  8 = greater than or equal
      *  9 = equals not
+     * @param int    $nType
+     *  0 = text
+     *  1 = number
      * @return FilterTextField
      */
-    public function addTextfield($cTitle, $cColumn, $nTestOp = 0)
+    public function addTextfield($cTitle, $cColumn, $nTestOp = 0, $nDataType = 0)
     {
-        $oField                                       = new FilterTextField($this, $cTitle, $cColumn, $nTestOp);
+        $oField                                       = new FilterTextField($this, $cTitle, $cColumn, $nTestOp, $nDataType);
         $this->oField_arr[]                           = $oField;
         $this->cSession_arr[$oField->getId()]         = $oField->getValue();
         $this->cSession_arr[$oField->getId() . '_op'] = $oField->getTestOp();

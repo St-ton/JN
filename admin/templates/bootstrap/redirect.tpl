@@ -102,10 +102,12 @@
     <div class="tab-content">
         <div id="redirects" class="tab-pane fade {if !isset($cTab) || $cTab === 'redirects'} active in{/if}">
             {if $nRedirectCount > 0}
-                {include file='tpl_inc/filtertools.tpl' oFilter=$oFilter}
-            {/if}
-            {if $oRedirect_arr|@count > 0}
-                {include file='tpl_inc/pagination.tpl' oPagination=$oPagination cAnchor='redirects'}
+                <div class="well well-sm">
+                    {include file='tpl_inc/filtertools.tpl' oFilter=$oFilter}
+                    {if $oRedirect_arr|@count > 0}
+                        {include file='tpl_inc/pagination.tpl' oPagination=$oPagination cAnchor='redirects'}
+                    {/if}
+                </div>
             {/if}
             {if $oRedirect_arr|@count > 0}
                 <div class="panel panel-default">

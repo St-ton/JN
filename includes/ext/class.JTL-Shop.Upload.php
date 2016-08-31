@@ -116,7 +116,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
          */
         public static function redirectWarenkorb($nErrorCode)
         {
-            header('Location: warenkorb.php?fillOut=' . $nErrorCode, true, 303);
+            $linkHelper = LinkHelper::getInstance();
+            header('Location: ' . $linkHelper->getStaticRoute('warenkorb.php') . '?fillOut=' . $nErrorCode, true, 303);
         }
 
         /**

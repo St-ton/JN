@@ -122,9 +122,14 @@
                 {else}
                     {lang key="footnoteInclusiveVat" section="global" assign="footnoteVat"}
                 {/if}
+                {if $Einstellungen.global.global_versandhinweis === 'zzgl'}
+                    {lang key="footnoteExclusiveShip" section="global" assign="footnoteShip"}
+                {elseif $Einstellungen.global.global_versandhinweis === 'inkl'}
+                    {lang key="footnoteInclusiveShip" section="global" assign="footnoteShip"}
+                {/if}
                 {block name="footer-vat-notice"}
                     <p class="padded-lg-top">
-                        <span class="footnote-reference">*</span> {$footnoteVat|replace:'#SHIPPING_LINK#':$oSpezialseiten_arr[6]->cURL}
+                        <span class="footnote-reference">*</span> {$footnoteVat}{if isset($footnoteShip)}{$footnoteShip|replace:'#SHIPPING_LINK#':$oSpezialseiten_arr[6]->cURL}{/if}
                     </p>
                 {/block}
             </div>

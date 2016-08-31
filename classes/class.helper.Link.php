@@ -635,27 +635,14 @@ class LinkHelper
         $bNoIndex = false;
         switch (basename($_SERVER['SCRIPT_NAME'])) {
             case 'wartung.php':
-                $bNoIndex = true;
-                break;
             case 'navi.php':
-                $bNoIndex = true;
-                break;
             case 'bestellabschluss.php':
-                $bNoIndex = true;
-                break;
             case 'bestellvorgang.php':
-                $bNoIndex = true;
-                break;
             case 'jtl.php':
-                $bNoIndex = true;
-                break;
             case 'pass.php':
-                $bNoIndex = true;
-                break;
             case 'registrieren.php':
-                $bNoIndex = true;
-                break;
             case 'warenkorb.php':
+            case 'wunschliste.php':
                 $bNoIndex = true;
                 break;
             default:

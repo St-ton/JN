@@ -1,6 +1,6 @@
 <h1>{$CWunschliste->cName}</h1>
 
-{if $hinweis}
+{if !empty($hinweis)}
     <div class="alert alert-info">{$hinweis}</div>
 {/if}
 
@@ -20,7 +20,7 @@
       </fieldset>
    </form>
 *}
-<form method="post" action="{get_static_route id='jtl.php'}" name="Wunschliste" class="basket_wrapper">
+<form method="post" action="{get_static_route id='wunschliste.php'}" name="Wunschliste" class="basket_wrapper">
     {$jtl_token}
     {block name="wishlist"}
     <input type="hidden" name="wla" value="1" />
@@ -94,7 +94,7 @@
                             <div class="btn-group-vertical">
                                 {* @todo: button href? *}
                                 {if $CWunschlistePos->Artikel->bHasKonfig}
-                                    <a href="{$CWunschlistePos->Artikel->cURL}" class="btn btn-primary" title="{lang key="product" section="global"} {lang key="configure" section="global"}">
+                                    <a href="{$CWunschlistePos->Artikel->cURLFull}" class="btn btn-primary" title="{lang key="product" section="global"} {lang key="configure" section="global"}">
                                         <span class="fa fa-gears"></span>
                                     </a>
                                 {else}
@@ -134,7 +134,7 @@
                 <div class="row">
                     <div class="col-xs-12">
                         <div class="input-group">
-                            <input type="text" name="wishlist-url" readonly="readonly" value="{$ShopURL}/index.php?wlid={$CWunschliste->cURLID}" class="form-control">
+                            <input type="text" name="wishlist-url" readonly="readonly" value="{get_static_route id='wunschliste.php'}?wlid={$CWunschliste->cURLID}" class="form-control">
                             <span class="input-group-btn">
                                 {if $Einstellungen.global.global_wunschliste_freunde_aktiv === 'Y'}
                                    <button type="submit" name="wlvm" value="1" class="btn btn-default" title="{lang key="wishlistViaEmail" section="login"}">

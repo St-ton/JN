@@ -748,11 +748,8 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
                     ORDER BY dErstellt DESC", 2
             );
         }
-        // Pruefen, ob der Kunde Wunschlisten hat
-        if (count($oWunschliste_arr) > 0) {
-            $smarty->assign('oWunschliste_arr', $oWunschliste_arr);
-        }
         $smarty->assign('Bestellungen', $Bestellungen)
+               ->assign('oWunschliste_arr', $oWunschliste_arr)
                ->assign('Lieferadressen', $Lieferadressen);
 
         executeHook(HOOK_JTL_PAGE_MEINKKONTO);

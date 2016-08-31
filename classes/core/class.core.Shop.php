@@ -1094,6 +1094,10 @@ final class Shop
                             self::$AktuelleSeite = 'WARENKORB';
                             self::setPageType(PAGE_WARENKORB);
                             break;
+                        case 'wunschliste.php' :
+                            self::$AktuelleSeite = 'WUNSCHLISTE';
+                            self::setPageType(PAGE_WUNSCHLISTE);
+                            break;
                         default :
                             break;
                     }

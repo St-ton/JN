@@ -42,9 +42,9 @@ if (isset($_SESSION['bWarenkorbHinzugefuegt']) && isset($_SESSION['bWarenkorbAnz
     unset($_SESSION['bWarenkorbAnzahl']);
     unset($_SESSION['bWarenkorbHinzugefuegt']);
 }
-//wurde was in den Warenkorb gelegt?
+//wurde ein artikel in den Warenkorb gelegt?
 checkeWarenkorbEingang();
-if (!$cParameter_arr['kWunschliste'] && strlen(verifyGPDataString('wlid')) > 0) {
+if (!$cParameter_arr['kWunschliste'] && strlen(verifyGPDataString('wlid')) > 0 && verifyGPDataString('error') === '') {
     header('Location: ' . $linkHelper->getStaticRoute('wunschliste.php', true) . '?wlid=' . verifyGPDataString('wlid') . '&error=1', true, 303);
     exit();
 }
@@ -106,7 +106,6 @@ if ($cParameter_arr['kKategorie'] > 0 && !Kategorie::isVisible($cParameter_arr['
     Shop::$kLink                  = $kLink;
 }
 Shop::getEntryPoint();
-
 if (Shop::$is404 === true) {
     $cParameter_arr['is404'] = true;
 }

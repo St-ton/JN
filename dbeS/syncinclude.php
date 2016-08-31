@@ -199,7 +199,7 @@ function DBDelInsert($tablename, $object_arr, $del)
         }
         foreach ($object_arr as $object) {
             //hack? unset arrays/objects that would result in nicedb exceptions
-            foreach(get_object_vars($object) as $key=>$var) {
+            foreach (get_object_vars($object) as $key => $var) {
                 if (is_array($var) || is_object($var)) {
                     unset($object->$key);
                 }
@@ -380,7 +380,8 @@ function mapAttributes(&$obj, $xml)
  * @param array $array
  * @return bool
  */
-function is_assoc(array $array) {
+function is_assoc(array $array)
+{
     return count(array_filter(array_keys($array), 'is_string')) > 0;
 }
 
@@ -497,6 +498,7 @@ function updateXMLinDB($xml, $tabelle, $map, $pk1, $pk2 = 0)
 /**
  * @param object $oArtikel
  * @param array  $oKundengruppe_arr
+ * @global JTLSmarty $smarty
  */
 function fuelleArtikelKategorieRabatt($oArtikel, $oKundengruppe_arr)
 {
@@ -563,9 +565,7 @@ function versendeVerfuegbarkeitsbenachrichtigung($oArtikel)
             // Kampagne
             $oKampagne = new Kampagne(KAMPAGNE_INTERN_VERFUEGBARKEIT);
             if (isset($oKampagne->kKampagne) && $oKampagne->kKampagne > 0) {
-                $cSep = (strpos($Artikel->cURL, '.php') === false) ?
-                    '?' :
-                    '&';
+                $cSep = (strpos($Artikel->cURL, '.php') === false) ? '?' : '&';
                 $Artikel->cURL .= $cSep . $oKampagne->cParameter . '=' . $oKampagne->cWert;
             }
             foreach ($Benachrichtigungen as $Benachrichtigung) {
@@ -575,9 +575,7 @@ function versendeVerfuegbarkeitsbenachrichtigung($oArtikel)
                 $obj->tartikel->cName                  = StringHandler::htmlentitydecode($obj->tartikel->cName);
                 $mail                                  = new stdClass();
                 $mail->toEmail                         = $Benachrichtigung->cMail;
-                $mail->toName                          = ($Benachrichtigung->cVorname || $Benachrichtigung->cNachname) ?
-                    ($Benachrichtigung->cVorname . ' ' . $Benachrichtigung->cNachname) :
-                    $Benachrichtigung->cMail;
+                $mail->toName                          = ($Benachrichtigung->cVorname || $Benachrichtigung->cNachname) ? ($Benachrichtigung->cVorname . ' ' . $Benachrichtigung->cNachname) : $Benachrichtigung->cMail;
                 $obj->mail = $mail;
                 sendeMail(MAILTEMPLATE_PRODUKT_WIEDER_VERFUEGBAR, $obj);
                 Shop::DB()->query(
@@ -620,7 +618,7 @@ function setzePreisverlauf($kArtikel, $kKundengruppe, $fVKNetto)
                 LIMIT 1", 1
         );
         //no pricehistory or price changed?
-        if ( !isset($oPreis->fVKNetto) || isset($oPreis->fVKNetto) && intval($oPreis->fVKNetto * 100) !== intval($fVKNetto * 100)) {
+        if (!isset($oPreis->fVKNetto) || isset($oPreis->fVKNetto) && intval($oPreis->fVKNetto * 100) !== intval($fVKNetto * 100)) {
             Shop::DB()->insert('tpreisverlauf', $oPreisverlauf);
             // Clear Artikel Cache
             $cache = Shop::Cache();
@@ -911,46 +909,47 @@ function handlePriceFormat($kArtikel, $kKundengruppe, $kKunde = null)
 
     if ($kKunde !== null && intval($kKunde) > 0) {
         $o->kKunde = (int)$kKunde;
+        flushCustomerPriceCache($o->kKunde);
     }
 
     return Shop::DB()->insert('tpreis', $o);
 }
 
 /**
- * Handle new PriceFormat (Wawi >= v.1.00): 
- * 
+ * Handle new PriceFormat (Wawi >= v.1.00):
+ *
  * Sample XML:
- * 	<tpreis kPreis="8" kArtikel="15678" kKundenGruppe="1" kKunde="0">
- *		<tpreisdetail kPreis="8">
- *			<nAnzahlAb>100</nAnzahlAb>
- *			<fNettoPreis>0.756303</fNettoPreis>
- *		</tpreisdetail>
- *		<tpreisdetail kPreis="8">
- *			<nAnzahlAb>250</nAnzahlAb>
- *			<fNettoPreis>0.714286</fNettoPreis>
- *		</tpreisdetail>
- *		<tpreisdetail kPreis="8">
- *			<nAnzahlAb>500</nAnzahlAb>
- *			<fNettoPreis>0.672269</fNettoPreis>
- *		</tpreisdetail>
- *		<tpreisdetail kPreis="8">
- *			<nAnzahlAb>750</nAnzahlAb>
- *			<fNettoPreis>0.630252</fNettoPreis>
- *		</tpreisdetail>
- *		<tpreisdetail kPreis="8">
- *			<nAnzahlAb>1000</nAnzahlAb>
- *			<fNettoPreis>0.588235</fNettoPreis>
- *		</tpreisdetail>
- *		<tpreisdetail kPreis="8">
- *			<nAnzahlAb>2000</nAnzahlAb>
- *			<fNettoPreis>0.420168</fNettoPreis>
- *		</tpreisdetail>
- *		<tpreisdetail kPreis="8">
- *			<nAnzahlAb>0</nAnzahlAb>
- *			<fNettoPreis>0.798319</fNettoPreis>
- *		</tpreisdetail>
- *	</tpreis>
- * 
+ *  <tpreis kPreis="8" kArtikel="15678" kKundenGruppe="1" kKunde="0">
+ *      <tpreisdetail kPreis="8">
+ *          <nAnzahlAb>100</nAnzahlAb>
+ *          <fNettoPreis>0.756303</fNettoPreis>
+ *      </tpreisdetail>
+ *      <tpreisdetail kPreis="8">
+ *          <nAnzahlAb>250</nAnzahlAb>
+ *          <fNettoPreis>0.714286</fNettoPreis>
+ *      </tpreisdetail>
+ *      <tpreisdetail kPreis="8">
+ *          <nAnzahlAb>500</nAnzahlAb>
+ *          <fNettoPreis>0.672269</fNettoPreis>
+ *      </tpreisdetail>
+ *      <tpreisdetail kPreis="8">
+ *          <nAnzahlAb>750</nAnzahlAb>
+ *          <fNettoPreis>0.630252</fNettoPreis>
+ *      </tpreisdetail>
+ *      <tpreisdetail kPreis="8">
+ *          <nAnzahlAb>1000</nAnzahlAb>
+ *          <fNettoPreis>0.588235</fNettoPreis>
+ *      </tpreisdetail>
+ *      <tpreisdetail kPreis="8">
+ *          <nAnzahlAb>2000</nAnzahlAb>
+ *          <fNettoPreis>0.420168</fNettoPreis>
+ *      </tpreisdetail>
+ *      <tpreisdetail kPreis="8">
+ *          <nAnzahlAb>0</nAnzahlAb>
+ *          <fNettoPreis>0.798319</fNettoPreis>
+ *      </tpreisdetail>
+ *  </tpreis>
+ *
  * @param array $xml
  */
 function handleNewPriceFormat($xml)
@@ -968,7 +967,7 @@ function handleNewPriceFormat($xml)
                 }
                 $hasDefaultPrice = false;
                 foreach ($preisdetails as $preisdetail) {
-                    $o            = (object) array(
+                    $o            = (object)array(
                         'kPreis'    => $kPreis,
                         'nAnzahlAb' => $preisdetail->nAnzahlAb,
                         'fVKNetto'  => $preisdetail->fNettoPreis
@@ -979,8 +978,8 @@ function handleNewPriceFormat($xml)
                     }
                 }
                 // default price for customergroup set?
-                if (!$hasDefaultPrice && isset($xml['fStandardpreisNetto'])) { 
-                    $o            = (object) array(
+                if (!$hasDefaultPrice && isset($xml['fStandardpreisNetto'])) {
+                    $o            = (object)array(
                         'kPreis'    => $kPreis,
                         'nAnzahlAb' => 0,
                         'fVKNetto'  => $xml['fStandardpreisNetto']
@@ -989,13 +988,14 @@ function handleNewPriceFormat($xml)
                 }
                 $customerGroupHandled[] = $preis->kKundenGruppe;
             }
-            //any customergroups with missing tpreis node left? 
+            //any customergroups with missing tpreis node left?
             $kKundengruppen_arr = Kundengruppe::getGroups();
+            /** @var Kundengruppe $customergroup */
             foreach ($kKundengruppen_arr as $customergroup) {
-            	$kKundengruppe = $customergroup->getKundengruppe();
+                $kKundengruppe = $customergroup->getKundengruppe();
                 if (!in_array($kKundengruppe, $customerGroupHandled) && isset($xml['fStandardpreisNetto'])) {
                     $kPreis       = handlePriceFormat($preis->kArtikel, $kKundengruppe, 0);
-                    $o            = (object) array(
+                    $o            = (object)array(
                         'kPreis'    => $kPreis,
                         'nAnzahlAb' => 0,
                         'fVKNetto'  => $xml['fStandardpreisNetto']
@@ -1003,8 +1003,6 @@ function handleNewPriceFormat($xml)
                     Shop::DB()->insert('tpreisdetail', $o);
                 }
             }
-            
-            
         }
     }
 }
@@ -1065,7 +1063,7 @@ function mappeWawiAnrede2ShopAnrede($cAnrede)
 
 /**
  * prints fatal sync exception and exits with die()
- * 
+ *
  * wawi codes:
  * 0: HTTP_NOERROR
  * 1: HTTP_DBERROR
@@ -1076,12 +1074,13 @@ function mappeWawiAnrede2ShopAnrede($cAnrede)
  * 6: HTTP_AUTHINVALID
  * 7: HTTP_AUTHCLOSED
  * 8: HTTP_CUSTOMERR
- * 9: HTTP_EBAYERROR 
- * 
+ * 9: HTTP_EBAYERROR
+ *
  * @param string $msg Exception Message
  * @param int $wawiExceptionCode int code (0-9)
  */
-function syncException($msg, $wawiExceptionCode = null) {
+function syncException($msg, $wawiExceptionCode = null)
+{
     $output = '';
     if (isset($wawiExceptionCode)) {
         $output .= $wawiExceptionCode . '\n';
@@ -1098,6 +1097,16 @@ function syncException($msg, $wawiExceptionCode = null) {
 function flushCategoryTreeCache()
 {
     return Shop::Cache()->flushTags('jtl_category_tree');
+}
+
+/**
+ * @param int $kKunde
+ * @return bool|int
+ */
+function flushCustomerPriceCache($kKunde)
+{
+    $cacheID = 'custprice_' . (int)$kKunde;
+    return Shop::Cache()->flush($cacheID);
 }
 
 ob_start('handleError');

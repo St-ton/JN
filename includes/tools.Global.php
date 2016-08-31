@@ -3337,6 +3337,12 @@ function parseNewsText($cText)
 {
     preg_match_all('/\${1}\#{1}[akhmntl]{1}:[0-9]+\:{0,1}[a-zA-Z0-9äÄöÖüÜß\.\,\!\"\§\$\%\&\/\(\)\=\`\´\+\~\*\'\;\-\_\?\{\}\[\]\ ]{0,}\#{1}\${1}/', $cText, $cTreffer_arr);
     if (is_array($cTreffer_arr[0]) && count($cTreffer_arr[0]) > 0) {
+        if (!isset($_SESSION['kSprache'])) {
+            $_lang    = gibStandardsprache();
+            $kSprache = $_lang->kSprache;
+        } else {
+            $kSprache = (int)$_SESSION['kSprache'];
+        }
         // Parameter
         $cParameter_arr = array('a' => URLART_ARTIKEL, 'k' => URLART_KATEGORIE, 'h' => URLART_HERSTELLER, 'm' => URLART_MERKMAL, 'n' => URLART_NEWS, 't' => URLART_TAG, 'l' => URLART_LIVESUCHE);
         foreach ($cTreffer_arr[0] as $cTreffer) {
@@ -3371,7 +3377,7 @@ function parseNewsText($cText)
                             FROM " . $cTabellenname . "
                             LEFT JOIN tseo ON tseo.cKey = 'kArtikel'
                                 AND tseo.kKey = " . $cTabellenname . ".kArtikel
-                                AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
+                                AND tseo.kSprache = " . $kSprache . "
                             WHERE " . $cTabellenname . ".kArtikel=" . (int)$cKey . $cSpracheSQL, 1
                     );
 
@@ -3389,14 +3395,14 @@ function parseNewsText($cText)
                     $cSpracheSQL         = '';
                     if (isset($_SESSION['kSprache']) && $_SESSION['kSprache'] > 0 && !standardspracheAktiv()) {
                         $cTabellenname = "tkategoriesprache";
-                        $cSpracheSQL   = " AND tkategoriesprache.kSprache = " . (int)$_SESSION['kSprache'];
+                        $cSpracheSQL   = " AND tkategoriesprache.kSprache = " . $kSprache;
                     }
                     $oKategorie = Shop::DB()->query(
                         "SELECT " . $cTabellenname . ".kKategorie, " . $cTabellenname . ".cName, tseo.cSeo
                             FROM " . $cTabellenname . "
                             LEFT JOIN tseo ON tseo.cKey = 'kKategorie'
                                 AND tseo.kKey = " . $cTabellenname . ".kKategorie
-                                AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
+                                AND tseo.kSprache = " . $kSprache . "
                             WHERE " . $cTabellenname . ".kKategorie = " . (int)$cKey . $cSpracheSQL, 1
                     );
 
@@ -3416,7 +3422,7 @@ function parseNewsText($cText)
                             FROM thersteller
                             LEFT JOIN tseo ON tseo.cKey = 'kHersteller'
                                 AND tseo.kKey = " . $cTabellenname . ".kHersteller
-                                AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
+                                AND tseo.kSprache = " . $kSprache . "
                             WHERE " . $cTabellenname . ".kHersteller = " . (int)$cKey, 1
                     );
 
@@ -3435,9 +3441,9 @@ function parseNewsText($cText)
                             FROM tmerkmalwertsprache
                             LEFT JOIN tseo ON tseo.cKey = 'kMerkmalWert'
                                 AND tseo.kKey = tmerkmalwertsprache.kMerkmalWert
-                                AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
+                                AND tseo.kSprache = " . $kSprache . "
                             WHERE tmerkmalwertsprache.kMerkmalWert = " . (int)$cKey . "
-                                AND tmerkmalwertsprache.kSprache = " . (int)$_SESSION['kSprache'], 1
+                                AND tmerkmalwertsprache.kSprache = " . $kSprache, 1
                     );
 
                     if (isset($oMerkmalWert->kMerkmalWert) && $oMerkmalWert->kMerkmalWert > 0) {
@@ -3455,7 +3461,7 @@ function parseNewsText($cText)
                             FROM tnews
                             LEFT JOIN tseo ON tseo.cKey = 'kNews'
                                 AND tseo.kKey = tnews.kNews
-                                AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
+                                AND tseo.kSprache = " . $kSprache . "
                             WHERE tnews.kNews = " . (int)$cKey, 1
                     );
 
@@ -3474,7 +3480,7 @@ function parseNewsText($cText)
                             FROM tumfrage
                             LEFT JOIN tseo ON tseo.cKey = 'kUmfrage'
                                 AND tseo.kKey = tnews.kUmfrage
-                                AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
+                                AND tseo.kSprache = " . $kSprache . "
                             WHERE tumfrage.kUmfrage = " . (int)$cKey, 1
                     );
 
@@ -3493,7 +3499,7 @@ function parseNewsText($cText)
                             FROM ttag
                             LEFT JOIN tseo ON tseo.cKey = 'kTag'
                                 AND tseo.kKey = ttag.kTag
-                                AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
+                                AND tseo.kSprache = " . $kSprache . "
                             WHERE ttag.kTag = " . (int)$cKey, 1
                     );
 
@@ -3512,7 +3518,7 @@ function parseNewsText($cText)
                             FROM tsuchanfrage
                             LEFT JOIN tseo ON tseo.cKey = 'kSuchanfrage'
                                 AND tseo.kKey = tsuchanfrage.kSuchanfrage
-                                AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
+                                AND tseo.kSprache = " . $kSprache . "
                             WHERE tsuchanfrage.kSuchanfrage = " . (int)$cKey, 1
                     );
 

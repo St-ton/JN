@@ -412,7 +412,7 @@ function getCats($catlist)
     $cats     = array();
     $shopcats = array();
     $res      = Shop::DB()->query("SELECT kKategorie, cName, kOberKategorie, nSort FROM tkategorie", 10);
-    while ($row = $res->fetch_assoc()) {
+    while ($row = $res->fetch(PDO::FETCH_ASSOC)) {
         $cats[array_shift($row)] = $row;
     }
     foreach ($catlist as $cat_id) {

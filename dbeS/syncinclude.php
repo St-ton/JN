@@ -530,12 +530,6 @@ function fuelleArtikelKategorieRabatt($oArtikel, $oKundengruppe_arr)
                 // Clear Artikel Cache
                 $cache = Shop::Cache();
                 $cache->flushTags(array(CACHING_GROUP_ARTICLE . '_' . $oArtikel->kArtikel));
-                if ($cache->isPageCacheEnabled()) {
-                    if (!isset($smarty)) {
-                        $smarty = Shop::Smarty();
-                    }
-                    $smarty->clearCache(null, 'jtlc|article|aid' . $oArtikel->kArtikel);
-                }
             }
         }
     }
@@ -623,12 +617,6 @@ function setzePreisverlauf($kArtikel, $kKundengruppe, $fVKNetto)
             // Clear Artikel Cache
             $cache = Shop::Cache();
             $cache->flushTags(array(CACHING_GROUP_ARTICLE . '_' . $kArtikel));
-            if ($cache->isPageCacheEnabled()) {
-                if (!isset($smarty)) {
-                    $smarty = Shop::Smarty();
-                }
-                $smarty->clearCache(null, 'jtlc|article|aid' . $kArtikel);
-            }
         }
     }
 }
@@ -789,12 +777,6 @@ function deleteArticleImage($oArtikelPict = null, $kArtikel = 0, $kArtikelPict =
     // Clear Artikel Cache
     $cache = Shop::Cache();
     $cache->flushTags(array(CACHING_GROUP_ARTICLE . '_' . (int)$kArtikel));
-    if ($cache->isPageCacheEnabled()) {
-        if (!isset($smarty)) {
-            $smarty = Shop::Smarty();
-        }
-        $smarty->clearCache(null, 'jtlc|article|aid' . (int)$kArtikel);
-    }
 }
 
 /**

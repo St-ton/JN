@@ -128,11 +128,6 @@ if (isset($_POST['neu_link']) && intval($_POST['neu_link']) === 1 && validateTok
         } else {
             //updaten
             $kLink = intval($_POST['kLink']);
-            //clear page cache
-            if (Shop::Cache()->isPageCacheEnabled()) {
-                $_smarty = new JTLSmarty(true, false, true, 'cache');
-                $_smarty->setCachingParams(true)->clearCache(null, 'jtlc|page|link|lid' . $_POST['kLink']);
-            }
             Shop::DB()->update('tlink', 'kLink', $kLink, $link);
             $hinweis .= "Der Link <strong>$link->cName</strong> wurde erfolgreich ge&auml;ndert.";
             $step     = 'uebersicht';
@@ -411,14 +406,10 @@ if ($step === 'neuer Link') {
            ->assign('gesetzteKundengruppen', getGesetzteKundengruppen($link));
 }
 
-//clear page cache
+//clear cache
 if ($clearCache === true) {
     Shop::Cache()->flushTags(array(CACHING_GROUP_CORE));
     Shop::DB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
-    if (Shop::Cache()->isPageCacheEnabled()) {
-        $_smarty = new JTLSmarty(true, false, true, 'cache');
-        $_smarty->setCachingParams(true)->clearCache(null, 'jtlc|page');
-    }
 }
 $smarty->assign('step', $step)
        ->assign('hinweis', $hinweis)

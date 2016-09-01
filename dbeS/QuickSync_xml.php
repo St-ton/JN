@@ -129,15 +129,6 @@ function bearbeiteInsert($xml)
 
             // Clear Artikel Cache
             $clearTags[] = CACHING_GROUP_ARTICLE . '_' . (int)$oArtikel->kArtikel;
-            if (Shop::Cache()->isPageCacheEnabled()) {
-                if (!isset($smarty)) {
-                    $smarty = Shop::Smarty();
-                }
-                if (isset($smarty)) {
-                    //@todo: smarty is null...
-                    $smarty->clearCache(null, 'jtlc|article|aid' . (int)$oArtikel->kArtikel);
-                }
-            }
             versendeVerfuegbarkeitsbenachrichtigung($oArtikel);
         }
         Shop::Cache()->flushTags($clearTags);

@@ -512,17 +512,13 @@ function gibYategoExport($exportformat, $oJobQueue, $ExportEinstellungen)
             $Artikel->fuelleArtikel($tartikel->kArtikel, $oArtikelOptionen, $exportformat->kKundengruppe, $exportformat->kSprache);
 
             verarbeiteYategoExport($Artikel, $exportformat, $ExportEinstellungen, $KategorieListe, $oGlobal_arr);
-
-            $oJobQueue->nLimitN += 1;
         }
 
         $KategorieListe                = array_keys($KategorieListe);
         $oGlobal_arr['shopkategorien'] = getCats($KategorieListe);
 
         if ($exportformat->cKodierung === 'UTF-8' || $exportformat->cKodierung === 'UTF-8noBOM') {
-            if ($exportformat->cKodierung === 'UTF-8') {
-                $cHeader = "\xEF\xBB\xBF";
-            }
+            $cHeader = $exportformat->cKodierung === 'UTF-8' ? "\xEF\xBB\xBF" : '';
             writeFile(PATH . 'varianten.csv', $cHeader . utf8_encode(makecsv($oGlobal_arr['varianten'], $oJobQueue->nLimitN) . CRLF . makecsv($oGlobal_arr['variantenwerte'], $oJobQueue->nLimitN)));
             writeFile(PATH . 'artikel.csv', $cHeader . utf8_encode(makecsv($oGlobal_arr['artikel'], $oJobQueue->nLimitN)));
             writeFile(PATH . 'shopkategorien.csv', $cHeader . utf8_encode(makecsv($oGlobal_arr['shopkategorien'], $oJobQueue->nLimitN)));
@@ -534,6 +530,7 @@ function gibYategoExport($exportformat, $oJobQueue, $ExportEinstellungen)
             writeFile(PATH . 'lager.csv', makecsv($oGlobal_arr['lager'], $oJobQueue->nLimitN));
         }
 
+        $oJobQueue->nLimitN         += count($oArtikel_arr);
         $oJobQueue->dZuletztGelaufen = date('Y-m-d H:i');
         $oJobQueue->nInArbeit        = 0;
         $oJobQueue->updateJobInDB();

@@ -68,6 +68,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
                     if ($oPosition->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL && isset($oPosition->Artikel->kArtikel)) {
                         $oUpload              = new stdClass();
                         $oUpload->cName       = $oPosition->Artikel->cName;
+                        if (!empty($oPosition->WarenkorbPosEigenschaftArr)) {
+                            $oUpload->WarenkorbPosEigenschaftArr = $oPosition->WarenkorbPosEigenschaftArr;
+                        }
                         $oUpload->oUpload_arr = self::gibArtikelUploads($oPosition->Artikel->kArtikel);
                         if ($oUpload->oUpload_arr) {
                             $oUploads_arr[] = $oUpload;

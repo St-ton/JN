@@ -12,19 +12,21 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
     {
         /**
          * @param int $kArtikel
+         * @param array $eigenschaftenArr
          * @return bool
          */
-        public static function gibArtikelUploads($kArtikel)
+        public static function gibArtikelUploads($kArtikel, $eigenschaftenArr = false)
         {
             $oUploadSchema = new UploadSchema();
             $oUploads_arr  = $oUploadSchema->fetchAll($kArtikel, UPLOAD_TYP_WARENKORBPOS);
             if (is_array($oUploads_arr) && count($oUploads_arr) > 0) {
                 foreach ($oUploads_arr as &$oUpload) {
-                    $oUpload->cUnique       = self::uniqueDateiname($oUpload);
-                    $oUpload->cDateiTyp_arr = self::formatTypen($oUpload->cDateiTyp);
-                    $oUpload->cDateiListe   = implode(';', $oUpload->cDateiTyp_arr);
-                    $oUpload->bVorhanden    = is_file(PFAD_UPLOADS . $oUpload->cUnique);
-                    $oUploadDatei           = (isset($_SESSION['Uploader'][$oUpload->cUnique])) ? $_SESSION['Uploader'][$oUpload->cUnique] : null;
+                    $oUpload->nEigenschaften_arr = $eigenschaftenArr;
+                    $oUpload->cUnique            = self::uniqueDateiname($oUpload);
+                    $oUpload->cDateiTyp_arr      = self::formatTypen($oUpload->cDateiTyp);
+                    $oUpload->cDateiListe        = implode(';', $oUpload->cDateiTyp_arr);
+                    $oUpload->bVorhanden         = is_file(PFAD_UPLOADS . $oUpload->cUnique);
+                    $oUploadDatei                = (isset($_SESSION['Uploader'][$oUpload->cUnique])) ? $_SESSION['Uploader'][$oUpload->cUnique] : null;
                     if (is_object($oUploadDatei)) {
                         $oUpload->cDateiname    = $oUploadDatei->cName;
                         $oUpload->cDateigroesse = self::formatGroesse($oUploadDatei->nBytes);
@@ -66,12 +68,18 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
             if (count($oWarenkorb->PositionenArr) > 0) {
                 foreach ($oWarenkorb->PositionenArr as &$oPosition) {
                     if ($oPosition->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL && isset($oPosition->Artikel->kArtikel)) {
+                        $eigenschaftArr = array();
+                        if (!empty($oPosition->WarenkorbPosEigenschaftArr)){
+                            foreach ($oPosition->WarenkorbPosEigenschaftArr as $eigenschaft){
+                                $eigenschaftArr[$eigenschaft->kEigenschaft] = $eigenschaft->kEigenschaftWert;
+                            }
+                        }
                         $oUpload              = new stdClass();
                         $oUpload->cName       = $oPosition->Artikel->cName;
                         if (!empty($oPosition->WarenkorbPosEigenschaftArr)) {
                             $oUpload->WarenkorbPosEigenschaftArr = $oPosition->WarenkorbPosEigenschaftArr;
                         }
-                        $oUpload->oUpload_arr = self::gibArtikelUploads($oPosition->Artikel->kArtikel);
+                        $oUpload->oUpload_arr = self::gibArtikelUploads($oPosition->Artikel->kArtikel, $eigenschaftArr);
                         if ($oUpload->oUpload_arr) {
                             $oUploads_arr[] = $oUpload;
                         }
@@ -221,7 +229,16 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
          */
         public static function uniqueDateiname($oUpload)
         {
-            return md5($oUpload->kUploadSchema . $oUpload->kCustomID . $oUpload->nTyp . session_id());
+            $unique = $oUpload->kUploadSchema . $oUpload->kCustomID . $oUpload->nTyp . session_id();
+            if (!empty($oUpload->nEigenschaften_arr)) {
+                $eigenschaften = '';
+                foreach ($oUpload->nEigenschaften_arr as $k => $v) {
+                    $eigenschaften .= $k . $v;
+                }
+                $unique .= $eigenschaften;
+            }
+
+            return md5($unique);
         }
 
         /**

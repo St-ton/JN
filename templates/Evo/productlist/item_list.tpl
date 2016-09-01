@@ -28,15 +28,19 @@
                         {if ($Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen === 'BT'
                         || $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen === 'B') && !empty($Artikel->cHerstellerBildKlein)}
                             <div class="media-left">
-                                <a href="{$Artikel->cHerstellerHomepage}">
+                                {if !empty($Artikel->cHerstellerHomepage)}<a href="{$Artikel->cHerstellerHomepage}">{/if}
                                     <img src="{$Artikel->cHerstellerBildKlein}" alt="" class="img-xs">
-                                </a>
+                                {if !empty($Artikel->cHerstellerHomepage)}</a>{/if}
                             </div>
                         {/if}
                         {if ($Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen === 'BT'
                         || $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen === 'Y') && !empty($Artikel->cHersteller)}
                             <div class="media-body">
-                                <span class="small text-uppercase"><a href="{$Artikel->cHerstellerHomepage}">{$Artikel->cHersteller}</a></span>
+                                <span class="small text-uppercase">
+                                    {if !empty($Artikel->cHerstellerHomepage)}<a href="{$Artikel->cHerstellerHomepage}">{/if}
+                                        {$Artikel->cHersteller}
+                                    {if !empty($Artikel->cHerstellerHomepage)}</a>{/if}
+                                </span>
                             </div>
                         {/if}
                     </div>

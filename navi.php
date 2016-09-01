@@ -488,7 +488,6 @@ if ($cParameter_arr['kHersteller'] > 0 ||
            ->assign('cFehler', $cFehler)
            ->assign('Einstellungen', $Einstellungen)
            ->assign('Sortierliste', gibSortierliste($Einstellungen, $bExtendedJTLSearch))
-           ->assign('Einstellungen', $Einstellungen)
            ->assign('Suchergebnisse', $oSuchergebnisse)
            ->assign('requestURL', (isset($requestURL)) ? $requestURL : null)
            ->assign('sprachURL', (isset($sprachURL)) ? $sprachURL : null)

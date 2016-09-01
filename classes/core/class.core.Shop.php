@@ -650,6 +650,10 @@ final class Shop
         } else {
             self::$cSuche = StringHandler::xssClean(verifyGPDataString('suche'));
         }
+        //avoid redirect loops for surveys that require logged in customers
+        if (self::$kUmfrage > 0 && verifyGPCDataInteger('r') !== '' && empty($_SESSION['Kunde']->kKunde)) {
+            self::$kUmfrage = 0;
+        }
 
         self::$nArtikelProSeite = verifyGPCDataInteger('af');
         if (self::$nArtikelProSeite > 0) {

@@ -69,8 +69,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
                 foreach ($oWarenkorb->PositionenArr as &$oPosition) {
                     if ($oPosition->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL && isset($oPosition->Artikel->kArtikel)) {
                         $eigenschaftArr = array();
-                        if (!empty($oPosition->WarenkorbPosEigenschaftArr)){
-                            foreach ($oPosition->WarenkorbPosEigenschaftArr as $eigenschaft){
+                        if (!empty($oPosition->WarenkorbPosEigenschaftArr)) {
+                            foreach ($oPosition->WarenkorbPosEigenschaftArr as $eigenschaft) {
                                 $eigenschaftArr[$eigenschaft->kEigenschaft] = $eigenschaft->kEigenschaftWert;
                             }
                         }

@@ -20,7 +20,16 @@
         <table class="table table-stripped table-bordered">
             <thead>
             <tr>
-                <th colspan="3" class="tleft">{$oUploadSchema->cName}</th>
+                <th colspan="3" class="tleft">
+                    {$oUploadSchema->cName}
+                    {if !empty($oUploadSchema->WarenkorbPosEigenschaftArr)}
+                        <small>
+                            {foreach name=variationen from=$oUploadSchema->WarenkorbPosEigenschaftArr item=Variation}
+                                - {$Variation->cEigenschaftName|trans}: {$Variation->cEigenschaftWertName|trans}
+                            {/foreach}
+                        </small>
+                    {/if}
+                </th>
             </tr>
             </thead>
             <tbody>

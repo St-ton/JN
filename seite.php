@@ -183,6 +183,6 @@ $smarty->assign('meta_title', $cMetaTitle)
        ->assign('meta_description', $cMetaDescription)
        ->assign('meta_keywords', $cMetaKeywords);
 executeHook(HOOK_SEITE_PAGE);
-$smarty->display('layout/index.tpl', $cacheID);
+$smarty->display('layout/index.tpl');
 
 require PFAD_ROOT . PFAD_INCLUDES . 'profiler_inc.php';

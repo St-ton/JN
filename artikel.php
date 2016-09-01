@@ -259,6 +259,6 @@ $smarty->assign('meta_title', $AktuellerArtikel->getMetaTitle())
        ->assign('meta_keywords', $AktuellerArtikel->getMetaKeywords());
 executeHook(HOOK_ARTIKEL_PAGE, array('oArtikel' => $AktuellerArtikel));
 
-$smarty->display('productdetails/index.tpl', $cacheID);
+$smarty->display('productdetails/index.tpl');
 
 require PFAD_ROOT . PFAD_INCLUDES . 'profiler_inc.php';

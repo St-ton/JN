@@ -6,7 +6,6 @@
 require_once PFAD_ROOT . PFAD_INCLUDES . 'suche_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'filter_inc.php';
 $cachingOptions = Shop::getSettings(array(CONF_CACHING));
-$cacheID        = $smarty->getCacheID('productlist/index.tpl', array('naviFilter' => $NaviFilter), null);
 Shop::setPageType(PAGE_ARTIKELLISTE);
 $Einstellungen = Shop::getSettings(
     array(
@@ -303,6 +302,6 @@ $smarty->assign(
 );
 executeHook(HOOK_FILTER_ENDE);
 
-$smarty->display('productlist/index.tpl', $cacheID);
+$smarty->display('productlist/index.tpl');
 
 require PFAD_ROOT . PFAD_INCLUDES . 'profiler_inc.php';

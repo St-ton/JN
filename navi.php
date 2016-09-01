@@ -42,7 +42,6 @@ if (isset($_POST['a']) && isset($_POST['wke'])) {
     }
 }
 
-//earlier setzeUsersortierung() for page cache ID
 require_once PFAD_ROOT . PFAD_INCLUDES . 'filter_inc.php';
 // Usersortierung
 setzeUsersortierung($NaviFilter);
@@ -525,7 +524,7 @@ if ($cParameter_arr['kHersteller'] > 0 ||
 
     executeHook(HOOK_NAVI_ENDE);
 
-    $smarty->display('productlist/index.tpl', $cacheID);
+    $smarty->display('productlist/index.tpl');
 } else {
     //Artikel
     if ($cParameter_arr['kArtikel'] > 0) {

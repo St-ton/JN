@@ -483,18 +483,18 @@ if ($cParameter_arr['kHersteller'] > 0 ||
     }
     // Work around fürs Template
     $smarty->assign('SEARCHSPECIALS_TOPREVIEWS', SEARCHSPECIALS_TOPREVIEWS)
-        ->assign('PFAD_ART_ABNAHMEINTERVALL', PFAD_ART_ABNAHMEINTERVALL)
-        ->assign('Navigation', $cBrotNavi)
-        ->assign('cFehler', $cFehler)
-        ->assign('Einstellungen', $Einstellungen)
-        ->assign('Sortierliste', gibSortierliste($Einstellungen, $bExtendedJTLSearch))
-        ->assign('Einstellungen', $Einstellungen)
-        ->assign('Suchergebnisse', $oSuchergebnisse)
-        ->assign('requestURL', (isset($requestURL)) ? $requestURL : null)
-        ->assign('sprachURL', (isset($sprachURL)) ? $sprachURL : null)
-        ->assign('oNavigationsinfo', $oNavigationsinfo)
-        ->assign('SEO', false)
-        ->assign('SESSION_NOTWENDIG', false);
+           ->assign('PFAD_ART_ABNAHMEINTERVALL', PFAD_ART_ABNAHMEINTERVALL)
+           ->assign('Navigation', $cBrotNavi)
+           ->assign('cFehler', $cFehler)
+           ->assign('Einstellungen', $Einstellungen)
+           ->assign('Sortierliste', gibSortierliste($Einstellungen, $bExtendedJTLSearch))
+           ->assign('Einstellungen', $Einstellungen)
+           ->assign('Suchergebnisse', $oSuchergebnisse)
+           ->assign('requestURL', (isset($requestURL)) ? $requestURL : null)
+           ->assign('sprachURL', (isset($sprachURL)) ? $sprachURL : null)
+           ->assign('oNavigationsinfo', $oNavigationsinfo)
+           ->assign('SEO', false)
+           ->assign('SESSION_NOTWENDIG', false);
 
     require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
     executeHook(HOOK_NAVI_PAGE);

@@ -27,6 +27,13 @@ $action           = null;
 $kWunschlistePos  = null;
 $oWunschliste_arr = array();
 
+if ($kWunschliste === 0 && !empty($_SESSION['Kunde']->kKunde) && empty($_SESSION['Wunschliste']->kWunschliste)) {
+    //create new wishlist at very first visit
+    $_SESSION['Wunschliste'] = new Wunschliste();
+    $_SESSION['Wunschliste']->schreibeDB();
+    $kWunschliste = (int)$_SESSION['Wunschliste']->kWunschliste;
+}
+
 Shop::setPageType(PAGE_WUNSCHLISTE);
 loeseHttps();
 

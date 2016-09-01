@@ -982,74 +982,18 @@ final class Shop
             self::$AktuelleSeite = 'UMFRAGE';
             self::setPageType(PAGE_UMFRAGE);
         } elseif (!self::$kLink) {
-            self::$is404         = true;
-            self::$AktuelleSeite = '404';
-            self::setPageType(PAGE_404);
             //check path
             $cPath        = self::getRequestUri();
             $cRequestFile = '/' . ltrim($cPath, '/');
-            if (in_array($cRequestFile, ['/', '/index.php', '/navi.php'])) {
+            if ($cRequestFile === '/') { //special case: home page is accessible without seo url
                 $linkHelper  = LinkHelper::getInstance();
-                $kLink       = $linkHelper->getSpecialPageLinkKey(LINKTYP_STARTSEITE);
-                $Link        = $linkHelper->getPageLink($kLink);
-                self::$kLink = $kLink;
-                if (isset($Link->nLinkart)) {
-                    switch ($Link->nLinkart) {
-                        case LINKTYP_STARTSEITE :
-                            self::setPageType(PAGE_STARTSEITE);
-                            self::$AktuelleSeite = 'STARTSEITE';
-                            self::$kLink         = $Link->kLink;
-                            break;
-
-                        case LINKTYP_TAGGING :
-                            self::setPageType(PAGE_TAGGING);
-                            break;
-
-                        case LINKTYP_UMFRAGE :
-                            self::setPageType(PAGE_UMFRAGE);
-                            break;
-
-                        case LINKTYP_VERSAND :
-                            self::setPageType(PAGE_VERSAND);
-                            break;
-
-                        case LINKTYP_DATENSCHUTZ :
-                            self::setPageType(PAGE_DATENSCHUTZ);
-                            break;
-
-                        case LINKTYP_WRB :
-                            self::setPageType(PAGE_WRB);
-                            break;
-
-                        case LINKTYP_LIVESUCHE :
-                            self::setPageType(PAGE_LIVESUCHE);
-                            break;
-
-                        case LINKTYP_HERSTELLER :
-                            self::setPageType(PAGE_HERSTELLER);
-                            break;
-
-                        case LINKTYP_NEWSLETTERARCHIV :
-                            self::setPageType(PAGE_NEWSLETTERARCHIV);
-                            break;
-
-                        case LINKTYP_GRATISGESCHENK :
-                            self::setPageType(PAGE_GRATISGESCHENK);
-                            break;
-
-                        case LINKTYP_AUSWAHLASSISTENT :
-                            self::setPageType(PAGE_AUSWAHLASSISTENT);
-                            break;
-
-                        default:
-                            break;
-
-                    }
-                }
+                self::$kLink = $linkHelper->getSpecialPageLinkKey(LINKTYP_STARTSEITE);
+            } elseif (self::Media()->isValidRequest($cPath)) {
+                self::Media()->handleRequest($cPath);
             } else {
-                if (self::Media()->isValidRequest($cPath)) {
-                    self::Media()->handleRequest($cPath);
-                }
+                self::$is404         = true;
+                self::$AktuelleSeite = '404';
+                self::setPageType(PAGE_404);
             }
         } else {
             if (!empty(self::$kLink)) {
@@ -1057,7 +1001,7 @@ final class Shop
                 $link       = $linkHelper->getPageLink(self::$kLink);
                 $oSeite     = null;
                 if (isset($link->nLinkart)) {
-                    $oSeite = self::DB()->query("SELECT cDateiname FROM tspezialseite WHERE nLinkart = " . (int)$link->nLinkart, 1);
+                    $oSeite = self::DB()->select('tspezialseite', 'nLinkart', (int)$link->nLinkart);
                 }
                 if (!empty($oSeite->cDateiname)) {
                     self::$fileName = $oSeite->cDateiname;
@@ -1189,6 +1133,11 @@ final class Shop
             $oHersteller = self::DB()->select('thersteller', 'kHersteller', (int)$NaviFilter->Hersteller->kHersteller, null, null, null, null, false, 'cName');
             if (!empty($oHersteller->cName)) {
                 $NaviFilter->Hersteller->cName = $oHersteller->cName;
+            } elseif ($oHersteller === null) {
+                //invalid manufacturer ID
+                self::$kHersteller = 0;
+                unset($NaviFilter->Hersteller);
+                self::$is404 = true;
             }
         }
 
@@ -1460,6 +1409,13 @@ final class Shop
                 case SEARCHSPECIALS_TOPREVIEWS:
                     $NaviFilter->Suchspecial->cName = self::Lang()->get('topReviews', 'global');
                     break;
+                default:
+                    //invalid search special ID
+                    self::$is404               = true;
+                    self::$kSuchspecial        = 0;
+                    $NaviFilter->nAnzahlFilter = 0;
+                    unset($NaviFilter->Suchspecial);
+                    break;
             }
         }
         //filter
@@ -1676,6 +1632,10 @@ final class Shop
 
                 case SEARCHSPECIALS_UPCOMINGPRODUCTS:
                     $NaviFilter->SuchspecialFilter->cName = self::Lang()->get('upcomingProducts', 'global');
+                    break;
+
+                default:
+                    $NaviFilter->SuchspecialFilter->cName = '';
                     break;
 
             }

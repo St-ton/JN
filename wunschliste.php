@@ -249,7 +249,7 @@ if (verifyGPCDataInteger('error') === 1) {
         }
     }
     if (!$kWunschliste) {
-        header('Location: ' . Shop::getURL() . '/');
+        header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true) . '?u=' . $cParameter_arr['kUmfrage'] . '&r=' . R_LOGIN_WUNSCHLISTE);
         exit;
     }
 }

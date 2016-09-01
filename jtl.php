@@ -97,7 +97,7 @@ if (isset($_POST['login']) && intval($_POST['login']) === 1 && isset($_POST['ema
                 unset($_SESSION['VersandKupon']);
                 unset($_SESSION['NeukundenKupon']);
                 unset($_SESSION['Kupon']);
-                // Lösche kompletten Kategorie Cache
+                // Lösche kompletten Kategoriecache
                 unset($_SESSION['kKategorieVonUnterkategorien_arr']);
                 unset($_SESSION['oKategorie_arr']);
                 unset($_SESSION['oKategorie_arr_new']);

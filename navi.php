@@ -573,6 +573,8 @@ if ($smarty->isCached('productlist/index.tpl', $cacheID) === true) {
             require_once PFAD_ROOT . 'news.php';
         } elseif ($cParameter_arr['kUmfrage'] > 0) {
             require_once PFAD_ROOT . 'umfrage.php';
+        } elseif ($cParameter_arr['kLink'] > 0) {
+            require_once PFAD_ROOT . 'seite.php';
         } else {
             Shop::getEntryPoint();
         }

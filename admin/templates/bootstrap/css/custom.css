@@ -185,7 +185,6 @@ a {
 
 .settings .input-group,#settings .input-group {
     width: 100%;
-    table-layout: fixed;
 }
 
 .documentation {

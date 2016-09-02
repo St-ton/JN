@@ -3,11 +3,13 @@
     im = {if isset($oUmfrageFrage->oUmfrageMatrixOption_arr) && $oUmfrageFrage->oUmfrageMatrixOption_arr|@count > 0}Number({$oUmfrageFrage->oUmfrageMatrixOption_arr|@count}) + 1{else}1{/if};
 
 function addInputRow() {ldelim}
-    var row, cell_1, input1, input2, label1, label2;
+    var row, cell_1, input1, input2, label1, label2, paragraph;
     row = document.getElementById('formtable').insertRow(i);
     row.id = '' + i;
     cell_1 = row.insertCell(0);
-    cell_1.className = "left";
+
+    paragraph = document.createElement('p');
+    paragraph.className = 'form-inline';
 
     input1 = document.createElement('input');
     input1.type = 'text';
@@ -25,27 +27,33 @@ function addInputRow() {ldelim}
     label1 = document.createElement('label');
     label1.setAttribute('for', 'cNameAntwort_' + i);
     label1.innerHTML = 'Antwort ' + i;
+    label1.style.paddingRight = '5px';
 
     label2 = document.createElement('label');
     label2.setAttribute('for', 'nSortAntwort_' + i);
     label2.innerHTML = '  {#umfrageQSort#}: ';
+    label2.style.paddingLeft = '5px';
+    label2.style.paddingRight = '5px';
 
-    cell_1.appendChild(label1);
-    cell_1.appendChild(input1);
+    paragraph.appendChild(label1);
+    paragraph.appendChild(input1);
 
-    cell_1.appendChild(label2);
-    cell_1.appendChild(input2);
+    paragraph.appendChild(label2);
+    paragraph.appendChild(input2);
+    cell_1.appendChild(paragraph);
 
     i += 1;
 {rdelim}
 
 function addInputRowOption() {ldelim}
-    var row, cell_1, input1, input2, myTex1, myText2;
+    var row, cell_1, input1, input2, myTex1, myText2, paragraph;
     row = document.getElementById('formtableOption').insertRow(im);
     row.id = im;
 
     cell_1 = row.insertCell(0);
-    cell_1.className = "left";
+
+    paragraph = document.createElement('p');
+    paragraph.className = 'form-inline';
 
     input1 = document.createElement('input');
     input1.type = 'text';
@@ -63,11 +71,13 @@ function addInputRowOption() {ldelim}
     myText1 = document.createTextNode('Option ' + im + ':');
     myText2 = document.createTextNode('  {#umfrageQSort#}:');
 
-    cell_1.appendChild(myText1);
-    cell_1.appendChild(input1);
+    paragraph.appendChild(myText1);
+    paragraph.appendChild(input1);
 
-    cell_1.appendChild(myText2);
-    cell_1.appendChild(input2);
+    paragraph.appendChild(myText2);
+    paragraph.appendChild(input2);
+
+    cell_1.appendChild(paragraph);
 
     im += 1;
 {rdelim}
@@ -97,7 +107,7 @@ function resetteFormtable() {ldelim}
 {rdelim}
 
 function checkSelect(selectBox) {ldelim}
-    var row, cell_1, input1, input2, myText1, myText2, button, label1, label2;
+    var row, cell_1, input1, input2, myText1, myText2, button, label1, label2, paragraph;
     switch(Number(selectBox.selectedIndex))
     {ldelim}
         case 0:
@@ -109,7 +119,9 @@ function checkSelect(selectBox) {ldelim}
             row.id = i;
 
             cell_1 = row.insertCell(0);
-            cell_1.className = "left";
+
+            paragraph = document.createElement('p');
+            paragraph.className = 'form-inline';
 
             input1 = document.createElement('input');
             input1.type = 'text';
@@ -127,16 +139,21 @@ function checkSelect(selectBox) {ldelim}
             label1 = document.createElement('label');
             label1.setAttribute('for', 'cNameAntwort_' + i);
             label1.innerHTML = 'Antwort ' + i;
+            label1.style.paddingRight = '5px';
 
             label2 = document.createElement('label');
             label2.setAttribute('for', 'nSortAntwort_' + i);
             label2.innerHTML = '  {#umfrageQSort#}: ';
+            label2.style.paddingLeft = '5px';
+            label2.style.paddingRight = '5px';
 
-            cell_1.appendChild(label1);
-            cell_1.appendChild(input1);
+            paragraph.appendChild(label1);
+            paragraph.appendChild(input1);
 
-            cell_1.appendChild(label2);
-            cell_1.appendChild(input2);
+            paragraph.appendChild(label2);
+            paragraph.appendChild(input2);
+
+            cell_1.appendChild(paragraph);
 
             button = document.createElement('button');
             button.type = 'button';
@@ -154,7 +171,9 @@ function checkSelect(selectBox) {ldelim}
             row = document.getElementById('formtable').insertRow(i);
             row.id = i;
             cell_1 = row.insertCell(0);
-            cell_1.className = "left";
+
+            paragraph = document.createElement('p');
+            paragraph.className = 'form-inline';
 
             input1 = document.createElement('input');
             input1.type = 'text';
@@ -172,16 +191,21 @@ function checkSelect(selectBox) {ldelim}
             label1 = document.createElement('label');
             label1.setAttribute('for', 'cNameAntwort_' + i);
             label1.innerHTML = 'Antwort ' + i;
+            label1.style.paddingRight = '5px';
 
             label2 = document.createElement('label');
             label2.setAttribute('for', 'nSortAntwort_' + i);
             label2.innerHTML = '  {#umfrageQSort#}: ';
+            label2.style.paddingLeft = '5px';
+            label2.style.paddingRight = '5px';
 
-            cell_1.appendChild(label1);
-            cell_1.appendChild(input1);
+            paragraph.appendChild(label1);
+            paragraph.appendChild(input1);
 
-            cell_1.appendChild(label2);
-            cell_1.appendChild(input2);
+            paragraph.appendChild(label2);
+            paragraph.appendChild(input2);
+
+            cell_1.appendChild(paragraph);
 
             button = document.createElement('button');
             button.type = 'button';
@@ -200,7 +224,9 @@ function checkSelect(selectBox) {ldelim}
             row.id = i;
 
             cell_1 = row.insertCell(0);
-            cell_1.className = "left";
+
+            paragraph = document.createElement('p');
+            paragraph.className = 'form-inline';
 
             input1 = document.createElement('input');
             input1.type = 'text';
@@ -218,16 +244,21 @@ function checkSelect(selectBox) {ldelim}
             label1 = document.createElement('label');
             label1.setAttribute('for', 'cNameAntwort_' + i);
             label1.innerHTML = 'Antwort ' + i;
+            label1.style.paddingRight = '5px';
 
             label2 = document.createElement('label');
             label2.setAttribute('for', 'nSortAntwort_' + i);
             label2.innerHTML = '  {#umfrageQSort#}: ';
+            label2.style.paddingLeft = '5px';
+            label2.style.paddingRight = '5px';
 
-            cell_1.appendChild(label1);
-            cell_1.appendChild(input1);
+            paragraph.appendChild(label1);
+            paragraph.appendChild(input1);
 
-            cell_1.appendChild(label2);
-            cell_1.appendChild(input2);
+            paragraph.appendChild(label2);
+            paragraph.appendChild(input2);
+
+            cell_1.appendChild(paragraph);
 
             button = document.createElement('button');
             button.type = 'button';
@@ -245,7 +276,9 @@ function checkSelect(selectBox) {ldelim}
             row = document.getElementById('formtable').insertRow(i);
             row.id = i;
             cell_1 = row.insertCell(0);
-            cell_1.className = "left";
+
+            paragraph = document.createElement('p');
+            paragraph.className = 'form-inline';
 
             input1 = document.createElement('input');
             input1.type = 'text';
@@ -263,16 +296,21 @@ function checkSelect(selectBox) {ldelim}
             label1 = document.createElement('label');
             label1.setAttribute('for', 'cNameAntwort_' + i);
             label1.innerHTML = 'Antwort ' + i;
+            label1.style.paddingRight = '5px';
 
             label2 = document.createElement('label');
             label2.setAttribute('for', 'nSortAntwort_' + i);
             label2.innerHTML = '  {#umfrageQSort#}: ';
+            label2.style.paddingLeft = '5px';
+            label2.style.paddingRight = '5px';
 
-            cell_1.appendChild(label1);
-            cell_1.appendChild(input1);
+            paragraph.appendChild(label1);
+            paragraph.appendChild(input1);
 
-            cell_1.appendChild(label2);
-            cell_1.appendChild(input2);
+            paragraph.appendChild(label2);
+            paragraph.appendChild(input2);
+
+            cell_1.appendChild(paragraph);
 
             button = document.createElement('button');
             button.type = 'button';
@@ -296,7 +334,9 @@ function checkSelect(selectBox) {ldelim}
             row = document.getElementById('formtableOption').insertRow(im);
             row.id = im;
             cell_1 = row.insertCell(0);
-            cell_1.className = "left";
+
+            paragraph = document.createElement('p');
+            paragraph.className = 'form-inline';
 
             input1 = document.createElement('input');
             input1.type = 'text';
@@ -317,16 +357,21 @@ function checkSelect(selectBox) {ldelim}
             label1 = document.createElement('label');
             label1.setAttribute('for', 'cNameOption_' + im);
             label1.innerHTML = 'Option ' + im;
+            label1.style.paddingRight = '5px';
 
             label2 = document.createElement('label');
             label2.setAttribute('for', 'nSortOption_' + im);
             label2.innerHTML = '  {#umfrageQSort#}: ';
+            label2.style.paddingLeft = '5px';
+            label2.style.paddingRight = '5px';
 
-            cell_1.appendChild(label1);
-            cell_1.appendChild(input1);
+            paragraph.appendChild(label1);
+            paragraph.appendChild(input1);
 
-            cell_1.appendChild(label2);
-            cell_1.appendChild(input2);
+            paragraph.appendChild(label2);
+            paragraph.appendChild(input2);
+
+            cell_1.appendChild(paragraph);
 
             button = document.createElement('button');
             button.type = 'button';
@@ -343,7 +388,9 @@ function checkSelect(selectBox) {ldelim}
             row.id = i;
 
             cell_1 = row.insertCell(0);
-            cell_1.className = "left";
+
+            paragraph = document.createElement('p');
+            paragraph.className = 'form-inline';
 
             input1 = document.createElement('input');
             input1.type = 'text';
@@ -361,16 +408,21 @@ function checkSelect(selectBox) {ldelim}
             label1 = document.createElement('label');
             label1.setAttribute('for', 'cNameAntwort_' + i);
             label1.innerHTML = 'Antwort ' + i;
+            label1.style.paddingRight = '5px';
 
             label2 = document.createElement('label');
             label2.setAttribute('for', 'nSortAntwort_' + i);
             label2.innerHTML = '  {#umfrageQSort#}: ';
+            label2.style.paddingLeft = '5px';
+            label2.style.paddingRight = '5px';
 
-            cell_1.appendChild(label1);
-            cell_1.appendChild(input1);
+            paragraph.appendChild(label1);
+            paragraph.appendChild(input1);
 
-            cell_1.appendChild(label2);
-            cell_1.appendChild(input2);
+            paragraph.appendChild(label2);
+            paragraph.appendChild(input2);
+
+            cell_1.appendChild(paragraph);
 
             button = document.createElement('button');
             button.type = 'button';
@@ -388,7 +440,9 @@ function checkSelect(selectBox) {ldelim}
             row = document.getElementById('formtableOption').insertRow(i);
             row.id = im;
             cell_1 = row.insertCell(0);
-            cell_1.className = "left";
+
+            paragraph = document.createElement('p');
+            paragraph.className = 'form-inline';
 
             input1 = document.createElement('input');
             input1.type = 'text';
@@ -406,16 +460,21 @@ function checkSelect(selectBox) {ldelim}
             label1 = document.createElement('label');
             label1.setAttribute('for', 'cNameOption_' + i);
             label1.innerHTML = 'Option ' + im;
+            label1.style.paddingRight = '5px';
 
             label2 = document.createElement('label');
             label2.setAttribute('for', 'nSortOption_' + im);
             label2.innerHTML = '  {#umfrageQSort#}: ';
+            label2.style.paddingLeft = '5px';
+            label2.style.paddingRight = '5px';
 
-            cell_1.appendChild(label1);
-            cell_1.appendChild(input1);
+            paragraph.appendChild(label1);
+            paragraph.appendChild(input1);
 
-            cell_1.appendChild(label2);
-            cell_1.appendChild(input2);
+            paragraph.appendChild(label2);
+            paragraph.appendChild(input2);
+
+            cell_1.appendChild(paragraph);
 
             button = document.createElement('button');
             button.type = 'button';
@@ -431,7 +490,9 @@ function checkSelect(selectBox) {ldelim}
             row = document.getElementById('formtable').insertRow(i);
             row.id = '' + i;
             cell_1 = row.insertCell(0);
-            cell_1.className = "left";
+
+            paragraph = document.createElement('p');
+            paragraph.className = 'form-inline';
 
             input1 = document.createElement('input');
             input1.type = 'text';
@@ -449,16 +510,21 @@ function checkSelect(selectBox) {ldelim}
             label1 = document.createElement('label');
             label1.setAttribute('for', 'cNameAntwort_' + i);
             label1.innerHTML = 'Antwort ' + i;
+            label1.style.paddingRight = '5px';
 
             label2 = document.createElement('label');
             label2.setAttribute('for', 'nSortAntwort_' + i);
             label2.innerHTML = '  {#umfrageQSort#}: ';
+            label2.style.paddingLeft = '5px';
+            label2.style.paddingRight = '5px';
 
-            cell_1.appendChild(label1);
-            cell_1.appendChild(input1);
+            paragraph.appendChild(label1);
+            paragraph.appendChild(input1);
 
-            cell_1.appendChild(label2);
-            cell_1.appendChild(input2);
+            paragraph.appendChild(label2);
+            paragraph.appendChild(input2);
+
+            cell_1.appendChild(paragraph);
 
             button = document.createElement('button');
             button.type = 'button';
@@ -601,7 +667,7 @@ function checkSelect(selectBox) {ldelim}
                     </div>
 
                     <div id="formtableDIV">
-                        <table id="formtable" class="kundenfeld">
+                        <table id="formtable" class="kundenfeld table">
                             <tr>
                                 <td id="buttons">
                                     {if isset($oUmfrageFrage->oUmfrageFrageAntwort_arr) && $oUmfrageFrage->oUmfrageFrageAntwort_arr|@count > 0}
@@ -611,10 +677,16 @@ function checkSelect(selectBox) {ldelim}
                             </tr>
                             {if isset($oUmfrageFrage->oUmfrageFrageAntwort_arr) && $oUmfrageFrage->oUmfrageFrageAntwort_arr|@count > 0}
                                 {foreach name=umfragefrageantwort from=$oUmfrageFrage->oUmfrageFrageAntwort_arr item=oUmfrageFrageAntwort}
-                                <input name="kUmfrageFrageAntwort[]" type="hidden" value="{$oUmfrageFrageAntwort->kUmfrageFrageAntwort}" />
                                 <tr>
                                     <td>
-                                        <label for="cNameAntwort-{$smarty.foreach.umfragefrageantwort.index}">Antwort {$smarty.foreach.umfragefrageantwort.iteration}</label> <input id="cNameAntwort-{$smarty.foreach.umfragefrageantwort.index}" name="cNameAntwort[]"  type="text" value="{$oUmfrageFrageAntwort->cName}" /> {#umfrageQSort#}: <input name="nSortAntwort[]"  type="text" value="{$oUmfrageFrageAntwort->nSort}" style="width: 40px;" /></td>
+                                        <p class="form-inline">
+                                            <input name="kUmfrageFrageAntwort[]" type="hidden" value="{$oUmfrageFrageAntwort->kUmfrageFrageAntwort}" />
+                                            <label for="cNameAntwort-{$smarty.foreach.umfragefrageantwort.index}">Antwort {$smarty.foreach.umfragefrageantwort.iteration}</label>
+                                            <input class="form-control" id="cNameAntwort-{$smarty.foreach.umfragefrageantwort.index}" name="cNameAntwort[]"  type="text" value="{$oUmfrageFrageAntwort->cName}" />
+                                            <label for="nSortAntwort-{$smarty.foreach.umfragefrageantwort.index}">{#umfrageQSort#}:</label>
+                                            <input id="nSortAntwort-{$smarty.foreach.umfragefrageantwort.index}" name="nSortAntwort[]"  type="text" class="form-control" value="{$oUmfrageFrageAntwort->nSort}" style="width: 40px;" />
+                                        </p>
+                                    </td>
                                 </tr>
                                 {/foreach}
                             {/if}

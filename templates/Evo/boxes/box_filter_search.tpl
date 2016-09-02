@@ -1,5 +1,4 @@
 {if $bBoxenFilterNach}
-    {nocache}
     {if $NaviFilter->SuchFilter|@count > 0 && !$NaviFilter->Suche->kSuchanfrage}
         <section class="panel panel-default box box-filter-price" id="sidebox{$oBox->kBox}">
             <div class="panel-heading">
@@ -10,5 +9,4 @@
             </div>
         </section>
     {/if}
-    {/nocache}
 {/if}

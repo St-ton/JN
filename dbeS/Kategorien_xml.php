@@ -241,23 +241,8 @@ function bearbeiteInsert($xml)
 //            $flushArray[] = CACHING_GROUP_CATEGORY . '_' . $Kategorie->kOberKategorie;
 //        }
 //        $cache->flushTags($flushArray);
-//        if ($cache->isPageCacheEnabled()) {
-//            if (!isset($smarty)) {
-//                global $smarty;
-//            }
-//            $smarty->clearCache(null, 'jtlc|category|cid' . $Kategorie->kKategorie);
-//            if (isset($Kategorie->kOberKategorie) && $Kategorie->kOberKategorie > 0) {
-//                $smarty->clearCache(null, 'jtlc|category|cid' . $Kategorie->kOberKategorie);
-//            }
-//        }
         //@todo: the above does not really work on parent categories when adding/deleting child categories
         $cache->flushTags(array(CACHING_GROUP_CATEGORY));
-        if ($cache->isPageCacheEnabled()) {
-            if (!isset($smarty)) {
-                $smarty = Shop::Smarty();
-            }
-            $smarty->clearCache(null, 'jtlc|category');
-        }
     }
 }
 
@@ -271,32 +256,13 @@ function loescheKategorie($kKategorie)
 //    if (is_array($category)) {
 //        foreach ($category as $_category) {
 //            if (isset($_category->kOberKategorie)) {
-//                error_log('flushing1 kat ' . $_category->kOberKategorie);
 //                $cache->flushTags(array(CACHING_GROUP_CATEGORY . '_' . $_category->kOberKategorie));
-//                if ($cache->isPageCacheEnabled()) {
-//                    if (!isset($smarty)) {
-//                        global $smarty;
-//                    }
-//                    $smarty->clearCache(null, 'jtlc|category|cid' . $_category->kOberKategorie);
-//                }
 //            }
 //        }
 //    } elseif (isset($category->kOberKategorie)) {
 //        $cache->flushTags(array(CACHING_GROUP_CATEGORY . '_' . $category->kOberKategorie));
-//        if ($cache->isPageCacheEnabled()) {
-//            if (!isset($smarty)) {
-//                global $smarty;
-//            }
-//            $smarty->clearCache(null, 'jtlc|category|cid' . $category->kOberKategorie);
-//        }
 //    }
 //    $cache->flushTags(array(CACHING_GROUP_CATEGORY . '_' . $kKategorie));
-//    if ($cache->isPageCacheEnabled()) {
-//        if (!isset($smarty)) {
-//            global $smarty;
-//        }
-//        $smarty->clearCache(null, 'jtlc|category|cid' . $kKategorie);
-//    }
     //@todo: the above does not really work on parent categories when adding/deleting child categories - because of class.helper.KategorieListe getter/setter
 
     $deleteAttributes_arr = Shop::DB()->query(
@@ -318,12 +284,6 @@ function loescheKategorie($kKategorie)
         Jtllog::writeLog('Kategorie geloescht: ' . $kKategorie, JTLLOG_LEVEL_DEBUG, false, 'Kategorien_xml');
     }
     Shop::Cache()->flushTags(array(CACHING_GROUP_CATEGORY));
-    if (Shop::Cache()->isPageCacheEnabled()) {
-        if (!isset($smarty)) {
-            $smarty = Shop::Smarty();
-        }
-        $smarty->clearCache(null, 'jtlc|category');
-    }
 }
 
 /**

@@ -1,4 +1,3 @@
-{nocache}
 {if isset($smarty.session.Vergleichsliste) && $smarty.session.Vergleichsliste->oArtikel_arr|@count > 0}
     {if isset($oBox->nAnzahl) && $oBox->nAnzahl > 0 && isset($oBox->Artikel)} {*3.50*}
         {assign var=from value=$oBox->Artikel}
@@ -35,4 +34,3 @@
         </section>
     {/if}
 {/if}
-{/nocache}

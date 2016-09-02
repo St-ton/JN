@@ -133,11 +133,6 @@ if (isset($_POST['einstellungen_bearbeiten']) && (int)$_POST['einstellungen_bear
         $tagsToFlush[] = CACHING_GROUP_BOX;
     }
     Shop::Cache()->flushTags($tagsToFlush);
-    if (Shop::Cache()->isPageCacheEnabled()) {
-        $_smarty = new JTLSmarty(true, false, true, 'cache');
-        $_smarty->setCachingParams(true)->clearCache(null, 'jtlc');
-    }
-
     // Einstellungen zurücksetzen und Notifications neu laden
     Shopsetting::getInstance()->reset();
 }

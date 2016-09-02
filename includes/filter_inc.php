@@ -203,7 +203,11 @@ function gibArtikelKeys($FilterSQL, $nArtikelProSeite, $NaviFilter, $bExtern, $o
         }
     }
     if (isset($_SESSION['Usersortierung'])) {
-        if ($_SESSION['Usersortierung'] == SEARCH_SORT_BESTSELLER && (!isset($NaviFilter->Suchspecial->kKey) || $NaviFilter->Suchspecial->kKey != SEARCHSPECIALS_BESTSELLER)) {
+        //avoid joining the same table twice if we already have a bestseller search special
+        if ($_SESSION['Usersortierung'] == SEARCH_SORT_BESTSELLER &&
+            (!isset($NaviFilter->Suchspecial->kKey) || $NaviFilter->Suchspecial->kKey != SEARCHSPECIALS_BESTSELLER) &&
+            (!isset($NaviFilter->SuchspecialFilter->kKey) || $NaviFilter->SuchspecialFilter->kKey != SEARCHSPECIALS_BESTSELLER)
+        ) {
             $oSortierungsSQL->cJoin = " LEFT JOIN tbestseller ON tbestseller.kArtikel = tartikel.kArtikel";
         }
         if ($_SESSION['Usersortierung'] == SEARCH_SORT_RATING) {
@@ -240,7 +244,6 @@ function gibArtikelKeys($FilterSQL, $nArtikelProSeite, $NaviFilter, $bExtern, $o
             'SortierungsSQL' => &$oSortierungsSQL,
             'cLimitSQL'      => &$cLimitSQL)
     );
-
     $oArtikelKey_arr = Shop::DB()->query(
         "SELECT tartikel.kArtikel
             FROM tartikel

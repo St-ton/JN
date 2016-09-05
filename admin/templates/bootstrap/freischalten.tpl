@@ -12,7 +12,7 @@
                     <span class="input-group-addon">
                         <label for="formSprachwechselSelect">{#changeLanguage#}</label>
                     </span>
-                    <span class="input-group-wrap last">
+                    <span class="input-group-wrap">
                         <select class="form-control" id="formSprachwechselSelect" name="kSprache" >
                             {foreach name=sprachen from=$Sprachen item=sprache}
                             <option value="{$sprache->kSprache}" {if $sprache->kSprache==$smarty.session.kSprache}selected{/if}>{$sprache->cNameDeutsch}</option>
@@ -146,64 +146,71 @@
         </div>
         <div id="livesearch" class="tab-pane fade {if isset($cTab) && $cTab === 'livesearch'} active in{/if}">
             {if $oSuchanfrage_arr|@count > 0 && $oSuchanfrage_arr}
-                {include file='tpl_inc/pagination.tpl' oPagination=$oPagiSuchanfragen cAnchor='livesearch'}
-                <form method="post" action="freischalten.php">
-                    {$jtl_token}
-                    <input type="hidden" name="freischalten" value="1" />
-                    <input type="hidden" name="suchanfragen" value="1" />
-                    <input type="hidden" name="tab" value="livesearch" />
-                    {if isset($nSort)}
-                    <input type="hidden" name="nSort" value="{$nSort}" />
-                    {/if}
-                    {if isset($cSuche) && isset($cSuchTyp) && $cSuche && $cSuchTyp}
-                        {assign var=cSuchStr value="Suche=1&cSuche="|cat:$cSuche|cat:"&cSuchTyp="|cat:$cSuchTyp|cat:"&"}
-                    {else}
-                        {assign var=cSuchStr value=""}
-                    {/if}
+                <div class="well">
+                    {include file='tpl_inc/pagination.tpl' oPagination=$oPagiSuchanfragen cAnchor='livesearch'}
+                </div>
+                <div class="panel panel-default">
+                    <form method="post" action="freischalten.php">
+                        {$jtl_token}
+                        <input type="hidden" name="freischalten" value="1" />
+                        <input type="hidden" name="suchanfragen" value="1" />
+                        <input type="hidden" name="tab" value="livesearch" />
+                        {if isset($nSort)}
+                        <input type="hidden" name="nSort" value="{$nSort}" />
+                        {/if}
+                        {if isset($cSuche) && isset($cSuchTyp) && $cSuche && $cSuchTyp}
+                            {assign var=cSuchStr value="Suche=1&cSuche="|cat:$cSuche|cat:"&cSuchTyp="|cat:$cSuchTyp|cat:"&"}
+                        {else}
+                            {assign var=cSuchStr value=""}
+                        {/if}
 
-                    <table class="list table">
-                        <thead>
-                        <tr>
-                            <th class="check">&nbsp;</th>
-                            <th class="tleft">(<a href="freischalten.php?tab=livesearch&{$cSuchStr}nSort=1{if !isset($nSort) || $nSort != 11}1{/if}&token={$smarty.session.jtl_token}" style="text-decoration: underline;">{if !isset($nSort) || $nSort != 11}Z...A{else}A...Z{/if}</a>) {#freischaltenLivesearchSearch#}</th>
-                            <th>(<a href="freischalten.php?tab=livesearch&{$cSuchStr}nSort=2{if !isset($nSort) || $nSort != 22}2{/if}&token={$smarty.session.jtl_token}" style="text-decoration: underline;">{if !isset($nSort) || $nSort != 22}1...9{else}9...1{/if}</a>) {#freischaltenLivesearchCount#}</th>
-                            <th>(<a href="freischalten.php?tab=livesearch&{$cSuchStr}nSort=3{if !isset($nSort) || $nSort != 33}3{/if}&token={$smarty.session.jtl_token}" style="text-decoration: underline;">{if !isset($nSort) || $nSort != 33}0...1{else}1...0{/if}</a>) {#freischaltenLivesearchHits#}</th>
-                            <th>{#freischaltenLiveseachDate#}</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {foreach name=suchanfragen from=$oSuchanfrage_arr item=oSuchanfrage}
-                            <tr class="tab_bg{$smarty.foreach.suchanfragen.iteration%2}">
-                                <td class="check"><input name="kSuchanfrage[]" type="checkbox" value="{$oSuchanfrage->kSuchanfrage}" /></td>
-                                <td class="tleft">{$oSuchanfrage->cSuche}</td>
-                                <td class="tcenter">{$oSuchanfrage->nAnzahlGesuche}</td>
-                                <td class="tcenter">{$oSuchanfrage->nAnzahlTreffer}</td>
-                                <td class="tcenter">{$oSuchanfrage->dZuletztGesucht_de}</td>
+                        <table class="list table">
+                            <thead>
+                            <tr>
+                                <th class="check">&nbsp;</th>
+                                <th class="tleft">(<a href="freischalten.php?tab=livesearch&{$cSuchStr}nSort=1{if !isset($nSort) || $nSort != 11}1{/if}&token={$smarty.session.jtl_token}" style="text-decoration: underline;">{if !isset($nSort) || $nSort != 11}Z...A{else}A...Z{/if}</a>) {#freischaltenLivesearchSearch#}</th>
+                                <th>(<a href="freischalten.php?tab=livesearch&{$cSuchStr}nSort=2{if !isset($nSort) || $nSort != 22}2{/if}&token={$smarty.session.jtl_token}" style="text-decoration: underline;">{if !isset($nSort) || $nSort != 22}1...9{else}9...1{/if}</a>) {#freischaltenLivesearchCount#}</th>
+                                <th>(<a href="freischalten.php?tab=livesearch&{$cSuchStr}nSort=3{if !isset($nSort) || $nSort != 33}3{/if}&token={$smarty.session.jtl_token}" style="text-decoration: underline;">{if !isset($nSort) || $nSort != 33}0...1{else}1...0{/if}</a>) {#freischaltenLivesearchHits#}</th>
+                                <th>{#freischaltenLiveseachDate#}</th>
                             </tr>
-                        {/foreach}
-                        </tbody>
-                        <tfoot>
-                        <tr>
-                            <td class="check"><input name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);" /></td>
-                            <td colspan="5"><label for="ALLMSGS2">{#freischaltenSelectAll#}</label></td>
-                        </tr>
-                        </tfoot>
-                    </table>
-                    <div class="save_wrapper btn-group">
-                        <button name="freischaltensubmit" type="submit" value="Markierte freischalten" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> Markierte freischalten</button>
-                        <button name="freischaltenleoschen" type="submit" value="Markierte l&ouml;schen" class="btn btn-danger"><i class="fa fa-trash"></i> Markierte l&ouml;schen</button>
-                        <div class="input-group" style="width: 400px;">
-                            <span class="input-group-addon">
-                                <input id="nMapping" name="nMapping" type="radio" value="1" /> <label for="nMapping">Markierte verkn&uuml;pfen mit</label>
-                            </span>
-                            <input class="form-control" name="cMapping" id="cMapping" type="text" value="" />
-                            <span class="input-group-btn">
-                                <button name="submitMapping" type="submit" value="Verkn&uouml;pfen" class="btn btn-primary">Verkn&uuml;pfen</button>
-                            </span>
+                            </thead>
+                            <tbody>
+                            {foreach name=suchanfragen from=$oSuchanfrage_arr item=oSuchanfrage}
+                                <tr class="tab_bg{$smarty.foreach.suchanfragen.iteration%2}">
+                                    <td class="check"><input name="kSuchanfrage[]" type="checkbox" value="{$oSuchanfrage->kSuchanfrage}" /></td>
+                                    <td class="tleft">{$oSuchanfrage->cSuche}</td>
+                                    <td class="tcenter">{$oSuchanfrage->nAnzahlGesuche}</td>
+                                    <td class="tcenter">{$oSuchanfrage->nAnzahlTreffer}</td>
+                                    <td class="tcenter">{$oSuchanfrage->dZuletztGesucht_de}</td>
+                                </tr>
+                            {/foreach}
+                            </tbody>
+                            <tfoot>
+                            <tr>
+                                <td class="check"><input name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);" /></td>
+                                <td colspan="5"><label for="ALLMSGS2">{#freischaltenSelectAll#}</label></td>
+                            </tr>
+                            </tfoot>
+                        </table>
+                        <div class="panel-footer">
+                            <div style="overflow:hidden;">
+                                <div class="btn-group left p50">
+                                    <button name="freischaltensubmit" type="submit" value="Markierte freischalten" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> Markierte freischalten</button>
+                                    <button name="freischaltenleoschen" type="submit" value="Markierte l&ouml;schen" class="btn btn-danger"><i class="fa fa-trash"></i> Markierte l&ouml;schen</button>
+                                </div>
+                                <div class="input-group right p50" data-toggle="tooltip" data-placement="bottom" title='{#freischaltenMappingDesc#}'>
+                                    <span class="input-group-addon">
+                                        <label for="cMapping">Markierte verkn&uuml;pfen mit</label>
+                                    </span>
+                                    <input class="form-control" name="cMapping" id="cMapping" type="text" value="" />
+                                    <span class="input-group-btn">
+                                        <button name="submitMapping" type="submit" value="Verkn&uouml;pfen" class="btn btn-primary">Verkn&uuml;pfen</button>
+                                    </span>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="alert alert-info">{#freischaltenMappingDesc#}</div>
-                </form>
+                    </form>
+                </div>
             {else}
                 <div class="alert alert-info" role="alert">{#noDataAvailable#}</div>
             {/if}

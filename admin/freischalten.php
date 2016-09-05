@@ -142,7 +142,7 @@ if (verifyGPCDataInteger('freischalten') === 1 && validateToken()) {
         }
     } elseif (verifyGPCDataInteger('suchanfragen') === 1 && validateToken()) { // Suchanfragen
         // Mappen
-        if (verifyGPCDataInteger('nMapping') === 1 && isset($_POST['submitMapping'])) {
+        if (isset($_POST['submitMapping'])) {
             $cMapping = verifyGPDataString('cMapping');
             if (strlen($cMapping) > 0) {
                 $nReturnValue = 0;

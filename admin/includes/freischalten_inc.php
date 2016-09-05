@@ -471,7 +471,7 @@ function mappeLiveSuche($kSuchanfrage_arr, $cMapping)
                             WHERE cSuche = '" . Shop::DB()->escape($cMapping) . "'", 1
                     );
 
-                    if ($oSuchanfrageNeu->kSuchanfrage > 0) {
+                    if (isset($oSuchanfrageNeu->kSuchanfrage) && $oSuchanfrageNeu->kSuchanfrage > 0) {
                         $oSuchanfrageMapping                 = new stdClass();
                         $oSuchanfrageMapping->kSprache       = $_SESSION['kSprache'];
                         $oSuchanfrageMapping->cSuche         = $oSuchanfrage->cSuche;

@@ -1,6 +1,6 @@
 {include file='layout/header.tpl'}
 
-<h1>{$Warenkorbtext}</h1>
+<h1>{lang key="basket" section="global"}</h1>
 
 {include file="snippets/extension.tpl"}
 

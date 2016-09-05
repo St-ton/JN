@@ -1,9 +1,9 @@
 <div itemprop="author" itemscope itemtype="https://schema.org/Person" class="dropdown v-box">
-    <a itemprop="name" class="dropdown-toggle" href="#" title="{$oAuthor->cName}" data-toggle="dropdown" data-hover="dropdown">{$oAuthor->cName}</a>
+    <a itemprop="name" class="dropdown-toggle" href="#" title="{$oAuthor->cName}" data-toggle="dropdown" data-hover="dropdown">{$oAuthor->cName}</a>  -
     <ul id="author-{$oAuthor->kContentAuthor}-dropdown" class="dropdown-menu dropdown-menu-right{if !empty($oAuthor->cVitaShort)} modal-dialog{/if}">
         <li>
-            <div class="modal-content v-wrap">
-                <div class="modal-header">
+            <div class="modal-content">
+                <div class="modal-header v-wrap">
                     {if !empty($oAuthor->cAvatarImgSrc)}
                         <img itemprop="image" alt="{$oAuthor->cName}" src="{$oAuthor->cAvatarImgSrc}" height="80" class="img-circle" />
                     {/if}

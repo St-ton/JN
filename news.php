@@ -335,7 +335,7 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
     $smarty->assign('meta_title', $cMetaTitle)
            ->assign('meta_description', $cMetaDescription)
            ->assign('meta_keywords', $cMetaKeywords)
-           ->display('blog/index.tpl', $cacheID);
+           ->display('blog/index.tpl');
     require PFAD_ROOT . PFAD_INCLUDES . 'profiler_inc.php';
 } else {
     $oLink                   = Shop::DB()->query("SELECT kLink FROM tlink WHERE nLinkart = " . LINKTYP_404, 1);

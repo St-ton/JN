@@ -128,7 +128,6 @@ class Bewertung
             $oBewertungAnzahl_arr = array();
             $cSQL                 = '';
             // Sortierung beachten
-            $cOrderSQL = ' dDatum DESC';
             switch ($nOption) {
                 case 2:
                     $cOrderSQL = ' dDatum DESC';
@@ -149,14 +148,16 @@ class Bewertung
                     $cOrderSQL = ' nHilfreich ASC';
                     break;
 
+                default:
+                    $cOrderSQL = ' dDatum DESC';
+                    break;
+
             }
             executeHook(HOOK_BEWERTUNG_CLASS_SWITCH_SORTIERUNG);
 
-            if ($cFreischalten === 'Y') {
-                $cSQLFreischalten = ' AND nAktiv=1';
-            } else {
-                $cSQLFreischalten = '';
-            }
+            $cSQLFreischalten = ($cFreischalten === 'Y') ?
+                ' AND nAktiv=1' :
+                '';
             // Bewertungen nur in einer bestimmten Sprache oder in allen Sprachen?
             $cSprachSQL = ' AND kSprache = ' . $kSprache;
             if ($bAlleSprachen) {

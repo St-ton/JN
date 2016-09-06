@@ -860,7 +860,7 @@ class JTLCache
      */
     public function _isActive()
     {
-        return (bool) $this->options['activated'];
+        return (bool)$this->options['activated'];
     }
 
     /**
@@ -870,7 +870,7 @@ class JTLCache
      */
     public function _isPageCacheEnabled()
     {
-        return (bool) $this->options['page_cache'];
+        return false;
     }
 
     /**

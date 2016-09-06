@@ -739,7 +739,8 @@ function pruefeSpezialseite($nLinkart)
             Shop::Cache()->set($cacheID, $oSeite, array(CACHING_GROUP_CORE));
         }
         if (isset($oSeite->cDateiname) && strlen($oSeite->cDateiname) > 0) {
-            header('Location: ' . Shop::getURL() . '/' . $oSeite->cDateiname);
+            $linkHelper = LinkHelper::getInstance();
+            header('Location: ' . $linkHelper->getStaticRoute($oSeite->cDateiname));
             exit();
         }
     }

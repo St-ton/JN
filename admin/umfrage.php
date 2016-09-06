@@ -133,7 +133,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                     $oUmfrage->nBonuspunkte  = $nBonuspunkte;
                     $oUmfrage->nAktiv        = $nAktiv;
                     $oUmfrage->dGueltigVon   = convertDate($dGueltigVon);
-                    $oUmfrage->dGueltigBis   = convertDate($dGueltigBis);
+                    $oUmfrage->dGueltigBis   = (strlen($dGueltigBis) > 0) ? convertDate($dGueltigBis) : null;
                     $oUmfrage->dErstellt     = 'now()';
 
                     $nNewsOld = 0;

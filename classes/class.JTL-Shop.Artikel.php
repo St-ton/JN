@@ -5927,12 +5927,11 @@ class Artikel
      */
     public function getDimension()
     {
-        $dim = array();
-        $typ = 1;
-
-        $dim['fLaenge'] = (float) $this->fLaenge;
-        $dim['fHoehe'] = (float) $this->fHoehe;
-        $dim['fBreite'] = (float) $this->fBreite;
+        $dim            = array();
+        $typ            = 1;
+        $dim['fLaenge'] = (float)$this->fLaenge;
+        $dim['fHoehe']  = (float)$this->fHoehe;
+        $dim['fBreite'] = (float)$this->fBreite;
 
         foreach ($dim as $k => $v) {
             if (empty($v)) {

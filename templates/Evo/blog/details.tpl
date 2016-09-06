@@ -10,10 +10,10 @@
     <div class="alert alert-danger">{lang key="newsRestricted" section="news"}</div>
 {else}
     <div itemscope itemtype="https://schema.org/Article">
-        <h1>
-            <span itemprop="headline">{$oNewsArchiv->cBetreff}</span>
+        <h1 itemprop="headline">
+            {$oNewsArchiv->cBetreff}
         </h1>
-        <p class="date text-muted">
+        <p class="text-muted">
             {if empty($oNewsArchiv->dGueltigVon)}{assign var="dDate" value=$oNewsArchiv->dErstellt}{else}{assign var="dDate" value=$oNewsArchiv->dGueltigVon}{/if}
             {if !empty($Einstellungen.global.global_shopname)}
                 <span itemprop="publisher" class="hidden">{$Einstellungen.global.global_shopname}</span>

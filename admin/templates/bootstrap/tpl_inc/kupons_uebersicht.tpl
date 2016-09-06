@@ -1,4 +1,5 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=#coupons# cBeschreibung=#couponsDesc# cDokuURL=#couponsURL#}
+{include file='tpl_inc/sortcontrols.tpl'}
 
 {function kupons_uebersicht_tab}
     <div id="{$cKuponTyp}" class="tab-pane fade{if $tab === $cKuponTyp} active in{/if}">
@@ -14,38 +15,13 @@
                             <tr>
                                 <th title="Aktiv"></th>
                                 <th></th>
-                                <th>
-                                    {#name#}
-                                    {if $oPagination->getSortBy() !== 0}
-                                        <a href="#" onclick="pagiResort('{$oPagination->getId()}', 0, 0);return false;"><i class="fa fa-unsorted"></i></a>
-                                    {elseif $oPagination->getSortDirSpecifier() === 'DESC'}
-                                        <a href="#" onclick="pagiResort('{$oPagination->getId()}', 0, 0);return false;"><i class="fa fa-sort-desc"></i></a>
-                                    {elseif $oPagination->getSortDirSpecifier() === 'ASC'}
-                                        <a href="#" onclick="pagiResort('{$oPagination->getId()}', 0, 1);return false;"><i class="fa fa-sort-asc"></i></a>
-                                    {/if}
-                                </th>
+                                <th>{#name#} {call sortControls oPagination=$oPagination nSortBy=0}</th>
                                 {if $cKuponTyp === 'standard' || $cKuponTyp === 'neukundenkupon'}<th>{#value#}</th>{/if}
-                                {if $cKuponTyp === 'standard' || $cKuponTyp === 'versandkupon'}<th>
-                                    {#code#}
-                                    {if $oPagination->getSortBy() !== 1}
-                                        <a href="#" onclick="pagiResort('{$oPagination->getId()}', 1, 0);return false;"><i class="fa fa-unsorted"></i></a>
-                                    {elseif $oPagination->getSortDirSpecifier() === 'DESC'}
-                                        <a href="#" onclick="pagiResort('{$oPagination->getId()}', 1, 0);return false;"><i class="fa fa-sort-desc"></i></a>
-                                    {elseif $oPagination->getSortDirSpecifier() === 'ASC'}
-                                        <a href="#" onclick="pagiResort('{$oPagination->getId()}', 1, 1);return false;"><i class="fa fa-sort-asc"></i></a>
-                                    {/if}
-                                </th>{/if}
+                                {if $cKuponTyp === 'standard' || $cKuponTyp === 'versandkupon'}
+                                    <th>{#code#} {call sortControls oPagination=$oPagination nSortBy=1}</th>
+                                {/if}
                                 <th>{#mbw#}</th>
-                                <th>
-                                    {#curmaxusage#}
-                                    {if $oPagination->getSortBy() !== 2}
-                                        <a href="#" onclick="pagiResort('{$oPagination->getId()}', 2, 0);return false;"><i class="fa fa-unsorted"></i></a>
-                                    {elseif $oPagination->getSortDirSpecifier() === 'DESC'}
-                                        <a href="#" onclick="pagiResort('{$oPagination->getId()}', 2, 0);return false;"><i class="fa fa-sort-desc"></i></a>
-                                    {elseif $oPagination->getSortDirSpecifier() === 'ASC'}
-                                        <a href="#" onclick="pagiResort('{$oPagination->getId()}', 2, 1);return false;"><i class="fa fa-sort-asc"></i></a>
-                                    {/if}
-                                </th>
+                                <th>{#curmaxusage#} {call sortControls oPagination=$oPagination nSortBy=2}</th>
                                 <th>{#customerGroup#}</th>
                                 <th>{#restrictions#}</th>
                                 <th>{#validity#}</th>

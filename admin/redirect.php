@@ -4,34 +4,33 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-
 require_once dirname(__FILE__) . '/includes/admininclude.php';
 $oAccount->permission('REDIRECT_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 
-$aData           = (isset($_POST['aData'])) ? $_POST['aData'] : null;
-$oRedirect       = new Redirect();
-$urls            = array();
-$cHinweis        = '';
-$cFehler         = '';
-$shopURL         = Shop::getURL();
+$aData     = (isset($_POST['aData'])) ? $_POST['aData'] : null;
+$oRedirect = new Redirect();
+$urls      = array();
+$cHinweis  = '';
+$cFehler   = '';
+$shopURL   = Shop::getURL();
 
 switch ($aData['action']) {
     case 'search':
-        $ret = array(
+        $ret = [
             'article'      => getArticleList($aData['search'], array('cLimit' => 10, 'return' => 'object')),
             'category'     => getCategoryList($aData['search'], array('cLimit' => 10, 'return' => 'object')),
             'manufacturer' => getManufacturerList($aData['search'], array('cLimit' => 10, 'return' => 'object')),
-        );
+        ];
         exit(json_encode($ret));
         break;
     case 'check_url':
-        exit($aData['url'] != '' && Redirect::checkAvailability($aData['url']) ? '1' : '0');
+        exit($aData['url'] !== '' && Redirect::checkAvailability($aData['url']) ? '1' : '0');
         break;
-    case 'save' :
+    case 'save':
         if (validateToken()) {
-            foreach($aData['redirect'] as $kRedirect => $redirectEntry) {
+            foreach ($aData['redirect'] as $kRedirect => $redirectEntry) {
                 $cToUrl = $redirectEntry['url'];
                 $oItem  = new Redirect($kRedirect);
                 if (!empty($cToUrl)) {
@@ -46,14 +45,14 @@ switch ($aData['action']) {
                     }
                 }
             }
-            if($cFehler == '') {
+            if ($cFehler === '') {
                 $cHinweis = 'Daten wurden erfolgreich aktualisiert.';
             }
         }
         break;
     case 'delete':
         if (validateToken()) {
-            foreach($aData['redirect'] as $kRedirect => $redirectEntry) {
+            foreach ($aData['redirect'] as $kRedirect => $redirectEntry) {
                 if (isset($redirectEntry['active']) && $redirectEntry['active'] == 1) {
                     $oRedirect->delete((int)$kRedirect);
                 }

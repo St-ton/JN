@@ -1766,7 +1766,7 @@ class Artikel
         if ($nMindestSterne > 0 && $this->bIsTopBewertet !== null) {
             $kArtikel = (isset($this->kEigenschaftKombi) && (int)$this->kEigenschaftKombi > 0) ? (int)$this->kVaterArtikel : (int)$this->kArtikel;
             if ($kArtikel === null) {
-                //                if (($artikel = Shop::Cache()->get($this->cacheID)) !== false) {
+//                if (($artikel = Shop::Cache()->get($this->cacheID)) !== false) {
 //                    if (isset($artikel->fDurchschnittsBewertung)) {
 //                        return $this;
 //                    }

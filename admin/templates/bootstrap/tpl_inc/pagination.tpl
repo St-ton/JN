@@ -8,15 +8,15 @@
     {assign var=cUrlAppend value=$cUrlAppend|cat:'#'|cat:$cAnchor}
 {/if}
 
-{assign var=bItemsAvailable value=$oPagination->getItemCount() > 1}
+{assign var=bItemsAvailable value=$oPagination->getItemCount() > 0}
 {assign var=bMultiplePages value=$oPagination->getPageCount() > 1}
 {assign var=bSortByOptions value=$oPagination->getSortByOptions()|@count > 0}
 
 {if $bItemsAvailable}
-    <div class="pagination-bar well well-sm">
-        <div class=" container-fluid pagination-bar-container">
-            <div class="pagination-bar-row">
-                <div class="col-md-{if $bSortByOptions}6{else}10{/if} pagination-col">
+    <div class="toolbar well well-sm">
+        <div class="container-fluid toolbar-container">
+            <div class="toolbar-row">
+                <div class="col-md-{if $bSortByOptions}6{else}10{/if} toolbar-col">
                     <label>
                         {if $bMultiplePages}
                             Eintr&auml;ge {$oPagination->getFirstPageItem() + 1} - {$oPagination->getFirstPageItem() + $oPagination->getPageItemCount()} von {$oPagination->getItemCount()}
@@ -24,8 +24,8 @@
                             Eintr&auml;ge gesamt:
                         {/if}
                     </label>
-                    <div class="pagination-bar-row">
-                        <div class="col-md-12 pagination-col">
+                    <div class="toolbar-row">
+                        <div class="col-md-12 toolbar-col">
                             {if $bMultiplePages}
                                 <ul class="pagination">
                                     <li>
@@ -70,13 +70,13 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-{if $bSortByOptions}6{else}2{/if} pagination-col">
+                <div class="col-md-{if $bSortByOptions}6{else}2{/if} toolbar-col">
                     <form action="{if isset($cAnchor)}#{$cAnchor}{/if}" method="get" name="{$oPagination->getId()}" id="{$oPagination->getId()}">
                         {foreach $cParam_arr as $cParamName => $cParamValue}
                             <input type="hidden" name="{$cParamName}" value="{$cParamValue}">
                         {/foreach}
-                        <div class="pagination-bar-row">
-                            <div class="col-md-{if $bSortByOptions}3{else}8{/if} pagination-col">
+                        <div class="toolbar-row">
+                            <div class="col-md-{if $bSortByOptions}3{else}8{/if} toolbar-col">
                                 <label>Eintr&auml;ge/Seite</label>
                                 <select class="form-control" name="{$oPagination->getId()}_nItemsPerPage" id="{$oPagination->getId()}_nItemsPerPage">
                                     {foreach $oPagination->getItemsPerPageOptions() as $nItemsPerPageOption}
@@ -90,7 +90,7 @@
                                 </select>
                             </div>
                             {if $bSortByOptions}
-                                <div class="col-md-5 pagination-col">
+                                <div class="col-md-5 toolbar-col">
                                     <label>Sortierung</label>
                                     <select class="form-control" name="{$oPagination->getId()}_nSortBy" id="{$oPagination->getId()}_nSortBy">
                                         {foreach $oPagination->getSortByOptions() as $i => $cSortByOption}
@@ -100,7 +100,7 @@
                                         {/foreach}
                                     </select>
                                 </div>
-                                <div class="col-md-3 pagination-col">
+                                <div class="col-md-3 toolbar-col">
                                     <label>&nbsp;</label>
                                     <select class="form-control" name="{$oPagination->getId()}_nSortDir" id="{$oPagination->getId()}_nSortDir">
                                         <option value="0"{if $oPagination->getSortDir() == 0} selected{/if}>aufsteigend</option>
@@ -108,10 +108,10 @@
                                     </select>
                                 </div>
                             {/if}
-                            <div class="col-md-{if $bSortByOptions}1{else}4{/if} pagination-col tright">
+                            <div class="col-md-{if $bSortByOptions}1{else}4{/if} toolbar-col tright">
                                 <label>&nbsp;</label>
-                                <div class="pagination-bar-row">
-                                    <div class="col-md-12 pagination-col">
+                                <div class="toolbar-row">
+                                    <div class="col-md-12 toolbar-col">
                                         <button type="submit" class="btn btn-primary">
                                             <i class="fa fa-refresh"></i>
                                         </button>

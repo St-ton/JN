@@ -2891,36 +2891,36 @@ h2 .btn-group {
   border: none;
 }
 
-.pagination-bar {
+.toolbar {
     margin-bottom: 10px;
     padding: 10px;
 }
 
-.pagination-bar-container {
+.toolbar-container {
     padding: 0;
     margin: 0;
 }
 
-.pagination-bar .pagination {
+.toolbar .pagination {
     margin: 0;
     display:block;
 }
 
-.pagination-bar label {
+.toolbar label {
     margin: 0;
     margin-bottom: 5px;
 }
 
-.pagination-col {
+.toolbar-col {
     padding-left: 5px;
     padding-right: 5px;
 }
 
-.pagination-bar-row {
+.toolbar-row {
     margin-left: -5px;
     margin-right: -5px;
 }
 
-.pagination-bar .well {
+.toolbar .well {
     margin: 0;
 }

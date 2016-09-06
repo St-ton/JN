@@ -37,26 +37,26 @@
                 if (search.length > 1) {
                     var ret = '',
                         i;
-                    $('#resSearch' + id + ' li').remove();
+                    $('#resSearch_' + id + ' li').remove();
                     if (data.article.length > 0) {
                         ret += '<li class="dropdown-header">Artikel</li>';
                         for (i = 0; i < data.article.length; i++) {
-                            ret += '<li onclick="$(\'#url' + id + '\').val(\'/' + data.article[i].cUrl + '\');check_url(\'' + id + '\',$(\'#url' + id + '\').val());return false;"><a href="#">/' + data.article[i].cUrl + '</a></li>';
+                            ret += '<li onclick="$(\'#url_' + id + '\').val(\'/' + data.article[i].cUrl + '\');check_url(\'' + id + '\',$(\'#url_' + id + '\').val());return false;"><a href="#">/' + data.article[i].cUrl + '</a></li>';
                         }
                     }
                     if (data.category.length > 0) {
                         ret += '<li class="dropdown-header">Kategorie</li>';
                         for (i = 0; i < data.category.length; i++) {
-                            ret += '<li onclick="$(\'#url' + id + '\').val(\'/' + data.category[i].cUrl + '\');check_url(\'' + id + '\',$(\'#url' + id + '\').val());return false;"><a href="#">/' + data.category[i].cUrl + '</a></li>';
+                            ret += '<li onclick="$(\'#url_' + id + '\').val(\'/' + data.category[i].cUrl + '\');check_url(\'' + id + '\',$(\'#url_' + id + '\').val());return false;"><a href="#">/' + data.category[i].cUrl + '</a></li>';
                         }
                     }
                     if (data.manufacturer.length > 0) {
                         ret += '<li class="dropdown-header">Hersteller</li>';
                         for (i = 0; i < data.manufacturer.length; i++) {
-                            ret += '<li onclick="$(\'#url' + id + '\').val(\'/' + data.manufacturer[i].cUrl + '\');check_url(\'' + id + '\',$(\'#url' + id + '\').val());return false;"><a href="#">/' + data.manufacturer[i].cUrl + '</a></li>';
+                            ret += '<li onclick="$(\'#url_' + id + '\').val(\'/' + data.manufacturer[i].cUrl + '\');check_url(\'' + id + '\',$(\'#url_' + id + '\').val());return false;"><a href="#">/' + data.manufacturer[i].cUrl + '</a></li>';
                         }
                     }
-                    $('#resSearch' + id).append(ret);
+                    $('#resSearch_' + id).append(ret);
                     if (ret) {
                         $('#frm_' + id + ' .input-group-btn').addClass('open');
                     } else {
@@ -98,7 +98,7 @@
         {foreach $oRedirect_arr as $oRedirect}
             check_url({$oRedirect->kRedirect}, '{$oRedirect->cToUrl}');
         {/foreach}
-        check_url('cDestiny', '{if isset($cPost_arr.cDestiny)}{$cPost_arr.cDestiny}{/if}');
+        check_url('cToUrl', '{if isset($cPost_arr.cToUrl)}{$cPost_arr.cToUrl}{/if}');
     });
 
 </script>
@@ -129,7 +129,7 @@
                             <thead>
                             <tr>
                                 <th class="tcenter" style="width:24px"></th>
-                                <th class="tleft" style="width:35%;">Url
+                                <th class="tleft" style="width:35%;">URL
                                     {if $oPagination->getSortBy() !== 0}
                                         <a href="#" onclick="pagiResort('{$oPagination->getId()}', 0, 0);return false;"><i class="fa fa-unsorted"></i></a>
                                     {elseif $oPagination->getSortDirSpecifier() === 'DESC'}
@@ -174,7 +174,7 @@
                                             <span class="input-group-addon alert-info state-checking"><i class="fa fa-spinner"></i></span>
                                             <span class="input-group-addon alert-success state-available" style="display:none;"><i class="fa fa-check"></i></span>
                                             <span class="input-group-addon alert-danger state-unavailable" style="display:none;"><i class="fa fa-warning"></i></span>
-                                            <input id="url{$oRedirect->kRedirect}"
+                                            <input id="url_{$oRedirect->kRedirect}"
                                                    name="aData[redirect][{$oRedirect->kRedirect}][url]" type="text"
                                                    class="form-control cToUrl" autocomplete="off"
                                                    value="{$oRedirect->cToUrl}"
@@ -182,7 +182,7 @@
                                                    onkeyup="redirect_search('{$oRedirect->kRedirect}',this.value);">
                                             <div class="input-group-btn" style="width:100%;display:block;top:100%;">
                                                 <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="caret"></span></button>
-                                                <ul class="dropdown-menu" style="min-width:100%;" id="resSearch{$oRedirect->kRedirect}"></ul>
+                                                <ul class="dropdown-menu" style="min-width:100%;" id="resSearch_{$oRedirect->kRedirect}"></ul>
                                             </div>
                                         </div>
                                     </td>
@@ -291,21 +291,21 @@
                             </span>
                             <input class="form-control" id="cSource" name="cSource" type="text" placeholder="Quell Url" value="{if isset($cPost_arr.cSource)}{$cPost_arr.cSource}{/if}" />
                         </div>
-                        <div id="frm_cDestiny" class="input-group" style="margin-right:30px;">
+                        <div id="frm_cToUrl" class="input-group" style="margin-right:30px;">
                             <span class="input-group-addon">
-                                <label for="cDestiny">Ziel-URL:</label>
+                                <label for="cToUrl">Ziel-URL:</label>
                             </span>
                             <span class="input-group-addon alert-info state-checking"><i class="fa fa-spinner"></i></span>
                             <span class="input-group-addon alert-success state-available" style="display:none;"><i class="fa fa-check"></i></span>
                             <span class="input-group-addon alert-danger state-unavailable" style="display:none;"><i class="fa fa-warning"></i></span>
-                            <input id="urlcDestiny" name="cDestiny" type="text" class="form-control cToUrl"
-                                   autocomplete="off" onblur="check_url('cDestiny',this.value);"
-                                   onkeyup="redirect_search('cDestiny', this.value );"
+                            <input id="url_cToUrl" name="cToUrl" type="text" class="form-control cToUrl"
+                                   autocomplete="off" onblur="check_url('cToUrl',this.value);"
+                                   onkeyup="redirect_search('cToUrl', this.value );"
                                    placeholder="Ziel-URL"
-                                   value="{if isset($cPost_arr.cDestiny)}{$cPost_arr.cDestiny}{/if}">
+                                   value="{if isset($cPost_arr.cToUrl)}{$cPost_arr.cToUrl}{/if}">
                             <div class="input-group-btn" style="min-width:100%;display:block;top:100%;">
                                 <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="caret"></span></button>
-                                <ul class="dropdown-menu" style="min-width:100%;" id="resSearchcDestiny"></ul>
+                                <ul class="dropdown-menu" style="min-width:100%;" id="resSearch_cToUrl"></ul>
                             </div>
                         </div>
                     </div>

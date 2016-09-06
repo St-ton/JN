@@ -5,6 +5,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 require_once dirname(__FILE__) . '/includes/admininclude.php';
+
 $oAccount->permission('REDIRECT_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
@@ -65,7 +66,7 @@ switch ($aData['action']) {
         }
         break;
     case 'new':
-        if ($oRedirect->saveExt($_POST['cSource'], $_POST['cDestiny'])) {
+        if ($oRedirect->saveExt($_POST['cSource'], $_POST['cToUrl'])) {
             $cHinweis = 'Ihre Weiterleitung wurde erfolgreich gespeichert';
         } else {
             $cFehler = 'Fehler: Bitte pr&uuml;fen Sie Ihre Eingaben';

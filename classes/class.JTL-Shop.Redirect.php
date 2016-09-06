@@ -134,8 +134,8 @@ class Redirect
             $oTarget = $this->getRedirectByTarget($cSource);
             if (!empty($oTarget)) {
                 $this->saveExt($oTarget->cFromUrl, $cDestination);
-                $oObj           = new stdClass();
-                $oObj->cToUrl   = StringHandler::convertISO($cDestination);
+                $oObj         = new stdClass();
+                $oObj->cToUrl = StringHandler::convertISO($cDestination);
                 Shop::DB()->update('tredirect', 'cToUrl', $cSource, $oObj);
             }
 

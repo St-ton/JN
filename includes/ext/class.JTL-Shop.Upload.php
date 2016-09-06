@@ -12,7 +12,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
     {
         /**
          * @param int $kArtikel
-         * @param array $eigenschaftenArr
+         * @param bool|array $eigenschaftenArr
          * @return bool
          */
         public static function gibArtikelUploads($kArtikel, $eigenschaftenArr = false)

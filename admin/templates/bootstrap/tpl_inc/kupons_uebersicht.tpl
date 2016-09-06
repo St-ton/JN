@@ -2,22 +2,13 @@
 
 {function kupons_uebersicht_tab}
     <div id="{$cKuponTyp}" class="tab-pane fade{if $tab === $cKuponTyp} active in{/if}">
-        {if $nKuponCount > 0}
-            <div class="well well-sm">
-                {include file='tpl_inc/filtertools.tpl' oFilter=$oFilter cParam_arr=['tab'=>$cKuponTyp]}
+        <div class="panel panel-default">
+            {include file='tpl_inc/filtertools.tpl' oFilter=$oFilter cParam_arr=['tab'=>$cKuponTyp]}
+            {include file='tpl_inc/pagination.tpl' oPagination=$oPagination cParam_arr=['tab'=>$cKuponTyp]}
+            <form method="post" action="kupons.php">
+                {$jtl_token}
+                <input type="hidden" name="cKuponTyp" id="cKuponTyp" value="{$cKuponTyp}">
                 {if $oKupon_arr|@count > 0}
-                    {include file='tpl_inc/pagination.tpl' oPagination=$oPagination cParam_arr=['tab'=>$cKuponTyp]}
-                {/if}
-            </div>
-        {/if}
-        <form method="post" action="kupons.php">
-            {$jtl_token}
-            <input type="hidden" name="cKuponTyp" id="cKuponTyp" value="{$cKuponTyp}">
-            <div class="panel panel-default">
-                {if $oKupon_arr|@count > 0}
-                    <div class="panel-heading">
-                        <h3 class="panel-title">{#all#} {$cKuponTypName}s</h3>
-                    </div>
                     <table class="list table">
                         <thead>
                             <tr>
@@ -130,8 +121,8 @@
                         <button type="submit" class="btn btn-primary" name="kKuponBearbeiten" value="0"><i class="fa fa-share"></i> {$cKuponTypName} {#create#}</button>
                     </div>
                 </div>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
 {/function}
 

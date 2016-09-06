@@ -1088,8 +1088,8 @@ function pruefeFuegeEinInWarenkorb($Artikel, $anzahl, $oEigenschaftwerte_arr, $n
         $redirectParam[] = R_UNVERKAEUFLICH;
     }
     // Preis auf Anfrage
-    // Workaround um Konfigartikel mit Preis=0 kaufbar zu machen
-    if(($Artikel->bHasKonfig === false && !empty($Artikel->isKonfigItem) && $Artikel->inWarenkorbLegbar === INWKNICHTLEGBAR_PREISAUFANFRAGE)){
+    // // verhindert, dass Konfigitems mit Preis=0 aus der Artikelkonfiguration fallen wenn 'Preis auf Anfrage' eingestellt ist
+    if (($Artikel->bHasKonfig === false && !empty($Artikel->isKonfigItem) && $Artikel->inWarenkorbLegbar === INWKNICHTLEGBAR_PREISAUFANFRAGE)) {
         $Artikel->inWarenkorbLegbar = 1;
     }
     if (($Artikel->bHasKonfig === false && empty($Artikel->isKonfigItem)) && (!isset($Artikel->Preise->fVKNetto) || $Artikel->Preise->fVKNetto == 0) && $conf['global']['global_preis0'] === 'N') {
@@ -1227,8 +1227,8 @@ function fuegeEinInWarenkorb($kArtikel, $anzahl, $oEigenschaftwerte_arr = '', $n
 
         // Prüfung
         $redirectParam = pruefeFuegeEinInWarenkorb($Artikel, $anzahl, $oEigenschaftwerte_arr);
-        //Workaround Konfigitems mit Preis=0 kaufbar machen
-        if(!empty($kKonfigitem) && $redirectParam[0] === 16){
+        // verhindert, dass Konfigitems mit Preis=0 aus der Artikelkonfiguration fallen wenn 'Preis auf Anfrage' eingestellt ist
+        if (!empty($kKonfigitem) && $redirectParam[0] === R_AUFANFRAGE) {
             unset($redirectParam[0]);
         }
 

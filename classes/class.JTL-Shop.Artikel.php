@@ -5786,7 +5786,9 @@ class Artikel
             if ($conf['artikeldetails']['artikeldetails_warenkorbmatrix_anzeige'] === 'Y' ||
                 (!empty($this->FunktionsAttribute[FKT_ATTRIBUT_WARENKORBMATRIX]) && $this->FunktionsAttribute[FKT_ATTRIBUT_WARENKORBMATRIX] === '1')
             ) {
-                if (($this->nVariationOhneFreifeldAnzahl === 2 || $this->nVariationOhneFreifeldAnzahl === 1) && is_array($this->Variationen)) {
+                if (($this->nVariationOhneFreifeldAnzahl === 2 || $this->nVariationOhneFreifeldAnzahl === 1 ||
+                        ($conf['artikeldetails']['artikeldetails_warenkorbmatrix_anzeigeformat'] === 'L' && $this->nVariationOhneFreifeldAnzahl > 1)) && is_array($this->Variationen)
+                ) {
                     //the cart matrix cannot deal with those different kinds of variations..
                     //so if we got "freifeldvariationen" in combination with normal ones, we have to disable the matrix
                     foreach ($this->Variationen as $_variation) {

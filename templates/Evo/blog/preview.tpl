@@ -10,7 +10,7 @@
                     <span itemprop="publisher" class="hidden">{$Einstellungen.global.global_shopname}</span>
                 {/if}
                 {if (isset($oNewsUebersicht->oAuthor))}
-                    <span class="hidden-xs">{include file="snippets/author.tpl" oAuthor=$oNewsUebersicht->oAuthor}</span>
+                    <div class="hidden-xs v-box">{include file="snippets/author.tpl" oAuthor=$oNewsUebersicht->oAuthor}</div>
                 {/if}
                 {if isset($oNewsUebersicht->dErstellt)}<time itemprop="dateModified" class="hidden">{$oNewsUebersicht->dErstellt}</time>{/if}
                 <time itemprop="datePublished" datetime="{$dDate}" class="hidden">{$dDate}</time><span class="v-box">{$oNewsUebersicht->dErstellt_de}</span>

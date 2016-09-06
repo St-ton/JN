@@ -1,4 +1,4 @@
-<div itemprop="author" itemscope itemtype="https://schema.org/Person" class="v-box">
+<div itemprop="author" itemscope itemtype="https://schema.org/Person">
     <a itemprop="name" class="dropdown-toggle" href="#" title="{$oAuthor->cName}" data-toggle="modal" data-target="#author-{$oAuthor->kContentAuthor}">{$oAuthor->cName}</a>  -
     <div class="modal fade" tabindex="-1" role="dialog" id="author-{$oAuthor->kContentAuthor}">
         <div class="modal-dialog" role="document">

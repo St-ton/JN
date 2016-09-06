@@ -94,7 +94,7 @@ if ($action === 'bearbeiten') {
     $oKategorie_arr    = getCategories($oKupon->cKategorien);
     $oKunde_arr        = getCustomers($oKupon->cKunden);
     if ($oKupon->kKupon > 0) {
-        $oKuponName_arr    = getCouponNames((int)$oKupon->kKupon);
+        $oKuponName_arr = getCouponNames((int)$oKupon->kKupon);
     } else {
         foreach ($oSprache_arr as $oSprache) {
             $oKuponName_arr[$oSprache->cISO] =

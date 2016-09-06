@@ -5369,12 +5369,16 @@ class Artikel
             $cLaenderAssoc_arr = array();
             for ($i = 0; $i < $nLaender; $i++) {
                 if ($bString) {
-                    $cLaender .= $_SESSION['cISOSprache'] === 'ger' ? $oLand_arr[$i]->cDeutsch : $oLand_arr[$i]->cEnglisch;
+                    $cLaender .= (!isset($_SESSION['cISOSprache']) || $_SESSION['cISOSprache'] === 'ger') ?
+                        $oLand_arr[$i]->cDeutsch :
+                        $oLand_arr[$i]->cEnglisch;
                     if ($nLaender > ($i + 1)) {
                         $cLaender .= ', ';
                     }
                 } else {
-                    $cLaender = $_SESSION['cISOSprache'] === 'ger' ? $oLand_arr[$i]->cDeutsch : $oLand_arr[$i]->cEnglisch;
+                    $cLaender = (!isset($_SESSION['cISOSprache']) || $_SESSION['cISOSprache'] === 'ger') ?
+                        $oLand_arr[$i]->cDeutsch :
+                        $oLand_arr[$i]->cEnglisch;
                 }
                 $cLaenderAssoc_arr[$oLand_arr[$i]->cISO] = $cLaender;
             }

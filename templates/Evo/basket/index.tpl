@@ -78,7 +78,7 @@
                             </div>
                             <div class="panel-body">
                                 <div class="input-group col-xs-12 col-md-8 col-lg-6 col-xl-4">
-                                    <input class="form-control" type="text" name="Kuponcode" id="couponCode" maxlength="20" placeholder="{lang key="couponCode" section="account data"}" />
+                                    <input class="form-control" type="text" name="Kuponcode" id="couponCode" maxlength="32" placeholder="{lang key="couponCode" section="account data"}" />
                                     <span class="input-group-btn">
                                         <input class="btn btn-default" type="submit" value="{lang key="useCoupon" section="checkout"}" />
                                     </span>

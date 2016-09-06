@@ -21,73 +21,21 @@
                 makeCurrencyTooltip('fWert');
             {/if}{literal}
             makeCurrencyTooltip('fMindestbestellwert');
-            $('#dGueltigAb').keyup(calcRelativeValidity);
-            $('#dGueltigBis').keyup(calcRelativeValidity);
-            $('#dDauerTage').keyup(calcValidityEnd);
             $('#bOpenEnd').change(onEternalCheckboxChange);
-            calcRelativeValidity();
             onEternalCheckboxChange();
         });
-
-        function pad (num, size) {
-            var res = num + '';
-            while (res.length < size) {
-                res = '0' + res;
-            }
-            return res;
-        }
-
-        function dateToString (date) {
-            return pad(date.getDate(), 2) + '.' + pad(date.getMonth() + 1, 2) + '.' + date.getFullYear() +
-                ' ' + pad(date.getHours(), 2) + ':' + pad(date.getMinutes(), 2);
-        }
-
-        function stringToDate (str) {
-            var date = new Date();
-            var strMatch = str.match(/^ *([0-9]{0,2})\.([0-9]{0,2})\.([0-9]{0,4}) +([0-9]{0,2}):([0-9]{0,2}) *$/);
-            if (strMatch !== null) {
-                date.setFullYear(parseInt(strMatch[3]), parseInt(strMatch[2]) - 1, parseInt(strMatch[1]));
-                date.setHours(parseInt(strMatch[4]), parseInt(strMatch[5]), 0);
-            } else {
-                var strMatch = str.match(/^ *([0-9]{0,2})\.([0-9]{0,2})\.([0-9]{0,4}) *$/);
-                if (strMatch !== null) {
-                    date.setFullYear(parseInt(strMatch[3]), parseInt(strMatch[2]) - 1, parseInt(strMatch[1]));
-                    date.setHours(0, 0, 0);
-                }
-            }
-            return date;
-        }
-
-        function calcRelativeValidity () {
-            if ($('#bOpenEnd').prop('checked')) {
-                $('#dDauerTage').val('Ende offen');
-            } else {
-                var validStartDate = stringToDate($('#dGueltigAb').val());
-                var validEndDate   = stringToDate($('#dGueltigBis').val());
-                var deltaDays      = Math.floor((validEndDate - validStartDate) / (1000 * 60 * 60 * 24)) || 0;
-                $('#dDauerTage').val(deltaDays);
-            }
-        }
-
-        function calcValidityEnd () {
-            if ($('#bOpenEnd').prop('checked')) {
-                $('#dGueltigBis').val('');
-            } else {
-                var date = stringToDate($('#dGueltigAb').val());
-                var validDays = parseInt($('#dDauerTage').val()) || 0;
-                date.setTime(date.getTime() + validDays * 24 * 60 * 60 * 1000);
-                var endDateString = dateToString(date);
-                $('#dGueltigBis').val(endDateString);
-            }
-        }
 
         function onEternalCheckboxChange () {
             var elem = $('#bOpenEnd');
             var bOpenEnd = elem[0].checked;
             $('#dGueltigBis').prop('disabled', bOpenEnd);
             $('#dDauerTage').prop('disabled', bOpenEnd);
-            calcRelativeValidity ();
-            calcValidityEnd ();
+            if ($('#bOpenEnd').prop('checked')) {
+                $('#dDauerTage').val('Ende offen');
+                $('#dGueltigBis').val('');
+            } else {
+                $('#dDauerTage').val('');
+            }
         }
     {/literal}
 </script>
@@ -125,6 +73,63 @@
                 {/foreach}
             </div>
         </div>
+        {if empty($oKupon->kKupon) && isset($oKupon->cKuponTyp) && $oKupon->cKuponTyp !== 'neukundenkupon'}
+            <div class="panel panel-default settings">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><label><input type="checkbox" name="couponCreation" id="couponCreation" class="checkfield"{if isset($oKupon->massCreationCoupon->cActiv) && $oKupon->massCreationCoupon->cActiv == 1} checked{/if} value="1" />{#couponsCreation#}</label></h3>
+                </div>
+                <div class="panel-body{if !isset($oKupon->massCreationCoupon)} hidden{/if}" id="massCreationCouponsBody">
+                    <div class="input-group">
+                                 <span class="input-group-addon">
+                                     <label for="numberCoupons">{#numberCouponsDesc#}</label>
+                                 </span>
+                        <input class="form-control" type="number" name="numberOfCoupons" id="numberOfCoupons" min="2" step="1" {if isset($oKupon->massCreationCoupon->numberOfCoupons)}value="{$oKupon->massCreationCoupon->numberOfCoupons}"{else}value="2"{/if}/>
+                    </div>
+                    <div class="input-group">
+                                 <span class="input-group-addon">
+                                     <label for="lowerCase">{#lowerCaseDesc#}</label>
+                                 </span>
+                        <div class="input-group-wrap">
+                            <input type="checkbox" name="lowerCase" id="lowerCase" class="checkfield" {if isset($oKupon->massCreationCoupon->lowerCase) && $oKupon->massCreationCoupon->lowerCase == true}checked{elseif isset($oKupon->massCreationCoupon->lowerCase) && $oKupon->massCreationCoupon->lowerCase == false}unchecked{else}checked{/if} />
+                        </div>
+                    </div>
+                    <div class="input-group">
+                                 <span class="input-group-addon">
+                                     <label for="upperCase">{#upperCaseDesc#}</label>
+                                 </span>
+                        <div class="input-group-wrap">
+                            <input type="checkbox" name="upperCase" id="upperCase" class="checkfield" {if isset($oKupon->massCreationCoupon->upperCase) && $oKupon->massCreationCoupon->upperCase == true}checked{elseif isset($oKupon->massCreationCoupon->upperCase) && $oKupon->massCreationCoupon->upperCase == false}unchecked{else}checked{/if} />
+                        </div>
+                    </div>
+                    <div class="input-group">
+                                 <span class="input-group-addon">
+                                     <label for="numbersHash">{#numbersHashDesc#}</label>
+                                 </span>
+                        <div class="input-group-wrap">
+                            <input type="checkbox" name="numbersHash" id="numbersHash" class="checkfield" {if isset($oKupon->massCreationCoupon->numbersHash) && $oKupon->massCreationCoupon->numbersHash == true}checked{elseif isset($oKupon->massCreationCoupon->numbersHash) && $oKupon->massCreationCoupon->numbersHash == false}unchecked{else}checked{/if} />
+                        </div>
+                    </div>
+                    <div class="input-group">
+                                 <span class="input-group-addon">
+                                     <label for="hashLength">{#hashLengthDesc#}</label>
+                                 </span>
+                        <input class="form-control" type="number" name="hashLength" id="hashLength" min="2" max="16" step="1" {if isset($oKupon->massCreationCoupon->hashLength)}value="{$oKupon->massCreationCoupon->hashLength}"{else}value="2"{/if} />
+                    </div>
+                    <div class="input-group">
+                                 <span class="input-group-addon">
+                                     <label for="prefixHash">{#prefixHashDesc#}</label>
+                                 </span>
+                        <input class="form-control" type="text" name="prefixHash" id="prefixHash" placeholder="SUMMER"{if isset($oKupon->massCreationCoupon->prefixHash)} value="{$oKupon->massCreationCoupon->prefixHash}"{/if} />
+                    </div>
+                    <div class="input-group">
+                                 <span class="input-group-addon">
+                                     <label for="suffixHash">{#suffixHashDesc#}</label>
+                                 </span>
+                        <input class="form-control" type="text" name="suffixHash" id="suffixHash"{if isset($oKupon->massCreationCoupon->suffixHash)} value="{$oKupon->massCreationCoupon->suffixHash}"{/if} />
+                    </div>
+                </div>
+            </div>
+        {/if}
         <div class="panel panel-default settings">
             <div class="panel-heading">
                 <h3 class="panel-title">{#general#}</h3>
@@ -205,12 +210,12 @@
                     </span>
                 </div>
                 {if $oKupon->cKuponTyp === 'standard' || $oKupon->cKuponTyp === 'versandkupon'}
-                    <div class="input-group">
+                    <div class="input-group{if isset($oKupon->massCreationCoupon)} hidden{/if}" id="singleCouponCode">
                         <span class="input-group-addon">
                             <label for="cCode">{#code#}</label>
                         </span>
                         <span class="input-group-wrap">
-                            <input type="text" class="form-control" name="cCode" id="cCode" value="{$oKupon->cCode}">
+                            <input type="text" class="form-control" name="cCode" id="cCode"{if !isset($oKupon->massCreationCoupon)} value="{$oKupon->cCode}"{/if}>
                         </span>
                         <span class="input-group-addon">{getHelpDesc cDesc=#codeHint#}</span>
                     </div>
@@ -253,31 +258,34 @@
             <div class="panel-body">
                 <div class="input-group">
                     <span class="input-group-addon">
-                        <label for="dGueltigAb">{#validity#} {#from#}</label>
+                        <label for="dGueltigAb">{#validFrom#}</label>
                     </span>
                     <span class="input-group-wrap">
-                        <input type="text" class="form-control" name="dGueltigAb" id="dGueltigAb" value="{$oKupon->cGueltigAbLong}">
+                        <input type="datetime" class="form-control" name="dGueltigAb" id="dGueltigAb" value="{$oKupon->cGueltigAbLong}">
                     </span>
+                    <span class="input-group-addon">{getHelpDesc cDesc=#validFromHelp#}</span>
                 </div>
                 <div class="input-group">
                     <span class="input-group-addon">
-                        <label for="dGueltigBis">{#validity#} {#to#}</label>
+                        <label for="dGueltigBis">{#validUntil#}</label>
                     </span>
                     <span class="input-group-wrap">
-                        <input type="text" class="form-control" name="dGueltigBis" id="dGueltigBis" value="{$oKupon->cGueltigBisLong}">
+                        <input type="datetime" class="form-control" name="dGueltigBis" id="dGueltigBis" value="{$oKupon->cGueltigBisLong}">
                     </span>
+                    <span class="input-group-addon">{getHelpDesc cDesc=#validUntilHelp#}</span>
                 </div>
                 <div class="input-group">
                     <span class="input-group-addon">
-                        <label for="dDauerTage">G&uuml;tigkeitsdauer (Tage)</label>
+                        <label for="dDauerTage">{#periodOfValidity#}</label>
                     </span>
                     <span class="input-group-wrap">
                         <input type="text" class="form-control" name="dDauerTage" id="dDauerTage" value="">
                     </span>
+                    <span class="input-group-addon">{getHelpDesc cDesc=#periodOfValidityHelp#}</span>
                 </div>
                 <div class="input-group">
                     <span class="input-group-addon">
-                        <label for="bOpenEnd">Ende offen</label>
+                        <label for="bOpenEnd">{#openEnd#}</label>
                     </span>
                     <span class="input-group-wrap">
                         <input type="checkbox" class="checkfield" name="bOpenEnd" id="bOpenEnd" value="Y"{if $oKupon->bOpenEnd} checked{/if}>
@@ -349,7 +357,7 @@
                     <span class="input-group-addon">{getHelpDesc cDesc=#multipleChoice#}</span>
                 </div>
                 {if $oKupon->cKuponTyp === 'standard' || $oKupon->cKuponTyp === 'versandkupon'}
-                    <div class="input-group">
+                    <div class="input-group{if isset($oKupon->massCreationCoupon)} hidden{/if}" id="limitedByCustomers">
                         <span class="input-group-addon">
                             <label for="kKunden">{#restrictedToCustomers#}</label>
                         </span>
@@ -367,7 +375,7 @@
                         </span>
                         <span class="input-group-addon">{getHelpDesc cDesc=#multipleChoice#}</span>
                     </div>
-                    <div class="input-group">
+                    <div class="input-group{if isset($oKupon->massCreationCoupon)} hidden{/if}" id="informCustomers">
                         <span class="input-group-addon">
                             <label for="informieren">{#informCustomers#}</label>
                         </span>

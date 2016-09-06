@@ -131,6 +131,9 @@ function get_list_callback(type, id) {
         case 'attribute':
             return (id == 0) ? 'getAttributeList' :
                 'getAttributeListFromString';
+        case 'link':
+            return (id == 0) ? 'getLinkList' :
+                'getLinkListFromString';
     }
     return false;
 }
@@ -152,7 +155,7 @@ function init_simple_search(callback) {
         simple_search_list(type, search, function (result) {
             $(result).each(function (k, v) {
                 browser.find('select').append(
-                    $('<option></option>').attr('primary', v.kPrimary).attr('url', v.cUrl).val(v.cBase).html(v.cName).dblclick(function () {
+                    $('<option></option>').attr('primary', v.kPrimary).attr('url', v.cUrl).val(v.kPrimary).html(v.cName).dblclick(function () {
                         browser.find('.button.add').trigger('click');
                     })
                 );

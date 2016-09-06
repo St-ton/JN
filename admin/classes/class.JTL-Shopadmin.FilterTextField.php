@@ -40,10 +40,11 @@ class FilterTextField extends FilterField
 
         if ($this->bCustomTestOp) {
             $this->nTestOp =
-                $oFilter->getAction() === $oFilter->getId() . '_filter' ? (int)$_GET[$oFilter->getId() . '_' . $this->cId . '_op'] : (
-                $oFilter->hasSessionField($cColumn . '_op')             ? (int)$oFilter->getSessionField($this->cId . '_op') :
-                                                                          1
-                );
+                $oFilter->getAction() === $oFilter->getId() . '_filter'      ? (int)$_GET[$oFilter->getId() . '_' . $this->cId . '_op'] : (
+                $oFilter->getAction() === $oFilter->getId() . '_resetfilter' ? 1 : (
+                $oFilter->hasSessionField($this->cId . '_op')                ? (int)$oFilter->getSessionField($this->cId . '_op') :
+                                                                               1
+                ));
         }
     }
 

@@ -54,6 +54,21 @@ function getCurrencyConversionAjax($fPreisNetto, $fPreisBrutto, $cTargetID)
 }
 
 /**
+ * @param float  $fPreisNetto
+ * @param float  $fPreisBrutto
+ * @param string $cTargetID
+ * @return xajaxResponse
+ */
+function setCurrencyConversionAjaxTooltip($fPreisNetto, $fPreisBrutto, $cTooltipID)
+{
+    $objResponse = new xajaxResponse();
+    $cString     = getCurrencyConversion($fPreisNetto, $fPreisBrutto);
+    $objResponse->assign($cTooltipID, 'dataset.originalTitle', $cString);
+
+    return $objResponse;
+}
+
+/**
  * @param int    $kWidget
  * @param string $cContainer
  * @param int    $nPos
@@ -566,6 +581,7 @@ executeHook(HOOK_TOOLSAJAX_SERVER_ADMIN, array('xajax' => &$xajax));
 
 $xajax->registerFunction('reloadAdminLoginCaptcha');
 $xajax->registerFunction('getCurrencyConversionAjax');
+$xajax->registerFunction('setCurrencyConversionAjaxTooltip');
 $xajax->registerFunction('setWidgetPositionAjax');
 $xajax->registerFunction('closeWidgetAjax');
 $xajax->registerFunction('addWidgetAjax');

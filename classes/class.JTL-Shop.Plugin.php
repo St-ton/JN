@@ -148,37 +148,37 @@ class Plugin
     /**
      * @var array
      */
-    public $oPluginHook_arr;
+    public $oPluginHook_arr = array();
 
     /**
      * @var array
      */
-    public $oPluginAdminMenu_arr;
+    public $oPluginAdminMenu_arr = array();
 
     /**
      * @var array
      */
-    public $oPluginEinstellung_arr;
+    public $oPluginEinstellung_arr = array();
 
     /**
      * @var array
      */
-    public $oPluginEinstellungConf_arr;
+    public $oPluginEinstellungConf_arr = array();
 
     /**
      * @var array
      */
-    public $oPluginEinstellungAssoc_arr;
+    public $oPluginEinstellungAssoc_arr = array();
 
     /**
      * @var array
      */
-    public $oPluginSprachvariable_arr;
+    public $oPluginSprachvariable_arr = array();
 
     /**
      * @var array
      */
-    public $oPluginSprachvariableAssoc_arr;
+    public $oPluginSprachvariableAssoc_arr = array();
 
     /**
      * @var array
@@ -188,37 +188,37 @@ class Plugin
     /**
      * @var array
      */
-    public $oPluginZahlungsmethode_arr;
+    public $oPluginZahlungsmethode_arr = array();
 
     /**
      * @var array
      */
-    public $oPluginZahlungsmethodeAssoc_arr;
+    public $oPluginZahlungsmethodeAssoc_arr = array();
 
     /**
      * @var array
      */
-    public $oPluginZahlungsKlasseAssoc_arr;
+    public $oPluginZahlungsKlasseAssoc_arr = array();
 
     /**
      * @var array
      */
-    public $oPluginEmailvorlage_arr;
+    public $oPluginEmailvorlage_arr = array();
 
     /**
      * @var array
      */
-    public $oPluginEmailvorlageAssoc_arr;
+    public $oPluginEmailvorlageAssoc_arr = array();
 
     /**
      * @var array
      */
-    public $oPluginAdminWidget_arr;
+    public $oPluginAdminWidget_arr = array();
 
     /**
      * @var array
      */
-    public $oPluginAdminWidgetAssoc_arr;
+    public $oPluginAdminWidgetAssoc_arr = array();
 
     /**
      * @var stdClass
@@ -268,6 +268,11 @@ class Plugin
     /**
      * @var int
      */
+    public $bBootstrap;
+
+    /**
+     * @var int
+     */
     public $nCalledHook;
 
     /**
@@ -276,17 +281,28 @@ class Plugin
     private static $hookList = null;
 
     /**
+     * @var array
+     */
+    private static $bootstrapper = [];
+
+    /**
      * Konstruktor
      *
      * @param int  $kPlugin - Falls angegeben, wird das Plugin mit angegebenem $kPlugin aus der DB geholt
      * @param bool $invalidateCache - set to true to clear plugin cache
+     * @param bool $suppressReload - set to true when the plugin shouldn't be reloaded, not even in plugin dev mode
      * @return Plugin
      */
-    public function __construct($kPlugin = 0, $invalidateCache = false)
+    public function __construct($kPlugin = 0, $invalidateCache = false, $suppressReload = false)
     {
         $kPlugin = (int)$kPlugin;
         if ($kPlugin > 0) {
             $this->loadFromDB($kPlugin, $invalidateCache);
+
+            if (defined('PLUGIN_DEV_MODE') && PLUGIN_DEV_MODE === true && $suppressReload === false) {
+                reloadPlugin($this);
+                $this->loadFromDB($kPlugin, $invalidateCache);
+            }
         }
     }
 
@@ -319,7 +335,7 @@ class Plugin
                 $this->$k = $v;
             }
         } else {
-            return null;
+            return;
         }
         $_shopURL    = Shop::getURL();
         $_shopURLSSL = Shop::getURL(true);
@@ -354,10 +370,20 @@ class Plugin
         );
         // Plugin Einstellungen holen
         $this->oPluginEinstellung_arr = Shop::DB()->query(
-            "SELECT *
+            "SELECT tplugineinstellungen.*, tplugineinstellungenconf.cConf
                 FROM tplugineinstellungen
-                WHERE kPlugin = " . $kPlugin, 2
+                LEFT JOIN tplugineinstellungenconf ON tplugineinstellungenconf.kPlugin = tplugineinstellungen.kPlugin 
+                    AND tplugineinstellungen.cName = tplugineinstellungenconf.cWertName
+                WHERE tplugineinstellungen.kPlugin = " . $kPlugin, 2
         );
+        if (is_array($this->oPluginEinstellung_arr)) {
+            foreach ($this->oPluginEinstellung_arr as $conf) {
+                if ($conf->cConf === 'M') {
+                    $conf->cWert = unserialize($conf->cWert);
+                }
+                unset($conf->cConf);
+            }
+        }
         // Plugin Einstellungen Conf holen
         $oPluginEinstellungConfTMP_arr = Shop::DB()->query(
             "SELECT *
@@ -565,6 +591,7 @@ class Plugin
         $obj->dZuletztAktualisiert = $this->dZuletztAktualisiert;
         $obj->dInstalliert         = $this->dInstalliert;
         $obj->dErstellt            = $this->dErstellt;
+        $obj->bBootstrap           = $this->bBootstrap ? 1 : 0;
 
         return Shop::DB()->update('tplugin', 'kPlugin', $obj->kPlugin, $obj);
     }
@@ -708,7 +735,8 @@ class Plugin
             "SELECT tpluginhook.nHook, tplugin.kPlugin, tplugin.cVerzeichnis, tplugin.nVersion, tpluginhook.cDateiname
                 FROM tplugin
                 JOIN tpluginhook ON tpluginhook.kPlugin = tplugin.kPlugin
-                WHERE tplugin.nStatus = 2", 2
+                WHERE tplugin.nStatus = 2
+                ORDER BY tpluginhook.nPriority, tplugin.kPlugin", 2
         );
         if (is_array($oPluginHook_arr) && count($oPluginHook_arr) > 0) {
             foreach ($oPluginHook_arr as $oPluginHook) {
@@ -777,5 +805,39 @@ class Plugin
         }
 
         return $dynamicOptions;
+    }
+
+    public static function bootstrapper($kPlugin)
+    {
+        if (!isset(self::$bootstrapper[$kPlugin])) {
+            $plugin = Shop::DB()->select('tplugin', 'kPlugin', $kPlugin);
+
+            if ($plugin === null || (bool)$plugin->bBootstrap === false) {
+                return;
+            }
+
+            $file  = PFAD_ROOT . PFAD_PLUGIN . $plugin->cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $plugin->nVersion . '/' . PLUGIN_BOOTSTRAPPER;
+            $class = sprintf('%s\\%s', $plugin->cPluginID, 'Bootstrap');
+
+            if (!is_file($file)) {
+                return;
+            }
+
+            require_once $file;
+
+            if (!class_exists($class)) {
+                return;
+            }
+
+            $bootstrapper = new $class($plugin->cPluginID);
+
+            if (!is_subclass_of($bootstrapper, 'AbstractPlugin')) {
+                return;
+            }
+
+            self::$bootstrapper[$kPlugin] = $bootstrapper;
+        }
+
+        return self::$bootstrapper[$kPlugin];
     }
 }

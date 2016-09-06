@@ -37,8 +37,12 @@ if ($type) {
     }
     $results['type'] = $type;
 } elseif (isset($security)) {
-    $result = http_get_contents('https://tlstest.paypal.com/');
-    $smarty->assign('securityCheck', $result === 'PayPal_Connection_OK');
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_SSLVERSION, 1);
+    curl_setopt($ch, CURLOPT_URL, 'https://tlstest.paypal.com');
+    $isValid = curl_exec($ch) === true;
+    curl_close($ch);
+    $smarty->assign('securityCheck', $isValid);
 }
 
 $smarty->assign('results', $results)

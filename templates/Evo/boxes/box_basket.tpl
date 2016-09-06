@@ -1,4 +1,3 @@
-{nocache}
 <section class="panel panel-default box box-basket" id="sidebox{$oBox->kBox}">
     <div class="panel-heading">
         <h5 class="panel-title">{lang key="yourBasket" section="global"}<span id="basket_loader"></span></h5>
@@ -10,4 +9,3 @@
         </a>
     </div>
 </section>
-{/nocache}

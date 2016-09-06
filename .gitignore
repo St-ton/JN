@@ -4,6 +4,7 @@
 /shopinfo.xml
 /.idea
 /.htaccess
+/.phpstorm.meta.php
 
 # bilder
 /bilder/brandingbilder/*

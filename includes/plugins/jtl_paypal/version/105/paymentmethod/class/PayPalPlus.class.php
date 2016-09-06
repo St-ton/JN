@@ -127,6 +127,8 @@ class PayPalPlus extends PaymentMethod
             'http.ConnectionTimeOut'                     => 30,
             'http.headers.PayPal-Partner-Attribution-Id' => 'JTL_Cart_REST_Plus',
             'mode'                                       => $this->getModus(),
+            'cache.enabled'                              => true,
+            'cache.FileName'                             => PFAD_ROOT . PFAD_COMPILEDIR . 'paypalplus.auth.cache'
         ]);
 
         return $apiContext;
@@ -187,7 +189,7 @@ class PayPalPlus extends PaymentMethod
 
             $presentation = new \PayPal\Api\Presentation();
             $presentation->setLogoImage($shoplogo)
-                ->setBrandName($this->settings['brand'])
+                ->setBrandName(utf8_encode($this->settings['brand']))
                 ->setLocaleCode($this->languageIso);
 
             $inputFields = new \PayPal\Api\InputFields();
@@ -336,9 +338,9 @@ class PayPalPlus extends PaymentMethod
         $payer->setPaymentMethod('paypal');
 
         $basket = PayPalHelper::getBasket();
-
-        $items       = [];
         $currencyIso = $basket->currency->cISO;
+
+        $items = [];
 
         foreach ($basket->items as $i => $p) {
             $item = new Item();
@@ -352,11 +354,19 @@ class PayPalPlus extends PaymentMethod
         $itemList = new ItemList();
         $itemList->setItems($items);
 
+        /*
         $details = new Details();
         $details->setShipping($basket->shipping[WarenkorbHelper::GROSS])
             ->setSubtotal($basket->article[WarenkorbHelper::GROSS])
             ->setShippingDiscount($basket->discount[WarenkorbHelper::GROSS] * -1)
-            //->setTax($basket->diff[WarenkorbHelper::GROSS]);
+            ->setTax(0.00);
+        */
+
+        $details = new Details();
+        $details->setShipping($basket->shipping[WarenkorbHelper::GROSS])
+            ->setSubtotal($basket->article[WarenkorbHelper::GROSS])
+            ->setHandlingFee($basket->surcharge[WarenkorbHelper::GROSS])
+            ->setShippingDiscount($basket->discount[WarenkorbHelper::GROSS] * -1)
             ->setTax(0.00);
 
         $amount = new Amount();
@@ -524,7 +534,6 @@ class PayPalPlus extends PaymentMethod
                     ->setSubtotal($basket->article[WarenkorbHelper::GROSS])
                     ->setHandlingFee($basket->surcharge[WarenkorbHelper::GROSS])
                     ->setShippingDiscount($basket->discount[WarenkorbHelper::GROSS] * -1)
-                    //->setTax($basket->diff[WarenkorbHelper::GROSS]);
                     ->setTax(0.00);
 
                 $amount = new Amount();

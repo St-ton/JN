@@ -1,5 +1,5 @@
 {if ($Artikel->inWarenkorbLegbar == 1 || $Artikel->nErscheinendesProdukt == 1) || $Artikel->Variationen}
-    <div id="add-to-cart" class="product-buy{if $Artikel->nErscheinendesProdukt} coming_soon{/if}">
+    <div id="add-to-cart" class="hidden-print product-buy{if $Artikel->nErscheinendesProdukt} coming_soon{/if}">
     {block name="add-to-cart"}
         {if $Artikel->nErscheinendesProdukt}
             <div class="{if $Einstellungen.global.global_erscheinende_kaeuflich === 'Y'}alert alert-warning coming_soon{/if} text-center">
@@ -27,35 +27,34 @@
                     </div>
                 </div>
             {/if}
-            
-            {if $Artikel->fMindestbestellmenge > 1 || ($Artikel->fMindestbestellmenge > 0 && $Artikel->cTeilbar === 'Y') || $Artikel->fAbnahmeintervall > 0 || $Artikel->cTeilbar === 'Y' || (isset($Artikel->FunktionsAttribute[$FKT_ATTRIBUT_MAXBESTELLMENGE]) && $Artikel->FunktionsAttribute[$FKT_ATTRIBUT_MAXBESTELLMENGE] > 0)}
-                <div class="clearfix"></div>
-                <div class="purchase-info alert alert-info top10" role="alert">
-                        {assign var="units" value=$Artikel->cEinheit}
-                        {if empty($Artikel->cEinheit) || $Artikel->cEinheit|@count_characters == 0}
-                            <p>{lang key="units" section="productDetails" assign="units"}</p>
-                        {/if}
+        {/if}
+        {if $Artikel->inWarenkorbLegbar == 1 && ($Artikel->fMindestbestellmenge > 1 || ($Artikel->fMindestbestellmenge > 0 && $Artikel->cTeilbar === 'Y') || $Artikel->fAbnahmeintervall > 0 || $Artikel->cTeilbar === 'Y' || (isset($Artikel->FunktionsAttribute[$FKT_ATTRIBUT_MAXBESTELLMENGE]) && $Artikel->FunktionsAttribute[$FKT_ATTRIBUT_MAXBESTELLMENGE] > 0))}
+            <div class="clearfix"></div>
+            <div class="purchase-info alert alert-info top10" role="alert">
+                {assign var="units" value=$Artikel->cEinheit}
+                {if empty($Artikel->cEinheit) || $Artikel->cEinheit|@count_characters == 0}
+                    <p>{lang key="units" section="productDetails" assign="units"}</p>
+                {/if}
 
-                        {if $Artikel->fMindestbestellmenge > 1 || ($Artikel->fMindestbestellmenge > 0 && $Artikel->cTeilbar === 'Y')}
-                            {lang key="minimumPurchase" section="productDetails" assign="minimumPurchase"}
-                            <p>{$minimumPurchase|replace:"%d":$Artikel->fMindestbestellmenge|replace:"%s":$units}</p>
-                        {/if}
+                {if $Artikel->fMindestbestellmenge > 1 || ($Artikel->fMindestbestellmenge > 0 && $Artikel->cTeilbar === 'Y')}
+                    {lang key="minimumPurchase" section="productDetails" assign="minimumPurchase"}
+                    <p>{$minimumPurchase|replace:"%d":$Artikel->fMindestbestellmenge|replace:"%s":$units}</p>
+                {/if}
 
-                        {if $Artikel->fAbnahmeintervall > 0}
-                            {lang key="takeHeedOfInterval" section="productDetails" assign="takeHeedOfInterval"}
-                            <p>{$takeHeedOfInterval|replace:"%d":$Artikel->fAbnahmeintervall|replace:"%s":$units}</p>
-                        {/if}
+                {if $Artikel->fAbnahmeintervall > 0}
+                    {lang key="takeHeedOfInterval" section="productDetails" assign="takeHeedOfInterval"}
+                    <p>{$takeHeedOfInterval|replace:"%d":$Artikel->fAbnahmeintervall|replace:"%s":$units}</p>
+                {/if}
 
-                        {if $Artikel->cTeilbar === 'Y'}
-                            <p>{lang key="integralQuantities" section="productDetails"}</p>
-                        {/if}
+                {if $Artikel->cTeilbar === 'Y'}
+                    <p>{lang key="integralQuantities" section="productDetails"}</p>
+                {/if}
 
-                        {if isset($Artikel->FunktionsAttribute[$FKT_ATTRIBUT_MAXBESTELLMENGE]) && $Artikel->FunktionsAttribute[$FKT_ATTRIBUT_MAXBESTELLMENGE] > 0}
-                            {lang key="maximalPurchase" section="productDetails" assign="maximalPurchase"}
-                            <p>{$maximalPurchase|replace:"%d":$Artikel->FunktionsAttribute[$FKT_ATTRIBUT_MAXBESTELLMENGE]|replace:"%s":$units}</p>
-                        {/if}
-                </div>
-            {/if}
+                {if isset($Artikel->FunktionsAttribute[$FKT_ATTRIBUT_MAXBESTELLMENGE]) && $Artikel->FunktionsAttribute[$FKT_ATTRIBUT_MAXBESTELLMENGE] > 0}
+                    {lang key="maximalPurchase" section="productDetails" assign="maximalPurchase"}
+                    <p>{$maximalPurchase|replace:"%d":$Artikel->FunktionsAttribute[$FKT_ATTRIBUT_MAXBESTELLMENGE]|replace:"%s":$units}</p>
+                {/if}
+            </div>
         {/if}
     {/block}
     </div>

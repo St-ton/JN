@@ -222,3 +222,37 @@ function getZuschlagNames($kVersandzuschlag)
 
     return $namen;
 }
+
+/**
+ * @param string $cSearch
+ * @return array $allShippingsByName
+ */
+function getShippingByName($cSearch)
+{
+    // Einstellungen Kommagetrennt?
+    $cSearch_arr        = explode(',', $cSearch);
+    $allShippingsByName = array();
+    foreach ($cSearch_arr as $cSearchPos) {
+        trim($cSearchPos);
+        if (strlen($cSearchPos) > 2) {
+            $shippingByName_arr = Shop::DB()->query(
+                "SELECT va.kVersandart, va.cName
+                    FROM tversandart AS va
+                    LEFT JOIN tversandartsprache AS vs ON vs.kVersandart = va.kVersandart
+                        AND vs.cName LIKE '%" . Shop::DB()->escape($cSearchPos) . "%'
+                    WHERE va.cName LIKE '%" . Shop::DB()->escape($cSearchPos) . "%' OR vs.cName LIKE '%" . Shop::DB()->escape($cSearchPos) . "%'", 2
+            );
+            if (!empty($shippingByName_arr)) {
+                if (count($shippingByName_arr) > 1) {
+                    foreach ($shippingByName_arr as $shippingByName) {
+                        $allShippingsByName[$shippingByName->kVersandart] = $shippingByName;
+                    }
+                } else {
+                    $allShippingsByName[$shippingByName_arr[0]->kVersandart] = $shippingByName_arr[0];
+                }
+            }
+        }
+    }
+
+    return $allShippingsByName;
+}

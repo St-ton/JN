@@ -25,18 +25,7 @@ if (!is_array($cDBFileStruct_arr)) {
 }
 
 if (strlen($cFehler) === 0) {
-    foreach ($cDBFileStruct_arr as $cTable => $cColumn_arr) {
-        if (!array_key_exists($cTable, $cDBStruct_arr)) {
-            $cDBError_arr[$cTable] = 'Tabelle nicht vorhanden';
-        } else {
-            foreach ($cColumn_arr as $cColumn) {
-                if (!in_array($cColumn, $cDBStruct_arr[$cTable])) {
-                    $cDBError_arr[$cTable] = "Spalte $cColumn in $cTable nicht vorhanden";
-                    break;
-                }
-            }
-        }
-    }
+    $cDBError_arr = compareDBStruct($cDBFileStruct_arr, $cDBStruct_arr);
 }
 
 $smarty->assign('cFehler', $cFehler)

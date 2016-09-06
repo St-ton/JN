@@ -1,7 +1,7 @@
  {include file='tpl_inc/seite_header.tpl' cTitel=#benutzer# cBeschreibung=#benutzerDesc# cDokuURL=#benutzerURL#}
 <div id="content" class="container-fluid">
     <ul class="nav nav-tabs" role="tablist">
-        <li class="tab{if !isset($cTab) || $cTab === 'account_view'} active{/if}">
+        <li class="tab{if empty($cTab) || $cTab === 'account_view'} active{/if}">
             <a data-toggle="tab" role="tab" href="#account_view">{#benutzerTab#}</a>
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'group_view'} active{/if}">
@@ -9,7 +9,7 @@
         </li>
     </ul>
     <div class="tab-content">
-        <div id="account_view" class="tab-pane fade {if !isset($cTab) || $cTab === 'account_view'} active in{/if}">
+        <div id="account_view" class="tab-pane fade {if empty($cTab) || $cTab === 'account_view'} active in{/if}">
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h3 class="panel-title">{#benutzerKategorie#}</h3>
@@ -19,6 +19,7 @@
                     <tr>
                         <th class="tleft">#</th>
                         <th class="tcenter">{#benutzerLogin#}</th>
+                        <th class="tcenter">{#benutzer2FA#}</th>
                         <th class="tcenter">{#benutzerMail#}</th>
                         <th class="tcenter">{#benutzerGruppe#}</th>
                         <th class="tcenter">{#benutzerLoginVersuche#}</th>
@@ -32,6 +33,7 @@
                         <tr>
                             <td class="tleft">{$oAdmin->kAdminlogin}</td>
                             <td class="tcenter">{$oAdmin->cLogin}</td>
+                            <td class="tcenter">{if $oAdmin->b2FAauth}{#stateON#}{else}{#stateOFF#}{/if}</td>
                             <td class="tcenter">{$oAdmin->cMail}</td>
                             <td class="tcenter">
                                 {if $oAdmin->kAdminlogingruppe > 1}

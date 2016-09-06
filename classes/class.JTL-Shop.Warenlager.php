@@ -108,7 +108,7 @@ class Warenlager extends MainModel
      */
     public function setWarenlager($kWarenlager)
     {
-        $this->kWarenlager = (int) $kWarenlager;
+        $this->kWarenlager = (int)$kWarenlager;
 
         return $this;
     }
@@ -513,7 +513,7 @@ class Warenlager extends MainModel
                         }
                     }
                     if (is_array($xOption_arr)) {
-                        $oWarenlager->buildWarehouseInfo($oWarenlager->fBestand, $oWarenlager->fZulauf, $xOption_arr);
+                        $oWarenlager->buildWarehouseInfo($oWarenlager->fBestand, $xOption_arr);
                     }
                     $oWarenlager_arr[] = $oWarenlager;
                 }
@@ -525,53 +525,62 @@ class Warenlager extends MainModel
 
     /**
      * @param float $fBestand
-     * @param float $fZulauf
      * @param array $xOption_arr
      * @return $this
      */
-    public function buildWarehouseInfo($fBestand, $fZulauf, array $xOption_arr)
+    public function buildWarehouseInfo($fBestand, array $xOption_arr)
     {
         $this->oLageranzeige                = new stdClass();
         $this->oLageranzeige->cLagerhinweis = array();
+        $conf                               = Shop::getSettings(array(CONF_GLOBAL, CONF_ARTIKELDETAILS));
 
-        if ($fBestand > 0 || $xOption_arr['cLagerBeachten'] !== 'Y') {
-            $this->oLageranzeige->cLagerhinweis['genau']          = "{$fBestand} {$xOption_arr['cEinheit']} " . Shop::Lang()->get('inStock', 'global');
-            $this->oLageranzeige->cLagerhinweis['verfuegbarkeit'] = Shop::Lang()->get('productAvailable', 'global');
+        if ($xOption_arr['cLagerBeachten'] === 'Y') {
+            if ($fBestand > 0) {
+                $this->oLageranzeige->cLagerhinweis['genau']          = $fBestand . ' ' . $xOption_arr['cEinheit'] . ' ' . Shop::Lang()->get('inStock', 'global');
+                $this->oLageranzeige->cLagerhinweis['verfuegbarkeit'] = Shop::Lang()->get('productAvailable', 'global');
+                if (isset($conf['artikeldetails']['artikel_lagerbestandsanzeige']) && $conf['artikeldetails']['artikel_lagerbestandsanzeige'] === 'verfuegbarkeit') {
+                    $this->oLageranzeige->cLagerhinweis['verfuegbarkeit'] = Shop::Lang()->get('ampelGruen', 'global');
+                }
+            } elseif ($xOption_arr['cLagerKleinerNull'] === 'Y') {
+                $this->oLageranzeige->cLagerhinweis['genau']          = Shop::Lang()->get('ampelGruen', 'global');
+                $this->oLageranzeige->cLagerhinweis['verfuegbarkeit'] = Shop::Lang()->get('ampelGruen', 'global');
+            } else {
+                $this->oLageranzeige->cLagerhinweis['genau']          = Shop::Lang()->get('productNotAvailable', 'global');
+                $this->oLageranzeige->cLagerhinweis['verfuegbarkeit'] = Shop::Lang()->get('productNotAvailable', 'global');
+            }
         } else {
-            $this->oLageranzeige->cLagerhinweis['genau']          = Shop::Lang()->get('productNotAvailable', 'global');
-            $this->oLageranzeige->cLagerhinweis['verfuegbarkeit'] = Shop::Lang()->get('productNotAvailable', 'global');
+            $this->oLageranzeige->cLagerhinweis['genau']          = Shop::Lang()->get('ampelGruen', 'global');
+            $this->oLageranzeige->cLagerhinweis['verfuegbarkeit'] = Shop::Lang()->get('ampelGruen', 'global');
         }
         if ($xOption_arr['cLagerBeachten'] === 'Y') {
             // ampel
             $this->oLageranzeige->nStatus   = 1;
-            $this->oLageranzeige->AmpelText = Shop::Lang()->get('ampelGelb', 'global');
-            if ($fBestand <= intval($xOption_arr['artikel_lagerampel_rot'])) {
+            $this->oLageranzeige->AmpelText = $xOption_arr['attribut_ampeltext_gelb'];
+            if ($fBestand <= (int)$conf['global']['artikel_lagerampel_rot']) {
                 $this->oLageranzeige->nStatus   = 0;
-                $this->oLageranzeige->AmpelText = Shop::Lang()->get('ampelRot', 'global');
+                $this->oLageranzeige->AmpelText = $xOption_arr['attribut_ampeltext_rot'];
             }
-            if ($xOption_arr['cLagerBeachten'] !== 'Y' || $fBestand >= intval($xOption_arr['artikel_lagerampel_gruen']) || ($xOption_arr['cLagerBeachten'] === 'Y' &&
-                    $xOption_arr['cLagerKleinerNull'] === 'Y' && $xOption_arr['artikel_ampel_lagernull_gruen'] === 'Y')
+            if ($xOption_arr['cLagerBeachten'] !== 'Y' || $fBestand >= (int)$conf['global']['artikel_lagerampel_gruen'] ||
+                ($xOption_arr['cLagerBeachten'] === 'Y' && $xOption_arr['cLagerKleinerNull'] === 'Y' && $conf['global']['artikel_ampel_lagernull_gruen'] === 'Y')
             ) {
                 $this->oLageranzeige->nStatus   = 2;
-                $this->oLageranzeige->AmpelText = Shop::Lang()->get('ampelGruen', 'global');
+                $this->oLageranzeige->AmpelText = $xOption_arr['attribut_ampeltext_gruen'];
             }
         } else {
-            $this->oLageranzeige->nStatus = intval($xOption_arr['artikel_lagerampel_keinlager']);
+            $this->oLageranzeige->nStatus = (int)$conf['global']['artikel_lagerampel_keinlager'];
             if ($this->oLageranzeige->nStatus < 0 || $this->oLageranzeige->nStatus > 2) {
                 $this->oLageranzeige->nStatus = 2;
             }
 
             switch ($this->oLageranzeige->nStatus) {
                 case 1:
-                    $this->oLageranzeige->AmpelText = Shop::Lang()->get('ampelGelb', 'global');
+                    $this->oLageranzeige->AmpelText = $xOption_arr['attribut_ampeltext_gelb'];
                     break;
-
                 case 0:
-                    $this->oLageranzeige->AmpelText = Shop::Lang()->get('ampelRot', 'global');
+                    $this->oLageranzeige->AmpelText = $xOption_arr['attribut_ampeltext_rot'];
                     break;
-
                 case 2:
-                    $this->oLageranzeige->AmpelText = Shop::Lang()->get('ampelGruen', 'global');
+                    $this->oLageranzeige->AmpelText = $xOption_arr['attribut_ampeltext_gruen'];
                     break;
             }
         }

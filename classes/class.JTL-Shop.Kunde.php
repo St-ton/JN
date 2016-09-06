@@ -271,19 +271,11 @@ class Kunde
         ) {
             $attempts = Shop::DB()->select('tkunde', 'cMail', StringHandler::filterXSS($cBenutzername), 'nRegistriert', 1, null, null, false, 'nLoginversuche');
             if (isset($attempts->nLoginversuche) && intval($attempts->nLoginversuche) >= intval($conf['kunden']['kundenlogin_max_loginversuche'])) {
-                if (isset($_POST['g-recaptcha-response'])) {
-                    if (validateReCaptcha($_POST['g-recaptcha-response'])) {
-                        return true;
-                    }
+                if (validateCaptcha($_POST)) {
+                    return true;
+                }
 
-                    return (int)$attempts->nLoginversuche;
-                }
-                if (!isset($_POST['captcha']) || $_POST['captcha'] === '' || !isset($_POST['md5'])) {
-                    return (int)$attempts->nLoginversuche;
-                }
-                if (($_POST['md5'] != md5(PFAD_ROOT . strtoupper($_POST['captcha'])))) {
-                    return (int)$attempts->nLoginversuche;
-                }
+                return (int)$attempts->nLoginversuche;
             }
         }
 
@@ -572,9 +564,9 @@ class Kunde
             $obj->dGeburtstag = '0000-00-00';
         }
 
-        $obj->cLand = $this->pruefeLandISO($obj->cLand);
+        $obj->cLand       = $this->pruefeLandISO($obj->cLand);
         $obj->dVeraendert = 'now()';
-        $cReturn    = Shop::DB()->update('tkunde', 'kKunde', $obj->kKunde, $obj);
+        $cReturn          = Shop::DB()->update('tkunde', 'kKunde', $obj->kKunde, $obj);
         if (is_array($cKundenattribut_arr) && count($cKundenattribut_arr) > 0) {
             $obj->cKundenattribut_arr = $cKundenattribut_arr;
         }

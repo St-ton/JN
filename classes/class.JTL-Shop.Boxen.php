@@ -60,6 +60,7 @@ class Boxen
     public function __construct()
     {
         $this->boxConfig = Shop::getConfig(array(
+            CONF_GLOBAL,
             CONF_BOXEN,
             CONF_VERGLEICHSLISTE,
             CONF_NAVIGATIONSFILTER,
@@ -333,8 +334,8 @@ class Boxen
                 $limit        = (int)$this->boxConfig['boxen']['box_bestseller_anzahl_basis'];
                 $anzahl       = (int)$this->boxConfig['boxen']['box_bestseller_anzahl_anzeige'];
                 $nAnzahl      = 100;
-                if ((int)$this->boxConfig['boxen']['boxen_bestseller_minanzahl'] > 0) {
-                    $nAnzahl = (int)$this->boxConfig['boxen']['boxen_bestseller_minanzahl'];
+                if ((int)$this->boxConfig['global']['global_bestseller_minanzahl'] > 0) {
+                    $nAnzahl = (int)$this->boxConfig['global']['global_bestseller_minanzahl'];
                 }
                 if ($limit < 1) {
                     $limit = 10;
@@ -517,7 +518,8 @@ class Boxen
                     $oNewsKategorie_arr = Shop::DB()->query(
                         "SELECT tnewskategorie.kNewsKategorie, tnewskategorie.kSprache, tnewskategorie.cName,
                             tnewskategorie.cBeschreibung, tnewskategorie.cMetaTitle, tnewskategorie.cMetaDescription,
-                            tnewskategorie.nSort, tnewskategorie.nAktiv, tnewskategorie.dLetzteAktualisierung, tseo.cSeo,
+                            tnewskategorie.nSort, tnewskategorie.nAktiv, tnewskategorie.dLetzteAktualisierung,
+                            tnewskategorie.cPreviewImage, tseo.cSeo,
                             count(DISTINCT(tnewskategorienews.kNews)) AS nAnzahlNews
                             FROM tnewskategorie
                             LEFT JOIN tnewskategorienews ON tnewskategorienews.kNewsKategorie = tnewskategorie.kNewsKategorie
@@ -1221,7 +1223,9 @@ class Boxen
                             } else {
                                 $smarty->assign('oBox', $_cbox);
                             }
-                            $_box->innerHTML .= trim(($_cbox->eTyp === 'plugin') ? $smarty->fetch($_cbox->cTemplate) : $smarty->fetch($path . $_cbox->cTemplate));
+                            if (!empty($_cbox->cTemplate)) {
+                                $_box->innerHTML .= trim(($_cbox->eTyp === 'plugin') ? $smarty->fetch($_cbox->cTemplate) : $smarty->fetch($path . $_cbox->cTemplate));
+                            }
                             $_box->children[] = array('obj' => $_cbox, 'tpl' => $path . $_cbox->cTemplate);
                         }
                     }
@@ -1244,7 +1248,9 @@ class Boxen
                         $_oldPlugin = $smarty->getTemplateVars('oPlugin');
                         $smarty->assign('oPlugin', $_box->oPlugin);
                     }
-                    $htmlArray[$_position] .= trim(($_box->eTyp === 'plugin') ? $smarty->fetch($_box->cTemplate) : $smarty->fetch($path . $_box->cTemplate));
+                    if (!empty($_box->cTemplate)) {
+                        $htmlArray[$_position] .= trim(($_box->eTyp === 'plugin') ? $smarty->fetch($_box->cTemplate) : $smarty->fetch($path . $_box->cTemplate));
+                    }
                     if ($_oldPlugin !== null) {
                         $smarty->assign('oPlugin', $_oldPlugin);
                     }
@@ -1696,13 +1702,16 @@ class Boxen
      */
     public function gibBoxenFilterNach($NaviFilter, $oSuchergebnisse)
     {
+        $conf = Shop::getSettings(array(CONF_GLOBAL));
+
         return ((isset($NaviFilter->KategorieFilter->kKategorie) && $NaviFilter->KategorieFilter->kKategorie > 0 &&
                 $this->boxConfig['navigationsfilter']['allgemein_kategoriefilter_benutzen'] === 'Y')
             || (isset($NaviFilter->HerstellerFilter->kHersteller) && $NaviFilter->HerstellerFilter->kHersteller > 0 &&
                 $this->boxConfig['navigationsfilter']['allgemein_herstellerfilter_benutzen'] === 'Y')
             || (isset($NaviFilter->PreisspannenFilter->fBis) && ($NaviFilter->PreisspannenFilter->fVon >= 0 &&
                     $NaviFilter->PreisspannenFilter->fBis > 0) &&
-                $this->boxConfig['navigationsfilter']['preisspannenfilter_benutzen'] !== 'N')
+                $this->boxConfig['navigationsfilter']['preisspannenfilter_benutzen'] !== 'N' &&
+                $conf['global']['global_sichtbarkeit'] == 1)
             || (isset($NaviFilter->BewertungFilter->nSterne) && $NaviFilter->BewertungFilter->nSterne > 0 &&
                 $this->boxConfig['navigationsfilter']['bewertungsfilter_benutzen'] !== 'N')
             || (isset($NaviFilter->TagFilter) && count($NaviFilter->TagFilter) > 0 && $this->boxConfig['navigationsfilter']['allgemein_tagfilter_benutzen'] === 'Y')
@@ -1713,7 +1722,8 @@ class Boxen
             || (isset($oSuchergebnisse->Bewertung) &&
                 count($oSuchergebnisse->Bewertung) > 0 && $this->boxConfig['navigationsfilter']['bewertungsfilter_benutzen'] === 'box')
             || (isset($oSuchergebnisse->Preisspanne) &&
-                count($oSuchergebnisse->Preisspanne) > 0 && $this->boxConfig['navigationsfilter']['preisspannenfilter_benutzen'] === 'box')
+                count($oSuchergebnisse->Preisspanne) > 0 && $this->boxConfig['navigationsfilter']['preisspannenfilter_benutzen'] === 'box' &&
+                $conf['global']['global_sichtbarkeit'] == 1)
             || (isset($NaviFilter->SuchspecialFilter->kKey) &&
                 $NaviFilter->SuchspecialFilter->kKey > 0 && $this->boxConfig['navigationsfilter']['allgemein_suchspecialfilter_benutzen'] === 'Y')
             || (isset($NaviFilter->SuchFilter) && count($NaviFilter->SuchFilter) > 0 &&
@@ -1831,5 +1841,34 @@ class Boxen
         }
 
         return $class;
+    }
+
+    /**
+     * @return array
+     */
+    public function getInvisibleBoxes()
+    {
+        $tpl            = Template::getInstance();
+        $layout         = $tpl->getBoxLayoutXML();
+        $invisibleBoxes = array();
+        foreach ($layout as $position => $isAvailable) {
+            if ($isAvailable === false) {
+                $box = Shop::DB()->select('tboxen', 'ePosition', $position);
+                if ($box !== null && isset($box->kBox)) {
+                    $boxes = Shop::DB()->query("
+                        SELECT tboxen.*, tboxvorlage.eTyp, tboxvorlage.cName, tboxvorlage.cTemplate 
+                          FROM tboxen 
+                            LEFT JOIN tboxvorlage
+                              ON tboxen.kBoxvorlage = tboxvorlage.kBoxvorlage
+                          WHERE ePosition = '" . $position . "'", 2
+                    );
+                    foreach ($boxes as $box) {
+                        $invisibleBoxes[] = $box;
+                    }
+                }
+            }
+        }
+
+        return $invisibleBoxes;
     }
 }

@@ -82,10 +82,10 @@ class ArtikelHelper
                 foreach ($kVariationKombi_arr as $i => $kVariationKombi) {
                     if ($j > 0) {
                         $cSQL1 .= ',' . $i;
-                        $cSQL2 .= ',' . (int) $kVariationKombi;
+                        $cSQL2 .= ',' . (int)$kVariationKombi;
                     } else {
                         $cSQL1 .= $i;
-                        $cSQL2 .= (int) $kVariationKombi;
+                        $cSQL2 .= (int)$kVariationKombi;
                     }
                     $j++;
                 }
@@ -239,11 +239,11 @@ class ArtikelHelper
             $oSQLEigenschaftWert->cJOIN   = '';
             if ($kSprache > 0 && !standardspracheAktiv()) {
                 $oSQLEigenschaft->cSELECT = "teigenschaftsprache.cName AS cName_teigenschaftsprache, ";
-                $oSQLEigenschaft->cJOIN   = " JOIN teigenschaftsprache ON teigenschaftsprache.kEigenschaft = teigenschaft.kEigenschaft
+                $oSQLEigenschaft->cJOIN   = "LEFT JOIN teigenschaftsprache ON teigenschaftsprache.kEigenschaft = teigenschaft.kEigenschaft
                                             AND teigenschaftsprache.kSprache=" . $kSprache;
 
                 $oSQLEigenschaftWert->cSELECT = "teigenschaftwertsprache.cName AS cName_teigenschaftwertsprache, ";
-                $oSQLEigenschaftWert->cJOIN   = " JOIN teigenschaftwertsprache ON teigenschaftwertsprache.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
+                $oSQLEigenschaftWert->cJOIN   = "LEFT JOIN teigenschaftwertsprache ON teigenschaftwertsprache.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
                                                 AND teigenschaftwertsprache.kSprache=" . $kSprache;
             }
 
@@ -409,7 +409,7 @@ class ArtikelHelper
                                 LEFT JOIN teigenschaftwertsichtbarkeit
                                     ON teigenschaftwertsichtbarkeit.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
                                     AND teigenschaftwertsichtbarkeit.kKundengruppe = " . $kKundengruppe . "
-                                WHERE teigenschaftwert.kEigenschaftWert = " . (int) self::getSelectedVariationValue($oEigenschaft->kEigenschaft) . "
+                                WHERE teigenschaftwert.kEigenschaftWert = " . (int)self::getSelectedVariationValue($oEigenschaft->kEigenschaft) . "
                                     AND teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL
                                     AND teigenschaftwert.kEigenschaft = " . (int)$oEigenschaft->kEigenschaft, 1
                         );
@@ -427,7 +427,7 @@ class ArtikelHelper
                             break;
                         }
                     } else {
-                        if (!isset($_SESSION['variBoxAnzahl_arr'])  && $bRedirect) {
+                        if (!isset($_SESSION['variBoxAnzahl_arr']) && $bRedirect) {
                             //redirekt zum artikel, um variation/en zu waehlen  MBM beachten
                             header('Location: ' . Shop::getURL() . '/index.php?a=' . $kArtikel . '&n=' . (int)$_POST['anzahl'] . '&r=' . R_VARWAEHLEN, true, 302);
                             exit();

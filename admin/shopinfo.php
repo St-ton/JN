@@ -473,11 +473,12 @@ $XML = <<<EOF
         $ShopDescription
 EOF;
 
-$bWrite = is_writable(PFAD_ROOT . "shopinfo.xml");
+$fileShopFeed = basename(FILE_SHOP_FEED);
+$bWrite       = is_writable(PFAD_ROOT . $fileShopFeed);
 
 if ($bWrite) {
     if (isset($_REQUEST['update']) && $_REQUEST['update'] == '1') {
-        $file = fopen(PFAD_ROOT . "shopinfo.xml", "w+");
+        $file = fopen(PFAD_ROOT . $fileShopFeed, "w+");
 
         fputs(
             $file, '<?xml version="1.0" encoding="' . JTL_CHARSET . '"?>
@@ -496,8 +497,8 @@ if ($bWrite) {
     } else {
         header('Cache-Control: no-cache, must-revalidate');
         header('Content-type: application/xml');
-        header('Content-Disposition: attachment; filename="shopinfo.xml"');
-        readfile(PFAD_ROOT . "shopinfo.xml");
+        header('Content-Disposition: attachment; filename="' . $fileShopFeed . '"');
+        readfile(PFAD_ROOT . $fileShopFeed);
     }
 } else {
     header('location: shopinfoexport.php?bWrite=0');

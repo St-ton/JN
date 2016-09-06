@@ -304,7 +304,7 @@ class Kundengruppe
      */
     public static function getDefault()
     {
-        return Shop::DB()->query("SELECT * FROM tkundengruppe WHERE cStandard = 'Y'", 1);
+        return Shop::DB()->select('tkundengruppe', 'cStandard', 'Y');
     }
 
     /**

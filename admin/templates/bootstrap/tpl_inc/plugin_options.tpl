@@ -21,7 +21,7 @@
                     <div class="panel panel-default panel-idx-{$smarty.foreach.plugineinstellungenconf.index}{if $smarty.foreach.plugineinstellungenconf.index === 0} first{/if}">
                     <div class="panel-heading">
                         <h3 class="panel-title">{$oPluginEinstellungConf->cName}
-                            {if $oPluginEinstellungConf->cBeschreibung|@count_characters > 0}
+                            {if $oPluginEinstellungConf->cBeschreibung|strlen > 0}
                                 <span class="panel-title-addon">{getHelpDesc cDesc=$oPluginEinstellungConf->cBeschreibung}</span>
                             {/if}
                         </h3>
@@ -41,9 +41,14 @@
                         </span>
                         <span class="input-group-wrap">
                         {if $oPluginEinstellungConf->cInputTyp === 'selectbox'}
-                            <select id="{$oPluginEinstellungConf->cWertName}" name="{$oPluginEinstellungConf->cWertName}" class="form-control combo">
+                            <select id="{$oPluginEinstellungConf->cWertName}" name="{$oPluginEinstellungConf->cWertName}{if $oPluginEinstellungConf->cConf === 'M'}[]{/if}" class="form-control combo"{if $oPluginEinstellungConf->cConf === 'M'} multiple{/if}>
                                 {foreach name="plugineinstellungenconfwerte" from=$oPluginEinstellungConf->oPluginEinstellungenConfWerte_arr item=oPluginEinstellungenConfWerte}
-                                    <option value="{$oPluginEinstellungenConfWerte->cWert}"{if $cEinstellungWert == $oPluginEinstellungenConfWerte->cWert} selected{/if}>{$oPluginEinstellungenConfWerte->cName}</option>
+                                    {if $oPluginEinstellungConf->cConf === 'M' && $cEinstellungWert|is_array}
+                                        {assign var=selected value=($oPluginEinstellungenConfWerte->cWert|in_array:$cEinstellungWert)}
+                                    {else}
+                                        {assign var=selected value=($cEinstellungWert == $oPluginEinstellungenConfWerte->cWert)}
+                                    {/if}
+                                    <option value="{$oPluginEinstellungenConfWerte->cWert}"{if $selected} selected{/if}>{$oPluginEinstellungenConfWerte->cName}</option>
                                 {/foreach}
                             </select>
                         {elseif $oPluginEinstellungConf->cInputTyp === 'password'}
@@ -65,7 +70,7 @@
                             <input class="form-control" id="{$oPluginEinstellungConf->cWertName}" name="{$oPluginEinstellungConf->cWertName}" type="text" value="{$cEinstellungWert|escape:'html'}" />
                         {/if}
                         </span>
-                        {if $oPluginEinstellungConf->cBeschreibung|@count_characters > 0}
+                        {if $oPluginEinstellungConf->cBeschreibung|strlen > 0}
                             <span class="input-group-addon">{getHelpDesc cDesc=$oPluginEinstellungConf->cBeschreibung}</span>
                         {/if}
                     </div>

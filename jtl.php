@@ -2,6 +2,9 @@
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
+ *
+ * @global JTLSmarty $smarty
+ * @global Session $session
  */
 require_once dirname(__FILE__) . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
@@ -51,6 +54,12 @@ if (isset($_SESSION['JTL_REDIRECT']) || verifyGPCDataInteger('r') > 0) {
     executeHook(HOOK_JTL_PAGE_REDIRECT_DATEN);
 }
 pruefeHttps();
+// Upload zum Download freigeben
+if(isset($_POST['kUpload']) && (int)$_POST['kUpload'] > 0 && isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0 && isset($_POST['jtl_token']) && $_POST['jtl_token'] === $_SESSION['jtl_token']) {
+    $kUpload      = (int)$_POST['kUpload'];
+    $oUploadDatei = new UploadDatei($kUpload);
+    UploadDatei::send_file_to_browser(PFAD_UPLOADS . $oUploadDatei->cPfad, 'application/octet-stream', true, $oUploadDatei->cName);
+}
 
 unset($_SESSION['JTL_REDIRECT']);
 
@@ -144,6 +153,16 @@ if (isset($_POST['login']) && intval($_POST['login']) === 1 && isset($_POST['ema
                             $smarty->assign('nWarenkorb2PersMerge', 1);
                         }
                     }
+                }
+
+                // setzte Sprache auf Sprache des Kunden
+                $oISOSprache = Shop::Lang()->getIsoFromLangID($Kunde->kSprache);
+                if ((int)$_SESSION['kSprache'] !== (int)$Kunde->kSprache && !empty($oISOSprache->cISO)) {
+                    $_SESSION['kSprache']        = (int)$Kunde->kSprache;
+                    $_SESSION['cISOSprache']     = $oISOSprache->cISO;
+                    $_SESSION['currentLanguage'] = gibAlleSprachen(1)[$Kunde->kSprache];
+                    Shop::setLanguage($Kunde->kSprache, $oISOSprache->cISO);
+                    Shop::Lang()->setzeSprache($oISOSprache->cISO);
                 }
             } else {
                 $cHinweis .= Shop::Lang()->get('loginNotActivated', 'global');
@@ -241,11 +260,15 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
                 if (!pruefeEmailblacklist($_POST['cEmail'])) {
                     if (pruefeEingabe($_POST)) {
                         if (setzeKwKinDB($_POST, $Einstellungen)) {
-                            $cHinweis .= sprintf(Shop::Lang()->get('kwkAdd', 'messages') . '<br />',
-                                StringHandler::filterXSS($_POST['cEmail']));
+                            $cHinweis .= sprintf(
+                                Shop::Lang()->get('kwkAdd', 'messages') . '<br />',
+                                StringHandler::filterXSS($_POST['cEmail'])
+                            );
                         } else {
-                            $cFehler .= sprintf(Shop::Lang()->get('kwkAlreadyreg', 'errorMessages') . '<br />',
-                                StringHandler::filterXSS($_POST['cEmail']));
+                            $cFehler .= sprintf(
+                                Shop::Lang()->get('kwkAlreadyreg', 'errorMessages') . '<br />',
+                                StringHandler::filterXSS($_POST['cEmail'])
+                            );
                         }
                     } else {
                         $cFehler .= Shop::Lang()->get('kwkWrongdata', 'errorMessages') . '<br />';
@@ -264,9 +287,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
         $step            = (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) ? 'mein Konto' : 'login';
         $oWunschlistePos = giboWunschlistePos($kWunschlistePos);
         if (isset($oWunschlistePos->kArtikel) || $oWunschlistePos->kArtikel > 0) {
-            $oEigenschaftwerte_arr = (ArtikelHelper::isVariChild($oWunschlistePos->kArtikel)) ?
-                gibVarKombiEigenschaftsWerte($oWunschlistePos->kArtikel) :
-                gibEigenschaftenZuWunschliste($kWunschliste, $oWunschlistePos->kWunschlistePos);
+            $oEigenschaftwerte_arr = (ArtikelHelper::isVariChild($oWunschlistePos->kArtikel)) ? gibVarKombiEigenschaftsWerte($oWunschlistePos->kArtikel) : gibEigenschaftenZuWunschliste($kWunschliste, $oWunschlistePos->kWunschlistePos);
             if (!$oWunschlistePos->bKonfig) {
                 fuegeEinInWarenkorb($oWunschlistePos->kArtikel, $oWunschlistePos->fAnzahl, $oEigenschaftwerte_arr);
             }
@@ -285,9 +306,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
 
         if (isset($oWunschliste->CWunschlistePos_arr) && is_array($oWunschliste->CWunschlistePos_arr) && count($oWunschliste->CWunschlistePos_arr) > 0) {
             foreach ($oWunschliste->CWunschlistePos_arr as $oWunschlistePos) {
-                $oEigenschaftwerte_arr = (ArtikelHelper::isVariChild($oWunschlistePos->kArtikel)) ?
-                    gibVarKombiEigenschaftsWerte($oWunschlistePos->kArtikel) :
-                    gibEigenschaftenZuWunschliste($kWunschliste, $oWunschlistePos->kWunschlistePos);
+                $oEigenschaftwerte_arr = (ArtikelHelper::isVariChild($oWunschlistePos->kArtikel)) ? gibVarKombiEigenschaftsWerte($oWunschlistePos->kArtikel) : gibEigenschaftenZuWunschliste($kWunschliste, $oWunschlistePos->kWunschlistePos);
                 if (!$oWunschlistePos->Artikel->bHasKonfig && !$oWunschlistePos->bKonfig && isset($oWunschlistePos->Artikel->inWarenkorbLegbar) && $oWunschlistePos->Artikel->inWarenkorbLegbar > 0) {
                     fuegeEinInWarenkorb($oWunschlistePos->kArtikel, $oWunschlistePos->fAnzahl, $oEigenschaftwerte_arr);
                 }
@@ -302,14 +321,12 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
         $kWunschliste = verifyGPCDataInteger('wl');
         if ($kWunschliste) {
             // Prüfe ob die Wunschliste dem eingeloggten Kunden gehört
-            $oWunschliste = Shop::DB()->select('twunschliste', 'kWunschliste', (int)$kWunschliste);
+            $oWunschliste = Shop::DB()->select('twunschliste', 'kWunschliste', $kWunschliste);
             if (!empty($oWunschliste->kKunde) && $oWunschliste->kKunde == $_SESSION['Kunde']->kKunde) {
                 $step = 'wunschliste anzeigen';
                 $cHinweis .= wunschlisteAktualisieren($kWunschliste);
 
-                $CWunschliste            = (isset($_SESSION['Wunschliste']->kWunschliste)) ?
-                    new Wunschliste($_SESSION['Wunschliste']->kWunschliste) :
-                    new Wunschliste($kWunschliste);
+                $CWunschliste            = (isset($_SESSION['Wunschliste']->kWunschliste)) ? new Wunschliste($_SESSION['Wunschliste']->kWunschliste) : new Wunschliste($kWunschliste);
                 $_SESSION['Wunschliste'] = $CWunschliste;
                 $cBrotNavi               = createNavigation('', 0, 0, $CWunschliste->cName, 'jtl.php?wl=' . $CWunschliste->kWunschliste);
             }
@@ -327,7 +344,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
         $step         = (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) ? 'mein Konto' : 'login';
         // Pruefen, ob der MD5 vorhanden ist
         if (intval($kWunschliste) > 0) {
-            $oWunschliste = Shop::DB()->select('twunschliste', 'kWunschliste', (int)$kWunschliste, 'kKunde', (int)$_SESSION['Kunde']->kKunde, null, null, false, 'kWunschliste, cURLID');
+            $oWunschliste = Shop::DB()->select('twunschliste', 'kWunschliste', $kWunschliste, 'kKunde', (int)$_SESSION['Kunde']->kKunde, null, null, false, 'kWunschliste, cURLID');
             if (isset($oWunschliste->kWunschliste) && $oWunschliste->kWunschliste > 0 && strlen($oWunschliste->cURLID) > 0) {
                 $step = 'wunschliste anzeigen';
                 // Soll die Wunschliste nun an die Emailempfaenger geschickt werden?
@@ -395,8 +412,11 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
                     $nOeffentlich = verifyGPCDataInteger('nstd');
                     // Wurde nstd auf 1 oder 0 gesetzt?
                     if ($nOeffentlich === 0) {
+                        $upd               = new stdClass();
+                        $upd->nOeffentlich = 0;
+                        $upd->cURLID       = '';
                         // nOeffentlich der Wunschliste updaten zu Privat
-                        Shop::DB()->query("UPDATE twunschliste SET nOeffentlich = 0, cURLID = '' WHERE kWunschliste = " . intval($kWunschliste), 3);
+                        Shop::DB()->update('twunschliste', 'kWunschliste', $kWunschliste, $upd);
                         $cHinweis .= Shop::Lang()->get('wishlistSetPrivate', 'messages');
                     } elseif ($nOeffentlich === 1) {
                         $cURLID = gibUID(32, substr(md5($kWunschliste), 0, 16) . time());
@@ -406,11 +426,10 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
                             $cURLID .= '&' . $oKampagne->cParameter . '=' . $oKampagne->cWert;
                         }
                         // nOeffentlich der Wunschliste updaten zu öffentlich
-                        Shop::DB()->query(
-                            "UPDATE twunschliste
-                                SET nOeffentlich = 1, cURLID = '" . $cURLID . "'
-                                WHERE kWunschliste = " . intval($kWunschliste), 3
-                        );
+                        $upd               = new stdClass();
+                        $upd->nOeffentlich = 1;
+                        $upd->cURLID       = $cURLID;
+                        Shop::DB()->update('twunschliste', 'kWunschliste', $kWunschliste, $upd);
                         $cHinweis .= Shop::Lang()->get('wishlistSetPublic', 'messages');
                     }
                 }
@@ -506,8 +525,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
         if (!isset($_POST['altesPasswort']) || !isset($_POST['neuesPasswort1']) || !$_POST['altesPasswort'] || !$_POST['neuesPasswort1']) {
             $cHinweis .= Shop::Lang()->get('changepasswordFilloutForm', 'login');
         }
-        if (
-            (isset($_POST['neuesPasswort1']) && !isset($_POST['neuesPasswort2'])) ||
+        if ((isset($_POST['neuesPasswort1']) && !isset($_POST['neuesPasswort2'])) ||
             (isset($_POST['neuesPasswort2']) && !isset($_POST['neuesPasswort1'])) ||
             $_POST['neuesPasswort1'] !== $_POST['neuesPasswort2']
         ) {
@@ -560,6 +578,14 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
             if ($Einstellungen['trustedshops']['trustedshops_kundenbewertung_anzeigen'] === 'Y') {
                 $smarty->assign('oTrustedShopsBewertenButton', gibTrustedShopsBewertenButton($bestellung->oRechnungsadresse->cMail, $bestellung->cBestellNr));
             }
+            if (isset($bestellung->oEstimatedDelivery->longestMin) && isset($bestellung->oEstimatedDelivery->longestMax)) {
+                $smarty->assign(
+                    'cEstimatedDeliveryEx',
+                    dateAddWeekday($bestellung->dErstellt, $bestellung->oEstimatedDelivery->longestMin)->format('d.m.Y')
+                    . ' - ' .
+                    dateAddWeekday($bestellung->dErstellt, $bestellung->oEstimatedDelivery->longestMax)->format('d.m.Y')
+                );
+            }
         } else {
             $step = 'login';
         }
@@ -584,7 +610,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
                 if (count($oBestellung_arr) > 0) {
                     $cText .= "\n" . print_r($oBestellung_arr, true);
                 }
-                writeLog(PFAD_ROOT . '/jtllogs/geloeschteKundenkontos.log', $cText, 1);
+                Jtllog::writeLog(PFAD_LOGFILES . 'geloeschteKundenkontos.log', $cText, 1);
 
                 // Newsletter
                 Shop::DB()->delete('tnewsletterempfaenger', 'cEmail', $_SESSION['Kunde']->cMail);
@@ -609,24 +635,24 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
                 Shop::DB()->delete('tlieferadresse', 'kKunde', (int)$_SESSION['Kunde']->kKunde);
                 Shop::DB()->query(
                     "DELETE twarenkorb, twarenkorbpos, twarenkorbposeigenschaft, twarenkorbpers, twarenkorbperspos, twarenkorbpersposeigenschaft
-                    FROM twarenkorb
-                    LEFT JOIN twarenkorbpos ON twarenkorbpos.kWarenkorb = twarenkorb.kWarenkorb
-                    LEFT JOIN twarenkorbposeigenschaft ON twarenkorbposeigenschaft.kWarenkorbPos = twarenkorbpos.kWarenkorbPos
-                    LEFT JOIN twarenkorbpers ON twarenkorbpers.kKunde = " . (int)$_SESSION['Kunde']->kKunde . "
-                    LEFT JOIN twarenkorbperspos ON twarenkorbperspos.kWarenkorbPers = twarenkorbpers.kWarenkorbPers
-                    LEFT JOIN twarenkorbpersposeigenschaft ON twarenkorbpersposeigenschaft.kWarenkorbPersPos = twarenkorbperspos.kWarenkorbPersPos
-                    WHERE twarenkorb.kKunde = " . (int)$_SESSION['Kunde']->kKunde, 4
+                        FROM twarenkorb
+                        LEFT JOIN twarenkorbpos ON twarenkorbpos.kWarenkorb = twarenkorb.kWarenkorb
+                        LEFT JOIN twarenkorbposeigenschaft ON twarenkorbposeigenschaft.kWarenkorbPos = twarenkorbpos.kWarenkorbPos
+                        LEFT JOIN twarenkorbpers ON twarenkorbpers.kKunde = " . (int)$_SESSION['Kunde']->kKunde . "
+                        LEFT JOIN twarenkorbperspos ON twarenkorbperspos.kWarenkorbPers = twarenkorbpers.kWarenkorbPers
+                        LEFT JOIN twarenkorbpersposeigenschaft ON twarenkorbpersposeigenschaft.kWarenkorbPersPos = twarenkorbperspos.kWarenkorbPersPos
+                        WHERE twarenkorb.kKunde = " . (int)$_SESSION['Kunde']->kKunde, 4
                 );
                 Shop::DB()->delete('tkundenattribut', 'kKunde', (int)$_SESSION['Kunde']->kKunde);
                 Shop::DB()->query(
                     "DELETE twunschliste, twunschlistepos, twunschlisteposeigenschaft, twunschlisteversand
-                    FROM twunschliste
-                    LEFT JOIN twunschlistepos ON twunschliste.kWunschliste = twunschlistepos.kWunschliste
-                    LEFT JOIN twunschlisteposeigenschaft ON twunschlisteposeigenschaft.kWunschlistePos = twunschlistepos.kWunschlistePos
-                    LEFT JOIN twunschlisteversand ON twunschlisteversand.kWunschliste = twunschliste.kWunschliste
-                    WHERE twunschliste.kKunde = " . (int)$_SESSION['Kunde']->kKunde, 4
+                        FROM twunschliste
+                        LEFT JOIN twunschlistepos ON twunschliste.kWunschliste = twunschlistepos.kWunschliste
+                        LEFT JOIN twunschlisteposeigenschaft ON twunschlisteposeigenschaft.kWunschlistePos = twunschlistepos.kWunschlistePos
+                        LEFT JOIN twunschlisteversand ON twunschlisteversand.kWunschliste = twunschliste.kWunschliste
+                        WHERE twunschliste.kKunde = " . (int)$_SESSION['Kunde']->kKunde, 4
                 );
-                $obj->tkunde = $_SESSION['Kunde'];
+                $obj = (object)['tkunde' => $_SESSION['Kunde']];
                 sendeMail(MAILTEMPLATE_KUNDENACCOUNT_GELOESCHT, $obj);
 
                 executeHook(HOOK_JTL_PAGE_KUNDENACCOUNTLOESCHEN);
@@ -647,8 +673,11 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
         // Download wurde angefordert?
         if (verifyGPCDataInteger('dl') > 0) {
             if (class_exists('Download')) {
-                $nReturn = Download::getFile(verifyGPCDataInteger('dl'), $_SESSION['Kunde']->kKunde,
-                    verifyGPCDataInteger('kBestellung'));
+                $nReturn = Download::getFile(
+                    verifyGPCDataInteger('dl'),
+                    $_SESSION['Kunde']->kKunde,
+                    verifyGPCDataInteger('kBestellung')
+                );
                 if ($nReturn != 1) {
                     $cFehler = Download::mapGetFileErrorCode($nReturn);
                 }
@@ -670,7 +699,6 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
             }
         }
 
-        $smarty->assign('Lieferadressen', $Lieferadressen);
         $Bestellungen     = array();
         $oWunschliste_arr = array();
         if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
@@ -687,6 +715,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
                         foreach ($oDownload_arr as $oDownload) {
                             if ($oBestellung->kBestellung == $oDownload->kBestellung) {
                                 $Bestellungen[$i]->bDownload = true;
+                                break;
                             }
                         }
                     }
@@ -694,9 +723,15 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
             }
         }
         $orderCount = count($Bestellungen);
+        $currencies = array();
         for ($i = 0; $i < $orderCount; $i++) {
             if ($Bestellungen[$i]->kWaehrung > 0) {
-                $Bestellungen[$i]->Waehrung = Shop::DB()->select('twaehrung', 'kWaehrung', (int)$Bestellungen[$i]->kWaehrung);
+                if (isset($currencies[(int)$Bestellungen[$i]->kWaehrung])) {
+                    $Bestellungen[$i]->Waehrung = $currencies[(int)$Bestellungen[$i]->kWaehrung];
+                } else {
+                    $Bestellungen[$i]->Waehrung = Shop::DB()->select('twaehrung', 'kWaehrung', (int)$Bestellungen[$i]->kWaehrung);
+                    $currencies[(int)$Bestellungen[$i]->kWaehrung] = $Bestellungen[$i]->Waehrung;
+                }
                 if (isset($Bestellungen[$i]->fWaehrungsFaktor) && $Bestellungen[$i]->fWaehrungsFaktor !== 1 && isset($Bestellungen[$i]->Waehrung->fFaktor)) {
                     $Bestellungen[$i]->Waehrung->fFaktor = $Bestellungen[$i]->fWaehrungsFaktor;
                 }
@@ -706,8 +741,8 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
         }
         // Hole Wunschliste für eingeloggten Kunden
         if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
-            $oWunschliste_arr = Shop::DB()->query("
-                SELECT *
+            $oWunschliste_arr = Shop::DB()->query(
+                "SELECT *
                     FROM twunschliste
                     WHERE kKunde = " . (int)$_SESSION['Kunde']->kKunde . "
                     ORDER BY dErstellt DESC", 2
@@ -717,7 +752,8 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
         if (count($oWunschliste_arr) > 0) {
             $smarty->assign('oWunschliste_arr', $oWunschliste_arr);
         }
-        $smarty->assign('Bestellungen', $Bestellungen);
+        $smarty->assign('Bestellungen', $Bestellungen)
+               ->assign('Lieferadressen', $Lieferadressen);
 
         executeHook(HOOK_JTL_PAGE_MEINKKONTO);
     }

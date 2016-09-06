@@ -13,7 +13,7 @@
             {block name="sitemap-pages-body"}
             <div class="row">
                 {foreach name=linkgruppen from=$linkgroups item=oLinkgruppe key=linkgroupName}
-                    {if isset($oLinkgruppe->cName) && $oLinkgruppe->cName != 'hidden' && isset($oLinkgruppe->Links) && !empty($oLinkgruppe->Links)}
+                    {if isset($oLinkgruppe->cName) && $oLinkgruppe->cName !== 'hidden' && isset($oLinkgruppe->Links) && !empty($oLinkgruppe->Links)}
                         <div class="col-sm-6 col-md-4">
                             <ul class="list-unstyled">
                                 {include file='snippets/linkgroup_list.tpl' linkgroupIdentifier=$linkgroupName tplscope='sitemap'}

@@ -14,6 +14,7 @@ function gibStartBoxen()
     if (!$kKundengruppe || !$_SESSION['Kundengruppe']->darfArtikelKategorienSehen) {
         return array();
     }
+    $cURL          = 0;
     $Boxliste      = array();
     $schon_drin    = array();
     $Einstellungen = Shop::getSettings(array(CONF_STARTSEITE));
@@ -68,6 +69,7 @@ function gibStartBoxen()
             $Boxliste[$i]->Artikel->getArtikelByKeys($kArtikel_arr, 0, count($kArtikel_arr));
         }
     }
+    executeHook(HOOK_BOXEN_HOME, array('boxes' => &$Boxliste));
 
     return $Boxliste;
 }
@@ -626,7 +628,8 @@ function gibNewsKategorie()
         $oNewsKategorie_arr = Shop::DB()->query(
             "SELECT tnewskategorie.kNewsKategorie, tnewskategorie.kSprache, tnewskategorie.cName,
                 tnewskategorie.cBeschreibung, tnewskategorie.cMetaTitle, tnewskategorie.cMetaDescription,
-                tnewskategorie.nSort, tnewskategorie.nAktiv, tnewskategorie.dLetzteAktualisierung, tseo.cSeo,
+                tnewskategorie.nSort, tnewskategorie.nAktiv, tnewskategorie.dLetzteAktualisierung, 
+                tnewskategorie.cPreviewImage, tseo.cSeo,
                 count(DISTINCT(tnewskategorienews.kNews)) AS nAnzahlNews
                 FROM tnewskategorie
                 LEFT JOIN tnewskategorienews ON tnewskategorienews.kNewsKategorie = tnewskategorie.kNewsKategorie
@@ -732,11 +735,12 @@ function pruefeSpezialseite($nLinkart)
     if (intval($nLinkart) > 0) {
         $cacheID = 'special_page_n_' . $nLinkart;
         if (($oSeite = Shop::Cache()->get($cacheID)) === false) {
-            $oSeite = Shop::DB()->query("SELECT * FROM tspezialseite WHERE nLinkart = " . (int) $nLinkart, 1);
+            $oSeite = Shop::DB()->select('tspezialseite', 'nLinkart', (int)$nLinkart);
             Shop::Cache()->set($cacheID, $oSeite, array(CACHING_GROUP_CORE));
         }
         if (isset($oSeite->cDateiname) && strlen($oSeite->cDateiname) > 0) {
-            header('Location: ' . Shop::getURL() . '/' . $oSeite->cDateiname);
+            $linkHelper = LinkHelper::getInstance();
+            header('Location: ' . $linkHelper->getStaticRoute($oSeite->cDateiname));
             exit();
         }
     }

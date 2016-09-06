@@ -19,21 +19,28 @@ function ShopAutoload($class)
 {
     $classPaths = array(
         PFAD_ROOT . PFAD_CLASSES,
+        PFAD_ROOT . PFAD_ADMIN . PFAD_CLASSES,
         PFAD_ROOT . PFAD_INCLUDES_EXT,
         PFAD_ROOT . PFAD_CLASSES_CORE
     );
 
-    $endsWith = function($haystack, $needle)
-    {
+    $endsWith = function ($haystack, $needle) {
         $length = strlen($needle);
         if ($length == 0) {
             return true;
         }
+
         return (substr($haystack, -$length) === $needle);
     };
 
     foreach ($classPaths as $classPath) {
         $fileName = $classPath . 'class.JTL-Shop.' . $class . '.php';
+        if (file_exists($fileName)) {
+            require $fileName;
+
+            return true;
+        }
+        $fileName = $classPath . 'class.JTL-Shopadmin.' . $class . '.php';
         if (file_exists($fileName)) {
             require $fileName;
 

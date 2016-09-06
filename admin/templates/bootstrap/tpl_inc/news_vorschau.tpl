@@ -33,7 +33,7 @@
                                     </td>
                                     <td>
                                         <strong>
-                                            {if $oNewsKommentar->cVorname|count_characters > 0}
+                                            {if $oNewsKommentar->cVorname|strlen > 0}
                                                 <label for="nk-{$oNewsKommentar->kNewsKommentar}">{$oNewsKommentar->cVorname} {$oNewsKommentar->cNachname|truncate:1:""}., {$oNewsKommentar->dErstellt_de}</label>
                                             {else}
                                                 <label for="nk-{$oNewsKommentar->kNewsKommentar}">{$oNewsKommentar->cName}, {$oNewsKommentar->dErstellt_de}</label>

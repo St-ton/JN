@@ -8,7 +8,6 @@ require_once dirname(__FILE__) . '/includes/admininclude.php';
 $oAccount->permission('STATS_CAMPAIGN_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'kampagne_inc.php';
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'blaetternavi.php';
 
 $cHinweis          = '';
 $cFehler           = '';
@@ -16,8 +15,6 @@ $kKampagne         = 0;
 $kKampagneDef      = 0;
 $cStamp            = '';
 $step              = 'kampagne_uebersicht';
-$nAnzahlProSeite   = 100;
-$oBlaetterNaviConf = baueBlaetterNaviGetterSetter(1, $nAnzahlProSeite);
 
 // Zeitraum
 // 1 = Monat
@@ -178,16 +175,20 @@ if ($step === 'kampagne_uebersicht') {
                     AND kKampagneDef = " . (int)$oKampagneDef->kKampagneDef, 2
         );
 
-        $oBlaetterNaviDefDetail = baueBlaetterNavi($oBlaetterNaviConf->nAktuelleSeite1, count($oStats_arr), $nAnzahlProSeite);
+        $oPagiDefDetail = (new Pagination('defdetail'))
+            ->setItemCount(count($oStats_arr))
+            ->assemble();
+        $oKampagneStat_arr = holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, $cStampText, $cMember_arr,
+            ' LIMIT ' . $oPagiDefDetail->getLimitSQL());
 
-        $smarty->assign('oBlaetterNaviDefDetail', $oBlaetterNaviDefDetail)
-               ->assign('oKampagne', holeKampagne($kKampagne))
-               ->assign('oKampagneStat_arr', holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, $cStampText, $cMember_arr, $oBlaetterNaviConf->cSQL1))
-               ->assign('oKampagneDef', $oKampagneDef)
-               ->assign('cMember_arr', $cMember_arr)
-               ->assign('cStampText', $cStampText)
-               ->assign('cStamp', $cStamp)
-               ->assign('nGesamtAnzahlDefDetail', count($oStats_arr));
+        $smarty->assign('oPagiDefDetail', $oPagiDefDetail)
+            ->assign('oKampagne', holeKampagne($kKampagne))
+            ->assign('oKampagneStat_arr', $oKampagneStat_arr)
+            ->assign('oKampagneDef', $oKampagneDef)
+            ->assign('cMember_arr', $cMember_arr)
+            ->assign('cStampText', $cStampText)
+            ->assign('cStamp', $cStamp)
+            ->assign('nGesamtAnzahlDefDetail', count($oStats_arr));
     }
 }
 

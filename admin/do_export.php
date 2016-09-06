@@ -172,8 +172,10 @@ foreach ($res as $tartikel) {
         unset($_SESSION['oKategorie_arr_new']);
         unset($_SESSION['kKategorieVonUnterkategorien_arr']);
         //Kategoriepfad
-        $Artikel->Kategorie     = new Kategorie($Artikel->gibKategorie(), $exportformat->kSprache, $exportformat->kKundengruppe, false, $exportformat->nUseCache === '0');
-        $Artikel->Kategoriepfad = gibKategoriepfad($Artikel->Kategorie, $exportformat->kKundengruppe, $exportformat->kSprache);
+        $Artikel->Kategorie     = new Kategorie($Artikel->gibKategorie(), $exportformat->kSprache, $exportformat->kKundengruppe, $exportformat->nUseCache === '0');
+        $Artikel->Kategoriepfad = (isset($Artikel->Kategorie->cKategoriePfad)) ?
+            $Artikel->Kategorie->cKategoriePfad : // calling gibKategoriepfad() should not be necessary since it has already been called in Kategorie::loadFromDB()
+            gibKategoriepfad($Artikel->Kategorie, $exportformat->kKundengruppe, $exportformat->kSprache);
         $Artikel->Versandkosten = gibGuenstigsteVersandkosten(
             (isset($ExportEinstellungen['exportformate_lieferland'])) ? $ExportEinstellungen['exportformate_lieferland'] : null,
             $Artikel,
@@ -225,12 +227,11 @@ if ($max_artikel->nAnzahl > $queue->nLimit_n + $queue->nLimit_m) {
         $oCallback->bFirst        = ($queue->nLimit_n == 0);
         $oCallback->cURL          = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'];
         echo json_encode($oCallback);
-        exit;
     } else {
         $cURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'] . '?e=' . (int)$queue->kExportqueue . '&back=admin&token=' . $_SESSION['jtl_token'];
         header('Location: ' . $cURL);
-        exit;
     }
+    exit;
 } else {
     // Versucht (falls so eingestellt) die erstellte Exportdatei in mehrere Dateien zu splitten
     splitteExportDatei($exportformat);
@@ -250,11 +251,10 @@ if ($max_artikel->nAnzahl > $queue->nLimit_n + $queue->nLimit_m) {
             $oCallback->bFinished     = true;
 
             echo json_encode($oCallback);
-            exit;
         } else {
             header('Location: exportformate.php?action=exported&token=' . $_SESSION['jtl_token'] . '&kExportformat=' . (int)$queue->kExportformat);
-            exit;
         }
+        exit;
     }
 }
 /**

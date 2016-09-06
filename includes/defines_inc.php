@@ -3,13 +3,13 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/hooks_inc.php';
-define('JTL_VERSION', 404);
+
+// Version
+define('JTL_VERSION', 405);
 define('JTL_MIN_WAWI_VERSION', 99713);
 define('JTL_MINOR_VERSION', '#JTL_MINOR_VERSION#');
 define('JTL_BUILD_TIMESTAMP', '#JTL_BUILD_TIMESTAMP#');
-
-//Einstellungssektionen
+// Einstellungssektionen
 define('CONF_GLOBAL', 1);
 define('CONF_STARTSEITE', 2);
 define('CONF_EMAILS', 3);
@@ -21,7 +21,7 @@ define('CONF_BOXEN', 8);
 define('CONF_BILDER', 9);
 define('CONF_SONSTIGES', 10);
 define('CONF_TEMPLATE', 11);
-
+//
 define('CONF_ZAHLUNGSARTEN', 100);
 define('CONF_EXPORTFORMATE', 101);
 define('CONF_KONTAKTFORMULAR', 102);
@@ -48,7 +48,7 @@ define('CONF_RMA', 122);
 define('CONF_OBJECTCACHING', 123);
 define('CONF_CACHING', 124);
 define('CONF_LOGO', 125);
-
+//
 define('C_WARENKORBPOS_TYP_ARTIKEL', '1');
 define('C_WARENKORBPOS_TYP_VERSANDPOS', '2');
 define('C_WARENKORBPOS_TYP_KUPON', '3');
@@ -61,22 +61,22 @@ define('C_WARENKORBPOS_TYP_VERSAND_ARTIKELABHAENGIG', '9');
 define('C_WARENKORBPOS_TYP_VERPACKUNG', '10');
 define('C_WARENKORBPOS_TYP_GRATISGESCHENK', '11');
 define('C_WARENKORBPOS_TYP_TRUSTEDSHOPS', '12');
-
+//
 define('C_WARENKORBPOS_TYP_ZINSAUFSCHLAG', '13');
 define('C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR', '14');
-
+//
 define('KONFIG_ITEM_TYP_ARTIKEL', 0);
 define('KONFIG_ITEM_TYP_SPEZIAL', 1);
-
+//
 define('KONFIG_ANZEIGE_TYP_CHECKBOX', 0);
 define('KONFIG_ANZEIGE_TYP_RADIO', 1);
 define('KONFIG_ANZEIGE_TYP_DROPDOWN', 2);
 define('KONFIG_ANZEIGE_TYP_DROPDOWN_MULTI', 3);
-
+//
 define('KONFIG_AUSWAHL_TYP_BELIEBIG', -1);
 define('KONFIG_AUSWAHL_TYP_MIN1', 0);
 // KONFIG_AUSWAHL_TYP_EXAKT > 0
-
+//
 define('URLART_ARTIKEL', 1);
 define('URLART_KATEGORIE', 2);
 define('URLART_SEITE', 3);
@@ -89,21 +89,18 @@ define('URLART_NEWSMONAT', 9);
 define('URLART_NEWSKATEGORIE', 10);
 define('URLART_UMFRAGE', 11);
 define('URLART_SEARCHSPECIALS', 12);
-
-//bestellstati
+// bestellstati
 define('BESTELLUNG_STATUS_STORNO', -1);
 define('BESTELLUNG_STATUS_OFFEN', 1);
 define('BESTELLUNG_STATUS_IN_BEARBEITUNG', 2);
 define('BESTELLUNG_STATUS_BEZAHLT', 3);
 define('BESTELLUNG_STATUS_VERSANDT', 4);
 define('BESTELLUNG_STATUS_TEILVERSANDT', 5);
-
-//zahlungsart mails
+// zahlungsart mails
 define('ZAHLUNGSART_MAIL_EINGANG', 0x0001);
 define('ZAHLUNGSART_MAIL_STORNO', 0x0010);
 define('ZAHLUNGSART_MAIL_RESTORNO', 0x0100);
-
-//mailtemplates
+// mailtemplates
 define('MAILTEMPLATE_GUTSCHEIN', 'core_jtl_gutschein');
 define('MAILTEMPLATE_BESTELLBESTAETIGUNG', 'core_jtl_bestellbestaetigung');
 define('MAILTEMPLATE_PASSWORT_VERGESSEN', 'core_jtl_passwort_vergessen');
@@ -132,8 +129,7 @@ define('MAILTEMPLATE_RMA_ABGESENDET', 'core_jtl_rma_submitted');
 define('MAILTEMPLATE_BEWERTUNG_GUTHABEN', 'core_jtl_bewertung_guthaben');
 define('MAILTEMPLATE_BESTELLUNG_TEILVERSANDT', 'core_jtl_bestellung_teilversandt');
 define('MAILTEMPLATE_ANBIETERKENNZEICHNUNG', 'core_jtl_anbieterkennzeichnung');
-
-//Suche
+// Suche
 define('SEARCH_SORT_STANDARD', 100);
 define('SEARCH_SORT_NAME_ASC', 1);
 define('SEARCH_SORT_NAME_DESC', 2);
@@ -147,7 +143,7 @@ define('SEARCH_SORT_WEIGHT', 9);
 define('SEARCH_SORT_DATEOFISSUE', 10);
 define('SEARCH_SORT_BESTSELLER', 11);
 define('SEARCH_SORT_RATING', 12);
-
+//
 define('SEARCH_SORT_CRITERION_NAME', 'artikelname');
 define('SEARCH_SORT_CRITERION_NAME_ASC', 'artikelname aufsteigend');
 define('SEARCH_SORT_CRITERION_NAME_DESC', 'artikelname absteigend');
@@ -162,15 +158,13 @@ define('SEARCH_SORT_CRITERION_NEWEST_FIRST', 'neuste zuerst');
 define('SEARCH_SORT_CRITERION_DATEOFISSUE', 'erscheinungsdatum');
 define('SEARCH_SORT_CRITERION_BESTSELLER', 'bestseller');
 define('SEARCH_SORT_CRITERION_RATING', 'bewertungen');
-
-//Einstellungen
+// Einstellungen
 define('EINSTELLUNGEN_ARTIKELANZEIGEFILTER_ALLE', 1);
 define('EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER', 2);
 define('EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL', 3);
 define('EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_ALLE', 1);
 define('EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_NICHTLEERE', 2);
-
-//Linktypen
+// Linktypen
 define('LINKTYP_EIGENER_CONTENT', 1);
 define('LINKTYP_EXTERNE_URL', 2);
 define('LINKTYP_STARTSEITE', 5);
@@ -202,15 +196,13 @@ define('LINKTYP_BATTERIEGESETZ_HINWEISE', 30);
 define('LINKTYP_WRB_FORMULAR', 31);
 define('LINKTYP_BESTELLVORGANG', 32);
 define('LINKTYP_BESTELLABSCHLUSS', 33);
-
-//Artikel
+// Artikel
 define('INWKNICHTLEGBAR_LAGER', -1);
 define('INWKNICHTLEGBAR_LAGERVAR', -2);
 define('INWKNICHTLEGBAR_NICHTVORBESTELLBAR', -3);
 define('INWKNICHTLEGBAR_PREISAUFANFRAGE', -4);
 define('INWKNICHTLEGBAR_UNVERKAEUFLICH', -5);
-
-//Attribute
+// Attribute
 define('KAT_ATTRIBUT_KATEGORIEBOX', 'kategoriebox');
 define('KAT_ATTRIBUT_ARTIKELSORTIERUNG', 'artikelsortierung');
 define('KAT_ATTRIBUT_METATITLE', 'meta_title');
@@ -220,7 +212,6 @@ define('KAT_ATTRIBUT_BILDNAME', 'bildname');
 define('KAT_ATTRIBUT_DARSTELLUNG', 'darstellung');
 define('KAT_ATTRIBUT_CSSKLASSE', 'css_klasse');
 define('KAT_ATTRIBUT_MERKMALFILTER', 'merkmalfilter');
-
 define('ART_ATTRIBUT_STEUERTEXT', 'steuertext');
 define('ART_ATTRIBUT_METATITLE', 'meta_title');
 define('ART_ATTRIBUT_METADESCRIPTION', 'meta_description');
@@ -231,8 +222,7 @@ define('ART_ATTRIBUT_AMPELTEXT_GRUEN', 'ampel_text_gruen');
 define('ART_ATTRIBUT_AMPELTEXT_GELB', 'ampel_text_gelb');
 define('ART_ATTRIBUT_AMPELTEXT_ROT', 'ampel_text_rot');
 define('KNDGRP_ATTRIBUT_MINDESTBESTELLWERT', 'mindestbestellwert');
-
-//Fkt Attribute
+// Fkt Attribute
 define('FKT_ATTRIBUT_KEINE_PREISSUCHMASCHINEN', 'keine preissuchmaschinen');
 define('FKT_ATTRIBUT_BILDNAME', 'bildname');
 define('FKT_ATTRIBUT_UNVERKAEUFLICH', 'unverkaeuflich');
@@ -251,10 +241,8 @@ define('FKT_ATTRIBUT_KONFIG_MAX_ITEMS', 'konfig_max_items'); // deprecated? not 
 define('FKT_ATTRIBUT_ARTIKELDETAILS_TPL', 'tpl_artikeldetails');
 define('FKT_ATTRIBUT_ARTIKELKONFIG_TPL', 'tpl_artikelkonfig');
 define('FKT_ATTRIBUT_ARTIKELKONFIG_TPL_JS', 'tpl_js_artikelkonfig');
-
-//Special Content
+// Special Content
 define('SC_KONTAKTFORMULAR', '1');
-
 // Suchspecials
 define('SEARCHSPECIALS_BESTSELLER', 1);
 define('SEARCHSPECIALS_SPECIALOFFERS', 2);
@@ -265,15 +253,28 @@ define('SEARCHSPECIALS_TOPREVIEWS', 6);
 define('SEARCHSPECIALS_OUTOFSTOCK', 7);
 define('SEARCHSPECIALS_ONSTOCK', 8);
 define('SEARCHSPECIALS_PREORDER', 9);
-
 // Adminmenu (Backend)
 define('LINKTYP_BACKEND_PLUGINS', 5);
 define('LINKTYP_BACKEND_MODULE', 7);
-
-// Seite Plugin Handler
+// Plugin
+define('PFAD_PLUGIN_VERSION', 'version/');
+define('PFAD_PLUGIN_SQL', 'sql/');
+define('PFAD_PLUGIN_FRONTEND', 'frontend/');
+define('PFAD_PLUGIN_ADMINMENU', 'adminmenu/');
+define('PFAD_PLUGIN_LICENCE', 'licence/');
+define('PFAD_PLUGIN_PAYMENTMETHOD', 'paymentmethod/');
+define('PFAD_PLUGIN_TEMPLATE', 'template/');
+define('PFAD_PLUGIN_BOXEN', 'boxen/');
+define('PFAD_PLUGIN_WIDGET', 'widget/');
+define('PFAD_PLUGIN_EXPORTFORMAT', 'exportformat/');
+define('PFAD_PLUGIN_UNINSTALL', 'uninstall/');
+define('PLUGIN_INFO_FILE', 'info.xml');
+define('PLUGIN_LICENCE_METHODE', 'checkLicence');
+define('PLUGIN_LICENCE_CLASS', 'PluginLicence');
+define('PLUGIN_EXPORTFORMAT_CONTENTFILE', 'PluginContentFile_');
 define('PLUGIN_SEITENHANDLER', 'seite_plugin.php');
-
-//Red. Param
+define('PLUGIN_BOOTSTRAPPER', 'bootstrap.php');
+// Red. Param
 define('R_MINDESTMENGE', 1);
 define('R_LAGER', 2);
 define('R_LOGIN', 3);
@@ -298,7 +299,7 @@ define('R_LOGIN_RMA', 19);
 // 2 = Tiefe 1
 // 3 = Tiefe 2
 define('K_KATEGORIE_TIEFE', 3);
-//url sep
+// url sep
 define('SEP_SEITE', '_s');
 define('SEP_KAT', ':');
 define('SEP_HST', '::');
@@ -306,7 +307,7 @@ define('SEP_MERKMAL', '__');
 define('SEP_MM_MMW', '--');
 // extract params seperator
 define('EXT_PARAMS_SEPERATORS_REGEX', '\&\?');
-//Updater
+// Updater
 define('U_FILE_PREFIX', 'jtl_update_');
 // JobQueue
 defined('JOBQUEUE_LIMIT_JOBS') || define('JOBQUEUE_LIMIT_JOBS', '5');
@@ -439,6 +440,8 @@ define('CHECKBOX_ORT_BESTELLABSCHLUSS', 2);
 define('CHECKBOX_ORT_NEWSLETTERANMELDUNG', 3);
 define('CHECKBOX_ORT_KUNDENDATENEDITIEREN', 4);
 define('CHECKBOX_ORT_KONTAKT', 5);
+define('CHECKBOX_ORT_FRAGE_ZUM_PRODUKT', 6);
+define('CHECKBOX_ORT_FRAGE_VERFUEGBARKEIT', 7);
 // JTLLOG Levels
 define('JTLLOG_LEVEL_ERROR', 1); // 0001
 define('JTLLOG_LEVEL_NOTICE', 2); // 0010
@@ -450,7 +453,33 @@ define('JTLSEPARATER_AMOUNT', 3);
 // Globale Arten von generierte Nummern (z.b. Bestellnummer)
 define('JTL_GENNUMBER_ORDERNUMBER', 1);
 define('JTL_GENNUMBER_RMANUMBER', 2);
-// Steuersatz Standardland OVERRIDE - setzt ein anderes Steuerland, als im Shop angegeben (upper case, ISO 3166-2)
-// define('STEUERSATZ_STANDARD_LAND', 'DE');
-
-defined('CUSTOMER_ACCOUNT_MAX_ORDERS') || define('CUSTOMER_ACCOUNT_MAX_ORDERS', 50);
+// JTL Support Email
+define('JTLSUPPORT_EMAIL', 'support@jtl-software.de');
+// JTL URLS
+define('JTLURL_BASE', 'https://ext.jtl-software.de/');
+define('JTLURL_HP', 'https://www.jtl-software.de/');
+define('JTLURL_GET_DUK', JTLURL_BASE . 'json_duk.php');
+define('JTLURL_GET_SHOPNEWS', JTLURL_HP . 'news_json.php?notimeline=1&limit=5');
+define('JTLURL_GET_SHOPPATCH', JTLURL_BASE . 'json_patch.php');
+define('JTLURL_GET_SHOPMARKETPLACE', JTLURL_BASE . 'json_marketplace.php');
+define('JTLURL_GET_SHOPHELP', JTLURL_BASE . 'jtlhelp.php');
+define('JTLURL_GET_SHOPVERSION', JTLURL_BASE . 'json_version.php');
+// Log-Levels
+define('LOGLEVEL_ERROR', 1);
+define('LOGLEVEL_NOTICE', 2);
+define('LOGLEVEL_DEBUG', 3);
+// Auswahlassistent
+define('AUSWAHLASSISTENT_ORT_STARTSEITE', 'kStartseite');
+define('AUSWAHLASSISTENT_ORT_KATEGORIE', 'kKategorie');
+define('AUSWAHLASSISTENT_ORT_LINK', 'kLink');
+// Upload
+define('UPLOAD_TYP_KUNDE', 1);
+define('UPLOAD_TYP_BESTELLUNG', 2);
+define('UPLOAD_TYP_WARENKORBPOS', 3);
+define('UPLOAD_ERROR_NEED_UPLOAD', 12);
+// Template
+define('TEMPLATE_XML', 'template.xml');
+// Seo
+define('SHOP_SEO', true);
+// Sessionspeicherung 1 => DB, sonst => Dateien
+define('ES_SESSIONS', 0);

@@ -17,18 +17,18 @@
             <th>{lang key="wishlistPosCount" section="login"}</th>
             <th>{lang key="wishlistProduct" section="login"}</th>
             <th>{lang key="wishlistComment" section="login"}</th>
-            <!--<th>{lang key="wishlistAddedOn" section="login"}</th>-->
+            {*<th>{lang key="wishlistAddedOn" section="login"}</th>*}
         </tr>
         </thead>
         <tbody>
         {foreach name=wunschlistepos from=$CWunschliste->CWunschlistePos_arr item=CWunschlistePos}
             <tr>
                 <td style="width:10%">
-                    <a href="{$CWunschlistePos->Artikel->cURL}"><img src="{$CWunschlistePos->Artikel->Bilder[0]->cPfadKlein}" class="image"></a>
+                    <a href="{$CWunschlistePos->Artikel->cURLFull}"><img src="{$CWunschlistePos->Artikel->Bilder[0]->cPfadKlein}" class="image"></a>
                 </td>
                 <td><b>{$CWunschlistePos->fAnzahl}</b><br>{$CWunschlistePos->Artikel->cEinheit}</td>
                 <td valign="middle">
-                    <a href="{$CWunschlistePos->Artikel->cURL}">{$CWunschlistePos->cArtikelName}</a>
+                    <a href="{$CWunschlistePos->Artikel->cURLFull}">{$CWunschlistePos->cArtikelName}</a>
                     <p><span class="price">{$CWunschlistePos->cPreis}</span></p>
                     {foreach name=eigenschaft from=$CWunschlistePos->CWunschlistePosEigenschaft_arr item=CWunschlistePosEigenschaft}
                         {if !empty($CWunschlistePosEigenschaft->cEigenschaftName) && !empty($CWunschlistePosEigenschaft->cEigenschaftWertName)}
@@ -40,7 +40,7 @@
                     {/foreach}
                 </td>
                 <td valign="middle">{$CWunschlistePos->cKommentar}</td>
-                <!--<td valign="top">{$CWunschlistePos->dHinzugefuegt_de}</td>-->
+                {*<td valign="top">{$CWunschlistePos->dHinzugefuegt_de}</td>*}
             </tr>
         {/foreach}
         </tbody>

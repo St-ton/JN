@@ -150,16 +150,16 @@
         },
         {
             "name": "paypal/sdk-core-php",
-            "version": "v3.2.4",
+            "version": "3.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/paypal/sdk-core-php.git",
-                "reference": "16b01e8e05f18538ff8dcce3292f0ada4eb4969b"
+                "reference": "e74083dbd0a9375c616b71cf0188dce87e5688ec"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/paypal/sdk-core-php/zipball/16b01e8e05f18538ff8dcce3292f0ada4eb4969b",
-                "reference": "16b01e8e05f18538ff8dcce3292f0ada4eb4969b",
+                "url": "https://api.github.com/repos/paypal/sdk-core-php/zipball/e74083dbd0a9375c616b71cf0188dce87e5688ec",
+                "reference": "e74083dbd0a9375c616b71cf0188dce87e5688ec",
                 "shasum": ""
             },
             "require": {
@@ -192,7 +192,7 @@
                 "php",
                 "sdk"
             ],
-            "time": "2016-01-20 17:53:01"
+            "time": "2016-05-16 18:04:26"
         }
     ],
     "packages-dev": [],

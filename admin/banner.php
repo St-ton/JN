@@ -70,7 +70,7 @@ if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && 
         if ($nSeite === PAGE_ARTIKEL) {
             $cKey      = 'kArtikel';
             $cKeyValue = 'article_key';
-            $cValue    = $_POST[$cKeyValue];
+            $cValue    = (isset($_POST[$cKeyValue])) ? $_POST[$cKeyValue] : null;
         } elseif ($nSeite === PAGE_ARTIKELLISTE) {
             // data mapping
             $aFilter_arr = array(
@@ -81,7 +81,7 @@ if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && 
                 'cSuche'       => 'keycSuche'
             );
             $cKeyValue = $aFilter_arr[$cKey];
-            $cValue    = $_POST[$cKeyValue];
+            $cValue    = (isset($_POST[$cKeyValue])) ? $_POST[$cKeyValue] : null;
         } elseif ($nSeite === PAGE_HERSTELLER) {
             $cKey      = 'kHersteller';
             $cKeyValue = 'manufacturer_key';
@@ -89,10 +89,10 @@ if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && 
         } elseif ($nSeite === PAGE_EIGENE) {
             $cKey      = 'kLink';
             $cKeyValue = 'link_key';
-            $cValue    = $_POST[$cKeyValue];
+            $cValue    = (isset($_POST[$cKeyValue])) ? $_POST[$cKeyValue] : null;
         }
 
-        Shop::DB()->delete('textensionpoint', array('cClass', 'kInitial'), array('ImageMap', $kImageMap));
+        Shop::DB()->delete('textensionpoint', ['cClass', 'kInitial'], ['ImageMap', $kImageMap]);
         // save extensionpoint
         $oExtension                = new stdClass();
         $oExtension->kSprache      = $kSprache;
@@ -156,7 +156,7 @@ switch ($cAction) {
         $oExtension    = holeExtension($id);
         $oSprache      = Sprache::getInstance(false);
         $oSprachen_arr = $oSprache->gibInstallierteSprachen();
-        $nMaxFileSize  = return_bytes(ini_get('upload_max_filesize'));
+        $nMaxFileSize  = getMaxFileSize(ini_get('upload_max_filesize'));
 
         $smarty->assign('oExtension', $oExtension)
                ->assign('cBannerFile_arr', holeBannerDateien())
@@ -174,7 +174,7 @@ switch ($cAction) {
     case 'new':
         $oSprache      = Sprache::getInstance(false);
         $oSprachen_arr = $oSprache->gibInstallierteSprachen();
-        $nMaxFileSize  = return_bytes(ini_get('upload_max_filesize'));
+        $nMaxFileSize  = getMaxFileSize(ini_get('upload_max_filesize'));
         $smarty->assign('oBanner', (isset($oBanner) ? $oBanner : null))
                ->assign('oSprachen_arr', $oSprachen_arr)
                ->assign('oKundengruppe_arr', Kundengruppe::getGroups())

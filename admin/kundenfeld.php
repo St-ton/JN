@@ -77,21 +77,9 @@ if (isset($_POST['einstellungen']) && intval($_POST['einstellungen']) > 0) {
         if (count($oPlausi->getPlausiVar()) === 0) {
             // Update?
             if (isset($_POST['kKundenfeld']) && (int)$_POST['kKundenfeld'] > 0) {
-                Shop::DB()->query(
-                    "DELETE
-                      FROM tkundenfeld
-                      WHERE tkundenfeld.kKundenfeld = " . (int)$_POST['kKundenfeld'], 3
-                );
-                Shop::DB()->query(
-                    "DELETE
-                       FROM tkundenfeldwert
-                       WHERE tkundenfeldwert.kKundenfeld = " . (int)$_POST['kKundenfeld'], 3
-                );
-                Shop::DB()->query(
-                    "DELETE
-                       FROM tkundenattribut
-                       WHERE tkundenattribut.kKundenfeld = " . (int)$_POST['kKundenfeld'], 3
-                );
+                Shop::DB()->delete('tkundenfeld', 'kKundenfeld', (int)$_POST['kKundenfeld']);
+                Shop::DB()->delete('tkundenfeldwert', 'kKundenfeld', (int)$_POST['kKundenfeld']);
+                Shop::DB()->delete('tkundenattribut', 'kKundenfeld', (int)$_POST['kKundenfeld']);
             }
 
             $oKundenfeld              = new stdClass();

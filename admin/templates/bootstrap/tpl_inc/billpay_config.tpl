@@ -1,5 +1,5 @@
 <div class="plain-list">
-{if isset($oItem->cFehler) && $oItem->cFehler|count_characters > 0}
+{if isset($oItem->cFehler) && $oItem->cFehler|strlen > 0}
     <div class="alert alert-danger">{$oItem->cFehler}</div>
 {else}
     <div class="panel panel-default">

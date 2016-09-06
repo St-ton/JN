@@ -9,46 +9,48 @@
                         {lang key="averageProductRating" section="product rating"}
                     </h3>
                 </div>
-                <div class="panel-body">
-                    <form method="post" action="{get_static_route id='bewertung.php'}" id="article_rating" class="row">
+                <div class="panel-body hidden-print">
+                    <form method="post" action="{get_static_route id='bewertung.php'}" id="article_rating">
                         {$jtl_token}
-                        {if $Artikel->Bewertungen->oBewertungGesamt->nAnzahl > 0}
-                            <div id="article_votes" class="col-xs-12 col-md-6">
-                                {foreach name=sterne from=$Artikel->Bewertungen->nSterne_arr item=nSterne key=i}
-                                    {assign var=int1 value=5}
-                                    {math equation='x - y' x=$int1 y=$i assign='schluessel'}
-                                    {assign var=int2 value=100}
-                                    {math equation='a/b*c' a=$nSterne b=$Artikel->Bewertungen->oBewertungGesamt->nAnzahl c=$int2 assign='percent'}
-                                    <div class="row">
-                                        <div class="col-xs-12 col-sm-6 col-lg-4">
-                                            {if $nSterne > 0}
-                                                <a href="index.php?a={$Artikel->kArtikel}&amp;btgsterne={$schluessel}">{$schluessel} {if $i == 4}{lang key="starSingular" section="product rating"}{else}{lang key="starPlural" section="product rating"}{/if}</a>
-                                            {else}
-                                                {$schluessel} {if $i == 4}{lang key="starSingular" section="product rating"}{else}{lang key="starPlural" section="product rating"}{/if}
-                                            {/if}
-                                        </div>
-                                        <div class="col-xs-12 col-sm-6 col-lg-8">
-                                            <div class="progress">
+                        <div class="row">
+                            {if $Artikel->Bewertungen->oBewertungGesamt->nAnzahl > 0}
+                                <div id="article_votes" class="col-xs-12 col-md-6">
+                                    {foreach name=sterne from=$Artikel->Bewertungen->nSterne_arr item=nSterne key=i}
+                                        {assign var=int1 value=5}
+                                        {math equation='x - y' x=$int1 y=$i assign='schluessel'}
+                                        {assign var=int2 value=100}
+                                        {math equation='a/b*c' a=$nSterne b=$Artikel->Bewertungen->oBewertungGesamt->nAnzahl c=$int2 assign='percent'}
+                                        <div class="row">
+                                            <div class="col-xs-12 col-sm-6 col-lg-4">
                                                 {if $nSterne > 0}
-                                                    <div class="progress-bar" role="progressbar" aria-valuenow="{$percent|round}" aria-valuemin="0" aria-valuemax="100" style="width: {$percent|round}%;">
-                                                        {$nSterne}
-                                                    </div>
+                                                    <a href="{$Artikel->cURLFull}?btgsterne={$schluessel}">{$schluessel} {if $i == 4}{lang key="starSingular" section="product rating"}{else}{lang key="starPlural" section="product rating"}{/if}</a>
+                                                {else}
+                                                    {$schluessel} {if $i == 4}{lang key="starSingular" section="product rating"}{else}{lang key="starPlural" section="product rating"}{/if}
                                                 {/if}
                                             </div>
+                                            <div class="col-xs-12 col-sm-6 col-lg-8">
+                                                <div class="progress">
+                                                    {if $nSterne > 0}
+                                                        <div class="progress-bar" role="progressbar" aria-valuenow="{$percent|round}" aria-valuemin="0" aria-valuemax="100" style="width: {$percent|round}%;">
+                                                            {$nSterne}
+                                                        </div>
+                                                    {/if}
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
-                                {/foreach}
-                            </div>
-                        {/if}
-                        <div class="col-xs-12 {if $Artikel->Bewertungen->oBewertungGesamt->nAnzahl === 0}col-md-10 col-md-push-1 {else}col-md-6 {/if}">
-                            {if $Artikel->Bewertungen->oBewertungGesamt->nAnzahl == 0}
-                                <p>{lang key="firstReview" section="global"}: </p>
-                            {else}
-                                <p>{lang key="shareYourExperience" section="product rating"}: </p>
+                                    {/foreach}
+                                </div>
                             {/if}
-                            <input name="bfa" type="hidden" value="1" />
-                            <input name="a" type="hidden" value="{$Artikel->kArtikel}" />
-                            <input name="bewerten" type="submit" value="{lang key="productAssess" section="product rating"}" class="submit btn btn-primary" />
+                            <div class="col-xs-12 {if $Artikel->Bewertungen->oBewertungGesamt->nAnzahl === 0}col-md-10 col-md-push-1 {else}col-md-6 {/if}">
+                                {if $Artikel->Bewertungen->oBewertungGesamt->nAnzahl == 0}
+                                    <p>{lang key="firstReview" section="global"}: </p>
+                                {else}
+                                    <p>{lang key="shareYourExperience" section="product rating"}: </p>
+                                {/if}
+                                <input name="bfa" type="hidden" value="1" />
+                                <input name="a" type="hidden" value="{$Artikel->kArtikel}" />
+                                <input name="bewerten" type="submit" value="{lang key="productAssess" section="product rating"}" class="submit btn btn-primary" />
+                            </div>
                         </div>
                     </form>
                 </div>
@@ -86,7 +88,7 @@
             {if $Artikel->Bewertungen->oBewertung_arr|@count == 1 && $Artikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich > 0 && $Artikel->HilfreichsteBewertung->oBewertung_arr[0]->kBewertung == $oBewertung->kBewertung}
                 {* only one review so far. don't display this stuff *}
             {else}
-                <div class="review-wrapper reviews-sortcontrol">
+                <div class="review-wrapper reviews-sortcontrol hidden-print">
                     <form id="sortierenID" method="post" action="{if !empty($Artikel->cURLFull)}{$Artikel->cURLFull}{else}index.php{/if}" class="form-inline">
                         {$jtl_token}
                         <input name="a" type="hidden" value="{$Artikel->kArtikel}" />
@@ -146,24 +148,24 @@
 
             {if $Artikel->Bewertungen->nAnzahlSprache > $Einstellungen.bewertung.bewertung_anzahlseite && $BlaetterNavi->nAktiv == 1}
                 <div class="reviews-pagination row">
-                    <div class="col-xs-4">
+                    <div class="col-xs-12">
                         <ul class="pagination">
                             <li>
                                 {if $BlaetterNavi->nAktuelleSeite > 1}
-                                    <a href="index.php?a={$Artikel->kArtikel}&btgsterne={$BlaetterNavi->nSterne}&btgseite={$BlaetterNavi->nVoherige}">&laquo; {lang key="previous" section="productOverview"}</a>
+                                    <a href="{$Artikel->cURLFull}?btgsterne={$BlaetterNavi->nSterne}&amp;btgseite={$BlaetterNavi->nVoherige}#tab-votes">&laquo; {lang key="previous" section="productOverview"}</a>
                                 {/if}
                                 {if $BlaetterNavi->nAnfang != 0}
-                                    <a href="index.php?a={$Artikel->kArtikel}&btgsterne={$BlaetterNavi->nSterne}&btgseite={$BlaetterNavi->nAnfang}">{$BlaetterNavi->nAnfang}</a> ...
+                                    <a href="{$Artikel->cURLFull}?btgsterne={$BlaetterNavi->nSterne}&amp;btgseite={$BlaetterNavi->nAnfang}#tab-votes">{$BlaetterNavi->nAnfang}</a> ...
                                 {/if}
                             </li>
                             {foreach name=blaetter from=$BlaetterNavi->nBlaetterAnzahl_arr item=Blatt key=i}
                                 <li class="{if $BlaetterNavi->nAktuelleSeite == $Blatt}active{/if}">
-                                    <a href="index.php?a={$Artikel->kArtikel}&btgsterne={$BlaetterNavi->nSterne}&btgseite={$Blatt}">{$Blatt}</a>
+                                    <a href="{$Artikel->cURLFull}?&btgsterne={$BlaetterNavi->nSterne}&amp;btgseite={$Blatt}#tab-votes">{$Blatt}</a>
                                 </li>
                             {/foreach}
                             <li>
                                 {if $BlaetterNavi->nAktuelleSeite < $BlaetterNavi->nSeiten}
-                                    <a href="index.php?a={$Artikel->kArtikel}&btgsterne={$BlaetterNavi->nSterne}&btgseite={$BlaetterNavi->nNaechste}">{lang key="next" section="productOverview"} &raquo;</a>
+                                    <a href="{$Artikel->cURLFull}?btgsterne={$BlaetterNavi->nSterne}&amp;btgseite={$BlaetterNavi->nNaechste}#tab-votes">{lang key="next" section="productOverview"} &raquo;</a>
                                 {/if}
                             </li>
                         </ul>

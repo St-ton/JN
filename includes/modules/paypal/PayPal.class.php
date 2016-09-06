@@ -4,7 +4,7 @@ include_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
 
 // Debug
 define('PP_D_MODE', 0); // 1 = An / 0 = Aus
-define('PP_D_PFAD', PFAD_ROOT . 'jtllogs/paypal.log');
+define('PP_D_PFAD', PFAD_LOGFILES . 'paypal.log');
 
 // Sandbox
 define('URL_TEST', 'https://www.sandbox.paypal.com/cgi-bin/webscr');

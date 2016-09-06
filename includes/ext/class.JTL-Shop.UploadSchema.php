@@ -88,7 +88,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
          */
         public function update()
         {
-            return Shop::DB()->update('tuploadschema', 'kUploadSchema', intval($this->kUploadSchema), self::copyMembers($this));
+            return Shop::DB()->update('tuploadschema', 'kUploadSchema', (int)$this->kUploadSchema, self::copyMembers($this));
         }
 
         /**
@@ -96,7 +96,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
          */
         public function delete()
         {
-            return Shop::DB()->query("DELETE FROM tuploadschema WHERE kUploadSchema = " . intval($this->kUploadSchema), 3);
+            return Shop::DB()->delete('tuploadschema', 'kUploadSchema', (int)$this->kUploadSchema);
         }
 
         /**

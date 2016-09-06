@@ -86,49 +86,66 @@ class Redirect
     }
 
     /**
+     * Get a redirect by target
+     *
+     * @param string $cToUrl target to search for
+     * @return mixed returns null if fails, redirect object if successful
+     */
+    public function getRedirectByTarget($cToUrl)
+    {
+        return Shop::DB()->select('tredirect', 'cToUrl', $this->normalize($cToUrl));
+    }
+
+    /**
      * @param string $cSource
-     * @param string $cDestiny
+     * @param string $cDestination
      * @return bool
      */
-    public function isDeadlock($cSource, $cDestiny)
+    public function isDeadlock($cSource, $cDestination)
     {
-        $nPos      = strrpos($cSource, '/');
-        $nPos      = $nPos !== false ? ($nPos + 1) : 0;
-        $cSource   = substr($cSource, $nPos);
-        $xPath_arr = parse_url(Shop::getURL());
-        $cDestiny  = (isset($xPath_arr['path'])) ? $xPath_arr['path'] . '/' . $cDestiny : $cDestiny;
-        $oObj      = Shop::DB()->select('tredirect', 'cFromUrl', $cDestiny, 'cToUrl', $cSource);
+        $xPath_arr     = parse_url(Shop::getURL());
+        $cDestination  = (isset($xPath_arr['path'])) ? $xPath_arr['path'] . '/' . $cDestination : $cDestination;
+        $oObj          = Shop::DB()->select('tredirect', 'cFromUrl', $cDestination, 'cToUrl', $cSource);
 
         return (isset($oObj->kRedirect) && intval($oObj->kRedirect) > 0);
     }
 
     /**
      * @param string $cSource
-     * @param string $cDestiny
+     * @param string $cDestination
      * @param bool   $bForce
      * @return bool
      */
-    public function saveExt($cSource, $cDestiny, $bForce = false)
+    public function saveExt($cSource, $cDestination, $bForce = false)
     {
-        if (strlen($cSource) > 1 && substr($cSource, 0, 1) !== '/') {
+        if (strlen($cSource) > 0 && substr($cSource, 0, 1) !== '/') {
             $cSource = '/' . $cSource;
         }
-        if (strlen($cDestiny) > 1 && substr($cDestiny, 0, 1) !== '/') {
-            $cDestiny = '/' . $cDestiny;
+        if (strlen($cDestination) > 0 && substr($cDestination, 0, 1) !== '/') {
+            $cDestination = '/' . $cDestination;
         }
-        if (strlen($cSource) > 1 && strlen($cDestiny) > 1 && $cSource != $cDestiny || $bForce) {
-            if (!$this->isDeadlock($cSource, $cDestiny)) {
-                $oRedirect = $this->find($cSource);
 
-                if (!$oRedirect) {
-                    $oObj           = new stdClass();
-                    $oObj->cFromUrl = StringHandler::convertISO($cSource);
-                    $oObj->cToUrl   = StringHandler::convertISO($cDestiny);
+        if (strlen($cSource) > 1 && strlen($cDestination) > 1 && $cSource != $cDestination || $bForce) {
+            if ($this->isDeadlock($cSource, $cDestination)) {
+                Shop::DB()->delete('tredirect', ['cToUrl', 'cFromUrl'], [$cSource, $cDestination]);
+            }
+            $oTarget = $this->getRedirectByTarget($cSource);
+            if (!empty($oTarget)) {
+                $this->saveExt($oTarget->cFromUrl, $cDestination);
+                $oObj           = new stdClass();
+                $oObj->cToUrl   = StringHandler::convertISO($cDestination);
+                Shop::DB()->update('tredirect', 'cToUrl', $cSource, $oObj);
+            }
 
-                    $kRedirect = Shop::DB()->insert('tredirect', $oObj);
-                    if (intval($kRedirect) > 0) {
-                        return true;
-                    }
+            $oRedirect = $this->find($cSource);
+            if (empty($oRedirect)) {
+                $oObj           = new stdClass();
+                $oObj->cFromUrl = StringHandler::convertISO($cSource);
+                $oObj->cToUrl   = StringHandler::convertISO($cDestination);
+
+                $kRedirect = Shop::DB()->insert('tredirect', $oObj);
+                if (intval($kRedirect) > 0) {
+                    return true;
                 }
             }
         }
@@ -306,7 +323,6 @@ class Redirect
             $seoPath  = Shop::DB()->select('tseo', 'cSeo', $lastPath);
             if ((isset($seoPath->cSeo) && strlen($seoPath->cSeo) > 0) || $filename === 'jtl.php' ||
                 $filename === 'warenkorb.php' || $filename === 'kontakt.php' || $filename === 'news.php') {
-                
                 return $lastPath;
             }
         }
@@ -484,43 +500,61 @@ class Redirect
      * @param string $cSuchbegriff
      * @param bool   $cMitVerweis
      * @return mixed
+     * @deprecated since 4.05 - use Redirect::getRedirects()
      */
     public function getList($nStart, $nLimit, $bUmgeleiteteUrls, $cSortierFeld, $cSortierung, $cSuchbegriff, $cMitVerweis = true)
     {
-        $cSub_arr = array(
-            'dFirst',
-            'dLast'
-        );
-        if (in_array($cSortierFeld, $cSub_arr)) {
-            $cSortierFeld = "tredirectreferer.{$cSortierFeld}";
+        $cWhereSQL_arr = array();
+        $cOrderSQL = $cSortierFeld . ' ' . $cSortierung;
+        $cLimitSQL = (int)$nStart . ',' . (int)$nLimit;
+
+        if ($cSuchbegriff != '') {
+            $cWhereSQL_arr[] = "cFromUrl LIKE '%" . $cSuchbegriff . "%'";
         }
 
-        $where = '';
-        if ($bUmgeleiteteUrls == '1' || $bUmgeleiteteUrls == '2' || !empty($cSuchbegriff)) {
-            $where .= 'WHERE ';
-        }
         if ($bUmgeleiteteUrls == '1') {
-            $where .= ' cToUrl != ""';
+            $cWhereSQL_arr[] = "cToUrl != ''";
+            if ($cSuchbegriff != '') {
+                $cWhereSQL_arr[] = "cToUrl LIKE '%" . $cSuchbegriff . "%'";
+            }
         } elseif ($bUmgeleiteteUrls === '2') {
-            $where .= ' cToUrl = ""';
+            $cWhereSQL_arr[] = "cToUrl = ''";
         }
-        if (!empty($cSuchbegriff) && $bUmgeleiteteUrls == '1') {
-            $where .= ' AND ';
-        }
-        if (!empty($cSuchbegriff)) {
-            $where .= "cFromUrl LIKE '%{$cSuchbegriff}%'";
-        }
-        $oRedirect_arr = Shop::DB()->query(
-            "SELECT tredirect.kRedirect, tredirect.cFromUrl, tredirect.cToUrl, tredirect.nCount
-                FROM tredirect {$where}
-                ORDER BY {$cSortierFeld} {$cSortierung} LIMIT {$nStart},{$nLimit}", 2
-        );
 
-        if ($cMitVerweis) {
-            if (is_array($oRedirect_arr) && count($oRedirect_arr)) {
-                foreach ($oRedirect_arr as &$oRedirect) {
-                    $oRedirect->oRedirectReferer_arr = $this->getVerweise($oRedirect->kRedirect);
-                }
+        $cWhereSQL = implode(' AND ', $cWhereSQL_arr);
+
+        return self::getRedirects($cWhereSQL, $cOrderSQL, $cLimitSQL);
+    }
+
+    /**
+     * @param int $kRedirect
+     * @return mixed
+     * @deprecated since 4.05 - use Redirect::getReferers()
+     */
+    public function getVerweise($kRedirect)
+    {
+        return self::getReferers($kRedirect);
+    }
+
+    /**
+     * @param $cWhereSQL
+     * @param $cOrderSQL
+     * @param $cLimitSQL
+     * @return array
+     */
+    public static function getRedirects ($cWhereSQL, $cOrderSQL, $cLimitSQL)
+    {
+        $oRedirect_arr = Shop::DB()->query("
+            SELECT *
+                FROM tredirect
+                " . ($cWhereSQL != '' ? "WHERE " . $cWhereSQL : "") . "
+                ORDER BY " . $cOrderSQL . "
+                LIMIT " . $cLimitSQL,
+            2);
+
+        if (is_array($oRedirect_arr) && count($oRedirect_arr) > 0) {
+            foreach ($oRedirect_arr as &$oRedirect) {
+                $oRedirect->oRedirectReferer_arr = self::getReferers($oRedirect->kRedirect);
             }
         }
 
@@ -529,17 +563,27 @@ class Redirect
 
     /**
      * @param int $kRedirect
-     * @return mixed
+     * @param int $nLimit
+     * @return array
      */
-    public function getVerweise($kRedirect)
+    public static function getReferers($kRedirect, $nLimit = 100)
     {
         return Shop::DB()->query(
             "SELECT tredirectreferer.*, tbesucherbot.cName AS cBesucherBotName, tbesucherbot.cUserAgent AS cBesucherBotAgent
                 FROM tredirectreferer
                 LEFT JOIN tbesucherbot
                     ON tredirectreferer.kBesucherBot = tbesucherbot.kBesucherBot
-                    WHERE kRedirect = " . intval($kRedirect) . "
-                ORDER BY dDate ASC LIMIT 100", 2
-        );
+                    WHERE kRedirect = " . (int)$kRedirect . "
+                ORDER BY dDate ASC
+                LIMIT " . (int)$nLimit,
+            2);
+    }
+
+    /**
+     * @return int
+     */
+    public static function getTotalRedirectCount()
+    {
+        return Shop::DB()->query("SELECT count(kRedirect) AS nCount FROM tredirect", 1)->nCount;
     }
 }

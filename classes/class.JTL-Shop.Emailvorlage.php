@@ -75,6 +75,12 @@ class Emailvorlage
      * @access protected
      * @var int
      */
+    protected $nWRBForm;
+
+    /**
+     * @access protected
+     * @var int
+     */
     protected $nFehlerhaft;
 
     /**
@@ -109,9 +115,10 @@ class Emailvorlage
      */
     private function loadFromDB($kEmailvorlage, $bPlugin)
     {
+        $kEmailvorlage = (int)$kEmailvorlage;
         $cTable        = $bPlugin ? 'tpluginemailvorlage' : 'temailvorlage';
         $cTableSetting = $bPlugin ? 'tpluginemailvorlageeinstellungen' : 'temailvorlageeinstellungen';
-        $oObj          = Shop::DB()->query("SELECT * FROM {$cTable} WHERE kEmailvorlage = " . intval($kEmailvorlage), 1);
+        $oObj          = Shop::DB()->select($cTable, 'kEmailvorlage', $kEmailvorlage);
 
         if (isset($oObj->kEmailvorlage) && $oObj->kEmailvorlage > 0) {
             $cMember_arr = array_keys(get_object_vars($oObj));
@@ -231,7 +238,7 @@ class Emailvorlage
      */
     public function setAKZ($nAKZ)
     {
-        $this->nAKZ = $nAKZ;
+        $this->nAKZ = (int)$nAKZ;
 
         return $this;
     }
@@ -244,7 +251,7 @@ class Emailvorlage
      */
     public function setAGB($nAGB)
     {
-        $this->nAGB = $nAGB;
+        $this->nAGB = (int)$nAGB;
 
         return $this;
     }
@@ -257,7 +264,20 @@ class Emailvorlage
      */
     public function setWRB($nWRB)
     {
-        $this->nWRB = $nWRB;
+        $this->nWRB = (int)$nWRB;
+
+        return $this;
+    }
+
+    /**
+     * Sets the nWRBForm
+     *
+     * @var int
+     * @return $this
+     */
+    public function setWRBForm($nWRBForm)
+    {
+        $this->nWRBForm = (int)$nWRBForm;
 
         return $this;
     }
@@ -270,7 +290,7 @@ class Emailvorlage
      */
     public function setFehlerhaft($nFehlerhaft)
     {
-        $this->nFehlerhaft = $nFehlerhaft;
+        $this->nFehlerhaft = (int)$nFehlerhaft;
 
         return $this;
     }
@@ -378,6 +398,16 @@ class Emailvorlage
     public function getWRB()
     {
         return $this->nWRB;
+    }
+
+    /**
+     * Gets the nWRBForm
+     *
+     * @return int
+     */
+    public function getWRBForm()
+    {
+        return $this->nWRBForm;
     }
 
     /**

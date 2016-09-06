@@ -26,7 +26,7 @@ $oCron_arr = Shop::DB()->query(
     "SELECT tcron.*
         FROM tcron
         LEFT JOIN tjobqueue ON tjobqueue.kCron = tcron.kCron
-        WHERE (tcron.dLetzterStart='0000-00-00 00:00:00' OR (UNIX_TIMESTAMP(now()) > (UNIX_TIMESTAMP(tcron.dLetzterStart) + (3600 * tcron.nAlleXStd))))
+        WHERE (tcron.dLetzterStart = '0000-00-00 00:00:00' OR (UNIX_TIMESTAMP(now()) > (UNIX_TIMESTAMP(tcron.dLetzterStart) + (3600 * tcron.nAlleXStd))))
             AND tcron.dStart < now()
             AND tjobqueue.kJobQueue IS NULL", 2
 );
@@ -91,9 +91,4 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'jobqueue_inc.php';
 
 if (file_exists(JOBQUEUE_LOCKFILE)) {
     unlink(JOBQUEUE_LOCKFILE);
-}
-
-if (!isset($bCronManuell) || !$bCronManuell) {
-    header('Content-type: image/gif');
-    echo base64_decode('R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==');
 }

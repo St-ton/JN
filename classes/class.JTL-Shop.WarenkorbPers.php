@@ -191,8 +191,7 @@ class WarenkorbPers
     public function ladeWarenkorbPers($bArtikel)
     {
         // Prüfe ob die WarenkorbPers dem eingeloggten Kunden gehört
-        $oWarenkorbPers = Shop::DB()->query("SELECT * FROM twarenkorbpers WHERE kKunde = " . intval($this->kKunde), 1);
-
+        $oWarenkorbPers = Shop::DB()->select('twarenkorbpers', 'kKunde', (int)$this->kKunde);
         if (!isset($oWarenkorbPers->kWarenkorbPers) || $oWarenkorbPers->kWarenkorbPers == 0) {
             $this->dErstellt = 'now()';
             $this->schreibeDB();

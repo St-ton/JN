@@ -45,3 +45,8 @@
    $token->createFromRefreshToken(array('openid', 'address'));
 ```
    6. Redirect your buyer to `PPOpenIdSession::getLogoutUrl($redirectUri, $idToken);` to log him out of paypal. 
+
+
+#### LICENSE and CONTRIBUTIONS
+
+- Please read [LICENSE](LICENSE) and [CONTRIBUTING](CONTRIBUTING.md) for more information.

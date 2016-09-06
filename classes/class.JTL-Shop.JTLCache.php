@@ -83,7 +83,7 @@ class JTLCache
     /**
      * currently active caching method
      *
-     * @var ICachingMethod
+     * @var JTLCacheTrait
      */
     private $_method = null;
 
@@ -344,7 +344,7 @@ class JTLCache
             'collect_stats'    => false, //used to tell caching methods to collect statistical data or not (if not provided transparently)
             'debug'            => false, //enable or disable collecting of debug data
             'debug_method'     => 'echo', //'ssd'/'jtld' for SmarterSmartyDebug/JTLDebug, 'echo' for direct echo
-            'cache_dir'        => (defined('PFAD_ROOT') && defined('PFAD_COMPILEDIR')) ? (PFAD_ROOT . PFAD_COMPILEDIR . 'filecache/') : '/tmp', //file cache directory
+            'cache_dir'        => (defined('PFAD_ROOT') && defined('PFAD_COMPILEDIR')) ? (PFAD_ROOT . PFAD_COMPILEDIR . 'filecache/') : sys_get_temp_dir(), //file cache directory
             'file_extension'   => '.fcache', //file extension for file cache
             'page_cache'       => false, //smarty page cache switch
             'types_disabled'   => array() //disabled cache groups
@@ -356,11 +356,9 @@ class JTLCache
             $this->options['cache_dir'] .= '/';
         }
         //accept only valid integer lifetime values
-        if ($this->options['lifetime'] === '' || (int) $this->options['lifetime'] <= 0) {
-            $this->options['lifetime'] = self::DEFAULT_LIFETIME;
-        } else {
-            $this->options['lifetime'] = (int) $this->options['lifetime'];
-        }
+        $this->options['lifetime'] = ($this->options['lifetime'] === '' || (int) $this->options['lifetime'] <= 0) ?
+            self::DEFAULT_LIFETIME :
+            (int)$this->options['lifetime'];
         if ($this->options['types_disabled'] === null) {
             $this->options['types_disabled'] = array();
         }
@@ -405,7 +403,7 @@ class JTLCache
     /**
      * set caching method
      *
-     * @param ICachingMethod $method
+     * @param JTLCacheTrait $method
      *
      * @return $this
      */
@@ -862,7 +860,7 @@ class JTLCache
      */
     public function _isActive()
     {
-        return (bool) $this->options['activated'];
+        return (bool)$this->options['activated'];
     }
 
     /**
@@ -872,7 +870,7 @@ class JTLCache
      */
     public function _isPageCacheEnabled()
     {
-        return (bool) $this->options['page_cache'];
+        return false;
     }
 
     /**
@@ -1016,7 +1014,7 @@ class JTLCache
         if (is_array($methods)) {
             foreach ($methods as $method) {
                 if ($method !== 'null') {
-                    $results[] = $this->benchmark($method, $testData, $runCount, $repeat, $echo, $format);
+                    $results[] = $this->_benchmark($method, $testData, $runCount, $repeat, $echo, $format);
                 }
             }
         } else {

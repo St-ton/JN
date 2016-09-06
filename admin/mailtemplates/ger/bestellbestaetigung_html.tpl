@@ -81,6 +81,16 @@ Ihre Bestellung mit Bestellnummer {$Bestellung->cBestellNr} umfasst folgende Pos
             <strong>{$Bestellung->WarensummeLocalized[0]}</strong>
         </td>
     </tr>
+</table>
+<table cellpadding="0" cellspacing="0" border="0" width="100%" style="border-bottom: 1px dotted #929292;">
+    <tr>
+        <td class="column mobile-left" width="50%" align="left" valign="top">
+            <strong>Lieferzeit:</strong>
+        </td>
+        <td class="column mobile-left" width="50%" align="right" valign="top">
+            {if isset($Bestellung->cEstimatedDeliveryEx)}{$Bestellung->cEstimatedDeliveryEx}{else}{$Bestellung->cEstimatedDelivery}{/if}
+        </td>
+    </tr>
 </table><br>
 <strong>Ihre Rechnungsadresse:</strong><br>
 <br>

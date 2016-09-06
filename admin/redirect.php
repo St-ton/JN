@@ -8,7 +8,6 @@ require_once dirname(__FILE__) . '/includes/admininclude.php';
 
 $oAccount->permission('REDIRECT_VIEW', true, true);
 
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'blaetternavi.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 
 $aData           = (isset($_POST['aData'])) ? $_POST['aData'] : null;
@@ -16,13 +15,6 @@ $oRedirect       = new Redirect();
 $urls            = array();
 $cHinweis        = '';
 $cFehler         = '';
-$cParams_arr     = array(
-    'cSortierFeld'     => 'nCount',
-    'cSortierung'      => 'DESC',
-    'nAnzahlProSeite'  => 50,
-    'bUmgeleiteteUrls' => 0,
-    'cSuchbegriff'     => ''
-);
 
 switch ($aData['action']) {
     case 'search':
@@ -99,22 +91,24 @@ switch ($aData['action']) {
         break;
 }
 
-foreach ($cParams_arr as $cKey => $cVal) {
-    if (isset($_POST[$cKey]) && !empty($_POST[$cKey])) {
-        $cParams_arr[$cKey] = $_POST[$cKey];
-        $smarty->assign($cKey, $_POST[$cKey]);
-    } else {
-        $smarty->assign($cKey, $cVal);
-    }
-}
+$oFilter = new Filter();
+$oFilter->addTextfield('URL', 'cFromUrl', 1);
+$oFilter->addTextfield('Ziel-URL', 'cToUrl', 1);
+$oSelect = $oFilter->addSelectfield('Umleitung', 'cToUrl');
+$oSelect->addSelectOption('alle', '', 0);
+$oSelect->addSelectOption('vorhanden', '', 9);
+$oSelect->addSelectOption('fehlend', '', 4);
+$oFilter->assemble();
 
-$oBlaetterNaviConf = baueBlaetterNaviGetterSetter(1, $cParams_arr['nAnzahlProSeite']);
-$cParams           = '';
-foreach ($cParams_arr as $key => $val) {
-    $cParams .= $key . '=' . $val . '&';
-}
-$oRedirect_arr = $oRedirect->getList($oBlaetterNaviConf->cLimit1, $cParams_arr['nAnzahlProSeite'], $cParams_arr['bUmgeleiteteUrls'], $cParams_arr['cSortierFeld'], $cParams_arr['cSortierung'], $cParams_arr['cSuchbegriff']);
-$oBlaetterNavi = baueBlaetterNavi($oBlaetterNaviConf->nAktuelleSeite1, $oRedirect->getCount($cParams_arr['bUmgeleiteteUrls'], $cParams_arr['cSuchbegriff']), $cParams_arr['nAnzahlProSeite']);
+$oPagination = (new Pagination())
+    ->setItemCount(Redirect::getTotalRedirectCount())
+    ->setSortByOptions([['cFromUrl', 'Url'],
+                        ['cToUrl', 'Weiterleitung nach'],
+                        ['nCount', 'Aufrufe']])
+    ->assemble();
+
+$oRedirect_arr = Redirect::getRedirects($oFilter->getWhereSQL(), $oPagination->getOrderSQL(), $oPagination->getLimitSQL());
+
 if (!empty($oRedirect_arr) && !empty($urls)) {
     foreach ($oRedirect_arr as &$kRedirect) {
         if (array_key_exists($kRedirect->kRedirect, $urls)) {
@@ -127,9 +121,10 @@ if (!empty($oRedirect_arr) && !empty($urls)) {
 }
 
 $smarty->assign('aData', $aData)
-       ->assign('cParams', $cParams)
-       ->assign('oBlaetterNavi', $oBlaetterNavi)
-       ->assign('oRedirect_arr', $oRedirect_arr)
-       ->assign('cHinweis', $cHinweis)
-       ->assign('cFehler', $cFehler)
-       ->display('redirect.tpl');
+    ->assign('oPagination', $oPagination)
+    ->assign('oFilter', $oFilter)
+    ->assign('oRedirect_arr', $oRedirect_arr)
+    ->assign('nRedirectCount', Redirect::getTotalRedirectCount())
+    ->assign('cHinweis', $cHinweis)
+    ->assign('cFehler', $cFehler)
+    ->display('redirect.tpl');

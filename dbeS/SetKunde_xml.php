@@ -155,7 +155,7 @@ function bearbeite($xml)
             }
             //Kunde existiert nicht im Shop - check, ob email schon belegt
             $oKundeAlt = Shop::DB()->query("SELECT kKunde FROM tkunde WHERE nRegistriert = 1 AND cMail = '" . Shop::DB()->escape($Kunde->cMail) . "'", 1);
-            if ($oKundeAlt->kKunde > 0) {
+            if (isset($oKundeAlt->kKunde) && $oKundeAlt->kKunde > 0) {
                 //EMAIL SCHON BELEGT -> Kunde wird nicht neu angelegt, sondern der Kunde wird an Wawi zurückgegeben
                 $xml_obj['kunden']['tkunde']      = Shop::DB()->query(
                     "SELECT kKunde, kKundengruppe, kSprache, cKundenNr, cPasswort, cAnrede, cTitel, cVorname,
@@ -337,11 +337,7 @@ function speicherKundenattribut($kKunde, $kSprache, $oKundenattribut_arr, $bNeu)
                     continue;
                 }
                 if (!$bNeu) {
-                    Shop::DB()->query(
-                        "DELETE FROM tkundenattribut
-                            WHERE kKunde = " . $kKunde . "
-                                AND kKundenfeld = " . (int)$oKundenfeld->kKundenfeld, 4
-                    );
+                    Shop::DB()->delete('tkundenattribut', ['kKunde', 'kKundenfeld'], [$kKunde, (int)$oKundenfeld->kKundenfeld]);
                 }
                 $oKundenattributTMP              = new stdClass();
                 $oKundenattributTMP->kKunde      = $kKunde;

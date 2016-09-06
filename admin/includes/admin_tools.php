@@ -320,7 +320,7 @@ function setzeSprache()
     }
     //setze explizit ausgewählte Sprache
     if (isset($_POST['sprachwechsel']) && intval($_POST['sprachwechsel']) === 1) {
-        $StdSprache = Shop::DB()->query("SELECT kSprache, cISO FROM tsprache WHERE kSprache = " . intval($_POST['kSprache']), 1);
+        $StdSprache = Shop::DB()->select('tsprache', 'kSprache', (int)$_POST['kSprache']);
         if ($StdSprache->kSprache > 0) {
             $_SESSION['kSprache']    = $StdSprache->kSprache;
             $_SESSION['cISOSprache'] = $StdSprache->cISO;
@@ -455,4 +455,18 @@ function getJTLVersionDB($bDate = false)
     }
 
     return $nRet;
+}
+
+/**
+ * @param string $size_str
+ * @return mixed
+ */
+function getMaxFileSize($size_str)
+{
+    switch (substr($size_str, -1)) {
+        case 'M': case 'm': return (int)$size_str * 1048576;
+        case 'K': case 'k': return (int)$size_str * 1024;
+        case 'G': case 'g': return (int)$size_str * 1073741824;
+        default: return $size_str;
+    }
 }

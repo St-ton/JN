@@ -3,7 +3,6 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-define('JTLLOG_MAX_LOGSIZE', 200000);
 
 /**
  * Class Jtllol
@@ -100,7 +99,7 @@ class Jtllog
         unset($oObj->kLog);
         $this->setErstellt(date('Y-m-d H:i:s'));
 
-        $kPrim = Shop::DB()->insert('tjtllog', $oObj, 0, false);
+        $kPrim = Shop::DB()->insert('tjtllog', $oObj);
         if ($kPrim > 0) {
             return $bPrim ? $kPrim : true;
         }
@@ -300,7 +299,7 @@ class Jtllog
      */
     public function delete()
     {
-        return Shop::DB()->query("DELETE FROM tjtllog WHERE kLog = " . $this->getkLog(), 3);
+        return Shop::DB()->delete('tjtllog', 'kLog', $this->getkLog());
     }
 
     /**
@@ -484,5 +483,22 @@ class Jtllog
     public static function isBitFlagSet($nVal, $nFlag)
     {
         return ($nVal & $nFlag);
+    }
+
+    /**
+     * @param string $string
+     * @param int    $level
+     * @return bool
+     */
+    public static function cronLog($string, $level = 1)
+    {
+        if (php_sapi_name() === 'cli' && defined('VERBOSE_CRONJOBS') && (int)VERBOSE_CRONJOBS >= $level) {
+            $now = new DateTime();
+            echo $now->format('Y-m-d H:i:s') . ' ' . $string . PHP_EOL;
+
+            return true;
+        }
+
+        return false;
     }
 }

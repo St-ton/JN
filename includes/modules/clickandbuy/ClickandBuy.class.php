@@ -6,7 +6,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES_LIBS . PFAD_NUSOAP . 'nusoap.php';
 
 // Debug
 define('CAB_D_MODE', 0); // 1 = An / 0 = Aus
-define('CAB_D_PFAD', PFAD_ROOT . 'jtllogs/clickandbuy.log');
+define('CAB_D_PFAD', PFAD_LOGFILES . 'clickandbuy.log');
 
 define('SOAP_NAMESPACE', "http://api.clickandbuy.com/webservices/pay_1_0_0/\" xmlns=\"http://api.clickandbuy.com/webservices/pay_1_0_0/");
 define('SOAP_ACTION', 'http://api.clickandbuy.com/webservices/pay_1_0_0/');

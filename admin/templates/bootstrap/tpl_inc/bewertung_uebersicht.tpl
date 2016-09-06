@@ -35,11 +35,11 @@
     <div class="tab-content">
         <div id="freischalten" class="tab-pane fade {if !isset($cTab) || $cTab === 'freischalten'} active in{/if}">
             {if $oBewertung_arr && $oBewertung_arr|@count > 0}
+                {include file='tpl_inc/pagination.tpl' oPagination=$oPagiInaktiv cAnchor='freischalten'}
                 <form method="post" action="bewertung.php">
                     {$jtl_token}
                     <input type="hidden" name="bewertung_nicht_aktiv" value="1" />
                     <input type="hidden" name="tab" value="freischalten" />
-                    {include file='pagination.tpl' cSite=1 cUrl='bewertung.php' oBlaetterNavi=$oBlaetterNaviInaktiv hash='#freischalten'}
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <h3 class="panel-title">{#ratingsInaktive#}</h3>
@@ -97,11 +97,11 @@
         </div>
         <div id="letzten50" class="tab-pane fade {if isset($cTab) && $cTab === 'letzten50'} active in{/if}">
             {if $oBewertungLetzten50_arr && $oBewertungLetzten50_arr|@count > 0}
+                {include file='tpl_inc/pagination.tpl' oPagination=$oPagiAktiv cAnchor='letzten50'}
                 <form name="letzten50" method="post" action="bewertung.php">
                     {$jtl_token}
                     <input type="hidden" name="bewertung_aktiv" value="1" />
                     <input type="hidden" name="tab" value="letzten50" />
-                    {include file='pagination.tpl' cSite=2 cUrl='bewertung.php' oBlaetterNavi=$oBlaetterNaviAktiv hash='#letzten50'}
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <h3 class="panel-title">{#ratingLast50#}</h3>
@@ -164,7 +164,7 @@
                         <button name="submitSearch" type="submit" value="{#ratingSearch#}" class="btn btn-info"><i class="fa fa-search"></i> {#ratingSearch#}</button>
                     </span>
                 </div>
-                {if isset($cArtNr) && $cArtNr|count_characters > 0}
+                {if isset($cArtNr) && $cArtNr|strlen > 0}
                     <div class="alert alert-info">{#ratingSearchedFor#}: {$cArtNr}</div>
                 {/if}
                 {if $oBewertungAktiv_arr && $oBewertungAktiv_arr|@count > 0}

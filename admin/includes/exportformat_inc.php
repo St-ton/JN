@@ -289,15 +289,17 @@ function verarbeiteYategoExport(&$Artikel, $exportformat, $ExportEinstellungen, 
         $Artikel->cName                 = StringHandler::unhtmlentities($Artikel->cName);
         $Artikel->cBeschreibung         = StringHandler::unhtmlentities($Artikel->cBeschreibung);
         $Artikel->cKurzBeschreibung     = StringHandler::unhtmlentities($Artikel->cKurzBeschreibung);
-        $Artikel->cName                 = StringHandler::removeDoubleSpaces(str_replace($find, $replace, $Artikel->cName));
-        $Artikel->cBeschreibung         = StringHandler::removeDoubleSpaces(str_replace($find, $replace, $Artikel->cBeschreibung));
-        $Artikel->cKurzBeschreibung     = StringHandler::removeDoubleSpaces(str_replace($find, $replace, $Artikel->cKurzBeschreibung));
-        $Artikel->cBeschreibungHTML     = StringHandler::removeDoubleSpaces(str_replace($find, $replace, $Artikel->cBeschreibungHTML));
-        $Artikel->cKurzBeschreibungHTML = StringHandler::removeDoubleSpaces(str_replace($find, $replace, $Artikel->cKurzBeschreibungHTML));
+        $Artikel->cName                 = StringHandler::removeWhitespace(str_replace($find, $replace, $Artikel->cName));
+        $Artikel->cBeschreibung         = StringHandler::removeWhitespace(str_replace($find, $replace, $Artikel->cBeschreibung));
+        $Artikel->cKurzBeschreibung     = StringHandler::removeWhitespace(str_replace($find, $replace, $Artikel->cKurzBeschreibung));
+        $Artikel->cBeschreibungHTML     = StringHandler::removeWhitespace(str_replace($find, $replace, $Artikel->cBeschreibungHTML));
+        $Artikel->cKurzBeschreibungHTML = StringHandler::removeWhitespace(str_replace($find, $replace, $Artikel->cKurzBeschreibungHTML));
         $Artikel->Preise->fVKBrutto     = berechneBrutto($Artikel->Preise->fVKNetto, gibUst($Artikel->kSteuerklasse));
         //Kategoriepfad
-        $Artikel->Kategorie     = new Kategorie($Artikel->gibKategorie());
-        $Artikel->Kategoriepfad = gibKategoriepfad($Artikel->Kategorie, $exportformat->kKundengruppe, $exportformat->kSprache);
+        $Artikel->Kategorie     = new Kategorie($Artikel->gibKategorie(), $exportformat->kSprache, $exportformat->kKundengruppe);
+        $Artikel->Kategoriepfad = (isset($Artikel->Kategorie->cKategoriePfad)) ?
+            $Artikel->Kategorie->cKategoriePfad : // calling gibKategoriepfad() should not be necessary since it has already been called in Kategorie::loadFromDB()
+            gibKategoriepfad($Artikel->Kategorie, $exportformat->kKundengruppe, $exportformat->kSprache);
         $Artikel->Versandkosten = gibGuenstigsteVersandkosten($ExportEinstellungen['exportformate_lieferland'], $Artikel, 0, $exportformat->kKundengruppe);
         // Kampagne URL
         if (isset($exportformat->tkampagne_cParameter)) {
@@ -441,7 +443,7 @@ function verarbeiteYategoExport(&$Artikel, $exportformat, $ExportEinstellungen, 
                                 );
                                 $fLagerbestand = -1;
                                 $nAktiv        = 1;
-                                if ($oVariationsKind->cLagerBeachten === 'Y') {
+                                if ($oVariationsKind->cLagerBeachten === 'Y' && $oVariationsKind->cLagerKleinerNull === 'N') {
                                     $fLagerbestand = $oVariationsKind->fLagerbestand;
                                     if ($oVariationsKind->fLagerbestand <= 0) {
                                         $nAktiv = 0;
@@ -529,7 +531,8 @@ function verarbeiteYategoExport(&$Artikel, $exportformat, $ExportEinstellungen, 
             $cVarianten = implode(',', $oVariationsListe_arr);
         }
 
-        $cBacklink = '<h1 style="font-size: 100%;"><a href="' . getURL($Artikel->cURL) . '" target="_blank">' . $Artikel->cName . '</a></h1>';
+        //do not use double quotes here to keep csv column order (https://gitlab.jtl-software.de/jtlshop/shop4/issues/166)
+        $cBacklink = "<a href='" . getURL($Artikel->cURL) . "' target='_blank'>{$Artikel->cName}</a>";
 
         $oGlobal_arr['artikel'][] = array(
             'foreign_id'         => $Artikel->kArtikel,
@@ -543,11 +546,11 @@ function verarbeiteYategoExport(&$Artikel, $exportformat, $ExportEinstellungen, 
             'short_desc'         => '<h2>' . $Artikel->cName . '</h2>' . (($Artikel->cKurzBeschreibung) ? $Artikel->cKurzBeschreibung : substr($Artikel->cBeschreibung, 0, 130)),
             'long_desc'          => '<h2>' . $Artikel->cName . '</h2>' . $Artikel->cBeschreibung . $cBacklink,
             'url'                => getURL($Artikel->cURL),
-            'picture'            => getURL($Artikel->Bilder[0]->cPfadGross),
-            'picture2'           => getURL($Artikel->Bilder[1]->cPfadGross),
-            'picture3'           => getURL($Artikel->Bilder[2]->cPfadGross),
-            'picture4'           => getURL($Artikel->Bilder[3]->cPfadGross),
-            'picture5'           => getURL($Artikel->Bilder[4]->cPfadGross),
+            'picture'            => isset($Artikel->Bilder[0]) ? getURL($Artikel->Bilder[0]->cPfadGross) : '',
+            'picture2'           => isset($Artikel->Bilder[1]) ? getURL($Artikel->Bilder[1]->cPfadGross) : '',
+            'picture3'           => isset($Artikel->Bilder[2]) ? getURL($Artikel->Bilder[2]->cPfadGross) : '',
+            'picture4'           => isset($Artikel->Bilder[3]) ? getURL($Artikel->Bilder[3]->cPfadGross) : '',
+            'picture5'           => isset($Artikel->Bilder[4]) ? getURL($Artikel->Bilder[4]->cPfadGross) : '',
             'categories'         => implode(',', $kKategorieListe_arr),
             'variants'           => $cVarianten,
             'delivery_date'      => $Artikel->cLieferstatus,
@@ -561,7 +564,7 @@ function verarbeiteYategoExport(&$Artikel, $exportformat, $ExportEinstellungen, 
             $fVPEWert      = (isset($Artikel->fVPEWert) && $Artikel->fVPEWert > 0) ? $Artikel->fVPEWert : 1;
             $fLagerbestand = -1;
             $nAktiv        = 1;
-            if ($Artikel->cLagerBeachten === 'Y') {
+            if ($Artikel->cLagerBeachten === 'Y' && $Artikel->cLagerKleinerNull === 'N') {
                 $fLagerbestand = $oWert->fLagerbestand;
                 if ($Artikel->fLagerbestand <= 0) {
                     $nAktiv = 0;
@@ -680,7 +683,7 @@ function holeMaxExportArtikelAnzahl(&$oExportformat)
     }
 
     return Shop::DB()->query(
-        "SELECT count(*) as nAnzahl
+        "SELECT count(*) AS nAnzahl
             FROM tartikel
             LEFT JOIN tartikelattribut ON tartikelattribut.kArtikel = tartikel.kArtikel
                 AND tartikelattribut.cName = '" . FKT_ATTRIBUT_KEINE_PREISSUCHMASCHINEN . "'

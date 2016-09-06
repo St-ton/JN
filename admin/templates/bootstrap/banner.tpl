@@ -24,6 +24,15 @@
     {if $cAction === 'edit' || $cAction === 'new'}
     <script type="text/javascript">
         {literal}
+        var file2large = false;
+
+        function checkfile(e){
+            e.preventDefault();
+            if (!file2large){
+                document.banner.submit();
+            }
+        }
+
         $(document).ready(function () {
             $("select[name='cKey']").change(function () {
                 var selected = $("select[name='cKey'] option:selected");
@@ -56,8 +65,10 @@
                 {literal}
                 if (filesize >= maxsize) {
                     $('.input-group.file-input').after('<div class="alert alert-danger"><i class="fa fa-warning"></i> Die Datei ist gr&ouml;&szlig;er als das Uploadlimit des Servers.</div>').slideDown();
+                    file2large = true;
                 } else {
                     $('form div.alert').slideUp();
+                    file2large = false;
                 }
             });
 
@@ -96,7 +107,7 @@
         {/literal}
     </script>
     <div id="settings">
-        <form action="banner.php" method="post" enctype="multipart/form-data">
+        <form name="banner" action="banner.php" method="post" enctype="multipart/form-data" onsubmit="checkfile(event);">
             {$jtl_token}
             <input type="hidden" name="action" value="{$cAction}" />
             {if $cAction === 'edit'}
@@ -342,12 +353,11 @@
                     </span>
                     <input type="hidden" name="article" id="article" value="{if isset($oBanner->kArtikel)}{$oBanner->kArtikel}{/if}" />
                 </div>
-                <a href="#" class="btn btn-default" id="article_browser">Artikel w&auml;hlen</a>
-                <a href="#" class="btn btn-default" id="article_unlink">Artikel L&ouml;sen</a>
-
                 <input type="hidden" name="id" id="id" />
                 <div class="save_wrapper btn-group">
-                    <button type="button" class="btn btn-danger" id="remove"><i class="fa fa-trash"></i>Zone l&ouml;schen</button>
+                    <a href="#" class="btn btn-default" id="article_browser">Artikel w&auml;hlen</a>
+                    <a href="#" class="btn btn-default" id="article_unlink">Artikel L&ouml;sen</a>
+                    <button type="button" class="btn btn-danger" id="remove"><i class="fa fa-trash"></i> Zone l&ouml;schen</button>
                 </div>
             </div>
         </div>

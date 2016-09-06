@@ -36,6 +36,8 @@ Gutschein: -{$Bestellung->GutscheinLocalized}
 
 Gesamtsumme: {$Bestellung->WarensummeLocalized[0]}
 
+Lieferzeit: {if isset($Bestellung->cEstimatedDeliveryEx)}{$Bestellung->cEstimatedDeliveryEx}{else}{$Bestellung->cEstimatedDelivery}{/if}
+
 
 Ihre Rechnungsadresse:
 

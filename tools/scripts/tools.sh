@@ -10,16 +10,52 @@ bgWhite=$(tput setab 7)   ; bgBlack=$(tput setab 0)
 
 B=$(tput bold) ; U=$(tput smul) ; C=$(tput sgr0)
 
+use_colors()
+{
+    if test -t 1; then
+        ncolors=$(tput colors)
+        if test -n "$ncolors" && test $ncolors -ge 8; then
+            return 0
+        fi
+    fi
+    return 1
+}
+
+# $1 colored
+# $2 noncolor
+echo_colored()
+{
+    use_colors
+    if [ $? == 0 ]
+    then
+        printf "$1\n"
+    else
+        printf "$2\n"
+    fi
+}
+
+# $1 text
+text()
+{
+    echo_colored "${fgMagenta}$1${C}" "$1"
+}
+
 # $1 text
 msg()
 {
-    printf "${fgYellow}Ξ${C} $1\n"
+    echo_colored " ${fgYellow}•${C} $1" " - $1"
+}
+
+# $1 text
+success()
+{
+    echo_colored " ${fgGreen}•${C} $1" " - $1"
 }
 
 # $1 text
 error()
 {
-    printf "${fgRed}Ξ${C} $1\n"
+    echo_colored " ${fgRed}•${C} $1" " - $1"
     exit -1
 }
 

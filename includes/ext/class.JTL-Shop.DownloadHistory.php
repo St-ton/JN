@@ -50,11 +50,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
          */
         private function loadFromDB($kDownloadHistory)
         {
-            $oDownloadHistory = Shop::DB()->query(
-                "SELECT *
-                    FROM tdownloadhistory
-                    WHERE kDownloadHistory = " . (int)$kDownloadHistory, 1
-            );
+            $oDownloadHistory = Shop::DB()->select('tdownloadhistory', 'kDownloadHistory', (int)$kDownloadHistory);
             if (isset($oDownloadHistory->kDownloadHistory) && intval($oDownloadHistory->kDownloadHistory) > 0) {
                 $cMember_arr = array_keys(get_object_vars($oDownloadHistory));
                 if (is_array($cMember_arr) && count($cMember_arr) > 0) {

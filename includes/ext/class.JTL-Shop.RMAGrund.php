@@ -141,10 +141,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         public function delete()
         {
-            return Shop::DB()->query(
-                "DELETE FROM trmagrund
-                   WHERE kRMAGrund = " . $this->kRMAGrund, 3
-            );
+            return Shop::DB()->delete('trmagrund', 'kRMAGrund', $this->getRMAGrund());
         }
 
         /**
@@ -239,7 +236,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         public function getRMAGrund()
         {
-            return $this->kRMAGrund;
+            return (int)$this->kRMAGrund;
         }
 
         /**
@@ -250,7 +247,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         public function getSprache()
         {
-            return $this->kSprache;
+            return (int)$this->kSprache;
         }
 
         /**
@@ -261,7 +258,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         public function getSort()
         {
-            return $this->nSort;
+            return (int)$this->nSort;
         }
 
         /**

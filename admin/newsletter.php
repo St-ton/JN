@@ -8,7 +8,6 @@ require_once dirname(__FILE__) . '/includes/admininclude.php';
 $oAccount->permission('MODULE_NEWSLETTER_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'newsletter_inc.php';
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'blaetternavi.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 
 $Einstellungen = Shop::getSettings(array(CONF_NEWSLETTER));
@@ -38,10 +37,6 @@ if (!isset($_SESSION['Kundengruppe'])) {
 $_SESSION['Kundengruppe']->kKundengruppe = $oKundengruppe->kKundengruppe;
 
 setzeSprache();
-
-// BlaetterNavi Getter / Setter + SQL
-$nAnzahlProSeite   = 15;
-$oBlaetterNaviConf = baueBlaetterNaviGetterSetter(5, $nAnzahlProSeite);
 
 // Tabs
 if (strlen(verifyGPDataString('tab')) > 0) {
@@ -507,6 +502,46 @@ if (isset($_POST['einstellungen']) && intval($_POST['einstellungen']) === 1) {
 
 // Steps
 if ($step === 'uebersicht') {
+
+    $oNewsletterEmpfaengerAnzahl = Shop::DB()->query(
+        "SELECT count(*) AS nAnzahl
+            FROM tnewsletterempfaenger
+            WHERE tnewsletterempfaenger.nAktiv = 0" . $cInaktiveSucheSQL->cWHERE, 1
+    );
+    $oNewsletterQueueAnzahl = Shop::DB()->query(
+        "SELECT count(*) AS nAnzahl
+            FROM tnewsletterqueue
+            JOIN tnewsletter ON tnewsletterqueue.kNewsletter = tnewsletter.kNewsletter
+            WHERE tnewsletter.kSprache = " . (int)$_SESSION['kSprache'], 1
+    );
+    $oNewsletterVorlageAnzahl = Shop::DB()->query(
+        "SELECT count(*) AS nAnzahl
+            FROM tnewslettervorlage
+            WHERE kSprache = " . (int)$_SESSION['kSprache'], 1
+    );
+    $oNewsletterHistoryAnzahl = Shop::DB()->query(
+        "SELECT count(*) AS nAnzahl
+            FROM tnewsletterhistory
+            WHERE kSprache = " . (int)$_SESSION['kSprache'], 1
+    );
+
+    // Paginationen
+    $oPagiInaktiveAbos = (new Pagination('inaktive'))
+        ->setItemCount($oNewsletterEmpfaengerAnzahl->nAnzahl)
+        ->assemble();
+    $oPagiWarteschlange = (new Pagination('warteschlange'))
+        ->setItemCount($oNewsletterQueueAnzahl->nAnzahl)
+        ->assemble();
+    $oPagiVorlagen = (new Pagination('vorlagen'))
+        ->setItemCount($oNewsletterVorlageAnzahl->nAnzahl)
+        ->assemble();
+    $oPagiHistory = (new Pagination('history'))
+        ->setItemCount($oNewsletterHistoryAnzahl->nAnzahl)
+        ->assemble();
+    $oPagiAlleAbos = (new Pagination('alle'))
+        ->setItemCount(holeAbonnentenAnzahl($cAktiveSucheSQL))
+        ->assemble();
+
     // Kundengruppen
     $oKundengruppe_arr = Shop::DB()->query(
         "SELECT kKundengruppe, cName
@@ -520,13 +555,7 @@ if ($step === 'uebersicht') {
             FROM tnewsletterqueue
             JOIN tnewsletter ON tnewsletterqueue.kNewsletter = tnewsletter.kNewsletter
             WHERE tnewsletter.kSprache = " . (int)$_SESSION['kSprache'] . "
-            ORDER BY Datum DESC" . $oBlaetterNaviConf->cSQL2, 2
-    );
-    $oNewsletterQueueAnzahl = Shop::DB()->query(
-        "SELECT count(*) AS nAnzahl
-            FROM tnewsletterqueue
-            JOIN tnewsletter ON tnewsletterqueue.kNewsletter = tnewsletter.kNewsletter
-            WHERE tnewsletter.kSprache = " . (int)$_SESSION['kSprache'], 1
+            ORDER BY Datum DESC LIMIT " . $oPagiWarteschlange->getLimitSQL(), 2
     );
     if (is_array($oNewsletterQueue_arr) && count($oNewsletterQueue_arr) > 0) {
         // Hole JobQueue fortschritt fuer Newsletterqueue
@@ -550,12 +579,7 @@ if ($step === 'uebersicht') {
         "SELECT kNewsletterVorlage, kNewslettervorlageStd, cBetreff, cName
             FROM tnewslettervorlage
             WHERE kSprache = " . (int)$_SESSION['kSprache'] . "
-            ORDER BY cName " . $oBlaetterNaviConf->cSQL3, 2
-    );
-    $oNewsletterVorlageAnzahl = Shop::DB()->query(
-        "SELECT count(*) AS nAnzahl
-            FROM tnewslettervorlage
-            WHERE kSprache = " . (int)$_SESSION['kSprache'], 1
+            ORDER BY cName LIMIT " . $oPagiVorlagen->getLimitSQL(), 2
     );
     if (is_array($oNewsletterVorlage_arr) && count($oNewsletterVorlage_arr) > 0) {
         $smarty->assign('oNewsletterVorlage_arr', $oNewsletterVorlage_arr);
@@ -595,12 +619,7 @@ if ($step === 'uebersicht') {
             LEFT JOIN tkundengruppe ON tkundengruppe.kKundengruppe = tkunde.kKundengruppe
             WHERE tnewsletterempfaenger.nAktiv = 0
             " . $cInaktiveSucheSQL->cWHERE . "
-            ORDER BY Datum DESC" . $oBlaetterNaviConf->cSQL1, 2
-    );
-    $oNewsletterEmpfaengerAnzahl = Shop::DB()->query(
-        "SELECT count(*) AS nAnzahl
-            FROM tnewsletterempfaenger
-            WHERE tnewsletterempfaenger.nAktiv = 0" . $cInaktiveSucheSQL->cWHERE, 1
+            ORDER BY Datum DESC LIMIT " . $oPagiInaktiveAbos->getLimitSQL(), 2
     );
     if (is_array($oNewsletterEmpfaenger_arr) && count($oNewsletterEmpfaenger_arr) > 0) {
         foreach ($oNewsletterEmpfaenger_arr as $i => $oNewsletterEmpfaenger) {
@@ -616,13 +635,7 @@ if ($step === 'uebersicht') {
             FROM tnewsletterhistory
             WHERE kSprache = " . (int)$_SESSION['kSprache'] . "
                 AND nAnzahl > 0
-            ORDER BY dStart DESC" . $oBlaetterNaviConf->cSQL4, 2
-    );
-
-    $oNewsletterHistoryAnzahl = Shop::DB()->query(
-        "SELECT count(*) AS nAnzahl
-            FROM tnewsletterhistory
-            WHERE kSprache = " . (int)$_SESSION['kSprache'], 1
+            ORDER BY dStart DESC LIMIT " . $oPagiHistory->getLimitSQL(), 2
     );
     if (is_array($oNewsletterHistory_arr) && count($oNewsletterHistory_arr) > 0) {
         $smarty->assign('oNewsletterHistory_arr', $oNewsletterHistory_arr);
@@ -656,21 +669,16 @@ if ($step === 'uebersicht') {
 
     $kundengruppen = Shop::DB()->query("SELECT * FROM tkundengruppe ORDER BY cName", 2);
 
-    $oBlaetterNaviInaktiveAbonnenten = baueBlaetterNavi($oBlaetterNaviConf->nAktuelleSeite1, $oNewsletterEmpfaengerAnzahl->nAnzahl, $nAnzahlProSeite);
-    $oBlaetterNaviNLWarteschlange    = baueBlaetterNavi($oBlaetterNaviConf->nAktuelleSeite2, $oNewsletterQueueAnzahl->nAnzahl, $nAnzahlProSeite);
-    $oBlaetterNaviNLVorlagen         = baueBlaetterNavi($oBlaetterNaviConf->nAktuelleSeite3, $oNewsletterVorlageAnzahl->nAnzahl, $nAnzahlProSeite);
-    $oBlaetterNaviNLHistory          = baueBlaetterNavi($oBlaetterNaviConf->nAktuelleSeite4, $oNewsletterHistoryAnzahl->nAnzahl, $nAnzahlProSeite);
-    $oBlaetterNaviAlleAbonnenten     = baueBlaetterNavi($oBlaetterNaviConf->nAktuelleSeite5, holeAbonnentenAnzahl($cAktiveSucheSQL), $nAnzahlProSeite);
-
     $smarty->assign('kundengruppen', $kundengruppen)
-           ->assign('oConfig_arr', $oConfig_arr)
-           ->assign('oAbonnenten_arr', holeAbonnenten($oBlaetterNaviConf->cSQL5, $cAktiveSucheSQL))
-           ->assign('nMaxAnzahlAbonnenten', holeAbonnentenAnzahl($cAktiveSucheSQL))
-           ->assign('oBlaetterNaviInaktiveAbonnenten', $oBlaetterNaviInaktiveAbonnenten)
-           ->assign('oBlaetterNaviNLWarteschlage', $oBlaetterNaviNLWarteschlange)
-           ->assign('oBlaetterNaviNLVorlagen', $oBlaetterNaviNLVorlagen)
-           ->assign('oBlaetterNaviNLHistory', $oBlaetterNaviNLHistory)
-           ->assign('oBlaetterNaviAlleAbonnenten', $oBlaetterNaviAlleAbonnenten);
+        ->assign('oConfig_arr', $oConfig_arr)
+        ->assign('oAbonnenten_arr', holeAbonnenten(' LIMIT ' . $oPagiAlleAbos->getLimitSQL(), $cAktiveSucheSQL))
+        ->assign('nMaxAnzahlAbonnenten', holeAbonnentenAnzahl($cAktiveSucheSQL))
+        ->assign('oPagiInaktiveAbos', $oPagiInaktiveAbos)
+        ->assign('oPagiWarteschlange', $oPagiWarteschlange)
+        ->assign('oPagiVorlagen', $oPagiVorlagen)
+        ->assign('oPagiHistory', $oPagiHistory)
+        ->assign('oPagiAlleAbos', $oPagiAlleAbos)
+    ;
 }
 $Sprachen = gibAlleSprachen();
 $smarty->assign('Sprachen', $Sprachen)

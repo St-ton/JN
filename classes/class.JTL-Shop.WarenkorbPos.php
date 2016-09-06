@@ -150,6 +150,20 @@ class WarenkorbPos
     public $cKonfigeinzelpreisLocalized;
 
     /**
+     * @var string
+     */
+    public $cEstimatedDelivery = '';
+
+    /**
+     * @var object {
+     *      localized: string,
+     *      longestMin: int,
+     *      longestMax: int,
+     * }
+     */
+    public $oEstimatedDelivery = null;
+
+    /**
      * Konstruktor
      *
      * @param int $kWarenkorbPos Falls angegeben, wird der WarenkorbPos mit angegebenem kWarenkorbPos aus der DB geholt
@@ -301,6 +315,8 @@ class WarenkorbPos
      */
     public function setzeGesamtpreisLoacalized()
     {
+        /** @var array('Warenkorb' => Warenkorb) $_SESSION */
+
         if (is_array($_SESSION['Waehrungen'])) {
             foreach ($_SESSION['Waehrungen'] as $Waehrung) {
                 // Standardartikel
@@ -322,6 +338,7 @@ class WarenkorbPos
                     $fPreisBrutto = 0;
                     $nVaterPos    = null;
 
+                    /** @var  WarenkorbPos $oPosition */
                     foreach ($_SESSION['Warenkorb']->PositionenArr as $nPos => $oPosition) {
                         if ($this->cUnique == $oPosition->cUnique) {
                             $fPreisNetto += $oPosition->fPreis * $oPosition->nAnzahl;
@@ -365,6 +382,15 @@ class WarenkorbPos
             $this->$member = $obj->$member;
         }
 
+        if (isset($this->nLongestMinDelivery) && isset($this->nLongestMaxDelivery)) {
+            self::setEstimatedDelivery($this, $this->nLongestMinDelivery, $this->nLongestMaxDelivery);
+
+            unset($this->nLongestMinDelivery);
+            unset($this->nLongestMaxDelivery);
+        } else {
+            self::setEstimatedDelivery($this);
+        }
+
         return $this;
     }
 
@@ -394,6 +420,8 @@ class WarenkorbPos
         $obj->kKonfigitem               = $this->kKonfigitem;
         $obj->kBestellpos               = $this->kBestellpos;
         $obj->fLagerbestandVorAbschluss = $this->fLagerbestandVorAbschluss;
+        $obj->nLongestMinDelivery       = $this->oEstimatedDelivery->longestMin;
+        $obj->nLongestMaxDelivery       = $this->oEstimatedDelivery->longestMax;
 
         $this->kWarenkorbPos = Shop::DB()->insert('twarenkorbpos', $obj);
 
@@ -422,5 +450,30 @@ class WarenkorbPos
     public function istKonfig()
     {
         return ($this->istKonfigVater() || $this->istKonfigKind());
+    }
+
+    /**
+     * @param object $oWarenkorbPos
+     * @param int|null $nMinDelivery
+     * @param int|null $nMaxDelivery
+     */
+    public static function setEstimatedDelivery($oWarenkorbPos, $nMinDelivery = null, $nMaxDelivery = null)
+    {
+        $oWarenkorbPos->oEstimatedDelivery = (object)[
+            'localized'  => '',
+            'longestMin' => 0,
+            'longestMax' => 0,
+        ];
+        if (isset($nMinDelivery) && isset($nMaxDelivery)) {
+            $oWarenkorbPos->oEstimatedDelivery->longestMin = (int)$nMinDelivery;
+            $oWarenkorbPos->oEstimatedDelivery->longestMax = (int)$nMaxDelivery;
+
+            if (!empty($oWarenkorbPos->oEstimatedDelivery->longestMin) && !empty($oWarenkorbPos->oEstimatedDelivery->longestMax)) {
+                $oWarenkorbPos->oEstimatedDelivery->localized = getDeliverytimeEstimationText($oWarenkorbPos->oEstimatedDelivery->longestMin, $oWarenkorbPos->oEstimatedDelivery->longestMax);
+            } else {
+                $oWarenkorbPos->oEstimatedDelivery->localized = '';
+            }
+        }
+        $oWarenkorbPos->cEstimatedDelivery = &$oWarenkorbPos->oEstimatedDelivery->localized;
     }
 }

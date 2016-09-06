@@ -667,6 +667,9 @@ final class Shop
             //login redirect on wishlist add when not logged in uses get param "n" as amount
             self::$kNews    = 0;
             self::$kArtikel = 0;
+        } elseif (self::$kArtikel > 0 && $redirect === '9' && empty($_SESSION['Kunde']->kKunde)) {
+            //avoid redirect to article page for ratings that require logged in customers
+            self::$kArtikel = 0;
         }
 
         $_SESSION['cTemplate'] = Template::$cTemplate;

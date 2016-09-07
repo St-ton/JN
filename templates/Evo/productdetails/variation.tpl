@@ -1,4 +1,4 @@
-{if isset($Artikel->Variationen) && $Artikel->Variationen|@count > 0 && (isset($Artikel->nIstVater) && $Artikel->nIstVater == 1 || !$showMatrix)}
+{if isset($Artikel->Variationen) && $Artikel->Variationen|@count > 0 && !$showMatrix}
     {assign var="oVariationKombi_arr" value=$Artikel->getChildVariations()}
     <div class="variations {if $simple}simple{else}switch{/if}-variations top15 row">
         <div class="col-xs-12">

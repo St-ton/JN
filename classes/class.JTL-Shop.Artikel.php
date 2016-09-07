@@ -1766,7 +1766,7 @@ class Artikel
         if ($nMindestSterne > 0 && $this->bIsTopBewertet !== null) {
             $kArtikel = (isset($this->kEigenschaftKombi) && (int)$this->kEigenschaftKombi > 0) ? (int)$this->kVaterArtikel : (int)$this->kArtikel;
             if ($kArtikel === null) {
-                //                if (($artikel = Shop::Cache()->get($this->cacheID)) !== false) {
+//                if (($artikel = Shop::Cache()->get($this->cacheID)) !== false) {
 //                    if (isset($artikel->fDurchschnittsBewertung)) {
 //                        return $this;
 //                    }
@@ -5369,12 +5369,16 @@ class Artikel
             $cLaenderAssoc_arr = array();
             for ($i = 0; $i < $nLaender; $i++) {
                 if ($bString) {
-                    $cLaender .= $_SESSION['cISOSprache'] === 'ger' ? $oLand_arr[$i]->cDeutsch : $oLand_arr[$i]->cEnglisch;
+                    $cLaender .= (!isset($_SESSION['cISOSprache']) || $_SESSION['cISOSprache'] === 'ger') ?
+                        $oLand_arr[$i]->cDeutsch :
+                        $oLand_arr[$i]->cEnglisch;
                     if ($nLaender > ($i + 1)) {
                         $cLaender .= ', ';
                     }
                 } else {
-                    $cLaender = $_SESSION['cISOSprache'] === 'ger' ? $oLand_arr[$i]->cDeutsch : $oLand_arr[$i]->cEnglisch;
+                    $cLaender = (!isset($_SESSION['cISOSprache']) || $_SESSION['cISOSprache'] === 'ger') ?
+                        $oLand_arr[$i]->cDeutsch :
+                        $oLand_arr[$i]->cEnglisch;
                 }
                 $cLaenderAssoc_arr[$oLand_arr[$i]->cISO] = $cLaender;
             }
@@ -5786,7 +5790,9 @@ class Artikel
             if ($conf['artikeldetails']['artikeldetails_warenkorbmatrix_anzeige'] === 'Y' ||
                 (!empty($this->FunktionsAttribute[FKT_ATTRIBUT_WARENKORBMATRIX]) && $this->FunktionsAttribute[FKT_ATTRIBUT_WARENKORBMATRIX] === '1')
             ) {
-                if (($this->nVariationOhneFreifeldAnzahl === 2 || $this->nVariationOhneFreifeldAnzahl === 1) && is_array($this->Variationen)) {
+                if (($this->nVariationOhneFreifeldAnzahl === 2 || $this->nVariationOhneFreifeldAnzahl === 1 ||
+                        ($conf['artikeldetails']['artikeldetails_warenkorbmatrix_anzeigeformat'] === 'L' && $this->nVariationOhneFreifeldAnzahl > 1)) && is_array($this->Variationen)
+                ) {
                     //the cart matrix cannot deal with those different kinds of variations..
                     //so if we got "freifeldvariationen" in combination with normal ones, we have to disable the matrix
                     foreach ($this->Variationen as $_variation) {

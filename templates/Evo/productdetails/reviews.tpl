@@ -23,7 +23,7 @@
                                         <div class="row">
                                             <div class="col-xs-12 col-sm-6 col-lg-4">
                                                 {if $nSterne > 0}
-                                                    <a href="index.php?a={$Artikel->kArtikel}&amp;btgsterne={$schluessel}">{$schluessel} {if $i == 4}{lang key="starSingular" section="product rating"}{else}{lang key="starPlural" section="product rating"}{/if}</a>
+                                                    <a href="{$Artikel->cURLFull}?btgsterne={$schluessel}">{$schluessel} {if $i == 4}{lang key="starSingular" section="product rating"}{else}{lang key="starPlural" section="product rating"}{/if}</a>
                                                 {else}
                                                     {$schluessel} {if $i == 4}{lang key="starSingular" section="product rating"}{else}{lang key="starPlural" section="product rating"}{/if}
                                                 {/if}
@@ -148,24 +148,24 @@
 
             {if $Artikel->Bewertungen->nAnzahlSprache > $Einstellungen.bewertung.bewertung_anzahlseite && $BlaetterNavi->nAktiv == 1}
                 <div class="reviews-pagination row">
-                    <div class="col-xs-4">
+                    <div class="col-xs-12">
                         <ul class="pagination">
                             <li>
                                 {if $BlaetterNavi->nAktuelleSeite > 1}
-                                    <a href="index.php?a={$Artikel->kArtikel}&btgsterne={$BlaetterNavi->nSterne}&btgseite={$BlaetterNavi->nVoherige}">&laquo; {lang key="previous" section="productOverview"}</a>
+                                    <a href="{$Artikel->cURLFull}?btgsterne={$BlaetterNavi->nSterne}&amp;btgseite={$BlaetterNavi->nVoherige}#tab-votes">&laquo; {lang key="previous" section="productOverview"}</a>
                                 {/if}
                                 {if $BlaetterNavi->nAnfang != 0}
-                                    <a href="index.php?a={$Artikel->kArtikel}&btgsterne={$BlaetterNavi->nSterne}&btgseite={$BlaetterNavi->nAnfang}">{$BlaetterNavi->nAnfang}</a> ...
+                                    <a href="{$Artikel->cURLFull}?btgsterne={$BlaetterNavi->nSterne}&amp;btgseite={$BlaetterNavi->nAnfang}#tab-votes">{$BlaetterNavi->nAnfang}</a> ...
                                 {/if}
                             </li>
                             {foreach name=blaetter from=$BlaetterNavi->nBlaetterAnzahl_arr item=Blatt key=i}
                                 <li class="{if $BlaetterNavi->nAktuelleSeite == $Blatt}active{/if}">
-                                    <a href="index.php?a={$Artikel->kArtikel}&btgsterne={$BlaetterNavi->nSterne}&btgseite={$Blatt}">{$Blatt}</a>
+                                    <a href="{$Artikel->cURLFull}?&btgsterne={$BlaetterNavi->nSterne}&amp;btgseite={$Blatt}#tab-votes">{$Blatt}</a>
                                 </li>
                             {/foreach}
                             <li>
                                 {if $BlaetterNavi->nAktuelleSeite < $BlaetterNavi->nSeiten}
-                                    <a href="index.php?a={$Artikel->kArtikel}&btgsterne={$BlaetterNavi->nSterne}&btgseite={$BlaetterNavi->nNaechste}">{lang key="next" section="productOverview"} &raquo;</a>
+                                    <a href="{$Artikel->cURLFull}?btgsterne={$BlaetterNavi->nSterne}&amp;btgseite={$BlaetterNavi->nNaechste}#tab-votes">{lang key="next" section="productOverview"} &raquo;</a>
                                 {/if}
                             </li>
                         </ul>

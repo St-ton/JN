@@ -44,11 +44,7 @@
                     {else}
                         {$oNewsUebersicht->cText|strip_tags|truncate:200:""}
                     {/if}
-                    <div class="row">
-                        <div class="col-xs-12">
-                            <span class="pull-right">{$oNewsUebersicht->cMehrURL}</span>
-                        </div>
-                    </div>
+                    <span class="pull-right top17">{$oNewsUebersicht->cMehrURL}</span>
                 </div>
             {/if}
         </div>

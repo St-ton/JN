@@ -266,7 +266,7 @@ function verarbeiteYategoExport(&$Artikel, $exportformat, $ExportEinstellungen, 
 
         if ($ExportEinstellungen['exportformate_quot'] !== 'N' && $ExportEinstellungen['exportformate_quot']) {
             $find[] = '"';
-            if ($ExportEinstellungen['exportformate_quot'] === 'bq') {
+            if ($ExportEinstellungen['exportformate_quot'] === 'q' || $ExportEinstellungen['exportformate_quot'] === 'bq') {
                 $replace[] = '\"';
             } elseif ($ExportEinstellungen['exportformate_quot'] === 'qq') {
                 $replace[] = '""';
@@ -276,7 +276,7 @@ function verarbeiteYategoExport(&$Artikel, $exportformat, $ExportEinstellungen, 
         }
         if ($ExportEinstellungen['exportformate_equot'] !== 'N' && $ExportEinstellungen['exportformate_equot']) {
             $find[] = "'";
-            if ($ExportEinstellungen['exportformate_equot'] === 'q') {
+            if ($ExportEinstellungen['exportformate_equot'] === 'q' || $ExportEinstellungen['exportformate_equot'] === 'bq') {
                 $replace[] = '"';
             } else {
                 $replace[] = $ExportEinstellungen['exportformate_equot'];

@@ -1206,38 +1206,31 @@ function gibVarKombiEigenschaftsWerte($kArtikel, $bSichtbarkeitBeachten = true)
 function fuegeEinInWarenkorb($kArtikel, $anzahl, $oEigenschaftwerte_arr = '', $nWeiterleitung = 0, $cUnique = false, $kKonfigitem = 0, $oArtikelOptionen = null, $setzePositionsPreise = true)
 {
     $kArtikel = (int)$kArtikel;
-
     if ($anzahl > 0 && $kArtikel > 0) {
         $Artikel = new Artikel();
         if ($oArtikelOptionen === null) {
             $oArtikelOptionen = Artikel::getDefaultOptions();
         }
         $Artikel->fuelleArtikel($kArtikel, $oArtikelOptionen);
-
-        // ### 28.10.2010 auskommentiert weil es das $oEigenschaftwerte_arr bei Kindern mit PFLICHT-FREIFELDERN falsch verändert ###
-        // Falls der Artikel ein Variationskombikind ist, hole direkt seine Eigenschaften
-        //if(isset($Artikel->kEigenschaftKombi) && $Artikel->kEigenschaftKombi > 0)
-        //$oEigenschaftwerte_arr = gibVarKombiEigenschaftsWerte($Artikel->kArtikel);
-
         if (intval($anzahl) != $anzahl && $Artikel->cTeilbar !== 'Y') {
-            $anzahl = max(intval($anzahl), 1);
+            $anzahl = max((int)$anzahl, 1);
         }
-
-        // Prüfung
         $redirectParam = pruefeFuegeEinInWarenkorb($Artikel, $anzahl, $oEigenschaftwerte_arr);
-
         if (count($redirectParam) > 0) {
             if (isset($_SESSION['variBoxAnzahl_arr'])) {
                 return false;
             }
-
             if ($nWeiterleitung == 0) {
-                if ($Artikel->nIstVater == 1) {
-                    header('Location: ' . Shop::getURL() . '/navi.php?a=' . $Artikel->kArtikel . '&n=' . $anzahl . '&r=' . implode(',', $redirectParam), true, 302);
-                } elseif ($Artikel->kEigenschaftKombi > 0) {
-                    header('Location: ' . Shop::getURL() . '/navi.php?a=' . $Artikel->kVaterArtikel . '&a2=' . $Artikel->kArtikel . '&n=' . $anzahl . '&r=' . implode(',', $redirectParam), true, 302);
+                if ($Artikel->kEigenschaftKombi > 0) {
+                    $url = (!empty($Artikel->cURLFull)) ?
+                        ($Artikel->cURLFull . '?'):
+                        (Shop::getURL() . '/index.php?a=' . $Artikel->kVaterArtikel . '&a2=' . $Artikel->kArtikel . '&');
+                    header('Location: ' . $url . 'n=' . $anzahl . '&r=' . implode(',', $redirectParam), true, 302);
                 } else {
-                    header('Location: ' . Shop::getURL() . '/index.php?a=' . $Artikel->kArtikel . '&n=' . $anzahl . '&r=' . implode(',', $redirectParam), true, 302);
+                    $url = (!empty($Artikel->cURLFull)) ?
+                        ($Artikel->cURLFull . '?'):
+                        (Shop::getURL() . '/index.php?a=' . $Artikel->kArtikel . '&');
+                    header('Location: ' . $url . 'n=' . $anzahl . '&r=' . implode(',', $redirectParam), true, 302);
                 }
                 exit;
             } else {

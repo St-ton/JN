@@ -29,20 +29,23 @@
 
     </div>
     <div class="panel-body">
-        {if !empty($oNewsUebersicht->cPreviewImage)}
-            <div class="col-lg-4 col-xs-6">
-                <a href="{$oNewsUebersicht->cURL}">
-                    <img itemprop="image" src="{$ShopURL}/{$oNewsUebersicht->cPreviewImage}" alt="" class="img-responsive" />
-                </a>
-            </div>
-        {/if}
-        <div itemprop="description" class="news-preview panel-strap">
-            {if $oNewsUebersicht->cVorschauText|count_characters > 0}
-                {$oNewsUebersicht->cVorschauText} <span class="read-more">{$oNewsUebersicht->cMehrURL}</span>
-            {elseif $oNewsUebersicht->cText|strip_tags|count_characters > 200}
-                {$oNewsUebersicht->cText|strip_tags|truncate:200:""} <span class="read-more">{$oNewsUebersicht->cMehrURL}</span>
-            {else}
-                {$oNewsUebersicht->cText}
+        <div class=" row">
+            {if !empty($oNewsUebersicht->cPreviewImage)}
+                <div class="col-sm-4 col-xs-12">
+                    <a href="{$oNewsUebersicht->cURL}">
+                        <img itemprop="image" src="{$ShopURL}/{$oNewsUebersicht->cPreviewImage}" alt="" class="img-responsive center-block"/>
+                    </a>
+                </div>
+            {/if}
+            {if $oNewsUebersicht->cVorschauText|strip_tags|count_characters > 0}
+                <div itemprop="description" class="{if !empty($oNewsUebersicht->cPreviewImage)}col-sm-8 {/if}col-xs-12">
+                    {if $oNewsUebersicht->cText|strip_tags|count_characters < 200}
+                        {$oNewsUebersicht->cVorschauText}
+                    {else}
+                        {$oNewsUebersicht->cText|strip_tags|truncate:200:""}
+                    {/if}
+                    <span class="pull-right top17">{$oNewsUebersicht->cMehrURL}</span>
+                </div>
             {/if}
         </div>
     </div>

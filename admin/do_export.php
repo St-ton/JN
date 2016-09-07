@@ -115,7 +115,7 @@ $replaceTwo = array(' ', ' ', ' ', ' ', '');
 
 if (isset($ExportEinstellungen['exportformate_quot']) && $ExportEinstellungen['exportformate_quot'] !== 'N') {
     $findTwo[] = '"';
-    if ($ExportEinstellungen['exportformate_quot'] === 'bq') {
+    if ($ExportEinstellungen['exportformate_quot'] === 'q' || $ExportEinstellungen['exportformate_quot'] === 'bq') {
         $replaceTwo[] = '\"';
     } elseif ($ExportEinstellungen['exportformate_quot'] === 'qq') {
         $replaceTwo[] = '""';
@@ -125,7 +125,7 @@ if (isset($ExportEinstellungen['exportformate_quot']) && $ExportEinstellungen['e
 }
 if (isset($ExportEinstellungen['exportformate_quot']) && $ExportEinstellungen['exportformate_equot'] !== 'N') {
     $findTwo[] = "'";
-    if ($ExportEinstellungen['exportformate_equot'] === 'q') {
+    if ($ExportEinstellungen['exportformate_equot'] === 'q' || $ExportEinstellungen['exportformate_equot'] === 'bq') {
         $replaceTwo[] = '"';
     } else {
         $replaceTwo[] = $ExportEinstellungen['exportformate_equot'];

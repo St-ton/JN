@@ -142,7 +142,7 @@
                                         {/foreach}
                                     </td>
                                     <td class="TD5">{$oNews->dGueltigVon_de}</td>
-                                    <td class="tcenter">{$oNews->nAktiv}</td>
+                                    <td class="tcenter"><i class="fa fa-{if $oNews->nAktiv == 1}check{else}close{/if}"></i></td>
                                     <td class="tcenter">
                                         {if $oNews->nNewsKommentarAnzahl > 0}
                                             <a href="news.php?news=1&nd=1&kNews={$oNews->kNews}&tab=aktiv&token={$smarty.session.jtl_token}">{$oNews->nNewsKommentarAnzahl}</a>

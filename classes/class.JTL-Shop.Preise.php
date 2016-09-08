@@ -290,6 +290,11 @@ class Preise
     public $Sonderpreis_aktiv = false;
 
     /**
+     * @var bool
+     */
+    public $Kundenpreis_aktiv = false;
+
+    /**
      * Konstruktor
      *
      * @param int $kKundengruppe
@@ -332,6 +337,10 @@ class Preise
             $this->kKunde        = $kKunde;
             $specialPriceValue   = null;
             foreach ($prices as $i => $price) {
+                // Kundenpreis?
+                if ((int)$price->kKunde > 0) {
+                    $this->Kundenpreis_aktiv = true;
+                }
                 // Standardpreis
                 if ($price->nAnzahlAb < 1) {
                     $this->fVKNetto = (float)$price->fVKNetto;
@@ -471,7 +480,7 @@ class Preise
      */
     public function rabbatierePreise($Rabatt, $offset = 0.0)
     {
-        if ($Rabatt != 0 && !$this->Sonderpreis_aktiv) {
+        if ($Rabatt != 0 && !$this->Sonderpreis_aktiv && !$this->Kundenpreis_aktiv) {
             $this->rabatt       = $Rabatt;
             $this->alterVKNetto = $this->fVKNetto;
 

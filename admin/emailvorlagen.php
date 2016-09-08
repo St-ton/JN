@@ -563,6 +563,9 @@ if (isset($_POST['Aendern']) && isset($_POST['kEmailvorlage']) && intval($_POST[
     $Emailvorlagesprache->kEmailvorlage = (int)$_POST['kEmailvorlage'];
     $cAnhangError_arr                   = array();
 
+    $revision = new Revision();
+    $revision->addRevision('mail', (int)$_POST['kEmailvorlage'], true);
+
     foreach ($Sprachen as $Sprache) {
         // PDFs hochladen
         $cDateiname_arr    = array();

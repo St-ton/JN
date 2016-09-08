@@ -37,6 +37,10 @@ class Migration_20160823155500 extends Migration implements IMigration
             "ALTER TABLE tpluginemailvorlage 
                 ADD COLUMN nWRBForm TINYINT(3) UNSIGNED NOT NULL DEFAULT 0"
         );
+        $this->execute(
+            "ALTER TABLE temailvorlageoriginal 
+                ADD COLUMN nWRBForm TINYINT(3) UNSIGNED NOT NULL DEFAULT 0"
+        );
         $this->setLocalization('ger', 'global', 'wrbform', 'Muster-Widerrufsbelehrungsformular');
         $this->setLocalization('eng', 'global', 'wrbform', 'Model withdrawal form');
     }
@@ -47,6 +51,7 @@ class Migration_20160823155500 extends Migration implements IMigration
         $this->dropColumn('ttext', 'cWRBFormContentText');
         $this->dropColumn('temailvorlage', 'nWRBForm');
         $this->dropColumn('tpluginemailvorlage', 'nWRBForm');
+        $this->dropColumn('temailvorlageoriginal', 'nWRBForm');
         $this->execute("DELETE FROM tsprachwerte WHERE cName = 'wrbform' AND kSprachsektion = 1");
     }
 }

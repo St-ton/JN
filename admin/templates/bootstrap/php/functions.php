@@ -3,15 +3,39 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-$smarty->register_function('getCurrencyConversionSmarty', 'getCurrencyConversionSmarty');
-$smarty->register_function('getCurrencyConversionTooltipButton', 'getCurrencyConversionTooltipButton');
-$smarty->register_function('getCurrentPage', 'getCurrentPage');
-$smarty->register_function('SmartyConvertDate', 'SmartyConvertDate');
-$smarty->register_function('getHelpDesc', 'getHelpDesc');
-$smarty->register_function('getExtensionCategory', 'getExtensionCategory');
-$smarty->register_function('formatVersion', 'formatVersion');
-$smarty->register_function('gravatarImage', 'gravatarImage');
-$smarty->register_modifier('permission', 'permission');
+$smarty->registerPlugin('function', 'getCurrencyConversionSmarty', 'getCurrencyConversionSmarty')
+       ->registerPlugin('function', 'getCurrencyConversionTooltipButton', 'getCurrencyConversionTooltipButton')
+       ->registerPlugin('function', 'getCurrentPage', 'getCurrentPage')
+       ->registerPlugin('function', 'SmartyConvertDate', 'SmartyConvertDate')
+       ->registerPlugin('function', 'getHelpDesc', 'getHelpDesc')
+       ->registerPlugin('function', 'getExtensionCategory', 'getExtensionCategory')
+       ->registerPlugin('function', 'formatVersion', 'formatVersion')
+       ->registerPlugin('function', 'gravatarImage', 'gravatarImage')
+       ->registerPlugin('function', 'getRevisions', 'getRevisions')
+       ->registerPlugin('function', 'permission', 'permission');
+
+/**
+ * @param array     $params
+ * @param JTLSmarty $smarty
+ * @return mixed
+ */
+function getRevisions($params, &$smarty)
+{
+    $secondary = (isset($params['secondary'])) ?
+       $params['secondary'] :
+        false;
+    $data      = (isset($params['data'])) ?
+        $params['data'] :
+        null;
+    $revision  = new Revision();
+    $smarty->assign('revisions', $revision->getRevisions($params['type'], $params['key'], $secondary))
+           ->assign('secondary', $secondary)
+           ->assign('data', $data)
+           ->assign('show', $params['show']);
+
+    return $smarty->fetch('tpl_inc/revisions.tpl');
+}
+
 
 /**
  * @param array $params

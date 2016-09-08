@@ -31,11 +31,12 @@ class ContentAuthor
         $contentID = (int)$contentID;
 
         if ($authorID > 0) {
-            return Shop::DB()->insert('tcontentauthor', (object)[
-                'cRealm'      => $realm,
-                'kAdminlogin' => $authorID,
-                'kContentId'  => $contentID,
-            ]);
+            return Shop::DB()->query(
+                "INSERT INTO tcontentauthor (cRealm, kAdminlogin, kContentId)
+                    VALUES('" . $realm . "', " . $authorID . ", " . $contentID . ")
+                    ON DUPLICATE KEY UPDATE
+                        kAdminlogin = " . $authorID, 4
+            );
         }
 
         return false;

@@ -20,6 +20,9 @@ $cUploadVerzeichnis = PFAD_ROOT . PFAD_BILDER . PFAD_LINKBILDER;
 $clearCache         = false;
 $continue           = true;
 
+/**
+ * @global JTLSmarty $smarty
+ */
 if (isset($_POST['addlink']) && intval($_POST['addlink']) > 0) {
     $step = 'neuer Link';
     if (!isset($link)) {
@@ -47,7 +50,7 @@ if (isset($_POST['loesch_linkgruppe']) && intval($_POST['loesch_linkgruppe']) ==
     }
 }
 
-if ((isset($_POST['dellinkgruppe']) && intval($_POST['dellinkgruppe']) > 0  && validateToken()) || $step === 'loesch_linkgruppe') {
+if ((isset($_POST['dellinkgruppe']) && intval($_POST['dellinkgruppe']) > 0 && validateToken()) || $step === 'loesch_linkgruppe') {
     $step = 'uebersicht';
 
     $kLinkgruppe = -1;
@@ -78,9 +81,15 @@ if (isset($_POST['delconfirmlinkgruppe']) && intval($_POST['delconfirmlinkgruppe
 }
 
 if (isset($_POST['neu_link']) && intval($_POST['neu_link']) === 1 && validateToken()) {
+    $sprachen     = gibAlleSprachen();
+    $hasHTML_arr  = [];
+
+    foreach ($sprachen as $sprache) {
+        $hasHTML_arr[] = 'cContent_' . $sprache->cISO;
+    }
     // Plausi
     $oPlausiCMS = new PlausiCMS();
-    $oPlausiCMS->setPostVar($_POST);
+    $oPlausiCMS->setPostVar($_POST, $hasHTML_arr, true);
     $oPlausiCMS->doPlausi('lnk');
 
     if (count($oPlausiCMS->getPlausiVar()) === 0) {
@@ -158,7 +167,6 @@ if (isset($_POST['neu_link']) && intval($_POST['neu_link']) === 1 && validateTok
             }
         }
 
-        $sprachen = gibAlleSprachen();
         if (!isset($linkSprache)) {
             $linkSprache = new stdClass();
         }
@@ -192,7 +200,7 @@ if (isset($_POST['neu_link']) && intval($_POST['neu_link']) === 1 && validateTok
             Shop::DB()->insert('tlinksprache', $linkSprache);
             $oSpracheTMP = Shop::DB()->select('tsprache', 'cISO ', $linkSprache->cISOSprache);
             if (isset($oSpracheTMP->kSprache) && $oSpracheTMP->kSprache > 0) {
-                Shop::DB()->delete('tseo', array('cKey', 'kKey', 'kSprache'),  array('kLink', (int)$linkSprache->kLink, (int)$oSpracheTMP->kSprache));
+                Shop::DB()->delete('tseo', array('cKey', 'kKey', 'kSprache'), array('kLink', (int)$linkSprache->kLink, (int)$oSpracheTMP->kSprache));
                 $oSeo           = new stdClass();
                 $oSeo->cSeo     = checkSeo($linkSprache->cSeo);
                 $oSeo->kKey     = $linkSprache->kLink;

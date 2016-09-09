@@ -241,6 +241,7 @@ function uebernehmeWarenkorbAenderungen()
                 }
             }
         }
+        plausiNeukundenKupon();
     }
     $_SESSION['Warenkorb']->setzePositionsPreise();
     // Gesamtsumme Warenkorb < Gratisgeschenk && Gratisgeschenk in den Pos?

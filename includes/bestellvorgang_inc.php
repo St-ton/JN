@@ -4,64 +4,6 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-/**
- * @param string $userLogin
- * @param string $passLogin
- * @return int
- */
-function fuehreLoginAus($userLogin, $passLogin)
-{
-    global $hinweis, $Kunde;
-
-    if (strlen($userLogin) > 0 && strlen($passLogin) > 0) {
-        $csrfTest = validateToken();
-        if ($csrfTest === false) {
-            $hinweis = Shop::Lang()->get('csrfValidationFailed', 'global');
-            Jtllog::writeLog('CSRF-Warnung fuer Login: ' . $_POST['login'], JTLLOG_LEVEL_ERROR);
-
-            return 0;
-        }
-        $Kunde = new Kunde();
-        $Kunde->holLoginKunde($userLogin, $passLogin);
-        if (isset($Kunde->kKunde) && $Kunde->kKunde > 0) {
-            $_customer         = new stdClass();
-            $_customer->kKunde = (int)$Kunde->kKunde;
-            Shop::DB()->update('tbesucher', 'cIP', gibIP(), $_customer);
-            unset($_SESSION['Zahlungsart']);
-            unset($_SESSION['Versandart']);
-            $_SESSION['Warenkorb']->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR)
-                                  ->loescheSpezialPos(C_WARENKORBPOS_TYP_NEUKUNDENKUPON)
-                                  ->loescheSpezialPos(C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR)
-                                  ->loescheSpezialPos(C_WARENKORBPOS_TYP_KUPON);
-            unset($_SESSION['Lieferadresse']);
-            unset($_SESSION['ks']);
-            unset($_SESSION['VersandKupon']);
-            unset($_SESSION['oVersandfreiKupon']);
-            unset($_SESSION['NeukundenKupon']);
-            unset($_SESSION['Kupon']);
-            $Kunde->angezeigtesLand = ISO2land($Kunde->cLand);
-            $session                = Session::getInstance();
-            $session->setCustomer($Kunde);
-            // Prüfe ob Artikel im Warenkorb vorhanden sind, welche für den aktuellen Kunden nicht mehr sichtbar sein dürfen
-            require_once PFAD_ROOT . PFAD_INCLUDES . 'jtl_inc.php';
-            pruefeWarenkorbArtikelSichtbarkeit($_SESSION['Kunde']->kKundengruppe);
-            $conf = Shop::getSettings(array(CONF_GLOBAL, CONF_KAUFABWICKLUNG));
-            if ($conf['global']['warenkorbpers_nutzen'] === 'Y' && $conf['kaufabwicklung']['warenkorb_warenkorb2pers_merge'] === 'Y') {
-                setzeWarenkorbPersInWarenkorb($_SESSION['Kunde']->kKunde);
-            } elseif ($conf['global']['warenkorbpers_nutzen'] === 'Y' && $conf['kaufabwicklung']['warenkorb_warenkorb2pers_merge'] === 'P') {
-                $oWarenkorbPers = new WarenkorbPers($Kunde->kKunde);
-                if (count($oWarenkorbPers->oWarenkorbPersPos_arr) > 0) {
-                    Shop::Smarty()->assign('nWarenkorb2PersMerge', 1);
-                }
-            }
-
-            return 1;
-        }
-    }
-    $hinweis = Shop::Lang()->get('incorrectLogin', 'global');
-
-    return 0;
-}
 
 /**
  *

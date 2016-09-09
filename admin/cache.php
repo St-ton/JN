@@ -26,13 +26,7 @@ try {
     $error = 'Ausnahme: ' . $exc->getMessage();
 }
 //get disabled cache types
-$deactivated = Shop::DB()->query("
-    SELECT *
-        FROM teinstellungen
-        WHERE kEinstellungenSektion = " . CONF_CACHING . "
-            AND cName = 'caching_types_disabled'", 1
-);
-
+$deactivated       = Shop::DB()->select('teinstellungen', ['kEinstellungenSektion', 'cName'], [CONF_CACHING, 'caching_types_disabled']);
 $currentlyDisabled = array();
 if (is_object($deactivated) && isset($deactivated->cWert)) {
     $currentlyDisabled = ($deactivated->cWert !== '') ? unserialize($deactivated->cWert) : array();
@@ -118,12 +112,9 @@ switch ($action) {
                             unset($currentlyDisabled[$index]);
                         }
                     }
-                    $res = Shop::DB()->query("
-                        UPDATE teinstellungen
-                            SET cWert = '" . serialize($currentlyDisabled) . "'
-                            WHERE kEinstellungenSektion = " . CONF_CACHING . "
-                            AND cName = 'caching_types_disabled'", 3
-                    );
+                    $upd        = new stdClass();
+                    $upd->cWert = serialize($currentlyDisabled);
+                    $res        = Shop::DB()->update('teinstellungen', ['kEinstellungenSektion', 'cName'], [CONF_CACHING, 'caching_types_disabled'], $upd);
                     if ($res > 0) {
                         $notice .= 'Ausgew&auml;hlte Typen erfolgreich aktiviert.';
                     }
@@ -138,12 +129,9 @@ switch ($action) {
                         $currentlyDisabled[] = $cacheType;
                     }
                     $currentlyDisabled = array_unique($currentlyDisabled);
-                    $res               = Shop::DB()->query("
-                        UPDATE teinstellungen
-                            SET cWert = '" . serialize($currentlyDisabled) . "'
-                            WHERE kEinstellungenSektion = " . CONF_CACHING . "
-                            AND cName = 'caching_types_disabled'", 3
-                    );
+                    $upd               = new stdClass();
+                    $upd->cWert        = serialize($currentlyDisabled);
+                    $res               = Shop::DB()->update('teinstellungen', ['kEinstellungenSektion', 'cName'], [CONF_CACHING, 'caching_types_disabled'], $upd);
                     if ($res > 0) {
                         $notice .= 'Ausgew&auml;hlte Typen erfolgreich deaktiviert.';
                     }
@@ -167,13 +155,7 @@ switch ($action) {
         }
         break;
     case 'settings' :
-        $settings = Shop::DB()->query("
-            SELECT *
-                FROM teinstellungenconf
-                WHERE kEinstellungenSektion = " . CONF_CACHING . "
-                    AND cConf = 'Y'
-                ORDER BY nSort", 2
-        );
+        $settings = Shop::DB()->selectAll('teinstellungenconf', ['kEinstellungenSektion', 'cConf'], [CONF_CACHING, 'Y'], '*', 'nSort');
         $i             = 0;
         $settingsCount = count($settings);
         while ($i < $settingsCount) {
@@ -317,81 +299,34 @@ if ($cache !== null) {
            ->assign('all_methods', $cache->getAllMethods())
            ->assign('stats', $cache->getStats());
 }
-$settings = Shop::DB()->query("
-    SELECT *
-        FROM teinstellungenconf
-        WHERE nStandardAnzeigen = 1
-            AND kEinstellungenSektion = " . CONF_CACHING . "
-        ORDER BY nSort", 2
-);
+$settings = Shop::DB()->selectAll('teinstellungenconf', ['nStandardAnzeigen', 'kEinstellungenSektion'], [1, CONF_CACHING], '*', 'nSort');
 $settingsCount = count($settings);
 for ($i = 0; $i < $settingsCount; $i++) {
     if ($settings[$i]->cInputTyp === 'selectbox') {
-        $settings[$i]->ConfWerte = Shop::DB()->query("
-            SELECT *
-                FROM teinstellungenconfwerte
-                WHERE kEinstellungenConf = " . (int)$settings[$i]->kEinstellungenConf . "
-                ORDER BY nSort", 2
-        );
+        $settings[$i]->ConfWerte = Shop::DB()->selectAll('teinstellungenconfwerte', 'kEinstellungenConf', (int)$settings[$i]->kEinstellungenConf, '*', 'nSort');
     }
-    $oSetValue = Shop::DB()->query("
-        SELECT cWert
-            FROM teinstellungen
-            WHERE kEinstellungenSektion = " . CONF_CACHING . "
-                AND cName = '" . $settings[$i]->cWertName . "'", 1
-    );
+    $oSetValue = Shop::DB()->select('teinstellungen', ['kEinstellungenSektion', 'cName'], [CONF_CACHING, $settings[$i]->cWertName]);
     $settings[$i]->gesetzterWert = (isset($oSetValue->cWert)) ? $oSetValue->cWert : null;
 }
-$advancedSettings = Shop::DB()->query("
-    SELECT *
-        FROM teinstellungenconf
-        WHERE nStandardAnzeigen = 0
-            AND kEinstellungenSektion = " . CONF_CACHING . "
-            ORDER BY nSort", 2
-);
-$settingsCount = count($advancedSettings);
+$advancedSettings = Shop::DB()->selectAll('teinstellungenconf', ['nStandardAnzeigen', 'kEinstellungenSektion'], [0, CONF_CACHING], '*', 'nSort');
+$settingsCount    = count($advancedSettings);
 for ($i = 0; $i < $settingsCount; $i++) {
     if ($advancedSettings[$i]->cInputTyp === 'selectbox') {
-        $advancedSettings[$i]->ConfWerte = Shop::DB()->query("
-            SELECT *
-                FROM teinstellungenconfwerte
-                WHERE kEinstellungenConf = " . (int)$advancedSettings[$i]->kEinstellungenConf . "
-                ORDER BY nSort", 2);
+        $advancedSettings[$i]->ConfWerte = Shop::DB()->selectAll('teinstellungenconfwerte', 'kEinstellungenConf', (int)$advancedSettings[$i]->kEinstellungenConf, '*', 'nSort');
     }
-    $oSetValue = Shop::DB()->query("
-        SELECT cWert
-            FROM teinstellungen
-            WHERE kEinstellungenSektion = " . CONF_CACHING . "
-                AND cName = '" . $advancedSettings[$i]->cWertName . "'", 1
-    );
+    $oSetValue = Shop::DB()->select('teinstellungen', ['kEinstellungenSektion', 'cName'], [CONF_CACHING, $advancedSettings[$i]->cWertName]);
     $advancedSettings[$i]->gesetzterWert = (isset($oSetValue->cWert)) ? $oSetValue->cWert : null;
 }
 $expertSettings = null;
 if (defined('SHOW_PAGE_CACHE') && SHOW_PAGE_CACHE === true) {
-    $expertSettings = Shop::DB()->query("
-        SELECT *
-            FROM teinstellungenconf
-            WHERE nStandardAnzeigen = 2
-                AND kEinstellungenSektion = " . CONF_CACHING . "
-                ORDER BY nSort", 2
-    );
+    $expertSettings = Shop::DB()->selectAll('teinstellungenconf', ['nStandardAnzeigen', 'kEinstellungenSektion'], [2, CONF_CACHING], '*', 'nSort');
     $i             = 0;
     $settingsCount = count($expertSettings);
     for ($i = 0; $i < $settingsCount; $i++) {
         if ($expertSettings[$i]->cInputTyp === 'selectbox') {
-            $expertSettings[$i]->ConfWerte = Shop::DB()->query("
-                SELECT *
-                    FROM teinstellungenconfwerte
-                    WHERE kEinstellungenConf = " . (int)$expertSettings[$i]->kEinstellungenConf . "
-                    ORDER BY nSort", 2
-            );
+            $expertSettings[$i]->ConfWerte = Shop::DB()->selectAll('teinstellungenconfwerte', 'kEinstellungenConf', (int)$expertSettings[$i]->kEinstellungenConf, '*', 'nSort');
         }
-        $oSetValue = Shop::DB()->query("
-            SELECT cWert
-                FROM teinstellungen
-                WHERE kEinstellungenSektion = " . CONF_CACHING . "
-                    AND cName = '" . $expertSettings[$i]->cWertName . "'", 1
-        );
+        $oSetValue = Shop::DB()->select('teinstellungen', ['kEinstellungenSektion', 'cName'], [CONF_CACHING, $expertSettings[$i]->cWertName]);
         $expertSettings[$i]->gesetzterWert = (isset($oSetValue->cWert)) ? $oSetValue->cWert : null;
     }
 }

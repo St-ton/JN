@@ -5,11 +5,6 @@
  */
 require_once dirname(__FILE__) . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'exportformat_inc.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Artikel.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Preise.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Eigenschaft.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.EigenschaftWert.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Kategorie.php';
 
 if (!ini_get('safe_mode')) {
     @ini_set('max_execution_time', 0);

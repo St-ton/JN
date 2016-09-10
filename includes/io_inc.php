@@ -143,7 +143,7 @@ function pushToBasket($kArtikel, $anzahl, $oEigenschaftwerte_arr = '')
         }
         $oXSelling = gibArtikelXSelling($kArtikel);
 
-        $smarty->assign('WarenkorbVersandkostenfreiHinweis', baueVersandkostenfreiString(gibVersandkostenfreiAb($kKundengruppe), $_SESSION['Warenkorb']->gibGesamtsummeWaren(true, true)))
+        $smarty->assign('WarenkorbVersandkostenfreiHinweis', baueVersandkostenfreiString(gibVersandkostenfreiAb($kKundengruppe), $_SESSION['Warenkorb']->gibGesamtsummeWarenExt(array(C_WARENKORBPOS_TYP_ARTIKEL, C_WARENKORBPOS_TYP_KUPON, C_WARENKORBPOS_TYP_NEUKUNDENKUPON), true)))
                ->assign('WarenkorbVersandkostenfreiLaenderHinweis', baueVersandkostenfreiLaenderString(gibVersandkostenfreiAb($kKundengruppe)))
                ->assign('zuletztInWarenkorbGelegterArtikel', $Artikel)
                ->assign('fAnzahl', $anzahl)
@@ -215,7 +215,7 @@ function getBasketItems($nTyp)
                 ->assign('Einstellungen', $Einstellungen)
                 ->assign('WarenkorbArtikelPositionenanzahl', $nAnzahl)
                 ->assign('NettoPreise', $_SESSION['Kundengruppe']->nNettoPreise)
-                ->assign('WarenkorbVersandkostenfreiHinweis', baueVersandkostenfreiString($versandkostenfreiAb, $_SESSION['Warenkorb']->gibGesamtsummeWaren(true, true)))
+                ->assign('WarenkorbVersandkostenfreiHinweis', baueVersandkostenfreiString($versandkostenfreiAb, $_SESSION['Warenkorb']->gibGesamtsummeWarenExt(array(C_WARENKORBPOS_TYP_ARTIKEL, C_WARENKORBPOS_TYP_KUPON, C_WARENKORBPOS_TYP_NEUKUNDENKUPON), true)))
                 ->assign('WarenkorbVersandkostenfreiLaenderHinweis', baueVersandkostenfreiLaenderString($versandkostenfreiAb))
                 ->assign('oSpezialseiten_arr', LinkHelper::getInstance()->getSpecialPages());
 

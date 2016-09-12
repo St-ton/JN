@@ -38,10 +38,19 @@ class Migration_20160912173000 extends Migration implements IMigration
 
         $this->setLocalization('ger', 'global', 'paginationTotalEntries', 'Eintr&auml;ge gesamt:');
         $this->setLocalization('eng', 'global', 'paginationTotalEntries', 'Total entries:');
+
+        $this->setLocalization('ger', 'global', 'paginationOrderByDate', 'Datum');
+        $this->setLocalization('eng', 'global', 'paginationOrderByDate', 'Date');
+
+        $this->setLocalization('ger', 'global', 'paginationOrderByRating', 'Bewertung');
+        $this->setLocalization('eng', 'global', 'paginationOrderByRating', 'Rating');
+
+        $this->setLocalization('ger', 'global', 'paginationOrderUsefulness', 'Hilreich');
+        $this->setLocalization('eng', 'global', 'paginationOrderUsefulness', 'Usefulness');
     }
 
     public function down()
     {
-        $this->execute("DELETE FROM `tsprachwerte` WHERE cName IN ('asc', 'desc', 'paginationTotalEntries', 'paginationEntriesPerPage', 'paginationEntryPagination') AND kSprachsektion = 1");
+        $this->execute("DELETE FROM `tsprachwerte` WHERE cName IN ('asc', 'desc', 'paginationTotalEntries', 'paginationEntriesPerPage', 'paginationEntryPagination', 'paginationOrderByDate', 'paginationOrderByRating', 'paginationOrderUsefulness') AND kSprachsektion = 1");
     }
 }

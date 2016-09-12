@@ -78,7 +78,7 @@ class JTLCache
     /**
      * currently active caching method
      *
-     * @var JTLCacheTrait
+     * @var cache_apc|cache_file|cache_memcache|cache_memcached|cache_redis|cache_session|cache_xcache
      */
     private $_method = null;
 
@@ -566,9 +566,9 @@ class JTLCache
             $expiration = null;
             $res        = call_user_func_array($callback, array($this, $cacheID, &$content, &$tags, &$expiration, $customData));
             if ($res === true) {
-                $this->set($cacheID, $content, $tags, $expiration);
+                $this->_set($cacheID, $content, $tags, $expiration);
 
-                return $this->get($cacheID);
+                return $this->_get($cacheID);
             }
         }
 
@@ -591,7 +591,7 @@ class JTLCache
         if ($this->options['activated'] === true && $this->isCacheGroupActive($tags) === true) {
             $res = $this->_method->store($cacheID, $content, $expiration);
             if ($tags !== null) {
-                $this->setCacheTag($tags, $cacheID);
+                $this->_setCacheTag($tags, $cacheID);
             }
         }
         if ($this->options['debug'] === true) {
@@ -621,7 +621,7 @@ class JTLCache
             $res = $this->_method->storeMulti($keyValue, $expiration);
             if ($tags !== null) {
                 foreach (array_keys($keyValue) as $_cacheID) {
-                    $this->setCacheTag($tags, $_cacheID);
+                    $this->_setCacheTag($tags, $_cacheID);
                 }
             }
             $this->resultCode = self::RES_UNDEF; //for now, let's not check every part of the result
@@ -751,7 +751,7 @@ class JTLCache
         if ($cacheID !== null && $tags === null) {
             $res = ($this->options['activated'] === true) ? $this->_method->flush($cacheID, $tags) : false;
         } elseif ($tags !== null) {
-            $res = $this->flushTags($tags, $hookInfo);
+            $res = $this->_flushTags($tags, $hookInfo);
         }
         if ($this->options['debug'] === true) {
             if ($this->options['debug_method'] === 'echo') {
@@ -896,7 +896,7 @@ class JTLCache
     public function _checkAvailability()
     {
         $available = array();
-        foreach ($this->getAllMethods() as $methodName) {
+        foreach ($this->_getAllMethods() as $methodName) {
             $class = 'cache_' . $methodName;
             include_once CACHING_METHODS_DIR . 'class.cachingMethod.' . $methodName . '.php';
             if (class_exists($class)) {
@@ -1004,7 +1004,7 @@ class JTLCache
         }
         $results = array();
         if ($methods === 'all') {
-            $methods = $this->getAllMethods();
+            $methods = $this->_getAllMethods();
         }
         if (is_array($methods)) {
             foreach ($methods as $method) {

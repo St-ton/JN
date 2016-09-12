@@ -23,7 +23,7 @@
                                         <div class="row">
                                             <div class="col-xs-12 col-sm-6 col-lg-4">
                                                 {if $nSterne > 0}
-                                                    <a href="{$Artikel->cURLFull}?btgsterne={$schluessel}">{$schluessel} {if $i == 4}{lang key="starSingular" section="product rating"}{else}{lang key="starPlural" section="product rating"}{/if}</a>
+                                                    <a href="{$Artikel->cURLFull}?btgsterne={$schluessel}#tab-votes">{$schluessel} {if $i == 4}{lang key="starSingular" section="product rating"}{else}{lang key="starPlural" section="product rating"}{/if}</a>
                                                 {else}
                                                     {$schluessel} {if $i == 4}{lang key="starSingular" section="product rating"}{else}{lang key="starPlural" section="product rating"}{/if}
                                                 {/if}
@@ -89,7 +89,7 @@
                 {* only one review so far. don't display this stuff *}
             {else}
                 <div class="review-wrapper reviews-sortcontrol hidden-print">
-                    <form id="sortierenID" method="post" action="{if !empty($Artikel->cURLFull)}{$Artikel->cURLFull}{else}index.php{/if}" class="form-inline">
+                    <form id="sortierenID" method="post" action="{if !empty($Artikel->cURLFull)}{$Artikel->cURLFull}#tab-votes{else}index.php{/if}" class="form-inline">
                         {$jtl_token}
                         <input name="a" type="hidden" value="{$Artikel->kArtikel}" />
                         <input name="btgsterne" type="hidden" value="{$BlaetterNavi->nSterne}" />

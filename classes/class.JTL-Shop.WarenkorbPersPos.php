@@ -55,6 +55,11 @@ class WarenkorbPersPos
     public $kKonfigitem;
 
     /**
+     * @var int
+     */
+    public $nPosTyp;
+
+    /**
      * @var array
      */
     public $oWarenkorbPersPosEigenschaft_arr = array();
@@ -76,8 +81,9 @@ class WarenkorbPersPos
      * @param int    $kWarenkorbPers
      * @param string $cUnique
      * @param int    $kKonfigitem
+     * @param int    $nPosTyp
      */
-    public function __construct($kArtikel, $cArtikelName, $fAnzahl, $kWarenkorbPers, $cUnique = '', $kKonfigitem = 0)
+    public function __construct($kArtikel, $cArtikelName, $fAnzahl, $kWarenkorbPers, $cUnique = '', $kKonfigitem = 0, $nPosTyp = 1)
     {
         $this->kArtikel       = intval($kArtikel);
         $this->cArtikelName   = $cArtikelName;
@@ -86,6 +92,7 @@ class WarenkorbPersPos
         $this->kWarenkorbPers = intval($kWarenkorbPers);
         $this->cUnique        = $cUnique;
         $this->kKonfigitem    = $kKonfigitem;
+        $this->nPosTyp        = $nPosTyp;
     }
 
     /**
@@ -123,6 +130,7 @@ class WarenkorbPersPos
         $oTemp->dHinzugefuegt    = $this->dHinzugefuegt;
         $oTemp->cUnique          = $this->cUnique;
         $oTemp->kKonfigitem      = $this->kKonfigitem;
+        $oTemp->nPosTyp          = $this->nPosTyp;
         $this->kWarenkorbPersPos = Shop::DB()->insert('twarenkorbperspos', $oTemp);
 
         return $this;
@@ -142,6 +150,7 @@ class WarenkorbPersPos
         $oTemp->dHinzugefuegt     = $this->dHinzugefuegt;
         $oTemp->cUnique           = $this->cUnique;
         $oTemp->kKonfigitem       = $this->kKonfigitem;
+        $oTemp->nPosTyp           = $this->nPosTyp;
 
         return Shop::DB()->update('twarenkorbperspos', 'kWarenkorbPersPos', $this->kWarenkorbPersPos, $oTemp);
     }

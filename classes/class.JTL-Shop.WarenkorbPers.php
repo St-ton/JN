@@ -55,9 +55,10 @@ class WarenkorbPers
      * @param float  $fAnzahl
      * @param string $cUnique
      * @param int    $kKonfigitem
+     * @param int    $nPosTyp
      * @return $this
      */
-    public function fuegeEin($kArtikel, $cArtikelName, $oEigenschaftwerte_arr, $fAnzahl, $cUnique = '', $kKonfigitem = 0)
+    public function fuegeEin($kArtikel, $cArtikelName, $oEigenschaftwerte_arr, $fAnzahl, $cUnique = '', $kKonfigitem = 0, $nPosTyp = 1)
     {
         $bBereitsEnthalten = false;
         $nPosition         = 0;
@@ -90,7 +91,7 @@ class WarenkorbPers
             $this->oWarenkorbPersPos_arr[$nPosition]->fAnzahl += $fAnzahl;
             $this->oWarenkorbPersPos_arr[$nPosition]->updateDB();
         } else {
-            $oWarenkorbPersPos = new WarenkorbPersPos($kArtikel, $cArtikelName, $fAnzahl, $this->kWarenkorbPers, $cUnique, $kKonfigitem);
+            $oWarenkorbPersPos = new WarenkorbPersPos($kArtikel, $cArtikelName, $fAnzahl, $this->kWarenkorbPers, $cUnique, $kKonfigitem, $nPosTyp);
             $oWarenkorbPersPos->schreibeDB();
             $oWarenkorbPersPos->erstellePosEigenschaften($oEigenschaftwerte_arr);
             $this->oWarenkorbPersPos_arr[] = $oWarenkorbPersPos;
@@ -171,6 +172,24 @@ class WarenkorbPers
     }
 
     /**
+     * löscht alle Gratisgeschenke aus dem persistenten Warenkorb
+     *
+     * @return $this
+     */
+    public function loescheGratisGeschenkAusWarenkorbPers()
+    {
+        if (is_array($this->oWarenkorbPersPos_arr) && count($this->oWarenkorbPersPos_arr) > 0) {
+            foreach ($this->oWarenkorbPersPos_arr as $oWarenkorbPersPos) {
+                if ((int)$oWarenkorbPersPos->nPosTyp === (int)C_WARENKORBPOS_TYP_GRATISGESCHENK) {
+                    $this->entfernePos($oWarenkorbPersPos->kWarenkorbPersPos);
+                }
+            }
+        }
+
+        return $this;
+    }
+
+    /**
      * @return $this
      */
     public function schreibeDB()
@@ -225,7 +244,8 @@ class WarenkorbPers
                             $oWarenkorbPersPosTMP->fAnzahl,
                             $oWarenkorbPersPosTMP->kWarenkorbPers,
                             $oWarenkorbPersPosTMP->cUnique,
-                            $oWarenkorbPersPosTMP->kKonfigitem
+                            $oWarenkorbPersPosTMP->kKonfigitem,
+                            $oWarenkorbPersPosTMP->nPosTyp
                         );
 
                         $oWarenkorbPersPos->kWarenkorbPersPos = $oWarenkorbPersPosTMP->kWarenkorbPersPos;

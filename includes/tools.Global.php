@@ -966,8 +966,9 @@ function pruefeVariBoxAnzahl($variBoxAnzahl_arr)
  * @param array $oEigenschaftwerte_arr
  * @param bool  $cUnique
  * @param int   $kKonfigitem
+ * @param int   $nPosTyp
  */
-function fuegeEinInWarenkorbPers($kArtikel, $fAnzahl, $oEigenschaftwerte_arr, $cUnique = false, $kKonfigitem = 0)
+function fuegeEinInWarenkorbPers($kArtikel, $fAnzahl, $oEigenschaftwerte_arr, $cUnique = false, $kKonfigitem = 0, $nPosTyp = 1)
 {
     // Pruefe ob Kunde eingeloggt
     if (!isset($_SESSION['Kunde']->kKunde)) {
@@ -987,7 +988,10 @@ function fuegeEinInWarenkorbPers($kArtikel, $fAnzahl, $oEigenschaftwerte_arr, $c
                 $oSichtbarkeit = Shop::DB()->select('tartikelsichtbarkeit', 'kArtikel', $kArtikel, 'kKundengruppe', (int)$_SESSION['Kundengruppe']->kKundengruppe, null, null, false, 'kArtikel');
                 if (empty($oSichtbarkeit) || !isset($oSichtbarkeit->kArtikel) || !$oSichtbarkeit->kArtikel) {
                     $oWarenkorbPers = new WarenkorbPers($_SESSION['Kunde']->kKunde);
-                    $oWarenkorbPers->fuegeEin($kArtikel, $oArtikelVorhanden->cName, $oEigenschaftwerte_arr, $fAnzahl, $cUnique, $kKonfigitem);
+                    if ($nPosTyp === (int)C_WARENKORBPOS_TYP_GRATISGESCHENK) {
+                        $oWarenkorbPers->loescheGratisGeschenkAusWarenkorbPers();
+                    }
+                    $oWarenkorbPers->fuegeEin($kArtikel, $oArtikelVorhanden->cName, $oEigenschaftwerte_arr, $fAnzahl, $cUnique, $kKonfigitem, $nPosTyp);
                 }
             }
         }

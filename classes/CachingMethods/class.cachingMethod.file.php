@@ -150,7 +150,9 @@ class cache_file implements ICachingMethod
                 $this->recursiveDelete($path);
             }
 
-            return rmdir($str);
+            return ($str === $this->options['cache_dir']) ?
+                true :
+                rmdir($str);
         }
 
         return false;
@@ -173,6 +175,8 @@ class cache_file implements ICachingMethod
      */
     public function flushAll()
     {
+        $this->journal = null;
+        
         return $this->recursiveDelete($this->options['cache_dir']);
     }
 
@@ -203,7 +207,9 @@ class cache_file implements ICachingMethod
                 }
             }
         }
-        closedir($dir);
+        if ($dir !== false) {
+            closedir($dir);
+        }
 
         return array(
             'entries' => $num,

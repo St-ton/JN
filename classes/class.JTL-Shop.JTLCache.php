@@ -6,11 +6,6 @@
 define('CACHING_ROOT_DIR', dirname(__FILE__) . '/');
 define('CACHING_METHODS_DIR', CACHING_ROOT_DIR . 'CachingMethods/');
 
-//include helper class
-require_once CACHING_ROOT_DIR . 'class.helper.JTLCache.php';
-//include interface for caching methods
-require_once CACHING_ROOT_DIR . 'interface.JTL-Shop.ICachingMethod.php';
-
 /**
  * Class JTLCache
  *
@@ -345,7 +340,7 @@ class JTLCache
             'debug'            => false, //enable or disable collecting of debug data
             'debug_method'     => 'echo', //'ssd'/'jtld' for SmarterSmartyDebug/JTLDebug, 'echo' for direct echo
             'cache_dir'        => (defined('PFAD_ROOT') && defined('PFAD_COMPILEDIR')) ? (PFAD_ROOT . PFAD_COMPILEDIR . 'filecache/') : sys_get_temp_dir(), //file cache directory
-            'file_extension'   => '.fcache', //file extension for file cache
+            'file_extension'   => '.fc', //file extension for file cache
             'page_cache'       => false, //smarty page cache switch
             'types_disabled'   => array() //disabled cache groups
         );
@@ -425,7 +420,7 @@ class JTLCache
         if (!class_exists('Shop')) {
             return array();
         }
-        $cacheConfig = Shop::DB()->query("SELECT kEinstellungenSektion, cName, cWert FROM teinstellungen WHERE kEinstellungenSektion = " . CONF_CACHING, 2);
+        $cacheConfig = Shop::DB()->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_CACHING);
         $cacheInit   = array();
         if (!empty($cacheConfig)) {
             foreach ($cacheConfig as $_conf) {

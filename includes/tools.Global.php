@@ -968,7 +968,7 @@ function pruefeVariBoxAnzahl($variBoxAnzahl_arr)
  * @param int   $kKonfigitem
  * @param int   $nPosTyp
  */
-function fuegeEinInWarenkorbPers($kArtikel, $fAnzahl, $oEigenschaftwerte_arr, $cUnique = false, $kKonfigitem = 0, $nPosTyp = 1)
+function fuegeEinInWarenkorbPers($kArtikel, $fAnzahl, $oEigenschaftwerte_arr, $cUnique = false, $kKonfigitem = 0, $nPosTyp = C_WARENKORBPOS_TYP_ARTIKEL)
 {
     // Pruefe ob Kunde eingeloggt
     if (!isset($_SESSION['Kunde']->kKunde)) {

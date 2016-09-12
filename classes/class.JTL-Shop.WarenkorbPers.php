@@ -58,7 +58,7 @@ class WarenkorbPers
      * @param int    $nPosTyp
      * @return $this
      */
-    public function fuegeEin($kArtikel, $cArtikelName, $oEigenschaftwerte_arr, $fAnzahl, $cUnique = '', $kKonfigitem = 0, $nPosTyp = 1)
+    public function fuegeEin($kArtikel, $cArtikelName, $oEigenschaftwerte_arr, $fAnzahl, $cUnique = '', $kKonfigitem = 0, $nPosTyp = C_WARENKORBPOS_TYP_ARTIKEL)
     {
         $bBereitsEnthalten = false;
         $nPosition         = 0;

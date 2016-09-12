@@ -137,7 +137,6 @@ if (isset($_POST['login']) && intval($_POST['login']) === 1 && isset($_POST['ema
                                             executeHook(HOOK_WARENKORB_PAGE_GRATISGESCHENKEINFUEGEN);
                                             $_SESSION['Warenkorb']->loescheSpezialPos(C_WARENKORBPOS_TYP_GRATISGESCHENK)
                                                 ->fuegeEin($kArtikelGeschenk, 1, array(), C_WARENKORBPOS_TYP_GRATISGESCHENK);
-                                            //fuegeEinInWarenkorbPers($kArtikelGeschenk, 1, array(), null, null, (int)C_WARENKORBPOS_TYP_GRATISGESCHENK);
                                         }
                                     }
                                 } else {

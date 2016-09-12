@@ -84,7 +84,6 @@ if (isset($_POST['gratis_geschenk']) && intval($_POST['gratis_geschenk']) === 1 
             AND tartikelattribut.cName = '" . FKT_ATTRIBUT_GRATISGESCHENK . "'
             AND CAST(tartikelattribut.cWert AS DECIMAL) <= " . $_SESSION['Warenkorb']->gibGesamtsummeWarenExt(array(C_WARENKORBPOS_TYP_ARTIKEL), true), 1
     );
-
     if (isset($oArtikelGeschenk->kArtikel) && $oArtikelGeschenk->kArtikel > 0) {
         if ($oArtikelGeschenk->fLagerbestand <= 0 && $oArtikelGeschenk->cLagerKleinerNull === 'N' && $oArtikelGeschenk->cLagerBeachten === 'Y') {
             $MsgWarning = Shop::Lang()->get('freegiftsNostock', 'errorMessages');

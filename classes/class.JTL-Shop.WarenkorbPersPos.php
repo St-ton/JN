@@ -83,7 +83,7 @@ class WarenkorbPersPos
      * @param int    $kKonfigitem
      * @param int    $nPosTyp
      */
-    public function __construct($kArtikel, $cArtikelName, $fAnzahl, $kWarenkorbPers, $cUnique = '', $kKonfigitem = 0, $nPosTyp = 1)
+    public function __construct($kArtikel, $cArtikelName, $fAnzahl, $kWarenkorbPers, $cUnique = '', $kKonfigitem = 0, $nPosTyp = C_WARENKORBPOS_TYP_ARTIKEL)
     {
         $this->kArtikel       = intval($kArtikel);
         $this->cArtikelName   = $cArtikelName;

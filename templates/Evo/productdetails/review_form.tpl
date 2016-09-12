@@ -29,6 +29,7 @@
                             {/if}
                             <span class="vmiddle">{$Artikel->cName}</span>
                         </div>
+                        <hr>
                         <div class="form-group required">
                             <select name="nSterne" id="stars" class="form-control" required>
                                 <option value="" disabled>{lang key="starPlural" section="product rating"}</option>

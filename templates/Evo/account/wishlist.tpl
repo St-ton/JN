@@ -1,6 +1,6 @@
 <h1>{$CWunschliste->cName}</h1>
 
-{if $hinweis}
+{if !empty($hinweis)}
     <div class="alert alert-info">{$hinweis}</div>
 {/if}
 

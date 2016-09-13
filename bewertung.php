@@ -8,7 +8,6 @@ require_once PFAD_INCLUDES . 'bewertung_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
 
 $AktuelleSeite = 'BEWERTUNG';
-$smarty->setCaching(false);
 
 Shop::run();
 Shop::setPageType(PAGE_BEWERTUNG);
@@ -17,7 +16,13 @@ $Einstellungen  = Shop::getSettings(array(CONF_GLOBAL, CONF_RSS, CONF_BEWERTUNG)
 // Bewertung in die Datenbank speichern
 if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
     if (pruefeKundeArtikelBewertet($cParameter_arr['kArtikel'], $_SESSION['Kunde']->kKunde)) {
-        header('Location: index.php?a=' . $cParameter_arr['kArtikel'] . '&bewertung_anzeigen=1&cFehler=f02', true, 301);
+        $artikel = new Artikel();
+        $artikel->fuelleArtikel($cParameter_arr['kArtikel'], Artikel::getDefaultOptions());
+        $url = (!empty($artikel->cURLFull)) ?
+            ($artikel->cURLFull . '?') :
+            (Shop::getURL() . '/?a=' . $cParameter_arr['kArtikel']);
+
+        header('Location: ' . $url . 'bewertung_anzeigen=1&cFehler=f02', true, 301);
         exit();
     } else {
         // Versuche die Bewertung zu speichern
@@ -39,7 +44,7 @@ if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
     // Prüfe ob Kunde eingeloggt
     if (empty($_SESSION['Kunde']->kKunde)) {
         $helper = LinkHelper::getInstance();
-        header('Location: ' . $helper->getStaticRoute('jtl.php', true) . '?a=' . verifyGPCDataInteger('a') . '&bfa=1&r=' . R_LOGIN_BEWERTUNG . '&', true, 303);
+        header('Location: ' . $helper->getStaticRoute('jtl.php', true) . '?a=' . verifyGPCDataInteger('a') . '&bfa=1&r=' . R_LOGIN_BEWERTUNG, true, 303);
         exit();
     }
     //hole aktuellen Artikel
@@ -47,22 +52,24 @@ if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
     $AktuellerArtikel->fuelleArtikel($cParameter_arr['kArtikel'], Artikel::getDefaultOptions());
     //falls kein Artikel vorhanden, zurück zum Shop
     if (!$AktuellerArtikel->kArtikel) {
-        header('Location: index.php?', true, 303);
+        header('Location: ' . Shop::getURL() . '/', true, 303);
         exit;
     }
     //hole aktuelle Kategorie, falls eine gesetzt
     $AufgeklappteKategorien = new KategorieListe();
     $startKat               = new Kategorie();
     $startKat->kKategorie   = 0;
-    $AktuellerArtikel->holeBewertung(
-        Shop::$kSprache,
-        $Einstellungen['bewertung']['bewertung_anzahlseite'],
-        0,
-        -1,
-        $Einstellungen['bewertung']['bewertung_freischalten'],
-        $cParameter_arr['nSortierung']
-    );
-    $AktuellerArtikel->holehilfreichsteBewertung(Shop::$kSprache);
+    if (!isset($AktuellerArtikel->Bewertungen)) {
+        $AktuellerArtikel->holeBewertung(
+            Shop::$kSprache,
+            $Einstellungen['bewertung']['bewertung_anzahlseite'],
+            0,
+            -1,
+            $Einstellungen['bewertung']['bewertung_freischalten'],
+            $cParameter_arr['nSortierung']
+        );
+        $AktuellerArtikel->holehilfreichsteBewertung(Shop::$kSprache);
+    }
 
     if ($Einstellungen['bewertung']['bewertung_artikel_gekauft'] === 'Y') {
         $smarty->assign('nArtikelNichtGekauft', pruefeKundeArtikelGekauft($AktuellerArtikel->kArtikel, $_SESSION['Kunde']->kKunde));

@@ -14,7 +14,7 @@
                 {if isset($cDokuURL) && $cDokuURL|@strlen > 0}
                     <a href="{$cDokuURL}" class="btn btn-default" data-toggle="tooltip" data-container="body" data-placement="left" title="Zur Dokumentation"><i class="fa fa-medkit" aria-hidden="true"></i></a>
                 {/if}
-                <a href="#" class="btn btn-default" data-toggle="tooltip" data-container="body" data-placement="left" title="Zu Favoriten hinzuf&uuml;gen"><i class="fa fa-star" aria-hidden="true"></i></a>
+                <a href="favs.php" class="btn btn-default" data-toggle="tooltip" data-container="body" data-placement="left" title="Zu Favoriten hinzuf&uuml;gen" id="fav-add"><i class="fa fa-star" aria-hidden="true"></i></a>
             </div>
         </div>
     </div>

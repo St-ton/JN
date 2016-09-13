@@ -225,7 +225,7 @@
                         <div class="panel-footer">
                             <div class="btn-group">
                                 <button type="button" onclick="$('[name=\'aData\[action\]\']').val('save');$('#frmRedirect').submit();" value="{#save#}" class="btn btn-primary"><i class="fa fa-save"></i> {#save#}</button>
-                                <button type="button" onclick="$('[name=\'aData\[action\]\']').val('delete');$('#frmRedirect').submit();" name="delete" value="Auswahl l&ouml;schen" class="btn btn-danger"><i class="fa fa-trash"></i> Markierte l&ouml;schen</button>
+                                <button type="button" onclick="$('[name=\'aData\[action\]\']').val('delete');$('#frmRedirect').submit();" name="delete" value="Auswahl l&ouml;schen" class="btn btn-danger"><i class="fa fa-trash"></i> {#deleteSelected#}</button>
                                 <button type="button" onclick="$('[name=\'aData\[action\]\']').val('delete_all');$('#frmRedirect').submit();" name="delete_all" value="Alle ohne Weiterleitung l&ouml;schen" class="btn btn-warning">Alle ohne Weiterleitung l&ouml;schen</button>
                             </div>
 

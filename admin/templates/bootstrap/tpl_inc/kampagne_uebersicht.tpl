@@ -119,7 +119,7 @@
                     <div class="panel-footer">
                         <div class="btn-group">
                             {if isset($nGroessterKey) && $nGroessterKey >= 1000}
-                                <button name="submitDelete" type="submit" value="{#delete#}" class="btn btn-danger"><i class="fa fa-trash"></i> Markierte l&ouml;schen</button>
+                                <button name="submitDelete" type="submit" value="{#delete#}" class="btn btn-danger"><i class="fa fa-trash"></i> {#deleteSelected#}</button>
                             {/if}
                             <a href="kampagne.php?neu=1&token={$smarty.session.jtl_token}" class="btn btn-primary">{#kampagneNewBTN#}</a>
                         </div>

@@ -124,7 +124,7 @@
                         <div class="panel-footer">
                             <div class="btn-group p50">
                                 <button name="suchanfragenUpdate" type="submit" value="{#update#}" class="btn btn-default reset"><i class="fa fa-refresh"></i> {#update#}</button>
-                                <button name="delete" type="submit" value="{#delete#}" class="btn btn-danger"><i class="fa fa-trash"></i> Markierte {#delete#}</button>
+                                <button name="delete" type="submit" value="{#delete#}" class="btn btn-danger"><i class="fa fa-trash"></i> {#deleteSelected#}</button>
                             </div>
                             <div class="input-group right p50">
                                 <span class="input-group-addon">

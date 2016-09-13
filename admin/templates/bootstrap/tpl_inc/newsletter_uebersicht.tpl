@@ -180,7 +180,7 @@
                                 </tr>
                             </table>
                             <div class="panel-footer">
-                                <button name="loeschen" type="submit" class="btn btn-danger"><i class="fa fa-trash"></i> markierte l&ouml;schen</button>
+                                <button name="loeschen" type="submit" class="btn btn-danger"><i class="fa fa-trash"></i> {#deleteSelected#}</button>
                             </div>
                         </div>
                     </div>

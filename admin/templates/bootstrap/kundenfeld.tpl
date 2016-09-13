@@ -269,7 +269,9 @@
                         <div class="panel-footer">
                             <div class="btn-group">
                                 <button name="aktualisieren" type="submit" value="{#kundenfeldUpdate#}" class="btn btn-primary"><i class="fa fa-refresh"></i> {#kundenfeldUpdate#}</button>
-                                <button name="loeschen" type="submit" value="{#kundenfeldDel#}" class="btn btn-danger"><i class="fa fa-trash"></i> Markierte l&ouml;schen</button>
+                                <button name="loeschen" type="submit" value="{#kundenfeldDel#}" class="btn btn-danger">
+                                    <i class="fa fa-trash"></i> {#deleteSelected#}
+                                </button>
                             </div>
                         </div>
                     </form>

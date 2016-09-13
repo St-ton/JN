@@ -4,20 +4,20 @@
 {if !empty($fehler)}
     <div class="alert alert-danger">{$fehler}</div>
 {/if}
-{include file="snippets/extension.tpl"}
+{include file='snippets/extension.tpl'}
 
-{if isset($cNewsErr) && $cNewsErr !== ""}
-    <div class="alert alert-danger">{lang key="newsRestricted" section="news"}</div>
+{if !empty($cNewsErr)}
+    <div class="alert alert-danger">{lang key='newsRestricted' section='news'}</div>
 {else}
     <div itemscope itemtype="https://schema.org/Article">
         <h1><span itemprop="headline">{$oNewsArchiv->cBetreff}</span>
             <small class="date text-muted pull-right">
-                {if empty($oNewsArchiv->dGueltigVon)}{assign var="dDate" value=$oNewsArchiv->dErstellt}{else}{assign var="dDate" value=$oNewsArchiv->dGueltigVon}{/if}
+                {if empty($oNewsArchiv->dGueltigVon)}{assign var=dDate value=$oNewsArchiv->dErstellt}{else}{assign var=dDate value=$oNewsArchiv->dGueltigVon}{/if}
                 {if !empty($Einstellungen.global.global_shopname)}
                     <span itemprop="publisher" class="hidden">{$Einstellungen.global.global_shopname}</span>
                 {/if}
                 {if (isset($oNewsArchiv->oAuthor))}
-                    {include file="snippets/author.tpl" oAuthor=$oNewsArchiv->oAuthor dDate=$dDate cDate=$oNewsArchiv->dGueltigVon_de}&nbsp;-&nbsp;
+                    {include file="snippets/author.tpl" oAuthor=$oNewsArchiv->oAuthor dDate=$dDate cDate=$oNewsArchiv->dGueltigVon_de}&nbsp;&ndash;&nbsp;
                 {/if}
                 {if isset($oNewsArchiv->dErstellt)}<time itemprop="dateModified" class="hidden">{$oNewsArchiv->dErstellt}</time>{/if}
                 <time itemprop="datePublished" datetime="{$dDate}" class="hidden">{$dDate}</time><span class="v-box">{$oNewsArchiv->dGueltigVon_de}</span>
@@ -87,7 +87,7 @@
 
                                         <fieldset>
                                             {if $Einstellungen.news.news_kommentare_eingeloggt === 'N'}
-                                                {if empty($smarty.session.Kunde->kKunde) || $smarty.session.Kunde->kKunde == 0}
+                                                {if empty($smarty.session.Kunde->kKunde)}
                                                     <div class="row">
                                                         <div class="col-xs-12 col-md-6">
                                                             <div id="commentName" class="form-group float-label-control{if isset($nPlausiValue_arr.cName)} has-error{/if} required">

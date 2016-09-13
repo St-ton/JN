@@ -85,6 +85,7 @@ if (isset($aData['action']) && validateToken()) {
             break;
         default:
             $cFehler = 'Fehler: Es wurde eine invalide Aktion ausgel&ouml;st';
+            break;
     }
 }
 

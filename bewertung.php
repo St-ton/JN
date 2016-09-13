@@ -84,6 +84,9 @@ if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
 
     require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
     $smarty->display('productdetails/review_form.tpl');
+} else {
+    header('Location: ' . Shop::getURL() . '/', true, 303);
+    exit;
 }
 
 require PFAD_ROOT . PFAD_INCLUDES . 'profiler_inc.php';

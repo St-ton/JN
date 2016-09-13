@@ -339,6 +339,10 @@ class AdminAccount
             'nSort ASC'
         );
 
+        if (!is_array($favs)) {
+            return [];
+        }
+
         foreach ($favs as &$fav) {
             $fav->bExtern = true;
             $fav->cAbsUrl = $fav->cUrl;

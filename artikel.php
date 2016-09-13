@@ -61,6 +61,7 @@ $oArtikelOptionen->nVariationKombi       = 1;
 $oArtikelOptionen->nVariationKombiKinder = 1;
 $oArtikelOptionen->nWarenlager           = 1;
 $oArtikelOptionen->nVariationDetailPreis = 1;
+$oArtikelOptionen->nRatings              = 1;
 // Warenkorbmatrix noetig? => Varikinder mit Preisen holen
 $oArtikelOptionen->nWarenkorbmatrix = (int)($Einstellungen['artikeldetails']['artikeldetails_warenkorbmatrix_anzeige'] === 'Y');
  // Stückliste noetig? => Stücklistenkomponenten  holen

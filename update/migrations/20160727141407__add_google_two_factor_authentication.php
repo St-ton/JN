@@ -19,7 +19,6 @@
  * addLocalization    - add localization
  * removeLocalization - remove localization
  */
-
 class Migration_20160727141407 extends Migration implements IMigration
 {
     protected $author = 'cr';

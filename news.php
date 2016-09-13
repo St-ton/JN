@@ -107,11 +107,11 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
 
                 executeHook(HOOK_NEWS_PAGE_NEWSKOMMENTAR_PLAUSI);
 
-                if ($Einstellungen['news']['news_kommentare_eingeloggt'] === 'Y' && $_SESSION['Kunde']->kKunde > 0) {
+                if ($Einstellungen['news']['news_kommentare_eingeloggt'] === 'Y' && !empty($_SESSION['Kunde']->kKunde)) {
                     if (is_array($nPlausiValue_arr) && count($nPlausiValue_arr) === 0) {
                         $oNewsKommentar             = new stdClass();
                         $oNewsKommentar->kNews      = (int)$_POST['kNews'];
-                        $oNewsKommentar->kKunde     = $_SESSION['Kunde']->kKunde;
+                        $oNewsKommentar->kKunde     = (int)$_SESSION['Kunde']->kKunde;
                         $oNewsKommentar->nAktiv     = ($Einstellungen['news']['news_kommentare_freischalten'] === 'Y') ? 0 : 1;
                         $oNewsKommentar->cName      = $_SESSION['Kunde']->cVorname . ' ' . substr($_SESSION['Kunde']->cNachname, 0, 1) . '.';
                         $oNewsKommentar->cEmail     = $_SESSION['Kunde']->cMail;
@@ -330,7 +330,7 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
            ->display('blog/index.tpl');
     require PFAD_ROOT . PFAD_INCLUDES . 'profiler_inc.php';
 } else {
-    $oLink                   = Shop::DB()->query("SELECT kLink FROM tlink WHERE nLinkart = " . LINKTYP_404, 1);
+    $oLink                   = Shop::DB()->select('tlink', 'nLinkart', LINKTYP_404);
     $bFileNotFound           = true;
     Shop::$kLink             = $oLink->kLink;
     Shop::$bFileNotFound     = true;

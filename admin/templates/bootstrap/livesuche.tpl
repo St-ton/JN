@@ -77,7 +77,7 @@
                     {else}
                         {assign var=cSuchStr value=""}
                     {/if}
-                    <div class="panel panel-default settings">
+                    <div class="panel panel-default">
                         <div class="panel-heading">
                             <h3 class="panel-title">{#searchrequest#}</h3>
                         </div>
@@ -121,20 +121,20 @@
                                 <td colspan="5" class="TD7"><label for="ALLMSGS">{#livesucheSelectAll#}</label></td>
                             </tr>
                         </table>
-                        <div class="panel-footer">
-                            <div class="btn-group">
+                        <div class="panel-footer" style="overflow:hidden;">
+                            <div class="btn-group left p50">
                                 <button name="suchanfragenUpdate" type="submit" value="{#update#}" class="btn btn-default reset"><i class="fa fa-refresh"></i> {#update#}</button>
                                 <button name="delete" type="submit" value="{#delete#}" class="btn btn-danger"><i class="fa fa-trash"></i> Markierte {#delete#}</button>
-                                <div class="input-group" style="width: 500px;margin-bottom: 0;">
-                                    <span class="input-group-addon">
-                                        <input id="nMapping" name="nMapping" type="radio" value="1" style="float: left;margin-right: 2px;"/>
-                                        <label style="width: 300px;" for="nMapping">{#livesucheMappingOn#}</label>
-                                    </span>
-                                        <input class="form-control" name="cMapping" type="text" value="" />
-                                    <span class="input-group-btn">
-                                        <button name="submitMapping" type="submit" value="{#livesucheMappingOnBTN#}" class="btn btn-primary">{#livesucheMappingOnBTN#}</button>
-                                    </span>
-                                </div>
+                            </div>
+                            <div class="input-group right p50">
+                                <span class="input-group-addon">
+                                    {*<input id="nMapping" name="nMapping" type="radio" value="1" style="float: left;margin-right: 2px;"/>*}
+                                    <label for="cMapping">{#livesucheMappingOn#}</label>
+                                </span>
+                                <input class="form-control" name="cMapping" type="text">
+                                <span class="input-group-btn">
+                                    <button name="submitMapping" type="submit" value="{#livesucheMappingOnBTN#}" class="btn btn-primary">{#livesucheMappingOnBTN#}</button>
+                                </span>
                             </div>
                         </div>
                     </div>

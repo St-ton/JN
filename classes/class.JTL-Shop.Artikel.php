@@ -1734,22 +1734,13 @@ class Artikel
      * @param int    $nSterne
      * @param string $cFreischalten
      * @param int    $nOption
-     * @param bool   $bAlleSprachen
      * @return $this
      */
-    public function holeBewertung(
-        $kSprache = 0,
-        $nAnzahlSeite = 10,
-        $nSeite = 1,
-        $nSterne = 0,
-        $cFreischalten = 'N',
-        $nOption = 0,
-        $bAlleSprachen = false
-    ) {
+    public function holeBewertung($kSprache = 0, $nAnzahlSeite = 10, $nSeite = 1, $nSterne = 0, $cFreischalten = 'N', $nOption = 0) {
         if (!$kSprache) {
             $kSprache = Shop::$kSprache;
         }
-        $this->Bewertungen = new Bewertung($this->kArtikel, $kSprache, $nAnzahlSeite, $nSeite, $nSterne, $cFreischalten, $nOption, $bAlleSprachen);
+        $this->Bewertungen = new Bewertung($this->kArtikel, $kSprache, $nAnzahlSeite, $nSeite, $nSterne, $cFreischalten, $nOption);
 
         return $this;
     }
@@ -3208,7 +3199,8 @@ class Artikel
             CONF_GLOBAL,
             CONF_ARTIKELDETAILS,
             CONF_BOXEN,
-            CONF_ARTIKELUEBERSICHT
+            CONF_ARTIKELUEBERSICHT,
+            CONF_BEWERTUNG
         ));
         $this->cCachedCountryCode = (isset($_SESSION['cLieferlandISO'])) ? $_SESSION['cLieferlandISO'] : null;
         $nSchwelleBestseller      = (isset($conf['global']['global_bestseller_minanzahl'])) ? doubleval($conf['global']['global_bestseller_minanzahl']) : 10;
@@ -3748,6 +3740,10 @@ class Artikel
         $this->metaDescription = $this->setMetaDescription();
         $this->tags            = $this->getTags();
         $this->taxData         = $this->getShippingAndTaxData();
+        if ($conf['bewertung']['bewertung_anzeigen'] === 'Y') {
+            $this->holehilfreichsteBewertung($kSprache);
+            $this->holeBewertung($kSprache, -1, 1, 0, $conf['bewertung']['bewertung_freischalten'], 0);
+        }
 
         $cacheTags = array(CACHING_GROUP_ARTICLE . '_' . $this->kArtikel, CACHING_GROUP_ARTICLE);
         executeHook(HOOK_ARTIKEL_CLASS_FUELLEARTIKEL, array(

@@ -43,7 +43,7 @@
             {/if}
         </select>
 
-        <input name="submitGo" type="submit" value="{lang key="filterGo" section="global"}" class="btn btn-default" />
+        <button name="submitGo" type="submit" value="{lang key="filterGo" section="global"}" class="btn btn-default">{lang key="filterGo" section="global"}</button>
     </form>
 </div>
 

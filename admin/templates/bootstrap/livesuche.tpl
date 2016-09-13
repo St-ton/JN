@@ -121,14 +121,13 @@
                                 <td colspan="5" class="TD7"><label for="ALLMSGS">{#livesucheSelectAll#}</label></td>
                             </tr>
                         </table>
-                        <div class="panel-footer" style="overflow:hidden;">
-                            <div class="btn-group left p50">
+                        <div class="panel-footer">
+                            <div class="btn-group p50">
                                 <button name="suchanfragenUpdate" type="submit" value="{#update#}" class="btn btn-default reset"><i class="fa fa-refresh"></i> {#update#}</button>
                                 <button name="delete" type="submit" value="{#delete#}" class="btn btn-danger"><i class="fa fa-trash"></i> Markierte {#delete#}</button>
                             </div>
                             <div class="input-group right p50">
                                 <span class="input-group-addon">
-                                    {*<input id="nMapping" name="nMapping" type="radio" value="1" style="float: left;margin-right: 2px;"/>*}
                                     <label for="cMapping">{#livesucheMappingOn#}</label>
                                 </span>
                                 <input class="form-control" name="cMapping" type="text">

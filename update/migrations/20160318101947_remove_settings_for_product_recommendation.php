@@ -26,7 +26,7 @@ class Migration_20160318101947 extends Migration implements IMigration
                         (5, 'artikeldetails_artikelweiterempfehlen_captcha', 'N', NULL),
                         (5, 'artikeldetails_artikelweiterempfehlen_anzeigen', 'P', NULL),
                         (5, 'artikeldetails_artikelweiterempfehlen_sperreminuten', '2', NULL)");
-                        
+
         $this->execute("INSERT INTO `teinstellungenconf` (`kEinstellungenConf`, `kEinstellungenSektion`, `cName`, `cBeschreibung`, `cWertName`, `cInputTyp`, `cModulId`, `nSort`, `nStandardAnzeigen`, `nModul`, `cConf`) VALUES
                         (609, 5, 'Artikel weiterempfehlen', '', NULL, NULL, NULL, 650, 1, 0, 'N'),
                         (610, 5, 'Artikel weiterempfehlen Formular anzeigen', 'Zeigt ein Formular an, über das ein Artikel weiterempfohlen werden kann. Ein Bekannter erhält diesen Artikel dann als Email.', 'artikeldetails_artikelweiterempfehlen_anzeigen', 'selectbox', NULL, 660, 1, 0, 'Y'),

@@ -10,7 +10,7 @@
                     </h3>
                 </div>
                 <div class="panel-body hidden-print">
-                    <form method="post" action="{get_static_route id='bewertung.php'}" id="article_rating">
+                    <form method="post" action="{get_static_route id='bewertung.php'}#tab-votes" id="article_rating">
                         {$jtl_token}
                         <div class="row">
                             {if $Artikel->Bewertungen->oBewertungGesamt->nAnzahl > 0}
@@ -23,7 +23,7 @@
                                         <div class="row">
                                             <div class="col-xs-12 col-sm-6 col-lg-4">
                                                 {if $nSterne > 0}
-                                                    <a href="{$Artikel->cURLFull}?btgsterne={$schluessel}">{$schluessel} {if $i == 4}{lang key="starSingular" section="product rating"}{else}{lang key="starPlural" section="product rating"}{/if}</a>
+                                                    <a href="{$Artikel->cURLFull}?btgsterne={$schluessel}#tab-votes">{$schluessel} {if $i == 4}{lang key="starSingular" section="product rating"}{else}{lang key="starPlural" section="product rating"}{/if}</a>
                                                 {else}
                                                     {$schluessel} {if $i == 4}{lang key="starSingular" section="product rating"}{else}{lang key="starPlural" section="product rating"}{/if}
                                                 {/if}
@@ -60,7 +60,7 @@
 
         {if isset($Artikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich) && $Artikel->HilfreichsteBewertung->oBewertung_arr|@count > 0 && $Artikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich > 0}
             <div class="review-wrapper reviews-mosthelpful panel">
-                <form method="post" action="{get_static_route id='bewertung.php'}">
+                <form method="post" action="{get_static_route id='bewertung.php'}#tab-votes">
                     {$jtl_token}
                     {block name="productdetails-review-most-helpful"}
                     <input name="bhjn" type="hidden" value="1" />
@@ -89,7 +89,7 @@
                 {* only one review so far. don't display this stuff *}
             {else}
                 <div class="review-wrapper reviews-sortcontrol hidden-print">
-                    <form id="sortierenID" method="post" action="{if !empty($Artikel->cURLFull)}{$Artikel->cURLFull}{else}index.php{/if}" class="form-inline">
+                    <form id="sortierenID" method="post" action="{if !empty($Artikel->cURLFull)}{$Artikel->cURLFull}#tab-votes{else}index.php{/if}" class="form-inline">
                         {$jtl_token}
                         <input name="a" type="hidden" value="{$Artikel->kArtikel}" />
                         <input name="btgsterne" type="hidden" value="{$BlaetterNavi->nSterne}" />
@@ -125,7 +125,7 @@
                         <div class="clearfix"></div>
                     </form>
                 </div>
-                <form method="post" action="{get_static_route id='bewertung.php'}" class="reviews-list">
+                <form method="post" action="{get_static_route id='bewertung.php'}#tab-votes" class="reviews-list">
                     {$jtl_token}
                     <input name="bhjn" type="hidden" value="1" />
                     <input name="a" type="hidden" value="{$Artikel->kArtikel}" />

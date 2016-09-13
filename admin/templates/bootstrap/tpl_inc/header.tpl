@@ -222,6 +222,7 @@
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
                         <li class="dropdown" id="notify-drop">{include file="tpl_inc/notify_drop.tpl"}</li>
+                        <li class="dropdown" id="favs-drop">{include file="tpl_inc/favs_drop.tpl"}</li>
                         {if permission('DASHBOARD_VIEW')}
                             <li>
                                 <a class="link-dashboard" href="index.php" title="Dashboard"><i class="fa fa-home"></i></a>

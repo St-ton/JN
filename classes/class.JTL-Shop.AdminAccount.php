@@ -325,6 +325,36 @@ class AdminAccount
         return false;
     }
 
+    public function getFavorites()
+    {
+        if (!$this->logged()) {
+            return [];
+        }
+
+        $favs = Shop::DB()->selectAll(
+            'tadminfavs',
+            'kAdminlogin',
+            (int) $_SESSION['AdminAccount']->kAdminlogin,
+            'kAdminfav, cTitel, cUrl',
+            'nSort ASC'
+        );
+
+        if (!is_array($favs)) {
+            return [];
+        }
+
+        foreach ($favs as &$fav) {
+            $fav->bExtern = true;
+            $fav->cAbsUrl = $fav->cUrl;
+            if (strpos($fav->cUrl, 'http') !== 0) {
+                $fav->bExtern = false;
+                $fav->cAbsUrl = Shop::getURL() . '/' . $fav->cUrl;
+            }
+        }
+
+        return $favs;
+    }
+
     /**
      * @param stdClass $oAdmin
      * @return $this

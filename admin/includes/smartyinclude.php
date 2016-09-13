@@ -167,4 +167,5 @@ $smarty->assign('SID', (defined('SID') ? SID : null))
        ->assign('oLinkOberGruppe_arr', $oLinkOberGruppe_arr)
        ->assign('SektionenEinstellungen', $configSections)
        ->assign('kAdminmenuEinstellungen', KADMINMENU_EINSTELLUNGEN)
-       ->assign('notifications', $notify);
+       ->assign('notifications', $notify)
+       ->assign('favorites', $oAccount->getFavorites());

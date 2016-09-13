@@ -43,11 +43,9 @@ if (verifyGPCDataInteger('bewertung_editieren') === 1) {
             $cacheTags    = array();
             $kArtikel_arr = $_POST['kArtikel'];
             foreach ($_POST['kBewertung'] as $i => $kBewertung) {
-                Shop::DB()->query(
-                    "UPDATE tbewertung
-                        SET nAktiv = 1
-                        WHERE kBewertung = " . (int)$kBewertung, 3
-                );
+                $upd = new stdClass();
+                $upd->nAktiv = 1;
+                Shop::DB()->update('tbewertung', 'kBewertung', (int)$kBewertung, $upd);
                 // Durchschnitt neu berechnen
                 aktualisiereDurchschnitt(intval($kArtikel_arr[$i]), $Einstellungen['bewertung']['bewertung_freischalten']);
                 // Berechnet BewertungGuthabenBonus
@@ -108,44 +106,20 @@ if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_ed
     }
 } elseif ($step === 'bewertung_uebersicht') {
     // Config holen
-    $oConfig_arr = Shop::DB()->query(
-        "SELECT *
-            FROM teinstellungenconf
-            WHERE kEinstellungenSektion = " . CONF_BEWERTUNG . "
-            ORDER BY nSort", 2
-    );
+    $oConfig_arr = Shop::DB()->selectAll('teinstellungenconf', 'kEinstellungenSektion', CONF_BEWERTUNG, '*', 'nSort');
     $configCount = count($oConfig_arr);
     for ($i = 0; $i < $configCount; $i++) {
         if ($oConfig_arr[$i]->cInputTyp === 'selectbox') {
-            $oConfig_arr[$i]->ConfWerte = Shop::DB()->query(
-                "SELECT *
-                    FROM teinstellungenconfwerte
-                    WHERE kEinstellungenConf = " . (int)$oConfig_arr[$i]->kEinstellungenConf . "
-                    ORDER BY nSort", 2
-            );
+            $oConfig_arr[$i]->ConfWerte = Shop::DB()->selectAll('teinstellungenconfwerte', 'kEinstellungenConf', (int)$oConfig_arr[$i]->kEinstellungenConf, '*', 'nSort');
         } elseif ($oConfig_arr[$i]->cInputTyp === 'listbox') {
-            $oConfig_arr[$i]->ConfWerte = Shop::DB()->query(
-                "SELECT kKundengruppe, cName
-                    FROM tkundengruppe
-                    ORDER BY cStandard DESC", 2
-            );
+            $oConfig_arr[$i]->ConfWerte = Shop::DB()->selectAll('tkundengruppe', [], [], 'kKundengruppe, cName', 'cStandard DESC');
         }
 
         if ($oConfig_arr[$i]->cInputTyp === 'listbox') {
-            $oSetValue = Shop::DB()->query(
-                "SELECT cWert
-                    FROM teinstellungen
-                    WHERE kEinstellungenSektion = " . CONF_BEWERTUNG . "
-                        AND cName = '" . $oConfig_arr[$i]->cWertName . "'", 2
-            );
+            $oSetValue = Shop::DB()->selectAll('teinstellungen', ['kEinstellungenSektion', 'cName'], [CONF_BEWERTUNG, $oConfig_arr[$i]->cWertName], 'cWert');
             $oConfig_arr[$i]->gesetzterWert = $oSetValue;
         } else {
-            $oSetValue = Shop::DB()->query(
-                "SELECT cWert
-                    FROM teinstellungen
-                    WHERE kEinstellungenSektion = " . CONF_BEWERTUNG . "
-                        AND cName = '" . $oConfig_arr[$i]->cWertName . "'", 1
-            );
+            $oSetValue = Shop::DB()->select('teinstellungen', ['kEinstellungenSektion', 'cName'], [CONF_BEWERTUNG, $oConfig_arr[$i]->cWertName]);
             $oConfig_arr[$i]->gesetzterWert = (isset($oSetValue->cWert)) ? $oSetValue->cWert : null;
         }
     }

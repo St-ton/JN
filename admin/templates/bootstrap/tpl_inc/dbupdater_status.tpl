@@ -1,40 +1,43 @@
 {config_load file="$lang.conf" section="dbupdater"}
 {config_load file="$lang.conf" section="shopupdate"}
 
-{function migration_list list=[] title='' filter=0} {* filter: 0 - All, 1 - Executed, 2 - Pending *}
+{function migration_list manager=null title='' filter=0} {* filter: 0 - All, 1 - Executed, 2 - Pending *}
     {if $title|strlen > 0}
         <h4>{$title}</h4>
     {/if}
+    
     <table class="table table-hover">
         <thead>
         <tr>
             <th width="5%">#</th>
-            <th width="15%" class="text-center">Version</th>
-            <th width="50%">Migration</th>
-            <th width="15%" class="text-center">{if $filter != 2}Ausgef&uuml;hrt{/if}</th>
-            <th width="15%" class="text-center"></th>
+            <th width="60%">Migration</th>
+            <th width="250%" class="text-center">{if $filter != 2}Ausgef&uuml;hrt{/if}</th>
+            <th width="10%" class="text-center"></th>
         </tr>
         </thead>
         <tbody>
-        {$migrationIndex = 1}
-        {foreach $list as $version => $migration}
-            {$executedMigrations = $migration->getExecutedMigrations()}
-            {foreach $migration->getMigrations()|@array_reverse as $m}
-                {$executed = $m->getId()|in_array:$executedMigrations}
-                {if $filter == 0 || ($filter == 1 && $executed) || ($filter == 2 && !$executed)}
-                    <tr class="text-vcenter">
-                        <th scope="row">{$migrationIndex++}</th>
-                        <td class="text-center">{formatVersion value=$version}</td>
-                        <td>{$m->getName()}<br><small class="text-muted">{$m->getDescription()}</small></td>
-                        <td class="text-center"><span class="migration-created">{if $executed}<i class="fa fa-check text-success" aria-hidden="true"></i> {/if}{if $m->getCreated()}{$m->getCreated()|date_format:"d.m.Y - H:i:s"}{/if}</span></td>
-                        <td class="text-center">
-                            <a {if $executed}style="display:none"{/if} href="dbupdater.php?action=migration" data-callback="migration" data-dir="up" data-id="{$m->getId()}" data-version="{$version}" class="btn btn-success btn-xs" {if $executed}disabled="disabled"{/if}><i class="fa fa-arrow-up"></i></a>
-                            <a {if !$executed}style="display:none"{/if} href="dbupdater.php?action=migration" data-callback="migration" data-dir="down" data-id="{$m->getId()}" data-version="{$version}" class="btn btn-warning btn-xs" {if !$executed}disabled="disabled"{/if}><i class="fa fa-arrow-down"></i></a>
-                        </td>
-                    </tr>
-                {/if}
-            {/foreach}
-        {/foreach}
+          {$migrationIndex = 1}
+          {$executedMigrations = $manager->getExecutedMigrations()}
+          {foreach $manager->getMigrations()|@array_reverse as $m}
+              {$executed = $m->getId()|in_array:$executedMigrations}
+              {if $filter == 0 || ($filter == 1 && $executed) || ($filter == 2 && !$executed)}
+                  <tr class="text-vcenter">
+                      <th scope="row">{$migrationIndex++}</th>
+                      <td>
+                        {$m->getDescription()}<br>
+                        {if $m->getCreated()}
+                          <small class="text-muted"><i class="fa fa-clock-o" aria-hidden="true"></i> {$m->getCreated()|date_format:"d.m.Y - H:i:s"}&nbsp;&nbsp;</small>
+                        {/if}
+                        <small class="text-muted"><i class="fa fa-file-code-o" aria-hidden="true"></i> {$m->getName()}</small>
+                      </td>
+                      <td class="text-center"><span class="migration-created">{if $executed}<i class="fa fa-check text-success" aria-hidden="true"></i> {/if}{if $m->getExecuted()}{$m->getExecuted()|date_format:"d.m.Y - H:i:s"}{/if}</span></td>
+                      <td class="text-center">
+                          <a {if $executed}style="display:none"{/if} href="dbupdater.php?action=migration" data-callback="migration" data-dir="up" data-id="{$m->getId()}" class="btn btn-success btn-xs" {if $executed}disabled="disabled"{/if}><i class="fa fa-arrow-up"></i></a>
+                          <a {if !$executed}style="display:none"{/if} href="dbupdater.php?action=migration" data-callback="migration" data-dir="down" data-id="{$m->getId()}" class="btn btn-warning btn-xs" {if !$executed}disabled="disabled"{/if}><i class="fa fa-arrow-down"></i></a>
+                      </td>
+                  </tr>
+              {/if}
+          {/foreach}
         </tbody>
     </table>
 {/function}
@@ -74,10 +77,10 @@
     {/if}
 </form>
 
-{if isset($migrations) && $migrations|@count > 0}
+{if isset($manager) && is_object($manager)}
     <p>&nbsp;</p>
     {if $updatesAvailable}
-        {migration_list list=$migrations filter=2 title='Nicht-ausgef&uuml;hrte Migrationen'}
+        {migration_list manager=$manager filter=2 title='Nicht-ausgef&uuml;hrte Migrationen'}
     {/if}
-    {migration_list list=$migrations filter=1 title='Erfolgreiche Migrationen'}
+    {migration_list manager=$manager filter=1 title='Erfolgreiche Migrationen'}
 {/if}

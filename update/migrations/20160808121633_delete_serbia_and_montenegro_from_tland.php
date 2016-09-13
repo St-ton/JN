@@ -1,9 +1,9 @@
 <?php
 /**
- * add_language_variable_descriptionview
+ * delete_serbia_and_montenegro_from_tland
  *
  * @author Mirko Schmidt
- * @created Fri, 12 Aug 2016 11:42:10 +0200
+ * @created Mon, 08 Aug 2016 12:16:33 +0200
  */
 
 /**
@@ -20,18 +20,19 @@
  * setConfig          - add / update config property
  * removeConfig       - remove config property
  */
-class Migration_20160812114210 extends Migration implements IMigration
+class Migration_20160808121633 extends Migration implements IMigration
 {
     protected $author = 'Mirko Schmidt';
 
     public function up()
     {
-        $this->setLocalization('ger', 'global', 'showDescription', 'Beschreibung anzeigen');
-        $this->setLocalization('eng', 'global', 'showDescription', 'Show description');
+        $this->execute("DELETE FROM `tland` WHERE `cISO` = 'YU'");
+        $this->execute("UPDATE `tland` SET `cEnglisch` = 'Serbia' WHERE `cISO` = 'RS'");
     }
 
     public function down()
     {
-        $this->removeLocalization('showDescription');
+        $this->execute("INSERT INTO `tland` (`cISO`, `cDeutsch`, `cEnglisch`, `nEU`, `cKontinent`) VALUES('YU', 'Serbien und Montenegro', 'Serbia and Montenegro', 0, 'Europa')");
+        $this->execute("UPDATE `tland` SET `cEnglisch` = 'Serbien' WHERE `cISO` = 'RS'");
     }
 }

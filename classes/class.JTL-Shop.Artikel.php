@@ -3154,8 +3154,8 @@ class Artikel
             $baseID        = Shop::Cache()->getBaseID();
             $taxClass      = isset($_SESSION['Steuersatz']) ? implode('_', $_SESSION['Steuersatz']) : '';
             $kKunde        = isset($_SESSION['Kunde']) ? (int)$_SESSION['Kunde']->kKunde : 0;
-            $productHash   = md5($baseID . $this->getOptionsHash($oArtikelOptionen) . $taxClass . '_' . $kKunde);
-            $cacheID       = 'fa_' . '_' . $kArtikel . '_' . $productHash;
+            $productHash   = md5($baseID . $this->getOptionsHash($oArtikelOptionen) . $taxClass . $kKunde);
+            $cacheID       = 'fa_' . $kArtikel . '_' . $productHash;
             $this->cacheID = $cacheID;
             if (($artikel = Shop::Cache()->get($cacheID)) !== false) {
                 if ($artikel === null) {

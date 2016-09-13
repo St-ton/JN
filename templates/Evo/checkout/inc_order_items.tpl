@@ -167,8 +167,8 @@
                                         </span>
                                     {else}
                                         <div class="form-inline">
-                                            <div id="quantity-grp" class="choose_quantity input-group">
-                                                <input name="anzahl[{$smarty.foreach.positionen.index}]" id="quantity{$smarty.foreach.positionen.index}" class="form-control quantity form-control text-right" size="3" value="{$oPosition->nAnzahl}" />
+                                            <div id="quantity-grp" class="choose_quantity input-group input-group-sm">
+                                                <input name="anzahl[{$smarty.foreach.positionen.index}]" id="quantity{$smarty.foreach.positionen.index}" class="form-control quantity text-right" size="3" value="{$oPosition->nAnzahl}" />
                                                 {if $oPosition->Artikel->cEinheit}
                                                     <span class="input-group-addon unit hidden-xs">{$oPosition->Artikel->cEinheit}</span>
                                                 {/if}

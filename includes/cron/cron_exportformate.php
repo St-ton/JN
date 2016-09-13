@@ -3,10 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Artikel.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Kategorie.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'exportformat_inc.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'tools.Global.php';
 
 /**
  * @return JTLSmarty
@@ -135,7 +132,7 @@ function bearbeiteExportformate($oJobQueue)
 
             if (isset($ExportEinstellungen['exportformate_quot']) && $ExportEinstellungen['exportformate_quot'] !== 'N') {
                 $search[] = '"';
-                if ($ExportEinstellungen['exportformate_quot'] === 'bq') {
+                if ($ExportEinstellungen['exportformate_quot'] === 'q' || $ExportEinstellungen['exportformate_quot'] === 'bq') {
                     $replace[] = '\"';
                 } elseif ($ExportEinstellungen['exportformate_quot'] === 'qq') {
                     $replace[] = '""';
@@ -145,7 +142,7 @@ function bearbeiteExportformate($oJobQueue)
             }
             if (isset($ExportEinstellungen['exportformate_equot']) && $ExportEinstellungen['exportformate_equot'] !== 'N') {
                 $search[] = "'";
-                if ($ExportEinstellungen['exportformate_equot'] === 'q') {
+                if ($ExportEinstellungen['exportformate_equot'] === 'q' || $ExportEinstellungen['exportformate_equot'] === 'bq') {
                     $replace[] = '"';
                 } else {
                     $replace[] = $ExportEinstellungen['exportformate_equot'];
@@ -251,7 +248,9 @@ function bearbeiteExportformate($oJobQueue)
             $oJobQueue->nInArbeit = 0;
             $oJobQueue->updateJobInDB();
         } else {
-            Shop::DB()->query("UPDATE texportformat SET dZuletztErstellt = now() WHERE kExportformat = " . (int)$oJobQueue->kKey, 4);
+            $upd = new stdClass();
+            $upd->dZuletztErstellt = 'now()';
+            Shop::DB()->update('texportformat', 'kExportformat', (int)$oJobQueue->kKey, $upd);
             $oJobQueue->deleteJobInDB();
 
             if (file_exists(PFAD_ROOT . PFAD_EXPORT . $exportformat->cDateiname)) {

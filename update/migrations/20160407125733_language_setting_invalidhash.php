@@ -20,6 +20,5 @@ class Migration_20160407125733 extends Migration implements IMigration
 
     public function down()
     {
-
     }
 }

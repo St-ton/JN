@@ -12,7 +12,7 @@
 class Migration_20160205105322 extends Migration implements IMigration
 {
     protected $author = 'dh';
-    
+
     public function up()
     {
         $this->execute("INSERT INTO `teinstellungenconfwerte` (kEinstellungenConf, cName, cWert, nSort) VALUES(1330, 'Liste (nur bei Varkombis möglich)', 'L', 3);");

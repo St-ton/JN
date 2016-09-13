@@ -5,10 +5,10 @@
 
 <h1>{lang key="umfrage" section="umfrage"}</h1>
 
-{if $hinweis}
+{if !empty($hinweis)}
     <div class="alert aler-info">{$hinweis}</div>
 {/if}
-{if $fehler}
+{if !empty($fehler)}
     <div class="alert alert-danger">{$fehler}</div>
 {/if}
 

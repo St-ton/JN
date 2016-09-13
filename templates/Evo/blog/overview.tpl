@@ -49,18 +49,16 @@
 
 {if isset($noarchiv) && $noarchiv}
     <div class="alert alert-info">{lang key="noNewsArchiv" section="news"}.</div>
-{else}
-    {if !empty($oNewsUebersicht_arr)}
-        <div id="newsContent">
-            {if !empty($cCurrentKategorie)}
-                <h2>{$cCurrentKategorie}</h2>
-                <hr>
-            {/if}
-            {foreach name=uebersicht from=$oNewsUebersicht_arr item=oNewsUebersicht}
-                {include file="blog/preview.tpl"}
-            {/foreach}
-        </div>
-    {/if}
-
+{elseif !empty($oNewsUebersicht_arr)}
     {include file='snippets/pagination.tpl' oPagination=$oPagination cThisUrl='news.php'}
+    <div id="newsContent">
+        {if !empty($cCurrentKategorie)}
+            <h2>{$cCurrentKategorie}</h2>
+            <hr>
+        {/if}
+        {foreach name=uebersicht from=$oNewsUebersicht_arr item=oNewsUebersicht}
+            {include file="blog/preview.tpl"}
+        {/foreach}
+    </div>
+    {include file='snippets/pagination.tpl' oPagination=$oPagination cThisUrl='news.php' showFilter=false}
 {/if}

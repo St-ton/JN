@@ -24,8 +24,8 @@ class Migration_20160912173000 extends Migration implements IMigration
 
     public function up()
     {
-        $this->setLocalization('ger', 'global', 'paginationEntryPagination', 'Einträge %d - %d von %d');
-        $this->setLocalization('eng', 'global', 'paginationEntryPagination', 'Entries %d - %d of %d');
+        $this->setLocalization('ger', 'global', 'paginationEntryPagination', 'Einträge %d &ndash; %d von %d');
+        $this->setLocalization('eng', 'global', 'paginationEntryPagination', 'Entries %d &ndash; %d of %d');
 
         $this->setLocalization('ger', 'global', 'paginationEntriesPerPage', 'Einträge/Seite');
         $this->setLocalization('eng', 'global', 'paginationEntriesPerPage', 'Entries/page');

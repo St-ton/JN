@@ -3055,6 +3055,7 @@ class Artikel
             'nMain',
             'nWarenlager',
             'bSimilar',
+            'nRatings',
         );
     }
 
@@ -3728,8 +3729,6 @@ class Artikel
         }
         // Suchspecialbildoverlay
         $this->baueSuchspecialBildoverlay();
-        //@todo: is this really necessary? fDurchschnittsbewertung is set via sql before.
-        $this->holeBewertungDurchschnitt();
         $this->staffelPreis_arr  = $this->getTierPrices();
         $this->isSimpleVariation = false;
         if (count($this->Variationen) > 0) {
@@ -3740,9 +3739,9 @@ class Artikel
         $this->metaDescription = $this->setMetaDescription();
         $this->tags            = $this->getTags();
         $this->taxData         = $this->getShippingAndTaxData();
-        if ($conf['bewertung']['bewertung_anzeigen'] === 'Y') {
-            $this->holehilfreichsteBewertung($kSprache);
-            $this->holeBewertung($kSprache, -1, 1, 0, $conf['bewertung']['bewertung_freischalten'], 0);
+        if (isset($oArtikelOptionen->nRatings) && $oArtikelOptionen->nRatings === 1 && $conf['bewertung']['bewertung_anzeigen'] === 'Y') {
+            $this->holehilfreichsteBewertung($kSprache)
+                 ->holeBewertung($kSprache, -1, 1, 0, $conf['bewertung']['bewertung_freischalten'], 0);
         }
 
         $cacheTags = array(CACHING_GROUP_ARTICLE . '_' . $this->kArtikel, CACHING_GROUP_ARTICLE);

@@ -859,6 +859,7 @@ function loescheArtikel($kArtikel, $nIstVater = 0, $bForce = false, $conf = null
         Shop::DB()->delete('tkategorieartikel', 'kArtikel', $kArtikel);
         Shop::DB()->delete('tartikelsprache', 'kArtikel', $kArtikel);
         Shop::DB()->delete('tartikelattribut', 'kArtikel', $kArtikel);
+        Shop::DB()->delete('tartikelwarenlager', 'kArtikel', $kArtikel);
         loescheArtikelAttribute($kArtikel);
         loescheArtikelEigenschaftWert($kArtikel);
         loescheArtikelEigenschaft($kArtikel);

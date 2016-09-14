@@ -462,13 +462,13 @@ class Redirect
     public function getCount($bUmgeleiteteUrls, $cSuchbegriff)
     {
         $where = '';
-        if ($bUmgeleiteteUrls == '1' || !empty($cSuchbegriff)) {
+        if ($bUmgeleiteteUrls === '1' || !empty($cSuchbegriff)) {
             $where .= 'WHERE ';
         }
-        if ($bUmgeleiteteUrls == '1') {
+        if ($bUmgeleiteteUrls === '1') {
             $where .= ' cToUrl != ""';
         }
-        if (!empty($cSuchbegriff) && $bUmgeleiteteUrls == '1') {
+        if (!empty($cSuchbegriff) && $bUmgeleiteteUrls === '1') {
             $where .= ' AND ';
         }
         if (!empty($cSuchbegriff)) {
@@ -496,16 +496,16 @@ class Redirect
     public function getList($nStart, $nLimit, $bUmgeleiteteUrls, $cSortierFeld, $cSortierung, $cSuchbegriff, $cMitVerweis = true)
     {
         $cWhereSQL_arr = array();
-        $cOrderSQL = $cSortierFeld . ' ' . $cSortierung;
-        $cLimitSQL = (int)$nStart . ',' . (int)$nLimit;
+        $cOrderSQL     = $cSortierFeld . ' ' . $cSortierung;
+        $cLimitSQL     = (int)$nStart . ',' . (int)$nLimit;
 
-        if ($cSuchbegriff != '') {
+        if ($cSuchbegriff !== '') {
             $cWhereSQL_arr[] = "cFromUrl LIKE '%" . $cSuchbegriff . "%'";
         }
 
-        if ($bUmgeleiteteUrls == '1') {
+        if ($bUmgeleiteteUrls === '1') {
             $cWhereSQL_arr[] = "cToUrl != ''";
-            if ($cSuchbegriff != '') {
+            if ($cSuchbegriff !== '') {
                 $cWhereSQL_arr[] = "cToUrl LIKE '%" . $cSuchbegriff . "%'";
             }
         } elseif ($bUmgeleiteteUrls === '2') {
@@ -538,7 +538,7 @@ class Redirect
         $oRedirect_arr = Shop::DB()->query("
             SELECT *
                 FROM tredirect
-                " . ($cWhereSQL != '' ? "WHERE " . $cWhereSQL : "") . "
+                " . ($cWhereSQL !== '' ? "WHERE " . $cWhereSQL : "") . "
                 ORDER BY " . $cOrderSQL . "
                 LIMIT " . $cLimitSQL,
             2);
@@ -587,16 +587,16 @@ class Redirect
         $parsedUrl = parse_url($cUrl);
 
         if (!isset($parsedUrl['host'])) {
-            $parsedShopUrl = parse_url(Shop::getURL());
+            $parsedShopUrl       = parse_url(Shop::getURL());
             $parsedUrl['scheme'] = $parsedShopUrl['scheme'];
-            $parsedUrl['host'] = $parsedShopUrl['host'];
+            $parsedUrl['host']   = $parsedShopUrl['host'];
             if (!isset($parsedUrl['path'])) {
                 $parsedUrl['path'] = '/';
             }
-            if ($parsedUrl['path'][0] != '/') {
+            if ($parsedUrl['path'][0] !== '/') {
                 $parsedUrl['path'] = '/' . $parsedUrl['path'];
             }
-            if (false === StringHandler::beginsWith($parsedUrl['path'], $parsedShopUrl['path'])) {
+            if (strpos($parsedUrl['path'], $parsedShopUrl['path']) === 0) {
                 $parsedUrl['path'] = $parsedShopUrl['path'] . $parsedUrl['path'];
             }
         }

@@ -526,14 +526,4 @@ class StringHandler
             (isset($parts['query']) ? '?' . $parts['query'] : '') .
             (isset($parts['fragment']) ? '#' . $parts['fragment'] : '');
     }
-
-    /**
-     * @param $subject
-     * @param $query
-     * @return bool - true if $subject begins with $query, false otherwise
-     */
-    public static function beginsWith($subject, $query)
-    {
-        return substr($subject, 0, strlen($query)) === $query;
-    }
 }

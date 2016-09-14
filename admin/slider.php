@@ -13,7 +13,6 @@ $cFehler      = '';
 $cHinweis     = '';
 $_kSlider     = 0;
 $cRedirectUrl = Shop::getURL() . '/' . PFAD_ADMIN . 'slider.php';
-
 $cAction = ((isset($_REQUEST['action']) && validateToken()) ? $_REQUEST['action'] : 'view');
 $kSlider = (isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0);
 
@@ -53,7 +52,11 @@ switch ($cAction) {
 
             $cKeyValue = '';
             $cValue    = '';
-            if ($nSeite == 2) {
+            if ($nSeite == PAGE_ARTIKEL) {
+                $cKey      = 'kArtikel';
+                $cKeyValue = 'article_key';
+                $cValue    = $_POST[$cKeyValue];
+            } elseif ($nSeite == PAGE_ARTIKELLISTE) {
                 // data mapping
                 $aFilter_arr = array(
                     'kTag'         => 'tag_key',
@@ -64,6 +67,14 @@ switch ($cAction) {
                 );
 
                 $cKeyValue = $aFilter_arr[$cKey];
+                $cValue    = $_POST[$cKeyValue];
+            } elseif ($nSeite == PAGE_HERSTELLER) {
+                $cKey      = 'kHersteller';
+                $cKeyValue = 'manufacturer_key';
+                $cValue    = $_POST[$cKeyValue];
+            } elseif ($nSeite == PAGE_EIGENE) {
+                $cKey      = 'kLink';
+                $cKeyValue = 'link_key';
                 $cValue    = $_POST[$cKeyValue];
             }
 

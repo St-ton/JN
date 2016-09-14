@@ -5,7 +5,7 @@
 
 {if $Einstellungen.global.global_wunschliste_freunde_aktiv === 'Y'}
     <h1>{lang key="wishlistViaEmail" section="login"}</h1>
-    {if $hinweis}
+    {if !empty($hinweis)}
         <p class="alert alert-info">{$hinweis}</p>
     {/if}
     <div class="row">

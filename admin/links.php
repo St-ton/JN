@@ -20,6 +20,9 @@ $cUploadVerzeichnis = PFAD_ROOT . PFAD_BILDER . PFAD_LINKBILDER;
 $clearCache         = false;
 $continue           = true;
 
+/**
+ * @global JTLSmarty $smarty
+ */
 if (isset($_POST['addlink']) && intval($_POST['addlink']) > 0) {
     $step = 'neuer Link';
     if (!isset($link)) {
@@ -47,7 +50,7 @@ if (isset($_POST['loesch_linkgruppe']) && intval($_POST['loesch_linkgruppe']) ==
     }
 }
 
-if ((isset($_POST['dellinkgruppe']) && intval($_POST['dellinkgruppe']) > 0  && validateToken()) || $step === 'loesch_linkgruppe') {
+if ((isset($_POST['dellinkgruppe']) && intval($_POST['dellinkgruppe']) > 0 && validateToken()) || $step === 'loesch_linkgruppe') {
     $step = 'uebersicht';
 
     $kLinkgruppe = -1;
@@ -78,9 +81,15 @@ if (isset($_POST['delconfirmlinkgruppe']) && intval($_POST['delconfirmlinkgruppe
 }
 
 if (isset($_POST['neu_link']) && intval($_POST['neu_link']) === 1 && validateToken()) {
+    $sprachen     = gibAlleSprachen();
+    $hasHTML_arr  = [];
+
+    foreach ($sprachen as $sprache) {
+        $hasHTML_arr[] = 'cContent_' . $sprache->cISO;
+    }
     // Plausi
     $oPlausiCMS = new PlausiCMS();
-    $oPlausiCMS->setPostVar($_POST);
+    $oPlausiCMS->setPostVar($_POST, $hasHTML_arr, true);
     $oPlausiCMS->doPlausi('lnk');
 
     if (count($oPlausiCMS->getPlausiVar()) === 0) {
@@ -128,11 +137,6 @@ if (isset($_POST['neu_link']) && intval($_POST['neu_link']) === 1 && validateTok
         } else {
             //updaten
             $kLink = intval($_POST['kLink']);
-            //clear page cache
-            if (Shop::Cache()->isPageCacheEnabled()) {
-                $_smarty = new JTLSmarty(true, false, true, 'cache');
-                $_smarty->setCachingParams(true)->clearCache(null, 'jtlc|page|link|lid' . $_POST['kLink']);
-            }
             Shop::DB()->update('tlink', 'kLink', $kLink, $link);
             $hinweis .= "Der Link <strong>$link->cName</strong> wurde erfolgreich ge&auml;ndert.";
             $step     = 'uebersicht';
@@ -163,7 +167,6 @@ if (isset($_POST['neu_link']) && intval($_POST['neu_link']) === 1 && validateTok
             }
         }
 
-        $sprachen = gibAlleSprachen();
         if (!isset($linkSprache)) {
             $linkSprache = new stdClass();
         }
@@ -195,10 +198,9 @@ if (isset($_POST['neu_link']) && intval($_POST['neu_link']) === 1 && validateTok
             Shop::DB()->delete('tlinksprache', array('kLink', 'cISOSprache'), array($kLink, $sprache->cISO));
             $linkSprache->cSeo = getSeo($linkSprache->cSeo);
             Shop::DB()->insert('tlinksprache', $linkSprache);
-
-            $oSpracheTMP = Shop::DB()->query("SELECT kSprache FROM tsprache WHERE cISO = '" . $linkSprache->cISOSprache . "'", 1);
-            if ($oSpracheTMP->kSprache > 0) {
-                Shop::DB()->delete('tseo', array('cKey', 'kKey', 'kSprache'),  array('kLink', (int)$linkSprache->kLink, (int)$oSpracheTMP->kSprache));
+            $oSpracheTMP = Shop::DB()->select('tsprache', 'cISO ', $linkSprache->cISOSprache);
+            if (isset($oSpracheTMP->kSprache) && $oSpracheTMP->kSprache > 0) {
+                Shop::DB()->delete('tseo', array('cKey', 'kKey', 'kSprache'), array('kLink', (int)$linkSprache->kLink, (int)$oSpracheTMP->kSprache));
                 $oSeo           = new stdClass();
                 $oSeo->cSeo     = checkSeo($linkSprache->cSeo);
                 $oSeo->kKey     = $linkSprache->kLink;
@@ -221,7 +223,7 @@ if (isset($_POST['neu_link']) && intval($_POST['neu_link']) === 1 && validateTok
     $step = 'neue Linkgruppe';
 
     if (isset($_POST['kLinkgruppe']) && intval($_POST['kLinkgruppe']) > 0) {
-        $linkgruppe = Shop::DB()->query("SELECT * FROM tlinkgruppe WHERE kLinkgruppe = " . intval($_POST['kLinkgruppe']), 1);
+        $linkgruppe = Shop::DB()->select('tlinkgruppe', 'kLinkgruppe', (int)$_POST['kLinkgruppe']);
         $smarty->assign('Linkgruppe', $linkgruppe)
                ->assign('Linkgruppenname', getLinkgruppeNames($linkgruppe->kLinkgruppe));
     }
@@ -229,7 +231,7 @@ if (isset($_POST['neu_link']) && intval($_POST['neu_link']) === 1 && validateTok
 
 if ($continue && ((isset($_POST['kLink']) && intval($_POST['kLink']) > 0) || (isset($_GET['kLink']) && intval($_GET['kLink']) && isset($_GET['delpic']))) && validateToken()) {
     $step = 'neuer Link';
-    $link = Shop::DB()->query("SELECT * FROM tlink WHERE kLink=" . verifyGPCDataInteger('kLink'), 1);
+    $link = Shop::DB()->select('tlink', 'kLink', verifyGPCDataInteger('kLink'));
     $smarty->assign('Link', $link)
            ->assign('Linkname', getLinkVar($link->kLink, 'cName'))
            ->assign('Linkseo', getLinkVar($link->kLink, 'cSeo'))
@@ -317,13 +319,8 @@ if (isset($_POST['aender_linkgruppe']) && intval($_POST['aender_linkgruppe']) ==
         $oLink = new Link((int)$_POST['kLink'], null, true);
 
         if ($oLink->getLink() > 0) {
-            $oLinkgruppe = Shop::DB()->query(
-                "SELECT kLinkgruppe, cName
-                    FROM tlinkgruppe
-                    WHERE kLinkgruppe = " . (int)$_POST['kLinkgruppe'], 1
-            );
-
-            if ($oLinkgruppe->kLinkgruppe > 0) {
+            $oLinkgruppe = Shop::DB()->select('tlinkgruppe', 'kLinkgruppe', (int)$_POST['kLinkgruppe']);
+            if (isset($oLinkgruppe->kLinkgruppe) && $oLinkgruppe->kLinkgruppe > 0) {
                 $oLink->setLinkgruppe($_POST['kLinkgruppe'])
                       ->setVaterLink(0)
                       ->update();
@@ -347,16 +344,11 @@ if (isset($_POST['kopiere_in_linkgruppe']) && intval($_POST['kopiere_in_linkgrup
         $oLink = new Link((int)$_POST['kLink'], null, true);
 
         if ($oLink->getLink() > 0) {
-            $oLinkgruppe = Shop::DB()->query(
-                "SELECT kLinkgruppe, cName
-                    FROM tlinkgruppe
-                    WHERE kLinkgruppe = " . (int)$_POST['kLinkgruppe'], 1
-            );
-
-            if ($oLinkgruppe->kLinkgruppe > 0) {
+            $oLinkgruppe = Shop::DB()->select('tlinkgruppe', 'kLinkgruppe', (int)$_POST['kLinkgruppe']);
+            if (isset($oLinkgruppe->kLinkgruppe) && $oLinkgruppe->kLinkgruppe > 0) {
                 $oLink->setLinkgruppe($_POST['kLinkgruppe'])
-                    ->setVaterLink(0)
-                    ->save();
+                      ->setVaterLink(0)
+                      ->save();
                 // Kinder auch umziehen
                 if (isset($oLink->oSub_arr) && count($oLink->oSub_arr) > 0) {
                     copyIntoLinkgroupRec($oLink->oSub_arr, $_POST['kLinkgruppe']);
@@ -378,12 +370,14 @@ if (isset($_POST['aender_linkvater']) && intval($_POST['aender_linkvater']) === 
     if (intval($_POST['kLink']) > 0 && intval($_POST['kVaterLink']) >= 0) {
         $kLink      = (int)$_POST['kLink'];
         $kVaterLink = (int)$_POST['kVaterLink'];
-        $oLink      = Shop::DB()->query("SELECT kLink, cName FROM tlink WHERE kLink = " . $kLink, 1);
-        $oVaterLink = Shop::DB()->query("SELECT kLink, cName FROM tlink WHERE kLink = " . $kVaterLink, 1);
+        $oLink      = Shop::DB()->select('tlink', 'kLink', $kLink);
+        $oVaterLink = Shop::DB()->select('tlink', 'kLink', $kVaterLink);
 
         if (isset($oLink->kLink) && $oLink->kLink > 0 && ((isset($oVaterLink->kLink) && $oVaterLink->kLink > 0) || $kVaterLink == 0)) {
             $success = true;
-            Shop::DB()->query("UPDATE tlink SET kVaterLink = " . $kVaterLink . " WHERE kLink = " . $kLink, 4);
+            $upd = new stdClass();
+            $upd->kVaterLink = $kVaterLink;
+            Shop::DB()->update('tlink', 'kLink', $kLink, $upd);
             $hinweis .= "Sie haben den Link '" . $oLink->cName . "' erfolgreich verschoben.";
             $step = 'uebersicht';
         }
@@ -420,14 +414,10 @@ if ($step === 'neuer Link') {
            ->assign('gesetzteKundengruppen', getGesetzteKundengruppen($link));
 }
 
-//clear page cache
+//clear cache
 if ($clearCache === true) {
     Shop::Cache()->flushTags(array(CACHING_GROUP_CORE));
     Shop::DB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
-    if (Shop::Cache()->isPageCacheEnabled()) {
-        $_smarty = new JTLSmarty(true, false, true, 'cache');
-        $_smarty->setCachingParams(true)->clearCache(null, 'jtlc|page');
-    }
 }
 $smarty->assign('step', $step)
        ->assign('hinweis', $hinweis)

@@ -2924,3 +2924,24 @@ h2 .btn-group {
 .toolbar .well {
     margin: 0;
 }
+
+.ui-state-highlight {
+    border: 0;
+}
+
+.ui-sortable-handle:hover {
+    cursor: ns-resize;
+}
+
+.dropdown-menu li.icon a {
+    position: relative;
+    padding-right: 2em;
+}
+
+.dropdown-menu li.icon i {
+    font-size: 0.7em;
+    color: #bbb;
+    position: absolute;
+    right:1em;
+    margin-top: 0.5em;
+}

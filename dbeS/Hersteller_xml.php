@@ -85,12 +85,6 @@ function bearbeiteHerstellerDeletes($xml)
             }
         }
         Shop::Cache()->flushTags($cacheTags);
-        if (Shop::Cache()->isPageCacheEnabled()) {
-            if (!isset($smarty)) {
-                $smarty = Shop::Smarty();
-            }
-            $smarty->clearCache(null, 'jtlc|manufacturer');
-        }
     }
 }
 
@@ -159,12 +153,6 @@ function bearbeiteHersteller($xml)
                 }
             }
             Shop::Cache()->flushTags($cacheTags);
-            if (Shop::Cache()->isPageCacheEnabled()) {
-                if (!isset($smarty)) {
-                    $smarty = Shop::Smarty();
-                }
-                $smarty->clearCache(null, 'jtlc|manufacturer');
-            }
         }
     }
 }

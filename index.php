@@ -48,7 +48,6 @@ if (!$cParameter_arr['kWunschliste'] && strlen(verifyGPDataString('wlid')) > 0) 
     header('Location: ' . $linkHelper->getStaticRoute('wunschliste.php', true) . '?wlid=' . verifyGPDataString('wlid') . '&error=1', true, 303);
     exit();
 }
-$smarty->assign('NaviFilter', $NaviFilter);
 //support for artikel_after_cart_add
 if ($smarty->getTemplateVars('bWarenkorbHinzugefuegt')) {
     require_once PFAD_ROOT . PFAD_INCLUDES . 'artikel_inc.php';
@@ -82,7 +81,8 @@ if (isset($_SESSION['Kunde']->cLand) && strlen($_SESSION['Kunde']->cLand) > 0) {
     $cKundenherkunft = $_SESSION['Kunde']->cLand;
 }
 $oVersandartKostenfrei = gibVersandkostenfreiAb($kKundengruppe, $cKundenherkunft);
-$smarty->assign('WarenkorbArtikelanzahl', $numArticles)
+$smarty->assign('NaviFilter', $NaviFilter)
+       ->assign('WarenkorbArtikelanzahl', $numArticles)
        ->assign('WarenkorbArtikelPositionenanzahl', $warenpositionenanzahl)
        ->assign('WarenkorbWarensumme', $warensumme)
        ->assign('WarenkorbGesamtsumme', $gesamtsumme)
@@ -109,20 +109,12 @@ Shop::getEntryPoint();
 
 if (Shop::$is404 === true) {
     $cParameter_arr['is404'] = true;
+    Shop::$fileName = null;
 }
 if (Shop::$fileName !== null) {
     require PFAD_ROOT . Shop::$fileName;
 }
 if ($cParameter_arr['is404'] === true) {
-    $uri = $_SERVER['REQUEST_URI'];
-    if (isset($_SERVER['HTTP_X_REWRITE_URL'])) {
-        $uri = $_SERVER['HTTP_X_REWRITE_URL'];
-    }
-    $parsed = parse_url($uri);
-    if (isset($parsed['path']) && (in_array($parsed['path'], array('index.php', 'navi.php')))) {
-        $kLink       = $linkHelper->getSpecialPageLinkKey(LINKTYP_STARTSEITE);
-        Shop::$kLink = $kLink;
-    }
     if (!isset($seo)) {
         $seo = null;
     }

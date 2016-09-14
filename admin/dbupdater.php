@@ -33,41 +33,21 @@ $_smarty->clearCompiledTemplate();
 // clear data cache
 Shop::Cache()->flushAll();
 
-$allMigrations = function () use ($updater) {
-    $migrations = [];
-
-    $migrationDirs = array_filter($updater->getUpdateDirs(), function ($v) {
-        return (int) $v >= 402;
-    });
-
-    sort($migrationDirs, SORT_NUMERIC);
-    $migrationDirs = array_reverse($migrationDirs);
-
-    foreach ($migrationDirs as $version) {
-        $manager              = new MigrationManager((int) $version);
-        $migrations[$version] = $manager;
-    }
-
-    return $migrations;
-};
-
-$buildStatus = function () use ($updater, $smarty, $template, $allMigrations) {
+$buildStatus = function () use ($updater, $smarty, $template) {
     $currentFileVersion     = $updater->getCurrentFileVersion();
     $currentDatabaseVersion = $updater->getCurrentDatabaseVersion();
-    $latestVersion          = $updater->getLatestVersion();
     $version                = $updater->getVersion();
     $updatesAvailable       = $updater->hasPendingUpdates();
     $updateError            = $updater->error();
 
     if (defined('ADMIN_MIGRATION') && ADMIN_MIGRATION) {
-        $smarty->assign('migrations', $allMigrations());
+        $smarty->assign('manager', new MigrationManager());
     }
 
     $smarty
         ->assign('updatesAvailable', $updatesAvailable)
         ->assign('currentFileVersion', $currentFileVersion)
         ->assign('currentDatabaseVersion', $currentDatabaseVersion)
-        ->assign('latestVersion', $latestVersion)
         ->assign('version', $version)
         ->assign('updateError', $updateError)
         ->assign('currentTemplateFileVersion', $template->xmlData->cShopVersion)

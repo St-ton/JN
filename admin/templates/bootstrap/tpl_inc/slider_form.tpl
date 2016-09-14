@@ -247,33 +247,44 @@
                                         </option>
                                     </select>
                                 </div>
-                                <div class="nl">
-                                    <div id="keykTag" class="key">
-                                        <input type="hidden" name="tag_key" value="{if isset($oExtension->cKey) && $oExtension->cKey === 'kTag'}{$oExtension->cValue}{/if}" />
-                                        <input type="text" name="tag_name" disabled="disabled" value="{if isset($oExtension->cKey) && $oExtension->cKey === "kTag"}{$oExtension->cValue}{else}Kein Tag ausgew&auml;hlt{/if}" />
-                                        <a href="#" class="btn btn-default" id="tag">Tag suchen</a>
-                                    </div>
-                                    <div id="keykMerkmalWert" class="key">
-                                        <input type="hidden" name="attribute_key" value="{if isset($oExtension->cKey) && $oExtension->cKey === 'kMerkmalWert'}{$oExtension->cValue}{/if}" />
-                                        <input type="text" name="attribute_name" disabled="disabled" value="{if isset($oExtension->cKey) && $oExtension->cKey === 'kMerkmalWert'}{$oExtension->cValue}{else}Kein Merkmal ausgew&auml;hlt{/if}" />
-                                        <a href="#" class="btn btn-default" id="attribute">Merkmal suchen</a>
-                                    </div>
-                                    <div id="keykKategorie" class="key">
-                                        <input type="hidden" name="categories_key" value="{if isset($oExtension->cKey) && $oExtension->cKey === 'kKategorie'}{$oExtension->cValue}{/if}" />
-                                        <input type="text" name="categories_name" disabled="disabled" value="{if isset($oExtension->cKey) && $oExtension->cKey === 'kKategorie'}{$oExtension->cValue}{else}Keine Kategorie ausgew&auml;hlt{/if}" />
-                                        <a href="#" class="btn btn-default" id="categories">Kategorie suchen</a>
-                                    </div>
-                                    <div id="keykHersteller" class="key">
-                                        <input type="hidden" name="manufacturer_key" value="{if isset($oExtension->cKey) && $oExtension->cKey === 'kHersteller'}{$oExtension->cValue}{/if}" />
-                                        <input type="text" name="manufacturer_name" disabled="disabled" value="{if isset($oExtension->cKey) && $oExtension->cKey === 'kHersteller'}{$oExtension->cValue}{else}Kein Hersteller ausgew&auml;hlt{/if}" />
-                                        <a href="#" class="btn btn-default" id="manufacturer">Hersteller suchen</a>
-                                    </div>
-                                    <div id="keycSuche" class="key">
-                                        <input type="text" name="keycSuche" value="{if isset($oExtension->cKey) && $oExtension->cKey === 'cSuche'}{$oExtension->cValue}{/if}" />
-                                    </div>
-                                </div>
                             </div>
                         </div>
+                    </div>
+                </li>
+                <li class="nl list-group-item item">
+                    <div id="keykArtikel" class="key">
+                        <input type="hidden" name="article_key" value="{if (isset($cKey) && $cKey === 'kArtikel') || (isset($oExtension->cKey) && $oExtension->cKey === 'kArtikel')}{$oExtension->cValue}{/if}" />
+                        <input class="form-control" type="text" name="article_name" disabled="disabled" value="{if (isset($cKey) && $cKey === 'kArtikel') || (isset($oExtension->cKey) && $oExtension->cKey === 'kArtikel')}{if isset($article_key) && $article_key !== ''}{$article_key}{elseif isset($oExtension->cValue) && $oExtension->cValue !== ''}{$oExtension->cValue}{else}Kein Artikel ausgew&auml;hlt{/if}{/if}" />
+                        <a href="#" class="btn btn-success" id="article">Artikel suchen</a>
+                    </div>
+                    <div id="keykLink" class="key">
+                        <input type="hidden" name="link_key" value="{if (isset($cKey) && $cKey === 'kLink') || (isset($oExtension->cKey) && $oExtension->cKey === 'kLink')}{$oExtension->cValue}{/if}" />
+                        <input class="form-control" type="text" name="link_name" disabled="disabled" value="{if (isset($cKey) && $cKey === 'kLink') || (isset($oExtension->cKey) && $oExtension->cKey === 'kLink')}{if isset($link_key) && $link_key !== ''}{$link_key}{elseif isset($oExtension->cValue) && $oExtension->cValue !== ''}{$oExtension->cValue}{else}Kein Seite ausgew&auml;hlt{/if}{/if}" />
+                        <a href="#" class="btn btn-success" id="link">Eigene Seite suchen</a>
+                    </div>
+                    <div id="keykTag" class="key">
+                        <input type="hidden" name="tag_key" value="{if (isset($cKey) && $cKey === 'kTag') || (isset($oExtension->cKey) && $oExtension->cKey === 'kTag')}{$oExtension->cValue}{/if}" />
+                        <input class="form-control" type="text" name="tag_name" disabled="disabled" value="{if (isset($cKey) && $cKey === 'kTag') || (isset($oExtension->cKey) && $oExtension->cKey === 'kTag')}{if isset($tag_key) && $tag_key !== ''}{$tag_key}{elseif isset($oExtension->cValue) && $oExtension->cValue !== ''}{$oExtension->cValue}{else}Kein Tag ausgew&auml;hlt{/if}{/if}" />
+                        <a href="#" class="btn btn-success" id="tag">Tag suchen</a>
+                    </div>
+                    <div id="keykMerkmalWert" class="key">
+                        <input type="hidden" name="attribute_key" value="{if (isset($cKey) && $cKey === 'kMerkmalWert') || (isset($oExtension->cKey) && $oExtension->cKey === 'kMerkmalWert')}{$oExtension->cValue}{/if}" />
+                        <input class="form-control" type="text" name="attribute_name" disabled="disabled" value="{if (isset($cKey) && $cKey === 'kMerkmalWert') || (isset($oExtension->cKey) && $oExtension->cKey == 'kMerkmalWert')}{if isset($attribute_key) && $attribute_key !== ''}{$attribute_key}{elseif isset($oExtension->cValue) && $oExtension->cValue !== ''}{$oExtension->cValue}{else}Kein Merkmal ausgew&auml;hlt{/if}{/if}" />
+                        <a href="#" class="btn btn-success" id="attribute">Merkmal suchen</a>
+                    </div>
+                    <div id="keykKategorie" class="key">
+                        <input type="hidden" name="categories_key" value="{if (isset($cKey) && $cKey === 'kKategorie') || (isset($oExtension->cKey) && $oExtension->cKey === 'kKategorie')}{$oExtension->cValue}{/if}" />
+                        <input class="form-control" type="text" name="categories_name" disabled="disabled" value="{if (isset($cKey) && $cKey === 'kKategorie') || (isset($oExtension->cKey) && $oExtension->cKey === 'kKategorie')}{if isset($categories_key) && $categories_key !== ''}{$categories_key}{elseif isset($oExtension->cValue) && $oExtension->cValue !== ''}{$oExtension->cValue}{else}Keine Kategorie ausgew&auml;hlt{/if}{/if}" />
+                        <a href="#" class="btn btn-success" id="categories">Kategorie suchen</a>
+                    </div>
+                    <div id="keykHersteller" class="key">
+                        <input type="hidden" name="manufacturer_key" value="{if (isset($cKey) && $cKey === 'kHersteller') || (isset($oExtension->cKey) && $oExtension->cKey === 'kHersteller')}{$oExtension->cValue}{/if}" />
+                        <input class="form-control" type="text" name="manufacturer_name" disabled="disabled" value="{if (isset($cKey) && $cKey === 'kHersteller') || (isset($oExtension->cKey) && $oExtension->cKey === 'kHersteller')}{if isset($manufacturer_key) && $manufacturer_key !== ''}{$manufacturer_key}{elseif isset($oExtension->cValue) && $oExtension->cValue !== ''}{$oExtension->cValue}{else}Kein Hersteller ausgew&auml;hlt{/if}{/if}" />
+                        <a href="#" class="btn btn-success" id="manufacturer">Hersteller suchen</a>
+                    </div>
+                    <div id="keycSuche" class="key input-group">
+                        <span class="input-group-addon"><label for="ikeycSuche">Suchbegriff</label></span>
+                        <input class="form-control" type="text" id="ikeycSuche" name="keycSuche" value="{if (isset($cKey) &&  $cKey === 'cSuche') || (isset($oExtension->cKey) && $oExtension->cKey === 'cSuche')}{if isset($keycSuche) && $keycSuche !== ''}{$keycSuche}{else}{$oExtension->cValue}{/if}{/if}" />
                     </div>
                 </li>
             </ul>

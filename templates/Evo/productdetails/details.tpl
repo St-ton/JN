@@ -1,40 +1,38 @@
 {if isset($boxes)}{* only available in shop versions > 3.19 *}
     {has_boxes position='left' assign='hasLeftBox'}
 {/if}
-{nocache}
-    {if !empty($hinweis)}
-        {if isset($bWarenkorbHinzugefuegt) && $bWarenkorbHinzugefuegt}
-            {include file='productdetails/pushed_success.tpl' type='alert'}
-        {else}
-            <div class="alert alert-success">
-                {$hinweis}
-            </div>
-        {/if}
-    {/if}
-    {if !empty($fehler)}
-        <div class="alert alert-danger">
-            {$fehler}
-        </div>
-    {/if}
-    {if !empty($ProdukttagHinweis)}
+{if !empty($hinweis)}
+    {if isset($bWarenkorbHinzugefuegt) && $bWarenkorbHinzugefuegt}
+        {include file='productdetails/pushed_success.tpl' type='alert'}
+    {else}
         <div class="alert alert-success">
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-            {$ProdukttagHinweis}
+            {$hinweis}
         </div>
     {/if}
-    {if isset($PositiveFeedback) && count($PositiveFeedback) > 0}
-        {foreach name=feedback from=$PositiveFeedback item=Feedback}
-            <div class="alert alert-success">{$Feedback}</div>
-        {/foreach}
-    {/if}
-    {if isset($Artikelhinweise) && count($Artikelhinweise) > 0}
-        {foreach name=hinweise from=$Artikelhinweise item=Artikelhinweis}
-            <div class="alert alert-danger">{$Artikelhinweis}</div>
-        {/foreach}
-    {/if}
-{/nocache}
+{/if}
+{if !empty($fehler)}
+    <div class="alert alert-danger">
+        {$fehler}
+    </div>
+{/if}
+{if !empty($ProdukttagHinweis)}
+    <div class="alert alert-success">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        {$ProdukttagHinweis}
+    </div>
+{/if}
+{if isset($PositiveFeedback) && count($PositiveFeedback) > 0}
+    {foreach name=feedback from=$PositiveFeedback item=Feedback}
+        <div class="alert alert-success">{$Feedback}</div>
+    {/foreach}
+{/if}
+{if isset($Artikelhinweise) && count($Artikelhinweise) > 0}
+    {foreach name=hinweise from=$Artikelhinweise item=Artikelhinweis}
+        <div class="alert alert-danger">{$Artikelhinweis}</div>
+    {/foreach}
+{/if}
 
 <div class="h1 visible-xs text-center">{$Artikel->cName}</div>
 

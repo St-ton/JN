@@ -1206,38 +1206,31 @@ function gibVarKombiEigenschaftsWerte($kArtikel, $bSichtbarkeitBeachten = true)
 function fuegeEinInWarenkorb($kArtikel, $anzahl, $oEigenschaftwerte_arr = '', $nWeiterleitung = 0, $cUnique = false, $kKonfigitem = 0, $oArtikelOptionen = null, $setzePositionsPreise = true)
 {
     $kArtikel = (int)$kArtikel;
-
     if ($anzahl > 0 && $kArtikel > 0) {
         $Artikel = new Artikel();
         if ($oArtikelOptionen === null) {
             $oArtikelOptionen = Artikel::getDefaultOptions();
         }
         $Artikel->fuelleArtikel($kArtikel, $oArtikelOptionen);
-
-        // ### 28.10.2010 auskommentiert weil es das $oEigenschaftwerte_arr bei Kindern mit PFLICHT-FREIFELDERN falsch verändert ###
-        // Falls der Artikel ein Variationskombikind ist, hole direkt seine Eigenschaften
-        //if(isset($Artikel->kEigenschaftKombi) && $Artikel->kEigenschaftKombi > 0)
-        //$oEigenschaftwerte_arr = gibVarKombiEigenschaftsWerte($Artikel->kArtikel);
-
         if (intval($anzahl) != $anzahl && $Artikel->cTeilbar !== 'Y') {
-            $anzahl = max(intval($anzahl), 1);
+            $anzahl = max((int)$anzahl, 1);
         }
-
-        // Prüfung
         $redirectParam = pruefeFuegeEinInWarenkorb($Artikel, $anzahl, $oEigenschaftwerte_arr);
-
         if (count($redirectParam) > 0) {
             if (isset($_SESSION['variBoxAnzahl_arr'])) {
                 return false;
             }
-
             if ($nWeiterleitung == 0) {
-                if ($Artikel->nIstVater == 1) {
-                    header('Location: ' . Shop::getURL() . '/navi.php?a=' . $Artikel->kArtikel . '&n=' . $anzahl . '&r=' . implode(',', $redirectParam), true, 302);
-                } elseif ($Artikel->kEigenschaftKombi > 0) {
-                    header('Location: ' . Shop::getURL() . '/navi.php?a=' . $Artikel->kVaterArtikel . '&a2=' . $Artikel->kArtikel . '&n=' . $anzahl . '&r=' . implode(',', $redirectParam), true, 302);
+                if ($Artikel->kEigenschaftKombi > 0) {
+                    $url = (!empty($Artikel->cURLFull)) ?
+                        ($Artikel->cURLFull . '?'):
+                        (Shop::getURL() . '/index.php?a=' . $Artikel->kVaterArtikel . '&a2=' . $Artikel->kArtikel . '&');
+                    header('Location: ' . $url . 'n=' . $anzahl . '&r=' . implode(',', $redirectParam), true, 302);
                 } else {
-                    header('Location: ' . Shop::getURL() . '/index.php?a=' . $Artikel->kArtikel . '&n=' . $anzahl . '&r=' . implode(',', $redirectParam), true, 302);
+                    $url = (!empty($Artikel->cURLFull)) ?
+                        ($Artikel->cURLFull . '?'):
+                        (Shop::getURL() . '/index.php?a=' . $Artikel->kArtikel . '&');
+                    header('Location: ' . $url . 'n=' . $anzahl . '&r=' . implode(',', $redirectParam), true, 302);
                 }
                 exit;
             } else {
@@ -3337,6 +3330,12 @@ function parseNewsText($cText)
 {
     preg_match_all('/\${1}\#{1}[akhmntl]{1}:[0-9]+\:{0,1}[a-zA-Z0-9äÄöÖüÜß\.\,\!\"\§\$\%\&\/\(\)\=\`\´\+\~\*\'\;\-\_\?\{\}\[\]\ ]{0,}\#{1}\${1}/', $cText, $cTreffer_arr);
     if (is_array($cTreffer_arr[0]) && count($cTreffer_arr[0]) > 0) {
+        if (!isset($_SESSION['kSprache'])) {
+            $_lang    = gibStandardsprache();
+            $kSprache = $_lang->kSprache;
+        } else {
+            $kSprache = (int)$_SESSION['kSprache'];
+        }
         // Parameter
         $cParameter_arr = array('a' => URLART_ARTIKEL, 'k' => URLART_KATEGORIE, 'h' => URLART_HERSTELLER, 'm' => URLART_MERKMAL, 'n' => URLART_NEWS, 't' => URLART_TAG, 'l' => URLART_LIVESUCHE);
         foreach ($cTreffer_arr[0] as $cTreffer) {
@@ -3371,7 +3370,7 @@ function parseNewsText($cText)
                             FROM " . $cTabellenname . "
                             LEFT JOIN tseo ON tseo.cKey = 'kArtikel'
                                 AND tseo.kKey = " . $cTabellenname . ".kArtikel
-                                AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
+                                AND tseo.kSprache = " . $kSprache . "
                             WHERE " . $cTabellenname . ".kArtikel=" . (int)$cKey . $cSpracheSQL, 1
                     );
 
@@ -3389,14 +3388,14 @@ function parseNewsText($cText)
                     $cSpracheSQL         = '';
                     if (isset($_SESSION['kSprache']) && $_SESSION['kSprache'] > 0 && !standardspracheAktiv()) {
                         $cTabellenname = "tkategoriesprache";
-                        $cSpracheSQL   = " AND tkategoriesprache.kSprache = " . (int)$_SESSION['kSprache'];
+                        $cSpracheSQL   = " AND tkategoriesprache.kSprache = " . $kSprache;
                     }
                     $oKategorie = Shop::DB()->query(
                         "SELECT " . $cTabellenname . ".kKategorie, " . $cTabellenname . ".cName, tseo.cSeo
                             FROM " . $cTabellenname . "
                             LEFT JOIN tseo ON tseo.cKey = 'kKategorie'
                                 AND tseo.kKey = " . $cTabellenname . ".kKategorie
-                                AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
+                                AND tseo.kSprache = " . $kSprache . "
                             WHERE " . $cTabellenname . ".kKategorie = " . (int)$cKey . $cSpracheSQL, 1
                     );
 
@@ -3416,7 +3415,7 @@ function parseNewsText($cText)
                             FROM thersteller
                             LEFT JOIN tseo ON tseo.cKey = 'kHersteller'
                                 AND tseo.kKey = " . $cTabellenname . ".kHersteller
-                                AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
+                                AND tseo.kSprache = " . $kSprache . "
                             WHERE " . $cTabellenname . ".kHersteller = " . (int)$cKey, 1
                     );
 
@@ -3435,9 +3434,9 @@ function parseNewsText($cText)
                             FROM tmerkmalwertsprache
                             LEFT JOIN tseo ON tseo.cKey = 'kMerkmalWert'
                                 AND tseo.kKey = tmerkmalwertsprache.kMerkmalWert
-                                AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
+                                AND tseo.kSprache = " . $kSprache . "
                             WHERE tmerkmalwertsprache.kMerkmalWert = " . (int)$cKey . "
-                                AND tmerkmalwertsprache.kSprache = " . (int)$_SESSION['kSprache'], 1
+                                AND tmerkmalwertsprache.kSprache = " . $kSprache, 1
                     );
 
                     if (isset($oMerkmalWert->kMerkmalWert) && $oMerkmalWert->kMerkmalWert > 0) {
@@ -3455,7 +3454,7 @@ function parseNewsText($cText)
                             FROM tnews
                             LEFT JOIN tseo ON tseo.cKey = 'kNews'
                                 AND tseo.kKey = tnews.kNews
-                                AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
+                                AND tseo.kSprache = " . $kSprache . "
                             WHERE tnews.kNews = " . (int)$cKey, 1
                     );
 
@@ -3474,7 +3473,7 @@ function parseNewsText($cText)
                             FROM tumfrage
                             LEFT JOIN tseo ON tseo.cKey = 'kUmfrage'
                                 AND tseo.kKey = tnews.kUmfrage
-                                AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
+                                AND tseo.kSprache = " . $kSprache . "
                             WHERE tumfrage.kUmfrage = " . (int)$cKey, 1
                     );
 
@@ -3493,7 +3492,7 @@ function parseNewsText($cText)
                             FROM ttag
                             LEFT JOIN tseo ON tseo.cKey = 'kTag'
                                 AND tseo.kKey = ttag.kTag
-                                AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
+                                AND tseo.kSprache = " . $kSprache . "
                             WHERE ttag.kTag = " . (int)$cKey, 1
                     );
 
@@ -3512,7 +3511,7 @@ function parseNewsText($cText)
                             FROM tsuchanfrage
                             LEFT JOIN tseo ON tseo.cKey = 'kSuchanfrage'
                                 AND tseo.kKey = tsuchanfrage.kSuchanfrage
-                                AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
+                                AND tseo.kSprache = " . $kSprache . "
                             WHERE tsuchanfrage.kSuchanfrage = " . (int)$cKey, 1
                     );
 
@@ -5507,9 +5506,19 @@ function convertCurrency($price, $iso = null, $id = null, $useRounding = true, $
  */
 function resetNeuKundenKupon()
 {
-    if (isset($_SESSION['NeukundenKupon']->kKupon)) {
-        Shop::DB()->delete('tkuponneukunde', 'kKupon', $_SESSION['NeukundenKupon']->kKupon);
+    if (isset($_SESSION['Kunde'])) {
+        $hash = Kuponneukunde::Hash(
+            null,
+            trim($_SESSION['Kunde']->cNachname),
+            trim($_SESSION['Kunde']->cStrasse),
+            null,
+            trim($_SESSION['Kunde']->cPLZ),
+            trim($_SESSION['Kunde']->cOrt),
+            trim($_SESSION['Kunde']->cLand)
+        );
+        Shop::DB()->delete('tkuponneukunde', ['cDatenHash','cVerwendet'], [$hash,'N']);
     }
+
     unset($_SESSION['NeukundenKupon']);
     unset($_SESSION['NeukundenKuponAngenommen']);
     $_SESSION['Warenkorb']->loescheSpezialPos(C_WARENKORBPOS_TYP_NEUKUNDENKUPON)

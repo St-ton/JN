@@ -12,7 +12,7 @@ function gibArtikelXSelling($kArtikel)
 {
     $kArtikel = (int)$kArtikel;
     if ($kArtikel <= 0) {
-        return;
+        return null;
     }
     $xSelling = new stdClass();
     $config   = Shop::getSettings(array(CONF_ARTIKELDETAILS));
@@ -35,16 +35,12 @@ function gibArtikelXSelling($kArtikel)
             }
             $xSelling->Standard->XSellGruppen = array();
             $xsCount                          = count($xsellgruppen);
+            $oArtikelOptionen                 = Artikel::getDefaultOptions();
             for ($i = 0; $i < $xsCount; $i++) {
                 if (Shop::$kSprache > 0) {
                     //lokalisieren
-                    $objSprache = Shop::DB()->query(
-                        "SELECT cName, cBeschreibung
-                            FROM txsellgruppe
-                            WHERE kXSellGruppe = " . (int)$xsellgruppen[$i] . "
-                            AND kSprache = " . (int)Shop::$kSprache, 1
-                    );
-                    if ($objSprache === false || !isset($objSprache->cName)) {
+                    $objSprache = Shop::DB()->select('txsellgruppe', 'kXSellGruppe', (int)$xsellgruppen[$i], 'kSprache', (int)Shop::$kSprache);
+                    if (!isset($objSprache->cName)) {
                         continue;
                     }
                     $xSelling->Standard->XSellGruppen[$i]               = new stdClass();
@@ -52,7 +48,6 @@ function gibArtikelXSelling($kArtikel)
                     $xSelling->Standard->XSellGruppen[$i]->Beschreibung = $objSprache->cBeschreibung;
                 }
                 $xSelling->Standard->XSellGruppen[$i]->Artikel = array();
-                $oArtikelOptionen                              = Artikel::getDefaultOptions();
                 foreach ($xsell as $xs) {
                     if ($xs->kXSellGruppe == $xsellgruppen[$i]) {
                         $artikel = new Artikel();
@@ -171,22 +166,6 @@ function bearbeiteFrageZumProdukt()
     } else {
         $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('productquestionPleaseLogin', 'errorMessages');
     }
-}
-
-/**
- * @deprecated deprecated since version 4.3
- */
-function bearbeiteArtikelWeiterempfehlen()
-{
-}
-
-/**
- * @deprecated deprecated since version 4.
- * @return bool
- */
-function gibFehlendeEingabenArtikelWeiterempfehlenFormular()
-{
-    return;
 }
 
 /**
@@ -1240,12 +1219,13 @@ function buildConfig($kArtikel, $fAnzahl, $nVariation_arr, $nKonfiggruppe_arr, $
     foreach ($nKonfiggruppe_arr as $i => $nKonfiggruppe) {
         $nKonfiggruppe_arr[$i] = (array) $nKonfiggruppe;
     }
+    /** @var Konfiggruppe $oKonfiggruppe */
     foreach ($oKonfig->oKonfig_arr as $i => &$oKonfiggruppe) {
         $oKonfiggruppe->bAktiv = false;
         $kKonfiggruppe         = $oKonfiggruppe->getKonfiggruppe();
         $nKonfigitem_arr       = (isset($nKonfiggruppe_arr[$kKonfiggruppe])) ? $nKonfiggruppe_arr[$kKonfiggruppe] : array();
-
         foreach ($oKonfiggruppe->oItem_arr as $j => &$oKonfigitem) {
+            /** @var Konfigitem $oKonfigitem */
             $kKonfigitem          = $oKonfigitem->getKonfigitem();
             $oKonfigitem->fAnzahl = floatval(
                 isset($nKonfiggruppeAnzahl_arr[$oKonfigitem->getKonfiggruppe()]) ?
@@ -1328,6 +1308,22 @@ function gibMetaKeywords($Artikel)
 function holeProduktTagging($AktuellerArtikel)
 {
     return $AktuellerArtikel->tags;
+}
+
+/**
+ * @deprecated since version 4.3
+ */
+function bearbeiteArtikelWeiterempfehlen()
+{
+}
+
+/**
+ * @deprecated since version 4.3
+ * @return array
+ */
+function gibFehlendeEingabenArtikelWeiterempfehlenFormular()
+{
+    return [];
 }
 
 if (!function_exists('baueFormularVorgaben')) {

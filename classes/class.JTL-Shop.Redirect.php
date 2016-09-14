@@ -126,7 +126,7 @@ class Redirect
         }
 
         if (self::checkAvailability(Shop::getURL() . $cDestination) &&
-            strlen($cSource) > 1 && strlen($cDestination) > 1 && $cSource != $cDestination || $bForce)
+            strlen($cSource) > 1 && strlen($cDestination) > 1 && $cSource !== $cDestination || $bForce)
         {
             if ($this->isDeadlock($cSource, $cDestination)) {
                 Shop::DB()->delete('tredirect', ['cToUrl', 'cFromUrl'], [$cSource, $cDestination]);

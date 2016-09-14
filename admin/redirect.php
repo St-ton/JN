@@ -77,14 +77,14 @@ if (isset($aData['action']) && validateToken()) {
                         $cHinweis = 'Der Import wurde erfolgreich durchgef&uuml;hrt';
                     } else {
                         @unlink($cFile);
-                        $cFehler = 'Fehler: Der Import konnte nicht durchgef&uuml;hrt werden. Bitte pr&uuml;fen Sie die CSV Datei<br /><br />' .
+                        $cFehler = 'Fehler: Der Import konnte nicht durchgef&uuml;hrt werden. Bitte pr&uuml;fen Sie die CSV-Datei<br /><br />' .
                             implode('<br />', $cError_arr);
                     }
                 }
             }
             break;
         default:
-            $cFehler = 'Fehler: Es wurde eine invalide Aktion ausgel&ouml;st';
+            $cFehler = 'Fehler: Es wurde eine ung&uuml;ltige Aktion ausgel&ouml;st';
             break;
     }
 }

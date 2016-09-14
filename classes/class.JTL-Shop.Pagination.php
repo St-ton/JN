@@ -132,10 +132,10 @@ class Pagination
             ? (int)$_GET[$this->cId . '_nItemsPerPage']
             : (isset($_SESSION[$this->cId . '_nItemsPerPage'])
                 ? (int)$_SESSION[$this->cId . '_nItemsPerPage']
-                : (($this->nDefaultItemsPerPage >= 0)
+                : ($this->nDefaultItemsPerPage > 0
                     ? $this->nDefaultItemsPerPage
-                    : $this->nItemsPerPageOption_arr[0])
-            );
+                    : $this->nItemsPerPageOption_arr[0]
+            ));
         $this->nSortBy = isset($_GET[$this->cId . '_nSortBy'])
             ? (int)$_GET[$this->cId . '_nSortBy']
             : (isset($_SESSION[$this->cId . '_nSortBy'])
@@ -178,7 +178,7 @@ class Pagination
             $this->nFirstPageItem  = 0;
             $this->nPageItemCount  = $this->nItemCount;
         } else {
-            $this->nPageCount      = (int)ceil($this->nItemCount / $this->nItemsPerPage);
+            $this->nPageCount      = $this->nItemsPerPage > 0 ? (int)ceil($this->nItemCount / $this->nItemsPerPage) : 1;
             $this->nPage           = max(0, min($this->nPageCount - 1, $this->nPage));
             $this->nPrevPage       = max(0, min($this->nPageCount - 1, $this->nPage - 1));
             $this->nNextPage       = max(0, min($this->nPageCount - 1, $this->nPage + 1));

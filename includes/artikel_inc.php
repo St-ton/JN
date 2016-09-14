@@ -683,6 +683,8 @@ function baueArtikelhinweise($cRedirectParam = null, $bRenew = false, $oArtikel 
                 case R_EMPTY_VARIBOX:
                     $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('artikelVariBoxEmpty', 'messages');
                     break;
+                default:
+                    break;
             }
             executeHook(HOOK_ARTIKEL_INC_ARTIKELHINWEISSWITCH);
         }
@@ -801,7 +803,10 @@ function bearbeiteProdukttags($AktuellerArtikel)
             header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true) . '?a=' . (int)$_POST['a'] . '&r=' . R_LOGIN_TAG, true, 303);
             exit();
         } else {
-            header('Location: index.php?a=' . (int)$_POST['a'] . '&r=' . R_EMPTY_TAG, true, 303);
+            $url = (!empty($AktuellerArtikel->cURLFull)) ?
+                ($AktuellerArtikel->cURLFull . '?') :
+                (Shop::getURL() . '/?a=' . (int)$_POST['a'] . '&');
+            header('Location: ' . $url . 'r=' . R_EMPTY_TAG, true, 303);
             exit();
         }
     }
@@ -1182,7 +1187,7 @@ function buildConfig($kArtikel, $fAnzahl, $nVariation_arr, $nKonfiggruppe_arr, $
     $oKonfig->cPreisString    = Shop::Lang()->get('priceAsConfigured', 'productDetails');
 
     if (!class_exists('Konfigurator') || !Konfigurator::validateKonfig($kArtikel)) {
-        return;
+        return null;
     }
     foreach ($nVariation_arr as $i => $nVariation) {
         $_POST['eigenschaftwert_' . $i] = $nVariation;

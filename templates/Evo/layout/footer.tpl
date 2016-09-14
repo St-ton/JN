@@ -123,13 +123,13 @@
                     {lang key="footnoteInclusiveVat" section="global" assign="footnoteVat"}
                 {/if}
                 {if $Einstellungen.global.global_versandhinweis === 'zzgl'}
-                    {lang key="footnoteExclusiveShipping" section="global" assign="footnoteShipping"}
+                    {lang key="footnoteExclusiveShipping" section="global" printf=$oSpezialseiten_arr[6]->cURL assign="footnoteShipping"}
                 {elseif $Einstellungen.global.global_versandhinweis === 'inkl'}
-                    {lang key="footnoteInclusiveShipping" section="global" assign="footnoteShipping"}
+                    {lang key="footnoteInclusiveShipping" section="global" printf=$oSpezialseiten_arr[6]->cURL assign="footnoteShipping"}
                 {/if}
                 {block name="footer-vat-notice"}
                     <p class="padded-lg-top">
-                        <span class="footnote-reference">*</span> {$footnoteVat}{if isset($footnoteShipping)}{$footnoteShipping|replace:'#SHIPPING_LINK#':$oSpezialseiten_arr[6]->cURL}{/if}
+                        <span class="footnote-reference">*</span> {$footnoteVat}{if isset($footnoteShipping)}{$footnoteShipping}{/if}
                     </p>
                 {/block}
             </div>

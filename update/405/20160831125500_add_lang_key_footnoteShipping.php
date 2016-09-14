@@ -26,11 +26,11 @@ class Migration_20160831125500 extends Migration implements IMigration
 
     public function up()
     {
-        $this->setLocalization('ger', 'global', 'footnoteInclusiveShipping', ', inkl. <a href="#SHIPPING_LINK#">Versand</a>');
-        $this->setLocalization('eng', 'global', 'footnoteInclusiveShipping', ' and <a href="#SHIPPING_LINK#">shipping costs</a>');
+        $this->setLocalization('ger', 'global', 'footnoteInclusiveShipping', ', inkl. <a href="%s">Versand</a>');
+        $this->setLocalization('eng', 'global', 'footnoteInclusiveShipping', ' and <a href="%s">shipping costs</a>');
 
-        $this->setLocalization('ger', 'global', 'footnoteExclusiveShipping', ', zzgl. <a href="#SHIPPING_LINK#">Versand</a>');
-        $this->setLocalization('eng', 'global', 'footnoteExclusiveShipping', ' plus <a href="#SHIPPING_LINK#">shipping costs</a>');
+        $this->setLocalization('ger', 'global', 'footnoteExclusiveShipping', ', zzgl. <a href="%s">Versand</a>');
+        $this->setLocalization('eng', 'global', 'footnoteExclusiveShipping', ' plus <a href="%s">shipping costs</a>');
 
         $this->setLocalization('ger', 'global', 'footnoteInclusiveVat', 'Alle Preise inkl. gesetzlicher USt.');
         $this->setLocalization('eng', 'global', 'footnoteInclusiveVat', 'All prices inclusive legal <abbr title="value added tax">VAT</abbr>');

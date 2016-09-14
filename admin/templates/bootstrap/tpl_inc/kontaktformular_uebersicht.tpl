@@ -106,7 +106,9 @@
                                     <span class="input-group-addon">
                                         <label for="cTitle_{$cISO}">{#title#} ({$sprache->cNameDeutsch})</label>
                                     </span>
-                                    <input class="form-control" type="text" name="cTitle_{$cISO}" id="cTitle_{$cISO}" value="{if !empty($Content[$cISOcat])}{$Content[$cISOcat]}{/if}" tabindex="1" />
+                                    <span class="input-group-wrap">
+                                        <input class="form-control" type="text" name="cTitle_{$cISO}" id="cTitle_{$cISO}" value="{if !empty($Content[$cISOcat])}{$Content[$cISOcat]}{/if}" tabindex="1" />
+                                    </span>
                                 </div>
                             {/foreach}
                             {foreach name=sprachen from=$sprachen item=sprache}

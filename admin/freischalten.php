@@ -142,7 +142,7 @@ if (verifyGPCDataInteger('freischalten') === 1 && validateToken()) {
         }
     } elseif (verifyGPCDataInteger('suchanfragen') === 1 && validateToken()) { // Suchanfragen
         // Mappen
-        if (verifyGPCDataInteger('nMapping') === 1 && isset($_POST['submitMapping'])) {
+        if (isset($_POST['submitMapping'])) {
             $cMapping = verifyGPDataString('cMapping');
             if (strlen($cMapping) > 0) {
                 $nReturnValue = 0;
@@ -187,13 +187,13 @@ if (verifyGPCDataInteger('freischalten') === 1 && validateToken()) {
         }
 
         if (isset($_POST['freischaltensubmit'])) {
-            if (schalteSuchanfragenFrei($_POST['kSuchanfrage'])) {
+            if (isset($_POST['kSuchanfrage']) && schalteSuchanfragenFrei($_POST['kSuchanfrage'])) {
                 $cHinweis .= 'Ihre markierten Suchanfragen wurden erfolgreich freigeschaltet.<br />';
             } else {
                 $cFehler .= 'Fehler: Bitte markieren Sie mindestens eine Suchanfrage.<br />';
             }
         } elseif (isset($_POST['freischaltenleoschen'])) {
-            if (loescheSuchanfragen($_POST['kSuchanfrage'])) {
+            if (isset($_POST['kSuchanfrage']) && loescheSuchanfragen($_POST['kSuchanfrage'])) {
                 $cHinweis .= 'Ihre markierten Suchanfragen wurden erfolgreich gel&ouml;scht.<br />';
             } else {
                 $cFehler .= 'Fehler: Bitte markieren Sie mindestens eine Suchanfrage.<br />';
@@ -201,13 +201,13 @@ if (verifyGPCDataInteger('freischalten') === 1 && validateToken()) {
         }
     } elseif (verifyGPCDataInteger('tags') === 1 && validateToken()) { // Tags
         if (isset($_POST['freischaltensubmit'])) {
-            if (schalteTagsFrei($_POST['kTag'])) {
+            if (isset($_POST['kTag']) && schalteTagsFrei($_POST['kTag'])) {
                 $cHinweis .= 'Ihre markierten Tags wurden erfolgreich freigeschaltet.<br />';
             } else {
                 $cFehler .= 'Fehler: Bitte markieren Sie mindestens einen Tag.<br />';
             }
         } elseif (isset($_POST['freischaltenleoschen'])) {
-            if (loescheTags($_POST['kTag'])) {
+            if (isset($_POST['kTag']) && loescheTags($_POST['kTag'])) {
                 $cHinweis .= 'Ihre markierten Tags wurden erfolgreich gel&ouml;scht.<br />';
             } else {
                 $cFehler .= 'Fehler: Bitte markieren Sie mindestens einen Tag.<br />';
@@ -215,13 +215,13 @@ if (verifyGPCDataInteger('freischalten') === 1 && validateToken()) {
         }
     } elseif (verifyGPCDataInteger('newskommentare') === 1 && validateToken()) { // Newskommentare
         if (isset($_POST['freischaltensubmit'])) {
-            if (schalteNewskommentareFrei($_POST['kNewsKommentar'])) {
+            if (isset($_POST['kNewsKommentar']) && schalteNewskommentareFrei($_POST['kNewsKommentar'])) {
                 $cHinweis .= 'Ihre markierten Newskommentare wurden erfolgreich freigeschaltet.<br />';
             } else {
                 $cFehler .= 'Fehler: Bitte markieren Sie mindestens einen Newskommentar.<br />';
             }
         } elseif (isset($_POST['freischaltenleoschen'])) {
-            if (loescheNewskommentare($_POST['kNewsKommentar'])) {
+            if (isset($_POST['kNewsKommentar']) && loescheNewskommentare($_POST['kNewsKommentar'])) {
                 $cHinweis .= 'Ihre markierten Newskommentare wurden erfolgreich gel&ouml;scht.<br />';
             } else {
                 $cFehler .= 'Fehler: Bitte markieren Sie mindestens einen Newskommentar.<br />';
@@ -229,13 +229,13 @@ if (verifyGPCDataInteger('freischalten') === 1 && validateToken()) {
         }
     } elseif (verifyGPCDataInteger('newsletterempfaenger') === 1 && validateToken()) { // Newsletterempfaenger
         if (isset($_POST['freischaltensubmit'])) {
-            if (schalteNewsletterempfaengerFrei($_POST['kNewsletterEmpfaenger'])) {
+            if (isset($_POST['kNewsletterEmpfaenger']) && schalteNewsletterempfaengerFrei($_POST['kNewsletterEmpfaenger'])) {
                 $cHinweis .= 'Ihre markierten Newsletterempf&auml;nger wurden erfolgreich freigeschaltet.<br />';
             } else {
                 $cFehler .= 'Fehler: Bitte markieren Sie mindestens einen Newsletterempf&auml;nger.<br />';
             }
         } elseif (isset($_POST['freischaltenleoschen'])) {
-            if (loescheNewsletterempfaenger($_POST['kNewsletterEmpfaenger'])) {
+            if (isset($_POST['kNewsletterEmpfaenger']) && loescheNewsletterempfaenger($_POST['kNewsletterEmpfaenger'])) {
                 $cHinweis .= 'Ihre markierten Newsletterempf&auml;nger wurden erfolgreich gel&ouml;scht.<br />';
             } else {
                 $cFehler .= 'Fehler: Bitte markieren Sie mindestens einen Newsletterempf&auml;nger.<br />';

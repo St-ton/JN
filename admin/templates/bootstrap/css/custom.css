@@ -14,6 +14,12 @@ body {
     font-weight: 600;
 }
 
+.btn {
+    font-size: 16px;
+}
+.input-group .btn {
+    font-size: 14px;
+}
 .btn-primary {
     background-color: #5cbcf6;
     border-color: #44b2f5;
@@ -182,7 +188,6 @@ a {
 
 .settings .input-group,#settings .input-group {
     width: 100%;
-    table-layout: fixed;
 }
 
 .documentation {

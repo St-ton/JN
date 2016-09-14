@@ -105,7 +105,7 @@
 
             {if $Einstellungen.artikeldetails.artikeldetails_kategorie_anzeigen === 'Y'}
                 {block name="productdetails-info-category"}
-                <p class="product-category">
+                <p class="product-category word-break">
                     <span class="text-muted">{lang key="category" section="global"}: </span>
                     {assign var=i_kat value=$Brotnavi|@count}{assign var=i_kat value=$i_kat-2}
                     <a href="{$Brotnavi[$i_kat]->url}">{$Brotnavi[$i_kat]->name}</a>

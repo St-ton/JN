@@ -2209,7 +2209,7 @@ function standardspracheAktiv($bShop = false, $kSprache = null)
  * @param bool $bShop
  * @return mixed
  */
-function gibStandardsprache($bShop = false)
+function gibStandardsprache($bShop = true)
 {
     if (isset($_SESSION['Sprachen']) && is_array($_SESSION['Sprachen'])) {
         foreach ($_SESSION['Sprachen'] as $Sprache) {

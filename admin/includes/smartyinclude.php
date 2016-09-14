@@ -168,4 +168,4 @@ $smarty->assign('SID', (defined('SID') ? SID : null))
        ->assign('SektionenEinstellungen', $configSections)
        ->assign('kAdminmenuEinstellungen', KADMINMENU_EINSTELLUNGEN)
        ->assign('notifications', $notify)
-       ->assign('favorites', $oAccount->getFavorites());
+       ->assign('favorites', $oAccount->favorites());

@@ -62,6 +62,11 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         public $oItem_arr;
 
         /**
+         * @var bool|null
+         */
+        public $bAktiv;
+
+        /**
          * Constructor
          *
          * @param int $kKonfiggruppe
@@ -135,15 +140,13 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         public function save($bPrim = true)
         {
-            $oObj        = new stdClass();
-            $cMember_arr = array_keys(get_object_vars($this));
-            if (is_array($cMember_arr) && count($cMember_arr) > 0) {
-                foreach ($cMember_arr as $cMember) {
-                    $oObj->$cMember = $this->$cMember;
-                }
-            }
-
-            unset($oObj->kKonfiggruppe);
+            $oObj             = new stdClass();
+            $oObj->cBildPfad  = $this->cBildPfad;
+            $oObj->nMin       = $this->nMin;
+            $oObj->nMax       = $this->nMax;
+            $oObj->nTyp       = $this->nTyp;
+            $oObj->nSort      = $this->nSort;
+            $oObj->cKommentar = $this->cKommentar;
 
             $kPrim = Shop::DB()->insert('tkonfiggruppe', $oObj);
             if ($kPrim > 0) {

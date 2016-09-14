@@ -5,7 +5,7 @@
     </div>
     <div class="box-body">
         <nav class="nav-panel">
-            <ul class="nav">
+            <ul class="nav word-break">
                 {include file='snippets/categories_recursive.tpl' i=0 categoryId=0 categoryBoxNumber=$nID limit=3}
             </ul>
         </nav>

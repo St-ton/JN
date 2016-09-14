@@ -1,6 +1,7 @@
 {include file='tpl_inc/header.tpl'}
 {config_load file="$lang.conf" section="redirect"}
 {include file='tpl_inc/seite_header.tpl' cTitel=#redirect# cBeschreibung=#redirectDesc# cDokuURL=#redirectURL#}
+{include file='tpl_inc/sortcontrols.tpl'}
 
 <script>{literal}
     $(document).ready(function () {
@@ -120,14 +121,10 @@
     </ul>
     <div class="tab-content">
         <div id="redirects" class="tab-pane fade {if !isset($cTab) || $cTab === 'redirects'} active in{/if}">
-            {if $nRedirectCount > 0}
-                {include file='tpl_inc/filtertools.tpl' oFilter=$oFilter}
-            {/if}
-            {if $oRedirect_arr|@count > 0}
-                {include file='tpl_inc/pagination.tpl' oPagination=$oPagination cAnchor='redirects'}
-            {/if}
             {if $oRedirect_arr|@count > 0}
                 <div class="panel panel-default">
+                    {include file='tpl_inc/filtertools.tpl' oFilter=$oFilter}
+                    {include file='tpl_inc/pagination.tpl' oPagination=$oPagination cAnchor='redirects'}
                     <form id="frmRedirect" action="redirect.php" method="post">
                         {$jtl_token}
                         <input type="hidden" name="aData[action]" value="save">
@@ -135,32 +132,14 @@
                             <thead>
                             <tr>
                                 <th class="tcenter" style="width:24px"></th>
-                                <th class="tleft" style="width:35%;">URL
-                                    {if $oPagination->getSortBy() !== 0}
-                                        <a href="#" onclick="pagiResort('{$oPagination->getId()}', 0, 0);return false;"><i class="fa fa-unsorted"></i></a>
-                                    {elseif $oPagination->getSortDirSpecifier() === 'DESC'}
-                                        <a href="#" onclick="pagiResort('{$oPagination->getId()}', 0, 0);return false;"><i class="fa fa-sort-desc"></i></a>
-                                    {elseif $oPagination->getSortDirSpecifier() === 'ASC'}
-                                        <a href="#" onclick="pagiResort('{$oPagination->getId()}', 0, 1);return false;"><i class="fa fa-sort-asc"></i></a>
-                                    {/if}
+                                <th class="tleft" style="width:35%;">
+                                    URL {call sortControls oPagination=$oPagination nSortBy=0}
                                 </th>
-                                <th class="tleft">Wird weitergeleitet nach
-                                    {if $oPagination->getSortBy() !== 1}
-                                        <a href="#" onclick="pagiResort('{$oPagination->getId()}', 1, 0);return false;"><i class="fa fa-unsorted"></i></a>
-                                    {elseif $oPagination->getSortDirSpecifier() === 'DESC'}
-                                        <a href="#" onclick="pagiResort('{$oPagination->getId()}', 1, 0);return false;"><i class="fa fa-sort-desc"></i></a>
-                                    {elseif $oPagination->getSortDirSpecifier() === 'ASC'}
-                                        <a href="#" onclick="pagiResort('{$oPagination->getId()}', 1, 1);return false;"><i class="fa fa-sort-asc"></i></a>
-                                    {/if}
+                                <th class="tleft">
+                                    Wird weitergeleitet nach {call sortControls oPagination=$oPagination nSortBy=1}
                                 </th>
-                                <th class="tright" style="width:85px">Aufrufe
-                                    {if $oPagination->getSortBy() !== 2}
-                                        <a href="#" onclick="pagiResort('{$oPagination->getId()}', 2, 0);return false;"><i class="fa fa-unsorted"></i></a>
-                                    {elseif $oPagination->getSortDirSpecifier() === 'DESC'}
-                                        <a href="#" onclick="pagiResort('{$oPagination->getId()}', 2, 0);return false;"><i class="fa fa-sort-desc"></i></a>
-                                    {elseif $oPagination->getSortDirSpecifier() === 'ASC'}
-                                        <a href="#" onclick="pagiResort('{$oPagination->getId()}', 2, 1);return false;"><i class="fa fa-sort-asc"></i></a>
-                                    {/if}
+                                <th class="tright" style="width:85px">
+                                    Aufrufe {call sortControls oPagination=$oPagination nSortBy=2}
                                 </th>
                                 <th class="tcenter">Optionen</th>
                             </tr>

@@ -498,7 +498,7 @@ ul.hlist li.right {
     float: right;
 }
 
-#content .ocontainer,#content .container-fluid {
+#content .ocontainer{
     margin: 1em 0;
 }
 
@@ -2288,8 +2288,6 @@ body.modal-open nav {
 
 .well {
     min-height: 20px;
-    padding: 19px;
-    margin-bottom: 20px;
     background-color: #F7F7F7;
     border: 0;
     border-radius: 0;
@@ -2896,6 +2894,40 @@ h2 .btn-group {
 
 .label abbr {
   border: none;
+}
+
+.toolbar {
+    margin-bottom: 10px;
+    padding: 10px;
+}
+
+.toolbar-container {
+    padding: 0;
+    margin: 0;
+}
+
+.toolbar .pagination {
+    margin: 0;
+    display:block;
+}
+
+.toolbar label {
+    margin: 0;
+    margin-bottom: 5px;
+}
+
+.toolbar-col {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.toolbar-row {
+    margin-left: -5px;
+    margin-right: -5px;
+}
+
+.toolbar .well {
+    margin: 0;
 }
 
 .ui-state-highlight {

@@ -120,16 +120,10 @@
     </ul>
     <div class="tab-content">
         <div id="redirects" class="tab-pane fade {if !isset($cTab) || $cTab === 'redirects'} active in{/if}">
-            {if $nRedirectCount > 0}
-                <div class="well well-sm">
-                    {include file='tpl_inc/filtertools.tpl' oFilter=$oFilter}
-                    {if $oRedirect_arr|@count > 0}
-                        {include file='tpl_inc/pagination.tpl' oPagination=$oPagination cAnchor='redirects'}
-                    {/if}
-                </div>
-            {/if}
             {if $oRedirect_arr|@count > 0}
                 <div class="panel panel-default">
+                    {include file='tpl_inc/filtertools.tpl' oFilter=$oFilter}
+                    {include file='tpl_inc/pagination.tpl' oPagination=$oPagination cAnchor='redirects'}
                     <form id="frmRedirect" action="redirect.php" method="post">
                         {$jtl_token}
                         <input type="hidden" name="aData[action]" value="save">

@@ -83,25 +83,19 @@
             </form>
         </div>
         <div id="fertig" class="tab-pane fade{if isset($cTab) && $cTab === 'fertig'} active in{/if}">
-            <form method="post" action="exportformat_queue.php">
-                {$jtl_token}
-                <div class="block tcenter">
-                    <div class="input-group p25">
-                        <span class="input-group-addon">
-                            <label for="nStunden">{#exportformatLastXHourPre#}</label>
-                        </span>
-                        <span class="input-group-btn">
-                            <input size="2" style="width: 100px;" class="form-control" id="nStunden" name="nStunden" type="text" value="{$nStunden}" />
-                        </span>
-                        <span class="input-group-addon">
-                            {#exportformatLastXHourPost#}
-                        </span>
-                        <span class="input-group-btn">
-                            <button name="action[fertiggestellt]" type="submit" value="1" class="btn btn-info"><i class="fa fa-search"></i> {#exportformatShow#}</button>
-                        </span>
+            <div class="block well well-sm">
+                <form method="post" action="exportformat_queue.php" class="form-inline">
+                    {$jtl_token}
+                    <div class="form-group">
+                        <label for="nStunden">{#exportformatLastXHourPre#}</label>
+                        <input size="2" class="form-control" id="nStunden" name="nStunden" type="text" value="{$nStunden}" />
+                        <label>{#exportformatLastXHourPost#}</label>
                     </div>
-                </div>
-            </form>
+                    <div class="btn-group">
+                        <button name="action[fertiggestellt]" type="submit" value="1" class="btn btn-info"><i class="fa fa-search"></i> {#exportformatShow#}</button>
+                    </div>
+                </form>
+            </div>
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h3 class="panel-title">{#exportformatTodaysWork#}</h3>

@@ -190,7 +190,7 @@ if (isset($_POST['livesuche']) && intval($_POST['livesuche']) === 1) { //Formula
         }
 
         $hinweis .= 'Die Suchanfragen wurden erfolgreich aktualisiert.<br />';
-    } elseif (isset($_POST['submitMapping']) && verifyGPCDataInteger('nMapping') === 1) { // Auswahl mappen
+    } elseif (isset($_POST['submitMapping'])) { // Auswahl mappen
         $cMapping = verifyGPDataString('cMapping');
 
         if (strlen($cMapping) > 0) {

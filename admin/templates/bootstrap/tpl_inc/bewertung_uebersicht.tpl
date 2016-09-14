@@ -141,7 +141,7 @@
                             </tfoot>
                         </table>
                         <div class="panel-footer">
-                            <button name="loeschen" type="submit" value="{#ratingDelete#}" class="btn btn-danger"><i class="fa fa-trash"></i> Markierte l&ouml;schen</button>
+                            <button name="loeschen" type="submit" value="{#ratingDelete#}" class="btn btn-danger"><i class="fa fa-trash"></i> {#deleteSelected#}</button>
                         </div>
                     </div>
                 </form>

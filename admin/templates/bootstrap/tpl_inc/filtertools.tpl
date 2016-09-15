@@ -69,10 +69,10 @@
                 <div class="col-md-1 toolbar-col tright">
                     <label>&nbsp;</label>
                     <div class="btn-group">
-                        <button type="submit" class="btn btn-primary" name="action" value="{$oFilter->getId()}_filter">
+                        <button type="submit" class="btn btn-primary" name="action" value="{$oFilter->getId()}_filter" title="Filter anwenden">
                             <i class="fa fa-search"></i>
                         </button>
-                        <button type="submit" class="btn btn-default" name="action" value="{$oFilter->getId()}_resetfilter">
+                        <button type="submit" class="btn btn-default" name="action" value="{$oFilter->getId()}_resetfilter" title="Filter zur&uuml;cksetzen">
                             <i class="fa fa-eraser"></i>
                         </button>
                     </div>

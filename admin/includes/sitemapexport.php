@@ -866,7 +866,7 @@ function generateSitemapXML()
         if (200 !== curlReturnCode('http://www.google.com/webmasters/tools/ping?sitemap=' . $encodedSitemapIndexURL)) {
             Jtllog::writeLog('Sitemap ping to Google failed');
         }
-        if (200 !== curlReturnCode('http://www.bing.com/ping?siteMap=' . $encodedSitemapIndexURL)) {
+        if (200 !== curlReturnCode('http://www.bing.com/ping?sitemap=' . $encodedSitemapIndexURL)) {
             Jtllog::writeLog('Sitemap ping to Google failed');
         }
     }

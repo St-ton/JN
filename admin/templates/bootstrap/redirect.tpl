@@ -228,9 +228,9 @@
                         </table>
                         <div class="panel-footer">
                             <div class="btn-group">
-                                <button type="button" onclick="$('[name=\'aData\[action\]\']').val('save');$('#frmRedirect').submit();" value="{#save#}" class="btn btn-primary"><i class="fa fa-save"></i> {#save#}</button>
-                                <button type="button" onclick="$('[name=\'aData\[action\]\']').val('delete');$('#frmRedirect').submit();" name="delete" value="Auswahl l&ouml;schen" class="btn btn-danger"><i class="fa fa-trash"></i> {#deleteSelected#}</button>
-                                <button type="button" onclick="$('[name=\'aData\[action\]\']').val('delete_all');$('#frmRedirect').submit();" name="delete_all" value="Alle ohne Weiterleitung l&ouml;schen" class="btn btn-warning">Alle ohne Weiterleitung l&ouml;schen</button>
+                                <button type="button" onclick="$('[name=\'aData\[action\]\']').val('save');$('#frmRedirect').submit();" value="{#save#}" class="btn btn-primary" title="{#save#}"><i class="fa fa-save"></i> {#save#}</button>
+                                <button type="button" onclick="$('[name=\'aData\[action\]\']').val('delete');$('#frmRedirect').submit();" name="delete" value="Auswahl l&ouml;schen" title="Auswahl l&ouml;schen" class="btn btn-danger"><i class="fa fa-trash"></i> {#deleteSelected#}</button>
+                                <button type="button" onclick="$('[name=\'aData\[action\]\']').val('delete_all');$('#frmRedirect').submit();" name="delete_all" value="Alle ohne Weiterleitung l&ouml;schen" title="Alle ohne Weiterleitung l&ouml;schen" class="btn btn-warning">Alle ohne Weiterleitung l&ouml;schen</button>
                             </div>
 
                             <div class="pull-right">
@@ -264,7 +264,7 @@
             </div>
             <form method="post" action="#new_redirect">
                 {$jtl_token}
-                <div class="panel panel-default">
+                <div class="panel panel-default settings">
                     <div class="panel-heading">
                         <h3 class="panel-title">Neue Weiterleitung</h3>
                     </div>
@@ -276,7 +276,7 @@
                             </span>
                             <input class="form-control" id="cSource" name="cSource" type="text" placeholder="Quell Url" value="{if isset($cPost_arr.cSource)}{$cPost_arr.cSource}{/if}" />
                         </div>
-                        <div id="frm_cToUrl" class="input-group" style="margin-right:30px;">
+                        <div id="frm_cToUrl" class="input-group">
                             <span class="input-group-addon">
                                 <label for="cToUrl">Ziel-URL:</label>
                             </span>
@@ -288,9 +288,9 @@
                                    onkeyup="redirect_search('cToUrl', this.value );"
                                    placeholder="Ziel-URL"
                                    value="{if isset($cPost_arr.cToUrl)}{$cPost_arr.cToUrl}{/if}">
-                            <div class="input-group-btn" style="min-width:100%;display:block;top:100%;">
+                            <div class="input-group-btn">
                                 <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="caret"></span></button>
-                                <ul class="dropdown-menu" style="min-width:100%;" id="resSearch_cToUrl"></ul>
+                                <ul class="dropdown-menu dropdown-menu-right" id="resSearch_cToUrl"></ul>
                             </div>
                         </div>
                     </div>

@@ -112,7 +112,7 @@
                                 <label>&nbsp;</label>
                                 <div class="toolbar-row">
                                     <div class="col-md-12 toolbar-col">
-                                        <button type="submit" class="btn btn-primary">
+                                        <button type="submit" class="btn btn-primary" title="{#refresh#}">
                                             <i class="fa fa-refresh"></i>
                                         </button>
                                     </div>

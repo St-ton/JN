@@ -587,7 +587,7 @@ class Redirect
         $parsedUrl = parse_url($cUrl);
 
         if (!isset($parsedUrl['host'])) {
-            $parsedShopUrl       = parse_url(Shop::getURL());
+            $parsedShopUrl       = parse_url(Shop::getURL() . '/');
             $parsedUrl['scheme'] = $parsedShopUrl['scheme'];
             $parsedUrl['host']   = $parsedShopUrl['host'];
             if (!isset($parsedUrl['path'])) {

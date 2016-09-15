@@ -129,6 +129,7 @@ function bearbeiteInsert($xml)
             $upd->fLagerbestand         = $oArtikel->fLagerbestand;
             $upd->dLetzteAktualisierung = 'now()';
             Shop::DB()->update('tartikel', 'kArtikel', (int)$oArtikel->kArtikel, $upd);
+            executeHook(HOOK_QUICKSYNC_XML_BEARBEITEINSERT, ['oArtikel' => $oArtikel]);
             // clear object cache for this article and its parent if there is any
             $parentArticle = Shop::DB()->select('tartikel', 'kArtikel', $oArtikel->kArtikel, null, null, null, null, false, 'kVaterArtikel');
             if (!empty($parentArticle->kVaterArtikel)) {

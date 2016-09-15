@@ -219,10 +219,10 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
             break;
 
         case 'VERGLEICHSLISTE':
-            $SieSindHierString .= ' &gt; <a href="vergleichsliste.php">' . Shop::Lang()->get('compare', 'global') . '</a>';
+            $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('vergleichsliste.php') . '">' . Shop::Lang()->get('compare', 'global') . '</a>';
             $ele        = new stdClass();
             $ele->name  = Shop::Lang()->get('compare', 'global');
-            $ele->url   = 'vergleichsliste.php';
+            $ele->url   = $linkHelper->getStaticRoute('vergleichsliste.php');
             $brotnavi[] = $ele;
             $SieSindHierString .= '<br />';
             break;
@@ -497,7 +497,7 @@ function checkeWarenkorbEingang()
         $fAnzahl = doubleval($_GET['n']);
     }
     $kArtikel = verifyGPCDataInteger('a');
-    $conf     = Shop::getSettings(array(CONF_GLOBAL));
+    $conf     = Shop::getSettings(array(CONF_GLOBAL, CONF_VERGLEICHSLISTE));
     executeHook(HOOK_TOOLS_GLOBAL_CHECKEWARENKORBEINGANG_ANFANG, array('kArtikel' => $kArtikel, 'fAnzahl' => $fAnzahl));
     // Wunschliste?
     if ((isset($_POST['Wunschliste']) || isset($_GET['Wunschliste'])) && $conf['global']['global_wunschliste_anzeigen'] === 'Y') {
@@ -565,11 +565,9 @@ function checkeWarenkorbEingang()
         }
     } elseif (isset($_POST['Vergleichsliste'])) { // Vergleichsliste?
         if ($kArtikel > 0) {
-            $Einstellungen_vergleichsliste = Shop::getSettings(array(CONF_VERGLEICHSLISTE));
-
             // Prüfen ob nicht schon die maximale Anzahl an Artikeln auf der Vergleichsliste ist
             if (!isset($_SESSION['Vergleichsliste']->oArtikel_arr) ||
-                intval($Einstellungen_vergleichsliste['vergleichsliste']['vergleichsliste_anzahl']) > count($_SESSION['Vergleichsliste']->oArtikel_arr)
+                intval($conf['vergleichsliste']['vergleichsliste_anzahl']) > count($_SESSION['Vergleichsliste']->oArtikel_arr)
             ) {
                 // Prüfe auf kArtikel
                 $oArtikelVorhanden = Shop::DB()->select('tartikel', 'kArtikel', $kArtikel, null, null, null, null, false, 'kArtikel, cName');

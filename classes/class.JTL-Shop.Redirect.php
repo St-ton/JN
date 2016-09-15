@@ -597,7 +597,7 @@ class Redirect
                 $parsedUrl['path'] = '/' . $parsedUrl['path'];
             }
             if (strpos($parsedUrl['path'], $parsedShopUrl['path']) === false) {
-                $parsedUrl['path'] = $parsedShopUrl['path'] . $parsedUrl['path'];
+                $parsedUrl['path'] = rtrim($parsedShopUrl['path'], '/') . $parsedUrl['path'];
             }
         }
 

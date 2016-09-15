@@ -264,7 +264,7 @@
             </div>
             <form method="post" action="#new_redirect">
                 {$jtl_token}
-                <div class="panel panel-default">
+                <div class="panel panel-default settings">
                     <div class="panel-heading">
                         <h3 class="panel-title">Neue Weiterleitung</h3>
                     </div>
@@ -276,7 +276,7 @@
                             </span>
                             <input class="form-control" id="cSource" name="cSource" type="text" placeholder="Quell Url" value="{if isset($cPost_arr.cSource)}{$cPost_arr.cSource}{/if}" />
                         </div>
-                        <div id="frm_cToUrl" class="input-group" style="margin-right:30px;">
+                        <div id="frm_cToUrl" class="input-group">
                             <span class="input-group-addon">
                                 <label for="cToUrl">Ziel-URL:</label>
                             </span>
@@ -288,9 +288,9 @@
                                    onkeyup="redirect_search('cToUrl', this.value );"
                                    placeholder="Ziel-URL"
                                    value="{if isset($cPost_arr.cToUrl)}{$cPost_arr.cToUrl}{/if}">
-                            <div class="input-group-btn" style="min-width:100%;display:block;top:100%;">
+                            <div class="input-group-btn">
                                 <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="caret"></span></button>
-                                <ul class="dropdown-menu" style="min-width:100%;" id="resSearch_cToUrl"></ul>
+                                <ul class="dropdown-menu dropdown-menu-right" id="resSearch_cToUrl"></ul>
                             </div>
                         </div>
                     </div>

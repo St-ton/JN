@@ -587,7 +587,7 @@ class Redirect
         $parsedUrl = parse_url($cUrl);
 
         if (!isset($parsedUrl['host'])) {
-            $parsedShopUrl       = parse_url(Shop::getURL());
+            $parsedShopUrl       = parse_url(Shop::getURL() . '/');
             $parsedUrl['scheme'] = $parsedShopUrl['scheme'];
             $parsedUrl['host']   = $parsedShopUrl['host'];
             if (!isset($parsedUrl['path'])) {
@@ -597,7 +597,7 @@ class Redirect
                 $parsedUrl['path'] = '/' . $parsedUrl['path'];
             }
             if (strpos($parsedUrl['path'], $parsedShopUrl['path']) === false) {
-                $parsedUrl['path'] = $parsedShopUrl['path'] . $parsedUrl['path'];
+                $parsedUrl['path'] = rtrim($parsedShopUrl['path'], '/') . $parsedUrl['path'];
             }
         }
 

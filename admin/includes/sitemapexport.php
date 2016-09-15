@@ -861,6 +861,14 @@ function generateSitemapXML()
         executeHook(HOOK_SITEMAP_EXPORT_GENERATED, array('nAnzahlURL_arr' => $nAnzahlURL_arr, 'fTotalZeit' => $fTotalZeit));
         // Sitemap Report
         baueSitemapReport($nAnzahlURL_arr, $fTotalZeit);
+        // ping sitemap to Google and Bing
+        $encodedSitemapIndexURL = urlencode(Shop::getURL() . '/sitemap_index.xml');
+        if (200 !== curlReturnCode('http://www.google.com/webmasters/tools/ping?sitemap=' . $encodedSitemapIndexURL)) {
+            Jtllog::writeLog('Sitemap ping to Google failed');
+        }
+        if (200 !== curlReturnCode('http://www.bing.com/ping?siteMap=' . $encodedSitemapIndexURL)) {
+            Jtllog::writeLog('Sitemap ping to Google failed');
+        }
     }
 }
 
@@ -1138,4 +1146,18 @@ function gibAlleSprachenAssoc($Sprachen)
     }
 
     return $oSpracheAssoc_arr;
+}
+
+/**
+ * Ping an URL to just return the HTTP return code
+ * @param string $url
+ * @return int - HTTP return code
+ */
+function curlReturnCode($url)
+{
+    $ch = curl_init($url);
+    curl_exec($ch);
+    $res = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+    return $res;
 }

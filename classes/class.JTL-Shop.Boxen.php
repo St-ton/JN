@@ -477,11 +477,9 @@ class Boxen
                 }
                 $cacheID = 'box_price_radar_' . $currencyCachePart . $nTage . '_' . $nLimit . '_' . (int)Shop::$kSprache . '_' . $_SESSION['Kundengruppe']->kKundengruppe;
                 if (($oBoxCached = Shop::Cache()->get($cacheID)) === false) {
-                    $oPreisradar_arr = Preisradar::getProducts($_SESSION['Kundengruppe']->kKundengruppe, $nLimit, $nTage);
-                    if (!isset($oBox->Artikel)) {
-                        $oBox->Artikel = new stdClass();
-                    }
-                    $oBox->Artikel->elemente = array();
+                    $oPreisradar_arr         = Preisradar::getProducts($_SESSION['Kundengruppe']->kKundengruppe, $nLimit, $nTage);
+                    $oBox->Artikel           = new stdClass();
+                    $oBox->Artikel->elemente = [];
                     if (count($oPreisradar_arr) > 0) {
                         $oBox->anzeigen   = 'Y';
                         $oArtikelOptionen = Artikel::getDefaultOptions();
@@ -696,14 +694,8 @@ class Boxen
                             $cDeleteParam = '?vlplo=';
                         }
                         if (TEMPLATE_COMPATIBILITY === false) {
-                            $artikel                                      = new Artikel();
-                            $oArtikelOptionen                             = new stdClass();
-                            $oArtikelOptionen->nMerkmale                  = 1;
-                            $oArtikelOptionen->nAttribute                 = 1;
-                            $oArtikelOptionen->nArtikelAttribute          = 1;
-                            $oArtikelOptionen->nVariationKombi            = 1;
-                            $oArtikelOptionen->nKeineSichtbarkeitBeachten = 1;
-                            $artikel->fuelleArtikel($oArtikel->kArtikel, $oArtikelOptionen);
+                            $artikel = new Artikel();
+                            $artikel->fuelleArtikel($oArtikel->kArtikel, Artikel::getDefaultOptions());
                             $artikel->cURLDEL = $cRequestURI . $cDeleteParam . $oArtikel->kArtikel . $cZusatzParams;
                             if (isset($oArtikel->oVariationen_arr) && count($oArtikel->oVariationen_arr) > 0) {
                                 $artikel->Variationen = $oArtikel->oVariationen_arr;

@@ -3083,12 +3083,41 @@ class Artikel
     /**
      * @return stdClass
      */
+    public static function getDetailOptions()
+    {
+        $conf                                    = Shop::getConfig([CONF_ARTIKELDETAILS]);
+        $oArtikelOptionen                        = new stdClass();
+        $oArtikelOptionen->nMerkmale             = 1;
+        $oArtikelOptionen->nKategorie            = 1;
+        $oArtikelOptionen->nAttribute            = 1;
+        $oArtikelOptionen->nArtikelAttribute     = 1;
+        $oArtikelOptionen->nMedienDatei          = 1;
+        $oArtikelOptionen->nVariationKombi       = 1;
+        $oArtikelOptionen->nVariationKombiKinder = 1;
+        $oArtikelOptionen->nWarenlager           = 1;
+        $oArtikelOptionen->nVariationDetailPreis = 1;
+        $oArtikelOptionen->nRatings              = 1;
+        $oArtikelOptionen->nWarenkorbmatrix      = (int)($conf['artikeldetails']['artikeldetails_warenkorbmatrix_anzeige'] === 'Y');
+        $oArtikelOptionen->nStueckliste          = (int)($conf['artikeldetails']['artikeldetails_stueckliste_anzeigen'] === 'Y');
+        $oArtikelOptionen->nProductBundle        = (int)($conf['artikeldetails']['artikeldetails_produktbundle_nutzen'] === 'Y');
+        $oArtikelOptionen->nDownload             = 1;
+        $oArtikelOptionen->nKonfig               = 1;
+        $oArtikelOptionen->nMain                 = 1;
+        $oArtikelOptionen->bSimilar              = true;
+
+        return $oArtikelOptionen;
+    }
+
+    /**
+     * @return stdClass
+     */
     public static function getDefaultOptions()
     {
         $options                    = new stdClass();
         $options->nMerkmale         = 1;
         $options->nAttribute        = 1;
         $options->nArtikelAttribute = 1;
+        $options->nKonfig           = 1;
 
         return $options;
     }
@@ -3513,6 +3542,7 @@ class Artikel
             $this->holeMedienDatei($kSprache);
         }
         if (isset($oArtikelOptionen->nVariationKombiKinder) && $oArtikelOptionen->nVariationKombiKinder) {
+            //@todo: page type should not be checked here
             if (isset($this->nIstVater) && $this->nIstVater == 1 &&
                 ((Shop::getPageType() === PAGE_ARTIKEL && $conf['artikeldetails']['artikeldetails_variationskombikind_bildvorschau'] === 'Y') ||
                     (Shop::getPageType() === PAGE_ARTIKELLISTE && $conf['artikeluebersicht']['artikeluebersicht_varikombi_anzahl'] > 0))
@@ -5012,6 +5042,7 @@ class Artikel
      */
     public function getSimilarProducts()
     {
+        require_once PFAD_ROOT . PFAD_INCLUDES . 'artikel_inc.php';
         $kArtikel = (int)$this->kArtikel;
         $return   = array('kArtikelXSellerKey_arr', 'oArtikelArr');
         $cLimit   = ' LIMIT 3';

@@ -291,9 +291,8 @@ function giboWunschlistePos($kWunschlistePos)
         $oWunschlistePos = Shop::DB()->select('twunschlistepos', 'kWunschlistePos', $kWunschlistePos);
 
         if ($oWunschlistePos->kWunschliste > 0) {
-            $oArtikelOptionen          = Artikel::getDefaultOptions();
-            $oArtikelOptionen->nKonfig = 0;
-            $oArtikel                  = new Artikel();
+            $oArtikelOptionen = Artikel::getDefaultOptions();
+            $oArtikel         = new Artikel();
             $oArtikel->fuelleArtikel($oWunschlistePos->kArtikel, $oArtikelOptionen);
 
             if (intval($oArtikel->kArtikel) > 0) {

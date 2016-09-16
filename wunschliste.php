@@ -169,7 +169,7 @@ if ($action !== null && isset($_POST['kWunschliste']) && isset($_SESSION['Kunde'
             break;
 
         case 'createNew' :
-            $CWunschlisteName = StringHandler::htmlentities(StringHandler::filterXSS($_POST['CWunschlisteName']));
+            $CWunschlisteName = StringHandler::htmlentities(StringHandler::filterXSS($_POST['cWunschlisteName']));
             $cHinweis .= wunschlisteSpeichern($CWunschlisteName);
             break;
 

@@ -74,10 +74,10 @@ class Status
 
     protected function validFolderPermissions()
     {
-        require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'permissioncheck_inc.php';
+        $oFsCheck = new Systemcheck_Platform_Filesystem(PFAD_ROOT);
 
-        $writeableDirs  = checkWriteables();
-        $permissionStat = getPermissionStats($writeableDirs);
+        $writeableDirs = $oFsCheck->getFoldersChecked();
+        $permissionStat = $oFsCheck->getFolderStats();
 
         return $permissionStat->nCountInValid === 0;
     }

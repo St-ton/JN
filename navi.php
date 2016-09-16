@@ -63,11 +63,10 @@ $Einstellungen = Shop::getSettings(
         CONF_AUSWAHLASSISTENT)
 );
 // Suche prüfen
-if (strlen($cParameter_arr['cSuche']) > 0) {
-    $nMindestzeichen = 3;
-    if ((int)$Einstellungen['artikeluebersicht']['suche_min_zeichen'] > 0) {
-        $nMindestzeichen = (int)$Einstellungen['artikeluebersicht']['suche_min_zeichen'];
-    }
+if (strlen($cParameter_arr['cSuche']) > 0 || (isset($_GET['qs']) && strlen($_GET['qs']) === 0)) {
+    $nMindestzeichen = ((int)$Einstellungen['artikeluebersicht']['suche_min_zeichen'] > 0) ?
+        (int)$Einstellungen['artikeluebersicht']['suche_min_zeichen'] :
+        3;
     preg_match("/[\w" . utf8_decode('äÄüÜöÖß') . "\.\-]{" . $nMindestzeichen . ",}/", str_replace(' ', '', $cParameter_arr['cSuche']), $cTreffer_arr);
     if (count($cTreffer_arr) === 0) {
         $cFehler                 = Shop::Lang()->get('expressionHasTo', 'global') . ' ' . $nMindestzeichen . ' ' . Shop::Lang()->get('lettersDigits', 'global');
@@ -105,7 +104,8 @@ if ($cParameter_arr['kHersteller'] > 0 ||
     strlen($cParameter_arr['cSuche']) > 0 ||
     $cParameter_arr['kSuchspecial'] > 0 ||
     $cParameter_arr['kSuchspecialFilter'] > 0 ||
-    $cParameter_arr['kSuchFilter'] > 0
+    $cParameter_arr['kSuchFilter'] > 0 ||
+    (isset($_GET['qs']) && strlen($_GET['qs']) === 0)
 ) {
     require_once PFAD_ROOT . PFAD_INCLUDES . 'suche_inc.php';
     $suchanfrage = '';

@@ -3772,8 +3772,7 @@ function setzeSpracheUndWaehrungLink()
                 $_SESSION['Sprachen'][$i]->cURL = $AktuellerArtikel->cSprachURL_arr[$oSprache->kSprache];
             } elseif (($kLink > 0 || $kSeite > 0) && isset($sprachURL[$oSprache->cISO])) {
                 $_SESSION['Sprachen'][$i]->cURL = $sprachURL[$oSprache->cISO];
-            } // Special Seiten
-            elseif ($AktuelleSeite === 'WARENKORB'
+            } elseif ($AktuelleSeite === 'WARENKORB'
                 || $AktuelleSeite === 'KONTAKT'
                 || $AktuelleSeite === 'REGISTRIEREN'
                 || $AktuelleSeite === 'MEIN KONTO'
@@ -3783,6 +3782,8 @@ function setzeSpracheUndWaehrungLink()
                 || $AktuelleSeite === 'STARTSEITE'
                 || $AktuelleSeite === 'PASSWORT VERGESSEN'
                 || $AktuelleSeite === 'NEWS'
+                || $AktuelleSeite === 'WUNSCHLISTE'
+                || $AktuelleSeite === 'VERGLEICHSLISTE'
             ) {
                 switch ($AktuelleSeite) {
                     case 'STARTSEITE' :
@@ -3827,6 +3828,14 @@ function setzeSpracheUndWaehrungLink()
 
                     case 'NEWS':
                         $id = 'news.php';
+                        break;
+
+                    case 'VERGLEICHSLISTE':
+                        $id = 'vergleichsliste.php';
+                        break;
+
+                    case 'WUNSCHLISTE' :
+                        $id = 'wunschliste.php';
                         break;
 
                     default:

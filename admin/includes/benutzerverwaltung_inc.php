@@ -262,11 +262,12 @@ function benutzerverwaltungActionAccountEdit(JTLSmarty $smarty, array &$messages
 
     // find out, if 2FA ist active and if there is a secret
     $szQRcodeString = '';
-    if(null !== $kAdminlogin) {
+    $szKnownSecret  = '';
+    if (null !== $kAdminlogin) {
         $oTwoFA = new TwoFA();
         $oTwoFA->setUserByID($_POST['id']);
 
-        if(true === $oTwoFA->is2FAauthSecretExist()) {
+        if (true === $oTwoFA->is2FAauthSecretExist()) {
             $szQRcodeString = $oTwoFA->getQRcode();
             $szKnownSecret = $oTwoFA->getSecret();
         }
@@ -283,8 +284,8 @@ function benutzerverwaltungActionAccountEdit(JTLSmarty $smarty, array &$messages
         $oTmpAcc->cLogin         = trim($_POST['cLogin']);
         $oTmpAcc->cPass          = trim($_POST['cPass']);
         $oTmpAcc->b2FAauth       = (int)$_POST['b2FAauth'];
-        (0 < strlen($_POST['c2FAsecret'])) ? $oTmpAcc->c2FAauthSecret = trim($_POST['c2FAsecret']) : null;
         $tmpAttribs              = isset($_POST['extAttribs']) ? $_POST['extAttribs'] : array();
+        (0 < strlen($_POST['c2FAsecret'])) ? $oTmpAcc->c2FAauthSecret = trim($_POST['c2FAsecret']) : null;
 
         $dGueltigBisAktiv = (isset($_POST['dGueltigBisAktiv']) && ($_POST['dGueltigBisAktiv'] === '1'));
         if ($dGueltigBisAktiv) {
@@ -299,7 +300,7 @@ function benutzerverwaltungActionAccountEdit(JTLSmarty $smarty, array &$messages
         }
         $oTmpAcc->kAdminlogingruppe = (int)$_POST['kAdminlogingruppe'];
 
-        if((bool)$oTmpAcc->b2FAauth && !isset($oTmpAcc->c2FAauthSecret)) {
+        if ((bool)$oTmpAcc->b2FAauth && !isset($oTmpAcc->c2FAauthSecret)) {
             $cError_arr['c2FAsecret'] = 1;
         }
         if (strlen($oTmpAcc->cName) === 0) {

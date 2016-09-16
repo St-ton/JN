@@ -49,29 +49,8 @@ if (verifyGPCDataInteger('addproductbundle') === 1 && isset($_POST['a'])) {
         Shop::$kArtikel = (int)$_POST['aBundle'];
     }
 }
-//hole aktuellen Artikel
-$AktuellerArtikel                        = new Artikel();
-$oArtikelOptionen                        = new stdClass();
-$oArtikelOptionen->nMerkmale             = 1;
-$oArtikelOptionen->nKategorie            = 1;
-$oArtikelOptionen->nAttribute            = 1;
-$oArtikelOptionen->nArtikelAttribute     = 1;
-$oArtikelOptionen->nMedienDatei          = 1;
-$oArtikelOptionen->nVariationKombi       = 1;
-$oArtikelOptionen->nVariationKombiKinder = 1;
-$oArtikelOptionen->nWarenlager           = 1;
-$oArtikelOptionen->nVariationDetailPreis = 1;
-$oArtikelOptionen->nRatings              = 1;
-// Warenkorbmatrix noetig? => Varikinder mit Preisen holen
-$oArtikelOptionen->nWarenkorbmatrix = (int)($Einstellungen['artikeldetails']['artikeldetails_warenkorbmatrix_anzeige'] === 'Y');
- // Stückliste noetig? => Stücklistenkomponenten  holen
-$oArtikelOptionen->nStueckliste   = (int)($Einstellungen['artikeldetails']['artikeldetails_stueckliste_anzeigen'] === 'Y');
-$oArtikelOptionen->nProductBundle = (int)($Einstellungen['artikeldetails']['artikeldetails_produktbundle_nutzen'] === 'Y');
-$oArtikelOptionen->nDownload      = 1;
-$oArtikelOptionen->nKonfig        = 1;
-$oArtikelOptionen->nMain          = 1;
-$oArtikelOptionen->bSimilar       = true;
-$AktuellerArtikel->fuelleArtikel(Shop::$kArtikel, $oArtikelOptionen);
+$AktuellerArtikel = new Artikel();
+$AktuellerArtikel->fuelleArtikel(Shop::$kArtikel, Artikel::getDetailOptions());
 if (isset($AktuellerArtikel->nIstVater) && $AktuellerArtikel->nIstVater == 1) {
     $_SESSION['oVarkombiAuswahl']                               = new stdClass();
     $_SESSION['oVarkombiAuswahl']->kGesetzteEigeschaftWert_arr  = array();
@@ -109,17 +88,8 @@ $similarArticles = ((int)($Einstellungen['artikeldetails']['artikeldetails_aehnl
 // Lade VariationKombiKind
 if (Shop::$kVariKindArtikel > 0) {
     $oVariKindArtikel                            = new Artikel();
-    $oArtikelOptionen                            = new stdClass();
-    $oArtikelOptionen->nMerkmale                 = 1;
-    $oArtikelOptionen->nAttribute                = 1;
-    $oArtikelOptionen->nArtikelAttribute         = 1;
-    $oArtikelOptionen->nMedienDatei              = 1;
-    $oArtikelOptionen->nKonfig                   = 1;
-    $oArtikelOptionen->nDownload                 = 1;
-    $oArtikelOptionen->nMain                     = 1;
+    $oArtikelOptionen                            = Artikel::getDetailOptions();
     $oArtikelOptionen->nKeinLagerbestandBeachten = 1;
-    $oArtikelOptionen->nVariationDetailPreis     = 1;
-    $oArtikelOptionen->nProductBundle            = (int)($Einstellungen['artikeldetails']['artikeldetails_produktbundle_nutzen'] === 'Y');
     $oVariKindArtikel->fuelleArtikel(Shop::$kVariKindArtikel, $oArtikelOptionen);
     $AktuellerArtikel = fasseVariVaterUndKindZusammen($AktuellerArtikel, $oVariKindArtikel);
     $bCanonicalURL    = ($Einstellungen['artikeldetails']['artikeldetails_canonicalurl_varkombikind'] === 'N') ? false : true;

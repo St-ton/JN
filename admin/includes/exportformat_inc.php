@@ -380,10 +380,10 @@ function verarbeiteYategoExport(&$Artikel, $exportformat, $ExportEinstellungen, 
                         $oEigenschaftKombi_arr = Shop::DB()->query(
                             "SELECT teigenschaftkombiwert.*, tartikel.kArtikel
                                 FROM teigenschaftkombiwert
-                                JOIN tartikel ON tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
-                                WHERE teigenschaftkombiwert.kEigenschaftKombi IN (" . $cSQL . ")
-                                GROUP BY teigenschaftkombiwert.kEigenschaftWert
-                                ORDER BY teigenschaftkombiwert.kEigenschaft, teigenschaftkombiwert.kEigenschaftWert", 2
+                                    JOIN tartikel ON tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
+                                    WHERE teigenschaftkombiwert.kEigenschaftKombi IN (" . $cSQL . ")
+                                    GROUP BY teigenschaftkombiwert.kEigenschaftWert
+                                    ORDER BY teigenschaftkombiwert.kEigenschaft, teigenschaftkombiwert.kEigenschaftWert", 2
                         );
                     }
                 }
@@ -401,11 +401,11 @@ function verarbeiteYategoExport(&$Artikel, $exportformat, $ExportEinstellungen, 
                 $oVariationsListe_arr[] = $oVariation->kEigenschaft;
 
                 if (is_array($oVariation->Werte) && count($oVariation->Werte) > 0) {
+                    $oArtikelOptionen  = Artikel::getDefaultOptions();
                     foreach ($oVariation->Werte as $oWert) {
                         $oVariationsKind = new stdClass();
                         if (is_array($oEigenschaftKombi_arr) && count($oEigenschaftKombi_arr) > 0) {
                             $bEigenschaftCheck = false;
-                            $oArtikelOptionen  = new stdClass();
                             foreach ($oEigenschaftKombi_arr as $oEigenschaftKombi) {
                                 if ($oEigenschaftKombi->kEigenschaft == $oVariation->kEigenschaft && $oEigenschaftKombi->kEigenschaftWert == $oWert->kEigenschaftWert) {
                                     $oVariationsKind = new Artikel();

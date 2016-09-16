@@ -164,6 +164,8 @@ ifndef('CUSTOMER_ACCOUNT_MAX_ORDERS', 50);
 // ifndef('STEUERSATZ_STANDARD_LAND', 'DE')
 ifndef('JTLLOG_MAX_LOGSIZE', 200000);
 
+ifndef('UNIFY_CACHE_IDS', false);
+
 /**
  * @param string     $constant
  * @param string|int $value

@@ -262,6 +262,7 @@ function benutzerverwaltungActionAccountEdit(JTLSmarty $smarty, array &$messages
 
     // find out, if 2FA ist active and if there is a secret
     $szQRcodeString = '';
+    $szKnownSecret = '';
     if(null !== $kAdminlogin) {
         $oTwoFA = new TwoFA();
         $oTwoFA->setUserByID($_POST['id']);

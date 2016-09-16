@@ -1156,6 +1156,7 @@ function gibAlleSprachenAssoc($Sprachen)
 function curlReturnCode($url)
 {
     $ch = curl_init($url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_exec($ch);
     $res = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);

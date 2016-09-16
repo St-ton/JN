@@ -19,7 +19,6 @@
     </div>
 {/if}
 
-{nocache}
 {if isset($bWarenkorbHinzugefuegt) && $bWarenkorbHinzugefuegt}
     {if !isset($kArtikel)}
         {assign var=kArtikel value=$Artikel->kArtikel}
@@ -31,7 +30,6 @@
         {include file='productdetails/pushed.tpl' oArtikel=$Artikel fAnzahl=$bWarenkorbAnzahl}
     </div>
 {/if}
-{/nocache}
 <script type="text/javascript">
     $(function() {
         {if isset($fehlendeAngaben_benachrichtigung) && count($fehlendeAngaben_benachrichtigung) > 0 && ($verfuegbarkeitsBenachrichtigung == 2 || $verfuegbarkeitsBenachrichtigung == 3) && $Artikel->cLagerBeachten === 'Y'}

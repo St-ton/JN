@@ -1655,3 +1655,11 @@ define('HOOK_BACKEND_ACCOUNT_PREPARE_EDIT', 223);
  * @param boxes - list of boxes for the home page
  */
 define('HOOK_BOXEN_HOME', 224);
+
+/**
+ * in bearbeiteInsert() after inserting an article into the database
+ *
+ * @file QuickSync_xml.php
+ * @param oArtikel
+ */
+define('HOOK_QUICKSYNC_XML_BEARBEITEINSERT', 225);

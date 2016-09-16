@@ -67,13 +67,10 @@ class Updater
             return true;
         }
 
-        foreach ($this->getPendingMigrations() as $version => $migrations) {
-            if (count($migrations) > 0) {
-                return true;
-            }
-        }
+        $manager = new MigrationManager();
+        $pending = $manager->getPendingMigrations();
 
-        return false;
+        return count($pending) > 0;
     }
 
     /**
@@ -165,7 +162,9 @@ class Updater
         if (array_key_exists($version, $majors)) {
             $targetVersion = $majors[$version];
         } else {
-            $targetVersion = ++$version;
+            $targetVersion = $version < $this->getCurrentFileVersion()
+                ? ++$version
+                : $version;
         }
 
         return $targetVersion;
@@ -284,13 +283,15 @@ class Updater
         $currentVersion = (int) $version->nVersion;
         $targetVersion  = (int) $this->getTargetVersion($currentVersion);
 
-        if ($targetVersion <= $currentVersion) {
-            return $currentVersion;
+        if ($targetVersion < 403) {
+            if ($targetVersion <= $currentVersion) {
+                return $currentVersion;
+            }
+
+            return $this->updateBySqlFile($currentVersion, $targetVersion);
         }
 
-        return ($targetVersion < 403)  ?
-             $this->updateBySqlFile($currentVersion, $targetVersion) :
-             $this->updateByMigration($currentVersion, $targetVersion);
+        return $this->updateByMigration($targetVersion);
     }
 
     /**
@@ -341,52 +342,37 @@ class Updater
     }
 
     /**
-     * @param int $currentVersion
      * @param int $targetVersion
      * @return mixed
      * @throws Exception
      */
-    protected function updateByMigration($currentVersion, $targetVersion)
+    protected function updateByMigration($targetVersion)
     {
-        $pendingMigrations = $this->getPendingMigrations();
-        $previousVersion   = $this->getPreviousVersion($currentVersion);
+        $manager           = new MigrationManager();
+        $pendingMigrations = $manager->getPendingMigrations();
 
-        $previousMigrations = isset($pendingMigrations[$previousVersion])
-            ? $pendingMigrations[$previousVersion] : [];
-
-        $currentMigrations = isset($pendingMigrations[$currentVersion])
-            ? $pendingMigrations[$currentVersion] : [];
-
-        $matchingMigrations = [
-            $previousVersion => $previousMigrations,
-            $currentVersion  => $currentMigrations,
-        ];
-
-        if (count($previousMigrations) === 0 && count($currentMigrations) === 0) {
+        if (count($pendingMigrations) < 1) {
             $this->setVersion($targetVersion);
 
             return $targetVersion;
         }
 
-        foreach ($matchingMigrations as $version => $versionedMigrations) {
-            $manager = new MigrationManager($version);
-            foreach ($versionedMigrations as $migration) {
-                $migration = $manager->getMigrationById($migration);
-                $manager->executeMigration($migration, IMigration::UP);
+        $id = end($pendingMigrations);
 
-                return $migration; // 1 migration per run
-            }
-        }
+        $migration = $manager->getMigrationById($id);
+        $manager->executeMigration($migration, IMigration::UP);
 
-        return;
+        return $migration;
     }
 
     /**
      * @return array
      */
-    public function getPendingMigrations()
+    public function getPendingMigrations2()
     {
+        /*
         $migrations    = [];
+        
         $migrationDirs = array_filter($this->getUpdateDirs(), function ($v) {
             return (int) $v >= 402;
         });
@@ -398,17 +384,22 @@ class Updater
                 $migrations[(int) $version] = $pending;
             }
         }
-
+        
         return $migrations;
+        */
+
+        $manager = new MigrationManager();
+
+        return $manager->getPendingMigrations();
     }
 
     /**
      * @param int $version
      * @throws Exception
      */
-    protected function executeMigrations($version)
+    protected function executeMigrations()
     {
-        $manager    = new MigrationManager($version);
+        $manager    = new MigrationManager();
         $migrations = $manager->migrate(null);
 
         foreach ($migrations as $migration) {

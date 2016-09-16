@@ -297,8 +297,7 @@ class AdminAccount
         $this->_bLogged = false;
         if (isset($_SESSION['AdminAccount']->cLogin) && isset($_SESSION['AdminAccount']->cPass) && isset($_SESSION['AdminAccount']->cURL) &&
             $_SESSION['AdminAccount']->cURL == Shop::getURL()) {
-
-            $oAccount = Shop::DB()->select('tadminlogin', 'cLogin', $_SESSION['AdminAccount']->cLogin, 'cPass', $_SESSION['AdminAccount']->cPass);
+            $oAccount                 = Shop::DB()->select('tadminlogin', 'cLogin', $_SESSION['AdminAccount']->cLogin, 'cPass', $_SESSION['AdminAccount']->cPass);
             $this->twoFaAuthenticated = (isset($oAccount->b2FAauth) && $oAccount->b2FAauth === '1') ?
                 (isset($_SESSION['AdminAccount']->TwoFA_valid) && true === $_SESSION['AdminAccount']->TwoFA_valid) :
                 true;
@@ -323,6 +322,16 @@ class AdminAccount
         }
 
         return false;
+    }
+
+    public function favorites()
+    {
+        if (!$this->logged()) {
+            return [];
+        }
+
+        return AdminFavorite::fetchAll(
+            $_SESSION['AdminAccount']->kAdminlogin);
     }
 
     /**

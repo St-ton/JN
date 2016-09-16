@@ -488,7 +488,6 @@ if ($cParameter_arr['kHersteller'] > 0 ||
            ->assign('cFehler', $cFehler)
            ->assign('Einstellungen', $Einstellungen)
            ->assign('Sortierliste', gibSortierliste($Einstellungen, $bExtendedJTLSearch))
-           ->assign('Einstellungen', $Einstellungen)
            ->assign('Suchergebnisse', $oSuchergebnisse)
            ->assign('requestURL', (isset($requestURL)) ? $requestURL : null)
            ->assign('sprachURL', (isset($sprachURL)) ? $sprachURL : null)
@@ -537,13 +536,10 @@ if ($cParameter_arr['kHersteller'] > 0 ||
         require_once PFAD_ROOT . 'news.php';
     } elseif ($cParameter_arr['kUmfrage'] > 0) {
         require_once PFAD_ROOT . 'umfrage.php';
-    } else {
-        if (!$cParameter_arr['kSeite']) {
-            $Link   = Shop::DB()->query("SELECT kLink FROM tlink WHERE nLinkart = " . LINKTYP_STARTSEITE, 1);
-            $kSeite = $Link->kLink;
-        }
-
+    } elseif ($cParameter_arr['kLink'] > 0) {
         require_once PFAD_ROOT . 'seite.php';
+    } else {
+        Shop::getEntryPoint();
     }
     if (Shop::$is404 === true) {
         $cParameter_arr['is404'] = true;

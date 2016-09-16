@@ -49,7 +49,6 @@
         </li>
     {/block}{* /navbar-productsearch *}
 
-    {nocache}
     {block name="navbar-top-user"}
     {*  ACCOUNT *}
     <li class="dropdown hidden-xs">
@@ -127,6 +126,5 @@
     </li>
     {*  CART END *}
     {/block}{* /navbar-top-user *}
-    {/nocache}
 </ul>{* /shop-nav *}
 {/strip}

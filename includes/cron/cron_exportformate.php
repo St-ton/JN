@@ -3,10 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Artikel.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Kategorie.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'exportformat_inc.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'tools.Global.php';
 
 /**
  * @return JTLSmarty
@@ -135,7 +132,7 @@ function bearbeiteExportformate($oJobQueue)
 
             if (isset($ExportEinstellungen['exportformate_quot']) && $ExportEinstellungen['exportformate_quot'] !== 'N') {
                 $search[] = '"';
-                if ($ExportEinstellungen['exportformate_quot'] === 'bq') {
+                if ($ExportEinstellungen['exportformate_quot'] === 'q' || $ExportEinstellungen['exportformate_quot'] === 'bq') {
                     $replace[] = '\"';
                 } elseif ($ExportEinstellungen['exportformate_quot'] === 'qq') {
                     $replace[] = '""';
@@ -145,7 +142,7 @@ function bearbeiteExportformate($oJobQueue)
             }
             if (isset($ExportEinstellungen['exportformate_equot']) && $ExportEinstellungen['exportformate_equot'] !== 'N') {
                 $search[] = "'";
-                if ($ExportEinstellungen['exportformate_equot'] === 'q') {
+                if ($ExportEinstellungen['exportformate_equot'] === 'q' || $ExportEinstellungen['exportformate_equot'] === 'bq') {
                     $replace[] = '"';
                 } else {
                     $replace[] = $ExportEinstellungen['exportformate_equot'];
@@ -251,7 +248,9 @@ function bearbeiteExportformate($oJobQueue)
             $oJobQueue->nInArbeit = 0;
             $oJobQueue->updateJobInDB();
         } else {
-            Shop::DB()->query("UPDATE texportformat SET dZuletztErstellt = now() WHERE kExportformat = " . (int)$oJobQueue->kKey, 4);
+            $upd = new stdClass();
+            $upd->dZuletztErstellt = 'now()';
+            Shop::DB()->update('texportformat', 'kExportformat', (int)$oJobQueue->kKey, $upd);
             $oJobQueue->deleteJobInDB();
 
             if (file_exists(PFAD_ROOT . PFAD_EXPORT . $exportformat->cDateiname)) {
@@ -512,17 +511,13 @@ function gibYategoExport($exportformat, $oJobQueue, $ExportEinstellungen)
             $Artikel->fuelleArtikel($tartikel->kArtikel, $oArtikelOptionen, $exportformat->kKundengruppe, $exportformat->kSprache);
 
             verarbeiteYategoExport($Artikel, $exportformat, $ExportEinstellungen, $KategorieListe, $oGlobal_arr);
-
-            $oJobQueue->nLimitN += 1;
         }
 
         $KategorieListe                = array_keys($KategorieListe);
         $oGlobal_arr['shopkategorien'] = getCats($KategorieListe);
 
         if ($exportformat->cKodierung === 'UTF-8' || $exportformat->cKodierung === 'UTF-8noBOM') {
-            if ($exportformat->cKodierung === 'UTF-8') {
-                $cHeader = "\xEF\xBB\xBF";
-            }
+            $cHeader = $exportformat->cKodierung === 'UTF-8' ? "\xEF\xBB\xBF" : '';
             writeFile(PATH . 'varianten.csv', $cHeader . utf8_encode(makecsv($oGlobal_arr['varianten'], $oJobQueue->nLimitN) . CRLF . makecsv($oGlobal_arr['variantenwerte'], $oJobQueue->nLimitN)));
             writeFile(PATH . 'artikel.csv', $cHeader . utf8_encode(makecsv($oGlobal_arr['artikel'], $oJobQueue->nLimitN)));
             writeFile(PATH . 'shopkategorien.csv', $cHeader . utf8_encode(makecsv($oGlobal_arr['shopkategorien'], $oJobQueue->nLimitN)));
@@ -534,6 +529,7 @@ function gibYategoExport($exportformat, $oJobQueue, $ExportEinstellungen)
             writeFile(PATH . 'lager.csv', makecsv($oGlobal_arr['lager'], $oJobQueue->nLimitN));
         }
 
+        $oJobQueue->nLimitN         += count($oArtikel_arr);
         $oJobQueue->dZuletztGelaufen = date('Y-m-d H:i');
         $oJobQueue->nInArbeit        = 0;
         $oJobQueue->updateJobInDB();

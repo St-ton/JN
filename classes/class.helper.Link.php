@@ -973,7 +973,7 @@ class LinkHelper
 
             return $index;
         }
-        if ($full) {
+        if ($full && strpos($id, 'http') !== 0) {
             return Shop::getURL($secure) . '/' . $id;
         }
 

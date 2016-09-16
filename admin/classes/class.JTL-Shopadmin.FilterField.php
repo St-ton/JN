@@ -32,7 +32,7 @@ abstract class FilterField
         $this->cValue  =
             $oFilter->getAction() === $oFilter->getId() . '_filter'      ? $_GET[$oFilter->getId() . '_' . $this->cId] : (
             $oFilter->getAction() === $oFilter->getId() . '_resetfilter' ? $cDefValue : (
-            $oFilter->hasSessionField($cColumn)                          ? $oFilter->getSessionField($this->cId) :
+            $oFilter->hasSessionField($this->cId)                        ? $oFilter->getSessionField($this->cId) :
                                                                            $cDefValue
             ));
     }

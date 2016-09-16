@@ -1,31 +1,27 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=#coupons# cBeschreibung=#couponsDesc# cDokuURL=#couponsURL#}
+{include file='tpl_inc/sortcontrols.tpl'}
 
 {function kupons_uebersicht_tab}
     <div id="{$cKuponTyp}" class="tab-pane fade{if $tab === $cKuponTyp} active in{/if}">
-        {if $nKuponCount > 0}
+        <div class="panel panel-default">
             {include file='tpl_inc/filtertools.tpl' oFilter=$oFilter cParam_arr=['tab'=>$cKuponTyp]}
-        {/if}
-        {if $oKupon_arr|@count > 0}
             {include file='tpl_inc/pagination.tpl' oPagination=$oPagination cParam_arr=['tab'=>$cKuponTyp]}
-        {/if}
-        <form method="post" action="kupons.php">
-            {$jtl_token}
-            <input type="hidden" name="cKuponTyp" id="cKuponTyp" value="{$cKuponTyp}">
-            <div class="panel panel-default">
+            <form method="post" action="kupons.php">
+                {$jtl_token}
+                <input type="hidden" name="cKuponTyp" id="cKuponTyp" value="{$cKuponTyp}">
                 {if $oKupon_arr|@count > 0}
-                    <div class="panel-heading">
-                        <h3 class="panel-title">{#all#} {$cKuponTypName}s</h3>
-                    </div>
                     <table class="list table">
                         <thead>
                             <tr>
                                 <th title="Aktiv"></th>
                                 <th></th>
-                                <th>{#name#}</th>
+                                <th>{#name#} {call sortControls oPagination=$oPagination nSortBy=0}</th>
                                 {if $cKuponTyp === 'standard' || $cKuponTyp === 'neukundenkupon'}<th>{#value#}</th>{/if}
-                                {if $cKuponTyp === 'standard' || $cKuponTyp === 'versandkupon'}<th>{#code#}</th>{/if}
+                                {if $cKuponTyp === 'standard' || $cKuponTyp === 'versandkupon'}
+                                    <th>{#code#} {call sortControls oPagination=$oPagination nSortBy=1}</th>
+                                {/if}
                                 <th>{#mbw#}</th>
-                                <th>{#curmaxusage#}</th>
+                                <th>{#curmaxusage#} {call sortControls oPagination=$oPagination nSortBy=2}</th>
                                 <th>{#customerGroup#}</th>
                                 <th>{#restrictions#}</th>
                                 <th>{#validity#}</th>
@@ -45,14 +41,22 @@
                                     {if $cKuponTyp === 'standard' || $cKuponTyp === 'neukundenkupon'}
                                         <td>
                                             {if $oKupon->cWertTyp === 'festpreis'}
-                                                {getCurrencyConversionSmarty fPreisBrutto=$oKupon->fWert}
+                                                <span data-toggle="tooltip" data-placement="right" data-html="true"
+                                                      title='{getCurrencyConversionSmarty fPreisBrutto=$oKupon->fWert}'>
+                                                    {$oKupon->cLocalizedValue}
+                                                </span>
                                             {else}
                                                 {$oKupon->fWert} %
                                             {/if}
                                         </td>
                                     {/if}
                                     {if $cKuponTyp === 'standard' || $cKuponTyp === 'versandkupon'}<td>{$oKupon->cCode}</td>{/if}
-                                    <td>{getCurrencyConversionSmarty fPreisBrutto=$oKupon->fMindestbestellwert}</td>
+                                    <td>
+                                        <span data-toggle="tooltip" data-placement="right" data-html="true"
+                                              title='{getCurrencyConversionSmarty fPreisBrutto=$oKupon->fMindestbestellwert}'>
+                                            {$oKupon->cLocalizedMbw}
+                                        </span>
+                                    </td>
                                     <td>
                                         {$oKupon->nVerwendungenBisher}
                                         {if $oKupon->nVerwendungen > 0}
@@ -61,8 +65,8 @@
                                     <td>{$oKupon->cKundengruppe}</td>
                                     <td>{$oKupon->cArtikelInfo}</td>
                                     <td>
-                                        <strong>{#from#}:</strong> {$oKupon->cGueltigAbShort}<br>
-                                        <strong>{#to#}:</strong> {$oKupon->cGueltigBisShort}
+                                        {#from#}: {$oKupon->cGueltigAbShort}<br>
+                                        {#to#}: {$oKupon->cGueltigBisShort}
                                     </td>
                                     <td>
                                         <button type="submit" class="btn btn-default" name="kKuponBearbeiten" value="{$oKupon->kKupon}">
@@ -93,8 +97,8 @@
                         <button type="submit" class="btn btn-primary" name="kKuponBearbeiten" value="0"><i class="fa fa-share"></i> {$cKuponTypName} {#create#}</button>
                     </div>
                 </div>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
 {/function}
 

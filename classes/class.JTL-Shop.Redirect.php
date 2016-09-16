@@ -125,15 +125,17 @@ class Redirect
             $cDestination = '/' . $cDestination;
         }
 
-        if (strlen($cSource) > 1 && strlen($cDestination) > 1 && $cSource != $cDestination || $bForce) {
+        if (self::checkAvailability(Shop::getURL() . $cDestination) &&
+            strlen($cSource) > 1 && strlen($cDestination) > 1 && $cSource !== $cDestination || $bForce)
+        {
             if ($this->isDeadlock($cSource, $cDestination)) {
                 Shop::DB()->delete('tredirect', ['cToUrl', 'cFromUrl'], [$cSource, $cDestination]);
             }
             $oTarget = $this->getRedirectByTarget($cSource);
             if (!empty($oTarget)) {
                 $this->saveExt($oTarget->cFromUrl, $cDestination);
-                $oObj           = new stdClass();
-                $oObj->cToUrl   = StringHandler::convertISO($cDestination);
+                $oObj         = new stdClass();
+                $oObj->cToUrl = StringHandler::convertISO($cDestination);
                 Shop::DB()->update('tredirect', 'cToUrl', $cSource, $oObj);
             }
 
@@ -428,22 +430,11 @@ class Redirect
     /**
      * @param string $cUrl
      * @return bool
+     * @deprecated since 4.05 - use Redirect::checkAvailability()
      */
     public function isAvailable($cUrl)
     {
-        $sep = (parse_url($cUrl, PHP_URL_QUERY) === null) ? '?' : '&';
-        $cUrl .= $sep . 'notrack';
-        $cHeader_arr = @get_headers($cUrl);
-        if (empty($cHeader_arr)) {
-            return false;
-        }
-        foreach ($cHeader_arr as $head) { //Nur der letzte Status Code ist relevant (Redirects werden übersprungen)
-            if (preg_match('/^HTTP\\/\\d+\\.\\d+\\s+2\\d\\d\\s+.*$/', $head)) {
-                return true;
-            }
-        }
-
-        return false;
+        return self::checkAvailability($cUrl);
     }
 
     /**
@@ -471,13 +462,13 @@ class Redirect
     public function getCount($bUmgeleiteteUrls, $cSuchbegriff)
     {
         $where = '';
-        if ($bUmgeleiteteUrls == '1' || !empty($cSuchbegriff)) {
+        if ($bUmgeleiteteUrls === '1' || !empty($cSuchbegriff)) {
             $where .= 'WHERE ';
         }
-        if ($bUmgeleiteteUrls == '1') {
+        if ($bUmgeleiteteUrls === '1') {
             $where .= ' cToUrl != ""';
         }
-        if (!empty($cSuchbegriff) && $bUmgeleiteteUrls == '1') {
+        if (!empty($cSuchbegriff) && $bUmgeleiteteUrls === '1') {
             $where .= ' AND ';
         }
         if (!empty($cSuchbegriff)) {
@@ -505,16 +496,16 @@ class Redirect
     public function getList($nStart, $nLimit, $bUmgeleiteteUrls, $cSortierFeld, $cSortierung, $cSuchbegriff, $cMitVerweis = true)
     {
         $cWhereSQL_arr = array();
-        $cOrderSQL = $cSortierFeld . ' ' . $cSortierung;
-        $cLimitSQL = (int)$nStart . ',' . (int)$nLimit;
+        $cOrderSQL     = $cSortierFeld . ' ' . $cSortierung;
+        $cLimitSQL     = (int)$nStart . ',' . (int)$nLimit;
 
-        if ($cSuchbegriff != '') {
+        if ($cSuchbegriff !== '') {
             $cWhereSQL_arr[] = "cFromUrl LIKE '%" . $cSuchbegriff . "%'";
         }
 
-        if ($bUmgeleiteteUrls == '1') {
+        if ($bUmgeleiteteUrls === '1') {
             $cWhereSQL_arr[] = "cToUrl != ''";
-            if ($cSuchbegriff != '') {
+            if ($cSuchbegriff !== '') {
                 $cWhereSQL_arr[] = "cToUrl LIKE '%" . $cSuchbegriff . "%'";
             }
         } elseif ($bUmgeleiteteUrls === '2') {
@@ -547,7 +538,7 @@ class Redirect
         $oRedirect_arr = Shop::DB()->query("
             SELECT *
                 FROM tredirect
-                " . ($cWhereSQL != '' ? "WHERE " . $cWhereSQL : "") . "
+                " . ($cWhereSQL !== '' ? "WHERE " . $cWhereSQL : "") . "
                 ORDER BY " . $cOrderSQL . "
                 LIMIT " . $cLimitSQL,
             2);
@@ -585,5 +576,48 @@ class Redirect
     public static function getTotalRedirectCount()
     {
         return Shop::DB()->query("SELECT count(kRedirect) AS nCount FROM tredirect", 1)->nCount;
+    }
+
+    /**
+     * @param $cUrl - full URL (http://www.shop.com/path/to/page) or url path (/path/to/page)
+     * @return bool
+     */
+    public static function checkAvailability($cUrl)
+    {
+        $parsedUrl = parse_url($cUrl);
+
+        if (!isset($parsedUrl['host'])) {
+            $parsedShopUrl       = parse_url(Shop::getURL() . '/');
+            $parsedUrl['scheme'] = $parsedShopUrl['scheme'];
+            $parsedUrl['host']   = $parsedShopUrl['host'];
+            if (!isset($parsedUrl['path'])) {
+                $parsedUrl['path'] = '/';
+            }
+            if ($parsedUrl['path'][0] !== '/') {
+                $parsedUrl['path'] = '/' . $parsedUrl['path'];
+            }
+            if (strpos($parsedUrl['path'], $parsedShopUrl['path']) === false) {
+                $parsedUrl['path'] = rtrim($parsedShopUrl['path'], '/') . $parsedUrl['path'];
+            }
+        }
+
+        if (isset($parsedUrl['query'])) {
+            $parsedUrl['query'] .= '&notrack';
+        } else {
+            $parsedUrl['query'] = 'notrack';
+        }
+
+        $rebuildUrl = StringHandler::buildUrl($parsedUrl);
+
+        $cHeader_arr = @get_headers($rebuildUrl);
+        if (empty($cHeader_arr)) {
+            return false;
+        }
+        //Nur der letzte Status Code ist relevant (Redirects werden übersprungen)
+        if (preg_match('/^HTTP\\/\\d+\\.\\d+\\s+2\\d\\d\\s+.*$/', $cHeader_arr[0])) {
+            return true;
+        }
+
+        return false;
     }
 }

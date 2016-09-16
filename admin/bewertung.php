@@ -15,6 +15,7 @@ $Einstellungen = Shop::getSettings(array(CONF_BEWERTUNG));
 $cHinweis      = '';
 $cFehler       = '';
 $step          = 'bewertung_uebersicht';
+$cacheTags     = [];
 
 setzeSprache();
 
@@ -34,27 +35,26 @@ if (verifyGPCDataInteger('bewertung_editieren') === 1) {
         $step = 'bewertung_editieren';
         $cFehler .= 'Fehler: Bitte &uuml;berpr&uuml;fen Sie Ihre Eingaben. ';
     }
-} elseif (isset($_POST['einstellungen']) && intval($_POST['einstellungen']) === 1) {
+} elseif (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1) {
+    Shop::Cache()->flushTags([CACHING_GROUP_ARTICLE]);
     $cHinweis .= saveAdminSectionSettings(CONF_BEWERTUNG, $_POST);
-} elseif (isset($_POST['bewertung_nicht_aktiv']) && intval($_POST['bewertung_nicht_aktiv']) === 1) {
+} elseif (isset($_POST['bewertung_nicht_aktiv']) && (int)$_POST['bewertung_nicht_aktiv'] === 1) {
     // Bewertungen aktivieren
     if (isset($_POST['aktivieren'])) {
         if (is_array($_POST['kBewertung']) && count($_POST['kBewertung']) > 0) {
-            $cacheTags    = array();
             $kArtikel_arr = $_POST['kArtikel'];
             foreach ($_POST['kBewertung'] as $i => $kBewertung) {
-                Shop::DB()->query(
-                    "UPDATE tbewertung
-                        SET nAktiv = 1
-                        WHERE kBewertung = " . (int)$kBewertung, 3
-                );
+                $upd = new stdClass();
+                $upd->nAktiv = 1;
+                Shop::DB()->update('tbewertung', 'kBewertung', (int)$kBewertung, $upd);
                 // Durchschnitt neu berechnen
-                aktualisiereDurchschnitt(intval($kArtikel_arr[$i]), $Einstellungen['bewertung']['bewertung_freischalten']);
+                aktualisiereDurchschnitt($kArtikel_arr[$i], $Einstellungen['bewertung']['bewertung_freischalten']);
                 // Berechnet BewertungGuthabenBonus
                 checkeBewertungGuthabenBonus($kBewertung, $Einstellungen);
-                $cacheTags[] = CACHING_GROUP_ARTICLE . '_' . (int)$kArtikel_arr[$i];
+                $cacheTags[] = $kArtikel_arr[$i];
             }
             // Clear Cache
+            array_walk($cacheTags, function(&$i) { $i = CACHING_GROUP_ARTICLE . '_' . $i; });
             Shop::Cache()->flushTags($cacheTags);
             $cHinweis .= count($_POST['kBewertung']) . " Bewertung(en) wurde(n) erfolgreich aktiviert.";
         }
@@ -63,11 +63,10 @@ if (verifyGPCDataInteger('bewertung_editieren') === 1) {
             foreach ($_POST['kBewertung'] as $kBewertung) {
                 Shop::DB()->delete('tbewertung', 'kBewertung', (int)$kBewertung);
             }
-
             $cHinweis .= count($_POST['kBewertung']) . " Bewertung(en) wurde(n) erfolgreich gel&ouml;scht.";
         }
     }
-} elseif (isset($_POST['bewertung_aktiv']) && intval($_POST['bewertung_aktiv']) === 1) {
+} elseif (isset($_POST['bewertung_aktiv']) && (int)$_POST['bewertung_aktiv'] === 1) {
     if (isset($_POST['cArtNr'])) {
         // Bewertungen holen
         $oBewertungAktiv_arr = Shop::DB()->query(
@@ -88,12 +87,15 @@ if (verifyGPCDataInteger('bewertung_editieren') === 1) {
             $kArtikel_arr = $_POST['kArtikel'];
             foreach ($_POST['kBewertung'] as $i => $kBewertung) {
                 // Loesche Guthaben aus tbewertungguthabenbonus und aktualisiere tkunde
-                BewertungsGuthabenBonusLoeschen(intval($kBewertung));
+                BewertungsGuthabenBonusLoeschen($kBewertung);
 
                 Shop::DB()->delete('tbewertung', 'kBewertung', (int)$kBewertung);
                 // Durchschnitt neu berechnen
-                aktualisiereDurchschnitt(intval($kArtikel_arr[$i]), $Einstellungen['bewertung']['bewertung_freischalten']);
+                aktualisiereDurchschnitt($kArtikel_arr[$i], $Einstellungen['bewertung']['bewertung_freischalten']);
+                $cacheTags[] = $kArtikel_arr[$i];
             }
+            array_walk($cacheTags, function(&$i) { $i = CACHING_GROUP_ARTICLE . '_' . $i; });
+            Shop::Cache()->flushTags($cacheTags);
 
             $cHinweis .= count($_POST['kBewertung']) . ' Bewertung(en) wurde(n) erfolgreich gel&ouml;scht.';
         }
@@ -108,48 +110,23 @@ if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_ed
     }
 } elseif ($step === 'bewertung_uebersicht') {
     // Config holen
-    $oConfig_arr = Shop::DB()->query(
-        "SELECT *
-            FROM teinstellungenconf
-            WHERE kEinstellungenSektion = " . CONF_BEWERTUNG . "
-            ORDER BY nSort", 2
-    );
+    $oConfig_arr = Shop::DB()->selectAll('teinstellungenconf', 'kEinstellungenSektion', CONF_BEWERTUNG, '*', 'nSort');
     $configCount = count($oConfig_arr);
     for ($i = 0; $i < $configCount; $i++) {
         if ($oConfig_arr[$i]->cInputTyp === 'selectbox') {
-            $oConfig_arr[$i]->ConfWerte = Shop::DB()->query(
-                "SELECT *
-                    FROM teinstellungenconfwerte
-                    WHERE kEinstellungenConf = " . (int)$oConfig_arr[$i]->kEinstellungenConf . "
-                    ORDER BY nSort", 2
-            );
+            $oConfig_arr[$i]->ConfWerte = Shop::DB()->selectAll('teinstellungenconfwerte', 'kEinstellungenConf', (int)$oConfig_arr[$i]->kEinstellungenConf, '*', 'nSort');
         } elseif ($oConfig_arr[$i]->cInputTyp === 'listbox') {
-            $oConfig_arr[$i]->ConfWerte = Shop::DB()->query(
-                "SELECT kKundengruppe, cName
-                    FROM tkundengruppe
-                    ORDER BY cStandard DESC", 2
-            );
+            $oConfig_arr[$i]->ConfWerte = Shop::DB()->selectAll('tkundengruppe', [], [], 'kKundengruppe, cName', 'cStandard DESC');
         }
 
         if ($oConfig_arr[$i]->cInputTyp === 'listbox') {
-            $oSetValue = Shop::DB()->query(
-                "SELECT cWert
-                    FROM teinstellungen
-                    WHERE kEinstellungenSektion = " . CONF_BEWERTUNG . "
-                        AND cName = '" . $oConfig_arr[$i]->cWertName . "'", 2
-            );
+            $oSetValue = Shop::DB()->selectAll('teinstellungen', ['kEinstellungenSektion', 'cName'], [CONF_BEWERTUNG, $oConfig_arr[$i]->cWertName], 'cWert');
             $oConfig_arr[$i]->gesetzterWert = $oSetValue;
         } else {
-            $oSetValue = Shop::DB()->query(
-                "SELECT cWert
-                    FROM teinstellungen
-                    WHERE kEinstellungenSektion = " . CONF_BEWERTUNG . "
-                        AND cName = '" . $oConfig_arr[$i]->cWertName . "'", 1
-            );
+            $oSetValue = Shop::DB()->select('teinstellungen', ['kEinstellungenSektion', 'cName'], [CONF_BEWERTUNG, $oConfig_arr[$i]->cWertName]);
             $oConfig_arr[$i]->gesetzterWert = (isset($oSetValue->cWert)) ? $oSetValue->cWert : null;
         }
     }
-
     // Bewertungen holen
     $oBewertung_arr = Shop::DB()->query(
         "SELECT tbewertung.*, DATE_FORMAT(tbewertung.dDatum, '%d.%m.%Y') AS Datum, tartikel.cName AS ArtikelName

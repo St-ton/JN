@@ -6,11 +6,10 @@
     <div class="alert alert-info">{lang key="myAccountDesc" section="login"}</div>
 {/if}
 
-{if $hinweis}
+{if !empty($hinweis)}
     <div class="alert alert-info">{$hinweis}</div>
 {/if}
-
-{if $cFehler}
+{if !empty($cFehler)}
     <div class="alert alert-danger">{$cFehler}</div>
 {/if}
 

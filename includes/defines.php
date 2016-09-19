@@ -163,6 +163,8 @@ ifndef('CUSTOMER_ACCOUNT_MAX_ORDERS', 50);
 // Steuersatz Standardland OVERRIDE - setzt ein anderes Steuerland, als im Shop angegeben (upper case, ISO 3166-2)
 // ifndef('STEUERSATZ_STANDARD_LAND', 'DE')
 ifndef('JTLLOG_MAX_LOGSIZE', 200000);
+// temp dir for pclzip extension
+ifndef('PCLZIP_TEMPORARY_DIR', PFAD_ROOT . PFAD_COMPILEDIR);
 
 /**
  * @param string     $constant

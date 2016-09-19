@@ -84,7 +84,7 @@ if (ArtikelHelper::isVariChild($cParameter_arr['kArtikel'])) {
     $cParameter_arr['kArtikel']         = Shop::$kArtikel;
 }
 if (!$cParameter_arr['kWunschliste'] && strlen(verifyGPDataString('wlid')) > 0) {
-    header('Location: wunschliste.php?wlid=' . verifyGPDataString('wlid') . '&error=1', true, 303);
+    header('Location: ' . $linkHelper->getStaticRoute('wunschliste.php') . '?wlid=' . verifyGPDataString('wlid') . '&error=1', true, 303);
     exit();
 }
 $smarty->assign('NaviFilter', $NaviFilter);

@@ -120,10 +120,10 @@
                             <tbody>
                             {foreach name=wunschlisten from=$oWunschliste_arr item=Wunschliste}
                                 <tr>
-                                    <td><a href="{get_static_route id='jtl.php'}?wl={$Wunschliste->kWunschliste}">{$Wunschliste->cName}</a></td>
+                                    <td><a href="{get_static_route id='wunschliste.php'}{if $Wunschliste->nStandard != 1}?wl={$Wunschliste->kWunschliste}{/if}">{$Wunschliste->cName}</a></td>
                                     <td>{if $Wunschliste->nStandard == 1}{lang key="active" section="global"}{/if} {if $Wunschliste->nStandard == 0}{lang key="inactive" section="global"}{/if}</td>
                                     <td class="text-right">
-                                        <form method="post" action="{get_static_route id='jtl.php'}">
+                                        <form method="post" action="{get_static_route id='wunschliste.php'}">
                                             {$jtl_token}
                                             <span class="btn-group">
                                                 {if $Wunschliste->nStandard != 1}

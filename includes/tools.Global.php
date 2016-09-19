@@ -52,10 +52,10 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
                     $brotnavi[] = $ele;
                 }
             }
-            $SieSindHierString .= ' &gt; <a href="' . $Artikel->cURL . '">' . $Artikel->cName . '</a>';
+            $SieSindHierString .= ' &gt; <a href="' . $Artikel->cURLFull . '">' . $Artikel->cName . '</a>';
             $ele        = new stdClass();
             $ele->name  = $Artikel->cName;
-            $ele->url   = $Artikel->cURL;
+            $ele->url   = $Artikel->cURLFull;
             $brotnavi[] = $ele;
             $SieSindHierString .= '<br />';
             break;
@@ -83,26 +83,26 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
             break;
 
         case 'WARENKORB':
-            $SieSindHierString .= ' &gt; <a href="warenkorb.php">' . Shop::Lang()->get('basket', 'breadcrumb') . '</a>';
+            $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('warenkorb.php') . '">' . Shop::Lang()->get('basket', 'breadcrumb') . '</a>';
             $ele        = new stdClass();
             $ele->name  = Shop::Lang()->get('basket', 'breadcrumb');
-            $ele->url   = 'warenkorb.php';
+            $ele->url   = $linkHelper->getStaticRoute('warenkorb.php');
             $brotnavi[] = $ele;
             $SieSindHierString .= '<br />';
             break;
 
         case 'PASSWORT VERGESSEN':
-            $SieSindHierString .= ' &gt; <a href="pass.php">' . Shop::Lang()->get('forgotpassword', 'breadcrumb') . '</a>';
+            $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('pass.php') . '">' . Shop::Lang()->get('forgotpassword', 'breadcrumb') . '</a>';
             $ele        = new stdClass();
             $ele->name  = Shop::Lang()->get('forgotpassword', 'breadcrumb');
-            $ele->url   = 'pass.php';
+            $ele->url   = $linkHelper->getStaticRoute('pass.php');
             $brotnavi[] = $ele;
             $SieSindHierString .= '<br />';
             break;
 
         case 'MEIN KONTO':
             $cText = (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) ? Shop::Lang()->get('account', 'breadcrumb') : Shop::Lang()->get('login', 'breadcrumb');
-            $SieSindHierString .= ' &gt; <a href="jtl.php">' . $cText . '</a>';
+            $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('jtl.php') . '">' . $cText . '</a>';
             $ele        = new stdClass();
             $ele->name  = $cText;
             $ele->url   = 'jtl.php';
@@ -111,28 +111,28 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
             break;
 
         case 'BESTELLVORGANG':
-            $SieSindHierString .= ' &gt; <a href="bestellvorgang.php">' . Shop::Lang()->get('checkout', 'breadcrumb') . '</a>';
+            $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('bestellvorgang.php') . '">' . Shop::Lang()->get('checkout', 'breadcrumb') . '</a>';
             $ele        = new stdClass();
             $ele->name  = Shop::Lang()->get('checkout', 'breadcrumb');
-            $ele->url   = 'bestellvorgang.php';
+            $ele->url   = $linkHelper->getStaticRoute('bestellvorgang.php');
             $brotnavi[] = $ele;
             $SieSindHierString .= '<br />';
             break;
 
         case 'REGISTRIEREN':
-            $SieSindHierString .= ' &gt; <a href="registrieren.php">' . Shop::Lang()->get('register', 'breadcrumb') . '</a>';
+            $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('registrieren.php') . '">' . Shop::Lang()->get('register', 'breadcrumb') . '</a>';
             $ele        = new stdClass();
             $ele->name  = Shop::Lang()->get('register', 'breadcrumb');
-            $ele->url   = 'registrieren.php';
+            $ele->url   = $linkHelper->getStaticRoute('registrieren.php');
             $brotnavi[] = $ele;
             $SieSindHierString .= '<br />';
             break;
 
         case 'KONTAKT':
-            $SieSindHierString .= ' &gt; <a href="kontakt.php">' . Shop::Lang()->get('contact', 'breadcrumb') . '</a>';
+            $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('kontakt.php') . '">' . Shop::Lang()->get('contact', 'breadcrumb') . '</a>';
             $ele        = new stdClass();
             $ele->name  = Shop::Lang()->get('contact', 'breadcrumb');
-            $ele->url   = 'kontakt.php';
+            $ele->url   = $linkHelper->getStaticRoute('kontakt.php');
             $brotnavi[] = $ele;
             $SieSindHierString .= '<br />';
             break;
@@ -556,7 +556,7 @@ function checkeWarenkorbEingang()
                         Shop::Smarty()->assign('hinweis', Shop::Lang()->get('wishlistProductadded', 'messages'));
                         // Weiterleiten?
                         if ($conf['global']['global_wunschliste_weiterleitung'] === 'Y') {
-                            header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true) . '?wl=' . (int)$_SESSION['Wunschliste']->kWunschliste, true, 302);
+                            header('Location: ' . $linkHelper->getStaticRoute('wunschliste.php', true), true, 302);
                             exit;
                         }
                     }
@@ -3876,6 +3876,7 @@ function setzeSpracheUndWaehrungLink()
                 || $AktuelleSeite === 'BESTELLVORGANG'
                 || $AktuelleSeite === 'NEWS'
                 || $AktuelleSeite === 'PASSWORT VERGESSEN'
+                || $AktuelleSeite === 'WUNSCHLISTE'
             ) { // Special Seiten
                 switch ($AktuelleSeite) {
                     case 'WARENKORB':
@@ -3912,6 +3913,10 @@ function setzeSpracheUndWaehrungLink()
 
                     case 'PASSWORT VERGESSEN':
                         $id = 'pass.php';
+                        break;
+
+                    case 'WUNSCHLISTE':
+                        $id = 'wunschliste.php';
                         break;
 
                     default:

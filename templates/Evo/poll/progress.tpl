@@ -255,15 +255,17 @@
             </div>{* /well *}
         {/foreach}
         <div class="row">
-            <div class="col-xs-6">
+            <div class="col-xs-4">
                 {if $nAktuelleSeite <= $nAnzahlSeiten && $nAktuelleSeite != 1}
                     <button class="btn btn-default pull-left" name="back" type="submit" value="back">
                         <span>&laquo; {lang key="umfrageBack" section="umfrage"}</span>
                     </button>
                 {/if}
+            </div>
+            <div class="col-xs-4 text-center">
                 <b>{lang key="umfrageQPage" section="umfrage"} {$nAktuelleSeite}</b> {lang key="from" section="product rating"} {$nAnzahlSeiten}
             </div>
-            <div class="col-xs-6">
+            <div class="col-xs-4">
                 {if $nAktuelleSeite > 0 && $nAktuelleSeite < $nAnzahlSeiten}
                     <button class="btn btn-default pull-right" name="next" type="submit" value="next">
                         <span>{lang key="umfrageNext" section="umfrage"}</span>
@@ -274,7 +276,7 @@
 
         <input name="s" type="hidden" value="{$nAktuelleSeite}" />
         {if $nAktuelleSeite == $nAnzahlSeiten}
-            <input name="end" type="submit" value="{lang key="umfrageSubmit" section="umfrage"}" class="btn btn-primary submit" />
+            <input name="end" type="submit" value="{lang key="umfrageSubmit" section="umfrage"}" class="btn btn-primary submit top17" />
         {/if}
     </form>
 {/if}

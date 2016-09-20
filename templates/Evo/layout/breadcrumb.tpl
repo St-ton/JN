@@ -19,7 +19,7 @@
                                 {/if}
                             </li>
                         {else}
-                            <li class="breadcrumb-item word-break">
+                            <li class="breadcrumb-item">
                                 <a href="{$oItem->url}" title="{$oItem->name|escape:"quotes"}">{$oItem->name}</a>
                             </li>
                         {/if}

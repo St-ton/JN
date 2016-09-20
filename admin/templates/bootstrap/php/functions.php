@@ -12,7 +12,7 @@ $smarty->registerPlugin('function', 'getCurrencyConversionSmarty', 'getCurrencyC
        ->registerPlugin('function', 'formatVersion', 'formatVersion')
        ->registerPlugin('function', 'gravatarImage', 'gravatarImage')
        ->registerPlugin('function', 'getRevisions', 'getRevisions')
-       ->registerPlugin('function', 'permission', 'permission');
+       ->registerPlugin('modifier', 'permission', 'permission');
 
 /**
  * @param array     $params
@@ -35,7 +35,6 @@ function getRevisions($params, &$smarty)
 
     return $smarty->fetch('tpl_inc/revisions.tpl');
 }
-
 
 /**
  * @param array $params
@@ -235,11 +234,16 @@ function formatVersion($params, &$smarty)
 /**
  * Get either a Gravatar URL or complete image tag for a specified email address.
  *
- * @param string $email The email address
- * @param string $s Size in pixels, defaults to 80px [ 1 - 2048 ]
- * @param string $d Default imageset to use [ 404 | mm | identicon | monsterid | wavatar ]
- * @param string $r Maximum rating (inclusive) [ g | pg | r | x ]
+ * @param array $params
+ *
+ * array['email'] - The email address
+ * array['s']     - Size in pixels, defaults to 80px [ 1 - 2048 ]
+ * array['d']     - Default imageset to use [ 404 | mm | identicon | monsterid | wavatar ]
+ * array['r']     - Maximum rating (inclusive) [ g | pg | r | x ]
+ *
+ * @param JTLSmarty $smarty
  * @source https://gravatar.com/site/implement/images/php/
+ * @return string
  */
 function gravatarImage($params, &$smarty)
 {

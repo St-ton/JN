@@ -1,31 +1,10 @@
 <?php
 
 /**
- * @param string $a
- * @return bool
- */
-function ini_get_bool($a)
-{
-    $b = ini_get($a);
-
-    switch (strtolower($b)) {
-        case 'on':
-        case 'yes':
-        case 'true':
-            return 'assert.active' !== $a;
-
-        case 'stdout':
-        case 'stderr':
-            return 'display_errors' === $a;
-
-        default:
-            return (bool) (int) $b;
-    }
-}
-
-/**
+ * check for existens of a shop-DB (by looking for a specific table)
+ *
  * @param NiceDB $niceDB
- * @return int
+ * @return int returns =3(table `tsynclogin` not exist) or =4(table `tsynclogin` exist) or =false for failed
  */
 function pruefeMySQLDaten($niceDB)
 {
@@ -55,16 +34,6 @@ function pruefeBereitsInstalliert()
     return false;
 }
 
-/**
- * @return array
- */
-function gibBeschreibbareVerzeichnisse()
-{
-    return array_merge(
-        array('includes/config.JTL-Shop.ini.php'),
-        shop_writeable_paths()
-    );
-}
 
 /**
  * @return array
@@ -94,27 +63,6 @@ function gibIniDateien()
 }
 
 /**
- * @return bool
- */
-function pruefeVerzeichnisRechte()
-{
-    if (!defined('PFAD_ROOT')) {
-        return false;
-    }
-
-    $cVerzeichnis_arr = gibBeschreibbareVerzeichnisse();
-    if (is_array($cVerzeichnis_arr) && count($cVerzeichnis_arr) > 0) {
-        foreach ($cVerzeichnis_arr as $cVerzeichnis) {
-            if (!is_writable(PFAD_ROOT . $cVerzeichnis)) {
-                return false;
-            }
-        }
-    }
-
-    return true;
-}
-
-/**
  * @return array
  */
 function gibVorhandeneIniDateien()
@@ -138,128 +86,6 @@ function gibVorhandeneIniDateien()
 }
 
 /**
- * @return array
- */
-function gibBeschreibbareVerzeichnisseAssoc()
-{
-    if (!defined('PFAD_ROOT')) {
-        return array();
-    }
-
-    $cVerzeichnisAssoc_arr = array();
-    $cVerzeichnis_arr      = gibBeschreibbareVerzeichnisse();
-    if (is_array($cVerzeichnis_arr) && count($cVerzeichnis_arr) > 0) {
-        foreach ($cVerzeichnis_arr as $cVerzeichnis) {
-            $cVerzeichnisAssoc_arr['/' . $cVerzeichnis] = false;
-            if (is_writable(PFAD_ROOT . $cVerzeichnis)) {
-                $cVerzeichnisAssoc_arr['/' . $cVerzeichnis] = true;
-            } elseif (($cVerzeichnis === 'includes/config.JTL-Shop.ini.php' || $cVerzeichnis === 'rss.xml') && !is_file(PFAD_ROOT . $cVerzeichnis)) {
-                $cVerzeichnisAssoc_arr['/' . $cVerzeichnis] = (@file_put_contents(PFAD_ROOT . $cVerzeichnis, ' ') === 1);
-            }
-        }
-    }
-
-    return $cVerzeichnisAssoc_arr;
-}
-
-/**
- * @return bool
- */
-function pruefeAnforderungen()
-{
-    return (
-        pruefePHPVersion()->bOk &&
-        pruefeGDLib()->bOk &&
-        pruefeMySQL()->bOk &&
-        pruefeSafeMode()->bOk
-    );
-}
-
-/**
- * @return stdClass
- */
-function pruefeSafeMode()
-{
-    $oData        = new stdClass();
-    $oData->bOk   = !ini_get_bool('safe_mode');
-    $oData->cText = 'Safe Mode: ' . (!$oData->bOk ? 'aktiviert' : 'deaktiviert');
-
-    return $oData;
-}
-
-/**
- * @return stdClass
- */
-function pruefePHPVersion()
-{
-    $oData        = new stdClass();
-    $oData->bOk   = version_compare(phpversion(), '5.4', '>=');
-    $oData->cText = 'PHP Version: ' . phpversion();
-
-    return $oData;
-}
-
-/**
- * @return stdClass
- */
-function pruefeGDLib()
-{
-    $bGDAssoc_arr = (function_exists('gd_info')) ? gd_info() : null;
-    $gdVersion    = (isset($bGDAssoc_arr['GD Version'])) ? $bGDAssoc_arr['GD Version'] : 0;
-    $oData        = new stdClass();
-    $oData->bOk   = $bGDAssoc_arr !== null;
-    $oData->cText = 'GD lib: ' . $gdVersion;
-    if (!$gdVersion) {
-        $oData->cText = 'GD lib ' . $gdVersion . ': GD-Bibliothek fehlt. Bilderskalierung wird nicht funktionieren.';
-    } elseif (!$bGDAssoc_arr['JPEG Support'] && !$bGDAssoc_arr['JPG Support']) {
-        $oData->cText = 'GD lib ' . $gdVersion . ': GD-Bibliothek vorhanden, jedoch keine JPG Unterst&uuml;tzung. Bilderskalierung wird nicht funktionieren.';
-    }
-
-    return $oData;
-}
-
-/**
- * @return stdClass
- */
-function pruefeMySQL()
-{
-    $oData        = new stdClass();
-    $oData->bOk   = true;
-    $oData->cText = 'MySQL: Version OK.';
-    //mysql_get_client_info() is deprecated in PHP 5.5 and removed in 7.0
-    //getting the client version in pdo seems to be only possible if there is a db connection - which we havent.
-    //so we just assume it's ok then..
-    if (version_compare(phpversion(), 5.5, '<')) {
-        $nVersion      = 0;
-        $cMySQLVersion = mysql_get_client_info();
-
-        if (preg_match('/([0-9]+)\.[0-9]+\.[0-9A-Za-z]+/', $cMySQLVersion, $aMatches)) {
-            if (is_array($aMatches) && count($aMatches) > 1) {
-                $nVersion = intval($aMatches[1]);
-            }
-        }
-        if ($nVersion <= 0) {
-            $nVersion = intval($cMySQLVersion[0]);
-        }
-
-        if ($nVersion < 4 && $nVersion != 0) {
-            $oData->bOk   = false;
-            $oData->cText = 'MySQL: ' . $cMySQLVersion . ': Mysql &auml;lter als 4.0';
-        } elseif ($nVersion == 0) {
-            $oData->cText = 'MySQL: Version unbekannt';
-        } else {
-            $oData->cText = 'MySQL: ' . $cMySQLVersion;
-        }
-    }
-    if (!class_exists('PDO', false) || !method_exists('PDO', 'getAvailableDrivers')) {
-        $oData->bOk   = false;
-        $oData->cText = 'MySQL: PDO Extension wurde nicht gefunden.';
-    }
-
-    return $oData;
-}
-
-/**
  * @return bool
  */
 function pruefeSchritt1Eingaben()
@@ -280,7 +106,7 @@ function pruefeSchritt1Eingaben()
 function generatePW($length = 8)
 {
     $dummy = array_merge(range('0', '9'), range('a', 'z'), range('A', 'Z'));
-    mt_srand((double) microtime() * 1000000);
+    mt_srand((double)microtime() * 1000000);
     for ($i = 1; $i <= (count($dummy) * 2); $i++) {
         $swap         = mt_rand(0, count($dummy) - 1);
         $tmp          = $dummy[$swap];
@@ -315,37 +141,6 @@ function parse_mysql_dump($url)
     }
 
     return $errors;
-}
-
-/**
- * @param string $currentversion
- * @param string $requiredversion
- * @return bool
- */
-function check_version($currentversion, $requiredversion)
-{
-    list($majorC, $minorC, $editC) = explode('[/.-]', $currentversion);
-    list($majorR, $minorR, $editR) = explode('[/.-]', $requiredversion);
-
-    if ($majorC > $majorR) {
-        return true;
-    }
-    if ($majorC < $majorR) {
-        return false;
-    }
-    // same major - check ninor
-    if ($minorC > $minorR) {
-        return true;
-    }
-    if ($minorC < $minorR) {
-        return false;
-    }
-    // and same minor
-    if ($editC >= $editR) {
-        return true;
-    }
-
-    return false;
 }
 
 /**
@@ -418,9 +213,10 @@ function uname($part = 'a')
             's' => 'sysname'
         );
         $puname = @posix_uname();
-        $result = ($part === 'a' || !array_key_exists($part, $posix_equivs)) ?
-            implode(' ', $puname) :
-            $puname[$posix_equivs[$part]];
+        $result = ($part === 'a' || !array_key_exists($part, $posix_equivs))
+            ? implode(' ', $puname)
+            : $puname[$posix_equivs[$part]]
+        ;
     } else {
         if (!function_is_disabled('phpinfo')) {
             ob_start();
@@ -455,3 +251,4 @@ function function_is_disabled($fn_name)
 {
     return in_array($fn_name, explode(',', ini_get('disable_functions')));
 }
+

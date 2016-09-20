@@ -107,8 +107,7 @@ if ($step === 'umfrage_uebersicht') {
 $smarty->assign('Einstellungen', $Einstellungen)
        ->assign('hinweis', $cHinweis)
        ->assign('fehler', $cFehler)
-       ->assign('step', $step)
-       ->assign('SID', SID);
+       ->assign('step', $step);
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 

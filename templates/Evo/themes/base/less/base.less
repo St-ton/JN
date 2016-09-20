@@ -287,20 +287,6 @@ hr.hr-sm {
     margin-bottom: 0.5em;
 }
 
-/* LIGHTBOX WORKAROUND */
-
-.modal-dialog {
-    background: @body-bg;
-}
-
-.modal-backdrop {
-    z-index: auto;
-}
-
-.modal-header {
-    z-index: 1;
-}
-
 .carousel-indicators {
     position: absolute;
     bottom: -20px;
@@ -3028,3 +3014,12 @@ header.fixed-navbar {
     .thumbs-box {position:relative;margin:auto;}
 }
 /*Artikel Bilder Slider Ende*/
+
+// Fix for #513 - backdrop was not visible
+.modal-backdrop {
+    bottom: 0;
+    z-index: 1040;
+}
+.modal {
+    z-index: 1050;
+}

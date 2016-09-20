@@ -20,18 +20,18 @@ class Migration implements JsonSerializable
     /**
      * @var DateTime
      */
-    protected $created;
+    protected $executed;
 
     /**
      * Migration constructor.
      *
      * @param null|string   $info
-     * @param DateTime|null $created
+     * @param DateTime|null $executed
      */
-    public function __construct($info = null, DateTime $created = null)
+    public function __construct($info = null, DateTime $executed = null)
     {
-        $this->info    = ucfirst(strtolower($info));
-        $this->created = $created;
+        $this->info     = ucfirst(strtolower($info));
+        $this->executed = $executed;
     }
 
     /**
@@ -64,7 +64,8 @@ class Migration implements JsonSerializable
      */
     public function getDescription()
     {
-        return $this->info;
+        return (isset($this->description) && $this->description !== null)
+            ? $this->description : $this->info;
     }
 
     /**
@@ -72,7 +73,16 @@ class Migration implements JsonSerializable
      */
     public function getCreated()
     {
-        return $this->created;
+        // 20160222135131
+        return DateTime::createFromFormat('YmdHis', $this->getId());
+    }
+
+    /**
+     * @return DateTime
+     */
+    public function getExecuted()
+    {
+        return $this->executed;
     }
 
     /**
@@ -87,6 +97,7 @@ class Migration implements JsonSerializable
             'name'        => $this->getName(),
             'author'      => $this->getAuthor(),
             'description' => $this->getDescription(),
+            'executed'    => $this->getExecuted(),
             'created'     => $this->getCreated()
         ];
     }

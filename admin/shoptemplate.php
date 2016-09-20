@@ -27,7 +27,8 @@ $lessVarsSkin   = array();
 $lessColors_arr = array();
 $lessColorsSkin = array();
 $oTemplate      = Template::getInstance();
-$templateHelper = $oTemplate->getHelper();
+$templateHelper = TemplateHelper::getInstance(true);
+$templateHelper->disableCaching();
 $admin          = (isset($_GET['admin']) && $_GET['admin'] === 'true');
 if (isset($_GET['check'])) {
     if ($_GET['check'] === 'true') {

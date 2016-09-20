@@ -28,14 +28,12 @@ function editiereBewertung($cPost_arr)
     if ($kBewertung > 0 && !empty($cPost_arr['cName']) && !empty($cPost_arr['cTitel']) && isset($cPost_arr['nSterne']) && intval($cPost_arr['nSterne']) > 0) {
         $oBewertung = holeBewertung($kBewertung);
         if (isset($oBewertung->kBewertung) && $oBewertung->kBewertung > 0) {
-            Shop::DB()->query(
-                "UPDATE tbewertung
-                    SET cName = '" . Shop::DB()->realEscape($cPost_arr['cName']) . "',
-                        cTitel = '" . Shop::DB()->realEscape($cPost_arr['cTitel']) . "',
-                        cText = '" . Shop::DB()->realEscape($cPost_arr['cText']) . "',
-                        nSterne = " . (int)$cPost_arr['nSterne'] . "
-                    WHERE kBewertung = " . $kBewertung, 3
-            );
+            $upd          = new stdClass();
+            $upd->cName   = $cPost_arr['cName'];
+            $upd->cTitel  = $cPost_arr['cTitel'];
+            $upd->cText   = $cPost_arr['cTitel'];
+            $upd->nSterne = (int)$cPost_arr['nSterne'];
+            Shop::DB()->update('tbewertung', 'kBewertung', $kBewertung, $upd);
             // Durchschnitt neu berechnen
             aktualisiereDurchschnitt($oBewertung->kArtikel, $Einstellungen['bewertung']['bewertung_freischalten']);
 

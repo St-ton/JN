@@ -9,21 +9,25 @@ $oAccount->permission('ORDER_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'bestellungen_inc.php';
 
-$cHinweis          = '';
-$cFehler           = '';
-$step              = 'bestellungen_uebersicht';
-$cSuchFilter       = '';
-$nAnzahlProSeite   = 15;
+$cHinweis        = '';
+$cFehler         = '';
+$step            = 'bestellungen_uebersicht';
+$cSuchFilter     = '';
+$nAnzahlProSeite = 15;
 
 // Bestellung Wawi Abholung zuruecksetzen
 if (verifyGPCDataInteger('zuruecksetzen') === 1 && validateToken()) {
-    switch (setzeAbgeholtZurueck($_POST['kBestellung'])) {
-        case -1: // Alles O.K.
-            $cHinweis = 'Ihr markierten Bestellungen wurden erfolgreich zur&uuml;ckgesetzt.';
-            break;
-        case 1:  // Array mit Keys nicht vorhanden oder leer
-            $cFehler = 'Fehler: Bitte markieren Sie mindestens eine Bestellung.';
-            break;
+    if (isset($_POST['kBestellung'])) {
+        switch (setzeAbgeholtZurueck($_POST['kBestellung'])) {
+            case -1: // Alles O.K.
+                $cHinweis = 'Ihr markierten Bestellungen wurden erfolgreich zur&uuml;ckgesetzt.';
+                break;
+            case 1:  // Array mit Keys nicht vorhanden oder leer
+                $cFehler = 'Fehler: Bitte markieren Sie mindestens eine Bestellung.';
+                break;
+        }
+    } else {
+        $cFehler = 'Fehler: Bitte markieren Sie mindestens eine Bestellung.';
     }
 } elseif (verifyGPCDataInteger('Suche') === 1) { // Bestellnummer gesucht
     $cSuche = StringHandler::filterXSS(verifyGPDataString('cSuche'));

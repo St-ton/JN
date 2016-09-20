@@ -10,7 +10,7 @@
                     </h3>
                 </div>
                 <div class="panel-body hidden-print">
-                    <form method="post" action="{get_static_route id='bewertung.php'}" id="article_rating">
+                    <form method="post" action="{get_static_route id='bewertung.php'}#tab-votes" id="article_rating">
                         {$jtl_token}
                         <div class="row">
                             {if $Artikel->Bewertungen->oBewertungGesamt->nAnzahl > 0}
@@ -23,7 +23,7 @@
                                         <div class="row">
                                             <div class="col-xs-12 col-sm-6 col-lg-4">
                                                 {if $nSterne > 0}
-                                                    <a href="{$Artikel->cURLFull}?btgsterne={$schluessel}">{$schluessel} {if $i == 4}{lang key="starSingular" section="product rating"}{else}{lang key="starPlural" section="product rating"}{/if}</a>
+                                                    <a href="{$Artikel->cURLFull}?btgsterne={$schluessel}#tab-votes">{$schluessel} {if $i == 4}{lang key="starSingular" section="product rating"}{else}{lang key="starPlural" section="product rating"}{/if}</a>
                                                 {else}
                                                     {$schluessel} {if $i == 4}{lang key="starSingular" section="product rating"}{else}{lang key="starPlural" section="product rating"}{/if}
                                                 {/if}
@@ -60,7 +60,7 @@
 
         {if isset($Artikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich) && $Artikel->HilfreichsteBewertung->oBewertung_arr|@count > 0 && $Artikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich > 0}
             <div class="review-wrapper reviews-mosthelpful panel">
-                <form method="post" action="{get_static_route id='bewertung.php'}">
+                <form method="post" action="{get_static_route id='bewertung.php'}#tab-votes">
                     {$jtl_token}
                     {block name="productdetails-review-most-helpful"}
                     <input name="bhjn" type="hidden" value="1" />
@@ -85,54 +85,19 @@
         {/if}
 
         {if $Artikel->Bewertungen->oBewertung_arr|@count > 0}
-            {if $Artikel->Bewertungen->oBewertung_arr|@count == 1 && $Artikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich > 0 && $Artikel->HilfreichsteBewertung->oBewertung_arr[0]->kBewertung == $oBewertung->kBewertung}
+            {if $Artikel->Bewertungen->oBewertung_arr|@count == 1 && isset($Artikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich) &&
+            $Artikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich > 0 && $Artikel->HilfreichsteBewertung->oBewertung_arr[0]->kBewertung == $oBewertung->kBewertung}
                 {* only one review so far. don't display this stuff *}
             {else}
-                <div class="review-wrapper reviews-sortcontrol hidden-print">
-                    <form id="sortierenID" method="post" action="{if !empty($Artikel->cURLFull)}{$Artikel->cURLFull}{else}index.php{/if}" class="form-inline">
-                        {$jtl_token}
-                        <input name="a" type="hidden" value="{$Artikel->kArtikel}" />
-                        <input name="btgsterne" type="hidden" value="{$BlaetterNavi->nSterne}" />
-                        <input name="btgseite" type="hidden" value="{$BlaetterNavi->nAktuelleSeite}" />
-                        <div class="pull-right">
-                            <label class="sr-only" for="reviews-sortby">{lang key="reviewsSortedBy" section="product rating"}</label>
-                            <select id="reviews-sortby" name="sortierreihenfolge" onchange="$('#sortierenID').submit();" class="form-control">
-                                <option value="2"{if $Artikel->Bewertungen->Sortierung == 2} selected{/if}>{lang key="recentReviewFirst" section="product rating"}</option>
-                                <option value="3"{if $Artikel->Bewertungen->Sortierung == 3} selected{/if}>{lang key="latestReviewFirst" section="product rating"}</option>
-                                <option value="4"{if $Artikel->Bewertungen->Sortierung == 4} selected{/if}>{lang key="highestReviewFirst" section="product rating"}</option>
-                                <option value="5"{if $Artikel->Bewertungen->Sortierung == 5} selected{/if}>{lang key="lowestReviewFirst" section="product rating"}</option>
-                                <option value="6"{if $Artikel->Bewertungen->Sortierung == 6} selected{/if}>{lang key="usefulClassifiedReviewFirst" section="product rating"}</option>
-                                <option value="7"{if $Artikel->Bewertungen->Sortierung == 7} selected{/if}>{lang key="unusefulClassifiedReviewFirst" section="product rating"}</option>
-                            </select>
-                            {*<input name="submit__" type="submit" value="{lang key="goButton" section="product rating"}" class="btn btn-default btn-sm"/>*}
-                        </div>
-                        <div class="form-control-static hidden-xs hidden-sm">
-                            <strong>
-                                {lang key="page" section="productOverview"}
-                                {if $BlaetterNavi->nAktiv == 1}
-                                    {$BlaetterNavi->nAktuelleSeite}
-                                {else}
-                                    1
-                                {/if}
-                            </strong>
-                            {lang key="of" section="productOverview"}
-                            {if $BlaetterNavi->nAktiv == 1}
-                                {$BlaetterNavi->nSeiten}
-                            {else}
-                                1
-                            {/if}
-                        </div>
-                        <div class="clearfix"></div>
-                    </form>
-                </div>
-                <form method="post" action="{get_static_route id='bewertung.php'}" class="reviews-list">
+                {include file="snippets/pagination.tpl" oPagination=$ratingPagination cThisUrl=$Artikel->cURLFull cAnchor='tab-votes'}
+                <form method="post" action="{get_static_route id='bewertung.php'}#tab-votes" class="reviews-list">
                     {$jtl_token}
                     <input name="bhjn" type="hidden" value="1" />
                     <input name="a" type="hidden" value="{$Artikel->kArtikel}" />
                     <input name="btgsterne" type="hidden" value="{$BlaetterNavi->nSterne}" />
                     <input name="btgseite" type="hidden" value="{$BlaetterNavi->nAktuelleSeite}" />
 
-                    {foreach name=artikelbewertungen from=$Artikel->Bewertungen->oBewertung_arr item=oBewertung}
+                    {foreach name=artikelbewertungen from=$ratingPagination->getPageItems() item=oBewertung}
                         {if $Artikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich > 0 && $Artikel->HilfreichsteBewertung->oBewertung_arr[0]->kBewertung == $oBewertung->kBewertung}
                             {* helpful review already displayed on top *}
                         {else}
@@ -145,33 +110,7 @@
                     {/foreach}
                 </form>
             {/if}
-
-            {if $Artikel->Bewertungen->nAnzahlSprache > $Einstellungen.bewertung.bewertung_anzahlseite && $BlaetterNavi->nAktiv == 1}
-                <div class="reviews-pagination row">
-                    <div class="col-xs-12">
-                        <ul class="pagination">
-                            <li>
-                                {if $BlaetterNavi->nAktuelleSeite > 1}
-                                    <a href="{$Artikel->cURLFull}?btgsterne={$BlaetterNavi->nSterne}&amp;btgseite={$BlaetterNavi->nVoherige}#tab-votes">&laquo; {lang key="previous" section="productOverview"}</a>
-                                {/if}
-                                {if $BlaetterNavi->nAnfang != 0}
-                                    <a href="{$Artikel->cURLFull}?btgsterne={$BlaetterNavi->nSterne}&amp;btgseite={$BlaetterNavi->nAnfang}#tab-votes">{$BlaetterNavi->nAnfang}</a> ...
-                                {/if}
-                            </li>
-                            {foreach name=blaetter from=$BlaetterNavi->nBlaetterAnzahl_arr item=Blatt key=i}
-                                <li class="{if $BlaetterNavi->nAktuelleSeite == $Blatt}active{/if}">
-                                    <a href="{$Artikel->cURLFull}?&btgsterne={$BlaetterNavi->nSterne}&amp;btgseite={$Blatt}#tab-votes">{$Blatt}</a>
-                                </li>
-                            {/foreach}
-                            <li>
-                                {if $BlaetterNavi->nAktuelleSeite < $BlaetterNavi->nSeiten}
-                                    <a href="{$Artikel->cURLFull}?btgsterne={$BlaetterNavi->nSterne}&amp;btgseite={$BlaetterNavi->nNaechste}#tab-votes">{lang key="next" section="productOverview"} &raquo;</a>
-                                {/if}
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            {/if}
+            {include file="snippets/pagination.tpl" oPagination=$ratingPagination cThisUrl=$Artikel->cURLFull cAnchor='tab-votes' showFilter=false}
         {/if}
     </div>{* /col *}
 </div>{* /row *}

@@ -44,7 +44,9 @@
                     {else}
                         {$oNewsUebersicht->cText|strip_tags|truncate:200:""}
                     {/if}
-                    <span class="pull-right top17">{$oNewsUebersicht->cMehrURL}</span>
+                    <span class="pull-right top17">
+                        <a class="news-more-link" href="{$oNewsUebersicht->cURL}">{lang key='moreLink' section='news'}</a>
+                    </span>
                 </div>
             {/if}
         </div>

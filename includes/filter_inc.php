@@ -158,7 +158,7 @@ function buildSearchResultPage(&$oSearchResult, $nProductCount, $nLimitN, $nPage
 function gibArtikelKeys($FilterSQL, $nArtikelProSeite, $NaviFilter, $bExtern, $oSuchergebnisse)
 {
     $oArtikel_arr = array();
-    $conf         = Shop::getSettings(array(CONF_ARTIKELUEBERSICHT, CONF_BOXEN, CONF_NAVIGATIONSFILTER));
+    $conf         = Shop::getSettings(array(CONF_ARTIKELUEBERSICHT, CONF_BOXEN, CONF_NAVIGATIONSFILTER, CONF_ARTIKELDETAILS));
     //Sortierung
     $cSortSQL      = gibArtikelsortierung($NaviFilter);
     $kKundengruppe = (int)$_SESSION['Kundengruppe']->kKundengruppe;
@@ -299,17 +299,42 @@ function gibArtikelKeys($FilterSQL, $nArtikelProSeite, $NaviFilter, $bExtern, $o
             exit;
         }
 
+        $oArtikelOptionen = new stdClass();
+        if (defined('UNIFY_CACHE_IDS') && UNIFY_CACHE_IDS === true) {
+            //these are the same options as in artikel.php
+            require_once PFAD_ROOT . PFAD_INCLUDES . 'artikel_inc.php';
+            $oArtikelOptionen->nMerkmale             = 1;
+            $oArtikelOptionen->nKategorie            = 1;
+            $oArtikelOptionen->nAttribute            = 1;
+            $oArtikelOptionen->nArtikelAttribute     = 1;
+            $oArtikelOptionen->nMedienDatei          = 1;
+            $oArtikelOptionen->nVariationKombi       = 1;
+            $oArtikelOptionen->nVariationKombiKinder = 1;
+            $oArtikelOptionen->nWarenlager           = 1;
+            $oArtikelOptionen->nVariationDetailPreis = 1;
+            $oArtikelOptionen->nRatings              = 1;
+            // Warenkorbmatrix noetig? => Varikinder mit Preisen holen
+            $oArtikelOptionen->nWarenkorbmatrix = (int)($conf['artikeldetails']['artikeldetails_warenkorbmatrix_anzeige'] === 'Y');
+            // Stückliste noetig? => Stücklistenkomponenten  holen
+            $oArtikelOptionen->nStueckliste   = (int)($conf['artikeldetails']['artikeldetails_stueckliste_anzeigen'] === 'Y');
+            $oArtikelOptionen->nProductBundle = (int)($conf['artikeldetails']['artikeldetails_produktbundle_nutzen'] === 'Y');
+            $oArtikelOptionen->nDownload      = 1;
+            $oArtikelOptionen->nKonfig        = 1;
+            $oArtikelOptionen->nMain          = 1;
+            $oArtikelOptionen->bSimilar       = true;
+        } else {
+            $oArtikelOptionen->nMerkmale             = 1;
+            $oArtikelOptionen->nKategorie            = 1;
+            $oArtikelOptionen->nAttribute            = 1;
+            $oArtikelOptionen->nArtikelAttribute     = 1;
+            $oArtikelOptionen->nVariationKombiKinder = 1;
+            $oArtikelOptionen->nWarenlager           = 1;
+        }
+
         foreach ($oArtikelKey_arr as $i => $oArtikelKey) {
             $nLaufLimitN = $i + $nLimitNBlaetter;
             if ($bExtern || ($nLaufLimitN >= $nLimitN && $nLaufLimitN < $nLimitN + $nArtikelProSeite)) {
-                $oArtikel                                = new Artikel();
-                $oArtikelOptionen                        = new stdClass();
-                $oArtikelOptionen->nMerkmale             = 1;
-                $oArtikelOptionen->nKategorie            = 1;
-                $oArtikelOptionen->nAttribute            = 1;
-                $oArtikelOptionen->nArtikelAttribute     = 1;
-                $oArtikelOptionen->nVariationKombiKinder = 1;
-                $oArtikelOptionen->nWarenlager           = 1;
+                $oArtikel = new Artikel();
                 //$oArtikelOptionen->nVariationDetailPreis = 1;
                 $oArtikel->fuelleArtikel($oArtikelKey->kArtikel, $oArtikelOptionen);
                 // Aktuelle Artikelmenge in die Session (Keine Vaterartikel)

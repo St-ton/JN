@@ -115,7 +115,12 @@
                                                 {elseif $oSetting->cType === 'text' || $oSetting->cType === 'float'}
                                                     <input class="form-control" type="text" name="cWert[]" id="{$oSection->cKey}-{$oSetting->cKey}" value="{$oSetting->cValue|escape:"html"}" placeholder="{$oSetting->cPlaceholder}" />
                                                 {elseif $oSetting->cType === 'upload' && isset($oSetting->rawAttributes.target)}
-                                                    <input name="upload-{$smarty.foreach.tplOptions.index}" id="tpl-upload-{$smarty.foreach.tplOptions.index}" type="file" class="file" accept="{if !empty($oSetting->rawAttributes.accept)}{$oSetting->rawAttributes.accept}{else}image/*{/if}" />
+                                                    <div class="template-favicon-upload">
+                                                        <input name="upload-{$smarty.foreach.tplOptions.index}"
+                                                               id="tpl-upload-{$smarty.foreach.tplOptions.index}" type="file"
+                                                               class="file"
+                                                               accept="{if !empty($oSetting->rawAttributes.accept)}{$oSetting->rawAttributes.accept}{else}image/*{/if}">
+                                                    </div>
                                                     <input type="hidden" name="cWert[]" value="upload-{$smarty.foreach.tplOptions.index}" />
                                                     <script>
                                                         $('#tpl-upload-{$smarty.foreach.tplOptions.index}').fileinput({ldelim}

@@ -36,6 +36,7 @@ $cache->setJtlCacheConfig();
 
 $session = AdminSession::getInstance();
 
+/** @var Notification $notify */
 $notify = Notification::getInstance();
 $notify->buildDefault();
 
@@ -47,7 +48,12 @@ require PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'smartyinclude.php';
 if (isset($_POST['revision-action']) && isset($_POST['revision-type']) && isset($_POST['revision-id']) && validateToken()) {
     $revision = new Revision();
     if ($_POST['revision-action'] === 'restore') {
-        $revision->restoreRevision($_POST['revision-type'], $_POST['revision-id'], (isset($_POST['revision-secondary']) && $_POST['revision-secondary'] === '1'));
+        $revision->restoreRevision(
+            $_POST['revision-type'],
+            $_POST['revision-id'],
+            (isset($_POST['revision-secondary']) && $_POST['revision-secondary'] === '1'),
+            (empty($_POST['restore-utf8']) || ($_POST['restore-utf8'] === '1'))
+        );
     } elseif ($_POST['revision-action'] === 'delete') {
         $revision->deleteRevision($_POST['revision-id']);
     }

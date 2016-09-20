@@ -84,10 +84,11 @@ class Revision
      * @param int         $key
      * @param bool        $secondary
      * @param null|string $author
+     * @param bool        $utf8
      * @return bool
      * @throws InvalidArgumentException
      */
-    public function addRevision($type, $key, $secondary = false, $author = null)
+    public function addRevision($type, $key, $secondary = false, $author = null, $utf8 = true)
     {
         $key = (int)$key;
         if (($mapping = $this->getMapping($type)) !== null && !empty($key)) {
@@ -120,7 +121,10 @@ class Revision
                     $revision->content->references[$referencedRevision->$field] = $referencedRevision;
                 }
             }
-            $revision->content = json_encode(utf8_convert_recursive($revision->content));
+            if ($utf8 === true) {
+                $revision->content = utf8_convert_recursive($revision->content);
+            }
+            $revision->content = json_encode($revision->content);
             $this->storeRevision($revision);
             $this->housekeeping($type, $key);
 
@@ -168,9 +172,10 @@ class Revision
      * @param string $type
      * @param int    $id
      * @param bool   $secondary
+     * @param bool   $utf8
      * @return bool
      */
-    public function restoreRevision($type, $id, $secondary = false)
+    public function restoreRevision($type, $id, $secondary = false, $utf8 = true)
     {
         $revision = $this->getRevision($id);
         $mapping  = $this->getMapping($type); //get static mapping from build in content types
@@ -183,7 +188,9 @@ class Revision
             $primaryRow = $mapping['id'];
             $primaryKey = $oldCOntent->$primaryRow;
             unset($oldCOntent->$primaryRow);
-
+            if ($utf8 === true) {
+                $oldCOntent = utf8_convert_recursive($oldCOntent, false);
+            }
             if ($secondary === false) {
                 return Shop::DB()->update($mapping['table'], $primaryRow, $primaryKey, $oldCOntent) === 1;
             }
@@ -194,6 +201,9 @@ class Revision
                     //$key is the index in the reference array - which corresponds to the foreign key
                     unset($value->$primaryRow);
                     unset($value->$secondaryRow);
+                    if ($utf8 === true) {
+                        $value = utf8_convert_recursive($value, false);
+                    }
                     Shop::DB()->update($tableToUpdate, [$primaryRow, $secondaryRow], [$primaryKey, $key], $value);
                 }
 
@@ -205,6 +215,8 @@ class Revision
     }
 
     /**
+     * delete single revision
+     *
      * @param int $id
      * @return int
      */
@@ -214,6 +226,8 @@ class Revision
     }
 
     /**
+     * remove revisions that would add up to more then MAX_REVISIONS
+     *
      * @param string $type
      * @param int    $key
      * @return int

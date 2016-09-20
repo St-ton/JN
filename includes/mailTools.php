@@ -14,7 +14,7 @@ require_once PFAD_ROOT . PFAD_PHPMAILER . 'PHPMailerAutoload.php';
 function includeMailTemplate($params, &$smarty)
 {
     if (isset($params['template']) && isset($params['type']) &&
-        ($params['type'] === 'plain' || $params['type'] === 'html') &&
+        ($params['type'] === 'text' || $params['type'] === 'plain' || $params['type'] === 'html') &&
         $smarty->getTemplateVars('int_lang') !== null) {
         $res            = null;
         $currenLanguage = null;
@@ -28,17 +28,17 @@ function includeMailTemplate($params, &$smarty)
             $res = Shop::DB()->query(
                 "SELECT " . $row . " AS content
                     FROM temailvorlagesprache
-                    WHERE kSprache = " . (int) $currenLanguage->kSprache . "
-                    AND kEmailvorlage = " . (int) $vorlage->kEmailvorlage, 1
+                    WHERE kSprache = " . (int)$currenLanguage->kSprache . "
+                    AND kEmailvorlage = " . (int)$vorlage->kEmailvorlage, 1
             );
         }
         if (isset($res->content)) {
-            //smarty 3 gives us an Internal_Template
-            if (isset($smarty->smarty) && get_class($smarty) === 'Smarty_Internal_Template') {
-                return $smarty->smarty->fetch('row:' . $params['type'] . '_' . $vorlage->kEmailvorlage . '_' . $currenLanguage->kSprache);
+            if ($params['type'] === 'plain') {
+                $params['type'] = 'text';
             }
-            //smarty 2 gives us a smarty class instance
-            return $smarty->fetch('row:' . $params['type'] . '_' . $vorlage->kEmailvorlage . '_' . $currenLanguage->kSprache);
+            //smarty 3 gives us an Internal_Template
+//            echo 'db:' . $params['type'] . '_' . $vorlage->kEmailvorlage . '_' . $currenLanguage->kSprache;die();
+            return $smarty->fetch('db:' . $params['type'] . '_' . $vorlage->kEmailvorlage . '_' . $currenLanguage->kSprache);
         }
     }
 
@@ -72,7 +72,7 @@ function sendeMail($ModulId, $Object, $mail = null)
     $kopie         = '';
     //Smarty Objekt bauen
     $mailSmarty = new JTLSmarty(true, false, false, 'mail');
-    $mailSmarty->registerResource('row', array('row_get_template', 'row_get_timestamp', 'row_get_secure', 'row_get_trusted'))
+    $mailSmarty->registerResource('db', new SmartyResourceNiceDB('mail'))
                ->registerPlugin('function', 'includeMailTemplate', 'includeMailTemplate')
                ->setCaching(0)
                ->setDebugging(0)
@@ -207,8 +207,9 @@ function sendeMail($ModulId, $Object, $mail = null)
             /*if (isset($Object->tbestellung->Lieferadresse->kLieferadresse) && $Object->tbestellung->Lieferadresse->kLieferadresse > 0) {
                 $Object->tbestellung->Lieferadresse = lokalisiereLieferadresse($Sprache, $Object->tbestellung->Lieferadresse);
             }*/
-            $mailSmarty->assign('Bestellung', $Object->tbestellung);
-            $mailSmarty->assign('Verfuegbarkeit_arr', (isset($Object->cVerfuegbarkeit_arr)) ? $Object->cVerfuegbarkeit_arr : null);
+            $mailSmarty->assign('Bestellung', $Object->tbestellung)
+                       ->assign('Verfuegbarkeit_arr', (isset($Object->cVerfuegbarkeit_arr)) ? $Object->cVerfuegbarkeit_arr : null)
+                       ->assign('oTrustedShopsBewertenButton', null);
             // Zahlungsart Einstellungen
             if (isset($Object->tbestellung->Zahlungsart->cModulId) && strlen($Object->tbestellung->Zahlungsart->cModulId) > 0) {
                 $cModulId         = $Object->tbestellung->Zahlungsart->cModulId;
@@ -415,9 +416,9 @@ function sendeMail($ModulId, $Object, $mail = null)
     }
     //fetch
     if (($Emailvorlage->cMailTyp === 'text/html' || $Emailvorlage->cMailTyp === 'html')) {
-        $bodyHtml = $mailSmarty->fetch('row:html_' . $Emailvorlage->kEmailvorlage . '_' . $Sprache->kSprache . $cPluginBody);
+        $bodyHtml = $mailSmarty->fetch('db:html_' . $Emailvorlage->kEmailvorlage . '_' . $Sprache->kSprache . $cPluginBody);
     }
-    $bodyText = $mailSmarty->fetch('row:text_' . $Emailvorlage->kEmailvorlage . '_' . $Sprache->kSprache . $cPluginBody);
+    $bodyText = $mailSmarty->fetch('db:text_' . $Emailvorlage->kEmailvorlage . '_' . $Sprache->kSprache . $cPluginBody);
     // AKZ, AGB und WRB anhängen falls eingestellt
     if ($Emailvorlage->nAKZ == 1) {
         if (!isset($akzHtml)) {
@@ -426,8 +427,8 @@ function sendeMail($ModulId, $Object, $mail = null)
         if (!isset($akzText)) {
             $akzText = '';
         }
-        $akzHtml .= $mailSmarty->fetch('row:html_core_jtl_anbieterkennzeichnung_' . $Sprache->kSprache . $cPluginBody);
-        $akzText .= $mailSmarty->fetch('row:text_core_jtl_anbieterkennzeichnung_' . $Sprache->kSprache . $cPluginBody);
+        $akzHtml .= $mailSmarty->fetch('db:html_core_jtl_anbieterkennzeichnung_' . $Sprache->kSprache . $cPluginBody);
+        $akzText .= $mailSmarty->fetch('db:text_core_jtl_anbieterkennzeichnung_' . $Sprache->kSprache . $cPluginBody);
 
         if (strlen($bodyHtml) > 0) {
             $bodyHtml .= '<br /><br />' . $akzHtml;
@@ -738,81 +739,6 @@ function lokalisiereInhalt($Object)
     }
 
     return $Object;
-}
-
-/**
- * @param string    $tpl_name
- * @param string    $tpl_source
- * @param JTLSmarty $smarty
- * @return bool
- */
-function row_get_template($tpl_name, &$tpl_source, $smarty)
-{
-    $tpl_source = ' ';
-    $pcs        = explode('_', $tpl_name);
-    if (isset($pcs[0]) && isset($pcs[1]) && isset($pcs[2]) && isset($pcs[3]) && $pcs[3] === 'anbieterkennzeichnung') {
-        // Anbieterkennzeichnungsvorlage holen
-        $vl = Shop::DB()->query(
-            "SELECT tevs.cContentHtml, tevs.cContentText
-                FROM temailvorlageoriginal tevo
-                JOIN temailvorlagesprache tevs
-                    ON tevs.kEmailVorlage = tevo.kEmailvorlage
-                    AND tevs.kSprache = " . (int) $pcs[4] . "
-                WHERE tevo.cModulId = 'core_jtl_anbieterkennzeichnung'
-                LIMIT 1", 1
-        );
-    } else {
-        // Plugin Emailvorlage?
-        $cTableSprache = 'temailvorlagesprache';
-        if (isset($pcs[3]) && intval($pcs[3]) > 0) {
-            $cTableSprache = 'tpluginemailvorlagesprache';
-        }
-        $vl = Shop::DB()->query("
-            SELECT cContentHtml, cContentText 
-              FROM " . $cTableSprache . " 
-              WHERE kEmailvorlage = " . (int) $pcs[1] . " AND kSprache = " . (int) $pcs[2], 1
-        );
-    }
-    if ($vl !== false) {
-        if ($pcs[0] === 'html') {
-            $tpl_source = $vl->cContentHtml;
-        } elseif ($pcs[0] === 'text') {
-            $tpl_source = $vl->cContentText;
-        }
-    }
-
-    return true;
-}
-
-/**
- * @param string    $tpl_name
- * @param string    $tpl_timestamp
- * @param JTLSmarty $smarty
- * @return bool
- */
-function row_get_timestamp($tpl_name, &$tpl_timestamp, $smarty)
-{
-    $tpl_timestamp = time();
-
-    return true;
-}
-
-/**
- * @param string    $tpl_name
- * @param JTLSmarty $smarty
- * @return bool
- */
-function row_get_secure($tpl_name, $smarty)
-{
-    return true;
-}
-
-/**
- * @param string    $tpl_name
- * @param JTLSmarty $smarty
- */
-function row_get_trusted($tpl_name, $smarty)
-{
 }
 
 /**

@@ -272,9 +272,9 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
         }
 
         // Baut den NewsNaviFilter SQL
-        $oSQL                = baueFilterSQL(true);
+        $oSQL = baueFilterSQL(true);
         // News total count
-        $oNewsUebersichtAll  = getFullNewsOverview($oSQL);
+        $oNewsUebersichtAll = getFullNewsOverview($oSQL);
         // Pagination
         $oPagination = (new Pagination())
             ->setItemsPerPageOptions([2, 5, 10])

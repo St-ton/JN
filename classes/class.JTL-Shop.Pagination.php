@@ -123,7 +123,7 @@ class Pagination
     }
 
     /**
-     * Load parameters from GET or SESSION store
+     * Load parameters from GET, POST or SESSION store
      * @return $this
      */
     public function loadParameters()
@@ -184,7 +184,7 @@ class Pagination
             $this->nPageItemCount  = min($this->nItemsPerPage, $this->nItemCount - $this->nFirstPageItem);
         }
 
-        if (count($this->cSortByOption_arr)) {
+        if (isset($this->cSortByOption_arr[$this->nSortBy])) {
             $this->cSortBy   = $this->cSortByOption_arr[$this->nSortBy][0];
             $this->cSortDir  = $this->nSortDir == 0 ? 'ASC' : 'DESC';
             $this->cOrderSQL = $this->cSortBy . ' ' . $this->cSortDir;

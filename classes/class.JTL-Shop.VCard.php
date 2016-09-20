@@ -434,6 +434,10 @@ class VCard
                     if (isset($data['Type']) && count($data['Type']) > 0) {
                         $key          = implode('_', $data['Type']);
                         $result->$key = (object)$data;
+
+                        foreach ($data['Type'] as $key) {
+                            $result->$key = (object)$data;
+                        }
                     } else {
                         if (is_array($data)) {
                             $result = (object)$data;
@@ -560,9 +564,23 @@ class VCard
         if (isset($this->N)) {
             if (!empty($this->N->Prefixes)) {
                 if (is_array($this->N->Prefixes)) {
-                    $Kunde->cTitel = implode(' ', $this->N->Prefixes);
+                    // Workaround fals prefix für Anrede genutzt wird
+                    if (in_array(Shop::Lang()->get('salutationM', 'global'), $this->N->Prefixes)) {
+                        $Kunde->cAnrede = 'm';
+                    } elseif (in_array(Shop::Lang()->get('salutationW', 'global'), $this->N->Prefixes)) {
+                        $Kunde->cAnrede = 'w';
+                    } else {
+                        $Kunde->cTitel = implode(' ', $this->N->Prefixes);
+                    }
                 } else {
-                    $Kunde->cTitel = $this->N->Prefixes;
+                    // Workaround fals prefix für Anrede genutzt wird
+                    if (Shop::Lang()->get('salutationM', 'global') === $this->N->Prefixes) {
+                        $Kunde->cAnrede = 'm';
+                    } elseif (Shop::Lang()->get('salutationW', 'global') === $this->N->Prefixes) {
+                        $Kunde->cAnrede = 'w';
+                    } else {
+                        $Kunde->cTitel = $this->N->Prefixes;
+                    }
                 }
             }
 
@@ -578,7 +596,7 @@ class VCard
             $Kunde->cPLZ          = isset($adr->PostalCode) ? $adr->PostalCode : '';
             $Kunde->cOrt          = isset($adr->Locality) ? $adr->Locality : '';
             $Kunde->cBundesland   = isset($adr->Region) ? $adr->Region : '';
-            $Kunde->cLand         = isset($adr->Country) ? $adr->Country : '';
+            $Kunde->cLand         = isset($adr->Country) ? landISO($adr->Country) : '';
 
             if (preg_match('/^(.*)[\. ]*([0-9]+[a-zA-Z]?)$/U', $Kunde->cStrasse, $hits)) {
                 $Kunde->cStrasse    = $hits[1];

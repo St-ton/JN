@@ -165,6 +165,8 @@ if (isset($_POST['preview']) && intval($_POST['preview']) > 0) {
     $bestellung->Positionen[0]->cHinweis                 = 'Hinweistext zum Artikel';
     $bestellung->Positionen[0]->cGesamtpreisLocalized[0] = '278,00 EUR';
     $bestellung->Positionen[0]->cGesamtpreisLocalized[1] = '239,66 EUR';
+    $bestellung->Positionen[0]->cEinzelpreisLocalized[0] = '139,00 EUR';
+    $bestellung->Positionen[0]->cEinzelpreisLocalized[1] = '119,83 EUR';
 
     $bestellung->Positionen[0]->WarenkorbPosEigenschaftArr                           = array();
     $bestellung->Positionen[0]->WarenkorbPosEigenschaftArr[0]                        = new stdClass();
@@ -195,6 +197,8 @@ if (isset($_POST['preview']) && intval($_POST['preview']) > 0) {
     $bestellung->Positionen[1]->cHinweis                 = 'Hinweistext zum Artikel';
     $bestellung->Positionen[1]->cGesamtpreisLocalized[0] = '238,00 EUR';
     $bestellung->Positionen[1]->cGesamtpreisLocalized[1] = '200,00 EUR';
+    $bestellung->Positionen[1]->cEinzelpreisLocalized[0] = '238,00 EUR';
+    $bestellung->Positionen[1]->cEinzelpreisLocalized[1] = '200,00 EUR';
 
     $bestellung->Positionen[1]->nAusgeliefert       = 1;
     $bestellung->Positionen[1]->nAusgeliefertGesamt = 1;
@@ -677,14 +681,14 @@ if (isset($_POST['Aendern']) && isset($_POST['kEmailvorlage']) && intval($_POST[
             Shop::DB()->insert($cTableSprache, $Emailvorlagesprache);
             //Smarty Objekt bauen
             $mailSmarty = new JTLSmarty(true, false, false, 'mail');
-            $mailSmarty->registerResource('xrow', array('xrow_get_template', 'xrow_get_timestamp', 'xrow_get_secure', 'xrow_get_trusted'))
+            $mailSmarty->registerResource('db', new SmartyResourceNiceDB('mail'))
                        ->registerPlugin('function', 'includeMailTemplate', 'includeMailTemplate')
                        ->setCaching(0)
                        ->setDebugging(0)
                        ->setCompileDir(PFAD_ROOT . PFAD_COMPILEDIR);
             try {
-                $mailSmarty->fetch('xrow:html_' . $Emailvorlagesprache->kEmailvorlage . '_' . $Sprache->kSprache . '_' . $cTableSprache);
-                $mailSmarty->fetch('xrow:text_' . $Emailvorlagesprache->kEmailvorlage . '_' . $Sprache->kSprache . '_' . $cTableSprache);
+                $mailSmarty->fetch('db:html_' . $Emailvorlagesprache->kEmailvorlage . '_' . $Sprache->kSprache . '_' . $cTableSprache);
+                $mailSmarty->fetch('db:text_' . $Emailvorlagesprache->kEmailvorlage . '_' . $Sprache->kSprache . '_' . $cTableSprache);
             } catch (Exception $e) {
                 $oSmartyError->cText = $e->getMessage();
                 $oSmartyError->nCode = 1;
@@ -894,61 +898,6 @@ function setzeFehler($kEmailvorlage, $bFehler = true, $bForce = false)
         $cSQL = ", cAktiv='{$cAktiv}'";
     }
     Shop::DB()->query("UPDATE temailvorlage SET nFehlerhaft = " . $nFehler . " {$cSQL} WHERE kEmailvorlage = " . (int)$kEmailvorlage, 4);
-}
-
-/**
- * @param string    $tpl_name
- * @param string    $tpl_source
- * @param JTLSmarty $smarty
- * @return bool
- */
-function xrow_get_template($tpl_name, &$tpl_source, $smarty)
-{
-    $x             = explode('_', $tpl_name);
-    $obj           = ($x[0] === 'html') ? 'cContentHtml' : 'cContentText';
-    $kEmailvorlage = (int)$x[1];
-    $kSprache      = (int)$x[2];
-    $cTable        = $x[3];
-
-    $oTpl = Shop::DB()->query("SELECT  " . $obj . " FROM " . $cTable . " WHERE kEmailvorlage = " . $kEmailvorlage . " AND kSprache = " . $kSprache, 1);
-    if (isset($oTpl->$obj)) {
-        $tpl_source = $oTpl->$obj;
-
-        return true;
-    }
-
-    return false;
-}
-
-/**
- * @param string    $tpl_name
- * @param string    $tpl_timestamp
- * @param JTLSmarty $smarty
- * @return bool
- */
-function xrow_get_timestamp($tpl_name, &$tpl_timestamp, $smarty)
-{
-    $tpl_timestamp = time();
-
-    return true;
-}
-
-/**
- * @param string    $tpl_name
- * @param JTLSmarty $smarty
- * @return bool
- */
-function xrow_get_secure($tpl_name, $smarty)
-{
-    return true;
-}
-
-/**
- * @param string    $tpl_name
- * @param JTLSmarty $smarty
- */
-function xrow_get_trusted($tpl_name, $smarty)
-{
 }
 
 /**

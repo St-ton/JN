@@ -109,6 +109,17 @@
                         </span>
                         <input class="form-control{if isset($cPlausiValue_arr.cDateiname)} fieldfillout{/if}" type="text" name="cDateiname" id="cDateiname" value="{if isset($cPostVar_arr.cDateiname)}{$cPostVar_arr.cDateiname}{elseif isset($Exportformat->cDateiname)}{$Exportformat->cDateiname}{/if}" tabindex="2" />
                     </li>
+
+                    <li class="input-group item">
+                        <span class="input-group-addon"><label for="nRemoveBreaks">Zeilenumbr&uuml;che aus Exportformat entfernen?</label></span>
+                        <span class="input-group-wrap">
+                            <select class="form-control" name="nRemoveBreaks" id="nRemoveBreaks">
+                                <option value="1" {if (isset($Exportformat->nRemoveBreaks) && $Exportformat->nRemoveBreaks === '1')}selected{/if}>Ja</option>
+                                <option value="0" {if (!isset($Exportformat->nRemoveBreaks) || $Exportformat->nRemoveBreaks === '0')}selected{/if}>Nein</option>
+                            </select>
+                        </span>
+                        <span class="input-group-addon">{getHelpDesc placement='left' cDesc=#removeBreaksDescription#}</span>
+                    </li>
                 </ul>
                 {if !isset($Exportformat->bPluginContentFile)|| !$Exportformat->bPluginContentFile}
                     <p><label for="cKopfzeile">{#header#}</label>

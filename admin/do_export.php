@@ -38,10 +38,11 @@ if (!isset($exportformat->kKundengruppe) || !$exportformat->kKundengruppe) {
 $ExportEinstellungen = getEinstellungenExport($exportformat->kExportformat);
 $Waehrung            = Shop::DB()->select('twaehrung', 'kWaehrung', (int)$exportformat->kWaehrung);
 $smarty              = new JTLSmarty(true, false, false);
+$clean               = (isset($exportformat->nRemoveBreaks) && $exportformat->nRemoveBreaks === '1');
 $smarty->setCaching(0)
        ->setTemplateDir(PFAD_TEMPLATES)
        ->setConfigDir($smarty->getTemplateDir($smarty->context) . 'lang/')
-       ->registerResource('db', new SmartyResourceNiceDB('export'));
+       ->registerResource('db', new SmartyResourceNiceDB('export', $clean));
 
 setzeSteuersaetze();
 if (!isset($_SESSION['Kundengruppe'])) {

@@ -7,7 +7,9 @@
 if (!function_exists('getallheaders')) {
     /**
      * Get all HTTP header key/values as an associative array for the current request.
+     * polyfill for nginx
      *
+     * @see https://github.com/ralouphie/getallheaders/blob/master/src/getallheaders.php     *
      * @return string[string] The HTTP header key/value pairs.
      */
     function getallheaders()

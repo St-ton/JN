@@ -5,7 +5,7 @@
     {rdelim}
 </script>
 
-{include file='tpl_inc/seite_header.tpl' cTitel=#kampagne# cBeschreibung=#kampagneDesc#}
+{include file='tpl_inc/seite_header.tpl' cTitel=#kampagne# cBeschreibung=#kampagneDesc# cDokuURL=#kampagneURL#}
 <div id="content" class="container-fluid">
     <ul class="nav nav-tabs" role="tablist">
         <li class="tab{if !isset($cTab) || $cTab === 'uebersicht'} active{/if}">

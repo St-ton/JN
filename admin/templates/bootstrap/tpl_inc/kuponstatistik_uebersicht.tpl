@@ -1,4 +1,4 @@
-{include file='tpl_inc/seite_header.tpl' cTitel='Kupon Statistik'}
+{include file='tpl_inc/seite_header.tpl' cTitel=#couponstatistics# cDokuURL=#couponstatisticsURL#}
 <div id="content">
     <form method="post" action="kuponstatistik.php" class="form-horizontal">
         {$jtl_token}

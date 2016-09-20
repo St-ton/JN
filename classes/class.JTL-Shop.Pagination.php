@@ -128,34 +128,30 @@ class Pagination
      */
     public function loadParameters()
     {
-        $this->nItemsPerPage = isset($_GET[$this->cId . '_nItemsPerPage'])
-            ? (int)$_GET[$this->cId . '_nItemsPerPage']
-            : (isset($_SESSION[$this->cId . '_nItemsPerPage'])
-                ? (int)$_SESSION[$this->cId . '_nItemsPerPage']
-                : ($this->nDefaultItemsPerPage > 0
-                    ? $this->nDefaultItemsPerPage
-                    : $this->nItemsPerPageOption_arr[0]
-            ));
-        $this->nSortBy = isset($_GET[$this->cId . '_nSortBy'])
-            ? (int)$_GET[$this->cId . '_nSortBy']
-            : (isset($_SESSION[$this->cId . '_nSortBy'])
-                ? (int)$_SESSION[$this->cId . '_nSortBy']
-                : 0
-            );
+        $this->nItemsPerPage =
+            isset($_GET[$this->cId . '_nItemsPerPage'])     ? (int)$_GET[$this->cId . '_nItemsPerPage'] : (
+            isset($_POST[$this->cId . '_nItemsPerPage'])    ? (int)$_POST[$this->cId . '_nItemsPerPage'] : (
+            isset($_SESSION[$this->cId . '_nItemsPerPage']) ? (int)$_SESSION[$this->cId . '_nItemsPerPage'] : (
+            $this->nDefaultItemsPerPage > 0                 ? $this->nDefaultItemsPerPage :
+                                                              $this->nItemsPerPageOption_arr[0] )));
 
-        $this->nSortDir = isset($_GET[$this->cId . '_nSortDir'])
-            ? (int)$_GET[$this->cId . '_nSortDir']
-            : (isset($_SESSION[$this->cId . '_nSortDir'])
-                ? (int)$_SESSION[$this->cId . '_nSortDir']
-                : 0
-            );
+        $this->nSortBy =
+            isset($_GET[$this->cId . '_nSortBy'])     ? (int)$_GET[$this->cId . '_nSortBy'] : (
+            isset($_POST[$this->cId . '_nSortBy'])    ? (int)$_POST[$this->cId . '_nSortBy'] : (
+            isset($_SESSION[$this->cId . '_nSortBy']) ? (int)$_SESSION[$this->cId . '_nSortBy'] :
+                                                        0 ));
 
-        $this->nPage = isset($_GET[$this->cId . '_nPage'])
-            ? (int)$_GET[$this->cId . '_nPage']
-            : (isset($_SESSION[$this->cId . '_nPage'])
-                ? (int)$_SESSION[$this->cId . '_nPage']
-                : 0
-            );
+        $this->nSortDir =
+            isset($_GET[$this->cId . '_nSortDir'])     ? (int)$_GET[$this->cId . '_nSortDir'] : (
+            isset($_POST[$this->cId . '_nSortDir'])    ? (int)$_POST[$this->cId . '_nSortDir'] : (
+            isset($_SESSION[$this->cId . '_nSortDir']) ? (int)$_SESSION[$this->cId . '_nSortDir'] :
+                                                         0 ));
+
+        $this->nPage =
+            isset($_GET[$this->cId . '_nPage'])     ? (int)$_GET[$this->cId . '_nPage'] : (
+            isset($_POST[$this->cId . '_nPage'])    ? (int)$_POST[$this->cId . '_nPage'] : (
+            isset($_SESSION[$this->cId . '_nPage']) ? (int)$_SESSION[$this->cId . '_nPage'] :
+                                                      0 ));
 
         return $this;
     }

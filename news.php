@@ -278,6 +278,7 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
         // Pagination
         $oPagination = (new Pagination())
             ->setItemsPerPageOptions([2, 5, 10])
+            ->setDefaultItemsPerPage(0)
             ->setItemCount($oNewsUebersichtAll->nAnzahl)
             ->assemble();
         // Get filtered news of current page

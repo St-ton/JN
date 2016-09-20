@@ -1,7 +1,7 @@
 {assign var=cParam_arr value=$cParam_arr|default:[]}
 {assign var=cUrlAppend value=$cParam_arr|http_build_query}
 {* parts list to display: label, pagination, items-per-page-options, sort-options *}
-{assign var=parts value=$parts|default:['l','p','c','s']}
+{assign var=parts value=$parts|default:['label','pagi','count','sort']}
 
 {if !empty($cAnchor)}
     {assign var=cAnchor value='#'|cat:$cAnchor}
@@ -20,15 +20,15 @@
 
 <div class="panel panel-blank">
     {if $oPagination->getPageCount() > 1}
-        {if in_array('l', $parts) || in_array('p', $parts)}
+        {if in_array('label', $parts) || in_array('pagi', $parts)}
             <div class="form-group pagination-group">
-                {if in_array('l', $parts)}
+                {if in_array('label', $parts)}
                     <span class="text-muted">
                         {lang key='paginationEntryPagination' section='global' printf={$oPagination->getFirstPageItem() + 1}|cat:':::'|cat:{$oPagination->getFirstPageItem() + $oPagination->getPageItemCount()}|cat:':::'|cat:{$oPagination->getItemCount()}}
                     </span>
                 {/if}
 
-                {if in_array('p', $parts)}
+                {if in_array('pagi', $parts)}
                     <ul class="pagination btn-group">
                         <li>
                             <a {if $oPagination->getPrevPage() != $oPagination->getPage()}
@@ -71,12 +71,12 @@
         {/if}
     {/if}
 
-    {if $showFilter === true && (in_array('c', $parts) || in_array('s', $parts))}
+    {if $showFilter === true && (in_array('count', $parts) || in_array('sort', $parts))}
         <form action="{$cThisUrl}{$cAnchor}" method="get" class="form-inline">
             {foreach $cParam_arr as $cParamName => $cParamValue}
                 <input type="hidden" name="{$cParamName}" value="{$cParamValue}" />
             {/foreach}
-            {if in_array('c', $parts)}
+            {if in_array('count', $parts)}
                 <div class="form-group items-per-page-group">
                     <label for="{$oPagination->getId()}_nItemsPerPage">
                         {lang key='paginationEntriesPerPage' section='global'}
@@ -93,7 +93,7 @@
                     </select>
                 </div>
             {/if}
-            {if $oPagination->getSortByOptions()|@count > 0 && in_array('s', $parts)}
+            {if $oPagination->getSortByOptions()|@count > 0 && in_array('sort', $parts)}
                 <div class="form-group filter-group">
                     <label for="{$oPagination->getId()}_nSortBy">{lang key='sorting' section='productOverview'}</label>
                     <select class="form-control" name="{$oPagination->getId()}_nSortBy" id="{$oPagination->getId()}_nSortBy">

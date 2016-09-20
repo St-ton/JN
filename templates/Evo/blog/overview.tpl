@@ -45,7 +45,7 @@
 
         <select class="form-control" name="{$oPagination->getId()}_nItemsPerPage" id="{$oPagination->getId()}_nItemsPerPage"
                 onchange="this.form.submit();">
-            <option value="-2"{if $oPagination->getItemsPerPage() == -2} selected{/if}>
+            <option value="0" {if $oPagination->getItemsPerPage() == 0} selected{/if}>
                 {lang key='newsPerSite' section='news'}
             </option>
             {foreach $oPagination->getItemsPerPageOptions() as $nItemsPerPageOption}
@@ -53,9 +53,6 @@
                     {$nItemsPerPageOption}
                 </option>
             {/foreach}
-            <option value="-1"{if $oPagination->getItemsPerPage() == -1} selected{/if}>
-                {lang key='showAll' section='global'}
-            </option>
         </select>
 
         <button name="submitGo" type="submit" value="{lang key="filterGo" section="global"}" class="btn btn-default">{lang key="filterGo" section="global"}</button>
@@ -65,15 +62,15 @@
 {if isset($noarchiv) && $noarchiv}
     <div class="alert alert-info">{lang key="noNewsArchiv" section="news"}.</div>
 {elseif !empty($oNewsUebersicht_arr)}
-    {include file='snippets/pagination.tpl' oPagination=$oPagination cThisUrl='news.php' showFilter=false}
     <div id="newsContent">
         {if !empty($cCurrentKategorie)}
             <h2>{$cCurrentKategorie}</h2>
             <hr>
+            {include file='snippets/pagination.tpl' oPagination=$oPagination cThisUrl='news.php' parts=['label']}
         {/if}
         {foreach name=uebersicht from=$oNewsUebersicht_arr item=oNewsUebersicht}
             {include file="blog/preview.tpl"}
         {/foreach}
     </div>
-    {include file='snippets/pagination.tpl' oPagination=$oPagination cThisUrl='news.php' showFilter=false}
+    {include file='snippets/pagination.tpl' oPagination=$oPagination cThisUrl='news.php' parts=['pagi']}
 {/if}

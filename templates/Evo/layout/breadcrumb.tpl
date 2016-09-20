@@ -4,7 +4,7 @@
     <div class="breadcrumb-wrapper hidden-xs">
         <div class="row">
             <div class="col-xs-12">
-                <ul id="breadcrumb" class="breadcrumb">
+                <ul id="breadcrumb" class="breadcrumb word-break">
                     {foreach name=navi from=$Brotnavi item=oItem}
                         {if $smarty.foreach.navi.first}
                             <li class="breadcrumb-item first">

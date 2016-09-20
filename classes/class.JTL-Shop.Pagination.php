@@ -165,7 +165,7 @@ class Pagination
         $this->loadParameters()
              ->storeParameters();
 
-        if ($this->nItemsPerPage == -1) {
+        if ($this->nItemsPerPage === -1) {
             // Show all entries on a single page
             $this->nPageCount      = 1;
             $this->nPage           = 0;
@@ -175,7 +175,7 @@ class Pagination
             $this->nRightRangePage = 0;
             $this->nFirstPageItem  = 0;
             $this->nPageItemCount  = $this->nItemCount;
-        } elseif ($this->nItemsPerPage == 0) {
+        } elseif ($this->nItemsPerPage === 0) {
             // Set $nItemsPerPage to default if greater 0 or else to the first option in $nItemsPerPageOption_arr
             $nItemsPerPage         = $this->nDefaultItemsPerPage > 0 ? $this->nDefaultItemsPerPage : $this->nItemsPerPageOption_arr[0];
             $this->nPageCount      = $nItemsPerPage > 0 ? (int)ceil($this->nItemCount / $nItemsPerPage) : 1;
@@ -200,9 +200,9 @@ class Pagination
         if (isset($this->cSortByOption_arr[$this->nSortBy])) {
             // Create ORDER SQL clauses
             $this->cSortBy   = $this->cSortByOption_arr[$this->nSortBy][0];
-            $this->cSortDir  = $this->nSortDir == 0 ? 'ASC' : 'DESC';
+            $this->cSortDir  = $this->nSortDir === 0 ? 'ASC' : 'DESC';
             $this->cOrderSQL = $this->cSortBy . ' ' . $this->cSortDir;
-            $nSortFac        = $this->nSortDir == 0 ? +1 : -1;
+            $nSortFac        = $this->nSortDir === 0 ? +1 : -1;
             $cSortBy         = $this->cSortBy;
 
             // Sort array if exists

@@ -1,5 +1,5 @@
 <div itemscope itemtype="https://schema.org/Article" class="panel panel-default">
-    <div class="panel-heading">
+    <div class="panel-heading hide-overflow">
         <div class="panel-title">
             <a href="{$oNewsUebersicht->cURL}">
                 <strong><span itemprop="headline">{$oNewsUebersicht->cBetreff}</span></strong>
@@ -26,7 +26,6 @@
                 {/if}
             </div>
         </div>
-
     </div>
     <div class="panel-body">
         <div class=" row">

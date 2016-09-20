@@ -110,7 +110,7 @@ if (isset($_GET['return']) && $_GET['return'] === '1') {
     $customer->cAbgeholt     = 'N';
     $customer->cAktiv        = 'Y';
     $customer->cSperre       = 'N';
-    $customer->nRegistriert  = 0;
+    $customer->nRegistriert  = (int) $createAccount;
     $customer->dErstellt     = date_format(date_create(), 'Y-m-d');
 
     if (!isset($customer->cAnrede) || $customer->cAnrede === null) {

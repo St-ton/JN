@@ -354,14 +354,6 @@ class PayPalPlus extends PaymentMethod
         $itemList = new ItemList();
         $itemList->setItems($items);
 
-        /*
-        $details = new Details();
-        $details->setShipping($basket->shipping[WarenkorbHelper::GROSS])
-            ->setSubtotal($basket->article[WarenkorbHelper::GROSS])
-            ->setShippingDiscount($basket->discount[WarenkorbHelper::GROSS] * -1)
-            ->setTax(0.00);
-        */
-
         $details = new Details();
         $details->setShipping($basket->shipping[WarenkorbHelper::GROSS])
             ->setSubtotal($basket->article[WarenkorbHelper::GROSS])
@@ -377,7 +369,8 @@ class PayPalPlus extends PaymentMethod
         $transaction = new Transaction();
         $transaction->setAmount($amount)
             ->setItemList($itemList)
-            ->setDescription('Payment');
+            ->setDescription('Payment')
+            ->setInvoiceNumber(uniqid('PPPLUS_'));
 
         $redirectUrls = new RedirectUrls();
         $redirectUrls->setReturnUrl($this->getCallbackUrl(['a' => 'return', 'r' => 'true']))

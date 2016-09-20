@@ -27,7 +27,7 @@ class SmartyResourceNiceDB extends Smarty_Resource_Custom
     public function __construct($type = 'export', $clean = false)
     {
         $this->clean = $clean;
-        $this->type = $type;
+        $this->type  = $type;
     }
 
     /**

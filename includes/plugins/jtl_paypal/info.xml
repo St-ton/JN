@@ -540,15 +540,6 @@ Ihr Team von {$Firma->cName}]]></ContentText>
                         <Option value="N" sort="2">Nein</Option>
                     </SelectboxOptions>
                 </Setting>
-                <Setting type="selectbox" initialValue="N" sort="23" conf="Y">
-                    <Name>Versandkostenhinweis in PayPal als Position anzeigen</Name>
-                    <Description>Gesonderter Hinweis, auf Versandkostenberechnung NACH PayPal Login</Description>
-                    <ValueName>jtl_paypal_versandhinweis</ValueName>
-                    <SelectboxOptions>
-                        <Option value="Y" sort="1">Ja</Option>
-                        <Option value="N" sort="2">Nein</Option>
-                    </SelectboxOptions>
-                </Setting>
                 <Setting type="selectbox" initialValue="Y" sort="24" conf="Y">
                     <Name>Checkboxen aus Registrierungsseite auf Bestellübersichtsseite anzeigen</Name>
                     <Description>Sollen die Checkboxen aus der Registrierungsseite auf der Bestellübersichtsseite

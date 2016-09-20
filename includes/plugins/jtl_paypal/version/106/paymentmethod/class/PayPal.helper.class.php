@@ -313,9 +313,4 @@ class PayPalHelper
 
         return $basket;
     }
-
-    public static function getBasketV2()
-    {
-
-    }
 }

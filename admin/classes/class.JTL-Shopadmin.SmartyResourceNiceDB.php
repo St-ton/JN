@@ -10,11 +10,6 @@
 class SmartyResourceNiceDB extends Smarty_Resource_Custom
 {
     /**
-     * @var bool
-     */
-    private $clean = false;
-
-    /**
      * @var string
      */
     private $type = 'export';
@@ -22,11 +17,9 @@ class SmartyResourceNiceDB extends Smarty_Resource_Custom
     /**
      * SmartyResourceNiceDB constructor.
      * @param string $type
-     * @param bool   $clean
      */
-    public function __construct($type = 'export', $clean = false)
+    public function __construct($type = 'export')
     {
-        $this->clean = $clean;
         $this->type  = $type;
     }
 
@@ -92,12 +85,9 @@ class SmartyResourceNiceDB extends Smarty_Resource_Custom
             } elseif ($cTeile_arr[2] === 'text') {
                 $source = $oNewsletter->cInhaltText;
             }
-        }
-
-        if ($this->clean === true && !empty($source)) {
-            $s      = ["\n", "\r", "\r\n"];
-            $r      = ['', '', ''];
-            $source = str_replace($s, $r, $source);
+        } else {
+            $source = '';
+            Jtllog::writeLog('Template-Typ ' . $this->type . ' wurde nicht gefunden', JTLLOG_LEVEL_NOTICE);
         }
     }
 

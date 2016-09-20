@@ -879,23 +879,11 @@ function handlePriceFormat($kArtikel, $kKundengruppe, $kKunde = null)
 {
     $kArtikel      = (int)$kArtikel;
     $kKundengruppe = (int)$kKundengruppe;
-    $price         = Shop::DB()->query(
-        "SELECT kPreis
+    Shop::DB()->query(
+        "DELETE p, d
             FROM tpreis AS p
-            WHERE p.kArtikel = {$kArtikel}
-                AND p.kKundengruppe = {$kKundengruppe}",
-        1
-    );
-
-    if ($price && isset($price->kPreis)) {
-        Shop::DB()->query(
-            "DELETE p, d
-                FROM tpreis AS p
-                LEFT JOIN tpreisdetail AS d ON d.kPreis = p.kPreis
-                WHERE p.kPreis = {$price->kPreis}",
-            3
-        );
-    }
+            LEFT JOIN tpreisdetail AS d ON d.kPreis = p.kPreis
+            WHERE p.kArtikel = {$kArtikel} AND p.kKundengruppe = {$kKundengruppe}", 3);
     // tpreis
     $o                = new stdClass();
     $o->kArtikel      = $kArtikel;

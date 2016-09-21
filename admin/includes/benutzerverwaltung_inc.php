@@ -269,22 +269,22 @@ function benutzerverwaltungActionAccountEdit(JTLSmarty $smarty, array &$messages
 
         if (true === $oTwoFA->is2FAauthSecretExist()) {
             $szQRcodeString = $oTwoFA->getQRcode();
-            $szKnownSecret = $oTwoFA->getSecret();
+            $szKnownSecret  = $oTwoFA->getSecret();
         }
     }
     $smarty->assign('QRcodeString', $szQRcodeString); // transfer via smarty-var (to prevent session-pollution)
     $smarty->assign('cKnownSecret', $szKnownSecret); // not nice to "show" the secret, but needed to prevent empty creations
 
     if (isset($_POST['save'])) {
-        $cError_arr              = array();
-        $oTmpAcc                 = new stdClass();
-        $oTmpAcc->kAdminlogin    = (isset($_POST['kAdminlogin'])) ? (int)$_POST['kAdminlogin'] : 0;
-        $oTmpAcc->cName          = trim($_POST['cName']);
-        $oTmpAcc->cMail          = trim($_POST['cMail']);
-        $oTmpAcc->cLogin         = trim($_POST['cLogin']);
-        $oTmpAcc->cPass          = trim($_POST['cPass']);
-        $oTmpAcc->b2FAauth       = (int)$_POST['b2FAauth'];
-        $tmpAttribs              = isset($_POST['extAttribs']) ? $_POST['extAttribs'] : array();
+        $cError_arr           = array();
+        $oTmpAcc              = new stdClass();
+        $oTmpAcc->kAdminlogin = (isset($_POST['kAdminlogin'])) ? (int)$_POST['kAdminlogin'] : 0;
+        $oTmpAcc->cName       = trim($_POST['cName']);
+        $oTmpAcc->cMail       = trim($_POST['cMail']);
+        $oTmpAcc->cLogin      = trim($_POST['cLogin']);
+        $oTmpAcc->cPass       = trim($_POST['cPass']);
+        $oTmpAcc->b2FAauth    = (int)$_POST['b2FAauth'];
+        $tmpAttribs           = isset($_POST['extAttribs']) ? $_POST['extAttribs'] : array();
         (0 < strlen($_POST['c2FAsecret'])) ? $oTmpAcc->c2FAauthSecret = trim($_POST['c2FAsecret']) : null;
 
         $dGueltigBisAktiv = (isset($_POST['dGueltigBisAktiv']) && ($_POST['dGueltigBisAktiv'] === '1'));
@@ -568,6 +568,27 @@ function benutzerverwaltungActionGroupEdit(JTLSmarty $smarty, array &$messages)
 function benutzerverwaltungActionGroupDelete(JTLSmarty $smarty, array &$messages)
 {
     $kAdminlogingruppe = (int)$_POST['id'];
+
+    $oResult = Shop::DB()->query('
+                    SELECT
+                        count(*) AS member_count
+                    FROM
+                        tadminlogin
+                    WHERE
+                        kAdminlogingruppe = ' . $kAdminlogingruppe, 1);
+    // stop the deletion with a message, if there are accounts in this group
+    if (0 !== (int)$oResult->member_count) {
+        $messages['error'] .= 'Die Gruppe kann nicht entfernt werden, da sich noch '
+                            . (2 > $oResult->member_count ? 'ein' : $oResult->member_count)
+                            . ' Mitglied' . (2 > $oResult->member_count ? '' : 'er' )
+                            . ' in dieser Gruppe befind' . (2 > $oResult->member_count ? 'et' : 'en') . '.<br>'
+                            . 'Bitte entfernen Sie dies' . (2 > $oResult->member_count ? 'es' : 'e')
+                            . ' Gruppenmitglied'  . (2 > $oResult->member_count ? '' : 'er')
+                            . ' oder weisen Sie ' . (2 > $oResult->member_count ? 'es' : 'sie')
+                            . ' einer anderen Gruppe zu, bevor Sie die Gruppe l&ouml;schen!';
+
+        return 'group_redirect';
+    }
 
     if ($kAdminlogingruppe !== ADMINGROUP) {
         Shop::DB()->delete('tadminlogingruppe', 'kAdminlogingruppe', $kAdminlogingruppe);

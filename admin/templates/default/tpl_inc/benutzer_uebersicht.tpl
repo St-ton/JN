@@ -5,13 +5,13 @@
 
 {include file="tpl_inc/seite_header.tpl" cTitel=#benutzer# cBeschreibung=#benutzerDesc# cDokuURL=#benutzerURL#}
 <div id="content">
-	{if isset($hinweis) && $hinweis|count_characters > 0}			
+	{if isset($hinweis) && $hinweis|count_characters > 0}
 		<p class="box_success">{$hinweis}</p>
 	{/if}
-	{if isset($fehler) && $fehler|count_characters > 0}			
+	{if isset($fehler) && $fehler|count_characters > 0}
 		<p class="box_error">{$fehler}</p>
 	{/if}
-	
+
 	<div class="tabber">
 		<div class="tabbertab{if $action == 'account_view' || $action == ''} tabbertabdefault{/if}">
 			<h2>{#benutzerTab#}</h2>
@@ -54,16 +54,16 @@
 					{/foreach}
 				</tbody>
 			</table>
-			
+
 			<div class="save_wrapper">
 				<form action="benutzerverwaltung.php" method="get">
 					<input type="hidden" name="action" value="account_edit" />
 					<input type="submit" class="button orange" value="{#benutzerNeu#}" />
 				</form>
 			</div>
-			
+
 		</div>
-		
+
 		<div class="tabbertab{if $action == 'group_view'} tabbertabdefault{/if}">
 			<h2>{#gruppenTab#}</h2>
 			<div class="category first">{#gruppenKategorie#}</div>
@@ -94,14 +94,14 @@
 					{/foreach}
 				</tbody>
 			</table>
-			
+
 			<div class="save_wrapper">
 				<form action="benutzerverwaltung.php" method="get">
 					<input type="hidden" name="action" value="group_edit" />
 					<input type="submit" class="button orange" value="{#gruppeNeu#}" />
 				</form>
 			</div>
-			
+
 		</div>
 	</div>
 </div>

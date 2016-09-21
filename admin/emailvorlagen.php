@@ -87,21 +87,18 @@ if (isset($_POST['resetEmailvorlage']) && intval($_POST['resetEmailvorlage']) ==
             $vorlage   = Shop::DB()->select('temailvorlageoriginal', 'kEmailvorlage', (int)$_POST['kEmailvorlage']);
             if (isset($vorlage->cDateiname) && strlen($vorlage->cDateiname) > 0) {
                 foreach ($languages as $_lang) {
-                    $sql      = 'UPDATE ' . $cTableSprache . ' SET ';
-                    $doUpdate = false;
-                    $path     = PFAD_ROOT . PFAD_EMAILVORLAGEN . $_lang->cISO;
+                    $path = PFAD_ROOT . PFAD_EMAILVORLAGEN . $_lang->cISO;
                     if (isset($_lang->cISO) && file_exists(PFAD_ROOT . PFAD_EMAILVORLAGEN . $_lang->cISO)) {
                         $fileHtml  = $path . '/' . $vorlage->cDateiname . '_html.tpl';
                         $filePlain = $path . '/' . $vorlage->cDateiname . '_plain.tpl';
                         if (file_exists($fileHtml) && file_exists($filePlain)) {
-                            $doUpdate = true;
-                            $sql .= "cContentHtml = '" . Shop::DB()->escape(file_get_contents($fileHtml)) . "'";
-                            $sql .= ", cContentText = '" . Shop::DB()->escape(file_get_contents($filePlain)) . "'";
-                            $sql .= ' WHERE kEmailVorlage = ' . (int)$_POST['kEmailvorlage'] . " AND kSprache = " . (int)$_lang->kSprache;
+                            $upd               = new stdClass();
+                            $html              = file_get_contents($fileHtml);
+                            $text              = file_get_contents($filePlain);
+                            $upd->cContentHtml = StringHandler::is_utf8($html) ? utf8_decode($html) : $html;
+                            $upd->cContentText = StringHandler::is_utf8($text) ? utf8_decode($text) : $text;
+                            Shop::DB()->update($cTableSprache, ['kEmailVorlage', 'kSprache'], [(int)$_POST['kEmailvorlage'], (int)$_lang->kSprache], $upd);
                         }
-                    }
-                    if ($doUpdate === true) {
-                        Shop::DB()->query($sql, 4);
                     }
                 }
             }

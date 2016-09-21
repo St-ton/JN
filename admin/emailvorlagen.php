@@ -95,8 +95,14 @@ if (isset($_POST['resetEmailvorlage']) && intval($_POST['resetEmailvorlage']) ==
                             $upd               = new stdClass();
                             $html              = file_get_contents($fileHtml);
                             $text              = file_get_contents($filePlain);
-                            $upd->cContentHtml = StringHandler::is_utf8($html) ? utf8_decode($html) : $html;
-                            $upd->cContentText = StringHandler::is_utf8($text) ? utf8_decode($text) : $text;
+                            $doDecodeHtml      = (function_exists('mb_detect_encoding'))
+                                ? (mb_detect_encoding($html, 'UTF-8', true) === 'UTF-8')
+                                : (StringHandler::is_utf8($html) === 1);
+                            $doDecodeText      = (function_exists('mb_detect_encoding'))
+                                ? (mb_detect_encoding($text, 'UTF-8', true) === 'UTF-8')
+                                : (StringHandler::is_utf8($text) === 1);
+                            $upd->cContentHtml = ($doDecodeHtml === true) ? utf8_decode($html) : $html;
+                            $upd->cContentText = ($doDecodeText === true) ? utf8_decode($text) : $text;
                             Shop::DB()->update($cTableSprache, ['kEmailVorlage', 'kSprache'], [(int)$_POST['kEmailvorlage'], (int)$_lang->kSprache], $upd);
                         }
                     }

@@ -86,7 +86,6 @@ wir freuen uns Ihnen mitteilen zu dürfen, dass in unserem Onlineshop folgenden K
 	<br>
 {/if}
 
-{*Gültig vom {$Kupon->dGueltigAb|date_format:"%d.%m.%Y %H:%M:%S"}{if $Kupon->dGueltigBis != 0} bis {$Kupon->dGueltigBis|date_format:"%d.%m.%Y %H:%M:%S"}{/if}<br>*}
 Gültig vom {$Kupon->cGueltigAbLong}{if $Kupon->dGueltigBis != 0} bis {$Kupon->cGueltigBisLong}{/if}<br>
 <br>
 {if $Kupon->nVerwendungenProKunde>1}

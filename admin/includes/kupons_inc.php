@@ -498,6 +498,9 @@ function saveCoupon($oKupon, $oSprache_arr)
  */
 function informCouponCustomers($oKupon)
 {
+    // Augment Coupon
+    augmentCoupon($oKupon);
+
     // Standard-Sprache
     $oStdSprache = Shop::DB()->select('tsprache', 'cShopStandard', 'Y');
 

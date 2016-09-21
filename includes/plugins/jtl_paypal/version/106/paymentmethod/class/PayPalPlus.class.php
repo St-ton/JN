@@ -533,7 +533,7 @@ class PayPalPlus extends PaymentMethod
             /**
              * #437 Update invoice number
              */
-            patchInvoiceNumber($payment, $order->cBestellNr);
+            $this->patchInvoiceNumber($payment, $order->cBestellNr);
 
             if ($payment->getState() == 'created') {
                 $execution = new PaymentExecution();

@@ -189,8 +189,8 @@ function augmentCoupon($oKupon)
         $oKupon->cGueltigBisShort = 'ung&uuml;ltig';
         $oKupon->cGueltigBisLong  = 'ung&uuml;ltig';
     } else {
-        $oKupon->cGueltigBisShort  = date_create($oKupon->dGueltigBis)->format('d.m.Y');
-        $oKupon->cGueltigBisLong   = date_create($oKupon->dGueltigBis)->format('d.m.Y H:i');
+        $oKupon->cGueltigBisShort = date_create($oKupon->dGueltigBis)->format('d.m.Y');
+        $oKupon->cGueltigBisLong  = date_create($oKupon->dGueltigBis)->format('d.m.Y H:i');
     }
 
     if ((int)$oKupon->kKundengruppe == -1) {
@@ -276,7 +276,7 @@ function createCouponFromInput()
     $oKupon->cAktiv                = isset($_POST['cAktiv']) && $_POST['cAktiv'] === 'Y' ? 'Y' : 'N';
     $oKupon->cKategorien           = '-1';
     if ($oKupon->cKuponTyp !== "neukundenkupon") {
-        $oKupon->cKunden               = '-1';
+        $oKupon->cKunden = '-1';
     }
     if ($oKupon->dGueltigAb == 0) {
         $oKupon->dGueltigAb = date_create()->format('Y-m-d H:i') . ':00';
@@ -357,12 +357,15 @@ function validateCoupon($oKupon)
         $cFehler_arr[] = 'Bitte geben Sie einen nicht-negativen Mindestbestellwert an!';
     }
     if ($oKupon->cKuponTyp === 'versandkupon' && $oKupon->cLieferlaender === '') {
-        $cFehler_arr[] = 'Bitte geben Sie die L&auml;nderk&uuml;rzel (ISO-Codes) unter "Lieferl&auml;nder" an, f&uuml;r die dieser Versandkupon gelten soll!';
+        $cFehler_arr[] = 'Bitte geben Sie die L&auml;nderk&uuml;rzel (ISO-Codes) unter "Lieferl&auml;nder" an, ' .
+            'f&uuml;r die dieser Versandkupon gelten soll!';
     }
     if (isset($oKupon->massCreationCoupon)) {
         foreach ($oKupon->cCode as $cCode) {
             if (strlen($cCode) > 32) {
-                $cFehler_arr[] = 'Der zu generiende Code ist l&auml;nger als 32 Zeichen. Bitte verringern Sie die Menge der Zeichen in Pr&auml;fix, Suffix oder geben eine kleinere Zahl bei der L&auml;nge des Zufallcodes an.';
+                $cFehler_arr[] = 'Der zu generiende Code ist l&auml;nger als 32 Zeichen. Bitte verringern Sie die ' .
+                    'Menge der Zeichen in Pr&auml;fix, Suffix oder geben eine kleinere Zahl bei der L&auml;nge des ' .
+                    'Zufallcodes an.';
             }
         }
     } elseif (strlen($oKupon->cCode) > 32) {
@@ -372,10 +375,12 @@ function validateCoupon($oKupon)
         $queryRes = Shop::DB()->query("
         SELECT kKupon
             FROM tkupon
-            WHERE cCode = '" . Shop::DB()->escape($oKupon->cCode) . "'" . ((int)$oKupon->kKupon > 0 ? " AND kKupon != " . (int)$oKupon->kKupon : ''),
+            WHERE cCode = '" . Shop::DB()->escape($oKupon->cCode) . "'" .
+                ((int)$oKupon->kKupon > 0 ? " AND kKupon != " . (int)$oKupon->kKupon : ''),
             1);
         if (is_object($queryRes)) {
-            $cFehler_arr[] = 'Der angegeben Kuponcode wird bereits von einem anderen Kupon verwendet. Bitte w&auml;hlen Sie einen anderen Code!';
+            $cFehler_arr[] = 'Der angegeben Kuponcode wird bereits von einem anderen Kupon verwendet. Bitte ' .
+                'w&auml;hlen Sie einen anderen Code!';
         }
     }
 
@@ -443,7 +448,7 @@ function saveCoupon($oKupon, $oSprache_arr)
         } else {
             $oKupon->kKupon = (int)$oKupon->save();
         }
-        $res            = $oKupon->kKupon;
+        $res = $oKupon->kKupon;
     }
 
     if ($res > 0) {
@@ -506,7 +511,7 @@ function informCouponCustomers($oKupon)
     $oKupon->cLocalizedWert = ($oKupon->cWertTyp === 'festpreis') ?
         gibPreisStringLocalized($oKupon->fWert, $oStdWaehrung, 0) :
         $oKupon->fWert . ' %';
-    $oKupon->cLocalizedMBW = gibPreisStringLocalized($oKupon->fMindestbestellwert, $oStdWaehrung, 0);
+    $oKupon->cLocalizedMBW  = gibPreisStringLocalized($oKupon->fMindestbestellwert, $oStdWaehrung, 0);
 
     // kKunde-array aller Kunden
     if ($oKupon->cKunden === '-1') {

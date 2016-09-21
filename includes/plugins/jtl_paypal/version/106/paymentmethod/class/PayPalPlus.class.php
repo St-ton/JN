@@ -369,8 +369,7 @@ class PayPalPlus extends PaymentMethod
         $transaction = new Transaction();
         $transaction->setAmount($amount)
             ->setItemList($itemList)
-            ->setDescription('Payment')
-            ->setInvoiceNumber(uniqid('PPPLUS_'));
+            ->setDescription('Payment');
 
         $redirectUrls = new RedirectUrls();
         $redirectUrls->setReturnUrl($this->getCallbackUrl(['a' => 'return', 'r' => 'true']))
@@ -504,6 +503,19 @@ class PayPalPlus extends PaymentMethod
         return;
     }
 
+    public function patchInvoiceNumber(PayPal\Api\Payment &$payment, $invoiceNumber)
+    {
+        $patch = new \PayPal\Api\Patch();
+        $patch->setOp('add')
+            ->setPath('/transactions/0/invoice_number')
+            ->setValue($invoiceNumber);
+
+        $patchRequest = new \PayPal\Api\PatchRequest();
+        $patchRequest->setPatches([$patch]);
+
+        $payment->update($patchRequest, $this->getContext());
+    }
+
     /**
      * @param Bestellung $order
      */
@@ -517,6 +529,11 @@ class PayPalPlus extends PaymentMethod
             $apiContext      = $this->getContext();
             $payment         = Payment::get($paymentId, $apiContext);
             $order->cSession = $paymentId;
+
+            /**
+             * #437 Update invoice number
+             */
+            patchInvoiceNumber($payment, $order->cBestellNr);
 
             if ($payment->getState() == 'created') {
                 $execution = new PaymentExecution();
@@ -536,7 +553,7 @@ class PayPalPlus extends PaymentMethod
 
                 $transaction = new Transaction();
                 $transaction->setAmount($amount)
-                    ->setInvoiceNumber($order->cBestellNr)
+                    //->setInvoiceNumber($order->cBestellNr)
                     ->setCustom($order->kBestellung);
 
                 $execution->addTransaction($transaction);
@@ -566,15 +583,12 @@ class PayPalPlus extends PaymentMethod
                         '%company%'                           => $company->cName,
                     ];
 
-                    $pui = $this->plugin->oPluginSprachvariableAssoc_arr['jtl_paypal_pui'];
+                    $pui = sprintf("%s\r\n\r\n%s",
+                        $this->plugin->oPluginSprachvariableAssoc_arr['jtl_paypal_pui'],
+                        $this->plugin->oPluginSprachvariableAssoc_arr['jtl_paypal_pui_legal']);
 
-                    if (true) { // todo
-                        $pui = sprintf("%s\r\n\r\n%s", $pui,
-                            $this->plugin->oPluginSprachvariableAssoc_arr['jtl_paypal_pui_legal']);
-                    }
-
-                    $pui                      = str_replace(array_keys($replacement), array_values($replacement), $pui);
-                    $order->cPUIZahlungsdaten = $pui;
+                    $order->cPUIZahlungsdaten = str_replace(
+                        array_keys($replacement), array_values($replacement), $pui);
                 }
 
                 $order->updateInDB();
@@ -606,11 +620,14 @@ class PayPalPlus extends PaymentMethod
                 $this->logResult('ExecutePayment', 'Unhandled payment state', $payment->getState(), JTLLOG_LEVEL_ERROR);
             }
 
-            // clear
             $this->unsetCache();
+            return;
+
         } catch (Exception $ex) {
             $this->handleException('ExecutePayment', $payment, $ex);
         }
+
+        header("location: bestellvorgang.php?editZahlungsart=1");
     }
 
     /**

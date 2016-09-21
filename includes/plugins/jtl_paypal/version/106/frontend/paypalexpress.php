@@ -68,6 +68,7 @@ if (isset($_GET['return']) && $_GET['return'] === '1') {
     $createAccount = $oPlugin->oPluginEinstellungAssoc_arr['jtl_paypal_express_create_account'] === 'Y';
 
     if (isset($_SESSION['Kunde']) && (int)$_SESSION['Kunde']->kKunde > 0) {
+        $createAccount = false;
         if ($_SESSION['Kunde']->cMail == $_POST['email']) {
             $customer = $_SESSION['Kunde'];
         } else {

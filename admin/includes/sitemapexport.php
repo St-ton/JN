@@ -863,11 +863,11 @@ function generateSitemapXML()
         baueSitemapReport($nAnzahlURL_arr, $fTotalZeit);
         // ping sitemap to Google and Bing
         $encodedSitemapIndexURL = urlencode(Shop::getURL() . '/sitemap_index.xml');
-        if (200 !== curlReturnCode('http://www.google.com/webmasters/tools/ping?sitemap=' . $encodedSitemapIndexURL)) {
-            Jtllog::writeLog('Sitemap ping to Google failed');
+        if (200 !== ($httpStatus = http_get_status('http://www.google.com/webmasters/tools/ping?sitemap=' . $encodedSitemapIndexURL))) {
+            Jtllog::writeLog('Sitemap ping to Google failed with status ' . $httpStatus, JTLLOG_LEVEL_NOTICE);
         }
-        if (200 !== curlReturnCode('http://www.bing.com/ping?sitemap=' . $encodedSitemapIndexURL)) {
-            Jtllog::writeLog('Sitemap ping to Bing failed');
+        if (200 !== ($httpStatus = http_get_status('http://www.bing.com/ping?sitemap=' . $encodedSitemapIndexURL))) {
+            Jtllog::writeLog('Sitemap ping to Bing failed with status ' . $httpStatus, JTLLOG_LEVEL_NOTICE);
         }
     }
 }
@@ -1146,19 +1146,4 @@ function gibAlleSprachenAssoc($Sprachen)
     }
 
     return $oSpracheAssoc_arr;
-}
-
-/**
- * Ping an URL to just return the HTTP return code
- * @param string $url
- * @return int - HTTP return code
- */
-function curlReturnCode($url)
-{
-    $ch = curl_init($url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_exec($ch);
-    $res = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    curl_close($ch);
-    return $res;
 }

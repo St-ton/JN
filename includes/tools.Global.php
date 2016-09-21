@@ -5182,6 +5182,29 @@ function curl_exec_follow($ch, &$maxredirect = 5)
  */
 function http_get_contents($cURL, $nTimeout = 15, $cPost = null)
 {
+    return http_request($cURL, $nTimeout, $cPost, false);
+}
+
+/**
+ * @param string $cURL
+ * @param int    $nTimeout
+ * @param null   $cPost
+ * @return int
+ */
+function http_get_status($cURL, $nTimeout = 15, $cPost = null)
+{
+    return http_request($cURL, $nTimeout, $cPost, true);
+}
+
+/**
+ * @param string $cURL
+ * @param int    $nTimeout
+ * @param null   $cPost
+ * @param bool   $bReturnStatus - false = return content on success / true = return status code instead of content
+ * @return mixed|string
+ */
+function http_request($cURL, $nTimeout = 15, $cPost = null, $bReturnStatus = false)
+{
     $nCode = 0;
     $cData = '';
 
@@ -5225,6 +5248,9 @@ function http_get_contents($cURL, $nTimeout = 15, $cPost = null)
         $cData = '';
     }
 
+    if ($bReturnStatus) {
+        return $nCode;
+    }
     return $cData;
 }
 

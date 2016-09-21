@@ -57,22 +57,16 @@ if (isset($_POST['eintragen']) && intval($_POST['eintragen']) === 1 && validateT
             // In tverpackungsprache adden
             if (is_array($oSprache_arr) && count($oSprache_arr) > 0) {
                 foreach ($oSprache_arr as $i => $oSprache) {
-                    $oVerpackungSprache              = new stdClass();
-                    $oVerpackungSprache->kVerpackung = $kVerpackung;
-                    $oVerpackungSprache->cISOSprache = $oSprache->cISO;
-
-                    if (strlen($_POST['cName_' . $oSprache->cISO]) > 0) {
-                        $oVerpackungSprache->cName = $_POST['cName_' . $oSprache->cISO];
-                    } else {
-                        $oVerpackungSprache->cName = $_POST['cName_' . $oSprache_arr[0]->cISO];
-                    }
-                    if (strlen($_POST['cBeschreibung_' . $oSprache->cISO]) > 0) {
-                        $oVerpackungSprache->cBeschreibung = $_POST['cBeschreibung_' . $oSprache->cISO];
-                    } else {
-                        $oVerpackungSprache->cBeschreibung = $_POST['cBeschreibung_' . $oSprache_arr[0]->cISO];
-                    }
+                    $oVerpackungSprache                = new stdClass();
+                    $oVerpackungSprache->kVerpackung   = $kVerpackung;
+                    $oVerpackungSprache->cISOSprache   = $oSprache->cISO;
+                    $oVerpackungSprache->cName         = (!empty($_POST['cName_' . $oSprache->cISO]))
+                        ? $_POST['cName_' . $oSprache->cISO]
+                        : $_POST['cName_' . $oSprache_arr[0]->cISO];
+                    $oVerpackungSprache->cBeschreibung = (!empty($_POST['cBeschreibung_' . $oSprache->cISO]))
+                        ? $_POST['cBeschreibung_' . $oSprache->cISO]
+                        : $oVerpackungSprache->cBeschreibung = $_POST['cBeschreibung_' . $oSprache_arr[0]->cISO];
                     Shop::DB()->insert('tverpackungsprache', $oVerpackungSprache);
-                    unset($oVerpackungSprache);
                 }
             }
 
@@ -104,10 +98,10 @@ if (isset($_POST['eintragen']) && intval($_POST['eintragen']) === 1 && validateT
         Shop::DB()->query("UPDATE tverpackung SET nAktiv = 0", 3);
         if (is_array($_POST['nAktiv']) && count($_POST['nAktiv']) > 0) {
             foreach ($_POST['nAktiv'] as $kVerpackung) {
-                $kVerpackung = (int)$kVerpackung;
-                Shop::DB()->query("UPDATE tverpackung SET nAktiv = 1 WHERE kVerpackung = " . $kVerpackung, 3);
+                $upd         = new stdClass();
+                $upd->nAktiv = 1;
+                Shop::DB()->update('tverpackung', 'kVerpackung', (int)$kVerpackung, $upd);
             }
-
             $cHinweis .= 'Ihre markierten Verpackungen wurden erfolgreich aktualisiert.<br />';
         }
     }
@@ -117,7 +111,7 @@ if (isset($_POST['eintragen']) && intval($_POST['eintragen']) === 1 && validateT
 
     if ($oVerpackung->kVerpackung > 0) {
         $oVerpackung->oSprach_arr = array();
-        $oVerpackungSprach_arr    = Shop::DB()->query("SELECT cISOSprache, cName, cBeschreibung FROM tverpackungsprache WHERE kVerpackung = " . $kVerpackung, 2);
+        $oVerpackungSprach_arr    = Shop::DB()->selectAll('tverpackungsprache', 'kVerpackung', $kVerpackung, 'cISOSprache, cName, cBeschreibung');
         if (is_array($oVerpackungSprach_arr) && count($oVerpackungSprach_arr) > 0) {
             foreach ($oVerpackungSprach_arr as $oVerpackungSprach) {
                 $oVerpackung->oSprach_arr[$oVerpackungSprach->cISOSprache] = $oVerpackungSprach;
@@ -135,8 +129,8 @@ if (isset($_POST['eintragen']) && intval($_POST['eintragen']) === 1 && validateT
 // tverpackungsprache anzeigen
 if (isset($_GET['a']) && intval($_GET['a']) > 0 && validateToken()) {
     $step                   = 'anzeigen';
-    $kVerpackung            = intval($_GET['a']);
-    $oVerpackungSprache_arr = Shop::DB()->query("SELECT * FROM tverpackungsprache WHERE kVerpackung = " . $kVerpackung, 2);
+    $kVerpackung            = (int)$_GET['a'];
+    $oVerpackungSprache_arr = Shop::DB()->selectAll('tverpackungsprache', 'kVerpackung', $kVerpackung);
     $smarty->assign('oVerpackungSprache_arr', $oVerpackungSprache_arr);
 } else {
     // Kundengruppen holen
@@ -166,7 +160,7 @@ $smarty->assign('hinweis', $cHinweis)
 
 /**
  * @param string $cKundengruppe
- * @return null
+ * @return object|null
  */
 function gibKundengruppeObj($cKundengruppe)
 {

@@ -5928,8 +5928,8 @@ class Artikel
     public function getDimension()
     {
         $dim            = array();
-        $dim['length'] = (float)$this->fLaenge;
-        $dim['width'] = (float)$this->fBreite;
+        $dim['length']  = (float)$this->fLaenge;
+        $dim['width']   = (float)$this->fBreite;
         $dim['height']  = (float)$this->fHoehe;
 
         return $dim;

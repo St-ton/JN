@@ -5940,18 +5940,16 @@ class Artikel
      */
     public function getDimensionLocalized()
     {
+        $cValue_arr = [];
         if (($fDimension_arr = $this->getDimension()) !== null) {
-            $cValue_arr = [];
             $kSprache   = Shop::$kSprache;
             foreach ($fDimension_arr as $key => $val) {
                 if (!empty($val)) {
                     $cValue_arr[Shop::Lang()->get('dimension_' . $key, 'productDetails')] = Trennzeichen::getUnit(JTLSEPARATER_LENGTH, $kSprache, $val);
                 }
             }
-
-            return $cValue_arr;
         }
 
-        return;
+        return $cValue_arr;
     }
 }

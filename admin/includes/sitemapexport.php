@@ -862,12 +862,14 @@ function generateSitemapXML()
         // Sitemap Report
         baueSitemapReport($nAnzahlURL_arr, $fTotalZeit);
         // ping sitemap to Google and Bing
-        $encodedSitemapIndexURL = urlencode(Shop::getURL() . '/sitemap_index.xml');
-        if (200 !== ($httpStatus = http_get_status('http://www.google.com/webmasters/tools/ping?sitemap=' . $encodedSitemapIndexURL))) {
-            Jtllog::writeLog('Sitemap ping to Google failed with status ' . $httpStatus, JTLLOG_LEVEL_NOTICE);
-        }
-        if (200 !== ($httpStatus = http_get_status('http://www.bing.com/ping?sitemap=' . $encodedSitemapIndexURL))) {
-            Jtllog::writeLog('Sitemap ping to Bing failed with status ' . $httpStatus, JTLLOG_LEVEL_NOTICE);
+        if (isset($conf['sitemap']['sitemap_google_ping']) && $conf['sitemap']['sitemap_google_ping'] === 'Y') {
+            $encodedSitemapIndexURL = urlencode(Shop::getURL() . '/sitemap_index.xml');
+            if (200 !== ($httpStatus = http_get_status('http://www.google.com/webmasters/tools/ping?sitemap=' . $encodedSitemapIndexURL))) {
+                Jtllog::writeLog('Sitemap ping to Google failed with status ' . $httpStatus, JTLLOG_LEVEL_NOTICE);
+            }
+            if (200 !== ($httpStatus = http_get_status('http://www.bing.com/ping?sitemap=' . $encodedSitemapIndexURL))) {
+                Jtllog::writeLog('Sitemap ping to Bing failed with status ' . $httpStatus, JTLLOG_LEVEL_NOTICE);
+            }
         }
     }
 }

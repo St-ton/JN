@@ -9,27 +9,31 @@
         {if $MerkmalWert->nAktiv}
             <li class="active">
                 <a rel="nofollow" href="{if !empty($MerkmalWert->cURL)}{$MerkmalWert->cURL}{else}#{/if}"{if $Merkmal->cTyp === 'BILD'} title="{$MerkmalWert->cWert}"{/if}>
-                    <i class="fa fa-check-square-o text-muted"></i>
-                    <span class="badge pull-right marg-left-2">{$MerkmalWert->nAnzahl}</span>
-                    {if $MerkmalWert->cBildpfadKlein !== 'gfx/keinBild_kl.gif' && $Merkmal->cTyp !== 'TEXT'}
-                        <img src="{$MerkmalWert->cBildpfadKlein}" alt="" class="vmiddle" />
-                    {/if}
-                    {if $Merkmal->cTyp !== 'BILD'}
-                        <span class="word-break{if $is_dropdown} pad-right-3{/if}">{$MerkmalWert->cWert}</span>
-                    {/if}
+                    <span class="badge pull-right">{$MerkmalWert->nAnzahl}</span>
+                    <div class="marg-right-3">
+                        <i class="fa fa-check-square-o text-muted"></i>
+                        {if $MerkmalWert->cBildpfadKlein !== 'gfx/keinBild_kl.gif' && $Merkmal->cTyp !== 'TEXT'}
+                            <img src="{$MerkmalWert->cBildpfadKlein}" alt="" class="vmiddle" />
+                        {/if}
+                        {if $Merkmal->cTyp !== 'BILD'}
+                            <span class="word-break">{$MerkmalWert->cWert}</span>
+                        {/if}
+                    </div>
                 </a>
             </li>
         {else}
             <li>
                 <a rel="nofollow" href="{$MerkmalWert->cURL}"{if $Merkmal->cTyp === 'BILD'} title="{$MerkmalWert->cWert}"{/if}>
-                    <i class="fa fa-square-o text-muted"></i>
-                    <span class="badge pull-right marg-left-2">{$MerkmalWert->nAnzahl}</span>
-                    {if $MerkmalWert->cBildpfadKlein !== 'gfx/keinBild_kl.gif' && $Merkmal->cTyp !== 'TEXT'}
-                        <img src="{$MerkmalWert->cBildpfadKlein}" alt="" class="vmiddle" />
-                    {/if}
-                    {if $Merkmal->cTyp !== 'BILD'}
-                        <span class="word-break{if $is_dropdown} pad-right-3{/if}">{$MerkmalWert->cWert}</span>
-                    {/if}
+                    <span class="badge pull-right">{$MerkmalWert->nAnzahl}</span>
+                    <div class="marg-right-3">
+                        <i class="fa fa-square-o text-muted"></i>
+                        {if $MerkmalWert->cBildpfadKlein !== 'gfx/keinBild_kl.gif' && $Merkmal->cTyp !== 'TEXT'}
+                            <img src="{$MerkmalWert->cBildpfadKlein}" alt="" class="vmiddle" />
+                        {/if}
+                        {if $Merkmal->cTyp !== 'BILD'}
+                            <span class="word-break">{$MerkmalWert->cWert}</span>
+                        {/if}
+                    </div>
                 </a>
             </li>
         {/if}

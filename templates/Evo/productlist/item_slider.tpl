@@ -15,7 +15,7 @@
         {/if}
     </a>
     <div class="caption">
-        <h4 class="title">
+        <h4 class="title word-break">
             {if isset($showPartsList) && $showPartsList === true && isset($Artikel->fAnzahl_stueckliste)}
                 <span class="article-bundle-info">
                     <span class="bundle-amount">{$Artikel->fAnzahl_stueckliste}</span> <span class="bundle-times">x</span>

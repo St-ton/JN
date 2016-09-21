@@ -27,6 +27,9 @@
         <Version nr="105">
             <CreateDate>2016-05-10</CreateDate>
         </Version>
+        <Version nr="106">
+            <CreateDate>2016-09-14</CreateDate>
+        </Version>
         <Hooks>
             <Hook id="6">6_7_jtl_paypal.php</Hook>
             <Hook id="7">6_7_jtl_paypal.php</Hook>
@@ -527,24 +530,6 @@ Ihr Team von {$Firma->cName}]]></ContentText>
                     <Name>Sonstige Einstellungen</Name>
                     <Description />
                     <ValueName>jtl_paypal_sonstige_headline</ValueName>
-                </Setting>
-                <Setting type="selectbox" initialValue="N" sort="21" conf="Y">
-                    <Name>Kunde soll ein Kundenkonto erhalten</Name>
-                    <Description>Kunde bekommt sein Kundenkontopasswort per E-Mail zugesandt.</Description>
-                    <ValueName>jtl_paypal_express_create_account</ValueName>
-                    <SelectboxOptions>
-                        <Option value="Y" sort="1">Ja</Option>
-                        <Option value="N" sort="2">Nein</Option>
-                    </SelectboxOptions>
-                </Setting>
-                <Setting type="selectbox" initialValue="N" sort="23" conf="Y">
-                    <Name>Versandkostenhinweis in PayPal als Position anzeigen</Name>
-                    <Description>Gesonderter Hinweis, auf Versandkostenberechnung NACH PayPal Login</Description>
-                    <ValueName>jtl_paypal_versandhinweis</ValueName>
-                    <SelectboxOptions>
-                        <Option value="Y" sort="1">Ja</Option>
-                        <Option value="N" sort="2">Nein</Option>
-                    </SelectboxOptions>
                 </Setting>
                 <Setting type="selectbox" initialValue="Y" sort="24" conf="Y">
                     <Name>Checkboxen aus Registrierungsseite auf Bestellübersichtsseite anzeigen</Name>

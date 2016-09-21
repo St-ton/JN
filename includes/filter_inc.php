@@ -638,7 +638,7 @@ function gibKategorieFilterOptionen($FilterSQL, $NaviFilter)
         );
         //baue URL
         $count = (is_array($oKategorieFilterDB_arr)) ? count($oKategorieFilterDB_arr) : 0;
-        for ($i = 0; $i < $count; $i++) {
+        for ($i = 0; $i < $count; ++$i) {
             // Anzeigen als KategoriePfad
             if ($conf['navigationsfilter']['kategoriefilter_anzeigen_als'] === 'KP') {
                 $oKategorie                        = new Kategorie($oKategorieFilterDB_arr[$i]->kKategorie);
@@ -2817,14 +2817,19 @@ function gibNaviURL($NaviFilter, $bSeo, $oZusatzFilter, $kSprache = 0, $bCanonic
             (!isset($NaviFilter->Kategorie->kKategorie) || $NaviFilter->Kategorie->kKategorie != $NaviFilter->KategorieFilter->kKategorie)
         ) {
             if (!isset($oZusatzFilter->FilterLoesen->Kategorie) || !$oZusatzFilter->FilterLoesen->Kategorie) {
-                $cSEOURL .= SEP_KAT . $NaviFilter->KategorieFilter->cSeo[$kSprache];
                 if (strlen($NaviFilter->KategorieFilter->cSeo[$kSprache]) === 0) {
                     $bSeo = false;
                 }
                 $conf = Shop::getConfig(array(CONF_NAVIGATIONSFILTER));
                 if ($conf['navigationsfilter']['kategoriefilter_anzeigen_als'] === 'HF' && !empty($oZusatzFilter->KategorieFilter->kKategorie)) {
+                    if (!empty($oZusatzFilter->KategorieFilter->cSeo)) {
+                        $cSEOURL .= SEP_KAT . $oZusatzFilter->KategorieFilter->cSeo;
+                    } else {
+                        $cSEOURL .= SEP_KAT . $NaviFilter->KategorieFilter->cSeo[$kSprache];
+                    }
                     $cURL .= '&amp;kf=' . (int)$oZusatzFilter->KategorieFilter->kKategorie;
                 } else {
+                    $cSEOURL .= SEP_KAT . $NaviFilter->KategorieFilter->cSeo[$kSprache];
                     $cURL .= '&amp;kf=' . (int)$NaviFilter->KategorieFilter->kKategorie;
                 }
             }

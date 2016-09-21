@@ -8584,16 +8584,6 @@ hr.hr-sm {
 .attr-group > .item {
   margin-bottom: 0.5em;
 }
-/* LIGHTBOX WORKAROUND */
-.modal-dialog {
-  background: #ffffff;
-}
-.modal-backdrop {
-  z-index: auto;
-}
-.modal-header {
-  z-index: 1;
-}
 .carousel-indicators {
   position: absolute;
   bottom: -20px;
@@ -8794,6 +8784,9 @@ ul.filter_state li a.active:before {
   margin-right: 5px;
   vertical-align: middle;
 }
+.box-filter-characteristics .value {
+  margin-right: 3em;
+}
 /* CONTENT */
 #content {
   margin-bottom: 30px;
@@ -8934,7 +8927,6 @@ ul.filter_state li a.active:before {
 }
 aside .box {
   margin-bottom: 20px;
-  word-break: break-all;
 }
 aside .badge {
   float: right;
@@ -10901,6 +10893,8 @@ header.fixed-navbar .visible-affix .cart-dropdown {
 .desc,
 .shortdesc,
 .product-title {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
   word-break: break-word;
   -webkit-hyphens: auto;
   -moz-hyphens: auto;
@@ -11046,6 +11040,13 @@ header.fixed-navbar .visible-affix .cart-dropdown {
   }
 }
 /*Artikel Bilder Slider Ende*/
+.modal-backdrop {
+  bottom: 0;
+  z-index: 1040;
+}
+.modal {
+  z-index: 1050;
+}
 .sandstone {
   font-size: 11px;
   line-height: 22px;
@@ -11253,4 +11254,3 @@ input:focus,
 #footer .panel .panel-title {
   border-bottom: 1px dotted #fff;
 }
-/*# sourceMappingURL=sourcemap.map */

@@ -113,7 +113,10 @@
                                     <td class="tcenter">{$oBewertung->nSterne}</td>
                                     <td class="tcenter">{$oBewertung->Datum}</td>
                                     <td class="tcenter">
-                                        <a class="btn btn-default btn-sm" href="bewertung.php?a=editieren&kBewertung={$oBewertung->kBewertung}&nFZ=1&token={$smarty.session.jtl_token}"><i class="fa fa-edit"></i></a>
+                                        <a class="btn btn-default btn-sm" title="{#modify#}"
+                                           href="bewertung.php?a=editieren&kBewertung={$oBewertung->kBewertung}&nFZ=1&token={$smarty.session.jtl_token}">
+                                            <i class="fa fa-edit"></i>
+                                        </a>
                                     </td>
                                 </tr>
                                 <tr>
@@ -295,7 +298,10 @@
                                         <td>{$oNewsKommentar->cBetreff|truncate:50:"..."}</td>
                                         <td class="tcenter">{$oNewsKommentar->dErstellt_de}</td>
                                         <td class="tcenter">
-                                            <a class="btn btn-default btn-sm" href="news.php?news=1&kNews={$oNewsKommentar->kNews}&kNewsKommentar={$oNewsKommentar->kNewsKommentar}&nkedit=1&nFZ=1&token={$smarty.session.jtl_token}" title="{#freischaltenEdit#}"><i class="fa fa-edit"></i></a>
+                                            <a class="btn btn-default btn-sm" title="{#modify#}"
+                                               href="news.php?news=1&kNews={$oNewsKommentar->kNews}&kNewsKommentar={$oNewsKommentar->kNewsKommentar}&nkedit=1&nFZ=1&token={$smarty.session.jtl_token}">
+                                                <i class="fa fa-edit"></i>
+                                            </a>
                                         </td>
                                     </tr>
                                     <tr>

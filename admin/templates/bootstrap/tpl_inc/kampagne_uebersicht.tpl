@@ -101,7 +101,10 @@
                                         <td class="tcenter">{if isset($oKampagne->nAktiv) && $oKampagne->nAktiv == 1}{#yes#}{else}{#no#}{/if}</td>
                                         <td class="tcenter">{$oKampagne->dErstellt_DE}</td>
                                         <td class="tcenter">
-                                            <a href="kampagne.php?kKampagne={$oKampagne->kKampagne}&editieren=1&token={$smarty.session.jtl_token}" class="btn btn-default"><i class="fa fa-edit"></i></a>
+                                            <a href="kampagne.php?kKampagne={$oKampagne->kKampagne}&editieren=1&token={$smarty.session.jtl_token}"
+                                               class="btn btn-default" title="{#modify#}">
+                                                <i class="fa fa-edit"></i>
+                                            </a>
                                         </td>
                                     </tr>
                                 {/if}

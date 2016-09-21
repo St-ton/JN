@@ -93,7 +93,10 @@
                                         </td>
                                         <td class="TD8">{$oCheckBoxUebersicht->dErstellt_DE}</td>
                                         <td class="TD9">
-                                            <a href="checkbox.php?edit={$oCheckBoxUebersicht->kCheckBox}&token={$smarty.session.jtl_token}" class="btn btn-default"><i class="fa fa-edit"></i></a>
+                                            <a href="checkbox.php?edit={$oCheckBoxUebersicht->kCheckBox}&token={$smarty.session.jtl_token}"
+                                               class="btn btn-default" title="{#modify#}">
+                                                <i class="fa fa-edit"></i>
+                                            </a>
                                         </td>
                                     </tr>
                                 {/foreach}

@@ -349,6 +349,28 @@ class PayPalPlus extends PaymentMethod
         return $amount;
     }
 
+    public function prepareShippingAddress($address)
+    {
+        $a = new \PayPal\Api\ShippingAddress();
+        $shippingAddress = utf8_convert_recursive($address);
+
+        // 2-letter code for US states, and the equivalent for other countries. 100 characters max.
+        if (in_array($shippingAddress->cLand, ['US', 'CA', 'IT', 'NL'])) {
+            $state = Staat::getRegionByName($address->cBundesland);
+            if ($state !== null) {
+                $shippingAddress->state = $state->cCode;
+            }
+        }
+
+        $a->setRecipientName("{$shippingAddress->cVorname} {$shippingAddress->cNachname}")
+            ->setLine1("{$shippingAddress->cStrasse} {$shippingAddress->cHausnummer}")
+            ->setCity($shippingAddress->cOrt)
+            ->setPostalCode($shippingAddress->cPLZ)
+            ->setCountryCode($shippingAddress->cLand);
+
+        return $a;
+    }
+
     public function createPayment()
     {
         $items = [];

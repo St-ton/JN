@@ -89,40 +89,18 @@ switch ($action) {
             _exit(400);
         }
 
-        $deliveryAddress = $_SESSION['Lieferadresse'];
-        foreach (get_object_vars($deliveryAddress) as $key => $value) {
-            $deliveryAddress->{$key} = StringHandler::unhtmlentities($value);
-        }
-
-        $address = json_decode(utf8_encode(sprintf('{
-            "recipient_name": "%s %s",
-            "line1": "%s %s",
-            "city": "%s",
-            "postal_code": "%s",
-            "country_code": "%s"
-        }', $deliveryAddress->cVorname, $deliveryAddress->cNachname,
-            $deliveryAddress->cStrasse, $deliveryAddress->cHausnummer,
-            $deliveryAddress->cOrt,
-            $deliveryAddress->cPLZ,
-            $deliveryAddress->cLand)));
-
-        // 2-letter code for US states, and the equivalent for other countries. 100 characters max.
-        if (in_array($deliveryAddress->cLand, ['US', 'CA', 'IT', 'NL'])) {
-            $state = Staat::getRegionByName($_SESSION['Lieferadresse']->cBundesland);
-            if ($state !== null) {
-                $address->state = $state->cCode;
-            }
-        }
-
         PayPalHelper::addSurcharge($api->getPaymentId());
 
         $basket = PayPalHelper::getBasket();
+        $shippingAddress = clone $_SESSION['Lieferadresse'];
+
         $amount = $api->prepareAmount($basket, $basket->currency->cISO);
+        $shippingAddress = $api->prepareShippingAddress($_SESSION['Lieferadresse']);
 
         $patchShipping = new \PayPal\Api\Patch();
         $patchShipping->setOp('add')
             ->setPath('/transactions/0/item_list/shipping_address')
-            ->setValue($address);
+            ->setValue($shippingAddress);
 
         $patchAmount = new \PayPal\Api\Patch();
         $patchAmount->setOp('replace')

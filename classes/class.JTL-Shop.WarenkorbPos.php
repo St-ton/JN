@@ -167,7 +167,6 @@ class WarenkorbPos
      * Konstruktor
      *
      * @param int $kWarenkorbPos Falls angegeben, wird der WarenkorbPos mit angegebenem kWarenkorbPos aus der DB geholt
-     * @return WarenkorbPos
      */
     public function __construct($kWarenkorbPos = 0)
     {
@@ -420,8 +419,12 @@ class WarenkorbPos
         $obj->kKonfigitem               = $this->kKonfigitem;
         $obj->kBestellpos               = $this->kBestellpos;
         $obj->fLagerbestandVorAbschluss = $this->fLagerbestandVorAbschluss;
-        $obj->nLongestMinDelivery       = $this->oEstimatedDelivery->longestMin;
-        $obj->nLongestMaxDelivery       = $this->oEstimatedDelivery->longestMax;
+
+        if (isset($this->oEstimatedDelivery)) {
+            // Lieferzeiten nur speichern, wenn sie gesetzt sind, also z.B. nicht bei Versandkosten etc.
+            $obj->nLongestMinDelivery = $this->oEstimatedDelivery->longestMin;
+            $obj->nLongestMaxDelivery = $this->oEstimatedDelivery->longestMax;
+        }
 
         $this->kWarenkorbPos = Shop::DB()->insert('twarenkorbpos', $obj);
 

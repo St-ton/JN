@@ -1,4 +1,4 @@
-{include file='tpl_inc/header.tpl' bForceFluid=($cAction == 'area')}
+{include file='tpl_inc/header.tpl' bForceFluid=($cAction === 'area')}
 {config_load file="$lang.conf" section="banner"}
 {include file='tpl_inc/seite_header.tpl' cTitel=#banner# cBeschreibung=#bannerDesc# cDokuURL=#bannerURL#}
 

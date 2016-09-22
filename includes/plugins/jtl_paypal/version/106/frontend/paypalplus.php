@@ -71,8 +71,12 @@ switch ($action) {
 
             $step = 'ZahlungZusatzschritt';
 
+            $settings = Shop::Smarty()->getTemplateVars('Einstellungen');
+            $settings = array_merge($settings, Shop::getSettings([CONF_ZAHLUNGSARTEN]));
+
             Shop::Smarty()
                 ->assign('step', $step)
+                ->assign('Einstellungen', $settings)
                 ->assign('bestellschritt', gibBestellschritt($step))
                 ->display('checkout/index.tpl');
 

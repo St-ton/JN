@@ -3571,7 +3571,6 @@ class Artikel
         /* Sobald ein KindArtikel teurer ist als der Vaterartikel, muss nVariationsAufpreisVorhanden auf 1 gesetzt werden damit in der Artikelvorschau ein "Preis ab ..." erscheint
            aber nur wenn auch Preise angezeigt werden, this->Preise also auch vorhanden ist */
         if (is_object($this->Preise) && $oArtikelTMP->kVaterArtikel == 0 && $oArtikelTMP->nIstVater == 1) {
-
             $fVKNetto         = ($this->Preise->fVKNetto !== null) ? $this->Preise->fVKNetto : 0.0;
             $fMaxRabatt       = $this->getDiscount($kKundengruppe, $oArtikelTMP->kArtikel);
             $oKindSonderpreis = Shop::DB()->query(

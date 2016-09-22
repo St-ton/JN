@@ -8,7 +8,7 @@
 
 {if $Einstellungen.kunden.kundenregistrierung_vcardupload === 'Y'}
 <div class="dropdown nav-toggle">
-    <a href="#" class="dropdown-toggle btn btn-default{if isset($panel_heading)} heading{/if}" title="{lang key="uploadVCard" section="account data"}" data-toggle="dropdown"><i class="fa fa-file-text-o"></i>&nbsp;<span class="caret"></span></a>
+    <a href="#" class="dropdown-toggle btn btn-default{if isset($panel_heading)} heading{/if}" title="{lang key="uploadVCard" section="account data"}" data-toggle="dropdown"><i class="fa fa-file-text-o"></i><span class="hidden-xs">&nbsp;{lang key="uploadVCard" section="account data"}&nbsp;</span><span class="caret"></span></a>
     <ul class="dropdown-menu dropdown-menu-right">
         <li>
             <div class="panel">

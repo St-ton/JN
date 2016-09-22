@@ -332,15 +332,28 @@ class PayPalPlus extends PaymentMethod
         return $object;
     }
 
+    public function prepareAmount($basket)
+    {
+        $details = new Details();
+        $details->setShipping($basket->shipping[WarenkorbHelper::GROSS])
+            ->setSubtotal($basket->article[WarenkorbHelper::GROSS])
+            ->setHandlingFee($basket->surcharge[WarenkorbHelper::GROSS])
+            ->setShippingDiscount($basket->discount[WarenkorbHelper::GROSS] * -1)
+            ->setTax(0.00);
+
+        $amount = new Amount();
+        $amount->setCurrency($basket->currency->cISO)
+            ->setTotal($basket->total[WarenkorbHelper::GROSS])
+            ->setDetails($details);
+
+        return $amount;
+    }
+
     public function createPayment()
     {
-        $payer = new Payer();
-        $payer->setPaymentMethod('paypal');
-
+        $items = [];
         $basket = PayPalHelper::getBasket();
         $currencyIso = $basket->currency->cISO;
-
-        $items = [];
 
         foreach ($basket->items as $i => $p) {
             $item = new Item();
@@ -354,17 +367,7 @@ class PayPalPlus extends PaymentMethod
         $itemList = new ItemList();
         $itemList->setItems($items);
 
-        $details = new Details();
-        $details->setShipping($basket->shipping[WarenkorbHelper::GROSS])
-            ->setSubtotal($basket->article[WarenkorbHelper::GROSS])
-            ->setHandlingFee($basket->surcharge[WarenkorbHelper::GROSS])
-            ->setShippingDiscount($basket->discount[WarenkorbHelper::GROSS] * -1)
-            ->setTax(0.00);
-
-        $amount = new Amount();
-        $amount->setCurrency($currencyIso)
-            ->setTotal($basket->total[WarenkorbHelper::GROSS])
-            ->setDetails($details);
+        $amount = $this->prepareAmount($basket);
 
         $transaction = new Transaction();
         $transaction->setAmount($amount)
@@ -374,6 +377,9 @@ class PayPalPlus extends PaymentMethod
         $redirectUrls = new RedirectUrls();
         $redirectUrls->setReturnUrl($this->getCallbackUrl(['a' => 'return', 'r' => 'true']))
             ->setCancelUrl($this->getCallbackUrl(['a' => 'return', 'r' => 'false']));
+
+        $payer = new Payer();
+        $payer->setPaymentMethod('paypal');
 
         $payment = new Payment();
         $payment->setIntent('sale')

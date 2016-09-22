@@ -206,13 +206,29 @@ class PayPalHelper
         return;
     }
 
-    public static function addSurcharge()
+    public static function addSurcharge($paymentId = 0)
     {
-        if (!isset($_SESSION['Versandart']->kVersandart) || !isset($_SESSION['Zahlungsart']->kZahlungsart)) {
+        $paymentId = $paymentId <= 0 &&
+            isset($_SESSION['Zahlungsart']) &&
+            isset($_SESSION['Zahlungsart']->kZahlungsart)
+            ? (int) $_SESSION['Zahlungsart']->kZahlungsart : $paymentId;
+
+        $shippingId = isset($_SESSION['Versandart']) &&
+            isset($_SESSION['Versandart']->kVersandart)
+            ? $_SESSION['Versandart']->kVersandart : 0;
+
+        if ($paymentId <= 0 && isset($_SESSION['Zahlungsart']->kZahlungsart)) {
+            $paymentId = (int) $_SESSION['Zahlungsart']->kZahlungsart;
+        }
+
+        if ($shippingId <= 0 || $paymentId <= 0) {
             return;
         }
 
-        $surcharge = Shop::DB()->query("SELECT * FROM tversandartzahlungsart WHERE kVersandart='" . intval($_SESSION['Versandart']->kVersandart) . "' AND kZahlungsart='" . intval($_SESSION['Zahlungsart']->kZahlungsart) . "'", 1);
+        $surcharge = Shop::DB()->selectSingleRow(
+            'tversandartzahlungsart',
+            'kVersandart', $shippingId,
+            'kZahlungsart', $paymentId);
 
         if ($surcharge !== null && is_object($surcharge)) {
             $_SESSION['Zahlungsart']->fAufpreis    = $surcharge->fAufpreis;
@@ -220,15 +236,16 @@ class PayPalHelper
         }
 
         if (isset($_SESSION['Zahlungsart']->cAufpreisTyp) && $_SESSION['Zahlungsart']->cAufpreisTyp === 'prozent') {
-            $Aufpreis = ($_SESSION['Warenkorb']->gibGesamtsummeWarenExt(['1'], 1) * $_SESSION['Zahlungsart']->fAufpreis) / 100.0;
+            $amount = ($_SESSION['Warenkorb']->gibGesamtsummeWarenExt(['1'], 1) * $_SESSION['Zahlungsart']->fAufpreis) / 100.0;
         } else {
-            $Aufpreis = (isset($_SESSION['Zahlungsart']->fAufpreis)) ? $_SESSION['Zahlungsart']->fAufpreis : 0;
+            $amount = (isset($_SESSION['Zahlungsart']->fAufpreis)) ? $_SESSION['Zahlungsart']->fAufpreis : 0;
         }
-        if ($Aufpreis != 0) {
+
+        if ($amount != 0) {
             $_SESSION['Warenkorb']->erstelleSpezialPos(
                 $_SESSION['Zahlungsart']->angezeigterName,
                 1,
-                $Aufpreis,
+                $amount,
                 $_SESSION['Warenkorb']->gibVersandkostenSteuerklasse(),
                 C_WARENKORBPOS_TYP_ZAHLUNGSART,
                 true

@@ -114,16 +114,26 @@ switch ($action) {
             }
         }
 
+        PayPalHelper::addSurcharge($api->getPaymentId());
+
+        $basket = PayPalHelper::getBasket();
+        $amount = $api->prepareAmount($basket, $basket->currency->cISO);
+
+        $patchShipping = new \PayPal\Api\Patch();
+        $patchShipping->setOp('add')
+            ->setPath('/transactions/0/item_list/shipping_address')
+            ->setValue($address);
+
+        $patchAmount = new \PayPal\Api\Patch();
+        $patchAmount->setOp('replace')
+            ->setPath('/transactions/0/amount')
+            ->setValue($amount);
+
         try {
             $payment = Payment::get($_GET['id'], $apiContext);
 
-            $patchShipping = new \PayPal\Api\Patch();
-            $patchShipping->setOp('add')
-                ->setPath('/transactions/0/item_list/shipping_address')
-                ->setValue($address);
-
             $patchRequest = new \PayPal\Api\PatchRequest();
-            $patchRequest->setPatches([$patchShipping]);
+            $patchRequest->setPatches([$patchShipping, $patchAmount]);
 
             $payment->update($patchRequest, $apiContext);
             $api->logResult('Patch', $patchRequest, $payment);

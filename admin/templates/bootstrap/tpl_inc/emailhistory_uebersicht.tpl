@@ -1,4 +1,4 @@
-{include file='tpl_inc/seite_header.tpl' cTitel=#emailhistory# cBeschreibung=#emailhistoryDesc# cDokuURL="#emailhistoryURL#"}
+{include file='tpl_inc/seite_header.tpl' cTitel=#emailhistory# cBeschreibung=#emailhistoryDesc# cDokuURL=#emailhistoryURL#}
 <div id="content" class="container-fluid">
     {if $oEmailhistory_arr|@count > 0 && $oEmailhistory_arr}
         {include file='tpl_inc/pagination.tpl' oPagination=$oPagination}

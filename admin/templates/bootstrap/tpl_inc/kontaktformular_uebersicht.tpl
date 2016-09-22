@@ -76,7 +76,9 @@
                             <td class="tcenter">{$Betreff->Kundengruppen}</td>
                             <td class="tcenter">
                                 <span class="btn-group">
-                                    <a href="kontaktformular.php?kKontaktBetreff={$Betreff->kKontaktBetreff}&token={$smarty.session.jtl_token}" class="btn btn-default"><i class="fa fa-edit"></i></a>
+                                    <a href="kontaktformular.php?kKontaktBetreff={$Betreff->kKontaktBetreff}&token={$smarty.session.jtl_token}"
+                                       class="btn btn-default" title="{#modify#}"><i class="fa fa-edit"></i>
+                                    </a>
                                     <a href="kontaktformular.php?del={$Betreff->kKontaktBetreff}&token={$smarty.session.jtl_token}" class="btn btn-danger" title="{#delete#}"><i class="fa fa-trash"></i></a>
                                 </span>
                             </td>

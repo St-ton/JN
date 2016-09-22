@@ -257,7 +257,10 @@
                                         <input class="form-control" name="nSort_{$oKundenfeld->kKundenfeld}" type="text" value="{$oKundenfeld->nSort}" size="5" />
                                     </td>
                                     <td class="tcenter">
-                                        <a href="kundenfeld.php?a=edit&kKundenfeld={$oKundenfeld->kKundenfeld}&tab=uebersicht&token={$smarty.session.jtl_token}" class="btn btn-default btn-sm"><i class="fa fa-edit"></i></a>
+                                        <a href="kundenfeld.php?a=edit&kKundenfeld={$oKundenfeld->kKundenfeld}&tab=uebersicht&token={$smarty.session.jtl_token}"
+                                           class="btn btn-default btn-sm" title="{#modify#}">
+                                            <i class="fa fa-edit"></i>
+                                        </a>
                                     </td>
                                 </tr>
                             {/foreach}

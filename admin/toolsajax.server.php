@@ -54,6 +54,21 @@ function getCurrencyConversionAjax($fPreisNetto, $fPreisBrutto, $cTargetID)
 }
 
 /**
+ * @param float  $fPreisNetto
+ * @param float  $fPreisBrutto
+ * @param string $cTargetID
+ * @return xajaxResponse
+ */
+function setCurrencyConversionAjaxTooltip($fPreisNetto, $fPreisBrutto, $cTooltipID)
+{
+    $objResponse = new xajaxResponse();
+    $cString     = getCurrencyConversion($fPreisNetto, $fPreisBrutto);
+    $objResponse->assign($cTooltipID, 'dataset.originalTitle', $cString);
+
+    return $objResponse;
+}
+
+/**
  * @param int    $kWidget
  * @param string $cContainer
  * @param int    $nPos
@@ -447,6 +462,31 @@ function getAttributeList($cSearch, $cWrapperID)
 }
 
 /**
+ * @param string $cSearch
+ * @param array $aParam
+ * @return array
+ */
+function getLinkList($cSearch, $aParam)
+{
+    global $oAccount;
+
+    $cSearch      = Shop::DB()->escape($cSearch);
+    $cSearch      = utf8_decode($cSearch);
+    $oArticle_arr = array();
+    $oResponse    = new xajaxResponse();
+    if (strlen($cSearch) >= 2) {
+        $oArticle_arr = Shop::DB()->query("SELECT kLink AS kPrimary, kLink AS cBase, cName FROM tlink WHERE cName LIKE '" . $cSearch . "%' LIMIT 50", 2);
+        foreach ($oArticle_arr as &$oArticle) {
+            $oArticle->cName = utf8_encode($oArticle->cName);
+        }
+    }
+    $oResponse->script('this.search_arr = ' . json_encode($oArticle_arr) . ';');
+
+    return $oResponse;
+}
+
+
+/**
  * Auswahlassistent
  *
  * @param array $kMM_arr
@@ -541,6 +581,7 @@ executeHook(HOOK_TOOLSAJAX_SERVER_ADMIN, array('xajax' => &$xajax));
 
 $xajax->registerFunction('reloadAdminLoginCaptcha');
 $xajax->registerFunction('getCurrencyConversionAjax');
+$xajax->registerFunction('setCurrencyConversionAjaxTooltip');
 $xajax->registerFunction('setWidgetPositionAjax');
 $xajax->registerFunction('closeWidgetAjax');
 $xajax->registerFunction('addWidgetAjax');
@@ -557,6 +598,7 @@ $xajax->registerFunction('getCategoryList');
 $xajax->registerFunction('getCategoryListFromString');
 $xajax->registerFunction('getTagList');
 $xajax->registerFunction('getAttributeList');
+$xajax->registerFunction('getLinkList');
 $xajax->registerFunction('getMerkmalWerteAA');
 $xajax->registerFunction('setRMAStatusAjax');
 $xajax->registerFunction('saveBannerAreas');

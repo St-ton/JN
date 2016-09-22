@@ -85,7 +85,7 @@ function speicherFragenInSession($cPost_arr)
 {
     if (is_array($cPost_arr['kUmfrageFrage']) && count($cPost_arr['kUmfrageFrage']) > 0) {
         foreach ($cPost_arr['kUmfrageFrage'] as $i => $kUmfrageFrage) {
-            $kUmfrageFrage = intval($kUmfrageFrage);
+            $kUmfrageFrage = (int)$kUmfrageFrage;
             $oUmfrageFrage = Shop::DB()->query(
                 "SELECT cTyp
                     FROM tumfragefrage
@@ -126,7 +126,7 @@ function findeFragenUndUpdateSession($cPost_arr)
 {
     if (is_array($cPost_arr['kUmfrageFrage']) && count($cPost_arr['kUmfrageFrage']) > 0) {
         foreach ($cPost_arr['kUmfrageFrage'] as $kUmfrageFrage) {
-            $kUmfrageFrage = intval($kUmfrageFrage);
+            $kUmfrageFrage = (int)$kUmfrageFrage;
             $oUmfrageFrage = Shop::DB()->query(
                 "SELECT cTyp
                     FROM tumfragefrage
@@ -200,7 +200,6 @@ function setzeUmfrageErgebnisse()
         $oUmfrageDurchfuehrung->dDurchgefuehrt = 'now()';
 
         $kUmfrageDurchfuehrung = Shop::DB()->insert('tumfragedurchfuehrung', $oUmfrageDurchfuehrung);
-
 
         // Daten der Umfrage in die Datenbank (tumfragedurchfuehrungantwort) speichern
         foreach ($_SESSION['Umfrage']->oUmfrageFrage_arr as $j => $oUmfrageFrage) {

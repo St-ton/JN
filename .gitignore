@@ -4,6 +4,7 @@
 /shopinfo.xml
 /.idea
 /.htaccess
+/.phpstorm.meta.php
 
 # bilder
 /bilder/brandingbilder/*
@@ -18,6 +19,7 @@
 /bilder/hersteller/normal/*
 /bilder/konfigurator/klein/*
 /bilder/news/*
+/bilder/newskategorie/*
 /bilder/produkte/klein/*
 /bilder/produkte/normal/*
 /bilder/produkte/gross/*
@@ -61,3 +63,6 @@
 bootstrap/*
 includes/vendor/*
 node_modules/
+/tools/bin/*
+/tools/dist/*
+/uploads/*

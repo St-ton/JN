@@ -44,7 +44,7 @@
     <div class="tab-content">
         <div id="uebersicht" class="tab-pane fade {if !isset($cTab) || $cTab === 'uebersicht'} active in{/if}">
             {if isset($oCheckBox_arr) && $oCheckBox_arr|@count > 0}
-                {include file='pagination.tpl' cSite=1 cUrl='checkbox.php' oBlaetterNavi=$oBlaetterNavi hash='#uebersicht'}
+                {include file='tpl_inc/pagination.tpl' oPagination=$oPagination cAnchor='uebersicht'}
                 <div id="tabellenLivesuche">
                     <form name="uebersichtForm" method="post" action="checkbox.php">
                         {$jtl_token}
@@ -185,7 +185,7 @@
                                         <div class="form-group">
                                             <div class="col-xs-3 group-radio">
                                                 <label>
-                                                <input id="nLink" name="nLink" type="radio" class="{if isset($cPlausi_arr.kLink)} fieldfillout{/if}" value="-1" onClick="aenderAnzeigeLinks(false);"{if (!isset($cPlausi_arr.kLink) && (!isset($oCheckBox->kLink) || !$oCheckBox->kLink)) || $cPost_arr.nLink == -1} checked="checked"{/if} />
+                                                <input id="nLink" name="nLink" type="radio" class="{if isset($cPlausi_arr.kLink)} fieldfillout{/if}" value="-1" onClick="aenderAnzeigeLinks(false);"{if (!isset($cPlausi_arr.kLink) && (!isset($oCheckBox->kLink) || !$oCheckBox->kLink)) || isset($cPlausi_arr.kLink) && $cPost_arr.nLink == -1} checked="checked"{/if} />
                                                 Kein Link
                                                 </label>
                                             </div>

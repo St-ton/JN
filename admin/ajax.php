@@ -21,7 +21,18 @@ if (isset($_GET['query']) && isset($_GET['type']) && validateToken()) {
             die($jsonAPI->getPages());
         case 'manufacturer':
             die($jsonAPI->getManufacturers());
+        case 'TwoFA':
+            $oTwoFA = new TwoFA();
+            $oTwoFA->setUserByName($_GET['userName']);
+
+            $oUserData = new stdClass();
+            $oUserData->szSecret = $oTwoFA->createNewSecret()->getSecret();
+            $oUserData->szQRcode = $oTwoFA->getQRcode();
+            $szJSONuserData = json_encode($oUserData);
+
+            die($szJSONuserData);
         default :
             die();
     }
 }
+

@@ -9,6 +9,7 @@ require PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
 Shop::run();
 $cParameter_arr = Shop::getParameters();
 $NaviFilter     = Shop::buildNaviFilter($cParameter_arr);
+Shop::checkNaviFilter($NaviFilter);
 $https          = false;
 $linkHelper     = LinkHelper::getInstance();
 if (isset(Shop::$kLink) && (int)Shop::$kLink > 0) {
@@ -41,13 +42,12 @@ if (isset($_SESSION['bWarenkorbHinzugefuegt']) && isset($_SESSION['bWarenkorbAnz
     unset($_SESSION['bWarenkorbAnzahl']);
     unset($_SESSION['bWarenkorbHinzugefuegt']);
 }
-//wurde was in den Warenkorb gelegt?
+//wurde ein artikel in den Warenkorb gelegt?
 checkeWarenkorbEingang();
-if (!$cParameter_arr['kWunschliste'] && strlen(verifyGPDataString('wlid')) > 0) {
-    header('Location: ' . $helper->getStaticRoute('wunschliste.php', true) . '?wlid=' . verifyGPDataString('wlid') . '&error=1', true, 303);
+if (!$cParameter_arr['kWunschliste'] && strlen(verifyGPDataString('wlid')) > 0 && verifyGPDataString('error') === '') {
+    header('Location: ' . $linkHelper->getStaticRoute('wunschliste.php', true) . '?wlid=' . verifyGPDataString('wlid') . '&error=1', true, 303);
     exit();
 }
-$smarty->assign('NaviFilter', $NaviFilter);
 //support for artikel_after_cart_add
 if ($smarty->getTemplateVars('bWarenkorbHinzugefuegt')) {
     require_once PFAD_ROOT . PFAD_INCLUDES . 'artikel_inc.php';
@@ -81,8 +81,8 @@ if (isset($_SESSION['Kunde']->cLand) && strlen($_SESSION['Kunde']->cLand) > 0) {
     $cKundenherkunft = $_SESSION['Kunde']->cLand;
 }
 $oVersandartKostenfrei = gibVersandkostenfreiAb($kKundengruppe, $cKundenherkunft);
-
-$smarty->assign('WarenkorbArtikelanzahl', $numArticles)
+$smarty->assign('NaviFilter', $NaviFilter)
+       ->assign('WarenkorbArtikelanzahl', $numArticles)
        ->assign('WarenkorbArtikelPositionenanzahl', $warenpositionenanzahl)
        ->assign('WarenkorbWarensumme', $warensumme)
        ->assign('WarenkorbGesamtsumme', $gesamtsumme)
@@ -106,34 +106,24 @@ if ($cParameter_arr['kKategorie'] > 0 && !Kategorie::isVisible($cParameter_arr['
     Shop::$kLink                  = $kLink;
 }
 Shop::getEntryPoint();
-
 if (Shop::$is404 === true) {
     $cParameter_arr['is404'] = true;
+    Shop::$fileName = null;
 }
 if (Shop::$fileName !== null) {
     require PFAD_ROOT . Shop::$fileName;
 }
 if ($cParameter_arr['is404'] === true) {
-    $uri = $_SERVER['REQUEST_URI'];
-    if (isset($_SERVER['HTTP_X_REWRITE_URL'])) {
-        $uri = $_SERVER['HTTP_X_REWRITE_URL'];
+    if (!isset($seo)) {
+        $seo = null;
     }
-    $parsed = parse_url($uri);
-    if (isset($parsed['path']) && (in_array($parsed['path'], array('index.php', 'navi.php')))) {
-        $oLink       = Shop::DB()->query("SELECT kLink FROM tlink WHERE nLinkart = " . LINKTYP_STARTSEITE, 1);
-        $kLink       = $oLink->kLink;
-        Shop::$kLink = $kLink;
-    }
-    if (isset($seo) && strlen($seo) > 0) {
-        executeHook(HOOK_INDEX_SEO_404, array('seo' => $seo));
-    }
+    executeHook(HOOK_INDEX_SEO_404, array('seo' => $seo));
     if (!Shop::$kLink) {
         $hookInfos     = urlNotFoundRedirect(array('key' => 'kLink', 'value' => $cParameter_arr['kLink']));
         $kLink         = $hookInfos['value'];
         $bFileNotFound = $hookInfos['isFileNotFound'];
         if (!$kLink) {
-            $oLink       = Shop::DB()->query("SELECT kLink FROM tlink WHERE nLinkart = " . LINKTYP_404, 1);
-            $kLink       = $oLink->kLink;
+            $kLink       = $linkHelper->getSpecialPageLinkKey(LINKTYP_404);
             Shop::$kLink = $kLink;
         }
     }

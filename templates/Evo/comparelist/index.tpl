@@ -17,7 +17,7 @@
             <tr>
                 <td>&nbsp;</td>
                 {foreach name=vergleich from=$oVergleichsliste->oArtikel_arr item=oArtikel}
-                    <td style="vertical-align:bottom; width:{$Einstellungen_Vergleichsliste.vergleichsliste.vergleichsliste_spaltengroesse}px;" class="text-center">
+                    <td style="width:{$Einstellungen_Vergleichsliste.vergleichsliste.vergleichsliste_spaltengroesse}px;" class="text-center">
                         <div class="thumbnail">
                             <a href="{$oArtikel->cURL}">
                                 {image src=$oArtikel->cVorschaubild alt=$oArtikel->cName class="image"}
@@ -27,15 +27,18 @@
                             <a href="{$oArtikel->cURL}">{$oArtikel->cName}</a>
                         </p>
 
-                        <p>
-                            <strong class="price text-nowrap">{$oArtikel->Preise->cVKLocalized[$NettoPreise]}</strong
-                        {*
-                        {if $oArtikel->cLocalizedVPE}
-                        <br/><small><b>{lang key="basePrice" section="global"}:</b> {$oArtikel->cLocalizedVPE[$NettoPreise]}</small>
+                        {if $oArtikel->Preise->fVKNetto == 0 && $Einstellungen.global.global_preis0 === 'N'}
+                            <p>{lang key="priceOnApplication" section="global"}</p>
+                        {else}
+                            <p>
+                                {if isset($oArtikel->Preise->strPreisGrafik_Detail)}
+                                    {assign var=priceImage value=$oArtikel->Preise->strPreisGrafik_Detail}
+                                {else}
+                                    {assign var=priceImage value=null}
+                                {/if}
+                                {include file="productdetails/price.tpl" Artikel=$oArtikel price_image=$priceImage tplscope="detail"}
+                            </p>
                         {/if}
-                        <br /><span class="vat_info">{include file='snippets/shipping_tax_info.tpl' taxdata=$oArtikel->taxData}</span>
-                        *}
-                        </p>
                         <p>
                             <a href="{$oArtikel->cURLDEL}" class="remove"><span class="fa fa-trash-o"></span></a>
                         </p>
@@ -154,7 +157,7 @@
                                         {if $oVariationen->cName == $oVariationenArtikel->cName}
                                             {foreach name=variationswerte from=$oVariationenArtikel->Werte item=oVariationsWerte}
                                                 {$oVariationsWerte->cName}
-                                                {if $oArtikel->nVariationOhneFreifeldAnzahl == 1 && ($oArtikel->kVaterArtikel > 0 || $oArtikel->nIstVater==1)}
+                                                {if $oArtikel->nVariationOhneFreifeldAnzahl == 1 && ($oArtikel->kVaterArtikel > 0 || $oArtikel->nIstVater == 1)}
                                                     {assign var=kEigenschaftWert value=$oVariationsWerte->kEigenschaftWert}
                                                     ({$oArtikel->oVariationDetailPreisKind_arr[$kEigenschaftWert]->Preise->cVKLocalized[$NettoPreise]}{if !empty($oArtikel->oVariationDetailPreisKind_arr[$kEigenschaftWert]->Preise->PreisecPreisVPEWertInklAufpreis[$NettoPreise])}, {$oArtikel->oVariationDetailPreisKind_arr[$kEigenschaftWert]->Preise->PreisecPreisVPEWertInklAufpreis[$NettoPreise]}{/if})
                                                 {/if}
@@ -166,9 +169,9 @@
                                         {if $oVariationen->cName == $oVariationenArtikel->cName}
                                             {foreach name=variationswerte from=$oVariationenArtikel->Werte item=oVariationsWerte}
                                                 {$oVariationsWerte->cName}
-                                                {if $Einstellungen_Vergleichsliste.artikeldetails.artikel_variationspreisanzeige==1 && $oVariationsWerte->fAufpreisNetto!=0}
+                                                {if $Einstellungen_Vergleichsliste.artikeldetails.artikel_variationspreisanzeige == 1 && $oVariationsWerte->fAufpreisNetto != 0}
                                                     ({$oVariationsWerte->cAufpreisLocalized[$NettoPreise]}{if !empty($oVariationsWerte->cPreisVPEWertAufpreis[$NettoPreise])}, {$oVariationsWerte->cPreisVPEWertAufpreis[$NettoPreise]}{/if})
-                                                {elseif $Einstellungen_Vergleichsliste.artikeldetails.artikel_variationspreisanzeige==2 && $oVariationsWerte->fAufpreisNetto!=0}
+                                                {elseif $Einstellungen_Vergleichsliste.artikeldetails.artikel_variationspreisanzeige == 2 && $oVariationsWerte->fAufpreisNetto != 0}
                                                     ({$oVariationsWerte->cPreisInklAufpreis[$NettoPreise]}{if !empty($oVariationsWerte->cPreisVPEWertInklAufpreis[$NettoPreise])}, {$oVariationsWerte->cPreisVPEWertInklAufpreis[$NettoPreise]}{/if})
                                                 {/if}
                                                 {if !$smarty.foreach.variationswerte.last},{/if}
@@ -226,6 +229,30 @@
     <div class="alert alert-danger">
         {$cFehler}
     </div>
+{/if}
+
+{if isset($bAjaxRequest) && $bAjaxRequest}
+    <script type="text/javascript">
+        $('a.remove').click(function(e) {
+            eModal.ajax({
+                'size': 'lg',
+                'url': e.currentTarget.href,
+                'title': '{lang key="compare" section="global"}'
+            });
+
+            return false;
+        });
+        new function(){
+            var clCount = {if isset($oVergleichsliste->oArtikel_arr)}{$oVergleichsliste->oArtikel_arr|count}{else}0{/if};
+            if (clCount > 1) {
+                $('.navbar-nav .compare-list-menu .badge em').html(clCount);
+            }
+            else {
+                $('.navbar-nav .compare-list-menu').addClass('hidden');
+                eModal.close();
+            }
+        }();
+    </script>
 {/if}
 
 {include file='layout/footer.tpl'}

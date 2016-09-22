@@ -129,3 +129,5 @@ if (!JTL_INCLUDE_ONLY_DB) {
     }
     $GLOBALS['oSprache'] = Sprache::getInstance();
 }
+
+Shop::bootstrap();

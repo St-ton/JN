@@ -147,7 +147,7 @@ class Emailhistory
      */
     public function delete()
     {
-        return Shop::DB()->query("DELETE FROM temailhistory WHERE kEmailhistory = " . $this->getEmailhistory(), 3);
+        return Shop::DB()->delete('temailhistory', 'kEmailhistory', $this->getEmailhistory());
     }
 
     /**

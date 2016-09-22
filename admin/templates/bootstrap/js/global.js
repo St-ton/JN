@@ -131,6 +131,9 @@ function get_list_callback(type, id) {
         case 'attribute':
             return (id == 0) ? 'getAttributeList' :
                 'getAttributeListFromString';
+        case 'link':
+            return (id == 0) ? 'getLinkList' :
+                'getLinkListFromString';
     }
     return false;
 }
@@ -152,7 +155,7 @@ function init_simple_search(callback) {
         simple_search_list(type, search, function (result) {
             $(result).each(function (k, v) {
                 browser.find('select').append(
-                    $('<option></option>').attr('primary', v.kPrimary).attr('url', v.cUrl).val(v.cBase).html(v.cName).dblclick(function () {
+                    $('<option></option>').attr('primary', v.kPrimary).attr('url', v.cUrl).val(v.kPrimary).html(v.cName).dblclick(function () {
                         browser.find('.button.add').trigger('click');
                     })
                 );
@@ -456,6 +459,47 @@ function createNotify(options, settings) {
     return $.notify(options, settings);
 }
 
+function updateNotifyDrop() {
+    ajaxCall('status.php', { action: 'notify' }, function(result, xhr) {
+        if (xhr && xhr.error && xhr.error.code == 401) {
+            // auth session expired
+        }
+        else if(!result.error) {
+            if (result.data.tpl) {
+                $('#notify-drop').html(result.data.tpl);
+            }
+        }
+    });
+}
+
+function massCreationCoupons() {
+    var checkboxCreationCoupons = $("#couponCreation").prop("checked");
+    $("#massCreationCouponsBody").toggleClass("hidden", !checkboxCreationCoupons);
+    $("#singleCouponCode").toggleClass("hidden", checkboxCreationCoupons);
+    $("#limitedByCustomers").toggleClass("hidden", checkboxCreationCoupons);
+    $("#informCustomers").toggleClass("hidden", checkboxCreationCoupons);
+}
+
+function addFav(title, url, success) {
+    ajaxCallV2('favs.php?action=add', { title: title, url: url }, function(result, error) {
+        if (!error) {
+            reloadFavs();
+            if (typeof success == 'function') {
+                success();
+            }
+        }
+    });
+}
+
+function reloadFavs() {
+    ajaxCallV2('favs.php?action=list', {}, function(result, error) {
+        if (!error) {
+            console.log(result.data.tpl);
+            $('#favs-drop').html(result.data.tpl);
+        }
+    });
+}
+
 /**
  * document ready
  */
@@ -511,6 +555,16 @@ $(document).ready(function () {
 
     });
 
+    $('#fav-add').click(function() {
+        var title = $('.content-header h1').text();
+        var url = window.location.href;
+        addFav(title, url, function() {
+            showNotify('success', 'Favoriten', 'Wurde erfolgreich hinzugef&uuml;gt');
+        });
+
+        return false;
+    });
+
     $('button.blue, input[type=submit].blue').addClass('btn btn-primary');
     $('button.orange, input[type=submit].orange').addClass('btn btn-default');
 
@@ -541,4 +595,36 @@ $(document).ready(function () {
             $(item).prop("checked", activitem);
         });
     });
+
+    $('.switcher .switcher-wrapper').on('click', function(e) {
+        e.stopPropagation();
+    });
+    $('.switcher').on('show.bs.dropdown', function () {
+        showBackdrop();
+        xajax_getAvailableWidgetsAjax();
+    }).on('hide.bs.dropdown', function () {
+        hideBackdrop();
+    });
+    
+    $('#nbc-1 .dropdown').on('show.bs.dropdown', function () {
+        showBackdrop();
+    }).on('hide.bs.dropdown', function () {
+        hideBackdrop();
+    });
+
+    // Massenerstellung von Kupons de-/aktivieren
+    $("#couponCreation").change(function () {
+        massCreationCoupons();
+    });
 });
+
+function showBackdrop() {
+    $backdrop = $('<div class="menu-backdrop fade" />')
+        .appendTo($(document.body));
+    $backdrop[0].offsetWidth;
+    $backdrop.addClass('in');
+}
+
+function hideBackdrop() {
+    $('.menu-backdrop').remove();
+}

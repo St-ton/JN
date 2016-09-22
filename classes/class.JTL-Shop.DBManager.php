@@ -35,6 +35,7 @@ class DBManager
         $columns = Shop::DB()->query("SHOW FULL COLUMNS FROM `{$table}`", 2);
 
         foreach ($columns as $column) {
+            $column->Type_info    = self::parseType($column->Type);
             $list[$column->Field] = $column;
         }
 
@@ -53,7 +54,28 @@ class DBManager
         $indexes = Shop::DB()->query("SHOW INDEX FROM `{$table}`", 2);
 
         foreach ($indexes as $index) {
-            $list[$index->Key_name][] = $index;
+            $container = (object)[
+                'Index_type' => 'INDEX',
+                'Columns'    => []
+            ];
+
+            if (!isset($list[$index->Key_name])) {
+                $list[$index->Key_name] = $container;
+            }
+
+            $list[$index->Key_name]->Columns[$index->Column_name] = $index;
+        }
+        foreach ($list as $key => $item) {
+            if (count($item->Columns) > 0) {
+                $column = reset($item->Columns);
+                if ($column->Key_name === 'PRIMARY') {
+                    $list[$key]->Index_type = 'PRIMARY';
+                } elseif ($column->Index_type === 'FULLTEXT') {
+                    $list[$key]->Index_type = 'FULLTEXT';
+                } elseif ((int)$column->Non_unique === 0) {
+                    $list[$key]->Index_type = 'UNIQUE';
+                }
+            }
         }
 
         return $list;
@@ -89,23 +111,26 @@ class DBManager
      */
     public static function parseType($type)
     {
-        $result = [
-            'type'     => null,
-            'size'     => null,
-            'unsigned' => false
+        $result = (object)[
+            'Name'     => null,
+            'Size'     => null,
+            'Unsigned' => false
         ];
 
         $type = explode(' ', $type);
 
         if (isset($type[1]) && $type[1] === 'unsigned') {
-            $result['unsigned'] = true;
+            $result->Unsigned = true;
         }
 
-        $type           = explode('(', $type[0]);
-        $result['type'] = $type[0];
-
-        if (isset($type[1])) {
-            $result['size'] = (int) $type[1];
+        if (preg_match('/([a-z]+)(?:\((.*)\))?/', $type[0], $m)) {
+            $result->Size = 0;
+            $result->Name = $m[1];
+            if (isset($m[2])) {
+                $size         = explode(',', $m[2]);
+                $size         = count($size) === 1 ? $size[0] : $size;
+                $result->Size = $size;
+            }
         }
 
         return $result;

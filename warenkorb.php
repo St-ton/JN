@@ -43,9 +43,9 @@ if (isset($_POST['Kuponcode']) && strlen($_POST['Kuponcode']) > 0 && !$_SESSION[
         if (isset($Kupon->kKupon)) {
             $Kuponfehler  = checkeKupon($Kupon);
             $nReturnValue = angabenKorrekt($Kuponfehler);
+            executeHook(HOOK_WARENKORB_PAGE_KUPONANNEHMEN_PLAUSI, array('error' => &$Kuponfehler, 'nReturnValue' => &$nReturnValue));
             if ($nReturnValue) {
                 if (isset($Kupon->kKupon) && $Kupon->kKupon > 0 && $Kupon->cKuponTyp === 'standard') {
-                    executeHook(HOOK_WARENKORB_PAGE_KUPONANNEHMEN_PLAUSI);
                     kuponAnnehmen($Kupon);
                     executeHook(HOOK_WARENKORB_PAGE_KUPONANNEHMEN);
                 } elseif (!empty($Kupon->kKupon) && $Kupon->cKuponTyp === 'versandkupon') {
@@ -123,7 +123,7 @@ if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']->kKundengruppe > 0) {
     $kKundengruppe = $_SESSION['Kunde']->kKundengruppe;
 }
 // Canonical
-$cCanonicalURL = Shop::getURL() . '/warenkorb.php';
+$cCanonicalURL = $linkHelper->getStaticRoute('warenkorb.php');
 // Metaangaben
 $oMeta            = $linkHelper->buildSpecialPageMeta(LINKTYP_WARENKORB);
 $cMetaTitle       = $oMeta->cTitle;

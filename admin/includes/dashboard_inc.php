@@ -14,11 +14,11 @@ function getWidgets($bActive = true)
     if ($bActive && is_array($oWidget_arr) && count($oWidget_arr) > 0) {
         foreach ($oWidget_arr as $i => $oWidget) {
             $oWidget_arr[$i]->cContent = '';
-            $cClass     = 'Widget' . $oWidget->cClass;
-            $cClassFile = 'class.' . $cClass . '.php';
-            $cClassPath = PFAD_ROOT . PFAD_ADMIN . 'includes/widgets/' . $cClassFile;
-            $oWidget->cNiceTitle = str_replace(array('--', ' '), '-', $oWidget->cTitle);
-            $oWidget->cNiceTitle = strtolower(str_replace(
+            $cClass                    = 'Widget' . $oWidget->cClass;
+            $cClassFile                = 'class.' . $cClass . '.php';
+            $cClassPath                = PFAD_ROOT . PFAD_ADMIN . 'includes/widgets/' . $cClassFile;
+            $oWidget->cNiceTitle       = str_replace(array('--', ' '), '-', $oWidget->cTitle);
+            $oWidget->cNiceTitle       = strtolower(str_replace(
                 array('ä', 'Ä', 'ü', 'Ü', 'ö', 'Ö', 'ß', utf8_decode('ü'), utf8_decode('Ü'), utf8_decode('ä'), utf8_decode('Ä'), utf8_decode('ö'), utf8_decode('Ö'), '(', ')', '/', '\\'),
                 '',
                 $oWidget->cNiceTitle)
@@ -50,7 +50,10 @@ function getWidgets($bActive = true)
  */
 function setWidgetPosition($kWidget, $eContainer, $nPos)
 {
-    Shop::DB()->query("UPDATE tadminwidgets SET eContainer = '" . $eContainer . "', nPos = " . intval($nPos) . " WHERE kWidget = " . (int)$kWidget, 4);
+    $upd             = new stdClass();
+    $upd->eContainer = $eContainer;
+    $upd->nPos       = (int)$nPos;
+    Shop::DB()->update('tadminwidgets', 'kWidget', (int)$kWidget, $upd);
 }
 
 /**
@@ -58,7 +61,9 @@ function setWidgetPosition($kWidget, $eContainer, $nPos)
  */
 function closeWidget($kWidget)
 {
-    Shop::DB()->query("UPDATE tadminwidgets SET bActive = 0 WHERE kWidget = " . (int)$kWidget, 4);
+    $upd          = new stdClass();
+    $upd->bActive = 0;
+    Shop::DB()->update('tadminwidgets', 'kWidget', (int)$kWidget, $upd);
 }
 
 /**
@@ -66,7 +71,9 @@ function closeWidget($kWidget)
  */
 function addWidget($kWidget)
 {
-    Shop::DB()->query("UPDATE tadminwidgets SET bActive = 1 WHERE kWidget = " . (int)$kWidget, 4);
+    $upd          = new stdClass();
+    $upd->bActive = 1;
+    Shop::DB()->update('tadminwidgets', 'kWidget', (int)$kWidget, $upd);
 }
 
 /**
@@ -75,7 +82,9 @@ function addWidget($kWidget)
  */
 function expandWidget($kWidget, $bExpand)
 {
-    Shop::DB()->query("UPDATE tadminwidgets SET bExpanded = " . (int)$bExpand . " WHERE kWidget = " . (int)$kWidget, 4);
+    $upd            = new stdClass();
+    $upd->bExpanded = (int)$bExpand;
+    Shop::DB()->update('tadminwidgets', 'kWidget', (int)$kWidget, $upd);
 }
 
 /**

@@ -289,10 +289,7 @@ class Trennzeichen
      */
     public function delete()
     {
-        return Shop::DB()->query(
-            "DELETE FROM ttrennzeichen
-               WHERE kTrennzeichen = " . (int)$this->kTrennzeichen, 3
-        );
+        return Shop::DB()->delete('ttrennzeichen', 'kTrennzeichen', (int)$this->kTrennzeichen);
     }
 
     /**

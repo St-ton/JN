@@ -63,7 +63,10 @@ class IOResponse implements JsonSerializable
         array_walk($filtered, function (&$value, $key) {
 
             switch (gettype($value)) {
+                case 'array':
+                case 'object':
                 case 'string':
+                    $value = utf8_convert_recursive($value);
                     $value = json_encode($value);
                     break;
 
@@ -74,11 +77,6 @@ class IOResponse implements JsonSerializable
                 case 'integer':
                 case 'double':
                     // nothing todo
-                    break;
-
-                case 'array':
-                case 'object':
-                    $value = json_encode($value);
                     break;
 
                 case 'resource':
@@ -93,16 +91,28 @@ class IOResponse implements JsonSerializable
         $argumentlist = implode(', ', $filtered);
         $syntax       = sprintf('%s(%s);', $function, $argumentlist);
 
-        //$this->script("console.warn('%c CALL %c {$syntax}', 'background: #e86c00; color: #fff;', 'background: transparent; color: #000; font-weight: normal;');");
-
         $this->script($syntax);
 
-        /*
-        $this->script("console.groupCollapsed('%c CALL %c {$function}()', 'background: #e86c00; color: #fff;', 'background: transparent; color: #000; font-weight: normal;');");
-        $this->script("console.log('%c METHOD %c {$function}()', 'background: #e8e8e8; color: #333;', 'background: transparent; color: #000; font-weight: normal;');");        
-        $this->script("console.log('%c PARAMS ', 'background: #e8e8e8; color: #333;', ".json_encode($arguments).");");
-        $this->script("console.groupEnd();");
-        */
+        if (defined('IO_LOG_CONSOLE') && IO_LOG_CONSOLE === true) {
+            $reset  = 'background: transparent; color: #000;';
+            $orange = 'background: #e86c00; color: #fff;';
+            $grey   = 'background: #e8e8e8; color: #333;';
+
+            $args = json_encode(utf8_convert_recursive($arguments));
+
+            $this->script("console.groupCollapsed('%c CALL %c {$function}()', '$orange', '$reset');");
+            $this->script("console.log('%c METHOD %c {$function}()', '$grey', '$reset');");
+            $this->script("console.log('%c PARAMS %c', '$grey', '$reset', " . $args . ");");
+
+            $this->script("console.groupCollapsed('%c TOGGLE DEBUG TRACE %c', '$grey', '$reset');");
+
+            foreach ($this->generateCallTrace() as $trace) {
+                $this->script("console.log('%c TRACE %c', '$grey', '$reset', " . json_encode($trace) . ");");
+            }
+
+            $this->script("console.groupEnd();");
+            $this->script("console.groupEnd();");
+        }
     }
 
     /**
@@ -122,7 +132,7 @@ class IOResponse implements JsonSerializable
             $result[] = '#' . ($i + 1) . substr($t, strpos($t, ' '));
         }
 
-        return implode("\n", $result);
+        return $result;
     }
 
     /**

@@ -26,15 +26,15 @@
     {/if}
 {/if}
 {* einfache kombination oder variationskombination mit mindestens 2 nicht-freifeld positionen *}
-{if ($Artikel->kVaterArtikel == 0 && $Artikel->nIstVater == 0)}
-    {if $Einstellungen.artikeldetails.artikel_variationspreisanzeige==1 && $Variationswert->fAufpreisNetto!=0}
+{if ($Artikel->kVaterArtikel == 0 && $Artikel->nIstVater == 0) && isset($Variationswert->fAufpreisNetto)}
+    {if $Einstellungen.artikeldetails.artikel_variationspreisanzeige == 1 && $Variationswert->fAufpreisNetto!=0}
         <span class="label label-info label-surcharge">{$Variationswert->cAufpreisLocalized[$NettoPreise]}</span>
-    {elseif $Einstellungen.artikeldetails.artikel_variationspreisanzeige==2 && $Variationswert->fAufpreisNetto!=0}
+    {elseif $Einstellungen.artikeldetails.artikel_variationspreisanzeige == 2 && $Variationswert->fAufpreisNetto!=0}
         <span class="label label-info label-surcharge">{$Variationswert->cPreisInklAufpreis[$NettoPreise]}</span>
     {/if}
 {/if}
 {* variationskombination mit mindestens 2 nicht-freifeld positionen *}
-{if ($Artikel->kVaterArtikel > 0 || $Artikel->nIstVater == 1) && $Artikel->nVariationOhneFreifeldAnzahl > 1}
+{if ($Artikel->kVaterArtikel > 0 || $Artikel->nIstVater == 1) && $Artikel->nVariationOhneFreifeldAnzahl > 1 && isset($Variationswert->fAufpreisNetto)}
     {if $Einstellungen.artikeldetails.artikel_variationspreisanzeige == 1 && $Variationswert->fAufpreisNetto!=0}
         <span class="label label-info label-surcharge">{$Variationswert->cAufpreisLocalized[$NettoPreise]}
         {if !empty($Variationswert->cPreisVPEWertAufpreis[$NettoPreise]) && $Artikel->nVariationOhneFreifeldAnzahl == 1}

@@ -24,15 +24,24 @@
     {if $cAction === 'edit' || $cAction === 'new'}
     <script type="text/javascript">
         {literal}
-        $(document).ready(function () {
-            $("select[name='nSeitenTyp']").change(function () {
-                var selected = $("select[name='nSeitenTyp'] option:selected");
-                typeChanged($(selected).val());
-            }).change();
+        var file2large = false;
 
+        function checkfile(e){
+            e.preventDefault();
+            if (!file2large){
+                document.banner.submit();
+            }
+        }
+
+        $(document).ready(function () {
             $("select[name='cKey']").change(function () {
                 var selected = $("select[name='cKey'] option:selected");
                 keyChanged($(selected).val());
+            }).change();
+
+            $("select[name='nSeitenTyp']").change(function () {
+                var selected = $("select[name='nSeitenTyp'] option:selected");
+                typeChanged($(selected).val());
             }).change();
 
             $('.nl').find('a').each(function () {
@@ -56,8 +65,10 @@
                 {literal}
                 if (filesize >= maxsize) {
                     $('.input-group.file-input').after('<div class="alert alert-danger"><i class="fa fa-warning"></i> Die Datei ist gr&ouml;&szlig;er als das Uploadlimit des Servers.</div>').slideDown();
+                    file2large = true;
                 } else {
                     $('form div.alert').slideUp();
+                    file2large = false;
                 }
             });
 
@@ -67,21 +78,27 @@
             $('.custom').hide();
             $('#type' + type).show();
 
-            if (type != 2) {
-                $('select[name="cKey"]').val('');
-                $('.nl .key').hide();
-                $('.nl input[type="text"], .nl input[type="hidden"]').each(function () {
-                    $(this).val('');
-                });
+            switch (type) {
+                case '1':
+                    keyChanged('kArtikel');
+                    break;
+                case '24':
+                    keyChanged('kHersteller');
+                    break;
+                case '31':
+                    keyChanged('kLink');
+                    break;
+                default:
+                    $('select[name="cKey"]').val('');
+                    $('.nl .key').hide();
+                    $('.nl input[type="text"], .nl input[type="hidden"]').each(function () {
+                        $(this).val('');
+                    });
+                    break;
             }
         }
 
         function keyChanged(key) {
-            // reset keys
-            $('.key[id!="key' + key + '"]').find('input').each(function () {
-                $(this).val('');
-            });
-
             $('.key').hide();
             $('#key' + key).show();
         }
@@ -90,7 +107,7 @@
         {/literal}
     </script>
     <div id="settings">
-        <form action="banner.php" method="post" enctype="multipart/form-data">
+        <form name="banner" action="banner.php" method="post" enctype="multipart/form-data" onsubmit="checkfile(event);">
             {$jtl_token}
             <input type="hidden" name="action" value="{$cAction}" />
             {if $cAction === 'edit'}
@@ -210,6 +227,16 @@
                     </div>
                     {include file="tpl_inc/single_search_browser.tpl"}
                     <div class="nl">
+                        <div id="keykArtikel" class="key">
+                            <input type="hidden" name="article_key" value="{if (isset($cKey) && $cKey === 'kArtikel') || (isset($oExtension->cKey) && $oExtension->cKey === 'kArtikel')}{$oExtension->cValue}{/if}" />
+                            <input class="form-control" type="text" name="article_name" disabled="disabled" value="{if (isset($cKey) && $cKey === 'kArtikel') || (isset($oExtension->cKey) && $oExtension->cKey === 'kArtikel')}{if isset($article_key) && $article_key !== ''}{$article_key}{elseif isset($oExtension->cValue) && $oExtension->cValue !== ''}{$oExtension->cValue}{else}Kein Artikel ausgew&auml;hlt{/if}{/if}" />
+                            <a href="#" class="btn btn-success" id="article">Artikel suchen</a>
+                        </div>
+                        <div id="keykLink" class="key">
+                            <input type="hidden" name="link_key" value="{if (isset($cKey) && $cKey === 'kLink') || (isset($oExtension->cKey) && $oExtension->cKey === 'kLink')}{$oExtension->cValue}{/if}" />
+                            <input class="form-control" type="text" name="link_name" disabled="disabled" value="{if (isset($cKey) && $cKey === 'kLink') || (isset($oExtension->cKey) && $oExtension->cKey === 'kLink')}{if isset($link_key) && $link_key !== ''}{$link_key}{elseif isset($oExtension->cValue) && $oExtension->cValue !== ''}{$oExtension->cValue}{else}Kein Seite ausgew&auml;hlt{/if}{/if}" />
+                            <a href="#" class="btn btn-success" id="link">Eigene Seite suchen</a>
+                        </div>
                         <div id="keykTag" class="key">
                             <input type="hidden" name="tag_key" value="{if (isset($cKey) && $cKey === 'kTag') || (isset($oExtension->cKey) && $oExtension->cKey === 'kTag')}{$oExtension->cValue}{/if}" />
                             <input class="form-control" type="text" name="tag_name" disabled="disabled" value="{if (isset($cKey) && $cKey === 'kTag') || (isset($oExtension->cKey) && $oExtension->cKey === 'kTag')}{if isset($tag_key) && $tag_key !== ''}{$tag_key}{elseif isset($oExtension->cValue) && $oExtension->cValue !== ''}{$oExtension->cValue}{else}Kein Tag ausgew&auml;hlt{/if}{/if}" />
@@ -326,12 +353,11 @@
                     </span>
                     <input type="hidden" name="article" id="article" value="{if isset($oBanner->kArtikel)}{$oBanner->kArtikel}{/if}" />
                 </div>
-                <a href="#" class="btn btn-default" id="article_browser">Artikel w&auml;hlen</a>
-                <a href="#" class="btn btn-default" id="article_unlink">Artikel L&ouml;sen</a>
-
                 <input type="hidden" name="id" id="id" />
                 <div class="save_wrapper btn-group">
-                    <button type="button" class="btn btn-danger" id="remove"><i class="fa fa-trash"></i>Zone l&ouml;schen</button>
+                    <a href="#" class="btn btn-default" id="article_browser">Artikel w&auml;hlen</a>
+                    <a href="#" class="btn btn-default" id="article_unlink">Artikel L&ouml;sen</a>
+                    <button type="button" class="btn btn-danger" id="remove"><i class="fa fa-trash"></i> Zone l&ouml;schen</button>
                 </div>
             </div>
         </div>

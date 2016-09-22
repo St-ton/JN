@@ -68,7 +68,8 @@ function fuehreLoginAus($userLogin, $passLogin)
  */
 function pruefeBestellungMoeglich()
 {
-    header('Location: warenkorb.php?fillOut=' . $_SESSION['Warenkorb']->istBestellungMoeglich(), true, 303);
+    $linkHelper = LinkHelper::getInstance();
+    header('Location: ' . $linkHelper->getStaticRoute('warenkorb.php', true) . '?fillOut=' . $_SESSION['Warenkorb']->istBestellungMoeglich(), true, 303);
     exit;
 }
 
@@ -118,7 +119,6 @@ function pruefeUnregistriertBestellen($cPost_arr)
     $cKundenattribut_arr = getKundenattribute($cPost_arr);
     $kKundengruppe       = Kundengruppe::getCurrent();
     // CheckBox Plausi
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.CheckBox.php';
     $oCheckBox       = new CheckBox();
     $fehlendeAngaben = array_merge($fehlendeAngaben, $oCheckBox->validateCheckBox(CHECKBOX_ORT_REGISTRIERUNG, $kKundengruppe, $cPost_arr, true));
     $nReturnValue    = angabenKorrekt($fehlendeAngaben);
@@ -222,10 +222,7 @@ function pruefeLieferdaten($cPost_arr)
     setzeSteuersaetze();
     //lieferland hat sich geändert und versandart schon gewählt?
     if (isset($_SESSION['Lieferadresse']) && isset($_SESSION['Versandart']) && $_SESSION['Lieferadresse'] && $_SESSION['Versandart']) {
-        $delVersand = false;
-        if (!stristr($_SESSION['Versandart']->cLaender, $_SESSION['Lieferadresse']->cLand)) {
-            $delVersand = true;
-        }
+        $delVersand = (!stristr($_SESSION['Versandart']->cLaender, $_SESSION['Lieferadresse']->cLand));
         //ist die plz im zuschlagsbereich?
         $plz   = Shop::DB()->escape($_SESSION['Lieferadresse']->cPLZ);
         $plz_x = Shop::DB()->query(
@@ -340,8 +337,9 @@ function pruefeRechnungsadresseStep($cGet_arr)
     if (isset($cGet_arr['editRechnungsadresse']) && $cGet_arr['editRechnungsadresse'] == 1 && $_SESSION['Kunde']) {
         resetNeuKundenKupon();
         if ($_SESSION['Kunde']->kKunde > 0) {
+            $linkHelper = LinkHelper::getInstance();
             //weiterleitung zur Rechnungsänderung eines bestehenden Kunden
-            header('Location: registrieren.php?checkout=1&editRechnungsadresse=1', true, 303);
+            header('Location: ' . $linkHelper->getStaticRoute('registrieren.php', true) . '?checkout=1&editRechnungsadresse=1', true, 303);
             exit;
         } else {
             $Kunde = $_SESSION['Kunde'];
@@ -560,7 +558,8 @@ function validateCouponInCheckout()
             $_SESSION['Warenkorb']->loescheSpezialPos(C_WARENKORBPOS_TYP_KUPON);
             $_SESSION['checkCouponResult'] = $checkCouponResult;
             unset($_SESSION['Kupon']);
-            header('Location: ' . Shop::getURL() . '/warenkorb.php');
+            $linkHelper = LinkHelper::getInstance();
+            header('Location: ' . $linkHelper->getStaticRoute('warenkorb.php', true));
             exit(0);
         }
     }
@@ -829,7 +828,7 @@ function plausiNeukundenKupon()
                         OR tkunde.kKunde = " . (int)$_SESSION['Kunde']->kKunde . "
                     LIMIT 1", 1
             );
-            if ($oBestellung === false || !empty($oBestellung->kBestellung)) {
+            if (empty($oBestellung->kBestellung)) {
                 $NeukundenKupons = Shop::DB()->query("SELECT * FROM tkupon WHERE cKuponTyp = 'neukundenkupon' AND cAktiv = 'Y' ORDER BY fWert DESC", 2);
                 foreach ($NeukundenKupons as $NeukundenKupon) {
                     if (angabenKorrekt(checkeKupon($NeukundenKupon))) {
@@ -1357,7 +1356,7 @@ function gibZahlungsarten($kVersandart, $kKundengruppe)
         if (!zahlungsartGueltig($Zahlungsarten[$i])) {
             continue;
         }
-        $Zahlungsarten[$i]->Specials = gibSpecials($Zahlungsarten[$i]);
+        $Zahlungsarten[$i]->Specials = null;
         //evtl. Versandkupon anwenden / Nur Nachname fällt weg
         if (isset($_SESSION['VersandKupon']->cZusatzgebuehren) && $_SESSION['VersandKupon']->cZusatzgebuehren === 'Y' && $Zahlungsarten[$i]->fAufpreis > 0) {
             if ($Zahlungsarten[$i]->cName === 'Nachnahme') {
@@ -1434,6 +1433,8 @@ function zahlungsartGueltig($Zahlungsart)
             if (!pluginLizenzpruefung($oPlugin, array('cModulId' => $Zahlungsart->cModulId))) {
                 return false;
             }
+
+            return $oZahlungsart->isValid($_SESSION['Kunde'], $_SESSION['Warenkorb']);
         }
     } else {
         $oPaymentMethod = new PaymentMethod($Zahlungsart->cModulId);
@@ -1443,7 +1444,7 @@ function zahlungsartGueltig($Zahlungsart)
             return false;
         }
         if ($oZahlungsart && !$oZahlungsart->isValidIntern()) {
-            Jtllog::writeLog('Die Zahlungsartprüfung (' . $Zahlungsart->cModulId . ') wurde nicht erfolgreich validiert (isValidIntern).',
+            Jtllog::writeLog(utf8_decode('Die Zahlungsartprüfung (' . $Zahlungsart->cModulId . ') wurde nicht erfolgreich validiert (isValidIntern).'),
                 JTLLOG_LEVEL_DEBUG,
                 false,
                 'cModulId',
@@ -1452,691 +1453,11 @@ function zahlungsartGueltig($Zahlungsart)
 
             return false;
         }
+
+        return ZahlungsartHelper::shippingMethodWithValidPaymentMethod($Zahlungsart);
     }
 
-    switch ($Zahlungsart->cModulId) {
-        case 'za_ueberweisung_jtl':
-            if (!pruefeZahlungsartMinBestellungen(@$Zahlungsart->einstellungen['zahlungsart_ueberweisung_min_bestellungen'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMinBestellwert(@$Zahlungsart->einstellungen['zahlungsart_ueberweisung_min'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMaxBestellwert(@$Zahlungsart->einstellungen['zahlungsart_ueberweisung_max'])) {
-                return false;
-            }
-            break;
-        case 'za_nachnahme_jtl':
-            if (!pruefeZahlungsartMinBestellungen(@$Zahlungsart->einstellungen['zahlungsart_nachnahme_min_bestellungen'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMinBestellwert(@$Zahlungsart->einstellungen['zahlungsart_nachnahme_min'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMaxBestellwert(@$Zahlungsart->einstellungen['zahlungsart_nachnahme_max'])) {
-                return false;
-            }
-            break;
-        case 'za_kreditkarte_jtl':
-            if (!pruefeZahlungsartMinBestellungen(@$Zahlungsart->einstellungen['zahlungsart_kreditkarte_min_bestellungen'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMinBestellwert(@$Zahlungsart->einstellungen['zahlungsart_kreditkarte_min'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMaxBestellwert(@$Zahlungsart->einstellungen['zahlungsart_kreditkarte_max'])) {
-                return false;
-            }
-            break;
-        case 'za_rechnung_jtl':
-            if (!pruefeZahlungsartMinBestellungen(@$Zahlungsart->einstellungen['zahlungsart_rechnung_min_bestellungen'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMinBestellwert(@$Zahlungsart->einstellungen['zahlungsart_rechnung_min'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMaxBestellwert(@$Zahlungsart->einstellungen['zahlungsart_rechnung_max'])) {
-                return false;
-            }
-            break;
-        case 'za_lastschrift_jtl':
-            if (!pruefeZahlungsartMinBestellungen(@$Zahlungsart->einstellungen['zahlungsart_lastschrift_min_bestellungen'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMinBestellwert(@$Zahlungsart->einstellungen['zahlungsart_lastschrift_min'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMaxBestellwert(@$Zahlungsart->einstellungen['zahlungsart_lastschrift_max'])) {
-                return false;
-            }
-            break;
-        case 'za_barzahlung_jtl':
-            if (!pruefeZahlungsartMinBestellungen(@$Zahlungsart->einstellungen['zahlungsart_barzahlung_min_bestellungen'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMinBestellwert(@$Zahlungsart->einstellungen['zahlungsart_barzahlung_min'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMaxBestellwert(@$Zahlungsart->einstellungen['zahlungsart_barzahlung_max'])) {
-                return false;
-            }
-            break;
-        case 'za_paypal_jtl':
-            if (!pruefeZahlungsartMinBestellungen($Zahlungsart->einstellungen['zahlungsart_paypal_min_bestellungen'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMinBestellwert($Zahlungsart->einstellungen['zahlungsart_paypal_min'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMaxBestellwert($Zahlungsart->einstellungen['zahlungsart_paypal_max'])) {
-                return false;
-            }
-            break;
-        case 'za_moneybookers_jtl':
-            if (!pruefeZahlungsartMinBestellungen($Zahlungsart->einstellungen['zahlungsart_moneybookers_min_bestellungen'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMinBestellwert($Zahlungsart->einstellungen['zahlungsart_moneybookers_min'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMaxBestellwert($Zahlungsart->einstellungen['zahlungsart_moneybookers_max'])) {
-                return false;
-            }
-            break;
-        case 'za_worldpay_jtl':
-            if (!pruefeZahlungsartMinBestellungen($Zahlungsart->einstellungen['zahlungsart_worldpay_min_bestellungen'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMinBestellwert($Zahlungsart->einstellungen['zahlungsart_worldpay_min'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMaxBestellwert($Zahlungsart->einstellungen['zahlungsart_worldpay_max'])) {
-                return false;
-            }
-            break;
-        case 'za_ipayment_jtl':
-            if (!pruefeZahlungsartMinBestellungen($Zahlungsart->einstellungen['zahlungsart_ipayment_min_bestellungen'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMinBestellwert($Zahlungsart->einstellungen['zahlungsart_ipayment_min'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMaxBestellwert($Zahlungsart->einstellungen['zahlungsart_ipayment_max'])) {
-                return false;
-            }
-            break;
-        case 'za_sofortueberweisung_jtl':
-            if (!pruefeZahlungsartMinBestellungen($Zahlungsart->einstellungen['zahlungsart_sofortueberweisung_min_bestellungen'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMinBestellwert($Zahlungsart->einstellungen['zahlungsart_sofortueberweisung_min'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMaxBestellwert($Zahlungsart->einstellungen['zahlungsart_sofortueberweisung_max'])) {
-                return false;
-            }
-            break;
-        case 'za_clickpay_cc_jtl':
-            if (!pruefeZahlungsartMinBestellungen($Zahlungsart->einstellungen['zahlungsart_clickpay_cc_min_bestellungen'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMinBestellwert($Zahlungsart->einstellungen['zahlungsart_clickpay_cc_min'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMaxBestellwert($Zahlungsart->einstellungen['zahlungsart_clickpay_cc_max'])) {
-                return false;
-            }
-            break;
-        case 'za_clickpay_dd_jtl':
-            if (!pruefeZahlungsartMinBestellungen($Zahlungsart->einstellungen['zahlungsart_clickpay_dd_min_bestellungen'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMinBestellwert($Zahlungsart->einstellungen['zahlungsart_clickpay_dd_min'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMaxBestellwert($Zahlungsart->einstellungen['zahlungsart_clickpay_dd_max'])) {
-                return false;
-            }
-            break;
-        case 'za_eos_cc_jtl':
-            if (!pruefeZahlungsartMinBestellungen($Zahlungsart->einstellungen['zahlungsart_eos_cc_min_bestellungen'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMinBestellwert($Zahlungsart->einstellungen['zahlungsart_eos_cc_min'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMaxBestellwert($Zahlungsart->einstellungen['zahlungsart_eos_cc_max'])) {
-                return false;
-            }
-            break;
-        case 'za_eos_dd_jtl':
-            if (!pruefeZahlungsartMinBestellungen($Zahlungsart->einstellungen['zahlungsart_eos_dd_min_bestellungen'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMinBestellwert($Zahlungsart->einstellungen['zahlungsart_eos_dd_min'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMaxBestellwert($Zahlungsart->einstellungen['zahlungsart_eos_dd_max'])) {
-                return false;
-            }
-            break;
-        case 'za_eos_direkt_jtl':
-            if (!pruefeZahlungsartMinBestellungen($Zahlungsart->einstellungen['zahlungsart_eos_direkt_min_bestellungen'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMinBestellwert($Zahlungsart->einstellungen['zahlungsart_eos_direkt_min'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMaxBestellwert($Zahlungsart->einstellungen['zahlungsart_eos_direkt_max'])) {
-                return false;
-            }
-            break;
-        case 'za_eos_ewallet_jtl':
-            if (!pruefeZahlungsartMinBestellungen($Zahlungsart->einstellungen['zahlungsart_eos_ewallet_min_bestellungen'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMinBestellwert($Zahlungsart->einstellungen['zahlungsart_eos_ewallet_min'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMaxBestellwert($Zahlungsart->einstellungen['zahlungsart_eos_ewallet_max'])) {
-                return false;
-            }
-            break;
-        case 'za_heidelpay_jtl':
-            if (!pruefeZahlungsartMinBestellungen($Zahlungsart->einstellungen['zahlungsart_heidelpay_min_bestellungen'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMinBestellwert($Zahlungsart->einstellungen['zahlungsart_heidelpay_min'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMaxBestellwert($Zahlungsart->einstellungen['zahlungsart_heidelpay_max'])) {
-                return false;
-            }
-            break;
-        case 'za_postfinance_jtl':
-            if (!pruefeZahlungsartMinBestellungen($Zahlungsart->einstellungen['zahlungsart_postfinance_min_bestellungen'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMinBestellwert($Zahlungsart->einstellungen['zahlungsart_postfinance_min'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMaxBestellwert($Zahlungsart->einstellungen['zahlungsart_postfinance_max'])) {
-                return false;
-            }
-            break;
-        case 'za_safetypay':
-            if (!pruefeZahlungsartMinBestellungen($Zahlungsart->einstellungen['zahlungsart_safetypay_min_bestellungen'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMinBestellwert($Zahlungsart->einstellungen['zahlungsart_safetypay_min'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMaxBestellwert($Zahlungsart->einstellungen['zahlungsart_safetypay_max'])) {
-                return false;
-            }
-            break;
-        case 'za_ut_cc_jtl':
-            if (!pruefeZahlungsartMinBestellungen($Zahlungsart->einstellungen['zahlungsart_ut_cc_min_bestellungen'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMinBestellwert($Zahlungsart->einstellungen['zahlungsart_ut_cc_min'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMaxBestellwert($Zahlungsart->einstellungen['zahlungsart_ut_cc_max'])) {
-                return false;
-            }
-            break;
-        case 'za_ut_dd_jtl':
-            if (!pruefeZahlungsartMinBestellungen($Zahlungsart->einstellungen['zahlungsart_ut_dd_min_bestellungen'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMinBestellwert($Zahlungsart->einstellungen['zahlungsart_ut_dd_min'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMaxBestellwert($Zahlungsart->einstellungen['zahlungsart_ut_dd_max'])) {
-                return false;
-            }
-            break;
-        case 'za_ut_ebank_jtl':
-            if (!pruefeZahlungsartMinBestellungen($Zahlungsart->einstellungen['zahlungsart_ut_ebank_min_bestellungen'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMinBestellwert($Zahlungsart->einstellungen['zahlungsart_ut_ebank_min'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMaxBestellwert($Zahlungsart->einstellungen['zahlungsart_ut_ebank_max'])) {
-                return false;
-            }
-            break;
-        case 'za_ut_gi_jtl':
-            if (!pruefeZahlungsartMinBestellungen($Zahlungsart->einstellungen['zahlungsart_ut_gi_min_bestellungen'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMinBestellwert($Zahlungsart->einstellungen['zahlungsart_ut_gi_min'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMaxBestellwert($Zahlungsart->einstellungen['zahlungsart_ut_gi_max'])) {
-                return false;
-            }
-            break;
-        case 'za_ut_prepaid_jtl':
-            if (!pruefeZahlungsartMinBestellungen($Zahlungsart->einstellungen['zahlungsart_ut_prepaid_min_bestellungen'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMinBestellwert($Zahlungsart->einstellungen['zahlungsart_ut_prepaid_min'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMaxBestellwert($Zahlungsart->einstellungen['zahlungsart_ut_prepaid_max'])) {
-                return false;
-            }
-            break;
-        case 'za_ut_stand_jtl':
-            if (!pruefeZahlungsartMinBestellungen($Zahlungsart->einstellungen['zahlungsart_ut_stand_min_bestellungen'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMinBestellwert($Zahlungsart->einstellungen['zahlungsart_ut_stand_min'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMaxBestellwert($Zahlungsart->einstellungen['zahlungsart_ut_stand_max'])) {
-                return false;
-            }
-            break;
-        case 'za_wirecard_jtl':
-            if (!pruefeZahlungsartMinBestellungen($Zahlungsart->einstellungen['zahlungsart_wirecard_min_bestellungen'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMinBestellwert($Zahlungsart->einstellungen['zahlungsart_wirecard_min'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMaxBestellwert($Zahlungsart->einstellungen['zahlungsart_wirecard_max'])) {
-                return false;
-            }
-            break;
-        case 'za_mbqc_acc_jtl':
-            if (!pruefeZahlungsartMinBestellungen($Zahlungsart->einstellungen['zahlungsart_mbqc_acc_min_bestellungen'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMinBestellwert($Zahlungsart->einstellungen['zahlungsart_mbqc_acc_min'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMaxBestellwert($Zahlungsart->einstellungen['zahlungsart_mbqc_acc_max'])) {
-                return false;
-            }
-            break;
-        case 'za_mbqc_csi_jtl':
-            if (!pruefeZahlungsartMinBestellungen($Zahlungsart->einstellungen['zahlungsart_mbqc_csi_min_bestellungen'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMinBestellwert($Zahlungsart->einstellungen['zahlungsart_mbqc_csi_min'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMaxBestellwert($Zahlungsart->einstellungen['zahlungsart_mbqc_csi_max'])) {
-                return false;
-            }
-            break;
-        case 'za_mbqc_did_jtl':
-            if (!pruefeZahlungsartMinBestellungen($Zahlungsart->einstellungen['zahlungsart_mbqc_did_min_bestellungen'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMinBestellwert($Zahlungsart->einstellungen['zahlungsart_mbqc_did_min'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMaxBestellwert($Zahlungsart->einstellungen['zahlungsart_mbqc_did_max'])) {
-                return false;
-            }
-            break;
-        case 'za_mbqc_dnk_jtl':
-            if (!pruefeZahlungsartMinBestellungen($Zahlungsart->einstellungen['zahlungsart_mbqc_dnk_min_bestellungen'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMinBestellwert($Zahlungsart->einstellungen['zahlungsart_mbqc_dnk_min'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMaxBestellwert($Zahlungsart->einstellungen['zahlungsart_mbqc_dnk_max'])) {
-                return false;
-            }
-            break;
-        case 'za_mbqc_ebt_jtl':
-            if (!pruefeZahlungsartMinBestellungen($Zahlungsart->einstellungen['zahlungsart_mbqc_ebt_min_bestellungen'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMinBestellwert($Zahlungsart->einstellungen['zahlungsart_mbqc_ebt_min'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMaxBestellwert($Zahlungsart->einstellungen['zahlungsart_mbqc_ebt_max'])) {
-                return false;
-            }
-            break;
-        case 'za_mbqc_ent_jtl':
-            if (!pruefeZahlungsartMinBestellungen($Zahlungsart->einstellungen['zahlungsart_mbqc_ent_min_bestellungen'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMinBestellwert($Zahlungsart->einstellungen['zahlungsart_mbqc_ent_min'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMaxBestellwert($Zahlungsart->einstellungen['zahlungsart_mbqc_ent_max'])) {
-                return false;
-            }
-            break;
-        case 'za_mbqc_gcb_jtl':
-            if (!pruefeZahlungsartMinBestellungen($Zahlungsart->einstellungen['zahlungsart_mbqc_gcb_min_bestellungen'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMinBestellwert($Zahlungsart->einstellungen['zahlungsart_mbqc_gcb_min'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMaxBestellwert($Zahlungsart->einstellungen['zahlungsart_mbqc_gcb_max'])) {
-                return false;
-            }
-            break;
-        case 'za_mbqc_git_jtl':
-            if (!pruefeZahlungsartMinBestellungen($Zahlungsart->einstellungen['zahlungsart_mbqc_git_min_bestellungen'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMinBestellwert($Zahlungsart->einstellungen['zahlungsart_mbqc_git_min'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMaxBestellwert($Zahlungsart->einstellungen['zahlungsart_mbqc_git_max'])) {
-                return false;
-            }
-            break;
-        case 'za_mbqc_obt_jtl':
-            if (!pruefeZahlungsartMinBestellungen($Zahlungsart->einstellungen['zahlungsart_mbqc_obt_min_bestellungen'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMinBestellwert($Zahlungsart->einstellungen['zahlungsart_mbqc_obt_min'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMaxBestellwert($Zahlungsart->einstellungen['zahlungsart_mbqc_obt_max'])) {
-                return false;
-            }
-            break;
-        case 'za_mbqc_idl_jtl':
-            if (!pruefeZahlungsartMinBestellungen($Zahlungsart->einstellungen['zahlungsart_mbqc_idl_min_bestellungen'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMinBestellwert($Zahlungsart->einstellungen['zahlungsart_mbqc_idl_min'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMaxBestellwert($Zahlungsart->einstellungen['zahlungsart_mbqc_idl_max'])) {
-                return false;
-            }
-            break;
-        case 'za_mbqc_lsr_jtl':
-            if (!pruefeZahlungsartMinBestellungen($Zahlungsart->einstellungen['zahlungsart_mbqc_lsr_min_bestellungen'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMinBestellwert($Zahlungsart->einstellungen['zahlungsart_mbqc_lsr_min'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMaxBestellwert($Zahlungsart->einstellungen['zahlungsart_mbqc_lsr_max'])) {
-                return false;
-            }
-            break;
-        case 'za_mbqc_mae_jtl':
-            if (!pruefeZahlungsartMinBestellungen($Zahlungsart->einstellungen['zahlungsart_mbqc_mae_min_bestellungen'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMinBestellwert($Zahlungsart->einstellungen['zahlungsart_mbqc_mae_min'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMaxBestellwert($Zahlungsart->einstellungen['zahlungsart_mbqc_mae_max'])) {
-                return false;
-            }
-            break;
-        case 'za_mbqc_msc_jtl':
-            if (!pruefeZahlungsartMinBestellungen($Zahlungsart->einstellungen['zahlungsart_mbqc_msc_min_bestellungen'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMinBestellwert($Zahlungsart->einstellungen['zahlungsart_mbqc_msc_min'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMaxBestellwert($Zahlungsart->einstellungen['zahlungsart_mbqc_msc_max'])) {
-                return false;
-            }
-            break;
-        case 'za_mbqc_npy_jtl':
-            if (!pruefeZahlungsartMinBestellungen($Zahlungsart->einstellungen['zahlungsart_mbqc_npy_min_bestellungen'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMinBestellwert($Zahlungsart->einstellungen['zahlungsart_mbqc_npy_min'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMaxBestellwert($Zahlungsart->einstellungen['zahlungsart_mbqc_npy_max'])) {
-                return false;
-            }
-            break;
-        case 'za_mbqc_pli_jtl':
-            if (!pruefeZahlungsartMinBestellungen($Zahlungsart->einstellungen['zahlungsart_mbqc_pli_min_bestellungen'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMinBestellwert($Zahlungsart->einstellungen['zahlungsart_mbqc_pli_min'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMaxBestellwert($Zahlungsart->einstellungen['zahlungsart_mbqc_pli_max'])) {
-                return false;
-            }
-            break;
-        case 'za_mbqc_psp_jtl':
-            if (!pruefeZahlungsartMinBestellungen($Zahlungsart->einstellungen['zahlungsart_mbqc_psp_min_bestellungen'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMinBestellwert($Zahlungsart->einstellungen['zahlungsart_mbqc_psp_min'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMaxBestellwert($Zahlungsart->einstellungen['zahlungsart_mbqc_psp_max'])) {
-                return false;
-            }
-            break;
-        case 'za_mbqc_pwy_jtl':
-            if (!pruefeZahlungsartMinBestellungen($Zahlungsart->einstellungen['zahlungsart_mbqc_pwy_min_bestellungen'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMinBestellwert($Zahlungsart->einstellungen['zahlungsart_mbqc_pwy_min'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMaxBestellwert($Zahlungsart->einstellungen['zahlungsart_mbqc_pwy_max'])) {
-                return false;
-            }
-            break;
-        case 'za_mbqc_sft_jtl':
-            if (!pruefeZahlungsartMinBestellungen($Zahlungsart->einstellungen['zahlungsart_mbqc_sft_min_bestellungen'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMinBestellwert($Zahlungsart->einstellungen['zahlungsart_mbqc_sft_min'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMaxBestellwert($Zahlungsart->einstellungen['zahlungsart_mbqc_sft_max'])) {
-                return false;
-            }
-            break;
-        case 'za_mbqc_slo_jtl':
-            if (!pruefeZahlungsartMinBestellungen($Zahlungsart->einstellungen['zahlungsart_mbqc_slo_min_bestellungen'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMinBestellwert($Zahlungsart->einstellungen['zahlungsart_mbqc_slo_min'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMaxBestellwert($Zahlungsart->einstellungen['zahlungsart_mbqc_slo_max'])) {
-                return false;
-            }
-            break;
-        case 'za_mbqc_so2_jtl':
-            if (!pruefeZahlungsartMinBestellungen($Zahlungsart->einstellungen['zahlungsart_mbqc_so2_min_bestellungen'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMinBestellwert($Zahlungsart->einstellungen['zahlungsart_mbqc_so2_min'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMaxBestellwert($Zahlungsart->einstellungen['zahlungsart_mbqc_so2_max'])) {
-                return false;
-            }
-            break;
-        case 'za_mbqc_vsa_jtl':
-            if (!pruefeZahlungsartMinBestellungen($Zahlungsart->einstellungen['zahlungsart_mbqc_vsa_min_bestellungen'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMinBestellwert($Zahlungsart->einstellungen['zahlungsart_mbqc_vsa_min'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMaxBestellwert($Zahlungsart->einstellungen['zahlungsart_mbqc_vsa_max'])) {
-                return false;
-            }
-            break;
-        case 'za_mbqc_wlt_jtl':
-            if (!pruefeZahlungsartMinBestellungen($Zahlungsart->einstellungen['zahlungsart_mbqc_wlt_min_bestellungen'])) {
-                return false;
-            }
-            if (!pruefeZahlungsartMinBestellwert($Zahlungsart->einstellungen['zahlungsart_mbqc_wlt_min'])) {
-                return false;
-            }
-
-            if (!pruefeZahlungsartMaxBestellwert($Zahlungsart->einstellungen['zahlungsart_mbqc_wlt_max'])) {
-                return false;
-            }
-            break;
-        case 'za_billpay_jtl':
-        case 'za_billpay_invoice_jtl':
-        case 'za_billpay_direct_debit_jtl':
-        case 'za_billpay_rate_payment_jtl':
-        case 'za_billpay_paylater_jtl':
-        // workaround, fallback wawi <= v1.072
-        if ($Zahlungsart->cModulId === 'za_billpay_jtl') {
-            $Zahlungsart->cModulId = 'za_billpay_invoice_jtl';
-        }
-            require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
-            $paymentMethod = PaymentMethod::create($Zahlungsart->cModulId);
-
-            return $paymentMethod->isValid($_SESSION['Kunde'], $_SESSION['Warenkorb']);
-            break;
-
-        default:
-            // Zahlungsart als Plugin
-            $kPlugin = gibkPluginAuscModulId($Zahlungsart->cModulId);
-            if ($kPlugin > 0) {
-                $oPlugin = new Plugin($kPlugin);
-                if ($oPlugin->kPlugin > 0) {
-                    require_once PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $oPlugin->nVersion . '/' . PFAD_PLUGIN_PAYMENTMETHOD .
-                        $oPlugin->oPluginZahlungsKlasseAssoc_arr[$Zahlungsart->cModulId]->cClassPfad;
-                    $className               = $oPlugin->oPluginZahlungsKlasseAssoc_arr[$Zahlungsart->cModulId]->cClassName;
-                    $paymentMethod           = new $className($Zahlungsart->cModulId);
-                    $paymentMethod->cModulId = $Zahlungsart->cModulId;
-
-                    Jtllog::writeLog('Zahlungsart Gueltig Plugin: kPlugin ' . $oPlugin->kPlugin . ' - ModulID: ' . $Zahlungsart->cModulId, JTLLOG_LEVEL_DEBUG, false);
-
-                    if (!pruefeZahlungsartMinBestellungen($oPlugin->oPluginEinstellungAssoc_arr[$Zahlungsart->cModulId . '_min_bestellungen'])) {
-                        return false;
-                    }
-                    if (!pruefeZahlungsartMinBestellwert($oPlugin->oPluginEinstellungAssoc_arr[$Zahlungsart->cModulId . '_min'])) {
-                        return false;
-                    }
-                    if (!pruefeZahlungsartMaxBestellwert($oPlugin->oPluginEinstellungAssoc_arr[$Zahlungsart->cModulId . '_max'])) {
-                        return false;
-                    }
-
-                    return $paymentMethod->isValid($_SESSION['Kunde'], $_SESSION['Warenkorb']);
-                }
-            }
-            break;
-    }
-
-    return true;
+    return false;
 }
 
 /**
@@ -2175,7 +1496,7 @@ function pruefeZahlungsartMinBestellungen($nMinBestellungen)
  */
 function pruefeZahlungsartMinBestellwert($fMinBestellwert)
 {
-    if ($fMinBestellwert > 0 && $_SESSION['Warenkorb']->gibGesamtsummeWaren(1) <= $fMinBestellwert) {
+    if ($fMinBestellwert > 0 && $_SESSION['Warenkorb']->gibGesamtsummeWarenOhne(array(C_WARENKORBPOS_TYP_VERSANDPOS), true) < $fMinBestellwert) {
         if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
             Jtllog::writeLog('pruefeZahlungsartMinBestellwert Bestellwert zu niedrig: Wert ' . $_SESSION['Warenkorb']->gibGesamtsummeWaren(true) . ' < ' . $fMinBestellwert,
                 JTLLOG_LEVEL_DEBUG, false);
@@ -2193,7 +1514,7 @@ function pruefeZahlungsartMinBestellwert($fMinBestellwert)
  */
 function pruefeZahlungsartMaxBestellwert($fMaxBestellwert)
 {
-    if ($fMaxBestellwert > 0 && $_SESSION['Warenkorb']->gibGesamtsummeWaren(1) >= $fMaxBestellwert) {
+    if ($fMaxBestellwert > 0 && $_SESSION['Warenkorb']->gibGesamtsummeWarenOhne(array(C_WARENKORBPOS_TYP_VERSANDPOS), true) >= $fMaxBestellwert) {
         if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
             Jtllog::writeLog('pruefeZahlungsartMaxBestellwert Bestellwert zu hoch: Wert ' . $_SESSION['Warenkorb']->gibGesamtsummeWaren(true) . ' > ' . $fMaxBestellwert,
                 JTLLOG_LEVEL_DEBUG, false);
@@ -2524,7 +1845,7 @@ function checkKundenFormular($kundenaccount, $checkpass = 1)
         }
         if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
             //emailadresse anders und existiert dennoch?
-            $mail = Shop::DB()->query("SELECT cMail FROM tkunde WHERE kKunde = " . intval($_SESSION['Kunde']->kKunde), 1);
+            $mail = Shop::DB()->select('tkunde', 'kKunde', (int)$_SESSION['Kunde']->kKunde);
             if ($_POST['email'] == $mail->cMail) {
                 unset($ret['email_vorhanden']);
             }
@@ -2542,10 +1863,10 @@ function checkKundenFormular($kundenaccount, $checkpass = 1)
             foreach ($oKundenfeld_arr as $oKundenfeld) {
                 // Kundendaten ändern?
                 if (intval($_POST['editRechnungsadresse']) === 1) {
-                    if (!$_POST['custom_' . $oKundenfeld->kKundenfeld] && $oKundenfeld->nPflicht == 1 && $oKundenfeld->nEditierbar == 1) {
+                    if (!isset($_POST['custom_' . $oKundenfeld->kKundenfeld]) && $oKundenfeld->nPflicht == 1 && $oKundenfeld->nEditierbar == 1) {
                         $ret['custom'][$oKundenfeld->kKundenfeld] = 1;
                     } else {
-                        if ($_POST['custom_' . $oKundenfeld->kKundenfeld]) {
+                        if (isset($_POST['custom_' . $oKundenfeld->kKundenfeld]) && $_POST['custom_' . $oKundenfeld->kKundenfeld]) {
                             // Datum
                             // 1 = leer
                             // 2 = falsches Format
@@ -2624,24 +1945,8 @@ function checkKundenFormular($kundenaccount, $checkpass = 1)
         }
     }
 
-    if ((!isset($_SESSION['bAnti_spam_already_checked']) || $_SESSION['bAnti_spam_already_checked'] !== true) && isset($conf['kunden']['registrieren_captcha']) && $conf['kunden']['registrieren_captcha'] !== 'N' && $conf['global']['anti_spam_method'] !== 'N' && empty($_SESSION['Kunde']->kKunde)) {
-        // reCAPTCHA
-        if (isset($_POST['g-recaptcha-response'])) {
-            $ret['captcha'] = !validateReCaptcha($_POST['g-recaptcha-response']);
-        } else {
-            if (empty($_POST['captcha'])) {
-                $ret['captcha'] = 1;
-            }
-            if (empty($_POST['md5']) || ($_POST['md5'] !== md5(PFAD_ROOT . strtoupper($_POST['captcha'])))) {
-                $ret['captcha'] = 2;
-            }
-            if ($conf['kunden']['registrieren_captcha'] == 5) { //Prüfen ob der Token und der Name korrekt sind
-                $ret['captcha'] = 2;
-                if (validToken()) {
-                    unset($ret['captcha']);
-                }
-            }
-        }
+    if (isset($conf['kunden']['registrieren_captcha']) && $conf['kunden']['registrieren_captcha'] !== 'N' && !validateCaptcha($_POST)) {
+        $ret['captcha'] = 2;
     }
 
     return $ret;
@@ -2994,14 +2299,10 @@ function getKundendaten($post, $kundenaccount, $htmlentities = 1)
 function getKundenattribute($cPost_arr)
 {
     $cKundenattribut_arr = array();
-    $cSQL                = '';
-    if (intval($cPost_arr['editRechnungsadresse']) === 1) {
-        $cSQL = " AND nEditierbar=1";
-    }
-    $oKundenfeld_arr = Shop::DB()->query(
+    $oKundenfeld_arr     = Shop::DB()->query(
         "SELECT kKundenfeld, cName, cWawi
             FROM tkundenfeld
-            WHERE kSprache = " . (int)Shop::$kSprache . $cSQL, 2
+            WHERE kSprache = " . (int)Shop::$kSprache, 2
     );
     if (is_array($oKundenfeld_arr) && count($oKundenfeld_arr) > 0) {
         foreach ($oKundenfeld_arr as $oKundenfeldTMP) {
@@ -3032,6 +2333,30 @@ function getKundenattributeNichtEditierbar()
     );
 
     return $oKundenfeld_arr;
+}
+
+/**
+ * @return array - non editable customer fields
+ */
+function getNonEditableCustomerFields()
+{
+    $cKundenAttribute_arr = array();
+    $oKundenattribute_arr = Shop::DB()->query(
+        "SELECT ka.kKundenfeld
+             FROM tkundenattribut AS ka
+             LEFT JOIN tkundenfeld AS kf ON ka.kKundenfeld = kf.kKundenfeld 
+             WHERE kKunde = " . (int)$_SESSION['Kunde']->kKunde . "
+             AND kf.nEditierbar = 0", 2
+    );
+    if (is_array($oKundenattribute_arr) && count($oKundenattribute_arr) > 0) {
+        foreach ($oKundenattribute_arr as $oKundenattribute) {
+            $oKundenfeldAttribut                                  = new stdClass();
+            $oKundenfeldAttribut->kKundenfeld                     = $oKundenattribute->kKundenfeld;
+            $cKundenAttribute_arr[$oKundenattribute->kKundenfeld] = $oKundenfeldAttribut;
+        }
+    }
+
+    return $cKundenAttribute_arr;
 }
 
 /**
@@ -3100,6 +2425,9 @@ function getArtikelQry($PositionenArr)
     return $ret;
 }
 
+/**
+ * @return bool
+ */
 function guthabenMoeglich()
 {
     return ($_SESSION['Kunde']->fGuthaben > 0 && (empty($_SESSION['Bestellung']->GuthabenNutzen) || !$_SESSION['Bestellung']->GuthabenNutzen))
@@ -3568,25 +2896,6 @@ function setzeFehlerSmartyAccountwahl($cFehler)
 
 /**
  * @param array $cPost_arr
- * @param int   $nUnreg
- * @return array
- */
-function plausiRechnungsadresse($cPost_arr, $nUnreg = 0)
-{
-    if ($nUnreg) {
-        $cFehlendeEingaben_arr = checkKundenFormular(0);
-    } else {
-        $cFehlendeEingaben_arr = checkKundenFormular(0, 1);
-    }
-    if (angabenKorrekt($cFehlendeEingaben_arr)) {
-        return $cFehlendeEingaben_arr;
-    }
-
-    return $cFehlendeEingaben_arr;
-}
-
-/**
- * @param array $cPost_arr
  * @param array $cFehlendeEingaben_arr
  * @return bool
  */
@@ -3700,10 +3009,11 @@ function plausiLieferadresse($cPost_arr)
         $cFehlendeAngaben_arr = checkLieferFormular();
         if (angabenKorrekt($cFehlendeAngaben_arr)) {
             return $cFehlendeEingaben_arr;
-        } else {
-            return $cFehlendeAngaben_arr;
         }
-    } elseif (intval($cPost_arr['kLieferadresse']) > 0) {
+
+        return $cFehlendeAngaben_arr;
+    }
+    if (intval($cPost_arr['kLieferadresse']) > 0) {
         //vorhandene lieferadresse
         $oLieferadresse = Shop::DB()->query(
             "SELECT kLieferadresse
@@ -4130,11 +3440,8 @@ function mappeBestellvorgangZahlungshinweis($nHinweisCode)
  */
 function isEmailAvailable($email)
 {
-    $email = StringHandler::filterXSS(Shop::DB()->escape($email));
     if (strlen($email) > 0) {
-        $obj = Shop::DB()->query("SELECT count(*) AS count FROM tkunde WHERE cMail = '{$email}' AND cPasswort != ''", 1);
-
-        return ($obj->count == 0);
+        return (Shop::DB()->select('tkunde', 'cMail', $email, 'nRegistriert', 1) === null);
     }
 
     return false;
@@ -4154,21 +3461,6 @@ function convertDate2German($datum)
     }
 
     return $datum;
-}
-
-/**
- * @param Zahlungsart $Zahlungsart
- * @return null
- */
-function gibSpecials($Zahlungsart)
-{
-    $specials = null;
-    switch ($Zahlungsart->cModulId) {
-        case 'externesModul':
-            break;
-    }
-
-    return $specials;
 }
 
 /**
@@ -4240,4 +3532,25 @@ function gibFehlendeAngabenZahlungsart($Zahlungsart)
  */
 function setzeSessionZahlungsart($Zahlungsart)
 {
+}
+
+/**
+ * @param Zahlungsart $Zahlungsart
+ * @return null
+ * @deprecated since 4.0.5
+ */
+function gibSpecials($Zahlungsart)
+{
+    return;
+}
+
+/**
+ * @param array $cPost_arr
+ * @param int   $nUnreg
+ * @return array
+ * @deprecated since 4.05
+ */
+function plausiRechnungsadresse($cPost_arr, $nUnreg = 0)
+{
+    return ($nUnreg) ? checkKundenFormular(0) : checkKundenFormular(0, 1);
 }

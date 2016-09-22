@@ -33,35 +33,8 @@
 {if isset($oNews_arr) && $oNews_arr|@count > 0}
     <hr>
     <h2>{lang key="news" section="news"}</h2>
-    {foreach name=news from=$oNews_arr item=oNews}
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">
-                    <a href="{$oNews->cURL}">{$oNews->cBetreff}</a>&nbsp;-&nbsp;
-                    {$oNews->dErstellt_de}{if isset($Einstellungen.news.news_kommentare_nutzen) && $Einstellungen.news.news_kommentare_nutzen === 'Y'}
-                    |
-                    <a href="{$oNews->cURL}#comments" title="{lang key="readComments" section="news"}">{$oNews->nNewsKommentarAnzahl} {if $oNews->nNewsKommentarAnzahl == 1}{lang key="newsComment" section="news"}{else}{lang key="newsComments" section="news"}{/if}{/if}</a>
-                </h3>
-            </div>
-            <div class="panel-body">
-                {if !empty($oNews->cPreviewImage)}
-                    <div class="col-lg-4 col-xs-6">
-                        <a href="{$oNews->cURL}">
-                            <img src="{$ShopURL}/{$oNews->cPreviewImage}" alt="" class="img-responsive" />
-                        </a>
-                    </div>
-                {/if}
-                <div class="news-preview panel-strap">
-                    {if $oNews->cVorschauText|strlen > 0}
-                        {$oNews->cVorschauText}<span class="read-more">{$oNews->cMehrURL}</span>
-                    {elseif $oNews->cText|strip_tags|strlen > 200}
-                        {$oNews->cText|strip_tags|truncate:200:""}<span class="read-more">{$oNews->cMehrURL}</span>
-                    {else}
-                        {$oNews->cText}
-                    {/if}
-                </div>
-            </div>
-        </div>
+    {foreach name=news from=$oNews_arr item=oNewsUebersicht}
+        {include file="blog/preview.tpl"}
     {/foreach}
 {/if}
 {/block}

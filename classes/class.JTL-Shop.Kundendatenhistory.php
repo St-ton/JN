@@ -237,7 +237,7 @@ class Kundendatenhistory extends MainModel
      */
     public function delete()
     {
-        return Shop::DB()->query("DELETE FROM tkundendatenhistory WHERE kKundendatenHistory = " . (int)$this->getKundendatenHistory(), 3);
+        return Shop::DB()->delete('tkundendatenhistory', 'kKundendatenHistory', $this->getKundendatenHistory());
     }
 
     /**

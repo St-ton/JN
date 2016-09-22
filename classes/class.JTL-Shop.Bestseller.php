@@ -188,7 +188,7 @@ class Bestseller
      * @param bool  $onlykeys
      * @param int   $limit
      * @param int   $minsells
-     * @return array|null
+     * @return array
      */
     public static function buildBestsellers($products, $customergrp, $viewallowed = true, $onlykeys = true, $limit = 3, $minsells = 10)
     {
@@ -222,7 +222,7 @@ class Bestseller
             }
         }
 
-        return;
+        return array();
     }
 
     /**

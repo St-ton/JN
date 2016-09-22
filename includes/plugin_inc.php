@@ -12,6 +12,10 @@ require_once PFAD_ROOT . PFAD_CLASSES . 'interface.JTL-Shop.PluginLizenz.php';
 function executeHook($nHook, $args_arr = array())
 {
     global $smarty;
+
+    $dispatcher = EventDispatcher::getInstance();
+    $dispatcher->fire("shop.hook.{$nHook}", array_merge((array)$nHook, $args_arr));
+
     $hookList = Plugin::getHookList();
     if (!empty($hookList[$nHook]) && is_array($hookList[$nHook])) {
         foreach ($hookList[$nHook] as $oPluginTmp) {
@@ -122,15 +126,18 @@ function gibPluginEinstellungen($kPlugin)
     $oPluginEinstellungen_arr = array();
     if ($kPlugin > 0) {
         $oPluginEinstellungenTMP_arr = Shop::DB()->query(
-            "SELECT tplugineinstellungen.*
+            "SELECT tplugineinstellungen.*, tplugineinstellungenconf.cConf
                 FROM tplugin
                 JOIN tplugineinstellungen ON tplugineinstellungen.kPlugin = tplugin.kPlugin
+                LEFT JOIN tplugineinstellungenconf ON tplugineinstellungenconf.kPlugin = tplugin.kPlugin 
+                    AND tplugineinstellungen.cName = tplugineinstellungenconf.cWertName
                 WHERE tplugin.kPlugin = " . (int)$kPlugin, 2
         );
-
         if (is_array($oPluginEinstellungenTMP_arr) && count($oPluginEinstellungenTMP_arr) > 0) {
             foreach ($oPluginEinstellungenTMP_arr as $oPluginEinstellungenTMP) {
-                $oPluginEinstellungen_arr[$oPluginEinstellungenTMP->cName] = $oPluginEinstellungenTMP->cWert;
+                $oPluginEinstellungen_arr[$oPluginEinstellungenTMP->cName] = ($oPluginEinstellungenTMP->cConf === 'M') ?
+                    unserialize($oPluginEinstellungenTMP->cWert) :
+                    $oPluginEinstellungenTMP->cWert;
             }
         }
     }

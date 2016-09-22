@@ -74,7 +74,7 @@ class Preisverlauf
                 $_currency = $_SESSION['Waehrung'];
             }
             if (!isset($_SESSION['Waehrung']) || (isset($_SESSION['Waehrungen']) && count($_SESSION['Waehrungen']) > 1)) {
-                $_currency = Shop::DB()->query("SELECT cISO FROM twaehrung WHERE cStandard = 'Y'", 1);
+                $_currency = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
             }
             if (is_array($obj_arr)) {
                 $dt = new DateTime();

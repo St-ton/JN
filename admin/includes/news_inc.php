@@ -48,12 +48,7 @@ function pruefeNewsKategorie($cName, $nNewskategorieEditSpeichern = 0)
     }
     // Prüfen ob Name schon vergeben
     if ($nNewskategorieEditSpeichern == 0) {
-        $oNewsKategorieTMP = Shop::DB()->query(
-            "SELECT kNewsKategorie
-                FROM tnewskategorie
-                WHERE cName = '" . Shop::DB()->realEscape($cName) . "'", 1
-        );
-
+        $oNewsKategorieTMP = Shop::DB()->select('tnewskategorie', 'cName', $cName);
         if (isset($oNewsKategorieTMP->kNewsKategorie) && $oNewsKategorieTMP->kNewsKategorie > 0) {
             $cPlausiValue_arr['cName'] = 2;
         }
@@ -211,12 +206,11 @@ function gibJahrMonatVonDateTime($cDateTimeStr)
 function speicherNewsKommentar($kNewsKommentar, $cPost_arr)
 {
     if ($kNewsKommentar > 0) {
-        return Shop::DB()->query(
-            "UPDATE tnewskommentar
-                SET cName = '" . StringHandler::filterXSS($cPost_arr['cName']) . "',
-                    cKommentar = '" . StringHandler::filterXSS($cPost_arr['cKommentar']) . "'
-                WHERE kNewsKommentar = " . intval($kNewsKommentar), 3
-        ) >= 0;
+        $upd             = new stdClass();
+        $upd->cName      = $cPost_arr['cName'];
+        $upd->cKommentar = $cPost_arr['cKommentar'];
+
+        return Shop::DB()->update('tnewskommentar', 'kNewsKommentar', (int)$kNewsKommentar, $upd) >= 0;
     }
 
     return false;
@@ -249,14 +243,22 @@ function calcRatio($cDatei, $nMaxBreite, $nMaxHoehe)
 }
 
 /**
+ * @param  int    $kSprache
+ * @param  string $cLimitSQL
  * @return mixed
  */
-function holeNewskategorie()
+function holeNewskategorie($kSprache = null, $cLimitSQL = '')
 {
+    if (!isset($kSprache)) {
+        $kSprache = $_SESSION['kSprache'];
+    }
+    $kSprache = (int) $kSprache;
+
     return Shop::DB()->query(
-        "SELECT *, DATE_FORMAT(dLetzteAktualisierung, '%d.%m.%Y %H:%i') AS dLetzteAktualisierung_de
+        "SELECT" . (!empty($cLimitSQL) ? " SQL_CALC_FOUND_ROWS" : '') . " *, DATE_FORMAT(dLetzteAktualisierung, '%d.%m.%Y %H:%i') AS dLetzteAktualisierung_de
             FROM tnewskategorie
-            WHERE kSprache = " . (int)$_SESSION['kSprache'], 2
+            WHERE kSprache = " . $kSprache . "
+            ORDER BY nSort DESC" . (!empty($cLimitSQL) ? " " . $cLimitSQL : ''), 2
     );
 }
 
@@ -272,11 +274,12 @@ function holeNewsBilder($kNews, $cUploadVerzeichnis)
     if ($kNews > 0) {
         if (is_dir($cUploadVerzeichnis . $kNews)) {
             $DirHandle = opendir($cUploadVerzeichnis . $kNews);
+            $shopURL   = Shop::getURL() . '/';
             while (false !== ($Datei = readdir($DirHandle))) {
                 if ($Datei !== '.' && $Datei !== '..') {
                     $oDatei         = new stdClass();
                     $oDatei->cName  = substr($Datei, 0, strpos($Datei, '.'));
-                    $oDatei->cURL   = '<img src="' . Shop::getURL() . '/' . PFAD_NEWSBILDER . $kNews . '/' . $Datei . '" />';
+                    $oDatei->cURL   = '<img src="' . $shopURL . PFAD_NEWSBILDER . $kNews . '/' . $Datei . '" />';
                     $oDatei->cDatei = $Datei;
 
                     $oDatei_arr[] = $oDatei;
@@ -348,7 +351,8 @@ function editiereNewskategorie($kNewsKategorie, $kSprache)
         $oNewsKategorie = Shop::DB()->query(
             "SELECT tnewskategorie.kNewsKategorie, tnewskategorie.kSprache, tnewskategorie.cName,
                 tnewskategorie.cBeschreibung, tnewskategorie.cMetaTitle, tnewskategorie.cMetaDescription,
-                tnewskategorie.nSort, tnewskategorie.nAktiv, tnewskategorie.dLetzteAktualisierung, tseo.cSeo,
+                tnewskategorie.nSort, tnewskategorie.nAktiv, tnewskategorie.dLetzteAktualisierung,
+                tnewskategorie.cPreviewImage, tseo.cSeo,
                 DATE_FORMAT(tnewskategorie.dLetzteAktualisierung, '%d.%m.%Y %H:%i') AS dLetzteAktualisierung_de
                 FROM tnewskategorie
                 LEFT JOIN tseo ON tseo.cKey = 'kNewsKategorie'
@@ -382,11 +386,12 @@ function parseText($cText, $kNews)
     }
     usort($cBild_arr, 'cmp');
 
+    $shopURL = Shop::getURL() . '/';
     for ($i = 1; $i <= count($cBild_arr); $i++) {
-        $cText = str_replace("$#Bild" . $i . "#$", '<img alt="" src="' . Shop::getURL() . '/' . PFAD_NEWSBILDER . $kNews . '/' . $cBild_arr[$i - 1] . '" />', $cText);
+        $cText = str_replace("$#Bild" . $i . "#$", '<img alt="" src="' . $shopURL . PFAD_NEWSBILDER . $kNews . '/' . $cBild_arr[$i - 1] . '" />', $cText);
     }
     if (strpos(end($cBild_arr), 'preview') !== false) {
-        $cText = str_replace("$#preview#$", '<img alt="" src="' . Shop::getURL() . '/' . PFAD_NEWSBILDER . $kNews . '/' . $cBild_arr[count($cBild_arr) - 1] . '" />', $cText);
+        $cText = str_replace("$#preview#$", '<img alt="" src="' . $shopURL . PFAD_NEWSBILDER . $kNews . '/' . $cBild_arr[count($cBild_arr) - 1] . '" />', $cText);
     }
 
     return str_replace("'", "\'", $cText);
@@ -408,8 +413,11 @@ function loescheNewsBild($cBildname, $kNews, $cUploadVerzeichnis)
                     unlink($cUploadVerzeichnis . $kNews . '/' . $Datei);
                     closedir($DirHandle);
                     if ($cBildname === 'preview') {
-                        Shop::DB()->query("UPDATE tnews SET cPreviewImage = '' WHERE kNews = " . $kNews, 3);
+                        $upd                = new stdClass();
+                        $upd->cPreviewImage = '';
+                        Shop::DB()->update('tnews', 'kNews', $kNews, $upd);
                     }
+
                     return true;
                 }
             }
@@ -417,4 +425,39 @@ function loescheNewsBild($cBildname, $kNews, $cUploadVerzeichnis)
     }
 
     return false;
+}
+
+/**
+ * @param string $cTab
+ * @param string $cHinweis
+ * @param array  $urlParams
+ * @return bool
+ */
+function newsRedirect($cTab = '', $cHinweis = '', $urlParams = null)
+{
+    $tabPageMapping = array(
+        'inaktiv'    => 's1',
+        'aktiv'      => 's2',
+        'kategorien' => 's3',
+    );
+    if (empty($cHinweis)) {
+        unset($_SESSION['news.cHinweis']);
+    } else {
+        $_SESSION['news.cHinweis'] = $cHinweis;
+    }
+
+    if (!empty($cTab)) {
+        if (!is_array($urlParams)) {
+            $urlParams = array();
+        }
+
+        $urlParams['tab'] = $cTab;
+
+        if (isset($tabPageMapping[$cTab]) && verifyGPCDataInteger($tabPageMapping[$cTab]) > 1 && !array_key_exists($tabPageMapping[$cTab], $urlParams)) {
+            $urlParams[$tabPageMapping[$cTab]] = verifyGPCDataInteger($tabPageMapping[$cTab]);
+        }
+    }
+
+    header('Location: news.php' . (is_array($urlParams) ? '?' . http_build_query($urlParams, '', '&') : ''));
+    exit;
 }

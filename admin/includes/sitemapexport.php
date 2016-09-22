@@ -11,19 +11,19 @@ require_once PFAD_ROOT . PFAD_CLASSES_CORE . 'class.core.Shop.php';
  */
 function baueSitemap($nDatei, $data)
 {
-    writeLog(PFAD_ROOT . 'jtllogs/sitemap.log', 'Baue "/export/sitemap_' . $nDatei . '.xml", Datenlänge "' . strlen($data) . '"', 1);
+    writeLog(PFAD_LOGFILES . 'sitemap.log', 'Baue "' . PFAD_EXPORT . 'sitemap_' . $nDatei . '.xml", Datenlänge "' . strlen($data) . '"', 1);
     $conf = Shop::getSettings(array(CONF_SITEMAP));
     if (!empty($data)) {
         if (function_exists('gzopen')) {
             // Sitemap-Dateien anlegen
-            $gz = gzopen(PFAD_ROOT . '/export/sitemap_' . $nDatei . '.xml.gz', 'w9');
+            $gz = gzopen(PFAD_ROOT . PFAD_EXPORT . 'sitemap_' . $nDatei . '.xml.gz', 'w9');
             fputs($gz, getXMLHeader($conf['sitemap']['sitemap_googleimage_anzeigen']) . "\n");
             fputs($gz, $data);
             fputs($gz, '</urlset>');
             gzclose($gz);
         } else {
             // Sitemap-Dateien anlegen
-            $file = fopen(PFAD_ROOT . '/export/sitemap_' . $nDatei . '.xml', 'w+');
+            $file = fopen(PFAD_ROOT . PFAD_EXPORT . 'sitemap_' . $nDatei . '.xml', 'w+');
             fputs($file, getXMLHeader($conf['sitemap']['sitemap_googleimage_anzeigen']) . "\n");
             fputs($file, $data);
             fputs($file, '</urlset>');
@@ -216,11 +216,11 @@ function generateSitemapXML()
     // W3C Datetime formats:
     //  YYYY-MM-DD (eg 1997-07-16)
     //  YYYY-MM-DDThh:mmTZD (eg 1997-07-16T19:20+01:00)
-    $stdKundengruppe         = Shop::DB()->query("SELECT kKundengruppe FROM tkundengruppe WHERE cStandard = 'Y'", 1);
+    $stdKundengruppe         = Shop::DB()->select('tkundengruppe', 'cStandard', 'Y');
     $Sprachen                = gibAlleSprachen();
     $oSpracheAssoc_arr       = gibAlleSprachenAssoc($Sprachen);
     $seoAktiv                = true;
-    $Sprache                 = Shop::DB()->query("SELECT * FROM tsprache WHERE cShopStandard = 'Y'", 1);
+    $Sprache                 = Shop::DB()->select('tsprache', 'cShopStandard', 'Y');
     $_SESSION['kSprache']    = $Sprache->kSprache;
     $_SESSION['cISOSprache'] = $Sprache->cISO;
     if (!isset($_SESSION['Kundengruppe'])) {
@@ -847,7 +847,7 @@ function generateSitemapXML()
         }
     }
     baueSitemap($nDatei, $sitemap_data);
-    writeLog(PFAD_ROOT . 'jtllogs/sitemap.log', print_r($nStat_arr, true), 1);
+    writeLog(PFAD_LOGFILES . 'sitemap.log', print_r($nStat_arr, true), 1);
     // XML ablegen + ausgabe an user
     $datei = PFAD_ROOT . PFAD_EXPORT . 'sitemap_index.xml';
     if (is_writable($datei) || !is_file($datei)) {
@@ -956,7 +956,7 @@ function baueSitemapReport($nAnzahlURL_arr, $fTotalZeit)
 
         $kSitemapReport = Shop::DB()->insert('tsitemapreport', $oSitemapReport);
         $bGZ            = function_exists('gzopen');
-        writeLog(PFAD_ROOT . 'jtllogs/sitemap.log', 'Sitemaps Report: ' . var_export($nAnzahlURL_arr, true), 1);
+        writeLog(PFAD_LOGFILES . 'sitemap.log', 'Sitemaps Report: ' . var_export($nAnzahlURL_arr, true), 1);
         foreach ($nAnzahlURL_arr as $i => $nAnzahlURL) {
             if ($nAnzahlURL > 0) {
                 $oSitemapReportFile                 = new stdClass();

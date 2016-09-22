@@ -26,7 +26,7 @@ if (verifyGPCDataInteger('anmeldung') === 1) {
         // Dynkey neu generieren und als Einstellung in die DB speichern
         $cDynKey = gibUID(12, URL_SHOP);
 
-        Shop::DB()->query("DELETE FROM teinstellungen WHERE cName = 'zahlungsart_clickandbuy_md5_key'", 3);
+        Shop::DB()->delete('teinstellungen', 'cName', 'zahlungsart_clickandbuy_md5_key');
         Shop::DB()->query("INSERT INTO teinstellungen VALUES('100', 'zahlungsart_clickandbuy_md5_key', '" . $cDynKey . "', 'za_clickandbuy_jtl')", 3);
 
         // Weiterleitung zur Registrierung bei ClickandBuy

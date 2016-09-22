@@ -1,5 +1,5 @@
 {assign var="nID" value=$oBox->kCustomID}
-<section class="panel panel-default box box-categories" id="sidebox_categories{$nID}">
+<section class="panel panel-default box box-categories word-break" id="sidebox_categories{$nID}">
     <div class="panel-heading">
         <h5 class="panel-title">{if !empty($oBox->cTitel)}{$oBox->cTitel}{else}{lang key="categories" section="global"}{/if}</h5>
     </div>

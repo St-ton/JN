@@ -64,12 +64,12 @@ class Wunschliste
      */
     public function __construct($kWunschliste = 0)
     {
-        $kWunschliste = intval($kWunschliste);
+        $kWunschliste = (int)$kWunschliste;
         if ($kWunschliste > 0) {
             $this->kWunschliste = $kWunschliste;
             $this->ladeWunschliste();
         } else {
-            $this->kKunde       = $_SESSION['Kunde']->kKunde;
+            $this->kKunde       = (isset($_SESSION['Kunde']->kKunde)) ? (int)$_SESSION['Kunde']->kKunde : 0;
             $this->nStandard    = 1;
             $this->nOeffentlich = 0;
             $this->cName        = Shop::Lang()->get('wishlist', 'global');
@@ -188,10 +188,10 @@ class Wunschliste
      * Artikel vom aktuellen Wunschzettel gekauft wurden, sollen diese vom Wunschzettel geloescht werden
      *
      * @param int   $kWunschliste
-     * @param array $kArtikel_arr
+     * @param array $oWarenkorbpositionen_arr
      * @return bool|int
      */
-    public static function pruefeArtikelnachBestellungLoeschen($kWunschliste, $kArtikel_arr)
+    public static function pruefeArtikelnachBestellungLoeschen($kWunschliste, $oWarenkorbpositionen_arr)
     {
         $kWunschliste = intval($kWunschliste);
         $conf         = Shop::getSettings(array(CONF_GLOBAL));
@@ -199,11 +199,36 @@ class Wunschliste
             $nCount        = 0;
             $oWunschzettel = new self($kWunschliste);
             if (isset($oWunschzettel->kWunschliste) && $oWunschzettel->kWunschliste > 0) {
-                if (isset($oWunschzettel->CWunschlistePos_arr) && count($oWunschzettel->CWunschlistePos_arr) > 0 && is_array($kArtikel_arr) && count($kArtikel_arr) > 0) {
+                if (isset($oWunschzettel->CWunschlistePos_arr) && count($oWunschzettel->CWunschlistePos_arr) > 0 && is_array($oWarenkorbpositionen_arr) && count($oWarenkorbpositionen_arr) > 0) {
                     foreach ($oWunschzettel->CWunschlistePos_arr as $i => $oWunschlistePos) {
-                        foreach ($kArtikel_arr as $kArtikel) {
-                            if ($oWunschlistePos->kArtikel == $kArtikel) {
-                                $oWunschzettel->entfernePos($oWunschlistePos->kWunschlistePos);
+                        foreach ($oWarenkorbpositionen_arr as $oArtikel) {
+                            if ($oWunschlistePos->kArtikel == $oArtikel->kArtikel) {
+                                //mehrfache Variationen beachten
+                                if (!empty($oWunschlistePos->CWunschlistePosEigenschaft_arr) && !empty($oArtikel->WarenkorbPosEigenschaftArr)) {
+                                    $nMatchesFound = 0;
+                                    $index = 0;
+                                    foreach ($oWunschlistePos->CWunschlistePosEigenschaft_arr as $oWPEigenschaft){
+                                        if ($index === $nMatchesFound) {
+                                            foreach ($oArtikel->WarenkorbPosEigenschaftArr as $oAEigenschaft){
+                                                if ($oWPEigenschaft->kEigenschaftWert != 0 && $oWPEigenschaft->kEigenschaftWert === $oAEigenschaft->kEigenschaftWert){
+                                                    $nMatchesFound++;
+                                                    break;
+                                                } elseif ($oWPEigenschaft->kEigenschaftWert === 0 && $oAEigenschaft->kEigenschaftWert === 0 &&
+                                                    !empty($oWPEigenschaft->cFreifeldWert) && !empty($oAEigenschaft->cFreifeldWert) &&
+                                                    $oWPEigenschaft->cFreifeldWert === $oAEigenschaft->cFreifeldWert) {
+                                                    $nMatchesFound++;
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                        $index++;
+                                    }
+                                    if ($nMatchesFound === count($oArtikel->WarenkorbPosEigenschaftArr)) {
+                                        $oWunschzettel->entfernePos($oWunschlistePos->kWunschlistePos);
+                                    }
+                                } else {
+                                    $oWunschzettel->entfernePos($oWunschlistePos->kWunschlistePos);
+                                }
                                 $nCount++;
                             }
                         }
@@ -231,11 +256,12 @@ class Wunschliste
                     JOIN twunschlistepos ON twunschlistepos.kWunschliste = twunschliste.kWunschliste
                         AND (twunschlistepos.cArtikelName LIKE '%" . addcslashes($cSuche, '%_') . "%'
                         OR twunschlistepos.cKommentar LIKE '%" . addcslashes($cSuche, '%_') . "%')
-                    WHERE twunschliste.kWunschliste = " . (int) $this->kWunschliste, 2
+                    WHERE twunschliste.kWunschliste = " . (int)$this->kWunschliste, 2
             );
 
             if (is_array($oSuchergebnis_arr) && count($oSuchergebnis_arr) > 0) {
                 foreach ($oSuchergebnis_arr as $i => $oSuchergebnis) {
+                    $oWunschlistePosSuche_arr[$i] = new stdClass();
                     $oWunschlistePosSuche_arr[$i]->CWunschlistePosEigenschaft_arr = array();
                     $oWunschlistePosSuche_arr[$i]                                 = new WunschlistePos($oSuchergebnis->kArtikel, $oSuchergebnis->cArtikelName, $oSuchergebnis->fAnzahl, $oSuchergebnis->kWunschliste);
 

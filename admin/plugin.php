@@ -24,15 +24,18 @@ if ($step === 'plugin_uebersicht') {
             if (!validateToken()) {
                 $bError = true;
             } else {
-                $oPluginEinstellungConf_arr = Shop::DB()->query(
-                    "SELECT *
-                        FROM tplugineinstellungenconf
-                        WHERE kPluginAdminMenu != 0
-                            AND kPlugin = " . $kPlugin . "
-                            AND cConf = 'Y'
-                            AND kPluginAdminMenu = " . (int) $_POST['kPluginAdminMenu'], 2
-                );
-                $bError = false;
+                $bError                     = false;
+                $oPluginEinstellungConf_arr = array();
+                if (isset($_POST['kPluginAdminMenu'])) {
+                    $oPluginEinstellungConf_arr = Shop::DB()->query(
+                        "SELECT *
+                            FROM tplugineinstellungenconf
+                            WHERE kPluginAdminMenu != 0
+                                AND kPlugin = " . $kPlugin . "
+                                AND cConf != 'N'
+                                AND kPluginAdminMenu = " . (int)$_POST['kPluginAdminMenu'], 2
+                    );
+                }
                 if (count($oPluginEinstellungConf_arr) > 0) {
                     foreach ($oPluginEinstellungConf_arr as $oPluginEinstellungConf) {
                         Shop::DB()->delete('tplugineinstellungen', array('kPlugin', 'cName'), array($kPlugin, $oPluginEinstellungConf->cWertName));
@@ -41,8 +44,13 @@ if ($step === 'plugin_uebersicht') {
                         $oPluginEinstellung->cName   = $oPluginEinstellungConf->cWertName;
                         if (isset($_POST[$oPluginEinstellungConf->cWertName])) {
                             if (is_array($_POST[$oPluginEinstellungConf->cWertName])) {
-                                //radio buttons
-                                $oPluginEinstellung->cWert = $_POST[$oPluginEinstellungConf->cWertName][0];
+                                if ($oPluginEinstellungConf->cConf === 'M') {
+                                    //selectbox with "multiple" attribute
+                                    $oPluginEinstellung->cWert = serialize($_POST[$oPluginEinstellungConf->cWertName]);
+                                } else {
+                                    //radio buttons
+                                    $oPluginEinstellung->cWert = $_POST[$oPluginEinstellungConf->cWertName][0];
+                                }
                             } else {
                                 //textarea/text
                                 $oPluginEinstellung->cWert = $_POST[$oPluginEinstellungConf->cWertName];
@@ -74,6 +82,13 @@ if ($step === 'plugin_uebersicht') {
         }
 
         $oPlugin = new Plugin($kPlugin, $invalidateCache);
+        if (!$invalidateCache) { //make sure dynamic options are reloaded
+            foreach ($oPlugin->oPluginEinstellungConf_arr as $option) {
+                if (!empty($option->cSourceFile)) {
+                    $option->oPluginEinstellungenConfWerte_arr = $oPlugin->getDynamicOptions($option);
+                }
+            }
+        }
         $smarty->assign('oPlugin', $oPlugin);
         $i = 0;
         $j = 0;

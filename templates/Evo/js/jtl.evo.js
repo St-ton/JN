@@ -320,6 +320,74 @@
             });
         },
 
+        popover: function() {
+            /*
+             * <a data-toggle="popover" data-ref="#popover-content123">Click me</a>
+             * <div id="popover-content123" class="popover">content here</div> 
+             */
+            $('[data-toggle="popover"]').popover({
+                trigger: 'hover',
+                html: true,
+                content: function() {
+                    var ref = $(this).attr('data-ref');
+                    return $(ref).html();
+                }
+            });
+        },
+
+        smoothScrollToAnchor: function(href, pushToHistory) {
+            var anchorRegex = /^#[\w]+$/;
+            if (!anchorRegex.test(href)) {
+                return false;
+            }
+
+            var target, targetOffset;
+            target = $('#' + href.slice(1));
+
+            if (target.length > 0) {
+                // scroll below the static megamenu
+                var nav         = $('#evo-main-nav-wrapper.do-affix');
+                var fixedOffset = nav.length > 0 ? nav.outerHeight() : 0;
+
+                targetOffset = target.offset().top - fixedOffset - parseInt(target.css('margin-top'));
+                $('html, body').animate({scrollTop: targetOffset});
+
+                if (pushToHistory) {
+                    history.pushState({}, document.title, location.pathname + href);
+                }
+
+                return true;
+            }
+
+            return false;
+        },
+
+        smoothScroll: function() {
+            var supportHistory = (history && history.pushState) ? true : false;
+            var that = this;
+
+            this.smoothScrollToAnchor(location.hash, false);
+            $(document).delegate('a[href^="#"]', 'click', function(e) {
+                var elem = e.target;
+                if (!e.isDefaultPrevented()) {
+                    // only runs if no other click event is fired
+                    if (that.smoothScrollToAnchor(elem.getAttribute('href'), supportHistory)) {
+                        e.preventDefault();
+                    }
+                }
+            });
+        },
+
+        preventDropdownToggle: function() {
+            $('a.dropdown-toggle').click(function(e){
+                var elem = e.target;
+                if (elem.getAttribute('aria-expanded') == 'true' && elem.getAttribute('href') != '#') {
+                    window.location.href = elem.getAttribute('href');
+                    e.preventDefault();
+                }
+            });
+        },
+
         register: function() {
             this.addSliderTouchSupport();
             this.productTabs();
@@ -331,6 +399,9 @@
             this.imagebox();
             this.renderCaptcha();
             this.popupDep();
+            this.popover();
+            this.preventDropdownToggle();
+            this.smoothScroll();
         },
         
         loadContent: function(url, callback, error, animation) {

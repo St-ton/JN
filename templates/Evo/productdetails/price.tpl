@@ -6,9 +6,9 @@
     <div class="price_wrapper">
     {block name="price-wrapper"}
     {* --- Preis auf Anfrage? --- *}
-    {if $Artikel->Preise->fVKNetto==0 && $Artikel->bHasKonfig}
+    {if $Artikel->Preise->fVKNetto == 0 && $Artikel->bHasKonfig}
         <span class="price_label price_as_configured">{lang key="priceAsConfigured" section="productDetails"}</span>
-    {elseif $Artikel->Preise->fVKNetto==0 && $Einstellungen.global.global_preis0 === 'N'}
+    {elseif $Artikel->Preise->fVKNetto == 0 && $Einstellungen.global.global_preis0 === 'N'}
         <span class="price_label price_on_application">{lang key="priceOnApplication" section="global"}</span>
     {else}
         {if ($Artikel->nVariationsAufpreisVorhanden == 1 || $Artikel->bHasKonfig) && $Artikel->kVaterArtikel == 0}
@@ -59,33 +59,32 @@
                     </div>
                 {/if}
                 
-                {if $Artikel->Preise->Sonderpreis_aktiv && $Einstellungen.artikeldetails.artikeldetails_sonderpreisanzeige==2}
+                {if $Artikel->Preise->Sonderpreis_aktiv && $Einstellungen.artikeldetails.artikeldetails_sonderpreisanzeige == 2}
                     <div class="instead_of old_price">{lang key="oldPrice" section="global"}:
                         <del class="value">{$Artikel->Preise->alterVKLocalized[$NettoPreise]}</del>
                     </div>
                 {elseif !$Artikel->Preise->Sonderpreis_aktiv && $Artikel->Preise->rabatt > 0}
-                    {if $Einstellungen.artikeldetails.artikeldetails_rabattanzeige == 3 || $Einstellungen.artikeldetails.artikeldetails_rabattanzeige==4}
+                    {if $Einstellungen.artikeldetails.artikeldetails_rabattanzeige == 3 || $Einstellungen.artikeldetails.artikeldetails_rabattanzeige == 4}
                         <div class="old_price">{lang key="oldPrice" section="global"}:
                             <del class="value text-nowrap">{$Artikel->Preise->alterVKLocalized[$NettoPreise]}</del>
                         </div>
                     {/if}
-                    {if $Einstellungen.artikeldetails.artikeldetails_rabattanzeige == 2 || $Einstellungen.artikeldetails.artikeldetails_rabattanzeige==4}
+                    {if $Einstellungen.artikeldetails.artikeldetails_rabattanzeige == 2 || $Einstellungen.artikeldetails.artikeldetails_rabattanzeige == 4}
                         <div class="discount">{lang key="discount" section="global"}:
-                            <span class="value text-nowrap">{$Artikel->Preise->rabatt}%</span></div>
+                            <span class="value text-nowrap">{$Artikel->Preise->rabatt}%</span>
+                        </div>
                     {/if}
                 {/if}
 
-                {if $Einstellungen.artikeldetails.artikeldetails_uvp_anzeigen === 'Y' && $Artikel->fUVP>0}
-                    {* --- Unverbindliche Preisempfehlung anzeigen? Aktuell wegen $UVPlocalized nur auf Detailseite moeglich --- *}
+                {if $Einstellungen.artikeldetails.artikeldetails_uvp_anzeigen === 'Y' && $Artikel->fUVP > 0}
                     <div class="suggested-price">
                         <abbr title="{lang key="suggestedPriceExpl" section="productDetails"}">{lang key="suggestedPrice" section="productDetails"}</abbr>:
-                        <span class="value text-nowrap">{$UVPlocalized}</span>
+                        <span class="value text-nowrap">{$Artikel->cUVPLocalized}</span>
                     </div>
                     {* Preisersparnis zur UVP anzeigen? *}
                     {if isset($Artikel->SieSparenX) && $Artikel->SieSparenX->anzeigen == 1 && $Artikel->SieSparenX->nProzent > 0 && !$NettoPreise}
                         <div class="yousave">({lang key="youSave" section="productDetails"}
-                            <span class="percent">{$Artikel->SieSparenX->nProzent}
-                                %</span>, {lang key="thatIs" section="productDetails"}
+                            <span class="percent">{$Artikel->SieSparenX->nProzent}%</span>, {lang key="thatIs" section="productDetails"}
                             <span class="value text-nowrap">{$Artikel->SieSparenX->cLocalizedSparbetrag}</span>)
                         </div>
                     {/if}
@@ -130,7 +129,7 @@
                 {/block}
                 {/if}
                 
-                {if $Artikel->Preise->Sonderpreis_aktiv && isset($Einstellungen.artikeluebersicht) && $Einstellungen.artikeluebersicht.artikeluebersicht_sonderpreisanzeige==2}
+                {if $Artikel->Preise->Sonderpreis_aktiv && isset($Einstellungen.artikeluebersicht) && $Einstellungen.artikeluebersicht.artikeluebersicht_sonderpreisanzeige == 2}
                     <div class="instead-of old-price">
                         <small class="text-muted">
                             {lang key="oldPrice" section="global"}: 
@@ -138,7 +137,7 @@
                         </small>
                     </div>
                 {elseif !$Artikel->Preise->Sonderpreis_aktiv && $Artikel->Preise->rabatt > 0 && isset($Einstellungen.artikeluebersicht)}
-                    {if $Einstellungen.artikeluebersicht.artikeluebersicht_rabattanzeige == 3 || $Einstellungen.artikeluebersicht.artikeluebersicht_rabattanzeige==4}
+                    {if $Einstellungen.artikeluebersicht.artikeluebersicht_rabattanzeige == 3 || $Einstellungen.artikeluebersicht.artikeluebersicht_rabattanzeige == 4}
                         <div class="old-price">
                             <small class="text-muted">
                                 {lang key="oldPrice" section="global"}: 
@@ -146,7 +145,7 @@
                             </small>
                         </div>
                     {/if}
-                    {if $Einstellungen.artikeluebersicht.artikeluebersicht_rabattanzeige == 2 || isset($Einstellungen.artikeluebersicht) && $Einstellungen.artikeluebersicht.artikeluebersicht_rabattanzeige==4}
+                    {if $Einstellungen.artikeluebersicht.artikeluebersicht_rabattanzeige == 2 || isset($Einstellungen.artikeluebersicht) && $Einstellungen.artikeluebersicht.artikeluebersicht_rabattanzeige == 4}
                         <div class="discount">
                             <small class="text-muted">
                                 {lang key="discount" section="global"}: 

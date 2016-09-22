@@ -33,19 +33,17 @@
                     <input type="hidden" name="umfrage" value="1" />
                     <input type="hidden" name="umfrage_erstellen" value="1" />
                     <input type="hidden" name="tab" value="umfrage" />
-                    <input type="hidden" name="s1" value="{$oBlaetterNaviUmfrage->nAktuelleSeite}" />
                     <p class="tcenter">
                         <button name="umfrageerstellen" type="submit" value="{#umfrageAdd#}" class="btn btn-primary"><i class="fa fa-share"></i> {#umfrageAdd#}</button>
                     </p>
                 </form>
                 {if $oUmfrage_arr|@count > 0 && $oUmfrage_arr}
+                    {include file='tpl_inc/pagination.tpl' oPagination=$oPagination cAnchor='umfrage'}
                     <form name="umfrage" method="post" action="umfrage.php">
                         {$jtl_token}
                         <input type="hidden" name="umfrage" value="1" />
                         <input type="hidden" name="umfrage_loeschen" value="1" />
                         <input type="hidden" name="tab" value="umfrage" />
-                        <input type="hidden" name="s1" value="{$oBlaetterNaviUmfrage->nAktuelleSeite}" />
-                        {include file='pagination.tpl' cSite=1 cUrl='umfrage.php' oBlaetterNavi=$oBlaetterNaviUmfrage hash='#umfrage'}
                         <div id="payment">
                             <div id="tabellenLivesuche">
                                 <div class="panel panel-default">
@@ -66,7 +64,9 @@
                                         {foreach name=umfrage from=$oUmfrage_arr item=oUmfrage}
                                             <tr class="tab_bg{$smarty.foreach.umfrage.iteration%2}">
                                                 <td class="TD1"><input type="checkbox" name="kUmfrage[]" value="{$oUmfrage->kUmfrage}" /></td>
-                                                <td class="TD2"><a href="umfrage.php?umfrage=1&token={$smarty.session.jtl_token}{if $oBlaetterNaviUmfrage->nAktuelleSeite}&s1={$oBlaetterNaviUmfrage->nAktuelleSeite}{/if}&ud=1&kUmfrage={$oUmfrage->kUmfrage}&tab=umfrage">{$oUmfrage->cName}</a></td>
+                                                <td class="TD2">
+                                                    <a href="umfrage.php?umfrage=1&token={$smarty.session.jtl_token}&ud=1&kUmfrage={$oUmfrage->kUmfrage}&tab=umfrage">{$oUmfrage->cName}</a>
+                                                </td>
                                                 <td class="TD3">
                                                     {foreach name=kundengruppen from=$oUmfrage->cKundengruppe_arr item=cKundengruppe}
                                                         {$cKundengruppe}{if !$smarty.foreach.kundengruppen.last},{/if}
@@ -78,7 +78,9 @@
                                                 <td class="TD7">{$oUmfrage->dErstellt_de}</td>
                                                 <td class="TD8">
                                                     <div class="btn-group">
-                                                        <a href="umfrage.php?umfrage=1&token={$smarty.session.jtl_token}{if $oBlaetterNaviUmfrage->nAktuelleSeite}&s1={$oBlaetterNaviUmfrage->nAktuelleSeite}{/if}&umfrage_editieren=1&kUmfrage={$oUmfrage->kUmfrage}&tab=umfrage" class="btn btn-default" title="Bearbeiten"><i class="fa fa-edit"></i></a>
+                                                        <a href="umfrage.php?umfrage=1&token={$smarty.session.jtl_token}&umfrage_editieren=1&kUmfrage={$oUmfrage->kUmfrage}&tab=umfrage" class="btn btn-default" title="Bearbeiten">
+                                                            <i class="fa fa-edit"></i>
+                                                        </a>
                                                         <a href="umfrage.php?umfrage=1&token={$smarty.session.jtl_token}&kUmfrage={$oUmfrage->kUmfrage}&umfrage_statistik=1" class="btn btn-default" title="{#umfrageStats#}"><i class="fa fa-bar-chart"></i></a>
                                                     </div>
                                                 </td>
@@ -86,7 +88,7 @@
                                         {/foreach}
                                     </table>
                                     <div class="panel-footer">
-                                        <button name="loeschen" type="submit" class="btn btn-danger"><i class="fa fa-trash"></i> Markierte l&ouml;schen</button>
+                                        <button name="loeschen" type="submit" class="btn btn-danger"><i class="fa fa-trash"></i> {#deleteSelected#}</button>
                                     </div>
                                 </div>
                             </div>

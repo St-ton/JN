@@ -5,21 +5,15 @@
 {if permission('DASHBOARD_VIEW')}
     <script type="text/javascript" src="../includes/libs/flashchart/js/json/json2.js"></script>
     <script type="text/javascript" src="../includes/libs/flashchart/js/swfobject.js"></script>
+    <script type="text/javascript" src="{$currentTemplateDir}js/html.sortable.js"></script>
+    <script type="text/javascript" src="{$currentTemplateDir}js/dashboard.js"></script>
     <script type="text/javascript">
-    function slideToggle() {ldelim}
-        if ($('#settings').is(':hidden')) {ldelim}
-            xajax_getAvailableWidgetsAjax();
-            $('#settings').slideDown('fast');
-            $('.column_wrapper').slideUp('fast');
-        {rdelim} else  {ldelim}
-            $('#settings').slideUp('fast');
-            $('.column_wrapper').slideDown('fast');
-        {rdelim}
-    {rdelim}
+
+    // xajax_getAvailableWidgetsAjax();
 
     function registerWidgetSettings() {ldelim}
-        $('.widget_item a.add').click(function() {ldelim}
-            var kWidget = $(this).attr('ref'),
+        $('[data-widget="add"]').click(function() {ldelim}
+            var kWidget = $(this).data('id'),
                 myCallback = xajax.callback.create();
             myCallback.onComplete = function(obj) {ldelim}
                 window.location.href='index.php?kWidget=' + kWidget;
@@ -30,42 +24,37 @@
 
     $(function() {ldelim}
         xajax_truncateJtllog();
+        registerWidgetSettings();
     {rdelim});
     </script>
 
-    <div class="row dashboard-conf">
-        <div class="col-md-12">
-             <a href="#" class='btn btn-default pull-right' onClick="slideToggle();return false;"><i class="fa fa-cogs"></i> Einstellungen</a>
-        </div>
-    </div>
-
-    <div id="content" class="nomargin clearall">
-
-        <div class="widget_settings_wrapper" id="settings">
-            <div class="widget_settings">
-                {foreach from=$oAvailableWidget_arr item=oAvailableWidget}
-                    <div class="widget_item">
-                        <p class="title">{$oAvailableWidget->cTitle}</p>
-                        <p class="desc">{$oAvailableWidget->cDescription}</p>
-                        <a href="#" class="add" ref="{$oAvailableWidget->kWidget}"><i class="fa fa-plus-square"></i></a>
-                    </div>
-                {/foreach}
-                {if $oAvailableWidget_arr|@count == 0}
-                    <div class="widget_item">
-                        <p class="title">Keine weiteren Widgets vorhanden.</p>
-                    </div>
-                {/if}
-            </div>
-        </div>
-
-        <div class='column_wrapper clear'>
+    <div id="content" class="nomargin">
+        <div class="row">
             {include file='tpl_inc/widget_container.tpl' eContainer='left'}
             {include file='tpl_inc/widget_container.tpl' eContainer='center'}
             {include file='tpl_inc/widget_container.tpl' eContainer='right'}
         </div>
     </div>
 
-    <script type="text/javascript" src="{$currentTemplateDir}js/inettuts.js"></script>
+    <div id="switcher">
+        <div class="switcher" id="dashboard-config">
+            {*<a href="#" data-toggle="active" data-target="#dashboard-config" class="btn-toggle"><i class="fa fa-gear"></i></a>*}
+            
+            <a href="#" class="dropdown-toggle parent btn-toggle" data-toggle="dropdown">
+                <i class="fa fa-gear"></i>
+            </a>
+            <div class="switcher-wrapper">
+                <div class="switcher-header">
+                    <h2>Widgets</h2>
+                </div>
+                <div class="switcher-content">
+                    <div id="settings">
+                        {include file='tpl_inc/widget_selector.tpl' oAvailableWidget_arr=$oAvailableWidget_arr}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 {else}
     {include file='tpl_inc/seite_header.tpl' cTitel=#dashboard#}
     <div class="alert alert-success">

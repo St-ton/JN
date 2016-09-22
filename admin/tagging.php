@@ -8,7 +8,6 @@ require_once dirname(__FILE__) . '/includes/admininclude.php';
 $oAccount->permission('MODULE_PRODUCTTAGS_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'blaetternavi.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'tagging_inc.php';
 
 setzeSprache();
@@ -17,8 +16,6 @@ $cHinweis          = '';
 $cFehler           = '';
 $step              = 'uebersicht';
 $settingsIDs       = array(427, 428, 431, 433, 434, 435, 430);
-$nAnzahlProSeite   = 15;
-$oBlaetterNaviConf = baueBlaetterNaviGetterSetter(2, $nAnzahlProSeite);
 // Tabs
 if (strlen(verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', verifyGPDataString('tab'));
@@ -28,11 +25,9 @@ if (isset($_POST['tagging']) && intval($_POST['tagging']) === 1 && validateToken
         if (is_array($_POST['kTagAll']) && count($_POST['kTagAll']) > 0) {
             $cSQLDel = ' IN (';
             foreach ($_POST['kTagAll'] as $i => $kTagAll) {
-                Shop::DB()->query(
-                    'UPDATE ttag
-                        SET nAktiv = 0
-                        WHERE kTag = ' . (int)$kTagAll, 3
-                );
+                $upd         = new stdClass();
+                $upd->nAktiv = 0;
+                Shop::DB()->update('ttag', 'kTag', (int)$kTagAll, $upd);
                 // Loeschequery vorbereiten
                 if ($i > 0) {
                     $cSQLDel .= ', ' . (int)$kTagAll;
@@ -56,11 +51,7 @@ if (isset($_POST['tagging']) && intval($_POST['tagging']) === 1 && validateToken
             // nAktiv Reihe updaten
             if (is_array($_POST['nAktiv'])) {
                 foreach ($_POST['nAktiv'] as $i => $nAktiv) {
-                    $oTag = Shop::DB()->query(
-                        "SELECT cName
-                            FROM ttag
-                            WHERE kTag = " . (int)$nAktiv, 1
-                    );
+                    $oTag = Shop::DB()->select('ttag', 'kTag', (int)$nAktiv);
                     Shop::DB()->delete('tseo', array('cKey', 'kKey', 'kSprache'), array('kTag', (int)$nAktiv, (int)$_SESSION['kSprache']));
                     // Aktivierten Tag in tseo eintragen
                     $oSeo           = new stdClass();
@@ -70,11 +61,10 @@ if (isset($_POST['tagging']) && intval($_POST['tagging']) === 1 && validateToken
                     $oSeo->kSprache = $_SESSION['kSprache'];
                     Shop::DB()->insert('tseo', $oSeo);
                     // Aktivierte Suchanfragen in tsuchanfrage updaten
-                    Shop::DB()->query(
-                        "UPDATE ttag
-                            SET nAktiv = 1, cSeo = '" . $oSeo->cSeo . "'
-                            WHERE kTag = " . intval($nAktiv), 3
-                    );
+                    $upd         = new stdClass();
+                    $upd->nAktiv = 1;
+                    $upd->cSeo   = $oSeo->cSeo;
+                    Shop::DB()->update('ttag', 'kTag', $nAktiv, $upd);
                 }
             }
             flushAffectedArticleCache($_POST['kTagAll']);
@@ -84,7 +74,7 @@ if (isset($_POST['tagging']) && intval($_POST['tagging']) === 1 && validateToken
             "SELECT ttag.kTag,ttag.cName,ttag.nAktiv,sum(ttagartikel.nAnzahlTagging) AS Anzahl FROM ttag
                 JOIN ttagartikel ON ttagartikel.kTag = ttag.kTag
                 WHERE ttag.kSprache = " . (int)$_SESSION['kSprache'] . " GROUP BY ttag.cName
-                ORDER BY Anzahl DESC" . $oBlaetterNaviConf->cSQL1, 2
+                ORDER BY Anzahl DESC", 2
         );
         if (is_array($Tags) && count($Tags) > 0) {
             foreach ($Tags as $tag) {
@@ -101,25 +91,25 @@ if (isset($_POST['tagging']) && intval($_POST['tagging']) === 1 && validateToken
                         if (isset($Neuertag->kTag) && $Neuertag->kTag > 0) {
                             Shop::DB()->insert('ttagmapping', $tagmapping_obj);
                             Shop::DB()->delete('ttag', 'kTag', $tag->kTag);
-                            Shop::DB()->query(
-                                "UPDATE tseo
-                                    SET kKey = " . (int)$Neuertag->kTag . "
-                                    WHERE cKey = 'kTag'
-                                        AND kKey = " . (int)$tag->kTag, 3
-                            );
-
-                            $tagmappings = Shop::DB()->query("SELECT * FROM ttagartikel WHERE ktag = " . (int)$tag->kTag, 2);
+                            $upd = new stdClass();
+                            $upd->kKey = (int)$Neuertag->kTag;
+                            Shop::DB()->update('tseo', ['cKey', 'kKey'], ['kTag', (int)$tag->kTag], $upd);
+                            $tagmappings = Shop::DB()->selectAll('ttagartikel', 'ktag', (int)$tag->kTag);
 
                             foreach ($tagmappings as $tagmapping) {
                                 //update tab amount, delete product tagging with old tag ID
                                 if (Shop::DB()->query(
-                                        "UPDATE ttagartikel SET nAnzahlTagging = nAnzahlTagging+" . $tagmapping->nAnzahlTagging . "
-                                            WHERE kTag = " . (int)$Neuertag->kTag . " AND kArtikel = " . (int)$tagmapping->kArtikel, 3
+                                        "UPDATE ttagartikel 
+                                            SET nAnzahlTagging = nAnzahlTagging+" . $tagmapping->nAnzahlTagging . "
+                                            WHERE kTag = " . (int)$Neuertag->kTag . " 
+                                                AND kArtikel = " . (int)$tagmapping->kArtikel, 3
                                     ) > 0
                                 ) {
-                                    Shop::DB()->delete('ttagartikel', array('kTag', 'kArtikel'), array((int)$tag->kTag, (int)$tagmapping->kArtikel));
+                                    Shop::DB()->delete('ttagartikel', ['kTag', 'kArtikel'], [(int)$tag->kTag, (int)$tagmapping->kArtikel]);
                                 } else {
-                                    Shop::DB()->query("UPDATE ttagartikel SET kTag = " . (int)$Neuertag->kTag . " WHERE kTag = " . (int)$tag->kTag . " AND kArtikel = " . (int)$tagmapping->kArtikel, 4);
+                                    $upd = new stdClass();
+                                    $upd->kTag = (int)$Neuertag->kTag;
+                                    Shop::DB()->update('ttagartikel', ['kTag', 'kArtikel'], [(int)$tag->kTag, (int)$tagmapping->kArtikel], $upd);
                                 }
                             }
                             $cHinweis .= 'Der Tag "' . $tagmapping_obj->cName . '" wurde erfolgreich auf "' . $tagmapping_obj->cNameNeu . '" gemappt.<br />';
@@ -139,11 +129,7 @@ if (isset($_POST['tagging']) && intval($_POST['tagging']) === 1 && validateToken
             flushAffectedArticleCache($_POST['kTag']);
             foreach ($_POST['kTag'] as $kTag) {
                 $kTag = (int)$kTag;
-                $oTag = Shop::DB()->query(
-                    "SELECT cName
-                        FROM ttag
-                        WHERE kTag = " . $kTag, 1
-                );
+                $oTag = Shop::DB()->select('ttag', 'kTag', $kTag);
                 if (strlen($oTag->cName) > 0) {
                     Shop::DB()->query(
                         "DELETE ttag, tseo
@@ -169,11 +155,7 @@ if (isset($_POST['tagging']) && intval($_POST['tagging']) === 1 && validateToken
         if (is_array($_POST['kTagMapping'])) {
             foreach ($_POST['kTagMapping'] as $kTagMapping) {
                 $kTagMapping = (int)$kTagMapping;
-                $oMapping    = Shop::DB()->query(
-                    "SELECT cName
-                        FROM ttagmapping
-                        WHERE kTagMapping = " . $kTagMapping, 1
-                );
+                $oMapping    = Shop::DB()->select('ttagmapping', 'kTagMapping', $kTagMapping);
                 if (strlen($oMapping->cName) > 0) {
                     Shop::DB()->delete('ttagmapping', 'kTagMapping', $kTagMapping);
 
@@ -192,6 +174,11 @@ if (isset($_POST['tagging']) && intval($_POST['tagging']) === 1 && validateToken
 // Tagdetail
 if (verifyGPCDataInteger('kTag') > 0 && verifyGPCDataInteger('tagdetail') === 1) {
     $step = 'detail';
+    // Pagination
+    $nTagDetailAnzahl = holeTagDetailAnzahl(verifyGPCDataInteger('kTag'), $_SESSION['kSprache']);
+    $oPagiTagDetail   = (new Pagination('detail'))
+        ->setItemCount($nTagDetailAnzahl)
+        ->assemble();
     // Tag von einem odere mehreren Artikeln loesen
     if (!empty($_POST['kArtikel_arr']) && is_array($_POST['kArtikel_arr']) && count($_POST['kArtikel_arr']) && verifyGPCDataInteger('detailloeschen') === 1) {
         if (loescheTagsVomArtikel($_POST['kArtikel_arr'], verifyGPCDataInteger('kTag'))) {
@@ -201,32 +188,49 @@ if (verifyGPCDataInteger('kTag') > 0 && verifyGPCDataInteger('tagdetail') === 1)
             $cFehler = 'Fehler: Ihre markierten Artikel zum Produkttag konnten nicht gel&ouml;scht werden.';
         }
     }
-    $oTagArtikel_arr = holeTagDetail(verifyGPCDataInteger('kTag'), (int)$_SESSION['kSprache'], $oBlaetterNaviConf->cSQL2);
-    // Baue Blaetternavigation
-    $oBlaetterNaviTagsDetail = baueBlaetterNavi($oBlaetterNaviConf->nAktuelleSeite2, holeTagDetailAnzahl(verifyGPCDataInteger('kTag'), $_SESSION['kSprache']), $nAnzahlProSeite);
+    $oTagArtikel_arr = holeTagDetail(verifyGPCDataInteger('kTag'), (int)$_SESSION['kSprache'], ' LIMIT ' . $oPagiTagDetail->getLimitSQL());
     $smarty->assign('oTagArtikel_arr', $oTagArtikel_arr)
-           ->assign('oBlaetterNaviTagsDetail', $oBlaetterNaviTagsDetail)
-           ->assign('kTag', verifyGPCDataInteger('kTag'))
-           ->assign('cTagName', (isset($oTagArtikel_arr[0]->cName)) ? $oTagArtikel_arr[0]->cName : '');
+        ->assign('oPagiTagDetail', $oPagiTagDetail)
+        ->assign('kTag', verifyGPCDataInteger('kTag'))
+        ->assign('cTagName', (isset($oTagArtikel_arr[0]->cName)) ? $oTagArtikel_arr[0]->cName : '');
 } else {
-    // Anzahl Suchanfrageerfolglos
+    // Anzahl Tags fuer diese Sprache
     $nAnzahlTags = Shop::DB()->query(
         "SELECT count(*) AS nAnzahl
             FROM ttag
-            WHERE kSprache=" . $_SESSION['kSprache'], 1
+            WHERE kSprache = " . (int)$_SESSION['kSprache'], 1
     );
-    // Baue Blaetternavigation
-    $oBlaetterNaviTags = baueBlaetterNavi($oBlaetterNaviConf->nAktuelleSeite1, $nAnzahlTags->nAnzahl, $nAnzahlProSeite);
-    $Sprachen          = gibAlleSprachen();
-    $Tags              = Shop::DB()->query(
-        "SELECT ttag.kTag,ttag.cName,ttag.nAktiv,sum(ttagartikel.nAnzahlTagging) AS Anzahl FROM ttag
+    // Anzahl Tag Mappings fuer diese Sprache
+    $nAnzahlTagMappings = Shop::DB()->query(
+        "SELECT count(*) AS nAnzahl
+            FROM ttagmapping
+            WHERE kSprache = " . (int)$_SESSION['kSprache'], 1
+    );
+
+    // Paginationen
+    $oPagiTags = (new Pagination('tags'))
+        ->setItemCount($nAnzahlTags->nAnzahl)
+        ->assemble();
+    $oPagiTagMappings = (new Pagination('mappings'))
+        ->setItemCount($nAnzahlTagMappings->nAnzahl)
+        ->assemble();
+
+    $Sprachen = gibAlleSprachen();
+    $Tags     = Shop::DB()->query("
+        SELECT ttag.kTag,ttag.cName,ttag.nAktiv,sum(ttagartikel.nAnzahlTagging) AS Anzahl FROM ttag
             JOIN ttagartikel ON ttagartikel.kTag = ttag.kTag
             WHERE ttag.kSprache = " . (int)$_SESSION['kSprache'] . "
             GROUP BY ttag.cName
-            ORDER BY Anzahl DESC" . $oBlaetterNaviConf->cSQL1, 2
-    );
+            ORDER BY Anzahl DESC
+            LIMIT " . $oPagiTags->getLimitSQL(),
+        2);
+    $Tagmapping = Shop::DB()->query("
+        SELECT *
+            FROM ttagmapping
+            WHERE kSprache = " . (int)$_SESSION['kSprache'] . "
+            LIMIT " . $oPagiTagMappings->getLimitSQL(),
+        2);
 
-    $Tagmapping = Shop::DB()->query("SELECT * FROM ttagmapping WHERE kSprache = " . (int)$_SESSION['kSprache'], 2);
     // Config holen
     $oConfig_arr = Shop::DB()->query(
         "SELECT *
@@ -236,23 +240,14 @@ if (verifyGPCDataInteger('kTag') > 0 && verifyGPCDataInteger('tagdetail') === 1)
     );
     $configCount = count($oConfig_arr);
     for ($i = 0; $i < $configCount; $i++) {
-        $oConfig_arr[$i]->ConfWerte = Shop::DB()->query(
-            "SELECT *
-                FROM teinstellungenconfwerte
-                WHERE kEinstellungenConf = " . (int)$oConfig_arr[$i]->kEinstellungenConf . "
-                ORDER BY nSort", 2
-        );
-        $oSetValue = Shop::DB()->query(
-            "SELECT cWert
-                FROM teinstellungen
-                WHERE kEinstellungenSektion = " . (int)$oConfig_arr[$i]->kEinstellungenSektion . "
-                    AND cName = '" . $oConfig_arr[$i]->cWertName . "'", 1
-        );
+        $oConfig_arr[$i]->ConfWerte = Shop::DB()->selectAll('teinstellungenconfwerte', 'kEinstellungenConf', (int)$oConfig_arr[$i]->kEinstellungenConf, '*', 'nSort');
+        $oSetValue = Shop::DB()->select('teinstellungen', 'kEinstellungenSektion', (int)$oConfig_arr[$i]->kEinstellungenSektion, 'cName', $oConfig_arr[$i]->cWertName);
         $oConfig_arr[$i]->gesetzterWert = (isset($oSetValue->cWert)) ? $oSetValue->cWert : null;
     }
 
     $smarty->assign('oConfig_arr', $oConfig_arr)
-           ->assign('oBlaetterNaviTags', $oBlaetterNaviTags)
+           ->assign('oPagiTags', $oPagiTags)
+           ->assign('oPagiTagMappings', $oPagiTagMappings)
            ->assign('Sprachen', $Sprachen)
            ->assign('Tags', $Tags)
            ->assign('Tagmapping', $Tagmapping);

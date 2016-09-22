@@ -185,8 +185,12 @@ if (isset($AktuellerArtikel->kArtikel) && $AktuellerArtikel->kArtikel > 0) {
     // Letzten angesehenden Artikel hinzufügen
     $boxes->addRecentlyViewed($AktuellerArtikel->kArtikel);
 }
+$besucherzaehler = ($Einstellungen['global']['global_zaehler_anzeigen'] === 'Y') ?
+    Shop::DB()->query("SELECT * FROM tbesucherzaehler", 1) :
+    null;
 $smarty->assign('bCookieErlaubt', isset($_COOKIE['JTLSHOP']))
        ->assign('nIsSSL', pruefeSSL())
        ->assign('boxes', $boxesToShow)
        ->assign('linkgroups', $linkGroups)
-       ->assign('nZeitGebraucht', (isset($nStartzeit)) ? (microtime(true) - $nStartzeit) : 0);
+       ->assign('nZeitGebraucht', (isset($nStartzeit)) ? (microtime(true) - $nStartzeit) : 0)
+       ->assign('Besucherzaehler', (!empty($besucherzaehler->nZaehler)) ? (int)$besucherzaehler->nZaehler : 0);

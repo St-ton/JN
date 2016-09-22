@@ -1,7 +1,7 @@
 {if count($oPatch_arr) > 0}
     {foreach name="patch" from=$oPatch_arr item=oPatch}
         <li>
-            {if $oPatch->cIconURL|count_characters > 0}
+            {if $oPatch->cIconURL|strlen > 0}
                 <img src="{$oPatch->cIconURL|urldecode}" alt="" title="{$oPatch->cTitle}" />
             {/if}
             <p><a href="{$oPatch->cURL}" title="{$oPatch->cTitle}" target="_blank">

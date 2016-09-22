@@ -23,13 +23,12 @@ body.no-bg {
 }
 
 .img-responsive-width {
-    display: block;
-    width: 100%;
+    max-width: 100%;
     height: auto;
 }
 
 .img-responsive-height {
-    height: 100%;
+    max-height: 100%;
     width: auto;
 }
 
@@ -69,6 +68,9 @@ body.no-bg {
 
 .input-group input[type="text"].form-control {
     min-width: 3em;
+    &[readonly] {
+        cursor: auto;
+    }
 }
 
 .input-group input[type="number"].form-control {
@@ -251,6 +253,7 @@ ul.vlist li {
     padding-bottom: @margin-large;
 }
 
+.top0 { margin-top:0; }
 .top5 { margin-top:5px; }
 .top7 { margin-top:7px; }
 .top10 { margin-top:10px; }
@@ -282,20 +285,6 @@ hr.hr-sm {
 
 .attr-group > .item {
     margin-bottom: 0.5em;
-}
-
-/* LIGHTBOX WORKAROUND */
-
-.modal-dialog {
-    background: @body-bg;
-}
-
-.modal-backdrop {
-    z-index: auto;
-}
-
-.modal-header {
-    z-index: 1;
 }
 
 .carousel-indicators {
@@ -342,7 +331,7 @@ hr.hr-sm {
 
 .carousel.dark {
     .carousel-title, .carousel-caption {
-        color: #fff;
+        color: @carousel-caption-color;
     }
 }
 
@@ -532,6 +521,10 @@ ul.filter_state li a.active:before {
     vertical-align: middle;
 }
 
+.box-filter-characteristics .value{
+    margin-right: 3em;
+}
+
 /* CONTENT */
 
 #content {
@@ -546,6 +539,21 @@ ul.filter_state li a.active:before {
 
 #buy_form {
     margin-bottom: @margin-base;
+}
+
+#panel-register-form {
+    position: relative;
+
+    .nav-toggle {
+        width: auto;
+        top: @caret-width-base;
+        right: @caret-width-base;
+
+        > .btn.heading {
+            background-color: @brand-secondary;
+            color: @panel-default-text;
+        }
+    }
 }
 
 // Slider
@@ -621,15 +629,15 @@ ul.filter_state li a.active:before {
 /* SIGNAL */
 .delivery-status {
     .status-0 {
-        color: #B80000; /* red */
+        color: @delivery-status-0;
     }
 
     .status-1 {
-        color: #2896ec; /* blue */
+        color: @delivery-status-1;
     }
 
     .status-2 {
-        color: #007C00; /* green */
+        color: @delivery-status-2;
     }
 }
 
@@ -690,7 +698,6 @@ ul.filter_state li a.active:before {
 
 .panel-wrap .panel {
     margin: 0;
-    margin-bottom: 0;
 }
 
 aside .box {
@@ -699,6 +706,11 @@ aside .box {
 
 aside .badge {
     float: right;
+}
+
+.dropdown-menu {
+    padding: 0;
+    position: absolute;
 }
 
 .nav-list .dropdown-menu {
@@ -857,7 +869,7 @@ aside .badge {
 /* HELPER */
 
 .vcenter {
-    display: table-cell !important;
+    display: table-cell;
     vertical-align: middle !important;
     float: none;
 }
@@ -907,6 +919,10 @@ aside .badge {
 
 #sortierenID{
     margin-bottom: 20px;
+}
+
+.product-attributes .value a.label {
+    line-height: 2;
 }
 
 /* ARTICLE MATRIX */
@@ -959,7 +975,7 @@ table.matrix tbody>tr>td {
 }
 
 .banner > a {
-    border: 0px solid #ffffff;
+    border: 0 solid #ffffff;
     border-radius: 2px;
 }
 
@@ -1018,7 +1034,7 @@ table.matrix tbody>tr>td {
     border-color: transparent;
     border-style: solid;
     border-width: 5px 0 5px 5px;
-    border-left-color: #ccc;
+    border-left-color: @dropdown-border;
     margin-top: 5px;
 }
 
@@ -1477,14 +1493,10 @@ fieldset {
         }
         &.col-xs-12, .col-xs-6 {
             padding: 0;
-            padding-left: 0;
-            padding-right: 0;
         }
     }
     .order-submit {
         padding: 0;
-        padding-left: 0;
-        padding-right: 0;
 
         .btn {
             float: none!important;
@@ -1745,7 +1757,7 @@ fieldset {
 }
 
 .navbar-wrapper {
-    background-color: #fff;
+    background-color: @body-bg;
     -moz-transition: box-shadow .8s ease-in-out 0s;
     -webkit-transition: box-shadow .8s ease-in-out 0s;
     -webkit-transition-delay: 0s;
@@ -1772,7 +1784,7 @@ fieldset {
     margin: 2px 0 0;
     list-style: none;
     font-size: 14px;
-    background-color: #fff;
+    background-color: @dropdown-bg;
     border: none;
     border-radius: 0;
     -webkit-box-shadow: none;
@@ -1789,10 +1801,6 @@ fieldset {
     left: 0;
     z-index: 4;
     background-color: rgba(0, 0, 0, 0.3);
-}
-
-.navbar-default .nav > li {
-    margin-top: -3px;
 }
 
 .navbar-default .nav > li > a {
@@ -1871,7 +1879,7 @@ fieldset {
         height: auto;
     }
     .navbar-offcanvas .dropdown-menu>li>a {
-        color: #777;
+        color: @navbar-default-link-color;
         padding: 5px 15px 5px 30px;
     }
 }
@@ -2201,8 +2209,8 @@ div#add-to-cart {
 }
 
 .swatches.imgswatches .variation {
-    background: #ffffff !important;
-    color: #333 !important;
+    background: @swatches-bg !important;
+    color: @swatches-color !important;
     img {
         max-width: 50px;
         max-height: 50px;
@@ -2428,12 +2436,6 @@ div#add-to-cart {
 .image-gallery ul.image-thumbs li img {
     max-width: 44px;
     max-height: 44px;
-}
-
-@media (max-width: 768px) {
-    .image-gallery.has-thumbs ul.image-thumbs {
-        display: none;
-    }
 }
 
 @media (min-width: 992px) {
@@ -2677,7 +2679,7 @@ div#add-to-cart {
 
 .image-gallery.fullscreen.has-thumbs ul.image-thumbs li {
     display: inline-block;
-    background-color: #fff;
+    background-color: @body-bg;
 }
 
 .image-gallery.fullscreen.has-thumbs ul.image-container {
@@ -2811,6 +2813,14 @@ div#add-to-cart {
 #evo-main-nav {
     margin-bottom: 0;
     z-index: 20;
+
+    .dropdown-cart-items .item-name {
+        max-width: 200px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+        vertical-align: middle;
+    }
 }
 
 //fixed navbar start
@@ -2826,9 +2836,6 @@ header.fixed-navbar {
         width:    100%;
         z-index:  20;
         left:     0;
-    }
-    #evo-main-nav > .container {
-        margin-top: 3px;
     }
 
     /*
@@ -2878,7 +2885,9 @@ header.fixed-navbar {
 }
 
 .word-break, .desc, .shortdesc, .product-title {
-     word-break: break-word;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-word;
     -webkit-hyphens: auto;
        -moz-hyphens: auto;
         -ms-hyphens: auto;
@@ -2943,6 +2952,10 @@ header.fixed-navbar {
     .panel h4 {
         color: @text-color;
     }
+    .product-cell .caption{
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
 }
 
 .group-image {
@@ -3002,10 +3015,16 @@ header.fixed-navbar {
 .btn-gallery-down {bottom:0px;z-index:5;position:absolute;transform:rotate(90deg);}
 .thumbs {display:block;top:0;}
 .thumbs-box {position:relative;margin:auto;}
-@media (max-width: @screen-sm-min) {
-    .thumbs {display:none;}
-}
 @media (min-width: @screen-md-min) {
     .thumbs-box {position:relative;margin:auto;}
 }
 /*Artikel Bilder Slider Ende*/
+
+// Fix for #513 - backdrop was not visible
+.modal-backdrop {
+    bottom: 0;
+    z-index: 1040;
+}
+.modal {
+    z-index: 1050;
+}

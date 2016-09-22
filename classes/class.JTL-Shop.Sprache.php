@@ -8,7 +8,7 @@
  * Class Sprache
  *
  * @method Sprache autoload()
- * @method string get(string $cName, string $cSektion = 'global')
+ * @method string get(string $cName, string $cSektion = 'global', mixed ...$arg1)
  * @method bool set(int $kSprachsektion, string $cName, string $cWert)
  * @method bool insert(string $cSprachISO, int $kSprachsektion, string $cName, string $cWert)
  * @method bool delete(int $kSprachsektion, string $cName)
@@ -223,13 +223,25 @@ class Sprache
         if (!isset($this->idAssociation[$cISO])) {
             $cacheID = 'lang_id_ks';
             if (($this->idAssociation = Shop::Cache()->get($cacheID)) === false || !isset($this->idAssociation[$cISO])) {
-                $lang                       = Shop::DB()->query("SELECT kSprachISO FROM tsprachiso WHERE cISO = '" . Shop::DB()->escape($cISO) . "'", 1);
+                $lang                       = Shop::DB()->select('tsprachiso', 'cISO', Shop::DB()->escape($cISO));
                 $this->idAssociation[$cISO] = $lang;
                 Shop::Cache()->set($cacheID, $this->idAssociation, array(CACHING_GROUP_LANGUAGE));
             }
         }
 
         return $this->idAssociation[$cISO];
+    }
+
+    /**
+     * @param int $kSektion
+     * @param mixed null|string $default
+     * @return string
+     */
+    public function getSectionName($kSektion, $default = null)
+    {
+        $section = Shop::DB()->select('tsprachsektion', 'kSprachsektion', (int)$kSektion);
+
+        return is_object($section) ? $section->cName : $default;
     }
 
     /**
@@ -242,8 +254,8 @@ class Sprache
     {
         $_lv = $this->generateLangVars();
         if ($this->kSprachISO > 0 && $this->cISOSprache !== '' && !isset($_lv[$this->cISOSprache])) {
-            $allLangVars = Shop::DB()->query("
-                SELECT tsprachwerte.kSprachsektion, tsprachwerte.cWert, tsprachwerte.cName, tsprachsektion.cName AS sectionName
+            $allLangVars = Shop::DB()->query(
+                "SELECT tsprachwerte.kSprachsektion, tsprachwerte.cWert, tsprachwerte.cName, tsprachsektion.cName AS sectionName
                     FROM tsprachwerte 
                         LEFT JOIN tsprachsektion
                         ON tsprachwerte.kSprachsektion = tsprachsektion.kSprachsektion
@@ -305,12 +317,12 @@ class Sprache
     {
         if (strlen($cISO) > 0) {
             if (isset($this->oSprachISO[$cISO]->kSprachISO)) {
-                return (int) $this->oSprachISO[$cISO]->kSprachISO;
+                return (int)$this->oSprachISO[$cISO]->kSprachISO;
             }
             $oSprachISO              = $this->getLangIDFromIso($cISO);
             $this->oSprachISO[$cISO] = $oSprachISO;
 
-            return (isset($oSprachISO->kSprachISO)) ? (int) $oSprachISO->kSprachISO : false;
+            return (isset($oSprachISO->kSprachISO)) ? (int)$oSprachISO->kSprachISO : false;
         }
 
         return false;
@@ -319,6 +331,7 @@ class Sprache
     /**
      * @param string $cName
      * @param string $cSektion
+     * @param mixed [$arg1, ...]
      * @return string
      * @todo: HTML verhindern
      */
@@ -377,11 +390,12 @@ class Sprache
         }
         $kSektion = (int)$kSektion;
         if ($kSektion > 0) {
-            $oSprachWerte_arr = Shop::DB()->query("
-                SELECT cName, cWert
+            $oSprachWerte_arr = Shop::DB()->query(
+                "SELECT cName, cWert
                     FROM tsprachwerte
                     WHERE kSprachISO = " . $this->kSprachISO . "
-                        AND kSprachsektion = " . $kSektion, 2);
+                        AND kSprachsektion = " . $kSektion, 2
+            );
         }
 
         if (count($oSprachWerte_arr) > 0) {
@@ -404,11 +418,12 @@ class Sprache
     {
         $cName    = Shop::DB()->escape($cName);
         $cSektion = Shop::DB()->escape($cSektion);
-        $nCount   = Shop::DB()->query("
-            SELECT kSprachISO
+        $nCount   = Shop::DB()->query(
+            "SELECT kSprachISO
                 FROM tsprachlog
                 WHERE kSprachISO = " . (int)$this->kSprachISO . "
-                    AND cSektion = '" . $cSektion . "' AND cName = '" . $cName . "'", 3);
+                    AND cSektion = '" . $cSektion . "' AND cName = '" . $cName . "'", 3
+        );
         if ($nCount == 0) {
             $oLog             = new stdClass();
             $oLog->kSprachISO = $this->kSprachISO;
@@ -426,9 +441,7 @@ class Sprache
      */
     public function clearLog($currentLang = true)
     {
-        $where = ($currentLang === true) ?
-            " WHERE kSprachISO = " . (int)$this->kSprachISO :
-            '';
+        $where = ($currentLang === true) ? " WHERE kSprachISO = " . (int)$this->kSprachISO : '';
 
         return Shop::DB()->query("DELETE FROM tsprachlog" . $where, 3);
     }
@@ -438,11 +451,11 @@ class Sprache
      */
     public function gibLogWerte()
     {
-        return Shop::DB()->query("
-          SELECT * 
-            FROM tsprachlog 
-            WHERE kSprachISO = " . (int)$this->kSprachISO . " 
-            ORDER BY cName ASC", 2
+        return Shop::DB()->query(
+            "SELECT * 
+                FROM tsprachlog 
+                WHERE kSprachISO = " . (int)$this->kSprachISO . " 
+                ORDER BY cName ASC", 2
         );
     }
 
@@ -602,7 +615,7 @@ class Sprache
     public function _export($nTyp = 0)
     {
         $cCSVData_arr = array();
-        $nTyp         = (int) $nTyp;
+        $nTyp         = (int)$nTyp;
 
         switch ($nTyp) {
             default:

@@ -301,7 +301,7 @@ class MediaImage implements IMedia
     }
 
     /**
-     * @param $type
+     * @param string $type
      * @param bool $notCached
      * @return array
      * @throws Exception
@@ -314,11 +314,11 @@ class MediaImage implements IMedia
             case Image::TYPE_PRODUCT:
             {
                 $images = Shop::DB()->executeQuery('
-                    SELECT `tartikelpict`.`cPfad` as `path`, `tartikelpict`.`nNr` as `number`, `tartikelpict`.`kArtikel` as `id`,
+                    SELECT `tartikelpict`.`cPfad` AS `path`, `tartikelpict`.`nNr` AS `number`, `tartikelpict`.`kArtikel` AS `id`,
                            `tartikel`.`kArtikel`, `tartikel`.`cArtNr`, `tartikel`.`cSeo`, `tartikel`.`cName`, `tartikel`.`cBarcode`
                     FROM `tartikelpict`
                     INNER JOIN `tartikel`
-                    ON `tartikelpict`.`kArtikel` = `tartikel`.`kArtikel`', 2);
+                      ON `tartikelpict`.`kArtikel` = `tartikel`.`kArtikel`', 2);
                 break;
             }
             default:

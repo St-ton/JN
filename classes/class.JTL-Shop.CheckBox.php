@@ -138,7 +138,7 @@ class CheckBox
                 // Falls mal kCheckBoxFunktion gesetzt war aber diese Funktion nicht mehr existiert (deinstallation vom Plugin)
                 // wird kCheckBoxFunktion auf 0 gesetzt
                 if ($this->kCheckBoxFunktion > 0) {
-                    $oCheckBoxFunktion = Shop::DB()->query("SELECT * FROM tcheckboxfunktion WHERE kCheckBoxFunktion = " . (int)$this->kCheckBoxFunktion, 1);
+                    $oCheckBoxFunktion = Shop::DB()->select('tcheckboxfunktion', 'kCheckBoxFunktion', (int)$this->kCheckBoxFunktion);
                     if (isset($oCheckBoxFunktion->kCheckBoxFunktion) && $oCheckBoxFunktion->kCheckBoxFunktion > 0) {
                         $this->oCheckBoxFunktion = $oCheckBoxFunktion;
                     } else {
@@ -454,7 +454,6 @@ class CheckBox
             unset($oCheckBox->cKundengruppeAssoc_arr);
             unset($oCheckBox->oCheckBoxSprache_arr);
             unset($oCheckBox->cLink);
-            unset($oCheckBox->kCheckBox);
 
             $kCheckBox       = Shop::DB()->insert('tcheckbox', $oCheckBox);
             $this->kCheckBox = !empty($oCheckBox->kCheckBox) ? $oCheckBox->kCheckBox : $kCheckBox;
@@ -578,6 +577,8 @@ class CheckBox
             CHECKBOX_ORT_BESTELLABSCHLUSS     => 'Bestellabschluss',
             CHECKBOX_ORT_NEWSLETTERANMELDUNG  => 'Newsletteranmeldung',
             CHECKBOX_ORT_KUNDENDATENEDITIEREN => 'Editieren von Kundendaten',
-            CHECKBOX_ORT_KONTAKT              => 'Kontaktformular');
+            CHECKBOX_ORT_KONTAKT              => 'Kontaktformular',
+            CHECKBOX_ORT_FRAGE_ZUM_PRODUKT    => 'Frage zum Produkt',
+            CHECKBOX_ORT_FRAGE_VERFUEGBARKEIT => 'Verf&uuml;gbarkeitsanfrage');
     }
 }

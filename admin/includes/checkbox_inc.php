@@ -35,9 +35,9 @@ function plausiCheckBox($cPost_arr, $oSprache_arr)
         }
         // nLink
         $bLink = true;
-        if (intval($cPost_arr['nLink']) === 1) {
+        if ((int)$cPost_arr['nLink'] === 1) {
             $bLink = false;
-            if (isset($cPost_arr['kLink']) && intval($cPost_arr['kLink']) > 0) {
+            if (isset($cPost_arr['kLink']) && (int)$cPost_arr['kLink'] > 0) {
                 $bLink = true;
             }
         }
@@ -49,7 +49,7 @@ function plausiCheckBox($cPost_arr, $oSprache_arr)
             $cPlausi_arr['cAnzeigeOrt'] = 1;
         } else {
             foreach ($cPost_arr['cAnzeigeOrt'] as $cAnzeigeOrt) {
-                if (intval($cAnzeigeOrt) === 3 && $cPost_arr['kCheckBoxFunktion'] == 1) {
+                if ((int)$cAnzeigeOrt === 3 && $cPost_arr['kCheckBoxFunktion'] == 1) {
                     $cPlausi_arr['cAnzeigeOrt'] = 2;
                 }
             }
@@ -67,7 +67,7 @@ function plausiCheckBox($cPost_arr, $oSprache_arr)
             $cPlausi_arr['nLogging'] = 1;
         }
         // nSort
-        if (!isset($cPost_arr['nSort']) || intval($cPost_arr['nSort']) === 0) {
+        if (!isset($cPost_arr['nSort']) || (int)$cPost_arr['nSort'] === 0) {
             $cPlausi_arr['nSort'] = 1;
         }
         // kKundengruppe
@@ -86,15 +86,17 @@ function plausiCheckBox($cPost_arr, $oSprache_arr)
  */
 function speicherCheckBox($cPost_arr, $oSprache_arr)
 {
-    $oCheckBox = new CheckBox();
-    if (isset($cPost_arr['kCheckBox']) && intval($cPost_arr['kCheckBox']) > 0) {
-        $oCheckBox->deleteCheckBox(array(intval($cPost_arr['kCheckBox'])));
+    if (isset($cPost_arr['kCheckBox']) && (int)$cPost_arr['kCheckBox'] > 0) {
+        $oCheckBox = new CheckBox((int)$cPost_arr['kCheckBox']);
+        $oCheckBox->deleteCheckBox(array((int)$cPost_arr['kCheckBox']));
+    } else {
+        $oCheckBox = new CheckBox();
     }
     $oCheckBox->kLink = 0;
-    if (intval($cPost_arr['nLink']) === 1) {
-        $oCheckBox->kLink = intval($cPost_arr['kLink']);
+    if ((int)$cPost_arr['nLink'] === 1) {
+        $oCheckBox->kLink = (int)$cPost_arr['kLink'];
     }
-    $oCheckBox->kCheckBoxFunktion = intval($cPost_arr['kCheckBoxFunktion']);
+    $oCheckBox->kCheckBoxFunktion = (int)$cPost_arr['kCheckBoxFunktion'];
     $oCheckBox->cName             = $cPost_arr['cName'];
     $oCheckBox->cKundengruppe     = gibKeyStringFuerKeyArray($cPost_arr['kKundengruppe'], ';');
     $oCheckBox->cAnzeigeOrt       = gibKeyStringFuerKeyArray($cPost_arr['cAnzeigeOrt'], ';');

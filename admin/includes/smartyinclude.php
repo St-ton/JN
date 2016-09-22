@@ -8,14 +8,11 @@ $templateDir               = $smarty->getTemplateDir($smarty->context);
 $template                  = AdminTemplate::getInstance();
 $Einstellungen             = Shop::getSettings(array(CONF_GLOBAL));
 $Einstellungen['template'] = $template->getConfig();
-$updater                   = new Updater();
-$currentTheme              = '';
-if (isset($Einstellungen['template']['theme_default'])) {
-    $currentTheme = $Einstellungen['template']['theme_default'];
-}
-$shopURL            = Shop::getURL();
-$currentTemplateDir = str_replace(PFAD_ROOT . PFAD_ADMIN, '', $templateDir);
-$resourcePaths      = $template->getResources(isset($Einstellungen['template']['general']['use_minify']) && $Einstellungen['template']['general']['use_minify'] === 'Y');
+$currentTheme              = isset($Einstellungen['template']['theme_default']) ?: '';
+$shopURL                   = Shop::getURL();
+$currentTemplateDir        = str_replace(PFAD_ROOT . PFAD_ADMIN, '', $templateDir);
+$resourcePaths             = $template->getResources(isset($Einstellungen['template']['general']['use_minify']) && $Einstellungen['template']['general']['use_minify'] === 'Y');
+$oAccount                  = new AdminAccount();
 // Account
 if (!isset($oAccount) || get_class_methods($oAccount) === null) {
     require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'benutzerverwaltung_inc.php';
@@ -170,5 +167,5 @@ $smarty->assign('SID', (defined('SID') ? SID : null))
        ->assign('oLinkOberGruppe_arr', $oLinkOberGruppe_arr)
        ->assign('SektionenEinstellungen', $configSections)
        ->assign('kAdminmenuEinstellungen', KADMINMENU_EINSTELLUNGEN)
-       ->assign('notifications', Notification::buildDefault())
-       ->assign('hasUpdates', $updater->hasPendingUpdates());
+       ->assign('notifications', $notify)
+       ->assign('favorites', $oAccount->favorites());

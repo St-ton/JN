@@ -1,6 +1,6 @@
 {if isset($Sektion) && $Sektion}
     {assign var="cTitel" value=#preferences#|cat:": "|cat:$Sektion->cName}
-    {if isset($cSearch) && $cSearch|count_characters  > 0}
+    {if isset($cSearch) && $cSearch|strlen  > 0}
         {assign var="cTitel" value=$cSearch}
     {/if}
     {include file='tpl_inc/seite_header.tpl' cTitel=$cTitel cBeschreibung=$cPrefDesc cDokuURL=$cPrefURL}
@@ -8,12 +8,34 @@
 {if !isset($action) || !$action}
     {assign var="action" value="einstellungen.php"}
 {/if}
+{$search = isset($cSuche) && !empty($cSuche)}
+
+{if $search}
+    <script>
+        $(function() {
+            var $element = $('.input-group.highlight');
+            if ($element.length > 0) {
+            
+                var height = $element.height();
+                var offset = $element.offset().top;
+                var wndHeight = $(window).height();
+
+                if (height < wndHeight) {
+                    offset = offset - ((wndHeight / 2) - (height / 2));
+                }
+                
+                $('html, body').stop().animate({ scrollTop: offset }, 400);
+            }
+        });
+    </script>
+{/if}
+
 <div id="content" class="container-fluid">
     <div id="settings">
         <form name="einstellen" method="post" action="{$action}" class="navbar-form">
             {$jtl_token}
             <input type="hidden" name="einstellungen_bearbeiten" value="1" />
-            {if isset($cSuche) && $cSuche|count_characters > 0}
+            {if $search}
                 <input type="hidden" name="cSuche" value="{$cSuche}" />
                 <input type="hidden" name="einstellungen_suchen" value="1" />
             {/if}

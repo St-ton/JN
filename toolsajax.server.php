@@ -887,26 +887,27 @@ function baueArtikelDetail($oArtikel, $xPost_arr)
         $bewertung_seite = 1;
     }
     // Bewertungen holen
-    $oArtikel->holeBewertung(
-        $_SESSION['kSprache'],
-        $conf['bewertung']['bewertung_anzahlseite'],
-        $bewertung_seite,
-        $bewertung_sterne,
-        $conf['bewertung']['bewertung_freischalten'],
-        $nSortierung
-    );
-    $oArtikel->holehilfreichsteBewertung(Shop::$kSprache);
-    $oArtikel->Bewertungen->Sortierung = $nSortierung;
-    if ($bewertung_sterne == 0) {
-        //$nAnzahlBewertungen = $oArtikel->Bewertungen->oBewertungGesamt->nAnzahl;
-        $nAnzahlBewertungen = $oArtikel->Bewertungen->nAnzahlSprache;
-    } else {
-        $nAnzahlBewertungen = $oArtikel->Bewertungen->nSterne_arr[5 - $bewertung_sterne];
+    if (!isset($oArtikel->Bewertungen)) {
+        $oArtikel->holeBewertung(
+            $_SESSION['kSprache'],
+            $conf['bewertung']['bewertung_anzahlseite'],
+            $bewertung_seite,
+            $bewertung_sterne,
+            $conf['bewertung']['bewertung_freischalten'],
+            $nSortierung
+        );
+        $oArtikel->holehilfreichsteBewertung(Shop::$kSprache);
     }
+    $oArtikel->Bewertungen->Sortierung = $nSortierung;
+    //$nAnzahlBewertungen = $oArtikel->Bewertungen->oBewertungGesamt->nAnzahl;
+    $nAnzahlBewertungen = ($bewertung_sterne == 0) ?
+        $oArtikel->Bewertungen->nAnzahlSprache :
+        $oArtikel->Bewertungen->nSterne_arr[5 - $bewertung_sterne];
     // Baue Blätter Navigation
     $oBlaetterNavi = baueBewertungNavi($bewertung_seite, $bewertung_sterne, $nAnzahlBewertungen, $conf['bewertung']['bewertung_anzahlseite']);
     // Baue Gewichte für Smarty
     $oTrennzeichen = Trennzeichen::getUnit(JTLSEPARATER_WEIGHT, Shop::$kSprache);
+    $shopURL       = Shop::getURL() . '/';
     baueGewicht(array($oArtikel), $oTrennzeichen->getDezimalstellen(), $oTrennzeichen->getDezimalstellen());
 
     $smarty->assign('Navigation', createNavigation('ARTIKEL', $AufgeklappteKategorien, $oArtikel))
@@ -929,10 +930,10 @@ function baueArtikelDetail($oArtikel, $xPost_arr)
            ->assign('BewertungsTabAnzeigen', $BewertungsTabAnzeigen)
            ->assign('hinweis', ((isset($cHinweis)) ? $cHinweis : null))
            ->assign('fehler', ((isset($cFehler)) ? $cFehler : null))
-           ->assign('PFAD_IMAGESLIDER', Shop::getURL() . '/' . PFAD_IMAGESLIDER)
-           ->assign('PFAD_MEDIAFILES', Shop::getURL() . '/' . PFAD_MEDIAFILES)
-           ->assign('PFAD_FLASHPLAYER', Shop::getURL() . '/' . PFAD_FLASHPLAYER)
-           ->assign('PFAD_BILDER', Shop::getURL() . '/' . PFAD_BILDER)
+           ->assign('PFAD_IMAGESLIDER', $shopURL . PFAD_IMAGESLIDER)
+           ->assign('PFAD_MEDIAFILES', $shopURL . PFAD_MEDIAFILES)
+           ->assign('PFAD_FLASHPLAYER', $shopURL . PFAD_FLASHPLAYER)
+           ->assign('PFAD_BILDER', $shopURL . PFAD_BILDER)
            ->assign('KONFIG_ITEM_TYP_ARTIKEL', KONFIG_ITEM_TYP_ARTIKEL)
            ->assign('KONFIG_ITEM_TYP_SPEZIAL', KONFIG_ITEM_TYP_SPEZIAL)
            ->assign('KONFIG_ANZEIGE_TYP_CHECKBOX', KONFIG_ANZEIGE_TYP_CHECKBOX)
@@ -1036,9 +1037,9 @@ function resetSelectionWizardAnswerAjax($nFrage, $kKategorie)
     //@todo: undefined vars..:
     baueFilterSelectionWizard($kKategorie, $NaviFilter, $FilterSQL, $oSuchergebnisse, $nArtikelProSeite, $nLimitN);
     filterSelectionWizard($oSuchergebnisse->MerkmalFilter, $bMerkmalFilterVorhanden);
-    $smarty->assign('Einstellungen', $Einstellungen);
-    $smarty->assign('NaviFilter', $NaviFilter);
-    $smarty->assign('oAuswahlAssistent', $_SESSION['AuswahlAssistent']->oAuswahlAssistent);
+    $smarty->assign('Einstellungen', $Einstellungen)
+           ->assign('NaviFilter', $NaviFilter)
+           ->assign('oAuswahlAssistent', $_SESSION['AuswahlAssistent']->oAuswahlAssistent);
     $objResponse->assign('selection_wizard', 'innerHTML', $smarty->fetch('productwizard/form.tpl'));
     $objResponse->script('aaDeleteSelectBTN();');
     foreach ($_SESSION['AuswahlAssistent']->oAuswahl_arr as $i => $oAuswahl) {
@@ -1243,7 +1244,7 @@ function gibArtikelByVariationen($kArtikel, $kVariationKombi_arr)
             $j++;
         }
     } else {
-        return null;
+        return;
     }
     $oArtikelTMP = Shop::DB()->query(
         "SELECT tartikel.kArtikel

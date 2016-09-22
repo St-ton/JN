@@ -25,13 +25,7 @@ if (verifyGPCDataInteger('einstellungen') === 1) {
     $cHinweis .= saveAdminSectionSettings(CONF_SUCHSPECIAL, $_POST);
 } elseif (isset($_POST['suchspecials']) && intval($_POST['suchspecials']) === 1 && validateToken()) { // Suchspecials
     // Suchspecials aus der DB holen und in smarty assignen
-    $oSuchSpecials_arr = Shop::DB()->query(
-        "SELECT *
-            FROM tseo
-            WHERE cKey = 'suchspecial'
-                AND kSprache = " . (int)$_SESSION['kSprache'] . "
-            ORDER BY kKey", 2
-    );
+    $oSuchSpecials_arr = Shop::DB()->selectAll('tseo', ['cKey', 'kSprache'], ['suchspecial', (int)$_SESSION['kSprache']], '*', 'kKey');
 
     $oSuchSpecialsTMP_arr    = array();
     $nSuchSpecialsLoesch_arr = array();
@@ -118,12 +112,9 @@ if (verifyGPCDataInteger('einstellungen') === 1) {
     // Pruefe In kuerze Verfuegbar
     if (strlen($cInKuerzeVerfuegbarSeo) > 0 && !pruefeSuchspecialSeo($oSuchSpecials_arr, $cInKuerzeVerfuegbarSeo, SEARCHSPECIALS_UPCOMINGPRODUCTS)) {
         $cInKuerzeVerfuegbarSeo = checkSeo(getSeo($cInKuerzeVerfuegbarSeo));
-
         if ($cInKuerzeVerfuegbarSeo != $_POST['in_kuerze_verfuegbar']) {
             $cHinweis .= 'Das In k&uuml;rze Verf&uuml;gbar Seo "' . strip_tags(Shop::DB()->escape($_POST['in_kuerze_verfuegbar'])) . '" war bereits vorhanden und wurde auf "' . $cInKuerzeVerfuegbarSeo . '" umbenannt.<br />';
         }
-
-        unset($oInKuerzeVerfuegbar);
         $oInKuerzeVerfuegbar       = new stdClass();
         $oInKuerzeVerfuegbar->kKey = SEARCHSPECIALS_UPCOMINGPRODUCTS;
         $oInKuerzeVerfuegbar->cSeo = $cInKuerzeVerfuegbarSeo;
@@ -172,7 +163,7 @@ if (verifyGPCDataInteger('einstellungen') === 1) {
 
         // Neu Setzen
         foreach ($oSuchSpecialsTMP_arr as $oSuchSpecialsTMP) {
-            unset($oSeo);
+            $oSeo = new stdClass();
             $oSeo->cSeo     = $oSuchSpecialsTMP->cSeo;
             $oSeo->cKey     = 'suchspecial';
             $oSeo->kKey     = $oSuchSpecialsTMP->kKey;
@@ -205,15 +196,8 @@ if (verifyGPCDataInteger('einstellungen') === 1) {
 }
 
 // Suchspecials aus der DB holen und in smarty assignen
-$oSuchSpecials_arrTMP = Shop::DB()->query(
-    "SELECT *
-        FROM tseo
-        WHERE cKey = 'suchspecial'
-            AND kSprache = " . (int)$_SESSION['kSprache'] . "
-        ORDER BY kKey", 2
-);
-
-$oSuchSpecials_arr = array();
+$oSuchSpecials_arrTMP = Shop::DB()->selectAll('tseo', ['cKey', 'kSprache'], ['suchspecial', (int)$_SESSION['kSprache']], '*', 'kKey');
+$oSuchSpecials_arr    = array();
 if (is_array($oSuchSpecials_arrTMP) && count($oSuchSpecials_arrTMP) > 0) {
     foreach ($oSuchSpecials_arrTMP as $oSuchSpecials) {
         $oSuchSpecials_arr[$oSuchSpecials->kKey] = $oSuchSpecials->cSeo;
@@ -221,26 +205,11 @@ if (is_array($oSuchSpecials_arrTMP) && count($oSuchSpecials_arrTMP) > 0) {
 }
 
 // Config holen
-$oConfig_arr = Shop::DB()->query(
-    "SELECT *
-        FROM teinstellungenconf
-        WHERE kEinstellungenSektion = " . CONF_SUCHSPECIAL . "
-        ORDER BY nSort", 2
-);
+$oConfig_arr = Shop::DB()->selectAll('teinstellungenconf', 'kEinstellungenSektion', CONF_SUCHSPECIAL, '*', 'nSort');
 $configCount = count($oConfig_arr);
 for ($i = 0; $i < $configCount; $i++) {
-    $oConfig_arr[$i]->ConfWerte = Shop::DB()->query(
-        "SELECT *
-            FROM teinstellungenconfwerte
-            WHERE kEinstellungenConf = " . (int)$oConfig_arr[$i]->kEinstellungenConf . "
-            ORDER BY nSort", 2
-    );
-    $oSetValue = Shop::DB()->query(
-        "SELECT cWert
-            FROM teinstellungen
-            WHERE kEinstellungenSektion = " . (int)$oConfig_arr[$i]->kEinstellungenSektion . "
-                AND cName = '" . $oConfig_arr[$i]->cWertName . "'", 1
-    );
+    $oConfig_arr[$i]->ConfWerte     = Shop::DB()->selectAll('teinstellungenconfwerte', 'kEinstellungenConf', (int)$oConfig_arr[$i]->kEinstellungenConf, '*', 'nSort');
+    $oSetValue                      = Shop::DB()->select('teinstellungen', 'kEinstellungenSektion', (int)$oConfig_arr[$i]->kEinstellungenSektion, 'cName', $oConfig_arr[$i]->cWertName);
     $oConfig_arr[$i]->gesetzterWert = (isset($oSetValue->cWert)) ? $oSetValue->cWert : null;
 }
 

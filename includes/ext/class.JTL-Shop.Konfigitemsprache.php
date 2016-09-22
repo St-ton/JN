@@ -63,20 +63,16 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         private function loadFromDB($kKonfigitem = 0, $kSprache = 0)
         {
-            $oObj = Shop::DB()->query(
-                "SELECT *
-                  FROM tkonfigitemsprache
-                  WHERE kKonfigitem = " . (int)$kKonfigitem . "
-                     AND kSprache = " . (int)$kSprache, 1
-            );
-            if ($oObj == null || empty($oObj->cName)) {
-                $kSprache = gibStandardsprache();
-                $oObj     = Shop::DB()->query(
-                    "SELECT *
-                  FROM tkonfigitemsprache
-                  WHERE kKonfigitem = " . (int)$kKonfigitem . "
-                     AND kSprache = " . (int)$kSprache->kSprache, 1
-                );
+            $oObj = Shop::DB()->select('tkonfigitemsprache', 'kKonfigitem', (int)$kKonfigitem, 'kSprache', (int)$kSprache);
+            if (isset($oObj) && empty($oObj->cName)) {
+                $kSprache         = gibStandardsprache();
+                $StandardLanguage = Shop::DB()->select('tkonfigitemsprache', 'kKonfigitem', (int)$kKonfigitem, 'kSprache', (int)$kSprache->kSprache, null, null, false, 'cName');
+                $oObj->cName      = $StandardLanguage->cName;
+            }
+            if (isset($oObj) && empty($oObj->cBeschreibung)) {
+                $kSprache            = gibStandardsprache();
+                $StandardLanguage    = Shop::DB()->select('tkonfigitemsprache', 'kKonfigitem', (int)$kKonfigitem, 'kSprache', (int)$kSprache->kSprache, null, null, false, 'cBeschreibung');
+                $oObj->cBeschreibung = $StandardLanguage->cBeschreibung;
             }
 
             if (isset($oObj->kKonfigitem) && isset($oObj->kSprache) && $oObj->kKonfigitem > 0 && $oObj->kSprache > 0) {
@@ -103,7 +99,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                     $oObj->$cMember = $this->$cMember;
                 }
             }
-
             unset($oObj->kKonfigitem);
             unset($oObj->kSprache);
 
@@ -139,11 +134,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         public function delete()
         {
-            return Shop::DB()->query(
-                "DELETE FROM tkonfigitemsprache
-                   WHERE kKonfigitem = " . (int)$this->kKonfigitem . "
-                       AND kSprache = " . (int)$this->kSprache, 3
-            );
+            return Shop::DB()->delete('tkonfigitemsprache', ['kKonfigitem', 'kSprache'], [(int)$this->kKonfigitem, (int)$this->kSprache]);
         }
 
         /**

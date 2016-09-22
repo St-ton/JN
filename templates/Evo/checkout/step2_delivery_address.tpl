@@ -26,7 +26,7 @@
                         {$jtl_token}
                         <fieldset>
                             <div class="radio">
-                                <label class="control-label" for="delivery0"><input type="radio" name="kLieferadresse" onclick="changeState('0')" value="0" id="delivery0" {if $kLieferadresse==0}checked{/if}>
+                                <label class="control-label" for="delivery0"><input type="radio" name="kLieferadresse" onclick="changeState('0')" value="0" id="delivery0" {if $kLieferadresse == 0}checked{/if}>
                                     {lang key="shippingAdressEqualBillingAdress" section="account data"}
                                 </label>
                             </div>
@@ -43,7 +43,7 @@
                                 {/foreach}
                             {/if}
                             <div class="radio">
-                                <label class="control-label" for="delivery_new"><input type="radio" name="kLieferadresse" onclick="changeState('-1')" value="-1" id="delivery_new" {if $kLieferadresse==-1}checked{/if}>
+                                <label class="control-label" for="delivery_new"><input type="radio" name="kLieferadresse" onclick="changeState('-1')" value="-1" id="delivery_new" {if $kLieferadresse == -1}checked{/if}>
                                     {lang key="createNewShippingAdress" section="account data"}
                                 </label>
                             </div>
@@ -190,7 +190,7 @@
                                         <select name="land" id="country" class="country_input form-control">
                                             <option value="" selected disabled>{lang key="country" section="account data"}*</option>
                                             {foreach name=land from=$laender item=land}
-                                                <option value="{$land->cISO}" {if ($Einstellungen.kunden.kundenregistrierung_standardland == $land->cISO && !$Lieferadresse->cLand) || $Lieferadresse->cLand==$land->cISO}selected="selected"{/if}>{$land->cName}</option>
+                                                <option value="{$land->cISO}" {if empty($Lieferadresse->cLand) && $Einstellungen.kunden.kundenregistrierung_standardland == $land->cISO} || (isset($Lieferadresse->cLand) && $Lieferadresse->cLand==$land->cISO)}selected="selected"{/if}>{$land->cName}</option>
                                             {/foreach}
                                         </select>
                                     </div>

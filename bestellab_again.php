@@ -26,7 +26,7 @@ if (isset($bestellung->oKunde) && (int) $bestellung->oKunde->nRegistriert === 1)
     }
 }
 
-$bestellid         = Shop::DB()->select('tbestellid', 'kBestellung', $bestellung->kBestellung, 1);
+$bestellid         = Shop::DB()->select('tbestellid', 'kBestellung', $bestellung->kBestellung);
 $successPaymentURL = Shop::getURL();
 if ($bestellid->cId) {
     $orderCompleteURL  = $linkHelper->getStaticRoute('bestellabschluss.php', true);

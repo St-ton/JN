@@ -1,5 +1,6 @@
 {if $stars > 0}
-    {assign var=filename1 value="rate"}{assign var=filename3 value=".png"}
+    {assign var=filename1 value='rate'}
+    {assign var=filename3 value='.png'}
     {if isset($total) && $total > 1}
         {lang key='averageProductRating' section='product rating' assign='ratingLabelText'}
     {else}
@@ -8,7 +9,7 @@
     {block name="productdetails-rating"}
     <span class="rating" title="{$ratingLabelText}: {$stars}/5">
     {strip}
-        {if $stars >=5}
+        {if $stars >= 5}
             <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i>
         {elseif $stars >= 4}
             <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i>

@@ -1,16 +1,26 @@
 <input type="submit" name="fake" class="hidden">
-<table class="table table-striped order-items">
+
+<table class="table table-striped order-items layout-fixed hyphens">
     <thead>
-        <tr>
-            <th class="hidden-xs"></th>
-            <th>{lang key="product" section="global"}</th>
-            <th>{lang key="quantity" section="global"}</th>
-            {if $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'Y'}
-                <th class="text-right hidden-xs">{lang key="pricePerUnit" section="productDetails"}</th>
+        <tr class="row">
+            {if $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y'}
+                <th class="hidden-xs col-sm-3"></th>
             {/if}
-            <th class="text-right">{lang key="price" section="global"}</th>
+            <th class="{if $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y' && $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'Y' && $tplscope === 'cart'}col-xs-7 col-sm-4
+                        {elseif $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y' && $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'Y' && $tplscope !== 'cart'}col-xs-8 col-sm-5
+                        {elseif $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y' && $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'N' && $tplscope === 'cart'}col-xs-7 col-sm-5
+                        {elseif $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y' && $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'N' && $tplscope !== 'cart'}col-xs-8 col-sm-6
+                        {elseif $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'N' && $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'Y' && $tplscope === 'cart'}col-xs-7
+                        {elseif $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'N' && $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'Y' && $tplscope !== 'cart'}col-xs-8
+                        {elseif $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'N' && $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'N' && $tplscope === 'cart'}col-xs-7 col-sm-8
+                        {else}col-xs-8 col-sm-9{/if}">{lang key="product" section="global"}</th>
+            <th class="col-xs-2 col-sm-1">{lang key="quantity" section="global"}</th>
+            {if $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'Y'}
+                <th class="text-right hidden-xs col-sm-1">{lang key="pricePerUnit" section="productDetails"}</th>
+            {/if}
+            <th class="text-right col-xs-2">{lang key="price" section="global"}</th>
             {if $tplscope === 'cart'}
-                <th class="delitem-col"></th>
+                <th class="delitem-col col-xs-1"></th>
             {/if}
         </tr>
     </thead>
@@ -18,13 +28,16 @@
     {foreach name=positionen from=$smarty.session.Warenkorb->PositionenArr item=oPosition}
         {if !$oPosition->istKonfigKind()}
             <tr class="type-{$oPosition->nPosTyp}">
-                <td class="img-col hidden-xs text-center">
-                    {if $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y' && !empty($oPosition->Artikel->cVorschaubild)}
-                        <a href="{$oPosition->Artikel->cURL}" title="{$oPosition->cName|trans}" class="pull-left">
-                            <img src="{$oPosition->Artikel->cVorschaubild}" alt="{$oPosition->cName|trans}" class="img-responsive-height" />
+                <td></td>
+                {if $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y' && !empty($oPosition->Artikel->cVorschaubild)}
+                    <td class="img-col hidden-xs text-center vcenter">
+                        <a href="{$oPosition->Artikel->cURL}" title="{$oPosition->cName|trans}">
+                            <img src="{$oPosition->Artikel->cVorschaubild}" alt="{$oPosition->cName|trans}" class="img-responsive-width" />
                         </a>
-                    {/if}
-                </td>
+                    </td>
+                {elseif $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y'}
+                    <td class="hidden-xs"></td>
+                {/if}
                 <td>
                     {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL}
                         <a href="{$oPosition->Artikel->cURL}" title="{$oPosition->cName|trans}">{$oPosition->cName|trans}</a>
@@ -51,17 +64,17 @@
                             {if !empty($oPosition->cHinweis)}
                                 <li class="text-info notice">{$oPosition->cHinweis}</li>
                             {/if}
-                            
+
                             {* Buttonloesung eindeutige Merkmale *}
                             {if $oPosition->Artikel->cHersteller && $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen != "N"}
                                  <li class="manufacturer">
-                                    <strong>{lang key="manufacturer" section="productDetails"}</strong>: 
+                                    <strong>{lang key="manufacturer" section="productDetails"}</strong>:
                                     <span class="values">
                                        {$oPosition->Artikel->cHersteller}
                                     </span>
                                  </li>
                             {/if}
-                            
+
                             {if $Einstellungen.kaufabwicklung.bestellvorgang_artikelmerkmale == 'Y' && !empty($oPosition->Artikel->oMerkmale_arr)}
                                 {foreach from=$oPosition->Artikel->oMerkmale_arr item="oMerkmale_arr"}
                                   <li class="characteristic">
@@ -75,7 +88,7 @@
                                   </li>
                                 {/foreach}
                             {/if}
-                             
+
                             {if $Einstellungen.kaufabwicklung.bestellvorgang_artikelattribute == 'Y' && !empty($oPosition->Artikel->Attribute)}
                                 {foreach from=$oPosition->Artikel->Attribute item="oAttribute_arr"}
                                  <li class="attribute">
@@ -86,7 +99,7 @@
                                  </li>
                                 {/foreach}
                             {/if}
-                             
+
                             {if $Einstellungen.kaufabwicklung.bestellvorgang_artikelkurzbeschreibung == 'Y' && $oPosition->Artikel->cKurzBeschreibung|strlen > 0}
                                 <li class="shortdescription">{$oPosition->Artikel->cKurzBeschreibung}</li>
                             {/if}
@@ -154,8 +167,8 @@
                                         </span>
                                     {else}
                                         <div class="form-inline">
-                                            <div id="quantity-grp" class="choose_quantity input-group">
-                                                <input name="anzahl[{$smarty.foreach.positionen.index}]" id="quantity{$smarty.foreach.positionen.index}" class="form-control quantity form-control text-right" size="3" value="{$oPosition->nAnzahl}" />
+                                            <div id="quantity-grp" class="choose_quantity input-group input-group-sm">
+                                                <input name="anzahl[{$smarty.foreach.positionen.index}]" id="quantity{$smarty.foreach.positionen.index}" class="form-control quantity text-right" size="3" value="{$oPosition->nAnzahl}" />
                                                 {if $oPosition->Artikel->cEinheit}
                                                     <span class="input-group-addon unit hidden-xs">{$oPosition->Artikel->cEinheit}</span>
                                                 {/if}
@@ -205,38 +218,42 @@
     <tfoot>
     {if $NettoPreise}
         <tr class="total-net">
-            <td class="hidden-xs"></td>
-            <td class="hidden-xs"></td>
-            <td class="text-right" colspan="{if $tplscope === 'cart'}3{else}2{/if}"><span class="price_label"><strong>{lang key="totalSum" section="global"} ({lang key="net" section="global"}):</strong></span></td>
-            <td class="text-right price-col"><strong class="price total-sum">{$WarensummeLocalized[$NettoPreise]}</strong></td>
+            {if $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y'}
+                <td class="hidden-xs"></td>
+            {/if}
+            <td class="text-right" colspan="2"><span class="price_label"><strong>{lang key="totalSum" section="global"} ({lang key="net" section="global"}):</strong></span></td>
+            <td class="text-right price-col" colspan="{if $tplscope === 'cart'}4{else}3{/if}"><strong class="price total-sum">{$WarensummeLocalized[$NettoPreise]}</strong></td>
         </tr>
     {/if}
-    
+
     {if $Einstellungen.global.global_steuerpos_anzeigen !== 'N' && $Steuerpositionen|@count > 0}
         {foreach name=steuerpositionen from=$Steuerpositionen item=Steuerposition}
             <tr class="tax">
-                <td class="hidden-xs"></td>
-                <td class="hidden-xs"></td>
-                <td class="text-right" colspan="{if $tplscope === 'cart'}3{else}2{/if}"><span class="tax_label">{$Steuerposition->cName}:</span></td>
-                <td class="text-right price-col"><span class="tax_label">{$Steuerposition->cPreisLocalized}</span></td>
+                {if $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y'}
+                    <td class="hidden-xs"></td>
+                {/if}
+                <td class="text-right" colspan="2"><span class="tax_label">{$Steuerposition->cName}:</span></td>
+                <td class="text-right price-col" colspan="{if $tplscope === 'cart'}4{else}3{/if}"><span class="tax_label">{$Steuerposition->cPreisLocalized}</span></td>
             </tr>
         {/foreach}
     {/if}
-    
+
     {if isset($smarty.session.Bestellung->GuthabenNutzen) && $smarty.session.Bestellung->GuthabenNutzen == 1}
          <tr class="customer-credit">
-            <td class="hidden-xs"></td>
-            <td class="hidden-xs"></td>
-            <td class="text-right" colspan="{if $tplscope === 'cart'}3{else}2{/if}">{lang key="useCredit" section="account data"}</td>
-            <td class="text-right">{$smarty.session.Bestellung->GutscheinLocalized}</td>
+             {if $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y'}
+                 <td class="hidden-xs"></td>
+             {/if}
+             <td class="text-right" colspan="2">{lang key="useCredit" section="account data"}</td>
+             <td class="text-right" colspan="{if $tplscope === 'cart'}4{else}3{/if}">{$smarty.session.Bestellung->GutscheinLocalized}</td>
          </tr>
     {/if}
 
     <tr class="total info">
-        <td class="hidden-xs"></td>
-        <td class="hidden-xs"></td>
-        <td class="text-right" colspan="{if $tplscope === 'cart'}3{else}2{/if}"><span class="price_label"><strong>{lang key="totalSum" section="global"}:</strong></span></td>
-        <td class="text-right price-col"><strong class="price total-sum">{$WarensummeLocalized[0]}</strong></td>
+        {if $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y'}
+            <td class="hidden-xs"></td>
+        {/if}
+        <td class="text-right" colspan="2"><span class="price_label"><strong>{lang key="totalSum" section="global"}:</strong></span></td>
+        <td class="text-right price-col" colspan="{if $tplscope === 'cart'}4{else}3{/if}"><strong class="price total-sum">{$WarensummeLocalized[0]}</strong></td>
     </tr>
     </tfoot>
 </table>

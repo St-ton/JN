@@ -1,12 +1,6 @@
 [submodule "templates/Evo-Child-Example"]
 	path = templates/Evo-Child-Example
 	url = git@gitlab.jtl-software.de:f.moche/childTemplateTest.git
-[submodule "templates/Tiny"]
-	path = templates/Tiny
-	url = git@gitlab.jtl-software.de:jtlshop/tiny-template.git
-[submodule "templates/Mobile"]
-	path = templates/Mobile
-	url = git@gitlab.jtl-software.de:jtlshop/mobile-template.git
 [submodule "includes/plugins/jtl_debug"]
 	path = includes/plugins/jtl_debug
 	url = git@gitlab.jtl-software.de:jtlshop/jtldebug.git
@@ -28,3 +22,12 @@
 [submodule "includes/plugins/evo_editor"]
 	path = includes/plugins/evo_editor
 	url = git@gitlab.jtl-software.de:jtlshop/evo-editor.git
+[submodule "includes/plugins/s360_amazon_lpa_shop4"]
+	path = includes/plugins/s360_amazon_lpa_shop4
+	url = git@gitlab.jtl-software.de:Pluginzertifizierungen/pluginzertifizierung-amazon-payments.git
+[submodule "includes/plugins/agws_ts_features"]
+	path = includes/plugins/agws_ts_features
+	url = https://gitlab.ag-websolutions.de/plugins/agws_trustedshops.git
+[submodule "includes/plugins/jtl_themebar"]
+	path = includes/plugins/jtl_themebar
+	url = git@gitlab.jtl-software.de:jtlshop/jtl_themebar.git

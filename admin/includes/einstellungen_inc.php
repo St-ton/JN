@@ -43,10 +43,10 @@ function bearbeiteEinstellungsSuche($cSuche, $bSpeichern = false)
                 if ($kEinstellungenConf > 0) {
                     if ($i > 0) {
                         $oSQL->cSearch .= ", " . $kEinstellungenConf;
-                        $oSQL->cWHERE .= ", " . $kEinstellungenConf;
+                        $oSQL->cWHERE .= ", " . Shop::DB()->escape($kEinstellungenConf);
                     } else {
                         $oSQL->cSearch .= $kEinstellungenConf;
-                        $oSQL->cWHERE .= $kEinstellungenConf;
+                        $oSQL->cWHERE .= Shop::DB()->escape($kEinstellungenConf);
                     }
                 }
             }
@@ -69,13 +69,13 @@ function bearbeiteEinstellungsSuche($cSuche, $bSpeichern = false)
                 // Suche war eine Range
                 $oSQL->nSuchModus = 2;
                 $oSQL->cSearch    = "Suche nach ID Range: " . $kEinstellungenConf_arr[0] . " - " . $kEinstellungenConf_arr[1];
-                $oSQL->cWHERE .= " AND ((kEinstellungenConf BETWEEN " . $kEinstellungenConf_arr[0] . " AND " . $kEinstellungenConf_arr[1] . ") AND cConf = 'Y')";
+                $oSQL->cWHERE .= " AND ((kEinstellungenConf BETWEEN " . Shop::DB()->escape($kEinstellungenConf_arr[0]) . " AND " . Shop::DB()->escape($kEinstellungenConf_arr[1]) . ") AND cConf = 'Y')";
             } // Suche in cName oder kEinstellungenConf suchen
             else {
                 if (intval($cSuche) > 0) {
                     $oSQL->nSuchModus = 3;
                     $oSQL->cSearch    = "Suche nach ID: " . $cSuche;
-                    $oSQL->cWHERE .= " AND kEinstellungenConf = '" . $cSuche . "'";
+                    $oSQL->cWHERE .= " AND kEinstellungenConf = '" . Shop::DB()->escape($cSuche) . "'";
                 } else {
                     $cSuche    = strtolower($cSuche);
                     $cSucheEnt = StringHandler::htmlentities($cSuche);    // HTML Entities
@@ -84,9 +84,9 @@ function bearbeiteEinstellungsSuche($cSuche, $bSpeichern = false)
                     $oSQL->cSearch    = "Suche nach Name: " . $cSuche;
 
                     if ($cSuche === $cSucheEnt) {
-                        $oSQL->cWHERE .= " AND (cName LIKE '%" . $cSuche . "%' AND cConf = 'Y')";
+                        $oSQL->cWHERE .= " AND (cName LIKE '%" . Shop::DB()->escape($cSuche) . "%' AND cConf = 'Y')";
                     } else {
-                        $oSQL->cWHERE .= " AND (((cName LIKE '%" . $cSuche . "%' OR cName LIKE '%" . $cSucheEnt . "%')) AND cConf = 'Y')";
+                        $oSQL->cWHERE .= " AND (((cName LIKE '%" . Shop::DB()->escape($cSuche) . "%' OR cName LIKE '%" . Shop::DB()->escape($cSucheEnt) . "%')) AND cConf = 'Y')";
                     }
                 }
             }
@@ -223,73 +223,50 @@ function gibEinstellungsSektionsPfad($kEinstellungenSektion)
         switch ($kEinstellungenSektion) {
             case CONF_ZAHLUNGSARTEN:
                 return 'Storefront-&gt;Zahlungsarten-&gt;&Uuml;bersicht';
-                break;
             case CONF_EXPORTFORMATE:
                 return 'System-&gt;Export-&gt;Exportformate';
-                break;
             case CONF_KONTAKTFORMULAR:
                 return 'Storefront-&gt;Formulare-&gt;Kontaktformular';
-                break;
             case CONF_SHOPINFO:
                 return 'System-&gt;Export-&gt;Exportformate';
-                break;
             case CONF_RSS:
                 return 'System-&gt;Export-&gt;RSS Feed';
-                break;
             case CONF_PREISVERLAUF:
                 return 'Storefront-&gt;Artikel-&gt;Preisverlauf';
-                break;
             case CONF_VERGLEICHSLISTE:
                 return 'Storefront-&gt;Artikel-&gt;Vergleichsliste';
-                break;
             case CONF_BEWERTUNG:
                 return 'Storefront-&gt;Artikel-&gt;Bewertungen';
-                break;
             case CONF_NEWSLETTER:
                 return 'System-&gt;E-Mails-&gt;Newsletter';
-                break;
             case CONF_KUNDENFELD:
                 return 'Storefront-&gt;Formulare-&gt;Eigene Kundenfelder';
-                break;
             case CONF_NAVIGATIONSFILTER:
                 return 'Storefront-&gt;Suche-&gt;Filter';
-                break;
             case CONF_EMAILBLACKLIST:
                 return 'System-&gt;E-Mails-&gt;Blacklist';
-                break;
             case CONF_METAANGABEN:
                 return 'System-&gt;E-Mails-&gt;Globale Einstellungen-&gt;Globale Meta-Angaben';
-                break;
             case CONF_NEWS:
                 return 'Inhalte-&gt;News';
-                break;
             case CONF_SITEMAP:
                 return 'System-&gt;Export-&gt;Sitemap';
-                break;
             case CONF_UMFRAGE:
                 return 'Inhalte-&gt;Umfragen';
-                break;
             case CONF_KUNDENWERBENKUNDEN:
                 return 'System-&gt;Benutzer- &amp; Kundenverwaltung-&gt;Kunden werben Kunden';
-                break;
             case CONF_TRUSTEDSHOPS:
                 return 'Storefront-&gt;Kaufabwicklung-&gt;Trusted Shops';
-                break;
             case CONF_PREISANZEIGE:
                 return 'Storefront-&gt;Artikel-&gt;Preisanzeige';
-                break;
             case CONF_SUCHSPECIAL:
                 return 'Storefront-&gt;Artikel-&gt;Besondere Produkte';
-                break;
+            default:
+                return '';
         }
     } else {
         // Einstellungssektion in der Datenbank nachschauen
-        $oEinstellungsSektion = Shop::DB()->query(
-            "SELECT *
-                FROM teinstellungensektion
-                WHERE kEinstellungenSektion = " . $kEinstellungenSektion, 1
-        );
-
+        $oEinstellungsSektion = Shop::DB()->select('teinstellungensektion', 'kEinstellungenSektion', $kEinstellungenSektion);
         if (isset($oEinstellungsSektion->kEinstellungenSektion) && $oEinstellungsSektion->kEinstellungenSektion > 0) {
             return 'Einstellungen-&gt;' . $oEinstellungsSektion->cName;
         }
@@ -328,5 +305,5 @@ function sortiereEinstellungen($oEinstellung_arr)
         return $oEinstellungTMP_arr;
     }
 
-    return false;
+    return [];
 }

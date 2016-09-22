@@ -43,3 +43,56 @@ function getDBFileStruct()
 
     return $oDBFileStruct;
 }
+
+/**
+ * @param array $cDBFileStruct_arr
+ * @param array $cDBStruct_arr
+ * @return array
+ */
+function compareDBStruct($cDBFileStruct_arr, $cDBStruct_arr)
+{
+    $cDBError_arr = array();
+    foreach ($cDBFileStruct_arr as $cTable => $cColumn_arr) {
+        if (!array_key_exists($cTable, $cDBStruct_arr)) {
+            $cDBError_arr[$cTable] = 'Tabelle nicht vorhanden';
+        } else {
+            foreach ($cColumn_arr as $cColumn) {
+                if (!in_array($cColumn, $cDBStruct_arr[$cTable])) {
+                    $cDBError_arr[$cTable] = "Spalte $cColumn in $cTable nicht vorhanden";
+                    break;
+                }
+            }
+        }
+    }
+
+    return $cDBError_arr;
+}
+
+/**
+ * @param string $action
+ * @param array  $tables
+ * @return array|bool
+ */
+function doDBMaintenance($action, array $tables)
+{
+    $tables = implode(', ', $tables);
+
+    switch ($action) {
+        case 'optimize' :
+            $cmd = 'OPTIMIZE TABLE ';
+            break;
+        case 'analyze' :
+            $cmd = 'ANALYZE TABLE ';
+            break;
+        case 'repair' :
+            $cmd = 'REPAIR TABLE ';
+            break;
+        case 'check' :
+            $cmd = 'CHECK TABLE ';
+            break;
+        default :
+            return false;
+    }
+
+    return (count($tables) > 0) ? Shop::DB()->query($cmd . $tables, 2) : false;
+}

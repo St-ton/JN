@@ -20,7 +20,11 @@
     <div class="caption">
         <h4 class="title"><a href="{$Artikel->cURL}">{$Artikel->cName}</a></h4>
         {if $Artikel->fDurchschnittsBewertung > 0}{include file='productdetails/rating.tpl' stars=$Artikel->fDurchschnittsBewertung}<br>{/if}
-        {include file="productdetails/price.tpl" Artikel=$Artikel price_image=$Artikel->Preise->strPreisGrafik_Suche tplscope=$tplscope}
+        {assign var=price_image value=""}
+        {if isset($Artikel->Preise->strPreisGrafik_Suche)}
+            {assign var=$price_image value=$Artikel->Preise->strPreisGrafik_Suche}
+        {/if}
+        {include file="productdetails/price.tpl" Artikel=$Artikel price_image=$price_image tplscope=$tplscope}
     </div>{* /caption *}
     {/block}
     <form action="navi.php" method="post" class="form form-basket" data-toggle="basket-add">
@@ -43,9 +47,9 @@
             $Artikel->fLagerbestand <= 0 && $Artikel->fLieferantenlagerbestand > 0 && $Artikel->fLieferzeit > 0 &&
             ($Artikel->cLagerKleinerNull === 'N' || $Einstellungen.artikeluebersicht.artikeluebersicht_lagerbestandanzeige_anzeigen === 'U')}
                 <div class="signal_image status-1"><small>{lang key="supplierStockNotice" section="global" printf=$Artikel->fLieferzeit}</small></div>
-            {elseif $anzeige=='verfuegbarkeit' || $anzeige === 'genau'}
+            {elseif $anzeige === 'verfuegbarkeit' || $anzeige === 'genau'}
                 <div class="signal_image status-{$Artikel->Lageranzeige->nStatus}"><small>{$Artikel->Lageranzeige->cLagerhinweis[$anzeige]}</small></div>
-            {elseif $anzeige=='ampel'}
+            {elseif $anzeige === 'ampel'}
                 <div class="signal_image status-{$Artikel->Lageranzeige->nStatus}"><small>{$Artikel->Lageranzeige->AmpelText}</small></div>
             {/if}
             {if $Artikel->cEstimatedDelivery}

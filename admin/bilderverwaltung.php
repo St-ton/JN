@@ -14,7 +14,7 @@ $hasPermission = $oAccount->permission('DISPLAY_IMAGES_VIEW', false, false);
 $action = isset($_GET['action']) ? $_GET['action'] : null;
 $type   = isset($_GET['type']) ? $_GET['type'] : null;
 
-if ($action === null && !$hasPermission) {
+if (!$hasPermission) {
     $oAccount->redirectOnFailure();
     makeResponse(null, null, 401);
 }

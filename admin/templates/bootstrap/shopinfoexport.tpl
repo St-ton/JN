@@ -3,12 +3,11 @@
 
 {include file='tpl_inc/seite_header.tpl' cTitel=#shopinfoExport# cBeschreibung=#shopinfoExportDesc# cDokuURL=#shopinfoExportURL#}
 <div id="content" class="container-fluid">
-    {if isset($errorNoWrite) && $errorNoWrite|count_characters > 0}
+    {if isset($errorNoWrite) && $errorNoWrite|strlen > 0}
         <div class="alert alert-danger">{$errorNoWrite}</div>
     {/if}
     <div class="alert alert-info">
         <p><input style="width:550px;" type="text" readonly="readonly" class="form-control" value="{$URL}" /></p>
-
         <p class="container-fluid2">{#priceSearchEngines#}</p>
     </div>
     <p><a href="shopinfo.php" class="btn btn-info">{#download#} {#xml#}</a></p>
@@ -112,7 +111,8 @@
                             <p class="smallfont">{#payitemHelp#}</p>
                         </td>
                         <td class="TD2">
-                            <input class="form-control" type="text" id="shopInfo_payItems" name="shopInfo_payItems" value="{$objShopInfo->shopInfo_payItems}" />
+                            <input class="form-control" type="text" id="shopInfo_payItems" name="shopInfo_payItems"
+                                   value="{if isset($objShopInfo->shopInfo_payItems)}{$objShopInfo->shopInfo_payItems}{/if}" />
                         </td>
                     </tr>
                     <tr class="tab-2_bg">

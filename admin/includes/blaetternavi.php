@@ -5,10 +5,15 @@
  */
 
 /**
+ * This pagination implementation is deprecated. Use the Pagination admin class instead!
+ */
+
+/**
  * @param int $nAktuelleSeite
  * @param int $nAnzahl
  * @param int $nAnzahlProSeite
  * @return stdClass
+ * @deprecated since 4.05
  */
 function baueBlaetterNavi($nAktuelleSeite, $nAnzahl, $nAnzahlProSeite)
 {
@@ -91,6 +96,7 @@ function baueBlaetterNavi($nAktuelleSeite, $nAnzahl, $nAnzahlProSeite)
  * @param int $nAnzahl
  * @param int $nAnzahlProSeite
  * @return bool|stdClass
+ * @deprecated since 4.05
  */
 function baueBlaetterNaviGetterSetter($nAnzahl, $nAnzahlProSeite)
 {

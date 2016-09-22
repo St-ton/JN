@@ -119,18 +119,9 @@ if ($step === 'uebersicht') {
     $configCount = count($Conf);
     for ($i = 0; $i < $configCount; $i++) {
         if ($Conf[$i]->cInputTyp === 'selectbox') {
-            $Conf[$i]->ConfWerte = Shop::DB()->query("
-                SELECT *
-                    FROM teinstellungenconfwerte
-                    WHERE kEinstellungenConf = " . (int)$Conf[$i]->kEinstellungenConf . "
-                    ORDER BY nSort", 2
-            );
+            $Conf[$i]->ConfWerte = Shop::DB()->selectAll('teinstellungenconfwerte', 'kEinstellungenConf', (int)$Conf[$i]->kEinstellungenConf, '*', 'nSort');
         }
-        $setValue = Shop::DB()->query("
-            SELECT cWert
-                FROM teinstellungen
-                WHERE kEinstellungenSektion = " . CONF_KONTAKTFORMULAR . "
-                    AND cName = '" . $Conf[$i]->cWertName . "'", 1);
+        $setValue = Shop::DB()->select('teinstellungen', 'kEinstellungenSektion', CONF_KONTAKTFORMULAR, 'cName', $Conf[$i]->cWertName);
         $Conf[$i]->gesetzterWert = (isset($setValue->cWert) ? $setValue->cWert : null);
     }
     $neuerBetreffs = Shop::DB()->query("SELECT * FROM tkontaktbetreff ORDER BY nSort", 2);
@@ -152,12 +143,7 @@ if ($step === 'uebersicht') {
         }
         $neuerBetreffs[$i]->Kundengruppen = $kunden;
     }
-    $SpezialContent = Shop::DB()->query("
-        SELECT *
-            FROM tspezialcontentsprache
-            WHERE nSpezialContent = " . SC_KONTAKTFORMULAR . "
-            ORDER BY cTyp", 2
-    );
+    $SpezialContent = Shop::DB()->selectAll('tspezialcontentsprache', 'nSpezialContent', SC_KONTAKTFORMULAR, '*', 'cTyp');
     $Content      = array();
     $contentCount = count($SpezialContent);
     for ($i = 0; $i < $contentCount; $i++) {

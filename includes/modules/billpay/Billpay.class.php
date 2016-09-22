@@ -160,7 +160,7 @@ class Billpay extends PaymentMethod
                         $oIncomingPayment          = new stdClass();
                         $oIncomingPayment->fBetrag = $oBasketInfo->fTotal[AMT_GROSS];
                         $oIncomingPayment->cISO    = $oBasketInfo->cCurrency->cISO;
-                        //$this->addIncomingPayment($oOrder, $oIncomingPayment);
+                        $this->addIncomingPayment($oOrder, $oIncomingPayment);
                         $this->setOrderStatusToPaid($oOrder);
                     }
                     // additional payment information
@@ -1158,7 +1158,7 @@ class Billpay extends PaymentMethod
             $cCurrency = $oBasket->Waehrung;
         }
         if (is_null($cCurrency) || !isset($cCurrency->kWaehrung)) {
-            $cCurrency = Shop::DB()->query("SELECT * FROM twaehrung WHERE cStandard='Y'", 1);
+            $cCurrency = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
         }
 
         $oBasketInfo->cCurrency = $cCurrency;

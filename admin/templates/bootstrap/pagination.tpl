@@ -1,14 +1,17 @@
 {if !isset($hash)}
     {assign var=hash value=''}
 {/if}
+
 {if !isset($cParams)}
     {assign var=cParams value=''}
 {/if}
+
 {if isset($oBlaetterNavi->nAktiv) && $oBlaetterNavi->nAktiv == 1}
     <div class="block clearall">
         <div class="pages tleft">
-            <span class="pageinfo">Eintrag: <strong>{$oBlaetterNavi->nVon}</strong> - {$oBlaetterNavi->nBis}
-                von {$oBlaetterNavi->nAnzahl}</span>
+            <span class="pageinfo">
+                Eintrag: <strong>{$oBlaetterNavi->nVon}</strong> - {$oBlaetterNavi->nBis} von {$oBlaetterNavi->nAnzahl}
+            </span>
             <ul class="pagination">
                 {if $oBlaetterNavi->nAktuelleSeite == 1}
                     <li class="pagination-item"><span class="page">&laquo;</span></li>

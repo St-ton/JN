@@ -25,6 +25,11 @@ class TemplateHelper
     public static $instances = array();
 
     /**
+     * @var bool
+     */
+    private $cachingEnabled = true;
+
+    /**
      * @param bool $isAdmin
      */
     public function __construct($isAdmin = false)
@@ -36,13 +41,33 @@ class TemplateHelper
 
     /**
      * @param bool $isAdmin
-     * @return Template
+     * @return TemplateHelper
      */
     public static function getInstance($isAdmin = false)
     {
         $idx = ($isAdmin) ? 'admin' : 'frontend';
 
         return (!empty(self::$instances[$idx])) ? self::$instances[$idx] : new self($isAdmin);
+    }
+
+    /**
+     * @return $this
+     */
+    public function disableCaching()
+    {
+        $this->cachingEnabled = false;
+
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    public function enableCaching()
+    {
+        $this->cachingEnabled = true;
+
+        return $this;
     }
 
     /**
@@ -76,6 +101,35 @@ class TemplateHelper
     }
 
     /**
+     * todo
+     *
+     * @return array
+     */
+    public function getStoredTemplates()
+    {
+        $storedTemplates = [];
+
+        $subTemplateDir   = 'original' . DIRECTORY_SEPARATOR;
+        $storeTemplateDir = PFAD_ROOT . PFAD_TEMPLATES . $subTemplateDir;
+
+        $folders      = $this->getFrontendTemplateFolders();
+        $childFolders = $this->getFolders($storeTemplateDir, 2);
+
+        foreach ($childFolders as $version => $dirs) {
+            $intersect = array_intersect(
+                array_values($folders), array_keys($dirs));
+            foreach ($intersect as $dir) {
+                $d = $subTemplateDir . $version . DIRECTORY_SEPARATOR . $dir;
+                if ($data = $this->getData($d, false)) {
+                    $storedTemplates[$dir][] = $data;
+                }
+            }
+        }
+
+        return $storedTemplates;
+    }
+
+    /**
      * get list of all frontend templates
      *
      * @return array
@@ -90,8 +144,9 @@ class TemplateHelper
                 $templates[] = $oTemplate;
             }
         }
-        //check if given parent template is available
+
         foreach ($templates as $template) {
+            //check if given parent template is available
             if ($template->bChild === true) {
                 $template->bHasError = true;
                 foreach ($templates as $_template) {
@@ -104,6 +159,32 @@ class TemplateHelper
         }
 
         return $templates;
+    }
+
+    /**
+     * @param string $path
+     * @param int    $depht
+     * @return array
+     */
+    public function getFolders($path, $depht = 0)
+    {
+        $result = array();
+
+        if (!is_dir($path)) {
+            return $result;
+        }
+
+        foreach (scandir($path) as $key => $value) {
+            if (!in_array($value, array('.', '..'))) {
+                if (is_dir($path . DIRECTORY_SEPARATOR . $value)) {
+                    $result[$value] = $depht > 1 ?
+                        $this->getFolders($path . DIRECTORY_SEPARATOR . $value, $depht - 1) :
+                        array();
+                }
+            }
+        }
+
+        return $result;
     }
 
     /**
@@ -159,11 +240,7 @@ class TemplateHelper
      */
     public function getXML($cOrdner, $isAdmin = null)
     {
-        $isAdmin = ($isAdmin !== null) ? $isAdmin : $this->isAdmin;
-        $cacheID = 'template_xml_' . md5($cOrdner) . (($isAdmin) ? '_a' : '');
-        if (($oTemplate = Shop::Cache()->get($cacheID)) !== false) {
-            return $oTemplate;
-        }
+        $isAdmin  = ($isAdmin !== null) ? $isAdmin : $this->isAdmin;
         $cXMLFile = ($isAdmin === false) ? PFAD_ROOT . PFAD_TEMPLATES . $cOrdner . DIRECTORY_SEPARATOR . TEMPLATE_XML :
             PFAD_ROOT . PFAD_ADMIN . PFAD_TEMPLATES . $cOrdner . DIRECTORY_SEPARATOR . TEMPLATE_XML;
         if (file_exists($cXMLFile)) {
@@ -181,7 +258,7 @@ class TemplateHelper
             return $oXML;
         }
 
-        return;
+        return null;
     }
 
     /**
@@ -190,7 +267,7 @@ class TemplateHelper
      */
     public function getConfig($cOrdner)
     {
-        $oSetting_arr = Shop::DB()->query("SELECT * FROM ttemplateeinstellungen WHERE cTemplate = '" . Shop::DB()->escape($cOrdner) . "'", 2);
+        $oSetting_arr = Shop::DB()->selectAll('ttemplateeinstellungen', 'cTemplate', $cOrdner);
         if (is_array($oSetting_arr) && count($oSetting_arr) > 0) {
             $oFMTSettings_arr = array();
             foreach ($oSetting_arr as $oSetting) {
@@ -215,7 +292,7 @@ class TemplateHelper
     {
         $isAdmin = ($isAdmin !== null) ? $isAdmin : $this->isAdmin;
         $cacheID = 'tpl_' . $cOrdner . (($isAdmin) ? '_admin' : '');
-        if (($oTemplate = Shop::Cache()->get($cacheID)) !== false) {
+        if ($this->cachingEnabled === true  && ($oTemplate = Shop::Cache()->get($cacheID)) !== false) {
             return $oTemplate;
         }
 
@@ -224,19 +301,22 @@ class TemplateHelper
         if (!$oXMLTemplate) {
             return false;
         }
-        $oTemplate->cName        = (string) trim($oXMLTemplate->Name);
-        $oTemplate->cOrdner      = (string) $cOrdner; //trim($oXMLTemplate->Ordner);
-        $oTemplate->cAuthor      = (string) trim($oXMLTemplate->Author);
-        $oTemplate->cURL         = (string) trim($oXMLTemplate->URL);
-        $oTemplate->cVersion     = (string) trim($oXMLTemplate->Version);
-        $oTemplate->cShopVersion = (string) trim($oXMLTemplate->ShopVersion);
-        $oTemplate->cPreview     = (string) trim($oXMLTemplate->Preview);
-        $oTemplate->cDokuURL     = (string) trim($oXMLTemplate->DokuURL);
+        $oTemplate->cName        = (string)trim($oXMLTemplate->Name);
+        $oTemplate->cOrdner      = (string)$cOrdner;
+        $oTemplate->cAuthor      = (string)trim($oXMLTemplate->Author);
+        $oTemplate->cURL         = (string)trim($oXMLTemplate->URL);
+        $oTemplate->cVersion     = (string)trim($oXMLTemplate->Version);
+        $oTemplate->cShopVersion = (string)trim($oXMLTemplate->ShopVersion);
+        $oTemplate->cPreview     = (string)trim($oXMLTemplate->Preview);
+        $oTemplate->cDokuURL     = (string)trim($oXMLTemplate->DokuURL);
         $oTemplate->bChild       = (!empty($oXMLTemplate->Parent));
-        $oTemplate->cParent      = (!empty($oXMLTemplate->Parent)) ? (string) trim($oXMLTemplate->Parent) : '';
+        $oTemplate->cParent      = (!empty($oXMLTemplate->Parent)) ? (string)trim($oXMLTemplate->Parent) : '';
         $oTemplate->bHasError    = false;
         $oTemplate->eTyp         = '';
-        $oTemplate->cDescription = (!empty($oXMLTemplate->Description)) ? (string) trim($oXMLTemplate->Description) : '';
+        $oTemplate->cDescription = (!empty($oXMLTemplate->Description)) ? (string)trim($oXMLTemplate->Description) : '';
+        if (StringHandler::is_utf8($oTemplate->cDescription)) {
+            $oTemplate->cDescription = utf8_decode($oTemplate->cDescription);
+        }
 
         $oTemplate_arr = Shop::DB()->query("SELECT * FROM ttemplate", 2);
         foreach ($oTemplate_arr as $oTpl) {
@@ -251,7 +331,9 @@ class TemplateHelper
         if (strlen($oTemplate->cName) === 0) {
             $oTemplate->cName = $oTemplate->cOrdner;
         }
-        Shop::Cache()->set($cacheID, $oTemplate, array(CACHING_GROUP_TEMPLATE));
+        if ($this->cachingEnabled === true) {
+            Shop::Cache()->set($cacheID, $oTemplate, array(CACHING_GROUP_TEMPLATE));
+        }
 
         return $oTemplate;
     }

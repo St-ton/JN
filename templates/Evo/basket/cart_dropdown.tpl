@@ -1,9 +1,9 @@
 <li>
     {if $smarty.session.Warenkorb->PositionenArr|@count > 0}
-        <table class="table table-striped dropdown-cart-items">
+        <table class="table table-striped dropdown-cart-items hyphens">
             <tbody>
             {foreach from=$smarty.session.Warenkorb->PositionenArr item=oPosition}
-                {if $oPosition->nPosTyp == 1 && !$oPosition->istKonfigKind()}
+                {if ($oPosition->nPosTyp == 1 || $oPosition->nPosTyp == 3 || $oPosition->nPosTyp == 7) && !$oPosition->istKonfigKind()}
                     <tr>
                         <td class="item-image">
                             {if $oPosition->Artikel->Bilder[0]->cPfadNormal !== $BILD_KEIN_ARTIKELBILD_VORHANDEN}

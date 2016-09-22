@@ -7,7 +7,7 @@
 /**
  * Class Rechnungsadresse
  */
-class Rechnungsadresse
+class Rechnungsadresse extends Adresse
 {
     /**
      * @access public
@@ -23,97 +23,12 @@ class Rechnungsadresse
     /**
      * @var string
      */
-    public $cAnrede;
-
-    /**
-     * @var string
-     */
-    public $cTitel;
-
-    /**
-     * @var string
-     */
-    public $cVorname;
-
-    /**
-     * @var string
-     */
-    public $cNachname;
-
-    /**
-     * @var string
-     */
-    public $cFirma;
-
-    /**
-     * @var string
-     */
-    public $cStrasse;
-
-    /**
-     * @var string
-     */
-    public $cHausnummer;
-
-    /**
-     * @var string
-     */
-    public $cAdressZusatz;
-
-    /**
-     * @var string
-     */
-    public $cPLZ;
-
-    /**
-     * @var string
-     */
-    public $cOrt;
-
-    /**
-     * @var string
-     */
-    public $cBundesland;
-
-    /**
-     * @var string
-     */
-    public $cLand;
-
-    /**
-     * @var string
-     */
-    public $cTel;
-
-    /**
-     * @var string
-     */
-    public $cMobil;
-
-    /**
-     * @var string
-     */
-    public $cFax;
-
-    /**
-     * @var string
-     */
     public $cUSTID;
 
     /**
      * @var string
      */
     public $cWWW;
-
-    /**
-     * @var string
-     */
-    public $cMail;
-
-    /**
-     * @var string
-     */
-    public $cZusatz;
 
     /**
      * @var string
@@ -140,32 +55,6 @@ class Rechnungsadresse
     }
 
     /**
-     * @return $this
-     */
-    public function verschluesselRechnungsadresse()
-    {
-        $this->cNachname = verschluesselXTEA(trim($this->cNachname));
-        $this->cFirma    = verschluesselXTEA(trim($this->cFirma));
-        $this->cZusatz   = verschluesselXTEA(trim($this->cZusatz));
-        $this->cStrasse  = verschluesselXTEA(trim($this->cStrasse));
-
-        return $this;
-    }
-
-    /**
-     * @return $this
-     */
-    public function entschluesselRechnungsadresse()
-    {
-        $this->cNachname = trim(entschluesselXTEA($this->cNachname));
-        $this->cFirma    = trim(entschluesselXTEA($this->cFirma));
-        $this->cZusatz   = trim(entschluesselXTEA($this->cZusatz));
-        $this->cStrasse  = trim(entschluesselXTEA($this->cStrasse));
-
-        return $this;
-    }
-
-    /**
      * Setzt Rechnungsadresse mit Daten aus der DB mit spezifiziertem Primary Key
      *
      * @access public
@@ -180,15 +69,13 @@ class Rechnungsadresse
             return 0;
         }
 
-        $members = array_keys(get_object_vars($obj));
-        foreach ($members as $member) {
-            $this->$member = $obj->$member;
-        }
+        $this->fromObject($obj);
+
         // Anrede mappen
         $this->cAnredeLocalized = mappeKundenanrede($this->cAnrede, 0, $this->kKunde);
         $this->angezeigtesLand  = ISO2land($this->cLand);
         if ($this->kRechnungsadresse > 0) {
-            $this->entschluesselRechnungsadresse();
+            $this->decrypt();
         }
 
         executeHook(HOOK_RECHNUNGSADRESSE_CLASS_LOADFROMDB);
@@ -204,22 +91,20 @@ class Rechnungsadresse
      */
     public function insertInDB()
     {
-        $this->verschluesselRechnungsadresse();
-        $obj        = kopiereMembers($this);
+        $this->encrypt();
+        $obj = $this->toObject();
+
         $obj->cLand = $this->pruefeLandISO($obj->cLand);
 
         unset($obj->kRechnungsadresse);
         unset($obj->angezeigtesLand);
         unset($obj->cAnredeLocalized);
+
         $this->kRechnungsadresse = Shop::DB()->insert('trechnungsadresse', $obj);
-        $this->entschluesselRechnungsadresse();
+        $this->decrypt();
 
         // Anrede mappen
-        if ($this->cAnrede === 'm') {
-            $this->cAnredeLocalized = Shop::Lang()->get('salutationM', 'global');
-        } elseif ($this->cAnrede === 'w') {
-            $this->cAnredeLocalized = Shop::Lang()->get('salutationW', 'global');
-        }
+        $this->cAnredeLocalized = $this->mappeAnrede($this->cAnrede);
 
         return $this->kRechnungsadresse;
     }
@@ -232,41 +117,21 @@ class Rechnungsadresse
      */
     public function updateInDB()
     {
-        $this->verschluesselRechnungsadresse();
-        $obj        = kopiereMembers($this);
+        $this->encrypt();
+        $obj = $this->toObject();
+
         $obj->cLand = $this->pruefeLandISO($obj->cLand);
 
         unset($obj->angezeigtesLand);
         unset($obj->cAnredeLocalized);
+
         $cReturn = Shop::DB()->update('trechnungsadresse', 'kRechnungsadresse', $obj->kRechnungsadresse, $obj);
-        $this->entschluesselRechnungsadresse();
+        $this->decrypt();
 
         // Anrede mappen
-        if ($this->cAnrede === 'm') {
-            $this->cAnredeLocalized = Shop::Lang()->get('salutationM', 'global');
-        } elseif ($this->cAnrede === 'w') {
-            $this->cAnredeLocalized = Shop::Lang()->get('salutationW', 'global');
-        }
+        $this->cAnredeLocalized = $this->mappeAnrede($this->cAnrede);
 
         return $cReturn;
-    }
-
-    /**
-     * @param string $cLandISO
-     * @return string
-     */
-    public function pruefeLandISO($cLandISO)
-    {
-        // ISO prüfen
-        preg_match('/[a-zA-Z]{2}/', $cLandISO, $cTreffer1_arr);
-        if (strlen($cTreffer1_arr[0]) != strlen($cLandISO)) {
-            $cISO = landISO($cLandISO);
-            if (strlen($cISO) > 0 && $cISO !== 'noISO') {
-                $cLandISO = $cISO;
-            }
-        }
-
-        return $cLandISO;
     }
 
     /**
@@ -274,18 +139,10 @@ class Rechnungsadresse
      */
     public function gibRechnungsadresseAssoc()
     {
-        $RechnungsadresseAssoc_arr = array();
-
         if ($this->kRechnungsadresse > 0) {
-            $cMember_arr = array_keys(get_object_vars($this));
-
-            if (is_array($cMember_arr) && count($cMember_arr) > 0) {
-                foreach ($cMember_arr as $cMember) {
-                    $RechnungsadresseAssoc_arr[$cMember] = $this->$cMember;
-                }
-            }
+            return $this->toArray();
         }
 
-        return $RechnungsadresseAssoc_arr;
+        return [];
     }
 }

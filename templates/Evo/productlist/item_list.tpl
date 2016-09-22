@@ -1,6 +1,6 @@
 {* template to display products in product-lists *}
 
-<div class="product-cell thumbnail">
+<div class="product-cell">
     <div class="product-body row {if $tplscope !== 'list'} text-center{/if}">
         <div class="col-xs-3 col-sm-2 col-lg-3 text-center">
             {block name="image-wrapper"}
@@ -20,8 +20,32 @@
             {/block}
             {include file='productdetails/rating.tpl' stars=$Artikel->fDurchschnittsBewertung}
         </div>
-        <div class="col-xs-6 col-sm-6 col-lg-5">
+        <div class="col-xs-6 col-lg-5">
             {block name="product-title"}<h4 class="title"><a href="{$Artikel->cURL}">{$Artikel->cName}</a></h4>{/block}
+            {block name="product-manufacturer"}
+                {if $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen !== 'N'}
+                    <div class="media hidden-xs top0 bottom5">
+                        {if ($Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen === 'BT'
+                        || $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen === 'B') && !empty($Artikel->cHerstellerBildKlein)}
+                            <div class="media-left">
+                                {if !empty($Artikel->cHerstellerHomepage)}<a href="{$Artikel->cHerstellerHomepage}">{/if}
+                                    <img src="{$Artikel->cHerstellerBildKlein}" alt="" class="img-xs">
+                                {if !empty($Artikel->cHerstellerHomepage)}</a>{/if}
+                            </div>
+                        {/if}
+                        {if ($Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen === 'BT'
+                        || $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen === 'Y') && !empty($Artikel->cHersteller)}
+                            <div class="media-body">
+                                <span class="small text-uppercase">
+                                    {if !empty($Artikel->cHerstellerHomepage)}<a href="{$Artikel->cHerstellerHomepage}">{/if}
+                                        {$Artikel->cHersteller}
+                                    {if !empty($Artikel->cHerstellerHomepage)}</a>{/if}
+                                </span>
+                            </div>
+                        {/if}
+                    </div>
+                {/if}
+            {/block}
 
             <div class="product-info hidden-xs">
                 {block name="product-info"}
@@ -35,25 +59,6 @@
                         {if isset($Artikel->dMHD) && isset($Artikel->dMHD_de)}
                             <li class="item row attr-best-before" title="{lang key='productMHDTool' section='global'}">
                                 <span class="attr-label col-sm-5">{lang key="productMHD" section="global"}: </span> <span class="value col-sm-7">{$Artikel->dMHD_de}</span>
-                            </li>
-                        {/if}
-                        {if $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen !== 'N' && !empty($Artikel->cHersteller)}
-                            <li class="item row attr-manufacturer">
-                                <span class="attr-label col-sm-5">{lang key="manufacturerSingle" section="productOverview"}: </span>
-                                <span class="value col-sm-7">
-                                {if $Artikel->cHerstellerHomepage}
-                                    <a href="{$Artikel->cHerstellerHomepage}">
-                                {/if}
-                                {if $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen !== 'B' && !empty($Artikel->cHersteller)}
-                                    {$Artikel->cHersteller}
-                                {/if}
-                                {if $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen !== 'Y' && !empty($Artikel->cHerstellerBildKlein)}
-                                    <img src="{$Artikel->cHerstellerBildKlein}" alt="" />
-                                {/if}
-                                {if $Artikel->cHerstellerHomepage}
-                                    </a>
-                                {/if}
-                                </span>
                             </li>
                         {/if}
                         {if isset($Artikel->cGewicht) && $Einstellungen.artikeluebersicht.artikeluebersicht_gewicht_anzeigen === 'Y' && $Artikel->fGewicht > 0}
@@ -97,7 +102,11 @@
         <div class="col-xs-3 col-sm-4">
             <form action="navi.php" method="post" class="form form-basket" data-toggle="basket-add">
                 {block name="form-basket"}
-                    {include file="productdetails/price.tpl" Artikel=$Artikel price_image=$Artikel->Preise->strPreisGrafik_Suche tplscope=$tplscope}
+                    {assign var=price_image value=""}
+                    {if isset($Artikel->Preise->strPreisGrafik_Suche)}
+                        {assign var=$price_image value=$Artikel->Preise->strPreisGrafik_Suche}
+                    {/if}
+                    {include file="productdetails/price.tpl" Artikel=$Artikel price_image=$price_image tplscope=$tplscope}
                     <div class="delivery-status">
                     {block name="delivery-status"}
                         {assign var=anzeige value=$Einstellungen.artikeluebersicht.artikeluebersicht_lagerbestandsanzeige}
@@ -116,9 +125,9 @@
                         $Artikel->fLagerbestand <= 0 && $Artikel->fLieferantenlagerbestand > 0 && $Artikel->fLieferzeit > 0 &&
                         ($Artikel->cLagerKleinerNull === 'N' || $Einstellungen.artikeluebersicht.artikeluebersicht_lagerbestandanzeige_anzeigen === 'U')}
                             <div class="signal_image status-1"><small>{lang key="supplierStockNotice" section="global" printf=$Artikel->fLieferzeit}</small></div>
-                        {elseif $anzeige=='verfuegbarkeit' || $anzeige === 'genau'}
+                        {elseif $anzeige === 'verfuegbarkeit' || $anzeige === 'genau'}
                             <div class="signal_image status-{$Artikel->Lageranzeige->nStatus}"><small>{$Artikel->Lageranzeige->cLagerhinweis[$anzeige]}</small></div>
-                        {elseif $anzeige=='ampel'}
+                        {elseif $anzeige === 'ampel'}
                             <div class="signal_image status-{$Artikel->Lageranzeige->nStatus}"><small>{$Artikel->Lageranzeige->AmpelText}</small></div>
                         {/if}
                         {if $Artikel->cEstimatedDelivery}
@@ -217,7 +226,7 @@
                                 </button>
                             </div>
                         {/if}
-                        {if $Einstellungen.artikeluebersicht.artikeluebersicht_wunschzettel_anzeigen === 'Y'}
+                        {if $Einstellungen.global.global_wunschliste_anzeigen === 'Y' && $Einstellungen.artikeluebersicht.artikeluebersicht_wunschzettel_anzeigen === 'Y'}
                             <div class="btn-group btn-group-xs" role="group">
                                 <button name="Wunschliste" type="submit" class="wishlist btn btn-default" title="{lang key="addToWishlist" section="productDetails"}">
                                     <span class="fa fa-heart"></span>
@@ -226,7 +235,7 @@
                         {/if}
                         {if $Artikel->verfuegbarkeitsBenachrichtigung == 3 && (($Artikel->cLagerBeachten === 'Y' && $Artikel->cLagerKleinerNull !== 'Y') || $Artikel->cLagerBeachten !== 'Y')}
                             <div class="btn-group btn-group-xs" role="group">
-                                <button type="button" id="n{$Artikel->kArtikel}" class="popup notification btn btn-default btn-left" title="{lang key="requestNotification" section="global"}">
+                                <button type="button" id="n{$Artikel->kArtikel}" class="popup-dep notification btn btn-default btn-left" title="{lang key="requestNotification" section="global"}">
                                     <span class="fa fa-bell"></span>
                                 </button>
                             </div>
@@ -243,6 +252,6 @@
 {* popup-content *}
 {if $Artikel->verfuegbarkeitsBenachrichtigung == 3}
     <div id="popupn{$Artikel->kArtikel}" class="hidden">
-        {include file='productdetails/availability_notification_form.tpl' tplscope='artikeldetails'}
+        {include file='productdetails/availability_notification_form.tpl' position="popup" tplscope='artikeldetails'}
     </div>
 {/if}

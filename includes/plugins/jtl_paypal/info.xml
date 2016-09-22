@@ -531,15 +531,6 @@ Ihr Team von {$Firma->cName}]]></ContentText>
                     <Description />
                     <ValueName>jtl_paypal_sonstige_headline</ValueName>
                 </Setting>
-                <Setting type="selectbox" initialValue="N" sort="21" conf="Y">
-                    <Name>Kunde soll ein Kundenkonto erhalten</Name>
-                    <Description>Kunde bekommt sein Kundenkontopasswort per E-Mail zugesandt.</Description>
-                    <ValueName>jtl_paypal_express_create_account</ValueName>
-                    <SelectboxOptions>
-                        <Option value="Y" sort="1">Ja</Option>
-                        <Option value="N" sort="2">Nein</Option>
-                    </SelectboxOptions>
-                </Setting>
                 <Setting type="selectbox" initialValue="Y" sort="24" conf="Y">
                     <Name>Checkboxen aus Registrierungsseite auf Bestellübersichtsseite anzeigen</Name>
                     <Description>Sollen die Checkboxen aus der Registrierungsseite auf der Bestellübersichtsseite

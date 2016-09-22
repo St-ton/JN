@@ -248,13 +248,14 @@ if ($continue && ((isset($_POST['kLink']) && intval($_POST['kLink']) > 0) || (is
     $cDatei_arr = array();
     if (is_dir($cUploadVerzeichnis . $link->kLink)) {
         $DirHandle = opendir($cUploadVerzeichnis . $link->kLink);
+        $shopURL   = Shop::getURL() . '/';
         while (false !== ($Datei = readdir($DirHandle))) {
             if ($Datei !== '.' && $Datei !== '..') {
                 $nImageGroesse_arr = calcRatio(PFAD_ROOT . '/' . PFAD_BILDER . PFAD_LINKBILDER . $link->kLink . '/' . $Datei, 160, 120);
                 $oDatei            = new stdClass();
                 $oDatei->cName     = substr($Datei, 0, strpos($Datei, '.'));
                 $oDatei->cNameFull = $Datei;
-                $oDatei->cURL      = '<img class="link_image" src="' . Shop::getURL() . '/' . PFAD_BILDER . PFAD_LINKBILDER . $link->kLink . '/' . $Datei . '" />';
+                $oDatei->cURL      = '<img class="link_image" src="' . $shopURL . PFAD_BILDER . PFAD_LINKBILDER . $link->kLink . '/' . $Datei . '" />';
                 $oDatei->nBild     = intval(substr(str_replace('Bild', '', $Datei), 0, strpos(str_replace('Bild', '', $Datei), '.')));
                 $cDatei_arr[]      = $oDatei;
             }
@@ -393,7 +394,7 @@ if ($step === 'uebersicht') {
     $linkgruppen = Shop::DB()->query("SELECT * FROM tlinkgruppe", 2);
     $lCount      = count($linkgruppen);
     for ($i = 0; $i < $lCount; $i++) {
-        $linkgruppen[$i]->links_nh = Shop::DB()->query("SELECT * FROM tlink WHERE kLinkgruppe = " . (int)$linkgruppen[$i]->kLinkgruppe . " ORDER BY nSort, cName", 2);
+        $linkgruppen[$i]->links_nh = Shop::DB()->selectAll('tlink', 'kLinkgruppe', (int)$linkgruppen[$i]->kLinkgruppe, '*', 'nSort, cName');
         $linkgruppen[$i]->links    = build_navigation_subs_admin($linkgruppen[$i]->links_nh);
     }
 

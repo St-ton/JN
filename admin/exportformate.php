@@ -106,9 +106,9 @@ if (isset($_POST['neu_export']) && (int)$_POST['neu_export'] === 1 && validateTo
         }
         $step = ($error) ? $step : 'uebersicht';
     } else {
-        $_POST['cContent']   = str_replace("<tab>", "\t", $_POST['cContent']);
-        $_POST['cKopfzeile'] = str_replace("<tab>", "\t", $_POST['cKopfzeile']);
-        $_POST['cFusszeile'] = str_replace("<tab>", "\t", $_POST['cFusszeile']);
+        $_POST['cContent']   = str_replace('<tab>', "\t", $_POST['cContent']);
+        $_POST['cKopfzeile'] = str_replace('<tab>', "\t", $_POST['cKopfzeile']);
+        $_POST['cFusszeile'] = str_replace('<tab>', "\t", $_POST['cFusszeile']);
         $smarty->assign('cPlausiValue_arr', $cPlausiValue_arr)
                ->assign('cPostVar_arr', StringHandler::filterXSS($_POST));
         $step   = 'neuer Export';

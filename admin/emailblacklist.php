@@ -13,16 +13,16 @@ $cFehler       = '';
 $step          = 'emailblacklist';
 
 // Einstellungen
-if (isset($_POST['einstellungen']) && intval($_POST['einstellungen']) > 0) {
+if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
     $cHinweis .= saveAdminSectionSettings(CONF_EMAILBLACKLIST, $_POST);
 }
 // Kundenfelder
-if (isset($_POST['emailblacklist']) && intval($_POST['emailblacklist']) === 1 && validateToken()) {
+if (isset($_POST['emailblacklist']) && (int)$_POST['emailblacklist'] === 1 && validateToken()) {
     // Speichern
     $cEmail_arr = explode(';', $_POST['cEmail']);
 
     if (is_array($cEmail_arr) && count($cEmail_arr) > 0) {
-        Shop::DB()->query("truncate temailblacklist", 3);
+        Shop::DB()->query("TRUNCATE temailblacklist", 3);
 
         foreach ($cEmail_arr as $cEmail) {
             $cEmail = strip_tags(trim($cEmail));
@@ -30,43 +30,24 @@ if (isset($_POST['emailblacklist']) && intval($_POST['emailblacklist']) === 1 &&
                 $oEmailBlacklist         = new stdClass();
                 $oEmailBlacklist->cEmail = $cEmail;
                 Shop::DB()->insert('temailblacklist', $oEmailBlacklist);
-                unset($oEmailBlacklist);
             }
         }
     }
 }
 
-$oConfig_arr = Shop::DB()->query(
-    "SELECT *
-        FROM teinstellungenconf
-        WHERE kEinstellungenSektion = " . CONF_EMAILBLACKLIST . "
-        ORDER BY nSort", 2
-);
+$oConfig_arr = Shop::DB()->selectAll('teinstellungenconf', 'kEinstellungenSektion', CONF_EMAILBLACKLIST, '*', 'nSort');
 $configCount = count($oConfig_arr);
 for ($i = 0; $i < $configCount; $i++) {
     if ($oConfig_arr[$i]->cInputTyp === 'selectbox') {
-        $oConfig_arr[$i]->ConfWerte = Shop::DB()->query(
-            "SELECT *
-                FROM teinstellungenconfwerte
-                WHERE kEinstellungenConf = " . (int)$oConfig_arr[$i]->kEinstellungenConf . "
-                ORDER BY nSort", 2
-        );
+        $oConfig_arr[$i]->ConfWerte = Shop::DB()->selectAll('teinstellungenconfwerte', 'kEinstellungenConf', (int)$oConfig_arr[$i]->kEinstellungenConf, '*', 'nSort');
     }
 
-    $oSetValue = Shop::DB()->query(
-        "SELECT cWert
-            FROM teinstellungen
-            WHERE kEinstellungenSektion = " . CONF_EMAILBLACKLIST . "
-                AND cName = '" . $oConfig_arr[$i]->cWertName . "'", 1
-    );
+    $oSetValue = Shop::DB()->select('teinstellungen', 'kEinstellungenSektion', CONF_EMAILBLACKLIST, 'cName', $oConfig_arr[$i]->cWertName);
     $oConfig_arr[$i]->gesetzterWert = (isset($oSetValue->cWert)) ? $oSetValue->cWert : null;
 }
 
 // Emails auslesen und in Smarty assignen
 $oEmailBlacklist_arr = Shop::DB()->query("SELECT * FROM temailblacklist", 2);
-if (is_array($oEmailBlacklist_arr) && count($oEmailBlacklist_arr) > 0) {
-    $smarty->assign('oEmailBlacklist_arr', $oEmailBlacklist_arr);
-}
 // Geblockte Emails auslesen und assignen
 $oEmailBlacklistBlock_arr = Shop::DB()->query(
     "SELECT *, DATE_FORMAT(dLetzterBlock, '%d.%m.%Y %H:%i') AS Datum
@@ -75,10 +56,9 @@ $oEmailBlacklistBlock_arr = Shop::DB()->query(
         LIMIT 100", 2
 );
 
-if (is_array($oEmailBlacklistBlock_arr) && count($oEmailBlacklistBlock_arr) > 0) {
-    $smarty->assign('oEmailBlacklistBlock_arr', $oEmailBlacklistBlock_arr);
-}
 $smarty->assign('Sprachen', gibAlleSprachen())
+       ->assign('oEmailBlacklist_arr', (is_array($oEmailBlacklist_arr)) ? $oEmailBlacklist_arr : [])
+       ->assign('oEmailBlacklistBlock_arr', (is_array($oEmailBlacklistBlock_arr)) ? $oEmailBlacklistBlock_arr : [])
        ->assign('oConfig_arr', $oConfig_arr)
        ->assign('hinweis', $cHinweis)
        ->assign('fehler', $cFehler)

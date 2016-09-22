@@ -64,8 +64,7 @@ if (isset($_GET['return']) && $_GET['return'] === '1') {
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    $customer      = null;
-    $createAccount = $oPlugin->oPluginEinstellungAssoc_arr['jtl_paypal_express_create_account'] === 'Y';
+    $customer = null;
 
     if (isset($_SESSION['Kunde']) && (int)$_SESSION['Kunde']->kKunde > 0) {
         if ($_SESSION['Kunde']->cMail == $_POST['email']) {
@@ -98,11 +97,6 @@ if (isset($_GET['return']) && $_GET['return'] === '1') {
         unset($_SESSION['Kunde']);
     }
 
-    if ($createAccount) {
-        $plainPassword = gibUID(max(intval($conf['kunden']['kundenregistrierung_passwortlaenge']), 8));
-        $_POST['pass'] = $_POST['pass2'] = $plainPassword;
-    }
-
     $customer = getKundendaten($_POST, 0, 0);
 
     $customer->kKundengruppe = $_SESSION['Kundengruppe']->kKundengruppe;
@@ -110,7 +104,7 @@ if (isset($_GET['return']) && $_GET['return'] === '1') {
     $customer->cAbgeholt     = 'N';
     $customer->cAktiv        = 'Y';
     $customer->cSperre       = 'N';
-    $customer->nRegistriert  = (int) $createAccount;
+    $customer->nRegistriert  = 1;
     $customer->dErstellt     = date_format(date_create(), 'Y-m-d');
 
     if (!isset($customer->cAnrede) || $customer->cAnrede === null) {
@@ -118,13 +112,6 @@ if (isset($_GET['return']) && $_GET['return'] === '1') {
     }
 
     $session->setCustomer($customer);
-
-    if ($createAccount) {
-        $oMail                            = (object) ['tkunde' => $_SESSION['Kunde']];
-        $oMail->tkunde->cPasswortKlartext = $plainPassword;
-        sendeMail('kPlugin_' . $oPlugin->kPlugin . '_ppexpresskkpw', $oMail);
-    }
-
     setzeLieferadresseAusRechnungsadresse();
 
     $step = 'Zahlung';

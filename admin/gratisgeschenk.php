@@ -30,20 +30,8 @@ $oConfig_arr = Shop::DB()->query(
 );
 $configCount = count($oConfig_arr);
 for ($i = 0; $i < $configCount; $i++) {
-    $oConfig_arr[$i]->ConfWerte = Shop::DB()->query(
-        "SELECT *
-            FROM teinstellungenconfwerte
-            WHERE kEinstellungenConf = " . (int)$oConfig_arr[$i]->kEinstellungenConf . "
-            ORDER BY nSort", 2
-    );
-
-    $oSetValue = Shop::DB()->query(
-        "SELECT cWert
-            FROM teinstellungen
-            WHERE kEinstellungenSektion = " . (int)$oConfig_arr[$i]->kEinstellungenSektion . "
-                AND cName = '" . $oConfig_arr[$i]->cWertName . "'", 1
-    );
-
+    $oConfig_arr[$i]->ConfWerte = Shop::DB()->selectAll('teinstellungenconfwerte', 'kEinstellungenConf', (int)$oConfig_arr[$i]->kEinstellungenConf, '*', 'nSort');
+    $oSetValue = Shop::DB()->select('teinstellungen', 'kEinstellungenSektion', (int)$oConfig_arr[$i]->kEinstellungenSektion, 'cName', $oConfig_arr[$i]->cWertName);
     $oConfig_arr[$i]->gesetzterWert = (isset($oSetValue->cWert)) ? $oSetValue->cWert : null;
 }
 
@@ -62,13 +50,13 @@ $oHaeufigGeschenk_arr    = holeHaeufigeGeschenke(' LIMIT ' . $oPagiHaeufig->getL
 $oLetzten100Geschenk_arr = holeLetzten100Geschenke(' LIMIT ' . $oPagiLetzte100->getLimitSQL());
 
 $smarty->assign('oPagiAktiv', $oPagiAktiv)
-    ->assign('oPagiHaeufig', $oPagiHaeufig)
-    ->assign('oPagiLetzte100', $oPagiLetzte100)
-    ->assign('oAktiveGeschenk_arr', $oAktiveGeschenk_arr)
-    ->assign('oHaeufigGeschenk_arr', $oHaeufigGeschenk_arr)
-    ->assign('oLetzten100Geschenk_arr', $oLetzten100Geschenk_arr)
-    ->assign('oConfig_arr', $oConfig_arr)
-    ->assign('ART_ATTRIBUT_GRATISGESCHENKAB', ART_ATTRIBUT_GRATISGESCHENKAB)
-    ->assign('hinweis', $cHinweis)
-    ->assign('fehler', $cfehler)
-    ->display('gratisgeschenk.tpl');
+       ->assign('oPagiHaeufig', $oPagiHaeufig)
+       ->assign('oPagiLetzte100', $oPagiLetzte100)
+       ->assign('oAktiveGeschenk_arr', $oAktiveGeschenk_arr)
+       ->assign('oHaeufigGeschenk_arr', $oHaeufigGeschenk_arr)
+       ->assign('oLetzten100Geschenk_arr', $oLetzten100Geschenk_arr)
+       ->assign('oConfig_arr', $oConfig_arr)
+       ->assign('ART_ATTRIBUT_GRATISGESCHENKAB', ART_ATTRIBUT_GRATISGESCHENKAB)
+       ->assign('hinweis', $cHinweis)
+       ->assign('fehler', $cfehler)
+       ->display('gratisgeschenk.tpl');

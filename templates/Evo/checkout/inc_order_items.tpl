@@ -170,7 +170,7 @@
                                             <div class="btn-group-vertical" role="group" id="quantity-grp">
                                                 <input name="anzahl[{$smarty.foreach.positionen.index}]" id="quantity{$smarty.foreach.positionen.index}" class="btn-group form-control quantity text-right" size="3" value="{$oPosition->nAnzahl}" />
                                                 {if $oPosition->Artikel->cEinheit}
-                                                    <span class="btn-group unit input-group-addon">{$oPosition->Artikel->cEinheit}</span>
+                                                    <span class="btn-group unit input-group-addon hidden-xs">{$oPosition->Artikel->cEinheit}</span>
                                                 {/if}
                                                 <span class="btn-group">
                                                     <button type="submit" class="btn btn-default" title="{lang key='refresh' section='checkout'}"><i class="fa fa-refresh"></i></button>

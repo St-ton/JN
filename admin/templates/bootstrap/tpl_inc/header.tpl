@@ -1,3 +1,5 @@
+{assign var='bForceFluid' value=$bForceFluid|default:false}
+
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -159,8 +161,11 @@
         </script>
     {/if}
     {getCurrentPage assign="currentPage"}
-    {$fluid = ['index', 'marktplatz', 'banner', 'dbmanager', 'status']}
-    <div class="backend-wrapper {if $currentPage|in_array:$fluid}container-fluid{else}container{/if}{if $currentPage === 'index' || $currentPage === 'status'} dashboard{/if}{if $currentPage === 'marktplatz'} marktplatz{/if}">
+    {$fluid = ['index', 'marktplatz', 'dbmanager', 'status']}
+    <div class="backend-wrapper
+         {if $bForceFluid || $currentPage|in_array:$fluid}container-fluid{else}container{/if}
+         {if $currentPage === 'index' || $currentPage === 'status'} dashboard{/if}
+         {if $currentPage === 'marktplatz'} marktplatz{/if}">
         <nav class="navbar navbar-inverse navbar-fixed-top yamm" role="navigation">
             <div class="container-fluid">
                 <div class="navbar-header">

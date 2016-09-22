@@ -78,7 +78,7 @@
                                                 <td class="TD7">{$oUmfrage->dErstellt_de}</td>
                                                 <td class="TD8">
                                                     <div class="btn-group">
-                                                        <a href="umfrage.php?umfrage=1&token={$smarty.session.jtl_token}&umfrage_editieren=1&kUmfrage={$oUmfrage->kUmfrage}&tab=umfrage" class="btn btn-default" title="Bearbeiten">
+                                                        <a href="umfrage.php?umfrage=1&token={$smarty.session.jtl_token}&umfrage_editieren=1&kUmfrage={$oUmfrage->kUmfrage}&tab=umfrage" class="btn btn-default" title="{#modify#}">
                                                             <i class="fa fa-edit"></i>
                                                         </a>
                                                         <a href="umfrage.php?umfrage=1&token={$smarty.session.jtl_token}&kUmfrage={$oUmfrage->kUmfrage}&umfrage_statistik=1" class="btn btn-default" title="{#umfrageStats#}"><i class="fa fa-bar-chart"></i></a>

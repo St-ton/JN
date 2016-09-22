@@ -92,11 +92,11 @@ if (isset($_POST['neu_export']) && (int)$_POST['neu_export'] === 1 && validateTo
         $smartyExport = new JTLSmarty(true, false, false, 'export');
         $smartyExport->setCaching(0)
                      ->setDebugging(0)
-                     ->registerResource('xdb', array('xdb_get_template', 'xdb_get_timestamp', 'xdb_get_secure', 'xdb_get_trusted'))
+                     ->registerResource('db', new SmartyResourceNiceDB('export'))
                      ->setTemplateDir(PFAD_TEMPLATES);
         $error = false;
         try {
-            $cOutput = $smartyExport->fetch('xdb:' . $kExportformat);
+            $cOutput = $smartyExport->fetch('db:' . $kExportformat);
         } catch (Exception $e) {
             $error  = true;
             $step   = 'neuer Export';
@@ -232,7 +232,7 @@ if ($step === 'neuer Export') {
             $Conf[$i]->ConfWerte = Shop::DB()->selectAll('teinstellungenconfwerte', 'kEinstellungenConf', (int)$Conf[$i]->kEinstellungenConf, '*', 'nSort');
         }
         if (isset($exportformat->kExportformat)) {
-            $setValue = Shop::DB()->select('texportformateinstellungen', 'kExportformat', (int)$exportformat->kExportformat, 'cName', $Conf[$i]->cWertName);
+            $setValue = Shop::DB()->select('texportformateinstellungen', ['kExportformat', 'cName'], [(int)$exportformat->kExportformat, $Conf[$i]->cWertName]);
             $Conf[$i]->gesetzterWert = (isset($setValue->cWert)) ? $setValue->cWert : null;
         }
     }

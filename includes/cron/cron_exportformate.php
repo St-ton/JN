@@ -16,7 +16,7 @@ function getSmarty()
            ->setTemplateDir(PFAD_ROOT . PFAD_ADMIN . PFAD_TEMPLATES)
            ->setCompileDir(PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR)
            ->setConfigDir($smarty->getTemplateDir($smarty->context) . 'lang/')
-           ->registerResource('db', array('db_get_template', 'db_get_timestamp', 'db_get_secure', 'db_get_trusted'));
+           ->registerResource('db', new SmartyResourceNiceDB('export'));
 
     return $smarty;
 }

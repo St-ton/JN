@@ -52,10 +52,10 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
                     $brotnavi[] = $ele;
                 }
             }
-            $SieSindHierString .= ' &gt; <a href="' . $Artikel->cURL . '">' . $Artikel->cName . '</a>';
+            $SieSindHierString .= ' &gt; <a href="' . $Artikel->cURLFull . '">' . $Artikel->cName . '</a>';
             $ele        = new stdClass();
             $ele->name  = $Artikel->cName;
-            $ele->url   = $Artikel->cURL;
+            $ele->url   = $Artikel->cURLFull;
             $brotnavi[] = $ele;
             $SieSindHierString .= '<br />';
             break;
@@ -83,26 +83,26 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
             break;
 
         case 'WARENKORB':
-            $SieSindHierString .= ' &gt; <a href="warenkorb.php">' . Shop::Lang()->get('basket', 'breadcrumb') . '</a>';
+            $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('warenkorb.php') . '">' . Shop::Lang()->get('basket', 'breadcrumb') . '</a>';
             $ele        = new stdClass();
             $ele->name  = Shop::Lang()->get('basket', 'breadcrumb');
-            $ele->url   = 'warenkorb.php';
+            $ele->url   = $linkHelper->getStaticRoute('warenkorb.php');
             $brotnavi[] = $ele;
             $SieSindHierString .= '<br />';
             break;
 
         case 'PASSWORT VERGESSEN':
-            $SieSindHierString .= ' &gt; <a href="pass.php">' . Shop::Lang()->get('forgotpassword', 'breadcrumb') . '</a>';
+            $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('pass.php') . '">' . Shop::Lang()->get('forgotpassword', 'breadcrumb') . '</a>';
             $ele        = new stdClass();
             $ele->name  = Shop::Lang()->get('forgotpassword', 'breadcrumb');
-            $ele->url   = 'pass.php';
+            $ele->url   = $linkHelper->getStaticRoute('pass.php');
             $brotnavi[] = $ele;
             $SieSindHierString .= '<br />';
             break;
 
         case 'MEIN KONTO':
             $cText = (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) ? Shop::Lang()->get('account', 'breadcrumb') : Shop::Lang()->get('login', 'breadcrumb');
-            $SieSindHierString .= ' &gt; <a href="jtl.php">' . $cText . '</a>';
+            $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('jtl.php') . '">' . $cText . '</a>';
             $ele        = new stdClass();
             $ele->name  = $cText;
             $ele->url   = 'jtl.php';
@@ -111,28 +111,28 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
             break;
 
         case 'BESTELLVORGANG':
-            $SieSindHierString .= ' &gt; <a href="bestellvorgang.php">' . Shop::Lang()->get('checkout', 'breadcrumb') . '</a>';
+            $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('bestellvorgang.php') . '">' . Shop::Lang()->get('checkout', 'breadcrumb') . '</a>';
             $ele        = new stdClass();
             $ele->name  = Shop::Lang()->get('checkout', 'breadcrumb');
-            $ele->url   = 'bestellvorgang.php';
+            $ele->url   = $linkHelper->getStaticRoute('bestellvorgang.php');
             $brotnavi[] = $ele;
             $SieSindHierString .= '<br />';
             break;
 
         case 'REGISTRIEREN':
-            $SieSindHierString .= ' &gt; <a href="registrieren.php">' . Shop::Lang()->get('register', 'breadcrumb') . '</a>';
+            $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('registrieren.php') . '">' . Shop::Lang()->get('register', 'breadcrumb') . '</a>';
             $ele        = new stdClass();
             $ele->name  = Shop::Lang()->get('register', 'breadcrumb');
-            $ele->url   = 'registrieren.php';
+            $ele->url   = $linkHelper->getStaticRoute('registrieren.php');
             $brotnavi[] = $ele;
             $SieSindHierString .= '<br />';
             break;
 
         case 'KONTAKT':
-            $SieSindHierString .= ' &gt; <a href="kontakt.php">' . Shop::Lang()->get('contact', 'breadcrumb') . '</a>';
+            $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('kontakt.php') . '">' . Shop::Lang()->get('contact', 'breadcrumb') . '</a>';
             $ele        = new stdClass();
             $ele->name  = Shop::Lang()->get('contact', 'breadcrumb');
-            $ele->url   = 'kontakt.php';
+            $ele->url   = $linkHelper->getStaticRoute('kontakt.php');
             $brotnavi[] = $ele;
             $SieSindHierString .= '<br />';
             break;
@@ -219,10 +219,10 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
             break;
 
         case 'VERGLEICHSLISTE':
-            $SieSindHierString .= ' &gt; <a href="vergleichsliste.php">' . Shop::Lang()->get('compare', 'global') . '</a>';
+            $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('vergleichsliste.php') . '">' . Shop::Lang()->get('compare', 'global') . '</a>';
             $ele        = new stdClass();
             $ele->name  = Shop::Lang()->get('compare', 'global');
-            $ele->url   = 'vergleichsliste.php';
+            $ele->url   = $linkHelper->getStaticRoute('vergleichsliste.php');
             $brotnavi[] = $ele;
             $SieSindHierString .= '<br />';
             break;
@@ -497,7 +497,7 @@ function checkeWarenkorbEingang()
         $fAnzahl = doubleval($_GET['n']);
     }
     $kArtikel = verifyGPCDataInteger('a');
-    $conf     = Shop::getSettings(array(CONF_GLOBAL));
+    $conf     = Shop::getSettings(array(CONF_GLOBAL, CONF_VERGLEICHSLISTE));
     executeHook(HOOK_TOOLS_GLOBAL_CHECKEWARENKORBEINGANG_ANFANG, array('kArtikel' => $kArtikel, 'fAnzahl' => $fAnzahl));
     // Wunschliste?
     if ((isset($_POST['Wunschliste']) || isset($_GET['Wunschliste'])) && $conf['global']['global_wunschliste_anzeigen'] === 'Y') {
@@ -556,7 +556,7 @@ function checkeWarenkorbEingang()
                         Shop::Smarty()->assign('hinweis', Shop::Lang()->get('wishlistProductadded', 'messages'));
                         // Weiterleiten?
                         if ($conf['global']['global_wunschliste_weiterleitung'] === 'Y') {
-                            header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true) . '?wl=' . (int)$_SESSION['Wunschliste']->kWunschliste, true, 302);
+                            header('Location: ' . $linkHelper->getStaticRoute('wunschliste.php', true), true, 302);
                             exit;
                         }
                     }
@@ -565,11 +565,9 @@ function checkeWarenkorbEingang()
         }
     } elseif (isset($_POST['Vergleichsliste'])) { // Vergleichsliste?
         if ($kArtikel > 0) {
-            $Einstellungen_vergleichsliste = Shop::getSettings(array(CONF_VERGLEICHSLISTE));
-
             // Prüfen ob nicht schon die maximale Anzahl an Artikeln auf der Vergleichsliste ist
             if (!isset($_SESSION['Vergleichsliste']->oArtikel_arr) ||
-                intval($Einstellungen_vergleichsliste['vergleichsliste']['vergleichsliste_anzahl']) > count($_SESSION['Vergleichsliste']->oArtikel_arr)
+                intval($conf['vergleichsliste']['vergleichsliste_anzahl']) > count($_SESSION['Vergleichsliste']->oArtikel_arr)
             ) {
                 // Prüfe auf kArtikel
                 $oArtikelVorhanden = Shop::DB()->select('tartikel', 'kArtikel', $kArtikel, null, null, null, null, false, 'kArtikel, cName');
@@ -1206,38 +1204,31 @@ function gibVarKombiEigenschaftsWerte($kArtikel, $bSichtbarkeitBeachten = true)
 function fuegeEinInWarenkorb($kArtikel, $anzahl, $oEigenschaftwerte_arr = '', $nWeiterleitung = 0, $cUnique = false, $kKonfigitem = 0, $oArtikelOptionen = null, $setzePositionsPreise = true)
 {
     $kArtikel = (int)$kArtikel;
-
     if ($anzahl > 0 && $kArtikel > 0) {
         $Artikel = new Artikel();
         if ($oArtikelOptionen === null) {
             $oArtikelOptionen = Artikel::getDefaultOptions();
         }
         $Artikel->fuelleArtikel($kArtikel, $oArtikelOptionen);
-
-        // ### 28.10.2010 auskommentiert weil es das $oEigenschaftwerte_arr bei Kindern mit PFLICHT-FREIFELDERN falsch verändert ###
-        // Falls der Artikel ein Variationskombikind ist, hole direkt seine Eigenschaften
-        //if(isset($Artikel->kEigenschaftKombi) && $Artikel->kEigenschaftKombi > 0)
-        //$oEigenschaftwerte_arr = gibVarKombiEigenschaftsWerte($Artikel->kArtikel);
-
         if (intval($anzahl) != $anzahl && $Artikel->cTeilbar !== 'Y') {
-            $anzahl = max(intval($anzahl), 1);
+            $anzahl = max((int)$anzahl, 1);
         }
-
-        // Prüfung
         $redirectParam = pruefeFuegeEinInWarenkorb($Artikel, $anzahl, $oEigenschaftwerte_arr);
-
         if (count($redirectParam) > 0) {
             if (isset($_SESSION['variBoxAnzahl_arr'])) {
                 return false;
             }
-
             if ($nWeiterleitung == 0) {
-                if ($Artikel->nIstVater == 1) {
-                    header('Location: ' . Shop::getURL() . '/navi.php?a=' . $Artikel->kArtikel . '&n=' . $anzahl . '&r=' . implode(',', $redirectParam), true, 302);
-                } elseif ($Artikel->kEigenschaftKombi > 0) {
-                    header('Location: ' . Shop::getURL() . '/navi.php?a=' . $Artikel->kVaterArtikel . '&a2=' . $Artikel->kArtikel . '&n=' . $anzahl . '&r=' . implode(',', $redirectParam), true, 302);
+                if ($Artikel->kEigenschaftKombi > 0) {
+                    $url = (!empty($Artikel->cURLFull)) ?
+                        ($Artikel->cURLFull . '?'):
+                        (Shop::getURL() . '/index.php?a=' . $Artikel->kVaterArtikel . '&a2=' . $Artikel->kArtikel . '&');
+                    header('Location: ' . $url . 'n=' . $anzahl . '&r=' . implode(',', $redirectParam), true, 302);
                 } else {
-                    header('Location: ' . Shop::getURL() . '/index.php?a=' . $Artikel->kArtikel . '&n=' . $anzahl . '&r=' . implode(',', $redirectParam), true, 302);
+                    $url = (!empty($Artikel->cURLFull)) ?
+                        ($Artikel->cURLFull . '?'):
+                        (Shop::getURL() . '/index.php?a=' . $Artikel->kArtikel . '&');
+                    header('Location: ' . $url . 'n=' . $anzahl . '&r=' . implode(',', $redirectParam), true, 302);
                 }
                 exit;
             } else {
@@ -2216,7 +2207,7 @@ function standardspracheAktiv($bShop = false, $kSprache = null)
  * @param bool $bShop
  * @return mixed
  */
-function gibStandardsprache($bShop = false)
+function gibStandardsprache($bShop = true)
 {
     if (isset($_SESSION['Sprachen']) && is_array($_SESSION['Sprachen'])) {
         foreach ($_SESSION['Sprachen'] as $Sprache) {
@@ -3781,8 +3772,7 @@ function setzeSpracheUndWaehrungLink()
                 $_SESSION['Sprachen'][$i]->cURL = $AktuellerArtikel->cSprachURL_arr[$oSprache->kSprache];
             } elseif (($kLink > 0 || $kSeite > 0) && isset($sprachURL[$oSprache->cISO])) {
                 $_SESSION['Sprachen'][$i]->cURL = $sprachURL[$oSprache->cISO];
-            } // Special Seiten
-            elseif ($AktuelleSeite === 'WARENKORB'
+            } elseif ($AktuelleSeite === 'WARENKORB'
                 || $AktuelleSeite === 'KONTAKT'
                 || $AktuelleSeite === 'REGISTRIEREN'
                 || $AktuelleSeite === 'MEIN KONTO'
@@ -3792,6 +3782,8 @@ function setzeSpracheUndWaehrungLink()
                 || $AktuelleSeite === 'STARTSEITE'
                 || $AktuelleSeite === 'PASSWORT VERGESSEN'
                 || $AktuelleSeite === 'NEWS'
+                || $AktuelleSeite === 'WUNSCHLISTE'
+                || $AktuelleSeite === 'VERGLEICHSLISTE'
             ) {
                 switch ($AktuelleSeite) {
                     case 'STARTSEITE' :
@@ -3838,6 +3830,14 @@ function setzeSpracheUndWaehrungLink()
                         $id = 'news.php';
                         break;
 
+                    case 'VERGLEICHSLISTE':
+                        $id = 'vergleichsliste.php';
+                        break;
+
+                    case 'WUNSCHLISTE' :
+                        $id = 'wunschliste.php';
+                        break;
+
                     default:
                         $id = null;
                         break;
@@ -3876,6 +3876,7 @@ function setzeSpracheUndWaehrungLink()
                 || $AktuelleSeite === 'BESTELLVORGANG'
                 || $AktuelleSeite === 'NEWS'
                 || $AktuelleSeite === 'PASSWORT VERGESSEN'
+                || $AktuelleSeite === 'WUNSCHLISTE'
             ) { // Special Seiten
                 switch ($AktuelleSeite) {
                     case 'WARENKORB':
@@ -3912,6 +3913,10 @@ function setzeSpracheUndWaehrungLink()
 
                     case 'PASSWORT VERGESSEN':
                         $id = 'pass.php';
+                        break;
+
+                    case 'WUNSCHLISTE':
+                        $id = 'wunschliste.php';
                         break;
 
                     default:
@@ -5513,9 +5518,19 @@ function convertCurrency($price, $iso = null, $id = null, $useRounding = true, $
  */
 function resetNeuKundenKupon()
 {
-    if (isset($_SESSION['NeukundenKupon']->kKupon)) {
-        Shop::DB()->delete('tkuponneukunde', 'kKupon', $_SESSION['NeukundenKupon']->kKupon);
+    if (isset($_SESSION['Kunde'])) {
+        $hash = Kuponneukunde::Hash(
+            null,
+            trim($_SESSION['Kunde']->cNachname),
+            trim($_SESSION['Kunde']->cStrasse),
+            null,
+            trim($_SESSION['Kunde']->cPLZ),
+            trim($_SESSION['Kunde']->cOrt),
+            trim($_SESSION['Kunde']->cLand)
+        );
+        Shop::DB()->delete('tkuponneukunde', ['cDatenHash','cVerwendet'], [$hash,'N']);
     }
+
     unset($_SESSION['NeukundenKupon']);
     unset($_SESSION['NeukundenKuponAngenommen']);
     $_SESSION['Warenkorb']->loescheSpezialPos(C_WARENKORBPOS_TYP_NEUKUNDENKUPON)

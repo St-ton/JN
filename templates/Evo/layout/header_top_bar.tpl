@@ -20,7 +20,7 @@
                 <i class="fa fa-language"></i>
                 {foreach from=$smarty.session.Sprachen item=Sprache}
                     {if $Sprache->kSprache == $smarty.session.kSprache}
-                        <span="lang-{$lang}"> {if $lang === 'ger'}{$Sprache->cNameDeutsch}{else}{$Sprache->cNameEnglisch}{/if}</span>
+                        <span class="lang-{$lang}"> {if $lang === 'ger'}{$Sprache->cNameDeutsch}{else}{$Sprache->cNameEnglisch}{/if}</span>
                     {/if}
                 {/foreach}
                 <span class="caret"></span>

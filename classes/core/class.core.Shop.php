@@ -664,8 +664,15 @@ final class Shop
 
         $redirect = verifyGPDataString('r');
         if (self::$kNews > 0 && self::$kArtikel > 0 && !empty($redirect)) {
-            //login redirect on wishlist add when not logged in uses get param "n" as amount
+            //GET param "n" is often misused as "amount of article"
             self::$kNews    = 0;
+            if ((int)$redirect === R_LOGIN_WUNSCHLISTE) {
+                //login redirect on wishlist add when not logged in uses get param "n" as amount and "a" for the article ID
+                //but we wont to go to the login page, not to the article page
+                self::$kArtikel = 0;
+            }
+        } elseif (self::$kArtikel > 0 && ((int)$redirect === R_LOGIN_BEWERTUNG || (int)$redirect === R_LOGIN_TAG) && empty($_SESSION['Kunde']->kKunde)) {
+            //avoid redirect to article page for ratings that require logged in customers
             self::$kArtikel = 0;
         }
 
@@ -1041,6 +1048,10 @@ final class Shop
                         case 'warenkorb.php' :
                             self::$AktuelleSeite = 'WARENKORB';
                             self::setPageType(PAGE_WARENKORB);
+                            break;
+                        case 'wunschliste.php' :
+                            self::$AktuelleSeite = 'WUNSCHLISTE';
+                            self::setPageType(PAGE_WUNSCHLISTE);
                             break;
                         default :
                             break;

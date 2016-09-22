@@ -1129,7 +1129,8 @@ class Warenkorb
         }
         if ($bRedirect) {
             $this->setzePositionsPreise();
-            header('Location: ' . Shop::getURL() . '/warenkorb.php?fillOut=10', true, 303);
+            $linkHelper = LinkHelper::getInstance();
+            header('Location: ' . $linkHelper->getStaticRoute('warenkorb.php') . '?fillOut=10', true, 303);
             exit;
         }
 
@@ -1273,7 +1274,8 @@ class Warenkorb
     {
         $conf = Shop::getSettings(array(CONF_GLOBAL));
         if (!isset($_SESSION['variBoxAnzahl_arr']) && $conf['global']['global_warenkorb_weiterleitung'] === 'Y' && !$isRedirect && !$unique) {
-            header('Location: warenkorb.php', true, 303);
+            $linkHelper = LinkHelper::getInstance();
+            header('Location: ' . $linkHelper->getStaticRoute('warenkorb.php'), true, 303);
             exit;
         }
     }

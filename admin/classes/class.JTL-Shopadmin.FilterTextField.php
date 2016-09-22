@@ -6,6 +6,7 @@
 class FilterTextField extends FilterField
 {
     protected $nTestOp       = 0;
+    protected $nDataType     = 0;
     protected $bCustomTestOp = true;
 
     /**
@@ -25,20 +26,25 @@ class FilterTextField extends FilterField
      *  7 = lower than or equal
      *  8 = greater than or equal
      *  9 = equals not
+     * @param int    $nType
+     *  0 = text
+     *  1 = number
      */
-    public function __construct($oFilter, $cTitle, $cColumn, $nTestOp = 0)
+    public function __construct($oFilter, $cTitle, $cColumn, $nTestOp = 0, $nDataType = 0)
     {
         parent::__construct($oFilter, 'text', $cTitle, $cColumn);
 
         $this->nTestOp       = (int)$nTestOp;
+        $this->nDataType     = (int)$nDataType;
         $this->bCustomTestOp = $this->nTestOp == 0;
 
         if ($this->bCustomTestOp) {
             $this->nTestOp =
-                $oFilter->getAction() === $oFilter->getId() . '_filter' ? (int)$_GET[$oFilter->getId() . '_' . $this->cId . '_op'] : (
-                $oFilter->hasSessionField($cColumn . '_op')             ? (int)$oFilter->getSessionField($this->cId . '_op') :
-                                                                          1
-                );
+                $oFilter->getAction() === $oFilter->getId() . '_filter'      ? (int)$_GET[$oFilter->getId() . '_' . $this->cId . '_op'] : (
+                $oFilter->getAction() === $oFilter->getId() . '_resetfilter' ? 1 : (
+                $oFilter->hasSessionField($this->cId . '_op')                ? (int)$oFilter->getSessionField($this->cId . '_op') :
+                                                                               1
+                ));
         }
     }
 
@@ -70,6 +76,14 @@ class FilterTextField extends FilterField
     public function getTestOp()
     {
         return $this->nTestOp;
+    }
+
+    /**
+     * @return int
+     */
+    public function getDataType()
+    {
+        return $this->nDataType;
     }
 
     /**

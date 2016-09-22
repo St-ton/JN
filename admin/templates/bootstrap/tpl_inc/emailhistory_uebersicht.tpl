@@ -45,7 +45,7 @@
                     </tfoot>
                 </table>
                 <div class="panel-footer">
-                    <button name="zuruecksetzenBTN" type="submit" class="btn btn-danger"><i class="fa fa-trash"></i> Markierte l&ouml;schen</button>
+                    <button name="zuruecksetzenBTN" type="submit" class="btn btn-danger"><i class="fa fa-trash"></i> {#deleteSelected#}</button>
                 </div>
             </div>
         </form>

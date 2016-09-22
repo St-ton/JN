@@ -56,7 +56,7 @@ if (isset($_GET['i'])) {
 
         if ($_SESSION['Warenkorb']->checkIfCouponIsStillValid() === false) {
             $_SESSION['checkCouponResult']['ungueltig'] = 3;
-            header('Location: ' . Shop::getURL() . '/warenkorb.php', true, 303);
+            header('Location: ' . $linkHelper->getStaticRoute('warenkorb.php'), true, 303);
             exit;
         }
 

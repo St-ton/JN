@@ -859,6 +859,7 @@ function loescheArtikel($kArtikel, $nIstVater = 0, $bForce = false, $conf = null
         Shop::DB()->delete('tkategorieartikel', 'kArtikel', $kArtikel);
         Shop::DB()->delete('tartikelsprache', 'kArtikel', $kArtikel);
         Shop::DB()->delete('tartikelattribut', 'kArtikel', $kArtikel);
+        Shop::DB()->delete('tartikelwarenlager', 'kArtikel', $kArtikel);
         loescheArtikelAttribute($kArtikel);
         loescheArtikelEigenschaftWert($kArtikel);
         loescheArtikelEigenschaft($kArtikel);
@@ -1112,8 +1113,9 @@ function loescheStueckliste($kStueckliste)
 function fuelleKategorieGesamt($oKategorieArtikel_arr)
 {
     if (is_array($oKategorieArtikel_arr) && count($oKategorieArtikel_arr) > 0) {
-        $deleted = array();
-        $added   = array();
+        $deleted   = [];
+        $added     = [];
+        $cacheTags = [];
         //$oKategorieArtikel_arr probably always contains the same kArtikel. this is just to be sure.
         foreach ($oKategorieArtikel_arr as $oKategorieArtikel) {
             $kArtikel = (int)$oKategorieArtikel->kArtikel;
@@ -1126,9 +1128,9 @@ function fuelleKategorieGesamt($oKategorieArtikel_arr)
             // Lösche aktuellen KategorieArtikel
             $oOberKategorie_arr = array();
             // Hole die Kategorie vom aktuellen KategorieArtikel
-            $oKategorie = Shop::DB()->select('tkategorie', 'kKategorie', (int)$oKategorieArtikel->kKategorie);
+            $oKategorie           = Shop::DB()->select('tkategorie', 'kKategorie', (int)$oKategorieArtikel->kKategorie);
             $oOberKategorie_arr[] = $oKategorie;
-            Shop::Cache()->flushTags(array(CACHING_GROUP_CATEGORY . '_' . (int)$oKategorieArtikel->kKategorie));
+            $cacheTags[]          = (int)$oKategorieArtikel->kKategorie;
             // Laufe solange bis es keine OberKategorie mehr zum aktuellen KategorieArtikel gibt
             // Falls es zum aktuellen KategorieArtikel keine OberKategorie gibt, wird die schleife nicht betreten
             while (isset($oKategorie->kOberKategorie) && $oKategorie->kOberKategorie > 0) {
@@ -1152,12 +1154,14 @@ function fuelleKategorieGesamt($oKategorieArtikel_arr)
                         $oKategorieArtikelGesamt->nLevel         = $i;
 
                         Shop::DB()->insert('tkategorieartikelgesamt', $oKategorieArtikelGesamt);
-                        Shop::Cache()->flushTags(array(CACHING_GROUP_CATEGORY . '_' . $oKategorieArtikelGesamt->kKategorie));
-                        $added[] = (int)$oOberKategorie->kKategorie;
+                        $added[]     = (int)$oOberKategorie->kKategorie;
+                        $cacheTags[] = (int)$oOberKategorie->kKategorie;
                     }
                 }
             }
         }
+        array_walk($cacheTags, function(&$i) { $i = CACHING_GROUP_CATEGORY . '_' . $i; });
+        Shop::Cache()->flushTags($cacheTags);
     }
 }
 
@@ -1247,7 +1251,8 @@ function clearProductCaches($kArtikel)
 {
     $kArtikel  = (int) $kArtikel;
     $parentIDs = getConfigParents($kArtikel);
-    array_walk($parentIDs,  function(&$i) { $i = CACHING_GROUP_ARTICLE . '_' . $i; });
+    $cacheTags = [];
+    array_walk($parentIDs, function(&$i) { $i = CACHING_GROUP_ARTICLE . '_' . $i; });
     //flush config parents cache
     Shop::Cache()->flushTags($parentIDs);
     //flush cache tags associated with the article's manufacturer ID
@@ -1259,9 +1264,12 @@ function clearProductCaches($kArtikel)
     $oArticleCategories = Shop::DB()->query("SELECT * FROM tkategorieartikel WHERE kArtikel = " . $kArtikel, 2);
     if (is_array($oArticleCategories)) {
         foreach ($oArticleCategories as $_articleCategory) {
-            Shop::Cache()->flushTags(array(CACHING_GROUP_CATEGORY . '_' . (int)$_articleCategory->kKategorie));
+            $cacheTags[] = (int)$_articleCategory->kKategorie;
         }
     }
-    //flush article cache and cache for gibMerkmalFilterOptionen() and mega menu/category boxes
-    Shop::Cache()->flushTags(array(CACHING_GROUP_ARTICLE . '_' . $kArtikel, 'jtl_mmf'));
+    array_walk($cacheTags, function(&$i) { $i = CACHING_GROUP_CATEGORY . '_' . $i; });
+    $cacheTags[] = CACHING_GROUP_ARTICLE . '_' . $kArtikel;
+    $cacheTags[] = 'jtl_mmf';
+    //flush article cache, category cache and cache for gibMerkmalFilterOptionen() and mega menu/category boxes
+    Shop::Cache()->flushTags($cacheTags);
 }

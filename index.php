@@ -42,13 +42,12 @@ if (isset($_SESSION['bWarenkorbHinzugefuegt']) && isset($_SESSION['bWarenkorbAnz
     unset($_SESSION['bWarenkorbAnzahl']);
     unset($_SESSION['bWarenkorbHinzugefuegt']);
 }
-//wurde was in den Warenkorb gelegt?
+//wurde ein artikel in den Warenkorb gelegt?
 checkeWarenkorbEingang();
-if (!$cParameter_arr['kWunschliste'] && strlen(verifyGPDataString('wlid')) > 0) {
+if (!$cParameter_arr['kWunschliste'] && strlen(verifyGPDataString('wlid')) > 0 && verifyGPDataString('error') === '') {
     header('Location: ' . $linkHelper->getStaticRoute('wunschliste.php', true) . '?wlid=' . verifyGPDataString('wlid') . '&error=1', true, 303);
     exit();
 }
-$smarty->assign('NaviFilter', $NaviFilter);
 //support for artikel_after_cart_add
 if ($smarty->getTemplateVars('bWarenkorbHinzugefuegt')) {
     require_once PFAD_ROOT . PFAD_INCLUDES . 'artikel_inc.php';
@@ -82,7 +81,8 @@ if (isset($_SESSION['Kunde']->cLand) && strlen($_SESSION['Kunde']->cLand) > 0) {
     $cKundenherkunft = $_SESSION['Kunde']->cLand;
 }
 $oVersandartKostenfrei = gibVersandkostenfreiAb($kKundengruppe, $cKundenherkunft);
-$smarty->assign('WarenkorbArtikelanzahl', $numArticles)
+$smarty->assign('NaviFilter', $NaviFilter)
+       ->assign('WarenkorbArtikelanzahl', $numArticles)
        ->assign('WarenkorbArtikelPositionenanzahl', $warenpositionenanzahl)
        ->assign('WarenkorbWarensumme', $warensumme)
        ->assign('WarenkorbGesamtsumme', $gesamtsumme)
@@ -106,7 +106,6 @@ if ($cParameter_arr['kKategorie'] > 0 && !Kategorie::isVisible($cParameter_arr['
     Shop::$kLink                  = $kLink;
 }
 Shop::getEntryPoint();
-
 if (Shop::$is404 === true) {
     $cParameter_arr['is404'] = true;
     Shop::$fileName = null;

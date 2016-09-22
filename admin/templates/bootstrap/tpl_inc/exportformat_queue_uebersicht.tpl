@@ -35,18 +35,16 @@
                                     {foreach name=exportformatqueue from=$oExportformatCron_arr item=oExportformatCron}
                                         <tr class="tab_bg{$smarty.foreach.exportformatqueue.iteration%2}">
                                             <td class="tleft">
-                                                <input name="kCron[]" type="checkbox" value="{$oExportformatCron->kCron}">
+                                                <input name="kCron[]" type="checkbox" value="{$oExportformatCron->kCron}" id="kCron-{$oExportformatCron->kCron}" />
                                             </td>
-                                            <td class="tleft">{$oExportformatCron->cName}</td>
-                                            <td class="tleft">{$oExportformatCron->Sprache->cNameDeutsch}
-                                                / {$oExportformatCron->Waehrung->cName}
-                                                / {$oExportformatCron->Kundengruppe->cName}</td>
+                                            <td class="tleft"><label for="kCron-{$oExportformatCron->kCron}">{$oExportformatCron->cName}</label></td>
+                                            <td class="tleft">{$oExportformatCron->Sprache->cNameDeutsch}/{$oExportformatCron->Waehrung->cName}/{$oExportformatCron->Kundengruppe->cName}</td>
                                             <td class="tcenter">{$oExportformatCron->dStart_de}</td>
                                             <td class="tcenter">{$oExportformatCron->cAlleXStdToDays}</td>
                                             <td class="tcenter">{if isset($oExportformatCron->oJobQueue->nLimitN) && $oExportformatCron->oJobQueue->nLimitN > 0}{$oExportformatCron->oJobQueue->nLimitN}{else}0{/if}
                                                 von {if $oExportformatCron->nSpecial == "1"}{$oExportformatCron->nAnzahlArtikelYatego->nAnzahl}{else}{$oExportformatCron->nAnzahlArtikel->nAnzahl}{/if}</td>
-                                            <td class="tcenter">{$oExportformatCron->dLetzterStart_de}</td>
-                                            <td class="tcenter">{$oExportformatCron->dNaechsterStart_de}</td>
+                                            <td class="tcenter">{if $oExportformatCron->dLetzterStart_de === '00.00.0000 00:00'}-{else}{$oExportformatCron->dLetzterStart_de}{/if}</td>
+                                            <td class="tcenter">{if $oExportformatCron->dNaechsterStart_de === null}sofort{else}{$oExportformatCron->dNaechsterStart_de}{/if}</td>
                                             <td class="tcenter">
                                                 <a href="exportformat_queue.php?action=editieren&kCron={$oExportformatCron->kCron}&token={$smarty.session.jtl_token}" class="btn btn-default"><i class="fa fa-edit"></i></a>
                                             </td>
@@ -83,25 +81,19 @@
             </form>
         </div>
         <div id="fertig" class="tab-pane fade{if isset($cTab) && $cTab === 'fertig'} active in{/if}">
-            <form method="post" action="exportformat_queue.php">
-                {$jtl_token}
-                <div class="block tcenter">
-                    <div class="input-group p25">
-                        <span class="input-group-addon">
-                            <label for="nStunden">{#exportformatLastXHourPre#}</label>
-                        </span>
-                        <span class="input-group-btn">
-                            <input size="2" style="width: 100px;" class="form-control" id="nStunden" name="nStunden" type="text" value="{$nStunden}" />
-                        </span>
-                        <span class="input-group-addon">
-                            {#exportformatLastXHourPost#}
-                        </span>
-                        <span class="input-group-btn">
-                            <button name="action[fertiggestellt]" type="submit" value="1" class="btn btn-info"><i class="fa fa-search"></i> {#exportformatShow#}</button>
-                        </span>
+            <div class="block well well-sm">
+                <form method="post" action="exportformat_queue.php" class="form-inline">
+                    {$jtl_token}
+                    <div class="form-group">
+                        <label for="nStunden">{#exportformatLastXHourPre#}</label>
+                        <input size="2" class="form-control" id="nStunden" name="nStunden" type="text" value="{$nStunden}" />
+                        <label>{#exportformatLastXHourPost#}</label>
                     </div>
-                </div>
-            </form>
+                    <div class="btn-group">
+                        <button name="action[fertiggestellt]" type="submit" value="1" class="btn btn-info"><i class="fa fa-search"></i> {#exportformatShow#}</button>
+                    </div>
+                </form>
+            </div>
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h3 class="panel-title">{#exportformatTodaysWork#}</h3>

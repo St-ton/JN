@@ -82,13 +82,13 @@
         <p><strong>Wir w&uuml;nschen Ihnen viel Erfolg und Spa&szlig; mit Ihrem neuen JTL Shop!</strong></p>
     </div>
 
-    <div class="row">
+    <div class="row hidden-print no-print">
         <div class="col-xs-12 col-md-6">
             <input type="button" value="Diese Seite drucken" class="btn btn-default pull-left" onClick="javascript:window.print()">
         </div>
-        <div class="btn-group col-xs-12 col-md-6 pull-right" role="group">
-            <a href="{$URL_SHOP}/" class="btn btn-default"><i class="fa fa-share"></i> Hier gelangen Sie zu Ihrem Shop</a>
-            <a href="{$URL_SHOP}admin/" class="btn btn-primary"><i class="fa fa-share"></i> Hier gelangen Sie zu Ihrem Shop-Backend</a>
+        <div class="btn-group col-xs-12 col-md-6 pull-right" style="height:80px;" role="group">
+            <a href="{$URL_SHOP}" class="btn btn-default" style="text-align:left;width:330px;position:absolute;right:15px"><i class="fa fa-share"></i> Hier gelangen Sie zu Ihrem Shop</a><br>
+            <a href="{$URL_SHOP}admin/" class="btn btn-primary" style="text-align:left;width:330px;position:absolute;top:40px;right:15px"><i class="fa fa-share"></i> Hier gelangen Sie zu Ihrem Shop-Backend</a>
         </div>
     </div>
 {/if}

@@ -4,17 +4,17 @@
 {if !empty($fehler)}
     <div class="alert alert-danger">{$fehler}</div>
 {/if}
-{include file="snippets/extension.tpl"}
+{include file='snippets/extension.tpl'}
 
-{if isset($cNewsErr) && $cNewsErr !== ""}
-    <div class="alert alert-danger">{lang key="newsRestricted" section="news"}</div>
+{if !empty($cNewsErr)}
+    <div class="alert alert-danger">{lang key='newsRestricted' section='news'}</div>
 {else}
     <div itemscope itemtype="https://schema.org/Article">
         <h1 itemprop="headline">
             {$oNewsArchiv->cBetreff}
         </h1>
         <p class="text-muted">
-            {if empty($oNewsArchiv->dGueltigVon)}{assign var="dDate" value=$oNewsArchiv->dErstellt}{else}{assign var="dDate" value=$oNewsArchiv->dGueltigVon}{/if}
+            {if empty($oNewsArchiv->dGueltigVon)}{assign var=dDate value=$oNewsArchiv->dErstellt}{else}{assign var=dDate value=$oNewsArchiv->dGueltigVon}{/if}
             {if !empty($Einstellungen.global.global_shopname)}
                 <span itemprop="publisher" class="hidden">{$Einstellungen.global.global_shopname}</span>
             {/if}
@@ -41,6 +41,13 @@
 
         {if isset($Einstellungen.news.news_kommentare_nutzen) && $Einstellungen.news.news_kommentare_nutzen === 'Y'}
             {if $oNewsKommentar_arr|@count > 0}
+                {if !empty($oNewsArchiv->cSeo)}
+                    {assign var=articleURL value=$ShopURL|cat:'/'|cat:$oNewsArchiv->cSeo}
+                    {assign var=cParam_arr value=[]}
+                {else}
+                    {assign var=articleURL value='news.php'}
+                    {assign var=cParam_arr value=['kNews'=>$oNewsArchiv->kNews,'n'=>$oNewsArchiv->kNews]}
+                {/if}
                 <hr>
                 <div class="top10" id="comments">
                     <h3 class="section-heading">{lang key="newsComments" section="news"}<span itemprop="commentCount" class="hidden">{$oNewsKommentar_arr|count}</span></h3>
@@ -64,11 +71,7 @@
                         </blockquote>
                     {/foreach}
                 </div>
-
-                {include file='snippets/pagination.tpl'
-                    oPagination=$oPagiComments
-                    cThisUrl='news.php'
-                    cParam_arr=['kNews'=>$oNewsArchiv->kNews,'n'=>$oNewsArchiv->kNews]}
+                {include file='snippets/pagination.tpl' oPagination=$oPagiComments cThisUrl=$articleURL cParam_arr=$cParam_arr}
             {/if}
 
             {if ($Einstellungen.news.news_kommentare_eingeloggt === 'Y' && !empty($smarty.session.Kunde->kKunde)) || $Einstellungen.news.news_kommentare_eingeloggt !== 'Y'}
@@ -87,7 +90,7 @@
 
                                         <fieldset>
                                             {if $Einstellungen.news.news_kommentare_eingeloggt === 'N'}
-                                                {if empty($smarty.session.Kunde->kKunde) || $smarty.session.Kunde->kKunde == 0}
+                                                {if empty($smarty.session.Kunde->kKunde)}
                                                     <div class="row">
                                                         <div class="col-xs-12 col-md-6">
                                                             <div id="commentName" class="form-group float-label-control{if isset($nPlausiValue_arr.cName)} has-error{/if} required">
@@ -103,7 +106,7 @@
                                                         <div class="col-xs-12 col-md-6">
                                                             <div id="commentEmail" class="form-group float-label-control{if isset($nPlausiValue_arr.cEmail)} has-error{/if} required">
                                                                 <label class="control-label commentForm" for="comment-email">{lang key="newsEmail" section="news"}</label>
-                                                                <input class="form-control" required id="comment-email" name="cEmail" type="text" value="{if !empty($cPostVar_arr.cEmail)}{$cPostVar_arr.cEmail}{/if}" />
+                                                                <input class="form-control" required id="comment-email" name="cEmail" type="email" value="{if !empty($cPostVar_arr.cEmail)}{$cPostVar_arr.cEmail}{/if}" />
                                                                 {if isset($nPlausiValue_arr.cEmail)}
                                                                     <div class="alert alert-danger">
                                                                         {lang key="fillOut" section="global"}

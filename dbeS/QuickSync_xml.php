@@ -102,7 +102,7 @@ function bearbeiteInsert($xml)
                 }
             }
         }
-        $clearTags = array();
+        $clearTags = [];
         foreach ($oArtikel_arr as $oArtikel) {
             //any new orders since last wawi-sync? see https://gitlab.jtl-software.de/jtlshop/jtl-shop/issues/304
             if (isset($oArtikel->fLagerbestand) && $oArtikel->fLagerbestand > 0) {
@@ -125,12 +125,21 @@ function bearbeiteInsert($xml)
             if ($oArtikel->fLagerbestand < 0) {
                 $oArtikel->fLagerbestand = 0;
             }
-            Shop::DB()->query("UPDATE tartikel SET fLagerbestand = " . $oArtikel->fLagerbestand . " WHERE kArtikel = " . (int)$oArtikel->kArtikel, 4);
-
-            // Clear Artikel Cache
-            $clearTags[] = CACHING_GROUP_ARTICLE . '_' . (int)$oArtikel->kArtikel;
+            $upd                        = new stdClass();
+            $upd->fLagerbestand         = $oArtikel->fLagerbestand;
+            $upd->dLetzteAktualisierung = 'now()';
+            Shop::DB()->update('tartikel', 'kArtikel', (int)$oArtikel->kArtikel, $upd);
+            executeHook(HOOK_QUICKSYNC_XML_BEARBEITEINSERT, ['oArtikel' => $oArtikel]);
+            // clear object cache for this article and its parent if there is any
+            $parentArticle = Shop::DB()->select('tartikel', 'kArtikel', $oArtikel->kArtikel, null, null, null, null, false, 'kVaterArtikel');
+            if (!empty($parentArticle->kVaterArtikel)) {
+                $clearTags[] = (int)$parentArticle->kVaterArtikel;
+            }
+            $clearTags[] = (int)$oArtikel->kArtikel;
             versendeVerfuegbarkeitsbenachrichtigung($oArtikel);
         }
+        $clearTags = array_unique($clearTags);
+        array_walk($clearTags, function(&$i) { $i = CACHING_GROUP_ARTICLE . '_' . $i; });
         Shop::Cache()->flushTags($clearTags);
     }
 }

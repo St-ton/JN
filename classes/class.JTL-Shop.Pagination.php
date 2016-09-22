@@ -31,6 +31,7 @@ class Pagination
     private $cOrderSQL               = '';
     private $oItem_arr               = null;
     private $oPageItem_arr           = null;
+    private $nDefaultItemsPerPage    = 0;
 
     /**
      * Pagination constructor.
@@ -41,9 +42,6 @@ class Pagination
         if (is_string($cId)) {
             $this->cId = $cId;
         }
-        
-        $this->loadParameters();
-        $this->storeParameters();
     }
 
     /**
@@ -53,8 +51,6 @@ class Pagination
     public function setId($cId)
     {
         $this->cId = $cId;
-        $this->loadParameters();
-        $this->storeParameters();
 
         return $this;
     }
@@ -116,6 +112,17 @@ class Pagination
     }
 
     /**
+     * @param int $n
+     * @return $this
+     */
+    public function setDefaultItemsPerPage($n)
+    {
+        $this->nDefaultItemsPerPage = (int)$n;
+
+        return $this;
+    }
+
+    /**
      * Load parameters from GET or SESSION store
      * @return $this
      */
@@ -125,9 +132,10 @@ class Pagination
             ? (int)$_GET[$this->cId . '_nItemsPerPage']
             : (isset($_SESSION[$this->cId . '_nItemsPerPage'])
                 ? (int)$_SESSION[$this->cId . '_nItemsPerPage']
-                : $this->nItemsPerPageOption_arr[0]
-            );
-
+                : ($this->nDefaultItemsPerPage > 0
+                    ? $this->nDefaultItemsPerPage
+                    : $this->nItemsPerPageOption_arr[0]
+            ));
         $this->nSortBy = isset($_GET[$this->cId . '_nSortBy'])
             ? (int)$_GET[$this->cId . '_nSortBy']
             : (isset($_SESSION[$this->cId . '_nSortBy'])
@@ -158,6 +166,8 @@ class Pagination
      */
     public function assemble()
     {
+        $this->loadParameters()
+             ->storeParameters();
         if ($this->nItemsPerPage == -1) {
             $this->nPageCount      = 1;
             $this->nPage           = 0;
@@ -168,7 +178,7 @@ class Pagination
             $this->nFirstPageItem  = 0;
             $this->nPageItemCount  = $this->nItemCount;
         } else {
-            $this->nPageCount      = (int)ceil($this->nItemCount / $this->nItemsPerPage);
+            $this->nPageCount      = $this->nItemsPerPage > 0 ? (int)ceil($this->nItemCount / $this->nItemsPerPage) : 1;
             $this->nPage           = max(0, min($this->nPageCount - 1, $this->nPage));
             $this->nPrevPage       = max(0, min($this->nPageCount - 1, $this->nPage - 1));
             $this->nNextPage       = max(0, min($this->nPageCount - 1, $this->nPage + 1));

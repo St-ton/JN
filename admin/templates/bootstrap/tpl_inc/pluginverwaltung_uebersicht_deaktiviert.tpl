@@ -48,7 +48,7 @@
                                         </span>
                                     </h4>
                                 </td>
-                                <td class="tcenter plugin-version">{$PluginInstalliert->dVersion}{if isset($PluginInstalliert->dUpdate) && $PluginInstalliert->dUpdate|strlen > 0} <span class="label labe-success update-info">{$PluginInstalliert->dUpdate}</span>{/if}</td>
+                                <td class="tcenter plugin-version">{$PluginInstalliert->dVersion}{if isset($PluginInstalliert->dUpdate) && $PluginInstalliert->dUpdate|strlen > 0} <span class="label label-success update-info">{$PluginInstalliert->dUpdate}</span>{/if}</td>
                                 <td class="tcenter plugin-install-date">{$PluginInstalliert->dInstalliert_DE}</td>
                                 <td class="tcenter plugin-folder">{$PluginInstalliert->cVerzeichnis}</td>
                                 <td class="tcenter plugin-lang-vars">

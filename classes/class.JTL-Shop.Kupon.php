@@ -809,8 +809,9 @@ class Kupon
         $upperCaseString  = $upperCase ? 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' : null;
         $numberHashString = $numberHash ? '0123456789' : null;
 
-        $cCode = '';
-        while (empty($cCode) && Shop::DB()->select('tkupon', 'cCode', $cCode)) {
+        $cCode      = '';
+        $allCoupons = Shop::DB()->query("SELECT * FROM tkupon", 2);
+        while (empty($cCode) || ((count($allCoupons) == 0) ? empty($cCode) : Shop::DB()->select('tkupon', 'cCode', $cCode))) {
             $cCode = $prefix . substr(str_shuffle(str_repeat($lowerCaseString . $upperCaseString . $numberHashString, $hashLength)), 0, $hashLength) . $suffix;
         }
 

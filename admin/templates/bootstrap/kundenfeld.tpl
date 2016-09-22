@@ -240,9 +240,9 @@
                             {foreach name=kundenfeld from=$oKundenfeld_arr item=oKundenfeld}
                                 <tr class="tab_bg{$smarty.foreach.kundenfeld.iteration%2}">
                                     <td class="check">
-                                        <input name="kKundenfeld[]" type="checkbox" value="{$oKundenfeld->kKundenfeld}" />
+                                        <input name="kKundenfeld[]" type="checkbox" value="{$oKundenfeld->kKundenfeld}" id="check-{$oKundenfeld->kKundenfeld}" />
                                     </td>
-                                    <td class="TD2">{$oKundenfeld->cName}{if $oKundenfeld->nPflicht == 1} *{/if}</td>
+                                    <td class="TD2"><label for="check-{$oKundenfeld->kKundenfeld}">{$oKundenfeld->cName}{if $oKundenfeld->nPflicht == 1} *{/if}</label></td>
                                     <td class="TD3">{$oKundenfeld->cWawi}</td>
                                     <td class="TD4">{$oKundenfeld->cTyp}</td>
                                     <td class="TD5">

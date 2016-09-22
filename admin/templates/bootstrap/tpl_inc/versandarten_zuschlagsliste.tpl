@@ -26,14 +26,16 @@
                 <tr>
                     <td width="35%">{#plz#}</td>
                     <td>
-                        {foreach name=plz from=$zuschlag->zuschlagplz item=plz}
-                            <p>
-                                {if $plz->cPLZ}{$plz->cPLZ}{elseif $plz->cPLZAb}{$plz->cPLZAb} - {$plz->cPLZBis}{/if}
-                                {if $plz->cPLZ || $plz->cPLZAb}
-                                    <a href="versandarten.php?delplz={$plz->kVersandzuschlagPlz}&kVersandart={$Versandart->kVersandart}&cISO={$Land->cISO}&token={$smarty.session.jtl_token}" class="button plain remove">{#delete#}</a>
-                                {/if}
-                            </p>
-                        {/foreach}
+                        <div class="row">
+                            {foreach name=plz from=$zuschlag->zuschlagplz item=plz}
+                                <p class="col-xs-6 col-md-4">
+                                    {if $plz->cPLZ}{$plz->cPLZ}{elseif $plz->cPLZAb}{$plz->cPLZAb} - {$plz->cPLZBis}{/if}
+                                    {if $plz->cPLZ || $plz->cPLZAb}
+                                        <a href="versandarten.php?delplz={$plz->kVersandzuschlagPlz}&kVersandart={$Versandart->kVersandart}&cISO={$Land->cISO}&token={$smarty.session.jtl_token}" class="button plain remove">{#delete#}</a>
+                                    {/if}
+                                </p>
+                            {/foreach}
+                        </div>
                     </td>
                 </tr>
                 <tr>
@@ -89,7 +91,7 @@
             {/if}
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">{#createNewList#}</h3>
+                    <h3 class="panel-title">{if isset($oVersandzuschlag->kVersandzuschlag) && $oVersandzuschlag->kVersandzuschlag > 0}{#additionalFeeEdit#}{else}{#createNewList#}{/if}</h3>
                 </div>
                 <div class="panel-body">
                     <div class="input-group">

@@ -500,6 +500,7 @@ function sendeMail($ModulId, $Object, $mail = null)
     $mail->smtp_user     = $Einstellungen['emails']['email_smtp_user'];
     $mail->smtp_pass     = $Einstellungen['emails']['email_smtp_pass'];
     $mail->SMTPSecure    = $Einstellungen['emails']['email_smtp_verschluesselung'];
+    $mail->SMTPAutoTLS   = (empty($mail->SMTPSecure)) ? false : true;
 
     $mailSmarty->assign('absender_name', $absender_name)
                ->assign('absender_mail', $absender_mail);
@@ -647,6 +648,11 @@ function verschickeMail($mail)
                 $phpmailer->Username      = $mail->smtp_user;
                 $phpmailer->Password      = $mail->smtp_pass;
                 $phpmailer->SMTPSecure    = $mail->SMTPSecure;
+                $phpmailer->SMTPAutoTLS   = (isset($mail->SMTPAutoTLS))
+                    ? $mail->SMTPAutoTLS :
+                    ((empty($mail->SMTPSecure))
+                        ? false
+                        : true);
                 break;
         }
         if ($mail->bodyHtml) {

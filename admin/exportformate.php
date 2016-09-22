@@ -68,12 +68,7 @@ if (isset($_POST['neu_export']) && (int)$_POST['neu_export'] === 1 && validateTo
         }
 
         Shop::DB()->delete('texportformateinstellungen', 'kExportformat', $kExportformat);
-        $Conf        = Shop::DB()->query("
-            SELECT * 
-              FROM teinstellungenconf 
-              WHERE kEinstellungenSektion = " . CONF_EXPORTFORMATE . " 
-              ORDER BY nSort", 2
-        );
+        $Conf        = Shop::DB()->selectAll('teinstellungenconf', 'kEinstellungenSektion', CONF_EXPORTFORMATE, '*', 'nSort');
         $configCount = count($Conf);
         for ($i = 0; $i < $configCount; $i++) {
             $aktWert                = new stdClass();
@@ -111,9 +106,9 @@ if (isset($_POST['neu_export']) && (int)$_POST['neu_export'] === 1 && validateTo
         }
         $step = ($error) ? $step : 'uebersicht';
     } else {
-        $_POST['cContent']   = str_replace("<tab>", "\t", $_POST['cContent']);
-        $_POST['cKopfzeile'] = str_replace("<tab>", "\t", $_POST['cKopfzeile']);
-        $_POST['cFusszeile'] = str_replace("<tab>", "\t", $_POST['cFusszeile']);
+        $_POST['cContent']   = str_replace('<tab>', "\t", $_POST['cContent']);
+        $_POST['cKopfzeile'] = str_replace('<tab>', "\t", $_POST['cKopfzeile']);
+        $_POST['cFusszeile'] = str_replace('<tab>', "\t", $_POST['cFusszeile']);
         $smarty->assign('cPlausiValue_arr', $cPlausiValue_arr)
                ->assign('cPostVar_arr', StringHandler::filterXSS($_POST));
         $step   = 'neuer Export';
@@ -230,19 +225,14 @@ if ($step === 'neuer Export') {
         $smarty->assign('Exportformat', $exportformat);
     }
 
-    $Conf      = Shop::DB()->query("SELECT * FROM teinstellungenconf WHERE kEinstellungenSektion = " . CONF_EXPORTFORMATE . " ORDER BY nSort", 2);
+    $Conf      = Shop::DB()->selectAll('teinstellungenconf', 'kEinstellungenSektion', CONF_EXPORTFORMATE, '*', 'nSort');
     $confCount = count($Conf);
     for ($i = 0; $i < $confCount; $i++) {
         if ($Conf[$i]->cInputTyp === 'selectbox') {
-            $Conf[$i]->ConfWerte = Shop::DB()->query("SELECT * FROM teinstellungenconfwerte WHERE kEinstellungenConf = " . (int)$Conf[$i]->kEinstellungenConf . " ORDER BY nSort", 2);
+            $Conf[$i]->ConfWerte = Shop::DB()->selectAll('teinstellungenconfwerte', 'kEinstellungenConf', (int)$Conf[$i]->kEinstellungenConf, '*', 'nSort');
         }
         if (isset($exportformat->kExportformat)) {
-            $setValue = Shop::DB()->query("
-                SELECT cWert
-                    FROM texportformateinstellungen
-                    WHERE kExportformat = " . (int)$exportformat->kExportformat . "
-                        AND cName = '" . $Conf[$i]->cWertName . "'", 1
-            );
+            $setValue = Shop::DB()->select('texportformateinstellungen', 'kExportformat', (int)$exportformat->kExportformat, 'cName', $Conf[$i]->cWertName);
             $Conf[$i]->gesetzterWert = (isset($setValue->cWert)) ? $setValue->cWert : null;
         }
     }

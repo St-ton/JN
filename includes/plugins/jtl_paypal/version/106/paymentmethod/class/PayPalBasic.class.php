@@ -570,6 +570,9 @@ class PayPalBasic extends PaymentMethod
      */
     public function validateAdditional()
     {
-        return $this->getCache('token') !== null;
+        if ($this->duringCheckout() === true) {
+            return $this->getCache('token') !== null;
+        }
+        return true;
     }
 }

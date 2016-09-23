@@ -22,6 +22,12 @@
 
         $('input[name="nLinkart"]').change(function () {
             var lnk = $('input[name="nLinkart"]:checked').val();
+            if (lnk == '1') {
+                $('#option_isActive').slideDown("slow");
+            } else {
+                $('#option_isActive').slideUp("slow");
+                $('#option_isActive select').val(1);
+            }
         }).trigger('change');
 
         $('#content_template_type ul li a').click(function () {
@@ -122,7 +128,7 @@
                         <select name="cKundengruppen[]" class="form-control{if isset($xPlausiVar_arr.cKundengruppen)} fieldfillout{/if}" multiple="multiple" size="6" id="cKundengruppen">
                             <option value="-1"{if isset($Link->kLink) && $Link->kLink > 0 && isset($gesetzteKundengruppen[0]) && $gesetzteKundengruppen[0]} selected{elseif isset($xPostVar_arr.cKundengruppen)}
                                 {foreach name=postkndgrp from=$xPostVar_arr.cKundengruppen item=cPostKndGrp}
-                                    {if $cPostKndGrp|count_characters > 0 && $cPostKndGrp == "-1"}selected{/if}
+                                    {if $cPostKndGrp|strlen > 0 && $cPostKndGrp == "-1"}selected{/if}
                                 {/foreach}
                                     {elseif !isset($Link->kLink) || !$Link->kLink}selected{/if}>{#all#}</option>
 
@@ -138,6 +144,15 @@
                             {/foreach}
                         </select>
                         <span class="input-group-addon">{getHelpDesc cDesc=#multipleChoice#}</span>
+                    </div>
+                    <div class="input-group" id="option_isActive">
+                        <span class="input-group-addon"><label for="bIsActive">{#active#}</label></span>
+                        <div class="input-group-wrap">
+                            <select class="form-control" type="selectbox" name="bIsActive" id="bIsActive">
+                                <option value="1" {if (isset($Link->bIsActive) && $Link->bIsActive === '1') || (isset($xPostVar_arr.bIsActive) && $xPostVar_arr.bIsActive === '1')}selected{/if}>Aktiviert</option>
+                                <option value="0" {if (isset($Link->bIsActive) && $Link->bIsActive === '0') || (isset($xPostVar_arr.bIsActive) && $xPostVar_arr.bIsActive === '0')}selected{/if}>Deaktiviert</option>
+                            </select>
+                        </div>
                     </div>
                     {if !isset($Link->nLinkart) || $Link->nLinkart != LINKTYP_LOGIN}
                     <div class="input-group">

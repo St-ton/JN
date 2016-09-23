@@ -90,7 +90,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
         $cHinweis .= saveAdminSectionSettings(CONF_AUSWAHLASSISTENT, $_POST);
     }
     if ($step === 'uebersicht') {
-        $StdSprache = Shop::DB()->query("SELECT kSprache FROM tsprache WHERE cShopStandard = 'Y'", 1);
+        $StdSprache = Shop::DB()->select('tsprache', 'cShopStandard', 'Y');
         $cSQLSelect = 'tmerkmal.*';
         $cSQLJoin   = '';
         if ($StdSprache->kSprache != $_SESSION['kSprache']) {

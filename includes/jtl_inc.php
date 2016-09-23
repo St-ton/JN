@@ -18,6 +18,7 @@ function gibRedirect($cRedirect)
 
     switch ($cRedirect) {
         case R_LOGIN_WUNSCHLISTE:
+            $linkHelper                  = LinkHelper::getInstance();
             $oRedirect->oParameter_arr   = array();
             $oTMP                        = new stdClass();
             $oTMP->Name                  = 'a';
@@ -32,7 +33,7 @@ function gibRedirect($cRedirect)
             $oTMP->Wert                  = 1;
             $oRedirect->oParameter_arr[] = $oTMP;
             $oRedirect->nRedirect        = R_LOGIN_WUNSCHLISTE;
-            $oRedirect->cURL             = 'index.php?a=' . verifyGPCDataInteger('a') . '&n=' . verifyGPCDataInteger('n') . '&Wunschliste=1';
+            $oRedirect->cURL             = $linkHelper->getStaticRoute('wunschliste.php', false);
             $oRedirect->cName            = Shop::Lang()->get('wishlist', 'redirect');
             break;
         case R_LOGIN_BEWERTUNG:

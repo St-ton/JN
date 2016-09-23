@@ -7,7 +7,6 @@ require_once dirname(__FILE__) . '/includes/admininclude.php';
 
 $oAccount->permission('MODULE_LIVESEARCH_VIEW', true, true);
 
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'blaetternavi.php';
 require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
 
 setzeSprache();
@@ -15,8 +14,6 @@ setzeSprache();
 $hinweis           = '';
 $fehler            = '';
 $settingsIDs       = array(423, 425, 422, 437, 438);
-$nAnzahlProSeite   = 15;
-$oBlaetterNaviConf = baueBlaetterNaviGetterSetter(3, $nAnzahlProSeite);
 
 // Tabs
 if (strlen(verifyGPDataString('tab')) > 0) {
@@ -91,7 +88,7 @@ if (isset($_POST['livesuche']) && intval($_POST['livesuche']) === 1) { //Formula
             "SELECT *
                 FROM tsuchanfrage
                 WHERE kSprache = " . (int)$_SESSION['kSprache'] . "
-                ORDER BY nAnzahlGesuche DESC" . $oBlaetterNaviConf->cSQL1, 2
+                ORDER BY nAnzahlGesuche DESC", 2
         );
         // Wurde ein Mapping durchgefuehrt
         $nMappingVorhanden = 0;
@@ -193,7 +190,7 @@ if (isset($_POST['livesuche']) && intval($_POST['livesuche']) === 1) { //Formula
         }
 
         $hinweis .= 'Die Suchanfragen wurden erfolgreich aktualisiert.<br />';
-    } elseif (isset($_POST['submitMapping']) && verifyGPCDataInteger('nMapping') === 1) { // Auswahl mappen
+    } elseif (isset($_POST['submitMapping'])) { // Auswahl mappen
         $cMapping = verifyGPDataString('cMapping');
 
         if (strlen($cMapping) > 0) {
@@ -281,7 +278,7 @@ if (isset($_POST['livesuche']) && intval($_POST['livesuche']) === 1) { //Formula
             SELECT *
                 FROM tsuchanfrageerfolglos
                 WHERE kSprache = " . (int)$_SESSION['kSprache'] . "
-                ORDER BY nAnzahlGesuche DESC" . $oBlaetterNaviConf->cSQL2, 2
+                ORDER BY nAnzahlGesuche DESC", 2
         );
         if (count($Suchanfragenerfolglos) > 0) {
             foreach ($Suchanfragenerfolglos as $Suchanfrageerfolglos) {
@@ -392,9 +389,16 @@ $nAnzahlSuchanfragenMapping = Shop::DB()->query(
         WHERE kSprache = " . (int)$_SESSION['kSprache'], 1
 );
 
-$oBlaetterNaviSuchanfragen         = baueBlaetterNavi($oBlaetterNaviConf->nAktuelleSeite1, $nAnzahlSuchanfragen->nAnzahl, $nAnzahlProSeite);
-$oBlaetterNaviSuchanfrageerfolglos = baueBlaetterNavi($oBlaetterNaviConf->nAktuelleSeite2, $nAnzahlSuchanfrageerfolglos->nAnzahl, $nAnzahlProSeite);
-$oBlaetterNaviSuchanfragenMapping  = baueBlaetterNavi($oBlaetterNaviConf->nAktuelleSeite3, $nAnzahlSuchanfragenMapping->nAnzahl, $nAnzahlProSeite);
+// Paginationen
+$oPagiSuchanfragen = (new Pagination('suchanfragen'))
+    ->setItemCount($nAnzahlSuchanfragen->nAnzahl)
+    ->assemble();
+$oPagiErfolglos = (new Pagination('erfolglos'))
+    ->setItemCount($nAnzahlSuchanfrageerfolglos->nAnzahl)
+    ->assemble();
+$oPagiMapping = (new Pagination('mapping'))
+    ->setItemCount($nAnzahlSuchanfragenMapping->nAnzahl)
+    ->assemble();
 
 $Suchanfragen = Shop::DB()->query(
     "SELECT tsuchanfrage.*, tseo.cSeo AS tcSeo
@@ -405,7 +409,8 @@ $Suchanfragen = Shop::DB()->query(
         WHERE tsuchanfrage.kSprache = " . (int)$_SESSION['kSprache'] . "
             " . $cLivesucheSQL->cWhere . "
         GROUP BY tsuchanfrage.kSuchanfrage
-        ORDER BY " . $cLivesucheSQL->cOrder . $oBlaetterNaviConf->cSQL1, 2
+        ORDER BY " . $cLivesucheSQL->cOrder . "
+        LIMIT " . $oPagiSuchanfragen->getLimitSQL(), 2
 );
 
 if (isset($Suchanfragen->tcSeo) && strlen($Suchanfragen->tcSeo) > 0) {
@@ -417,7 +422,8 @@ $Suchanfragenerfolglos = Shop::DB()->query("
     SELECT *
         FROM tsuchanfrageerfolglos
         WHERE kSprache = " . (int)$_SESSION['kSprache'] . "
-        ORDER BY nAnzahlGesuche DESC" . $oBlaetterNaviConf->cSQL2, 2
+        ORDER BY nAnzahlGesuche DESC
+        LIMIT " . $oPagiErfolglos->getLimitSQL(), 2
 );
 $Suchanfragenblacklist = Shop::DB()->query("
     SELECT *
@@ -428,7 +434,8 @@ $Suchanfragenblacklist = Shop::DB()->query("
 $Suchanfragenmapping = Shop::DB()->query("
     SELECT *
         FROM tsuchanfragemapping
-         WHERE kSprache = " . (int)$_SESSION['kSprache'] . $oBlaetterNaviConf->cSQL3, 2
+        WHERE kSprache = " . (int)$_SESSION['kSprache'] . "
+        LIMIT " . $oPagiMapping->getLimitSQL(), 2
 );
 
 // Config holen
@@ -455,15 +462,15 @@ for ($i = 0; $i < $configCount; $i++) {
 
     $oConfig_arr[$i]->gesetzterWert = (isset($oSetValue->cWert)) ? $oSetValue->cWert : null;
 }
-$smarty->assign('oBlaetterNaviSuchanfragen', $oBlaetterNaviSuchanfragen)
-       ->assign('oBlaetterNaviSuchanfrageerfolglos', $oBlaetterNaviSuchanfrageerfolglos)
-       ->assign('oBlaetterNaviSuchanfragenMapping', $oBlaetterNaviSuchanfragenMapping)
-       ->assign('oConfig_arr', $oConfig_arr)
-       ->assign('Sprachen', $Sprachen)
-       ->assign('Suchanfragen', $Suchanfragen)
-       ->assign('Suchanfragenerfolglos', $Suchanfragenerfolglos)
-       ->assign('Suchanfragenblacklist', $Suchanfragenblacklist)
-       ->assign('Suchanfragenmapping', $Suchanfragenmapping)
-       ->assign('hinweis', $hinweis)
-       ->assign('fehler', $fehler)
-       ->display('livesuche.tpl');
+$smarty->assign('oConfig_arr', $oConfig_arr)
+    ->assign('Sprachen', $Sprachen)
+    ->assign('Suchanfragen', $Suchanfragen)
+    ->assign('Suchanfragenerfolglos', $Suchanfragenerfolglos)
+    ->assign('Suchanfragenblacklist', $Suchanfragenblacklist)
+    ->assign('Suchanfragenmapping', $Suchanfragenmapping)
+    ->assign('oPagiSuchanfragen', $oPagiSuchanfragen)
+    ->assign('oPagiErfolglos', $oPagiErfolglos)
+    ->assign('oPagiMapping', $oPagiMapping)
+    ->assign('hinweis', $hinweis)
+    ->assign('fehler', $fehler)
+    ->display('livesuche.tpl');

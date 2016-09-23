@@ -8,14 +8,11 @@ require_once dirname(__FILE__) . '/includes/admininclude.php';
 $oAccount->permission('MODULE_GIFT_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'gratisgeschenk_inc.php';
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'blaetternavi.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 
 $cHinweis          = '';
 $cfehler           = '';
 $settingsIDs       = array(1143, 1144, 1145, 1146);
-$nAnzahlProSeite   = 15;
-$oBlaetterNaviConf = baueBlaetterNaviGetterSetter(3, $nAnzahlProSeite);
 // Tabs
 if (strlen(verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', verifyGPDataString('tab'));
@@ -33,33 +30,31 @@ $oConfig_arr = Shop::DB()->query(
 );
 $configCount = count($oConfig_arr);
 for ($i = 0; $i < $configCount; $i++) {
-    $oConfig_arr[$i]->ConfWerte = Shop::DB()->query(
-        "SELECT *
-            FROM teinstellungenconfwerte
-            WHERE kEinstellungenConf = " . (int)$oConfig_arr[$i]->kEinstellungenConf . "
-            ORDER BY nSort", 2
-    );
-
-    $oSetValue = Shop::DB()->query(
-        "SELECT cWert
-            FROM teinstellungen
-            WHERE kEinstellungenSektion = " . (int)$oConfig_arr[$i]->kEinstellungenSektion . "
-                AND cName = '" . $oConfig_arr[$i]->cWertName . "'", 1
-    );
-
+    $oConfig_arr[$i]->ConfWerte = Shop::DB()->selectAll('teinstellungenconfwerte', 'kEinstellungenConf', (int)$oConfig_arr[$i]->kEinstellungenConf, '*', 'nSort');
+    $oSetValue = Shop::DB()->select('teinstellungen', 'kEinstellungenSektion', (int)$oConfig_arr[$i]->kEinstellungenSektion, 'cName', $oConfig_arr[$i]->cWertName);
     $oConfig_arr[$i]->gesetzterWert = (isset($oSetValue->cWert)) ? $oSetValue->cWert : null;
 }
 
-$oBlaetterNaviAktiv      = baueBlaetterNavi($oBlaetterNaviConf->nAktuelleSeite1, gibAnzahlAktiverGeschenke(), $nAnzahlProSeite);
-$oBlaetterNaviHaeufig    = baueBlaetterNavi($oBlaetterNaviConf->nAktuelleSeite2, gibAnzahlHaeufigGekaufteGeschenke(), $nAnzahlProSeite);
-$oBlaetterNaviLetzten100 = baueBlaetterNavi($oBlaetterNaviConf->nAktuelleSeite3, gibAnzahlLetzten100Geschenke(), $nAnzahlProSeite);
+$oPagiAktiv     = (new Pagination('aktiv'))
+    ->setItemCount(gibAnzahlAktiverGeschenke())
+    ->assemble();
+$oPagiHaeufig   = (new Pagination('haeufig'))
+    ->setItemCount(gibAnzahlHaeufigGekaufteGeschenke())
+    ->assemble();
+$oPagiLetzte100 = (new Pagination('letzte100'))
+    ->setItemCount(gibAnzahlLetzten100Geschenke())
+    ->assemble();
 
-$smarty->assign('oBlaetterNaviAktiv', $oBlaetterNaviAktiv)
-       ->assign('oBlaetterNaviHaeufig', $oBlaetterNaviHaeufig)
-       ->assign('oBlaetterNaviLetzten100', $oBlaetterNaviLetzten100)
-       ->assign('oAktiveGeschenk_arr', holeAktiveGeschenke($oBlaetterNaviConf->cSQL1))
-       ->assign('oHaeufigGeschenk_arr', holeHaeufigeGeschenke($oBlaetterNaviConf->cSQL2))
-       ->assign('oLetzten100Geschenk_arr', holeLetzten100Geschenke($oBlaetterNaviConf->cSQL3))
+$oAktiveGeschenk_arr     = holeAktiveGeschenke(' LIMIT ' . $oPagiAktiv->getLimitSQL());
+$oHaeufigGeschenk_arr    = holeHaeufigeGeschenke(' LIMIT ' . $oPagiHaeufig->getLimitSQL());
+$oLetzten100Geschenk_arr = holeLetzten100Geschenke(' LIMIT ' . $oPagiLetzte100->getLimitSQL());
+
+$smarty->assign('oPagiAktiv', $oPagiAktiv)
+       ->assign('oPagiHaeufig', $oPagiHaeufig)
+       ->assign('oPagiLetzte100', $oPagiLetzte100)
+       ->assign('oAktiveGeschenk_arr', $oAktiveGeschenk_arr)
+       ->assign('oHaeufigGeschenk_arr', $oHaeufigGeschenk_arr)
+       ->assign('oLetzten100Geschenk_arr', $oLetzten100Geschenk_arr)
        ->assign('oConfig_arr', $oConfig_arr)
        ->assign('ART_ATTRIBUT_GRATISGESCHENKAB', ART_ATTRIBUT_GRATISGESCHENKAB)
        ->assign('hinweis', $cHinweis)

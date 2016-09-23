@@ -55,8 +55,12 @@
         width: 100%;
     }
 
-    #plugin-header h1, #plugin-header h5 {
+    #plugin-header h1, #plugin-header h4 {
         color: #fff;
+    }
+
+    .plugin-agws_ts_features #plugin-header h1, .plugin-agws_ts_features #plugin-header h4 {
+        color: #000;
     }
 
     h1.plugin-title {
@@ -119,7 +123,7 @@
     {else}
         {assign var=ld value=$pp->getLongDescription()}
         {assign var=sd value=$pp->getShortDescription()}
-        <div id="plugin-header-wrap">
+        <div id="plugin-header-wrap" class="plugin-{$pp->getPluginID()}">
             <div class="" id="plugin-header">
                 <div class="row" id="plugin-main">
                     <div class="col-md-2">
@@ -204,7 +208,7 @@
                             <img src="{$sp->cLogoPfad}" style="max-width: 100px" alt="{$sp->cFirma}" />
                         </p>
                         <hr>
-                        <h4>Solution 360 GmbH</h4>
+                        <h4>{$sp->cFirma}</h4>
                         <p>
                             <span class="sp-street">{$sp->cStrasse}</span><br>
                             <span class="sp-plz">{$sp->cPLZ} {$sp->cOrt}</span><br>
@@ -217,10 +221,12 @@
                         <p class="sp-www">
                             <a href="{$sp->cWWW}" class="muted" target="_blank"><i class="fa fa-external-link"></i> {$sp->cWWW}</a>
                         </p>
-                        <hr>
-                        <p class="centered sp-details">
-                            <a href="{$sp->marketPlaceURL}" target="_blank" class="btn btn-default"><i class="fa fa-external-link"></i> Servicepartner-Details</a><br>
-                        </p>
+                        {if $sp->marketPlaceURL !== null}
+                            <hr>
+                            <p class="centered sp-details">
+                                <a href="{$sp->marketPlaceURL}" target="_blank" class="btn btn-default"><i class="fa fa-external-link"></i> Servicepartner-Details</a><br>
+                            </p>
+                        {/if}
                         {if $pp->hasCertifcates()}
                             <hr>
                             <h4>Zertifikate</h4>

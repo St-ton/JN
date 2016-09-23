@@ -1,7 +1,7 @@
 <script type="text/javascript">
     {literal}
     function confirmDelete(cName) {
-        return confirm('Sind Sie sicher, dass Sie die Versandart "' + cName + '" löschen möchten?');
+        return confirm('Sind Sie sicher, dass Sie die Versandart "' + cName + '" lï¿½schen mï¿½chten?');
     }
     {/literal}
 </script>
@@ -27,7 +27,7 @@
                         <td>{#countries#}</td>
                         <td>
                             {foreach name=laender from=$versandart->land_arr item=land}
-                                <a href="versandarten.php?zuschlag=1&kVersandart={$versandart->kVersandart}&cISO={$land}&token={$smarty.session.jtl_token}" class="country {if isset($versandart->zuschlag_arr[$land])}addition{/if}">{$land}</a>
+                                <a href="versandarten.php?zuschlag=1&kVersandart={$versandart->kVersandart}&cISO={$land}&token={$smarty.session.jtl_token}"><span class="label label-{if isset($versandart->zuschlag_arr[$land])}success{else}default{/if}">{$land}</span></a>
                             {/foreach}
                         </td>
                     </tr>
@@ -60,7 +60,7 @@
                         <td>
                             {foreach name=zahlungsarten from=$versandart->versandartzahlungsarten item=zahlungsart}
                                 {$zahlungsart->zahlungsart->cName}{if isset($zahlungsart->zahlungsart->cAnbieter) &&
-                                    $zahlungsart->zahlungsart->cAnbieter|count_characters > 0} ({$zahlungsart->zahlungsart->cAnbieter}){/if} {if $zahlungsart->fAufpreis!=0}{if $zahlungsart->cAufpreisTyp != "%"}{getCurrencyConversionSmarty fPreisBrutto=$zahlungsart->fAufpreis bSteuer=false}{else}{$zahlungsart->fAufpreis}%{/if}{/if}
+                                    $zahlungsart->zahlungsart->cAnbieter|strlen > 0} ({$zahlungsart->zahlungsart->cAnbieter}){/if} {if $zahlungsart->fAufpreis!=0}{if $zahlungsart->cAufpreisTyp != "%"}{getCurrencyConversionSmarty fPreisBrutto=$zahlungsart->fAufpreis bSteuer=false}{else}{$zahlungsart->fAufpreis}%{/if}{/if}
                                 <br />
                             {/foreach}
                         </td>

@@ -582,7 +582,11 @@ final class Shop
      */
     public static function bootstrap()
     {
-        $plugins = self::DB()->executeQuery("SELECT kPlugin FROM tplugin WHERE nStatus = 2 AND bBootstrap = 1 ORDER BY nPrio ASC", 2) ?: [];
+        $cacheID = 'plgnbtsrp';
+        if (($plugins = Shop::Cache()->get($cacheID)) === false) {
+            $plugins = self::DB()->executeQuery("SELECT kPlugin FROM tplugin WHERE nStatus = 2 AND bBootstrap = 1 ORDER BY nPrio ASC", 2) ?: [];
+            Shop::Cache()->set($cacheID, $plugins, array(CACHING_GROUP_PLUGIN));
+        }
 
         foreach ($plugins as $plugin) {
             if ($p = Plugin::bootstrapper($plugin->kPlugin)) {
@@ -646,6 +650,10 @@ final class Shop
         } else {
             self::$cSuche = StringHandler::xssClean(verifyGPDataString('suche'));
         }
+        //avoid redirect loops for surveys that require logged in customers
+        if (self::$kUmfrage > 0 && verifyGPCDataInteger('r') !== '' && empty($_SESSION['Kunde']->kKunde)) {
+            self::$kUmfrage = 0;
+        }
 
         self::$nArtikelProSeite = verifyGPCDataInteger('af');
         if (self::$nArtikelProSeite > 0) {
@@ -653,6 +661,20 @@ final class Shop
         }
 
         self::$isInitialized = true;
+
+        $redirect = verifyGPDataString('r');
+        if (self::$kNews > 0 && self::$kArtikel > 0 && !empty($redirect)) {
+            //GET param "n" is often misused as "amount of article"
+            self::$kNews    = 0;
+            if ((int)$redirect === R_LOGIN_WUNSCHLISTE) {
+                //login redirect on wishlist add when not logged in uses get param "n" as amount and "a" for the article ID
+                //but we wont to go to the login page, not to the article page
+                self::$kArtikel = 0;
+            }
+        } elseif (self::$kArtikel > 0 && ((int)$redirect === R_LOGIN_BEWERTUNG || (int)$redirect === R_LOGIN_TAG) && empty($_SESSION['Kunde']->kKunde)) {
+            //avoid redirect to article page for ratings that require logged in customers
+            self::$kArtikel = 0;
+        }
 
         $_SESSION['cTemplate'] = Template::$cTemplate;
 
@@ -758,7 +780,7 @@ final class Shop
                 }
                 //double content work around
                 if (strlen($seo) > 0 && $seite === 1) {
-                    header('HTTP/1.1 301 Moved Permanently');
+                    http_response_code(301);
                     header('Location: ' . self::getURL() . '/' . $seo);
                     exit();
                 }
@@ -829,6 +851,13 @@ final class Shop
                     $oSeo->kSprache = self::$kSprache;
                 }
                 //EXPERIMENTAL_MULTILANG_SHOP END
+                //Link active?
+                if (isset($oSeo->cKey) && $oSeo->cKey === 'kLink') {
+                    $bIsActive = self::DB()->select('tlink', 'kLink', $oSeo->kKey);
+                    if ($bIsActive->bIsActive === '0') {
+                        $oSeo = false;
+                    }
+                }
 
                 //mainwords
                 if (isset($oSeo->kKey) && strcasecmp($oSeo->cSeo, $seo) === 0) {
@@ -925,9 +954,9 @@ final class Shop
                         $cRP .= '&' . $cMember . '=' . $_POST[$cMember];
                     }
                     // Redirect POST
-                    $cRP = ' &cRP=' . base64_encode($cRP);
+                    $cRP = '&cRP=' . base64_encode($cRP);
                 }
-                header('HTTP/1.1 301 Moved Permanently');
+                http_response_code(301);
                 header('Location: ' . self::getURL() . '/navi.php?a=' . $kArtikel . $cRP);
                 exit();
             }
@@ -964,75 +993,18 @@ final class Shop
             self::$AktuelleSeite = 'UMFRAGE';
             self::setPageType(PAGE_UMFRAGE);
         } elseif (!self::$kLink) {
-            self::$is404         = true;
-            self::$AktuelleSeite = '404';
-            self::setPageType(PAGE_404);
             //check path
             $cPath        = self::getRequestUri();
             $cRequestFile = '/' . ltrim($cPath, '/');
-            if (in_array($cRequestFile, ['/', '/index.php', '/navi.php'])) {
-                $oLink       = self::DB()->query("SELECT kLink FROM tlink WHERE nLinkart = " . LINKTYP_STARTSEITE, 1);
-                $kLink       = $oLink->kLink;
+            if ($cRequestFile === '/') { //special case: home page is accessible without seo url
                 $linkHelper  = LinkHelper::getInstance();
-                $Link        = $linkHelper->getPageLink($kLink);
-                self::$kLink = $kLink;
-                if (isset($Link->nLinkart)) {
-                    switch ($Link->nLinkart) {
-                        case LINKTYP_STARTSEITE :
-                            self::setPageType(PAGE_STARTSEITE);
-                            self::$AktuelleSeite = 'STARTSEITE';
-                            self::$kLink         = $Link->kLink;
-                            break;
-
-                        case LINKTYP_TAGGING :
-                            self::setPageType(PAGE_TAGGING);
-                            break;
-
-                        case LINKTYP_UMFRAGE :
-                            self::setPageType(PAGE_UMFRAGE);
-                            break;
-
-                        case LINKTYP_VERSAND :
-                            self::setPageType(PAGE_VERSAND);
-                            break;
-
-                        case LINKTYP_DATENSCHUTZ :
-                            self::setPageType(PAGE_DATENSCHUTZ);
-                            break;
-
-                        case LINKTYP_WRB :
-                            self::setPageType(PAGE_WRB);
-                            break;
-
-                        case LINKTYP_LIVESUCHE :
-                            self::setPageType(PAGE_LIVESUCHE);
-                            break;
-
-                        case LINKTYP_HERSTELLER :
-                            self::setPageType(PAGE_HERSTELLER);
-                            break;
-
-                        case LINKTYP_NEWSLETTERARCHIV :
-                            self::setPageType(PAGE_NEWSLETTERARCHIV);
-                            break;
-
-                        case LINKTYP_GRATISGESCHENK :
-                            self::setPageType(PAGE_GRATISGESCHENK);
-                            break;
-
-                        case LINKTYP_AUSWAHLASSISTENT :
-                            self::setPageType(PAGE_AUSWAHLASSISTENT);
-                            break;
-
-                        default:
-                            break;
-
-                    }
-                }
+                self::$kLink = $linkHelper->getSpecialPageLinkKey(LINKTYP_STARTSEITE);
+            } elseif (self::Media()->isValidRequest($cPath)) {
+                self::Media()->handleRequest($cPath);
             } else {
-                if (self::Media()->isValidRequest($cPath)) {
-                    self::Media()->handleRequest($cPath);
-                }
+                self::$is404         = true;
+                self::$AktuelleSeite = '404';
+                self::setPageType(PAGE_404);
             }
         } else {
             if (!empty(self::$kLink)) {
@@ -1040,7 +1012,7 @@ final class Shop
                 $link       = $linkHelper->getPageLink(self::$kLink);
                 $oSeite     = null;
                 if (isset($link->nLinkart)) {
-                    $oSeite = self::DB()->query("SELECT cDateiname FROM tspezialseite WHERE nLinkart = " . (int)$link->nLinkart, 1);
+                    $oSeite = self::DB()->select('tspezialseite', 'nLinkart', (int)$link->nLinkart);
                 }
                 if (!empty($oSeite->cDateiname)) {
                     self::$fileName = $oSeite->cDateiname;
@@ -1076,6 +1048,10 @@ final class Shop
                         case 'warenkorb.php' :
                             self::$AktuelleSeite = 'WARENKORB';
                             self::setPageType(PAGE_WARENKORB);
+                            break;
+                        case 'wunschliste.php' :
+                            self::$AktuelleSeite = 'WUNSCHLISTE';
+                            self::setPageType(PAGE_WUNSCHLISTE);
                             break;
                         default :
                             break;
@@ -1172,6 +1148,11 @@ final class Shop
             $oHersteller = self::DB()->select('thersteller', 'kHersteller', (int)$NaviFilter->Hersteller->kHersteller, null, null, null, null, false, 'cName');
             if (!empty($oHersteller->cName)) {
                 $NaviFilter->Hersteller->cName = $oHersteller->cName;
+            } elseif ($oHersteller === null) {
+                //invalid manufacturer ID
+                self::$kHersteller = 0;
+                unset($NaviFilter->Hersteller);
+                self::$is404 = true;
             }
         }
 
@@ -1443,6 +1424,13 @@ final class Shop
                 case SEARCHSPECIALS_TOPREVIEWS:
                     $NaviFilter->Suchspecial->cName = self::Lang()->get('topReviews', 'global');
                     break;
+                default:
+                    //invalid search special ID
+                    self::$is404               = true;
+                    self::$kSuchspecial        = 0;
+                    $NaviFilter->nAnzahlFilter = 0;
+                    unset($NaviFilter->Suchspecial);
+                    break;
             }
         }
         //filter
@@ -1614,7 +1602,7 @@ final class Shop
             $NaviFilter->PreisspannenFilter->cBisLocalized = gibPreisLocalizedOhneFaktor($NaviFilter->PreisspannenFilter->fBis);
         }
         //search special filter
-        if (isset($cParameter_arr['kSuchspecialFilter']) && strlen($cParameter_arr['kSuchspecialFilter']) > 0) {
+        if (!empty($cParameter_arr['kSuchspecialFilter'])) {
             if (!isset($NaviFilter->SuchspecialFilter)) {
                 $NaviFilter->SuchspecialFilter = new stdClass();
             }
@@ -1659,6 +1647,10 @@ final class Shop
 
                 case SEARCHSPECIALS_UPCOMINGPRODUCTS:
                     $NaviFilter->SuchspecialFilter->cName = self::Lang()->get('upcomingProducts', 'global');
+                    break;
+
+                default:
+                    $NaviFilter->SuchspecialFilter->cName = '';
                     break;
 
             }
@@ -1723,6 +1715,11 @@ final class Shop
                 //we have a manufacturer page with some manufacturer filter
                 http_response_code(301);
                 header('Location: ' . Shop::getURL() . '/' . $NaviFilter->Hersteller->cSeo[Shop::$kSprache]);
+                exit();
+            } elseif (!empty($NaviFilter->Kategorie->kKategorie) && !empty($NaviFilter->KategorieFilter->kKategorie) && !empty($NaviFilter->Kategorie->cSeo[Shop::$kSprache])) {
+                //we have a category page with some category filter
+                http_response_code(301);
+                header('Location: ' . Shop::getURL() . '/' . $NaviFilter->Kategorie->cSeo[Shop::$kSprache]);
                 exit();
             }
         }
@@ -1868,13 +1865,8 @@ final class Shop
         };
         if (isset($_COOKIE['eSIdAdm'])) {
             if (session_name() !== 'eSIdAdm') {
-                $oldID = session_id();
-                session_write_close();
-                session_id($_COOKIE['eSIdAdm']);
                 $result = $isLogged();
-                session_write_close();
-                session_id($oldID);
-                new Session();
+                Session::getInstance(true, true);
             } else {
                 $result = $isLogged();
             }

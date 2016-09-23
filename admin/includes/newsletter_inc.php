@@ -16,7 +16,7 @@ function bereiteNewsletterVor($Einstellungen)
     $mailSmarty->setCaching(0)
                ->setDebugging(0)
                ->setCompileDir(PFAD_ROOT . PFAD_COMPILEDIR)
-               ->registerResource('newsletter', array('newsletter_get_template', 'newsletter_get_timestamp', 'newsletter_get_secure', 'newsletter_get_trusted'))
+               ->registerResource('db', new SmartyResourceNiceDB('newsletter'))
                ->assign('Firma', Shop::DB()->query("SELECT * FROM tfirma", 1))
                ->assign('URL_SHOP', Shop::getURL())
                ->assign('Einstellungen', $Einstellungen);
@@ -79,7 +79,7 @@ function versendeNewsletter($mailSmarty, $oNewsletter, $Einstellungen, $oEmailem
     //fetch
     if (($oNewsletter->cArt === 'text/html' || $oNewsletter->cArt === 'html')) {
         try {
-            $bodyHtml = $mailSmarty->fetch('newsletter:' . $cTyp . '_' . $nKey . '_html') . $cPixel;
+            $bodyHtml = $mailSmarty->fetch('db:' . $cTyp . '_' . $nKey . '_html') . $cPixel;
         } catch (Exception $e) {
             $GLOBALS['smarty']->assign('oSmartyError', $e->getMessage());
 
@@ -87,7 +87,7 @@ function versendeNewsletter($mailSmarty, $oNewsletter, $Einstellungen, $oEmailem
         }
     }
     try {
-        $bodyText = $mailSmarty->fetch('newsletter:' . $cTyp . '_' . $nKey . '_text');
+        $bodyText = $mailSmarty->fetch('db:' . $cTyp . '_' . $nKey . '_text');
     } catch (Exception $e) {
         $GLOBALS['smarty']->assign('oSmartyError', $e->getMessage());
 
@@ -157,69 +157,7 @@ function gibStaticHtml($mailSmarty, $oNewsletter, $oArtikel_arr = array(), $oHer
         $nKey = $oNewsletter->kNewsletter;
     }
 
-    return $mailSmarty->fetch('newsletter:' . $cTyp . '_' . $nKey . '_html');
-}
-
-/**
- * @param string    $tpl_name
- * @param string    $tpl_source
- * @param JTLSmarty $smarty
- * @return bool
- */
-function newsletter_get_template($tpl_name, &$tpl_source, $smarty)
-{
-    $tpl_source = ' ';
-    $cTeile_arr = explode('_', $tpl_name);
-    $cTabelle   = 'tnewslettervorlage';
-    $cFeld      = 'kNewsletterVorlage';
-    if ($cTeile_arr[0] === 'NL') {
-        $cTabelle = 'tnewsletter';
-        $cFeld    = 'kNewsletter';
-    }
-    $oNewsletter = Shop::DB()->query(
-        "SELECT cInhaltHTML, cInhaltText
-            FROM " . $cTabelle . "
-            WHERE " . $cFeld . "=" . $cTeile_arr[1], 1
-    );
-
-    if ($cTeile_arr[2] === 'html') {
-        $tpl_source = $oNewsletter->cInhaltHTML;
-    } elseif ($cTeile_arr[2] === 'text') {
-        $tpl_source = $oNewsletter->cInhaltText;
-    }
-
-    return true;
-}
-
-/**
- * @param string    $tpl_name
- * @param string    $tpl_timestamp
- * @param JTLSmarty $smarty
- * @return bool
- */
-function newsletter_get_timestamp($tpl_name, &$tpl_timestamp, $smarty)
-{
-    $tpl_timestamp = time();
-
-    return true;
-}
-
-/**
- * @param string    $tpl_name
- * @param JTLSmarty $smarty
- * @return bool
- */
-function newsletter_get_secure($tpl_name, $smarty)
-{
-    return true;
-}
-
-/**
- * @param string    $tpl_name
- * @param JTLSmarty $smarty
- */
-function newsletter_get_trusted($tpl_name, $smarty)
-{
+    return $mailSmarty->fetch('db:' . $cTyp . '_' . $nKey . '_html');
 }
 
 /**
@@ -1195,8 +1133,8 @@ function baueNewsletterVorschau(&$oNewsletterVorlage)
     $cTyp = 'VL';
     //fetch
     try {
-        $bodyHtml = $mailSmarty->fetch('newsletter:' . $cTyp . '_' . $oNewsletterVorlage->kNewsletterVorlage . '_html');
-        $bodyText = $mailSmarty->fetch('newsletter:' . $cTyp . '_' . $oNewsletterVorlage->kNewsletterVorlage . '_text');
+        $bodyHtml = $mailSmarty->fetch('db:' . $cTyp . '_' . $oNewsletterVorlage->kNewsletterVorlage . '_html');
+        $bodyText = $mailSmarty->fetch('db:' . $cTyp . '_' . $oNewsletterVorlage->kNewsletterVorlage . '_text');
     } catch (Exception $e) {
         return $e->getMessage();
     }
@@ -1416,11 +1354,8 @@ if (!function_exists('unique_NewsletterCode')) {
      */
     function unique_NewsletterCode($dbfeld, $code)
     {
-        $res = Shop::DB()->query("SELECT * FROM tnewsletterempfaenger WHERE " . $dbfeld . "='" . $code . "'", 1);
-        if (isset($res->kNewsletterEmpfaenger) && $res->kNewsletterEmpfaenger > 0) {
-            return false;
-        }
+        $res = Shop::DB()->select('tnewsletterempfaenger', $dbfeld, $code);
 
-        return true;
+        return !(isset($res->kNewsletterEmpfaenger) && $res->kNewsletterEmpfaenger > 0);
     }
 }

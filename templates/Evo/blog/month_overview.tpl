@@ -5,12 +5,12 @@
 
 <h1>{lang key="newsMonthOverview" section="news"}</h1>
 
-{if $hinweis}
+{if !empty($hinweis)}
     <div class="alert alert-info">
         {$hinweis}
     </div>
 {/if}
-{if $fehler}
+{if !empty($fehler)}
     <div class="alert alert-danger">
         {$fehler}
     </div>
@@ -41,7 +41,7 @@
                         {if $oNews->cVorschauText|count_characters > 0}
                             {$oNews->cVorschauText}
                             <div class="flt_right">
-                                {$oNews->cMehrURL}
+                                <a class="news-more-link" href="{$oNews->cURL}">{lang key='moreLink' section='news'}</a>
                             </div>
                             <div class="clearer"></div>
                         {elseif $oNews->cText|count_characters > 200}

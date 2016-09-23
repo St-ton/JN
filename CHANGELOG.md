@@ -35,12 +35,35 @@
 * Verbesserung: Prioritäten für Plugin-Hooks (#45)
 * Bugfix: Abnahmeintervall wird bei Konfigurationsartikel nicht beachtet, Hinweis auf Mindestbestellmenge/Abnahmeintervall fehlt (#259)
 * Verbesserung: Anzeige von Boxen in nicht-sichtbaren Positionen im Backend mitsamt Warnhinweis(#252)
+* Verbesserung: Neue Hooks HOOK_FILTER_INC_GIBARTIKELKEYS_SQL und HOOK_FILTER_INC_BAUFILTERSQL (#310)
+* Bugfix: apple-touch-icon.png in header.tpl verlinket, obwohl Datei nicht vorhanden ist (#278)
+* Verbesserung: Kupon-Backend komplett überarbeitet, Validierung verbessert (#275)
+* Bugfix: Fehlerhafte URLs in $Suchergebnisse->Kategorieauswahl bei hierarchischer Filterung (#273)
+* Bugfix: Mehrdeutige Verwendung von GET-Parameter "n" (#321)
+* Bugfix: Weiterleitung zum Login bei Artikel mit Slash in SEO-URL fehlerhaft (#322)
+* Bugfix: Fehlerhafter Kategoriefilter, wenn Einstellung 1321 auf "Hierarchische Filterung" gestellt ist (#185)
+* Update: Smarty auf Version 3.1.30 aktualisiert
+* Verbesserung: SEO-URLs für warenkorb.php, bestellvorgang.php, bestellabschluss.php, pass.php, newsletter.php, wunschliste.php und jtl.php (#31)
+* Verbesserung: optionale 2-Faktor-Authentifizierung im Backend (#276)
+* Bugfix: Prozent-Kupon-Preis in Standardwährung ändert sich abhängig von der Währung beim Einlösen (#366)
+* Verbesserung: Neuer Hook HOOK_BOXEN_HOME bei Erstellung der Startseiten-Boxen (#371)
+* Bugfix: Bestellkommentar wird nicht zur Wawi übertragen, wenn "Zahlung vor Bestellabschluss" auf "Ja" steht (#356)
+* Verbesserung: NiceDB::selectAll() zur Abfrage mehrere Spalten als Prepared Statement implementiert (#334)
+* Verbesserung: Registrierung per vCard-Upload statt manueller Dateneingabe ermöglicht (#307)
+* Bugfix: Im Wartungsmodus, wird man in kürzester Zeit nach dem Einloggen im Frontend wieder ausgeloggt (#314)
+* Verbesserung: FontAwesome auf Version 4.6.3 und jQuery auf Version 1.12.4 aktualisiert
 
 ## [4.04.1]
+* Neues Premium-Plugin: Login und Bezahlen mit Amazon (von Solution360)
+* Neues Premium-Plugin: TrustedShops Trustbade (von AG-Websolutions)
+* Update: Google Shopping Plugin v1.05 (Bugfix: Unter Umständen doppelte IDs bei Varkombi-Kindartikeln)
 * Bugfix: Testmails werden nur noch auf Deutsch versendet (#241)
 * Verbesserung: Vermeiden mehrfacher Cache-Einträge mit demselben Inhalt in gibKategorieFilterOptionen() (#244)
 * Bugfix: Mixed-Content-Warnungen (Megamenü-Kategoriebilder via http) bei Teilverschlüsselung und Wechsel auf https (#211)
 * Bugfix: Frontendlinks verschwinden aus tseo bei Plugin-Updates in mehrsprachiger Umgebung (#258)
+* Bugfix: jtl_token wird sporadisch in der Session überschrieben (#306)
+* Bugfix: Boxenverwaltung: Footer für alle Seiten aktivieren geht nicht
+* Bugfix: Produktbilder-Encoding bei Dateityp "PNG" fehlerhaft
 
 ## [4.04] - 2016-06-22
 * Bugfix: robots.txt fehlendes "Sitemap: " vor der Sitemap-URL (#83)

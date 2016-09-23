@@ -1,4 +1,4 @@
-<ul id="{$eContainer}" class="column">
+<ul id="{$eContainer}" class="dashboard-col col-md-4 col-sm-6 col-xs-12">
     {foreach from=$oActiveWidget_arr item=oWidget}
         {if $oWidget->eContainer == $eContainer}
             <li id="widget-{$oWidget->cNiceTitle}" class="widget panel panel-default" ref="{$oWidget->kWidget}">

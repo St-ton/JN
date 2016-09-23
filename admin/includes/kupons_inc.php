@@ -13,7 +13,7 @@ function loescheKupons($kKupon_arr)
 {
     if (is_array($kKupon_arr) && count($kKupon_arr) > 0) {
         $kKupon_arr = array_map('intval', $kKupon_arr);
-        $nRows = Shop::DB()->query(
+        $nRows      = Shop::DB()->query(
             "DELETE
                 FROM tkupon
                 WHERE kKupon IN(" . implode(',', $kKupon_arr) . ")", 3
@@ -123,23 +123,27 @@ function normalizeDate($string)
  * Get instances of existing coupons, each with some enhanced information that can be displayed
  * 
  * @param string $cKuponTyp
- * @param string $cLimitSQL - an SQL LIMIT clause
- * @param string $cOrderBy - a column that should be sorted by
+ * @param string $cWhereSQL - an SQL WHERE clause (col1 = val1 AND vol2 LIKE ...)
+ * @param string $cOrderSQL - an SQL ORDER BY clause (cName DESC)
+ * @param string $cLimitSQL - an SQL LIMIT clause  (10,20)
  * @return array
  */
-function getCoupons($cKuponTyp = 'standard', $cLimitSQL = '', $cOrderBy = 'kKupon')
+function getCoupons($cKuponTyp = 'standard', $cWhereSQL = '', $cOrderSQL = '', $cLimitSQL = '')
 {
     $oKuponDB_arr = Shop::DB()->query("
         SELECT kKupon
             FROM tkupon
-            WHERE cKuponTyp = '" . $cKuponTyp . "'
-            ORDER BY " . $cOrderBy . " " .
-            $cLimitSQL,
+            WHERE cKuponTyp = '" . Shop::DB()->escape($cKuponTyp) . "'" .
+            ($cWhereSQL !== '' ? " AND " . $cWhereSQL : "") .
+            ($cOrderSQL !== '' ? " ORDER BY " . $cOrderSQL : "") .
+            ($cLimitSQL !== '' ? " LIMIT " . $cLimitSQL : ""),
         2);
     $oKupon_arr = array();
 
-    foreach ($oKuponDB_arr as $oKuponDB) {
-        $oKupon_arr[] = getCoupon((int)$oKuponDB->kKupon);
+    if (is_array($oKuponDB_arr)) {
+        foreach ($oKuponDB_arr as $oKuponDB) {
+            $oKupon_arr[] = getCoupon((int)$oKuponDB->kKupon);
+        }
     }
 
     return $oKupon_arr;
@@ -166,7 +170,9 @@ function getCoupon($kKupon)
  */
 function augmentCoupon($oKupon)
 {
-    $oKupon->bOpenEnd = $oKupon->dGueltigBis === '0000-00-00 00:00:00';
+    $oKupon->cLocalizedValue = $oKupon->cWertTyp == 'festpreis' ? gibPreisStringLocalized($oKupon->fWert) : '';
+    $oKupon->cLocalizedMbw   = isset($oKupon->fMindestbestellwert) ? gibPreisStringLocalized($oKupon->fMindestbestellwert) : '';
+    $oKupon->bOpenEnd        = $oKupon->dGueltigBis === '0000-00-00 00:00:00';
 
     if (date_create($oKupon->dGueltigAb) === false) {
         $oKupon->cGueltigAbShort = 'ung&uuml;ltig';
@@ -195,10 +201,17 @@ function augmentCoupon($oKupon)
     }
 
     if ($oKupon->cArtikel === '') {
-        $oKupon->ArtikelInfo = 'Alle';
+        $oKupon->cArtikelInfo = 'Alle';
     } else {
-        $oKupon->ArtikelInfo = 'eingeschr&auml;nkt';
+        $oKupon->cArtikelInfo = 'eingeschr&auml;nkt';
     }
+
+    $oMaxErstelltDB = Shop::DB()->query("
+        SELECT max(dErstellt) as dLastUse
+            FROM " . ($oKupon->cKuponTyp === 'neukundenkupon' ? "tkuponneukunde" : "tkuponkunde") . "
+            WHERE kKupon = " . (int)$oKupon->kKupon,
+        1);
+    $oKupon->dLastUse = date_create(is_string($oMaxErstelltDB->dLastUse) ? $oMaxErstelltDB->dLastUse : '0000-00-00 00:00:00');
 }
 
 /**
@@ -211,21 +224,21 @@ function createNewCoupon($cKuponTyp)
 {
     $oKupon                        = new Kupon();
     $oKupon->cKuponTyp             = $cKuponTyp;
-    $oKupon->cName                 = 'neuerkupon';
+    $oKupon->cName                 = '';
     $oKupon->fWert                 = 0.0;
     $oKupon->cWertTyp              = 'festpreis';
     $oKupon->cZusatzgebuehren      = 'N';
     $oKupon->nGanzenWKRabattieren  = 1;
     $oKupon->kSteuerklasse         = 1;
     $oKupon->fMindestbestellwert   = 0.0;
-    $oKupon->cCode                 = $oKupon->generateCode();
+    $oKupon->cCode                 = '';
     $oKupon->cLieferlaender        = '';
-    $oKupon->nVerwendungen         = 1;
-    $oKupon->nVerwendungenProKunde = 1;
+    $oKupon->nVerwendungen         = 0;
+    $oKupon->nVerwendungenProKunde = 0;
     $oKupon->cArtikel              = '';
     $oKupon->kKundengruppe         = -1;
     $oKupon->dGueltigAb            = date_create()->format('Y-m-d H:i');
-    $oKupon->dGueltigBis           = $oKupon->dGueltigAb;
+    $oKupon->dGueltigBis           = '';
     $oKupon->cAktiv                = 'Y';
     $oKupon->cKategorien           = '-1';
     $oKupon->cKunden               = '-1';
@@ -262,22 +275,38 @@ function createCouponFromInput()
     $oKupon->dGueltigBis           = normalizeDate(isset($_POST['dGueltigBis']) ? $_POST['dGueltigBis'] : null);
     $oKupon->cAktiv                = isset($_POST['cAktiv']) && $_POST['cAktiv'] === 'Y' ? 'Y' : 'N';
     $oKupon->cKategorien           = '-1';
-    $oKupon->cKunden               = '-1';
-
-    if ($oKupon->dGueltigAb === '0000-00-00 00:00:00') {
+    if ($oKupon->cKuponTyp !== "neukundenkupon") {
+        $oKupon->cKunden               = '-1';
+    }
+    if ($oKupon->dGueltigAb == 0) {
         $oKupon->dGueltigAb = date_create()->format('Y-m-d H:i') . ':00';
     }
     if (isset($_POST['bOpenEnd']) && $_POST['bOpenEnd'] === 'Y') {
         $oKupon->dGueltigBis = '0000-00-00 00:00:00';
-    }
-    if ($oKupon->cKuponTyp !== 'neukundenkupon' && $oKupon->cCode === '') {
-        $oKupon->cCode = $oKupon->generateCode();
+    } elseif (isset($_POST['dDauerTage']) && $_POST['dDauerTage'] > 0) {
+        $oKupon->dGueltigBis     = '';
+        $actualTimestamp         = date_create();
+        $actualTimestampEndofDay = date_time_set($actualTimestamp, 23, 59, 59);
+        $setDays                 = new DateInterval('P' . $_POST['dDauerTage'] . 'D');
+        $oKupon->dGueltigBis     = date_add($actualTimestampEndofDay, $setDays)->format('Y-m-d H:i:s');
     }
     if (isset($_POST['kKategorien']) && is_array($_POST['kKategorien']) && count($_POST['kKategorien']) > 0 && !in_array('-1', $_POST['kKategorien'])) {
         $oKupon->cKategorien = StringHandler::createSSK($_POST['kKategorien']);
     }
     if (isset($_POST['kKunden']) && is_array($_POST['kKunden']) && count($_POST['kKunden']) > 0 && !in_array('-1', $_POST['kKunden'])) {
         $oKupon->cKunden = StringHandler::createSSK($_POST['kKunden']);
+    }
+    if (isset($_POST['couponCreation'])) {
+        $massCreationCoupon                  = new stdClass();
+        $massCreationCoupon->cActiv          = (isset($_POST['couponCreation'])) ? (int)$_POST['couponCreation'] : 0;
+        $massCreationCoupon->numberOfCoupons = ($massCreationCoupon->cActiv == 1 && isset($_POST['numberOfCoupons'])) ? (int)$_POST['numberOfCoupons'] : null;
+        $massCreationCoupon->lowerCase       = ($massCreationCoupon->cActiv == 1 && isset($_POST['lowerCase'])) ? true : false;
+        $massCreationCoupon->upperCase       = ($massCreationCoupon->cActiv == 1 && isset($_POST['upperCase'])) ? true : false;
+        $massCreationCoupon->numbersHash     = ($massCreationCoupon->cActiv == 1 && isset($_POST['numbersHash'])) ? true : false;
+        $massCreationCoupon->hashLength      = ($massCreationCoupon->cActiv == 1 && isset($_POST['hashLength'])) ? $_POST['hashLength'] : null;
+        $massCreationCoupon->prefixHash      = ($massCreationCoupon->cActiv == 1 && isset($_POST['prefixHash'])) ? $_POST['prefixHash'] : null;
+        $massCreationCoupon->suffixHash      = ($massCreationCoupon->cActiv == 1 && isset($_POST['suffixHash'])) ? $_POST['suffixHash'] : null;
+        $oKupon->massCreationCoupon          = $massCreationCoupon;
     }
 
     return $oKupon;
@@ -289,15 +318,15 @@ function createCouponFromInput()
  * @param string $cKuponTyp
  * @return int
  */
-function getCouponCount($cKuponTyp = 'standard')
+function getCouponCount($cKuponTyp = 'standard', $cWhereSQL = '')
 {
     $oKuponDB = Shop::DB()->query("
         SELECT count(kKupon) AS count
             FROM tkupon
-            WHERE cKuponTyp = '" . $cKuponTyp . "'",
+            WHERE cKuponTyp = '" . $cKuponTyp . "'" . ($cWhereSQL !== '' ? " AND " . $cWhereSQL : ""),
         1);
 
-    return $oKuponDB->count;
+    return (int)$oKuponDB->count;
 }
 
 /**
@@ -322,11 +351,19 @@ function validateCoupon($oKupon)
     if ($oKupon->cKuponTyp === 'versandkupon' && $oKupon->cLieferlaender === '') {
         $cFehler_arr[] = 'Bitte geben Sie die L&auml;nderk&uuml;rzel (ISO-Codes) unter "Lieferl&auml;nder" an, f&uuml;r die dieser Versandkupon gelten soll!';
     }
-    if ($oKupon->cKuponTyp == 'standard' || $oKupon->cKuponTyp === 'versandkupon') {
+    if (isset($oKupon->massCreationCoupon)) {
+        $cCodeLength = (int)$oKupon->massCreationCoupon->hashLength + (int)strlen($oKupon->massCreationCoupon->prefixHash) + (int)strlen($oKupon->massCreationCoupon->suffixHash);
+        if ($cCodeLength > 32) {
+            $cFehler_arr[] = 'Der zu generiende Code ist l&auml;nger als 32 Zeichen. Bitte verringern Sie die Menge der Zeichen in Pr&auml;fix, Suffix oder geben eine kleinere Zahl bei der L&auml;nge des Zufallcodes an.';
+        }
+    } elseif (strlen($oKupon->cCode) > 32) {
+        $cFehler_arr[] = 'Bitte geben Sie einen k&uuml;rzeren Code ein. Es sind maximal 32 Zeichen erlaubt.';
+    }
+    if (!isset($oKupon->massCreationCoupon) && ($oKupon->cKuponTyp == 'standard' || $oKupon->cKuponTyp === 'versandkupon')) {
         $queryRes = Shop::DB()->query("
         SELECT kKupon
             FROM tkupon
-            WHERE cCode = '" . $oKupon->cCode . "'" . ((int)$oKupon->kKupon > 0 ? " AND kKupon != " . (int)$oKupon->kKupon : ''),
+            WHERE cCode = '" . Shop::DB()->escape($oKupon->cCode) . "'" . ((int)$oKupon->kKupon > 0 ? " AND kKupon != " . (int)$oKupon->kKupon : ''),
             1);
         if (is_object($queryRes)) {
             $cFehler_arr[] = 'Der angegeben Kuponcode wird bereits von einem anderen Kupon verwendet. Bitte w&auml;hlen Sie einen anderen Code!';
@@ -386,25 +423,62 @@ function saveCoupon($oKupon, $oSprache_arr)
         // neuer Kupon
         $oKupon->nVerwendungenBisher = 0;
         $oKupon->dErstellt           = 'now()';
-        $oKupon->kKupon              = (int)$oKupon->save();
-        $res                         = $oKupon->kKupon;
+        if (isset($oKupon->massCreationCoupon)) {
+            $massCreationCoupon = $oKupon->massCreationCoupon;
+            $oKupon->kKupon     = array();
+            unset($oKupon->massCreationCoupon, $_POST['informieren']);
+            for ($i = 1; $i <= $massCreationCoupon->numberOfCoupons; $i++) {
+                if ($oKupon->cKuponTyp !== 'neukundenkupon') {
+                    $oKupon->cCode = $oKupon->generateCode($massCreationCoupon->hashLength,
+                        $massCreationCoupon->lowerCase, $massCreationCoupon->upperCase,
+                        $massCreationCoupon->numbersHash, $massCreationCoupon->prefixHash,
+                        $massCreationCoupon->suffixHash);
+                }
+                $oKupon->kKupon[] = (int)$oKupon->save();
+            }
+        } else {
+            if ($oKupon->cKuponTyp !== 'neukundenkupon' && $oKupon->cCode === '') {
+                $oKupon->cCode = $oKupon->generateCode();
+            }
+            $oKupon->kKupon = (int)$oKupon->save();
+        }
+        $res = $oKupon->kKupon;
     }
 
     if ($res > 0) {
         // Kupon-Sprachen aktualisieren
-        Shop::DB()->delete('tkuponsprache', 'kKupon', $oKupon->kKupon);
+        if (is_array($oKupon->kKupon)) {
+            foreach ($oKupon->kKupon as $kKupon) {
+                Shop::DB()->delete('tkuponsprache', 'kKupon', $kKupon);
 
-        foreach ($oSprache_arr as $oSprache) {
-            $cKuponSpracheName =
-                (isset($_POST['cName_' . $oSprache->cISO]) && $_POST['cName_' . $oSprache->cISO] !== '')
-                ? $_POST['cName_' . $oSprache->cISO]
-                : $oKupon->cName;
+                foreach ($oSprache_arr as $oSprache) {
+                    $cKuponSpracheName =
+                        (isset($_POST['cName_' . $oSprache->cISO]) && $_POST['cName_' . $oSprache->cISO] !== '')
+                            ? $_POST['cName_' . $oSprache->cISO]
+                            : $oKupon->cName;
 
-            $kuponSprache              = new stdClass();
-            $kuponSprache->kKupon      = $oKupon->kKupon;
-            $kuponSprache->cISOSprache = $oSprache->cISO;
-            $kuponSprache->cName       = $cKuponSpracheName;
-            Shop::DB()->insert('tkuponsprache', $kuponSprache);
+                    $kuponSprache              = new stdClass();
+                    $kuponSprache->kKupon      = $kKupon;
+                    $kuponSprache->cISOSprache = $oSprache->cISO;
+                    $kuponSprache->cName       = $cKuponSpracheName;
+                    Shop::DB()->insert('tkuponsprache', $kuponSprache);
+                }
+            }
+        } else {
+            Shop::DB()->delete('tkuponsprache', 'kKupon', $oKupon->kKupon);
+
+            foreach ($oSprache_arr as $oSprache) {
+                $cKuponSpracheName =
+                    (isset($_POST['cName_' . $oSprache->cISO]) && $_POST['cName_' . $oSprache->cISO] !== '')
+                        ? $_POST['cName_' . $oSprache->cISO]
+                        : $oKupon->cName;
+
+                $kuponSprache              = new stdClass();
+                $kuponSprache->kKupon      = $oKupon->kKupon;
+                $kuponSprache->cISOSprache = $oSprache->cISO;
+                $kuponSprache->cName       = $cKuponSpracheName;
+                Shop::DB()->insert('tkuponsprache', $kuponSprache);
+            }
         }
     }
 
@@ -498,4 +572,28 @@ function informCouponCustomers($oKupon)
         $obj->tkunde             = $oKunde;
         sendeMail(MAILTEMPLATE_KUPON, $obj);
     }
+}
+
+/**
+ * Set all Coupons with an outdated dGueltigBis to cAktiv = 'N'
+ */
+function deactivateOutdatedCoupons()
+{
+    Shop::DB()->query("
+        UPDATE tkupon
+            SET cAktiv = 'N'
+            WHERE dGueltigBis > 0 AND dGueltigBis <= now()",
+        10);
+}
+
+/**
+ * Set all Coupons that reached nVerwendungenBisher to nVerwendungen to cAktiv = 'N'
+ */
+function deactivateExhaustedCoupons()
+{
+    Shop::DB()->query("
+        UPDATE tkupon
+            SET cAktiv = 'N'
+            WHERE nVerwendungen > 0 AND nVerwendungenBisher >= nVerwendungen",
+        10);
 }

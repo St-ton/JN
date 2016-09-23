@@ -208,7 +208,7 @@
                                         </td>
                                         <td>
                                             <label for="kZahlungsart{$smarty.foreach.zahlungsarten.index}">
-                                                {$zahlungsart->cName}{if isset($zahlungsart->cAnbieter) && $zahlungsart->cAnbieter|count_characters > 0} ({$zahlungsart->cAnbieter}){/if}
+                                                {$zahlungsart->cName}{if isset($zahlungsart->cAnbieter) && $zahlungsart->cAnbieter|strlen > 0} ({$zahlungsart->cAnbieter}){/if}
                                             </label>
                                         </td>
                                         <td>{#discount#}</td>
@@ -509,8 +509,13 @@
                 </div>
             </div>
             <div class="save_wrapper">
-                <button type="submit" value="{if !isset($Versandart->kVersandart) || !$Versandart->kVersandart}{#createShippingType#}{else}{#modifyedShippingType#}{/if}" class="btn btn-primary">
-                    {if !isset($Versandart->kVersandart) || !$Versandart->kVersandart}<i class="fa fa-share"></i> {#createShippingType#}{else}<i class="fa fa-edit"></i> {#modifyedShippingType#}{/if}
+                <button type="submit" value="{if !isset($Versandart->kVersandart) || !$Versandart->kVersandart}{#createShippingType#}{else}{#modifyedShippingType#}{/if}"
+                        class="btn btn-primary">
+                    {if !isset($Versandart->kVersandart) || !$Versandart->kVersandart}
+                        <i class="fa fa-share"></i> {#createShippingType#}
+                    {else}
+                        <i class="fa fa-edit"></i> {#modifyedShippingType#}
+                    {/if}
                 </button>
             </div>
         </div>

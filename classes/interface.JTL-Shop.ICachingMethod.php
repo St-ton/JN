@@ -74,7 +74,7 @@ interface ICachingMethod
     public function flushAll();
 
     /**
-     * test data integrity and if functions are working properly - default implementation @JTLCacheHelper
+     * test data integrity and if functions are working properly - default implementation @JTLCacheTrait
      *
      * @return bool - success
      */

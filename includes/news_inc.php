@@ -9,19 +9,12 @@
  * @param bool $bActiveOnly
  * @return stdClass
  */
-function baueFilterSQL($nAktuelleSeite = 1, $bActiveOnly = false)
+function baueFilterSQL($bActiveOnly = false)
 {
     $oSQL              = new stdClass();
     $oSQL->cSortSQL    = '';
-    $oSQL->cAnzahlSQL  = '';
     $oSQL->cDatumSQL   = '';
     $oSQL->cNewsKatSQL = '';
-    // Anzahl Filter
-    if ($_SESSION['NewsNaviFilter']->nAnzahl > 0) {
-        $oSQL->cAnzahlSQL = ' LIMIT ' . (($nAktuelleSeite - 1) * $_SESSION['NewsNaviFilter']->nAnzahl) . ', ' . $_SESSION['NewsNaviFilter']->nAnzahl;
-    } elseif ($_SESSION['NewsNaviFilter']->nAnzahl == -1) { // Standard
-        $oSQL->cAnzahlSQL = '';
-    }
     // Sortierung Filter
     if ($_SESSION['NewsNaviFilter']->nSort > 0) {
         switch ($_SESSION['NewsNaviFilter']->nSort) {
@@ -122,26 +115,8 @@ function pruefeKundenKommentar($cKommentar, $cName = '', $cEmail = '', $kNews, $
         if (!valid_email($cEmail)) {
             $nPlausiValue_arr['cEmail'] = 1;
         }
-        if (empty($_SESSION['Kunde']->kKunde) && (!isset($_SESSION['bAnti_spam_already_checked']) || $_SESSION['bAnti_spam_already_checked'] !== true) && isset($conf['news']['news_sicherheitscode']) && $conf['news']['news_sicherheitscode'] !== 'N') {
-            // reCAPTCHA
-            if (isset($_POST['g-recaptcha-response'])) {
-                if (!validateReCaptcha($_POST['g-recaptcha-response'])) {
-                    $nPlausiValue_arr['captcha'] = 1;
-                }
-            } else {
-                if (empty($_POST['captcha'])) {
-                    $nPlausiValue_arr['captcha'] = 1;
-                }
-                if (!isset($_POST['md5']) || !$_POST['md5'] || ($_POST['md5'] !== md5(PFAD_ROOT . $_POST['captcha']))) {
-                    $nPlausiValue_arr['captcha'] = 2;
-                }
-                if ($conf['news']['news_sicherheitscode'] == 5) {
-                    $nPlausiValue_arr['captcha'] = 2;
-                    if (validToken()) {
-                        unset($nPlausiValue_arr['captcha']);
-                    }
-                }
-            }
+        if (isset($conf['news']['news_sicherheitscode']) && $conf['news']['news_sicherheitscode'] !== 'N' && !validateCaptcha($_POST)) {
+            $nPlausiValue_arr['captcha'] = 2;
         }
     }
     if ((!isset($nPlausiValue_arr['cName']) || !$nPlausiValue_arr['cName']) && pruefeEmailblacklist($cEmail)) {
@@ -437,7 +412,7 @@ function getNewsArchive($kNews, $bActiveOnly = false)
 
     return Shop::DB()->query(
         "SELECT tnews.kNews, tnews.kSprache, tnews.cKundengruppe, tnews.cBetreff, tnews.cText, tnews.cVorschauText, tnews.cPreviewImage, tnews.cMetaTitle,
-            tnews.cMetaDescription, tnews.cMetaKeywords, tnews.nAktiv, tnews.dErstellt, tseo.cSeo,
+            tnews.cMetaDescription, tnews.cMetaKeywords, tnews.nAktiv, tnews.dErstellt, tnews.dGueltigVon, tseo.cSeo,
             DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y %H:%i') AS Datum, DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y %H:%i') AS dGueltigVon_de
             FROM tnews
             LEFT JOIN tseo ON tseo.cKey = 'kNews'
@@ -517,20 +492,16 @@ function getNewsCategory($kNews)
  * @param int|null $to
  * @return mixed
  */
-function getNewsComments($kNews, $count, $from = null, $to = null)
+function getNewsComments($kNews, $cLimitSQL)
 {
-    $cSQL = ' LIMIT ' . $count;
-    if ($from !== null && $to !== null) {
-        $cSQL = ' LIMIT ' . (int)$from . ', ' . (int)$to;
-    }
-
     return Shop::DB()->query(
         "SELECT *, DATE_FORMAT(tnewskommentar.dErstellt, '%d.%m.%Y %H:%i') AS dErstellt_de
             FROM tnewskommentar
             WHERE tnewskommentar.kNews = " . (int)$kNews . "
                 AND tnewskommentar.nAktiv = 1
-            ORDER BY tnewskommentar.dErstellt DESC" . $cSQL, 2
-    );
+            ORDER BY tnewskommentar.dErstellt DESC
+            LIMIT " . $cLimitSQL,
+        2);
 }
 
 /**
@@ -567,7 +538,7 @@ function getMonthOverview($kNewsMonatsUebersicht)
  * @param object $oSQL
  * @return mixed
  */
-function getNewsOverview($oSQL)
+function getNewsOverview($oSQL, $cLimitSQL)
 {
     return Shop::DB()->query(
         "SELECT tseo.cSeo, tnews.*, DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y %H:%i') AS dErstellt_de, count(*) AS nAnzahl, count(DISTINCT(tnewskommentar.kNewsKommentar)) AS nNewsKommentarAnzahl
@@ -583,8 +554,9 @@ function getNewsOverview($oSQL)
                 AND tnews.kSprache = " . (int)$_SESSION['kSprache'] . "
                 " . $oSQL->cDatumSQL . "
             GROUP BY tnews.kNews
-            " . $oSQL->cSortSQL . $oSQL->cAnzahlSQL, 2
-    );
+            " . $oSQL->cSortSQL . "
+            LIMIT " . $cLimitSQL,
+        2);
 }
 
 /**

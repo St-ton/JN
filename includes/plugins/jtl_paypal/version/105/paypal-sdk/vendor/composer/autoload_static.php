@@ -36,8 +36,8 @@ class ComposerStaticInit84a2fe4e6ba58fb1cf91c92b97d465a0
             ),
             'PayPal' => 
             array (
-                0 => __DIR__ . '/..' . '/paypal/sdk-core-php/lib',
-                1 => __DIR__ . '/..' . '/paypal/rest-api-sdk-php/lib',
+                0 => __DIR__ . '/..' . '/paypal/rest-api-sdk-php/lib',
+                1 => __DIR__ . '/..' . '/paypal/sdk-core-php/lib',
             ),
         ),
     );

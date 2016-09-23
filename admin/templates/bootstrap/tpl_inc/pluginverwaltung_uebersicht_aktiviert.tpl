@@ -26,18 +26,18 @@
                         </thead>
                         <tbody>
                         {foreach from=$PluginInstalliertByStatus_arr.status_2 item=PluginInstalliert}
-                            <tr {if isset($PluginInstalliert->dUpdate) && $PluginInstalliert->dUpdate|count_characters > 0 && $PluginInstalliert->cUpdateFehler == 1}class="highlight"{/if}>
+                            <tr {if isset($PluginInstalliert->dUpdate) && $PluginInstalliert->dUpdate|strlen > 0 && $PluginInstalliert->cUpdateFehler == 1}class="highlight"{/if}>
                                 <td class="check">
                                     <input type="checkbox" name="kPlugin[]" id="plugin-check-{$PluginInstalliert->kPlugin}" value="{$PluginInstalliert->kPlugin}" />
                                 </td>
                                 <td>
                                     <label for="plugin-check-{$PluginInstalliert->kPlugin}">{$PluginInstalliert->cName}</label>
-                                    {if (isset($PluginInstalliert->dUpdate) && $PluginInstalliert->dUpdate|count_characters > 0) || (isset($PluginInstalliert->cInfo) && $PluginInstalliert->cInfo|count_characters > 0)}
+                                    {if (isset($PluginInstalliert->dUpdate) && $PluginInstalliert->dUpdate|strlen > 0) || (isset($PluginInstalliert->cInfo) && $PluginInstalliert->cInfo|strlen > 0)}
                                         <p>
                                             {if $PluginInstalliert->cUpdateFehler == 1}
-                                                {if isset($PluginInstalliert->cInfo) && $PluginInstalliert->cInfo|count_characters > 0}{$PluginInstalliert->cInfo}<br />{/if}{#pluginUpdateExists#}
+                                                {if isset($PluginInstalliert->cInfo) && $PluginInstalliert->cInfo|strlen > 0}{$PluginInstalliert->cInfo}<br />{/if}{#pluginUpdateExists#}
                                             {else}
-                                                {if isset($PluginInstalliert->cInfo) && $PluginInstalliert->cInfo|count_characters > 0}{$PluginInstalliert->cInfo}<br />{/if}{#pluginUpdateExists#}. <br />{#pluginUpdateExistsError#}: <br />{$PluginInstalliert->cUpdateFehler}
+                                                {if isset($PluginInstalliert->cInfo) && $PluginInstalliert->cInfo|strlen > 0}{$PluginInstalliert->cInfo}<br />{/if}{#pluginUpdateExists#}. <br />{#pluginUpdateExistsError#}: <br />{$PluginInstalliert->cUpdateFehler}
                                             {/if}
                                         </p>
                                     {/if}
@@ -49,29 +49,32 @@
                                     </span>
                                     </h4>
                                 </td>
-                                <td class="tcenter plugin-version">{$PluginInstalliert->dVersion}{if isset($PluginInstalliert->dUpdate) && $PluginInstalliert->dUpdate|count_characters > 0} <span class="badge update-available">{$PluginInstalliert->dUpdate}</span>{/if}</td>
+                                <td class="tcenter plugin-version">{$PluginInstalliert->dVersion}{if isset($PluginInstalliert->dUpdate) && $PluginInstalliert->dUpdate|strlen > 0} <span class="badge update-available">{$PluginInstalliert->dUpdate}</span>{/if}</td>
                                 <td class="tcenter plugin-install-date">{$PluginInstalliert->dInstalliert_DE}</td>
                                 <td class="tcenter plugin-folder">{$PluginInstalliert->cVerzeichnis}</td>
                                 <td class="tcenter plugin-lang-vars">
                                     {if isset($PluginInstalliert->oPluginSprachvariableAssoc_arr) && $PluginInstalliert->oPluginSprachvariableAssoc_arr|@count > 0}
-                                        <a href="pluginverwaltung.php?pluginverwaltung_uebersicht=1&sprachvariablen=1&kPlugin={$PluginInstalliert->kPlugin}&token={$smarty.session.jtl_token}" class="btn btn-default btn-sm"><i class="fa fa-edit"></i></a>
+                                        <a href="pluginverwaltung.php?pluginverwaltung_uebersicht=1&sprachvariablen=1&kPlugin={$PluginInstalliert->kPlugin}&token={$smarty.session.jtl_token}"
+                                           class="btn btn-default btn-sm" title="{#modify#}"><i class="fa fa-edit"></i></a>
                                     {/if}
                                 </td>
                                 <td class="tcenter plugin-frontend-links">
                                     {if isset($PluginInstalliert->oPluginFrontendLink_arr) && $PluginInstalliert->oPluginFrontendLink_arr|@count > 0}
-                                        <a href="links.php?kPlugin={$PluginInstalliert->kPlugin}" class="btn btn-default btn-sm"><i class="fa fa-edit"></i></a>
+                                        <a href="links.php?kPlugin={$PluginInstalliert->kPlugin}"
+                                           class="btn btn-default btn-sm" title="{#modify#}"><i class="fa fa-edit"></i></a>
                                     {/if}
                                 </td>
                                 <td class="tcenter plugin-license">
-                                    {if isset($PluginInstalliert->cLizenzKlasse) && $PluginInstalliert->cLizenzKlasse|count_characters > 0}
-                                        <button name="lizenzkey" type="submit" class="btn {if $PluginInstalliert->cLizenz && $PluginInstalliert->cLizenz|count_characters > 0}btn-default{else}btn-primary{/if} btn-sm" value="{$PluginInstalliert->kPlugin}">
+                                    {if isset($PluginInstalliert->cLizenzKlasse) && $PluginInstalliert->cLizenzKlasse|strlen > 0}
+                                        <button name="lizenzkey" type="submit" title="{#modify#}"
+                                                class="btn {if $PluginInstalliert->cLizenz && $PluginInstalliert->cLizenz|strlen > 0}btn-default{else}btn-primary{/if} btn-sm" value="{$PluginInstalliert->kPlugin}">
                                         <i class="fa fa-edit"></i></button>
                                     {/if}
                                 </td>
                                 <td class="tcenter plugin-config">
                                     {assign var=btnGroup value=false}
                                     {if (isset($PluginInstalliert->oPluginEinstellung_arr) && $PluginInstalliert->oPluginEinstellung_arr|@count > 0) || (isset($PluginInstalliert->oPluginAdminMenu_arr) && $PluginInstalliert->oPluginAdminMenu_arr|@count > 0) &&
-                                    (isset($PluginInstalliert->dUpdate) && $PluginInstalliert->dUpdate|count_characters > 0 && $PluginInstalliert->cUpdateFehler == 1)}
+                                    (isset($PluginInstalliert->dUpdate) && $PluginInstalliert->dUpdate|strlen > 0 && $PluginInstalliert->cUpdateFehler == 1)}
                                         {assign var=btnGroup value=true}
                                     {/if}
                                     {if $btnGroup}
@@ -80,7 +83,7 @@
                                         {if (isset($PluginInstalliert->oPluginEinstellung_arr) && $PluginInstalliert->oPluginEinstellung_arr|@count > 0) || (isset($PluginInstalliert->oPluginAdminMenu_arr) && $PluginInstalliert->oPluginAdminMenu_arr|@count > 0)}
                                             <a class="btn btn-default btn-sm" href="plugin.php?kPlugin={$PluginInstalliert->kPlugin}" title="Einstellungen"><i class="fa fa-cogs"></i></a>
                                         {/if}
-                                        {if isset($PluginInstalliert->dUpdate) && $PluginInstalliert->dUpdate|count_characters > 0 && $PluginInstalliert->cUpdateFehler == 1}
+                                        {if isset($PluginInstalliert->dUpdate) && $PluginInstalliert->dUpdate|strlen > 0 && $PluginInstalliert->cUpdateFehler == 1}
                                             <a onclick="ackCheck({$PluginInstalliert->kPlugin});return false;" class="btn btn-success btn-sm" title="{#pluginBtnUpdate#}"><i class="fa fa-refresh"></i></a>
                                         {/if}
                                         {if $btnGroup}

@@ -518,7 +518,11 @@ function bearbeiteInsert($xml, array $conf)
             DBUpdateInsert('tartikelkonfiggruppe', $oArtikelKonfig_arr, 'kArtikel', 'kKonfiggruppe');
         }
         // Sonderpreise
-        Shop::DB()->delete('tsonderpreise', 'kArtikelSonderpreis', $artikel_arr[0]->kArtikel);
+        Shop::DB()->query("
+            DELETE asp, sp
+                FROM tartikelsonderpreis asp LEFT JOIN tsonderpreise sp ON sp.kArtikelSonderpreis = asp.kArtikelSonderpreis
+                WHERE asp.kArtikel = " . (int)$artikel_arr[0]->kArtikel,
+            4);
         if (isset($xml['tartikel']['tartikelsonderpreis'])) {
             updateXMLinDB($xml['tartikel']['tartikelsonderpreis'], 'tsonderpreise', $GLOBALS['mSonderpreise'], 'kArtikelSonderpreis', 'kKundengruppe');
         }
@@ -602,12 +606,13 @@ function bearbeiteInsert($xml, array $conf)
         // Artikel Warenlager
         if (isset($xml['tartikel']['tartikelwarenlager']) && is_array($xml['tartikel']['tartikelwarenlager'])) {
             $oArtikelWarenlager_arr = mapArray($xml['tartikel'], 'tartikelwarenlager', $GLOBALS['mArtikelWarenlager']);
-            foreach ($oArtikelWarenlager_arr as $_oawl) {
-                if (isset($_oawl->dZulaufDatum) && $_oawl->dZulaufDatum === '') {
-                    $_oawl->dZulaufDatum = '0000-00-00 00:00:00';
+            Shop::DB()->delete('tartikelwarenlager', 'kArtikel', (int)$xml['tartikel attr']['kArtikel']);
+            foreach ($oArtikelWarenlager_arr as $oArtikelWarenlager) {
+                if (isset($oArtikelWarenlager->dZulaufDatum) && $oArtikelWarenlager->dZulaufDatum === '') {
+                    $oArtikelWarenlager->dZulaufDatum = '0000-00-00 00:00:00';
                 }
+                Shop::DB()->insert('tartikelwarenlager', $oArtikelWarenlager);
             }
-            DBUpdateInsert('tartikelwarenlager', $oArtikelWarenlager_arr, 'kArtikel', 'kWarenlager');
         }
         if (isset($xml['tartikel']['tartikelsonderpreis']) && is_array($xml['tartikel']['tartikelsonderpreis'])) {
             $ArtikelSonderpreis_arr = mapArray($xml['tartikel'], 'tartikelsonderpreis', $GLOBALS['mArtikelSonderpreis']);
@@ -854,6 +859,7 @@ function loescheArtikel($kArtikel, $nIstVater = 0, $bForce = false, $conf = null
         Shop::DB()->delete('tkategorieartikel', 'kArtikel', $kArtikel);
         Shop::DB()->delete('tartikelsprache', 'kArtikel', $kArtikel);
         Shop::DB()->delete('tartikelattribut', 'kArtikel', $kArtikel);
+        Shop::DB()->delete('tartikelwarenlager', 'kArtikel', $kArtikel);
         loescheArtikelAttribute($kArtikel);
         loescheArtikelEigenschaftWert($kArtikel);
         loescheArtikelEigenschaft($kArtikel);
@@ -1107,49 +1113,55 @@ function loescheStueckliste($kStueckliste)
 function fuelleKategorieGesamt($oKategorieArtikel_arr)
 {
     if (is_array($oKategorieArtikel_arr) && count($oKategorieArtikel_arr) > 0) {
-        $isPageCacheEnabled = Shop::Cache()->isPageCacheEnabled();
-        // Laufe jeden KategorieArtikel Eintrag durch
+        $deleted   = [];
+        $added     = [];
+        $cacheTags = [];
+        //$oKategorieArtikel_arr probably always contains the same kArtikel. this is just to be sure.
+        foreach ($oKategorieArtikel_arr as $oKategorieArtikel) {
+            $kArtikel = (int)$oKategorieArtikel->kArtikel;
+            if (!in_array($kArtikel, $deleted)) {
+                $deleted[] = $kArtikel;
+                Shop::DB()->delete('tkategorieartikelgesamt', 'kArtikel', (int)$oKategorieArtikel->kArtikel);
+            }
+        }
         foreach ($oKategorieArtikel_arr as $oKategorieArtikel) {
             // Lösche aktuellen KategorieArtikel
-            Shop::DB()->delete('tkategorieartikelgesamt', 'kArtikel', (int) $oKategorieArtikel->kArtikel);
             $oOberKategorie_arr = array();
             // Hole die Kategorie vom aktuellen KategorieArtikel
-            $oKategorie = Shop::DB()->query("SELECT * FROM tkategorie WHERE kKategorie = " . (int) $oKategorieArtikel->kKategorie, 1);
-
+            $oKategorie           = Shop::DB()->select('tkategorie', 'kKategorie', (int)$oKategorieArtikel->kKategorie);
             $oOberKategorie_arr[] = $oKategorie;
-            Shop::Cache()->flushTags(array(CACHING_GROUP_CATEGORY . '_' . (int) $oKategorieArtikel->kKategorie));
+            $cacheTags[]          = (int)$oKategorieArtikel->kKategorie;
             // Laufe solange bis es keine OberKategorie mehr zum aktuellen KategorieArtikel gibt
             // Falls es zum aktuellen KategorieArtikel keine OberKategorie gibt, wird die schleife nicht betreten
             while (isset($oKategorie->kOberKategorie) && $oKategorie->kOberKategorie > 0) {
                 // Hole OberKategorie
-                $oKategorie = Shop::DB()->query("SELECT * FROM tkategorie WHERE kKategorie = " . (int) $oKategorie->kOberKategorie, 1);
+                $oKategorie = Shop::DB()->select('tkategorie', 'kKategorie', (int)$oKategorie->kOberKategorie);
                 if (isset($oKategorie->kKategorie)) {
                     $oOberKategorie_arr[] = $oKategorie;
                 }
             }
 
-            $oOberKategorie_arr = array_reverse($oOberKategorie_arr);  // Dreh das Array um, damit wir an Array[0] auch das Level 0 haben
+            $oOberKategorie_arr = array_reverse($oOberKategorie_arr); // Dreh das Array um, damit wir an Array[0] auch das Level 0 haben
 
             if (count($oOberKategorie_arr) > 0) {
                 // Speicher den kompletten Kategoriepfad zum aktuellen KategorieArtikel nach Level sortiert in die Datenbank
                 foreach ($oOberKategorie_arr as $i => $oOberKategorie) {
-                    $oKategorieArtikelGesamt                 = new stdClass();
-                    $oKategorieArtikelGesamt->kArtikel       = (int)$oKategorieArtikel->kArtikel;
-                    $oKategorieArtikelGesamt->kOberKategorie = (int)$oOberKategorie->kOberKategorie;
-                    $oKategorieArtikelGesamt->kKategorie     = (int)$oOberKategorie->kKategorie;
-                    $oKategorieArtikelGesamt->nLevel         = $i;
+                    if (!in_array((int)$oOberKategorie->kKategorie, $added)) {
+                        $oKategorieArtikelGesamt                 = new stdClass();
+                        $oKategorieArtikelGesamt->kArtikel       = (int)$oKategorieArtikel->kArtikel;
+                        $oKategorieArtikelGesamt->kOberKategorie = (int)$oOberKategorie->kOberKategorie;
+                        $oKategorieArtikelGesamt->kKategorie     = (int)$oOberKategorie->kKategorie;
+                        $oKategorieArtikelGesamt->nLevel         = $i;
 
-                    Shop::DB()->insert('tkategorieartikelgesamt', $oKategorieArtikelGesamt);
-                    Shop::Cache()->flushTags(array(CACHING_GROUP_CATEGORY . '_' . $oKategorieArtikelGesamt->kKategorie));
-                    if ($isPageCacheEnabled === true) {
-                        if (!isset($smarty)) {
-                            $smarty = Shop::Smarty();
-                        }
-                        $smarty->clearCache(null, 'jtlc|category|cid' . $oKategorieArtikelGesamt->kKategorie);
+                        Shop::DB()->insert('tkategorieartikelgesamt', $oKategorieArtikelGesamt);
+                        $added[]     = (int)$oOberKategorie->kKategorie;
+                        $cacheTags[] = (int)$oOberKategorie->kKategorie;
                     }
                 }
             }
         }
+        array_walk($cacheTags, function(&$i) { $i = CACHING_GROUP_CATEGORY . '_' . $i; });
+        Shop::Cache()->flushTags($cacheTags);
     }
 }
 
@@ -1239,7 +1251,8 @@ function clearProductCaches($kArtikel)
 {
     $kArtikel  = (int) $kArtikel;
     $parentIDs = getConfigParents($kArtikel);
-    array_walk($parentIDs,  function(&$i) { $i = CACHING_GROUP_ARTICLE . '_' . $i; });
+    $cacheTags = [];
+    array_walk($parentIDs, function(&$i) { $i = CACHING_GROUP_ARTICLE . '_' . $i; });
     //flush config parents cache
     Shop::Cache()->flushTags($parentIDs);
     //flush cache tags associated with the article's manufacturer ID
@@ -1251,9 +1264,12 @@ function clearProductCaches($kArtikel)
     $oArticleCategories = Shop::DB()->query("SELECT * FROM tkategorieartikel WHERE kArtikel = " . $kArtikel, 2);
     if (is_array($oArticleCategories)) {
         foreach ($oArticleCategories as $_articleCategory) {
-            Shop::Cache()->flushTags(array(CACHING_GROUP_CATEGORY . '_' . (int)$_articleCategory->kKategorie));
+            $cacheTags[] = (int)$_articleCategory->kKategorie;
         }
     }
-    //flush article cache and cache for gibMerkmalFilterOptionen() and mega menu/category boxes
-    Shop::Cache()->flushTags(array(CACHING_GROUP_ARTICLE . '_' . $kArtikel, 'jtl_mmf'));
+    array_walk($cacheTags, function(&$i) { $i = CACHING_GROUP_CATEGORY . '_' . $i; });
+    $cacheTags[] = CACHING_GROUP_ARTICLE . '_' . $kArtikel;
+    $cacheTags[] = 'jtl_mmf';
+    //flush article cache, category cache and cache for gibMerkmalFilterOptionen() and mega menu/category boxes
+    Shop::Cache()->flushTags($cacheTags);
 }

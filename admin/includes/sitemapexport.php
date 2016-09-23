@@ -216,11 +216,11 @@ function generateSitemapXML()
     // W3C Datetime formats:
     //  YYYY-MM-DD (eg 1997-07-16)
     //  YYYY-MM-DDThh:mmTZD (eg 1997-07-16T19:20+01:00)
-    $stdKundengruppe         = Shop::DB()->query("SELECT kKundengruppe FROM tkundengruppe WHERE cStandard = 'Y'", 1);
+    $stdKundengruppe         = Shop::DB()->select('tkundengruppe', 'cStandard', 'Y');
     $Sprachen                = gibAlleSprachen();
     $oSpracheAssoc_arr       = gibAlleSprachenAssoc($Sprachen);
     $seoAktiv                = true;
-    $Sprache                 = Shop::DB()->query("SELECT * FROM tsprache WHERE cShopStandard = 'Y'", 1);
+    $Sprache                 = Shop::DB()->select('tsprache', 'cShopStandard', 'Y');
     $_SESSION['kSprache']    = $Sprache->kSprache;
     $_SESSION['cISOSprache'] = $Sprache->cISO;
     if (!isset($_SESSION['Kundengruppe'])) {

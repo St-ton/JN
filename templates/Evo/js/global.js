@@ -80,7 +80,7 @@ function compatibility() {
     var __enforceFocus = $.fn.modal.Constructor.prototype.enforceFocus;
     $.fn.modal.Constructor.prototype.enforceFocus = function () {
         if ($('.modal-body .g-recaptcha').length == 0) {
-            __enforceFocus();
+            __enforceFocus.apply(this, arguments);
         }
     };
 }
@@ -149,19 +149,27 @@ function loadContent(url)
     });
 }
 
-$(window).load(function(){
-    var navWrapper = $('#evo-main-nav-wrapper'),
-        stickyWrapperParent = navWrapper.parent();
-
-    stickyWrapperParent.css('height', stickyWrapperParent.outerHeight());
+function navigation()
+{
+    var navWrapper = $('#evo-main-nav-wrapper');
 
     if (navWrapper.hasClass('do-affix')) {
         navWrapper.affix({
             offset: {
-                top: navWrapper.offset().top + navWrapper.height()
+                top: function() {
+                    return navWrapper.height();
+                }
             }
         });
     }
+}
+
+$(window).load(function(){
+    navigation();
+});
+
+$(window).resize(function(){
+    navigation();
 });
 
 $(document).ready(function () {
@@ -178,7 +186,8 @@ $(document).ready(function () {
         url += (url.indexOf('?') === -1) ? '?isAjax=true' : '&isAjax=true';
         eModal.ajax({
             'size': 'lg',
-            'url': url
+            'url': url,
+            'title': typeof e.currentTarget.title != 'undefined' ? e.currentTarget.title : ''
         });
         e.stopPropagation();
         return false;

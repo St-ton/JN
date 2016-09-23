@@ -76,7 +76,7 @@ class Versand
      */
     private function loadFromDB($kVersand = 0, $oData = null)
     {
-        $oObj = Shop::DB()->query("SELECT * FROM tversand WHERE kVersand = " . (int)$kVersand, 1);
+        $oObj = Shop::DB()->select('tversand', 'kVersand', (int)$kVersand);
 
         $this->oData = $oData;
 

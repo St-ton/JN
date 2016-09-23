@@ -2,6 +2,8 @@
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
+ *
+ * @global JTLSmarty $smarty
  */
 $smarty->registerPlugin('function', 'gibPreisStringLocalizedSmarty', 'gibPreisStringLocalizedSmarty')
     ->registerPlugin('function', 'load_boxes', 'load_boxes')
@@ -20,24 +22,97 @@ $smarty->registerPlugin('function', 'gibPreisStringLocalizedSmarty', 'gibPreisSt
     ->registerPlugin('function', 'get_cms_content', 'get_cms_content')
     ->registerPlugin('function', 'get_static_route', 'get_static_route')
     ->registerPlugin('modifier', 'has_trans', 'has_translation')
-    ->registerPlugin('modifier', 'trans', 'get_translation');
+    ->registerPlugin('modifier', 'trans', 'get_translation')
+    ->registerPlugin('function', 'get_product_list', 'get_product_list');
+
 
 /**
  * @param array     $params
  * @param JTLSmarty $smarty
- * @return bool|string
+ * @return array
+ */
+function get_product_list($params, &$smarty)
+{
+    $nLimit      = (isset($params['nLimit'])) ?(int)$params['nLimit'] : 10;
+    $nSortierung = (isset($params['nSortierung'])) ?(int)$params['nSortierung'] : 0;
+    $cAssign     = (isset($params['cAssign']) && strlen($params['cAssign']) > 0) ?
+        $params['cAssign'] :
+        'oCustomArtikel_arr';
+
+    $cMerkmalFilter_arr = (isset($params['cMerkmalFilter'])) ? setzeMerkmalFilter(explode(';', $params['cMerkmalFilter'])) : null;
+    $cSuchFilter_arr    = (isset($params['cSuchFilter'])) ? setzeSuchFilter(explode(';', $params['cSuchFilter'])) : null;
+    $cTagFilter_arr     = (isset($params['cTagFilter'])) ? setzeTagFilter(explode(';', $params['cTagFilter'])) : null;
+
+    $cParameter_arr = array(
+        'kKategorie'             => (isset($params['kKategorie'])) ? $params['kKategorie'] : null,
+        'kHersteller'            => (isset($params['kHersteller'])) ? $params['kHersteller'] : null,
+        'kArtikel'               => (isset($params['kArtikel'])) ? $params['kArtikel'] : null,
+        'kVariKindArtikel'       => (isset($params['kVariKindArtikel'])) ? $params['kVariKindArtikel'] : null,
+        'kSeite'                 => (isset($params['kSeite'])) ? $params['kSeite'] : null,
+        'kSuchanfrage'           => (isset($params['kSuchanfrage'])) ? $params['kSuchanfrage'] : null,
+        'kMerkmalWert'           => (isset($params['kMerkmalWert'])) ? $params['kMerkmalWert'] : null,
+        'kTag'                   => (isset($params['kTag'])) ? $params['kTag'] : null,
+        'kSuchspecial'           => (isset($params['kSuchspecial'])) ? $params['kSuchspecial'] : null,
+        'kNews'                  => (isset($params['kNews'])) ? $params['kNews'] : null,
+        'kNewsMonatsUebersicht'  => (isset($params['kNewsMonatsUebersicht'])) ? $params['kNewsMonatsUebersicht'] : null,
+        'kNewsKategorie'         => (isset($params['kNewsKategorie'])) ? $params['kNewsKategorie'] : null,
+        'kUmfrage'               => (isset($params['kUmfrage'])) ? $params['kUmfrage'] : null,
+        'kKategorieFilter'       => (isset($params['kKategorieFilter'])) ? $params['kKategorieFilter'] : null,
+        'kHerstellerFilter'      => (isset($params['kHerstellerFilter'])) ? $params['kHerstellerFilter'] : null,
+        'nBewertungSterneFilter' => (isset($params['nBewertungSterneFilter'])) ? $params['nBewertungSterneFilter'] : null,
+        'cPreisspannenFilter'    => (isset($params['cPreisspannenFilter'])) ? $params['cPreisspannenFilter'] : null,
+        'kSuchspecialFilter'     => (isset($params['kSuchspecialFilter'])) ? $params['kSuchspecialFilter'] : null,
+        'nSortierung'            => $nSortierung,
+        'MerkmalFilter_arr'      => $cMerkmalFilter_arr,
+        'TagFilter_arr'          => $cTagFilter_arr,
+        'SuchFilter_arr'         => $cSuchFilter_arr,
+        'nArtikelProSeite'       => (isset($params['nArtikelProSeite'])) ? $params['nArtikelProSeite'] : null,
+        'cSuche'                 => (isset($params['cSuche'])) ? $params['cSuche'] : null,
+        'seite'                  => (isset($params['seite'])) ? $params['seite'] : null,
+        'cArtAttrib'             => (isset($params['cArtAttrib'])) ? $params['cArtAttrib'] : null
+    );
+
+    // Filter
+    $NaviFilter = Shop::buildNaviFilter($cParameter_arr);
+
+    // Artikelattribut
+    if (isset($cParameter_arr['cArtAttrib']) && strlen($cParameter_arr['cArtAttrib']) > 0) {
+        $NaviFilter->ArtikelAttributFilter->cArtAttrib = $cParameter_arr['cArtAttrib'];
+    }
+
+    //Filter SQLs Objekte
+    $FilterSQL = bauFilterSQL($NaviFilter);
+
+    // Artikelliste
+    $oArtikel_arr = gibArtikelKeys($FilterSQL, $nLimit, $NaviFilter, true, null);
+
+    $smarty->assign($cAssign, $oArtikel_arr);
+
+    if (isset($params['bReturn'])) {
+        return $oArtikel_arr;
+    }
+}
+
+/**
+ * @param array     $params
+ * @param JTLSmarty $smarty
+ * @return bool|string|void
  */
 function get_static_route($params, &$smarty)
 {
+    $res = false;
     if (isset($params['id'])) {
         $helper = LinkHelper::getInstance();
         $full   = !isset($params['full']) || $params['full'] === true;
         $secure = isset($params['secure']) && $params['secure'] === true;
 
-        return $helper->getStaticRoute($params['id'], $full, $secure);
+        $res = $helper->getStaticRoute($params['id'], $full, $secure);
     }
-
-    return false;
+    if (!empty($params['assign'])) {
+        $smarty->assign($params['assign'], $res);
+    } else {
+        return $res;
+    }
 }
 
 /**
@@ -51,6 +126,7 @@ function get_manufacturers($params, &$smarty)
     $manufacturers = $helper->getManufacturers();
     if (isset($params['assign'])) {
         $smarty->assign($params['assign'], $manufacturers);
+        return;
     } else {
         return $manufacturers;
     }
@@ -76,11 +152,9 @@ function load_boxes_raw($params, &$smarty)
  * @param JTLSmarty $smarty
  * @return array|void
  */
-function get_category_array($params = array(), &$smarty)
+function get_category_array($params, &$smarty)
 {
-    $id = (isset($params['categoryId'])) ?
-        (int)$params['categoryId'] :
-        0;
+    $id = (isset($params['categoryId'])) ? (int)$params['categoryId'] : 0;
     if ($id === 0) {
         $categories = KategorieHelper::getInstance();
         $list       = $categories->combinedGetAll();
@@ -92,7 +166,7 @@ function get_category_array($params = array(), &$smarty)
     if (isset($params['categoryBoxNumber']) && (int)$params['categoryBoxNumber'] > 0) {
         $list2 = array();
         foreach ($list as $key => $oList) {
-            if (isset($oList->KategorieAttribute[KAT_ATTRIBUT_KATEGORIEBOX]) && $oList->KategorieAttribute[KAT_ATTRIBUT_KATEGORIEBOX] == $params['categoryBoxNumber']) {
+            if (isset($oList->categoryFunctionAttributes[KAT_ATTRIBUT_KATEGORIEBOX]) && $oList->categoryFunctionAttributes[KAT_ATTRIBUT_KATEGORIEBOX] == $params['categoryBoxNumber']) {
                 $list2[$key] = $oList;
             }
         }
@@ -101,6 +175,7 @@ function get_category_array($params = array(), &$smarty)
 
     if (isset($params['assign'])) {
         $smarty->assign($params['assign'], $list);
+        return;
     } else {
         return $list;
     }
@@ -111,11 +186,9 @@ function get_category_array($params = array(), &$smarty)
  * @param JTLSmarty $smarty
  * @return array|void
  */
-function get_category_parents($params = array(), &$smarty)
+function get_category_parents($params, &$smarty)
 {
-    $id         = (isset($params['categoryId'])) ?
-        (int)$params['categoryId'] :
-        0;
+    $id         = (isset($params['categoryId'])) ? (int)$params['categoryId'] : 0;
     $category   = new Kategorie($id);
     $categories = new KategorieListe();
     $list       = $categories->getOpenCategories($category);
@@ -125,6 +198,7 @@ function get_category_parents($params = array(), &$smarty)
 
     if (isset($params['assign'])) {
         $smarty->assign($params['assign'], $list);
+        return;
     } else {
         return $list;
     }
@@ -221,6 +295,7 @@ function load_boxes($params, &$smarty)
     }
     if (isset($params['assign'])) {
         $smarty->assign($params['assign'], $cTplData);
+        return;
     } else {
         return $cTplData;
     }
@@ -267,16 +342,13 @@ function gibPreisStringLocalizedSmarty($params, &$smarty)
         $fVPEWert               = doubleval($params['fVPEWert']);
         $cVPEEinheit            = $params['cVPEEinheit'];
         $FunktionsAttribute_arr = $params['FunktionsAttribute'];
-        $nGenauigkeit           = (isset($FunktionsAttribute_arr[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT]) && intval($FunktionsAttribute_arr[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT]) > 0) ?
-            intval($FunktionsAttribute_arr[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT]) :
-            2;
+        $nGenauigkeit = (isset($FunktionsAttribute_arr[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT])
+            && intval($FunktionsAttribute_arr[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT]) > 0) ? intval($FunktionsAttribute_arr[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT]) : 2;
 
         if (intval($params['nNettoPreise']) === 1) {
             $oAufpreis->cAufpreisLocalized = gibPreisStringLocalized($fAufpreisNetto);
             $oAufpreis->cPreisInklAufpreis = gibPreisStringLocalized($fAufpreisNetto + $fVKNetto);
-            $oAufpreis->cAufpreisLocalized = ($fAufpreisNetto > 0) ?
-                ('+ ' . $oAufpreis->cAufpreisLocalized) :
-                (str_replace('-', '- ', $oAufpreis->cAufpreisLocalized));
+            $oAufpreis->cAufpreisLocalized = ($fAufpreisNetto > 0) ? ('+ ' . $oAufpreis->cAufpreisLocalized) : (str_replace('-', '- ', $oAufpreis->cAufpreisLocalized));
 
             if ($fVPEWert > 0) {
                 $oAufpreis->cPreisVPEWertAufpreis = gibPreisStringLocalized(
@@ -298,9 +370,7 @@ function gibPreisStringLocalizedSmarty($params, &$smarty)
         } else {
             $oAufpreis->cAufpreisLocalized = gibPreisStringLocalized(berechneBrutto($fAufpreisNetto, $_SESSION['Steuersatz'][$kSteuerklasse]));
             $oAufpreis->cPreisInklAufpreis = gibPreisStringLocalized(berechneBrutto($fAufpreisNetto + $fVKNetto, $_SESSION['Steuersatz'][$kSteuerklasse]));
-            $oAufpreis->cAufpreisLocalized = ($fAufpreisNetto > 0) ?
-                ('+ ' . $oAufpreis->cAufpreisLocalized) :
-                (str_replace('-', '- ', $oAufpreis->cAufpreisLocalized));
+            $oAufpreis->cAufpreisLocalized = ($fAufpreisNetto > 0) ? ('+ ' . $oAufpreis->cAufpreisLocalized) : (str_replace('-', '- ', $oAufpreis->cAufpreisLocalized));
 
             if ($fVPEWert > 0) {
                 $oAufpreis->cPreisVPEWertAufpreis = gibPreisStringLocalized(
@@ -309,8 +379,10 @@ function gibPreisStringLocalizedSmarty($params, &$smarty)
                         1, $nGenauigkeit
                     ) . ' ' . Shop::Lang()->get('vpePer', 'global') . ' ' . $cVPEEinheit;
                 $oAufpreis->cPreisVPEWertInklAufpreis = gibPreisStringLocalized(
-                        berechneBrutto(($fAufpreisNetto + $fVKNetto) / $fVPEWert,
-                            $_SESSION['Steuersatz'][$kSteuerklasse]),
+                        berechneBrutto(
+                            ($fAufpreisNetto + $fVKNetto) / $fVPEWert,
+                            $_SESSION['Steuersatz'][$kSteuerklasse]
+                        ),
                         $_SESSION['Waehrung'],
                         1,
                         $nGenauigkeit
@@ -322,9 +394,7 @@ function gibPreisStringLocalizedSmarty($params, &$smarty)
         }
     }
 
-    return (isset($params['bAufpreise']) && (int)$params['bAufpreise'] > 0) ?
-        $oAufpreis->cAufpreisLocalized :
-        $oAufpreis->cPreisInklAufpreis;
+    return (isset($params['bAufpreise']) && (int)$params['bAufpreise'] > 0) ? $oAufpreis->cAufpreisLocalized : $oAufpreis->cPreisInklAufpreis;
 }
 
 /**
@@ -446,9 +516,7 @@ function get_navigation($params, &$smarty)
     if (strlen($linkgroupIdentifier) > 0) {
         $LinkHelper  = LinkHelper::getInstance();
         $linkGroups  = $LinkHelper->getLinkGroups();
-        $oLinkGruppe = (isset($linkGroups->{$linkgroupIdentifier})) ?
-            $linkGroups->{$linkgroupIdentifier} :
-            null;
+        $oLinkGruppe = (isset($linkGroups->{$linkgroupIdentifier})) ? $linkGroups->{$linkgroupIdentifier} : null;
     }
 
     if (is_object($oLinkGruppe) && isset($params['assign'])) {
@@ -527,7 +595,7 @@ function prepare_image_details($params, &$smarty)
         }
     }
 
-    $result = (object) $result;
+    $result = (object)$result;
 
     if (isset($params['json']) && $params['json']) {
         return json_encode($result, JSON_FORCE_OBJECT);
@@ -598,6 +666,8 @@ function get_cms_content($params, &$smarty)
             return $oLink->Sprache->cContent;
         }
     }
+
+    return;
 }
 
 /**
@@ -612,8 +682,7 @@ function get_translation($mixed, $to = null)
     $to = $to ?: Shop::getLanguage(true);
 
     if (has_translation($mixed, $to)) {
-        return is_string($mixed)
-            ? $mixed : $mixed[$to];
+        return is_string($mixed) ? $mixed : $mixed[$to];
     }
 
     return;

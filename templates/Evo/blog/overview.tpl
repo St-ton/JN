@@ -43,68 +43,22 @@
             {/if}
         </select>
 
-        <select name="nAnzahl" onchange="this.form.submit();" class="form-control">
-            <option value="-1"{if $smarty.session.NewsNaviFilter->nAnzahl == -1} selected{/if}>{lang key="newsPerSite" section="news"}</option>
-            <option value="2"{if $smarty.session.NewsNaviFilter->nAnzahl == 2} selected{/if}>2</option>
-            <option value="5"{if $smarty.session.NewsNaviFilter->nAnzahl == 5} selected{/if}>5</option>
-            <option value="10"{if $smarty.session.NewsNaviFilter->nAnzahl == 10} selected{/if}>10</option>
-            <option value="20"{if $smarty.session.NewsNaviFilter->nAnzahl == 20} selected{/if}>20</option>
-        </select>
-
-        <input name="submitGo" type="submit" value="{lang key="filterGo" section="global"}" class="btn btn-default" />
+        <button name="submitGo" type="submit" value="{lang key="filterGo" section="global"}" class="btn btn-default">{lang key="filterGo" section="global"}</button>
     </form>
 </div>
 
 {if isset($noarchiv) && $noarchiv}
     <div class="alert alert-info">{lang key="noNewsArchiv" section="news"}.</div>
-{else}
-    {if !empty($oNewsUebersicht_arr)}
-        <div id="newsContent">
-            {if !empty($cCurrentKategorie)}
-                <h2>{$cCurrentKategorie}</h2>
-                <hr>
-            {/if}
-            {foreach name=uebersicht from=$oNewsUebersicht_arr item=oNewsUebersicht}
-                {include file="blog/preview.tpl"}
-            {/foreach}
-        </div>
-    {/if}
-
-    {if isset($oBlaetterNavi->nAktiv) && $oBlaetterNavi->nAktiv == 1}
-        <div class="row">
-            <div class="col-xs-7 col-md-8 col-lg-9">
-                <ul class="pagination">
-                    {if $oBlaetterNavi->nAktuelleSeite > 1}
-                        <li>
-                            <a href="{get_static_route id='news.php'}?s={$oBlaetterNavi->nVoherige}">&laquo; {lang key="previous" section="productOverview"}</a>
-                        </li>
-                    {/if}
-                    {if $oBlaetterNavi->nAnfang != 0}
-                        <li><a href="{get_static_route id='news.php'}?s={$oBlaetterNavi->nAnfang}">{$oBlaetterNavi->nAnfang}</a> ...</li>
-                    {/if}
-                    {foreach name=blaetternavi from=$oBlaetterNavi->nBlaetterAnzahl_arr item=Blatt}
-                        {if $oBlaetterNavi->nAktuelleSeite == $Blatt}
-                            <li class="active"><span>{$Blatt}</span></li>
-                        {else}
-                            <li><a href="{get_static_route id='news.php'}?s={$Blatt}">{$Blatt}</a></li>
-                        {/if}
-                    {/foreach}
-                    {if $oBlaetterNavi->nEnde != 0}
-                        <li> ... <a href="{get_static_route id='news.php'}?s={$oBlaetterNavi->nEnde}">{$oBlaetterNavi->nEnde}</a></li>
-                    {/if}
-                    {if $oBlaetterNavi->nAktuelleSeite < $oBlaetterNavi->nSeiten}
-                        <li>
-                            <a href="{get_static_route id='news.php'}?s={$oBlaetterNavi->nNaechste}">{lang key="next" section="productOverview"} &raquo;</a>
-                        </li>
-                    {/if}
-                </ul>
-            </div>
-            <div class="col-xs-6 col-md-4 col-lg-3 text-right">
-                <div class="pagination pagination-text">
-                    {$oBlaetterNavi->nVon}
-                    - {$oBlaetterNavi->nBis} {lang key="from" section="product rating"} {$oBlaetterNavi->nAnzahl}
-                </div>
-            </div>
-        </div>
-    {/if}
+{elseif !empty($oNewsUebersicht_arr)}
+    {include file='snippets/pagination.tpl' oPagination=$oPagination cThisUrl='news.php'}
+    <div id="newsContent">
+        {if !empty($cCurrentKategorie)}
+            <h2>{$cCurrentKategorie}</h2>
+            <hr>
+        {/if}
+        {foreach name=uebersicht from=$oNewsUebersicht_arr item=oNewsUebersicht}
+            {include file="blog/preview.tpl"}
+        {/foreach}
+    </div>
+    {include file='snippets/pagination.tpl' oPagination=$oPagination cThisUrl='news.php' showFilter=false}
 {/if}

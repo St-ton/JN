@@ -1,6 +1,6 @@
 {if isset($Sektion) && $Sektion}
     {assign var="cTitel" value=#preferences#|cat:": "|cat:$Sektion->cName}
-    {if isset($cSearch) && $cSearch|count_characters  > 0}
+    {if isset($cSearch) && $cSearch|strlen  > 0}
         {assign var="cTitel" value=$cSearch}
     {/if}
     {include file='tpl_inc/seite_header.tpl' cTitel=$cTitel cBeschreibung=$cPrefDesc cDokuURL=$cPrefURL}

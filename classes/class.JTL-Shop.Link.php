@@ -87,6 +87,11 @@ class Link extends MainModel
     public $cIdentifier = '';
 
     /**
+     * @var int
+     */
+    public $bIsActive = 1;
+
+    /**
      * @var array
      */
     public $oSub_arr = array();
@@ -452,6 +457,7 @@ class Link extends MainModel
             $oObj->cNoFollow          = $this->cNoFollow;
             $oObj->cURL               = $this->cURL;
             $oObj->cKundengruppen     = $this->cKundengruppen;
+            $oObj->bIsActive          = $this->bIsActive;
             $oObj->cSichtbarNachLogin = $this->cSichtbarNachLogin;
             $oObj->cDruckButton       = $this->cDruckButton;
             $oObj->nSort              = $this->nSort;

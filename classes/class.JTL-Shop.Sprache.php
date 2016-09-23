@@ -8,7 +8,7 @@
  * Class Sprache
  *
  * @method Sprache autoload()
- * @method string get(string $cName, string $cSektion = 'global')
+ * @method string get(string $cName, string $cSektion = 'global', mixed ...$arg1)
  * @method bool set(int $kSprachsektion, string $cName, string $cWert)
  * @method bool insert(string $cSprachISO, int $kSprachsektion, string $cName, string $cWert)
  * @method bool delete(int $kSprachsektion, string $cName)
@@ -223,7 +223,7 @@ class Sprache
         if (!isset($this->idAssociation[$cISO])) {
             $cacheID = 'lang_id_ks';
             if (($this->idAssociation = Shop::Cache()->get($cacheID)) === false || !isset($this->idAssociation[$cISO])) {
-                $lang                       = Shop::DB()->query("SELECT kSprachISO FROM tsprachiso WHERE cISO = '" . Shop::DB()->escape($cISO) . "'", 1);
+                $lang                       = Shop::DB()->select('tsprachiso', 'cISO', Shop::DB()->escape($cISO));
                 $this->idAssociation[$cISO] = $lang;
                 Shop::Cache()->set($cacheID, $this->idAssociation, array(CACHING_GROUP_LANGUAGE));
             }
@@ -331,6 +331,7 @@ class Sprache
     /**
      * @param string $cName
      * @param string $cSektion
+     * @param mixed [$arg1, ...]
      * @return string
      * @todo: HTML verhindern
      */

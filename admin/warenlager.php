@@ -39,6 +39,7 @@ switch ($cAction) {
                 }
             }
         }
+        Shop::Cache()->flushTags([CACHING_GROUP_ARTICLE]);
         $cHinweis = 'Ihre Warenlager wurden erfolgreich aktualisiert';
         break;
     default:

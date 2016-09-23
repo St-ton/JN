@@ -41,22 +41,14 @@ if (isset($_POST['einstellungen']) && intval($_POST['einstellungen']) > 0) {
         }
     } elseif (isset($_POST['aktualisieren']) && validateToken()) { // Aktualisieren
         // Kundenfelder auslesen und in Smarty assignen
-        $oKundenfeld_arr = Shop::DB()->query(
-            "SELECT *
-                FROM tkundenfeld
-                WHERE kSprache = " . (int)$_SESSION['kSprache'] . "
-                ORDER BY nSort DESC", 2
-        );
+        $oKundenfeld_arr = Shop::DB()->selectAll('tkundenfeld', 'kSprache', (int)$_SESSION['kSprache'], '*', 'nSort DESC');
 
         if (is_array($oKundenfeld_arr) && count($oKundenfeld_arr) > 0) {
             foreach ($oKundenfeld_arr as $oKundenfeld) {
-                Shop::DB()->query(
-                    "UPDATE tkundenfeld
-                        SET nSort = " . Shop::DB()->escape($_POST['nSort_' . $oKundenfeld->kKundenfeld]) . "
-                        WHERE kKundenfeld = " . $oKundenfeld->kKundenfeld, 3
-                );
+                $upd = new stdClass();
+                $upd->nSort = (int)$_POST['nSort_' . $oKundenfeld->kKundenfeld];
+                Shop::DB()->update('tkundenfeld', 'kKundenfeld', $oKundenfeld->kKundenfeld, $upd);
             }
-
             $cHinweis .= 'Ihre Kundenfelder wurden erfolgreich aktualisiert.';
         }
     } else { // Speichern
@@ -77,21 +69,9 @@ if (isset($_POST['einstellungen']) && intval($_POST['einstellungen']) > 0) {
         if (count($oPlausi->getPlausiVar()) === 0) {
             // Update?
             if (isset($_POST['kKundenfeld']) && (int)$_POST['kKundenfeld'] > 0) {
-                Shop::DB()->query(
-                    "DELETE
-                      FROM tkundenfeld
-                      WHERE tkundenfeld.kKundenfeld = " . (int)$_POST['kKundenfeld'], 3
-                );
-                Shop::DB()->query(
-                    "DELETE
-                       FROM tkundenfeldwert
-                       WHERE tkundenfeldwert.kKundenfeld = " . (int)$_POST['kKundenfeld'], 3
-                );
-                Shop::DB()->query(
-                    "DELETE
-                       FROM tkundenattribut
-                       WHERE tkundenattribut.kKundenfeld = " . (int)$_POST['kKundenfeld'], 3
-                );
+                Shop::DB()->delete('tkundenfeld', 'kKundenfeld', (int)$_POST['kKundenfeld']);
+                Shop::DB()->delete('tkundenfeldwert', 'kKundenfeld', (int)$_POST['kKundenfeld']);
+                Shop::DB()->delete('tkundenattribut', 'kKundenfeld', (int)$_POST['kKundenfeld']);
             }
 
             $oKundenfeld              = new stdClass();
@@ -135,11 +115,7 @@ if (isset($_POST['einstellungen']) && intval($_POST['einstellungen']) > 0) {
     if ($kKundenfeld > 0) {
         $oKundenfeld = Shop::DB()->select('tkundenfeld', 'kKundenfeld', $kKundenfeld);
         if (isset($oKundenfeld->kKundenfeld) && $oKundenfeld->kKundenfeld > 0) {
-            $oKundenfeldWert_arr = Shop::DB()->query(
-                "SELECT *
-                     FROM tkundenfeldwert
-                     WHERE kKundenfeld = " . (int)$kKundenfeld, 2
-            );
+            $oKundenfeldWert_arr = Shop::DB()->selectAll('tkundenfeldwert', 'kKundenfeld', (int)$kKundenfeld);
 
             $oKundenfeld->oKundenfeldWert_arr = $oKundenfeldWert_arr;
             $smarty->assign('oKundenfeld', $oKundenfeld);
@@ -147,49 +123,23 @@ if (isset($_POST['einstellungen']) && intval($_POST['einstellungen']) > 0) {
     }
 }
 
-$oConfig_arr = Shop::DB()->query(
-    "SELECT *
-        FROM teinstellungenconf
-        WHERE kEinstellungenSektion = " . CONF_KUNDENFELD . "
-        ORDER BY nSort", 2
-);
+$oConfig_arr = Shop::DB()->selectAll('teinstellungenconf', 'kEinstellungenSektion', CONF_KUNDENFELD, '*', 'nSort');
 $configCount = count($oConfig_arr);
 for ($i = 0; $i < $configCount; $i++) {
     if ($oConfig_arr[$i]->cInputTyp === 'selectbox') {
-        $oConfig_arr[$i]->ConfWerte = Shop::DB()->query(
-            "SELECT *
-                FROM teinstellungenconfwerte
-                WHERE kEinstellungenConf = " . (int)$oConfig_arr[$i]->kEinstellungenConf . "
-                ORDER BY nSort", 2
-        );
+        $oConfig_arr[$i]->ConfWerte = Shop::DB()->selectAll('teinstellungenconfwerte', 'kEinstellungenConf', (int)$oConfig_arr[$i]->kEinstellungenConf, '*', 'nSort');
     }
 
-    $oSetValue = Shop::DB()->query(
-        "SELECT cWert
-            FROM teinstellungen
-            WHERE kEinstellungenSektion = " . CONF_KUNDENFELD . "
-                AND cName = '" . $oConfig_arr[$i]->cWertName . "'", 1
-    );
+    $oSetValue = Shop::DB()->select('teinstellungen', 'kEinstellungenSektion', CONF_KUNDENFELD, 'cName', $oConfig_arr[$i]->cWertName);
     $oConfig_arr[$i]->gesetzterWert = (isset($oSetValue->cWert) ? $oSetValue->cWert : null);
 }
 // Kundenfelder auslesen und in Smarty assignen
-$oKundenfeld_arr = Shop::DB()->query(
-    "SELECT *
-        FROM tkundenfeld
-        WHERE kSprache = " . (int)$_SESSION['kSprache'] . "
-        ORDER BY nSort DESC", 2
-);
-
+$oKundenfeld_arr = Shop::DB()->selectAll('tkundenfeld', 'kSprache', (int)$_SESSION['kSprache'], '*', 'nSort DESC');
 if (is_array($oKundenfeld_arr) && count($oKundenfeld_arr) > 0) {
     // tkundenfeldwert nachschauen ob dort Werte fuer tkundenfeld enthalten sind
     foreach ($oKundenfeld_arr as $i => $oKundenfeld) {
         if ($oKundenfeld->cTyp === 'auswahl') {
-            $oKundenfeldWert_arr = Shop::DB()->query(
-                "SELECT *
-                    FROM tkundenfeldwert
-                    WHERE kKundenfeld = " . (int)$oKundenfeld->kKundenfeld, 2
-            );
-
+            $oKundenfeldWert_arr = Shop::DB()->selectAll('tkundenfeldwert', 'kKundenfeld', (int)$oKundenfeld->kKundenfeld);
             $oKundenfeld_arr[$i]->oKundenfeldWert_arr = $oKundenfeldWert_arr;
         }
     }

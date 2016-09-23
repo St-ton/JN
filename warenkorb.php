@@ -123,7 +123,7 @@ if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']->kKundengruppe > 0) {
     $kKundengruppe = $_SESSION['Kunde']->kKundengruppe;
 }
 // Canonical
-$cCanonicalURL = Shop::getURL() . '/warenkorb.php';
+$cCanonicalURL = $linkHelper->getStaticRoute('warenkorb.php');
 // Metaangaben
 $oMeta            = $linkHelper->buildSpecialPageMeta(LINKTYP_WARENKORB);
 $cMetaTitle       = $oMeta->cTitle;

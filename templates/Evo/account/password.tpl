@@ -3,16 +3,14 @@
 
 {include file="snippets/extension.tpl"}
 
-{if $cFehler}
+{if !empty($cFehler)}
     <div class="alert alert-danger">{$cFehler}</div>
 {/if}
 {if $step === 'formular'}
-    {if !$hinweis}
-      <div class="alert alert-info">{lang key="forgotPasswordDesc" section="forgot password"}</div>
-    {/if}
-
-    {if $hinweis}
-      <div class="alert alert-danger">{$hinweis}</div>
+    {if empty($hinweis)}
+        <div class="alert alert-info">{lang key="forgotPasswordDesc" section="forgot password"}</div>
+    {else}
+        <div class="alert alert-danger">{$hinweis}</div>
     {/if}
     <div class="row">
         <div class="col-xs-12 col-md-8 col-md-offset-2">

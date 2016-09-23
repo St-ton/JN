@@ -141,11 +141,10 @@
         var id = $element.data('id');
         var url = $element.attr('href');
         var dir = $element.data('dir');
-        var version = $element.data('version');
 
         $element.attr('disabled', true);
 
-        var params = { version: version, dir: dir };
+        var params = { dir: dir };
         if (id !== undefined) {
             params = $.extend({}, { id: id }, params);
         }

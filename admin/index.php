@@ -6,14 +6,6 @@
 require_once dirname(__FILE__) . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 
-//----------------------------------------- --DEVELOPMENT-- TO-REMOVE
-date_default_timezone_set('Europe/Berlin');
-
-Logger::configure('../_logging_conf.xml');
-$oLogger = Logger::getLogger('default');
-
-//----------------------------------------- --DEVELOPMENT-- TO-REMOVE
-
 $oUpdater = new Updater();
 $cFehler  = '';
 

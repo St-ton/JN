@@ -46,7 +46,7 @@
                             <input type="hidden" name="md5" value="{$code_adminlogin->codemd5}" id="captcha_md5">{/if}
 
                             {* BEGIN google-2FA-authentiocation *}
-                            {if isset($smarty.session.AdminAccount->TwoFA_active) && true == $smarty.session.AdminAccount->TwoFA_active }  {* added for 2FA *}
+                            {if isset($smarty.session.AdminAccount->TwoFA_active) && true === $smarty.session.AdminAccount->TwoFA_active }  {* added for 2FA *}
                                 {* forwarded index, no content in this vars! *}
                                 <input type="hidden" name="benutzer" value="">
                                 <input type="hidden" name="passwort" value="">
@@ -128,7 +128,7 @@
                             {* END google-2FA-authentiocation *}
 
                         <button type="submit" value="Anmelden" tabindex="100" class="btn btn-primary btn-block btn-md">Anmelden</button>
-                        {if isset($smarty.session.AdminAccount->TwoFA_active) && true == $smarty.session.AdminAccount->TwoFA_active }
+                        {if isset($smarty.session.AdminAccount->TwoFA_active) && true === $smarty.session.AdminAccount->TwoFA_active }
                             <button type="button" tabindex="110" class="btn btn-default btn-block btn-md" onclick="switchUser();">Benutzer wechseln</button>
                         {/if}
                     </form>

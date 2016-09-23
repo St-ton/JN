@@ -6,6 +6,14 @@
 require_once dirname(__FILE__) . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 
+//----------------------------------------- --DEVELOPMENT-- TO-REMOVE
+date_default_timezone_set('Europe/Berlin');
+
+Logger::configure('../_logging_conf.xml');
+$oLogger = Logger::getLogger('default');
+
+//----------------------------------------- --DEVELOPMENT-- TO-REMOVE
+
 $oUpdater = new Updater();
 $cFehler  = '';
 
@@ -76,7 +84,7 @@ if (isset($_POST['adminlogin']) && intval($_POST['adminlogin']) === 1) {
                 break;
 
             case -6:
-                if (isset($_SESSION['AdminAccount']->TwoFA_expired) && true == $_SESSION['AdminAccount']->TwoFA_expired) {
+                if (isset($_SESSION['AdminAccount']->TwoFA_expired) && true === $_SESSION['AdminAccount']->TwoFA_expired) {
                     $cFehler = '2-Faktor-Authentifizierungs-Code abgelaufen';
                 }
                 break;

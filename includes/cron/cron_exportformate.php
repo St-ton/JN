@@ -31,6 +31,10 @@ function bearbeiteExportformate($oJobQueue)
     $oJobQueue->updateJobInDB();
     $smarty               = getSmarty();
     $oExportformat        = $oJobQueue->holeJobArt();
+    if (empty($oExportformat)) {
+        Jtllog::cronLog('Invalid export format for job queue ID ' . $oJobQueue->kJobQueue);
+        return;
+    }
     $max                  = holeMaxExportArtikelAnzahl($oExportformat);
     $start                = microtime(true);
     $cacheHits            = 0;

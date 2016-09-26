@@ -10,12 +10,12 @@ $oAccount->permission('ORDER_COUPON_VIEW', true, true);
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'kupons_inc.php';
 
-$cHinweis        = '';
-$cFehler         = '';
-$action          = '';
-$tab             = 'standard';
-$oSprache_arr    = gibAlleSprachen();
-$oKupon          = null;
+$cHinweis     = '';
+$cFehler      = '';
+$action       = '';
+$tab          = 'standard';
+$oSprache_arr = gibAlleSprachen();
+$oKupon       = null;
 
 // Aktion ausgeloest?
 
@@ -99,6 +99,7 @@ if ($action === 'bearbeiten') {
     if ($oKupon->kKupon > 0) {
         $oKuponName_arr = getCouponNames((int)$oKupon->kKupon);
     } else {
+        $oKuponName_arr = [];
         foreach ($oSprache_arr as $oSprache) {
             $oKuponName_arr[$oSprache->cISO] =
                 (isset($_POST['cName_' . $oSprache->cISO]) && $_POST['cName_' . $oSprache->cISO] !== '')

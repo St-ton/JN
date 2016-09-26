@@ -670,8 +670,10 @@ class Boxen
                     }
                     $cZusatzParams = StringHandler::filterXSS($cZusatzParams);
                     $oTMP_arr      = array();
+                    $cRequestURI   = (!empty($_SERVER['REQUEST_URI']))
+                        ? (Shop::getURL() . $_SERVER['REQUEST_URI'])
+                        : (Shop::getURL() . $_SERVER['SCRIPT_NAME']);
                     foreach ($oArtikel_arr as $oArtikel) {
-                        $cRequestURI = $_SERVER['SCRIPT_NAME'];
                         $nPosAnd     = strrpos($cRequestURI, '&');
                         $nPosQuest   = strrpos($cRequestURI, '?');
                         $nPosWD      = strpos($cRequestURI, 'vlplo=');

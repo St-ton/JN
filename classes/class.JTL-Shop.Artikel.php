@@ -3494,13 +3494,9 @@ class Artikel
         if (isset($oArtikelOptionen->nMedienDatei) && $oArtikelOptionen->nMedienDatei) {
             $this->holeMedienDatei($kSprache);
         }
-        if (isset($oArtikelOptionen->nVariationKombiKinder) && $oArtikelOptionen->nVariationKombiKinder) {
-            if (isset($this->nIstVater) && $this->nIstVater == 1 &&
-                ((Shop::getPageType() === PAGE_ARTIKEL && $conf['artikeldetails']['artikeldetails_variationskombikind_bildvorschau'] === 'Y') ||
-                    (Shop::getPageType() === PAGE_ARTIKELLISTE && $conf['artikeluebersicht']['artikeluebersicht_varikombi_anzahl'] > 0))
-            ) {
-                $this->holeVariationKombiKinder($kKundengruppe, $kSprache);
-            }
+        if (isset($oArtikelOptionen->nVariationKombiKinder) && $oArtikelOptionen->nVariationKombiKinder && $this->nIstVater == 1 &&
+            ($conf['artikeldetails']['artikeldetails_variationskombikind_bildvorschau'] === 'Y' || $conf['artikeluebersicht']['artikeluebersicht_varikombi_anzahl'] > 0)) {
+            $this->holeVariationKombiKinder($kKundengruppe, $kSprache);
         }
         if ((isset($oArtikelOptionen->nStueckliste) && $oArtikelOptionen->nStueckliste) ||
             isset($this->FunktionsAttribute[FKT_ATTRIBUT_STUECKLISTENKOMPONENTEN]) && (int)$this->FunktionsAttribute[FKT_ATTRIBUT_STUECKLISTENKOMPONENTEN] === 1

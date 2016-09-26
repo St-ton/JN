@@ -10,7 +10,7 @@
  */
 function getWidgets($bActive = true)
 {
-    $oWidget_arr = Shop::DB()->query("SELECT * FROM tadminwidgets WHERE bActive = " . (int)$bActive . " ORDER BY eContainer ASC, nPos ASC", 2);
+    $oWidget_arr = Shop::DB()->selectAll('tadminwidgets', 'bActive', (int)$bActive, '*', 'eContainer ASC, nPos ASC');
     if ($bActive && is_array($oWidget_arr) && count($oWidget_arr) > 0) {
         foreach ($oWidget_arr as $i => $oWidget) {
             $oWidget_arr[$i]->cContent = '';

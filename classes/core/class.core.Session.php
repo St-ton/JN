@@ -362,6 +362,11 @@ class Session
                     // Positionen Array in der Wunschliste neu nummerieren
                     $_SESSION['Vergleichsliste']->oArtikel_arr = array_merge($_SESSION['Vergleichsliste']->oArtikel_arr);
                 }
+                if (!isset($_SERVER['REQUEST_URI']) || strpos($_SERVER['REQUEST_URI'], 'index.php') !== false) {
+                    http_response_code(301);
+                    header('Location: ' . Shop::getURL() . '/');
+                    exit;
+                }
             }
         }
 

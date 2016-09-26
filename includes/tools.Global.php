@@ -2952,7 +2952,7 @@ function makeHTTPHeader($nStatusCode)
         504 => $proto . ' 504 Gateway Time-out'
     );
 
-    return (isset($codes[$nStatusCode)) ? $codes[$nStatusCode] : '';
+    return (isset($codes[$nStatusCode])) ? $codes[$nStatusCode] : '';
 }
 
 /**

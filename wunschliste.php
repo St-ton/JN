@@ -3,6 +3,9 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+/**
+ * @global JTLSmarty $smarty
+ */
 require_once dirname(__FILE__) . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'wunschliste_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
@@ -26,6 +29,7 @@ $action           = null;
 $action           = null;
 $kWunschlistePos  = null;
 $oWunschliste_arr = array();
+$linkHelper       = LinkHelper::getInstance();
 
 if ($kWunschliste === 0 && !empty($_SESSION['Kunde']->kKunde) && empty($_SESSION['Wunschliste']->kWunschliste)) {
     //create new wishlist at very first visit
@@ -53,7 +57,7 @@ if ($action !== null && isset($_POST['kWunschliste']) && isset($_SESSION['Kunde'
     $userOK       = (int)$_SESSION['Kunde']->kKunde === (int)$oWunschliste->kKunde;
 
     switch ($action) {
-        case 'addToCart' :
+        case 'addToCart':
             $oWunschlistePos = giboWunschlistePos($kWunschlistePos);
             if (isset($oWunschlistePos->kArtikel) && $oWunschlistePos->kArtikel > 0) {
                 $oEigenschaftwerte_arr = (ArtikelHelper::isVariChild($oWunschlistePos->kArtikel)) ?
@@ -66,18 +70,16 @@ if ($action !== null && isset($_POST['kWunschliste']) && isset($_SESSION['Kunde'
             }
             break;
 
-        case 'sendViaMail' :
+        case 'sendViaMail':
             // Pruefen, ob der MD5 vorhanden ist
-            $oWunschliste = Shop::DB()->select('twunschliste', ['kWunschliste', 'kKunde'],
-                [$kWunschliste, (int)$_SESSION['Kunde']->kKunde]);
+            $oWunschliste = Shop::DB()->select('twunschliste', ['kWunschliste', 'kKunde'], [$kWunschliste, (int)$_SESSION['Kunde']->kKunde]);
             if (isset($oWunschliste->kWunschliste) && $oWunschliste->kWunschliste > 0 && strlen($oWunschliste->cURLID) > 0) {
                 $step = 'wunschliste anzeigen';
                 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
                 // Soll die Wunschliste nun an die Emailempfaenger geschickt werden?
                 if (isset($_POST['send']) && intval($_POST['send']) === 1) {
                     if ($Einstellungen['global']['global_wunschliste_anzeigen'] === 'Y') {
-                        $cEmail_arr = explode(' ',
-                            StringHandler::htmlentities(StringHandler::filterXSS($_POST['email'])));
+                        $cEmail_arr = explode(' ', StringHandler::htmlentities(StringHandler::filterXSS($_POST['email'])));
                         $cHinweis .= wunschlisteSenden($cEmail_arr, $kWunschliste);
                         // Wunschliste aufbauen und cPreis setzen (Artikelanzahl mit eingerechnet)
                         $CWunschliste = bauecPreis(new Wunschliste($kWunschliste));
@@ -106,7 +108,7 @@ if ($action !== null && isset($_POST['kWunschliste']) && isset($_SESSION['Kunde'
             }
             break;
 
-        case 'remove' :
+        case 'remove':
             if ($userOK === true && $kWunschlistePos > 0) {
                 $oWunschliste = new Wunschliste($kWunschliste);
                 $oWunschliste->entfernePos($kWunschlistePos);
@@ -114,7 +116,7 @@ if ($action !== null && isset($_POST['kWunschliste']) && isset($_SESSION['Kunde'
             }
             break;
 
-        case 'removeAll' :
+        case 'removeAll':
             if ($userOK === true) {
                 $oWunschliste = new Wunschliste($kWunschliste);
                 if ($oWunschliste->kKunde == $_SESSION['Kunde']->kKunde && $oWunschliste->kKunde) {
@@ -127,7 +129,7 @@ if ($action !== null && isset($_POST['kWunschliste']) && isset($_SESSION['Kunde'
             }
             break;
 
-        case 'update' :
+        case 'update':
             if ($userOK === true) {
                 $oWunschliste = Shop::DB()->select('twunschliste', 'kWunschliste', $kWunschliste);
                 if (!empty($_POST['wishlistName']) && $_POST['wishlistName'] !== $oWunschliste->cName) {
@@ -142,7 +144,7 @@ if ($action !== null && isset($_POST['kWunschliste']) && isset($_SESSION['Kunde'
             }
             break;
 
-        case 'setPublic' :
+        case 'setPublic':
             if ($userOK === true && isset($_POST['kWunschlisteTarget'])) {
                 $cURLID = gibUID(32, substr(md5($kWunschliste), 0, 16) . time());
                 // Kampagne
@@ -158,7 +160,7 @@ if ($action !== null && isset($_POST['kWunschliste']) && isset($_SESSION['Kunde'
             }
             break;
 
-        case 'setPrivate' :
+        case 'setPrivate':
             if ($userOK === true && isset($_POST['kWunschlisteTarget'])) {
                 $upd               = new stdClass();
                 $upd->nOeffentlich = 0;
@@ -168,12 +170,12 @@ if ($action !== null && isset($_POST['kWunschliste']) && isset($_SESSION['Kunde'
             }
             break;
 
-        case 'createNew' :
+        case 'createNew':
             $CWunschlisteName = StringHandler::htmlentities(StringHandler::filterXSS($_POST['cWunschlisteName']));
             $cHinweis .= wunschlisteSpeichern($CWunschlisteName);
             break;
 
-        case 'delete' :
+        case 'delete':
             if ($userOK === true && isset($_POST['kWunschlisteTarget'])) {
                 $cHinweis .= wunschlisteLoeschen((int)$_POST['kWunschlisteTarget']);
                 if ((int)$_POST['kWunschlisteTarget'] === $kWunschliste) {
@@ -195,14 +197,14 @@ if ($action !== null && isset($_POST['kWunschliste']) && isset($_SESSION['Kunde'
             }
             break;
 
-        case 'setAsDefault' :
+        case 'setAsDefault':
             if ($userOK === true && isset($_POST['kWunschlisteTarget'])) {
                 $cHinweis .= wunschlisteStandard((int)$_POST['kWunschlisteTarget']);
                 $kWunschliste = (int)$_POST['kWunschlisteTarget'];
             }
             break;
 
-        case 'search' :
+        case 'search':
             $cSuche = strip_tags(StringHandler::filterXSS(verifyGPDataString('cSuche')));
             if ($userOK === true && strlen($cSuche) > 0) {
                 $oWunschliste                      = new Wunschliste($kWunschliste);
@@ -212,8 +214,17 @@ if ($action !== null && isset($_POST['kWunschliste']) && isset($_SESSION['Kunde'
             }
             break;
 
-        default :
+        default:
             break;
+    }
+} elseif ($action === 'search' && $kWunschliste > 0 && validateToken()) {
+    // Suche in einer öffentlichen Wunschliste
+    $cSuche = strip_tags(StringHandler::filterXSS(verifyGPDataString('cSuche')));
+    if (strlen($cSuche) > 0) {
+        $oWunschliste                      = new Wunschliste($kWunschliste);
+        $oWunschlistePosSuche_arr          = $oWunschliste->sucheInWunschliste($cSuche);
+        $oWunschliste->CWunschlistePos_arr = $oWunschlistePosSuche_arr;
+        $CWunschliste                      = $oWunschliste;
     }
 }
 
@@ -253,9 +264,7 @@ if (verifyGPCDataInteger('error') === 1) {
         exit;
     }
 }
-$link       = ($cParameter_arr['kLink'] > 0) ?
-    $linkHelper->getPageLink($cParameter_arr['kLink']) :
-    null;
+$link       = ($cParameter_arr['kLink'] > 0) ? $linkHelper->getPageLink($cParameter_arr['kLink']) : null;
 $requestURL = baueURL($link, URLART_SEITE);
 $sprachURL  = baueSprachURLS($link, URLART_SEITE);
 // Wunschliste aufbauen und cPreis setzen (Artikelanzahl mit eingerechnet)

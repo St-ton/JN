@@ -63,7 +63,7 @@ if ((isset($_POST['dellinkgruppe']) && intval($_POST['dellinkgruppe']) > 0 && va
 
     Shop::DB()->delete('tlinkgruppe', 'kLinkgruppe', $kLinkgruppe);
     Shop::DB()->delete('tlinkgruppesprache', 'kLinkgruppe', $kLinkgruppe);
-    $links = Shop::DB()->query("SELECT kLink FROM tlink WHERE kLinkgruppe = " . $kLinkgruppe, 2);
+    $links = Shop::DB()->selectAll('tlink', 'kLinkgruppe', $kLinkgruppe);
     foreach ($links as $link) {
         $oLink = new Link($link->kLink, null, true);
         $oLink->delete(false);

@@ -110,12 +110,7 @@ if (((isset($_GET['kKontaktBetreff']) && intval($_GET['kKontaktBetreff']) > 0) |
 }
 
 if ($step === 'uebersicht') {
-    $Conf = Shop::DB()->query("
-        SELECT *
-            FROM teinstellungenconf
-            WHERE kEinstellungenSektion = " . CONF_KONTAKTFORMULAR . "
-            ORDER BY nSort", 2
-    );
+    $Conf = Shop::DB()->selectAll('teinstellungenconf', 'kEinstellungenSektion', CONF_KONTAKTFORMULAR, '*', 'nSort');
     $configCount = count($Conf);
     for ($i = 0; $i < $configCount; $i++) {
         if ($Conf[$i]->cInputTyp === 'selectbox') {
@@ -135,7 +130,7 @@ if ($step === 'uebersicht') {
             if (is_array($kKundengruppen)) {
                 foreach ($kKundengruppen as $kKundengruppe) {
                     if (is_numeric($kKundengruppe)) {
-                        $kndgrp = Shop::DB()->query("SELECT cName FROM tkundengruppe WHERE kKundengruppe = " . (int)$kKundengruppe, 1);
+                        $kndgrp = Shop::DB()->select('tkundengruppe', 'kKundengruppe', (int)$kKundengruppe);
                         $kunden .= ' ' . $kndgrp->cName;
                     }
                 }
@@ -204,9 +199,9 @@ function getNames($kKontaktBetreff)
     if (!$kKontaktBetreff) {
         return $namen;
     }
-    $zanamen = Shop::DB()->query("SELECT * FROM tkontaktbetreffsprache WHERE kKontaktBetreff = " . $kKontaktBetreff, 2);
+    $zanamen = Shop::DB()->selectAll('tkontaktbetreffsprache', 'kKontaktBetreff', $kKontaktBetreff);
     $nCount  = count($zanamen);
-    for ($i = 0; $i < $nCount; $i++) {
+    for ($i = 0; $i < $nCount; ++$i) {
         $namen[$zanamen[$i]->cISOSprache] = $zanamen[$i]->cName;
     }
 

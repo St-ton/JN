@@ -20,7 +20,7 @@ function getAdminList()
 {
     return Shop::DB()->query(
         "SELECT * FROM tadminlogin
-            LEFT JOIN tadminlogingruppe 
+            LEFT JOIN tadminlogingruppe
             ON tadminlogin.kAdminlogingruppe = tadminlogingruppe.kAdminlogingruppe
          ORDER BY kAdminlogin", 2
     );
@@ -34,8 +34,8 @@ function getAdminGroups()
     $oGroups_arr = Shop::DB()->query("SELECT * FROM tadminlogingruppe", 2);
     foreach ($oGroups_arr as &$oGroup) {
         $oCount         = Shop::DB()->query("
-            SELECT COUNT(*) AS nCount 
-              FROM tadminlogin 
+            SELECT COUNT(*) AS nCount
+              FROM tadminlogin
               WHERE kAdminlogingruppe = " . (int)$oGroup->kAdminlogingruppe, 1
         );
         $oGroup->nCount = $oCount->nCount;
@@ -340,8 +340,17 @@ function benutzerverwaltungActionAccountEdit(JTLSmarty $smarty, array &$messages
                 if (!$dGueltigBisAktiv) {
                     $oTmpAcc->dGueltigBis = '_DBNULL_';
                 }
+                // if we change the current admin-user, we have to update his session-credentials too!
+                if ((int)$oTmpAcc->kAdminlogin === (int)$_SESSION['AdminAccount']->kAdminlogin
+                    && $oTmpAcc->cLogin !== $_SESSION['AdminAccount']->cLogin) {
+                    $_SESSION['AdminAccount']->cLogin = $oTmpAcc->cLogin;
+                }
                 if (strlen($oTmpAcc->cPass) > 0) {
                     $oTmpAcc->cPass = AdminAccount::generatePasswordHash($oTmpAcc->cPass);
+                    // if we change the current admin-user, we have to update his session-credentials too!
+                    if ((int)$oTmpAcc->kAdminlogin === (int)$_SESSION['AdminAccount']->kAdminlogin) {
+                        $_SESSION['AdminAccount']->cPass = $oTmpAcc->cPass;
+                    }
                 } else {
                     unset($oTmpAcc->cPass);
                 }

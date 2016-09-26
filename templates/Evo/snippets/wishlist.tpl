@@ -50,7 +50,11 @@
         <div id="wishlist-search" class="panel panel-blank">
             <form method="post" action="{get_static_route id='wunschliste.php'}" name="WunschlisteSuche" class="form form-inline">
                 {$jtl_token}
-                <input type="hidden" name="kWunschliste" value="{$CWunschliste->kWunschliste}" />
+                {if $CWunschliste->nOeffentlich == 1 && !empty($cURLID)}
+                    <input type="hidden" name="wlid" value="{$cURLID}" />
+                {else}
+                    <input type="hidden" name="kWunschliste" value="{$CWunschliste->kWunschliste}" />
+                {/if}
                 <div class="input-group">
                     <input name="cSuche" size="35" type="text" value="{$wlsearch}" placeholder="{lang key="wishlistSearch" section="login"}" class="form-control" />
                     <span class="input-group-btn">

@@ -42,14 +42,17 @@
                     </p>
                 {/if}
 
-                <div class="btn-group btn-group-justified">
-                    <a class="btn btn-default" href="{get_static_route id='jtl.php'}?pass=1">
+                <p>
+                    <a class="btn btn-default btn-group-justified href="{get_static_route id='jtl.php'}?pass=1">
                         <span class="fa fa-lock"></span> {lang key="changePassword" section="login"}
                     </a>
-                    <a class="btn btn-danger" href="{get_static_route id='jtl.php'}?del=1">
+                </p>
+
+                <p class="text-center">
+                    <a href="{get_static_route id='jtl.php'}?del=1">
                         <span class="fa fa-chain-broken"></span> {lang key="deleteAccount" section="login"}
                     </a>
-                </div>
+                </p>
             </div>
         {/block}
     </div>

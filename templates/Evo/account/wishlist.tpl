@@ -1,36 +1,27 @@
-<h1 class="menu-title">{$CWunschliste->cName}</h1>
-
 {if $hinweis}
     <div class="alert alert-info">{$hinweis}</div>
 {/if}
 
-{*
-   <form method="post" action="{get_static_route id='jtl.php'}" name="WunschlisteSuche" class="form">
-      <input type="hidden" name="wlsearch" value="1" />
-      <input type="hidden" name="wl" value="{$CWunschliste->kWunschliste}" />
-      <input type="hidden" name="{$session_name}" value="{$session_id}" />
-
-      <fieldset>
-         <legend>{lang key="wishlistSearch" section="login"}</legend>
-         <input name="cSuche" type="text" value="{$wlsearch}" />
-         <input name="submitSuche" type="submit" value="{lang key="wishlistSearchBTN" section="login"}" />
-         {if $wlsearch}
-            <a href="{get_static_route id='jtl.php'}?wl={$CWunschliste->kWunschliste}" class="wishlistlink">{lang key="wishlistRemoveSearch" section="login"}</a>
-         {/if}
-      </fieldset>
-   </form>
-*}
 <form method="post" action="{get_static_route id='jtl.php'}" name="Wunschliste">
     {$jtl_token}
     {block name="wishlist"}
     <input type="hidden" name="wla" value="1" />
     <input type="hidden" name="wl" value="{$CWunschliste->kWunschliste}" />
-    <input type="hidden" name="WunschlisteName" value="{$CWunschliste->cName}" />
 
     {if isset($wlsearch)}
         <input type="hidden" name="wlsearch" value="1" />
         <input type="hidden" name="cSuche" value="{$wlsearch}" />
     {/if}
+
+    <div class="panel panel-blank">
+        <div class="input-group">
+        <span class="input-group-addon">
+            <strong>{lang key="name" section="global"}</strong>
+        </span>
+            <input id="wishlist-name" type="text" class="form-control" placeholder="name" name="WunschlisteName" value="{$CWunschliste->cName}" />
+        </div>
+    </div>
+
     {if !empty($CWunschliste->CWunschlistePos_arr)}
         <table class="table table-striped">
             <thead>

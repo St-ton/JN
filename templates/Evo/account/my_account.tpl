@@ -33,12 +33,16 @@
 
         {block name="account-general"}
             <div class="panel-group" id="account-general" role="tablist" aria-multiselectable="true">
-                <div class="btn-group btn-group-justified">
-                    {if $Einstellungen.kundenwerbenkunden.kwk_nutzen === 'Y'}
-                        <a class="btn btn-default" href="{get_static_route id='jtl.php'}?KwK=1">
+
+                {if $Einstellungen.kundenwerbenkunden.kwk_nutzen === 'Y'}
+                    <p>
+                        <a class="btn btn-default btn-group-justified" href="{get_static_route id='jtl.php'}?KwK=1">
                             <span class="fa fa-comment"></span> {lang key="kwkName" section="login"}
                         </a>
-                    {/if}
+                    </p>
+                {/if}
+
+                <div class="btn-group btn-group-justified">
                     <a class="btn btn-default" href="{get_static_route id='jtl.php'}?pass=1">
                         <span class="fa fa-lock"></span> {lang key="changePassword" section="login"}
                     </a>

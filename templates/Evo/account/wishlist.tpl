@@ -18,7 +18,8 @@
         <span class="input-group-addon">
             <strong>{lang key="name" section="global"}</strong>
         </span>
-            <input id="wishlist-name" type="text" class="form-control" placeholder="name" name="WunschlisteName" value="{$CWunschliste->cName}" />
+            <input id="wishlist-name" type="text" class="form-control" placeholder="name" name="WunschlisteName" value="{$CWunschliste->cName}" autofocus />
+            <input type="submit" class="hidden" />
         </div>
     </div>
 
@@ -125,8 +126,7 @@
                             </span>
                         </div>
                     {else}
-                        {*lang key="wishlistNoticePrivate" section="login"*}
-                        <button type="submit" name="nstd" value="1" class="btn btn-sm btn-default">
+                        <button type="button" name="nstd" value="1" class="btn btn-sm btn-default">
                             <span class="fa fa-eye"></span> {lang key="wishlistSetPublic" section="login"}
                         </button>
                     {/if}
@@ -160,40 +160,5 @@
         });
     </script>
 
-    {*
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            <h5 class="panel-title">{block name="wishlist-title"}{if $CWunschliste->nOeffentlich == 1}{lang key="wishlistURL" section="login"}{else}{lang key="yourWishlist" section="login"}{/if}{/block}</h5>
-        </div>
-        <div class="panel-body">
-            {block name="wishlist-body"}
-            {if $CWunschliste->nOeffentlich == 1}
-                <div class="row">
-                    <div class="col-xs-12">
-                        <div class="input-group">
-                            <input type="text" name="wishlist-url" readonly="readonly" value="{$ShopURL}/index.php?wlid={$CWunschliste->cURLID}" class="form-control">
-                            <span class="input-group-btn">
-                                {if $Einstellungen.global.global_wunschliste_freunde_aktiv === 'Y'}
-                                   <button type="submit" name="wlvm" value="1" class="btn btn-default" title="{lang key="wishlistViaEmail" section="login"}">
-                                       <i class="fa fa-envelope"></i>
-                                   </button>
-                                {/if}
-                                <button type="submit" name="nstd" value="0" class="btn btn-default" title="{lang key="wishlistSetPrivate" section="login"}">
-                                    <i class="fa fa-eye-slash"></i> {lang key="wishlistSetPrivate" section="login"}
-                                </button>
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            {else}
-                {lang key="wishlistNoticePrivate" section="login"}&nbsp;
-                <button type="submit" name="nstd" value="1" class="btn btn-default">
-                    <span class="fa fa-eye"></span> {lang key="wishlistSetPublic" section="login"}
-                </button>
-            {/if}
-            {/block}
-        </div>
-    </div>
-    *}
     {/block}
 </form>

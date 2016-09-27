@@ -177,7 +177,7 @@ if (isset($_POST['neu_link']) && intval($_POST['neu_link']) === 1 && validateTok
             $linkSprache->cTitle      = '';
             $linkSprache->cContent    = '';
             if (!empty($_POST['cName_' . $sprache->cISO])) {
-                $linkSprache->cName = htmlspecialchars(['cName_' . $sprache->cISO]);
+                $linkSprache->cName = htmlspecialchars($_POST['cName_' . $sprache->cISO]);
             }
             if (!empty($_POST['cTitle_' . $sprache->cISO])) {
                 $linkSprache->cTitle = htmlspecialchars($_POST['cTitle_' . $sprache->cISO]);

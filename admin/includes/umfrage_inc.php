@@ -479,11 +479,7 @@ function holeUmfrageStatistik($kUmfrage)
             if ($kKundengruppe == -1) {
                 $oUmfrageStats->cKundengruppe_arr[] = 'Alle';
             } else {
-                $oKundengruppe = Shop::DB()->query(
-                    "SELECT cName
-                        FROM tkundengruppe
-                        WHERE kKundengruppe = " . (int)$kKundengruppe, 1
-                );
+                $oKundengruppe = Shop::DB()->select('tkundengruppe', 'kKundengruppe', (int)$kKundengruppe);
                 if (!empty($oKundengruppe->cName)) {
                     $oUmfrageStats->cKundengruppe_arr[] = $oKundengruppe->cName;
                 }

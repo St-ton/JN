@@ -63,13 +63,7 @@ function speicherEinstellung($kSuchspecialOverlay, $cPost_arr, $cFiles_arr)
     if (strlen($cFiles_arr['cSuchspecialOverlayBild']['name']) > 0) {
         $oSuchspecialoverlaySprache->cBildPfad = 'kSuchspecialOverlay_' . $_SESSION['kSprache'] . '_' . (int)$kSuchspecialOverlay . mappeFileTyp($cFiles_arr['cSuchspecialOverlayBild']['type']);
     } else {
-        $oSuchspecialoverlaySpracheTMP = Shop::DB()->query(
-            "SELECT cBildPfad
-                FROM tsuchspecialoverlaysprache
-                WHERE kSuchspecialOverlay = " . (int)$kSuchspecialOverlay . "
-                    AND kSprache = " . (int)$_SESSION['kSprache'], 1
-        );
-
+        $oSuchspecialoverlaySpracheTMP = Shop::DB()->select('tsuchspecialoverlaysprache', 'kSuchspecialOverlay', (int)$kSuchspecialOverlay, 'kSprache', (int)$_SESSION['kSprache']);
         if (isset($oSuchspecialoverlaySpracheTMP->cBildPfad) && strlen($oSuchspecialoverlaySpracheTMP->cBildPfad)) {
             $oSuchspecialoverlaySprache->cBildPfad = $oSuchspecialoverlaySpracheTMP->cBildPfad;
         }

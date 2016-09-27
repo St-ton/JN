@@ -99,7 +99,7 @@ if (isset($_POST['neu_link']) && intval($_POST['neu_link']) === 1 && validateTok
         $link->kLink              = (int)$_POST['kLink'];
         $link->kLinkgruppe        = (int)$_POST['kLinkgruppe'];
         $link->kPlugin            = (int)$_POST['kPlugin'];
-        $link->cName              = $_POST['cName'];
+        $link->cName              = htmlspecialchars($_POST['cName']);
         $link->nLinkart           = (int)$_POST['nLinkart'];
         $link->cURL               = (isset($_POST['cURL'])) ? $_POST['cURL'] : null;
         $link->nSort              = !empty($_POST['nSort']) ? $_POST['nSort'] : 0;
@@ -177,10 +177,10 @@ if (isset($_POST['neu_link']) && intval($_POST['neu_link']) === 1 && validateTok
             $linkSprache->cTitle      = '';
             $linkSprache->cContent    = '';
             if (!empty($_POST['cName_' . $sprache->cISO])) {
-                $linkSprache->cName = $_POST['cName_' . $sprache->cISO];
+                $linkSprache->cName = htmlspecialchars(['cName_' . $sprache->cISO]);
             }
             if (!empty($_POST['cTitle_' . $sprache->cISO])) {
-                $linkSprache->cTitle = $_POST['cTitle_' . $sprache->cISO];
+                $linkSprache->cTitle = htmlspecialchars($_POST['cTitle_' . $sprache->cISO]);
             }
             if (!empty($_POST['cContent_' . $sprache->cISO])) {
                 $linkSprache->cContent = parseText($_POST['cContent_' . $sprache->cISO], $kLink);
@@ -191,10 +191,10 @@ if (isset($_POST['neu_link']) && intval($_POST['neu_link']) === 1 && validateTok
             }
             $linkSprache->cMetaTitle = $linkSprache->cTitle;
             if (isset($_POST['cMetaTitle_' . $sprache->cISO])) {
-                $linkSprache->cMetaTitle = $_POST['cMetaTitle_' . $sprache->cISO];
+                $linkSprache->cMetaTitle = htmlspecialchars($_POST['cMetaTitle_' . $sprache->cISO]);
             }
-            $linkSprache->cMetaKeywords    = $_POST['cMetaKeywords_' . $sprache->cISO];
-            $linkSprache->cMetaDescription = $_POST['cMetaDescription_' . $sprache->cISO];
+            $linkSprache->cMetaKeywords    = htmlspecialchars($_POST['cMetaKeywords_' . $sprache->cISO]);
+            $linkSprache->cMetaDescription = htmlspecialchars($_POST['cMetaDescription_' . $sprache->cISO]);
             Shop::DB()->delete('tlinksprache', array('kLink', 'cISOSprache'), array($kLink, $sprache->cISO));
             $linkSprache->cSeo = getSeo($linkSprache->cSeo);
             Shop::DB()->insert('tlinksprache', $linkSprache);
@@ -276,8 +276,8 @@ if (isset($_POST['neu_linkgruppe']) && intval($_POST['neu_linkgruppe']) === 1 &&
             $linkgruppe = new stdClass();
         }
         $linkgruppe->kLinkgruppe   = (int)$_POST['kLinkgruppe'];
-        $linkgruppe->cName         = $_POST['cName'];
-        $linkgruppe->cTemplatename = $_POST['cTemplatename'];
+        $linkgruppe->cName         = htmlspecialchars($_POST['cName']);
+        $linkgruppe->cTemplatename = htmlspecialchars($_POST['cTemplatename']);
 
         $kLinkgruppe = 0;
         if (intval($_POST['kLinkgruppe']) === 0) {
@@ -301,7 +301,7 @@ if (isset($_POST['neu_linkgruppe']) && intval($_POST['neu_linkgruppe']) === 1 &&
             $linkgruppeSprache->cISOSprache = $sprache->cISO;
             $linkgruppeSprache->cName       = $linkgruppe->cName;
             if ($_POST['cName_' . $sprache->cISO]) {
-                $linkgruppeSprache->cName = $_POST['cName_' . $sprache->cISO];
+                $linkgruppeSprache->cName = htmlspecialchars($_POST['cName_' . $sprache->cISO]);
             }
 
             Shop::DB()->delete('tlinkgruppesprache', array('kLinkgruppe', 'cISOSprache'), array($kLinkgruppe, $sprache->cISO));

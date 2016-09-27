@@ -96,7 +96,7 @@ class ImageStorage
         $lastModifiedDate = filemtime($masterFilepath);
         $tagHash          = md5($lastModifiedDate . $filepath);
         $imageHash        = $this->req->getHash(true);
-        $gmtDateTime      = gmdate("D, d M Y H:i:s", $lastModifiedDate) . " GMT";
+        $gmtDateTime      = gmdate('D, d M Y H:i:s', $lastModifiedDate) . ' GMT';
         $mimeType         = Image::getMimeType($filepath);
 
         header("Content-Type: {$mimeType}");
@@ -106,14 +106,16 @@ class ImageStorage
         header("Last-Modified: {$gmtDateTime}");
         header("X-Image-Hash: {$imageHash}");
 
-        $httpModifiedSince = isset($_SERVER["HTTP_IF_MODIFIED_SINCE"]) ?
-            strtotime($_SERVER["HTTP_IF_MODIFIED_SINCE"]) : null;
+        $httpModifiedSince = isset($_SERVER['HTTP_IF_MODIFIED_SINCE'])
+            ? strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE'])
+            : null;
 
-        $httpNoneMatch = isset($_SERVER["HTTP_IF_NONE_MATCH"]) ?
-            trim($_SERVER["HTTP_IF_NONE_MATCH"]) : null;
+        $httpNoneMatch = isset($_SERVER['HTTP_IF_NONE_MATCH'])
+            ? trim($_SERVER['HTTP_IF_NONE_MATCH'])
+            : null;
 
         if ($httpModifiedSince == $lastModifiedDate || $httpNoneMatch == $tagHash) {
-            header("HTTP/1.1 304 Not Modified");
+            header(makeHTTPHeader(304));
             exit;
         }
     }

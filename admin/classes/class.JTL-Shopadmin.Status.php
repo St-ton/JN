@@ -248,12 +248,7 @@ class Status
     protected function getPaymentMethodsWithError()
     {
         $incorrectPaymentMethods = [];
-        $paymentMethods          = Shop::DB()->query("
-          SELECT * 
-            FROM tzahlungsart 
-            WHERE nActive = 1 
-            ORDER BY cAnbieter, cName, nSort, kZahlungsart", 2
-        );
+        $paymentMethods          = Shop::DB()->selectAll('tzahlungsart', 'nActive', 1, '*', 'cAnbieter, cName, nSort, kZahlungsart');
 
         if (is_array($paymentMethods)) {
             foreach ($paymentMethods as $i => $method) {

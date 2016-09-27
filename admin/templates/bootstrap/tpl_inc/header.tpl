@@ -120,43 +120,11 @@
             });
 
             $(document).on("keydown", function (event) {
-                if (event.keyCode == 70 && event.ctrlKey) {
+                if (event.keyCode == 71 && event.ctrlKey) {
                     event.preventDefault();
                     $search_frame.modal('toggle');
                 }
             });
-
-            /*
-            $search_input.on('keydown', function(event) {
-                if (event.keyCode == 38 || event.keyCode == 40) {
-                    event.preventDefault();
-                }
-                switch (event.keyCode) {
-                    case 38: {
-                        console.log('up');
-                        break;
-                    }
-                    case 40: {
-                        if ($search_result.find('li.active').length == 0) {
-                            $search_result.find('li').first().addClass('active');
-                        }
-                        else {
-                            $active = $search_result.find('li.active');
-                            $next = $active.next('li');
-                            if ($next.length == 0) {
-                                $next = $active.closest('.grid-item').next().find('li').first();
-                            }
-
-                            if ($next.length) {
-                                $active.removeClass('active');
-                                $next.addClass('active');
-                            }
-                        }
-                        break;
-                    }
-                }
-            });
-            */
         });
         </script>
     {/if}

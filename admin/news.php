@@ -51,7 +51,7 @@ if (strlen(verifyGPDataString('tab')) > 0) {
 $Sprachen     = gibAlleSprachen();
 $oSpracheNews = Shop::Lang()->getIsoFromLangID($_SESSION['kSprache']);
 if (!$oSpracheNews) {
-    $oSpracheNews = Shop::DB()->query("SELECT cISO FROM tsprache WHERE kSprache = " . (int)$_SESSION['kSprache'], 1);
+    $oSpracheNews = Shop::DB()->select('tsprache', 'kSprache', (int)$_SESSION['kSprache']);
 }
 // News
 if (isset($_POST['einstellungen']) && intval($_POST['einstellungen']) > 0 && validateToken()) {
@@ -335,11 +335,7 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
 
                 if ($kNews > 0) {
                     ContentAuthor::getInstance()->clearAuthor('NEWS', $kNews);
-                    $oNewsTMP = Shop::DB()->query(
-                        "SELECT dGueltigVon, nAktiv, kSprache
-                            FROM tnews
-                            WHERE kNews = " . $kNews, 1
-                    );
+                    $oNewsTMP = Shop::DB()->select('tnews', 'kNews', $kNews);
                     Shop::DB()->delete('tnews', 'kNews', $kNews);
                     // Bilderverzeichnis loeschen
                     loescheNewsBilderDir($kNews, $cUploadVerzeichnis);

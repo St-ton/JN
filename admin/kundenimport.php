@@ -136,9 +136,9 @@ function processImport($fmt, $data)
         return 'kein Nachname! &Uuml;bergehe diesen Datensatz.';
     }
 
-    $old_mail = Shop::DB()->query("SELECT kKunde FROM tkunde WHERE cMail = '" . $kunde->cMail . "'", 1);
-    if ($old_mail->kKunde > 0) {
-        return "Kunde mit dieser Emailadresse bereits vorhanden: ($kunde->cMail)! &Uuml;bergehe Datendatz";
+    $old_mail = Shop::DB()->select('tkunde', 'cMail', $kunde->cMail);
+    if (isset($old_mail->kKunde) && $old_mail->kKunde > 0) {
+        return "Kunde mit dieser Emailadresse bereits vorhanden: ($kunde->cMail)! &Uuml;bergehe Datensatz.";
     }
     if ($kunde->cAnrede === 'f' || strtolower($kunde->cAnrede) === 'frau') {
         $kunde->cAnrede = 'w';
@@ -166,8 +166,8 @@ function processImport($fmt, $data)
     }
     $cPasswortKlartext = '';
     if (intval($_POST['PasswortGenerieren']) === 1) {
-        $cPasswortKlartext = $kunde->generatePassword(12);//generatePW(8);
-        $kunde->cPasswort  = $kunde->generatePasswordHash($cPasswortKlartext);//cryptPasswort($cPasswortKlartext);
+        $cPasswortKlartext = $kunde->generatePassword(12);
+        $kunde->cPasswort  = $kunde->generatePasswordHash($cPasswortKlartext);
     }
     $oTMP              = new stdClass();
     $oTMP->cNachname   = $kunde->cNachname;

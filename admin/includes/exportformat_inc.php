@@ -630,7 +630,7 @@ function baueArtikelExportSQL(&$oExportformat)
     $cSQL_arr['Where'] = '';
     $cSQL_arr['Join']  = '';
 
-    if (!$oExportformat->kExportformat) {
+    if (empty($oExportformat->kExportformat)) {
         return $cSQL_arr;
     }
     $cExportEinstellungAssoc_arr = getEinstellungenExport($oExportformat->kExportformat);
@@ -640,14 +640,13 @@ function baueArtikelExportSQL(&$oExportformat)
             $cSQL_arr['Where'] = " AND kVaterArtikel = 0";
             break;
         case 3:
-            $cSQL_arr['Where'] = " AND (tartikel.nIstVater != 1
-                            OR tartikel.kEigenschaftKombi > 0)";
+            $cSQL_arr['Where'] = " AND (tartikel.nIstVater != 1 OR tartikel.kEigenschaftKombi > 0)";
             break;
     }
     if (isset($cExportEinstellungAssoc_arr['exportformate_lager_ueber_null']) && $cExportEinstellungAssoc_arr['exportformate_lager_ueber_null'] === 'Y') {
-        $cSQL_arr['Where'] .= " AND (NOT (tartikel.fLagerbestand<=0 AND tartikel.cLagerBeachten='Y'))";
+        $cSQL_arr['Where'] .= " AND (NOT (tartikel.fLagerbestand <= 0 AND tartikel.cLagerBeachten = 'Y'))";
     } elseif (isset($cExportEinstellungAssoc_arr['exportformate_lager_ueber_null']) && $cExportEinstellungAssoc_arr['exportformate_lager_ueber_null'] === 'O') {
-        $cSQL_arr['Where'] .= " AND (NOT (tartikel.fLagerbestand<=0 AND tartikel.cLagerBeachten='Y') OR tartikel.cLagerKleinerNull='Y')";
+        $cSQL_arr['Where'] .= " AND (NOT (tartikel.fLagerbestand <= 0 AND tartikel.cLagerBeachten = 'Y') OR tartikel.cLagerKleinerNull = 'Y')";
     }
 
     if (isset($cExportEinstellungAssoc_arr['exportformate_preis_ueber_null']) && $cExportEinstellungAssoc_arr['exportformate_preis_ueber_null'] === 'Y') {
@@ -681,8 +680,12 @@ function holeMaxExportArtikelAnzahl(&$oExportformat)
                         )
                 )';
     }
+    $cid = 'xp_' . md5(json_encode($cSQL_arr) . $sql);
+    if (($count = Shop::Cache()->get($cid)) !== false) {
+        return $count;
+    }
 
-    return Shop::DB()->query(
+    $count = Shop::DB()->query(
         "SELECT count(*) AS nAnzahl
             FROM tartikel
             LEFT JOIN tartikelattribut ON tartikelattribut.kArtikel = tartikel.kArtikel
@@ -694,4 +697,7 @@ function holeMaxExportArtikelAnzahl(&$oExportformat)
                 AND tartikelsichtbarkeit.kArtikel IS NULL
                 {$sql}", 1
     );
+    Shop::Cache()->set($cid, $count, [CACHING_GROUP_CORE], 120);
+
+    return $count;
 }

@@ -35,7 +35,7 @@ if (isset($_POST['edit']) && intval($_POST['edit']) > 0 && validateToken()) {
     $step                    = 'neue Versandart';
     $Versandart              = Shop::DB()->select('tversandart', 'kVersandart', (int)$_POST['edit']);
     $VersandartZahlungsarten = Shop::DB()->selectAll('tversandartzahlungsart', 'kVersandart', (int)$_POST['edit'], '*', 'kZahlungsart');
-    $VersandartStaffeln      = Shop::DB()->selectAll('tversandartstaffel', 'kVersandart ', (int)$_POST['edit'], '*', 'fBis');
+    $VersandartStaffeln      = Shop::DB()->selectAll('tversandartstaffel', 'kVersandart', (int)$_POST['edit'], '*', 'fBis');
     $versandberechnung       = Shop::DB()->select('tversandberechnung', 'kVersandberechnung', (int)$Versandart->kVersandberechnung);
 
     $smarty->assign('VersandartZahlungsarten', reorganizeObjectArray($VersandartZahlungsarten, 'kZahlungsart'))

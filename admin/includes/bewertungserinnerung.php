@@ -34,11 +34,7 @@ function baueBewertungsErinnerung()
                     }
                 } else {
                     // Hole standard Kundengruppe
-                    $oKundengruppe = Shop::DB()->query(
-                        "SELECT kKundengruppe
-                            FROM tkundengruppe
-                            WHERE cStandard = 'Y'", 1
-                    );
+                    $oKundengruppe = Shop::DB()->select('tkundengruppe', 'cStandard', 'Y');
                     if ($oKundengruppe->kKundengruppe > 0) {
                         $cSQL = " tkunde.kKundengruppe = " . $oKundengruppe->kKundengruppe;
                     }

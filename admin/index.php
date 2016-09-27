@@ -76,7 +76,7 @@ if (isset($_POST['adminlogin']) && intval($_POST['adminlogin']) === 1) {
                 break;
 
             case -6:
-                if (isset($_SESSION['AdminAccount']->TwoFA_expired) && true == $_SESSION['AdminAccount']->TwoFA_expired) {
+                if (isset($_SESSION['AdminAccount']->TwoFA_expired) && true === $_SESSION['AdminAccount']->TwoFA_expired) {
                     $cFehler = '2-Faktor-Authentifizierungs-Code abgelaufen';
                 }
                 break;

@@ -114,18 +114,6 @@
                 </VariableLocalized>
             </Variable>
             <Variable>
-                <Name>jtl_paypal_versandkostenheinweis</Name>
-                <Description></Description>
-                <VariableLocalized iso="GER">Die Versandkosten werden erst im letzten Bestellschritt berechnet und
-                    angezeigt.
-                </VariableLocalized>
-            </Variable>
-            <Variable>
-                <Name>jtl_paypal_versandkostenheinweis_artnr</Name>
-                <Description></Description>
-                <VariableLocalized iso="GER">shipping</VariableLocalized>
-            </Variable>
-            <Variable>
                 <Name>jtl_paypal_notallowed</Name>
                 <Description></Description>
                 <VariableLocalized iso="GER">Sie haben mindestens einen Artikel im Warenkorb, der nicht über PayPal

@@ -36,20 +36,20 @@
 
                 {if $Einstellungen.kundenwerbenkunden.kwk_nutzen === 'Y'}
                     <p>
-                        <a class="btn btn-default btn-group-justified" href="{get_static_route id='jtl.php'}?KwK=1">
+                        <a class="btn btn-default btn-group-justified" href="{get_static_route id='jtl.php' params=['KwK' => 1]}">
                             <span class="fa fa-comment"></span> {lang key="kwkName" section="login"}
                         </a>
                     </p>
                 {/if}
 
                 <p>
-                    <a class="btn btn-default btn-group-justified href="{get_static_route id='jtl.php'}?pass=1">
+                    <a class="btn btn-default btn-group-justified" href="{get_static_route id='jtl.php' params=['pass' => 1]}">
                         <span class="fa fa-lock"></span> {lang key="changePassword" section="login"}
                     </a>
                 </p>
 
                 <p class="text-center">
-                    <a href="{get_static_route id='jtl.php'}?del=1">
+                    <a href="{get_static_route id='jtl.php' params=['del' => 1]}">
                         <span class="fa fa-chain-broken"></span> {lang key="deleteAccount" section="login"}
                     </a>
                 </p>

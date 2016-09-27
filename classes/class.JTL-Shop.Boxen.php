@@ -122,7 +122,7 @@ class Boxen
     {
         return (strlen($cISO) > 0) ?
             Shop::DB()->select('tboxsprache', 'kBox', (int) $kBox, 'cISO', $cISO) :
-            Shop::DB()->query("SELECT * FROM tboxsprache WHERE kBox = " . (int)$kBox, 2);
+            Shop::DB()->selectAll('tboxsprache', 'kBox', (int)$kBox);
     }
 
     /**
@@ -245,11 +245,11 @@ class Boxen
                                         $filterEntry['id'] = $_filterValue;
                                         $name              = null;
                                         if ($nSeite == 2) { //map category name
-                                            $name = Shop::DB()->query("SELECT cName FROM tkategorie WHERE kKategorie = " . (int)$_filterValue, 1);
+                                            $name = Shop::DB()->select('tkategorie', 'kKategorie', (int)$_filterValue, null, null, null, null, false, 'cName');
                                         } elseif ($nSeite == 1) { //map article name
-                                            $name = Shop::DB()->query("SELECT cName FROM tartikel WHERE kArtikel = " . (int)$_filterValue, 1);
+                                            $name = Shop::DB()->select('tartikel', 'kArtikel', (int)$_filterValue, null, null, null, null, false, 'cName');
                                         } elseif ($nSeite == 31) { //map page name
-                                            $name = Shop::DB()->query("SELECT cName FROM tlink WHERE kLink = " . (int)$_filterValue, 1);
+                                            $name = Shop::DB()->select('tlink', 'kLink', (int)$_filterValue, null, null, null, null, false, 'cName');
                                         }
                                         $filterEntry['name'] = (!empty($name->cName)) ? $name->cName : '???';
                                         $filterOptions[]     = $filterEntry;
@@ -1015,7 +1015,7 @@ class Boxen
                                 AND tartikel.cNeu = 'Y'
                                 $this->lagerFilter
                                 $this->cVaterSQL
-                                AND cNeu='Y' AND DATE_SUB(now(),INTERVAL $alter_tage DAY) < dErstellt
+                                AND cNeu = 'Y' AND DATE_SUB(now(),INTERVAL $alter_tage DAY) < dErstellt
                             ORDER BY rand() LIMIT " . $limit, 2
                     );
                     if (is_array($menge) && count($menge) > 0) {
@@ -1400,7 +1400,7 @@ class Boxen
         }
         $nSeite      = (int)$nSeite;
         $oBoxAnzeige = array();
-        $oBox_arr    = Shop::DB()->query("SELECT * FROM tboxenanzeige WHERE nSeite = " . $nSeite, 2);
+        $oBox_arr    = Shop::DB()->selectAll('tboxenanzeige', 'nSeite', $nSeite);
         if (is_array($oBox_arr) && count($oBox_arr)) {
             foreach ($oBox_arr as $oBox) {
                 $oBoxAnzeige[$oBox->ePosition] = (boolean)$oBox->bAnzeigen;
@@ -1454,7 +1454,7 @@ class Boxen
      */
     public function holeContainer($ePosition)
     {
-        return Shop::DB()->query("SELECT kBox FROM tboxen WHERE kBoxvorlage = 0 AND ePosition = '" . $ePosition . "' ORDER BY ePosition ASC", 2);
+        return Shop::DB()->selectAll('tboxen', ['kBoxvorlage', 'ePosition'], [0, $ePosition], 'kBox', 'ePosition ASC');
     }
 
     /**

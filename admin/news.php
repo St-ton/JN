@@ -662,7 +662,7 @@ if ($step === 'news_uebersicht') {
                 "SELECT tnewskategorie.cName
                     FROM tnewskategorie
                     LEFT JOIN tnewskategorienews ON tnewskategorienews.kNewsKategorie = tnewskategorie.kNewsKategorie
-                    WHERE tnewskategorienews.kNews = {$oNews->kNews} ORDER BY tnewskategorie.nSort", 2
+                    WHERE tnewskategorienews.kNews = " . (int)$oNews->kNews ." ORDER BY tnewskategorie.nSort", 2
             );
             $Kategoriearray = array();
             foreach ($oCategorytoNews_arr as $j => $KategorieAusgabe) {
@@ -674,7 +674,7 @@ if ($step === 'news_uebersicht') {
                 "SELECT count(tnewskommentar.kNewsKommentar) AS nNewsKommentarAnzahlAktiv
                     FROM tnews
                     LEFT JOIN tnewskommentar ON tnewskommentar.kNews = tnews.kNews
-                    WHERE tnewskommentar.nAktiv = 1 AND tnews.kNews = {$oNews->kNews}
+                    WHERE tnewskommentar.nAktiv = 1 AND tnews.kNews = " . (int)$oNews->kNews . "
                     AND tnews.kSprache = " . (int)$_SESSION['kSprache'], 1
             );
             $oNews_arr[$i]->nNewsKommentarAnzahl = $oNewsKommentarAktiv->nNewsKommentarAnzahlAktiv;

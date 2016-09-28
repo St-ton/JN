@@ -48,7 +48,7 @@ function includeMailTemplate($params, &$smarty)
  * @param string      $ModulId
  * @param object      $Object
  * @param null|object $mail
- * @return null|stdClass
+ * @return null|bool|stdClass
  */
 function sendeMail($ModulId, $Object, $mail = null)
 {

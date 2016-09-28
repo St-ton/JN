@@ -11,7 +11,7 @@ require_once PFAD_ROOT . PFAD_CLASSES_CORE . 'class.core.Shop.php';
  */
 function baueSitemap($nDatei, $data)
 {
-    writeLog(PFAD_LOGFILES . 'sitemap.log', 'Baue "' . PFAD_EXPORT . 'sitemap_' . $nDatei . '.xml", Datenlänge "' . strlen($data) . '"', 1);
+    Jtllog::writeLog('Baue "' . PFAD_EXPORT . 'sitemap_' . $nDatei . '.xml", Datenlaenge "' . strlen($data) . '"', JTLLOG_LEVEL_DEBUG);
     $conf = Shop::getSettings(array(CONF_SITEMAP));
     if (!empty($data)) {
         if (function_exists('gzopen')) {
@@ -847,7 +847,6 @@ function generateSitemapXML()
         }
     }
     baueSitemap($nDatei, $sitemap_data);
-    writeLog(PFAD_LOGFILES . 'sitemap.log', print_r($nStat_arr, true), 1);
     // XML ablegen + ausgabe an user
     $datei = PFAD_ROOT . PFAD_EXPORT . 'sitemap_index.xml';
     if (is_writable($datei) || !is_file($datei)) {
@@ -956,7 +955,7 @@ function baueSitemapReport($nAnzahlURL_arr, $fTotalZeit)
 
         $kSitemapReport = Shop::DB()->insert('tsitemapreport', $oSitemapReport);
         $bGZ            = function_exists('gzopen');
-        writeLog(PFAD_LOGFILES . 'sitemap.log', 'Sitemaps Report: ' . var_export($nAnzahlURL_arr, true), 1);
+        Jtllog::writeLog('Sitemaps Report: ' . var_export($nAnzahlURL_arr, true), JTLLOG_LEVEL_DEBUG);
         foreach ($nAnzahlURL_arr as $i => $nAnzahlURL) {
             if ($nAnzahlURL > 0) {
                 $oSitemapReportFile                 = new stdClass();

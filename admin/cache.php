@@ -38,7 +38,7 @@ switch ($action) {
         //clear the smarty page cache
         $tab     = 'massaction';
         $_smarty = new JTLSmarty(true, false, false);
-        $_smarty->setCachingParams(true);
+        $_smarty->setCachingParams();
         $res = $_smarty->clearAllCache();
         if ($res === true) {
             $notice .= 'Seiten-Cache erfolgreich gel&ouml;scht.';

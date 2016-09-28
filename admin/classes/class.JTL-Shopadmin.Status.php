@@ -179,6 +179,31 @@ class Status
     }
 
     /**
+     * @return bool
+     */
+    protected function hasMobileTemplateIssue()
+    {
+        $oTemplate = Shop::DB()->select('ttemplate', 'eTyp', 'standard');
+        if (isset($oTemplate) && ($oTemplate->name === 'Evo' || $oTemplate->parent === 'Evo')) {
+            $oMobileTpl = Shop::DB()->select('ttemplate', 'eTyp', 'mobil');
+
+            return $oMobileTpl != null;
+        }
+
+        return false;
+    }
+
+    /**
+     * @return bool
+     */
+    protected function hasStandardTemplateIssue()
+    {
+        $oTemplate = Shop::DB()->select('ttemplate', 'eTyp', 'standard');
+
+        return $oTemplate == null;
+    }
+
+    /**
      * @return mixed|void
      */
     protected function getSubscription()

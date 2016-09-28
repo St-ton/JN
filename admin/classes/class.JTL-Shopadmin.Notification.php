@@ -83,6 +83,7 @@ class Notification implements IteratorAggregate, Countable
      */
     public function buildDefault()
     {
+        /** @var Status $status */
         $status     = Status::getInstance();
         $confGlobal = Shop::getSettings(array(CONF_GLOBAL));
 
@@ -100,6 +101,14 @@ class Notification implements IteratorAggregate, Countable
 
         if ($status->hasDifferentTemplateVersion()) {
             $this->add(NotificationEntry::TYPE_WARNING, 'Template', 'Ihre Template-Version unterscheidet sich von Ihrer Shop-Version.<br />Weitere Hilfe zu Template-Updates finden Sie im <i class="fa fa-external-link"></i> Wiki', 'shoptemplate.php');
+        }
+
+        if ($status->hasMobileTemplateIssue()) {
+            $this->add(NotificationEntry::TYPE_WARNING, 'Template', 'Sie haben ein responsive Standard-Template.<br />Es sollte deshalb kein Template speziell f&uuml;r mobile Endger&auml;te aktiviert sein!', 'shoptemplate.php');
+        }
+
+        if ($status->hasStandardTemplateIssue()) {
+            $this->add(NotificationEntry::TYPE_WARNING, 'Template', 'Sie haben kein Standard-Template aktiviert!', 'shoptemplate.php');
         }
 
         if ($status->hasActiveProfiler()) {

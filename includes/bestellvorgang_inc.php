@@ -614,7 +614,7 @@ function gibStepZahlung()
         unset($_SESSION['TrustedShops']);
         $_SESSION['Warenkorb']->loescheSpezialPos(C_WARENKORBPOS_TYP_TRUSTEDSHOPS);
         $oTrustedShops = gibTrustedShops();
-        if ($oTrustedShops->nAktiv == 1 && $oTrustedShops->eType === TS_BUYERPROT_EXCELLENCE) {
+        if (isset($oTrustedShops->nAktiv) && $oTrustedShops->nAktiv == 1 && $oTrustedShops->eType === TS_BUYERPROT_EXCELLENCE) {
             if (!isset($_SESSION['TrustedShops'])) {
                 $_SESSION['TrustedShops'] = new stdClass();
             }

@@ -293,7 +293,7 @@ function speicherBild($cFiles_arr, $oSuchspecialoverlaySprache)
         $cFiles_arr['cSuchspecialOverlayBild']['type'] === 'image/jpg' || $cFiles_arr['cSuchspecialOverlayBild']['type'] === 'image/gif' ||
         $cFiles_arr['cSuchspecialOverlayBild']['type'] === 'image/png' || $cFiles_arr['cSuchspecialOverlayBild']['type'] === 'image/bmp' ||
         $cFiles_arr['cSuchspecialOverlayBild']['type'] === 'image/x-png') {
-        if ($cFiles_arr['cSuchspecialOverlayBild']['size'] <= 2097152) {
+        if (empty($cFiles_arr['cSuchspecialOverlayBild']['error'])) {
             $cFormat   = mappeFileTyp($cFiles_arr['cSuchspecialOverlayBild']['type']);
             $cName     = 'kSuchspecialOverlay_' . $oSuchspecialoverlaySprache->kSprache . '_' . $oSuchspecialoverlaySprache->kSuchspecialOverlay . $cFormat;
             $cOriginal = $cFiles_arr['cSuchspecialOverlayBild']['tmp_name'];

@@ -27,7 +27,7 @@ class SmartyResourceNiceDB extends Smarty_Resource_Custom
      * @param string $name
      * @param string $source
      * @param int    $mtime
-     * @return bool
+     * @return bool|void
      */
     public function fetch($name, &$source, &$mtime)
     {

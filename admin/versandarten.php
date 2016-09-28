@@ -16,6 +16,7 @@ $standardwaehrung   = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
 $versandberechnung  = null;
 $hinweis            = '';
 $step               = 'uebersicht';
+$Versandart         = null;
 $nSteuersatzKey_arr = array_keys($_SESSION['Steuersatz']);
 if (isset($_POST['neu']) && isset($_POST['kVersandberechnung']) && intval($_POST['neu']) === 1 && intval($_POST['kVersandberechnung']) > 0 && validateToken()) {
     $step = 'neue Versandart';

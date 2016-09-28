@@ -213,9 +213,10 @@
                                                 <label class="thumbnail" for="gift{$oArtikelGeschenk->kArtikel}">
                                                     <img src="{$oArtikelGeschenk->Bilder[0]->cPfadKlein}" class="image" />
 
-                                                    <p class="small text-muted">{lang key="freeGiftFrom1" section="global"} {$oArtikelGeschenk->cBestellwert} {lang key="freeGiftFrom2" section="global"}</p>
-
-                                                    <p>{$oArtikelGeschenk->cName}</p>
+                                                    <span class="small text-muted">{lang key="freeGiftFrom1" section="global"} {$oArtikelGeschenk->cBestellwert} {lang key="freeGiftFrom2" section="global"}</span>
+                                                    <br />
+                                                    <span>{$oArtikelGeschenk->cName}</span>
+                                                    <br />
                                                     <input name="gratisgeschenk" type="radio" value="{$oArtikelGeschenk->kArtikel}" id="gift{$oArtikelGeschenk->kArtikel}" />
                                                 </label>
                                             </div>

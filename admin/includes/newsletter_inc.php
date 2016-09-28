@@ -49,6 +49,7 @@ function versendeNewsletter($mailSmarty, $oNewsletter, $Einstellungen, $oEmailem
 
     // Nettopreise?
     $NettoPreise = 0;
+    $bodyHtml    = '';
     if (isset($oKunde->kKunde) && $oKunde->kKunde > 0) {
         $oKundengruppe = Shop::DB()->query(
             "SELECT tkundengruppe.nNettoPreise
@@ -103,11 +104,7 @@ function versendeNewsletter($mailSmarty, $oNewsletter, $Einstellungen, $oEmailem
         $mail->toName = ((isset($oKunde->cVorname)) ? $oKunde->cVorname : '') . ' ' . ((isset($oKunde->cNachname)) ? $oKunde->cNachname : '');
     }
 
-    $oSpracheTMP = Shop::DB()->query(
-        "SELECT cISO
-            FROM tsprache
-            WHERE kSprache = " . (int)$oNewsletter->kSprache, 1
-    );
+    $oSpracheTMP = Shop::DB()->select('tsprache', 'kSprache', (int)$oNewsletter->kSprache);
 
     $mail->fromEmail     = $Einstellungen['newsletter']['newsletter_emailadresse'];
     $mail->fromName      = $Einstellungen['newsletter']['newsletter_emailabsender'];

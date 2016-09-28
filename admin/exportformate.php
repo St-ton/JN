@@ -181,7 +181,7 @@ if ($cAction !== null && $kExportformat !== null && validateToken()) {
             $exportformat = Shop::DB()->select('texportformat', 'kExportformat', $kExportformat);
             if ($exportformat->cDateiname && (file_exists(PFAD_ROOT . PFAD_EXPORT . $exportformat->cDateiname) ||
                     file_exists(PFAD_ROOT . PFAD_EXPORT . $exportformat->cDateiname . '.zip') ||
-                    (isset($oExportformat->nSplitgroesse) && (int)$oExportformat->nSplitgroesse > 0))
+                    (isset($exportformat->nSplitgroesse) && (int)$exportformat->nSplitgroesse > 0))
             ) {
                 $hinweis = 'Das Exportformat <b>' . $exportformat->cName . '</b> wurde erfolgreich erstellt.';
             } else {

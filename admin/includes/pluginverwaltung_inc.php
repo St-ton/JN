@@ -1838,9 +1838,9 @@ function installierePlugin($XML_arr, $cVerzeichnis, $oPluginOld)
         }
 
         return $nReturnValue;
-    } else {
-        return 2; // Main Plugindaten nicht korrekt
     }
+
+    return 2; // Main Plugindaten nicht korrekt
 }
 
 /**
@@ -2120,9 +2120,9 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
             }
 
             if (strlen($cTreffer2_arr[0]) === strlen($u)) {
-                if (!empty($oPluginOld->kPlugin)) {
-                    $kLinkOld = Shop::DB()->select('tlink', 'kPlugin', $oPluginOld->kPlugin, 'cName', $Link_arr['Name']);
-                }
+                $kLinkOld                  = (!empty($oPluginOld->kPlugin))
+                    ? Shop::DB()->select('tlink', 'kPlugin', $oPluginOld->kPlugin, 'cName', $Link_arr['Name'])
+                    : null;
                 $oLink->kLinkgruppe        = $kLinkgruppe;
                 $oLink->kPlugin            = $kPlugin;
                 $oLink->cName              = $Link_arr['Name'];
@@ -3025,12 +3025,9 @@ function syncPluginUpdate($kPlugin, $oPluginOld, $nXMLVersion)
                 WHERE kPlugin = " . $kPlugin, 3
         );
         // tboxvorlage
-        Shop::DB()->query(
-            "UPDATE tboxvorlage
-                SET kCustomID = " . $kPluginOld . "
-                WHERE kCustomID = " . $kPlugin . "
-                    AND eTyp = 'plugin'", 3
-        );
+        $upd = new stdClass();
+        $upd->kCustomID = $kPluginOld;
+        Shop::DB()->update('tboxvorlage', ['kCustomID', 'eTyp'], [$kPlugin, 'plugin'], $upd);
         // tpluginzahlungsartklasse
         Shop::DB()->query(
             "UPDATE tpluginzahlungsartklasse
@@ -3238,7 +3235,7 @@ function doSQLDelete($kPlugin, $bUpdate, $kPluginNew = null)
         );
 
         Shop::DB()->delete('tboxvorlage', array('kCustomID', 'eTyp'), array($kPlugin, 'plugin'));
-
+        Shop::DB()->delete('tpluginlinkdatei', 'kPlugin', $kPlugin);
         Shop::DB()->query(
             "DELETE tpluginemailvorlage, tpluginemailvorlagespracheoriginal
                 FROM tpluginemailvorlage

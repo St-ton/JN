@@ -155,7 +155,7 @@ $smarty->assign('bProfilerActive', $profilerState !== 0)
  */
 function openDashboard()
 {
-    global $oAccount , $smarty;
+    global $oAccount, $smarty;
 
     $_SESSION['loginIsValid'] = true;
     if ($oAccount->permission('DASHBOARD_VIEW')) {
@@ -185,7 +185,7 @@ function openDashboard()
  */
 function redirectToURI($szURI)
 {
-    $url = base64_decode(trim($_REQUEST['uri']));
+    $url = base64_decode($szURI);
     header('Location: ' . Shop::getURL(true) . '/' . PFAD_ADMIN . $url);
     exit;
 }

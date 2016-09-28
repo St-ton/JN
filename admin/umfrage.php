@@ -14,6 +14,7 @@ $cHinweis      = '';
 $cFehler       = '';
 $step          = 'umfrage_uebersicht';
 $kUmfrageTMP   = 0;
+$kUmfrage      = 0;
 if (verifyGPCDataInteger('kUmfrage') > 0) {
     $kUmfrageTMP = verifyGPCDataInteger('kUmfrage');
 } else {

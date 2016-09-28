@@ -5,7 +5,7 @@
  */
 require dirname(__FILE__) . '/includes/globalinclude.php';
 require PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
-
+/** @global JTLSmarty $smarty */
 Shop::run();
 $cParameter_arr = Shop::getParameters();
 $NaviFilter     = Shop::buildNaviFilter($cParameter_arr);
@@ -93,7 +93,7 @@ if (($cParameter_arr['kArtikel'] > 0 || $cParameter_arr['kKategorie'] > 0) && !$
 // Ticket #6498
 if ($cParameter_arr['kKategorie'] > 0 && !Kategorie::isVisible($cParameter_arr['kKategorie'], $_SESSION['Kundengruppe']->kKundengruppe)) {
     $cParameter_arr['kKategorie'] = 0;
-    $oLink                        = Shop::DB()->query("SELECT kLink FROM tlink WHERE nLinkart = " . LINKTYP_404, 1);
+    $oLink                        = Shop::DB()->select('tlink', 'nLinkart', LINKTYP_404);
     $kLink                        = $oLink->kLink;
     Shop::$kLink                  = $kLink;
 }

@@ -268,7 +268,7 @@ $(document).ready(function() {
             {if !empty($extContent)}
                 {$extContent}
             {/if}
-		</div>
+        </div>
         <div class="panel-footer">
             <div class="btn-group">
                 <input type="hidden" name="action" value="account_edit" />
@@ -282,4 +282,3 @@ $(document).ready(function() {
         </div>
     </form>
 </div>
-

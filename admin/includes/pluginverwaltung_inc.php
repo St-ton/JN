@@ -3025,12 +3025,9 @@ function syncPluginUpdate($kPlugin, $oPluginOld, $nXMLVersion)
                 WHERE kPlugin = " . $kPlugin, 3
         );
         // tboxvorlage
-        Shop::DB()->query(
-            "UPDATE tboxvorlage
-                SET kCustomID = " . $kPluginOld . "
-                WHERE kCustomID = " . $kPlugin . "
-                    AND eTyp = 'plugin'", 3
-        );
+        $upd = new stdClass();
+        $upd->kCustomID = $kPluginOld;
+        Shop::DB()->update('tboxvorlage', ['kCustomID', 'eTyp'], [$kPlugin, 'plugin'], $upd);
         // tpluginzahlungsartklasse
         Shop::DB()->query(
             "UPDATE tpluginzahlungsartklasse

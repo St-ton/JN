@@ -8,7 +8,7 @@ require_once dirname(__FILE__) . '/includes/admininclude.php';
 $oAccount->permission('ACCOUNT_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
-
+/** @global JTLSmarty $smarty */
 $cAction  = 'account_view';
 $messages = array(
     'notice' => '',
@@ -21,23 +21,23 @@ if (isset($_REQUEST['action']) && validateToken()) {
 
 switch ($cAction) {
     case 'account_lock':
-        $cAction = benutzerverwaltungActionAccountLock($GLOBALS['smarty'], $messages);
+        $cAction = benutzerverwaltungActionAccountLock($smarty, $messages);
         break;
     case 'account_unlock':
-        $cAction = benutzerverwaltungActionAccountUnLock($GLOBALS['smarty'], $messages);
+        $cAction = benutzerverwaltungActionAccountUnLock($smarty, $messages);
         break;
     case 'account_edit':
-        $cAction = benutzerverwaltungActionAccountEdit($GLOBALS['smarty'], $messages);
+        $cAction = benutzerverwaltungActionAccountEdit($smarty, $messages);
         break;
     case 'account_delete':
-        $cAction = benutzerverwaltungActionAccountDelete($GLOBALS['smarty'], $messages);
+        $cAction = benutzerverwaltungActionAccountDelete($smarty, $messages);
         break;
     case 'group_edit':
-        $cAction = benutzerverwaltungActionGroupEdit($GLOBALS['smarty'], $messages);
+        $cAction = benutzerverwaltungActionGroupEdit($smarty, $messages);
         break;
     case 'group_delete':
-        $cAction = benutzerverwaltungActionGroupDelete($GLOBALS['smarty'], $messages);
+        $cAction = benutzerverwaltungActionGroupDelete($smarty, $messages);
         break;
 }
 
-benutzerverwaltungFinalize($cAction, $GLOBALS['smarty'], $messages);
+benutzerverwaltungFinalize($cAction, $smarty, $messages);

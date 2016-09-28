@@ -4,11 +4,10 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 require_once dirname(__FILE__) . '/includes/admininclude.php';
-
-$oAccount->permission('EXPORT_FORMATS_VIEW', true, true);
-
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'exportformat_inc.php';
 
+$oAccount->permission('EXPORT_FORMATS_VIEW', true, true);
+/** @global JTLSmarty $smarty */
 $fehler              = '';
 $hinweis             = '';
 $step                = 'uebersicht';

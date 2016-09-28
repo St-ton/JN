@@ -6,7 +6,7 @@
 require_once dirname(__FILE__) . '/includes/admininclude.php';
 
 $oAccount->permission('IMPORT_CUSTOMER_VIEW', true, true);
-
+/** @global JTLSmarty $smarty */
 require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'tools.Global.php';
@@ -24,7 +24,7 @@ if (isset($_POST['kundenimport']) && $_POST['kundenimport'] == 1 && $_FILES['csv
         $file = fopen($_FILES['csv']['tmp_name'], 'r');
         if ($file !== false) {
             $row      = 0;
-            $fmt      = 0;
+            $fmt      = [];
             $formatId = -1;
             $hinweis  = '';
             while ($data = fgetcsv($file, 2000, $delimiter, '"')) {

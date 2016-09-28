@@ -6,7 +6,7 @@
 require_once dirname(__FILE__) . '/includes/admininclude.php';
 
 $oAccount->permission('DISPLAY_PRICECHART_VIEW', true, true);
-
+/** @global JTLSmarty $smarty */
 $cHinweis              = '';
 $cFehler               = '';
 $oPreisanzeigeConf_arr = array();

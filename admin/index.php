@@ -5,7 +5,7 @@
  */
 require_once dirname(__FILE__) . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
-
+/** @global JTLSmarty $smarty */
 $oUpdater = new Updater();
 $cFehler  = '';
 

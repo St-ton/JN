@@ -7,7 +7,7 @@ require_once dirname(__FILE__) . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Jtllog.php';
 
 $oAccount->permission('SYSTEMLOG_VIEW', true, true);
-
+/** @global JTLSmarty $smarty */
 $cHinweis          = '';
 $cFehler           = '';
 $cSuche            = '';

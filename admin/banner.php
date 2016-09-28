@@ -5,7 +5,7 @@
  */
 require_once dirname(__FILE__) . '/includes/admininclude.php';
 $oAccount->permission('DISPLAY_BANNER_VIEW', true, true);
-
+/** @global JTLSmarty $smarty */
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'banner_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 $cFehler  = '';

@@ -10,7 +10,7 @@ require_once dirname(__FILE__) . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Updater.php';
 
 $hasPermission = $oAccount->permission('DISPLAY_IMAGES_VIEW', false, false);
-
+/** @global JTLSmarty $smarty */
 $action = isset($_GET['action']) ? $_GET['action'] : null;
 $type   = isset($_GET['type']) ? $_GET['type'] : null;
 

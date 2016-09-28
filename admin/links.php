@@ -11,7 +11,7 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_CLASSES . 'class.JTL-Shopadmin.Plausi
 require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Link.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'links_inc.php';
-
+/** @global JTLSmarty $smarty */
 $hinweis            = '';
 $fehler             = '';
 $step               = 'uebersicht';

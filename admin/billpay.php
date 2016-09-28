@@ -12,14 +12,12 @@ include_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
 
 $cFehler           = null;
 $cStep             = 'uebersicht';
-
-//$oLog = new ZahlungsLog('za_billpay_jtl');
-
+/** @global JTLSmarty $smarty */
 $smarty->assign('cTab', $cStep);
 if (strlen(verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', verifyGPDataString('tab'));
 }
-
+/** @var Billpay $oBillpay */
 $oBillpay = PaymentMethod::create('za_billpay_jtl');
 
 if (strlen($oBillpay->getSetting('pid')) > 0 && strlen($oBillpay->getSetting('mid')) > 0 && strlen($oBillpay->getSetting('bpsecure')) > 0) {

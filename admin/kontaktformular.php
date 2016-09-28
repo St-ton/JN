@@ -6,7 +6,7 @@
 require_once dirname(__FILE__) . '/includes/admininclude.php';
 
 $oAccount->permission('SETTINGS_CONTACTFORM_VIEW', true, true);
-
+/** @global JTLSmarty $smarty */
 $cHinweis = '';
 $cTab     = 'config';
 $step     = 'uebersicht';

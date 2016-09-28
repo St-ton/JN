@@ -8,7 +8,7 @@ require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'umfrage_inc.php';
 
 $oAccount->permission('EXTENSION_VOTE_VIEW', true, true);
-
+/** @global JTLSmarty $smarty */
 $Einstellungen = Shop::getSettings(array(CONF_UMFRAGE));
 $cHinweis      = '';
 $cFehler       = '';

@@ -6,7 +6,7 @@
 require_once dirname(__FILE__) . '/includes/admininclude.php';
 
 $oAccount->permission('DISPLAY_BRANDING_VIEW', true, true);
-
+/** @global JTLSmarty $smarty */
 $cHinweis = '';
 $cFehler  = '';
 $step     = 'branding_uebersicht';

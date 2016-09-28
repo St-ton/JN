@@ -4,9 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 require_once dirname(__FILE__) . '/includes/admininclude.php';
-
+/** @global JTLSmarty $smarty */
 setzeSprache();
-global $smarty;
 $oAccount->permission('OBJECTCACHE_VIEW', true, true);
 $notice       = '';
 $error        = '';

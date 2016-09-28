@@ -6,7 +6,7 @@
 require_once dirname(__FILE__) . '/includes/admininclude.php';
 
 $oAccount->permission('MODULE_WISHLIST_VIEW', true, true);
-
+/** @global JTLSmarty $smarty */
 $cHinweis          = '';
 $settingsIDs       = array(442, 443, 440, 439, 445, 446, 1460);
 // Tabs

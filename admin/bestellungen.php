@@ -4,10 +4,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 require_once dirname(__FILE__) . '/includes/admininclude.php';
-
-$oAccount->permission('ORDER_VIEW', true, true);
-
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'bestellungen_inc.php';
+/** @global JTLSmarty $smarty */
+$oAccount->permission('ORDER_VIEW', true, true);
 
 $cHinweis        = '';
 $cFehler         = '';

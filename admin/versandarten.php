@@ -10,7 +10,7 @@ $oAccount->permission('ORDER_SHIPMENT_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'versandarten_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
-
+/** @global JTLSmarty $smarty */
 setzeSteuersaetze();
 $standardwaehrung   = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
 $versandberechnung  = null;

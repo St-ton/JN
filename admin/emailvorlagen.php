@@ -10,7 +10,7 @@ require_once dirname(__FILE__) . '/includes/admininclude.php';
 $oAccount->permission('CONTENT_EMAIL_TEMPLATE_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
-
+/** @global JTLSmarty $smarty */
 $Emailvorlage          = null;
 $hinweis               = '';
 $cHinweis              = '';

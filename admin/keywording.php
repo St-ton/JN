@@ -6,7 +6,7 @@
 require_once dirname(__FILE__) . '/includes/admininclude.php';
 
 $oAccount->permission('SETTINGS_META_KEYWORD_BLACKLIST_VIEW', true, true);
-
+/** @global JTLSmarty $smarty */
 $sprachen = gibAlleSprachen();
 if (isset($_POST['keywording']) && intval($_POST['keywording']) === 1 && validateToken()) {
     foreach ($sprachen as $sprache) {

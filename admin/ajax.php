@@ -4,6 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 require_once dirname(__FILE__) . '/includes/admininclude.php';
+/** @global JTLSmarty $smarty */
 $smarty->setForceCompile(true);
 require PFAD_ROOT . PFAD_ADMIN . PFAD_CLASSES . 'class.JTL-Shopadmin.JSONAPI.php';
 

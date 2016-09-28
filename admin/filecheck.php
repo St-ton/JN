@@ -4,11 +4,10 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 require_once dirname(__FILE__) . '/includes/admininclude.php';
-
-$oAccount->permission('FILECHECK_VIEW', true, true);
-
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'filecheck_inc.php';
 
+$oAccount->permission('FILECHECK_VIEW', true, true);
+/** @global JTLSmarty $smarty */
 $cHinweis     = '';
 $cFehler      = '';
 $oDatei_arr   = array();
@@ -28,7 +27,6 @@ if ($nReturnValue !== 1) {
             break;
     }
 }
-
 $smarty->assign('cHinweis', $cHinweis)
        ->assign('cFehler', $cFehler)
        ->assign('oDatei_arr', $oDatei_arr)

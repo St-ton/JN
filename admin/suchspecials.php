@@ -7,7 +7,7 @@ require_once dirname(__FILE__) . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
 
 $oAccount->permission('SETTINGS_SPECIALPRODUCTS_VIEW', true, true);
-
+/** @global JTLSmarty $smarty */
 $Einstellungen = Shop::getSettings(array(CONF_KUNDENFELD));
 $cHinweis      = '';
 $cFehler       = '';

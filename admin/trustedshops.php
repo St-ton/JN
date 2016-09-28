@@ -11,7 +11,7 @@ define('SHOP_SOFTWARE', 'JTL');
 $oAccount->permission('ORDER_TRUSTEDSHOPS_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.TrustedShops.php';
-
+/** @global JTLSmarty $smarty */
 $cHinweis = '';
 $cFehler  = '';
 $step     = 'uebersicht';

@@ -378,7 +378,7 @@ function setPie($data_arr, $x_labels_arr)
 
     $chart = new open_flash_chart();
     $chart->add_element($pie);
-    $chart->x_axis = null;
+    $chart->set_x_axis(null);
     $chart->set_bg_colour('#ffffff');
     $chart->set_number_format(0, true, true, false);
 

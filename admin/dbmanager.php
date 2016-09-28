@@ -7,11 +7,9 @@ require_once dirname(__FILE__) . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dbcheck_inc.php';
 
 $oAccount->permission('DBCHECK_VIEW', true, true);
-
+/** @global JTLSmarty $smarty */
 $tables = DBManager::getStatus(DB_NAME);
 $smarty->assign('tables', $tables);
-
-////////////////////////////////////////////////////////////////////////////
 
 $restrictedTables = ['tadminlogin', 'tbrocken', 'tsession', 'tsynclogin'];
 
@@ -33,15 +31,6 @@ function exec_query($query)
     }
 }
 
-/*
-$str = 'select=tadminlogin&filter[where][col][]=kAdminlogin&filter[where][op][]=<&filter[where][val][]=2&filter[limit]=50';
-$output = [];
-parse_str($str, $output);
-dd($output);
-*/
-
-////////////////////////////////////////////////////////////////////////////
-
 $jsTypo = (object)['tables' => []];
 foreach ($tables as $table => $info) {
     $columns                = DBManager::getColumns($table);
@@ -49,8 +38,6 @@ foreach ($tables as $table => $info) {
     $jsTypo->tables[$table] = $columns;
 }
 $smarty->assign('jsTypo', $jsTypo);
-
-////////////////////////////////////////////////////////////////////////////
 
 switch (true) {
     case isset($_GET['table']): {

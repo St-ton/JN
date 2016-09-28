@@ -179,7 +179,7 @@ class Status
     }
 
     /**
-     * @return mixed|void
+     * @return mixed|null
      */
     protected function getSubscription()
     {
@@ -190,7 +190,7 @@ class Status
             return $_SESSION['subscription'];
         }
 
-        return;
+        return null;
     }
 
     /**

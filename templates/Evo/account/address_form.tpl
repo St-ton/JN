@@ -5,7 +5,7 @@
 {/if}
 
 {include file="snippets/extension.tpl"}
-<form id="rechnungsdaten" action="{get_static_route id='jtl.php' params=['editRechnungsadresse' => 1]}" method="post" class="well panel-wrap">
+<form id="rechnungsdaten" action="{get_static_route id='jtl.php' params=['editRechnungsadresse' => 1]}" method="post" class="panel-wrap">
     <div class="panel panel-default" id="panel-address-form">
         <div class="panel-body">
             {$jtl_token}

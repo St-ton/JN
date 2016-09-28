@@ -15,7 +15,7 @@
     <div class="row">
         <div class="col-xs-12 col-md-8 col-md-offset-2">
             {block name="password-reset-form"}
-            <div class="well panel-wrap">
+            <div class="panel-wrap">
                 <div class="panel panel-default">
                     <div class="panel-heading"><h3 class="panel-title">{block name="password-reset-form-title"}{lang key="customerInformation" section="global"}{/block}</h3></div>
                     <div class="panel-body">

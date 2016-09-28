@@ -14,6 +14,7 @@ class Filter
     /**
      * Filter constructor.
      * Create a new empty filter object
+     * @param string|null $cId
      */
     public function __construct($cId = null)
     {
@@ -41,7 +42,7 @@ class Filter
      *  7 = lower than or equal
      *  8 = greater than or equal
      *  9 = equals not
-     * @param int    $nType
+     * @param int    $nDataType
      *  0 = text
      *  1 = number
      * @return FilterTextField
@@ -129,6 +130,7 @@ class Filter
     }
 
     /**
+     * @param string $cField
      * @return bool
      */
     public function hasSessionField($cField)
@@ -137,6 +139,7 @@ class Filter
     }
 
     /**
+     * @param string $cField
      * @return mixed
      */
     public function getSessionField($cField)

@@ -132,7 +132,7 @@ class Status
                   FROM tpluginhook 
                   INNER JOIN tplugin 
                     ON tpluginhook.kPlugin = tplugin.kPlugin 
-                    WHERE tpluginhook.nHook = {$hookId} AND tplugin.nStatus = 2", 2
+                    WHERE tpluginhook.nHook = " . $hookId . " AND tplugin.nStatus = 2", 2
             );
             foreach ($plugins as $plugin) {
                 $sharedPlugins[$hookId][$plugin->cPluginID] = $plugin;

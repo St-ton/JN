@@ -175,7 +175,7 @@ function berechneStatZeitraum($nZeitraum)
 function getJSON($oStat_arr, $nAnzeigeIntervall, $nTyp)
 {
     require_once PFAD_ROOT . PFAD_FLASHCHART . 'php-ofc-library/open-flash-chart.php';
-
+    $data = [];
     if (!is_array($oStat_arr) || count($oStat_arr) === 0) {
         return false;
     }

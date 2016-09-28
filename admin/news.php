@@ -449,17 +449,17 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
 
             $oNewsKategorie = editiereNewskategorie(verifyGPCDataInteger('kNewsKategorie'), $_SESSION['kSprache']);
 
-            if (isset($oNewsKategorie->kNewsKategorie) && intval($oNewsKategorie->kNewsKategorie) > 0) {
+            if (isset($oNewsKategorie->kNewsKategorie) && (int)$oNewsKategorie->kNewsKategorie > 0) {
                 $smarty->assign('oNewsKategorie', $oNewsKategorie);
             } else {
                 $step = 'news_uebersicht';
-                $cFehler .= 'Fehler: Die Newskategorie mit der ID "' . $kNewsKategorie . '" konnte nicht gefunden werden.<br />';
+                $cFehler .= 'Fehler: Die Newskategorie mit der ID "' . verifyGPCDataInteger('kNewsKategorie') . '" konnte nicht gefunden werden.<br />';
             }
 
             $smarty->assign('cPlausiValue_arr', $cPlausiValue_arr)
                    ->assign('cPostVar_arr', $_POST);
         }
-    } elseif (isset($_POST['news_kategorie_loeschen']) && intval($_POST['news_kategorie_loeschen']) === 1) { // Newskategorie loeschen
+    } elseif (isset($_POST['news_kategorie_loeschen']) && (int)$_POST['news_kategorie_loeschen'] === 1) { // Newskategorie loeschen
         $step = 'news_uebersicht';
 
         if (loescheNewsKategorie($_POST['kNewsKategorie'])) {
@@ -468,17 +468,17 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
         } else {
             $cFehler .= 'Fehler: Bitte markieren Sie mindestens eine Newskategorie.<br />';
         }
-    } elseif (isset($_GET['newskategorie_editieren']) && intval($_GET['newskategorie_editieren']) === 1) { // Newskategorie editieren
-        if (isset($_GET['kNewsKategorie']) && intval($_GET['kNewsKategorie']) > 0) {
+    } elseif (isset($_GET['newskategorie_editieren']) && (int)$_GET['newskategorie_editieren'] === 1) { // Newskategorie editieren
+        if (isset($_GET['kNewsKategorie']) && (int)$_GET['kNewsKategorie'] > 0) {
             $step = 'news_kategorie_erstellen';
 
             $oNewsKategorie = editiereNewskategorie($_GET['kNewsKategorie'], $_SESSION['kSprache']);
 
-            if (isset($oNewsKategorie->kNewsKategorie) && intval($oNewsKategorie->kNewsKategorie) > 0) {
+            if (isset($oNewsKategorie->kNewsKategorie) && (int)$oNewsKategorie->kNewsKategorie > 0) {
                 $smarty->assign('oNewsKategorie', $oNewsKategorie);
             } else {
                 $step = 'news_uebersicht';
-                $cFehler .= 'Fehler: Die Newskategorie mit der ID "' . $kNewsKategorie . '" konnte nicht gefunden werden.<br />';
+                $cFehler .= 'Fehler: Die Newskategorie mit der ID "' . (int)$_GET['kNewsKategorie'] . '" konnte nicht gefunden werden.<br />';
             }
         }
     } elseif (isset($_POST['newskommentar_freischalten']) && intval($_POST['newskommentar_freischalten']) && !isset($_POST['kommentareloeschenSubmit'])) { // Kommentare freischalten

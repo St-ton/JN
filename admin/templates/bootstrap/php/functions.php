@@ -3,6 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+/** @global JTLSmarty $smarty */
 $smarty->registerPlugin('function', 'getCurrencyConversionSmarty', 'getCurrencyConversionSmarty')
        ->registerPlugin('function', 'getCurrencyConversionTooltipButton', 'getCurrencyConversionTooltipButton')
        ->registerPlugin('function', 'getCurrentPage', 'getCurrentPage')

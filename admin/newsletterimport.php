@@ -21,11 +21,12 @@ if (isset($_POST['newsletterimport']) && intval($_POST['newsletterimport']) === 
         if ($file !== false) {
             $row      = 0;
             $formatId = -1;
+            $fmt      = [];
             while ($data = fgetcsv($file, 2000, ';', '"')) {
                 if ($row == 0) {
                     $hinweis .= 'Checke Kopfzeile ...';
                     $fmt = checkformat($data);
-                    if ($fmt == -1) {
+                    if ($fmt === -1) {
                         $fehler = 'Format nicht erkannt!';
                         break;
                     } else {
@@ -46,7 +47,6 @@ $smarty->assign('sprachen', gibAlleSprachen())
        ->assign('kundengruppen', Shop::DB()->query("SELECT * FROM tkundengruppe ORDER BY cName", 2))
        ->assign('hinweis', $hinweis)
        ->assign('fehler', $fehler)
-       ->assign('waehrung', (isset($standardwaehrung->cName) ? $standardwaehrung->cName : null))
        ->display('newsletterimport.tpl');
 
 /**
@@ -97,7 +97,7 @@ function pruefeNLEBlacklist($cMail)
 }
 
 /**
- * @param $data
+ * @param array $data
  * @return array|int
  */
 function checkformat($data)

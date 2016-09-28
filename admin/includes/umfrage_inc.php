@@ -404,8 +404,6 @@ function holeUmfrageStatistik($kUmfrage)
                             );
                             if (isset($oUmfrageFrageAntwortTMP->nAnzahlAntwort) && intval($oUmfrageFrageAntwortTMP->nAnzahlAntwort) > 0) {
                                 $oUmfrageStats->oUmfrageFrage_arr[$i]->nAnzahlAntworten += intval($oUmfrageFrageAntwortTMP->nAnzahlAntwort);
-
-                                unset($oTMP);
                                 $oTMP        = new stdClass();
                                 $oTMP->cName = '<a href="umfrage.php?umfrage=1&uf=' . $oUmfrageFrage->kUmfrageFrage . '&aa=' . $oUmfrageStats->oUmfrageFrage_arr[$i]->nAnzahlAntworten .
                                     '&ma=' . count($oUmfrageFrageAntwort_arr) . '&a=zeige_sonstige">Sonstige</a>';

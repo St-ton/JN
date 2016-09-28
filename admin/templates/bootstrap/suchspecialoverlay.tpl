@@ -128,7 +128,7 @@
                                 <label for="nPosition">{#suchspecialoverlayPosition#}</label>
                             </span>
                             <span class="input-group-wrap">
-                                <select name="nPosition" id="nPosition" class="combo form-control">
+                                <select name="nPosition" id="nPosition" class="combo form-control"{if !empty($disabledInEvo)} disabled="disabled"{/if}>
                                     <option value="1"{if $oSuchspecialOverlay->nPosition === '1'} selected{/if}>
                                         oben-links
                                     </option>

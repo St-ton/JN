@@ -161,13 +161,9 @@ class Kupon
      */
     private function loadFromDB($kKupon = 0)
     {
-        $oObj = Shop::DB()->query(
-            "SELECT *
-              FROM tkupon
-              WHERE kKupon = " . intval($kKupon), 1
-        );
+        $oObj = Shop::DB()->select('tkupon', 'kKupon', (int)$kKupon);
 
-        if ($oObj->kKupon > 0) {
+        if (isset($oObj->kKupon) && $oObj->kKupon > 0) {
             $cMember_arr = array_keys(get_object_vars($oObj));
             foreach ($cMember_arr as $cMember) {
                 $this->$cMember = $oObj->$cMember;

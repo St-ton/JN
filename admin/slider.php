@@ -24,9 +24,9 @@ switch ($cAction) {
             $aSlide               = $_REQUEST['aSlide'][$aSlideKey[$i]];
             $oSlide->kSlide       = ((strpos($aSlideKey[$i], 'neu') === false) ? $aSlideKey[$i] : null);
             $oSlide->kSlider      = $kSlider;
-            $oSlide->cTitel       = $aSlide['cTitel'];
+            $oSlide->cTitel       = htmlspecialchars($aSlide['cTitel']);
             $oSlide->cBild        = $aSlide['cBild'];
-            $oSlide->cText        = $aSlide['cText'];
+            $oSlide->cText        = htmlspecialchars($aSlide['cText']);
             $oSlide->cLink        = $aSlide['cLink'];
             $oSlide->nSort        = $aSlide['nSort'];
             if ($aSlide['delete'] == 1) {

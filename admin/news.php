@@ -64,7 +64,7 @@ if (isset($_POST['einstellungen']) && intval($_POST['einstellungen']) > 0 && val
             $oNewsMonatsPraefix           = new stdClass();
             $oNewsMonatsPraefix->kSprache = $oSpracheTMP->kSprache;
             if (strlen($_POST['praefix_' . $oSpracheTMP->cISO]) > 0) {
-                $oNewsMonatsPraefix->cPraefix = $_POST['praefix_' . $oSpracheTMP->cISO];
+                $oNewsMonatsPraefix->cPraefix = htmlspecialchars($_POST['praefix_' . $oSpracheTMP->cISO]);
             } else {
                 $oNewsMonatsPraefix->cPraefix = ($oSpracheTMP->cISO === 'ger') ? 'Newsuebersicht' : 'Newsoverview';
             }
@@ -152,13 +152,13 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
             $oNews                   = new stdClass();
             $oNews->kSprache         = $_SESSION['kSprache'];
             $oNews->cKundengruppe    = ';' . implode(';', $kKundengruppe_arr) . ';';
-            $oNews->cBetreff         = $cBetreff;
+            $oNews->cBetreff         = htmlspecialchars($cBetreff);
             $oNews->cText            = $cText;
             $oNews->cVorschauText    = $cVorschauText;
             $oNews->nAktiv           = $nAktiv;
-            $oNews->cMetaTitle       = $cMetaTitle;
-            $oNews->cMetaDescription = $cMetaDescription;
-            $oNews->cMetaKeywords    = $cMetaKeywords;
+            $oNews->cMetaTitle       = htmlspecialchars($cMetaTitle);
+            $oNews->cMetaDescription = htmlspecialchars($cMetaDescription);
+            $oNews->cMetaKeywords    = htmlspecialchars($cMetaKeywords);
             $oNews->dErstellt        = 'now()';
             $oNews->dGueltigVon      = convertDate($dGueltigVon);
             $oNews->cPreviewImage    = $cPreviewImage;
@@ -376,13 +376,13 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
         }
     } elseif (isset($_POST['news_kategorie_speichern']) && intval($_POST['news_kategorie_speichern']) === 1) { //Newskategorie speichern
         $step             = 'news_uebersicht';
-        $cName            = $_POST['cName'];
+        $cName            = htmlspecialchars($_POST['cName']);
         $cSeo             = $_POST['cSeo'];
         $nSort            = $_POST['nSort'];
         $nAktiv           = $_POST['nAktiv'];
-        $cMetaTitle       = $_POST['cMetaTitle'];
-        $cMetaDescription = $_POST['cMetaDescription'];
-        $cBeschreibung    = $_POST['cBeschreibung'];
+        $cMetaTitle       = htmlspecialchars($_POST['cMetaTitle']);
+        $cMetaDescription = htmlspecialchars($_POST['cMetaDescription']);
+        $cBeschreibung    = htmlspecialchars($_POST['cBeschreibung']);
         $cPreviewImage    = $_POST['previewImage'];
         $cPlausiValue_arr = pruefeNewsKategorie($_POST['cName'], (isset($_POST['newskategorie_edit_speichern'])) ? intval($_POST['newskategorie_edit_speichern']) : 0);
 

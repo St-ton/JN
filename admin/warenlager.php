@@ -32,7 +32,7 @@ switch ($cAction) {
                         $oObj              = new stdClass();
                         $oObj->kWarenlager = (int)$kWarenlager;
                         $oObj->kSprache    = (int)$kSprache;
-                        $oObj->cName       = trim($cName);
+                        $oObj->cName       = htmlspecialchars(trim($cName));
 
                         Shop::DB()->insert('twarenlagersprache', $oObj);
                     }

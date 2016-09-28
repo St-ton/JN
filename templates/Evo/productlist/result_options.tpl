@@ -2,7 +2,7 @@
 {if $Einstellungen.artikeluebersicht.suchfilter_anzeigen_ab == 0 || count($Suchergebnisse->Artikel->elemente) >= $Einstellungen.artikeluebersicht.suchfilter_anzeigen_ab || $NaviFilter->nAnzahlFilter > 0}
     {assign var='show_filters' value=true}
 {/if}
-<div id="result-options" class="well panel-wrap{if !$show_filters} hidden-xs{/if}">
+<div id="result-options" class="panel-wrap{if !$show_filters} hidden-xs{/if}">
     <div class="row">
         <div class="col-sm-8 col-sm-push-4 displayoptions form-inline text-right hidden-xs">
             {block name="productlist-result-options-sort"}

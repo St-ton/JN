@@ -77,8 +77,8 @@
             {if ($Einstellungen.news.news_kommentare_eingeloggt === 'Y' && !empty($smarty.session.Kunde->kKunde)) || $Einstellungen.news.news_kommentare_eingeloggt !== 'Y'}
                 <hr>
                 <div class="row">
-                    <div class="col-xs-12 col-md-10 col-md-offset-1">
-                        <div class="well panel-wrap">
+                    <div class="col-xs-12">
+                        <div class="panel-wrap">
                             <div class="panel panel-default">
                                 <div class="panel-heading"><h4 class="panel-title">{lang key="newsCommentAdd" section="news"}</h4></div>
                                 <div class="panel-body">

@@ -13,9 +13,9 @@
     {/literal}
 </script>
 <div class="row">
-    <div class="col-xs-12 col-md-10 col-md-offset-1">
+    <div class="col-xs-12">
         {block name="checkout-enter-shipping-address"}
-        <div class="well panel-wrap">
+        <div class="panel-wrap">
             <div class="panel panel-default" id="order-enter-shipping-address">
                 <div class="panel-heading">
                     <h3 class="panel-title">{block name="checkout-enter-shipping-address-title"}{lang key="shippingAdress" section="account data"}{/block}</h3>

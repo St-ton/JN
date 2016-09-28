@@ -6,9 +6,9 @@
 {include file='layout/header.tpl'}
 
 <h1>{lang key="productRating" section="product rating"}</h1>
-<div class="col-xs-12 col-md-10 col-md-offset-1">
+<div class="col-xs-12">
     {block name="productdetails-review-form"}
-    <div class="well panel-wrap">
+    <div class="panel-wrap">
         <div class="panel panel-default">
             <div class="panel-body">
                 <form method="post" action="{get_static_route id='bewertung.php'}#tab-votes">

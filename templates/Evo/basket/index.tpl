@@ -53,7 +53,7 @@
                     <div class="alert alert-info">{$Schnellkaufhinweis}</div>
                 {/if}
                 {block name="basket-note"}
-                    <div class="well panel-wrap basket-well">
+                    <div class="panel-wrap basket-well">
                         <div class="panel panel-default">
                             <div class="panel-body">
                                 {include file='checkout/inc_order_items.tpl' tplscope='cart'}

@@ -468,14 +468,16 @@ function getAttributeList($cSearch, $cWrapperID)
  */
 function getLinkList($cSearch, $aParam)
 {
-    global $oAccount;
-
     $cSearch      = Shop::DB()->escape($cSearch);
     $cSearch      = utf8_decode($cSearch);
     $oArticle_arr = array();
     $oResponse    = new xajaxResponse();
     if (strlen($cSearch) >= 2) {
-        $oArticle_arr = Shop::DB()->query("SELECT kLink AS kPrimary, kLink AS cBase, cName FROM tlink WHERE cName LIKE '" . $cSearch . "%' LIMIT 50", 2);
+        $oArticle_arr = Shop::DB()->query("
+          SELECT kLink AS kPrimary, kLink AS cBase, cName 
+            FROM tlink 
+            WHERE cName LIKE '" . $cSearch . "%' LIMIT 50", 2
+        );
         foreach ($oArticle_arr as &$oArticle) {
             $oArticle->cName = utf8_encode($oArticle->cName);
         }

@@ -662,8 +662,8 @@ class Billpay extends PaymentMethod
     }
 
     /**
-     * @param      $cType
-     * @param null $nPaymentType
+     * @param string   $cType
+     * @param null|int $nPaymentType
      * @return bool
      */
     public function getApi($cType, $nPaymentType = null)

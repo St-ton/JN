@@ -89,6 +89,10 @@ if (!empty($_FILES['file_data'])) {
     $PluginFehlerhaft_arr = gibVerfuegbarePlugins($PluginInstalliert_arr, true);
     // Version mappen und Update (falls vorhanden) anzeigen
     if (count($PluginInstalliert_arr) > 0) {
+        /**
+         * @var int $i
+         * @var Plugin $PluginInstalliert
+         */
         foreach ($PluginInstalliert_arr as $i => $PluginInstalliert) {
             $nVersion = $PluginInstalliert->getCurrentVersion();
             if ($nVersion > $PluginInstalliert->nVersion) {
@@ -98,7 +102,7 @@ if (!empty($_FILES['file_data'])) {
                 if ($nReturnValue == 1 || $nReturnValue == 90) {
                     $PluginInstalliert_arr[$i]->cUpdateFehler = 1;
                 } else {
-                    $PluginInstalliert_arr[$i]->cUpdateFehler = StringHandler::htmlentities(mappePlausiFehler($nReturnValue));
+                    $PluginInstalliert_arr[$i]->cUpdateFehler = StringHandler::htmlentities(mappePlausiFehler($nReturnValue, $PluginInstalliert));
                 }
             }
             $PluginInstalliert_arr[$i]->dVersion = number_format(doubleval($PluginInstalliert->nVersion) / 100, 2);
@@ -202,7 +206,7 @@ if (verifyGPCDataInteger('pluginverwaltung_uebersicht') === 1 && validateToken()
                 }
 
                 if ($nReturnValue > 3) {
-                    $cFehler = mappePlausiFehler($nReturnValue);
+                    $cFehler = mappePlausiFehler($nReturnValue, null);
                 }
             } elseif (isset($_POST['deaktivieren'])) { // Deaktivieren
                 $nReturnValue = deaktivierePlugin($kPlugin);
@@ -498,6 +502,10 @@ if ($step === 'pluginverwaltung_uebersicht') {
     $PluginFehlerhaft_arr = gibVerfuegbarePlugins($PluginInstalliert_arr, true);
     // Version mappen und Update (falls vorhanden) anzeigen
     if (count($PluginInstalliert_arr) > 0) {
+        /**
+         * @var int $i
+         * @var Plugin $PluginInstalliert
+         */
         foreach ($PluginInstalliert_arr as $i => $PluginInstalliert) {
             $nVersion = $PluginInstalliert->getCurrentVersion();
             if ($nVersion > $PluginInstalliert->nVersion) {
@@ -506,7 +514,7 @@ if ($step === 'pluginverwaltung_uebersicht') {
 
                 $PluginInstalliert_arr[$i]->cUpdateFehler = ($nReturnValue == 1 || $nReturnValue == 90) ?
                     1 :
-                    StringHandler::htmlentities(mappePlausiFehler($nReturnValue));
+                    StringHandler::htmlentities(mappePlausiFehler($nReturnValue, $PluginInstalliert));
             }
             $PluginInstalliert_arr[$i]->dVersion = number_format(doubleval($PluginInstalliert->nVersion) / 100, 2);
             $PluginInstalliert_arr[$i]->cStatus  = $PluginInstalliert->mapPluginStatus($PluginInstalliert->nStatus);

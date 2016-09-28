@@ -5,7 +5,6 @@
  */
 
 /**
- * @param int  $nAktuelleSeite
  * @param bool $bActiveOnly
  * @return stdClass
  */
@@ -355,13 +354,7 @@ function baueNewsMetaStart($oNewsNaviFilter)
     }
     // Kategoriefilter gesetzt
     if ($oNewsNaviFilter->nNewsKat != -1) {
-        $oNewsKat = Shop::DB()->query(
-            "SELECT cName, kNewsKategorie
-                FROM tnewskategorie
-                WHERE kNewsKategorie = " . (int)$oNewsNaviFilter->nNewsKat . "
-                    AND kSprache = " . (int)$_SESSION['kSprache'], 1
-        );
-
+        $oNewsKat = Shop::DB()->select('tnewskategorie', 'kNewsKategorie', (int)$oNewsNaviFilter->nNewsKat, 'kSprache', (int)$_SESSION['kSprache']);
         if (isset($oNewsKat->kNewsKategorie) && $oNewsKat->kNewsKategorie > 0) {
             $cMetaStart .= ' ' . $oNewsKat->cName;
         }
@@ -371,12 +364,13 @@ function baueNewsMetaStart($oNewsNaviFilter)
 }
 
 /**
- *
+ * @param JTLSmarty $smarty
+ * @param string    $AktuelleSeite
+ * @param string    $cCanonicalURL
  */
 function baueNewsKruemel($smarty, $AktuelleSeite, &$cCanonicalURL)
 {
-    $oLink = Shop::DB()->query("SELECT kLink FROM tlink WHERE nLinkart = " . LINKTYP_NEWS, 1);
-
+    $oLink = Shop::DB()->select('tlink', 'nLinkart', LINKTYP_NEWS);
     if (isset($oLink->kLink) && $oLink->kLink > 0) {
         //hole Link
         $linkHelper    = LinkHelper::getInstance();
@@ -387,7 +381,7 @@ function baueNewsKruemel($smarty, $AktuelleSeite, &$cCanonicalURL)
         $requestURL = baueURL($Link, URLART_SEITE);
         $sprachURL  = baueSprachURLS($Link, URLART_SEITE);
         // Canonical
-        if (strpos($requestURL, '.php') === false || !SHOP_SEO) {
+        if (strpos($requestURL, '.php') === false) {
             $cCanonicalURL = Shop::getURL() . '/' . $requestURL;
         }
         if (!isset($AktuelleSeite)) {
@@ -486,10 +480,8 @@ function getNewsCategory($kNews)
 }
 
 /**
- * @param int      $kNews
- * @param int      $count
- * @param int|null $from
- * @param int|null $to
+ * @param int    $kNews
+ * @param string $cLimitSQL
  * @return mixed
  */
 function getNewsComments($kNews, $cLimitSQL)
@@ -536,6 +528,7 @@ function getMonthOverview($kNewsMonatsUebersicht)
 
 /**
  * @param object $oSQL
+ * @param string $cLimitSQL
  * @return mixed
  */
 function getNewsOverview($oSQL, $cLimitSQL)
@@ -569,7 +562,7 @@ function getFullNewsOverview($oSQL)
         "SELECT count(DISTINCT(tnews.kNews)) AS nAnzahl
             FROM tnews
             " . $oSQL->cNewsKatSQL . "
-            WHERE tnews.nAktiv=1
+            WHERE tnews.nAktiv = 1
                 AND tnews.dGueltigVon <= now()
                 AND (tnews.cKundengruppe LIKE '%;-1;%' OR tnews.cKundengruppe LIKE '%;" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";%')
                 " . $oSQL->cDatumSQL . "
@@ -587,7 +580,7 @@ function getNewsDateArray($oSQL)
         "SELECT month(tnews.dGueltigVon) AS nMonat, year( tnews.dGueltigVon ) AS nJahr
             FROM tnews
             " . $oSQL->cNewsKatSQL . "
-            WHERE tnews.nAktiv=1
+            WHERE tnews.nAktiv = 1
                 AND tnews.dGueltigVon <= now()
                 AND (tnews.cKundengruppe LIKE '%;-1;%' OR tnews.cKundengruppe LIKE '%;" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";%')
                 AND tnews.kSprache = " . (int)$_SESSION['kSprache'] . "

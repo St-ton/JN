@@ -101,6 +101,13 @@
         </CSS>
         <Locales>
             <Variable>
+                <Name>jtl_paypal_payment_invoice_name</Name>
+                <Description>PayPal PLUS Zahlungsartname bei Rechnungskauf</Description>
+                <VariableLocalized iso="GER">Rechnung (PayPal PLUS)</VariableLocalized>
+                <VariableLocalized iso="ENG">Invoice (PayPal PLUS)</VariableLocalized>
+                <VariableLocalized iso="FRE">Facture (PayPal PLUS)</VariableLocalized>
+            </Variable>
+            <Variable>
                 <Name>jtl_paypal_warenkorb_max</Name>
                 <Description></Description>
                 <VariableLocalized iso="GER">Bitte reduzieren Sie Ihren Warenkorbwert auf maximal %Wert%.

@@ -15,6 +15,10 @@ $smarty->assign('tables', $tables);
 
 $restrictedTables = ['tadminlogin', 'tbrocken', 'tsession', 'tsynclogin'];
 
+/**
+ * @param string $query
+ * @return array|int|object
+ */
 function exec_query($query)
 {
     try {
@@ -98,7 +102,7 @@ switch (true) {
 
         $filter['offset'] = ($page - 1) * $filter['limit'];
 
-        $baseQuery = "SELECT * FROM `{$table}`";
+        $baseQuery = "SELECT * FROM " . $table;
 
         // query parts
         $queryParams = [];

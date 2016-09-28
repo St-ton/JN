@@ -13,15 +13,7 @@ Shop::checkNaviFilter($NaviFilter);
 $https          = false;
 $linkHelper     = LinkHelper::getInstance();
 if (isset(Shop::$kLink) && (int)Shop::$kLink > 0) {
-    $link       = $linkHelper->getPageLink(Shop::$kLink);
-    //temp. fix for #336, #337, @todo: remove after merge
-    if (isset($link->isActive) && $link->isActive === false) {
-        $cParameter_arr['kLink'] = 0;
-        Shop::$kLink             = 0;
-        Shop::$is404             = true;
-        Shop::$fileName          = null;
-        $link                    = null;
-    }
+    $link = $linkHelper->getPageLink(Shop::$kLink);
     if (isset($link->bSSL) && $link->bSSL > 0) {
         $https = true;
         if ((int)$link->bSSL === 2) {

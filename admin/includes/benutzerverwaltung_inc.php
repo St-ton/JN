@@ -279,8 +279,8 @@ function benutzerverwaltungActionAccountEdit(JTLSmarty $smarty, array &$messages
         $cError_arr           = array();
         $oTmpAcc              = new stdClass();
         $oTmpAcc->kAdminlogin = (isset($_POST['kAdminlogin'])) ? (int)$_POST['kAdminlogin'] : 0;
-        $oTmpAcc->cName       = trim($_POST['cName']);
-        $oTmpAcc->cMail       = trim($_POST['cMail']);
+        $oTmpAcc->cName       = htmlspecialchars(trim($_POST['cName']));
+        $oTmpAcc->cMail       = htmlspecialchars(trim($_POST['cMail']));
         $oTmpAcc->cLogin      = trim($_POST['cLogin']);
         $oTmpAcc->cPass       = trim($_POST['cPass']);
         $oTmpAcc->b2FAauth    = (int)$_POST['b2FAauth'];
@@ -500,8 +500,8 @@ function benutzerverwaltungActionGroupEdit(JTLSmarty $smarty, array &$messages)
         $cError_arr                     = array();
         $oAdminGroup                    = new stdClass();
         $oAdminGroup->kAdminlogingruppe = (isset($_POST['kAdminlogingruppe'])) ? (int)$_POST['kAdminlogingruppe'] : 0;
-        $oAdminGroup->cGruppe           = trim($_POST['cGruppe']);
-        $oAdminGroup->cBeschreibung     = trim($_POST['cBeschreibung']);
+        $oAdminGroup->cGruppe           = htmlspecialchars(trim($_POST['cGruppe']));
+        $oAdminGroup->cBeschreibung     = htmlspecialchars(trim($_POST['cBeschreibung']));
         $oAdminGroupPermission_arr      = $_POST['perm'];
 
         if (strlen($oAdminGroup->cGruppe) === 0) {

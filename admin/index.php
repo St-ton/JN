@@ -181,6 +181,7 @@ function openDashboard()
 /**
  * redirects to a given (base64-encoded) URI
  * (prevents code duplication)
+ * @param string $szURI
  */
 function redirectToURI($szURI)
 {

@@ -56,7 +56,7 @@ function getCurrencyConversionAjax($fPreisNetto, $fPreisBrutto, $cTargetID)
 /**
  * @param float  $fPreisNetto
  * @param float  $fPreisBrutto
- * @param string $cTargetID
+ * @param string $cTooltipID
  * @return xajaxResponse
  */
 function setCurrencyConversionAjaxTooltip($fPreisNetto, $fPreisBrutto, $cTooltipID)

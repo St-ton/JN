@@ -77,9 +77,7 @@ function getCategories($selKats = '', $kKategorie = 0, $tiefe = 0)
 }
 
 /**
- * @param string $selKats
- * @param int    $kKategorie
- * @param int    $tiefe
+ * @param string $selCustomers
  * @return array
  */
 function getCustomers($selCustomers = '')
@@ -316,6 +314,7 @@ function createCouponFromInput()
  * Get the number of existing coupons of type $cKuponTyp
  * 
  * @param string $cKuponTyp
+ * @param string $cWhereSQL
  * @return int
  */
 function getCouponCount($cKuponTyp = 'standard', $cWhereSQL = '')

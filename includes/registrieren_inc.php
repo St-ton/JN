@@ -6,7 +6,7 @@
 
 /**
  * @param array $cPost_arr
- * @return array
+ * @return array|int
  */
 function kundeSpeichern($cPost_arr)
 {

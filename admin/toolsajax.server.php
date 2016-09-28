@@ -464,7 +464,7 @@ function getAttributeList($cSearch, $cWrapperID)
 /**
  * @param string $cSearch
  * @param array $aParam
- * @return array
+ * @return xajaxResponse
  */
 function getLinkList($cSearch, $aParam)
 {

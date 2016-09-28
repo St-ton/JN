@@ -128,26 +128,6 @@
                 </VariableLocalized>
             </Variable>
             <Variable>
-                <Name>jtl_paypal_article_or</Name>
-                <Description></Description>
-                <VariableLocalized iso="GER"><![CDATA[<p> - oder - </p>]]></VariableLocalized>
-            </Variable>
-            <Variable>
-                <Name>jtl_paypal_cart_pre</Name>
-                <Description></Description>
-                <VariableLocalized iso="GER"><![CDATA[<p> - oder - </p>]]></VariableLocalized>
-            </Variable>
-            <Variable>
-                <Name>jtl_paypal_cart_after</Name>
-                <Description></Description>
-                <VariableLocalized iso="GER"> </VariableLocalized>
-            </Variable>
-            <Variable>
-                <Name>jtl_paypal_versandermittlung_weiter</Name>
-                <Description></Description>
-                <VariableLocalized iso="GER">Versandart auswählen</VariableLocalized>
-            </Variable>
-            <Variable>
                 <Name>jtl_paypal_lieferadresse_nicht_aenderbar</Name>
                 <Description></Description>
                 <VariableLocalized iso="GER">Bei der Zahlart PayPal Express ist die Lieferadresse nicht änderbar.

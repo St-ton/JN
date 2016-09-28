@@ -85,7 +85,7 @@ if ((int) $order->kBestellung === 0) {
 
 // validation
 if (!in_array((int) $order->cStatus, [BESTELLUNG_STATUS_OFFEN, BESTELLUNG_STATUS_IN_BEARBEITUNG])) {
-    $payment->doLog("PayPal Notify: Order status '{$order->cStatus}' did not match the requirements", LOGLEVEL_ERROR);
+    // order status has already been set
     $exit();
 }
 

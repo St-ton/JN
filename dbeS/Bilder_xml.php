@@ -356,7 +356,7 @@ function bearbeite($xml, $unzipPath)
     }
     //Herstellerbilder
     foreach ($herstellerbild_arr as $Herstellerbild) {
-        $Herstellerbild->kHersteller = (int) $Herstellerbild->kHersteller;
+        $Herstellerbild->kHersteller = (int)$Herstellerbild->kHersteller;
         if (strlen($Herstellerbild->cPfad) > 0 && $Herstellerbild->kHersteller > 0) {
             $imgFilename  = $Herstellerbild->cPfad;
             $Bildformat   = gibBildformat($unzipPath . $imgFilename);
@@ -399,6 +399,11 @@ function bearbeite($xml, $unzipPath)
                 //thersteller updaten
                 Shop::DB()->update('thersteller', 'kHersteller', (int)$Herstellerbild->kHersteller, (object)['cBildpfad' => $Herstellerbild->cPfad]);
             }
+            $cacheTags = [];
+            foreach (Shop::DB()->selectAll('tartikel', 'kHersteller', (int)$Herstellerbild->kHersteller, 'kArtikel') as $article) {
+                $cacheTags[] =  CACHING_GROUP_ARTICLE . '_' . $article->kArtikel;
+            }
+            Shop::Cache()->flushTags($cacheTags);
             unlink($unzipPath . $imgFilename);
         }
     }
@@ -1050,14 +1055,25 @@ function bearbeiteDeletes($xml)
     }
     //Herstellerbilder löschen
     if (isset($xml['del_bilder']['kHersteller'])) {
+        $cacheTags = [];
         if (is_array($xml['del_bilder']['kHersteller'])) {
             foreach ($xml['del_bilder']['kHersteller'] as $kHersteller) {
                 if ((int)$kHersteller > 0) {
                     Shop::DB()->update('thersteller', 'kHersteller', (int)$kHersteller, (object)['cBildpfad' => '']);
+                    foreach (Shop::DB()->selectAll('tartikel', 'kHersteller', (int)$kHersteller, 'kArtikel') as $article) {
+                        $cacheTags[] = $article->kArtikel;
+                    }
                 }
             }
         } elseif ((int)$xml['del_bilder']['kHersteller'] > 0) {
             Shop::DB()->update('thersteller', 'kHersteller', (int)$xml['del_bilder']['kHersteller'], (object)['cBildpfad' => '']);
+            foreach (Shop::DB()->selectAll('tartikel', 'kHersteller', (int)$xml['del_bilder']['kHersteller'], 'kArtikel') as $article) {
+                $cacheTags[] = $article->kArtikel;
+            }
+        }
+        if (count($cacheTags) > 0) {
+            array_walk($cacheTags, function(&$i) { $i = CACHING_GROUP_ARTICLE . '_' . $i; });
+            Shop::Cache()->flushTags($cacheTags);
         }
     }
     //Merkmalbilder löschen

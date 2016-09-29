@@ -386,11 +386,11 @@ function gibPLZInfo($cFormValue, $cLandISO)
     $objResponse = new xajaxResponse();
     $oPlz_arr    = array();
     if (strlen($cFormValue) >= 4) {
-        $oPlz_arr = Shop::DB()->query(
-            "SELECT cOrt
-                FROM tplz
-                WHERE cPLZ='" . StringHandler::htmlentities(StringHandler::filterXSS($cFormValue)) . "'
-                    AND cLandISO='" . StringHandler::htmlentities(StringHandler::filterXSS($cLandISO)) . "'", 2
+        $oPlz_arr = Shop::DB()->selectAll(
+            'tplz',
+            ['cPLZ', 'cLandISO'],
+            [StringHandler::htmlentities(StringHandler::filterXSS($cFormValue)), StringHandler::htmlentities(StringHandler::filterXSS($cLandISO))],
+            'cOrt'
         );
     }
     foreach ($oPlz_arr as $i => $oPlz) {
@@ -736,7 +736,7 @@ function tauscheVariationKombi($aFormValues, $nVater = 0, $kEigenschaft = 0, $kE
                     // Durchlaufe alle Eigenschaften
                     $oEigenschaftWert_arr = array();
                     foreach ($oEigenschaft_arr as $i => $oEigenschaft) {
-                        $oEigenschaftWert_arr[$i] = Shop::DB()->query("SELECT * FROM teigenschaftwert WHERE kEigenschaft = " . intval($oEigenschaft->kEigenschaft), 2);
+                        $oEigenschaftWert_arr[$i] = Shop::DB()->selectAll('teigenschaftwert', 'kEigenschaft', (int)$oEigenschaft->kEigenschaft);
                     }
                     // Baue mögliche Kindartikel
                     $oKombiFilter_arr = gibMoeglicheVariationen($oVaterArtikel->kArtikel, $oEigenschaftWert_arr, $_SESSION['oVarkombiAuswahl']->kGesetzteEigeschaftWert_arr);
@@ -764,7 +764,7 @@ function tauscheVariationKombi($aFormValues, $nVater = 0, $kEigenschaft = 0, $kE
                         $kNichtGesetzteEigenschaft = $oVariationKombiKind->kEigenschaft;
                         // hole eigenschaftswerte
                         $kBereitsGesetzt      = array();
-                        $oEigenschaftWert_arr = Shop::DB()->query("SELECT * FROM teigenschaftwert WHERE kEigenschaft = " . intval($kNichtGesetzteEigenschaft), 2);
+                        $oEigenschaftWert_arr = Shop::DB()->selectAll('teigenschaftwert', 'kEigenschaft', (int)$kNichtGesetzteEigenschaft);
                         foreach ($oEigenschaftWert_arr as $oEigenschaftWert) {
                             $kMoeglicheEigenschaftWert_arr                             = $_SESSION['oVarkombiAuswahl']->kGesetzteEigeschaftWert_arr;
                             $kMoeglicheEigenschaftWert_arr[$kNichtGesetzteEigenschaft] = $oEigenschaftWert->kEigenschaftWert;
@@ -1116,7 +1116,7 @@ function checkVarkombiDependencies($kVaterArtikel, $cVaterURL, $kEigenschaft = 0
         // Durchlaufe alle Eigenschaften
         $oEigenschaftWert_arr = array();
         foreach ($oEigenschaft_arr as $i => $oEigenschaft) {
-            $oEigenschaftWert_arr[$i] = Shop::DB()->query("SELECT * FROM teigenschaftwert WHERE kEigenschaft = " . (int)$oEigenschaft->kEigenschaft, 2);
+            $oEigenschaftWert_arr[$i] = Shop::DB()->selectAll('teigenschaftwert', 'kEigenschaft', (int)$oEigenschaft->kEigenschaft);
         }
         // Baue mögliche Kindartikel
         $oKombiFilter_arr = gibMoeglicheVariationen($kVaterArtikel, $oEigenschaftWert_arr, $_SESSION['oVarkombiAuswahl']->kGesetzteEigeschaftWert_arr);
@@ -1150,8 +1150,7 @@ function checkVarkombiDependencies($kVaterArtikel, $cVaterURL, $kEigenschaft = 0
             $kNichtGesetzteEigenschaft     = (int) $kNichtGesetzteEigenschaft_arr[0];
 
             // hole eigenschaftswerte
-            $oEigenschaftWert_arr = Shop::DB()->query("SELECT * FROM teigenschaftwert WHERE kEigenschaft = " . (int)$kNichtGesetzteEigenschaft, 2);
-
+            $oEigenschaftWert_arr = Shop::DB()->selectAll('teigenschaftwert', 'kEigenschaft', (int)$kNichtGesetzteEigenschaft);
             foreach ($oEigenschaftWert_arr as $oEigenschaftWert) {
                 $kMoeglicheEigenschaftWert_arr                             = $_SESSION['oVarkombiAuswahl']->kGesetzteEigeschaftWert_arr;
                 $kMoeglicheEigenschaftWert_arr[$kNichtGesetzteEigenschaft] = $oEigenschaftWert->kEigenschaftWert;
@@ -1262,6 +1261,6 @@ function gibArtikelByVariationen($kArtikel, $kVariationKombi_arr)
 
     return $oArtikelTMP;
 }
-
+/** @global xajax $xajax */
 $xajax->processRequest();
 header('Content-Type:text/html;charset=' . JTL_CHARSET . ';');

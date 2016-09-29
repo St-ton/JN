@@ -53,12 +53,7 @@ if (pruefeBetreffVorhanden()) {
         }
     }
     $lang     = $_SESSION['cISOSprache'];
-    $Contents = Shop::DB()->query("
-        SELECT *
-            FROM tspezialcontentsprache
-            WHERE nSpezialContent = " . (int) SC_KONTAKTFORMULAR . "
-            AND cISOSprache = '" . $lang . "'", 2
-    );
+    $Contents = Shop::DB()->selectAll('tspezialcontentsprache', ['nSpezialContent', 'cISOSprache'], [(int)SC_KONTAKTFORMULAR, $lang]);
     $SpezialContent = new stdClass();
     foreach ($Contents as $Content) {
         $SpezialContent->{$Content->cTyp} = $Content->cContent;

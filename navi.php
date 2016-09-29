@@ -553,7 +553,7 @@ if ($cParameter_arr['kHersteller'] > 0 ||
             $kLink         = $hookInfos['value'];
             $bFileNotFound = $hookInfos['isFileNotFound'];
             if (!$kLink) {
-                $oLink       = Shop::DB()->query("SELECT kLink FROM tlink WHERE nLinkart = " . LINKTYP_404, 1);
+                $oLink       = Shop::DB()->select('tlink', 'nLinkart', LINKTYP_404);
                 $kLink       = $oLink->kLink;
                 Shop::$kLink = $kLink;
             }

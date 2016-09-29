@@ -10,7 +10,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'seite_inc.php';
 
 Shop::setPageType(PAGE_NEWSLETTER);
 $AktuelleSeite = 'NEWSLETTER';
-$oLink         = Shop::DB()->query("SELECT kLink FROM tlink WHERE nLinkart = " . LINKTYP_NEWSLETTER, 1);
+$oLink         = Shop::DB()->select('tlink', 'nLinkart', LINKTYP_NEWSLETTER);
 if (isset($oLink->kLink)) {
     $kLink = $oLink->kLink;
 } else {
@@ -55,11 +55,7 @@ if (isset($_GET['fc']) && strlen($_GET['fc']) > 0) {
     if (isset($oNewsletterEmpfaenger->kNewsletterEmpfaenger) && $oNewsletterEmpfaenger->kNewsletterEmpfaenger > 0) {
         executeHook(HOOK_NEWSLETTER_PAGE_EMPFAENGERFREISCHALTEN, array('oNewsletterEmpfaenger' => $oNewsletterEmpfaenger));
         // Newsletterempfaenger freischalten
-        Shop::DB()->query(
-            "UPDATE tnewsletterempfaenger
-                SET nAktiv = 1
-                WHERE kNewsletterEmpfaenger = " . (int)$oNewsletterEmpfaenger->kNewsletterEmpfaenger, 3
-        );
+        Shop::DB()->update('tnewsletterempfaenger', 'kNewsletterEmpfaenger', (int)$oNewsletterEmpfaenger->kNewsletterEmpfaenger, (object)['nAktiv' => 1]);
         // Pruefen, ob mittlerweile ein Kundenkonto existiert und wenn ja, dann kKunde in tnewsletterempfänger aktualisieren
         Shop::DB()->query(
             "UPDATE tnewsletterempfaenger, tkunde
@@ -68,13 +64,10 @@ if (isset($_GET['fc']) && strlen($_GET['fc']) > 0) {
                     AND tnewsletterempfaenger.kKunde = 0", 3
         );
         // Protokollieren (freigeschaltet)
-        Shop::DB()->query(
-            "UPDATE tnewsletterempfaengerhistory
-                SET dOptCode = now(), cOptIp = '" . gibIP() . "'
-                WHERE cOptCode = '" . $cFreischaltCode . "'
-                    AND cAktion = 'Eingetragen'", 4
-        );
-
+        $upd           = new stdClass();
+        $upd->dOptCode = 'now()';
+        $upd->cOptIp   = gibIP();
+        Shop::DB()->update('tnewsletterempfaengerhistory', ['cOptCode', 'cAktion'], [$cFreischaltCode, 'Eingetragen'], $upd);
         $cHinweis = Shop::Lang()->get('newsletterActive', 'messages');
     } else {
         $cFehler = Shop::Lang()->get('newsletterNoactive', 'errorMessages');

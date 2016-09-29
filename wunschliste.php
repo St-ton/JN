@@ -272,12 +272,7 @@ if (empty($CWunschliste)) {
     $CWunschliste = bauecPreis(new Wunschliste($kWunschliste));
 }
 if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
-    $oWunschliste_arr = Shop::DB()->query(
-        "SELECT *
-            FROM twunschliste
-                WHERE kKunde = " . (int)$_SESSION['Kunde']->kKunde . "
-                ORDER BY dErstellt DESC", 2
-    );
+    $oWunschliste_arr = Shop::DB()->selectAll('twunschliste', 'kKunde', (int)$_SESSION['Kunde']->kKunde, '*', 'dErstellt DESC');
 }
 $smarty->assign('CWunschliste', $CWunschliste)
        ->assign('oWunschliste_arr', $oWunschliste_arr)

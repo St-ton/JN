@@ -87,7 +87,7 @@ if (isset($_POST['login']) && intval($_POST['login']) === 1 && isset($_POST['ema
             session_regenerate_id(false);
             //in tbesucher kKunde setzen
             if (isset($_SESSION['oBesucher']->kBesucher) && $_SESSION['oBesucher']->kBesucher > 0) {
-                Shop::DB()->query("UPDATE tbesucher SET kKunde = " . $Kunde->kKunde . " WHERE kBesucher = " . (int)$_SESSION["oBesucher"]->kBesucher, 4);
+                Shop::DB()->update('tbesucher', 'kBesucher', (int)$_SESSION["oBesucher"]->kBesucher, (object)['kKunde' => $Kunde->kKunde]);
             }
             if ($Kunde->cAktiv === 'Y') {
                 unset($_SESSION['Zahlungsart']);
@@ -642,7 +642,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
                     AND kKunde = " . (int)$_SESSION['Kunde']->kKunde, 1
             );
             if (empty($oBestellung->kBestellung) || !$oBestellung->kBestellung) {
-                $oBestellung_arr     = Shop::DB()->query("SELECT * FROM tbestellung WHERE kKunde = " . (int)$_SESSION['Kunde']->kKunde, 2);
+                $oBestellung_arr     = Shop::DB()->selectAll('tbestellung', 'kKunde', (int)$_SESSION['Kunde']->kKunde);
                 $nAnzahlBestellungen = Shop::DB()->delete('bestellung', 'kKunde', (int)$_SESSION['Kunde']->kKunde);
                 $cText               = utf8_decode('Der Kunde ' . $_SESSION['Kunde']->cVorname . ' ' . $_SESSION['Kunde']->cNachname .
                     ' (' . $_SESSION['Kunde']->kKunde . ') hat am ' . date('d.m.Y') . ' um ' . date('H:m:i') . ' Uhr sein Kundenkonto und ' . $nAnzahlBestellungen . ' Bestellungen gelöscht.');
@@ -728,12 +728,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
 
         $Bestellungen     = array();
         if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
-            $Bestellungen = Shop::DB()->query(
-                "SELECT *, date_format(dErstellt,'%d.%m.%Y') AS dBestelldatum
-                    FROM tbestellung
-                    WHERE kKunde = " . (int)$_SESSION['Kunde']->kKunde . "
-                    ORDER BY kBestellung DESC LIMIT " . CUSTOMER_ACCOUNT_MAX_ORDERS, 2
-            );
+            $Bestellungen = Shop::DB()->selectAll('tbestellung', 'kKunde', (int)$_SESSION['Kunde']->kKunde, '*, date_format(dErstellt,\'%d.%m.%Y\') AS dBestelldatum', 'kBestellung DESC', CUSTOMER_ACCOUNT_MAX_ORDERS);
             if (is_array($Bestellungen) && count($Bestellungen) > 0) {
                 foreach ($Bestellungen as $i => $oBestellung) {
                     $Bestellungen[$i]->bDownload = false;
@@ -773,12 +768,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
         // Hole Wunschliste für eingeloggten Kunden
         $oWunschliste_arr = array();
         if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
-            $oWunschliste_arr = Shop::DB()->query(
-                "SELECT *
-                    FROM twunschliste
-                    WHERE kKunde = " . (int)$_SESSION['Kunde']->kKunde . "
-                    ORDER BY dErstellt DESC", 2
-            );
+            $oWunschliste_arr = Shop::DB()->selectAll('twunschliste', 'kKunde', (int)$_SESSION['Kunde']->kKunde, '*', 'dErstellt DESC');
         }
         // Pruefen, ob der Kunde Wunschlisten hat
         if (count($oWunschliste_arr) > 0) {
@@ -788,8 +778,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
 
     if ($step === 'mein Konto') {
         $Lieferadressen      = array();
-        $oLieferdatenTMP_arr = Shop::DB()->query("SELECT kLieferadresse FROM tlieferadresse WHERE kKunde = " . (int)$_SESSION['Kunde']->kKunde, 2);
-
+        $oLieferdatenTMP_arr = Shop::DB()->selectAll('tlieferadresse', 'kKunde', (int)$_SESSION['Kunde']->kKunde, 'kLieferadresse');
         if (is_array($oLieferdatenTMP_arr) && count($oLieferdatenTMP_arr) > 0) {
             foreach ($oLieferdatenTMP_arr as $oLieferdatenTMP) {
                 if ($oLieferdatenTMP->kLieferadresse > 0) {
@@ -820,23 +809,12 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
                ->assign('Einstellungen', $Einstellungen)
                ->assign('laender', gibBelieferbareLaender($_SESSION['Kunde']->kKundengruppe));
         // selbstdef. Kundenfelder
-        $oKundenfeld_arr = Shop::DB()->query(
-            "SELECT *
-                FROM tkundenfeld
-                WHERE kSprache = " . (int)Shop::$kSprache . "
-                ORDER BY nSort DESC", 2
-        );
+        $oKundenfeld_arr = Shop::DB()->selectAll('tkundenfeld', 'kSprache', (int)Shop::$kSprache, '*', 'nSort DESC');
         if (is_array($oKundenfeld_arr) && count($oKundenfeld_arr) > 0) {
             // tkundenfeldwert nachschauen ob dort Werte für tkundenfeld enthalten sind
             foreach ($oKundenfeld_arr as $i => $oKundenfeld) {
                 if ($oKundenfeld->cTyp === 'auswahl') {
-                    $oKundenfeldWert_arr = Shop::DB()->query(
-                        "SELECT *
-                            FROM tkundenfeldwert
-                            WHERE kKundenfeld = " . (int)$oKundenfeld->kKundenfeld, 2
-                    );
-
-                    $oKundenfeld_arr[$i]->oKundenfeldWert_arr = $oKundenfeldWert_arr;
+                    $oKundenfeld_arr[$i]->oKundenfeldWert_arr = Shop::DB()->selectAll('tkundenfeldwert', 'kKundenfeld', (int)$oKundenfeld->kKundenfeld);;
                 }
             }
         }

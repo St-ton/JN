@@ -165,7 +165,7 @@ class ArtikelListe
         for ($i = (int) $start; $i < $cnt; $i++) {
             $artikel = new Artikel();
             $artikel->fuelleArtikel($kArtikel_arr[$i], $oArtikelOptionen);
-            if ($artikel->kArtikel > 0) {
+            if (!empty($artikel->kArtikel) && $artikel->kArtikel > 0) {
                 ++$anz;
                 $this->elemente[] = $artikel;
             }

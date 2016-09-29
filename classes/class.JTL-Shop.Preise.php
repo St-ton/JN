@@ -300,10 +300,11 @@ class Preise
      * @param int $kKundengruppe
      * @param int $kArtikel
      * @param int $kKunde
+     * @param int $kSteuerklasse
      *
      * @return Preise Object
      */
-    public function __construct($kKundengruppe, $kArtikel, $kKunde = 0)
+    public function __construct($kKundengruppe, $kArtikel, $kKunde = 0, $kSteuerklasse = 0)
     {
         $kKundengruppe = (int)$kKundengruppe;
         $kArtikel      = (int)$kArtikel;
@@ -330,8 +331,11 @@ class Preise
                 ORDER BY d.nAnzahlAb", 2);
 
         if (count($prices) > 0) {
-            $tax                 = Shop::DB()->query("SELECT kSteuerklasse FROM tartikel WHERE kArtikel = " . $kArtikel, 1);
-            $this->fUst          = gibUst($tax->kSteuerklasse);
+            if ($kSteuerklasse === 0) {
+                $tax           = Shop::DB()->select('tartikel', 'kArtikel', $kArtikel, null, null, null, null, false, 'kSteuerklasse');
+                $kSteuerklasse = (int)$tax->kSteuerklasse;
+            }
+            $this->fUst          = gibUst($kSteuerklasse);
             $this->kArtikel      = $kArtikel;
             $this->kKundengruppe = $kKundengruppe;
             $this->kKunde        = $kKunde;

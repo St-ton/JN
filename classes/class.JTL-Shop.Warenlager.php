@@ -423,11 +423,7 @@ class Warenlager extends MainModel
     public function loadLanguages()
     {
         if ($this->getWarenlager() > 0) {
-            $oObj_arr = Shop::DB()->query(
-                "SELECT *
-                    FROM twarenlagersprache
-                    WHERE kWarenlager = " . $this->getWarenlager(), 2
-            );
+            $oObj_arr = Shop::DB()->selectAll('twarenlagersprache', 'kWarenlager', $this->getWarenlager());
 
             if (is_array($oObj_arr) && count($oObj_arr) > 0) {
                 $this->cSpracheAssoc_arr = array();

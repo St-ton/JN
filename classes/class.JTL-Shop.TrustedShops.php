@@ -856,14 +856,9 @@ class TrustedShops
     public function loescheTrustedShopsZertifikat($kTrustedShopsZertifikat)
     {
         if (intval($kTrustedShopsZertifikat) > 0) {
-            $nRows = Shop::DB()->query(
-                "DELETE FROM ttrustedshopszertifikat
-                    WHERE kTrustedShopsZertifikat = " . intval($kTrustedShopsZertifikat), 3
-            );
+            $nRows = Shop::DB()->delete('ttrustedshopszertifikat', 'kTrustedShopsZertifikat', (int)$kTrustedShopsZertifikat);
 
-            if ($nRows > 0) {
-                return true;
-            }
+            return ($nRows > 0);
         }
 
         return false;
@@ -1176,7 +1171,7 @@ class TrustedShops
      */
     public function gibKundenbewertungsStatistik()
     {
-        $arrStatistik = Shop::DB()->query("SELECT * FROM ttrustedshopsstatistik WHERE cTSID = '" . trim(Shop::DB()->escape($this->tsId)) . "'", 2);
+        $arrStatistik = Shop::DB()->selectAll('ttrustedshopsstatistik', 'cTSID', trim($this->tsId));
 
         if (count($arrStatistik) === 0) {
             // Erstimport

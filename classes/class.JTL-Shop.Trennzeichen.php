@@ -269,16 +269,14 @@ class Trennzeichen
      */
     public function update()
     {
-        return Shop::DB()->query(
-            "UPDATE ttrennzeichen
-               SET kTrennzeichen = " . (int) $this->kTrennzeichen . ",
-                   kSprache = " . (int) $this->kSprache . ",
-                   nEinheit = " . $this->nEinheit . ",
-                   nDezimalstellen = " . $this->nDezimalstellen . ",
-                   cDezimalZeichen = '" . $this->cDezimalZeichen . "',
-                   cTausenderZeichen = '" . $this->cTausenderZeichen . "'
-               WHERE kTrennzeichen = " . (int) $this->kTrennzeichen, 3
-        );
+        $upd                    = new stdClass();
+        $upd->kSprache          = (int)$this->kSprache;
+        $upd->nEinheit          = $this->nEinheit;
+        $upd->nDezimalstellen   = $this->nDezimalstellen;
+        $upd->cDezimalZeichen   = $this->cDezimalZeichen;
+        $upd->cTausenderZeichen = $this->cTausenderZeichen;
+        
+        return Shop::DB()->update('ttrennzeichen', 'kTrennzeichen', (int)$this->kTrennzeichen, $upd);
     }
 
     /**

@@ -426,12 +426,7 @@ class Profiler
                     ORDER BY runID DESC", 2
             );
         }
-        $profiles = Shop::DB()->query("
-            SELECT *
-                FROM tprofiler
-                WHERE ptype = '" . $type . "'
-                ORDER BY runID DESC", 2
-        );
+        $profiles = Shop::DB()->selectAll('tprofiler', 'ptype', $type, '*', 'runID DESC');
         $data = array();
         if (is_array($profiles)) {
             foreach ($profiles as $_profile) {

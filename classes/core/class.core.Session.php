@@ -251,12 +251,7 @@ class Session
                 }
                 if (isset($_SESSION['Kundengruppe']->kKundengruppe) && $_SESSION['Kundengruppe']->kKundengruppe &&
                     isset($_SESSION['kSprache']) && $_SESSION['kSprache'] > 0) {
-                    $oKundengruppeSprache = Shop::DB()->query(
-                        "SELECT cName
-                          FROM tkundengruppensprache
-                          WHERE kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
-                            AND kSprache = " . (int)$_SESSION['kSprache'], 1
-                    );
+                    $oKundengruppeSprache = Shop::DB()->select('tkundengruppensprache', 'kKundengruppe', (int)$_SESSION['Kundengruppe']->kKundengruppe, 'kSprache', (int)$_SESSION['kSprache']);
                     if (isset($oKundengruppeSprache->cName)) {
                         $_SESSION['Kundengruppe']->cNameLocalized = $oKundengruppeSprache->cName;
                     }

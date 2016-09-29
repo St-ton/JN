@@ -541,12 +541,7 @@ function fuelleArtikelKategorieRabatt($oArtikel, $oKundengruppe_arr)
 function versendeVerfuegbarkeitsbenachrichtigung($oArtikel)
 {
     if ($oArtikel->fLagerbestand > 0 && $oArtikel->kArtikel) {
-        $Benachrichtigungen = Shop::DB()->query(
-            "SELECT *
-                FROM tverfuegbarkeitsbenachrichtigung
-                WHERE nStatus=0
-                    AND kArtikel=" . $oArtikel->kArtikel, 2
-        );
+        $Benachrichtigungen = Shop::DB()->selectAll('tverfuegbarkeitsbenachrichtigung', ['nStatus', 'kArtikel'], [0, $oArtikel->kArtikel]);
         if (is_array($Benachrichtigungen) && count($Benachrichtigungen) > 0) {
             require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
             require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Bestellung.php';
@@ -572,11 +567,12 @@ function versendeVerfuegbarkeitsbenachrichtigung($oArtikel)
                 $mail->toName                          = ($Benachrichtigung->cVorname || $Benachrichtigung->cNachname) ? ($Benachrichtigung->cVorname . ' ' . $Benachrichtigung->cNachname) : $Benachrichtigung->cMail;
                 $obj->mail = $mail;
                 sendeMail(MAILTEMPLATE_PRODUKT_WIEDER_VERFUEGBAR, $obj);
-                Shop::DB()->query(
-                    "UPDATE tverfuegbarkeitsbenachrichtigung
-                        SET nStatus=1, dBenachrichtigtAm=now(), cAbgeholt = 'N'
-                        WHERE kVerfuegbarkeitsbenachrichtigung=" . $Benachrichtigung->kVerfuegbarkeitsbenachrichtigung, 4
-                );
+
+                $upd                    = new stdClass();
+                $upd->nStatus           = 1;
+                $upd->dBenachrichtigtAm = 'now()';
+                $upd->cAbgeholt         = 'N';
+                Shop::DB()->update('tverfuegbarkeitsbenachrichtigung', 'kVerfuegbarkeitsbenachrichtigung', $Benachrichtigung->kVerfuegbarkeitsbenachrichtigung, $upd);
             }
         }
     }
@@ -591,10 +587,10 @@ function setzePreisverlauf($kArtikel, $kKundengruppe, $fVKNetto)
 {
     $nReihen = Shop::DB()->query(
         "UPDATE tpreisverlauf
-            SET fVKNetto=" . $fVKNetto . "
-            WHERE kArtikel=" . $kArtikel . "
-                AND kKundengruppe=" . $kKundengruppe . "
-                AND dDate=DATE(NOW())", 3
+            SET fVKNetto = " . $fVKNetto . "
+            WHERE kArtikel = " . $kArtikel . "
+                AND kKundengruppe = " . $kKundengruppe . "
+                AND dDate = DATE(NOW())", 3
     );
     if ($nReihen == 0) {
         $oPreisverlauf                = new stdClass();
@@ -606,8 +602,8 @@ function setzePreisverlauf($kArtikel, $kKundengruppe, $fVKNetto)
         $oPreis = Shop::DB()->query(
             "SELECT fVKNetto
                 FROM tpreisverlauf
-                WHERE kArtikel=" . $kArtikel . "
-                    AND kKundengruppe=" . $kKundengruppe . "
+                WHERE kArtikel = " . $kArtikel . "
+                    AND kKundengruppe = " . $kKundengruppe . "
                 ORDER BY dDate DESC
                 LIMIT 1", 1
         );
@@ -693,12 +689,8 @@ function deleteArticleImage($oArtikelPict = null, $kArtikel = 0, $kArtikelPict =
 {
     $kArtikelPict = (int)$kArtikelPict;
     if ($oArtikelPict === null && $kArtikelPict > 0) {
-        $oArtikelPict = Shop::DB()->query(
-            "SELECT *
-                FROM tartikelpict
-                WHERE kArtikelPict = " . $kArtikelPict, 1
-        );
-        $kArtikel = (isset($oArtikelPict->kArtikel)) ? (int)$oArtikelPict->kArtikel : 0;
+        $oArtikelPict = Shop::DB()->select('tartikelpict', 'kArtikelPict', $kArtikelPict);
+        $kArtikel     = (isset($oArtikelPict->kArtikel)) ? (int)$oArtikelPict->kArtikel : 0;
     }
     // Das Bild ist eine Verknüpfung
     if (isset($oArtikelPict->kMainArtikelBild) && $oArtikelPict->kMainArtikelBild > 0 && $kArtikel > 0) {
@@ -765,11 +757,9 @@ function deleteArticleImage($oArtikelPict = null, $kArtikel = 0, $kArtikelPict =
             //Reorder linked images because master imagelink will be deleted
             $kArtikelPictNext = $oVerknuepfteArtikel_arr[0]->kArtikelPict;
             //this will be the next masterimage
-            Shop::DB()->query("UPDATE tartikelpict SET kMainArtikelBild = 0
-                                WHERE kArtikelPict = " . (int)$kArtikelPictNext, 3);
+            Shop::DB()->update('tartikelpict', 'kArtikelPict', (int)$kArtikelPictNext, (object)['kMainArtikelBild' => 0]);
             //now link other images to the new masterimage
-            Shop::DB()->query("UPDATE tartikelpict SET kMainArtikelBild = " . (int)$kArtikelPictNext . "
-                                WHERE kMainArtikelBild = " . (int)$oArtikelPict->kArtikelPict, 3);
+            Shop::DB()->update('tartikelpict', 'kMainArtikelBild', (int)$oArtikelPict->kArtikelPict, (object)['kMainArtikelBild' => (int)$kArtikelPictNext]);
         }
         // Bild aus DB löschen
         Shop::DB()->delete('tartikelpict', 'kArtikelPict', (int)$oArtikelPict->kArtikelPict);
@@ -829,25 +819,12 @@ function getSeoFromDB($kKey, $cKey, $kSprache = null, $cAssoc = null)
     if ($kKey > 0 && strlen($cKey) > 0) {
         if ($kSprache !== null && intval($kSprache) > 0) {
             $kSprache = (int)$kSprache;
-            $oSeo     = Shop::DB()->query(
-                "SELECT *
-                    FROM tseo
-                    WHERE kKey = {$kKey}
-                        AND cKey = '" . Shop::DB()->escape($cKey) . "'
-                        AND kSprache = {$kSprache}", 1
-            );
-
+            $oSeo     = Shop::DB()->select('tseo', 'kKey', $kKey, 'cKey', $cKey, 'kSprache', $kSprache);
             if (isset($oSeo->kKey) && intval($oSeo->kKey) > 0) {
                 return $oSeo;
             }
         } else {
-            $oSeo_arr = Shop::DB()->query(
-                "SELECT *
-                    FROM tseo
-                    WHERE kKey = {$kKey}
-                        AND cKey = '" . Shop::DB()->escape($cKey) . "'", 2
-            );
-
+            $oSeo_arr = Shop::DB()->selectAll('tseo', ['kKey', 'cKey'], [$kKey, $cKey]);
             if (is_array($oSeo_arr) && count($oSeo_arr) > 0) {
                 if ($cAssoc !== null && strlen($cAssoc) > 0) {
                     $oAssoc_arr = array();

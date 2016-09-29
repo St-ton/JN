@@ -73,11 +73,9 @@ echo $return;
 function bearbeiteAck($xml)
 {
     if (!is_array($xml['ack_bestellungen']['kBestellung']) && intval($xml['ack_bestellungen']['kBestellung']) > 0) {
-        error_log('no array!');
         $xml['ack_bestellungen']['kBestellung'] = array($xml['ack_bestellungen']['kBestellung']);
     }
     if (is_array($xml['ack_bestellungen']['kBestellung'])) {
-        error_log('isArray!');
         foreach ($xml['ack_bestellungen']['kBestellung'] as $kBestellung) {
             $kBestellung = (int)$kBestellung;
             if ($kBestellung > 0) {

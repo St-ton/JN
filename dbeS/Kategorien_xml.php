@@ -230,7 +230,7 @@ function bearbeiteInsert($xml)
 function loescheKategorie($kKategorie)
 {
     $kKategorie = (int)$kKategorie;
-//    $category = Shop::DB()->query("SELECT * FROM tkategorie WHERE kKategorie = " . $kKategorie, 2);
+//    $category = Shop::DB()->selectAll('tkategorie', 'kKategorie', $kKategorie);
 //    if (is_array($category)) {
 //        foreach ($category as $_category) {
 //            if (isset($_category->kOberKategorie)) {
@@ -278,7 +278,7 @@ function rebuildCategoryTree($parent_id, $left)
         $right = rebuildCategoryTree($_res->kKategorie, $right);
     }
     // we've got the left value, and now that we've processed the children of this node we also know the right value
-    Shop::DB()->query("UPDATE tkategorie SET lft = " . $left . ", rght = " . $right . " WHERE kKategorie = " . $parent_id, 3);
+    Shop::DB()->update('tkategorie', 'kKategorie', $parent_id, (object)['lft' => $left, 'rght' => $right]);
 
     // return the right value of this node + 1
     return $right + 1;

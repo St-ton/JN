@@ -1,95 +1,116 @@
 <?php
 
+/**
+ * Class y_axis_base
+ */
 class y_axis_base
 {
+    /**
+     * y_axis_base constructor.
+     */
     public function __construct()
     {
     }
-    
+
     /**
-     * @param $s as integer, thickness of the Y axis line
+     * @param int $s - thickness of the Y axis line
      */
     public function set_stroke($s)
     {
         $this->stroke = $s;
     }
-    
+
     /**
-     * @param $val as integer. The length of the ticks in pixels
+     * @param int $val - The length of the ticks in pixels
      */
     public function set_tick_length($val)
     {
-        $tmp = 'tick-length';
+        $tmp        = 'tick-length';
         $this->$tmp = $val;
     }
-    
+
+    /**
+     * @param array  $colour
+     * @param string $grid_colour
+     */
     public function set_colours($colour, $grid_colour)
     {
         $this->set_colour($colour);
         $this->set_grid_colour($grid_colour);
     }
-    
+
+    /**
+     * @param string $colour
+     */
     public function set_colour($colour)
     {
         $this->colour = $colour;
     }
-    
+
+    /**
+     * @param string $colour
+     */
     public function set_grid_colour($colour)
     {
-        $tmp = 'grid-colour';
+        $tmp        = 'grid-colour';
         $this->$tmp = $colour;
     }
-    
+
     /**
      * Set min and max values, also (optionally) set the steps value.
      * You can reverse the chart by setting min larger than max, e.g. min = 10
      * and max = 0.
      *
-     * @param $min as integer
-     * @param $max as integer
-     * @param $steps as integer.
+     * @param int $min
+     * @param int $max
+     * @param int $steps
      */
-    public function set_range($min, $max, $steps=1)
+    public function set_range($min, $max, $steps = 1)
     {
         $this->min = $min;
         $this->max = $max;
         $this->set_steps($steps);
     }
-    
+
     /**
      * Sugar for set_range
+     *
+     * @param int $min
+     * @param int $max
+     * @param int $steps
+     * @return $this
      */
-    public function range($min, $max, $steps=1)
+    public function range($min, $max, $steps = 1)
     {
         $this->set_range($min, $max, $steps);
+
         return $this;
     }
-    
+
     /**
-     * @param $off as Boolean. If true the Y axis is nudged up half a step.
+     * @param bool $off - If true the Y axis is nudged up half a step.
      */
     public function set_offset($off)
     {
-        $this->offset = $off?1:0;
+        $this->offset = $off ? 1 : 0;
     }
-    
+
     /**
-     * @param $y_axis_labels as an y_axis_labels object
+     * @param y_axis_labels $y_axis_labels
      * Use this to customize the labels (colour, font, etc...)
      */
     public function set_labels($y_axis_labels)
     {
         $this->labels = $y_axis_labels;
     }
-    
+
     /**
      * Pass in some text for each label. This can contain magic variables "#val#" which
      * will get replaced with the value for that Y axis label. Useful for:
-     * - "�#val#"
      * - "#val#%"
      * - "#val# million"
      *
-     * @param $text as string.
+     * @param string $text
      */
     public function set_label_text($text)
     {
@@ -97,22 +118,22 @@ class y_axis_base
         $tmp->set_text($text);
         $this->labels = $tmp;
     }
-    
+
     /**
-     * @param $steps as integer.
-     *
      * Only show every $steps label, e.g. every 10th
+     *
+     * @param int $steps
      */
     public function set_steps($steps)
     {
         $this->steps = $steps;
     }
-    
+
     /**
      * Make the labels show vertical
      */
     public function set_vertical()
     {
-        $this->rotate = "vertical";
+        $this->rotate = 'vertical';
     }
 }

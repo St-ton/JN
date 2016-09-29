@@ -8,7 +8,7 @@
  * Class Sprache
  *
  * @method Sprache autoload()
- * @method string get(string $cName, string $cSektion = 'global')
+ * @method string get(string $cName, string $cSektion = 'global', mixed ...$arg1)
  * @method bool set(int $kSprachsektion, string $cName, string $cWert)
  * @method bool insert(string $cSprachISO, int $kSprachsektion, string $cName, string $cWert)
  * @method bool delete(int $kSprachsektion, string $cName)
@@ -331,6 +331,7 @@ class Sprache
     /**
      * @param string $cName
      * @param string $cSektion
+     * @param mixed [$arg1, ...]
      * @return string
      * @todo: HTML verhindern
      */

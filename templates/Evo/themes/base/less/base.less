@@ -287,20 +287,6 @@ hr.hr-sm {
     margin-bottom: 0.5em;
 }
 
-/* LIGHTBOX WORKAROUND */
-
-.modal-dialog {
-    background: @body-bg;
-}
-
-.modal-backdrop {
-    z-index: auto;
-}
-
-.modal-header {
-    z-index: 1;
-}
-
 .carousel-indicators {
     position: absolute;
     bottom: -20px;
@@ -345,7 +331,7 @@ hr.hr-sm {
 
 .carousel.dark {
     .carousel-title, .carousel-caption {
-        color: #fff;
+        color: @carousel-caption-color;
     }
 }
 
@@ -535,6 +521,10 @@ ul.filter_state li a.active:before {
     vertical-align: middle;
 }
 
+.box-filter-characteristics .value{
+    margin-right: 3em;
+}
+
 /* CONTENT */
 
 #content {
@@ -639,15 +629,15 @@ ul.filter_state li a.active:before {
 /* SIGNAL */
 .delivery-status {
     .status-0 {
-        color: #B80000; /* red */
+        color: @delivery-status-0;
     }
 
     .status-1 {
-        color: #2896ec; /* blue */
+        color: @delivery-status-1;
     }
 
     .status-2 {
-        color: #007C00; /* green */
+        color: @delivery-status-2;
     }
 }
 
@@ -708,7 +698,6 @@ ul.filter_state li a.active:before {
 
 .panel-wrap .panel {
     margin: 0;
-    margin-bottom: 0;
 }
 
 aside .box {
@@ -880,7 +869,7 @@ aside .badge {
 /* HELPER */
 
 .vcenter {
-    display: table-cell !important;
+    display: table-cell;
     vertical-align: middle !important;
     float: none;
 }
@@ -930,6 +919,10 @@ aside .badge {
 
 #sortierenID{
     margin-bottom: 20px;
+}
+
+.product-attributes .value a.label {
+    line-height: 2;
 }
 
 /* ARTICLE MATRIX */
@@ -982,7 +975,7 @@ table.matrix tbody>tr>td {
 }
 
 .banner > a {
-    border: 0px solid #ffffff;
+    border: 0 solid #ffffff;
     border-radius: 2px;
 }
 
@@ -1041,7 +1034,7 @@ table.matrix tbody>tr>td {
     border-color: transparent;
     border-style: solid;
     border-width: 5px 0 5px 5px;
-    border-left-color: #ccc;
+    border-left-color: @dropdown-border;
     margin-top: 5px;
 }
 
@@ -1500,14 +1493,10 @@ fieldset {
         }
         &.col-xs-12, .col-xs-6 {
             padding: 0;
-            padding-left: 0;
-            padding-right: 0;
         }
     }
     .order-submit {
         padding: 0;
-        padding-left: 0;
-        padding-right: 0;
 
         .btn {
             float: none!important;
@@ -1768,7 +1757,7 @@ fieldset {
 }
 
 .navbar-wrapper {
-    background-color: #fff;
+    background-color: @body-bg;
     -moz-transition: box-shadow .8s ease-in-out 0s;
     -webkit-transition: box-shadow .8s ease-in-out 0s;
     -webkit-transition-delay: 0s;
@@ -1795,7 +1784,7 @@ fieldset {
     margin: 2px 0 0;
     list-style: none;
     font-size: 14px;
-    background-color: #fff;
+    background-color: @dropdown-bg;
     border: none;
     border-radius: 0;
     -webkit-box-shadow: none;
@@ -1890,7 +1879,7 @@ fieldset {
         height: auto;
     }
     .navbar-offcanvas .dropdown-menu>li>a {
-        color: #777;
+        color: @navbar-default-link-color;
         padding: 5px 15px 5px 30px;
     }
 }
@@ -2220,8 +2209,8 @@ div#add-to-cart {
 }
 
 .swatches.imgswatches .variation {
-    background: #ffffff !important;
-    color: #333 !important;
+    background: @swatches-bg !important;
+    color: @swatches-color !important;
     img {
         max-width: 50px;
         max-height: 50px;
@@ -2690,7 +2679,7 @@ div#add-to-cart {
 
 .image-gallery.fullscreen.has-thumbs ul.image-thumbs li {
     display: inline-block;
-    background-color: #fff;
+    background-color: @body-bg;
 }
 
 .image-gallery.fullscreen.has-thumbs ul.image-container {
@@ -2896,7 +2885,9 @@ header.fixed-navbar {
 }
 
 .word-break, .desc, .shortdesc, .product-title {
-     word-break: break-word;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-word;
     -webkit-hyphens: auto;
        -moz-hyphens: auto;
         -ms-hyphens: auto;
@@ -3028,3 +3019,12 @@ header.fixed-navbar {
     .thumbs-box {position:relative;margin:auto;}
 }
 /*Artikel Bilder Slider Ende*/
+
+// Fix for #513 - backdrop was not visible
+.modal-backdrop {
+    bottom: 0;
+    z-index: 1040;
+}
+.modal {
+    z-index: 1050;
+}

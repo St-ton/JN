@@ -6,25 +6,21 @@
 require_once dirname(__FILE__) . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'umfrage_inc.php';
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'blaetternavi.php';
 
 $oAccount->permission('EXTENSION_VOTE_VIEW', true, true);
-
+/** @global JTLSmarty $smarty */
 $Einstellungen = Shop::getSettings(array(CONF_UMFRAGE));
 $cHinweis      = '';
 $cFehler       = '';
 $step          = 'umfrage_uebersicht';
 $kUmfrageTMP   = 0;
+$kUmfrage      = 0;
 if (verifyGPCDataInteger('kUmfrage') > 0) {
     $kUmfrageTMP = verifyGPCDataInteger('kUmfrage');
 } else {
     $kUmfrageTMP = verifyGPCDataInteger('kU');
 }
 setzeSprache();
-
-// BlaetterNavi Getter / Setter + SQL
-$nAnzahlProSeite   = 15;
-$oBlaetterNaviConf = baueBlaetterNaviGetterSetter(1, $nAnzahlProSeite);
 
 // Tabs
 if (strlen(verifyGPDataString('tab')) > 0) {
@@ -102,7 +98,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
             if (isset($_POST['umfrage_edit_speichern']) && isset($_POST['kUmfrage']) && intval($_POST['umfrage_edit_speichern']) === 1 && intval($_POST['kUmfrage']) > 0) {
                 $kUmfrage = (int)$_POST['kUmfrage'];
             }
-            $cName  = $_POST['cName'];
+            $cName  = htmlspecialchars($_POST['cName']);
             $kKupon = (isset($_POST['kKupon'])) ? (int)$_POST['kKupon'] : 0;
             if ($kKupon <= 0 || !isset($kKupon)) {
                 $kKupon = 0;
@@ -138,7 +134,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                     $oUmfrage->nBonuspunkte  = $nBonuspunkte;
                     $oUmfrage->nAktiv        = $nAktiv;
                     $oUmfrage->dGueltigVon   = convertDate($dGueltigVon);
-                    $oUmfrage->dGueltigBis   = convertDate($dGueltigBis);
+                    $oUmfrage->dGueltigBis   = (strlen($dGueltigBis) > 0) ? convertDate($dGueltigBis) : null;
                     $oUmfrage->dErstellt     = 'now()';
 
                     $nNewsOld = 0;
@@ -184,7 +180,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
         } elseif (isset($_POST['umfrage_frage_speichern']) && intval($_POST['umfrage_frage_speichern']) === 1 && validateToken()) { // Frage speichern
             $kUmfrage                 = (int)$_POST['kUmfrage'];
             $kUmfrageFrage            = (isset($_POST['kUmfrageFrage'])) ? (int)$_POST['kUmfrageFrage'] : 0;
-            $cName                    = $_POST['cName'];
+            $cName                    = htmlspecialchars($_POST['cName']);
             $cTyp                     = $_POST['cTyp'];
             $nSort                    = (isset($_POST['nSort'])) ? (int)$_POST['nSort'] : 0;
             $cBeschreibung            = (isset($_POST['cBeschreibung'])) ? $_POST['cBeschreibung'] : '';
@@ -470,6 +466,15 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
     }
     // Hole Umfrage aus DB
     if ($step === 'umfrage_uebersicht') {
+        $oUmfrageAnzahl = Shop::DB()->query(
+            "SELECT count(*) AS nAnzahl
+                FROM tumfrage
+                WHERE kSprache = " . (int)$_SESSION['kSprache'], 1
+        );
+        // Pagination
+        $oPagination = (new Pagination())
+            ->setItemCount($oUmfrageAnzahl->nAnzahl)
+            ->assemble();
         $oUmfrage_arr = Shop::DB()->query(
             "SELECT tumfrage.*, DATE_FORMAT(tumfrage.dGueltigVon, '%d.%m.%Y %H:%i') AS dGueltigVon_de, DATE_FORMAT(tumfrage.dGueltigBis, '%d.%m.%Y %H:%i') AS dGueltigBis_de,
                 DATE_FORMAT(tumfrage.dErstellt, '%d.%m.%Y %H:%i') AS dErstellt_de, count(tumfragefrage.kUmfrageFrage) AS nAnzahlFragen
@@ -477,13 +482,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                 JOIN tumfragefrage ON tumfragefrage.kUmfrage = tumfrage.kUmfrage
                 WHERE kSprache = " . (int)$_SESSION['kSprache'] . "
                 GROUP BY tumfrage.kUmfrage
-                ORDER BY dGueltigVon DESC" . $oBlaetterNaviConf->cSQL1, 2
-        );
-        $oUmfrageAnzahl = Shop::DB()->query(
-            "SELECT count(*) AS nAnzahl
-                FROM tumfrage
-                WHERE kSprache = " . (int)$_SESSION['kSprache'], 1
-        );
+                ORDER BY dGueltigVon DESC
+                LIMIT " . $oPagination->getLimitSQL(),
+            2);
 
         if (is_array($oUmfrage_arr) && count($oUmfrage_arr) > 0) {
             foreach ($oUmfrage_arr as $i => $oUmfrage) {
@@ -532,10 +533,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
             $oConfig_arr[$i]->gesetzterWert = (isset($oSetValue->cWert) ? $oSetValue->cWert : null);
         }
 
-        $oBlaetterNaviUmfrage = baueBlaetterNavi($oBlaetterNaviConf->nAktuelleSeite1, $oUmfrageAnzahl->nAnzahl, $nAnzahlProSeite);
         $smarty->assign('oConfig_arr', $oConfig_arr)
                ->assign('oUmfrage_arr', $oUmfrage_arr)
-               ->assign('oBlaetterNaviUmfrage', $oBlaetterNaviUmfrage);
+               ->assign('oPagination', $oPagination);
     }
     // Vorhandene Kundengruppen
     $oKundengruppe_arr = Shop::DB()->query(

@@ -4,9 +4,9 @@
     </div>
 {/if}
 <div class="row">
-    <div class="col-xs-12 col-md-10 col-md-offset-1">
+    <div class="col-xs-12">
         {block name="checkout-shipping-options"}
-        <div class="well panel-wrap">
+        <div class="panel-wrap">
             <div class="panel panel-default" id="order-enter-shipping-options">
                 <div class="panel-heading">
                     <h3 class="panel-title">{block name="checkout-shipping-options-title"}{lang key="shippingOptions" section="global"}{/block}</h3>

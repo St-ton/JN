@@ -48,23 +48,25 @@
                                         </span>
                                     </h4>
                                 </td>
-                                <td class="tcenter plugin-version">{$PluginInstalliert->dVersion}{if isset($PluginInstalliert->dUpdate) && $PluginInstalliert->dUpdate|strlen > 0} <span class="label labe-success update-info">{$PluginInstalliert->dUpdate}</span>{/if}</td>
+                                <td class="tcenter plugin-version">{$PluginInstalliert->dVersion}{if isset($PluginInstalliert->dUpdate) && $PluginInstalliert->dUpdate|strlen > 0} <span class="label label-success update-info">{$PluginInstalliert->dUpdate}</span>{/if}</td>
                                 <td class="tcenter plugin-install-date">{$PluginInstalliert->dInstalliert_DE}</td>
                                 <td class="tcenter plugin-folder">{$PluginInstalliert->cVerzeichnis}</td>
                                 <td class="tcenter plugin-lang-vars">
                                     {if isset($PluginInstalliert->oPluginSprachvariableAssoc_arr) && $PluginInstalliert->oPluginSprachvariableAssoc_arr|@count > 0}
-                                        <a href="pluginverwaltung.php?pluginverwaltung_uebersicht=1&sprachvariablen=1&kPlugin={$PluginInstalliert->kPlugin}" class="btn btn-default btn-sm" title="{#pluginEdit#}"><i class="fa fa-edit"></i></a>
+                                        <a href="pluginverwaltung.php?pluginverwaltung_uebersicht=1&sprachvariablen=1&kPlugin={$PluginInstalliert->kPlugin}"
+                                           class="btn btn-default btn-sm" title="{#modify#}"><i class="fa fa-edit"></i></a>
                                     {/if}
                                 </td>
                                 <td class="tcenter plugin-frontend-links">
                                     {if isset($PluginInstalliert->oPluginFrontendLink_arr) && $PluginInstalliert->oPluginFrontendLink_arr|@count > 0}
-                                        <a href="links.php?kPlugin={$PluginInstalliert->kPlugin}" class="btn btn-default btn-sm" title="{#pluginEdit#}"><i class="fa fa-edit"></i></a>
+                                        <a href="links.php?kPlugin={$PluginInstalliert->kPlugin}" class="btn btn-default btn-sm" title="{#modify#}"><i class="fa fa-edit"></i></a>
                                     {/if}
                                 </td>
                                 <td class="tcenter plugin-license">
                                     {if isset($PluginInstalliert->cLizenzKlasse) && $PluginInstalliert->cLizenzKlasse|strlen > 0}
                                         {if isset($PluginInstalliert->cLizenzKlasse) && $PluginInstalliert->cLizenzKlasse|strlen > 0}
-                                            <button name="lizenzkey" type="submit" class="btn {if $PluginInstalliert->cLizenz && $PluginInstalliert->cLizenz|strlen > 0}btn-default{else}btn-primary{/if} btn-sm" value="{$PluginInstalliert->kPlugin}">
+                                            <button name="lizenzkey" type="submit" title="{#modify#}"
+                                                    class="btn {if $PluginInstalliert->cLizenz && $PluginInstalliert->cLizenz|strlen > 0}btn-default{else}btn-primary{/if} btn-sm" value="{$PluginInstalliert->kPlugin}">
                                                 <i class="fa fa-edit"></i>
                                             </button>
                                         {/if}

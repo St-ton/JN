@@ -64,12 +64,12 @@ class Wunschliste
      */
     public function __construct($kWunschliste = 0)
     {
-        $kWunschliste = intval($kWunschliste);
+        $kWunschliste = (int)$kWunschliste;
         if ($kWunschliste > 0) {
             $this->kWunschliste = $kWunschliste;
             $this->ladeWunschliste();
         } else {
-            $this->kKunde       = $_SESSION['Kunde']->kKunde;
+            $this->kKunde       = (isset($_SESSION['Kunde']->kKunde)) ? (int)$_SESSION['Kunde']->kKunde : 0;
             $this->nStandard    = 1;
             $this->nOeffentlich = 0;
             $this->cName        = Shop::Lang()->get('wishlist', 'global');
@@ -256,11 +256,12 @@ class Wunschliste
                     JOIN twunschlistepos ON twunschlistepos.kWunschliste = twunschliste.kWunschliste
                         AND (twunschlistepos.cArtikelName LIKE '%" . addcslashes($cSuche, '%_') . "%'
                         OR twunschlistepos.cKommentar LIKE '%" . addcslashes($cSuche, '%_') . "%')
-                    WHERE twunschliste.kWunschliste = " . (int) $this->kWunschliste, 2
+                    WHERE twunschliste.kWunschliste = " . (int)$this->kWunschliste, 2
             );
 
             if (is_array($oSuchergebnis_arr) && count($oSuchergebnis_arr) > 0) {
                 foreach ($oSuchergebnis_arr as $i => $oSuchergebnis) {
+                    $oWunschlistePosSuche_arr[$i] = new stdClass();
                     $oWunschlistePosSuche_arr[$i]->CWunschlistePosEigenschaft_arr = array();
                     $oWunschlistePosSuche_arr[$i]                                 = new WunschlistePos($oSuchergebnis->kArtikel, $oSuchergebnis->cArtikelName, $oSuchergebnis->fAnzahl, $oSuchergebnis->kWunschliste);
 

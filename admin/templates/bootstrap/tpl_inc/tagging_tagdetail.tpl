@@ -6,7 +6,7 @@
         <p class="alert alert-info">Keine Daten vorhanden.</p>
     {/if}
     {if isset($oTagArtikel_arr) && $oTagArtikel_arr|@count > 0}
-        {include file='pagination.tpl' cSite=2 cUrl='tagging.php' oBlaetterNavi=$oBlaetterNaviTagsDetail hash=''}
+        {include file='tpl_inc/pagination.tpl' oPagination=$oPagiTagDetail}
         <!-- Tag Detailansicht -->
         <form method="post" action="tagging.php">
             {$jtl_token}

@@ -649,10 +649,10 @@ Supports Thumbs: false
 .theme-bar .nivo-controlNav {
     position: absolute;
     left: 0;
-    bottom: -41px;
+    bottom: -51px;
     z-index: 10;
     width: 100%;
-    height: 30px;
+    height: 50px;
     text-align: center;
     padding: 5px 0;
     border-top: 1px solid #333;
@@ -704,8 +704,8 @@ Supports Thumbs: false
     -o-transition: all 200ms ease-in-out;
     transition: all 200ms ease-in-out;
 }
-.theme-bar a.nivo-nextNav { right: -50px; }
-.theme-bar a.nivo-prevNav { left: -50px; }
+.theme-bar a.nivo-nextNav { right: -250px; }
+.theme-bar a.nivo-prevNav { left: -250px; }
 .theme-bar:hover a.nivo-nextNav { 
     right: 15px; 
     opacity: 1;
@@ -724,7 +724,7 @@ Supports Thumbs: false
     transition: all 200ms ease-in-out;
 }
 .theme-bar:hover .nivo-caption {
-    bottom: 41px;
+    bottom: 49px;
 }
 .theme-bar .nivo-caption a {
     color:#fff;
@@ -745,8 +745,8 @@ Supports Thumbs: false
 }
 .theme-bar .nivo-controlNav.nivo-thumbs-enabled img {
     display: block;
-    width: 120px;
-    height: auto;
+    width: auto;
+    height: 30px;
 }
 
 .slider-wrapper .nivoSlider.loaded {

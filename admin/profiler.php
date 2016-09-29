@@ -2,11 +2,10 @@
 
 require_once dirname(__FILE__) . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Jtllog.php';
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'blaetternavi.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'statistik_inc.php';
 
 $oAccount->permission('PROFILER_VIEW', true, true);
-
+/** @global JTLSmarty $smarty */
 $tab      = 'uebersicht';
 $cFehler  = '';
 $cHinweis = '';

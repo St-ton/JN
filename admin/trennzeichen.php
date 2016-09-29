@@ -10,7 +10,7 @@ $oAccount->permission('SETTINGS_SEPARATOR_VIEW', true, true);
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_CLASSES . 'class.JTL-Shopadmin.PlausiTrennzeichen.php';
 require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Trennzeichen.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'trennzeichen_inc.php';
-
+/** @global JTLSmarty $smarty */
 setzeSprache();
 
 $cHinweis = '';

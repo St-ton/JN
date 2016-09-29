@@ -7,22 +7,17 @@ require_once dirname(__FILE__) . '/includes/admininclude.php';
 
 $oAccount->permission('ORDER_BILLPAY_VIEW', true, true);
 
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'blaetternavi.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'billpay_inc.php';
 include_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
 
 $cFehler           = null;
 $cStep             = 'uebersicht';
-$nAnzahlProSeite   = 50;
-$oBlaetterNaviConf = baueBlaetterNaviGetterSetter(1, $nAnzahlProSeite);
-
-//$oLog = new ZahlungsLog('za_billpay_jtl');
-
+/** @global JTLSmarty $smarty */
 $smarty->assign('cTab', $cStep);
 if (strlen(verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', verifyGPDataString('tab'));
 }
-
+/** @var Billpay $oBillpay */
 $oBillpay = PaymentMethod::create('za_billpay_jtl');
 
 if (strlen($oBillpay->getSetting('pid')) > 0 && strlen($oBillpay->getSetting('mid')) > 0 && strlen($oBillpay->getSetting('bpsecure')) > 0) {
@@ -93,19 +88,22 @@ if (strlen($oBillpay->getSetting('pid')) > 0 && strlen($oBillpay->getSetting('mi
         header('location: billpay.php?tab=log');
     }
     */
-    $oLog_arr      = ZahlungsLog::getLog(['za_billpay_invoice_jtl', 'za_billpay_direct_debit_jtl', 'za_billpay_rate_payment_jtl', 'za_billpay_paylater_jtl'], $oBlaetterNaviConf->cLimit1, $nAnzahlProSeite);
-    $nLogCount     = count($oLog_arr);
-    $oBlaetterNavi = baueBlaetterNavi($oBlaetterNaviConf->nAktuelleSeite1, $nLogCount, $nAnzahlProSeite);
 
-    $smarty->assign('oLog_arr', $oLog_arr);
-    $smarty->assign('oBlaetterNavi', $oBlaetterNavi);
+    $oLog_arr = ZahlungsLog::getLog(['za_billpay_invoice_jtl', 'za_billpay_direct_debit_jtl', 'za_billpay_rate_payment_jtl', 'za_billpay_paylater_jtl']);
+    $oPagiLog = (new Pagination('log'))
+        ->setItemArray($oLog_arr)
+        ->assemble();
+    $nLogCount = count($oLog_arr);
+
+    $smarty->assign('oLog_arr', $oPagiLog->getPageItems())
+        ->assign('oPagiLog', $oPagiLog);
 } else {
     $cFehler = 'Billpay wurde bisher nicht konfiguriert. <a href="http://guide.jtl-software.de/index.php?title=Kaufabwicklung:Billpay#Billpay" target="_blank"><i class="fa fa-external-link"></i> Zur Dokumentation</a>';
 }
 
 $smarty->assign('cFehlerBillpay', $cFehler);
 
-$Conf = Shop::DB()->query("SELECT * FROM teinstellungenconf WHERE cModulId = 'za_billpay_jtl' AND cConf='Y' ORDER BY nSort", 2);
+$Conf = Shop::DB()->selectAll('teinstellungenconf', ['cModulId', 'cConf'], ['za_billpay_jtl', 'Y'], '*', 'nSort');
 
 if (isset($_POST['einstellungen_bearbeiten'])) {
     foreach ($Conf as $i => $oConfig) {
@@ -143,9 +141,9 @@ if (isset($_POST['einstellungen_bearbeiten'])) {
 $configCount = count($Conf);
 for ($i = 0; $i < $configCount; $i++) {
     if ($Conf[$i]->cInputTyp === 'selectbox') {
-        $Conf[$i]->ConfWerte = Shop::DB()->query("SELECT * FROM teinstellungenconfwerte WHERE kEinstellungenConf = " . (int)$Conf[$i]->kEinstellungenConf . " ORDER BY nSort", 2);
+        $Conf[$i]->ConfWerte = Shop::DB()->selectAll('teinstellungenconfwerte', 'kEinstellungenConf', (int)$Conf[$i]->kEinstellungenConf, '*', 'nSort');
     }
-    $setValue                = Shop::DB()->query("SELECT cWert FROM teinstellungen WHERE kEinstellungenSektion = " . (int)$Conf[$i]->kEinstellungenSektion . " AND cName = '" . $Conf[$i]->cWertName . "'", 1);
+    $setValue                = Shop::DB()->select('teinstellungen', 'kEinstellungenSektion', (int)$Conf[$i]->kEinstellungenSektion, 'cName', $Conf[$i]->cWertName);
     $Conf[$i]->gesetzterWert = (isset($setValue->cWert)) ? StringHandler::htmlentities($setValue->cWert) : null;
 }
 

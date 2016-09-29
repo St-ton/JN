@@ -27,6 +27,9 @@
         <Version nr="105">
             <CreateDate>2016-05-10</CreateDate>
         </Version>
+        <Version nr="106">
+            <CreateDate>2016-09-14</CreateDate>
+        </Version>
         <Hooks>
             <Hook id="6">6_7_jtl_paypal.php</Hook>
             <Hook id="7">6_7_jtl_paypal.php</Hook>
@@ -98,6 +101,13 @@
         </CSS>
         <Locales>
             <Variable>
+                <Name>jtl_paypal_payment_invoice_name</Name>
+                <Description>PayPal PLUS Zahlungsartname bei Rechnungskauf</Description>
+                <VariableLocalized iso="GER">Rechnung (PayPal PLUS)</VariableLocalized>
+                <VariableLocalized iso="ENG">Invoice (PayPal PLUS)</VariableLocalized>
+                <VariableLocalized iso="FRE">Facture (PayPal PLUS)</VariableLocalized>
+            </Variable>
+            <Variable>
                 <Name>jtl_paypal_warenkorb_max</Name>
                 <Description></Description>
                 <VariableLocalized iso="GER">Bitte reduzieren Sie Ihren Warenkorbwert auf maximal %Wert%.
@@ -111,43 +121,11 @@
                 </VariableLocalized>
             </Variable>
             <Variable>
-                <Name>jtl_paypal_versandkostenheinweis</Name>
-                <Description></Description>
-                <VariableLocalized iso="GER">Die Versandkosten werden erst im letzten Bestellschritt berechnet und
-                    angezeigt.
-                </VariableLocalized>
-            </Variable>
-            <Variable>
-                <Name>jtl_paypal_versandkostenheinweis_artnr</Name>
-                <Description></Description>
-                <VariableLocalized iso="GER">shipping</VariableLocalized>
-            </Variable>
-            <Variable>
                 <Name>jtl_paypal_notallowed</Name>
                 <Description></Description>
                 <VariableLocalized iso="GER">Sie haben mindestens einen Artikel im Warenkorb, der nicht über PayPal
                     Express bezahlt werden kann.
                 </VariableLocalized>
-            </Variable>
-            <Variable>
-                <Name>jtl_paypal_article_or</Name>
-                <Description></Description>
-                <VariableLocalized iso="GER"><![CDATA[<p> - oder - </p>]]></VariableLocalized>
-            </Variable>
-            <Variable>
-                <Name>jtl_paypal_cart_pre</Name>
-                <Description></Description>
-                <VariableLocalized iso="GER"><![CDATA[<p> - oder - </p>]]></VariableLocalized>
-            </Variable>
-            <Variable>
-                <Name>jtl_paypal_cart_after</Name>
-                <Description></Description>
-                <VariableLocalized iso="GER"> </VariableLocalized>
-            </Variable>
-            <Variable>
-                <Name>jtl_paypal_versandermittlung_weiter</Name>
-                <Description></Description>
-                <VariableLocalized iso="GER">Versandart auswählen</VariableLocalized>
             </Variable>
             <Variable>
                 <Name>jtl_paypal_lieferadresse_nicht_aenderbar</Name>
@@ -527,24 +505,6 @@ Ihr Team von {$Firma->cName}]]></ContentText>
                     <Name>Sonstige Einstellungen</Name>
                     <Description />
                     <ValueName>jtl_paypal_sonstige_headline</ValueName>
-                </Setting>
-                <Setting type="selectbox" initialValue="N" sort="21" conf="Y">
-                    <Name>Kunde soll ein Kundenkonto erhalten</Name>
-                    <Description>Kunde bekommt sein Kundenkontopasswort per E-Mail zugesandt.</Description>
-                    <ValueName>jtl_paypal_express_create_account</ValueName>
-                    <SelectboxOptions>
-                        <Option value="Y" sort="1">Ja</Option>
-                        <Option value="N" sort="2">Nein</Option>
-                    </SelectboxOptions>
-                </Setting>
-                <Setting type="selectbox" initialValue="N" sort="23" conf="Y">
-                    <Name>Versandkostenhinweis in PayPal als Position anzeigen</Name>
-                    <Description>Gesonderter Hinweis, auf Versandkostenberechnung NACH PayPal Login</Description>
-                    <ValueName>jtl_paypal_versandhinweis</ValueName>
-                    <SelectboxOptions>
-                        <Option value="Y" sort="1">Ja</Option>
-                        <Option value="N" sort="2">Nein</Option>
-                    </SelectboxOptions>
                 </Setting>
                 <Setting type="selectbox" initialValue="Y" sort="24" conf="Y">
                     <Name>Checkboxen aus Registrierungsseite auf Bestellübersichtsseite anzeigen</Name>

@@ -75,6 +75,12 @@ class Emailvorlage
      * @access protected
      * @var int
      */
+    protected $nWRBForm;
+
+    /**
+     * @access protected
+     * @var int
+     */
     protected $nFehlerhaft;
 
     /**
@@ -120,7 +126,7 @@ class Emailvorlage
                 $this->$cMember = $oObj->$cMember;
             }
             // Settings
-            $this->oEinstellung_arr = Shop::DB()->query("SELECT * FROM {$cTableSetting} WHERE kEmailvorlage = {$this->kEmailvorlage}", 2);
+            $this->oEinstellung_arr = Shop::DB()->selectAll($cTableSetting, 'kEmailvorlage', $this->kEmailvorlage);
             // Assoc bauen
             if (isset($Emailvorlage) && is_array($Emailvorlage->oEinstellung_arr) && count($this->oEinstellung_arr) > 0) {
                 $this->oEinstellungAssoc_arr = array();
@@ -232,7 +238,7 @@ class Emailvorlage
      */
     public function setAKZ($nAKZ)
     {
-        $this->nAKZ = $nAKZ;
+        $this->nAKZ = (int)$nAKZ;
 
         return $this;
     }
@@ -245,7 +251,7 @@ class Emailvorlage
      */
     public function setAGB($nAGB)
     {
-        $this->nAGB = $nAGB;
+        $this->nAGB = (int)$nAGB;
 
         return $this;
     }
@@ -258,7 +264,20 @@ class Emailvorlage
      */
     public function setWRB($nWRB)
     {
-        $this->nWRB = $nWRB;
+        $this->nWRB = (int)$nWRB;
+
+        return $this;
+    }
+
+    /**
+     * Sets the nWRBForm
+     *
+     * @var int
+     * @return $this
+     */
+    public function setWRBForm($nWRBForm)
+    {
+        $this->nWRBForm = (int)$nWRBForm;
 
         return $this;
     }
@@ -271,7 +290,7 @@ class Emailvorlage
      */
     public function setFehlerhaft($nFehlerhaft)
     {
-        $this->nFehlerhaft = $nFehlerhaft;
+        $this->nFehlerhaft = (int)$nFehlerhaft;
 
         return $this;
     }
@@ -379,6 +398,16 @@ class Emailvorlage
     public function getWRB()
     {
         return $this->nWRB;
+    }
+
+    /**
+     * Gets the nWRBForm
+     *
+     * @return int
+     */
+    public function getWRBForm()
+    {
+        return $this->nWRBForm;
     }
 
     /**

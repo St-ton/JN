@@ -266,7 +266,7 @@ function verarbeiteYategoExport(&$Artikel, $exportformat, $ExportEinstellungen, 
 
         if ($ExportEinstellungen['exportformate_quot'] !== 'N' && $ExportEinstellungen['exportformate_quot']) {
             $find[] = '"';
-            if ($ExportEinstellungen['exportformate_quot'] === 'bq') {
+            if ($ExportEinstellungen['exportformate_quot'] === 'q' || $ExportEinstellungen['exportformate_quot'] === 'bq') {
                 $replace[] = '\"';
             } elseif ($ExportEinstellungen['exportformate_quot'] === 'qq') {
                 $replace[] = '""';
@@ -276,7 +276,7 @@ function verarbeiteYategoExport(&$Artikel, $exportformat, $ExportEinstellungen, 
         }
         if ($ExportEinstellungen['exportformate_equot'] !== 'N' && $ExportEinstellungen['exportformate_equot']) {
             $find[] = "'";
-            if ($ExportEinstellungen['exportformate_equot'] === 'q') {
+            if ($ExportEinstellungen['exportformate_equot'] === 'q' || $ExportEinstellungen['exportformate_equot'] === 'bq') {
                 $replace[] = '"';
             } else {
                 $replace[] = $ExportEinstellungen['exportformate_equot'];
@@ -546,11 +546,11 @@ function verarbeiteYategoExport(&$Artikel, $exportformat, $ExportEinstellungen, 
             'short_desc'         => '<h2>' . $Artikel->cName . '</h2>' . (($Artikel->cKurzBeschreibung) ? $Artikel->cKurzBeschreibung : substr($Artikel->cBeschreibung, 0, 130)),
             'long_desc'          => '<h2>' . $Artikel->cName . '</h2>' . $Artikel->cBeschreibung . $cBacklink,
             'url'                => getURL($Artikel->cURL),
-            'picture'            => getURL($Artikel->Bilder[0]->cPfadGross),
-            'picture2'           => getURL($Artikel->Bilder[1]->cPfadGross),
-            'picture3'           => getURL($Artikel->Bilder[2]->cPfadGross),
-            'picture4'           => getURL($Artikel->Bilder[3]->cPfadGross),
-            'picture5'           => getURL($Artikel->Bilder[4]->cPfadGross),
+            'picture'            => isset($Artikel->Bilder[0]) ? getURL($Artikel->Bilder[0]->cPfadGross) : '',
+            'picture2'           => isset($Artikel->Bilder[1]) ? getURL($Artikel->Bilder[1]->cPfadGross) : '',
+            'picture3'           => isset($Artikel->Bilder[2]) ? getURL($Artikel->Bilder[2]->cPfadGross) : '',
+            'picture4'           => isset($Artikel->Bilder[3]) ? getURL($Artikel->Bilder[3]->cPfadGross) : '',
+            'picture5'           => isset($Artikel->Bilder[4]) ? getURL($Artikel->Bilder[4]->cPfadGross) : '',
             'categories'         => implode(',', $kKategorieListe_arr),
             'variants'           => $cVarianten,
             'delivery_date'      => $Artikel->cLieferstatus,
@@ -630,7 +630,7 @@ function baueArtikelExportSQL(&$oExportformat)
     $cSQL_arr['Where'] = '';
     $cSQL_arr['Join']  = '';
 
-    if (!$oExportformat->kExportformat) {
+    if (empty($oExportformat->kExportformat)) {
         return $cSQL_arr;
     }
     $cExportEinstellungAssoc_arr = getEinstellungenExport($oExportformat->kExportformat);
@@ -640,14 +640,13 @@ function baueArtikelExportSQL(&$oExportformat)
             $cSQL_arr['Where'] = " AND kVaterArtikel = 0";
             break;
         case 3:
-            $cSQL_arr['Where'] = " AND (tartikel.nIstVater != 1
-                            OR tartikel.kEigenschaftKombi > 0)";
+            $cSQL_arr['Where'] = " AND (tartikel.nIstVater != 1 OR tartikel.kEigenschaftKombi > 0)";
             break;
     }
     if (isset($cExportEinstellungAssoc_arr['exportformate_lager_ueber_null']) && $cExportEinstellungAssoc_arr['exportformate_lager_ueber_null'] === 'Y') {
-        $cSQL_arr['Where'] .= " AND (NOT (tartikel.fLagerbestand<=0 AND tartikel.cLagerBeachten='Y'))";
+        $cSQL_arr['Where'] .= " AND (NOT (tartikel.fLagerbestand <= 0 AND tartikel.cLagerBeachten = 'Y'))";
     } elseif (isset($cExportEinstellungAssoc_arr['exportformate_lager_ueber_null']) && $cExportEinstellungAssoc_arr['exportformate_lager_ueber_null'] === 'O') {
-        $cSQL_arr['Where'] .= " AND (NOT (tartikel.fLagerbestand<=0 AND tartikel.cLagerBeachten='Y') OR tartikel.cLagerKleinerNull='Y')";
+        $cSQL_arr['Where'] .= " AND (NOT (tartikel.fLagerbestand <= 0 AND tartikel.cLagerBeachten = 'Y') OR tartikel.cLagerKleinerNull = 'Y')";
     }
 
     if (isset($cExportEinstellungAssoc_arr['exportformate_preis_ueber_null']) && $cExportEinstellungAssoc_arr['exportformate_preis_ueber_null'] === 'Y') {
@@ -681,8 +680,12 @@ function holeMaxExportArtikelAnzahl(&$oExportformat)
                         )
                 )';
     }
+    $cid = 'xp_' . md5(json_encode($cSQL_arr) . $sql);
+    if (($count = Shop::Cache()->get($cid)) !== false) {
+        return $count;
+    }
 
-    return Shop::DB()->query(
+    $count = Shop::DB()->query(
         "SELECT count(*) AS nAnzahl
             FROM tartikel
             LEFT JOIN tartikelattribut ON tartikelattribut.kArtikel = tartikel.kArtikel
@@ -694,4 +697,7 @@ function holeMaxExportArtikelAnzahl(&$oExportformat)
                 AND tartikelsichtbarkeit.kArtikel IS NULL
                 {$sql}", 1
     );
+    Shop::Cache()->set($cid, $count, [CACHING_GROUP_CORE], 120);
+
+    return $count;
 }

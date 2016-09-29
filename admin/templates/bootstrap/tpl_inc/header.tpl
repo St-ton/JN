@@ -1,3 +1,5 @@
+{assign var='bForceFluid' value=$bForceFluid|default:false}
+
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -118,49 +120,20 @@
             });
 
             $(document).on("keydown", function (event) {
-                if (event.keyCode == 70 && event.ctrlKey) {
+                if (event.keyCode == 71 && event.ctrlKey) {
                     event.preventDefault();
                     $search_frame.modal('toggle');
                 }
             });
-
-            /*
-            $search_input.on('keydown', function(event) {
-                if (event.keyCode == 38 || event.keyCode == 40) {
-                    event.preventDefault();
-                }
-                switch (event.keyCode) {
-                    case 38: {
-                        console.log('up');
-                        break;
-                    }
-                    case 40: {
-                        if ($search_result.find('li.active').length == 0) {
-                            $search_result.find('li').first().addClass('active');
-                        }
-                        else {
-                            $active = $search_result.find('li.active');
-                            $next = $active.next('li');
-                            if ($next.length == 0) {
-                                $next = $active.closest('.grid-item').next().find('li').first();
-                            }
-
-                            if ($next.length) {
-                                $active.removeClass('active');
-                                $next.addClass('active');
-                            }
-                        }
-                        break;
-                    }
-                }
-            });
-            */
         });
         </script>
     {/if}
     {getCurrentPage assign="currentPage"}
-    {$fluid = ['index', 'marktplatz', 'banner', 'dbmanager', 'status']}
-    <div class="backend-wrapper {if $currentPage|in_array:$fluid}container-fluid{else}container{/if}{if $currentPage === 'index' || $currentPage === 'status'} dashboard{/if}{if $currentPage === 'marktplatz'} marktplatz{/if}">
+    {$fluid = ['index', 'marktplatz', 'dbmanager', 'status']}
+    <div class="backend-wrapper
+         {if $bForceFluid || $currentPage|in_array:$fluid}container-fluid{else}container{/if}
+         {if $currentPage === 'index' || $currentPage === 'status'} dashboard{/if}
+         {if $currentPage === 'marktplatz'} marktplatz{/if}">
         <nav class="navbar navbar-inverse navbar-fixed-top yamm" role="navigation">
             <div class="container-fluid">
                 <div class="navbar-header">
@@ -222,6 +195,7 @@
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
                         <li class="dropdown" id="notify-drop">{include file="tpl_inc/notify_drop.tpl"}</li>
+                        <li class="dropdown" id="favs-drop">{include file="tpl_inc/favs_drop.tpl"}</li>
                         {if permission('DASHBOARD_VIEW')}
                             <li>
                                 <a class="link-dashboard" href="index.php" title="Dashboard"><i class="fa fa-home"></i></a>

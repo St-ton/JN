@@ -63,4 +63,6 @@
 bootstrap/*
 includes/vendor/*
 node_modules/
-tools/bin/*
+/tools/bin/*
+/tools/dist/*
+/uploads/*

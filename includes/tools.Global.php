@@ -52,10 +52,10 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
                     $brotnavi[] = $ele;
                 }
             }
-            $SieSindHierString .= ' &gt; <a href="' . $Artikel->cURL . '">' . $Artikel->cName . '</a>';
+            $SieSindHierString .= ' &gt; <a href="' . $Artikel->cURLFull . '">' . $Artikel->cName . '</a>';
             $ele        = new stdClass();
             $ele->name  = $Artikel->cName;
-            $ele->url   = $Artikel->cURL;
+            $ele->url   = $Artikel->cURLFull;
             $brotnavi[] = $ele;
             $SieSindHierString .= '<br />';
             break;
@@ -83,26 +83,26 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
             break;
 
         case 'WARENKORB':
-            $SieSindHierString .= ' &gt; <a href="warenkorb.php">' . Shop::Lang()->get('basket', 'breadcrumb') . '</a>';
+            $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('warenkorb.php') . '">' . Shop::Lang()->get('basket', 'breadcrumb') . '</a>';
             $ele        = new stdClass();
             $ele->name  = Shop::Lang()->get('basket', 'breadcrumb');
-            $ele->url   = 'warenkorb.php';
+            $ele->url   = $linkHelper->getStaticRoute('warenkorb.php');
             $brotnavi[] = $ele;
             $SieSindHierString .= '<br />';
             break;
 
         case 'PASSWORT VERGESSEN':
-            $SieSindHierString .= ' &gt; <a href="pass.php">' . Shop::Lang()->get('forgotpassword', 'breadcrumb') . '</a>';
+            $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('pass.php') . '">' . Shop::Lang()->get('forgotpassword', 'breadcrumb') . '</a>';
             $ele        = new stdClass();
             $ele->name  = Shop::Lang()->get('forgotpassword', 'breadcrumb');
-            $ele->url   = 'pass.php';
+            $ele->url   = $linkHelper->getStaticRoute('pass.php');
             $brotnavi[] = $ele;
             $SieSindHierString .= '<br />';
             break;
 
         case 'MEIN KONTO':
             $cText = (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) ? Shop::Lang()->get('account', 'breadcrumb') : Shop::Lang()->get('login', 'breadcrumb');
-            $SieSindHierString .= ' &gt; <a href="jtl.php">' . $cText . '</a>';
+            $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('jtl.php') . '">' . $cText . '</a>';
             $ele        = new stdClass();
             $ele->name  = $cText;
             $ele->url   = 'jtl.php';
@@ -111,28 +111,28 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
             break;
 
         case 'BESTELLVORGANG':
-            $SieSindHierString .= ' &gt; <a href="bestellvorgang.php">' . Shop::Lang()->get('checkout', 'breadcrumb') . '</a>';
+            $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('bestellvorgang.php') . '">' . Shop::Lang()->get('checkout', 'breadcrumb') . '</a>';
             $ele        = new stdClass();
             $ele->name  = Shop::Lang()->get('checkout', 'breadcrumb');
-            $ele->url   = 'bestellvorgang.php';
+            $ele->url   = $linkHelper->getStaticRoute('bestellvorgang.php');
             $brotnavi[] = $ele;
             $SieSindHierString .= '<br />';
             break;
 
         case 'REGISTRIEREN':
-            $SieSindHierString .= ' &gt; <a href="registrieren.php">' . Shop::Lang()->get('register', 'breadcrumb') . '</a>';
+            $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('registrieren.php') . '">' . Shop::Lang()->get('register', 'breadcrumb') . '</a>';
             $ele        = new stdClass();
             $ele->name  = Shop::Lang()->get('register', 'breadcrumb');
-            $ele->url   = 'registrieren.php';
+            $ele->url   = $linkHelper->getStaticRoute('registrieren.php');
             $brotnavi[] = $ele;
             $SieSindHierString .= '<br />';
             break;
 
         case 'KONTAKT':
-            $SieSindHierString .= ' &gt; <a href="kontakt.php">' . Shop::Lang()->get('contact', 'breadcrumb') . '</a>';
+            $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('kontakt.php') . '">' . Shop::Lang()->get('contact', 'breadcrumb') . '</a>';
             $ele        = new stdClass();
             $ele->name  = Shop::Lang()->get('contact', 'breadcrumb');
-            $ele->url   = 'kontakt.php';
+            $ele->url   = $linkHelper->getStaticRoute('kontakt.php');
             $brotnavi[] = $ele;
             $SieSindHierString .= '<br />';
             break;
@@ -219,10 +219,10 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
             break;
 
         case 'VERGLEICHSLISTE':
-            $SieSindHierString .= ' &gt; <a href="vergleichsliste.php">' . Shop::Lang()->get('compare', 'global') . '</a>';
+            $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('vergleichsliste.php') . '">' . Shop::Lang()->get('compare', 'global') . '</a>';
             $ele        = new stdClass();
             $ele->name  = Shop::Lang()->get('compare', 'global');
-            $ele->url   = 'vergleichsliste.php';
+            $ele->url   = $linkHelper->getStaticRoute('vergleichsliste.php');
             $brotnavi[] = $ele;
             $SieSindHierString .= '<br />';
             break;
@@ -237,7 +237,7 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
                 if ($kVaterLink == 0) {
                     break;
                 }
-                $oItem = Shop::DB()->query("SELECT kLink, kVaterLink FROM tlink WHERE tlink.kLink = {$kVaterLink}", 1);
+                $oItem = Shop::DB()->select('tlink', 'kLink', $kVaterLink);
                 if (!is_object($oItem)) {
                     break;
                 }
@@ -330,7 +330,7 @@ function getCurrencyConversion($fPreisNetto, $fPreisBrutto, $cClass = '', $bForc
         $oWaehrung_arr = Shop::DB()->query("SELECT * FROM twaehrung ORDER BY cStandard DESC", 2);
 
         if (is_array($oWaehrung_arr) && count($oWaehrung_arr) > 0) {
-            $oSteuerklasse = Shop::DB()->query("SELECT kSteuerklasse FROM tsteuerklasse WHERE cStandard = 'Y'", 1);
+            $oSteuerklasse = Shop::DB()->select('tsteuerklasse', 'cStandard', 'Y');
             $kSteuerklasse = (isset($oSteuerklasse->kSteuerklasse)) ? $oSteuerklasse->kSteuerklasse : 1;
             // Netto
             if (isset($fPreisNetto) && doubleval($fPreisNetto) > 0) {
@@ -354,12 +354,16 @@ function getCurrencyConversion($fPreisNetto, $fPreisBrutto, $cClass = '', $bForc
                 }
                 // Wurde geändert weil der Preis nun als Betrag gesehen wird und die Steuer direkt in der Versandart als eSteuer Flag eingestellt wird
                 if ($i > 0) {
-                    $cString .= ($bForceSteuer) ? (' &#x2259; <strong>' . $cPreisBruttoLocalized . '</strong>' . ' (<em>' . $cPreisLocalized . '</em>)') : (' &#x2259; ' . $cPreisBruttoLocalized);
+                    $cString .= ($bForceSteuer) ?
+                        ('<br><strong>' . $cPreisBruttoLocalized . '</strong>' . ' (<em>' . $cPreisLocalized . ' ' . Shop::Lang()->get('net') . '</em>)') :
+                        ('<br> ' . $cPreisBruttoLocalized);
                 } else {
-                    $cString .= ($bForceSteuer) ? ('<strong>' . $cPreisBruttoLocalized . '</strong>' . ' (<em>' . $cPreisLocalized . '</em>)') : '<strong>' . $cPreisBruttoLocalized . '</strong>';
+                    $cString .= ($bForceSteuer) ?
+                        ('<strong>' . $cPreisBruttoLocalized . '</strong>' . ' (<em>' . $cPreisLocalized . ' ' . Shop::Lang()->get('net') . '</em>)') :
+                        '<strong>' . $cPreisBruttoLocalized . '</strong>';
                 }
             }
-            $cString .= ($bForceSteuer) ? ' (<strong>Brutto</strong> / Netto)</span>' : '</span>';
+            $cString .= '</span>';
         }
     }
 
@@ -493,7 +497,7 @@ function checkeWarenkorbEingang()
         $fAnzahl = doubleval($_GET['n']);
     }
     $kArtikel = verifyGPCDataInteger('a');
-    $conf     = Shop::getSettings(array(CONF_GLOBAL));
+    $conf     = Shop::getSettings(array(CONF_GLOBAL, CONF_VERGLEICHSLISTE));
     executeHook(HOOK_TOOLS_GLOBAL_CHECKEWARENKORBEINGANG_ANFANG, array('kArtikel' => $kArtikel, 'fAnzahl' => $fAnzahl));
     // Wunschliste?
     if ((isset($_POST['Wunschliste']) || isset($_GET['Wunschliste'])) && $conf['global']['global_wunschliste_anzeigen'] === 'Y') {
@@ -552,7 +556,7 @@ function checkeWarenkorbEingang()
                         Shop::Smarty()->assign('hinweis', Shop::Lang()->get('wishlistProductadded', 'messages'));
                         // Weiterleiten?
                         if ($conf['global']['global_wunschliste_weiterleitung'] === 'Y') {
-                            header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true) . '?wl=' . (int)$_SESSION['Wunschliste']->kWunschliste, true, 302);
+                            header('Location: ' . $linkHelper->getStaticRoute('wunschliste.php', true), true, 302);
                             exit;
                         }
                     }
@@ -561,11 +565,9 @@ function checkeWarenkorbEingang()
         }
     } elseif (isset($_POST['Vergleichsliste'])) { // Vergleichsliste?
         if ($kArtikel > 0) {
-            $Einstellungen_vergleichsliste = Shop::getSettings(array(CONF_VERGLEICHSLISTE));
-
             // Prüfen ob nicht schon die maximale Anzahl an Artikeln auf der Vergleichsliste ist
             if (!isset($_SESSION['Vergleichsliste']->oArtikel_arr) ||
-                intval($Einstellungen_vergleichsliste['vergleichsliste']['vergleichsliste_anzahl']) > count($_SESSION['Vergleichsliste']->oArtikel_arr)
+                intval($conf['vergleichsliste']['vergleichsliste_anzahl']) > count($_SESSION['Vergleichsliste']->oArtikel_arr)
             ) {
                 // Prüfe auf kArtikel
                 $oArtikelVorhanden = Shop::DB()->select('tartikel', 'kArtikel', $kArtikel, null, null, null, null, false, 'kArtikel, cName');
@@ -1208,24 +1210,15 @@ function gibVarKombiEigenschaftsWerte($kArtikel, $bSichtbarkeitBeachten = true)
 function fuegeEinInWarenkorb($kArtikel, $anzahl, $oEigenschaftwerte_arr = '', $nWeiterleitung = 0, $cUnique = false, $kKonfigitem = 0, $oArtikelOptionen = null, $setzePositionsPreise = true)
 {
     $kArtikel = (int)$kArtikel;
-
     if ($anzahl > 0 && $kArtikel > 0) {
         $Artikel = new Artikel();
         if ($oArtikelOptionen === null) {
             $oArtikelOptionen = Artikel::getDefaultOptions();
         }
         $Artikel->fuelleArtikel($kArtikel, $oArtikelOptionen);
-
-        // ### 28.10.2010 auskommentiert weil es das $oEigenschaftwerte_arr bei Kindern mit PFLICHT-FREIFELDERN falsch verändert ###
-        // Falls der Artikel ein Variationskombikind ist, hole direkt seine Eigenschaften
-        //if(isset($Artikel->kEigenschaftKombi) && $Artikel->kEigenschaftKombi > 0)
-        //$oEigenschaftwerte_arr = gibVarKombiEigenschaftsWerte($Artikel->kArtikel);
-
         if (intval($anzahl) != $anzahl && $Artikel->cTeilbar !== 'Y') {
-            $anzahl = max(intval($anzahl), 1);
+            $anzahl = max((int)$anzahl, 1);
         }
-
-        // Prüfung
         $redirectParam = pruefeFuegeEinInWarenkorb($Artikel, $anzahl, $oEigenschaftwerte_arr);
         // verhindert, dass Konfigitems mit Preis=0 aus der Artikelkonfiguration fallen wenn 'Preis auf Anfrage' eingestellt ist
         if (!empty($kKonfigitem) && $redirectParam[0] === R_AUFANFRAGE) {
@@ -1236,14 +1229,17 @@ function fuegeEinInWarenkorb($kArtikel, $anzahl, $oEigenschaftwerte_arr = '', $n
             if (isset($_SESSION['variBoxAnzahl_arr'])) {
                 return false;
             }
-
             if ($nWeiterleitung == 0) {
-                if ($Artikel->nIstVater == 1) {
-                    header('Location: ' . Shop::getURL() . '/navi.php?a=' . $Artikel->kArtikel . '&n=' . $anzahl . '&r=' . implode(',', $redirectParam), true, 302);
-                } elseif ($Artikel->kEigenschaftKombi > 0) {
-                    header('Location: ' . Shop::getURL() . '/navi.php?a=' . $Artikel->kVaterArtikel . '&a2=' . $Artikel->kArtikel . '&n=' . $anzahl . '&r=' . implode(',', $redirectParam), true, 302);
+                if ($Artikel->kEigenschaftKombi > 0) {
+                    $url = (!empty($Artikel->cURLFull)) ?
+                        ($Artikel->cURLFull . '?'):
+                        (Shop::getURL() . '/index.php?a=' . $Artikel->kVaterArtikel . '&a2=' . $Artikel->kArtikel . '&');
+                    header('Location: ' . $url . 'n=' . $anzahl . '&r=' . implode(',', $redirectParam), true, 302);
                 } else {
-                    header('Location: ' . Shop::getURL() . '/index.php?a=' . $Artikel->kArtikel . '&n=' . $anzahl . '&r=' . implode(',', $redirectParam), true, 302);
+                    $url = (!empty($Artikel->cURLFull)) ?
+                        ($Artikel->cURLFull . '?'):
+                        (Shop::getURL() . '/index.php?a=' . $Artikel->kArtikel . '&');
+                    header('Location: ' . $url . 'n=' . $anzahl . '&r=' . implode(',', $redirectParam), true, 302);
                 }
                 exit;
             } else {
@@ -1328,7 +1324,7 @@ function checkeKuponWKPos($oWKPosition, $Kupon)
             if (ArtikelHelper::isVariChild($kArtikel)) {
                 $kArtikel = ArtikelHelper::getParent($kArtikel);
             }
-            $oKategorie_arr = Shop::DB()->query("SELECT kKategorie FROM tkategorieartikel WHERE kArtikel = " . $kArtikel, 2);
+            $oKategorie_arr = Shop::DB()->selectAll('tkategorieartikel', 'kArtikel', $kArtikel);
             foreach ($oKategorie_arr as $oKategorie) {
                 if (!in_array($oKategorie->kKategorie, $kKategorie_arr)) {
                     $kKategorie_arr[] = (int)$oKategorie->kKategorie;
@@ -1650,7 +1646,7 @@ function baueURL($obj, $art, $row = 0, $bForceNonSeo = false, $bFull = false)
                     return $prefix . $obj->cLocalizedSeo[$_SESSION['cISOSprache']];
                 }
                 // Hole aktuelle Spezialseite und gib den URL Dateinamen zurück
-                $oSpezialseite = Shop::DB()->query("SELECT cDateiname FROM tspezialseite WHERE nLinkart = " . (int)$obj->nLinkart, 1);
+                $oSpezialseite = Shop::DB()->select('tspezialseite', 'nLinkart', (int)$obj->nLinkart);
                 if (isset($oSpezialseite->cDateiname) && strlen($oSpezialseite->cDateiname) > 0) {
                     if ($row) {
                         return $prefix . $oSpezialseite->cDateiname;
@@ -1868,122 +1864,44 @@ function checkeSpracheWaehrung($lang = '')
             //redirect per 301
             http_response_code(301);
             if ($kArtikel > 0) {
-                $dbRes = Shop::DB()->query(
-                    "SELECT tseo.cSeo
-                        FROM tseo
-                        WHERE tseo.cKey = 'kArtikel'
-                            AND tseo.kKey = " . $kArtikel . "
-                            AND tseo.kSprache = " . (int)$_SESSION['kSprache'], 1
-                );
-                $cSeo = $dbRes->cSeo;
+                $dbRes = Shop::DB()->select('tseo', 'cKey', 'kArtikel', 'kKey', $kArtikel, 'kSprache', (int)$_SESSION['kSprache']);
+                $cSeo  = $dbRes->cSeo;
             } elseif ($kKategorie > 0) {
-                $dbRes = Shop::DB()->query(
-                    "SELECT tseo.cSeo
-                        FROM tseo
-                        WHERE tseo.cKey = 'kKategorie'
-                            AND tseo.kKey = " . $kKategorie . "
-                            AND tseo.kSprache = " . (int)$_SESSION['kSprache'], 1
-                );
-                $cSeo = $dbRes->cSeo;
+                $dbRes = Shop::DB()->select('tseo', 'cKey', 'kKategorie', 'kKey', $kKategorie, 'kSprache', (int)$_SESSION['kSprache']);
+                $cSeo  = $dbRes->cSeo;
             } elseif ($kSeite > 0) {
-                $dbRes = Shop::DB()->query(
-                    "SELECT tseo.cSeo
-                        FROM tseo
-                        WHERE tseo.cKey = 'kLink'
-                            AND tseo.kKey = " . $kSeite . "
-                            AND tseo.kSprache = " . (int)$_SESSION['kSprache'], 1
-                );
-                $cSeo = $dbRes->cSeo;
+                $dbRes = Shop::DB()->select('tseo', 'cKey', 'kLink', 'kKey', $kSeite, 'kSprache', (int)$_SESSION['kSprache']);
+                $cSeo  = $dbRes->cSeo;
             } elseif ($kVariKindArtikel > 0) {
-                $dbRes = Shop::DB()->query(
-                    "SELECT tseo.cSeo
-                        FROM tseo
-                        WHERE tseo.cKey = 'kArtikel'
-                            AND tseo.kKey = " . $kVariKindArtikel . "
-                            AND tseo.kSprache = " . (int)$_SESSION['kSprache'], 1
-                );
-                $cSeo = $dbRes->cSeo;
+                $dbRes = Shop::DB()->select('tseo', 'cKey', 'kArtikel', 'kKey', $kVariKindArtikel, 'kSprache', (int)$_SESSION['kSprache']);
+                $cSeo  = $dbRes->cSeo;
             } elseif ($kHersteller > 0) {
-                $dbRes = Shop::DB()->query(
-                    "SELECT tseo.cSeo
-                        FROM tseo
-                        WHERE tseo.cKey = 'kHersteller'
-                            AND tseo.kKey = " . $kHersteller . "
-                            AND tseo.kSprache = " . (int)$_SESSION['kSprache'], 1
-                );
-                $cSeo = $dbRes->cSeo;
+                $dbRes = Shop::DB()->select('tseo', 'cKey', 'kHersteller', 'kKey', $kHersteller, 'kSprache', (int)$_SESSION['kSprache']);
+                $cSeo  = $dbRes->cSeo;
             } elseif ($kSuchanfrage > 0) {
-                $dbRes = Shop::DB()->query(
-                    "SELECT tseo.cSeo
-                        FROM tseo
-                        WHERE tseo.cKey = 'kSuchanfrage'
-                            AND tseo.kKey = " . $kSuchanfrage . "
-                            AND tseo.kSprache = " . (int)$_SESSION['kSprache'], 1
-                );
-                $cSeo = $dbRes->cSeo;
+                $dbRes = Shop::DB()->select('tseo', 'cKey', 'kSuchanfrage', 'kKey', $kSuchanfrage, 'kSprache', (int)$_SESSION['kSprache']);
+                $cSeo  = $dbRes->cSeo;
             } elseif ($kMerkmalWert > 0) {
-                $dbRes = Shop::DB()->query(
-                    "SELECT tseo.cSeo
-                        FROM tseo
-                        WHERE tseo.cKey = 'kMerkmalWert'
-                            AND tseo.kKey = " . $kMerkmalWert . "
-                            AND tseo.kSprache = " . (int)$_SESSION['kSprache'], 1
-                );
-                $cSeo = $dbRes->cSeo;
+                $dbRes = Shop::DB()->select('tseo', 'cKey', 'kMerkmalWert', 'kKey', $kMerkmalWert, 'kSprache', (int)$_SESSION['kSprache']);
+                $cSeo  = $dbRes->cSeo;
             } elseif ($kTag > 0) {
-                $dbRes = Shop::DB()->query(
-                    "SELECT tseo.cSeo
-                        FROM tseo
-                        WHERE tseo.cKey = 'kTag'
-                            AND tseo.kKey = " . $kTag . "
-                            AND tseo.kSprache = " . (int)$_SESSION['kSprache'], 1
-                );
-                $cSeo = $dbRes->cSeo;
+                $dbRes = Shop::DB()->select('tseo', 'cKey', 'kTag', 'kKey', $kTag, 'kSprache', (int)$_SESSION['kSprache']);
+                $cSeo  = $dbRes->cSeo;
             } elseif ($kSuchspecial > 0) {
-                $dbRes = Shop::DB()->query(
-                    "SELECT tseo.cSeo
-                        FROM tseo
-                        WHERE tseo.cKey = 'kSuchspecial'
-                            AND tseo.kKey = " . $kSuchspecial . "
-                            AND tseo.kSprache = " . (int)$_SESSION['kSprache'], 1
-                );
-                $cSeo = $dbRes->cSeo;
+                $dbRes = Shop::DB()->select('tseo', 'cKey', 'kSuchspecial', 'kKey', $kSuchspecial, 'kSprache', (int)$_SESSION['kSprache']);
+                $cSeo  = $dbRes->cSeo;
             } elseif ($kNews > 0) {
-                $dbRes = Shop::DB()->query(
-                    "SELECT tseo.cSeo
-                        FROM tseo
-                        WHERE tseo.cKey = 'kNews'
-                            AND tseo.kKey = " . $kNews . "
-                            AND tseo.kSprache = " . (int)$_SESSION['kSprache'], 1
-                );
-                $cSeo = $dbRes->cSeo;
+                $dbRes = Shop::DB()->select('tseo', 'cKey', 'kNews', 'kKey', $kNews, 'kSprache', (int)$_SESSION['kSprache']);
+                $cSeo  = $dbRes->cSeo;
             } elseif ($kNewsMonatsUebersicht > 0) {
-                $dbRes = Shop::DB()->query(
-                    "SELECT tseo.cSeo
-                        FROM tseo
-                        WHERE tseo.cKey = 'kNewsMonatsUebersicht'
-                            AND tseo.kKey = " . $kNewsMonatsUebersicht . "
-                            AND tseo.kSprache = " . (int)$_SESSION['kSprache'], 1
-                );
-                $cSeo = $dbRes->cSeo;
+                $dbRes = Shop::DB()->select('tseo', 'cKey', 'kNewsMonatsUebersicht', 'kKey', $kNewsMonatsUebersicht, 'kSprache', (int)$_SESSION['kSprache']);
+                $cSeo  = $dbRes->cSeo;
             } elseif ($kNewsKategorie > 0) {
-                $dbRes = Shop::DB()->query(
-                    "SELECT tseo.cSeo
-                        FROM tseo
-                        WHERE tseo.cKey = 'kNewsKategorie'
-                            AND tseo.kKey = " . $kNewsKategorie . "
-                            AND tseo.kSprache = " . (int)$_SESSION['kSprache'], 1
-                );
-                $cSeo = $dbRes->cSeo;
+                $dbRes = Shop::DB()->select('tseo', 'cKey', 'kNewsKategorie', 'kKey', $kNewsKategorie, 'kSprache', (int)$_SESSION['kSprache']);
+                $cSeo  = $dbRes->cSeo;
             } elseif ($kUmfrage > 0) {
-                $dbRes = Shop::DB()->query(
-                    "SELECT tseo.cSeo
-                        FROM tseo
-                        WHERE tseo.cKey = 'kUmfrage'
-                            AND tseo.kKey = " . $kUmfrage . "
-                            AND tseo.kSprache = " . (int)$_SESSION['kSprache'], 1
-                );
-                $cSeo = $dbRes->cSeo;
+                $dbRes = Shop::DB()->select('tseo', 'cKey', 'kUmfrage', 'kKey', $kUmfrage, 'kSprache', (int)$_SESSION['kSprache']);
+                $cSeo  = $dbRes->cSeo;
             }
             header('Location: ' . Shop::getURL() . '/' . $cSeo, true, 301);
             exit;
@@ -2222,7 +2140,7 @@ function standardspracheAktiv($bShop = false, $kSprache = null)
  * @param bool $bShop
  * @return mixed
  */
-function gibStandardsprache($bShop = false)
+function gibStandardsprache($bShop = true)
 {
     if (isset($_SESSION['Sprachen']) && is_array($_SESSION['Sprachen'])) {
         foreach ($_SESSION['Sprachen'] as $Sprache) {
@@ -2395,11 +2313,8 @@ function gibMoeglicheVerpackungen($kKundengruppe)
  */
 function gibVersandZuschlag($versandart, $cISO, $plz)
 {
-    $versandzuschlaege = Shop::DB()->query(
-        "SELECT * 
-            FROM tversandzuschlag 
-            WHERE kVersandart = " . (int)$versandart->kVersandart . " AND cISO = '" . $cISO . "'", 2
-    );
+    $versandzuschlaege = Shop::DB()->selectAll('tversandzuschlag', ['kVersandart', 'cISO'], [(int)$versandart->kVersandart, $cISO]);
+
     foreach ($versandzuschlaege as $versandzuschlag) {
         //ist plz enthalten?
         $plz_x = Shop::DB()->query(
@@ -2410,11 +2325,7 @@ function gibVersandZuschlag($versandart, $cISO, $plz)
             //posname lokalisiert ablegen
             $versandzuschlag->angezeigterName = array();
             foreach ($_SESSION['Sprachen'] as $Sprache) {
-                $name_spr = Shop::DB()->query(
-                    "SELECT cName
-                        FROM tversandzuschlagsprache
-                        WHERE kVersandzuschlag = " . (int)$versandzuschlag->kVersandzuschlag . " AND cISOSprache = '" . $Sprache->cISO . "'", 1
-                );
+                $name_spr = Shop::DB()->select('tversandzuschlagsprache', 'kVersandzuschlag', (int)$versandzuschlag->kVersandzuschlag, 'cISOSprache', $Sprache->cISO);
                 $versandzuschlag->angezeigterName[$Sprache->cISO] = $name_spr->cName;
             }
             $versandzuschlag->cPreisLocalized = gibPreisStringLocalized($versandzuschlag->fZuschlag);
@@ -2423,7 +2334,7 @@ function gibVersandZuschlag($versandart, $cISO, $plz)
         }
     }
 
-    return;
+    return null;
 }
 
 /**
@@ -2456,7 +2367,13 @@ function berechneVersandpreis($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
         case 'vm_versandberechnung_gewicht_jtl':
             $warenkorbgewicht = ($Artikel) ? $Artikel->fGewicht : $_SESSION['Warenkorb']->getWeight();
             $warenkorbgewicht += $oZusatzArtikel->fGewicht;
-            $versand = Shop::DB()->query("SELECT * FROM tversandartstaffel WHERE kVersandart = " . (int)$versandart->kVersandart . " AND fBis >= " . $warenkorbgewicht . " ORDER BY fBis ASC", 1);
+            $versand = Shop::DB()->query("
+                SELECT * 
+                  FROM tversandartstaffel 
+                  WHERE kVersandart = " . (int)$versandart->kVersandart . " 
+                      AND fBis >= " . $warenkorbgewicht . " 
+                  ORDER BY fBis ASC", 1
+            );
             if (isset($versand->kVersandartStaffel)) {
                 $preis = $versand->fPreis * ((100 + $fSteuersatz) / 100);
             } else {
@@ -2467,7 +2384,13 @@ function berechneVersandpreis($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
         case 'vm_versandberechnung_warenwert_jtl':
             $warenkorbwert = ($Artikel) ? $Artikel->Preise->fVKNetto : $_SESSION['Warenkorb']->gibGesamtsummeWarenExt(array(C_WARENKORBPOS_TYP_ARTIKEL), true);
             $warenkorbwert += $oZusatzArtikel->fWarenwertNetto;
-            $versand = Shop::DB()->query("SELECT * FROM tversandartstaffel WHERE kVersandart = " . (int)$versandart->kVersandart . " AND fBis >= " . $warenkorbwert . " ORDER BY fBis ASC", 1);
+            $versand = Shop::DB()->query("
+                SELECT * 
+                    FROM tversandartstaffel 
+                    WHERE kVersandart = " . (int)$versandart->kVersandart . " 
+                        AND fBis >= " . $warenkorbwert . " 
+                    ORDER BY fBis ASC", 1
+            );
             if (isset($versand->kVersandartStaffel)) {
                 $preis = $versand->fPreis * ((100 + $fSteuersatz) / 100);
             } else {
@@ -2482,7 +2405,13 @@ function berechneVersandpreis($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
             }
 
             $artikelanzahl += $oZusatzArtikel->fAnzahl;
-            $versand = Shop::DB()->query("SELECT * FROM tversandartstaffel WHERE kVersandart = " . (int)$versandart->kVersandart . " AND fBis >= " . $artikelanzahl . " ORDER BY fBis ASC", 1);
+            $versand = Shop::DB()->query("
+                SELECT * 
+                    FROM tversandartstaffel 
+                    WHERE kVersandart = " . (int)$versandart->kVersandart . " 
+                        AND fBis >= " . $artikelanzahl . " 
+                    ORDER BY fBis ASC", 1
+            );
             if (isset($versand->kVersandartStaffel)) {
                 $preis = $versand->fPreis * ((100 + $fSteuersatz) / 100);
             } else {
@@ -2922,49 +2851,52 @@ function pruefeVariationAusverkauft($kArtikel = 0, $oArtikel = null)
  */
 function makeHTTPHeader($nStatusCode)
 {
-    static $http = array(
-        100 => 'HTTP/1.1 100 Continue',
-        101 => 'HTTP/1.1 101 Switching Protocols',
-        200 => 'HTTP/1.1 200 OK',
-        201 => 'HTTP/1.1 201 Created',
-        202 => 'HTTP/1.1 202 Accepted',
-        203 => 'HTTP/1.1 203 Non-Authoritative Information',
-        204 => 'HTTP/1.1 204 No Content',
-        205 => 'HTTP/1.1 205 Reset Content',
-        206 => 'HTTP/1.1 206 Partial Content',
-        300 => 'HTTP/1.1 300 Multiple Choices',
-        301 => 'HTTP/1.1 301 Moved Permanently',
-        302 => 'HTTP/1.1 302 Found',
-        303 => 'HTTP/1.1 303 See Other',
-        304 => 'HTTP/1.1 304 Not Modified',
-        305 => 'HTTP/1.1 305 Use Proxy',
-        307 => 'HTTP/1.1 307 Temporary Redirect',
-        400 => 'HTTP/1.1 400 Bad Request',
-        401 => 'HTTP/1.1 401 Unauthorized',
-        402 => 'HTTP/1.1 402 Payment Required',
-        403 => 'HTTP/1.1 403 Forbidden',
-        404 => 'HTTP/1.1 404 Not Found',
-        405 => 'HTTP/1.1 405 Method Not Allowed',
-        406 => 'HTTP/1.1 406 Not Acceptable',
-        407 => 'HTTP/1.1 407 Proxy Authentication Required',
-        408 => 'HTTP/1.1 408 Request Time-out',
-        409 => 'HTTP/1.1 409 Conflict',
-        410 => 'HTTP/1.1 410 Gone',
-        411 => 'HTTP/1.1 411 Length Required',
-        412 => 'HTTP/1.1 412 Precondition Failed',
-        413 => 'HTTP/1.1 413 Request Entity Too Large',
-        414 => 'HTTP/1.1 414 Request-URI Too Large',
-        415 => 'HTTP/1.1 415 Unsupported Media Type',
-        416 => 'HTTP/1.1 416 Requested range not satisfiable',
-        417 => 'HTTP/1.1 417 Expectation Failed',
-        500 => 'HTTP/1.1 500 Internal Server Error',
-        501 => 'HTTP/1.1 501 Not Implemented',
-        502 => 'HTTP/1.1 502 Bad Gateway',
-        503 => 'HTTP/1.1 503 Service Unavailable',
-        504 => 'HTTP/1.1 504 Gateway Time-out'
+    $proto = (!empty($_SERVER['SERVER_PROTOCOL']))
+        ? $_SERVER['SERVER_PROTOCOL']
+        : 'HTTP/1.1';
+    $codes = array(
+        100 => $proto . ' 100 Continue',
+        101 => $proto . ' 101 Switching Protocols',
+        200 => $proto . ' 200 OK',
+        201 => $proto . ' 201 Created',
+        202 => $proto . ' 202 Accepted',
+        203 => $proto . ' 203 Non-Authoritative Information',
+        204 => $proto . ' 204 No Content',
+        205 => $proto . ' 205 Reset Content',
+        206 => $proto . ' 206 Partial Content',
+        300 => $proto . ' 300 Multiple Choices',
+        301 => $proto . ' 301 Moved Permanently',
+        302 => $proto . ' 302 Found',
+        303 => $proto . ' 303 See Other',
+        304 => $proto . ' 304 Not Modified',
+        305 => $proto . ' 305 Use Proxy',
+        307 => $proto . ' 307 Temporary Redirect',
+        400 => $proto . ' 400 Bad Request',
+        401 => $proto . ' 401 Unauthorized',
+        402 => $proto . ' 402 Payment Required',
+        403 => $proto . ' 403 Forbidden',
+        404 => $proto . ' 404 Not Found',
+        405 => $proto . ' 405 Method Not Allowed',
+        406 => $proto . ' 406 Not Acceptable',
+        407 => $proto . ' 407 Proxy Authentication Required',
+        408 => $proto . ' 408 Request Time-out',
+        409 => $proto . ' 409 Conflict',
+        410 => $proto . ' 410 Gone',
+        411 => $proto . ' 411 Length Required',
+        412 => $proto . ' 412 Precondition Failed',
+        413 => $proto . ' 413 Request Entity Too Large',
+        414 => $proto . ' 414 Request-URI Too Large',
+        415 => $proto . ' 415 Unsupported Media Type',
+        416 => $proto . ' 416 Requested range not satisfiable',
+        417 => $proto . ' 417 Expectation Failed',
+        500 => $proto . ' 500 Internal Server Error',
+        501 => $proto . ' 501 Not Implemented',
+        502 => $proto . ' 502 Bad Gateway',
+        503 => $proto . ' 503 Service Unavailable',
+        504 => $proto . ' 504 Gateway Time-out'
     );
 
-    return $http[$nStatusCode];
+    return (isset($codes[$nStatusCode])) ? $codes[$nStatusCode] : '';
 }
 
 /**
@@ -3343,6 +3275,12 @@ function parseNewsText($cText)
 {
     preg_match_all('/\${1}\#{1}[akhmntl]{1}:[0-9]+\:{0,1}[a-zA-Z0-9äÄöÖüÜß\.\,\!\"\§\$\%\&\/\(\)\=\`\´\+\~\*\'\;\-\_\?\{\}\[\]\ ]{0,}\#{1}\${1}/', $cText, $cTreffer_arr);
     if (is_array($cTreffer_arr[0]) && count($cTreffer_arr[0]) > 0) {
+        if (!isset($_SESSION['kSprache'])) {
+            $_lang    = gibStandardsprache();
+            $kSprache = $_lang->kSprache;
+        } else {
+            $kSprache = (int)$_SESSION['kSprache'];
+        }
         // Parameter
         $cParameter_arr = array('a' => URLART_ARTIKEL, 'k' => URLART_KATEGORIE, 'h' => URLART_HERSTELLER, 'm' => URLART_MERKMAL, 'n' => URLART_NEWS, 't' => URLART_TAG, 'l' => URLART_LIVESUCHE);
         foreach ($cTreffer_arr[0] as $cTreffer) {
@@ -3377,7 +3315,7 @@ function parseNewsText($cText)
                             FROM " . $cTabellenname . "
                             LEFT JOIN tseo ON tseo.cKey = 'kArtikel'
                                 AND tseo.kKey = " . $cTabellenname . ".kArtikel
-                                AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
+                                AND tseo.kSprache = " . $kSprache . "
                             WHERE " . $cTabellenname . ".kArtikel=" . (int)$cKey . $cSpracheSQL, 1
                     );
 
@@ -3395,14 +3333,14 @@ function parseNewsText($cText)
                     $cSpracheSQL         = '';
                     if (isset($_SESSION['kSprache']) && $_SESSION['kSprache'] > 0 && !standardspracheAktiv()) {
                         $cTabellenname = "tkategoriesprache";
-                        $cSpracheSQL   = " AND tkategoriesprache.kSprache = " . (int)$_SESSION['kSprache'];
+                        $cSpracheSQL   = " AND tkategoriesprache.kSprache = " . $kSprache;
                     }
                     $oKategorie = Shop::DB()->query(
                         "SELECT " . $cTabellenname . ".kKategorie, " . $cTabellenname . ".cName, tseo.cSeo
                             FROM " . $cTabellenname . "
                             LEFT JOIN tseo ON tseo.cKey = 'kKategorie'
                                 AND tseo.kKey = " . $cTabellenname . ".kKategorie
-                                AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
+                                AND tseo.kSprache = " . $kSprache . "
                             WHERE " . $cTabellenname . ".kKategorie = " . (int)$cKey . $cSpracheSQL, 1
                     );
 
@@ -3422,7 +3360,7 @@ function parseNewsText($cText)
                             FROM thersteller
                             LEFT JOIN tseo ON tseo.cKey = 'kHersteller'
                                 AND tseo.kKey = " . $cTabellenname . ".kHersteller
-                                AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
+                                AND tseo.kSprache = " . $kSprache . "
                             WHERE " . $cTabellenname . ".kHersteller = " . (int)$cKey, 1
                     );
 
@@ -3441,9 +3379,9 @@ function parseNewsText($cText)
                             FROM tmerkmalwertsprache
                             LEFT JOIN tseo ON tseo.cKey = 'kMerkmalWert'
                                 AND tseo.kKey = tmerkmalwertsprache.kMerkmalWert
-                                AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
+                                AND tseo.kSprache = " . $kSprache . "
                             WHERE tmerkmalwertsprache.kMerkmalWert = " . (int)$cKey . "
-                                AND tmerkmalwertsprache.kSprache = " . (int)$_SESSION['kSprache'], 1
+                                AND tmerkmalwertsprache.kSprache = " . $kSprache, 1
                     );
 
                     if (isset($oMerkmalWert->kMerkmalWert) && $oMerkmalWert->kMerkmalWert > 0) {
@@ -3461,7 +3399,7 @@ function parseNewsText($cText)
                             FROM tnews
                             LEFT JOIN tseo ON tseo.cKey = 'kNews'
                                 AND tseo.kKey = tnews.kNews
-                                AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
+                                AND tseo.kSprache = " . $kSprache . "
                             WHERE tnews.kNews = " . (int)$cKey, 1
                     );
 
@@ -3480,7 +3418,7 @@ function parseNewsText($cText)
                             FROM tumfrage
                             LEFT JOIN tseo ON tseo.cKey = 'kUmfrage'
                                 AND tseo.kKey = tnews.kUmfrage
-                                AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
+                                AND tseo.kSprache = " . $kSprache . "
                             WHERE tumfrage.kUmfrage = " . (int)$cKey, 1
                     );
 
@@ -3499,7 +3437,7 @@ function parseNewsText($cText)
                             FROM ttag
                             LEFT JOIN tseo ON tseo.cKey = 'kTag'
                                 AND tseo.kKey = ttag.kTag
-                                AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
+                                AND tseo.kSprache = " . $kSprache . "
                             WHERE ttag.kTag = " . (int)$cKey, 1
                     );
 
@@ -3518,7 +3456,7 @@ function parseNewsText($cText)
                             FROM tsuchanfrage
                             LEFT JOIN tseo ON tseo.cKey = 'kSuchanfrage'
                                 AND tseo.kKey = tsuchanfrage.kSuchanfrage
-                                AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
+                                AND tseo.kSprache = " . $kSprache . "
                             WHERE tsuchanfrage.kSuchanfrage = " . (int)$cKey, 1
                     );
 
@@ -3691,13 +3629,7 @@ function baueSuchSpecialURL($kKey)
 
         return $url;
     }
-    $oSeo = Shop::DB()->query(
-        "SELECT cSeo
-            FROM tseo
-            WHERE kSprache = " . (int)$_SESSION['kSprache'] . "
-                AND cKey = 'suchspecial'
-                AND kKey = " . (int)$kKey, 1
-    );
+    $oSeo = Shop::DB()->select('tseo', 'kSprache', (int)$_SESSION['kSprache'], 'cKey', 'suchspecial', 'kKey', (int)$kKey, false, 'cSeo');
     if ($oSeo === false) {
         $oSeo = new stdClass();
     }
@@ -3781,8 +3713,7 @@ function setzeSpracheUndWaehrungLink()
                 $_SESSION['Sprachen'][$i]->cURL = $AktuellerArtikel->cSprachURL_arr[$oSprache->kSprache];
             } elseif (($kLink > 0 || $kSeite > 0) && isset($sprachURL[$oSprache->cISO])) {
                 $_SESSION['Sprachen'][$i]->cURL = $sprachURL[$oSprache->cISO];
-            } // Special Seiten
-            elseif ($AktuelleSeite === 'WARENKORB'
+            } elseif ($AktuelleSeite === 'WARENKORB'
                 || $AktuelleSeite === 'KONTAKT'
                 || $AktuelleSeite === 'REGISTRIEREN'
                 || $AktuelleSeite === 'MEIN KONTO'
@@ -3792,6 +3723,8 @@ function setzeSpracheUndWaehrungLink()
                 || $AktuelleSeite === 'STARTSEITE'
                 || $AktuelleSeite === 'PASSWORT VERGESSEN'
                 || $AktuelleSeite === 'NEWS'
+                || $AktuelleSeite === 'WUNSCHLISTE'
+                || $AktuelleSeite === 'VERGLEICHSLISTE'
             ) {
                 switch ($AktuelleSeite) {
                     case 'STARTSEITE' :
@@ -3838,6 +3771,14 @@ function setzeSpracheUndWaehrungLink()
                         $id = 'news.php';
                         break;
 
+                    case 'VERGLEICHSLISTE':
+                        $id = 'vergleichsliste.php';
+                        break;
+
+                    case 'WUNSCHLISTE' :
+                        $id = 'wunschliste.php';
+                        break;
+
                     default:
                         $id = null;
                         break;
@@ -3876,6 +3817,7 @@ function setzeSpracheUndWaehrungLink()
                 || $AktuelleSeite === 'BESTELLVORGANG'
                 || $AktuelleSeite === 'NEWS'
                 || $AktuelleSeite === 'PASSWORT VERGESSEN'
+                || $AktuelleSeite === 'WUNSCHLISTE'
             ) { // Special Seiten
                 switch ($AktuelleSeite) {
                     case 'WARENKORB':
@@ -3912,6 +3854,10 @@ function setzeSpracheUndWaehrungLink()
 
                     case 'PASSWORT VERGESSEN':
                         $id = 'pass.php';
+                        break;
+
+                    case 'WUNSCHLISTE':
+                        $id = 'wunschliste.php';
                         break;
 
                     default:
@@ -4227,12 +4173,7 @@ function pruefeEmailblacklist($cEmail)
 function holePreisanzeigeEinstellungen()
 {
     $oPreisanzeigeConfTMP_arr = array();
-    $oPreisanzeigeConf_arr    = Shop::DB()->query(
-        "SELECT *
-            FROM teinstellungen
-            WHERE kEinstellungenSektion = " . CONF_PREISANZEIGE . "
-            ORDER BY cName", 2
-    );
+    $oPreisanzeigeConf_arr    = Shop::DB()->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_PREISANZEIGE, '*', 'cName');
     $cMapping_arr = array(
         'preisanzeige_preisgrafik_artikeldetails_anzeigen'    => 'Artikeldetails',
         'preisanzeige_preisgrafik_artikeluebersicht_anzeigen' => 'Artikeluebersicht',
@@ -4283,11 +4224,7 @@ function holePreisanzeigeEinstellungen()
         Shop::DB()->query("INSERT INTO teinstellungen VALUES(" . CONF_PREISANZEIGE . ", 'preisanzeige_schriftart_boxen', 'GeosansLight.ttf', NULL)", 4);
         Shop::DB()->query("INSERT INTO teinstellungen VALUES(" . CONF_PREISANZEIGE . ", 'preisanzeige_schriftart_startseite', 'GeosansLight.ttf', NULL)", 4);
 
-        $oPreisanzeigeConf_arr = Shop::DB()->query(
-            "SELECT *
-                FROM teinstellungen
-                WHERE kEinstellungenSektion = '" . CONF_PREISANZEIGE . "' ORDER BY cName ASC", 2
-        );
+        $oPreisanzeigeConf_arr = Shop::DB()->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_PREISANZEIGE, '*', 'cName ASC');
         foreach ($oPreisanzeigeConf_arr as $z => $oPreisanzeigeConf) {
             foreach ($cMapping_arr as $i => $cMapping) {
                 if ($oPreisanzeigeConf->cName == $i) {
@@ -4661,20 +4598,12 @@ function mappeKundenanrede($cAnrede, $kSprache, $kKunde = 0)
         }
         $cISOSprache = '';
         if ($kSprache > 0) { // Nimm die Sprache vom Kunden, falls gesetzt
-            $oSprache = Shop::DB()->query(
-                "SELECT kSprache, cISO
-                    FROM tsprache
-                    WHERE kSprache = " . (int)$kSprache, 1
-            );
+            $oSprache = Shop::DB()->select('tsprache', 'kSprache', (int)$kSprache);
             if (isset($oSprache->kSprache) && $oSprache->kSprache > 0) {
                 $cISOSprache = $oSprache->cISO;
             }
         } else { // Ansonsten nimm die Standard Sprache
-            $oSprache = Shop::DB()->query(
-                "SELECT kSprache, cISO
-                    FROM tsprache
-                    WHERE cShopStandard = 'Y'", 1
-            );
+            $oSprache = Shop::DB()->select('tsprache', 'cShopStandard', 'Y');
             if (isset($oSprache->kSprache) && $oSprache->kSprache > 0) {
                 $cISOSprache = $oSprache->cISO;
             }
@@ -4716,7 +4645,7 @@ function pruefeKampagnenParameter()
                     $oVorgang = Shop::DB()->select(
                         'tkampagnevorgang',
                         array('kKampagneDef', 'kKampagne', 'kKey', 'cCustomData'),
-                        array(KAMPAGNE_DEF_HIT, (int)$oKampagne->kKampagne, (int)$_SESSION['oBesucher']->kBesucher), (StringHandler::filterXSS(Shop::DB()->escape($_SERVER['REQUEST_URI'])) . ';' . $referrer)
+                        array(KAMPAGNE_DEF_HIT, (int)$oKampagne->kKampagne, (int)$_SESSION['oBesucher']->kBesucher, (StringHandler::filterXSS(Shop::DB()->escape($_SERVER['REQUEST_URI'])) . ';' . $referrer))
                     );
 
                     if (!isset($oVorgang->kKampagneVorgang)) {
@@ -4967,7 +4896,7 @@ function mappeSeitentyp($nSeitentyp)
  */
 function pruefeZahlungsartNutzbarkeit()
 {
-    $oZahlungsart_arr = Shop::DB()->query("SELECT * FROM tzahlungsart WHERE nActive = 1", 2);
+    $oZahlungsart_arr = Shop::DB()->selectAll('tzahlungsart', 'nActive', 1);
     if (is_array($oZahlungsart_arr) && count($oZahlungsart_arr) > 0) {
         foreach ($oZahlungsart_arr as $oZahlungsart) {
             // Bei SOAP oder CURL => versuche die Zahlungsart auf nNutzbar = 1 zu stellen, falls nicht schon geschehen
@@ -5005,7 +4934,9 @@ function aktiviereZahlungsart($oZahlungsart)
         if (isset($oZahlungsart->nALLOWURLFOPEN) && $oZahlungsart->nALLOWURLFOPEN) {
             $nNutzbar = (pruefeALLOWFOPEN()) ? 1 : 0;
         }
-        Shop::DB()->query("UPDATE tzahlungsart SET nNutzbar = " . $nNutzbar . " WHERE kZahlungsart = " . $kZahlungsart, 4);
+        $upd = new stdClass();
+        $upd->nNutzbar = $nNutzbar;
+        Shop::DB()->update('tzahlungsart', 'kZahlungsart', $kZahlungsart, $upd);
     }
 
     return false;
@@ -5041,11 +4972,7 @@ function gibSprachKeyISO($cISO = '', $kSprache = 0)
             return $oSprache->kSprache;
         }
     } elseif (intval($kSprache) > 0) {
-        $oSprache = Shop::DB()->query(
-            "SELECT cISO
-                FROM tsprache
-                WHERE kSprache = " . (int)$kSprache, 1
-        );
+        $oSprache = Shop::DB()->select('tsprache', 'kSprache', (int)$kSprache);
 
         if (isset($oSprache->cISO) && strlen($oSprache->cISO) > 0) {
             return $oSprache->cISO;
@@ -5344,7 +5271,7 @@ function gibStuecklistenKomponente($kStueckliste, $bAssoc = false)
 {
     $kStueckliste = (int)$kStueckliste;
     if ($kStueckliste > 0) {
-        $oObj_arr = Shop::DB()->query("SELECT * FROM tstueckliste WHERE kStueckliste = " . $kStueckliste, 2);
+        $oObj_arr = Shop::DB()->selectAll('tstueckliste', 'kStueckliste', $kStueckliste);
         if (is_array($oObj_arr) && count($oObj_arr) > 0) {
             if ($bAssoc) {
                 $oArtikelAssoc_arr = array();
@@ -5513,9 +5440,19 @@ function convertCurrency($price, $iso = null, $id = null, $useRounding = true, $
  */
 function resetNeuKundenKupon()
 {
-    if (isset($_SESSION['NeukundenKupon']->kKupon)) {
-        Shop::DB()->delete('tkuponneukunde', 'kKupon', $_SESSION['NeukundenKupon']->kKupon);
+    if (isset($_SESSION['Kunde'])) {
+        $hash = Kuponneukunde::Hash(
+            null,
+            trim($_SESSION['Kunde']->cNachname),
+            trim($_SESSION['Kunde']->cStrasse),
+            null,
+            trim($_SESSION['Kunde']->cPLZ),
+            trim($_SESSION['Kunde']->cOrt),
+            trim($_SESSION['Kunde']->cLand)
+        );
+        Shop::DB()->delete('tkuponneukunde', ['cDatenHash','cVerwendet'], [$hash,'N']);
     }
+
     unset($_SESSION['NeukundenKupon']);
     unset($_SESSION['NeukundenKuponAngenommen']);
     $_SESSION['Warenkorb']->loescheSpezialPos(C_WARENKORBPOS_TYP_NEUKUNDENKUPON)
@@ -5707,11 +5644,7 @@ function getDefaultLanguageID()
         if (Shop::$kSprache !== null) {
             $kSprache = Shop::$kSprache;
         } else {
-            $oSpracheTMP = Shop::DB()->query(
-                "SELECT kSprache
-                    FROM tsprache
-                    WHERE cShopStandard = 'Y'", 1
-            );
+            $oSpracheTMP = Shop::DB()->select('tsprache', 'cShopStandard', 'Y');
             if (isset($oSpracheTMP->kSprache) && $oSpracheTMP->kSprache > 0) {
                 $kSprache = $oSpracheTMP->kSprache;
             }
@@ -6206,6 +6139,40 @@ function formatSize($size)
     }
 
     return isset($res) ? $res : '';
+}
+
+/**
+ * @param DateTime|string|int $date
+ * @param int $weekdays
+ * @return DateTime
+ */
+function dateAddWeekday($date, $weekdays)
+{
+    try {
+        if (is_string($date)) {
+            $resDate = new DateTime($date);
+        } else if (is_numeric($date)) {
+            $resDate = new DateTime();
+            $resDate->setTimestamp($date);
+        } else if (is_object($date) && is_a($date, 'DateTime')) {
+            /** @var DateTime $date */
+            $resDate = new DateTime($date->format(DateTime::ISO8601));
+        } else {
+            $resDate = new DateTime();
+        }
+    } catch (Exception $e) {
+        Jtllog::writeLog($e->getMessage(), JTLLOG_LEVEL_ERROR);
+        $resDate = new DateTime();
+    }
+
+    $weekend = ((int)$resDate->format('w') + 1) % 6 == 1;
+    $pm      = (int)$resDate->format('G') > 12;
+
+    if ($weekend || $pm) {
+        $resDate->add(DateInterval::createFromDateString('1 weekday'));
+    }
+
+    return $resDate->add(DateInterval::createFromDateString($weekdays . ' weekday'));
 }
 
 if (!function_exists('dd')) {

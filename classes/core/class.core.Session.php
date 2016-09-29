@@ -36,13 +36,17 @@ class Session
     protected static $_storage;
 
     /**
-     * @param bool   $start - call session_start()?
-     * @param bool   $force - force new instance?
-     * @param string $sessionName
+     * @param bool        $start - call session_start()?
+     * @param bool        $force - force new instance?
+     * @param string|null $sessionName - if null, then default to current session name
      * @return Session
      */
-    public static function getInstance($start = true, $force = false, $sessionName = self::DefaultSession)
+    public static function getInstance($start = true, $force = false, $sessionName = null)
     {
+        if (!isset($sessionName)) {
+            $sessionName = self::$_sessionName;
+        }
+        
         if (self::$_sessionName !== $sessionName) {
             $force = true;
         }
@@ -60,6 +64,7 @@ class Session
      */
     public function __construct($start = true, $sessionName = self::DefaultSession)
     {
+        session_write_close(); // save previously created session
         self::$_instance    = $this;
         self::$_sessionName = $sessionName;
         $bot                = false;
@@ -69,6 +74,10 @@ class Session
             $bot            = self::getIsCrawler($_SERVER['HTTP_USER_AGENT']);
         }
         session_name(self::$_sessionName);
+        // if a session id came as cookie, set it as the current one
+        if (isset($_COOKIE[self::$_sessionName])) {
+            session_id($_COOKIE[self::$_sessionName]);
+        }
         if ($bot === false || $saveBotSession === 0) {
             if (ES_SESSIONS === 1) { // Sessions in DB speichern
                 self::$_handler = new SessionHandlerDB();
@@ -352,6 +361,11 @@ class Session
                 } else {
                     // Positionen Array in der Wunschliste neu nummerieren
                     $_SESSION['Vergleichsliste']->oArtikel_arr = array_merge($_SESSION['Vergleichsliste']->oArtikel_arr);
+                }
+                if (!isset($_SERVER['REQUEST_URI']) || strpos($_SERVER['REQUEST_URI'], 'index.php') !== false) {
+                    http_response_code(301);
+                    header('Location: ' . Shop::getURL() . '/');
+                    exit;
                 }
             }
         }

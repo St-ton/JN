@@ -7,7 +7,7 @@ require_once dirname(__FILE__) . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'template_inc.php';
 
 $oAccount->permission('DISPLAY_TEMPLATE_VIEW', true, true);
-
+/** @global JTLSmarty $smarty */
 if (isset($_POST['key']) && isset($_POST['upload'])) {
     $file     = PFAD_ROOT . PFAD_TEMPLATES . $_POST['upload'];
     $response = new stdClass();
@@ -27,7 +27,8 @@ $lessVarsSkin   = array();
 $lessColors_arr = array();
 $lessColorsSkin = array();
 $oTemplate      = Template::getInstance();
-$templateHelper = $oTemplate->getHelper();
+$templateHelper = TemplateHelper::getInstance(true);
+$templateHelper->disableCaching();
 $admin          = (isset($_GET['admin']) && $_GET['admin'] === 'true');
 if (isset($_GET['check'])) {
     if ($_GET['check'] === 'true') {

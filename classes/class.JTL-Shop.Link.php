@@ -87,6 +87,11 @@ class Link extends MainModel
     public $cIdentifier = '';
 
     /**
+     * @var int
+     */
+    public $bIsActive = 1;
+
+    /**
      * @var array
      */
     public $oSub_arr = array();
@@ -388,12 +393,7 @@ class Link extends MainModel
      */
     public function load($kKey, $oObj = null, $xOption = null)
     {
-        $kKey = (int)$kKey;
-        $oObj = Shop::DB()->query(
-            "SELECT *
-              FROM tlink
-              WHERE kLink = " . $kKey, 1
-        );
+        $oObj = Shop::DB()->select('tlink', 'kLink', (int)$kKey);
 
         if (!empty($oObj->kLink)) {
             $this->loadObject($oObj);
@@ -414,11 +414,7 @@ class Link extends MainModel
     {
         $kVaterLink = (int)$kVaterLink;
         if ($kVaterLink > 0) {
-            $oLink_arr = Shop::DB()->query(
-                "SELECT *
-                  FROM tlink
-                  WHERE kVaterLink = " . $kVaterLink, 2
-            );
+            $oLink_arr = Shop::DB()->selectAll('tlink', 'kVaterLink', $kVaterLink);
 
             if (is_array($oLink_arr) && count($oLink_arr) > 0) {
                 foreach ($oLink_arr as &$oLink) {
@@ -431,7 +427,7 @@ class Link extends MainModel
             return $oLink_arr;
         }
 
-        return;
+        return null;
     }
 
     /**
@@ -452,6 +448,7 @@ class Link extends MainModel
             $oObj->cNoFollow          = $this->cNoFollow;
             $oObj->cURL               = $this->cURL;
             $oObj->cKundengruppen     = $this->cKundengruppen;
+            $oObj->bIsActive          = $this->bIsActive;
             $oObj->cSichtbarNachLogin = $this->cSichtbarNachLogin;
             $oObj->cDruckButton       = $this->cDruckButton;
             $oObj->nSort              = $this->nSort;
@@ -527,7 +524,7 @@ class Link extends MainModel
             } else {
                 $nRows = Shop::DB()->delete('tlink', 'kLink', $this->getLink());
             }
-            $nLinkAnz = Shop::DB()->query("SELECT * FROM tlink WHERE kLink = " . $this->getLink(), 2);
+            $nLinkAnz = Shop::DB()->selectAll('tlink', 'kLink', $this->getLink());
             if (count($nLinkAnz) === 0) {
                 Shop::DB()->delete('tlinksprache', 'kLink', $this->getLink());
                 Shop::DB()->delete('tseo', ['kKey', 'cKey'], [$this->getLink(), 'kLink']);

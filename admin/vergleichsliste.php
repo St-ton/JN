@@ -6,15 +6,10 @@
 require_once dirname(__FILE__) . '/includes/admininclude.php';
 
 $oAccount->permission('MODULE_COMPARELIST_VIEW', true, true);
-
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'blaetternavi.php';
-
+/** @global JTLSmarty $smarty */
 $cHinweis = '';
 $cFehler  = '';
 $cSetting = '(469, 470)';
-// BlaetterNavi Getter / Setter + SQL
-$nAnzahlProSeite   = 15;
-$oBlaetterNaviConf = baueBlaetterNaviGetterSetter(1, $nAnzahlProSeite);
 // Tabs
 if (strlen(verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', verifyGPDataString('tab'));
@@ -94,14 +89,19 @@ $smarty->assign('oConfig_arr', $oConfig_arr);
 // Max Anzahl Vergleiche
 $oVergleichAnzahl = Shop::DB()->query(
     "SELECT count(*) AS nAnzahl
-        FROM tvergleichsliste", 1
-);
+        FROM tvergleichsliste",
+    1);
+// Pagination
+$oPagination = (new Pagination())
+    ->setItemCount($oVergleichAnzahl->nAnzahl)
+    ->assemble();
 // Letzten 20 Vergleiche
 $oLetzten20Vergleichsliste_arr = Shop::DB()->query(
     "SELECT kVergleichsliste, DATE_FORMAT(dDate, '%d.%m.%Y  %H:%i') AS Datum
         FROM tvergleichsliste
-        ORDER BY dDate DESC " . $oBlaetterNaviConf->cSQL1, 2
-);
+        ORDER BY dDate DESC
+        LIMIT " . $oPagination->getLimitSQL(),
+    2);
 
 if (is_array($oLetzten20Vergleichsliste_arr) && count($oLetzten20Vergleichsliste_arr) > 0) {
     $oLetzten20VergleichslistePos_arr = array();
@@ -130,15 +130,14 @@ $oTopVergleichsliste_arr = Shop::DB()->query(
 if (is_array($oTopVergleichsliste_arr) && count($oTopVergleichsliste_arr) > 0) {
     erstelleDiagrammTopVergleiche($oTopVergleichsliste_arr);
 }
-$oBlaetterNavi = baueBlaetterNavi($oBlaetterNaviConf->nAktuelleSeite1, $oVergleichAnzahl->nAnzahl, $nAnzahlProSeite);
 
 $smarty->assign('Letzten20Vergleiche', $oLetzten20Vergleichsliste_arr)
-       ->assign('TopVergleiche', $oTopVergleichsliste_arr)
-       ->assign('oBlaetterNavi', $oBlaetterNavi)
-       ->assign('sprachen', gibAlleSprachen())
-       ->assign('hinweis', $cHinweis)
-       ->assign('fehler', $cFehler)
-       ->display('vergleichsliste.tpl');
+    ->assign('TopVergleiche', $oTopVergleichsliste_arr)
+    ->assign('oPagination', $oPagination)
+    ->assign('sprachen', gibAlleSprachen())
+    ->assign('hinweis', $cHinweis)
+    ->assign('fehler', $cFehler)
+    ->display('vergleichsliste.tpl');
 
 /**
  * @param array $oTopVergleichsliste_arr

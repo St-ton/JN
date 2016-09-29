@@ -1,6 +1,6 @@
 {include file='layout/header.tpl'}
 
-<h1>{$Warenkorbtext}</h1>
+<h1>{lang key="basket" section="global"}</h1>
 
 {include file="snippets/extension.tpl"}
 
@@ -53,7 +53,7 @@
                     <div class="alert alert-info">{$Schnellkaufhinweis}</div>
                 {/if}
                 {block name="basket-note"}
-                    <div class="well panel-wrap basket-well">
+                    <div class="panel-wrap basket-well">
                         <div class="panel panel-default">
                             <div class="panel-body">
                                 {include file='checkout/inc_order_items.tpl' tplscope='cart'}
@@ -78,7 +78,7 @@
                             </div>
                             <div class="panel-body">
                                 <div class="input-group col-xs-12 col-md-8 col-lg-6 col-xl-4">
-                                    <input class="form-control" type="text" name="Kuponcode" id="couponCode" maxlength="20" placeholder="{lang key="couponCode" section="account data"}" />
+                                    <input class="form-control" type="text" name="Kuponcode" id="couponCode" maxlength="32" placeholder="{lang key="couponCode" section="account data"}" />
                                     <span class="input-group-btn">
                                         <input class="btn btn-default" type="submit" value="{lang key="useCoupon" section="checkout"}" />
                                     </span>
@@ -213,9 +213,10 @@
                                                 <label class="thumbnail" for="gift{$oArtikelGeschenk->kArtikel}">
                                                     <img src="{$oArtikelGeschenk->Bilder[0]->cPfadKlein}" class="image" />
 
-                                                    <p class="small text-muted">{lang key="freeGiftFrom1" section="global"} {$oArtikelGeschenk->cBestellwert} {lang key="freeGiftFrom2" section="global"}</p>
-
-                                                    <p>{$oArtikelGeschenk->cName}</p>
+                                                    <span class="small text-muted">{lang key="freeGiftFrom1" section="global"} {$oArtikelGeschenk->cBestellwert} {lang key="freeGiftFrom2" section="global"}</span>
+                                                    <br />
+                                                    <span>{$oArtikelGeschenk->cName}</span>
+                                                    <br />
                                                     <input name="gratisgeschenk" type="radio" value="{$oArtikelGeschenk->kArtikel}" id="gift{$oArtikelGeschenk->kArtikel}" />
                                                 </label>
                                             </div>

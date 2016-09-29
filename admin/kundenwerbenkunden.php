@@ -5,20 +5,16 @@
  */
 require_once dirname(__FILE__) . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'blaetternavi.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 
 $oAccount->permission('MODULE_CAC_VIEW', true, true);
-
+/** @global JTLSmarty $smarty */
 $Einstellungen = Shop::getSettings(array(CONF_KUNDENWERBENKUNDEN));
 $cHinweis      = '';
 $cFehler       = '';
 $step          = 'kwk_uebersicht';
 
 setzeSprache();
-
-$nAnzahlProSeite   = 15;
-$oBlaetterNaviConf = baueBlaetterNaviGetterSetter(3, $nAnzahlProSeite);
 
 // Tabs
 if (strlen(verifyGPDataString('tab')) > 0) {
@@ -49,21 +45,11 @@ if (verifyGPCDataInteger('KwK') === 1 && validateToken()) {
 //
 if ($step === 'kwk_uebersicht') {
     // Einstellungen
-    $oConfig_arr = Shop::DB()->query(
-        "SELECT *
-            FROM teinstellungenconf
-            WHERE kEinstellungenSektion = " . CONF_KUNDENWERBENKUNDEN . "
-            ORDER BY nSort", 2
-    );
+    $oConfig_arr = Shop::DB()->selectAll('teinstellungenconf', 'kEinstellungenSektion', CONF_KUNDENWERBENKUNDEN, '*', 'nSort');
     $configCount = count($oConfig_arr);
     for ($i = 0; $i < $configCount; $i++) {
         if ($oConfig_arr[$i]->cInputTyp === 'selectbox') {
-            $oConfig_arr[$i]->ConfWerte = Shop::DB()->query(
-                "SELECT *
-                    FROM teinstellungenconfwerte
-                    WHERE kEinstellungenConf = " . (int)$oConfig_arr[$i]->kEinstellungenConf . "
-                    ORDER BY nSort", 2
-            );
+            $oConfig_arr[$i]->ConfWerte = Shop::DB()->selectAll('teinstellungenconfwerte', 'kEinstellungenConf', (int)$oConfig_arr[$i]->kEinstellungenConf, '*', 'nSort');
         } elseif ($oConfig_arr[$i]->cInputTyp === 'selectkdngrp') {
             $oConfig_arr[$i]->ConfWerte = Shop::DB()->query(
                 "SELECT kKundengruppe, cName
@@ -73,23 +59,41 @@ if ($step === 'kwk_uebersicht') {
         }
 
         if ($oConfig_arr[$i]->cInputTyp === 'selectkdngrp') {
-            $oSetValue = Shop::DB()->query(
-                "SELECT cWert
-                    FROM teinstellungen
-                    WHERE kEinstellungenSektion = " . CONF_KUNDENWERBENKUNDEN . "
-                        AND cName = '" . $oConfig_arr[$i]->cWertName . "'", 2
-            );
+            $oSetValue = Shop::DB()->selectAll('teinstellungen', ['kEinstellungenSektion', 'cName'], [CONF_KUNDENWERBENKUNDEN, $oConfig_arr[$i]->cWertName]);
             $oConfig_arr[$i]->gesetzterWert = $oSetValue;
         } else {
-            $oSetValue = Shop::DB()->query(
-                "SELECT cWert
-                    FROM teinstellungen
-                    WHERE kEinstellungenSektion = " . CONF_KUNDENWERBENKUNDEN . "
-                        AND cName = '" . $oConfig_arr[$i]->cWertName . "'", 1
-            );
+            $oSetValue = Shop::DB()->select('teinstellungen', 'kEinstellungenSektion', CONF_KUNDENWERBENKUNDEN, 'cName', $oConfig_arr[$i]->cWertName);
             $oConfig_arr[$i]->gesetzterWert = (isset($oSetValue->cWert)) ? $oSetValue->cWert : null;
         }
     }
+
+    // Anzahl
+    $oAnzahlReg = Shop::DB()->query(
+        "SELECT count(*) AS nAnzahl
+            FROM tkundenwerbenkunden
+            WHERE nRegistriert = 0", 1
+    );
+    $oAnzahlNichtReg = Shop::DB()->query(
+        "SELECT count(*) AS nAnzahl
+            FROM tkundenwerbenkunden
+            WHERE nRegistriert = 1", 1
+    );
+    $oAnzahlPraemie = Shop::DB()->query(
+        "SELECT count(*) AS nAnzahl
+            FROM tkundenwerbenkundenbonus", 1
+    );
+
+    // Paginationen
+    $oPagiNichtReg = (new Pagination('nichtreg'))
+        ->setItemCount($oAnzahlReg->nAnzahl)
+        ->assemble();
+    $oPagiReg = (new Pagination('reg'))
+        ->setItemCount($oAnzahlNichtReg->nAnzahl)
+        ->assemble();
+    $oPagiPraemie = (new Pagination('praemie'))
+        ->setItemCount($oAnzahlPraemie->nAnzahl)
+        ->assemble();
+
     // tkundenwerbenkunden Nicht registrierte Kunden
     $oKwKNichtReg_arr = Shop::DB()->query(
         "SELECT tkundenwerbenkunden.*, DATE_FORMAT(tkundenwerbenkunden.dErstellt, '%d.%m.%Y %H:%i') AS dErstellt_de,
@@ -97,7 +101,7 @@ if ($step === 'kwk_uebersicht') {
             FROM tkundenwerbenkunden
             JOIN tkunde ON tkunde.kKunde = tkundenwerbenkunden.kKunde
             WHERE tkundenwerbenkunden.nRegistriert=0
-            ORDER BY tkundenwerbenkunden.dErstellt DESC" . $oBlaetterNaviConf->cSQL1, 2
+            ORDER BY tkundenwerbenkunden.dErstellt DESC LIMIT " . $oPagiNichtReg->getLimitSQL(), 2
     );
     if (is_array($oKwKNichtReg_arr) && count($oKwKNichtReg_arr) > 0) {
         foreach ($oKwKNichtReg_arr as $i => $oKwKNichtReg) {
@@ -113,7 +117,7 @@ if ($step === 'kwk_uebersicht') {
             FROM tkundenwerbenkunden
             JOIN tkunde ON tkunde.cMail = tkundenwerbenkunden.cEmail
             WHERE tkundenwerbenkunden.nRegistriert = 1
-            ORDER BY tkundenwerbenkunden.dErstellt DESC" . $oBlaetterNaviConf->cSQL2, 2
+            ORDER BY tkundenwerbenkunden.dErstellt DESC LIMIT " . $oPagiReg->getLimitSQL(), 2
     );
     if (is_array($oKwKReg_arr) && count($oKwKReg_arr) > 0) {
         foreach ($oKwKReg_arr as $i => $oKwKReg) {
@@ -130,7 +134,7 @@ if ($step === 'kwk_uebersicht') {
             tkunde.kKunde AS kKundeBestand, tkunde.cVorname AS cBestandVorname, tkunde.cNachname AS cBestandNachname, tkunde.cMail
             FROM tkundenwerbenkundenbonus
             JOIN tkunde ON tkunde.kKunde = tkundenwerbenkundenbonus.kKunde
-            ORDER BY dErhalten DESC" . $oBlaetterNaviConf->cSQL3, 2
+            ORDER BY dErhalten DESC LIMIT " . $oPagiPraemie->getLimitSQL(), 2
     );
 
     if (is_array($oKwKBestandBonus_arr) && count($oKwKBestandBonus_arr) > 0) {
@@ -140,32 +144,14 @@ if ($step === 'kwk_uebersicht') {
             $oKwKBestandBonus_arr[$i]->cBestandNachname = $oKunde->cNachname;
         }
     }
-    // Anzahl
-    $oAnzahl1 = Shop::DB()->query(
-        "SELECT count(*) AS nAnzahl
-            FROM tkundenwerbenkunden
-            WHERE nRegistriert = 0", 1
-    );
-    $oAnzahl2 = Shop::DB()->query(
-        "SELECT count(*) AS nAnzahl
-            FROM tkundenwerbenkunden
-            WHERE nRegistriert = 1", 1
-    );
-    $oAnzahl3 = Shop::DB()->query(
-        "SELECT count(*) AS nAnzahl
-            FROM tkundenwerbenkundenbonus", 1
-    );
-    $oBlaetterNaviNichtReg = baueBlaetterNavi($oBlaetterNaviConf->nAktuelleSeite1, $oAnzahl1->nAnzahl, $nAnzahlProSeite);
-    $oBlaetterNaviReg      = baueBlaetterNavi($oBlaetterNaviConf->nAktuelleSeite2, $oAnzahl2->nAnzahl, $nAnzahlProSeite);
-    $oBlaetterNaviPraemie  = baueBlaetterNavi($oBlaetterNaviConf->nAktuelleSeite3, $oAnzahl3->nAnzahl, $nAnzahlProSeite);
 
     $smarty->assign('oConfig_arr', $oConfig_arr)
-           ->assign('oKwKNichtReg_arr', $oKwKNichtReg_arr)
-           ->assign('oKwKReg_arr', $oKwKReg_arr)
-           ->assign('oKwKBestandBonus_arr', $oKwKBestandBonus_arr)
-           ->assign('oBlaetterNaviNichtReg', $oBlaetterNaviNichtReg)
-           ->assign('oBlaetterNaviReg', $oBlaetterNaviReg)
-           ->assign('oBlaetterNaviPraemie', $oBlaetterNaviPraemie);
+        ->assign('oKwKNichtReg_arr', $oKwKNichtReg_arr)
+        ->assign('oKwKReg_arr', $oKwKReg_arr)
+        ->assign('oKwKBestandBonus_arr', $oKwKBestandBonus_arr)
+        ->assign('oPagiNichtReg', $oPagiNichtReg)
+        ->assign('oPagiReg', $oPagiReg)
+        ->assign('oPagiPraemie', $oPagiPraemie);
 }
 $smarty->assign('Sprachen', gibAlleSprachen())
        ->assign('kSprache', $_SESSION['kSprache'])

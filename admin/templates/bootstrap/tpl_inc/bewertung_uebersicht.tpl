@@ -35,11 +35,11 @@
     <div class="tab-content">
         <div id="freischalten" class="tab-pane fade {if !isset($cTab) || $cTab === 'freischalten'} active in{/if}">
             {if $oBewertung_arr && $oBewertung_arr|@count > 0}
+                {include file='tpl_inc/pagination.tpl' oPagination=$oPagiInaktiv cAnchor='freischalten'}
                 <form method="post" action="bewertung.php">
                     {$jtl_token}
                     <input type="hidden" name="bewertung_nicht_aktiv" value="1" />
                     <input type="hidden" name="tab" value="freischalten" />
-                    {include file='pagination.tpl' cSite=1 cUrl='bewertung.php' oBlaetterNavi=$oBlaetterNaviInaktiv hash='#freischalten'}
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <h3 class="panel-title">{#ratingsInaktive#}</h3>
@@ -70,7 +70,10 @@
                                 <td class="tcenter">{$oBewertung->nSterne}</td>
                                 <td class="tcenter">{$oBewertung->Datum}</td>
                                 <td class="tcenter">
-                                    <a href="bewertung.php?a=editieren&kBewertung={$oBewertung->kBewertung}&tab=freischalten&token={$smarty.session.jtl_token}" class="btn btn-default"><i class="fa fa-edit"></i></a>
+                                    <a href="bewertung.php?a=editieren&kBewertung={$oBewertung->kBewertung}&tab=freischalten&token={$smarty.session.jtl_token}"
+                                       class="btn btn-default" title="{#modify#}">
+                                        <i class="fa fa-edit"></i>
+                                    </a>
                                 </td>
                             </tr>
                             </tbody>
@@ -97,11 +100,11 @@
         </div>
         <div id="letzten50" class="tab-pane fade {if isset($cTab) && $cTab === 'letzten50'} active in{/if}">
             {if $oBewertungLetzten50_arr && $oBewertungLetzten50_arr|@count > 0}
+                {include file='tpl_inc/pagination.tpl' oPagination=$oPagiAktiv cAnchor='letzten50'}
                 <form name="letzten50" method="post" action="bewertung.php">
                     {$jtl_token}
                     <input type="hidden" name="bewertung_aktiv" value="1" />
                     <input type="hidden" name="tab" value="letzten50" />
-                    {include file='pagination.tpl' cSite=2 cUrl='bewertung.php' oBlaetterNavi=$oBlaetterNaviAktiv hash='#letzten50'}
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <h3 class="panel-title">{#ratingLast50#}</h3>
@@ -128,7 +131,10 @@
                                     <td class="tcenter">{$oBewertungLetzten50->nSterne}</td>
                                     <td class="tcenter">{$oBewertungLetzten50->Datum}</td>
                                     <td class="tcenter7">
-                                        <a href="bewertung.php?a=editieren&kBewertung={$oBewertungLetzten50->kBewertung}&tab=letzten50&token={$smarty.session.jtl_token}" class="btn btn-default"><i class="fa fa-edit"></i></a>
+                                        <a href="bewertung.php?a=editieren&kBewertung={$oBewertungLetzten50->kBewertung}&tab=letzten50&token={$smarty.session.jtl_token}"
+                                           class="btn btn-default" title="{#modify#}">
+                                            <i class="fa fa-edit"></i>
+                                        </a>
                                     </td>
                                 </tr>
                             {/foreach}
@@ -141,7 +147,7 @@
                             </tfoot>
                         </table>
                         <div class="panel-footer">
-                            <button name="loeschen" type="submit" value="{#ratingDelete#}" class="btn btn-danger"><i class="fa fa-trash"></i> Markierte l&ouml;schen</button>
+                            <button name="loeschen" type="submit" value="{#ratingDelete#}" class="btn btn-danger"><i class="fa fa-trash"></i> {#deleteSelected#}</button>
                         </div>
                     </div>
                 </form>
@@ -193,7 +199,12 @@
                                     <td class="TD4"><b>{$oBewertungAktiv->cTitel}</b><br />{$oBewertungAktiv->cText}</td>
                                     <td class="tcenter">{$oBewertungAktiv->nSterne}</td>
                                     <td class="tcenter">{$oBewertungAktiv->Datum}</td>
-                                    <td class="tcenter"><a href="bewertung.php?a=editieren&kBewertung={$oBewertungAktiv->kBewertung}&tab=artikelbewertung" class="btn btn-default"><i class="fa fa-edit"></i></a></td>
+                                    <td class="tcenter">
+                                        <a href="bewertung.php?a=editieren&kBewertung={$oBewertungAktiv->kBewertung}&tab=artikelbewertung"
+                                           class="btn btn-default" title="{#modify#}">
+                                            <i class="fa fa-edit"></i>
+                                        </a>
+                                    </td>
                                 </tr>
                             {/foreach}
                             </tbody>

@@ -11,7 +11,7 @@
 class cache_file implements ICachingMethod
 {
     use JTLCacheTrait;
-    
+
     /**
      * @var cache_file|null
      */
@@ -31,6 +31,15 @@ class cache_file implements ICachingMethod
     }
 
     /**
+     * @param string $cacheID
+     * @return bool|string
+     */
+    private function getFileName($cacheID)
+    {
+        return $this->options['cache_dir'] . $cacheID . $this->options['file_extension'];
+    }
+
+    /**
      * @param string   $cacheID
      * @param mixed    $content
      * @param int|null $expiration
@@ -46,13 +55,19 @@ class cache_file implements ICachingMethod
                 return false;
             }
         }
+        $fileName = $this->getFileName($cacheID);
+        if ($fileName === false) {
+            return false;
+        }
 
         return (file_put_contents(
-                $dir . $cacheID . $this->options['file_extension'],
+                $fileName,
                 serialize(
                     array(
                         'value'    => $content,
-                        'lifetime' => ($expiration === null) ? $this->options['lifetime'] : $expiration
+                        'lifetime' => ($expiration === null) ?
+                            $this->options['lifetime'] :
+                            $expiration
                     )
                 )
             ) !== false) ? true : false;
@@ -80,8 +95,8 @@ class cache_file implements ICachingMethod
      */
     public function load($cacheID)
     {
-        $fileName = $this->options['cache_dir'] . $cacheID . $this->options['file_extension'];
-        if (file_exists($fileName)) {
+        $fileName = $this->getFileName($cacheID);
+        if ($fileName !== false && file_exists($fileName)) {
             $data = unserialize(file_get_contents($fileName));
             if ($data['lifetime'] === 0 || (time() - filemtime($fileName)) < $data['lifetime']) {
                 return $data['value'];
@@ -112,14 +127,35 @@ class cache_file implements ICachingMethod
      */
     public function isAvailable()
     {
+        $res = true;
         if (!is_dir($this->options['cache_dir'])) {
             $res = mkdir($this->options['cache_dir']);
-            if ($res === false) {
-                return false;
-            }
         }
 
-        return is_writable($this->options['cache_dir']);
+        return $res && is_writable($this->options['cache_dir']);
+    }
+
+    /**
+     * @param string $str
+     * @return bool
+     */
+    private function recursiveDelete($str)
+    {
+        if (is_file($str)) {
+            return unlink($str);
+        }
+        if (is_dir($str)) {
+            $scan = glob(rtrim($str, '/') . '/*');
+            foreach ($scan as $index => $path) {
+                $this->recursiveDelete($path);
+            }
+
+            return ($str === $this->options['cache_dir']) ?
+                true :
+                rmdir($str);
+        }
+
+        return false;
     }
 
     /**
@@ -129,9 +165,9 @@ class cache_file implements ICachingMethod
      */
     public function flush($cacheID)
     {
-        $fileName = $this->options['cache_dir'] . $cacheID . $this->options['file_extension'];
+        $fileName = $this->getFileName($cacheID);
 
-        return (file_exists($fileName)) ? unlink($fileName) : false;
+        return ($fileName !== false && file_exists($fileName)) ? unlink($fileName) : false;
     }
 
     /**
@@ -139,20 +175,9 @@ class cache_file implements ICachingMethod
      */
     public function flushAll()
     {
-        $res = false;
-        if (file_exists($this->options['cache_dir'])) {
-            $iterator = new RecursiveIteratorIterator(
-                new RecursiveDirectoryIterator($this->options['cache_dir'], RecursiveDirectoryIterator::SKIP_DOTS),
-                RecursiveIteratorIterator::CHILD_FIRST
-            );
-            $res = true;
-            foreach ($iterator as $fileInfo) {
-                $func = ($fileInfo->isDir() ? 'rmdir' : 'unlink');
-                $res  = $res && $func($fileInfo->getRealPath());
-            }
-        }
-
-        return $res;
+        $this->journal = null;
+        
+        return $this->recursiveDelete($this->options['cache_dir']);
     }
 
     /**
@@ -171,30 +196,20 @@ class cache_file implements ICachingMethod
                     while ($subDir && ($f = readdir($subDir)) !== false) {
                         if ($f !== '.' && $f !== '..') {
                             $filePath = $this->options['cache_dir'] . $file . '/' . $f;
-                            if (time() - filemtime($filePath) > $this->options['lifetime']) {
-                                //file expired, delete and don't count
-                                $this->flush(str_replace($this->options['file_extension'], '', $f));
-                            } else {
-                                $size = filesize($filePath);
-                                $total += $size;
-                                $num++;
-                            }
+                            $total += filesize($filePath);
+                            ++$num;
                         }
                     }
                     closedir($subDir);
                 } elseif (is_file($this->options['cache_dir'] . $file)) {
-                    if (time() - filemtime($this->options['cache_dir'] . $file) > $this->options['lifetime']) {
-                        //file expired, delete and don't count
-                        $this->flush(str_replace($this->options['file_extension'], '', $file));
-                    } else {
-                        $size = filesize($this->options['cache_dir'] . $file);
-                        $total += $size;
-                        $num++;
-                    }
+                    $total += filesize($this->options['cache_dir'] . $file);
+                    ++$num;
                 }
             }
         }
-        closedir($dir);
+        if ($dir !== false) {
+            closedir($dir);
+        }
 
         return array(
             'entries' => $num,

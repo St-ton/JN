@@ -25,7 +25,6 @@ require PFAD_ROOT . PFAD_INCLUDES . 'tools.Global.php';
 require PFAD_ROOT . PFAD_BLOWFISH . 'xtea.class.php';
 require PFAD_ROOT . PFAD_CLASSES_CORE . 'class.core.NiceDB.php';
 require PFAD_ROOT . PFAD_CLASSES_CORE . 'class.core.Nice.php';
-require PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'permissioncheck_inc.php';
 require PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'benutzerverwaltung_inc.php';
 require PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'admin_tools.php';
 
@@ -35,7 +34,10 @@ $DB = new NiceDB(DB_HOST, DB_USER, DB_PASS, DB_NAME, true);
 $cache = JTLCache::getInstance();
 $cache->setJtlCacheConfig();
 
+$session = AdminSession::getInstance();
+
 $notify = Notification::getInstance();
+/** @var Notification $notify */
 $notify->buildDefault();
 
 Shop::bootstrap();

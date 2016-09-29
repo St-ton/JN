@@ -76,7 +76,9 @@
                             <td class="tcenter">{$Betreff->Kundengruppen}</td>
                             <td class="tcenter">
                                 <span class="btn-group">
-                                    <a href="kontaktformular.php?kKontaktBetreff={$Betreff->kKontaktBetreff}&token={$smarty.session.jtl_token}" class="btn btn-default"><i class="fa fa-edit"></i></a>
+                                    <a href="kontaktformular.php?kKontaktBetreff={$Betreff->kKontaktBetreff}&token={$smarty.session.jtl_token}"
+                                       class="btn btn-default" title="{#modify#}"><i class="fa fa-edit"></i>
+                                    </a>
                                     <a href="kontaktformular.php?del={$Betreff->kKontaktBetreff}&token={$smarty.session.jtl_token}" class="btn btn-danger" title="{#delete#}"><i class="fa fa-trash"></i></a>
                                 </span>
                             </td>
@@ -106,7 +108,9 @@
                                     <span class="input-group-addon">
                                         <label for="cTitle_{$cISO}">{#title#} ({$sprache->cNameDeutsch})</label>
                                     </span>
-                                    <input class="form-control" type="text" name="cTitle_{$cISO}" id="cTitle_{$cISO}" value="{if !empty($Content[$cISOcat])}{$Content[$cISOcat]}{/if}" tabindex="1" />
+                                    <span class="input-group-wrap">
+                                        <input class="form-control" type="text" name="cTitle_{$cISO}" id="cTitle_{$cISO}" value="{if !empty($Content[$cISOcat])}{$Content[$cISOcat]}{/if}" tabindex="1" />
+                                    </span>
                                 </div>
                             {/foreach}
                             {foreach name=sprachen from=$sprachen item=sprache}

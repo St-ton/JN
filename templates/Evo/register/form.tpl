@@ -9,7 +9,7 @@
 {include file='checkout/inc_vcard_upload.tpl' id="registrieren.php"}
 <form method="post" action="{get_static_route id='registrieren.php'}">
     {$jtl_token}
-    {if $hinweis}
+    {if !empty($hinweis)}
         <div class="alert alert-info">{$hinweis}</div>{/if}
     {if !empty($fehlendeAngaben) && !$hinweis}
         <div class="alert alert-danger">{lang key="yourDataDesc" section="account data"}</div>

@@ -74,6 +74,10 @@ function gibBestseller($nLimit, $kKundengruppe = 0)
     if (!$kKundengruppe) {
         $kKundengruppe = Kundengruppe::getDefaultGroupID();
     }
+    $oGlobalnEinstellung_arr = Shop::getSettings(array(CONF_GLOBAL));
+    $nSchwelleBestseller     = (isset($oGlobalnEinstellung_arr['global']['global_bestseller_minanzahl'])) ?
+        doubleval($oGlobalnEinstellung_arr['global']['global_bestseller_minanzahl']) :
+        10;
     $bestsellers = Shop::DB()->query(
         "SELECT tartikel.kArtikel, tbestseller.fAnzahl
             FROM tbestseller, tartikel
@@ -81,6 +85,7 @@ function gibBestseller($nLimit, $kKundengruppe = 0)
                 AND tartikelsichtbarkeit.kKundengruppe = " . $kKundengruppe . "
             WHERE tartikelsichtbarkeit.kArtikel IS NULL
                 AND tbestseller.kArtikel = tartikel.kArtikel
+                 AND round(tbestseller.fAnzahl) >= " . $nSchwelleBestseller . "
                 " . gibVaterSQL() . "
                 " . gibLagerfilter() . "
             ORDER BY fAnzahl DESC

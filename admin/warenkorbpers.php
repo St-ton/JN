@@ -7,9 +7,8 @@ require_once dirname(__FILE__) . '/includes/admininclude.php';
 
 $oAccount->permission('MODULE_SAVED_BASKETS_VIEW', true, true);
 
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'blaetternavi.php';
 require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.WarenkorbPers.php';
-
+/** @global JTLSmarty $smarty */
 $cHinweis          = '';
 $cFehler           = '';
 $step              = 'uebersicht';
@@ -17,8 +16,6 @@ $settingsIDs       = array(540);
 $cSucheSQL         = new stdClass();
 $cSucheSQL->cJOIN  = '';
 $cSucheSQL->cWHERE = '';
-$nAnzahlProSeite   = 15;
-$oBlaetterNaviConf = baueBlaetterNaviGetterSetter(2, $nAnzahlProSeite);
 // Tabs
 if (strlen(verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', verifyGPDataString('tab'));
@@ -53,17 +50,7 @@ if (isset($_GET['l']) && intval($_GET['l']) > 0 && validateToken()) {
     unset($oWarenkorbPers);
 }
 
-// Gespeicherte Warenkoerbe
-$oKunde_arr = Shop::DB()->query(
-    "SELECT tkunde.kKunde, tkunde.cFirma, tkunde.cVorname, tkunde.cNachname, DATE_FORMAT(twarenkorbpers.dErstellt, '%d.%m.%Y  %H:%i') AS Datum, count(twarenkorbperspos.kWarenkorbPersPos) AS nAnzahl
-        FROM tkunde
-        JOIN twarenkorbpers ON tkunde.kKunde = twarenkorbpers.kKunde
-        JOIN twarenkorbperspos ON twarenkorbperspos.kWarenkorbPers = twarenkorbpers.kWarenkorbPers
-        " . $cSucheSQL->cWHERE . "
-        GROUP BY tkunde.kKunde
-        ORDER BY twarenkorbpers.dErstellt DESC" . $oBlaetterNaviConf->cSQL1, 2
-);
-
+// Anzahl Kunden mit Warenkorb
 $oKundeAnzahl = Shop::DB()->query(
     "SELECT count(*) AS nAnzahl
         FROM
@@ -77,6 +64,23 @@ $oKundeAnzahl = Shop::DB()->query(
         ) AS tAnzahl", 1
 );
 
+// Pagination
+$oPagiKunden = (new Pagination('kunden'))
+    ->setItemCount($oKundeAnzahl->nAnzahl)
+    ->assemble();
+
+// Gespeicherte Warenkoerbe
+$oKunde_arr = Shop::DB()->query(
+    "SELECT tkunde.kKunde, tkunde.cFirma, tkunde.cVorname, tkunde.cNachname, DATE_FORMAT(twarenkorbpers.dErstellt, '%d.%m.%Y  %H:%i') AS Datum, count(twarenkorbperspos.kWarenkorbPersPos) AS nAnzahl
+        FROM tkunde
+        JOIN twarenkorbpers ON tkunde.kKunde = twarenkorbpers.kKunde
+        JOIN twarenkorbperspos ON twarenkorbperspos.kWarenkorbPers = twarenkorbpers.kWarenkorbPers
+        " . $cSucheSQL->cWHERE . "
+        GROUP BY tkunde.kKunde
+        ORDER BY twarenkorbpers.dErstellt DESC
+        LIMIT " . $oPagiKunden->getLimitSQL(),
+    2);
+
 if (is_array($oKunde_arr) && count($oKunde_arr) > 0) {
     foreach ($oKunde_arr as $i => $oKunde) {
         $oKundeTMP = new Kunde($oKunde->kKunde);
@@ -86,7 +90,8 @@ if (is_array($oKunde_arr) && count($oKunde_arr) > 0) {
     }
 }
 
-$smarty->assign('oKunde_arr', $oKunde_arr);
+$smarty->assign('oKunde_arr', $oKunde_arr)
+    ->assign('oPagiKunden', $oPagiKunden);
 
 // Anzeigen
 if (isset($_GET['a']) && intval($_GET['a']) > 0) {
@@ -99,14 +104,20 @@ if (isset($_GET['a']) && intval($_GET['a']) > 0) {
             JOIN twarenkorbpers ON twarenkorbpers.kWarenkorbPers = twarenkorbperspos.kWarenkorbPers
             WHERE twarenkorbpers.kKunde = " . $kKunde, 1
     );
+
+    $oPagiWarenkorb = (new Pagination('warenkorb'))
+        ->setItemCount($oWarenkorbPers->nAnzahl)
+        ->assemble();
+
     $oWarenkorbPersPos_arr = Shop::DB()->query(
         "SELECT tkunde.kKunde AS kKundeTMP, tkunde.cVorname, tkunde.cNachname, twarenkorbperspos.kArtikel, twarenkorbperspos.cArtikelName, twarenkorbpers.kKunde,
             twarenkorbperspos.fAnzahl, DATE_FORMAT(twarenkorbperspos.dHinzugefuegt, '%d.%m.%Y  %H:%i') AS Datum
             FROM twarenkorbpers
             JOIN tkunde ON tkunde.kKunde = twarenkorbpers.kKunde
             JOIN twarenkorbperspos ON twarenkorbpers.kWarenkorbPers = twarenkorbperspos.kWarenkorbPers
-            WHERE twarenkorbpers.kKunde = " . $kKunde . $oBlaetterNaviConf->cSQL2, 2
-    );
+            WHERE twarenkorbpers.kKunde = " . $kKunde . "
+            LIMIT " . $oPagiWarenkorb->getLimitSQL(),
+        2);
 
     if (is_array($oWarenkorbPersPos_arr) && count($oWarenkorbPersPos_arr) > 0) {
         foreach ($oWarenkorbPersPos_arr as $i => $oWarenkorbPersPos) {
@@ -117,11 +128,9 @@ if (isset($_GET['a']) && intval($_GET['a']) > 0) {
         }
     }
 
-    $smarty->assign('oWarenkorbPersPos_arr', $oWarenkorbPersPos_arr);
-    // Baue Blaetternavigation
-    $oBlaetterNavi = baueBlaetterNavi($oBlaetterNaviConf->nAktuelleSeite2, $oWarenkorbPers->nAnzahl, $nAnzahlProSeite);
-    $smarty->assign('kKunde', $kKunde)
-           ->assign('oBlaetterNavi', $oBlaetterNavi);
+    $smarty->assign('oWarenkorbPersPos_arr', $oWarenkorbPersPos_arr)
+        ->assign('kKunde', $kKunde)
+        ->assign('oPagiWarenkorb', $oPagiWarenkorb);
 } else {
     // uebersicht
     // Config holen
@@ -149,11 +158,8 @@ if (isset($_GET['a']) && intval($_GET['a']) > 0) {
 
         $oConfig_arr[$i]->gesetzterWert = (isset($oSetValue->cWert)) ? $oSetValue->cWert : null;
     }
-    // Baue Blaetternavigation
-    $oBlaetterNaviKunde = baueBlaetterNavi($oBlaetterNaviConf->nAktuelleSeite1, $oKundeAnzahl->nAnzahl, $nAnzahlProSeite);
 
-    $smarty->assign('oBlaetterNaviKunde', $oBlaetterNaviKunde)
-           ->assign('oConfig_arr', $oConfig_arr);
+    $smarty->assign('oConfig_arr', $oConfig_arr);
 }
 
 $smarty->assign('step', $step)

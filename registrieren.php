@@ -67,7 +67,6 @@ $smarty->assign('Navigation', createNavigation($AktuelleSeite))
        ->assign('Einstellungen', $Einstellungen)
        ->assign('hinweis', $hinweis)
        ->assign('step', $step)
-       ->assign('sess', $_SESSION)
        ->assign('nAnzeigeOrt', CHECKBOX_ORT_REGISTRIERUNG)
        ->assign('code_registrieren', generiereCaptchaCode($Einstellungen['kunden']['registrieren_captcha']));
 

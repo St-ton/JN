@@ -1,50 +1,48 @@
 {if isset($boxes)}{* only available in shop versions > 3.19 *}
     {has_boxes position='left' assign='hasLeftBox'}
 {/if}
-{nocache}
-    {if !empty($hinweis)}
-        {if isset($bWarenkorbHinzugefuegt) && $bWarenkorbHinzugefuegt}
-            {include file='productdetails/pushed_success.tpl' type='alert'}
-        {else}
-            <div class="alert alert-success">
-                {$hinweis}
-            </div>
-        {/if}
-    {/if}
-    {if !empty($fehler)}
-        <div class="alert alert-danger">
-            {$fehler}
-        </div>
-    {/if}
-    {if !empty($ProdukttagHinweis)}
+{if !empty($hinweis)}
+    {if isset($bWarenkorbHinzugefuegt) && $bWarenkorbHinzugefuegt}
+        {include file='productdetails/pushed_success.tpl' type='alert'}
+    {else}
         <div class="alert alert-success">
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-            {$ProdukttagHinweis}
+            {$hinweis}
         </div>
     {/if}
-    {if isset($PositiveFeedback) && count($PositiveFeedback) > 0}
-        {foreach name=feedback from=$PositiveFeedback item=Feedback}
-            <div class="alert alert-success">{$Feedback}</div>
-        {/foreach}
-    {/if}
-    {if isset($Artikelhinweise) && count($Artikelhinweise) > 0}
-        {foreach name=hinweise from=$Artikelhinweise item=Artikelhinweis}
-            <div class="alert alert-danger">{$Artikelhinweis}</div>
-        {/foreach}
-    {/if}
-{/nocache}
+{/if}
+{if !empty($fehler)}
+    <div class="alert alert-danger">
+        {$fehler}
+    </div>
+{/if}
+{if !empty($ProdukttagHinweis)}
+    <div class="alert alert-success">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        {$ProdukttagHinweis}
+    </div>
+{/if}
+{if isset($PositiveFeedback) && count($PositiveFeedback) > 0}
+    {foreach name=feedback from=$PositiveFeedback item=Feedback}
+        <div class="alert alert-success">{$Feedback}</div>
+    {/foreach}
+{/if}
+{if isset($Artikelhinweise) && count($Artikelhinweise) > 0}
+    {foreach name=hinweise from=$Artikelhinweise item=Artikelhinweis}
+        <div class="alert alert-danger">{$Artikelhinweis}</div>
+    {/foreach}
+{/if}
 
 <div class="h1 visible-xs text-center">{$Artikel->cName}</div>
 
 <form id="buy_form" method="post" action="{$Artikel->cURLFull}">
     {$jtl_token}
     <div class="row product-primary" itemscope itemtype="http://schema.org/Product" id="product-offer">
-        <div class="product-gallery {if $hasLeftBox}col-sm-5{else}col-sm-6{/if}">
+        <div class="product-gallery{if $hasLeftBox} col-sm-5{else} col-sm-6{/if}">
             {include file="productdetails/image.tpl"}
         </div>
-        <div class="product-info {if $hasLeftBox}col-sm-7{else}col-sm-6{/if}">
+        <div class="product-info{if $hasLeftBox} col-sm-7{else} col-sm-6{/if}">
             {block name="productdetails-info"}
             {if $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen !== 'N' && isset($Artikel->cHersteller)}
                 {block name="product-info-manufacturer"}
@@ -105,7 +103,7 @@
 
             {if $Einstellungen.artikeldetails.artikeldetails_kategorie_anzeigen === 'Y'}
                 {block name="productdetails-info-category"}
-                <p class="product-category">
+                <p class="product-category word-break">
                     <span class="text-muted">{lang key="category" section="global"}: </span>
                     {assign var=i_kat value=$Brotnavi|@count}{assign var=i_kat value=$i_kat-2}
                     <a href="{$Brotnavi[$i_kat]->url}">{$Brotnavi[$i_kat]->name}</a>
@@ -158,7 +156,7 @@
             {/if}
         </div>{* /product-info *}
         {if $Artikel->bHasKonfig}
-            <div id="product-configurator" class="product-actions top10">
+            <div id="product-configurator" class="product-actions top10 col-sm-12">
                 <!-- KONFIGURATOR -->
                 {if isset($Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ARTIKELKONFIG_TPL]) && file_exists("tpl_inc/{$Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ARTIKELKONFIG_TPL]}")}
                     {include file='tpl_inc/'|cat:$Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ARTIKELKONFIG_TPL]}

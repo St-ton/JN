@@ -5,12 +5,9 @@
  */
 require_once dirname(__FILE__) . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Jtllog.php';
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'blaetternavi.php';
 
 $oAccount->permission('SYSTEMLOG_VIEW', true, true);
-
-$nAnzahlProSeite   = 50;
-$oBlaetterNaviConf = baueBlaetterNaviGetterSetter(1, $nAnzahlProSeite);
+/** @global JTLSmarty $smarty */
 $cHinweis          = '';
 $cFehler           = '';
 $cSuche            = '';
@@ -46,9 +43,14 @@ if (isset($_POST['einstellungen']) && intval($_POST['einstellungen']) === 1 && v
 }
 
 if ($step === 'systemlog_uebersicht') {
+    $nLogCount = Jtllog::getLogCount($cSuche, $nLevel);
+    // Pagination
+    $oPagination = (new Pagination())
+        ->setItemCount($nLogCount)
+        ->assemble();
     // Log
-    $oLog_arr = Jtllog::getLog($cSuche, $nLevel, $oBlaetterNaviConf->cLimit1, $nAnzahlProSeite);
-    // Highlight
+    $oLog_arr = Jtllog::getLog($cSuche, $nLevel, $oPagination->getFirstPageItem(), $oPagination->getPageItemCount());
+    /** @var Jtllog $oLog */
     foreach ($oLog_arr as &$oLog) {
         $cLog = $oLog->getcLog();
         $cLog = preg_replace('/\[(.*)\] => (.*)/', '<span class="hl_key">$1</span>: <span class="hl_value">$2</span>', $cLog);
@@ -57,14 +59,13 @@ if ($step === 'systemlog_uebersicht') {
         $oLog->setcLog($cLog, false);
     }
 
-    $oBlaetterNavi                  = baueBlaetterNavi($oBlaetterNaviConf->nAktuelleSeite1, Jtllog::getLogCount($cSuche, $nLevel), $nAnzahlProSeite);
     $nSystemlogFlag                 = getSytemlogFlag(false);
     $nFlag_arr[JTLLOG_LEVEL_ERROR]  = Jtllog::isBitFlagSet(JTLLOG_LEVEL_ERROR, $nSystemlogFlag);
     $nFlag_arr[JTLLOG_LEVEL_NOTICE] = Jtllog::isBitFlagSet(JTLLOG_LEVEL_NOTICE, $nSystemlogFlag);
     $nFlag_arr[JTLLOG_LEVEL_DEBUG]  = Jtllog::isBitFlagSet(JTLLOG_LEVEL_DEBUG, $nSystemlogFlag);
 
     $smarty->assign('oLog_arr', $oLog_arr)
-           ->assign('oBlaetterNavi', $oBlaetterNavi)
+           ->assign('oPagination', $oPagination)
            ->assign('nFlag_arr', $nFlag_arr)
            ->assign('JTLLOG_LEVEL_ERROR', JTLLOG_LEVEL_ERROR)
            ->assign('JTLLOG_LEVEL_NOTICE', JTLLOG_LEVEL_NOTICE)

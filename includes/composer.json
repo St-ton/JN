@@ -14,7 +14,7 @@
         "phpmyadmin/sql-parser": "^3.4",
         "phpgangsta/googleauthenticator": "dev-master",
         "phpmailer/phpmailer": "~5.2",
-        "chillerlan/php-qrcode": "dev-master"
+        "jtlshop/qrcodegenerator": "dev-master"
     },
     "require_dev": {
         "phpunit/php-token-stream": "~1.2",
@@ -26,13 +26,17 @@
             "type": "package",
             "package": {
                 "name": "jtlshop/shop4-systemcheck",
-                "version": "1.0.8",
+                "version": "1.0.9",
                 "source": {
                     "url": "https://gitlab.jtl-software.de/jtlshop/shop4-systemcheck.git",
                     "type": "git",
-                    "reference": "1.0.8"
+                    "reference": "1.0.9"
                 }
             }
+        },
+        {
+            "type": "vcs",
+            "url": "https://gitlab.jtl-software.de/jtlshop/qrcodegenerator.git"
         }
     ],
     "autoload": {

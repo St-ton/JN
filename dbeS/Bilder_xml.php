@@ -1053,11 +1053,11 @@ function bearbeiteDeletes($xml)
         if (is_array($xml['del_bilder']['kHersteller'])) {
             foreach ($xml['del_bilder']['kHersteller'] as $kHersteller) {
                 if ((int)$kHersteller > 0) {
-                    Shop::DB()->update('thersteller', 'kHersteller', (int)$kHersteller, (object)['cBildPfad' => '']);
+                    Shop::DB()->update('thersteller', 'kHersteller', (int)$kHersteller, (object)['cBildpfad' => '']);
                 }
             }
         } elseif ((int)$xml['del_bilder']['kHersteller'] > 0) {
-            Shop::DB()->update('thersteller', 'kHersteller', (int)$xml['del_bilder']['kHersteller'], (object)['cBildPfad' => '']);
+            Shop::DB()->update('thersteller', 'kHersteller', (int)$xml['del_bilder']['kHersteller'], (object)['cBildpfad' => '']);
         }
     }
     //Merkmalbilder löschen
@@ -1077,12 +1077,12 @@ function bearbeiteDeletes($xml)
         if (is_array($xml['del_bilder']['kMerkmalWert'])) {
             foreach ($xml['del_bilder']['kMerkmalWert'] as $kMerkmalWert) {
                 if ((int)$kMerkmalWert > 0) {
-                    Shop::DB()->update('tmerkmalwert', 'kMerkmalWert', (int)$kMerkmalWert, (object)['cBildPfad' => '']);
+                    Shop::DB()->update('tmerkmalwert', 'kMerkmalWert', (int)$kMerkmalWert, (object)['cBildpfad' => '']);
                     Shop::DB()->delete('tmerkmalwertbild', 'kMerkmalWert', (int)$kMerkmalWert);
                 }
             }
         } elseif ((int)$xml['del_bilder']['kMerkmalWert'] > 0) {
-            Shop::DB()->update('tmerkmalwert', 'kMerkmalWert', (int)$xml['del_bilder']['kMerkmalWert'], (object)['cBildPfad' => '']);
+            Shop::DB()->update('tmerkmalwert', 'kMerkmalWert', (int)$xml['del_bilder']['kMerkmalWert'], (object)['cBildpfad' => '']);
             Shop::DB()->delete('tmerkmalwertbild', 'kMerkmalWert', (int)$xml['del_bilder']['kMerkmalWert']);
         }
     }

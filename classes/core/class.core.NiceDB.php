@@ -15,7 +15,7 @@
  * @method int insert(string $tablename, object $object, int|bool $echo = false, bool $bExecuteHook = false)
  * @method int delete(string $tablename, string|array $keyname, string|int|array $keyvalue, bool|int $echo = false)
  * @method int update(string $tablename, string|array $keyname, string|int|array $keyvalue, object $object, int|bool $echo = false)
- * @method int|array selectAll(string $tablename, string|array $keys, string|int|array $values, string $select = '*', string $orderBy = '')
+ * @method int|array selectAll(string $tablename, string|array $keys, string|int|array $values, string $select = '*', string $orderBy = '', string $limit = '')
  * @method string realEscape($string)
  * @method string pdoEscape($string)
  * @method string info()
@@ -800,10 +800,11 @@ class NiceDB
      * @param string|array $values
      * @param string       $select
      * @param string       $orderBy
+     * @param string       $limit
      * @return array|int|object
      * @throws InvalidArgumentException
      */
-    public function selectArray($tablename, $keys, $values, $select = '*', $orderBy = '')
+    public function selectArray($tablename, $keys, $values, $select = '*', $orderBy = '', $limit = '')
     {
         $keys         = (is_array($keys)) ? $keys : array($keys);
         $values       = (is_array($values)) ? $values : array($values);
@@ -819,7 +820,8 @@ class NiceDB
                 (' WHERE ' . implode(' AND ', $kv)) :
                 ''
             ) .
-            ((!empty($orderBy)) ? (' ORDER BY ' . $orderBy) : '');
+            ((!empty($orderBy)) ? (' ORDER BY ' . $orderBy) : '') .
+            ((!empty($limit)) ? (' LIMIT ' . $limit) : '');
 
         return $this->executeQueryPrepared($stmt, array_combine($keys, $values), 2);
     }

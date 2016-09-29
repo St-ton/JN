@@ -464,7 +464,7 @@ function exportformatQueueRedirect($cTab = '', array &$messages = null)
 }
 
 /**
- * @param $step
+ * @param string $step
  * @param JTLSmarty $smarty
  * @param array $messages
  * @return void

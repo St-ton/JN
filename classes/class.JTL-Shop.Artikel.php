@@ -3605,7 +3605,7 @@ class Artikel
         if ($this->fLagerbestand <= 0 && $this->cLagerBeachten === 'Y' && $this->cLagerKleinerNull !== 'Y' && $this->cLagerVariation !== 'Y') {
             $this->inWarenkorbLegbar = INWKNICHTLEGBAR_LAGER;
         }
-        if (isset($this->Preise->fVKNetto) && $this->Preise->fVKNetto == 0 && isset($conf['global']['global_preis0']) && $conf['global']['global_preis0'] === 'N') {
+        if ((!$this->bHasKonfig) && isset($this->Preise->fVKNetto) && $this->Preise->fVKNetto == 0 && isset($conf['global']['global_preis0']) && $conf['global']['global_preis0'] === 'N') {
             $this->inWarenkorbLegbar = INWKNICHTLEGBAR_PREISAUFANFRAGE;
         }
         if (isset($this->FunktionsAttribute[FKT_ATTRIBUT_UNVERKAEUFLICH]) && $this->FunktionsAttribute[FKT_ATTRIBUT_UNVERKAEUFLICH]) {

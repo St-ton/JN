@@ -712,8 +712,9 @@ function checkeWarenkorbEingang()
                             if ($oTmpArtikel->cTeilbar !== 'Y' && intval($fAnzahl) != $fAnzahl) {
                                 $fAnzahl = (int)$fAnzahl;
                             }
+                            $oTmpArtikel->isKonfigItem = true;
                             $redirectParam = pruefeFuegeEinInWarenkorb(
-                                $oKonfigitem->getArtikel(),
+                                $oTmpArtikel,
                                 $oKonfigitem->fAnzahlWK,
                                 $oKonfigitem->oEigenschaftwerte_arr
                             );
@@ -745,6 +746,7 @@ function checkeWarenkorbEingang()
                     fuegeEinInWarenkorb($kArtikel, $fAnzahl, $oEigenschaftwerte_arr, 0, $cUnique);
                     // Konfigartikel in den WK legen
                     foreach ($oKonfigitem_arr as $oKonfigitem) {
+                        $oKonfigitem->isKonfigItem = true;
                         switch ($oKonfigitem->getPosTyp()) {
                             case KONFIG_ITEM_TYP_ARTIKEL:
                                 $_SESSION['Warenkorb']->fuegeEin(
@@ -1092,7 +1094,11 @@ function pruefeFuegeEinInWarenkorb($Artikel, $anzahl, $oEigenschaftwerte_arr, $n
         $redirectParam[] = R_UNVERKAEUFLICH;
     }
     // Preis auf Anfrage
-    if ((!isset($Artikel->Preise->fVKNetto) || $Artikel->Preise->fVKNetto == 0) && $conf['global']['global_preis0'] === 'N') {
+    // verhindert, dass Konfigitems mit Preis=0 aus der Artikelkonfiguration fallen wenn 'Preis auf Anfrage' eingestellt ist
+    if (($Artikel->bHasKonfig === false && !empty($Artikel->isKonfigItem) && $Artikel->inWarenkorbLegbar === INWKNICHTLEGBAR_PREISAUFANFRAGE)) {
+        $Artikel->inWarenkorbLegbar = 1;
+    }
+    if (($Artikel->bHasKonfig === false && empty($Artikel->isKonfigItem)) && (!isset($Artikel->Preise->fVKNetto) || $Artikel->Preise->fVKNetto == 0) && $conf['global']['global_preis0'] === 'N') {
         $redirectParam[] = R_AUFANFRAGE;
     }
     // Stücklistenkomponente oder Stückliste und ein Teil ist bereits im Warenkorb?
@@ -1218,6 +1224,11 @@ function fuegeEinInWarenkorb($kArtikel, $anzahl, $oEigenschaftwerte_arr = '', $n
             $anzahl = max((int)$anzahl, 1);
         }
         $redirectParam = pruefeFuegeEinInWarenkorb($Artikel, $anzahl, $oEigenschaftwerte_arr);
+        // verhindert, dass Konfigitems mit Preis=0 aus der Artikelkonfiguration fallen wenn 'Preis auf Anfrage' eingestellt ist
+        if (!empty($kKonfigitem) && $redirectParam[0] === R_AUFANFRAGE) {
+            unset($redirectParam[0]);
+        }
+
         if (count($redirectParam) > 0) {
             if (isset($_SESSION['variBoxAnzahl_arr'])) {
                 return false;

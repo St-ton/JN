@@ -1063,7 +1063,7 @@ class Artikel
             return $this;
         }
         $kKunde       = isset($_SESSION['Kunde']) ? (int)$_SESSION['Kunde']->kKunde : 0;
-        $this->Preise = new Preise($kKundengruppe, $oArtikelTMP->kArtikel, $kKunde);
+        $this->Preise = new Preise($kKundengruppe, $oArtikelTMP->kArtikel, $kKunde, (int)$oArtikelTMP->kSteuerklasse);
         $this->Preise->localizePreise();
 
         return $this;
@@ -1114,7 +1114,7 @@ class Artikel
             $kKundengruppe = (int)$_SESSION['Kundengruppe']->kKundengruppe;
         }
         $kKunde       = isset($_SESSION['Kunde']) ? (int)$_SESSION['Kunde']->kKunde : 0;
-        $this->Preise = new Preise($kKundengruppe, $this->kArtikel, $kKunde);
+        $this->Preise = new Preise($kKundengruppe, $this->kArtikel, $kKunde, (int)$this->kSteuerklasse);
         // Varkombi Kind?
         if ($this->kEigenschaftKombi > 0 && $this->kVaterArtikel > 0) {
             $this->Preise->rabbatierePreise($this->getDiscount($kKundengruppe, $this->kVaterArtikel));

@@ -1090,7 +1090,7 @@ function pruefeFuegeEinInWarenkorb($Artikel, $anzahl, $oEigenschaftwerte_arr, $n
         $redirectParam[] = R_UNVERKAEUFLICH;
     }
     // Preis auf Anfrage
-    // // verhindert, dass Konfigitems mit Preis=0 aus der Artikelkonfiguration fallen wenn 'Preis auf Anfrage' eingestellt ist
+    // verhindert, dass Konfigitems mit Preis=0 aus der Artikelkonfiguration fallen wenn 'Preis auf Anfrage' eingestellt ist
     if (($Artikel->bHasKonfig === false && !empty($Artikel->isKonfigItem) && $Artikel->inWarenkorbLegbar === INWKNICHTLEGBAR_PREISAUFANFRAGE)) {
         $Artikel->inWarenkorbLegbar = 1;
     }

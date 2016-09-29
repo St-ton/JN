@@ -130,7 +130,7 @@ if (isset($ExportEinstellungen['exportformate_semikolon']) && $ExportEinstellung
     $findTwo[]    = ';';
     $replaceTwo[] = $ExportEinstellungen['exportformate_semikolon'];
 }
-$waehrung = (isset($_SESSION['Waehrung']->kWaehrung)) ? $_SESSION['Waehrung'] : Shop::DB()->query("SELECT * FROM twaehrung WHERE cStandard = 'Y'", 1);
+$waehrung = (isset($_SESSION['Waehrung']->kWaehrung)) ? $_SESSION['Waehrung'] : Shop::DB()->select('twaehrung', 'cStandard', 'Y');
 
 $smarty->assign('URL_SHOP', $shopURL)
        ->assign('Waehrung', $waehrung)

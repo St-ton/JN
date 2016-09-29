@@ -7,7 +7,7 @@ require_once dirname(__FILE__) . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'newsletter_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'seite_inc.php';
-
+/** @global JTLSmarty $smarty */
 Shop::setPageType(PAGE_NEWSLETTER);
 $AktuelleSeite = 'NEWSLETTER';
 $oLink         = Shop::DB()->select('tlink', 'nLinkart', LINKTYP_NEWSLETTER);

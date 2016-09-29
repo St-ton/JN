@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 require_once dirname(__FILE__) . '/includes/globalinclude.php';
-
+/** @global JTLSmarty $smarty */
 $cart = (isset($_SESSION['Warenkorb'])) ?
     $_SESSION['Warenkorb'] :
     new Warenkorb();

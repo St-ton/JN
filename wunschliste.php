@@ -3,13 +3,10 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-/**
- * @global JTLSmarty $smarty
- */
 require_once dirname(__FILE__) . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'wunschliste_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
-
+/** @global JTLSmarty $smarty */
 Shop::run();
 $cParameter_arr   = Shop::getParameters();
 $cURLID           = StringHandler::filterXSS(verifyGPDataString('wlid'));

@@ -6,14 +6,11 @@
 require_once dirname(__FILE__) . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
 require_once PFAD_ROOT . 'toolsajax.common.php';
+/** @global JTLSmarty $smarty */
 
-$smarty->setCaching(false);
-
-if (isset($_SERVER['HTTP_REFERER'])) {
-    $cAktuelleSeite = substr(strrchr($_SERVER['HTTP_REFERER'], '/'), 1, strlen(strrchr($_SERVER['HTTP_REFERER'], '/')));
-} else {
-    $cAktuelleSeite = '';
-}
+$cAktuelleSeite = (isset($_SERVER['HTTP_REFERER']))
+    ? substr(strrchr($_SERVER['HTTP_REFERER'], '/'), 1, strlen(strrchr($_SERVER['HTTP_REFERER'], '/')))
+    : '';
 if ($cAktuelleSeite === 'warenkorb.php?') {
     $Einstellungen = Shop::getSettings(
         array(

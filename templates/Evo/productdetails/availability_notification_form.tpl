@@ -26,7 +26,7 @@
                 {$jtl_token}
                 <fieldset>
                     <legend>{lang key="contact" section="global"}</legend>
-                    {if $Einstellungen.artikeldetails.produktfrage_abfragen_vorname !== 'N' || $Einstellungen.artikeldetails.produktfrage_abfragen_nachname !== 'N'}
+                    {if $Einstellungen.$tplscope.benachrichtigung_abfragen_vorname !== 'N' || $Einstellungen.$tplscope.benachrichtigung_abfragen_nachname !== 'N'}
                         <div class="row">
                             {if $Einstellungen.$tplscope.benachrichtigung_abfragen_vorname !== 'N'}
                             <div class="col-xs-12 col-md-6">

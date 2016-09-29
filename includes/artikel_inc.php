@@ -401,7 +401,10 @@ function bearbeiteBenachrichtigung()
                     array('oKunde' => $Benachrichtigung, 'oNachricht' => $Benachrichtigung)
                 )->checkLogging(CHECKBOX_ORT_FRAGE_VERFUEGBARKEIT, $kKundengruppe, $_POST, true);
 
-                $kVerfuegbarkeitsbenachrichtigung = Shop::DB()->insert('tverfuegbarkeitsbenachrichtigung', $Benachrichtigung);
+                $kVerfuegbarkeitsbenachrichtigung = Shop::DB()->queryPrepared('INSERT INTO tverfuegbarkeitsbenachrichtigung (cVorname, cNachname, cMail, kSprache, kArtikel, cIP, dErstellt, nStatus) 
+                     VALUES (:cVorname, :cNachname, :cMail, :kSprache, :kArtikel, :cIP, now(), :nStatus)
+                     ON DUPLICATE KEY UPDATE cVorname = :cVorname, cNachname = :cNachname, ksprache = :kSprache, cIP = :cIP, dErstellt = now(), nStatus = :nStatus', get_object_vars($Benachrichtigung), 7);
+
                 // Kampagne
                 if (isset($_SESSION['Kampagnenbesucher'])) {
                     setzeKampagnenVorgang(KAMPAGNE_DEF_VERFUEGBARKEITSANFRAGE, $kVerfuegbarkeitsbenachrichtigung, 1.0); // Verfügbarkeitsbenachrichtigung

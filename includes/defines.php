@@ -166,6 +166,8 @@ ifndef('JTLLOG_MAX_LOGSIZE', 200000);
 // temp dir for pclzip extension
 ifndef('PCLZIP_TEMPORARY_DIR', PFAD_ROOT . PFAD_COMPILEDIR);
 
+ifndef('IMAGE_PRELOAD_LIMIT', 10);
+
 /**
  * @param string     $constant
  * @param string|int $value

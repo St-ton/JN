@@ -72,7 +72,6 @@ echo $return;
  */
 function bearbeiteAck($xml)
 {
-    error_log('ACK!');
     if (!is_array($xml['ack_bestellungen']['kBestellung']) && intval($xml['ack_bestellungen']['kBestellung']) > 0) {
         error_log('no array!');
         $xml['ack_bestellungen']['kBestellung'] = array($xml['ack_bestellungen']['kBestellung']);
@@ -81,10 +80,9 @@ function bearbeiteAck($xml)
         error_log('isArray!');
         foreach ($xml['ack_bestellungen']['kBestellung'] as $kBestellung) {
             $kBestellung = (int)$kBestellung;
-            error_log('kbestellung: ' . $kBestellung);
             if ($kBestellung > 0) {
                 Shop::DB()->update('tbestellung', 'kBestellung', $kBestellung, (object)['cAbgeholt' => 'Y']);
-                Shop::DB()->update('tbestellung', ['kBestellung', 'cStatus'], [$kBestellung, BESTELLUNG_STATUS_OFFEN], (object)['cStatus' => BESTELLUNG_STATUS_IN_BEARBEITUNG, 'cAbgeholt' => 'Y']);
+                Shop::DB()->update('tbestellung', ['kBestellung', 'cStatus'], [$kBestellung, BESTELLUNG_STATUS_OFFEN], (object)['cStatus' => BESTELLUNG_STATUS_IN_BEARBEITUNG]);
                 Shop::DB()->delete('tzahlungsinfo', 'kBestellung', $kBestellung);
             }
         }

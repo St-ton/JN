@@ -7,9 +7,9 @@
     <div class="alert alert-danger">{$hinweis}</div>
 {/if}
 <div class="row">
-    <div class="col-xs-12 col-md-10 col-md-offset-1">
+    <div class="col-xs-12">
         {block name="checkout-proceed-as-guest"}
-        <div class="well panel-wrap">
+        <div class="panel-wrap">
             <div class="panel panel-default" id="order-proceed-as-guest">
                 <div class="panel-heading">
                     <h3 class="panel-title">{block name="checkout-proceed-as-guest-title"}{lang key="orderUnregistered" section="checkout"}{/block}</h3>

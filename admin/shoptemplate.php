@@ -10,7 +10,7 @@ require_once dirname(__FILE__) . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'template_inc.php';
 
 $oAccount->permission('DISPLAY_TEMPLATE_VIEW', true, true);
-
+/** @global JTLSmarty $smarty */
 if (isset($_POST['key']) && isset($_POST['upload'])) {
     $file     = PFAD_ROOT . PFAD_TEMPLATES . $_POST['upload'];
     $response = new stdClass();

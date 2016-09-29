@@ -8,12 +8,13 @@ require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'umfrage_inc.php';
 
 $oAccount->permission('EXTENSION_VOTE_VIEW', true, true);
-
+/** @global JTLSmarty $smarty */
 $Einstellungen = Shop::getSettings(array(CONF_UMFRAGE));
 $cHinweis      = '';
 $cFehler       = '';
 $step          = 'umfrage_uebersicht';
 $kUmfrageTMP   = 0;
+$kUmfrage      = 0;
 if (verifyGPCDataInteger('kUmfrage') > 0) {
     $kUmfrageTMP = verifyGPCDataInteger('kUmfrage');
 } else {
@@ -97,7 +98,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
             if (isset($_POST['umfrage_edit_speichern']) && isset($_POST['kUmfrage']) && intval($_POST['umfrage_edit_speichern']) === 1 && intval($_POST['kUmfrage']) > 0) {
                 $kUmfrage = (int)$_POST['kUmfrage'];
             }
-            $cName  = $_POST['cName'];
+            $cName  = htmlspecialchars($_POST['cName']);
             $kKupon = (isset($_POST['kKupon'])) ? (int)$_POST['kKupon'] : 0;
             if ($kKupon <= 0 || !isset($kKupon)) {
                 $kKupon = 0;
@@ -179,7 +180,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
         } elseif (isset($_POST['umfrage_frage_speichern']) && intval($_POST['umfrage_frage_speichern']) === 1 && validateToken()) { // Frage speichern
             $kUmfrage                 = (int)$_POST['kUmfrage'];
             $kUmfrageFrage            = (isset($_POST['kUmfrageFrage'])) ? (int)$_POST['kUmfrageFrage'] : 0;
-            $cName                    = $_POST['cName'];
+            $cName                    = htmlspecialchars($_POST['cName']);
             $cTyp                     = $_POST['cTyp'];
             $nSort                    = (isset($_POST['nSort'])) ? (int)$_POST['nSort'] : 0;
             $cBeschreibung            = (isset($_POST['cBeschreibung'])) ? $_POST['cBeschreibung'] : '';

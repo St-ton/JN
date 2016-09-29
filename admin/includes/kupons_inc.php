@@ -77,9 +77,7 @@ function getCategories($selKats = '', $kKategorie = 0, $tiefe = 0)
 }
 
 /**
- * @param string $selKats
- * @param int    $kKategorie
- * @param int    $tiefe
+ * @param string $selCustomers
  * @return array
  */
 function getCustomers($selCustomers = '')
@@ -258,7 +256,7 @@ function createCouponFromInput()
 {
     $oKupon                        = new Kupon((int)$_POST['kKuponBearbeiten']);
     $oKupon->cKuponTyp             = $_POST['cKuponTyp'];
-    $oKupon->cName                 = $_POST['cName'];
+    $oKupon->cName                 = htmlspecialchars($_POST['cName']);
     $oKupon->fWert                 = isset($_POST['fWert']) ? (float)str_replace(',', '.', $_POST['fWert']) : null;
     $oKupon->cWertTyp              = isset($_POST['cWertTyp']) ? $_POST['cWertTyp'] : null;
     $oKupon->cZusatzgebuehren      = isset($_POST['cZusatzgebuehren']) ? $_POST['cZusatzgebuehren'] : 'N';
@@ -316,6 +314,7 @@ function createCouponFromInput()
  * Get the number of existing coupons of type $cKuponTyp
  * 
  * @param string $cKuponTyp
+ * @param string $cWhereSQL
  * @return int
  */
 function getCouponCount($cKuponTyp = 'standard', $cWhereSQL = '')
@@ -460,7 +459,7 @@ function saveCoupon($oKupon, $oSprache_arr)
                 foreach ($oSprache_arr as $oSprache) {
                     $cKuponSpracheName =
                         (isset($_POST['cName_' . $oSprache->cISO]) && $_POST['cName_' . $oSprache->cISO] !== '')
-                            ? $_POST['cName_' . $oSprache->cISO]
+                            ? htmlspecialchars($_POST['cName_' . $oSprache->cISO])
                             : $oKupon->cName;
 
                     $kuponSprache              = new stdClass();
@@ -476,7 +475,7 @@ function saveCoupon($oKupon, $oSprache_arr)
             foreach ($oSprache_arr as $oSprache) {
                 $cKuponSpracheName =
                     (isset($_POST['cName_' . $oSprache->cISO]) && $_POST['cName_' . $oSprache->cISO] !== '')
-                        ? $_POST['cName_' . $oSprache->cISO]
+                        ? htmlspecialchars($_POST['cName_' . $oSprache->cISO])
                         : $oKupon->cName;
 
                 $kuponSprache              = new stdClass();

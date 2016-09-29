@@ -53,6 +53,9 @@ $smarty->assign('step', $step)
        ->assign('hinweis', $hinweis)
        ->assign('Navigation', createNavigation($AktuelleSeite))
        ->assign('requestURL', $requestURL)
+       ->assign('BESTELLUNG_STATUS_BEZAHLT', BESTELLUNG_STATUS_BEZAHLT)
+       ->assign('BESTELLUNG_STATUS_VERSANDT', BESTELLUNG_STATUS_VERSANDT)
+       ->assign('BESTELLUNG_STATUS_OFFEN', BESTELLUNG_STATUS_OFFEN)
        ->assign('Einstellungen', $Einstellungen);
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';

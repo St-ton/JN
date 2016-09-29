@@ -265,9 +265,12 @@ class PayPalHelper
         return $oArtikel_arr;
     }
 
-    public static function getBasket()
+    public static function getBasket($helper = null)
     {
-        $helper = new WarenkorbHelper();
+        if ($helper === null) {
+            $helper = new WarenkorbHelper();
+        }
+
         $basket = $helper->getTotal();
 
         $rounding = function ($prop) {

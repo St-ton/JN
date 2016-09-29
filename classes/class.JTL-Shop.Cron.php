@@ -91,9 +91,7 @@ class Cron
     public function holeCronArt()
     {
         if ($this->kKey > 0 && strlen($this->cTabelle > 0)) {
-            return Shop::DB()->query(
-                "SELECT * FROM " . Shop::DB()->escape($this->cTabelle) . "
-                    WHERE " . Shop::DB()->escape($this->cKey) . "=" . intval($this->kKey), 2);
+            return Shop::DB()->selectAll($this->cTabelle, $this->cKey, (int)$this->kKey);
         }
 
         return false;

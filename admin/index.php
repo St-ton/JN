@@ -5,7 +5,7 @@
  */
 require_once dirname(__FILE__) . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
-
+/** @global JTLSmarty $smarty */
 $oUpdater = new Updater();
 $cFehler  = '';
 
@@ -155,7 +155,7 @@ $smarty->assign('bProfilerActive', $profilerState !== 0)
  */
 function openDashboard()
 {
-    global $oAccount , $smarty;
+    global $oAccount, $smarty;
 
     $_SESSION['loginIsValid'] = true;
     if ($oAccount->permission('DASHBOARD_VIEW')) {
@@ -181,10 +181,11 @@ function openDashboard()
 /**
  * redirects to a given (base64-encoded) URI
  * (prevents code duplication)
+ * @param string $szURI
  */
 function redirectToURI($szURI)
 {
-    $url = base64_decode(trim($_REQUEST['uri']));
+    $url = base64_decode($szURI);
     header('Location: ' . Shop::getURL(true) . '/' . PFAD_ADMIN . $url);
     exit;
 }

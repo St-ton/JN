@@ -10,7 +10,7 @@ $oAccount->permission('MODULE_VOTESYSTEM_VIEW', true, true);
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bewertung_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'bewertung_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
-
+/** @global JTLSmarty $smarty */
 $Einstellungen = Shop::getSettings(array(CONF_BEWERTUNG));
 $cHinweis      = '';
 $cFehler       = '';

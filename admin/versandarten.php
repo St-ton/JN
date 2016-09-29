@@ -10,12 +10,13 @@ $oAccount->permission('ORDER_SHIPMENT_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'versandarten_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
-
+/** @global JTLSmarty $smarty */
 setzeSteuersaetze();
 $standardwaehrung   = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
 $versandberechnung  = null;
 $hinweis            = '';
 $step               = 'uebersicht';
+$Versandart         = null;
 $nSteuersatzKey_arr = array_keys($_SESSION['Steuersatz']);
 if (isset($_POST['neu']) && isset($_POST['kVersandberechnung']) && intval($_POST['neu']) === 1 && intval($_POST['kVersandberechnung']) > 0 && validateToken()) {
     $step = 'neue Versandart';
@@ -172,7 +173,7 @@ if (isset($_POST['neuerZuschlag']) && intval($_POST['neuerZuschlag']) === 1 && v
 
     $Zuschlag->kVersandart = intval($_POST['kVersandart']);
     $Zuschlag->cISO        = $_POST['cISO'];
-    $Zuschlag->cName       = $_POST['cName'];
+    $Zuschlag->cName       = htmlspecialchars($_POST['cName']);
     $Zuschlag->fZuschlag   = floatval(str_replace(',', '.', $_POST['fZuschlag']));
     if ($Zuschlag->cName && $Zuschlag->fZuschlag != 0) {
         $kVersandzuschlag = 0;
@@ -215,7 +216,7 @@ if (isset($_POST['neueVersandart']) && intval($_POST['neueVersandart']) > 0 && v
     if (!isset($Versandart)) {
         $Versandart = new stdClass();
     }
-    $Versandart->cName                    = $_POST['cName'];
+    $Versandart->cName                    = htmlspecialchars($_POST['cName']);
     $Versandart->kVersandberechnung       = intval($_POST['kVersandberechnung']);
     $Versandart->cAnzeigen                = $_POST['cAnzeigen'];
     $Versandart->cBild                    = $_POST['cBild'];
@@ -379,15 +380,15 @@ if (isset($_POST['neueVersandart']) && intval($_POST['neueVersandart']) > 0 && v
                 $versandSprache->cISOSprache = $sprache->cISO;
                 $versandSprache->cName       = $Versandart->cName;
                 if ($_POST['cName_' . $sprache->cISO]) {
-                    $versandSprache->cName = $_POST['cName_' . $sprache->cISO];
+                    $versandSprache->cName = htmlspecialchars($_POST['cName_' . $sprache->cISO]);
                 }
                 $versandSprache->cLieferdauer = '';
                 if ($_POST['cLieferdauer_' . $sprache->cISO]) {
-                    $versandSprache->cLieferdauer = $_POST['cLieferdauer_' . $sprache->cISO];
+                    $versandSprache->cLieferdauer = htmlspecialchars($_POST['cLieferdauer_' . $sprache->cISO]);
                 }
                 $versandSprache->cHinweistext = '';
                 if ($_POST['cHinweistext_' . $sprache->cISO]) {
-                    $versandSprache->cHinweistext = $_POST['cHinweistext_' . $sprache->cISO];
+                    $versandSprache->cHinweistext = htmlspecialchars($_POST['cHinweistext_' . $sprache->cISO]);
                 }
                 Shop::DB()->delete('tversandartsprache', array('kVersandart', 'cISOSprache'), array($kVersandart, $sprache->cISO));
                 Shop::DB()->insert('tversandartsprache', $versandSprache);

@@ -3,10 +3,10 @@
  * @license http://jtl-url.de/jtlshoplicense
  *}
 {if isset($position) && $position === 'popup'}
-<div class="well panel-wrap">
+<div class="panel-wrap">
 {else}
 <div class="row">
-    <div class="col-xs-12 col-md-10 col-md-offset-1">
+    <div class="col-xs-12">
 {/if}
     <div class="panel panel-default">
         <div class="panel-body">

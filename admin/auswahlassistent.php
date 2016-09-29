@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 require_once dirname(__FILE__) . '/includes/admininclude.php';
-
+/** @global JTLSmarty $smarty */
 $oAccount->permission('EXTENSION_VOTE_VIEW', true, true);
 $cFehler  = '';
 $cHinweis = '';
@@ -20,7 +20,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
     }
     if (isset($_POST['a']) && $_POST['a'] === 'addQuest') {
         $oAuswahlAssistentFrage                          = new AuswahlAssistentFrage();
-        $oAuswahlAssistentFrage->cFrage                  = $_POST['cFrage'];
+        $oAuswahlAssistentFrage->cFrage                  = htmlspecialchars($_POST['cFrage']);
         $oAuswahlAssistentFrage->kMerkmal                = (int)$_POST['kMerkmal'];
         $oAuswahlAssistentFrage->kAuswahlAssistentGruppe = (int)$_POST['kAuswahlAssistentGruppe'];
         $oAuswahlAssistentFrage->nSort                   = (int)$_POST['nSort'];
@@ -56,8 +56,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
     if (isset($_POST['a']) && $_POST['a'] === 'addGrp' && validateToken()) {
         $oAuswahlAssistentGruppe                = new AuswahlAssistentGruppe();
         $oAuswahlAssistentGruppe->kSprache      = $_SESSION['kSprache'];
-        $oAuswahlAssistentGruppe->cName         = $_POST['cName'];
-        $oAuswahlAssistentGruppe->cBeschreibung = $_POST['cBeschreibung'];
+        $oAuswahlAssistentGruppe->cName         = htmlspecialchars($_POST['cName']);
+        $oAuswahlAssistentGruppe->cBeschreibung = htmlspecialchars($_POST['cBeschreibung']);
         $oAuswahlAssistentGruppe->nAktiv        = $_POST['nAktiv'];
 
         $cPlausi_arr = array();

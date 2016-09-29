@@ -137,7 +137,7 @@ function imagecopymerge_alpha($dst_im, $src_im, $dst_x, $dst_y, $src_x, $src_y, 
  * @param string $img
  * @param int    $width
  * @param int    $height
- * @return resource
+ * @return resource|null
  */
 function imageload_alpha($img, $width, $height)
 {
@@ -152,6 +152,8 @@ function imageload_alpha($img, $width, $height)
         case 3:
             $im = imagecreatefrompng($img);
             break;
+        default:
+            return null;
     }
 
     $new = imagecreatetruecolor($width, $height);
@@ -293,7 +295,7 @@ function speicherBild($cFiles_arr, $oSuchspecialoverlaySprache)
         $cFiles_arr['cSuchspecialOverlayBild']['type'] === 'image/jpg' || $cFiles_arr['cSuchspecialOverlayBild']['type'] === 'image/gif' ||
         $cFiles_arr['cSuchspecialOverlayBild']['type'] === 'image/png' || $cFiles_arr['cSuchspecialOverlayBild']['type'] === 'image/bmp' ||
         $cFiles_arr['cSuchspecialOverlayBild']['type'] === 'image/x-png') {
-        if ($cFiles_arr['cSuchspecialOverlayBild']['size'] <= 2097152) {
+        if (empty($cFiles_arr['cSuchspecialOverlayBild']['error'])) {
             $cFormat   = mappeFileTyp($cFiles_arr['cSuchspecialOverlayBild']['type']);
             $cName     = 'kSuchspecialOverlay_' . $oSuchspecialoverlaySprache->kSprache . '_' . $oSuchspecialoverlaySprache->kSuchspecialOverlay . $cFormat;
             $cOriginal = $cFiles_arr['cSuchspecialOverlayBild']['tmp_name'];

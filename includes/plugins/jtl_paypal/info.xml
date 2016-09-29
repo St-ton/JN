@@ -101,6 +101,13 @@
         </CSS>
         <Locales>
             <Variable>
+                <Name>jtl_paypal_payment_invoice_name</Name>
+                <Description>PayPal PLUS Zahlungsartname bei Rechnungskauf</Description>
+                <VariableLocalized iso="GER">Rechnung (PayPal PLUS)</VariableLocalized>
+                <VariableLocalized iso="ENG">Invoice (PayPal PLUS)</VariableLocalized>
+                <VariableLocalized iso="FRE">Facture (PayPal PLUS)</VariableLocalized>
+            </Variable>
+            <Variable>
                 <Name>jtl_paypal_warenkorb_max</Name>
                 <Description></Description>
                 <VariableLocalized iso="GER">Bitte reduzieren Sie Ihren Warenkorbwert auf maximal %Wert%.
@@ -119,26 +126,6 @@
                 <VariableLocalized iso="GER">Sie haben mindestens einen Artikel im Warenkorb, der nicht über PayPal
                     Express bezahlt werden kann.
                 </VariableLocalized>
-            </Variable>
-            <Variable>
-                <Name>jtl_paypal_article_or</Name>
-                <Description></Description>
-                <VariableLocalized iso="GER"><![CDATA[<p> - oder - </p>]]></VariableLocalized>
-            </Variable>
-            <Variable>
-                <Name>jtl_paypal_cart_pre</Name>
-                <Description></Description>
-                <VariableLocalized iso="GER"><![CDATA[<p> - oder - </p>]]></VariableLocalized>
-            </Variable>
-            <Variable>
-                <Name>jtl_paypal_cart_after</Name>
-                <Description></Description>
-                <VariableLocalized iso="GER"> </VariableLocalized>
-            </Variable>
-            <Variable>
-                <Name>jtl_paypal_versandermittlung_weiter</Name>
-                <Description></Description>
-                <VariableLocalized iso="GER">Versandart auswählen</VariableLocalized>
             </Variable>
             <Variable>
                 <Name>jtl_paypal_lieferadresse_nicht_aenderbar</Name>

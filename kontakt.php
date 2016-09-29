@@ -8,7 +8,7 @@ $session = Session::getInstance();
 require_once PFAD_ROOT . PFAD_INCLUDES . 'kontakt_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
-
+/** @global JTLSmarty $smarty */
 Shop::setPageType(PAGE_KONTAKT);
 $AktuelleSeite = 'KONTAKT';
 $Einstellungen = Shop::getSettings(array(CONF_GLOBAL, CONF_RSS, CONF_KONTAKTFORMULAR));

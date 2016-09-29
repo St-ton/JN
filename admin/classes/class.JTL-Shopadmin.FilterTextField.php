@@ -26,7 +26,7 @@ class FilterTextField extends FilterField
      *  7 = lower than or equal
      *  8 = greater than or equal
      *  9 = equals not
-     * @param int    $nType
+     * @param int    $nDataType
      *  0 = text
      *  1 = number
      */

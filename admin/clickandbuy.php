@@ -8,7 +8,7 @@ require_once dirname(__FILE__) . '/includes/admininclude.php';
 $oAccount->permission('ORDER_CLICKANDBUY_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'clickandbuy_inc.php';
-
+/** @global JTLSmarty $smarty */
 $cHinweis = '';
 $cFehler  = '';
 $step     = 'cab_uebersicht';

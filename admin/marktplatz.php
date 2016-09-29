@@ -6,7 +6,7 @@
 require_once dirname(__FILE__) . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_CLASSES . 'class.JTL-Shopadmin.Marketplace.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_CLASSES . 'class.JTL-Shopadmin.MarketplaceQuery.php';
-
+/** @global JTLSmarty $smarty */
 $oAccount->permission('DISPLAY_MARKETPLACE_VIEW', true, true);
 
 $action      = 'overview';
@@ -33,7 +33,6 @@ $queryNew->setEntitiesPerPage(10)
 
 try {
     $result = $api->fetch($queryNew);
-
     $smarty->assign('dataNew', $result->result);
 } catch (Exception $exc) {
     $error .= sprintf("Exception '%s' with message '%s' in %s:%s", get_class($exc), $exc->getMessage(), $exc->getFile(), $exc->getFile());

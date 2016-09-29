@@ -5,7 +5,7 @@
  */
 require dirname(__FILE__) . '/includes/globalinclude.php';
 require PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
-
+/** @global JTLSmarty $smarty */
 Shop::run();
 $cParameter_arr = Shop::getParameters();
 $NaviFilter     = Shop::buildNaviFilter($cParameter_arr);
@@ -13,15 +13,7 @@ Shop::checkNaviFilter($NaviFilter);
 $https          = false;
 $linkHelper     = LinkHelper::getInstance();
 if (isset(Shop::$kLink) && (int)Shop::$kLink > 0) {
-    $link       = $linkHelper->getPageLink(Shop::$kLink);
-    //temp. fix for #336, #337, @todo: remove after merge
-    if (isset($link->isActive) && $link->isActive === false) {
-        $cParameter_arr['kLink'] = 0;
-        Shop::$kLink             = 0;
-        Shop::$is404             = true;
-        Shop::$fileName          = null;
-        $link                    = null;
-    }
+    $link = $linkHelper->getPageLink(Shop::$kLink);
     if (isset($link->bSSL) && $link->bSSL > 0) {
         $https = true;
         if ((int)$link->bSSL === 2) {
@@ -101,7 +93,7 @@ if (($cParameter_arr['kArtikel'] > 0 || $cParameter_arr['kKategorie'] > 0) && !$
 // Ticket #6498
 if ($cParameter_arr['kKategorie'] > 0 && !Kategorie::isVisible($cParameter_arr['kKategorie'], $_SESSION['Kundengruppe']->kKundengruppe)) {
     $cParameter_arr['kKategorie'] = 0;
-    $oLink                        = Shop::DB()->query("SELECT kLink FROM tlink WHERE nLinkart = " . LINKTYP_404, 1);
+    $oLink                        = Shop::DB()->select('tlink', 'nLinkart', LINKTYP_404);
     $kLink                        = $oLink->kLink;
     Shop::$kLink                  = $kLink;
 }

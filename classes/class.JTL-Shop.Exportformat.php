@@ -197,7 +197,7 @@ class Exportformat
      */
     public function delete()
     {
-        return Shop::DB()->query("DELETE FROM texportformat WHERE kExportformat = " . $this->getExportformat(), 3);
+        return Shop::DB()->delete('texportformat', 'kExportformat', $this->getExportformat());
     }
 
     /**

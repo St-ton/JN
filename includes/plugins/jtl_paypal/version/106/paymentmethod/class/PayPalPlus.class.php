@@ -617,6 +617,11 @@ class PayPalPlus extends PaymentMethod
 
                     $order->cPUIZahlungsdaten = str_replace(
                         array_keys($replacement), array_values($replacement), $pui);
+
+                    $paymentName = $this->plugin->oPluginSprachvariableAssoc_arr['jtl_paypal_payment_invoice_name'];
+
+                    $order->cZahlungsartName = strlen($paymentName) > 0
+                        ? $paymentName : $order->cZahlungsartName;
                 }
 
                 $order->updateInDB();

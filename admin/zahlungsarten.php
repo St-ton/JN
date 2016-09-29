@@ -10,7 +10,7 @@ $oAccount->permission('ORDER_PAYMENT_VIEW', true, true);
 require_once PFAD_ROOT . PFAD_INCLUDES . 'plugin_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'zahlungsarten_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
-
+/** @global JTLSmarty $smarty */
 $standardwaehrung = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
 $hinweis          = '';
 $step             = 'uebersicht';

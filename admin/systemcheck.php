@@ -6,7 +6,7 @@
 require_once dirname(__FILE__) . '/includes/admininclude.php';
 
 $oAccount->redirectOnFailure();
-
+/** @global JTLSmarty $smarty */
 if (isset($_GET['phpinfo'])) {
     if (in_array('phpinfo', explode(',', ini_get('disable_functions')))) {
         return;

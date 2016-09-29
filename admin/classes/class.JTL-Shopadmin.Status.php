@@ -102,7 +102,6 @@ class Status
     {
         $oFsCheck = new Systemcheck_Platform_Filesystem(PFAD_ROOT);
 
-        $writeableDirs = $oFsCheck->getFoldersChecked();
         $permissionStat = $oFsCheck->getFolderStats();
 
         return $permissionStat->nCountInValid === 0;
@@ -114,11 +113,11 @@ class Status
     protected function getPluginSharedHooks()
     {
         $sharedPlugins = [];
-        $sharedHookIds = Shop::DB()->executeQuery("
-          SELECT nHook 
-            FROM tpluginhook 
-            GROUP BY nHook 
-            HAVING COUNT(DISTINCT kPlugin) > 1", 2
+        $sharedHookIds = Shop::DB()->executeQuery(
+            "SELECT nHook 
+                FROM tpluginhook 
+                GROUP BY nHook 
+                HAVING COUNT(DISTINCT kPlugin) > 1", 2
         );
 
         array_walk($sharedHookIds, function (&$val, $key) {
@@ -127,12 +126,12 @@ class Status
 
         foreach ($sharedHookIds as $hookId) {
             $sharedPlugins[$hookId] = [];
-            $plugins                = Shop::DB()->executeQuery("
-                SELECT DISTINCT tpluginhook.kPlugin, tplugin.cName, tplugin.cPluginID 
-                  FROM tpluginhook 
-                  INNER JOIN tplugin 
-                    ON tpluginhook.kPlugin = tplugin.kPlugin 
-                    WHERE tpluginhook.nHook = {$hookId} AND tplugin.nStatus = 2", 2
+            $plugins                = Shop::DB()->executeQuery(
+                "SELECT DISTINCT tpluginhook.kPlugin, tplugin.cName, tplugin.cPluginID 
+                    FROM tpluginhook 
+                    INNER JOIN tplugin 
+                        ON tpluginhook.kPlugin = tplugin.kPlugin 
+                    WHERE tpluginhook.nHook = " . $hookId . " AND tplugin.nStatus = 2", 2
             );
             foreach ($plugins as $plugin) {
                 $sharedPlugins[$hookId][$plugin->cPluginID] = $plugin;
@@ -187,7 +186,7 @@ class Status
         if (isset($oTemplate) && ($oTemplate->name === 'Evo' || $oTemplate->parent === 'Evo')) {
             $oMobileTpl = Shop::DB()->select('ttemplate', 'eTyp', 'mobil');
 
-            return $oMobileTpl != null;
+            return $oMobileTpl !== null;
         }
 
         return false;
@@ -200,22 +199,22 @@ class Status
     {
         $oTemplate = Shop::DB()->select('ttemplate', 'eTyp', 'standard');
 
-        return $oTemplate == null;
+        return $oTemplate === null;
     }
 
     /**
-     * @return mixed|void
+     * @return mixed|null
      */
     protected function getSubscription()
     {
         if (!isset($_SESSION['subscription']) || $_SESSION['subscription'] === null) {
             $_SESSION['subscription'] = jtlAPI::getSubscription();
         }
-        if (is_object($_SESSION['subscription']) && isset($_SESSION['subscription']->kShop) && (int) $_SESSION['subscription']->kShop > 0) {
+        if (is_object($_SESSION['subscription']) && isset($_SESSION['subscription']->kShop) && (int)$_SESSION['subscription']->kShop > 0) {
             return $_SESSION['subscription'];
         }
 
-        return;
+        return null;
     }
 
     /**

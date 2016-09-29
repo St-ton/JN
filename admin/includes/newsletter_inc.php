@@ -49,6 +49,7 @@ function versendeNewsletter($mailSmarty, $oNewsletter, $Einstellungen, $oEmailem
 
     // Nettopreise?
     $NettoPreise = 0;
+    $bodyHtml    = '';
     if (isset($oKunde->kKunde) && $oKunde->kKunde > 0) {
         $oKundengruppe = Shop::DB()->query(
             "SELECT tkundengruppe.nNettoPreise
@@ -103,11 +104,7 @@ function versendeNewsletter($mailSmarty, $oNewsletter, $Einstellungen, $oEmailem
         $mail->toName = ((isset($oKunde->cVorname)) ? $oKunde->cVorname : '') . ' ' . ((isset($oKunde->cNachname)) ? $oKunde->cNachname : '');
     }
 
-    $oSpracheTMP = Shop::DB()->query(
-        "SELECT cISO
-            FROM tsprache
-            WHERE kSprache = " . (int)$oNewsletter->kSprache, 1
-    );
+    $oSpracheTMP = Shop::DB()->select('tsprache', 'kSprache', (int)$oNewsletter->kSprache);
 
     $mail->fromEmail     = $Einstellungen['newsletter']['newsletter_emailadresse'];
     $mail->fromName      = $Einstellungen['newsletter']['newsletter_emailabsender'];
@@ -594,23 +591,14 @@ function holeNewslettervorlageStd($kNewsletterVorlageStd, $kNewsletterVorlage = 
     if ($kNewsletterVorlageStd > 0 || $kNewsletterVorlage > 0) {
         $oNewslettervorlage = new stdClass();
         if ($kNewsletterVorlage > 0) {
-            $oNewslettervorlage = Shop::DB()->query(
-                "SELECT *
-                    FROM tnewslettervorlage
-                    WHERE kNewsletterVorlage = " . $kNewsletterVorlage, 1
-            );
+            $oNewslettervorlage = Shop::DB()->select('tnewslettervorlage', 'kNewsletterVorlage', $kNewsletterVorlage);
 
             if (isset($oNewslettervorlage->kNewslettervorlageStd) && $oNewslettervorlage->kNewslettervorlageStd > 0) {
                 $kNewsletterVorlageStd = $oNewslettervorlage->kNewslettervorlageStd;
             }
         }
 
-        $oNewslettervorlageStd = Shop::DB()->query(
-            "SELECT *
-                FROM tnewslettervorlagestd
-                WHERE kNewslettervorlageStd = " . $kNewsletterVorlageStd, 1
-        );
-
+        $oNewslettervorlageStd = Shop::DB()->select('tnewslettervorlagestd', 'kNewslettervorlageStd', $kNewsletterVorlageStd);
         if ($oNewslettervorlageStd->kNewslettervorlageStd > 0) {
             if (isset($oNewslettervorlage->kNewslettervorlageStd) && $oNewslettervorlage->kNewslettervorlageStd > 0) {
                 $oNewslettervorlageStd->kNewsletterVorlage = $oNewslettervorlage->kNewsletterVorlage;
@@ -625,11 +613,7 @@ function holeNewslettervorlageStd($kNewsletterVorlageStd, $kNewsletterVorlage = 
                 $oNewslettervorlageStd->dStartZeit         = $oNewslettervorlage->dStartZeit;
             }
 
-            $oNewslettervorlageStd->oNewslettervorlageStdVar_arr = Shop::DB()->query(
-                "SELECT *
-                    FROM tnewslettervorlagestdvar
-                    WHERE kNewslettervorlageStd = " . $kNewsletterVorlageStd, 2
-            );
+            $oNewslettervorlageStd->oNewslettervorlageStdVar_arr = Shop::DB()->selectAll('tnewslettervorlagestdvar', 'kNewslettervorlageStd', $kNewsletterVorlageStd);
 
             if (is_array($oNewslettervorlageStd->oNewslettervorlageStdVar_arr) && count($oNewslettervorlageStd->oNewslettervorlageStdVar_arr) > 0) {
                 foreach ($oNewslettervorlageStd->oNewslettervorlageStdVar_arr as $j => $oNewslettervorlageStdVar) {
@@ -667,7 +651,7 @@ function holeNewslettervorlageStd($kNewsletterVorlageStd, $kNewsletterVorlage = 
         return $oNewslettervorlageStd;
     }
 
-    return;
+    return null;
 }
 
 /**
@@ -732,11 +716,7 @@ function holeArtikel($cArtNr_arr)
         $oArtikelOptionen = Artikel::getDefaultOptions();
         foreach ($cArtNr_arr as $cArtNr) {
             if ($cArtNr !== '') {
-                $oArtikel_tmp = Shop::DB()->query(
-                    "SELECT kArtikel
-                        FROM tartikel
-                        WHERE cArtNr='" . Shop::DB()->escape($cArtNr) . "'", 1
-                );
+                $oArtikel_tmp = Shop::DB()->select('tartikel', 'cArtNr', $cArtNr);
                 // Artikel mit cArtNr vorhanden?
                 if (isset($oArtikel_tmp->kArtikel) && $oArtikel_tmp->kArtikel > 0) {
                     // Artikelsichtbarkeit pruefen
@@ -787,11 +767,7 @@ function holeArtikelnummer($kArtikel)
     $oArtikel = null;
 
     if (intval($kArtikel) > 0) {
-        $oArtikel = Shop::DB()->query(
-            "SELECT cArtNr
-                FROM tartikel
-                WHERE kArtikel = " . (int)$kArtikel, 1
-        );
+        $oArtikel = Shop::DB()->select('tartikel', 'kArtikel', (int)$kArtikel);
     }
 
     return (isset($oArtikel->cArtNr)) ? $oArtikel->cArtNr : $cArtNr;
@@ -807,11 +783,7 @@ function getNewsletterEmpfaenger($kNewsletter)
     $oNewsletterEmpfaenger = new stdClass();
     if ($kNewsletter > 0) {
         // Kundengruppen holen um spaeter die maximal Anzahl Empfaenger gefiltert werden kann
-        $oNewsletter = Shop::DB()->query(
-            "SELECT kSprache, cKundengruppe
-                FROM tnewsletter
-                WHERE kNewsletter = " . $kNewsletter, 1
-        );
+        $oNewsletter = Shop::DB()->select('tnewsletter', 'kNewsletter', $kNewsletter);
         // Kundengruppe pruefen und spaeter in den Empfaenger SELECT einbauen
         $cKundengruppenTMP_arr = explode(';', $oNewsletter->cKundengruppe);
         $kKundengruppe_arr     = array();
@@ -1207,7 +1179,7 @@ function gibArtikelObjekte($kArtikel_arr, $oKampagne = '', $kKundengruppe = 0, $
 {
     $oArtikel_arr = array();
     if (is_array($kArtikel_arr) && count($kArtikel_arr) > 0) {
-        $shopURL = Shop::getURL();
+        $shopURL = Shop::getURL() . '/';
         require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Artikel.php';
         $oArtikelOptionen = Artikel::getDefaultOptions();
         foreach ($kArtikel_arr as $kArtikel) {
@@ -1224,7 +1196,7 @@ function gibArtikelObjekte($kArtikel_arr, $oKampagne = '', $kKundengruppe = 0, $
 
                     continue;
                 }
-                $oArtikel->cURL = $shopURL . '/' . $oArtikel->cURL;
+                $oArtikel->cURL = $shopURL . $oArtikel->cURL;
                 // Kampagne URL
                 if (isset($oKampagne->cParameter) && strlen($oKampagne->cParameter) > 0) {
                     $cSep = '?';
@@ -1237,12 +1209,12 @@ function gibArtikelObjekte($kArtikel_arr, $oKampagne = '', $kKundengruppe = 0, $
                 $imageCount = count($oArtikel->Bilder);
                 if (is_array($oArtikel->Bilder) && $imageCount > 0) {
                     for ($i = 0; $i < $imageCount; $i++) {
-                        $oArtikel->Bilder[$i]->cPfadMini   = $shopURL . '/' . $oArtikel->Bilder[$i]->cPfadMini;
-                        $oArtikel->Bilder[$i]->cPfadKlein  = $shopURL . '/' . $oArtikel->Bilder[$i]->cPfadKlein;
-                        $oArtikel->Bilder[$i]->cPfadNormal = $shopURL . '/' . $oArtikel->Bilder[$i]->cPfadNormal;
-                        $oArtikel->Bilder[$i]->cPfadGross  = $shopURL . '/' . $oArtikel->Bilder[$i]->cPfadGross;
+                        $oArtikel->Bilder[$i]->cPfadMini   = $shopURL . $oArtikel->Bilder[$i]->cPfadMini;
+                        $oArtikel->Bilder[$i]->cPfadKlein  = $shopURL . $oArtikel->Bilder[$i]->cPfadKlein;
+                        $oArtikel->Bilder[$i]->cPfadNormal = $shopURL . $oArtikel->Bilder[$i]->cPfadNormal;
+                        $oArtikel->Bilder[$i]->cPfadGross  = $shopURL . $oArtikel->Bilder[$i]->cPfadGross;
                     }
-                    $oArtikel->cVorschaubild = $shopURL . '/' . $oArtikel->cVorschaubild;
+                    $oArtikel->cVorschaubild = $shopURL . $oArtikel->cVorschaubild;
                 }
                 $oArtikel_arr[] = $oArtikel;
             }
@@ -1263,14 +1235,14 @@ function gibArtikelObjekte($kArtikel_arr, $oKampagne = '', $kKundengruppe = 0, $
 function gibHerstellerObjekte($kHersteller_arr, $oKampagne = 0, $kSprache = 0)
 {
     $oHersteller_arr = array();
-    $shopURL         = Shop::getURL();
+    $shopURL         = Shop::getURL() . '/';
     if (is_array($kHersteller_arr) && count($kHersteller_arr) > 0) {
         require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Hersteller.php';
         foreach ($kHersteller_arr as $kHersteller) {
             if (intval($kHersteller) > 0) {
                 $oHersteller = new Hersteller($kHersteller);
                 if (strpos($oHersteller->cURL, $shopURL) === false) {
-                    $oHersteller->cURL = $oHersteller->cURL = $shopURL . '/' . $oHersteller->cURL;
+                    $oHersteller->cURL = $oHersteller->cURL = $shopURL . $oHersteller->cURL;
                 }
                 // Kampagne URL
                 if (isset($oKampagne->cParameter) && strlen($oKampagne->cParameter) > 0) {
@@ -1281,8 +1253,8 @@ function gibHerstellerObjekte($kHersteller_arr, $oKampagne = 0, $kSprache = 0)
                     $oHersteller->cURL = $oHersteller->cURL . $cSep . $oKampagne->cParameter . '=' . $oKampagne->cWert;
                 }
                 // Herstellerbilder absolut machen
-                $oHersteller->cBildpfadKlein  = $shopURL . '/' . $oHersteller->cBildpfadKlein;
-                $oHersteller->cBildpfadNormal = $shopURL . '/' . $oHersteller->cBildpfadNormal;
+                $oHersteller->cBildpfadKlein  = $shopURL . $oHersteller->cBildpfadKlein;
+                $oHersteller->cBildpfadNormal = $shopURL . $oHersteller->cBildpfadNormal;
 
                 $oHersteller_arr[] = $oHersteller;
             }
@@ -1305,12 +1277,12 @@ function gibKategorieObjekte($kKategorie_arr, $oKampagne = 0)
     require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Kategorie.php';
 
     if (is_array($kKategorie_arr) && count($kKategorie_arr) > 0) {
-        $shopURL = Shop::getURL();
+        $shopURL = Shop::getURL() . '/';
         foreach ($kKategorie_arr as $kKategorie) {
             if (intval($kKategorie) > 0) {
                 $oKategorie = new Kategorie((int)$kKategorie);
                 if (strpos($oKategorie->cURL, $shopURL) === false) {
-                    $oKategorie->cURL = $shopURL . '/' . $oKategorie->cURL;
+                    $oKategorie->cURL = $shopURL . $oKategorie->cURL;
                 }
                 // Kampagne URL
                 if (isset($oKampagne->cParameter) && strlen($oKampagne->cParameter) > 0) {

@@ -49,7 +49,7 @@ function holeExportformatCron()
 
 /**
  * @param int $kCron
- * @return int
+ * @return int|object
  */
 function holeCron($kCron)
 {

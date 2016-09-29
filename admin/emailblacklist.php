@@ -6,7 +6,7 @@
 require_once dirname(__FILE__) . '/includes/admininclude.php';
 
 $oAccount->permission('SETTINGS_EMAIL_BLACKLIST_VIEW', true, true);
-
+/** @global JTLSmarty $smarty */
 $Einstellungen = Shop::getSettings(array(CONF_EMAILBLACKLIST));
 $cHinweis      = '';
 $cFehler       = '';

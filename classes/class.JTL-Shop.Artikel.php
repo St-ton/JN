@@ -1364,9 +1364,8 @@ class Artikel
                 $Attribut        = new stdClass();
                 $Attribut->nSort = $att->nSort;
                 $Attribut->cName = $att->cName;
-                $Attribut->cWert = ($att->cTextWert) ?
-                    $att->cTextWert :
-                    $att->cStringWert;
+                $Attribut->cWert = $att->cTextWert ? $att->cTextWert : $att->cStringWert;
+
                 if ($att->kAttribut > 0 && $kSprache > 0 && !standardspracheAktiv()) {
                     $attributsprache = Shop::DB()->select('tattributsprache', 'kAttribut', (int)$att->kAttribut, 'kSprache', $kSprache);
                     if (isset($attributsprache->cName) && $attributsprache->cName) {
@@ -1723,7 +1722,8 @@ class Artikel
      * @param int    $nOption
      * @return $this
      */
-    public function holeBewertung($kSprache = 0, $nAnzahlSeite = 10, $nSeite = 1, $nSterne = 0, $cFreischalten = 'N', $nOption = 0) {
+    public function holeBewertung($kSprache = 0, $nAnzahlSeite = 10, $nSeite = 1, $nSterne = 0, $cFreischalten = 'N', $nOption = 0)
+    {
         if (!$kSprache) {
             $kSprache = Shop::$kSprache;
         }
@@ -3525,31 +3525,17 @@ class Artikel
            aber nur wenn auch Preise angezeigt werden, this->Preise also auch vorhanden ist */
         if (is_object($this->Preise) && $oArtikelTMP->kVaterArtikel == 0 && $oArtikelTMP->nIstVater == 1) {
             $fVKNetto         = ($this->Preise->fVKNetto !== null) ? $this->Preise->fVKNetto : 0.0;
-            $fMaxRabatt       = $this->getDiscount($kKundengruppe, $oArtikelTMP->kArtikel);
             $oKindSonderpreis = Shop::DB()->query(
-                "SELECT sp.fNettoPreis > {$fVKNetto} AS nVariationsAufpreisVorhanden
-                    FROM tsonderpreise AS sp
-                    JOIN tartikel AS a ON a.kVaterArtikel = {$oArtikelTMP->kArtikel}
-                    WHERE sp.kArtikelSonderpreis = a.kArtikel AND sp.kKundengruppe = {$kKundengruppe}
-                    GROUP BY a.kArtikel
-                    ORDER BY nVariationsAufpreisVorhanden DESC
-                    LIMIT 1", 1
-            );
-            $oKindPreis = Shop::DB()->query(
-                "SELECT ROUND(d.fVKNetto - d.fVKNetto * {$fMaxRabatt} / 100, 8) > {$fVKNetto} AS nVariationsAufpreisVorhanden
-                    FROM tpreis AS p
-                    JOIN tartikel AS a ON a.kVaterArtikel = {$oArtikelTMP->kArtikel}
+                "SELECT COUNT(a.kArtikel) AS nVariationsAufpreisVorhanden
+                    FROM tartikel AS a
+                    JOIN tpreis AS p ON p.kArtikel = a.kArtikel AND p.kKundengruppe = {$kKundengruppe}
                     JOIN tpreisdetail AS d ON d.kPreis = p.kPreis
-                    LEFT JOIN tsonderpreise AS sp ON sp.kArtikelSonderpreis = a.kArtikel
-                    WHERE p.kArtikel = a.kArtikel AND p.kKundengruppe = {$kKundengruppe} AND sp.kArtikelSonderpreis IS NULL
-                    GROUP BY a.kArtikel
-                    ORDER BY nVariationsAufpreisVorhanden DESC
-                    LIMIT 1", 1
+                    LEFT JOIN tartikelsonderpreis AS asp ON asp.kArtikel = a.kArtikel
+                    LEFT JOIN tsonderpreise AS sp ON sp.kArtikelSonderpreis = asp.kArtikelSonderpreis AND sp.kKundengruppe = {$kKundengruppe}
+                    WHERE a.kVaterArtikel = {$oArtikelTMP->kArtikel}
+                        AND COALESCE(sp.fNettoPreis, d.fVKNetto) - {$fVKNetto} > 0.0001", 1
             );
-            if ((isset($oKindPreis->nVariationsAufpreisVorhanden) && $oKindPreis->nVariationsAufpreisVorhanden)
-                || (isset($oKindSonderpreis->nVariationsAufpreisVorhanden) && $oKindSonderpreis->nVariationsAufpreisVorhanden)) {
-                $this->nVariationsAufpreisVorhanden = 1;
-            }
+            $this->nVariationsAufpreisVorhanden = (int)$oKindSonderpreis->nVariationsAufpreisVorhanden > 0 ? 1 : 0;
         }
         if (isset($oArtikelOptionen->nVariationDetailPreis) && $oArtikelOptionen->nVariationDetailPreis) {
             if (isset($this->nIstVater) && $this->nIstVater == 1) {

@@ -1,5 +1,5 @@
 <div class="reviews row">
-    <div class="col-xs-12 col-md-10 col-md-offset-1">
+    <div class="col-xs-12">
         {block name="productdetails-review-overview"}
         <div id="reviews-overview">
             <div class="panel panel-default">

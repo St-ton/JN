@@ -4,11 +4,10 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 require_once dirname(__FILE__) . '/includes/admininclude.php';
-
-$oAccount->permission('EXPORT_FORMATS_VIEW', true, true);
-
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'exportformat_inc.php';
 
+$oAccount->permission('EXPORT_FORMATS_VIEW', true, true);
+/** @global JTLSmarty $smarty */
 $fehler              = '';
 $hinweis             = '';
 $step                = 'uebersicht';
@@ -182,7 +181,7 @@ if ($cAction !== null && $kExportformat !== null && validateToken()) {
             $exportformat = Shop::DB()->select('texportformat', 'kExportformat', $kExportformat);
             if ($exportformat->cDateiname && (file_exists(PFAD_ROOT . PFAD_EXPORT . $exportformat->cDateiname) ||
                     file_exists(PFAD_ROOT . PFAD_EXPORT . $exportformat->cDateiname . '.zip') ||
-                    (isset($oExportformat->nSplitgroesse) && (int)$oExportformat->nSplitgroesse > 0))
+                    (isset($exportformat->nSplitgroesse) && (int)$exportformat->nSplitgroesse > 0))
             ) {
                 $hinweis = 'Das Exportformat <b>' . $exportformat->cName . '</b> wurde erfolgreich erstellt.';
             } else {

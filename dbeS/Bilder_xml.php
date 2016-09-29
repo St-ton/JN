@@ -116,7 +116,7 @@ if (auth()) {
         $Einstellungen['bilder']['bilder_skalieren'] = 'N';
     }
     // tseo Sprache
-    $oSprache = Shop::DB()->query("SELECT kSprache FROM tsprache WHERE cShopStandard = 'Y'", 1);
+    $oSprache = Shop::DB()->select('tsprache', 'cShopStandard', 'Y');
     $cSQL     = '';
     if (!$oSprache->kSprache) {
         $oSprache->kSprache = $_SESSION['kSprache'];
@@ -241,7 +241,7 @@ function bearbeite($xml, $unzipPath)
             }
 
             if ($img->kMainArtikelBild > 0) {
-                $oMainArtikelBild = Shop::DB()->query("SELECT cPfad FROM tartikelpict WHERE kArtikelPict = " . (int)$img->kMainArtikelBild, 1);
+                $oMainArtikelBild = Shop::DB()->select('tartikelpict', 'kArtikelPict', (int)$img->kMainArtikelBild);
                 if (isset($oMainArtikelBild->cPfad) && strlen($oMainArtikelBild->cPfad) > 0) {
                     $img->cPfad = neuerDateiname($oMainArtikelBild->cPfad);
                     DBUpdateInsert('tartikelpict', array($img), 'kArtikel', 'kArtikelpict');
@@ -249,10 +249,10 @@ function bearbeite($xml, $unzipPath)
                     erstelleArtikelBild($img, $Bildformat, $unzipPath, $imgFilename);
                 }
             } else {
-                $oArtikelBild = Shop::DB()->query("SELECT * FROM tartikelpict WHERE kArtikelPict = " . (int)$img->kArtikelPict, 1);
+                $oArtikelBild = Shop::DB()->select('tartikelpict', 'kArtikelPict', (int)$img->kArtikelPict);
                 //update all references, if img is used by other products
                 if (isset($oArtikelBild->cPfad) && strlen($oArtikelBild->cPfad) > 0) {
-                    Shop::DB()->query("UPDATE tartikelpict SET cPfad = '{$oArtikelBild->cPfad}' WHERE kMainArtikelBild = " . (int)$oArtikelBild->kArtikelPict, 3);
+                    Shop::DB()->update('tartikelpict', 'kMainArtikelBild', (int)$oArtikelBild->kArtikelPict, (object)['cPfad' => $oArtikelBild->cPfad]);
                 }
                 erstelleArtikelBild($img, $Bildformat, $unzipPath, $imgFilename);
             }
@@ -397,7 +397,7 @@ function bearbeite($xml, $unzipPath)
                 $GLOBALS['Einstellungen']['bilder']['container_verwenden']
             )) {
                 //thersteller updaten
-                Shop::DB()->query("UPDATE thersteller SET cBildpfad = '" . $Herstellerbild->cPfad . "' WHERE kHersteller = " . (int)$Herstellerbild->kHersteller, 4);
+                Shop::DB()->update('thersteller', 'kHersteller', (int)$Herstellerbild->kHersteller, (object)['cBildpfad' => $Herstellerbild->cPfad]);
             }
             unlink($unzipPath . $imgFilename);
         }
@@ -436,7 +436,7 @@ function bearbeite($xml, $unzipPath)
                 $GLOBALS['Einstellungen']['bilder']['container_verwenden']
             )) {
                 //tmerkmal updaten
-                Shop::DB()->query("UPDATE tmerkmal SET cBildpfad = '" . $Merkmalbild->cPfad . "' WHERE kMerkmal = " . (int)$Merkmalbild->kMerkmal, 4);
+                Shop::DB()->update('tmerkmal', 'kMerkmal', (int)$Merkmalbild->kMerkmal, (object)['cBildpfad' => $Merkmalbild->cPfad]);
             }
             unlink($unzipPath . $imgFilename);
         }
@@ -475,11 +475,7 @@ function bearbeite($xml, $unzipPath)
                 $GLOBALS['Einstellungen']['bilder']['container_verwenden']
             )) {
                 //tmerkmalwert updaten
-                Shop::DB()->query(
-                    "UPDATE tmerkmalwert
-                        SET cBildpfad = '" . $Merkmalwertbild->cPfad . "'
-                        WHERE kMerkmalWert = " . (int)$Merkmalwertbild->kMerkmalWert, 4
-                );
+                Shop::DB()->update('tmerkmalwert', 'kMerkmalWert', (int)$Merkmalwertbild->kMerkmalWert, (object)['cBildpfad' => $Merkmalwertbild->cPfad]);
                 $oMerkmalwertbild               = new stdClass();
                 $oMerkmalwertbild->kMerkmalWert = (int)$Merkmalwertbild->kMerkmalWert;
                 $oMerkmalwertbild->cBildpfad    = $Merkmalwertbild->cPfad;
@@ -523,11 +519,7 @@ function bearbeite($xml, $unzipPath)
                 1,
                 $GLOBALS['Einstellungen']['bilder']['container_verwenden']
             )) {
-                Shop::DB()->query(
-                    "UPDATE tkonfiggruppe
-                        SET cBildPfad='" . $oKonfig->cBildPfad . "'
-                        WHERE kKonfiggruppe='" . $oKonfig->kKonfiggruppe . "'", 4
-                );
+                Shop::DB()->update('tkonfiggruppe', 'kKonfiggruppe', (int)$oKonfig->kKonfiggruppe, (object)['cBildPfad' => $oKonfig->cBildPfad]);
             }
             unlink($unzipPath . $imgFilename);
         }
@@ -657,7 +649,7 @@ function gibEigenschaftwertbildname($Eigenschaftwertbild, $Bildformat)
                             AND teigenschaftwert.kEigenschaftWert = " . $Eigenschaftwertbild->kEigenschaftWert, 1
                 );
 
-                $Eigenschaft = Shop::DB()->query("SELECT cName FROM teigenschaft WHERE kEigenschaft=" . $Eigenschaftwert->kEigenschaft, 1);
+                $Eigenschaft = Shop::DB()->query("SELECT cName FROM teigenschaft WHERE kEigenschaft = " . $Eigenschaftwert->kEigenschaft, 1);
                 if ((!empty($Artikel->cSeo) || !empty($Artikel->cName)) &&  !empty($Eigenschaft->cName) && !empty($Eigenschaftwert->cName)) {
                     if ($Artikel->cSeo) {
                         $Bildname = $Artikel->cSeo . '_' . gibAusgeschriebeneUmlaute($Eigenschaft->cName) . '_' . gibAusgeschriebeneUmlaute($Eigenschaftwert->cName);
@@ -1061,11 +1053,11 @@ function bearbeiteDeletes($xml)
         if (is_array($xml['del_bilder']['kHersteller'])) {
             foreach ($xml['del_bilder']['kHersteller'] as $kHersteller) {
                 if ((int)$kHersteller > 0) {
-                    Shop::DB()->query("UPDATE thersteller SET cBildPfad = '' WHERE kHersteller = " . (int)$kHersteller, 4);
+                    Shop::DB()->update('thersteller', 'kHersteller', (int)$kHersteller, (object)['cBildPfad' => '']);
                 }
             }
         } elseif ((int)$xml['del_bilder']['kHersteller'] > 0) {
-            Shop::DB()->query("UPDATE thersteller SET cBildPfad = '' WHERE kHersteller = " . (int)$xml['del_bilder']['kHersteller'], 4);
+            Shop::DB()->update('thersteller', 'kHersteller', (int)$xml['del_bilder']['kHersteller'], (object)['cBildPfad' => '']);
         }
     }
     //Merkmalbilder löschen
@@ -1073,11 +1065,11 @@ function bearbeiteDeletes($xml)
         if (is_array($xml['del_bilder']['kMerkmal'])) {
             foreach ($xml['del_bilder']['kMerkmal'] as $kMerkmal) {
                 if ((int)$kMerkmal > 0) {
-                    Shop::DB()->query("UPDATE tmerkmal SET cBildpfad = '' WHERE kMerkmal = " . (int)$kMerkmal, 4);
+                    Shop::DB()->update('tmerkmal', 'kMerkmal', (int)$kMerkmal, (object)['cBildpfad' => '']);
                 }
             }
         } elseif (intval($xml['del_bilder']['kMerkmal']) > 0) {
-            Shop::DB()->query("UPDATE tmerkmal SET cBildpfad = '' WHERE kMerkmal = " . (int)$xml['del_bilder']['kMerkmal'], 4);
+            Shop::DB()->update('tmerkmal', 'kMerkmal', (int)$xml['del_bilder']['kMerkmal'], (object)['cBildpfad' => '']);
         }
     }
     //Merkmalwertbilder löschen
@@ -1085,12 +1077,12 @@ function bearbeiteDeletes($xml)
         if (is_array($xml['del_bilder']['kMerkmalWert'])) {
             foreach ($xml['del_bilder']['kMerkmalWert'] as $kMerkmalWert) {
                 if ((int)$kMerkmalWert > 0) {
-                    Shop::DB()->query("UPDATE tmerkmalwert SET cBildPfad = '' WHERE kMerkmalWert = " . (int)$kMerkmalWert, 4);
+                    Shop::DB()->update('tmerkmalwert', 'kMerkmalWert', (int)$kMerkmalWert, (object)['cBildPfad' => '']);
                     Shop::DB()->delete('tmerkmalwertbild', 'kMerkmalWert', (int)$kMerkmalWert);
                 }
             }
         } elseif ((int)$xml['del_bilder']['kMerkmalWert'] > 0) {
-            Shop::DB()->query("UPDATE tmerkmalwert SET cBildPfad = '' WHERE kMerkmalWert = " . (int)$xml['del_bilder']['kMerkmalWert'], 4);
+            Shop::DB()->update('tmerkmalwert', 'kMerkmalWert', (int)$xml['del_bilder']['kMerkmalWert'], (object)['cBildPfad' => '']);
             Shop::DB()->delete('tmerkmalwertbild', 'kMerkmalWert', (int)$xml['del_bilder']['kMerkmalWert']);
         }
     }
@@ -1595,11 +1587,7 @@ function holeBilderEinstellungen()
             $oBranding_arr[$oBrandingTMP->cBildKategorie] = $oBrandingTMP;
         }
         foreach ($oBranding_arr as $i => $oBranding) {
-            $oBranding_arr[$i]->oBrandingEinstellung = Shop::DB()->query(
-                "SELECT *
-                    FROM tbrandingeinstellung
-                    WHERE kBranding = " . (int)$oBranding->kBranding, 1
-            );
+            $oBranding_arr[$i]->oBrandingEinstellung = Shop::DB()->select('tbrandingeinstellung', 'kBranding', (int)$oBranding->kBranding);
         }
     }
 

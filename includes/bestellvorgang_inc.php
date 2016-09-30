@@ -951,12 +951,12 @@ function checkAdditionalPayment($paymentMethod)
             if ($conf['zahlungsarten']['zahlungsart_lastschrift_bic_abfrage'] === 'Y' && (!isset($_POST['bic']) || !$_POST['bic'])) {
                 $errors['bic'] = 1;
             }
-            if (((isset($_POST['bic']) && $conf['zahlungsarten']['zahlungsart_lastschrift_iban_abfrage'] !== 'N') ||
-                    $conf['zahlungsarten']['zahlungsart_lastschrift_iban_abfrage'] === 'Y') && !$_POST['iban']
+            if (((!empty($_POST['bic']) && $conf['zahlungsarten']['zahlungsart_lastschrift_iban_abfrage'] !== 'N') ||
+                    $conf['zahlungsarten']['zahlungsart_lastschrift_iban_abfrage'] === 'Y') && !empty($_POST['iban'])
             ) {
                 $errors['iban'] = 1;
             }
-            if (((isset($_POST['bic']) && $conf['zahlungsarten']['zahlungsart_lastschrift_iban_abfrage'] !== 'N') ||
+            if (((!empty($_POST['bic']) && $conf['zahlungsarten']['zahlungsart_lastschrift_iban_abfrage'] !== 'N') ||
                     $conf['zahlungsarten']['zahlungsart_lastschrift_iban_abfrage'] === 'Y') && !plausiIban($_POST['iban'])
             ) {
                 $errors['iban'] = 2;
@@ -979,7 +979,7 @@ function checkAdditionalPayment($paymentMethod)
  */
 function plausiIban($iban)
 {
-    if ($iban === '') {
+    if ($iban === '' || strlen($iban) < 6) {
         return false;
     }
     $iban  = str_replace(' ', '', $iban);

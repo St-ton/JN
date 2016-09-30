@@ -254,6 +254,11 @@ function fuehreLoginAus($userLogin, $passLogin)
             $nLoginversuche = $loginCaptchaOK;
         }
         if ($Kunde->kKunde > 0) {
+            $oKupons[] = $_SESSION['VersandKupon'];
+            $oKupons[] = $_SESSION['oVersandfreiKupon'];
+            $oKupons[] = $_SESSION['NeukundenKupon'];
+            $oKupons[] = $_SESSION['Kupon'];
+            Shop::dbg($oKupons, false, 'Kupons');
             //create new session id to prevent session hijacking
             session_regenerate_id(false);
             //in tbesucher kKunde setzen
@@ -267,8 +272,7 @@ function fuehreLoginAus($userLogin, $passLogin)
                 unset($_SESSION['ks']);
                 unset($_SESSION['VersandKupon']);
                 unset($_SESSION['NeukundenKupon']);
-                //unset($_SESSION['Kupon']);
-                $_SESSION['Warenkorb']->checkIfCouponIsStillValid();
+                unset($_SESSION['Kupon']);
                 // Lösche kompletten Kategorie Cache
                 unset($_SESSION['kKategorieVonUnterkategorien_arr']);
                 unset($_SESSION['oKategorie_arr']);
@@ -351,7 +355,31 @@ function fuehreLoginAus($userLogin, $passLogin)
                         }
                     }
                 }
-
+                // Kupons übernehmen, wenn erst der Warenkorb befüllt und sich dann angemeldet wurde
+                if(count($oKupons)>0) {
+                    foreach ($oKupons as $Kupon) {
+                        if(!empty($Kupon)) {
+                            $Kuponfehler = checkeKupon($Kupon);
+                            $nReturnValue = angabenKorrekt($Kuponfehler);
+                            executeHook(HOOK_WARENKORB_PAGE_KUPONANNEHMEN_PLAUSI,
+                                array('error' => &$Kuponfehler, 'nReturnValue' => &$nReturnValue));
+                            if ($nReturnValue) {
+                                if (isset($Kupon->kKupon) && $Kupon->kKupon > 0 && $Kupon->cKuponTyp === 'standard') {
+                                    kuponAnnehmen($Kupon);
+                                    executeHook(HOOK_WARENKORB_PAGE_KUPONANNEHMEN);
+                                } elseif (!empty($Kupon->kKupon) && $Kupon->cKuponTyp === 'versandkupon') {
+                                    // Versandfrei Kupon
+                                    $_SESSION['oVersandfreiKupon'] = $Kupon;
+                                    Shop::Smarty()->assign('cVersandfreiKuponLieferlaender_arr',
+                                        explode(';', $Kupon->cLieferlaender));
+                                    $nVersandfreiKuponGueltig = true;
+                                }
+                            } else {
+                                Shop::Smarty()->assign('cKuponfehler', $Kuponfehler['ungueltig']);
+                            }
+                        }
+                    }
+                }
                 // setzte Sprache auf Sprache des Kunden
                 $oISOSprache = Shop::Lang()->getIsoFromLangID($Kunde->kSprache);
                 if ((int)$_SESSION['kSprache'] !== (int)$Kunde->kSprache && !empty($oISOSprache->cISO)) {

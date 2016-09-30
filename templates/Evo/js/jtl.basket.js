@@ -137,13 +137,10 @@
 
     // PLUGIN DATA-API
     // ===============
-
-    $('*[data-toggle="basket-add"]').on('submit', function(event) {
+    $('#content').on('submit', '[data-toggle="basket-add"]', function(event) {
         event.preventDefault();
         $.evo.basket().addToBasket($(this));
-    });
-
-    $('*[data-toggle="basket-items"]').on('show.bs.dropdown', function (event) {
+    }).on('show.bs.dropdown', '[data-toggle="basket-items"]', function (event) {
         $.evo.basket().updateCart();
     });
 })(jQuery);

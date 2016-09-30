@@ -58,9 +58,7 @@ class HerstellerHelper
             if (($manufacturers = Shop::Cache()->get($this->cacheID)) === false) {
                 $lagerfilter = gibLagerfilter();
                 //fixes for admin backend
-                $customerGroupID = (isset($_SESSION['Kundengruppe']->kKundengruppe)) ?
-                    $_SESSION['Kundengruppe']->kKundengruppe :
-                    Kundengruppe::getDefaultGroupID();
+                $customerGroupID = (isset($_SESSION['Kundengruppe']->kKundengruppe)) ? (int)$_SESSION['Kundengruppe']->kKundengruppe : (int)Kundengruppe::getDefaultGroupID();
                 if (Shop::$kSprache !== null) {
                     $kSprache = Shop::$kSprache;
                 } elseif (isset($_SESSION['kSprache'])) {
@@ -75,21 +73,22 @@ class HerstellerHelper
                             therstellersprache.cMetaTitle, therstellersprache.cMetaKeywords, therstellersprache.cMetaDescription,
                             therstellersprache.cBeschreibung, tseo.cSeo
                         FROM thersteller
-                        JOIN tartikel
-                            ON thersteller.kHersteller = tartikel.kHersteller
-                        LEFT JOIN tartikelsichtbarkeit
-                            ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                            AND tartikelsichtbarkeit.kKundengruppe = " . (int)$customerGroupID . "
-                        LEFT JOIN therstellersprache
-                            ON therstellersprache.kHersteller = thersteller.kHersteller
-                            AND therstellersprache.kSprache = " . $kSprache . "
-                        LEFT JOIN tseo
-                            ON tseo.kKey = thersteller.kHersteller
+                        LEFT JOIN therstellersprache ON therstellersprache.kHersteller = thersteller.kHersteller
+                            AND therstellersprache.kSprache = {$kSprache}
+                        LEFT JOIN tseo ON tseo.kKey = thersteller.kHersteller
                             AND tseo.cKey = 'kHersteller'
-                            AND tseo.kSprache = " . $kSprache . "
-                        WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                            " . $lagerfilter . "
-                        GROUP BY  thersteller.kHersteller
+                            AND tseo.kSprache = {$kSprache}
+                        WHERE EXISTS (
+                            SELECT 1
+                            FROM tartikel
+							WHERE tartikel.kHersteller = thersteller.kHersteller
+                                {$lagerfilter}
+                                AND NOT EXISTS (
+                                    SELECT 1 FROM tartikelsichtbarkeit
+								    WHERE tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
+                                        AND tartikelsichtbarkeit.kKundengruppe = {$customerGroupID}
+							        )
+                            )
                         ORDER BY thersteller.cName", 2
                 );
                 if (is_array($manufacturers) && count($manufacturers) > 0) {

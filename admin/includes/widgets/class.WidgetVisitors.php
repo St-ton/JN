@@ -84,8 +84,7 @@ class WidgetVisitors extends WidgetBase
      */
     public function getContent()
     {
-        $this->oSmarty->assign('linechart', $this->getJSON());
 
-        return $this->oSmarty->fetch('tpl_inc/widgets/visitors.tpl');
+        return $this->oSmarty->assign('linechart', $this->getJSON())->fetch('tpl_inc/widgets/visitors.tpl');
     }
 }

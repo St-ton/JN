@@ -160,7 +160,7 @@ function bearbeiteInsert($xml, array $conf)
     if (is_array($xml['tartikel'])) {
         $artikel_arr = mapArray($xml, 'tartikel', $GLOBALS['mArtikel']);
         // Alten SEO-Pfad merken. Eintrag in tredirect, wenn sich der Pfad geändert hat. 
-        $oSeoOld       = Shop::DB()->query("SELECT cSeo FROM tartikel WHERE kArtikel = " . (int) $Artikel->kArtikel, 1);
+        $oSeoOld       = Shop::DB()->select('tartikel', 'kArtikel', (int)$Artikel->kArtikel, null, null, null, null, false, 'cSeo');
         $oSeoAssoc_arr = getSeoFromDB($Artikel->kArtikel, 'kArtikel', null, 'kSprache');
         $isParent      = (isset($artikel_arr[0]->nIstVater)) ? 1 : 0;
 
@@ -169,7 +169,7 @@ function bearbeiteInsert($xml, array $conf)
             $newArticleCategories     = array();
             $flush                    = false;
             // get list of all categories the article is currently associated with
-            $currentArticleCategoriesObject = Shop::DB()->query("SELECT kKategorie FROM tkategorieartikel WHERE kArtikel = " . (int) $Artikel->kArtikel, 2);
+            $currentArticleCategoriesObject = Shop::DB()->selectAll('tkategorieartikel', 'kArtikel', (int)$Artikel->kArtikel, 'kKategorie');
             foreach ($currentArticleCategoriesObject as $obj) {
                 $currentArticleCategories[] = (int) $obj->kKategorie;
             }
@@ -218,7 +218,7 @@ function bearbeiteInsert($xml, array $conf)
             }
             if ($flush === false && $conf['global']['artikel_artikelanzeigefilter'] != EINSTELLUNGEN_ARTIKELANZEIGEFILTER_ALLE) {
                 $check         = false;
-                $currentStatus = Shop::DB()->query("SELECT cLagerBeachten, cLagerKleinerNull, fLagerbestand FROM tartikel WHERE kArtikel = " . $Artikel->kArtikel, 1);
+                $currentStatus = Shop::DB()->select('tartikel', 'kArtikel', $Artikel->kArtikel, null, null, null, null, false, 'cLagerBeachten, cLagerKleinerNull, fLagerbestand');
                 if (isset($currentStatus->cLagerBeachten)) {
                     if ($currentStatus->fLagerbestand <= 0 && $xml['tartikel']['fLagerbestand'] > 0) {
                         // article was not in stock before but is now - check if flush is necessary
@@ -830,7 +830,7 @@ function loescheArtikel($kArtikel, $nIstVater = 0, $bForce = false, $conf = null
     $kArtikel = (int)$kArtikel;
     if ($bForce === false && isset($conf['global']['kategorien_anzeigefilter']) && $conf['global']['kategorien_anzeigefilter'] === '2') {
         // get list of all categories the article was associated with
-        $articleCategories = Shop::DB()->query("SELECT kKategorie FROM tkategorieartikel WHERE kArtikel = " . $kArtikel, 2);
+        $articleCategories = Shop::DB()->selectAll('tkategorieartikel', 'kArtikel', $kArtikel, 'kKategorie');
         foreach ($articleCategories as $category) {
             // check if the article was the only one in at least one of these categories
             $categoryCount = Shop::DB()->query("
@@ -901,10 +901,7 @@ function loescheArtikelEigenschaft($kArtikel)
 {
     $kArtikel = (int)$kArtikel;
     if ($kArtikel > 0) {
-        $eigenschaft_arr = Shop::DB()->query(
-            "SELECT kEigenschaft
-                FROM teigenschaft
-                WHERE kArtikel = $kArtikel", 2);
+        $eigenschaft_arr = Shop::DB()->selectAll('teigenschaft', 'kArtikel', $kArtikel, 'kEigenschaft');
 
         if (is_array($eigenschaft_arr) && count($eigenschaft_arr)) {
             foreach ($eigenschaft_arr as $oEigenschaft) {
@@ -970,11 +967,7 @@ function loescheArtikelAttribute($kArtikel)
 {
     $kArtikel = (int)$kArtikel;
     if ($kArtikel > 0) {
-        $attribute_arr = Shop::DB()->query(
-            "SELECT tattribut.kAttribut
-                FROM tattribut
-                WHERE tattribut.kArtikel = $kArtikel", 2);
-
+        $attribute_arr = Shop::DB()->selectAll('tattribut', 'kArtikel', $kArtikel, 'kAttribut');
         if (is_array($attribute_arr) && count($attribute_arr)) {
             foreach ($attribute_arr as $oAttribut) {
                 loescheAttribute($oAttribut->kAttribut);
@@ -1003,11 +996,7 @@ function loescheArtikelMediendateien($kArtikel)
 {
     $kArtikel = (int)$kArtikel;
     if ($kArtikel > 0) {
-        $mediendateien_arr = Shop::DB()->query(
-            "SELECT kMedienDatei
-                FROM tmediendatei
-                WHERE kArtikel = $kArtikel", 2);
-
+        $mediendateien_arr = Shop::DB()->selectAll('tmediendatei', 'kArtikel', $kArtikel, 'kMedienDatei');
         if (is_array($mediendateien_arr) && count($mediendateien_arr)) {
             foreach ($mediendateien_arr as $oMediendatei) {
                 loescheMediendateien($oMediendatei->kMedienDatei);
@@ -1035,11 +1024,7 @@ function loescheArtikelUpload($kArtikel)
 {
     $kArtikel = (int) $kArtikel;
     if ($kArtikel > 0) {
-        $uploadschema_arr = Shop::DB()->query(
-            "SELECT kUploadSchema
-                FROM tuploadschema
-                WHERE kCustomID = $kArtikel", 2);
-
+        $uploadschema_arr = Shop::DB()->selectAll('tuploadschema', 'kCustomID', $kArtikel, 'kUploadSchema');
         if (is_array($uploadschema_arr) && count($uploadschema_arr)) {
             foreach ($uploadschema_arr as $oUploadschema) {
                 loescheUpload($oUploadschema->kUploadSchema);
@@ -1172,11 +1157,7 @@ function checkArtikelBildLoeschung($kArtikel)
 {
     $kArtikel = (int)$kArtikel;
     if ($kArtikel > 0) {
-        $oArtikelPict_arr = Shop::DB()->query(
-            "SELECT kArtikelPict, kMainArtikelBild, cPfad
-                FROM tartikelpict
-                WHERE kArtikel = " . $kArtikel, 2
-        );
+        $oArtikelPict_arr = Shop::DB()->selectAll('tartikelpict', 'kArtikel', $kArtikel, 'kArtikelPict, kMainArtikelBild, cPfad');
         // Besitzt der zu löschende Artikel Bilder?
         if (isset($oArtikelPict_arr) && count($oArtikelPict_arr) > 0) {
             // Hat der Artikel Bilder die auf eine Verknüpfung verlinken wobei der Eigentümer Artikel des Bilder gelöscht wurde
@@ -1201,7 +1182,7 @@ function getConfigParents($kArtikel)
 {
     $kArtikel         = (int)$kArtikel;
     $parentProductIDs = array();
-    $configItems      = Shop::DB()->query("SELECT kKonfiggruppe FROM tkonfigitem WHERE kArtikel = " . $kArtikel, 2);
+    $configItems      = Shop::DB()->selectAll('tkonfigitem', 'kArtikel', $kArtikel, 'kKonfiggruppe');
     if (!is_array($configItems) || count($configItems) === 0) {
         return $parentProductIDs;
     }
@@ -1227,10 +1208,7 @@ function getConfigParents($kArtikel)
 function getDownloadKeys($kArtikel) {
     $kArtikel = (int)$kArtikel;
     if ($kArtikel > 0) {
-        $download_arr = Shop::DB()->query(
-            "SELECT tartikeldownload.kDownload
-                FROM tartikeldownload
-                WHERE tartikeldownload.kArtikel = $kArtikel", 2);
+        $download_arr = Shop::DB()->selectAll('tartikeldownload', 'kArtikel', $kArtikel, 'kDownload');
         array_walk($download_arr, function(&$item, $key){
             $item = (int)$item->kDownload;
         });
@@ -1261,7 +1239,7 @@ function clearProductCaches($kArtikel)
         Shop::Cache()->flushTags(array(CACHING_GROUP_MANUFACTURER . '_' . $oArticleManufacturer->kHersteller));
     }
     //flush cache tags associated with the article's category IDs
-    $oArticleCategories = Shop::DB()->query("SELECT * FROM tkategorieartikel WHERE kArtikel = " . $kArtikel, 2);
+    $oArticleCategories = Shop::DB()->selectAll('tkategorieartikel', 'kArtikel', $kArtikel);
     if (is_array($oArticleCategories)) {
         foreach ($oArticleCategories as $_articleCategory) {
             $cacheTags[] = (int)$_articleCategory->kKategorie;

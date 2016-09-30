@@ -33,6 +33,7 @@ function getWidgets($bActive = true)
             if (file_exists($cClassPath)) {
                 require_once $cClassPath;
                 if (class_exists($cClass)) {
+                    /** @var WidgetBase $oClassObj */
                     $oClassObj                 = new $cClass(null, null, $oPlugin);
                     $oWidget_arr[$i]->cContent = $oClassObj->getContent();
                 }
@@ -107,6 +108,7 @@ function getWidgetContent($kWidget)
     if (file_exists($cClassPath)) {
         require_once $cClassPath;
         if (class_exists($cClass)) {
+            /** @var WidgetBase $oClassObj */
             $oClassObj = new $cClass();
             $cContent  = $oClassObj->getContent();
         }

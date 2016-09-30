@@ -24,11 +24,7 @@ $nSize       = verifyGPCDataInteger('s'); // Bildgröße
 
 if ($kArtikel > 0 && $nBildNummer > 0 && $nSize > 0) {
     // Standardkundengruppe holen
-    $oKundengruppe = Shop::DB()->query(
-        "SELECT kKundengruppe
-            FROM tkundengruppe
-            WHERE cStandard = 'Y'", 1
-    );
+    $oKundengruppe = Shop::DB()->select('tkundengruppe', 'cStandard', 'Y');
     if (!isset($oKundengruppe->kKundengruppe)) {
         exit();
     }

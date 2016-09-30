@@ -67,9 +67,8 @@ class WidgetBots extends WidgetBase
      */
     public function getContent()
     {
-        $this->oSmarty->assign('oBots_arr', $this->oBots_arr);
-        $this->oSmarty->assign('oBotsJSON', $this->getJSON());
-
-        return $this->oSmarty->fetch('tpl_inc/widgets/bots.tpl');
+        return $this->oSmarty->assign('oBots_arr', $this->oBots_arr)
+            ->assign('oBotsJSON', $this->getJSON())
+            ->fetch('tpl_inc/widgets/bots.tpl');
     }
 }

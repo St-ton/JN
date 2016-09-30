@@ -11,6 +11,8 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'wunschliste_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'jtl_inc.php';
 
+/** @global JTLSmarty $smarty */
+
 $AktuelleSeite = 'BESTELLVORGANG';
 $Einstellungen = Shop::getSettings(array(
     CONF_GLOBAL,

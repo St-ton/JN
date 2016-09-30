@@ -3,13 +3,10 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-/**
- * @global JTLSmarty $smarty
- */
 require_once dirname(__FILE__) . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'wunschliste_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
-
+/** @global JTLSmarty $smarty */
 Shop::run();
 $cParameter_arr   = Shop::getParameters();
 $cURLID           = StringHandler::filterXSS(verifyGPDataString('wlid'));
@@ -272,12 +269,7 @@ if (empty($CWunschliste)) {
     $CWunschliste = bauecPreis(new Wunschliste($kWunschliste));
 }
 if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
-    $oWunschliste_arr = Shop::DB()->query(
-        "SELECT *
-            FROM twunschliste
-                WHERE kKunde = " . (int)$_SESSION['Kunde']->kKunde . "
-                ORDER BY dErstellt DESC", 2
-    );
+    $oWunschliste_arr = Shop::DB()->selectAll('twunschliste', 'kKunde', (int)$_SESSION['Kunde']->kKunde, '*', 'dErstellt DESC');
 }
 $smarty->assign('CWunschliste', $CWunschliste)
        ->assign('oWunschliste_arr', $oWunschliste_arr)

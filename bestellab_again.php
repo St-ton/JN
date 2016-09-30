@@ -8,7 +8,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellabschluss_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
-
+/** @global JTLSmarty $smarty */
 $AktuelleSeite = 'BESTELLVORGANG';
 Shop::setPageType(PAGE_BESTELLABSCHLUSS);
 $Einstellungen = Shop::getSettings(array(CONF_GLOBAL, CONF_RSS, CONF_KUNDEN, CONF_KAUFABWICKLUNG, CONF_ZAHLUNGSARTEN));
@@ -82,7 +82,7 @@ if (verifyGPCDataInteger('zusatzschritt') === 1) {
 
     if ($bZusatzangabenDa) {
         if (saveZahlungsInfo($bestellung->kKunde, $bestellung->kBestellung)) {
-            Shop::DB()->query("UPDATE tbestellung SET cAbgeholt = 'N' WHERE kBestellung = " . (int)$bestellung->kBestellung, 3);
+            Shop::DB()->update('tbestellung', 'kBestellung', (int)$bestellung->kBestellung, (object)['cAbgeholt' => 'N']);
             unset($_SESSION['Zahlungsart']);
             header('Location: ' . $successPaymentURL, true, 303);
             exit();

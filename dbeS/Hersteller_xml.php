@@ -68,7 +68,7 @@ function bearbeiteHerstellerDeletes($xml)
         foreach ($xml['del_hersteller']['kHersteller'] as $kHersteller) {
             $kHersteller = (int)$kHersteller;
             if ($kHersteller > 0) {
-                $affectedArticles = Shop::DB()->query("SELECT kArtikel FROM tartikel WHERE kHersteller = " . $kHersteller, 2);
+                $affectedArticles = Shop::DB()->selectAll('tartikel', 'kHersteller', $kHersteller, 'kArtikel');
                 Shop::DB()->delete('tseo', ['kKey', 'cKey'], [$kHersteller, 'kHersteller']);
                 Shop::DB()->delete('thersteller', 'kHersteller', $kHersteller);
                 Shop::DB()->delete('therstellersprache', 'kHersteller', $kHersteller);
@@ -100,7 +100,7 @@ function bearbeiteHersteller($xml)
             $mfCount      = count($hersteller_arr);
             $cacheTags    = array();
             for ($i = 0; $i < $mfCount; $i++) {
-                $affectedArticles = Shop::DB()->query("SELECT kArtikel FROM tartikel WHERE kHersteller = " . (int)$hersteller_arr[$i]->kHersteller, 2);
+                $affectedArticles = Shop::DB()->selectAll('tartikel', 'kHersteller', (int)$hersteller_arr[$i]->kHersteller, 'kArtikel');
                 Shop::DB()->delete('tseo', ['kKey', 'cKey'], [(int)$hersteller_arr[$i]->kHersteller,'kHersteller']);
                 if (!trim($hersteller_arr[$i]->cSeo)) {
                     $hersteller_arr[$i]->cSeo = getFlatSeoPath($hersteller_arr[$i]->cName);

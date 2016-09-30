@@ -137,7 +137,7 @@
 
     // PLUGIN DATA-API
     // ===============
-    $('#content').on('submit', '[data-toggle="basket-add"]', function(event) {
+    $('#main-wrapper').on('submit', '[data-toggle="basket-add"]', function(event) {
         event.preventDefault();
         $.evo.basket().addToBasket($(this));
     }).on('show.bs.dropdown', '[data-toggle="basket-items"]', function (event) {

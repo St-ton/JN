@@ -287,20 +287,6 @@ hr.hr-sm {
     margin-bottom: 0.5em;
 }
 
-/* LIGHTBOX WORKAROUND */
-
-.modal-dialog {
-    background: @body-bg;
-}
-
-.modal-backdrop {
-    z-index: auto;
-}
-
-.modal-header {
-    z-index: 1;
-}
-
 .carousel-indicators {
     position: absolute;
     bottom: -20px;
@@ -535,6 +521,10 @@ ul.filter_state li a.active:before {
     vertical-align: middle;
 }
 
+.box-filter-characteristics .value{
+    margin-right: 3em;
+}
+
 /* CONTENT */
 
 #content {
@@ -712,7 +702,6 @@ ul.filter_state li a.active:before {
 
 aside .box {
     margin-bottom: 20px;
-    word-break: break-all;
 }
 
 aside .badge {
@@ -2896,7 +2885,9 @@ header.fixed-navbar {
 }
 
 .word-break, .desc, .shortdesc, .product-title {
-     word-break: break-word;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-word;
     -webkit-hyphens: auto;
        -moz-hyphens: auto;
         -ms-hyphens: auto;
@@ -3028,3 +3019,12 @@ header.fixed-navbar {
     .thumbs-box {position:relative;margin:auto;}
 }
 /*Artikel Bilder Slider Ende*/
+
+// Fix for #513 - backdrop was not visible
+.modal-backdrop {
+    bottom: 0;
+    z-index: 1040;
+}
+.modal {
+    z-index: 1050;
+}

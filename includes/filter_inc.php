@@ -158,7 +158,7 @@ function buildSearchResultPage(&$oSearchResult, $nProductCount, $nLimitN, $nPage
 function gibArtikelKeys($FilterSQL, $nArtikelProSeite, $NaviFilter, $bExtern, $oSuchergebnisse)
 {
     $oArtikel_arr = array();
-    $conf         = Shop::getSettings(array(CONF_ARTIKELUEBERSICHT, CONF_BOXEN, CONF_NAVIGATIONSFILTER));
+    $conf         = Shop::getSettings(array(CONF_ARTIKELUEBERSICHT, CONF_BOXEN, CONF_NAVIGATIONSFILTER, CONF_ARTIKELDETAILS));
     //Sortierung
     $cSortSQL      = gibArtikelsortierung($NaviFilter);
     $kKundengruppe = (int)$_SESSION['Kundengruppe']->kKundengruppe;
@@ -299,17 +299,42 @@ function gibArtikelKeys($FilterSQL, $nArtikelProSeite, $NaviFilter, $bExtern, $o
             exit;
         }
 
+        $oArtikelOptionen = new stdClass();
+        if (defined('UNIFY_CACHE_IDS') && UNIFY_CACHE_IDS === true) {
+            //these are the same options as in artikel.php
+            require_once PFAD_ROOT . PFAD_INCLUDES . 'artikel_inc.php';
+            $oArtikelOptionen->nMerkmale             = 1;
+            $oArtikelOptionen->nKategorie            = 1;
+            $oArtikelOptionen->nAttribute            = 1;
+            $oArtikelOptionen->nArtikelAttribute     = 1;
+            $oArtikelOptionen->nMedienDatei          = 1;
+            $oArtikelOptionen->nVariationKombi       = 1;
+            $oArtikelOptionen->nVariationKombiKinder = 1;
+            $oArtikelOptionen->nWarenlager           = 1;
+            $oArtikelOptionen->nVariationDetailPreis = 1;
+            $oArtikelOptionen->nRatings              = 1;
+            // Warenkorbmatrix noetig? => Varikinder mit Preisen holen
+            $oArtikelOptionen->nWarenkorbmatrix = (int)($conf['artikeldetails']['artikeldetails_warenkorbmatrix_anzeige'] === 'Y');
+            // Stückliste noetig? => Stücklistenkomponenten  holen
+            $oArtikelOptionen->nStueckliste   = (int)($conf['artikeldetails']['artikeldetails_stueckliste_anzeigen'] === 'Y');
+            $oArtikelOptionen->nProductBundle = (int)($conf['artikeldetails']['artikeldetails_produktbundle_nutzen'] === 'Y');
+            $oArtikelOptionen->nDownload      = 1;
+            $oArtikelOptionen->nKonfig        = 1;
+            $oArtikelOptionen->nMain          = 1;
+            $oArtikelOptionen->bSimilar       = true;
+        } else {
+            $oArtikelOptionen->nMerkmale             = 1;
+            $oArtikelOptionen->nKategorie            = 1;
+            $oArtikelOptionen->nAttribute            = 1;
+            $oArtikelOptionen->nArtikelAttribute     = 1;
+            $oArtikelOptionen->nVariationKombiKinder = 1;
+            $oArtikelOptionen->nWarenlager           = 1;
+        }
+
         foreach ($oArtikelKey_arr as $i => $oArtikelKey) {
             $nLaufLimitN = $i + $nLimitNBlaetter;
             if ($bExtern || ($nLaufLimitN >= $nLimitN && $nLaufLimitN < $nLimitN + $nArtikelProSeite)) {
-                $oArtikel                                = new Artikel();
-                $oArtikelOptionen                        = new stdClass();
-                $oArtikelOptionen->nMerkmale             = 1;
-                $oArtikelOptionen->nKategorie            = 1;
-                $oArtikelOptionen->nAttribute            = 1;
-                $oArtikelOptionen->nArtikelAttribute     = 1;
-                $oArtikelOptionen->nVariationKombiKinder = 1;
-                $oArtikelOptionen->nWarenlager           = 1;
+                $oArtikel = new Artikel();
                 //$oArtikelOptionen->nVariationDetailPreis = 1;
                 $oArtikel->fuelleArtikel($oArtikelKey->kArtikel, $oArtikelOptionen);
                 // Aktuelle Artikelmenge in die Session (Keine Vaterartikel)
@@ -339,7 +364,7 @@ function gibArtikelKeys($FilterSQL, $nArtikelProSeite, $NaviFilter, $bExtern, $o
             (isset($NaviFilter->Kategorie->kKategorie) && $NaviFilter->Kategorie->kKategorie > 0 && !$bUnterkategorien) ||
             (isset($NaviFilter->EchteSuche->cSuche)))
     ) {
-        header(makeHTTPHeader(301));
+        http_response_code(301);
         // Weiterleitung zur Artikeldetailansicht da nur ein Artikel gefunden wurde und die Einstellung gesetzt ist.
         $url = (isset($oArtikel_arr[0]->cURL) && strlen($oArtikel_arr[0]->cURL) > 0) ? Shop::getURL() . '/' . $oArtikel_arr[0]->cURL : Shop::getURL() . '/index.php?a=' . $oArtikel_arr[0]->kArtikel;
         header('Location: ' . $url);
@@ -613,7 +638,7 @@ function gibKategorieFilterOptionen($FilterSQL, $NaviFilter)
         );
         //baue URL
         $count = (is_array($oKategorieFilterDB_arr)) ? count($oKategorieFilterDB_arr) : 0;
-        for ($i = 0; $i < $count; $i++) {
+        for ($i = 0; $i < $count; ++$i) {
             // Anzeigen als KategoriePfad
             if ($conf['navigationsfilter']['kategoriefilter_anzeigen_als'] === 'KP') {
                 $oKategorie                        = new Kategorie($oKategorieFilterDB_arr[$i]->kKategorie);
@@ -2792,14 +2817,19 @@ function gibNaviURL($NaviFilter, $bSeo, $oZusatzFilter, $kSprache = 0, $bCanonic
             (!isset($NaviFilter->Kategorie->kKategorie) || $NaviFilter->Kategorie->kKategorie != $NaviFilter->KategorieFilter->kKategorie)
         ) {
             if (!isset($oZusatzFilter->FilterLoesen->Kategorie) || !$oZusatzFilter->FilterLoesen->Kategorie) {
-                $cSEOURL .= SEP_KAT . $NaviFilter->KategorieFilter->cSeo[$kSprache];
                 if (strlen($NaviFilter->KategorieFilter->cSeo[$kSprache]) === 0) {
                     $bSeo = false;
                 }
                 $conf = Shop::getConfig(array(CONF_NAVIGATIONSFILTER));
                 if ($conf['navigationsfilter']['kategoriefilter_anzeigen_als'] === 'HF' && !empty($oZusatzFilter->KategorieFilter->kKategorie)) {
+                    if (!empty($oZusatzFilter->KategorieFilter->cSeo)) {
+                        $cSEOURL .= SEP_KAT . $oZusatzFilter->KategorieFilter->cSeo;
+                    } else {
+                        $cSEOURL .= SEP_KAT . $NaviFilter->KategorieFilter->cSeo[$kSprache];
+                    }
                     $cURL .= '&amp;kf=' . (int)$oZusatzFilter->KategorieFilter->kKategorie;
                 } else {
+                    $cSEOURL .= SEP_KAT . $NaviFilter->KategorieFilter->cSeo[$kSprache];
                     $cURL .= '&amp;kf=' . (int)$NaviFilter->KategorieFilter->kKategorie;
                 }
             }
@@ -3711,15 +3741,14 @@ function gibErweiterteDarstellung($Einstellungen, $NaviFilter, $nDarstellung = 0
 
         if (isset($NaviFilter->Kategorie->kKategorie) && $NaviFilter->Kategorie->kKategorie > 0) {
             $oKategorie = new Kategorie($NaviFilter->Kategorie->kKategorie);
-
             if (!empty($oKategorie->categoryFunctionAttributes[KAT_ATTRIBUT_DARSTELLUNG])) {
                 $nStdDarstellung = (int)$oKategorie->categoryFunctionAttributes[KAT_ATTRIBUT_DARSTELLUNG];
             }
-        } elseif (isset($Einstellungen['artikeluebersicht']['artikeluebersicht_erw_darstellung_stdansicht']) &&
-            (int)$Einstellungen['artikeluebersicht']['artikeluebersicht_erw_darstellung_stdansicht'] > 0) {
+        }
+        if (isset($Einstellungen['artikeluebersicht']['artikeluebersicht_erw_darstellung_stdansicht']) &&
+            (int)$Einstellungen['artikeluebersicht']['artikeluebersicht_erw_darstellung_stdansicht'] > 0 && $nDarstellung === 0) {
             $nStdDarstellung = (int)$Einstellungen['artikeluebersicht']['artikeluebersicht_erw_darstellung_stdansicht'];
         }
-
         if ($nStdDarstellung > 0) {
             switch ($nStdDarstellung) {
                 case ERWDARSTELLUNG_ANSICHT_LISTE:

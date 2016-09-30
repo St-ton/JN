@@ -123,7 +123,9 @@ class WarenkorbHelper
             }
         }
 
-        if (isset($_SESSION['Bestellung']) && $_SESSION['Bestellung']->GuthabenNutzen === 1) {
+        if (isset($_SESSION['Bestellung']) &&
+            isset($_SESSION['Bestellung']->GuthabenNutzen) &&
+            $_SESSION['Bestellung']->GuthabenNutzen === 1) {
             $amountGross = $_SESSION['Bestellung']->fGuthabenGenutzt * -1;
             $amount      = $amountGross;
 

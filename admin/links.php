@@ -11,7 +11,7 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_CLASSES . 'class.JTL-Shopadmin.Plausi
 require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Link.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'links_inc.php';
-
+/** @global JTLSmarty $smarty */
 $hinweis            = '';
 $fehler             = '';
 $step               = 'uebersicht';
@@ -20,6 +20,9 @@ $cUploadVerzeichnis = PFAD_ROOT . PFAD_BILDER . PFAD_LINKBILDER;
 $clearCache         = false;
 $continue           = true;
 
+/**
+ * @global JTLSmarty $smarty
+ */
 if (isset($_POST['addlink']) && intval($_POST['addlink']) > 0) {
     $step = 'neuer Link';
     if (!isset($link)) {
@@ -47,7 +50,7 @@ if (isset($_POST['loesch_linkgruppe']) && intval($_POST['loesch_linkgruppe']) ==
     }
 }
 
-if ((isset($_POST['dellinkgruppe']) && intval($_POST['dellinkgruppe']) > 0  && validateToken()) || $step === 'loesch_linkgruppe') {
+if ((isset($_POST['dellinkgruppe']) && intval($_POST['dellinkgruppe']) > 0 && validateToken()) || $step === 'loesch_linkgruppe') {
     $step = 'uebersicht';
 
     $kLinkgruppe = -1;
@@ -60,7 +63,7 @@ if ((isset($_POST['dellinkgruppe']) && intval($_POST['dellinkgruppe']) > 0  && v
 
     Shop::DB()->delete('tlinkgruppe', 'kLinkgruppe', $kLinkgruppe);
     Shop::DB()->delete('tlinkgruppesprache', 'kLinkgruppe', $kLinkgruppe);
-    $links = Shop::DB()->query("SELECT kLink FROM tlink WHERE kLinkgruppe = " . $kLinkgruppe, 2);
+    $links = Shop::DB()->selectAll('tlink', 'kLinkgruppe', $kLinkgruppe);
     foreach ($links as $link) {
         $oLink = new Link($link->kLink, null, true);
         $oLink->delete(false);
@@ -78,9 +81,15 @@ if (isset($_POST['delconfirmlinkgruppe']) && intval($_POST['delconfirmlinkgruppe
 }
 
 if (isset($_POST['neu_link']) && intval($_POST['neu_link']) === 1 && validateToken()) {
+    $sprachen     = gibAlleSprachen();
+    $hasHTML_arr  = [];
+
+    foreach ($sprachen as $sprache) {
+        $hasHTML_arr[] = 'cContent_' . $sprache->cISO;
+    }
     // Plausi
     $oPlausiCMS = new PlausiCMS();
-    $oPlausiCMS->setPostVar($_POST);
+    $oPlausiCMS->setPostVar($_POST, $hasHTML_arr, true);
     $oPlausiCMS->doPlausi('lnk');
 
     if (count($oPlausiCMS->getPlausiVar()) === 0) {
@@ -90,7 +99,7 @@ if (isset($_POST['neu_link']) && intval($_POST['neu_link']) === 1 && validateTok
         $link->kLink              = (int)$_POST['kLink'];
         $link->kLinkgruppe        = (int)$_POST['kLinkgruppe'];
         $link->kPlugin            = (int)$_POST['kPlugin'];
-        $link->cName              = $_POST['cName'];
+        $link->cName              = htmlspecialchars($_POST['cName']);
         $link->nLinkart           = (int)$_POST['nLinkart'];
         $link->cURL               = (isset($_POST['cURL'])) ? $_POST['cURL'] : null;
         $link->nSort              = !empty($_POST['nSort']) ? $_POST['nSort'] : 0;
@@ -158,7 +167,6 @@ if (isset($_POST['neu_link']) && intval($_POST['neu_link']) === 1 && validateTok
             }
         }
 
-        $sprachen = gibAlleSprachen();
         if (!isset($linkSprache)) {
             $linkSprache = new stdClass();
         }
@@ -169,10 +177,10 @@ if (isset($_POST['neu_link']) && intval($_POST['neu_link']) === 1 && validateTok
             $linkSprache->cTitle      = '';
             $linkSprache->cContent    = '';
             if (!empty($_POST['cName_' . $sprache->cISO])) {
-                $linkSprache->cName = $_POST['cName_' . $sprache->cISO];
+                $linkSprache->cName = htmlspecialchars($_POST['cName_' . $sprache->cISO]);
             }
             if (!empty($_POST['cTitle_' . $sprache->cISO])) {
-                $linkSprache->cTitle = $_POST['cTitle_' . $sprache->cISO];
+                $linkSprache->cTitle = htmlspecialchars($_POST['cTitle_' . $sprache->cISO]);
             }
             if (!empty($_POST['cContent_' . $sprache->cISO])) {
                 $linkSprache->cContent = parseText($_POST['cContent_' . $sprache->cISO], $kLink);
@@ -183,16 +191,16 @@ if (isset($_POST['neu_link']) && intval($_POST['neu_link']) === 1 && validateTok
             }
             $linkSprache->cMetaTitle = $linkSprache->cTitle;
             if (isset($_POST['cMetaTitle_' . $sprache->cISO])) {
-                $linkSprache->cMetaTitle = $_POST['cMetaTitle_' . $sprache->cISO];
+                $linkSprache->cMetaTitle = htmlspecialchars($_POST['cMetaTitle_' . $sprache->cISO]);
             }
-            $linkSprache->cMetaKeywords    = $_POST['cMetaKeywords_' . $sprache->cISO];
-            $linkSprache->cMetaDescription = $_POST['cMetaDescription_' . $sprache->cISO];
+            $linkSprache->cMetaKeywords    = htmlspecialchars($_POST['cMetaKeywords_' . $sprache->cISO]);
+            $linkSprache->cMetaDescription = htmlspecialchars($_POST['cMetaDescription_' . $sprache->cISO]);
             Shop::DB()->delete('tlinksprache', array('kLink', 'cISOSprache'), array($kLink, $sprache->cISO));
             $linkSprache->cSeo = getSeo($linkSprache->cSeo);
             Shop::DB()->insert('tlinksprache', $linkSprache);
             $oSpracheTMP = Shop::DB()->select('tsprache', 'cISO ', $linkSprache->cISOSprache);
             if (isset($oSpracheTMP->kSprache) && $oSpracheTMP->kSprache > 0) {
-                Shop::DB()->delete('tseo', array('cKey', 'kKey', 'kSprache'),  array('kLink', (int)$linkSprache->kLink, (int)$oSpracheTMP->kSprache));
+                Shop::DB()->delete('tseo', array('cKey', 'kKey', 'kSprache'), array('kLink', (int)$linkSprache->kLink, (int)$oSpracheTMP->kSprache));
                 $oSeo           = new stdClass();
                 $oSeo->cSeo     = checkSeo($linkSprache->cSeo);
                 $oSeo->kKey     = $linkSprache->kLink;
@@ -240,13 +248,14 @@ if ($continue && ((isset($_POST['kLink']) && intval($_POST['kLink']) > 0) || (is
     $cDatei_arr = array();
     if (is_dir($cUploadVerzeichnis . $link->kLink)) {
         $DirHandle = opendir($cUploadVerzeichnis . $link->kLink);
+        $shopURL   = Shop::getURL() . '/';
         while (false !== ($Datei = readdir($DirHandle))) {
             if ($Datei !== '.' && $Datei !== '..') {
                 $nImageGroesse_arr = calcRatio(PFAD_ROOT . '/' . PFAD_BILDER . PFAD_LINKBILDER . $link->kLink . '/' . $Datei, 160, 120);
                 $oDatei            = new stdClass();
                 $oDatei->cName     = substr($Datei, 0, strpos($Datei, '.'));
                 $oDatei->cNameFull = $Datei;
-                $oDatei->cURL      = '<img class="link_image" src="' . Shop::getURL() . '/' . PFAD_BILDER . PFAD_LINKBILDER . $link->kLink . '/' . $Datei . '" />';
+                $oDatei->cURL      = '<img class="link_image" src="' . $shopURL . PFAD_BILDER . PFAD_LINKBILDER . $link->kLink . '/' . $Datei . '" />';
                 $oDatei->nBild     = intval(substr(str_replace('Bild', '', $Datei), 0, strpos(str_replace('Bild', '', $Datei), '.')));
                 $cDatei_arr[]      = $oDatei;
             }
@@ -267,8 +276,8 @@ if (isset($_POST['neu_linkgruppe']) && intval($_POST['neu_linkgruppe']) === 1 &&
             $linkgruppe = new stdClass();
         }
         $linkgruppe->kLinkgruppe   = (int)$_POST['kLinkgruppe'];
-        $linkgruppe->cName         = $_POST['cName'];
-        $linkgruppe->cTemplatename = $_POST['cTemplatename'];
+        $linkgruppe->cName         = htmlspecialchars($_POST['cName']);
+        $linkgruppe->cTemplatename = htmlspecialchars($_POST['cTemplatename']);
 
         $kLinkgruppe = 0;
         if (intval($_POST['kLinkgruppe']) === 0) {
@@ -292,7 +301,7 @@ if (isset($_POST['neu_linkgruppe']) && intval($_POST['neu_linkgruppe']) === 1 &&
             $linkgruppeSprache->cISOSprache = $sprache->cISO;
             $linkgruppeSprache->cName       = $linkgruppe->cName;
             if ($_POST['cName_' . $sprache->cISO]) {
-                $linkgruppeSprache->cName = $_POST['cName_' . $sprache->cISO];
+                $linkgruppeSprache->cName = htmlspecialchars($_POST['cName_' . $sprache->cISO]);
             }
 
             Shop::DB()->delete('tlinkgruppesprache', array('kLinkgruppe', 'cISOSprache'), array($kLinkgruppe, $sprache->cISO));
@@ -385,7 +394,7 @@ if ($step === 'uebersicht') {
     $linkgruppen = Shop::DB()->query("SELECT * FROM tlinkgruppe", 2);
     $lCount      = count($linkgruppen);
     for ($i = 0; $i < $lCount; $i++) {
-        $linkgruppen[$i]->links_nh = Shop::DB()->query("SELECT * FROM tlink WHERE kLinkgruppe = " . (int)$linkgruppen[$i]->kLinkgruppe . " ORDER BY nSort, cName", 2);
+        $linkgruppen[$i]->links_nh = Shop::DB()->selectAll('tlink', 'kLinkgruppe', (int)$linkgruppen[$i]->kLinkgruppe, '*', 'nSort, cName');
         $linkgruppen[$i]->links    = build_navigation_subs_admin($linkgruppen[$i]->links_nh);
     }
 

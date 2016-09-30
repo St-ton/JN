@@ -1,13 +1,11 @@
 <h1>{lang key="editBillingAdress" section="account data"}</h1>
 
-{if !$hinweis}
-    <div class="alert alert-info">{lang key="editBillingAdressDesc" section="login"}</div>
-{else}
-    <div class="alert alert-danger">{$hinweis}</div>
+{if isset($hinweis) && $hinweis|@count_characters > 0}
+    <div class="alert alert-warning">{$hinweis}</div>
 {/if}
 
 {include file="snippets/extension.tpl"}
-<form id="rechnungsdaten" action="{get_static_route id='jtl.php'}" method="post" class="well panel-wrap">
+<form id="rechnungsdaten" action="{get_static_route id='jtl.php' params=['editRechnungsadresse' => 1]}" method="post" class="panel-wrap">
     <div class="panel panel-default" id="panel-address-form">
         <div class="panel-body">
             {$jtl_token}

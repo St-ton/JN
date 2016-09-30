@@ -39,12 +39,27 @@ class Plausi
 
     /**
      * @param array $xVar_arr
+     * @param array|null $hasHTML_arr
+     * @param bool $toEntities
      * @return bool
      */
-    public function setPostVar($xVar_arr)
+    public function setPostVar($xVar_arr, $hasHTML_arr = null, $toEntities = false)
     {
         if (is_array($xVar_arr) && count($xVar_arr) > 0) {
-            $this->xPostVar_arr = StringHandler::filterXSS($xVar_arr);
+            if (is_array($hasHTML_arr)) {
+                $exclude_keys = array_fill_keys($hasHTML_arr, 1);
+                $filter_arr   = array_diff_key($xVar_arr, $exclude_keys);
+                $exclude_arr  = array_intersect_key($xVar_arr, $exclude_keys);
+
+                if ($toEntities) {
+                    array_walk($exclude_arr, function (&$value) {
+                        $value = htmlentities($value);
+                    });
+                }
+                $this->xPostVar_arr = array_merge($xVar_arr, StringHandler::filterXSS($filter_arr), $exclude_arr);
+            } else {
+                $this->xPostVar_arr = StringHandler::filterXSS($xVar_arr);
+            }
 
             return true;
         }

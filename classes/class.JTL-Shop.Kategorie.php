@@ -217,13 +217,7 @@ class Kategorie
         if ((!isset($oKategorie->cSeo) || $oKategorie->cSeo === null || $oKategorie->cSeo === '') && defined('EXPERIMENTAL_MULTILANG_SHOP') && EXPERIMENTAL_MULTILANG_SHOP === true) {
             $kDefaultLang = isset($oSpracheTmp) ? $oSpracheTmp->kSprache : gibStandardsprache()->kSprache;
             if ($kSprache != $kDefaultLang) {
-                $oSeo = Shop::DB()->query(
-                    "SELECT cSeo
-                        FROM tseo
-                        WHERE cKey = 'kKategorie'
-                          AND kSprache = " . (int)$kDefaultLang . "
-                          AND kKey = " . (int)$oKategorie->kKategorie, 1
-                );
+                $oSeo = Shop::DB()->select('tseo', 'cKey', 'kKategorie', 'kSprache', (int)$kDefaultLang, 'kKey', (int)$oKategorie->kKategorie);
                 if (isset($oSeo->cSeo)) {
                     $oKategorie->cSeo = $oSeo->cSeo;
                 }
@@ -309,7 +303,7 @@ class Kategorie
         }
         //hat die Kat Unterkategorien?
         if ($this->kKategorie > 0) {
-            $oUnterkategorien = Shop::DB()->query("SELECT kKategorie FROM tkategorie WHERE kOberKategorie = " . (int)$this->kKategorie . " LIMIT 1", 1);
+            $oUnterkategorien = Shop::DB()->select('tkategorie', 'kOberKategorie', (int)$this->kKategorie);
             if (isset($oUnterkategorien->kKategorie)) {
                 $this->bUnterKategorien = 1;
             }
@@ -411,7 +405,7 @@ class Kategorie
         if ($this->kKategorie > 0) {
             $cacheID = 'gkb_' . $this->kKategorie;
             if (($res = Shop::Cache()->get($cacheID)) === false) {
-                $resObj = Shop::DB()->query("SELECT cPfad FROM tkategoriepict WHERE kKategorie = " . (int)$this->kKategorie, 1);
+                $resObj = Shop::DB()->select('tkategoriepict', 'kKategorie', (int)$this->kKategorie);
                 $res    = (isset($resObj->cPfad) && $resObj->cPfad) ? PFAD_KATEGORIEBILDER . $resObj->cPfad : BILD_KEIN_KATEGORIEBILD_VORHANDEN;
                 Shop::Cache()->set($cacheID, $res, array(CACHING_GROUP_CATEGORY . '_' . $this->kKategorie, CACHING_GROUP_CATEGORY));
             }
@@ -468,12 +462,7 @@ class Kategorie
      */
     public static function isVisible($categoryId, $customerGroupId)
     {
-        $obj = Shop::DB()->query(
-            "SELECT kKategorie
-                FROM tkategoriesichtbarkeit
-                WHERE kKategorie = " . (int)$categoryId . "
-                    AND kKundengruppe = " . (int)$customerGroupId, 1
-        );
+        $obj = Shop::DB()->select('tkategoriesichtbarkeit', 'kKategorie', (int)$categoryId, 'kKundengruppe', (int)$customerGroupId);
 
         return empty($obj->kKategorie);
     }

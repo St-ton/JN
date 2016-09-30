@@ -6,11 +6,11 @@
 (function($, document, window, viewport){
     'use strict';
     
-    var _stock_info = ['out-of-stock', 'in-short-supply', 'in-stock' ];
-
-    var ArticleClass = function () {
-        this.init();
-    };
+    var _stock_info = ['out-of-stock', 'in-short-supply', 'in-stock'],
+        $v,
+        ArticleClass = function () {
+            this.init();
+        };
 
     ArticleClass.prototype = {
         constructor: ArticleClass,
@@ -32,12 +32,14 @@
         },
 
         register: function () {
-            var that = this;
+            var that = this,
+                config,
+                inner;
             this.gallery = $('#gallery').gallery();
             this.galleryIndex = 0;
             this.galleryLastIdent = '_';
 
-            var config = $('.product-configuration')
+            config = $('.product-configuration')
                 .closest('form')
                 .find('input[type="radio"], input[type="checkbox"], input[type="number"], select');
 
@@ -94,7 +96,7 @@
                     });
             }
             
-            var inner = function(context) {
+            inner = function(context) {
                 var id = $(context).attr('data-key'),
                     value = $(context).attr('data-value'),
                     data  = $(context).data('list'),
@@ -126,12 +128,15 @@
                 var tmp_idx = parseInt($(this).attr('data-original-index')) + 1,
                     p = $(this).closest('.bootstrap-select').find('select option:nth-child(' + tmp_idx + ')'),
                     id = $(p).attr('data-key'),
-                    data  = $(p).data('list');
+                    data  = $(p).data('list'),
+                    scope,
+                    gallery,
+                    active;
 
                 if (!!data) {
-                    var scope = '_',
-                        gallery = $.evo.article().gallery,
-                        active = $(p).find('.variation.active');
+                    scope = '_';
+                    gallery = $.evo.article().gallery;
+                    active = $(p).find('.variation.active');
 
                     gallery.render($.evo.article().galleryLastIdent);
                     gallery.activate($.evo.article().galleryIndex);
@@ -147,11 +152,14 @@
             }, function() {
                 var p = $(this).closest('.variation'),
                     id = $(this).attr('data-key'),
-                    data  = $(this).data('list');
+                    data  = $(this).data('list'),
+                    scope,
+                    gallery,
+                    active;
                 if (!!data) {
-                    var scope = '_',
-                        gallery = $.evo.article().gallery,
-                        active = $(p).find('.variation.active');
+                    scope = '_';
+                    gallery = $.evo.article().gallery;
+                    active = $(p).find('.variation.active');
                         
                     gallery.render($.evo.article().galleryLastIdent);
                     gallery.activate($.evo.article().galleryIndex);
@@ -221,12 +229,12 @@
                     i,
                     j,
                     item,
-                    itemarr_inactiv,
                     cBeschreibung,
                     quantityWrapper,
                     grp,
                     value,
                     enableQuantity,
+                    nNetto,
                     quantityInput;
                 if (error) {
                     $.evo.error(data);
@@ -240,7 +248,7 @@
                 }
 
                 // global price
-                var nNetto = result.nNettoPreise;
+                nNetto = result.nNettoPreise;
                 that.setPrice(result.fGesamtpreis[nNetto], result.cPreisLocalized[nNetto], result.cPreisString);
 
                 $('#content .summary').html(result.cTemplate);
@@ -288,8 +296,9 @@
                                         .attr('min', item.fMin)
                                         .attr('max', item.fMax);
                                     value = quantityInput.val();
-                                    if (value < item.fMin || value > item.fMax)
+                                    if (value < item.fMin || value > item.fMax) {
                                         quantityInput.val(item.fInitial);
+                                    }
                                 }
                             }
                         }
@@ -419,12 +428,15 @@
         },
         
         removeStockInfo: function(item) {
-            var type = item.attr('data-type');
+            var type = item.attr('data-type'),
+                elem,
+                label,
+                wrapper;
             
             switch (type) {
                 case 'option':
-                    var label = item.data('content');
-                    var wrapper = $('<div />').append(label);
+                    label = item.data('content');
+                    wrapper = $('<div />').append(label);
                     $(wrapper)
                         .find('.label-not-available')
                         .remove();
@@ -436,8 +448,8 @@
                         .selectpicker('refresh');
                 break;
                 case 'radio':
-                    var elem = item.find('.label-not-available');
-                    if (elem.length == 1) {
+                    elem = item.find('.label-not-available');
+                    if (elem.length === 1) {
                         $(elem).remove();
                     }
                 break;
@@ -450,23 +462,27 @@
         },
 
         variationInfo: function(value, status, note) {
-            var item = $('[data-value="' + value + '"].variation');
-            var type = item.attr('data-type');
+            var item = $('[data-value="' + value + '"].variation'),
+                type = item.attr('data-type'),
+                text,
+                content,
+                wrapper,
+                label;
             
             item.attr('data-stock', _stock_info[status]);
 
             switch (type) {
                 case 'option':
-                    var text = ' (' + note + ')';
-                    var content = item.data('content');
-                    var wrapper = $('<div />');
+                    text = ' (' + note + ')';
+                    content = item.data('content');
+                    wrapper = $('<div />');
                     
                     wrapper.append(content);
                     wrapper
                         .find('.label-not-available')
                         .remove();
                     
-                    var label = $('<span />')
+                    label = $('<span />')
                         .addClass('label label-default label-not-available')
                         .text(note);
                         
@@ -482,7 +498,7 @@
                     item.find('.label-not-available')
                         .remove();
 
-                    var label = $('<span />')
+                    label = $('<span />')
                         .addClass('label label-default label-not-available')
                         .text(note);
                     
@@ -501,11 +517,10 @@
         variationSwitch: function(item, animation) {
             var key = 0,
                 value = 0,
-                disabled = false,
                 io = $.evo.io(),
-                args = io.getFormValues('buy_form');
-                
-            var $spinner = null,
+                args = io.getFormValues('buy_form'),
+                $current,
+                $spinner = null,
                 $wrapper = $('#result-wrapper');
             
             if (animation) {
@@ -514,7 +529,8 @@
             }
 
             if (item) {
-                var $current = $(item).hasClass('variation') ? $(item) :
+                $current = $(item).hasClass('variation') ?
+                    $(item) :
                     $(item).closest('.variation'); 
 
                 if ($current.context.tagName === 'SELECT') {
@@ -569,7 +585,7 @@
         }
     };
 
-    var $v = new ArticleClass();
+    $v = new ArticleClass();
 
     $(window).on('load', function () {
         $v.onLoad();

@@ -14,6 +14,7 @@ class Filter
     /**
      * Filter constructor.
      * Create a new empty filter object
+     * @param string|null $cId
      */
     public function __construct($cId = null)
     {
@@ -41,11 +42,14 @@ class Filter
      *  7 = lower than or equal
      *  8 = greater than or equal
      *  9 = equals not
+     * @param int    $nDataType
+     *  0 = text
+     *  1 = number
      * @return FilterTextField
      */
-    public function addTextfield($cTitle, $cColumn, $nTestOp = 0)
+    public function addTextfield($cTitle, $cColumn, $nTestOp = 0, $nDataType = 0)
     {
-        $oField                                       = new FilterTextField($this, $cTitle, $cColumn, $nTestOp);
+        $oField                                       = new FilterTextField($this, $cTitle, $cColumn, $nTestOp, $nDataType);
         $this->oField_arr[]                           = $oField;
         $this->cSession_arr[$oField->getId()]         = $oField->getValue();
         $this->cSession_arr[$oField->getId() . '_op'] = $oField->getTestOp();
@@ -126,6 +130,7 @@ class Filter
     }
 
     /**
+     * @param string $cField
      * @return bool
      */
     public function hasSessionField($cField)
@@ -134,6 +139,7 @@ class Filter
     }
 
     /**
+     * @param string $cField
      * @return mixed
      */
     public function getSessionField($cField)

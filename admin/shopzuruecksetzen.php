@@ -7,7 +7,7 @@ require_once 'includes/admininclude.php';
 require_once 'includes/news_inc.php';
 
 $oAccount->permission('RESET_SHOP_VIEW', true, true);
-
+/** @global JTLSmarty $smarty */
 $cHinweis = '';
 $cFehler  = '';
 if (isset($_POST['zuruecksetzen']) && intval($_POST['zuruecksetzen']) === 1 && validateToken()) {

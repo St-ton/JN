@@ -324,13 +324,7 @@ class KategorieListe
                         defined('EXPERIMENTAL_MULTILANG_SHOP') && EXPERIMENTAL_MULTILANG_SHOP === true) {
                         $kDefaultLang = $oSpracheTmp->kSprache;
                         if ($kSprache != $kDefaultLang) {
-                            $oSeo = Shop::DB()->query(
-                                "SELECT cSeo
-                                    FROM tseo
-                                    WHERE cKey = 'kKategorie'
-                                        AND kSprache = " . (int)$kDefaultLang . "
-                                        AND kKey = " . (int)$oKategorie->kKategorie, 1
-                            );
+                            $oSeo = Shop::DB()->select('tseo', 'cKey', 'kKategorie', 'kSprache', (int)$kDefaultLang, 'kKey', (int)$oKategorie->kKategorie);
                             if (isset($oSeo->cSeo)) {
                                 $oKategorie->cSeo = $oSeo->cSeo;
                             }
@@ -383,11 +377,7 @@ class KategorieListe
                     //hat die Kat Unterkategorien?
                     $oKategorie->bUnterKategorien = 0;
                     if (isset($oKategorie->kKategorie) && $oKategorie->kKategorie > 0) {
-                        $oUnterkategorien = Shop::DB()->query(
-                            "SELECT kKategorie
-                                FROM tkategorie
-                                WHERE kOberKategorie = {$oKategorie->kKategorie} LIMIT 1", 1
-                        );
+                        $oUnterkategorien = Shop::DB()->select('tkategorie', 'kOberKategorie', $oKategorie->kKategorie);
                         if (isset($oUnterkategorien->kKategorie)) {
                             $oKategorie->bUnterKategorien = 1;
                         }

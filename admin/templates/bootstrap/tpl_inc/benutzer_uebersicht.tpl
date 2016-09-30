@@ -54,7 +54,7 @@
                                     {$jtl_token}
                                     <input type="hidden" name="id" value="{$oAdmin->kAdminlogin}" />
                                     <div class="btn-group">
-                                        <button class="notext btn btn-default" name="action" value="account_edit" title="{#bearbeitenLabel#}"><i class="fa fa-edit"></i></button>
+                                        <button class="notext btn btn-default" name="action" value="account_edit" title="{#modify#}"><i class="fa fa-edit"></i></button>
                                         {if $oAdmin->bAktiv}
                                             <button class="notext btn btn-warning" name="action" value="account_lock" title="{#sperrenLabel#}"><i class="fa fa-lock"></i></button>
                                         {else}
@@ -106,8 +106,8 @@
                                         {$jtl_token}
                                         <input type="hidden" value="{$oGroup->kAdminlogingruppe}" name="id" />
                                         <div class="btn-group">
-                                            <button type="submit" class="edit btn btn-default" name="action" value="group_edit" title="{#bearbeitenLabel#}"><i class="fa fa-edit"></i></button>
-                                            <button type="submit" class="delete btn btn-danger" name="action" value="group_delete" onclick="return confirm('Sind Sie sicher, dass die Gruppe entfernt werden soll?');" title="{#loeschenLabel#}"><i class="fa fa-trash"></i></button>
+                                            <button type="submit" class="edit btn btn-default" name="action" value="group_edit" title="{#modify#}"><i class="fa fa-edit"></i></button>
+                                            <button type="submit" class="delete btn btn-danger" name="action" value="group_delete" onclick="return confirm('Sind Sie sicher, dass die Gruppe entfernt werden soll?');" {if 0 < (int)$oGroup->nCount}title="{#loeschenLabelDeaktiviert#}" disabled="disabled"{else}title="{#loeschenLabel#}"{/if}><i class="fa fa-trash"></i></button>
                                         </div>
                                     </form>
                                 {/if}

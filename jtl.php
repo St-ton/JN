@@ -337,14 +337,20 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
     }
     // Kundendaten speichern
     if (isset($_POST['edit']) && intval($_POST['edit']) === 1) {
-        $smarty->assign('cPost_arr', StringHandler::filterXSS($_POST));
-        $fehlendeAngaben = checkKundenFormular(1, 0);
+        $cPost_arr = StringHandler::filterXSS($_POST);
+
+        if (isset($cPost_arr['account']) || isset($cPost_arr['register'])) {
+            $cPost_arr = array_flatten($cPost_arr);
+        }
+
+        $smarty->assign('cPost_arr', StringHandler::filterXSS($cPost_arr));
+        $fehlendeAngaben = checkKundenFormularArray($cPost_arr, 1, 0);
         $kKundengruppe   = Kundengruppe::getCurrent();
         // CheckBox Plausi
         $oCheckBox           = new CheckBox();
-        $fehlendeAngaben     = array_merge($fehlendeAngaben, $oCheckBox->validateCheckBox(CHECKBOX_ORT_KUNDENDATENEDITIEREN, $kKundengruppe, $_POST, true));
-        $knd                 = getKundendaten($_POST, 0, 0);
-        $cKundenattribut_arr = getKundenattribute($_POST);
+        $fehlendeAngaben     = array_merge($fehlendeAngaben, $oCheckBox->validateCheckBox(CHECKBOX_ORT_KUNDENDATENEDITIEREN, $kKundengruppe, $cPost_arr, true));
+        $knd                 = getKundendaten($cPost_arr, 0, 0);
+        $cKundenattribut_arr = getKundenattribute($cPost_arr);
         $nReturnValue        = angabenKorrekt($fehlendeAngaben);
 
         executeHook(HOOK_JTL_PAGE_KUNDENDATEN_PLAUSI);
@@ -353,8 +359,8 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
             $knd->cAbgeholt = 'N';
             $knd->updateInDB();
             // CheckBox Spezialfunktion ausführen
-            $oCheckBox->triggerSpecialFunction(CHECKBOX_ORT_KUNDENDATENEDITIEREN, $kKundengruppe, true, $_POST, array('oKunde' => $knd))
-                      ->checkLogging(CHECKBOX_ORT_KUNDENDATENEDITIEREN, $kKundengruppe, $_POST, true);
+            $oCheckBox->triggerSpecialFunction(CHECKBOX_ORT_KUNDENDATENEDITIEREN, $kKundengruppe, true, $cPost_arr, array('oKunde' => $knd))
+                      ->checkLogging(CHECKBOX_ORT_KUNDENDATENEDITIEREN, $kKundengruppe, $cPost_arr, true);
             // Kundendatenhistory
             Kundendatenhistory::saveHistory($_SESSION['Kunde'], $knd, Kundendatenhistory::QUELLE_MEINKONTO);
             $_SESSION['Kunde'] = $knd;
@@ -397,7 +403,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
                     }
                 }
             }
-            $step = 'mein Konto';
+            // $step = 'mein Konto';
             $cHinweis .= Shop::Lang()->get('dataEditSuccessful', 'login');
             setzeSteuersaetze();
             if (isset($_SESSION['Warenkorb']->kWarenkorb) && $_SESSION['Warenkorb']->gibAnzahlArtikelExt(array(C_WARENKORBPOS_TYP_ARTIKEL)) > 0) {
@@ -437,6 +443,16 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
                     $cHinweis .= Shop::Lang()->get('changepasswordWrongPass', 'login');
                 }
             }
+        }
+    }
+    if (verifyGPCDataInteger('bestellungen') > 0) {
+        if (isset($_SESSION['Kunde']) && isset($_SESSION['Kunde']->kKunde) && intval($_SESSION['Kunde']->kKunde) > 0) {
+            $step = 'bestellungen';
+        }
+    }
+    if (verifyGPCDataInteger('wllist') > 0) {
+        if (isset($_SESSION['Kunde']) && isset($_SESSION['Kunde']->kKunde) && intval($_SESSION['Kunde']->kKunde) > 0) {
+            $step = 'wunschliste';
         }
     }
     if (verifyGPCDataInteger('bestellung') > 0) {
@@ -552,11 +568,14 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
             }
         }
     }
-    if ($step === 'mein Konto') {
-        $Kunde->cGuthabenLocalized = gibPreisStringLocalized($Kunde->fGuthaben);
-        krsort($_SESSION['Kunde']->cKundenattribut_arr);
-        $smarty->assign('Kunde', $_SESSION['Kunde'])
-               ->assign('customerAttribute_arr', $_SESSION['Kunde']->cKundenattribut_arr);
+
+    if ($step === 'mein Konto' || $step === 'bestellungen') {
+        $oDownload_arr = array();
+        if (class_exists('Download')) {
+            $oDownload_arr = Download::getDownloads(array('kKunde' => $_SESSION['Kunde']->kKunde), Shop::$kSprache);
+            $smarty->assign('oDownload_arr', $oDownload_arr);
+        }
+
         // Download wurde angefordert?
         if (verifyGPCDataInteger('dl') > 0) {
             if (class_exists('Download')) {
@@ -570,24 +589,8 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
                 }
             }
         }
-        $oDownload_arr = array();
-        if (class_exists('Download')) {
-            $oDownload_arr = Download::getDownloads(array('kKunde' => $_SESSION['Kunde']->kKunde), Shop::$kSprache);
-            $smarty->assign('oDownload_arr', $oDownload_arr);
-        }
-        $Lieferadressen      = array();
-        $oLieferdatenTMP_arr = Shop::DB()->query("SELECT kLieferadresse FROM tlieferadresse WHERE kKunde = " . (int)$_SESSION['Kunde']->kKunde, 2);
-
-        if (is_array($oLieferdatenTMP_arr) && count($oLieferdatenTMP_arr) > 0) {
-            foreach ($oLieferdatenTMP_arr as $oLieferdatenTMP) {
-                if ($oLieferdatenTMP->kLieferadresse > 0) {
-                    $Lieferadressen[] = new Lieferadresse($oLieferdatenTMP->kLieferadresse);
-                }
-            }
-        }
 
         $Bestellungen     = array();
-        $oWunschliste_arr = array();
         if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
             $Bestellungen = Shop::DB()->query(
                 "SELECT *, date_format(dErstellt,'%d.%m.%Y') AS dBestelldatum
@@ -609,6 +612,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
                 }
             }
         }
+
         $orderCount = count($Bestellungen);
         $currencies = array();
         for ($i = 0; $i < $orderCount; $i++) {
@@ -626,7 +630,12 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
             $Bestellungen[$i]->cBestellwertLocalized = gibPreisStringLocalized($Bestellungen[$i]->fGesamtsumme, $Bestellungen[$i]->Waehrung);
             $Bestellungen[$i]->Status                = lang_bestellstatus($Bestellungen[$i]->cStatus);
         }
+        $smarty->assign('Bestellungen', $Bestellungen);
+    }
+
+    if ($step === 'mein Konto' || $step === 'wunschliste') {
         // Hole Wunschliste für eingeloggten Kunden
+        $oWunschliste_arr = array();
         if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
             $oWunschliste_arr = Shop::DB()->query(
                 "SELECT *
@@ -639,11 +648,25 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
         if (count($oWunschliste_arr) > 0) {
             $smarty->assign('oWunschliste_arr', $oWunschliste_arr);
         }
-        $smarty->assign('Bestellungen', $Bestellungen)
-               ->assign('Lieferadressen', $Lieferadressen);
+    }
+
+    if ($step === 'mein Konto') {
+        $Lieferadressen      = array();
+        $oLieferdatenTMP_arr = Shop::DB()->query("SELECT kLieferadresse FROM tlieferadresse WHERE kKunde = " . (int)$_SESSION['Kunde']->kKunde, 2);
+
+        if (is_array($oLieferdatenTMP_arr) && count($oLieferdatenTMP_arr) > 0) {
+            foreach ($oLieferdatenTMP_arr as $oLieferdatenTMP) {
+                if ($oLieferdatenTMP->kLieferadresse > 0) {
+                    $Lieferadressen[] = new Lieferadresse($oLieferdatenTMP->kLieferadresse);
+                }
+            }
+        }
+
+        $smarty->assign('Lieferadressen', $Lieferadressen);
 
         executeHook(HOOK_JTL_PAGE_MEINKKONTO);
     }
+
     if ($step === 'rechnungsdaten') {
         $knd = $_SESSION['Kunde'];
         if (isset($_POST['edit']) && intval($_POST['edit']) === 1) {
@@ -683,6 +706,13 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
         }
 
         $smarty->assign('oKundenfeld_arr', $oKundenfeld_arr);
+    }
+
+    if (isset($_SESSION['Kunde']) && isset($_SESSION['Kunde']->kKunde) && intval($_SESSION['Kunde']->kKunde) > 0) {
+        $Kunde->cGuthabenLocalized = gibPreisStringLocalized($Kunde->fGuthaben);
+        krsort($_SESSION['Kunde']->cKundenattribut_arr);
+        $smarty->assign('Kunde', $_SESSION['Kunde'])
+            ->assign('customerAttribute_arr', $_SESSION['Kunde']->cKundenattribut_arr);
     }
 }
 if (strlen($cBrotNavi) === 0) {

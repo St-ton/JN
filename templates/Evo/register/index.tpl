@@ -11,11 +11,11 @@
 
     {include file="snippets/extension.tpl"}
     <div id="new_customer" class="row">
-    <div class="col-xs-12 col-md-10 col-md-offset-1">
+    <div class="col-xs-12">
         {if !isset($checkout) && empty($smarty.session.Kunde->kKunde)}
             <h1>{lang key="createNewAccount" section="account data"}</h1>
         {/if}
-        <div class="well panel-wrap">
+        <div class="panel-wrap">
             <div class="panel panel-default" id="panel-register-form">
                 {if isset($panel_heading)}
                     <div class="panel-heading">

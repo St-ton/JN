@@ -18,6 +18,7 @@ function gibRedirect($cRedirect)
 
     switch ($cRedirect) {
         case R_LOGIN_WUNSCHLISTE:
+            $linkHelper                  = LinkHelper::getInstance();
             $oRedirect->oParameter_arr   = array();
             $oTMP                        = new stdClass();
             $oTMP->Name                  = 'a';
@@ -32,7 +33,7 @@ function gibRedirect($cRedirect)
             $oTMP->Wert                  = 1;
             $oRedirect->oParameter_arr[] = $oTMP;
             $oRedirect->nRedirect        = R_LOGIN_WUNSCHLISTE;
-            $oRedirect->cURL             = 'index.php?a=' . verifyGPCDataInteger('a') . '&n=' . verifyGPCDataInteger('n') . '&Wunschliste=1';
+            $oRedirect->cURL             = $linkHelper->getStaticRoute('wunschliste.php', false);
             $oRedirect->cName            = Shop::Lang()->get('wishlist', 'redirect');
             break;
         case R_LOGIN_BEWERTUNG:
@@ -279,7 +280,6 @@ function fuehreLoginAus($userLogin, $passLogin)
                 $session = Session::getInstance();
                 $session->setCustomer($Kunde);
                 // Setzt aktuelle Wunschliste (falls vorhanden) vom Kunden in die Session
-
                 setzeWunschlisteInSession();
                 // Redirect URL
                 $cURL = StringHandler::filterXSS(verifyGPDataString('cURL'));
@@ -289,20 +289,42 @@ function fuehreLoginAus($userLogin, $passLogin)
                 if ($Einstellungen['global']['warenkorbpers_nutzen'] === 'Y' && count($_SESSION['Warenkorb']->PositionenArr) === 0) {
                     $oWarenkorbPers = new WarenkorbPers($Kunde->kKunde);
                     $oWarenkorbPers->ueberpruefePositionen(true);
-                    Shop::dbg($oWarenkorbPers, true, 'pers warenkorb');
                     if (count($oWarenkorbPers->oWarenkorbPersPos_arr) > 0) {
                         foreach ($oWarenkorbPers->oWarenkorbPersPos_arr as $oWarenkorbPersPos) {
                             if (empty($oWarenkorbPers->Artikel->bHasKonfig)) {
-                                fuegeEinInWarenkorb(
-                                    $oWarenkorbPersPos->kArtikel,
-                                    $oWarenkorbPersPos->fAnzahl,
-                                    $oWarenkorbPersPos->oWarenkorbPersPosEigenschaft_arr,
-                                    1,
-                                    $oWarenkorbPersPos->cUnique,
-                                    $oWarenkorbPersPos->kKonfigitem,
-                                    null,
-                                    false
-                                );
+                                // Gratisgeschenk in Warenkorb legen
+                                if ((int)$oWarenkorbPersPos->nPosTyp === (int)C_WARENKORBPOS_TYP_GRATISGESCHENK) {
+                                    $kArtikelGeschenk = $oWarenkorbPersPos->kArtikel;
+                                    $oArtikelGeschenk = Shop::DB()->query(
+                                        "SELECT tartikelattribut.kArtikel, tartikel.fLagerbestand, tartikel.cLagerKleinerNull, tartikel.cLagerBeachten
+                                            FROM tartikelattribut
+                                            JOIN tartikel ON tartikel.kArtikel = tartikelattribut.kArtikel
+                                            WHERE tartikelattribut.kArtikel = " . $kArtikelGeschenk . "
+                                            AND tartikelattribut.cName = '" . FKT_ATTRIBUT_GRATISGESCHENK . "'
+                                            AND CAST(tartikelattribut.cWert AS DECIMAL) <= " . $_SESSION['Warenkorb']->gibGesamtsummeWarenExt(array(C_WARENKORBPOS_TYP_ARTIKEL), true), 1
+                                    );
+
+                                    if (isset($oArtikelGeschenk->kArtikel) && $oArtikelGeschenk->kArtikel > 0) {
+                                        if ($oArtikelGeschenk->fLagerbestand <= 0 && $oArtikelGeschenk->cLagerKleinerNull === 'N' && $oArtikelGeschenk->cLagerBeachten === 'Y') {
+                                            $MsgWarning = Shop::Lang()->get('freegiftsNostock', 'errorMessages');
+                                        } else {
+                                            executeHook(HOOK_WARENKORB_PAGE_GRATISGESCHENKEINFUEGEN);
+                                            $_SESSION['Warenkorb']->loescheSpezialPos(C_WARENKORBPOS_TYP_GRATISGESCHENK)
+                                                ->fuegeEin($kArtikelGeschenk, 1, array(), C_WARENKORBPOS_TYP_GRATISGESCHENK);
+                                        }
+                                    }
+                                } else {
+                                    fuegeEinInWarenkorb(
+                                        $oWarenkorbPersPos->kArtikel,
+                                        $oWarenkorbPersPos->fAnzahl,
+                                        $oWarenkorbPersPos->oWarenkorbPersPosEigenschaft_arr,
+                                        1,
+                                        $oWarenkorbPersPos->cUnique,
+                                        $oWarenkorbPersPos->kKonfigitem,
+                                        null,
+                                        false
+                                    );
+                                }
                             }
                         }
                         $_SESSION['Warenkorb']->setzePositionsPreise();

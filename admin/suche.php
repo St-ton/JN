@@ -12,7 +12,7 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'einstellungen_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'versandarten_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'zahlungsarten_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_CLASSES . 'class.JTL-Shopadmin.AjaxResponse.php';
-
+/** @global JTLSmarty $smarty */
 $response      = new AjaxResponse();
 $hasPermission = $oAccount->permission('SETTINGS_SEARCH_VIEW', false, false);
 

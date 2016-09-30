@@ -7,7 +7,7 @@ require_once dirname(__FILE__) . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Warenlager.php';
 
 $oAccount->permission('WAREHOUSE_VIEW', true, true);
-
+/** @global JTLSmarty $smarty */
 $cStep    = 'uebersicht';
 $cHinweis = '';
 $cFehler  = '';
@@ -32,13 +32,14 @@ switch ($cAction) {
                         $oObj              = new stdClass();
                         $oObj->kWarenlager = (int)$kWarenlager;
                         $oObj->kSprache    = (int)$kSprache;
-                        $oObj->cName       = trim($cName);
+                        $oObj->cName       = htmlspecialchars(trim($cName));
 
                         Shop::DB()->insert('twarenlagersprache', $oObj);
                     }
                 }
             }
         }
+        Shop::Cache()->flushTags([CACHING_GROUP_ARTICLE]);
         $cHinweis = 'Ihre Warenlager wurden erfolgreich aktualisiert';
         break;
     default:

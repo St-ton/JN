@@ -6986,7 +6986,7 @@ button.close {
   outline: 0;
 }
 .modal-backdrop {
-  position: absolute;
+  position: fixed;
   top: 0;
   right: 0;
   left: 0;
@@ -8588,16 +8588,6 @@ hr.hr-sm {
 .attr-group > .item {
   margin-bottom: 0.5em;
 }
-/* LIGHTBOX WORKAROUND */
-.modal-dialog {
-  background: #060606;
-}
-.modal-backdrop {
-  z-index: auto;
-}
-.modal-header {
-  z-index: 1;
-}
 .carousel-indicators {
   position: absolute;
   bottom: -20px;
@@ -8798,6 +8788,9 @@ ul.filter_state li a.active:before {
   margin-right: 5px;
   vertical-align: middle;
 }
+.box-filter-characteristics .value {
+  margin-right: 3em;
+}
 /* CONTENT */
 #content {
   margin-bottom: 30px;
@@ -8938,7 +8931,6 @@ ul.filter_state li a.active:before {
 }
 aside .box {
   margin-bottom: 20px;
-  word-break: break-all;
 }
 aside .badge {
   float: right;
@@ -10906,6 +10898,8 @@ header.fixed-navbar .visible-affix .cart-dropdown {
 .desc,
 .shortdesc,
 .product-title {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
   word-break: break-word;
   -webkit-hyphens: auto;
   -moz-hyphens: auto;
@@ -11051,6 +11045,13 @@ header.fixed-navbar .visible-affix .cart-dropdown {
   }
 }
 /*Artikel Bilder Slider Ende*/
+.modal-backdrop {
+  bottom: 0;
+  z-index: 1040;
+}
+.modal {
+  z-index: 1050;
+}
 .text-primary,
 .text-primary:hover {
   color: #2a9fd6;
@@ -11369,4 +11370,3 @@ a.list-group-item-danger.active:focus {
 #footer .panel > div > h5 {
   border-bottom: 1px dotted #555555;
 }
-/*# sourceMappingURL=sourcemap.map */

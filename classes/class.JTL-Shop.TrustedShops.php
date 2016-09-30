@@ -327,7 +327,7 @@ class TrustedShops
             //call WS method
             $returnValue = $client->getRequestState($this->tsId);
             if (is_soap_fault($returnValue)) {
-                $errorText = "SOAP Fault: (faultcode: {$Result->faultcode}, faultstring: {$Result->faultstring})";
+                $errorText = "SOAP Fault: (faultcode: {$returnValue->faultcode}, faultstring: {$returnValue->faultstring})";
                 writeLog(PFAD_LOGFILES . 'trustedshops.log', $errorText, 1);
             }
         } else {
@@ -335,7 +335,8 @@ class TrustedShops
         }
         // Geaendert aufgrund Mail von Herrn van der Wielen
         // Quote: 'Tatsächlich jedoch sollten Zertifikate mit den Status 'PRODUCTION', 'INTEGRATION' (und 'TEST') akzeptiert werden.'
-        if (($returnValue->stateEnum === 'PRODUCTION' || $returnValue->stateEnum === 'TEST' || $returnValue->stateEnum === 'INTEGRATION') && $returnValue->certificationLanguage == $cISOSprache) {
+        $languageIso = StringHandler::convertISO2ISO639($_SESSION['cISOSprache']);
+        if (($returnValue->stateEnum === 'PRODUCTION' || $returnValue->stateEnum === 'TEST' || $returnValue->stateEnum === 'INTEGRATION') && $returnValue->certificationLanguage == $languageIso) {
             return true;
         }
 
@@ -453,7 +454,7 @@ class TrustedShops
             );
         }
 
-        if (is_array($this->oKaeuferschutzProdukteDB->item) && count($this->oKaeuferschutzProdukteDB->item) > 0) {
+        if ($this->oKaeuferschutzProdukteDB !== null && is_array($this->oKaeuferschutzProdukteDB->item) && count($this->oKaeuferschutzProdukteDB->item) > 0) {
             $cLandISO = isset($_SESSION['Lieferadresse']->cLand) ? $_SESSION['Lieferadresse']->cLand : null;
             if (!$cLandISO && isset($_SESSION['Kunde']->cLand)) {
                 $cLandISO = $_SESSION['Kunde']->cLand;
@@ -649,7 +650,7 @@ class TrustedShops
             $returnValue = $client->checkLogin($this->tsId, $this->wsUser, $this->wsPassword);
 
             if (is_soap_fault($returnValue)) {
-                $errorText = "SOAP Fault: (faultcode: {$Result->faultcode}, faultstring: {$Result->faultstring})";
+                $errorText = "SOAP Fault: (faultcode: {$returnValue->faultcode}, faultstring: {$returnValue->faultstring})";
                 writeLog(PFAD_LOGFILES . 'trustedshops.log', $errorText, 1);
             }
         } else {
@@ -855,14 +856,9 @@ class TrustedShops
     public function loescheTrustedShopsZertifikat($kTrustedShopsZertifikat)
     {
         if (intval($kTrustedShopsZertifikat) > 0) {
-            $nRows = Shop::DB()->query(
-                "DELETE FROM ttrustedshopszertifikat
-                    WHERE kTrustedShopsZertifikat = " . intval($kTrustedShopsZertifikat), 3
-            );
+            $nRows = Shop::DB()->delete('ttrustedshopszertifikat', 'kTrustedShopsZertifikat', (int)$kTrustedShopsZertifikat);
 
-            if ($nRows > 0) {
-                return true;
-            }
+            return ($nRows > 0);
         }
 
         return false;
@@ -1175,7 +1171,7 @@ class TrustedShops
      */
     public function gibKundenbewertungsStatistik()
     {
-        $arrStatistik = Shop::DB()->query("SELECT * FROM ttrustedshopsstatistik WHERE cTSID = '" . trim(Shop::DB()->escape($this->tsId)) . "'", 2);
+        $arrStatistik = Shop::DB()->selectAll('ttrustedshopsstatistik', 'cTSID', trim($this->tsId));
 
         if (count($arrStatistik) === 0) {
             // Erstimport

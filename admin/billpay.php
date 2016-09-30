@@ -12,14 +12,12 @@ include_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
 
 $cFehler           = null;
 $cStep             = 'uebersicht';
-
-//$oLog = new ZahlungsLog('za_billpay_jtl');
-
+/** @global JTLSmarty $smarty */
 $smarty->assign('cTab', $cStep);
 if (strlen(verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', verifyGPDataString('tab'));
 }
-
+/** @var Billpay $oBillpay */
 $oBillpay = PaymentMethod::create('za_billpay_jtl');
 
 if (strlen($oBillpay->getSetting('pid')) > 0 && strlen($oBillpay->getSetting('mid')) > 0 && strlen($oBillpay->getSetting('bpsecure')) > 0) {
@@ -105,7 +103,7 @@ if (strlen($oBillpay->getSetting('pid')) > 0 && strlen($oBillpay->getSetting('mi
 
 $smarty->assign('cFehlerBillpay', $cFehler);
 
-$Conf = Shop::DB()->query("SELECT * FROM teinstellungenconf WHERE cModulId = 'za_billpay_jtl' AND cConf='Y' ORDER BY nSort", 2);
+$Conf = Shop::DB()->selectAll('teinstellungenconf', ['cModulId', 'cConf'], ['za_billpay_jtl', 'Y'], '*', 'nSort');
 
 if (isset($_POST['einstellungen_bearbeiten'])) {
     foreach ($Conf as $i => $oConfig) {
@@ -143,9 +141,9 @@ if (isset($_POST['einstellungen_bearbeiten'])) {
 $configCount = count($Conf);
 for ($i = 0; $i < $configCount; $i++) {
     if ($Conf[$i]->cInputTyp === 'selectbox') {
-        $Conf[$i]->ConfWerte = Shop::DB()->query("SELECT * FROM teinstellungenconfwerte WHERE kEinstellungenConf = " . (int)$Conf[$i]->kEinstellungenConf . " ORDER BY nSort", 2);
+        $Conf[$i]->ConfWerte = Shop::DB()->selectAll('teinstellungenconfwerte', 'kEinstellungenConf', (int)$Conf[$i]->kEinstellungenConf, '*', 'nSort');
     }
-    $setValue                = Shop::DB()->query("SELECT cWert FROM teinstellungen WHERE kEinstellungenSektion = " . (int)$Conf[$i]->kEinstellungenSektion . " AND cName = '" . $Conf[$i]->cWertName . "'", 1);
+    $setValue                = Shop::DB()->select('teinstellungen', 'kEinstellungenSektion', (int)$Conf[$i]->kEinstellungenSektion, 'cName', $Conf[$i]->cWertName);
     $Conf[$i]->gesetzterWert = (isset($setValue->cWert)) ? StringHandler::htmlentities($setValue->cWert) : null;
 }
 

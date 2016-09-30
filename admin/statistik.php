@@ -27,7 +27,7 @@ switch ($nStatsType) {
         $oAccount->redirectOnFailure();
         break;
 }
-
+/** @global JTLSmarty $smarty */
 $cHinweis          = '';
 $cFehler           = '';
 $cSpalteX          = '';

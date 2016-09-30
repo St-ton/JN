@@ -5,13 +5,13 @@
 
 {if $Einstellungen.global.global_wunschliste_freunde_aktiv === 'Y'}
     <h1>{lang key="wishlistViaEmail" section="login"}</h1>
-    {if $hinweis}
+    {if !empty($hinweis)}
         <p class="alert alert-info">{$hinweis}</p>
     {/if}
     <div class="row">
-        <div class="col-xs-12 col-md-10 col-md-offset-1">
+        <div class="col-xs-12">
             {block name="wishlist-email-form"}
-            <div class="well panel-wrap">
+            <div class="panel-wrap">
                 <div class="panel panel-default">
                     <div class="panel-heading"><h3 class="panel-title">{block name="wishlist-email-form-title"}{$CWunschliste->cName}{/block}</h3></div>
                     <div class="panel-body">

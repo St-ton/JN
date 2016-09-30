@@ -213,8 +213,6 @@ function holeKampagneDetailStats($kKampagne, $oKampagneDef_arr)
             break;
     }
 
-    $cSQLGROUPBY = '';
-
     switch (intval($_SESSION['Kampagne']->nDetailAnsicht)) {
         case 1:    // Jahr
             $cSQLSELECT  = "DATE_FORMAT(dErstellt, '%Y') AS cDatum";
@@ -232,6 +230,8 @@ function holeKampagneDetailStats($kKampagne, $oKampagneDef_arr)
             $cSQLSELECT  = "DATE_FORMAT(dErstellt, '%Y-%m-%d') AS cDatum";
             $cSQLGROUPBY = "GROUP BY DAY(dErstellt), YEAR(dErstellt), MONTH(dErstellt)";
             break;
+        default:
+            return [];
     }
     // Zeitraum
     $cZeitraum_arr = gibDetailDatumZeitraum();
@@ -341,8 +341,10 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                 $cStampText = $oStats_arr[0]->cStampText;
                 break;
             case 2:    // Monat
-                list($cMonat, $cJahr) = explode('.', $oStats_arr[0]->cStampText);
-                $cStampText           = mappeENGMonat($cMonat) . ' ' . $cJahr;
+                $cStampTextParts_arr = isset($oStats_arr[0]->cStampText) ? explode('.', $oStats_arr[0]->cStampText) : [];
+                $cMonat              = isset($cStampTextParts_arr [0]) ? $cStampTextParts_arr [0] : '';
+                $cJahr               = isset($cStampTextParts_arr [1]) ? $cStampTextParts_arr [1] : '';
+                $cStampText          = mappeENGMonat($cMonat) . ' ' . $cJahr;
                 break;
             case 3:    // Woche
                 $nDatum_arr = ermittleDatumWoche($oStats_arr[0]->cStampText);
@@ -377,7 +379,9 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
 
                 if (is_array($oDaten_arr) && count($oDaten_arr) > 0) {
                     foreach ($oDaten_arr as $i => $oDaten) {
-                        list($cEinstiegsseite, $cReferer) = explode(';', $oDaten->cCustomData);
+                        $cCustomDataParts_arr = explode(';', $oDaten->cCustomData);
+                        $cEinstiegsseite      = isset($cCustomDataParts_arr [0]) ? $cCustomDataParts_arr [0] : '';
+                        $cReferer             = isset($cCustomDataParts_arr [1]) ? $cCustomDataParts_arr [1] : '';
 
                         $oDaten_arr[$i]->cEinstiegsseite = $cEinstiegsseite;
                         $oDaten_arr[$i]->cReferer        = $cReferer;
@@ -1182,8 +1186,10 @@ function checkGesamtStatZeitParam()
 
     // Klick durch Gesamtübersicht
     if (strlen(verifyGPDataString('cZeitParam')) > 0) {
-        $cZeitraum                     = base64_decode(verifyGPDataString('cZeitParam'));
-        list($cStartDatum, $cEndDatum) = explode(' - ', $cZeitraum);
+        $cZeitraum          = base64_decode(verifyGPDataString('cZeitParam'));
+        $cZeitraumParts_arr = explode(' - ', $cZeitraum);
+        $cStartDatum        = isset($cZeitraumParts_arr[0]) ? $cZeitraumParts_arr[0] : '';
+        $cEndDatum          = isset($cZeitraumParts_arr[1]) ? $cZeitraumParts_arr[1] : '';
 
         // Ansicht war Tag
         if (strlen($cEndDatum) === 0) {

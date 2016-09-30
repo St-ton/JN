@@ -111,7 +111,8 @@
                             <p class="smallfont">{#payitemHelp#}</p>
                         </td>
                         <td class="TD2">
-                            <input class="form-control" type="text" id="shopInfo_payItems" name="shopInfo_payItems" value="{$objShopInfo->shopInfo_payItems}" />
+                            <input class="form-control" type="text" id="shopInfo_payItems" name="shopInfo_payItems"
+                                   value="{if isset($objShopInfo->shopInfo_payItems)}{$objShopInfo->shopInfo_payItems}{/if}" />
                         </td>
                     </tr>
                     <tr class="tab-2_bg">

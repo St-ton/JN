@@ -212,16 +212,10 @@ class Warenkorb
             $NeuePosition->cName[$Sprache->cISO]         = $NeuePosition->Artikel->cName;
             $NeuePosition->cLieferstatus[$Sprache->cISO] = $cLieferstatus_StdSprache;
             if ($Sprache->cStandard !== 'Y') {
-                $artikel_spr = Shop::DB()->query("
-                  SELECT cName 
-                    FROM tartikelsprache 
-                    WHERE kArtikel = " . (int)$NeuePosition->kArtikel . " AND kSprache = " . (int)$Sprache->kSprache, 1);
+                $artikel_spr = Shop::DB()->select('tartikelsprache', 'kArtikel', (int)$NeuePosition->kArtikel, 'kSprache', (int)$Sprache->kSprache);
                 //Wenn fuer die gewaehlte Sprache kein Name vorhanden ist dann StdSprache nehmen
                 $NeuePosition->cName[$Sprache->cISO] = (isset($artikel_spr->cName) && strlen(trim($artikel_spr->cName)) > 0) ? $artikel_spr->cName : $NeuePosition->Artikel->cName;
-                $lieferstatus_spr = Shop::DB()->query(
-                    "SELECT cName FROM tlieferstatus WHERE kLieferstatus = " .
-                    ((isset($NeuePosition->Artikel->kLieferstatus)) ? (int)$NeuePosition->Artikel->kLieferstatus : '') . " AND kSprache = " . (int)$Sprache->kSprache, 1
-                );
+                $lieferstatus_spr = Shop::DB()->select('tlieferstatus', 'kLieferstatus', ((isset($NeuePosition->Artikel->kLieferstatus)) ? (int)$NeuePosition->Artikel->kLieferstatus : ''), 'kSprache', (int)$Sprache->kSprache);
                 if (isset($lieferstatus_spr->cName) && $lieferstatus_spr->cName) {
                     $NeuePosition->cLieferstatus[$Sprache->cISO] = $lieferstatus_spr->cName;
                 }
@@ -1129,7 +1123,8 @@ class Warenkorb
         }
         if ($bRedirect) {
             $this->setzePositionsPreise();
-            header('Location: ' . Shop::getURL() . '/warenkorb.php?fillOut=10', true, 303);
+            $linkHelper = LinkHelper::getInstance();
+            header('Location: ' . $linkHelper->getStaticRoute('warenkorb.php') . '?fillOut=10', true, 303);
             exit;
         }
 
@@ -1273,7 +1268,8 @@ class Warenkorb
     {
         $conf = Shop::getSettings(array(CONF_GLOBAL));
         if (!isset($_SESSION['variBoxAnzahl_arr']) && $conf['global']['global_warenkorb_weiterleitung'] === 'Y' && !$isRedirect && !$unique) {
-            header('Location: warenkorb.php', true, 303);
+            $linkHelper = LinkHelper::getInstance();
+            header('Location: ' . $linkHelper->getStaticRoute('warenkorb.php'), true, 303);
             exit;
         }
     }

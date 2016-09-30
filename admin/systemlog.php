@@ -7,7 +7,7 @@ require_once dirname(__FILE__) . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Jtllog.php';
 
 $oAccount->permission('SYSTEMLOG_VIEW', true, true);
-
+/** @global JTLSmarty $smarty */
 $cHinweis          = '';
 $cFehler           = '';
 $cSuche            = '';
@@ -50,7 +50,7 @@ if ($step === 'systemlog_uebersicht') {
         ->assemble();
     // Log
     $oLog_arr = Jtllog::getLog($cSuche, $nLevel, $oPagination->getFirstPageItem(), $oPagination->getPageItemCount());
-    // Highlight
+    /** @var Jtllog $oLog */
     foreach ($oLog_arr as &$oLog) {
         $cLog = $oLog->getcLog();
         $cLog = preg_replace('/\[(.*)\] => (.*)/', '<span class="hl_key">$1</span>: <span class="hl_value">$2</span>', $cLog);
@@ -65,11 +65,11 @@ if ($step === 'systemlog_uebersicht') {
     $nFlag_arr[JTLLOG_LEVEL_DEBUG]  = Jtllog::isBitFlagSet(JTLLOG_LEVEL_DEBUG, $nSystemlogFlag);
 
     $smarty->assign('oLog_arr', $oLog_arr)
-        ->assign('oPagination', $oPagination)
-        ->assign('nFlag_arr', $nFlag_arr)
-        ->assign('JTLLOG_LEVEL_ERROR', JTLLOG_LEVEL_ERROR)
-        ->assign('JTLLOG_LEVEL_NOTICE', JTLLOG_LEVEL_NOTICE)
-        ->assign('JTLLOG_LEVEL_DEBUG', JTLLOG_LEVEL_DEBUG);
+           ->assign('oPagination', $oPagination)
+           ->assign('nFlag_arr', $nFlag_arr)
+           ->assign('JTLLOG_LEVEL_ERROR', JTLLOG_LEVEL_ERROR)
+           ->assign('JTLLOG_LEVEL_NOTICE', JTLLOG_LEVEL_NOTICE)
+           ->assign('JTLLOG_LEVEL_DEBUG', JTLLOG_LEVEL_DEBUG);
 }
 /**
  * @param $nFlag

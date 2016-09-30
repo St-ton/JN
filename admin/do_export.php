@@ -5,11 +5,6 @@
  */
 require_once dirname(__FILE__) . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'exportformat_inc.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Artikel.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Preise.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Eigenschaft.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.EigenschaftWert.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Kategorie.php';
 
 if (!ini_get('safe_mode')) {
     @ini_set('max_execution_time', 0);
@@ -46,7 +41,7 @@ $smarty              = new JTLSmarty(true, false, false);
 $smarty->setCaching(0)
        ->setTemplateDir(PFAD_TEMPLATES)
        ->setConfigDir($smarty->getTemplateDir($smarty->context) . 'lang/')
-       ->registerResource('db', array('db_get_template', 'db_get_timestamp', 'db_get_secure', 'db_get_trusted'));
+       ->registerResource('db', new SmartyResourceNiceDB('export'));
 
 setzeSteuersaetze();
 if (!isset($_SESSION['Kundengruppe'])) {
@@ -256,51 +251,4 @@ if ($max_artikel->nAnzahl > $queue->nLimit_n + $queue->nLimit_m) {
         }
         exit;
     }
-}
-/**
- * @param string    $tpl_name
- * @param mixed     $tpl_source
- * @param JTLSmarty $smarty
- * @return bool
- */
-function db_get_template($tpl_name, &$tpl_source, $smarty)
-{
-    $exportformat = Shop::DB()->select('texportformat', 'kExportformat', (int)$tpl_name);
-    if (empty($exportformat->kExportformat) || $exportformat->kExportformat <= 0) {
-        return false;
-    }
-    $tpl_source = $exportformat->cContent;
-
-    return true;
-}
-
-/**
- * @param string    $tpl_name
- * @param int       $tpl_timestamp
- * @param JTLSmarty $smarty
- * @return bool
- */
-function db_get_timestamp($tpl_name, &$tpl_timestamp, $smarty)
-{
-    $tpl_timestamp = time();
-
-    return true;
-}
-
-/**
- * @param string    $tpl_name
- * @param JTLSmarty $smarty
- * @return bool
- */
-function db_get_secure($tpl_name, $smarty)
-{
-    return true;
-}
-
-/**
- * @param string    $tpl_name
- * @param JTLSmarty $smarty
- */
-function db_get_trusted($tpl_name, $smarty)
-{
 }

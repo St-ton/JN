@@ -318,6 +318,7 @@ function ajaxCall(url, params, callback) {
     return $.ajax({
         type: "GET",
         dataType: "json",
+        cache: false,
         url: url,
         data: params,
         success: function (data, textStatus, jqXHR) {
@@ -480,6 +481,26 @@ function massCreationCoupons() {
     $("#informCustomers").toggleClass("hidden", checkboxCreationCoupons);
 }
 
+function addFav(title, url, success) {
+    ajaxCallV2('favs.php?action=add', { title: title, url: url }, function(result, error) {
+        if (!error) {
+            reloadFavs();
+            if (typeof success == 'function') {
+                success();
+            }
+        }
+    });
+}
+
+function reloadFavs() {
+    ajaxCallV2('favs.php?action=list', {}, function(result, error) {
+        if (!error) {
+            console.log(result.data.tpl);
+            $('#favs-drop').html(result.data.tpl);
+        }
+    });
+}
+
 /**
  * document ready
  */
@@ -533,6 +554,16 @@ $(document).ready(function () {
             window.location.hash = hash;
         });
 
+    });
+
+    $('#fav-add').click(function() {
+        var title = $('.content-header h1').text();
+        var url = window.location.href;
+        addFav(title, url, function() {
+            showNotify('success', 'Favoriten', 'Wurde erfolgreich hinzugef&uuml;gt');
+        });
+
+        return false;
     });
 
     $('button.blue, input[type=submit].blue').addClass('btn btn-primary');

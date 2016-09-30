@@ -240,9 +240,9 @@
                             {foreach name=kundenfeld from=$oKundenfeld_arr item=oKundenfeld}
                                 <tr class="tab_bg{$smarty.foreach.kundenfeld.iteration%2}">
                                     <td class="check">
-                                        <input name="kKundenfeld[]" type="checkbox" value="{$oKundenfeld->kKundenfeld}" />
+                                        <input name="kKundenfeld[]" type="checkbox" value="{$oKundenfeld->kKundenfeld}" id="check-{$oKundenfeld->kKundenfeld}" />
                                     </td>
-                                    <td class="TD2">{$oKundenfeld->cName}{if $oKundenfeld->nPflicht == 1} *{/if}</td>
+                                    <td class="TD2"><label for="check-{$oKundenfeld->kKundenfeld}">{$oKundenfeld->cName}{if $oKundenfeld->nPflicht == 1} *{/if}</label></td>
                                     <td class="TD3">{$oKundenfeld->cWawi}</td>
                                     <td class="TD4">{$oKundenfeld->cTyp}</td>
                                     <td class="TD5">
@@ -257,7 +257,10 @@
                                         <input class="form-control" name="nSort_{$oKundenfeld->kKundenfeld}" type="text" value="{$oKundenfeld->nSort}" size="5" />
                                     </td>
                                     <td class="tcenter">
-                                        <a href="kundenfeld.php?a=edit&kKundenfeld={$oKundenfeld->kKundenfeld}&tab=uebersicht&token={$smarty.session.jtl_token}" class="btn btn-default btn-sm"><i class="fa fa-edit"></i></a>
+                                        <a href="kundenfeld.php?a=edit&kKundenfeld={$oKundenfeld->kKundenfeld}&tab=uebersicht&token={$smarty.session.jtl_token}"
+                                           class="btn btn-default btn-sm" title="{#modify#}">
+                                            <i class="fa fa-edit"></i>
+                                        </a>
                                     </td>
                                 </tr>
                             {/foreach}
@@ -269,7 +272,9 @@
                         <div class="panel-footer">
                             <div class="btn-group">
                                 <button name="aktualisieren" type="submit" value="{#kundenfeldUpdate#}" class="btn btn-primary"><i class="fa fa-refresh"></i> {#kundenfeldUpdate#}</button>
-                                <button name="loeschen" type="submit" value="{#kundenfeldDel#}" class="btn btn-danger"><i class="fa fa-trash"></i> Markierte l&ouml;schen</button>
+                                <button name="loeschen" type="submit" value="{#kundenfeldDel#}" class="btn btn-danger">
+                                    <i class="fa fa-trash"></i> {#deleteSelected#}
+                                </button>
                             </div>
                         </div>
                     </form>

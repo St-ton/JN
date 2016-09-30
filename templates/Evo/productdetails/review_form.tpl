@@ -6,12 +6,12 @@
 {include file='layout/header.tpl'}
 
 <h1>{lang key="productRating" section="product rating"}</h1>
-<div class="col-xs-12 col-md-10 col-md-offset-1">
+<div class="col-xs-12">
     {block name="productdetails-review-form"}
-    <div class="well panel-wrap">
+    <div class="panel-wrap">
         <div class="panel panel-default">
             <div class="panel-body">
-                <form method="post" action="{get_static_route id='bewertung.php'}">
+                <form method="post" action="{get_static_route id='bewertung.php'}#tab-votes">
                     {$jtl_token}
                     {if isset($BereitsBewertet) && $BereitsBewertet == 1}
                         <div class="alert alert-danger">{lang key="allreadyWroteReview" section="product rating"}</div>
@@ -29,6 +29,7 @@
                             {/if}
                             <span class="vmiddle">{$Artikel->cName}</span>
                         </div>
+                        <hr>
                         <div class="form-group required">
                             <select name="nSterne" id="stars" class="form-control" required>
                                 <option value="" disabled>{lang key="starPlural" section="product rating"}</option>

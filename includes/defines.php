@@ -55,7 +55,7 @@ ifndef('PFAD_LINKBILDER', 'links/');
 ifndef('PFAD_INCLUDES_LIBS', PFAD_INCLUDES . 'libs/');
 ifndef('PFAD_MINIFY', PFAD_INCLUDES_LIBS . 'minify');
 ifndef('PFAD_CKEDITOR', PFAD_INCLUDES_LIBS . 'ckeditor/');
-ifndef('PFAD_CODEMIRROR', PFAD_INCLUDES_LIBS . 'codemirror-5.8.0/');
+ifndef('PFAD_CODEMIRROR', PFAD_INCLUDES_LIBS . 'codemirror-5.18.2/');
 ifndef('PFAD_INCLUDES_TOOLS', PFAD_INCLUDES . 'tools/');
 ifndef('PFAD_INCLUDES_EXT', PFAD_INCLUDES . 'ext/');
 ifndef('PFAD_INCLUDES_MODULES', PFAD_INCLUDES . 'modules/');
@@ -163,6 +163,8 @@ ifndef('CUSTOMER_ACCOUNT_MAX_ORDERS', 50);
 // Steuersatz Standardland OVERRIDE - setzt ein anderes Steuerland, als im Shop angegeben (upper case, ISO 3166-2)
 // ifndef('STEUERSATZ_STANDARD_LAND', 'DE')
 ifndef('JTLLOG_MAX_LOGSIZE', 200000);
+// temp dir for pclzip extension
+ifndef('PCLZIP_TEMPORARY_DIR', PFAD_ROOT . PFAD_COMPILEDIR);
 
 /**
  * @param string     $constant
@@ -173,59 +175,64 @@ function ifndef($constant, $value)
     defined($constant) || define($constant, $value);
 }
 
+/*$shop_writeable_paths = array(
+    // Directories
+    //PFAD_BILDER_SLIDER,
+    PFAD_GFX_TRUSTEDSHOPS, // ifndef('PFAD_GFX_TRUSTEDSHOPS', PFAD_BILDER_INTERN . 'trustedshops/');
+    PFAD_NEWSBILDER, // ifndef('PFAD_NEWSBILDER', PFAD_BILDER . 'news/');
+    PFAD_SHOPLOGO, // ifndef('PFAD_SHOPLOGO', PFAD_BILDER_INTERN . 'shoplogo/');
+    PFAD_MEDIAFILES . 'Bilder',
+    PFAD_MEDIAFILES . 'Musik',
+    PFAD_MEDIAFILES . 'Sonstiges',
+    PFAD_MEDIAFILES . 'Videos',
+    PFAD_IMAGEMAP,
+    PFAD_PRODUKTBILDER_MINI,
+    PFAD_PRODUKTBILDER_KLEIN,
+    PFAD_PRODUKTBILDER_NORMAL,
+    PFAD_PRODUKTBILDER_GROSS,
+    PFAD_KATEGORIEBILDER,
+    PFAD_VARIATIONSBILDER_MINI,
+    PFAD_VARIATIONSBILDER_NORMAL,
+    PFAD_VARIATIONSBILDER_GROSS,
+    PFAD_HERSTELLERBILDER_NORMAL,
+    PFAD_HERSTELLERBILDER_KLEIN,
+    PFAD_MERKMALBILDER_NORMAL,
+    PFAD_MERKMALBILDER_KLEIN,
+    PFAD_MERKMALWERTBILDER_NORMAL,
+    PFAD_MERKMALWERTBILDER_KLEIN,
+    PFAD_BRANDINGBILDER,
+    PFAD_SUCHSPECIALOVERLAY_KLEIN,
+    PFAD_SUCHSPECIALOVERLAY_NORMAL,
+    PFAD_SUCHSPECIALOVERLAY_GROSS,
+    PFAD_KONFIGURATOR_KLEIN,
+    PFAD_BILDER . PFAD_LINKBILDER,
+    PFAD_BILDER . PFAD_NEWSLETTERBILDER,
+    PFAD_LOGFILES,
+    PFAD_EXPORT,
+    PFAD_EXPORT_BACKUP,
+    PFAD_EXPORT_YATEGO,
+    PFAD_COMPILEDIR,
+    PFAD_DBES_TMP,
+    PFAD_UPLOADS,
+    PFAD_MEDIA_IMAGE,
+    PFAD_MEDIA_IMAGE_STORAGE,
+    PFAD_SYNC_LOGS,
+    PFAD_ADMIN . PFAD_COMPILEDIR,
+    PFAD_ADMIN . PFAD_INCLUDES . PFAD_EMAILPDFS,
+    // Files
+    FILE_RSS_FEED,
+    FILE_SHOP_FEED
+);
+*/
+
 /**
+ * @deprecated
  * @return array
- */
 function shop_writeable_paths()
 {
-    $paths = array(
-        // Directories
-        // PFAD_BILDER_SLIDER,
-        PFAD_GFX_TRUSTEDSHOPS,
-        PFAD_NEWSBILDER,
-        PFAD_SHOPLOGO,
-        PFAD_MEDIAFILES . 'Bilder',
-        PFAD_MEDIAFILES . 'Musik',
-        PFAD_MEDIAFILES . 'Sonstiges',
-        PFAD_MEDIAFILES . 'Videos',
-        PFAD_IMAGEMAP,
-        PFAD_PRODUKTBILDER_MINI,
-        PFAD_PRODUKTBILDER_KLEIN,
-        PFAD_PRODUKTBILDER_NORMAL,
-        PFAD_PRODUKTBILDER_GROSS,
-        PFAD_KATEGORIEBILDER,
-        PFAD_VARIATIONSBILDER_MINI,
-        PFAD_VARIATIONSBILDER_NORMAL,
-        PFAD_VARIATIONSBILDER_GROSS,
-        PFAD_HERSTELLERBILDER_NORMAL,
-        PFAD_HERSTELLERBILDER_KLEIN,
-        PFAD_MERKMALBILDER_NORMAL,
-        PFAD_MERKMALBILDER_KLEIN,
-        PFAD_MERKMALWERTBILDER_NORMAL,
-        PFAD_MERKMALWERTBILDER_KLEIN,
-        PFAD_BRANDINGBILDER,
-        PFAD_SUCHSPECIALOVERLAY_KLEIN,
-        PFAD_SUCHSPECIALOVERLAY_NORMAL,
-        PFAD_SUCHSPECIALOVERLAY_GROSS,
-        PFAD_KONFIGURATOR_KLEIN,
-        PFAD_BILDER . PFAD_LINKBILDER,
-        PFAD_BILDER . PFAD_NEWSLETTERBILDER,
-        PFAD_LOGFILES,
-        PFAD_EXPORT,
-        PFAD_EXPORT_BACKUP,
-        PFAD_EXPORT_YATEGO,
-        PFAD_COMPILEDIR,
-        PFAD_DBES_TMP,
-        PFAD_UPLOADS,
-        PFAD_MEDIA_IMAGE,
-        PFAD_MEDIA_IMAGE_STORAGE,
-        PFAD_SYNC_LOGS,
-        PFAD_ADMIN . PFAD_COMPILEDIR,
-        PFAD_ADMIN . PFAD_INCLUDES . PFAD_EMAILPDFS,
-        // Files
-        FILE_RSS_FEED,
-        FILE_SHOP_FEED
-    );
+    trigger_error('The function "shop_writeable_paths()" is removed in a future version!', E_USER_DEPRECATED);
+
+    global $shop_writeable_paths;
 
     return array_map(function ($v) {
         if (strpos($v, PFAD_ROOT) === 0) {
@@ -235,6 +242,7 @@ function shop_writeable_paths()
         return trim($v, '/\\');
     }, $paths);
 }
+ */
 
 // Static defines (do not edit)
 require_once dirname(__FILE__) . '/defines_inc.php';

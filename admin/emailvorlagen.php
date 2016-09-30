@@ -10,7 +10,7 @@ require_once dirname(__FILE__) . '/includes/admininclude.php';
 $oAccount->permission('CONTENT_EMAIL_TEMPLATE_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
-
+/** @global JTLSmarty $smarty */
 $Emailvorlage          = null;
 $hinweis               = '';
 $cHinweis              = '';
@@ -87,21 +87,24 @@ if (isset($_POST['resetEmailvorlage']) && intval($_POST['resetEmailvorlage']) ==
             $vorlage   = Shop::DB()->select('temailvorlageoriginal', 'kEmailvorlage', (int)$_POST['kEmailvorlage']);
             if (isset($vorlage->cDateiname) && strlen($vorlage->cDateiname) > 0) {
                 foreach ($languages as $_lang) {
-                    $sql      = 'UPDATE ' . $cTableSprache . ' SET ';
-                    $doUpdate = false;
-                    $path     = PFAD_ROOT . PFAD_EMAILVORLAGEN . $_lang->cISO;
+                    $path = PFAD_ROOT . PFAD_EMAILVORLAGEN . $_lang->cISO;
                     if (isset($_lang->cISO) && file_exists(PFAD_ROOT . PFAD_EMAILVORLAGEN . $_lang->cISO)) {
                         $fileHtml  = $path . '/' . $vorlage->cDateiname . '_html.tpl';
                         $filePlain = $path . '/' . $vorlage->cDateiname . '_plain.tpl';
                         if (file_exists($fileHtml) && file_exists($filePlain)) {
-                            $doUpdate = true;
-                            $sql .= "cContentHtml = '" . Shop::DB()->escape(file_get_contents($fileHtml)) . "'";
-                            $sql .= ", cContentText = '" . Shop::DB()->escape(file_get_contents($filePlain)) . "'";
-                            $sql .= ' WHERE kEmailVorlage = ' . (int)$_POST['kEmailvorlage'] . " AND kSprache = " . (int)$_lang->kSprache;
+                            $upd               = new stdClass();
+                            $html              = file_get_contents($fileHtml);
+                            $text              = file_get_contents($filePlain);
+                            $doDecodeHtml      = (function_exists('mb_detect_encoding'))
+                                ? (mb_detect_encoding($html, 'UTF-8', true) === 'UTF-8')
+                                : (StringHandler::is_utf8($html) === 1);
+                            $doDecodeText      = (function_exists('mb_detect_encoding'))
+                                ? (mb_detect_encoding($text, 'UTF-8', true) === 'UTF-8')
+                                : (StringHandler::is_utf8($text) === 1);
+                            $upd->cContentHtml = ($doDecodeHtml === true) ? utf8_decode($html) : $html;
+                            $upd->cContentText = ($doDecodeText === true) ? utf8_decode($text) : $text;
+                            Shop::DB()->update($cTableSprache, ['kEmailVorlage', 'kSprache'], [(int)$_POST['kEmailvorlage'], (int)$_lang->kSprache], $upd);
                         }
-                    }
-                    if ($doUpdate === true) {
-                        Shop::DB()->query($sql, 4);
                     }
                 }
             }
@@ -165,6 +168,8 @@ if (isset($_POST['preview']) && intval($_POST['preview']) > 0) {
     $bestellung->Positionen[0]->cHinweis                 = 'Hinweistext zum Artikel';
     $bestellung->Positionen[0]->cGesamtpreisLocalized[0] = '278,00 EUR';
     $bestellung->Positionen[0]->cGesamtpreisLocalized[1] = '239,66 EUR';
+    $bestellung->Positionen[0]->cEinzelpreisLocalized[0] = '139,00 EUR';
+    $bestellung->Positionen[0]->cEinzelpreisLocalized[1] = '119,83 EUR';
 
     $bestellung->Positionen[0]->WarenkorbPosEigenschaftArr                           = array();
     $bestellung->Positionen[0]->WarenkorbPosEigenschaftArr[0]                        = new stdClass();
@@ -195,6 +200,8 @@ if (isset($_POST['preview']) && intval($_POST['preview']) > 0) {
     $bestellung->Positionen[1]->cHinweis                 = 'Hinweistext zum Artikel';
     $bestellung->Positionen[1]->cGesamtpreisLocalized[0] = '238,00 EUR';
     $bestellung->Positionen[1]->cGesamtpreisLocalized[1] = '200,00 EUR';
+    $bestellung->Positionen[1]->cEinzelpreisLocalized[0] = '238,00 EUR';
+    $bestellung->Positionen[1]->cEinzelpreisLocalized[1] = '200,00 EUR';
 
     $bestellung->Positionen[1]->nAusgeliefert       = 1;
     $bestellung->Positionen[1]->nAusgeliefertGesamt = 1;
@@ -486,19 +493,9 @@ if (isset($_POST['preview']) && intval($_POST['preview']) > 0) {
     foreach ($Sprachen as $Sprache) {
         $oAGBWRB = new stdClass();
         if ($kunde->kKundengruppe > 0 && $Sprache->kSprache > 0) {
-            $oAGBWRB = Shop::DB()->query(
-                "SELECT *
-                    FROM ttext
-                    WHERE kKundengruppe = " . $kunde->kKundengruppe . "
-                    AND kSprache='" . $Sprache->kSprache . "'", 1
-            );
+            $oAGBWRB = Shop::DB()->select('ttext', ['kKundengruppe', 'kSprache'], [$kunde->kKundengruppe, $Sprache->kSprache]);
         }
-        $Emailvorlagesprache[$Sprache->kSprache] = Shop::DB()->query(
-            "SELECT *
-                FROM " . $cTableSprache . "
-                WHERE kEmailvorlage = " . (int)$Emailvorlage->kEmailvorlage . "
-                AND kSprache = " . (int)$Sprache->kSprache, 1
-        );
+        $Emailvorlagesprache[$Sprache->kSprache] = Shop::DB()->select($cTableSprache, ['kEmailvorlage', 'kSprache'], [(int)$Emailvorlage->kEmailvorlage, (int)$Sprache->kSprache]);
 
         $cModulId = $Emailvorlage->cModulId;
         if (verifyGPCDataInteger('kPlugin') > 0) {
@@ -545,11 +542,7 @@ if (isset($_POST['Aendern']) && isset($_POST['kEmailvorlage']) && intval($_POST[
     $cFehlerAnhang_arr           = null;
     $kEmailvorlage               = (int)$_POST['kEmailvorlage'];
     $cUploadVerzeichnis          = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_EMAILPDFS;
-    $oEmailvorlageSpracheTMP_arr = Shop::DB()->query(
-        "SELECT cPDFS, cDateiname, kSprache
-            FROM " . $cTableSprache . "
-            WHERE kEmailvorlage = " . (int)$_POST['kEmailvorlage'], 2
-    );
+    $oEmailvorlageSpracheTMP_arr = Shop::DB()->selectAll($cTableSprache, 'kEmailvorlage', (int)$_POST['kEmailvorlage'], 'cPDFS, cDateiname, kSprache');
     $oEmailvorlageSprache_arr = array();
     if (is_array($oEmailvorlageSpracheTMP_arr) && count($oEmailvorlageSpracheTMP_arr) > 0) {
         foreach ($oEmailvorlageSpracheTMP_arr as $oEmailvorlageSpracheTMP) {
@@ -677,14 +670,14 @@ if (isset($_POST['Aendern']) && isset($_POST['kEmailvorlage']) && intval($_POST[
             Shop::DB()->insert($cTableSprache, $Emailvorlagesprache);
             //Smarty Objekt bauen
             $mailSmarty = new JTLSmarty(true, false, false, 'mail');
-            $mailSmarty->registerResource('xrow', array('xrow_get_template', 'xrow_get_timestamp', 'xrow_get_secure', 'xrow_get_trusted'))
+            $mailSmarty->registerResource('db', new SmartyResourceNiceDB('mail'))
                        ->registerPlugin('function', 'includeMailTemplate', 'includeMailTemplate')
                        ->setCaching(0)
                        ->setDebugging(0)
                        ->setCompileDir(PFAD_ROOT . PFAD_COMPILEDIR);
             try {
-                $mailSmarty->fetch('xrow:html_' . $Emailvorlagesprache->kEmailvorlage . '_' . $Sprache->kSprache . '_' . $cTableSprache);
-                $mailSmarty->fetch('xrow:text_' . $Emailvorlagesprache->kEmailvorlage . '_' . $Sprache->kSprache . '_' . $cTableSprache);
+                $mailSmarty->fetch('db:html_' . $Emailvorlagesprache->kEmailvorlage . '_' . $Sprache->kSprache . '_' . $cTableSprache);
+                $mailSmarty->fetch('db:text_' . $Emailvorlagesprache->kEmailvorlage . '_' . $Sprache->kSprache . '_' . $cTableSprache);
             } catch (Exception $e) {
                 $oSmartyError->cText = $e->getMessage();
                 $oSmartyError->nCode = 1;
@@ -743,12 +736,7 @@ if ((isset($_POST['kEmailvorlage']) && intval($_POST['kEmailvorlage']) > 0 && $c
     if (isset($_GET['kS']) && isset($_GET['a']) && $_GET['a'] === 'pdfloeschen' && isset($_GET['token']) && $_GET['token'] === $_SESSION['jtl_token']) {
         $_POST['kEmailvorlage'] = $_GET['kEmailvorlage'];
         $_POST['kS']            = $_GET['kS'];
-        $oEmailvorlageSprache   = Shop::DB()->query(
-            "SELECT cPDFS, cDateiname
-                FROM " . $cTableSprache . "
-                WHERE kEmailvorlage = " . (int)$_POST['kEmailvorlage'] . "
-                AND kSprache = " . (int)$_POST['kS'], 1
-        );
+        $oEmailvorlageSprache   = Shop::DB()->select($cTableSprache, 'kEmailvorlage', (int)$_POST['kEmailvorlage'], 'kSprache', (int)$_POST['kS'], null, null, false, 'cPDFS, cDateiname');
         $cPDFS_arr = bauePDFArray($oEmailvorlageSprache->cPDFS);
 
         if (is_array($cPDFS_arr) && count($cPDFS_arr) > 0) {
@@ -758,13 +746,10 @@ if ((isset($_POST['kEmailvorlage']) && intval($_POST['kEmailvorlage']) > 0 && $c
                 }
             }
         }
-
-        Shop::DB()->query(
-            "UPDATE " . $cTableSprache . "
-                SET cPDFS = '', cDateiname = ''
-                WHERE kEmailvorlage = " . (int)$_POST['kEmailvorlage'] . "
-                    AND kSprache = " . (int)$_POST['kS'], 3
-        );
+        $upd             = new stdClass();
+        $upd->cPDFS      = '';
+        $upd->cDateiname = '';
+        Shop::DB()->update($cTableSprache, ['kEmailvorlage', 'kSprache'], [(int)$_POST['kEmailvorlage'], (int)$_POST['kS']], $upd);
         $cHinweis .= 'Ihre Dateianh&auml;nge f&uuml;r Ihre gew&auml;hlte Sprache, wurden erfolgreich gel&ouml;scht.<br />';
     }
 
@@ -773,7 +758,7 @@ if ((isset($_POST['kEmailvorlage']) && intval($_POST['kEmailvorlage']) > 0 && $c
 
     $Sprachen                   = gibAlleSprachen();
     $Emailvorlage               = Shop::DB()->select($cTable, 'kEmailvorlage', (int)$_POST['kEmailvorlage']);
-    $oEmailEinstellung_arr      = Shop::DB()->query("SELECT * FROM " . $cFromTable . " WHERE kEmailvorlage = " . (int)$Emailvorlage->kEmailvorlage, 2);
+    $oEmailEinstellung_arr      = Shop::DB()->selectAll($cFromTable, 'kEmailvorlage', (int)$Emailvorlage->kEmailvorlage);
     $oEmailEinstellungAssoc_arr = array();
 
     if (is_array($oEmailEinstellung_arr) && count($oEmailEinstellung_arr) > 0) {
@@ -783,12 +768,7 @@ if ((isset($_POST['kEmailvorlage']) && intval($_POST['kEmailvorlage']) > 0 && $c
     }
 
     foreach ($Sprachen as $Sprache) {
-        $Emailvorlagesprache[$Sprache->kSprache] = Shop::DB()->query(
-            "SELECT *
-                FROM " . $cTableSprache . "
-                WHERE kEmailvorlage = " . (int)$_POST['kEmailvorlage'] . "
-                AND kSprache = " . (int)$Sprache->kSprache, 1
-        );
+        $Emailvorlagesprache[$Sprache->kSprache] = Shop::DB()->select($cTableSprache, 'kEmailvorlage', (int)$_POST['kEmailvorlage'], 'kSprache', (int)$Sprache->kSprache);
         // PDF Name und Dateiname vorbereiten
         $cPDFS_arr      = array();
         $cDateiname_arr = array();
@@ -814,19 +794,8 @@ if ((isset($_POST['kEmailvorlage']) && intval($_POST['kEmailvorlage']) > 0 && $c
 }
 
 if ($step === 'uebersicht') {
-    $emailvorlagen = Shop::DB()->query(
-        "SELECT kEmailvorlage, cName, cModulId, cMailTyp, cAktiv, cDateiname, nAKZ, nAGB, nWRB, nWRBForm, nFehlerhaft
-            FROM temailvorlage
-            ORDER BY cModulId", 2
-    );
-    // Plugin Emailvorlagen
-    $oPluginEmailvorlage_arr = Shop::DB()->query(
-        "SELECT *
-            FROM tpluginemailvorlage
-            ORDER BY cModulId", 2
-    );
-    $smarty->assign('emailvorlagen', $emailvorlagen)
-           ->assign('oPluginEmailvorlage_arr', $oPluginEmailvorlage_arr);
+    $smarty->assign('emailvorlagen', Shop::DB()->selectAll('temailvorlage', [], [], '*', 'cModulId'))
+           ->assign('oPluginEmailvorlage_arr', Shop::DB()->selectAll('tpluginemailvorlage', [], [], '*', 'cModulId'));
 }
 
 if ($step === 'bearbeiten') {
@@ -837,7 +806,6 @@ $smarty->assign('kPlugin', verifyGPCDataInteger('kPlugin'))
        ->assign('step', $step)
        ->assign('hinweis', $cHinweis)
        ->assign('fehler', $cFehler)
-       ->assign('waehrung', (isset($standardwaehrung->cName) ? $standardwaehrung->cName : null))
        ->assign('Einstellungen', $Einstellungen);
 
 $smarty->display('emailvorlagen.tpl');
@@ -887,68 +855,13 @@ function baueDateinameArray($cDateiname)
  */
 function setzeFehler($kEmailvorlage, $bFehler = true, $bForce = false)
 {
-    $nFehler = (int)$bFehler;
-    $cAktiv  = $bFehler ? 'N' : 'Y';
-    $cSQL    = '';
+    $cAktiv           = $bFehler ? 'N' : 'Y';
+    $upd              = new stdClass();
+    $upd->nFehlerhaft = (int)$bFehler;
     if (!$bForce) {
-        $cSQL = ", cAktiv='{$cAktiv}'";
+        $upd->cAktiv = $cAktiv;
     }
-    Shop::DB()->query("UPDATE temailvorlage SET nFehlerhaft = " . $nFehler . " {$cSQL} WHERE kEmailvorlage = " . (int)$kEmailvorlage, 4);
-}
-
-/**
- * @param string    $tpl_name
- * @param string    $tpl_source
- * @param JTLSmarty $smarty
- * @return bool
- */
-function xrow_get_template($tpl_name, &$tpl_source, $smarty)
-{
-    $x             = explode('_', $tpl_name);
-    $obj           = ($x[0] === 'html') ? 'cContentHtml' : 'cContentText';
-    $kEmailvorlage = (int)$x[1];
-    $kSprache      = (int)$x[2];
-    $cTable        = $x[3];
-
-    $oTpl = Shop::DB()->query("SELECT  " . $obj . " FROM " . $cTable . " WHERE kEmailvorlage = " . $kEmailvorlage . " AND kSprache = " . $kSprache, 1);
-    if (isset($oTpl->$obj)) {
-        $tpl_source = $oTpl->$obj;
-
-        return true;
-    }
-
-    return false;
-}
-
-/**
- * @param string    $tpl_name
- * @param string    $tpl_timestamp
- * @param JTLSmarty $smarty
- * @return bool
- */
-function xrow_get_timestamp($tpl_name, &$tpl_timestamp, $smarty)
-{
-    $tpl_timestamp = time();
-
-    return true;
-}
-
-/**
- * @param string    $tpl_name
- * @param JTLSmarty $smarty
- * @return bool
- */
-function xrow_get_secure($tpl_name, $smarty)
-{
-    return true;
-}
-
-/**
- * @param string    $tpl_name
- * @param JTLSmarty $smarty
- */
-function xrow_get_trusted($tpl_name, $smarty)
-{
+    Shop::DB()->update('temailvorlage', 'kEmailvorlage', (int)$kEmailvorlage, $upd);
 }
 
 /**

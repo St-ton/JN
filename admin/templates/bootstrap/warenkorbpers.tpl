@@ -21,13 +21,13 @@
                         <input type="hidden" name="cSuche" value="{$cSuche}" />
                     {/if}
 
-                    <div class="block input-group container left p25">
+                    <div class="input-group">
                         <span class="input-group-addon">
                             <label for="cSuche">{#warenkorbpersClientName#}:</label>
                         </span>
                         <input class="form-control" id="cSuche" name="cSuche" type="text" value="{if isset($cSuche) && $cSuche|strlen > 0}{$cSuche}{/if}" />
                         <span class="input-group-btn">
-                            <button name="submitSuche" type="submit" value="{#warenkorbpersSearchBTN#}" class="btn btn-info"><i class="fa fa-search"></i> {#warenkorbpersSearchBTN#}</button>
+                            <button name="submitSuche" type="submit" value="{#warenkorbpersSearchBTN#}" class="btn btn-primary"><i class="fa fa-search"></i> {#warenkorbpersSearchBTN#}</button>
                         </span>
                     </div>
                 </form>

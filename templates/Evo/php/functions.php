@@ -44,32 +44,32 @@ function get_product_list($params, &$smarty)
     $cTagFilter_arr     = (isset($params['cTagFilter'])) ? setzeTagFilter(explode(';', $params['cTagFilter'])) : null;
 
     $cParameter_arr = array(
-        'kKategorie' => (isset($params['kKategorie'])) ? $params['kKategorie'] : null,
-        'kHersteller' => (isset($params['kHersteller'])) ? $params['kHersteller'] : null,
-        'kArtikel' => (isset($params['kArtikel'])) ? $params['kArtikel'] : null,
-        'kVariKindArtikel' => (isset($params['kVariKindArtikel'])) ? $params['kVariKindArtikel'] : null,
-        'kSeite' => (isset($params['kSeite'])) ? $params['kSeite'] : null,
-        'kSuchanfrage' => (isset($params['kSuchanfrage'])) ? $params['kSuchanfrage'] : null,
-        'kMerkmalWert' => (isset($params['kMerkmalWert'])) ? $params['kMerkmalWert'] : null,
-        'kTag' => (isset($params['kTag'])) ? $params['kTag'] : null,
-        'kSuchspecial' => (isset($params['kSuchspecial'])) ? $params['kSuchspecial'] : null,
-        'kNews' => (isset($params['kNews'])) ? $params['kNews'] : null,
-        'kNewsMonatsUebersicht' => (isset($params['kNewsMonatsUebersicht'])) ? $params['kNewsMonatsUebersicht'] : null,
-        'kNewsKategorie' => (isset($params['kNewsKategorie'])) ? $params['kNewsKategorie'] : null,
-        'kUmfrage' => (isset($params['kUmfrage'])) ? $params['kUmfrage'] : null,
-        'kKategorieFilter' => (isset($params['kKategorieFilter'])) ? $params['kKategorieFilter'] : null,
-        'kHerstellerFilter' => (isset($params['kHerstellerFilter'])) ? $params['kHerstellerFilter'] : null,
+        'kKategorie'             => (isset($params['kKategorie'])) ? $params['kKategorie'] : null,
+        'kHersteller'            => (isset($params['kHersteller'])) ? $params['kHersteller'] : null,
+        'kArtikel'               => (isset($params['kArtikel'])) ? $params['kArtikel'] : null,
+        'kVariKindArtikel'       => (isset($params['kVariKindArtikel'])) ? $params['kVariKindArtikel'] : null,
+        'kSeite'                 => (isset($params['kSeite'])) ? $params['kSeite'] : null,
+        'kSuchanfrage'           => (isset($params['kSuchanfrage'])) ? $params['kSuchanfrage'] : null,
+        'kMerkmalWert'           => (isset($params['kMerkmalWert'])) ? $params['kMerkmalWert'] : null,
+        'kTag'                   => (isset($params['kTag'])) ? $params['kTag'] : null,
+        'kSuchspecial'           => (isset($params['kSuchspecial'])) ? $params['kSuchspecial'] : null,
+        'kNews'                  => (isset($params['kNews'])) ? $params['kNews'] : null,
+        'kNewsMonatsUebersicht'  => (isset($params['kNewsMonatsUebersicht'])) ? $params['kNewsMonatsUebersicht'] : null,
+        'kNewsKategorie'         => (isset($params['kNewsKategorie'])) ? $params['kNewsKategorie'] : null,
+        'kUmfrage'               => (isset($params['kUmfrage'])) ? $params['kUmfrage'] : null,
+        'kKategorieFilter'       => (isset($params['kKategorieFilter'])) ? $params['kKategorieFilter'] : null,
+        'kHerstellerFilter'      => (isset($params['kHerstellerFilter'])) ? $params['kHerstellerFilter'] : null,
         'nBewertungSterneFilter' => (isset($params['nBewertungSterneFilter'])) ? $params['nBewertungSterneFilter'] : null,
-        'cPreisspannenFilter' => (isset($params['cPreisspannenFilter'])) ? $params['cPreisspannenFilter'] : null,
-        'kSuchspecialFilter' => (isset($params['kSuchspecialFilter'])) ? $params['kSuchspecialFilter'] : null,
-        'nSortierung' => $nSortierung,
-        'MerkmalFilter_arr' => $cMerkmalFilter_arr,
-        'TagFilter_arr' => $cTagFilter_arr,
-        'SuchFilter_arr' => $cSuchFilter_arr,
-        'nArtikelProSeite' => (isset($params['nArtikelProSeite'])) ? $params['nArtikelProSeite'] : null,
-        'cSuche' => (isset($params['cSuche'])) ? $params['cSuche'] : null,
-        'seite' => (isset($params['seite'])) ? $params['seite'] : null,
-        'cArtAttrib' => (isset($params['cArtAttrib'])) ? $params['cArtAttrib'] : null
+        'cPreisspannenFilter'    => (isset($params['cPreisspannenFilter'])) ? $params['cPreisspannenFilter'] : null,
+        'kSuchspecialFilter'     => (isset($params['kSuchspecialFilter'])) ? $params['kSuchspecialFilter'] : null,
+        'nSortierung'            => $nSortierung,
+        'MerkmalFilter_arr'      => $cMerkmalFilter_arr,
+        'TagFilter_arr'          => $cTagFilter_arr,
+        'SuchFilter_arr'         => $cSuchFilter_arr,
+        'nArtikelProSeite'       => (isset($params['nArtikelProSeite'])) ? $params['nArtikelProSeite'] : null,
+        'cSuche'                 => (isset($params['cSuche'])) ? $params['cSuche'] : null,
+        'seite'                  => (isset($params['seite'])) ? $params['seite'] : null,
+        'cArtAttrib'             => (isset($params['cArtAttrib'])) ? $params['cArtAttrib'] : null
     );
 
     // Filter
@@ -105,7 +105,17 @@ function get_static_route($params, &$smarty)
         $full   = !isset($params['full']) || $params['full'] === true;
         $secure = isset($params['secure']) && $params['secure'] === true;
 
-        return $helper->getStaticRoute($params['id'], $full, $secure);
+        $url = $helper->getStaticRoute($params['id'], $full, $secure);
+
+        $qp = isset($params['params'])
+            ? (array)$params['params']
+            : array();
+
+        if (count($qp) > 0) {
+            $url = $url . (parse_url($url, PHP_URL_QUERY) ? '&' : '?') . http_build_query($qp, '', '&');
+        }
+
+        return $url;
     }
 
     return false;

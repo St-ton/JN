@@ -1,6 +1,7 @@
 <script type="text/javascript">
-    if (top.location != self.location)
+    if (top.location !== self.location) {ldelim}
         top.location = self.location.href;
+    {rdelim}
 </script>
 
 {if !empty($cFehler)}

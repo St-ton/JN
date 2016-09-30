@@ -20,7 +20,7 @@
     <form action="shoptemplate.php" method="post" enctype="multipart/form-data">
         {$jtl_token}
         <div id="settings" class="settings">
-            {if isset($oTemplate->eTyp) && ($oTemplate->eTyp === 'admin' || ($oTemplate->eTyp != 'mobil' && ($oTemplate->cOrdner === 'Evo' || $oTemplate->cParent === 'Evo')))}
+            {if isset($oTemplate->eTyp) && ($oTemplate->eTyp === 'admin' || ($oTemplate->eTyp !== 'mobil' && ($oTemplate->cOrdner === 'Evo' || $oTemplate->cParent === 'Evo')))}
                 <input type="hidden" name="eTyp" value="{if !empty($oTemplate->eTyp)}{$oTemplate->eTyp}{else}standard{/if}" />
             {else}
                 <div class="panel panel-default">

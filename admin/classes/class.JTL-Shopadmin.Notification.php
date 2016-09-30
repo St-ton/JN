@@ -103,7 +103,7 @@ class Notification implements IteratorAggregate, Countable
         }
 
         if ($status->hasActiveProfiler()) {
-            $this->add(NotificationEntry::TYPE_WARNING, 'Plugin', 'Der Profiler ist aktiv und kann zu starken Leistungseinbu&szlig;en im Shop f&uuml;hren.');
+            $this->add(NotificationEntry::TYPE_WARNING, 'Plugin', 'Der Profiler ist aktiv. Dies kann zu starken Leistungseinbu&szlig;en im Shop f&uuml;hren.');
         }
 
         if ((int)$confGlobal['global']['anti_spam_method'] === 7 && !reCaptchaConfigured()) {

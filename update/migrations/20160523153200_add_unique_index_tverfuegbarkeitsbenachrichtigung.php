@@ -28,7 +28,7 @@ class Migration_20160523153200 extends Migration implements IMigration
                            WHERE  data1.`cMail` = data2.`cMail` 
                              AND data1.`kArtikel` = data2.`kArtikel` 
                              AND data1.`kVerfuegbarkeitsbenachrichtigung` < data2.`kVerfuegbarkeitsbenachrichtigung`");
-        $this->execute("CREATE UNIQUE INDEX `idx_cMail_kArtikel`  ON `tverfuegbarkeitsbenachrichtigung` (cMail, kArtikel) COMMENT '' ALGORITHM DEFAULT LOCK DEFAULT");
+        $this->execute("CREATE UNIQUE INDEX `idx_cMail_kArtikel`  ON `tverfuegbarkeitsbenachrichtigung` (cMail, kArtikel)");
     }
 
     public function down()

@@ -241,18 +241,18 @@
             $(this.element).find('button[name="btnGalleryPre"]').click(function() {
                 var el = GalleryClass.prototype;
                 if ($(el.element).find('.image-thumbs').css('position') === 'absolute') {//V
-                    step = Math.ceil( $(el.element).find('.thumbs-box').outerHeight(false) / $(el.element).find('.image-thumbs li').outerHeight(true));
+                    step = Math.ceil($(el.element).find('.thumbs-box').outerHeight(false) / $(el.element).find('.image-thumbs li').outerHeight(true));
                 } else {//H
-                    step = Math.ceil( $(el.element).find('.thumbs-box').outerWidth(false) / $(el.element).find('.image-thumbs li').outerWidth(true));
+                    step = Math.ceil($(el.element).find('.thumbs-box').outerWidth(false) / $(el.element).find('.image-thumbs li').outerWidth(true));
                 }
                 el.scrollTo(-step);//step = Schrittweite
             });
             $(this.element).find('button[name="btnGalleryNext"]').click(function() {
                 var el = GalleryClass.prototype;
                 if ($(el.element).find('.image-thumbs').css('position') === 'absolute') {//V
-                    step = Math.ceil( $(el.element).find('.thumbs-box').outerHeight(false) / $(el.element).find('.image-thumbs li').outerHeight(true));
+                    step = Math.ceil($(el.element).find('.thumbs-box').outerHeight(false) / $(el.element).find('.image-thumbs li').outerHeight(true));
                 } else {//H
-                    step = Math.ceil( $(el.element).find('.thumbs-box').outerWidth(false) / $(el.element).find('.image-thumbs li').outerWidth(true));
+                    step = Math.ceil($(el.element).find('.thumbs-box').outerWidth(false) / $(el.element).find('.image-thumbs li').outerWidth(true));
                 }
                 el.scrollTo(step);//step = Schrittweite
             });
@@ -261,9 +261,19 @@
         scrollTo: function(step) {
             var next,
                 img_w,
-                img_h;
+                img_h,
+                rect,
+                listElem;
             if ($(this.element).find('.image-thumbs').css('position') === 'absolute') { //V
-                img_h = $(this.element).find('.image-thumbs li').outerHeight(false) + ( $(this.element).find('.image-thumbs li').outerHeight(true)- $(this.element).find('.image-thumbs li').outerHeight(false))/2;
+                listElem = $(this.element).find('.image-thumbs li');
+                rect = listElem[0].getBoundingClientRect();
+                if (rect.height) {
+                    // "width" is available for IE9+
+                    img_h = rect.height + ((parseInt(listElem.css('margin-bottom').replace('px', '')) + parseInt(listElem.css('margin-top').replace('px', ''))) / 2);
+                } else {
+                    // Calculate width for IE8 and below
+                    img_h = (rect.bottom - rect.top) + (listElem.outerHeight(true) - (rect.bottom - rect.top))/2 + listElem.outerHeight(true)- (rect.bottom - rect.top);
+                }
                 if ($(this.element).find('.image-thumbs').outerHeight(false) - $(this.element).find('.thumbs-box').scrollTop() - (img_h * step) >  (img_h * step) ) {
                     next = img_h * step;
                 } else {
@@ -307,6 +317,8 @@
                 btn_left,
                 btn_top,
                 w,
+                rect,
+                imagesPerView, //amount of images visible at each gallery "page"
                 ulw;
             if (imgCount > 0) {
                 primary_h   = $('.product-primary').height();
@@ -314,36 +326,34 @@
                 main_img_w  = $(this.element).find('.thumbs').width();
                 main_img_h  = $('.product-gallery').height();
                 img_w       = listElem.outerWidth(true);
-                img_w_outer = ( listElem.outerWidth(true) - listElem.outerWidth(false));
+                img_w_outer = (listElem.outerWidth(true) - listElem.outerWidth(false));
                 prevElem    = $(this.element).find('button[name="btnGalleryPre"]');
                 nextElem    = $(this.element).find('button[name="btnGalleryNext"]');
 
                 if ($(this.element).find('.image-thumbs').css('position') === 'absolute') { //V
                     primary_h -= 40;//wegen up / down Buttons
                     $(this.element).find('.thumbs-box').scrollLeft(0);
-                    
-                    img_h       = listElem.outerHeight(false) + ( listElem.outerHeight(true)- listElem.outerHeight(false))/2;
-                    img_h_outer = listElem.outerHeight(true)- listElem.outerHeight(false);
-                    h           = parseInt(primary_h / img_h) * img_h;
-                    if (h > img_h * imgCount) {
-                        h = img_h * imgCount;
-                    }
-                    $(this.element).find('.thumbs-box').css({ 'height': Math.ceil(h - img_h_outer / 2) + 'px', 'width' : (img_w - img_w_outer) + 'px', 'overflow' : 'hidden' });
-                    $(this.element).find('.thumbs').css({ 'position': 'absolute'});
+                    rect = listElem[0].getBoundingClientRect();
+                    img_h_outer = ((parseInt(listElem.css('margin-bottom').replace('px', '')) + parseInt(listElem.css('margin-top').replace('px', ''))) / 2);
+                    img_h = (rect.height) ? (rect.height + img_h_outer) : (rect.bottom - rect.top + img_h_outer);
+                    imagesPerView = Math.round(primary_h / img_h);
+
+                    $(this.element).find('.thumbs-box').css({'height': Math.ceil((imagesPerView * img_h) - img_h_outer) + 'px', 'width' : (img_w - img_w_outer) + 'px', 'overflow' : 'hidden'});
+                    $(this.element).find('.thumbs').css({'position': 'absolute'});
 
                     btn_left = parseInt((img_w - img_w_outer) / 2 - prevElem.outerHeight(true) / 2);
 
-                    prevElem.removeClass('btn-gallery-left').addClass('btn-gallery-up').css({'top' : '','left':btn_left + 'px'});
-                    nextElem.removeClass('btn-gallery-right').addClass('btn-gallery-down').css({'top' : '','left':btn_left + 'px'});
+                    prevElem.removeClass('btn-gallery-left').addClass('btn-gallery-up').css({'top': '', 'left': btn_left + 'px'});
+                    nextElem.removeClass('btn-gallery-right').addClass('btn-gallery-down').css({'top': '', 'left': btn_left + 'px'});
                     
-                    //Show / Hidden Navi Button
+                    //Show / Hide Navi Button
                     if ($(this.element).find('.image-thumbs').height() <= $(this.element).find('.thumbs').height()) {
                         prevElem.hide();
                         nextElem.hide();
                     } else {
                         prevElem.show();
                         nextElem.show();
-                        $(this.element).find('.thumbs-box').css({ 'margin': '22px 0'});
+                        $(this.element).find('.thumbs-box').css({'margin': '22px 0'});
                     }
                 } else { //H
                     $(this.element).find('.thumbs-box').scrollTop(0);
@@ -363,7 +373,7 @@
                     $(this.element).find('.image-thumbs').css({'width' : ulw + 'px'});
                     $(this.element).find('.thumbs').css({'position': 'relative'});
                     
-                    btn_top = parseInt((h- $(this.element).find('button[name="btnGalleryPre"]').height())/2);
+                    btn_top = parseInt((h - prevElem.height())/2);
                     prevElem.removeClass('btn-gallery-up').addClass('btn-gallery-left').css({'left' : '', 'top':btn_top + 'px'});
                     nextElem.removeClass('btn-gallery-down').addClass('btn-gallery-right').css({'left':'', 'top':btn_top + 'px'});
                     
@@ -383,7 +393,6 @@
 
             if (this.options.fullscreen || ResponsiveBootstrapToolkit.current() === 'xs') {
                 // var height = $('#gallery-modal').find('.modal-body .image-gallery').prop('scrollHeight');
-                // console.log('scrollHeight', height, $(this.element));
                 // this.setMaxHeight(height);
                 this.resetMaxHeight();
             } else {

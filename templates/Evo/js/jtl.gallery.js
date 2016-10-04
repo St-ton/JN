@@ -329,14 +329,14 @@
                 img_w_outer = (listElem.outerWidth(true) - listElem.outerWidth(false));
                 prevElem    = $(this.element).find('button[name="btnGalleryPre"]');
                 nextElem    = $(this.element).find('button[name="btnGalleryNext"]');
-
+                console.log('primary_h: ', primary_h);
                 if ($(this.element).find('.image-thumbs').css('position') === 'absolute') { //V
                     primary_h -= 40;//wegen up / down Buttons
                     $(this.element).find('.thumbs-box').scrollLeft(0);
                     rect = listElem[0].getBoundingClientRect();
                     img_h_outer = ((parseInt(listElem.css('margin-bottom').replace('px', '')) + parseInt(listElem.css('margin-top').replace('px', ''))) / 2);
                     img_h = (rect.height) ? (rect.height + img_h_outer) : (rect.bottom - rect.top + img_h_outer);
-                    imagesPerView = Math.round(primary_h / img_h);
+                    imagesPerView = Math.floor(primary_h / img_h);
 
                     $(this.element).find('.thumbs-box').css({'height': Math.ceil((imagesPerView * img_h) - img_h_outer) + 'px', 'width' : (img_w - img_w_outer) + 'px', 'overflow' : 'hidden'});
                     $(this.element).find('.thumbs').css({'position': 'absolute'});

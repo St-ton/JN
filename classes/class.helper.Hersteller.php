@@ -81,11 +81,11 @@ class HerstellerHelper
                         WHERE EXISTS (
                             SELECT 1
                             FROM tartikel
-							WHERE tartikel.kHersteller = thersteller.kHersteller
+                            WHERE tartikel.kHersteller = thersteller.kHersteller
                                 {$lagerfilter}
                                 AND NOT EXISTS (
                                     SELECT 1 FROM tartikelsichtbarkeit
-								    WHERE tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
+                                    WHERE tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
                                         AND tartikelsichtbarkeit.kKundengruppe = {$customerGroupID}
 							        )
                             )

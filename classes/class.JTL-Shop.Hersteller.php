@@ -203,14 +203,14 @@ class Hersteller
         $kSprache = (isset($_SESSION['kSprache'])) ? (int)$_SESSION['kSprache'] : (int)gibStandardsprache();
         if ($productLookup) {
             $sqlWhere = "WHERE EXISTS (
-							SELECT 1
+                            SELECT 1
                             FROM tartikel
-							WHERE tartikel.kHersteller = thersteller.kHersteller
-								" . gibLagerfilter() . "
+                            WHERE tartikel.kHersteller = thersteller.kHersteller
+                                " . gibLagerfilter() . "
                                 AND NOT EXISTS (
-								SELECT 1 FROM tartikelsichtbarkeit
-								WHERE tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
-									AND tartikelsichtbarkeit.kKundengruppe = {$_SESSION['Kundengruppe']->kKundengruppe}
+                                SELECT 1 FROM tartikelsichtbarkeit
+                                WHERE tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
+                                    AND tartikelsichtbarkeit.kKundengruppe = {$_SESSION['Kundengruppe']->kKundengruppe}
 							)
                         )";
         }

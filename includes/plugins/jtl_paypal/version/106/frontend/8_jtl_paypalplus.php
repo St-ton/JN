@@ -40,6 +40,7 @@ if ($api->isConfigured(false) && $api->isUseable($items, $shippingId)) {
         $shopUrl = Shop()->getURL(true);
         $link    = PayPalHelper::getLinkByName($oPlugin, 'PayPalPLUS');
 
+        $styles                   = null;
         $sortedPayments           = [];
         $thirdPartyPaymentMethods = [];
 
@@ -76,6 +77,40 @@ if ($api->isConfigured(false) && $api->isUseable($items, $shippingId)) {
             $thirdPartyPaymentMethods[] = $thirdParty;
         }
 
+        $settings = $api->getSettings();
+
+        if ($settings['jtl_paypal_style_enabled'] === 'Y') {
+
+            $styles = (object)[
+                "psp" => (object)[
+                    "font-family" => $settings['jtl_paypal_style_font_family'],
+                    "color" => $settings['jtl_paypal_style_link_color'],
+                    "font-size" => $settings['jtl_paypal_style_font_size'],
+                    "font-style" => $settings['jtl_paypal_style_font_style']
+                ],
+
+                "link" => (object)[
+                    "color" => $settings['jtl_paypal_style_link_color'],
+                    "text-decoration" => $settings['jtl_paypal_style_link_text_decoration']
+                ],
+
+                "visited" => (object)[
+                    "color" => $settings['jtl_paypal_style_visited_color'],
+                    "text-decoration" => $settings['jtl_paypal_style_visited_text_decoration']
+                ],
+
+                "active" => (object)[
+                    "color" => $settings['jtl_paypal_style_active_color'],
+                    "text-decoration" => $settings['jtl_paypal_style_active_text_decoration']
+                ],
+
+                "hover" => (object)[
+                    "color" => $settings['jtl_paypal_style_hover_color'],
+                    "text-decoration" => $settings['jtl_paypal_style_hover_text_decoration']
+                ]
+            ];
+        }
+
         $language = StringHandler::convertISO2ISO639(Shop::$cISO);
         $language = sprintf('%s_%s', strtolower($language), strtoupper($language));
         $country  = $_SESSION['cLieferlandISO'];
@@ -87,6 +122,7 @@ if ($api->isConfigured(false) && $api->isUseable($items, $shippingId)) {
             ->assign('approvalUrl', $approvalUrl)
             ->assign('paymentId', $payment->getId())
             ->assign('linkId', $link->kLink)
+            ->assign('styles', $styles)
             ->assign('thirdPartyPaymentMethods', $thirdPartyPaymentMethods);
     }
 }

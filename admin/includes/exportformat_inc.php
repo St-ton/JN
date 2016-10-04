@@ -343,11 +343,7 @@ function verarbeiteYategoExport(&$Artikel, $exportformat, $ExportEinstellungen, 
         $cVarianten       = '';
         $kKategorie_arr   = array(); // Alle Kategorien vom Artikel
         $kYatKategoie_arr = array(); // Alle Yatego Kategorien vom Artikel
-        $oKategorie_arr   = Shop::DB()->query(
-            "SELECT kKategorie
-                FROM tkategorieartikel
-                WHERE kArtikel = " . (int)$Artikel->kArtikel, 2
-        );
+        $oKategorie_arr   = Shop::DB()->selectAll('tkategorieartikel', 'kArtikel', (int)$Artikel->kArtikel, 'kKategorie');
         if (is_array($oKategorie_arr) && count($oKategorie_arr) > 0) {
             foreach ($oKategorie_arr as $oKategorie) {
                 $kKategorie_arr[] = $oKategorie->kKategorie;
@@ -609,7 +605,7 @@ function getEinstellungenExport($kExportformat)
     $kExportformat = (int)$kExportformat;
     $ret           = array();
     if ($kExportformat > 0) {
-        $einst = Shop::DB()->query("SELECT cName, cWert FROM texportformateinstellungen WHERE kExportformat = " . $kExportformat, 2);
+        $einst = Shop::DB()->selectAll('texportformateinstellungen', 'kExportformat', $kExportformat, 'cName, cWert');
         foreach ($einst as $eins) {
             if ($eins->cName) {
                 $ret[$eins->cName] = $eins->cWert;

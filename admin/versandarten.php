@@ -117,7 +117,7 @@ if (isset($_POST['neueZuschlagPLZ']) && intval($_POST['neueZuschlagPLZ']) === 1 
         }
     }
 
-    $versandzuschlag = Shop::DB()->query("SELECT cISO, kVersandart FROM tversandzuschlag WHERE kVersandzuschlag = " . (int)$ZuschlagPLZ->kVersandzuschlag, 1);
+    $versandzuschlag = Shop::DB()->select('tversandzuschlag', 'kVersandzuschlag', (int)$ZuschlagPLZ->kVersandzuschlag);
 
     if ($ZuschlagPLZ->cPLZ || $ZuschlagPLZ->cPLZAb) {
         //schaue, ob sich PLZ ueberscheiden

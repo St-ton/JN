@@ -286,7 +286,7 @@ function generateSitemapXML()
     $modification = ($conf['sitemap']['sitemap_insert_lastmod'] === 'Y') ?
         ', tartikel.dLetzteAktualisierung' :
         '';
-    $strSQL = "SELECT tartikel.kArtikel, tartikel.cName, tseo.cSeo" . $modification .
+    $strSQL = "SELECT tartikel.kArtikel, tartikel.cName, tseo.cSeo, tartikel.cArtNr" . $modification .
             " FROM tartikel
             LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                AND tartikelsichtbarkeit.kKundengruppe = " . $stdKundengruppe->kKundengruppe .

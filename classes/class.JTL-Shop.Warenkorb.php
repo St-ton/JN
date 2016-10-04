@@ -513,7 +513,7 @@ class Warenkorb
                     $bestellungMoeglich = Shop::DB()->query(
                         "SELECT dErstellt+interval $min minute < now() AS moeglich
                             FROM tbestellung
-                            WHERE cIP='" . Shop::DB()->escape($ip) . "'
+                            WHERE cIP = '" . Shop::DB()->escape($ip) . "'
                                 AND dErstellt>now()-interval 1 day
                                 ORDER BY kBestellung DESC", 1
                     );

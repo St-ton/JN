@@ -466,7 +466,7 @@ class TrustedShops
                     $fPreis = $oItem->fNetto;
                     $nWert  = $oItem->nWert;
                     // Std Währung
-                    $oWaehrung = Shop::DB()->query("SELECT * FROM twaehrung WHERE cStandard = 'Y'", 1);
+                    $oWaehrung = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
                     // Nicht Standard im Shop?
                     if ($_SESSION['Waehrung']->kWaehrung != $oWaehrung->kWaehrung) {
                         $fPreis = $oItem->fNetto / $_SESSION['Waehrung']->fFaktor;
@@ -513,11 +513,7 @@ class TrustedShops
     public function speicherKaeuferschutzProdukteDB($kTrustedShopsZertifikat)
     {
         if (is_array($this->oKaeuferschutzProdukteDB->item) && count($this->oKaeuferschutzProdukteDB->item) > 0 && $kTrustedShopsZertifikat > 0) {
-            Shop::DB()->query(
-                "DELETE FROM ttrustedeshopsprodukt
-                    WHERE kTrustedShopsZertifikat = " . intval($kTrustedShopsZertifikat), 4
-            ); // Alles löschen
-
+            Shop::DB()->delete('ttrustedeshopsprodukt', 'kTrustedShopsZertifikat', (int)$kTrustedShopsZertifikat);
             foreach ($this->oKaeuferschutzProdukteDB->item as $oKaeuferschutzProdukt) {
                 $oKaeuferschutzProdukt->kTrustedShopsZertifikat = $kTrustedShopsZertifikat;
                 if (!isset($oKaeuferschutzProdukt->kSprache)) {

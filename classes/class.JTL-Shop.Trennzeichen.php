@@ -78,11 +78,7 @@ class Trennzeichen
         $kTrennzeichen = (int)$kTrennzeichen;
         $cacheID       = 'units_lfdb_' . $kTrennzeichen;
         if (($oObj = Shop::Cache()->get($cacheID)) === false) {
-            $oObj = Shop::DB()->query(
-                "SELECT *
-                  FROM ttrennzeichen
-                  WHERE kTrennzeichen = " . $kTrennzeichen, 1
-            );
+            $oObj = Shop::DB()->select('ttrennzeichen', 'kTrennzeichen', $kTrennzeichen);
             Shop::Cache()->set($cacheID, $oObj, array(CACHING_GROUP_CORE));
         }
         if (isset($oObj->kTrennzeichen) && $oObj->kTrennzeichen > 0) {
@@ -111,12 +107,7 @@ class Trennzeichen
         }
         $cacheID = 'units_' . (int)$nEinheit . '_' . (int)$kSprache;
         if (($oObj = Shop::Cache()->get($cacheID)) === false) {
-            $oObj = Shop::DB()->query(
-                "SELECT *
-                    FROM ttrennzeichen
-                    WHERE nEinheit = " . $nEinheit . "
-                        AND kSprache = " . (int)$kSprache, 1
-            );
+            $oObj = Shop::DB()->select('ttrennzeichen', 'nEinheit', $nEinheit, 'kSprache', (int)$kSprache);
             Shop::Cache()->set($cacheID, $oObj, array(CACHING_GROUP_CORE));
         }
         if (!isset(self::$unitObject[$kSprache])) {
@@ -207,13 +198,7 @@ class Trennzeichen
             $oObjAssoc_arr = array();
 
             if ($kSprache > 0) {
-                $oObjTMP_arr = Shop::DB()->query(
-                    "SELECT kTrennzeichen
-                        FROM ttrennzeichen
-                        WHERE kSprache = " . $kSprache . "
-                        ORDER BY nEinheit", 2
-                );
-
+                $oObjTMP_arr = Shop::DB()->selectAll('ttrennzeichen', 'kSprache', $kSprache, 'kTrennzeichen', 'nEinheit');
                 if (is_array($oObjTMP_arr) && count($oObjTMP_arr) > 0) {
                     foreach ($oObjTMP_arr as $oObjTMP) {
                         if (isset($oObjTMP->kTrennzeichen) && $oObjTMP->kTrennzeichen > 0) {

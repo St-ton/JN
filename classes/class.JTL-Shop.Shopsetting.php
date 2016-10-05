@@ -130,11 +130,7 @@ final class Shopsetting implements ArrayAccess
                     Jtllog::writeLog("Setting Caching Exception: " . $exc->getMessage(), JTLLOG_LEVEL_ERROR);
                 }
                 if ($section == 126) {
-                    $settings = Shop::DB()->query("
-                        SELECT cName, cWert
-                            FROM tplugineinstellungen
-                            WHERE cName LIKE '%_min%' OR cName LIKE '%_max'", 2
-                    );
+                    $settings = Shop::DB()->selectAll('teinstellungen', 'kEinstellungenSektion', $section, 'kEinstellungenSektion, cName, cWert');
                 } else {
                     $settings = Shop::DB()->query("
                         SELECT kEinstellungenSektion, cName, cWert

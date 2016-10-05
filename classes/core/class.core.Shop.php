@@ -1200,8 +1200,8 @@ final class Shop
                     ORDER BY kSprache", 2
             );
             if ($bSprache) {
+                $NaviFilter->MerkmalWert->cSeo = [];
                 foreach ($oSprache_arr as $oSprache) {
-                    $NaviFilter->MerkmalWert->cSeo = [];
                     $NaviFilter->MerkmalWert->cSeo[$oSprache->kSprache] = '';
                     if (is_array($oSeo_arr)) {
                         foreach ($oSeo_arr as $oSeo) {
@@ -1273,8 +1273,8 @@ final class Shop
                         ON tseo.kKey = ttag.kTag
                     WHERE tseo.cKey = 'kTag' AND tseo.kKey = " . $NaviFilter->Tag->kTag, 1
             );
-            $NaviFilter->Tag->cSeo = [];
             if (isset($bSprache)) {
+                $NaviFilter->Tag->cSeo = [];
                 foreach ($oSprache_arr as $oSprache) {
                     $NaviFilter->Tag->cSeo[$oSprache->kSprache] = '';
                     if ($oSprache->kSprache == $oSeo_obj->kSprache) {
@@ -1474,8 +1474,8 @@ final class Shop
             );
 
             if ($bSprache) {
+                $NaviFilter->HerstellerFilter->cSeo = [];
                 foreach ($oSprache_arr as $oSprache) {
-                    $NaviFilter->HerstellerFilter->cSeo = [];
                     $NaviFilter->HerstellerFilter->cSeo[$oSprache->kSprache] = '';
                     if (is_array($oSeo_arr)) {
                         foreach ($oSeo_arr as $oSeo) {

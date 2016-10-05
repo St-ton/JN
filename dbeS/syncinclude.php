@@ -585,13 +585,35 @@ function versendeVerfuegbarkeitsbenachrichtigung($oArtikel)
  */
 function setzePreisverlauf($kArtikel, $kKundengruppe, $fVKNetto)
 {
-    $nReihen = Shop::DB()->query(
-        "UPDATE tpreisverlauf
-            SET fVKNetto = " . $fVKNetto . "
-            WHERE kArtikel = " . $kArtikel . "
-                AND kKundengruppe = " . $kKundengruppe . "
-                AND dDate = DATE(NOW())", 3
+    $nReihen = 0;
+    $oPreis = Shop::DB()->query(
+        "SELECT fVKNetto
+                FROM tpreisverlauf
+                WHERE kArtikel = " . $kArtikel . "
+                    AND kKundengruppe = " . $kKundengruppe . "
+                    AND dDate != DATE(NOW())
+                ORDER BY dDate DESC
+                LIMIT 1", 1
     );
+    // gleicher Wert wie letzter Eintrag?
+    if (!isset($oPreis->fVKNetto) || isset($oPreis->fVKNetto) && (int)($oPreis->fVKNetto * 100) !== (int)($fVKNetto * 100)) {
+        $nReihen = Shop::DB()->query(
+            "UPDATE tpreisverlauf
+                SET fVKNetto = " . $fVKNetto . "
+                WHERE kArtikel = " . $kArtikel . "
+                    AND kKundengruppe = " . $kKundengruppe . "
+                    AND dDate = DATE(NOW())", 3
+        );
+    } else {
+        // Eintrag entfernen um Dopplung zu vermeiden
+        $nReihen = Shop::DB()->query(
+            "DELETE FROM tpreisverlauf
+                WHERE kArtikel = " . $kArtikel . "
+                    AND kKundengruppe = " . $kKundengruppe . "
+                    AND dDate = DATE(NOW())", 3
+        );
+    }
+
     if ($nReihen == 0) {
         $oPreisverlauf                = new stdClass();
         $oPreisverlauf->kArtikel      = $kArtikel;
@@ -608,7 +630,7 @@ function setzePreisverlauf($kArtikel, $kKundengruppe, $fVKNetto)
                 LIMIT 1", 1
         );
         //no pricehistory or price changed?
-        if (!isset($oPreis->fVKNetto) || isset($oPreis->fVKNetto) && intval($oPreis->fVKNetto * 100) !== intval($fVKNetto * 100)) {
+        if (!isset($oPreis->fVKNetto) || isset($oPreis->fVKNetto) && (int)($oPreis->fVKNetto * 100) !== (int)($fVKNetto * 100)) {
             Shop::DB()->insert('tpreisverlauf', $oPreisverlauf);
             // Clear Artikel Cache
             $cache = Shop::Cache();

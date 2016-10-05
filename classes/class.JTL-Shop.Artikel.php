@@ -4992,7 +4992,7 @@ class Artikel
         $cLimit   = ' LIMIT 3';
         $conf     = Shop::getSettings(array(CONF_ARTIKELDETAILS));
         // Gibt es X-Seller? Aus der Artikelmenge der änhlichen Artikel, dann alle X-Seller rausfiltern
-        $oXSeller               = gibArtikelXSelling($kArtikel);
+        $oXSeller               = gibArtikelXSelling($kArtikel, $this->nIstVater > 0);
         $kArtikelXSellerKey_arr = array();
         if (isset($oXSeller->Standard->XSellGruppen) && is_array($oXSeller->Standard->XSellGruppen) && count($oXSeller->Standard->XSellGruppen) > 0) {
             foreach ($oXSeller->Standard->XSellGruppen as $oXSeller) {

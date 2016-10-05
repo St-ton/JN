@@ -5,10 +5,11 @@
  */
 
 /**
- * @param int $kArtikel
+ * @param int       $kArtikel
+ * @param bool|null $isParent
  * @return stdClass|null
  */
-function gibArtikelXSelling($kArtikel)
+function gibArtikelXSelling($kArtikel, $isParent = null)
 {
     $kArtikel = (int)$kArtikel;
     if ($kArtikel <= 0) {
@@ -62,7 +63,10 @@ function gibArtikelXSelling($kArtikel)
     }
     if (isset($config['artikeldetails_xselling_kauf_anzeigen']) && $config['artikeldetails_xselling_kauf_anzeigen'] === 'Y') {
         $anzahl = (int)$config['artikeldetails_xselling_kauf_anzahl'];
-        if (ArtikelHelper::isParent($kArtikel)) {
+        if ($isParent === null) {
+            $isParent = ArtikelHelper::isParent($kArtikel);
+        }
+        if ($isParent === true) {
             $inArray = array($kArtikel);
             $tmps    = ArtikelHelper::getChildren($kArtikel);
             foreach ($tmps as $_article) {

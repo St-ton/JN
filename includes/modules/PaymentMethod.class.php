@@ -417,12 +417,9 @@ class PaymentMethod
      */
     public function getSetting($key)
     {
-        global $Einstellungen;
-        if (!is_array($Einstellungen)) {
-            $Einstellungen = Shop::getSettings(array(CONF_ZAHLUNGSARTEN));
-        }
+        $Einstellungen = Shop::getSettings(array(CONF_ZAHLUNGSARTEN, CONF_PLUGINZAHLUNGSARTEN));
 
-        return (isset($Einstellungen['zahlungsarten']['zahlungsart_' . $this->moduleAbbr . '_' . $key])) ? $Einstellungen['zahlungsarten']['zahlungsart_' . $this->moduleAbbr . '_' . $key] : null;
+        return (isset($Einstellungen['zahlungsarten']['zahlungsart_' . $this->moduleAbbr . '_' . $key])) ? $Einstellungen['zahlungsarten']['zahlungsart_' . $this->moduleAbbr . '_' . $key] : (isset($Einstellungen['pluginzahlungsarten'][$this->moduleID . '_' . $key]) ? $Einstellungen['pluginzahlungsarten'][$this->moduleID . '_' . $key] : null);
     }
 
     /**

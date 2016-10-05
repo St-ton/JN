@@ -1089,17 +1089,22 @@ final class Shop
             if (!isset($NaviFilter->Kategorie)) {
                 $NaviFilter->Kategorie = new stdClass();
             }
-            $NaviFilter->Kategorie->kKategorie = $cParameter_arr['kKategorie'];
+            $NaviFilter->Kategorie->kKategorie = (int)$cParameter_arr['kKategorie'];
             $oSeo_arr                          = self::DB()->query("
-                SELECT cSeo, kSprache
+                SELECT tseo.cSeo, tseo.kSprache, tkategorie.cName AS cKatName, tkategoriesprache.cName
                     FROM tseo
-                    WHERE cKey = 'kKategorie' AND kKey = " . (int)$NaviFilter->Kategorie->kKategorie . "
-                    ORDER BY kSprache", 2
+                        LEFT JOIN tkategorie
+                            ON tkategorie.kKategorie = tseo.kKey
+                        LEFT JOIN tkategoriesprache
+                            ON tkategoriesprache.kKategorie = tkategorie.kKategorie
+                            AND tkategoriesprache.kSprache = tseo.kSprache
+                    WHERE cKey = 'kKategorie' AND kKey = " . $NaviFilter->Kategorie->kKategorie . "
+                    ORDER BY tseo.kSprache", 2
             );
             if ($bSprache) {
                 foreach ($oSprache_arr as $oSprache) {
                     $NaviFilter->Kategorie->cSeo[$oSprache->kSprache] = '';
-                    if (is_array($oSeo_arr) && count($oSeo_arr) > 0) {
+                    if (is_array($oSeo_arr)) {
                         foreach ($oSeo_arr as $oSeo) {
                             if ($oSprache->kSprache == $oSeo->kSprache) {
                                 $NaviFilter->Kategorie->cSeo[$oSprache->kSprache] = $oSeo->cSeo;
@@ -1108,17 +1113,15 @@ final class Shop
                     }
                 }
             }
-            $oKategorieSprache = self::DB()->query("
-                SELECT tkategorie.cName AS cKatName, tkategoriesprache.cName
-                    FROM tkategorie
-                    LEFT JOIN tkategoriesprache ON tkategoriesprache.kKategorie = tkategorie.kKategorie
-                        AND tkategoriesprache.kSprache = " . (int)self::$kSprache . "
-                    WHERE tkategorie.kKategorie = " . (int)$NaviFilter->Kategorie->kKategorie, 1
-            );
-            if (isset($oKategorieSprache->cName) && strlen($oKategorieSprache->cName) > 0) {
-                $NaviFilter->Kategorie->cName = $oKategorieSprache->cName;
-            } elseif (isset($oKategorieSprache->cKatName) && strlen($oKategorieSprache->cKatName) > 0) {
-                $NaviFilter->Kategorie->cName = $oKategorieSprache->cKatName;
+            foreach ($oSeo_arr as $item) {
+                if ((int)$item->kSprache === (int)self::$kSprache) {
+                    if (!empty($item->cName)) {
+                        $NaviFilter->Kategorie->cName = $item->cName;
+                    } elseif (!empty($item->cKatName)) {
+                        $NaviFilter->Kategorie->cName = $item->cKatName;
+                    }
+                    break;
+                }
             }
         }
 
@@ -1128,15 +1131,18 @@ final class Shop
             }
             $NaviFilter->Hersteller->kHersteller = (int)$cParameter_arr['kHersteller'];
             $oSeo_arr                            = self::DB()->query("
-                SELECT cSeo, kSprache
+                SELECT tseo.cSeo, tseo.kSprache, thersteller.cName
                     FROM tseo
+                        LEFT JOIN thersteller
+                        ON thersteller.kHersteller = tseo.kKey
                     WHERE cKey = 'kHersteller' AND kKey = " . intval($NaviFilter->Hersteller->kHersteller) . "
                     ORDER BY kSprache", 2
             );
             if ($bSprache) {
+                $NaviFilter->Hersteller->cSeo = [];
                 foreach ($oSprache_arr as $oSprache) {
                     $NaviFilter->Hersteller->cSeo[$oSprache->kSprache] = '';
-                    if (is_array($oSeo_arr) && count($oSeo_arr) > 0) {
+                    if (is_array($oSeo_arr)) {
                         foreach ($oSeo_arr as $oSeo) {
                             if ($oSprache->kSprache == $oSeo->kSprache) {
                                 $NaviFilter->Hersteller->cSeo[$oSprache->kSprache] = $oSeo->cSeo;
@@ -1145,10 +1151,9 @@ final class Shop
                     }
                 }
             }
-            $oHersteller = self::DB()->select('thersteller', 'kHersteller', (int)$NaviFilter->Hersteller->kHersteller, null, null, null, null, false, 'cName');
-            if (!empty($oHersteller->cName)) {
-                $NaviFilter->Hersteller->cName = $oHersteller->cName;
-            } elseif ($oHersteller === null) {
+            if (isset($oSeo_arr[0]->cName)) {
+                $NaviFilter->Hersteller->cName = $oSeo_arr[0]->cName;
+            } else {
                 //invalid manufacturer ID
                 self::$kHersteller = 0;
                 unset($NaviFilter->Hersteller);
@@ -1161,27 +1166,25 @@ final class Shop
                 $NaviFilter->Suchanfrage = new stdClass();
             }
             $NaviFilter->Suchanfrage->kSuchanfrage = $cParameter_arr['kSuchanfrage'];
-            $oSeo_arr                              = self::DB()->query("
-                SELECT cSeo, kSprache
+            $oSeo_obj                              = self::DB()->query("
+                SELECT tseo.cSeo, tseo.kSprache, tsuchanfrage.cSuche
                     FROM tseo
-                    WHERE cKey = 'kSuchanfrage' AND kKey = " . (int)$NaviFilter->Suchanfrage->kSuchanfrage . "
-                    ORDER BY kSprache", 2
+                    LEFT JOIN tsuchanfrage
+                        ON tsuchanfrage.kSuchanfrage = tseo.kKey
+                        AND tsuchanfrage.kSprache = tseo.kSprache
+                    WHERE cKey = 'kSuchanfrage' AND kKey = " . (int)$NaviFilter->Suchanfrage->kSuchanfrage, 1
             );
             if ($bSprache) {
+                $NaviFilter->Suchanfrage->cSeo = [];
                 foreach ($oSprache_arr as $oSprache) {
                     $NaviFilter->Suchanfrage->cSeo[$oSprache->kSprache] = '';
-                    if (is_array($oSeo_arr) && count($oSeo_arr) > 0) {
-                        foreach ($oSeo_arr as $oSeo) {
-                            if ($oSprache->kSprache == $oSeo->kSprache) {
-                                $NaviFilter->Suchanfrage->cSeo[$oSprache->kSprache] = $oSeo->cSeo;
-                            }
-                        }
+                    if ($oSprache->kSprache == $oSeo_obj->kSprache) {
+                        $NaviFilter->Suchanfrage->cSeo[$oSprache->kSprache] = $oSeo_obj->cSeo;
                     }
                 }
             }
-            $oSuchanfrage = self::DB()->select('tsuchanfrage', 'kSuchanfrage', $NaviFilter->Suchanfrage->kSuchanfrage, 'kSprache', self::$kSprache, null, null, false, 'cSuche');
-            if (!empty($oSuchanfrage->cSuche)) {
-                $NaviFilter->Suchanfrage->cName = $oSuchanfrage->cSuche;
+            if (!empty($oSeo_obj->cSuche)) {
+                $NaviFilter->Suchanfrage->cName = $oSeo_obj->cSuche;
             }
         }
 
@@ -1198,8 +1201,9 @@ final class Shop
             );
             if ($bSprache) {
                 foreach ($oSprache_arr as $oSprache) {
+                    $NaviFilter->MerkmalWert->cSeo = [];
                     $NaviFilter->MerkmalWert->cSeo[$oSprache->kSprache] = '';
-                    if (is_array($oSeo_arr) && count($oSeo_arr) > 0) {
+                    if (is_array($oSeo_arr)) {
                         foreach ($oSeo_arr as $oSeo) {
                             if ($oSprache->kSprache == $oSeo->kSprache) {
                                 $NaviFilter->MerkmalWert->cSeo[$oSprache->kSprache] = $oSeo->cSeo;
@@ -1262,30 +1266,24 @@ final class Shop
                 $NaviFilter->Tag = new stdClass();
             }
             $NaviFilter->Tag->kTag = (int)$cParameter_arr['kTag'];
-            $oSeo_arr              = self::DB()->query("
-                SELECT cSeo, kSprache
+            $oSeo_obj              = self::DB()->query("
+                SELECT tseo.cSeo, tseo.kSprache, ttag.cName
                     FROM tseo
-                    WHERE cKey = 'kTag' AND kKey = " . $NaviFilter->Tag->kTag . "
-                    ORDER BY kSprache", 2
+                    LEFT JOIN ttag
+                        ON tseo.kKey = ttag.kTag
+                    WHERE tseo.cKey = 'kTag' AND tseo.kKey = " . $NaviFilter->Tag->kTag, 1
             );
-            if (isset($oSeo->cSeo)) {
-                $NaviFilter->Tag->cSeo = $oSeo->cSeo;
-            }
+            $NaviFilter->Tag->cSeo = [];
             if (isset($bSprache)) {
                 foreach ($oSprache_arr as $oSprache) {
                     $NaviFilter->Tag->cSeo[$oSprache->kSprache] = '';
-                    if (is_array($oSeo_arr) && count($oSeo_arr) > 0) {
-                        foreach ($oSeo_arr as $oSeo) {
-                            if ($oSprache->kSprache == $oSeo->kSprache) {
-                                $NaviFilter->Tag->cSeo[$oSprache->kSprache] = $oSeo->cSeo;
-                            }
-                        }
+                    if ($oSprache->kSprache == $oSeo_obj->kSprache) {
+                        $NaviFilter->Tag->cSeo[$oSprache->kSprache] = $oSeo_obj->cSeo;
                     }
                 }
             }
-            $oTag = self::DB()->select('ttag', 'kTag', $NaviFilter->Tag->kTag, 'kSprache', self::$kSprache, null, null, false, 'cName');
-            if (!empty($oTag->cName)) {
-                $NaviFilter->Tag->cName = $oTag->cName;
+            if (!empty($oSeo_obj->cName)) {
+                $NaviFilter->Tag->cName = $oSeo_obj->cName;
             }
         }
 
@@ -1293,29 +1291,26 @@ final class Shop
             if (!isset($NaviFilter->News)) {
                 $NaviFilter->News = new stdClass();
             }
-            $NaviFilter->News->kNews = (int) $cParameter_arr['kNews'];
-            $oSeo_arr                = self::DB()->query("
-                SELECT cSeo, kSprache
+            $NaviFilter->News->kNews = (int)$cParameter_arr['kNews'];
+            $oSeo_obj                = self::DB()->query("
+                SELECT tseo.cSeo, tseo.kSprache, tnews.cBetreff
                     FROM tseo
+                    LEFT JOIN tnews
+                        ON tnews.kNews = tseo.kKey                        
                     WHERE cKey = 'kNews'
                         AND kKey = " . $NaviFilter->News->kNews . "
-                    ORDER BY kSprache", 2
+                    ORDER BY kSprache", 1
             );
-            if ($bSprache) {
+            if ($bSprache && $oSeo_obj !== null) {
                 foreach ($oSprache_arr as $oSprache) {
                     $NaviFilter->News->cSeo[$oSprache->kSprache] = '';
-                    if (is_array($oSeo_arr) && count($oSeo_arr) > 0) {
-                        foreach ($oSeo_arr as $oSeo) {
-                            if ($oSprache->kSprache == $oSeo->kSprache) {
-                                $NaviFilter->News->cSeo[$oSprache->kSprache] = $oSeo->cSeo;
-                            }
-                        }
+                    if ($oSprache->kSprache == $oSeo_obj->kSprache) {
+                        $NaviFilter->News->cSeo[$oSprache->kSprache] = $oSeo_obj->cSeo;
                     }
                 }
             }
-            $obj = self::DB()->select('tnews', 'kNews', $NaviFilter->News->kNews, 'kSprache', self::$kSprache, null, null, false, 'cBetreff');
-            if (!empty($obj->cBetreff)) {
-                $NaviFilter->News->cName = $obj->cBetreff;
+            if (!empty($oSeo_obj->cBetreff)) {
+                $NaviFilter->News->cName = $oSeo_obj->cBetreff;
             }
         }
 
@@ -1324,28 +1319,25 @@ final class Shop
                 $NaviFilter->NewsMonat = new stdClass();
             }
             $NaviFilter->NewsMonat->kNewsMonatsUebersicht = (int) $cParameter_arr['kNewsMonatsUebersicht'];
-            $oSeo_arr                                     = self::DB()->query("
-                SELECT cSeo, kSprache
+            $oSeo_obj                                     = self::DB()->query("
+                SELECT tseo.cSeo, tseo.kSprache, tnewsmonatsuebersicht.cName
                     FROM tseo
-                    WHERE cKey = 'kNewsMonatsUebersicht'
-                        AND kKey = " . $NaviFilter->NewsMonat->kNewsMonatsUebersicht . "
-                    ORDER BY kSprache", 2
+                    LEFT JOIN tnewsmonatsuebersicht
+                        ON tnewsmonatsuebersicht.kNewsMonatsUebersicht = tseo.kKey
+                    WHERE tseo.cKey = 'kNewsMonatsUebersicht'
+                        AND tseo.kKey = " . $NaviFilter->NewsMonat->kNewsMonatsUebersicht, 1
             );
             if ($bSprache) {
+                $NaviFilter->NewsMonat->cSeo = [];
                 foreach ($oSprache_arr as $oSprache) {
                     $NaviFilter->NewsMonat->cSeo[$oSprache->kSprache] = '';
-                    if (is_array($oSeo_arr) && count($oSeo_arr) > 0) {
-                        foreach ($oSeo_arr as $oSeo) {
-                            if ($oSprache->kSprache == $oSeo->kSprache) {
-                                $NaviFilter->NewsMonat->cSeo[$oSprache->kSprache] = $oSeo->cSeo;
-                            }
-                        }
+                    if ($oSprache->kSprache == $oSeo_obj->kSprache) {
+                        $NaviFilter->NewsMonat->cSeo[$oSprache->kSprache] = $oSeo_obj->cSeo;
                     }
                 }
             }
-            $obj = self::DB()->select('tnewsmonatsuebersicht', 'kNewsMonatsUebersicht', $NaviFilter->NewsMonat->kNewsMonatsUebersicht, 'kSprache', self::$kSprache, null, null, false, 'cName');
-            if (!empty($obj->cName)) {
-                $NaviFilter->NewsMonat->cName = $obj->cName;
+            if (!empty($oSeo_obj->cName)) {
+                $NaviFilter->NewsMonat->cName = $oSeo_obj->cName;
             }
         }
 
@@ -1353,30 +1345,26 @@ final class Shop
             if (!isset($NaviFilter->NewsKategorie)) {
                 $NaviFilter->NewsKategorie = new stdClass();
             }
-
-            $NaviFilter->NewsKategorie->kNewsKategorie = (int) $cParameter_arr['kNewsKategorie'];
-            $oSeo_arr                                  = self::DB()->query("
-                SELECT cSeo, kSprache
+            $NaviFilter->NewsKategorie->kNewsKategorie = (int)$cParameter_arr['kNewsKategorie'];
+            $oSeo_obj                                  = self::DB()->query("
+                SELECT tseo.cSeo, tseo.kSprache, tnewskategorie.cName
                     FROM tseo
+                    LEFT JOIN tnewskategorie
+                        ON tnewskategorie.kNewsKategorie = tseo.kKey
                     WHERE cKey = 'kNewsKategorie'
-                        AND kKey = " . $NaviFilter->NewsKategorie->kNewsKategorie . "
-                    ORDER BY kSprache", 2
+                        AND kKey = " . $NaviFilter->NewsKategorie->kNewsKategorie, 1
             );
-            if ($bSprache) {
+            if ($bSprache && $oSeo_obj !== null) {
+                $NaviFilter->NewsKategorie->cSeo = [];
                 foreach ($oSprache_arr as $oSprache) {
                     $NaviFilter->NewsKategorie->cSeo[$oSprache->kSprache] = '';
-                    if (is_array($oSeo_arr) && count($oSeo_arr) > 0) {
-                        foreach ($oSeo_arr as $oSeo) {
-                            if ($oSprache->kSprache == $oSeo->kSprache) {
-                                $NaviFilter->NewsKategorie->cSeo[$oSprache->kSprache] = $oSeo->cSeo;
-                            }
-                        }
+                    if ($oSprache->kSprache == $oSeo_obj->kSprache) {
+                        $NaviFilter->NewsKategorie->cSeo[$oSprache->kSprache] = $oSeo_obj->cSeo;
                     }
                 }
             }
-            $obj = self::DB()->select('tnewskategorie', 'kNewsKategorie', $NaviFilter->NewsKategorie->kNewsKategorie, 'kSprache', self::$kSprache, null, null, false, 'cName');
-            if (!empty($obj->cName)) {
-                $NaviFilter->NewsKategorie->cName = $obj->cName;
+            if (!empty($oSeo_obj->cName)) {
+                $NaviFilter->NewsKategorie->cName = $oSeo_obj->cName;
             }
         }
         //search specials
@@ -1396,7 +1384,7 @@ final class Shop
             if ($bSprache) {
                 foreach ($oSprache_arr as $oSprache) {
                     $NaviFilter->Suchspecial->cSeo[$oSprache->kSprache] = '';
-                    if (is_array($oSeo_arr) && count($oSeo_arr) > 0) {
+                    if (is_array($oSeo_arr)) {
                         foreach ($oSeo_arr as $oSeo) {
                             if ($oSprache->kSprache == $oSeo->kSprache) {
                                 $NaviFilter->Suchspecial->cSeo[$oSprache->kSprache] = $oSeo->cSeo;
@@ -1451,7 +1439,7 @@ final class Shop
             if ($bSprache) {
                 foreach ($oSprache_arr as $oSprache) {
                     $NaviFilter->KategorieFilter->cSeo[$oSprache->kSprache] = '';
-                    if (is_array($oSeo_arr) && count($oSeo_arr) > 0) {
+                    if (is_array($oSeo_arr)) {
                         foreach ($oSeo_arr as $oSeo) {
                             if ($oSprache->kSprache == $oSeo->kSprache) {
                                 $NaviFilter->KategorieFilter->cSeo[$oSprache->kSprache] = $oSeo->cSeo;
@@ -1475,18 +1463,21 @@ final class Shop
             if (!isset($NaviFilter->HerstellerFilter)) {
                 $NaviFilter->HerstellerFilter = new stdClass();
             }
-            $NaviFilter->HerstellerFilter->kHersteller = $cParameter_arr['kHerstellerFilter'];
+            $NaviFilter->HerstellerFilter->kHersteller = (int)$cParameter_arr['kHerstellerFilter'];
             $oSeo_arr                                  = self::DB()->query("
-                SELECT cSeo, kSprache
+                SELECT tseo.cSeo, tseo.kSprache, thersteller.cName
                     FROM tseo
+                        LEFT JOIN thersteller
+                        ON thersteller.kHersteller = tseo.kKey
                     WHERE cKey = 'kHersteller' AND kKey = " . (int)$NaviFilter->HerstellerFilter->kHersteller . "
                     ORDER BY kSprache", 2
             );
 
             if ($bSprache) {
                 foreach ($oSprache_arr as $oSprache) {
+                    $NaviFilter->HerstellerFilter->cSeo = [];
                     $NaviFilter->HerstellerFilter->cSeo[$oSprache->kSprache] = '';
-                    if (is_array($oSeo_arr) && count($oSeo_arr) > 0) {
+                    if (is_array($oSeo_arr)) {
                         foreach ($oSeo_arr as $oSeo) {
                             if ($oSprache->kSprache == $oSeo->kSprache) {
                                 $NaviFilter->HerstellerFilter->cSeo[$oSprache->kSprache] = $oSeo->cSeo;
@@ -1495,9 +1486,8 @@ final class Shop
                     }
                 }
             }
-            $seo_obj = self::DB()->select('thersteller', 'kHersteller', $NaviFilter->HerstellerFilter->kHersteller, null, null, null, null, false, 'cName');
-            if (!empty($seo_obj->cName)) {
-                $NaviFilter->HerstellerFilter->cName = $seo_obj->cName;
+            if (isset($oSeo_arr[0]->cName)) {
+                $NaviFilter->HerstellerFilter->cName = $oSeo_arr[0]->cName;
             }
         }
         $NaviFilter->MerkmalFilter = array();
@@ -1517,7 +1507,7 @@ final class Shop
                     if ($bSprache) {
                         foreach ($oSprache_arr as $oSprache) {
                             $oMerkmalWert->cSeo[$oSprache->kSprache] = '';
-                            if (is_array($oSeo_arr) && count($oSeo_arr) > 0) {
+                            if (is_array($oSeo_arr)) {
                                 foreach ($oSeo_arr as $oSeo) {
                                     if ($oSprache->kSprache == $oSeo->kSprache) {
                                         $oMerkmalWert->cSeo[$oSprache->kSprache] = $oSeo->cSeo;
@@ -1617,7 +1607,7 @@ final class Shop
             if ($bSprache) {
                 foreach ($oSprache_arr as $oSprache) {
                     $NaviFilter->SuchspecialFilter->cSeo[$oSprache->kSprache] = '';
-                    if (is_array($oSeo_arr) && count($oSeo_arr) > 0) {
+                    if (is_array($oSeo_arr)) {
                         foreach ($oSeo_arr as $oSeo) {
                             if ($oSprache->kSprache == $oSeo->kSprache) {
                                 $NaviFilter->SuchspecialFilter->cSeo[$oSprache->kSprache] = $oSeo->cSeo;

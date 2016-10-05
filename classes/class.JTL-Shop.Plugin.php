@@ -335,7 +335,7 @@ class Plugin
                 $this->$k = $v;
             }
         } else {
-            return;
+            return null;
         }
         $_shopURL    = Shop::getURL();
         $_shopURLSSL = Shop::getURL(true);
@@ -588,10 +588,15 @@ class Plugin
     public static function getPluginById($cPluginID)
     {
         if (strlen($cPluginID) > 0) {
-            $oObj = Shop::DB()->select('tplugin', 'cPluginID', $cPluginID);
-
-            if (isset($oObj->kPlugin) && intval($oObj->kPlugin) > 0) {
-                return new self($oObj->kPlugin);
+            $cacheID = 'plugin_id_list';
+            if (($plugins = Shop::Cache()->get($cacheID)) === false) {
+                $plugins = Shop::DB()->query("SELECT kPlugin, cPluginID FROM tplugin", 2);
+                Shop::Cache()->set($cacheID, $plugins, [CACHING_GROUP_PLUGIN]);
+            }
+            foreach ($plugins as $plugin) {
+                if ($plugin->cPluginID === $cPluginID) {
+                    return new self($plugin->kPlugin);
+                }
             }
         }
 

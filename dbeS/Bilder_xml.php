@@ -682,12 +682,7 @@ function gibKategoriebildname($Kategoriebild, $Bildformat)
     if (!$GLOBALS['Einstellungen']['bilder']['bilder_kategorie_namen'] || !$Kategoriebild->kKategorie) {
         return (stripos(strrev($Kategoriebild->cPfad), strrev($Bildformat)) === 0) ? $Kategoriebild->cPfad : $Kategoriebild->cPfad . '.' . $Bildformat;
     }
-    $attr = Shop::DB()->query(
-        "SELECT cWert
-            FROM tkategorieattribut
-            WHERE kKategorie = " . (int)$Kategoriebild->kKategorie . "
-            AND cName = '" . KAT_ATTRIBUT_BILDNAME . "'", 1
-    );
+    $attr = Shop::DB()->select('tkategorieattribut', 'kKategorie', (int)$Kategoriebild->kKategorie, 'cName', KAT_ATTRIBUT_BILDNAME, null, null, false, 'cWert');
     if (isset($attr->cWert)) {
         return $attr->cWert . '.' . $Bildformat;
     }
@@ -733,12 +728,7 @@ function gibArtikelbildname($img, $Bildformat)
 
     if ($img->kArtikel) {
         //Bildname Attribut als Funktionsattribut beim Artikel?
-        $attr = Shop::DB()->query(
-            "SELECT cWert
-                FROM tartikelattribut
-                WHERE kArtikel = " . (int)$img->kArtikel . "
-                    AND cName = '" . FKT_ATTRIBUT_BILDNAME . "'", 1
-        );
+        $attr = Shop::DB()->select('tkategorieattribut', 'kArtikel', (int)$img->kArtikel, 'cName', FKT_ATTRIBUT_BILDNAME, null, null, false, 'cWert');
         if (isset($attr->cWert)) {
             if ($img->nNr > 1) {
                 $attr->cWert .= '_' . $img->nNr;

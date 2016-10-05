@@ -13,32 +13,42 @@
 {/if}
 
 {include file='tpl_inc/seite_header.tpl' cTitel=$cTitel cBeschreibung=#couponsDesc# cDokuURL=#couponsURL#}
-{include file='tpl_inc/customer_search.tpl' cUrl='kupons.php'}
+{include file='tpl_inc/customer_search.tpl' cUrl='kupons.php' kKundeSelected_arr=$kKunde_arr}
 
 <script>
-    {literal}
-        $(function () {
-            {/literal}{if $oKupon->cKuponTyp == 'standard' || $oKupon->cKuponTyp == 'neukundenkupon'}
-                makeCurrencyTooltip('fWert');
-            {/if}{literal}
-            makeCurrencyTooltip('fMindestbestellwert');
-            $('#bOpenEnd').change(onEternalCheckboxChange);
-            onEternalCheckboxChange();
-        });
+    $(function () {
+        {if $oKupon->cKuponTyp == 'standard' || $oKupon->cKuponTyp == 'neukundenkupon'}
+            makeCurrencyTooltip('fWert');
+        {/if}
+        makeCurrencyTooltip('fMindestbestellwert');
+        $('#bOpenEnd').change(onEternalCheckboxChange);
+        onEternalCheckboxChange();
+        $('#save-customer-selection').click(onApplySelectedCustomers);
+        onApplySelectedCustomers();
+    });
 
-        function onEternalCheckboxChange () {
-            var elem = $('#bOpenEnd');
-            var bOpenEnd = elem[0].checked;
-            $('#dGueltigBis').prop('disabled', bOpenEnd);
-            $('#dDauerTage').prop('disabled', bOpenEnd);
-            if ($('#bOpenEnd').prop('checked')) {
-                $('#dDauerTage').val('Ende offen');
-                $('#dGueltigBis').val('');
-            } else {
-                $('#dDauerTage').val('');
-            }
+    function onEternalCheckboxChange () {
+        var elem = $('#bOpenEnd');
+        var bOpenEnd = elem[0].checked;
+        $('#dGueltigBis').prop('disabled', bOpenEnd);
+        $('#dDauerTage').prop('disabled', bOpenEnd);
+        if ($('#bOpenEnd').prop('checked')) {
+            $('#dDauerTage').val('Ende offen');
+            $('#dGueltigBis').val('');
+        } else {
+            $('#dDauerTage').val('');
         }
-    {/literal}
+    }
+
+    function onApplySelectedCustomers () {
+        if (selectedCustomers.length > 0) {
+            $('#customerSelectionInfo').val(selectedCustomers.length + ' Kunden');
+            $('#cKunden').val(selectedCustomers.join(';'));
+        } else {
+            $('#customerSelectionInfo').val('Alle Kunden');
+            $('#cKunden').val('-1');
+        }
+    }
 </script>
 
 <div id="content" class="container-fluid">
@@ -360,19 +370,12 @@
                 {if $oKupon->cKuponTyp === 'standard' || $oKupon->cKuponTyp === 'versandkupon'}
                     <div class="input-group{if isset($oKupon->massCreationCoupon)} hidden{/if}" id="limitedByCustomers">
                         <span class="input-group-addon">
-                            <label for="kKunden">{#restrictedToCustomers#}</label>
+                            <label for="customerSelectionInfo">{#restrictedToCustomers#}</label>
                         </span>
                         <span class="input-group-wrap">
-                            <select multiple name="kKunden[]" id="kKunden" class="form-control combo">
-                                <option value="-1"{if $oKupon->cKunden === '-1'} selected{/if}>
-                                    {#allCustomers#}
-                                </option>
-                                {foreach $oKunde_arr as $oKunde}
-                                    <option value="{$oKunde->kKunde}"{if $oKunde->selected == 1} selected{/if}>
-                                        {$oKunde->cNachname}, {$oKunde->cVorname}
-                                    </option>
-                                {/foreach}
-                            </select>
+                            <input type="text" class="form-control" readonly="readonly" id="customerSelectionInfo"
+                                   value="{$kKunde_arr|implode:', '}">
+                            <input type="hidden" id="cKunden" name="cKunden" value="{$oKupon->cKunden}">
                         </span>
                         <span class="input-group-addon">
                             <button type="button" class="btn btn-primary btn-xs"

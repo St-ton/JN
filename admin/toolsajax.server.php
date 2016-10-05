@@ -620,21 +620,20 @@ function getCustomerList($searchString, $kKundeSelected_arr)
     $oResponse = new xajaxResponse();
     $oResponse->assign('customer-search-result-list', 'innerHTML', $customerListHtml);
     $oResponse->assign('customer-list-title', 'innerHTML', $listTitle);
+    $oResponse->script('shownCustomers=[' . implode(',', array_map(function ($e) { return $e->kKunde; }, $oKunde_arr)) . ']');
 
     foreach ($oKunde_arr as $oKunde) {
-        $oResponse->script('runningRequests.push(xajax_decodeCustomer(' . $oKunde->kKunde . ', ' .
-            (in_array($oKunde->kKunde, $kKundeSelected_arr) ? 'true' : 'false') . '));');
+        $oResponse->script('runningRequests.push(xajax_decodeCustomer(' . $oKunde->kKunde . '));');
     }
 
     return $oResponse;
 }
 
 /**
- * @param int  $kKunde
- * @param bool $bSelected
+ * @param int $kKunde
  * @return xajaxResponse
  */
-function decodeCustomer($kKunde, $bSelected)
+function decodeCustomer($kKunde)
 {
     global $smarty;
 
@@ -642,7 +641,6 @@ function decodeCustomer($kKunde, $bSelected)
 
     $customerHtml = $smarty->assign('cPart', 'fullcustomer')
         ->assign('oKunde', $oKunde)
-        ->assign('bSelected', $bSelected)
         ->fetch('tpl_inc/customer_search.tpl');
 
     $oResponse = new xajaxResponse();

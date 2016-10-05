@@ -230,7 +230,7 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
         default:
             $SieSindHierString .= ' &gt; <a href="' . $linkURL . '">' . $linkname . '</a>';
             $SieSindHierString .= '<br />';
-            $oLink      = $linkHelper->getLinkObject($kLink);
+            $oLink      = ($kLink > 0) ? $linkHelper->getLinkObject($kLink) : null;
             $kVaterLink = (isset($oLink->kVaterLink)) ? (int)$oLink->kVaterLink : null;
             $elems      = array();
             do {

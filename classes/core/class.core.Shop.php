@@ -853,7 +853,7 @@ final class Shop
                 //EXPERIMENTAL_MULTILANG_SHOP END
                 //Link active?
                 if (isset($oSeo->cKey) && $oSeo->cKey === 'kLink') {
-                    $bIsActive = self::DB()->select('tlink', 'kLink', $oSeo->kKey);
+                    $bIsActive = self::DB()->select('tlink', 'kLink', (int)$oSeo->kKey);
                     if ($bIsActive->bIsActive === '0') {
                         $oSeo = false;
                     }
@@ -917,9 +917,9 @@ final class Shop
                 }
                 if (isset($oSeo->kSprache) && $oSeo->kSprache > 0) {
                     $kSprache = (int)$oSeo->kSprache;
-                    $spr      = (class_exists('Sprache')) ?
-                        self::Lang()->getIsoFromLangID($kSprache) :
-                        self::DB()->query("SELECT cISO FROM tsprache WHERE kSprache = " . $kSprache, 1);
+                    $spr      = (class_exists('Sprache'))
+                        ? self::Lang()->getIsoFromLangID($kSprache)
+                        : self::DB()->select('tsprache', 'kSprache', $kSprache);
                     $cLang = (isset($spr->cISO)) ? $spr->cISO : null;
                     if ($cLang !== $_SESSION['cISOSprache']) {
                         checkeSpracheWaehrung($cLang);

@@ -622,8 +622,8 @@ function getCustomerList($searchString, $kKundeSelected_arr)
     $oResponse->assign('customer-list-title', 'innerHTML', $listTitle);
 
     foreach ($oKunde_arr as $oKunde) {
-        $oResponse->script('xajax_decodeCustomer(' . $oKunde->kKunde . ', ' .
-            (in_array($oKunde->kKunde, $kKundeSelected_arr) ? 'true' : 'false') . ');');
+        $oResponse->script('runningRequests.push(xajax_decodeCustomer(' . $oKunde->kKunde . ', ' .
+            (in_array($oKunde->kKunde, $kKundeSelected_arr) ? 'true' : 'false') . '));');
     }
 
     return $oResponse;

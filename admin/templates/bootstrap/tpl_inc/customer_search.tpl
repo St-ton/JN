@@ -22,10 +22,10 @@
         var searchString      = '';
         var lastSearchString  = '';
         var selectedCustomers = [3,6,9];
-        var lastRequest       = null;
+        var runningRequests   = [];
 
         $(function () {
-            lastRequest = xajax_getCustomerList('', selectedCustomers);
+            runningRequests.push(xajax_getCustomerList('', selectedCustomers));
         });
 
         function onChangeCustomerSearchInput (searchInput)
@@ -33,11 +33,10 @@
             searchString = $(searchInput).val();
 
             if (searchString !== lastSearchString) {
+                runningRequests.forEach(function (request) { xajax.abortRequest(request); });
+                runningRequests = [];
                 lastSearchString = searchString;
-                if (lastRequest) {
-                    xajax.abortRequest(lastRequest);
-                }
-                lastRequest = xajax_getCustomerList(searchString, selectedCustomers);
+                runningRequests.push(xajax_getCustomerList(searchString, selectedCustomers));
             }
         }
 

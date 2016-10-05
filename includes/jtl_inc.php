@@ -124,7 +124,7 @@ function pruefeKategorieSichtbarkeit($kKundengruppe)
         $categoryList = $_SESSION;
     }
 
-    $oKatSichtbarkeit_arr = Shop::DB()->query("SELECT kKategorie FROM tkategoriesichtbarkeit WHERE kKundengruppe = " . $kKundengruppe, 2);
+    $oKatSichtbarkeit_arr = Shop::DB()->selectAll('tkategoriesichtbarkeit', 'kKundengruppe', $kKundengruppe, 'kKategorie');
 
     if (is_array($oKatSichtbarkeit_arr) && count($oKatSichtbarkeit_arr) > 0) {
         $cKatKey_arr = array_keys($categoryList);

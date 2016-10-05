@@ -27,13 +27,15 @@ function speicherAGBWRB($kKundengruppe, $kSprache, $cPost_arr, $kText = 0)
             // Standard umsetzen
             Shop::DB()->query("UPDATE ttext SET nStandard = 0", 3);
         }
-        $oAGBWRB->kSprache        = $kSprache;
-        $oAGBWRB->kKundengruppe   = $kKundengruppe;
-        $oAGBWRB->cAGBContentText = $cPost_arr['cAGBContentText'];
-        $oAGBWRB->cAGBContentHtml = $cPost_arr['cAGBContentHtml'];
-        $oAGBWRB->cWRBContentText = $cPost_arr['cWRBContentText'];
-        $oAGBWRB->cWRBContentHtml = $cPost_arr['cWRBContentHtml'];
-        $oAGBWRB->nStandard       = (isset($cPost_arr['nStandard'])) ? $cPost_arr['nStandard'] : 0;
+        $oAGBWRB->kSprache            = $kSprache;
+        $oAGBWRB->kKundengruppe       = $kKundengruppe;
+        $oAGBWRB->cAGBContentText     = $cPost_arr['cAGBContentText'];
+        $oAGBWRB->cAGBContentHtml     = $cPost_arr['cAGBContentHtml'];
+        $oAGBWRB->cWRBContentText     = $cPost_arr['cWRBContentText'];
+        $oAGBWRB->cWRBContentHtml     = $cPost_arr['cWRBContentHtml'];
+        $oAGBWRB->cWRBFormContentText = $cPost_arr['cWRBFormContentText'];
+        $oAGBWRB->cWRBFormContentHtml = $cPost_arr['cWRBFormContentHtml'];
+        $oAGBWRB->nStandard           = (isset($cPost_arr['nStandard'])) ? $cPost_arr['nStandard'] : 0;
 
         Shop::DB()->insert('ttext', $oAGBWRB);
 

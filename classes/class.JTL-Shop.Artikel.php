@@ -1063,7 +1063,7 @@ class Artikel
             return $this;
         }
         $kKunde       = isset($_SESSION['Kunde']) ? (int)$_SESSION['Kunde']->kKunde : 0;
-        $this->Preise = new Preise($kKundengruppe, $oArtikelTMP->kArtikel, $kKunde);
+        $this->Preise = new Preise($kKundengruppe, $oArtikelTMP->kArtikel, $kKunde, (int)$oArtikelTMP->kSteuerklasse);
         $this->Preise->localizePreise();
 
         return $this;
@@ -1114,7 +1114,7 @@ class Artikel
             $kKundengruppe = (int)$_SESSION['Kundengruppe']->kKundengruppe;
         }
         $kKunde       = isset($_SESSION['Kunde']) ? (int)$_SESSION['Kunde']->kKunde : 0;
-        $this->Preise = new Preise($kKundengruppe, $this->kArtikel, $kKunde);
+        $this->Preise = new Preise($kKundengruppe, $this->kArtikel, $kKunde, (int)$this->kSteuerklasse);
         // Varkombi Kind?
         if ($this->kEigenschaftKombi > 0 && $this->kVaterArtikel > 0) {
             $this->Preise->rabbatierePreise($this->getDiscount($kKundengruppe, $this->kVaterArtikel));
@@ -1364,9 +1364,8 @@ class Artikel
                 $Attribut        = new stdClass();
                 $Attribut->nSort = $att->nSort;
                 $Attribut->cName = $att->cName;
-                $Attribut->cWert = ($att->cTextWert) ?
-                    $att->cTextWert :
-                    $att->cStringWert;
+                $Attribut->cWert = $att->cTextWert ? $att->cTextWert : $att->cStringWert;
+
                 if ($att->kAttribut > 0 && $kSprache > 0 && !standardspracheAktiv()) {
                     $attributsprache = Shop::DB()->select('tattributsprache', 'kAttribut', (int)$att->kAttribut, 'kSprache', $kSprache);
                     if (isset($attributsprache->cName) && $attributsprache->cName) {
@@ -1723,7 +1722,8 @@ class Artikel
      * @param int    $nOption
      * @return $this
      */
-    public function holeBewertung($kSprache = 0, $nAnzahlSeite = 10, $nSeite = 1, $nSterne = 0, $cFreischalten = 'N', $nOption = 0) {
+    public function holeBewertung($kSprache = 0, $nAnzahlSeite = 10, $nSeite = 1, $nSterne = 0, $cFreischalten = 'N', $nOption = 0)
+    {
         if (!$kSprache) {
             $kSprache = Shop::$kSprache;
         }
@@ -3494,13 +3494,9 @@ class Artikel
         if (isset($oArtikelOptionen->nMedienDatei) && $oArtikelOptionen->nMedienDatei) {
             $this->holeMedienDatei($kSprache);
         }
-        if (isset($oArtikelOptionen->nVariationKombiKinder) && $oArtikelOptionen->nVariationKombiKinder) {
-            if (isset($this->nIstVater) && $this->nIstVater == 1 &&
-                ((Shop::getPageType() === PAGE_ARTIKEL && $conf['artikeldetails']['artikeldetails_variationskombikind_bildvorschau'] === 'Y') ||
-                    (Shop::getPageType() === PAGE_ARTIKELLISTE && $conf['artikeluebersicht']['artikeluebersicht_varikombi_anzahl'] > 0))
-            ) {
-                $this->holeVariationKombiKinder($kKundengruppe, $kSprache);
-            }
+        if (isset($oArtikelOptionen->nVariationKombiKinder) && $oArtikelOptionen->nVariationKombiKinder && $this->nIstVater == 1 &&
+            ($conf['artikeldetails']['artikeldetails_variationskombikind_bildvorschau'] === 'Y' || $conf['artikeluebersicht']['artikeluebersicht_varikombi_anzahl'] > 0)) {
+            $this->holeVariationKombiKinder($kKundengruppe, $kSprache);
         }
         if ((isset($oArtikelOptionen->nStueckliste) && $oArtikelOptionen->nStueckliste) ||
             isset($this->FunktionsAttribute[FKT_ATTRIBUT_STUECKLISTENKOMPONENTEN]) && (int)$this->FunktionsAttribute[FKT_ATTRIBUT_STUECKLISTENKOMPONENTEN] === 1
@@ -3525,35 +3521,34 @@ class Artikel
             $oArtikelOptionen->nVariationKombi = 0;
         }
         $this->holVariationen($kKundengruppe, $kSprache, $oArtikelOptionen->nVariationKombi);
+
+        //Artikel mit Variationen, bei denen der Lagerbestand gesetzt und 0 ist, werden entsprechend der globalen Einstellung angezeigt
+        $tmpBestandVariationen = 0;
+        foreach ($this->Variationen as $tmpVari) {
+            $tmpBestandVariationen += $tmpVari->nLieferbareVariationswerte;
+        }
+        if (((int) $conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER ||
+            (int) $conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL) &&
+            $this->cLagerVariation === 'Y' && count($this->Variationen) > 0 && $tmpBestandVariationen === 0) {
+            unset($this->kArtikel);
+            return;
+        }
+
         /* Sobald ein KindArtikel teurer ist als der Vaterartikel, muss nVariationsAufpreisVorhanden auf 1 gesetzt werden damit in der Artikelvorschau ein "Preis ab ..." erscheint
            aber nur wenn auch Preise angezeigt werden, this->Preise also auch vorhanden ist */
         if (is_object($this->Preise) && $oArtikelTMP->kVaterArtikel == 0 && $oArtikelTMP->nIstVater == 1) {
             $fVKNetto         = ($this->Preise->fVKNetto !== null) ? $this->Preise->fVKNetto : 0.0;
-            $fMaxRabatt       = $this->getDiscount($kKundengruppe, $oArtikelTMP->kArtikel);
             $oKindSonderpreis = Shop::DB()->query(
-                "SELECT sp.fNettoPreis > {$fVKNetto} AS nVariationsAufpreisVorhanden
-                    FROM tsonderpreise AS sp
-                    JOIN tartikel AS a ON a.kVaterArtikel = {$oArtikelTMP->kArtikel}
-                    WHERE sp.kArtikelSonderpreis = a.kArtikel AND sp.kKundengruppe = {$kKundengruppe}
-                    GROUP BY a.kArtikel
-                    ORDER BY nVariationsAufpreisVorhanden DESC
-                    LIMIT 1", 1
-            );
-            $oKindPreis = Shop::DB()->query(
-                "SELECT ROUND(d.fVKNetto - d.fVKNetto * {$fMaxRabatt} / 100, 8) > {$fVKNetto} AS nVariationsAufpreisVorhanden
-                    FROM tpreis AS p
-                    JOIN tartikel AS a ON a.kVaterArtikel = {$oArtikelTMP->kArtikel}
+                "SELECT COUNT(a.kArtikel) AS nVariationsAufpreisVorhanden
+                    FROM tartikel AS a
+                    JOIN tpreis AS p ON p.kArtikel = a.kArtikel AND p.kKundengruppe = {$kKundengruppe}
                     JOIN tpreisdetail AS d ON d.kPreis = p.kPreis
-                    LEFT JOIN tsonderpreise AS sp ON sp.kArtikelSonderpreis = a.kArtikel
-                    WHERE p.kArtikel = a.kArtikel AND p.kKundengruppe = {$kKundengruppe} AND sp.kArtikelSonderpreis IS NULL
-                    GROUP BY a.kArtikel
-                    ORDER BY nVariationsAufpreisVorhanden DESC
-                    LIMIT 1", 1
+                    LEFT JOIN tartikelsonderpreis AS asp ON asp.kArtikel = a.kArtikel
+                    LEFT JOIN tsonderpreise AS sp ON sp.kArtikelSonderpreis = asp.kArtikelSonderpreis AND sp.kKundengruppe = {$kKundengruppe}
+                    WHERE a.kVaterArtikel = {$oArtikelTMP->kArtikel}
+                        AND COALESCE(sp.fNettoPreis, d.fVKNetto) - {$fVKNetto} > 0.0001", 1
             );
-            if ((isset($oKindPreis->nVariationsAufpreisVorhanden) && $oKindPreis->nVariationsAufpreisVorhanden)
-                || (isset($oKindSonderpreis->nVariationsAufpreisVorhanden) && $oKindSonderpreis->nVariationsAufpreisVorhanden)) {
-                $this->nVariationsAufpreisVorhanden = 1;
-            }
+            $this->nVariationsAufpreisVorhanden = (int)$oKindSonderpreis->nVariationsAufpreisVorhanden > 0 ? 1 : 0;
         }
         if (isset($oArtikelOptionen->nVariationDetailPreis) && $oArtikelOptionen->nVariationDetailPreis) {
             if (isset($this->nIstVater) && $this->nIstVater == 1) {
@@ -3623,7 +3618,7 @@ class Artikel
         if ($this->fLagerbestand <= 0 && $this->cLagerBeachten === 'Y' && $this->cLagerKleinerNull !== 'Y' && $this->cLagerVariation !== 'Y') {
             $this->inWarenkorbLegbar = INWKNICHTLEGBAR_LAGER;
         }
-        if (isset($this->Preise->fVKNetto) && $this->Preise->fVKNetto == 0 && isset($conf['global']['global_preis0']) && $conf['global']['global_preis0'] === 'N') {
+        if ((!$this->bHasKonfig) && isset($this->Preise->fVKNetto) && $this->Preise->fVKNetto == 0 && isset($conf['global']['global_preis0']) && $conf['global']['global_preis0'] === 'N') {
             $this->inWarenkorbLegbar = INWKNICHTLEGBAR_PREISAUFANFRAGE;
         }
         if (isset($this->FunktionsAttribute[FKT_ATTRIBUT_UNVERKAEUFLICH]) && $this->FunktionsAttribute[FKT_ATTRIBUT_UNVERKAEUFLICH]) {
@@ -5908,15 +5903,12 @@ class Artikel
      */
     public function getDimension()
     {
-        if ((float)$this->fLaenge > 0 && (float)$this->fHoehe > 0) {
-            return ['fLaenge' => $this->fLaenge,
-                'fHoehe'      => $this->fHoehe,
-                'fBreite'     => $this->fBreite,
-                'nAnzeigeTyp' => (float)$this->fBreite > 0 ? 1 : 0
-            ];
-        }
+        $dim            = array();
+        $dim['length']  = (float)$this->fLaenge;
+        $dim['width']   = (float)$this->fBreite;
+        $dim['height']  = (float)$this->fHoehe;
 
-        return;
+        return $dim;
     }
 
     /**
@@ -5924,19 +5916,16 @@ class Artikel
      */
     public function getDimensionLocalized()
     {
+        $cValue_arr = [];
         if (($fDimension_arr = $this->getDimension()) !== null) {
-            $cValue_arr = [];
             $kSprache   = Shop::$kSprache;
-
-            $cValue_arr[] = Trennzeichen::getUnit(JTLSEPARATER_LENGTH, $kSprache, $fDimension_arr['fLaenge']);
-            if ($fDimension_arr['nAnzeigeTyp'] === 1) {
-                $cValue_arr[] = Trennzeichen::getUnit(JTLSEPARATER_LENGTH, $kSprache, $fDimension_arr['fBreite']);
+            foreach ($fDimension_arr as $key => $val) {
+                if (!empty($val)) {
+                    $cValue_arr[Shop::Lang()->get('dimension_' . $key, 'productDetails')] = Trennzeichen::getUnit(JTLSEPARATER_LENGTH, $kSprache, $val);
+                }
             }
-            $cValue_arr[] = Trennzeichen::getUnit(JTLSEPARATER_LENGTH, $kSprache, $fDimension_arr['fHoehe']);
-
-            return sprintf('%s cm', implode(' x ', $cValue_arr));
         }
 
-        return;
+        return $cValue_arr;
     }
 }

@@ -357,12 +357,7 @@ function gibTagging($Einstellungen)
  */
 function gibNewsletterHistory()
 {
-    $oNewsletterHistory_arr = Shop::DB()->query(
-        "SELECT kNewsletterHistory, cBetreff, DATE_FORMAT(dStart, '%d.%m.%Y %H:%i') AS Datum, cHTMLStatic
-            FROM tnewsletterhistory
-            WHERE kSprache = " . (int)$_SESSION['kSprache'] . "
-            ORDER BY dStart DESC", 2
-    );
+    $oNewsletterHistory_arr = Shop::DB()->selectAll('tnewsletterhistory', 'kSprache', (int)$_SESSION['kSprache'], 'kNewsletterHistory, cBetreff, DATE_FORMAT(dStart, \'%d.%m.%Y %H:%i\') AS Datum, cHTMLStatic', 'dStart DESC');
     // URLs bauen
     if (is_array($oNewsletterHistory_arr) && count($oNewsletterHistory_arr) > 0) {
         foreach ($oNewsletterHistory_arr as $i => $oNewsletterHistory) {

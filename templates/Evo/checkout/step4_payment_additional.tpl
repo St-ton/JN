@@ -1,8 +1,8 @@
 <form id="form_payment_extra" class="form payment_extra" method="post" action="{get_static_route id='bestellvorgang.php'}">
     {$jtl_token}
     <div class="row">
-        <div class="col-xs-12 col-md-10 col-md-offset-1">
-            <div class="well panel-wrap">
+        <div class="col-xs-12">
+            <div class="panel-wrap">
                 <div class="panel panel-default" id="order-additional-payment">
                     <div class="panel-body">
                         {include file=$Zahlungsart->cZusatzschrittTemplate}

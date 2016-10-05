@@ -71,8 +71,12 @@ switch ($action) {
 
             $step = 'ZahlungZusatzschritt';
 
+            $settings = Shop::Smarty()->getTemplateVars('Einstellungen');
+            $settings = array_merge($settings, Shop::getSettings([CONF_ZAHLUNGSARTEN]));
+
             Shop::Smarty()
                 ->assign('step', $step)
+                ->assign('Einstellungen', $settings)
                 ->assign('bestellschritt', gibBestellschritt($step))
                 ->display('checkout/index.tpl');
 
@@ -89,41 +93,29 @@ switch ($action) {
             _exit(400);
         }
 
-        $deliveryAddress = $_SESSION['Lieferadresse'];
-        foreach (get_object_vars($deliveryAddress) as $key => $value) {
-            $deliveryAddress->{$key} = StringHandler::unhtmlentities($value);
-        }
+        PayPalHelper::addSurcharge($api->getPaymentId());
 
-        $address = json_decode(utf8_encode(sprintf('{
-            "recipient_name": "%s %s",
-            "line1": "%s %s",
-            "city": "%s",
-            "postal_code": "%s",
-            "country_code": "%s"
-        }', $deliveryAddress->cVorname, $deliveryAddress->cNachname,
-            $deliveryAddress->cStrasse, $deliveryAddress->cHausnummer,
-            $deliveryAddress->cOrt,
-            $deliveryAddress->cPLZ,
-            $deliveryAddress->cLand)));
+        $basket = PayPalHelper::getBasket();
+        $shippingAddress = clone $_SESSION['Lieferadresse'];
 
-        // 2-letter code for US states, and the equivalent for other countries. 100 characters max.
-        if (in_array($deliveryAddress->cLand, ['US', 'CA', 'IT', 'NL'])) {
-            $state = Staat::getRegionByName($_SESSION['Lieferadresse']->cBundesland);
-            if ($state !== null) {
-                $address->state = $state->cCode;
-            }
-        }
+        $amount = $api->prepareAmount($basket, $basket->currency->cISO);
+        $shippingAddress = $api->prepareShippingAddress($_SESSION['Lieferadresse']);
+
+        $patchShipping = new \PayPal\Api\Patch();
+        $patchShipping->setOp('add')
+            ->setPath('/transactions/0/item_list/shipping_address')
+            ->setValue($shippingAddress);
+
+        $patchAmount = new \PayPal\Api\Patch();
+        $patchAmount->setOp('replace')
+            ->setPath('/transactions/0/amount')
+            ->setValue($amount);
 
         try {
             $payment = Payment::get($_GET['id'], $apiContext);
 
-            $patchShipping = new \PayPal\Api\Patch();
-            $patchShipping->setOp('add')
-                ->setPath('/transactions/0/item_list/shipping_address')
-                ->setValue($address);
-
             $patchRequest = new \PayPal\Api\PatchRequest();
-            $patchRequest->setPatches([$patchShipping]);
+            $patchRequest->setPatches([$patchShipping, $patchAmount]);
 
             $payment->update($patchRequest, $apiContext);
             $api->logResult('Patch', $patchRequest, $payment);

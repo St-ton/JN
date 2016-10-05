@@ -107,7 +107,7 @@ function bearbeiteDelete($oXml)
         Shop::DB()->delete('tversand', 'kLieferschein', $kLieferschein);
         Shop::DB()->delete('tlieferschein', 'kLieferschein', $kLieferschein);
 
-        $oLieferscheinPos_arr = Shop::DB()->query("SELECT kLieferscheinPos FROM tlieferscheinpos WHERE kLieferschein = " . $kLieferschein, 2);
+        $oLieferscheinPos_arr = Shop::DB()->selectAll('tlieferscheinpos', 'kLieferschein', $kLieferschein, 'kLieferscheinPos');
         if (is_array($oLieferscheinPos_arr)) {
             foreach ($oLieferscheinPos_arr as $oLieferscheinPos) {
                 Shop::DB()->delete('tlieferscheinpos', 'kLieferscheinPos', (int)$oLieferscheinPos->kLieferscheinPos);

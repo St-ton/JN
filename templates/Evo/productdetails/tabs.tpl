@@ -98,7 +98,7 @@
             </div>
         {/if}
         {* VERFUEGBARKEITSBENACHRICHTIGUNG *}
-        {if $verfuegbarkeitsBenachrichtigung == 1 && $Artikel->cLagerBeachten === 'Y'}
+        {if $verfuegbarkeitsBenachrichtigung == 1 && $Artikel->cLagerBeachten === 'Y' && $Artikel->cLagerKleinerNull !== 'Y'}
             <div role="tabpanel" class="{if $tabanzeige}tab-pane{else}panel panel-default{/if}" id="tab-benachrichtigung">
                 <div class="panel-heading" {if $tabanzeige}data-toggle="collapse" {/if}data-parent="#article-tabs" data-target="#tab-benachrichtigung">
                     <h3 class="panel-title">{lang key="notifyMeWhenProductAvailableAgain" section="global"}</h3>

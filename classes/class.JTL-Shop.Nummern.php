@@ -49,11 +49,7 @@ class Nummern
      */
     private function loadFromDB($nArt = 0)
     {
-        $oObj = Shop::DB()->query(
-            "SELECT *
-              FROM tnummern
-              WHERE nArt = " . (int)$nArt, 1
-        );
+        $oObj = Shop::DB()->select('tnummern', 'nArt', (int)$nArt);
         if (isset($oObj->nArt) && $oObj->nArt > 0) {
             $cMember_arr = array_keys(get_object_vars($oObj));
             foreach ($cMember_arr as $cMember) {

@@ -355,9 +355,9 @@
                                             <div class="btn-group">
                                                 <a class="btn btn-default" href="newsletter.php?&vorschau={$oNewsletterVorlage->kNewsletterVorlage}&iframe=1&tab=newslettervorlagen&token={$smarty.session.jtl_token}" title="{#newsletterPreview#}"><i class="fa fa-eye"></i></a>
                                                 {if $oNewsletterVorlage->kNewslettervorlageStd > 0}
-                                                    <a class="btn btn-default" href="newsletter.php?newslettervorlagenstd=1&editieren={$oNewsletterVorlage->kNewsletterVorlage}&tab=newslettervorlagen&token={$smarty.session.jtl_token}" title="Bearbeiten"><i class="fa fa-edit"></i></a>
+                                                    <a class="btn btn-default" href="newsletter.php?newslettervorlagenstd=1&editieren={$oNewsletterVorlage->kNewsletterVorlage}&tab=newslettervorlagen&token={$smarty.session.jtl_token}" title="{#modify#}"><i class="fa fa-edit"></i></a>
                                                 {else}
-                                                    <a class="btn btn-default" href="newsletter.php?newslettervorlagen=1&editieren={$oNewsletterVorlage->kNewsletterVorlage}&tab=newslettervorlagen&token={$smarty.session.jtl_token}" title="Bearbeiten"><i class="fa fa-edit"></i></a>
+                                                    <a class="btn btn-default" href="newsletter.php?newslettervorlagen=1&editieren={$oNewsletterVorlage->kNewsletterVorlage}&tab=newslettervorlagen&token={$smarty.session.jtl_token}" title="{#modify#}"><i class="fa fa-edit"></i></a>
                                                 {/if}
                                                 <a class="btn btn-default" href="newsletter.php?newslettervorlagen=1&vorbereiten={$oNewsletterVorlage->kNewsletterVorlage}&tab=newslettervorlagen&token={$smarty.session.jtl_token}" title="{#newsletterprepare#}">{#newsletterprepare#}</a>
                                             </div>

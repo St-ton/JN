@@ -9,7 +9,7 @@ $oAccount->permission('MODULE_PRODUCTTAGS_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'tagging_inc.php';
-
+/** @global JTLSmarty $smarty */
 setzeSprache();
 
 $cHinweis          = '';
@@ -80,13 +80,12 @@ if (isset($_POST['tagging']) && intval($_POST['tagging']) === 1 && validateToken
             foreach ($Tags as $tag) {
                 if ($tag->cName != $_POST['mapping_' . $tag->kTag]) {
                     if (strlen($_POST['mapping_' . $tag->kTag]) > 0) {
-                        unset($tagmapping_obj);
                         $tagmapping_obj           = new stdClass();
                         $tagmapping_obj->kSprache = (int)$_SESSION['kSprache'];
                         $tagmapping_obj->cName    = $tag->cName;
                         $tagmapping_obj->cNameNeu = Shop::DB()->escape($_POST['mapping_' . $tag->kTag]);
 
-                        $Neuertag = Shop::DB()->query("SELECT kTag FROM ttag WHERE cName='" . $tagmapping_obj->cNameNeu . "'", 1);
+                        $Neuertag = Shop::DB()->select('ttag', 'cName', $tagmapping_obj->cNameNeu);
 
                         if (isset($Neuertag->kTag) && $Neuertag->kTag > 0) {
                             Shop::DB()->insert('ttagmapping', $tagmapping_obj);

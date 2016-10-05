@@ -6,7 +6,7 @@
 require_once dirname(__FILE__) . '/includes/admininclude.php';
 
 $oAccount->permission('DISPLAY_BRANDING_VIEW', true, true);
-
+/** @global JTLSmarty $smarty */
 $cHinweis = '';
 $cFehler  = '';
 $step     = 'branding_uebersicht';
@@ -41,11 +41,7 @@ $smarty->assign('cRnd', time())
  */
 function gibBrandings()
 {
-    return Shop::DB()->query(
-        "SELECT *
-            FROM tbranding
-            ORDER BY cBildKategorie", 2
-    );
+    return Shop::DB()->selectAll('tbranding', [], [], '*', 'cBildKategorie');
 }
 
 /**
@@ -82,17 +78,10 @@ function speicherEinstellung($kBranding, $cPost_arr, $cFiles_arr)
     if (strlen($cFiles_arr['cBrandingBild']['name']) > 0) {
         $oBrandingEinstellung->cBrandingBild = 'kBranding_' . $kBranding . mappeFileTyp($cFiles_arr['cBrandingBild']['type']);
     } else {
-        $oBrandingEinstellungTMP = Shop::DB()->query(
-            "SELECT cBrandingBild
-                FROM tbrandingeinstellung
-                WHERE kBranding = " . $kBranding, 1
-        );
-
-        if (strlen($oBrandingEinstellungTMP->cBrandingBild)) {
-            $oBrandingEinstellung->cBrandingBild = $oBrandingEinstellungTMP->cBrandingBild;
-        } else {
-            $oBrandingEinstellung->cBrandingBild = '';
-        }
+        $oBrandingEinstellungTMP             = Shop::DB()->select('tbrandingeinstellung', 'kBranding', $kBranding);
+        $oBrandingEinstellung->cBrandingBild = (!empty($oBrandingEinstellungTMP->cBrandingBild))
+            ? $oBrandingEinstellungTMP->cBrandingBild
+            : '';
     }
 
     if ($oBrandingEinstellung->kBranding > 0 && strlen($oBrandingEinstellung->cPosition) > 0 && strlen($oBrandingEinstellung->cBrandingBild) > 0) {

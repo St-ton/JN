@@ -6,7 +6,7 @@
 require_once dirname(__FILE__) . '/includes/admininclude.php';
 
 $oAccount->permission('SETTINGS_CONTACTFORM_VIEW', true, true);
-
+/** @global JTLSmarty $smarty */
 $cHinweis = '';
 $cTab     = 'config';
 $step     = 'uebersicht';
@@ -35,7 +35,7 @@ if (isset($_POST['content']) && intval($_POST['content']) === 1 && validateToken
         $spezialContent3->cTyp            = 'titel';
         $spezialContent1->cContent        = $_POST['cContentTop_' . $sprache->cISO];
         $spezialContent2->cContent        = $_POST['cContentBottom_' . $sprache->cISO];
-        $spezialContent3->cContent        = $_POST['cTitle_' . $sprache->cISO];
+        $spezialContent3->cContent        = htmlspecialchars($_POST['cTitle_' . $sprache->cISO]);
 
         Shop::DB()->insert('tspezialcontentsprache', $spezialContent1);
         Shop::DB()->insert('tspezialcontentsprache', $spezialContent2);
@@ -51,7 +51,7 @@ if (isset($_POST['content']) && intval($_POST['content']) === 1 && validateToken
 if (isset($_POST['betreff']) && intval($_POST['betreff']) === 1 && validateToken()) {
     if ($_POST['cName'] && $_POST['cMail']) {
         $neuerBetreff        = new stdClass();
-        $neuerBetreff->cName = $_POST['cName'];
+        $neuerBetreff->cName = htmlspecialchars($_POST['cName']);
         $neuerBetreff->cMail = $_POST['cMail'];
         if (is_array($_POST['cKundengruppen'])) {
             $neuerBetreff->cKundengruppen = implode(';', $_POST['cKundengruppen']) . ';';
@@ -85,7 +85,7 @@ if (isset($_POST['betreff']) && intval($_POST['betreff']) === 1 && validateToken
             $neuerBetreffSprache->cISOSprache = $sprache->cISO;
             $neuerBetreffSprache->cName       = $neuerBetreff->cName;
             if ($_POST['cName_' . $sprache->cISO]) {
-                $neuerBetreffSprache->cName = $_POST['cName_' . $sprache->cISO];
+                $neuerBetreffSprache->cName = htmlspecialchars($_POST['cName_' . $sprache->cISO]);
             }
             Shop::DB()->delete('tkontaktbetreffsprache', array('kKontaktBetreff', 'cISOSprache'), array((int)$kKontaktBetreff, $sprache->cISO));
             Shop::DB()->insert('tkontaktbetreffsprache', $neuerBetreffSprache);
@@ -110,12 +110,7 @@ if (((isset($_GET['kKontaktBetreff']) && intval($_GET['kKontaktBetreff']) > 0) |
 }
 
 if ($step === 'uebersicht') {
-    $Conf = Shop::DB()->query("
-        SELECT *
-            FROM teinstellungenconf
-            WHERE kEinstellungenSektion = " . CONF_KONTAKTFORMULAR . "
-            ORDER BY nSort", 2
-    );
+    $Conf = Shop::DB()->selectAll('teinstellungenconf', 'kEinstellungenSektion', CONF_KONTAKTFORMULAR, '*', 'nSort');
     $configCount = count($Conf);
     for ($i = 0; $i < $configCount; $i++) {
         if ($Conf[$i]->cInputTyp === 'selectbox') {
@@ -135,7 +130,7 @@ if ($step === 'uebersicht') {
             if (is_array($kKundengruppen)) {
                 foreach ($kKundengruppen as $kKundengruppe) {
                     if (is_numeric($kKundengruppe)) {
-                        $kndgrp = Shop::DB()->query("SELECT cName FROM tkundengruppe WHERE kKundengruppe = " . (int)$kKundengruppe, 1);
+                        $kndgrp = Shop::DB()->select('tkundengruppe', 'kKundengruppe', (int)$kKundengruppe);
                         $kunden .= ' ' . $kndgrp->cName;
                     }
                 }
@@ -204,9 +199,9 @@ function getNames($kKontaktBetreff)
     if (!$kKontaktBetreff) {
         return $namen;
     }
-    $zanamen = Shop::DB()->query("SELECT * FROM tkontaktbetreffsprache WHERE kKontaktBetreff = " . $kKontaktBetreff, 2);
+    $zanamen = Shop::DB()->selectAll('tkontaktbetreffsprache', 'kKontaktBetreff', $kKontaktBetreff);
     $nCount  = count($zanamen);
-    for ($i = 0; $i < $nCount; $i++) {
+    for ($i = 0; $i < $nCount; ++$i) {
         $namen[$zanamen[$i]->cISOSprache] = $zanamen[$i]->cName;
     }
 

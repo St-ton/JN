@@ -9,7 +9,7 @@ require_once dirname(__FILE__) . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
 
 $oAccount->permission('CONTENT_NEWS_SYSTEM_VIEW', true, true);
-
+/** @global JTLSmarty $smarty */
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'news_inc.php';
 
 $Einstellungen         = Shop::getSettings(array(CONF_NEWS));
@@ -51,7 +51,7 @@ if (strlen(verifyGPDataString('tab')) > 0) {
 $Sprachen     = gibAlleSprachen();
 $oSpracheNews = Shop::Lang()->getIsoFromLangID($_SESSION['kSprache']);
 if (!$oSpracheNews) {
-    $oSpracheNews = Shop::DB()->query("SELECT cISO FROM tsprache WHERE kSprache = " . (int)$_SESSION['kSprache'], 1);
+    $oSpracheNews = Shop::DB()->select('tsprache', 'kSprache', (int)$_SESSION['kSprache']);
 }
 // News
 if (isset($_POST['einstellungen']) && intval($_POST['einstellungen']) > 0 && validateToken()) {
@@ -64,7 +64,7 @@ if (isset($_POST['einstellungen']) && intval($_POST['einstellungen']) > 0 && val
             $oNewsMonatsPraefix           = new stdClass();
             $oNewsMonatsPraefix->kSprache = $oSpracheTMP->kSprache;
             if (strlen($_POST['praefix_' . $oSpracheTMP->cISO]) > 0) {
-                $oNewsMonatsPraefix->cPraefix = $_POST['praefix_' . $oSpracheTMP->cISO];
+                $oNewsMonatsPraefix->cPraefix = htmlspecialchars($_POST['praefix_' . $oSpracheTMP->cISO]);
             } else {
                 $oNewsMonatsPraefix->cPraefix = ($oSpracheTMP->cISO === 'ger') ? 'Newsuebersicht' : 'Newsoverview';
             }
@@ -152,13 +152,13 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
             $oNews                   = new stdClass();
             $oNews->kSprache         = $_SESSION['kSprache'];
             $oNews->cKundengruppe    = ';' . implode(';', $kKundengruppe_arr) . ';';
-            $oNews->cBetreff         = $cBetreff;
+            $oNews->cBetreff         = htmlspecialchars($cBetreff);
             $oNews->cText            = $cText;
             $oNews->cVorschauText    = $cVorschauText;
             $oNews->nAktiv           = $nAktiv;
-            $oNews->cMetaTitle       = $cMetaTitle;
-            $oNews->cMetaDescription = $cMetaDescription;
-            $oNews->cMetaKeywords    = $cMetaKeywords;
+            $oNews->cMetaTitle       = htmlspecialchars($cMetaTitle);
+            $oNews->cMetaDescription = htmlspecialchars($cMetaDescription);
+            $oNews->cMetaKeywords    = htmlspecialchars($cMetaKeywords);
             $oNews->dErstellt        = 'now()';
             $oNews->dGueltigVon      = convertDate($dGueltigVon);
             $oNews->cPreviewImage    = $cPreviewImage;
@@ -335,11 +335,7 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
 
                 if ($kNews > 0) {
                     ContentAuthor::getInstance()->clearAuthor('NEWS', $kNews);
-                    $oNewsTMP = Shop::DB()->query(
-                        "SELECT dGueltigVon, nAktiv, kSprache
-                            FROM tnews
-                            WHERE kNews = " . $kNews, 1
-                    );
+                    $oNewsTMP = Shop::DB()->select('tnews', 'kNews', $kNews);
                     Shop::DB()->delete('tnews', 'kNews', $kNews);
                     // Bilderverzeichnis loeschen
                     loescheNewsBilderDir($kNews, $cUploadVerzeichnis);
@@ -380,13 +376,13 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
         }
     } elseif (isset($_POST['news_kategorie_speichern']) && intval($_POST['news_kategorie_speichern']) === 1) { //Newskategorie speichern
         $step             = 'news_uebersicht';
-        $cName            = $_POST['cName'];
+        $cName            = htmlspecialchars($_POST['cName']);
         $cSeo             = $_POST['cSeo'];
         $nSort            = $_POST['nSort'];
         $nAktiv           = $_POST['nAktiv'];
-        $cMetaTitle       = $_POST['cMetaTitle'];
-        $cMetaDescription = $_POST['cMetaDescription'];
-        $cBeschreibung    = $_POST['cBeschreibung'];
+        $cMetaTitle       = htmlspecialchars($_POST['cMetaTitle']);
+        $cMetaDescription = htmlspecialchars($_POST['cMetaDescription']);
+        $cBeschreibung    = htmlspecialchars($_POST['cBeschreibung']);
         $cPreviewImage    = $_POST['previewImage'];
         $cPlausiValue_arr = pruefeNewsKategorie($_POST['cName'], (isset($_POST['newskategorie_edit_speichern'])) ? intval($_POST['newskategorie_edit_speichern']) : 0);
 
@@ -453,17 +449,17 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
 
             $oNewsKategorie = editiereNewskategorie(verifyGPCDataInteger('kNewsKategorie'), $_SESSION['kSprache']);
 
-            if (isset($oNewsKategorie->kNewsKategorie) && intval($oNewsKategorie->kNewsKategorie) > 0) {
+            if (isset($oNewsKategorie->kNewsKategorie) && (int)$oNewsKategorie->kNewsKategorie > 0) {
                 $smarty->assign('oNewsKategorie', $oNewsKategorie);
             } else {
                 $step = 'news_uebersicht';
-                $cFehler .= 'Fehler: Die Newskategorie mit der ID "' . $kNewsKategorie . '" konnte nicht gefunden werden.<br />';
+                $cFehler .= 'Fehler: Die Newskategorie mit der ID "' . verifyGPCDataInteger('kNewsKategorie') . '" konnte nicht gefunden werden.<br />';
             }
 
             $smarty->assign('cPlausiValue_arr', $cPlausiValue_arr)
                    ->assign('cPostVar_arr', $_POST);
         }
-    } elseif (isset($_POST['news_kategorie_loeschen']) && intval($_POST['news_kategorie_loeschen']) === 1) { // Newskategorie loeschen
+    } elseif (isset($_POST['news_kategorie_loeschen']) && (int)$_POST['news_kategorie_loeschen'] === 1) { // Newskategorie loeschen
         $step = 'news_uebersicht';
 
         if (loescheNewsKategorie($_POST['kNewsKategorie'])) {
@@ -472,17 +468,17 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
         } else {
             $cFehler .= 'Fehler: Bitte markieren Sie mindestens eine Newskategorie.<br />';
         }
-    } elseif (isset($_GET['newskategorie_editieren']) && intval($_GET['newskategorie_editieren']) === 1) { // Newskategorie editieren
-        if (isset($_GET['kNewsKategorie']) && intval($_GET['kNewsKategorie']) > 0) {
+    } elseif (isset($_GET['newskategorie_editieren']) && (int)$_GET['newskategorie_editieren'] === 1) { // Newskategorie editieren
+        if (isset($_GET['kNewsKategorie']) && (int)$_GET['kNewsKategorie'] > 0) {
             $step = 'news_kategorie_erstellen';
 
             $oNewsKategorie = editiereNewskategorie($_GET['kNewsKategorie'], $_SESSION['kSprache']);
 
-            if (isset($oNewsKategorie->kNewsKategorie) && intval($oNewsKategorie->kNewsKategorie) > 0) {
+            if (isset($oNewsKategorie->kNewsKategorie) && (int)$oNewsKategorie->kNewsKategorie > 0) {
                 $smarty->assign('oNewsKategorie', $oNewsKategorie);
             } else {
                 $step = 'news_uebersicht';
-                $cFehler .= 'Fehler: Die Newskategorie mit der ID "' . $kNewsKategorie . '" konnte nicht gefunden werden.<br />';
+                $cFehler .= 'Fehler: Die Newskategorie mit der ID "' . (int)$_GET['kNewsKategorie'] . '" konnte nicht gefunden werden.<br />';
             }
         }
     } elseif (isset($_POST['newskommentar_freischalten']) && intval($_POST['newskommentar_freischalten']) && !isset($_POST['kommentareloeschenSubmit'])) { // Kommentare freischalten
@@ -666,7 +662,7 @@ if ($step === 'news_uebersicht') {
                 "SELECT tnewskategorie.cName
                     FROM tnewskategorie
                     LEFT JOIN tnewskategorienews ON tnewskategorienews.kNewsKategorie = tnewskategorie.kNewsKategorie
-                    WHERE tnewskategorienews.kNews = {$oNews->kNews} ORDER BY tnewskategorie.nSort", 2
+                    WHERE tnewskategorienews.kNews = " . (int)$oNews->kNews ." ORDER BY tnewskategorie.nSort", 2
             );
             $Kategoriearray = array();
             foreach ($oCategorytoNews_arr as $j => $KategorieAusgabe) {
@@ -678,7 +674,7 @@ if ($step === 'news_uebersicht') {
                 "SELECT count(tnewskommentar.kNewsKommentar) AS nNewsKommentarAnzahlAktiv
                     FROM tnews
                     LEFT JOIN tnewskommentar ON tnewskommentar.kNews = tnews.kNews
-                    WHERE tnewskommentar.nAktiv = 1 AND tnews.kNews = {$oNews->kNews}
+                    WHERE tnewskommentar.nAktiv = 1 AND tnews.kNews = " . (int)$oNews->kNews . "
                     AND tnews.kSprache = " . (int)$_SESSION['kSprache'], 1
             );
             $oNews_arr[$i]->nNewsKommentarAnzahl = $oNewsKommentarAktiv->nNewsKommentarAnzahlAktiv;

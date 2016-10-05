@@ -256,7 +256,7 @@ class JTLSmarty extends SmartyBC
      */
     public function __construct($fast_init = false, $isAdmin = false, $tplCache = true, $context = 'frontend')
     {
-        parent::__construct(array());
+        parent::__construct();
         Smarty::$_CHARSET = JTL_CHARSET;
         if (defined('SMARTY_USE_SUB_DIRS') && is_bool(SMARTY_USE_SUB_DIRS)) {
             $this->setUseSubDirs(SMARTY_USE_SUB_DIRS);
@@ -329,7 +329,7 @@ class JTLSmarty extends SmartyBC
                 $this->template_class = 'jtlTplClass';
             }
             if (!$isAdmin) {
-                $this->setCachingParams(false, $this->config);
+                $this->setCachingParams($this->config);
             }
             $_tplDir = $this->getTemplateDir($this->context);
             if (file_exists($_tplDir . 'php/functions_custom.php')) {
@@ -354,44 +354,19 @@ class JTLSmarty extends SmartyBC
     /**
      * set options
      *
-     * @param bool  $force
-     * @param array $config
+     * @param array|null $config
      * @return $this
      */
-    public function setCachingParams($force = false, $config = null)
+    public function setCachingParams($config = null)
     {
-        $caching      = self::CACHING_OFF;
-        $compileCheck = true;
         //instantiate new cache - we use different options here
         if ($config === null) {
             $config = Shop::getSettings(array(CONF_CACHING));
         }
-        if (isset($config['caching']['caching_page_cache'])) {
-            if ($config['caching']['caching_page_cache'] === '1' || $config['caching']['caching_page_cache'] === '2' || $config['caching']['caching_page_cache'] === '3') {
-                $caching = self::CACHING_LIFETIME_CURRENT;
-            }
-            if ($config['caching']['caching_page_cache'] === '2' && !empty($_SESSION['Kunde']->kKunde)) {
-                //for guests only
-                $caching = self::CACHING_OFF;
-            } elseif ($config['caching']['caching_page_cache'] === '3' && isset($_SESSION['Warenkorb']->PositionenArr) && count($_SESSION['Warenkorb']->PositionenArr) > 0) {
-                //with empty carts only
-                $caching = self::CACHING_OFF;
-            }
-        }
-        if (isset($config['caching']['compile_check']) && $config['caching']['compile_check'] === 'N') {
-            $compileCheck = false;
-        }
-        if ($caching === 1 || $force === true) {
-            if (!file_exists($this->getCacheDir())) {
-                mkdir($this->getCacheDir());
-            }
-            if (isset($config['caching']['advanced_page_cache']) && $config['caching']['advanced_page_cache'] === 'Y') {
-                $this->registerCacheResource('jtlSmartyCache', new jtlSmartyCache($config));
-                $this->caching_type = 'jtlSmartyCache';
-            }
-            $caching = self::CACHING_LIFETIME_CURRENT;
-        }
-        $this->setCaching($caching)
+        $compileCheck = (isset($config['caching']['compile_check']) && $config['caching']['compile_check'] === 'N')
+            ? false
+            : true;
+        $this->setCaching(self::CACHING_OFF)
              ->setCompileCheck($compileCheck);
 
         return $this;

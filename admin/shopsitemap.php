@@ -6,11 +6,10 @@
 require_once dirname(__FILE__) . '/includes/admininclude.php';
 
 $oAccount->permission('SETTINGS_SITEMAP_VIEW', true, true);
-
+/** @global JTLSmarty $smarty */
 $Einstellungen = Shop::getSettings(array(CONF_SITEMAP));
-
-$cHinweis = '';
-$cFehler  = '';
+$cHinweis      = '';
+$cFehler       = '';
 
 setzeSprache();
 
@@ -23,7 +22,6 @@ if (isset($_POST['speichern']) && validateToken()) {
         for ($i = 0; $i < 10; $i++) {
             // Neue Werte in die DB einfuegen
             if (intval($_POST['nVon'][$i]) >= 0 && intval($_POST['nBis'][$i]) > 0) {
-                unset($oPreisspannenfilter);
                 $oPreisspannenfilter       = new stdClass();
                 $oPreisspannenfilter->nVon = intval($_POST['nVon'][$i]);
                 $oPreisspannenfilter->nBis = intval($_POST['nBis'][$i]);

@@ -1,6 +1,6 @@
 {include file='tpl_inc/header.tpl'}
 {config_load file="$lang.conf" section='wawisync'}
-{include file='tpl_inc/seite_header.tpl' cTitel='Wawi-Syncdaten' cBeschreibung='' cDokuURL=''}
+{include file='tpl_inc/seite_header.tpl' cTitel=#wawisync# cBeschreibung=#wawisyncDesc# cDokuURL=#wawisyncURL#}
 <div id="content" class="container-fluid">
     <form action="wawisync.php" method="post">
         {$jtl_token}

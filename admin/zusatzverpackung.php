@@ -8,7 +8,7 @@ require_once dirname(__FILE__) . '/includes/admininclude.php';
 $oAccount->permission('ORDER_PACKAGE_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
-
+/** @global JTLSmarty $smarty */
 $cHinweis     = '';
 $cFehler      = '';
 $step         = 'zusatzverpackung';
@@ -29,7 +29,7 @@ if (isset($_POST['eintragen']) && intval($_POST['eintragen']) === 1 && validateT
                 $oVerpackung = new stdClass();
             }
             $oVerpackung->kSteuerklasse = $kSteuerklasse;
-            $oVerpackung->cName         = strip_tags(trim($_POST['cName_' . $oSprache_arr[0]->cISO]));
+            $oVerpackung->cName         = htmlspecialchars(strip_tags(trim($_POST['cName_' . $oSprache_arr[0]->cISO])));
 
             if ($kKundengruppe_arr[0] == '-1') {
                 $oVerpackung->cKundengruppe = '-1';
@@ -61,11 +61,11 @@ if (isset($_POST['eintragen']) && intval($_POST['eintragen']) === 1 && validateT
                     $oVerpackungSprache->kVerpackung   = $kVerpackung;
                     $oVerpackungSprache->cISOSprache   = $oSprache->cISO;
                     $oVerpackungSprache->cName         = (!empty($_POST['cName_' . $oSprache->cISO]))
-                        ? $_POST['cName_' . $oSprache->cISO]
-                        : $_POST['cName_' . $oSprache_arr[0]->cISO];
+                        ? htmlspecialchars($_POST['cName_' . $oSprache->cISO])
+                        : htmlspecialchars($_POST['cName_' . $oSprache_arr[0]->cISO]);
                     $oVerpackungSprache->cBeschreibung = (!empty($_POST['cBeschreibung_' . $oSprache->cISO]))
-                        ? $_POST['cBeschreibung_' . $oSprache->cISO]
-                        : $oVerpackungSprache->cBeschreibung = $_POST['cBeschreibung_' . $oSprache_arr[0]->cISO];
+                        ? htmlspecialchars($_POST['cBeschreibung_' . $oSprache->cISO])
+                        : htmlspecialchars($_POST['cBeschreibung_' . $oSprache_arr[0]->cISO]);
                     Shop::DB()->insert('tverpackungsprache', $oVerpackungSprache);
                 }
             }

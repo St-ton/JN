@@ -71,13 +71,16 @@ function bearbeiteDeletes($xml)
     if (isset($xml['del_kategorien']['kKategorie'])) {
         // Alle Shop Kundengruppen holen
         $oKundengruppe_arr = Shop::DB()->query("SELECT kKundengruppe FROM tkundengruppe", 2);
+        if (!is_array($xml['del_kategorien']['kKategorie']) && intval($xml['del_kategorien']['kKategorie']) > 0) {
+            $xml['del_kategorien']['kKategorie'] = array($xml['del_kategorien']['kKategorie']);
+        }
         if (is_array($xml['del_kategorien']['kKategorie'])) {
             foreach ($xml['del_kategorien']['kKategorie'] as $kKategorie) {
                 $kKategorie = (int)$kKategorie;
                 if ($kKategorie > 0) {
                     loescheKategorie($kKategorie);
                     //hole alle artikel raus in dieser Kategorie
-                    $oArtikel_arr = Shop::DB()->query("SELECT kArtikel FROM tkategorieartikel WHERE kKategorie = " . $kKategorie, 2);
+                    $oArtikel_arr = Shop::DB()->selectAll('tkategorieartikel', 'kKategorie', $kKategorie, 'kArtikel');
                     //gehe alle Artikel durch
                     if (is_array($oArtikel_arr) && count($oArtikel_arr) > 0) {
                         foreach ($oArtikel_arr as $oArtikel) {
@@ -88,22 +91,6 @@ function bearbeiteDeletes($xml)
                     executeHook(HOOK_KATEGORIE_XML_BEARBEITEDELETES, array('kKategorie' => $kKategorie));
                 }
             }
-        } elseif (intval($xml['del_kategorien']['kKategorie']) > 0) {
-            loescheKategorie(intval($xml['del_kategorien']['kKategorie']));
-            //hole alle artikel raus in dieser Kategorie
-            $oArtikel_arr = Shop::DB()->query(
-                "SELECT kArtikel
-                    FROM tkategorieartikel
-                    WHERE kKategorie = " . (int)$xml['del_kategorien']['kKategorie'], 2
-            );
-            //gehe alle Artikel durch
-            if (is_array($oArtikel_arr) && count($oArtikel_arr) > 0) {
-                foreach ($oArtikel_arr as $oArtikel) {
-                    fuelleArtikelKategorieRabatt($oArtikel, $oKundengruppe_arr);
-                }
-            }
-
-            executeHook(HOOK_KATEGORIE_XML_BEARBEITEDELETES, array('kKategorie' => (int)$xml['del_kategorien']['kKategorie']));
         }
     }
 }
@@ -183,12 +170,7 @@ function bearbeiteInsert($xml)
                 $kategoriesprache_arr[$i]->cSeo = checkSeo($kategoriesprache_arr[$i]->cSeo);
                 DBUpdateInsert('tkategoriesprache', array($kategoriesprache_arr[$i]), 'kKategorie', 'kSprache');
 
-                Shop::DB()->query(
-                    "DELETE FROM tseo
-                        WHERE cKey = 'kKategorie'
-                            AND kKey = " . intval($kategoriesprache_arr[$i]->kKategorie) . "
-                            AND kSprache = " . intval($kategoriesprache_arr[$i]->kSprache), 4
-                );
+                Shop::DB()->delete('tseo', ['cKey', 'kKey', 'kSprache'], ['kKategorie', (int)$kategoriesprache_arr[$i]->kKategorie, (int)$kategoriesprache_arr[$i]->kSprache]);
                 //insert in tseo
                 $oSeo           = new stdClass();
                 $oSeo->cSeo     = $kategoriesprache_arr[$i]->cSeo;
@@ -207,11 +189,7 @@ function bearbeiteInsert($xml)
         updateXMLinDB($xml['tkategorie'], 'tkategoriekundengruppe', $GLOBALS['mKategorieKundengruppe'], 'kKundengruppe', 'kKategorie');
         if (is_array($oKundengruppe_arr) && count($oKundengruppe_arr) > 0) {
             //hole alle artikel raus in dieser Kategorie
-            $oArtikel_arr = Shop::DB()->query(
-                "SELECT kArtikel
-                    FROM tkategorieartikel
-                    WHERE kKategorie=" . $kategorie_arr[0]->kKategorie, 2
-            );
+            $oArtikel_arr = Shop::DB()->selectAll('tkategorieartikel', 'kKategorie', $kategorie_arr[0]->kKategorie, 'kArtikel');
             //gehe alle Artikel durch und ermittle max rabatt
             if (is_array($oArtikel_arr) && count($oArtikel_arr) > 0) {
                 foreach ($oArtikel_arr as $oArtikel) {
@@ -252,7 +230,7 @@ function bearbeiteInsert($xml)
 function loescheKategorie($kKategorie)
 {
     $kKategorie = (int)$kKategorie;
-//    $category = Shop::DB()->query("SELECT * FROM tkategorie WHERE kKategorie = " . $kKategorie, 2);
+//    $category = Shop::DB()->selectAll('tkategorie', 'kKategorie', $kKategorie);
 //    if (is_array($category)) {
 //        foreach ($category as $_category) {
 //            if (isset($_category->kOberKategorie)) {
@@ -265,11 +243,7 @@ function loescheKategorie($kKategorie)
 //    $cache->flushTags(array(CACHING_GROUP_CATEGORY . '_' . $kKategorie));
     //@todo: the above does not really work on parent categories when adding/deleting child categories - because of class.helper.KategorieListe getter/setter
 
-    $deleteAttributes_arr = Shop::DB()->query(
-        "SELECT kKategorieAttribut
-            FROM tkategorieattribut
-            WHERE kKategorie = " . $kKategorie, 2
-    );
+    $deleteAttributes_arr = Shop::DB()->selectAll('tkategorieattribut', 'kKategorie', $kKategorie, 'kKategorieAttribut');
     if (is_array($deleteAttributes_arr)) {
         foreach ($deleteAttributes_arr as $deleteAttribute) {
             deleteKategorieAttribut($deleteAttribute->kKategorieAttribut);
@@ -299,12 +273,12 @@ function rebuildCategoryTree($parent_id, $left)
     // the right value of this node is the left value + 1
     $right = $left + 1;
     // get all children of this node
-    $result = Shop::DB()->query("SELECT kKategorie FROM tkategorie WHERE kOberKategorie = " . (int)$parent_id . " ORDER BY nSort, cName", 2);
+    $result = Shop::DB()->selectAll('tkategorie', 'kOberKategorie', (int)$parent_id, 'kKategorie', 'nSort, cName');
     foreach ($result as $_res) {
         $right = rebuildCategoryTree($_res->kKategorie, $right);
     }
     // we've got the left value, and now that we've processed the children of this node we also know the right value
-    Shop::DB()->query("UPDATE tkategorie SET lft = " . $left . ", rght = " . $right . " WHERE kKategorie = " . $parent_id, 3);
+    Shop::DB()->update('tkategorie', 'kKategorie', $parent_id, (object)['lft' => $left, 'rght' => $right]);
 
     // return the right value of this node + 1
     return $right + 1;

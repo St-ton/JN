@@ -80,11 +80,7 @@ function loescheTagsVomArtikel($kArtikel_arr, $kTag)
         foreach ($kArtikel_arr as $kArtikel) {
             $kArtikel = (int)$kArtikel;
             Shop::DB()->delete('ttagartikel', array('kArtikel', 'kTag'), array($kArtikel, $kTag));
-            $oTagArtikel_arr = Shop::DB()->query(
-                "SELECT kArtikel
-                    FROM ttagartikel
-                    WHERE kTag = " . $kTag, 2
-            );
+            $oTagArtikel_arr = Shop::DB()->selectAll('ttagartikel', 'kTag', $kTag);
             // Es gibt keine Artikel mehr zu dem Tag => Tag aus ttag / tseo löschen
             if (count($oTagArtikel_arr) === 0) {
                 Shop::DB()->query(

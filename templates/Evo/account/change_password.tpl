@@ -3,7 +3,7 @@
 {include file="snippets/extension.tpl"}
 
 {block name="change-password-form"}
-<div class="well panel-wrap">
+<div class="panel-wrap">
     <div class="panel panel-default">
         <div class="panel-body">
             {if !$hinweis}

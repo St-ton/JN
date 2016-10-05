@@ -6,7 +6,7 @@
 require_once dirname(__FILE__) . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES_EXT . 'umfrage_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
-
+/** @global JTLSmarty $smarty */
 Shop::run();
 Shop::setPageType(PAGE_UMFRAGE);
 $cParameter_arr       = Shop::getParameters();

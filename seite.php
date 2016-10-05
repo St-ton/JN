@@ -8,7 +8,7 @@ if (!defined('PFAD_ROOT')) {
     exit();
 }
 require_once PFAD_ROOT . PFAD_INCLUDES . 'seite_inc.php';
-
+/** @global JTLSmarty $smarty */
 Shop::setPageType(PAGE_EIGENE);
 $AktuelleSeite = 'SEITE';
 $Einstellungen = Shop::getSettings(array(

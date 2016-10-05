@@ -411,11 +411,7 @@ class AdminAccount
         $kAdminlogingruppe = (int)$kAdminlogingruppe;
         $oGroup            = Shop::DB()->select('tadminlogingruppe', 'kAdminlogingruppe', $kAdminlogingruppe);
         if (isset($oGroup->kAdminlogingruppe)) {
-            $oPermission_arr = Shop::DB()->query("
-                SELECT cRecht
-                    FROM tadminrechtegruppe
-                    WHERE kAdminlogingruppe = " . $kAdminlogingruppe, 2
-            );
+            $oPermission_arr = Shop::DB()->selectAll('tadminrechtegruppe', 'kAdminlogingruppe', $kAdminlogingruppe, 'cRecht');
             if (is_array($oPermission_arr)) {
                 $oGroup->oPermission_arr = array();
                 foreach ($oPermission_arr as $oPermission) {

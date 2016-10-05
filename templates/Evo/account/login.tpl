@@ -24,7 +24,7 @@
 <div class="row">
     <div class="col-sm-8 col-sm-offset-2">
         {block name="login-form"}
-        <div class="well panel-wrap">
+        <div class="panel-wrap">
             <div class="panel">
                 <div class="panel-body">
                     <form id="login_form" action="{get_static_route id='jtl.php'}" method="post" role="form">

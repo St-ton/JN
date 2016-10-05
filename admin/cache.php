@@ -4,9 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 require_once dirname(__FILE__) . '/includes/admininclude.php';
-
+/** @global JTLSmarty $smarty */
 setzeSprache();
-global $smarty;
 $oAccount->permission('OBJECTCACHE_VIEW', true, true);
 $notice       = '';
 $error        = '';
@@ -39,7 +38,7 @@ switch ($action) {
         //clear the smarty page cache
         $tab     = 'massaction';
         $_smarty = new JTLSmarty(true, false, false);
-        $_smarty->setCachingParams(true);
+        $_smarty->setCachingParams();
         $res = $_smarty->clearAllCache();
         if ($res === true) {
             $notice .= 'Seiten-Cache erfolgreich gel&ouml;scht.';

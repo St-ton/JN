@@ -213,8 +213,6 @@ function holeKampagneDetailStats($kKampagne, $oKampagneDef_arr)
             break;
     }
 
-    $cSQLGROUPBY = '';
-
     switch (intval($_SESSION['Kampagne']->nDetailAnsicht)) {
         case 1:    // Jahr
             $cSQLSELECT  = "DATE_FORMAT(dErstellt, '%Y') AS cDatum";
@@ -232,6 +230,8 @@ function holeKampagneDetailStats($kKampagne, $oKampagneDef_arr)
             $cSQLSELECT  = "DATE_FORMAT(dErstellt, '%Y-%m-%d') AS cDatum";
             $cSQLGROUPBY = "GROUP BY DAY(dErstellt), YEAR(dErstellt), MONTH(dErstellt)";
             break;
+        default:
+            return [];
     }
     // Zeitraum
     $cZeitraum_arr = gibDetailDatumZeitraum();

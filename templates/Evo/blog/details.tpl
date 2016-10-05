@@ -10,22 +10,25 @@
     <div class="alert alert-danger">{lang key='newsRestricted' section='news'}</div>
 {else}
     <div itemscope itemtype="https://schema.org/Article">
-        <h1><span itemprop="headline">{$oNewsArchiv->cBetreff}</span>
-            <small class="date text-muted pull-right">
-                {if empty($oNewsArchiv->dGueltigVon)}{assign var=dDate value=$oNewsArchiv->dErstellt}{else}{assign var=dDate value=$oNewsArchiv->dGueltigVon}{/if}
-                {if !empty($Einstellungen.global.global_shopname)}
-                    <span itemprop="publisher" class="hidden">{$Einstellungen.global.global_shopname}</span>
-                {/if}
-                {if (isset($oNewsArchiv->oAuthor))}
-                    {include file="snippets/author.tpl" oAuthor=$oNewsArchiv->oAuthor dDate=$dDate cDate=$oNewsArchiv->dGueltigVon_de}&nbsp;&ndash;&nbsp;
-                {/if}
-                {if isset($oNewsArchiv->dErstellt)}<time itemprop="dateModified" class="hidden">{$oNewsArchiv->dErstellt}</time>{/if}
-                <time itemprop="datePublished" datetime="{$dDate}" class="hidden">{$dDate}</time><span class="v-box">{$oNewsArchiv->dGueltigVon_de}</span>
-            </small>
+        <h1 itemprop="headline">
+            {$oNewsArchiv->cBetreff}
         </h1>
+        <p class="text-muted">
+            {if empty($oNewsArchiv->dGueltigVon)}{assign var=dDate value=$oNewsArchiv->dErstellt}{else}{assign var=dDate value=$oNewsArchiv->dGueltigVon}{/if}
+            {if !empty($Einstellungen.global.global_shopname)}
+                <span itemprop="publisher" class="hidden">{$Einstellungen.global.global_shopname}</span>
+            {/if}
+            {if (isset($oNewsArchiv->oAuthor))}
+                {include file="snippets/author.tpl" oAuthor=$oNewsArchiv->oAuthor dDate=$dDate cDate=$oNewsArchiv->dGueltigVon_de}
+            {/if}
+            {if isset($oNewsArchiv->dErstellt)}<time itemprop="dateModified" class="hidden">{$oNewsArchiv->dErstellt}</time>{/if}
+            <time itemprop="datePublished" datetime="{$dDate}" class="hidden">{$dDate}</time><span class="v-box">{$oNewsArchiv->dGueltigVon_de}</span>
+        </p>
 
-        <div itemprop="articleBody" class="panel-strap">
-            {$oNewsArchiv->cText}
+        <div itemprop="articleBody" class="row">
+            <div class="col-xs-12">
+                {$oNewsArchiv->cText}
+            </div>
         </div>
 
         {if isset($Einstellungen.news.news_kategorie_unternewsanzeigen) && $Einstellungen.news.news_kategorie_unternewsanzeigen === 'Y' && !empty($oNewsKategorie_arr)}
@@ -74,8 +77,8 @@
             {if ($Einstellungen.news.news_kommentare_eingeloggt === 'Y' && !empty($smarty.session.Kunde->kKunde)) || $Einstellungen.news.news_kommentare_eingeloggt !== 'Y'}
                 <hr>
                 <div class="row">
-                    <div class="col-xs-12 col-md-10 col-md-offset-1">
-                        <div class="well panel-wrap">
+                    <div class="col-xs-12">
+                        <div class="panel-wrap">
                             <div class="panel panel-default">
                                 <div class="panel-heading"><h4 class="panel-title">{lang key="newsCommentAdd" section="news"}</h4></div>
                                 <div class="panel-body">

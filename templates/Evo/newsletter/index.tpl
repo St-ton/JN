@@ -22,9 +22,9 @@
 {/if}
 {if $cOption === 'eintragen'}
     {if empty($bBereitsAbonnent)}
-        <div class="col-xs-12 col-md-10 col-md-offset-1">
+        <div class="col-xs-12">
             {block name="newsletter-subscribe"}
-            <div class="well panel-wrap reviews-overview">
+            <div class="panel-wrap reviews-overview">
                 <div class="panel panel-default">
                     <div class="panel-heading">
                     <h3 class="panel-title">{block name="newsletter-subscribe-title"}{lang key="newsletterSubscribe" section="newsletter"}{/block}</h3></div>
@@ -104,9 +104,9 @@
             {/block}
         </div>
     {/if}
-    <div class="col-xs-12 col-md-10 col-md-offset-1">
+    <div class="col-xs-12">
         {block name="newsletter-unsubscribe"}
-        <div class="well panel-wrap reviews-overview">
+        <div class="panel-wrap reviews-overview">
             <div class="panel panel-default">
                 <div class="panel-heading">
                 <h3 class="panel-title">{block name="newsletter-unsubscribe-title"}{lang key="newsletterUnsubscribe" section="newsletter"}{/block}</h3></div>

@@ -35,8 +35,8 @@
 
                 {* Images *}
                 {if $oMedienDatei->nMedienTyp == 1}
-                    <div class="col-xs-12 col-md-10 col-md-offset-1">
-                        <div class="well panel-wrap">
+                    <div class="col-xs-12">
+                        <div class="panel-wrap">
                             <div class="panel panel-default">
                                 <div class="panel-heading"><h3 class="panel-title">{$oMedienDatei->cName}</h3></div>
                                 <div class="panel-body">
@@ -60,8 +60,8 @@
                     {* Audio *}
                 {elseif $oMedienDatei->nMedienTyp == 2}
                     {if $oMedienDatei->cName|count_characters > 1}
-                        <div class="col-xs-12 col-md-10 col-md-offset-1">
-                            <div class="well panel-wrap">
+                        <div class="col-xs-12">
+                            <div class="panel-wrap">
                                 <div class="panel panel-default">
                                     <div class="panel-heading"><h3 class="panel-title">{$oMedienDatei->cName}</h3></div>
                                     <div class="panel-body">
@@ -82,8 +82,8 @@
 
                     {* Video *}
                 {elseif $oMedienDatei->nMedienTyp == 3}
-                    <div class="col-xs-12 col-md-10 col-md-offset-1">
-                        <div class="well panel-wrap">
+                    <div class="col-xs-12">
+                        <div class="panel-wrap">
                             <div class="panel panel-default">
                                 <div class="panel-heading"><h3 class="panel-title">{$oMedienDatei->cName}</h3></div>
                                 <div class="panel-body">
@@ -107,8 +107,8 @@
                     </div>
                     {* Sonstiges *}
                 {elseif $oMedienDatei->nMedienTyp == 4}
-                    <div class="col-xs-12 col-md-10 col-md-offset-1">
-                        <div class="well panel-wrap">
+                    <div class="col-xs-12">
+                        <div class="panel-wrap">
                             <div class="panel panel-default">
                                 <div class="panel-heading"><h3 class="panel-title">{$oMedienDatei->cName}</h3></div>
                                 <div class="panel-body">
@@ -131,8 +131,8 @@
                     </div>
                     {* PDF *}
                 {elseif $oMedienDatei->nMedienTyp == 5}
-                    <div class="col-xs-12 col-md-10 col-md-offset-1">
-                        <div class="well panel-wrap">
+                    <div class="col-xs-12">
+                        <div class="panel-wrap">
                             <div class="panel panel-default">
                                 <div class="panel-heading"><h3 class="panel-title">{$oMedienDatei->cName}</h3></div>
                                 <div class="panel-body">

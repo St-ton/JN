@@ -20,7 +20,8 @@ function getAdminList()
 {
     return Shop::DB()->query(
         "SELECT * FROM tadminlogin
-            LEFT JOIN tadminlogingruppe ON tadminlogin.kAdminlogingruppe = tadminlogingruppe.kAdminlogingruppe
+            LEFT JOIN tadminlogingruppe
+            ON tadminlogin.kAdminlogingruppe = tadminlogingruppe.kAdminlogingruppe
          ORDER BY kAdminlogin", 2
     );
 }
@@ -32,7 +33,11 @@ function getAdminGroups()
 {
     $oGroups_arr = Shop::DB()->query("SELECT * FROM tadminlogingruppe", 2);
     foreach ($oGroups_arr as &$oGroup) {
-        $oCount         = Shop::DB()->query("SELECT COUNT(*) AS nCount FROM tadminlogin WHERE kAdminlogingruppe = " . (int)$oGroup->kAdminlogingruppe, 1);
+        $oCount         = Shop::DB()->query("
+            SELECT COUNT(*) AS nCount
+              FROM tadminlogin
+              WHERE kAdminlogingruppe = " . (int)$oGroup->kAdminlogingruppe, 1
+        );
         $oGroup->nCount = $oCount->nCount;
     }
 
@@ -44,9 +49,9 @@ function getAdminGroups()
  */
 function getAdminDefPermissions()
 {
-    $oGroups_arr = Shop::DB()->query("SELECT * FROM tadminrechtemodul ORDER BY nSort ASC", 2);
+    $oGroups_arr = Shop::DB()->selectAll('tadminrechtemodul', [], [], '*', 'nSort ASC');
     foreach ($oGroups_arr as &$oGroup) {
-        $oGroup->oPermission_arr = Shop::DB()->query("SELECT * FROM tadminrecht WHERE kAdminrechtemodul = " . (int)$oGroup->kAdminrechtemodul, 2);
+        $oGroup->oPermission_arr = Shop::DB()->selectAll('tadminrecht', 'kAdminrechtemodul', (int)$oGroup->kAdminrechtemodul);
     }
 
     return $oGroups_arr;
@@ -68,7 +73,7 @@ function getAdminGroup($kAdminlogingruppe)
 function getAdminGroupPermissions($kAdminlogingruppe)
 {
     $oPerm_arr       = array();
-    $oPermission_arr = Shop::DB()->query("SELECT * FROM tadminrechtegruppe WHERE kAdminlogingruppe = " . (int)$kAdminlogingruppe, 2);
+    $oPermission_arr = Shop::DB()->selectAll('tadminrechtegruppe', 'kAdminlogingruppe', (int)$kAdminlogingruppe);
 
     foreach ($oPermission_arr as $oPermission) {
         $oPerm_arr[] = $oPermission->cRecht;
@@ -95,12 +100,7 @@ function getInfoInUse($cRow, $cValue)
  */
 function benutzerverwaltungGetAttributes($kAdminlogin)
 {
-    $extAttribs = Shop::DB()->query(
-        'SELECT kAttribut, cName, cAttribValue, cAttribText
-            FROM tadminloginattribut
-            WHERE kAdminlogin = ' . (int)$kAdminlogin . ' ORDER BY cName ASC', 2
-    );
-
+    $extAttribs = Shop::DB()->selectAll('tadminloginattribut', 'kAdminlogin', (int)$kAdminlogin, 'kAttribut, cName, cAttribValue, cAttribText', 'cName ASC');
     if (version_compare(phpversion(), '7.0', '<')) {
         $result = array();
         foreach ($extAttribs as $attrib) {
@@ -279,8 +279,8 @@ function benutzerverwaltungActionAccountEdit(JTLSmarty $smarty, array &$messages
         $cError_arr           = array();
         $oTmpAcc              = new stdClass();
         $oTmpAcc->kAdminlogin = (isset($_POST['kAdminlogin'])) ? (int)$_POST['kAdminlogin'] : 0;
-        $oTmpAcc->cName       = trim($_POST['cName']);
-        $oTmpAcc->cMail       = trim($_POST['cMail']);
+        $oTmpAcc->cName       = htmlspecialchars(trim($_POST['cName']));
+        $oTmpAcc->cMail       = htmlspecialchars(trim($_POST['cMail']));
         $oTmpAcc->cLogin      = trim($_POST['cLogin']);
         $oTmpAcc->cPass       = trim($_POST['cPass']);
         $oTmpAcc->b2FAauth    = (int)$_POST['b2FAauth'];
@@ -340,8 +340,17 @@ function benutzerverwaltungActionAccountEdit(JTLSmarty $smarty, array &$messages
                 if (!$dGueltigBisAktiv) {
                     $oTmpAcc->dGueltigBis = '_DBNULL_';
                 }
+                // if we change the current admin-user, we have to update his session-credentials too!
+                if ((int)$oTmpAcc->kAdminlogin === (int)$_SESSION['AdminAccount']->kAdminlogin
+                    && $oTmpAcc->cLogin !== $_SESSION['AdminAccount']->cLogin) {
+                    $_SESSION['AdminAccount']->cLogin = $oTmpAcc->cLogin;
+                }
                 if (strlen($oTmpAcc->cPass) > 0) {
                     $oTmpAcc->cPass = AdminAccount::generatePasswordHash($oTmpAcc->cPass);
+                    // if we change the current admin-user, we have to update his session-credentials too!
+                    if ((int)$oTmpAcc->kAdminlogin === (int)$_SESSION['AdminAccount']->kAdminlogin) {
+                        $_SESSION['AdminAccount']->cPass = $oTmpAcc->cPass;
+                    }
                 } else {
                     unset($oTmpAcc->cPass);
                 }
@@ -491,8 +500,8 @@ function benutzerverwaltungActionGroupEdit(JTLSmarty $smarty, array &$messages)
         $cError_arr                     = array();
         $oAdminGroup                    = new stdClass();
         $oAdminGroup->kAdminlogingruppe = (isset($_POST['kAdminlogingruppe'])) ? (int)$_POST['kAdminlogingruppe'] : 0;
-        $oAdminGroup->cGruppe           = trim($_POST['cGruppe']);
-        $oAdminGroup->cBeschreibung     = trim($_POST['cBeschreibung']);
+        $oAdminGroup->cGruppe           = htmlspecialchars(trim($_POST['cGruppe']));
+        $oAdminGroup->cBeschreibung     = htmlspecialchars(trim($_POST['cBeschreibung']));
         $oAdminGroupPermission_arr      = $_POST['perm'];
 
         if (strlen($oAdminGroup->cGruppe) === 0) {
@@ -570,12 +579,10 @@ function benutzerverwaltungActionGroupDelete(JTLSmarty $smarty, array &$messages
     $kAdminlogingruppe = (int)$_POST['id'];
 
     $oResult = Shop::DB()->query('
-                    SELECT
-                        count(*) AS member_count
-                    FROM
-                        tadminlogin
-                    WHERE
-                        kAdminlogingruppe = ' . $kAdminlogingruppe, 1);
+                    SELECT count(*) AS member_count
+                      FROM tadminlogin
+                      WHERE kAdminlogingruppe = ' . $kAdminlogingruppe, 1
+    );
     // stop the deletion with a message, if there are accounts in this group
     if (0 !== (int)$oResult->member_count) {
         $messages['error'] .= 'Die Gruppe kann nicht entfernt werden, da sich noch '

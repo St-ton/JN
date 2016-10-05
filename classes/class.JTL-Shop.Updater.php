@@ -38,7 +38,7 @@ class Updater
 
             // While updating from 3.xx to 4.xx provide a default admin-template row
             if ($dbVersion < 400) {
-                $count = (int) Shop::DB()->query("SELECT * FROM `ttemplate` WHERE `eTyp`='admin'", 3);
+                $count = (int)Shop::DB()->query("SELECT * FROM `ttemplate` WHERE `eTyp`='admin'", 3);
                 if ($count === 0) {
                     Shop::DB()->query("ALTER TABLE `ttemplate` CHANGE `eTyp` `eTyp` ENUM('standard','mobil','admin') NOT NULL", 3);
                     Shop::DB()->query("INSERT INTO `ttemplate` (`cTemplate`, `eTyp`) VALUES ('bootstrap', 'admin')", 3);
@@ -137,7 +137,7 @@ class Updater
      */
     public function getCurrentFileVersion()
     {
-        return (int) JTL_VERSION;
+        return (int)JTL_VERSION;
     }
 
     /**
@@ -147,7 +147,7 @@ class Updater
     {
         $v = $this->getVersion();
 
-        return (int) $v->nVersion;
+        return (int)$v->nVersion;
     }
 
     /**
@@ -156,7 +156,7 @@ class Updater
      */
     public function getTargetVersion($version)
     {
-        $version = (int) $version;
+        $version = (int)$version;
         $majors  = [219 => 300, 320 => 400];
 
         if (array_key_exists($version, $majors)) {
@@ -178,7 +178,7 @@ class Updater
      */
     public function getPreviousVersion($version)
     {
-        $version = (int) $version;
+        $version = (int)$version;
         $majors  = [300 => 219, 400 => 320];
 
         if (array_key_exists($version, $majors)) {
@@ -197,7 +197,7 @@ class Updater
     {
         $versions = $this->getAvailableVersions();
 
-        return (int) end($versions);
+        return (int)end($versions);
     }
 
     /**
@@ -224,7 +224,7 @@ class Updater
      */
     protected function getUpdateDir($targetVersion)
     {
-        return sprintf('%s%d', PFAD_ROOT . PFAD_UPDATE, (int) $targetVersion);
+        return sprintf('%s%d', PFAD_ROOT . PFAD_UPDATE, (int)$targetVersion);
     }
 
     /**
@@ -280,8 +280,8 @@ class Updater
     {
         $version = $this->getVersion();
 
-        $currentVersion = (int) $version->nVersion;
-        $targetVersion  = (int) $this->getTargetVersion($currentVersion);
+        $currentVersion = (int)$version->nVersion;
+        $targetVersion  = (int)$this->getTargetVersion($currentVersion);
 
         if ($targetVersion < 403) {
             if ($targetVersion <= $currentVersion) {
@@ -313,7 +313,7 @@ class Updater
                 Shop::DB()->executeQuery($sql, 3);
             }
         } catch (\PDOException $e) {
-            $code  = (int) $e->errorInfo[1];
+            $code  = (int)$e->errorInfo[1];
             $error = Shop::DB()->escape($e->errorInfo[2]);
 
             if (!in_array($code, array(1062, 1060, 1267))) {
@@ -322,7 +322,7 @@ class Updater
                 $errorCountForLine = 1;
                 $version           = $this->getVersion();
 
-                if ((int) $version->nZeileBis === $currentLine) {
+                if ((int)$version->nZeileBis === $currentLine) {
                     $errorCountForLine = $version->nFehler + 1;
                 }
 
@@ -374,14 +374,14 @@ class Updater
         $migrations    = [];
         
         $migrationDirs = array_filter($this->getUpdateDirs(), function ($v) {
-            return (int) $v >= 402;
+            return (int)$v >= 402;
         });
 
         foreach ($migrationDirs as $version) {
-            $migration = new MigrationManager((int) $version);
+            $migration = new MigrationManager((int)$version);
             $pending   = $migration->getPendingMigrations();
             if (count($pending) > 0) {
-                $migrations[(int) $version] = $pending;
+                $migrations[(int)$version] = $pending;
             }
         }
         
@@ -449,7 +449,7 @@ class Updater
         $version = $this->getVersion();
         $sqls    = $this->getSqlUpdates($version->nVersion);
 
-        if ((int) $version->nFehler > 0) {
+        if ((int)$version->nFehler > 0) {
             if (array_key_exists($version->nZeileBis, $sqls)) {
                 $errorSql = trim($sqls[$version->nZeileBis]);
 
@@ -469,7 +469,7 @@ class Updater
         $dir         = PFAD_ROOT . PFAD_UPDATE;
         foreach (scandir($dir) as $key => $value) {
             if (!in_array($value, array(".", "..")) && is_dir($dir . DIRECTORY_SEPARATOR . $value)) {
-                if (is_numeric($value) && (int) $value > 300 && (int) $value < 500) {
+                if (is_numeric($value) && (int)$value > 300 && (int)$value < 500) {
                     $directories[] = $value;
                 }
             }

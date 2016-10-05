@@ -318,6 +318,7 @@ function ajaxCall(url, params, callback) {
     return $.ajax({
         type: "GET",
         dataType: "json",
+        cache: false,
         url: url,
         data: params,
         success: function (data, textStatus, jqXHR) {

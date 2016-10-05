@@ -220,7 +220,7 @@
         <div class="row">
             <div class="col-xs-12 order-submit">
                 {block name="checkout-confirmation-confirm-order"}
-                <div class="well panel-wrap basket-well basket-final">
+                <div class="panel-wrap basket-well basket-final">
                     <div class="panel panel-primary" id="panel-submit-order">
                         <div class="panel-body">
                             <input type="hidden" name="abschluss" value="1" />

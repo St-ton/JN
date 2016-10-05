@@ -53,7 +53,7 @@
                     <div class="alert alert-info">{$Schnellkaufhinweis}</div>
                 {/if}
                 {block name="basket-note"}
-                    <div class="well panel-wrap basket-well">
+                    <div class="panel-wrap basket-well">
                         <div class="panel panel-default">
                             <div class="panel-body">
                                 {include file='checkout/inc_order_items.tpl' tplscope='cart'}
@@ -213,9 +213,10 @@
                                                 <label class="thumbnail" for="gift{$oArtikelGeschenk->kArtikel}">
                                                     <img src="{$oArtikelGeschenk->Bilder[0]->cPfadKlein}" class="image" />
 
-                                                    <p class="small text-muted">{lang key="freeGiftFrom1" section="global"} {$oArtikelGeschenk->cBestellwert} {lang key="freeGiftFrom2" section="global"}</p>
-
-                                                    <p>{$oArtikelGeschenk->cName}</p>
+                                                    <span class="small text-muted">{lang key="freeGiftFrom1" section="global"} {$oArtikelGeschenk->cBestellwert} {lang key="freeGiftFrom2" section="global"}</span>
+                                                    <br />
+                                                    <span>{$oArtikelGeschenk->cName}</span>
+                                                    <br />
                                                     <input name="gratisgeschenk" type="radio" value="{$oArtikelGeschenk->kArtikel}" id="gift{$oArtikelGeschenk->kArtikel}" />
                                                 </label>
                                             </div>

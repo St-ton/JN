@@ -96,23 +96,29 @@ function get_product_list($params, &$smarty)
 /**
  * @param array     $params
  * @param JTLSmarty $smarty
- * @return bool|string|void
+ * @return bool|string
  */
 function get_static_route($params, &$smarty)
 {
-    $res = false;
     if (isset($params['id'])) {
         $helper = LinkHelper::getInstance();
         $full   = !isset($params['full']) || $params['full'] === true;
         $secure = isset($params['secure']) && $params['secure'] === true;
 
-        $res = $helper->getStaticRoute($params['id'], $full, $secure);
+        $url = $helper->getStaticRoute($params['id'], $full, $secure);
+
+        $qp = isset($params['params'])
+            ? (array)$params['params']
+            : array();
+
+        if (count($qp) > 0) {
+            $url = $url . (parse_url($url, PHP_URL_QUERY) ? '&' : '?') . http_build_query($qp, '', '&');
+        }
+
+        return $url;
     }
-    if (!empty($params['assign'])) {
-        $smarty->assign($params['assign'], $res);
-    } else {
-        return $res;
-    }
+
+    return false;
 }
 
 /**

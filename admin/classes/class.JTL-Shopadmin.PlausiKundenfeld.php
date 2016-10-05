@@ -47,12 +47,7 @@ class PlausiKundenfeld extends Plausi
                     $this->xPlausiVar_arr['cWert'] = 1;
                 }
             } elseif (!$bUpdate) {
-                $oKundenfeld = Shop::DB()->query(
-                    "SELECT kKundenfeld, cName
-                        FROM tkundenfeld
-                        WHERE kSprache = " . (int)$_SESSION['kSprache'] . "
-                            AND cName = '" . Shop::DB()->escape($this->xPostVar_arr['cName']) . "'", 1
-                );
+                $oKundenfeld = Shop::DB()->select('tkundenfeld', 'kSprache', (int)$_SESSION['kSprache'], 'cName', Shop::DB()->escape($this->xPostVar_arr['cName']));
                 if (isset($oKundenfeld->kKundenfeld) && $oKundenfeld->kKundenfeld > 0) {
                     $this->xPlausiVar_arr['cName'] = 2;
                 }

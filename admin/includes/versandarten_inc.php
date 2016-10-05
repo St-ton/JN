@@ -182,12 +182,7 @@ function gibGesetzteKundengruppen($cKundengruppen)
 function getShippingLanguage($kVersandart = 0, $oSprache_arr)
 {
     $oVersandartSpracheAssoc_arr = array();
-
-    $oVersandartSprache_arr = Shop::DB()->query(
-        "SELECT *
-            FROM tversandartsprache
-            WHERE kVersandart = " . (int)$kVersandart, 2
-    );
+    $oVersandartSprache_arr      = Shop::DB()->selectAll('tversandartsprache', 'kVersandart', (int)$kVersandart);
     if (is_array($oSprache_arr) && count($oSprache_arr) > 0) {
         foreach ($oSprache_arr as $oSprache) {
             $oVersandartSpracheAssoc_arr[$oSprache->cISO] = new stdClass();
@@ -214,7 +209,7 @@ function getZuschlagNames($kVersandzuschlag)
     if (!$kVersandzuschlag) {
         return $namen;
     }
-    $zuschlagnamen = Shop::DB()->query("SELECT * FROM tversandzuschlagsprache WHERE kVersandzuschlag = " . (int)$kVersandzuschlag, 2);
+    $zuschlagnamen = Shop::DB()->selectAll('tversandzuschlagsprache', 'kVersandzuschlag', (int)$kVersandzuschlag);
     $zCount        = count($zuschlagnamen);
     for ($i = 0; $i < $zCount; $i++) {
         $namen[$zuschlagnamen[$i]->cISOSprache] = $zuschlagnamen[$i]->cName;

@@ -89,13 +89,7 @@ function gibArtikelXSelling($kArtikel)
                 }
             }
         } else {
-            $xsell = Shop::DB()->query(
-                "SELECT *
-                    FROM txsellkauf
-                    WHERE kArtikel = {$kArtikel}
-                    ORDER BY nAnzahl DESC, rand()
-                    LIMIT {$anzahl}", 2
-            );
+            $xsell = Shop::DB()->selectAll('txsellkauf', 'kArtikel', $kArtikel, '*', 'nAnzahl DESC, rand()', $anzahl);
         }
         $xsellCount2 = (is_array($xsell)) ? count($xsell) : 0;
         if ($xsellCount2 > 0) {
@@ -401,7 +395,10 @@ function bearbeiteBenachrichtigung()
                     array('oKunde' => $Benachrichtigung, 'oNachricht' => $Benachrichtigung)
                 )->checkLogging(CHECKBOX_ORT_FRAGE_VERFUEGBARKEIT, $kKundengruppe, $_POST, true);
 
-                $kVerfuegbarkeitsbenachrichtigung = Shop::DB()->insert('tverfuegbarkeitsbenachrichtigung', $Benachrichtigung);
+                $kVerfuegbarkeitsbenachrichtigung = Shop::DB()->queryPrepared('INSERT INTO tverfuegbarkeitsbenachrichtigung (cVorname, cNachname, cMail, kSprache, kArtikel, cIP, dErstellt, nStatus) 
+                     VALUES (:cVorname, :cNachname, :cMail, :kSprache, :kArtikel, :cIP, now(), :nStatus)
+                     ON DUPLICATE KEY UPDATE cVorname = :cVorname, cNachname = :cNachname, ksprache = :kSprache, cIP = :cIP, dErstellt = now(), nStatus = :nStatus', get_object_vars($Benachrichtigung), 7);
+
                 // Kampagne
                 if (isset($_SESSION['Kampagnenbesucher'])) {
                     setzeKampagnenVorgang(KAMPAGNE_DEF_VERFUEGBARKEITSANFRAGE, $kVerfuegbarkeitsbenachrichtigung, 1.0); // Verfügbarkeitsbenachrichtigung
@@ -593,17 +590,12 @@ function gibNichtErlaubteEigenschaftswerte($nEigenschaftWert)
 {
     $nEigenschaftWert = (int)$nEigenschaftWert;
     if ($nEigenschaftWert) {
-        $arNichtErlaubteEigenschaftswerte = Shop::DB()->query(
-            "SELECT kEigenschaftWertZiel AS EigenschaftWert
-                FROM teigenschaftwertabhaengigkeit
-                WHERE kEigenschaftWert = {$nEigenschaftWert}", 2
-        );
-        $arNichtErlaubteEigenschaftswerte2 = Shop::DB()->query(
-            "SELECT kEigenschaftWert AS EigenschaftWert
-                FROM teigenschaftwertabhaengigkeit
-                WHERE kEigenschaftWertZiel = {$nEigenschaftWert}", 2
-        );
-        $arNichtErlaubteEigenschaftswerte = array_merge($arNichtErlaubteEigenschaftswerte, $arNichtErlaubteEigenschaftswerte2);
+        $arNichtErlaubteEigenschaftswerte  = Shop::DB()->selectAll('teigenschaftwertabhaengigkeit', 'kEigenschaftWert',
+            $nEigenschaftWert, 'kEigenschaftWertZiel AS EigenschaftWert');
+        $arNichtErlaubteEigenschaftswerte2 = Shop::DB()->selectAll('teigenschaftwertabhaengigkeit',
+            'kEigenschaftWertZiel', $nEigenschaftWert, 'kEigenschaftWert AS EigenschaftWert');
+        $arNichtErlaubteEigenschaftswerte  = array_merge($arNichtErlaubteEigenschaftswerte,
+            $arNichtErlaubteEigenschaftswerte2);
 
         return $arNichtErlaubteEigenschaftswerte;
     }

@@ -3,6 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+/** @global JTLSmarty $smarty */
 $smarty->registerPlugin('function', 'getCurrencyConversionSmarty', 'getCurrencyConversionSmarty')
        ->registerPlugin('function', 'getCurrencyConversionTooltipButton', 'getCurrencyConversionTooltipButton')
        ->registerPlugin('function', 'getCurrentPage', 'getCurrentPage')
@@ -64,13 +65,9 @@ function getCurrencyConversionTooltipButton($params, &$smarty)
 /**
  * @param array $params
  * @param JTLSmarty $smarty
- * @return string
  */
 function getCurrentPage($params, &$smarty)
 {
-    //$pro         = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? 'https' : 'http';
-    //$path        = $pro . $_SERVER['REQUEST_URI'];
-    //$path        = preg_replace('/\\?.*/', '', $path);
     $path = $_SERVER['SCRIPT_NAME'];
     $page = basename($path, '.php');
 
@@ -195,12 +192,12 @@ function getExtensionCategory($params, &$smarty)
 /**
  * @param array     $params
  * @param JTLSmarty $smarty
- * @return mixed|void
+ * @return string|null
  */
 function formatVersion($params, &$smarty)
 {
     if (!isset($params['value'])) {
-        return;
+        return null;
     }
 
     $version = (int) $params['value'];

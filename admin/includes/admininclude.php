@@ -37,6 +37,7 @@ $cache->setJtlCacheConfig();
 $session = AdminSession::getInstance();
 
 $notify = Notification::getInstance();
+/** @var Notification $notify */
 $notify->buildDefault();
 
 Shop::bootstrap();

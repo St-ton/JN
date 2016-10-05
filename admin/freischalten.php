@@ -10,7 +10,7 @@ $oAccount->permission('UNLOCK_CENTRAL_VIEW', true, true);
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'freischalten_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bewertung_inc.php';
 require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
-
+/** @global JTLSmarty $smarty */
 setzeSprache();
 
 $cHinweis = '';

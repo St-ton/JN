@@ -261,7 +261,7 @@ class PayPalBasic extends PaymentMethod
         } else {
             $hash                                        = $this->generateHash($order);
             $setExpressCheckoutRequestDetails->ReturnURL = $this->getNotificationURL($hash);
-            $setExpressCheckoutRequestDetails->CancelURL = Shop::getURL() . '/bestellvorgang.php?editZahlungsart=1';//$this->getReturnURL($order);
+            $setExpressCheckoutRequestDetails->CancelURL = $this->getReturnURL($order);
         }
 
         $setExpressCheckoutRequestDetails->BrandName            = $brandName;
@@ -547,8 +547,7 @@ class PayPalBasic extends PaymentMethod
      */
     public function canPayAgain()
     {
-        return false;
-        // return $this->duringCheckout() === false;
+        return $this->duringCheckout() === false;
     }
 
     /**

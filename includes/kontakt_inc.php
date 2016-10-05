@@ -187,7 +187,7 @@ function bearbeiteNachricht()
 
         $conf     = Shop::getSettings(array(CONF_KONTAKTFORMULAR, CONF_GLOBAL));
         $from     = new stdClass();
-        $from_arr = Shop::DB()->query("SELECT * FROM temailvorlageeinstellungen WHERE kEmailvorlage = 11", 2);
+        $from_arr = Shop::DB()->selectAll('temailvorlageeinstellungen', 'kEmailvorlage', 11);
         if (!isset($mail)) {
             $mail = new stdClass();
         }

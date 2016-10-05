@@ -404,8 +404,6 @@ function holeUmfrageStatistik($kUmfrage)
                             );
                             if (isset($oUmfrageFrageAntwortTMP->nAnzahlAntwort) && intval($oUmfrageFrageAntwortTMP->nAnzahlAntwort) > 0) {
                                 $oUmfrageStats->oUmfrageFrage_arr[$i]->nAnzahlAntworten += intval($oUmfrageFrageAntwortTMP->nAnzahlAntwort);
-
-                                unset($oTMP);
                                 $oTMP        = new stdClass();
                                 $oTMP->cName = '<a href="umfrage.php?umfrage=1&uf=' . $oUmfrageFrage->kUmfrageFrage . '&aa=' . $oUmfrageStats->oUmfrageFrage_arr[$i]->nAnzahlAntworten .
                                     '&ma=' . count($oUmfrageFrageAntwort_arr) . '&a=zeige_sonstige">Sonstige</a>';
@@ -479,11 +477,7 @@ function holeUmfrageStatistik($kUmfrage)
             if ($kKundengruppe == -1) {
                 $oUmfrageStats->cKundengruppe_arr[] = 'Alle';
             } else {
-                $oKundengruppe = Shop::DB()->query(
-                    "SELECT cName
-                        FROM tkundengruppe
-                        WHERE kKundengruppe = " . (int)$kKundengruppe, 1
-                );
+                $oKundengruppe = Shop::DB()->select('tkundengruppe', 'kKundengruppe', (int)$kKundengruppe);
                 if (!empty($oKundengruppe->cName)) {
                     $oUmfrageStats->cKundengruppe_arr[] = $oKundengruppe->cName;
                 }

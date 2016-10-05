@@ -35,7 +35,8 @@
                 <tr class="tab_bg{$smarty.foreach.kundengruppe.iteration%2}">
                     <td class="">{$oKundengruppe->cName}</td>
                     <td class="tcenter">
-                        <a href="agbwrb.php?agbwrb=1&agbwrb_edit=1&kKundengruppe={$oKundengruppe->kKundengruppe}&token={$smarty.session.jtl_token}" class="btn btn-default">
+                        <a href="agbwrb.php?agbwrb=1&agbwrb_edit=1&kKundengruppe={$oKundengruppe->kKundengruppe}&token={$smarty.session.jtl_token}"
+                           class="btn btn-default" title="{#modify#}">
                             <i class="fa fa-edit"></i>
                         </a>
                     </td>

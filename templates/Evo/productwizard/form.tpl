@@ -3,8 +3,9 @@
     <script type="text/javascript">
         {literal}
         function aaDeleteSelectBTN() {
+            var i;
             if (document.getElementsByName('aaLosBTN').length > 0) {
-                for (var i = 0; i < document.getElementsByName('aaLosBTN').length; i++) {
+                for (i = 0; i < document.getElementsByName('aaLosBTN').length; i++) {
                     document.getElementsByName('aaLosBTN')[i].style.display = 'none';
                 }
             }

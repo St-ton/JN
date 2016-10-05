@@ -8,7 +8,7 @@ require_once dirname(__FILE__) . '/includes/admininclude.php';
 $oAccount->permission('ORDER_CUSTOMERFIELDS_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_CLASSES . 'class.JTL-Shopadmin.PlausiKundenfeld.php';
-
+/** @global JTLSmarty $smarty */
 $Einstellungen = Shop::getSettings(array(CONF_KUNDENFELD));
 $cHinweis      = '';
 $cFehler       = '';
@@ -52,8 +52,8 @@ if (isset($_POST['einstellungen']) && intval($_POST['einstellungen']) > 0) {
             $cHinweis .= 'Ihre Kundenfelder wurden erfolgreich aktualisiert.';
         }
     } else { // Speichern
-        $cName           = $_POST['cName'];
-        $cWawi           = $_POST['cWawi'];
+        $cName           = htmlspecialchars($_POST['cName']);
+        $cWawi           = str_replace(['"',"'"], '',$_POST['cWawi']);
         $cTyp            = $_POST['cTyp'];
         $nSort           = intval($_POST['nSort']);
         $nPflicht        = $_POST['nPflicht'];

@@ -132,7 +132,7 @@ class Status
                   FROM tpluginhook 
                   INNER JOIN tplugin 
                     ON tpluginhook.kPlugin = tplugin.kPlugin 
-                    WHERE tpluginhook.nHook = {$hookId} AND tplugin.nStatus = 2", 2
+                    WHERE tpluginhook.nHook = " . $hookId . " AND tplugin.nStatus = 2", 2
             );
             foreach ($plugins as $plugin) {
                 $sharedPlugins[$hookId][$plugin->cPluginID] = $plugin;
@@ -179,7 +179,7 @@ class Status
     }
 
     /**
-     * @return mixed|void
+     * @return mixed|null
      */
     protected function getSubscription()
     {
@@ -190,7 +190,7 @@ class Status
             return $_SESSION['subscription'];
         }
 
-        return;
+        return null;
     }
 
     /**
@@ -248,12 +248,7 @@ class Status
     protected function getPaymentMethodsWithError()
     {
         $incorrectPaymentMethods = [];
-        $paymentMethods          = Shop::DB()->query("
-          SELECT * 
-            FROM tzahlungsart 
-            WHERE nActive = 1 
-            ORDER BY cAnbieter, cName, nSort, kZahlungsart", 2
-        );
+        $paymentMethods          = Shop::DB()->selectAll('tzahlungsart', 'nActive', 1, '*', 'cAnbieter, cName, nSort, kZahlungsart');
 
         if (is_array($paymentMethods)) {
             foreach ($paymentMethods as $i => $method) {

@@ -1,5 +1,5 @@
 <div itemscope itemtype="https://schema.org/Article" class="panel panel-default">
-    <div class="panel-heading">
+    <div class="panel-heading hide-overflow">
         <div class="panel-title">
             <a href="{$oNewsUebersicht->cURL}">
                 <strong><span itemprop="headline">{$oNewsUebersicht->cBetreff}</span></strong>
@@ -10,23 +10,26 @@
                     <span itemprop="publisher" class="hidden">{$Einstellungen.global.global_shopname}</span>
                 {/if}
                 {if (isset($oNewsUebersicht->oAuthor))}
-                    {include file="snippets/author.tpl" oAuthor=$oNewsUebersicht->oAuthor}&nbsp;-&nbsp;
+                    <div class="hidden-xs v-box">{include file="snippets/author.tpl" oAuthor=$oNewsUebersicht->oAuthor}</div>
                 {/if}
                 {if isset($oNewsUebersicht->dErstellt)}<time itemprop="dateModified" class="hidden">{$oNewsUebersicht->dErstellt}</time>{/if}
                 <time itemprop="datePublished" datetime="{$dDate}" class="hidden">{$dDate}</time><span class="v-box">{$oNewsUebersicht->dErstellt_de}</span>
                 {if isset($Einstellungen.news.news_kommentare_nutzen) && $Einstellungen.news.news_kommentare_nutzen === 'Y'}
                     |
-                    <a class="v-box" href="{$oNewsUebersicht->cURL}#comments" title="{lang key="readComments" section="news"}"><span itemprop="commentCount">{$oNewsUebersicht->nNewsKommentarAnzahl}</span>
-                        {if $oNewsUebersicht->nNewsKommentarAnzahl == 1}
-                            {lang key="newsComment" section="news"}
-                        {else}
-                            {lang key="newsComments" section="news"}
-                        {/if}
+                    <a class="v-box" href="{$oNewsUebersicht->cURL}#comments" title="{lang key="readComments" section="news"}">
+                        <span class="fa fa-comments"></span>
+                        <span class="sr-only">
+                            {if $oNewsUebersicht->nNewsKommentarAnzahl == 1}
+                                {lang key="newsComment" section="news"}
+                            {else}
+                                {lang key="newsComments" section="news"}
+                            {/if}
+                        </span>
+                        <em itemprop="commentCount">{$oNewsUebersicht->nNewsKommentarAnzahl}</em>
                     </a>
                 {/if}
             </div>
         </div>
-
     </div>
     <div class="panel-body">
         <div class=" row">

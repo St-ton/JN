@@ -90,26 +90,30 @@
                             {block name="basket-shipping-estimate-form"}
                                 <div class="panel panel-default" id="basket-shipping-estimate-form">
                                     <div class="panel-heading">
-                                        <h4 class="panel-title">{block name="basket-shipping-estimate-form-title"}{lang key="estimateShippingCostsTo" section="checkout"}{/block}</h4>
+                                        <div class="panel-title">
+                                            {block name="basket-shipping-estimate-form-title"}{lang key="estimateShippingCostsTo" section="checkout"}{/block}
+                                        </div>
                                     </div>
-                                    <div class="panel-body form-inline">
+                                    <div class="panel-body">
                                         {block name="basket-shipping-estimate-form-body"}
                                             <div class="row">
                                                 <div class="col-md-8 col-md-offset-2 col-lg-6 col-lg-offset-3">
-                                                    <label for="country">{lang key="country" section="account data"}</label>
-                                                    <select name="land" id="country" class="form-control">
-                                                        {foreach name=land from=$laender item=land}
-                                                            <option value="{$land->cISO}" {if ($Einstellungen.kunden.kundenregistrierung_standardland==$land->cISO && (!isset($smarty.session.Kunde->cLand) || !$smarty.session.Kunde->cLand)) || (isset($smarty.session.Kunde->cLand) && $smarty.session.Kunde->cLand==$land->cISO)}selected{/if}>{$land->cName}</option>
-                                                        {/foreach}
-                                                    </select>
-                                                    &nbsp;
-                                                    <label class="sr-only" for="plz">{lang key="plz" section="forgot password"}</label>
-                                                    <span class="input-group">
-                                                        <input type="text" name="plz" size="8" maxlength="8" value="{if isset($smarty.session.Kunde->cPLZ)}{$smarty.session.Kunde->cPLZ}{/if}" id="plz" class="form-control" placeholder="{lang key="plz" section="forgot password"}">
-                                                        <span class="input-group-btn">
-                                                            <button name="versandrechnerBTN" class="btn btn-default" type="submit">{lang key="estimateShipping" section="checkout"}</button>
+                                                    <div class="form-inline">
+                                                        <label for="country">{lang key="country" section="account data"}</label>
+                                                        <select name="land" id="country" class="form-control">
+                                                            {foreach name=land from=$laender item=land}
+                                                                <option value="{$land->cISO}" {if ($Einstellungen.kunden.kundenregistrierung_standardland==$land->cISO && (!isset($smarty.session.Kunde->cLand) || !$smarty.session.Kunde->cLand)) || (isset($smarty.session.Kunde->cLand) && $smarty.session.Kunde->cLand==$land->cISO)}selected{/if}>{$land->cName}</option>
+                                                            {/foreach}
+                                                        </select>
+                                                        &nbsp;
+                                                        <label class="sr-only" for="plz">{lang key="plz" section="forgot password"}</label>
+                                                        <span class="input-group">
+                                                            <input type="text" name="plz" size="8" maxlength="8" value="{if isset($smarty.session.Kunde->cPLZ)}{$smarty.session.Kunde->cPLZ}{/if}" id="plz" class="form-control" placeholder="{lang key="plz" section="forgot password"}">
+                                                            <span class="input-group-btn">
+                                                                <button name="versandrechnerBTN" class="btn btn-default" type="submit">{lang key="estimateShipping" section="checkout"}</button>
+                                                            </span>
                                                         </span>
-                                                    </span>
+                                                    </div>
                                                 </div>
                                             </div>
                                         {/block}

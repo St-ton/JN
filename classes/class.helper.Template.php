@@ -310,7 +310,7 @@ class TemplateHelper
         $oTemplate->cDokuURL     = (string)trim($oXMLTemplate->DokuURL);
         $oTemplate->bChild       = !empty($oXMLTemplate->Parent);
         $oTemplate->cParent      = !empty($oXMLTemplate->Parent) ? (string)trim($oXMLTemplate->Parent) : '';
-        $oTemplate->bResponsive  = empty($oXMLTemplate->Responsive) ? false : (strtolower((string)$oXMLTemplate->Responsive) === 'true' ? true : false);
+        $oTemplate->bResponsive  = empty($oXMLTemplate['isFullResponsive']) ? false : (strtolower((string)$oXMLTemplate['isFullResponsive']) === 'true' ? true : false);
         $oTemplate->bHasError    = false;
         $oTemplate->eTyp         = '';
         $oTemplate->cDescription = (!empty($oXMLTemplate->Description)) ? (string)trim($oXMLTemplate->Description) : '';

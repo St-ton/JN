@@ -597,21 +597,12 @@ function setzePreisverlauf($kArtikel, $kKundengruppe, $fVKNetto)
     );
     // gleicher Wert wie letzter Eintrag?
     if (!isset($oPreis->fVKNetto) || isset($oPreis->fVKNetto) && (int)($oPreis->fVKNetto * 100) !== (int)($fVKNetto * 100)) {
-        $nReihen = Shop::DB()->query(
-            "UPDATE tpreisverlauf
-                SET fVKNetto = " . $fVKNetto . "
-                WHERE kArtikel = " . $kArtikel . "
-                    AND kKundengruppe = " . $kKundengruppe . "
-                    AND dDate = DATE(NOW())", 3
-        );
+        $oPreisverlauf                = new stdClass();
+        $oPreisverlauf->fVKNetto      = $fVKNetto;
+        $nReihen = Shop::DB()->update('tpreisverlauf', ['kArtikel', 'kKundengruppe', 'dDate'], [$kArtikel, $kKundengruppe, date('Y-m-d')], $oPreisverlauf);
     } else {
         // Eintrag entfernen um Dopplung zu vermeiden
-        $nReihen = Shop::DB()->query(
-            "DELETE FROM tpreisverlauf
-                WHERE kArtikel = " . $kArtikel . "
-                    AND kKundengruppe = " . $kKundengruppe . "
-                    AND dDate = DATE(NOW())", 3
-        );
+        $nReihen = Shop::DB()->delete('tpreisverlauf', ['kArtikel', 'kKundengruppe', 'dDate'], [$kArtikel, $kKundengruppe, date('Y-m-d')]);
     }
 
     if ($nReihen == 0) {

@@ -609,9 +609,9 @@ function bearbeiteInsert($xml, array $conf)
                 Shop::DB()->insert('tartikelwarenlager', $oArtikelWarenlager);
             }
         }
+        $bTesteSonderpreis = false;
         if (isset($xml['tartikel']['tartikelsonderpreis']) && is_array($xml['tartikel']['tartikelsonderpreis'])) {
             $ArtikelSonderpreis_arr = mapArray($xml['tartikel'], 'tartikelsonderpreis', $GLOBALS['mArtikelSonderpreis']);
-            $bTesteSonderpreis      = false;
             if ($ArtikelSonderpreis_arr[0]->cAktiv === 'Y') {
                 $specialPriceStart = explode('-', $ArtikelSonderpreis_arr[0]->dStart);
                 if (count($specialPriceStart) > 2) {

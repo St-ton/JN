@@ -579,6 +579,77 @@ function truncateJtllog()
     return $oResponse;
 }
 
+/**
+ * @param string $searchString
+ * @param array  $kKundeSelected_arr
+ * @return xajaxResponse
+ */
+function getCustomerList($searchString, $kKundeSelected_arr)
+{
+    global $smarty;
+
+    if ($searchString === '') {
+        if (count($kKundeSelected_arr) === 0) {
+            $oKunde_arr = [];
+            $listTitle  = 'Bisher sind keine Kunden ausgew&auml;hlt. Suchen Sie jetzt nach Kunden!';
+        } else {
+            $oKunde_arr = Shop::DB()->query("
+                SELECT kKunde, cVorname, cMail, cPLZ, cOrt
+                    FROM tkunde
+                    WHERE kKunde IN (" . implode(',', $kKundeSelected_arr) . ")
+                ", 2);
+            $listTitle  = 'Alle ausgew&auml;hlten Kunden: '. count($oKunde_arr);
+        }
+    } else {
+        $oKunde_arr = Shop::DB()->query("
+            SELECT kKunde, cVorname, cMail, cPLZ, cOrt
+                FROM tkunde
+                WHERE cVorname LIKE '%" . $searchString . "%' OR
+                      cMail LIKE '%" . $searchString . "%' OR
+                      cOrt LIKE '%" . $searchString . "%' OR
+                      cPLZ LIKE '%" . $searchString . "%'
+            ", 2);
+        $listTitle  = 'Gefundene Kunden: ' . count($oKunde_arr);
+    }
+
+    $customerListHtml = $smarty->assign('cPart', 'customerlist')
+        ->assign('oKunde_arr', $oKunde_arr)
+        ->assign('kKundeSelected_arr', $kKundeSelected_arr)
+        ->fetch('tpl_inc/customer_search.tpl');
+
+    $oResponse = new xajaxResponse();
+    $oResponse->assign('customer-search-result-list', 'innerHTML', $customerListHtml);
+    $oResponse->assign('customer-list-title', 'innerHTML', $listTitle);
+
+    foreach ($oKunde_arr as $oKunde) {
+        $oResponse->script('xajax_decodeCustomer(' . $oKunde->kKunde . ', ' .
+            (in_array($oKunde->kKunde, $kKundeSelected_arr) ? 'true' : 'false') . ');');
+    }
+
+    return $oResponse;
+}
+
+/**
+ * @param int  $kKunde
+ * @param bool $bSelected
+ * @return xajaxResponse
+ */
+function decodeCustomer($kKunde, $bSelected)
+{
+    global $smarty;
+
+    $oKunde = new Kunde($kKunde);
+
+    $customerHtml = $smarty->assign('cPart', 'fullcustomer')
+        ->assign('oKunde', $oKunde)
+        ->assign('bSelected', $bSelected)
+        ->fetch('tpl_inc/customer_search.tpl');
+
+    $oResponse = new xajaxResponse();
+    $oResponse->assign('customer-' . (int)$kKunde, 'innerHTML', $customerHtml);
+    return $oResponse;
+}
+
 executeHook(HOOK_TOOLSAJAX_SERVER_ADMIN, array('xajax' => &$xajax));
 
 $xajax->registerFunction('reloadAdminLoginCaptcha');
@@ -606,6 +677,8 @@ $xajax->registerFunction('setRMAStatusAjax');
 $xajax->registerFunction('saveBannerAreas');
 $xajax->registerFunction('getContentTemplate');
 $xajax->registerFunction('truncateJtllog');
+$xajax->registerFunction('getCustomerList');
+$xajax->registerFunction('decodeCustomer');
 
 $xajax->processRequest();
 header('Content-Type:text/html;charset=' . JTL_CHARSET . ';');

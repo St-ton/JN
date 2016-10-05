@@ -13,6 +13,7 @@
 {/if}
 
 {include file='tpl_inc/seite_header.tpl' cTitel=$cTitel cBeschreibung=#couponsDesc# cDokuURL=#couponsURL#}
+{include file='tpl_inc/customer_search.tpl' cUrl='kupons.php'}
 
 <script>
     {literal}
@@ -373,7 +374,12 @@
                                 {/foreach}
                             </select>
                         </span>
-                        <span class="input-group-addon">{getHelpDesc cDesc=#multipleChoice#}</span>
+                        <span class="input-group-addon">
+                            <button type="button" class="btn btn-primary btn-xs"
+                                    data-toggle="modal" data-target="#customer-search-modal">
+                                <i class="fa fa-pencil"></i>
+                            </button>
+                        </span>
                     </div>
                     <div class="input-group{if isset($oKupon->massCreationCoupon)} hidden{/if}" id="informCustomers">
                         <span class="input-group-addon">

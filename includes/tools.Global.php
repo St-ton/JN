@@ -3082,7 +3082,7 @@ function gibVersandkostenfreiAb($kKundengruppe, $cLand = '')
 {
     // Ticket #1018
     $versandklassen = VersandartHelper::getShippingClasses($_SESSION['Warenkorb']);
-    $cacheID        = 'vkfrei_' . $kKundengruppe . '_' . $cLand . '_' . $versandklassen;
+    $cacheID        = 'vkfrei_' . $kKundengruppe . '_' . $cLand . '_' . $versandklassen . '_' . $_SESSION['cISOSprache'];
     if (($oVersandart = Shop::Cache()->get($cacheID)) === false) {
         if (strlen($cLand) > 0) {
             $cKundeSQLWhere = " AND cLaender LIKE '%" . StringHandler::filterXSS($cLand) . "%'";
@@ -3094,8 +3094,11 @@ function gibVersandkostenfreiAb($kKundengruppe, $cLand = '')
             }
         }
         $oVersandart = Shop::DB()->query(
-            "SELECT * 
+            "SELECT tversandart.*, tversandartsprache.cName AS cNameLocalized 
                 FROM tversandart
+                LEFT JOIN tversandartsprache
+                ON tversandart.kVersandart = tversandartsprache.kVersandart
+                    AND tversandartsprache.cISOSprache = '" . $_SESSION['cISOSprache'] . "'
                 WHERE fVersandkostenfreiAbX > 0
                     AND (cVersandklassen='-1' OR (cVersandklassen LIKE '% " . $versandklassen . " %' OR cVersandklassen LIKE '% " . $versandklassen . "'))
                     AND (cKundengruppen='-1' OR cKundengruppen LIKE '%;" . $kKundengruppe . ";%')
@@ -3114,8 +3117,8 @@ function gibVersandkostenfreiAb($kKundengruppe, $cLand = '')
 }
 
 /**
- * @param Versandart $oVersandart
- * @param float      $fWarenkorbSumme
+ * @param Versandart|object $oVersandart
+ * @param float             $fWarenkorbSumme
  * @return string
  */
 function baueVersandkostenfreiString($oVersandart, $fWarenkorbSumme)
@@ -3123,8 +3126,7 @@ function baueVersandkostenfreiString($oVersandart, $fWarenkorbSumme)
     if (is_object($oVersandart) && floatval($oVersandart->fVersandkostenfreiAbX) > 0 && isset($_SESSION['Warenkorb']) && isset($_SESSION['Steuerland'])) {
         $fSummeDiff = floatval($oVersandart->fVersandkostenfreiAbX) - floatval($fWarenkorbSumme);
         //check if vkfreiabx is calculated net or gross
-        $calculateNet = ($oVersandart->eSteuer === 'netto') ? true : false;
-        if ($calculateNet === true) {
+        if ($oVersandart->eSteuer === 'netto') {
             //calculate net with default tax class
             $defaultTaxClass = Shop::DB()->select('tsteuerklasse', 'cStandard', 'Y');
             if (isset($defaultTaxClass->kSteuerklasse)) {
@@ -3138,8 +3140,12 @@ function baueVersandkostenfreiString($oVersandart, $fWarenkorbSumme)
             }
         }
         // localization - see /jtl-shop/issues#347
-        $VersandartSprache = Shop::DB()->select('tversandartsprache', 'kVersandart', $oVersandart->kVersandart, 'cISOSprache', $_SESSION['cISOSprache']);
-        $cName             = (!empty($VersandartSprache->cName)) ? $VersandartSprache->cName : $oVersandart->cName;
+        if (isset($oVersandart->cNameLocalized)) {
+            $cName = $oVersandart->cNameLocalized;
+        } else {
+            $VersandartSprache = Shop::DB()->select('tversandartsprache', 'kVersandart', $oVersandart->kVersandart, 'cISOSprache', $_SESSION['cISOSprache']);
+            $cName             = (!empty($VersandartSprache->cName)) ? $VersandartSprache->cName : $oVersandart->cName;
+        }
         if ($fSummeDiff <= 0) {
             return sprintf(Shop::Lang()->get('noShippingCostsReached', 'basket'), strval($oVersandart->cLaender)) . ' ' . Shop::Lang()->get('with', 'global') . " $cName";
         }
@@ -3634,7 +3640,7 @@ function baueSuchSpecialURL($kKey)
         return $url;
     }
     $oSeo = Shop::DB()->select('tseo', 'kSprache', (int)$_SESSION['kSprache'], 'cKey', 'suchspecial', 'kKey', (int)$kKey, false, 'cSeo');
-    if ($oSeo === false) {
+    if (!isset($oSeo->cSeo)) {
         $oSeo = new stdClass();
     }
 

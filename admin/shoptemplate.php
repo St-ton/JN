@@ -3,6 +3,9 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+/**
+ * @global JTLSmarty $smarty
+ */
 require_once dirname(__FILE__) . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'template_inc.php';
 
@@ -78,7 +81,7 @@ if (isset($_POST['type']) && $_POST['type'] === 'settings' && validateToken()) {
     $parentFolder = null;
     $tplXML       = $oTemplate->leseXML($cOrdner);
     if (!empty($tplXML->Parent)) {
-        $parentFolder = (string) $tplXML->Parent;
+        $parentFolder = (string)$tplXML->Parent;
         $parentTplXML = $oTemplate->leseXML($parentFolder);
     }
     $tplConfXML   = $oTemplate->leseEinstellungenXML($cOrdner, $parentFolder);
@@ -149,7 +152,7 @@ if (isset($_GET['settings']) && strlen($_GET['settings']) > 0 && validateToken()
     $preview      = array();
     $parentFolder = null;
     if (!empty($tplXML->Parent)) {
-        $parentFolder = (string) $tplXML->Parent;
+        $parentFolder = (string)$tplXML->Parent;
         $parentTplXML = $templateHelper->getXML($parentFolder);
     }
     $tplConfXML       = $oTemplate->leseEinstellungenXML($cOrdner, $parentFolder);

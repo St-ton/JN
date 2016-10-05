@@ -102,7 +102,6 @@ class Status
     {
         $oFsCheck = new Systemcheck_Platform_Filesystem(PFAD_ROOT);
 
-        $writeableDirs = $oFsCheck->getFoldersChecked();
         $permissionStat = $oFsCheck->getFolderStats();
 
         return $permissionStat->nCountInValid === 0;
@@ -114,11 +113,11 @@ class Status
     protected function getPluginSharedHooks()
     {
         $sharedPlugins = [];
-        $sharedHookIds = Shop::DB()->executeQuery("
-          SELECT nHook 
-            FROM tpluginhook 
-            GROUP BY nHook 
-            HAVING COUNT(DISTINCT kPlugin) > 1", 2
+        $sharedHookIds = Shop::DB()->executeQuery(
+            "SELECT nHook 
+                FROM tpluginhook 
+                GROUP BY nHook 
+                HAVING COUNT(DISTINCT kPlugin) > 1", 2
         );
 
         array_walk($sharedHookIds, function (&$val, $key) {
@@ -127,11 +126,11 @@ class Status
 
         foreach ($sharedHookIds as $hookId) {
             $sharedPlugins[$hookId] = [];
-            $plugins                = Shop::DB()->executeQuery("
-                SELECT DISTINCT tpluginhook.kPlugin, tplugin.cName, tplugin.cPluginID 
-                  FROM tpluginhook 
-                  INNER JOIN tplugin 
-                    ON tpluginhook.kPlugin = tplugin.kPlugin 
+            $plugins                = Shop::DB()->executeQuery(
+                "SELECT DISTINCT tpluginhook.kPlugin, tplugin.cName, tplugin.cPluginID 
+                    FROM tpluginhook 
+                    INNER JOIN tplugin 
+                        ON tpluginhook.kPlugin = tplugin.kPlugin 
                     WHERE tpluginhook.nHook = " . $hookId . " AND tplugin.nStatus = 2", 2
             );
             foreach ($plugins as $plugin) {
@@ -179,6 +178,34 @@ class Status
     }
 
     /**
+     * @return bool
+     */
+    protected function hasMobileTemplateIssue()
+    {
+        $oTemplate = Shop::DB()->select('ttemplate', 'eTyp', 'standard');
+        if (isset($oTemplate)) {
+            $oTplData = TemplateHelper::getInstance(false)->getData($oTemplate->cTemplate);
+            if ($oTplData->bResponsive) {
+                $oMobileTpl = Shop::DB()->select('ttemplate', 'eTyp', 'mobil');
+
+                return $oMobileTpl !== null;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @return bool
+     */
+    protected function hasStandardTemplateIssue()
+    {
+        $oTemplate = Shop::DB()->select('ttemplate', 'eTyp', 'standard');
+
+        return $oTemplate === null;
+    }
+
+    /**
      * @return mixed|null
      */
     protected function getSubscription()
@@ -186,7 +213,7 @@ class Status
         if (!isset($_SESSION['subscription']) || $_SESSION['subscription'] === null) {
             $_SESSION['subscription'] = jtlAPI::getSubscription();
         }
-        if (is_object($_SESSION['subscription']) && isset($_SESSION['subscription']->kShop) && (int) $_SESSION['subscription']->kShop > 0) {
+        if (is_object($_SESSION['subscription']) && isset($_SESSION['subscription']->kShop) && (int)$_SESSION['subscription']->kShop > 0) {
             return $_SESSION['subscription'];
         }
 

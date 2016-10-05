@@ -4,7 +4,7 @@
     {block name="productlist-image"}
     <a class="image-wrapper" href="{$Artikel->cURL}">
         {if isset($Artikel->Bilder[0]->cAltAttribut)}
-            {assign var="alt" value=$Artikel->Bilder[0]->cAltAttribut|strip_tags|escape:"quotes"|truncate:60}
+            {assign var="alt" value=$Artikel->Bilder[0]->cAltAttribut|strip_tags|truncate:60|escape:"html"}
         {else}
             {assign var="alt" value=$Artikel->cName}
         {/if}

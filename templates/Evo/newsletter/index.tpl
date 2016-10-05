@@ -57,7 +57,7 @@
                                 </div>
                                 <div class="form-group float-label-control{if !empty($oPlausi->nPlausi_arr.cEmail)} has-error{/if} required">
                                     <label for="email" class="control-label">{lang key="newsletteremail" section="newsletter"}</label>
-                                    <input type="text" name="cEmail" class="form-control" required value="{if !empty($oPlausi->cPost_arr.cEmail)}{$oPlausi->cPost_arr.cEmail}{elseif !empty($oKunde->cMail)}{$oKunde->cMail}{/if}" id="email" />
+                                    <input type="email" name="cEmail" class="form-control" required value="{if !empty($oPlausi->cPost_arr.cEmail)}{$oPlausi->cPost_arr.cEmail}{elseif !empty($oKunde->cMail)}{$oKunde->cMail}{/if}" id="email" />
                                     {if !empty($oPlausi->nPlausi_arr.cEmail)}
                                         <div class="alert alert-danger">{lang key="fillOut" section="global"}</div>
                                     {/if}
@@ -118,7 +118,7 @@
                         <fieldset>
                             <div class="form-group float-label-control required">
                                 <label for="checkOut" class="control-label">{lang key="newsletteremail" section="newsletter"}</label>
-                                <input type="text" class="form-control" required name="cEmail" value="{if !empty($oKunde->cMail)}{$oKunde->cMail}{/if}" id="checkOut" />
+                                <input type="email" class="form-control" required name="cEmail" value="{if !empty($oKunde->cMail)}{$oKunde->cMail}{/if}" id="checkOut" />
                             </div>
                             <div class="col-sm-offset-2 col-sm-10">
                                 {$jtl_token}

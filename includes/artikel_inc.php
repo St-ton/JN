@@ -548,11 +548,11 @@ function gibNaviBlaettern($kArtikel, $kKategorie)
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
                     AND tartikel.kArtikel = tkategorieartikel.kArtikel
                     AND tkategorieartikel.kKategorie = $kKategorie
-                    AND tpreise.kArtikel=tartikel.kArtikel
+                    AND tpreise.kArtikel = tartikel.kArtikel
                     AND tartikel.kArtikel < $kArtikel
                     AND tpreise.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
                     " . gibLagerfilter() . "
-                ORDER BY tartikel.kArtikel desc
+                ORDER BY tartikel.kArtikel DESC
                 LIMIT 1
                 ", 1
         );

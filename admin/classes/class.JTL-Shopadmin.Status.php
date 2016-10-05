@@ -183,10 +183,13 @@ class Status
     protected function hasMobileTemplateIssue()
     {
         $oTemplate = Shop::DB()->select('ttemplate', 'eTyp', 'standard');
-        if (isset($oTemplate) && ($oTemplate->name === 'Evo' || $oTemplate->parent === 'Evo')) {
-            $oMobileTpl = Shop::DB()->select('ttemplate', 'eTyp', 'mobil');
+        if (isset($oTemplate)) {
+            $oTplData = TemplateHelper::getInstance(false)->getData($oTemplate->cTemplate);
+            if ($oTplData->bResponsive) {
+                $oMobileTpl = Shop::DB()->select('ttemplate', 'eTyp', 'mobil');
 
-            return $oMobileTpl !== null;
+                return $oMobileTpl !== null;
+            }
         }
 
         return false;

@@ -20,7 +20,7 @@
     <form action="shoptemplate.php" method="post" enctype="multipart/form-data">
         {$jtl_token}
         <div id="settings" class="settings">
-            {if isset($oTemplate->eTyp) && ($oTemplate->eTyp === 'admin' || ($oTemplate->eTyp !== 'mobil' && ($oTemplate->cOrdner === 'Evo' || $oTemplate->cParent === 'Evo')))}
+            {if isset($oTemplate->eTyp) && ($oTemplate->eTyp === 'admin' || ($oTemplate->eTyp !== 'mobil' && $oTemplate->bResponsive))}
                 <input type="hidden" name="eTyp" value="{if !empty($oTemplate->eTyp)}{$oTemplate->eTyp}{else}standard{/if}" />
             {else}
                 <div class="panel panel-default">
@@ -28,7 +28,7 @@
                         <h3 class="panel-title">Mobil</h3>
                     </div>
                     <div class="panel-body">
-                        {if $oTemplate->eTyp === 'mobil' && ($oTemplate->cOrdner === 'Evo' || $oTemplate->cParent === 'Evo')}
+                        {if $oTemplate->eTyp === 'mobil' && $oTemplate->bResponsive}
                             <div class="alert alert-warning">{#warning_responsive_mobile#}</div>
                         {/if}
                         <div class="item input-group">

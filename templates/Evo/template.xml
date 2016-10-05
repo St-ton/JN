@@ -6,6 +6,7 @@
     <Version>4.05</Version>
     <ShopVersion>405</ShopVersion>
     <Preview>preview.png</Preview>
+    <Responsive>true</Responsive>
     <Description>JTL-Shop Responsive-Template</Description>
     <Settings>
         <Section Name="Allgemein" Key="general">

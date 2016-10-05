@@ -5157,6 +5157,7 @@ class Artikel
         $kArtikel      = (int)$kArtikel;
         $kKundengruppe = (int)$kKundengruppe;
         $Rabatt_arr    = [];
+        $maxRabatt     = 0;
         // Existiert für diese Kundengruppe ein Kategorierabatt?
         if (isset($this->kEigenschaftKombi) && $this->kEigenschaftKombi > 0) {
             $oArtikelKatRabatt = Shop::DB()->select('tartikelkategorierabatt', 'kArtikel', $this->kVaterArtikel, 'kKundengruppe', $kKundengruppe);
@@ -5170,7 +5171,9 @@ class Artikel
             }
         }
         // Existiert für diese Kundengruppe ein Rabatt?
-        $kdgrp = Shop::DB()->select('tkundengruppe', 'kKundengruppe', $kKundengruppe, null, null, null, null, false, 'fRabatt');
+        $kdgrp = (isset($_SESSION['Kundengruppe']->fRabatt) && $_SESSION['Kundengruppe']->kKundengruppe == $kKundengruppe)
+            ? $_SESSION['Kundengruppe']
+            : Shop::DB()->select('tkundengruppe', 'kKundengruppe', $kKundengruppe, null, null, null, null, false, 'fRabatt');
         if (isset($kdgrp->fRabatt) && $kdgrp->fRabatt > 0) {
             $Rabatt_arr[] = $kdgrp->fRabatt;
         }
@@ -5185,8 +5188,6 @@ class Artikel
             $maxRabatt = (float)max($Rabatt_arr);
         } elseif (count($Rabatt_arr) == 1) {
             $maxRabatt = (float)$Rabatt_arr[0];
-        } else {
-            $maxRabatt = 0;
         }
 
         return $maxRabatt;

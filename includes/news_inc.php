@@ -445,7 +445,7 @@ function getCurrentNewsCategory($kNewsKategorie, $bActiveOnly = false)
 function getNewsCategory($kNews)
 {
     $cSQL                  = '';
-    $oNewsKategorieKey_arr = Shop::DB()->query("SELECT kNewsKategorie FROM tnewskategorienews WHERE kNews = " . (int)$kNews, 2);
+    $oNewsKategorieKey_arr = Shop::DB()->selectAll('tnewskategorienews', 'kNews', (int)$kNews, 'kNewsKategorie');
 
     if (is_array($oNewsKategorieKey_arr) && count($oNewsKategorieKey_arr) > 0) {
         $cSQL = '';

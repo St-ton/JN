@@ -87,12 +87,7 @@ function sendeMail($ModulId, $Object, $mail = null)
     $Object->tfirma        = Shop::DB()->query("SELECT * FROM tfirma", 1);
     $Object->tkundengruppe = Shop::DB()->select('tkundengruppe', 'kKundengruppe', (int)$Object->tkunde->kKundengruppe);
     if (isset($Object->tkunde->kSprache) && $Object->tkunde->kSprache > 0) {
-        $kundengruppensprache = Shop::DB()->query(
-            "SELECT *
-                FROM tkundengruppensprache
-                WHERE kKundengruppe = " . (int)$Object->tkunde->kKundengruppe . "
-                AND kSprache = " . (int)$Object->tkunde->kSprache, 1
-        );
+        $kundengruppensprache = Shop::DB()->select('tkundengruppensprache', 'kKundengruppe', (int)$Object->tkunde->kKundengruppe, 'kSprache', (int)$Object->tkunde->kSprache);
         if (isset($kundengruppensprache->cName) && $kundengruppensprache->cName != $Object->tkundengruppe->cName) {
             $Object->tkundengruppe->cName = $kundengruppensprache->cName;
         }

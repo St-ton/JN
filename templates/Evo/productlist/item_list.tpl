@@ -18,7 +18,9 @@
                     {/if}
                 </a>
             {/block}
-            {include file='productdetails/rating.tpl' stars=$Artikel->fDurchschnittsBewertung}
+            {if $Einstellungen.bewertung.bewertung_anzeigen === 'Y'}
+                {include file='productdetails/rating.tpl' stars=$Artikel->fDurchschnittsBewertung}
+            {/if}
         </div>
         <div class="col-xs-6 col-lg-5">
             {block name="product-title"}<h4 class="title"><a href="{$Artikel->cURL}">{$Artikel->cName}</a></h4>{/block}

@@ -25,7 +25,7 @@
         var lastRequest       = null;
 
         $(function () {
-            xajax_getCustomerList('', selectedCustomers);
+            lastRequest = xajax_getCustomerList('', selectedCustomers);
         });
 
         function onChangeCustomerSearchInput (searchInput)
@@ -34,8 +34,9 @@
 
             if (searchString !== lastSearchString) {
                 lastSearchString = searchString;
-                if (lastRequest)
+                if (lastRequest) {
                     xajax.abortRequest(lastRequest);
+                }
                 lastRequest = xajax_getCustomerList(searchString, selectedCustomers);
             }
         }
@@ -72,8 +73,7 @@
                                onkeyup="onChangeCustomerSearchInput(this)" autocomplete="off">
                     </div>
                     <h5 id="customer-list-title">Suchergebnisse</h5>
-                    <div class="list-group" id="customer-search-result-list">
-                    </div>
+                    <div class="list-group" id="customer-search-result-list"></div>
                 </div>
                 <div class="modal-footer">
                     <div class="btn-group">

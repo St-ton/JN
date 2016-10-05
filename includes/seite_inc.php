@@ -373,8 +373,9 @@ function gibNewsletterHistory()
  */
 function gibSitemapKategorien()
 {
-    $oKategorieliste = new KategorieListe();
-    $oKategorieliste->holKategorienAufEinenBlick(3, $_SESSION['Kundengruppe']->kKundengruppe, $_SESSION['kSprache']);
+    $helper                    = KategorieHelper::getInstance();
+    $oKategorieliste           = new KategorieListe();
+    $oKategorieliste->elemente = $helper->combinedGetAll();
 
     return $oKategorieliste;
 }

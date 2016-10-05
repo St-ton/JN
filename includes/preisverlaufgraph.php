@@ -9,7 +9,7 @@ if (intval($_GET['kArtikel']) > 0 && intval($_GET['kKundengruppe']) > 0 && intva
     //session starten
     $session       = Session::getInstance();
     $Einstellungen = Shop::getSettings(array(CONF_PREISVERLAUF));
-    $oConfig_arr   = Shop::DB()->query("SELECT * FROM teinstellungen WHERE kEinstellungenSektion = " . CONF_PREISVERLAUF, 2);
+    $oConfig_arr   = Shop::DB()->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_PREISVERLAUF);
     $kArtikel      = (int) $_GET['kArtikel'];
     $kKundengruppe = (int) $_GET['kKundengruppe'];
     $kSteuerklasse = (int) $_GET['kSteuerklasse'];

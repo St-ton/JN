@@ -6,7 +6,7 @@
 require_once dirname(__FILE__) . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'vergleichsliste_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
-
+/** @global JTLSmarty $smarty */
 Shop::setPageType(PAGE_VERGLEICHSLISTE);
 $AktuelleSeite  = 'VERGLEICHSLISTE';
 $conf           = Shop::getSettings(array(CONF_VERGLEICHSLISTE, CONF_ARTIKELDETAILS));

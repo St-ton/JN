@@ -870,7 +870,7 @@ function plausiNeukundenKupon()
                 trim($_SESSION['Kunde']->cOrt),
                 trim($_SESSION['Kunde']->cLand)
             );
-            $neukunde = Kuponneukunde::load($_SESSION['Kunde']->cMail, $hash);
+            $neukunde = Kuponneukunde::Load($_SESSION['Kunde']->cMail, $hash);
             if ($neukunde !== null) {
                 return;
             }

@@ -19,7 +19,7 @@
     {block name="productlist-image-caption"}
     <div class="caption">
         <h4 class="title"><a href="{$Artikel->cURL}">{$Artikel->cName}</a></h4>
-        {if $Artikel->fDurchschnittsBewertung > 0}{include file='productdetails/rating.tpl' stars=$Artikel->fDurchschnittsBewertung}<br>{/if}
+        {if $Einstellungen.bewertung.bewertung_anzeigen === 'Y' && $Artikel->fDurchschnittsBewertung > 0}{include file='productdetails/rating.tpl' stars=$Artikel->fDurchschnittsBewertung}<br>{/if}
         {assign var=price_image value=""}
         {if isset($Artikel->Preise->strPreisGrafik_Suche)}
             {assign var=$price_image value=$Artikel->Preise->strPreisGrafik_Suche}

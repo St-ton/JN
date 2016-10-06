@@ -304,7 +304,7 @@ class Boxen
             }
         }
 
-        return;
+        return null;
     }
 
     /**

@@ -4,7 +4,12 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-//hu
+/**
+ * @param Bestellung $Bestellung
+ * @param string     $email
+ * @param string     $returnURL
+ * @return string
+ */
 function gib_moneybookers_form($Bestellung, $email, $returnURL)
 {
     if ($Bestellung->fWarensumme > 0 && $email) {

@@ -291,7 +291,6 @@ class Plugin
      * @param int  $kPlugin - Falls angegeben, wird das Plugin mit angegebenem $kPlugin aus der DB geholt
      * @param bool $invalidateCache - set to true to clear plugin cache
      * @param bool $suppressReload - set to true when the plugin shouldn't be reloaded, not even in plugin dev mode
-     * @return Plugin
      */
     public function __construct($kPlugin = 0, $invalidateCache = false, $suppressReload = false)
     {

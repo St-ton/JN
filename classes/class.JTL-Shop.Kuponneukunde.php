@@ -250,7 +250,7 @@ class Kuponneukunde
             }
         }
 
-        return;
+        return null;
     }
 
     /**

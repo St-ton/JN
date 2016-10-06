@@ -518,6 +518,6 @@ class News extends MainModel
             return $oNews_arr;
         }
 
-        return;
+        return [];
     }
 }

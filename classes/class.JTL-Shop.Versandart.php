@@ -109,7 +109,6 @@ class Versandart
      * Konstruktor
      *
      * @param int $kVersandart - Falls angegeben, wird der Rechnungsadresse mit angegebenem kVersandart aus der DB geholt
-     * @return Versandart
      */
     public function __construct($kVersandart = 0)
     {

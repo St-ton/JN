@@ -44,7 +44,6 @@ class Rechnungsadresse extends Adresse
      * Konstruktor
      *
      * @param int $kRechnungsadresse - Falls angegeben, wird der Rechnungsadresse mit angegebenem kRechnungsadresse aus der DB geholt
-     * @return Rechnungsadresse
      */
     public function __construct($kRechnungsadresse = 0)
     {

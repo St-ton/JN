@@ -265,7 +265,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 return PFAD_KONFIGURATOR_KLEIN . $this->cBildPfad;
             }
 
-            return;
+            return null;
         }
 
         /**

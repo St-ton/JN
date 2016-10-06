@@ -301,8 +301,6 @@ class Preise
      * @param int $kArtikel
      * @param int $kKunde
      * @param int $kSteuerklasse
-     *
-     * @return Preise Object
      */
     public function __construct($kKundengruppe, $kArtikel, $kKunde = 0, $kSteuerklasse = 0)
     {

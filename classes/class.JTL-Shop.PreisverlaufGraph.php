@@ -175,7 +175,7 @@ class PreisverlaufGraph
      * @param int $kArtikel
      * @param int $kKundegruppe
      * @param int $nMonat
-     * @return array|null
+     * @return array
      */
     public function holePreisverlauf($kArtikel, $kKundegruppe, $nMonat)
     {
@@ -211,7 +211,7 @@ class PreisverlaufGraph
             }
         }
 
-        return;
+        return [];
     }
 
     /**
@@ -226,7 +226,7 @@ class PreisverlaufGraph
     {
         $this->oPreisverlaufData_arr = $this->holePreisverlauf($kArtikel, $kKundegruppe, $nMonat);
 
-        if (count($this->oPreisverlaufData_arr) > 1 && $this->oPreisverlaufData_arr != null && is_array($this->oPreisverlaufData_arr)) {
+        if (is_array($this->oPreisverlaufData_arr) && count($this->oPreisverlaufData_arr) > 1) {
             $fVKNetto_arr = array();
 
             foreach ($this->oPreisverlaufData_arr as $oPreisverlauf) {

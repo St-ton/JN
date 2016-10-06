@@ -230,7 +230,6 @@ class Kunde
      * Konstruktor
      *
      * @param int $kKunde - Falls angegeben, wird der Kunde mit angegebenem kKunde aus der DB geholt
-     * @return Kunde
      */
     public function __construct($kKunde = 0)
     {
@@ -255,7 +254,7 @@ class Kunde
             }
         }
 
-        return;
+        return null;
     }
 
     /**

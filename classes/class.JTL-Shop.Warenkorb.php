@@ -53,7 +53,6 @@ class Warenkorb
      * Konstruktor
      *
      * @param int $kWarenkorb Falls angegeben, wird der Warenkorb mit angegebenem kWarenkorb aus der DB geholt
-     * @return Warenkorb
      */
     public function __construct($kWarenkorb = 0)
     {

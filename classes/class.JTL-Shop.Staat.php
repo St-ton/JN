@@ -187,7 +187,7 @@ class Staat
             }
         }
 
-        return;
+        return null;
     }
 
     /**
@@ -210,6 +210,6 @@ class Staat
             }
         }
 
-        return;
+        return null;
     }
 }

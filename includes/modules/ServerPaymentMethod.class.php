@@ -33,6 +33,7 @@ class ServerPaymentMethod extends PaymentMethod
 
     /**
      * @param int $nAgainCheckout
+     * @return $this
      */
     public function init($nAgainCheckout = 0)
     {
@@ -41,6 +42,8 @@ class ServerPaymentMethod extends PaymentMethod
         $this->hostname = '';
         $this->host     = '';
         $this->path     = '';
+
+        return $this;
     }
 
     /**

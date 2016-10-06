@@ -363,6 +363,7 @@ class PaymentMethod
 
     /**
      * @param string $msg
+     * @param int    $level
      * @return $this
      */
     public function doLog($msg, $level = LOGLEVEL_NOTICE)

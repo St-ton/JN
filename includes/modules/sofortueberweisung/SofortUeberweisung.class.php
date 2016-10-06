@@ -335,9 +335,10 @@ class SofortUeberweisung extends PaymentMethod
     }
 
     /**
-     * @return boolean
      * @param Bestellung $order
+     * @param string     $paymentHash
      * @param array      $args
+     * @return bool
      */
     public function verifyNotification($order, $paymentHash, $args)
     {

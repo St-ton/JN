@@ -961,12 +961,12 @@ function pruefeVariBoxAnzahl($variBoxAnzahl_arr)
 }
 
 /**
- * @param int   $kArtikel
- * @param float $fAnzahl
- * @param array $oEigenschaftwerte_arr
- * @param bool  $cUnique
- * @param int   $kKonfigitem
- * @param int   $nPosTyp
+ * @param int        $kArtikel
+ * @param float      $fAnzahl
+ * @param array      $oEigenschaftwerte_arr
+ * @param bool       $cUnique
+ * @param int        $kKonfigitem
+ * @param int|string $nPosTyp
  */
 function fuegeEinInWarenkorbPers($kArtikel, $fAnzahl, $oEigenschaftwerte_arr, $cUnique = false, $kKonfigitem = 0, $nPosTyp = C_WARENKORBPOS_TYP_ARTIKEL)
 {

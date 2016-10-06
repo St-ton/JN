@@ -187,8 +187,14 @@ class Status
             $oTplData = TemplateHelper::getInstance(false)->getData($oTemplate->cTemplate);
             if ($oTplData->bResponsive) {
                 $oMobileTpl = Shop::DB()->select('ttemplate', 'eTyp', 'mobil');
-
-                return $oMobileTpl !== null;
+                if ($oMobileTpl !== null) {
+                    $cXMLFile = PFAD_ROOT . PFAD_TEMPLATES . $oMobileTpl->cTemplate . DIRECTORY_SEPARATOR . TEMPLATE_XML;
+                    if (file_exists($cXMLFile)) {
+                        return true;
+                    }
+                    // Wenn ein Template aktiviert aber physisch nicht vorhanden ist, dann ist der DB-Eintrag falsch und wird gelöscht
+                    Shop::DB()->delete('ttemplate', 'eTyp', 'mobil');
+                }
             }
         }
 

@@ -708,9 +708,6 @@ class PaymentMethod
                 $paymentMethod           = new $className($moduleId);
                 $paymentMethod->cModulId = $moduleId;
             }
-        } elseif ($moduleId === 'za_heidelpay_jtl') {
-            require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'heidelpay/HeidelPay.class.php';
-            $paymentMethod = new HeidelPay($moduleId);
         } elseif ($moduleId === 'za_paypal_jtl') {
             require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'paypal/PayPal.class.php';
             $paymentMethod = new PayPal($moduleId);

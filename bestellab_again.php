@@ -173,11 +173,6 @@ if ($kPlugin > 0) {
 } elseif ($bestellung->Zahlungsart->cModulId === 'za_safetypay') {
     require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'safetypay/confirmation.php';
     $smarty->assign('safetypay_form', show_confirmation($bestellung));
-} elseif ($bestellung->Zahlungsart->cModulId === 'za_heidelpay_jtl') {
-    require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'heidelpay/HeidelPay.class.php';
-    $paymentMethod           = new HeidelPay($bestellung->Zahlungsart->cModulId);
-    $paymentMethod->cModulId = $bestellung->Zahlungsart->cModulId;
-    $paymentMethod->preparePaymentProcess($bestellung);
 } elseif ($bestellung->Zahlungsart->cModulId === 'za_wirecard_jtl') {
     require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'wirecard/Wirecard.class.php';
     $paymentMethod           = new Wirecard($bestellung->Zahlungsart->cModulId);

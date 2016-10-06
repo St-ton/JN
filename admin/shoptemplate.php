@@ -3,11 +3,14 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+/**
+ * @global JTLSmarty $smarty
+ */
 require_once dirname(__FILE__) . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'template_inc.php';
 
 $oAccount->permission('DISPLAY_TEMPLATE_VIEW', true, true);
-
+/** @global JTLSmarty $smarty */
 if (isset($_POST['key']) && isset($_POST['upload'])) {
     $file     = PFAD_ROOT . PFAD_TEMPLATES . $_POST['upload'];
     $response = new stdClass();
@@ -27,7 +30,8 @@ $lessVarsSkin   = array();
 $lessColors_arr = array();
 $lessColorsSkin = array();
 $oTemplate      = Template::getInstance();
-$templateHelper = $oTemplate->getHelper();
+$templateHelper = TemplateHelper::getInstance(true);
+$templateHelper->disableCaching();
 $admin          = (isset($_GET['admin']) && $_GET['admin'] === 'true');
 if (isset($_GET['check'])) {
     if ($_GET['check'] === 'true') {
@@ -77,7 +81,7 @@ if (isset($_POST['type']) && $_POST['type'] === 'settings' && validateToken()) {
     $parentFolder = null;
     $tplXML       = $oTemplate->leseXML($cOrdner);
     if (!empty($tplXML->Parent)) {
-        $parentFolder = (string) $tplXML->Parent;
+        $parentFolder = (string)$tplXML->Parent;
         $parentTplXML = $oTemplate->leseXML($parentFolder);
     }
     $tplConfXML   = $oTemplate->leseEinstellungenXML($cOrdner, $parentFolder);
@@ -148,7 +152,7 @@ if (isset($_GET['settings']) && strlen($_GET['settings']) > 0 && validateToken()
     $preview      = array();
     $parentFolder = null;
     if (!empty($tplXML->Parent)) {
-        $parentFolder = (string) $tplXML->Parent;
+        $parentFolder = (string)$tplXML->Parent;
         $parentTplXML = $templateHelper->getXML($parentFolder);
     }
     $tplConfXML       = $oTemplate->leseEinstellungenXML($cOrdner, $parentFolder);
@@ -156,6 +160,7 @@ if (isset($_GET['settings']) && strlen($_GET['settings']) > 0 && validateToken()
     $currentSkin      = $oTemplate->getSkin();
     $frontendTemplate = PFAD_ROOT . PFAD_TEMPLATES . $oTemplate->getFrontendTemplate();
     $lessStack        = null;
+    $shopURL          = Shop::getURL() . '/';
     if ($admin === true) {
         $oTpl->eTyp = 'admin';
         $bCheck     = __switchTemplate($cOrdner, $oTpl->eTyp);
@@ -166,7 +171,7 @@ if (isset($_GET['settings']) && strlen($_GET['settings']) > 0 && validateToken()
         }
         Shop::DB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
         //re-init smarty with new template - problematic because of re-including functions.php
-        header('Location: ' . Shop::getURL() . '/' . PFAD_ADMIN . 'shoptemplate.php', true, 301);
+        header('Location: ' . $shopURL . PFAD_ADMIN . 'shoptemplate.php', true, 301);
     } else {
         foreach ($tplConfXML as $_conf) {
             foreach ($_conf->oSettings_arr as $_setting) {
@@ -185,8 +190,8 @@ if (isset($_GET['settings']) && strlen($_GET['settings']) > 0 && validateToken()
                                 PFAD_ROOT . PFAD_TEMPLATES . $cOrdner . '/themes/' . $_theme->cValue . '/preview.png';
                             if (file_exists($previewImage)) {
                                 $preview[$_theme->cValue] = (isset($_theme->cOrdner)) ?
-                                    Shop::getURL() . '/' . PFAD_TEMPLATES . $_theme->cOrdner . '/themes/' . $_theme->cValue . '/preview.png' :
-                                    Shop::getURL() . '/' . PFAD_TEMPLATES . $cOrdner . '/themes/' . $_theme->cValue . '/preview.png';
+                                    $shopURL . PFAD_TEMPLATES . $_theme->cOrdner . '/themes/' . $_theme->cValue . '/preview.png' :
+                                    $shopURL . PFAD_TEMPLATES . $cOrdner . '/themes/' . $_theme->cValue . '/preview.png';
                             }
                         }
                         break;
@@ -237,6 +242,7 @@ if (isset($_GET['settings']) && strlen($_GET['settings']) > 0 && validateToken()
 $smarty->assign('admin', ($admin === true) ? 1 : 0)
        ->assign('oTemplate_arr', $templateHelper->getFrontendTemplates())
        ->assign('oAdminTemplate_arr', $templateHelper->getAdminTemplates())
+       ->assign('oStoredTemplate_arr', $templateHelper->getStoredTemplates())
        ->assign('cFehler', $cFehler)
        ->assign('cHinweis', $cHinweis)
        ->display('shoptemplate.tpl');

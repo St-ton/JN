@@ -6,10 +6,12 @@
 require_once dirname(__FILE__) . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'vergleichsliste_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
-
+/** @global JTLSmarty $smarty */
 Shop::setPageType(PAGE_VERGLEICHSLISTE);
-$AktuelleSeite = 'VERGLEICHSLISTE';
-$conf          = Shop::getSettings(array(CONF_VERGLEICHSLISTE, CONF_ARTIKELDETAILS));
+$AktuelleSeite  = 'VERGLEICHSLISTE';
+$conf           = Shop::getSettings(array(CONF_VERGLEICHSLISTE, CONF_ARTIKELDETAILS));
+$cExclude       = [];
+$oMerkVaria_arr = [[], []];
 loeseHttps();
 
 if (isset($Link)) {
@@ -31,19 +33,14 @@ if (isset($_GET['vlph']) && intval($_GET['vlph']) === 1) {
 
     if ($kArtikel > 0) {
         //redirekt zum artikel, um variation/en zu wählen / MBM beachten
-        header('Location: index.php?a=' . $kArtikel);
+        header('Location: ' . Shop::getURL() . '/?a=' . $kArtikel);
         exit();
     }
 } else {
     $oVergleichsliste = new Vergleichsliste();
     $oMerkVaria_arr   = baueMerkmalundVariation($oVergleichsliste);
-    if (isset($_GET['print']) && intval($_GET['print']) === 1) {
-        $smarty->assign('print', 1);
-    }
     // Füge den Vergleich für Statistikzwecke in die DB ein
     setzeVergleich($oVergleichsliste);
-
-    $cExclude = array();
     for ($i = 0; $i < 8; $i++) {
         $cElement = gibMaxPrioSpalteV($cExclude, $conf);
         if (strlen($cElement) > 1) {
@@ -53,6 +50,7 @@ if (isset($_GET['vlph']) && intval($_GET['vlph']) === 1) {
 }
 
 if (isset($oVergleichsliste->oArtikel_arr)) {
+    $oArtikel_arr     = [];
     $oArtikel_arr                                 = array();
     $oArtikelOptionen                             = new stdClass();
     $oArtikelOptionen->nMerkmale                  = 1;
@@ -60,10 +58,12 @@ if (isset($oVergleichsliste->oArtikel_arr)) {
     $oArtikelOptionen->nArtikelAttribute          = 1;
     $oArtikelOptionen->nVariationKombi            = 1;
     $oArtikelOptionen->nKeineSichtbarkeitBeachten = 1;
+    $linkHelper       = LinkHelper::getInstance();
+    $baseURL          = $linkHelper->getStaticRoute('vergleichsliste.php');
     foreach ($oVergleichsliste->oArtikel_arr as $oArtikel) {
         $artikel = new Artikel();
         $artikel->fuelleArtikel($oArtikel->kArtikel, $oArtikelOptionen);
-        $artikel->cURLDEL = $_SERVER['SCRIPT_NAME'] . "?vlplo=" . $oArtikel->kArtikel;
+        $artikel->cURLDEL = $baseURL . '?vlplo=' . $oArtikel->kArtikel;
         if (isset($oArtikel->oVariationen_arr) && count($oArtikel->oVariationen_arr) > 0) {
             $artikel->Variationen = $oArtikel->oVariationen_arr;
         }
@@ -85,6 +85,7 @@ $smarty->assign('nBreiteTabelle', $nBreiteTabelle)
        ->assign('cPrioSpalten_arr', $cExclude)
        ->assign('oMerkmale_arr', $oMerkVaria_arr[0])
        ->assign('oVariationen_arr', $oMerkVaria_arr[1])
+       ->assign('print', (isset($_GET['print']) && (int)$_GET['print'] === 1) ? 1 : 0)
        ->assign('oVergleichsliste', $oVergleichsliste)
        ->assign('Navigation', createNavigation($AktuelleSeite, 0, 0))
        ->assign('Einstellungen', $GLOBALS['GlobaleEinstellungen'])

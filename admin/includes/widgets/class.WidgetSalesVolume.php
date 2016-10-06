@@ -24,7 +24,7 @@ class WidgetSalesVolume extends WidgetBase
      */
     public function init()
     {
-        $this->oWaehrung = Shop::DB()->query("SELECT * FROM twaehrung WHERE cStandard = 'Y'", 1);
+        $this->oWaehrung = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
     }
 
     /**
@@ -80,8 +80,6 @@ class WidgetSalesVolume extends WidgetBase
      */
     public function getContent()
     {
-        $this->oSmarty->assign('linechart', $this->getJSON());
-
-        return $this->oSmarty->fetch('tpl_inc/widgets/sales_volume.tpl');
+        return $this->oSmarty->assign('linechart', $this->getJSON())->fetch('tpl_inc/widgets/sales_volume.tpl');
     }
 }

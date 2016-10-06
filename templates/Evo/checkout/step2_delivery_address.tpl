@@ -13,9 +13,9 @@
     {/literal}
 </script>
 <div class="row">
-    <div class="col-xs-12 col-md-10 col-md-offset-1">
+    <div class="col-xs-12">
         {block name="checkout-enter-shipping-address"}
-        <div class="well panel-wrap">
+        <div class="panel-wrap">
             <div class="panel panel-default" id="order-enter-shipping-address">
                 <div class="panel-heading">
                     <h3 class="panel-title">{block name="checkout-enter-shipping-address-title"}{lang key="shippingAdress" section="account data"}{/block}</h3>
@@ -190,7 +190,7 @@
                                         <select name="land" id="country" class="country_input form-control">
                                             <option value="" selected disabled>{lang key="country" section="account data"}*</option>
                                             {foreach name=land from=$laender item=land}
-                                                <option value="{$land->cISO}" {if ($Einstellungen.kunden.kundenregistrierung_standardland == $land->cISO && !$Lieferadresse->cLand) || $Lieferadresse->cLand==$land->cISO}selected="selected"{/if}>{$land->cName}</option>
+                                                <option value="{$land->cISO}" {if empty($Lieferadresse->cLand) && $Einstellungen.kunden.kundenregistrierung_standardland == $land->cISO} || (isset($Lieferadresse->cLand) && $Lieferadresse->cLand==$land->cISO)}selected="selected"{/if}>{$land->cName}</option>
                                             {/foreach}
                                         </select>
                                     </div>

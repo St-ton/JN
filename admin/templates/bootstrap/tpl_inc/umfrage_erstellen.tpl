@@ -82,7 +82,7 @@ function clearInput(inputField) {ldelim}
                         <tr>
                             <td><label for="dGueltigVon">{#umfrageValidation#}</label></td>
                             <td>
-                                <input class="form-control" id="dGueltigVon" name="dGueltigVon" type="text"  value="{if isset($oUmfrage->dGueltigVon_de) && $oUmfrage->dGueltigVon_de|count_characters > 0}{$oUmfrage->dGueltigVon_de}{else}{$smarty.now|date_format:'%d.%m.%Y %H:%M'}{/if}" style="width: 150px;" />
+                                <input class="form-control" id="dGueltigVon" name="dGueltigVon" type="text"  value="{if isset($oUmfrage->dGueltigVon_de) && $oUmfrage->dGueltigVon_de|strlen > 0}{$oUmfrage->dGueltigVon_de}{else}{$smarty.now|date_format:'%d.%m.%Y %H:%M'}{/if}" style="width: 150px;" />
                                 <label for="dGueltigBis">{#umfrageTo#}</label>
                                 <input class="form-control" id="dGueltigBis" name="dGueltigBis" type="text"  value="{if isset($oUmfrage->dGueltigBis_de)}{$oUmfrage->dGueltigBis_de}{/if}" style="width: 150px;" />
                             </td>

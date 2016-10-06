@@ -1,7 +1,7 @@
  {include file='tpl_inc/seite_header.tpl' cTitel=#benutzer# cBeschreibung=#benutzerDesc# cDokuURL=#benutzerURL#}
 <div id="content" class="container-fluid">
     <ul class="nav nav-tabs" role="tablist">
-        <li class="tab{if !isset($cTab) || $cTab === 'account_view'} active{/if}">
+        <li class="tab{if empty($cTab) || $cTab === 'account_view'} active{/if}">
             <a data-toggle="tab" role="tab" href="#account_view">{#benutzerTab#}</a>
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'group_view'} active{/if}">
@@ -9,7 +9,7 @@
         </li>
     </ul>
     <div class="tab-content">
-        <div id="account_view" class="tab-pane fade {if !isset($cTab) || $cTab === 'account_view'} active in{/if}">
+        <div id="account_view" class="tab-pane fade {if empty($cTab) || $cTab === 'account_view'} active in{/if}">
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h3 class="panel-title">{#benutzerKategorie#}</h3>
@@ -19,6 +19,7 @@
                     <tr>
                         <th class="tleft">#</th>
                         <th class="tcenter">{#benutzerLogin#}</th>
+                        <th class="tcenter">{#benutzer2FA#}</th>
                         <th class="tcenter">{#benutzerMail#}</th>
                         <th class="tcenter">{#benutzerGruppe#}</th>
                         <th class="tcenter">{#benutzerLoginVersuche#}</th>
@@ -32,6 +33,7 @@
                         <tr>
                             <td class="tleft">{$oAdmin->kAdminlogin}</td>
                             <td class="tcenter">{$oAdmin->cLogin}</td>
+                            <td class="tcenter">{if $oAdmin->b2FAauth}{#stateON#}{else}{#stateOFF#}{/if}</td>
                             <td class="tcenter">{$oAdmin->cMail}</td>
                             <td class="tcenter">
                                 {if $oAdmin->kAdminlogingruppe > 1}
@@ -52,7 +54,7 @@
                                     {$jtl_token}
                                     <input type="hidden" name="id" value="{$oAdmin->kAdminlogin}" />
                                     <div class="btn-group">
-                                        <button class="notext btn btn-default" name="action" value="account_edit" title="{#bearbeitenLabel#}"><i class="fa fa-edit"></i></button>
+                                        <button class="notext btn btn-default" name="action" value="account_edit" title="{#modify#}"><i class="fa fa-edit"></i></button>
                                         {if $oAdmin->bAktiv}
                                             <button class="notext btn btn-warning" name="action" value="account_lock" title="{#sperrenLabel#}"><i class="fa fa-lock"></i></button>
                                         {else}
@@ -104,8 +106,8 @@
                                         {$jtl_token}
                                         <input type="hidden" value="{$oGroup->kAdminlogingruppe}" name="id" />
                                         <div class="btn-group">
-                                            <button type="submit" class="edit btn btn-default" name="action" value="group_edit" title="{#bearbeitenLabel#}"><i class="fa fa-edit"></i></button>
-                                            <button type="submit" class="delete btn btn-danger" name="action" value="group_delete" onclick="return confirm('Sind Sie sicher, dass die Gruppe entfernt werden soll?');" title="{#loeschenLabel#}"><i class="fa fa-trash"></i></button>
+                                            <button type="submit" class="edit btn btn-default" name="action" value="group_edit" title="{#modify#}"><i class="fa fa-edit"></i></button>
+                                            <button type="submit" class="delete btn btn-danger" name="action" value="group_delete" onclick="return confirm('Sind Sie sicher, dass die Gruppe entfernt werden soll?');" {if 0 < (int)$oGroup->nCount}title="{#loeschenLabelDeaktiviert#}" disabled="disabled"{else}title="{#loeschenLabel#}"{/if}><i class="fa fa-trash"></i></button>
                                         </div>
                                     </form>
                                 {/if}

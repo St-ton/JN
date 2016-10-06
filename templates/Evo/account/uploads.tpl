@@ -11,37 +11,30 @@
     {assign var=nImagePreviewWidth value=35}
     <div id="uploads">
         <h3>{lang key="yourUploads" section="global"}</h3>
-        <table class="tiny">
+        <table class="table table-striped table-bordered" id="customerupload">
             <thead>
             <tr>
-                <th class="tleft">{lang key="uploadFile" section="global"}</th>
                 <th class="text-center">{lang key="uploadAdded" section="global"}</th>
                 <th class="text-center">{lang key="uploadFilesize" section="global"}</th>
-                <th class="text-center">{lang key="uploadState" section="global"}</th>
+                <th class="text-center">{lang key="uploadFile" section="global"}</th>
             </tr>
             </thead>
             <tbody>
             {foreach from=$Bestellung->oUpload_arr item=oUpload}
                 <tr>
-                    <td class="tleft vmiddle">
-                        <div class="nowrap">
-                            {if $oUpload->bVorschau}
-                                <span class="image_preview zoomcur" ref="{$oUpload->cBildpfad}" maxwidth="{$nImageMaxWidth}" maxheight="{$nImageMaxHeight}" title="{$oUpload->cName}">
-                                   <img src="{$oUpload->cBildpfad}" alt="{$oUpload->cName}" width="{$nImagePreviewWidth}" class="vmiddle" />
-                                </span>
-                            {/if}
-                            <span class="vmiddle {if $oUpload->cName|count_characters > $nNameLength}infocur" title="{$oUpload->cName}{/if}">
-                                {$oUpload->cName|truncate:$nNameLength}
-                            </span>
-                        </div>
-                    </td>
-                    <td class="text-center" valign="middle" width="120">
+                    <td class="text-center vcenter">
                         <span class="infocur" title="{$oUpload->dErstellt|date_format:"%d.%m.%Y - %H:%M:%S"}">
                             {$oUpload->dErstellt|date_format:"%d.%m.%Y"}
                         </span>
                     </td>
-                    <td class="text-center" valign="middle" width="100">{$oUpload->cGroesse}</td>
-                    <td class="text-center" valign="middle" width="60"><span class="{if $oUpload->bVorhanden}success{else}notice{/if}"></span></td>
+                    <td class="text-center vcenter">{$oUpload->cGroesse}</td>
+                    <td class="text-center">
+                        <form method="post" action="{get_static_route id='jtl.php'}">
+                            {$jtl_token}
+                            <input name="kUpload" type="hidden" value="{$oUpload->kUpload}" />
+                            <button class="btn btn-default btn-xs" name="{$oUpload->cName}"><i class="fa fa-download"></i></button>
+                        </form>
+                    </td>
                 </tr>
             {/foreach}
             </tbody>

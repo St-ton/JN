@@ -33,7 +33,6 @@ class KategoriePict
      * Konstruktor
      *
      * @param int $kKategoriePict - Falls angegeben, wird der KategoriePict mit angegebenem KategoriePict aus der DB geholt
-     * @return KategoriePict
      */
     public function __construct($kKategoriePict = 0)
     {

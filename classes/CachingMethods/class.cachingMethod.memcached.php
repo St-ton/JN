@@ -10,8 +10,10 @@
  *
  * @warning Untested
  */
-class cache_memcached extends JTLCacheHelper implements ICachingMethod
+class cache_memcached implements ICachingMethod
 {
+    use JTLCacheTrait;
+    
     /**
      * @var cache_memcached|null
      */
@@ -31,19 +33,13 @@ class cache_memcached extends JTLCacheHelper implements ICachingMethod
             $this->setMemcached($options['memcache_host'], $options['memcache_port']);
             $this->isInitialized = true;
             $this->journalID     = 'memcached_journal';
+            $maxLifeTime         = 60 * 60 * 24 * 30;
+            if ($options['lifetime'] > $maxLifeTime) {
+                //@see http://php.net/manual/de/memcached.expiration.php
+                $options['lifetime'] = $maxLifeTime;
+            }
             $this->options       = $options;
         }
-    }
-
-    /**
-     * @param array $options
-     *
-     * @return cache_memcached
-     */
-    public static function getInstance($options)
-    {
-        //check if class was initialized before
-        return (self::$instance !== null) ? self::$instance : new self($options);
     }
 
     /**

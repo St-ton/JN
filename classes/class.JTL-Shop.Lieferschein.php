@@ -99,20 +99,20 @@ class Lieferschein
     private function loadFromDB($kLieferschein = 0, $oData = null)
     {
         $kLieferschein = intval($kLieferschein);
-        $oObj          = Shop::DB()->query("SELECT * FROM tlieferschein WHERE kLieferschein = " . $kLieferschein, 1);
+        $oObj          = Shop::DB()->select('tlieferschein', 'kLieferschein', $kLieferschein);
         if ($oObj->kLieferschein > 0) {
             $cMember_arr = array_keys(get_object_vars($oObj));
             foreach ($cMember_arr as $cMember) {
                 $this->$cMember = $oObj->$cMember;
             }
 
-            $kLieferscheinPos_arr = Shop::DB()->query("SELECT kLieferscheinPos FROM tlieferscheinpos WHERE kLieferschein = " . $kLieferschein, 2);
+            $kLieferscheinPos_arr = Shop::DB()->selectAll('tlieferscheinpos', 'kLieferschein', $kLieferschein, 'kLieferscheinPos');
 
             foreach ($kLieferscheinPos_arr as $oLieferscheinPos) {
                 $oLieferscheinpos                           = new Lieferscheinpos($oLieferscheinPos->kLieferscheinPos);
                 $oLieferscheinpos->oLieferscheinPosInfo_arr = array();
 
-                $kLieferscheinPosInfo_arr = Shop::DB()->query("SELECT kLieferscheinPosInfo FROM tlieferscheinposinfo WHERE kLieferscheinPos = " . intval($oLieferscheinPos->kLieferscheinPos), 2);
+                $kLieferscheinPosInfo_arr = Shop::DB()->selectAll('tlieferscheinposinfo', 'kLieferscheinPos', (int)$oLieferscheinPos->kLieferscheinPos, 'kLieferscheinPosInfo');
                 if (is_array($kLieferscheinPosInfo_arr) && !empty($kLieferscheinPosInfo_arr)) {
                     foreach ($kLieferscheinPosInfo_arr as $oLieferscheinPosInfo) {
                         $oLieferscheinpos->oLieferscheinPosInfo_arr[] = new Lieferscheinposinfo($oLieferscheinPosInfo->kLieferscheinPosInfo);
@@ -122,7 +122,7 @@ class Lieferschein
                 $this->oLieferscheinPos_arr[] = $oLieferscheinpos;
             }
 
-            $kVersand_arr = Shop::DB()->query("SELECT kVersand FROM tversand WHERE kLieferschein = " . $kLieferschein, 2);
+            $kVersand_arr = Shop::DB()->selectAll('tversand', 'kLieferschein', $kLieferschein, 'kVersand');
 
             foreach ($kVersand_arr as $oVersand) {
                 $this->oVersand_arr[] = new Versand($oVersand->kVersand, $oData);
@@ -165,18 +165,16 @@ class Lieferschein
      */
     public function update()
     {
-        return Shop::DB()->query(
-            "UPDATE tlieferschein
-               SET kLieferschein = " . $this->kLieferschein . ",
-                   kInetBestellung = " . $this->kInetBestellung . ",
-                   cLieferscheinNr = '" . $this->cLieferscheinNr . "',
-                   cHinweis = '" . $this->cHinweis . "',
-                   nFulfillment = " . $this->nFulfillment . ",
-                   nStatus = " . $this->nStatus . ",
-                   dErstellt = '" . $this->dErstellt . "',
-                   bEmailVerschickt = '" . $this->bEmailVerschickt . "'
-               WHERE kLieferschein = " . intval($this->kLieferschein), 3
-        );
+        $upd                   = new stdClass();
+        $upd->kInetBestellung  = $this->kInetBestellung;
+        $upd->cLieferscheinNr  = $this->cLieferscheinNr;
+        $upd->cHinweis         = $this->cHinweis;
+        $upd->nFulfillment     = $this->nFulfillment;
+        $upd->nStatus          = $this->nStatus;
+        $upd->dErstellt        = $this->dErstellt;
+        $upd->bEmailVerschickt = $this->bEmailVerschickt;
+
+        return Shop::DB()->update('tlieferschein', 'kLieferschein', (int)$this->kLieferschein, $upd);
     }
 
     /**

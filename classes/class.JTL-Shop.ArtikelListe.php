@@ -86,16 +86,13 @@ class ArtikelListe
      * @param string $order
      * @param int    $kKundengruppe
      * @param int    $kSprache
-     * @return array|null
+     * @return array
      */
     public function getArtikelFromKategorie($kKategorie, $limitStart, $limitAnzahl, $order, $kKundengruppe = 0, $kSprache = 0)
     {
         $this->elemente = array();
-        if (!$_SESSION['Kundengruppe']->darfArtikelKategorienSehen) {
+        if (!$_SESSION['Kundengruppe']->darfArtikelKategorienSehen || !$kKategorie) {
             return $this->elemente;
-        }
-        if (!$kKategorie) {
-            return;
         }
         if (!$kKundengruppe) {
             $kKundengruppe = $_SESSION['Kundengruppe']->kKundengruppe;
@@ -165,7 +162,7 @@ class ArtikelListe
         for ($i = (int) $start; $i < $cnt; $i++) {
             $artikel = new Artikel();
             $artikel->fuelleArtikel($kArtikel_arr[$i], $oArtikelOptionen);
-            if ($artikel->kArtikel > 0) {
+            if (!empty($artikel->kArtikel) && $artikel->kArtikel > 0) {
                 ++$anz;
                 $this->elemente[] = $artikel;
             }

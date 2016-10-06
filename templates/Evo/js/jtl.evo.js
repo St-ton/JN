@@ -378,6 +378,16 @@
             });
         },
 
+        preventDropdownToggle: function() {
+            $('a.dropdown-toggle').click(function(e){
+                var elem = e.target;
+                if (elem.getAttribute('aria-expanded') == 'true' && elem.getAttribute('href') != '#') {
+                    window.location.href = elem.getAttribute('href');
+                    e.preventDefault();
+                }
+            });
+        },
+
         register: function() {
             this.addSliderTouchSupport();
             this.productTabs();
@@ -390,6 +400,7 @@
             this.renderCaptcha();
             this.popupDep();
             this.popover();
+            this.preventDropdownToggle();
             this.smoothScroll();
         },
         

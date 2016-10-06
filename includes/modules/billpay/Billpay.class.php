@@ -662,8 +662,8 @@ class Billpay extends PaymentMethod
     }
 
     /**
-     * @param      $cType
-     * @param null $nPaymentType
+     * @param string   $cType
+     * @param null|int $nPaymentType
      * @return bool
      */
     public function getApi($cType, $nPaymentType = null)
@@ -1158,7 +1158,7 @@ class Billpay extends PaymentMethod
             $cCurrency = $oBasket->Waehrung;
         }
         if (is_null($cCurrency) || !isset($cCurrency->kWaehrung)) {
-            $cCurrency = Shop::DB()->query("SELECT * FROM twaehrung WHERE cStandard='Y'", 1);
+            $cCurrency = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
         }
 
         $oBasketInfo->cCurrency = $cCurrency;
@@ -1380,6 +1380,11 @@ class Billpay extends PaymentMethod
         Shop::Smarty()->assign('billpay_message', $oMessage);
     }
 
+    /**
+     * @param string $key
+     * @param bool   $root
+     * @return null
+     */
     public function getCoreSetting($key, $root = false)
     {
         global $Einstellungen;
@@ -1657,6 +1662,10 @@ class BPHelper
             'AUT' => 'https://www.billpay.de/api/agb-at');
     }
 
+    /**
+     * @param int $nType
+     * @return string|null
+     */
     public static function getPaymentType($nType)
     {
         switch ($nType) {
@@ -1672,7 +1681,7 @@ class BPHelper
                 return 'paylaterCollateralPromise';
         }
 
-        return;
+        return null;
     }
 
     /**

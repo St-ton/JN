@@ -116,7 +116,7 @@ class PaymentMethod
         if (!isset($_SESSION['Zahlungsart']->nWaehrendBestellung) || $_SESSION['Zahlungsart']->nWaehrendBestellung == 0) {
             global $Einstellungen;
             if ($Einstellungen['kaufabwicklung']['bestellabschluss_abschlussseite'] === 'A') { // Abschlussseite
-                $oZahlungsID = Shop::DB()->query("SELECT cId FROM tbestellid WHERE kBestellung = " . intval($order->kBestellung), 1);
+                $oZahlungsID = Shop::DB()->query("SELECT cId FROM tbestellid WHERE kBestellung = " . (int)$order->kBestellung, 1);
                 if (is_object($oZahlungsID)) {
                     return Shop::getURL() . '/bestellabschluss.php?i=' . $oZahlungsID->cId;
                 }
@@ -244,7 +244,7 @@ class PaymentMethod
             $oZahlungsID->dDatum       = 'now()';
             Shop::DB()->insert('tzahlungsid', $oZahlungsID);
         } else {
-            Shop::DB()->query("DELETE FROM tzahlungsession WHERE cSID='" . session_id() . "' AND kBestellung=0", 4);
+            Shop::DB()->delete('tzahlungsession', ['cSID', 'kBestellung'], [session_id(), 0]);
             $oZahlungSession               = new stdClass();
             $oZahlungSession->cSID         = session_id();
             $oZahlungSession->cNotifyID    = '';
@@ -363,6 +363,7 @@ class PaymentMethod
 
     /**
      * @param string $msg
+     * @param int    $level
      * @return $this
      */
     public function doLog($msg, $level = LOGLEVEL_NOTICE)
@@ -412,29 +413,26 @@ class PaymentMethod
     }
 
     /**
-     * @param $key
+     * @param string $key
      * @return mixed
      */
     public function getSetting($key)
     {
-        global $Einstellungen;
-        if (!is_array($Einstellungen)) {
-            $Einstellungen = Shop::getSettings(array(CONF_ZAHLUNGSARTEN));
-        }
+        $Einstellungen = Shop::getSettings(array(CONF_ZAHLUNGSARTEN, CONF_PLUGINZAHLUNGSARTEN));
 
-        return (isset($Einstellungen['zahlungsarten']['zahlungsart_' . $this->moduleAbbr . '_' . $key])) ? $Einstellungen['zahlungsarten']['zahlungsart_' . $this->moduleAbbr . '_' . $key] : null;
+        return (isset($Einstellungen['zahlungsarten']['zahlungsart_' . $this->moduleAbbr . '_' . $key])) ? $Einstellungen['zahlungsarten']['zahlungsart_' . $this->moduleAbbr . '_' . $key] : (isset($Einstellungen['pluginzahlungsarten'][$this->moduleID . '_' . $key]) ? $Einstellungen['pluginzahlungsarten'][$this->moduleID . '_' . $key] : null);
     }
 
     /**
      *
-     * @param $customer
-     * @param $cart
+     * @param object    $customer
+     * @param Warenkorb $cart
      * @return bool - true, if $customer with $cart may use Payment Method
      */
     public function isValid($customer, $cart)
     {
         if ($this->getSetting('min_bestellungen') > 0) {
-            if ($customer->kKunde > 0) {
+            if (isset($customer->kKunde) && $customer->kKunde > 0) {
                 $res = Shop::DB()->query("
                   SELECT count(*) AS cnt 
                     FROM tbestellung 
@@ -442,7 +440,7 @@ class PaymentMethod
                 );
                 $count = (int)$res->cnt;
                 if ($count < $this->getSetting('min_bestellungen')) {
-                    ZahlungsLog::add($this->moduleID, "Bestellanzahl " . $count . " ist kleiner als der Mindestanzahl von " . $this->getSetting('min_bestellungen'), null, LOGLEVEL_NOTICE);
+                    ZahlungsLog::add($this->moduleID, 'Bestellanzahl ' . $count . ' ist kleiner als der Mindestanzahl von ' . $this->getSetting('min_bestellungen'), null, LOGLEVEL_NOTICE);
 
                     return false;
                 }
@@ -454,13 +452,13 @@ class PaymentMethod
         }
 
         if ($this->getSetting('min') > 0 && $cart->gibGesamtsummeWaren(1) <= $this->getSetting('min')) {
-            ZahlungsLog::add($this->moduleID, "Bestellwert " . $cart->gibGesamtsummeWaren(1) . " ist kleiner als der Mindestbestellwert von " . $this->getSetting('min_bestellungen'), null, LOGLEVEL_NOTICE);
+            ZahlungsLog::add($this->moduleID, 'Bestellwert ' . $cart->gibGesamtsummeWaren(1) . ' ist kleiner als der Mindestbestellwert von ' . $this->getSetting('min_bestellungen'), null, LOGLEVEL_NOTICE);
 
             return false;
         }
 
         if ($this->getSetting('max') > 0 && $cart->gibGesamtsummeWaren(1) >= $this->getSetting('max')) {
-            ZahlungsLog::add($this->moduleID, "Bestellwert " . $cart->gibGesamtsummeWaren(1) . " ist größer als der Mindestbestellwert von " . $this->getSetting('min_bestellungen'), null, LOGLEVEL_NOTICE);
+            ZahlungsLog::add($this->moduleID, 'Bestellwert ' . $cart->gibGesamtsummeWaren(1) . ' ist groesser als der Mindestbestellwert von ' . $this->getSetting('min_bestellungen'), null, LOGLEVEL_NOTICE);
 
             return false;
         }
@@ -710,9 +708,6 @@ class PaymentMethod
                 $paymentMethod           = new $className($moduleId);
                 $paymentMethod->cModulId = $moduleId;
             }
-        } elseif ($moduleId === 'za_heidelpay_jtl') {
-            require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'heidelpay/HeidelPay.class.php';
-            $paymentMethod = new HeidelPay($moduleId);
         } elseif ($moduleId === 'za_paypal_jtl') {
             require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'paypal/PayPal.class.php';
             $paymentMethod = new PayPal($moduleId);

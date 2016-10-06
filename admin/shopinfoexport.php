@@ -6,8 +6,8 @@
 require_once dirname(__FILE__) . '/includes/admininclude.php';
 
 $oAccount->permission('EXPORT_SHOPINFO_VIEW', true, true);
-
-$arShopInfo  = Shop::DB()->query("SELECT cName, cWert FROM teinstellungen WHERE kEinstellungensektion = 103", 2);
+/** @global JTLSmarty $smarty */
+$arShopInfo  = Shop::DB()->selectAll('teinstellungen', 'kEinstellungensektion', 103, 'cName, cWert');
 $objShopInfo = new stdClass();
 foreach ($arShopInfo as $obj) {
     $tmp               = $obj->cName;
@@ -47,10 +47,10 @@ $strSQL = "SELECT  k.kKategorie AS katID, k.cName AS katName, m.cName AS mapName
                WHERE k.kOberKategorie = 0";
 
 $objKategorien = Shop::DB()->query($strSQL, 2);
-$fileShopFeed = basename(FILE_SHOP_FEED);
+$fileShopFeed  = basename(FILE_SHOP_FEED);
 
 if (isset($_GET['bWrite']) && $_GET['bWrite'] === '0') {
-    $smarty->assign('errorNoWrite', PFAD_ROOT . $fileShopFeed. "' konnte nicht gespeichert werden. Bitte achten Sie darauf, dass diese Datei ausreichende Schreibrechte besitzt.");
+    $smarty->assign('errorNoWrite', PFAD_ROOT . $fileShopFeed . "' konnte nicht gespeichert werden. Bitte achten Sie darauf, dass diese Datei ausreichende Schreibrechte besitzt.");
 }
 
 $smarty->assign('arMapping', $arMapping)

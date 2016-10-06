@@ -105,13 +105,14 @@ class Slider implements IExtensionPoint
      */
     public function init($kSlider)
     {
-        if (intval($kSlider) != 0) {
+        $kSlider = (int)$kSlider;
+        if ($kSlider > 0) {
             global $smarty;
 
             if ($this->load($kSlider, 'AND bAktiv = 1') === true) {
                 if ($this->bAktiv == 1) {
-                    $smarty->assign('PFAD_SLIDER', Shop::getURL() . '/' . PFAD_BILDER_SLIDER);
-                    $smarty->assign('oSlider', $this);
+                    $smarty->assign('PFAD_SLIDER', Shop::getURL() . '/' . PFAD_BILDER_SLIDER)
+                           ->assign('oSlider', $this);
                 }
             }
         }
@@ -138,18 +139,19 @@ class Slider implements IExtensionPoint
     }
 
     /**
-     * @param string $kSlider
+     * @param string|int $kSlider
      * @param string $filter
-     * @param string $limit
+     * @param int $limit
      * @return bool
      */
-    public function load($kSlider = '', $filter = '', $limit = '1')
+    public function load($kSlider = '', $filter = '', $limit = 1)
     {
         if (isset($kSlider) && intval($kSlider !== 0) || !empty($this->kSlider) && intval($this->kSlider !== 0)) {
             if (empty($kSlider) || (int)$kSlider === 0) {
                 $kSlider = $this->kSlider;
             }
             $kSlider     = (int)$kSlider;
+            $limit       = (int)$limit;
             $cSlider_arr = Shop::DB()->query("
                 SELECT *
                     FROM tslider
@@ -245,7 +247,7 @@ class Slider implements IExtensionPoint
         $kSlider = (int)$kSlider;
         if ($kSlider !== 0) {
             $bSuccess = Shop::DB()->delete('tslider', 'kSlider', $kSlider);
-            Shop::DB()->query("DELETE FROM textensionpoint WHERE cClass = 'Slider' AND kInitial = " . $kSlider, 4);
+            Shop::DB()->delete('textensionpoint', ['cClass', 'kInitial'], ['Slider', $kSlider]);
 
             if ($bSuccess == true) {
                 if (!empty($this->oSlide_arr)) {

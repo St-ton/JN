@@ -17,7 +17,7 @@
     <div class="tab-content">
         <div id="letztenvergleiche" class="tab-pane fade {if !isset($cTab) || $cTab === 'letztenvergleiche'} active in{/if}">
             {if $Letzten20Vergleiche && $Letzten20Vergleiche|@count > 0}
-                {include file='pagination.tpl' cSite=1 cUrl='vergleichsliste.php' oBlaetterNavi=$oBlaetterNavi hash='#letztenvergleiche'}
+                {include file='tpl_inc/pagination.tpl' oPagination=$oPagination cAnchor='letztenvergleiche'}
                 <div class="settings panel panel-default">
                     <table  class="table">
                         <tr>
@@ -97,7 +97,7 @@
 
             {if isset($TopVergleiche) && $TopVergleiche|@count > 0}
                 <div class="settings panel panel-default">
-                    <table class="container bottom table">
+                    <table class="bottom table">
                         <tr>
                             <th class="tleft">{#compareProduct#}</th>
                             <th class="th-2">{#compareCount#}</th>

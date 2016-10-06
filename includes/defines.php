@@ -53,20 +53,20 @@ ifndef('PFAD_EMAILPDFS', 'emailpdfs/');
 ifndef('PFAD_NEWSLETTERBILDER', 'newsletter/');
 ifndef('PFAD_LINKBILDER', 'links/');
 ifndef('PFAD_INCLUDES_LIBS', PFAD_INCLUDES . 'libs/');
-ifndef('PFAD_MINIFY', PFAD_INCLUDES . 'libs/minify');
+ifndef('PFAD_MINIFY', PFAD_INCLUDES_LIBS . 'minify');
 ifndef('PFAD_CKEDITOR', PFAD_INCLUDES_LIBS . 'ckeditor/');
-ifndef('PFAD_CODEMIRROR', PFAD_INCLUDES_LIBS . 'codemirror-5.8.0/');
+ifndef('PFAD_CODEMIRROR', PFAD_INCLUDES_LIBS . 'codemirror-5.18.2/');
 ifndef('PFAD_INCLUDES_TOOLS', PFAD_INCLUDES . 'tools/');
 ifndef('PFAD_INCLUDES_EXT', PFAD_INCLUDES . 'ext/');
 ifndef('PFAD_INCLUDES_MODULES', PFAD_INCLUDES . 'modules/');
-ifndef('PFAD_SMARTY', PFAD_INCLUDES_LIBS . 'smarty-3.1.27/libs/');
+ifndef('PFAD_SMARTY', PFAD_INCLUDES . 'vendor/smarty/smarty/libs/');
 ifndef('SMARTY_DIR', PFAD_ROOT . PFAD_SMARTY);
 ifndef('PFAD_XAJAX', PFAD_INCLUDES_LIBS . 'xajax_0.5_standard/');
 ifndef('PFAD_FLASHCHART', PFAD_INCLUDES_LIBS . 'flashchart/');
 ifndef('PFAD_FLASHCLOUD', PFAD_INCLUDES_LIBS . 'flashcloud/');
 ifndef('PFAD_PHPQUERY', PFAD_INCLUDES_LIBS . 'phpQuery/');
 ifndef('PFAD_PCLZIP', PFAD_INCLUDES_LIBS . 'pclzip-2-8-2/');
-ifndef('PFAD_PHPMAILER', PFAD_INCLUDES_LIBS . 'PHPMailer-5.2.14/');
+ifndef('PFAD_PHPMAILER', PFAD_INCLUDES . 'vendor/phpmailer/phpmailer/');
 ifndef('PFAD_GRAPHCLASS', PFAD_INCLUDES_LIBS . 'graph-2005-08-28/');
 ifndef('PFAD_AJAXCHECKOUT', PFAD_INCLUDES_LIBS . 'ajaxcheckout/');
 ifndef('PFAD_AJAXSUGGEST', PFAD_INCLUDES_LIBS . 'ajaxsuggest/');
@@ -82,7 +82,7 @@ ifndef('PFAD_GFX_BEWERTUNG_STERNE', PFAD_GFX . 'bewertung_sterne/');
 ifndef('PFAD_DBES', 'dbeS/');
 ifndef('PFAD_DBES_TMP', PFAD_DBES . 'tmp/');
 ifndef('PFAD_BILDER', 'bilder/');
-ifndef('PFAD_BILDER_SLIDER', 'bilder/slider/');
+ifndef('PFAD_BILDER_SLIDER', PFAD_BILDER . 'slider/');
 ifndef('PFAD_CRON', 'cron/');
 ifndef('PFAD_FONTS', PFAD_INCLUDES . 'fonts/');
 ifndef('PFAD_BILDER_INTERN', PFAD_BILDER . 'intern/');
@@ -115,9 +115,9 @@ ifndef('PFAD_MERKMALWERTBILDER_NORMAL', PFAD_MERKMALWERTBILDER . 'normal/');
 ifndef('PFAD_MERKMALWERTBILDER_KLEIN', PFAD_MERKMALWERTBILDER . 'klein/');
 ifndef('PFAD_BRANDINGBILDER', PFAD_BILDER . 'brandingbilder/');
 ifndef('PFAD_SUCHSPECIALOVERLAY', PFAD_BILDER . 'suchspecialoverlay/');
-ifndef('PFAD_SUCHSPECIALOVERLAY_KLEIN', PFAD_BILDER . 'suchspecialoverlay/klein/');
-ifndef('PFAD_SUCHSPECIALOVERLAY_NORMAL', PFAD_BILDER . 'suchspecialoverlay/normal/');
-ifndef('PFAD_SUCHSPECIALOVERLAY_GROSS', PFAD_BILDER . 'suchspecialoverlay/gross/');
+ifndef('PFAD_SUCHSPECIALOVERLAY_KLEIN', PFAD_SUCHSPECIALOVERLAY . 'klein/');
+ifndef('PFAD_SUCHSPECIALOVERLAY_NORMAL', PFAD_SUCHSPECIALOVERLAY . 'normal/');
+ifndef('PFAD_SUCHSPECIALOVERLAY_GROSS', PFAD_SUCHSPECIALOVERLAY . 'gross/');
 ifndef('PFAD_KONFIGURATOR_KLEIN', PFAD_BILDER . 'konfigurator/klein/');
 ifndef('PFAD_LOGFILES', PFAD_ROOT . 'jtllogs/');
 ifndef('PFAD_EXPORT', 'export/');
@@ -130,7 +130,7 @@ ifndef('PFAD_SHOPMD5', 'shopmd5files/');
 ifndef('PFAD_NUSOAP', 'nusoap/');
 ifndef('PFAD_UPLOADS', PFAD_ROOT . 'uploads/');
 ifndef('PFAD_DOWNLOADS_REL', 'downloads/');
-ifndef('PFAD_DOWNLOADS_PREVIEW_REL', 'downloads/vorschau/');
+ifndef('PFAD_DOWNLOADS_PREVIEW_REL', PFAD_DOWNLOADS_REL . 'vorschau/');
 ifndef('PFAD_DOWNLOADS', PFAD_ROOT . PFAD_DOWNLOADS_REL);
 ifndef('PFAD_DOWNLOADS_PREVIEW', PFAD_ROOT . PFAD_DOWNLOADS_PREVIEW_REL);
 ifndef('PFAD_UPLOADIFY', PFAD_INCLUDES_LIBS . 'uploadify/');
@@ -144,7 +144,7 @@ ifndef('PFAD_MEDIA_IMAGE_STORAGE', PFAD_MEDIA_IMAGE . 'storage/');
 ifndef('PFAD_PLUGIN', PFAD_INCLUDES . 'plugins/');
 // dbeS
 ifndef('PFAD_SYNC_TMP', 'tmp/'); //rel zu dbeS
-ifndef('PFAD_SYNC_LOGS', PFAD_ROOT . 'dbeS/logs/');
+ifndef('PFAD_SYNC_LOGS', PFAD_ROOT . PFAD_DBES . 'logs/');
 // Dateien
 ifndef('FILE_RSS_FEED', 'rss.xml');
 ifndef('FILE_SHOP_FEED', 'shopinfo.xml');
@@ -162,69 +162,89 @@ ifndef('SUCHCACHE_LEBENSDAUER', 60);
 ifndef('CUSTOMER_ACCOUNT_MAX_ORDERS', 50);
 // Steuersatz Standardland OVERRIDE - setzt ein anderes Steuerland, als im Shop angegeben (upper case, ISO 3166-2)
 // ifndef('STEUERSATZ_STANDARD_LAND', 'DE')
+ifndef('JTLLOG_MAX_LOGSIZE', 200000);
+// temp dir for pclzip extension
+ifndef('PCLZIP_TEMPORARY_DIR', PFAD_ROOT . PFAD_COMPILEDIR);
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
-function ifndef($constant, $value) {
+ifndef('IMAGE_PRELOAD_LIMIT', 10);
+
+/**
+ * @param string     $constant
+ * @param string|int $value
+ */
+function ifndef($constant, $value)
+{
     defined($constant) || define($constant, $value);
 }
 
-function shop_writeable_paths() {
-    $paths = array(
-        // Directories
-        // PFAD_BILDER_SLIDER,
-        PFAD_GFX_TRUSTEDSHOPS,
-        PFAD_NEWSBILDER,
-        PFAD_SHOPLOGO,
-        PFAD_MEDIAFILES.'Bilder',
-        PFAD_MEDIAFILES.'Musik',
-        PFAD_MEDIAFILES.'Sonstiges',
-        PFAD_MEDIAFILES.'Videos',
-        PFAD_IMAGEMAP,
-        PFAD_PRODUKTBILDER_MINI,
-        PFAD_PRODUKTBILDER_KLEIN,
-        PFAD_PRODUKTBILDER_NORMAL,
-        PFAD_PRODUKTBILDER_GROSS,
-        PFAD_KATEGORIEBILDER,
-        PFAD_VARIATIONSBILDER_MINI,
-        PFAD_VARIATIONSBILDER_NORMAL,
-        PFAD_VARIATIONSBILDER_GROSS,
-        PFAD_HERSTELLERBILDER_NORMAL,
-        PFAD_HERSTELLERBILDER_KLEIN,
-        PFAD_MERKMALBILDER_NORMAL,
-        PFAD_MERKMALBILDER_KLEIN,
-        PFAD_MERKMALWERTBILDER_NORMAL,
-        PFAD_MERKMALWERTBILDER_KLEIN,
-        PFAD_BRANDINGBILDER,
-        PFAD_SUCHSPECIALOVERLAY_KLEIN,
-        PFAD_SUCHSPECIALOVERLAY_NORMAL,
-        PFAD_SUCHSPECIALOVERLAY_GROSS,
-        PFAD_KONFIGURATOR_KLEIN,
-        PFAD_BILDER.PFAD_LINKBILDER,
-        PFAD_BILDER.PFAD_NEWSLETTERBILDER,
-        PFAD_LOGFILES,
-        PFAD_EXPORT,
-        PFAD_EXPORT_BACKUP,
-        PFAD_EXPORT_YATEGO,
-        PFAD_COMPILEDIR,
-        PFAD_DBES_TMP,
-        PFAD_UPLOADS,
-        PFAD_MEDIA_IMAGE,
-        PFAD_MEDIA_IMAGE_STORAGE,
-        PFAD_SYNC_LOGS,
-        PFAD_ADMIN . PFAD_COMPILEDIR,
-        PFAD_ADMIN . PFAD_INCLUDES . PFAD_EMAILPDFS,
-        // Files
-        FILE_RSS_FEED,
-        FILE_SHOP_FEED
-    );
+/*$shop_writeable_paths = array(
+    // Directories
+    //PFAD_BILDER_SLIDER,
+    PFAD_GFX_TRUSTEDSHOPS, // ifndef('PFAD_GFX_TRUSTEDSHOPS', PFAD_BILDER_INTERN . 'trustedshops/');
+    PFAD_NEWSBILDER, // ifndef('PFAD_NEWSBILDER', PFAD_BILDER . 'news/');
+    PFAD_SHOPLOGO, // ifndef('PFAD_SHOPLOGO', PFAD_BILDER_INTERN . 'shoplogo/');
+    PFAD_MEDIAFILES . 'Bilder',
+    PFAD_MEDIAFILES . 'Musik',
+    PFAD_MEDIAFILES . 'Sonstiges',
+    PFAD_MEDIAFILES . 'Videos',
+    PFAD_IMAGEMAP,
+    PFAD_PRODUKTBILDER_MINI,
+    PFAD_PRODUKTBILDER_KLEIN,
+    PFAD_PRODUKTBILDER_NORMAL,
+    PFAD_PRODUKTBILDER_GROSS,
+    PFAD_KATEGORIEBILDER,
+    PFAD_VARIATIONSBILDER_MINI,
+    PFAD_VARIATIONSBILDER_NORMAL,
+    PFAD_VARIATIONSBILDER_GROSS,
+    PFAD_HERSTELLERBILDER_NORMAL,
+    PFAD_HERSTELLERBILDER_KLEIN,
+    PFAD_MERKMALBILDER_NORMAL,
+    PFAD_MERKMALBILDER_KLEIN,
+    PFAD_MERKMALWERTBILDER_NORMAL,
+    PFAD_MERKMALWERTBILDER_KLEIN,
+    PFAD_BRANDINGBILDER,
+    PFAD_SUCHSPECIALOVERLAY_KLEIN,
+    PFAD_SUCHSPECIALOVERLAY_NORMAL,
+    PFAD_SUCHSPECIALOVERLAY_GROSS,
+    PFAD_KONFIGURATOR_KLEIN,
+    PFAD_BILDER . PFAD_LINKBILDER,
+    PFAD_BILDER . PFAD_NEWSLETTERBILDER,
+    PFAD_LOGFILES,
+    PFAD_EXPORT,
+    PFAD_EXPORT_BACKUP,
+    PFAD_EXPORT_YATEGO,
+    PFAD_COMPILEDIR,
+    PFAD_DBES_TMP,
+    PFAD_UPLOADS,
+    PFAD_MEDIA_IMAGE,
+    PFAD_MEDIA_IMAGE_STORAGE,
+    PFAD_SYNC_LOGS,
+    PFAD_ADMIN . PFAD_COMPILEDIR,
+    PFAD_ADMIN . PFAD_INCLUDES . PFAD_EMAILPDFS,
+    // Files
+    FILE_RSS_FEED,
+    FILE_SHOP_FEED
+);
+*/
 
-    return array_map(function($v) {
+/**
+ * @deprecated
+ * @return array
+function shop_writeable_paths()
+{
+    trigger_error('The function "shop_writeable_paths()" is removed in a future version!', E_USER_DEPRECATED);
+
+    global $shop_writeable_paths;
+
+    return array_map(function ($v) {
         if (strpos($v, PFAD_ROOT) === 0) {
             $v = substr($v, strlen(PFAD_ROOT));
         }
+
         return trim($v, '/\\');
     }, $paths);
 }
+ */
 
 // Static defines (do not edit)
 require_once dirname(__FILE__) . '/defines_inc.php';

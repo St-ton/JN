@@ -6,9 +6,10 @@
 require_once dirname(__FILE__) . '/includes/admininclude.php';
 
 $oAccount->permission('IMPORT_CUSTOMER_VIEW', true, true);
-
+/** @global JTLSmarty $smarty */
 require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
+require_once PFAD_ROOT . PFAD_INCLUDES . 'tools.Global.php';
 
 //jtl2
 $format = array(
@@ -19,13 +20,14 @@ $format = array(
 
 if (isset($_POST['kundenimport']) && $_POST['kundenimport'] == 1 && $_FILES['csv'] && validateToken()) {
     if (isset($_FILES['csv']['tmp_name']) && strlen($_FILES['csv']['tmp_name']) > 0) {
+        $delimiter = guessCsvDelimiter($_FILES['csv']['tmp_name']);
         $file = fopen($_FILES['csv']['tmp_name'], 'r');
         if ($file !== false) {
             $row      = 0;
-            $fmt      = 0;
+            $fmt      = [];
             $formatId = -1;
             $hinweis  = '';
-            while ($data = fgetcsv($file, 2000, ';', '"')) {
+            while ($data = fgetcsv($file, 2000, $delimiter, '"')) {
                 if ($row === 0) {
                     $hinweis .= 'Checke Kopfzeile ...';
                     $fmt = checkformat($data);
@@ -51,6 +53,7 @@ $smarty->assign('sprachen', gibAlleSprachen())
        ->assign('step', (isset($step) ? $step : null))
        ->assign('hinweis', (isset($hinweis) ? $hinweis : null))
        ->display('kundenimport.tpl');
+
 
 /**
  * @param int $length
@@ -82,6 +85,8 @@ function checkformat($data)
     for ($i = 0; $i < $cnt; $i++) {
         if (in_array($data[$i], $GLOBALS['format'])) {
             $fmt[$i] = $data[$i];
+        } else {
+            $fmt[$i] = '';
         }
     }
 
@@ -115,7 +120,7 @@ function processImport($fmt, $data)
     $kunde->dErstellt     = 'now()';
     $cnt                  = count($data);
     for ($i = 0; $i < $cnt; $i++) {
-        if ($fmt[$i] !== '') {
+        if (!empty($fmt[$i])) {
             $kunde->{$fmt[$i]} = $data[$i];
         }
     }
@@ -131,9 +136,9 @@ function processImport($fmt, $data)
         return 'kein Nachname! &Uuml;bergehe diesen Datensatz.';
     }
 
-    $old_mail = Shop::DB()->query("SELECT kKunde FROM tkunde WHERE cMail = '" . $kunde->cMail . "'", 1);
-    if ($old_mail->kKunde > 0) {
-        return "Kunde mit dieser Emailadresse bereits vorhanden: ($kunde->cMail)! &Uuml;bergehe Datendatz";
+    $old_mail = Shop::DB()->select('tkunde', 'cMail', $kunde->cMail);
+    if (isset($old_mail->kKunde) && $old_mail->kKunde > 0) {
+        return "Kunde mit dieser Emailadresse bereits vorhanden: ($kunde->cMail)! &Uuml;bergehe Datensatz.";
     }
     if ($kunde->cAnrede === 'f' || strtolower($kunde->cAnrede) === 'frau') {
         $kunde->cAnrede = 'w';
@@ -161,8 +166,8 @@ function processImport($fmt, $data)
     }
     $cPasswortKlartext = '';
     if (intval($_POST['PasswortGenerieren']) === 1) {
-        $cPasswortKlartext = $kunde->generatePassword(12);//generatePW(8);
-        $kunde->cPasswort  = $kunde->generatePasswordHash($cPasswortKlartext);//cryptPasswort($cPasswortKlartext);
+        $cPasswortKlartext = $kunde->generatePassword(12);
+        $kunde->cPasswort  = $kunde->generatePasswordHash($cPasswortKlartext);
     }
     $oTMP              = new stdClass();
     $oTMP->cNachname   = $kunde->cNachname;

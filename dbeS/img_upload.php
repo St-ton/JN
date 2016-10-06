@@ -82,7 +82,7 @@ function images_xml($tmpDir, SimpleXMLElement $xml)
         if (file_exists($tmpfile)) {
             if (copy($tmpfile, PFAD_ROOT . PFAD_MEDIA_IMAGE_STORAGE . $item->cPfad)) {
                 DBUpdateInsert('tbild', array($item), 'kBild');
-                Shop::DB()->query("UPDATE tartikelpict SET cPfad = '{$item->cPfad}' WHERE kBild = " . (int)$item->kBild, 4);
+                Shop::DB()->update('tartikelpict', 'kBild', (int)$item->kBild, (object)['cPfad' => $item->cPfad]);
             } else {
                 Jtllog::writeLog(sprintf('Copy "%s" to "%s"', $tmpfile, PFAD_ROOT . PFAD_MEDIA_IMAGE_STORAGE . $item->cPfad), JTLLOG_LEVEL_ERROR, false, 'img_upload_xml');
             }

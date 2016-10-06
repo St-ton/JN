@@ -6,7 +6,7 @@
 
 /**
  * @param array $cPost_arr
- * @return array
+ * @return array|int
  */
 function kundeSpeichern($cPost_arr)
 {
@@ -83,18 +83,13 @@ function kundeSpeichern($cPost_arr)
             $_SESSION['Kunde']->cKundenattribut_arr = $cKundenattribut_arr;
         } else {
             // Guthaben des Neukunden aufstocken insofern er geworben wurde
-            $oNeukunde = Shop::DB()->query(
-                "SELECT kKundenWerbenKunden
-                    FROM tkundenwerbenkunden
-                    WHERE cEmail = '" . $knd->cMail . "'
-                        AND nRegistriert = 0", 1
-            );
+            $oNeukunde = Shop::DB()->select('tkundenwerbenkunden', 'cEmail', $knd->cMail, 'nRegistriert', 0);
             $kKundengruppe = $_SESSION['Kundengruppe']->kKundengruppe;
             if (isset($oNeukunde->kKundenWerbenKunden) && $oNeukunde->kKundenWerbenKunden > 0 &&
                 isset($Einstellungen['kundenwerbenkunden']['kwk_kundengruppen']) &&
                 intval($Einstellungen['kundenwerbenkunden']['kwk_kundengruppen']) > 0
             ) {
-                $kKundengruppe = (int) $Einstellungen['kundenwerbenkunden']['kwk_kundengruppen'];
+                $kKundengruppe = (int)$Einstellungen['kundenwerbenkunden']['kwk_kundengruppen'];
             }
 
             $knd->kKundengruppe = $kKundengruppe;
@@ -168,7 +163,7 @@ function kundeSpeichern($cPost_arr)
         if ($cPost_arr['checkout'] == 1) {
             //weiterleitung zum chekout
             $linkHelper = LinkHelper::getInstance();
-            header('Location: ' . $linkHelper->getStaticRoute('bestellvorgang.php') . '?reg=1', true, 303);
+            header('Location: ' . $linkHelper->getStaticRoute('bestellvorgang.php', true) . '?reg=1', true, 303);
             exit;
         } elseif (isset($cPost_arr['ajaxcheckout_return']) && intval($cPost_arr['ajaxcheckout_return']) === 1) {
             return 1;
@@ -184,6 +179,8 @@ function kundeSpeichern($cPost_arr)
 
         return $fehlendeAngaben;
     }
+
+    return [];
 }
 
 /**
@@ -230,4 +227,22 @@ function gibKunde()
         $Kunde->dGeburtstag       = $tag . '.' . $monat . '.' . $jahr;
     }
     $titel = Shop::Lang()->get('editData', 'login');
+}
+
+/**
+ * @param string $vCardFile
+ */
+function gibKundeFromVCard($vCardFile)
+{
+    if (is_file($vCardFile)) {
+        global $smarty, $Kunde, $hinweis;
+
+        try {
+            $vCard = new VCard(file_get_contents($vCardFile), ['handling' => VCard::OPT_ERR_RAISE]);
+            $Kunde = $vCard->selectVCard(0)->asKunde();
+            $smarty->assign('Kunde', $Kunde);
+        } catch (Exception $e) {
+            $hinweis = Shop::Lang()->get('uploadError', 'global');
+        }
+    }
 }

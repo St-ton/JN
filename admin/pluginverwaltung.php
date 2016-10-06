@@ -6,7 +6,7 @@
 require_once dirname(__FILE__) . '/includes/admininclude.php';
 
 $oAccount->permission('PLUGIN_ADMIN_VIEW', true, true);
-
+/** @global JTLSmarty $smarty */
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'pluginverwaltung_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'plugin_inc.php';
 
@@ -89,6 +89,10 @@ if (!empty($_FILES['file_data'])) {
     $PluginFehlerhaft_arr = gibVerfuegbarePlugins($PluginInstalliert_arr, true);
     // Version mappen und Update (falls vorhanden) anzeigen
     if (count($PluginInstalliert_arr) > 0) {
+        /**
+         * @var int $i
+         * @var Plugin $PluginInstalliert
+         */
         foreach ($PluginInstalliert_arr as $i => $PluginInstalliert) {
             $nVersion = $PluginInstalliert->getCurrentVersion();
             if ($nVersion > $PluginInstalliert->nVersion) {
@@ -98,7 +102,7 @@ if (!empty($_FILES['file_data'])) {
                 if ($nReturnValue == 1 || $nReturnValue == 90) {
                     $PluginInstalliert_arr[$i]->cUpdateFehler = 1;
                 } else {
-                    $PluginInstalliert_arr[$i]->cUpdateFehler = StringHandler::htmlentities(mappePlausiFehler($nReturnValue));
+                    $PluginInstalliert_arr[$i]->cUpdateFehler = StringHandler::htmlentities(mappePlausiFehler($nReturnValue, $PluginInstalliert));
                 }
             }
             $PluginInstalliert_arr[$i]->dVersion = number_format(doubleval($PluginInstalliert->nVersion) / 100, 2);
@@ -202,7 +206,7 @@ if (verifyGPCDataInteger('pluginverwaltung_uebersicht') === 1 && validateToken()
                 }
 
                 if ($nReturnValue > 3) {
-                    $cFehler = mappePlausiFehler($nReturnValue);
+                    $cFehler = mappePlausiFehler($nReturnValue, null);
                 }
             } elseif (isset($_POST['deaktivieren'])) { // Deaktivieren
                 $nReturnValue = deaktivierePlugin($kPlugin);
@@ -244,6 +248,21 @@ if (verifyGPCDataInteger('pluginverwaltung_uebersicht') === 1 && validateToken()
                         case 4: // SQL Fehler bzw. Plugin nicht gefunden
                             $cFehler = 'Fehler: Plugin wurde nicht in der Datenbank gefunden.';
                             break;
+                    }
+                } else {
+                    $cFehler = 'Fehler: Ein oder mehrere Plugins wurden nicht in der Datenbank gefunden.';
+                }
+            } elseif (isset($_POST['reload'])) { // Reload
+                $oPlugin = Shop::DB()->select ('tplugin', 'kPlugin', $kPlugin);
+
+                if (isset($oPlugin->kPlugin) && $oPlugin->kPlugin > 0) {
+                    $nReturnValue = reloadPlugin($oPlugin, true);
+
+                    if ($nReturnValue === 1 || $nReturnValue === 126) {
+                        $cHinweis = 'Ihre ausgew&auml;hlten Plugins wurden erfolgreich neu geladen.';
+                        $reload = true;
+                    } else {
+                        $cFehler = 'Fehler: Ein Plugin konnte nicht neu geladen werden.';
                     }
                 } else {
                     $cFehler = 'Fehler: Ein oder mehrere Plugins wurden nicht in der Datenbank gefunden.';
@@ -483,6 +502,10 @@ if ($step === 'pluginverwaltung_uebersicht') {
     $PluginFehlerhaft_arr = gibVerfuegbarePlugins($PluginInstalliert_arr, true);
     // Version mappen und Update (falls vorhanden) anzeigen
     if (count($PluginInstalliert_arr) > 0) {
+        /**
+         * @var int $i
+         * @var Plugin $PluginInstalliert
+         */
         foreach ($PluginInstalliert_arr as $i => $PluginInstalliert) {
             $nVersion = $PluginInstalliert->getCurrentVersion();
             if ($nVersion > $PluginInstalliert->nVersion) {
@@ -491,7 +514,7 @@ if ($step === 'pluginverwaltung_uebersicht') {
 
                 $PluginInstalliert_arr[$i]->cUpdateFehler = ($nReturnValue == 1 || $nReturnValue == 90) ?
                     1 :
-                    StringHandler::htmlentities(mappePlausiFehler($nReturnValue));
+                    StringHandler::htmlentities(mappePlausiFehler($nReturnValue, $PluginInstalliert));
             }
             $PluginInstalliert_arr[$i]->dVersion = number_format(doubleval($PluginInstalliert->nVersion) / 100, 2);
             $PluginInstalliert_arr[$i]->cStatus  = $PluginInstalliert->mapPluginStatus($PluginInstalliert->nStatus);
@@ -525,11 +548,17 @@ if ($step === 'pluginverwaltung_uebersicht') {
            ->assign('kPlugin', $kPlugin)
            ->assign('oPluginSprachvariable_arr', gibSprachVariablen($kPlugin));
 }
+
 if ($reload === true) {
     $_SESSION['plugin_msg'] = $cHinweis;
     header('Location: ' . Shop::getURL() . '/' . PFAD_ADMIN . 'pluginverwaltung.php', true, 303);
     exit();
 }
+
+if (defined('PLUGIN_DEV_MODE') && PLUGIN_DEV_MODE === true) {
+    $cHinweis = 'Achtung: Ihr Shop befindet sich im Plugin-Dev-Mode! &Auml;nderungen der XML-Datei eines aktivierten Plugins bewirken deren automatisches Update.<br><br>' . $cHinweis;
+}
+
 $smarty->assign('hinweis', $cHinweis)
        ->assign('hinweis64', base64_encode($cHinweis))
        ->assign('fehler', $cFehler)

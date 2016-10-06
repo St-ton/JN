@@ -8,7 +8,7 @@
                         <img src="{$oExtension->cLogoPfad}" />
                         <p><a href="{$oExtension->cUrl}" target="_blank">
                             {$oExtension->cName|truncate:'50':'...'}
-                            {if $oExtension->cKurzBeschreibung|@count_characters > 0}
+                            {if $oExtension->cKurzBeschreibung|strlen > 0}
                                 {$oExtension->cKurzBeschreibung|truncate:'50':'...'}
                             {/if}
                         </a></p>

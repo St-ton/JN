@@ -147,12 +147,12 @@ class Emailhistory
      */
     public function delete()
     {
-        return Shop::DB()->query("DELETE FROM temailhistory WHERE kEmailhistory = " . $this->getEmailhistory(), 3);
+        return Shop::DB()->delete('temailhistory', 'kEmailhistory', $this->getEmailhistory());
     }
 
     /**
      * @param string $cSqlLimit
-     * @return array|null
+     * @return array
      */
     public function getAll($cSqlLimit = '')
     {
@@ -169,7 +169,7 @@ class Emailhistory
             return $oEmailhistory_arr;
         }
 
-        return;
+        return [];
     }
 
     /**

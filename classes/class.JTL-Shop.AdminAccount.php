@@ -16,6 +16,11 @@ class AdminAccount
     private $_bLogged = false;
 
     /**
+     * @var bool
+     */
+    private $twoFaAuthenticated = false;
+
+    /**
      * @param bool $bInitialize
      */
     public function __construct($bInitialize = true)
@@ -149,7 +154,8 @@ class AdminAccount
         }
         if ($verified === true || ($cPassCrypted !== null && $oAdmin->cPass === $cPassCrypted)) {
             // Wartungsmodus aktiv? Nein => loesche Session
-            if ($GLOBALS['oGlobaleEinstellung']['global']['wartungsmodus_aktiviert'] === 'N') {
+            $settings = Shop::getSettings(CONF_GLOBAL);
+            if ($settings['global']['wartungsmodus_aktiviert'] === 'N') {
                 if (is_array($_SESSION) && count($_SESSION) > 0) {
                     foreach ($_SESSION as $i => $xSession) {
                         unset($_SESSION[$i]);
@@ -160,6 +166,9 @@ class AdminAccount
             $this->_toSession($oAdmin);
             //check password hash and update if necessary
             $this->checkAndUpdateHash($cPass);
+            if (!$this->getIsTwoFaAuthenticated()) {
+                return -6;
+            }
 
             return $this->logged() ? 1 : 0;
         }
@@ -180,11 +189,37 @@ class AdminAccount
     }
 
     /**
+     * @return $this
+     */
+    public function lock()
+    {
+        $this->_bLogged = false;
+
+        return $this;
+    }
+
+    /**
      * @return bool
      */
     public function logged()
     {
+        return $this->twoFaAuthenticated && $this->_bLogged;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getIsAuthenticated()
+    {
         return $this->_bLogged;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getIsTwoFaAuthenticated()
+    {
+        return $this->twoFaAuthenticated;
     }
 
     /**
@@ -206,7 +241,7 @@ class AdminAccount
      */
     public function account()
     {
-        return ($this->logged()) ? $_SESSION['AdminAccount'] : false;
+        return ($this->getIsAuthenticated()) ? $_SESSION['AdminAccount'] : false;
     }
 
     /**
@@ -262,11 +297,43 @@ class AdminAccount
         $this->_bLogged = false;
         if (isset($_SESSION['AdminAccount']->cLogin) && isset($_SESSION['AdminAccount']->cPass) && isset($_SESSION['AdminAccount']->cURL) &&
             $_SESSION['AdminAccount']->cURL == Shop::getURL()) {
-            $oAccount       = Shop::DB()->select('tadminlogin', 'cLogin', $_SESSION['AdminAccount']->cLogin, 'cPass', $_SESSION['AdminAccount']->cPass, null, null, false, 'cLogin');
+            $oAccount                 = Shop::DB()->select('tadminlogin', 'cLogin', $_SESSION['AdminAccount']->cLogin, 'cPass', $_SESSION['AdminAccount']->cPass);
+            $this->twoFaAuthenticated = (isset($oAccount->b2FAauth) && $oAccount->b2FAauth === '1') ?
+                (isset($_SESSION['AdminAccount']->TwoFA_valid) && true === $_SESSION['AdminAccount']->TwoFA_valid) :
+                true;
             $this->_bLogged = isset($oAccount->cLogin);
         }
 
         return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function doTwoFA()
+    {
+        if (isset($_SESSION['AdminAccount']->cLogin) && isset($_POST['TwoFA_code'])) {
+            $oTwoFA = new TwoFA();
+            $oTwoFA->setUserByName($_SESSION['AdminAccount']->cLogin);
+            // check the 2fa-code here really
+            $_SESSION['AdminAccount']->TwoFA_valid = $oTwoFA->isCodeValid($_POST['TwoFA_code']);
+
+            return $_SESSION['AdminAccount']->TwoFA_valid;
+        }
+
+        return false;
+    }
+
+    /**
+     * @return array|int
+     */
+    public function favorites()
+    {
+        if (!$this->logged()) {
+            return [];
+        }
+
+        return AdminFavorite::fetchAll($_SESSION['AdminAccount']->kAdminlogin);
     }
 
     /**
@@ -346,11 +413,7 @@ class AdminAccount
         $kAdminlogingruppe = (int)$kAdminlogingruppe;
         $oGroup            = Shop::DB()->select('tadminlogingruppe', 'kAdminlogingruppe', $kAdminlogingruppe);
         if (isset($oGroup->kAdminlogingruppe)) {
-            $oPermission_arr = Shop::DB()->query("
-                SELECT cRecht
-                    FROM tadminrechtegruppe
-                    WHERE kAdminlogingruppe = " . $kAdminlogingruppe, 2
-            );
+            $oPermission_arr = Shop::DB()->selectAll('tadminrechtegruppe', 'kAdminlogingruppe', $kAdminlogingruppe, 'cRecht');
             if (is_array($oPermission_arr)) {
                 $oGroup->oPermission_arr = array();
                 foreach ($oPermission_arr as $oPermission) {

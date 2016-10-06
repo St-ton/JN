@@ -21,7 +21,7 @@
                     <div class="panel panel-default panel-idx-{$smarty.foreach.plugineinstellungenconf.index}{if $smarty.foreach.plugineinstellungenconf.index === 0} first{/if}">
                     <div class="panel-heading">
                         <h3 class="panel-title">{$oPluginEinstellungConf->cName}
-                            {if $oPluginEinstellungConf->cBeschreibung|@count_characters > 0}
+                            {if $oPluginEinstellungConf->cBeschreibung|strlen > 0}
                                 <span class="panel-title-addon">{getHelpDesc cDesc=$oPluginEinstellungConf->cBeschreibung}</span>
                             {/if}
                         </h3>
@@ -70,7 +70,7 @@
                             <input class="form-control" id="{$oPluginEinstellungConf->cWertName}" name="{$oPluginEinstellungConf->cWertName}" type="text" value="{$cEinstellungWert|escape:'html'}" />
                         {/if}
                         </span>
-                        {if $oPluginEinstellungConf->cBeschreibung|@count_characters > 0}
+                        {if $oPluginEinstellungConf->cBeschreibung|strlen > 0}
                             <span class="input-group-addon">{getHelpDesc cDesc=$oPluginEinstellungConf->cBeschreibung}</span>
                         {/if}
                     </div>

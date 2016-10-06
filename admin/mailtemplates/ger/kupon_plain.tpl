@@ -9,7 +9,7 @@ Er gilt für folgende Lieferländer: {$Kupon->cLieferlaender|upper}{/if}
 
 Kuponcode: {$Kupon->cCode}
 
-Gültig vom {$Kupon->GueltigAb} bis {$Kupon->GueltigBis}
+Gültig vom {$Kupon->cGueltigAbLong}{if $Kupon->dGueltigBis != 0} bis {$Kupon->cGueltigBisLong}{/if}
 
 {if $Kupon->fMindestbestellwert>0}Mindestbestellwert: {$Kupon->cLocalizedMBW}
 

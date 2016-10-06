@@ -116,7 +116,7 @@ class StringHandler
      */
     public static function is_utf8($string)
     {
-        return preg_match(
+        $res = preg_match(
             '%^(?:[\x09\x0A\x0D\x20-\x7E]  # ASCII
                                 | [\xC2-\xDF][\x80-\xBF]             # non-overlong 2-byte
                                 |  \xE0[\xA0-\xBF][\x80-\xBF]        # excluding overlongs
@@ -127,6 +127,15 @@ class StringHandler
                                 |  \xF4[\x80-\x8F][\x80-\xBF]{2}     # plane 16
                             )*$%xs', $string
         );
+        if ($res === false) {
+            //some kind of pcre error happend - probably PREG_JIT_STACKLIMIT_ERROR.
+            //we could check this via preg_last_error()
+            $res = (function_exists('mb_detect_encoding'))
+                ? (int)(mb_detect_encoding($string, 'UTF-8', true) === 'UTF-8')
+                : 0;
+        }
+
+        return $res;
     }
 
     /**
@@ -454,6 +463,21 @@ class StringHandler
     }
 
     /**
+     * Parse a semicolon separated key string to an array
+     *
+     * @param string $ssk
+     * @return array
+     */
+    public static function parseSSK($ssk)
+    {
+        if (is_string($ssk)) {
+            return array_filter(explode(';', $ssk));
+        }
+
+        return array();
+    }
+
+    /**
      * @note PHP's FILTER_SANITIZE_EMAIL cannot handle unicode -
      * without idn_to_ascii (PECL) this will fail with umlaut domains
      *
@@ -493,5 +517,22 @@ class StringHandler
         return ($validate) ?
             filter_var($sanitized, FILTER_VALIDATE_URL) :
             $sanitized;
+    }
+
+    /**
+     * Build an URL string from a given associative array of parts according to PHP's parse_url()
+     *
+     * @param array $parts
+     * @return string - the resulting URL
+     */
+    public static function buildUrl($parts)
+    {
+        return (isset($parts['scheme']) ? $parts['scheme'] . '://' : '') .
+            (isset($parts['user']) ? $parts['user'] . (isset($parts['pass']) ? ':' . $parts['pass'] : '') . '@' : '') .
+            (isset($parts['host']) ? $parts['host'] : '') .
+            (isset($parts['port']) ? ':' . $parts['port'] : '') .
+            (isset($parts['path']) ? $parts['path'] : '') .
+            (isset($parts['query']) ? '?' . $parts['query'] : '') .
+            (isset($parts['fragment']) ? '#' . $parts['fragment'] : '');
     }
 }

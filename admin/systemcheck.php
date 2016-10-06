@@ -3,11 +3,10 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-
 require_once dirname(__FILE__) . '/includes/admininclude.php';
 
 $oAccount->redirectOnFailure();
-
+/** @global JTLSmarty $smarty */
 if (isset($_GET['phpinfo'])) {
     if (in_array('phpinfo', explode(',', ini_get('disable_functions')))) {
         return;
@@ -18,16 +17,16 @@ if (isset($_GET['phpinfo'])) {
     $content = ob_get_contents();
     ob_end_clean();
 
-    $doc = phpQuery::newDocumentHTML($content, JTL_CHARSET);
+    $doc     = phpQuery::newDocumentHTML($content, JTL_CHARSET);
     $content = pq('body', $doc)->html();
 
     $smarty->assign('phpinfo', $content);
 }
 
 $systemcheck = new Systemcheck_Environment();
-$platform = new Systemcheck_Platform_Hosting();
+$platform    = new Systemcheck_Platform_Hosting();
 
-$tests = $systemcheck->executeTestGroup('Shop4');
+$tests  = $systemcheck->executeTestGroup('Shop4');
 $passed = $systemcheck->getIsPassed();
 
 $smarty->assign('tests', $tests)

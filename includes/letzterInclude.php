@@ -73,6 +73,13 @@ if (is_object($oGlobaleMetaAngaben)) {
         $cMetaKeywords = $oGlobaleMetaAngaben->Meta_Keywords;
     }
 }
+//Kategorielisten aufbauen
+if (isset($AktuelleKategorie)) {
+    baueKategorieListenHTML($startKat, $AufgeklappteKategorien, $AktuelleKategorie);
+    baueUnterkategorieListeHTML($AktuelleKategorie);
+} else {
+    $AktuelleKategorie = null;
+}
 
 //Standardassigns
 $smarty->assign('cPluginCss_arr', $cMinify_arr['plugin_css'])
@@ -156,12 +163,8 @@ $smarty->assign('cPluginCss_arr', $cMinify_arr['plugin_css'])
        ->assign('BILD_KEIN_HERSTELLERBILD_VORHANDEN', BILD_KEIN_HERSTELLERBILD_VORHANDEN)
        ->assign('BILD_KEIN_MERKMALBILD_VORHANDEN', BILD_KEIN_MERKMALBILD_VORHANDEN)
        ->assign('BILD_KEIN_MERKMALWERTBILD_VORHANDEN', BILD_KEIN_MERKMALWERTBILD_VORHANDEN)
-       ->assign('cCanonicalURL', (isset($cCanonicalURL)) ? $cCanonicalURL : null);
-//Kategorielisten aufbauen
-if (isset($AktuelleKategorie)) {
-    baueKategorieListenHTML($startKat, $AufgeklappteKategorien, $AktuelleKategorie);
-    baueUnterkategorieListeHTML($AktuelleKategorie);
-}
+       ->assign('cCanonicalURL', (isset($cCanonicalURL)) ? $cCanonicalURL : null)
+       ->assign('AktuelleKategorie', $AktuelleKategorie);
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'besucher.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'toolsajax_inc.php';
@@ -185,8 +188,12 @@ if (isset($AktuellerArtikel->kArtikel) && $AktuellerArtikel->kArtikel > 0) {
     // Letzten angesehenden Artikel hinzufügen
     $boxes->addRecentlyViewed($AktuellerArtikel->kArtikel);
 }
+$besucherzaehler = ($Einstellungen['global']['global_zaehler_anzeigen'] === 'Y') ?
+    Shop::DB()->query("SELECT * FROM tbesucherzaehler", 1) :
+    null;
 $smarty->assign('bCookieErlaubt', isset($_COOKIE['JTLSHOP']))
        ->assign('nIsSSL', pruefeSSL())
        ->assign('boxes', $boxesToShow)
        ->assign('linkgroups', $linkGroups)
-       ->assign('nZeitGebraucht', (isset($nStartzeit)) ? (microtime(true) - $nStartzeit) : 0);
+       ->assign('nZeitGebraucht', (isset($nStartzeit)) ? (microtime(true) - $nStartzeit) : 0)
+       ->assign('Besucherzaehler', (!empty($besucherzaehler->nZaehler)) ? (int)$besucherzaehler->nZaehler : 0);

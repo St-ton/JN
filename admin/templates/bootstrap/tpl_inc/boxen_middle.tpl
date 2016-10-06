@@ -157,7 +157,7 @@
             <form action="boxen.php" method="post">
                 {$jtl_token}
                 <div class="panel-heading">
-                    <h3>Footer {$nPage}</h3>
+                    <h3>Footer</h3>
                     <hr>
                 </div><!-- .panel-heading -->
                 <div class="panel-heading">

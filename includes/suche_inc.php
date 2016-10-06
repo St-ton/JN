@@ -243,12 +243,7 @@ function suchanfragenSpeichern($cSuche, $nAnzahlTreffer, $bEchteSuche = false, $
         if ($kSprache > 0) {
             // Blacklist beachten
             $Suchausdruck_tmp_arr = explode(';', $Suchausdruck);
-            $blacklist_erg        = Shop::DB()->query(
-                "SELECT kSuchanfrageBlacklist
-                    FROM tsuchanfrageblacklist
-                    WHERE kSprache = " . $kSprache . "
-                    AND cSuche = '" . Shop::DB()->escape($Suchausdruck_tmp_arr[0]) . "'", 1
-            );
+            $blacklist_erg        = Shop::DB()->select('tsuchanfrageblacklist', 'kSprache', $kSprache, 'cSuche', Shop::DB()->escape($Suchausdruck_tmp_arr[0]));
             if (!$bSpamFilter || !isset($blacklist_erg->kSuchanfrageBlacklist) || $blacklist_erg->kSuchanfrageBlacklist == 0) {
                 // Ist MD5(IP) bereits X mal im Cache
                 $conf         = Shop::getSettings(array(CONF_ARTIKELUEBERSICHT));
@@ -290,14 +285,9 @@ function suchanfragenSpeichern($cSuche, $nAnzahlTreffer, $bEchteSuche = false, $
                                     WHERE kSuchanfrage = " . (int)$suchanfrage_old->kSuchanfrage, 4
                             );
                         } elseif (!isset($suchanfrage_old->kSuchanfrage) || !$suchanfrage_old->kSuchanfrage) {
-                            Shop::DB()->query("
-                              DELETE 
-                                FROM tsuchanfrageerfolglos 
-                                WHERE kSprache = " . (int)$suchanfrage->kSprache . " 
-                                AND cSuche='" . Shop::DB()->realEscape($Suchausdruck) . "'", 4
-                            );
+                            Shop::DB()->delete('tsuchanfrageerfolglos', ['kSprache', 'cSuche'], [(int)$suchanfrage->kSprache, Shop::DB()->realEscape($Suchausdruck)]);
                             $kSuchanfrage = Shop::DB()->insert('tsuchanfrage', $suchanfrage);
-                            writeLog(PFAD_ROOT . 'jtllogs/suchanfragen.log', print_r($suchanfrage, true), 1);
+                            writeLog(PFAD_LOGFILES . 'suchanfragen.log', print_r($suchanfrage, true), 1);
 
                             return $kSuchanfrage;
                         }
@@ -315,12 +305,7 @@ function suchanfragenSpeichern($cSuche, $nAnzahlTreffer, $bEchteSuche = false, $
                                     WHERE kSuchanfrageErfolglos = " . (int)$suchanfrageerfolglos_old->kSuchanfrageErfolglos, 4
                             );
                         } else {
-                            Shop::DB()->query("
-                              DELETE 
-                                FROM tsuchanfrage 
-                                WHERE kSprache = " . (int)$suchanfrageerfolglos->kSprache . " 
-                                AND cSuche = '" . Shop::DB()->realEscape($Suchausdruck) . "'", 4
-                            );
+                            Shop::DB()->delete('tsuchanfrage', ['kSprache', 'cSuche'], [(int)$suchanfrageerfolglos->kSprache, Shop::DB()->realEscape($Suchausdruck)]);
                             Shop::DB()->insert('tsuchanfrageerfolglos', $suchanfrageerfolglos);
                         }
                     }

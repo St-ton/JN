@@ -1,3 +1,5 @@
+{assign var='bForceFluid' value=$bForceFluid|default:false}
+
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -13,15 +15,16 @@
     <link type="text/css" rel="stylesheet" href="{$PFAD_CODEMIRROR}addon/hint/show-hint.css" />
     <link type="text/css" rel="stylesheet" href="{$PFAD_CODEMIRROR}addon/display/fullscreen.css" />
     <link type="text/css" rel="stylesheet" href="{$PFAD_CODEMIRROR}addon/scroll/simplescrollbars.css" />
+    <link type="text/css" rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/7.1.0/css/bootstrap-slider.min.css" />
     {$admin_js}
     <script type="text/javascript" src="{$PFAD_CKEDITOR}ckeditor.js"></script>
     <script type="text/javascript" src="{$PFAD_CODEMIRROR}lib/codemirror.js"></script>
-    
+
     <script type="text/javascript" src="{$PFAD_CODEMIRROR}addon/hint/show-hint.js"></script>
     <script type="text/javascript" src="{$PFAD_CODEMIRROR}addon/hint/sql-hint.js"></script>
     <script type="text/javascript" src="{$PFAD_CODEMIRROR}addon/scroll/simplescrollbars.js"></script>
     <script type="text/javascript" src="{$PFAD_CODEMIRROR}addon/display/fullscreen.js"></script>
-    
+
     <script type="text/javascript" src="{$PFAD_CODEMIRROR}mode/css/css.js"></script>
     <script type="text/javascript" src="{$PFAD_CODEMIRROR}mode/javascript/javascript.js"></script>
     <script type="text/javascript" src="{$PFAD_CODEMIRROR}mode/xml/xml.js"></script>
@@ -30,6 +33,9 @@
     <script type="text/javascript" src="{$PFAD_CODEMIRROR}mode/smarty/smarty.js"></script>
     <script type="text/javascript" src="{$PFAD_CODEMIRROR}mode/smartymixed/smartymixed.js"></script>
     <script type="text/javascript" src="{$PFAD_CODEMIRROR}mode/sql/sql.js"></script>
+
+    <script src="//npmcdn.com/masonry-layout@4.0/dist/masonry.pkgd.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/7.1.0/bootstrap-slider.min.js"></script>
 
     <script type="text/javascript" src="{$URL_SHOP}/{$PFAD_ADMIN}{$currentTemplateDir}js/codemirror_init.js"></script>
     <script type="text/javascript">
@@ -46,17 +52,14 @@
 </head>
 <body>
 
-{if $account}
+{* {if $account} *}
+{if isset($smarty.session.loginIsValid) && true ===  $smarty.session.loginIsValid }
     {if permission('SETTINGS_SEARCH_VIEW')}
         <div id="main-search" class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <form method="post" action="einstellungen.php" role="search">
-                            {$jtl_token}
-                            <input type="hidden" name="einstellungen_suchen" value="1" />
-                            <input placeholder="Suchbegriff" name="cSuche" type="search" value="" autocomplete="off" />
-                        </form>
+                        <input placeholder="Suchbegriff" name="cSuche" type="search" value="" autocomplete="off" />
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     </div>
                     <div class="modal-body">
@@ -64,10 +67,9 @@
                 </div>
             </div>
         </div>
-        <script src="//npmcdn.com/masonry-layout@4.0/dist/masonry.pkgd.min.js"></script>
         <script>
         var $grid = null;
-        
+
         $(function () {
             var lastQuery = null;
             var $search_frame = $('#main-search');
@@ -77,27 +79,27 @@
             function searchEvent(event) {
                 var setResult = function(content) {
                     content = content || '';
-                
+
                     if ($grid) {
                         $grid.masonry('destroy');
                     }
-                
+
                     $search_result.html(content);
-                
+
                     $grid = $search_result.masonry({
                         itemSelector: '.grid-item',
                         columnWidth: '.grid-item',
                         percentPosition: true
                     });
                 };
-                
+
                 var query = $(event.target).val() || '';
                 if (query.length < 3) {
                     setResult(null);
                 }
                 else if(query != lastQuery) {
                     lastQuery = query;
-                    ajaxCallV2('suche.php', { query: query }, function(result, error) {
+                    ajaxCallV2('suche.php', { query: query, suggest: true }, function(result, error) {
                         if (error) {
                             setResult(null);
                         }
@@ -111,56 +113,27 @@
             $search_frame.on('shown.bs.modal', function (e) {
                 $search_input.on('keyup', searchEvent).focus();
             });
-            
+
             $search_frame.on('hidden.bs.modal', function (e) {
                 $('body').focus();
                 $search_input.off('keyup', searchEvent);
             });
-            
+
             $(document).on("keydown", function (event) {
-                if (event.keyCode == 70 && event.ctrlKey) {
+                if (event.keyCode == 71 && event.ctrlKey) {
                     event.preventDefault();
                     $search_frame.modal('toggle');
                 }
             });
-            
-            /*
-            $search_input.on('keydown', function(event) {
-                if (event.keyCode == 38 || event.keyCode == 40) {
-                    event.preventDefault();
-                }
-                switch (event.keyCode) {
-                    case 38: {
-                        console.log('up');
-                        break;
-                    }
-                    case 40: {
-                        if ($search_result.find('li.active').length == 0) {
-                            $search_result.find('li').first().addClass('active');
-                        }
-                        else {
-                            $active = $search_result.find('li.active');
-                            $next = $active.next('li');
-                            if ($next.length == 0) {
-                                $next = $active.closest('.grid-item').next().find('li').first();
-                            }
-                            
-                            if ($next.length) {
-                                $active.removeClass('active');
-                                $next.addClass('active');
-                            }
-                        }
-                        break;
-                    }
-                }
-            });
-            */
         });
         </script>
     {/if}
     {getCurrentPage assign="currentPage"}
-    {$fluid = ['index', 'marktplatz', 'banner', 'dbmanager', 'status']}
-    <div class="backend-wrapper {if $currentPage|in_array:$fluid}container-fluid{else}container{/if}{if $currentPage === 'index' || $currentPage === 'status'} dashboard{/if}{if $currentPage === 'marktplatz'} marktplatz{/if}">
+    {$fluid = ['index', 'marktplatz', 'dbmanager', 'status']}
+    <div class="backend-wrapper
+         {if $bForceFluid || $currentPage|in_array:$fluid}container-fluid{else}container{/if}
+         {if $currentPage === 'index' || $currentPage === 'status'} dashboard{/if}
+         {if $currentPage === 'marktplatz'} marktplatz{/if}">
         <nav class="navbar navbar-inverse navbar-fixed-top yamm" role="navigation">
             <div class="container-fluid">
                 <div class="navbar-header">
@@ -172,7 +145,7 @@
                     </button>
                     <a class="navbar-brand" href="index.php"><img src="{$currentTemplateDir}gfx/shop-logo.png" alt="JTL-Shop" /></a>
                 </div>
-                <div class="navbar-collapse collapse" id="nbc-1">   
+                <div class="navbar-collapse collapse" id="nbc-1">
                     <ul class="nav navbar-nav">
                         {foreach name=linkobergruppen from=$oLinkOberGruppe_arr item=oLinkOberGruppe}
                             {if $oLinkOberGruppe->oLinkGruppe_arr|@count === 0 && $oLinkOberGruppe->oLink_arr|@count === 1}
@@ -222,6 +195,7 @@
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
                         <li class="dropdown" id="notify-drop">{include file="tpl_inc/notify_drop.tpl"}</li>
+                        <li class="dropdown" id="favs-drop">{include file="tpl_inc/favs_drop.tpl"}</li>
                         {if permission('DASHBOARD_VIEW')}
                             <li>
                                 <a class="link-dashboard" href="index.php" title="Dashboard"><i class="fa fa-home"></i></a>
@@ -238,9 +212,9 @@
                             </a>
                             <ul class="dropdown-menu" role="main">
                                 <li>
-                                    <a href="http://guide.jtl-software.de/jtl/JTL-Shop:Installation:Erste_Schritte" target="_blank">Erste Schritte</a>
-                                    <a href="http://guide.jtl-software.de/jtl/JTL-Shop" target="_blank">JTL Guide</a>
-                                    <a href="http://forum.jtl-software.de/forum.php" target="_blank">JTL Forum</a>
+                                    <a href="https://guide.jtl-software.de/jtl/JTL-Shop:Installation:Erste_Schritte" target="_blank">Erste Schritte</a>
+                                    <a href="https://guide.jtl-software.de/jtl/JTL-Shop" target="_blank">JTL Guide</a>
+                                    <a href="https://forum.jtl-software.de" target="_blank">JTL Forum</a>
                                     <a href="https://www.jtl-software.de/Training" target="_blank">Training</a>
                                     <a href="https://www.jtl-software.de/Servicepartner" target="_blank">Servicepartner</a>
                                 </li>
@@ -256,11 +230,11 @@
                                         <a class="link-profile" href="benutzerverwaltung.php" title="Profil"><i class="fa fa-user"></i> Profil</a>
                                     {/if*}
                                     <a class="link-shop" href="{$URL_SHOP}" title="Zum Shop"><i class="fa fa-shopping-cart"></i> Zum Shop</a>
-                                    <a class="link-logout" href="logout.php?token={$smarty.session.jtl_token}" title="Abmelden"><i class="fa fa-sign-out"></i> Abmelden</a>
+                                    <a class="link-logout" href="logout.php?token={$smarty.session.jtl_token}" title="{#logout#}"><i class="fa fa-sign-out"></i> {#logout#}</a>
                                 </li>
                             </ul>
                         </li>
-                        
+
                         {*
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle parent" data-toggle="dropdown">
@@ -276,7 +250,7 @@
                                     </li>
                                 {/if}
                                 <li>
-                                    <a class="link-logout" href="logout.php?token={$smarty.session.jtl_token}" title="Abmelden"><i class="fa fa-sign-out"></i> Abmelden</a>
+                                    <a class="link-logout" href="logout.php?token={$smarty.session.jtl_token}" title="{#logout#}"><i class="fa fa-sign-out"></i> {#logout#}</a>
                                 </li>
                             </ul>
                         </li>
@@ -287,3 +261,4 @@
         </nav>
         <div id="content_wrapper" class="container-fluid">
 {/if}
+

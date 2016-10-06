@@ -42,25 +42,8 @@ function gibFehlendeEingabenKontaktformular()
     if ($conf['kontakt']['kontakt_abfragen_mobil'] === 'Y') {
         $ret['mobil'] = checkeTel($_POST['mobil']);
     }
-    if (empty($_SESSION['Kunde']->kKunde) && (!isset($_SESSION['bAnti_spam_already_checked']) || $_SESSION['bAnti_spam_already_checked'] !== true) &&
-        $conf['kontakt']['kontakt_abfragen_captcha'] === 'Y' && $conf['global']['anti_spam_method'] !== 'N') {
-        // reCAPTCHA
-        if (isset($_POST['g-recaptcha-response'])) {
-            $ret['captcha'] = !validateReCaptcha($_POST['g-recaptcha-response']);
-        } else {
-            if (!$_POST['captcha']) {
-                $ret['captcha'] = 1;
-            }
-            if (!$_POST['md5'] || ($_POST['md5'] != md5(PFAD_ROOT . $_POST['captcha']))) {
-                $ret['captcha'] = 2;
-            }
-            if ($conf['global']['anti_spam_method'] == 5) { //Prüfen ob der Token und der Name korrekt sind
-                $ret['captcha'] = 2;
-                if (validToken()) {
-                    unset($ret['captcha']);
-                }
-            }
-        }
+    if ($conf['kontakt']['kontakt_abfragen_captcha'] !== 'N' && !validateCaptcha($_POST)) {
+        $ret['captcha'] = 2;
     }
 
     return $ret;
@@ -194,7 +177,7 @@ function pruefeBetreffVorhanden()
 function bearbeiteNachricht()
 {
     $betreff = (isset($_POST['subject'])) ?
-        Shop::DB()->query("SELECT * FROM tkontaktbetreff WHERE kKontaktBetreff = " . intval($_POST['subject']), 1) :
+        Shop::DB()->select('tkontaktbetreff', 'kKontaktBetreff', (int)$_POST['subject']) :
         null;
     if (!empty($betreff->kKontaktBetreff)) {
         $betreffSprache               = Shop::DB()->select('tkontaktbetreffsprache', 'kKontaktBetreff', (int)$betreff->kKontaktBetreff, 'cISOSprache', $_SESSION['cISOSprache']);
@@ -204,7 +187,7 @@ function bearbeiteNachricht()
 
         $conf     = Shop::getSettings(array(CONF_KONTAKTFORMULAR, CONF_GLOBAL));
         $from     = new stdClass();
-        $from_arr = Shop::DB()->query("SELECT * FROM temailvorlageeinstellungen WHERE kEmailvorlage = 11", 2);
+        $from_arr = Shop::DB()->selectAll('temailvorlageeinstellungen', 'kEmailvorlage', 11);
         if (!isset($mail)) {
             $mail = new stdClass();
         }

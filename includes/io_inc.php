@@ -72,7 +72,7 @@ function pushToBasket($kArtikel, $anzahl, $oEigenschaftwerte_arr = '')
 
     $GLOBALS['oSprache'] = Sprache::getInstance();
 
-    $kArtikel = intval($kArtikel);
+    $kArtikel = (int)$kArtikel;
     if ($anzahl > 0 && $kArtikel > 0) {
         $Artikel                             = new Artikel();
         $oArtikelOptionen                    = new stdClass();
@@ -141,7 +141,7 @@ function pushToBasket($kArtikel, $anzahl, $oEigenschaftwerte_arr = '')
         if (isset($_SESSION['Kunde']->kKundengruppe) && $_SESSION['Kunde']->kKundengruppe > 0) {
             $kKundengruppe = $_SESSION['Kunde']->kKundengruppe;
         }
-        $oXSelling = gibArtikelXSelling($kArtikel);
+        $oXSelling = gibArtikelXSelling($kArtikel, $Artikel->nIstVater > 0);
 
         $smarty->assign('WarenkorbVersandkostenfreiHinweis', baueVersandkostenfreiString(gibVersandkostenfreiAb($kKundengruppe), $_SESSION['Warenkorb']->gibGesamtsummeWaren(true, true)))
                ->assign('WarenkorbVersandkostenfreiLaenderHinweis', baueVersandkostenfreiLaenderString(gibVersandkostenfreiAb($kKundengruppe)))
@@ -216,7 +216,8 @@ function getBasketItems($nTyp)
                 ->assign('WarenkorbArtikelPositionenanzahl', $nAnzahl)
                 ->assign('NettoPreise', $_SESSION['Kundengruppe']->nNettoPreise)
                 ->assign('WarenkorbVersandkostenfreiHinweis', baueVersandkostenfreiString($versandkostenfreiAb, $_SESSION['Warenkorb']->gibGesamtsummeWaren(true, true)))
-                ->assign('WarenkorbVersandkostenfreiLaenderHinweis', baueVersandkostenfreiLaenderString($versandkostenfreiAb));
+                ->assign('WarenkorbVersandkostenfreiLaenderHinweis', baueVersandkostenfreiLaenderString($versandkostenfreiAb))
+                ->assign('oSpezialseiten_arr', LinkHelper::getInstance()->getSpecialPages());
 
             VersandartHelper::getShippingCosts($cLand, $cPLZ, $error);
             $oResponse->cTemplate = utf8_encode($smarty->fetch('basket/cart_dropdown_label.tpl'));

@@ -34,7 +34,7 @@
     <div class="desc clearfix">
         {if !empty($oNavigationsinfo->cBildURL) && $oNavigationsinfo->cBildURL !== 'gfx/keinBild.gif' && $oNavigationsinfo->cBildURL !== 'gfx/keinBild_kl.gif'}
           <div class="img pull-left">
-            <img src="{$oNavigationsinfo->cBildURL}" alt="{if isset($oNavigationsinfo->oKategorie->cBeschreibung)}{$oNavigationsinfo->oKategorie->cBeschreibung|strip_tags|escape:"quotes"|truncate:40}{elseif isset($oNavigationsinfo->oHersteller->cBeschreibung)}{$oNavigationsinfo->oHersteller->cBeschreibung|strip_tags|escape:"quotes"|truncate:40}{/if}" />
+            <img src="{$oNavigationsinfo->cBildURL}" alt="{if isset($oNavigationsinfo->oKategorie->cBeschreibung)}{$oNavigationsinfo->oKategorie->cBeschreibung|strip_tags|truncate:40|escape:"html"}{elseif isset($oNavigationsinfo->oHersteller->cBeschreibung)}{$oNavigationsinfo->oHersteller->cBeschreibung|strip_tags|truncate:40|escape:"html"}{/if}" />
           </div>
         {/if}
         {if $Einstellungen.navigationsfilter.kategorie_beschreibung_anzeigen === 'Y' && isset($oNavigationsinfo->oKategorie) && $oNavigationsinfo->oKategorie->cBeschreibung|strlen > 0}
@@ -143,7 +143,7 @@
             <strong>{lang key="page" section="productOverview"} {$Suchergebnisse->Seitenzahlen->AktuelleSeite}</strong> {lang key="of" section="productOverview"} {$Suchergebnisse->Seitenzahlen->MaxSeiten}
         </div>
         <div class="col-xs-8 page-total text-right">
-            {$Suchergebnisse->GesamtanzahlArtikel} {if $Suchergebnisse->GesamtanzahlArtikel>0}{lang key="products" section="global"}{else}{lang key="product" section="global"}{/if} {lang key="found" section="global"}, {lang key="showProducts" section="global"} {$Suchergebnisse->ArtikelVon} - {$Suchergebnisse->ArtikelBis}
+            {lang key="products" section="global"} {$Suchergebnisse->ArtikelVon} - {$Suchergebnisse->ArtikelBis} {lang key="of" section="productOverview"} {$Suchergebnisse->GesamtanzahlArtikel}
         </div>
     </div>
 {/if}

@@ -13,7 +13,7 @@ $oAccount->permission('EXPORT_SITEMAP_VIEW', true, true);
 
 generateSitemapXML();
 
-if ($_REQUEST['update'] === '1') {
+if (isset($_REQUEST['update']) && (int)$_REQUEST['update'] === 1) {
     header('Location: sitemapexport.php?update=1');
 } else {
     header('Cache-Control: no-cache, must-revalidate');

@@ -4,7 +4,7 @@ include_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
 
 // Debug - 1 = An / 0 = Aus
 defined('D_MODE') || define('D_MODE', 1);
-defined('D_PFAD') || define('D_PFAD', PFAD_ROOT . 'jtllogs/sofortueberweisung.log');
+defined('D_PFAD') || define('D_PFAD', PFAD_LOGFILES . 'sofortueberweisung.log');
 
 /**
  * Class SofortUeberweisung
@@ -335,9 +335,10 @@ class SofortUeberweisung extends PaymentMethod
     }
 
     /**
-     * @return boolean
      * @param Bestellung $order
+     * @param string     $paymentHash
      * @param array      $args
+     * @return bool
      */
     public function verifyNotification($order, $paymentHash, $args)
     {

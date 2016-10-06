@@ -102,6 +102,26 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         protected $kKundengruppe;
 
         /**
+         * @var int
+         */
+        protected $nSort = 0;
+
+        /**
+         * @var int|null
+         */
+        public $fAnzahl;
+
+        /**
+         * @var int|null
+         */
+        public $fAnzahlWK;
+
+        /**
+         * @var bool|null
+         */
+        public $bAktiv;
+
+        /**
          * Constructor
          *
          * @param int $kKonfigitem - primary key
@@ -127,14 +147,16 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 'bAktiv' => $this->{"bAktiv"}
             );
             $override = array(
-                'cName'           => $this->getName(),
-                'cBeschreibung'   => $this->getBeschreibung(),
-                'bAnzahl'         => $this->getMin() != $this->getMax(),
-                'fInitial'        => (float) $this->getInitial(),
-                'fMin'            => (float) $this->getMin(),
-                'fMax'            => (float) $this->getMax(),
-                'cBildPfad'       => $this->getBildPfad(),
-                'fPreis'          => array(
+                'cName'             => $this->getName(),
+                'kArtikel'          => $this->getArtikelKey(),
+                'cBeschreibung'     => $this->getBeschreibung(),
+                'cKurzBeschreibung' => $this->getKurzBeschreibung(),
+                'bAnzahl'           => $this->getMin() != $this->getMax(),
+                'fInitial'          => (float) $this->getInitial(),
+                'fMin'              => (float) $this->getMin(),
+                'fMax'              => (float) $this->getMax(),
+                'cBildPfad'         => $this->getBildPfad(),
+                'fPreis'            => array(
                     (float) $this->getPreis(),
                     (float) $this->getPreis(true)
                 ),
@@ -217,14 +239,22 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         public function save($bPrim = true)
         {
-            $oObj        = new stdClass();
-            $cMember_arr = array_keys(get_object_vars($this));
-            if (is_array($cMember_arr) && count($cMember_arr) > 0) {
-                foreach ($cMember_arr as $cMember) {
-                    $oObj->$cMember = $this->$cMember;
-                }
-            }
-            unset($oObj->kKonfigitem);
+            $oObj                    = new stdClass();
+            $oObj->kKonfiggruppe     = $this->kKonfiggruppe;
+            $oObj->kArtikel          = $this->kArtikel;
+            $oObj->nPosTyp           = $this->nPosTyp;
+            $oObj->bSelektiert       = $this->bSelektiert;
+            $oObj->bEmpfohlen        = $this->bEmpfohlen;
+            $oObj->bName             = $this->bName;
+            $oObj->bPreis            = $this->bPreis;
+            $oObj->bRabatt           = $this->bRabatt;
+            $oObj->bZuschlag         = $this->bZuschlag;
+            $oObj->bIgnoreMultiplier = $this->bIgnoreMultiplier;
+            $oObj->fMin              = $this->fMin;
+            $oObj->fMax              = $this->fMax;
+            $oObj->fInitial          = $this->fInitial;
+            $oObj->nSort             = $this->nSort;
+
             $kPrim = Shop::DB()->insert('tkonfigitem', $oObj);
             if ($kPrim > 0) {
                 return $bPrim ? $kPrim : true;
@@ -239,6 +269,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         public function update()
         {
             $_upd                    = new stdClass();
+            $_upd->kKonfiggruppe     = $this->kKonfiggruppe;
             $_upd->kArtikel          = $this->kArtikel;
             $_upd->nPosTyp           = $this->nPosTyp;
             $_upd->bSelektiert       = $this->bSelektiert;
@@ -251,6 +282,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
             $_upd->fMin              = $this->fMin;
             $_upd->fMax              = $this->fMax;
             $_upd->fInitial          = $this->fInitial;
+            $_upd->nSort             = $this->nSort;
 
             return Shop::DB()->update('tkonfigitem', 'kKonfigitem', (int)$this->kKonfigitem, $_upd);
         }
@@ -265,11 +297,16 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
 
         /**
          * @param int $kKonfiggruppe
-         * @return array
+         * @return array|bool
          */
         public static function fetchAll($kKonfiggruppe)
         {
-            $oItem_arr = Shop::DB()->query("SELECT kKonfigitem FROM tkonfigitem WHERE kKonfiggruppe = " . (int)$kKonfiggruppe . " ORDER BY nSort ASC", 2);
+            $oItem_arr = Shop::DB()->query("
+                SELECT kKonfigitem 
+                  FROM tkonfigitem 
+                  WHERE kKonfiggruppe = " . (int)$kKonfiggruppe . " 
+                  ORDER BY nSort ASC", 2
+            );
             if (!is_array($oItem_arr)) {
                 return false;
             }
@@ -333,7 +370,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          * Gets the kKonfigitem
          *
          * @access public
-         * @return integer
+         * @return int
          */
         public function getKonfigitem()
         {
@@ -352,7 +389,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          * Gets the oArtikel
          *
          * @access public
-         * @return object
+         * @return int
          */
         public function getArtikelKey()
         {
@@ -374,7 +411,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          * Gets the nPosTyp
          *
          * @access public
-         * @return integer
+         * @return int
          */
         public function getPosTyp()
         {
@@ -467,7 +504,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 }
             }
 
-            return;
+            return null;
         }
 
         /**
@@ -508,7 +545,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 if (isset($_SESSION['Waehrung'])) {
                     $waehrung = $_SESSION['Waehrung'];
                 } else {
-                    $waehrung = Shop::DB()->query("SELECT * FROM twaehrung WHERE cStandard='Y'", 1);
+                    $waehrung = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
                 }
                 $fVKPreis = $fVKPreis * floatval($waehrung->fFaktor);
             }

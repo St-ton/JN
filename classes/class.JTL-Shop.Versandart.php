@@ -109,7 +109,6 @@ class Versandart
      * Konstruktor
      *
      * @param int $kVersandart - Falls angegeben, wird der Rechnungsadresse mit angegebenem kVersandart aus der DB geholt
-     * @return Versandart
      */
     public function __construct($kVersandart = 0)
     {
@@ -136,22 +135,14 @@ class Versandart
             $this->$member = $obj->$member;
         }
         // VersandartSprache
-        $oVersandartSprache_arr = Shop::DB()->query(
-            "SELECT *
-                FROM tversandartsprache
-                WHERE kVersandart = " . (int) $this->kVersandart, 2
-        );
+        $oVersandartSprache_arr = Shop::DB()->selectAll('tversandartsprache', 'kVersandart', (int)$this->kVersandart);
         if (is_array($oVersandartSprache_arr) && count($oVersandartSprache_arr) > 0) {
             foreach ($oVersandartSprache_arr as $oVersandartSprache) {
                 $this->oVersandartSprache_arr[$oVersandartSprache->cISOSprache] = $oVersandartSprache;
             }
         }
         // Versandstaffel
-        $this->oVersandartStaffel_arr = Shop::DB()->query(
-            "SELECT *
-                FROM tversandartstaffel
-                WHERE kVersandart = " . (int) $this->kVersandart, 2
-        );
+        $this->oVersandartStaffel_arr = Shop::DB()->selectAll('tversandartstaffel', 'kVersandart', (int)$this->kVersandart);
 
         return 1;
     }
@@ -260,17 +251,17 @@ class Versandart
      */
     private static function getShippingSection($table, $key, $value)
     {
-        $value = (int) $value;
+        $value = (int)$value;
 
         if (strlen($table) > 0 && strlen($key) > 0 && $value > 0) {
-            $Objs = Shop::DB()->query("SELECT * FROM {$table} WHERE {$key} = {$value}", 2);
+            $Objs = Shop::DB()->selectAll($table, $key, $value);
 
             if (is_array($Objs)) {
                 return $Objs;
             }
         }
 
-        return array();
+        return [];
     }
 
     /**
@@ -282,7 +273,7 @@ class Versandart
      */
     private static function cloneShippingSection(array $objectArr = null, $table, $key, $value, $unsetKey = null)
     {
-        $value = (int) $value;
+        $value = (int)$value;
 
         if (is_array($objectArr) && count($objectArr) > 0 && strlen($key) > 0 && $value > 0) {
             foreach ($objectArr as $Obj) {

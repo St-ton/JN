@@ -8,9 +8,13 @@
         "ifsnop/mysqldump-php": "^2.1",
         "symfony/var-dumper": "^3.0",
         "jtlshop/shop4-systemcheck": "^1.0",
+        "smarty/smarty": "~3.1",
         "jdorn/sql-formatter": "^1.2",
         "andyftw/ssllabs-php": "^1.2",
-        "phpmyadmin/sql-parser": "^3.4"
+        "phpmyadmin/sql-parser": "^3.4",
+        "phpgangsta/googleauthenticator": "dev-master",
+        "phpmailer/phpmailer": "~5.2",
+        "jtlshop/qrcodegenerator": "dev-master"
     },
     "require_dev": {
         "phpunit/php-token-stream": "~1.2",
@@ -22,13 +26,17 @@
             "type": "package",
             "package": {
                 "name": "jtlshop/shop4-systemcheck",
-                "version": "1.0.8",
+                "version": "1.0.9",
                 "source": {
                     "url": "https://gitlab.jtl-software.de/jtlshop/shop4-systemcheck.git",
                     "type": "git",
-                    "reference": "1.0.8"
+                    "reference": "1.0.9"
                 }
             }
+        },
+        {
+            "type": "vcs",
+            "url": "https://gitlab.jtl-software.de/jtlshop/qrcodegenerator.git"
         }
     ],
     "autoload": {

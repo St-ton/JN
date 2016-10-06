@@ -3,7 +3,6 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-
 trait MigrationTableTrait
 {
     /**
@@ -12,7 +11,7 @@ trait MigrationTableTrait
     public function getLocaleSections()
     {
         $result = [];
-        $items  = Shop::DB()->executeQuery("SELECT kSprachsektion as id, cName as name FROM tsprachsektion", 2);
+        $items  = $this->fetchAll("SELECT kSprachsektion as id, cName as name FROM tsprachsektion");
         foreach ($items as $item) {
             $result[$item->name] = $item->id;
         }
@@ -26,7 +25,7 @@ trait MigrationTableTrait
     public function getLocales()
     {
         $result = [];
-        $items  = Shop::DB()->executeQuery("SELECT kSprachISO as id, cISO as name FROM tsprachiso", 2);
+        $items  = $this->fetchAll("SELECT kSprachISO as id, cISO as name FROM tsprachiso");
         foreach ($items as $item) {
             $result[$item->name] = $item->id;
         }
@@ -41,7 +40,7 @@ trait MigrationTableTrait
     public function dropColumn($table, $column)
     {
         try {
-            Shop::DB()->executeQuery("ALTER TABLE `{$table}` DROP `{$column}`", 3);
+            $this->execute("ALTER TABLE `{$table}` DROP `{$column}`");
         } catch (Exception $e) {
         }
     }
@@ -69,14 +68,14 @@ trait MigrationTableTrait
             throw new Exception("section name '{$section}' not found");
         }
 
-        Shop::DB()->executeQuery("insert into tsprachwerte set
+        $this->execute("insert into tsprachwerte set
             kSprachISO = '{$locales[$locale]}', 
             kSprachsektion = '{$sections[$section]}', 
             cName = '{$key}', 
             cWert = '{$value}', 
             cStandard = '{$value}', 
             bSystem = '{$system}' 
-            on duplicate key update cStandard=VALUES(cStandard), cWert=IF(cWert = cStandard, VALUES(cStandard), cWert)", 3);
+            on duplicate key update cWert=IF(cWert = cStandard, VALUES(cStandard), cWert), cStandard=VALUES(cStandard)");
     }
 
     /**
@@ -84,7 +83,7 @@ trait MigrationTableTrait
      */
     public function removeLocalization($key)
     {
-        Shop::DB()->executeQuery("DELETE FROM tsprachwerte WHERE cName='{$key}'", 3);
+        $this->execute("DELETE FROM tsprachwerte WHERE cName='{$key}'");
     }
 
     /**

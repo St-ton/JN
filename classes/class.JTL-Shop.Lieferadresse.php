@@ -32,8 +32,7 @@ class Lieferadresse extends Adresse
     /**
      * Konstruktor
      *
-     * @param int $kLieferadresse Falls angegeben, wird der Lieferadresse mit angegebenem kLieferadresse aus der DB geholt
-     * @return Lieferadresse
+     * @param int $kLieferadresse - Falls angegeben, wird der Lieferadresse mit angegebenem kLieferadresse aus der DB geholt
      */
     public function __construct($kLieferadresse = 0)
     {
@@ -134,6 +133,7 @@ class Lieferadresse extends Adresse
         if ($this->kLieferadresse > 0) {
             return $this->toArray();
         }
+
         return [];
     }
 }

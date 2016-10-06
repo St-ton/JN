@@ -6,11 +6,10 @@
 require_once dirname(__FILE__) . '/includes/admininclude.php';
 
 $oAccount->permission('SETTINGS_SITEMAP_VIEW', true, true);
-
+/** @global JTLSmarty $smarty */
 $Einstellungen = Shop::getSettings(array(CONF_SITEMAP));
-
-$cHinweis = '';
-$cFehler  = '';
+$cHinweis      = '';
+$cFehler       = '';
 
 setzeSprache();
 
@@ -23,7 +22,6 @@ if (isset($_POST['speichern']) && validateToken()) {
         for ($i = 0; $i < 10; $i++) {
             // Neue Werte in die DB einfuegen
             if (intval($_POST['nVon'][$i]) >= 0 && intval($_POST['nBis'][$i]) > 0) {
-                unset($oPreisspannenfilter);
                 $oPreisspannenfilter       = new stdClass();
                 $oPreisspannenfilter->nVon = intval($_POST['nVon'][$i]);
                 $oPreisspannenfilter->nBis = intval($_POST['nBis'][$i]);
@@ -34,29 +32,13 @@ if (isset($_POST['speichern']) && validateToken()) {
     }
 }
 
-$oConfig_arr = Shop::DB()->query(
-    "SELECT *
-        FROM teinstellungenconf
-        WHERE kEinstellungenSektion = " . CONF_SITEMAP . "
-        ORDER BY nSort", 2
-);
+$oConfig_arr = Shop::DB()->selectAll('teinstellungenconf', 'kEinstellungenSektion', CONF_SITEMAP, '*', 'nSort');
 $configCount = count($oConfig_arr);
 for ($i = 0; $i < $configCount; $i++) {
     if ($oConfig_arr[$i]->cInputTyp === 'selectbox') {
-        $oConfig_arr[$i]->ConfWerte = Shop::DB()->query(
-            "SELECT *
-                FROM teinstellungenconfwerte
-                WHERE kEinstellungenConf = " . (int)$oConfig_arr[$i]->kEinstellungenConf . "
-                ORDER BY nSort", 2
-        );
+        $oConfig_arr[$i]->ConfWerte = Shop::DB()->selectAll('teinstellungenconfwerte', 'kEinstellungenConf', (int)$oConfig_arr[$i]->kEinstellungenConf, '*', 'nSort');
     }
-
-    $oSetValue = Shop::DB()->query(
-        "SELECT cWert
-            FROM teinstellungen
-            WHERE kEinstellungenSektion = " . CONF_SITEMAP . "
-                AND cName = '" . $oConfig_arr[$i]->cWertName . "'", 1
-    );
+    $oSetValue = Shop::DB()->select('teinstellungen', 'kEinstellungenSektion', CONF_SITEMAP, 'cName', $oConfig_arr[$i]->cWertName);
     $oConfig_arr[$i]->gesetzterWert = (isset($oSetValue->cWert)) ? $oSetValue->cWert : null;
 }
 

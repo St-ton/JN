@@ -20,18 +20,11 @@ class MigrationManager
     protected $executedMigrations;
 
     /**
-     * @var array
-     */
-    protected $version;
-
-    /**
      * Construct
-     * @param int $version
      */
-    public function __construct($version)
+    public function __construct()
     {
         static::$migrations = [];
-        $this->version = (int) $version;
     }
 
     /**
@@ -161,7 +154,7 @@ class MigrationManager
      */
     public function setMigrations(array $migrations)
     {
-        static::$migrations[$this->version] = $migrations;
+        static::$migrations = $migrations;
 
         return $this;
     }
@@ -184,10 +177,10 @@ class MigrationManager
      */
     public function getMigrations()
     {
-        if (!array_key_exists($this->version, static::$migrations) || static::$migrations[$this->version] === null) {
+        if (!is_array(static::$migrations) || count(static::$migrations) === 0) {
             $migrations = array();
             $executed   = $this->_getExecutedMigrations();
-            $path       = MigrationHelper::getMigrationPath($this->version);
+            $path       = MigrationHelper::getMigrationPath();
 
             foreach (glob($path . '*.php') as $filePath) {
                 $baseName = basename($filePath);
@@ -224,17 +217,17 @@ class MigrationManager
             $this->setMigrations($migrations);
         }
 
-        return static::$migrations[$this->version];
+        return static::$migrations;
     }
 
     /**
-     * Get last executed migration version.
+     * Get lastest executed migration id.
      *
      * @return int
      */
     public function getCurrentId()
     {
-        $oVersion = Shop::DB()->executeQuery(sprintf("SELECT kMigration FROM %s WHERE nVersion='%s' ORDER BY kMigration DESC", 'tmigration', $this->version), 1);
+        $oVersion = Shop::DB()->executeQuery("SELECT kMigration FROM tmigration ORDER BY kMigration DESC", 1);
         if ($oVersion) {
             return $oVersion->kMigration;
         }
@@ -274,7 +267,7 @@ class MigrationManager
     protected function _getExecutedMigrations()
     {
         if ($this->executedMigrations === null) {
-            $migrations = Shop::DB()->executeQuery(sprintf("SELECT * FROM %s WHERE nVersion='%d' ORDER BY kMigration ASC", 'tmigration', $this->version), 2);
+            $migrations = Shop::DB()->executeQuery("SELECT * FROM tmigration ORDER BY kMigration ASC", 2);
             foreach ($migrations as $m) {
                 $this->executedMigrations[$m->kMigration] = new DateTime($m->dExecuted);
             }
@@ -312,8 +305,8 @@ class MigrationManager
     {
         if (strcasecmp($direction, IMigration::UP) === 0) {
             $sql = sprintf(
-                "INSERT INTO tmigration (kMigration, nVersion, dExecuted) VALUES ('%s', '%d', '%s');",
-                $migration->getId(), $this->version, $executed->format('Y-m-d H:i:s')
+                "INSERT INTO tmigration (kMigration, dExecuted) VALUES ('%s', '%s');",
+                $migration->getId(), $executed->format('Y-m-d H:i:s')
             );
             Shop::DB()->executeQuery($sql, 3);
         } else {

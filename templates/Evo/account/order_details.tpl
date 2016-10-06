@@ -1,6 +1,7 @@
 <script type="text/javascript">
-    if (top.location != self.location)
+    if (top.location !== self.location) {ldelim}
         top.location = self.location.href;
+    {rdelim}
 </script>
 
 {if !empty($cFehler)}
@@ -59,14 +60,14 @@
             <div class="panel-heading"><h3 class="panel-title">{block name="order-details-payment-title"}{lang key="paymentOptions" section="global"}: {$Bestellung->cZahlungsartName}{/block}</h3></div>
             <div class="panel-body">
             {block name="order-details-payment-body"}
-            {if $Bestellung->cStatus >= 3}
+            {if $Bestellung->cStatus >= BESTELLUNG_STATUS_BEZAHLT}
                 {if $Bestellung->dBezahldatum_de !== '00.00.0000'}
                     {lang key="payedOn" section="login"} {$Bestellung->dBezahldatum_de}
                 {else}
                     {lang key="notPayedYet" section="login"}
                 {/if}
             {else}
-                {if ($Bestellung->cStatus == 1 || $Bestellung->cStatus == 2) && (($Bestellung->Zahlungsart->cModulId !== 'za_ueberweisung_jtl' && $Bestellung->Zahlungsart->cModulId !== 'za_nachnahme_jtl' && $Bestellung->Zahlungsart->cModulId !== 'za_rechnung_jtl' && $Bestellung->Zahlungsart->cModulId !== 'za_barzahlung_jtl' && $Bestellung->Zahlungsart->cModulId !== 'za_billpay_jtl') && (isset($Bestellung->Zahlungsart->bPayAgain) && $Bestellung->Zahlungsart->bPayAgain))}
+                {if ($Bestellung->cStatus == BESTELLUNG_STATUS_OFFEN || $Bestellung->cStatus == BESTELLUNG_STATUS_IN_BEARBEITUNG) && (($Bestellung->Zahlungsart->cModulId !== 'za_ueberweisung_jtl' && $Bestellung->Zahlungsart->cModulId !== 'za_nachnahme_jtl' && $Bestellung->Zahlungsart->cModulId !== 'za_rechnung_jtl' && $Bestellung->Zahlungsart->cModulId !== 'za_barzahlung_jtl' && $Bestellung->Zahlungsart->cModulId !== 'za_billpay_jtl') && (isset($Bestellung->Zahlungsart->bPayAgain) && $Bestellung->Zahlungsart->bPayAgain))}
                     <a href="bestellab_again.php?kBestellung={$Bestellung->kBestellung}">{lang key="payNow" section="global"}</a>
                 {else}
                     {lang key="notPayedYet" section="login"}
@@ -83,12 +84,15 @@
             <div class="panel-heading"><h3 class="panel-title">{block name="order-details-shipping-title"}{lang key="shippingOptions" section="global"}: {$Bestellung->cVersandartName}{/block}</h3></div>
             <div class="panel-body">
             {block name="order-details-shipping-body"}
-            {if $Bestellung->cStatus == 4}
+            {if $Bestellung->cStatus == BESTELLUNG_STATUS_VERSANDT}
                 {lang key="shippedOn" section="login"} {$Bestellung->dVersanddatum_de}
-            {elseif $Bestellung->cStatus == 5}
+            {elseif $Bestellung->cStatus == BESTELLUNG_STATUS_TEILVERSANDT}
                 {$Bestellung->Status}
             {else}
-                {lang key="notShippedYet" section="login"}
+                <p>{lang key="notShippedYet" section="login"}</p>
+                {if $Bestellung->cStatus != BESTELLUNG_STATUS_STORNO}
+                <p><strong>{lang key="shippingTime" section="global"}</strong>: {if isset($cEstimatedDeliveryEx)}{$cEstimatedDeliveryEx}{else}{$Bestellung->cEstimatedDelivery}{/if}</p>
+                {/if}
             {/if}
             {/block}
             </div>
@@ -174,7 +178,7 @@
 
 {if $Bestellung->oLieferschein_arr|@count > 0}
 {block name="order-details-delivery-note"}
-    <h2>{if $Bestellung->cStatus == '5'}{lang key="partialShipped" section="order"}{else}{lang key="shipped" section="order"}{/if}</h2>
+    <h2>{if $Bestellung->cStatus == BESTELLUNG_STATUS_TEILVERSANDT}{lang key="partialShipped" section="order"}{else}{lang key="shipped" section="order"}{/if}</h2>
     <table class="table table-striped table-bordered">
         <thead>
             <tr>
@@ -198,7 +202,7 @@
     {foreach from=$Bestellung->oLieferschein_arr item="oLieferschein"}
         {block name="order-details-delivery-note-popup"}
         <div id="popup{$oLieferschein->getLieferschein()}" class="hidden">
-            <h1>{if $Bestellung->cStatus == '5'}{lang key="partialShipped" section="order"}{else}{lang key="shipped" section="order"}{/if}</h1>
+            <h1>{if $Bestellung->cStatus == BESTELLUNG_STATUS_TEILVERSANDT}{lang key="partialShipped" section="order"}{else}{lang key="shipped" section="order"}{/if}</h1>
             <div class="well well-sm">
                 <strong>{lang key="shippingOrder" section="order"}</strong>: {$oLieferschein->getLieferscheinNr()}<br />
                 <strong>{lang key="shippedOn" section="login"}</strong>: {$oLieferschein->getErstellt()|date_format:"%d.%m.%Y %H:%M"}<br />

@@ -16,36 +16,31 @@
         <div class="col-xs-12 col-md-8 col-md-offset-2">
             {block name="password-reset-form"}
             <div class="panel-wrap">
-                <div class="panel panel-default">
-                    <div class="panel-heading"><h3 class="panel-title">{block name="password-reset-form-title"}{lang key="customerInformation" section="global"}{/block}</h3></div>
-                    <div class="panel-body">
-                        {block name="password-reset-form-body"}
-                        <form id="passwort_vergessen" action="{get_static_route id='pass.php'}{if $bExclusive === true}?exclusive_content=1{/if}" method="post">
-                            {$jtl_token}
-                            <fieldset>
-                                <div class="form-group float-label-control required">
-                                    <label for="email" class="control-label">{lang key="emailadress" section="global"}</label>
-                                    <input
-                                    type="text"
-                                    name="email"
-                                    id="email"
-                                    class="form-control"
-                                    placeholder="{lang key="emailadress" section="global"}*"
-                                    required
-                                    />
-                                </div>
-                                <div class="form-group">
-                                    {if $bExclusive === true}
-                                      <input type="hidden" name="exclusive_content" value="1" />
-                                    {/if}
-                                    <input type="hidden" name="passwort_vergessen" value="1" />
-                                    <input type="submit" class="btn btn-primary btn-block submit submit_once" value="{lang key="createNewPassword" section="forgot password"}" />
-                                </div>
-                            </fieldset>
-                        </form>
-                        {/block}
-                    </div>
-                </div>
+                {block name="password-reset-form-body"}
+                <form id="passwort_vergessen" action="{get_static_route id='pass.php'}{if $bExclusive === true}?exclusive_content=1{/if}" method="post">
+                    {$jtl_token}
+                    <fieldset>
+                        <div class="form-group float-label-control required">
+                            <label for="email" class="control-label">{lang key="emailadress" section="global"}</label>
+                            <input
+                            type="text"
+                            name="email"
+                            id="email"
+                            class="form-control"
+                            placeholder="{lang key="emailadress" section="global"}*"
+                            required
+                            />
+                        </div>
+                        <div class="form-group">
+                            {if $bExclusive === true}
+                              <input type="hidden" name="exclusive_content" value="1" />
+                            {/if}
+                            <input type="hidden" name="passwort_vergessen" value="1" />
+                            <input type="submit" class="btn btn-primary btn-block submit submit_once" value="{lang key="createNewPassword" section="forgot password"}" />
+                        </div>
+                    </fieldset>
+                </form>
+                {/block}
             </div>
             {/block}
         </div>

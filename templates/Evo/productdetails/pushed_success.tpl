@@ -2,9 +2,9 @@
     {if !isset($Artikel) && isset($zuletztInWarenkorbGelegterArtikel)}
         {assign var=Artikel value=$zuletztInWarenkorbGelegterArtikel}
     {/if}
-    <div class="panel panel-default clearfix">
+    <div class="panel panel-default ">
         <div class="panel-body">
-            <div class="row">
+            <div class="row clearfix">
                 {assign var="showXSellingCart" value=false}
                 {if isset($Xselling->Kauf) && count($Xselling->Kauf->Artikel) > 0}
                     {assign var="showXSellingCart" value=true}

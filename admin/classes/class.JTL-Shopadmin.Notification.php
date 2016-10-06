@@ -104,7 +104,7 @@ class Notification implements IteratorAggregate, Countable
         }
 
         if ($status->hasMobileTemplateIssue()) {
-            $this->add(NotificationEntry::TYPE_WARNING, 'Template', 'Sie haben ein responsive Standard-Template.<br />Es sollte deshalb kein Template speziell f&uuml;r mobile Endger&auml;te aktiviert sein!', 'shoptemplate.php');
+            $this->add(NotificationEntry::TYPE_INFO, 'Template', 'Sie nutzen ein Full-Responsive-Template. Die Aktivierung eines separaten Mobile-Templates ist in diesem Fall nicht notwendig.', 'shoptemplate.php');
         }
 
         if ($status->hasStandardTemplateIssue()) {

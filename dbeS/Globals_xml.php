@@ -81,6 +81,7 @@ function bearbeiteUpdates($xml)
             $oSprache_arr[$i]->cStandard = $oSprache_arr[$i]->cWawiStandard;
             unset($oSprache_arr[$i]->cWawiStandard);
         }
+        Shop::Cache()->flushTags([CACHING_GROUP_LANGUAGE]);
         if (count($oSprache_arr) > 0) {
             DBDelInsert('tsprache', $oSprache_arr, 1);
         }

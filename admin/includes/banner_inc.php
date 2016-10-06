@@ -54,7 +54,7 @@ function entferneBanner($kImageMap)
 function holeBannerDateien()
 {
     $cBannerFile_arr = array();
-    if ($nHandle = opendir(PFAD_ROOT . PFAD_BILDER_BANNER)) {
+    if (($nHandle = opendir(PFAD_ROOT . PFAD_BILDER_BANNER)) !== false) {
         while (false !== ($cFile = readdir($nHandle))) {
             if ($cFile !== '.' && $cFile !== '..' && $cFile[0] !== '.') {
                 $cBannerFile_arr[] = $cFile;

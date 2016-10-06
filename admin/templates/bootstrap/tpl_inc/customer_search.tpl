@@ -12,11 +12,11 @@
 
 {if isset($cPart) && $cPart === 'customerlist'}
     {foreach $oKunde_arr as $oKunde}
-        <button class="list-group-item {if in_array($oKunde->kKunde, $kKundeSelected_arr)}active{/if}"
+        <a class="list-group-item {if in_array($oKunde->kKunde, $kKundeSelected_arr)}active{/if}"
                 onclick="selectCustomer({$oKunde->kKunde}, !isSelected({$oKunde->kKunde}))" id="customer-{$oKunde->kKunde}">
             <p class="list-group-item-text">{$oKunde->cVorname|htmlentities} ... <em>({$oKunde->cMail|htmlentities})</em></p>
             <p class="list-group-item-text">... {$oKunde->cPLZ} {$oKunde->cOrt|htmlentities}</p>
-        </button>
+        </a>
     {/foreach}
 {elseif isset($cPart) && $cPart === 'fullcustomer'}
     <p class="list-group-item-text">{$oKunde->cVorname|htmlentities} {$oKunde->cNachname|htmlentities} <em>({$oKunde->cMail|htmlentities})</em></p>

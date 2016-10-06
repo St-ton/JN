@@ -52,7 +52,7 @@ class cache_memcache implements ICachingMethod
             $this->_memcache->close();
         }
         $m = new Memcache();
-        $m->addserver($host, $port);
+        $m->addServer($host, $port);
         $this->_memcache = $m;
 
         return $this;
@@ -142,7 +142,7 @@ class cache_memcache implements ICachingMethod
      */
     public function getStats()
     {
-        $stats = $this->_memcache->getstats();
+        $stats = $this->_memcache->getStats();
 
         return array(
             'entries' => $stats['curr_items'],

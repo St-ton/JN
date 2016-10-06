@@ -27,9 +27,8 @@ if ($step === 'uebersicht') {
     $oPagination = (new Pagination('emailhist'))
         ->setItemCount($oEmailhistory->getCount())
         ->assemble();
-    $oEmailhistory_arr = $oEmailhistory->getAll(' LIMIT ' . $oPagination->getLimitSQL());
     $smarty->assign('oPagination', $oPagination)
-           ->assign('oEmailhistory_arr', $oEmailhistory_arr);
+           ->assign('oEmailhistory_arr', $oEmailhistory->getAll(' LIMIT ' . $oPagination->getLimitSQL()));
 }
 
 $smarty->assign('cHinweis', $cHinweis)

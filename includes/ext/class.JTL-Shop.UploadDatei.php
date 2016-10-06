@@ -134,7 +134,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
         /**
          * @param string $filename
          * @param string $mimetype
-         * @param bool $bEncode
+         * @param bool   $bEncode
+         * @param string $downloadName
          */
         public static function send_file_to_browser($filename, $mimetype, $bEncode = false, $downloadName)
         {

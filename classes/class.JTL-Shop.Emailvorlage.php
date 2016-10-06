@@ -436,6 +436,6 @@ class Emailvorlage
             return new self($obj->kEmailvorlage, $isPlugin);
         }
 
-        return;
+        return null;
     }
 }

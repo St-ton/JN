@@ -75,13 +75,13 @@ class WarenkorbPersPos
     public $Artikel;
 
     /**
-     * @param int    $kArtikel
-     * @param string $cArtikelName
-     * @param float  $fAnzahl
-     * @param int    $kWarenkorbPers
-     * @param string $cUnique
-     * @param int    $kKonfigitem
-     * @param int    $nPosTyp
+     * @param int        $kArtikel
+     * @param string     $cArtikelName
+     * @param float      $fAnzahl
+     * @param int        $kWarenkorbPers
+     * @param string     $cUnique
+     * @param int        $kKonfigitem
+     * @param int|string $nPosTyp
      */
     public function __construct($kArtikel, $cArtikelName, $fAnzahl, $kWarenkorbPers, $cUnique = '', $kKonfigitem = 0, $nPosTyp = C_WARENKORBPOS_TYP_ARTIKEL)
     {

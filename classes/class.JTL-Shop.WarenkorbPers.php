@@ -49,13 +49,13 @@ class WarenkorbPers
     /**
      * fügt eine Position zur WarenkorbPers hinzu
      *
-     * @param int    $kArtikel
-     * @param string $cArtikelName
-     * @param array  $oEigenschaftwerte_arr
-     * @param float  $fAnzahl
-     * @param string $cUnique
-     * @param int    $kKonfigitem
-     * @param int    $nPosTyp
+     * @param int        $kArtikel
+     * @param string     $cArtikelName
+     * @param array      $oEigenschaftwerte_arr
+     * @param float      $fAnzahl
+     * @param string     $cUnique
+     * @param int        $kKonfigitem
+     * @param int|string $nPosTyp
      * @return $this
      */
     public function fuegeEin($kArtikel, $cArtikelName, $oEigenschaftwerte_arr, $fAnzahl, $cUnique = '', $kKonfigitem = 0, $nPosTyp = C_WARENKORBPOS_TYP_ARTIKEL)

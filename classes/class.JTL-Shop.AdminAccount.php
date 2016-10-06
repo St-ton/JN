@@ -324,14 +324,16 @@ class AdminAccount
         return false;
     }
 
+    /**
+     * @return array|int
+     */
     public function favorites()
     {
         if (!$this->logged()) {
             return [];
         }
 
-        return AdminFavorite::fetchAll(
-            $_SESSION['AdminAccount']->kAdminlogin);
+        return AdminFavorite::fetchAll($_SESSION['AdminAccount']->kAdminlogin);
     }
 
     /**

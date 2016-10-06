@@ -53,7 +53,6 @@ class EigenschaftWert
      * Konstruktor
      *
      * @param int $kEigenschaftWert - Falls angegeben, wird der EigenschaftWert mit angegebenem kEigenschaftWert aus der DB geholt
-     * @return EigenschaftWert
      */
     public function __construct($kEigenschaftWert = 0)
     {

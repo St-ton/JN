@@ -152,7 +152,7 @@ class Emailhistory
 
     /**
      * @param string $cSqlLimit
-     * @return array|null
+     * @return array
      */
     public function getAll($cSqlLimit = '')
     {
@@ -169,7 +169,7 @@ class Emailhistory
             return $oEmailhistory_arr;
         }
 
-        return;
+        return [];
     }
 
     /**

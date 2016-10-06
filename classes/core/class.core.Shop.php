@@ -502,6 +502,11 @@ final class Shop
         return EventDispatcher::getInstance();
     }
 
+    /**
+     * @param string $eventName
+     * @param array  $arguments
+     * @return array|null
+     */
     public static function fire($eventName, array $arguments = [])
     {
         return self::Event()->fire($eventName, $arguments);

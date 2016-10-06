@@ -394,7 +394,6 @@ class Updater
     }
 
     /**
-     * @param int $version
      * @throws Exception
      */
     protected function executeMigrations()

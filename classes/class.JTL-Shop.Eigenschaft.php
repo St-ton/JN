@@ -40,7 +40,6 @@ class Eigenschaft
      * Konstruktor
      *
      * @param int $kEigenschaft - Falls angegeben, wird der Eigenschaft mit angegebenem kEigenschaft aus der DB geholt
-     * @return Eigenschaft
      */
     public function __construct($kEigenschaft = 0)
     {

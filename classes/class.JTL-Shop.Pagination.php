@@ -393,7 +393,7 @@ class Pagination
     }
 
     /**
-     * @return string - just the column name to sort by
+     * @return string - the column name to sort by
      */
     public function getSortByCol()
     {
@@ -401,7 +401,8 @@ class Pagination
     }
 
     /**
-     * @return array
+     * @param int $nIndex
+     * @return mixed
      */
     public function getItemsPerPageOption($nIndex)
     {

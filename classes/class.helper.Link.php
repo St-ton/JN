@@ -134,7 +134,7 @@ class LinkHelper
             }
         }
 
-        return;
+        return null;
     }
 
     /**
@@ -157,7 +157,7 @@ class LinkHelper
             }
         }
 
-        return;
+        return null;
     }
 
     /**
@@ -183,13 +183,13 @@ class LinkHelper
     /**
      * @param int  $kParentLink
      * @param bool $bAssoc
-     * @return array|null
+     * @return array
      */
     public function getMyLevel($kParentLink, $bAssoc = false)
     {
-        $kParentLink = (int) $kParentLink;
+        $kParentLink = (int)$kParentLink;
+        $oLink_arr   = [];
         if ($kParentLink > 0) {
-            $oLink_arr   = array();
             $cMember_arr = array_keys(get_object_vars($this->linkGroups));
             foreach ($cMember_arr as $cLinkGruppe) {
                 if (is_array($this->linkGroups->$cLinkGruppe->Links)) {
@@ -204,11 +204,9 @@ class LinkHelper
                     }
                 }
             }
-
-            return $oLink_arr;
         }
 
-        return;
+        return $oLink_arr;
     }
 
     /**

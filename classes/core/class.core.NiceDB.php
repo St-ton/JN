@@ -296,7 +296,7 @@ class NiceDB
                 Shop::dbg($stmt, false, 'Exception when trying to analyze query: ');
             }
 
-            return;
+            return $this;
         }
         if ($backtrace !== null) {
             $strippedBacktrace = array();
@@ -751,14 +751,14 @@ class NiceDB
                 Shop::dbg(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS), false, 'Backtrace:');
             }
 
-            return;
+            return null;
         }
         if (!$res) {
             if ($this->logErrors && $this->logfileName) {
                 $this->writeLog($stmt . "\n" . $this->pdo->errorCode() . ': ' . $this->pdo->errorInfo());
             }
 
-            return;
+            return null;
         }
         $ret = $s->fetchObject();
         if ($this->debug === true || $this->collectData === true) {

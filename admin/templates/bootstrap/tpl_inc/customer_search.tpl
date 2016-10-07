@@ -88,6 +88,9 @@
                 $('#customer-' + kKunde).removeClass('active');
                 selectedCustomers.splice(selectedCustomers.indexOf(kKunde), 1);
             }
+            if ($('#customer-search-input').val() === '') {
+                $('#customer-list-title').html('Alle ausgew&auml;hlten Kunden: ' + selectedCustomers.length);
+            }
         }
 
         function selectAllShownCustomers (selected)
@@ -95,6 +98,12 @@
             shownCustomers.forEach(function (kKunde) {
                 selectCustomer(kKunde, selected);
             });
+        }
+
+        function onResetSearchInput ()
+        {
+            $('#customer-search-input').val('');
+            onChangeCustomerSearchInput('#customer-search-input');
         }
     </script>
     <div class="modal fade" id="customer-search-modal" tabindex="-1">
@@ -107,13 +116,18 @@
                     <h4 class="modal-title">Kunden ausw&auml;hlen</h4>
                 </div>
                 <div class="modal-body">
-                    <div class="form-group">
+                    <div class="input-group">
                         <label for="customer-search-input" class="sr-only">
                             Suche nach Vornamen, E-Mail-Adresse, Wohnort oder Postleitzahl:
                         </label>
                         <input type="text" class="form-control" id="customer-search-input"
                                placeholder="Suche nach Vornamen, E-Mail-Adresse, Wohnort oder Postleitzahl"
                                onkeyup="onChangeCustomerSearchInput(this)" autocomplete="off">
+                        <span class="input-group-btn">
+                            <button type="button" class="btn btn-default" onclick="onResetSearchInput();">
+                                <i class="fa fa-eraser"></i>
+                            </button>
+                        </span>
                     </div>
                     <h5 id="customer-list-title">Suchergebnisse</h5>
                     <div class="list-group" id="customer-search-result-list" style="max-height:500px;overflow:auto;"></div>

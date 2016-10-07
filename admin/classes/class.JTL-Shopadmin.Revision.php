@@ -90,6 +90,9 @@ class Revision
      */
     public function addRevision($type, $key, $secondary = false, $author = null, $utf8 = true)
     {
+        if (MAX_REVISIONS <= 0) {
+            return false;
+        }
         $key = (int)$key;
         if (($mapping = $this->getMapping($type)) !== null && !empty($key)) {
             if ($author === null) {

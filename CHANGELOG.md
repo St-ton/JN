@@ -16,24 +16,34 @@
 * Child-Templates erlauben Überschreiben von Parent-Themes mit override-Attribut (#200)
 * Eigene Datasources für Plugin-Optionen (#92)
 * Optionale Einstellung für "Kunden kauften auch": Vaterartikel statt wie bisher Kindartikel anzeigen (#171) 
+* Email-Vorlagen: Option "Muster-Widerrufsformular anhängen" implementieren (#422)
+* sitemap.xml nach Export automatisch an Google und Bing übermitteln (einstellbar in Sitemap-Optionen) (#470)
 * Neuer Hook HOOK_GET_NEWS in gibNews()
 * Neuer Hook HOOK_STOCK_FILTER in gibLagerFilter()
 * Neue Hooks HOOK_FILTER_INC_GIBARTIKELKEYS_SQL und HOOK_FILTER_INC_BAUFILTERSQL (#310)
 * Neuer Hook HOOK_BOXEN_HOME bei Erstellung der Startseiten-Boxen (#371)
+* Neuer Hook HOOK_QUICKSYNC_XML_BEARBEITEINSERT in dbeS/QuickSync_xml.php (#496)
 
-### Weitere Verbesserungen
+### Weitere Verbesserungen und Änderungen
 * Update: Smarty auf Version 3.1.30 aktualisiert
 * Update: FontAwesome auf Version 4.6.3 und jQuery auf Version 1.12.4 aktualisiert (#593)
 * Benutzerfreundliches Layout in Mein-Konto
-* Kuponverwaltung hinsichtlich Massenerstellung überarbeitet, Validierung verbessert (#275)
+* Kuponverwaltung hinsichtlich Massenerstellung überarbeitet, Validierung verbessert (#275, #277)
 * Backend: Überarbeitetes Layout. Warnungen und Informationen werden nun bei Klick auf ein Benachrichtigungs-Icon im Header gezeigt (#38)
 * Objektcache Speicheroptimierungen
+* SQL-Performanceoptimierungen für Prüfung von Varkombi-Aufpreisen (#87)
+* Exportformate Speicheroptimierungen (#327, #165)
+* Checkboxverwaltung: Verfügbarkeitsanfragen und Frage zum Produkt unterstützen (#256)
 * Bilder für Newskategorien können im Backend angegeben werden 
 * Links mit Typ Spezialseite können dupliziert werden und in mehreren Linkgruppen gleichzeitig vorhanden sein (#159)
 * Prioritäten für Plugin-Hooks (#45)
 * Anzeige von Boxen in nicht-sichtbaren Positionen im Backend mitsamt Warnhinweis(#252)
 * NiceDB::selectAll() zur Abfrage mehrere Spalten als Prepared Statement implementiert (#334)
 * Artikeldetails Bildergalerie nun auch in XS-Ansicht blätterbar 
+* Variationsauswahl bei aktiver Warenkorbmatrix am Vaterartikel ausblenden
+* Evo Druckansicht verbessert (#319)
+* Bestellabschluss: Lieferzeitangabe nach oben in die Versandart-Box verschieben
+* Smooth Scrolling bei relativen Ankerlinks (#147)
 * HOOK_INDEX_SEO_404 wird nun auch ausgeführt, wenn cSeo nicht leer ist
 * HOOK_WARENKORB_PAGE_KUPONANNEHMEN_PLAUSI wird wieder früher ausgeführt und enthält Parameter  (#234)
 
@@ -46,12 +56,9 @@
 * Plugin-Sprachvariablen lassen sich nicht aktualisieren, wenn zwischenzeitlich neue Sprache im Webshop aktiviert wurde
 * Speichern von Newsbeiträgen in deaktivierter Newskategorie schlägt fehl bzw. erzeugt Duplikat des Beitrags
 * Varkombis können in Fremdsprachen bei fehlender Übersetzung Sprachvariablen nicht nachgeladen werden
-* In Zukunft startende Sonderpreise werden bei aktiviertem Objektcache nicht berücksichtig
 * TopArtikel werden bei aktiviertem Objektcache nicht aktualisiert 
 * Ändern von Bildeinstellungen invalidiert Objektcache nicht 
 * Varkombi Dropdown-Auswahl wird bei Auswahl Nachladen der Kombination zurückgesetzt
-* PayPal-Plugin (v1.05): Gratisgeschenke werden nicht als Item gelistet
-* PayPal-Plugin (v1.05): TLS-Check liefert teilweise falsche Ergebnisse, da Version nicht festgelegt
 * Fehlerhafte Kategorie-/Merkmalfilter-URLs erzeugen keinen 404-Statuscode
 * Bei Klick auf Sortierung in Freischaltzentrale unter Livesuche erfolgt Weiterleitung zum Reiter "Bewertungen" (#100)
 * Aufgabenplaner: Bei Klick auf "Zuletzt fertiggestellt" verschwinden Buttons (#98)
@@ -68,7 +75,20 @@
 * Prozent-Kupon-Preis in Standardwährung ändert sich abhängig von der Währung beim Einlösen (#366)
 * Bestellkommentar wird nicht zur Wawi übertragen, wenn "Zahlung vor Bestellabschluss" auf "Ja" steht (#356)
 * Im Wartungsmodus, wird man in kürzester Zeit nach dem Einloggen im Frontend wieder ausgeloggt (#314)
-
+* Zahlungsart > Einstellung maximaler Bestellwert ohne Funktion (#346)
+* Exportformate: Zeichenmaskierung fehlerhaft (#481)
+* Neukundenkupon verfällt immer nach der Erstanmeldung (#215, #407)
+* Quicksync invalidiert Objektcache nicht korrekt, wenn Varkombi-Preis geändert wird (#447)
+* Preisalarmbox Darstellungsfehler (#451)
+* Bewertungs-Pagination springt nicht in den korrekten Tab und nutzt die SEO-URL des Artikels nicht (#472)
+* Box Bestseller Startseite: Es werden alle gekauften Produkte angezeigt (#199)
+* Backend: Weiterleitungen Sortierung nach Aufrufen funktioniert nicht (#368)
+* Konfiguratorgruppenkomponentenbeschreibung wird nicht angezeigt (#391)
+* Varkombis ohne Variationswert Übersetzung sind nicht in den Warenkorb legbar (#389)
+* Mehrere Tracking IDs in Versandbestätigungs-E-Mail darstellen (#389)
+* Sonderpreise können durch Wawi-Abgleich gelöscht werden (#305)
+* Anrede in "Mein Konto" nicht an Sprache angepasst (#514)
+* In Zukunft startende Sonderpreise werden bei aktiviertem Objektcache nicht berücksichtigt (#123)
 
 ## [4.04.1] - 2016-07-19
 * Neues Premium-Plugin: Login und Bezahlen mit Amazon (von Solution360)

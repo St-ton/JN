@@ -15,6 +15,7 @@
 * Weitere Felder für Backend-Benutzer (neues Plugin) (#21)
 * Child-Templates erlauben Überschreiben von Parent-Themes mit override-Attribut (#200)
 * Eigene Datasources für Plugin-Optionen (#92)
+* Optionale Einstellung für "Kunden kauften auch": Vaterartikel statt wie bisher Kindartikel anzeigen (#171) 
 * Neuer Hook HOOK_GET_NEWS in gibNews()
 * Neuer Hook HOOK_STOCK_FILTER in gibLagerFilter()
 * Neue Hooks HOOK_FILTER_INC_GIBARTIKELKEYS_SQL und HOOK_FILTER_INC_BAUFILTERSQL (#310)

@@ -659,7 +659,6 @@ $xajax->registerFunction('saveBannerAreas');
 $xajax->registerFunction('getContentTemplate');
 $xajax->registerFunction('truncateJtllog');
 $xajax->registerFunction('getCustomerList');
-$xajax->registerFunction('decodeCustomer');
 
 $xajax->processRequest();
 header('Content-Type:text/html;charset=' . JTL_CHARSET . ';');

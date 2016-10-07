@@ -86,7 +86,7 @@
                 selectedCustomers.push(kKunde);
             } else {
                 $('#customer-' + kKunde).removeClass('active');
-                selectedCustomers.splice(selectedCustomers.indexOf(kKunde), 1);
+                removeElementFromArray (selectedCustomers, kKunde);
             }
             if ($('#customer-search-input').val() === '') {
                 $('#customer-list-title').html('Alle ausgew&auml;hlten Kunden: ' + selectedCustomers.length);
@@ -104,6 +104,14 @@
         {
             $('#customer-search-input').val('');
             onChangeCustomerSearchInput('#customer-search-input');
+        }
+
+        function removeElementFromArray (a, e)
+        {
+            var i = a.indexOf(e);
+            if (i !== -1) {
+                a.splice(i, 1);
+            }
         }
     </script>
     <div class="modal fade" id="customer-search-modal" tabindex="-1">
@@ -154,7 +162,7 @@
                         <button type="button" class="btn btn-primary" data-dismiss="modal"
                                 id="save-customer-selection">
                             <i class="fa fa-save"></i>
-                            {#save#}
+                            {#apply#}
                         </button>
                     </div>
                 </div>

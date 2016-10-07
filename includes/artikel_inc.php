@@ -23,8 +23,8 @@ function gibArtikelXSelling($kArtikel, $isParent = null)
         $cSQLLager          = gibLagerfilter();
         $xsell              = Shop::DB()->query(
             "SELECT txsell.* FROM txsell, tartikel
-                WHERE txsell.kXSellArtikel = tartikel.kArtikel " . $cSQLLager . "
-                    AND txsell.kArtikel = " . $kArtikel . "
+                WHERE txsell.kXSellArtikel = tartikel.kArtikel {$cSQLLager}
+                    AND txsell.kArtikel = {$kArtikel}
                 ORDER BY tartikel.cName", 2
         );
         if (count($xsell) > 0) {
@@ -67,33 +67,50 @@ function gibArtikelXSelling($kArtikel, $isParent = null)
             $isParent = ArtikelHelper::isParent($kArtikel);
         }
         if ($isParent === true) {
-            $inArray = array($kArtikel);
-            $tmps    = ArtikelHelper::getChildren($kArtikel);
-            foreach ($tmps as $_article) {
-                $inArray[] = (int)$_article->kArtikel;
+            if (isset($config['artikeldetails_xselling_kauf_parent']) && $config['artikeldetails_xselling_kauf_parent'] === 'Y') {
+                $selectorXSellArtikel     = 'IF(tartikel.kVaterArtikel = 0, txsellkauf.kXSellArtikel, tartikel.kVaterArtikel)';
+                $filterXSellParentArtikel = 'IF(tartikel.kVaterArtikel = 0, txsellkauf.kXSellArtikel, tartikel.kVaterArtikel)';
+            } else {
+                $selectorXSellArtikel     = 'txsellkauf.kXSellArtikel';
+                $filterXSellParentArtikel = 'tartikel.kVaterArtikel';
             }
             $xsell = Shop::DB()->query(
-                "SELECT *
+                "SELECT {$kArtikel} AS kArtikel,
+                        {$selectorXSellArtikel} AS kXSellArtikel,
+                        SUM(txsellkauf.nAnzahl) nAnzahl
                     FROM txsellkauf
-                    WHERE kArtikel IN (" . implode(', ', $inArray) . ")
-                    GROUP BY kXSellArtikel
-                    ORDER BY nAnzahl DESC, rand()
+                    JOIN tartikel ON tartikel.kArtikel = txsellkauf.kXSellArtikel
+                    WHERE (txsellkauf.kArtikel IN (
+                            SELECT tartikel.kArtikel
+                            FROM tartikel
+                            WHERE tartikel.kVaterArtikel = {$kArtikel}
+                        ) OR txsellkauf.kArtikel = {$kArtikel})
+                        AND {$filterXSellParentArtikel} != {$kArtikel}
+                    GROUP BY 1, 2
+                    ORDER BY SUM(txsellkauf.nAnzahl) DESC, rand()
                     LIMIT {$anzahl}", 2
             );
-            $xsellCount = (is_array($xsell)) ? count($xsell) : 0;
-            if ($xsellCount > 0 && count($tmps) > 0) {
-                $children = array();
-                foreach ($tmps as $child) {
-                    $children[] = $child->kArtikel;
-                }
-                for ($i = 0; $i < $xsellCount; $i++) {
-                    if (in_array($xsell[$i]->kArtikel, $children) && in_array($xsell[$i]->kXSellArtikel, $children)) {
-                        unset($xsell[$i]);
-                    }
-                }
-            }
         } else {
-            $xsell = Shop::DB()->selectAll('txsellkauf', 'kArtikel', $kArtikel, '*', 'nAnzahl DESC, rand()', $anzahl);
+            if (isset($config['artikeldetails_xselling_kauf_parent']) && $config['artikeldetails_xselling_kauf_parent'] === 'Y') {
+                $xsell = Shop::DB()->query(
+                    "SELECT txsellkauf.kArtikel,
+                            IF(tartikel.kVaterArtikel = 0, txsellkauf.kXSellArtikel, tartikel.kVaterArtikel) AS kXSellArtikel,
+                            SUM(txsellkauf.nAnzahl) nAnzahl
+                        FROM txsellkauf
+                        JOIN tartikel ON tartikel.kArtikel = txsellkauf.kXSellArtikel
+                        WHERE txsellkauf.kArtikel = {$kArtikel}
+                            AND (tartikel.kVaterArtikel != (
+                                SELECT tartikel.kVaterArtikel
+                                FROM tartikel
+                                WHERE tartikel.kArtikel = {$kArtikel}
+                            ) OR tartikel.kVaterArtikel = 0)
+                        GROUP BY 1, 2
+                        ORDER BY SUM(txsellkauf.nAnzahl) DESC, rand()
+                        LIMIT {$anzahl}", 2
+                );
+            } else {
+                $xsell = Shop::DB()->selectAll('txsellkauf', 'kArtikel', $kArtikel, '*', 'nAnzahl DESC, rand()', $anzahl);
+            }
         }
         $xsellCount2 = (is_array($xsell)) ? count($xsell) : 0;
         if ($xsellCount2 > 0) {
@@ -477,8 +494,8 @@ function floodSchutzBenachrichtigung($min)
     if (!$min) {
         return false;
     }
-    $history = Shop::DB()->query('
-        SELECT kVerfuegbarkeitsbenachrichtigung
+    $history = Shop::DB()->query(
+        'SELECT kVerfuegbarkeitsbenachrichtigung
             FROM tverfuegbarkeitsbenachrichtigung
             WHERE cIP = "' . gibIP() . '"
             AND date_sub(now(), interval ' . $min . ' minute) < dErstellt', 1
@@ -594,12 +611,19 @@ function gibNichtErlaubteEigenschaftswerte($nEigenschaftWert)
 {
     $nEigenschaftWert = (int)$nEigenschaftWert;
     if ($nEigenschaftWert) {
-        $arNichtErlaubteEigenschaftswerte  = Shop::DB()->selectAll('teigenschaftwertabhaengigkeit', 'kEigenschaftWert',
-            $nEigenschaftWert, 'kEigenschaftWertZiel AS EigenschaftWert');
-        $arNichtErlaubteEigenschaftswerte2 = Shop::DB()->selectAll('teigenschaftwertabhaengigkeit',
-            'kEigenschaftWertZiel', $nEigenschaftWert, 'kEigenschaftWert AS EigenschaftWert');
-        $arNichtErlaubteEigenschaftswerte  = array_merge($arNichtErlaubteEigenschaftswerte,
-            $arNichtErlaubteEigenschaftswerte2);
+        $arNichtErlaubteEigenschaftswerte  = Shop::DB()->selectAll(
+            'teigenschaftwertabhaengigkeit',
+            'kEigenschaftWert',
+            $nEigenschaftWert,
+            'kEigenschaftWertZiel AS EigenschaftWert'
+        );
+        $arNichtErlaubteEigenschaftswerte2 = Shop::DB()->selectAll(
+            'teigenschaftwertabhaengigkeit',
+            'kEigenschaftWertZiel',
+            $nEigenschaftWert,
+            'kEigenschaftWert AS EigenschaftWert'
+        );
+        $arNichtErlaubteEigenschaftswerte  = array_merge($arNichtErlaubteEigenschaftswerte, $arNichtErlaubteEigenschaftswerte2);
 
         return $arNichtErlaubteEigenschaftswerte;
     }
@@ -627,9 +651,7 @@ function baueArtikelhinweise($cRedirectParam = null, $bRenew = false, $oArtikel 
         $GLOBALS['PositiveFeedback'] = array();
     }
     if ($cRedirectParam) {
-        $hin_arr = (is_array($cRedirectParam)) ?
-            $cRedirectParam :
-            explode(',', $cRedirectParam);
+        $hin_arr = is_array($cRedirectParam) ? $cRedirectParam : explode(',', $cRedirectParam);
         $hin_arr = array_unique($hin_arr);
 
         foreach ($hin_arr as $hin) {
@@ -739,7 +761,7 @@ function bearbeiteProdukttags($AktuellerArtikel)
                     }
                     // Prüfe ob der Tag bereits gemappt wurde
                     $tagmapping_objTMP = Shop::DB()->select('ttagmapping', 'kSprache', (int)Shop::$kSprache, 'cName', Shop::DB()->escape($tag));
-                    $tagmapping_obj = $tagmapping_objTMP;
+                    $tagmapping_obj    = $tagmapping_objTMP;
                     if (isset($tagmapping_obj->cNameNeu) && strlen($tagmapping_obj->cNameNeu) > 0) {
                         $tag = $tagmapping_obj->cNameNeu;
                     }
@@ -799,9 +821,7 @@ function bearbeiteProdukttags($AktuellerArtikel)
             header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true) . '?a=' . (int)$_POST['a'] . '&r=' . R_LOGIN_TAG, true, 303);
             exit();
         } else {
-            $url = (!empty($AktuellerArtikel->cURLFull)) ?
-                ($AktuellerArtikel->cURLFull . '?') :
-                (Shop::getURL() . '/?a=' . (int)$_POST['a'] . '&');
+            $url = (!empty($AktuellerArtikel->cURLFull)) ? ($AktuellerArtikel->cURLFull . '?') : (Shop::getURL() . '/?a=' . (int)$_POST['a'] . '&');
             header('Location: ' . $url . 'r=' . R_EMPTY_TAG, true, 303);
             exit();
         }
@@ -931,7 +951,6 @@ function mappingFehlerCode($cCode, $fGuthaben = 0.0)
             break;
         default:
             $error = '';
-
     }
     executeHook(HOOK_ARTIKEL_INC_BEWERTUNGHINWEISSWITCH, array('error' => $error));
 
@@ -1014,7 +1033,7 @@ function holeAehnlicheArtikel($kArtikel)
         if (intval($conf['artikeldetails']['artikeldetails_aehnlicheartikel_anzahl']) > 0) {
             $cLimit = " LIMIT " . (int)$conf['artikeldetails']['artikeldetails_aehnlicheartikel_anzahl'];
         }
-
+        $lagerFilter         = gibLagerfilter();
         $oArtikelMerkmal_arr = Shop::DB()->query(
             "SELECT tartikelmerkmal.kArtikel, tartikel.kVaterArtikel
                 FROM
@@ -1032,8 +1051,8 @@ function holeAehnlicheArtikel($kArtikel)
                     AND tartikel.kVaterArtikel != " . $kArtikel . "
                     AND (tartikel.nIstVater = 1 OR tartikel.kEigenschaftKombi = 0)
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                    " . gibLagerfilter() . "
-                    " . $cSQLXSeller . "
+                    {$lagerFilter}
+                    {$cSQLXSeller}
                 GROUP BY tartikelmerkmal.kArtikel
                 ORDER BY COUNT(*) DESC
                 " . $cLimit, 2
@@ -1069,8 +1088,8 @@ function holeAehnlicheArtikel($kArtikel)
                     JOIN tartikel ON tartikel.kArtikel = tsuchcachetreffer.kArtikel
                         AND tartikel.kVaterArtikel != " . $kArtikel . "
                     WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                        " . gibLagerfilter() . "
-                        " . $cSQLXSeller . "
+                        {$lagerFilter}
+                        {$cSQLXSeller}
                     GROUP BY tsuchcachetreffer.kArtikel
                     ORDER BY COUNT(*) DESC
                     " . $cLimit, 2
@@ -1105,8 +1124,8 @@ function holeAehnlicheArtikel($kArtikel)
                         JOIN tartikel ON tartikel.kArtikel = ttagartikel.kArtikel
                             AND tartikel.kVaterArtikel != " . $kArtikel . "
                         WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                            " . gibLagerfilter() . "
-                            " . $cSQLXSeller . "
+                            {$lagerFilter}
+                            {$cSQLXSeller}
                         GROUP BY ttagartikel.kArtikel
                         ORDER BY COUNT(*) DESC
                         " . $cLimit, 2
@@ -1218,7 +1237,7 @@ function buildConfig($kArtikel, $fAnzahl, $nVariation_arr, $nKonfiggruppe_arr, $
     $oKonfig->oKonfig_arr = $oArtikel->oKonfig_arr;
 
     foreach ($nKonfiggruppe_arr as $i => $nKonfiggruppe) {
-        $nKonfiggruppe_arr[$i] = (array) $nKonfiggruppe;
+        $nKonfiggruppe_arr[$i] = (array)$nKonfiggruppe;
     }
     /** @var Konfiggruppe $oKonfiggruppe */
     foreach ($oKonfig->oKonfig_arr as $i => &$oKonfiggruppe) {
@@ -1229,8 +1248,7 @@ function buildConfig($kArtikel, $fAnzahl, $nVariation_arr, $nKonfiggruppe_arr, $
             /** @var Konfigitem $oKonfigitem */
             $kKonfigitem          = $oKonfigitem->getKonfigitem();
             $oKonfigitem->fAnzahl = floatval(
-                isset($nKonfiggruppeAnzahl_arr[$oKonfigitem->getKonfiggruppe()]) ?
-                    $nKonfiggruppeAnzahl_arr[$oKonfigitem->getKonfiggruppe()] : $oKonfigitem->getInitial()
+                isset($nKonfiggruppeAnzahl_arr[$oKonfigitem->getKonfiggruppe()]) ? $nKonfiggruppeAnzahl_arr[$oKonfigitem->getKonfiggruppe()] : $oKonfigitem->getInitial()
             );
             if ($oKonfigitem->fAnzahl > $oKonfigitem->getMax() || $oKonfigitem->fAnzahl < $oKonfigitem->getMin()) {
                 $oKonfigitem->fAnzahl = $oKonfigitem->getInitial();

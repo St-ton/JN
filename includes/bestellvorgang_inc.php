@@ -891,10 +891,10 @@ function plausiNeukundenKupon()
                     kuponAnnehmen($NeukundenKupon);
                     if (empty($verwendet)) {
                         $Options = array(
-                            'Kupon' => $NeukundenKupon->kKupon,
-                            'Email' => $_SESSION['Kunde']->cMail,
+                            'Kupon'     => $NeukundenKupon->kKupon,
+                            'Email'     => $_SESSION['Kunde']->cMail,
                             'DatenHash' => $hash,
-                            'Erstellt' => 'now()',
+                            'Erstellt'  => 'now()',
                             'Verwendet' => 'N'
                         );
                         $Kuponneukunde = new Kuponneukunde();

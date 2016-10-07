@@ -1,59 +1,75 @@
 # JTL-Shop Changelog
 
 
-## [unreleased]
-* Bugfix: Bearbeiten von Herstellern invalidiert Objektcache für Artikel nicht
-* Bugfix: Newsbeiträge aus deaktivierten Kategorien werden auf der Startseite angezeigt
-* Bugfix: Globale Variable $AktuelleSeite zeigt bei Newsdetails falschen Typ an
-* Verbesserung: Neuer Hook 220 HOOK_GET_NEWS in gibNews()
-* Verbesserung: Neuer Hook 221 HOOK_STOCK_FILTER in gibLagerFilter()
-* Bugfix: Newskategorien-Box verschwindet bei aktiviertem Objektcache
-* Bugfix: URL_SHOP in Exportformaten nicht definiert
-* Verbesserung: DB-Wartungsfunktionen in Backend integriert
-* Verbesserung: Bilder für Newskategorien können im Backend angegeben werden 
-* Bugfix: Plugin-Sprachvariablen lassen sich nicht aktualisieren, wenn zwischenzeitlich neue Sprache im Webshop aktiviert wurde
-* Bugfix: Speichern von Newsbeiträgen in deaktivierter Newskategorie schlägt fehl bzw. erzeugt Duplikat des Beitrags
-* Bugfix: Varkombis können in Fremdsprachen bei fehlender Übersetzung Sprachvariablen nicht nachgeladen werden
-* Bugfix: In Zukunft startende Sonderpreise werden bei aktiviertem Objektcache nicht berücksichtig
-* Verbesserung: Speicheroptimierung bei aktiviertem Objektcache und gleichzeitiger Verwendung der Warenkorbmatrix
-* Verbesserung: Speicheroptimierung bei aktiviertem Objektcache und TopArtikeln/Bestsellern/Neuen Artikeln
-* Bugfix: TopArtikel werden bei aktiviertem Objektcache nicht aktualisiert 
-* Bugfix: Ändern von Bildeinstellungen invalidiert Objektcache nicht 
-* Bugfix: Varkombi Dropdown-Auswahl wird bei Auswahl Nachladen der Kombination zurückgesetzt
-* Bugfix: PayPal-Plugin (v1.05): Gratisgeschenke werden nicht als Item gelistet
-* Bugfix: PayPal-Plugin (v1.05): TLS-Check liefert teilweise falsche Ergebnisse, da Version nicht festgelegt
-* Bugfix: Fehlerhafte Kategorie-/Merkmalfilter-URLs erzeugen keinen 404-Statuscode
-* Bugfix: Bei Klick auf Sortierung in Freischaltzentrale unter Livesuche erfolgt Weiterleitung zum Reiter "Bewertungen" (#100)
-* Bugfix: Aufgabenplaner: Bei Klick auf "Zuletzt fertiggestellt" verschwinden Buttons (#98)
-* Bugfix: Mailversand erfolgt immer in zum Registrierungszeitpunkt eingestellter Sprache (#63)
-* Bugfix: "<tab>" wird aus Exportformaten gelöscht, wenn beim Speichern Angaben fehlen (#136)
-* Verbesserung: Links können nun dupliziert werden und in mehreren Linkgruppen gleichzeitig vorhanden sein (#159)
-* Bugfix: Kupon::generateCode() erzeugt Endlosrekursion
-* Verbesserung: HOOK_INDEX_SEO_404 wird nun auch ausgeführt, wenn cSeo nicht leer ist
-* Verbesserung: HOOK_WARENKORB_PAGE_KUPONANNEHMEN_PLAUSI wird wieder früher ausgeführt und enthält Parameter  (#234)
-* Bugfix: Internal Server Error wenn mod_deflate nicht aktiviert ist (#235)
-* Verbesserung: Prioritäten für Plugin-Hooks (#45)
-* Bugfix: Abnahmeintervall wird bei Konfigurationsartikel nicht beachtet, Hinweis auf Mindestbestellmenge/Abnahmeintervall fehlt (#259)
-* Verbesserung: Anzeige von Boxen in nicht-sichtbaren Positionen im Backend mitsamt Warnhinweis(#252)
-* Verbesserung: Neue Hooks HOOK_FILTER_INC_GIBARTIKELKEYS_SQL und HOOK_FILTER_INC_BAUFILTERSQL (#310)
-* Bugfix: apple-touch-icon.png in header.tpl verlinket, obwohl Datei nicht vorhanden ist (#278)
-* Verbesserung: Kupon-Backend komplett überarbeitet, Validierung verbessert (#275)
-* Bugfix: Fehlerhafte URLs in $Suchergebnisse->Kategorieauswahl bei hierarchischer Filterung (#273)
-* Bugfix: Mehrdeutige Verwendung von GET-Parameter "n" (#321)
-* Bugfix: Weiterleitung zum Login bei Artikel mit Slash in SEO-URL fehlerhaft (#322)
-* Bugfix: Fehlerhafter Kategoriefilter, wenn Einstellung 1321 auf "Hierarchische Filterung" gestellt ist (#185)
-* Update: Smarty auf Version 3.1.30 aktualisiert
-* Verbesserung: SEO-URLs für warenkorb.php, bestellvorgang.php, bestellabschluss.php, pass.php, newsletter.php, wunschliste.php und jtl.php (#31)
-* Verbesserung: optionale 2-Faktor-Authentifizierung im Backend (#276)
-* Bugfix: Prozent-Kupon-Preis in Standardwährung ändert sich abhängig von der Währung beim Einlösen (#366)
-* Verbesserung: Neuer Hook HOOK_BOXEN_HOME bei Erstellung der Startseiten-Boxen (#371)
-* Bugfix: Bestellkommentar wird nicht zur Wawi übertragen, wenn "Zahlung vor Bestellabschluss" auf "Ja" steht (#356)
-* Verbesserung: NiceDB::selectAll() zur Abfrage mehrere Spalten als Prepared Statement implementiert (#334)
-* Verbesserung: Registrierung per vCard-Upload statt manueller Dateneingabe ermöglicht (#307)
-* Bugfix: Im Wartungsmodus, wird man in kürzester Zeit nach dem Einloggen im Frontend wieder ausgeloggt (#314)
-* Verbesserung: FontAwesome auf Version 4.6.3 und jQuery auf Version 1.12.4 aktualisiert
+## [4.05]
 
-## [4.04.1]
+### Neue Features
+* Verkürzter Checkout (auf 3 Seiten anstatt bisher 5 Seiten)
+* SEO-URLs ersetzen warenkorb.php, bestellvorgang.php, bestellabschluss.php, pass.php, newsletter.php, wunschliste.php und jtl.php (#31)
+* Unterstützung für mehrsprachige Kategorieattribute (#191)
+* Optionale 2-Faktor-Authentifizierung im Backend (#276)
+* Datenbank-Management-Tool in das Backend integriert (admin/dbmanager.php)
+* Optionaler vCard-Upload im Rechnungsadresse-Formular (#307)
+* Support für alt-Attribute für Mediendatei-Bilder per Attribut "img_alt" (#179)
+* Banner und Slider und Box-Anzeige können nun konkreten CMS-Seiten zugewiesen werden (#107) 
+* Weitere Felder für Backend-Benutzer (neues Plugin) (#21)
+* Child-Templates erlauben Überschreiben von Parent-Themes mit override-Attribut (#200)
+* Eigene Datasources für Plugin-Optionen (#92)
+* Neuer Hook HOOK_GET_NEWS in gibNews()
+* Neuer Hook HOOK_STOCK_FILTER in gibLagerFilter()
+* Neue Hooks HOOK_FILTER_INC_GIBARTIKELKEYS_SQL und HOOK_FILTER_INC_BAUFILTERSQL (#310)
+* Neuer Hook HOOK_BOXEN_HOME bei Erstellung der Startseiten-Boxen (#371)
+
+### Weitere Verbesserungen
+* Update: Smarty auf Version 3.1.30 aktualisiert
+* Update: FontAwesome auf Version 4.6.3 und jQuery auf Version 1.12.4 aktualisiert (#593)
+* Benutzerfreundliches Layout in Mein-Konto
+* Kuponverwaltung hinsichtlich Massenerstellung überarbeitet, Validierung verbessert (#275)
+* Backend: Überarbeitetes Layout. Warnungen und Informationen werden nun bei Klick auf ein Benachrichtigungs-Icon im Header gezeigt (#38)
+* Objektcache Speicheroptimierungen
+* Bilder für Newskategorien können im Backend angegeben werden 
+* Links mit Typ Spezialseite können dupliziert werden und in mehreren Linkgruppen gleichzeitig vorhanden sein (#159)
+* Prioritäten für Plugin-Hooks (#45)
+* Anzeige von Boxen in nicht-sichtbaren Positionen im Backend mitsamt Warnhinweis(#252)
+* NiceDB::selectAll() zur Abfrage mehrere Spalten als Prepared Statement implementiert (#334)
+* Artikeldetails Bildergalerie nun auch in XS-Ansicht blätterbar 
+* HOOK_INDEX_SEO_404 wird nun auch ausgeführt, wenn cSeo nicht leer ist
+* HOOK_WARENKORB_PAGE_KUPONANNEHMEN_PLAUSI wird wieder früher ausgeführt und enthält Parameter  (#234)
+
+### Bugfixes
+* Bearbeiten von Herstellern invalidiert Objektcache für Artikel nicht
+* Newsbeiträge aus deaktivierten Kategorien werden auf der Startseite angezeigt
+* Globale Variable $AktuelleSeite zeigt bei Newsdetails falschen Typ an
+* Newskategorien-Box verschwindet bei aktiviertem Objektcache
+* URL_SHOP in Exportformaten nicht definiert
+* Plugin-Sprachvariablen lassen sich nicht aktualisieren, wenn zwischenzeitlich neue Sprache im Webshop aktiviert wurde
+* Speichern von Newsbeiträgen in deaktivierter Newskategorie schlägt fehl bzw. erzeugt Duplikat des Beitrags
+* Varkombis können in Fremdsprachen bei fehlender Übersetzung Sprachvariablen nicht nachgeladen werden
+* In Zukunft startende Sonderpreise werden bei aktiviertem Objektcache nicht berücksichtig
+* TopArtikel werden bei aktiviertem Objektcache nicht aktualisiert 
+* Ändern von Bildeinstellungen invalidiert Objektcache nicht 
+* Varkombi Dropdown-Auswahl wird bei Auswahl Nachladen der Kombination zurückgesetzt
+* PayPal-Plugin (v1.05): Gratisgeschenke werden nicht als Item gelistet
+* PayPal-Plugin (v1.05): TLS-Check liefert teilweise falsche Ergebnisse, da Version nicht festgelegt
+* Fehlerhafte Kategorie-/Merkmalfilter-URLs erzeugen keinen 404-Statuscode
+* Bei Klick auf Sortierung in Freischaltzentrale unter Livesuche erfolgt Weiterleitung zum Reiter "Bewertungen" (#100)
+* Aufgabenplaner: Bei Klick auf "Zuletzt fertiggestellt" verschwinden Buttons (#98)
+* Mailversand erfolgt immer in zum Registrierungszeitpunkt eingestellter Sprache (#63)
+* "<tab>" wird aus Exportformaten gelöscht, wenn beim Speichern Angaben fehlen (#136)
+* Kupon::generateCode() erzeugt Endlosrekursion
+* Internal Server Error wenn mod_deflate nicht aktiviert ist (#235)
+* Abnahmeintervall wird bei Konfigurationsartikel nicht beachtet, Hinweis auf Mindestbestellmenge/Abnahmeintervall fehlt (#259)
+* apple-touch-icon.png in header.tpl verlinket, obwohl Datei nicht vorhanden ist (#278)
+* Fehlerhafte URLs in $Suchergebnisse->Kategorieauswahl bei hierarchischer Filterung (#273)
+* Mehrdeutige Verwendung von GET-Parameter "n" (#321)
+* Weiterleitung zum Login bei Artikel mit Slash in SEO-URL fehlerhaft (#322)
+* Fehlerhafter Kategoriefilter, wenn Einstellung 1321 auf "Hierarchische Filterung" gestellt ist (#185)
+* Prozent-Kupon-Preis in Standardwährung ändert sich abhängig von der Währung beim Einlösen (#366)
+* Bestellkommentar wird nicht zur Wawi übertragen, wenn "Zahlung vor Bestellabschluss" auf "Ja" steht (#356)
+* Im Wartungsmodus, wird man in kürzester Zeit nach dem Einloggen im Frontend wieder ausgeloggt (#314)
+
+
+## [4.04.1] - 2016-07-19
 * Neues Premium-Plugin: Login und Bezahlen mit Amazon (von Solution360)
 * Neues Premium-Plugin: TrustedShops Trustbade (von AG-Websolutions)
 * Update: Google Shopping Plugin v1.05 (Bugfix: Unter Umständen doppelte IDs bei Varkombi-Kindartikeln)

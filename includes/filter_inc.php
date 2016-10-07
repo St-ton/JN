@@ -555,8 +555,15 @@ function gibKategorieFilterOptionen($FilterSQL, $NaviFilter)
             }
         }
     }
+    if (!isset($_SESSION['Kundengruppe']->kKundengruppe)) {
+        $oKundengruppe                           = Shop::DB()->select('tkundengruppe', 'cStandard', 'Y');
+        $kKundengruppe                           = $oKundengruppe->kKundengruppe;
+        $_SESSION['Kundengruppe']->kKundengruppe = $oKundengruppe->kKundengruppe;
+    } else {
+        $kKundengruppe = $_SESSION['Kundengruppe']->kKundengruppe;
+    }
     $cacheID = 'filter_kfo_' . md5(
-        json_encode($_SESSION['Kundengruppe']) .
+        $kKundengruppe .
         serialize($NaviFilter) .
         $filterString .
         Shop::$kSprache
@@ -567,13 +574,6 @@ function gibKategorieFilterOptionen($FilterSQL, $NaviFilter)
     $oKategorieFilterDB_arr = array();
     $conf                   = Shop::getSettings(array(CONF_NAVIGATIONSFILTER));
     if ($conf['navigationsfilter']['allgemein_kategoriefilter_benutzen'] !== 'N') {
-        $kKundengruppe = $_SESSION['Kundengruppe']->kKundengruppe;
-        if (!$kKundengruppe) {
-            $oKundengruppe                           = Shop::DB()->query("SELECT kKundengruppe FROM tkundengruppe WHERE cStandard = 'Y'", 1);
-            $kKundengruppe                           = $oKundengruppe->kKundengruppe;
-            $_SESSION['Kundengruppe']->kKundengruppe = $oKundengruppe->kKundengruppe;
-        }
-
         $kSprache = (int)Shop::$kSprache;
         if (!$kSprache) {
             $oSprache = gibStandardsprache(true);
@@ -615,7 +615,7 @@ function gibKategorieFilterOptionen($FilterSQL, $NaviFilter)
                 " . $FilterSQL->oBewertungSterneFilterSQL->cJoin . "
                 " . $FilterSQL->oPreisspannenFilterSQL->cJoin . "
                 LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                    AND tartikelsichtbarkeit.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
+                    AND tartikelsichtbarkeit.kKundengruppe = " . $kKundengruppe . "
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
                     AND tartikel.kVaterArtikel = 0
                     " . gibLagerfilter() . "
@@ -659,7 +659,7 @@ function gibKategorieFilterOptionen($FilterSQL, $NaviFilter)
             usort($oKategorieFilterDB_arr, 'sortierKategoriepfade');
         }
     }
-    $tagArray = array(CACHING_GROUP_CATEGORY);
+    $tagArray = [CACHING_GROUP_CATEGORY];
     if (isset($NaviFilter->Kategorie->kKategorie)) {
         $tagArray[] = CACHING_GROUP_CATEGORY . '_' . (int)$NaviFilter->Kategorie->kKategorie;
     } else {

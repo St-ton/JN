@@ -116,7 +116,7 @@ class AdminTemplate
         if (($oTemplate = Shop::Cache()->get($cacheID)) !== false) {
             self::$cTemplate = $oTemplate->cTemplate;
         } else {
-            $oTemplate = Shop::DB()->query("SELECT * FROM ttemplate WHERE eTyp = 'admin'", 1);
+            $oTemplate = Shop::DB()->select('ttemplate', 'eTyp', 'admin');
             if ($oTemplate) {
                 self::$cTemplate = $oTemplate->cTemplate;
                 Shop::Cache()->set($cacheID, $oTemplate, array(CACHING_GROUP_TEMPLATE));

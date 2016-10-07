@@ -4,6 +4,48 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+if (!function_exists('getallheaders')) {
+    /**
+     * Get all HTTP header key/values as an associative array for the current request.
+     * polyfill for nginx
+     *
+     * @see https://github.com/ralouphie/getallheaders/blob/master/src/getallheaders.php     *
+     * @return string[string] The HTTP header key/value pairs.
+     */
+    function getallheaders()
+    {
+        $headers     = array();
+        $copy_server = array(
+            'CONTENT_TYPE'   => 'Content-Type',
+            'CONTENT_LENGTH' => 'Content-Length',
+            'CONTENT_MD5'    => 'Content-Md5',
+        );
+        foreach ($_SERVER as $key => $value) {
+            if (substr($key, 0, 5) === 'HTTP_') {
+                $key = substr($key, 5);
+                if (!isset($copy_server[$key]) || !isset($_SERVER[$key])) {
+                    $key           = str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', $key))));
+                    $headers[$key] = $value;
+                }
+            } elseif (isset($copy_server[$key])) {
+                $headers[$copy_server[$key]] = $value;
+            }
+        }
+        if (!isset($headers['Authorization'])) {
+            if (isset($_SERVER['REDIRECT_HTTP_AUTHORIZATION'])) {
+                $headers['Authorization'] = $_SERVER['REDIRECT_HTTP_AUTHORIZATION'];
+            } elseif (isset($_SERVER['PHP_AUTH_USER'])) {
+                $basic_pass               = isset($_SERVER['PHP_AUTH_PW']) ? $_SERVER['PHP_AUTH_PW'] : '';
+                $headers['Authorization'] = 'Basic ' . base64_encode($_SERVER['PHP_AUTH_USER'] . ':' . $basic_pass);
+            } elseif (isset($_SERVER['PHP_AUTH_DIGEST'])) {
+                $headers['Authorization'] = $_SERVER['PHP_AUTH_DIGEST'];
+            }
+        }
+
+        return $headers;
+    }
+}
+
 /**
  * Class Notification
  */
@@ -70,13 +112,13 @@ class AjaxResponse
         }
 
         $data->type = $type;
-        $json = json_encode($data);
-        
+        $json       = json_encode($data);
+
         if (json_last_error() === JSON_ERROR_UTF8) {
             $data = utf8_convert_recursive($data);
             $json = json_encode($data);
         }
-        
+
         if ($json === null || json_last_error() !== JSON_ERROR_NONE) {
             $data = $this->buildError(json_last_error_msg());
             $json = json_encode($data);
@@ -95,6 +137,7 @@ class AjaxResponse
             return true;
         }
         $accept = explode(',', getallheaders()['Accept']);
+
         return in_array('application/json', $accept);
     }
 

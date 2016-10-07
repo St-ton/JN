@@ -230,7 +230,6 @@ class Kunde
      * Konstruktor
      *
      * @param int $kKunde - Falls angegeben, wird der Kunde mit angegebenem kKunde aus der DB geholt
-     * @return Kunde
      */
     public function __construct($kKunde = 0)
     {
@@ -255,7 +254,7 @@ class Kunde
             }
         }
 
-        return;
+        return null;
     }
 
     /**
@@ -271,19 +270,11 @@ class Kunde
         ) {
             $attempts = Shop::DB()->select('tkunde', 'cMail', StringHandler::filterXSS($cBenutzername), 'nRegistriert', 1, null, null, false, 'nLoginversuche');
             if (isset($attempts->nLoginversuche) && intval($attempts->nLoginversuche) >= intval($conf['kunden']['kundenlogin_max_loginversuche'])) {
-                if (isset($_POST['g-recaptcha-response'])) {
-                    if (validateReCaptcha($_POST['g-recaptcha-response'])) {
-                        return true;
-                    }
+                if (validateCaptcha($_POST)) {
+                    return true;
+                }
 
-                    return (int)$attempts->nLoginversuche;
-                }
-                if (!isset($_POST['captcha']) || $_POST['captcha'] === '' || !isset($_POST['md5'])) {
-                    return (int)$attempts->nLoginversuche;
-                }
-                if (($_POST['md5'] != md5(PFAD_ROOT . strtoupper($_POST['captcha'])))) {
-                    return (int)$attempts->nLoginversuche;
-                }
+                return (int)$attempts->nLoginversuche;
             }
         }
 
@@ -373,18 +364,15 @@ class Kunde
 
         if ($updatePassword === true) {
             //get customer by mail and old password hash
-            $obj = Shop::DB()->query("
-                SELECT *, date_format(dGeburtstag, '%d.%m.%Y') AS dGeburtstag
-                    FROM tkunde
-                    WHERE cMail = '$cBenutzername'
-                        AND cPasswort = '" . $oldPasswordHash . "' AND kKunde = " . (int)$oUser->kKunde, 1
-            );
+            $obj = Shop::DB()->select('tkunde', 'cMail', $cBenutzername, 'cPasswort', $oldPasswordHash, 'kKunde', (int)$oUser->kKunde, false, '*, date_format(dGeburtstag, \'%d.%m.%Y\') AS dGeburtstag');
         } elseif ($verify === true) {
             //get customer by mail since new hash verification was successful
-            $obj = Shop::DB()->query("SELECT *, date_format(dGeburtstag, '%d.%m.%Y') AS dGeburtstag FROM tkunde WHERE kKunde = " . (int)$oUser->kKunde, 1);
+            $obj = Shop::DB()->select('tkunde', 'kKunde', (int)$oUser->kKunde, null, null, null, null, false, '*, date_format(dGeburtstag, \'%d.%m.%Y\') AS dGeburtstag');
             //reset unsuccessful login attempts
             if ($oUser->nLoginversuche > 0) {
-                Shop::DB()->query("UPDATE tkunde SET nLoginversuche = 0 WHERE kKunde = " . (int)$oUser->kKunde, 3);
+                $upd = new stdClass();
+                $upd->nLoginversuche = 0;
+                Shop::DB()->update('tkunde', 'kKunde', (int)$oUser->kKunde, $upd);
             }
         } else {
             $obj = false;
@@ -572,9 +560,9 @@ class Kunde
             $obj->dGeburtstag = '0000-00-00';
         }
 
-        $obj->cLand = $this->pruefeLandISO($obj->cLand);
+        $obj->cLand       = $this->pruefeLandISO($obj->cLand);
         $obj->dVeraendert = 'now()';
-        $cReturn    = Shop::DB()->update('tkunde', 'kKunde', $obj->kKunde, $obj);
+        $cReturn          = Shop::DB()->update('tkunde', 'kKunde', $obj->kKunde, $obj);
         if (is_array($cKundenattribut_arr) && count($cKundenattribut_arr) > 0) {
             $obj->cKundenattribut_arr = $cKundenattribut_arr;
         }
@@ -597,7 +585,7 @@ class Kunde
     public function holeKundenattribute()
     {
         $this->cKundenattribut_arr = array();
-        $oKundenattribut_arr       = Shop::DB()->query("SELECT * FROM tkundenattribut WHERE kKunde = " . (int)$this->kKunde . " ORDER BY kKundenAttribut", 2);
+        $oKundenattribut_arr       = Shop::DB()->selectAll('tkundenattribut', 'kKunde', (int)$this->kKunde, '*', 'kKundenAttribut');
         if (is_array($oKundenattribut_arr) && count($oKundenattribut_arr) > 0) {
             foreach ($oKundenattribut_arr as $oKundenattribut) {
                 $this->cKundenattribut_arr[$oKundenattribut->kKundenfeld] = $oKundenattribut;
@@ -617,7 +605,7 @@ class Kunde
     {
         // ISO prüfen
         preg_match('/[a-zA-Z]{2}/', $cLandISO, $cTreffer1_arr);
-        if (strlen($cTreffer1_arr[0]) != strlen($cLandISO)) {
+        if (strlen($cTreffer1_arr[0]) !== strlen($cLandISO)) {
             $cISO = landISO($cLandISO);
             if (strlen($cISO) > 0 && $cISO !== 'noISO') {
                 $cLandISO = $cISO;

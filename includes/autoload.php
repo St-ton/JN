@@ -24,12 +24,12 @@ function ShopAutoload($class)
         PFAD_ROOT . PFAD_CLASSES_CORE
     );
 
-    $endsWith = function($haystack, $needle)
-    {
+    $endsWith = function ($haystack, $needle) {
         $length = strlen($needle);
         if ($length == 0) {
             return true;
         }
+
         return (substr($haystack, -$length) === $needle);
     };
 

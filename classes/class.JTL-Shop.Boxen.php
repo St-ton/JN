@@ -60,6 +60,7 @@ class Boxen
     public function __construct()
     {
         $this->boxConfig = Shop::getConfig(array(
+            CONF_GLOBAL,
             CONF_BOXEN,
             CONF_VERGLEICHSLISTE,
             CONF_NAVIGATIONSFILTER,
@@ -121,7 +122,7 @@ class Boxen
     {
         return (strlen($cISO) > 0) ?
             Shop::DB()->select('tboxsprache', 'kBox', (int) $kBox, 'cISO', $cISO) :
-            Shop::DB()->query("SELECT * FROM tboxsprache WHERE kBox = " . (int)$kBox, 2);
+            Shop::DB()->selectAll('tboxsprache', 'kBox', (int)$kBox);
     }
 
     /**
@@ -244,11 +245,11 @@ class Boxen
                                         $filterEntry['id'] = $_filterValue;
                                         $name              = null;
                                         if ($nSeite == 2) { //map category name
-                                            $name = Shop::DB()->query("SELECT cName FROM tkategorie WHERE kKategorie = " . (int)$_filterValue, 1);
+                                            $name = Shop::DB()->select('tkategorie', 'kKategorie', (int)$_filterValue, null, null, null, null, false, 'cName');
                                         } elseif ($nSeite == 1) { //map article name
-                                            $name = Shop::DB()->query("SELECT cName FROM tartikel WHERE kArtikel = " . (int)$_filterValue, 1);
+                                            $name = Shop::DB()->select('tartikel', 'kArtikel', (int)$_filterValue, null, null, null, null, false, 'cName');
                                         } elseif ($nSeite == 31) { //map page name
-                                            $name = Shop::DB()->query("SELECT cName FROM tlink WHERE kLink = " . (int)$_filterValue, 1);
+                                            $name = Shop::DB()->select('tlink', 'kLink', (int)$_filterValue, null, null, null, null, false, 'cName');
                                         }
                                         $filterEntry['name'] = (!empty($name->cName)) ? $name->cName : '???';
                                         $filterOptions[]     = $filterEntry;
@@ -303,7 +304,7 @@ class Boxen
             }
         }
 
-        return;
+        return null;
     }
 
     /**
@@ -333,8 +334,8 @@ class Boxen
                 $limit        = (int)$this->boxConfig['boxen']['box_bestseller_anzahl_basis'];
                 $anzahl       = (int)$this->boxConfig['boxen']['box_bestseller_anzahl_anzeige'];
                 $nAnzahl      = 100;
-                if ((int)$this->boxConfig['boxen']['boxen_bestseller_minanzahl'] > 0) {
-                    $nAnzahl = (int)$this->boxConfig['boxen']['boxen_bestseller_minanzahl'];
+                if ((int)$this->boxConfig['global']['global_bestseller_minanzahl'] > 0) {
+                    $nAnzahl = (int)$this->boxConfig['global']['global_bestseller_minanzahl'];
                 }
                 if ($limit < 1) {
                     $limit = 10;
@@ -669,8 +670,10 @@ class Boxen
                     }
                     $cZusatzParams = StringHandler::filterXSS($cZusatzParams);
                     $oTMP_arr      = array();
+                    $cRequestURI   = (!empty($_SERVER['REQUEST_URI']))
+                        ? (Shop::getURL() . $_SERVER['REQUEST_URI'])
+                        : (Shop::getURL() . $_SERVER['SCRIPT_NAME']);
                     foreach ($oArtikel_arr as $oArtikel) {
-                        $cRequestURI = $_SERVER['SCRIPT_NAME'];
                         $nPosAnd     = strrpos($cRequestURI, '&');
                         $nPosQuest   = strrpos($cRequestURI, '?');
                         $nPosWD      = strpos($cRequestURI, 'vlplo=');
@@ -1012,7 +1015,7 @@ class Boxen
                                 AND tartikel.cNeu = 'Y'
                                 $this->lagerFilter
                                 $this->cVaterSQL
-                                AND cNeu='Y' AND DATE_SUB(now(),INTERVAL $alter_tage DAY) < dErstellt
+                                AND cNeu = 'Y' AND DATE_SUB(now(),INTERVAL $alter_tage DAY) < dErstellt
                             ORDER BY rand() LIMIT " . $limit, 2
                     );
                     if (is_array($menge) && count($menge) > 0) {
@@ -1222,7 +1225,9 @@ class Boxen
                             } else {
                                 $smarty->assign('oBox', $_cbox);
                             }
-                            $_box->innerHTML .= trim(($_cbox->eTyp === 'plugin') ? $smarty->fetch($_cbox->cTemplate) : $smarty->fetch($path . $_cbox->cTemplate));
+                            if (!empty($_cbox->cTemplate)) {
+                                $_box->innerHTML .= trim(($_cbox->eTyp === 'plugin') ? $smarty->fetch($_cbox->cTemplate) : $smarty->fetch($path . $_cbox->cTemplate));
+                            }
                             $_box->children[] = array('obj' => $_cbox, 'tpl' => $path . $_cbox->cTemplate);
                         }
                     }
@@ -1245,7 +1250,9 @@ class Boxen
                         $_oldPlugin = $smarty->getTemplateVars('oPlugin');
                         $smarty->assign('oPlugin', $_box->oPlugin);
                     }
-                    $htmlArray[$_position] .= trim(($_box->eTyp === 'plugin') ? $smarty->fetch($_box->cTemplate) : $smarty->fetch($path . $_box->cTemplate));
+                    if (!empty($_box->cTemplate)) {
+                        $htmlArray[$_position] .= trim(($_box->eTyp === 'plugin') ? $smarty->fetch($_box->cTemplate) : $smarty->fetch($path . $_box->cTemplate));
+                    }
                     if ($_oldPlugin !== null) {
                         $smarty->assign('oPlugin', $_oldPlugin);
                     }
@@ -1393,7 +1400,7 @@ class Boxen
         }
         $nSeite      = (int)$nSeite;
         $oBoxAnzeige = array();
-        $oBox_arr    = Shop::DB()->query("SELECT * FROM tboxenanzeige WHERE nSeite = " . $nSeite, 2);
+        $oBox_arr    = Shop::DB()->selectAll('tboxenanzeige', 'nSeite', $nSeite);
         if (is_array($oBox_arr) && count($oBox_arr)) {
             foreach ($oBox_arr as $oBox) {
                 $oBoxAnzeige[$oBox->ePosition] = (boolean)$oBox->bAnzeigen;
@@ -1447,7 +1454,7 @@ class Boxen
      */
     public function holeContainer($ePosition)
     {
-        return Shop::DB()->query("SELECT kBox FROM tboxen WHERE kBoxvorlage = 0 AND ePosition = '" . $ePosition . "' ORDER BY ePosition ASC", 2);
+        return Shop::DB()->selectAll('tboxen', ['kBoxvorlage', 'ePosition'], [0, $ePosition], 'kBox', 'ePosition ASC');
     }
 
     /**
@@ -1836,5 +1843,34 @@ class Boxen
         }
 
         return $class;
+    }
+
+    /**
+     * @return array
+     */
+    public function getInvisibleBoxes()
+    {
+        $tpl            = Template::getInstance();
+        $layout         = $tpl->getBoxLayoutXML();
+        $invisibleBoxes = array();
+        foreach ($layout as $position => $isAvailable) {
+            if ($isAvailable === false) {
+                $box = Shop::DB()->select('tboxen', 'ePosition', $position);
+                if ($box !== null && isset($box->kBox)) {
+                    $boxes = Shop::DB()->query("
+                        SELECT tboxen.*, tboxvorlage.eTyp, tboxvorlage.cName, tboxvorlage.cTemplate 
+                          FROM tboxen 
+                            LEFT JOIN tboxvorlage
+                              ON tboxen.kBoxvorlage = tboxvorlage.kBoxvorlage
+                          WHERE ePosition = '" . $position . "'", 2
+                    );
+                    foreach ($boxes as $box) {
+                        $invisibleBoxes[] = $box;
+                    }
+                }
+            }
+        }
+
+        return $invisibleBoxes;
     }
 }

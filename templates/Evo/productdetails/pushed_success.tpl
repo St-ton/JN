@@ -2,9 +2,9 @@
     {if !isset($Artikel) && isset($zuletztInWarenkorbGelegterArtikel)}
         {assign var=Artikel value=$zuletztInWarenkorbGelegterArtikel}
     {/if}
-    <div class="panel panel-default clearfix">
+    <div class="panel panel-default ">
         <div class="panel-body">
-            <div class="row">
+            <div class="row clearfix">
                 {assign var="showXSellingCart" value=false}
                 {if isset($Xselling->Kauf) && count($Xselling->Kauf->Artikel) > 0}
                     {assign var="showXSellingCart" value=true}
@@ -15,7 +15,7 @@
                         <div class="row">
                             <div class="col-xs-4 col-xs-offset-4">
                                 {counter assign=imgcounter print=0}
-                                <img src="{$Artikel->Bilder[0]->cPfadNormal}" alt="{if isset($Artikel->Bilder[0]->cAltAttribut)}{$Artikel->Bilder[0]->cAltAttribut|strip_tags|escape:"quotes"|truncate:60}{else}{$Artikel->cName}{/if}" id="image{$Artikel->kArtikel}_{$imgcounter}" class="image img-responsive" />
+                                <img src="{$Artikel->Bilder[0]->cPfadNormal}" alt="{if isset($Artikel->Bilder[0]->cAltAttribut)}{$Artikel->Bilder[0]->cAltAttribut|strip_tags|truncate:60|escape:"html"}{else}{$Artikel->cName}{/if}" id="image{$Artikel->kArtikel}_{$imgcounter}" class="image img-responsive" />
                             </div>
                             <div class="col-xs-12">
                                 <div class="caption">

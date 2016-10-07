@@ -1,5 +1,4 @@
 {if $bBoxenFilterNach}
-    {nocache}
     {if !empty($NaviFilter->TagFilter)}
         <section class="panel panel-default box box-filter-tag" id="sidebox{$oBox->kBox}">
             <div class="panel-heading">
@@ -16,5 +15,4 @@
             </div>
         </section>
     {/if}
-    {/nocache}
 {/if}

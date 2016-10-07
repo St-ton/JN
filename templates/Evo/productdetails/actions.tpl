@@ -1,4 +1,4 @@
-<div id="product-actions" class="btn-group btn-group-md product-actions" role="group">
+<div id="product-actions" class="btn-group btn-group-md product-actions hidden-print" role="group">
     {assign var=kArtikel value=$Artikel->kArtikel}
 
     {if $Artikel->kArtikelVariKombi > 0}
@@ -22,13 +22,13 @@
             <span class="hidden-sm">{lang key="productQuestion" section="productDetails"}</span>
         </button>
     {/if}
-    {if ($verfuegbarkeitsBenachrichtigung == 2 || $verfuegbarkeitsBenachrichtigung == 3) && $Artikel->cLagerBeachten === 'Y'}
+    {if ($verfuegbarkeitsBenachrichtigung == 2 || $verfuegbarkeitsBenachrichtigung == 3) && $Artikel->cLagerBeachten === 'Y' && $Artikel->cLagerKleinerNull !== 'Y'}
         <button type="button" id="n{$kArtikel}" class="btn btn-default btn-secondary popup-dep notification" title="{lang key="requestNotification" section="global"}">
             <span class="fa fa-bell"></span>
             <span class="hidden-sm">{lang key="requestNotification" section="global"}</span>
         </button>
     {/if}
 </div>
-<div class="visible-xs clearfix">
+<div class="visible-xs clearfix hidden-print">
     <hr>
 </div>

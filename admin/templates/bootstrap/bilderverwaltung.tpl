@@ -141,7 +141,7 @@
         lastTick = new Date().getTime();
         var call = loadGenerate(type, index, function (result) {
             var items = result.images,
-                rendered = result.nextIndex,
+                rendered = result.renderedImages,
                 total = result.total,
                 offsetTick = new Date().getTime() - lastTick,
                 perItem = Math.floor(offsetTick / items.length);

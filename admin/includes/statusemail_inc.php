@@ -829,7 +829,7 @@ function gibAnzahlGenutzteKupons($dVon, $dBis)
  * @param object $oStatusemail
  * @param string $dVon
  * @param string $dBis
- * @return bool
+ * @return object|bool
  */
 function baueStatusEmail($oStatusemail, $dVon, $dBis)
 {
@@ -984,7 +984,7 @@ function baueStatusEmail($oStatusemail, $dVon, $dBis)
 
 /**
  * @param string $dStamp
- * @return bool
+ * @return object|bool
  */
 function gibSplitStamp($dStamp)
 {

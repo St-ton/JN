@@ -3,10 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Artikel.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Kategorie.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'exportformat_inc.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'tools.Global.php';
 
 /**
  * @return JTLSmarty
@@ -19,7 +16,7 @@ function getSmarty()
            ->setTemplateDir(PFAD_ROOT . PFAD_ADMIN . PFAD_TEMPLATES)
            ->setCompileDir(PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR)
            ->setConfigDir($smarty->getTemplateDir($smarty->context) . 'lang/')
-           ->register_resource('db', array('db_get_template', 'db_get_timestamp', 'db_get_secure', 'db_get_trusted'));
+           ->registerResource('db', new SmartyResourceNiceDB('export'));
 
     return $smarty;
 }
@@ -29,17 +26,26 @@ function getSmarty()
  */
 function bearbeiteExportformate($oJobQueue)
 {
+    $oJobQueue->nInArbeit        = 1;
+    $oJobQueue->dZuletztGelaufen = date('Y-m-d H:i');
+    $oJobQueue->updateJobInDB();
     $smarty               = getSmarty();
-    $oJobQueue->nInArbeit = 1;
     $oExportformat        = $oJobQueue->holeJobArt();
+    if (empty($oExportformat)) {
+        Jtllog::cronLog('Invalid export format for job queue ID ' . $oJobQueue->kJobQueue);
+        return;
+    }
+    $max                  = holeMaxExportArtikelAnzahl($oExportformat);
+    $start                = microtime(true);
+    $cacheHits            = 0;
+    $cacheMisses          = 0;
+    $noCache              = (isset($oExportformat->nUseCache) && $oExportformat->nUseCache === '0');
+    Jtllog::cronLog('Starting exportformat "' . $oExportformat->cName . '" for language ' . (int)$oExportformat->kSprache .
+        ' and customer group ' . (int)$oExportformat->kKundengruppe . ' - ' . $oJobQueue->nLimitN . '/' . $max->nAnzahl . ' products exported');
+    Jtllog::cronLog('Caching enabled? ' . ((Shop::Cache()->isActive() && !$noCache) ? 'Yes' : 'No'), 2);
     // Kampagne
     if (isset($oExportformat->kKampagne) && $oExportformat->kKampagne > 0) {
-        $oKampagne = Shop::DB()->query(
-            "SELECT kKampagne, cParameter, cWert
-                FROM tkampagne
-                WHERE kKampagne = " . intval($oExportformat->kKampagne) . "
-                    AND nAktiv = 1", 1
-        );
+        $oKampagne = Shop::DB()->select('tkampagne', ['kKampagne', 'nAktiv'], [(int)$oExportformat->kKampagne, 1]);
         if (isset($oKampagne->kKampagne) && $oKampagne->kKampagne > 0) {
             $oExportformat->tkampagne_cParameter = $oKampagne->cParameter;
             $oExportformat->tkampagne_cWert      = $oKampagne->cWert;
@@ -53,20 +59,20 @@ function bearbeiteExportformate($oJobQueue)
     if ($oExportformat->nSpecial == SPECIAL_EXPORTFORMAT_YATEGO) {
         gibYategoExport($exportformat, $oJobQueue, $ExportEinstellungen);
     } else {
-        if ($exportformat->kWaehrung > 0) {
-            $Waehrung = Shop::DB()->select('twaehrung', 'kWaehrung', (int)$exportformat->kWaehrung);
-        }
+        $currency = (isset($exportformat->kWaehrung) && $exportformat->kWaehrung > 0) ?
+            Shop::DB()->select('twaehrung', 'kWaehrung', (int)$exportformat->kWaehrung) :
+            Shop::DB()->select('twaehrung', 'cStandard', 'Y');
         setzeSteuersaetze();
         if (!isset($_SESSION['Kundengruppe'])) {
             $_SESSION['Kundengruppe'] = new stdClass();
         }
         $_SESSION['Kundengruppe']->darfPreiseSehen            = 1;
         $_SESSION['Kundengruppe']->darfArtikelKategorienSehen = 1;
-        $_SESSION['kSprache']                                 = $exportformat->kSprache;
-        $_SESSION['kKundengruppe']                            = $exportformat->kKundengruppe;
-        $_SESSION['Kundengruppe']->kKundengruppe              = $exportformat->kKundengruppe;
+        $_SESSION['kSprache']                                 = (int)$exportformat->kSprache;
+        $_SESSION['kKundengruppe']                            = (int)$exportformat->kKundengruppe;
+        $_SESSION['Kundengruppe']->kKundengruppe              = (int)$exportformat->kKundengruppe;
         $_SESSION['Sprachen']                                 = Shop::DB()->query("SELECT * FROM tsprache", 2);
-        $_SESSION['Waehrung']                                 = $Waehrung;
+        $_SESSION['Waehrung']                                 = $currency;
 
         // Plugin?
         if ($exportformat->kPlugin > 0 && strpos($exportformat->cContent, PLUGIN_EXPORTFORMAT_CONTENTFILE) !== false) {
@@ -75,7 +81,7 @@ function bearbeiteExportformate($oJobQueue)
 
             return;
         }
-        //falls datei existiert, löschen
+        //falls datei existiert, loeschen
         if ($oJobQueue->nLimitN == 0 && file_exists(PFAD_ROOT . PFAD_EXPORT . $cTMPDatei)) {
             unlink(PFAD_ROOT . PFAD_EXPORT . $cTMPDatei);
         }
@@ -95,7 +101,7 @@ function bearbeiteExportformate($oJobQueue)
                             )
                     )';
         }
-
+        $shopURL      = Shop::getURL();
         $cSQL_arr     = baueArtikelExportSQL($exportformat);
         $oArtikel_arr = Shop::DB()->query(
             "SELECT tartikel.kArtikel
@@ -104,7 +110,7 @@ function bearbeiteExportformate($oJobQueue)
                     AND tartikelattribut.cName = '" . FKT_ATTRIBUT_KEINE_PREISSUCHMASCHINEN . "'
                 " . $cSQL_arr['Join'] . "
                 LEFT JOIN tartikelsichtbarkeit ON tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
-                    AND tartikelsichtbarkeit.kKundengruppe = " . $exportformat->kKundengruppe . "
+                    AND tartikelsichtbarkeit.kKundengruppe = " . (int)$exportformat->kKundengruppe . "
                 WHERE tartikelattribut.kArtikelAttribut IS NULL" . $cSQL_arr['Where'] . "
                     AND tartikelsichtbarkeit.kArtikel IS NULL
                     {$sql}
@@ -112,72 +118,77 @@ function bearbeiteExportformate($oJobQueue)
                 LIMIT " . $oJobQueue->nLimitN . ", " . $oJobQueue->nLimitM, 2
         );
         if (is_array($oArtikel_arr) && count($oArtikel_arr) > 0) {
-            foreach ($oArtikel_arr as $tartikel) {
-                $Artikel                                     = new Artikel();
-                $oArtikelOptionen                            = new stdClass();
-                $oArtikelOptionen->nMerkmale                 = 1;
-                $oArtikelOptionen->nAttribute                = 1;
-                $oArtikelOptionen->nArtikelAttribute         = 1;
-                $oArtikelOptionen->nKategorie                = 1;
-                $oArtikelOptionen->nKeinLagerbestandBeachten = 1;
-                $oArtikelOptionen->nMedienDatei              = 1;
-                $Artikel->fuelleArtikel($tartikel->kArtikel, $oArtikelOptionen, $exportformat->kKundengruppe, $exportformat->kSprache);
+            $oArtikelOptionen                            = new stdClass();
+            $oArtikelOptionen->nMerkmale                 = 1;
+            $oArtikelOptionen->nAttribute                = 1;
+            $oArtikelOptionen->nArtikelAttribute         = 1;
+            $oArtikelOptionen->nKategorie                = 1;
+            $oArtikelOptionen->nKeinLagerbestandBeachten = 1;
+            $oArtikelOptionen->nMedienDatei              = 1;
 
+            $smarty->assign('URL_SHOP', $shopURL)
+                   ->assign('Waehrung', $currency)
+                   ->assign('Einstellungen', $ExportEinstellungen);
+
+            $htmlBreakSearch  = array('<br />', '<br>', '</');
+            $htmlBreakReplace = array(' ', ' ', ' </');
+
+            $search  = array("\r\n", "\r", "\n", "\x0B", "\x0");
+            $replace = array(' ', ' ', ' ', ' ', '');
+
+            if (isset($ExportEinstellungen['exportformate_quot']) && $ExportEinstellungen['exportformate_quot'] !== 'N') {
+                $search[] = '"';
+                if ($ExportEinstellungen['exportformate_quot'] === 'q' || $ExportEinstellungen['exportformate_quot'] === 'bq') {
+                    $replace[] = '\"';
+                } elseif ($ExportEinstellungen['exportformate_quot'] === 'qq') {
+                    $replace[] = '""';
+                } else {
+                    $replace[] = $ExportEinstellungen['exportformate_quot'];
+                }
+            }
+            if (isset($ExportEinstellungen['exportformate_equot']) && $ExportEinstellungen['exportformate_equot'] !== 'N') {
+                $search[] = "'";
+                if ($ExportEinstellungen['exportformate_equot'] === 'q' || $ExportEinstellungen['exportformate_equot'] === 'bq') {
+                    $replace[] = '"';
+                } else {
+                    $replace[] = $ExportEinstellungen['exportformate_equot'];
+                }
+            }
+            if (isset($ExportEinstellungen['exportformate_semikolon']) && $ExportEinstellungen['exportformate_semikolon'] !== 'N') {
+                $search[]  = ';';
+                $replace[] = $ExportEinstellungen['exportformate_semikolon'];
+            }
+            $iso = (isset($ExportEinstellungen['exportformate_lieferland'])) ? $ExportEinstellungen['exportformate_lieferland'] : '';
+            foreach ($oArtikel_arr as $tartikel) {
+                $Artikel = new Artikel();
+                $Artikel->fuelleArtikel($tartikel->kArtikel, $oArtikelOptionen, (int)$exportformat->kKundengruppe, (int)$exportformat->kSprache, $noCache);
                 if ($Artikel->kArtikel > 0) {
+                    if ($Artikel->cacheHit === true) {
+                        ++$cacheHits;
+                    } else {
+                        ++$cacheMisses;
+                    }
                     $Artikel->cBeschreibungHTML     = str_replace('"', '&quot;', $Artikel->cBeschreibung);
                     $Artikel->cKurzBeschreibungHTML = str_replace('"', '&quot;', $Artikel->cKurzBeschreibung);
 
-                    $find    = array('<br />', '<br>', '</');
-                    $replace = array(' ', ' ', ' </');
-
-                    $Artikel->cName             = str_replace($find, $replace, $Artikel->cName);
-                    $Artikel->cBeschreibung     = str_replace($find, $replace, $Artikel->cBeschreibung);
-                    $Artikel->cKurzBeschreibung = str_replace($find, $replace, $Artikel->cKurzBeschreibung);
+                    $Artikel->cName             = str_replace($htmlBreakSearch, $htmlBreakReplace, $Artikel->cName);
+                    $Artikel->cBeschreibung     = str_replace($htmlBreakSearch, $htmlBreakReplace, $Artikel->cBeschreibung);
+                    $Artikel->cKurzBeschreibung = str_replace($htmlBreakSearch, $htmlBreakReplace, $Artikel->cKurzBeschreibung);
                     $Artikel->cName             = strip_tags($Artikel->cName);
                     $Artikel->cBeschreibung     = strip_tags($Artikel->cBeschreibung);
                     $Artikel->cKurzBeschreibung = strip_tags($Artikel->cKurzBeschreibung);
 
-                    $find    = array("\r\n", "\r", "\n", "\x0B", "\x0");
-                    $replace = array(' ', ' ', ' ', ' ', '');
-
-                    if (isset($ExportEinstellungen['exportformate_quot']) && $ExportEinstellungen['exportformate_quot'] !== 'N') {
-                        $find[] = '"';
-                        if ($ExportEinstellungen['exportformate_quot'] === 'bq') {
-                            $replace[] = '\"';
-                        } elseif ($ExportEinstellungen['exportformate_quot'] === 'qq') {
-                            $replace[] = '""';
-                        } else {
-                            $replace[] = $ExportEinstellungen['exportformate_quot'];
-                        }
-                    }
-                    if (isset($ExportEinstellungen['exportformate_equot']) && $ExportEinstellungen['exportformate_equot'] !== 'N') {
-                        $find[] = "'";
-                        if ($ExportEinstellungen['exportformate_equot'] === 'q') {
-                            $replace[] = '"';
-                        } else {
-                            $replace[] = $ExportEinstellungen['exportformate_equot'];
-                        }
-                    }
-                    if (isset($ExportEinstellungen['exportformate_semikolon']) && $ExportEinstellungen['exportformate_semikolon'] !== 'N') {
-                        $find[]    = ';';
-                        $replace[] = $ExportEinstellungen['exportformate_semikolon'];
-                    }
                     $Artikel->cName                 = StringHandler::unhtmlentities($Artikel->cName);
                     $Artikel->cBeschreibung         = StringHandler::unhtmlentities($Artikel->cBeschreibung);
                     $Artikel->cKurzBeschreibung     = StringHandler::unhtmlentities($Artikel->cKurzBeschreibung);
-                    $Artikel->cName                 = StringHandler::removeWhitespace(str_replace($find, $replace, $Artikel->cName));
-                    $Artikel->cBeschreibung         = StringHandler::removeWhitespace(str_replace($find, $replace, $Artikel->cBeschreibung));
-                    $Artikel->cKurzBeschreibung     = StringHandler::removeWhitespace(str_replace($find, $replace, $Artikel->cKurzBeschreibung));
-                    $Artikel->cBeschreibungHTML     = StringHandler::removeWhitespace(str_replace($find, $replace, $Artikel->cBeschreibungHTML));
-                    $Artikel->cKurzBeschreibungHTML = StringHandler::removeWhitespace(str_replace($find, $replace, $Artikel->cKurzBeschreibungHTML));
-
-                    $waehrung = $_SESSION['Waehrung'];
-                    if (!isset($waehrung->kWaehrung)) {
-                        $waehrung = Shop::DB()->query("SELECT * FROM twaehrung WHERE cStandard='Y'", 1);
-                    }
+                    $Artikel->cName                 = StringHandler::removeWhitespace(str_replace($search, $replace, $Artikel->cName));
+                    $Artikel->cBeschreibung         = StringHandler::removeWhitespace(str_replace($search, $replace, $Artikel->cBeschreibung));
+                    $Artikel->cKurzBeschreibung     = StringHandler::removeWhitespace(str_replace($search, $replace, $Artikel->cKurzBeschreibung));
+                    $Artikel->cBeschreibungHTML     = StringHandler::removeWhitespace(str_replace($search, $replace, $Artikel->cBeschreibungHTML));
+                    $Artikel->cKurzBeschreibungHTML = StringHandler::removeWhitespace(str_replace($search, $replace, $Artikel->cKurzBeschreibungHTML));
 
                     $Artikel->fUst              = gibUst($Artikel->kSteuerklasse);
-                    $Artikel->Preise->fVKBrutto = berechneBrutto($Artikel->Preise->fVKNetto * $waehrung->fFaktor, $Artikel->fUst);
+                    $Artikel->Preise->fVKBrutto = berechneBrutto($Artikel->Preise->fVKNetto * $currency->fFaktor, $Artikel->fUst);
                     $Artikel->Preise->fVKNetto  = round($Artikel->Preise->fVKNetto, 2);
                     //Cache loeschen
                     unset($_SESSION['ks']);
@@ -185,9 +196,10 @@ function bearbeiteExportformate($oJobQueue)
                     unset($_SESSION['oKategorie_arr_new']);
                     unset($_SESSION['kKategorieVonUnterkategorien_arr']);
                     //Kategoriepfad
-                    $iso                    = (isset($ExportEinstellungen['exportformate_lieferland'])) ? $ExportEinstellungen['exportformate_lieferland'] : '';
                     $Artikel->Kategorie     = new Kategorie($Artikel->gibKategorie(), $exportformat->kSprache, $exportformat->kKundengruppe);
-                    $Artikel->Kategoriepfad = gibKategoriepfad($Artikel->Kategorie, $exportformat->kKundengruppe, $exportformat->kSprache);
+                    $Artikel->Kategoriepfad = (isset($Artikel->Kategorie->cKategoriePfad)) ?
+                        $Artikel->Kategorie->cKategoriePfad : // calling gibKategoriepfad() should not be necessary since it has already been called in Kategorie::loadFromDB()
+                        gibKategoriepfad($Artikel->Kategorie, $exportformat->kKundengruppe, $exportformat->kSprache);
                     $Artikel->Versandkosten = gibGuenstigsteVersandkosten($iso, $Artikel, 0, $exportformat->kKundengruppe);
                     if ($Artikel->Versandkosten != -1) {
                         $price = convertCurrency($Artikel->Versandkosten, null, $exportformat->kWaehrung);
@@ -203,51 +215,52 @@ function bearbeiteExportformate($oJobQueue)
                         }
                         $Artikel->cURL .= $cSep . $exportformat->tkampagne_cParameter . '=' . $exportformat->tkampagne_cWert;
                     }
-                    $Artikel->cDeeplink   = Shop::getURL() . '/' . $Artikel->cURL;
+                    $Artikel->cDeeplink   = $shopURL . '/' . $Artikel->cURL;
                     $Artikel->Artikelbild = '';
                     if ($Artikel->Bilder[0]->cPfadGross) {
-                        $Artikel->Artikelbild = Shop::getURL() . '/' . $Artikel->Bilder[0]->cPfadGross;
+                        $Artikel->Artikelbild = $shopURL . '/' . $Artikel->Bilder[0]->cPfadGross;
                     }
-                    $Artikel->Lieferbar = 'Y';
-                    if ($Artikel->fLagerbestand <= 0) {
-                        $Artikel->Lieferbar = 'N';
-                    }
-                    $Artikel->Lieferbar_01 = 1;
-                    if ($Artikel->fLagerbestand <= 0) {
-                        $Artikel->Lieferbar_01 = 0;
-                    }
-                    $Artikel->Verfuegbarkeit_kelkoo = '003';
-                    if ($Artikel->fLagerbestand > 0) {
-                        $Artikel->Verfuegbarkeit_kelkoo = "001";
-                    }
-                    $smarty->assign('Artikel', $Artikel);
-                    $smarty->assign('URL_SHOP', Shop::getURL());
-                    $smarty->assign('Waehrung', $Waehrung);
-                    $smarty->assign('Einstellungen', $ExportEinstellungen);
-
-                    $cOutput = $smarty->fetch('db:' . $exportformat->kExportformat);
+                    $Artikel->Lieferbar = ($Artikel->fLagerbestand <= 0) ?
+                        'N' :
+                        'Y';
+                    $Artikel->Lieferbar_01 = ($Artikel->fLagerbestand <= 0) ?
+                        0 :
+                        1;
+                    $Artikel->Verfuegbarkeit_kelkoo = ($Artikel->fLagerbestand > 0) ?
+                        '001' :
+                        '003';
+                    $cOutput = $smarty->assign('Artikel', $Artikel)
+                                      ->fetch('db:' . $exportformat->kExportformat);
 
                     executeHook(HOOK_CRON_EXPORTFORMATE_OUTPUT_FETCHED);
 
                     if (strlen($cOutput) > 0) {
-                        if ($exportformat->cKodierung == 'UTF-8') {
+                        if ($exportformat->cKodierung === 'UTF-8' || $exportformat->cKodierung === 'UTF-8noBOM') {
                             fwrite($datei, utf8_encode($cOutput . "\n"));
                         } else {
                             fwrite($datei, $cOutput . "\n");
                         }
                     }
                 }
-                $oJobQueue->nLimitN += 1;
-                $oJobQueue->dZuletztGelaufen = date('Y-m-d H:i');
-                $oJobQueue->updateJobInDB();
+                ++$oJobQueue->nLimitN;
+                //max. 10 status updates per run
+                if (($oJobQueue->nLimitN % max(round($oJobQueue->nLimitM / 10), 10)) === 0) {
+                    Jtllog::cronLog($oJobQueue->nLimitN . '/' . $max->nAnzahl . ' products exported', 2);
+                }
             }
             fclose($datei);
 
             updateExportformatQueueBearbeitet($oJobQueue);
-            $oJobQueue->nInArbeit = 0;
+            $oJobQueue->dZuletztGelaufen = date('Y-m-d H:i');
+            $oJobQueue->nInArbeit        = 0;
             $oJobQueue->updateJobInDB();
-        } else {
-            Shop::DB()->query("UPDATE texportformat SET dZuletztErstellt=now() WHERE kExportformat = " . (int)$oJobQueue->kKey, 4);
+        }
+        //finalize job when there are no more articles to export
+        if (!(is_array($oArtikel_arr) && count($oArtikel_arr) > 0) || ($oJobQueue->nLimitN >= $max->nAnzahl)) {
+            Jtllog::cronLog('Finalizing job.', 2);
+            $upd = new stdClass();
+            $upd->dZuletztErstellt = 'now()';
+            Shop::DB()->update('texportformat', 'kExportformat', (int)$oJobQueue->kKey, $upd);
             $oJobQueue->deleteJobInDB();
 
             if (file_exists(PFAD_ROOT . PFAD_EXPORT . $exportformat->cDateiname)) {
@@ -262,25 +275,23 @@ function bearbeiteExportformate($oJobQueue)
                     unlink(PFAD_ROOT . PFAD_EXPORT . $cTMPDatei);
                 }
             }
-            // Versucht (falls so eingestellt) die erstellte Exportdatei zu in mehrere Dateien zu splitten
+            // Versucht (falls so eingestellt) die erstellte Exportdatei in mehrere Dateien zu splitten
             splitteExportDatei($exportformat);
-
             unset($oJobQueue);
         }
     }
+    Jtllog::cronLog('Finished after ' . round(microtime(true) - $start, 4) . 's. Article cache hits: ' . $cacheHits . ', misses: ' . $cacheMisses);
 }
 
+
 /**
- * @param $oJobQueue
+ * @param object $oJobQueue
  * @return bool
  */
 function updateExportformatQueueBearbeitet($oJobQueue)
 {
     if ($oJobQueue->kJobQueue > 0) {
-        Shop::DB()->query(
-            "DELETE FROM texportformatqueuebearbeitet
-                WHERE kJobQueue = " . $oJobQueue->kJobQueue, 4
-        );
+        Shop::DB()->delete('texportformatqueuebearbeitet', 'kJobQueue', (int)$oJobQueue->kJobQueue);
 
         $oExportformatQueueBearbeitet                   = new stdClass();
         $oExportformatQueueBearbeitet->kJobQueue        = $oJobQueue->kJobQueue;
@@ -300,7 +311,7 @@ function updateExportformatQueueBearbeitet($oJobQueue)
 }
 
 /**
- * @param $n
+ * @param string $n
  * @return mixed
  */
 function getNum($n)
@@ -318,8 +329,8 @@ function getURL($img)
 }
 
 /**
- * @param $file
- * @param $data
+ * @param string $file
+ * @param string $data
  */
 function writeFile($file, $data)
 {
@@ -361,9 +372,9 @@ function makecsv($cGlobalAssoc_arr, $nLimitN = 0)
  */
 function db_get_template($tpl_name, &$tpl_source, $smarty)
 {
-    $exportformat = Shop::DB()->query("SELECT * FROM texportformat WHERE kExportformat=" . $tpl_name, 1);
+    $exportformat = Shop::DB()->select('texportformat', 'kExportformat', $tpl_name);
 
-    if (!$exportformat->kExportformat > 0) {
+    if (empty($exportformat->kExportformat) || !$exportformat->kExportformat > 0) {
         return false;
     }
     $tpl_source = $exportformat->cContent;
@@ -411,7 +422,7 @@ function getCats($catlist)
     $cats     = array();
     $shopcats = array();
     $res      = Shop::DB()->query("SELECT kKategorie, cName, kOberKategorie, nSort FROM tkategorie", 10);
-    while ($row = $res->fetch_assoc()) {
+    while ($row = $res->fetch(PDO::FETCH_ASSOC)) {
         $cats[array_shift($row)] = $row;
     }
     foreach ($catlist as $cat_id) {
@@ -440,7 +451,7 @@ function getCats($catlist)
 function writeLogTMP($entry)
 {
     $logfile = fopen(PFAD_LOGFILES . 'exportformat.log', 'a');
-    fwrite($logfile, "\n[" . date('m.d.y H:i:s') . " " . microtime() . "] " . $_SERVER['SCRIPT_NAME'] . "\n" . $entry);
+    fwrite($logfile, "\n[" . date('m.d.y H:i:s') . ' ' . microtime() . '] ' . $_SERVER['SCRIPT_NAME'] . "\n" . $entry);
     fclose($logfile);
 }
 
@@ -511,15 +522,13 @@ function gibYategoExport($exportformat, $oJobQueue, $ExportEinstellungen)
             $Artikel->fuelleArtikel($tartikel->kArtikel, $oArtikelOptionen, $exportformat->kKundengruppe, $exportformat->kSprache);
 
             verarbeiteYategoExport($Artikel, $exportformat, $ExportEinstellungen, $KategorieListe, $oGlobal_arr);
-
-            $oJobQueue->nLimitN += 1;
         }
 
         $KategorieListe                = array_keys($KategorieListe);
         $oGlobal_arr['shopkategorien'] = getCats($KategorieListe);
 
-        if ($exportformat->cKodierung === 'UTF-8') {
-            $cHeader = "\xEF\xBB\xBF";
+        if ($exportformat->cKodierung === 'UTF-8' || $exportformat->cKodierung === 'UTF-8noBOM') {
+            $cHeader = $exportformat->cKodierung === 'UTF-8' ? "\xEF\xBB\xBF" : '';
             writeFile(PATH . 'varianten.csv', $cHeader . utf8_encode(makecsv($oGlobal_arr['varianten'], $oJobQueue->nLimitN) . CRLF . makecsv($oGlobal_arr['variantenwerte'], $oJobQueue->nLimitN)));
             writeFile(PATH . 'artikel.csv', $cHeader . utf8_encode(makecsv($oGlobal_arr['artikel'], $oJobQueue->nLimitN)));
             writeFile(PATH . 'shopkategorien.csv', $cHeader . utf8_encode(makecsv($oGlobal_arr['shopkategorien'], $oJobQueue->nLimitN)));
@@ -531,6 +540,7 @@ function gibYategoExport($exportformat, $oJobQueue, $ExportEinstellungen)
             writeFile(PATH . 'lager.csv', makecsv($oGlobal_arr['lager'], $oJobQueue->nLimitN));
         }
 
+        $oJobQueue->nLimitN         += count($oArtikel_arr);
         $oJobQueue->dZuletztGelaufen = date('Y-m-d H:i');
         $oJobQueue->nInArbeit        = 0;
         $oJobQueue->updateJobInDB();

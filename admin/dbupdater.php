@@ -9,7 +9,7 @@ set_time_limit(0);
 require_once dirname(__FILE__) . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Updater.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_CLASSES . 'class.JTL-Shopadmin.AjaxResponse.php';
-
+/** @global JTLSmarty $smarty */
 $hasPermission = $oAccount->permission('SHOP_UPDATE_VIEW', false, false);
 $action        = isset($_GET['action']) ? $_GET['action'] : null;
 
@@ -33,41 +33,21 @@ $_smarty->clearCompiledTemplate();
 // clear data cache
 Shop::Cache()->flushAll();
 
-$allMigrations = function () use ($updater) {
-    $migrations = [];
-
-    $migrationDirs = array_filter($updater->getUpdateDirs(), function ($v) {
-        return (int) $v >= 402;
-    });
-
-    sort($migrationDirs, SORT_NUMERIC);
-    $migrationDirs = array_reverse($migrationDirs);
-
-    foreach ($migrationDirs as $version) {
-        $manager              = new MigrationManager((int) $version);
-        $migrations[$version] = $manager;
-    }
-
-    return $migrations;
-};
-
-$buildStatus = function () use ($updater, $smarty, $template, $allMigrations) {
+$buildStatus = function () use ($updater, $smarty, $template) {
     $currentFileVersion     = $updater->getCurrentFileVersion();
     $currentDatabaseVersion = $updater->getCurrentDatabaseVersion();
-    $latestVersion          = $updater->getLatestVersion();
     $version                = $updater->getVersion();
     $updatesAvailable       = $updater->hasPendingUpdates();
     $updateError            = $updater->error();
 
     if (defined('ADMIN_MIGRATION') && ADMIN_MIGRATION) {
-        $smarty->assign('migrations', $allMigrations());
+        $smarty->assign('manager', new MigrationManager());
     }
 
     $smarty
         ->assign('updatesAvailable', $updatesAvailable)
         ->assign('currentFileVersion', $currentFileVersion)
         ->assign('currentDatabaseVersion', $currentDatabaseVersion)
-        ->assign('latestVersion', $latestVersion)
         ->assign('version', $version)
         ->assign('updateError', $updateError)
         ->assign('currentTemplateFileVersion', $template->xmlData->cShopVersion)

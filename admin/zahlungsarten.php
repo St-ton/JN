@@ -10,8 +10,8 @@ $oAccount->permission('ORDER_PAYMENT_VIEW', true, true);
 require_once PFAD_ROOT . PFAD_INCLUDES . 'plugin_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'zahlungsarten_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
-
-$standardwaehrung = Shop::DB()->query("SELECT * FROM twaehrung WHERE cStandard = 'Y'", 1);
+/** @global JTLSmarty $smarty */
+$standardwaehrung = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
 $hinweis          = '';
 $step             = 'uebersicht';
 // Check Nutzbar
@@ -21,8 +21,8 @@ if (verifyGPCDataInteger('checkNutzbar') === 1) {
 }
 // reset log
 if (isset($_GET['a']) && isset($_GET['kZahlungsart']) && $_GET['a'] === 'logreset' && intval($_GET['kZahlungsart']) > 0 && validateToken()) {
-    $kZahlungsart = (int) $_GET['kZahlungsart'];
-    $oZahlungsart = Shop::DB()->query("SELECT cName, cModulId FROM tzahlungsart WHERE kZahlungsart = " . $kZahlungsart, 1);
+    $kZahlungsart = (int)$_GET['kZahlungsart'];
+    $oZahlungsart = Shop::DB()->select('tzahlungsart', 'kZahlungsart', $kZahlungsart);
 
     if (isset($oZahlungsart->cModulId) && strlen($oZahlungsart->cModulId) > 0) {
         require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.ZahlungsLog.php';
@@ -33,11 +33,11 @@ if (isset($_GET['a']) && isset($_GET['kZahlungsart']) && $_GET['a'] === 'logrese
     }
 }
 
-if (isset($_POST['einstellungen_bearbeiten']) && isset($_POST['kZahlungsart']) && intval($_POST['einstellungen_bearbeiten']) === 1 && intval($_POST['kZahlungsart']) > 0 && validateToken()) {
+if (isset($_POST['einstellungen_bearbeiten']) && isset($_POST['kZahlungsart']) && (int)$_POST['einstellungen_bearbeiten'] === 1 && (int)$_POST['kZahlungsart'] > 0 && validateToken()) {
     $step              = 'uebersicht';
-    $zahlungsart       = Shop::DB()->select('tzahlungsart', 'kZahlungsart', (int) $_POST['kZahlungsart']);
-    $nMailSenden       = intval($_POST['nMailSenden']);
-    $nMailSendenStorno = intval($_POST['nMailSendenStorno']);
+    $zahlungsart       = Shop::DB()->select('tzahlungsart', 'kZahlungsart', (int)$_POST['kZahlungsart']);
+    $nMailSenden       = (int)$_POST['nMailSenden'];
+    $nMailSendenStorno = (int)$_POST['nMailSendenStorno'];
     $nMailBits         = 0;
     if (is_array($_POST['kKundengruppe'])) {
         $cKundengruppen = StringHandler::createSSK($_POST['kKundengruppe']);
@@ -56,16 +56,16 @@ if (isset($_POST['einstellungen_bearbeiten']) && isset($_POST['kZahlungsart']) &
     }
 
     $nWaehrendBestellung = isset($_POST['nWaehrendBestellung'])
-        ? (int) $_POST['nWaehrendBestellung']
+        ? (int)$_POST['nWaehrendBestellung']
         : $zahlungsart->nWaehrendBestellung;
 
-    Shop::DB()->query(
-        "UPDATE tzahlungsart
-            SET cKundengruppen='" . $cKundengruppen . "', nSort = " . (int) $_POST['nSort'] . ", nMailSenden = " . $nMailBits . ",
-            cBild = '" . Shop::DB()->escape($_POST['cBild']) . "', nWaehrendBestellung = " . $nWaehrendBestellung . "
-            WHERE kZahlungsart = " . (int) $zahlungsart->kZahlungsart, 4
-    );
-
+    $upd                      = new stdClass();
+    $upd->cKundengruppen      = $cKundengruppen;
+    $upd->nSort               = (int)$_POST['nSort'];
+    $upd->nMailSenden         = $nMailBits;
+    $upd->cBild               = $_POST['cBild'];
+    $upd->nWaehrendBestellung = $nWaehrendBestellung;
+    Shop::DB()->update('tzahlungsart', 'kZahlungsart', (int)$zahlungsart->kZahlungsart, $upd);
     // Weiche fuer eine normale Zahlungsart oder eine Zahlungsart via Plugin
     if (strpos($zahlungsart->cModulId, 'kPlugin_') !== false) {
         $kPlugin     = gibkPluginAuscModulId($zahlungsart->cModulId);
@@ -80,9 +80,10 @@ if (isset($_POST['einstellungen_bearbeiten']) && isset($_POST['kZahlungsart']) &
 
             switch ($Conf[$i]->cInputTyp) {
                 case 'kommazahl':
-                    $aktWert->cWert = floatval($aktWert->cWert);
+                    $aktWert->cWert = floatval(str_replace(',', '.', $aktWert->cWert));
                     break;
                 case 'zahl':
+                case 'number':
                     $aktWert->cWert = intval($aktWert->cWert);
                     break;
                 case 'text':
@@ -93,7 +94,7 @@ if (isset($_POST['einstellungen_bearbeiten']) && isset($_POST['kZahlungsart']) &
             Shop::DB()->insert('tplugineinstellungen', $aktWert);
         }
     } else {
-        $Conf        = Shop::DB()->query("SELECT * FROM teinstellungenconf WHERE cModulId='" . $zahlungsart->cModulId . "' AND cConf = 'Y' ORDER BY nSort", 2);
+        $Conf        = Shop::DB()->selectAll('teinstellungenconf', ['cModulId', 'cConf'], [$zahlungsart->cModulId, 'Y'], '*', 'nSort');
         $configCount = count($Conf);
         for ($i = 0; $i < $configCount; $i++) {
             $aktWert                        = new stdClass();
@@ -104,9 +105,10 @@ if (isset($_POST['einstellungen_bearbeiten']) && isset($_POST['kZahlungsart']) &
 
             switch ($Conf[$i]->cInputTyp) {
                 case 'kommazahl':
-                    $aktWert->cWert = floatval($aktWert->cWert);
+                    $aktWert->cWert = floatval(str_replace(',', '.', $aktWert->cWert));
                     break;
                 case 'zahl':
+                case 'number':
                     $aktWert->cWert = intval($aktWert->cWert);
                     break;
                 case 'text':
@@ -146,7 +148,7 @@ if (isset($_GET['kZahlungsart']) && intval($_GET['kZahlungsart']) > 0 && (!isset
 }
 
 if ($step === 'einstellen') {
-    $zahlungsart = Shop::DB()->select('tzahlungsart', 'kZahlungsart', (int) $_GET['kZahlungsart']);
+    $zahlungsart = Shop::DB()->select('tzahlungsart', 'kZahlungsart', (int)$_GET['kZahlungsart']);
     if ($zahlungsart === false) {
         $step    = 'uebersicht';
         $hinweis = 'Zahlungsart nicht gefunden.';
@@ -164,31 +166,19 @@ if ($step === 'einstellen') {
             $configCount = count($Conf);
             for ($i = 0; $i < $configCount; $i++) {
                 if ($Conf[$i]->cInputTyp === 'selectbox') {
-                    $Conf[$i]->ConfWerte = Shop::DB()->query(
-                        "SELECT *
-                            FROM tplugineinstellungenconfwerte
-                            WHERE kPluginEinstellungenConf = " . (int) $Conf[$i]->kPluginEinstellungenConf . "
-                            ORDER BY nSort", 2
-                    );
+                    $Conf[$i]->ConfWerte = Shop::DB()->selectAll('tplugineinstellungenconfwerte', 'kPluginEinstellungenConf', (int)$Conf[$i]->kPluginEinstellungenConf, '*', 'nSort');
                 }
-                $setValue = Shop::DB()->query(
-                    "SELECT cWert
-                        FROM tplugineinstellungen
-                        WHERE kPlugin = " . (int) $Conf[$i]->kPlugin . "
-                            AND cName = '" . $Conf[$i]->cWertName . "'", 1
-                );
+                $setValue = Shop::DB()->select('tplugineinstellungen', 'kPlugin', (int)$Conf[$i]->kPlugin, 'cName', $Conf[$i]->cWertName);
                 $Conf[$i]->gesetzterWert = $setValue->cWert;
             }
         } else {
-            $Conf        = Shop::DB()->query("SELECT * FROM teinstellungenconf WHERE cModulId = '" . $zahlungsart->cModulId . "' ORDER BY nSort", 2);
+            $Conf        = Shop::DB()->selectAll('teinstellungenconf', 'cModulId', $zahlungsart->cModulId, '*', 'nSort');
             $configCount = count($Conf);
             for ($i = 0; $i < $configCount; $i++) {
                 if ($Conf[$i]->cInputTyp === 'selectbox') {
-                    $Conf[$i]->ConfWerte = Shop::DB()->query("SELECT * FROM teinstellungenconfwerte WHERE kEinstellungenConf = " . (int) $Conf[$i]->kEinstellungenConf . " ORDER BY nSort",
-                        2);
+                    $Conf[$i]->ConfWerte = Shop::DB()->selectAll('teinstellungenconfwerte', 'kEinstellungenConf', (int)$Conf[$i]->kEinstellungenConf, '*', 'nSort');
                 }
-                $setValue = Shop::DB()->query("SELECT cWert FROM teinstellungen WHERE kEinstellungenSektion = " . CONF_ZAHLUNGSARTEN . " AND cName = '" . $Conf[$i]->cWertName . "'",
-                    1);
+                $setValue = Shop::DB()->select('teinstellungen', 'kEinstellungenSektion', CONF_ZAHLUNGSARTEN, 'cName', $Conf[$i]->cWertName);
                 $Conf[$i]->gesetzterWert = (isset($setValue->cWert)) ? $setValue->cWert : null;
             }
         }
@@ -209,7 +199,7 @@ if ($step === 'einstellen') {
     require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.ZahlungsLog.php';
 
     $kZahlungsart = intval($_GET['kZahlungsart']);
-    $oZahlungsart = Shop::DB()->query("SELECT cModulId FROM tzahlungsart WHERE kZahlungsart = " . $kZahlungsart, 1);
+    $oZahlungsart = Shop::DB()->select('tzahlungsart', 'kZahlungsart', $kZahlungsart);
 
     if (isset($oZahlungsart->cModulId) && strlen($oZahlungsart->cModulId) > 0) {
         $oZahlungsLog = new ZahlungsLog($oZahlungsart->cModulId);
@@ -219,7 +209,7 @@ if ($step === 'einstellen') {
 }
 
 if ($step === 'uebersicht') {
-    $oZahlungsart_arr = Shop::DB()->query("SELECT * FROM tzahlungsart WHERE nActive = 1 ORDER BY cAnbieter, cName, nSort, kZahlungsart", 2);
+    $oZahlungsart_arr = Shop::DB()->selectAll('tzahlungsart', 'nActive', 1, '*', 'cAnbieter, cName, nSort, kZahlungsart');
 
     if (is_array($oZahlungsart_arr) && count($oZahlungsart_arr) > 0) {
         require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.ZahlungsLog.php';

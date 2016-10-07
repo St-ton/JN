@@ -6,19 +6,21 @@
             {block name="image-wrapper"}
                 <a class="image-wrapper" href="{$Artikel->cURL}">
                     {if isset($Artikel->Bilder[0]->cAltAttribut)}
-                        {assign var="alt" value=$Artikel->Bilder[0]->cAltAttribut|strip_tags|escape:"quotes"|truncate:60}
+                        {assign var="alt" value=$Artikel->Bilder[0]->cAltAttribut|strip_tags|truncate:60|escape:"html"}
                     {else}
                         {assign var="alt" value=$Artikel->cName}
                     {/if}
-    
+
                     {include file="snippets/image.tpl" src=$Artikel->Bilder[0]->cPfadNormal alt=$alt tplscope=$tplscope}
-    
+
                     {if isset($Artikel->oSuchspecialBild)}
                         <img class="overlay-img visible-lg" src="{$Artikel->oSuchspecialBild->cPfadKlein}" alt="{if isset($Artikel->oSuchspecialBild->cSuchspecial)}{$Artikel->oSuchspecialBild->cSuchspecial}{else}{$Artikel->cName}{/if}">
                     {/if}
                 </a>
             {/block}
-            {include file='productdetails/rating.tpl' stars=$Artikel->fDurchschnittsBewertung}
+            {if $Einstellungen.bewertung.bewertung_anzeigen === 'Y'}
+                {include file='productdetails/rating.tpl' stars=$Artikel->fDurchschnittsBewertung}
+            {/if}
         </div>
         <div class="col-xs-6 col-lg-5">
             {block name="product-title"}<h4 class="title"><a href="{$Artikel->cURL}">{$Artikel->cName}</a></h4>{/block}
@@ -28,15 +30,19 @@
                         {if ($Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen === 'BT'
                         || $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen === 'B') && !empty($Artikel->cHerstellerBildKlein)}
                             <div class="media-left">
-                                <a href="{$Artikel->cHerstellerHomepage}">
+                                {if !empty($Artikel->cHerstellerHomepage)}<a href="{$Artikel->cHerstellerHomepage}">{/if}
                                     <img src="{$Artikel->cHerstellerBildKlein}" alt="" class="img-xs">
-                                </a>
+                                {if !empty($Artikel->cHerstellerHomepage)}</a>{/if}
                             </div>
                         {/if}
                         {if ($Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen === 'BT'
                         || $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen === 'Y') && !empty($Artikel->cHersteller)}
                             <div class="media-body">
-                                <span class="small text-uppercase"><a href="{$Artikel->cHerstellerHomepage}">{$Artikel->cHersteller}</a></span>
+                                <span class="small text-uppercase">
+                                    {if !empty($Artikel->cHerstellerHomepage)}<a href="{$Artikel->cHerstellerHomepage}">{/if}
+                                        {$Artikel->cHersteller}
+                                    {if !empty($Artikel->cHerstellerHomepage)}</a>{/if}
+                                </span>
                             </div>
                         {/if}
                     </div>
@@ -133,7 +139,7 @@
                         {/if}
                     {/block}
                     </div>
-    
+
                     <div class="hidden-xs basket-details">
                         {block name="basket-details"}
                             {if ($Artikel->inWarenkorbLegbar == 1 || ($Artikel->nErscheinendesProdukt == 1 && $Einstellungen.global.global_erscheinende_kaeuflich === 'Y')) && $Artikel->nIstVater == 0 && $Artikel->Variationen|@count == 0 && !$Artikel->bHasKonfig}
@@ -141,7 +147,7 @@
                                     {if $Artikel->cEinheit}
                                         <div class="input-group input-group-sm">
                                             <input type="number" min="0"{if $Artikel->fAbnahmeintervall > 0} step="{$Artikel->fAbnahmeintervall}"{/if} size="2" onfocus="this.setAttribute('autocomplete', 'off');" id="quantity{$Artikel->kArtikel}" class="quantity form-control text-right" name="anzahl" value="{if $Artikel->fAbnahmeintervall > 0}{if $Artikel->fMindestbestellmenge > $Artikel->fAbnahmeintervall}{$Artikel->fMindestbestellmenge}{else}{$Artikel->fAbnahmeintervall}{/if}{else}1{/if}" />
-        
+
                                             {if $Artikel->cEinheit}
                                                 <span class="input-group-addon unit">{$Artikel->cEinheit}</span>
                                             {/if}
@@ -154,7 +160,7 @@
                                     {else}
                                         <div class="input-group input-group-sm">
                                             <input type="number" min="0"{if $Artikel->fAbnahmeintervall > 0} step="{$Artikel->fAbnahmeintervall}"{/if} size="2" onfocus="this.setAttribute('autocomplete', 'off');" id="quantity{$Artikel->kArtikel}" class="quantity form-control text-right" name="anzahl" value="{if $Artikel->fAbnahmeintervall > 0}{if $Artikel->fMindestbestellmenge > $Artikel->fAbnahmeintervall}{$Artikel->fMindestbestellmenge}{else}{$Artikel->fAbnahmeintervall}{/if}{else}1{/if}" />
-        
+
                                             <span class="change_quantity input-group-btn">
                                                 <button type="submit" class="btn btn-primary" id="submit{$Artikel->kArtikel}" title="{lang key="addToCart" section="global"}"><span class="fa fa-shopping-cart"></span><span class="hidden-md"> {lang key="addToCart" section="global"}</span></button>
                                             </span>
@@ -168,7 +174,7 @@
                             {/if}
                         {/block}
                     </div>
-    
+
                     <input type="hidden" name="a" value="{$Artikel->kArtikel}" />
                     <input type="hidden" name="wke" value="1" />
                     <input type="hidden" name="overview" value="1" />
@@ -222,7 +228,7 @@
                                 </button>
                             </div>
                         {/if}
-                        {if $Einstellungen.artikeluebersicht.artikeluebersicht_wunschzettel_anzeigen === 'Y'}
+                        {if $Einstellungen.global.global_wunschliste_anzeigen === 'Y' && $Einstellungen.artikeluebersicht.artikeluebersicht_wunschzettel_anzeigen === 'Y'}
                             <div class="btn-group btn-group-xs" role="group">
                                 <button name="Wunschliste" type="submit" class="wishlist btn btn-default" title="{lang key="addToWishlist" section="productDetails"}">
                                     <span class="fa fa-heart"></span>
@@ -248,6 +254,6 @@
 {* popup-content *}
 {if $Artikel->verfuegbarkeitsBenachrichtigung == 3}
     <div id="popupn{$Artikel->kArtikel}" class="hidden">
-        {include file='productdetails/availability_notification_form.tpl' tplscope='artikeldetails'}
+        {include file='productdetails/availability_notification_form.tpl' position="popup" tplscope='artikeldetails'}
     </div>
 {/if}

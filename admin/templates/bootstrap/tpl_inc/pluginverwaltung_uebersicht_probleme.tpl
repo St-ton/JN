@@ -25,18 +25,18 @@
                 </thead>
                 <tbody>
                 {foreach from=$PluginInstalliertByStatus_arr.status_3 item=PluginInstalliert}
-                    <tr {if isset($PluginInstalliert->dUpdate) && $PluginInstalliert->dUpdate|count_characters > 0 && $PluginInstalliert->cUpdateFehler == 1}class="highlight"{/if}>
+                    <tr {if isset($PluginInstalliert->dUpdate) && $PluginInstalliert->dUpdate|strlen > 0 && $PluginInstalliert->cUpdateFehler == 1}class="highlight"{/if}>
                         <td class="check">
                             <input type="checkbox" name="kPlugin[]" value="{$PluginInstalliert->kPlugin}" id="plugin-problem-{$PluginInstalliert->kPlugin}" />
                         </td>
                         <td>
                             <label for="plugin-problem-{$PluginInstalliert->kPlugin}">{$PluginInstalliert->cName}</label>
-                            {if (isset($PluginInstalliert->dUpdate) && $PluginInstalliert->dUpdate|count_characters > 0) || (isset($PluginInstalliert->cInfo) && $PluginInstalliert->cInfo|count_characters > 0)}
+                            {if (isset($PluginInstalliert->dUpdate) && $PluginInstalliert->dUpdate|strlen > 0) || (isset($PluginInstalliert->cInfo) && $PluginInstalliert->cInfo|strlen > 0)}
                                 <p>
                                     {if $PluginInstalliert->cUpdateFehler == 1}
-                                        {if isset($PluginInstalliert->cInfo) && $PluginInstalliert->cInfo|count_characters > 0}{$PluginInstalliert->cInfo}<br />{/if}{#pluginUpdateExists#}
+                                        {if isset($PluginInstalliert->cInfo) && $PluginInstalliert->cInfo|strlen > 0}{$PluginInstalliert->cInfo}<br />{/if}{#pluginUpdateExists#}
                                     {else}
-                                        {if isset($PluginInstalliert->cInfo) && $PluginInstalliert->cInfo|count_characters > 0}{$PluginInstalliert->cInfo}<br />{/if}{#pluginUpdateExists#}. <br />{#pluginUpdateExistsError#}: <br />{$PluginInstalliert->cUpdateFehler}
+                                        {if isset($PluginInstalliert->cInfo) && $PluginInstalliert->cInfo|strlen > 0}{$PluginInstalliert->cInfo}<br />{/if}{#pluginUpdateExists#}. <br />{#pluginUpdateExistsError#}: <br />{$PluginInstalliert->cUpdateFehler}
                                     {/if}
                                 </p>
                             {/if}
@@ -48,48 +48,54 @@
                                 </span>
                             </h4>
                         </td>
-                        <td class="tcenter">{$PluginInstalliert->dVersion}{if isset($PluginInstalliert->dUpdate) && $PluginInstalliert->dUpdate|count_characters > 0} <span class="error">{$PluginInstalliert->dUpdate}</span>{/if}</td>
+                        <td class="tcenter">{$PluginInstalliert->dVersion}{if isset($PluginInstalliert->dUpdate) && $PluginInstalliert->dUpdate|strlen > 0} <span class="error">{$PluginInstalliert->dUpdate}</span>{/if}</td>
                         <td class="tcenter">{$PluginInstalliert->dInstalliert_DE}</td>
                         <td class="tcenter">{$PluginInstalliert->cVerzeichnis}</td>
                         <td class="tcenter">
                             {if isset($PluginInstalliert->oPluginSprachvariableAssoc_arr) && $PluginInstalliert->oPluginSprachvariableAssoc_arr|@count > 0}
-                                <a href="pluginverwaltung.php?pluginverwaltung_uebersicht=1&sprachvariablen=1&kPlugin={$PluginInstalliert->kPlugin}" class="btn btn-default"><i class="fa fa-edit"></i></a>
+                                <a href="pluginverwaltung.php?pluginverwaltung_uebersicht=1&sprachvariablen=1&kPlugin={$PluginInstalliert->kPlugin}"
+                                   class="btn btn-default" title="{#modify#}">
+                                    <i class="fa fa-edit"></i></a>
                             {/if}
                         </td>
                         <td class="tcenter">
                             {if isset($PluginInstalliert->oPluginFrontendLink_arr) && $PluginInstalliert->oPluginFrontendLink_arr|@count > 0}
-                                <a href="links.php?kPlugin={$PluginInstalliert->kPlugin}" class="btn btn-default"><i class="fa fa-edit"></i></a>
+                                <a href="links.php?kPlugin={$PluginInstalliert->kPlugin}"
+                                   class="btn btn-default" title="{#modify#}"><i class="fa fa-edit"></i></a>
                             {/if}
                         </td>
                         <td class="tcenter">
-                            {if isset($PluginInstalliert->cLizenzKlasse) && $PluginInstalliert->cLizenzKlasse|count_characters > 0}
-                                {if $PluginInstalliert->cLizenz && $PluginInstalliert->cLizenz|count_characters > 0}
-                                    <strong>{#pluginBtnLicence#}:</strong> {$PluginInstalliert->cLizenz} <button name="lizenzkey" type="submit" class="btn btn-default" value="{$PluginInstalliert->kPlugin}"><i class="fa fa-edit"></i> {#pluginBtnLicenceChange#}</button>
+                            {if isset($PluginInstalliert->cLizenzKlasse) && $PluginInstalliert->cLizenzKlasse|strlen > 0}
+                                {if $PluginInstalliert->cLizenz && $PluginInstalliert->cLizenz|strlen > 0}
+                                    <strong>{#pluginBtnLicence#}:</strong> {$PluginInstalliert->cLizenz}
+                                    <button name="lizenzkey" type="submit" class="btn btn-default" value="{$PluginInstalliert->kPlugin}">
+                                        <i class="fa fa-edit"></i> {#pluginBtnLicenceChange#}</button>
                                 {else}
-                                    <button name="lizenzkey" type="submit" class="btn btn-primary" value="{$PluginInstalliert->kPlugin}"><i class="fa fa-edit"></i> {#pluginBtnLicenceAdd#}</button>
+                                    <button name="lizenzkey" type="submit" class="btn btn-primary" value="{$PluginInstalliert->kPlugin}">
+                                        <i class="fa fa-edit"></i> {#pluginBtnLicenceAdd#}</button>
                                 {/if}
                             {/if}
                         </td>
                         <td class="tcenter">
-                            {if isset($PluginInstalliert->dUpdate) && $PluginInstalliert->dUpdate|count_characters > 0 && $PluginInstalliert->cUpdateFehler == 1}
+                            {if isset($PluginInstalliert->dUpdate) && $PluginInstalliert->dUpdate|strlen > 0 && $PluginInstalliert->cUpdateFehler == 1}
                                 <a onclick="ackCheck({$PluginInstalliert->kPlugin}, '#probleme'); return false;" class="btn btn-primary">{#pluginBtnUpdate#}</a>
                             {/if}
                         </td>
                     </tr>
                 {/foreach}
                 {foreach from=$PluginInstalliertByStatus_arr.status_4 item=PluginInstalliert}
-                    <tr {if isset($PluginInstalliert->dUpdate) && $PluginInstalliert->dUpdate|count_characters > 0 && $PluginInstalliert->cUpdateFehler == 1}class="highlight"{/if}>
+                    <tr {if isset($PluginInstalliert->dUpdate) && $PluginInstalliert->dUpdate|strlen > 0 && $PluginInstalliert->cUpdateFehler == 1}class="highlight"{/if}>
                         <td class="check">
                             <input type="checkbox" name="kPlugin[]" value="{$PluginInstalliert->kPlugin}" id="plugin-problem-{$PluginInstalliert->kPlugin}" />
                         </td>
                         <td>
                             <label for="plugin-problem-{$PluginInstalliert->kPlugin}">{$PluginInstalliert->cName}</label>
-                            {if (isset($PluginInstalliert->dUpdate) && $PluginInstalliert->dUpdate|count_characters > 0) || (isset($PluginInstalliert->cInfo) && $PluginInstalliert->cInfo|count_characters > 0)}
+                            {if (isset($PluginInstalliert->dUpdate) && $PluginInstalliert->dUpdate|strlen > 0) || (isset($PluginInstalliert->cInfo) && $PluginInstalliert->cInfo|strlen > 0)}
                                 <p>
                                     {if $PluginInstalliert->cUpdateFehler == 1}
-                                        {if isset($PluginInstalliert->cInfo) && $PluginInstalliert->cInfo|count_characters > 0}{$PluginInstalliert->cInfo}<br />{/if}{#pluginUpdateExists#}
+                                        {if isset($PluginInstalliert->cInfo) && $PluginInstalliert->cInfo|strlen > 0}{$PluginInstalliert->cInfo}<br />{/if}{#pluginUpdateExists#}
                                     {else}
-                                        {if isset($PluginInstalliert->cInfo) && $PluginInstalliert->cInfo|count_characters > 0}{$PluginInstalliert->cInfo}<br />{/if}{#pluginUpdateExists#}. <br />{#pluginUpdateExistsError#}: <br />{$PluginInstalliert->cUpdateFehler}
+                                        {if isset($PluginInstalliert->cInfo) && $PluginInstalliert->cInfo|strlen > 0}{$PluginInstalliert->cInfo}<br />{/if}{#pluginUpdateExists#}. <br />{#pluginUpdateExistsError#}: <br />{$PluginInstalliert->cUpdateFehler}
                                     {/if}
                                 </p>
                             {/if}
@@ -101,48 +107,56 @@
                             </span>
                             </h4>
                         </td>
-                        <td class="tcenter">{$PluginInstalliert->dVersion}{if isset($PluginInstalliert->dUpdate) && $PluginInstalliert->dUpdate|count_characters > 0} <span class="error">{$PluginInstalliert->dUpdate}</span>{/if}</td>
+                        <td class="tcenter">{$PluginInstalliert->dVersion}{if isset($PluginInstalliert->dUpdate) && $PluginInstalliert->dUpdate|strlen > 0} <span class="error">{$PluginInstalliert->dUpdate}</span>{/if}</td>
                         <td class="tcenter">{$PluginInstalliert->dInstalliert_DE}</td>
                         <td class="tcenter">{$PluginInstalliert->cVerzeichnis}</td>
                         <td class="tcenter">
                             {if isset($PluginInstalliert->oPluginSprachvariableAssoc_arr) && $PluginInstalliert->oPluginSprachvariableAssoc_arr|@count > 0}
-                                <a href="pluginverwaltung.php?pluginverwaltung_uebersicht=1&sprachvariablen=1&kPlugin={$PluginInstalliert->kPlugin}" class="btn btn-default">{#pluginEdit#}</a>
+                                <a href="pluginverwaltung.php?pluginverwaltung_uebersicht=1&sprachvariablen=1&kPlugin={$PluginInstalliert->kPlugin}" class="btn btn-default">{#modify#}</a>
                             {/if}
                         </td>
                         <td class="tcenter">
                             {if isset($PluginInstalliert->oPluginFrontendLink_arr) && $PluginInstalliert->oPluginFrontendLink_arr|@count > 0}
-                                <a href="links.php?kPlugin={$PluginInstalliert->kPlugin}" class="btn btn-default"><i class="fa fa-edit"></i></a>
+                                <a href="links.php?kPlugin={$PluginInstalliert->kPlugin}"
+                                   class="btn btn-default" title="{#modify#}">
+                                    <i class="fa fa-edit"></i>
+                                </a>
                             {/if}
                         </td>
                         <td class="tcenter">
-                            {if isset($PluginInstalliert->cLizenzKlasse) && $PluginInstalliert->cLizenzKlasse|count_characters > 0}
-                                {if $PluginInstalliert->cLizenz && $PluginInstalliert->cLizenz|count_characters > 0}
-                                    {$PluginInstalliert->cLizenz|truncate:35:'...':true} <button name="lizenzkey" type="submit" class="btn btn-default" value="{$PluginInstalliert->kPlugin}"><i class="fa fa-edit"></i> {#pluginBtnLicenceChange#}</button>
+                            {if isset($PluginInstalliert->cLizenzKlasse) && $PluginInstalliert->cLizenzKlasse|strlen > 0}
+                                {if $PluginInstalliert->cLizenz && $PluginInstalliert->cLizenz|strlen > 0}
+                                    {$PluginInstalliert->cLizenz|truncate:35:'...':true}
+                                    <button name="lizenzkey" type="submit" class="btn btn-default" value="{$PluginInstalliert->kPlugin}">
+                                        <i class="fa fa-edit"></i> {#pluginBtnLicenceChange#}
+                                    </button>
                                 {else}
-                                    <button name="lizenzkey" type="submit" class="btn btn-primary" value="{$PluginInstalliert->kPlugin}"><i class="fa fa-edit"></i> {#pluginBtnLicenceAdd#}</button>
+                                    <button name="lizenzkey" type="submit" class="btn btn-primary" value="{$PluginInstalliert->kPlugin}">
+                                        <i class="fa fa-edit"></i> {#pluginBtnLicenceAdd#}
+                                    </button>
                                 {/if}
                             {/if}
                         </td>
                         <td class="tcenter">
-                            {if isset($PluginInstalliert->dUpdate) && $PluginInstalliert->dUpdate|count_characters > 0 && $PluginInstalliert->cUpdateFehler == 1}
+                            {if isset($PluginInstalliert->dUpdate) && $PluginInstalliert->dUpdate|strlen > 0 && $PluginInstalliert->cUpdateFehler == 1}
                                 <a onclick="ackCheck({$PluginInstalliert->kPlugin}, '#probleme'); return false;" class="btn btn-primary">{#pluginBtnUpdate#}</a>
                             {/if}
                         </td>
                     </tr>
                 {/foreach}
                 {foreach from=$PluginInstalliertByStatus_arr.status_5 item=PluginInstalliert}
-                    <tr {if isset($PluginInstalliert->dUpdate) && $PluginInstalliert->dUpdate|count_characters > 0 && $PluginInstalliert->cUpdateFehler == 1}class="highlight"{/if}>
+                    <tr {if isset($PluginInstalliert->dUpdate) && $PluginInstalliert->dUpdate|strlen > 0 && $PluginInstalliert->cUpdateFehler == 1}class="highlight"{/if}>
                         <td class="check">
                             <input type="checkbox" name="kPlugin[]" value="{$PluginInstalliert->kPlugin}" id="plugin-problem-{$PluginInstalliert->kPlugin}"/>
                         </td>
                         <td>
                             <label for="plugin-problem-{$PluginInstalliert->kPlugin}">{$PluginInstalliert->cName}</label>
-                            {if (isset($PluginInstalliert->dUpdate) && $PluginInstalliert->dUpdate|count_characters > 0) || (isset($PluginInstalliert->cInfo) && $PluginInstalliert->cInfo|count_characters > 0)}
+                            {if (isset($PluginInstalliert->dUpdate) && $PluginInstalliert->dUpdate|strlen > 0) || (isset($PluginInstalliert->cInfo) && $PluginInstalliert->cInfo|strlen > 0)}
                                 <p>
                                     {if $PluginInstalliert->cUpdateFehler == 1}
-                                        {if isset($PluginInstalliert->cInfo) && $PluginInstalliert->cInfo|count_characters > 0}{$PluginInstalliert->cInfo}<br />{/if}{#pluginUpdateExists#}
+                                        {if isset($PluginInstalliert->cInfo) && $PluginInstalliert->cInfo|strlen > 0}{$PluginInstalliert->cInfo}<br />{/if}{#pluginUpdateExists#}
                                     {else}
-                                        {if isset($PluginInstalliert->cInfo) && $PluginInstalliert->cInfo|count_characters > 0}{$PluginInstalliert->cInfo}<br />{/if}{#pluginUpdateExists#}. <br />{#pluginUpdateExistsError#}: <br />{$PluginInstalliert->cUpdateFehler}
+                                        {if isset($PluginInstalliert->cInfo) && $PluginInstalliert->cInfo|strlen > 0}{$PluginInstalliert->cInfo}<br />{/if}{#pluginUpdateExists#}. <br />{#pluginUpdateExistsError#}: <br />{$PluginInstalliert->cUpdateFehler}
                                     {/if}
                                 </p>
                             {/if}
@@ -154,48 +168,61 @@
                                 </span>
                             </h4>
                         </td>
-                        <td class="tcenter">{$PluginInstalliert->dVersion}{if isset($PluginInstalliert->dUpdate) && $PluginInstalliert->dUpdate|count_characters > 0} <span class="error">{$PluginInstalliert->dUpdate}</span>{/if}</td>
+                        <td class="tcenter">{$PluginInstalliert->dVersion}{if isset($PluginInstalliert->dUpdate) && $PluginInstalliert->dUpdate|strlen > 0} <span class="error">{$PluginInstalliert->dUpdate}</span>{/if}</td>
                         <td class="tcenter">{$PluginInstalliert->dInstalliert_DE}</td>
                         <td class="tcenter">{$PluginInstalliert->cVerzeichnis}</td>
                         <td class="tcenter">
                             {if isset($PluginInstalliert->oPluginSprachvariableAssoc_arr) && $PluginInstalliert->oPluginSprachvariableAssoc_arr|@count > 0}
-                                <a href="pluginverwaltung.php?pluginverwaltung_uebersicht=1&sprachvariablen=1&kPlugin={$PluginInstalliert->kPlugin}" class="btn btn-default"><i class="fa fa-edit"></i></a>
+                                <a href="pluginverwaltung.php?pluginverwaltung_uebersicht=1&sprachvariablen=1&kPlugin={$PluginInstalliert->kPlugin}"
+                                   class="btn btn-default" title="{#modify#}">
+                                    <i class="fa fa-edit"></i>
+                                </a>
                             {/if}
                         </td>
                         <td class="tcenter">
                             {if isset($PluginInstalliert->oPluginFrontendLink_arr) && $PluginInstalliert->oPluginFrontendLink_arr|@count > 0}
-                                <a href="links.php?kPlugin={$PluginInstalliert->kPlugin}" class="btn btn-default"><i class="fa fa-edit"></i></a>
+                                <a href="links.php?kPlugin={$PluginInstalliert->kPlugin}"
+                                   class="btn btn-default" title="{#modify#}">
+                                    <i class="fa fa-edit"></i>
+                                </a>
                             {/if}
                         </td>
                         <td class="tcenter">
-                            {if isset($PluginInstalliert->cLizenzKlasse) && $PluginInstalliert->cLizenzKlasse|count_characters > 0}
-                                {if $PluginInstalliert->cLizenz && $PluginInstalliert->cLizenz|count_characters > 0}
-                                    <strong>{#pluginBtnLicence#}:</strong> {$PluginInstalliert->cLizenz} <button name="lizenzkey" type="submit" class="btn btn-default" value="{$PluginInstalliert->kPlugin}"><i class="fa fa-edit"></i> {#pluginBtnLicenceChange#}</button>
+                            {if isset($PluginInstalliert->cLizenzKlasse) && $PluginInstalliert->cLizenzKlasse|strlen > 0}
+                                {if $PluginInstalliert->cLizenz && $PluginInstalliert->cLizenz|strlen > 0}
+                                    <strong>{#pluginBtnLicence#}:</strong> {$PluginInstalliert->cLizenz}
+                                    <button name="lizenzkey" type="submit" class="btn btn-default"
+                                            value="{$PluginInstalliert->kPlugin}">
+                                        <i class="fa fa-edit"></i> {#pluginBtnLicenceChange#}
+                                    </button>
                                 {else}
-                                    <button name="lizenzkey" type="submit" class="btn btn-primary" value="{$PluginInstalliert->kPlugin}"><i class="fa fa-edit"></i> {#pluginBtnLicenceAdd#}</button>
+                                    <button name="lizenzkey" type="submit" class="btn btn-primary"
+                                            value="{$PluginInstalliert->kPlugin}">
+                                        <i class="fa fa-edit"></i> {#pluginBtnLicenceAdd#}
+                                    </button>
                                 {/if}
                             {/if}
                         </td>
                         <td class="tcenter">
-                            {if isset($PluginInstalliert->dUpdate) && $PluginInstalliert->dUpdate|count_characters > 0 && $PluginInstalliert->cUpdateFehler == 1}
+                            {if isset($PluginInstalliert->dUpdate) && $PluginInstalliert->dUpdate|strlen > 0 && $PluginInstalliert->cUpdateFehler == 1}
                                 <a onclick="ackCheck({$PluginInstalliert->kPlugin}, '#probleme'); return false;" class="btn btn-primary">{#pluginBtnUpdate#}</a>
                             {/if}
                         </td>
                     </tr>
                 {/foreach}
                 {foreach from=$PluginInstalliertByStatus_arr.status_6 item=PluginInstalliert}
-                    <tr {if isset($PluginInstalliert->dUpdate) && $PluginInstalliert->dUpdate|count_characters > 0 && $PluginInstalliert->cUpdateFehler == 1}class="highlight"{/if}>
+                    <tr {if isset($PluginInstalliert->dUpdate) && $PluginInstalliert->dUpdate|strlen > 0 && $PluginInstalliert->cUpdateFehler == 1}class="highlight"{/if}>
                         <td class="check">
                             <input type="checkbox" name="kPlugin[]" value="{$PluginInstalliert->kPlugin}" id="plugin-problem-{$PluginInstalliert->kPlugin}" />
                         </td>
                         <td>
                             <label for="plugin-problem-{$PluginInstalliert->kPlugin}">{$PluginInstalliert->cName}</label>
-                            {if (isset($PluginInstalliert->dUpdate) && $PluginInstalliert->dUpdate|count_characters > 0) || (isset($PluginInstalliert->cInfo) && $PluginInstalliert->cInfo|count_characters > 0)}
+                            {if (isset($PluginInstalliert->dUpdate) && $PluginInstalliert->dUpdate|strlen > 0) || (isset($PluginInstalliert->cInfo) && $PluginInstalliert->cInfo|strlen > 0)}
                                 <p>
                                     {if $PluginInstalliert->cUpdateFehler == 1}
-                                        {if isset($PluginInstalliert->cInfo) && $PluginInstalliert->cInfo|count_characters > 0}{$PluginInstalliert->cInfo}<br />{/if}{#pluginUpdateExists#}
+                                        {if isset($PluginInstalliert->cInfo) && $PluginInstalliert->cInfo|strlen > 0}{$PluginInstalliert->cInfo}<br />{/if}{#pluginUpdateExists#}
                                     {else}
-                                        {if isset($PluginInstalliert->cInfo) && $PluginInstalliert->cInfo|count_characters > 0}{$PluginInstalliert->cInfo}<br />{/if}{#pluginUpdateExists#}. <br />{#pluginUpdateExistsError#}: <br />{$PluginInstalliert->cUpdateFehler}
+                                        {if isset($PluginInstalliert->cInfo) && $PluginInstalliert->cInfo|strlen > 0}{$PluginInstalliert->cInfo}<br />{/if}{#pluginUpdateExists#}. <br />{#pluginUpdateExistsError#}: <br />{$PluginInstalliert->cUpdateFehler}
                                     {/if}
                                 </p>
                             {/if}
@@ -207,30 +234,41 @@
                                 </span>
                             </h4>
                         </td>
-                        <td class="tcenter plugin-version">{$PluginInstalliert->dVersion}{if isset($PluginInstalliert->dUpdate) && $PluginInstalliert->dUpdate|count_characters > 0} <span class="label label-danger error">{$PluginInstalliert->dUpdate}</span>{/if}</td>
+                        <td class="tcenter plugin-version">{$PluginInstalliert->dVersion}{if isset($PluginInstalliert->dUpdate) && $PluginInstalliert->dUpdate|strlen > 0} <span class="label label-danger error">{$PluginInstalliert->dUpdate}</span>{/if}</td>
                         <td class="tcenter plugin-install-date">{$PluginInstalliert->dInstalliert_DE}</td>
                         <td class="tcenter plugin-folde"r>{$PluginInstalliert->cVerzeichnis}</td>
                         <td class="tcenter plugin-lang-vars">
                             {if isset($PluginInstalliert->oPluginSprachvariableAssoc_arr) && $PluginInstalliert->oPluginSprachvariableAssoc_arr|@count > 0}
-                                <a href="pluginverwaltung.php?pluginverwaltung_uebersicht=1&sprachvariablen=1&kPlugin={$PluginInstalliert->kPlugin}" class="btn btn-default"><i class="fa fa-edit"></i></a>
+                                <a href="pluginverwaltung.php?pluginverwaltung_uebersicht=1&sprachvariablen=1&kPlugin={$PluginInstalliert->kPlugin}"
+                                   class="btn btn-default" title="{#modify#}">
+                                    <i class="fa fa-edit"></i>
+                                </a>
                             {/if}
                         </td>
                         <td class="tcenter plugin-frontend-links">
                             {if isset($PluginInstalliert->oPluginFrontendLink_arr) && $PluginInstalliert->oPluginFrontendLink_arr|@count > 0}
-                                <a href="links.php?kPlugin={$PluginInstalliert->kPlugin}" class="btn btn-default"><i class="fa fa-edit"></i></a>
+                                <a href="links.php?kPlugin={$PluginInstalliert->kPlugin}"
+                                   class="btn btn-default" title="{#modify#}">
+                                    <i class="fa fa-edit"></i>
+                                </a>
                             {/if}
                         </td>
                         <td class="tcenter plugin-license">
-                            {if isset($PluginInstalliert->cLizenzKlasse) && $PluginInstalliert->cLizenzKlasse|count_characters > 0}
-                                {if $PluginInstalliert->cLizenz && $PluginInstalliert->cLizenz|count_characters > 0}
-                                    <strong>{#pluginBtnLicence#}:</strong> {$PluginInstalliert->cLizenz} <button name="lizenzkey" type="submit" class="btn btn-default" value="{$PluginInstalliert->kPlugin}"><i class="fa fa-edit"></i></button>
+                            {if isset($PluginInstalliert->cLizenzKlasse) && $PluginInstalliert->cLizenzKlasse|strlen > 0}
+                                {if $PluginInstalliert->cLizenz && $PluginInstalliert->cLizenz|strlen > 0}
+                                    <strong>{#pluginBtnLicence#}:</strong> {$PluginInstalliert->cLizenz}
+                                    <button name="lizenzkey" type="submit" class="btn btn-default"
+                                            value="{$PluginInstalliert->kPlugin}" title="{#modify#}">
+                                        <i class="fa fa-edit"></i></button>
                                 {else}
-                                    <button name="lizenzkey" type="submit" class="btn btn-primary" value="{$PluginInstalliert->kPlugin}"><i class="fa fa-edit"></i></button>
+                                    <button name="lizenzkey" type="submit" class="btn btn-primary"
+                                            value="{$PluginInstalliert->kPlugin}" title="{#modify#}">
+                                        <i class="fa fa-edit"></i></button>
                                 {/if}
                             {/if}
                         </td>
                         <td class="tcenter">
-                            {if isset($PluginInstalliert->dUpdate) && $PluginInstalliert->dUpdate|count_characters > 0 && $PluginInstalliert->cUpdateFehler == 1}
+                            {if isset($PluginInstalliert->dUpdate) && $PluginInstalliert->dUpdate|strlen > 0 && $PluginInstalliert->cUpdateFehler == 1}
                                 <a onclick="ackCheck({$PluginInstalliert->kPlugin}, '#probleme'); return false;" class="btn btn-primary">{#pluginBtnUpdate#}</a>
                             {/if}
                         </td>

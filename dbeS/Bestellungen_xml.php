@@ -68,41 +68,21 @@ if ($return == 1) {
 echo $return;
 
 /**
- * @param $xml
+ * @param array $xml
  */
 function bearbeiteAck($xml)
 {
+    if (!is_array($xml['ack_bestellungen']['kBestellung']) && intval($xml['ack_bestellungen']['kBestellung']) > 0) {
+        $xml['ack_bestellungen']['kBestellung'] = array($xml['ack_bestellungen']['kBestellung']);
+    }
     if (is_array($xml['ack_bestellungen']['kBestellung'])) {
         foreach ($xml['ack_bestellungen']['kBestellung'] as $kBestellung) {
-            $kBestellung = intval($kBestellung);
+            $kBestellung = (int)$kBestellung;
             if ($kBestellung > 0) {
-                Shop::DB()->query("UPDATE tbestellung SET cAbgeholt = 'Y' WHERE kBestellung = " . $kBestellung, 4);
-                Shop::DB()->query(
-                    "UPDATE tbestellung
-                        SET cStatus = '" . BESTELLUNG_STATUS_IN_BEARBEITUNG . "'
-                        WHERE cStatus = '" . BESTELLUNG_STATUS_OFFEN . "'
-                            AND kBestellung = " . $kBestellung, 4
-                );
-                Shop::DB()->query("DELETE FROM tzahlungsinfo WHERE kBestellung = " . $kBestellung, 4);
+                Shop::DB()->update('tbestellung', 'kBestellung', $kBestellung, (object)['cAbgeholt' => 'Y']);
+                Shop::DB()->update('tbestellung', ['kBestellung', 'cStatus'], [$kBestellung, BESTELLUNG_STATUS_OFFEN], (object)['cStatus' => BESTELLUNG_STATUS_IN_BEARBEITUNG]);
+                Shop::DB()->delete('tzahlungsinfo', 'kBestellung', $kBestellung);
             }
-        }
-    } else {
-        if (intval($xml['ack_bestellungen']['kBestellung']) > 0) {
-            Shop::DB()->query(
-                "UPDATE tbestellung
-                    SET cAbgeholt = 'Y'
-                    WHERE kBestellung = " . intval($xml['ack_bestellungen']['kBestellung']), 4
-            );
-            Shop::DB()->query(
-                "UPDATE tbestellung
-                    SET cStatus = '" . BESTELLUNG_STATUS_IN_BEARBEITUNG . "'
-                    WHERE cStatus = '" . BESTELLUNG_STATUS_OFFEN . "'
-                        AND kBestellung = " . intval($xml['ack_bestellungen']['kBestellung']), 4
-            );
-            Shop::DB()->query(
-                "DELETE FROM tzahlungsinfo
-                    WHERE kBestellung = " . intval($xml['ack_bestellungen']['kBestellung']), 4
-            );
         }
     }
 }
@@ -141,11 +121,10 @@ function bearbeiteDel($xml)
                 if ($oModule) {
                     $oModule->cancelOrder($kBestellung, true);
                 }
-
-                Shop::DB()->delete('tbestellung', 'kBestellung', $kBestellung);
+                deleteOrder($kBestellung);
                 //uploads (bestellungen)
-                Shop::DB()->query("DELETE FROM tuploadschema WHERE kCustomID = " . $kBestellung . " AND nTyp = 2", 4);
-                Shop::DB()->query("DELETE FROM tuploaddatei WHERE kCustomID = " . $kBestellung . " AND nTyp = 2", 4);
+                Shop::DB()->delete('tuploadschema', ['kCustomID', 'nTyp'], [$kBestellung, 2]);
+                Shop::DB()->delete('tuploaddatei', ['kCustomID', 'nTyp'], [$kBestellung, 2]);
                 //uploads (artikel der bestellung)
                 //todo...
                 //wenn unreg kunde, dann kunden auch löschen
@@ -168,7 +147,7 @@ function bearbeiteDel($xml)
             if ($oModule) {
                 $oModule->cancelOrder($kBestellung, true);
             }
-            Shop::DB()->delete('tbestellung', 'kBestellung', $kBestellung);
+            deleteOrder($kBestellung);
             //wenn unreg kunde, dann kunden auch löschen
             $b = Shop::DB()->query("SELECT kKunde FROM tbestellung WHERE kBestellung = " . $kBestellung, 1);
             if (isset($b->kKunde) && $b->kKunde > 0) {
@@ -197,7 +176,7 @@ function bearbeiteDelOnly($xml)
                 if ($oModule) {
                     $oModule->cancelOrder($kBestellung, true);
                 }
-                Shop::DB()->delete('tbestellung', 'kBestellung', $kBestellung);
+                deleteOrder($kBestellung);
             }
         }
     } else {
@@ -207,7 +186,7 @@ function bearbeiteDelOnly($xml)
             if ($oModule) {
                 $oModule->cancelOrder($kBestellung, true);
             }
-            Shop::DB()->delete('tbestellung', 'kBestellung', $kBestellung);
+            deleteOrder($kBestellung);
         }
     }
 }
@@ -235,19 +214,13 @@ function bearbeiteStorno($xml)
                     $oMail->tbestellung = $bestellungTmp;
                     sendeMail(MAILTEMPLATE_BESTELLUNG_STORNO, $oMail);
                 }
-
-                Shop::DB()->query(
-                    "UPDATE tbestellung
-                        SET cStatus = '" . BESTELLUNG_STATUS_STORNO . "'
-                        WHERE kBestellung = " . $kBestellung, 4
-                );
+                Shop::DB()->update('tbestellung', 'kBestellung', $kBestellung, (object)['cStatus' => BESTELLUNG_STATUS_STORNO]);
             }
             executeHook(HOOK_BESTELLUNGEN_XML_BEARBEITESTORNO, array(
                     'oBestellung' => &$bestellungTmp,
                     'oKunde'      => &$kunde,
                     'oModule'     => $oModule
-                )
-            );
+                ));
         }
     } else {
         $kBestellung = intval($xml['storno_bestellungen']['kBestellung']);
@@ -267,19 +240,13 @@ function bearbeiteStorno($xml)
                     $oMail->tbestellung = $bestellungTmp;
                     sendeMail(MAILTEMPLATE_BESTELLUNG_STORNO, $oMail);
                 }
-
-                Shop::DB()->query(
-                    "UPDATE tbestellung
-                        SET cStatus = '" . BESTELLUNG_STATUS_STORNO . "'
-                        WHERE kBestellung = " . $kBestellung, 4
-                );
+                Shop::DB()->update('tbestellung', 'kBestellung', $kBestellung, (object)['cStatus' => BESTELLUNG_STATUS_STORNO]);
             }
             executeHook(HOOK_BESTELLUNGEN_XML_BEARBEITESTORNO, array(
                     'oBestellung' => &$bestellungTmp,
                     'oKunde'      => &$kunde,
                     'oModule'     => $oModule
-                )
-            );
+                ));
         }
     }
 }
@@ -305,12 +272,7 @@ function bearbeiteRestorno($xml)
                     $oMail->tbestellung = $bestellungTmp;
                     sendeMail(MAILTEMPLATE_BESTELLUNG_RESTORNO, $oMail);
                 }
-
-                Shop::DB()->query(
-                    "UPDATE tbestellung
-                        SET cStatus = '" . BESTELLUNG_STATUS_IN_BEARBEITUNG . "'
-                        WHERE kBestellung = " . $kBestellung, 4
-                );
+                Shop::DB()->update('tbestellung', 'kBestellung', $kBestellung, (object)['cStatus' => BESTELLUNG_STATUS_IN_BEARBEITUNG]);
             }
         }
     } else {
@@ -330,12 +292,7 @@ function bearbeiteRestorno($xml)
                     $oMail->tbestellung = $bestellungTmp;
                     sendeMail(MAILTEMPLATE_BESTELLUNG_RESTORNO, $oMail);
                 }
-
-                Shop::DB()->query(
-                    "UPDATE tbestellung
-                        SET cStatus = '" . BESTELLUNG_STATUS_IN_BEARBEITUNG . "'
-                        WHERE kBestellung = " . $kBestellung, 4
-                );
+                Shop::DB()->update('tbestellung', 'kBestellung', $kBestellung, (object)['cStatus' => BESTELLUNG_STATUS_IN_BEARBEITUNG]);
             }
         }
     }
@@ -346,22 +303,15 @@ function bearbeiteRestorno($xml)
  */
 function bearbeiteAckZahlung($xml)
 {
+    if (!is_array($xml['ack_zahlungseingang']['kZahlungseingang']) && intval($xml['ack_zahlungseingang']['kZahlungseingang']) > 0) {
+        $xml['ack_zahlungseingang']['kZahlungseingang'] = array($xml['ack_zahlungseingang']['kZahlungseingang']);
+    }
     if (is_array($xml['ack_zahlungseingang']['kZahlungseingang'])) {
         foreach ($xml['ack_zahlungseingang']['kZahlungseingang'] as $kZahlungseingang) {
             if (intval($kZahlungseingang) > 0) {
-                Shop::DB()->query(
-                    "UPDATE tzahlungseingang
-                        SET cAbgeholt = 'Y'
-                        WHERE kZahlungseingang = " . intval($kZahlungseingang), 4
-                );
+                Shop::DB()->update('tzahlungseingang', 'kZahlungseingang', (int)$kZahlungseingang, (object)['cAbgeholt' => 'Y']);
             }
         }
-    } elseif (intval($xml['ack_zahlungseingang']['kZahlungseingang']) > 0) {
-        Shop::DB()->query(
-            "UPDATE tzahlungseingang
-                SET cAbgeholt = 'Y'
-                WHERE kZahlungseingang = " . intval($xml['ack_zahlungseingang']['kZahlungseingang']), 4
-        );
     }
 }
 
@@ -428,7 +378,7 @@ function bearbeiteUpdate($xml)
         $defaultCurrency = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
         if (isset($currentCurrency->kWaehrung) && isset($defaultCurrency->kWaehrung)) {
             $correctionFactor = floatval($currentCurrency->fFaktor);
-            $oBestellung->fGesamtsumme = $oBestellung->fGesamtsumme/$correctionFactor;
+            $oBestellung->fGesamtsumme = $oBestellung->fGesamtsumme / $correctionFactor;
         }
     }
     //aktualisiere bestellung
@@ -467,15 +417,19 @@ function bearbeiteUpdate($xml)
             Shop::DB()->query("UPDATE tbestellung SET kLieferadresse = " . (int)$oLieferadresse->kLieferadresse . " WHERE kBestellung = " . (int)$oBestellungAlt->kBestellung, 4);
         }
     } elseif ($oBestellungAlt->kLieferadresse > 0) { //falls lieferadresse vorhanden zurücksetzen
-        Shop::DB()->query("UPDATE tbestellung SET kLieferadresse = 0 WHERE kBestellung = " . (int)$oBestellungAlt->kBestellung, 4);
+        Shop::DB()->update('tbestellung', 'kBestellung', (int)$oBestellungAlt->kBestellung, (object)['kLieferadresse' => 0]);
     }
 
     $oRechnungsadresse->updateInDB();
     //loesche alte positionen
-    $WarenkorbposAlt_arr = Shop::DB()->query("SELECT * FROM twarenkorbpos WHERE kWarenkorb = " . (int)$oBestellungAlt->kWarenkorb, 2);
+    $WarenkorbposAlt_arr = Shop::DB()->selectAll('twarenkorbpos', 'kWarenkorb', (int)$oBestellungAlt->kWarenkorb);
+    $WarenkorbposAlt_map = array();
     //loesche poseigenschaften
-    foreach ($WarenkorbposAlt_arr as $WarenkorbposAlt) {
+    foreach ($WarenkorbposAlt_arr as $key => $WarenkorbposAlt) {
         Shop::DB()->delete('twarenkorbposeigenschaft', 'kWarenkorbPos', (int)$WarenkorbposAlt->kWarenkorbPos);
+        if ($WarenkorbposAlt->kArtikel > 0) {
+            $WarenkorbposAlt_map[$WarenkorbposAlt->kArtikel] = $key;
+        }
     }
     //loesche positionen
     Shop::DB()->delete('twarenkorbpos', 'kWarenkorb', (int)$oBestellungAlt->kWarenkorb);
@@ -484,10 +438,18 @@ function bearbeiteUpdate($xml)
     $positionCount    = count($Warenkorbpos_arr);
     for ($i = 0; $i < $positionCount; $i++) {
         //füge wkpos ein
+        $oWarenkorbposAlt = array_key_exists($Warenkorbpos_arr[$i]->kArtikel, $WarenkorbposAlt_map) ? $WarenkorbposAlt_arr[$WarenkorbposAlt_map[$Warenkorbpos_arr[$i]->kArtikel]] : null;
         unset($Warenkorbpos_arr[$i]->kWarenkorbPos);
-        $Warenkorbpos_arr[$i]->kWarenkorb    = $oBestellungAlt->kWarenkorb;
-        $Warenkorbpos_arr[$i]->fPreis /= $correctionFactor;
-        $Warenkorbpos_arr[$i]->fPreisEinzelNetto /= $correctionFactor;
+        $Warenkorbpos_arr[$i]->kWarenkorb          = $oBestellungAlt->kWarenkorb;
+        $Warenkorbpos_arr[$i]->fPreis             /= $correctionFactor;
+        $Warenkorbpos_arr[$i]->fPreisEinzelNetto  /= $correctionFactor;
+        // persistiere nLongestMin/MaxDelivery wenn nicht von Wawi übetragen
+        if (!isset($Warenkorbpos_arr[$i]->nLongestMinDelivery)) {
+            $Warenkorbpos_arr[$i]->nLongestMinDelivery = isset($oWarenkorbposAlt) ? $oWarenkorbposAlt->nLongestMinDelivery : 0;
+        }
+        if (!isset($Warenkorbpos_arr[$i]->nLongestMaxDelivery)) {
+            $Warenkorbpos_arr[$i]->nLongestMaxDelivery = isset($oWarenkorbposAlt) ? $oWarenkorbposAlt->nLongestMaxDelivery : 0;
+        }
         $Warenkorbpos_arr[$i]->kWarenkorbPos = Shop::DB()->insert('twarenkorbpos', $Warenkorbpos_arr[$i]);
 
         if (count($Warenkorbpos_arr) < 2) { // nur eine pos
@@ -529,8 +491,7 @@ function bearbeiteUpdate($xml)
             'oBestellung'    => &$oBestellung,
             'oBestellungAlt' => &$oBestellungAlt,
             'oKunde'         => &$kunde
-        )
-    );
+        ));
 }
 
 /**
@@ -560,7 +521,7 @@ function bearbeiteSet($xml)
             
             if ($oBestellungShop->cStatus === BESTELLUNG_STATUS_STORNO) {
                 $status = BESTELLUNG_STATUS_STORNO;    // fixes jtlshop/jtl-shop#42
-            } else {    
+            } else {
                 $status = BESTELLUNG_STATUS_IN_BEARBEITUNG;
                 if (isset($oBestellungWawi->cBezahlt) && $oBestellungWawi->cBezahlt === 'Y') {
                     $status = BESTELLUNG_STATUS_BEZAHLT;
@@ -576,7 +537,7 @@ function bearbeiteSet($xml)
                     (isset($oBestellungWawi->nKomplettAusgeliefert) && intval($oBestellungWawi->nKomplettAusgeliefert) === 0)) {
                     $status = BESTELLUNG_STATUS_TEILVERSANDT;
                 }
-            }            
+            }
             
 
             executeHook(HOOK_BESTELLUNGEN_XML_BESTELLSTATUS, array('status' => &$status, 'oBestellung' => &$oBestellungShop));
@@ -621,6 +582,7 @@ function bearbeiteSet($xml)
 
             $bLieferschein = false;
             foreach ($oBestellungUpdated->oLieferschein_arr as $oLieferschein) {
+                /** @var Lieferschein $oLieferschein */
                 if ($oLieferschein->getEmailVerschickt() == false) {
                     $bLieferschein = true;
                     break;
@@ -644,6 +606,7 @@ function bearbeiteSet($xml)
                         sendeMail($cMailType, $oMail);
                     }
                 }
+                /** @var Lieferschein $oLieferschein */
                 foreach ($oBestellungUpdated->oLieferschein_arr as $oLieferschein) {
                     $oLieferschein->setEmailVerschickt(true);
                     $oLieferschein->update();
@@ -682,6 +645,30 @@ function bearbeiteSet($xml)
                 }
             }
             executeHook(HOOK_BESTELLUNGEN_XML_BEARBEITESET, array('oBestellung' => &$oBestellungShop, 'oKunde' => &$kunde, 'oBestellungWawi' => &$oBestellungWawi));
+        }
+    }
+}
+
+/**
+ * @param $kBestellung
+ */
+function deleteOrder($kBestellung)
+{
+    $kWarenkorb = Shop::DB()->select('tbestellung', 'kBestellung', $kBestellung, null, null, null, null, false, 'kWarenkorb');
+    Shop::DB()->delete('tbestellung', 'kBestellung', $kBestellung);
+    Shop::DB()->delete('tbestellid', 'kBestellung', $kBestellung);
+    Shop::DB()->delete('tbestellstatus', 'kBestellung', $kBestellung);
+    Shop::DB()->delete('tkuponbestellung', 'kBestellung', $kBestellung);
+    Shop::DB()->delete('tuploaddatei', ['kCustomID', 'nTyp'], [$kBestellung, UPLOAD_TYP_BESTELLUNG]);
+    Shop::DB()->delete('tuploadqueue', 'kBestellung', $kBestellung);
+    if ((int)$kWarenkorb->kWarenkorb > 0) {
+        Shop::DB()->delete('twarenkorb', 'kWarenkorb', (int)$kWarenkorb->kWarenkorb);
+        $kWarenkorbPos_arr = Shop::DB()->selectAll('twarenkorbpos', 'kWarenkorb', (int)$kWarenkorb->kWarenkorb, 'kWarenkorbPos');
+        Shop::DB()->delete('twarenkorbpos', 'kWarenkorb', (int)$kWarenkorb->kWarenkorb);
+        if (is_array($kWarenkorbPos_arr)) {
+            foreach ($kWarenkorbPos_arr as $kWarenkorbPos) {
+                Shop::DB()->delete('twarenkorbposeigenschaft', 'kWarenkorbPos', (int)$kWarenkorbPos->kWarenkorbPos);
+            }
         }
     }
 }

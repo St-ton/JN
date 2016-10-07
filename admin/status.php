@@ -5,7 +5,7 @@
  */
 require_once dirname(__FILE__) . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_CLASSES . 'class.JTL-Shopadmin.AjaxResponse.php';
-
+/** @global JTLSmarty $smarty */
 $response  = new AjaxResponse();
 $action    = isset($_GET['action']) ? $_GET['action'] : null;
 
@@ -18,10 +18,10 @@ switch ($action) {
         if ($response->isAjax()) {
             $result = $response->buildError('Unauthorized', 401);
             $response->makeResponse($result);
-        }
-        else {
+        } else {
             $oAccount->redirectOnFailure();
         }
+
         return;
     }
     case 'notify': {
@@ -33,7 +33,7 @@ switch ($action) {
         $response->makeResponse($result, $action);
         break;
     }
-    
+
     default: {
         $smarty->assign('status', Status::getInstance())
             ->display('status.tpl');

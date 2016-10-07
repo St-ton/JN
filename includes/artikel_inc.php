@@ -5,14 +5,15 @@
  */
 
 /**
- * @param int $kArtikel
+ * @param int       $kArtikel
+ * @param bool|null $isParent
  * @return stdClass|null
  */
-function gibArtikelXSelling($kArtikel)
+function gibArtikelXSelling($kArtikel, $isParent = null)
 {
     $kArtikel = (int)$kArtikel;
     if ($kArtikel <= 0) {
-        return;
+        return null;
     }
     $xSelling = new stdClass();
     $config   = Shop::getSettings(array(CONF_ARTIKELDETAILS));
@@ -22,8 +23,8 @@ function gibArtikelXSelling($kArtikel)
         $cSQLLager          = gibLagerfilter();
         $xsell              = Shop::DB()->query(
             "SELECT txsell.* FROM txsell, tartikel
-                WHERE txsell.kXSellArtikel = tartikel.kArtikel " . $cSQLLager . "
-                    AND txsell.kArtikel = " . $kArtikel . "
+                WHERE txsell.kXSellArtikel = tartikel.kArtikel {$cSQLLager}
+                    AND txsell.kArtikel = {$kArtikel}
                 ORDER BY tartikel.cName", 2
         );
         if (count($xsell) > 0) {
@@ -35,16 +36,12 @@ function gibArtikelXSelling($kArtikel)
             }
             $xSelling->Standard->XSellGruppen = array();
             $xsCount                          = count($xsellgruppen);
+            $oArtikelOptionen                 = Artikel::getDefaultOptions();
             for ($i = 0; $i < $xsCount; $i++) {
                 if (Shop::$kSprache > 0) {
                     //lokalisieren
-                    $objSprache = Shop::DB()->query(
-                        "SELECT cName, cBeschreibung
-                            FROM txsellgruppe
-                            WHERE kXSellGruppe = " . (int)$xsellgruppen[$i] . "
-                            AND kSprache = " . (int)Shop::$kSprache, 1
-                    );
-                    if ($objSprache === false || !isset($objSprache->cName)) {
+                    $objSprache = Shop::DB()->select('txsellgruppe', 'kXSellGruppe', (int)$xsellgruppen[$i], 'kSprache', (int)Shop::$kSprache);
+                    if (!isset($objSprache->cName)) {
                         continue;
                     }
                     $xSelling->Standard->XSellGruppen[$i]               = new stdClass();
@@ -52,7 +49,6 @@ function gibArtikelXSelling($kArtikel)
                     $xSelling->Standard->XSellGruppen[$i]->Beschreibung = $objSprache->cBeschreibung;
                 }
                 $xSelling->Standard->XSellGruppen[$i]->Artikel = array();
-                $oArtikelOptionen                              = Artikel::getDefaultOptions();
                 foreach ($xsell as $xs) {
                     if ($xs->kXSellGruppe == $xsellgruppen[$i]) {
                         $artikel = new Artikel();
@@ -67,40 +63,54 @@ function gibArtikelXSelling($kArtikel)
     }
     if (isset($config['artikeldetails_xselling_kauf_anzeigen']) && $config['artikeldetails_xselling_kauf_anzeigen'] === 'Y') {
         $anzahl = (int)$config['artikeldetails_xselling_kauf_anzahl'];
-        if (ArtikelHelper::isParent($kArtikel)) {
-            $inArray = array($kArtikel);
-            $tmps    = ArtikelHelper::getChildren($kArtikel);
-            foreach ($tmps as $_article) {
-                $inArray[] = (int)$_article->kArtikel;
+        if ($isParent === null) {
+            $isParent = ArtikelHelper::isParent($kArtikel);
+        }
+        if ($isParent === true) {
+            if (isset($config['artikeldetails_xselling_kauf_parent']) && $config['artikeldetails_xselling_kauf_parent'] === 'Y') {
+                $selectorXSellArtikel     = 'IF(tartikel.kVaterArtikel = 0, txsellkauf.kXSellArtikel, tartikel.kVaterArtikel)';
+                $filterXSellParentArtikel = 'IF(tartikel.kVaterArtikel = 0, txsellkauf.kXSellArtikel, tartikel.kVaterArtikel)';
+            } else {
+                $selectorXSellArtikel     = 'txsellkauf.kXSellArtikel';
+                $filterXSellParentArtikel = 'tartikel.kVaterArtikel';
             }
             $xsell = Shop::DB()->query(
-                "SELECT *
+                "SELECT {$kArtikel} AS kArtikel,
+                        {$selectorXSellArtikel} AS kXSellArtikel,
+                        SUM(txsellkauf.nAnzahl) nAnzahl
                     FROM txsellkauf
-                    WHERE kArtikel IN (" . implode(', ', $inArray) . ")
-                    GROUP BY kXSellArtikel
-                    ORDER BY nAnzahl DESC, rand()
+                    JOIN tartikel ON tartikel.kArtikel = txsellkauf.kXSellArtikel
+                    WHERE (txsellkauf.kArtikel IN (
+                            SELECT tartikel.kArtikel
+                            FROM tartikel
+                            WHERE tartikel.kVaterArtikel = {$kArtikel}
+                        ) OR txsellkauf.kArtikel = {$kArtikel})
+                        AND {$filterXSellParentArtikel} != {$kArtikel}
+                    GROUP BY 1, 2
+                    ORDER BY SUM(txsellkauf.nAnzahl) DESC, rand()
                     LIMIT {$anzahl}", 2
             );
-            $xsellCount = (is_array($xsell)) ? count($xsell) : 0;
-            if ($xsellCount > 0 && count($tmps) > 0) {
-                $children = array();
-                foreach ($tmps as $child) {
-                    $children[] = $child->kArtikel;
-                }
-                for ($i = 0; $i < $xsellCount; $i++) {
-                    if (in_array($xsell[$i]->kArtikel, $children) && in_array($xsell[$i]->kXSellArtikel, $children)) {
-                        unset($xsell[$i]);
-                    }
-                }
-            }
         } else {
-            $xsell = Shop::DB()->query(
-                "SELECT *
-                    FROM txsellkauf
-                    WHERE kArtikel = {$kArtikel}
-                    ORDER BY nAnzahl DESC, rand()
-                    LIMIT {$anzahl}", 2
-            );
+            if (isset($config['artikeldetails_xselling_kauf_parent']) && $config['artikeldetails_xselling_kauf_parent'] === 'Y') {
+                $xsell = Shop::DB()->query(
+                    "SELECT txsellkauf.kArtikel,
+                            IF(tartikel.kVaterArtikel = 0, txsellkauf.kXSellArtikel, tartikel.kVaterArtikel) AS kXSellArtikel,
+                            SUM(txsellkauf.nAnzahl) nAnzahl
+                        FROM txsellkauf
+                        JOIN tartikel ON tartikel.kArtikel = txsellkauf.kXSellArtikel
+                        WHERE txsellkauf.kArtikel = {$kArtikel}
+                            AND (tartikel.kVaterArtikel != (
+                                SELECT tartikel.kVaterArtikel
+                                FROM tartikel
+                                WHERE tartikel.kArtikel = {$kArtikel}
+                            ) OR tartikel.kVaterArtikel = 0)
+                        GROUP BY 1, 2
+                        ORDER BY SUM(txsellkauf.nAnzahl) DESC, rand()
+                        LIMIT {$anzahl}", 2
+                );
+            } else {
+                $xsell = Shop::DB()->selectAll('txsellkauf', 'kArtikel', $kArtikel, '*', 'nAnzahl DESC, rand()', $anzahl);
+            }
         }
         $xsellCount2 = (is_array($xsell)) ? count($xsell) : 0;
         if ($xsellCount2 > 0) {
@@ -138,7 +148,24 @@ function bearbeiteFrageZumProdukt()
 
         if ($nReturnValue) {
             if (!floodSchutzProduktanfrage(intval($conf['artikeldetails']['produktfrage_sperre_minuten']))) {
+                $oCheckBox     = new CheckBox();
+                $kKundengruppe = Kundengruppe::getCurrent();
+                $oAnfrage      = baueProduktanfrageFormularVorgaben();
+
                 executeHook(HOOK_ARTIKEL_INC_FRAGEZUMPRODUKT);
+
+                // Bei anonymen Anfragen die E-Mail-Adresse als Name verwenden
+                if (empty($oAnfrage->cNachname)) {
+                    $oAnfrage->cNachname = $oAnfrage->cMail;
+                }
+                if (!isset($oAnfrage->cVorname)) {
+                    $oAnfrage->cVorname = '';
+                }
+                // CheckBox Spezialfunktion ausfuehren
+                $oCheckBox->triggerSpecialFunction(
+                    CHECKBOX_ORT_FRAGE_ZUM_PRODUKT, $kKundengruppe, true, $_POST,
+                    array('oKunde' => $oAnfrage, 'oNachricht' => $oAnfrage)
+                )->checkLogging(CHECKBOX_ORT_FRAGE_ZUM_PRODUKT, $kKundengruppe, $_POST, true);
                 sendeProduktanfrage();
             } else {
                 $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('questionNotPossible', 'messages');
@@ -154,22 +181,6 @@ function bearbeiteFrageZumProdukt()
     } else {
         $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('productquestionPleaseLogin', 'errorMessages');
     }
-}
-
-/**
- * @deprecated deprecated since version 4.3
- */
-function bearbeiteArtikelWeiterempfehlen()
-{
-}
-
-/**
- * @deprecated deprecated since version 4.
- * @return bool
- */
-function gibFehlendeEingabenArtikelWeiterempfehlenFormular()
-{
-    return;
 }
 
 /**
@@ -209,26 +220,13 @@ function gibFehlendeEingabenProduktanfrageformular()
     if ($conf['artikeldetails']['produktfrage_abfragen_mobil'] === 'Y' && !$_POST['mobil']) {
         $ret['mobil'] = 1;
     }
-    if (empty($_SESSION['Kunde']->kKunde) && (!isset($_SESSION['bAnti_spam_already_checked']) || $_SESSION['bAnti_spam_already_checked'] !== true) &&
-        $conf['artikeldetails']['produktfrage_abfragen_captcha'] === 'Y' && $conf['global']['anti_spam_method'] !== 'N' &&
-        !empty($conf['global']['global_google_recaptcha_private'])) {
-        // reCAPTCHA
-        if (isset($_POST['g-recaptcha-response'])) {
-            $ret['captcha'] = !validateReCaptcha($_POST['g-recaptcha-response']);
-        } else {
-            if (empty($_POST['captcha'])) {
-                $ret['captcha'] = 1;
-            } elseif (empty($_POST['md5']) || ($_POST['md5'] !== md5(PFAD_ROOT . $_POST['captcha']))) {
-                $ret['captcha'] = 2;
-            }
-            if ($conf['artikeldetails']['produktfrage_abfragen_captcha'] == 5) { //Prüfen ob der Token und der Name korrekt sind
-                $ret['captcha'] = 2;
-                if (validToken()) {
-                    unset($ret['captcha']);
-                }
-            }
-        }
+    if ($conf['artikeldetails']['produktfrage_abfragen_captcha'] !== 'N' && !validateCaptcha($_POST)) {
+        $ret['captcha'] = 2;
     }
+    // CheckBox Plausi
+    $oCheckBox     = new CheckBox();
+    $kKundengruppe = Kundengruppe::getCurrent();
+    $ret           = array_merge($ret, $oCheckBox->validateCheckBox(CHECKBOX_ORT_FRAGE_ZUM_PRODUKT, $kKundengruppe, $_POST, true));
 
     return $ret;
 }
@@ -400,9 +398,28 @@ function bearbeiteBenachrichtigung()
                 $Benachrichtigung->cIP       = gibIP();
                 $Benachrichtigung->dErstellt = 'now()';
                 $Benachrichtigung->nStatus   = 0;
+                $oCheckBox                   = new CheckBox();
+                $kKundengruppe               = Kundengruppe::getCurrent();
+
                 executeHook(HOOK_ARTIKEL_INC_BENACHRICHTIGUNG);
 
-                $kVerfuegbarkeitsbenachrichtigung = Shop::DB()->insert('tverfuegbarkeitsbenachrichtigung', $Benachrichtigung);
+                // Bei anonymen Anfragen die E-Mail-Adresse als Name verwenden
+                if (empty($Benachrichtigung->cNachname)) {
+                    $Benachrichtigung->cNachname = $Benachrichtigung->cMail;
+                }
+                if (!isset($Benachrichtigung->cVorname)) {
+                    $Benachrichtigung->cVorname = '';
+                }
+                // CheckBox Spezialfunktion ausfuehren
+                $oCheckBox->triggerSpecialFunction(
+                    CHECKBOX_ORT_FRAGE_VERFUEGBARKEIT, $kKundengruppe, true, $_POST,
+                    array('oKunde' => $Benachrichtigung, 'oNachricht' => $Benachrichtigung)
+                )->checkLogging(CHECKBOX_ORT_FRAGE_VERFUEGBARKEIT, $kKundengruppe, $_POST, true);
+
+                $kVerfuegbarkeitsbenachrichtigung = Shop::DB()->queryPrepared('INSERT INTO tverfuegbarkeitsbenachrichtigung (cVorname, cNachname, cMail, kSprache, kArtikel, cIP, dErstellt, nStatus) 
+                     VALUES (:cVorname, :cNachname, :cMail, :kSprache, :kArtikel, :cIP, now(), :nStatus)
+                     ON DUPLICATE KEY UPDATE cVorname = :cVorname, cNachname = :cNachname, ksprache = :kSprache, cIP = :cIP, dErstellt = now(), nStatus = :nStatus', get_object_vars($Benachrichtigung), 7);
+
                 // Kampagne
                 if (isset($_SESSION['Kampagnenbesucher'])) {
                     setzeKampagnenVorgang(KAMPAGNE_DEF_VERFUEGBARKEITSANFRAGE, $kVerfuegbarkeitsbenachrichtigung, 1.0); // Verfügbarkeitsbenachrichtigung
@@ -443,25 +460,13 @@ function gibFehlendeEingabenBenachrichtigungsformular()
     if ($conf['artikeldetails']['benachrichtigung_abfragen_nachname'] === 'Y' && !$_POST['nachname']) {
         $ret['nachname'] = 1;
     }
-    if (empty($_SESSION['Kunde']->kKunde) && (!isset($_SESSION['bAnti_spam_already_checked']) || $_SESSION['bAnti_spam_already_checked'] !== true) &&
-        $conf['artikeldetails']['benachrichtigung_abfragen_captcha'] !== 'N' && !empty($conf['global']['global_google_recaptcha_private'])) {
-        // reCAPTCHA
-        if (isset($_POST['g-recaptcha-response'])) {
-            $ret['captcha'] = !validateReCaptcha($_POST['g-recaptcha-response']);
-        } else {
-            if (empty($_POST['captcha'])) {
-                $ret['captcha'] = 1;
-            } elseif (!$_POST['md5'] || ($_POST['md5'] !== md5(PFAD_ROOT . $_POST['captcha']))) {
-                $ret['captcha'] = 2;
-            }
-            if ($conf['artikeldetails']['benachrichtigung_abfragen_captcha'] == 5) { //Prüfen ob der Token und der Name korrekt sind
-                $ret['captcha'] = 2;
-                if (validToken()) {
-                    unset($ret['captcha']);
-                }
-            }
-        }
+    if ($conf['artikeldetails']['benachrichtigung_abfragen_captcha'] !== 'N' && !validateCaptcha($_POST)) {
+        $ret['captcha'] = 2;
     }
+    // CheckBox Plausi
+    $oCheckBox     = new CheckBox();
+    $kKundengruppe = Kundengruppe::getCurrent();
+    $ret           = array_merge($ret, $oCheckBox->validateCheckBox(CHECKBOX_ORT_FRAGE_VERFUEGBARKEIT, $kKundengruppe, $_POST, true));
 
     return $ret;
 }
@@ -489,8 +494,8 @@ function floodSchutzBenachrichtigung($min)
     if (!$min) {
         return false;
     }
-    $history = Shop::DB()->query('
-        SELECT kVerfuegbarkeitsbenachrichtigung
+    $history = Shop::DB()->query(
+        'SELECT kVerfuegbarkeitsbenachrichtigung
             FROM tverfuegbarkeitsbenachrichtigung
             WHERE cIP = "' . gibIP() . '"
             AND date_sub(now(), interval ' . $min . ' minute) < dErstellt', 1
@@ -560,11 +565,11 @@ function gibNaviBlaettern($kArtikel, $kKategorie)
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
                     AND tartikel.kArtikel = tkategorieartikel.kArtikel
                     AND tkategorieartikel.kKategorie = $kKategorie
-                    AND tpreise.kArtikel=tartikel.kArtikel
+                    AND tpreise.kArtikel = tartikel.kArtikel
                     AND tartikel.kArtikel < $kArtikel
                     AND tpreise.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
                     " . gibLagerfilter() . "
-                ORDER BY tartikel.kArtikel desc
+                ORDER BY tartikel.kArtikel DESC
                 LIMIT 1
                 ", 1
         );
@@ -606,17 +611,19 @@ function gibNichtErlaubteEigenschaftswerte($nEigenschaftWert)
 {
     $nEigenschaftWert = (int)$nEigenschaftWert;
     if ($nEigenschaftWert) {
-        $arNichtErlaubteEigenschaftswerte = Shop::DB()->query(
-            "SELECT kEigenschaftWertZiel AS EigenschaftWert
-                FROM teigenschaftwertabhaengigkeit
-                WHERE kEigenschaftWert = {$nEigenschaftWert}", 2
+        $arNichtErlaubteEigenschaftswerte  = Shop::DB()->selectAll(
+            'teigenschaftwertabhaengigkeit',
+            'kEigenschaftWert',
+            $nEigenschaftWert,
+            'kEigenschaftWertZiel AS EigenschaftWert'
         );
-        $arNichtErlaubteEigenschaftswerte2 = Shop::DB()->query(
-            "SELECT kEigenschaftWert AS EigenschaftWert
-                FROM teigenschaftwertabhaengigkeit
-                WHERE kEigenschaftWertZiel = {$nEigenschaftWert}", 2
+        $arNichtErlaubteEigenschaftswerte2 = Shop::DB()->selectAll(
+            'teigenschaftwertabhaengigkeit',
+            'kEigenschaftWertZiel',
+            $nEigenschaftWert,
+            'kEigenschaftWert AS EigenschaftWert'
         );
-        $arNichtErlaubteEigenschaftswerte = array_merge($arNichtErlaubteEigenschaftswerte, $arNichtErlaubteEigenschaftswerte2);
+        $arNichtErlaubteEigenschaftswerte  = array_merge($arNichtErlaubteEigenschaftswerte, $arNichtErlaubteEigenschaftswerte2);
 
         return $arNichtErlaubteEigenschaftswerte;
     }
@@ -644,9 +651,7 @@ function baueArtikelhinweise($cRedirectParam = null, $bRenew = false, $oArtikel 
         $GLOBALS['PositiveFeedback'] = array();
     }
     if ($cRedirectParam) {
-        $hin_arr = (is_array($cRedirectParam)) ?
-            $cRedirectParam :
-            explode(',', $cRedirectParam);
+        $hin_arr = is_array($cRedirectParam) ? $cRedirectParam : explode(',', $cRedirectParam);
         $hin_arr = array_unique($hin_arr);
 
         foreach ($hin_arr as $hin) {
@@ -695,6 +700,8 @@ function baueArtikelhinweise($cRedirectParam = null, $bRenew = false, $oArtikel 
                     break;
                 case R_EMPTY_VARIBOX:
                     $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('artikelVariBoxEmpty', 'messages');
+                    break;
+                default:
                     break;
             }
             executeHook(HOOK_ARTIKEL_INC_ARTIKELHINWEISSWITCH);
@@ -753,12 +760,8 @@ function bearbeiteProdukttags($AktuellerArtikel)
                         return Shop::Lang()->get('pleaseLoginToAddTags', 'messages');
                     }
                     // Prüfe ob der Tag bereits gemappt wurde
-                    $tagmapping_objTMP = Shop::DB()->query(
-                        "SELECT cNameNeu
-                            FROM ttagmapping
-                            WHERE kSprache = " . (int)Shop::$kSprache . "
-                                AND cName = '" . Shop::DB()->escape($tag) . "'", 1);
-                    $tagmapping_obj = $tagmapping_objTMP;
+                    $tagmapping_objTMP = Shop::DB()->select('ttagmapping', 'kSprache', (int)Shop::$kSprache, 'cName', Shop::DB()->escape($tag));
+                    $tagmapping_obj    = $tagmapping_objTMP;
                     if (isset($tagmapping_obj->cNameNeu) && strlen($tagmapping_obj->cNameNeu) > 0) {
                         $tag = $tagmapping_obj->cNameNeu;
                     }
@@ -818,7 +821,8 @@ function bearbeiteProdukttags($AktuellerArtikel)
             header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true) . '?a=' . (int)$_POST['a'] . '&r=' . R_LOGIN_TAG, true, 303);
             exit();
         } else {
-            header('Location: index.php?a=' . (int)$_POST['a'] . '&r=' . R_EMPTY_TAG, true, 303);
+            $url = (!empty($AktuellerArtikel->cURLFull)) ? ($AktuellerArtikel->cURLFull . '?') : (Shop::getURL() . '/?a=' . (int)$_POST['a'] . '&');
+            header('Location: ' . $url . 'r=' . R_EMPTY_TAG, true, 303);
             exit();
         }
     }
@@ -947,7 +951,6 @@ function mappingFehlerCode($cCode, $fGuthaben = 0.0)
             break;
         default:
             $error = '';
-
     }
     executeHook(HOOK_ARTIKEL_INC_BEWERTUNGHINWEISSWITCH, array('error' => $error));
 
@@ -1030,7 +1033,7 @@ function holeAehnlicheArtikel($kArtikel)
         if (intval($conf['artikeldetails']['artikeldetails_aehnlicheartikel_anzahl']) > 0) {
             $cLimit = " LIMIT " . (int)$conf['artikeldetails']['artikeldetails_aehnlicheartikel_anzahl'];
         }
-
+        $lagerFilter         = gibLagerfilter();
         $oArtikelMerkmal_arr = Shop::DB()->query(
             "SELECT tartikelmerkmal.kArtikel, tartikel.kVaterArtikel
                 FROM
@@ -1048,8 +1051,8 @@ function holeAehnlicheArtikel($kArtikel)
                     AND tartikel.kVaterArtikel != " . $kArtikel . "
                     AND (tartikel.nIstVater = 1 OR tartikel.kEigenschaftKombi = 0)
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                    " . gibLagerfilter() . "
-                    " . $cSQLXSeller . "
+                    {$lagerFilter}
+                    {$cSQLXSeller}
                 GROUP BY tartikelmerkmal.kArtikel
                 ORDER BY COUNT(*) DESC
                 " . $cLimit, 2
@@ -1085,8 +1088,8 @@ function holeAehnlicheArtikel($kArtikel)
                     JOIN tartikel ON tartikel.kArtikel = tsuchcachetreffer.kArtikel
                         AND tartikel.kVaterArtikel != " . $kArtikel . "
                     WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                        " . gibLagerfilter() . "
-                        " . $cSQLXSeller . "
+                        {$lagerFilter}
+                        {$cSQLXSeller}
                     GROUP BY tsuchcachetreffer.kArtikel
                     ORDER BY COUNT(*) DESC
                     " . $cLimit, 2
@@ -1121,8 +1124,8 @@ function holeAehnlicheArtikel($kArtikel)
                         JOIN tartikel ON tartikel.kArtikel = ttagartikel.kArtikel
                             AND tartikel.kVaterArtikel != " . $kArtikel . "
                         WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                            " . gibLagerfilter() . "
-                            " . $cSQLXSeller . "
+                            {$lagerFilter}
+                            {$cSQLXSeller}
                         GROUP BY ttagartikel.kArtikel
                         ORDER BY COUNT(*) DESC
                         " . $cLimit, 2
@@ -1199,7 +1202,7 @@ function buildConfig($kArtikel, $fAnzahl, $nVariation_arr, $nKonfiggruppe_arr, $
     $oKonfig->cPreisString    = Shop::Lang()->get('priceAsConfigured', 'productDetails');
 
     if (!class_exists('Konfigurator') || !Konfigurator::validateKonfig($kArtikel)) {
-        return;
+        return null;
     }
     foreach ($nVariation_arr as $i => $nVariation) {
         $_POST['eigenschaftwert_' . $i] = $nVariation;
@@ -1234,18 +1237,18 @@ function buildConfig($kArtikel, $fAnzahl, $nVariation_arr, $nKonfiggruppe_arr, $
     $oKonfig->oKonfig_arr = $oArtikel->oKonfig_arr;
 
     foreach ($nKonfiggruppe_arr as $i => $nKonfiggruppe) {
-        $nKonfiggruppe_arr[$i] = (array) $nKonfiggruppe;
+        $nKonfiggruppe_arr[$i] = (array)$nKonfiggruppe;
     }
+    /** @var Konfiggruppe $oKonfiggruppe */
     foreach ($oKonfig->oKonfig_arr as $i => &$oKonfiggruppe) {
         $oKonfiggruppe->bAktiv = false;
         $kKonfiggruppe         = $oKonfiggruppe->getKonfiggruppe();
         $nKonfigitem_arr       = (isset($nKonfiggruppe_arr[$kKonfiggruppe])) ? $nKonfiggruppe_arr[$kKonfiggruppe] : array();
-
         foreach ($oKonfiggruppe->oItem_arr as $j => &$oKonfigitem) {
+            /** @var Konfigitem $oKonfigitem */
             $kKonfigitem          = $oKonfigitem->getKonfigitem();
             $oKonfigitem->fAnzahl = floatval(
-                isset($nKonfiggruppeAnzahl_arr[$oKonfigitem->getKonfiggruppe()]) ?
-                    $nKonfiggruppeAnzahl_arr[$oKonfigitem->getKonfiggruppe()] : $oKonfigitem->getInitial()
+                isset($nKonfiggruppeAnzahl_arr[$oKonfigitem->getKonfiggruppe()]) ? $nKonfiggruppeAnzahl_arr[$oKonfigitem->getKonfiggruppe()] : $oKonfigitem->getInitial()
             );
             if ($oKonfigitem->fAnzahl > $oKonfigitem->getMax() || $oKonfigitem->fAnzahl < $oKonfigitem->getMin()) {
                 $oKonfigitem->fAnzahl = $oKonfigitem->getInitial();
@@ -1270,10 +1273,16 @@ function buildConfig($kArtikel, $fAnzahl, $nVariation_arr, $nKonfiggruppe_arr, $
         }
         $oKonfiggruppe->oItem_arr = array_values($oKonfiggruppe->oItem_arr);
     }
-    $oKonfig->cPreisLocalized = array(
-        gibPreisStringLocalized($oKonfig->fGesamtpreis[0]),
-        gibPreisStringLocalized($oKonfig->fGesamtpreis[1])
-    );
+    if ($_SESSION['Kundengruppe']->darfPreiseSehen) {
+        $oKonfig->cPreisLocalized = array(
+            gibPreisStringLocalized($oKonfig->fGesamtpreis[0]),
+            gibPreisStringLocalized($oKonfig->fGesamtpreis[1])
+        );
+    } else {
+        $oKonfig->cPreisLocalized = array(
+            Shop::Lang()->get('priceHidden', 'global'),
+        );
+    }
     $oKonfig->nNettoPreise = $_SESSION['Kundengruppe']->nNettoPreise;
 
     return $oKonfig;
@@ -1318,6 +1327,22 @@ function gibMetaKeywords($Artikel)
 function holeProduktTagging($AktuellerArtikel)
 {
     return $AktuellerArtikel->tags;
+}
+
+/**
+ * @deprecated since version 4.3
+ */
+function bearbeiteArtikelWeiterempfehlen()
+{
+}
+
+/**
+ * @deprecated since version 4.3
+ * @return array
+ */
+function gibFehlendeEingabenArtikelWeiterempfehlenFormular()
+{
+    return [];
 }
 
 if (!function_exists('baueFormularVorgaben')) {

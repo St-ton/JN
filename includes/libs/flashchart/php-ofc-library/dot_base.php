@@ -7,89 +7,103 @@
 class dot_base
 {
     /**
-     * @param $type string
-     * @param $value integer
+     * @param string $type
+     * @param int    $value
      */
-    public function __construct($type, $value=null)
+    public function __construct($type, $value = null)
     {
         $this->type = $type;
         if (isset($value)) {
             $this->value($value);
         }
     }
-    
+
     /**
      * For line charts that only require a Y position
      * for each point.
-     * @param $value as integer, the Y position
+     * @param int $value - the Y position
      */
     public function value($value)
     {
         $this->value = $value;
     }
-    
+
     /**
      * For scatter charts that require an X and Y position for
      * each point.
      *
-     * @param $x as integer
-     * @param $y as integer
+     * @param int $x
+     * @param int $y
      */
     public function position($x, $y)
     {
         $this->x = $x;
         $this->y = $y;
     }
-    
+
     /**
-     * @param $colour is a string, HEX colour, e.g. '#FF0000' red
+     * @param string $colour - HEX colour, e.g. '#FF0000' red
+     * @return $this
      */
     public function colour($colour)
     {
         $this->colour = $colour;
+
         return $this;
     }
-    
+
     /**
      * The tooltip for this dot.
+     *
+     * @param string $tip
+     * @return $this
      */
     public function tooltip($tip)
     {
         $this->tip = $tip;
+
         return $this;
     }
-    
+
     /**
-     * @param $size is an integer. Size of the dot.
+     * @param int $size - Size of the dot
+     * @return $this
      */
     public function size($size)
     {
-        $tmp = 'dot-size';
+        $tmp        = 'dot-size';
         $this->$tmp = $size;
+
         return $this;
     }
-    
+
     /**
      * a private method
+     *
+     * @param string $type
+     * @return $this
      */
     public function type($type)
     {
         $this->type = $type;
+
         return $this;
     }
-    
+
     /**
-     * @param $size is an integer. The size of the hollow 'halo' around the dot that masks the line.
+     * @param int $size - The size of the hollow 'halo' around the dot that masks the line.
+     * @return $this
      */
     public function halo_size($size)
     {
-        $tmp = 'halo-size';
+        $tmp        = 'halo-size';
         $this->$tmp = $size;
+
         return $this;
     }
-    
+
     /**
-     * @param $do as string. One of three options (examples):
+     * @param string $do - One of three options (examples):
      *  - "http://example.com" - browse to this URL
      *  - "https://example.com" - browse to this URL
      *  - "trace:message" - print this message in the FlashDevelop debug pane
@@ -99,46 +113,53 @@ class dot_base
      */
     public function on_click($do)
     {
-        $tmp = 'on-click';
+        $tmp        = 'on-click';
         $this->$tmp = $do;
     }
 }
 
 /**
- * Draw a hollow dot
+ * Class hollow_dot
  */
 class hollow_dot extends dot_base
 {
-    public function __construct($value=null)
+    /**
+     * hollow_dot constructor.
+     * @param null $value
+     */
+    public function __construct($value = null)
     {
         parent::__construct('hollow-dot', $value);
     }
 }
 
 /**
- * Draw a star
+ * Class star
  */
 class star extends dot_base
 {
     /**
-     * The constructor, takes an optional $value
+     * star constructor.
+     * @param null $value
      */
-    public function __construct($value=null)
+    public function __construct($value = null)
     {
         parent::__construct('star', $value);
     }
-    
+
     /**
-     * @param $angle is an integer.
+     * @param int $angle
+     * @return $this
      */
     public function rotation($angle)
     {
         $this->rotation = $angle;
+
         return $this;
     }
-    
+
     /**
-     * @param $is_hollow is a boolean.
+     * @param bool $is_hollow
      */
     public function hollow($is_hollow)
     {
@@ -147,85 +168,97 @@ class star extends dot_base
 }
 
 /**
- * Draw a 'bow tie' shape.
+ * Class bow
  */
 class bow extends dot_base
 {
     /**
-     * The constructor, takes an optional $value
+     * bow constructor.
+     * @param null $value
      */
-    public function __construct($value=null)
+    public function __construct($value = null)
     {
         parent::__construct('bow', $value);
     }
-    
+
     /**
      * Rotate the anchor object.
-     * @param $angle is an integer.
+     *
+     * @param int $angle
+     * @return $this
      */
     public function rotation($angle)
     {
         $this->rotation = $angle;
+
         return $this;
     }
 }
 
 /**
- * An <i><b>n</b></i> sided shape.
+ * Class anchor
  */
 class anchor extends dot_base
 {
     /**
-     * The constructor, takes an optional $value
+     * anchor constructor.
+     * @param null $value
      */
-    public function __construct($value=null)
+    public function __construct($value = null)
     {
         parent::__construct('anchor', $value);
     }
-    
+
     /**
      * Rotate the anchor object.
-     * @param $angle is an integer.
+     *
+     * @param int $angle
+     * @return $this
      */
     public function rotation($angle)
     {
         $this->rotation = $angle;
+
         return $this;
     }
-    
+
     /**
-     * @param $sides is an integer. Number of sides this shape has.
+     * @param int $sides - Number of sides this shape has.
+     * @return $this
      */
     public function sides($sides)
     {
         $this->sides = $sides;
+
         return $this;
     }
 }
 
 /**
- * A simple dot
+ * Class dot
  */
 class dot extends dot_base
 {
     /**
-     * The constructor, takes an optional $value
+     * dot constructor.
+     * @param null $value
      */
-    public function __construct($value=null)
+    public function __construct($value = null)
     {
         parent::__construct('dot', $value);
     }
 }
 
 /**
- * A simple dot
+ * Class solid_dot
  */
 class solid_dot extends dot_base
 {
     /**
-     * The constructor, takes an optional $value
+     * solid_dot constructor.
+     * @param null $value
      */
-    public function __construct($value=null)
+    public function __construct($value = null)
     {
         parent::__construct('solid-dot', $value);
     }

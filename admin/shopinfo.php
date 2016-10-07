@@ -474,7 +474,7 @@ $XML = <<<EOF
 EOF;
 
 $fileShopFeed = basename(FILE_SHOP_FEED);
-$bWrite = is_writable(PFAD_ROOT . $fileShopFeed);
+$bWrite       = is_writable(PFAD_ROOT . $fileShopFeed);
 
 if ($bWrite) {
     if (isset($_REQUEST['update']) && $_REQUEST['update'] == '1') {
@@ -497,7 +497,7 @@ if ($bWrite) {
     } else {
         header('Cache-Control: no-cache, must-revalidate');
         header('Content-type: application/xml');
-        header('Content-Disposition: attachment; filename="'.$fileShopFeed.'"');
+        header('Content-Disposition: attachment; filename="' . $fileShopFeed . '"');
         readfile(PFAD_ROOT . $fileShopFeed);
     }
 } else {

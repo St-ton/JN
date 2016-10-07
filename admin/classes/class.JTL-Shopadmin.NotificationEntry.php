@@ -13,7 +13,7 @@ class NotificationEntry
      * None
      */
     const TYPE_NONE = -1;
-    
+
     /**
      * Information type
      */
@@ -48,7 +48,7 @@ class NotificationEntry
      * @var string
      */
     protected $description;
-    
+
     /**
      * @var string
      */
@@ -68,7 +68,7 @@ class NotificationEntry
         $this->setDescription($description);
         $this->setUrl($url);
     }
-    
+
     /**
      * @return string
      */
@@ -140,7 +140,7 @@ class NotificationEntry
     {
         return $this->description !== null && strlen($this->description) > 0;
     }
-    
+
     /**
      * @return string
      */
@@ -156,7 +156,7 @@ class NotificationEntry
     {
         $this->url = $url;
     }
-    
+
     /**
      * @return boolean
      */

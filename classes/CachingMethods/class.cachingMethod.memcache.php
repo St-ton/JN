@@ -8,8 +8,10 @@
  * Class cache_memcache
  * Implements the Memcache memory object caching system - no "d" at the end
  */
-class cache_memcache extends JTLCacheHelper implements ICachingMethod
+class cache_memcache implements ICachingMethod
 {
+    use JTLCacheTrait;
+    
     /**
      * @var cache_memcache|null
      */
@@ -29,19 +31,13 @@ class cache_memcache extends JTLCacheHelper implements ICachingMethod
             $this->setMemcache($options['memcache_host'], $options['memcache_port']);
             $this->isInitialized = true;
             $this->journalID     = 'memcache_journal';
-            $this->options       = $options;
+            $maxLifeTime         = 60 * 60 * 24 * 30;
+            if ($options['lifetime'] > $maxLifeTime) {
+                //@see http://php.net/manual/de/memcached.expiration.php
+                $options['lifetime'] = $maxLifeTime;
+            }
+            $this->options = $options;
         }
-    }
-
-    /**
-     * @param array $options
-     *
-     * @return cache_memcache
-     */
-    public static function getInstance($options)
-    {
-        //check if class was initialized before
-        return (self::$instance !== null) ? self::$instance : new self($options);
     }
 
     /**
@@ -56,7 +52,7 @@ class cache_memcache extends JTLCacheHelper implements ICachingMethod
             $this->_memcache->close();
         }
         $m = new Memcache();
-        $m->addserver($host, $port);
+        $m->addServer($host, $port);
         $this->_memcache = $m;
 
         return $this;
@@ -146,7 +142,7 @@ class cache_memcache extends JTLCacheHelper implements ICachingMethod
      */
     public function getStats()
     {
-        $stats = $this->_memcache->getstats();
+        $stats = $this->_memcache->getStats();
 
         return array(
             'entries' => $stats['curr_items'],

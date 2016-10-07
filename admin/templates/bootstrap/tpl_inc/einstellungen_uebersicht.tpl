@@ -3,7 +3,7 @@
 {else}
     {assign var="cTitel" value=#preferences#}
 {/if}
-{if isset($cSearch) && $cSearch|count_characters  > 0}
+{if isset($cSearch) && $cSearch|strlen  > 0}
     {assign var="cTitel" value=$cSearch}
 {/if}
 

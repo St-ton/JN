@@ -89,14 +89,14 @@ class IOResponse implements JsonSerializable
         });
 
         $argumentlist = implode(', ', $filtered);
-        $syntax = sprintf('%s(%s);', $function, $argumentlist);
+        $syntax       = sprintf('%s(%s);', $function, $argumentlist);
 
         $this->script($syntax);
 
         if (defined('IO_LOG_CONSOLE') && IO_LOG_CONSOLE === true) {
-            $reset = 'background: transparent; color: #000;';
+            $reset  = 'background: transparent; color: #000;';
             $orange = 'background: #e86c00; color: #fff;';
-            $grey = 'background: #e8e8e8; color: #333;';
+            $grey   = 'background: #e8e8e8; color: #333;';
 
             $args = json_encode(utf8_convert_recursive($arguments));
 
@@ -116,7 +116,7 @@ class IOResponse implements JsonSerializable
     }
 
     /**
-     * @return string
+     * @return array
      */
     public function generateCallTrace()
     {

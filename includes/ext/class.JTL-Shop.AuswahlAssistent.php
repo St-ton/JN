@@ -24,9 +24,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
         public static function getLinks()
         {
             return Shop::DB()->query(
-                "SELECT tlink.*
+                "SELECT *
                     FROM tlink
-                    WHERE tlink.nLinkart = " . LINKTYP_AUSWAHLASSISTENT, 2
+                    WHERE nLinkart = " . LINKTYP_AUSWAHLASSISTENT, 2
             );
         }
 

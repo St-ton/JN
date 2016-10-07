@@ -54,6 +54,8 @@ switch ($action) {
         if (!isset($_GET['id'])) {
             _exit(400);
         }
+		
+		Shop::setPageType(PAGE_BESTELLVORGANG);
 
         require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
 

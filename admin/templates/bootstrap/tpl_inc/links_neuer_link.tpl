@@ -22,6 +22,12 @@
 
         $('input[name="nLinkart"]').change(function () {
             var lnk = $('input[name="nLinkart"]:checked').val();
+            if (lnk == '1') {
+                $('#option_isActive').slideDown("slow");
+            } else {
+                $('#option_isActive').slideUp("slow");
+                $('#option_isActive select').val(1);
+            }
         }).trigger('change');
 
         $('#content_template_type ul li a').click(function () {
@@ -122,7 +128,7 @@
                         <select name="cKundengruppen[]" class="form-control{if isset($xPlausiVar_arr.cKundengruppen)} fieldfillout{/if}" multiple="multiple" size="6" id="cKundengruppen">
                             <option value="-1"{if isset($Link->kLink) && $Link->kLink > 0 && isset($gesetzteKundengruppen[0]) && $gesetzteKundengruppen[0]} selected{elseif isset($xPostVar_arr.cKundengruppen)}
                                 {foreach name=postkndgrp from=$xPostVar_arr.cKundengruppen item=cPostKndGrp}
-                                    {if $cPostKndGrp|count_characters > 0 && $cPostKndGrp == "-1"}selected{/if}
+                                    {if $cPostKndGrp|strlen > 0 && $cPostKndGrp == "-1"}selected{/if}
                                 {/foreach}
                                     {elseif !isset($Link->kLink) || !$Link->kLink}selected{/if}>{#all#}</option>
 
@@ -139,12 +145,23 @@
                         </select>
                         <span class="input-group-addon">{getHelpDesc cDesc=#multipleChoice#}</span>
                     </div>
+                    <div class="input-group" id="option_isActive">
+                        <span class="input-group-addon"><label for="bIsActive">{#active#}</label></span>
+                        <div class="input-group-wrap">
+                            <select class="form-control" type="selectbox" name="bIsActive" id="bIsActive">
+                                <option value="1" {if (isset($Link->bIsActive) && $Link->bIsActive === '1') || (isset($xPostVar_arr.bIsActive) && $xPostVar_arr.bIsActive === '1')}selected{/if}>Aktiviert</option>
+                                <option value="0" {if (isset($Link->bIsActive) && $Link->bIsActive === '0') || (isset($xPostVar_arr.bIsActive) && $xPostVar_arr.bIsActive === '0')}selected{/if}>Deaktiviert</option>
+                            </select>
+                        </div>
+                    </div>
+                    {if !isset($Link->nLinkart) || $Link->nLinkart != LINKTYP_LOGIN}
                     <div class="input-group">
                         <span class="input-group-addon"><label for="cSichtbarNachLogin">{#visibleAfterLogin#}</label></span>
                         <div class="input-group-wrap">
                             <input class="form-control2" type="checkbox" name="cSichtbarNachLogin" id="cSichtbarNachLogin" value="Y" {if (isset($Link->cSichtbarNachLogin) && $Link->cSichtbarNachLogin === 'Y') || (isset($xPostVar_arr.cSichtbarNachLogin) && $xPostVar_arr.cSichtbarNachLogin)}checked{/if} />
                         </div>
                     </div>
+                    {/if}
                     <div class="input-group">
                         <span class="input-group-addon"><label for="bSSL">SSL</label></span>
                         <span class="input-group-wrap">
@@ -175,9 +192,9 @@
                             </div>
                         </span>
                         <span class="input-group-btn input-group-addon">
-                            <input name="hinzufuegen" type="button" value="{#linkPicAdd#}" onclick="return append_file_selector();" class="btn btn-info" />
+                            <button title="{#linkPicAdd#}" name="hinzufuegen" value="{#linkPicAdd#}" onclick="return append_file_selector();" class="btn btn-info"><i class="fa fa-plus"></i></button>
                         </span>
-                        <span class="input-group-addon">{getHelpDesc cDesc=#titleDesc#}</span>
+
                     </div>
                     <div class="input-group">
                         <span class="input-group-addon"><label>{#linkPics#}</label></span>
@@ -220,7 +237,7 @@
 
             {foreach name=sprachen from=$sprachen item=sprache}
                 {assign var="cISO" value=$sprache->cISO}
-                <div id="iso_{$cISO}" class="iso_wrapper {if $sprache->cShopStandard!="Y"}hidden{/if}">
+                <div id="iso_{$cISO}" class="iso_wrapper{if $sprache->cShopStandard != "Y"} hidden-soft{/if}">
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <h3 class="panel-title">Meta/Seo ({$sprache->cNameDeutsch})</h3>
@@ -280,7 +297,7 @@
                     </div>
                 </div>
             {/foreach}
-            <div class="{if isset($Link->kLink)} btn-group{/if}">
+            <div class="panel{if isset($Link->kLink)} btn-group{/if}">
                 <button type="submit" value="{#newLinksSave#}" class="btn btn-primary"><i class="fa fa-save"></i> {#newLinksSave#}</button>
                 {if isset($Link->kLink)}<button type="submit" name="continue" value="1" class="btn btn-default" id="save-and-continue">{#newLinksSave#} und weiter bearbeiten</button>{/if}
             </div>

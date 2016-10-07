@@ -69,7 +69,6 @@ class Merkmal
      *
      * @param int  $kMerkmal - Falls angegeben, wird das Merkmal mit angegebenem kMerkmal aus der DB geholt
      * @param bool $bMMW
-     * @return Merkmal
      */
     public function __construct($kMerkmal = 0, $bMMW = false)
     {
@@ -90,7 +89,7 @@ class Merkmal
     {
         $kSprache = Shop::$kSprache;
         if (!$kSprache) {
-            $oSprache = Shop::DB()->query("SELECT kSprache FROM tsprache WHERE cShopStandard = 'Y'", 1);
+            $oSprache = Shop::DB()->select('tsprache', 'cShopStandard', 'Y');
             if ($oSprache->kSprache > 0) {
                 $kSprache = $oSprache->kSprache;
             }

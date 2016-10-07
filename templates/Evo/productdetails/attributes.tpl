@@ -89,10 +89,21 @@
                 {/if}
 
                 {if $dimension && $Einstellungen.artikeldetails.artikeldetails_abmessungen_anzeigen === 'Y'}
-                    <tr class="attr-dimensions">
-                        <td class="attr-label">{if $dimension['nAnzeigeTyp'] == 1}{lang key="dimensions" section="productDetails"}{else}{lang key="dimensions2d" section="productDetails"}{/if}: </td>
-                        <td class="attr-value">{$Artikel->getDimensionLocalized()}</td>
-                    </tr>
+                    {assign var=dimensionArr value=$Artikel->getDimensionLocalized()}
+                    {if $dimensionArr|count > 0}
+                        <tr class="attr-dimensions">
+                            <td class="attr-label">{lang key="dimensions" section="productDetails"}
+                                ({foreach name=DimensionKey from=$dimensionArr key=dimkey item=dim}
+                                    {$dimkey}{if $smarty.foreach.DimensionKey.last}{else} &times; {/if}
+                                {/foreach}):
+                            </td>
+                            <td class="attr-value">
+                                {foreach name=Dimension from=$dimensionArr item=dim}
+                                    {$dim}{if $smarty.foreach.Dimension.last} cm {else} &times; {/if}
+                                {/foreach}
+                            </td>
+                        </tr>
+                    {/if}
                 {/if}
 
                 {if $Einstellungen.artikeldetails.artikeldetails_attribute_anhaengen === 'Y' || $Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ATTRIBUTEANHAENGEN] == 1}

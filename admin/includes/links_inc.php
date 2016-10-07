@@ -129,7 +129,7 @@ function calcRatio($cDatei, $nMaxBreite, $nMaxHoehe)
  */
 function removeLink($kLink, $kLinkgruppe)
 {
-    $oLink = new Link($kLink, null, true);
+    $oLink              = new Link($kLink, null, true);
     $oLink->kLinkgruppe = $kLinkgruppe;
     $oLink->delete(true, $kLinkgruppe);
     // Bilderverzeichnis loeschen
@@ -170,7 +170,7 @@ function getLinkVar($kLink, $var)
                 WHERE tlinksprache.kLink = " . $kLink, 2
         );
     } else {
-        $linknamen = Shop::DB()->query("SELECT cISOSprache, $var FROM tlinksprache WHERE kLink = " . $kLink, 2);
+        $linknamen = Shop::DB()->selectAll('tlinksprache', 'kLink', $kLink);
     }
     $linkCount = count($linknamen);
     for ($i = 0; $i < $linkCount; $i++) {
@@ -212,7 +212,7 @@ function getLinkgruppeNames($kLinkgruppe)
     if (!$kLinkgruppe) {
         return $namen;
     }
-    $linknamen = Shop::DB()->query("SELECT * FROM tlinkgruppesprache WHERE kLinkgruppe = " . intval($kLinkgruppe), 2);
+    $linknamen = Shop::DB()->selectAll('tlinkgruppesprache', 'kLinkgruppe', (int)$kLinkgruppe);
     $linkCount = count($linknamen);
     for ($i = 0; $i < $linkCount; $i++) {
         $namen[$linknamen[$i]->cISOSprache] = $linknamen[$i]->cName;

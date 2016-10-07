@@ -17,7 +17,7 @@ class ArtikelHelper
     {
         $kArtikel = (int)$kArtikel;
         if ($kArtikel > 0) {
-            $oArtikel = Shop::DB()->query("SELECT kEigenschaftKombi FROM tartikel WHERE kArtikel = " . $kArtikel, 1);
+            $oArtikel = Shop::DB()->select('tartikel', 'kArtikel', $kArtikel, null, null, null, null, false, 'kEigenschaftKombi');
 
             return isset($oArtikel->kEigenschaftKombi) && (int)$oArtikel->kEigenschaftKombi > 0;
         }
@@ -33,7 +33,7 @@ class ArtikelHelper
     {
         $kArtikel = (int)$kArtikel;
         if ($kArtikel > 0) {
-            $oArtikel = Shop::DB()->query("SELECT kVaterArtikel FROM tartikel WHERE kArtikel = " . $kArtikel, 1);
+            $oArtikel = Shop::DB()->select('tartikel', 'kArtikel', $kArtikel, null, null, null, null, false, 'kVaterArtikel');
 
             return (isset($oArtikel->kVaterArtikel) && (int)$oArtikel->kVaterArtikel > 0) ? (int)$oArtikel->kVaterArtikel : 0;
         }
@@ -82,10 +82,10 @@ class ArtikelHelper
                 foreach ($kVariationKombi_arr as $i => $kVariationKombi) {
                     if ($j > 0) {
                         $cSQL1 .= ',' . $i;
-                        $cSQL2 .= ',' . (int) $kVariationKombi;
+                        $cSQL2 .= ',' . (int)$kVariationKombi;
                     } else {
                         $cSQL1 .= $i;
-                        $cSQL2 .= (int) $kVariationKombi;
+                        $cSQL2 .= (int)$kVariationKombi;
                     }
                     $j++;
                 }
@@ -239,11 +239,11 @@ class ArtikelHelper
             $oSQLEigenschaftWert->cJOIN   = '';
             if ($kSprache > 0 && !standardspracheAktiv()) {
                 $oSQLEigenschaft->cSELECT = "teigenschaftsprache.cName AS cName_teigenschaftsprache, ";
-                $oSQLEigenschaft->cJOIN   = " JOIN teigenschaftsprache ON teigenschaftsprache.kEigenschaft = teigenschaft.kEigenschaft
+                $oSQLEigenschaft->cJOIN   = "LEFT JOIN teigenschaftsprache ON teigenschaftsprache.kEigenschaft = teigenschaft.kEigenschaft
                                             AND teigenschaftsprache.kSprache=" . $kSprache;
 
                 $oSQLEigenschaftWert->cSELECT = "teigenschaftwertsprache.cName AS cName_teigenschaftwertsprache, ";
-                $oSQLEigenschaftWert->cJOIN   = " JOIN teigenschaftwertsprache ON teigenschaftwertsprache.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
+                $oSQLEigenschaftWert->cJOIN   = "LEFT JOIN teigenschaftwertsprache ON teigenschaftwertsprache.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
                                                 AND teigenschaftwertsprache.kSprache=" . $kSprache;
             }
 
@@ -409,7 +409,7 @@ class ArtikelHelper
                                 LEFT JOIN teigenschaftwertsichtbarkeit
                                     ON teigenschaftwertsichtbarkeit.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
                                     AND teigenschaftwertsichtbarkeit.kKundengruppe = " . $kKundengruppe . "
-                                WHERE teigenschaftwert.kEigenschaftWert = " . (int) self::getSelectedVariationValue($oEigenschaft->kEigenschaft) . "
+                                WHERE teigenschaftwert.kEigenschaftWert = " . (int)self::getSelectedVariationValue($oEigenschaft->kEigenschaft) . "
                                     AND teigenschaftwertsichtbarkeit.kEigenschaftWert IS NULL
                                     AND teigenschaftwert.kEigenschaft = " . (int)$oEigenschaft->kEigenschaft, 1
                         );
@@ -427,7 +427,7 @@ class ArtikelHelper
                             break;
                         }
                     } else {
-                        if (!isset($_SESSION['variBoxAnzahl_arr'])  && $bRedirect) {
+                        if (!isset($_SESSION['variBoxAnzahl_arr']) && $bRedirect) {
                             //redirekt zum artikel, um variation/en zu waehlen  MBM beachten
                             header('Location: ' . Shop::getURL() . '/index.php?a=' . $kArtikel . '&n=' . (int)$_POST['anzahl'] . '&r=' . R_VARWAEHLEN, true, 302);
                             exit();
@@ -472,11 +472,7 @@ class ArtikelHelper
     {
         $oVariationsKind_arr = array();
         if ($kVaterArtikel > 0) {
-            $oVariationsKind_arr = Shop::DB()->query(
-                "SELECT tartikel.kArtikel, tartikel.kEigenschaftKombi
-                    FROM tartikel
-                    WHERE tartikel.kVaterArtikel = " . (int)$kVaterArtikel, 2
-            );
+            $oVariationsKind_arr = Shop::DB()->selectAll('tartikel', 'kVaterArtikel', (int)$kVaterArtikel, 'kArtikel, kEigenschaftKombi');
         }
 
         return $oVariationsKind_arr;
@@ -489,7 +485,7 @@ class ArtikelHelper
      */
     public static function isParent($kArtikel)
     {
-        $oArtikelTMP = Shop::DB()->query("SELECT nIstVater FROM tartikel WHERE kArtikel = " . (int)$kArtikel, 1);
+        $oArtikelTMP = Shop::DB()->select('tartikel', 'kArtikel', (int)$kArtikel, null, null, null, null, false, 'nIstVater');
 
         return isset($oArtikelTMP->nIstVater) && $oArtikelTMP->nIstVater > 0;
     }
@@ -503,7 +499,7 @@ class ArtikelHelper
     {
         $kArtikel = (int)$kArtikel;
         if ($kArtikel > 0) {
-            $oObj = Shop::DB()->query("SELECT * FROM tstueckliste WHERE kArtikel = " . $kArtikel . ' LIMIT 1', 1);
+            $oObj = Shop::DB()->select('tstueckliste', 'kArtikel', $kArtikel);
             if (isset($oObj->kStueckliste) && $oObj->kStueckliste > 0) {
                 return ($bInfo) ? $oObj : true;
             }

@@ -165,10 +165,7 @@ if (class_exists('AuswahlAssistent')) {
         {
             if (isset($cParam_arr['kAuswahlAssistentFrage_arr']) && is_array($cParam_arr['kAuswahlAssistentFrage_arr']) && count($cParam_arr['kAuswahlAssistentFrage_arr']) > 0) {
                 foreach ($cParam_arr['kAuswahlAssistentFrage_arr'] as $kAuswahlAssistentFrage) {
-                    Shop::DB()->query(
-                        "DELETE FROM tauswahlassistentfrage
-                            WHERE tauswahlassistentfrage.kAuswahlAssistentFrage = " . (int)$kAuswahlAssistentFrage, 3
-                    );
+                    Shop::DB()->delete('tauswahlassistentfrage', 'kAuswahlAssistentFrage', (int)$kAuswahlAssistentFrage);
                 }
 
                 return true;

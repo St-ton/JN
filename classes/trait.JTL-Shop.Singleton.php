@@ -4,25 +4,54 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+/**
+ * Class SingletonTrait
+ */
 trait SingletonTrait
 {
+    /**
+     * @var SingletonTrait
+     */
     private static $_instance;
 
+    /**
+     * @return SingletonTrait
+     */
     final public static function getInstance()
     {
         if (static::$_instance === null) {
             static::$_instance = new static;
         }
+
         return static::$_instance;
     }
-    
-    final private function __construct() {
+
+    /**
+     * SingletonTrait constructor.
+     */
+    final private function __construct()
+    {
         $this->init();
     }
 
-    final private function __wakeup() {}
+    /**
+     *
+     */
+    final private function __wakeup()
+    {
+    }
 
-    final private function __clone() {}
-    
-    protected function init() {}
+    /**
+     *
+     */
+    final private function __clone()
+    {
+    }
+
+    /**
+     *
+     */
+    protected function init()
+    {
+    }
 }

@@ -35,16 +35,23 @@
 
                 {* Images *}
                 {if $oMedienDatei->nMedienTyp == 1}
-                    <div class="col-xs-12 col-md-10 col-md-offset-1">
-                        <div class="well panel-wrap">
+                    <div class="col-xs-12">
+                        <div class="panel-wrap">
                             <div class="panel panel-default">
                                 <div class="panel-heading"><h3 class="panel-title">{$oMedienDatei->cName}</h3></div>
                                 <div class="panel-body">
                                     <p>{$oMedienDatei->cBeschreibung}</p>
+                                    {if isset($oMedienDatei->oMedienDateiAttribut_arr) && $oMedienDatei->oMedienDateiAttribut_arr|@count > 0}
+                                        {foreach name="mediendateiattribute" from=$oMedienDatei->oMedienDateiAttribut_arr item=oAttribut}
+                                            {if $oAttribut->cName == "img_alt"}
+                                                {assign var=cMediaAltAttr value=$oAttribut->cWert}
+                                            {/if}
+                                        {/foreach}
+                                    {/if}
                                     {if !empty($oMedienDatei->cPfad)}
-                                        <img alt="" src="{$PFAD_MEDIAFILES}{$oMedienDatei->cPfad}" class="img-responsive" />
+                                        <img alt="{if isset($cMediaAltAttr)}{$cMediaAltAttr}{/if}" src="{$PFAD_MEDIAFILES}{$oMedienDatei->cPfad}" class="img-responsive" />
                                     {elseif !empty($oMedienDatei->cURL)}
-                                        <img alt="" src="{$oMedienDatei->cURL}" class="img-responsive" />
+                                        <img alt="{if isset($cMediaAltAttr)}{$cMediaAltAttr}{/if}" src="{$oMedienDatei->cURL}" class="img-responsive" />
                                     {/if}
                                 </div>
                             </div>
@@ -52,19 +59,25 @@
                     </div>
                     {* Audio *}
                 {elseif $oMedienDatei->nMedienTyp == 2}
-                    {if $oMedienDatei->cName|count_characters > 1}
-                        <div class="col-xs-12 col-md-10 col-md-offset-1">
-                            <div class="well panel-wrap">
+                    {if $oMedienDatei->cName|strlen > 1}
+                        <div class="col-xs-12">
+                            <div class="panel-wrap">
                                 <div class="panel panel-default">
                                     <div class="panel-heading"><h3 class="panel-title">{$oMedienDatei->cName}</h3></div>
                                     <div class="panel-body">
                                         <p>{$oMedienDatei->cBeschreibung}</p>
                                         {* Music *}
-                                        {if $oMedienDatei->cPfad|count_characters > 1}
-                                            <audio controls>
-                                                <source src="{$PFAD_MEDIAFILES}{$oMedienDatei->cPfad}" type="audio/mpeg">
-                                                Your browser does not support the audio element.
-                                            </audio>
+                                        {if $oMedienDatei->cPfad|strlen > 1 || $oMedienDatei->cURL|strlen > 1}
+                                            {assign var=audiosrc value=$oMedienDatei->cURL}
+                                            {if $oMedienDatei->cPfad|strlen > 1}
+                                                {assign var=audiosrc value=$PFAD_MEDIAFILES|cat:$oMedienDatei->cPfad}
+                                            {/if}
+                                            {if $audiosrc|strlen > 1}
+                                                <audio controls>
+                                                    <source src="{$audiosrc}" type="audio/mpeg">
+                                                    Your browser does not support the audio element.
+                                                </audio>
+                                            {/if}
                                         {/if}
                                     </div>
                                 </div>
@@ -75,8 +88,8 @@
 
                     {* Video *}
                 {elseif $oMedienDatei->nMedienTyp == 3}
-                    <div class="col-xs-12 col-md-10 col-md-offset-1">
-                        <div class="well panel-wrap">
+                    <div class="col-xs-12">
+                        <div class="panel-wrap">
                             <div class="panel panel-default">
                                 <div class="panel-heading"><h3 class="panel-title">{$oMedienDatei->cName}</h3></div>
                                 <div class="panel-body">
@@ -100,8 +113,8 @@
                     </div>
                     {* Sonstiges *}
                 {elseif $oMedienDatei->nMedienTyp == 4}
-                    <div class="col-xs-12 col-md-10 col-md-offset-1">
-                        <div class="well panel-wrap">
+                    <div class="col-xs-12">
+                        <div class="panel-wrap">
                             <div class="panel panel-default">
                                 <div class="panel-heading"><h3 class="panel-title">{$oMedienDatei->cName}</h3></div>
                                 <div class="panel-body">
@@ -124,13 +137,12 @@
                     </div>
                     {* PDF *}
                 {elseif $oMedienDatei->nMedienTyp == 5}
-                    <div class="col-xs-12 col-md-10 col-md-offset-1">
-                        <div class="well panel-wrap">
+                    <div class="col-xs-12">
+                        <div class="panel-wrap">
                             <div class="panel panel-default">
                                 <div class="panel-heading"><h3 class="panel-title">{$oMedienDatei->cName}</h3></div>
                                 <div class="panel-body">
                                     <p>{$oMedienDatei->cBeschreibung}</p>
-
                                     {if !empty($oMedienDatei->cPfad)}
                                         <a href="{$PFAD_MEDIAFILES}{$oMedienDatei->cPfad}" target="_blank"><img src="{$PFAD_BILDER}intern/file-pdf.png" /></a>
                                         <br />

@@ -5,7 +5,6 @@
  */
 require_once dirname(__FILE__) . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'statistik_inc.php';
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'blaetternavi.php';
 
 $nStatsType = verifyGPCDataInteger('s');
 switch ($nStatsType) {
@@ -28,13 +27,11 @@ switch ($nStatsType) {
         $oAccount->redirectOnFailure();
         break;
 }
-
+/** @global JTLSmarty $smarty */
 $cHinweis          = '';
 $cFehler           = '';
 $cSpalteX          = '';
 $nAnzeigeIntervall = 0;
-$nAnzahlProSeite   = 35;
-$oBlaetterNaviConf = baueBlaetterNaviGetterSetter(1, $nAnzahlProSeite);
 $nDateStampVon     = firstDayOfMonth();
 $nDateStampBis     = lastDayOfMonth();
 
@@ -131,20 +128,25 @@ if (is_array($oStat_arr) && count($oStat_arr) > 0) {
         $cMember_arr[] = array_keys(get_object_vars($oStat));
     }
 }
+
+$oPagination = (new Pagination())
+    ->setItemCount(count($oStat_arr))
+    ->assemble();
+
 $smarty->assign('headline', GetTypeNameStats($_SESSION['Statistik']->nTyp))
-       ->assign('cHinweis', $cHinweis)
-       ->assign('cFehler', $cFehler)
-       ->assign('nTyp', $_SESSION['Statistik']->nTyp)
-       ->assign('oStat_arr', $oStat_arr)
-       ->assign('oStatJSON', getJSON($oStat_arr, $nAnzeigeIntervall, $_SESSION['Statistik']->nTyp))
-       ->assign('cMember_arr', mappeDatenMember($cMember_arr, gibMappingDaten($_SESSION['Statistik']->nTyp)))
-       ->assign('btnZeit', $_SESSION['Statistik']->nZeitraum)
-       ->assign('STATS_ADMIN_TYPE_BESUCHER', STATS_ADMIN_TYPE_BESUCHER)
-       ->assign('STATS_ADMIN_TYPE_KUNDENHERKUNFT', STATS_ADMIN_TYPE_KUNDENHERKUNFT)
-       ->assign('STATS_ADMIN_TYPE_SUCHMASCHINE', STATS_ADMIN_TYPE_SUCHMASCHINE)
-       ->assign('STATS_ADMIN_TYPE_UMSATZ', STATS_ADMIN_TYPE_UMSATZ)
-       ->assign('STATS_ADMIN_TYPE_EINSTIEGSSEITEN', STATS_ADMIN_TYPE_EINSTIEGSSEITEN)
-       ->assign('oBlaetterNavi', baueBlaetterNavi($oBlaetterNaviConf->nAktuelleSeite1, count($oStat_arr), $nAnzahlProSeite))
-       ->assign('nPosAb', $oBlaetterNaviConf->cLimit1)
-       ->assign('nPosBis', $oBlaetterNaviConf->cLimit1 + $nAnzahlProSeite)
-       ->display('statistik.tpl');
+    ->assign('cHinweis', $cHinweis)
+    ->assign('cFehler', $cFehler)
+    ->assign('nTyp', $_SESSION['Statistik']->nTyp)
+    ->assign('oStat_arr', $oStat_arr)
+    ->assign('oStatJSON', getJSON($oStat_arr, $nAnzeigeIntervall, $_SESSION['Statistik']->nTyp))
+    ->assign('cMember_arr', mappeDatenMember($cMember_arr, gibMappingDaten($_SESSION['Statistik']->nTyp)))
+    ->assign('btnZeit', $_SESSION['Statistik']->nZeitraum)
+    ->assign('STATS_ADMIN_TYPE_BESUCHER', STATS_ADMIN_TYPE_BESUCHER)
+    ->assign('STATS_ADMIN_TYPE_KUNDENHERKUNFT', STATS_ADMIN_TYPE_KUNDENHERKUNFT)
+    ->assign('STATS_ADMIN_TYPE_SUCHMASCHINE', STATS_ADMIN_TYPE_SUCHMASCHINE)
+    ->assign('STATS_ADMIN_TYPE_UMSATZ', STATS_ADMIN_TYPE_UMSATZ)
+    ->assign('STATS_ADMIN_TYPE_EINSTIEGSSEITEN', STATS_ADMIN_TYPE_EINSTIEGSSEITEN)
+    ->assign('nPosAb', $oPagination->getFirstPageItem())
+    ->assign('nPosBis', $oPagination->getFirstPageItem() + $oPagination->getPageItemCount())
+    ->assign('oPagination', $oPagination)
+    ->display('statistik.tpl');

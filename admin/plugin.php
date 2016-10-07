@@ -6,7 +6,7 @@
 require_once dirname(__FILE__) . '/includes/admininclude.php';
 
 $oAccount->permission('PLUGIN_ADMIN_VIEW', true, true);
-
+/** @global JTLSmarty $smarty */
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'plugin_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 
@@ -24,15 +24,18 @@ if ($step === 'plugin_uebersicht') {
             if (!validateToken()) {
                 $bError = true;
             } else {
-                $oPluginEinstellungConf_arr = Shop::DB()->query(
-                    "SELECT *
-                        FROM tplugineinstellungenconf
-                        WHERE kPluginAdminMenu != 0
-                            AND kPlugin = " . $kPlugin . "
-                            AND cConf != 'N'
-                            AND kPluginAdminMenu = " . (int) $_POST['kPluginAdminMenu'], 2
-                );
-                $bError = false;
+                $bError                     = false;
+                $oPluginEinstellungConf_arr = array();
+                if (isset($_POST['kPluginAdminMenu'])) {
+                    $oPluginEinstellungConf_arr = Shop::DB()->query(
+                        "SELECT *
+                            FROM tplugineinstellungenconf
+                            WHERE kPluginAdminMenu != 0
+                                AND kPlugin = " . $kPlugin . "
+                                AND cConf != 'N'
+                                AND kPluginAdminMenu = " . (int)$_POST['kPluginAdminMenu'], 2
+                    );
+                }
                 if (count($oPluginEinstellungConf_arr) > 0) {
                     foreach ($oPluginEinstellungConf_arr as $oPluginEinstellungConf) {
                         Shop::DB()->delete('tplugineinstellungen', array('kPlugin', 'cName'), array($kPlugin, $oPluginEinstellungConf->cWertName));

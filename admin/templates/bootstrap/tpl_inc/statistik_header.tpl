@@ -15,6 +15,9 @@
 {elseif $nTyp == $STATS_ADMIN_TYPE_UMSATZ}
     {assign var="cTitel" value=#statisticTitle#|cat:": "|cat:#statisticUmsatz#}
     {assign var="cURL" value=#statisticUmsatzURL#}
+{else $nTyp == $STATS_ADMIN_TYPE_EINSTIEGSSEITEN}
+    {assign var="cTitel" value=#statisticTitle#|cat:": "|cat:#statisticEinstiegsseite#}
+    {assign var="cURL" value=#statisticEinstiegsseiteURL#}
 {/if}
 {include file='tpl_inc/seite_header.tpl' cTitel=$cTitel cBeschreibung=#statisticDesc# cDokuURL=$cURL}
 <div id="content" class="container-fluid">
@@ -29,6 +32,7 @@
                     <option value="{$STATS_ADMIN_TYPE_KUNDENHERKUNFT}"{if $nTyp == $STATS_ADMIN_TYPE_KUNDENHERKUNFT} selected{/if}>Kundenherkunft</option>
                     <option value="{$STATS_ADMIN_TYPE_SUCHMASCHINE}"{if $nTyp == $STATS_ADMIN_TYPE_SUCHMASCHINE} selected{/if}>Suchmaschinen</option>
                     <option value="{$STATS_ADMIN_TYPE_UMSATZ}"{if $nTyp == $STATS_ADMIN_TYPE_UMSATZ} selected{/if}>Umsatz</option>
+                    <option value="{$STATS_ADMIN_TYPE_EINSTIEGSSEITEN}"{if $nTyp == $STATS_ADMIN_TYPE_EINSTIEGSSEITEN} selected{/if}>Einstiegsseiten</option>
                 </select>
             </span>
         </div>

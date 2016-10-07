@@ -5,11 +5,6 @@
  */
 require_once dirname(__FILE__) . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'exportformat_inc.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Artikel.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Preise.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Eigenschaft.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.EigenschaftWert.php';
-require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Kategorie.php';
 
 if (!ini_get('safe_mode')) {
     @ini_set('max_execution_time', 0);
@@ -46,7 +41,7 @@ $smarty              = new JTLSmarty(true, false, false);
 $smarty->setCaching(0)
        ->setTemplateDir(PFAD_TEMPLATES)
        ->setConfigDir($smarty->getTemplateDir($smarty->context) . 'lang/')
-       ->registerResource('db', array('db_get_template', 'db_get_timestamp', 'db_get_secure', 'db_get_trusted'));
+       ->registerResource('db', new SmartyResourceNiceDB('export'));
 
 setzeSteuersaetze();
 if (!isset($_SESSION['Kundengruppe'])) {
@@ -115,7 +110,7 @@ $replaceTwo = array(' ', ' ', ' ', ' ', '');
 
 if (isset($ExportEinstellungen['exportformate_quot']) && $ExportEinstellungen['exportformate_quot'] !== 'N') {
     $findTwo[] = '"';
-    if ($ExportEinstellungen['exportformate_quot'] === 'bq') {
+    if ($ExportEinstellungen['exportformate_quot'] === 'q' || $ExportEinstellungen['exportformate_quot'] === 'bq') {
         $replaceTwo[] = '\"';
     } elseif ($ExportEinstellungen['exportformate_quot'] === 'qq') {
         $replaceTwo[] = '""';
@@ -125,7 +120,7 @@ if (isset($ExportEinstellungen['exportformate_quot']) && $ExportEinstellungen['e
 }
 if (isset($ExportEinstellungen['exportformate_quot']) && $ExportEinstellungen['exportformate_equot'] !== 'N') {
     $findTwo[] = "'";
-    if ($ExportEinstellungen['exportformate_equot'] === 'q') {
+    if ($ExportEinstellungen['exportformate_equot'] === 'q' || $ExportEinstellungen['exportformate_equot'] === 'bq') {
         $replaceTwo[] = '"';
     } else {
         $replaceTwo[] = $ExportEinstellungen['exportformate_equot'];
@@ -135,7 +130,7 @@ if (isset($ExportEinstellungen['exportformate_semikolon']) && $ExportEinstellung
     $findTwo[]    = ';';
     $replaceTwo[] = $ExportEinstellungen['exportformate_semikolon'];
 }
-$waehrung = (isset($_SESSION['Waehrung']->kWaehrung)) ? $_SESSION['Waehrung'] : Shop::DB()->query("SELECT * FROM twaehrung WHERE cStandard = 'Y'", 1);
+$waehrung = (isset($_SESSION['Waehrung']->kWaehrung)) ? $_SESSION['Waehrung'] : Shop::DB()->select('twaehrung', 'cStandard', 'Y');
 
 $smarty->assign('URL_SHOP', $shopURL)
        ->assign('Waehrung', $waehrung)
@@ -172,8 +167,10 @@ foreach ($res as $tartikel) {
         unset($_SESSION['oKategorie_arr_new']);
         unset($_SESSION['kKategorieVonUnterkategorien_arr']);
         //Kategoriepfad
-        $Artikel->Kategorie     = new Kategorie($Artikel->gibKategorie(), $exportformat->kSprache, $exportformat->kKundengruppe, false, $exportformat->nUseCache === '0');
-        $Artikel->Kategoriepfad = gibKategoriepfad($Artikel->Kategorie, $exportformat->kKundengruppe, $exportformat->kSprache);
+        $Artikel->Kategorie     = new Kategorie($Artikel->gibKategorie(), $exportformat->kSprache, $exportformat->kKundengruppe, $exportformat->nUseCache === '0');
+        $Artikel->Kategoriepfad = (isset($Artikel->Kategorie->cKategoriePfad)) ?
+            $Artikel->Kategorie->cKategoriePfad : // calling gibKategoriepfad() should not be necessary since it has already been called in Kategorie::loadFromDB()
+            gibKategoriepfad($Artikel->Kategorie, $exportformat->kKundengruppe, $exportformat->kSprache);
         $Artikel->Versandkosten = gibGuenstigsteVersandkosten(
             (isset($ExportEinstellungen['exportformate_lieferland'])) ? $ExportEinstellungen['exportformate_lieferland'] : null,
             $Artikel,
@@ -254,51 +251,4 @@ if ($max_artikel->nAnzahl > $queue->nLimit_n + $queue->nLimit_m) {
         }
         exit;
     }
-}
-/**
- * @param string    $tpl_name
- * @param mixed     $tpl_source
- * @param JTLSmarty $smarty
- * @return bool
- */
-function db_get_template($tpl_name, &$tpl_source, $smarty)
-{
-    $exportformat = Shop::DB()->select('texportformat', 'kExportformat', (int)$tpl_name);
-    if (empty($exportformat->kExportformat) || $exportformat->kExportformat <= 0) {
-        return false;
-    }
-    $tpl_source = $exportformat->cContent;
-
-    return true;
-}
-
-/**
- * @param string    $tpl_name
- * @param int       $tpl_timestamp
- * @param JTLSmarty $smarty
- * @return bool
- */
-function db_get_timestamp($tpl_name, &$tpl_timestamp, $smarty)
-{
-    $tpl_timestamp = time();
-
-    return true;
-}
-
-/**
- * @param string    $tpl_name
- * @param JTLSmarty $smarty
- * @return bool
- */
-function db_get_secure($tpl_name, $smarty)
-{
-    return true;
-}
-
-/**
- * @param string    $tpl_name
- * @param JTLSmarty $smarty
- */
-function db_get_trusted($tpl_name, $smarty)
-{
 }

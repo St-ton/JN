@@ -78,7 +78,7 @@ class ImageMap implements IExtensionPoint
             return false;
         }
 
-        $oImageMap->oArea_arr = Shop::DB()->query("SELECT * FROM timagemaparea WHERE kImageMap = " . (int)$oImageMap->kImageMap, 2);
+        $oImageMap->oArea_arr = Shop::DB()->selectAll('timagemaparea', 'kImageMap', (int)$oImageMap->kImageMap);
         $cBildPfad            = PFAD_ROOT . PFAD_IMAGEMAP . $oImageMap->cBildPfad;
         $oImageMap->cBildPfad = Shop::getURL() . '/' . PFAD_IMAGEMAP . $oImageMap->cBildPfad;
         $cParse_arr           = parse_url($oImageMap->cBildPfad);

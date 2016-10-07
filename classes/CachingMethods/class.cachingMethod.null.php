@@ -8,8 +8,10 @@
  * Class cache_null
  * emergency fallback caching method
  */
-class cache_null extends JTLCacheHelper implements ICachingMethod
+class cache_null implements ICachingMethod
 {
+    use JTLCacheTrait;
+    
     /**
      * @var cache_null|null
      */
@@ -24,17 +26,6 @@ class cache_null extends JTLCacheHelper implements ICachingMethod
         $this->options       = $options;
         $this->journalID     = 'null_journal';
         self::$instance      = $this;
-    }
-
-    /**
-     * @param array $options
-     *
-     * @return cache_null
-     */
-    public static function getInstance($options)
-    {
-        //check if class was initialized before
-        return (self::$instance !== null) ? self::$instance : new self($options);
     }
 
     /**

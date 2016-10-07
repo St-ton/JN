@@ -8,7 +8,7 @@ $session = Session::getInstance();
 require_once PFAD_ROOT . PFAD_INCLUDES . 'kontakt_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
-
+/** @global JTLSmarty $smarty */
 Shop::setPageType(PAGE_KONTAKT);
 $AktuelleSeite = 'KONTAKT';
 $Einstellungen = Shop::getSettings(array(CONF_GLOBAL, CONF_RSS, CONF_KONTAKTFORMULAR));
@@ -53,12 +53,7 @@ if (pruefeBetreffVorhanden()) {
         }
     }
     $lang     = $_SESSION['cISOSprache'];
-    $Contents = Shop::DB()->query("
-        SELECT *
-            FROM tspezialcontentsprache
-            WHERE nSpezialContent = " . (int) SC_KONTAKTFORMULAR . "
-            AND cISOSprache = '" . $lang . "'", 2
-    );
+    $Contents = Shop::DB()->selectAll('tspezialcontentsprache', ['nSpezialContent', 'cISOSprache'], [(int)SC_KONTAKTFORMULAR, $lang]);
     $SpezialContent = new stdClass();
     foreach ($Contents as $Content) {
         $SpezialContent->{$Content->cTyp} = $Content->cContent;
@@ -72,12 +67,7 @@ if (pruefeBetreffVorhanden()) {
     $bCount = count($betreffs);
     for ($i = 0; $i < $bCount; $i++) {
         if ($betreffs[$i]->kKontaktBetreff > 0) {
-            $betreffSprache = Shop::DB()->query(
-                "SELECT *
-                    FROM tkontaktbetreffsprache
-                    WHERE kKontaktBetreff = " . (int)$betreffs[$i]->kKontaktBetreff . "
-                    AND cISOSprache = '" . $_SESSION['cISOSprache'] . "'", 1
-            );
+            $betreffSprache = Shop::DB()->select('tkontaktbetreffsprache', 'kKontaktBetreff', (int)$betreffs[$i]->kKontaktBetreff, 'cISOSprache', $_SESSION['cISOSprache']);
             $betreffs[$i]->AngezeigterName = $betreffSprache->cName;
         }
     }

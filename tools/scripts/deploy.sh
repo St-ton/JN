@@ -5,42 +5,70 @@ source ${SCRIPT_DIR}/scripts/ini_parser.sh
 # database credentials
 MYCNF=~/.my.cnf
 
-# $1 archive filepath
+# $1 branch/tag
+# $2 build number
 deploy_create()
 {
-    local BRANCH=master
-    local TARGET_VERSION=404
-    local TARGET_BUILD=0
-    local DB_NAME=shop_${BASHPID}
-    local ARCHIVE=$1
+    source ${SCRIPT_DIR}/version.conf
 
-    if [ ! -f ${MYCNF} ]; then
-        error "Config file '${MYCNF}' does not exist"
-    fi
-
-    if [ -z "${ARCHIVE}" ]; then
-        ARCHIVE="shop${TARGET_VERSION}.${TARGET_BUILD}.zip"
-    fi
-
-    ARCHIVE=`realpath ${ARCHIVE} -m`
-
+    export VCS_TYPE="head"
+    export SHOP_VERSION SHOP_BUILD DB_PREFIX
     export BUILD_DIR=`mktemp -d`
 
-    msg "Build directory: ${BUILD_DIR}"
+    local VCS_BRANCH=$1
+    local VCS_BUILD_NUMBER=$2
+
+    local TARGET_FILE="shop"
+    local DB_NAME=$(deploy_db_name)
+
+    if [ -z "${VCS_BRANCH}" ]; then
+        VCS_BRANCH=$(deploy_branch_name)
+    fi
+
+    local VCS_REG="refs\\/(head|tag)s\\/(.+)"
+    local VCS_REG_TAG="v([0-9])\\.([0-9]{2})\\.([0-9])"
+    local VCS_REF=$VCS_BRANCH
+
+    if [[ $VCS_BRANCH =~ $VCS_REG ]]; then
+        VCS_TYPE=${BASH_REMATCH[1]}
+        VCS_REF=${BASH_REMATCH[2]}
+    fi
+
+    local SHOP_VERSION_MAJOR=${SHOP_VERSION:0:1}
+    local SHOP_VERSION_MINOR=${SHOP_VERSION:1:2}
+
+    if [ "$VCS_TYPE" = "tag" ]
+    then
+        if [[ $VCS_REF =~ $VCS_REG_TAG ]]; then
+            SHOP_VERSION_MAJOR=${BASH_REMATCH[1]}
+            SHOP_VERSION_MINOR=${BASH_REMATCH[2]}
+            SHOP_BUILD=${BASH_REMATCH[3]}
+        fi
+    fi
+
+    TARGET_FILE="${TARGET_FILE}_${SHOP_VERSION_MAJOR}.${SHOP_VERSION_MINOR}.${SHOP_BUILD}.zip"
+    TARGET_FILE="$(echo $TARGET_FILE | sed -e 's/[^A-Za-z0-9._-]/_/g')"
+
+    TARGET_PATH="${SCRIPT_DIR}/dist/${VCS_TYPE}"
+    TARGET_FULLPATH="${TARGET_PATH}/${TARGET_FILE}"
+
+    text "Deploying #${VCS_BUILD_NUMBER} ${VCS_TYPE} '${VCS_REF}' to ${TARGET_FILE}"
+
+    mkdir -p ${TARGET_PATH}
 
     msg "Cloning repository"
-    deploy_checkout ${BRANCH}
+    deploy_checkout ${VCS_BRANCH}
 
     msg "Creating additional files"
     deploy_additional_files
 
-    deploy_build_info ${TARGET_BUILD} `date +%Y%m%d%H%M%S`
+    deploy_build_info ${SHOP_BUILD}
 
     msg "Executing composer"
     deploy_vendors
 
     msg "Creating md5 hashfile"
-    deploy_md5_hashfile ${TARGET_VERSION}
+    deploy_md5_hashfile ${SHOP_VERSION}
 
     msg "Importing initial schema"
     deploy_initial_schema ${DB_NAME}
@@ -49,16 +77,42 @@ deploy_create()
     deploy_config_file ${DB_NAME}
 
     msg "Executing migrations"
-    deploy_migrate ${DB_NAME} ${TARGET_VERSION}
+    deploy_migrate ${DB_NAME} ${SHOP_VERSION}
 
     msg "Creating database struct"
-    deploy_db_struct ${DB_NAME} ${TARGET_VERSION}
+    deploy_db_struct ${DB_NAME} ${SHOP_VERSION}
+
+    msg "Preparing archive"
+    deploy_prepare_zip
 
     msg "Creating archive"
-    deploy_create_zip ${ARCHIVE}
+    deploy_create_zip ${TARGET_FULLPATH}
 
     msg "Cleaning workspace"
     deploy_clean ${DB_NAME}
+}
+
+deploy_db_name()
+{
+    if [ ! -f ${MYCNF} ]; then
+        error "Config file '${MYCNF}' does not exist"
+    fi
+
+    deploy_ini_values ~/.my.cnf custom
+
+    if [ -z "${dbprefix}" ]; then
+        dbprefix="build"
+    fi
+
+    echo "${dbprefix}_${BASHPID}"
+}
+
+deploy_branch_name()
+{
+    BRANCH=$(git symbolic-ref -q HEAD)
+    BRANCH=${BRANCH##refs/heads/}
+    BRANCH=${BRANCH:-HEAD}
+    echo ${BRANCH}
 }
 
 # $1 branch
@@ -66,7 +120,13 @@ deploy_checkout()
 {
     git clone git@gitlab.jtl-software.de:jtlshop/shop4.git ${BUILD_DIR} -q || exit 1
     git -C ${BUILD_DIR} checkout $1 -q || exit 1
+
+    git -C ${BUILD_DIR} submodule init -q || exit 1
+    git -C ${BUILD_DIR} submodule sync -q || exit 1
+    git -C ${BUILD_DIR} submodule update -q || exit 1
+
     rm -rf ${BUILD_DIR}/.git*
+    rm -rf ${BUILD_DIR}/tools
 }
 
 deploy_additional_files()
@@ -76,11 +136,11 @@ deploy_additional_files()
 }
 
 # $1 target build version
-# $2 target timestamp
 deploy_build_info()
 {
+    local TIMESTAMP=`date +%Y%m%d%H%M%S`
     sed -i "s/#JTL_MINOR_VERSION#/$1/g" ${BUILD_DIR}/includes/defines_inc.php
-    sed -i "s/#JTL_BUILD_TIMESTAMP#/$2/g" ${BUILD_DIR}/includes/defines_inc.php
+    sed -i "s/#JTL_BUILD_TIMESTAMP#/$TIMESTAMP/g" ${BUILD_DIR}/includes/defines_inc.php
 }
 
 deploy_vendors()
@@ -137,7 +197,7 @@ deploy_md5_hashfile()
     local MD5_DB_FILENAME="${BUILD_DIR}/admin/includes/shopmd5files/$1.csv"
 
     cd ${BUILD_DIR}
-    find . -type f ! -name robots.txt ! -name rss.xml ! -name shopinfo.xml ! -name .htaccess ! -samefile includes/defines.php ! -samefile includes/defines_inc.php ! -samefile includes/config.JTL-Shop.ini.initial.php -printf '"%P"\n' | grep -v -E '.git/|/.gitkeep|admin/gfx|admin/includes/emailpdfs|admin/includes/shopmd5files|admin/templates/gfx|admin/templates_c/|bilder/|downloads/|gfx/|includes/plugins|install/|jtllogs/|mediafiles/|templates/|templates_c/|uploads/|export/|shopinfo.xml|sitemap_index.xml' | xargs md5sum | awk '{ print $2";"$1; }' | sort > ${MD5_DB_FILENAME}
+    find . -type f ! -name robots.txt ! -name rss.xml ! -name shopinfo.xml ! -name .htaccess ! -samefile includes/defines.php ! -samefile includes/defines_inc.php ! -samefile includes/config.JTL-Shop.ini.initial.php -printf '"%P"\n' | grep -v -E '.git/|/.gitkeep|tools/|admin/gfx|admin/includes/emailpdfs|admin/includes/shopmd5files|admin/templates/gfx|admin/templates_c/|bilder/|downloads/|gfx/|includes/plugins|install/|jtllogs/|mediafiles/|templates/|templates_c/|uploads/|export/|shopinfo.xml|sitemap_index.xml' | xargs md5sum | awk '{ print $2";"$1; }' | sort > ${MD5_DB_FILENAME}
 
     cd $OLDPWD
 }
@@ -151,14 +211,17 @@ deploy_initial_schema()
     mysql $1 < ${INITIALSCHEMA} || exit 1
 }
 
+deploy_prepare_zip()
+{
+    rm ${BUILD_DIR}/includes/config.JTL-Shop.ini.php
+}
+
 # $1 archive name
 deploy_create_zip()
 {
-    local OLDPWD=`pwd`
-
-    cd ${BUILD_DIR}
+    pushd ${BUILD_DIR} >> /dev/null 2>&1
     zip -r $1 . -q || exit 1
-    cd $OLDPWD
+    popd >> /dev/null 2>&1
 }
 
 deploy_ide_meta()

@@ -77,13 +77,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         private function loadFromDB($kRMA, $bCustomer, $bRMAArtikel, $kSprache)
         {
-            $oObj = Shop::DB()->query(
-                "SELECT *
-                  FROM trma
-                  WHERE kRMA = " . intval($kRMA), 1
-            );
-
-            if ($oObj->kRMA > 0) {
+            $oObj = Shop::DB()->select('trma', 'kRMA', (int)$kRMA);
+            if (isset($oObj->kRMA) && $oObj->kRMA > 0) {
                 $cMember_arr = array_keys(get_object_vars($oObj));
                 foreach ($cMember_arr as $cMember) {
                     $this->$cMember = $oObj->$cMember;
@@ -171,10 +166,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         public function delete()
         {
-            return Shop::DB()->query(
-                "DELETE FROM trma
-                   WHERE kRMA = " . $this->kRMA, 3
-            );
+            return Shop::DB()->delete('trma', 'kRMA', $this->getRMA());
         }
 
         /**
@@ -186,7 +178,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         public function setRMA($kRMA)
         {
-            $this->kRMA = intval($kRMA);
+            $this->kRMA = (int)$kRMA;
 
             return $this;
         }
@@ -200,7 +192,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         public function setKunde($kKunde)
         {
-            $this->kKunde = intval($kKunde);
+            $this->kKunde = (int)$kKunde;
 
             return $this;
         }
@@ -214,7 +206,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         public function setRMAStatus($kRMAStatus)
         {
-            $this->kRMAStatus = intval($kRMAStatus);
+            $this->kRMAStatus = (int)$kRMAStatus;
 
             return $this;
         }
@@ -259,7 +251,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         public function getRMA()
         {
-            return $this->kRMA;
+            return (int)$this->kRMA;
         }
 
         /**
@@ -270,7 +262,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         public function getKunde()
         {
-            return $this->kKunde;
+            return (int)$this->kKunde;
         }
 
         /**
@@ -281,7 +273,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         public function getRMAStatus()
         {
-            return $this->kRMAStatus;
+            return (int)$this->kRMAStatus;
         }
 
         /**
@@ -313,8 +305,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         public static function findCMSLinkInSession($kLink, $kPlugin = 0)
         {
-            $kLink   = intval($kLink);
-            $kPlugin = intval($kPlugin);
+            $kLink   = (int)$kLink;
+            $kPlugin = (int)$kPlugin;
             if (($kLink > 0 || $kPlugin > 0) && isset($_SESSION['Linkgruppen']) && is_object($_SESSION['Linkgruppen'])) {
                 $cMember_arr = array_keys(get_object_vars($_SESSION['Linkgruppen']));
 
@@ -345,7 +337,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         public static function getCustomerOrders()
         {
-            $kKunde          = intval($_SESSION['Kunde']->kKunde);
+            $kKunde          = (int)$_SESSION['Kunde']->kKunde;
             $oBestellung_arr = array();
 
             if ($kKunde > 0) {
@@ -385,7 +377,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
             require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Bestellung.php';
             require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Trennzeichen.php';
 
-            $kBestellung = intval($kBestellung);
+            $kBestellung = (int)$kBestellung;
             $oBestellung = new Bestellung();
 
             if ($kBestellung > 0) {
@@ -437,9 +429,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         public static function insert($kKunde, $kBestellung, $kArtikel_arr, $cRMAPostAssoc_arr, $kSprache)
         {
-            $kKunde      = intval($kKunde);
-            $kBestellung = intval($kBestellung);
-            $kSprache    = intval($kSprache);
+            $kKunde      = (int)$kKunde;
+            $kBestellung = (int)$kBestellung;
+            $kSprache    = (int)$kSprache;
             $cRMA        = self::genRMANumber($kKunde, $kBestellung);
 
             if ($kKunde > 0 && $kBestellung > 0 && is_array($kArtikel_arr) && count($kArtikel_arr) > 0) {
@@ -465,9 +457,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
                         $oRMAArtikel->setBestellung($kBestellung);
                         $oRMAArtikel->setArtikel($kArtikel);
                         if (isset($cRMAPostAssoc_arr['cGrund'][$kArtikel])) {
-                            $oRMAGrund = new RMAGrund(intval($cRMAPostAssoc_arr['cGrund'][$kArtikel]));
+                            $oRMAGrund = new RMAGrund((int)$cRMAPostAssoc_arr['cGrund'][$kArtikel]);
                             $oRMAArtikel->setGrund($oRMAGrund->getGrund());
-                            $kRMAGrund = intval($cRMAPostAssoc_arr['cGrund'][$kArtikel]);
+                            $kRMAGrund = (int)$cRMAPostAssoc_arr['cGrund'][$kArtikel];
                         } else {
                             $oRMAArtikel->setGrund('');
                         }
@@ -505,8 +497,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         public static function isRMAAlreadySend($kKunde, $kBestellung, $kArtikel_arr, &$cRMAPostAssoc_arr)
         {
-            $kKunde      = intval($kKunde);
-            $kBestellung = intval($kBestellung);
+            $kKunde      = (int)$kKunde;
+            $kBestellung = (int)$kBestellung;
 
             if (!$kKunde || !$kBestellung || !is_array($kArtikel_arr) || count($kArtikel_arr) === 0 || !is_array($cRMAPostAssoc_arr) || count($cRMAPostAssoc_arr) === 0) {
                 return true;
@@ -608,7 +600,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
                     foreach ($cPostVar_arr['kArtikel_arr'] as $kArtikel) {
                         // Grund
                         if (isset($cPostVar_arr['cGrund_' . $kArtikel])) {
-                            $kRMAGrund                              = intval($cPostVar_arr['cGrund_' . $kArtikel]);
+                            $kRMAGrund                              = (int)$cPostVar_arr['cGrund_' . $kArtikel];
                             $cRMAPostAssoc_arr['cGrund'][$kArtikel] = $cPostVar_arr['cGrund_' . $kArtikel];
                             // Anzahl
                             if (isset($cPostVar_arr['fAnzahl_' . $kArtikel . '_' . $kRMAGrund])) {
@@ -721,7 +713,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         public static function getAllCustomerRMA($kKunde)
         {
-            $kKunde   = intval($kKunde);
+            $kKunde   = (int)$kKunde;
             $oRMA_arr = array();
             if ($kKunde > 0) {
                 $oObj_arr = Shop::DB()->query(
@@ -794,14 +786,14 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
             $cPlausi_arr = array();
 
             if (is_array($kArtikel_arr) && count($kArtikel_arr) > 0) {
-                $kBestellung = intval($kBestellung);
+                $kBestellung = (int)$kBestellung;
 
                 if ($kBestellung > 0) {
                     require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Bestellung.php';
                     $oPositionAssoc_arr = Bestellung::getOrderPositions($kBestellung);
 
                     foreach ($kArtikel_arr as $kArtikel) {
-                        $kArtikel            = intval($kArtikel);
+                        $kArtikel            = (int)$kArtikel;
                         $fRMAArtikelQuantity = RMAArtikel::getRMAQuantity($kBestellung, $kArtikel);
                         if ($oPositionAssoc_arr && isset($oPositionAssoc_arr[$kArtikel])) {
                             if (!$fRMAArtikelQuantity || $fRMAArtikelQuantity <= 0) {
@@ -813,7 +805,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
                             if (!isset($cRMAPostAssoc_arr['cGrund'][$kArtikel]) || strlen($cRMAPostAssoc_arr['cGrund'][$kArtikel]) === 0 || $cRMAPostAssoc_arr['cGrund'][$kArtikel] == '-1') {
                                 $cPlausi_arr[$kArtikel]['cGrund'] = 1;
                             } else {
-                                $kRMAGrund = intval($cRMAPostAssoc_arr['cGrund'][$kArtikel]);
+                                $kRMAGrund = (int)$cRMAPostAssoc_arr['cGrund'][$kArtikel];
                             }
 
                             // Check Anzahl

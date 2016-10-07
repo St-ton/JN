@@ -17,7 +17,7 @@ build_help()
     echo "  ${fgGreen}check${C}             - Check dependencies"
     echo "  ${fgGreen}deps${C}              - Install dependencies"
 	echo "  ${fgGreen}ide_meta${C}          - Create metadata"
-    echo "  ${fgGreen}deploy <archive>${C}  - Deploy"
+    echo "  ${fgGreen}deploy <branch>${C}   - Deploy branch/tag"
     echo ""
 }
 
@@ -43,19 +43,19 @@ build_deps()
     msg "Installing dependencies..."
 
     # composer
-    wget http://getcomposer.org/composer.phar -O ${SCRIPT_DIR}/bin/composer -q --show-progress || exit 1
+    wget http://getcomposer.org/composer.phar -O ${SCRIPT_DIR}/bin/composer || exit 1
     chmod u+x ${SCRIPT_DIR}/bin/composer
 
     # php-cs-fixer
-    wget http://get.sensiolabs.org/php-cs-fixer.phar -O ${SCRIPT_DIR}/bin/php-cs-fixer -q --show-progress || exit 1
+    wget http://get.sensiolabs.org/php-cs-fixer.phar -O ${SCRIPT_DIR}/bin/php-cs-fixer || exit 1
     chmod u+x ${SCRIPT_DIR}/bin/php-cs-fixer
 
     # phpcs
-    wget https://squizlabs.github.io/PHP_CodeSniffer/phpcs.phar -O ${SCRIPT_DIR}/bin/phpcs -q --show-progress || exit 1
+    wget https://squizlabs.github.io/PHP_CodeSniffer/phpcs.phar -O ${SCRIPT_DIR}/bin/phpcs || exit 1
     chmod u+x ${SCRIPT_DIR}/bin/phpcs
 
     # phpcbf
-    wget https://squizlabs.github.io/PHP_CodeSniffer/phpcbf.phar -O ${SCRIPT_DIR}/bin/phpcbf -q --show-progress || exit 1
+    wget https://squizlabs.github.io/PHP_CodeSniffer/phpcbf.phar -O ${SCRIPT_DIR}/bin/phpcbf || exit 1
     chmod u+x ${SCRIPT_DIR}/bin/phpcbf
 
     success "... done"
@@ -87,10 +87,11 @@ build_init()
     composer install --working-dir=${PROJECT_DIR}/includes || exit 1
 }
 
-# $1 archive filepath
+# $1 branch/tag
+# $2 build number
 build_deploy()
 {
-    deploy_create $1
+    deploy_create $1 $2
 }
 
 main() {

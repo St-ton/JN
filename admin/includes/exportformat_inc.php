@@ -266,7 +266,7 @@ function verarbeiteYategoExport(&$Artikel, $exportformat, $ExportEinstellungen, 
 
         if ($ExportEinstellungen['exportformate_quot'] !== 'N' && $ExportEinstellungen['exportformate_quot']) {
             $find[] = '"';
-            if ($ExportEinstellungen['exportformate_quot'] === 'bq') {
+            if ($ExportEinstellungen['exportformate_quot'] === 'q' || $ExportEinstellungen['exportformate_quot'] === 'bq') {
                 $replace[] = '\"';
             } elseif ($ExportEinstellungen['exportformate_quot'] === 'qq') {
                 $replace[] = '""';
@@ -276,7 +276,7 @@ function verarbeiteYategoExport(&$Artikel, $exportformat, $ExportEinstellungen, 
         }
         if ($ExportEinstellungen['exportformate_equot'] !== 'N' && $ExportEinstellungen['exportformate_equot']) {
             $find[] = "'";
-            if ($ExportEinstellungen['exportformate_equot'] === 'q') {
+            if ($ExportEinstellungen['exportformate_equot'] === 'q' || $ExportEinstellungen['exportformate_equot'] === 'bq') {
                 $replace[] = '"';
             } else {
                 $replace[] = $ExportEinstellungen['exportformate_equot'];
@@ -289,15 +289,17 @@ function verarbeiteYategoExport(&$Artikel, $exportformat, $ExportEinstellungen, 
         $Artikel->cName                 = StringHandler::unhtmlentities($Artikel->cName);
         $Artikel->cBeschreibung         = StringHandler::unhtmlentities($Artikel->cBeschreibung);
         $Artikel->cKurzBeschreibung     = StringHandler::unhtmlentities($Artikel->cKurzBeschreibung);
-        $Artikel->cName                 = StringHandler::removeDoubleSpaces(str_replace($find, $replace, $Artikel->cName));
-        $Artikel->cBeschreibung         = StringHandler::removeDoubleSpaces(str_replace($find, $replace, $Artikel->cBeschreibung));
-        $Artikel->cKurzBeschreibung     = StringHandler::removeDoubleSpaces(str_replace($find, $replace, $Artikel->cKurzBeschreibung));
-        $Artikel->cBeschreibungHTML     = StringHandler::removeDoubleSpaces(str_replace($find, $replace, $Artikel->cBeschreibungHTML));
-        $Artikel->cKurzBeschreibungHTML = StringHandler::removeDoubleSpaces(str_replace($find, $replace, $Artikel->cKurzBeschreibungHTML));
+        $Artikel->cName                 = StringHandler::removeWhitespace(str_replace($find, $replace, $Artikel->cName));
+        $Artikel->cBeschreibung         = StringHandler::removeWhitespace(str_replace($find, $replace, $Artikel->cBeschreibung));
+        $Artikel->cKurzBeschreibung     = StringHandler::removeWhitespace(str_replace($find, $replace, $Artikel->cKurzBeschreibung));
+        $Artikel->cBeschreibungHTML     = StringHandler::removeWhitespace(str_replace($find, $replace, $Artikel->cBeschreibungHTML));
+        $Artikel->cKurzBeschreibungHTML = StringHandler::removeWhitespace(str_replace($find, $replace, $Artikel->cKurzBeschreibungHTML));
         $Artikel->Preise->fVKBrutto     = berechneBrutto($Artikel->Preise->fVKNetto, gibUst($Artikel->kSteuerklasse));
         //Kategoriepfad
-        $Artikel->Kategorie     = new Kategorie($Artikel->gibKategorie());
-        $Artikel->Kategoriepfad = gibKategoriepfad($Artikel->Kategorie, $exportformat->kKundengruppe, $exportformat->kSprache);
+        $Artikel->Kategorie     = new Kategorie($Artikel->gibKategorie(), $exportformat->kSprache, $exportformat->kKundengruppe);
+        $Artikel->Kategoriepfad = (isset($Artikel->Kategorie->cKategoriePfad)) ?
+            $Artikel->Kategorie->cKategoriePfad : // calling gibKategoriepfad() should not be necessary since it has already been called in Kategorie::loadFromDB()
+            gibKategoriepfad($Artikel->Kategorie, $exportformat->kKundengruppe, $exportformat->kSprache);
         $Artikel->Versandkosten = gibGuenstigsteVersandkosten($ExportEinstellungen['exportformate_lieferland'], $Artikel, 0, $exportformat->kKundengruppe);
         // Kampagne URL
         if (isset($exportformat->tkampagne_cParameter)) {
@@ -341,11 +343,7 @@ function verarbeiteYategoExport(&$Artikel, $exportformat, $ExportEinstellungen, 
         $cVarianten       = '';
         $kKategorie_arr   = array(); // Alle Kategorien vom Artikel
         $kYatKategoie_arr = array(); // Alle Yatego Kategorien vom Artikel
-        $oKategorie_arr   = Shop::DB()->query(
-            "SELECT kKategorie
-                FROM tkategorieartikel
-                WHERE kArtikel = " . (int)$Artikel->kArtikel, 2
-        );
+        $oKategorie_arr   = Shop::DB()->selectAll('tkategorieartikel', 'kArtikel', (int)$Artikel->kArtikel, 'kKategorie');
         if (is_array($oKategorie_arr) && count($oKategorie_arr) > 0) {
             foreach ($oKategorie_arr as $oKategorie) {
                 $kKategorie_arr[] = $oKategorie->kKategorie;
@@ -441,7 +439,7 @@ function verarbeiteYategoExport(&$Artikel, $exportformat, $ExportEinstellungen, 
                                 );
                                 $fLagerbestand = -1;
                                 $nAktiv        = 1;
-                                if ($oVariationsKind->cLagerBeachten === 'Y') {
+                                if ($oVariationsKind->cLagerBeachten === 'Y' && $oVariationsKind->cLagerKleinerNull === 'N') {
                                     $fLagerbestand = $oVariationsKind->fLagerbestand;
                                     if ($oVariationsKind->fLagerbestand <= 0) {
                                         $nAktiv = 0;
@@ -544,11 +542,11 @@ function verarbeiteYategoExport(&$Artikel, $exportformat, $ExportEinstellungen, 
             'short_desc'         => '<h2>' . $Artikel->cName . '</h2>' . (($Artikel->cKurzBeschreibung) ? $Artikel->cKurzBeschreibung : substr($Artikel->cBeschreibung, 0, 130)),
             'long_desc'          => '<h2>' . $Artikel->cName . '</h2>' . $Artikel->cBeschreibung . $cBacklink,
             'url'                => getURL($Artikel->cURL),
-            'picture'            => getURL($Artikel->Bilder[0]->cPfadGross),
-            'picture2'           => getURL($Artikel->Bilder[1]->cPfadGross),
-            'picture3'           => getURL($Artikel->Bilder[2]->cPfadGross),
-            'picture4'           => getURL($Artikel->Bilder[3]->cPfadGross),
-            'picture5'           => getURL($Artikel->Bilder[4]->cPfadGross),
+            'picture'            => isset($Artikel->Bilder[0]) ? getURL($Artikel->Bilder[0]->cPfadGross) : '',
+            'picture2'           => isset($Artikel->Bilder[1]) ? getURL($Artikel->Bilder[1]->cPfadGross) : '',
+            'picture3'           => isset($Artikel->Bilder[2]) ? getURL($Artikel->Bilder[2]->cPfadGross) : '',
+            'picture4'           => isset($Artikel->Bilder[3]) ? getURL($Artikel->Bilder[3]->cPfadGross) : '',
+            'picture5'           => isset($Artikel->Bilder[4]) ? getURL($Artikel->Bilder[4]->cPfadGross) : '',
             'categories'         => implode(',', $kKategorieListe_arr),
             'variants'           => $cVarianten,
             'delivery_date'      => $Artikel->cLieferstatus,
@@ -562,7 +560,7 @@ function verarbeiteYategoExport(&$Artikel, $exportformat, $ExportEinstellungen, 
             $fVPEWert      = (isset($Artikel->fVPEWert) && $Artikel->fVPEWert > 0) ? $Artikel->fVPEWert : 1;
             $fLagerbestand = -1;
             $nAktiv        = 1;
-            if ($Artikel->cLagerBeachten === 'Y') {
+            if ($Artikel->cLagerBeachten === 'Y' && $Artikel->cLagerKleinerNull === 'N') {
                 $fLagerbestand = $oWert->fLagerbestand;
                 if ($Artikel->fLagerbestand <= 0) {
                     $nAktiv = 0;
@@ -607,7 +605,7 @@ function getEinstellungenExport($kExportformat)
     $kExportformat = (int)$kExportformat;
     $ret           = array();
     if ($kExportformat > 0) {
-        $einst = Shop::DB()->query("SELECT cName, cWert FROM texportformateinstellungen WHERE kExportformat = " . $kExportformat, 2);
+        $einst = Shop::DB()->selectAll('texportformateinstellungen', 'kExportformat', $kExportformat, 'cName, cWert');
         foreach ($einst as $eins) {
             if ($eins->cName) {
                 $ret[$eins->cName] = $eins->cWert;
@@ -628,7 +626,7 @@ function baueArtikelExportSQL(&$oExportformat)
     $cSQL_arr['Where'] = '';
     $cSQL_arr['Join']  = '';
 
-    if (!$oExportformat->kExportformat) {
+    if (empty($oExportformat->kExportformat)) {
         return $cSQL_arr;
     }
     $cExportEinstellungAssoc_arr = getEinstellungenExport($oExportformat->kExportformat);
@@ -638,14 +636,13 @@ function baueArtikelExportSQL(&$oExportformat)
             $cSQL_arr['Where'] = " AND kVaterArtikel = 0";
             break;
         case 3:
-            $cSQL_arr['Where'] = " AND (tartikel.nIstVater != 1
-                            OR tartikel.kEigenschaftKombi > 0)";
+            $cSQL_arr['Where'] = " AND (tartikel.nIstVater != 1 OR tartikel.kEigenschaftKombi > 0)";
             break;
     }
     if (isset($cExportEinstellungAssoc_arr['exportformate_lager_ueber_null']) && $cExportEinstellungAssoc_arr['exportformate_lager_ueber_null'] === 'Y') {
-        $cSQL_arr['Where'] .= " AND (NOT (tartikel.fLagerbestand<=0 AND tartikel.cLagerBeachten='Y'))";
+        $cSQL_arr['Where'] .= " AND (NOT (tartikel.fLagerbestand <= 0 AND tartikel.cLagerBeachten = 'Y'))";
     } elseif (isset($cExportEinstellungAssoc_arr['exportformate_lager_ueber_null']) && $cExportEinstellungAssoc_arr['exportformate_lager_ueber_null'] === 'O') {
-        $cSQL_arr['Where'] .= " AND (NOT (tartikel.fLagerbestand<=0 AND tartikel.cLagerBeachten='Y') OR tartikel.cLagerKleinerNull='Y')";
+        $cSQL_arr['Where'] .= " AND (NOT (tartikel.fLagerbestand <= 0 AND tartikel.cLagerBeachten = 'Y') OR tartikel.cLagerKleinerNull = 'Y')";
     }
 
     if (isset($cExportEinstellungAssoc_arr['exportformate_preis_ueber_null']) && $cExportEinstellungAssoc_arr['exportformate_preis_ueber_null'] === 'Y') {
@@ -679,9 +676,13 @@ function holeMaxExportArtikelAnzahl(&$oExportformat)
                         )
                 )';
     }
+    $cid = 'xp_' . md5(json_encode($cSQL_arr) . $sql);
+    if (($count = Shop::Cache()->get($cid)) !== false) {
+        return $count;
+    }
 
-    return Shop::DB()->query(
-        "SELECT count(*) as nAnzahl
+    $count = Shop::DB()->query(
+        "SELECT count(*) AS nAnzahl
             FROM tartikel
             LEFT JOIN tartikelattribut ON tartikelattribut.kArtikel = tartikel.kArtikel
                 AND tartikelattribut.cName = '" . FKT_ATTRIBUT_KEINE_PREISSUCHMASCHINEN . "'
@@ -692,4 +693,7 @@ function holeMaxExportArtikelAnzahl(&$oExportformat)
                 AND tartikelsichtbarkeit.kArtikel IS NULL
                 {$sql}", 1
     );
+    Shop::Cache()->set($cid, $count, [CACHING_GROUP_CORE], 120);
+
+    return $count;
 }

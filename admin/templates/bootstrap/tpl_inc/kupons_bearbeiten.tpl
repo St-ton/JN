@@ -13,7 +13,8 @@
 {/if}
 
 {include file='tpl_inc/seite_header.tpl' cTitel=$cTitel cBeschreibung=#couponsDesc# cDokuURL=#couponsURL#}
-{include file='tpl_inc/customer_search.tpl' cUrl='kupons.php' kKundeSelected_arr=$kKunde_arr}
+{include file='tpl_inc/customer_search.tpl' cUrl='kupons.php' kKundeSelected_arr=$kKunde_arr
+         onSave='onApplySelectedCustomers'}
 
 <script>
     $(function () {
@@ -23,7 +24,6 @@
         makeCurrencyTooltip('fMindestbestellwert');
         $('#bOpenEnd').change(onEternalCheckboxChange);
         onEternalCheckboxChange();
-        $('#save-customer-selection').click(onApplySelectedCustomers);
         onApplySelectedCustomers();
     });
 
@@ -290,7 +290,7 @@
                         <label for="dDauerTage">{#periodOfValidity#}</label>
                     </span>
                     <span class="input-group-wrap">
-                        <input type="text" class="form-control" name="dDauerTage" id="dDauerTage" value="">
+                        <input type="text" class="form-control" name="dDauerTage" id="dDauerTage">
                     </span>
                     <span class="input-group-addon">{getHelpDesc cDesc=#periodOfValidityHelp#}</span>
                 </div>
@@ -373,14 +373,13 @@
                             <label for="customerSelectionInfo">{#restrictedToCustomers#}</label>
                         </span>
                         <span class="input-group-wrap">
-                            <input type="text" class="form-control" readonly="readonly" id="customerSelectionInfo"
-                                   value="{$kKunde_arr|implode:', '}">
+                            <input type="text" class="form-control" readonly="readonly" id="customerSelectionInfo">
                             <input type="hidden" id="cKunden" name="cKunden" value="{$oKupon->cKunden}">
                         </span>
                         <span class="input-group-addon">
-                            <button type="button" class="btn btn-primary btn-xs"
+                            <button type="button" class="btn btn-info btn-xs"
                                     data-toggle="modal" data-target="#customer-search-modal">
-                                <i class="fa fa-pencil"></i>
+                                <i class="fa fa-edit"></i>
                             </button>
                         </span>
                     </div>

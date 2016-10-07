@@ -8,26 +8,32 @@
                 oKunde - complete Kunde instance
             unset          = output  the main dialog
                 kKundeSelected_arr - array of initially selected customer keys
+                onSave             - JS callback function name for save button click
+                onCancel           - JS callback function name for cancel button click
 *}
 
 {if isset($cPart) && $cPart === 'customerlist'}
     {foreach $oKunde_arr as $oKunde}
         <a class="list-group-item {if in_array($oKunde->kKunde, $kKundeSelected_arr)}active{/if}"
-                onclick="selectCustomer({$oKunde->kKunde}, !isSelected({$oKunde->kKunde}))" id="customer-{$oKunde->kKunde}">
-            <p class="list-group-item-text">{$oKunde->cVorname|htmlentities} ... <em>({$oKunde->cMail|htmlentities})</em></p>
-            <p class="list-group-item-text">... {$oKunde->cPLZ} {$oKunde->cOrt|htmlentities}</p>
+           onclick="selectCustomer({$oKunde->kKunde}, !isSelected({$oKunde->kKunde}))" id="customer-{$oKunde->kKunde}"
+           style="cursor: pointer;">
+            <p class="list-group-item-text">
+                {$oKunde->cVorname|htmlentities} {$oKunde->cNachname|htmlentities}
+                <em>({$oKunde->cMail|htmlentities})</em>
+            </p>
+            <p class="list-group-item-text">{$oKunde->cStrasse|htmlentities}
+                {$oKunde->cHausnummer}, {$oKunde->cPLZ} {$oKunde->cOrt|htmlentities}
+            </p>
         </a>
     {/foreach}
-{elseif isset($cPart) && $cPart === 'fullcustomer'}
-    <p class="list-group-item-text">{$oKunde->cVorname|htmlentities} {$oKunde->cNachname|htmlentities} <em>({$oKunde->cMail|htmlentities})</em></p>
-    <p class="list-group-item-text">{$oKunde->cStrasse|htmlentities} {$oKunde->cHausnummer}, {$oKunde->cPLZ} {$oKunde->cOrt|htmlentities}</p>
 {else}
     <script>
-        var searchString      = '';
-        var lastSearchString  = '';
-        var selectedCustomers = [{','|implode:$kKundeSelected_arr}];
-        var shownCustomers    = [];
-        var runningRequests   = [];
+        var searchString            = '';
+        var lastSearchString        = '';
+        var selectedCustomers       = [{','|implode:$kKundeSelected_arr}];
+        var shownCustomers          = [];
+        var runningRequests         = [];
+        var backupSelectedCustomers = selectedCustomers.slice();
 
         $(function () {
             runningRequests.push(xajax_getCustomerList('', selectedCustomers));
@@ -35,6 +41,19 @@
                 killAllRunningRequests();
                 $('#customer-search-input').val('');
                 runningRequests.push(xajax_getCustomerList('', selectedCustomers));
+            }).on('show.bs.modal', function () {
+                backupSelectedCustomers = selectedCustomers.slice();
+            });
+            $('#save-customer-selection').click(function () {
+                {if isset($onSave)}
+                    window['{$onSave}'] ();
+                {/if}
+            });
+            $('#cancel-customer-selection').click(function () {
+                selectedCustomers = backupSelectedCustomers.slice();
+                {if isset($onCancel)}
+                    window['{$onCancel}'] ();
+                {/if}
             });
         });
 
@@ -90,28 +109,39 @@
                 <div class="modal-body">
                     <div class="form-group">
                         <label for="customer-search-input" class="sr-only">
-                            Suche nach E-Mail-Adresse oder Vornamen:
+                            Suche nach Vornamen, E-Mail-Adresse, Wohnort oder Postleitzahl:
                         </label>
                         <input type="text" class="form-control" id="customer-search-input"
-                               placeholder="Suchen nach E-Mail-Adresse oder Vornamen"
+                               placeholder="Suche nach Vornamen, E-Mail-Adresse, Wohnort oder Postleitzahl"
                                onkeyup="onChangeCustomerSearchInput(this)" autocomplete="off">
                     </div>
                     <h5 id="customer-list-title">Suchergebnisse</h5>
-                    <div class="list-group" id="customer-search-result-list"></div>
-                    <button type="button" class="btn btn-primary" id="select-all-customers"
-                            onclick="selectAllShownCustomers(true);">
-                        Alle ausw&auml;hlen
-                    </button>
-                    <button type="button" class="btn btn-danger" id="unselect-all-customers"
-                            onclick="selectAllShownCustomers(false);">
-                        Alle abw&auml;hlen
-                    </button>
+                    <div class="list-group" id="customer-search-result-list" style="max-height:500px;overflow:auto;"></div>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-xs btn-primary" id="select-all-customers"
+                                onclick="selectAllShownCustomers(true);">
+                            <i class="fa fa-check-square-o"></i>
+                            Alle ausw&auml;hlen
+                        </button>
+                        <button type="button" class="btn btn-xs btn-danger" id="unselect-all-customers"
+                                onclick="selectAllShownCustomers(false);">
+                            <i class="fa fa-square-o"></i>
+                            Alle abw&auml;hlen
+                        </button>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <div class="btn-group">
-                        <button type="button" class="btn btn-danger" data-dismiss="modal">{#cancel#}</button>
+                        <button type="button" class="btn btn-danger" data-dismiss="modal"
+                                id="cancel-customer-selection">
+                            <i class="fa fa-times"></i>
+                            {#cancel#}
+                        </button>
                         <button type="button" class="btn btn-primary" data-dismiss="modal"
-                                id="save-customer-selection">{#save#}</button>
+                                id="save-customer-selection">
+                            <i class="fa fa-save"></i>
+                            {#save#}
+                        </button>
                     </div>
                 </div>
             </div>

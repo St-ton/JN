@@ -594,7 +594,7 @@ function getCustomerList($searchString, $kKundeSelected_arr)
             $listTitle  = 'Bisher sind keine Kunden ausgew&auml;hlt. Suchen Sie jetzt nach Kunden!';
         } else {
             $oKunde_arr = Shop::DB()->query("
-                SELECT kKunde, cVorname, cMail, cPLZ, cOrt
+                SELECT kKunde
                     FROM tkunde
                     WHERE kKunde IN (" . implode(',', $kKundeSelected_arr) . ")
                 ", 2);
@@ -602,18 +602,24 @@ function getCustomerList($searchString, $kKundeSelected_arr)
         }
     } else {
         $oKunde_arr = Shop::DB()->query("
-            SELECT kKunde, cVorname, cMail, cPLZ, cOrt
+            SELECT kKunde
                 FROM tkunde
                 WHERE cVorname LIKE '%" . $searchString . "%' OR
                       cMail LIKE '%" . $searchString . "%' OR
                       cOrt LIKE '%" . $searchString . "%' OR
                       cPLZ LIKE '%" . $searchString . "%'
+                LIMIT 100
             ", 2);
-        $listTitle  = 'Gefundene Kunden: ' . count($oKunde_arr);
+        $listTitle  = 'Gefundene Kunden: ' . (count($oKunde_arr) >= 100 ? '>= ' : '') . count($oKunde_arr);
+    }
+
+    $oKundeFull_arr = [];
+    foreach ($oKunde_arr as $oKunde) {
+        $oKundeFull_arr[] = new Kunde($oKunde->kKunde);
     }
 
     $customerListHtml = $smarty->assign('cPart', 'customerlist')
-        ->assign('oKunde_arr', $oKunde_arr)
+        ->assign('oKunde_arr', $oKundeFull_arr)
         ->assign('kKundeSelected_arr', $kKundeSelected_arr)
         ->fetch('tpl_inc/customer_search.tpl');
 
@@ -622,29 +628,6 @@ function getCustomerList($searchString, $kKundeSelected_arr)
     $oResponse->assign('customer-list-title', 'innerHTML', $listTitle);
     $oResponse->script('shownCustomers=[' . implode(',', array_map(function ($e) { return $e->kKunde; }, $oKunde_arr)) . ']');
 
-    foreach ($oKunde_arr as $oKunde) {
-        $oResponse->script('runningRequests.push(xajax_decodeCustomer(' . $oKunde->kKunde . '));');
-    }
-
-    return $oResponse;
-}
-
-/**
- * @param int $kKunde
- * @return xajaxResponse
- */
-function decodeCustomer($kKunde)
-{
-    global $smarty;
-
-    $oKunde = new Kunde($kKunde);
-
-    $customerHtml = $smarty->assign('cPart', 'fullcustomer')
-        ->assign('oKunde', $oKunde)
-        ->fetch('tpl_inc/customer_search.tpl');
-
-    $oResponse = new xajaxResponse();
-    $oResponse->assign('customer-' . (int)$kKunde, 'innerHTML', $customerHtml);
     return $oResponse;
 }
 

@@ -1,6 +1,6 @@
 <?php
 /**
- * added_option_for_dimension_of_articles
+ * add option for xselling show parent
  *
  * @author Falk Prüfer
  * @created Tue, 14 Jun 2016 15:25:25 +0200

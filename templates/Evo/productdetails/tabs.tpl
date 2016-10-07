@@ -14,59 +14,31 @@
 
     <div id="article-tabs" {if $tabanzeige}class="tab-content"{/if}>
         {* ARTIKELBESCHREIBUNG *}
-        {assign var="tplscope" value="details"}
-        {assign var="showProductWeight" value=false}
-        {if isset($Artikel->cArtikelgewicht)  && $Artikel->fArtikelgewicht > 0
-        && ($Einstellungen.artikeldetails.artikeldetails_artikelgewicht_anzeigen === 'Y' && $tplscope === 'details'
-        ||  $Einstellungen.artikeluebersicht.artikeluebersicht_artikelgewicht_anzeigen === 'Y' && $tplscope === 'productlist')}
-            {assign var="showProductWeight" value=true}
-        {/if}
+        <div role="tabpanel" class="{if $tabanzeige}tab-pane{else}panel panel-default{/if}" id="tab-description">
+            <div class="panel-heading" {if $tabanzeige}data-toggle="collapse" {/if}data-parent="#article-tabs" data-target="#tab-description">
+                <h3 class="panel-title">{lang key="description" section="productDetails"}</h3>
+            </div>
+            {assign var=cArtikelBeschreibung value=$Artikel->cBeschreibung}
+            <div class="panel-body">
+                <div class="tab-content-wrapper">
+                    <div class="desc">
+                        {$cArtikelBeschreibung}
 
-        {assign var="showShippingWeight" value=false}
-        {if isset($Artikel->cGewicht) && $Artikel->fGewicht > 0
-        && ($Einstellungen.artikeldetails.artikeldetails_gewicht_anzeigen === 'Y' && $tplscope === 'details'
-        ||  $Einstellungen.artikeluebersicht.artikeluebersicht_gewicht_anzeigen === 'Y' && $tplscope === 'productlist')}
-            {assign var="showShippingWeight" value=true}
-        {/if}
-
-        {assign var="dimension" value=$Artikel->getDimension()}
-        {assign var="showAttributesTable" value=false}
-        {if    $Einstellungen.artikeldetails.merkmale_anzeigen === 'Y' && !empty($Artikel->oMerkmale_arr)
-        || $showProductWeight
-        || $showShippingWeight
-        || $Einstellungen.artikeldetails.artikeldetails_abmessungen_anzeigen === 'Y' && (!empty($dimension['length']) || !empty($dimension['width']) || !empty($dimension['height']))
-        || isset($Artikel->cMasseinheitName) && isset($Artikel->fMassMenge) && $Artikel->fMassMenge > 0  && $Artikel->cTeilbar !== 'Y' && ($Artikel->fAbnahmeintervall == 0 || $Artikel->fAbnahmeintervall == 1)
-        || ($Einstellungen.artikeldetails.artikeldetails_attribute_anhaengen === 'Y' || $Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ATTRIBUTEANHAENGEN] == 1) && !empty($Artikel->Attribute)
-        }
-            {assign var="showAttributesTable" value=true}
-        {/if}
-
-        {if $Artikel->cBeschreibung|strlen > 0 || $showAttributesTable}
-            <div role="tabpanel" class="{if $tabanzeige}tab-pane{else}panel panel-default{/if}" id="tab-description">
-                <div class="panel-heading" {if $tabanzeige}data-toggle="collapse" {/if}data-parent="#article-tabs" data-target="#tab-description">
-                    <h3 class="panel-title">{lang key="description" section="productDetails"}</h3>
-                </div>
-                {assign var=cArtikelBeschreibung value=$Artikel->cBeschreibung}
-                <div class="panel-body">
-                    <div class="tab-content-wrapper">
-                        <div class="desc">
-                            {$cArtikelBeschreibung}
-
-                            {if ($Einstellungen.artikeldetails.mediendatei_anzeigen === 'YA' && $Artikel->cMedienDateiAnzeige !== 'tab') || $Artikel->cMedienDateiAnzeige === 'beschreibung'}
-                                {if !empty($Artikel->cMedienTyp_arr)}
-                                    {foreach name="mediendateigruppen" from=$Artikel->cMedienTyp_arr item=cMedienTyp}
-                                        <div class="media">
-                                            {include file='productdetails/mediafile.tpl'}
-                                        </div>
-                                    {/foreach}
-                                {/if}
+                        {if ($Einstellungen.artikeldetails.mediendatei_anzeigen === 'YA' && $Artikel->cMedienDateiAnzeige !== 'tab') || $Artikel->cMedienDateiAnzeige === 'beschreibung'}
+                            {if !empty($Artikel->cMedienTyp_arr)}
+                                {foreach name="mediendateigruppen" from=$Artikel->cMedienTyp_arr item=cMedienTyp}
+                                    <div class="media">
+                                        {include file='productdetails/mediafile.tpl'}
+                                    </div>
+                                {/foreach}
                             {/if}
-                        </div>
-                        {include file="productdetails/attributes.tpl" tplscope="details"}
+                        {/if}
                     </div>
+                    {include file="productdetails/attributes.tpl" tplscope="details"}
                 </div>
             </div>
-        {/if}
+        </div>
+
         {section name=iterator start=1 loop=10}
             {assign var=tab value=tab}
             {assign var=tabname value=$tab|cat:$smarty.section.iterator.index|cat:" name"}

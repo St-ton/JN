@@ -84,7 +84,7 @@ class Preisverlauf
                         $_pv->date   = $dt->format('d.m.');
                         $_pv->fPreis = ($_SESSION['Kundengruppe']->nNettoPreise == 1) ?
                             round($_pv->fVKNetto * $_currency->fFaktor, 2) :
-                            round(floatval($_pv->fVKNetto * $_currency->fFaktor + ($_pv->fVKNetto * $_currency->fFaktor * ($_pv->fMwst / 100.0))), 2);
+                            berechneBrutto($_pv->fVKNetto * $_currency->fFaktor, $_pv->fMwst);
                         $_pv->currency = $_currency->cISO;
                     }
                 }

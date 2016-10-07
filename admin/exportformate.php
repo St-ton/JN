@@ -33,37 +33,19 @@ if (isset($_GET['kExportformat']) && (int)$_GET['kExportformat'] > 0 && !isset($
     }
 }
 if (isset($_POST['neu_export']) && (int)$_POST['neu_export'] === 1 && validateToken()) {
-    // Plausi
-    $cPlausiValue_arr = pruefeExportformat();
+    $ef = new Exportformat();
+    $checkResult = $ef->check($_POST);;
 
-    if (count($cPlausiValue_arr) === 0) {
-        if (!isset($exportformat)) {
-            $exportformat = new stdClass();
-        }
-        $exportformat->cName           = $_POST['cName'];
-        $exportformat->cContent        = str_replace("<tab>", "\t", $_POST['cContent']);
-        $exportformat->cDateiname      = $_POST['cDateiname'];
-        $exportformat->cKopfzeile      = (isset($_POST['cKopfzeile'])) ? str_replace("<tab>", "\t", $_POST['cKopfzeile']) : '';
-        $exportformat->cFusszeile      = (isset($_POST['cFusszeile'])) ? str_replace("<tab>", "\t", $_POST['cFusszeile']) : '';
-        $exportformat->kSprache        = (int)$_POST['kSprache'];
-        $exportformat->kWaehrung       = (int)$_POST['kWaehrung'];
-        $exportformat->kKampagne       = ((int)$_POST['kKampagne'] > 0) ? (int)$_POST['kKampagne'] : 0;
-        $exportformat->kKundengruppe   = (int)$_POST['kKundengruppe'];
-        $exportformat->cKodierung      = Shop::DB()->escape($_POST['cKodierung']);
-        $exportformat->nVarKombiOption = (int)$_POST['nVarKombiOption'];
-        $exportformat->nSplitgroesse   = (int)$_POST['nSplitgroesse'];
-        $exportformat->nUseCache       = (int)$_POST['nUseCache'];
-        $kExportformat                 = null;
-
-        if ((int)$_POST['kExportformat'] > 0) {
+    if ($checkResult === true) {
+        $kExportformat = $ef->getExportformat();
+        if ($kExportformat > 0) {
             //update
-            $kExportformat = (int)$_POST['kExportformat'];
-            Shop::DB()->update('texportformat', 'kExportformat', $kExportformat, $exportformat);
-            $hinweis .= "Das Exportformat <strong>$exportformat->cName</strong> wurde erfolgreich ge&auml;ndert.";
+            $ef->update();
+            $hinweis .= 'Das Exportformat <strong>' . $ef->getName() . '</strong> wurde erfolgreich ge&auml;ndert.';
         } else {
             //insert
-            $kExportformat = Shop::DB()->insert('texportformat', $exportformat);
-            $hinweis .= "Das Exportformat <strong>$exportformat->cName</strong> wurde erfolgreich erstellt.";
+            $kExportformat = $ef->save();
+            $hinweis .= 'Das Exportformat <strong>' . $ef->getName() . '</strong> wurde erfolgreich erstellt.';
         }
 
         Shop::DB()->delete('texportformateinstellungen', 'kExportformat', $kExportformat);
@@ -80,7 +62,7 @@ if (isset($_POST['neu_export']) && (int)$_POST['neu_export'] === 1 && validateTo
                     break;
                 case 'zahl':
                 case 'number':
-                    $aktWert->cWert = intval($aktWert->cWert);
+                    $aktWert->cWert = (int)$aktWert->cWert;
                     break;
                 case 'text':
                     $aktWert->cWert = substr($aktWert->cWert, 0, 255);
@@ -88,27 +70,17 @@ if (isset($_POST['neu_export']) && (int)$_POST['neu_export'] === 1 && validateTo
             }
             Shop::DB()->insert('texportformateinstellungen', $aktWert);
         }
-        $smartyExport = new JTLSmarty(true, false, false, 'export');
-        $smartyExport->setCaching(0)
-                     ->setDebugging(0)
-                     ->registerResource('db', new SmartyResourceNiceDB('export'))
-                     ->setTemplateDir(PFAD_TEMPLATES);
-        $error = false;
-        try {
-            $cOutput = $smartyExport->fetch('db:' . $kExportformat);
-        } catch (Exception $e) {
-            $error  = true;
+        $step  = 'uebersicht';
+        $error = $ef->checkSyntax();
+        if ($error !== false) {
             $step   = 'neuer Export';
-            $fehler = '<b>Smarty-Syntaxfehler.</b><br />';
-            $fehler .= $e->getMessage();
-            $hinweis = '';
+            $fehler = $error;
         }
-        $step = ($error) ? $step : 'uebersicht';
     } else {
         $_POST['cContent']   = str_replace('<tab>', "\t", $_POST['cContent']);
         $_POST['cKopfzeile'] = str_replace('<tab>', "\t", $_POST['cKopfzeile']);
         $_POST['cFusszeile'] = str_replace('<tab>', "\t", $_POST['cFusszeile']);
-        $smarty->assign('cPlausiValue_arr', $cPlausiValue_arr)
+        $smarty->assign('cPlausiValue_arr', $checkResult)
                ->assign('cPostVar_arr', StringHandler::filterXSS($_POST));
         $step   = 'neuer Export';
         $fehler = 'Fehler: Bitte &uuml;berpr&uuml;fen Sie Ihre Eingaben.';

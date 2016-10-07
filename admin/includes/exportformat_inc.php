@@ -5,6 +5,7 @@
  */
 
 /**
+ * @deprecated since 4.05
  * @param array $cDateinameSplit_arr
  * @param int   $nDateiZaehler
  * @return string
@@ -19,6 +20,7 @@ function gibDateiname($cDateinameSplit_arr, $nDateiZaehler)
 }
 
 /**
+ * @deprecated since 4.05
  * @param array $cDateinameSplit_arr
  * @param int   $nDateiZaehler
  * @return string
@@ -29,6 +31,7 @@ function gibDateiPfad($cDateinameSplit_arr, $nDateiZaehler)
 }
 
 /**
+ * @deprecated since 4.05
  * @return array
  */
 function pruefeExportformat()
@@ -70,6 +73,7 @@ function pruefeExportformat()
 /**
  * Falls eingestellt, wird die Exportdatei in mehrere Dateien gesplittet
  *
+ * @deprecated since 4.05
  * @param object $oExportformat
  */
 function splitteExportDatei($oExportformat)
@@ -126,6 +130,7 @@ function splitteExportDatei($oExportformat)
 }
 
 /**
+ * @deprecated since 4.05
  * @param resource $dateiHandle
  * @param string   $cKopfzeile
  * @param string   $cKodierung
@@ -146,6 +151,7 @@ function schreibeKopfzeile($dateiHandle, $cKopfzeile, $cKodierung)
 }
 
 /**
+ * @deprecated since 4.05
  * @param resource $dateiHandle
  * @param string   $cFusszeile
  * @param string   $cKodierung
@@ -162,6 +168,7 @@ function schreibeFusszeile($dateiHandle, $cFusszeile, $cKodierung)
 }
 
 /**
+ * @deprecated since 4.05
  * @param string $cDateiname
  * @param string $cDateinameSplit
  */
@@ -178,54 +185,6 @@ function loescheExportDateien($cDateiname, $cDateinameSplit)
             closedir($dir);
         }
     }
-}
-
-/**
- * @param string    $tpl_name
- * @param string    $tpl_source
- * @param JTLSmarty $smarty
- * @return bool
- */
-function xdb_get_template($tpl_name, &$tpl_source, $smarty)
-{
-    $exportformat = Shop::DB()->select('texportformat', 'kExportformat', (int)$tpl_name);
-    if (empty($exportformat->kExportformat) || $exportformat->kExportformat <= 0) {
-        return false;
-    }
-    $tpl_source = $exportformat->cContent;
-
-    return true;
-}
-
-/**
- * @param string    $tpl_name
- * @param string    $tpl_timestamp
- * @param JTLSmarty $smarty
- * @return bool
- */
-function xdb_get_timestamp($tpl_name, &$tpl_timestamp, $smarty)
-{
-    $tpl_timestamp = time();
-
-    return true;
-}
-
-/**
- * @param string    $tpl_name
- * @param JTLSmarty $smarty
- * @return bool
- */
-function xdb_get_secure($tpl_name, $smarty)
-{
-    return true;
-}
-
-/**
- * @param string    $tpl_name
- * @param JTLSmarty $smarty
- */
-function xdb_get_trusted($tpl_name, $smarty)
-{
 }
 
 /**
@@ -617,6 +576,7 @@ function getEinstellungenExport($kExportformat)
 }
 
 /**
+ * @deprecated since 4.05
  * @param object $oExportformat
  * @return array
  */
@@ -659,6 +619,7 @@ function baueArtikelExportSQL(&$oExportformat)
 }
 
 /**
+ * @deprecated since 4.05
  * @param object $oExportformat
  * @return mixed
  */

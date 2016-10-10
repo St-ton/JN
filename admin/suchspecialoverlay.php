@@ -35,7 +35,7 @@ if (verifyGPCDataInteger('suchspecialoverlay') === 1) {
 }
 $oSuchspecialOverlay_arr = gibAlleSuchspecialOverlays();
 $nMaxFileSize            = getMaxFileSize(ini_get('upload_max_filesize'));
-if ($_SESSION['cTemplate'] === "Evo") {
+if ((int)($_SESSION['template']->shopversion) >= 400) {
     $smarty->assign('disabledInEvo', true);
 }
 

@@ -27,12 +27,12 @@ class Migration_20161007143100 extends Migration implements IMigration
     public function up()
     {
         $this->setConfig('artikeldetails_kurzbeschreibung_anzeigen', 'Y', 5, 'Kurzbeschreibung anzeigen', 'selectbox', 365, (object)[
-            'cBeschreibung' => 'Soll die Kurzbeschreibung des Artikels auf der Dateilseite angezeigt werden?',
+            'cBeschreibung' => 'Soll die Kurzbeschreibung des Artikels auf der Detailseite angezeigt werden?',
             'inputOptions'  => [
                 'Y' => 'Ja',
                 'N' => 'Nein'
             ]]);
-        $this->setConfig('artikeluebersicht_kurzbeschreibung_anzeigen', 'Y', 4, 'Kurzbeschreibung anzeigen', 'selectbox', 315, (object)[
+        $this->setConfig('artikeluebersicht_kurzbeschreibung_anzeigen', 'N', 4, 'Kurzbeschreibung anzeigen', 'selectbox', 315, (object)[
             'cBeschreibung' => 'Soll die Kurzbeschreibung des Artikels auf &Uuml;bersichtsseiten angezeigt werden?',
             'inputOptions'  => [
                 'Y' => 'Ja',

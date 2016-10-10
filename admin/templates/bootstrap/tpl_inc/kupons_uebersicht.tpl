@@ -1,5 +1,6 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=#coupons# cBeschreibung=#couponsDesc# cDokuURL=#couponsURL#}
 {include file='tpl_inc/sortcontrols.tpl'}
+{include file='tpl_inc/csv_exporter.tpl'}
 
 {function kupons_uebersicht_tab}
     <div id="{$cKuponTyp}" class="tab-pane fade{if $tab === $cKuponTyp} active in{/if}">
@@ -24,7 +25,7 @@
                                 <th>{#curmaxusage#} {call sortControls oPagination=$oPagination nSortBy=2}</th>
                                 <th>{#customerGroup#}</th>
                                 <th>{#restrictions#}</th>
-                                <th>{#validity#}</th>
+                                <th>{#validityPeriod#}</th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -91,10 +92,11 @@
                 {/if}
                 <div class="panel-footer">
                     <div class="btn-group">
+                        <button type="submit" class="btn btn-primary" name="kKuponBearbeiten" value="0"><i class="fa fa-share"></i> {$cKuponTypName} {#create#}</button>
                         {if $oKupon_arr|@count > 0}
                             <button type="submit" class="btn btn-danger" name="action" value="loeschen"><i class="fa fa-trash"></i> {#delete#}</button>
+                            {call csvExportButton exporterId=$cKuponTyp csvFilename=$cKuponTyp|cat:'.csv'}
                         {/if}
-                        <button type="submit" class="btn btn-primary" name="kKuponBearbeiten" value="0"><i class="fa fa-share"></i> {$cKuponTypName} {#create#}</button>
                     </div>
                 </div>
             </form>
@@ -122,7 +124,6 @@
             nKuponCount=$nKuponStandardCount
             oPagination=$oPaginationStandard
             oFilter=$oFilterStandard
-            nSeite=1
         }
         {kupons_uebersicht_tab
             cKuponTyp='versandkupon'
@@ -131,7 +132,6 @@
             nKuponCount=$nKuponVersandCount
             oPagination=$oPaginationVersandkupon
             oFilter=$oFilterVersand
-            nSeite=2
         }
         {kupons_uebersicht_tab
             cKuponTyp='neukundenkupon'
@@ -140,7 +140,6 @@
             nKuponCount=$nKuponNeukundenCount
             oPagination=$oPaginationNeukundenkupon
             oFilter=$oFilterNeukunden
-            nSeite=3
         }
     </div>
 </div>

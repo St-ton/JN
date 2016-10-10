@@ -4,17 +4,22 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-function exportArrayAsCSV ($arr)
+function handleCsvExportAction ($exporterId, $arr, $fields)
 {
-//    header('Content-Disposition: attachment, filename=export.csv');
-//    header('Content-Type: text/csv');
+    if (validateToken() && verifyGPDataString('exportcsv') === $exporterId) {
+        $csvFilename = verifyGPDataString('csvFilename') ?: 'export.csv';
+        header('Content-Disposition: attachment; filename=' . $csvFilename);
+        header('Content-Type: text/csv');
+        $fs = fopen('php://output', 'w');
+        fputcsv($fs, $fields);
 
-    $fs     = fopen('php://output', 'w');
-    $fields = array_keys($arr[0]);
-    fputcsv($fs, $fields);
-
-    foreach ($arr as $i => $assoc) {
-        foreach ($assoc as $name => $val) {
+        foreach ($arr as $elem) {
+            $csvRow = [];
+            foreach ($fields as $field) {
+                $csvRow[] = (string)$elem->$field;
+            }
+            fputcsv($fs, $csvRow);
         }
+        exit();
     }
 }

@@ -176,9 +176,12 @@ if ($action === 'bearbeiten') {
         ->setItemArray($oKuponNeukunden_arr)
         ->assemble();
 
-    $oKuponStandard_arr  = $oPaginationStandard->getPageItems();
-    $oKuponVersand_arr   = $oPaginationVersand->getPageItems();
-    $oKuponNeukunden_arr = $oPaginationNeukunden->getPageItems();
+    handleCsvExportAction('standard', $oKuponStandard_arr, ['cName', 'fWert', 'cWertTyp', 'cCode',
+        'fMindestbestellwert', 'dGueltigAb', 'dGueltigBis', 'nVerwendungen', 'cKuponTyp']);
+    handleCsvExportAction('versandkupon', $oKuponVersand_arr, ['cName', 'cCode', 'fMindestbestellwert', 'dGueltigAb',
+        'dGueltigBis', 'nVerwendungen', 'cKuponTyp']);
+    handleCsvExportAction('neukundenkupon', $oKuponNeukunden_arr, ['cName', 'fWert', 'cWertTyp', 'fMindestbestellwert',
+        'dGueltigAb', 'dGueltigBis', 'nVerwendungen', 'cKuponTyp']);
 
     $smarty->assign('tab', $tab)
         ->assign('oFilterStandard', $oFilterStandard)
@@ -187,9 +190,9 @@ if ($action === 'bearbeiten') {
         ->assign('oPaginationStandard', $oPaginationStandard)
         ->assign('oPaginationVersandkupon', $oPaginationVersand)
         ->assign('oPaginationNeukundenkupon', $oPaginationNeukunden)
-        ->assign('oKuponStandard_arr', $oKuponStandard_arr)
-        ->assign('oKuponVersandkupon_arr', $oKuponVersand_arr)
-        ->assign('oKuponNeukundenkupon_arr', $oKuponNeukunden_arr)
+        ->assign('oKuponStandard_arr', $oPaginationStandard->getPageItems())
+        ->assign('oKuponVersandkupon_arr', $oPaginationVersand->getPageItems())
+        ->assign('oKuponNeukundenkupon_arr', $oPaginationNeukunden->getPageItems())
         ->assign('nKuponStandardCount', $nKuponStandardCount)
         ->assign('nKuponVersandCount', $nKuponVersandCount)
         ->assign('nKuponNeukundenCount', $nKuponNeukundenCount);

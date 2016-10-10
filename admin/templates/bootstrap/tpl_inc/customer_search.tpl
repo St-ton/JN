@@ -132,7 +132,8 @@
                                placeholder="Suche nach Vornamen, E-Mail-Adresse, Wohnort oder Postleitzahl"
                                onkeyup="onChangeCustomerSearchInput(this)" autocomplete="off">
                         <span class="input-group-btn">
-                            <button type="button" class="btn btn-default" onclick="onResetSearchInput();">
+                            <button type="button" class="btn btn-default" onclick="onResetSearchInput();"
+                                    title="Eingabe l&ouml;schen">
                                 <i class="fa fa-eraser"></i>
                             </button>
                         </span>

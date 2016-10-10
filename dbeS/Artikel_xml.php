@@ -598,11 +598,6 @@ function bearbeiteInsert($xml, array $conf)
         }
         // tkategoriegesamt füllen
         fuelleKategorieGesamt(mapArray($xml['tartikel'], 'tkategorieartikel', $GLOBALS['mKategorieArtikel']));
-        // Preise für Preisverlauf
-        $oPreis_arr = mapArray($xml['tartikel'], 'tpreise', $GLOBALS['mPreise']);
-        foreach ($oPreis_arr as $oPreis) {
-            setzePreisverlauf($oPreis->kArtikel, $oPreis->kKundengruppe, $oPreis->fVKNetto);
-        }
         // Artikel Warenlager
         if (isset($xml['tartikel']['tartikelwarenlager']) && is_array($xml['tartikel']['tartikelwarenlager'])) {
             $oArtikelWarenlager_arr = mapArray($xml['tartikel'], 'tartikelwarenlager', $GLOBALS['mArtikelWarenlager']);
@@ -614,9 +609,9 @@ function bearbeiteInsert($xml, array $conf)
                 Shop::DB()->insert('tartikelwarenlager', $oArtikelWarenlager);
             }
         }
+        $bTesteSonderpreis = false;
         if (isset($xml['tartikel']['tartikelsonderpreis']) && is_array($xml['tartikel']['tartikelsonderpreis'])) {
             $ArtikelSonderpreis_arr = mapArray($xml['tartikel'], 'tartikelsonderpreis', $GLOBALS['mArtikelSonderpreis']);
-            $bTesteSonderpreis      = false;
             if ($ArtikelSonderpreis_arr[0]->cAktiv === 'Y') {
                 $specialPriceStart = explode('-', $ArtikelSonderpreis_arr[0]->dStart);
                 if (count($specialPriceStart) > 2) {
@@ -644,6 +639,11 @@ function bearbeiteInsert($xml, array $conf)
                 if ($nNowStamp >= $nStartStamp && ($nNowStamp < $nEndStamp || intval($ArtikelSonderpreis_arr[0]->dEnde) === 0)) {
                     $bTesteSonderpreis = true;
                 }
+                if (!empty($ArtikelSonderpreis_arr[0]->nAnzahl) && !empty($xml['tartikel']['fLagerbestand']) && $ArtikelSonderpreis_arr[0]->nAnzahl < (int)($xml['tartikel']['fLagerbestand'])) {
+                    $bTesteSonderpreis = true;
+                } else {
+                    $bTesteSonderpreis = false;
+                }
             }
             $spCount = count($ArtikelSonderpreis_arr);
             for ($i = 0; $i < $spCount; $i++) {
@@ -656,6 +656,14 @@ function bearbeiteInsert($xml, array $conf)
                 updateXMLinDB($xml['tartikel']['tartikelsonderpreis'], 'tsonderpreise', $GLOBALS['mSonderpreise'], 'kArtikelSonderpreis', 'kKundengruppe');
             }
             DBUpdateInsert('tartikelsonderpreis', $ArtikelSonderpreis_arr, 'kArtikelSonderpreis');
+        }
+        // Preise für Preisverlauf
+        // NettoPreis übertragen, falls kein Sonderpreis gesetzt wurde
+        if (!(isset($xml['tartikel']['tartikelsonderpreis']) && is_array($xml['tartikel']['tartikelsonderpreis']) && $bTesteSonderpreis == true)) {
+            $oPreis_arr = mapArray($xml['tartikel'], 'tpreise', $GLOBALS['mPreise']);
+            foreach ($oPreis_arr as $oPreis) {
+                setzePreisverlauf($oPreis->kArtikel, $oPreis->kKundengruppe, $oPreis->fVKNetto);
+            }
         }
         if (isset($xml['tartikel']['teigenschaft']) && is_array($xml['tartikel']['teigenschaft'])) {
             $Eigenschaft_arr = mapArray($xml['tartikel'], 'teigenschaft', $GLOBALS['mEigenschaft']);

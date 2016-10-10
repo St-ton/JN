@@ -29,7 +29,7 @@
 {include file="snippets/extension.tpl"}
 
 {block name="productlist-header"}
-{if isset($oNavigationsinfo) && ($oNavigationsinfo->cName !== '' || $oNavigationsinfo->cBildURL)}
+{if isset($oNavigationsinfo->cName) && $oNavigationsinfo->cName !== '' || isset($oNavigationsinfo->cBildURL) && !empty($oNavigationsinfo->cBildURL)}
     <div class="title">{if $oNavigationsinfo->cName}<h1>{$oNavigationsinfo->cName}</h1>{/if}</div>
     <div class="desc clearfix">
         {if !empty($oNavigationsinfo->cBildURL) && $oNavigationsinfo->cBildURL !== 'gfx/keinBild.gif' && $oNavigationsinfo->cBildURL !== 'gfx/keinBild_kl.gif'}
@@ -51,7 +51,7 @@
 {/block}
 
 {block name="productlist-subcategories"}
-{if $oUnterKategorien_arr|@count > 0 && $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'N'}
+{if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'N' && $oUnterKategorien_arr|@count > 0}
     <div class="row row-eq-height content-cats-small clearfix">
         {foreach name=unterkats from=$oUnterKategorien_arr item=Unterkat}
             <div class="col-xs-6 col-md-4 col-lg-3">
@@ -83,30 +83,30 @@
 
 {include file="productwizard/index.tpl"}
 
-{if count($Suchergebnisse->Artikel->elemente)>0}
+{if count($Suchergebnisse->Artikel->elemente) > 0}
     <form id="improve_search" action="navi.php" method="get" class="form-inline clearfix">
-        {if isset($NaviFilter->Kategorie) && $NaviFilter->Kategorie->kKategorie > 0}
+        {if isset($NaviFilter->Kategorie->kKategorie) && $NaviFilter->Kategorie->kKategorie > 0}
             <input type="hidden" name="k" value="{$NaviFilter->Kategorie->kKategorie}" />{/if}
-        {if isset($NaviFilter->Hersteller) && $NaviFilter->Hersteller->kHersteller > 0}
+        {if isset($NaviFilter->Hersteller->kHersteller) && $NaviFilter->Hersteller->kHersteller > 0}
             <input type="hidden" name="h" value="{$NaviFilter->Hersteller->kHersteller}" />{/if}
-        {if isset($NaviFilter->Suchanfrage) && $NaviFilter->Suchanfrage->kSuchanfrage > 0}
+        {if isset($NaviFilter->Suchanfrage->kSuchanfrage) && $NaviFilter->Suchanfrage->kSuchanfrage > 0}
             <input type="hidden" name="l" value="{$NaviFilter->Suchanfrage->kSuchanfrage}" />{/if}
-        {if isset($NaviFilter->MerkmalWert) && $NaviFilter->MerkmalWert->kMerkmalWert > 0}
+        {if isset($NaviFilter->MerkmalWert->kMerkmalWert) && $NaviFilter->MerkmalWert->kMerkmalWert > 0}
             <input type="hidden" name="m" value="{$NaviFilter->MerkmalWert->kMerkmalWert}" />{/if}
-        {if isset($NaviFilter->Suchspecial) && $NaviFilter->Suchspecial->kKey > 0}
+        {if isset($NaviFilter->Suchspecial->kKey) && $NaviFilter->Suchspecial->kKey > 0}
             <input type="hidden" name="q" value="{$NaviFilter->Suchspecial->kKey}" />{/if}
         {if isset($NaviFilter->SuchspecialFilter) && $NaviFilter->SuchspecialFilter->kKey > 0}
             <input type="hidden" name="qf" value="{$NaviFilter->SuchspecialFilter->kKey}" />{/if}
-        {if isset($NaviFilter->Suche) && isset($NaviFilter->Suche->cSuche) && $NaviFilter->Suche->cSuche|count > 0}
+        {if isset($NaviFilter->Suche->cSuche) && $NaviFilter->Suche->cSuche|count > 0}
             <input type="hidden" name="suche" value="{$NaviFilter->Suche->cSuche|escape:'htmlall'}" />{/if}
-        {if isset($NaviFilter->Tag) && $NaviFilter->Tag->kTag > 0}
+        {if isset($NaviFilter->Tag->kTag) && $NaviFilter->Tag->kTag > 0}
             <input type="hidden" name="t" value="{$NaviFilter->Tag->kTag}" />{/if}
         {if isset($NaviFilter->MerkmalFilter) && is_array($NaviFilter->MerkmalFilter)}
             {foreach name=merkmalfilter from=$NaviFilter->MerkmalFilter item=mmfilter}
                 <input type="hidden" name="mf{$smarty.foreach.merkmalfilter.iteration}" value="{$mmfilter->kMerkmalWert}" />
             {/foreach}
         {/if}
-        {if isset($cJTLSearchStatedFilter_arr) && $cJTLSearchStatedFilter_arr|@count > 0}
+        {if isset($cJTLSearchStatedFilter_arr) && is_array($cJTLSearchStatedFilter_arr)}
             {foreach name=jtlsearchstatedfilter from=$cJTLSearchStatedFilter_arr key=key item=cJTLSearchStatedFilter}
                 <input name="fq{$key}" type="hidden" value="{$cJTLSearchStatedFilter}" />
             {/foreach}

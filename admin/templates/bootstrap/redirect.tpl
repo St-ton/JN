@@ -2,6 +2,7 @@
 {config_load file="$lang.conf" section="redirect"}
 {include file='tpl_inc/seite_header.tpl' cTitel=#redirect# cBeschreibung=#redirectDesc# cDokuURL=#redirectURL#}
 {include file='tpl_inc/sortcontrols.tpl'}
+{include file='tpl_inc/csv_exporter.tpl'}
 
 <script>{literal}
     $(document).ready(function () {
@@ -231,6 +232,7 @@
                                 <button type="button" onclick="$('[name=\'aData\[action\]\']').val('save');$('#frmRedirect').submit();" value="{#save#}" class="btn btn-primary" title="{#save#}"><i class="fa fa-save"></i> {#save#}</button>
                                 <button type="button" onclick="$('[name=\'aData\[action\]\']').val('delete');$('#frmRedirect').submit();" name="delete" value="Auswahl l&ouml;schen" title="Auswahl l&ouml;schen" class="btn btn-danger"><i class="fa fa-trash"></i> {#deleteSelected#}</button>
                                 <button type="button" onclick="$('[name=\'aData\[action\]\']').val('delete_all');$('#frmRedirect').submit();" name="delete_all" value="Alle ohne Weiterleitung l&ouml;schen" title="Alle ohne Weiterleitung l&ouml;schen" class="btn btn-warning">Alle ohne Weiterleitung l&ouml;schen</button>
+                                {call csvExportButton csvFilename='redirects.csv'}
                             </div>
 
                             <div class="pull-right">

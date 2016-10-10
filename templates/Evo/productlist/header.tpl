@@ -95,7 +95,7 @@
             <input type="hidden" name="m" value="{$NaviFilter->MerkmalWert->kMerkmalWert}" />{/if}
         {if isset($NaviFilter->Suchspecial->kKey) && $NaviFilter->Suchspecial->kKey > 0}
             <input type="hidden" name="q" value="{$NaviFilter->Suchspecial->kKey}" />{/if}
-        {if isset($NaviFilter->SuchspecialFilter) && $NaviFilter->SuchspecialFilter->kKey > 0}
+        {if isset($NaviFilter->SuchspecialFilter->kKey) && $NaviFilter->SuchspecialFilter->kKey > 0}
             <input type="hidden" name="qf" value="{$NaviFilter->SuchspecialFilter->kKey}" />{/if}
         {if isset($NaviFilter->Suche->cSuche) && $NaviFilter->Suche->cSuche|count > 0}
             <input type="hidden" name="suche" value="{$NaviFilter->Suche->cSuche|escape:'htmlall'}" />{/if}

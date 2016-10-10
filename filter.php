@@ -7,7 +7,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'filter_inc.php';
 $cachingOptions = Shop::getSettings(array(CONF_CACHING));
 Shop::setPageType(PAGE_ARTIKELLISTE);
 /** @global JTLSmarty $smarty */
-/** @global object $NaviFilter*/
+/** @global Navigationsfilter $NaviFilter*/
 $Einstellungen = Shop::getSettings(
     array(
         CONF_GLOBAL,
@@ -40,29 +40,28 @@ $nArtikelProSeite_arr = array(
     50,
     100
 );
-if ($cParameter_arr['kSuchanfrage'] > 0) {
-    $oSuchanfrage = Shop::DB()->select('tsuchanfrage', 'kSuchanfrage', (int)$cParameter_arr['kSuchanfrage'], null, null, null, null, false, 'cSuche');
-    if (isset($oSuchanfrage->cSuche) && strlen($oSuchanfrage->cSuche) > 0) {
-        if (!isset($NaviFilter->Suche)) {
-            $NaviFilter->Suche = new stdClass();
-        }
-        $NaviFilter->Suche->kSuchanfrage = $cParameter_arr['kSuchanfrage'];
-        $NaviFilter->Suche->cSuche       = $oSuchanfrage->cSuche;
-    }
-}
+//if ($cParameter_arr['kSuchanfrage'] > 0) {
+//    $oSuchanfrage = Shop::DB()->select('tsuchanfrage', 'kSuchanfrage', (int)$cParameter_arr['kSuchanfrage'], null, null, null, null, false, 'cSuche');
+//    if (isset($oSuchanfrage->cSuche) && strlen($oSuchanfrage->cSuche) > 0) {
+//        $NaviFilter->Suche->kSuchanfrage = $cParameter_arr['kSuchanfrage'];
+//        $NaviFilter->Suche->cSuche       = $oSuchanfrage->cSuche;
+//    }
+//}
 // Suchcache beachten / erstellen
-if (isset($NaviFilter->Suche->cSuche) && strlen($NaviFilter->Suche->cSuche) > 0) {
-    $NaviFilter->Suche->kSuchCache = bearbeiteSuchCache($NaviFilter);
-}
+//if (isset($NaviFilter->Suche->cSuche) && strlen($NaviFilter->Suche->cSuche) > 0) {
+//    $NaviFilter->Suche->kSuchCache = bearbeiteSuchCache($NaviFilter);
+//}
 
 $AktuelleKategorie      = new stdClass();
 $AufgeklappteKategorien = new stdClass();
-if ($cParameter_arr['kKategorie'] > 0) {
-    $AktuelleKategorie = new Kategorie($cParameter_arr['kKategorie']);
+Shop::dbg($NaviFilter, true, 'State:');
+if ($NaviFilter->hasCategory()) {
+    $kKategorie = $NaviFilter->getActiveState()->getID();
+    $AktuelleKategorie = new Kategorie($kKategorie);
     if (!isset($AktuelleKategorie->kKategorie) || $AktuelleKategorie->kKategorie === null) {
         //temp. workaround: do not return 404 when non-localized existing category is loaded
-        if (KategorieHelper::categoryExists($cParameter_arr['kKategorie'])) {
-            $AktuelleKategorie->kKategorie = $cParameter_arr['kKategorie'];
+        if (KategorieHelper::categoryExists($kKategorie)) {
+            $AktuelleKategorie->kKategorie = $kKategorie;
         } else {
             $is404                   = true;
             $cParameter_arr['is404'] = true;
@@ -80,15 +79,11 @@ setzeUsersortierung($NaviFilter);
 // Hole alle aktiven Sprachen
 $NaviFilter->oSprache_arr = Shop::Lang()->getLangArray();
 // Filter SQL
+$NaviFilter->getProducts();
 $FilterSQL = bauFilterSQL($NaviFilter);
+//Shop::dbg($FilterSQL, false, 'filtersql:');
 // Erweiterte Darstellung Artikelübersicht
 gibErweiterteDarstellung($Einstellungen, $NaviFilter, $cParameter_arr['nDarstellung']);
-if (!isset($NaviFilter->Suche)) {
-    $NaviFilter->Suche = new stdClass();
-}
-if (!isset($NaviFilter->Suche->cSuche)) {
-    $NaviFilter->Suche->cSuche = '';
-}
 $oSuchergebnisse = buildSearchResults($FilterSQL, $NaviFilter);
 suchanfragenSpeichern($NaviFilter->Suche->cSuche, $oSuchergebnisse->GesamtanzahlArtikel);
 $NaviFilter->Suche->kSuchanfrage = gibSuchanfrageKey($NaviFilter->Suche->cSuche, Shop::$kSprache);

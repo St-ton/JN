@@ -202,15 +202,18 @@ function gibArtikelKeys($FilterSQL, $nArtikelProSeite, $NaviFilter, $bExtern, $o
             tpreise.fVKNetto-((tartikelkategorierabatt.fRabatt/100)*tpreise.fVKNetto), tpreise.fVKNetto)) DESC";
         }
     }
-    if (isset($_SESSION['Usersortierung'])) {
+    $sort = (isset($_SESSION['Usersortierung']))
+        ? (int)$_SESSION['Usersortierung']
+        : (int)$conf['artikeluebersicht']['artikeluebersicht_artikelsortierung'];
+    if ($sort === SEARCH_SORT_BESTSELLER  || $sort === SEARCH_SORT_RATING) {
         //avoid joining the same table twice if we already have a bestseller search special
-        if ($_SESSION['Usersortierung'] == SEARCH_SORT_BESTSELLER &&
+        if ($sort === SEARCH_SORT_BESTSELLER &&
             (!isset($NaviFilter->Suchspecial->kKey) || $NaviFilter->Suchspecial->kKey != SEARCHSPECIALS_BESTSELLER) &&
             (!isset($NaviFilter->SuchspecialFilter->kKey) || $NaviFilter->SuchspecialFilter->kKey != SEARCHSPECIALS_BESTSELLER)
         ) {
             $oSortierungsSQL->cJoin = " LEFT JOIN tbestseller ON tbestseller.kArtikel = tartikel.kArtikel";
         }
-        if ($_SESSION['Usersortierung'] == SEARCH_SORT_RATING) {
+        if ($sort === SEARCH_SORT_RATING) {
             $oSortierungsSQL->cJoin .= " LEFT JOIN tbewertung ON tbewertung.kArtikel = tartikel.kArtikel";
         }
     }
@@ -232,10 +235,9 @@ function gibArtikelKeys($FilterSQL, $nArtikelProSeite, $NaviFilter, $bExtern, $o
         $cLimitSQL = " LIMIT " . $nArtikelProSeite;
     }
 
-    if (strlen($FilterSQL->oPreisspannenFilterSQL->cJoin) === 0) {
+    if (strlen($FilterSQL->oPreisspannenFilterSQL->cJoin) === 0 && ($sort === SEARCH_SORT_PRICE_ASC || $sort === SEARCH_SORT_PRICE_DESC)) {
         $cSQL .= " JOIN tpreise ON tartikel.kArtikel = tpreise.kArtikel AND tpreise.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe;
     }
-
     executeHook(
         HOOK_FILTER_INC_GIBARTIKELKEYS_SQL, array(
             'cSQL'           => &$cSQL,
@@ -244,8 +246,8 @@ function gibArtikelKeys($FilterSQL, $nArtikelProSeite, $NaviFilter, $bExtern, $o
             'SortierungsSQL' => &$oSortierungsSQL,
             'cLimitSQL'      => &$cLimitSQL)
     );
-    $oArtikelKey_arr = Shop::DB()->query(
-        "SELECT tartikel.kArtikel
+//    Shop::dbg($FilterSQL, false, 'FilterSQL:');
+    $query = "SELECT tartikel.kArtikel
             FROM tartikel
             " . $cSQL . "
             " . $FilterSQL->oSuchspecialFilterSQL->cJoin . "
@@ -257,7 +259,7 @@ function gibArtikelKeys($FilterSQL, $nArtikelProSeite, $NaviFilter, $bExtern, $o
             " . $FilterSQL->oPreisspannenFilterSQL->cJoin . "
             " . $FilterSQL->oArtikelAttributFilterSQL->cJoin . "
             " . $oSortierungsSQL->cJoin . "
-            LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel=tartikelsichtbarkeit.kArtikel
+            LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                 AND tartikelsichtbarkeit.kKundengruppe = " . $kKundengruppe . "
             WHERE tartikelsichtbarkeit.kArtikel IS NULL
                 AND tartikel.kVaterArtikel = 0
@@ -273,8 +275,11 @@ function gibArtikelKeys($FilterSQL, $nArtikelProSeite, $NaviFilter, $bExtern, $o
             GROUP BY tartikel.kArtikel
             " . $FilterSQL->oMerkmalFilterSQL->cHaving . "
             ORDER BY " . $oSortierungsSQL->cOrder . ", tartikel.kArtikel
-            " . $cLimitSQL, 2
+            " . $cLimitSQL;
+    $oArtikelKey_arr = Shop::DB()->query(
+        $query, 2
     );
+    Shop::dbg($query, false, 'qry');
     executeHook(
         HOOK_FILTER_INC_GIBARTIKELKEYS, array(
             'oArtikelKey_arr' => &$oArtikelKey_arr,
@@ -2201,7 +2206,6 @@ function gibHerstellerFilterSQL($NaviFilter)
  */
 function gibKategorieFilterSQL($NaviFilter)
 {
-    $conf            = Shop::getSettings(array(CONF_NAVIGATIONSFILTER));
     $oFilter         = new stdClass();
     $oFilter->cJoin  = '';
     $oFilter->cWhere = '';
@@ -2212,6 +2216,7 @@ function gibKategorieFilterSQL($NaviFilter)
     }
     // Kategorie Filter?
     if (isset($NaviFilter->KategorieFilter->kKategorie) && $NaviFilter->KategorieFilter->kKategorie > 0) {
+        $conf            = Shop::getSettings(array(CONF_NAVIGATIONSFILTER));
         $oFilter->cJoin  = 'JOIN tkategorieartikel ON tartikel.kArtikel = tkategorieartikel.kArtikel';
         $oFilter->cWhere = ' AND tkategorieartikel.kKategorie = ' . (int)$NaviFilter->KategorieFilter->kKategorie;
         if ($conf['navigationsfilter']['kategoriefilter_anzeigen_als'] === 'HF') {
@@ -3269,7 +3274,7 @@ function erstelleFilterLoesenURLs($bSeo, $oSuchergebnisse)
         $NaviFilter->URL->cAlleMerkmalWerte[$oMerkmal->kMerkmalWert] = gibNaviURL($NaviFilter, $bSeo, $oZusatzFilter);
     }
     // kinda hacky: try to build url that removes a merkmalwert url from merkmalfilter url
-    if (isset($NaviFilter->MerkmalWert->kMerkmalWert) && !isset($NaviFilter->URL->cAlleMerkmalWerte[$NaviFilter->MerkmalWert->kMerkmalWert])) {
+    if (isset($NaviFilter->MerkmalWert->kMerkmalWert) && $NaviFilter->MerkmalWert->kMerkmalWert > 0 && !isset($NaviFilter->URL->cAlleMerkmalWerte[$NaviFilter->MerkmalWert->kMerkmalWert])) {
         if (isset($NaviFilter->URL->cAlleKategorien)) {
             // the url should be <shop>/<merkmalwert-url>__<merkmalfilter>[__<merkmalfilter>]
             $_mmwSeo = str_replace($NaviFilter->MerkmalWert->cSeo[Shop::$kSprache] . '__', '', $NaviFilter->URL->cAlleKategorien);
@@ -3858,10 +3863,10 @@ function setzeUsersortierung($NaviFilter)
     // Wenn noch keine Sortierung gewählt wurde => setze Standard-Sortierung aus Option
     if (!isset($_SESSION['Usersortierung']) && isset($Einstellungen['artikeluebersicht']['artikeluebersicht_artikelsortierung'])) {
         unset($_SESSION['nUsersortierungWahl']);
-        $_SESSION['Usersortierung'] = $Einstellungen['artikeluebersicht']['artikeluebersicht_artikelsortierung'];
+        $_SESSION['Usersortierung'] = (int)$Einstellungen['artikeluebersicht']['artikeluebersicht_artikelsortierung'];
     }
     if (!isset($_SESSION['nUsersortierungWahl']) && isset($Einstellungen['artikeluebersicht']['artikeluebersicht_artikelsortierung'])) {
-        $_SESSION['Usersortierung'] = $Einstellungen['artikeluebersicht']['artikeluebersicht_artikelsortierung'];
+        $_SESSION['Usersortierung'] = (int)$Einstellungen['artikeluebersicht']['artikeluebersicht_artikelsortierung'];
     }
     // Eine Suche wurde ausgeführt und die Suche wird auf die Suchtreffersuche eingestellt
     if (isset($NaviFilter->Suche->kSuchCache) && $NaviFilter->Suche->kSuchCache > 0 && !isset($_SESSION['nUsersortierungWahl'])) {
@@ -3870,12 +3875,13 @@ function setzeUsersortierung($NaviFilter)
         $_SESSION['Usersortierung']         = SEARCH_SORT_STANDARD;
     }
     // Kategorie Funktionsattribut
-    if (!empty($AktuelleKategorie->categoryFunctionAttributes[KAT_ATTRIBUT_ARTIKELSORTIERUNG])) {
-        $_SESSION['Usersortierung'] = $AktuelleKategorie->categoryFunctionAttributes[KAT_ATTRIBUT_ARTIKELSORTIERUNG];
+    //@todo: TMP disabled
+    if (FALSE&&!empty($AktuelleKategorie->categoryFunctionAttributes[KAT_ATTRIBUT_ARTIKELSORTIERUNG])) {
+        $_SESSION['Usersortierung'] = mappeUsersortierung($AktuelleKategorie->categoryFunctionAttributes[KAT_ATTRIBUT_ARTIKELSORTIERUNG]);
     }
     // Wurde zuvor etwas gesucht? Dann die Einstellung des Users vor der Suche wiederherstellen
     if (isset($_SESSION['UsersortierungVorSuche']) && intval($_SESSION['UsersortierungVorSuche']) > 0) {
-        $_SESSION['Usersortierung'] = $_SESSION['UsersortierungVorSuche'];
+        $_SESSION['Usersortierung'] = (int)$_SESSION['UsersortierungVorSuche'];
     }
     // Suchspecial sortierung
     if (isset($NaviFilter->Suchspecial->kKey) && $NaviFilter->Suchspecial->kKey > 0) {
@@ -3883,7 +3889,7 @@ function setzeUsersortierung($NaviFilter)
         $oSuchspecialEinstellung_arr = gibSuchspecialEinstellungMapping($Einstellungen['suchspecials']);
         // -1 = Keine spezielle Sortierung
         if (count($oSuchspecialEinstellung_arr) > 0 && isset($oSuchspecialEinstellung_arr[$NaviFilter->Suchspecial->kKey]) && $oSuchspecialEinstellung_arr[$NaviFilter->Suchspecial->kKey] != -1) {
-            $_SESSION['Usersortierung'] = $oSuchspecialEinstellung_arr[$NaviFilter->Suchspecial->kKey];
+            $_SESSION['Usersortierung'] = (int)$oSuchspecialEinstellung_arr[$NaviFilter->Suchspecial->kKey];
         }
     }
     // Der User hat expliziet eine Sortierung eingestellt

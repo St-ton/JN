@@ -309,7 +309,7 @@ class WarenkorbPos
                 $this->cEinzelpreisLocalized[0][$Waehrung->cName] = gibPreisStringLocalized(berechneBrutto($this->fPreis, gibUst($this->kSteuerklasse)), $Waehrung);
                 $this->cEinzelpreisLocalized[1][$Waehrung->cName] = gibPreisStringLocalized($this->fPreis, $Waehrung);
 
-                if ($this->Artikel->cVPE == 'Y' && $this->Artikel->fVPEWert > 0 && !empty($this->Artikel->cVPEEinheit)) {
+                if ($this->Artikel->cVPE === 'Y' && $this->Artikel->fVPEWert > 0 && !empty($this->Artikel->cVPEEinheit)) {
                     $this->Artikel->baueVPE($this->fPreis);
                 }
 

@@ -40,23 +40,22 @@ $nArtikelProSeite_arr = array(
     50,
     100
 );
-//if ($cParameter_arr['kSuchanfrage'] > 0) {
-//    $oSuchanfrage = Shop::DB()->select('tsuchanfrage', 'kSuchanfrage', (int)$cParameter_arr['kSuchanfrage'], null, null, null, null, false, 'cSuche');
-//    if (isset($oSuchanfrage->cSuche) && strlen($oSuchanfrage->cSuche) > 0) {
-//        $NaviFilter->Suche->kSuchanfrage = $cParameter_arr['kSuchanfrage'];
-//        $NaviFilter->Suche->cSuche       = $oSuchanfrage->cSuche;
-//    }
-//}
+if ($cParameter_arr['kSuchanfrage'] > 0) {
+    $oSuchanfrage = Shop::DB()->select('tsuchanfrage', 'kSuchanfrage', (int)$cParameter_arr['kSuchanfrage'], null, null, null, null, false, 'cSuche');
+    if (isset($oSuchanfrage->cSuche) && strlen($oSuchanfrage->cSuche) > 0) {
+        $NaviFilter->Suche->kSuchanfrage = $cParameter_arr['kSuchanfrage'];
+        $NaviFilter->Suche->cSuche       = $oSuchanfrage->cSuche;
+    }
+}
 // Suchcache beachten / erstellen
-//if (isset($NaviFilter->Suche->cSuche) && strlen($NaviFilter->Suche->cSuche) > 0) {
-//    $NaviFilter->Suche->kSuchCache = bearbeiteSuchCache($NaviFilter);
-//}
+if (isset($NaviFilter->Suche->cSuche) && strlen($NaviFilter->Suche->cSuche) > 0) {
+    $NaviFilter->Suche->kSuchCache = bearbeiteSuchCache($NaviFilter);
+}
 
 $AktuelleKategorie      = new stdClass();
 $AufgeklappteKategorien = new stdClass();
-Shop::dbg($NaviFilter, true, 'State:');
-if ($NaviFilter->hasCategory()) {
-    $kKategorie = $NaviFilter->getActiveState()->getID();
+if ($NaviFilter2->hasCategory()) {
+    $kKategorie = $NaviFilter2->getActiveState()->getID();
     $AktuelleKategorie = new Kategorie($kKategorie);
     if (!isset($AktuelleKategorie->kKategorie) || $AktuelleKategorie->kKategorie === null) {
         //temp. workaround: do not return 404 when non-localized existing category is loaded
@@ -76,17 +75,52 @@ $startKat             = new Kategorie();
 $startKat->kKategorie = 0;
 // Usersortierung
 setzeUsersortierung($NaviFilter);
+
+
 // Hole alle aktiven Sprachen
 $NaviFilter->oSprache_arr = Shop::Lang()->getLangArray();
+
 // Filter SQL
-$NaviFilter->getProducts();
 $FilterSQL = bauFilterSQL($NaviFilter);
+
 //Shop::dbg($FilterSQL, false, 'filtersql:');
 // Erweiterte Darstellung Artikelübersicht
 gibErweiterteDarstellung($Einstellungen, $NaviFilter, $cParameter_arr['nDarstellung']);
+if (!isset($NaviFilter->Suche)) {
+    $NaviFilter->Suche = new stdClass();
+}
+if (!isset($NaviFilter->Suche->cSuche)) {
+    $NaviFilter->Suche->cSuche = '';
+}
+
+
 $oSuchergebnisse = buildSearchResults($FilterSQL, $NaviFilter);
+$oSuchergebnisse2 = $NaviFilter2->getProducts();;
+Shop::dbg(count($oSuchergebnisse->Artikel->elemente), false, 'elem count original:');
+Shop::dbg(count($oSuchergebnisse2->Artikel->elemente), false, 'elem count new:');
+$ori = [];
+foreach($oSuchergebnisse->Artikel->elemente as $art) {
+    $ori[] = (int)$art->kArtikel;
+}
+$new = [];
+foreach($oSuchergebnisse2->Artikel->elemente as $art) {
+    $new[] = (int)$art->kArtikel;
+}
+if ($ori !== $new) {
+    echo 'MISMATCH!<br>';
+    Shop::dbg($ori, false, 'ori:');
+    Shop::dbg($new, true, 'new:');
+}
+
+Shop::dbg($oSuchergebnisse->Seitenzahlen, false,'ori:');
+Shop::dbg($oSuchergebnisse2->Seitenzahlen, false,'new:');
+
 suchanfragenSpeichern($NaviFilter->Suche->cSuche, $oSuchergebnisse->GesamtanzahlArtikel);
 $NaviFilter->Suche->kSuchanfrage = gibSuchanfrageKey($NaviFilter->Suche->cSuche, Shop::$kSprache);
+
+
+
+
 // Umleiten falls SEO keine Artikel ergibt
 doMainwordRedirect($NaviFilter, count($oSuchergebnisse->Artikel->elemente), true);
 // Bestsellers
@@ -96,10 +130,10 @@ if (isset($Einstellungen['artikeluebersicht']['artikelubersicht_bestseller_grupp
         $products[] = (int) $product->kArtikel;
     }
     $limit       = (isset($Einstellungen['artikeluebersicht']['artikeluebersicht_bestseller_anzahl'])) ?
-        (int) $Einstellungen['artikeluebersicht']['artikeluebersicht_bestseller_anzahl'] :
+        (int)$Einstellungen['artikeluebersicht']['artikeluebersicht_bestseller_anzahl'] :
         3;
     $minsells    = (isset($Einstellungen['global']['global_bestseller_minanzahl'])) ?
-        (int) $Einstellungen['global']['global_bestseller_minanzahl'] :
+        (int)$Einstellungen['global']['global_bestseller_minanzahl'] :
         10;
     $bestsellers = Bestseller::buildBestsellers($products, $_SESSION['Kundengruppe']->kKundengruppe, $_SESSION['Kundengruppe']->darfArtikelKategorienSehen, false, $limit, $minsells);
     Bestseller::ignoreProducts($oSuchergebnisse->Artikel->elemente, $bestsellers);
@@ -113,18 +147,80 @@ if (intval($Einstellungen['artikeluebersicht']['suche_max_treffer']) > 0) {
 }
 // Filteroptionen holen
 $oSuchergebnisse->Herstellerauswahl = gibHerstellerFilterOptionen($FilterSQL, $NaviFilter);
+$oSuchergebnisse2->Herstellerauswahl = $NaviFilter2->getManufacturerFilterOptions();
+
+//Shop::dbg($oSuchergebnisse->Herstellerauswahl, false, '$oSuchergebnisse->Herstellerauswahl');
+//Shop::dbg($oSuchergebnisse2->Herstellerauswahl, true, '$oSuchergebnisse2->Herstellerauswahl');
+
+
 $oSuchergebnisse->Bewertung         = gibBewertungSterneFilterOptionen($FilterSQL, $NaviFilter);
+$oSuchergebnisse2->Bewertung         = $NaviFilter2->getRatingFilterOptions();
+
+//Shop::dbg($oSuchergebnisse->Bewertung, false, '$oSuchergebnisse->Bewertung');
+//Shop::dbg($oSuchergebnisse2->Bewertung, true, '$oSuchergebnisse2->Bewertung');
+
+
 $oSuchergebnisse->Tags              = gibTagFilterOptionen($FilterSQL, $NaviFilter);
+$oSuchergebnisse2->Tags              = $NaviFilter2->getTagFilterOptions();
+
+//Shop::dbg($oSuchergebnisse->Tags, false, '$oSuchergebnisse->Tags');
+//Shop::dbg($oSuchergebnisse2->Tags, true, '$oSuchergebnisse2->Tags');
+
+
 if (isset($Einstellungen['navigationsfilter']['allgemein_tagfilter_benutzen']) && $Einstellungen['navigationsfilter']['allgemein_tagfilter_benutzen'] === 'Y') {
     $oSuchergebnisse->TagsJSON = gibTagFilterJSONOptionen($FilterSQL, $NaviFilter);
+
+    $oTags_arr = [];
+    foreach ($oSuchergebnisse2->Tags as $key => $oTags) {
+        $oTags_arr[$key] = $oTags;
+        $oTags_arr[$key]->cURL = StringHandler::htmlentitydecode($oTags->cURL);
+    }
+    $oSuchergebnisse2->TagsJSON = Boxen::gibJSONString($oTags_arr);
+
 }
 $oSuchergebnisse->MerkmalFilter    = gibMerkmalFilterOptionen($FilterSQL, $NaviFilter, $AktuelleKategorie, function_exists('starteAuswahlAssistent'));
+$oSuchergebnisse2->MerkmalFilter    = $NaviFilter2->getAttributeFilterOptions($AktuelleKategorie, function_exists('starteAuswahlAssistent'));
+
+//Shop::dbg($oSuchergebnisse->MerkmalFilter, false, '$oSuchergebnisse->MerkmalFilter');
+//Shop::dbg($oSuchergebnisse2->MerkmalFilter, true, '$oSuchergebnisse2->MerkmalFilter');
+
+
 $oSuchergebnisse->Preisspanne      = gibPreisspannenFilterOptionen($FilterSQL, $NaviFilter, $oSuchergebnisse);
+$oSuchergebnisse2->Preisspanne      = $NaviFilter2->getPriceRangeFilterOptions($FilterSQL, $oSuchergebnisse);
+
+//Shop::dbg($oSuchergebnisse->Preisspanne, false, '$oSuchergebnisse->Preisspanne');
+//Shop::dbg($oSuchergebnisse2->Preisspanne, true, '$oSuchergebnisse2->Preisspanne');
+
+
 $oSuchergebnisse->Kategorieauswahl = gibKategorieFilterOptionen($FilterSQL, $NaviFilter);
+$oSuchergebnisse2->Kategorieauswahl = $NaviFilter2->getCategoryFilterOptions();
+
+//Shop::dbg($oSuchergebnisse->Kategorieauswahl, false, '$oSuchergebnisse->Kategorieauswahl');
+//Shop::dbg($oSuchergebnisse2->Kategorieauswahl, true, '$oSuchergebnisse2->Kategorieauswahl');
+
+
 $oSuchergebnisse->SuchFilter       = gibSuchFilterOptionen($FilterSQL, $NaviFilter);
+$oSuchergebnisse2->SuchFilter       = $NaviFilter2->getSearchFilterOptions();
+
+//Shop::dbg($oSuchergebnisse->SuchFilter, false, '$oSuchergebnisse->SuchFilter');
+//Shop::dbg($oSuchergebnisse2->SuchFilter, true, '$oSuchergebnisse2->SuchFilter');
+
+
 $oSuchergebnisse->SuchFilterJSON   = gibSuchFilterJSONOptionen($FilterSQL, $NaviFilter);
+
+$oSuchergebnisse2->SuchFilterJSON   = [];
+foreach ($oSuchergebnisse2->SuchFilter as $key => $oSuchfilter) {
+    $oSuchergebnisse2->SuchFilterJSON[$key] = $oSuchfilter;
+    $oSuchergebnisse2->SuchFilterJSON[$key]->cURL = StringHandler::htmlentitydecode($oSuchfilter->cURL);
+}
+$oSuchergebnisse2->SuchFilterJSON = Boxen::gibJSONString($oSuchergebnisse2->SuchFilterJSON);
+
 if (!$cParameter_arr['kSuchspecial']) {
     $oSuchergebnisse->Suchspecialauswahl = gibSuchspecialFilterOptionen($FilterSQL, $NaviFilter);
+    $oSuchergebnisse2->Suchspecialauswahl = $NaviFilter2->getSearchSpecialFilterOptions();
+
+//    Shop::dbg($oSuchergebnisse->Suchspecialauswahl, false, '$oSuchergebnisse->Suchspecialauswahl');
+//    Shop::dbg($oSuchergebnisse2->Suchspecialauswahl, true, '$oSuchergebnisse2->Suchspecialauswahl');
 }
 $smarty->assign('oNaviSeite_arr', baueSeitenNaviURL($NaviFilter, true, $oSuchergebnisse->Seitenzahlen, $Einstellungen['artikeluebersicht']['artikeluebersicht_max_seitenzahl']));
 if (verifyGPCDataInteger('zahl') > 0) {
@@ -166,9 +262,14 @@ if (count($oSuchergebnisse->Artikel->elemente) === 0) {
     }
 }
 erstelleFilterLoesenURLs(true, $oSuchergebnisse);
+
+
 // Header bauen
 $NaviFilter->cBrotNaviName          = gibBrotNaviName();
 $oSuchergebnisse->SuchausdruckWrite = gibHeaderAnzeige();
+
+$oSuchergebnisse2->SuchausdruckWrite = $NaviFilter2->getHeader();
+
 // Mainword NaviBilder
 $oNavigationsinfo           = new stdClass();
 $oNavigationsinfo->cName    = '';

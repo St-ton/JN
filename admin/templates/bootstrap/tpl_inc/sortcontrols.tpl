@@ -1,12 +1,10 @@
 <script>
-    {literal}
-        function pagiResort (pagiId, nSortBy, nSortDir)
-        {
-            $('#' + pagiId + '_nSortByDir').val(nSortBy * 2 + nSortDir);
-            $('form#' + pagiId).submit();
-            return false;
-        }
-    {/literal}
+    function pagiResort (pagiId, nSortBy, nSortDir)
+    {
+        $('#' + pagiId + '_nSortByDir').val(nSortBy * 2 + nSortDir);
+        $('form#' + pagiId).submit();
+        return false;
+    }
 </script>
 
 {function sortControls}

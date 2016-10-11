@@ -6,7 +6,7 @@
 
 {if !empty($WarenkorbVersandkostenfreiHinweis) && $Warenkorb->PositionenArr|@count > 0}
     <div class="alert alert-info">
-        <span class="basket_notice">{$WarenkorbVersandkostenfreiHinweis} {$WarenkorbVersandkostenfreiLaenderHinweis|lcfirst}</span>
+        <span class="basket_notice">{$WarenkorbVersandkostenfreiHinweis}</span>
     </div>
 {/if}
 {if $Schnellkaufhinweis}

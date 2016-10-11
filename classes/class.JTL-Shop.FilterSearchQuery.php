@@ -5,19 +5,14 @@
  */
 
 /**
- * Class FilterSearch
+ * Class FilterSearchQuery
  */
-class FilterSearch extends AbstractFilter implements IFilter
+class FilterSearchQuery extends AbstractFilter implements IFilter
 {
     /**
      * @var int
      */
     public $kSuchanfrage = 0;
-
-    /**
-     * @var string
-     */
-    public $cSuche;
 
     /**
      * @param int $id

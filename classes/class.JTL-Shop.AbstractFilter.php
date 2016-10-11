@@ -5,6 +5,9 @@
  */
 abstract class AbstractFilter implements IFilter
 {
+    const FILTER_TYPE_OR = 0;
+    const FILTER_TYPE_AND = 1;
+
     /**
      * @var string
      */
@@ -14,6 +17,11 @@ abstract class AbstractFilter implements IFilter
      * @var array
      */
     public $cSeo = [];
+
+    /**
+     * @var int
+     */
+    private $type = self::FILTER_TYPE_AND;
 
     /**
      * @var bool
@@ -51,6 +59,33 @@ abstract class AbstractFilter implements IFilter
                 ? $this->cSeo[$idx]
                 : null)
             : $this->cSeo;
+    }
+
+    /**
+     * @return int
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    /**
+     * @param int $type
+     * @return $this
+     */
+    public function setType($type)
+    {
+        $this->type = (int)$type;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->cName;
     }
 
     /**

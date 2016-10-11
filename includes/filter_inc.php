@@ -37,7 +37,6 @@ function buildSearchResults($FilterSQL, $NaviFilter)
     $oSuchergebnisse->Preisspanne       = array();
     $oSuchergebnisse->Suchspecial       = array();
     $oSuchergebnisse->SuchFilter        = array();
-
     baueArtikelAnzahl($FilterSQL, $oSuchergebnisse, $nArtikelProSeite, $nLimitN);
     $oSuchergebnisse->Artikel->elemente = gibArtikelKeys($FilterSQL, $nArtikelProSeite, $NaviFilter, false, $oSuchergebnisse);
 
@@ -246,7 +245,6 @@ function gibArtikelKeys($FilterSQL, $nArtikelProSeite, $NaviFilter, $bExtern, $o
             'SortierungsSQL' => &$oSortierungsSQL,
             'cLimitSQL'      => &$cLimitSQL)
     );
-//    Shop::dbg($FilterSQL, false, 'FilterSQL:');
     $query = "SELECT tartikel.kArtikel
             FROM tartikel
             " . $cSQL . "
@@ -279,7 +277,6 @@ function gibArtikelKeys($FilterSQL, $nArtikelProSeite, $NaviFilter, $bExtern, $o
     $oArtikelKey_arr = Shop::DB()->query(
         $query, 2
     );
-    Shop::dbg($query, false, 'qry');
     executeHook(
         HOOK_FILTER_INC_GIBARTIKELKEYS, array(
             'oArtikelKey_arr' => &$oArtikelKey_arr,
@@ -290,7 +287,6 @@ function gibArtikelKeys($FilterSQL, $nArtikelProSeite, $NaviFilter, $bExtern, $o
     // Artikelkeys in der Session halten, da andere Seite wie z.b. Artikel.php auf die voherige Artikelübersicht Daten aufbaut.
     $_SESSION['oArtikelUebersichtKey_arr']   = $oArtikelKey_arr;
     $_SESSION['nArtikelUebersichtVLKey_arr'] = array(); // Nur Artikel die auch wirklich auf der Seite angezeigt werden
-
     if (is_array($oArtikelKey_arr)) {
         //wurde kein Artikel herausgeholt, aber eine Seite > 1 angegeben?
         if ((count($oArtikelKey_arr) === 0 ||
@@ -1684,7 +1680,7 @@ function gibSuchspecialFilterOptionen($FilterSQL, $NaviFilter)
                     $oFilter->cWhere = ' AND now() < tartikel.dErscheinungsdatum';
                     break;
                 case SEARCHSPECIALS_TOPREVIEWS:
-                    if (!isset($NaviFilter->BewertungFilter->nSterne)) {
+                    if (empty($NaviFilter->BewertungFilter->nSterne)) {
                         $oFilter->cJoin = "JOIN tartikelext ON tartikelext.kArtikel = tartikel.kArtikel";
                     }
                     $oFilter->cWhere = " AND round(tartikelext.fDurchschnittsBewertung) >= " . (int)$conf['boxen']['boxen_topbewertet_minsterne'];

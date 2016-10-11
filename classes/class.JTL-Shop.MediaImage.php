@@ -391,7 +391,7 @@ class MediaImage implements IMedia
     private function parse($request)
     {
         if (!is_string($request) || strlen($request) == 0) {
-            return null;
+            return;
         }
 
         if ($request[0] === '/') {
@@ -402,7 +402,7 @@ class MediaImage implements IMedia
             return array_intersect_key($matches, array_flip(array_filter(array_keys($matches), 'is_string')));
         }
 
-        return null;
+        return;
     }
 
     /**
@@ -414,5 +414,42 @@ class MediaImage implements IMedia
         $matches = $this->parse($request);
 
         return MediaImageRequest::create($matches);
+    }
+
+    /**
+     * @param $type
+     * @param $id
+     * @return bool
+     */
+    public static function hasImage($type, $id)
+    {
+        switch ($type) {
+            case Image::TYPE_PRODUCT:
+                $imageCount = Shop::DB()->queryPrepared("SELECT kArtikel FROM tartikelpict WHERE kArtikel = :kArtikel GROUP BY cPfad", array('kArtikel' => $id), 3);
+                break;
+            case Image::TYPE_CATEGORY:
+                $imageCount = Shop::DB()->queryPrepared("SELECT kKategorie FROM tkategoriepict WHERE kKategorie = :kKategorie", array('kKategorie' => $id), 3);
+                break;
+            case Image::TYPE_CONFIGGROUP:
+                $imageCount = Shop::DB()->queryPrepared("SELECT cBildpfad FROM tkonfiggruppe WHERE kKonfiggruppe = :kKonfiggruppe", array('kKonfiggruppe' => $id), 3);
+                break;
+            case Image::TYPE_VARIATION:
+                $imageCount = Shop::DB()->queryPrepared("SELECT kEigenschaftWert FROM teigenschaftwertpict WHERE kEigenschaftWert = :kEigenschaftWert", array('kEigenschaftWert' => $id), 3);
+                break;
+            case Image::TYPE_MANUFACTURER:
+                $imageCount = Shop::DB()->queryPrepared("SELECT cBildpfad FROM thersteller WHERE kHersteller = :kHersteller", array('kHersteller' => $id), 3);
+                break;
+            case Image::TYPE_ATTRIBUTE:
+                $imageCount = Shop::DB()->queryPrepared("SELECT cBildpfad FROM tmerkmal WHERE kMerkmal = :kMerkmal", array('kMerkmal' => $id), 3);
+                break;
+            case Image::TYPE_ATTRIBUTE_VALUE:
+                $imageCount = Shop::DB()->queryPrepared("SELECT cBildpfad FROM tmerkmalwert WHERE kMerkmalWert = :kMerkmalWert", array('kMerkmalWert' => $id), 3);
+                break;
+        }
+        if (isset($imageCount) && $imageCount) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

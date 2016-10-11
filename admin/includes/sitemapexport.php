@@ -306,9 +306,14 @@ function generateSitemapXML()
         // GoogleImages einbinden?
         $cGoogleImage = '';
         if (isset($conf['sitemap']['sitemap_googleimage_anzeigen']) && $conf['sitemap']['sitemap_googleimage_anzeigen'] === 'Y') {
-            $cGoogleImage = MediaImage::getThumb(Image::TYPE_PRODUCT, $oArtikel->kArtikel, $oArtikel, Image::SIZE_LG);
-            if (strlen($cGoogleImage) > 0) {
-                $cGoogleImage = $shopURL . '/' . $cGoogleImage;
+            if (MediaImage::hasImage(Image::TYPE_PRODUCT, $oArtikel->kArtikel)) {
+                $cGoogleImage = MediaImage::getThumb(Image::TYPE_PRODUCT, $oArtikel->kArtikel, $oArtikel, Image::SIZE_LG);
+                if (strlen($cGoogleImage) > 0) {
+                    $cGoogleImage = $shopURL . '/' . $cGoogleImage;
+                }
+                echo "<pre>";
+                var_dump($cGoogleImage);
+                echo "</pre>";
             }
         }
         $cUrl = baueURL($oArtikel, URLART_ARTIKEL);
@@ -443,6 +448,9 @@ function generateSitemapXML()
                             if ($nSitemap > $nSitemapLimit) {
                                 $nSitemap = 1;
                                 baueSitemap($nDatei, $sitemap_data);
+                                echo "<pre>";
+                                var_dump(baueSitemap($nDatei, $sitemap_data));
+                                echo "</pre>";
                                 $nDatei++;
                                 $nAnzahlURL_arr[$nDatei] = 0;
                                 $sitemap_data            = '';

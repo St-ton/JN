@@ -4,7 +4,12 @@
  *}
 
 <fieldset>
-   <legend>{lang key="address" section="account data"}</legend>
+    <legend>
+        {lang key="address" section="account data"}
+        {if !isset($checkout)}
+            {include file='register/inc_vcard_upload.tpl' id='registrieren.php'}
+        {/if}
+    </legend>
     {* salutation / title *}
     <div class="row">
         {if $Einstellungen.kunden.kundenregistrierung_abfragen_anrede !== 'N'}

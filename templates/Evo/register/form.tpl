@@ -6,7 +6,6 @@
  * http://jtl-software.de/jtlshop3license.html
  *}
 
-{include file='checkout/inc_vcard_upload.tpl' id="registrieren.php"}
 <form method="post" action="{get_static_route id='registrieren.php'}">
     {$jtl_token}
     {if !empty($hinweis)}
@@ -20,7 +19,7 @@
     {if isset($fehlendeAngaben.formular_zeit) && $fehlendeAngaben.formular_zeit == 1}
         <div class="alert alert-danger">{lang key="formToFast" section="account data"}</div>
     {/if}
-
+    
     {include file='checkout/inc_billing_address_form.tpl'}
 
     {if !$editRechnungsadresse}
@@ -51,5 +50,5 @@
     <input type="hidden" name="checkout" value="{if isset($checkout)}{$checkout}{/if}">
     <input type="hidden" name="form" value="1">
     <input type="hidden" name="editRechnungsadresse" value="{$editRechnungsadresse}">
-    <input type="submit" class="btn btn-primary submit submit_once" value="{lang key="sendCustomerData" section="account data"}">
+    <input type="submit" class="btn btn-primary btn-lg pull-right submit submit_once" value="{lang key="sendCustomerData" section="account data"}">
 </form>

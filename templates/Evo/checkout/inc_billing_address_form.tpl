@@ -6,9 +6,6 @@
 <fieldset>
     <legend>
         {lang key="address" section="account data"}
-        {if !isset($checkout)}
-            {include file='register/inc_vcard_upload.tpl' id='registrieren.php'}
-        {/if}
     </legend>
     {* salutation / title *}
     <div class="row">

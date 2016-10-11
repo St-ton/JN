@@ -140,7 +140,7 @@ class WarenkorbPos
     public $nAnzahlEinzel;
 
     /**
-     * @var string
+     * @var string[]
      */
     public $cEinzelpreisLocalized;
 
@@ -308,6 +308,10 @@ class WarenkorbPos
                 $this->cGesamtpreisLocalized[1][$Waehrung->cName] = gibPreisStringLocalized($this->fPreis * $this->nAnzahl, $Waehrung);
                 $this->cEinzelpreisLocalized[0][$Waehrung->cName] = gibPreisStringLocalized(berechneBrutto($this->fPreis, gibUst($this->kSteuerklasse)), $Waehrung);
                 $this->cEinzelpreisLocalized[1][$Waehrung->cName] = gibPreisStringLocalized($this->fPreis, $Waehrung);
+
+                if ($this->Artikel->cVPE == 'Y' && $this->Artikel->fVPEWert > 0 && !empty($this->Artikel->cVPEEinheit)) {
+                    $this->Artikel->baueVPE($this->fPreis);
+                }
 
                 if ($this->istKonfigVater()) {
                     $this->cKonfigpreisLocalized[0][$Waehrung->cName]       = gibPreisStringLocalized(berechneBrutto($this->fPreis * $this->nAnzahl, gibUst($this->kSteuerklasse)), $Waehrung);

@@ -167,6 +167,8 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
             if (isset($_POST['news_edit_speichern']) && intval($_POST['news_edit_speichern']) === 1) {
                 $nNewsOld = 1;
                 $kNews    = (int)$_POST['kNews'];
+                $revision = new Revision();
+                $revision->addRevision('news', $kNews);
                 Shop::DB()->delete('tnews', 'kNews', $kNews);
                 // tseo loeschen
                 Shop::DB()->delete('tseo', array('cKey', 'kKey'), array('kNews', $kNews));

@@ -17,6 +17,7 @@ class Pagination
     private $nItemsPerPage           = 10;
     private $nSortBy                 = 0;
     private $nSortDir                = 0;
+    private $nSortByDir              = 0;
     private $nPage                   = 0;
     private $nPageCount              = 0;
     private $nPrevPage               = 0;
@@ -135,17 +136,11 @@ class Pagination
             $this->nDefaultItemsPerPage >= -1               ? $this->nDefaultItemsPerPage :
                                                               $this->nItemsPerPageOption_arr[0] )));
 
-        $this->nSortBy =
-            isset($_GET[$this->cId . '_nSortBy'])     ? (int)$_GET[$this->cId . '_nSortBy'] : (
-            isset($_POST[$this->cId . '_nSortBy'])    ? (int)$_POST[$this->cId . '_nSortBy'] : (
-            isset($_SESSION[$this->cId . '_nSortBy']) ? (int)$_SESSION[$this->cId . '_nSortBy'] :
-                                                        0 ));
-
-        $this->nSortDir =
-            isset($_GET[$this->cId . '_nSortDir'])     ? (int)$_GET[$this->cId . '_nSortDir'] : (
-            isset($_POST[$this->cId . '_nSortDir'])    ? (int)$_POST[$this->cId . '_nSortDir'] : (
-            isset($_SESSION[$this->cId . '_nSortDir']) ? (int)$_SESSION[$this->cId . '_nSortDir'] :
-                                                         0 ));
+        $this->nSortByDir =
+            isset($_GET[$this->cId . '_nSortByDir'])     ? (int)$_GET[$this->cId . '_nSortByDir'] : (
+            isset($_POST[$this->cId . '_nSortByDir'])    ? (int)$_POST[$this->cId . '_nSortByDir'] : (
+            isset($_SESSION[$this->cId . '_nSortByDir']) ? (int)$_SESSION[$this->cId . '_nSortByDir'] :
+                0 ));
 
         $this->nPage =
             isset($_GET[$this->cId . '_nPage'])     ? (int)$_GET[$this->cId . '_nPage'] : (
@@ -197,6 +192,9 @@ class Pagination
             $this->nPageItemCount  = min($this->nItemsPerPage, $this->nItemCount - $this->nFirstPageItem);
         }
 
+        $this->nSortBy  = (int)($this->nSortByDir / 2);
+        $this->nSortDir = $this->nSortByDir % 2;
+
         if (isset($this->cSortByOption_arr[$this->nSortBy])) {
             // Create ORDER SQL clauses
             $this->cSortBy   = $this->cSortByOption_arr[$this->nSortBy][0];
@@ -233,8 +231,7 @@ class Pagination
     public function storeParameters()
     {
         $_SESSION[$this->cId . '_nItemsPerPage'] = $this->nItemsPerPage;
-        $_SESSION[$this->cId . '_nSortBy']       = $this->nSortBy;
-        $_SESSION[$this->cId . '_nSortDir']      = $this->nSortDir;
+        $_SESSION[$this->cId . '_nSortByDir']    = $this->nSortByDir;
         $_SESSION[$this->cId . '_nPage']         = $this->nPage;
 
         return $this;
@@ -407,5 +404,13 @@ class Pagination
     public function getItemsPerPageOption($nIndex)
     {
         return $this->nItemsPerPageOption_arr[$nIndex];
+    }
+
+    /**
+     * @return int
+     */
+    public function getSortByDir()
+    {
+        return $this->nSortByDir;
     }
 }

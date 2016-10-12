@@ -258,4 +258,7 @@
             </div>
         </div>
     </form>
+    {if isset($oNews->kNews) && $oNews->kNews > 0}
+        {getRevisions type='news' key=$oNews->kNews show=['cText'] secondary=false data=$oNews}
+    {/if}
 </div>

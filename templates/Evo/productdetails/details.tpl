@@ -92,7 +92,7 @@
                 <div class="clearfix top10"></div>
             {/if}
 
-            {if $Artikel->cKurzBeschreibung}
+            {if $Einstellungen.artikeldetails.artikeldetails_kurzbeschreibung_anzeigen === 'Y' && $Artikel->cKurzBeschreibung}
                 {block name="productdetails-info-description"}
                 <div class="shortdesc" itemprop="description">
                     {$Artikel->cKurzBeschreibung}

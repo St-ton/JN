@@ -20,6 +20,10 @@
         <div class="alert alert-danger">{lang key="formToFast" section="account data"}</div>
     {/if}
     
+    {if !isset($checkout)}
+        {include file='register/inc_vcard_upload.tpl' id='registrieren.php'}
+    {/if}
+    
     {include file='checkout/inc_billing_address_form.tpl'}
 
     {if !$editRechnungsadresse}

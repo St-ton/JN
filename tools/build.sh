@@ -16,8 +16,10 @@ build_help()
     echo "${fgYellow}Actions:${C}"
     echo "  ${fgGreen}check${C}             - Check dependencies"
     echo "  ${fgGreen}deps${C}              - Install dependencies"
-	echo "  ${fgGreen}ide_meta${C}          - Create metadata"
+    echo "  ${fgGreen}ide_meta${C}          - Create metadata"
     echo "  ${fgGreen}deploy <branch>${C}   - Deploy branch/tag"
+    echo "  ${fgGreen}schema <dbname>${C}   - Create initial schema"
+
     echo ""
 }
 
@@ -92,6 +94,12 @@ build_init()
 build_deploy()
 {
     deploy_create $1 $2
+}
+
+# $1 database name
+build_schema()
+{
+    deploy_create_initial_schema $1
 }
 
 main() {

@@ -71,7 +71,7 @@ deploy_create()
     deploy_md5_hashfile ${SHOP_VERSION}
 
     msg "Importing initial schema"
-    deploy_initial_schema ${DB_NAME}
+    deploy_import_initial_schema ${DB_NAME}
 
     msg "Writing config.JTL-Shop.ini.initial.php"
     deploy_config_file ${DB_NAME}
@@ -203,12 +203,41 @@ deploy_md5_hashfile()
 }
 
 # $1 database name
-deploy_initial_schema()
+deploy_import_initial_schema()
 {
     local INITIALSCHEMA=${BUILD_DIR}/install/initial_schema.sql
 
     mysql -e "CREATE DATABASE IF NOT EXISTS $1" || exit 1
     mysql $1 < ${INITIALSCHEMA} || exit 1
+}
+
+# $1 database name
+deploy_create_initial_schema()
+{
+    source ${SCRIPT_DIR}/version.conf
+
+    export SHOP_VERSION
+
+    local TMPDB="${1}_tmp"
+    local TMPFILE=`tempfile`
+
+    mysqldump --default-character-set=latin1 --skip-add-locks  --skip-add-drop-table --skip-comments $1 > $TMPFILE
+
+    mysql -e "DROP DATABASE IF EXISTS ${TMPDB}"
+
+    mysql -e "CREATE DATABASE ${TMPDB} DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci"
+
+    mysql $TMPDB < $TMPFILE
+
+    rm $TMPFILE
+
+    mysql -D $TMPDB -e "TRUNCATE TABLE tsynclogin; TRUNCATE TABLE tadminlogin;TRUNCATE TABLE tbesucher; TRUNCATE TABLE tbesucherarchiv; TRUNCATE TABLE tbesuchteseiten; TRUNCATE TABLE tbrocken; TRUNCATE TABLE tfirma; TRUNCATE TABLE tsprachlog; TRUNCATE TABLE tredirect; TRUNCATE TABLE tredirectreferer;TRUNCATE TABLE tjtllog;TRUNCATE TABLE tsuchanfragencache;TRUNCATE TABLE tsuchanfrageerfolglos;TRUNCATE TABLE ttrustedshopskundenbewertung;TRUNCATE TABLE teinheit;"
+
+    mysql -D $TMPDB -e "UPDATE tversion SET nVersion=${SHOP_VERSION}; UPDATE tbesucherzaehler SET nZaehler=0; UPDATE tnummern SET nNummer = 10000 WHERE nArt=1; UPDATE tnummern SET dAktualisiert='0000-00-00 00:00:00';UPDATE tmigration SET dExecuted=NOW();"
+
+    mysqldump $TMPDB
+
+    mysql -e "DROP DATABASE IF EXISTS ${TMPDB}"
 }
 
 deploy_prepare_zip()

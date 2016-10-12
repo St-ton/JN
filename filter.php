@@ -74,14 +74,7 @@ if ($NaviFilter->hasCategory()) {
 $startKat             = new Kategorie();
 $startKat->kKategorie = 0;
 // Usersortierung
-setzeUsersortierung($NaviFilter);
-
-
-// Hole alle aktiven Sprachen
-$NaviFilter->oSprache_arr = Shop::Lang()->getLangArray();
-
-// Filter SQL
-//$FilterSQL = bauFilterSQL($NaviFilter);
+$NaviFilter->setUserSort($AktuelleKategorie);
 
 // Erweiterte Darstellung Artikelübersicht
 gibErweiterteDarstellung($Einstellungen, $NaviFilter, $cParameter_arr['nDarstellung']);

@@ -385,6 +385,15 @@ class Navigationsfilter
     }
 
     /**
+     * @return int
+     * @todo: update value when adding filters
+     */
+    public function getFilterCount()
+    {
+        return $this->nAnzahlFilter;
+    }
+
+    /**
      * @return bool
      */
     public function hasManufacturerFilter()

@@ -5209,7 +5209,7 @@ function http_request($cURL, $nTimeout = 15, $cPost = null, $bReturnStatus = fal
 /**
  * @param string|array|object $xData
  * @param bool                $bEncode
- * @return array
+ * @return string|array|object
  */
 function utf8_convert_recursive($xData, $bEncode = true)
 {

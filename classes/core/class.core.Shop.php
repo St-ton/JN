@@ -1081,6 +1081,7 @@ final class Shop
      */
     public static function buildNaviFilter($cParameter_arr, $NaviFilter = null)
     {
+        die('Shop::buildNaviFilter()');
         if ($NaviFilter === null) {
             $NaviFilter = new stdClass();
         }

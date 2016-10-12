@@ -44,6 +44,7 @@
 * Evo Druckansicht verbessert (#319)
 * Bestellabschluss: Lieferzeitangabe nach oben in die Versandart-Box verschieben
 * Smooth Scrolling bei relativen Ankerlinks (#147)
+* Einstellungen zur Anzeige der Artikel-Kurzbeschreibungen in Listen und Artikeldetails (#479)
 * HOOK_INDEX_SEO_404 wird nun auch ausgeführt, wenn cSeo nicht leer ist
 * HOOK_WARENKORB_PAGE_KUPONANNEHMEN_PLAUSI wird wieder früher ausgeführt und enthält Parameter  (#234)
 

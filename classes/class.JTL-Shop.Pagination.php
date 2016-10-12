@@ -192,7 +192,7 @@ class Pagination
             $this->nPageItemCount  = min($this->nItemsPerPage, $this->nItemCount - $this->nFirstPageItem);
         }
 
-        $this->nSortBy  = intdiv($this->nSortByDir, 2);
+        $this->nSortBy  = (int)($this->nSortByDir / 2);
         $this->nSortDir = $this->nSortByDir % 2;
 
         if (isset($this->cSortByOption_arr[$this->nSortBy])) {

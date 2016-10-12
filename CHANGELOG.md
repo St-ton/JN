@@ -90,6 +90,7 @@
 * Sonderpreise können durch Wawi-Abgleich gelöscht werden (#305)
 * Anrede in "Mein Konto" nicht an Sprache angepasst (#514)
 * In Zukunft startende Sonderpreise werden bei aktiviertem Objektcache nicht berücksichtigt (#123)
+* Versandkostenfreigrenze ignoriert Steuerberechnung-Einstellung (#231)
 
 ## [4.04.1] - 2016-07-19
 * Neues Premium-Plugin: Login und Bezahlen mit Amazon (von Solution360)

@@ -219,7 +219,7 @@ final class Shop
     private static $_instance = null;
 
     /**
-     * @var object
+     * @var Navigationsfilter
      */
     public static $NaviFilter;
 
@@ -1075,9 +1075,9 @@ final class Shop
      * build navigation filter object from parameters
      *
      * @param array $cParameter_arr
-     * @param object|null $NaviFilter
+     * @param object|null|Navigationsfilter $NaviFilter
      * @todo: use NaviFilter param
-     * @return mixed
+     * @return Navigationsfilter
      */
     public static function buildNaviFilter($cParameter_arr, $NaviFilter = null)
     {
@@ -1086,6 +1086,14 @@ final class Shop
         self::$NaviFilter = $NaviFilter;
 
         return $NaviFilter;
+    }
+
+    /**
+     * @return Navigationsfilter
+     */
+    public static function getNaviFilter()
+    {
+        return self::$NaviFilter;
     }
 
     /**

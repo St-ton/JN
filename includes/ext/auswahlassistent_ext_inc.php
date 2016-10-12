@@ -19,12 +19,10 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
         $kAuswahlAssistentFrage = null;
         $nFrage                 = null;
         $kKategorie             = null;
-        if (class_exists('AuswahlAssistent') && $Einstellungen['auswahlassistent_nutzen'] === 'Y') {
+        if ($Einstellungen['auswahlassistent_nutzen'] === 'Y' && class_exists('AuswahlAssistent')) {
             // Work Around falls schon einmal der Auswahlassistent durchlaufen wurde
-            if (isset($GLOBALS['NaviFilter']) && function_exists('gibAnzahlFilter')) {
-                if (gibAnzahlFilter($GLOBALS['NaviFilter']) > 0) {
-                    return false;
-                }
+            if (Shop::getNaviFilter()->getFilterCount() > 0) {
+                return false;
             }
             if (strlen($cKey) > 0 && intval($kKey) > 0 && intval($kSprache) > 0) {
                 $Einstellungen = Shop::getSettings(array(CONF_GLOBAL, CONF_RSS, CONF_ARTIKELUEBERSICHT, CONF_AUSWAHLASSISTENT));

@@ -311,9 +311,6 @@ function generateSitemapXML()
                 if (strlen($cGoogleImage) > 0) {
                     $cGoogleImage = $shopURL . '/' . $cGoogleImage;
                 }
-                echo "<pre>";
-                var_dump($cGoogleImage);
-                echo "</pre>";
             }
         }
         $cUrl = baueURL($oArtikel, URLART_ARTIKEL);
@@ -448,9 +445,6 @@ function generateSitemapXML()
                             if ($nSitemap > $nSitemapLimit) {
                                 $nSitemap = 1;
                                 baueSitemap($nDatei, $sitemap_data);
-                                echo "<pre>";
-                                var_dump(baueSitemap($nDatei, $sitemap_data));
-                                echo "</pre>";
                                 $nDatei++;
                                 $nAnzahlURL_arr[$nDatei] = 0;
                                 $sitemap_data            = '';

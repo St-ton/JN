@@ -3873,61 +3873,13 @@ function gibErweiterteDarstellung($Einstellungen, $NaviFilter, $nDarstellung = 0
 }
 
 /**
- * @todo
+ * @deprecated since 4.06
  * @param object $NaviFilter
  */
 function setzeUsersortierung($NaviFilter)
 {
-    global $Einstellungen, $oSuchergebnisse, $AktuelleKategorie;
-    if (!isset($Einstellungen['artikeluebersicht']) || !isset($Einstellungen['suchspecials'])) {
-        $Einstellungen = Shop::getSettings(array(CONF_GLOBAL, CONF_ARTIKELUEBERSICHT, CONF_NAVIGATIONSFILTER, CONF_SUCHSPECIAL));
-    }
-    // Der User möchte die Standardsortierung wiederherstellen
-    if (verifyGPCDataInteger('Sortierung') > 0 && verifyGPCDataInteger('Sortierung') === 100) {
-        unset($_SESSION['Usersortierung']);
-        unset($_SESSION['nUsersortierungWahl']);
-        unset($_SESSION['UsersortierungVorSuche']);
-    }
-    // Wenn noch keine Sortierung gewählt wurde => setze Standard-Sortierung aus Option
-    if (!isset($_SESSION['Usersortierung']) && isset($Einstellungen['artikeluebersicht']['artikeluebersicht_artikelsortierung'])) {
-        unset($_SESSION['nUsersortierungWahl']);
-        $_SESSION['Usersortierung'] = (int)$Einstellungen['artikeluebersicht']['artikeluebersicht_artikelsortierung'];
-    }
-    if (!isset($_SESSION['nUsersortierungWahl']) && isset($Einstellungen['artikeluebersicht']['artikeluebersicht_artikelsortierung'])) {
-        $_SESSION['Usersortierung'] = (int)$Einstellungen['artikeluebersicht']['artikeluebersicht_artikelsortierung'];
-    }
-    // Eine Suche wurde ausgeführt und die Suche wird auf die Suchtreffersuche eingestellt
-    if (isset($NaviFilter->Suche->kSuchCache) && $NaviFilter->Suche->kSuchCache > 0 && !isset($_SESSION['nUsersortierungWahl'])) {
-        // nur bei initialsuche Sortierung zurücksetzen
-        $_SESSION['UsersortierungVorSuche'] = $_SESSION['Usersortierung'];
-        $_SESSION['Usersortierung']         = SEARCH_SORT_STANDARD;
-    }
-    // Kategorie Funktionsattribut
-    //@todo: TMP disabled
-    if (FALSE&&!empty($AktuelleKategorie->categoryFunctionAttributes[KAT_ATTRIBUT_ARTIKELSORTIERUNG])) {
-        $_SESSION['Usersortierung'] = mappeUsersortierung($AktuelleKategorie->categoryFunctionAttributes[KAT_ATTRIBUT_ARTIKELSORTIERUNG]);
-    }
-    // Wurde zuvor etwas gesucht? Dann die Einstellung des Users vor der Suche wiederherstellen
-    if (isset($_SESSION['UsersortierungVorSuche']) && intval($_SESSION['UsersortierungVorSuche']) > 0) {
-        $_SESSION['Usersortierung'] = (int)$_SESSION['UsersortierungVorSuche'];
-    }
-    // Suchspecial sortierung
-    if (isset($NaviFilter->Suchspecial->kKey) && $NaviFilter->Suchspecial->kKey > 0) {
-        // Gibt die Suchspecialeinstellungen als Assoc Array zurück, wobei die Keys des Arrays der kKey vom Suchspecial sind.
-        $oSuchspecialEinstellung_arr = gibSuchspecialEinstellungMapping($Einstellungen['suchspecials']);
-        // -1 = Keine spezielle Sortierung
-        if (count($oSuchspecialEinstellung_arr) > 0 && isset($oSuchspecialEinstellung_arr[$NaviFilter->Suchspecial->kKey]) && $oSuchspecialEinstellung_arr[$NaviFilter->Suchspecial->kKey] != -1) {
-            $_SESSION['Usersortierung'] = (int)$oSuchspecialEinstellung_arr[$NaviFilter->Suchspecial->kKey];
-        }
-    }
-    // Der User hat expliziet eine Sortierung eingestellt
-    if (verifyGPCDataInteger('Sortierung') > 0 && verifyGPCDataInteger('Sortierung') !== 100) {
-        $_SESSION['Usersortierung']         = verifyGPCDataInteger('Sortierung');
-        $_SESSION['UsersortierungVorSuche'] = $_SESSION['Usersortierung'];
-        $_SESSION['nUsersortierungWahl']    = 1;
-        $oSuchergebnisse->Sortierung        = $_SESSION['Usersortierung'];
-        setFsession(0, $_SESSION['Usersortierung'], 0);
-    }
+    global $AktuelleKategorie;
+    return Shop::getNaviFilter()->setUserSort($AktuelleKategorie);
 }
 
 /**

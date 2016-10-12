@@ -5286,7 +5286,7 @@ function doMainwordRedirect($NaviFilter, $nAnzahl, $bSeo = false)
         if (isset($_SESSION['kSprache'])) {
             $kSprache = (int)$_SESSION['kSprache'];
         }
-        if (gibAnzahlFilter($NaviFilter) > 0) {
+        if (Shop::getNaviFilter()->getFilterCount() > 0) {
             foreach ($cMainword_arr as $cMainword => $cInfo_arr) {
                 $cKey   = $cInfo_arr['cKey'];
                 $cParam = $cInfo_arr['cParam'];

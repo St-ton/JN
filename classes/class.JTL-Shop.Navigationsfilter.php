@@ -148,7 +148,7 @@ class Navigationsfilter
     public function __construct(array $options = null)
     {
         $this->oSprache_arr = Shop::Lang()->getLangArray();
-        $this->conf = Shop::getSettings([CONF_ARTIKELUEBERSICHT, CONF_NAVIGATIONSFILTER, CONF_BOXEN, CONF_GLOBAL]);
+        $this->conf = Shop::getSettings([CONF_ARTIKELUEBERSICHT, CONF_NAVIGATIONSFILTER, CONF_BOXEN, CONF_GLOBAL, CONF_SUCHSPECIAL]);
         $this->initBaseStates();
     }
 
@@ -338,7 +338,7 @@ class Navigationsfilter
             $this->Suchspecial = (new FilterSearchSpecial())->init($params['kSuchspecial'], $this->oSprache_arr);
         }
         if ($params['kSuchspecialFilter'] > 0) {
-            $this->SuchspecialFilter = (new FilterSearchSpecial())->init($params['kSuchspecialFilter'], $this->oSprache_arr);
+            $this->SuchspecialFilter[] = (new FilterSearchSpecial())->init($params['kSuchspecialFilter'], $this->oSprache_arr);
             ++$count;
         }
 
@@ -634,8 +634,6 @@ class Navigationsfilter
     {
 
         // $nArtikelProSeite auf max. ARTICLES_PER_PAGE_HARD_LIMIT beschränken
-        $nArtikelProSeite = min($this->getArticlesPerPageLimit(), ARTICLES_PER_PAGE_HARD_LIMIT);
-        $nLimitN          = ($this->nSeite - 1) * $nArtikelProSeite;
 
         $oSuchergebnisse                    = new stdClass();
         $oSuchergebnisse->Artikel           = new ArtikelListe();
@@ -1735,4 +1733,55 @@ class Navigationsfilter
 
         return $query;
     }
+
+    /**
+     * @param null|Kategorie $currentCategory
+     */
+    public function setUserSort($currentCategory = null)
+    {
+        // Der User möchte die Standardsortierung wiederherstellen
+        if (verifyGPCDataInteger('Sortierung') > 0 && verifyGPCDataInteger('Sortierung') === 100) {
+            unset($_SESSION['Usersortierung']);
+            unset($_SESSION['nUsersortierungWahl']);
+            unset($_SESSION['UsersortierungVorSuche']);
+        }
+        // Wenn noch keine Sortierung gewählt wurde => setze Standard-Sortierung aus Option
+        if (!isset($_SESSION['Usersortierung']) && isset($this->conf['artikeluebersicht']['artikeluebersicht_artikelsortierung'])) {
+            unset($_SESSION['nUsersortierungWahl']);
+            $_SESSION['Usersortierung'] = (int)$this->conf['artikeluebersicht']['artikeluebersicht_artikelsortierung'];
+        }
+        if (!isset($_SESSION['nUsersortierungWahl']) && isset($this->conf['artikeluebersicht']['artikeluebersicht_artikelsortierung'])) {
+            $_SESSION['Usersortierung'] = (int)$this->conf['artikeluebersicht']['artikeluebersicht_artikelsortierung'];
+        }
+        // Eine Suche wurde ausgeführt und die Suche wird auf die Suchtreffersuche eingestellt
+        if (isset($this->Suche->kSuchCache) && $this->Suche->kSuchCache > 0 && !isset($_SESSION['nUsersortierungWahl'])) {
+            // nur bei initialsuche Sortierung zurücksetzen
+            $_SESSION['UsersortierungVorSuche'] = $_SESSION['Usersortierung'];
+            $_SESSION['Usersortierung']         = SEARCH_SORT_STANDARD;
+        }
+        // Kategorie Funktionsattribut
+        if (!empty($currentCategory->categoryFunctionAttributes[KAT_ATTRIBUT_ARTIKELSORTIERUNG])) {
+            $_SESSION['Usersortierung'] = mappeUsersortierung($currentCategory->categoryFunctionAttributes[KAT_ATTRIBUT_ARTIKELSORTIERUNG]);
+        }
+        // Wurde zuvor etwas gesucht? Dann die Einstellung des Users vor der Suche wiederherstellen
+        if (isset($_SESSION['UsersortierungVorSuche']) && intval($_SESSION['UsersortierungVorSuche']) > 0) {
+            $_SESSION['Usersortierung'] = (int)$_SESSION['UsersortierungVorSuche'];
+        }
+        // Suchspecial sortierung
+        if ($this->Suchspecial->isInitialized()) {
+            // Gibt die Suchspecial$this->conf als Assoc Array zurück, wobei die Keys des Arrays der kKey vom Suchspecial sind.
+            $oSuchspecialEinstellung_arr = gibSuchspecialEinstellungMapping($this->conf['suchspecials']);
+            // -1 = Keine spezielle Sortierung
+            if (count($oSuchspecialEinstellung_arr) > 0 && isset($oSuchspecialEinstellung_arr[$this->Suchspecial->getID()]) && $oSuchspecialEinstellung_arr[$this->Suchspecial->getID()] !== -1) {
+                $_SESSION['Usersortierung'] = (int)$oSuchspecialEinstellung_arr[$this->Suchspecial->getID()];
+            }
+        }
+        // Der User hat expliziet eine Sortierung eingestellt
+        if (verifyGPCDataInteger('Sortierung') > 0 && verifyGPCDataInteger('Sortierung') !== 100) {
+            $_SESSION['Usersortierung']         = verifyGPCDataInteger('Sortierung');
+            $_SESSION['UsersortierungVorSuche'] = $_SESSION['Usersortierung'];
+            $_SESSION['nUsersortierungWahl']    = 1;
+            setFsession(0, $_SESSION['Usersortierung'], 0);
+        }
+    } 
 }

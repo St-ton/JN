@@ -113,7 +113,7 @@ class Navigationsfilter
     public $Suchspecial;
 
     /**
-     * @var object
+     * @var FilterSearch
      */
     public $Suche;
 
@@ -272,9 +272,7 @@ class Navigationsfilter
 
         $this->PreisspannenFilter = new FilterPriceRange();
 
-        $this->Suche = new stdClass();
-        $this->Suche->cSuche = '';
-        $this->Suche->kSuchanfrage = 0;
+        $this->Suche = new FilterSearch();
 
 
         return $this;
@@ -992,6 +990,24 @@ class Navigationsfilter
     }
 
     /**
+     * @param array $oMerkmalauswahl_arr
+     * @param int   $kMerkmal
+     * @return int
+     */
+    private function getAttributePosition($oMerkmalauswahl_arr, $kMerkmal)
+    {
+        if (is_array($oMerkmalauswahl_arr)) {
+            foreach ($oMerkmalauswahl_arr as $i => $oMerkmalauswahl) {
+                if ($oMerkmalauswahl->kMerkmal == $kMerkmal) {
+                    return $i;
+                }
+            }
+        }
+
+        return -1;
+    }
+
+    /**
      * @param null|Kategorie $oAktuelleKategorie
      * @param bool           $bForce
      * @return array
@@ -1049,7 +1065,7 @@ class Navigationsfilter
 
             if (is_array($oMerkmalFilterDB_arr) && count($oMerkmalFilterDB_arr) > 0) {
                 foreach ($oMerkmalFilterDB_arr as $i => $oMerkmalFilterDB) {
-                    $nPos          = gibMerkmalPosition($oMerkmalFilter_arr, $oMerkmalFilterDB->kMerkmal);
+                    $nPos          = $this->getAttributePosition($oMerkmalFilter_arr, $oMerkmalFilterDB->kMerkmal);
                     $oMerkmalWerte = new stdClass();
                     if ($this->MerkmalWert->getID() == $oMerkmalFilterDB->kMerkmalWert || (checkMerkmalWertVorhanden($this->MerkmalWert, $oMerkmalFilterDB->kMerkmalWert))) {
                         $oMerkmalWerte->nAktiv = 1;
@@ -1615,7 +1631,25 @@ class Navigationsfilter
      */
     public function getHeader()
     {
-        $this->cBrotNaviName = gibBrotNaviName();
+        $this->cBrotNaviName =  '';
+        if ($this->Kategorie->isInitialized()) {
+            $this->cBrotNaviName = $this->Kategorie->getName();
+        }
+        if ($this->Hersteller->isInitialized()) {
+            $this->cBrotNaviName = $this->Hersteller->getName();
+        }
+        if ($this->MerkmalWert->isInitialized()) {
+            $this->cBrotNaviName = $this->MerkmalWert->getName();
+        }
+        if ($this->Tag->isInitialized()) {
+            $this->cBrotNaviName = $this->Tag->getName();
+        }
+        if ($this->Suchspecial->isInitialized()) {
+            $this->cBrotNaviName = $this->Suchspecial->getName();
+        }
+        if ($this->Suche->isInitialized()) {
+            $this->cBrotNaviName = $this->Suche->getName();
+        }
         if ($this->Kategorie->isInitialized()) {
             return $this->cBrotNaviName;
         }

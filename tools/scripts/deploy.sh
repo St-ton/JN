@@ -37,8 +37,7 @@ deploy_create()
     local SHOP_VERSION_MAJOR=${SHOP_VERSION:0:1}
     local SHOP_VERSION_MINOR=${SHOP_VERSION:1:2}
 
-    if [ "$VCS_TYPE" = "tag" ]
-    then
+    if [ "$VCS_TYPE" = "tag" ]; then
         if [[ $VCS_REF =~ $VCS_REG_TAG ]]; then
             SHOP_VERSION_MAJOR=${BASH_REMATCH[1]}
             SHOP_VERSION_MINOR=${BASH_REMATCH[2]}
@@ -46,7 +45,12 @@ deploy_create()
         fi
     fi
 
-    TARGET_FILE="${TARGET_FILE}_${SHOP_VERSION_MAJOR}.${SHOP_VERSION_MINOR}.${SHOP_BUILD}.zip"
+    if [ "$VCS_REF" = "master" ]; then
+        TARGET_FILE="${TARGET_FILE}_devel.zip"
+    else
+        TARGET_FILE="${TARGET_FILE}_${SHOP_VERSION_MAJOR}.${SHOP_VERSION_MINOR}.${SHOP_BUILD}.zip"
+    fi
+
     TARGET_FILE="$(echo $TARGET_FILE | sed -e 's/[^A-Za-z0-9._-]/_/g')"
 
     TARGET_PATH="${SCRIPT_DIR}/dist/${VCS_TYPE}"

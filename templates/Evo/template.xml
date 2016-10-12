@@ -78,6 +78,10 @@
                 <Option Value="N">Nein</Option>
                 <Option Value="Y">Ja (funktioniert nur in Kombination mit Boxed Layout = Nein)</Option>
             </Setting>
+            <Setting Description="Full-Width Banner?" Key="banner_full_width" Type="select" Value="N">
+                <Option Value="N">Nein</Option>
+                <Option Value="Y">Ja (funktioniert nur in Kombination mit Boxed Layout = Nein)</Option>
+            </Setting>
             <Setting Description="Mitlaufendes Header-Megamenü?" Key="static_header" Type="select" Value="N">
                 <Option Value="N">Nein</Option>
                 <Option Value="Y">Ja</Option>

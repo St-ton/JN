@@ -51,9 +51,11 @@
 
             <div class="product-info hidden-xs">
                 {block name="product-info"}
-                    <div class="shortdescription">
-                        {$Artikel->cKurzBeschreibung}
-                    </div>
+                    {if $Einstellungen.artikeluebersicht.artikeluebersicht_kurzbeschreibung_anzeigen === 'Y' && $Artikel->cKurzBeschreibung}
+                        <div class="shortdescription">
+                            {$Artikel->cKurzBeschreibung}
+                        </div>
+                    {/if}
                     <ul class="attr-group list-unstyled small text-muted top10  hidden-sm">
                         <li class="item row attr-sku">
                             <span class="attr-label col-sm-5">{lang key="productNo" section="global"}: </span> <span class="value col-sm-7">{$Artikel->cArtNr}</span>

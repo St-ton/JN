@@ -47,7 +47,7 @@ deploy_create()
 
     TARGET_FILE="${TARGET_FILE}_${SHOP_VERSION_MAJOR}.${SHOP_VERSION_MINOR}.${SHOP_BUILD}.zip"
 
-    if [ "$VCS_TYPE" = "master" ]; then
+    if [ "$VCS_REF" = "master" ]; then
         TARGET_FILE="${TARGET_FILE}_devel.zip"
     fi
 

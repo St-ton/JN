@@ -32,16 +32,16 @@ class Migration_20161013102200 extends Migration implements IMigration
         $this->setLocalization('eng', 'productDownloads', 'downloadSection', 'downloads');
 
         $this->setLocalization('ger', 'productDownloads', 'downloadName', 'Name');
-        $this->setLocalization('eng', 'productDownloads', 'downloadName', 'name');
+        $this->setLocalization('eng', 'productDownloads', 'downloadName', 'Name');
 
         $this->setLocalization('ger', 'productDownloads', 'downloadDescription', 'Beschreibung');
-        $this->setLocalization('eng', 'productDownloads', 'downloadDescription', 'description');
+        $this->setLocalization('eng', 'productDownloads', 'downloadDescription', 'Description');
 
-        $this->setLocalization('ger', 'productDownloads', 'downloadFileExt', 'Dateiformat');
-        $this->setLocalization('eng', 'productDownloads', 'downloadFileExt', 'file extension');
+        $this->setLocalization('ger', 'productDownloads', 'downloadFileType', 'Dateiformat');
+        $this->setLocalization('eng', 'productDownloads', 'downloadFileType', 'File type');
 
-        $this->setLocalization('ger', 'productDownloads', 'downloadPreview', 'Downloadvorschau');
-        $this->setLocalization('eng', 'productDownloads', 'downloadPreview', 'download preview');
+        $this->setLocalization('ger', 'productDownloads', 'downloadPreview', 'Vorschau');
+        $this->setLocalization('eng', 'productDownloads', 'downloadPreview', 'Preview');
     }
 
     public function down()
@@ -49,7 +49,7 @@ class Migration_20161013102200 extends Migration implements IMigration
         $this->removeLocalization('downloadSection');
         $this->removeLocalization('downloadName');
         $this->removeLocalization('downloadDescription');
-        $this->removeLocalization('downloadFileExt');
+        $this->removeLocalization('downloadFileType');
         $this->removeLocalization('downloadPreview');
         $this->execute('DELETE FROM tsprachsektion WHERE cName = "productDownloads";');
     }

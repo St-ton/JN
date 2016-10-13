@@ -10,7 +10,7 @@
                     <th></th>
                     <th>{lang section="productDownloads" key="downloadName"}</th>
                     <th>{lang section="productDownloads" key="downloadDescription" }</th>
-                    <th>{lang section="productDownloads" key="downloadFileExt"}</th>
+                    <th>{lang section="productDownloads" key="downloadFileType"}</th>
                     <th>{lang section="productDownloads" key="downloadPreview"}</th>
                 </tr>
                 </thead>

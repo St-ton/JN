@@ -29,7 +29,7 @@ class Migration_20161013102200 extends Migration implements IMigration
         $this->execute('INSERT INTO tsprachsektion (cName) VALUES ("productDownloads");');
 
         $this->setLocalization('ger', 'productDownloads', 'downloadSection', 'Downloads');
-        $this->setLocalization('eng', 'productDownloads', 'downloadSection', 'downloads');
+        $this->setLocalization('eng', 'productDownloads', 'downloadSection', 'Downloads');
 
         $this->setLocalization('ger', 'productDownloads', 'downloadName', 'Name');
         $this->setLocalization('eng', 'productDownloads', 'downloadName', 'Name');

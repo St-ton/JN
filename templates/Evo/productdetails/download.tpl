@@ -37,14 +37,9 @@
                                     {elseif $oDownload->getPreviewType() === 'image'}
                                         <img src="{PFAD_DOWNLOADS_PREVIEW_REL}{$oDownload->cPfadVorschau}" class="img-responsive" alt="{$oDownload->oDownloadSprache->getBeschreibung()}">
                                     {else}
-                                        <video width="320" height="240" controls>
-                                            <source src="{PFAD_DOWNLOADS_PREVIEW_REL}{$oDownload->cPfadVorschau}" >
-                                            Your browser does not support the video tag.
-                                        </video>
-                                        <audio controls>
-                                            <source src="{PFAD_DOWNLOADS_PREVIEW_REL}{$oDownload->cPfadVorschau}" >
-                                            Your browser does not support the audio element.
-                                        </audio>
+                                        <a href="{PFAD_DOWNLOADS_PREVIEW_REL}{$oDownload->cPfadVorschau}" title="{$oDownload->oDownloadSprache->getName()}" target="_blank">
+                                            {$oDownload->oDownloadSprache->getName()}
+                                        </a>
                                     {/if}
                                 {/if}
                             </td>

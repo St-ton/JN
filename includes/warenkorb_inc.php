@@ -132,7 +132,7 @@ function uebernehmeWarenkorbAenderungen()
                 $gueltig = true;
                 // Abnahmeintervall
                 if ($Artikel->fAbnahmeintervall > 0) {
-                    $dVielfache = round($Artikel->fAbnahmeintervall * ceil($_POST['anzahl'][$i] / $Artikel->fAbnahmeintervall), 2);
+                    $dVielfache = round($Artikel->fAbnahmeintervall * ceil(bcdiv($_POST['anzahl'][$i],$Artikel->fAbnahmeintervall, 3)), 2);
 
                     if ($dVielfache != $_POST['anzahl'][$i]) {
                         $gueltig                         = false;

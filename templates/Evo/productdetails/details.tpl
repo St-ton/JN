@@ -171,7 +171,6 @@
 
 </form>
 
-{include file="productdetails/download.tpl"}
 {include file="productdetails/tabs.tpl"}
 
 <div class="clearfix"></div>

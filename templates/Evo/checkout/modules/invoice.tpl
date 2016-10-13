@@ -239,8 +239,8 @@
         <fieldset>
             <legend>Weitere Informationen</legend>
             <div class="btn-group">
-                <a class="btn btn-default" href="{$cBillpayTermsURL}" target="_blank" onclick="return open_window('{$cBillpayTermsURL}');">AGB</a>
-                <a class="btn btn-default" href="{$cBillpayTermsURL}#datenschutz" target="_blank" onclick="return open_window('{$cBillpayTermsURL}#datenschutz');">Datenschutzbestimmungen</a>
+                <a class="btn btn-default popup" href="{$cBillpayTermsURL}" target="_blank">AGB</a>
+                <a class="btn btn-default popup" href="{$cBillpayTermsURL}#datenschutz" target="_blank">Datenschutzbestimmungen</a>
             </div>
         </fieldset>
     </div>
@@ -251,7 +251,7 @@
             die Abwicklung des Rechnungskaufs und einer Identit&auml;ts
             und Bonit&auml;tspr&uuml;fung <br />erforderlichen Daten an die
             <a href='https://billpay.de/endkunden' target='blank'> Billpay GmbH</a> bin ich einverstanden. Es gelten die
-            <a href="{$cBillpayTermsURL}#datenschutz" target="_blank" onclick="return open_window('{$cBillpayTermsURL}#datenschutz');">Datenschutzbestimmungen</a>
+            <a href="{$cBillpayTermsURL}#datenschutz" class="popup" target="_blank">Datenschutzbestimmungen</a>
             von Billpay.
             {if $cMissing_arr.billpay_accepted}
                 <div class="alert alert-danger">Bitte best&auml;tigen</div>

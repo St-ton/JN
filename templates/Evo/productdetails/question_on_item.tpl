@@ -180,7 +180,7 @@
 
         {if $Einstellungen.artikeldetails.artikeldetails_fragezumprodukt_anzeigen === 'P' && !empty($oSpezialseiten_arr[12]->cName)}
             <p class="privacy text-muted small">
-                <a href="{$oSpezialseiten_arr[12]->cURL}" onclick="return open_window('{$oSpezialseiten_arr[12]->cURL}?exclusive_content=1', 640, 640);">{$oSpezialseiten_arr[12]->cName}</a>
+                <a href="{$oSpezialseiten_arr[12]->cURL}" class="popup">{$oSpezialseiten_arr[12]->cName}</a>
             </p>
         {/if}
         <input type="hidden" name="a" value="{$Artikel->kArtikel}" />

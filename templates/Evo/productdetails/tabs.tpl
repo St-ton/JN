@@ -13,6 +13,10 @@
     {/if}
 
     <div id="article-tabs" {if $tabanzeige}class="tab-content"{/if}>
+        {* DOWNLOADS *}
+        {if isset($Artikel->oDownload_arr) && $Artikel->oDownload_arr|@count > 0}
+            {include file="productdetails/download.tpl"}
+        {/if}
         {* ARTIKELBESCHREIBUNG *}
         <div role="tabpanel" class="{if $tabanzeige}tab-pane{else}panel panel-default{/if}" id="tab-description">
             <div class="panel-heading" {if $tabanzeige}data-toggle="collapse" {/if}data-parent="#article-tabs" data-target="#tab-description">

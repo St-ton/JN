@@ -9939,11 +9939,6 @@ fieldset {
   margin-left: 5px;
   margin-right: 10px;
 }
-.panel.panel-blank {
-  border: none !important;
-  box-shadow: none !important;
-  background-color: transparent;
-}
 /* product variations */
 .form-inner dt {
   margin: 5px 0;

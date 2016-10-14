@@ -1,7 +1,4 @@
 <div id="order-confirm">
-    <p id="check-order-details-alert" class="alert alert-info">
-        {lang key="checkOrderDetails" section="checkout"}
-    </p>
     {if $hinweis}
        <p class="alert alert-danger">{$hinweis}</p>
     {/if}

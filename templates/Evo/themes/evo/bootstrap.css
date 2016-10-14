@@ -11433,6 +11433,12 @@ header.fixed-navbar .visible-affix .cart-dropdown {
   background-color: #c12e2a;
   background-image: none;
 }
+.form-group label {
+  font-size: 12px;
+  text-transform: uppercase;
+  font-weight: 400;
+  color: #9A9A9A;
+}
 .breadcrumb {
   padding-bottom: 5px;
   padding-left: 0;

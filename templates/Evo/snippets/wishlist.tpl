@@ -47,7 +47,7 @@
     </div>
 {else}
     {if $hasItems === true || !empty($wlsearch)}
-        <div id="wishlist-search" class="panel panel-blank">
+        <div id="wishlist-search">
             <form method="post" action="{get_static_route id='wunschliste.php'}" name="WunschlisteSuche" class="form form-inline">
                 {$jtl_token}
                 {if $CWunschliste->nOeffentlich == 1 && !empty($cURLID)}
@@ -78,7 +78,7 @@
             {/if}
             {if !empty($CWunschliste->CWunschlistePos_arr)}
                 {if $isCurrenctCustomer === true}
-                    <div class="panel panel-blank">
+                    <div id="edit-wishlist-name">
                         <div class="input-group">
                             <span class="input-group-addon">
                                 <label for="wishlist-name">{lang key="name" section="global"}</label>
@@ -201,7 +201,7 @@
         {/block}
     </form>
     {if $isCurrenctCustomer === true}
-        <div class="panel panel-blank top15">
+        <div class="wishlist-actions top15">
             <div class="panel-heading">
                 <h5 class="panel-title">{block name="wishlist-title"}{if $CWunschliste->nOeffentlich == 1}{lang key="wishlistURL" section="login"}{else}{/if}{/block}</h5>
             </div>
@@ -211,24 +211,20 @@
                         <form method="post" action="{get_static_route id='wunschliste.php'}">
                             {$jtl_token}
                             <input type="hidden" name="kWunschliste" value="{$CWunschliste->kWunschliste}"/>
-                            <div class="row">
-                                <div class="col-xs-12">
-                                    <div class="input-group">
-                                        <input type="text" name="wishlist-url" readonly="readonly"
-                                               value="{get_static_route id='wunschliste.php'}?wlid={$CWunschliste->cURLID}"
-                                               class="form-control">
-                                        <span class="input-group-btn">
-                                            {if $Einstellungen.global.global_wunschliste_freunde_aktiv === 'Y'}
-                                                <button type="submit" name="action" value="sendViaMail"
-                                                        {if !$hasItems} disabled="disabled"{/if}
-                                                        class="btn btn-default"
-                                                        title="{lang key="wishlistViaEmail" section="login"}">
-                                                   <i class="fa fa-envelope"></i>
-                                               </button>
-                                            {/if}
-                                        </span>
-                                    </div>
-                                </div>
+                            <div class="input-group">
+                                <input type="text" name="wishlist-url" readonly="readonly"
+                                       value="{get_static_route id='wunschliste.php'}?wlid={$CWunschliste->cURLID}"
+                                       class="form-control">
+                                <span class="input-group-btn">
+                                    {if $Einstellungen.global.global_wunschliste_freunde_aktiv === 'Y'}
+                                        <button type="submit" name="action" value="sendViaMail"
+                                                {if !$hasItems} disabled="disabled"{/if}
+                                                class="btn btn-default"
+                                                title="{lang key="wishlistViaEmail" section="login"}">
+                                           <i class="fa fa-envelope"></i>
+                                       </button>
+                                    {/if}
+                                </span>
                             </div>
                         </form>
                     {else}

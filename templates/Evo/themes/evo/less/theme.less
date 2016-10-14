@@ -462,28 +462,6 @@ footer h6 {
 // Panels
 // --------------------------------------------------
 
-#content-wrapper .panel-default {
-    border-color: @gray-darker;
-}
-// Apply the mixin to the panel headings only
-.panel-default    > .panel-heading { background: @brand-secondary; }
-.panel-primary    > .panel-heading { background: @panel-primary-heading-bg; }
-.panel-success    > .panel-heading { background: @panel-success-heading-bg; }
-.panel-info       > .panel-heading { background: @panel-info-heading-bg;    }
-.panel-warning    > .panel-heading { background: @panel-warning-heading-bg; }
-.panel-danger     > .panel-heading { background: @panel-danger-heading-bg;  }
-
-.panel-default    > .panel-heading h1
-.panel-default    > .panel-heading h2,
-.panel-default    > .panel-heading h3,
-.panel-default    > .panel-heading h4,
-.panel-default    > .panel-heading h5,
-.panel-default    > .panel-heading h6 {
-  color: @panel-default-text;
-  border-bottom: none;
-  padding-top: 5px;
-}
-
 .panel-heading h5 {
   margin: 0;
   font-size: @font-size-large;
@@ -491,6 +469,10 @@ footer h6 {
 
 .form-inner.last .panel {
   margin-bottom: 0;
+}
+
+.panel-title {
+    padding: 5px 0;
 }
 
 .panel-title .btn-default {

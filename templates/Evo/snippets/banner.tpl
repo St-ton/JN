@@ -1,8 +1,9 @@
 {if isset($oImageMap)}
     <div class="banner">
-        {block name="banner"}
+        {block name="banner-map"}
             <img alt="{$oImageMap->cTitel}" src="{$oImageMap->cBildPfad}" class="img-responsive" />
             {foreach from=$oImageMap->oArea_arr item=oImageMapArea}
+                {strip}
                 <a href="{$oImageMapArea->cUrl}" class="area {$oImageMapArea->cStyle}" style="left:{math equation="100/bWidth*posX" bWidth=$oImageMap->fWidth posX=$oImageMapArea->oCoords->x}%;top:{math equation="100/bHeight*posY" bHeight=$oImageMap->fHeight posY=$oImageMapArea->oCoords->y}%;width:{math equation="100/bWidth*aWidth" bWidth=$oImageMap->fWidth aWidth=$oImageMapArea->oCoords->w}%;height:{math equation="100/bHeight*aHeight" bHeight=$oImageMap->fHeight aHeight=$oImageMapArea->oCoords->h}%" title="{$oImageMapArea->cTitel|strip_tags|escape:"html"|escape:"quotes"}">
                     {if $oImageMapArea->oArtikel || $oImageMapArea->cBeschreibung|@strlen > 0}
                         {assign var="oArtikel" value=$oImageMapArea->oArtikel}
@@ -21,11 +22,15 @@
                         </div>
                     {/if}
                 </a>
+                {/strip}
             {/foreach}
         {/block}
+        {if isset($isFluid) && $isFluid == false}
+            <hr>
+        {/if}
     </div>
     <script type="text/javascript">
-        {block name="extension-js"}
+        {block name="banner-js"}
         {literal}
         jtl.ready(function () {
             var bannerLink = $('.banner > a');

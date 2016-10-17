@@ -423,6 +423,7 @@ class MediaImage implements IMedia
      */
     public static function hasImage($type, $id)
     {
+        $id = (int)$id;
         switch ($type) {
             case Image::TYPE_PRODUCT:
                 $imageCount = Shop::DB()->queryPrepared("SELECT kArtikel FROM tartikelpict WHERE kArtikel = :kArtikel GROUP BY cPfad", array('kArtikel' => $id), 3);

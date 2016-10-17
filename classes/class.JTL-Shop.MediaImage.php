@@ -390,7 +390,7 @@ class MediaImage implements IMedia
      */
     private function parse($request)
     {
-        if (!is_string($request) || strlen($request) == 0) {
+        if (!is_string($request) || strlen($request) === 0) {
             return;
         }
 
@@ -417,8 +417,8 @@ class MediaImage implements IMedia
     }
 
     /**
-     * @param $type
-     * @param $id
+     * @param string $type
+     * @param int $id
      * @return bool
      */
     public static function hasImage($type, $id)
@@ -445,8 +445,10 @@ class MediaImage implements IMedia
             case Image::TYPE_ATTRIBUTE_VALUE:
                 $imageCount = Shop::DB()->queryPrepared("SELECT cBildpfad FROM tmerkmalwert WHERE kMerkmalWert = :kMerkmalWert", array('kMerkmalWert' => $id), 3);
                 break;
+            default:
+                break;
         }
-        if (isset($imageCount) && $imageCount) {
+        if (!empty($imageCount)) {
             return true;
         } else {
             return false;

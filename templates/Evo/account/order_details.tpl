@@ -192,7 +192,7 @@
                 <tr>
                     <td><a class="popup-dep" id="{$oLieferschein->getLieferschein()}" href="#" title="{$oLieferschein->getLieferscheinNr()}">{$oLieferschein->getLieferscheinNr()}</a></td>
                     <td>{$oLieferschein->getErstellt()|date_format:"%d.%m.%Y %H:%M"}</td>
-                    <td class="text-right">{foreach from=$oLieferschein->oVersand_arr name="versand" item="oVersand"}{if $oVersand->getIdentCode()}<p><a href="{$oVersand->getLogistikVarUrl()}" target="_blank" class="shipment popup" title="{$oVersand->getIdentCode()}">{lang key="packageTracking" section="order"}</a></p>{/if}{/foreach}</td>
+                    <td class="text-right">{foreach from=$oLieferschein->oVersand_arr name="versand" item="oVersand"}{if $oVersand->getIdentCode()}<p><a href="{$oVersand->getLogistikVarUrl()}" target="_blank" class="shipment" title="{$oVersand->getIdentCode()}">{lang key="packageTracking" section="order"}</a></p>{/if}{/foreach}</td>
                 </tr>
             {/foreach}
         </tbody>
@@ -215,7 +215,7 @@
             {/if}
 
             <div class="well well-sm">
-                {foreach from=$oLieferschein->oVersand_arr name="versand" item="oVersand"}{if $oVersand->getIdentCode()}<p><a href="{$oVersand->getLogistikVarUrl()}" target="_blank" class="shipment popup" title="{$oVersand->getIdentCode()}">{lang key="packageTracking" section="order"}</a></p>{/if}{/foreach}
+                {foreach from=$oLieferschein->oVersand_arr name="versand" item="oVersand"}{if $oVersand->getIdentCode()}<p><a href="{$oVersand->getLogistikVarUrl()}" target="_blank" class="shipment" title="{$oVersand->getIdentCode()}">{lang key="packageTracking" section="order"}</a></p>{/if}{/foreach}
             </div>
 
             <div class="well well-sm">

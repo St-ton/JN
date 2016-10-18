@@ -225,8 +225,8 @@
                 value="{if isset($Kunde->cPLZ)}{$Kunde->cPLZ}{/if}" 
                 id="plz" 
                 class="plz_input form-control" 
-                placeholder="{lang key="plz" section="account data"}" 
-                required 
+                placeholder="{lang key="plz" section="account data"}"
+                required
                 >
                 {if isset($fehlendeAngaben.plz)}<div class="alert alert-danger">{if $fehlendeAngaben.plz >= 2}{lang key="checkPLZCity" section="checkout"}{else}{lang key="fillOut" section="global"}{/if}</div>{/if}
             </div>
@@ -240,7 +240,7 @@
                 name="ort" 
                 value="{if isset($Kunde->cOrt)}{$Kunde->cOrt}{/if}" 
                 id="city" 
-                class="city_input form-control" 
+                class="city_input form-control typeahead"
                 placeholder="{lang key="city" section="account data"}" 
                 required 
                 >

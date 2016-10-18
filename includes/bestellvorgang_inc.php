@@ -2530,7 +2530,7 @@ function valid_plzort($plz, $ort, $land)
             "SELECT kPLZ
                 FROM tplz
                 WHERE cPLZ = '" . Shop::DB()->escape($plz) . "'
-                AND cOrt LIKE '" . Shop::DB()->escape($ort) . "'
+                AND cOrt LIKE '%" . Shop::DB()->escape($ort) . "%'
                 AND cLandISO = '" . Shop::DB()->escape($land) . "'", 1
         );
         if (isset($obj->kPLZ) && $obj->kPLZ > 0) {

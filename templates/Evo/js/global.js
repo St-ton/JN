@@ -237,6 +237,34 @@ $(document).ready(function () {
         );
     }
 
+    var citySuggestion = new Bloodhound({
+        datumTokenizer: Bloodhound.tokenizers.obj.whitespace('keyword'),
+        queryTokenizer: Bloodhound.tokenizers.whitespace,
+        remote:         {
+            url:      'io.php?io={"name":"getCitiesByZip","params":["%QUERY","'+$('#country').val()+'","'+$('#plz').val()+'"]}',
+            wildcard: '%QUERY'
+        },
+        dataType: "json"
+    });
+
+    $('#rechnungsdaten #plz').change(function(){
+        citySuggestion.remote.url = 'io.php?io={"name":"getCitiesByZip","params":["%QUERY","'+$('#country').val()+'","'+$('#plz').val()+'"]}';
+    });
+    $('#rechnungsdaten #country').change(function(){
+        citySuggestion.remote.url = 'io.php?io={"name":"getCitiesByZip","params":["%QUERY","'+$('#country').val()+'","'+$('#plz').val()+'"]}';
+    });
+
+    $('#rechnungsdaten #city').typeahead(
+        {
+            hint: true,
+            minLength: 1
+        },
+        {
+            name:       'cities',
+            source:     citySuggestion
+        }
+    );
+
     $('.btn-offcanvas').click(function() {
         $('body').click();
     });

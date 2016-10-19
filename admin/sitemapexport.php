@@ -96,7 +96,7 @@ $smarty->assign('oConfig_arr', $oConfig_arr)
        ->assign('oSitemapDownload_arr', $oSitemapDownload_arr)
        ->assign('hinweis', $cHinweis)
        ->assign('fehler', $cFehler)
-       ->assign('URL', Shop::getURL() . '/' . PFAD_EXPORT . 'sitemap_index.xml')
+       ->assign('URL', Shop::getURL() . '/' . 'sitemap_index.xml')
        ->display('sitemapexport.tpl');
 
 /**

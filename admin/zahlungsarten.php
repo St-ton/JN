@@ -131,8 +131,9 @@ if (isset($_POST['einstellungen_bearbeiten']) && isset($_POST['kZahlungsart']) &
         if ($_POST['cName_' . $sprache->cISO]) {
             $zahlungsartSprache->cName = $_POST['cName_' . $sprache->cISO];
         }
-        $zahlungsartSprache->cGebuehrname = $_POST['cGebuehrname_' . $sprache->cISO];
-        $zahlungsartSprache->cHinweisText = $_POST['cHinweisText_' . $sprache->cISO];
+        $zahlungsartSprache->cGebuehrname      = $_POST['cGebuehrname_' . $sprache->cISO];
+        $zahlungsartSprache->cHinweisText      = $_POST['cHinweisText_' . $sprache->cISO];
+        $zahlungsartSprache->cHinweistextEmail = $_POST['cHinweistextEmail_' . $sprache->cISO];
 
         Shop::DB()->delete('tzahlungsartsprache', array('kZahlungsart', 'cISOSprache'), array((int)$_POST['kZahlungsart'], $sprache->cISO));
         Shop::DB()->insert('tzahlungsartsprache', $zahlungsartSprache);
@@ -191,7 +192,7 @@ if ($step === 'einstellen') {
             ->assign('sprachen', gibAlleSprachen())
             ->assign('Zahlungsartname', getNames($zahlungsart->kZahlungsart))
             ->assign('Gebuehrname', getshippingTimeNames($zahlungsart->kZahlungsart))
-            ->assign('cHinweisTexte_arr', getHinweisTexte($zahlungsart->kZahlungsart))
+            ->assign('cHinweistexte_arr', getHinweisTexte($zahlungsart->kZahlungsart))
             ->assign('ZAHLUNGSART_MAIL_EINGANG', ZAHLUNGSART_MAIL_EINGANG)
             ->assign('ZAHLUNGSART_MAIL_STORNO', ZAHLUNGSART_MAIL_STORNO);
     }

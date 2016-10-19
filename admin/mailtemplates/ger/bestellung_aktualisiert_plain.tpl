@@ -74,7 +74,7 @@ Lieferadresse ist gleich Rechnungsadresse.
 
 Sie haben folgende Zahlungsart gewählt: {$Bestellung->cZahlungsartName}
 
-{if isset($Zahlungsart->cHinweisText) && $Zahlungsart->cHinweisText|count_characters > 0}  {$Zahlungsart->cHinweisText}
+{if isset($Zahlungsart->cHinweistextEmail) && $Zahlungsart->cHinweistextEmail|count_characters > 0}  {$Zahlungsart->cHinweistextEmail}
 
 
 {/if}

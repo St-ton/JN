@@ -515,8 +515,8 @@ Sie haben folgende Zahlungsart gewählt: {$Bestellung->cZahlungsartName}<br>
 {elseif $Bestellung->Zahlungsart->cModulId=="za_moneybookers_jtl"}
 {/if}
 
-{if isset($Zahlungsart->cHinweisText) && $Zahlungsart->cHinweisText|count_characters > 0}
-    {$Zahlungsart->cHinweisText}<br>
+{if isset($Zahlungsart->cHinweistextEmail) && $Zahlungsart->cHinweistextEmail|count_characters > 0}
+    {$Zahlungsart->cHinweistextEmail}<br>
     <br>
 {/if}
 Über den weiteren Verlauf Ihrer Bestellung werden wir Sie jeweils gesondert informieren.

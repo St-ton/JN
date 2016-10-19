@@ -55,7 +55,8 @@ function getHinweisTexte($kZahlungsart)
     $oZahlungsartSprache_arr = Shop::DB()->selectAll('tzahlungsartsprache', 'kZahlungsart', (int)$kZahlungsart);
     if (is_array($oZahlungsartSprache_arr) && count($oZahlungsartSprache_arr) > 0) {
         foreach ($oZahlungsartSprache_arr as $oZahlungsartSprache) {
-            $cHinweisTexte_arr[$oZahlungsartSprache->cISOSprache] = $oZahlungsartSprache->cHinweisText;
+            $cHinweisTexte_arr[$oZahlungsartSprache->cISOSprache]['Shop']  = $oZahlungsartSprache->cHinweisText;
+            $cHinweisTexte_arr[$oZahlungsartSprache->cISOSprache]['Email'] = $oZahlungsartSprache->cHinweistextEmail;
         }
     }
 

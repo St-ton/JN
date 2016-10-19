@@ -862,7 +862,7 @@ function generateSitemapXML()
         baueSitemapReport($nAnzahlURL_arr, $fTotalZeit);
         // ping sitemap to Google and Bing
         if (isset($conf['sitemap']['sitemap_google_ping']) && $conf['sitemap']['sitemap_google_ping'] === 'Y') {
-            $encodedSitemapIndexURL = urlencode(Shop::getURL() . '/sitemap_index.xml');
+            $encodedSitemapIndexURL = urlencode(Shop::getURL() . '/' . PFAD_EXPORT . '/sitemap_index.xml');
             if (200 !== ($httpStatus = http_get_status('http://www.google.com/webmasters/tools/ping?sitemap=' . $encodedSitemapIndexURL))) {
                 Jtllog::writeLog('Sitemap ping to Google failed with status ' . $httpStatus, JTLLOG_LEVEL_NOTICE);
             }
@@ -1052,7 +1052,6 @@ function baueExportURL($kKey, $cKey, $dLetzteAktualisierung, $oSprach_arr, $kSpr
                     $NaviFilter->Suche->kSuchanfrage = $GLOBALS['kSuchanfrage'];
                     $NaviFilter->Suche->cSuche       = $oSuchanfrage->cSuche;
                 }
-                $NaviFilter->Suche->kSuchCache = bearbeiteSuchCache($NaviFilter);
             }
             $NaviFilter = Shop::buildNaviFilter($cParameter_arr);
             if (strlen($NaviFilter->Suchanfrage->cSeo[$kSprache]) === 0) {

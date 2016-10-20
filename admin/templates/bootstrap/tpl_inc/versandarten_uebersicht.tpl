@@ -35,7 +35,7 @@
                         <td>{#shippingclasses#}</td>
                         <td>
                             {foreach name=versandklassen from=$versandart->versandklassen item=versandklasse}
-                                {$versandklasse}
+                                [{$versandklasse}] &nbsp;
                             {/foreach}
                         </td>
                     </tr>

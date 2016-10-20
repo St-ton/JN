@@ -173,7 +173,7 @@ class MediaImageRequest
     public function getRaw($absolute = false)
     {
         $path = $this->getPath();
-        $path = (empty($path)) ? null : sprintf('%s/%s', self::getStoragePath(), $path);
+        $path = (empty($path)) ? null : sprintf('%s%s', self::getStoragePath(), $path);
 
         if ($path !== null && $absolute === true) {
             $path = PFAD_ROOT . $path;

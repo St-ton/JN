@@ -63,7 +63,11 @@
                     </div>
                 </div>
                 <div class="panel-footer">
-                    <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> {#statusemailSave#}</button>
+                    <div class="btn-group">
+                        <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> {#statusemailSave#}</button>
+                        <button type="submit" class="btn btn-default" name="action" value="sendnow">
+                            <i class="fa fa-envelope-o"></i> E-Mail-Bericht jetzt senden</button>
+                    </div>
                 </div>
             </div>
         </div>

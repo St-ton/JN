@@ -14,13 +14,22 @@ $cHinweis = '';
 $cFehler  = '';
 $step     = 'statusemail_uebersicht';
 
-if (isset($_POST['einstellungen']) && intval($_POST['einstellungen']) === 1 && validateToken()) {
-    if (speicherStatusemailEinstellungen($_POST)) {
-        $cHinweis .= 'Ihre Einstellungen wurden &uuml;bernommen.<br />';
-    } else {
-        $cFehler .= 'Fehler: Ihre Einstellungen konnte nicht gespeichert werden. Bitte pr&uuml;fen Sie Ihre Eingaben.<br />';
+$dVon = date('Y-m-d H:i:s', mktime(0, 0, 0, date('m', time() - (3600 * 24)), date('d', time() - (3600 * 24)), date('Y', time() - (3600 * 24))));
+$dBis = date('Y-m-d H:i:s', mktime(0, 0, 0, date('m'), date('d'), date('Y')));
+
+
+if (validateToken()) {
+    if (isset($_POST['action']) && $_POST['action'] === 'sendnow') {
+        sendStatusMail();
     }
-    $step = 'statusemail_uebersicht';
+    elseif (isset($_POST['einstellungen']) && intval($_POST['einstellungen']) === 1) {
+        if (speicherStatusemailEinstellungen()) {
+            $cHinweis .= 'Ihre Einstellungen wurden &uuml;bernommen.<br />';
+        } else {
+            $cFehler .= 'Fehler: Ihre Einstellungen konnte nicht gespeichert werden. Bitte pr&uuml;fen Sie Ihre Eingaben.<br />';
+        }
+        $step = 'statusemail_uebersicht';
+    }
 }
 if ($step === 'statusemail_uebersicht') {
     $smarty->assign('oStatusemailEinstellungen', ladeStatusemailEinstellungen());

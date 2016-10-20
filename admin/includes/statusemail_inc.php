@@ -8,22 +8,18 @@
  * @param array $cPost_arr
  * @return bool
  */
-function speicherStatusemailEinstellungen($cPost_arr)
+function speicherStatusemailEinstellungen()
 {
-    if (intval($cPost_arr['nAktiv']) === 0 || (valid_email($cPost_arr['cEmail']) && (is_array($cPost_arr['cIntervall_arr']) &&
-                count($cPost_arr['cIntervall_arr']) > 0) && (is_array($cPost_arr['cInhalt_arr']) && count($cPost_arr['cInhalt_arr']) > 0))
+    if ((int)$_POST['nAktiv'] === 0 || valid_email($_POST['cEmail']) && is_array($_POST['cIntervall_arr']) &&
+        count($_POST['cIntervall_arr']) > 0 && is_array($_POST['cInhalt_arr']) && count($_POST['cInhalt_arr']) > 0
     ) {
         if (erstelleStatusemailCron(24)) {
             // Erstellt den Cron Eintrag
-            $oStatusemail             = new stdClass();
-            $oStatusemail->cEmail     = $cPost_arr['cEmail'];
-            $oStatusemail->cIntervall = (is_array($cPost_arr['cIntervall_arr']) && count($cPost_arr['cIntervall_arr']) > 0) ?
-                ';' . implode(';', $cPost_arr['cIntervall_arr']) . ';' :
-                '';
-            $oStatusemail->cInhalt = (is_array($cPost_arr['cInhalt_arr']) && count($cPost_arr['cInhalt_arr']) > 0) ?
-                ';' . implode(';', $cPost_arr['cInhalt_arr']) . ';' :
-                '';
-            $oStatusemail->nAktiv                = (int)$cPost_arr['nAktiv'];
+            $oStatusemail                        = new stdClass();
+            $oStatusemail->cEmail                = $_POST['cEmail'];
+            $oStatusemail->cIntervall            = StringHandler::createSSK($_POST['cIntervall_arr']);
+            $oStatusemail->cInhalt               = StringHandler::createSSK($_POST['cInhalt_arr']);
+            $oStatusemail->nAktiv                = (int)$_POST['nAktiv'];
             $oStatusemail->dLetzterTagesVersand  = 'now()';
             $oStatusemail->dLetzterWochenVersand = 'now()';
             $oStatusemail->dLetzterMonatsVersand = 'now()';
@@ -1042,4 +1038,9 @@ function pruefeIntervallUeberschritten($dStamp, $nIntervall)
     }
 
     return false;
+}
+
+function sendStatusMail()
+{
+    $oMailObjekt = baueStatusEmail($oStatusemail, $dVon, $dBis);
 }

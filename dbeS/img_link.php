@@ -58,9 +58,7 @@ function bildartikellink_xml(SimpleXMLElement $xml)
         $articleIDs[] = (int)$item->kArtikel;
         DBUpdateInsert('tartikelpict', array($item), 'kArtikelPict');
     }
-    $smarty = Shop::Smarty();
     foreach (array_unique($articleIDs) as $_aid) {
-        $smarty->clearCache(null, 'jtlc|article|aid' . $_aid);
         $cacheArticleIDs = CACHING_GROUP_ARTICLE . '_' . $_aid;
         MediaImage::clearCache(Image::TYPE_PRODUCT, $_aid);
     }
@@ -79,9 +77,7 @@ function del_bildartikellink_xml(SimpleXMLElement $xml)
         del_img_item($item);
         $articleIDs[] = $item->kArtikel;
     }
-    $smarty = Shop::Smarty();
     foreach (array_unique($articleIDs) as $_aid) {
-        $smarty->clearCache(null, 'jtlc|article|aid' . $_aid);
         $cacheArticleIDs = CACHING_GROUP_ARTICLE . '_' . $_aid;
         MediaImage::clearCache(Image::TYPE_PRODUCT, $_aid);
     }

@@ -91,7 +91,7 @@ function del_img_item($item) {
     $image = Shop::DB()->select('tartikelpict', 'kArtikel', $item->kArtikel, 'nNr', $item->nNr);
     if (is_object($image)) {
         // is last reference
-        $res = Shop::DB()->query("SELECT COUNT(*) AS cnt FROM tbild WHERE kBild = " . (int)$image->kBild, 1);
+        $res = Shop::DB()->query("SELECT COUNT(*) AS cnt FROM tartikelpict WHERE kBild = " . (int)$image->kBild, 1);
         if ($res->cnt == 1) {
             Shop::DB()->delete('tbild', 'kBild', (int)$image->kBild);
             $storage = PFAD_ROOT . PFAD_MEDIA_IMAGE_STORAGE . $image->cPfad;

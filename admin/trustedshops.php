@@ -47,8 +47,7 @@ if (isset($_POST['kaeuferschutzeinstellungen']) && intval($_POST['kaeuferschutze
             $cFehler .= 'Fehler: Es wurde kein Zertifikat f&uuml; die aktuelle Sprache gefunden.';
         }
     } else { // Speicher die Einstellungen
-        $cPreStatus = $Einstellungen['trustedshops']['trustedshops_nutzen'];
-
+        $cPreStatus  = $Einstellungen['trustedshops']['trustedshops_nutzen'];
         $oConfig_arr = Shop::DB()->query(
             "SELECT *
                 FROM teinstellungenconf
@@ -80,13 +79,11 @@ if (isset($_POST['kaeuferschutzeinstellungen']) && intval($_POST['kaeuferschutze
             }
 
             if ($oConfig_arr[$i]->cInputTyp !== 'listbox') {
-                Shop::DB()->query(
-                    "DELETE FROM teinstellungen
-                        WHERE kEinstellungenSektion = " . CONF_TRUSTEDSHOPS . "
-                            AND cName = '" . $oConfig_arr[$i]->cWertName . "'", 4
-                );
+                Shop::DB()->delete('teinstellungen', ['kEinstellungenSektion', 'cName'], [CONF_TRUSTEDSHOPS, $oConfig_arr[$i]->cWertName]);
                 Shop::DB()->insert('teinstellungen', $aktWert);
             }
+            $settings = Shopsetting::getInstance();
+            $settings->reset();
         }
 
         if (strlen($_POST['tsId']) > 0 && (strlen($_POST['wsUser']) > 0 && strlen($_POST['wsPassword']) > 0 || $_POST['eType'] === TS_BUYERPROT_CLASSIC)) {
@@ -131,14 +128,7 @@ if (isset($_POST['kaeuferschutzeinstellungen']) && intval($_POST['kaeuferschutze
     $oTrustedShops = new TrustedShops(-1, $_SESSION['TrustedShops']->oSprache->cISOSprache);
     $cPreStatus    = $Einstellungen['trustedshops']['trustedshops_kundenbewertung_anzeigen'];
 
-    $oConfig_arr = Shop::DB()->query(
-        "SELECT *
-            FROM teinstellungenconf
-            WHERE kEinstellungenSektion = " . CONF_TRUSTEDSHOPS . "
-                AND cConf = 'Y'
-                AND cWertName = 'trustedshops_kundenbewertung_anzeigen'
-            ORDER BY nSort", 2
-    );
+    $oConfig_arr = Shop::DB()->selectAll('teinstellungenconf', ['kEinstellungenSektion', 'cConf', 'cWertName'], [CONF_TRUSTEDSHOPS, 'Y', 'trustedshops_kundenbewertung_anzeigen'], '*', 'nSort');
     $configCount = count($oConfig_arr);
     for ($i = 0; $i < $configCount; $i++) {
         $aktWert                        = new stdClass();
@@ -162,28 +152,23 @@ if (isset($_POST['kaeuferschutzeinstellungen']) && intval($_POST['kaeuferschutze
         }
 
         if ($oConfig_arr[$i]->cInputTyp !== 'listbox') {
-            Shop::DB()->query(
-                "DELETE FROM teinstellungen
-                    WHERE kEinstellungenSektion = " . CONF_TRUSTEDSHOPS . "
-                        AND cName = '" . $oConfig_arr[$i]->cWertName . "'", 4
-            );
+            Shop::DB()->delete('teinstellungen', ['kEinstellungenSektion', 'cName'], [CONF_TRUSTEDSHOPS, $oConfig_arr[$i]->cWertName]);
             Shop::DB()->insert('teinstellungen', $aktWert);
         }
     }
-
+    $settings = Shopsetting::getInstance();
+    $settings->reset();
+    $Einstellungen = Shop::getConfig([CONF_TRUSTEDSHOPS]);
     if ($Einstellungen['trustedshops']['trustedshops_kundenbewertung_anzeigen'] === 'N') {
         $oTrustedShops->aenderKundenbewertungsstatusDB(0, $_SESSION['TrustedShops']->oSprache->cISOSprache);
         $oTrustedShops->aenderKundenbewertungsstatus(0, $_SESSION['TrustedShops']->oSprache->cISOSprache);
     }
 
-    if (strlen($_POST['tsId']) > 0) {
-        $oTrustedShops->aenderKundenbewertungtsIDDB(trim($_POST['tsId']), $_SESSION['TrustedShops']->oSprache->cISOSprache);
-
+    if (strlen($_POST['kb-tsId']) > 0) {
+        $oTrustedShops->aenderKundenbewertungtsIDDB(trim($_POST['kb-tsId']), $_SESSION['TrustedShops']->oSprache->cISOSprache);
         $cHinweis = 'Ihre Einstellungen wurden erfolgreich gespeichert.';
-    } elseif ($cPreStatus === 'Y') {
-        $cFehler .= 'Fehler: Bitte geben Sie eine tsID ein!<br>';
     } else {
-        $cHinweis = 'Ihre Einstellungen wurden erfolgreich gespeichert.';
+        $cFehler .= 'Fehler: Bitte geben Sie eine tsID ein!<br>';
     }
     Shop::Cache()->flushTags(array(CACHING_GROUP_OPTION));
 } elseif (isset($_POST['kundenbewertungupdate']) && intval($_POST['kundenbewertungupdate']) === 1) { // Kundenbewertung update
@@ -346,7 +331,6 @@ if ($step === 'uebersicht') {
             $oSprachen_arr[$i]->cURLKundenBewertungUebersicht = $cURLKundenBewertungUebersicht_arr[$i];
         }
     }
-
     $smarty->assign('Sprachen', $oSprachen_arr);
 } elseif ($step === 'info') {
     $smarty->assign('PFAD_GFX_TRUSTEDSHOPS', PFAD_GFX_TRUSTEDSHOPS);
@@ -364,9 +348,9 @@ $smarty->assign('TS_BUYERPROT_CLASSIC', TS_BUYERPROT_CLASSIC)
        ->display('trustedshops.tpl');
 
 /**
- * @param $cHinweis
- * @param $cFehler
- * @param $nReturnValue
+ * @param string $cHinweis
+ * @param string $cFehler
+ * @param int    $nReturnValue
  */
 function mappeTSFehlerCode(&$cHinweis, &$cFehler, $nReturnValue)
 {

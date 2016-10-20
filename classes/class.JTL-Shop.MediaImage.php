@@ -87,8 +87,8 @@ class MediaImage implements IMedia
     }
 
     /**
-     * @param $type
-     * @param bool $filesize
+     * @param string $type
+     * @param bool   $filesize
      * @return object
      * @throws Exception
      */
@@ -117,7 +117,7 @@ class MediaImage implements IMedia
             $raw = $image->getRaw(true);
             $result->total++;
             if (!file_exists($raw)) {
-                $result->corrupted++;
+                ++$result->corrupted;
             } else {
                 foreach ([Image::SIZE_XS, Image::SIZE_SM, Image::SIZE_MD, Image::SIZE_LG] as $size) {
                     $thumb = $image->getThumb($size, true);
@@ -305,7 +305,7 @@ class MediaImage implements IMedia
      * @param bool     $notCached
      * @param int|null $offset
      * @param int|null $limit
-     * @return array
+     * @return MediaImageRequest[]
      * @throws Exception
      */
     public static function getImages($type, $notCached = false, $offset = null, $limit = null)

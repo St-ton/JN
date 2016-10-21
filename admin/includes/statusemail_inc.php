@@ -1007,40 +1007,54 @@ function gibSplitStamp($dStamp)
 }
 
 /**
- * @param string $dStamp
- * @param int    $nIntervall
+ * @param string $dStart
+ * @param string $cInterval - one of 'hour', 'day', 'week', 'month', 'year'
  * @return bool
  */
-function pruefeIntervallUeberschritten($dStamp, $nIntervall)
+function isIntervalExceeded($dStart, $cInterval)
 {
-    $nIntervall = (int) $nIntervall;
-    if (strlen($dStamp) > 0 && $nIntervall > 0) {
-        $oDateTime = new DateTime($dStamp);
-
-        switch ($nIntervall) {
-            case 1:
-                $oDateTime->modify('+1 day');
-                break;
-
-            case 7:
-                $oDateTime->modify('+1 week');
-                break;
-
-            case 30:
-                $oDateTime->modify('+1 month');
-                break;
-
-            default:
-                break;
-        }
-
-        return (time() >= intval($oDateTime->format('U')));
+    if ($dStart === '0000-00-00 00:00:00') {
+        return true;
     }
 
-    return false;
+    $oStartTime = date_create($dStart);
+
+    if ($oStartTime === false) {
+        return false;
+    }
+
+    $oEndTime = $oStartTime->modify('+1 ' . $cInterval);
+
+    if ($oEndTime === false) {
+        return false;
+    }
+
+    return date_create()->format("YmdHis") >= $oEndTime->format("YmdHis");
 }
 
+/**
+ * Sendet eine Status-Mail xD ;) hehe, lolz!!!!111einself
+ */
 function sendStatusMail()
 {
-    $oMailObjekt = baueStatusEmail($oStatusemail, $dVon, $dBis);
+    $dBis         = date_create()->format('Y-m-d H:i:s');
+    $dVon         = date_create()->modify('-1 day')->format('Y-m-d H:i:s');
+
+    $oStatusemail = Shop::DB()->select('tstatusemail', 'nAktiv', 1);
+
+    $oStatusemail->nIntervall_arr = StringHandler::parseSSK($oStatusemail->cIntervall);
+    $oStatusemail->nInhalt_arr    = StringHandler::parseSSK($oStatusemail->cInhalt);
+
+    $oMailObjekt  = baueStatusEmail($oStatusemail, $dVon, $dBis);
+
+    if ($oMailObjekt) {
+        if (!isset($oMailObjekt->mail)) {
+            $oMailObjekt->mail = new stdClass();
+        }
+
+        $oMailObjekt->mail->toEmail = $oStatusemail->cEmail;
+        $oMailObjekt->cIntervall    = utf8_decode('Tägliche Status-Email');
+        sendeMail(MAILTEMPLATE_STATUSEMAIL, $oMailObjekt);
+        Shop::DB()->query("UPDATE tstatusemail SET dLetzterTagesVersand = now() WHERE nAktiv = 1", 4);
+    }
 }

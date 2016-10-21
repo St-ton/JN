@@ -351,7 +351,7 @@ class JTLCache
             $this->options['cache_dir'] .= '/';
         }
         //accept only valid integer lifetime values
-        $this->options['lifetime'] = ($this->options['lifetime'] === '' || (int) $this->options['lifetime'] <= 0) ?
+        $this->options['lifetime'] = ($this->options['lifetime'] === '' || (int)$this->options['lifetime'] <= 0) ?
             self::DEFAULT_LIFETIME :
             (int)$this->options['lifetime'];
         if ($this->options['types_disabled'] === null) {
@@ -431,7 +431,7 @@ class JTLCache
                 } elseif ($_conf->cWert === '') {
                     $value = null;
                 } elseif (is_numeric($_conf->cWert)) {
-                    $value = (int) $_conf->cWert;
+                    $value = (int)$_conf->cWert;
                 } else {
                     $value = $_conf->cWert;
                 }
@@ -707,7 +707,7 @@ class JTLCache
      */
     public function _setCacheLifetime($lifetime)
     {
-        $this->options['lifetime'] = ((int) $lifetime > 0) ? (int) $lifetime : self::DEFAULT_LIFETIME;
+        $this->options['lifetime'] = ((int)$lifetime > 0) ? (int)$lifetime : self::DEFAULT_LIFETIME;
 
         return $this;
     }

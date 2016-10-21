@@ -234,9 +234,9 @@ trait JTLCacheTrait
             $res = $this->flush($_id);
             $this->clearCacheTags($_id);
             if ($res === true) {
-                $deleted++;
+                ++$deleted;
             } elseif (is_int($res)) {
-                $deleted = $res;
+                $deleted += $res;
             }
         }
 

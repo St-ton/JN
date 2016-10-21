@@ -25,87 +25,51 @@ function bearbeiteStatusemail($oJobQueue)
 
     // Laufe alle Intervalle durch
     foreach ($oStatusemail->nIntervall_arr as $nIntervall) {
-        $nIntervall = (int)$nIntervall;
+        $nIntervall   = (int)$nIntervall;
+        $cInterval    = '';
+        $cIntervalAdj = '';
 
-        // Prüfe ob ein gesetztes Intervall "überfällig" ist => falls ja, baue Email und versende sie
         switch ($nIntervall) {
             case 1:
-                if (pruefeIntervallUeberschritten($oStatusemail->dLetzterTagesVersand, $nIntervall) || $oStatusemail->dLetzterTagesVersand === '0000-00-00 00:00:00') {
-                    // Noch nicht gesendet => abschicken
-                    $dVon        = date('Y-m-d H:i:s', mktime(0, 0, 0, date('m', time() - (3600 * 24)), date('d', time() - (3600 * 24)), date('Y', time() - (3600 * 24))));
-                    $dBis        = date('Y-m-d H:i:s', mktime(0, 0, 0, date('m'), date('d'), date('Y')));
-                    $oMailObjekt = baueStatusEmail($oStatusemail, $dVon, $dBis);
-
-                    if ($oMailObjekt) {
-                        if (!isset($oMailObjekt->mail)) {
-                            $oMailObjekt->mail = new stdClass();
-                        }
-
-                        $oMailObjekt->mail->toEmail = $oStatusemail->cEmail;
-                        $oMailObjekt->cIntervall    = utf8_decode('Tägliche Status-Email');
-                        sendeMail(MAILTEMPLATE_STATUSEMAIL, $oMailObjekt);
-                        Shop::DB()->query("UPDATE tstatusemail SET dLetzterTagesVersand = now() WHERE nAktiv = " . (int)$oJobQueue->kKey, 4);
-                        $bAusgefuehrt = true;
-                    }
-                }
+                $cInterval    = 'day';
+                $cIntervalAdj = 'Tägliche';
                 break;
             case 7:
-                if (date('w') == '1' || pruefeIntervallUeberschritten($oStatusemail->dLetzterWochenVersand, $nIntervall) || $oStatusemail->dLetzterWochenVersand === '0000-00-00 00:00:00') {
-                    // Noch nicht gesendet => abschicken
-                    $dNow = mktime(0, 0, 0, date('m'), date('d', time() - (3600 * 24)), date('Y'));
-
-                    while (date('w', $dNow) != '1') {
-                        $dNow -= 24 * 3600;
-                    }
-
-                    $dVon        = date('Y-m-d H:i:s', $dNow);
-                    $dBis        = date('Y-m-d H:i:s', ($dNow + 7 * 24 * 3600));
-                    $oMailObjekt = baueStatusEmail($oStatusemail, $dVon, $dBis);
-
-                    if ($oMailObjekt) {
-                        if (!isset($oMailObjekt->mail)) {
-                            $oMailObjekt->mail = new stdClass();
-                        }
-
-                        $oMailObjekt->mail->toEmail = $oStatusemail->cEmail;
-                        $oMailObjekt->cIntervall    = utf8_decode('Wöchentliche Status-Email');
-                        sendeMail(MAILTEMPLATE_STATUSEMAIL, $oMailObjekt);
-                        Shop::DB()->query("UPDATE tstatusemail SET dLetzterWochenVersand = now() WHERE nAktiv = " . (int)$oJobQueue->kKey, 4);
-                        $bAusgefuehrt = true;
-                    }
-                }
+                $cInterval    = 'week';
+                $cIntervalAdj = 'Wöchentliche';
                 break;
-
-            case 30;
-                $oZeit = gibSplitStamp($oStatusemail->dLetzterMonatsVersand);
-
-                if (date('m') != $oZeit->dMonat || pruefeIntervallUeberschritten($oStatusemail->dLetzterMonatsVersand, $nIntervall) || $oStatusemail->dLetzterMonatsVersand === '0000-00-00 00:00:00') {
-                    // Noch nicht gesendet => abschicken
-                    $dNow = mktime(0, 0, 0, (intval(date('m')) - 1), (intval(date('d')) + 1), date('Y'));
-
-                    while (date('d', $dNow) != '01') {
-                        $dNow -= 24 * 3600;
-                    }
-
-                    $dVon        = date('Y-m-d H:i:s', $dNow);
-                    $dBis        = date('Y-m-d H:i:s', ($dNow + intval(date('t', $dNow)) * 24 * 3600));
-                    $oMailObjekt = baueStatusEmail($oStatusemail, $dVon, $dBis);
-
-                    if ($oMailObjekt) {
-                        $oMailObjekt->mail->toEmail = $oStatusemail->cEmail;
-                        $oMailObjekt->cIntervall    = 'Monatliche Status-Email';
-                        sendeMail(MAILTEMPLATE_STATUSEMAIL, $oMailObjekt);
-                        Shop::DB()->query("UPDATE tstatusemail SET dLetzterMonatsVersand = now() WHERE nAktiv = " . (int)$oJobQueue->kKey, 4);
-                        $bAusgefuehrt = true;
-                    }
-                }
+            case 30:
+                $cInterval    = 'month';
+                $cIntervalAdj = 'Monatliche';
                 break;
+            default:
+                // TODO: handle non matching intervals
+                break;
+        }
+
+        if (isIntervalExceeded($oStatusemail->dLetzterTagesVersand, $cInterval)) {
+            $dVon        = $oStatusemail->dLetzterTagesVersand;
+            $dBis        = date_create()->format('Y-m-d H:i:s');
+            $oMailObjekt = baueStatusEmail($oStatusemail, $dVon, $dBis);
+
+            if ($oMailObjekt) {
+                isset($oMailObjekt->mail) or $oMailObjekt->mail = new stdClass();
+                $oMailObjekt->mail->toEmail                     = $oStatusemail->cEmail;
+                $oMailObjekt->cIntervall                        = utf8_decode($cIntervalAdj . ' Status-Email');
+                sendeMail(MAILTEMPLATE_STATUSEMAIL, $oMailObjekt);
+                Shop::DB()->query("
+                    UPDATE tstatusemail
+                        SET dLetzterTagesVersand = now()
+                        WHERE nAktiv = " . (int)$oJobQueue->kKey,
+                    4);
+                $bAusgefuehrt = true;
+            }
         }
     }
 
     if ($bAusgefuehrt === true) {
         $oJobQueue->deleteJobInDB();
     }
-    
+
     unset($oJobQueue);
 }

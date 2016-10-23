@@ -201,8 +201,6 @@ switch ($action) {
                             $value->cWert = 'advancedfile';
                         }  elseif (in_array('file', $availableMethods)) {
                             $value->cWert = 'file';
-                        } elseif (in_array('mysql', $availableMethods)) {
-                            $value->cWert = 'mysql';
                         } else {
                             $value->cWert = 'null';
                         }

@@ -10,7 +10,6 @@ use Imanee\Imanee;
  */
 class MediaImage implements IMedia
 {
-    const REGEX = '/^media\/image\/(?P<type>product|category|variation|manufacturer)\/(?P<id>\d+)\/(?P<size>xs|sm|md|lg)\/(?P<name>[a-zA-Z0-9\-_]+)(?:(?:~(?P<number>\d+))?)\.(?P<ext>jpg|jpeg|png|gif)$/';
 
     /**
      *
@@ -398,7 +397,7 @@ class MediaImage implements IMedia
             $request = substr($request, 1);
         }
 
-        if (preg_match(self::REGEX, $request, $matches)) {
+        if (preg_match(MEDIAIMAGE_REGEX, $request, $matches)) {
             return array_intersect_key($matches, array_flip(array_filter(array_keys($matches), 'is_string')));
         }
 

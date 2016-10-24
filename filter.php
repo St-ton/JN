@@ -80,11 +80,10 @@ $NaviFilter->setUserSort($AktuelleKategorie);
 gibErweiterteDarstellung($Einstellungen, $NaviFilter, $cParameter_arr['nDarstellung']);
 
 
-$oSuchergebnisse = $NaviFilter->getProducts();;
+$oSuchergebnisse = $NaviFilter->getProducts();
 
 suchanfragenSpeichern($NaviFilter->Suche->cSuche, $oSuchergebnisse->GesamtanzahlArtikel);
 $NaviFilter->Suche->kSuchanfrage = gibSuchanfrageKey($NaviFilter->Suche->cSuche, Shop::$kSprache);
-
 
 // Umleiten falls SEO keine Artikel ergibt
 doMainwordRedirect($NaviFilter, count($oSuchergebnisse->Artikel->elemente), true);
@@ -141,7 +140,7 @@ $oSuchergebnisse->Kategorieauswahl = $NaviFilter->getCategoryFilterOptions();
 //Shop::dbg($oSuchergebnisse->Kategorieauswahl, false, '$oSuchergebnisse->Kategorieauswahl');
 
 $oSuchergebnisse->SuchFilter       = $NaviFilter->getSearchFilterOptions();
-//Shop::dbg($oSuchergebnisse->SuchFilter, false, '$oSuchergebnisse->SuchFilter');
+//Shop::dbg($oSuchergebnisse->SuchFilter, false, '$oSuchergebnisse->SuchFilter');i
 
 $oSuchergebnisse->SuchFilterJSON   = [];
 foreach ($oSuchergebnisse->SuchFilter as $key => $oSuchfilter) {

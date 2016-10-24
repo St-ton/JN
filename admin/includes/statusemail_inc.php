@@ -1065,24 +1065,41 @@ function isIntervalExceeded($dStart, $cInterval)
  */
 function sendStatusMail()
 {
-    $dBis         = date_create()->format('Y-m-d H:i:s');
-    $dVon         = date_create()->modify('-1 week')->format('Y-m-d H:i:s');
-
-    $oStatusemail = Shop::DB()->select('tstatusemail', 'nAktiv', 1);
-
+    $oStatusemail                 = Shop::DB()->select('tstatusemail', 'nAktiv', 1);
     $oStatusemail->nIntervall_arr = StringHandler::parseSSK($oStatusemail->cIntervall);
     $oStatusemail->nInhalt_arr    = StringHandler::parseSSK($oStatusemail->cInhalt);
 
-    $oMailObjekt  = baueStatusEmail($oStatusemail, $dVon, $dBis);
+    foreach ($oStatusemail->nIntervall_arr as $nIntervall) {
+        $nIntervall   = (int)$nIntervall;
+        $cInterval    = '';
+        $cIntervalAdj = '';
 
-    if ($oMailObjekt) {
-        if (!isset($oMailObjekt->mail)) {
-            $oMailObjekt->mail = new stdClass();
+        switch ($nIntervall) {
+            case 1:
+                $cInterval    = 'day';
+                $cIntervalAdj = 'Tägliche';
+                break;
+            case 7:
+                $cInterval    = 'week';
+                $cIntervalAdj = 'Wöchentliche';
+                break;
+            case 30:
+                $cInterval    = 'month';
+                $cIntervalAdj = 'Monatliche';
+                break;
+            default:
+                continue;
         }
 
-        $oMailObjekt->mail->toEmail = $oStatusemail->cEmail;
-        $oMailObjekt->cIntervall    = utf8_decode('Tägliche Status-Email');
-        sendeMail(MAILTEMPLATE_STATUSEMAIL, $oMailObjekt);
-        Shop::DB()->query("UPDATE tstatusemail SET dLetzterTagesVersand = now() WHERE nAktiv = 1", 4);
+        $dBis        = date_create()->format('Y-m-d H:i:s');
+        $dVon        = date_create()->modify('-1 ' . $cInterval)->format('Y-m-d H:i:s');
+        $oMailObjekt = baueStatusEmail($oStatusemail, $dVon, $dBis);
+
+        if ($oMailObjekt) {
+            isset($oMailObjekt->mail) or $oMailObjekt->mail = new stdClass();
+            $oMailObjekt->mail->toEmail                     = $oStatusemail->cEmail;
+            $oMailObjekt->cIntervall                        = utf8_decode($cIntervalAdj . ' Status-Email');
+            sendeMail(MAILTEMPLATE_STATUSEMAIL, $oMailObjekt);
+        }
     }
 }

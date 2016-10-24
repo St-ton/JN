@@ -42,7 +42,7 @@
     {quantityStatisticRow cAnzahlTitle='Tags' nAnzahlVar=$oMailObjekt->nAnzahlTags}
     {quantityStatisticRow cAnzahlTitle='Tags not approved' nAnzahlVar=$oMailObjekt->nAnzahlTagsNichtFreigeschaltet}
     {quantityStatisticRow cAnzahlTitle='Acquired customers' nAnzahlVar=$oMailObjekt->nAnzahlGeworbenerKunden}
-    {quantityStatisticRow cAnzahlTitle='Acquired customers who purchased' nAnzahlVar=$oMailObjekt->nAnzahlErfolgreichGeworbenerKunden}
+    {quantityStatisticRow cAnzahlTitle='Acquired customers who purchased something' nAnzahlVar=$oMailObjekt->nAnzahlErfolgreichGeworbenerKunden}
     {quantityStatisticRow cAnzahlTitle='Wish lists sent' nAnzahlVar=$oMailObjekt->nAnzahlVersendeterWunschlisten}
     {quantityStatisticRow cAnzahlTitle='Surveys conducted' nAnzahlVar=$oMailObjekt->nAnzahlDurchgefuehrteUmfragen}
     {quantityStatisticRow cAnzahlTitle='New article comments' nAnzahlVar=$oMailObjekt->nAnzahlNewskommentare}

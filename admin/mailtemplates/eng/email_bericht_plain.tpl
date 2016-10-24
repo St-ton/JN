@@ -10,11 +10,11 @@
 
 {/foreach}{/if}
 {if $oMailObjekt->nAnzahlNeukunden != -1}
-New customer: {$oMailObjekt->nAnzahlNeukunden}
+New customers: {$oMailObjekt->nAnzahlNeukunden}
 {/if}
 
 {if $oMailObjekt->nAnzahlNeukundenGekauft != -1}
-New customers who purchased: {$oMailObjekt->nAnzahlNeukundenGekauft}
+New customers who purchased something: {$oMailObjekt->nAnzahlNeukundenGekauft}
 {/if}
 
 {if $oMailObjekt->nAnzahlBestellungen != -1}
@@ -68,7 +68,7 @@ Acquired customers: {$oMailObjekt->nAnzahlGeworbenerKunden}
 {/if}
 
 {if $oMailObjekt->nAnzahlErfolgreichGeworbenerKunden != -1}
-Acquired customers who purchased: {$oMailObjekt->nAnzahlErfolgreichGeworbenerKunden}
+Acquired customers who purchased something: {$oMailObjekt->nAnzahlErfolgreichGeworbenerKunden}
 {/if}
 
 {if $oMailObjekt->nAnzahlVersendeterWunschlisten != -1}

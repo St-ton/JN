@@ -51,8 +51,7 @@ function bearbeiteStatusemail($oJobQueue)
                 $dLetzterVersandCol = 'dLetzterMonatsVersand';
                 break;
             default:
-                // TODO: handle non matching intervals
-                break;
+                continue;
         }
 
         if (isIntervalExceeded($dLetzterVersand, $cInterval)) {

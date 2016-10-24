@@ -330,6 +330,9 @@ class WarenkorbPers
                             $kArtikel_arr[] = $oArtikelVorhanden->kArtikel;
                         }
                     }
+                // Konfigitem ohne Artikelbezug?
+                } elseif ($WarenkorbPersPos->kArtikel === 0 && !empty($WarenkorbPersPos->kKonfigitem)) {
+                    $kArtikel_arr[] = $WarenkorbPersPos->kArtikel;
                 }
             }
             // Artikel aus dem Array Löschen, die nicht mehr Gültig sind

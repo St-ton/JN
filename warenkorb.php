@@ -75,7 +75,7 @@ if (isset($_SESSION['checkCouponResult'])) {
 // Gratis Geschenk bearbeiten
 if (isset($_POST['gratis_geschenk']) && intval($_POST['gratis_geschenk']) === 1 && isset($_POST['gratishinzufuegen'])) {
     $kArtikelGeschenk = (int)$_POST['gratisgeschenk'];
-    // Pruefenn ob der Artikel wirklich ein Gratis Geschenk ist
+    // Pruefen ob der Artikel wirklich ein Gratis Geschenk ist
     $oArtikelGeschenk = Shop::DB()->query(
         "SELECT tartikelattribut.kArtikel, tartikel.fLagerbestand, tartikel.cLagerKleinerNull, tartikel.cLagerBeachten
             FROM tartikelattribut

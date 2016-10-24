@@ -296,7 +296,7 @@ final class Shop
     /**
      * @var array
      */
-    private $registry = array();
+    private $registry = [];
 
     /**
      * @var bool
@@ -727,8 +727,8 @@ final class Shop
             'nSortierung'            => self::$nSortierung,
             'nSort'                  => self::$nSort,
             'MerkmalFilter_arr'      => self::$MerkmalFilter,
-            'TagFilter_arr'          => (isset(self::$TagFilter)) ? self::$TagFilter : array(),
-            'SuchFilter_arr'         => (isset(self::$SuchFilter)) ? self::$SuchFilter : array(),
+            'TagFilter_arr'          => (isset(self::$TagFilter)) ? self::$TagFilter : [],
+            'SuchFilter_arr'         => (isset(self::$SuchFilter)) ? self::$SuchFilter : [],
             'nArtikelProSeite'       => (isset(self::$nArtikelProSeite)) ? self::$nArtikelProSeite : null,
             'cSuche'                 => (isset(self::$cSuche)) ? self::$cSuche : null,
             'seite'                  => (isset(self::$seite)) ? self::$seite : null,
@@ -763,7 +763,7 @@ final class Shop
         self::$bKatFilterNotFound        = false;
         self::$bHerstellerFilterNotFound = false;
 
-        if (strpos($uri, 'index.php') === false) {
+        if (true||strpos($uri, 'index.php') === false) {
             executeHook(HOOK_SEOCHECK_ANFANG, array('uri' => &$uri));
             $seite        = 0;
             $hstseo       = '';

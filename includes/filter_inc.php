@@ -2774,7 +2774,7 @@ function gibNaviURL($NaviFilter, $bSeo, $oZusatzFilter, $kSprache = 0, $bCanonic
     ) {
         $bSeo = false;
     }
-    $cURL = $cSEOURL . 'navi.php?';
+    $cURL = $cSEOURL . 'index.php?';
     // Mainwords
     if (isset($NaviFilter->Kategorie->kKategorie) && $NaviFilter->Kategorie->kKategorie > 0) {
         if (!isset($NaviFilter->Kategorie->cSeo[$kSprache]) || strlen($NaviFilter->Kategorie->cSeo[$kSprache]) === 0) {
@@ -3936,7 +3936,7 @@ function baueSeitenNaviURL($NaviFilter, $bSeo, $oSeitenzahlen, $nMaxAnzeige = 7,
                     } else {
                         if ($bSeo) {
                             $cURL = $naviURL;
-                            if (strpos(basename($cURL), 'navi.php') !== false) {
+                            if (strpos(basename($cURL), 'index.php') !== false) {
                                 $oSeite->cURL = $cURL . '&amp;seite=' . $oSeite->nSeite . $cFilterShopURL;
                             } else {
                                 $oSeite->cURL = $cURL . SEP_SEITE . $oSeite->nSeite;
@@ -3963,7 +3963,7 @@ function baueSeitenNaviURL($NaviFilter, $bSeo, $oSeitenzahlen, $nMaxAnzeige = 7,
                     } else {
                         if ($bSeo) {
                             $cURL = $naviURL;
-                            if (strpos(basename($cURL), 'navi.php') !== false) {
+                            if (strpos(basename($cURL), 'index.php') !== false) {
                                 $oSeite->cURL = $cURL . '&amp;seite=' . $oSeite->nSeite . $cFilterShopURL;
                             } else {
                                 $oSeite->cURL = $cURL . SEP_SEITE . $oSeite->nSeite;
@@ -3986,7 +3986,7 @@ function baueSeitenNaviURL($NaviFilter, $bSeo, $oSeitenzahlen, $nMaxAnzeige = 7,
             } else {
                 if ($bSeo) {
                     $cURL = $naviURL;
-                    if (strpos(basename($cURL), 'navi.php') !== false) {
+                    if (strpos(basename($cURL), 'index.php') !== false) {
                         $oSeite_arr['zurueck']->cURL = $cURL . '&amp;seite=' . $oSeite_arr['zurueck']->nSeite . $cFilterShopURL;
                     } else {
                         $oSeite_arr['zurueck']->cURL = $cURL . SEP_SEITE . $oSeite_arr['zurueck']->nSeite;
@@ -4003,7 +4003,7 @@ function baueSeitenNaviURL($NaviFilter, $bSeo, $oSeitenzahlen, $nMaxAnzeige = 7,
             $oSeite_arr['vor']->nSeite = $oSeitenzahlen->AktuelleSeite + 1;
             if ($bSeo) {
                 $cURL = $naviURL;
-                if (strpos(basename($cURL), 'navi.php') !== false) {
+                if (strpos(basename($cURL), 'index.php') !== false) {
                     $oSeite_arr['vor']->cURL = $cURL . '&amp;seite=' . $oSeite_arr['vor']->nSeite . $cFilterShopURL;
                 } else {
                     $oSeite_arr['vor']->cURL = $cURL . SEP_SEITE . $oSeite_arr['vor']->nSeite;
@@ -4023,7 +4023,7 @@ function baueSeitenNaviURL($NaviFilter, $bSeo, $oSeitenzahlen, $nMaxAnzeige = 7,
  */
 function bauFilterSQL($NaviFilter)
 {
-    die('bauFilterSQL');
+    Shop::dbg('d', true, 'bauFilterSQL', 76);
     $cacheID = 'fsql_' . md5(serialize($NaviFilter));
     if (($FilterSQL = Shop::Cache()->get($cacheID)) === false) {
         $FilterSQL = new stdClass();

@@ -955,6 +955,13 @@ function gibPreisspannenFilterOptionen($FilterSQL, $NaviFilter, $oSuchergebnisse
         $oSprache = gibStandardsprache(true);
         $kSprache = (int)$oSprache->kSprache;
     }
+    $waehrung = null;
+    if (isset($_SESSION['Waehrung'])) {
+        $waehrung = $_SESSION['Waehrung'];
+    }
+    if (!isset($waehrung->kWaehrung)) {
+        $waehrung = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
+    }
     $cacheID = 'filter_ps_' . md5(
         json_encode($_SESSION['Kundengruppe']->kKundengruppe) .
         ((isset($NaviFilter->PreisspannenFilter->fVon)) ? json_encode($NaviFilter->PreisspannenFilter->fVon) : '') .
@@ -962,7 +969,7 @@ function gibPreisspannenFilterOptionen($FilterSQL, $NaviFilter, $oSuchergebnisse
         json_encode($FilterSQL) .
         $oSuchergebnisse->GesamtanzahlArtikel .
         json_encode($_SESSION['Steuersatz'])
-    ) . '_' . $kSprache;
+    ) . '_' . (int)$waehrung->kWaehrung . '_' . $kSprache;
     if (($oPreisspanne_arr = Shop::Cache()->get($cacheID)) !== false) {
         return $oPreisspanne_arr;
     }
@@ -1135,8 +1142,8 @@ function gibPreisspannenFilterOptionen($FilterSQL, $NaviFilter, $oSuchergebnisse
                         }
                     }
                     // Localize Preise
-                    $oPreisspannenFilter->cVonLocalized  = gibPreisLocalizedOhneFaktor($oPreisspannenFilter->nVon);
-                    $oPreisspannenFilter->cBisLocalized  = gibPreisLocalizedOhneFaktor($oPreisspannenFilter->nBis);
+                    $oPreisspannenFilter->cVonLocalized  = gibPreisLocalizedOhneFaktor($oPreisspannenFilter->nVon, $waehrung->kWaehrung);
+                    $oPreisspannenFilter->cBisLocalized  = gibPreisLocalizedOhneFaktor($oPreisspannenFilter->nBis, $waehrung->kWaehrung);
                     $oPreisspannenFilter->nAnzahlArtikel = $oPreisspannenFilterDB_arr[$i];
                     //baue URL
                     if (!isset($oZusatzFilter)) {
@@ -1228,8 +1235,8 @@ function gibPreisspannenFilterOptionen($FilterSQL, $NaviFilter, $oSuchergebnisse
                     $oPreisspannenfilterTMP->nBis           = $oPreisspannenfilter->nBis;
                     $oPreisspannenfilterTMP->nAnzahlArtikel = $oPreisspannenFilterDB_arr[$i];
                     // Localize Preise
-                    $oPreisspannenfilterTMP->cVonLocalized = gibPreisLocalizedOhneFaktor($oPreisspannenfilterTMP->nVon);
-                    $oPreisspannenfilterTMP->cBisLocalized = gibPreisLocalizedOhneFaktor($oPreisspannenfilterTMP->nBis);
+                    $oPreisspannenfilterTMP->cVonLocalized = gibPreisLocalizedOhneFaktor($oPreisspannenfilterTMP->nVon, $waehrung->kWaehrung);
+                    $oPreisspannenfilterTMP->cBisLocalized = gibPreisLocalizedOhneFaktor($oPreisspannenfilterTMP->nBis, $waehrung->kWaehrung);
                     //baue URL
                     $oZusatzFilter                           = new stdClass();
                     $oZusatzFilter->PreisspannenFilter       = new stdClass();

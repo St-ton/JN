@@ -571,6 +571,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
                 case 'mpg':
                 case 'avi':
                 case 'wmv':
+                case 'mp4':
                     return 'video';
 
                 case 'wav':

@@ -3,7 +3,6 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-
 define('DEFINES_PFAD', '../includes/');
 define('FREIDEFINIERBARER_FEHLER', '8');
 
@@ -565,7 +564,7 @@ function versendeVerfuegbarkeitsbenachrichtigung($oArtikel)
                 $mail                                  = new stdClass();
                 $mail->toEmail                         = $Benachrichtigung->cMail;
                 $mail->toName                          = ($Benachrichtigung->cVorname || $Benachrichtigung->cNachname) ? ($Benachrichtigung->cVorname . ' ' . $Benachrichtigung->cNachname) : $Benachrichtigung->cMail;
-                $obj->mail = $mail;
+                $obj->mail                             = $mail;
                 sendeMail(MAILTEMPLATE_PRODUKT_WIEDER_VERFUEGBAR, $obj);
 
                 $upd                    = new stdClass();
@@ -586,7 +585,7 @@ function versendeVerfuegbarkeitsbenachrichtigung($oArtikel)
 function setzePreisverlauf($kArtikel, $kKundengruppe, $fVKNetto)
 {
     $nReihen = 0;
-    $oPreis = Shop::DB()->query(
+    $oPreis  = Shop::DB()->query(
         "SELECT fVKNetto
                 FROM tpreisverlauf
                 WHERE kArtikel = " . $kArtikel . "
@@ -599,7 +598,7 @@ function setzePreisverlauf($kArtikel, $kKundengruppe, $fVKNetto)
     if (!isset($oPreis->fVKNetto) || isset($oPreis->fVKNetto) && (int)($oPreis->fVKNetto * 100) !== (int)($fVKNetto * 100)) {
         $oPreisverlauf                = new stdClass();
         $oPreisverlauf->fVKNetto      = $fVKNetto;
-        $nReihen = Shop::DB()->update('tpreisverlauf', ['kArtikel', 'kKundengruppe', 'dDate'], [$kArtikel, $kKundengruppe, date('Y-m-d')], $oPreisverlauf);
+        $nReihen                      = Shop::DB()->update('tpreisverlauf', ['kArtikel', 'kKundengruppe', 'dDate'], [$kArtikel, $kKundengruppe, date('Y-m-d')], $oPreisverlauf);
     } else {
         // Eintrag entfernen um Dopplung zu vermeiden
         $nReihen = Shop::DB()->delete('tpreisverlauf', ['kArtikel', 'kKundengruppe', 'dDate'], [$kArtikel, $kKundengruppe, date('Y-m-d')]);
@@ -856,7 +855,7 @@ function getSeoFromDB($kKey, $cKey, $kSprache = null, $cAssoc = null)
         }
     }
 
-    return null;
+    return;
 }
 
 /**
@@ -867,17 +866,10 @@ function getSeoFromDB($kKey, $cKey, $kSprache = null, $cAssoc = null)
  */
 function handlePriceFormat($kArtikel, $kKundengruppe, $kKunde = null)
 {
-    $kArtikel      = (int)$kArtikel;
-    $kKundengruppe = (int)$kKundengruppe;
-    Shop::DB()->query(
-        "DELETE p, d
-            FROM tpreis AS p
-            LEFT JOIN tpreisdetail AS d ON d.kPreis = p.kPreis
-            WHERE p.kArtikel = {$kArtikel} AND p.kKundengruppe = {$kKundengruppe}", 3);
     // tpreis
     $o                = new stdClass();
-    $o->kArtikel      = $kArtikel;
-    $o->kKundengruppe = $kKundengruppe;
+    $o->kArtikel      = (int)$kArtikel;
+    $o->kKundengruppe = (int)$kKundengruppe;
 
     if ($kKunde !== null && intval($kKunde) > 0) {
         $o->kKunde = (int)$kKunde;
@@ -929,9 +921,16 @@ function handleNewPriceFormat($xml)
     if (is_array($xml) && isset($xml['tpreis'])) {
         $preise = mapArray($xml, 'tpreis', $GLOBALS['mPreis']);
         if (is_array($preise) && count($preise) > 0) {
+            $kArtikel = (int)$preise[0]->kArtikel;
+            Shop::DB()->query(
+                "DELETE p, d
+                    FROM tpreis AS p
+                    LEFT JOIN tpreisdetail AS d ON d.kPreis = p.kPreis
+                    WHERE p.kArtikel = {$kArtikel}", 3
+            );
             $customerGroupHandled = array();
             foreach ($preise as $i => $preis) {
-                $kPreis       = handlePriceFormat($preis->kArtikel, $preis->kKundenGruppe, $preis->kKunde);
+                $kPreis = handlePriceFormat($preis->kArtikel, $preis->kKundenGruppe, $preis->kKunde);
                 if (!empty($xml['tpreis'][$i])) {
                     $preisdetails = mapArray($xml['tpreis'][$i], 'tpreisdetail', $GLOBALS['mPreisDetail']);
                 } else {
@@ -951,7 +950,7 @@ function handleNewPriceFormat($xml)
                 }
                 // default price for customergroup set?
                 if (!$hasDefaultPrice && isset($xml['fStandardpreisNetto'])) {
-                    $o            = (object)array(
+                    $o = (object)array(
                         'kPreis'    => $kPreis,
                         'nAnzahlAb' => 0,
                         'fVKNetto'  => $xml['fStandardpreisNetto']
@@ -985,6 +984,13 @@ function handleNewPriceFormat($xml)
 function handleOldPriceFormat($objs)
 {
     if (is_array($objs) && count($objs) > 0) {
+        $kArtikel = (int)$objs[0]->kArtikel;
+        Shop::DB()->query(
+            "DELETE p, d
+                    FROM tpreis AS p
+                    LEFT JOIN tpreisdetail AS d ON d.kPreis = p.kPreis
+                    WHERE p.kArtikel = {$kArtikel}", 3
+        );
         foreach ($objs as $obj) {
             $kPreis = handlePriceFormat($obj->kArtikel, $obj->kKundengruppe);
             // tpreisdetail
@@ -1078,6 +1084,7 @@ function flushCategoryTreeCache()
 function flushCustomerPriceCache($kKunde)
 {
     $cacheID = 'custprice_' . (int)$kKunde;
+
     return Shop::Cache()->flush($cacheID);
 }
 

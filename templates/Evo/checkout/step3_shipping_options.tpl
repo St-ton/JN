@@ -14,8 +14,6 @@
                     {if !isset($Versandarten)}
                         <div class="alert alert-danger">{lang key="noShippingMethodsAvailable" section="checkout"}</div>
                     {else}
-                        <div class="alert alert-info">{lang key="shippingOptionsDesc" section="shipping payment"}</div>
-
                         <ul class="list-group">
                             {foreach name=shipment from=$Versandarten item=versandart}
                                 <li id="shipment_{$versandart->kVersandart}" class="list-group-item">

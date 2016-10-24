@@ -6,6 +6,7 @@
 ### Neue Features
 * Verkürzter Checkout (3 Seiten anstatt bisher 5 Seiten)
 * SEO-URLs ersetzen warenkorb.php, bestellvorgang.php, bestellabschluss.php, pass.php, newsletter.php, wunschliste.php und jtl.php (#31)
+* Unterstützung kundenindividueller Preise. Setzt Wawi v1.2 oder größer voraus (#344)
 * Unterstützung mehrsprachiger Kategorieattribute (#191)
 * Optionale 2-Faktor-Authentifizierung im Backend (#276)
 * Banner und Slider und Box-Anzeige können nun konkreten CMS-Seiten zugewiesen werden (#107) 

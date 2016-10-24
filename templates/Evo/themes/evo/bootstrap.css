@@ -6740,7 +6740,7 @@ a.list-group-item-danger.active:focus {
 .panel-footer {
   padding: 10px 15px;
   background-color: #f5f5f5;
-  border-top: 1px solid #dddddd;
+  border-top: 1px solid #f3f3f3;
   border-bottom-right-radius: 3px;
   border-bottom-left-radius: 3px;
 }
@@ -6927,31 +6927,31 @@ a.list-group-item-danger.active:focus {
 }
 .panel-group .panel-heading + .panel-collapse > .panel-body,
 .panel-group .panel-heading + .panel-collapse > .list-group {
-  border-top: 1px solid #dddddd;
+  border-top: 1px solid #f3f3f3;
 }
 .panel-group .panel-footer {
   border-top: 0;
 }
 .panel-group .panel-footer + .panel-collapse .panel-body {
-  border-bottom: 1px solid #dddddd;
+  border-bottom: 1px solid #f3f3f3;
 }
 .panel-default {
-  border-color: #dddddd;
+  border-color: #dadada;
 }
 .panel-default > .panel-heading {
-  color: #ffffff;
-  background-color: #313131;
-  border-color: #dddddd;
-}
-.panel-default > .panel-heading + .panel-collapse > .panel-body {
-  border-top-color: #dddddd;
-}
-.panel-default > .panel-heading .badge {
   color: #313131;
   background-color: #ffffff;
+  border-color: #dadada;
+}
+.panel-default > .panel-heading + .panel-collapse > .panel-body {
+  border-top-color: #dadada;
+}
+.panel-default > .panel-heading .badge {
+  color: #ffffff;
+  background-color: #313131;
 }
 .panel-default > .panel-footer + .panel-collapse > .panel-body {
-  border-bottom-color: #dddddd;
+  border-bottom-color: #dadada;
 }
 .panel-primary {
   border-color: #bc3726;
@@ -8999,7 +8999,7 @@ ul.filter_state li a.active:before {
 }
 #panel-register-form .nav-toggle > .btn.heading {
   background-color: #313131;
-  color: #ffffff;
+  color: #313131;
 }
 #content > .carousel.slide {
   overflow: hidden;
@@ -9340,6 +9340,9 @@ table.matrix tbody > tr > td {
 .banner > a {
   border: 0 solid #ffffff;
   border-radius: 2px;
+}
+.banner .img-responsive {
+  width: 100%;
 }
 .backstretch {
   left: 0;
@@ -9697,7 +9700,6 @@ fieldset {
 }
 #footer .panel .panel-title {
   font-size: 14px;
-  padding-bottom: 5px;
 }
 #footer .panel a {
   color: #9a9a9a;
@@ -9776,13 +9778,6 @@ fieldset {
 }
 /* Order confirm fix */
 @media (max-width: 480px) {
-  #order-confirm > .panel > .panel-body {
-    padding: 0;
-  }
-  #order-confirm.col-xs-12,
-  #order-confirm .col-xs-6 {
-    padding: 0;
-  }
   .order-submit {
     padding: 0;
   }
@@ -9881,7 +9876,7 @@ fieldset {
   float: right;
 }
 .thumbnail {
-  border: 1px solid #dddddd;
+  border: 1px solid #dadada;
   background-color: #ffffff;
   padding: 10px;
   box-shadow: none;
@@ -9892,8 +9887,8 @@ fieldset {
 }
 .row.gallery .product-wrapper {
   overflow: hidden;
-  border-bottom: 1px solid #dddddd;
-  border-right: 1px solid #dddddd;
+  border-bottom: 1px solid #dadada;
+  border-right: 1px solid #dadada;
 }
 @media (min-width: 1200px) {
   .row.gallery .product-wrapper:nth-child(3n) {
@@ -9942,11 +9937,6 @@ fieldset {
 .navbar-form.navbar-left.filter-select {
   margin-left: 5px;
   margin-right: 10px;
-}
-.panel.panel-blank {
-  border: none !important;
-  box-shadow: none !important;
-  background-color: transparent;
 }
 /* product variations */
 .form-inner dt {
@@ -10233,9 +10223,9 @@ fieldset {
   box-shadow: none;
 }
 .megamenu .thumbnail:hover {
-  border: 1px solid #dddddd;
-  -webkit-box-shadow: 0 1px 2px #dddddd;
-  box-shadow: 0 1px 2px #dddddd;
+  border: 1px solid #dadada;
+  -webkit-box-shadow: 0 1px 2px #dadada;
+  box-shadow: 0 1px 2px #dadada;
 }
 .megamenu .mega-categories.hasInfoColumn {
   border-left: 1px solid #dfdfdf;
@@ -10247,9 +10237,9 @@ fieldset {
 }
 .megamenu .mega-categories .category-wrapper:hover,
 .megamenu .mega-categories .category-wrapper.active {
-  border: 1px solid #dddddd;
-  -webkit-box-shadow: 0 1px 2px #dddddd;
-  box-shadow: 0 1px 2px #dddddd;
+  border: 1px solid #dadada;
+  -webkit-box-shadow: 0 1px 2px #dadada;
+  box-shadow: 0 1px 2px #dadada;
 }
 .megamenu .mega-categories .category-wrapper.active .caption > h5,
 .megamenu .mega-categories .category-wrapper ul.subsub li.active {
@@ -10353,7 +10343,7 @@ div#add-to-cart {
   }
 }
 .pgwSlider .ps-current img {
-  border: 1px solid #dddddd;
+  border: 1px solid #dadada;
 }
 .content-cats-small .thumbnail,
 .content-cats-small a,
@@ -10367,9 +10357,9 @@ div#add-to-cart {
   text-decoration: underline;
 }
 .content-cats-small .thumbnail:hover {
-  border: 1px solid #dddddd;
-  -webkit-box-shadow: 0 1px 2px #dddddd;
-  box-shadow: 0 1px 2px #dddddd;
+  border: 1px solid #dadada;
+  -webkit-box-shadow: 0 1px 2px #dadada;
+  box-shadow: 0 1px 2px #dadada;
 }
 .group-description,
 .group-items {
@@ -11166,8 +11156,8 @@ header.fixed-navbar .visible-affix .cart-dropdown {
   color: inherit !important;
 }
 .bpy .header-box {
-  background-color: #313131 !important;
-  color: #ffffff !important;
+  background-color: #ffffff !important;
+  color: #313131 !important;
 }
 .bpy .bpy-icon {
   color: #313131;
@@ -11441,6 +11431,12 @@ header.fixed-navbar .visible-affix .cart-dropdown {
 .btn-danger[disabled] {
   background-color: #c12e2a;
   background-image: none;
+}
+.form-group label {
+  font-size: 12px;
+  text-transform: uppercase;
+  font-weight: 400;
+  color: #9A9A9A;
 }
 .breadcrumb {
   padding-bottom: 5px;
@@ -11780,42 +11776,15 @@ footer h6 {
   background-image: -o-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
   background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
 }
-#content-wrapper .panel-default {
-  border-color: #b9b9b9;
-}
-.panel-default > .panel-heading {
-  background: #313131;
-}
-.panel-primary > .panel-heading {
-  background: #bc3726;
-}
-.panel-success > .panel-heading {
-  background: #dff0d8;
-}
-.panel-info > .panel-heading {
-  background: #d9edf7;
-}
-.panel-warning > .panel-heading {
-  background: #fcf8e3;
-}
-.panel-danger > .panel-heading {
-  background: #f2dede;
-}
-.panel-default > .panel-heading h1 .panel-default > .panel-heading h2,
-.panel-default > .panel-heading h3,
-.panel-default > .panel-heading h4,
-.panel-default > .panel-heading h5,
-.panel-default > .panel-heading h6 {
-  color: #ffffff;
-  border-bottom: none;
-  padding-top: 5px;
-}
 .panel-heading h5 {
   margin: 0;
   font-size: 18px;
 }
 .form-inner.last .panel {
   margin-bottom: 0;
+}
+.panel-title {
+  padding: 5px 0;
 }
 .panel-title .btn-default {
   color: #333333;

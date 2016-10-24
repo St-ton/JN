@@ -148,12 +148,12 @@ if (isset($_POST['type']) && $_POST['type'] === 'settings' && validateToken()) {
 if (isset($_GET['settings']) && strlen($_GET['settings']) > 0 && validateToken()) {
     $cOrdner      = Shop::DB()->escape($_GET['settings']);
     $oTpl         = $templateHelper->getData($cOrdner, $admin);
-    $tplXML       = $templateHelper->getXML($cOrdner);
+    $tplXML       = $templateHelper->getXML($cOrdner, false);
     $preview      = array();
     $parentFolder = null;
     if (!empty($tplXML->Parent)) {
         $parentFolder = (string)$tplXML->Parent;
-        $parentTplXML = $templateHelper->getXML($parentFolder);
+        $parentTplXML = $templateHelper->getXML($parentFolder, false);
     }
     $tplConfXML       = $oTemplate->leseEinstellungenXML($cOrdner, $parentFolder);
     $tplLessXML       = $oTemplate->leseLessXML($cOrdner);

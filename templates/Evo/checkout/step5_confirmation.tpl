@@ -1,7 +1,4 @@
 <div id="order-confirm">
-    <p id="check-order-details-alert" class="alert alert-info">
-        {lang key="checkOrderDetails" section="checkout"}
-    </p>
     {if $hinweis}
        <p class="alert alert-danger">{$hinweis}</p>
     {/if}
@@ -14,132 +11,110 @@
        <p class="alert alert-danger">{lang key="fillOutQuestion" section="messages"}</p>
     {/if}
 
-    <div class="row">
-        <div class="col-xs-12 col-sm-4">
-            {block name="checkout-confirmation-billing-address"}
-            <div class="panel panel-default" id="panel-edit-billing-address">
+    <div class="row row-eq-height">
+        <div class="col-xs-12 col-sm-8"  id="check-billing-shipping-address">
+            <div class="panel panel-default">
                 <div class="panel-heading">
                     <h3 class="panel-title">
-                        {block name="checkout-confirmation-billing-address-title"}{lang key="billingAdress" section="account data"}
-                        <a class="btn btn-default btn-xs pull-right button_edit" href="{get_static_route id='bestellvorgang.php'}?editRechnungsadresse=1">
-                        <span class="fa fa-pencil" title="{lang key="modifyBillingAdress" section="global"}"></span>
-                        </a>
-                        {/block}
+                        {* ToDo: New Localization! *}
+                        {lang key="billingAdress" section="account data"} &amp; {lang key="shippingAdress" section="account data"}
                     </h3>
                 </div>
                 <div class="panel-body">
-                    {include file='checkout/inc_billing_address.tpl'}
-                </div>
-            </div>
-            {/block}
+                    <div class="row">
+                        <div class="col-xxs-12 col-xs-6" id="billing-address">
+                            {block name="checkout-confirmation-billing-address"}
+                                <p class="title">
+                                    <strong>{lang key="billingAdress" section="account data"}</strong>
+                                </p>
+                                <p>
+                                    {include file='checkout/inc_billing_address.tpl'}
+                                </p>
+                                <a class="small edit" href="{get_static_route id='bestellvorgang.php'}?editRechnungsadresse=1">
+                                    <span class="fa fa-pencil"></span> {lang key="modifyBillingAdress" section="global"}
+                                </a>
+                            {/block}
+                        </div>
+                        <div class="col-xxs-12 col-xs-6" id="shipping-address">
+                            {block name="checkout-confirmation-shipping-address"}
+                                <p class="title">
+                                    <strong>{lang key="shippingAdress" section="account data"}</strong>
+                                </p>
+                                <p>
+                                    {include file='checkout/inc_delivery_address.tpl'}
+                                </p>
+                                <a class="small edit" href="{get_static_route id='bestellvorgang.php'}?editLieferadresse=1">
+                                    <span class="fa fa-pencil"></span> {lang key="modifyShippingAdress" section="checkout"}
+                                </a>
+                            {/block}
+                        </div>
+                    </div>{* /row *}
+                </div>{* /panel-body *}
+            </div>{* /panel *}
         </div>
 
-        <div class="col-xs-12 col-sm-4">
-            {block name="checkout-confirmation-shipping-address"}
-            <div class="panel panel-default" id="panel-edit-shipping-address">
+        <div class="col-xs-12 col-sm-4" id="check-payment-shipping">
+            <div class="panel panel-default">
                 <div class="panel-heading">
                     <h3 class="panel-title">
-                        {block name="checkout-confirmation-shipping-address-title"}
-                        {lang key="shippingAdress" section="account data"}
-                        <a class="btn btn-default btn-xs pull-right button_edit" href="{get_static_route id='bestellvorgang.php'}?editLieferadresse=1" title="{lang key="modifyShippingAdress" section="checkout"}">
-                        <span class="fa fa-pencil"></span>
-                        </a>
-                        {/block}
+                        {* ToDo: New Localization! *}
+                        {lang key="shippingOptions" section="global"} &amp; {lang key="paymentOptions" section="global"}
                     </h3>
                 </div>
                 <div class="panel-body">
-                    {include file='checkout/inc_delivery_address.tpl'}
-                </div>
-            </div>
-            {/block}
-        </div>
-
-        <div class="col-xs-12 col-sm-4">
-            {block name="checkout-confirmation-shipping-method"}
-            <div class="panel panel-default" id="panel-edit-shipping-method">
-                <div class="panel-heading">
-                    <h3 class="panel-title">
-                        {block name="checkout-confirmation-shipping-method-title"}
-                        {lang key="shippingOptions" section="global"}
-                        <a class="btn btn-default btn-xs pull-right button_edit" href="{get_static_route id='bestellvorgang.php'}?editVersandart=1" title="{lang key="modifyShippingOption" section="checkout"}">
-                        <span class="fa fa-pencil"></span>
-                        </a>
+                    <div id="shipping-method">
+                        {block name="checkout-confirmation-shipping-method"}
+                            <p>
+                                <strong class="title">{lang key="shippingOptions" section="global"}: </strong>
+                                {$smarty.session.Versandart->angezeigterName|trans}
+                            </p>
+                            
+                            {$cEstimatedDelivery = $smarty.session.Warenkorb->getEstimatedDeliveryTime()}
+                            {if $cEstimatedDelivery|@count_characters > 0}
+                                <p class="small text-muted">
+                                    <strong>{lang key="shippingTime" section="global"}</strong>: {$cEstimatedDelivery}
+                                </p>
+                            {/if}
+                            <a class="small edit" href="{get_static_route id='bestellvorgang.php'}?editVersandart=1">
+                                <span class="fa fa-pencil"></span> {lang key="modifyShippingOption" section="checkout"}
+                            </a>
                         {/block}
-                    </h3>
-                </div>
-                <div class="panel-body">
-                {$cEstimatedDelivery = $smarty.session.Warenkorb->getEstimatedDeliveryTime()}
-                {if $cEstimatedDelivery|@count_characters > 0}
-                    <p>
-                        {$smarty.session.Versandart->angezeigterName|trans}
-                    </p>
-                    <p>
-                        <strong>{lang key="shippingTime" section="global"}</strong>: {$cEstimatedDelivery}
-                    </p>
-                {else}
-                    {$smarty.session.Versandart->angezeigterName|trans}
-                {/if}
-                </div>
-            </div>
-            {/block}
-            {block name="checkout-confirmation-payment-method"}
-            <div class="panel panel-default" id="panel-edit-payment-options">
-                <div class="panel-heading">
-                    <h3 class="panel-title">
-                        {block name="checkout-confirmation-payment-method-title"}
-                        {lang key="paymentOptions" section="global"}
-                        <a class="btn btn-default btn-xs pull-right button_edit" href="{get_static_route id='bestellvorgang.php'}?editZahlungsart=1" title="{lang key="modifyPaymentOption" section="checkout"}">
-                        <span class="fa fa-pencil"></span>
-                        </a>
+                    </div>
+                    <hr>
+                    <div id="payment-method">
+                        {block name="checkout-confirmation-payment-method"}
+                            <p>
+                                <strong class="title">{lang key="paymentOptions" section="global"}: </strong>
+                                {$smarty.session.Zahlungsart->angezeigterName|trans}
+                            </p>
+                            {if isset($smarty.session.Zahlungsart->cHinweisText) && !empty($smarty.session.Zahlungsart->cHinweisText)}{* this should be localized *}
+                                <p class="small text-muted">{$smarty.session.Zahlungsart->cHinweisText}</p>
+                            {/if}
+                            <a class="small edit" href="{get_static_route id='bestellvorgang.php'}?editZahlungsart=1">
+                                <span class="fa fa-pencil"></span> {lang key="modifyPaymentOption" section="checkout"}
+                            </a>
                         {/block}
-                    </h3>
-                </div>
-                <div class="panel-body">
-                    {block name="checkout-confirmation-payment-method-body"}
-                    {$smarty.session.Zahlungsart->angezeigterName|trans}
-                    {if isset($smarty.session.Zahlungsart->cHinweisText) && !empty($smarty.session.Zahlungsart->cHinweisText)}{* this should be localized *}
-                        <p class="small text-muted">{$smarty.session.Zahlungsart->cHinweisText}</p>
-                    {/if}
-                    {/block}
-                </div>
+                    </div>
+                </div>{* /panel-body *}
             </div>
-            {/block}
         </div>
     </div>{* /row *}
 
     {if $GuthabenMoeglich}
-        <div class="row">
-            <div class="col-xs-12 col-md-12">
-                {block name="checkout-confirmation-credit"}
-                    <div class="panel panel-default" id="panel-edit-credit">
-                        <div class="panel-heading">
-                            <h3 class="panel-title">{block name="checkout-confirmation-credit-title"}{lang key="credit" section="account data"}{/block}</h3>
-                        </div>
-                        <div class="panel-body">
-                            {include file='checkout/credit_form.tpl'}
-                        </div>
-                    </div>
-                {/block}
-            </div>
-        </div>
-    {/if}
-    <div class="row">
-        {if $KuponMoeglich}
-            <div class="col-xs-12 col-md-6">
-                {block name="checkout-confirmation-coupon"}
-                <div class="panel panel-default" id="panel-edit-coupon">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">{block name="checkout-confirmation-coupon-title"}{lang key="coupon" section="account data"}{/block}</h3>
-                    </div>
-                    <div class="panel-body">
-                        {include file='checkout/coupon_form.tpl'}
-                    </div>
+        {block name="checkout-confirmation-credit"}
+            <div class="panel panel-default" id="panel-edit-credit">
+                <div class="panel-heading">
+                    <h3 class="panel-title">{block name="checkout-confirmation-credit-title"}{lang key="credit" section="account data"}{/block}</h3>
                 </div>
-                {/block}
+                <div class="panel-body">
+                    {include file='checkout/credit_form.tpl'}
+                </div>
             </div>
-        {/if}
+        {/block}
+    {/if}
+    <div class="row row-eq-height">
         {block name="checkout-confirmation-comment"}
-            <div class="col-xs-12 col-md-{if $KuponMoeglich == 1}6{else}12{/if}">
+            <div class="col-xs-12 col-md-{if $KuponMoeglich == 1}8{else}12{/if}">
                 <div class="panel panel-default" id="panel-edit-comment">
                     <div class="panel-heading">
                         <h3 class="panel-title">{block name="checkout-confirmation-comment-title"}{lang key="comment" section="product rating"}{/block}</h3>
@@ -153,6 +128,20 @@
                 </div>
             </div>
         {/block}
+        {if $KuponMoeglich}
+            <div class="col-xs-12 col-md-4">
+                {block name="checkout-confirmation-coupon"}
+                <div class="panel panel-default" id="panel-edit-coupon">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">{block name="checkout-confirmation-coupon-title"}{lang key="coupon" section="account data"}{/block}</h3>
+                    </div>
+                    <div class="panel-body">
+                        {include file='checkout/coupon_form.tpl'}
+                    </div>
+                </div>
+                {/block}
+            </div>
+        {/if}
     </div>{* /row *}
 
     {if isset($safetypay_form)}

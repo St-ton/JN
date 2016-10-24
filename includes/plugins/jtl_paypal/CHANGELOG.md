@@ -13,7 +13,7 @@
 * PayPal Basic Bestellungen lassen sich nun nachträglich bezahlen (#74)
 * PayPal PLUS Payment Wall Style-Support (neue Einstellungen)
 * Bugfix: TLS-Check lieferte teilweise falsche Ergebnisse, da Version nicht festgelegt war
-* Bugfix: Einlösen eines Kupons in Kombination mit der Zahlungsart PayPal Basic nicht möglich 
+* Bugfix: Einlösen eines Kupons in Kombination mit der Zahlungsart PayPal Basic nicht möglich (#373)
 * Bugfix: PayPal PLUS: Bestellnummer wird nicht korrekt an PayPal übersendet (#437)
 * Bugfix: PayPal PLUS: Rundungsdifferenzen bei mehr als 2 Nachkommastellen werden nicht ausgeglichen ("validation error") (#317)
 * Bugfix: Rundungsfehler bei PayPal mit Kuponnutzung (#272)

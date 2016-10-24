@@ -58,6 +58,8 @@ if (isset($_POST['neu_export']) && (int)$_POST['neu_export'] === 1 && validateTo
         if ((int)$_POST['kExportformat'] > 0) {
             //update
             $kExportformat = (int)$_POST['kExportformat'];
+            $revision = new Revision();
+            $revision->addRevision('export', $kExportformat);
             Shop::DB()->update('texportformat', 'kExportformat', $kExportformat, $exportformat);
             $hinweis .= "Das Exportformat <strong>$exportformat->cName</strong> wurde erfolgreich ge&auml;ndert.";
         } else {

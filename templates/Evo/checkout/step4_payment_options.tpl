@@ -10,9 +10,7 @@
             <form id="zahlung" method="post" action="{get_static_route id='bestellvorgang.php'}" class="form">
                 {$jtl_token}
                 <fieldset>
-                    {if empty($cFehler)}
-                        <div class="alert alert-info">{lang key="paymentOptionsDesc" section="shipping payment"}</div>
-                    {else}
+                    {if !empty($cFehler)}
                         <div class="alert alert-danger">{$cFehler}</div>
                     {/if}
                     <ul class="list-group">

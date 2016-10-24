@@ -1053,7 +1053,11 @@ function pruefeFuegeEinInWarenkorb($Artikel, $anzahl, $oEigenschaftwerte_arr, $n
 
     // Abnahmeintervall
     if ($Artikel->fAbnahmeintervall > 0) {
-        $dVielfache = round($Artikel->fAbnahmeintervall * ceil($anzahl / $Artikel->fAbnahmeintervall), $nGenauigkeit);
+        if (function_exists('bcdiv')) {
+            $dVielfache = round($Artikel->fAbnahmeintervall * ceil(bcdiv($_POST['anzahl'][$i],$Artikel->fAbnahmeintervall, 3)), 2);
+        } else {
+            $dVielfache = round($Artikel->fAbnahmeintervall * ceil($anzahl / $Artikel->fAbnahmeintervall), $nGenauigkeit);
+        }
         if ($dVielfache != $anzahl) {
             $redirectParam[] = R_ARTIKELABNAHMEINTERVALL;
         }
@@ -1225,7 +1229,7 @@ function fuegeEinInWarenkorb($kArtikel, $anzahl, $oEigenschaftwerte_arr = '', $n
         }
         $redirectParam = pruefeFuegeEinInWarenkorb($Artikel, $anzahl, $oEigenschaftwerte_arr);
         // verhindert, dass Konfigitems mit Preis=0 aus der Artikelkonfiguration fallen wenn 'Preis auf Anfrage' eingestellt ist
-        if (!empty($kKonfigitem) && $redirectParam[0] === R_AUFANFRAGE) {
+        if (!empty($kKonfigitem) && isset($redirectParam[0]) && $redirectParam[0] === R_AUFANFRAGE) {
             unset($redirectParam[0]);
         }
 
@@ -3155,10 +3159,10 @@ function baueVersandkostenfreiString($oVersandart, $fWarenkorbSumme)
             $cName             = (!empty($VersandartSprache->cName)) ? $VersandartSprache->cName : $oVersandart->cName;
         }
         if ($fSummeDiff <= 0) {
-            return sprintf(Shop::Lang()->get('noShippingCostsReached', 'basket'), strval($oVersandart->cLaender)) . ' ' . Shop::Lang()->get('with', 'global') . " $cName";
+            return sprintf(Shop::Lang()->get('noShippingCostsReached', 'basket'), $cName, baueVersandkostenfreiLaenderString($oVersandart), strval($oVersandart->cLaender));
         }
 
-        return sprintf(Shop::Lang()->get('noShippingCostsAt', 'basket'), strval(gibPreisStringLocalized($fSummeDiff))) . ' ' . Shop::Lang()->get('with', 'global') . " $cName";
+        return sprintf(Shop::Lang()->get('noShippingCostsAt', 'basket'), strval(gibPreisStringLocalized($fSummeDiff)), $cName, baueVersandkostenfreiLaenderString($oVersandart));
     }
 
     return '';
@@ -5209,7 +5213,7 @@ function http_request($cURL, $nTimeout = 15, $cPost = null, $bReturnStatus = fal
 /**
  * @param string|array|object $xData
  * @param bool                $bEncode
- * @return array
+ * @return string|array|object
  */
 function utf8_convert_recursive($xData, $bEncode = true)
 {

@@ -718,8 +718,8 @@ function gibKategoriebildname($Kategoriebild, $Bildformat)
 }
 
 /**
- * @param $img
- * @param $Bildformat
+ * @param object $img
+ * @param string $Bildformat
  * @return mixed|string
  */
 function gibArtikelbildname($img, $Bildformat)
@@ -1515,7 +1515,7 @@ function imageload_alpha($img, $nWidth = 0, $nHeight = 0)
 }
 
 /**
- * @param $pfad
+ * @param string $pfad
  * @return string
  */
 function neuerDateiname($pfad)

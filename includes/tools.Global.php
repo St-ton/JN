@@ -523,7 +523,7 @@ function checkeWarenkorbEingang()
                         // Falls die Wunschliste aus der Artikelübersicht ausgewählt wurde, muss zum Artikel weitergeleitet werden
                         // um Variationen zu wählen
                         if (verifyGPCDataInteger('overview') === 1) {
-                            header('Location: ' . Shop::getURL() . '/navi.php?a=' . $kArtikel . '&n=' . $fAnzahl . '&r=' . R_VARWAEHLEN, true, 303);
+                            header('Location: ' . Shop::getURL() . '/index.php?a=' . $kArtikel . '&n=' . $fAnzahl . '&r=' . R_VARWAEHLEN, true, 303);
                             exit;
                         }
 
@@ -905,11 +905,7 @@ function fuegeVariBoxInWK($variBoxAnzahl_arr, $kArtikel, $bIstVater, $bExtern = 
 
             if (count($nRedirectErr_arr) > 0) {
                 //redirekt zum artikel, um variation/en zu wählen / MBM beachten
-                if ($bIstVater) {
-                    header('Location: navi.php?a=' . $kVaterArtikel . '&r=' . implode(',', $nRedirectErr_arr), true, 302);
-                } else {
-                    header('Location: index.php?a=' . $kVaterArtikel . '&r=' . implode(',', $nRedirectErr_arr), true, 302);
-                }
+                header('Location: index.php?a=' . $kVaterArtikel . '&r=' . implode(',', $nRedirectErr_arr), true, 302);
                 exit();
             } else {
                 foreach ($oAlleEigenschaft_arr as $i => $oAlleEigenschaftPost) {
@@ -1628,7 +1624,7 @@ function baueURL($obj, $art, $row = 0, $bForceNonSeo = false, $bFull = false)
         $obj->cSeo = '';
     }
     if (!$bForceNonSeo) {
-        $cDatei = 'navi.php';
+        $cDatei = 'index.php';
     }
     if ($art && $obj) {
         executeHook(HOOK_TOOLSGLOBAL_INC_SWITCH_BAUEURL, array('obj' => &$obj, 'art' => &$art));
@@ -3897,7 +3893,7 @@ function setzeSpracheUndWaehrungLink()
                     $_SESSION['Waehrungen'][$i]->cURL = $url;
                 }
             } elseif ($kLink > 0) {
-                $_SESSION['Waehrungen'][$i]->cURL = 'navi.php?s=' . $kLink . '&lang=' . $_SESSION['cISOSprache'] . '&amp;curr=' . $oWaehrung->cISO;
+                $_SESSION['Waehrungen'][$i]->cURL = 'index.php?s=' . $kLink . '&lang=' . $_SESSION['cISOSprache'] . '&amp;curr=' . $oWaehrung->cISO;
             } else {
                 $_SESSION['Waehrungen'][$i]->cURL = gibNaviURL($NaviFilter, true, $oZusatzFilter, $_SESSION['kSprache']) . '?curr=' . $oWaehrung->cISO;
             }
@@ -5294,9 +5290,8 @@ function doMainwordRedirect($NaviFilter, $nAnzahl, $bSeo = false)
             foreach ($cMainword_arr as $cMainword => $cInfo_arr) {
                 $cKey   = $cInfo_arr['cKey'];
                 $cParam = $cInfo_arr['cParam'];
-
                 if (isset($NaviFilter->$cMainword) && intval($NaviFilter->$cMainword->$cKey) > 0) {
-                    $cUrl = "navi.php?{$cParam}={$NaviFilter->$cMainword->$cKey}";
+                    $cUrl = "index.php?{$cParam}={$NaviFilter->$cMainword->$cKey}";
                     if ($bSeo && isset($NaviFilter->$cMainword->cSeo) && is_array($NaviFilter->$cMainword->cSeo)) {
                         $cUrl = "{$NaviFilter->$cMainword->cSeo[$kSprache]}";
                     }

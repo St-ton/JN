@@ -92,11 +92,7 @@ class Nice
     public function checkErweiterung($kShopModulCheck)
     {
         if (isset($this->cAPIKey) && strlen($this->cAPIKey) > 0 && !empty($this->cDomain) && count($this->kShopModul_arr) > 0) {
-            foreach ($this->kShopModul_arr as $kShopModul) {
-                if ($kShopModul === intval($kShopModulCheck)) {
-                    return true;
-                }
-            }
+            return in_array(intval($kShopModulCheck), $this->kShopModul_arr, true);
         }
 
         return false;
@@ -121,6 +117,8 @@ class Nice
         defined('SHOP_ERWEITERUNG_DOWNLOADS') || define('SHOP_ERWEITERUNG_DOWNLOADS', 8051);
         // Konfigurator Modul
         defined('SHOP_ERWEITERUNG_KONFIGURATOR') || define('SHOP_ERWEITERUNG_KONFIGURATOR', 8061);
+        // Brandfree Option
+        defined('SHOP_ERWEITERUNG_BRANDFREE') || define('SHOP_ERWEITERUNG_BRANDFREE', 8071);
 
         return $this;
     }
@@ -176,7 +174,13 @@ class Nice
         $oModul->cDefine  = 'SHOP_ERWEITERUNG_KONFIGURATOR';
         $oModul->cURL     = '';
         $oModul_arr[]     = $oModul;
-
+        // Brandfree Option
+        $oModul           = new stdClass();
+        $oModul->kModulId = SHOP_ERWEITERUNG_BRANDFREE;
+        $oModul->cName    = 'Brandfree Option';
+        $oModul->cDefine  = 'SHOP_ERWEITERUNG_BRANDFREE';
+        $oModul->cURL     = '';
+        $oModul_arr[]     = $oModul;
         return $oModul_arr;
     }
 

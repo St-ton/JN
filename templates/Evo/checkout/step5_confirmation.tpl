@@ -153,7 +153,7 @@
             {lang key="cancellationPolicyNotice" section="checkout" assign="cancellationPolicyNotice"}
             {lang key="wrb" section="checkout" assign="wrb"}
             {if isset($AGB->kLinkWRB) && $AGB->kLinkWRB > 0}
-                {assign var='linkWRB' value='<a href="navi.php?s='|cat:$AGB->kLinkWRB|cat:'" class="popup">'|cat:$wrb|cat:'</a>'}
+                {assign var='linkWRB' value='<a href="index.php?s='|cat:$AGB->kLinkWRB|cat:'" class="popup">'|cat:$wrb|cat:'</a>'}
 
                 <div class="alert alert-info">{$cancellationPolicyNotice|replace:"#LINK_WRB#":$linkWRB}</div>
             {elseif !empty($AGB->cWRBContentHtml)}

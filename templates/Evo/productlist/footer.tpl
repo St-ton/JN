@@ -65,7 +65,7 @@
             </ul>
         </div>
         <div class="col-xs-6 col-md-4 col-lg-3 text-right">
-            <form action="navi.php" method="get" class="form-inline pagination">
+            <form action="index.php" method="get" class="form-inline pagination">
                 {$jtl_token}
                 {if isset($NaviFilter->Kategorie) && $NaviFilter->Kategorie->kKategorie > 0}
                     <input type="hidden" name="k" value="{$NaviFilter->Kategorie->kKategorie}" />

@@ -27,7 +27,7 @@
         {include file="productdetails/price.tpl" Artikel=$Artikel price_image=$price_image tplscope=$tplscope}
     </div>{* /caption *}
     {/block}
-    <form action="navi.php" method="post" class="form form-basket" data-toggle="basket-add">
+    <form action="index.php" method="post" class="form form-basket" data-toggle="basket-add">
         {$jtl_token}
         {block name="productlist-delivery-status"}
         <div class="delivery-status">

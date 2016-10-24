@@ -104,7 +104,7 @@
         </div>{* /col-md-9 *}
 
         <div class="col-xs-3 col-sm-4">
-            <form action="navi.php" method="post" class="form form-basket" data-toggle="basket-add">
+            <form action="index.php" method="post" class="form form-basket" data-toggle="basket-add">
                 {block name="form-basket"}
                     {assign var=price_image value=""}
                     {if isset($Artikel->Preise->strPreisGrafik_Suche)}
@@ -218,7 +218,7 @@
                 {/block}
             </form>
 
-            <form action="navi.php" method="post" class="hidden-sm hidden-xs product-actions">
+            <form action="index.php" method="post" class="hidden-sm hidden-xs product-actions">
                 {$jtl_token}
                 <div class="actions btn-group btn-group-xs btn-group-justified" role="group" aria-label="...">
                 {block name="product-actions"}

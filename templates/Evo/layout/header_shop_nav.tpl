@@ -36,7 +36,7 @@
     {/if}
     {block name="navbar-productsearch"}
         <li id="search">
-            <form action="navi.php" method="GET">
+            <form action="index.php" method="get">
                 <div class="input-group">
                     <input name="qs" type="text" class="form-control ac_input" placeholder="{lang key='search'}" autocomplete="off" />
                     <span class="input-group-addon">

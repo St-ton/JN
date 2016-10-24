@@ -5,7 +5,6 @@
 
 <ul {if $is_dropdown}class="dropdown-menu" role="menu" {elseif isset($class)}class="{$class}" {else}class="nav nav-list"{/if}>
     {foreach name=filter from=$Merkmal->oMerkmalWerte_arr item=MerkmalWert}
-        {assign var=kMerkmalWert value=$MerkmalWert->kMerkmalWert}
         {if $MerkmalWert->nAktiv}
             <li class="active">
                 <a rel="nofollow" href="{if !empty($MerkmalWert->cURL)}{$MerkmalWert->cURL}{else}#{/if}"{if $Merkmal->cTyp === 'BILD'} title="{$MerkmalWert->cWert}"{/if}>

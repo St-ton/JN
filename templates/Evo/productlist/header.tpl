@@ -11,7 +11,7 @@
 
 {if isset($Suchergebnisse->SucheErfolglos) && $Suchergebnisse->SucheErfolglos == 1}
     <div class="alert alert-info">{lang key="noResults" section="productOverview"}</div>
-    <form id="suche2" action="navi.php" method="get" class="form">
+    <form id="suche2" action="index.php" method="get" class="form">
         <fieldset>
             <ul class="list-unstyled">
                 <li class="form-group">
@@ -84,7 +84,7 @@
 {include file="productwizard/index.tpl"}
 
 {if count($Suchergebnisse->Artikel->elemente) > 0}
-    <form id="improve_search" action="navi.php" method="get" class="form-inline clearfix">
+    <form id="improve_search" action="index.php" method="get" class="form-inline clearfix">
         {if isset($NaviFilter->Kategorie->kKategorie) && $NaviFilter->Kategorie->kKategorie > 0}
             <input type="hidden" name="k" value="{$NaviFilter->Kategorie->kKategorie}" />{/if}
         {if isset($NaviFilter->Hersteller->kHersteller) && $NaviFilter->Hersteller->kHersteller > 0}

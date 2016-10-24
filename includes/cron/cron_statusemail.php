@@ -25,30 +25,38 @@ function bearbeiteStatusemail($oJobQueue)
 
     // Laufe alle Intervalle durch
     foreach ($oStatusemail->nIntervall_arr as $nIntervall) {
-        $nIntervall   = (int)$nIntervall;
-        $cInterval    = '';
-        $cIntervalAdj = '';
+        $nIntervall         = (int)$nIntervall;
+        $cInterval          = '';
+        $cIntervalAdj       = '';
+        $dLetzterVersand    = '';
+        $dLetzterVersandCol = '';
 
         switch ($nIntervall) {
             case 1:
-                $cInterval    = 'day';
-                $cIntervalAdj = 'Tägliche';
+                $cInterval          = 'day';
+                $cIntervalAdj       = 'Tägliche';
+                $dLetzterVersand    = $oStatusemail->dLetzterTagesVersand;
+                $dLetzterVersandCol = 'dLetzterTagesVersand';
                 break;
             case 7:
-                $cInterval    = 'week';
-                $cIntervalAdj = 'Wöchentliche';
+                $cInterval          = 'week';
+                $cIntervalAdj       = 'Wöchentliche';
+                $dLetzterVersand    = $oStatusemail->dLetzterWochenVersand;
+                $dLetzterVersandCol = 'dLetzterWochenVersand';
                 break;
             case 30:
-                $cInterval    = 'month';
-                $cIntervalAdj = 'Monatliche';
+                $cInterval          = 'month';
+                $cIntervalAdj       = 'Monatliche';
+                $dLetzterVersand    = $oStatusemail->dLetzterMonatsVersand;
+                $dLetzterVersandCol = 'dLetzterMonatsVersand';
                 break;
             default:
                 // TODO: handle non matching intervals
                 break;
         }
 
-        if (isIntervalExceeded($oStatusemail->dLetzterTagesVersand, $cInterval)) {
-            $dVon        = $oStatusemail->dLetzterTagesVersand;
+        if (isIntervalExceeded($dLetzterVersand, $cInterval)) {
+            $dVon        = $dLetzterVersand;
             $dBis        = date_create()->format('Y-m-d H:i:s');
             $oMailObjekt = baueStatusEmail($oStatusemail, $dVon, $dBis);
 
@@ -59,7 +67,7 @@ function bearbeiteStatusemail($oJobQueue)
                 sendeMail(MAILTEMPLATE_STATUSEMAIL, $oMailObjekt);
                 Shop::DB()->query("
                     UPDATE tstatusemail
-                        SET dLetzterTagesVersand = now()
+                        SET " . $dLetzterVersandCol . " = now()
                         WHERE nAktiv = " . (int)$oJobQueue->kKey,
                     4);
                 $bAusgefuehrt = true;

@@ -117,7 +117,8 @@ function gibInhaltMoeglichkeiten()
         'Anzahl neuer Produktanfragen'                 => 19,
         'Anzahl neuer Verf&uuml;gbarkeitsanfragen'     => 20,
         'Anzahl Produktvergleiche'                     => 21,
-        'Anzahl genutzter Kupons'                      => 22
+        'Anzahl genutzter Kupons'                      => 22,
+        'Die letzten Log-Eintr&auml;ge'                => 25
     );
 }
 
@@ -821,6 +822,26 @@ function gibAnzahlGenutzteKupons($dVon, $dBis)
     return 0;
 }
 
+function getLogEntries($dVon, $dBis)
+{
+    $dVon = Shop::DB()->escape($dVon);
+    $dBis = Shop::DB()->escape($dBis);
+
+    if (strlen($dVon) > 0 && strlen($dBis) > 0) {
+        $oLog_arr = Shop::DB()->query(
+            "SELECT *
+                FROM tjtllog
+                WHERE dErstellt >= '" . $dVon . "'
+                    AND dErstellt < '" . $dBis . "'
+                ORDER BY dErstellt DESC",
+            2);
+
+        return $oLog_arr;
+    }
+
+    return [];
+}
+
 /**
  * @param object $oStatusemail
  * @param string $dVon
@@ -856,6 +877,8 @@ function baueStatusEmail($oStatusemail, $dVon, $dBis)
     $oMailObjekt->nAnzahlGenutzteKupons                    = -1;
     $oMailObjekt->nAnzahlZahlungseingaengeVonBestellungen  = -1;
     $oMailObjekt->nAnzahlVersendeterBestellungen           = -1;
+    $oMailObjekt->dVon                                     = $dVon;
+    $oMailObjekt->dBis                                     = $dBis;
 
     $dVon = Shop::DB()->escape($dVon);
     $dBis = Shop::DB()->escape($dBis);
@@ -969,6 +992,11 @@ function baueStatusEmail($oStatusemail, $dVon, $dBis)
                 case 24:
                     $oMailObjekt->nAnzahlVersendeterBestellungen = gibAnzahlVersendeterBestellungen($dVon, $dBis);
                     break;
+
+                // Log-Einträge
+                case 25:
+                    $oMailObjekt->oLogEntry_arr = getLogEntries($dVon, $dBis);
+                    break;
             }
         }
 
@@ -1038,7 +1066,7 @@ function isIntervalExceeded($dStart, $cInterval)
 function sendStatusMail()
 {
     $dBis         = date_create()->format('Y-m-d H:i:s');
-    $dVon         = date_create()->modify('-1 day')->format('Y-m-d H:i:s');
+    $dVon         = date_create()->modify('-1 week')->format('Y-m-d H:i:s');
 
     $oStatusemail = Shop::DB()->select('tstatusemail', 'nAktiv', 1);
 

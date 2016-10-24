@@ -1,14 +1,14 @@
 {includeMailTemplate template=header type=plain}
+=== {$oMailObjekt->cIntervall} ===
 
-{$oMailObjekt->cIntervall}
+--- Zeitraum: {$oMailObjekt->dVon|date_format:"d.m.Y - H:i"} bis {$oMailObjekt->dBis|date_format:"d.m.Y - H:i"} ---
 
-{if is_array($oMailObjekt->oAnzahlArtikelProKundengruppe)}
-Produkte pro Kundengruppe:
-{foreach name=artikelprokgr from=$oMailObjekt->oAnzahlArtikelProKundengruppe item=oArtikelProKundengruppe}
-{$oArtikelProKundengruppe->cName}: {$oArtikelProKundengruppe->nAnzahl}
-{/foreach}
-{/if}
+{if is_array($oMailObjekt->oAnzahlArtikelProKundengruppe)}Produkte pro Kundengruppe:
 
+{foreach $oMailObjekt->oAnzahlArtikelProKundengruppe as $oArtikelProKundengruppe}
+    {$oArtikelProKundengruppe->cName}: {$oArtikelProKundengruppe->nAnzahl}
+
+{/foreach}{/if}
 {if $oMailObjekt->nAnzahlNeukunden != -1}
 Neukunde: {$oMailObjekt->nAnzahlNeukunden}
 {/if}
@@ -51,6 +51,7 @@ Nicht freigeschaltete Bewertungen: {$oMailObjekt->nAnzahlBewertungenNichtFreiges
 
 {if isset($oMailObjekt->oAnzahlGezahltesGuthaben->fSummeGuthaben) && isset($oMailObjekt->oAnzahlGezahltesGuthaben->nAnzahl)}
 Bewertungsguthaben gezahlt: {$oMailObjekt->oAnzahlGezahltesGuthaben->nAnzahl}
+
 Bewertungsguthaben Summe: {$oMailObjekt->oAnzahlGezahltesGuthaben->fSummeGuthaben}
 {/if}
 
@@ -102,4 +103,14 @@ Produktvergleiche: {$oMailObjekt->nAnzahlVergleiche}
 Genutzte Kupons: {$oMailObjekt->nAnzahlGenutzteKupons}
 {/if}
 
+{if isset($oMailObjekt->oLogEntry_arr)}
+Log-Einträge ({$oMailObjekt->oLogEntry_arr|@count}):
+
+{foreach $oMailObjekt->oLogEntry_arr as $oLogEntry}
+    [{$oLogEntry->dErstellt|date_format:"%d.%m.%Y %H:%M:%S"}] [{if $oLogEntry->nLevel == 1}Fehler{elseif $oLogEntry->nLevel == 2}Hinweis{elseif $oLogEntry->nLevel == 4}Debug{/if}]
+{for $i=0 to $oLogEntry->cLog|strlen step 120}
+        "{$oLogEntry->cLog|replace:"\n":' '|substr:$i:120}"
+{/for}
+{/foreach}
+{/if}
 {includeMailTemplate template=footer type=plain}

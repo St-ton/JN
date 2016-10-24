@@ -39,8 +39,11 @@
                             <label for="cIntervall">{#statusemailIntervall#}</label>
                         </span>
                         <select name="cIntervall_arr[]" id="cIntervall" multiple="multiple" class="form-control multiple">
-                            {foreach name=intervallmoeglich from=$oStatusemailEinstellungen->cIntervallMoeglich_arr key=key item=cIntervallMoeglich}
-                                <option value="{$cIntervallMoeglich}"{foreach name=cintervall from=$oStatusemailEinstellungen->nIntervall_arr item=nIntervall}{if $nIntervall == $cIntervallMoeglich} selected{/if}{/foreach}>{$key}</option>
+                            {foreach $oStatusemailEinstellungen->cIntervallMoeglich_arr as $key => $nIntervallMoeglich}
+                                <option value="{$nIntervallMoeglich}"
+                                        {if $nIntervallMoeglich|in_array:$oStatusemailEinstellungen->nIntervall_arr}selected{/if}>
+                                    {$key}
+                                </option>
                             {/foreach}
                         </select>
                         <span class="input-group-addon">
@@ -53,8 +56,11 @@
                             <label for="cInhalt">{#statusemailContent#}</label>
                         </span>
                         <select name="cInhalt_arr[]" id="cInhalt" multiple="multiple" class="form-control multiple">
-                            {foreach name=inhaltmoeglich from=$oStatusemailEinstellungen->cInhaltMoeglich_arr key=key item=cInhaltMoeglich}
-                                <option value="{$cInhaltMoeglich}"{foreach name=cinhalt from=$oStatusemailEinstellungen->nInhalt_arr item=nInhalt}{if $nInhalt == $cInhaltMoeglich} selected{/if}{/foreach}>{$key}</option>
+                            {foreach $oStatusemailEinstellungen->cInhaltMoeglich_arr as $key => $nInhaltMoeglich}
+                                <option value="{$nInhaltMoeglich}"
+                                        {if $nInhaltMoeglich|in_array:$oStatusemailEinstellungen->nInhalt_arr}selected{/if}>
+                                    {$key}
+                                </option>
                             {/foreach}
                         </select>
                         <span class="input-group-addon">

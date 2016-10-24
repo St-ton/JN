@@ -39,7 +39,7 @@ interface IFilter
     public function getSQLCondition();
 
     /**
-     * @return string
+     * @return FilterJoin[]
      */
     public function getSQLJoin();
 }

@@ -543,7 +543,7 @@ class Navigationsfilter
     {
         $Artikelsortierung = $this->conf['artikeluebersicht']['artikeluebersicht_artikelsortierung'];
         $sort = new stdClass();
-        $sort->join = '';
+        $sort->join = [];
         if (isset($_SESSION['Usersortierung'])) {
             $Artikelsortierung          = mappeUsersortierung($_SESSION['Usersortierung']);
             $_SESSION['Usersortierung'] = $Artikelsortierung;
@@ -570,11 +570,14 @@ class Navigationsfilter
                 break;
             case SEARCH_SORT_PRICE_ASC:
                 $sort->orderBy = 'tpreise.fVKNetto, tartikel.cName';
-                $sort->coin = 'JOIN tpreise ON tartikel.kArtikel = tpreise.kArtikel AND tpreise.kKundengruppe = ' . (int)$_SESSION['Kundengruppe']->kKundengruppe;
+//                $sort->join = 'JOIN tpreise ON tartikel.kArtikel = tpreise.kArtikel AND tpreise.kKundengruppe = ' . (int)$_SESSION['Kundengruppe']->kKundengruppe;
+                $sort->join->setComment('join from SORT by price ASC')->setType('JOIN')->setTable('tpreise')->setOn('tartikel.kArtikel = tpreise.kArtikel AND tpreise.kKundengruppe = ' . (int)$_SESSION['Kundengruppe']->kKundengruppe);
                 break;
             case SEARCH_SORT_PRICE_DESC:
                 $sort->orderBy = 'tpreise.fVKNetto DESC, tartikel.cName';
-                $sort->coin = 'JOIN tpreise ON tartikel.kArtikel = tpreise.kArtikel AND tpreise.kKundengruppe = ' . (int)$_SESSION['Kundengruppe']->kKundengruppe;
+//                $sort->join = 'JOIN tpreise ON tartikel.kArtikel = tpreise.kArtikel AND tpreise.kKundengruppe = ' . (int)$_SESSION['Kundengruppe']->kKundengruppe;
+                $sort->join = new FilterJoin();
+                $sort->join->setComment('join from SORT by price DESC')->setType('JOIN')->setTable('tpreise')->setOn('tartikel.kArtikel = tpreise.kArtikel AND tpreise.kKundengruppe = ' . (int)$_SESSION['Kundengruppe']->kKundengruppe);
                 break;
             case SEARCH_SORT_EAN:
                 $sort->orderBy = 'tartikel.cBarcode, tartikel.cName';
@@ -596,11 +599,15 @@ class Navigationsfilter
                 break;
             case SEARCH_SORT_BESTSELLER:
                 $sort->orderBy = 'tbestseller.fAnzahl DESC, tartikel.cName';
-                $sort->join = 'LEFT JOIN tbestseller ON tartikel.kArtikel = tbestseller.kArtikel';
+//                $sort->join = 'LEFT JOIN tbestseller ON tartikel.kArtikel = tbestseller.kArtikel';
+                $sort->join = new FilterJoin();
+                $sort->join->setComment('join from SORT by bestseller')->setType('LEFT JOIN')->setTable('tbestseller')->setOn('tartikel.kArtikel = tbestseller.kArtikel');
                 break;
             case SEARCH_SORT_RATING:
                 $sort->orderBy = 'tbewertung.nSterne DESC, tartikel.cName';
-                $sort->join = 'LEFT JOIN tbewertung ON tbewertung.kArtikel = tartikel.kArtikel';
+                $sort->join = new FilterJoin();
+                $sort->join->setComment('join from SORT by rating')->setType('LEFT JOIN')->setTable('tbewertung')->setOn('tbewertung.kArtikel = tartikel.kArtikel');
+//                $sort->join = 'LEFT JOIN tbewertung ON tbewertung.kArtikel = tartikel.kArtikel';
                 break;
             default:
                 break;
@@ -632,7 +639,6 @@ class Navigationsfilter
      */
     public function getProductKeys()
     {
-
         // $nArtikelProSeite auf max. ARTICLES_PER_PAGE_HARD_LIMIT beschränken
 
         $oSuchergebnisse                    = new stdClass();
@@ -648,7 +654,8 @@ class Navigationsfilter
         $order = $this->getOrder();
 
         $state = $this->getCurrentStateData();
-        $state->joins[] = "\n#current order join \n" . $order->join;
+//        $state->joins[] = "\n#current order join \n" . $order->join;
+        $state->joins[] = $order->join;
 
         $query = $this->getBaseQuery(['tartikel.kArtikel'], $state->joins, $state->conditions, $state->having, $order->orderBy);
 
@@ -734,8 +741,10 @@ class Navigationsfilter
     {
         $data = new stdClass();
         $data->having = [];
-        $data->joins = [];
-        $data->joins[] = "\n#current state join \n" . $this->getActiveState()->getSQLJoin();
+//        $data->joins = [];
+//        $data->joins[] = "\n#current state join \n" . $this->getActiveState()->getSQLJoin();
+        $data->joins = $this->getActiveState()->getSQLJoin();
+
         $data->conditions[] = "\n#condition for current state \n" . $this->getActiveState()->getSQLCondition();
         foreach ($this->getActiveFilters(true) as $type => $filter) {
             $count = count($filter);
@@ -744,7 +753,10 @@ class Navigationsfilter
                 /** @var AbstractFilter $item */
                 foreach ($filter as $idx => $item) {
                     if ($idx === 0) {
-                        $data->joins[] = "\n#join from filter " . $type . "\n" . $item->getSQLJoin();
+                        foreach ($item->getSQLJoin() as $filterJoin) {
+                            $data->joins[] = $filterJoin;
+                        }
+//                        $data->joins[] = "\n#join from filter " . $type . "\n" . $item->getSQLJoin();
                         if ($item->getType() === AbstractFilter::FILTER_TYPE_AND) {
                             //filters that decrease the total amount of articles must have a "HAVING" clause
                             $data->having[] = 'HAVING COUNT(' . $item->getTableName() . '.' . $item->getPrimaryKeyRow() . ') = ' . $count;
@@ -754,7 +766,9 @@ class Navigationsfilter
                 }
                 $data->conditions[] = $singleConditions;
             } elseif ($count === 1)  {
-                $data->joins[] = "\n#join from filter " . $type . "\n" . $filter[0]->getSQLJoin();
+                foreach ($filter[0]->getSQLJoin() as $filterJoin) {
+                    $data->joins[] = $filterJoin;
+                }
                 $data->conditions[] = "\n#condition from filter " . $type . "\n" . $filter[0]->getSQLCondition();
             }
         }
@@ -776,26 +790,47 @@ class Navigationsfilter
                         $nAnzahl = ($this->conf['global']['global_bestseller_minanzahl'] > 0)
                             ? (int)$this->conf['global']['global_bestseller_minanzahl']
                             : 100;
-                        $state->joins[]  = 'JOIN tbestseller ON tbestseller.kArtikel = tartikel.kArtikel';
+//                        $state->joins[]  = 'JOIN tbestseller ON tbestseller.kArtikel = tartikel.kArtikel';
+
+                        $join = new FilterJoin();
+                        $join->setComment('join from getSearchSpecialFilterOptions bestseller')
+                             ->setType('JOIN')
+                             ->setTable('tbestseller')
+                             ->setOn('tbestseller.kArtikel = tartikel.kArtikel');
+                        $state->joins[] = $join;
+
                         $state->conditions[] = 'ROUND(tbestseller.fAnzahl) >= ' . $nAnzahl;
                         break;
                     case SEARCHSPECIALS_SPECIALOFFERS:
                         if (!$this->PreisspannenFilter->isInitialized()) {
-                            $state->joins[] = "JOIN tartikelsonderpreis ON tartikelsonderpreis.kArtikel = tartikel.kArtikel
-                                            JOIN tsonderpreise ON tsonderpreise.kArtikelSonderpreis = tartikelsonderpreis.kArtikelSonderpreis";
+                            $join = new FilterJoin();
+                            $join->setComment('join1 from getSearchSpecialFilterOptions special offer')
+                                 ->setType('JOIN')
+                                 ->setTable('tartikelsonderpreis')
+                                 ->setOn('tartikelsonderpreis.kArtikel = tartikel.kArtikel');
+                            $state->joins[] = $join;
+
+                            $join = new FilterJoin();
+                            $join->setComment('join2 from getSearchSpecialFilterOptions special offer')
+                                 ->setType('JOIN')
+                                 ->setTable('tsonderpreise')
+                                 ->setOn('tsonderpreise.kArtikelSonderpreis = tartikelsonderpreis.kArtikelSonderpreis');
+                            $state->joins[] = $join;
+//                            $state->joins[] = "JOIN tartikelsonderpreis ON tartikelsonderpreis.kArtikel = tartikel.kArtikel
+//                                            JOIN tsonderpreise ON tsonderpreise.kArtikelSonderpreis = tartikelsonderpreis.kArtikelSonderpreis";
                             $tsonderpreise = 'tsonderpreise';
                         } else {
                             $tsonderpreise = 'tsonderpreise';//'tspgspqf';
                         }
                         $state->conditions[] = "tartikelsonderpreis.cAktiv = 'Y' AND tartikelsonderpreis.dStart <= now()";
-                        $state->conditions[] = "(tartikelsonderpreis.dEnde >= CURDATE() OR tartikelsonderpreis.dEnde = '0000-00-00')";
+                        $state->conditions[] = "(tartikelsonderpreis.dEnde >= CuRDATE() OR tartikelsonderpreis.dEnde = '0000-00-00')";
                         $state->conditions[] = $tsonderpreise . ".kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe;
                         break;
                     case SEARCHSPECIALS_NEWPRODUCTS:
                         $alter_tage = ($this->conf['boxen']['box_neuimsortiment_alter_tage'] > 0)
                             ? (int)$this->conf['boxen']['box_neuimsortiment_alter_tage']
                             : 30;
-                        $state->conditions[] = "tartikel.cNeu='Y' AND DATE_SUB(now(),INTERVAL $alter_tage DAY) < tartikel.dErstellt";
+                        $state->conditions[] = "tartikel.cNeu = 'Y' AND DATE_SUB(now(),INTERVAL $alter_tage DAY) < tartikel.dErstellt";
                         break;
                     case SEARCHSPECIALS_TOPOFFERS:
                         $state->conditions[] = 'tartikel.cTopArtikel = "Y"';
@@ -805,12 +840,19 @@ class Navigationsfilter
                         break;
                     case SEARCHSPECIALS_TOPREVIEWS:
                         if (!$this->BewertungFilter->isInitialized()) {
-                            $state->joins[] = "JOIN tartikelext ON tartikelext.kArtikel = tartikel.kArtikel";
+                            $join = new FilterJoin();
+                            $join->setComment('join from getSearchSpecialFilterOptions top reviews')
+                                 ->setType('JOIN')
+                                 ->setTable('tartikelext')
+                                 ->setOn('tartikelext.kArtikel = tartikel.kArtikel');
+                            $state->joins[] = $join;
+//                            $state->joins[] = "JOIN tartikelext ON tartikelext.kArtikel = tartikel.kArtikel";
                         }
                         $state->conditions[] = "ROUND(tartikelext.fDurchschnittsBewertung) >= " . (int)$this->conf['boxen']['boxen_topbewertet_minsterne'];
                         break;
                 }
                 $qry = $this->getBaseQuery(['tartikel.kArtikel'], $state->joins, $state->conditions, $state->having);
+
                 $oSuchspecialFilterDB = Shop::DB()->query(
                     $qry, 2
                 );
@@ -846,10 +888,16 @@ class Navigationsfilter
 //                return $filter;
 //            }
             $order = $this->getOrder();
-
             $state = $this->getCurrentStateData();
-            $state->joins[] = "\n#current order join \n" . $order->join;
-            $state->joins[] = "JOIN thersteller ON tartikel.kHersteller = thersteller.kHersteller";
+//            $state->joins[] = "\n#current order join \n" . $order->join;
+            $state->joins[] = $order->join;
+            $join = new FilterJoin();
+            $join->setComment('join from manufacturerFilterOptions')
+                ->setType('JOIN')
+                ->setTable('thersteller')
+                ->setOn('tartikel.kHersteller = thersteller.kHersteller');
+//            $state->joins[] = "JOIN thersteller ON tartikel.kHersteller = thersteller.kHersteller";
+            $state->joins[] = $join;
 
             $query = $this->getBaseQuery(['thersteller.kHersteller', 'thersteller.cName', 'thersteller.nSortNr', 'tartikel.kArtikel'], $state->joins, $state->conditions, $state->having, $order->orderBy);
             $query = "
@@ -893,8 +941,15 @@ class Navigationsfilter
         if ($this->conf['navigationsfilter']['bewertungsfilter_benutzen'] !== 'N') {
             $order = $this->getOrder();
             $state = $this->getCurrentStateData();
-            $state->joins[] = "\n#current order join \n" . $order->join;
-            $state->joins[] = "JOIN tartikelext ON tartikel.kArtikel = tartikelext.kArtikel";
+//            $state->joins[] = "\n#current order join \n" . $order->join;
+            $state->joins[] = $order->join;
+            $join = new FilterJoin();
+            $join->setComment('join from getRatingFilterOptions')
+                ->setType('JOIN')
+                ->setTable('tartikelext')
+                ->setOn('tartikel.kArtikel = tartikelext.kArtikel');
+//            $state->joins[] = "JOIN tartikelext ON tartikel.kArtikel = tartikelext.kArtikel";
+            $state->joins[] = $join;
 
             $query = $this->getBaseQuery(['ROUND(tartikelext.fDurchschnittsBewertung, 0) AS nSterne', 'tartikel.kArtikel'], $state->joins, $state->conditions, $state->having, $order->orderBy);
             $query = "
@@ -938,9 +993,36 @@ class Navigationsfilter
         if ($this->conf['navigationsfilter']['allgemein_tagfilter_benutzen'] !== 'N') {
             $order = $this->getOrder();
             $state = $this->getCurrentStateData();
-            $state->joins[] = "\n#current order join \n" . $order->join;
-            $state->joins[] = "JOIN ttagartikel ON ttagartikel.kArtikel = tartikel.kArtikel";
-            $state->joins[] = "JOIN ttag ON ttagartikel.kTag = ttag.kTag";
+
+            $join = new FilterJoin();
+            $join->setComment('join1 from getTagFilterOptions')
+                 ->setType('JOIN')
+                 ->setTable('ttagartikel')
+                 ->setOn('ttagartikel.kArtikel = tartikel.kArtikel');
+
+            $join2 = new FilterJoin();
+            $join2->setComment('join2 from getTagFilterOptions')
+                 ->setType('JOIN')
+                 ->setTable('ttag')
+                 ->setOn('ttagartikel.kTag = ttag.kTag');
+
+            $state->joins[] = $order->join;
+            $state->joins[] = $join;
+            $state->joins[] = $join2;
+
+            $joinedTables = [];
+            //remove duplicate joins
+            foreach ($state->joins as $i => $stateJoin) {
+                if (!in_array($stateJoin->getTable(), $joinedTables)) {
+                    $joinedTables[] = $stateJoin->getTable();
+                } else {
+                    unset($state->joins[$i]);
+                }
+            }
+
+//            $state->joins[] = "\n#current order join \n" . $order->join;
+//            $state->joins[] = "\n#getTagFilterOptions join1 \nJoIN ttagartikel ON ttagartikel.kArtikel = tartikel.kArtikel";
+//            $state->joins[] = "\n#getTagFilterOptions join2 \nJOIN ttag ON ttagartikel.kTag = ttag.kTag";
 
             $state->conditions[] = "ttag.nAktiv = 1";
             $state->conditions[] = "ttag.kSprache = " . Shop::getLanguage();
@@ -953,7 +1035,7 @@ class Navigationsfilter
                 AND tseo.cKey = 'kTag'
                 AND tseo.kSprache = " . Shop::getLanguage() . "
             GROUP BY ssMerkmal.kTag
-            ORDER BY nAnzahl DESC LIMIT 0 , " . (int)$this->conf['navigationsfilter']['tagfilter_max_anzeige'];
+            ORDER BY nAnzahl DESC LIMIT 0, " . (int)$this->conf['navigationsfilter']['tagfilter_max_anzeige'];
             $oTagFilterDB_arr = Shop::DB()->query($query, 2);
 
             if (is_array($oTagFilterDB_arr)) {
@@ -1036,21 +1118,46 @@ class Navigationsfilter
             $order = $this->getOrder();
             $state = $this->getCurrentStateData();
 
-            $state->joins[] = "\n#current order join \n" . $order->join;
+            $state->joins[] = $order->join;
+//            $state->joins[] = "\n#current order join \n" . $order->join;
 
             $select = 'tmerkmal.cName';
             if (Shop::$kSprache > 0 && !standardspracheAktiv()) {
                 $select = "tmerkmalsprache.cName";
-                $state->joins[]   = " JOIN tmerkmalsprache ON tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal
-                                    AND tmerkmalsprache.kSprache = " . Shop::getLanguage();
+                $join = new FilterJoin();
+                $join->setComment('join1 from getAttributeFilterOptions')
+                      ->setType('JOIN')
+                      ->setTable('tmerkmalsprache')
+                      ->setOn('tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal AND tmerkmalsprache.kSprache = ' . Shop::getLanguage());
+                $state->joins[] = $join;
+//                $state->joins[]   = " JOIN tmerkmalsprache ON tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal
+//                                    AND tmerkmalsprache.kSprache = " . Shop::getLanguage();
             }
             if (!$this->MerkmalWert->isInitialized() && count($this->MerkmalFilter) === 0) {
-                $state->joins[] = "JOIN tartikelmerkmal ON tartikel.kArtikel = tartikelmerkmal.kArtikel";
+                $join = new FilterJoin();
+                $join->setComment('join2 from getAttributeFilterOptions')
+                     ->setType('JOIN')
+                     ->setTable('tartikelmerkmal')
+                     ->setOn('tartikel.kArtikel = tartikelmerkmal.kArtikel');
+                $state->joins[] = $join;
+//                $state->joins[] = "JOIN tartikelmerkmal ON tartikel.kArtikel = tartikelmerkmal.kArtikel";
             }
             $state->joins[] = "JOIN tmerkmalwert ON tmerkmalwert.kMerkmalWert = tartikelmerkmal.kMerkmalWert";
-                $state->joins[] = "JOIN tmerkmalwertsprache ON tmerkmalwertsprache.kMerkmalWert = tartikelmerkmal.kMerkmalWert
-                    AND tmerkmalwertsprache.kSprache = " . (int)Shop::$kSprache;
-            $state->joins[] = "JOIN tmerkmal ON tmerkmal.kMerkmal = tartikelmerkmal.kMerkmal";
+            $join = new FilterJoin();
+            $join->setComment('join3 from getAttributeFilterOptions')
+                 ->setType('JOIN')
+                 ->setTable('tmerkmalwertsprache')
+                 ->setOn('tmerkmalwertsprache.kMerkmalWert = tartikelmerkmal.kMerkmalWert AND tmerkmalwertsprache.kSprache = ' . (int)Shop::$kSprache);
+            $state->joins[] = $join;
+//                $state->joins[] = "JOIN tmerkmalwertsprache ON tmerkmalwertsprache.kMerkmalWert = tartikelmerkmal.kMerkmalWert
+//                    AND tmerkmalwertsprache.kSprache = " . (int)Shop::$kSprache;
+//            $state->joins[] = "JOIN tmerkmal ON tmerkmal.kMerkmal = tartikelmerkmal.kMerkmal";
+            $join = new FilterJoin();
+            $join->setComment('join4 from getAttributeFilterOptions')
+                 ->setType('JOIN')
+                 ->setTable('tmerkmal')
+                 ->setOn('tmerkmal.kMerkmal = tartikelmerkmal.kMerkmal');
+            $state->joins[] = $join;
 
             $query = $this->getBaseQuery(['tartikelmerkmal.kMerkmal', 'tartikelmerkmal.kMerkmalWert', 'tmerkmalwert.cBildPfad AS cMMWBildPfad',
                                           'tmerkmalwertsprache.cWert', 'tmerkmal.nSort AS nSortMerkmal', 'tmerkmalwert.nSort', 'tmerkmal.cTyp',
@@ -1189,6 +1296,7 @@ class Navigationsfilter
      */
     public function getPriceRangeFilterOptions($FilterSQL, $oSuchergebnisse)
     {
+        Shop::dbg($FilterSQL, true, 'getPriceRangeFilterOptions:');
         $oPreisspanne_arr = array();
 
         // Prüfe ob es nur einen Artikel in der Artikelübersicht gibt, falls ja und es ist noch kein Preisspannenfilter gesetzt
@@ -1202,9 +1310,9 @@ class Navigationsfilter
                                 LEFT JOIN tartikelsonderpreis ON tartikelsonderpreis.kArtikel = tartikel.kArtikel
                                     AND tartikelsonderpreis.cAktiv='Y'
                                     AND tartikelsonderpreis.dStart <= now()
-                                    AND (tartikelsonderpreis.dEnde >= CURDATE() OR tartikelsonderpreis.dEnde = '0000-00-00')
+                                    AND (tartikelsonderpreis.dEnde >= CURDATe() OR tartikelsonderpreis.dEnde = '0000-00-00')
                                 LEFT JOIN tsonderpreise ON tartikelsonderpreis.kArtikelSonderpreis = tsonderpreise.kArtikelSonderpreis
-                                    AND tsonderpreise.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe;
+                                    AnD tsonderpreise.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe;
 
             // Automatisch
             if ($this->conf['navigationsfilter']['preisspannenfilter_anzeige_berechnung'] === 'A') {
@@ -1480,11 +1588,32 @@ class Navigationsfilter
             $order = $this->getOrder();
             $state = $this->getCurrentStateData();
 
-            $state->joins[] = "\n#current order join \n" . $order->join;
+            $state->joins[] = $order->join;
+            $join = new FilterJoin();
+            $join->setComment('join1 from getSearchFilterOptions')
+                ->setType('JOIN')
+                ->setTable('tsuchcachetreffer')
+                ->setOn('tartikel.kArtikel = tsuchcachetreffer.kArtikel');
+            $state->joins[] = $join;
 
-            $state->joins[] = "JOIN tsuchcachetreffer ON tartikel.kArtikel = tsuchcachetreffer.kArtikel";
-            $state->joins[] = "JOIN tsuchcache ON tsuchcache.kSuchCache = tsuchcachetreffer.kSuchCache";
-            $state->joins[] = "JOIN tsuchanfrage ON tsuchanfrage.cSuche = tsuchcache.cSuche AND tsuchanfrage.kSprache = " . Shop::getLanguage();
+            $join = new FilterJoin();
+            $join->setComment('join2 from getSearchFilterOptions')
+                 ->setType('JOIN')
+                 ->setTable('tsuchcache')
+                 ->setOn('tsuchcache.kSuchCache = tsuchcachetreffer.kSuchCache');
+            $state->joins[] = $join;
+
+            $join = new FilterJoin();
+            $join->setComment('join3 from getSearchFilterOptions')
+                 ->setType('JOIN')
+                 ->setTable('tsuchanfrage')
+                 ->setOn('tsuchanfrage.cSuche = tsuchcache.cSuche AND tsuchanfrage.kSprache = ' . Shop::getLanguage());
+            $state->joins[] = $join;
+
+//            $state->joins[] = "\n#current order join \n" . $order->join;
+//            $state->joins[] = "JOIN tsuchcachetreffer ON tartikel.kArtikel = tsuchcachetreffer.kArtikel";
+//            $state->joins[] = "JOIN tsuchcache ON tsuchcache.kSuchCache = tsuchcachetreffer.kSuchCache";
+//            $state->joins[] = "JOIN tsuchanfrage ON tsuchanfrage.cSuche = tsuchcache.cSuche AND tsuchanfrage.kSprache = " . Shop::getLanguage();
 
             $state->conditions[] = "tsuchanfrage.nAktiv = 1";
 
@@ -1567,18 +1696,47 @@ class Navigationsfilter
             $order = $this->getOrder();
             $state = $this->getCurrentStateData();
 
-            $state->joins[] = "\n#current order join \n" . $order->join;
+            $state->joins[] = $order->join;
+//            $state->joins[] = "\n#current order join \n" . $order->join;
 
             // Kategoriefilter anzeige
             if ($this->conf['navigationsfilter']['kategoriefilter_anzeigen_als'] === 'HF' && (!$this->Kategorie->isInitialized())) {
                 $kKatFilter        = ($this->KategorieFilter->isInitialized()) ? '' : " AND tkategorieartikelgesamt.kOberKategorie = 0";
-                $state->joins[] = "JOIN tkategorieartikelgesamt ON tartikel.kArtikel = tkategorieartikelgesamt.kArtikel " . $kKatFilter;
-                $state->joins[] = "JOIN tkategorie ON tkategorie.kKategorie = tkategorieartikelgesamt.kKategorie";
+
+                $join = new FilterJoin();
+                $join->setComment('join1 from getCategoryFilterOptions')
+                     ->setType('JOIN')
+                     ->setTable('tkategorieartikelgesamt')
+                     ->setOn('tartikel.kArtikel = tkategorieartikelgesamt.kArtikel ' . $kKatFilter);
+                $state->joins[] = $join;
+
+                $join = new FilterJoin();
+                $join->setComment('join2 from getCategoryFilterOptions')
+                     ->setType('JOIN')
+                     ->setTable('tkategorie')
+                     ->setOn('tkategorie.kKategorie = tkategorieartikelgesamt.kKategorie');
+                $state->joins[] = $join;
+
+//                $state->joins[] = "JOIN tkategorieartikelgesamt ON tartikel.kArtikel = tkategorieartikelgesamt.kArtikel " . $kKatFilter;
+//                $state->joins[] = "JOIN tkategorie ON tkategorie.kKategorie = tkategorieartikelgesamt.kKategorie";
             } else {
                 if (!$this->Kategorie->isInitialized()) {
-                    $state->joins[] = "JOIN tkategorieartikel ON tartikel.kArtikel = tkategorieartikel.kArtikel";
+                    $join = new FilterJoin();
+                    $join->setComment('join3 from getCategoryFilterOptions')
+                         ->setType('JOIN')
+                         ->setTable('tkategorieartikel')
+                         ->setOn('tartikel.kArtikel = tkategorieartikel.kArtikel');
+                    $state->joins[] = $join;
+
+//                    $state->joins[] = "JOIN tkategorieartikel ON tartikel.kArtikel = tkategorieartikel.kArtikel";
                 }
-                $state->joins[] = "JOIN tkategorie ON tkategorie.kKategorie = tkategorieartikel.kKategorie";
+                $join = new FilterJoin();
+                $join->setComment('join4 from getCategoryFilterOptions')
+                     ->setType('JOIN')
+                     ->setTable('tkategorie')
+                     ->setOn('tkategorie.kKategorie = tkategorieartikel.kKategorie');
+                $state->joins[] = $join;
+//                $state->joins[] = "JOIN tkategorie ON tkategorie.kKategorie = tkategorieartikel.kKategorie";
             }
 
             // nicht Standardsprache? Dann hole Namen nicht aus tkategorie sondern aus tkategoriesprache
@@ -1587,7 +1745,13 @@ class Navigationsfilter
             $select = ['tkategorie.kKategorie', 'tkategorie.nSort'];
             if (!standardspracheAktiv()) {
                 $select[] = "IF(tkategoriesprache.cName = '', tkategorie.cName, tkategoriesprache.cName) AS cName";
-                $state->joins[]   = "JOIN tkategoriesprache ON tkategoriesprache.kKategorie = tkategorie.kKategorie AND tkategoriesprache.kSprache = " . Shop::getLanguage();
+                $join = new FilterJoin();
+                $join->setComment('join5 from getCategoryFilterOptions')
+                     ->setType('JOIN')
+                     ->setTable('tkategoriesprache')
+                     ->setOn('tkategoriesprache.kKategorie = tkategorie.kKategorie AND tkategoriesprache.kSprache = ' . Shop::getLanguage());
+                $state->joins[] = $join;
+//                $state->joins[]   = "JOIN tkategoriesprache ON tkategoriesprache.kKategorie = tkategorie.kKategorie AND tkategoriesprache.kSprache = " . Shop::getLanguage();
             } else {
                 $select[] = "tkategorie.cName";
             }

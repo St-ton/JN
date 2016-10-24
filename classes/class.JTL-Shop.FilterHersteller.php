@@ -92,10 +92,10 @@ class FilterHersteller extends AbstractFilter implements IFilter
     }
 
     /**
-     * @return string
+     * @return FilterJoin[]
      */
     public function getSQLJoin()
     {
-        return '';
+        return [];
     }
 }

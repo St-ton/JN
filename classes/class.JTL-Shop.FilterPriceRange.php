@@ -83,16 +83,16 @@ class FilterPriceRange extends AbstractFilter implements IFilter
         $this->cBisLocalized = gibPreisLocalizedOhneFaktor($this->fBis);
         $this->isInitialized = true;
 
-        $oFilter = new stdClass();
-        $oFilter->cJoin = "JOIN tpreise ON tartikel.kArtikel = tpreise.kArtikel AND tpreise.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
+        $oFilter         = new stdClass();
+        $oFilter->cJoin  = "JOIN tpreise ON tartikel.kArtikel = tpreise.kArtikel AND tpreise.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
                             LEFT JOIN tartikelkategorierabatt ON tartikelkategorierabatt.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
                                 AND tartikelkategorierabatt.kArtikel = tartikel.kArtikel
                             LEFT JOIN tartikelsonderpreis ON tartikelsonderpreis.kArtikel = tartikel.kArtikel
                                 AND tartikelsonderpreis.cAktiv = 'Y'
                                 AND tartikelsonderpreis.dStart <= now()
-                                AND (tartikelsonderpreis.dEnde >= CURDATE() OR tartikelsonderpreis.dEnde = '0000-00-00')
+                                AND (tartikelsonderpreis.dEnde >= curDATE() OR tartikelsonderpreis.dEnde = '0000-00-00')
                             LEFT JOIN tsonderpreise ON tartikelsonderpreis.kArtikelSonderpreis = tsonderpreise.kArtikelSonderpreis
-                                AND tsonderpreise.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe;
+                                ANd tsonderpreise.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe;
         $oFilter->cWhere = '';
 
         $fKundenrabatt = 0.0;
@@ -179,10 +179,43 @@ class FilterPriceRange extends AbstractFilter implements IFilter
     }
 
     /**
-     * @return string
+     * @return FilterJoin[]
      */
     public function getSQLJoin()
     {
-        return $this->oFilter->cJoin;
+        $res = [];
+
+        $join = new FilterJoin();
+        $join->setComment('join1 from FilterPriceRange')
+             ->setType('JOIN')
+             ->setTable('tpreise')
+             ->setOn('tartikel.kArtikel = tpreise.kArtikel AND tpreise.kKundengruppe = ' . (int)$_SESSION['Kundengruppe']->kKundengruppe);
+        $res[] = $join;
+
+        $join = new FilterJoin();
+        $join->setComment('join2 from FilterPriceRange')
+             ->setType('LEFT JOIN')
+             ->setTable('tartikelkategorierabatt')
+             ->setOn('tartikelkategorierabatt.kKundengruppe = ' . (int)$_SESSION['Kundengruppe']->kKundengruppe . ' AND tartikelkategorierabatt.kArtikel = tartikel.kArtikel');
+        $res[] = $join;
+
+        $join = new FilterJoin();
+        $join->setComment('join3 from FilterPriceRange')
+             ->setType('LEFT JOIN')
+             ->setTable('tartikelsonderpreis')
+             ->setOn("tartikelsonderpreis.kArtikel = tartikel.kArtikel
+                 AND tartikelsonderpreis.cAktiv = 'Y'
+                 AND tartikelsonderpreis.dStart <= now()
+                 AND (tartikelsonderpreis.dEnde >= curDATE() OR tartikelsonderpreis.dEnde = '0000-00-00'");
+        $res[] = $join;
+
+        $join = new FilterJoin();
+        $join->setComment('join4 from FilterPriceRange')
+             ->setType('LEFT JOIN')
+             ->setTable('tsonderpreise')
+             ->setOn('tartikelsonderpreis.kArtikelSonderpreis = tsonderpreise.kArtikelSonderpreis AND tsonderpreise.kKundengruppe = ' . (int)$_SESSION['Kundengruppe']->kKundengruppe);
+        $res[] = $join;
+
+        return $res;
     }
 }

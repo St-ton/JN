@@ -65,10 +65,17 @@ class FilterRating extends AbstractFilter implements IFilter
     }
 
     /**
-     * @return string
+     * @return FilterJoin[]
      */
     public function getSQLJoin()
     {
-        return 'JOIN tartikelext ON tartikel.kArtikel = tartikelext.kArtikel';
+        $join = new FilterJoin();
+        $join->setType('JOIN')
+             ->setTable('tartikelext')
+             ->setOn('tartikel.kArtikel = tartikelext.kArtikel')
+             ->setComment('JOIN from FilterRating');
+
+        return [$join];
+//        return 'JOIN tartikelext ON tartikel.kArtikel = tartikelext.kArtikel';
     }
 }

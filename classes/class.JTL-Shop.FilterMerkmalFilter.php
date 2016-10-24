@@ -85,10 +85,17 @@ class FilterMerkmalFilter extends FilterMerkmal
     }
 
     /**
-     * @return string
+     * @return FilterJoin[]
      */
     public function getSQLJoin()
     {
-        return 'JOIN tartikelmerkmal ON tartikel.kArtikel = tartikelmerkmal.kArtikel';
+        $join = new FilterJoin();
+        $join->setType('JOIN')
+             ->setTable('tartikelmerkmal')
+             ->setOn('tartikel.kArtikel = tartikelmerkmal.kArtikel')
+             ->setComment('join from FilterMerkmalFilter');
+
+        return [$join];
+//        return 'JOIN tartikelmerkmal ON tartikel.kArtikel = tartikelmerkmal.kArtikel';
     }
 }

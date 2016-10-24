@@ -80,15 +80,22 @@ class FilterTag extends AbstractFilter implements IFilter
      */
     public function getSQLCondition()
     {
-        return 'tkategorieartikel.kKategorie = ' . $this->getID();
+        return "ttag.nAktiv = 1 AND ttagartikel.kTag = " . $this->getID();
     }
 
     /**
-     * @return string
+     * @return FilterJoin[]
      */
     public function getSQLJoin()
     {
-        return  'JOIN ttagartikel ON tartikel.kArtikel = ttagartikel.kArtikel
-                 JOIN ttag ON ttagartikel.kTag = ttag.kTag';
+        $join = new FilterJoin();
+        $join->setType('JOIN')->setTable('ttagartikel')->setOn('tartikel.kArtikel = ttagartikel.kArtikel')->setComment('JOIN1 from FilterTag');
+        $join2 = new FilterJoin();
+        $join2->setType('JOIN')->setTable('ttag')->setOn('ttagartikel.kTag = ttag.kTag')->setComment('JOIN2 from FilterTag');
+
+        return [$join, $join2];
+
+//        return  'JOIN ttagartikel ON tartikel.kArtikel = ttagartikel.kArtikel
+//                 JoiN ttag ON ttagartikel.kTag = ttag.kTag';
     }
 }

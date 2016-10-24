@@ -175,27 +175,45 @@ class FilterSearchSpecial extends AbstractFilter implements IFilter
 //        }
         switch ($this->kKey) {
             case SEARCHSPECIALS_BESTSELLER:
-                return "JOIN tbestseller ON tbestseller.kArtikel = tartikel.kArtikel";
+                $join = new FilterJoin();
+                $join->setType('JOIN')
+                     ->setTable('tbestseller')
+                     ->setOn('tbestseller.kArtikel = tartikel.kArtikel')
+                     ->setComment('JOIN from FilterSearchSpecial bestseller');
+                return [$join];
+//                return "JOIN tbestseller ON tbestseller.kArtikel = tartikel.kArtikel";
 
             case SEARCHSPECIALS_SPECIALOFFERS:
                 if (!Shop::getNaviFilter()->PreisspannenFilter->isInitialized()) {
-                    return "JOIN tartikelsonderpreis AS tasp ON tasp.kArtikel = tartikel.kArtikel\nJOIN tsonderpreise AS tsp ON tsp.kArtikelSonderpreis = tasp.kArtikelSonderpreis";
+                    $join = new FilterJoin();
+                    $join->setType('JOIN')
+                         ->setTable('tartikelsonderpreis AS tasp')
+                         ->setOn('tasp.kArtikel = tartikel.kArtikel\nJOIN tsonderpreise AS tsp ON tsp.kArtikelSonderpreis = tasp.kArtikelSonderpreis')
+                         ->setComment('JOIN from FilterSearchSpecial special offers');
+                    return [$join];
+//                    return "JOIN tartikelsonderpreis AS tasp ON tasp.kArtikel = tartikel.kArtikel\nJOIN tsonderpreise AS tsp ON tsp.kArtikelSonderpreis = tasp.kArtikelSonderpreis";
                 }
-                return '';
+                return [];
 
             case SEARCHSPECIALS_NEWPRODUCTS:
             case SEARCHSPECIALS_TOPOFFERS:
             case SEARCHSPECIALS_UPCOMINGPRODUCTS:
-                return '';
+                return [];
 
             case SEARCHSPECIALS_TOPREVIEWS:
                 if (!Shop::getNaviFilter()->BewertungFilter->isInitialized()) {
-                    return "JOIN tartikelext AS taex ON taex.kArtikel = tartikel.kArtikel";
+                    $join = new FilterJoin();
+                    $join->setType('JOIN')
+                         ->setTable('tartikelext AS taex ')
+                         ->setOn('taex.kArtikel = tartikel.kArtikel')
+                         ->setComment('JOIN from FilterSearchSpecial top reviews');
+                    return [$join];
+//                    return "JOIN tartikelext AS taex ON taex.kArtikel = tartikel.kArtikel";
                 }
-                return '';
+                return [];
 
             default:
-                return '';
+                return [];
         }
     }
 }

@@ -99,10 +99,17 @@ class FilterKategorie extends AbstractFilter implements IFilter
     }
 
     /**
-     * @return string
+     * @return FilterJoin[]
      */
     public function getSQLJoin()
     {
-        return  'JOIN tkategorieartikel ON tartikel.kArtikel = tkategorieartikel.kArtikel';
+        $join = new FilterJoin();
+        $join->setType('JOIN')
+            ->setTable('tkategorieartikel')
+            ->setOn('tartikel.kArtikel = tkategorieartikel.kArtikel')
+            ->setComment('join from FilterKategorie');
+
+        return [$join];
+//        return  'JOIN tkategorieartikel ON tartikel.kArtikel = tkategorieartikel.kArtikel';
     }
 }

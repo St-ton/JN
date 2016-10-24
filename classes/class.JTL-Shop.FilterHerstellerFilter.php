@@ -34,10 +34,10 @@ class FilterHerstellerFilter extends FilterHersteller
     }
 
     /**
-     * @return string
+     * @return FilterJoin[]
      */
     public function getSQLJoin()
     {
-        return '';
+        return [];
     }
 }

@@ -374,7 +374,9 @@ function checkVarkombiDependencies($aValues, $kEigenschaft = 0, $kEigenschaftWer
     $kVaterArtikel               = intval($aValues['a']);
     $kArtikelKind                = isset($aValues['VariKindArtikel']) ? intval($aValues['VariKindArtikel']) : 0;
     $kFreifeldEigeschaftWert_arr = array();
-    $kGesetzteEigeschaftWert_arr = array_filter((array) $aValues['eigenschaftwert']);
+    $kGesetzteEigeschaftWert_arr = (isset($aValues['eigenschaftwert']))
+        ? array_filter((array) $aValues['eigenschaftwert'])
+        : [];
 
     if ($kVaterArtikel > 0) {
         $oArtikelOptionen                            = new stdClass();

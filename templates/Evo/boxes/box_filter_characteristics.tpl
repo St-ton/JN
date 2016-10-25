@@ -1,7 +1,6 @@
 {if $BoxenEinstellungen.navigationsfilter.merkmalfilter_verwenden === 'box'}
     {if isset($Suchergebnisse) && $Suchergebnisse->MerkmalFilter|@count > 0}
         {foreach name=merkmalfilter from=$Suchergebnisse->MerkmalFilter item=Merkmal}
-            {assign var=kMerkmal value=$Merkmal->kMerkmal}
             <section class="panel panel-default box box-filter-characteristics">
                 {if ($Merkmal->cTyp === 'SELECTBOX') && $Merkmal->oMerkmalWerte_arr|@count > 1}
                     <div class="panel-heading dropdown">

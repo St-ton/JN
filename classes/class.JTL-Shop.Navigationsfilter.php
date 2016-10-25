@@ -708,6 +708,24 @@ class Navigationsfilter
             : 20;
     }
 
+    /**
+     * @return string
+     */
+    private function getStorageFilter()
+    {
+        $filterSQL = '';
+        if ((int)$this->conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER) {
+            $filterSQL = "AND (NOT (tartikel.fLagerbestand <= 0 AND tartikel.cLagerBeachten = 'Y') OR tartikel.cLagerVariation = 'Y')";
+        } elseif ((int)$this->conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL) {
+            $filterSQL = "AND (NOT (tartikel.fLagerbestand <= 0 AND tartikel.cLagerBeachten = 'Y') OR tartikel.cLagerKleinerNull = 'Y' OR tartikel.cLagerVariation = 'Y')";
+        }
+        executeHook(HOOK_STOCK_FILTER, [
+            'conf'      => (int)$this->conf['global']['artikel_artikelanzeigefilter'],
+            'filterSQL' => &$filterSQL
+        ]);
+
+        return $filterSQL;
+    }
 
     /**
      * @return stdClass|string
@@ -1430,7 +1448,7 @@ class Navigationsfilter
                     AND tartikelsichtbarkeit.kKundengruppe = " . $this->customerGroupID . "
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
                     AND tartikel.kVaterArtikel = 0
-                    " . gibLagerfilter() . "
+                    " . $this->getStorageFilter() . "
                     " . $state->conditions . "
                 GROUP BY tartikel.kArtikel
                 " . $state->having . "
@@ -1460,7 +1478,7 @@ class Navigationsfilter
                             AND tartikelsichtbarkeit.kKundengruppe = " . $this->customerGroupID . "
                         WHERE tartikelsichtbarkeit.kArtikel IS NULL
                             AND tartikel.kVaterArtikel = 0
-                            " . gibLagerfilter() . "
+                            " . $this->getStorageFilter() . "
                             " . $state->conditions . "
                         GROUP BY tartikel.kArtikel
                         " . $state->having . "
@@ -1521,7 +1539,7 @@ class Navigationsfilter
                 );
                 if (!$oPreis->nAnzahlSpannen || !$oPreis->fMaxPreis) {
                     $res = [];
-//                    Shop::Cache()->set($cacheID, $res, array(CACHING_GROUP_CATEGORY));
+//                    Shop::Cache()->set($cacheID, $res, [CACHING_GROUP_CATEGORY]);
 
                     return $res;
                 }
@@ -1547,7 +1565,7 @@ class Navigationsfilter
                                     AND tartikelsichtbarkeit.kKundengruppe = " . $this->customerGroupID . "
                                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
                                     AND tartikel.kVaterArtikel = 0
-                                    " . gibLagerfilter() . "
+                                    " . $this->getStorageFilter() . "
                                     " . $state->where . "
                                 GROUP BY tartikel.kArtikel
                                 " . $state->having . "
@@ -1902,7 +1920,7 @@ class Navigationsfilter
             WHERE tartikelsichtbarkeit.kArtikel IS NULL
                 AND tartikel.kVaterArtikel = 0
                 #stock filter
-                " . gibLagerfilter() .
+                " . $this->getStorageFilter() .
                 $conditions . "
             #default group by
             " . $groupBy . "
@@ -2124,7 +2142,7 @@ class Navigationsfilter
             // Suche
             $nLetzterSuchFilter   = 1;
             $bZusatzSuchEnthalten = false;
-            $oSuchanfrage_arr     = array();
+            $oSuchanfrage_arr     = [];
             if (isset($this->SuchFilter) && is_array($this->SuchFilter) && count($this->SuchFilter) > 0) {
                 foreach ($this->SuchFilter as $i => $oSuchFilter) {
                     if (isset($oSuchFilter->kSuchanfrage) && $oSuchFilter->kSuchanfrage > 0) {
@@ -2133,7 +2151,7 @@ class Navigationsfilter
                             if ($oSuchFilter->kSuchanfrage != $this->Suche->kSuchanfrage) {
                                 $oSuchanfrage_arr[$i]->kSuchanfrage = $oSuchFilter->kSuchanfrage;
                             }
-                            $nLetzterSuchFilter++;
+                            ++$nLetzterSuchFilter;
                             if ($oSuchFilter->kSuchanfrage == $oZusatzFilter->SuchFilter->kSuchanfrage) {
                                 $bZusatzSuchEnthalten = true;
                             }
@@ -2159,7 +2177,7 @@ class Navigationsfilter
             // Merkmale
             $nLetzterMerkmalFilter   = 1;
             $bZusatzMerkmalEnthalten = false;
-            $oMerkmalWert_arr        = array();
+            $oMerkmalWert_arr        = [];
             foreach ($this->MerkmalFilter as $i => $oMerkmalFilter) {
                 if ($oMerkmalFilter->isInitialized() > 0) {
                     if ((!isset($oZusatzFilter->FilterLoesen->Merkmale)) || $oZusatzFilter->FilterLoesen->Merkmale != $oMerkmalFilter->kMerkmal) {
@@ -2218,7 +2236,7 @@ class Navigationsfilter
             // Tag
             $nLetzterTagFilter   = 1;
             $bZusatzTagEnthalten = false;
-            $oTag_arr            = array();
+            $oTag_arr            = [];
             if (!isset($oZusatzFilter->FilterLoesen->Tags)) {
                 if (isset($this->TagFilter) && is_array($this->TagFilter)) {
                     foreach ($this->TagFilter as $i => $oTagFilter) {
@@ -2242,7 +2260,7 @@ class Navigationsfilter
                 if (!isset($oTag_arr[$nPos])) {
                     $oTag_arr[$nPos] = new stdClass();
                 }
-                $oTag_arr[$nPos]->kTag = $oZusatzFilter->TagFilter->kTag;
+                $oTag_arr[$nPos]->kTag = (int)$oZusatzFilter->TagFilter->kTag;
             }
             // Baue TagFilter URL
             $oTag_arr = sortiereFilter($oTag_arr, 'kTag');

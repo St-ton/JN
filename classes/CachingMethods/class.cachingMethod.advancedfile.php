@@ -51,15 +51,9 @@ class cache_advancedfile implements ICachingMethod
      */
     public function store($cacheID, $content, $expiration = null)
     {
-        $dir = $this->options['cache_dir'];
-        if (!is_dir($dir)) {
-            $createDir = mkdir($dir);
-            if ($createDir === false) {
-                return false;
-            }
-        }
         $fileName = $this->getFileName($cacheID);
-        if ($fileName === false) {
+        $dir      = $this->options['cache_dir'];
+        if ($fileName === false || (!is_dir($dir) && mkdir($dir) === false)) {
             return false;
         }
 
@@ -230,12 +224,12 @@ class cache_advancedfile implements ICachingMethod
     public function setCacheTag($tags = array(), $cacheID)
     {
         $fileName = $this->getFileName($cacheID);
-        if ($fileName === false) {
+        if ($fileName === false || file_exists($fileName)) {
             return false;
         }
         $res = false;
         if (is_string($tags)) {
-            $tags = array($tags);
+            $tags = [$tags];
         }
         if (count($tags) > 0) {
             foreach ($tags as $tag) {

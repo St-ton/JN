@@ -38,7 +38,8 @@
                         <span class="input-group-addon">
                             <label for="cIntervall">{#statusemailIntervall#}</label>
                         </span>
-                        <select name="cIntervall_arr[]" id="cIntervall" multiple="multiple" class="form-control multiple">
+                        <select name="cIntervall_arr[]" id="cIntervall" multiple="multiple" class="form-control multiple"
+                                size="3">
                             {foreach $oStatusemailEinstellungen->cIntervallMoeglich_arr as $key => $nIntervallMoeglich}
                                 <option value="{$nIntervallMoeglich}"
                                         {if $nIntervallMoeglich|in_array:$oStatusemailEinstellungen->nIntervall_arr}selected{/if}>
@@ -55,7 +56,8 @@
                         <span class="input-group-addon">
                             <label for="cInhalt">{#statusemailContent#}</label>
                         </span>
-                        <select name="cInhalt_arr[]" id="cInhalt" multiple="multiple" class="form-control multiple">
+                        <select name="cInhalt_arr[]" id="cInhalt" multiple="multiple" class="form-control multiple"
+                                size="15">
                             {foreach $oStatusemailEinstellungen->cInhaltMoeglich_arr as $key => $nInhaltMoeglich}
                                 <option value="{$nInhaltMoeglich}"
                                         {if $nInhaltMoeglich|in_array:$oStatusemailEinstellungen->nInhalt_arr}selected{/if}>

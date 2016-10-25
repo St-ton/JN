@@ -118,7 +118,9 @@ function gibInhaltMoeglichkeiten()
         'Anzahl neuer Verf&uuml;gbarkeitsanfragen'     => 20,
         'Anzahl Produktvergleiche'                     => 21,
         'Anzahl genutzter Kupons'                      => 22,
-        'Die letzten Log-Eintr&auml;ge'                => 25
+        'Letzte Fehlermeldungen im Systemlog'          => 25,
+        'Letzte Hinweise im Systemlog'                 => 26,
+        'Letzte Debugeintr&auml;ge im Systemlog'       => 27
     );
 }
 
@@ -136,7 +138,7 @@ function gibAnzahlArtikelProKundengruppe()
 
     if (is_array($oKundengruppe_arr) && count($oKundengruppe_arr) > 0) {
         foreach ($oKundengruppe_arr as $oKundengruppe) {
-            $oArtikel = Shop::DB()->query(
+            $oArtikel            = Shop::DB()->query(
                 "SELECT count(*) AS nAnzahl
                     FROM tartikel
                     LEFT JOIN tartikelsichtbarkeit ON tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
@@ -822,7 +824,7 @@ function gibAnzahlGenutzteKupons($dVon, $dBis)
     return 0;
 }
 
-function getLogEntries($dVon, $dBis)
+function getLogEntries($dVon, $dBis, $nLogLevel_arr)
 {
     $dVon = Shop::DB()->escape($dVon);
     $dBis = Shop::DB()->escape($dBis);
@@ -833,6 +835,7 @@ function getLogEntries($dVon, $dBis)
                 FROM tjtllog
                 WHERE dErstellt >= '" . $dVon . "'
                     AND dErstellt < '" . $dBis . "'
+                    AND nLevel IN (" . implode(',', $nLogLevel_arr) . ")
                 ORDER BY dErstellt DESC",
             2);
 
@@ -884,6 +887,8 @@ function baueStatusEmail($oStatusemail, $dVon, $dBis)
     $dBis = Shop::DB()->escape($dBis);
 
     if (is_array($oStatusemail->nInhalt_arr) && count($oStatusemail->nInhalt_arr) > 0 && strlen($dVon) > 0 && strlen($dBis) > 0) {
+        $nLogLevel_arr = [];
+
         foreach ($oStatusemail->nInhalt_arr as $nInhalt) {
             switch ($nInhalt) {
                 // Anzahl Artikel pro Kundengruppe
@@ -995,11 +1000,18 @@ function baueStatusEmail($oStatusemail, $dVon, $dBis)
 
                 // Log-Einträge
                 case 25:
-                    $oMailObjekt->oLogEntry_arr = getLogEntries($dVon, $dBis);
+                    $nLogLevel_arr[] = JTLLOG_LEVEL_ERROR;
+                    break;
+                case 26:
+                    $nLogLevel_arr[] = JTLLOG_LEVEL_NOTICE;
+                    break;
+                case 27:
+                    $nLogLevel_arr[] = JTLLOG_LEVEL_DEBUG;
                     break;
             }
         }
 
+        $oMailObjekt->oLogEntry_arr = getLogEntries($dVon, $dBis, $nLogLevel_arr);
         return $oMailObjekt;
     }
 

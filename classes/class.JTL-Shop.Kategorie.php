@@ -160,12 +160,12 @@ class Kategorie
         $kKundengruppe = (int)$kKundengruppe;
         $kKategorie    = (int)$kKategorie;
         //exculpate session
-        $cacheID = 'cl_l_' . $kSprache . '_cg_' . $kKundengruppe . '_ssl_' . pruefeSSL();
-        if (!$noCache && ($oKategorie_arr = Shop::Cache()->get($cacheID)) !== false && isset($oKategorie_arr[$kKategorie])) {
-            foreach (get_object_vars($oKategorie_arr[$kKategorie]) as $k => $v) {
+        $cacheID = CACHING_GROUP_CATEGORY . '_' . $kKategorie . '_' . $kSprache . '_cg_' . $kKundengruppe . '_ssl_' . pruefeSSL();
+        if (!$noCache && ($category = Shop::Cache()->get($cacheID)) !== false) {
+            foreach (get_object_vars($category) as $k => $v) {
                 $this->$k = $v;
             }
-            executeHook(HOOK_KATEGORIE_CLASS_LOADFROMDB, array('oKategorie' => &$this, 'cacheTags' => array(), 'cached' => true));
+            executeHook(HOOK_KATEGORIE_CLASS_LOADFROMDB, ['oKategorie' => &$this, 'cacheTags' => [], 'cached' => true]);
 
             return $this;
         }
@@ -191,7 +191,7 @@ class Kategorie
                     AND tseo.kKey = " . $kKategorie . "
                     AND tseo.kSprache = " . $kSprache . "
                 LEFT JOIN tkategoriepict ON tkategoriepict.kKategorie = tkategorie.kKategorie
-                WHERE tkategorie.kKategorie=" . $kKategorie . "
+                WHERE tkategorie.kKategorie = " . $kKategorie . "
                     " . $oSQLKategorie->cWHERE . "
                     AND tkategoriesichtbarkeit.kKategorie IS NULL", 1
         );
@@ -235,7 +235,6 @@ class Kategorie
         $this->cKategoriePfad_arr = gibKategoriepfad($this, $kKundengruppe, $kSprache, false);
         $this->cKategoriePfad     = implode(' > ', $this->cKategoriePfad_arr);
         // Bild holen
-
         $this->cBildURL       = BILD_KEIN_KATEGORIEBILD_VORHANDEN;
         $this->cBild          = Shop::getURL() . '/' . BILD_KEIN_KATEGORIEBILD_VORHANDEN;
         $this->nBildVorhanden = 0;
@@ -310,11 +309,10 @@ class Kategorie
         }
         //interne Verlinkung $#k:X:Y#$
         $this->cBeschreibung         = parseNewsText($this->cBeschreibung);
-        $oKategorie_arr[$kKategorie] = $this;
-        $cacheTags                   = array(CACHING_GROUP_CATEGORY . '_' . $kKategorie, CACHING_GROUP_CATEGORY);
+        $cacheTags                   = [CACHING_GROUP_CATEGORY . '_' . $kKategorie, CACHING_GROUP_CATEGORY];
         executeHook(HOOK_KATEGORIE_CLASS_LOADFROMDB, array('oKategorie' => &$this, 'cacheTags' => &$cacheTags, 'cached' => false));
         if (!$noCache) {
-            Shop::Cache()->set($cacheID, $oKategorie_arr, $cacheTags);
+            Shop::Cache()->set($cacheID, $this, $cacheTags);
         }
 
         return $this;
@@ -413,7 +411,7 @@ class Kategorie
             return $res;
         }
 
-        return;
+        return null;
     }
 
     /**

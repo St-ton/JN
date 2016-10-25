@@ -9,11 +9,24 @@
  */
 class FilterJoin
 {
-
+    /**
+     * @var string
+     */
     private $type = 'JOIN';
-    private $table;
 
+    /**
+     * @var string
+     */
+    private $table = null;
+
+    /**
+     * @var string
+     */
     private $comment;
+
+    /**
+     * @var string
+     */
     private $on;
 
     /**
@@ -108,6 +121,8 @@ class FilterJoin
      */
     public function getSql()
     {
-        return $this->getComment() . $this->getType() . ' ' . $this->getTable() . ' ON ' . $this->getOn();
+        return ($this->getTable() !== null)
+            ? $this->getComment() . $this->getType() . ' ' . $this->getTable() . ' ON ' . $this->getOn()
+            : '';
     }
 }

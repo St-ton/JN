@@ -543,7 +543,7 @@ class Navigationsfilter
     {
         $Artikelsortierung = $this->conf['artikeluebersicht']['artikeluebersicht_artikelsortierung'];
         $sort = new stdClass();
-        $sort->join = [];
+        $sort->join = new FilterJoin();
         if (isset($_SESSION['Usersortierung'])) {
             $Artikelsortierung          = mappeUsersortierung($_SESSION['Usersortierung']);
             $_SESSION['Usersortierung'] = $Artikelsortierung;
@@ -656,7 +656,6 @@ class Navigationsfilter
         $state = $this->getCurrentStateData();
 //        $state->joins[] = "\n#current order join \n" . $order->join;
         $state->joins[] = $order->join;
-
         $query = $this->getBaseQuery(['tartikel.kArtikel'], $state->joins, $state->conditions, $state->having, $order->orderBy);
 
         $oArtikelKey_arr = Shop::DB()->query(
@@ -1296,8 +1295,7 @@ class Navigationsfilter
      */
     public function getPriceRangeFilterOptions($FilterSQL, $oSuchergebnisse)
     {
-        Shop::dbg($FilterSQL, true, 'getPriceRangeFilterOptions:');
-        $oPreisspanne_arr = array();
+        $oPreisspanne_arr = [];
 
         // Prüfe ob es nur einen Artikel in der Artikelübersicht gibt, falls ja und es ist noch kein Preisspannenfilter gesetzt
         // dürfen keine Preisspannenfilter angezeigt werden

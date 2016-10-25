@@ -224,7 +224,7 @@ class cache_advancedfile implements ICachingMethod
     public function setCacheTag($tags = array(), $cacheID)
     {
         $fileName = $this->getFileName($cacheID);
-        if ($fileName === false || file_exists($fileName)) {
+        if ($fileName === false || !file_exists($fileName)) {
             return false;
         }
         $res = false;

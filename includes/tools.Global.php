@@ -3207,9 +3207,9 @@ function baueVersandkostenfreiLaenderString($oVersandart, $fWarenkorbSumme = 0.0
 }
 
 /**
- * @param float $preis
- * @param int   $waehrung
- * @param int   $html
+ * @param float      $preis
+ * @param int|object $waehrung
+ * @param int        $html
  * @return string
  */
 function gibPreisLocalizedOhneFaktor($preis, $waehrung = 0, $html = 1)

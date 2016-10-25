@@ -136,8 +136,7 @@ $oSuchergebnisse->MerkmalFilter    = $NaviFilter->getAttributeFilterOptions($Akt
 //Shop::dbg($oSuchergebnisse->MerkmalFilter, false, '$oSuchergebnisse->MerkmalFilter');
 
 //@todo
-$oSuchergebnisse->Preisspanne = [];
-//$oSuchergebnisse->Preisspanne      = $NaviFilter->getPriceRangeFilterOptions($FilterSQL, $oSuchergebnisse);
+$oSuchergebnisse->Preisspanne      = $NaviFilter->getPriceRangeFilterOptions($oSuchergebnisse->GesamtanzahlArtikel);
 //Shop::dbg($oSuchergebnisse->Preisspanne, false, '$oSuchergebnisse->Preisspanne');
 
 $oSuchergebnisse->Kategorieauswahl = $NaviFilter->getCategoryFilterOptions();

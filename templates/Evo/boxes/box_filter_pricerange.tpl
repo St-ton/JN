@@ -1,6 +1,4 @@
-box!
 {if $bBoxenFilterNach && $BoxenEinstellungen.navigationsfilter.preisspannenfilter_benutzen === 'box'}
-    if!
     {if $Suchergebnisse->Preisspanne|@count > 0}
         <section class="panel panel-default box box-filter-price" id="sidebox{$oBox->kBox}">
             <div class="panel-heading">

@@ -3296,7 +3296,7 @@ class Artikel
 
         $oArtikelTMP = Shop::DB()->query($productSQL, 1);
         if ($oArtikelTMP === false || $oArtikelTMP === null) {
-            $cacheTags = array(CACHING_GROUP_ARTICLE . '_' . $this->kArtikel, CACHING_GROUP_ARTICLE);
+            $cacheTags = array(CACHING_GROUP_ARTICLE . '_' . $kArtikel, CACHING_GROUP_ARTICLE);
             executeHook(HOOK_ARTIKEL_CLASS_FUELLEARTIKEL, array(
                 'oArtikel'  => &$this,
                 'cacheTags' => &$cacheTags,

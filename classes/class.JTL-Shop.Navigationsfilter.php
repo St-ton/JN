@@ -1035,9 +1035,9 @@ class Navigationsfilter
 
             $query = $this->getBaseQuery(['ROUND(tartikelext.fDurchschnittsBewertung, 0) AS nSterne', 'tartikel.kArtikel'], $state->joins, $state->conditions, $state->having, $order->orderBy);
             $query = "SELECT ssMerkmal.nSterne, COUNT(*) AS nAnzahl
-                FROM (" . $query . " ) AS ssMerkmal
-                    GROUP BY ssMerkmal.nSterne
-                    ORDER BY ssMerkmal.nSterne DESC";
+                        FROM (" . $query . " ) AS ssMerkmal
+                        GROUP BY ssMerkmal.nSterne
+                        ORDER BY ssMerkmal.nSterne DESC";
 
             $oBewertungFilterDB_arr = Shop::DB()->query($query, 2);
             if (is_array($oBewertungFilterDB_arr)) {
@@ -1111,26 +1111,23 @@ class Navigationsfilter
                 GROUP BY ssMerkmal.kTag
                 ORDER BY nAnzahl DESC LIMIT 0, " . (int)$this->conf['navigationsfilter']['tagfilter_max_anzeige'];
             $oTagFilterDB_arr = Shop::DB()->query($query, 2);
-
-            if (is_array($oTagFilterDB_arr)) {
-                foreach ($oTagFilterDB_arr as $oTagFilterDB) {
-                    $oTagFilter = new stdClass();
-                    if (!isset($oZusatzFilter)) {
-                        $oZusatzFilter = new stdClass();
-                    }
-                    if (!isset($oZusatzFilter->TagFilter)) {
-                        $oZusatzFilter->TagFilter = new stdClass();
-                    }
-                    //baue URL
-                    $oZusatzFilter->TagFilter->kTag = $oTagFilterDB->kTag;
-                    $oTagFilter->cURL               = $this->getURL(true, $oZusatzFilter);
-                    $oTagFilter->kTag               = $oTagFilterDB->kTag;
-                    $oTagFilter->cName              = $oTagFilterDB->cName;
-                    $oTagFilter->nAnzahl            = $oTagFilterDB->nAnzahl;
-                    $oTagFilter->nAnzahlTagging     = $oTagFilterDB->nAnzahlTagging;
-
-                    $oTagFilter_arr[] = $oTagFilter;
+            foreach ($oTagFilterDB_arr as $oTagFilterDB) {
+                $oTagFilter = new stdClass();
+                if (!isset($oZusatzFilter)) {
+                    $oZusatzFilter = new stdClass();
                 }
+                if (!isset($oZusatzFilter->TagFilter)) {
+                    $oZusatzFilter->TagFilter = new stdClass();
+                }
+                //baue URL
+                $oZusatzFilter->TagFilter->kTag = $oTagFilterDB->kTag;
+                $oTagFilter->cURL               = $this->getURL(true, $oZusatzFilter);
+                $oTagFilter->kTag               = $oTagFilterDB->kTag;
+                $oTagFilter->cName              = $oTagFilterDB->cName;
+                $oTagFilter->nAnzahl            = $oTagFilterDB->nAnzahl;
+                $oTagFilter->nAnzahlTagging     = $oTagFilterDB->nAnzahlTagging;
+
+                $oTagFilter_arr[] = $oTagFilter;
             }
             // Priorität berechnen
             $nPrioStep = 0;
@@ -1230,9 +1227,18 @@ class Navigationsfilter
                  ->setOn('tmerkmal.kMerkmal = tartikelmerkmal.kMerkmal');
             $state->joins[] = $join;
 
-            $query = $this->getBaseQuery(['tartikelmerkmal.kMerkmal', 'tartikelmerkmal.kMerkmalWert', 'tmerkmalwert.cBildPfad AS cMMWBildPfad',
-                                          'tmerkmalwertsprache.cWert', 'tmerkmal.nSort AS nSortMerkmal', 'tmerkmalwert.nSort', 'tmerkmal.cTyp',
-                                          'tmerkmal.cBildPfad AS cMMBildPfad', $select], $state->joins, $state->conditions, $state->having, $order->orderBy, '', ['tartikelmerkmal.kMerkmalWert', 'tartikel.kArtikel']);
+            $query = $this->getBaseQuery([
+                'tartikelmerkmal.kMerkmal',
+                'tartikelmerkmal.kMerkmalWert',
+                'tmerkmalwert.cBildPfad AS cMMWBildPfad',
+                'tmerkmalwertsprache.cWert',
+                'tmerkmal.nSort AS nSortMerkmal',
+                'tmerkmalwert.nSort',
+                'tmerkmal.cTyp',
+                'tmerkmal.cBildPfad AS cMMBildPfad',
+                $select
+            ], $state->joins, $state->conditions, $state->having, $order->orderBy, '',
+                ['tartikelmerkmal.kMerkmalWert', 'tartikel.kArtikel']);
 
             $query = "SELECT tseo.cSeo, ssMerkmal.kMerkmal, ssMerkmal.kMerkmalWert, ssMerkmal.cMMWBildPfad, ssMerkmal.cWert, ssMerkmal.cName, ssMerkmal.cTyp, ssMerkmal.cMMBildPfad, COUNT(*) AS nAnzahl
                 FROM (" . $query . ") AS ssMerkmal
@@ -1644,12 +1650,8 @@ class Navigationsfilter
                         FROM
                         (
                             SELECT " . $this->getPriceRangeSQL($oPreis, $currency, $oPreisspannenfilter_arr) . "
-                                FROM tartikel
-                                JOIN tpreise ON tpreise.kArtikel = tartikel.kArtikel
-                                    AND tpreise.kKundengruppe = " . $this->customerGroupID . "
-                                " . $state->joins . "
-                                LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                                    AND tartikelsichtbarkeit.kKundengruppe = " . $this->customerGroupID . "
+                                FROM tartikel " .
+                                $state->joins . "
                                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
                                     AND tartikel.kVaterArtikel = 0
                                     " . $this->getStorageFilter() . "
@@ -1833,8 +1835,6 @@ class Navigationsfilter
                      ->setOn('tkategorie.kKategorie = tkategorieartikelgesamt.kKategorie');
                 $state->joins[] = $join;
 
-//                $state->joins[] = "JOIN tkategorieartikelgesamt ON tartikel.kArtikel = tkategorieartikelgesamt.kArtikel " . $kKatFilter;
-//                $state->joins[] = "JOIN tkategorie ON tkategorie.kKategorie = tkategorieartikelgesamt.kKategorie";
             } else {
                 if (!$this->Kategorie->isInitialized()) {
                     $join = new FilterJoin();
@@ -1843,8 +1843,6 @@ class Navigationsfilter
                          ->setTable('tkategorieartikel')
                          ->setOn('tartikel.kArtikel = tkategorieartikel.kArtikel');
                     $state->joins[] = $join;
-
-//                    $state->joins[] = "JOIN tkategorieartikel ON tartikel.kArtikel = tkategorieartikel.kArtikel";
                 }
                 $join = new FilterJoin();
                 $join->setComment('join4 from getCategoryFilterOptions')
@@ -1852,7 +1850,6 @@ class Navigationsfilter
                      ->setTable('tkategorie')
                      ->setOn('tkategorie.kKategorie = tkategorieartikel.kKategorie');
                 $state->joins[] = $join;
-//                $state->joins[] = "JOIN tkategorie ON tkategorie.kKategorie = tkategorieartikel.kKategorie";
             }
 
             // nicht Standardsprache? Dann hole Namen nicht aus tkategorie sondern aus tkategoriesprache
@@ -1867,7 +1864,6 @@ class Navigationsfilter
                      ->setTable('tkategoriesprache')
                      ->setOn('tkategoriesprache.kKategorie = tkategorie.kKategorie AND tkategoriesprache.kSprache = ' . $this->languageID);
                 $state->joins[] = $join;
-//                $state->joins[]   = "JOIN tkategoriesprache ON tkategoriesprache.kKategorie = tkategorie.kKategorie AND tkategoriesprache.kSprache = " . $kSprache;
             } else {
                 $select[] = "tkategorie.cName";
             }
@@ -1966,6 +1962,12 @@ class Navigationsfilter
      */
     private function getBaseQuery($select = ['tartikel.kArtikel'], $joins, $conditions, $having = [], $order = '', $limit = '', $groupBy = ['tartikel.kArtikel'])
     {
+        $join = new FilterJoin();
+        $join->setComment('article visiblity join from getBaseQuery')
+            ->setType('LEFT JOIN')
+            ->setTable('tartikelsichtbarkeit')
+            ->setOn('tartikel.kArtikel = tartikelsichtbarkeit.kArtikel AND tartikelsichtbarkeit.kKundengruppe = ' . $this->customerGroupID);
+        $joins[] = $join;
         //remove duplicate joins
         $joinedTables = [];
         foreach ($joins as $i => $stateJoin) {
@@ -2000,9 +2002,6 @@ class Navigationsfilter
 
         $query = "SELECT " . implode(', ', $select) . "
             FROM tartikel " . $joins . "
-            #default group visibility
-            LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                AND tartikelsichtbarkeit.kKundengruppe = " . $this->customerGroupID . "
             #default conditions
             WHERE tartikelsichtbarkeit.kArtikel IS NULL
                 AND tartikel.kVaterArtikel = 0

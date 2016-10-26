@@ -206,7 +206,7 @@ class FilterPriceRange extends AbstractFilter implements IFilter
              ->setOn("tartikelsonderpreis.kArtikel = tartikel.kArtikel
                  AND tartikelsonderpreis.cAktiv = 'Y'
                  AND tartikelsonderpreis.dStart <= now()
-                 AND (tartikelsonderpreis.dEnde >= curDATE() OR tartikelsonderpreis.dEnde = '0000-00-00'");
+                 AND (tartikelsonderpreis.dEnde >= curDATE() OR tartikelsonderpreis.dEnde = '0000-00-00')");
         $res[] = $join;
 
         $join = new FilterJoin();

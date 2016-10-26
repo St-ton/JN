@@ -82,11 +82,12 @@ if (!empty($_FILES['file_data'])) {
         'status_6' => array()
     );
     $PluginInstalliert_arr = gibInstalliertePlugins();
+    $allPlugins            = gibAllePlugins($PluginInstalliert_arr);
     foreach ($PluginInstalliert_arr as $_plugin) {
         $PluginInstalliertByStatus_arr['status_' . $_plugin->nStatus][] = $_plugin;
     }
-    $PluginVerfuebar_arr  = gibVerfuegbarePlugins($PluginInstalliert_arr);
-    $PluginFehlerhaft_arr = gibVerfuegbarePlugins($PluginInstalliert_arr, true);
+    $PluginVerfuebar_arr  = $allPlugins->verfuegbar;
+    $PluginFehlerhaft_arr = $allPlugins->fehlerhaft;
     // Version mappen und Update (falls vorhanden) anzeigen
     if (count($PluginInstalliert_arr) > 0) {
         /**
@@ -151,7 +152,7 @@ if (verifyGPCDataInteger('pluginverwaltung_uebersicht') === 1 && validateToken()
         $smarty->assign('oPlugin', $oPlugin)
                ->assign('kPlugin', $kPlugin);
         Shop::Cache()->flushTags(array(CACHING_GROUP_CORE, CACHING_GROUP_LANGUAGE, CACHING_GROUP_PLUGIN));
-    } elseif (isset($_POST['lizenzkeyadd']) && intval($_POST['lizenzkeyadd']) === 1 && intval($_POST['kPlugin']) > 0  && validateToken()) { // Lizenzkey eingeben
+    } elseif (isset($_POST['lizenzkeyadd']) && intval($_POST['lizenzkeyadd']) === 1 && intval($_POST['kPlugin']) > 0 && validateToken()) { // Lizenzkey eingeben
         $step    = 'pluginverwaltung_lizenzkey';
         $kPlugin = intval($_POST['kPlugin']);
         $oPlugin = Shop::DB()->query(
@@ -253,7 +254,7 @@ if (verifyGPCDataInteger('pluginverwaltung_uebersicht') === 1 && validateToken()
                     $cFehler = 'Fehler: Ein oder mehrere Plugins wurden nicht in der Datenbank gefunden.';
                 }
             } elseif (isset($_POST['reload'])) { // Reload
-                $oPlugin = Shop::DB()->select ('tplugin', 'kPlugin', $kPlugin);
+                $oPlugin = Shop::DB()->select('tplugin', 'kPlugin', $kPlugin);
 
                 if (isset($oPlugin->kPlugin) && $oPlugin->kPlugin > 0) {
                     $nReturnValue = reloadPlugin($oPlugin, true);
@@ -495,11 +496,12 @@ if ($step === 'pluginverwaltung_uebersicht') {
         'status_6' => array()
     );
     $PluginInstalliert_arr = gibInstalliertePlugins();
+    $allPlugins            = gibAllePlugins($PluginInstalliert_arr);
     foreach ($PluginInstalliert_arr as $_plugin) {
         $PluginInstalliertByStatus_arr['status_' . $_plugin->nStatus][] = $_plugin;
     }
-    $PluginVerfuebar_arr  = gibVerfuegbarePlugins($PluginInstalliert_arr);
-    $PluginFehlerhaft_arr = gibVerfuegbarePlugins($PluginInstalliert_arr, true);
+    $PluginVerfuebar_arr  = $allPlugins->verfuegbar;
+    $PluginFehlerhaft_arr = $allPlugins->fehlerhaft;
     // Version mappen und Update (falls vorhanden) anzeigen
     if (count($PluginInstalliert_arr) > 0) {
         /**
@@ -512,9 +514,7 @@ if ($step === 'pluginverwaltung_uebersicht') {
                 $nReturnValue                       = pluginPlausi($PluginInstalliert->kPlugin);
                 $PluginInstalliert_arr[$i]->dUpdate = number_format(doubleval($nVersion) / 100, 2);
 
-                $PluginInstalliert_arr[$i]->cUpdateFehler = ($nReturnValue == 1 || $nReturnValue == 90) ?
-                    1 :
-                    StringHandler::htmlentities(mappePlausiFehler($nReturnValue, $PluginInstalliert));
+                $PluginInstalliert_arr[$i]->cUpdateFehler = ($nReturnValue == 1 || $nReturnValue == 90) ? 1 : StringHandler::htmlentities(mappePlausiFehler($nReturnValue, $PluginInstalliert));
             }
             $PluginInstalliert_arr[$i]->dVersion = number_format(doubleval($PluginInstalliert->nVersion) / 100, 2);
             $PluginInstalliert_arr[$i]->cStatus  = $PluginInstalliert->mapPluginStatus($PluginInstalliert->nStatus);
@@ -539,7 +539,8 @@ if ($step === 'pluginverwaltung_uebersicht') {
            ->assign('PluginErrorCount', $errorCount)
            ->assign('PluginInstalliert_arr', $PluginInstalliert_arr)
            ->assign('PluginVerfuebar_arr', $PluginVerfuebar_arr)
-           ->assign('PluginFehlerhaft_arr', $PluginFehlerhaft_arr);
+           ->assign('PluginFehlerhaft_arr', $PluginFehlerhaft_arr)
+           ->assign('PluginIndex_arr', $allPlugins->index);
 } elseif ($step === 'pluginverwaltung_sprachvariablen') { // Sprachvariablen
     $kPlugin      = verifyGPCDataInteger('kPlugin');
     $oSprache_arr = Shop::DB()->query("SELECT * FROM tsprache", 2);

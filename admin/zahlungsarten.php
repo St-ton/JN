@@ -141,10 +141,18 @@ if (isset($_POST['einstellungen_bearbeiten']) && isset($_POST['kZahlungsart']) &
     $hinweis = 'Zahlungsart gespeichert.';
 }
 
-if (isset($_GET['kZahlungsart']) && intval($_GET['kZahlungsart']) > 0 && (!isset($_GET['a']) || strlen($_GET['a']) === 0) && validateToken()) {
-    $step = 'einstellen';
-} elseif (isset($_GET['kZahlungsart']) && intval($_GET['kZahlungsart']) > 0 && $_GET['a'] === 'log') { // Log einsehen
-    $step = 'log';
+if (validateToken()) {
+    if (isset($_GET['kZahlungsart']) && (int)$_GET['kZahlungsart'] > 0) {
+        if ($_GET['a'] === 'payments') {
+            // Zahlungseingaenge
+            $step = 'payments';
+        } elseif ($_GET['a'] === 'log') {
+            // Log einsehen
+            $step = 'log';
+        } else {
+            $step = 'einstellen';
+        }
+    }
 }
 
 if ($step === 'einstellen') {
@@ -206,6 +214,10 @@ if ($step === 'einstellen') {
         $smarty->assign('oLog_arr', $oZahlungsLog->holeLog())
             ->assign('kZahlungsart', $kZahlungsart);
     }
+} elseif ($step === 'payments') {
+    $kZahlungsart = (int)$_GET['kZahlungsart'];
+    $oZahlungsart = Shop::DB()->select('tzahlungsart', 'kZahlungsart', $kZahlungsart);
+    $smarty->assign('oZahlungsart', $oZahlungsart);
 }
 
 if ($step === 'uebersicht') {

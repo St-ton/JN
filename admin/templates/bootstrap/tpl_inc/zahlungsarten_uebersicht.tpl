@@ -28,14 +28,14 @@
                                     <small>{$zahlungsart->cAnbieter}</small>
                                 </h4>
                             </td>
-                            <td class="text-center">
+                            <td class="tright">
                                 {if $zahlungsart->nActive == 1}
-                                    <span class="label label-success"><i class="fa fa-check"></i></span>
+                                    <span class="label label-success" title="Aktiv"><i class="fa fa-check"></i></span>
                                 {else}
-                                    <span class="label label-danger"><i class="fa fa-times"></i></span>
+                                    <span class="label label-danger" title="Inaktiv"><i class="fa fa-times"></i></span>
                                 {/if}
                             </td>
-                            <td class="text-center" width="100">
+                            <td class="tright">
                                 <div class="btn-group" role="group">
                                     <a href="zahlungsarten.php?a=log&kZahlungsart={$zahlungsart->kZahlungsart}&token={$smarty.session.jtl_token}"
                                        class="btn btn-sm down
@@ -51,6 +51,10 @@
                                                   {else}
                                                         fa-check
                                                   {/if}"></i>
+                                    </a>
+                                    <a href="zahlungsarten.php?a=payments&kZahlungsart={$zahlungsart->kZahlungsart}&token={$smarty.session.jtl_token}"
+                                       class="btn btn-default" title="Zahlungeing&auml;nge">
+                                        <i class="fa fa-money"></i>
                                     </a>
                                     <a href="zahlungsarten.php?kZahlungsart={$zahlungsart->kZahlungsart}&token={$smarty.session.jtl_token}"
                                        class="btn btn-default btn-sm" title="{#edit#}">

@@ -117,8 +117,10 @@ class Nice
         defined('SHOP_ERWEITERUNG_DOWNLOADS') || define('SHOP_ERWEITERUNG_DOWNLOADS', 8051);
         // Konfigurator Modul
         defined('SHOP_ERWEITERUNG_KONFIGURATOR') || define('SHOP_ERWEITERUNG_KONFIGURATOR', 8061);
+        // Warenrücksendung Modul
+        defined('SHOP_ERWEITERUNG_WARENRUECKSENDUNG') || define('SHOP_ERWEITERUNG_WARENRUECKSENDUNG', 8071);
         // Brandfree Option
-        defined('SHOP_ERWEITERUNG_BRANDFREE') || define('SHOP_ERWEITERUNG_BRANDFREE', 8071);
+        defined('SHOP_ERWEITERUNG_BRANDFREE') || define('SHOP_ERWEITERUNG_BRANDFREE', 8081);
 
         return $this;
     }

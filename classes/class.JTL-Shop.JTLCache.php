@@ -572,7 +572,7 @@ class JTLCache
         $res = false;
         if ($this->options['activated'] === true && $this->isCacheGroupActive($tags) === true) {
             $res = $this->_method->store($cacheID, $content, $expiration);
-            if ($tags !== null) {
+            if ($res === true && $tags !== null) {
                 $this->_setCacheTag($tags, $cacheID);
             }
         }

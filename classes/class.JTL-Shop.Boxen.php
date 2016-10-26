@@ -385,20 +385,22 @@ class Boxen
 
             case BOX_TRUSTEDSHOPS_GUETESIEGEL :
                 $oBox->compatName = 'TrustedShopsSiegelbox';
-                $oTrustedShops    = new TrustedShops(-1, StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
-                if (strlen($oTrustedShops->tsId) > 0 && $oTrustedShops->nAktiv == 1) {
-                    $oBox->anzeigen          = 'Y';
-                    $oBox->cLogoURL          = $oTrustedShops->cLogoURL;
-                    $oBox->cLogoSiegelBoxURL = $oTrustedShops->cLogoSiegelBoxURL[StringHandler::convertISO2ISO639($_SESSION['cISOSprache'])];
-                    $oBox->cBild             = Shop::getURL(true) . '/' . PFAD_GFX_TRUSTEDSHOPS . 'trustedshops_m.png';
-                    $oBox->cBGBild           = Shop::getURL(true) . '/' . PFAD_GFX_TRUSTEDSHOPS . 'bg_yellow.jpg';
+                if ($this->boxConfig['trustedshops']['trustedshops_siegelbox_anzeigen'] === 'Y') {
+                    $oTrustedShops    = new TrustedShops(-1, StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
+                    if (strlen($oTrustedShops->tsId) > 0 && $oTrustedShops->nAktiv == 1) {
+                        $oBox->anzeigen          = 'Y';
+                        $oBox->cLogoURL          = $oTrustedShops->cLogoURL;
+                        $oBox->cLogoSiegelBoxURL = $oTrustedShops->cLogoSiegelBoxURL[StringHandler::convertISO2ISO639($_SESSION['cISOSprache'])];
+                        $oBox->cBild             = Shop::getURL(true) . '/' . PFAD_GFX_TRUSTEDSHOPS . 'trustedshops_m.png';
+                        $oBox->cBGBild           = Shop::getURL(true) . '/' . PFAD_GFX_TRUSTEDSHOPS . 'bg_yellow.jpg';
+                    }
                 }
                 break;
 
             case BOX_TRUSTEDSHOPS_KUNDENBEWERTUNGEN :
                 $oBox->compatName    = 'TrustedShopsKundenbewertung';
                 $cValidSprachISO_arr = array('de', 'en', 'fr', 'pl', 'es');
-                if (in_array(StringHandler::convertISO2ISO639($_SESSION['cISOSprache']), $cValidSprachISO_arr)) {
+                if ($this->boxConfig['trustedshops']['trustedshops_kundenbewertung_anzeigen'] === 'Y' && in_array(StringHandler::convertISO2ISO639($_SESSION['cISOSprache']), $cValidSprachISO_arr)) {
                     $oTrustedShops                = new TrustedShops(-1, StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
                     $oTrustedShopsKundenbewertung = $oTrustedShops->holeKundenbewertungsstatus(StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
                     if (isset($oTrustedShopsKundenbewertung->cTSID) && strlen($oTrustedShopsKundenbewertung->cTSID) > 0 && $oTrustedShopsKundenbewertung->nStatus == 1) {

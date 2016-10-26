@@ -1053,7 +1053,11 @@ function pruefeFuegeEinInWarenkorb($Artikel, $anzahl, $oEigenschaftwerte_arr, $n
 
     // Abnahmeintervall
     if ($Artikel->fAbnahmeintervall > 0) {
-        $dVielfache = round($Artikel->fAbnahmeintervall * ceil(bcdiv($anzahl,$Artikel->fAbnahmeintervall, $nGenauigkeit+1)), $nGenauigkeit);
+        if (function_exists('bcdiv')) {
+            $dVielfache = round($Artikel->fAbnahmeintervall * ceil(bcdiv($_POST['anzahl'][$i],$Artikel->fAbnahmeintervall, 3)), 2);
+        } else {
+            $dVielfache = round($Artikel->fAbnahmeintervall * ceil($anzahl / $Artikel->fAbnahmeintervall), $nGenauigkeit);
+        }
         if ($dVielfache != $anzahl) {
             $redirectParam[] = R_ARTIKELABNAHMEINTERVALL;
         }
@@ -3207,9 +3211,9 @@ function baueVersandkostenfreiLaenderString($oVersandart, $fWarenkorbSumme = 0.0
 }
 
 /**
- * @param float $preis
- * @param int   $waehrung
- * @param int   $html
+ * @param float      $preis
+ * @param int|object $waehrung
+ * @param int        $html
  * @return string
  */
 function gibPreisLocalizedOhneFaktor($preis, $waehrung = 0, $html = 1)

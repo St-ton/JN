@@ -1074,7 +1074,7 @@ function syncException($msg, $wawiExceptionCode = null)
  */
 function flushCategoryTreeCache()
 {
-    return Shop::Cache()->flushTags('jtl_category_tree');
+    return Shop::Cache()->flushTags(['jtl_category_tree']);
 }
 
 /**

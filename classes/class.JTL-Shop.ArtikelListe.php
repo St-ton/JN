@@ -12,10 +12,9 @@ class ArtikelListe
     /**
      * Array mit Artikeln
      *
-     * @access public
      * @var array
      */
-    public $elemente = array();
+    public $elemente = [];
 
     /**
      *
@@ -32,7 +31,7 @@ class ArtikelListe
      * @param int    $anzahl wieviele Top-Angebot Artikel geholt werden sollen
      * @param int    $kKundengruppe
      * @param int    $kSprache
-     * @return array
+     * @return Artikel[]
      */
     public function getTopNeuArtikel($topneu, $anzahl = 3, $kKundengruppe = 0, $kSprache = 0)
     {
@@ -40,9 +39,9 @@ class ArtikelListe
         if (!$_SESSION['Kundengruppe']->darfArtikelKategorienSehen) {
             return $this->elemente;
         }
-        $kKundengruppe = (int) $kKundengruppe;
-        $kSprache      = (int) $kSprache;
-        $anzahl        = (int) $anzahl;
+        $kKundengruppe = (int)$kKundengruppe;
+        $kSprache      = (int)$kSprache;
+        $anzahl        = (int)$anzahl;
         $cacheID       = 'jtl_tpnw_' . ((is_string($topneu)) ? $topneu : '') . '_' . $anzahl . '_' . $kSprache . '_' . $kKundengruppe;
         $objArr        = Shop::Cache()->get($cacheID);
         if ($objArr === false) {
@@ -86,7 +85,7 @@ class ArtikelListe
      * @param string $order
      * @param int    $kKundengruppe
      * @param int    $kSprache
-     * @return array
+     * @return Artikel[]
      */
     public function getArtikelFromKategorie($kKategorie, $limitStart, $limitAnzahl, $order, $kKundengruppe = 0, $kSprache = 0)
     {
@@ -148,7 +147,7 @@ class ArtikelListe
      * @param array $kArtikel_arr
      * @param int   $start
      * @param int   $maxAnzahl
-     * @return array
+     * @return Artikel[]
      */
     public function getArtikelByKeys($kArtikel_arr, $start, $maxAnzahl)
     {
@@ -159,7 +158,7 @@ class ArtikelListe
         $cnt              = count($kArtikel_arr);
         $anz              = 0;
         $oArtikelOptionen = Artikel::getDefaultOptions();
-        for ($i = (int) $start; $i < $cnt; $i++) {
+        for ($i = (int)$start; $i < $cnt; $i++) {
             $artikel = new Artikel();
             $artikel->fuelleArtikel($kArtikel_arr[$i], $oArtikelOptionen);
             if (!empty($artikel->kArtikel) && $artikel->kArtikel > 0) {
@@ -176,17 +175,17 @@ class ArtikelListe
 
     /**
      * @param KategorieListe $katListe
-     * @return Artikel
+     * @return Artikel[]
      */
     public function holeTopArtikel($katListe)
     {
         $arr_kKategorie = array();
         if (!empty($katListe->elemente)) {
             foreach ($katListe->elemente as $i => $kategorie) {
-                $arr_kKategorie[] = (int) $kategorie->kKategorie;
+                $arr_kKategorie[] = (int)$kategorie->kKategorie;
                 if (isset($kategorie->Unterkategorien) && is_array($kategorie->Unterkategorien)) {
                     foreach ($kategorie->Unterkategorien as $kategorie_lvl2) {
-                        $arr_kKategorie[] = (int) $kategorie_lvl2->kKategorie;
+                        $arr_kKategorie[] = (int)$kategorie_lvl2->kKategorie;
                     }
                 }
             }
@@ -200,7 +199,7 @@ class ArtikelListe
             $Einstellungen = Shop::getSettings(array(CONF_ARTIKELUEBERSICHT));
             $kKundengruppe = (int)$_SESSION['Kundengruppe']->kKundengruppe;
             $cLimitSql     = (isset($Einstellungen['artikeluebersicht']['artikelubersicht_topbest_anzahl'])) ?
-                ('LIMIT ' . (int) $Einstellungen['artikeluebersicht']['artikelubersicht_topbest_anzahl']) :
+                ('LIMIT ' . (int)$Einstellungen['artikeluebersicht']['artikelubersicht_topbest_anzahl']) :
                 'LIMIT 6';
 
             //top-Artikel
@@ -244,17 +243,17 @@ class ArtikelListe
     /**
      * @param Kategorieliste    $katListe
      * @param ArtikelListe|null $topArtikelliste
-     * @return array
+     * @return Artikel[]
      */
     public function holeBestsellerArtikel($katListe, $topArtikelliste = null)
     {
         $arr_kKategorie = array();
         if (isset($katListe->elemente) && is_array($katListe->elemente)) {
             foreach ($katListe->elemente as $i => $kategorie) {
-                $arr_kKategorie[] = (int) $kategorie->kKategorie;
+                $arr_kKategorie[] = (int)$kategorie->kKategorie;
                 if (isset($kategorie->Unterkategorien) && is_array($kategorie->Unterkategorien)) {
                     foreach ($kategorie->Unterkategorien as $kategorie_lvl2) {
-                        $arr_kKategorie[] = (int) $kategorie_lvl2->kKategorie;
+                        $arr_kKategorie[] = (int)$kategorie_lvl2->kKategorie;
                     }
                 }
             }
@@ -281,7 +280,7 @@ class ArtikelListe
                 }
             }
             $cLimitSql = (isset($Einstellungen['artikeluebersicht']['artikelubersicht_topbest_anzahl'])) ?
-                ('LIMIT ' . (int) $Einstellungen['artikeluebersicht']['artikelubersicht_topbest_anzahl']) :
+                ('LIMIT ' . (int)$Einstellungen['artikeluebersicht']['artikelubersicht_topbest_anzahl']) :
                 'LIMIT 6';
             //top-Artikel
             $lagerfilter = gibLagerfilter();
@@ -308,7 +307,7 @@ class ArtikelListe
             }
             Shop::Cache()->set($cacheID, $objArr, $cacheTags);
         }
-        $res = array();
+        $res = [];
         if (is_array($objArr)) {
             $oArtikelOptionen = Artikel::getDefaultOptions();
             foreach ($objArr as $obj) {

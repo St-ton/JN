@@ -3075,7 +3075,6 @@ function gibNaviURL($NaviFilter, $bSeo, $oZusatzFilter, $kSprache = 0, $bCanonic
  */
 function berechnePreisspannenSQL($oPreis, $oPreisspannenfilter_arr = 0)
 {
-    die('berechnePreisspannenSQL');
     $cSQL          = '';
     $fKundenrabatt = 0.0;
     $conf          = Shop::getSettings(array(CONF_NAVIGATIONSFILTER));
@@ -3089,8 +3088,8 @@ function berechnePreisspannenSQL($oPreis, $oPreisspannenfilter_arr = 0)
         $nStep     = $oPreis->fStep;
 
         for ($i = 0; $i < $oPreis->nAnzahlSpannen; $i++) {
-            $cSQL .= "count(
-                    if(";
+            $cSQL .= "COUNT(
+                    IF(";
 
             $nBis = ($nPreisMin + ($i + 1) * $nStep);
             if (isset($oPreisspannenfilter_arr->nBis) && $oPreisspannenfilter_arr->nBis > $nPreisMax) {

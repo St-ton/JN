@@ -20,6 +20,8 @@ class FilterRating extends AbstractFilter implements IFilter
      */
     public function setID($id)
     {
+        $this->nSterne = (int)$id;
+
         return $this;
     }
 
@@ -61,7 +63,7 @@ class FilterRating extends AbstractFilter implements IFilter
      */
     public function getSQLCondition()
     {
-        return 'ROUND(tartikelext.fDurchschnittsBewertung, 0) >= ' . $this->nSterne;
+        return 'ROUND(tartikelext.fDurchschnittsBewertung, 0) >= ' . $this->getID();
     }
 
     /**

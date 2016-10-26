@@ -631,7 +631,7 @@ class Navigationsfilter
             case SEARCH_SORT_STANDARD:
                 if ($this->Kategorie->kKategorie > 0) {
                     $sort->orderBy = 'tartikel.nSort, tartikel.cName';
-                } elseif ($this->Suche->kSuchCache > 0 && isset($_SESSION['Usersortierung']) && (int)$_SESSION['Usersortierung'] === 100) {
+                } elseif ($this->Suche->isInitialized() && isset($_SESSION['Usersortierung']) && (int)$_SESSION['Usersortierung'] === 100) {
                     $sort->orderBy = 'tsuchcachetreffer.nSort';
                 } else {
                     $sort->orderBy = 'tartikel.nSort, tartikel.cName';
@@ -1583,10 +1583,10 @@ class Navigationsfilter
                 $nPreisspannenAnzahl_arr   = (is_object($oPreisspannenFilterDB)) ? get_object_vars($oPreisspannenFilterDB) : null;
                 $oPreisspannenFilterDB_arr = [];
                 for ($i = 0; $i < $oPreis->nAnzahlSpannen; ++$i) {
-                    $to = ($i === 0)
+                    $sub = ($i === 0)
                         ? 0
                         : ($nPreisspannenAnzahl_arr['anz' . ($i - 1)]);
-                    $oPreisspannenFilterDB_arr[] = ($nPreisspannenAnzahl_arr['anz' . $i] - $to);
+                    $oPreisspannenFilterDB_arr[] = ($nPreisspannenAnzahl_arr['anz' . $i] - $sub);
                 }
                 $nPreisMax      = $oPreis->fMaxPreis;
                 $nPreisMin      = $oPreis->fMinPreis;
@@ -1666,11 +1666,10 @@ class Navigationsfilter
                 if (is_array($nPreisspannenAnzahl_arr)) {
                     $count = count($nPreisspannenAnzahl_arr);
                     for ($i = 0; $i < $count; ++$i) {
-                        if ($i === 0) {
-                            $oPreisspannenFilterDB_arr[] = ($nPreisspannenAnzahl_arr['anz' . $i] - 0);
-                        } else {
-                            $oPreisspannenFilterDB_arr[] = ($nPreisspannenAnzahl_arr['anz' . $i] - $nPreisspannenAnzahl_arr['anz' . ($i - 1)]);
-                        }
+                        $sub = ($i === 0)
+                            ? 0
+                            : ($nPreisspannenAnzahl_arr['anz' . ($i - 1)]);
+                        $oPreisspannenFilterDB_arr[] = ($nPreisspannenAnzahl_arr['anz' . $i] - $sub);
                     }
                 }
                 foreach ($oPreisspannenfilter_arr as $i => $oPreisspannenfilter) {
@@ -1722,11 +1721,11 @@ class Navigationsfilter
             $state = $this->getCurrentStateData();
 
             $state->joins[] = $order->join;
-            $join = new FilterJoin();
+            $join           = new FilterJoin();
             $join->setComment('join1 from getSearchFilterOptions')
-                ->setType('JOIN')
-                ->setTable('tsuchcachetreffer')
-                ->setOn('tartikel.kArtikel = tsuchcachetreffer.kArtikel');
+                 ->setType('JOIN')
+                 ->setTable('tsuchcachetreffer')
+                 ->setOn('tartikel.kArtikel = tsuchcachetreffer.kArtikel');
             $state->joins[] = $join;
 
             $join = new FilterJoin();
@@ -1815,11 +1814,10 @@ class Navigationsfilter
             $state = $this->getCurrentStateData();
 
             $state->joins[] = $order->join;
-//            $state->joins[] = "\n#current order join \n" . $order->join;
 
             // Kategoriefilter anzeige
             if ($this->conf['navigationsfilter']['kategoriefilter_anzeigen_als'] === 'HF' && (!$this->Kategorie->isInitialized())) {
-                $kKatFilter        = ($this->KategorieFilter->isInitialized()) ? '' : " AND tkategorieartikelgesamt.kOberKategorie = 0";
+                $kKatFilter = ($this->KategorieFilter->isInitialized()) ? '' : " AND tkategorieartikelgesamt.kOberKategorie = 0";
 
                 $join = new FilterJoin();
                 $join->setComment('join1 from getCategoryFilterOptions')
@@ -1853,12 +1851,12 @@ class Navigationsfilter
             }
 
             // nicht Standardsprache? Dann hole Namen nicht aus tkategorie sondern aus tkategoriesprache
-            $cSQLKategorieSprache          = new stdClass();
-            $cSQLKategorieSprache->cJOIN   = '';
-            $select = ['tkategorie.kKategorie', 'tkategorie.nSort'];
+            $cSQLKategorieSprache        = new stdClass();
+            $cSQLKategorieSprache->cJOIN = '';
+            $select                      = ['tkategorie.kKategorie', 'tkategorie.nSort'];
             if (!standardspracheAktiv()) {
                 $select[] = "IF(tkategoriesprache.cName = '', tkategorie.cName, tkategoriesprache.cName) AS cName";
-                $join = new FilterJoin();
+                $join     = new FilterJoin();
                 $join->setComment('join5 from getCategoryFilterOptions')
                      ->setType('JOIN')
                      ->setTable('tkategoriesprache')
@@ -1871,11 +1869,11 @@ class Navigationsfilter
             $query = $this->getBaseQuery($select, $state->joins, $state->conditions, $state->having, $order->orderBy, '', ['tkategorie.kKategorie', 'tartikel.kArtikel']);
             $query =  "SELECT tseo.cSeo, ssMerkmal.kKategorie, ssMerkmal.cName, ssMerkmal.nSort, COUNT(*) AS nAnzahl
                 FROM (" . $query . " ) AS ssMerkmal
-            LEFT JOIN tseo ON tseo.kKey = ssMerkmal.kKategorie
-                AND tseo.cKey = 'kKategorie'
-                AND tseo.kSprache = " .$this->languageID . "
-            GROUP BY ssMerkmal.kKategorie
-            ORDER BY ssMerkmal.nSort, ssMerkmal.cName";
+                    LEFT JOIN tseo ON tseo.kKey = ssMerkmal.kKategorie
+                        AND tseo.cKey = 'kKategorie'
+                        AND tseo.kSprache = " .$this->languageID . "
+                    GROUP BY ssMerkmal.kKategorie
+                    ORDER BY ssMerkmal.nSort, ssMerkmal.cName";
             $oKategorieFilterDB_arr = Shop::DB()->query($query, 2);
             //baue URL
             $count                          = (is_array($oKategorieFilterDB_arr)) ? count($oKategorieFilterDB_arr) : 0;
@@ -1964,9 +1962,9 @@ class Navigationsfilter
     {
         $join = new FilterJoin();
         $join->setComment('article visiblity join from getBaseQuery')
-            ->setType('LEFT JOIN')
-            ->setTable('tartikelsichtbarkeit')
-            ->setOn('tartikel.kArtikel = tartikelsichtbarkeit.kArtikel AND tartikelsichtbarkeit.kKundengruppe = ' . $this->customerGroupID);
+             ->setType('LEFT JOIN')
+             ->setTable('tartikelsichtbarkeit')
+             ->setOn('tartikel.kArtikel = tartikelsichtbarkeit.kArtikel AND tartikelsichtbarkeit.kKundengruppe = ' . $this->customerGroupID);
         $joins[] = $join;
         //remove duplicate joins
         $joinedTables = [];
@@ -2377,7 +2375,7 @@ class Navigationsfilter
             return $cSEOURL;
         }
         if ($this->languageID != Shop::$kSprache) {
-            //@todo@todo: this will probably never happen.....
+            //@todo@todo: this will probably never happen..?
             $cISOSprache = '';
             if (isset($_SESSION['Sprachen']) && count($_SESSION['Sprachen']) > 0) {
                 foreach ($_SESSION['Sprachen'] as $i => $oSprache) {

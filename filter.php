@@ -83,12 +83,10 @@ $NaviFilter->setUserSort($AktuelleKategorie);
 // Erweiterte Darstellung Artikelübersicht
 gibErweiterteDarstellung($Einstellungen, $NaviFilter, $cParameter_arr['nDarstellung']);
 
-
 $oSuchergebnisse = $NaviFilter->getProducts();
 
 suchanfragenSpeichern($NaviFilter->Suche->cSuche, $oSuchergebnisse->GesamtanzahlArtikel);
 $NaviFilter->Suche->kSuchanfrage = gibSuchanfrageKey($NaviFilter->Suche->cSuche, Shop::$kSprache);
-
 // Umleiten falls SEO keine Artikel ergibt
 doMainwordRedirect($NaviFilter, count($oSuchergebnisse->Artikel->elemente), true);
 // Bestsellers
@@ -154,9 +152,7 @@ $oSuchergebnisse->SuchFilterJSON = Boxen::gibJSONString($oSuchergebnisse->SuchFi
 
 if (!$cParameter_arr['kSuchspecial']) {
     $oSuchergebnisse->Suchspecialauswahl = $NaviFilter->getSearchSpecialFilterOptions();
-//    Shop::dbg($oSuchergebnisse->Suchspecialauswahl, false, '$oSuchergebnisse->Suchspecialauswahl');
 }
-$smarty->assign('oNaviSeite_arr', baueSeitenNaviURL($NaviFilter, true, $oSuchergebnisse->Seitenzahlen, $Einstellungen['artikeluebersicht']['artikeluebersicht_max_seitenzahl']));
 if (verifyGPCDataInteger('zahl') > 0) {
     $_SESSION['ArtikelProSeite'] = verifyGPCDataInteger('zahl');
     setFsession(0, 0, $_SESSION['ArtikelProSeite']);
@@ -164,8 +160,6 @@ if (verifyGPCDataInteger('zahl') > 0) {
 if (!isset($_SESSION['ArtikelProSeite']) && $Einstellungen['artikeluebersicht']['artikeluebersicht_erw_darstellung'] === 'N') {
     $_SESSION['ArtikelProSeite'] = min((int)$Einstellungen['artikeluebersicht']['artikeluebersicht_artikelproseite'], ARTICLES_PER_PAGE_HARD_LIMIT);
 }
-// Verfügbarkeitsbenachrichtigung allgemeiner CaptchaCode
-$smarty->assign('code_benachrichtigung_verfuegbarkeit', generiereCaptchaCode($Einstellungen['artikeldetails']['benachrichtigung_abfragen_captcha']));
 // Verfügbarkeitsbenachrichtigung pro Artikel
 if (is_array($oSuchergebnisse->Artikel->elemente)) {
     foreach ($oSuchergebnisse->Artikel->elemente as $Artikel) {
@@ -284,6 +278,8 @@ if (function_exists('starteAuswahlAssistent')) {
     starteAuswahlAssistent(AUSWAHLASSISTENT_ORT_KATEGORIE, $cParameter_arr['kKategorie'], Shop::$kSprache, $smarty, $Einstellungen['auswahlassistent']);
 }
 $smarty->assign('SEARCHSPECIALS_TOPREVIEWS', SEARCHSPECIALS_TOPREVIEWS)
+        ->assign('code_benachrichtigung_verfuegbarkeit', generiereCaptchaCode($Einstellungen['artikeldetails']['benachrichtigung_abfragen_captcha']))
+        ->assign('oNaviSeite_arr', baueSeitenNaviURL($NaviFilter, true, $oSuchergebnisse->Seitenzahlen, $Einstellungen['artikeluebersicht']['artikeluebersicht_max_seitenzahl']))
        ->assign('PFAD_ART_ABNAHMEINTERVALL', PFAD_ART_ABNAHMEINTERVALL)
        ->assign('ArtikelProSeite', $nArtikelProSeite_arr)
        ->assign('Navigation', $cBrotNavi)

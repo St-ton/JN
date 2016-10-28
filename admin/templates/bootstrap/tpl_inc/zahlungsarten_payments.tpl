@@ -9,11 +9,22 @@
                     <th>Kunde</th>
                     <th>Gezahlter Betrag</th>
                     <th>Zahlungsgeb&uuml;hr</th>
-                    <th>Währung</th>
+                    <th>W&auml;hrung</th>
                     <th>Abgeholt durch Wawi</th>
                 </tr>
             </thead>
             <tbody>
+                {foreach $oZahlunseingang_arr as $oZahlunseingang}
+                    <tr>
+                        <td>{$oZahlunseingang->dZeit}</td>
+                        <td>Bestell-Nr.</td>
+                        <td>Kunde</td>
+                        <td>Gezahlter Betrag</td>
+                        <td>Zahlungsgeb&uuml;hr</td>
+                        <td>W&auml;hrung</td>
+                        <td>Abgeholt durch Wawi</td>
+                    </tr>
+                {/foreach}
             </tbody>
         </table>
     </div>

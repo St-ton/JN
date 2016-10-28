@@ -215,9 +215,16 @@ if ($step === 'einstellen') {
             ->assign('kZahlungsart', $kZahlungsart);
     }
 } elseif ($step === 'payments') {
-    $kZahlungsart = (int)$_GET['kZahlungsart'];
-    $oZahlungsart = Shop::DB()->select('tzahlungsart', 'kZahlungsart', $kZahlungsart);
-    $smarty->assign('oZahlungsart', $oZahlungsart);
+    $kZahlungsart        = (int)$_GET['kZahlungsart'];
+    $oZahlungsart        = Shop::DB()->select('tzahlungsart', 'kZahlungsart', $kZahlungsart);
+    $oZahlunseingang_arr = Shop::DB()->query("
+        SELECT *
+            FROM tzahlungseingang AS ze
+                JOIN tbestellung AS b ON ze.kBestellung = b.kBestellung
+            WHERE b.kZahlungsart = " . (int)$kZahlungsart,
+        2);
+    $smarty->assign('oZahlungsart', $oZahlungsart)
+           ->assign('oZahlunseingang_arr', $oZahlunseingang_arr);
 }
 
 if ($step === 'uebersicht') {

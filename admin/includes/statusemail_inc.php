@@ -1011,7 +1011,10 @@ function baueStatusEmail($oStatusemail, $dVon, $dBis)
             }
         }
 
-        $oMailObjekt->oLogEntry_arr = getLogEntries($dVon, $dBis, $nLogLevel_arr);
+        if (count($nLogLevel_arr) > 0) {
+            $oMailObjekt->oLogEntry_arr = getLogEntries($dVon, $dBis, $nLogLevel_arr);
+        }
+
         return $oMailObjekt;
     }
 
@@ -1111,7 +1114,22 @@ function sendStatusMail()
             isset($oMailObjekt->mail) or $oMailObjekt->mail = new stdClass();
             $oMailObjekt->mail->toEmail                     = $oStatusemail->cEmail;
             $oMailObjekt->cIntervall                        = utf8_decode($cIntervalAdj . ' Status-Email');
-            sendeMail(MAILTEMPLATE_STATUSEMAIL, $oMailObjekt);
+
+            $cFilePath  = tempnam(sys_get_temp_dir(), 'jtl');
+            $fileStream = fopen($cFilePath, 'w');
+
+            fputs($fileStream, $cFilePath.'\n');
+            fputs($fileStream, 'Hello World!');
+            fclose($fileStream);
+
+            $oAttachment            = new stdClass();
+            $oAttachment->cFilePath = $cFilePath;
+            $oAttachment->cName     = 'log.txt';
+            $mail                   = new stdClass();
+            $mail->oAttachment_arr  = [$oAttachment];
+
+            sendeMail(MAILTEMPLATE_STATUSEMAIL, $oMailObjekt, $mail);
+            unlink($cFilePath);
         }
     }
 }

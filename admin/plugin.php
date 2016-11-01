@@ -93,6 +93,36 @@ if ($step === 'plugin_uebersicht') {
         $i = 0;
         $j = 0;
 
+        // check, if we have a README.md in this current plugin and if so, we insert a "DocTab"
+        $fAddAsDocTab = false;
+        $szReadmeFile = PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/README.md'; // maybe we make this name configurable in the future
+        if (file_exists($szReadmeFile)) {
+            $szReadmeContent = utf8_decode(file_get_contents($szReadmeFile)); // slurp in the file-content
+            // check, if we got a Markdown-parser
+            $fMarkDown     = false;
+            if (class_exists('Parsedown')) {
+                $fMarkDown       = true;
+                $oParseDown      = new Parsedown();
+                $szReadmeContent = $oParseDown->text($szReadmeContent);
+            }
+            // set, what we found, into the smarty-object
+            // (and let the template decide to show markdown or <pre>-formatted-text)
+            $smarty->assign('fMarkDown'      , $fMarkDown)
+                   ->assign('szReadmeContent', $szReadmeContent);
+
+            // create a tab-object (for insert into the admin-menu later)
+            $docTab                          = new stdClass();
+            $docTab->kPluginAdminMenu        = 0; // `kPluginAdminMenu` from `tpluginadminmenu` (there is no 0, so we use it for docu)
+            $docTab->kPlugin                 = $oPlugin->kPlugin; // the current plugin-ID
+            $docTab->cName                   = 'Dokumentation';
+            $docTab->cDateiname              = '';
+            $docTab->nSort                   = count($oPlugin->oPluginAdminMenu_arr) + 1; // set as the last entry/tab
+            $docTab->nConf                   = 1;
+            $oPlugin->oPluginAdminMenu_arr[] = $docTab; // append to menu-array
+
+            $fAddAsDocTab = true;
+        }
+
         foreach ($oPlugin->oPluginAdminMenu_arr as $_adminMenu) {
             if ($_adminMenu->nConf === '0' && $_adminMenu->cDateiname !== '' && file_exists($oPlugin->cAdminmenuPfad . $_adminMenu->cDateiname)) {
                 ob_start();
@@ -117,6 +147,16 @@ if ($step === 'plugin_uebersicht') {
                 $tab->kPluginAdminMenu = $_adminMenu->kPluginAdminMenu;
                 $tab->cName            = $_adminMenu->cName;
                 $tab->html             = $smarty->fetch('tpl_inc/plugin_options.tpl');
+                $customPluginTabs[]    = $tab;
+                ++$j;
+            } elseif (true === $fAddAsDocTab) {
+                $tab                   = new stdClass();
+                $tab->file             = '';
+                $tab->idx              = $i;
+                $tab->id               = 'settings-' . $j;
+                $tab->kPluginAdminMenu = $_adminMenu->kPluginAdminMenu;
+                $tab->cName            = $_adminMenu->cName;
+                $tab->html             = $smarty->fetch('tpl_inc/plugin_documentation.tpl');
                 $customPluginTabs[]    = $tab;
                 ++$j;
             }

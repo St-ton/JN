@@ -60,16 +60,18 @@ function bearbeiteStatusemail($oJobQueue)
             $oMailObjekt = baueStatusEmail($oStatusemail, $dVon, $dBis);
 
             if ($oMailObjekt) {
-                isset($oMailObjekt->mail) or $oMailObjekt->mail = new stdClass();
-                $oMailObjekt->mail->toEmail                     = $oStatusemail->cEmail;
-                $oMailObjekt->cIntervall                        = utf8_decode($cIntervalAdj . ' Status-Email');
-                sendeMail(MAILTEMPLATE_STATUSEMAIL, $oMailObjekt);
+                $oMailObjekt->cIntervall = utf8_decode($cIntervalAdj . ' Status-Email');
+                sendeMail(MAILTEMPLATE_STATUSEMAIL, $oMailObjekt, $oMailObjekt->mail);
                 Shop::DB()->query("
                     UPDATE tstatusemail
                         SET " . $dLetzterVersandCol . " = now()
                         WHERE nAktiv = " . (int)$oJobQueue->kKey,
                     4);
                 $bAusgefuehrt = true;
+
+                if (isset($oMailObjekt->mail->oAttachment_arr)) {
+                    unlink($oMailObjekt->mail->oAttachment_arr[0]->cFilePath);
+                }
             }
         }
     }

@@ -853,41 +853,41 @@ function getLogEntries($dVon, $dBis, $nLogLevel_arr)
  */
 function baueStatusEmail($oStatusemail, $dVon, $dBis)
 {
-    // Mail Objekt anlegen und vorbelegen (wichtig fürs Template)
-    $oMailObjekt                                           = new stdClass();
-    $oMailObjekt->mail                                     = new stdClass();
-    $oMailObjekt->oAnzahlArtikelProKundengruppe            = -1;
-    $oMailObjekt->nAnzahlNeukunden                         = -1;
-    $oMailObjekt->nAnzahlNeukundenGekauft                  = -1;
-    $oMailObjekt->nAnzahlBestellungen                      = -1;
-    $oMailObjekt->nAnzahlBestellungenNeukunden             = -1;
-    $oMailObjekt->nAnzahlBesucher                          = -1;
-    $oMailObjekt->nAnzahlBesucherSuchmaschine              = -1;
-    $oMailObjekt->nAnzahlBewertungen                       = -1;
-    $oMailObjekt->nAnzahlBewertungenNichtFreigeschaltet    = -1;
-    $oMailObjekt->oAnzahlGezahltesGuthaben                 = -1;
-    $oMailObjekt->nAnzahlTags                              = -1;
-    $oMailObjekt->nAnzahlTagsNichtFreigeschaltet           = -1;
-    $oMailObjekt->nAnzahlGeworbenerKunden                  = -1;
-    $oMailObjekt->nAnzahlErfolgreichGeworbenerKunden       = -1;
-    $oMailObjekt->nAnzahlVersendeterWunschlisten           = -1;
-    $oMailObjekt->nAnzahlDurchgefuehrteUmfragen            = -1;
-    $oMailObjekt->nAnzahlNewskommentare                    = -1;
-    $oMailObjekt->nAnzahlNewskommentareNichtFreigeschaltet = -1;
-    $oMailObjekt->nAnzahlProduktanfrageArtikel             = -1;
-    $oMailObjekt->nAnzahlProduktanfrageVerfuegbarkeit      = -1;
-    $oMailObjekt->nAnzahlVergleiche                        = -1;
-    $oMailObjekt->nAnzahlGenutzteKupons                    = -1;
-    $oMailObjekt->nAnzahlZahlungseingaengeVonBestellungen  = -1;
-    $oMailObjekt->nAnzahlVersendeterBestellungen           = -1;
-    $oMailObjekt->dVon                                     = $dVon;
-    $oMailObjekt->dBis                                     = $dBis;
+    global $smarty;
 
-    $dVon = Shop::DB()->escape($dVon);
-    $dBis = Shop::DB()->escape($dBis);
-
-    if (is_array($oStatusemail->nInhalt_arr) && count($oStatusemail->nInhalt_arr) > 0 && strlen($dVon) > 0 && strlen($dBis) > 0) {
-        $nLogLevel_arr = [];
+    if (is_array($oStatusemail->nInhalt_arr) && count($oStatusemail->nInhalt_arr) > 0 &&
+        strlen($dVon) > 0 && strlen($dBis) > 0)
+    {
+        $oMailObjekt                                           = new stdClass();
+        $oMailObjekt->mail                                     = new stdClass();
+        $oMailObjekt->oAnzahlArtikelProKundengruppe            = -1;
+        $oMailObjekt->nAnzahlNeukunden                         = -1;
+        $oMailObjekt->nAnzahlNeukundenGekauft                  = -1;
+        $oMailObjekt->nAnzahlBestellungen                      = -1;
+        $oMailObjekt->nAnzahlBestellungenNeukunden             = -1;
+        $oMailObjekt->nAnzahlBesucher                          = -1;
+        $oMailObjekt->nAnzahlBesucherSuchmaschine              = -1;
+        $oMailObjekt->nAnzahlBewertungen                       = -1;
+        $oMailObjekt->nAnzahlBewertungenNichtFreigeschaltet    = -1;
+        $oMailObjekt->oAnzahlGezahltesGuthaben                 = -1;
+        $oMailObjekt->nAnzahlTags                              = -1;
+        $oMailObjekt->nAnzahlTagsNichtFreigeschaltet           = -1;
+        $oMailObjekt->nAnzahlGeworbenerKunden                  = -1;
+        $oMailObjekt->nAnzahlErfolgreichGeworbenerKunden       = -1;
+        $oMailObjekt->nAnzahlVersendeterWunschlisten           = -1;
+        $oMailObjekt->nAnzahlDurchgefuehrteUmfragen            = -1;
+        $oMailObjekt->nAnzahlNewskommentare                    = -1;
+        $oMailObjekt->nAnzahlNewskommentareNichtFreigeschaltet = -1;
+        $oMailObjekt->nAnzahlProduktanfrageArtikel             = -1;
+        $oMailObjekt->nAnzahlProduktanfrageVerfuegbarkeit      = -1;
+        $oMailObjekt->nAnzahlVergleiche                        = -1;
+        $oMailObjekt->nAnzahlGenutzteKupons                    = -1;
+        $oMailObjekt->nAnzahlZahlungseingaengeVonBestellungen  = -1;
+        $oMailObjekt->nAnzahlVersendeterBestellungen           = -1;
+        $oMailObjekt->dVon                                     = $dVon;
+        $oMailObjekt->dBis                                     = $dBis;
+        $oMailObjekt->oLogEntry_arr                            = [];
+        $nLogLevel_arr                                         = [];
 
         foreach ($oStatusemail->nInhalt_arr as $nInhalt) {
             switch ($nInhalt) {
@@ -1013,7 +1013,18 @@ function baueStatusEmail($oStatusemail, $dVon, $dBis)
 
         if (count($nLogLevel_arr) > 0) {
             $oMailObjekt->oLogEntry_arr = getLogEntries($dVon, $dBis, $nLogLevel_arr);
+            $cLogFilePath               = tempnam(sys_get_temp_dir(), 'jtl');
+            $fileStream                 = fopen($cLogFilePath, 'w');
+            $smarty->assign('oMailObjekt', $oMailObjekt);
+            fputs($fileStream, $smarty->fetch(PFAD_ROOT . PFAD_EMAILVORLAGEN . 'ger/email_bericht_plain_log.tpl'));
+            fclose($fileStream);
+            $oAttachment                        = new stdClass();
+            $oAttachment->cFilePath             = $cLogFilePath;
+            $oAttachment->cName                 = 'jtl-log-digest.txt';
+            $oMailObjekt->mail->oAttachment_arr = [$oAttachment];
+            $oMailObjekt->mail->toEmail         = $oStatusemail->cEmail;
         }
+
 
         return $oMailObjekt;
     }
@@ -1080,6 +1091,8 @@ function isIntervalExceeded($dStart, $cInterval)
  */
 function sendStatusMail()
 {
+    global $smarty;
+
     $oStatusemail                 = Shop::DB()->select('tstatusemail', 'nAktiv', 1);
     $oStatusemail->nIntervall_arr = StringHandler::parseSSK($oStatusemail->cIntervall);
     $oStatusemail->nInhalt_arr    = StringHandler::parseSSK($oStatusemail->cInhalt);
@@ -1111,25 +1124,13 @@ function sendStatusMail()
         $oMailObjekt = baueStatusEmail($oStatusemail, $dVon, $dBis);
 
         if ($oMailObjekt) {
-            isset($oMailObjekt->mail) or $oMailObjekt->mail = new stdClass();
-            $oMailObjekt->mail->toEmail                     = $oStatusemail->cEmail;
-            $oMailObjekt->cIntervall                        = utf8_decode($cIntervalAdj . ' Status-Email');
+            $oMailObjekt->cIntervall = utf8_decode($cIntervalAdj . ' Status-Email');
 
-            $cFilePath  = tempnam(sys_get_temp_dir(), 'jtl');
-            $fileStream = fopen($cFilePath, 'w');
+            sendeMail(MAILTEMPLATE_STATUSEMAIL, $oMailObjekt, $oMailObjekt->mail);
 
-            fputs($fileStream, $cFilePath.'\n');
-            fputs($fileStream, 'Hello World!');
-            fclose($fileStream);
-
-            $oAttachment            = new stdClass();
-            $oAttachment->cFilePath = $cFilePath;
-            $oAttachment->cName     = 'log.txt';
-            $mail                   = new stdClass();
-            $mail->oAttachment_arr  = [$oAttachment];
-
-            sendeMail(MAILTEMPLATE_STATUSEMAIL, $oMailObjekt, $mail);
-            unlink($cFilePath);
+            if (isset($oMailObjekt->mail->oAttachment_arr)) {
+                unlink($oMailObjekt->mail->oAttachment_arr[0]->cFilePath);
+            }
         }
     }
 }

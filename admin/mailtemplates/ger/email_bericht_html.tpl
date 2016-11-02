@@ -44,30 +44,13 @@
     {quantityStatisticRow cAnzahlTitle='Geworbene Kunden' nAnzahlVar=$oMailObjekt->nAnzahlGeworbenerKunden}
     {quantityStatisticRow cAnzahlTitle='Geworbene Kunden, die etwas kauften' nAnzahlVar=$oMailObjekt->nAnzahlErfolgreichGeworbenerKunden}
     {quantityStatisticRow cAnzahlTitle='Versendete Wunschlisten' nAnzahlVar=$oMailObjekt->nAnzahlVersendeterWunschlisten}
-    {quantityStatisticRow cAnzahlTitle='DurchgefÃ¼hrte Umfragen' nAnzahlVar=$oMailObjekt->nAnzahlDurchgefuehrteUmfragen}
+    {quantityStatisticRow cAnzahlTitle='Durchgeführte Umfragen' nAnzahlVar=$oMailObjekt->nAnzahlDurchgefuehrteUmfragen}
     {quantityStatisticRow cAnzahlTitle='Neue Beitragskommentare' nAnzahlVar=$oMailObjekt->nAnzahlNewskommentare}
     {quantityStatisticRow cAnzahlTitle='Beitragskommentare, nicht freigeschaltet' nAnzahlVar=$oMailObjekt->nAnzahlNewskommentareNichtFreigeschaltet}
     {quantityStatisticRow cAnzahlTitle='Neue Produktanfragen' nAnzahlVar=$oMailObjekt->nAnzahlProduktanfrageArtikel}
-    {quantityStatisticRow cAnzahlTitle='Neue VerfÃ¼gbarkeitsanfragen' nAnzahlVar=$oMailObjekt->nAnzahlProduktanfrageVerfuegbarkeit}
+    {quantityStatisticRow cAnzahlTitle='Neue Verfügbarkeitsanfragen' nAnzahlVar=$oMailObjekt->nAnzahlProduktanfrageVerfuegbarkeit}
     {quantityStatisticRow cAnzahlTitle='Produktvergleiche' nAnzahlVar=$oMailObjekt->nAnzahlVergleiche}
     {quantityStatisticRow cAnzahlTitle='Genutzte Kupons' nAnzahlVar=$oMailObjekt->nAnzahlGenutzteKupons}
 </div>
-
-{if isset($oMailObjekt->oLogEntry_arr)}
-    <h2>Log-EintrÃ¤ge ({$oMailObjekt->oLogEntry_arr|@count}):</h2>
-    {foreach $oMailObjekt->oLogEntry_arr as $oLogEntry}
-        <h3>
-            [{$oLogEntry->dErstellt|date_format:"%d.%m.%Y %H:%M:%S"}]
-            {if $oLogEntry->nLevel == 1}
-                <span style="color:#f00;">[Fehler]</span>
-            {elseif $oLogEntry->nLevel == 2}
-                <span style="color:#00f;">[Hinweis]</span>
-            {elseif $oLogEntry->nLevel == 4}
-                <span style="color:#fa0;">[Debug]</span>
-            {/if}
-        </h3>
-        <pre>{$oLogEntry->cLog}</pre>
-    {/foreach}
-{/if}
 
 {includeMailTemplate template=footer type=html}

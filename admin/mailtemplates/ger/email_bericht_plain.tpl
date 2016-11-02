@@ -76,7 +76,7 @@ Versendete Wunschlisten: {$oMailObjekt->nAnzahlVersendeterWunschlisten}
 {/if}
 
 {if $oMailObjekt->nAnzahlDurchgefuehrteUmfragen != -1}
-DurchgefÃ¼hrte Umfragen: {$oMailObjekt->nAnzahlDurchgefuehrteUmfragen}
+Durchgeführte Umfragen: {$oMailObjekt->nAnzahlDurchgefuehrteUmfragen}
 {/if}
 
 {if $oMailObjekt->nAnzahlNewskommentare != -1}
@@ -92,7 +92,7 @@ Neue Produktanfragen: {$oMailObjekt->nAnzahlProduktanfrageArtikel}
 {/if}
 
 {if $oMailObjekt->nAnzahlProduktanfrageVerfuegbarkeit != -1}
-Neue VerfÃ¼gbarkeitsanfragen: {$oMailObjekt->nAnzahlProduktanfrageVerfuegbarkeit}
+Neue Verfügbarkeitsanfragen: {$oMailObjekt->nAnzahlProduktanfrageVerfuegbarkeit}
 {/if}
 
 {if $oMailObjekt->nAnzahlVergleiche != -1}
@@ -101,16 +101,5 @@ Produktvergleiche: {$oMailObjekt->nAnzahlVergleiche}
 
 {if $oMailObjekt->nAnzahlGenutzteKupons != -1}
 Genutzte Kupons: {$oMailObjekt->nAnzahlGenutzteKupons}
-{/if}
-
-{if isset($oMailObjekt->oLogEntry_arr)}
-Log-EintrÃ¤ge ({$oMailObjekt->oLogEntry_arr|@count}):
-
-{foreach $oMailObjekt->oLogEntry_arr as $oLogEntry}
-    [{$oLogEntry->dErstellt|date_format:"%d.%m.%Y %H:%M:%S"}] [{if $oLogEntry->nLevel == 1}Fehler{elseif $oLogEntry->nLevel == 2}Hinweis{elseif $oLogEntry->nLevel == 4}Debug{/if}]
-{for $i=0 to $oLogEntry->cLog|strlen step 120}
-        "{$oLogEntry->cLog|replace:"\n":' '|substr:$i:120}"
-{/for}
-{/foreach}
 {/if}
 {includeMailTemplate template=footer type=plain}

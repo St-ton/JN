@@ -50,6 +50,14 @@
         {if isset($Einstellungen.rss.rss_nutzen) && $Einstellungen.rss.rss_nutzen === 'Y'}
             <link rel="alternate" type="application/rss+xml" title="Newsfeed {$Einstellungen.global.global_shopname}" href="rss.xml">
         {/if}
+        {* Languages *}
+        {if !empty($smarty.session.Sprachen)}
+            {foreach item="oSprache" from=$smarty.session.Sprachen}
+                {if $oSprache->kSprache !== $smarty.session.kSprache}
+                    <link rel="alternate" hreflang="{$oSprache->cISO}" href="{$oSprache->cURL}">
+                {/if}
+            {/foreach}
+        {/if}
     {/block}
 
     {* Pagination *}

@@ -33,11 +33,8 @@ class cache_memcached implements ICachingMethod
             $this->setMemcached($options['memcache_host'], $options['memcache_port']);
             $this->isInitialized = true;
             $this->journalID     = 'memcached_journal';
-            $maxLifeTime         = 60 * 60 * 24 * 30;
-            if ($options['lifetime'] > $maxLifeTime) {
-                //@see http://php.net/manual/de/memcached.expiration.php
-                $options['lifetime'] = $maxLifeTime;
-            }
+            //@see http://php.net/manual/de/memcached.expiration.php
+            $options['lifetime'] = min(60 * 60 * 24 * 30, $options['lifetime']);
             $this->options       = $options;
         }
     }
@@ -45,16 +42,15 @@ class cache_memcached implements ICachingMethod
     /**
      * @param string $host
      * @param int    $port
-     *
      * @return $this
      */
-    public function setMemcached($host, $port)
+    private function setMemcached($host, $port)
     {
         if ($this->_memcached !== null) {
             $this->_memcached->quit();
         }
         $m = new Memcached();
-        $m->addServer($host, $port);
+        $m->addServer($host, (int)$port);
         $this->_memcached = $m;
 
         return $this;
@@ -64,7 +60,6 @@ class cache_memcached implements ICachingMethod
      * @param string   $cacheID
      * @param mixed    $content
      * @param int|null $expiration
-     *
      * @return bool
      */
     public function store($cacheID, $content, $expiration = null)
@@ -75,7 +70,6 @@ class cache_memcached implements ICachingMethod
     /**
      * @param array    $keyValue
      * @param int|null $expiration
-     *
      * @return array|bool
      */
     public function storeMulti($keyValue, $expiration = null)
@@ -85,7 +79,6 @@ class cache_memcached implements ICachingMethod
 
     /**
      * @param string $cacheID
-     *
      * @return bool|mixed
      */
     public function load($cacheID)
@@ -95,7 +88,6 @@ class cache_memcached implements ICachingMethod
 
     /**
      * @param array $cacheIDs
-     *
      * @return bool|array
      */
     public function loadMulti($cacheIDs)
@@ -103,7 +95,7 @@ class cache_memcached implements ICachingMethod
         if (!is_array($cacheIDs)) {
             return false;
         }
-        $prefixedKeys = array();
+        $prefixedKeys = [];
         foreach ($cacheIDs as $_cid) {
             $prefixedKeys[] = $this->options['prefix'] . $_cid;
         }
@@ -123,7 +115,6 @@ class cache_memcached implements ICachingMethod
 
     /**
      * @param string $cacheID
-     *
      * @return bool
      */
     public function flush($cacheID)
@@ -141,7 +132,6 @@ class cache_memcached implements ICachingMethod
 
     /**
      * @param string $cacheID
-     *
      * @return bool
      */
     public function keyExists($cacheID)
@@ -161,17 +151,17 @@ class cache_memcached implements ICachingMethod
             $stats = $this->_memcached->getStats();
             if (is_array($stats)) {
                 foreach ($stats as $key => $_stat) {
-                    return array(
+                    return [
                         'entries' => $_stat['curr_items'],
                         'hits'    => $_stat['get_hits'],
                         'misses'  => $_stat['get_misses'],
                         'inserts' => $_stat['cmd_set'],
                         'mem'     => $_stat['bytes']
-                    );
+                    ];
                 }
             }
         }
 
-        return array();
+        return [];
     }
 }

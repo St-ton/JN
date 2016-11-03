@@ -33,13 +33,15 @@ if (isset($_GET['kExportformat']) && (int)$_GET['kExportformat'] > 0 && !isset($
     }
 }
 if (isset($_POST['neu_export']) && (int)$_POST['neu_export'] === 1 && validateToken()) {
-    $ef = new Exportformat();
-    $checkResult = $ef->check($_POST);;
-
+    $ef          = new Exportformat();
+    $checkResult = $ef->check($_POST);
     if ($checkResult === true) {
         $kExportformat = $ef->getExportformat();
         if ($kExportformat > 0) {
             //update
+            $kExportformat = (int)$_POST['kExportformat'];
+            $revision = new Revision();
+            $revision->addRevision('export', $kExportformat);
             $ef->update();
             $hinweis .= 'Das Exportformat <strong>' . $ef->getName() . '</strong> wurde erfolgreich ge&auml;ndert.';
         } else {

@@ -1053,7 +1053,11 @@ function pruefeFuegeEinInWarenkorb($Artikel, $anzahl, $oEigenschaftwerte_arr, $n
 
     // Abnahmeintervall
     if ($Artikel->fAbnahmeintervall > 0) {
-        $dVielfache = round($Artikel->fAbnahmeintervall * ceil($anzahl / $Artikel->fAbnahmeintervall), $nGenauigkeit);
+        if (function_exists('bcdiv')) {
+            $dVielfache = round($Artikel->fAbnahmeintervall * ceil(bcdiv($_POST['anzahl'][$i],$Artikel->fAbnahmeintervall, 3)), 2);
+        } else {
+            $dVielfache = round($Artikel->fAbnahmeintervall * ceil($anzahl / $Artikel->fAbnahmeintervall), $nGenauigkeit);
+        }
         if ($dVielfache != $anzahl) {
             $redirectParam[] = R_ARTIKELABNAHMEINTERVALL;
         }
@@ -1225,7 +1229,7 @@ function fuegeEinInWarenkorb($kArtikel, $anzahl, $oEigenschaftwerte_arr = '', $n
         }
         $redirectParam = pruefeFuegeEinInWarenkorb($Artikel, $anzahl, $oEigenschaftwerte_arr);
         // verhindert, dass Konfigitems mit Preis=0 aus der Artikelkonfiguration fallen wenn 'Preis auf Anfrage' eingestellt ist
-        if (!empty($kKonfigitem) && $redirectParam[0] === R_AUFANFRAGE) {
+        if (!empty($kKonfigitem) && isset($redirectParam[0]) && $redirectParam[0] === R_AUFANFRAGE) {
             unset($redirectParam[0]);
         }
 
@@ -2436,24 +2440,33 @@ function berechneVersandpreis($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
         $preis += $versandart->Zuschlag->fZuschlag;
     }
     //versandkostenfrei?
-    $fArtikelPreis = 0;
-    if ($Artikel) {
-        switch ($versandart->eSteuer) {
-            case 'netto':
+    $fArtikelPreis     = 0;
+    $fGesamtsummeWaren = 0;
+    switch ($versandart->eSteuer) {
+        case 'netto' :
+            if ($Artikel) {
                 $fArtikelPreis = $Artikel->Preise->fVKNetto;
-                break;
+            }
+            if (isset($_SESSION['Warenkorb'])) {
+                $fGesamtsummeWaren = berechneNetto($_SESSION['Warenkorb']->gibGesamtsummeWarenExt(array(C_WARENKORBPOS_TYP_ARTIKEL, C_WARENKORBPOS_TYP_KUPON, C_WARENKORBPOS_TYP_NEUKUNDENKUPON),
+                    1), gibUst($_SESSION['Warenkorb']->gibVersandkostenSteuerklasse()));
+            }
+            break;
 
-            case 'brutto':
+        case 'brutto' :
+            if ($Artikel) {
                 $fArtikelPreis = berechneBrutto($Artikel->Preise->fVKNetto, gibUst($Artikel->kSteuerklasse));
-                break;
+            }
+            if (isset($_SESSION['Warenkorb'])) {
+                $fGesamtsummeWaren = $_SESSION['Warenkorb']->gibGesamtsummeWarenExt(array(C_WARENKORBPOS_TYP_ARTIKEL, C_WARENKORBPOS_TYP_KUPON, C_WARENKORBPOS_TYP_NEUKUNDENKUPON), 1);
+            }
+            break;
 
-        }
     }
+
     if ($Artikel && $fArtikelPreis >= $versandart->fVersandkostenfreiAbX && $versandart->fVersandkostenfreiAbX > 0) {
         $preis = 0;
-    } elseif (isset($_SESSION['Warenkorb'])
-        && ($_SESSION['Warenkorb']->gibGesamtsummeWarenExt(array(C_WARENKORBPOS_TYP_ARTIKEL), 1) + $_SESSION['Warenkorb']->gibGesamtsummeWarenExt(array(C_WARENKORBPOS_TYP_KUPON), 1)) >= $versandart->fVersandkostenfreiAbX
-        && $versandart->fVersandkostenfreiAbX > 0) {
+    } elseif ($fGesamtsummeWaren >= $versandart->fVersandkostenfreiAbX && $versandart->fVersandkostenfreiAbX > 0) {
         $preis = 0;
     }
     executeHook(HOOK_TOOLSGLOBAL_INC_BERECHNEVERSANDPREIS, array('fPreis' => &$preis));
@@ -3123,8 +3136,8 @@ function gibVersandkostenfreiAb($kKundengruppe, $cLand = '')
  */
 function baueVersandkostenfreiString($oVersandart, $fWarenkorbSumme)
 {
-    if (is_object($oVersandart) && floatval($oVersandart->fVersandkostenfreiAbX) > 0 && isset($_SESSION['Warenkorb']) && isset($_SESSION['Steuerland'])) {
-        $fSummeDiff = floatval($oVersandart->fVersandkostenfreiAbX) - floatval($fWarenkorbSumme);
+    if (is_object($oVersandart) && (float)$oVersandart->fVersandkostenfreiAbX > 0 && isset($_SESSION['Warenkorb']) && isset($_SESSION['Steuerland'])) {
+        $fSummeDiff = (float)$oVersandart->fVersandkostenfreiAbX - (float)$fWarenkorbSumme;
         //check if vkfreiabx is calculated net or gross
         if ($oVersandart->eSteuer === 'netto') {
             //calculate net with default tax class
@@ -3133,9 +3146,8 @@ function baueVersandkostenfreiString($oVersandart, $fWarenkorbSumme)
                 $taxClasss  = (int)$defaultTaxClass->kSteuerklasse;
                 $defaultTax = Shop::DB()->select('tsteuersatz', 'kSteuerklasse', $taxClasss);
                 if (isset($defaultTax->fSteuersatz)) {
-                    $defaultTaxValue       = $defaultTax->fSteuersatz;
-                    $fVersandkostenfreiAbX = berechneNetto(floatval($oVersandart->fVersandkostenfreiAbX), $defaultTaxValue);
-                    $fSummeDiff            = $fVersandkostenfreiAbX - berechneNetto(floatval($fWarenkorbSumme), $defaultTaxValue);
+                    $defaultTaxValue = $defaultTax->fSteuersatz;
+                    $fSummeDiff      = (float)$oVersandart->fVersandkostenfreiAbX - berechneNetto((float)$fWarenkorbSumme, $defaultTaxValue);
                 }
             }
         }
@@ -3147,10 +3159,10 @@ function baueVersandkostenfreiString($oVersandart, $fWarenkorbSumme)
             $cName             = (!empty($VersandartSprache->cName)) ? $VersandartSprache->cName : $oVersandart->cName;
         }
         if ($fSummeDiff <= 0) {
-            return sprintf(Shop::Lang()->get('noShippingCostsReached', 'basket'), strval($oVersandart->cLaender)) . ' ' . Shop::Lang()->get('with', 'global') . " $cName";
+            return sprintf(Shop::Lang()->get('noShippingCostsReached', 'basket'), $cName, baueVersandkostenfreiLaenderString($oVersandart), strval($oVersandart->cLaender));
         }
 
-        return sprintf(Shop::Lang()->get('noShippingCostsAt', 'basket'), strval(gibPreisStringLocalized($fSummeDiff))) . ' ' . Shop::Lang()->get('with', 'global') . " $cName";
+        return sprintf(Shop::Lang()->get('noShippingCostsAt', 'basket'), strval(gibPreisStringLocalized($fSummeDiff)), $cName, baueVersandkostenfreiLaenderString($oVersandart));
     }
 
     return '';
@@ -3199,9 +3211,9 @@ function baueVersandkostenfreiLaenderString($oVersandart, $fWarenkorbSumme = 0.0
 }
 
 /**
- * @param float $preis
- * @param int   $waehrung
- * @param int   $html
+ * @param float      $preis
+ * @param int|object $waehrung
+ * @param int        $html
  * @return string
  */
 function gibPreisLocalizedOhneFaktor($preis, $waehrung = 0, $html = 1)
@@ -5126,6 +5138,29 @@ function curl_exec_follow($ch, &$maxredirect = 5)
  */
 function http_get_contents($cURL, $nTimeout = 15, $cPost = null)
 {
+    return http_request($cURL, $nTimeout, $cPost, false);
+}
+
+/**
+ * @param string $cURL
+ * @param int    $nTimeout
+ * @param null   $cPost
+ * @return int
+ */
+function http_get_status($cURL, $nTimeout = 15, $cPost = null)
+{
+    return http_request($cURL, $nTimeout, $cPost, true);
+}
+
+/**
+ * @param string $cURL
+ * @param int    $nTimeout
+ * @param null   $cPost
+ * @param bool   $bReturnStatus - false = return content on success / true = return status code instead of content
+ * @return mixed|string
+ */
+function http_request($cURL, $nTimeout = 15, $cPost = null, $bReturnStatus = false)
+{
     $nCode = 0;
     $cData = '';
 
@@ -5169,13 +5204,16 @@ function http_get_contents($cURL, $nTimeout = 15, $cPost = null)
         $cData = '';
     }
 
+    if ($bReturnStatus) {
+        return $nCode;
+    }
     return $cData;
 }
 
 /**
  * @param string|array|object $xData
  * @param bool                $bEncode
- * @return array
+ * @return string|array|object
  */
 function utf8_convert_recursive($xData, $bEncode = true)
 {

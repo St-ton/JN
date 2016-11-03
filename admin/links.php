@@ -137,6 +137,8 @@ if (isset($_POST['neu_link']) && intval($_POST['neu_link']) === 1 && validateTok
         } else {
             //updaten
             $kLink = intval($_POST['kLink']);
+            $revision = new Revision();
+            $revision->addRevision('link', (int)$_POST['kLink'], true);
             Shop::DB()->update('tlink', 'kLink', $kLink, $link);
             $hinweis .= "Der Link <strong>$link->cName</strong> wurde erfolgreich ge&auml;ndert.";
             $step     = 'uebersicht';

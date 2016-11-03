@@ -1031,9 +1031,9 @@ function baueStatusEmail($oStatusemail, $dVon, $dBis)
 
             fclose($fileStream);
             $oMailObjekt->mail->oAttachment_arr = [$oAttachment];
-            $oMailObjekt->mail->toEmail         = $oStatusemail->cEmail;
         }
 
+        $oMailObjekt->mail->toEmail = $oStatusemail->cEmail;
 
         return $oMailObjekt;
     }

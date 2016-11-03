@@ -27,14 +27,29 @@ class Migration_20161101152800 extends Migration implements IMigration
     public function up()
     {
         $this->execute("
-            UPDATE temailvorlageoriginal
+            UPDATE temailvorlage
                 SET cDateiname = 'email_bericht'
                 WHERE cModulId = 'core_jtl_statusemail'
         ");
         $this->execute("
             UPDATE temailvorlageoriginal
+                SET cDateiname = 'email_bericht'
+                WHERE cModulId = 'core_jtl_statusemail'
+        ");
+        $this->execute("
+            UPDATE temailvorlage
                 SET cDateiname = 'checkbox_shopbetreiber'
                 WHERE cModulId = 'core_jtl_checkbox_shopbetreiber'
+        ");
+        $this->execute("
+            UPDATE temailvorlageoriginal
+                SET cDateiname = 'checkbox_shopbetreiber'
+                WHERE cModulId = 'core_jtl_checkbox_shopbetreiber'
+        ");
+        $this->execute("
+            UPDATE temailvorlage
+                SET cDateiname = 'admin_passwort_vergessen'
+                WHERE cModulId = 'core_jtl_admin_passwort_vergessen'
         ");
         $this->execute("
             UPDATE temailvorlageoriginal
@@ -46,14 +61,29 @@ class Migration_20161101152800 extends Migration implements IMigration
     public function down()
     {
         $this->execute("
-            UPDATE temailvorlageoriginal
+            UPDATE temailvorlage
                 SET cDateiname = ''
                 WHERE cModulId = 'core_jtl_statusemail'
         ");
         $this->execute("
             UPDATE temailvorlageoriginal
                 SET cDateiname = ''
+                WHERE cModulId = 'core_jtl_statusemail'
+        ");
+        $this->execute("
+            UPDATE temailvorlage
+                SET cDateiname = ''
                 WHERE cModulId = 'core_jtl_checkbox_shopbetreiber'
+        ");
+        $this->execute("
+            UPDATE temailvorlageoriginal
+                SET cDateiname = ''
+                WHERE cModulId = 'core_jtl_checkbox_shopbetreiber'
+        ");
+        $this->execute("
+            UPDATE temailvorlage
+                SET cDateiname = ''
+                WHERE cModulId = 'core_jtl_admin_passwort_vergessen'
         ");
         $this->execute("
             UPDATE temailvorlageoriginal

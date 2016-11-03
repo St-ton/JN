@@ -507,7 +507,7 @@ function informCouponCustomers($oKupon)
     $oStdWaehrung = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
 
     // Artikel Default Optionen
-    $oArtikelOptions = Artikel::getDefaultOptions();
+    $defaultOptions = Artikel::getDefaultOptions();
 
     // lokalisierter Kuponwert und MBW
     $oKupon->cLocalizedWert = ($oKupon->cWertTyp === 'festpreis') ?
@@ -567,7 +567,7 @@ function informCouponCustomers($oKupon)
         $oArtikel_arr = array();
         foreach ($oArtikelDB_arr as $oArtikelDB) {
             $oArtikel = new Artikel();
-            $oArtikel->fuelleArtikel($oArtikelDB->kArtikel, $oArtikelOptions, $oKunde->kKundengruppe, $oKunde->kSprache, true);
+            $oArtikel->fuelleArtikel($oArtikelDB->kArtikel, $defaultOptions, $oKunde->kKundengruppe, $oKunde->kSprache, true);
             $oArtikel_arr[] = $oArtikel;
         }
 

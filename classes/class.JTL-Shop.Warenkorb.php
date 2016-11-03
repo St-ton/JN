@@ -642,13 +642,13 @@ class Warenkorb
      */
     public function setzePositionsPreise()
     {
-        $oArtikelOptionen = Artikel::getDefaultOptions();
+        $defaultOptions = Artikel::getDefaultOptions();
         foreach ($this->PositionenArr as $i => $Position) {
             if ($Position->kArtikel > 0 && $Position->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL) {
                 $_oldPosition = clone $Position;
                 $oArtikel     = new Artikel();
 
-                if ($oArtikel->fuelleArtikel($Position->kArtikel, $oArtikelOptionen)) {
+                if ($oArtikel->fuelleArtikel($Position->kArtikel, $defaultOptions)) {
                     // Baue Variationspreise im Warenkorb neu, aber nur wenn es ein gültiger Artikel ist
                     if (is_array($this->PositionenArr[$i]->WarenkorbPosEigenschaftArr) && count($this->PositionenArr[$i]->WarenkorbPosEigenschaftArr) > 0) {
                         foreach ($this->PositionenArr[$i]->WarenkorbPosEigenschaftArr as $j => $oWarenkorbPosEigenschaft) {

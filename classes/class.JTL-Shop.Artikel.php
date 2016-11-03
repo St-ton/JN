@@ -3060,11 +3060,43 @@ class Artikel
         }
         $given = get_object_vars($options);
         $mask  = '';
+        if (isset($options->nDownload) && $options->nDownload === 1 && !class_exists('Download')) {
+            //unset download-option if there is no license for the download module
+            $options->nDownload = 0;
+        }
         foreach (self::getAllOptions() as $_opt) {
             $mask .= (empty($given[$_opt])) ? 0 : 1;
         }
 
         return $mask;
+    }
+
+    /**
+     * @return stdClass
+     */
+    public static function getDetailOptions()
+    {
+        $conf                                    = Shop::getConfig([CONF_ARTIKELDETAILS]);
+        $oArtikelOptionen                        = new stdClass();
+        $oArtikelOptionen->nMerkmale             = 1;
+        $oArtikelOptionen->nKategorie            = 1;
+        $oArtikelOptionen->nAttribute            = 1;
+        $oArtikelOptionen->nArtikelAttribute     = 1;
+        $oArtikelOptionen->nMedienDatei          = 1;
+        $oArtikelOptionen->nVariationKombi       = 1;
+        $oArtikelOptionen->nVariationKombiKinder = 1;
+        $oArtikelOptionen->nWarenlager           = 1;
+        $oArtikelOptionen->nVariationDetailPreis = 1;
+        $oArtikelOptionen->nRatings              = 1;
+        $oArtikelOptionen->nWarenkorbmatrix      = (int)($conf['artikeldetails']['artikeldetails_warenkorbmatrix_anzeige'] === 'Y');
+        $oArtikelOptionen->nStueckliste          = (int)($conf['artikeldetails']['artikeldetails_stueckliste_anzeigen'] === 'Y');
+        $oArtikelOptionen->nProductBundle        = (int)($conf['artikeldetails']['artikeldetails_produktbundle_nutzen'] === 'Y');
+        $oArtikelOptionen->nDownload             = 1;
+        $oArtikelOptionen->nKonfig               = 1;
+        $oArtikelOptionen->nMain                 = 1;
+        $oArtikelOptionen->bSimilar              = true;
+
+        return $oArtikelOptionen;
     }
 
     /**
@@ -3076,6 +3108,7 @@ class Artikel
         $options->nMerkmale         = 1;
         $options->nAttribute        = 1;
         $options->nArtikelAttribute = 1;
+        $options->nKonfig           = 1;
 
         return $options;
     }
@@ -4953,10 +4986,10 @@ class Artikel
         $products     = $data['oArtikelArr'];
         $oArtikel_arr = array();
         if (is_array($products) && count($products) > 0) {
-            $oArtikelOptionen = self::getDefaultOptions();
+            $defaultOptions = self::getDefaultOptions();
             foreach ($products as $oProduct) {
                 $oArtikel = new self();
-                $oArtikel->fuelleArtikel(($oProduct->kVaterArtikel > 0) ? $oProduct->kVaterArtikel : $oProduct->kArtikel, $oArtikelOptionen);
+                $oArtikel->fuelleArtikel(($oProduct->kVaterArtikel > 0) ? $oProduct->kVaterArtikel : $oProduct->kArtikel, $defaultOptions);
                 if ($oArtikel->kArtikel > 0) {
                     $oArtikel_arr[] = $oArtikel;
                 }
@@ -4987,6 +5020,7 @@ class Artikel
      */
     public function getSimilarProducts()
     {
+        require_once PFAD_ROOT . PFAD_INCLUDES . 'artikel_inc.php';
         $kArtikel = (int)$this->kArtikel;
         $return   = array('kArtikelXSellerKey_arr', 'oArtikelArr');
         $cLimit   = ' LIMIT 3';

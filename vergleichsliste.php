@@ -51,18 +51,12 @@ if (isset($_GET['vlph']) && intval($_GET['vlph']) === 1) {
 
 if (isset($oVergleichsliste->oArtikel_arr)) {
     $oArtikel_arr     = [];
-    $oArtikel_arr                                 = array();
-    $oArtikelOptionen                             = new stdClass();
-    $oArtikelOptionen->nMerkmale                  = 1;
-    $oArtikelOptionen->nAttribute                 = 1;
-    $oArtikelOptionen->nArtikelAttribute          = 1;
-    $oArtikelOptionen->nVariationKombi            = 1;
-    $oArtikelOptionen->nKeineSichtbarkeitBeachten = 1;
+    $defaultOptions   = Artikel::getDefaultOptions();
     $linkHelper       = LinkHelper::getInstance();
     $baseURL          = $linkHelper->getStaticRoute('vergleichsliste.php');
     foreach ($oVergleichsliste->oArtikel_arr as $oArtikel) {
         $artikel = new Artikel();
-        $artikel->fuelleArtikel($oArtikel->kArtikel, $oArtikelOptionen);
+        $artikel->fuelleArtikel($oArtikel->kArtikel, $defaultOptions);
         $artikel->cURLDEL = $baseURL . '?vlplo=' . $oArtikel->kArtikel;
         if (isset($oArtikel->oVariationen_arr) && count($oArtikel->oVariationen_arr) > 0) {
             $artikel->Variationen = $oArtikel->oVariationen_arr;

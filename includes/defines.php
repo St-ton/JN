@@ -170,6 +170,8 @@ ifndef('PCLZIP_TEMPORARY_DIR', PFAD_ROOT . PFAD_COMPILEDIR);
 
 ifndef('IMAGE_PRELOAD_LIMIT', 10);
 
+ifndef('UNIFY_CACHE_IDS', false);
+
 /**
  * @param string     $constant
  * @param string|int $value

@@ -708,9 +708,10 @@ function gibGratisGeschenkArtikel($Einstellungen)
     );
 
     if (is_array($oArtikelGeschenkTMP_arr) && count($oArtikelGeschenkTMP_arr) > 0) {
+        $defaultOptions = Artikel::getDefaultOptions();
         foreach ($oArtikelGeschenkTMP_arr as $i => $oArtikelGeschenkTMP) {
             $oArtikel = new Artikel();
-            $oArtikel->fuelleArtikel($oArtikelGeschenkTMP->kArtikel, Artikel::getDefaultOptions());
+            $oArtikel->fuelleArtikel($oArtikelGeschenkTMP->kArtikel, $defaultOptions);
             $oArtikel->cBestellwert = gibPreisStringLocalized(doubleval($oArtikelGeschenkTMP->cWert));
 
             if ($oArtikel->kEigenschaftKombi > 0 || !is_array($oArtikel->Variationen) || count($oArtikel->Variationen) === 0) {

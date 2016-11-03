@@ -101,7 +101,7 @@ $oFilter->assemble();
 
 $oPagination = (new Pagination())
     ->setItemCount(Redirect::getTotalRedirectCount())
-    ->setSortByOptions([['cFromUrl', 'Url'],
+    ->setSortByOptions([['cFromUrl', 'URL'],
                         ['cToUrl', 'Weiterleitung nach'],
                         ['nCount', 'Aufrufe']])
     ->assemble();

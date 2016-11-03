@@ -302,5 +302,8 @@
                 {if isset($Link->kLink)}<button type="submit" name="continue" value="1" class="btn btn-default" id="save-and-continue">{#newLinksSave#} und weiter bearbeiten</button>{/if}
             </div>
         </form>
+        {if isset($Link->kLink)}
+            {getRevisions type='link' key=$Link->kLink show=['cContent'] secondary=true}
+        {/if}
     </div>
 </div>

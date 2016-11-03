@@ -32,7 +32,6 @@ class cache_null implements ICachingMethod
      * @param string   $cacheID
      * @param mixed    $content
      * @param int|null $expiration
-     *
      * @return bool
      */
     public function store($cacheID, $content, $expiration = null)
@@ -43,7 +42,6 @@ class cache_null implements ICachingMethod
     /**
      * @param array    $keyValue
      * @param int|null $expiration
-     *
      * @return bool
      */
     public function storeMulti($keyValue, $expiration = null)
@@ -53,7 +51,6 @@ class cache_null implements ICachingMethod
 
     /**
      * @param string $cacheID
-     *
      * @return bool
      */
     public function load($cacheID)
@@ -63,7 +60,6 @@ class cache_null implements ICachingMethod
 
     /**
      * @param array $cacheIDs
-     *
      * @return bool
      */
     public function loadMulti($cacheIDs)
@@ -81,7 +77,6 @@ class cache_null implements ICachingMethod
 
     /**
      * @param string $cacheID
-     *
      * @return bool
      */
     public function flush($cacheID)
@@ -102,6 +97,6 @@ class cache_null implements ICachingMethod
      */
     public function getStats()
     {
-        return array();
+        return [];
     }
 }

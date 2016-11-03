@@ -11,7 +11,6 @@ interface ICachingMethod
      * @param string   $cacheID - key to identify the value
      * @param mixed    $content - the content to save
      * @param int|null $expiration - expiration time in seconds
-     *
      * @return bool - success
      */
     public function store($cacheID, $content, $expiration);
@@ -29,7 +28,6 @@ interface ICachingMethod
      * get value from cache
      *
      * @param string $cacheID
-     *
      * @return mixed|bool - the loaded data or false if not found
      */
     public function load($cacheID);
@@ -45,7 +43,7 @@ interface ICachingMethod
     /**
      * class singleton getter
      *
-     * @param $options
+     * @param array $options
      * @return mixed
      */
     public static function getInstance($options);
@@ -61,7 +59,6 @@ interface ICachingMethod
      * clear cache by cid or gid
      *
      * @param string $cacheID
-     *
      * @return bool - success
      */
     public function flush($cacheID);

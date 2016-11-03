@@ -3,6 +3,10 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+if (!defined('PFAD_ROOT')) {
+    http_response_code(400);
+    exit();
+}
 require_once PFAD_ROOT . PFAD_INCLUDES . 'filter_inc.php';
 $cachingOptions = Shop::getSettings(array(CONF_CACHING));
 Shop::setPageType(PAGE_ARTIKELLISTE);

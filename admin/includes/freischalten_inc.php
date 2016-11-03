@@ -7,16 +7,20 @@
 /**
  * @param string $cSQL
  * @param object $cSuchSQL
+ * @param bool   $checkLanguage
  * @return mixed
  */
-function gibBewertungFreischalten($cSQL, $cSuchSQL)
+function gibBewertungFreischalten($cSQL, $cSuchSQL, $checkLanguage = true)
 {
+    $cond = ($checkLanguage === true)
+        ? "tbewertung.kSprache = " . (int)$_SESSION['kSprache'] . " AND "
+        : "";
+
     return Shop::DB()->query(
         "SELECT tbewertung.*, DATE_FORMAT(tbewertung.dDatum, '%d.%m.%Y') AS Datum, tartikel.cName AS ArtikelName
             FROM tbewertung
             LEFT JOIN tartikel ON tbewertung.kArtikel = tartikel.kArtikel
-            WHERE tbewertung.kSprache = " . (int)$_SESSION['kSprache'] . "
-                AND tbewertung.nAktiv = 0
+            WHERE " . $cond . "tbewertung.nAktiv = 0
                 " . $cSuchSQL->cWhere . "
             ORDER BY tbewertung.kArtikel, tbewertung.dDatum DESC" . $cSQL, 2
     );
@@ -25,16 +29,18 @@ function gibBewertungFreischalten($cSQL, $cSuchSQL)
 /**
  * @param string $cSQL
  * @param object $cSuchSQL
+ * @param bool   $checkLanguage
  * @return mixed
  */
-function gibSuchanfrageFreischalten($cSQL, $cSuchSQL)
+function gibSuchanfrageFreischalten($cSQL, $cSuchSQL, $checkLanguage = true)
 {
+    $cond = ($checkLanguage === true)
+        ? "AND kSprache = " . (int)$_SESSION['kSprache'] . " "
+        : "";
     return Shop::DB()->query(
         "SELECT *, DATE_FORMAT(dZuletztGesucht, '%d.%m.%Y %H:%i') AS dZuletztGesucht_de
             FROM tsuchanfrage
-            WHERE nAktiv=0
-                AND kSprache = " . (int)$_SESSION['kSprache'] . "
-                " . $cSuchSQL->cWhere . "
+            WHERE nAktiv = 0 " . $cond . $cSuchSQL->cWhere . "
             ORDER BY " . $cSuchSQL->cOrder . $cSQL, 2
     );
 }
@@ -42,18 +48,21 @@ function gibSuchanfrageFreischalten($cSQL, $cSuchSQL)
 /**
  * @param string $cSQL
  * @param object $cSuchSQL
+ * @param bool   $checkLanguage
  * @return mixed
  */
-function gibTagFreischalten($cSQL, $cSuchSQL)
+function gibTagFreischalten($cSQL, $cSuchSQL, $checkLanguage = true)
 {
+    $cond = ($checkLanguage === true)
+        ? "AND ttag.kSprache = " . (int)$_SESSION['kSprache'] . " "
+        : "";
+
     return Shop::DB()->query(
         "SELECT ttag.*, sum(ttagartikel.nAnzahlTagging) AS Anzahl, ttagartikel.kArtikel, tartikel.cName AS cArtikelName, tartikel.cSeo AS cArtikelSeo
             FROM ttag
             LEFT JOIN ttagartikel ON ttagartikel.kTag = ttag.kTag
             LEFT JOIN tartikel ON tartikel.kArtikel = ttagartikel.kArtikel
-            WHERE ttag.kSprache = " . (int)$_SESSION['kSprache'] . "
-                AND ttag.nAktiv = 0
-                " . $cSuchSQL->cWhere . "
+            WHERE ttag.nAktiv = 0 " . $cond . $cSuchSQL->cWhere . "
             GROUP BY ttag.kTag
             ORDER BY Anzahl DESC" . $cSQL, 2
     );
@@ -62,19 +71,22 @@ function gibTagFreischalten($cSQL, $cSuchSQL)
 /**
  * @param string $cSQL
  * @param object $cSuchSQL
+ * @param bool   $checkLanguage
  * @return mixed
  */
-function gibNewskommentarFreischalten($cSQL, $cSuchSQL)
+function gibNewskommentarFreischalten($cSQL, $cSuchSQL, $checkLanguage = true)
 {
+    $cond = ($checkLanguage === true)
+        ? " AND tnews.kSprache = " . (int)$_SESSION['kSprache'] . " "
+        : "";
     $oNewsKommentar_arr = Shop::DB()->query(
         "SELECT tnewskommentar.*, DATE_FORMAT(tnewskommentar.dErstellt, '%d.%m.%Y  %H:%i') AS dErstellt_de, tkunde.kKunde,
             tkunde.cVorname, tkunde.cNachname, tnews.cBetreff
             FROM tnewskommentar
             JOIN tnews ON tnews.kNews = tnewskommentar.kNews
             LEFT JOIN tkunde ON tkunde.kKunde = tnewskommentar.kKunde
-            WHERE tnewskommentar.nAktiv=0
-                " . $cSuchSQL->cWhere . "
-                AND tnews.kSprache = " . (int)$_SESSION['kSprache'] . $cSQL, 2
+            WHERE tnewskommentar.nAktiv = 0" .
+            $cSuchSQL->cWhere . $cond . $cSQL, 2
     );
 
     if (is_array($oNewsKommentar_arr) && count($oNewsKommentar_arr) > 0) {
@@ -91,17 +103,21 @@ function gibNewskommentarFreischalten($cSQL, $cSuchSQL)
 /**
  * @param string $cSQL
  * @param object $cSuchSQL
+ * @param bool   $checkLanguage
  * @return mixed
  */
-function gibNewsletterEmpfaengerFreischalten($cSQL, $cSuchSQL)
+function gibNewsletterEmpfaengerFreischalten($cSQL, $cSuchSQL, $checkLanguage = true)
 {
+    $cond = ($checkLanguage === true)
+        ? " AND kSprache = " . (int)$_SESSION['kSprache']
+        : "";
+
     return Shop::DB()->query(
-        "SELECT *, DATE_FORMAT(dEingetragen, '%d.%m.%Y  %H:%i') AS dEingetragen_de, DATE_FORMAT(dLetzterNewsletter,
-            '%d.%m.%Y  %H:%i') AS dLetzterNewsletter_de
+        "SELECT *, DATE_FORMAT(dEingetragen, '%d.%m.%Y  %H:%i') AS dEingetragen_de, 
+            DATE_FORMAT(dLetzterNewsletter, '%d.%m.%Y  %H:%i') AS dLetzterNewsletter_de
             FROM tnewsletterempfaenger
             WHERE nAktiv = 0
-                " . $cSuchSQL->cWhere . "
-                AND kSprache = " . (int)$_SESSION['kSprache'] .
+                " . $cSuchSQL->cWhere . $cond .
         " ORDER BY " . $cSuchSQL->cOrder . $cSQL, 2
     );
 }

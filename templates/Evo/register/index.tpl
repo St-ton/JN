@@ -16,7 +16,7 @@
             <h1>{lang key="createNewAccount" section="account data"}</h1>
         {/if}
         <div class="panel-wrap" id="panel-register-form">
-            {include file='register/form.tpl' title=$panel_heading}
+            {include file='register/form.tpl'}
         </div>
     </div>
 </div>

@@ -132,7 +132,11 @@ function uebernehmeWarenkorbAenderungen()
                 $gueltig = true;
                 // Abnahmeintervall
                 if ($Artikel->fAbnahmeintervall > 0) {
-                    $dVielfache = round($Artikel->fAbnahmeintervall * ceil($_POST['anzahl'][$i] / $Artikel->fAbnahmeintervall), 2);
+                    if (function_exists('bcdiv')) {
+                        $dVielfache = round($Artikel->fAbnahmeintervall * ceil(bcdiv($_POST['anzahl'][$i],$Artikel->fAbnahmeintervall, 3)), 2);
+                    } else {
+                        $dVielfache = round($Artikel->fAbnahmeintervall * ceil($anzahl / $Artikel->fAbnahmeintervall), $nGenauigkeit);
+                    }
 
                     if ($dVielfache != $_POST['anzahl'][$i]) {
                         $gueltig                         = false;
@@ -356,11 +360,11 @@ function gibXSelling()
                 if (!isset($oXselling->Kauf)) {
                     $oXselling->Kauf = new stdClass();
                 }
-                $oXselling->Kauf->Artikel = array();
-                $oArtikelOptionen         = Artikel::getDefaultOptions();
+                $oXselling->Kauf->Artikel = [];
+                $defaultOptions           = Artikel::getDefaultOptions();
                 foreach ($oXsellkauf_arr as $oXsellkauf) {
                     $oArtikel = new Artikel();
-                    $oArtikel->fuelleArtikel($oXsellkauf->kXSellArtikel, $oArtikelOptionen);
+                    $oArtikel->fuelleArtikel($oXsellkauf->kXSellArtikel, $defaultOptions);
 
                     if ($oArtikel->kArtikel > 0 && $oArtikel->aufLagerSichtbarkeit()) {
                         $oXselling->Kauf->Artikel[] = $oArtikel;

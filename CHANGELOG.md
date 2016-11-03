@@ -6,6 +6,7 @@
 ### Neue Features
 * Verkürzter Checkout (3 Seiten anstatt bisher 5 Seiten)
 * SEO-URLs ersetzen warenkorb.php, bestellvorgang.php, bestellabschluss.php, pass.php, newsletter.php, wunschliste.php und jtl.php (#31)
+* Unterstützung kundenindividueller Preise. Setzt Wawi v1.2 oder größer voraus (#344)
 * Unterstützung mehrsprachiger Kategorieattribute (#191)
 * Optionale 2-Faktor-Authentifizierung im Backend (#276)
 * Banner und Slider und Box-Anzeige können nun konkreten CMS-Seiten zugewiesen werden (#107) 
@@ -44,6 +45,7 @@
 * Evo Druckansicht verbessert (#319)
 * Bestellabschluss: Lieferzeitangabe nach oben in die Versandart-Box verschieben
 * Smooth Scrolling bei relativen Ankerlinks (#147)
+* Einstellungen zur Anzeige der Artikel-Kurzbeschreibungen in Listen und Artikeldetails (#479)
 * HOOK_INDEX_SEO_404 wird nun auch ausgeführt, wenn cSeo nicht leer ist
 * HOOK_WARENKORB_PAGE_KUPONANNEHMEN_PLAUSI wird wieder früher ausgeführt und enthält Parameter  (#234)
 
@@ -89,6 +91,7 @@
 * Sonderpreise können durch Wawi-Abgleich gelöscht werden (#305)
 * Anrede in "Mein Konto" nicht an Sprache angepasst (#514)
 * In Zukunft startende Sonderpreise werden bei aktiviertem Objektcache nicht berücksichtigt (#123)
+* Versandkostenfreigrenze ignoriert Steuerberechnung-Einstellung (#231)
 
 ## [4.04.1] - 2016-07-19
 * Neues Premium-Plugin: Login und Bezahlen mit Amazon (von Solution360)

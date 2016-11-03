@@ -115,15 +115,10 @@ function gibVergleichsliste($nVLKeys = 0, $bWarenkorb = true)
     }
     $oVergleichslisteArr = array();
     if (isset($oVergleichsliste->oArtikel_arr)) {
-        $oArtikelOptionen                             = new stdClass();
-        $oArtikelOptionen->nMerkmale                  = 1;
-        $oArtikelOptionen->nAttribute                 = 1;
-        $oArtikelOptionen->nArtikelAttribute          = 1;
-        $oArtikelOptionen->nVariationKombi            = 1;
-        $oArtikelOptionen->nKeineSichtbarkeitBeachten = 1;
+        $defaultOptions = Artikel::getDefaultOptions();
         foreach ($oVergleichsliste->oArtikel_arr as $article) {
             $oArtikel = new Artikel();
-            $oArtikel->fuelleArtikel($article->kArtikel, $oArtikelOptionen);
+            $oArtikel->fuelleArtikel($article->kArtikel, $defaultOptions);
             $oVergleichslisteArr[] = $oArtikel;
         }
         $oVergleichsliste->oArtikel_arr = $oVergleichslisteArr;
@@ -320,8 +315,7 @@ function fuegeEinInWarenkorbAjax($kArtikel, $anzahl, $oEigenschaftwerte_arr = ''
         }
         $oXSelling = gibArtikelXSelling($kArtikel);
 
-        $smarty->assign('WarenkorbVersandkostenfreiHinweis', baueVersandkostenfreiString(gibVersandkostenfreiAb($kKundengruppe), $_SESSION['Warenkorb']->gibGesamtsummeWaren(true, true)))
-               ->assign('WarenkorbVersandkostenfreiLaenderHinweis', baueVersandkostenfreiLaenderString(gibVersandkostenfreiAb($kKundengruppe)))
+        $smarty->assign('WarenkorbVersandkostenfreiHinweis', baueVersandkostenfreiString(gibVersandkostenfreiAb($kKundengruppe), $_SESSION['Warenkorb']->gibGesamtsummeWarenExt(array(C_WARENKORBPOS_TYP_ARTIKEL, C_WARENKORBPOS_TYP_KUPON, C_WARENKORBPOS_TYP_NEUKUNDENKUPON), true)))
                ->assign('oArtikel', $Artikel)// deprecated 3.12
                ->assign('zuletztInWarenkorbGelegterArtikel', $Artikel)
                ->assign('fAnzahl', $anzahl)

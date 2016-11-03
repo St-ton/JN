@@ -43,17 +43,13 @@ class cache_file implements ICachingMethod
      * @param string   $cacheID
      * @param mixed    $content
      * @param int|null $expiration
-     *
      * @return bool
      */
     public function store($cacheID, $content, $expiration = null)
     {
         $dir = $this->options['cache_dir'];
-        if (!is_dir($dir)) {
-            $createDir = mkdir($dir);
-            if ($createDir === false) {
-                return false;
-            }
+        if (!is_dir($dir) && mkdir($dir) === false) {
+            return false;
         }
         $fileName = $this->getFileName($cacheID);
         if ($fileName === false) {
@@ -76,7 +72,6 @@ class cache_file implements ICachingMethod
     /**
      * @param array    $keyValue
      * @param int|null $expiration
-     *
      * @return bool
      */
     public function storeMulti($keyValue, $expiration = null)
@@ -90,7 +85,6 @@ class cache_file implements ICachingMethod
 
     /**
      * @param string $cacheID
-     *
      * @return bool|mixed
      */
     public function load($cacheID)
@@ -109,12 +103,11 @@ class cache_file implements ICachingMethod
 
     /**
      * @param array $cacheIDs
-     *
      * @return array|bool
      */
     public function loadMulti($cacheIDs)
     {
-        $res = array();
+        $res = [];
         foreach ($cacheIDs as $_cid) {
             $res[$_cid] = $this->load($cacheIDs);
         }
@@ -150,9 +143,9 @@ class cache_file implements ICachingMethod
                 $this->recursiveDelete($path);
             }
 
-            return ($str === $this->options['cache_dir']) ?
-                true :
-                rmdir($str);
+            return ($str === $this->options['cache_dir'])
+                ? true
+                : rmdir($str);
         }
 
         return false;
@@ -160,7 +153,6 @@ class cache_file implements ICachingMethod
 
     /**
      * @param string $cacheID
-     *
      * @return bool
      */
     public function flush($cacheID)
@@ -211,12 +203,12 @@ class cache_file implements ICachingMethod
             closedir($dir);
         }
 
-        return array(
+        return [
             'entries' => $num,
             'hits'    => null,
             'misses'  => null,
             'inserts' => null,
             'mem'     => $total
-        );
+        ];
     }
 }

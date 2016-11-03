@@ -646,7 +646,11 @@ class PayPalPlus extends PaymentMethod
 
                         $this->setOrderStatusToPaid($order);
                         $this->addIncomingPayment($order, $ip);
-                        $this->sendConfirmationMail($order);
+                        
+                        //send confirmationMail - except for payment upon invoice (see https://gitlab.jtl-software.de/jtlshop/shop4/issues/618)
+                        if(empty($order->cPUIZahlungsdaten)) {
+                            $this->sendConfirmationMail($order);
+                        }
                     }
                 }
             } else {

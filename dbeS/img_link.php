@@ -50,18 +50,16 @@ echo $return;
 function bildartikellink_xml(SimpleXMLElement $xml)
 {
     $items           = get_array($xml);
-    $articleIDs      = array();
-    $cacheArticleIDs = array();
+    $articleIDs      = [];
+    $cacheArticleIDs = [];
     foreach ($items as $item) {
         //delete link first. Important because jtl-wawi does not send del_bildartikellink when image is updated.
         Shop::DB()->delete('tartikelpict', ['kArtikel', 'nNr'], [(int)$item->kArtikel, (int)$item->nNr]);
         $articleIDs[] = (int)$item->kArtikel;
         DBUpdateInsert('tartikelpict', array($item), 'kArtikelPict');
     }
-    $smarty = Shop::Smarty();
     foreach (array_unique($articleIDs) as $_aid) {
-        $smarty->clearCache(null, 'jtlc|article|aid' . $_aid);
-        $cacheArticleIDs = CACHING_GROUP_ARTICLE . '_' . $_aid;
+        $cacheArticleIDs[] = CACHING_GROUP_ARTICLE . '_' . $_aid;
         MediaImage::clearCache(Image::TYPE_PRODUCT, $_aid);
     }
     Shop::Cache()->flushTags($cacheArticleIDs);
@@ -73,16 +71,14 @@ function bildartikellink_xml(SimpleXMLElement $xml)
 function del_bildartikellink_xml(SimpleXMLElement $xml)
 {
     $items           = get_del_array($xml);
-    $articleIDs      = array();
-    $cacheArticleIDs = array();
+    $articleIDs      = [];
+    $cacheArticleIDs = [];
     foreach ($items as $item) {
         del_img_item($item);
         $articleIDs[] = $item->kArtikel;
     }
-    $smarty = Shop::Smarty();
     foreach (array_unique($articleIDs) as $_aid) {
-        $smarty->clearCache(null, 'jtlc|article|aid' . $_aid);
-        $cacheArticleIDs = CACHING_GROUP_ARTICLE . '_' . $_aid;
+        $cacheArticleIDs[] = CACHING_GROUP_ARTICLE . '_' . $_aid;
         MediaImage::clearCache(Image::TYPE_PRODUCT, $_aid);
     }
     Shop::Cache()->flushTags($cacheArticleIDs);

@@ -4,7 +4,9 @@
  *}
 
 <fieldset>
-   <legend>{lang key="address" section="account data"}</legend>
+    <legend>
+        {lang key="address" section="account data"}
+    </legend>
     {* salutation / title *}
     <div class="row">
         {if $Einstellungen.kunden.kundenregistrierung_abfragen_anrede !== 'N'}

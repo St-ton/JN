@@ -197,10 +197,10 @@ switch ($action) {
                             $value->cWert = 'apc';
                         } elseif (in_array('xcache', $availableMethods)) {
                             $value->cWert = 'xcache';
-                        } elseif (in_array('file', $availableMethods)) {
+                        } elseif (in_array('advancedfile', $availableMethods)) {
+                            $value->cWert = 'advancedfile';
+                        }  elseif (in_array('file', $availableMethods)) {
                             $value->cWert = 'file';
-                        } elseif (in_array('mysql', $availableMethods)) {
-                            $value->cWert = 'mysql';
                         } else {
                             $value->cWert = 'null';
                         }

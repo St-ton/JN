@@ -232,8 +232,8 @@ class WarenkorbPers
                 );
                 // Wenn Positionen vorhanden sind
                 if (is_array($oWarenkorbPersPos_arr) && count($oWarenkorbPersPos_arr) > 0) {
-                    $fWarenwert       = 0.0;
-                    $oArtikelOptionen = Artikel::getDefaultOptions();
+                    $fWarenwert     = 0.0;
+                    $defaultOptions = Artikel::getDefaultOptions();
                     if (!isset($_SESSION['Steuersatz'])) {
                         setzeSteuersaetze();
                     }
@@ -270,7 +270,7 @@ class WarenkorbPers
                         }
                         if ($bArtikel) {
                             $oWarenkorbPersPos->Artikel = new Artikel();
-                            $oWarenkorbPersPos->Artikel->fuelleArtikel($oWarenkorbPersPos->kArtikel, $oArtikelOptionen);
+                            $oWarenkorbPersPos->Artikel->fuelleArtikel($oWarenkorbPersPos->kArtikel, $defaultOptions);
                             $oWarenkorbPersPos->cArtikelName = $oWarenkorbPersPos->Artikel->cName;
 
                             $fWarenwert += $oWarenkorbPersPos->Artikel->Preise->fVK[$oWarenkorbPersPos->Artikel->kSteuerklasse];

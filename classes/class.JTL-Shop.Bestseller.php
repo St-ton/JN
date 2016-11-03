@@ -205,10 +205,10 @@ class Bestseller
             }
             $bestsellerkeys = $bestseller->fetch();
             $bestsellers    = array();
-            $options        = Artikel::getDefaultOptions();
+            $defaultOptions = Artikel::getDefaultOptions();
             foreach ($bestsellerkeys as $bestsellerkey) {
                 $product = new Artikel();
-                $product->fuelleArtikel($bestsellerkey, $options);
+                $product->fuelleArtikel($bestsellerkey, $defaultOptions);
                 if ($product->kArtikel > 0) {
                     $bestsellers[] = $product;
                 }

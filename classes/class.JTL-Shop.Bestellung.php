@@ -499,7 +499,7 @@ class Bestellung
             $this->fWarensummeNetto   = 0;
             $this->fVersandNetto      = 0;
             $positionCount            = count($this->Positionen);
-            $oArtikelOptionen         = Artikel::getDefaultOptions();
+            $defaultOptions           = Artikel::getDefaultOptions();
             for ($i = 0; $i < $positionCount; $i++) {
                 if ($this->Positionen[$i]->nAnzahl == intval($this->Positionen[$i]->nAnzahl)) {
                     $this->Positionen[$i]->nAnzahl = intval($this->Positionen[$i]->nAnzahl);
@@ -520,7 +520,7 @@ class Bestellung
                 if ($this->Positionen[$i]->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL) {
                     if ($bArtikel) {
                         $this->Positionen[$i]->Artikel = new Artikel();
-                        $this->Positionen[$i]->Artikel->fuelleArtikel($this->Positionen[$i]->kArtikel, $oArtikelOptionen);
+                        $this->Positionen[$i]->Artikel->fuelleArtikel($this->Positionen[$i]->kArtikel, $defaultOptions);
                     }
 
                     $kSprache = (isset($_SESSION['kSprache']) ? $_SESSION['kSprache'] : null);

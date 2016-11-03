@@ -4982,10 +4982,10 @@ class Artikel
         $products     = $data['oArtikelArr'];
         $oArtikel_arr = array();
         if (is_array($products) && count($products) > 0) {
-            $oArtikelOptionen = self::getDefaultOptions();
+            $defaultOptions = self::getDefaultOptions();
             foreach ($products as $oProduct) {
                 $oArtikel = new self();
-                $oArtikel->fuelleArtikel(($oProduct->kVaterArtikel > 0) ? $oProduct->kVaterArtikel : $oProduct->kArtikel, $oArtikelOptionen);
+                $oArtikel->fuelleArtikel(($oProduct->kVaterArtikel > 0) ? $oProduct->kVaterArtikel : $oProduct->kArtikel, $defaultOptions);
                 if ($oArtikel->kArtikel > 0) {
                     $oArtikel_arr[] = $oArtikel;
                 }

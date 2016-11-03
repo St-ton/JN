@@ -1,7 +1,12 @@
-{includeMailTemplate template=header type=html}
-
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title></title>
+</head>
+<body>
 {if isset($oMailObjekt->oLogEntry_arr)}
-    <h2>Log-Einträge ({$oMailObjekt->oLogEntry_arr|@count}):</h2>
+    <h2>Log-EintrÃ¤ge ({$oMailObjekt->oLogEntry_arr|@count}):</h2>
     {foreach $oMailObjekt->oLogEntry_arr as $oLogEntry}
         <h3>
             [{$oLogEntry->dErstellt|date_format:"%d.%m.%Y %H:%M:%S"}]
@@ -16,5 +21,5 @@
         <pre>{$oLogEntry->cLog}</pre>
     {/foreach}
 {/if}
-
-{includeMailTemplate template=footer type=html}
+</body>
+</html>

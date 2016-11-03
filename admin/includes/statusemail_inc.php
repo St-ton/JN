@@ -858,6 +858,8 @@ function baueStatusEmail($oStatusemail, $dVon, $dBis)
     if (is_array($oStatusemail->nInhalt_arr) && count($oStatusemail->nInhalt_arr) > 0 &&
         strlen($dVon) > 0 && strlen($dBis) > 0)
     {
+        $cMailTyp                                              = Shop::DB()->select('temailvorlage', 'cModulId',
+            MAILTEMPLATE_STATUSEMAIL, null, null, null, null, false, 'cMailTyp')->cMailTyp;
         $oMailObjekt                                           = new stdClass();
         $oMailObjekt->mail                                     = new stdClass();
         $oMailObjekt->oAnzahlArtikelProKundengruppe            = -1;
@@ -1016,11 +1018,18 @@ function baueStatusEmail($oStatusemail, $dVon, $dBis)
             $cLogFilePath               = tempnam(sys_get_temp_dir(), 'jtl');
             $fileStream                 = fopen($cLogFilePath, 'w');
             $smarty->assign('oMailObjekt', $oMailObjekt);
-            fputs($fileStream, $smarty->fetch(PFAD_ROOT . PFAD_EMAILVORLAGEN . 'ger/email_bericht_plain_log.tpl'));
+            $oAttachment            = new stdClass();
+            $oAttachment->cFilePath = $cLogFilePath;
+
+            if ($cMailTyp === 'text') {
+                fputs($fileStream, $smarty->fetch(PFAD_ROOT . PFAD_EMAILVORLAGEN . 'ger/email_bericht_plain_log.tpl'));
+                $oAttachment->cName = 'jtl-log-digest.txt';
+            } else {
+                fputs($fileStream, $smarty->fetch(PFAD_ROOT . PFAD_EMAILVORLAGEN . 'ger/email_bericht_html_log.tpl'));
+                $oAttachment->cName = 'jtl-log-digest.html';
+            }
+
             fclose($fileStream);
-            $oAttachment                        = new stdClass();
-            $oAttachment->cFilePath             = $cLogFilePath;
-            $oAttachment->cName                 = 'jtl-log-digest.txt';
             $oMailObjekt->mail->oAttachment_arr = [$oAttachment];
             $oMailObjekt->mail->toEmail         = $oStatusemail->cEmail;
         }

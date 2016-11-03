@@ -1,4 +1,3 @@
-{includeMailTemplate template=header type=plain}
 {if isset($oMailObjekt->oLogEntry_arr)}
 Log entries ({$oMailObjekt->oLogEntry_arr|@count}):
 
@@ -9,4 +8,3 @@ Log entries ({$oMailObjekt->oLogEntry_arr|@count}):
 {/for}
 {/foreach}
 {/if}
-{includeMailTemplate template=footer type=plain}

@@ -483,11 +483,11 @@ class Boxen
                     $oBox->Artikel           = new stdClass();
                     $oBox->Artikel->elemente = [];
                     if (count($oPreisradar_arr) > 0) {
-                        $oBox->anzeigen   = 'Y';
-                        $oArtikelOptionen = Artikel::getDefaultOptions();
+                        $oBox->anzeigen = 'Y';
+                        $defaultOptions = Artikel::getDefaultOptions();
                         foreach ($oPreisradar_arr as $oPreisradar) {
                             $oArtikel = new Artikel();
-                            $oArtikel->fuelleArtikel($oPreisradar->kArtikel, $oArtikelOptionen);
+                            $oArtikel->fuelleArtikel($oPreisradar->kArtikel, $defaultOptions);
                             $oArtikel->oPreisradar                     = new stdClass();
                             $oArtikel->oPreisradar->fDiff              = $oPreisradar->fDiff * -1;
                             $oArtikel->oPreisradar->fDiffLocalized[0]  = gibPreisStringLocalized(berechneBrutto($oArtikel->oPreisradar->fDiff, $oArtikel->Preise->fUst));
@@ -623,10 +623,10 @@ class Boxen
 
                             if (is_array($kKey_arr) && count($kKey_arr) > 0) {
                                 // Lauf die Keys durch und hole baue Artikelobjekte
-                                $oArtikelOptionen = Artikel::getDefaultOptions();
+                                $defaultOptions = Artikel::getDefaultOptions();
                                 foreach ($kKey_arr as $i => $kKey) {
                                     $oArtikel = new Artikel();
-                                    $oArtikel->fuelleArtikel($kArtikel_arr[$kKey], $oArtikelOptionen);
+                                    $oArtikel->fuelleArtikel($kArtikel_arr[$kKey], $defaultOptions);
                                     $oArtikel_arr[] = $oArtikel;
                                 }
                             }
@@ -919,11 +919,11 @@ class Boxen
                     break;
                 }
                 if (isset($_SESSION['ZuletztBesuchteArtikel']) && is_array($_SESSION['ZuletztBesuchteArtikel']) && count($_SESSION['ZuletztBesuchteArtikel']) > 0) {
-                    $oTMP_arr         = array();
-                    $oArtikelOptionen = Artikel::getDefaultOptions();
+                    $oTMP_arr       = [];
+                    $defaultOptions = Artikel::getDefaultOptions();
                     foreach ($_SESSION['ZuletztBesuchteArtikel'] as $i => $oArtikel) {
                         $artikel = new Artikel();
-                        $artikel->fuelleArtikel($oArtikel->kArtikel, $oArtikelOptionen);
+                        $artikel->fuelleArtikel($oArtikel->kArtikel, $defaultOptions);
                         if ($artikel->kArtikel > 0) {
                             $oTMP_arr[$i] = $artikel;
                         }

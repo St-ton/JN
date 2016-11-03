@@ -54,7 +54,7 @@ class Vergleichsliste
     public function umgebungsWechsel()
     {
         if (count($_SESSION['Vergleichsliste']->oArtikel_arr) > 0) {
-            $oArtikelOptionen = Artikel::getDefaultOptions();
+            $defaultOptions = Artikel::getDefaultOptions();
             foreach ($_SESSION['Vergleichsliste']->oArtikel_arr as $i => $oArtikel) {
                 //new slim variant for compare list
                 if (TEMPLATE_COMPATIBILITY === false) {
@@ -63,7 +63,7 @@ class Vergleichsliste
                 } else {
                     //default mode
                     $oArtikel_tmp = new Artikel($oArtikel->kArtikel);
-                    $oArtikel_tmp->fuelleArtikel($oArtikel->kArtikel, $oArtikelOptionen);
+                    $oArtikel_tmp->fuelleArtikel($oArtikel->kArtikel, $defaultOptions);
                 }
                 $_SESSION['Vergleichsliste']->oArtikel_arr[$i] = $oArtikel_tmp;
             }

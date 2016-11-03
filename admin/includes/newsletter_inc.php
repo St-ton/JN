@@ -713,7 +713,7 @@ function holeArtikel($cArtNr_arr)
     $oArtikel_arr = array();
     if (is_array($cArtNr_arr) && count($cArtNr_arr) > 0) {
         require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Artikel.php';
-        $oArtikelOptionen = Artikel::getDefaultOptions();
+        $defaultOptions = Artikel::getDefaultOptions();
         foreach ($cArtNr_arr as $cArtNr) {
             if ($cArtNr !== '') {
                 $oArtikel_tmp = Shop::DB()->select('tartikel', 'cArtNr', $cArtNr);
@@ -739,7 +739,7 @@ function holeArtikel($cArtNr_arr)
                     if ($nSichtbar) {
                         $_SESSION['Kundengruppe']->darfPreiseSehen = 1;
                         $oArtikel                                  = new Artikel();
-                        $oArtikel->fuelleArtikel($oArtikel_tmp->kArtikel, $oArtikelOptionen);
+                        $oArtikel->fuelleArtikel($oArtikel_tmp->kArtikel, $defaultOptions);
 
                         $oArtikel_arr[] = $oArtikel;
                     } else {
@@ -1181,12 +1181,12 @@ function gibArtikelObjekte($kArtikel_arr, $oKampagne = '', $kKundengruppe = 0, $
     if (is_array($kArtikel_arr) && count($kArtikel_arr) > 0) {
         $shopURL = Shop::getURL() . '/';
         require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Artikel.php';
-        $oArtikelOptionen = Artikel::getDefaultOptions();
+        $defaultOptions = Artikel::getDefaultOptions();
         foreach ($kArtikel_arr as $kArtikel) {
             if (intval($kArtikel) > 0) {
                 $_SESSION['Kundengruppe']->darfPreiseSehen = 1;
                 $oArtikel                                  = new Artikel();
-                $oArtikel->fuelleArtikel((int)$kArtikel, $oArtikelOptionen, $kKundengruppe, $kSprache);
+                $oArtikel->fuelleArtikel((int)$kArtikel, $defaultOptions, $kKundengruppe, $kSprache);
 
                 if (!isset($oArtikel->kArtikel) || intval($oArtikel->kArtikel) === 0) {
                     Jtllog::writeLog(

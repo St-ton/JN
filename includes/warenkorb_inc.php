@@ -360,11 +360,11 @@ function gibXSelling()
                 if (!isset($oXselling->Kauf)) {
                     $oXselling->Kauf = new stdClass();
                 }
-                $oXselling->Kauf->Artikel = array();
-                $oArtikelOptionen         = Artikel::getDefaultOptions();
+                $oXselling->Kauf->Artikel = [];
+                $defaultOptions           = Artikel::getDefaultOptions();
                 foreach ($oXsellkauf_arr as $oXsellkauf) {
                     $oArtikel = new Artikel();
-                    $oArtikel->fuelleArtikel($oXsellkauf->kXSellArtikel, $oArtikelOptionen);
+                    $oArtikel->fuelleArtikel($oXsellkauf->kXSellArtikel, $defaultOptions);
 
                     if ($oArtikel->kArtikel > 0 && $oArtikel->aufLagerSichtbarkeit()) {
                         $oXselling->Kauf->Artikel[] = $oArtikel;

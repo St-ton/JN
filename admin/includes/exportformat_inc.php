@@ -397,7 +397,7 @@ function verarbeiteYategoExport(&$Artikel, $exportformat, $ExportEinstellungen, 
                 $oVariationsListe_arr[] = $oVariation->kEigenschaft;
 
                 if (is_array($oVariation->Werte) && count($oVariation->Werte) > 0) {
-                    $oArtikelOptionen  = Artikel::getDefaultOptions();
+                    $defaultOptions = Artikel::getDefaultOptions();
                     foreach ($oVariation->Werte as $oWert) {
                         $oVariationsKind = new stdClass();
                         if (is_array($oEigenschaftKombi_arr) && count($oEigenschaftKombi_arr) > 0) {
@@ -405,7 +405,7 @@ function verarbeiteYategoExport(&$Artikel, $exportformat, $ExportEinstellungen, 
                             foreach ($oEigenschaftKombi_arr as $oEigenschaftKombi) {
                                 if ($oEigenschaftKombi->kEigenschaft == $oVariation->kEigenschaft && $oEigenschaftKombi->kEigenschaftWert == $oWert->kEigenschaftWert) {
                                     $oVariationsKind = new Artikel();
-                                    $oVariationsKind->fuelleArtikel($oEigenschaftKombi->kArtikel, $oArtikelOptionen, $exportformat->kKundengruppe, $exportformat->kSprache, true);
+                                    $oVariationsKind->fuelleArtikel($oEigenschaftKombi->kArtikel, $defaultOptions, $exportformat->kKundengruppe, $exportformat->kSprache, true);
                                     $bEigenschaftCheck = true;
                                     break;
                                 }

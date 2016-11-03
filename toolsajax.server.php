@@ -115,15 +115,10 @@ function gibVergleichsliste($nVLKeys = 0, $bWarenkorb = true)
     }
     $oVergleichslisteArr = array();
     if (isset($oVergleichsliste->oArtikel_arr)) {
-        $oArtikelOptionen                             = new stdClass();
-        $oArtikelOptionen->nMerkmale                  = 1;
-        $oArtikelOptionen->nAttribute                 = 1;
-        $oArtikelOptionen->nArtikelAttribute          = 1;
-        $oArtikelOptionen->nVariationKombi            = 1;
-        $oArtikelOptionen->nKeineSichtbarkeitBeachten = 1;
+        $defaultOptions = Artikel::getDefaultOptions();
         foreach ($oVergleichsliste->oArtikel_arr as $article) {
             $oArtikel = new Artikel();
-            $oArtikel->fuelleArtikel($article->kArtikel, $oArtikelOptionen);
+            $oArtikel->fuelleArtikel($article->kArtikel, $defaultOptions);
             $oVergleichslisteArr[] = $oArtikel;
         }
         $oVergleichsliste->oArtikel_arr = $oVergleichslisteArr;

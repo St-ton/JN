@@ -102,7 +102,7 @@
                     {include file="layout/header_top_bar.tpl"}
                 </div>
                 <div class="row">
-                    <div class="col-xs-4 col-sm-2 col-md-4" id="logo">
+                    <div class="col-xs-4" id="logo">
                         {block name="logo"}
                         <a href="{$ShopURL}" title="{$Einstellungen.global.global_shopname}">
                             {if isset($ShopLogoURL)}
@@ -114,7 +114,7 @@
                         {/block}
                     </div>
 
-                    <div class="col-xs-8 col-sm-10 col-md-8" id="shop-nav">
+                    <div class="col-xs-8" id="shop-nav">
                         {include file='layout/header_shop_nav.tpl'}
                     </div>
                 </div>

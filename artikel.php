@@ -102,8 +102,6 @@ if (Shop::$kVariKindArtikel > 0) {
 // Hat Artikel einen Preisverlauf?
 $smarty->assign('bPreisverlauf', !empty($_SESSION['Kundengruppe']->darfPreiseSehen));
 if ($Einstellungen['preisverlauf']['preisverlauf_anzeigen'] === 'Y' && !empty($_SESSION['Kundengruppe']->darfPreiseSehen)) {
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Preisverlauf.php';
-
     Shop::$kArtikel = Shop::$kVariKindArtikel > 0 ? Shop::$kVariKindArtikel : $AktuellerArtikel->kArtikel;
     $oPreisverlauf  = new Preisverlauf();
     $oPreisverlauf  = $oPreisverlauf->gibPreisverlauf(Shop::$kArtikel, $AktuellerArtikel->Preise->kKundengruppe, (int)$Einstellungen['preisverlauf']['preisverlauf_anzahl_monate']);

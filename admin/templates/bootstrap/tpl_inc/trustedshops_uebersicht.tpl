@@ -183,7 +183,7 @@
                                 <span class="input-group-addon">
                                     <label for="kb-tsId">Trusted Shops ID (tsId)</label>
                                 </span>
-                                <input class="form-control" type="text" name="tsId" id="kb-tsId" value="{if isset($oTrustedShopsKundenbewertung->cTSID)}{$oTrustedShopsKundenbewertung->cTSID}{/if}" tabindex="1" />
+                                <input class="form-control" type="text" name="kb-tsId" id="kb-tsId" value="{if isset($oTrustedShopsKundenbewertung->cTSID)}{$oTrustedShopsKundenbewertung->cTSID}{/if}" tabindex="1" />
                                 <span class="input-group-addon">{getHelpDesc cDesc="Die vom Shopbetreiber eingegebene Zertifikats-ID"}</span>
                             </div>
                             {if isset($Sprachen[$sessionSprachISO]->cURLKundenBewertungUebersicht) && $Sprachen[$sessionSprachISO]->cURLKundenBewertungUebersicht|strlen > 0}

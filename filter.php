@@ -3,10 +3,15 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once PFAD_ROOT . PFAD_INCLUDES . 'suche_inc.php';
+if (!defined('PFAD_ROOT')) {
+    http_response_code(400);
+    exit();
+}
 require_once PFAD_ROOT . PFAD_INCLUDES . 'filter_inc.php';
 $cachingOptions = Shop::getSettings(array(CONF_CACHING));
 Shop::setPageType(PAGE_ARTIKELLISTE);
+/** @global JTLSmarty $smarty */
+/** @global object $NaviFilter*/
 $Einstellungen = Shop::getSettings(
     array(
         CONF_GLOBAL,
@@ -92,7 +97,7 @@ $oSuchergebnisse = buildSearchResults($FilterSQL, $NaviFilter);
 suchanfragenSpeichern($NaviFilter->Suche->cSuche, $oSuchergebnisse->GesamtanzahlArtikel);
 $NaviFilter->Suche->kSuchanfrage = gibSuchanfrageKey($NaviFilter->Suche->cSuche, Shop::$kSprache);
 // Umleiten falls SEO keine Artikel ergibt
-doMainwordRedirect($NaviFilter, count($oSuchergebnisse->Artikel->elemente), $bSeo);
+doMainwordRedirect($NaviFilter, count($oSuchergebnisse->Artikel->elemente), true);
 // Bestsellers
 if (isset($Einstellungen['artikeluebersicht']['artikelubersicht_bestseller_gruppieren']) && $Einstellungen['artikeluebersicht']['artikelubersicht_bestseller_gruppieren'] === 'Y') {
     $products = array();

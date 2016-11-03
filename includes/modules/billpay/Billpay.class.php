@@ -662,8 +662,8 @@ class Billpay extends PaymentMethod
     }
 
     /**
-     * @param      $cType
-     * @param null $nPaymentType
+     * @param string   $cType
+     * @param null|int $nPaymentType
      * @return bool
      */
     public function getApi($cType, $nPaymentType = null)
@@ -1380,6 +1380,11 @@ class Billpay extends PaymentMethod
         Shop::Smarty()->assign('billpay_message', $oMessage);
     }
 
+    /**
+     * @param string $key
+     * @param bool   $root
+     * @return null
+     */
     public function getCoreSetting($key, $root = false)
     {
         global $Einstellungen;
@@ -1657,6 +1662,10 @@ class BPHelper
             'AUT' => 'https://www.billpay.de/api/agb-at');
     }
 
+    /**
+     * @param int $nType
+     * @return string|null
+     */
     public static function getPaymentType($nType)
     {
         switch ($nType) {
@@ -1672,7 +1681,7 @@ class BPHelper
                 return 'paylaterCollateralPromise';
         }
 
-        return;
+        return null;
     }
 
     /**

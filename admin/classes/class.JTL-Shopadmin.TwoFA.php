@@ -6,7 +6,6 @@
 
 use qrcodegenerator\QRCode\QRCode;
 use qrcodegenerator\QRCode\Output\QRString;
-use qrcodegenerator\QRCode\Output\QRStringOptions;
 
 /**
  * Class TwoFA

@@ -22,12 +22,12 @@
 {/if}
 {if $cOption === 'eintragen'}
     {if empty($bBereitsAbonnent)}
-        <div class="col-xs-12 col-md-10 col-md-offset-1">
             {block name="newsletter-subscribe"}
-            <div class="well panel-wrap reviews-overview">
+            <div id="newsletter-subscribe" class="panel-wrap">
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                    <h3 class="panel-title">{block name="newsletter-subscribe-title"}{lang key="newsletterSubscribe" section="newsletter"}{/block}</h3></div>
+                        <h3 class="panel-title">{block name="newsletter-subscribe-title"}{lang key="newsletterSubscribe" section="newsletter"}{/block}</h3>
+                    </div>
                     <div class="panel-body">
                         {block name="newsletter-subscribe-body"}
                         <p>{lang key="newsletterSubscribeDesc" section="newsletter"}</p>
@@ -57,7 +57,7 @@
                                 </div>
                                 <div class="form-group float-label-control{if !empty($oPlausi->nPlausi_arr.cEmail)} has-error{/if} required">
                                     <label for="email" class="control-label">{lang key="newsletteremail" section="newsletter"}</label>
-                                    <input type="text" name="cEmail" class="form-control" required value="{if !empty($oPlausi->cPost_arr.cEmail)}{$oPlausi->cPost_arr.cEmail}{elseif !empty($oKunde->cMail)}{$oKunde->cMail}{/if}" id="email" />
+                                    <input type="email" name="cEmail" class="form-control" required value="{if !empty($oPlausi->cPost_arr.cEmail)}{$oPlausi->cPost_arr.cEmail}{elseif !empty($oKunde->cMail)}{$oKunde->cMail}{/if}" id="email" />
                                     {if !empty($oPlausi->nPlausi_arr.cEmail)}
                                         <div class="alert alert-danger">{lang key="fillOut" section="global"}</div>
                                     {/if}
@@ -85,7 +85,6 @@
 
                                 <div class="form-group">
                                     {$jtl_token}
-                                    <div class="col-sm-offset-2 col-sm-10">
                                         <input type="hidden" name="abonnieren" value="1" />
                                         <button type="submit" class="btn btn-primary submit">
                                             <span>{lang key="newsletterSendSubscribe" section="newsletter"}</span>
@@ -93,7 +92,6 @@
                                         <p class="info small">
                                             {lang key="unsubscribeAnytime" section="newsletter"}
                                         </p>
-                                    </div>
                                 </div>
                             </fieldset>
                         </form>
@@ -102,39 +100,36 @@
                 </div>
             </div>
             {/block}
-        </div>
     {/if}
-    <div class="col-xs-12 col-md-10 col-md-offset-1">
-        {block name="newsletter-unsubscribe"}
-        <div class="well panel-wrap reviews-overview">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                <h3 class="panel-title">{block name="newsletter-unsubscribe-title"}{lang key="newsletterUnsubscribe" section="newsletter"}{/block}</h3></div>
-                <div class="panel-body">
-                    {block name="newsletter-unsubscribe-body"}
-                    <p>{lang key="newsletterUnsubscribeDesc" section="newsletter"}</p>
+    
+    
+    {block name="newsletter-unsubscribe"}
+    <div id="newsletter-unsubscribe" class="panel-wrap top15">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+            <h3 class="panel-title">{block name="newsletter-unsubscribe-title"}{lang key="newsletterUnsubscribe" section="newsletter"}{/block}</h3></div>
+            <div class="panel-body">
+                {block name="newsletter-unsubscribe-body"}
+                <p>{lang key="newsletterUnsubscribeDesc" section="newsletter"}</p>
 
-                    <form method="post" action="{get_static_route id='newsletter.php'}" name="newsletterabmelden">
-                        <fieldset>
-                            <div class="form-group float-label-control required">
-                                <label for="checkOut" class="control-label">{lang key="newsletteremail" section="newsletter"}</label>
-                                <input type="text" class="form-control" required name="cEmail" value="{if !empty($oKunde->cMail)}{$oKunde->cMail}{/if}" id="checkOut" />
-                            </div>
-                            <div class="col-sm-offset-2 col-sm-10">
-                                {$jtl_token}
-                                <input type="hidden" name="abmelden" value="1" />
-                                <button type="submit" class="submit btn btn-default">
-                                    <span>{lang key="newsletterSendUnsubscribe" section="newsletter"}</span>
-                                </button>
-                            </div>
-                        </fieldset>
-                    </form>
-                    {/block}
-                </div>
+                <form method="post" action="{get_static_route id='newsletter.php'}" name="newsletterabmelden">
+                    <fieldset>
+                        <div class="form-group float-label-control required">
+                            <label for="checkOut" class="control-label">{lang key="newsletteremail" section="newsletter"}</label>
+                            <input type="email" class="form-control" required name="cEmail" value="{if !empty($oKunde->cMail)}{$oKunde->cMail}{/if}" id="checkOut" />
+                        </div>
+                        {$jtl_token}
+                        <input type="hidden" name="abmelden" value="1" />
+                        <button type="submit" class="submit btn btn-default">
+                            <span>{lang key="newsletterSendUnsubscribe" section="newsletter"}</span>
+                        </button>
+                    </fieldset>
+                </form>
+                {/block}
             </div>
         </div>
-        {/block}
     </div>
+    {/block}
 {elseif $cOption === 'anzeigen'}
     {if isset($oNewsletterHistory) && $oNewsletterHistory->kNewsletterHistory > 0}
         {block name="newsletter-history"}

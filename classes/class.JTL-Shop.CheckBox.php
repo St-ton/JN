@@ -143,14 +143,16 @@ class CheckBox
                         $this->oCheckBoxFunktion = $oCheckBoxFunktion;
                     } else {
                         $this->kCheckBoxFunktion = 0;
-                        Shop::DB()->query("UPDATE tcheckbox SET kCheckBoxFunktion = 0 WHERE kCheckBox = " . (int)$this->kCheckBox, 3);
+                        $upd = new stdClass();
+                        $upd->kCheckBoxFunktion = 0;
+                        Shop::DB()->update('tcheckbox', 'kCheckBox', (int)$this->kCheckBox, $upd);
                     }
                 }
                 // Mapping Kundengruppe
                 if (is_array($this->kKundengruppe_arr) && count($this->kKundengruppe_arr) > 0) {
                     $this->cKundengruppeAssoc_arr = array();
                     foreach ($this->kKundengruppe_arr as $kKundengruppe) {
-                        $oKundengruppe = Shop::DB()->query("SELECT cName FROM tkundengruppe WHERE kKundengruppe = " . (int)$kKundengruppe, 1);
+                        $oKundengruppe = Shop::DB()->select('tkundengruppe', 'kKundengruppe', (int)$kKundengruppe);
                         if (isset($oKundengruppe->cName) && strlen($oKundengruppe->cName) > 0) {
                             $this->cKundengruppeAssoc_arr[$kKundengruppe] = $oKundengruppe->cName;
                         }
@@ -158,7 +160,7 @@ class CheckBox
                 }
                 // Mapping Link
                 if ($this->kLink > 0) {
-                    $oLink = Shop::DB()->query("SELECT kLink, cName, nLinkart FROM tlink WHERE kLink = " . (int)$this->kLink, 1);
+                    $oLink = Shop::DB()->select('tlink', 'kLink', (int)$this->kLink);
                     if (isset($oLink->kLink) && $oLink->kLink > 0) {
                         $this->oLink = $oLink;
                     }
@@ -167,7 +169,7 @@ class CheckBox
                 }
                 // Hole Sprachen
                 if ($bSprachWerte) {
-                    $oCheckBoxSpracheTMP_arr = Shop::DB()->query("SELECT * FROM tcheckboxsprache WHERE kCheckBox = " . (int)$this->kCheckBox, 2);
+                    $oCheckBoxSpracheTMP_arr = Shop::DB()->selectAll('tcheckboxsprache', 'kCheckBox', (int)$this->kCheckBox);
                     if (count($oCheckBoxSpracheTMP_arr) > 0) {
                         foreach ($oCheckBoxSpracheTMP_arr as $oCheckBoxSpracheTMP) {
                             $this->oCheckBoxSprache_arr[$oCheckBoxSpracheTMP->kSprache] = $oCheckBoxSpracheTMP;
@@ -212,7 +214,7 @@ class CheckBox
         }
         $oCheckBoxTMP_arr = Shop::DB()->query(
             "SELECT kCheckBox FROM tcheckbox
-                WHERE cAnzeigeOrt LIKE '%;" . intval($nAnzeigeOrt) . ";%'
+                WHERE cAnzeigeOrt LIKE '%;" . (int)$nAnzeigeOrt . ";%'
                     AND cKundengruppe LIKE  '%;" . $kKundengruppe . ";%'
                     " . $cSQL . "
                 ORDER BY nSort", 2
@@ -380,7 +382,9 @@ class CheckBox
     {
         if (is_array($kCheckBox_arr) && count($kCheckBox_arr) > 0) {
             foreach ($kCheckBox_arr as $kCheckBox) {
-                Shop::DB()->query("UPDATE tcheckbox SET nAktiv = 1 WHERE kCheckBox = " . (int)$kCheckBox, 3);
+                $upd = new stdClass();
+                $upd->nAktiv = 1;
+                Shop::DB()->update('tcheckbox', 'kCheckBox', (int)$kCheckBox, $upd);
             }
 
             return true;
@@ -397,7 +401,9 @@ class CheckBox
     {
         if (is_array($kCheckBox_arr) && count($kCheckBox_arr) > 0) {
             foreach ($kCheckBox_arr as $kCheckBox) {
-                Shop::DB()->query("UPDATE tcheckbox SET nAktiv = 0 WHERE kCheckBox = " . (int)$kCheckBox, 3);
+                $upd = new stdClass();
+                $upd->nAktiv = 0;
+                Shop::DB()->update('tcheckbox', 'kCheckBox', (int)$kCheckBox, $upd);
             }
 
             return true;

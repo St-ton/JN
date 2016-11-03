@@ -6,15 +6,13 @@
 require_once dirname(__FILE__) . '/includes/admininclude.php';
 
 $oAccount->permission('PERMISSIONCHECK_VIEW', true, true);
-
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'permissioncheck_inc.php';
-
-$cHinweis      = '';
-$cFehler       = '';
-$cDirAssoc_arr = checkWriteables();
+/** @global JTLSmarty $smarty */
+$cHinweis = '';
+$cFehler  = '';
+$oFsCheck = new Systemcheck_Platform_Filesystem(PFAD_ROOT); // to get all folders which need to be writable
 
 $smarty->assign('cHinweis', $cHinweis)
        ->assign('cFehler', $cFehler)
-       ->assign('cDirAssoc_arr', $cDirAssoc_arr)
-       ->assign('oStat', getPermissionStats($cDirAssoc_arr))
+       ->assign('cDirAssoc_arr', $oFsCheck->getFoldersChecked())
+       ->assign('oStat', $oFsCheck->getFolderStats())
        ->display('permissioncheck.tpl');

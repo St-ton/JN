@@ -216,4 +216,7 @@
             </div>
         </div>
     </form>
+    {if isset($Emailvorlage->kEmailvorlage)}
+        {getRevisions type='mail' key=$Emailvorlage->kEmailvorlage show=['cContentText','cContentHtml'] secondary=true data=$Emailvorlagesprache}
+    {/if}
 </div>

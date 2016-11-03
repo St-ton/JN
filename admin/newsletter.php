@@ -6,7 +6,7 @@
 require_once dirname(__FILE__) . '/includes/admininclude.php';
 
 $oAccount->permission('MODULE_NEWSLETTER_VIEW', true, true);
-
+/** @global JTLSmarty $smarty */
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'newsletter_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 
@@ -26,11 +26,7 @@ $cAktiveSucheSQL->cJOIN    = '';
 $cAktiveSucheSQL->cWHERE   = '';
 
 // Standardkundengruppe Work Around
-$oKundengruppe = Shop::DB()->query(
-    "SELECT kKundengruppe
-        FROM tkundengruppe
-        WHERE cStandard = 'Y'", 1
-);
+$oKundengruppe = Shop::DB()->select('tkundengruppe', 'cStandard', 'Y');
 if (!isset($_SESSION['Kundengruppe'])) {
     $_SESSION['Kundengruppe'] = new stdClass();
 }
@@ -75,7 +71,7 @@ if (isset($_POST['einstellungen']) && intval($_POST['einstellungen']) === 1) {
     $oNewsletter->kKunde       = 0;
 
     if (!empty($oNewsletter->cEmail)) {
-        $oNewsTmp = Shop::DB()->query("SELECT * FROM tnewsletterempfaenger WHERE cEmail = '" . $oNewsletter->cEmail . "'", 1);
+        $oNewsTmp = Shop::DB()->select('tnewsletterempfaenger', 'cEmail', $oNewsletter->cEmail);
         if ($oNewsTmp) {
             $cFehler = 'E-Mail Adresse existiert bereits';
             $smarty->assign('oNewsletter', $oNewsletter);
@@ -382,11 +378,7 @@ if (isset($_POST['einstellungen']) && intval($_POST['einstellungen']) === 1) {
                 $nCount_arr[1] = 0;     // Count Kundengruppenkeys
                 foreach ($oNewsletterEmpfaenger->cKundengruppe_arr as $cKundengruppeTMP) {
                     if ($cKundengruppeTMP != '0') {
-                        $oKundengruppeTMP = Shop::DB()->query(
-                            "SELECT cName, kKundengruppe
-                                FROM tkundengruppe
-                                WHERE kKundengruppe = " . intval($cKundengruppeTMP), 1
-                        );
+                        $oKundengruppeTMP = Shop::DB()->select('tkundengruppe', 'kKundengruppe', (int)$cKundengruppeTMP);
                         if (strlen($oKundengruppeTMP->cName) > 0) {
                             if ($nCount_arr[0] > 0) {
                                 $cKundengruppe .= ', ' . $oKundengruppeTMP->cName;
@@ -641,29 +633,14 @@ if ($step === 'uebersicht') {
         $smarty->assign('oNewsletterHistory_arr', $oNewsletterHistory_arr);
     }
     // Einstellungen
-    $oConfig_arr = Shop::DB()->query(
-        "SELECT *
-            FROM teinstellungenconf
-            WHERE kEinstellungenSektion = " . CONF_NEWSLETTER . "
-            ORDER BY nSort", 2
-    );
+    $oConfig_arr = Shop::DB()->selectAll('teinstellungenconf', 'kEinstellungenSektion', CONF_NEWSLETTER, '*', 'nSort');
     $configCount = count($oConfig_arr);
     for ($i = 0; $i < $configCount; $i++) {
         if ($oConfig_arr[$i]->cInputTyp === 'selectbox') {
-            $oConfig_arr[$i]->ConfWerte = Shop::DB()->query(
-                "SELECT *
-                    FROM teinstellungenconfwerte
-                    WHERE kEinstellungenConf = " . $oConfig_arr[$i]->kEinstellungenConf . "
-                    ORDER BY nSort", 2
-            );
+            $oConfig_arr[$i]->ConfWerte = Shop::DB()->selectAll('teinstellungenconfwerte', 'kEinstellungenConf', $oConfig_arr[$i]->kEinstellungenConf, '*', 'nSort');
         }
 
-        $oSetValue = Shop::DB()->query(
-            "SELECT cWert
-                FROM teinstellungen
-                WHERE kEinstellungenSektion = " . CONF_NEWSLETTER . "
-                    AND cName = '" . $oConfig_arr[$i]->cWertName . "'", 1
-        );
+        $oSetValue = Shop::DB()->select('teinstellungen', ['kEinstellungenSektion', 'cName'], [CONF_NEWSLETTER,  $oConfig_arr[$i]->cWertName]);
         $oConfig_arr[$i]->gesetzterWert = (isset($oSetValue->cWert)) ? $oSetValue->cWert : null;
     }
 

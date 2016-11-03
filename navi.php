@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 require_once dirname(__FILE__) . '/includes/globalinclude.php';
-
+/** @global JTLSmarty $smarty */
 $cart = (isset($_SESSION['Warenkorb'])) ?
     $_SESSION['Warenkorb'] :
     new Warenkorb();
@@ -63,11 +63,10 @@ $Einstellungen = Shop::getSettings(
         CONF_AUSWAHLASSISTENT)
 );
 // Suche prüfen
-if (strlen($cParameter_arr['cSuche']) > 0) {
-    $nMindestzeichen = 3;
-    if ((int)$Einstellungen['artikeluebersicht']['suche_min_zeichen'] > 0) {
-        $nMindestzeichen = (int)$Einstellungen['artikeluebersicht']['suche_min_zeichen'];
-    }
+if (strlen($cParameter_arr['cSuche']) > 0 || (isset($_GET['qs']) && strlen($_GET['qs']) === 0)) {
+    $nMindestzeichen = ((int)$Einstellungen['artikeluebersicht']['suche_min_zeichen'] > 0) ?
+        (int)$Einstellungen['artikeluebersicht']['suche_min_zeichen'] :
+        3;
     preg_match("/[\w" . utf8_decode('äÄüÜöÖß') . "\.\-]{" . $nMindestzeichen . ",}/", str_replace(' ', '', $cParameter_arr['cSuche']), $cTreffer_arr);
     if (count($cTreffer_arr) === 0) {
         $cFehler                 = Shop::Lang()->get('expressionHasTo', 'global') . ' ' . $nMindestzeichen . ' ' . Shop::Lang()->get('lettersDigits', 'global');
@@ -85,7 +84,7 @@ if (ArtikelHelper::isVariChild($cParameter_arr['kArtikel'])) {
     $cParameter_arr['kArtikel']         = Shop::$kArtikel;
 }
 if (!$cParameter_arr['kWunschliste'] && strlen(verifyGPDataString('wlid')) > 0) {
-    header('Location: wunschliste.php?wlid=' . verifyGPDataString('wlid') . '&error=1', true, 303);
+    header('Location: ' . $linkHelper->getStaticRoute('wunschliste.php') . '?wlid=' . verifyGPDataString('wlid') . '&error=1', true, 303);
     exit();
 }
 $smarty->assign('NaviFilter', $NaviFilter);
@@ -105,7 +104,8 @@ if ($cParameter_arr['kHersteller'] > 0 ||
     strlen($cParameter_arr['cSuche']) > 0 ||
     $cParameter_arr['kSuchspecial'] > 0 ||
     $cParameter_arr['kSuchspecialFilter'] > 0 ||
-    $cParameter_arr['kSuchFilter'] > 0
+    $cParameter_arr['kSuchFilter'] > 0 ||
+    (isset($_GET['qs']) && strlen($_GET['qs']) === 0)
 ) {
     require_once PFAD_ROOT . PFAD_INCLUDES . 'suche_inc.php';
     $suchanfrage = '';
@@ -553,7 +553,7 @@ if ($cParameter_arr['kHersteller'] > 0 ||
             $kLink         = $hookInfos['value'];
             $bFileNotFound = $hookInfos['isFileNotFound'];
             if (!$kLink) {
-                $oLink       = Shop::DB()->query("SELECT kLink FROM tlink WHERE nLinkart = " . LINKTYP_404, 1);
+                $oLink       = Shop::DB()->select('tlink', 'nLinkart', LINKTYP_404);
                 $kLink       = $oLink->kLink;
                 Shop::$kLink = $kLink;
             }

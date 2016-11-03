@@ -6,7 +6,7 @@
 require_once dirname(__FILE__) . '/includes/admininclude.php';
 
 $oAccount->permission('MODULE_COMPARELIST_VIEW', true, true);
-
+/** @global JTLSmarty $smarty */
 $cHinweis = '';
 $cFehler  = '';
 $cSetting = '(469, 470)';
@@ -69,19 +69,9 @@ $oConfig_arr = Shop::DB()->query(
 $configCount = count($oConfig_arr);
 for ($i = 0; $i < $configCount; $i++) {
     if ($oConfig_arr[$i]->cInputTyp === 'selectbox') {
-        $oConfig_arr[$i]->ConfWerte = Shop::DB()->query(
-            "SELECT *
-                FROM teinstellungenconfwerte
-                WHERE kEinstellungenConf = " . (int)$oConfig_arr[$i]->kEinstellungenConf . "
-                ORDER BY nSort", 2
-        );
+        $oConfig_arr[$i]->ConfWerte = Shop::DB()->selectAll('teinstellungenconfwerte', 'kEinstellungenConf', (int)$oConfig_arr[$i]->kEinstellungenConf, '*', 'nSort');
     }
-    $oSetValue = Shop::DB()->query(
-        "SELECT cWert
-            FROM teinstellungen
-            WHERE kEinstellungenSektion = " . (int)$oConfig_arr[$i]->kEinstellungenSektion . "
-                AND cName = '" . $oConfig_arr[$i]->cWertName . "'", 1
-    );
+    $oSetValue = Shop::DB()->select('teinstellungen', 'kEinstellungenSektion', (int)$oConfig_arr[$i]->kEinstellungenSektion, 'cName', $oConfig_arr[$i]->cWertName);
     $oConfig_arr[$i]->gesetzterWert = (isset($oSetValue->cWert)) ? $oSetValue->cWert : null;
 }
 
@@ -107,12 +97,7 @@ if (is_array($oLetzten20Vergleichsliste_arr) && count($oLetzten20Vergleichsliste
     $oLetzten20VergleichslistePos_arr = array();
 
     foreach ($oLetzten20Vergleichsliste_arr as $oLetzten20Vergleichsliste) {
-        $oLetzten20VergleichslistePos_arr = Shop::DB()->query(
-            "SELECT kArtikel, cArtikelName
-                FROM tvergleichslistepos
-                WHERE kVergleichsliste = " . (int)$oLetzten20Vergleichsliste->kVergleichsliste, 2
-        );
-
+        $oLetzten20VergleichslistePos_arr = Shop::DB()->selectAll('tvergleichslistepos', 'kVergleichsliste', (int)$oLetzten20Vergleichsliste->kVergleichsliste, 'kArtikel, cArtikelName');
         $oLetzten20Vergleichsliste->oLetzten20VergleichslistePos_arr = $oLetzten20VergleichslistePos_arr;
     }
 }

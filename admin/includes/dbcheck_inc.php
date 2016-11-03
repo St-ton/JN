@@ -44,6 +44,11 @@ function getDBFileStruct()
     return $oDBFileStruct;
 }
 
+/**
+ * @param array $cDBFileStruct_arr
+ * @param array $cDBStruct_arr
+ * @return array
+ */
 function compareDBStruct($cDBFileStruct_arr, $cDBStruct_arr)
 {
     $cDBError_arr = array();

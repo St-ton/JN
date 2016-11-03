@@ -300,25 +300,18 @@ class Preise
      * @param int $kKundengruppe
      * @param int $kArtikel
      * @param int $kKunde
-     *
-     * @return Preise Object
+     * @param int $kSteuerklasse
      */
-    public function __construct($kKundengruppe, $kArtikel, $kKunde = 0)
+    public function __construct($kKundengruppe, $kArtikel, $kKunde = 0, $kSteuerklasse = 0)
     {
         $kKundengruppe = (int)$kKundengruppe;
         $kArtikel      = (int)$kArtikel;
         $kKunde        = (int)$kKunde;
         $filterKunde   = 'AND p.kKunde IS NULL';
 
-        if ($kKunde > 0 && $this->hasCustomPrice($kKunde)) {
-            $filterKunde   = "
-                AND IFNULL(p.kKunde, 0) = (
-                    SELECT max(IFNULL(p1.kKunde, 0))
-                    FROM tpreis AS p1
-                    WHERE p1.kArtikel = p.kArtikel
-                        AND p1.kKundengruppe = p.kKundengruppe
-                        AND (p1.kKunde = {$kKunde} OR p1.kKunde IS NULL)
-                )";
+        if ($kKunde > 0 && $this->hasCustomPrice($kArtikel, $kKunde)) {
+            $kKundengruppe = 0;
+            $filterKunde   = "AND p.kKunde = {$kKunde}";
         }
 
         $prices = Shop::DB()->query("
@@ -330,8 +323,11 @@ class Preise
                 ORDER BY d.nAnzahlAb", 2);
 
         if (count($prices) > 0) {
-            $tax                 = Shop::DB()->query("SELECT kSteuerklasse FROM tartikel WHERE kArtikel = " . $kArtikel, 1);
-            $this->fUst          = gibUst($tax->kSteuerklasse);
+            if ($kSteuerklasse === 0) {
+                $tax           = Shop::DB()->select('tartikel', 'kArtikel', $kArtikel, null, null, null, null, false, 'kSteuerklasse');
+                $kSteuerklasse = (int)$tax->kSteuerklasse;
+            }
+            $this->fUst          = gibUst($kSteuerklasse);
             $this->kArtikel      = $kArtikel;
             $this->kKundengruppe = $kKundengruppe;
             $this->kKunde        = $kKunde;
@@ -384,19 +380,21 @@ class Preise
     }
 
     /**
+     * @param int $kArtikel
      * @param int $kKunde
      * @return bool
      */
-    protected function hasCustomPrice($kKunde)
+    protected function hasCustomPrice($kArtikel, $kKunde)
     {
-        $kKunde = (int)$kKunde;
-        if ($kKunde > 0) {
+        $kKunde   = (int)$kKunde;
+        $kArtikel = (int)$kArtikel;
+        if ($kKunde > 0 && $kArtikel > 0) {
             $cacheID = 'custprice_' . $kKunde;
             if (($oCustomPrice = Shop::Cache()->get($cacheID)) === false) {
                 $oCustomPrice = Shop::DB()->query(
                     "SELECT count(kPreis) AS nAnzahl 
                         FROM tpreis
-                        WHERE kKunde = {$kKunde}",
+                        WHERE kArtikel = {$kArtikel} AND kKunde = {$kKunde}",
                     1
                 );
 
@@ -615,7 +613,7 @@ class Preise
         $this->fPreisPrivat = Shop::DB()->escape($_POST['ArtikelVKBrutto']);
         $this->fPreisHaendler = Shop::DB()->escape($_POST['ArtikelVKHaendlerBrutto']);
         $this->dDate = 'now()';
-        */
+         */
         if ($this->kArtikel > 0) {
             return true;
         }

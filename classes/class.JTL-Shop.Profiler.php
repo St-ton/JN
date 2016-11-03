@@ -426,21 +426,11 @@ class Profiler
                     ORDER BY runID DESC", 2
             );
         }
-        $profiles = Shop::DB()->query("
-            SELECT *
-                FROM tprofiler
-                WHERE ptype = '" . $type . "'
-                ORDER BY runID DESC", 2
-        );
+        $profiles = Shop::DB()->selectAll('tprofiler', 'ptype', $type, '*', 'runID DESC');
         $data = array();
         if (is_array($profiles)) {
             foreach ($profiles as $_profile) {
-                $_profile->data = Shop::DB()->query("
-                    SELECT *
-                        FROM tprofiler_runs
-                         WHERE runID = " . (int) $_profile->runID . "
-                         ORDER BY runtime DESC", 2
-                );
+                $_profile->data = Shop::DB()->selectAll('tprofiler_runs', 'runID', (int)$_profile->runID, '*', 'runtime DESC');
                 $data[] = $_profile;
             }
         }

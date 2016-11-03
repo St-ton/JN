@@ -1,26 +1,26 @@
 {assign var="showProductWeight" value=false}
 {if isset($Artikel->cArtikelgewicht)  && $Artikel->fArtikelgewicht > 0
-    && ($Einstellungen.artikeldetails.artikeldetails_artikelgewicht_anzeigen === 'Y' && $tplscope === 'details'
-    ||  $Einstellungen.artikeluebersicht.artikeluebersicht_artikelgewicht_anzeigen === 'Y' && $tplscope === 'productlist')}
+&& ($Einstellungen.artikeldetails.artikeldetails_artikelgewicht_anzeigen === 'Y' && $tplscope === 'details'
+||  $Einstellungen.artikeluebersicht.artikeluebersicht_artikelgewicht_anzeigen === 'Y' && $tplscope === 'productlist')}
     {assign var="showProductWeight" value=true}
 {/if}
 
 {assign var="showShippingWeight" value=false}
 {if isset($Artikel->cGewicht) && $Artikel->fGewicht > 0
-    && ($Einstellungen.artikeldetails.artikeldetails_gewicht_anzeigen === 'Y' && $tplscope === 'details'
-    ||  $Einstellungen.artikeluebersicht.artikeluebersicht_gewicht_anzeigen === 'Y' && $tplscope === 'productlist')}
+&& ($Einstellungen.artikeldetails.artikeldetails_gewicht_anzeigen === 'Y' && $tplscope === 'details'
+||  $Einstellungen.artikeluebersicht.artikeluebersicht_gewicht_anzeigen === 'Y' && $tplscope === 'productlist')}
     {assign var="showShippingWeight" value=true}
 {/if}
 
 {assign var="dimension" value=$Artikel->getDimension()}
 
 {assign var="showAttributesTable" value=false}
-{if    $Einstellungen.artikeldetails.merkmale_anzeigen === 'Y' && !empty($Artikel->oMerkmale_arr)
-    || $showProductWeight
-    || $showShippingWeight
-    || $dimension && $Einstellungen.artikeldetails.artikeldetails_abmessungen_anzeigen === 'Y'
-    || isset($Artikel->cMasseinheitName) && isset($Artikel->fMassMenge) && $Artikel->fMassMenge > 0  && $Artikel->cTeilbar !== 'Y' && ($Artikel->fAbnahmeintervall == 0 || $Artikel->fAbnahmeintervall == 1)
-    || ($Einstellungen.artikeldetails.artikeldetails_attribute_anhaengen === 'Y' || $Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ATTRIBUTEANHAENGEN] == 1) && !empty($Artikel->Attribute)
+{if $Einstellungen.artikeldetails.merkmale_anzeigen === 'Y' && !empty($Artikel->oMerkmale_arr)
+|| $showProductWeight
+|| $showShippingWeight
+|| $Einstellungen.artikeldetails.artikeldetails_abmessungen_anzeigen === 'Y' && (!empty($dimension['length']) || !empty($dimension['width']) || !empty($dimension['height']))
+|| isset($Artikel->cMasseinheitName) && isset($Artikel->fMassMenge) && $Artikel->fMassMenge > 0  && $Artikel->cTeilbar !== 'Y' && ($Artikel->fAbnahmeintervall == 0 || $Artikel->fAbnahmeintervall == 1)
+|| ($Einstellungen.artikeldetails.artikeldetails_attribute_anhaengen === 'Y' || $Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ATTRIBUTEANHAENGEN] == 1) && !empty($Artikel->Attribute)
 }
     {assign var="showAttributesTable" value=true}
 {/if}
@@ -89,10 +89,21 @@
                 {/if}
 
                 {if $dimension && $Einstellungen.artikeldetails.artikeldetails_abmessungen_anzeigen === 'Y'}
-                    <tr class="attr-dimensions">
-                        <td class="attr-label">{if $dimension['nAnzeigeTyp'] == 1}{lang key="dimensions" section="productDetails"}{else}{lang key="dimensions2d" section="productDetails"}{/if}: </td>
-                        <td class="attr-value">{$Artikel->getDimensionLocalized()}</td>
-                    </tr>
+                    {assign var=dimensionArr value=$Artikel->getDimensionLocalized()}
+                    {if $dimensionArr|count > 0}
+                        <tr class="attr-dimensions">
+                            <td class="attr-label">{lang key="dimensions" section="productDetails"}
+                                ({foreach name=DimensionKey from=$dimensionArr key=dimkey item=dim}
+                                    {$dimkey}{if $smarty.foreach.DimensionKey.last}{else} &times; {/if}
+                                {/foreach}):
+                            </td>
+                            <td class="attr-value">
+                                {foreach name=Dimension from=$dimensionArr item=dim}
+                                    {$dim}{if $smarty.foreach.Dimension.last} cm {else} &times; {/if}
+                                {/foreach}
+                            </td>
+                        </tr>
+                    {/if}
                 {/if}
 
                 {if $Einstellungen.artikeldetails.artikeldetails_attribute_anhaengen === 'Y' || $Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ATTRIBUTEANHAENGEN] == 1}

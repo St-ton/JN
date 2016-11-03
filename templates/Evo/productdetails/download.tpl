@@ -1,50 +1,53 @@
-{if isset($Artikel->oDownload_arr) && $Artikel->oDownload_arr|@count > 0}
-<div id="article_downloads">
-   <table class="table table-striped">
-      <thead>
-         <tr>
-            <th></th>
-            <th>Name</th>
-            <th>Beschreibung</th>
-            <th>Format</th>
-            <th>Aktionen</th>
-         </tr>
-      </thead>
-      <tbody>
-         {foreach name=downloads from=$Artikel->oDownload_arr item=oDownload}
-         {if isset($oDownload->oDownloadSprache)}
-            <tr>
-               <td>{$smarty.foreach.downloads.index+1}.</td>
-               <td>{$oDownload->oDownloadSprache->getName()}</td>
-               <td>{$oDownload->oDownloadSprache->getBeschreibung()}</td>
-               <td>{$oDownload->getExtension()}</td>
-               <td>
-                  {if $oDownload->hasPreview()}
-
-                     {if $oDownload->getPreviewType() === 'music' || $oDownload->getPreviewType() === 'video'}
-                        <a href="#" onclick="return open_window('{$ShopURL}/popup.php?a=download_vorschau&k={$oDownload->getDownload()}', 480, 320);" class="btn_play">x</a>
-                     {elseif $oDownload->getPreviewType() === 'image'}
-
-                        {assign var=nNameLength value=50}
-                        {assign var=nImageMaxWidth value=480}
-                        {assign var=nImageMaxHeight value=320}
-                        {assign var=nImagePreviewWidth value=35}
-
-                        <span class="image_preview zoomcur" ref="{$oDownload->getPreview()}" maxwidth="{$nImageMaxWidth}" maxheight="{$nImageMaxHeight}" title="{$oDownload->oDownloadSprache->getName()}">
-                           <img src="{$oDownload->getPreview()}" alt="{$oUpload->cName}" width="{$nImagePreviewWidth}" class="vmiddle" />
-                        </span>
-                     {else}
-
-                        {* nothing to do *}
-
-                     {/if}
-
-                  {/if}
-               </td>
-            </tr>
-         {/if}
-         {/foreach}
-      </tbody>
-   </table>
+ <div role="tabpanel" class="{if $tabanzeige}tab-pane{else}panel panel-default{/if}" id="article_downloads">
+    <div class="panel-heading" {if $tabanzeige}data-toggle="collapse" {/if}data-parent="#article-tabs" data-target="#article_downloads">
+        <h3 class="panel-title">{lang section="productDownloads" key="downloadSection"}</h3>
+    </div>
+    <div class="tab-content-wrapper">
+        <div class="panel-body">
+            <table class="table table-striped table-bordered">
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>{lang section="productDownloads" key="downloadName"}</th>
+                    <th>{lang section="productDownloads" key="downloadDescription" }</th>
+                    <th>{lang section="productDownloads" key="downloadFileType"}</th>
+                    <th>{lang section="productDownloads" key="downloadPreview"}</th>
+                </tr>
+                </thead>
+                <tbody>
+                {foreach name=downloads from=$Artikel->oDownload_arr item=oDownload}
+                    {if isset($oDownload->oDownloadSprache)}
+                        <tr>
+                            <td>{$smarty.foreach.downloads.index+1}.</td>
+                            <td>{$oDownload->oDownloadSprache->getName()}</td>
+                            <td>{$oDownload->oDownloadSprache->getBeschreibung()}</td>
+                            <td>{$oDownload->getExtension()}</td>
+                            <td>
+                                {if $oDownload->hasPreview()}
+                                    {if $oDownload->getPreviewType() === 'music'}
+                                        <audio controls>
+                                            <source src="{PFAD_DOWNLOADS_PREVIEW_REL}{$oDownload->cPfadVorschau}" >
+                                            Your browser does not support the audio element.
+                                        </audio>
+                                    {elseif $oDownload->getPreviewType() === 'video'}
+                                        <video width="320" height="240" controls>
+                                            <source src="{PFAD_DOWNLOADS_PREVIEW_REL}{$oDownload->cPfadVorschau}" >
+                                            Your browser does not support the video tag.
+                                        </video>
+                                    {elseif $oDownload->getPreviewType() === 'image'}
+                                        <img src="{PFAD_DOWNLOADS_PREVIEW_REL}{$oDownload->cPfadVorschau}" class="img-responsive" alt="{$oDownload->oDownloadSprache->getBeschreibung()}">
+                                    {else}
+                                        <a href="{PFAD_DOWNLOADS_PREVIEW_REL}{$oDownload->cPfadVorschau}" title="{$oDownload->oDownloadSprache->getName()}" target="_blank">
+                                            {$oDownload->oDownloadSprache->getName()}
+                                        </a>
+                                    {/if}
+                                {/if}
+                            </td>
+                        </tr>
+                    {/if}
+                {/foreach}
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
-{/if}

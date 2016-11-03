@@ -6,7 +6,7 @@
 
 /**
  * @param array $cPost_arr
- * @return array
+ * @return array|int
  */
 function kundeSpeichern($cPost_arr)
 {
@@ -83,12 +83,7 @@ function kundeSpeichern($cPost_arr)
             $_SESSION['Kunde']->cKundenattribut_arr = $cKundenattribut_arr;
         } else {
             // Guthaben des Neukunden aufstocken insofern er geworben wurde
-            $oNeukunde = Shop::DB()->query(
-                "SELECT kKundenWerbenKunden
-                    FROM tkundenwerbenkunden
-                    WHERE cEmail = '" . $knd->cMail . "'
-                        AND nRegistriert = 0", 1
-            );
+            $oNeukunde = Shop::DB()->select('tkundenwerbenkunden', 'cEmail', $knd->cMail, 'nRegistriert', 0);
             $kKundengruppe = $_SESSION['Kundengruppe']->kKundengruppe;
             if (isset($oNeukunde->kKundenWerbenKunden) && $oNeukunde->kKundenWerbenKunden > 0 &&
                 isset($Einstellungen['kundenwerbenkunden']['kwk_kundengruppen']) &&

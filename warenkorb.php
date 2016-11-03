@@ -7,7 +7,7 @@ require_once dirname(__FILE__) . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'warenkorb_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
-
+/** @global JTLSmarty $smarty */
 $AktuelleSeite = 'WARENKORB';
 $MsgWarning    = '';
 $Einstellungen = Shop::getSettings(array(
@@ -91,6 +91,7 @@ if (isset($_POST['gratis_geschenk']) && intval($_POST['gratis_geschenk']) === 1 
             executeHook(HOOK_WARENKORB_PAGE_GRATISGESCHENKEINFUEGEN);
             $_SESSION['Warenkorb']->loescheSpezialPos(C_WARENKORBPOS_TYP_GRATISGESCHENK)
                                   ->fuegeEin($kArtikelGeschenk, 1, array(), C_WARENKORBPOS_TYP_GRATISGESCHENK);
+            fuegeEinInWarenkorbPers($kArtikelGeschenk, 1, array(), null, null, (int)C_WARENKORBPOS_TYP_GRATISGESCHENK);
         }
     }
 }
@@ -123,7 +124,7 @@ if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']->kKundengruppe > 0) {
     $kKundengruppe = $_SESSION['Kunde']->kKundengruppe;
 }
 // Canonical
-$cCanonicalURL = Shop::getURL() . '/warenkorb.php';
+$cCanonicalURL = $linkHelper->getStaticRoute('warenkorb.php');
 // Metaangaben
 $oMeta            = $linkHelper->buildSpecialPageMeta(LINKTYP_WARENKORB);
 $cMetaTitle       = $oMeta->cTitle;

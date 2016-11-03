@@ -391,12 +391,7 @@ class Bestellung
         if ($this->kWarenkorb > 0 || $nZahlungExtern > 0) {
             $warenwert = null;
             if ($this->kWarenkorb > 0) {
-                $this->Positionen = Shop::DB()->query(
-                    "SELECT *
-                        FROM twarenkorbpos
-                        WHERE kWarenkorb = " . (int)$this->kWarenkorb . "
-                        ORDER BY kWarenkorbPos", 2
-                );
+                $this->Positionen = Shop::DB()->selectAll('twarenkorbpos', 'kWarenkorb', (int)$this->kWarenkorb, '*', 'kWarenkorbPos');
                 if (isset($this->kLieferadresse) && $this->kLieferadresse > 0) {
                     $this->Lieferadresse = new Lieferadresse($this->kLieferadresse);
                 }
@@ -429,7 +424,7 @@ class Bestellung
                     }
                 }
 
-                $bestellstatus          = Shop::DB()->query("SELECT cUID FROM tbestellstatus WHERE kBestellung = " . (int)$this->kBestellung, 1);
+                $bestellstatus          = Shop::DB()->select('tbestellstatus', 'kBestellung', (int)$this->kBestellung);
                 $this->BestellstatusURL = Shop::getURL() . '/status.php?uid=' . $bestellstatus->cUID;
                 $warenwert              = Shop::DB()->query(
                     "SELECT sum(((fPreis*fMwSt)/100+fPreis)*nAnzahl) AS wert
@@ -543,11 +538,7 @@ class Bestellung
                         $this->oUpload_arr = Upload::gibBestellungUploads($this->kBestellung);
                     }
                     if ($this->Positionen[$i]->kWarenkorbPos > 0) {
-                        $this->Positionen[$i]->WarenkorbPosEigenschaftArr = Shop::DB()->query(
-                            "SELECT *
-                                FROM twarenkorbposeigenschaft
-                                WHERE kWarenkorbPos = " . (int)$this->Positionen[$i]->kWarenkorbPos, 2
-                        );
+                        $this->Positionen[$i]->WarenkorbPosEigenschaftArr = Shop::DB()->selectAll('twarenkorbposeigenschaft', 'kWarenkorbPos', (int)$this->Positionen[$i]->kWarenkorbPos);
                         $fpositionCount = count($this->Positionen[$i]->WarenkorbPosEigenschaftArr);
                         for ($o = 0; $o < $fpositionCount; $o++) {
                             if ($this->Positionen[$i]->WarenkorbPosEigenschaftArr[$o]->fAufpreis) {
@@ -887,7 +878,7 @@ class Bestellung
     {
         $kBestellung = (int)$kBestellung;
         if ($kBestellung > 0) {
-            $oObj = Shop::DB()->query("SELECT cBestellNr FROM tbestellung WHERE kBestellung = " . $kBestellung, 1);
+            $oObj = Shop::DB()->select('tbestellung', 'kBestellung', $kBestellung, null, null, null, null, false, 'cBestellNr');
             if (isset($oObj->cBestellNr) && strlen($oObj->cBestellNr) > 0) {
                 return $oObj->cBestellNr;
             }

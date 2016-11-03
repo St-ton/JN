@@ -83,6 +83,7 @@ class Notification implements IteratorAggregate, Countable
      */
     public function buildDefault()
     {
+        /** @var Status $status */
         $status     = Status::getInstance();
         $confGlobal = Shop::getSettings(array(CONF_GLOBAL));
 
@@ -102,8 +103,16 @@ class Notification implements IteratorAggregate, Countable
             $this->add(NotificationEntry::TYPE_WARNING, 'Template', 'Ihre Template-Version unterscheidet sich von Ihrer Shop-Version.<br />Weitere Hilfe zu Template-Updates finden Sie im <i class="fa fa-external-link"></i> Wiki', 'shoptemplate.php');
         }
 
+        if ($status->hasMobileTemplateIssue()) {
+            $this->add(NotificationEntry::TYPE_INFO, 'Template', 'Sie nutzen ein Full-Responsive-Template. Die Aktivierung eines separaten Mobile-Templates ist in diesem Fall nicht notwendig.', 'shoptemplate.php');
+        }
+
+        if ($status->hasStandardTemplateIssue()) {
+            $this->add(NotificationEntry::TYPE_WARNING, 'Template', 'Sie haben kein Standard-Template aktiviert!', 'shoptemplate.php');
+        }
+
         if ($status->hasActiveProfiler()) {
-            $this->add(NotificationEntry::TYPE_WARNING, 'Plugin', 'Der Profiler ist aktiv und kann zu starken Leistungseinbu&szlig;en im Shop f&uuml;hren.');
+            $this->add(NotificationEntry::TYPE_WARNING, 'Plugin', 'Der Profiler ist aktiv. Dies kann zu starken Leistungseinbu&szlig;en im Shop f&uuml;hren.');
         }
 
         if ((int)$confGlobal['global']['anti_spam_method'] === 7 && !reCaptchaConfigured()) {

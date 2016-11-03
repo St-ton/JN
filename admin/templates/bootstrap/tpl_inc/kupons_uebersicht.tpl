@@ -69,7 +69,7 @@
                                         {#to#}: {$oKupon->cGueltigBisShort}
                                     </td>
                                     <td>
-                                        <button type="submit" class="btn btn-default" name="kKuponBearbeiten" value="{$oKupon->kKupon}">
+                                        <button type="submit" class="btn btn-default" name="kKuponBearbeiten" value="{$oKupon->kKupon}" title="{#modify#}">
                                             <i class="fa fa-edit"></i>
                                         </button>
                                     </td>

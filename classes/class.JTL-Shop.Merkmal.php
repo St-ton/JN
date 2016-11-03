@@ -69,7 +69,6 @@ class Merkmal
      *
      * @param int  $kMerkmal - Falls angegeben, wird das Merkmal mit angegebenem kMerkmal aus der DB geholt
      * @param bool $bMMW
-     * @return Merkmal
      */
     public function __construct($kMerkmal = 0, $bMMW = false)
     {

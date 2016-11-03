@@ -4,11 +4,10 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 require_once dirname(__FILE__) . '/includes/admininclude.php';
-
-$oAccount->permission('EXPORT_FORMATS_VIEW', true, true);
-
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'exportformat_inc.php';
 
+$oAccount->permission('EXPORT_FORMATS_VIEW', true, true);
+/** @global JTLSmarty $smarty */
 $fehler              = '';
 $hinweis             = '';
 $step                = 'uebersicht';
@@ -59,6 +58,8 @@ if (isset($_POST['neu_export']) && (int)$_POST['neu_export'] === 1 && validateTo
         if ((int)$_POST['kExportformat'] > 0) {
             //update
             $kExportformat = (int)$_POST['kExportformat'];
+            $revision = new Revision();
+            $revision->addRevision('export', $kExportformat);
             Shop::DB()->update('texportformat', 'kExportformat', $kExportformat, $exportformat);
             $hinweis .= "Das Exportformat <strong>$exportformat->cName</strong> wurde erfolgreich ge&auml;ndert.";
         } else {
@@ -68,12 +69,7 @@ if (isset($_POST['neu_export']) && (int)$_POST['neu_export'] === 1 && validateTo
         }
 
         Shop::DB()->delete('texportformateinstellungen', 'kExportformat', $kExportformat);
-        $Conf        = Shop::DB()->query("
-            SELECT * 
-              FROM teinstellungenconf 
-              WHERE kEinstellungenSektion = " . CONF_EXPORTFORMATE . " 
-              ORDER BY nSort", 2
-        );
+        $Conf        = Shop::DB()->selectAll('teinstellungenconf', 'kEinstellungenSektion', CONF_EXPORTFORMATE, '*', 'nSort');
         $configCount = count($Conf);
         for ($i = 0; $i < $configCount; $i++) {
             $aktWert                = new stdClass();
@@ -97,11 +93,11 @@ if (isset($_POST['neu_export']) && (int)$_POST['neu_export'] === 1 && validateTo
         $smartyExport = new JTLSmarty(true, false, false, 'export');
         $smartyExport->setCaching(0)
                      ->setDebugging(0)
-                     ->registerResource('xdb', array('xdb_get_template', 'xdb_get_timestamp', 'xdb_get_secure', 'xdb_get_trusted'))
+                     ->registerResource('db', new SmartyResourceNiceDB('export'))
                      ->setTemplateDir(PFAD_TEMPLATES);
         $error = false;
         try {
-            $cOutput = $smartyExport->fetch('xdb:' . $kExportformat);
+            $cOutput = $smartyExport->fetch('db:' . $kExportformat);
         } catch (Exception $e) {
             $error  = true;
             $step   = 'neuer Export';
@@ -111,9 +107,9 @@ if (isset($_POST['neu_export']) && (int)$_POST['neu_export'] === 1 && validateTo
         }
         $step = ($error) ? $step : 'uebersicht';
     } else {
-        $_POST['cContent']   = str_replace("<tab>", "\t", $_POST['cContent']);
-        $_POST['cKopfzeile'] = str_replace("<tab>", "\t", $_POST['cKopfzeile']);
-        $_POST['cFusszeile'] = str_replace("<tab>", "\t", $_POST['cFusszeile']);
+        $_POST['cContent']   = str_replace('<tab>', "\t", $_POST['cContent']);
+        $_POST['cKopfzeile'] = str_replace('<tab>', "\t", $_POST['cKopfzeile']);
+        $_POST['cFusszeile'] = str_replace('<tab>', "\t", $_POST['cFusszeile']);
         $smarty->assign('cPlausiValue_arr', $cPlausiValue_arr)
                ->assign('cPostVar_arr', StringHandler::filterXSS($_POST));
         $step   = 'neuer Export';
@@ -187,7 +183,7 @@ if ($cAction !== null && $kExportformat !== null && validateToken()) {
             $exportformat = Shop::DB()->select('texportformat', 'kExportformat', $kExportformat);
             if ($exportformat->cDateiname && (file_exists(PFAD_ROOT . PFAD_EXPORT . $exportformat->cDateiname) ||
                     file_exists(PFAD_ROOT . PFAD_EXPORT . $exportformat->cDateiname . '.zip') ||
-                    (isset($oExportformat->nSplitgroesse) && (int)$oExportformat->nSplitgroesse > 0))
+                    (isset($exportformat->nSplitgroesse) && (int)$exportformat->nSplitgroesse > 0))
             ) {
                 $hinweis = 'Das Exportformat <b>' . $exportformat->cName . '</b> wurde erfolgreich erstellt.';
             } else {
@@ -230,19 +226,14 @@ if ($step === 'neuer Export') {
         $smarty->assign('Exportformat', $exportformat);
     }
 
-    $Conf      = Shop::DB()->query("SELECT * FROM teinstellungenconf WHERE kEinstellungenSektion = " . CONF_EXPORTFORMATE . " ORDER BY nSort", 2);
+    $Conf      = Shop::DB()->selectAll('teinstellungenconf', 'kEinstellungenSektion', CONF_EXPORTFORMATE, '*', 'nSort');
     $confCount = count($Conf);
     for ($i = 0; $i < $confCount; $i++) {
         if ($Conf[$i]->cInputTyp === 'selectbox') {
-            $Conf[$i]->ConfWerte = Shop::DB()->query("SELECT * FROM teinstellungenconfwerte WHERE kEinstellungenConf = " . (int)$Conf[$i]->kEinstellungenConf . " ORDER BY nSort", 2);
+            $Conf[$i]->ConfWerte = Shop::DB()->selectAll('teinstellungenconfwerte', 'kEinstellungenConf', (int)$Conf[$i]->kEinstellungenConf, '*', 'nSort');
         }
         if (isset($exportformat->kExportformat)) {
-            $setValue = Shop::DB()->query("
-                SELECT cWert
-                    FROM texportformateinstellungen
-                    WHERE kExportformat = " . (int)$exportformat->kExportformat . "
-                        AND cName = '" . $Conf[$i]->cWertName . "'", 1
-            );
+            $setValue = Shop::DB()->select('texportformateinstellungen', ['kExportformat', 'cName'], [(int)$exportformat->kExportformat, $Conf[$i]->cWertName]);
             $Conf[$i]->gesetzterWert = (isset($setValue->cWert)) ? $setValue->cWert : null;
         }
     }

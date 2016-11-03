@@ -140,7 +140,7 @@ class KundenwerbenKunden
             return $oKundenWerbenKundenBoni;
         }
 
-        return;
+        return null;
     }
 
     /**

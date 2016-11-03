@@ -77,7 +77,8 @@
                                     <td class="TD4">{$oNewsKommentar->cKommentar|truncate:150:"..."}</td>
                                     <td class="tcenter">{$oNewsKommentar->dErstellt_de}</td>
                                     <td class="tcenter">
-                                        <a href="news.php?news=1&kNews={$oNewsKommentar->kNews}&kNewsKommentar={$oNewsKommentar->kNewsKommentar}&nkedit=1&tab=inaktiv&token={$smarty.session.jtl_token}" class="btn btn-default">
+                                        <a href="news.php?news=1&kNews={$oNewsKommentar->kNews}&kNewsKommentar={$oNewsKommentar->kNewsKommentar}&nkedit=1&tab=inaktiv&token={$smarty.session.jtl_token}"
+                                           class="btn btn-default" title="{#modify#}">
                                             <i class="fa fa-edit"></i>
                                         </a>
                                     </td>
@@ -142,7 +143,7 @@
                                         {/foreach}
                                     </td>
                                     <td class="TD5">{$oNews->dGueltigVon_de}</td>
-                                    <td class="tcenter">{$oNews->nAktiv}</td>
+                                    <td class="tcenter"><i class="fa fa-{if $oNews->nAktiv == 1}check{else}close{/if}"></i></td>
                                     <td class="tcenter">
                                         {if $oNews->nNewsKommentarAnzahl > 0}
                                             <a href="news.php?news=1&nd=1&kNews={$oNews->kNews}&tab=aktiv&token={$smarty.session.jtl_token}">{$oNews->nNewsKommentarAnzahl}</a>
@@ -153,8 +154,14 @@
                                     <td class="tcenter">{$oNews->Datum}</td>
                                     <td class="tcenter">
                                         <div class="btn-group">
-                                            <a href="news.php?news=1&news_editieren=1&kNews={$oNews->kNews}&tab=aktiv&token={$smarty.session.jtl_token}" class="btn btn-default"><i class="fa fa-edit"></i></a>
-                                            <a href="news.php?news=1&nd=1&kNews={$oNews->kNews}&tab=aktiv&token={$smarty.session.jtl_token}" class="btn btn-default">{#newsPreview#}</a>
+                                            <a href="news.php?news=1&news_editieren=1&kNews={$oNews->kNews}&tab=aktiv&token={$smarty.session.jtl_token}"
+                                               class="btn btn-default" title="{#modify#}">
+                                                <i class="fa fa-edit"></i>
+                                            </a>
+                                            <a href="news.php?news=1&nd=1&kNews={$oNews->kNews}&tab=aktiv&token={$smarty.session.jtl_token}"
+                                               class="btn btn-default" title="{#newsPreview#}">
+                                                <i class="fa fa-eye"></i>
+                                            </a>
                                         </div>
                                     </td>
                                 </tr>
@@ -226,7 +233,8 @@
                                     <td class="tcenter">{if $oNewsKategorie->nAktiv === '1'}ja{else}nein{/if}</td>
                                     <td class="tcenter">{$oNewsKategorie->dLetzteAktualisierung_de}</td>
                                     <td class="tcenter">
-                                        <a href="news.php?news=1&newskategorie_editieren=1&kNewsKategorie={$oNewsKategorie->kNewsKategorie}&tab=kategorien&token={$smarty.session.jtl_token}" class="btn btn-default">
+                                        <a href="news.php?news=1&newskategorie_editieren=1&kNewsKategorie={$oNewsKategorie->kNewsKategorie}&tab=kategorien&token={$smarty.session.jtl_token}"
+                                           class="btn btn-default" title="{#modify#}">
                                             <i class="fa fa-edit"></i>
                                         </a>
                                     </td>

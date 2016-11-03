@@ -96,23 +96,29 @@ function get_product_list($params, &$smarty)
 /**
  * @param array     $params
  * @param JTLSmarty $smarty
- * @return bool|string|void
+ * @return bool|string
  */
 function get_static_route($params, &$smarty)
 {
-    $res = false;
     if (isset($params['id'])) {
         $helper = LinkHelper::getInstance();
         $full   = !isset($params['full']) || $params['full'] === true;
         $secure = isset($params['secure']) && $params['secure'] === true;
 
-        $res = $helper->getStaticRoute($params['id'], $full, $secure);
+        $url = $helper->getStaticRoute($params['id'], $full, $secure);
+
+        $qp = isset($params['params'])
+            ? (array)$params['params']
+            : array();
+
+        if (count($qp) > 0) {
+            $url = $url . (parse_url($url, PHP_URL_QUERY) ? '&' : '?') . http_build_query($qp, '', '&');
+        }
+
+        return $url;
     }
-    if (!empty($params['assign'])) {
-        $smarty->assign($params['assign'], $res);
-    } else {
-        return $res;
-    }
+
+    return false;
 }
 
 /**
@@ -424,16 +430,23 @@ function getCheckBoxForLocation($params, &$smarty)
     $oCheckBox_arr = $oCheckBox->getCheckBoxFrontend(intval($params['nAnzeigeOrt']), 0, true, true);
 
     if (count($oCheckBox_arr) > 0) {
+        $linkHelper = LinkHelper::getInstance();
         foreach ($oCheckBox_arr as $oCheckBox) {
             // Link URL bauen
-            $cLinkURL = '';
+            $cLinkURL     = '';
+            $cLinkURLFull = '';
             if ($oCheckBox->kLink > 0) {
                 $oLinkTMP = Shop::DB()->select('tseo', 'cKey', 'kLink', 'kKey', (int)$oCheckBox->kLink, 'kSprache', (int)$_SESSION['kSprache'], false, 'cSeo');
                 if (isset($oLinkTMP->cSeo) && strlen($oLinkTMP->cSeo) > 0) {
                     $oCheckBox->oLink->cLocalizedSeo[$_SESSION['cISOSprache']] = $oLinkTMP->cSeo;
                 }
-
-                $cLinkURL = baueURL($oCheckBox->oLink, URLART_SEITE);
+                $page = $linkHelper->findCMSLinkInSession($oCheckBox->oLink->kLink);
+                if (!empty($page->URL)) {
+                    $cLinkURL     = $page->URL;
+                    $cLinkURLFull = $page->cURLFull;
+                } else {
+                    $cLinkURL = baueURL($oCheckBox->oLink, URLART_SEITE);
+                }
             }
             // Fehlende Angaben
             $bError              = isset($params['cPlausi_arr'][$oCheckBox->cID]);
@@ -448,6 +461,7 @@ function getCheckBoxForLocation($params, &$smarty)
             if (strlen($cLinkURL) > 0) {
                 $oCheckBox->cLinkURL = $cLinkURL;
             }
+            $oCheckBox->cLinkURLFull = $cLinkURLFull;
             if (isset($oCheckBox->oCheckBoxSprache_arr[$_SESSION['kSprache']]->cBeschreibung) && strlen($oCheckBox->oCheckBoxSprache_arr[$_SESSION['kSprache']]->cBeschreibung) > 0) {
                 $oCheckBox->cBeschreibung = $oCheckBox->oCheckBoxSprache_arr[$_SESSION['kSprache']]->cBeschreibung;
             }

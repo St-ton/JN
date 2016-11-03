@@ -11,8 +11,16 @@ class Status
 {
     use SingletonTrait;
 
+    /**
+     * @var array
+     */
     protected $cache = [];
 
+    /**
+     * @param string $name
+     * @param mixed $arguments
+     * @return mixed
+     */
     public function __call($name, $arguments)
     {
         if (!isset($this->cache[$name]) || $this->cache[$name] !== null) {
@@ -22,6 +30,9 @@ class Status
         return $this->cache[$name];
     }
 
+    /**
+     * @return JTLCache
+     */
     protected function getObjectCache()
     {
         $cache = JTLCache::getInstance();
@@ -30,11 +41,17 @@ class Status
         return $cache;
     }
 
+    /**
+     * @return object
+     */
     protected function getImageCache()
     {
         return MediaImage::getStats(Image::TYPE_PRODUCT, false);
     }
 
+    /**
+     * @return object
+     */
     protected function getSystemLogInfo()
     {
         $flags = getSytemlogFlag(false);
@@ -46,6 +63,9 @@ class Status
         ];
     }
 
+    /**
+     * @return bool
+     */
     protected function validDatabateStruct()
     {
         require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dbcheck_inc.php';
@@ -60,6 +80,9 @@ class Status
         return false;
     }
 
+    /**
+     * @return bool
+     */
     protected function validFileStruct()
     {
         require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'filecheck_inc.php';
@@ -72,20 +95,30 @@ class Status
         return false;
     }
 
+    /**
+     * @return bool
+     */
     protected function validFolderPermissions()
     {
-        require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'permissioncheck_inc.php';
+        $oFsCheck = new Systemcheck_Platform_Filesystem(PFAD_ROOT);
 
-        $writeableDirs  = checkWriteables();
-        $permissionStat = getPermissionStats($writeableDirs);
+        $permissionStat = $oFsCheck->getFolderStats();
 
         return $permissionStat->nCountInValid === 0;
     }
 
+    /**
+     * @return array
+     */
     protected function getPluginSharedHooks()
     {
         $sharedPlugins = [];
-        $sharedHookIds = Shop::DB()->executeQuery("SELECT nHook FROM tpluginhook GROUP BY nHook HAVING COUNT(DISTINCT kPlugin) > 1", 2);
+        $sharedHookIds = Shop::DB()->executeQuery(
+            "SELECT nHook 
+                FROM tpluginhook 
+                GROUP BY nHook 
+                HAVING COUNT(DISTINCT kPlugin) > 1", 2
+        );
 
         array_walk($sharedHookIds, function (&$val, $key) {
             $val = (int)$val->nHook;
@@ -93,7 +126,13 @@ class Status
 
         foreach ($sharedHookIds as $hookId) {
             $sharedPlugins[$hookId] = [];
-            $plugins                = Shop::DB()->executeQuery("SELECT DISTINCT tpluginhook.kPlugin, tplugin.cName, tplugin.cPluginID FROM tpluginhook INNER JOIN tplugin ON tpluginhook.kPlugin = tplugin.kPlugin WHERE tpluginhook.nHook={$hookId} AND tplugin.nStatus=2", 2);
+            $plugins                = Shop::DB()->executeQuery(
+                "SELECT DISTINCT tpluginhook.kPlugin, tplugin.cName, tplugin.cPluginID 
+                    FROM tpluginhook 
+                    INNER JOIN tplugin 
+                        ON tpluginhook.kPlugin = tplugin.kPlugin 
+                    WHERE tpluginhook.nHook = " . $hookId . " AND tplugin.nStatus = 2", 2
+            );
             foreach ($plugins as $plugin) {
                 $sharedPlugins[$hookId][$plugin->cPluginID] = $plugin;
             }
@@ -102,6 +141,9 @@ class Status
         return $sharedPlugins;
     }
 
+    /**
+     * @return bool
+     */
     protected function hasPendingUpdates()
     {
         $updater = new Updater();
@@ -109,16 +151,25 @@ class Status
         return $updater->hasPendingUpdates();
     }
 
+    /**
+     * @return bool
+     */
     protected function hasActiveProfiler()
     {
         return Profiler::getIsActive() !== 0;
     }
 
+    /**
+     * @return bool
+     */
     protected function hasInstallDir()
     {
         return is_dir(PFAD_ROOT . 'install');
     }
 
+    /**
+     * @return bool
+     */
     protected function hasDifferentTemplateVersion()
     {
         $template = Template::getInstance();
@@ -126,18 +177,58 @@ class Status
         return JTL_VERSION != $template->getShopVersion();
     }
 
+    /**
+     * @return bool
+     */
+    protected function hasMobileTemplateIssue()
+    {
+        $oTemplate = Shop::DB()->select('ttemplate', 'eTyp', 'standard');
+        if (isset($oTemplate)) {
+            $oTplData = TemplateHelper::getInstance(false)->getData($oTemplate->cTemplate);
+            if ($oTplData->bResponsive) {
+                $oMobileTpl = Shop::DB()->select('ttemplate', 'eTyp', 'mobil');
+                if ($oMobileTpl !== null) {
+                    $cXMLFile = PFAD_ROOT . PFAD_TEMPLATES . $oMobileTpl->cTemplate . DIRECTORY_SEPARATOR . TEMPLATE_XML;
+                    if (file_exists($cXMLFile)) {
+                        return true;
+                    }
+                    // Wenn ein Template aktiviert aber physisch nicht vorhanden ist, dann ist der DB-Eintrag falsch und wird gelöscht
+                    Shop::DB()->delete('ttemplate', 'eTyp', 'mobil');
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @return bool
+     */
+    protected function hasStandardTemplateIssue()
+    {
+        $oTemplate = Shop::DB()->select('ttemplate', 'eTyp', 'standard');
+
+        return $oTemplate === null;
+    }
+
+    /**
+     * @return mixed|null
+     */
     protected function getSubscription()
     {
         if (!isset($_SESSION['subscription']) || $_SESSION['subscription'] === null) {
             $_SESSION['subscription'] = jtlAPI::getSubscription();
         }
-        if (is_object($_SESSION['subscription']) && isset($_SESSION['subscription']->kShop) && (int) $_SESSION['subscription']->kShop > 0) {
+        if (is_object($_SESSION['subscription']) && isset($_SESSION['subscription']->kShop) && (int)$_SESSION['subscription']->kShop > 0) {
             return $_SESSION['subscription'];
         }
 
-        return;
+        return null;
     }
 
+    /**
+     * @return bool
+     */
     protected function hasValidEnvironment()
     {
         $systemcheck = new Systemcheck_Environment();
@@ -146,6 +237,9 @@ class Status
         return $systemcheck->getIsPassed();
     }
 
+    /**
+     * @return array
+     */
     protected function getEnvironmentTests()
     {
         $systemcheck = new Systemcheck_Environment();
@@ -153,11 +247,17 @@ class Status
         return $systemcheck->executeTestGroup('Shop4');
     }
 
+    /**
+     * @return Systemcheck_Platform_Hosting
+     */
     protected function getPlatform()
     {
         return new Systemcheck_Platform_Hosting();
     }
 
+    /**
+     * @return array
+     */
     protected function getMySQLStats()
     {
         $stats = Shop::DB()->stats();
@@ -175,10 +275,13 @@ class Status
         return $lines;
     }
 
+    /**
+     * @return array
+     */
     protected function getPaymentMethodsWithError()
     {
         $incorrectPaymentMethods = [];
-        $paymentMethods          = Shop::DB()->query("SELECT * FROM tzahlungsart WHERE nActive = 1 ORDER BY cAnbieter, cName, nSort, kZahlungsart", 2);
+        $paymentMethods          = Shop::DB()->selectAll('tzahlungsart', 'nActive', 1, '*', 'cAnbieter, cName, nSort, kZahlungsart');
 
         if (is_array($paymentMethods)) {
             foreach ($paymentMethods as $i => $method) {

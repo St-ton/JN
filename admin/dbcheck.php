@@ -8,7 +8,7 @@ require_once dirname(__FILE__) . '/includes/admininclude.php';
 $oAccount->permission('DBCHECK_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dbcheck_inc.php';
-
+/** @global JTLSmarty $smarty */
 $cHinweis          = '';
 $cFehler           = '';
 $cDBStruct_arr     = getDBStruct();

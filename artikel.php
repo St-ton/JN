@@ -9,7 +9,7 @@ if (!defined('PFAD_ROOT')) {
 }
 require_once PFAD_ROOT . PFAD_INCLUDES . 'artikel_inc.php';
 require_once PFAD_ROOT . PFAD_CLASSES_CORE . 'class.core.NiceMail.php';
-
+/** @global JTLSmarty $smarty */
 $AktuelleSeite = 'ARTIKEL';
 Shop::setPageType(PAGE_ARTIKEL);
 $Einstellungen = Shop::getSettings(
@@ -198,7 +198,7 @@ $smarty->assign('Navigation', createNavigation($AktuelleSeite, $AufgeklappteKate
        ->assign('UVPlocalized', $AktuellerArtikel->cUVPLocalized)
        ->assign('UVPBruttolocalized', gibPreisStringLocalized($AktuellerArtikel->fUVPBrutto))
        ->assign('Artikel', $AktuellerArtikel)
-       ->assign('Xselling', (!empty($AktuellerArtikel->kVariKindArtikel)) ? gibArtikelXSelling($AktuellerArtikel->kVariKindArtikel) : gibArtikelXSelling($AktuellerArtikel->kArtikel))
+       ->assign('Xselling', (!empty($AktuellerArtikel->kVariKindArtikel)) ? gibArtikelXSelling($AktuellerArtikel->kVariKindArtikel) : gibArtikelXSelling($AktuellerArtikel->kArtikel, $AktuellerArtikel->nIstVater > 0))
        ->assign('requestURL', $requestURL)
        ->assign('sprachURL', $sprachURL)
        ->assign('Artikelhinweise', $Artikelhinweise)

@@ -65,7 +65,7 @@ function aktiviereKunden($xml)
             $kunde_db = new Kunde($kunde->kKunde);
 
             if ($kunde_db->kKunde > 0 && $kunde_db->kKundengruppe != $kunde->kKundenGruppe) {
-                Shop::DB()->query("UPDATE tkunde SET kKundengruppe = " . (int)$kunde->kKundenGruppe . " WHERE kKunde = " . (int)$kunde->kKunde, 4);
+                Shop::DB()->update('tkunde', 'kKunde', (int)$kunde->kKunde, (object)['kKundengruppe' => (int)$kunde->kKundenGruppe]);
                 //mail
                 $kunde_db->kKundengruppe = (int)$kunde->kKundenGruppe;
                 $obj                     = new stdClass();
@@ -74,7 +74,7 @@ function aktiviereKunden($xml)
                     sendeMail(MAILTEMPLATE_KUNDENGRUPPE_ZUWEISEN, $obj);
                 }
             }
-            Shop::DB()->query("UPDATE tkunde SET cAktiv = 'Y' WHERE kKunde = " . (int)$kunde->kKunde, 4);
+            Shop::DB()->update('tkunde', 'kKunde', (int)$kunde->kKunde, (object)['cAktiv' => 'Y']);
         }
     }
 }
@@ -133,21 +133,18 @@ function bearbeiteDeletes($xml)
 function bearbeiteAck($xml)
 {
     if (isset($xml['ack_kunden']['kKunde'])) {
+        if (!is_array($xml['ack_kunden']['kKunde']) && (int)$xml['ack_kunden']['kKunde'] > 0) {
+            $xml['ack_kunden']['kKunde'] = array($xml['ack_kunden']['kKunde']);
+        }
         if (is_array($xml['ack_kunden']['kKunde'])) {
             foreach ($xml['ack_kunden']['kKunde'] as $kKunde) {
                 $kKunde = (int)$kKunde;
                 if ($kKunde > 0) {
-                    Shop::DB()->query("UPDATE tkunde SET cAbgeholt = 'Y' WHERE kKunde = " . $kKunde, 4);
+                    Shop::DB()->update('tkunde', 'kKunde', $kKunde, (object)['cAbgeholt' => 'Y']);
                     if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
                         Jtllog::writeLog('Kunde erfolgreich abgeholt: ' . $kKunde, JTLLOG_LEVEL_DEBUG, false, 'Kunden_xml');
                     }
                 }
-            }
-        } elseif ((int)$xml['ack_kunden']['kKunde'] > 0) {
-            $kKunde = (int)$xml['ack_kunden']['kKunde'];
-            Shop::DB()->query("UPDATE tkunde SET cAbgeholt = 'Y' WHERE kKunde = " . $kKunde, 4);
-            if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                Jtllog::writeLog('Kunde erfolgreich abgeholt: ' . $kKunde, JTLLOG_LEVEL_DEBUG, false, 'Kunden_xml');
             }
         }
     }
@@ -162,7 +159,7 @@ function bearbeiteGutscheine($xml)
         $gutscheine_arr = mapArray($xml['gutscheine'], 'gutschein', $GLOBALS['mGutschein']);
         foreach ($gutscheine_arr as $gutschein) {
             if ($gutschein->kGutschein > 0 && $gutschein->kKunde > 0) {
-                $gutschein_exists = Shop::DB()->query("SELECT kGutschein FROM tgutschein WHERE kGutschein = " . (int)$gutschein->kGutschein, 1);
+                $gutschein_exists = Shop::DB()->select('tgutschein', 'kGutschein', (int)$gutschein->kGutschein);
                 if (!isset($gutschein_exists->kGutschein) || !$gutschein_exists->kGutschein) {
                     $kGutschein = Shop::DB()->insert('tgutschein', $gutschein);
                     if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {

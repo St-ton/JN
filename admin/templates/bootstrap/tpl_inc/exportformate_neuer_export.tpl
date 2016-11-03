@@ -168,4 +168,8 @@
             </button>
         </div>
     </form>
+
+    {if isset($Exportformat->kExportformat)}
+        {getRevisions type='export' key=$Exportformat->kExportformat show=['cContent','cKopfzeile','cFusszeile'] data=$Exportformat}
+    {/if}
 </div>

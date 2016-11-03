@@ -6,7 +6,7 @@
 require_once dirname(__FILE__) . '/includes/admininclude.php';
 
 $oAccount->permission('STATS_COUPON_VIEW', true, true);
-
+/** @global JTLSmarty $smarty */
 $cHinweis      = '';
 $cFehler       = '';
 $step          = 'kuponstatistik_uebersicht';

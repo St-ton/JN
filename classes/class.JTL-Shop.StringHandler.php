@@ -116,7 +116,7 @@ class StringHandler
      */
     public static function is_utf8($string)
     {
-        return preg_match(
+        $res = preg_match(
             '%^(?:[\x09\x0A\x0D\x20-\x7E]  # ASCII
                                 | [\xC2-\xDF][\x80-\xBF]             # non-overlong 2-byte
                                 |  \xE0[\xA0-\xBF][\x80-\xBF]        # excluding overlongs
@@ -127,6 +127,15 @@ class StringHandler
                                 |  \xF4[\x80-\x8F][\x80-\xBF]{2}     # plane 16
                             )*$%xs', $string
         );
+        if ($res === false) {
+            //some kind of pcre error happend - probably PREG_JIT_STACKLIMIT_ERROR.
+            //we could check this via preg_last_error()
+            $res = (function_exists('mb_detect_encoding'))
+                ? (int)(mb_detect_encoding($string, 'UTF-8', true) === 'UTF-8')
+                : 0;
+        }
+
+        return $res;
     }
 
     /**

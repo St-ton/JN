@@ -73,6 +73,13 @@ if (is_object($oGlobaleMetaAngaben)) {
         $cMetaKeywords = $oGlobaleMetaAngaben->Meta_Keywords;
     }
 }
+//Kategorielisten aufbauen
+if (isset($AktuelleKategorie)) {
+    baueKategorieListenHTML($startKat, $AufgeklappteKategorien, $AktuelleKategorie);
+    baueUnterkategorieListeHTML($AktuelleKategorie);
+} else {
+    $AktuelleKategorie = null;
+}
 
 //Standardassigns
 $smarty->assign('cPluginCss_arr', $cMinify_arr['plugin_css'])
@@ -111,8 +118,7 @@ $smarty->assign('cPluginCss_arr', $cMinify_arr['plugin_css'])
        ->assign('WarenkorbGesamtgewicht', $cart->getWeight())
        ->assign('Warenkorbtext', lang_warenkorb_warenkorbEnthaeltXArtikel($cart))
        ->assign('zuletztInWarenkorbGelegterArtikel', $cart->gibLetztenWKArtikel())
-       ->assign('WarenkorbVersandkostenfreiHinweis', baueVersandkostenfreiString($oVersandartKostenfrei, ($cart->gibGesamtsummeWarenExt(array(C_WARENKORBPOS_TYP_ARTIKEL), true) + $_SESSION['Warenkorb']->gibGesamtsummeWarenExt(array(C_WARENKORBPOS_TYP_KUPON), true))))
-       ->assign('WarenkorbVersandkostenfreiLaenderHinweis', baueVersandkostenfreiLaenderString($oVersandartKostenfrei))
+       ->assign('WarenkorbVersandkostenfreiHinweis', baueVersandkostenfreiString($oVersandartKostenfrei, ($cart->gibGesamtsummeWarenExt(array(C_WARENKORBPOS_TYP_ARTIKEL, C_WARENKORBPOS_TYP_KUPON, C_WARENKORBPOS_TYP_NEUKUNDENKUPON), true))))
        ->assign('meta_title', (isset($cMetaTitle)) ? $cMetaTitle : '')
        ->assign('meta_description', (isset($cMetaDescription)) ? $cMetaDescription : '')
        ->assign('meta_keywords', (isset($cMetaKeywords)) ? $cMetaKeywords : '')
@@ -156,12 +162,8 @@ $smarty->assign('cPluginCss_arr', $cMinify_arr['plugin_css'])
        ->assign('BILD_KEIN_HERSTELLERBILD_VORHANDEN', BILD_KEIN_HERSTELLERBILD_VORHANDEN)
        ->assign('BILD_KEIN_MERKMALBILD_VORHANDEN', BILD_KEIN_MERKMALBILD_VORHANDEN)
        ->assign('BILD_KEIN_MERKMALWERTBILD_VORHANDEN', BILD_KEIN_MERKMALWERTBILD_VORHANDEN)
-       ->assign('cCanonicalURL', (isset($cCanonicalURL)) ? $cCanonicalURL : null);
-//Kategorielisten aufbauen
-if (isset($AktuelleKategorie)) {
-    baueKategorieListenHTML($startKat, $AufgeklappteKategorien, $AktuelleKategorie);
-    baueUnterkategorieListeHTML($AktuelleKategorie);
-}
+       ->assign('cCanonicalURL', (isset($cCanonicalURL)) ? $cCanonicalURL : null)
+       ->assign('AktuelleKategorie', $AktuelleKategorie);
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'besucher.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'toolsajax_inc.php';

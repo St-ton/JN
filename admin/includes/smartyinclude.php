@@ -32,12 +32,7 @@ for ($i = 0; $i < $sectionCount; $i++) {
     $configSections[$i]->cLinkname = $configSections[$i]->cName;
     $configSections[$i]->cURL      = 'einstellungen.php?kSektion=' . $configSections[$i]->kEinstellungenSektion;
 }
-$oLinkOberGruppe_arr = Shop::DB()->query(
-    "SELECT *
-        FROM tadminmenugruppe
-        WHERE kAdminmenueOberGruppe = 0
-        ORDER BY nSort", 2
-);
+$oLinkOberGruppe_arr = Shop::DB()->selectAll('tadminmenugruppe', 'kAdminmenueOberGruppe', 0, '*', 'nSort');
 
 if (is_array($oLinkOberGruppe_arr) && count($oLinkOberGruppe_arr) > 0) {
     // JTL Search Plugin aktiv?
@@ -50,23 +45,13 @@ if (is_array($oLinkOberGruppe_arr) && count($oLinkOberGruppe_arr) > 0) {
         $oLinkOberGruppe_arr[$i]->oLinkGruppe_arr = array();
         $oLinkOberGruppe_arr[$i]->oLink_arr       = array();
 
-        $oLinkGruppe_arr = Shop::DB()->query(
-            "SELECT *
-                FROM tadminmenugruppe
-                WHERE kAdminmenueOberGruppe = " . (int)$oLinkOberGruppe->kAdminmenueGruppe . "
-                ORDER BY cName, nSort", 2
-        );
+        $oLinkGruppe_arr = Shop::DB()->selectAll('tadminmenugruppe', 'kAdminmenueOberGruppe', (int)$oLinkOberGruppe->kAdminmenueGruppe, '*', 'cName, nSort');
         if (is_array($oLinkGruppe_arr) && count($oLinkGruppe_arr) > 0) {
             foreach ($oLinkGruppe_arr as $j => $oLinkGruppe) {
                 if (!isset($oLinkGruppe->oLink_arr)) {
                     $oLinkGruppe->oLink_arr = array();
                 }
-                $oLinkGruppe_arr[$j]->oLink_arr = Shop::DB()->query(
-                    "SELECT *
-                        FROM tadminmenu
-                        WHERE kAdminmenueGruppe = " . (int)$oLinkGruppe->kAdminmenueGruppe . "
-                        ORDER BY cLinkname, nSort", 2
-                );
+                $oLinkGruppe_arr[$j]->oLink_arr = Shop::DB()->selectAll('tadminmenu', 'kAdminmenueGruppe', (int)$oLinkGruppe->kAdminmenueGruppe, '*', 'cLinkname, nSort');
                 foreach ($configSections as $_k => $_configSection) {
                     if (isset($_configSection->kAdminmenueGruppe) && $_configSection->kAdminmenueGruppe == $oLinkGruppe->kAdminmenueGruppe) {
                         $oLinkGruppe->oLink_arr[] = $_configSection;
@@ -97,12 +82,7 @@ if (is_array($oLinkOberGruppe_arr) && count($oLinkOberGruppe_arr) > 0) {
             $pluginManager                            = new stdClass();
             $pluginManager->cName                     = '&Uuml;bersicht';
             $pluginManager->break                     = false;
-            $pluginManager->oLink_arr                 = Shop::DB()->query(
-                "SELECT *
-                    FROM tadminmenu
-                    WHERE kAdminmenueGruppe = " . (int)$oLinkOberGruppe->kAdminmenueGruppe . "
-                    ORDER BY cLinkname", 2
-            );
+            $pluginManager->oLink_arr                 = Shop::DB()->selectAll('tadminmenu', 'kAdminmenueGruppe', (int)$oLinkOberGruppe->kAdminmenueGruppe, '*', 'cLinkname');
             $oLinkOberGruppe_arr[$i]->oLinkGruppe_arr[] = $pluginManager;
             $pluginCount                                = count($oPlugin_arr);
             $maxEntries                                 = ($pluginCount > 24) ? 10 : 6;
@@ -128,12 +108,7 @@ if (is_array($oLinkOberGruppe_arr) && count($oLinkOberGruppe_arr) > 0) {
                 objectSort($oLinkOberGruppe_arr[$i]->oLink_arr, 'cLinkname');
             }
         } else {
-            $oLinkOberGruppe_arr[$i]->oLink_arr = Shop::DB()->query(
-                "SELECT *
-                    FROM tadminmenu
-                    WHERE kAdminmenueGruppe = " . (int)$oLinkOberGruppe->kAdminmenueGruppe . "
-                    ORDER BY cLinkname", 2
-            );
+            $oLinkOberGruppe_arr[$i]->oLink_arr = Shop::DB()->selectAll('tadminmenu', 'kAdminmenueGruppe', (int)$oLinkOberGruppe->kAdminmenueGruppe, '*', 'cLinkname');
         }
     }
 }

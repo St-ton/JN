@@ -344,7 +344,7 @@ function gibArtikelKeys($FilterSQL, $nArtikelProSeite, $NaviFilter, $bExtern, $o
             (isset($NaviFilter->Kategorie->kKategorie) && $NaviFilter->Kategorie->kKategorie > 0 && !$bUnterkategorien) ||
             (isset($NaviFilter->EchteSuche->cSuche)))
     ) {
-        header(makeHTTPHeader(301));
+        http_response_code(301);
         // Weiterleitung zur Artikeldetailansicht da nur ein Artikel gefunden wurde und die Einstellung gesetzt ist.
         $url = (isset($oArtikel_arr[0]->cURL) && strlen($oArtikel_arr[0]->cURL) > 0) ? Shop::getURL() . '/' . $oArtikel_arr[0]->cURL : Shop::getURL() . '/index.php?a=' . $oArtikel_arr[0]->kArtikel;
         header('Location: ' . $url);
@@ -535,8 +535,15 @@ function gibKategorieFilterOptionen($FilterSQL, $NaviFilter)
             }
         }
     }
+    if (!isset($_SESSION['Kundengruppe']->kKundengruppe)) {
+        $oKundengruppe                           = Shop::DB()->select('tkundengruppe', 'cStandard', 'Y');
+        $kKundengruppe                           = $oKundengruppe->kKundengruppe;
+        $_SESSION['Kundengruppe']->kKundengruppe = $oKundengruppe->kKundengruppe;
+    } else {
+        $kKundengruppe = $_SESSION['Kundengruppe']->kKundengruppe;
+    }
     $cacheID = 'filter_kfo_' . md5(
-        json_encode($_SESSION['Kundengruppe']) .
+        $kKundengruppe .
         serialize($NaviFilter) .
         $filterString .
         Shop::$kSprache
@@ -547,13 +554,6 @@ function gibKategorieFilterOptionen($FilterSQL, $NaviFilter)
     $oKategorieFilterDB_arr = array();
     $conf                   = Shop::getSettings(array(CONF_NAVIGATIONSFILTER));
     if ($conf['navigationsfilter']['allgemein_kategoriefilter_benutzen'] !== 'N') {
-        $kKundengruppe = $_SESSION['Kundengruppe']->kKundengruppe;
-        if (!$kKundengruppe) {
-            $oKundengruppe                           = Shop::DB()->query("SELECT kKundengruppe FROM tkundengruppe WHERE cStandard = 'Y'", 1);
-            $kKundengruppe                           = $oKundengruppe->kKundengruppe;
-            $_SESSION['Kundengruppe']->kKundengruppe = $oKundengruppe->kKundengruppe;
-        }
-
         $kSprache = (int)Shop::$kSprache;
         if (!$kSprache) {
             $oSprache = gibStandardsprache(true);
@@ -595,7 +595,7 @@ function gibKategorieFilterOptionen($FilterSQL, $NaviFilter)
                 " . $FilterSQL->oBewertungSterneFilterSQL->cJoin . "
                 " . $FilterSQL->oPreisspannenFilterSQL->cJoin . "
                 LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                    AND tartikelsichtbarkeit.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
+                    AND tartikelsichtbarkeit.kKundengruppe = " . $kKundengruppe . "
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
                     AND tartikel.kVaterArtikel = 0
                     " . gibLagerfilter() . "
@@ -618,7 +618,7 @@ function gibKategorieFilterOptionen($FilterSQL, $NaviFilter)
         );
         //baue URL
         $count = (is_array($oKategorieFilterDB_arr)) ? count($oKategorieFilterDB_arr) : 0;
-        for ($i = 0; $i < $count; $i++) {
+        for ($i = 0; $i < $count; ++$i) {
             // Anzeigen als KategoriePfad
             if ($conf['navigationsfilter']['kategoriefilter_anzeigen_als'] === 'KP') {
                 $oKategorie                        = new Kategorie($oKategorieFilterDB_arr[$i]->kKategorie);
@@ -639,7 +639,7 @@ function gibKategorieFilterOptionen($FilterSQL, $NaviFilter)
             usort($oKategorieFilterDB_arr, 'sortierKategoriepfade');
         }
     }
-    $tagArray = array(CACHING_GROUP_CATEGORY);
+    $tagArray = [CACHING_GROUP_CATEGORY];
     if (isset($NaviFilter->Kategorie->kKategorie)) {
         $tagArray[] = CACHING_GROUP_CATEGORY . '_' . (int)$NaviFilter->Kategorie->kKategorie;
     } else {
@@ -926,14 +926,22 @@ function gibBewertungSterneFilterOptionen($FilterSQL, $NaviFilter)
  */
 function gibPreisspannenFilterOptionen($FilterSQL, $NaviFilter, $oSuchergebnisse)
 {
-    if (!$_SESSION['Kundengruppe']->darfPreiseSehen) {
-        return array();
+    $conf = Shop::getSettings(array(CONF_NAVIGATIONSFILTER));
+    if ($conf['navigationsfilter']['preisspannenfilter_benutzen'] === 'N' || !$_SESSION['Kundengruppe']->darfPreiseSehen) {
+        return [];
     }
     if (isset(Shop::$kSprache)) {
         $kSprache = (int)Shop::$kSprache;
     } else {
         $oSprache = gibStandardsprache(true);
         $kSprache = (int)$oSprache->kSprache;
+    }
+    $waehrung = null;
+    if (isset($_SESSION['Waehrung'])) {
+        $waehrung = $_SESSION['Waehrung'];
+    }
+    if (!isset($waehrung->kWaehrung)) {
+        $waehrung = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
     }
     $cacheID = 'filter_ps_' . md5(
         json_encode($_SESSION['Kundengruppe']->kKundengruppe) .
@@ -942,7 +950,7 @@ function gibPreisspannenFilterOptionen($FilterSQL, $NaviFilter, $oSuchergebnisse
         json_encode($FilterSQL) .
         $oSuchergebnisse->GesamtanzahlArtikel .
         json_encode($_SESSION['Steuersatz'])
-    ) . '_' . $kSprache;
+    ) . '_' . (int)$waehrung->kWaehrung . '_' . $kSprache;
     if (($oPreisspanne_arr = Shop::Cache()->get($cacheID)) !== false) {
         return $oPreisspanne_arr;
     }
@@ -953,271 +961,269 @@ function gibPreisspannenFilterOptionen($FilterSQL, $NaviFilter, $oSuchergebnisse
     if ($oSuchergebnisse->GesamtanzahlArtikel == 1 && !isset($NaviFilter->PreisspannenFilter->fVon) && !isset($NaviFilter->PreisspannenFilter->fBis)) {
         return $oPreisspanne_arr;
     }
-    $conf = Shop::getSettings(array(CONF_NAVIGATIONSFILTER));
-    if ($conf['navigationsfilter']['preisspannenfilter_benutzen'] !== 'N') {
-        $cPreisspannenJOIN = "LEFT JOIN tartikelkategorierabatt ON tartikelkategorierabatt.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
-                                    AND tartikelkategorierabatt.kArtikel = tartikel.kArtikel
-                                LEFT JOIN tartikelsonderpreis ON tartikelsonderpreis.kArtikel = tartikel.kArtikel
-                                    AND tartikelsonderpreis.cAktiv='Y'
-                                    AND tartikelsonderpreis.dStart <= now()
-                                    AND (tartikelsonderpreis.dEnde >= CURDATE() OR tartikelsonderpreis.dEnde = '0000-00-00')
-                                LEFT JOIN tsonderpreise ON tartikelsonderpreis.kArtikelSonderpreis = tsonderpreise.kArtikelSonderpreis
-                                    AND tsonderpreise.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe;
 
-        // Automatisch
-        if ($conf['navigationsfilter']['preisspannenfilter_anzeige_berechnung'] === 'A') {
-            // Finde den höchsten und kleinsten Steuersatz
-            if (is_array($_SESSION['Steuersatz']) && $_SESSION['Kundengruppe']->nNettoPreise === '0') {
-                $fSteuersatz_arr = array();
-                foreach ($_SESSION['Steuersatz'] as $fSteuersatz) {
-                    $fSteuersatz_arr[] = $fSteuersatz;
-                }
-                $fSteuersatzMax = count($fSteuersatz_arr) ? max($fSteuersatz_arr) : 0;
-                $fSteuersatzMin = count($fSteuersatz_arr) ? min($fSteuersatz_arr) : 0;
-            } elseif ($_SESSION['Kundengruppe']->nNettoPreise > 0) {
-                $fSteuersatzMax = 0.0;
-                $fSteuersatzMin = 0.0;
+    $cPreisspannenJOIN = "LEFT JOIN tartikelkategorierabatt ON tartikelkategorierabatt.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
+                                AND tartikelkategorierabatt.kArtikel = tartikel.kArtikel
+                            LEFT JOIN tartikelsonderpreis ON tartikelsonderpreis.kArtikel = tartikel.kArtikel
+                                AND tartikelsonderpreis.cAktiv='Y'
+                                AND tartikelsonderpreis.dStart <= now()
+                                AND (tartikelsonderpreis.dEnde >= CURDATE() OR tartikelsonderpreis.dEnde = '0000-00-00')
+                            LEFT JOIN tsonderpreise ON tartikelsonderpreis.kArtikelSonderpreis = tsonderpreise.kArtikelSonderpreis
+                                AND tsonderpreise.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe;
+
+    // Automatisch
+    if ($conf['navigationsfilter']['preisspannenfilter_anzeige_berechnung'] === 'A') {
+        // Finde den höchsten und kleinsten Steuersatz
+        if (is_array($_SESSION['Steuersatz']) && $_SESSION['Kundengruppe']->nNettoPreise === '0') {
+            $fSteuersatz_arr = array();
+            foreach ($_SESSION['Steuersatz'] as $fSteuersatz) {
+                $fSteuersatz_arr[] = $fSteuersatz;
             }
-            $fKundenrabatt = 0.0;
-            if (isset($_SESSION['Kunde']->fRabatt) && $_SESSION['Kunde']->fRabatt > 0) {
-                $fKundenrabatt = $_SESSION['Kunde']->fRabatt;
-            }
-            $oPreisspannenFilterMaxMin = Shop::DB()->query(
-                "SELECT max(ssMerkmal.fMax) AS fMax, min(ssMerkmal.fMin) AS fMin
-                    FROM (
-                        SELECT ROUND(
-                            LEAST(
-                                (tpreise.fVKNetto * " . $_SESSION['Waehrung']->fFaktor . ") *
-                                ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), " . $_SESSION['Kundengruppe']->fRabatt . ", " . $fKundenrabatt . ", 0)) / 100),
-                                IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * " . $_SESSION['Waehrung']->fFaktor . "))) * ((100 + " . $fSteuersatzMax . ") / 100), 2) AS fMax,
-                     ROUND(LEAST((tpreise.fVKNetto * " . $_SESSION['Waehrung']->fFaktor . ") *
-                     ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), " . $_SESSION['Kundengruppe']->fRabatt . ", " . $fKundenrabatt . ", 0)) / 100),
-                     IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * " . $_SESSION['Waehrung']->fFaktor . "))) * ((100 + " . $fSteuersatzMin . ") / 100), 2) AS fMin
-                    FROM tartikel
-                    JOIN tpreise ON tpreise.kArtikel = tartikel.kArtikel
-                        AND tpreise.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
-                    " . $FilterSQL->oHerstellerFilterSQL->cJoin . "
+            $fSteuersatzMax = count($fSteuersatz_arr) ? max($fSteuersatz_arr) : 0;
+            $fSteuersatzMin = count($fSteuersatz_arr) ? min($fSteuersatz_arr) : 0;
+        } elseif ($_SESSION['Kundengruppe']->nNettoPreise > 0) {
+            $fSteuersatzMax = 0.0;
+            $fSteuersatzMin = 0.0;
+        }
+        $fKundenrabatt = 0.0;
+        if (isset($_SESSION['Kunde']->fRabatt) && $_SESSION['Kunde']->fRabatt > 0) {
+            $fKundenrabatt = $_SESSION['Kunde']->fRabatt;
+        }
+        $oPreisspannenFilterMaxMin = Shop::DB()->query(
+            "SELECT max(ssMerkmal.fMax) AS fMax, min(ssMerkmal.fMin) AS fMin
+                FROM (
+                    SELECT ROUND(
+                        LEAST(
+                            (tpreise.fVKNetto * " . $_SESSION['Waehrung']->fFaktor . ") *
+                            ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), " . $_SESSION['Kundengruppe']->fRabatt . ", " . $fKundenrabatt . ", 0)) / 100),
+                            IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * " . $_SESSION['Waehrung']->fFaktor . "))) * ((100 + " . $fSteuersatzMax . ") / 100), 2) AS fMax,
+                 ROUND(LEAST((tpreise.fVKNetto * " . $_SESSION['Waehrung']->fFaktor . ") *
+                 ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), " . $_SESSION['Kundengruppe']->fRabatt . ", " . $fKundenrabatt . ", 0)) / 100),
+                 IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * " . $_SESSION['Waehrung']->fFaktor . "))) * ((100 + " . $fSteuersatzMin . ") / 100), 2) AS fMin
+                FROM tartikel
+                JOIN tpreise ON tpreise.kArtikel = tartikel.kArtikel
+                    AND tpreise.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
+                " . $FilterSQL->oHerstellerFilterSQL->cJoin . "
 
-                    " . $FilterSQL->oSuchspecialFilterSQL->cJoin . "
-                    " . $FilterSQL->oSuchFilterSQL->cJoin . "
-                    " . $FilterSQL->oKategorieFilterSQL->cJoin . "
-                    " . $FilterSQL->oMerkmalFilterSQL->cJoin . "
-                    " . $FilterSQL->oTagFilterSQL->cJoin . "
-                    " . $FilterSQL->oBewertungSterneFilterSQL->cJoin . "
+                " . $FilterSQL->oSuchspecialFilterSQL->cJoin . "
+                " . $FilterSQL->oSuchFilterSQL->cJoin . "
+                " . $FilterSQL->oKategorieFilterSQL->cJoin . "
+                " . $FilterSQL->oMerkmalFilterSQL->cJoin . "
+                " . $FilterSQL->oTagFilterSQL->cJoin . "
+                " . $FilterSQL->oBewertungSterneFilterSQL->cJoin . "
 
-                    " . $cPreisspannenJOIN . "
+                " . $cPreisspannenJOIN . "
 
-                    LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                        AND tartikelsichtbarkeit.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
-                    WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                        AND tartikel.kVaterArtikel = 0
-                        " . gibLagerfilter() . "
-                        " . $FilterSQL->oSuchspecialFilterSQL->cWhere . "
-                        " . $FilterSQL->oSuchFilterSQL->cWhere . "
-                        " . $FilterSQL->oHerstellerFilterSQL->cWhere . "
-                        " . $FilterSQL->oKategorieFilterSQL->cWhere . "
-                        " . $FilterSQL->oMerkmalFilterSQL->cWhere . "
-                        " . $FilterSQL->oTagFilterSQL->cWhere . "
-                        " . $FilterSQL->oBewertungSterneFilterSQL->cWhere . "
-                        " . $FilterSQL->oPreisspannenFilterSQL->cWhere . "
-                    GROUP BY tartikel.kArtikel
-                    " . $FilterSQL->oMerkmalFilterSQL->cHaving . "
-                ) AS ssMerkmal
-                ", 1
-            );
-            if (isset($oPreisspannenFilterMaxMin->fMax) && isset($oPreisspannenFilterMaxMin->fMin) && $oPreisspannenFilterMaxMin->fMax == $oPreisspannenFilterMaxMin->fMin) {
+                LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
+                    AND tartikelsichtbarkeit.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
+                WHERE tartikelsichtbarkeit.kArtikel IS NULL
+                    AND tartikel.kVaterArtikel = 0
+                    " . gibLagerfilter() . "
+                    " . $FilterSQL->oSuchspecialFilterSQL->cWhere . "
+                    " . $FilterSQL->oSuchFilterSQL->cWhere . "
+                    " . $FilterSQL->oHerstellerFilterSQL->cWhere . "
+                    " . $FilterSQL->oKategorieFilterSQL->cWhere . "
+                    " . $FilterSQL->oMerkmalFilterSQL->cWhere . "
+                    " . $FilterSQL->oTagFilterSQL->cWhere . "
+                    " . $FilterSQL->oBewertungSterneFilterSQL->cWhere . "
+                    " . $FilterSQL->oPreisspannenFilterSQL->cWhere . "
+                GROUP BY tartikel.kArtikel
+                " . $FilterSQL->oMerkmalFilterSQL->cHaving . "
+            ) AS ssMerkmal
+            ", 1
+        );
+        if (isset($oPreisspannenFilterMaxMin->fMax) && isset($oPreisspannenFilterMaxMin->fMin) && $oPreisspannenFilterMaxMin->fMax == $oPreisspannenFilterMaxMin->fMin) {
+            $res = array();
+            Shop::Cache()->set($cacheID, $res, array(CACHING_GROUP_CATEGORY));
+
+            return $res;
+        }
+        if (isset($oPreisspannenFilterMaxMin->fMax) && $oPreisspannenFilterMaxMin->fMax > 0) {
+            // Berechnet Max, Min, Step, Anzahl, Diff und liefert diese Werte in einem Objekt
+            $oPreis = berechneMaxMinStep($oPreisspannenFilterMaxMin->fMax * $_SESSION['Waehrung']->fFaktor, $oPreisspannenFilterMaxMin->fMin * $_SESSION['Waehrung']->fFaktor);
+            if (!$oPreis->nAnzahlSpannen || !$oPreis->fMaxPreis) {
                 $res = array();
                 Shop::Cache()->set($cacheID, $res, array(CACHING_GROUP_CATEGORY));
 
                 return $res;
             }
-            if (isset($oPreisspannenFilterMaxMin->fMax) && $oPreisspannenFilterMaxMin->fMax > 0) {
-                // Berechnet Max, Min, Step, Anzahl, Diff und liefert diese Werte in einem Objekt
-                $oPreis = berechneMaxMinStep($oPreisspannenFilterMaxMin->fMax * $_SESSION['Waehrung']->fFaktor, $oPreisspannenFilterMaxMin->fMin * $_SESSION['Waehrung']->fFaktor);
-                if (!$oPreis->nAnzahlSpannen || !$oPreis->fMaxPreis) {
-                    $res = array();
-                    Shop::Cache()->set($cacheID, $res, array(CACHING_GROUP_CATEGORY));
+            // Begrenzung der Preisspannen bei zu großen Preisdifferenzen
+            if ($oPreis->nAnzahlSpannen > 20) {
+                $oPreis->nAnzahlSpannen = 20;
+            }
+            $cSelectSQL = '';
+            for ($i = 0; $i < $oPreis->nAnzahlSpannen; $i++) {
+                if ($i > 0) {
+                    $cSelectSQL .= ', ';
+                }
+                $cSelectSQL .= " SUM(ssMerkmal.anz" . $i . ") AS anz" . $i;
+            }
+            $oPreisspannenFilterDB = Shop::DB()->query(
+                "SELECT " . $cSelectSQL . "
+                    FROM
+                    (
+                        SELECT " . berechnePreisspannenSQL($oPreis) . "
+                        FROM tartikel
+                        JOIN tpreise ON tpreise.kArtikel = tartikel.kArtikel
+                            AND tpreise.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
+                        " . $FilterSQL->oHerstellerFilterSQL->cJoin . "
+                        " . $FilterSQL->oSuchspecialFilterSQL->cJoin . "
+                        " . $FilterSQL->oSuchFilterSQL->cJoin . "
+                        " . $FilterSQL->oKategorieFilterSQL->cJoin . "
+                        " . $FilterSQL->oMerkmalFilterSQL->cJoin . "
+                        " . $FilterSQL->oTagFilterSQL->cJoin . "
+                        " . $FilterSQL->oBewertungSterneFilterSQL->cJoin . "
+                        LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
+                            AND tartikelsichtbarkeit.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
 
-                    return $res;
+                        " . $cPreisspannenJOIN . "
+
+                        WHERE tartikelsichtbarkeit.kArtikel IS NULL
+                            AND tartikel.kVaterArtikel = 0
+                            " . gibLagerfilter() . "
+                            " . $FilterSQL->oSuchspecialFilterSQL->cWhere . "
+                            " . $FilterSQL->oSuchFilterSQL->cWhere . "
+                            " . $FilterSQL->oHerstellerFilterSQL->cWhere . "
+                            " . $FilterSQL->oKategorieFilterSQL->cWhere . "
+                            " . $FilterSQL->oMerkmalFilterSQL->cWhere . "
+                            " . $FilterSQL->oTagFilterSQL->cWhere . "
+                            " . $FilterSQL->oBewertungSterneFilterSQL->cWhere . "
+                            " . $FilterSQL->oPreisspannenFilterSQL->cWhere . "
+                        GROUP BY tartikel.kArtikel
+                        " . $FilterSQL->oMerkmalFilterSQL->cHaving . "
+                    ) AS ssMerkmal
+                    ", 1
+            );
+
+            $nPreisspannenAnzahl_arr   = (is_bool($oPreisspannenFilterDB)) ? null : get_object_vars($oPreisspannenFilterDB);
+            $oPreisspannenFilterDB_arr = array();
+            for ($i = 0; $i < $oPreis->nAnzahlSpannen; $i++) {
+                if ($i == 0) {
+                    $oPreisspannenFilterDB_arr[] = ($nPreisspannenAnzahl_arr['anz' . $i] - 0);
+                } else {
+                    $oPreisspannenFilterDB_arr[] = ($nPreisspannenAnzahl_arr['anz' . $i] - $nPreisspannenAnzahl_arr['anz' . ($i - 1)]);
                 }
-                // Begrenzung der Preisspannen bei zu großen Preisdifferenzen
-                if ($oPreis->nAnzahlSpannen > 20) {
-                    $oPreis->nAnzahlSpannen = 20;
-                }
-                $cSelectSQL = '';
-                for ($i = 0; $i < $oPreis->nAnzahlSpannen; $i++) {
-                    if ($i > 0) {
-                        $cSelectSQL .= ', ';
+            }
+            $nPreisMax      = $oPreis->fMaxPreis;
+            $nPreisMin      = $oPreis->fMinPreis;
+            $nStep          = $oPreis->fStep;
+            $nAnzahlSpannen = $oPreis->nAnzahlSpannen;
+            for ($i = 0; $i < $nAnzahlSpannen; $i++) {
+                $oPreisspannenFilter       = new stdClass();
+                $oPreisspannenFilter->nVon = ($nPreisMin + $i * $nStep);
+                $oPreisspannenFilter->nBis = ($nPreisMin + ($i + 1) * $nStep);
+                if ($oPreisspannenFilter->nBis > $nPreisMax) {
+                    if ($oPreisspannenFilter->nVon >= $nPreisMax) {
+                        $oPreisspannenFilter->nVon = ($nPreisMin + ($i - 1) * $nStep);
                     }
-                    $cSelectSQL .= " SUM(ssMerkmal.anz" . $i . ") AS anz" . $i;
+
+                    if ($oPreisspannenFilter->nBis > $nPreisMax) {
+                        $oPreisspannenFilter->nBis = $nPreisMax;
+                    }
                 }
-                $oPreisspannenFilterDB = Shop::DB()->query(
-                    "SELECT " . $cSelectSQL . "
-                        FROM
-                        (
-                            SELECT " . berechnePreisspannenSQL($oPreis) . "
-                            FROM tartikel
-                            JOIN tpreise ON tpreise.kArtikel = tartikel.kArtikel
-                                AND tpreise.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
-                            " . $FilterSQL->oHerstellerFilterSQL->cJoin . "
-                            " . $FilterSQL->oSuchspecialFilterSQL->cJoin . "
-                            " . $FilterSQL->oSuchFilterSQL->cJoin . "
-                            " . $FilterSQL->oKategorieFilterSQL->cJoin . "
-                            " . $FilterSQL->oMerkmalFilterSQL->cJoin . "
-                            " . $FilterSQL->oTagFilterSQL->cJoin . "
-                            " . $FilterSQL->oBewertungSterneFilterSQL->cJoin . "
-                            LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                                AND tartikelsichtbarkeit.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
+                // Localize Preise
+                $oPreisspannenFilter->cVonLocalized  = gibPreisLocalizedOhneFaktor($oPreisspannenFilter->nVon, $waehrung);
+                $oPreisspannenFilter->cBisLocalized  = gibPreisLocalizedOhneFaktor($oPreisspannenFilter->nBis, $waehrung);
+                $oPreisspannenFilter->nAnzahlArtikel = $oPreisspannenFilterDB_arr[$i];
+                //baue URL
+                if (!isset($oZusatzFilter)) {
+                    $oZusatzFilter = new stdClass();
+                }
+                if (!isset($oZusatzFilter->PreisspannenFilter)) {
+                    $oZusatzFilter->PreisspannenFilter = new stdClass();
+                }
+                $oZusatzFilter->PreisspannenFilter->fVon = $oPreisspannenFilter->nVon;
+                $oZusatzFilter->PreisspannenFilter->fBis = $oPreisspannenFilter->nBis;
+                $oPreisspannenFilter->cURL               = gibNaviURL($NaviFilter, true, $oZusatzFilter);
+                $oPreisspanne_arr[]                      = $oPreisspannenFilter;
+            }
+        }
+    } else {
+        $oPreisspannenfilter_arr = Shop::DB()->query("SELECT * FROM tpreisspannenfilter", 2);
+        if (is_array($oPreisspannenfilter_arr) && count($oPreisspannenfilter_arr) > 0) {
+            // Berechnet Max, Min, Step, Anzahl, Diff
+            $oPreis = berechneMaxMinStep(
+                $oPreisspannenfilter_arr[count($oPreisspannenfilter_arr) - 1]->nBis * $_SESSION['Waehrung']->fFaktor,
+                $oPreisspannenfilter_arr[0]->nVon * $_SESSION['Waehrung']->fFaktor
+            );
+            if (!$oPreis->nAnzahlSpannen || !$oPreis->fMaxPreis) {
+                $res = array();
+                Shop::Cache()->set($cacheID, $res, array(CACHING_GROUP_CATEGORY));
 
-                            " . $cPreisspannenJOIN . "
+                return $res;
+            }
+            $cSelectSQL = '';
+            $count      = count($oPreisspannenfilter_arr);
+            for ($i = 0; $i < $count; $i++) {
+                if ($i > 0) {
+                    $cSelectSQL .= ', ';
+                }
+                $cSelectSQL .= "SUM(ssMerkmal.anz" . $i . ") AS anz" . $i;
+            }
 
-                            WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                                AND tartikel.kVaterArtikel = 0
-                                " . gibLagerfilter() . "
-                                " . $FilterSQL->oSuchspecialFilterSQL->cWhere . "
-                                " . $FilterSQL->oSuchFilterSQL->cWhere . "
-                                " . $FilterSQL->oHerstellerFilterSQL->cWhere . "
-                                " . $FilterSQL->oKategorieFilterSQL->cWhere . "
-                                " . $FilterSQL->oMerkmalFilterSQL->cWhere . "
-                                " . $FilterSQL->oTagFilterSQL->cWhere . "
-                                " . $FilterSQL->oBewertungSterneFilterSQL->cWhere . "
-                                " . $FilterSQL->oPreisspannenFilterSQL->cWhere . "
-                            GROUP BY tartikel.kArtikel
-                            " . $FilterSQL->oMerkmalFilterSQL->cHaving . "
-                        ) AS ssMerkmal
-                        ", 1
-                );
+            $oPreisspannenFilterDB = Shop::DB()->query(
+                "SELECT " . $cSelectSQL . "
+                    FROM
+                    (
+                        SELECT " . berechnePreisspannenSQL($oPreis, $oPreisspannenfilter_arr) . "
+                        FROM tartikel
+                        JOIN tpreise ON tpreise.kArtikel = tartikel.kArtikel
+                            AND tpreise.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
+                        " . $FilterSQL->oHerstellerFilterSQL->cJoin . "
+                        " . $FilterSQL->oSuchspecialFilterSQL->cJoin . "
+                        " . $FilterSQL->oSuchFilterSQL->cJoin . "
+                        " . $FilterSQL->oKategorieFilterSQL->cJoin . "
+                        " . $FilterSQL->oMerkmalFilterSQL->cJoin . "
+                        " . $FilterSQL->oTagFilterSQL->cJoin . "
+                        " . $FilterSQL->oBewertungSterneFilterSQL->cJoin . "
+                        LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
+                            AND tartikelsichtbarkeit.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
 
-                $nPreisspannenAnzahl_arr   = (is_bool($oPreisspannenFilterDB)) ? null : get_object_vars($oPreisspannenFilterDB);
-                $oPreisspannenFilterDB_arr = array();
-                for ($i = 0; $i < $oPreis->nAnzahlSpannen; $i++) {
-                    if ($i == 0) {
+                        " . $cPreisspannenJOIN . "
+
+                        WHERE tartikelsichtbarkeit.kArtikel IS NULL
+                            AND tartikel.kVaterArtikel = 0
+                            " . gibLagerfilter() . "
+                            " . $FilterSQL->oSuchspecialFilterSQL->cWhere . "
+                            " . $FilterSQL->oSuchFilterSQL->cWhere . "
+                            " . $FilterSQL->oHerstellerFilterSQL->cWhere . "
+                            " . $FilterSQL->oKategorieFilterSQL->cWhere . "
+                            " . $FilterSQL->oMerkmalFilterSQL->cWhere . "
+                            " . $FilterSQL->oTagFilterSQL->cWhere . "
+                            " . $FilterSQL->oBewertungSterneFilterSQL->cWhere . "
+                            " . $FilterSQL->oPreisspannenFilterSQL->cWhere . "
+                        GROUP BY tartikel.kArtikel
+                        " . $FilterSQL->oMerkmalFilterSQL->cHaving . "
+                    ) AS ssMerkmal
+                    ", 1
+            );
+            $nPreisspannenAnzahl_arr   = get_object_vars($oPreisspannenFilterDB);
+            $oPreisspannenFilterDB_arr = array();
+            if (is_array($nPreisspannenAnzahl_arr)) {
+                $count = count($nPreisspannenAnzahl_arr);
+                for ($i = 0; $i < $count; $i++) {
+                    if ($i === 0) {
                         $oPreisspannenFilterDB_arr[] = ($nPreisspannenAnzahl_arr['anz' . $i] - 0);
                     } else {
                         $oPreisspannenFilterDB_arr[] = ($nPreisspannenAnzahl_arr['anz' . $i] - $nPreisspannenAnzahl_arr['anz' . ($i - 1)]);
                     }
                 }
-                $nPreisMax      = $oPreis->fMaxPreis;
-                $nPreisMin      = $oPreis->fMinPreis;
-                $nStep          = $oPreis->fStep;
-                $nAnzahlSpannen = $oPreis->nAnzahlSpannen;
-                for ($i = 0; $i < $nAnzahlSpannen; $i++) {
-                    $oPreisspannenFilter       = new stdClass();
-                    $oPreisspannenFilter->nVon = ($nPreisMin + $i * $nStep);
-                    $oPreisspannenFilter->nBis = ($nPreisMin + ($i + 1) * $nStep);
-                    if ($oPreisspannenFilter->nBis > $nPreisMax) {
-                        if ($oPreisspannenFilter->nVon >= $nPreisMax) {
-                            $oPreisspannenFilter->nVon = ($nPreisMin + ($i - 1) * $nStep);
-                        }
-
-                        if ($oPreisspannenFilter->nBis > $nPreisMax) {
-                            $oPreisspannenFilter->nBis = $nPreisMax;
-                        }
-                    }
-                    // Localize Preise
-                    $oPreisspannenFilter->cVonLocalized  = gibPreisLocalizedOhneFaktor($oPreisspannenFilter->nVon);
-                    $oPreisspannenFilter->cBisLocalized  = gibPreisLocalizedOhneFaktor($oPreisspannenFilter->nBis);
-                    $oPreisspannenFilter->nAnzahlArtikel = $oPreisspannenFilterDB_arr[$i];
-                    //baue URL
-                    if (!isset($oZusatzFilter)) {
-                        $oZusatzFilter = new stdClass();
-                    }
-                    if (!isset($oZusatzFilter->PreisspannenFilter)) {
-                        $oZusatzFilter->PreisspannenFilter = new stdClass();
-                    }
-                    $oZusatzFilter->PreisspannenFilter->fVon = $oPreisspannenFilter->nVon;
-                    $oZusatzFilter->PreisspannenFilter->fBis = $oPreisspannenFilter->nBis;
-                    $oPreisspannenFilter->cURL               = gibNaviURL($NaviFilter, true, $oZusatzFilter);
-                    $oPreisspanne_arr[]                      = $oPreisspannenFilter;
-                }
             }
-        } else {
-            $oPreisspannenfilter_arr = Shop::DB()->query("SELECT * FROM tpreisspannenfilter", 2);
-            if (is_array($oPreisspannenfilter_arr) && count($oPreisspannenfilter_arr) > 0) {
-                // Berechnet Max, Min, Step, Anzahl, Diff
-                $oPreis = berechneMaxMinStep(
-                    $oPreisspannenfilter_arr[count($oPreisspannenfilter_arr) - 1]->nBis * $_SESSION['Waehrung']->fFaktor,
-                    $oPreisspannenfilter_arr[0]->nVon * $_SESSION['Waehrung']->fFaktor
-                );
-                if (!$oPreis->nAnzahlSpannen || !$oPreis->fMaxPreis) {
-                    $res = array();
-                    Shop::Cache()->set($cacheID, $res, array(CACHING_GROUP_CATEGORY));
-
-                    return $res;
-                }
-                $cSelectSQL = '';
-                $count      = count($oPreisspannenfilter_arr);
-                for ($i = 0; $i < $count; $i++) {
-                    if ($i > 0) {
-                        $cSelectSQL .= ', ';
-                    }
-                    $cSelectSQL .= "SUM(ssMerkmal.anz" . $i . ") AS anz" . $i;
-                }
-
-                $oPreisspannenFilterDB = Shop::DB()->query(
-                    "SELECT " . $cSelectSQL . "
-                        FROM
-                        (
-                            SELECT " . berechnePreisspannenSQL($oPreis, $oPreisspannenfilter_arr) . "
-                            FROM tartikel
-                            JOIN tpreise ON tpreise.kArtikel = tartikel.kArtikel
-                                AND tpreise.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
-                            " . $FilterSQL->oHerstellerFilterSQL->cJoin . "
-                            " . $FilterSQL->oSuchspecialFilterSQL->cJoin . "
-                            " . $FilterSQL->oSuchFilterSQL->cJoin . "
-                            " . $FilterSQL->oKategorieFilterSQL->cJoin . "
-                            " . $FilterSQL->oMerkmalFilterSQL->cJoin . "
-                            " . $FilterSQL->oTagFilterSQL->cJoin . "
-                            " . $FilterSQL->oBewertungSterneFilterSQL->cJoin . "
-                            LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                                AND tartikelsichtbarkeit.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
-
-                            " . $cPreisspannenJOIN . "
-
-                            WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                                AND tartikel.kVaterArtikel = 0
-                                " . gibLagerfilter() . "
-                                " . $FilterSQL->oSuchspecialFilterSQL->cWhere . "
-                                " . $FilterSQL->oSuchFilterSQL->cWhere . "
-                                " . $FilterSQL->oHerstellerFilterSQL->cWhere . "
-                                " . $FilterSQL->oKategorieFilterSQL->cWhere . "
-                                " . $FilterSQL->oMerkmalFilterSQL->cWhere . "
-                                " . $FilterSQL->oTagFilterSQL->cWhere . "
-                                " . $FilterSQL->oBewertungSterneFilterSQL->cWhere . "
-                                " . $FilterSQL->oPreisspannenFilterSQL->cWhere . "
-                            GROUP BY tartikel.kArtikel
-                            " . $FilterSQL->oMerkmalFilterSQL->cHaving . "
-                        ) AS ssMerkmal
-                        ", 1
-                );
-                $nPreisspannenAnzahl_arr   = get_object_vars($oPreisspannenFilterDB);
-                $oPreisspannenFilterDB_arr = array();
-                if (is_array($nPreisspannenAnzahl_arr)) {
-                    $count = count($nPreisspannenAnzahl_arr);
-                    for ($i = 0; $i < $count; $i++) {
-                        if ($i === 0) {
-                            $oPreisspannenFilterDB_arr[] = ($nPreisspannenAnzahl_arr['anz' . $i] - 0);
-                        } else {
-                            $oPreisspannenFilterDB_arr[] = ($nPreisspannenAnzahl_arr['anz' . $i] - $nPreisspannenAnzahl_arr['anz' . ($i - 1)]);
-                        }
-                    }
-                }
-                foreach ($oPreisspannenfilter_arr as $i => $oPreisspannenfilter) {
-                    $oPreisspannenfilterTMP                 = new stdClass();
-                    $oPreisspannenfilterTMP->nVon           = $oPreisspannenfilter->nVon;
-                    $oPreisspannenfilterTMP->nBis           = $oPreisspannenfilter->nBis;
-                    $oPreisspannenfilterTMP->nAnzahlArtikel = $oPreisspannenFilterDB_arr[$i];
-                    // Localize Preise
-                    $oPreisspannenfilterTMP->cVonLocalized = gibPreisLocalizedOhneFaktor($oPreisspannenfilterTMP->nVon);
-                    $oPreisspannenfilterTMP->cBisLocalized = gibPreisLocalizedOhneFaktor($oPreisspannenfilterTMP->nBis);
-                    //baue URL
-                    $oZusatzFilter                           = new stdClass();
-                    $oZusatzFilter->PreisspannenFilter       = new stdClass();
-                    $oZusatzFilter->PreisspannenFilter->fVon = $oPreisspannenfilterTMP->nVon;
-                    $oZusatzFilter->PreisspannenFilter->fBis = $oPreisspannenfilterTMP->nBis;
-                    $oPreisspannenfilterTMP->cURL            = gibNaviURL($NaviFilter, true, $oZusatzFilter);
-                    $oPreisspanne_arr[]                      = $oPreisspannenfilterTMP;
-                }
+            foreach ($oPreisspannenfilter_arr as $i => $oPreisspannenfilter) {
+                $oPreisspannenfilterTMP                 = new stdClass();
+                $oPreisspannenfilterTMP->nVon           = $oPreisspannenfilter->nVon;
+                $oPreisspannenfilterTMP->nBis           = $oPreisspannenfilter->nBis;
+                $oPreisspannenfilterTMP->nAnzahlArtikel = $oPreisspannenFilterDB_arr[$i];
+                // Localize Preise
+                $oPreisspannenfilterTMP->cVonLocalized = gibPreisLocalizedOhneFaktor($oPreisspannenfilterTMP->nVon, $waehrung);
+                $oPreisspannenfilterTMP->cBisLocalized = gibPreisLocalizedOhneFaktor($oPreisspannenfilterTMP->nBis, $waehrung);
+                //baue URL
+                $oZusatzFilter                           = new stdClass();
+                $oZusatzFilter->PreisspannenFilter       = new stdClass();
+                $oZusatzFilter->PreisspannenFilter->fVon = $oPreisspannenfilterTMP->nVon;
+                $oZusatzFilter->PreisspannenFilter->fBis = $oPreisspannenfilterTMP->nBis;
+                $oPreisspannenfilterTMP->cURL            = gibNaviURL($NaviFilter, true, $oZusatzFilter);
+                $oPreisspanne_arr[]                      = $oPreisspannenfilterTMP;
             }
         }
     }
@@ -2797,14 +2803,19 @@ function gibNaviURL($NaviFilter, $bSeo, $oZusatzFilter, $kSprache = 0, $bCanonic
             (!isset($NaviFilter->Kategorie->kKategorie) || $NaviFilter->Kategorie->kKategorie != $NaviFilter->KategorieFilter->kKategorie)
         ) {
             if (!isset($oZusatzFilter->FilterLoesen->Kategorie) || !$oZusatzFilter->FilterLoesen->Kategorie) {
-                $cSEOURL .= SEP_KAT . $NaviFilter->KategorieFilter->cSeo[$kSprache];
                 if (strlen($NaviFilter->KategorieFilter->cSeo[$kSprache]) === 0) {
                     $bSeo = false;
                 }
                 $conf = Shop::getConfig(array(CONF_NAVIGATIONSFILTER));
                 if ($conf['navigationsfilter']['kategoriefilter_anzeigen_als'] === 'HF' && !empty($oZusatzFilter->KategorieFilter->kKategorie)) {
+                    if (!empty($oZusatzFilter->KategorieFilter->cSeo)) {
+                        $cSEOURL .= SEP_KAT . $oZusatzFilter->KategorieFilter->cSeo;
+                    } else {
+                        $cSEOURL .= SEP_KAT . $NaviFilter->KategorieFilter->cSeo[$kSprache];
+                    }
                     $cURL .= '&amp;kf=' . (int)$oZusatzFilter->KategorieFilter->kKategorie;
                 } else {
+                    $cSEOURL .= SEP_KAT . $NaviFilter->KategorieFilter->cSeo[$kSprache];
                     $cURL .= '&amp;kf=' . (int)$NaviFilter->KategorieFilter->kKategorie;
                 }
             }
@@ -3716,15 +3727,14 @@ function gibErweiterteDarstellung($Einstellungen, $NaviFilter, $nDarstellung = 0
 
         if (isset($NaviFilter->Kategorie->kKategorie) && $NaviFilter->Kategorie->kKategorie > 0) {
             $oKategorie = new Kategorie($NaviFilter->Kategorie->kKategorie);
-
             if (!empty($oKategorie->categoryFunctionAttributes[KAT_ATTRIBUT_DARSTELLUNG])) {
                 $nStdDarstellung = (int)$oKategorie->categoryFunctionAttributes[KAT_ATTRIBUT_DARSTELLUNG];
             }
-        } elseif (isset($Einstellungen['artikeluebersicht']['artikeluebersicht_erw_darstellung_stdansicht']) &&
-            (int)$Einstellungen['artikeluebersicht']['artikeluebersicht_erw_darstellung_stdansicht'] > 0) {
+        }
+        if (isset($Einstellungen['artikeluebersicht']['artikeluebersicht_erw_darstellung_stdansicht']) &&
+            (int)$Einstellungen['artikeluebersicht']['artikeluebersicht_erw_darstellung_stdansicht'] > 0 && $nDarstellung === 0) {
             $nStdDarstellung = (int)$Einstellungen['artikeluebersicht']['artikeluebersicht_erw_darstellung_stdansicht'];
         }
-
         if ($nStdDarstellung > 0) {
             switch ($nStdDarstellung) {
                 case ERWDARSTELLUNG_ANSICHT_LISTE:

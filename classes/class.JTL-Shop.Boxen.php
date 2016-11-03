@@ -122,7 +122,7 @@ class Boxen
     {
         return (strlen($cISO) > 0) ?
             Shop::DB()->select('tboxsprache', 'kBox', (int) $kBox, 'cISO', $cISO) :
-            Shop::DB()->query("SELECT * FROM tboxsprache WHERE kBox = " . (int)$kBox, 2);
+            Shop::DB()->selectAll('tboxsprache', 'kBox', (int)$kBox);
     }
 
     /**
@@ -245,11 +245,11 @@ class Boxen
                                         $filterEntry['id'] = $_filterValue;
                                         $name              = null;
                                         if ($nSeite == 2) { //map category name
-                                            $name = Shop::DB()->query("SELECT cName FROM tkategorie WHERE kKategorie = " . (int)$_filterValue, 1);
+                                            $name = Shop::DB()->select('tkategorie', 'kKategorie', (int)$_filterValue, null, null, null, null, false, 'cName');
                                         } elseif ($nSeite == 1) { //map article name
-                                            $name = Shop::DB()->query("SELECT cName FROM tartikel WHERE kArtikel = " . (int)$_filterValue, 1);
+                                            $name = Shop::DB()->select('tartikel', 'kArtikel', (int)$_filterValue, null, null, null, null, false, 'cName');
                                         } elseif ($nSeite == 31) { //map page name
-                                            $name = Shop::DB()->query("SELECT cName FROM tlink WHERE kLink = " . (int)$_filterValue, 1);
+                                            $name = Shop::DB()->select('tlink', 'kLink', (int)$_filterValue, null, null, null, null, false, 'cName');
                                         }
                                         $filterEntry['name'] = (!empty($name->cName)) ? $name->cName : '???';
                                         $filterOptions[]     = $filterEntry;
@@ -304,7 +304,7 @@ class Boxen
             }
         }
 
-        return;
+        return null;
     }
 
     /**
@@ -385,20 +385,22 @@ class Boxen
 
             case BOX_TRUSTEDSHOPS_GUETESIEGEL :
                 $oBox->compatName = 'TrustedShopsSiegelbox';
-                $oTrustedShops    = new TrustedShops(-1, StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
-                if (strlen($oTrustedShops->tsId) > 0 && $oTrustedShops->nAktiv == 1) {
-                    $oBox->anzeigen          = 'Y';
-                    $oBox->cLogoURL          = $oTrustedShops->cLogoURL;
-                    $oBox->cLogoSiegelBoxURL = $oTrustedShops->cLogoSiegelBoxURL[StringHandler::convertISO2ISO639($_SESSION['cISOSprache'])];
-                    $oBox->cBild             = Shop::getURL(true) . '/' . PFAD_GFX_TRUSTEDSHOPS . 'trustedshops_m.png';
-                    $oBox->cBGBild           = Shop::getURL(true) . '/' . PFAD_GFX_TRUSTEDSHOPS . 'bg_yellow.jpg';
+                if ($this->boxConfig['trustedshops']['trustedshops_siegelbox_anzeigen'] === 'Y') {
+                    $oTrustedShops    = new TrustedShops(-1, StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
+                    if (strlen($oTrustedShops->tsId) > 0 && $oTrustedShops->nAktiv == 1) {
+                        $oBox->anzeigen          = 'Y';
+                        $oBox->cLogoURL          = $oTrustedShops->cLogoURL;
+                        $oBox->cLogoSiegelBoxURL = $oTrustedShops->cLogoSiegelBoxURL[StringHandler::convertISO2ISO639($_SESSION['cISOSprache'])];
+                        $oBox->cBild             = Shop::getURL(true) . '/' . PFAD_GFX_TRUSTEDSHOPS . 'trustedshops_m.png';
+                        $oBox->cBGBild           = Shop::getURL(true) . '/' . PFAD_GFX_TRUSTEDSHOPS . 'bg_yellow.jpg';
+                    }
                 }
                 break;
 
             case BOX_TRUSTEDSHOPS_KUNDENBEWERTUNGEN :
                 $oBox->compatName    = 'TrustedShopsKundenbewertung';
                 $cValidSprachISO_arr = array('de', 'en', 'fr', 'pl', 'es');
-                if (in_array(StringHandler::convertISO2ISO639($_SESSION['cISOSprache']), $cValidSprachISO_arr)) {
+                if ($this->boxConfig['trustedshops']['trustedshops_kundenbewertung_anzeigen'] === 'Y' && in_array(StringHandler::convertISO2ISO639($_SESSION['cISOSprache']), $cValidSprachISO_arr)) {
                     $oTrustedShops                = new TrustedShops(-1, StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
                     $oTrustedShopsKundenbewertung = $oTrustedShops->holeKundenbewertungsstatus(StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
                     if (isset($oTrustedShopsKundenbewertung->cTSID) && strlen($oTrustedShopsKundenbewertung->cTSID) > 0 && $oTrustedShopsKundenbewertung->nStatus == 1) {
@@ -668,8 +670,10 @@ class Boxen
                     }
                     $cZusatzParams = StringHandler::filterXSS($cZusatzParams);
                     $oTMP_arr      = array();
+                    $cRequestURI   = (!empty($_SERVER['REQUEST_URI']))
+                        ? (Shop::getURL() . $_SERVER['REQUEST_URI'])
+                        : (Shop::getURL() . $_SERVER['SCRIPT_NAME']);
                     foreach ($oArtikel_arr as $oArtikel) {
-                        $cRequestURI = $_SERVER['SCRIPT_NAME'];
                         $nPosAnd     = strrpos($cRequestURI, '&');
                         $nPosQuest   = strrpos($cRequestURI, '?');
                         $nPosWD      = strpos($cRequestURI, 'vlplo=');
@@ -1005,7 +1009,7 @@ class Boxen
                                 AND tartikel.cNeu = 'Y'
                                 $this->lagerFilter
                                 $this->cVaterSQL
-                                AND cNeu='Y' AND DATE_SUB(now(),INTERVAL $alter_tage DAY) < dErstellt
+                                AND cNeu = 'Y' AND DATE_SUB(now(),INTERVAL $alter_tage DAY) < dErstellt
                             ORDER BY rand() LIMIT " . $limit, 2
                     );
                     if (is_array($menge) && count($menge) > 0) {
@@ -1390,7 +1394,7 @@ class Boxen
         }
         $nSeite      = (int)$nSeite;
         $oBoxAnzeige = array();
-        $oBox_arr    = Shop::DB()->query("SELECT * FROM tboxenanzeige WHERE nSeite = " . $nSeite, 2);
+        $oBox_arr    = Shop::DB()->selectAll('tboxenanzeige', 'nSeite', $nSeite);
         if (is_array($oBox_arr) && count($oBox_arr)) {
             foreach ($oBox_arr as $oBox) {
                 $oBoxAnzeige[$oBox->ePosition] = (boolean)$oBox->bAnzeigen;
@@ -1444,7 +1448,7 @@ class Boxen
      */
     public function holeContainer($ePosition)
     {
-        return Shop::DB()->query("SELECT kBox FROM tboxen WHERE kBoxvorlage = 0 AND ePosition = '" . $ePosition . "' ORDER BY ePosition ASC", 2);
+        return Shop::DB()->selectAll('tboxen', ['kBoxvorlage', 'ePosition'], [0, $ePosition], 'kBox', 'ePosition ASC');
     }
 
     /**

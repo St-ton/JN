@@ -97,11 +97,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
          */
         public static function fetchAll($kCustomID, $nTyp)
         {
-            $oUploadDatei_arr = Shop::DB()->query(
-                "SELECT * FROM tuploaddatei
-                   WHERE kCustomID = '" . (int)$kCustomID . "'
-                   AND nTyp = '" . (int)$nTyp . "'", 2
-            );
+            $oUploadDatei_arr = Shop::DB()->selectAll('tuploaddatei', ['kCustomID', 'nTyp'], [(int)$kCustomID, (int)$nTyp]);
 
             if (is_array($oUploadDatei_arr)) {
                 foreach ($oUploadDatei_arr as &$oUpload) {
@@ -138,7 +134,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
         /**
          * @param string $filename
          * @param string $mimetype
-         * @param bool $bEncode
+         * @param bool   $bEncode
+         * @param string $downloadName
          */
         public static function send_file_to_browser($filename, $mimetype, $bEncode = false, $downloadName)
         {

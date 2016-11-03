@@ -103,14 +103,14 @@ function gibNews($Einstellungen)
     $cSQL      = '';
     $oNews_arr = array();
     // Sollen keine News auf der Startseite angezeigt werden?
-    if (!isset($Einstellungen['news']['news_anzahl_content']) || (int) $Einstellungen['news']['news_anzahl_content'] === 0) {
+    if (!isset($Einstellungen['news']['news_anzahl_content']) || (int)$Einstellungen['news']['news_anzahl_content'] === 0) {
         return $oNews_arr;
     }
-    $cacheID = 'news_' . md5(json_encode($Einstellungen['news']) . '_' . (int) $_SESSION['kSprache']);
+    $cacheID = 'news_' . md5(json_encode($Einstellungen['news']) . '_' . (int)$_SESSION['kSprache']);
 
     if (($oNews_arr = Shop::Cache()->get($cacheID)) === false) {
-        if ((int) $Einstellungen['news']['news_anzahl_content'] > 0) {
-            $cSQL = ' LIMIT ' . (int) $Einstellungen['news']['news_anzahl_content'];
+        if ((int)$Einstellungen['news']['news_anzahl_content'] > 0) {
+            $cSQL = ' LIMIT ' . (int)$Einstellungen['news']['news_anzahl_content'];
         }
         $oNews_arr = Shop::DB()->query(
             "SELECT tnews.kNews, tnews.kSprache, tnews.cKundengruppe, tnews.cBetreff, tnews.cText, tnews.cVorschauText, tnews.cMetaTitle,
@@ -125,11 +125,11 @@ function gibNews($Einstellungen)
                     AND tnewskommentar.nAktiv = 1
                 LEFT JOIN tseo ON tseo.cKey = 'kNews'
                     AND tseo.kKey = tnews.kNews
-                    AND tseo.kSprache = " . (int) $_SESSION['kSprache'] . "
-                WHERE tnews.kSprache = " . (int) $_SESSION['kSprache'] . "
+                    AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
+                WHERE tnews.kSprache = " . (int)$_SESSION['kSprache'] . "
                     AND tnews.nAktiv = 1
                     AND tnews.dGueltigVon <= now()
-                    AND (tnews.cKundengruppe LIKE '%;-1;%' OR tnews.cKundengruppe LIKE '%;" . (int) $_SESSION['Kundengruppe']->kKundengruppe . ";%')
+                    AND (tnews.cKundengruppe LIKE '%;-1;%' OR tnews.cKundengruppe LIKE '%;" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";%')
                 GROUP BY tnews.kNews
                 ORDER BY tnews.dGueltigVon DESC" . $cSQL, 2
         );
@@ -175,35 +175,35 @@ function gibNextBoxPrio($search, $Einstellungen)
         !in_array('Bestseller', $search)
     ) {
         $obj->name   = 'Bestseller';
-        $obj->anzahl = (int) $Einstellungen['startseite']['startseite_bestseller_anzahl'];
-        $obj->sort   = (int) $Einstellungen['startseite']['startseite_bestseller_sortnr'];
-        $max         = (int) $Einstellungen['startseite']['startseite_bestseller_sortnr'];
+        $obj->anzahl = (int)$Einstellungen['startseite']['startseite_bestseller_anzahl'];
+        $obj->sort   = (int)$Einstellungen['startseite']['startseite_bestseller_sortnr'];
+        $max         = (int)$Einstellungen['startseite']['startseite_bestseller_sortnr'];
     }
     if ($max < intval($Einstellungen['startseite']['startseite_sonderangebote_sortnr']) &&
         intval($Einstellungen['startseite']['startseite_sonderangebote_anzahl']) > 0 &&
         !in_array('Sonderangebote', $search)
     ) {
         $obj->name   = 'Sonderangebote';
-        $obj->anzahl = (int) $Einstellungen['startseite']['startseite_sonderangebote_anzahl'];
-        $obj->sort   = (int) $Einstellungen['startseite']['startseite_sonderangebote_sortnr'];
-        $max         = (int) $Einstellungen['startseite']['startseite_sonderangebote_sortnr'];
+        $obj->anzahl = (int)$Einstellungen['startseite']['startseite_sonderangebote_anzahl'];
+        $obj->sort   = (int)$Einstellungen['startseite']['startseite_sonderangebote_sortnr'];
+        $max         = (int)$Einstellungen['startseite']['startseite_sonderangebote_sortnr'];
     }
     if ($max < intval($Einstellungen['startseite']['startseite_topangebote_sortnr']) &&
         intval($Einstellungen['startseite']['startseite_topangebote_anzahl']) > 0 &&
         !in_array('TopAngebot', $search)
     ) {
         $obj->name   = 'TopAngebot';
-        $obj->anzahl = (int) $Einstellungen['startseite']['startseite_topangebote_anzahl'];
-        $obj->sort   = (int) $Einstellungen['startseite']['startseite_topangebote_sortnr'];
-        $max         = (int) $Einstellungen['startseite']['startseite_topangebote_sortnr'];
+        $obj->anzahl = (int)$Einstellungen['startseite']['startseite_topangebote_anzahl'];
+        $obj->sort   = (int)$Einstellungen['startseite']['startseite_topangebote_sortnr'];
+        $max         = (int)$Einstellungen['startseite']['startseite_topangebote_sortnr'];
     }
     if ($max < intval($Einstellungen['startseite']['startseite_neuimsortiment_sortnr']) &&
         intval($Einstellungen['startseite']['startseite_neuimsortiment_anzahl']) > 0 &&
         !in_array('NeuImSortiment', $search)
     ) {
         $obj->name   = 'NeuImSortiment';
-        $obj->anzahl = (int) $Einstellungen['startseite']['startseite_neuimsortiment_anzahl'];
-        $obj->sort   = (int) $Einstellungen['startseite']['startseite_neuimsortiment_sortnr'];
+        $obj->anzahl = (int)$Einstellungen['startseite']['startseite_neuimsortiment_anzahl'];
+        $obj->sort   = (int)$Einstellungen['startseite']['startseite_neuimsortiment_sortnr'];
     }
 
     return (strlen($obj->name) > 0) ? $obj : null;
@@ -216,14 +216,14 @@ function gibNextBoxPrio($search, $Einstellungen)
 function gibLivesucheTop($Einstellungen)
 {
     $limit = (isset($Einstellungen['sonstiges']['sonstiges_livesuche_all_top_count']) && intval($Einstellungen['sonstiges']['sonstiges_livesuche_all_top_count']) > 0) ?
-        (int) $Einstellungen['sonstiges']['sonstiges_livesuche_all_top_count'] :
+        (int)$Einstellungen['sonstiges']['sonstiges_livesuche_all_top_count'] :
         100;
     $suchwolke_objs = Shop::DB()->query(
         "SELECT tsuchanfrage.kSuchanfrage, tsuchanfrage.kSprache, tsuchanfrage.cSuche, tsuchanfrage.nAktiv, tsuchanfrage.nAnzahlTreffer,
             tsuchanfrage.nAnzahlGesuche, DATE_FORMAT(tsuchanfrage.dZuletztGesucht, '%d.%m.%Y  %H:%i') AS dZuletztGesucht_de, tseo.cSeo
             FROM tsuchanfrage
-            LEFT JOIN tseo ON tseo.cKey = 'kSuchanfrage' AND tseo.kKey = tsuchanfrage.kSuchanfrage AND tseo.kSprache = " . (int) $_SESSION['kSprache'] . "
-            WHERE tsuchanfrage.kSprache = " . (int) $_SESSION['kSprache'] . "
+            LEFT JOIN tseo ON tseo.cKey = 'kSuchanfrage' AND tseo.kKey = tsuchanfrage.kSuchanfrage AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
+            WHERE tsuchanfrage.kSprache = " . (int)$_SESSION['kSprache'] . "
                 AND tsuchanfrage.nAktiv = 1
             ORDER BY tsuchanfrage.nAnzahlGesuche DESC
             LIMIT " . $limit, 2
@@ -279,8 +279,8 @@ function gibLivesucheLast($Einstellungen)
         "SELECT tsuchanfrage.kSuchanfrage, tsuchanfrage.kSprache, tsuchanfrage.cSuche, tsuchanfrage.nAktiv, tsuchanfrage.nAnzahlTreffer,
             tsuchanfrage.nAnzahlGesuche, DATE_FORMAT(tsuchanfrage.dZuletztGesucht, '%d.%m.%Y  %H:%i') AS dZuletztGesucht_de, tseo.cSeo
             FROM tsuchanfrage
-            LEFT JOIN tseo ON tseo.cKey = 'kSuchanfrage' AND tseo.kKey = tsuchanfrage.kSuchanfrage AND tseo.kSprache = " . (int) $_SESSION['kSprache'] . "
-            WHERE tsuchanfrage.kSprache = " . (int) $_SESSION['kSprache'] . "
+            LEFT JOIN tseo ON tseo.cKey = 'kSuchanfrage' AND tseo.kKey = tsuchanfrage.kSuchanfrage AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
+            WHERE tsuchanfrage.kSprache = " . (int)$_SESSION['kSprache'] . "
                 AND tsuchanfrage.nAktiv = 1
             ORDER BY tsuchanfrage.dZuletztGesucht DESC
             LIMIT " . $limit, 2
@@ -313,16 +313,16 @@ function gibLivesucheLast($Einstellungen)
 function gibTagging($Einstellungen)
 {
     $limit = (isset($Einstellungen['sonstiges']['sonstiges_tagging_all_count']) && intval($Einstellungen['sonstiges']['sonstiges_tagging_all_count']) > 0) ?
-        (int) $Einstellungen['sonstiges']['sonstiges_tagging_all_count'] :
+        (int)$Einstellungen['sonstiges']['sonstiges_tagging_all_count'] :
         100;
     $limit         = ' LIMIT ' . $limit;
     $tagwolke_objs = Shop::DB()->query(
         "SELECT ttag.kTag, ttag.cName, tseo.cSeo, sum(ttagartikel.nAnzahlTagging) AS Anzahl
             FROM ttag
             JOIN ttagartikel ON ttagartikel.kTag = ttag.kTag
-            LEFT JOIN tseo ON tseo.cKey = 'kTag' AND tseo.kKey = ttag.kTag AND tseo.kSprache = " . (int) $_SESSION['kSprache'] . "
+            LEFT JOIN tseo ON tseo.cKey = 'kTag' AND tseo.kKey = ttag.kTag AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
             WHERE ttag.nAktiv = 1
-                AND ttag.kSprache = " . (int) $_SESSION['kSprache'] . "
+                AND ttag.kSprache = " . (int)$_SESSION['kSprache'] . "
             GROUP BY ttag.cName
             ORDER BY Anzahl DESC" . $limit, 2
     );
@@ -357,12 +357,7 @@ function gibTagging($Einstellungen)
  */
 function gibNewsletterHistory()
 {
-    $oNewsletterHistory_arr = Shop::DB()->query(
-        "SELECT kNewsletterHistory, cBetreff, DATE_FORMAT(dStart, '%d.%m.%Y %H:%i') AS Datum, cHTMLStatic
-            FROM tnewsletterhistory
-            WHERE kSprache = " . (int) $_SESSION['kSprache'] . "
-            ORDER BY dStart DESC", 2
-    );
+    $oNewsletterHistory_arr = Shop::DB()->selectAll('tnewsletterhistory', 'kSprache', (int)$_SESSION['kSprache'], 'kNewsletterHistory, cBetreff, DATE_FORMAT(dStart, \'%d.%m.%Y %H:%i\') AS Datum, cHTMLStatic', 'dStart DESC');
     // URLs bauen
     if (is_array($oNewsletterHistory_arr) && count($oNewsletterHistory_arr) > 0) {
         foreach ($oNewsletterHistory_arr as $i => $oNewsletterHistory) {
@@ -378,8 +373,9 @@ function gibNewsletterHistory()
  */
 function gibSitemapKategorien()
 {
-    $oKategorieliste = new KategorieListe();
-    $oKategorieliste->holKategorienAufEinenBlick(3, $_SESSION['Kundengruppe']->kKundengruppe, $_SESSION['kSprache']);
+    $helper                    = KategorieHelper::getInstance();
+    $oKategorieliste           = new KategorieListe();
+    $oKategorieliste->elemente = $helper->combinedGetAll();
 
     return $oKategorieliste;
 }
@@ -390,7 +386,7 @@ function gibSitemapKategorien()
 function gibSitemapGlobaleMerkmale()
 {
     $isDefaultLanguage = standardspracheAktiv();
-    $cacheID           = 'gsgm_' . (($isDefaultLanguage === true) ? 'd_' : '') . (int) $_SESSION['kSprache'];
+    $cacheID           = 'gsgm_' . (($isDefaultLanguage === true) ? 'd_' : '') . (int)$_SESSION['kSprache'];
     if (($oMerkmal_arr = Shop::Cache()->get($cacheID)) === false) {
         $oMerkmal_arr    = array();
         $cDatei          = 'navi.php';
@@ -403,7 +399,7 @@ function gibSitemapGlobaleMerkmale()
             $cSQL            = " JOIN tmerkmal ON tmerkmal.kMerkmal = tmerkmalsprache.kMerkmal";
             $cSQL .= " JOIN tmerkmalwert ON tmerkmalwert.kMerkmal = tmerkmal.kMerkmal";
             $cSQL .= " JOIN tmerkmalwertsprache ON tmerkmalwertsprache.kMerkmalWert = tmerkmalwert.kMerkmalWert";
-            $cMerkmalWhere = " AND tmerkmalsprache.kSprache = " . (int) $_SESSION['kSprache'];
+            $cMerkmalWhere = " AND tmerkmalsprache.kSprache = " . (int)$_SESSION['kSprache'];
         }
         $oMerkmalTMP_arr = Shop::DB()->query(
             "SELECT {$cMerkmalTabelle}.*, tmerkmalwertsprache.cWert, tseo.cSeo, tmerkmalwertsprache.kMerkmalWert, tmerkmal.nSort, tmerkmal.nGlobal, tmerkmal.cTyp, tmerkmalwert.cBildPfad AS cBildPfadMW, tmerkmal.cBildpfad
@@ -544,15 +540,15 @@ function verarbeiteMerkmalWertBild(&$oMerkmalWert)
 function gibBoxNews($BoxenEinstellungen)
 {
     $nBoxenLimit = (intval($BoxenEinstellungen['news']['news_anzahl_box']) > 0) ?
-        (int) $BoxenEinstellungen['news']['news_anzahl_box'] :
+        (int)$BoxenEinstellungen['news']['news_anzahl_box'] :
         3;
 
     return Shop::DB()->query(
         "SELECT DATE_FORMAT(dErstellt, '%M, %Y') AS Datum, count(*) AS nAnzahl, DATE_FORMAT(dErstellt, '%m') AS nMonat
             FROM tnews
-            WHERE kSprache = " . (int) $_SESSION['kSprache'] . "
+            WHERE kSprache = " . (int)$_SESSION['kSprache'] . "
                 AND nAktiv = 1
-                AND (cKundengruppe LIKE '%;-1;%' OR cKundengruppe LIKE '%;" . (int) $_SESSION['Kundengruppe']->kKundengruppe . ";%')
+                AND (cKundengruppe LIKE '%;-1;%' OR cKundengruppe LIKE '%;" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";%')
             GROUP BY DATE_FORMAT(dErstellt, '%M')
             ORDER BY dErstellt DESC
             LIMIT " . $nBoxenLimit, 2
@@ -574,10 +570,10 @@ function gibSitemapNews()
                     AND tnewsmonatsuebersicht.kSprache =1
                 LEFT JOIN tseo ON cKey = 'kNewsMonatsUebersicht'
                     AND kKey = tnewsmonatsuebersicht.kNewsMonatsUebersicht
-                    AND tseo.kSprache = " . (int) $_SESSION['kSprache'] . "
+                    AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
                 WHERE tnews.dGueltigVon < now()
                     AND tnews.nAktiv = 1
-                    AND tnews.kSprache = " . (int) $_SESSION['kSprache'] . "
+                    AND tnews.kSprache = " . (int)$_SESSION['kSprache'] . "
                 GROUP BY year(tnews.dGueltigVon) , month(tnews.dGueltigVon)
                 ORDER BY tnews.dGueltigVon DESC", 2
         );
@@ -591,10 +587,10 @@ function gibSitemapNews()
                         LEFT JOIN tnewskommentar ON tnews.kNews = tnewskommentar.kNews
                         LEFT JOIN tseo ON tseo.cKey = 'kNews'
                             AND tseo.kKey = tnews.kNews
-                            AND tseo.kSprache = " . (int) $_SESSION['kSprache'] . "
-                        WHERE tnews.kSprache = " . (int) $_SESSION['kSprache'] . "
+                            AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
+                        WHERE tnews.kSprache = " . (int)$_SESSION['kSprache'] . "
                             AND tnews.nAktiv = 1
-                            AND (tnews.cKundengruppe LIKE '%;-1;%' OR tnews.cKundengruppe LIKE '%;" . (int) $_SESSION['Kundengruppe']->kKundengruppe . ";%')
+                            AND (tnews.cKundengruppe LIKE '%;-1;%' OR tnews.cKundengruppe LIKE '%;" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";%')
                             AND (MONTH(tnews.dGueltigVon) = '" . $oNewsMonatsUebersicht->nMonat . "') && (tnews.dGueltigVon <= now())
                             AND (YEAR(tnews.dGueltigVon) = '" . $oNewsMonatsUebersicht->nJahr . "') && (tnews.dGueltigVon <= now())
                         GROUP BY tnews.kNews
@@ -623,7 +619,7 @@ function gibSitemapNews()
  */
 function gibNewsKategorie()
 {
-    $cacheID = 'news_category_' . (int) $_SESSION['kSprache'] . '_' . (int) $_SESSION['Kundengruppe']->kKundengruppe;
+    $cacheID = 'news_category_' . (int)$_SESSION['kSprache'] . '_' . (int)$_SESSION['Kundengruppe']->kKundengruppe;
     if (($oNewsKategorie_arr = Shop::Cache()->get($cacheID)) === false) {
         $oNewsKategorie_arr = Shop::DB()->query(
             "SELECT tnewskategorie.kNewsKategorie, tnewskategorie.kSprache, tnewskategorie.cName,
@@ -636,12 +632,12 @@ function gibNewsKategorie()
                 LEFT JOIN tnews ON tnews.kNews = tnewskategorienews.kNews
                 LEFT JOIN tseo ON tseo.cKey = 'kNewsKategorie'
                     AND tseo.kKey = tnewskategorie.kNewsKategorie
-                    AND tseo.kSprache = " . (int) $_SESSION['kSprache'] . "
-                WHERE tnewskategorie.kSprache = " . (int) $_SESSION['kSprache'] . "
+                    AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
+                WHERE tnewskategorie.kSprache = " . (int)$_SESSION['kSprache'] . "
                     AND tnewskategorie.nAktiv = 1
                     AND tnews.nAktiv = 1
                     AND tnews.dGueltigVon <= now()
-                    AND (tnews.cKundengruppe LIKE '%;-1;%' OR tnews.cKundengruppe LIKE '%;" . (int) $_SESSION['Kundengruppe']->kKundengruppe . ";%')
+                    AND (tnews.cKundengruppe LIKE '%;-1;%' OR tnews.cKundengruppe LIKE '%;" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";%')
                 GROUP BY tnewskategorienews.kNewsKategorie
                 ORDER BY tnewskategorie.nSort DESC", 2
         );
@@ -659,12 +655,12 @@ function gibNewsKategorie()
                         JOIN tnewskategorienews ON tnewskategorienews.kNews = tnews.kNews
                         LEFT JOIN tseo ON tseo.cKey = 'kNews'
                             AND tseo.kKey = tnews.kNews
-                            AND tseo.kSprache = " . (int) $_SESSION['kSprache'] . "
-                        WHERE tnews.kSprache = " . (int) $_SESSION['kSprache'] . "
+                            AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
+                        WHERE tnews.kSprache = " . (int)$_SESSION['kSprache'] . "
                             AND tnewskategorienews.kNewsKategorie = " . $oNewsKategorie->kNewsKategorie . "
                             AND tnews.nAktiv = 1
                             AND tnews.dGueltigVon <= now()
-                            AND (tnews.cKundengruppe LIKE '%;-1;%' OR tnews.cKundengruppe LIKE '%;" . (int) $_SESSION['Kundengruppe']->kKundengruppe . ";%')
+                            AND (tnews.cKundengruppe LIKE '%;-1;%' OR tnews.cKundengruppe LIKE '%;" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";%')
                         GROUP BY tnews.kNews
                         ORDER BY tnews.dGueltigVon DESC", 2
                 );
@@ -699,7 +695,7 @@ function gibGratisGeschenkArtikel($Einstellungen)
         $cSQLSort = " ORDER BY tartikel.fLagerbestand DESC";
     }
     $cSQLLimit = (intval($Einstellungen['sonstiges']['sonstiges_gratisgeschenk_anzahl']) > 0) ?
-        " LIMIT " . (int) $Einstellungen['sonstiges']['sonstiges_gratisgeschenk_anzahl'] :
+        " LIMIT " . (int)$Einstellungen['sonstiges']['sonstiges_gratisgeschenk_anzahl'] :
         '';
     $oArtikelGeschenkTMP_arr = Shop::DB()->query(
         "SELECT tartikel.kArtikel, tartikelattribut.cWert
@@ -835,11 +831,11 @@ function gibNewsArchiv()
             LEFT JOIN tnewskommentar ON tnewskommentar.kNews = tnews.kNews
             LEFT JOIN tseo ON tseo.cKey = 'kNews'
                 AND tseo.kKey = tnews.kNews
-                AND tseo.kSprache = " . (int) $_SESSION['kSprache'] . "
-            WHERE tnews.kSprache = " . (int) $_SESSION['kSprache'] . "
+                AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
+            WHERE tnews.kSprache = " . (int)$_SESSION['kSprache'] . "
                 AND tnews.nAktiv = 1
                 AND MONTH(tnews.dErstellt)='" . date('m') . "'
-                AND (tnews.cKundengruppe LIKE '%;-1;%' OR tnews.cKundengruppe LIKE '%;" . (int) $_SESSION['Kundengruppe']->kKundengruppe . ";%')
+                AND (tnews.cKundengruppe LIKE '%;-1;%' OR tnews.cKundengruppe LIKE '%;" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";%')
             GROUP BY tnews.kNews
             ORDER BY tnews.dErstellt DESC", 2
     );

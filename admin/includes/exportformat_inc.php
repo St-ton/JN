@@ -343,11 +343,7 @@ function verarbeiteYategoExport(&$Artikel, $exportformat, $ExportEinstellungen, 
         $cVarianten       = '';
         $kKategorie_arr   = array(); // Alle Kategorien vom Artikel
         $kYatKategoie_arr = array(); // Alle Yatego Kategorien vom Artikel
-        $oKategorie_arr   = Shop::DB()->query(
-            "SELECT kKategorie
-                FROM tkategorieartikel
-                WHERE kArtikel = " . (int)$Artikel->kArtikel, 2
-        );
+        $oKategorie_arr   = Shop::DB()->selectAll('tkategorieartikel', 'kArtikel', (int)$Artikel->kArtikel, 'kKategorie');
         if (is_array($oKategorie_arr) && count($oKategorie_arr) > 0) {
             foreach ($oKategorie_arr as $oKategorie) {
                 $kKategorie_arr[] = $oKategorie->kKategorie;
@@ -609,7 +605,7 @@ function getEinstellungenExport($kExportformat)
     $kExportformat = (int)$kExportformat;
     $ret           = array();
     if ($kExportformat > 0) {
-        $einst = Shop::DB()->query("SELECT cName, cWert FROM texportformateinstellungen WHERE kExportformat = " . $kExportformat, 2);
+        $einst = Shop::DB()->selectAll('texportformateinstellungen', 'kExportformat', $kExportformat, 'cName, cWert');
         foreach ($einst as $eins) {
             if ($eins->cName) {
                 $ret[$eins->cName] = $eins->cWert;
@@ -630,7 +626,7 @@ function baueArtikelExportSQL(&$oExportformat)
     $cSQL_arr['Where'] = '';
     $cSQL_arr['Join']  = '';
 
-    if (!$oExportformat->kExportformat) {
+    if (empty($oExportformat->kExportformat)) {
         return $cSQL_arr;
     }
     $cExportEinstellungAssoc_arr = getEinstellungenExport($oExportformat->kExportformat);
@@ -640,14 +636,13 @@ function baueArtikelExportSQL(&$oExportformat)
             $cSQL_arr['Where'] = " AND kVaterArtikel = 0";
             break;
         case 3:
-            $cSQL_arr['Where'] = " AND (tartikel.nIstVater != 1
-                            OR tartikel.kEigenschaftKombi > 0)";
+            $cSQL_arr['Where'] = " AND (tartikel.nIstVater != 1 OR tartikel.kEigenschaftKombi > 0)";
             break;
     }
     if (isset($cExportEinstellungAssoc_arr['exportformate_lager_ueber_null']) && $cExportEinstellungAssoc_arr['exportformate_lager_ueber_null'] === 'Y') {
-        $cSQL_arr['Where'] .= " AND (NOT (tartikel.fLagerbestand<=0 AND tartikel.cLagerBeachten='Y'))";
+        $cSQL_arr['Where'] .= " AND (NOT (tartikel.fLagerbestand <= 0 AND tartikel.cLagerBeachten = 'Y'))";
     } elseif (isset($cExportEinstellungAssoc_arr['exportformate_lager_ueber_null']) && $cExportEinstellungAssoc_arr['exportformate_lager_ueber_null'] === 'O') {
-        $cSQL_arr['Where'] .= " AND (NOT (tartikel.fLagerbestand<=0 AND tartikel.cLagerBeachten='Y') OR tartikel.cLagerKleinerNull='Y')";
+        $cSQL_arr['Where'] .= " AND (NOT (tartikel.fLagerbestand <= 0 AND tartikel.cLagerBeachten = 'Y') OR tartikel.cLagerKleinerNull = 'Y')";
     }
 
     if (isset($cExportEinstellungAssoc_arr['exportformate_preis_ueber_null']) && $cExportEinstellungAssoc_arr['exportformate_preis_ueber_null'] === 'Y') {
@@ -681,8 +676,12 @@ function holeMaxExportArtikelAnzahl(&$oExportformat)
                         )
                 )';
     }
+    $cid = 'xp_' . md5(json_encode($cSQL_arr) . $sql);
+    if (($count = Shop::Cache()->get($cid)) !== false) {
+        return $count;
+    }
 
-    return Shop::DB()->query(
+    $count = Shop::DB()->query(
         "SELECT count(*) AS nAnzahl
             FROM tartikel
             LEFT JOIN tartikelattribut ON tartikelattribut.kArtikel = tartikel.kArtikel
@@ -694,4 +693,7 @@ function holeMaxExportArtikelAnzahl(&$oExportformat)
                 AND tartikelsichtbarkeit.kArtikel IS NULL
                 {$sql}", 1
     );
+    Shop::Cache()->set($cid, $count, [CACHING_GROUP_CORE], 120);
+
+    return $count;
 }

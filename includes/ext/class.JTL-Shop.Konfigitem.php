@@ -504,7 +504,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 }
             }
 
-            return;
+            return null;
         }
 
         /**

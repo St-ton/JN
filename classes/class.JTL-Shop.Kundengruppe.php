@@ -381,7 +381,7 @@ class Kundengruppe
     {
         $attributes = array();
         if ($kKundengruppe > 0) {
-            $attr_arr = Shop::DB()->query("SELECT * FROM tkundengruppenattribut WHERE kKundengruppe = " . (int)$kKundengruppe, 2);
+            $attr_arr = Shop::DB()->selectAll('tkundengruppenattribut', 'kKundengruppe', (int)$kKundengruppe);
             foreach ($attr_arr as $Att) {
                 $attributes[strtolower($Att->cName)] = $Att->cWert;
             }

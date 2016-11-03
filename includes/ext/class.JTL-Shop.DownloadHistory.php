@@ -70,12 +70,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
             $kDownload            = (int)$kDownload;
             $oDownloadHistory_arr = array();
             if ($kDownload > 0) {
-                $oHistory_arr = Shop::DB()->query(
-                    "SELECT kDownloadHistory
-                        FROM tdownloadhistory
-                        WHERE kDownload = " . $kDownload . "
-                        ORDER BY dErstellt DESC", 2
-                );
+                $oHistory_arr = Shop::DB()->selectAll('tdownloadhistory', 'kDownload', $kDownload, 'kDownloadHistory', 'dErstellt DESC');
                 if (count($oHistory_arr) > 0) {
                     foreach ($oHistory_arr as $oHistory) {
                         $oDownloadHistory_arr[] = new self($oHistory->kDownloadHistory);

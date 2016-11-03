@@ -4,9 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 require_once dirname(__FILE__) . '/includes/admininclude.php';
-
+/** @global JTLSmarty $smarty */
 setzeSprache();
-global $smarty;
 $oAccount->permission('OBJECTCACHE_VIEW', true, true);
 $notice       = '';
 $error        = '';
@@ -39,7 +38,7 @@ switch ($action) {
         //clear the smarty page cache
         $tab     = 'massaction';
         $_smarty = new JTLSmarty(true, false, false);
-        $_smarty->setCachingParams(true);
+        $_smarty->setCachingParams();
         $res = $_smarty->clearAllCache();
         if ($res === true) {
             $notice .= 'Seiten-Cache erfolgreich gel&ouml;scht.';
@@ -198,10 +197,10 @@ switch ($action) {
                             $value->cWert = 'apc';
                         } elseif (in_array('xcache', $availableMethods)) {
                             $value->cWert = 'xcache';
-                        } elseif (in_array('file', $availableMethods)) {
+                        } elseif (in_array('advancedfile', $availableMethods)) {
+                            $value->cWert = 'advancedfile';
+                        }  elseif (in_array('file', $availableMethods)) {
                             $value->cWert = 'file';
-                        } elseif (in_array('mysql', $availableMethods)) {
-                            $value->cWert = 'mysql';
                         } else {
                             $value->cWert = 'null';
                         }

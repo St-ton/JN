@@ -16,7 +16,7 @@ function getSmarty()
            ->setTemplateDir(PFAD_ROOT . PFAD_ADMIN . PFAD_TEMPLATES)
            ->setCompileDir(PFAD_ROOT . PFAD_ADMIN . PFAD_COMPILEDIR)
            ->setConfigDir($smarty->getTemplateDir($smarty->context) . 'lang/')
-           ->registerResource('db', array('db_get_template', 'db_get_timestamp', 'db_get_secure', 'db_get_trusted'));
+           ->registerResource('db', new SmartyResourceNiceDB('export'));
 
     return $smarty;
 }
@@ -26,16 +26,23 @@ function getSmarty()
  */
 function bearbeiteExportformate($oJobQueue)
 {
+    $oJobQueue->nInArbeit        = 1;
+    $oJobQueue->dZuletztGelaufen = date('Y-m-d H:i');
+    $oJobQueue->updateJobInDB();
     $smarty               = getSmarty();
-    $oJobQueue->nInArbeit = 1;
     $oExportformat        = $oJobQueue->holeJobArt();
+    if (empty($oExportformat)) {
+        Jtllog::cronLog('Invalid export format for job queue ID ' . $oJobQueue->kJobQueue);
+        return;
+    }
     $max                  = holeMaxExportArtikelAnzahl($oExportformat);
     $start                = microtime(true);
     $cacheHits            = 0;
     $cacheMisses          = 0;
+    $noCache              = (isset($oExportformat->nUseCache) && $oExportformat->nUseCache === '0');
     Jtllog::cronLog('Starting exportformat "' . $oExportformat->cName . '" for language ' . (int)$oExportformat->kSprache .
         ' and customer group ' . (int)$oExportformat->kKundengruppe . ' - ' . $oJobQueue->nLimitN . '/' . $max->nAnzahl . ' products exported');
-    Jtllog::cronLog('Caching enabled? ' . ((Shop::Cache()->isActive()) ? 'Yes' : 'No'), 2);
+    Jtllog::cronLog('Caching enabled? ' . ((Shop::Cache()->isActive() && !$noCache) ? 'Yes' : 'No'), 2);
     // Kampagne
     if (isset($oExportformat->kKampagne) && $oExportformat->kKampagne > 0) {
         $oKampagne = Shop::DB()->select('tkampagne', ['kKampagne', 'nAktiv'], [(int)$oExportformat->kKampagne, 1]);
@@ -94,7 +101,7 @@ function bearbeiteExportformate($oJobQueue)
                             )
                     )';
         }
-
+        $shopURL      = Shop::getURL();
         $cSQL_arr     = baueArtikelExportSQL($exportformat);
         $oArtikel_arr = Shop::DB()->query(
             "SELECT tartikel.kArtikel
@@ -110,7 +117,6 @@ function bearbeiteExportformate($oJobQueue)
                 ORDER BY kArtikel
                 LIMIT " . $oJobQueue->nLimitN . ", " . $oJobQueue->nLimitM, 2
         );
-        $shopURL     = Shop::getURL();
         if (is_array($oArtikel_arr) && count($oArtikel_arr) > 0) {
             $oArtikelOptionen                            = new stdClass();
             $oArtikelOptionen->nMerkmale                 = 1;
@@ -152,12 +158,10 @@ function bearbeiteExportformate($oJobQueue)
                 $search[]  = ';';
                 $replace[] = $ExportEinstellungen['exportformate_semikolon'];
             }
-
             $iso = (isset($ExportEinstellungen['exportformate_lieferland'])) ? $ExportEinstellungen['exportformate_lieferland'] : '';
-
             foreach ($oArtikel_arr as $tartikel) {
                 $Artikel = new Artikel();
-                $Artikel->fuelleArtikel($tartikel->kArtikel, $oArtikelOptionen, (int)$exportformat->kKundengruppe, (int)$exportformat->kSprache);
+                $Artikel->fuelleArtikel($tartikel->kArtikel, $oArtikelOptionen, (int)$exportformat->kKundengruppe, (int)$exportformat->kSprache, $noCache);
                 if ($Artikel->kArtikel > 0) {
                     if ($Artikel->cacheHit === true) {
                         ++$cacheHits;
@@ -238,16 +242,22 @@ function bearbeiteExportformate($oJobQueue)
                         }
                     }
                 }
-                $oJobQueue->nLimitN += 1;
-                $oJobQueue->dZuletztGelaufen = date('Y-m-d H:i');
-                $oJobQueue->updateJobInDB();
+                ++$oJobQueue->nLimitN;
+                //max. 10 status updates per run
+                if (($oJobQueue->nLimitN % max(round($oJobQueue->nLimitM / 10), 10)) === 0) {
+                    Jtllog::cronLog($oJobQueue->nLimitN . '/' . $max->nAnzahl . ' products exported', 2);
+                }
             }
             fclose($datei);
 
             updateExportformatQueueBearbeitet($oJobQueue);
-            $oJobQueue->nInArbeit = 0;
+            $oJobQueue->dZuletztGelaufen = date('Y-m-d H:i');
+            $oJobQueue->nInArbeit        = 0;
             $oJobQueue->updateJobInDB();
-        } else {
+        }
+        //finalize job when there are no more articles to export
+        if (!(is_array($oArtikel_arr) && count($oArtikel_arr) > 0) || ($oJobQueue->nLimitN >= $max->nAnzahl)) {
+            Jtllog::cronLog('Finalizing job.', 2);
             $upd = new stdClass();
             $upd->dZuletztErstellt = 'now()';
             Shop::DB()->update('texportformat', 'kExportformat', (int)$oJobQueue->kKey, $upd);
@@ -272,6 +282,7 @@ function bearbeiteExportformate($oJobQueue)
     }
     Jtllog::cronLog('Finished after ' . round(microtime(true) - $start, 4) . 's. Article cache hits: ' . $cacheHits . ', misses: ' . $cacheMisses);
 }
+
 
 /**
  * @param object $oJobQueue

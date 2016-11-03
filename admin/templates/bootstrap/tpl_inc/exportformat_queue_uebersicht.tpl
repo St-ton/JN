@@ -35,20 +35,20 @@
                                     {foreach name=exportformatqueue from=$oExportformatCron_arr item=oExportformatCron}
                                         <tr class="tab_bg{$smarty.foreach.exportformatqueue.iteration%2}">
                                             <td class="tleft">
-                                                <input name="kCron[]" type="checkbox" value="{$oExportformatCron->kCron}">
+                                                <input name="kCron[]" type="checkbox" value="{$oExportformatCron->kCron}" id="kCron-{$oExportformatCron->kCron}" />
                                             </td>
-                                            <td class="tleft">{$oExportformatCron->cName}</td>
-                                            <td class="tleft">{$oExportformatCron->Sprache->cNameDeutsch}
-                                                / {$oExportformatCron->Waehrung->cName}
-                                                / {$oExportformatCron->Kundengruppe->cName}</td>
+                                            <td class="tleft"><label for="kCron-{$oExportformatCron->kCron}">{$oExportformatCron->cName}</label></td>
+                                            <td class="tleft">{$oExportformatCron->Sprache->cNameDeutsch}/{$oExportformatCron->Waehrung->cName}/{$oExportformatCron->Kundengruppe->cName}</td>
                                             <td class="tcenter">{$oExportformatCron->dStart_de}</td>
                                             <td class="tcenter">{$oExportformatCron->cAlleXStdToDays}</td>
                                             <td class="tcenter">{if isset($oExportformatCron->oJobQueue->nLimitN) && $oExportformatCron->oJobQueue->nLimitN > 0}{$oExportformatCron->oJobQueue->nLimitN}{else}0{/if}
                                                 von {if $oExportformatCron->nSpecial == "1"}{$oExportformatCron->nAnzahlArtikelYatego->nAnzahl}{else}{$oExportformatCron->nAnzahlArtikel->nAnzahl}{/if}</td>
-                                            <td class="tcenter">{$oExportformatCron->dLetzterStart_de}</td>
-                                            <td class="tcenter">{$oExportformatCron->dNaechsterStart_de}</td>
+                                            <td class="tcenter">{if $oExportformatCron->dLetzterStart_de === '00.00.0000 00:00'}-{else}{$oExportformatCron->dLetzterStart_de}{/if}</td>
+                                            <td class="tcenter">{if $oExportformatCron->dNaechsterStart_de === null}sofort{else}{$oExportformatCron->dNaechsterStart_de}{/if}</td>
                                             <td class="tcenter">
-                                                <a href="exportformat_queue.php?action=editieren&kCron={$oExportformatCron->kCron}&token={$smarty.session.jtl_token}" class="btn btn-default"><i class="fa fa-edit"></i></a>
+                                                <a href="exportformat_queue.php?action=editieren&kCron={$oExportformatCron->kCron}&token={$smarty.session.jtl_token}"
+                                                   class="btn btn-default" title="{#modify#}"><i class="fa fa-edit"></i>
+                                                </a>
                                             </td>
                                         </tr>
                                     {/foreach}

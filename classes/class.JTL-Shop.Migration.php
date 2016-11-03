@@ -73,7 +73,6 @@ class Migration implements JsonSerializable
      */
     public function getCreated()
     {
-        // 20160222135131
         return DateTime::createFromFormat('YmdHis', $this->getId());
     }
 

@@ -7,7 +7,7 @@
 require_once dirname(__FILE__) . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . 'toolsajax.server.php';
 $oAccount->permission('SLIDER_VIEW', true, true);
-
+/** @global JTLSmarty $smarty */
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'slider_inc.php';
 $cFehler      = '';
 $cHinweis     = '';
@@ -24,9 +24,9 @@ switch ($cAction) {
             $aSlide               = $_REQUEST['aSlide'][$aSlideKey[$i]];
             $oSlide->kSlide       = ((strpos($aSlideKey[$i], 'neu') === false) ? $aSlideKey[$i] : null);
             $oSlide->kSlider      = $kSlider;
-            $oSlide->cTitel       = $aSlide['cTitel'];
+            $oSlide->cTitel       = htmlspecialchars($aSlide['cTitel']);
             $oSlide->cBild        = $aSlide['cBild'];
-            $oSlide->cText        = $aSlide['cText'];
+            $oSlide->cText        = htmlspecialchars($aSlide['cText']);
             $oSlide->cLink        = $aSlide['cLink'];
             $oSlide->nSort        = $aSlide['nSort'];
             if ($aSlide['delete'] == 1) {

@@ -19,12 +19,10 @@ function holeBewertung($kBewertung)
  */
 function editiereBewertung($cPost_arr)
 {
-    global $Einstellungen;
-
     require_once PFAD_ROOT . PFAD_INCLUDES . 'bewertung_inc.php';
 
     $kBewertung = verifyGPCDataInteger('kBewertung');
-
+    $conf       = Shop::getConfig([CONF_BEWERTUNG]);
     if ($kBewertung > 0 && !empty($cPost_arr['cName']) && !empty($cPost_arr['cTitel']) && isset($cPost_arr['nSterne']) && intval($cPost_arr['nSterne']) > 0) {
         $oBewertung = holeBewertung($kBewertung);
         if (isset($oBewertung->kBewertung) && $oBewertung->kBewertung > 0) {
@@ -35,7 +33,7 @@ function editiereBewertung($cPost_arr)
             $upd->nSterne = (int)$cPost_arr['nSterne'];
             Shop::DB()->update('tbewertung', 'kBewertung', $kBewertung, $upd);
             // Durchschnitt neu berechnen
-            aktualisiereDurchschnitt($oBewertung->kArtikel, $Einstellungen['bewertung']['bewertung_freischalten']);
+            aktualisiereDurchschnitt($oBewertung->kArtikel, $conf['bewertung']['bewertung_freischalten']);
 
             return true;
         }

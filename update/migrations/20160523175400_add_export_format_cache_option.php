@@ -1,7 +1,7 @@
 <?php
 /**
  * @author fm
- * @created Mon, 35 May 2016 17:54:00 +0200
+ * @created Mon, 23 May 2016 17:54:00 +0200
  */
 
 /**
@@ -24,7 +24,7 @@ class Migration_20160523175400 extends Migration implements IMigration
 
     public function up()
     {
-        $this->execute("ALTER TABLE `texportformat` ADD COLUMN `nUseCache` TINYINT(3) UNSIGNED NOT NULL DEFAULT 0");
+        $this->execute("ALTER TABLE `texportformat` ADD COLUMN `nUseCache` TINYINT(3) UNSIGNED NOT NULL DEFAULT 1");
     }
 
     public function down()

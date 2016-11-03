@@ -77,7 +77,7 @@
                             {/if}
                         </div>
                     {/if}
-                    {if ($Artikel->Bewertungen->oBewertungGesamt->nAnzahl > 0)}
+                    {if ($Einstellungen.bewertung.bewertung_anzeigen === 'Y' && $Artikel->Bewertungen->oBewertungGesamt->nAnzahl > 0)}
                         <div class="rating-wrapper col-xs-4 text-right" itemprop="aggregateRating" itemscope itemtype="http://schema.org/AggregateRating">
                         <span itemprop="ratingValue"
                               class="hidden">{$Artikel->Bewertungen->oBewertungGesamt->fDurchschnitt}</span>
@@ -92,7 +92,7 @@
                 <div class="clearfix top10"></div>
             {/if}
 
-            {if $Artikel->cKurzBeschreibung}
+            {if $Einstellungen.artikeldetails.artikeldetails_kurzbeschreibung_anzeigen === 'Y' && $Artikel->cKurzBeschreibung}
                 {block name="productdetails-info-description"}
                 <div class="shortdesc" itemprop="description">
                     {$Artikel->cKurzBeschreibung}
@@ -103,7 +103,7 @@
 
             {if $Einstellungen.artikeldetails.artikeldetails_kategorie_anzeigen === 'Y'}
                 {block name="productdetails-info-category"}
-                <p class="product-category">
+                <p class="product-category word-break">
                     <span class="text-muted">{lang key="category" section="global"}: </span>
                     {assign var=i_kat value=$Brotnavi|@count}{assign var=i_kat value=$i_kat-2}
                     <a href="{$Brotnavi[$i_kat]->url}">{$Brotnavi[$i_kat]->name}</a>
@@ -171,7 +171,6 @@
 
 </form>
 
-{include file="productdetails/download.tpl"}
 {include file="productdetails/tabs.tpl"}
 
 <div class="clearfix"></div>

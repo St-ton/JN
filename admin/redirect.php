@@ -7,7 +7,7 @@
 require_once dirname(__FILE__) . '/includes/admininclude.php';
 
 $oAccount->permission('REDIRECT_VIEW', true, true);
-
+/** @global JTLSmarty $smarty */
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 
 $aData     = (isset($_POST['aData'])) ? $_POST['aData'] : null;
@@ -100,7 +100,7 @@ $oFilter->assemble();
 
 $oPagination = (new Pagination())
     ->setItemCount(Redirect::getTotalRedirectCount())
-    ->setSortByOptions([['cFromUrl', 'Url'],
+    ->setSortByOptions([['cFromUrl', 'URL'],
                         ['cToUrl', 'Weiterleitung nach'],
                         ['nCount', 'Aufrufe']])
     ->assemble();

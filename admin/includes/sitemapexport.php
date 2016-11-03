@@ -11,7 +11,7 @@ require_once PFAD_ROOT . PFAD_CLASSES_CORE . 'class.core.Shop.php';
  */
 function baueSitemap($nDatei, $data)
 {
-    writeLog(PFAD_LOGFILES . 'sitemap.log', 'Baue "' . PFAD_EXPORT . 'sitemap_' . $nDatei . '.xml", Datenlänge "' . strlen($data) . '"', 1);
+    Jtllog::writeLog('Baue "' . PFAD_EXPORT . 'sitemap_' . $nDatei . '.xml", Datenlaenge "' . strlen($data) . '"', JTLLOG_LEVEL_DEBUG);
     $conf = Shop::getSettings(array(CONF_SITEMAP));
     if (!empty($data)) {
         if (function_exists('gzopen')) {
@@ -286,7 +286,7 @@ function generateSitemapXML()
     $modification = ($conf['sitemap']['sitemap_insert_lastmod'] === 'Y') ?
         ', tartikel.dLetzteAktualisierung' :
         '';
-    $strSQL = "SELECT tartikel.kArtikel, tartikel.cName, tseo.cSeo" . $modification .
+    $strSQL = "SELECT tartikel.kArtikel, tartikel.cName, tseo.cSeo, tartikel.cArtNr" . $modification .
             " FROM tartikel
             LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                AND tartikelsichtbarkeit.kKundengruppe = " . $stdKundengruppe->kKundengruppe .
@@ -847,7 +847,6 @@ function generateSitemapXML()
         }
     }
     baueSitemap($nDatei, $sitemap_data);
-    writeLog(PFAD_LOGFILES . 'sitemap.log', print_r($nStat_arr, true), 1);
     // XML ablegen + ausgabe an user
     $datei = PFAD_ROOT . PFAD_EXPORT . 'sitemap_index.xml';
     if (is_writable($datei) || !is_file($datei)) {
@@ -861,6 +860,16 @@ function generateSitemapXML()
         executeHook(HOOK_SITEMAP_EXPORT_GENERATED, array('nAnzahlURL_arr' => $nAnzahlURL_arr, 'fTotalZeit' => $fTotalZeit));
         // Sitemap Report
         baueSitemapReport($nAnzahlURL_arr, $fTotalZeit);
+        // ping sitemap to Google and Bing
+        if (isset($conf['sitemap']['sitemap_google_ping']) && $conf['sitemap']['sitemap_google_ping'] === 'Y') {
+            $encodedSitemapIndexURL = urlencode(Shop::getURL() . '/sitemap_index.xml');
+            if (200 !== ($httpStatus = http_get_status('http://www.google.com/webmasters/tools/ping?sitemap=' . $encodedSitemapIndexURL))) {
+                Jtllog::writeLog('Sitemap ping to Google failed with status ' . $httpStatus, JTLLOG_LEVEL_NOTICE);
+            }
+            if (200 !== ($httpStatus = http_get_status('http://www.bing.com/ping?sitemap=' . $encodedSitemapIndexURL))) {
+                Jtllog::writeLog('Sitemap ping to Bing failed with status ' . $httpStatus, JTLLOG_LEVEL_NOTICE);
+            }
+        }
     }
 }
 
@@ -956,7 +965,7 @@ function baueSitemapReport($nAnzahlURL_arr, $fTotalZeit)
 
         $kSitemapReport = Shop::DB()->insert('tsitemapreport', $oSitemapReport);
         $bGZ            = function_exists('gzopen');
-        writeLog(PFAD_LOGFILES . 'sitemap.log', 'Sitemaps Report: ' . var_export($nAnzahlURL_arr, true), 1);
+        Jtllog::writeLog('Sitemaps Report: ' . var_export($nAnzahlURL_arr, true), JTLLOG_LEVEL_DEBUG);
         foreach ($nAnzahlURL_arr as $i => $nAnzahlURL) {
             if ($nAnzahlURL > 0) {
                 $oSitemapReportFile                 = new stdClass();
@@ -1043,7 +1052,6 @@ function baueExportURL($kKey, $cKey, $dLetzteAktualisierung, $oSprach_arr, $kSpr
                     $NaviFilter->Suche->kSuchanfrage = $GLOBALS['kSuchanfrage'];
                     $NaviFilter->Suche->cSuche       = $oSuchanfrage->cSuche;
                 }
-                $NaviFilter->Suche->kSuchCache = bearbeiteSuchCache($NaviFilter);
             }
             $NaviFilter = Shop::buildNaviFilter($cParameter_arr);
             if (strlen($NaviFilter->Suchanfrage->cSeo[$kSprache]) === 0) {

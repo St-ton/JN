@@ -6,7 +6,7 @@
 require_once dirname(__FILE__) . '/includes/admininclude.php';
 
 $oAccount->permission('SETTINGS_GLOBAL_META_VIEW', true, true);
-
+/** @global JTLSmarty $smarty */
 $Einstellungen = Shop::getSettings(array(CONF_METAANGABEN));
 $chinweis      = '';
 $cfehler       = '';
@@ -52,52 +52,31 @@ if (isset($_POST['einstellungen']) && intval($_POST['einstellungen']) === 1 && v
     $oGlobaleMetaAngaben->cName                 = 'Meta_Description_Praefix';
     $oGlobaleMetaAngaben->cWertName             = $cMetaDescPraefix;
     Shop::DB()->insert('tglobalemetaangaben', $oGlobaleMetaAngaben);
-    Shop::Cache()->flushTags(array(CACHING_GROUP_OPTION));
+    Shop::Cache()->flushAll();
     $chinweis .= 'Ihre Einstellungen wurden &uuml;bernommen.<br />';
     unset($oConfig_arr);
 }
 
-$oConfig_arr = Shop::DB()->query(
-    "SELECT *
-        FROM teinstellungenconf
-        WHERE kEinstellungenSektion = " . CONF_METAANGABEN . "
-        ORDER BY nSort", 2
-);
+$oConfig_arr = Shop::DB()->selectAll('teinstellungenconf', 'kEinstellungenSektion', CONF_METAANGABEN, '*', 'nSort');
 $configCount = count($oConfig_arr);
 for ($i = 0; $i < $configCount; $i++) {
     if ($oConfig_arr[$i]->cInputTyp === 'selectbox') {
-        $oConfig_arr[$i]->ConfWerte = Shop::DB()->query(
-            "SELECT *
-                FROM teinstellungenconfwerte
-                WHERE kEinstellungenConf = " . (int)$oConfig_arr[$i]->kEinstellungenConf . "
-                ORDER BY nSort", 2
-        );
+        $oConfig_arr[$i]->ConfWerte = Shop::DB()->selectAll('teinstellungenconfwerte', 'kEinstellungenConf', (int)$oConfig_arr[$i]->kEinstellungenConf, '*', 'nSort');
     }
-    $oSetValue = Shop::DB()->query(
-        "SELECT cWert
-            FROM teinstellungen
-            WHERE kEinstellungenSektion = " . CONF_METAANGABEN . "
-                AND cName = '" . $oConfig_arr[$i]->cWertName . "'", 1
-    );
+    $oSetValue = Shop::DB()->select('teinstellungen', 'kEinstellungenSektion', CONF_METAANGABEN, 'cName', $oConfig_arr[$i]->cWertName);
     $oConfig_arr[$i]->gesetzterWert = (isset($oSetValue->cWert) ? $oSetValue->cWert : null);
 }
 
-$oMetaangaben_arr = Shop::DB()->query(
-    "SELECT *
-        FROM tglobalemetaangaben
-        WHERE kSprache = " . (int)$_SESSION['kSprache'] . "
-            AND kEinstellungenSektion = " . CONF_METAANGABEN, 2
-);
-
+$oMetaangaben_arr = Shop::DB()->selectAll('tglobalemetaangaben', ['kSprache', 'kEinstellungenSektion'], [(int)$_SESSION['kSprache'], CONF_METAANGABEN]);
+$cTMP_arr         = [];
 if (is_array($oMetaangaben_arr) && count($oMetaangaben_arr) > 0) {
-    $cTMP_arr = array();
     foreach ($oMetaangaben_arr as $oMetaangaben) {
         $cTMP_arr[$oMetaangaben->cName] = $oMetaangaben->cWertName;
     }
-    $smarty->assign('oMetaangaben_arr', $cTMP_arr);
 }
 
 $smarty->assign('oConfig_arr', $oConfig_arr)
+       ->assign('oMetaangaben_arr', $cTMP_arr)
        ->assign('Sprachen', gibAlleSprachen())
        ->assign('hinweis', $chinweis)
        ->assign('fehler', $cfehler)

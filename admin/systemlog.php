@@ -7,7 +7,7 @@ require_once dirname(__FILE__) . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Jtllog.php';
 
 $oAccount->permission('SYSTEMLOG_VIEW', true, true);
-
+/** @global JTLSmarty $smarty */
 $cHinweis          = '';
 $cFehler           = '';
 $cSuche            = '';
@@ -27,13 +27,14 @@ if (strlen(verifyGPCDataInteger('nLevel')) > 0) {
     $nLevel = verifyGPCDataInteger('nLevel');
 }
 if (isset($_POST['einstellungen']) && intval($_POST['einstellungen']) === 1 && validateToken()) {
-    Shop::DB()->query("DELETE FROM teinstellungen WHERE kEinstellungenSektion = 1 AND cName = 'systemlog_flag'", 3);
-    if (isset($_POST['nFlag']) && count($_POST['nFlag']) > 0) {
-        $nFlag_arr = array_map('cleanSystemFlag', $_POST['nFlag']);
-        Shop::DB()->query("INSERT INTO teinstellungen (kEinstellungenSektion, cName, cWert) VALUES(1, 'systemlog_flag', " . Jtllog::setBitFlag($nFlag_arr) . ")", 3);
-    } else {
-        Shop::DB()->query("INSERT INTO teinstellungen (kEinstellungenSektion, cName, cWert) VALUES(1, 'systemlog_flag', 0)", 3);
-    }
+    Shop::DB()->delete('teinstellungen', ['kEinstellungenSektion', 'cName'], [1, 'systemlog_flag']);
+    $ins                        = new stdClass();
+    $ins->kEinstellungenSektion = 1;
+    $ins->cName                 = 'systemlog_flag';
+    $ins->cWert                 = (isset($_POST['nFlag']) && count($_POST['nFlag']) > 0)
+        ? Jtllog::setBitFlag(array_map('cleanSystemFlag', $_POST['nFlag']))
+        : 0;
+    Shop::DB()->insert('teinstellungen', $ins);
     Shop::Cache()->flushTags(array(CACHING_GROUP_OPTION));
 
     $cHinweis = 'Ihre Einstellungen wurden erfolgreich gespeichert.';
@@ -50,7 +51,7 @@ if ($step === 'systemlog_uebersicht') {
         ->assemble();
     // Log
     $oLog_arr = Jtllog::getLog($cSuche, $nLevel, $oPagination->getFirstPageItem(), $oPagination->getPageItemCount());
-    // Highlight
+    /** @var Jtllog $oLog */
     foreach ($oLog_arr as &$oLog) {
         $cLog = $oLog->getcLog();
         $cLog = preg_replace('/\[(.*)\] => (.*)/', '<span class="hl_key">$1</span>: <span class="hl_value">$2</span>', $cLog);
@@ -65,11 +66,11 @@ if ($step === 'systemlog_uebersicht') {
     $nFlag_arr[JTLLOG_LEVEL_DEBUG]  = Jtllog::isBitFlagSet(JTLLOG_LEVEL_DEBUG, $nSystemlogFlag);
 
     $smarty->assign('oLog_arr', $oLog_arr)
-        ->assign('oPagination', $oPagination)
-        ->assign('nFlag_arr', $nFlag_arr)
-        ->assign('JTLLOG_LEVEL_ERROR', JTLLOG_LEVEL_ERROR)
-        ->assign('JTLLOG_LEVEL_NOTICE', JTLLOG_LEVEL_NOTICE)
-        ->assign('JTLLOG_LEVEL_DEBUG', JTLLOG_LEVEL_DEBUG);
+           ->assign('oPagination', $oPagination)
+           ->assign('nFlag_arr', $nFlag_arr)
+           ->assign('JTLLOG_LEVEL_ERROR', JTLLOG_LEVEL_ERROR)
+           ->assign('JTLLOG_LEVEL_NOTICE', JTLLOG_LEVEL_NOTICE)
+           ->assign('JTLLOG_LEVEL_DEBUG', JTLLOG_LEVEL_DEBUG);
 }
 /**
  * @param $nFlag

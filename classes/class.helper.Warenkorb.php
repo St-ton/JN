@@ -123,7 +123,9 @@ class WarenkorbHelper
             }
         }
 
-        if (isset($_SESSION['Bestellung']) && $_SESSION['Bestellung']->GuthabenNutzen === 1) {
+        if (isset($_SESSION['Bestellung']) &&
+            isset($_SESSION['Bestellung']->GuthabenNutzen) &&
+            $_SESSION['Bestellung']->GuthabenNutzen === 1) {
             $amountGross = $_SESSION['Bestellung']->fGuthabenGenutzt * -1;
             $amount      = $amountGross;
 
@@ -194,7 +196,7 @@ class WarenkorbHelper
     }
 
     /**
-     * @return currency
+     * @return object
      */
     public function getCurrency()
     {
@@ -203,7 +205,7 @@ class WarenkorbHelper
     }
 
     /**
-     * @return currency iso
+     * @return string
      */
     public function getCurrencyISO()
     {
@@ -211,7 +213,7 @@ class WarenkorbHelper
     }
 
     /**
-     * @return language iso
+     * @return string
      */
     public function getLanguageISO()
     {
@@ -219,7 +221,7 @@ class WarenkorbHelper
     }
 
     /**
-     * @return state iso
+     * @return string
      */
     public function getStateISO()
     {
@@ -229,7 +231,7 @@ class WarenkorbHelper
     }
 
     /**
-     * @return return country iso
+     * @return string
      */
     public function getCountryISO()
     {

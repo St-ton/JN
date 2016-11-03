@@ -316,6 +316,7 @@ function checkeBewertungGuthabenBonus($kBewertung, $Einstellungen)
             "SELECT sum(fGuthabenBonus) AS fGuthabenProMonat
                 FROM tbewertungguthabenbonus
                 WHERE kKunde = " . $kKunde . "
+                    AND YEAR(dDatum)=" . date("Y") ."
                     AND MONTH(dDatum) = " . date('m'), 1
         );
         if (doubleval($oBewertungGuthabenBonus->fGuthabenProMonat) <= doubleval($Einstellungen['bewertung']['bewertung_max_guthaben'])) {
@@ -345,7 +346,7 @@ function checkeBewertungGuthabenBonus($kBewertung, $Einstellungen)
                 $oBewertungGuthabenBonus->dDatum         = 'now()';
                 Shop::DB()->insert('tbewertungguthabenbonus', $oBewertungGuthabenBonus);
             } else {
-                // Prüfen ob die max. Belohnung + das aktuelle Guthaben, das Max des Monats überscchreitet
+                // Prüfen ob die max. Belohnung + das aktuelle Guthaben, das Max des Monats überschreitet
                 // Falls ja, nur die Differenz von Kundenguthaben zu Max im Monat auszahlen
                 if ((doubleval($oBewertungGuthabenBonus->fGuthabenProMonat) + doubleval($Einstellungen['bewertung']['bewertung_stufe1_guthaben'])) >
                     doubleval($Einstellungen['bewertung']['bewertung_max_guthaben'])) {

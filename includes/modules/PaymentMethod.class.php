@@ -363,6 +363,7 @@ class PaymentMethod
 
     /**
      * @param string $msg
+     * @param int    $level
      * @return $this
      */
     public function doLog($msg, $level = LOGLEVEL_NOTICE)
@@ -417,12 +418,9 @@ class PaymentMethod
      */
     public function getSetting($key)
     {
-        global $Einstellungen;
-        if (!is_array($Einstellungen)) {
-            $Einstellungen = Shop::getSettings(array(CONF_ZAHLUNGSARTEN));
-        }
+        $Einstellungen = Shop::getSettings(array(CONF_ZAHLUNGSARTEN, CONF_PLUGINZAHLUNGSARTEN));
 
-        return (isset($Einstellungen['zahlungsarten']['zahlungsart_' . $this->moduleAbbr . '_' . $key])) ? $Einstellungen['zahlungsarten']['zahlungsart_' . $this->moduleAbbr . '_' . $key] : null;
+        return (isset($Einstellungen['zahlungsarten']['zahlungsart_' . $this->moduleAbbr . '_' . $key])) ? $Einstellungen['zahlungsarten']['zahlungsart_' . $this->moduleAbbr . '_' . $key] : (isset($Einstellungen['pluginzahlungsarten'][$this->moduleID . '_' . $key]) ? $Einstellungen['pluginzahlungsarten'][$this->moduleID . '_' . $key] : null);
     }
 
     /**
@@ -710,9 +708,6 @@ class PaymentMethod
                 $paymentMethod           = new $className($moduleId);
                 $paymentMethod->cModulId = $moduleId;
             }
-        } elseif ($moduleId === 'za_heidelpay_jtl') {
-            require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'heidelpay/HeidelPay.class.php';
-            $paymentMethod = new HeidelPay($moduleId);
         } elseif ($moduleId === 'za_paypal_jtl') {
             require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'paypal/PayPal.class.php';
             $paymentMethod = new PayPal($moduleId);

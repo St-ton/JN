@@ -58,7 +58,6 @@ class MerkmalWert
      * Konstruktor
      *
      * @param int $kMerkmalWert - Falls angegeben, wird der MerkmalWert mit angegebenem kMerkmalWert aus der DB geholt
-     * @return MerkmalWert
      */
     public function __construct($kMerkmalWert = 0)
     {

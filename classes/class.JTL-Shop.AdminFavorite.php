@@ -170,13 +170,13 @@ class AdminFavorite
      */
     public static function remove($kAdminlogin, $kAdminfav = 0)
     {
-        $kAdminfav   = (int) $kAdminfav;
-        $kAdminlogin = (int) $kAdminlogin;
+        $kAdminfav   = (int)$kAdminfav;
+        $kAdminlogin = (int)$kAdminlogin;
 
         if ($kAdminfav > 0) {
-            Shop::DB()->query("DELETE FROM tadminfavs WHERE kAdminfav={$kAdminfav} AND kAdminlogin={$kAdminlogin}", 3);
+            Shop::DB()->delete('tadminfavs', ['kAdminfav', 'kAdminlogin'], [$kAdminfav, $kAdminlogin]);
         } else {
-            Shop::DB()->query("DELETE FROM tadminfavs WHERE kAdminlogin={$kAdminlogin}", 3);
+            Shop::DB()->delete('tadminfavs', 'kAdminlogin', $kAdminlogin);
         }
     }
 }

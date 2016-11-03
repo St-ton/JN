@@ -3060,6 +3060,10 @@ class Artikel
         }
         $given = get_object_vars($options);
         $mask  = '';
+        if (isset($options->nDownload) && $options->nDownload === 1 && !class_exists('Download')) {
+            //unset download-option if there is no license for the download module
+            $options->nDownload = 0;
+        }
         foreach (self::getAllOptions() as $_opt) {
             $mask .= (empty($given[$_opt])) ? 0 : 1;
         }

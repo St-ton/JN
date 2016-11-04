@@ -5,8 +5,10 @@
  */
 
 /**
- * When the "Import CSV" button was clicked with the id $importerId, try to insert entries from the CSV file uploaded
- * into to the table $cTable. Call this function before you read the data from the table again!
+ * If the "Import CSV" button was clicked with the id $importerId, try to insert entries from the CSV file uploaded
+ * into to the table $cTable. Call this function before you read the data from the table again! Make sure, the CSV
+ * contains all important fields to form a valid row in your DB-table! Missing fields in the CSV will be set to the
+ * DB-tables default value if your DB is configured so.
  *
  * @param string $importerId
  * @param string $cTable

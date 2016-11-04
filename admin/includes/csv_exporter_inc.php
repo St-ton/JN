@@ -5,7 +5,7 @@
  */
 
 /**
- * When the "Export CSV" button was clicked with the id $exporterId, offer a CSV download and stop execution of current
+ * If the "Export CSV" button was clicked with the id $exporterId, offer a CSV download and stop execution of current
  * script. Call this function as soon as you can provide data to be exported but before any page output has been done!
  * Call this function for each CSV exporter on a page with its unique $exporterId!
  *

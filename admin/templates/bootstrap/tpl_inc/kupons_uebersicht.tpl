@@ -1,6 +1,5 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=#coupons# cBeschreibung=#couponsDesc# cDokuURL=#couponsURL#}
 {include file='tpl_inc/sortcontrols.tpl'}
-{include file='tpl_inc/csv_exporter.tpl'}
 
 {function kupons_uebersicht_tab}
     <div id="{$cKuponTyp}" class="tab-pane fade{if $tab === $cKuponTyp} active in{/if}">
@@ -95,8 +94,9 @@
                         <button type="submit" class="btn btn-primary" name="kKuponBearbeiten" value="0"><i class="fa fa-share"></i> {$cKuponTypName} {#create#}</button>
                         {if $oKupon_arr|@count > 0}
                             <button type="submit" class="btn btn-danger" name="action" value="loeschen"><i class="fa fa-trash"></i> {#delete#}</button>
-                            {call csvExportButton exporterId=$cKuponTyp csvFilename=$cKuponTyp|cat:'.csv'}
+                            {include file='tpl_inc/csv_export_btn.tpl' exporterId=$cKuponTyp}
                         {/if}
+                        {include file='tpl_inc/csv_import_btn.tpl' importerId="kupon"}
                     </div>
                 </div>
             </form>

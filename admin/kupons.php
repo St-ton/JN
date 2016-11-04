@@ -9,7 +9,8 @@ $oAccount->permission('ORDER_COUPON_VIEW', true, true);
 /** @global JTLSmarty $smarty */
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'kupons_inc.php';
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'csv_exporter.php';
+require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'csv_exporter_inc.php';
+require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'csv_importer_inc.php';
 
 $cHinweis     = '';
 $cFehler      = '';
@@ -17,6 +18,12 @@ $action       = '';
 $tab          = 'standard';
 $oSprache_arr = gibAlleSprachen();
 $oKupon       = null;
+
+// CSV Import ausgelöst?
+
+handleCsvImportAction('standard', 'tkupon');
+handleCsvImportAction('versandkupon', 'tkupon');
+handleCsvImportAction('neukundenkupon', 'tkupon');
 
 // Aktion ausgeloest?
 
@@ -161,6 +168,13 @@ if ($action === 'bearbeiten') {
     $nKuponVersandCount   = getCouponCount('versandkupon');
     $nKuponNeukundenCount = getCouponCount('neukundenkupon');
 
+    handleCsvExportAction('standard', 'standard.csv', $oKuponStandard_arr,
+        ['cName', 'fWert', 'cWertTyp', 'cCode', 'fMindestbestellwert', 'dGueltigAb', 'dGueltigBis', 'nVerwendungen', 'cKuponTyp']);
+    handleCsvExportAction('versandkupon', 'versandkupon.csv', $oKuponVersand_arr,
+        ['cName', 'cCode', 'fMindestbestellwert', 'dGueltigAb', 'dGueltigBis', 'nVerwendungen', 'cKuponTyp']);
+    handleCsvExportAction('neukundenkupon', 'versandkupon.csv', $oKuponNeukunden_arr,
+        ['cName', 'fWert', 'cWertTyp', 'fMindestbestellwert', 'dGueltigAb', 'dGueltigBis', 'nVerwendungen', 'cKuponTyp']);
+
     $oPaginationStandard = (new Pagination('standard'))
         ->setSortByOptions($cSortByOption_arr)
         ->setItemArray($oKuponStandard_arr)
@@ -175,13 +189,6 @@ if ($action === 'bearbeiten') {
         ->setSortByOptions($cSortByOption_arr)
         ->setItemArray($oKuponNeukunden_arr)
         ->assemble();
-
-    handleCsvExportAction('standard', $oKuponStandard_arr, ['cName', 'fWert', 'cWertTyp', 'cCode',
-        'fMindestbestellwert', 'dGueltigAb', 'dGueltigBis', 'nVerwendungen', 'cKuponTyp']);
-    handleCsvExportAction('versandkupon', $oKuponVersand_arr, ['cName', 'cCode', 'fMindestbestellwert', 'dGueltigAb',
-        'dGueltigBis', 'nVerwendungen', 'cKuponTyp']);
-    handleCsvExportAction('neukundenkupon', $oKuponNeukunden_arr, ['cName', 'fWert', 'cWertTyp', 'fMindestbestellwert',
-        'dGueltigAb', 'dGueltigBis', 'nVerwendungen', 'cKuponTyp']);
 
     $smarty->assign('tab', $tab)
         ->assign('oFilterStandard', $oFilterStandard)

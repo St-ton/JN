@@ -54,7 +54,7 @@
         {if !empty($smarty.session.Sprachen)}
             {foreach item="oSprache" from=$smarty.session.Sprachen}
                 {if $oSprache->kSprache !== $smarty.session.kSprache}
-                    <link rel="alternate" hreflang="{$oSprache->cISO}" href="{$oSprache->cURL}">
+                    <link rel="alternate" hreflang="{$oSprache->cISO639}" href="{$oSprache->cURL}">
                 {/if}
                 {if $oSprache->kSprache === $smarty.session.kSprache && $oSprache->cStandard === 'Y'}
                     <link rel="alternate" hreflang="x-default" href="{$oSprache->cURL}">

@@ -11,12 +11,28 @@
  *
  * @param string $exporterId
  * @param string $csvFilename
- * @param array $arr - array of rows to be exported as csv
- * @param array $fields - array of field/column names
+ * @param array|callable $source - array of objects to be exported as CSV or function that gives that array back on
+ *      demand
+ * @param array $fields - array of property/column names to be included or empty array for all columns (taken from
+ *      first item of $source)
+ * @param array $excluded - array of property/column names to be excluded
+ * @return bool - false = failure or exporter-id-mismatch
  */
-function handleCsvExportAction ($exporterId, $csvFilename, $arr, $fields)
+function handleCsvExportAction ($exporterId, $csvFilename, $source, $fields = [], $excluded = [])
 {
     if (validateToken() && verifyGPDataString('exportcsv') === $exporterId) {
+        if (is_callable($source)) {
+            $arr = $source();
+        } elseif (is_array($source)) {
+            $arr = $source;
+        } else {
+            return false;
+        }
+
+        if (count($fields) === 0) {
+            $fields = array_diff(array_keys(get_object_vars($arr[0])), $excluded);
+        }
+
         header('Content-Disposition: attachment; filename=' . $csvFilename);
         header('Content-Type: text/csv');
         $fs = fopen('php://output', 'w');
@@ -24,11 +40,15 @@ function handleCsvExportAction ($exporterId, $csvFilename, $arr, $fields)
 
         foreach ($arr as $elem) {
             $csvRow = [];
+
             foreach ($fields as $field) {
                 $csvRow[] = (string)$elem->$field;
             }
+
             fputcsv($fs, $csvRow);
         }
         exit();
     }
+
+    return false;
 }

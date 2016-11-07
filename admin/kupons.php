@@ -21,9 +21,7 @@ $oKupon       = null;
 
 // CSV Import ausgelöst?
 
-handleCsvImportAction('standard', 'tkupon');
-handleCsvImportAction('versandkupon', 'tkupon');
-handleCsvImportAction('neukundenkupon', 'tkupon');
+handleCsvImportAction('kupon', 'tkupon');
 
 // Aktion ausgeloest?
 
@@ -168,12 +166,15 @@ if ($action === 'bearbeiten') {
     $nKuponVersandCount   = getCouponCount('versandkupon');
     $nKuponNeukundenCount = getCouponCount('neukundenkupon');
 
-    handleCsvExportAction('standard', 'standard.csv', $oKuponStandard_arr,
-        ['cName', 'fWert', 'cWertTyp', 'cCode', 'fMindestbestellwert', 'dGueltigAb', 'dGueltigBis', 'nVerwendungen', 'cKuponTyp']);
-    handleCsvExportAction('versandkupon', 'versandkupon.csv', $oKuponVersand_arr,
-        ['cName', 'cCode', 'fMindestbestellwert', 'dGueltigAb', 'dGueltigBis', 'nVerwendungen', 'cKuponTyp']);
-    handleCsvExportAction('neukundenkupon', 'versandkupon.csv', $oKuponNeukunden_arr,
-        ['cName', 'fWert', 'cWertTyp', 'fMindestbestellwert', 'dGueltigAb', 'dGueltigBis', 'nVerwendungen', 'cKuponTyp']);
+    handleCsvExportAction('standard', 'standard.csv', function () use ($oFilterStandard) {
+            return getRawCoupons('standard', [], $oFilterStandard->getWhereSQL());
+        }, [], ['kKupon']);
+    handleCsvExportAction('versandkupon', 'versandkupon.csv', function () use ($oFilterVersand) {
+            return getRawCoupons('versandkupon', [], $oFilterVersand->getWhereSQL());
+        }, [], ['kKupon']);
+    handleCsvExportAction('neukundenkupon', 'neukundenkupon.csv', function () use ($oFilterNeukunden) {
+            return getRawCoupons('neukundenkupon', [], $oFilterNeukunden->getWhereSQL());
+        }, [], ['kKupon']);
 
     $oPaginationStandard = (new Pagination('standard'))
         ->setSortByOptions($cSortByOption_arr)

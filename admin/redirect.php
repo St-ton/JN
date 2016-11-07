@@ -110,9 +110,10 @@ $oPagination = (new Pagination())
     ->assemble();
 
 $oRedirect_arr = Redirect::getRedirects($oFilter->getWhereSQL(), $oPagination->getOrderSQL(), $oPagination->getLimitSQL());
-$allRedirects  = Redirect::getRedirects($oFilter->getWhereSQL(), $oPagination->getOrderSQL());
 
-handleCsvExportAction('redirects', 'redirects.csv', $allRedirects, ['cFromUrl', 'cToUrl']);
+handleCsvExportAction('redirects', 'redirects.csv', function () use ($oFilter, $oPagination) {
+        return Redirect::getRedirects($oFilter->getWhereSQL(), $oPagination->getOrderSQL());
+    }, ['cFromUrl', 'cToUrl']);
 
 if (!empty($oRedirect_arr) && !empty($urls)) {
     foreach ($oRedirect_arr as &$oRedirect) {

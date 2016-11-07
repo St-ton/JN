@@ -8,5 +8,5 @@
     }
 </script>
 <button type="button" class="btn btn-default" onclick="onClickCsvExport_{$exporterId}()">
-    <i class="fa fa-download"></i> Exportiere Eintr&auml;ge
+    <i class="fa fa-download"></i> {#exportCsv#}
 </button>

@@ -12,6 +12,7 @@
  *
  * @param string $importerId
  * @param string $cTable
+ * @return int - -1 if importer-id-mismatch / 0 on success / >1 import error count
  */
 function handleCsvImportAction ($importerId, $cTable)
 {
@@ -37,6 +38,12 @@ function handleCsvImportAction ($importerId, $cTable)
                     $nErrors ++;
                 }
             }
+
+            return $nErrors;
         }
+
+        return 1;
     }
+
+    return -1;
 }

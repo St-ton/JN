@@ -16,5 +16,5 @@
     }
 </script>
 <button type="button" class="btn btn-default" onclick="onClickCsvImport_{$importerId}()">
-    <i class="fa fa-upload"></i> Importiere Eintr&auml;ge
+    <i class="fa fa-upload"></i> {#importCsv#}
 </button>

@@ -4,8 +4,12 @@
 {function kupons_uebersicht_tab}
     <div id="{$cKuponTyp}" class="tab-pane fade{if $tab === $cKuponTyp} active in{/if}">
         <div class="panel panel-default">
-            {include file='tpl_inc/filtertools.tpl' oFilter=$oFilter cParam_arr=['tab'=>$cKuponTyp]}
-            {include file='tpl_inc/pagination.tpl' oPagination=$oPagination cParam_arr=['tab'=>$cKuponTyp]}
+            {if $nKuponCount > 0}
+                {include file='tpl_inc/filtertools.tpl' oFilter=$oFilter cParam_arr=['tab'=>$cKuponTyp]}
+            {/if}
+            {if $oKupon_arr|@count > 0}
+                {include file='tpl_inc/pagination.tpl' oPagination=$oPagination cParam_arr=['tab'=>$cKuponTyp]}
+            {/if}
             <form method="post" action="kupons.php">
                 {$jtl_token}
                 <input type="hidden" name="cKuponTyp" id="cKuponTyp" value="{$cKuponTyp}">
@@ -84,6 +88,8 @@
                             </tr>
                         </tfoot>
                     </table>
+                {elseif $nKuponCount > 0}
+                    <div class="alert alert-info" role="alert">{#noFilterResults#}</div>
                 {else}
                     <div class="alert alert-info" role="alert">
                         {#emptySetMessage1#} {$cKuponTypName}s {#emptySetMessage2#}

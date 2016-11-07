@@ -121,13 +121,17 @@
     </ul>
     <div class="tab-content">
         <div id="redirects" class="tab-pane fade {if !isset($cTab) || $cTab === 'redirects'} active in{/if}">
-            {if $oRedirect_arr|@count > 0}
-                <div class="panel panel-default">
+            <div class="panel panel-default">
+                {if $nRedirectCount > 0}
                     {include file='tpl_inc/filtertools.tpl' oFilter=$oFilter}
+                {/if}
+                {if $oRedirect_arr|@count > 0}
                     {include file='tpl_inc/pagination.tpl' oPagination=$oPagination cAnchor='redirects'}
-                    <form id="frmRedirect" action="redirect.php" method="post">
-                        {$jtl_token}
-                        <input type="hidden" name="aData[action]" value="save">
+                {/if}
+                <form id="frmRedirect" action="redirect.php" method="post">
+                    {$jtl_token}
+                    <input type="hidden" name="aData[action]" value="save">
+                    {if $oRedirect_arr|@count > 0}
                         <table class="list table">
                             <thead>
                             <tr>
@@ -226,8 +230,14 @@
                             </tr>
                             </tfoot>
                         </table>
-                        <div class="panel-footer">
-                            <div class="btn-group">
+                    {elseif $nRedirectCount > 0}
+                        <div class="alert alert-info" role="alert">{#noFilterResults#}</div>
+                    {else}
+                        <div class="alert alert-info" role="alert">{#noDataAvailable#}</div>
+                    {/if}
+                    <div class="panel-footer">
+                        <div class="btn-group">
+                            {if $oRedirect_arr|@count > 0}
                                 <button type="button"
                                         onclick="$('[name=\'aData\[action\]\']').val('save');$('#frmRedirect').submit();"
                                         value="{#save#}" class="btn btn-primary" title="{#save#}">
@@ -246,14 +256,12 @@
                                     Alle ohne Weiterleitung l&ouml;schen
                                 </button>
                                 {include file='tpl_inc/csv_export_btn.tpl' exporterId='redirects'}
-                            </div>
+                            {/if}
+                            {include file='tpl_inc/csv_import_btn.tpl' importerId='redirects'}
                         </div>
-                    </form>
-                </div>
-            {else}
-                <div class="alert alert-info" role="alert">{#noDataAvailable#}</div>
-                {include file='tpl_inc/csv_import_btn.tpl' importerId='redirects'}
-            {/if}
+                    </div>
+                </form>
+            </div>
         </div>
         <div id="new_redirect" class="tab-pane fade {if isset($cTab) && $cTab === 'new_redirect'} active in{/if}">
             <button class="btn btn-primary import" style="margin-bottom: 15px;">CSV-Import durchf&uuml;hren</button>

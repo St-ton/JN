@@ -143,10 +143,10 @@ if (isset($_POST['einstellungen_bearbeiten']) && isset($_POST['kZahlungsart']) &
 
 if (validateToken()) {
     if (isset($_GET['kZahlungsart']) && (int)$_GET['kZahlungsart'] > 0) {
-        if ($_GET['a'] === 'payments') {
+        if (isset($_GET['a']) && $_GET['a'] === 'payments') {
             // Zahlungseingaenge
             $step = 'payments';
-        } elseif ($_GET['a'] === 'log') {
+        } elseif (isset($_GET['a']) && $_GET['a'] === 'log') {
             // Log einsehen
             $step = 'log';
         } else {
@@ -218,11 +218,19 @@ if ($step === 'einstellen') {
     $kZahlungsart        = (int)$_GET['kZahlungsart'];
     $oZahlungsart        = Shop::DB()->select('tzahlungsart', 'kZahlungsart', $kZahlungsart);
     $oZahlunseingang_arr = Shop::DB()->query("
-        SELECT *
+        SELECT ze.*, b.kZahlungsart, b.cBestellNr, k.kKunde, k.cVorname, k.cNachname, k.cMail
             FROM tzahlungseingang AS ze
                 JOIN tbestellung AS b ON ze.kBestellung = b.kBestellung
-            WHERE b.kZahlungsart = " . (int)$kZahlungsart,
+                JOIN tkunde AS k ON b.kKunde = k.kKunde
+            WHERE b.kZahlungsart = " . (int)$kZahlungsart . "
+            ORDER BY dZeit DESC",
         2);
+
+    foreach ($oZahlunseingang_arr as &$oZahlunseingang) {
+        $oZahlunseingang->cNachname = entschluesselXTEA($oZahlunseingang->cNachname);
+        $oZahlunseingang->dZeit     = date_create($oZahlunseingang->dZeit)->format('d.m.Y - H:i');
+    }
+
     $smarty->assign('oZahlungsart', $oZahlungsart)
            ->assign('oZahlunseingang_arr', $oZahlunseingang_arr);
 }
@@ -233,9 +241,16 @@ if ($step === 'uebersicht') {
     if (is_array($oZahlungsart_arr) && count($oZahlungsart_arr) > 0) {
         require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.ZahlungsLog.php';
 
-        foreach ($oZahlungsart_arr as $i => $oZahlungsart) {
-            $oZahlungsLog           = new ZahlungsLog($oZahlungsart->cModulId);
-            $oZahlungsLog->oLog_arr = $oZahlungsLog->holeLog();
+        foreach ($oZahlungsart_arr as $i => &$oZahlungsart) {
+            $oZahlungsLog                 = new ZahlungsLog($oZahlungsart->cModulId);
+            $oZahlungsLog->oLog_arr       = $oZahlungsLog->holeLog();
+            $oZahlungsart->nEingangAnzahl = (int)Shop::DB()->query("
+                    SELECT count(*) AS nAnzahl
+                        FROM tzahlungseingang AS ze
+                            JOIN tbestellung AS b ON ze.kBestellung = b.kBestellung
+                        WHERE b.kZahlungsart = " . $oZahlungsart->kZahlungsart . ";
+                ", 1)->nAnzahl;
+
             // jtl-shop/issues#288
             $hasError = false;
             foreach ($oZahlungsLog->oLog_arr as $entry) {

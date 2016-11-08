@@ -17,12 +17,25 @@
                 {foreach $oZahlunseingang_arr as $oZahlunseingang}
                     <tr>
                         <td>{$oZahlunseingang->dZeit}</td>
-                        <td>Bestell-Nr.</td>
-                        <td>Kunde</td>
-                        <td>Gezahlter Betrag</td>
-                        <td>Zahlungsgeb&uuml;hr</td>
-                        <td>W&auml;hrung</td>
-                        <td>Abgeholt durch Wawi</td>
+                        <td>{$oZahlunseingang->cBestellNr}</td>
+                        <td>
+                            {$oZahlunseingang->cVorname} {$oZahlunseingang->cNachname}<br>
+                            &lt;{$oZahlunseingang->cMail}&gt;
+                        </td>
+                        <td>
+                            {$oZahlunseingang->fBetrag|number_format:2:',':'.'}
+                        </td>
+                        <td>
+                            {$oZahlunseingang->fZahlungsgebuehr|number_format:2:',':'.'}
+                        </td>
+                        <td>{$oZahlunseingang->cISO}</td>
+                        <td>
+                            {if $oZahlunseingang->cAbgeholt === 'Y'}
+                                <span class="label label-success" title="Aktiv"><i class="fa fa-check"></i></span>
+                            {elseif $oZahlunseingang->cAbgeholt === 'N'}
+                                <span class="label label-danger" title="Inaktiv"><i class="fa fa-times"></i></span>
+                            {/if}
+                        </td>
                     </tr>
                 {/foreach}
             </tbody>

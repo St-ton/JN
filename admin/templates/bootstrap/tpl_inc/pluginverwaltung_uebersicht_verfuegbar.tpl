@@ -1,3 +1,45 @@
+<script>
+    // transfer our licenses(-json-object) from php into js
+    var vLicenses = {if isset($szLicenses)}{$szLicenses}{else}[]{/if};
+//{literal}
+    var token       = $('input[name="jtl_token"]').val();
+
+    $(document).ready(function() {
+
+        // for all found licenses..
+        for (var key in vLicenses) {
+            // ..bind a click-handler to the plugins checkbox
+            $('input[id="plugin-check-'+key+'"]').click(function(event) {
+                // grab the element, which was rising that click-event (click to the checkbox)
+                var oTemp = $(event.currentTarget);
+                szPluginName = oTemp.val();
+
+                if (this.checked) { // it's checked yet, right after the click was fired
+                    $('input[id="plugin-check-'+szPluginName+'"]').attr('disabled', 'disabled'); // block the checkbox!
+                    $('div[id="licenseModal"]').modal({backdrop : 'static'}); // set our modal static (a click in black did not hide it!)
+                    $('div[id="licenseModal"]').find('.modal-body').load('getMarkdownAsHTML.php', {'jtl_token':token, 'path':vLicenses[szPluginName]});
+                    $('div[id="licenseModal"]').modal('show');
+                }
+            });
+        }
+
+        // handle the (befor-)hiding of the modal and what's happening during it occurs
+        $('div[id="licenseModal"]').on('hide.bs.modal', function(event) {
+            // IMPORTANT: release the checkbox on modal-close again too!
+            $('input[id=plugin-check-'+szPluginName+']').removeAttr('disabled');
+
+            // check, which element is 'active' before/during the modal goes hiding (to determine, which button closes it)
+            // (it is faster than check a var or bind an event to an element)
+            if ('ok' === document.activeElement.name) {
+                $('input[id=plugin-check-'+szPluginName+']').prop('checked', true);
+            } else {
+                $('input[id=plugin-check-'+szPluginName+']').prop('checked', false);
+            }
+        });
+    });
+</script>
+{/literal}
+
 <div id="verfuegbar" class="tab-pane fade {if isset($cTab) && $cTab === 'verfuegbar'} active in{/if}">
     {if isset($PluginVerfuebar_arr) && $PluginVerfuebar_arr|@count > 0}
         <form name="pluginverwaltung" method="post" action="pluginverwaltung.php">
@@ -18,6 +60,28 @@
                         </tr>
                         </thead>
                         <tbody>
+
+                        <!-- license-modal definition -->
+                        <div id="licenseModal" class="modal fade" role="dialog">
+                            <div class="modal-dialog modal-lg">
+
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                        <h4 class="modal-title">License Plugin</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        {* license.md content goes here via js *}
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-primary" name="ok" data-dismiss="modal">Ok</button>
+                                        <button type="button" class="btn btn-default" name="cancel" data-dismiss="modal">Abbrechen</button>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
                         {foreach name="verfuergbareplugins" from=$PluginVerfuebar_arr item=PluginVerfuebar}
                             <tr>
                                 <td class="check"><input type="checkbox" name="cVerzeichnis[]" id="plugin-check-{$PluginVerfuebar->cVerzeichnis}" value="{$PluginVerfuebar->cVerzeichnis}" /></td>
@@ -35,7 +99,8 @@
                         </tbody>
                         <tfoot>
                         <tr>
-                            <td class="check"><input name="ALLMSGS" id="ALLMSGS4" type="checkbox" onclick="AllMessages(this.form);" /></td>
+                            {*<td class="check"><input name="ALLMSGS" id="ALLMSGS4" type="checkbox" onclick="AllMessages(this.form);" /></td>*}
+                            <td class="check"><input name="ALLMSGS" id="ALLMSGS4" type="checkbox" onclick="AllMessagesExcept(this.form, vLicenses);" /></td>
                             <td colspan="5"><label for="ALLMSGS4">{#pluginSelectAll#}</label></td>
                         </tr>
                         </tfoot>

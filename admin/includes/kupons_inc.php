@@ -223,6 +223,12 @@ function augmentCoupon($oKupon)
         $oKupon->cArtikelInfo = 'eingeschr&auml;nkt';
     }
 
+    if (empty($oKupon->cHersteller) || $oKupon->cHersteller === '-1') {
+        $oKupon->cHerstellerInfo = 'Alle';
+    } else {
+        $oKupon->cHerstellerInfo = 'eingeschr&auml;nkt';
+    }
+
     $oMaxErstelltDB   = Shop::DB()->query("
         SELECT max(dErstellt) as dLastUse
             FROM " . ($oKupon->cKuponTyp === 'neukundenkupon' ? "tkuponneukunde" : "tkuponkunde") . "
@@ -288,6 +294,7 @@ function createCouponFromInput()
     $oKupon->nVerwendungen         = isset($_POST['nVerwendungen']) ? (int)$_POST['nVerwendungen'] : 0;
     $oKupon->nVerwendungenProKunde = isset($_POST['nVerwendungenProKunde']) ? (int)$_POST['nVerwendungenProKunde'] : 0;
     $oKupon->cArtikel              = trim($_POST['cArtikel']);
+    $oKupon->cHersteller           = '-1';
     $oKupon->kKundengruppe         = (int)$_POST['kKundengruppe'];
     $oKupon->dGueltigAb            = normalizeDate(isset($_POST['dGueltigAb']) ? $_POST['dGueltigAb'] : null);
     $oKupon->dGueltigBis           = normalizeDate(isset($_POST['dGueltigBis']) ? $_POST['dGueltigBis'] : null);

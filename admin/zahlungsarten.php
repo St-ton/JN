@@ -225,6 +225,9 @@ if ($step === 'einstellen') {
             WHERE b.kZahlungsart = " . (int)$kZahlungsart . "
             ORDER BY dZeit DESC",
         2);
+    $oPagination         = (new Pagination('payments' . $kZahlungsart))
+        ->setItemArray($oZahlunseingang_arr)
+        ->assemble();
 
     foreach ($oZahlunseingang_arr as &$oZahlunseingang) {
         $oZahlunseingang->cNachname = entschluesselXTEA($oZahlunseingang->cNachname);
@@ -232,7 +235,8 @@ if ($step === 'einstellen') {
     }
 
     $smarty->assign('oZahlungsart', $oZahlungsart)
-           ->assign('oZahlunseingang_arr', $oZahlunseingang_arr);
+           ->assign('oZahlunseingang_arr', $oPagination->getPageItems())
+           ->assign('oPagination', $oPagination);
 }
 
 if ($step === 'uebersicht') {

@@ -152,4 +152,29 @@ class JobQueue
             Shop::DB()->delete('tjobqueue', 'kJobQueue', (int)$this->kJobQueue) :
             0;
     }
+
+    /**
+     * @return bool
+     */
+    public function updateExportformatQueueBearbeitet()
+    {
+        if ($this->kJobQueue > 0) {
+            Shop::DB()->delete('texportformatqueuebearbeitet', 'kJobQueue', (int)$this->kJobQueue);
+
+            $ins                   = new stdClass();
+            $ins->kJobQueue        = $this->kJobQueue;
+            $ins->kExportformat    = $this->kKey;
+            $ins->nLimitN          = $this->nLimitN;
+            $ins->nLimitM          = $this->nLimitM;
+            $ins->nInArbeit        = $this->nInArbeit;
+            $ins->dStartZeit       = $this->dStartZeit;
+            $ins->dZuletztGelaufen = $this->dZuletztGelaufen;
+
+            Shop::DB()->insert('texportformatqueuebearbeitet', $ins);
+
+            return true;
+        }
+
+        return false;
+    }
 }

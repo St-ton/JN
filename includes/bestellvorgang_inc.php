@@ -2077,6 +2077,10 @@ function checkeKupon($Kupon)
             $ret['ungueltig'] = 11;
         }
     }
+    //Hersteller
+    if ($Kupon->cHersteller != -1 && !warenkorbKuponFaehigHersteller($Kupon, $_SESSION['Warenkorb']->PositionenArr)) {
+        $ret['ungueltig'] = 12;
+    }
     $alreadyUsedSQL = '';
     if (!empty($_SESSION['Kunde']->kKunde) && !empty($_SESSION['Kunde']->cMail)) {
         $alreadyUsedSQL = "SELECT SUM(nVerwendungen) AS nVerwendungen FROM tkuponkunde WHERE (kKunde = " . intval($_SESSION['Kunde']->kKunde) .
@@ -2183,6 +2187,24 @@ function warenkorbKuponFaehigArtikel($Kupon, $PositionenArr)
     if (is_array($PositionenArr)) {
         foreach ($PositionenArr as $Pos) {
             if ($Pos->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL && preg_match('/;' . preg_quote($Pos->Artikel->cArtNr, '/') . ';/i', $Kupon->cArtikel)) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+/**
+ * @param Kupon|object $Kupon
+ * @param array $PositionenArr
+ * @return bool
+ */
+function warenkorbKuponFaehigHersteller($Kupon, $PositionenArr)
+{
+    if (is_array($PositionenArr)) {
+        foreach ($PositionenArr as $Pos) {
+            if ($Pos->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL && preg_match('/;' . preg_quote($Pos->Artikel->kHersteller, '/') . ';/i', $Kupon->cHersteller)) {
                 return true;
             }
         }
@@ -2450,11 +2472,12 @@ function guthabenMoeglich()
  */
 function kuponMoeglich()
 {
-    $moeglich      = 0;
-    $Artikel_qry   = '';
-    $Kats          = array();
-    $Kategorie_qry = '';
-    $Kunden_qry    = '';
+    $moeglich       = 0;
+    $Artikel_qry    = '';
+    $Hersteller_qry = '';
+    $Kats           = array();
+    $Kategorie_qry  = '';
+    $Kunden_qry     = '';
 
     if ((!empty($_SESSION['Kupon']->kKupon)) || (!empty($_SESSION['VersandKupon']->kKupon)) ||
         (isset($_SESSION['Zahlungsart']->cModulId) && substr($_SESSION['Zahlungsart']->cModulId, 0, 10) === 'za_billpay')
@@ -2465,6 +2488,9 @@ function kuponMoeglich()
         foreach ($_SESSION['Warenkorb']->PositionenArr as $Pos) {
             if (isset($Pos->Artikel->cArtNr) && strlen($Pos->Artikel->cArtNr) > 0) {
                 $Artikel_qry .= " OR cArtikel LIKE '%;" . str_replace('%', '\%', Shop::DB()->escape($Pos->Artikel->cArtNr)) . ";%'";
+            }
+            if (isset($Pos->Artikel->cHersteller) && strlen($Pos->Artikel->cHersteller) > 0) {
+                $Hersteller_qry .= " OR cHersteller LIKE '%;" . str_replace('%', '\%', Shop::DB()->escape($Pos->Artikel->kHersteller)) . ";%'";
             }
             if ($Pos->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL) {
                 if (isset($Pos->Artikel->kArtikel) && $Pos->Artikel->kArtikel > 0) {
@@ -2502,6 +2528,7 @@ function kuponMoeglich()
                 AND (kKundengruppe = -1 OR kKundengruppe = 0 OR kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . ")
                 AND (nVerwendungen = 0 OR nVerwendungen > nVerwendungenBisher)
                 AND (cArtikel = '' " . $Artikel_qry . ")
+                AND (cHersteller = '-1' " . $Hersteller_qry . ") 
                 AND (cKategorien = '' OR cKategorien = '-1' " . $Kategorie_qry . ")
                 AND (cKunden = '' OR cKunden = '-1' " . $Kunden_qry . ")", 1
     );

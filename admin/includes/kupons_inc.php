@@ -50,6 +50,25 @@ function getCouponNames($kKupon)
 }
 
 /**
+ * @param string $selHerst
+ * @return array
+ */
+function getManufacturers($selHerst = '')
+{
+    $selected       = StringHandler::parseSSK($selHerst);
+    $hersteller_arr = Shop::DB()->query("SELECT kHersteller, cName FROM thersteller", 2);
+
+    foreach ($hersteller_arr as $i => $hersteller) {
+        $oHersteller                  = new Hersteller($hersteller->kHersteller);
+        $hersteller_arr[$i]->cName    = $oHersteller->cName;
+        $hersteller_arr[$i]->selected = in_array($hersteller_arr[$i]->kHersteller, $selected) ? 1 : 0;
+        unset($oHersteller);
+    }
+
+    return $hersteller_arr;
+}
+
+/**
  * @param string $selKats
  * @param int    $kKategorie
  * @param int    $tiefe
@@ -238,6 +257,7 @@ function createNewCoupon($cKuponTyp)
     $oKupon->dGueltigAb            = date_create()->format('Y-m-d H:i');
     $oKupon->dGueltigBis           = '';
     $oKupon->cAktiv                = 'Y';
+    $oKupon->cHersteller           = '-1';
     $oKupon->cKategorien           = '-1';
     $oKupon->cKunden               = '-1';
     $oKupon->kKupon                = 0;
@@ -287,6 +307,9 @@ function createCouponFromInput()
         $actualTimestampEndofDay = date_time_set($actualTimestamp, 23, 59, 59);
         $setDays                 = new DateInterval('P' . $_POST['dDauerTage'] . 'D');
         $oKupon->dGueltigBis     = date_add($actualTimestampEndofDay, $setDays)->format('Y-m-d H:i:s');
+    }
+    if (isset($_POST['kHersteller']) && is_array($_POST['kHersteller']) && count($_POST['kHersteller']) > 0 && !in_array('-1', $_POST['kHersteller'])) {
+        $oKupon->cHersteller = StringHandler::createSSK($_POST['kHersteller']);
     }
     if (isset($_POST['kKategorien']) && is_array($_POST['kKategorien']) && count($_POST['kKategorien']) > 0 && !in_array('-1', $_POST['kKategorien'])) {
         $oKupon->cKategorien = StringHandler::createSSK($_POST['kKategorien']);

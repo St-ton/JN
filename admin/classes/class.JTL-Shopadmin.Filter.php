@@ -75,6 +75,19 @@ class Filter
     }
 
     /**
+     * Add a DateRange field to the filter object.
+     * 
+     * @param $cTitle
+     * @param $cColumn
+     */
+    public function addDaterangefield($cTitle, $cColumn)
+    {
+        $oField                               = new FilterDateRangeField($this, $cTitle, $cColumn);
+        $this->oField_arr[]                   = $oField;
+        $this->cSession_arr[$oField->getId()] = $oField->getValue();
+    }
+
+    /**
      * Assemble filter object to be ready for use. Build WHERE clause.
      */
     public function assemble()

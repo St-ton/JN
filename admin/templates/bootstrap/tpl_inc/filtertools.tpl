@@ -62,6 +62,32 @@
                                         {/foreach}
                                     </select>
                                 </div>
+                            {elseif $oField->getType() === 'daterange'}
+                                <div class="col-md-3 toolbar-col">
+                                    <label for="{$oFilter->getId()}_{$oField->getId()}">{$oField->getTitle()}</label>
+                                    <input type="text"  class="form-control"
+                                           name="{$oFilter->getId()}_{$oField->getId()}"
+                                           id="{$oFilter->getId()}_{$oField->getId()}">
+                                    <script>
+                                        $(function () {
+                                            var $datepicker = $('#{$oFilter->getId()}_{$oField->getId()}');
+                                            $datepicker.daterangepicker({
+                                                locale: { format: 'DD.MM.YYYY', separator: ' - ' },
+                                                autoUpdateInput: false,
+                                            });
+                                            $datepicker.on('apply.daterangepicker', function(ev, picker) {
+                                                $(this).val(picker.startDate.format('DD.MM.YYYY') + ' - '
+                                                        + picker.endDate.format('DD.MM.YYYY'));
+                                            });
+                                            var curDateRange = '{$oField->getValue()}'.split(' - ');
+                                            if (curDateRange.length == 2) {
+                                                $datepicker.val(curDateRange[0] + ' - ' + curDateRange[1]);
+                                                $datepicker.data('daterangepicker').setStartDate(curDateRange[0]);
+                                                $datepicker.data('daterangepicker').setEndDate(curDateRange[1]);
+                                            }
+                                        });
+                                    </script>
+                                </div>
                             {/if}
                         {/foreach}
                     </div>

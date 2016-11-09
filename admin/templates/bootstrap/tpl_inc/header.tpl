@@ -16,6 +16,8 @@
     <link type="text/css" rel="stylesheet" href="{$PFAD_CODEMIRROR}addon/display/fullscreen.css" />
     <link type="text/css" rel="stylesheet" href="{$PFAD_CODEMIRROR}addon/scroll/simplescrollbars.css" />
     <link type="text/css" rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/7.1.0/css/bootstrap-slider.min.css" />
+    <link type="text/css" rel="stylesheet" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
+
     {$admin_js}
     <script type="text/javascript" src="{$PFAD_CKEDITOR}ckeditor.js"></script>
     <script type="text/javascript" src="{$PFAD_CODEMIRROR}lib/codemirror.js"></script>
@@ -36,6 +38,8 @@
 
     <script src="//npmcdn.com/masonry-layout@4.0/dist/masonry.pkgd.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/7.1.0/bootstrap-slider.min.js"></script>
+    <script src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
 
     <script type="text/javascript" src="{$URL_SHOP}/{$PFAD_ADMIN}{$currentTemplateDir}js/codemirror_init.js"></script>
     <script type="text/javascript">

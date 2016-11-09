@@ -224,7 +224,12 @@ if ($step === 'einstellen') {
             10);
     }
 
-    $kZahlungsart        = (int)$_GET['kZahlungsart'];
+    $kZahlungsart = (int)$_GET['kZahlungsart'];
+
+    $oFilter = new Filter('payments-' . $kZahlungsart);
+    $oFilter->addDaterangefield('Zeitraum', 'dZeit');
+    $oFilter->assemble();
+
     $oZahlungsart        = Shop::DB()->select('tzahlungsart', 'kZahlungsart', $kZahlungsart);
     $oZahlunseingang_arr = Shop::DB()->query("
         SELECT ze.*, b.kZahlungsart, b.cBestellNr, k.kKunde, k.cVorname, k.cNachname, k.cMail
@@ -232,6 +237,7 @@ if ($step === 'einstellen') {
                 JOIN tbestellung AS b ON ze.kBestellung = b.kBestellung
                 JOIN tkunde AS k ON b.kKunde = k.kKunde
             WHERE b.kZahlungsart = " . (int)$kZahlungsart . "
+                " . ($oFilter->getWhereSQL() !== '' ? " AND " . $oFilter->getWhereSQL() : "") . "
             ORDER BY dZeit DESC",
         2);
     $oPagination         = (new Pagination('payments' . $kZahlungsart))
@@ -240,12 +246,13 @@ if ($step === 'einstellen') {
 
     foreach ($oZahlunseingang_arr as &$oZahlunseingang) {
         $oZahlunseingang->cNachname = entschluesselXTEA($oZahlunseingang->cNachname);
-        $oZahlunseingang->dZeit     = date_create($oZahlunseingang->dZeit)->format('d.m.Y - H:i');
+        $oZahlunseingang->dZeit     = date_create($oZahlunseingang->dZeit)->format('d.m.Y\<\b\r\>H:i');
     }
 
     $smarty->assign('oZahlungsart', $oZahlungsart)
            ->assign('oZahlunseingang_arr', $oPagination->getPageItems())
-           ->assign('oPagination', $oPagination);
+           ->assign('oPagination', $oPagination)
+           ->assign('oFilter', $oFilter);
 }
 
 if ($step === 'uebersicht') {

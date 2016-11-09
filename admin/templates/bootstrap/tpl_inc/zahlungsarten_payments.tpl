@@ -1,5 +1,7 @@
 {include file='tpl_inc/seite_header.tpl' cTitel="Zahlungseing&auml;nge f&uuml;r "|cat:$oZahlungsart->cName cBeschreibung='Hello World' cDokuURL=Nix}
 <div id="content" class="container-fluid">
+    {include file='tpl_inc/filtertools.tpl' oFilter=$oFilter cParam_arr=['a'=>$smarty.get.a,
+        'token'=>$smarty.session.jtl_token, 'kZahlungsart'=>$smarty.get.kZahlungsart]}
     {include file='tpl_inc/pagination.tpl' oPagination=$oPagination cParam_arr=['a'=>$smarty.get.a,
         'token'=>$smarty.session.jtl_token, 'kZahlungsart'=>$smarty.get.kZahlungsart]}
     <form method="post" action="{$smarty.server.REQUEST_URI}">

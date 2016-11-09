@@ -2,9 +2,9 @@
     // transfer our licenses(-json-object) from php into js
     var vLicenses = {if isset($szLicenses)}{$szLicenses}{else}[]{/if};
 //{literal}
-    var token       = $('input[name="jtl_token"]').val();
 
     $(document).ready(function() {
+        token = $('input[name="jtl_token"]').val();
 
         // for all found licenses..
         for (var key in vLicenses) {
@@ -50,6 +50,30 @@
                     <h3 class="panel-title">{#pluginListNotInstalled#}</h3>
                 </div>
                 <div class="table-responsive">
+
+                    <!-- license-modal definition -->
+                    <div id="licenseModal" class="modal fade" role="dialog">
+                        <div class="modal-dialog modal-lg">
+
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    <h4 class="modal-title">License Plugin</h4>
+                                </div>
+                                <div class="modal-body">
+                                    {* license.md content goes here via js *}
+                                </div>
+                                <div class="modal-footer">
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-success" name="ok" data-dismiss="modal"><i class="fa fa-check"></i>&nbsp;Ok</button>
+                                        <button type="button" class="btn btn-danger" name="cancel" data-dismiss="modal"><i class="fa fa-close"></i>&nbsp;Abbrechen</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
                     <table class="list table">
                         <thead>
                         <tr>
@@ -60,28 +84,6 @@
                         </tr>
                         </thead>
                         <tbody>
-
-                        <!-- license-modal definition -->
-                        <div id="licenseModal" class="modal fade" role="dialog">
-                            <div class="modal-dialog modal-lg">
-
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                        <h4 class="modal-title">License Plugin</h4>
-                                    </div>
-                                    <div class="modal-body">
-                                        {* license.md content goes here via js *}
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-primary" name="ok" data-dismiss="modal">Ok</button>
-                                        <button type="button" class="btn btn-default" name="cancel" data-dismiss="modal">Abbrechen</button>
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div>
-
                         {foreach name="verfuergbareplugins" from=$PluginVerfuebar_arr item=PluginVerfuebar}
                             <tr>
                                 <td class="check"><input type="checkbox" name="cVerzeichnis[]" id="plugin-check-{$PluginVerfuebar->cVerzeichnis}" value="{$PluginVerfuebar->cVerzeichnis}" /></td>

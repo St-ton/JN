@@ -394,7 +394,7 @@ function parseText($cText, $kNews)
         $cText = str_replace("$#preview#$", '<img alt="" src="' . $shopURL . PFAD_NEWSBILDER . $kNews . '/' . $cBild_arr[count($cBild_arr) - 1] . '" />', $cText);
     }
 
-    return str_replace("'", "\'", $cText);
+    return $cText;
 }
 
 /**

@@ -2,7 +2,8 @@
 <div id="content" class="container-fluid">
     {include file='tpl_inc/pagination.tpl' oPagination=$oPagination cParam_arr=['a'=>$smarty.get.a,
         'token'=>$smarty.session.jtl_token, 'kZahlungsart'=>$smarty.get.kZahlungsart]}
-    <form>
+    <form method="post" action="{$smarty.server.REQUEST_URI}">
+        {$jtl_token}
         <div class="panel panel-default">
             {if $oZahlunseingang_arr|@count > 0}
                 <table class="table">
@@ -65,7 +66,10 @@
             {/if}
             <div class="panel-footer">
                 <div class="btn-group">
-                    <button type="submit" name="a" value="paymentreset" class="btn btn-danger">Reset</button>
+                    <button type="submit" name="action" value="paymentwawireset" class="btn btn-danger">
+                        <i class="fa fa-refresh"></i>
+                        Wawi-Abholung zur&uuml;cksetzen
+                    </button>
                     <a class="btn btn-primary" href="zahlungsarten.php">{#goBack#}</a>
                 </div>
             </div>

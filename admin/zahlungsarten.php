@@ -215,6 +215,15 @@ if ($step === 'einstellen') {
             ->assign('kZahlungsart', $kZahlungsart);
     }
 } elseif ($step === 'payments') {
+    if(validateToken() && isset($_POST['action']) && $_POST['action'] === 'paymentwawireset') {
+        $kEingang_arr = $_POST['kEingang_arr'];
+        Shop::DB()->query("
+                UPDATE tzahlungseingang
+                SET cAbgeholt = 'N'
+                WHERE kZahlungseingang IN (" . implode(',', $kEingang_arr) . ")",
+            10);
+    }
+
     $kZahlungsart        = (int)$_GET['kZahlungsart'];
     $oZahlungsart        = Shop::DB()->select('tzahlungsart', 'kZahlungsart', $kZahlungsart);
     $oZahlunseingang_arr = Shop::DB()->query("

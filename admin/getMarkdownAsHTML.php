@@ -16,11 +16,11 @@ date_default_timezone_set('Europe/Berlin');
 // try to guess our root-path, by the knowing "we are somewhere in 'admin'"
 $szRootPath = preg_split('/admin/', __FILE__)[0];
 // "close the ring" to the main-application (for the correct _SESSION)
-require_once($szRootPath . '/admin/includes/admininclude.php');
+require_once $szRootPath . '/admin/includes/admininclude.php';
 
 
 if (validateToken()) {
-    if(file_exists($_POST['path'])) {
+    if (file_exists($_POST['path'])) {
         // slurp in the files content
         $szFileContent = file_get_contents(utf8_decode($_POST['path']));
         // check, if we got a Markdown-parser
@@ -32,6 +32,7 @@ if (validateToken()) {
             $szLicenseContent = '<pre>' . $szFileContent . '</pre>';
         }
         // spit out, what we have
-        echo($szLicenseContent);
+        echo $szLicenseContent;
     }
 }
+

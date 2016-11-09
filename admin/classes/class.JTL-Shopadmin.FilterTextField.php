@@ -14,7 +14,7 @@ class FilterTextField extends FilterField
      * 
      * @param Filter $oFilter
      * @param string $cTitle
-     * @param string $cColumn
+     * @param string|array $cColumn - column/field or array of them to be searched disjunctively (OR)
      * @param int    $nTestOp
      *  0 = custom
      *  1 = contains
@@ -54,17 +54,27 @@ class FilterTextField extends FilterField
     public function getWhereClause()
     {
         if ($this->cValue !== '' || $this->nTestOp == 4 || $this->nTestOp == 9) {
-            switch ($this->nTestOp) {
-                case 1: return $this->cColumn . " LIKE '%" . Shop::DB()->escape($this->cValue) . "%'";
-                case 2: return $this->cColumn . " LIKE '" . Shop::DB()->escape($this->cValue) . "%'";
-                case 3: return $this->cColumn . " LIKE '%" . Shop::DB()->escape($this->cValue) . "'";
-                case 4: return $this->cColumn . " = '" . Shop::DB()->escape($this->cValue) . "'";
-                case 5: return $this->cColumn . " < '" . Shop::DB()->escape($this->cValue) . "'";
-                case 6: return $this->cColumn . " > '" . Shop::DB()->escape($this->cValue) . "'";
-                case 7: return $this->cColumn . " <= '" . Shop::DB()->escape($this->cValue) . "'";
-                case 8: return $this->cColumn . " >= '" . Shop::DB()->escape($this->cValue) . "'";
-                case 9: return $this->cColumn . " != '" . Shop::DB()->escape($this->cValue) . "'";
+            if (is_array($this->cColumn)) {
+                $cColumn_arr = $this->cColumn;
+            } else {
+                $cColumn_arr = [$this->cColumn];
             }
+            $cClausePart_arr = [];
+            foreach ($cColumn_arr as $cColumn) {
+                switch ($this->nTestOp) {
+                    case 1: $cClausePart_arr[] = $cColumn . " LIKE '%" . Shop::DB()->escape($this->cValue) . "%'"; break;
+                    case 2: $cClausePart_arr[] = $cColumn . " LIKE '" . Shop::DB()->escape($this->cValue) . "%'"; break;
+                    case 3: $cClausePart_arr[] = $cColumn . " LIKE '%" . Shop::DB()->escape($this->cValue) . "'"; break;
+                    case 4: $cClausePart_arr[] = $cColumn . " = '" . Shop::DB()->escape($this->cValue) . "'"; break;
+                    case 5: $cClausePart_arr[] = $cColumn . " < '" . Shop::DB()->escape($this->cValue) . "'"; break;
+                    case 6: $cClausePart_arr[] = $cColumn . " > '" . Shop::DB()->escape($this->cValue) . "'"; break;
+                    case 7: $cClausePart_arr[] = $cColumn . " <= '" . Shop::DB()->escape($this->cValue) . "'"; break;
+                    case 8: $cClausePart_arr[] = $cColumn . " >= '" . Shop::DB()->escape($this->cValue) . "'"; break;
+                    case 9: $cClausePart_arr[] = $cColumn . " != '" . Shop::DB()->escape($this->cValue) . "'"; break;
+                }
+            }
+
+            return '(' . implode(' OR ', $cClausePart_arr) . ')';
         }
 
         return null;

@@ -76,7 +76,7 @@ class Filter
 
     /**
      * Add a DateRange field to the filter object.
-     * 
+     *
      * @param $cTitle
      * @param $cColumn
      */

@@ -987,19 +987,18 @@ class Exportformat
      * @param bool            $isAsync
      * @param bool            $back
      * @param bool            $isCron
+     * @param int|null        $max
      * @return bool|void
      */
-    public function startExport($queue, $isAsync = false, $back = false, $isCron = false)
+    public function startExport($queue, $isAsync = false, $back = false, $isCron = false, $max = null)
     {
         if (!$this->isOK()) {
             return false;
         }
         $this->setQueue($queue)->initSession()->initSmarty();
-
         if ($this->getPlugin() > 0 && strpos($this->getContent(), PLUGIN_EXPORTFORMAT_CONTENTFILE) !== false) {
             $oPlugin = new Plugin($this->getPlugin());
-            include $oPlugin->cAdminmenuPfad . PFAD_PLUGIN_EXPORTFORMAT . str_replace(PLUGIN_EXPORTFORMAT_CONTENTFILE,
-                    '', $this->getContent());
+            include $oPlugin->cAdminmenuPfad . PFAD_PLUGIN_EXPORTFORMAT . str_replace(PLUGIN_EXPORTFORMAT_CONTENTFILE, '', $this->getContent());
 
             Shop::DB()->delete('texportqueue', 'kExportqueue', (int)$this->queue->kExportqueue);
             if ($_GET['back'] === 'admin') {
@@ -1017,12 +1016,15 @@ class Exportformat
         }
 
         $datei = fopen(PFAD_ROOT . PFAD_EXPORT . $this->tempFileName, 'a');
-        $max   = Shop::DB()->executeQuery($this->getExportSQL(true), 1);
+        if ($max === null) {
+            $maxObj = Shop::DB()->executeQuery($this->getExportSQL(true), 1);
+            $max    = (int)$maxObj->nAnzahl;
+        } else {
+            $max = (int)$max;
+        }
 
-        Jtllog::cronLog('Starting exportformat "' . $this->cName . '" for language ' . $this->kSprache .
-            ' and customer group ' . $this->kKundengruppe . ' - ' . $queue->nLimitN . '/' . $max->nAnzahl . ' products exported');
+        Jtllog::cronLog('Starting exportformat "' . $this->cName . '" for language ' . $this->kSprache . ' and customer group ' . $this->kKundengruppe . ' - ' . $queue->nLimitN . '/' . $max . ' products exported');
         Jtllog::cronLog('Caching enabled? ' . ((Shop::Cache()->isActive() && $this->useCache()) ? 'Yes' : 'No'), 2);
-
         // Kopfzeile schreiben
         if ($this->queue->nLimitN == 0) {
             $this->writeHeader($datei);
@@ -1065,6 +1067,7 @@ class Exportformat
             $replaceTwo[] = $this->config['exportformate_semikolon'];
         }
         foreach ($articles as $articleObj) {
+
             $Artikel = new Artikel();
             $Artikel->fuelleArtikel($articleObj->kArtikel, $oArtikelOptionen, $this->kKundengruppe, $this->kSprache, !$this->useCache());
 
@@ -1074,16 +1077,11 @@ class Exportformat
                 } else {
                     ++$cacheMisses;
                 }
-                $Artikel->cBeschreibungHTML     = StringHandler::removeWhitespace(str_replace($findTwo, $replaceTwo,
-                    str_replace('"', '&quot;', $Artikel->cBeschreibung)));
-                $Artikel->cKurzBeschreibungHTML = StringHandler::removeWhitespace(str_replace($findTwo, $replaceTwo,
-                    str_replace('"', '&quot;', $Artikel->cKurzBeschreibung)));
-                $Artikel->cName                 = StringHandler::removeWhitespace(str_replace($findTwo, $replaceTwo,
-                    StringHandler::unhtmlentities(strip_tags(str_replace($find, $replace, $Artikel->cName)))));
-                $Artikel->cBeschreibung         = StringHandler::removeWhitespace(str_replace($findTwo, $replaceTwo,
-                    StringHandler::unhtmlentities(strip_tags(str_replace($find, $replace, $Artikel->cBeschreibung)))));
-                $Artikel->cKurzBeschreibung     = StringHandler::removeWhitespace(str_replace($findTwo, $replaceTwo,
-                    StringHandler::unhtmlentities(strip_tags(str_replace($find, $replace, $Artikel->cKurzBeschreibung)))));
+                $Artikel->cBeschreibungHTML     = StringHandler::removeWhitespace(str_replace($findTwo, $replaceTwo, str_replace('"', '&quot;', $Artikel->cBeschreibung)));
+                $Artikel->cKurzBeschreibungHTML = StringHandler::removeWhitespace(str_replace($findTwo, $replaceTwo, str_replace('"', '&quot;', $Artikel->cKurzBeschreibung)));
+                $Artikel->cName                 = StringHandler::removeWhitespace(str_replace($findTwo, $replaceTwo, StringHandler::unhtmlentities(strip_tags(str_replace($find, $replace, $Artikel->cName)))));
+                $Artikel->cBeschreibung         = StringHandler::removeWhitespace(str_replace($findTwo, $replaceTwo, StringHandler::unhtmlentities(strip_tags(str_replace($find, $replace, $Artikel->cBeschreibung)))));
+                $Artikel->cKurzBeschreibung     = StringHandler::removeWhitespace(str_replace($findTwo, $replaceTwo, StringHandler::unhtmlentities(strip_tags(str_replace($find, $replace, $Artikel->cKurzBeschreibung)))));
                 $Artikel->fUst                  = gibUst($Artikel->kSteuerklasse);
                 $Artikel->Preise->fVKBrutto     = berechneBrutto($Artikel->Preise->fVKNetto * $this->currency->fFaktor, $Artikel->fUst);
                 $Artikel->Preise->fVKNetto      = round($Artikel->Preise->fVKNetto, 2);
@@ -1122,21 +1120,18 @@ class Exportformat
                     ++$queue->nLimitN;
                     //max. 10 status updates per run
                     if (($queue->nLimitN % max(round($queue->nLimitM / 10), 10)) === 0) {
-                        Jtllog::cronLog($queue->nLimitN . '/' . $max->nAnzahl . ' products exported', 2);
+                        Jtllog::cronLog($queue->nLimitN . '/' . $max . ' products exported', 2);
                     }
                 }
             }
         }
         if (strlen($cOutput) > 0) {
-            fwrite($datei,
-                (($this->cKodierung === 'UTF-8' || $this->cKodierung === 'UTF-8noBOM') ? utf8_encode($cOutput) : $cOutput));
+            fwrite($datei, (($this->cKodierung === 'UTF-8' || $this->cKodierung === 'UTF-8noBOM') ? utf8_encode($cOutput) : $cOutput));
         }
 
         if ($isCron === false) {
-            if ($max->nAnzahl > $this->queue->nLimitN + $this->queue->nLimitM) {
-                Shop::DB()->query("UPDATE texportqueue SET nLimit_n = nLimit_n+" . $this->queue->nLimitM . " WHERE kExportqueue = " . (int)$this->queue->kExportqueue,
-                    4);
-
+            if ($max > $this->queue->nLimitN + $this->queue->nLimitM) {
+                Shop::DB()->query("UPDATE texportqueue SET nLimit_n = nLimit_n + " . $this->queue->nLimitM . " WHERE kExportqueue = " . (int)$this->queue->kExportqueue, 4);
                 $protocol = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') || function_exists('pruefeSSL') && pruefeSSL() === 2) ?
                     'https://' :
                     'http://';
@@ -1144,14 +1139,16 @@ class Exportformat
                     $oCallback                = new stdClass();
                     $oCallback->kExportformat = $this->getExportformat();
                     $oCallback->kExportqueue  = $this->queue->kExportqueue;
-                    $oCallback->nMax          = $max->nAnzahl;
+                    $oCallback->nMax          = $max;
                     $oCallback->nCurrent      = $this->queue->nLimitN + $this->queue->nLimitM;
                     $oCallback->bFinished     = false;
                     $oCallback->bFirst        = ($this->queue->nLimitN == 0);
                     $oCallback->cURL          = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'];
+                    $oCallback->cacheMisses   = $cacheMisses;
+                    $oCallback->cacheHits     = $cacheHits;
                     echo json_encode($oCallback);
                 } else {
-                    $cURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'] . '?e=' . (int)$this->queue->kExportqueue . '&back=admin&token=' . $_SESSION['jtl_token'];
+                    $cURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'] . '?e=' . (int)$this->queue->kExportqueue . '&back=admin&token=' . $_SESSION['jtl_token'] . '&max=' . $max;
                     header('Location: ' . $cURL);
                 }
             } else {
@@ -1167,13 +1164,15 @@ class Exportformat
                     if ($isAsync) {
                         $oCallback                = new stdClass();
                         $oCallback->kExportformat = $this->getExportformat();
-                        $oCallback->nMax          = $max->nAnzahl;
+                        $oCallback->nMax          = $max;
                         $oCallback->nCurrent      = $this->queue->nLimitN;
                         $oCallback->bFinished     = true;
+                        $oCallback->cacheMisses   = $cacheMisses;
+                        $oCallback->cacheHits     = $cacheHits;
 
                         echo json_encode($oCallback);
                     } else {
-                        header('Location: exportformate.php?action=exported&token=' . $_SESSION['jtl_token'] . '&kExportformat=' . $this->getExportformat());
+                        header('Location: exportformate.php?action=exported&token=' . $_SESSION['jtl_token'] . '&kExportformat=' . $this->getExportformat() . '&max=' . $max);
                     }
                 }
             }
@@ -1184,7 +1183,7 @@ class Exportformat
             $queue->nInArbeit        = 0;
             $queue->updateJobInDB();
             //finalize job when there are no more articles to export
-            if (!(is_array($articles) && count($articles) > 0) || ($queue->nLimitN >= $max->nAnzahl)) {
+            if (!(is_array($articles) && count($articles) > 0) || ($queue->nLimitN >= $max)) {
                 Jtllog::cronLog('Finalizing job.', 2);
                 $upd                   = new stdClass();
                 $upd->dZuletztErstellt = 'now()';

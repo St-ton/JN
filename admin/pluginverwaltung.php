@@ -554,9 +554,13 @@ if ($reload === true) {
     header('Location: ' . Shop::getURL() . '/' . PFAD_ADMIN . 'pluginverwaltung.php', true, 303);
     exit();
 }
-
 if (defined('PLUGIN_DEV_MODE') && PLUGIN_DEV_MODE === true) {
-    $cHinweis = 'Achtung: Ihr Shop befindet sich im Plugin-Dev-Mode! &Auml;nderungen der XML-Datei eines aktivierten Plugins bewirken deren automatisches Update.<br><br>' . $cHinweis;
+    $pluginDevNotice = 'Ihr Shop befindet sich im Plugin-Entwicklungsmodus. &Auml;nderungen an der XML-Datei eines aktivierten Plugins bewirken ein automatisches Update.';
+    if (empty($cHinweis)) {
+        $cHinweis = $pluginDevNotice;
+    } else {
+        $cHinweis = $pluginDevNotice . '<br>' . $cHinweis;
+    }
 }
 
 $smarty->assign('hinweis', $cHinweis)

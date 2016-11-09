@@ -510,7 +510,7 @@ class Warenkorb
                 if ($cnt->anz > 0) {
                     $min                = pow(2, $cnt->anz);
                     $bestellungMoeglich = Shop::DB()->query(
-                        "SELECT dErstellt+interval $min minute < now() AS moeglich
+                        "SELECT dErstellt+interval " . $min . " minute < now() AS moeglich
                             FROM tbestellung
                             WHERE cIP = '" . Shop::DB()->escape($ip) . "'
                                 AND dErstellt>now()-interval 1 day

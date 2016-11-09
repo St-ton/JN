@@ -5516,6 +5516,7 @@ function holeKonfigBearbeitenModus($kKonfig, &$smarty)
 {
     if (class_exists('Konfigitem')) {
         if (isset($_SESSION['Warenkorb']->PositionenArr[$kKonfig])) {
+            /** @var WarenkorbPos $oBasePosition */
             $oBasePosition = $_SESSION['Warenkorb']->PositionenArr[$kKonfig];
             if ($oBasePosition->istKonfigVater()) {
                 $nKonfigitem_arr         = array();
@@ -5536,6 +5537,21 @@ function holeKonfigBearbeitenModus($kKonfig, &$smarty)
                        ->assign('nKonfigitem_arr', $nKonfigitem_arr)
                        ->assign('nKonfigitemAnzahl_arr', $nKonfigitemAnzahl_arr)
                        ->assign('nKonfiggruppeAnzahl_arr', $nKonfiggruppeAnzahl_arr);
+            }
+
+            if (isset($oBasePosition->WarenkorbPosEigenschaftArr)) {
+                $oEigenschaftWertEdit_arr = [];
+                foreach ($oBasePosition->WarenkorbPosEigenschaftArr as $oWarenkorbPosEigenschaft) {
+                    $oEigenschaftWertEdit_arr[$oWarenkorbPosEigenschaft->kEigenschaft] = (object)[
+                        'kEigenschaft'                  => $oWarenkorbPosEigenschaft->kEigenschaft,
+                        'kEigenschaftWert'              => $oWarenkorbPosEigenschaft->kEigenschaftWert,
+                        'cEigenschaftWertNameLocalized' => $oWarenkorbPosEigenschaft->cEigenschaftWertName[$_SESSION['cISOSprache']],
+                    ];
+                }
+
+                if (count($oEigenschaftWertEdit_arr) > 0) {
+                    $smarty->assign('oEigenschaftWertEdit_arr', $oEigenschaftWertEdit_arr);
+                }
             }
         }
     }

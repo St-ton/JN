@@ -33,7 +33,7 @@
                                 <td>{$oZahlungseingang->cBestellNr}</td>
                                 <td>
                                     {$oZahlungseingang->cVorname} {$oZahlungseingang->cNachname}<br>
-                                    &lt;{$oZahlungseingang->cMail}&gt;
+                                    &lt;{$oZahlungseingang->cZahler}&gt;
                                 </td>
                                 <td>
                                     {$oZahlungseingang->fBetrag|number_format:2:',':'.'}

@@ -54,7 +54,7 @@
                                     </a>
                                     <a {if $zahlungsart->nEingangAnzahl > 0}href="zahlungsarten.php?a=payments&kZahlungsart={$zahlungsart->kZahlungsart}&token={$smarty.session.jtl_token}"{/if}
                                        class="btn btn-default {if $zahlungsart->nEingangAnzahl === 0}disabled{/if}"
-                                       title="Zahlungeing&auml;nge">
+                                       title="Zahlungseing&auml;nge">
                                         <i class="fa fa-money"></i>
                                     </a>
                                     <a href="zahlungsarten.php?kZahlungsart={$zahlungsart->kZahlungsart}&token={$smarty.session.jtl_token}"

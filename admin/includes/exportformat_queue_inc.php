@@ -495,6 +495,17 @@ function exportformatQueueFinalize($step, JTLSmarty $smarty, array &$messages)
         case 'fertiggestellt':
             exportformatQueueRedirect('fertig', $messages);
             break;
+        case 'erstellen':
+            if (!empty($messages['error'])) {
+                $nStunden = isset($_SESSION['exportformatQueue.nStunden']) ? $_SESSION['exportformatQueue.nStunden'] : 24;
+                $smarty->assign('oExportformatCron_arr', holeExportformatCron())
+                       ->assign('oExportformatQueueBearbeitet_arr', holeExportformatQueueBearbeitet($nStunden))
+                       ->assign('oExportformat_arr', holeAlleExportformate())
+                       ->assign('nStunden', $nStunden);
+            }
+            break;
+        default:
+            break;
     }
 
     $smarty->assign('hinweis', $messages['notice'])

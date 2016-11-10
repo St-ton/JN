@@ -29,7 +29,7 @@ class Filter
     /**
      * Add a text field to a filter object
      *
-     * @param string $cTitle - the label/title for this field
+     * @param string|array $cTitle - either title-string for this field or a pair of short title and long title
      * @param string $cColumn - the column name to be compared
      * @param int    $nTestOp
      *  0 = custom
@@ -61,7 +61,7 @@ class Filter
      * Add a select field to a filter object. Options can be added with FilterSelectField->addSelectOption() to this
      * select field
      *
-     * @param string $cTitle - the label/title for this field
+     * @param string|array $cTitle - either title-string for this field or a pair of short title and long title
      * @param string $cColumn - the column name to be compared
      * @return FilterSelectField
      */

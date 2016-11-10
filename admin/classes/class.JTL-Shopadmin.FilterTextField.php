@@ -13,7 +13,7 @@ class FilterTextField extends FilterField
      * FilterTextField constructor.
      * 
      * @param Filter $oFilter
-     * @param string $cTitle
+     * @param string|array $cTitle - either title-string for this field or a pair of short title and long title
      * @param string|array $cColumn - column/field or array of them to be searched disjunctively (OR)
      * @param int    $nTestOp
      *  0 = custom

@@ -215,7 +215,7 @@ if ($step === 'einstellen') {
             ->assign('kZahlungsart', $kZahlungsart);
     }
 } elseif ($step === 'payments') {
-    if(validateToken() && isset($_POST['action']) && $_POST['action'] === 'paymentwawireset') {
+    if(validateToken() && isset($_POST['action']) && $_POST['action'] === 'paymentwawireset' && isset($_POST['kEingang_arr'])) {
         $kEingang_arr = $_POST['kEingang_arr'];
         Shop::DB()->query("
                 UPDATE tzahlungseingang
@@ -227,7 +227,8 @@ if ($step === 'einstellen') {
     $kZahlungsart = (int)$_GET['kZahlungsart'];
 
     $oFilter = new Filter('payments-' . $kZahlungsart);
-    $oFilter->addTextfield('Suchbegriff', ['cBestellNr', 'fBetrag', 'cVorname', 'cNachname', 'cHinweis']);
+    $oFilter->addTextfield(['Suchbegriff', 'Suche nach Bestell-Nr., Betrag, Kunden, Hinweis'],
+        ['cBestellNr', 'fBetrag', 'cVorname', 'cNachname', 'cHinweis']);
     $oFilter->addDaterangefield('Zeitraum', 'dZeit');
     $oFilter->assemble();
 

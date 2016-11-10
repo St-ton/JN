@@ -1,4 +1,4 @@
-{include file='tpl_inc/seite_header.tpl' cTitel="Zahlungseing&auml;nge f&uuml;r "|cat:$oZahlungsart->cName cBeschreibung='Hello World' cDokuURL=Nix}
+{include file='tpl_inc/seite_header.tpl' cTitel=#payments#|cat:$oZahlungsart->cName cBeschreibung=#paymentsDesc# cDokuURL=#paymentsURL#}
 <div id="content" class="container-fluid">
     {include file='tpl_inc/filtertools.tpl' oFilter=$oFilter cParam_arr=['a'=>$smarty.get.a,
         'token'=>$smarty.session.jtl_token, 'kZahlungsart'=>$smarty.get.kZahlungsart]}

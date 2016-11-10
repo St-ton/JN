@@ -41,7 +41,7 @@
                     <p>{$minimumPurchase|replace:"%d":$Artikel->fMindestbestellmenge|replace:"%s":$units}</p>
                 {/if}
 
-                {if $Artikel->fAbnahmeintervall > 0}
+                {if $Artikel->fAbnahmeintervall > 0 && $Einstellungen.artikeldetails.artikeldetails_artikelintervall_anzeigen === 'Y'}
                     {lang key="takeHeedOfInterval" section="productDetails" assign="takeHeedOfInterval"}
                     <p>{$takeHeedOfInterval|replace:"%d":$Artikel->fAbnahmeintervall|replace:"%s":$units}</p>
                 {/if}

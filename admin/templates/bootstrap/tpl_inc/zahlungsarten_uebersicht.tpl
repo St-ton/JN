@@ -14,39 +14,57 @@
         <div class="panel-body">
             <table class="list table">
                 <thead>
-                <tr>
-                    <th>{#name#}</th>
-                    <th></th>
-                    <th></th>
-                </tr>
+                    <tr>
+                        <th>{#name#}</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
                 </thead>
                 <tbody>
-                {foreach name=zahlungsarten from=$zahlungsarten item=zahlungsart}
-                    <tr class="text-vcenter">
-                        <td class="text-left">
-                            <h4>{$zahlungsart->cName}
-                                <small>{$zahlungsart->cAnbieter}</small>
-                            </h4>
-                        </td>
-                        <td class="text-center">
-                            {if $zahlungsart->nActive == 1}
-                                <span class="label label-success"><i class="fa fa-check"></i></span>
-                            {else}
-                                <span class="label label-danger"><i class="fa fa-times"></i></span>
-                            {/if}
-                        </td>
-                        <td class="text-center" width="100">
-                            <div class="btn-group" role="group">
-                                <a href="zahlungsarten.php?a=log&kZahlungsart={$zahlungsart->kZahlungsart}&token={$smarty.session.jtl_token}"
-                                   class="btn {if isset($zahlungsart->oZahlungsLog->oLog_arr) && $zahlungsart->oZahlungsLog->oLog_arr|@count > 0}{if $zahlungsart->oZahlungsLog->hasError}btn-danger{else}btn-default{/if}{else}btn-default disabled{/if} btn-sm down"
-                                   title="{#viewLog#}"><i
-                                            class="fa {if isset($zahlungsart->oZahlungsLog->oLog_arr) && $zahlungsart->oZahlungsLog->oLog_arr|@count > 0}{if $zahlungsart->oZahlungsLog->hasError}fa-warning{else}fa-bars{/if}{else}fa-check{/if}"></i></a>
-                                <a href="zahlungsarten.php?kZahlungsart={$zahlungsart->kZahlungsart}&token={$smarty.session.jtl_token}"
-                                   class="btn btn-default btn-sm" title="{#edit#}"><i class="fa fa-edit"></i></a>
-                            </div>
-                        </td>
-                    </tr>
-                {/foreach}
+                    {foreach name=zahlungsarten from=$zahlungsarten item=zahlungsart}
+                        <tr class="text-vcenter">
+                            <td class="text-left">
+                                <h4>{$zahlungsart->cName}
+                                    <small>{$zahlungsart->cAnbieter}</small>
+                                </h4>
+                            </td>
+                            <td class="tright">
+                                {if $zahlungsart->nActive == 1}
+                                    <span class="label label-success" title="Aktiv"><i class="fa fa-check"></i></span>
+                                {else}
+                                    <span class="label label-danger" title="Inaktiv"><i class="fa fa-times"></i></span>
+                                {/if}
+                            </td>
+                            <td class="tright">
+                                <div class="btn-group" role="group">
+                                    <a href="zahlungsarten.php?a=log&kZahlungsart={$zahlungsart->kZahlungsart}&token={$smarty.session.jtl_token}"
+                                       class="btn btn-sm down
+                                              {if isset($zahlungsart->oZahlungsLog->oLog_arr) && $zahlungsart->oZahlungsLog->oLog_arr|@count > 0}
+                                                    {if $zahlungsart->oZahlungsLog->hasError}btn-danger{else}btn-default{/if}
+                                              {else}
+                                                    btn-default disabled
+                                              {/if}"
+                                       title="{#viewLog#}">
+                                        <i class="fa
+                                                  {if isset($zahlungsart->oZahlungsLog->oLog_arr) && $zahlungsart->oZahlungsLog->oLog_arr|@count > 0}
+                                                        {if $zahlungsart->oZahlungsLog->hasError}fa-warning{else}fa-bars{/if}
+                                                  {else}
+                                                        fa-check
+                                                  {/if}"></i>
+                                    </a>
+                                    <a {if $zahlungsart->nEingangAnzahl > 0}href="zahlungsarten.php?a=payments&kZahlungsart={$zahlungsart->kZahlungsart}&token={$smarty.session.jtl_token}"{/if}
+                                       class="btn btn-default {if $zahlungsart->nEingangAnzahl === 0}disabled{/if}"
+                                       title="Zahlungseing&auml;nge">
+                                        <i class="fa fa-money"></i>
+                                    </a>
+                                    <a href="zahlungsarten.php?kZahlungsart={$zahlungsart->kZahlungsart}&token={$smarty.session.jtl_token}"
+                                       class="btn btn-default btn-sm" title="{#edit#}">
+                                        <i class="fa fa-edit"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    {/foreach}
                 </tbody>
             </table>
         </div>

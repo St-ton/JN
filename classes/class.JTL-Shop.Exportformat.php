@@ -1284,7 +1284,7 @@ class Exportformat
      */
     public function checkSyntax()
     {
-        $this->initSmarty();
+        $this->initSession()->initSmarty();
         $error = false;
         try {
             $this->smarty->fetch('db:' . $this->kExportformat);

@@ -528,6 +528,25 @@ if ($step === 'pluginverwaltung_uebersicht') {
     if (count($PluginVerfuebar_arr) > 0) {
         foreach ($PluginVerfuebar_arr as $i => $PluginVerfuebar) {
             $PluginVerfuebar_arr[$i] = makeXMLToObj($PluginVerfuebar);
+            // searching for multiple names of license-file (e.g. LICENSE.md or License.md and so on)
+            $szFolder = PFAD_ROOT . PFAD_PLUGIN . $PluginVerfuebar_arr[$i]->cVerzeichnis.'/';
+            $vPossibleLicenseNames = array(
+                  ''
+                , 'license.md'
+                , 'License.md'
+                , 'LICENSE.md'
+            );
+            $j = count($vPossibleLicenseNames) -1;
+            for (; $j !== 0 && !file_exists($szFolder.$vPossibleLicenseNames[$j]); $j--) {
+                // we're only couting up to our find
+            }
+            // only if we found something, we add it to our array
+            if ('' !== $vPossibleLicenseNames[$j]) {
+                $vLicenseFiles[$PluginVerfuebar_arr[$i]->cVerzeichnis] = $szFolder.$vPossibleLicenseNames[$j];;
+            }
+        }
+        if (!empty($vLicenseFiles)) {
+            $smarty->assign('szLicenses', json_encode($vLicenseFiles));
         }
     }
     $errorCount = count($PluginInstalliertByStatus_arr['status_3']) +

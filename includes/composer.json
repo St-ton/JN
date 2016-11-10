@@ -15,6 +15,7 @@
         "phpgangsta/googleauthenticator": "dev-master",
         "phpmailer/phpmailer": "~5.2",
         "jtlshop/qrcodegenerator": "dev-master"
+        "erusev/parsedown": "dev-master"
     },
     "require_dev": {
         "phpunit/php-token-stream": "~1.2",

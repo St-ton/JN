@@ -966,6 +966,7 @@ class Exportformat
     /**
      * @param string $fileName
      * @param string $fileNameSplit
+     * @return $this
      */
     private function cleanupFiles($fileName, $fileNameSplit)
     {
@@ -980,6 +981,8 @@ class Exportformat
                 closedir($dir);
             }
         }
+
+        return $this;
     }
 
     /**
@@ -1067,7 +1070,6 @@ class Exportformat
             $replaceTwo[] = $this->config['exportformate_semikolon'];
         }
         foreach ($articles as $articleObj) {
-
             $Artikel = new Artikel();
             $Artikel->fuelleArtikel($articleObj->kArtikel, $oArtikelOptionen, $this->kKundengruppe, $this->kSprache, !$this->useCache());
 

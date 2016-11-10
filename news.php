@@ -297,8 +297,8 @@ if ($Einstellungen['news']['news_benutzen'] === 'Y') {
                 $oNewsUebersicht_arr[$i]->cMehrURL = '<a class="news-more-link" href="' . $oNewsUebersicht_arr[$i]->cURL . '">' . Shop::Lang()->get('moreLink', 'news') . '</a>';
             }
         }
-        $cMetaTitle       = (strlen($cMetaDescription) < 1) ? baueNewsMetaTitle($_SESSION['NewsNaviFilter'], $oNewsUebersicht_arr) : $cMetaTitle;
-        $cMetaDescription = (strlen($cMetaDescription) < 1) ? baueNewsMetaDescription($_SESSION['NewsNaviFilter'], $oNewsUebersicht_arr) : $cMetaDescription;
+        $cMetaTitle       = (strlen($cMetaDescription) < 1) ? Shop::Lang()->get('news', 'news') . ' ' . Shop::Lang()->get('from', 'global') . ' ' . $conf['global']['global_shopname'] : $cMetaTitle;
+        $cMetaDescription = (strlen($cMetaDescription) < 1) ? Shop::Lang()->get('newsMetaDesc', 'news') : $cMetaDescription;
         $cMetaKeywords    = (strlen($cMetaKeywords) < 1) ? baueNewsMetaKeywords($_SESSION['NewsNaviFilter'], $oNewsUebersicht_arr) : $cMetaKeywords;
 
         $smarty->assign('oNewsUebersicht_arr', $oNewsUebersicht_arr)

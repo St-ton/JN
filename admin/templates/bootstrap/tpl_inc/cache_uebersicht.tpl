@@ -452,6 +452,8 @@
                                                 </select>
                                             {elseif $setting->cInputTyp === 'number'}
                                                 <input class="form-control" type="number" name="{$setting->cWertName}" id="{$setting->cWertName}" value="{if isset($setting->gesetzterWert)}{$setting->gesetzterWert}{/if}" tabindex="1" />
+                                            {elseif $setting->cInputTyp === 'pass'}
+                                                <input class="form-control" type="password" name="{$setting->cWertName}" id="{$setting->cWertName}" value="{if isset($setting->gesetzterWert)}{$setting->gesetzterWert}{/if}" tabindex="1" />
                                             {else}
                                                 <input class="form-control" type="text" name="{$setting->cWertName}" id="{$setting->cWertName}" value="{if isset($setting->gesetzterWert)}{$setting->gesetzterWert}{/if}" tabindex="1" />
                                             {/if}
@@ -485,6 +487,8 @@
                                                     </select>
                                                 {elseif $setting->cInputTyp === 'number'}
                                                     <input class="form-control" type="number" name="{$setting->cWertName}" id="{$setting->cWertName}" value="{if isset($setting->gesetzterWert)}{$setting->gesetzterWert}{/if}" tabindex="1" />
+                                                {elseif $setting->cInputTyp === 'pass'}
+                                                    <input class="form-control" type="password" name="{$setting->cWertName}" id="{$setting->cWertName}" value="{if isset($setting->gesetzterWert)}{$setting->gesetzterWert}{/if}" tabindex="1" />
                                                 {else}
                                                     <input class="form-control" type="text" name="{$setting->cWertName}" id="{$setting->cWertName}" value="{if isset($setting->gesetzterWert)}{$setting->gesetzterWert}{/if}" tabindex="1" />
                                                 {/if}

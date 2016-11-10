@@ -227,8 +227,8 @@ if ($step === 'einstellen') {
     $kZahlungsart = (int)$_GET['kZahlungsart'];
 
     $oFilter = new Filter('payments-' . $kZahlungsart);
-    $oFilter->addDaterangefield('Zeitraum', 'dZeit');
     $oFilter->addTextfield('Suchbegriff', ['cBestellNr', 'fBetrag', 'cVorname', 'cNachname', 'cHinweis']);
+    $oFilter->addDaterangefield('Zeitraum', 'dZeit');
     $oFilter->assemble();
 
     $oZahlungsart        = Shop::DB()->select('tzahlungsart', 'kZahlungsart', $kZahlungsart);

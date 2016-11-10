@@ -93,7 +93,7 @@ class JobQueue
     }
 
     /**
-     * @return mixed
+     * @return object|null
      */
     public function holeJobArt()
     {
@@ -101,7 +101,7 @@ class JobQueue
             return Shop::DB()->select(Shop::DB()->escape($this->cTabelle), Shop::DB()->escape($this->cKey), (int)$this->kKey);
         }
 
-        return;
+        return null;
     }
 
     /**

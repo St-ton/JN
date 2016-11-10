@@ -75,7 +75,7 @@ class Nice
                 $bCount = count($cBrocken_arr);
                 if ($bCount > 2) {
                     for ($i = 2; $i < $bCount; $i++) {
-                        $this->kShopModul_arr[] = intval($cBrocken_arr[$i]);
+                        $this->kShopModul_arr[] = (int)$cBrocken_arr[$i];
                     }
                 }
             }
@@ -183,6 +183,7 @@ class Nice
         $oModul->cDefine  = 'SHOP_ERWEITERUNG_BRANDFREE';
         $oModul->cURL     = '';
         $oModul_arr[]     = $oModul;
+        
         return $oModul_arr;
     }
 

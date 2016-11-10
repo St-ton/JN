@@ -1870,4 +1870,12 @@ final class Shop
 
         return $result;
     }
+
+    /**
+     * @return bool
+     */
+    public static function isBrandfree()
+    {
+        return Nice::getInstance()->checkErweiterung(SHOP_ERWEITERUNG_BRANDFREE);
+    }
 }

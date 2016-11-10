@@ -244,11 +244,13 @@ class Boxen
                                         $filterEntry       = array();
                                         $filterEntry['id'] = $_filterValue;
                                         $name              = null;
-                                        if ($nSeite == 2) { //map category name
+                                        if ($nSeite == PAGE_ARTIKELLISTE) { //map category name
                                             $name = Shop::DB()->select('tkategorie', 'kKategorie', (int)$_filterValue, null, null, null, null, false, 'cName');
-                                        } elseif ($nSeite == 1) { //map article name
+                                        } elseif ($nSeite == PAGE_ARTIKEL) { //map article name
                                             $name = Shop::DB()->select('tartikel', 'kArtikel', (int)$_filterValue, null, null, null, null, false, 'cName');
-                                        } elseif ($nSeite == 31) { //map page name
+                                        } elseif ($nSeite == PAGE_HERSTELLER) { //map manufacturer name
+                                            $name = Shop::DB()->select('thersteller', 'kHersteller', (int)$_filterValue, null, null, null, null, false, 'cName');
+                                        } elseif ($nSeite == PAGE_EIGENE) { //map page name
                                             $name = Shop::DB()->select('tlink', 'kLink', (int)$_filterValue, null, null, null, null, false, 'cName');
                                         }
                                         $filterEntry['name'] = (!empty($name->cName)) ? $name->cName : '???';

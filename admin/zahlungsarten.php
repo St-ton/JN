@@ -227,8 +227,8 @@ if ($step === 'einstellen') {
     $kZahlungsart = (int)$_GET['kZahlungsart'];
 
     $oFilter = new Filter('payments-' . $kZahlungsart);
-    $oFilter->addTextfield(['Suchbegriff', 'Suche nach Bestell-Nr., Betrag, Kunden, Hinweis'],
-        ['cBestellNr', 'fBetrag', 'cVorname', 'cNachname', 'cHinweis']);
+    $oFilter->addTextfield(['Suchbegriff', 'Sucht in Bestell-Nr., Betrag, Kunden-Vornamen, E-Mail-Adresse, Hinweis'],
+        ['cBestellNr', 'fBetrag', 'cVorname', 'cMail', 'cHinweis']);
     $oFilter->addDaterangefield('Zeitraum', 'dZeit');
     $oFilter->assemble();
 

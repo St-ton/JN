@@ -70,7 +70,7 @@ class WarenkorbPers
                 }
                 if ($oWarenkorbPersPos->kArtikel == $kArtikel &&
                     count($oWarenkorbPersPos->oWarenkorbPersPosEigenschaft_arr) > 0 &&
-                    (int)($oWarenkorbPersPos->kKonfigitem) === (int)($kKonfigitem)) {
+                    (int)$oWarenkorbPersPos->kKonfigitem === (int)$kKonfigitem) {
                     $nPosition         = $i;
                     $bBereitsEnthalten = true;
                     foreach ($oEigenschaftwerte_arr as $oEigenschaftwerte) {
@@ -84,7 +84,7 @@ class WarenkorbPers
                     }
                 } elseif ($oWarenkorbPersPos->kArtikel == $kArtikel && $cUnique !== '' &&
                     $oWarenkorbPersPos->cUnique === $cUnique &&
-                    (int)($oWarenkorbPersPos->kKonfigitem) === (int)($kKonfigitem)) {
+                    (int)$oWarenkorbPersPos->kKonfigitem === (int)$kKonfigitem) {
                     $nPosition         = $i;
                     $bBereitsEnthalten = true;
                     break;

@@ -37,6 +37,11 @@ if (validateToken()) {
             div.markdown blockquote {
                 font-size: inherit;
             }
+             pre {
+                 overflow-wrap: break-word;
+                 white-space: pre-line;
+                 word-break: unset;
+             }
         </style>
     ';
     if (file_exists($_POST['path'])) {

@@ -1,6 +1,5 @@
 {literal}
 <style>
-    /* set some documentation-styles, different from the shop */
     div.markdown {
         padding: 0px 10px;
     }
@@ -16,17 +15,25 @@
     div.markdown blockquote {
         font-size: inherit;
     }
+    div.markdown-wrapper {
+        padding: 5px 40px 30px;
+    }
+    pre {
+        overflow-wrap: break-word;
+        white-space: pre-line;
+        word-break: unset;
+    }
 </style>
 {/literal}
 <div class="panel panel-default">
-    <div style="padding:5px 40px 30px;">
-        {if $fMarkDown}
-        <div class="markdown">
-            {$szLicenseContent}
-        </div>
+    <div class="markdown-wrapper">
+        {if $fMarkDown === true}
+            <div class="markdown">
+                {$szLicenseContent}
+            </div>
         {else}
-        <br>
-        <pre>{$szLicenseContent}</pre>
+            <br>
+            <pre>{$szLicenseContent}</pre>
         {/if}
     </div>
 </div>

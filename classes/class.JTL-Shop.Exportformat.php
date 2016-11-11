@@ -1181,9 +1181,7 @@ class Exportformat
             fclose($datei);
         } else {
             $queue->updateExportformatQueueBearbeitet();
-            $queue->dZuletztGelaufen = date('Y-m-d H:i');
-            $queue->nInArbeit        = 0;
-            $queue->updateJobInDB();
+            $queue->setDZuletztGelaufen(date('Y-m-d H:i'))->setNInArbeit(0)->updateJobInDB();
             //finalize job when there are no more articles to export
             if (!(is_array($articles) && count($articles) > 0) || ($queue->nLimitN >= $max)) {
                 Jtllog::cronLog('Finalizing job.', 2);

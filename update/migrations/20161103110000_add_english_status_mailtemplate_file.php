@@ -36,6 +36,10 @@ class Migration_20161103110000 extends Migration implements IMigration
                     (SELECT kSprache FROM tsprache WHERE cISO = 'eng'),
                     'Status email', '" . $cContentHtml . "', '" . $cContentText . "', '', ''
                 )
+                ON DUPLICATE KEY UPDATE
+                    cBetreff = 'Status Email',
+                        cContentHtml = '" . $cContentHtml . "',
+                        cContentText = '" . $cContentText . "'
         ");
         $this->execute("
             INSERT INTO temailvorlagespracheoriginal
@@ -44,6 +48,10 @@ class Migration_20161103110000 extends Migration implements IMigration
                     (SELECT kSprache FROM tsprache WHERE cISO = 'eng'),
                     'Status email', '" . $cContentHtml . "', '" . $cContentText . "', '', ''
                 )
+                ON DUPLICATE KEY UPDATE
+                    cBetreff = 'Status Email',
+                        cContentHtml = '" . $cContentHtml . "',
+                        cContentText = '" . $cContentText . "'
         ");
     }
 

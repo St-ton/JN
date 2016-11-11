@@ -28,9 +28,7 @@ function suggestions($keyword)
 
     $results    = array();
     $language   = Shop::getLanguage();
-    $maxResults = (intval($Einstellungen['artikeluebersicht']['suche_ajax_anzahl']) > 0) ?
-        intval($Einstellungen['artikeluebersicht']['suche_ajax_anzahl']) :
-        10;
+    $maxResults = (intval($Einstellungen['artikeluebersicht']['suche_ajax_anzahl']) > 0) ? intval($Einstellungen['artikeluebersicht']['suche_ajax_anzahl']) : 10;
     if (strlen($keyword) >= 2) {
         $results = Shop::DB()->query("
           SELECT cSuche AS keyword, nAnzahlTreffer as quantity
@@ -59,6 +57,7 @@ function suggestions($keyword)
  */
 function pushToBasket($kArtikel, $anzahl, $oEigenschaftwerte_arr = '')
 {
+    /** @var array('Warenkorb' => Warenkorb) $_SESSION */
     global $Einstellungen, $Kunde, $smarty;
 
     require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Artikel.php';
@@ -182,6 +181,7 @@ function pushToBasket($kArtikel, $anzahl, $oEigenschaftwerte_arr = '')
  */
 function getBasketItems($nTyp)
 {
+    /** @var array('Warenkorb' => Warenkorb) $_SESSION */
     global $Einstellungen, $smarty;
 
     require_once PFAD_ROOT . PFAD_INCLUDES . 'artikel_inc.php';
@@ -191,6 +191,7 @@ function getBasketItems($nTyp)
     $objResponse = new IOResponse();
 
     $GLOBALS['oSprache'] = Sprache::getInstance();
+    WarenkorbHelper::addVariationPictures($_SESSION['Warenkorb']);
 
     switch (intval($nTyp)) {
         default:
@@ -243,17 +244,12 @@ function buildConfiguration($aValues)
 {
     global $smarty;
 
-    $oResponse = new IOResponse();
-
-    $articleId = isset($aValues['VariKindArtikel'])
-        ? intval($aValues['VariKindArtikel'])
-        : intval($aValues['a']);
-
+    $oResponse       = new IOResponse();
+    $articleId       = isset($aValues['VariKindArtikel']) ? intval($aValues['VariKindArtikel']) : intval($aValues['a']);
     $items           = isset($aValues['item']) ? $aValues['item'] : array();
     $quantities      = isset($aValues['quantity']) ? $aValues['quantity'] : array();
     $variationValues = isset($aValues['eigenschaftwert']) ? $aValues['eigenschaftwert'] : array();
-
-    $oKonfig = buildConfig($articleId, $aValues['anzahl'], $variationValues, $items, $quantities, array());
+    $oKonfig         = buildConfig($articleId, $aValues['anzahl'], $variationValues, $items, $quantities, array());
 
     $smarty->assign('oKonfig', $oKonfig);
     $oKonfig->cTemplate = utf8_encode(
@@ -285,7 +281,7 @@ function getArticleStockInfo($kArtikel, $kEigenschaftWert_arr)
         $oTestArtikel->fuelleArtikel($oTMPArtikel->kArtikel, $oArtikelOptionen, Kundengruppe::getCurrent(), $_SESSION['kSprache']);
         $oTestArtikel->Lageranzeige->AmpelText = utf8_encode($oTestArtikel->Lageranzeige->AmpelText);
 
-        return (object) [
+        return (object)[
             'stock'  => $oTestArtikel->aufLagerSichtbarkeit(),
             'status' => $oTestArtikel->Lageranzeige->nStatus,
             'text'   => $oTestArtikel->Lageranzeige->AmpelText
@@ -304,7 +300,7 @@ function checkDependencies($aValues)
     $objResponse   = new IOResponse();
     $kVaterArtikel = intval($aValues['a']);
     $fAnzahl       = floatval($aValues['anzahl']);
-    $valueID_arr   = array_filter((array) $aValues['eigenschaftwert']);
+    $valueID_arr   = array_filter((array)$aValues['eigenschaftwert']);
 
     if ($kVaterArtikel > 0) {
         $oArtikelOptionen                            = new stdClass();
@@ -374,7 +370,7 @@ function checkVarkombiDependencies($aValues, $kEigenschaft = 0, $kEigenschaftWer
     $kVaterArtikel               = intval($aValues['a']);
     $kArtikelKind                = isset($aValues['VariKindArtikel']) ? intval($aValues['VariKindArtikel']) : 0;
     $kFreifeldEigeschaftWert_arr = array();
-    $kGesetzteEigeschaftWert_arr = array_filter((array) $aValues['eigenschaftwert']);
+    $kGesetzteEigeschaftWert_arr = array_filter((array)$aValues['eigenschaftwert']);
 
     if ($kVaterArtikel > 0) {
         $oArtikelOptionen                            = new stdClass();
@@ -439,7 +435,7 @@ function checkVarkombiDependencies($aValues, $kEigenschaft = 0, $kEigenschaftWer
             if ($kArtikelKind != $oArtikelTMP->kArtikel) {
                 $oGesetzteEigeschaftWerte_arr = [];
                 foreach ($kFreifeldEigeschaftWert_arr as $cKey => $cValue) {
-                    $oGesetzteEigeschaftWerte_arr[] = (object) [
+                    $oGesetzteEigeschaftWerte_arr[] = (object)[
                         'key'   => $cKey,
                         'value' => $cValue
                     ];
@@ -568,7 +564,7 @@ function getCategoryMenu($categoryId)
 {
     global $smarty;
 
-    $categoryId = (int) $categoryId;
+    $categoryId = (int)$categoryId;
     $auto       = $categoryId === 0;
 
     if ($auto) {
@@ -585,7 +581,7 @@ function getCategoryMenu($categoryId)
         $categories = $list->holUnterkategorien($category->kKategorie, 0, 0);
     }
 
-    $result = (object) ['current' => $category, 'items' => $categories];
+    $result = (object)['current' => $category, 'items' => $categories];
 
     $smarty->assign('result', $result)
            ->assign('nSeitenTyp', 0);

@@ -110,6 +110,11 @@ class WarenkorbPos
     public $WarenkorbPosEigenschaftArr = array();
 
     /**
+     * @var object[]
+     */
+    public $variationPicturesArr = [];
+
+    /**
      * @var int
      */
     public $nZeitLetzteAenderung = 0;

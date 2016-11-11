@@ -74,6 +74,9 @@ if ($link->nLinkart == LINKTYP_STARTSEITE) {
     $smarty->assign('StartseiteBoxen', gibStartBoxen())
            ->assign('Navigation', $Navigation);
     // Auswahlassistent
+    if (class_exists('AuswahlAssistent') && AuswahlAssistent::isRequired()) {
+        $oAuswahlAssistent = new AuswahlAssistent(AUSWAHLASSISTENT_ORT_STARTSEITE, 1, Shop::$kSprache);
+    }
     if (function_exists('starteAuswahlAssistent')) {
         starteAuswahlAssistent(AUSWAHLASSISTENT_ORT_STARTSEITE, 1, Shop::$kSprache, $smarty, $Einstellungen['auswahlassistent']);
     }

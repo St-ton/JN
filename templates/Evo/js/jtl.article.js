@@ -96,12 +96,16 @@
                     });
             }
             
-            inner = function(context) {
+            inner = function(context, temporary) {
                 var id = $(context).attr('data-key'),
                     value = $(context).attr('data-value'),
                     data  = $(context).data('list'),
                     title = $(context).attr('data-title'),
                     gallery = $.evo.article().gallery;
+
+                if (typeof temporary === 'undefined') {
+                    temporary = true;
+                }
 
                 $.evo.article().galleryIndex = gallery.index;
                 $.evo.article().galleryLastIdent = gallery.ident;
@@ -109,7 +113,22 @@
                 if (!$(context).hasClass('active')) {
                     if (!!data) {
                         gallery.setItems([data], value);
-                        gallery.render(value);
+
+                        if (!temporary) {
+                            var items  = [data];
+                            var stacks = gallery.getStacks();
+                            for (var s in stacks) {
+                                if (stacks.hasOwnProperty(s) && s.match(/^_[0-9a-zA-Z]*$/) && s != '_' + id) {
+                                    items = $.merge(items, stacks[s]);
+                                }
+                            }
+
+                            gallery.setItems([data], '_' + id);
+                            gallery.setItems(items, '__');
+                            gallery.render('__');
+                        } else {
+                            gallery.render(value);
+                        }
                     }
                 }
             };
@@ -144,7 +163,7 @@
             });
             
             $('.variations .variation').click(function() {
-                inner(this);
+                inner(this, false);
             });
             
             $('.variations .variation').hover(function() {

@@ -95,7 +95,7 @@ if (Shop::$kVariKindArtikel > 0) {
     $bCanonicalURL    = ($Einstellungen['artikeldetails']['artikeldetails_canonicalurl_varkombikind'] === 'N') ? false : true;
     $cCanonicalURL    = $AktuellerArtikel->baueVariKombiKindCanonicalURL(SHOP_SEO, $AktuellerArtikel, $bCanonicalURL);
     $smarty->assign('a2', Shop::$kVariKindArtikel)
-           ->assign('reset_button', '<ul><li><button type="button" class="btn submit reset_selection" onclick="javascript:location.href=\'' .
+           ->assign('reset_button', '<ul><li><button type="button" class="btn submit reset_selection" onclick="location.href=\'' .
                $shopURL . $AktuellerArtikel->cVaterURL . '\';">' . Shop::Lang()->get('resetSelection', 'global') . '</button></li></ul>');
 }
 // Hat Artikel einen Preisverlauf?
@@ -173,7 +173,6 @@ $oBlaetterNavi = baueBewertungNavi($bewertung_seite, $bewertung_sterne, $nAnzahl
 if (hasGPCDataInteger('ek')) {
     $kKonfig = verifyGPCDataInteger('ek');
     holeKonfigBearbeitenModus($kKonfig, $smarty);
-    ArtikelHelper::addVariationPictures($AktuellerArtikel, $_SESSION['Warenkorb']->PositionenArr[$kKonfig]->variationPicturesArr);
 }
 $arNichtErlaubteEigenschaftswerte = array();
 if ($AktuellerArtikel->Variationen) {

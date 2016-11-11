@@ -166,7 +166,7 @@ function checkNewsletterSend() {ldelim}
                         <span class="input-group-wrap">
                             <select class="form-control " id="kKampagne" name="kKampagne">
                                 <option value="0"></option>
-                                {foreach name="" from=$oKampagne_arr item=oKampagne}
+                                {foreach name="Kampagnen" from=$oKampagne_arr item=oKampagne}
                                     <option value="{$oKampagne->kKampagne}"{if isset($oNewsletterVorlage->kKampagne) && $oKampagne->kKampagne == $oNewsletterVorlage->kKampagne || (isset($cPostVar_arr.kKampagne) && isset($oKampagne->kKampagne) && $cPostVar_arr.kKampagne == $oKampagne->kKampagne)} selected{/if}>{$oKampagne->cName}</option>
                                 {/foreach}
                             </select>

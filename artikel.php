@@ -171,8 +171,7 @@ $nAnzahlBewertungen = ($bewertung_sterne == 0) ? $AktuellerArtikel->Bewertungen-
 $oBlaetterNavi = baueBewertungNavi($bewertung_seite, $bewertung_sterne, $nAnzahlBewertungen, $Einstellungen['bewertung']['bewertung_anzahlseite']);
 // Konfig bearbeiten
 if (hasGPCDataInteger('ek')) {
-    $kKonfig = verifyGPCDataInteger('ek');
-    holeKonfigBearbeitenModus($kKonfig, $smarty);
+    holeKonfigBearbeitenModus(verifyGPCDataInteger('ek'), $smarty);
 }
 $arNichtErlaubteEigenschaftswerte = array();
 if ($AktuellerArtikel->Variationen) {

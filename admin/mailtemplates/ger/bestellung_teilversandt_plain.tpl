@@ -11,13 +11,13 @@ der Versandstatus Ihrer Bestellung mit der Bestell-Nr. {$Bestellung->cBestellNr}
 {foreach name=variationen from=$Position->WarenkorbPosEigenschaftArr item=WKPosEigenschaft}
 {$WKPosEigenschaft->cEigenschaftName}: {$WKPosEigenschaft->cEigenschaftWertName}
 {/foreach}
-{if $Position->cSeriennummer|@count_characters > 0}
+{if $Position->cSeriennummer|strlen > 0}
 Seriennummer: {$Position->cSeriennummer}
 {/if}
-{if $Position->dMHD|@count_characters > 0}
+{if $Position->dMHD|strlen > 0}
 Mindesthaltbarkeitsdatum: {$Position->dMHD_de}
 {/if}
-{if $Position->cChargeNr|@count_characters > 0}
+{if $Position->cChargeNr|strlen > 0}
 Charge: {$Position->cChargeNr}
 {/if}
 {else}
@@ -26,7 +26,7 @@ Charge: {$Position->cChargeNr}
 {/foreach}
 
 {foreach from=$oLieferschein->oVersand_arr item=oVersand}
-{if $oVersand->getIdentCode()|@count_characters > 0}
+{if $oVersand->getIdentCode()|strlen > 0}
 Tracking-Url: {$oVersand->getLogistikVarUrl()}
 {/if}
 {/foreach}

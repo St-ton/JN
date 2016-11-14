@@ -20,17 +20,17 @@ Ihre Bestellung mit Bestellnummer {$Bestellung->cBestellNr} umfasst folgende Pos
                     {/foreach}
                     
                     {* Seriennummer *}
-                    {if $Position->cSeriennummer|@count_characters > 0}
+                    {if $Position->cSeriennummer|strlen > 0}
                         <br>Seriennummer: {$Position->cSeriennummer}
                     {/if}
 
                     {* MHD *}
-                    {if $Position->dMHD|@count_characters > 0}
+                    {if $Position->dMHD|strlen > 0}
                         <br>Mindesthaltbarkeitsdatum: {$Position->dMHD_de}
                     {/if}
 
                     {* Charge *}
-                    {if $Position->cChargeNr|@count_characters > 0}
+                    {if $Position->cChargeNr|strlen > 0}
                         <br>Charge: {$Position->cChargeNr}
                     {/if}
                 {else}
@@ -515,13 +515,13 @@ Sie haben folgende Zahlungsart gewählt: {$Bestellung->cZahlungsartName}<br>
 {elseif $Bestellung->Zahlungsart->cModulId=="za_moneybookers_jtl"}
 {/if}
 
-{if isset($Zahlungsart->cHinweistextEmail) && $Zahlungsart->cHinweistextEmail|count_characters > 0}
+{if isset($Zahlungsart->cHinweistextEmail) && $Zahlungsart->cHinweistextEmail|strlen > 0}
     {$Zahlungsart->cHinweistextEmail}<br>
     <br>
 {/if}
 Über den weiteren Verlauf Ihrer Bestellung werden wir Sie jeweils gesondert informieren.
 
-{if $oTrustedShopsBewertenButton->cURL|count_characters > 0}
+{if !empty($oTrustedShopsBewertenButton->cURL)}
     <br><br>
     Waren Sie mit Ihrer Bestellung zufrieden? Dann würden wir uns über eine Empfehlung freuen ... es dauert auch nur eine Minute.<br>
     <a href="{$oTrustedShopsBewertenButton->cURL}"><img src="{$oTrustedShopsBewertenButton->cPicURL}" alt="Bewerten Sie uns!"></a>

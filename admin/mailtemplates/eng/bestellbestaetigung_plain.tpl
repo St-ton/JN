@@ -96,7 +96,7 @@ You have chosen the following payment option: {$Bestellung->cZahlungsartName}
 {elseif $Bestellung->Zahlungsart->cModulId=="za_moneybookers_jtl"}
 {/if}
 
-{if isset($Zahlungsart->cHinweistextEmail) && $Zahlungsart->cHinweistextEmail|count_characters > 0}{$Zahlungsart->cHinweistextEmail}
+{if isset($Zahlungsart->cHinweistextEmail) && $Zahlungsart->cHinweistextEmail|strlen > 0}{$Zahlungsart->cHinweistextEmail}
 
 {/if}
 {if $Bestellung->Zahlungsart->cModulId=="za_rechnung_jtl"}

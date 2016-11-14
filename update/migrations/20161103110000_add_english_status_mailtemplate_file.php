@@ -28,44 +28,51 @@ class Migration_20161103110000 extends Migration implements IMigration
     {
         $cContentHtml = Shop::DB()->escape(file_get_contents(PFAD_ROOT . PFAD_EMAILVORLAGEN . 'eng/email_bericht_html.tpl'));
         $cContentText = Shop::DB()->escape(file_get_contents(PFAD_ROOT . PFAD_EMAILVORLAGEN . 'eng/email_bericht_plain.tpl'));
+        $oSpracheEng  = Shop::DB()->select('tsprache', 'cIso', 'eng', null, null, null, null, false, 'kSprache');
 
-        $this->execute("
-            INSERT INTO temailvorlagesprache
-                VALUES (
-                    (SELECT kEmailvorlage FROM temailvorlage WHERE cModulId = 'core_jtl_statusemail'),
-                    (SELECT kSprache FROM tsprache WHERE cISO = 'eng'),
-                    'Status email', '" . $cContentHtml . "', '" . $cContentText . "', '', ''
-                )
-                ON DUPLICATE KEY UPDATE
-                    cBetreff = 'Status Email',
+        if ($oSpracheEng !== null) {
+            $this->execute("
+                INSERT INTO temailvorlagesprache
+                    VALUES (
+                        (SELECT kEmailvorlage FROM temailvorlage WHERE cModulId = 'core_jtl_statusemail'),
+                        " . (int)$oSpracheEng->kSprache . ",
+                        'Status email', '" . $cContentHtml . "', '" . $cContentText . "', '', ''
+                    )
+                    ON DUPLICATE KEY UPDATE
+                        cBetreff = 'Status Email',
                         cContentHtml = '" . $cContentHtml . "',
                         cContentText = '" . $cContentText . "'
-        ");
-        $this->execute("
-            INSERT INTO temailvorlagespracheoriginal
-                VALUES (
-                    (SELECT kEmailvorlage FROM temailvorlage WHERE cModulId = 'core_jtl_statusemail'),
-                    (SELECT kSprache FROM tsprache WHERE cISO = 'eng'),
-                    'Status email', '" . $cContentHtml . "', '" . $cContentText . "', '', ''
-                )
-                ON DUPLICATE KEY UPDATE
-                    cBetreff = 'Status Email',
+            ");
+            $this->execute("
+                INSERT INTO temailvorlagespracheoriginal
+                    VALUES (
+                        (SELECT kEmailvorlage FROM temailvorlage WHERE cModulId = 'core_jtl_statusemail'),
+                        " . (int)$oSpracheEng->kSprache . ",
+                        'Status email', '" . $cContentHtml . "', '" . $cContentText . "', '', ''
+                    )
+                    ON DUPLICATE KEY UPDATE
+                        cBetreff = 'Status Email',
                         cContentHtml = '" . $cContentHtml . "',
                         cContentText = '" . $cContentText . "'
-        ");
+            ");
+        }
     }
 
     public function down()
     {
-        $this->execute("
-            DELETE FROM temailvorlagesprache
-                WHERE kEmailvorlage = (SELECT kEmailvorlage FROM temailvorlage WHERE cModulId = 'core_jtl_statusemail')
-                    AND kSprache = (SELECT kSprache FROM tsprache WHERE cISO = 'eng')
-        ");
-        $this->execute("
-            DELETE FROM temailvorlagespracheoriginal
-                WHERE kEmailvorlage = (SELECT kEmailvorlage FROM temailvorlage WHERE cModulId = 'core_jtl_statusemail')
-                    AND kSprache = (SELECT kSprache FROM tsprache WHERE cISO = 'eng')
-        ");
+        $oSpracheEng = Shop::DB()->select('tsprache', 'cIso', 'eng', null, null, null, null, false, 'kSprache');
+
+        if ($oSpracheEng !== null) {
+            $this->execute("
+                DELETE FROM temailvorlagesprache
+                    WHERE kEmailvorlage = (SELECT kEmailvorlage FROM temailvorlage WHERE cModulId = 'core_jtl_statusemail')
+                        AND kSprache = " . (int)$oSpracheEng->kSprache . "
+            ");
+            $this->execute("
+                DELETE FROM temailvorlagespracheoriginal
+                    WHERE kEmailvorlage = (SELECT kEmailvorlage FROM temailvorlage WHERE cModulId = 'core_jtl_statusemail')
+                        AND kSprache = " . (int)$oSpracheEng->kSprache . "
+            ");
+        }
     }
 }

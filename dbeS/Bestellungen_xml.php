@@ -320,6 +320,7 @@ function bearbeiteAckZahlung($xml)
  */
 function bearbeiteUpdate($xml)
 {
+    $kunde            = null;
     $oBestellung      = new stdClass();
     $Bestellungen_arr = mapArray($xml, 'tbestellung', $GLOBALS['mBestellung']);
     if (is_array($Bestellungen_arr) && count($Bestellungen_arr) === 1) {
@@ -608,8 +609,7 @@ function bearbeiteSet($xml)
                 }
                 /** @var Lieferschein $oLieferschein */
                 foreach ($oBestellungUpdated->oLieferschein_arr as $oLieferschein) {
-                    $oLieferschein->setEmailVerschickt(true);
-                    $oLieferschein->update();
+                    $oLieferschein->setEmailVerschickt(true)->update();
                 }
                 // Guthaben an Bestandskunden verbuchen, Email rausschicken:
                 if (is_null($kunde)) {
@@ -644,7 +644,12 @@ function bearbeiteSet($xml)
                     }
                 }
             }
-            executeHook(HOOK_BESTELLUNGEN_XML_BEARBEITESET, array('oBestellung' => &$oBestellungShop, 'oKunde' => &$kunde, 'oBestellungWawi' => &$oBestellungWawi));
+            executeHook(HOOK_BESTELLUNGEN_XML_BEARBEITESET, [
+                    'oBestellung'     => &$oBestellungShop,
+                    'oKunde'          => &$kunde,
+                    'oBestellungWawi' => &$oBestellungWawi
+                ]
+            );
         }
     }
 }

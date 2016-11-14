@@ -5067,28 +5067,29 @@ class Artikel
             if ((int)$conf['artikeldetails']['artikeldetails_aehnlicheartikel_anzahl'] > 0) {
                 $cLimit = " LIMIT " . (int)$conf['artikeldetails']['artikeldetails_aehnlicheartikel_anzahl'];
             }
+            $lagerFilter           = gibLagerfilter();
+            $kundenGruppe          = (int)$_SESSION['Kundengruppe']->kKundengruppe;
             $return['oArtikelArr'] = Shop::DB()->query(
-                "SELECT tartikelmerkmal.kArtikel, tartikel.kVaterArtikel
-                    FROM
-                    (
-                        SELECT kMerkmal, kMerkmalWert
+                "SELECT merkmalartikel.kArtikel, merkmalartikel.kVaterArtikel
+                    FROM (
+                        SELECT DISTINCT tartikelmerkmal.kArtikel, tartikel.kVaterArtikel, tartikelmerkmal.kMerkmal, tartikelmerkmal.kMerkmalWert
                         FROM tartikelmerkmal
-                        WHERE kArtikel = {$kArtikel}
-                    ) AS ssMerkmal
-                    JOIN tartikelmerkmal ON tartikelmerkmal.kMerkmal = 	ssMerkmal.kMerkmal
-                        AND tartikelmerkmal.kMerkmalWert = ssMerkmal.kMerkmalWert
-                        AND tartikelmerkmal.kArtikel != " . $kArtikel . "
-                    LEFT JOIN tartikelsichtbarkeit ON tartikelmerkmal.kArtikel = tartikelsichtbarkeit.kArtikel
-                        AND tartikelsichtbarkeit.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
-                    JOIN tartikel ON tartikel.kArtikel = tartikelmerkmal.kArtikel
-                        AND tartikel.kVaterArtikel != " . $kArtikel . "
-                        AND (tartikel.nIstVater = 1 OR tartikel.kEigenschaftKombi = 0)
-                    WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                        " . gibLagerfilter() . "
-                        {$cSQLXSeller}
-                    GROUP BY tartikelmerkmal.kArtikel
-                    ORDER BY COUNT(*) DESC
-                    " . $cLimit, 2
+                        JOIN tartikel ON tartikel.kArtikel = tartikelmerkmal.kArtikel
+                            AND tartikel.kVaterArtikel != {$kArtikel}
+                            AND (tartikel.nIstVater = 1 OR tartikel.kEigenschaftKombi = 0)
+                        LEFT JOIN tartikelsichtbarkeit ON tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
+                            AND tartikelsichtbarkeit.kKundengruppe = {$kundenGruppe}
+                        WHERE tartikelsichtbarkeit.kArtikel IS NULL
+                            AND tartikelmerkmal.kArtikel != {$kArtikel}
+                            {$lagerFilter}
+                            {$cSQLXSeller}
+                    ) AS merkmalartikel
+                    JOIN tartikelmerkmal similarMerkmal ON similarMerkmal.kArtikel = {$kArtikel}
+                        AND similarMerkmal.kMerkmal = merkmalartikel.kMerkmal
+                        AND similarMerkmal.kMerkmalWert = merkmalartikel.kMerkmalWert
+                    GROUP BY merkmalartikel.kArtikel
+                    ORDER BY COUNT(similarMerkmal.kMerkmal) DESC
+                " . $cLimit, 2
             );
             if (!is_array($return['oArtikelArr']) || count($return['oArtikelArr']) < 1) { // Falls es keine Merkmale gibt, in tsuchcachetreffer und ttagartikel suchen
                 $return['oArtikelArr'] = Shop::DB()->query(

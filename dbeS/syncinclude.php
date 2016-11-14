@@ -584,7 +584,6 @@ function versendeVerfuegbarkeitsbenachrichtigung($oArtikel)
  */
 function setzePreisverlauf($kArtikel, $kKundengruppe, $fVKNetto)
 {
-    $nReihen = 0;
     $oPreis  = Shop::DB()->query(
         "SELECT fVKNetto
                 FROM tpreisverlauf
@@ -742,14 +741,9 @@ function deleteArticleImage($oArtikelPict = null, $kArtikel = 0, $kArtikelPict =
     } elseif (isset($oArtikelPict->kMainArtikelBild) && $oArtikelPict->kMainArtikelBild == 0) { // Das Bild ist ein Hauptbild
         // Gibt es Artikel die auf Bilder des zu löschenden Artikel verknüpfen?
         $oVerknuepfteArtikel_arr = Shop::DB()->query(
-            "SELECT *
+            "SELECT kArtikelPict
                 FROM tartikelpict
-                WHERE kMainArtikelBild =
-                (
-                    SELECT kArtikelPict
-                        FROM tartikelpict
-                        WHERE kArtikelPict = " . (int)$oArtikelPict->kArtikelPict . "
-                )", 2
+                WHERE kMainArtikelBild = " . (int)$oArtikelPict->kArtikelPict, 2
         );
         if (count($oVerknuepfteArtikel_arr) === 0) {
             // Gibt ein neue Artikel die noch auf den physikalischen Pfad zeigen?
@@ -778,7 +772,7 @@ function deleteArticleImage($oArtikelPict = null, $kArtikel = 0, $kArtikelPict =
     }
     // Clear Artikel Cache
     $cache = Shop::Cache();
-    $cache->flushTags(array(CACHING_GROUP_ARTICLE . '_' . (int)$kArtikel));
+    $cache->flushTags([CACHING_GROUP_ARTICLE . '_' . (int)$kArtikel]);
 }
 
 /**
@@ -855,7 +849,7 @@ function getSeoFromDB($kKey, $cKey, $kSprache = null, $cAssoc = null)
         }
     }
 
-    return;
+    return null;
 }
 
 /**

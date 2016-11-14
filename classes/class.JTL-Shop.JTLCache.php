@@ -139,7 +139,6 @@ class JTLCache
      * singleton
      *
      * @param array $options
-     *
      * @return JTLCache
      */
     public static function getInstance($options = array())
@@ -150,8 +149,8 @@ class JTLCache
     /**
      * object wrapper
      *
-     * @param $method
-     * @param $arguments
+     * @param string $method
+     * @param array  $arguments
      * @return mixed
      */
     public function __call($method, $arguments)
@@ -165,8 +164,8 @@ class JTLCache
      * static wrapper
      * this allows to call Cache::set() etc.
      *
-     * @param $method
-     * @param $arguments
+     * @param string $method
+     * @param array  $arguments
      * @return mixed
      */
     public static function __callStatic($method, $arguments)
@@ -349,7 +348,6 @@ class JTLCache
      * set caching method by name
      *
      * @param string $methodName
-     *
      * @return bool
      */
     public function setCache($methodName)
@@ -381,7 +379,6 @@ class JTLCache
      * set caching method
      *
      * @param JTLCacheTrait $method
-     *
      * @return $this
      */
     private function setMethod($method)
@@ -480,7 +477,6 @@ class JTLCache
      * @param int         $port
      * @param string|null $pass
      * @param int|null    $database
-     *
      * @return $this
      */
     public function setRedisCredentials($host, $port, $pass = null, $database = null)
@@ -498,7 +494,6 @@ class JTLCache
      *
      * @param string $host
      * @param int    $port
-     *
      * @return $this
      */
     public function setMemcacheCredentials($host, $port)
@@ -514,7 +509,6 @@ class JTLCache
      *
      * @param string $host
      * @param int    $port
-     *
      * @return $this
      */
     public function setMemcachedCredentials($host, $port)
@@ -528,7 +522,6 @@ class JTLCache
      * @param string   $cacheID
      * @param callable $callback
      * @param mixed    $customData
-     *
      * @return mixed
      */
     public function _get($cacheID, $callback = null, $customData = null)
@@ -564,7 +557,6 @@ class JTLCache
      * @param mixed      $content
      * @param array|null $tags
      * @param int|null   $expiration
-     *
      * @return mixed
      */
     public function _set($cacheID, $content, $tags = null, $expiration = null)
@@ -594,14 +586,13 @@ class JTLCache
      * @param array      $keyValue - key=cacheID, value=content
      * @param array|null $tags
      * @param int|null   $expiration
-     *
      * @return bool
      */
     public function _setMulti($keyValue, $tags = null, $expiration = null)
     {
         if ($this->options['activated'] === true && $this->isCacheGroupActive($tags) === true) {
             $res = $this->_method->storeMulti($keyValue, $expiration);
-            if ($tags !== null) {
+            if ($res === true && $tags !== null) {
                 foreach (array_keys($keyValue) as $_cacheID) {
                     $this->_setCacheTag($tags, $_cacheID);
                 }
@@ -619,7 +610,6 @@ class JTLCache
      * get multiple values from cache
      *
      * @param array $cacheIDs
-     *
      * @return array
      */
     public function _getMulti($cacheIDs)
@@ -634,7 +624,6 @@ class JTLCache
      * this allows the disabling of certain cache types
      *
      * @param string $groupID
-     *
      * @return bool
      */
     public function _isCacheGroupActive($groupID)
@@ -659,7 +648,6 @@ class JTLCache
 
     /**
      * @param string|array $tags
-     *
      * @return array
      */
     public function getKeysByTag($tags)
@@ -672,7 +660,6 @@ class JTLCache
      *
      * @param array  $tags
      * @param string $cacheID
-     *
      * @return bool
      */
     public function _setCacheTag($tags, $cacheID)
@@ -684,7 +671,6 @@ class JTLCache
      * set custom cache lifetime
      *
      * @param int $lifetime
-     *
      * @return $this
      */
     public function _setCacheLifetime($lifetime)
@@ -698,7 +684,6 @@ class JTLCache
      * set custom file cache directory
      *
      * @param string $dir
-     *
      * @return $this
      */
     public function _setCacheDir($dir)

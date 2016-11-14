@@ -966,6 +966,7 @@ class Exportformat
     /**
      * @param string $fileName
      * @param string $fileNameSplit
+     * @return $this
      */
     private function cleanupFiles($fileName, $fileNameSplit)
     {
@@ -980,6 +981,8 @@ class Exportformat
                 closedir($dir);
             }
         }
+
+        return $this;
     }
 
     /**
@@ -1067,7 +1070,6 @@ class Exportformat
             $replaceTwo[] = $this->config['exportformate_semikolon'];
         }
         foreach ($articles as $articleObj) {
-
             $Artikel = new Artikel();
             $Artikel->fuelleArtikel($articleObj->kArtikel, $oArtikelOptionen, $this->kKundengruppe, $this->kSprache, !$this->useCache());
 
@@ -1179,9 +1181,7 @@ class Exportformat
             fclose($datei);
         } else {
             $queue->updateExportformatQueueBearbeitet();
-            $queue->dZuletztGelaufen = date('Y-m-d H:i');
-            $queue->nInArbeit        = 0;
-            $queue->updateJobInDB();
+            $queue->setDZuletztGelaufen(date('Y-m-d H:i'))->setNInArbeit(0)->updateJobInDB();
             //finalize job when there are no more articles to export
             if (!(is_array($articles) && count($articles) > 0) || ($queue->nLimitN >= $max)) {
                 Jtllog::cronLog('Finalizing job.', 2);
@@ -1284,7 +1284,7 @@ class Exportformat
      */
     public function checkSyntax()
     {
-        $this->initSmarty();
+        $this->initSession()->initSmarty();
         $error = false;
         try {
             $this->smarty->fetch('db:' . $this->kExportformat);

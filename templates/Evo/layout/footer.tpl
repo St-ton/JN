@@ -154,7 +154,9 @@
                             {/if}
                         </li>
                         <li class="col-xs-12 col-md-3 text-right" id="system-credits">
+                            {if !Shop::isBrandfree()}
                             Powered by <a href="http://jtl-url.de/jtlshop" title="JTL-Shop" target="_blank" rel="nofollow">JTL-Shop</a>
+                            {/if}
                         </li>
                     </ul>
                      {if isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout !== 'fluid'}

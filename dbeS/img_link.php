@@ -112,10 +112,10 @@ function get_del_array(SimpleXMLElement $xml)
 {
     $items = array();
     foreach ($xml->children() as $child) {
-        $item    = (object)array(
+        $item    = (object)[
             'nNr'      => (int)$child->nNr,
             'kArtikel' => (int)$child->kArtikel
-        );
+        ];
         $items[] = $item;
     }
 
@@ -129,26 +129,22 @@ function get_del_array(SimpleXMLElement $xml)
 function get_array(SimpleXMLElement $xml)
 {
     $items = array();
+    /** @var SimpleXMLElement $child */
     foreach ($xml->children() as $child) {
-        $item = (object)array(
+        $item    = (object)[
             'cPfad'        => '',
             'kBild'        => (int)$child->attributes()->kBild,
             'nNr'          => (int)$child->attributes()->nNr,
             'kArtikel'     => (int)$child->attributes()->kArtikel,
             'kArtikelPict' => (int)$child->attributes()->kArtikelPict
-        );
-
+        ];
         $imageId = (int)$child->attributes()->kBild;
         $image   = Shop::DB()->select('tbild', 'kBild', $imageId);
-
         if (is_object($image)) {
             $item->cPfad = $image->cPfad;
-            $items[] = $item;
-        }
-        else {
-            if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                Jtllog::writeLog('Missing reference in tbild (Key: ' . $imageId . ')', JTLLOG_LEVEL_DEBUG, false, 'img_link_xml');
-            }
+            $items[]     = $item;
+        } elseif (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
+            Jtllog::writeLog('Missing reference in tbild (Key: ' . $imageId . ')', JTLLOG_LEVEL_DEBUG, false, 'img_link_xml');
         }
     }
 

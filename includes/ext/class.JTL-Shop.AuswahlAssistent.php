@@ -51,6 +51,11 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
         private $nAktiv = 0;
 
         /**
+         * @var array
+         */
+        private $oFrage_arr = [];
+
+        /**
          * @var int
          */
         private $nQuestion = 0;
@@ -66,18 +71,26 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
          * @param string $cKey
          * @param int    $kKey
          * @param int    $kSprache
+         * @param bool   $bOnlyActive
          */
         public function __construct($cKey, $kKey, $kSprache = 0, $bOnlyActive = true)
         {
+            $kKey     = (int)$kKey;
+            $kSprache = (int)$kSprache;
+
+            if ($kSprache === 0) {
+                $kSprache = Shop::getLanguage();
+            }
+
             $oDbResult = Shop::DB()->query("
                     SELECT *
                         FROM tauswahlassistentort AS ao
                             JOIN tauswahlassistentgruppe AS ag
                                 ON ao.kAuswahlAssistentGruppe = ag.kAuswahlAssistentGruppe
-                        WHERE ao.cKey = '" . $cKey . "'
-                            AND ao.kKey = " . (int)$kKey . "
-                            AND ag.kSprache = " . (int)$kSprache . "
-                            " . ($bOnlyActive ? "AND ag.nAktiv = 1" : "") . "
+                                    AND ao.cKey = '" . Shop::DB()->escape($cKey) . "'
+                                    AND ao.kKey = " . $kKey . "
+                                    AND ag.kSprache = " . $kSprache . "
+                                    " . ($bOnlyActive ? "AND ag.nAktiv = 1" : "") . "
                 ", 1);
 
             if ($oDbResult !== null) {
@@ -90,6 +103,28 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
                 $this->kKey                    = (int)$this->kKey;
                 $this->kSprache                = (int)$this->kSprache;
                 $this->nAktiv                  = (int)$this->nAktiv;
+
+                $this->oFrage_arr = Shop::DB()->query("
+                        SELECT af.kAuswahlAssistentFrage, af.kMerkmal, af.cFrage, af.nAktiv, m.cBildpfad,
+                                COALESCE(m.cName, ms.cName) AS cName
+                            FROM tauswahlassistentfrage AS af
+                                JOIN tmerkmal AS m
+                                    ON af.kMerkmal = m.kMerkmal
+                                        AND af.kAuswahlAssistentGruppe = " . $this->kAuswahlAssistentGruppe . "
+                                        " . ($bOnlyActive ? "AND af.nAktiv = 1" : "") . "
+                                LEFT JOIN tmerkmalsprache AS ms
+                                    ON m.kMerkmal = ms.kMerkmal
+                                        AND ms.kSprache = " . $kSprache . "
+                            ORDER BY af.nSort
+                    ", 2);
+
+                foreach ($this->oFrage_arr as &$oFrage) {
+                    $oFrage->kAuswahlAssistentFrage = (int)$oFrage->kAuswahlAssistentFrage;
+                    $oFrage->kMerkmal               = (int)$oFrage->kMerkmal;
+                    $oFrage->nAktiv                 = (int)$oFrage->nAktiv;
+
+//                    $oFrage->
+                }
             }
         }
 

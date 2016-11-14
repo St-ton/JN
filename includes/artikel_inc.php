@@ -826,6 +826,8 @@ function bearbeiteProdukttags($AktuellerArtikel)
             exit();
         }
     }
+
+    return null;
 }
 
 /**

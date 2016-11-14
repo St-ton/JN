@@ -745,6 +745,7 @@ function checkeWarenkorbEingang()
                     // Hauptartikel in den WK legen
                     fuegeEinInWarenkorb($kArtikel, $fAnzahl, $oEigenschaftwerte_arr, 0, $cUnique);
                     // Konfigartikel in den WK legen
+                    /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
                     foreach ($oKonfigitem_arr as $oKonfigitem) {
                         $oKonfigitem->isKonfigItem = true;
                         switch ($oKonfigitem->getPosTyp()) {
@@ -1051,7 +1052,7 @@ function pruefeFuegeEinInWarenkorb($Artikel, $anzahl, $oEigenschaftwerte_arr, $n
     $kArtikel      = $Artikel->kArtikel; // relevant für die Berechnung von Artikelsummen im Warenkorb
     $redirectParam = array();
     $conf          = Shop::getSettings(array(CONF_GLOBAL));
-
+    /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
     // Abnahmeintervall
     if ($Artikel->fAbnahmeintervall > 0) {
         if (function_exists('bcdiv')) {
@@ -1547,6 +1548,7 @@ function setzeSteuersaetze($steuerland = 0)
         }
     }
     if (isset($_SESSION['Warenkorb']) && get_class($_SESSION['Warenkorb']) === 'Warenkorb') {
+        /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
         $_SESSION['Warenkorb']->setzePositionsPreise();
     }
 }
@@ -1827,6 +1829,7 @@ function baueSprachURLS($obj, $art)
  */
 function checkeSpracheWaehrung($lang = '')
 {
+    /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
     if (strlen($lang) > 0) {
         //Kategorien zurücksetzen, da sie lokalisiert abgelegt wurden
         if ($lang != $_SESSION['cISOSprache']) {
@@ -2356,6 +2359,7 @@ function gibVersandZuschlag($versandart, $cISO, $plz)
  */
 function berechneVersandpreis($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
 {
+    /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
     $fSteuersatz = 0.0;
     if (!isset($oZusatzArtikel->fAnzahl)) {
         if (!isset($oZusatzArtikel)) {
@@ -5395,7 +5399,7 @@ function pruefeWarenkorbStueckliste($oArtikel, $fAnzahl)
         }
     }
 
-    return;
+    return null;
 }
 
 /**
@@ -5519,6 +5523,7 @@ function resetNeuKundenKupon()
 
     unset($_SESSION['NeukundenKupon']);
     unset($_SESSION['NeukundenKuponAngenommen']);
+    /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
     $_SESSION['Warenkorb']->loescheSpezialPos(C_WARENKORBPOS_TYP_NEUKUNDENKUPON)
                           ->setzePositionsPreise();
 }
@@ -5530,13 +5535,15 @@ function resetNeuKundenKupon()
 function holeKonfigBearbeitenModus($kKonfig, &$smarty)
 {
     if (class_exists('Konfigitem')) {
+        /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
         if (isset($_SESSION['Warenkorb']->PositionenArr[$kKonfig])) {
             $oBasePosition = $_SESSION['Warenkorb']->PositionenArr[$kKonfig];
+            /** @var WarenkorbPos $oBasePosition */
             if ($oBasePosition->istKonfigVater()) {
                 $nKonfigitem_arr         = array();
                 $nKonfigitemAnzahl_arr   = array();
                 $nKonfiggruppeAnzahl_arr = array();
-
+                /** @var WarenkorbPos $oPosition */
                 foreach ($_SESSION['Warenkorb']->PositionenArr as &$oPosition) {
                     if ($oPosition->istKonfigKind() && $oPosition->cUnique == $oBasePosition->cUnique) {
                         $oKonfigitem                                              = new Konfigitem($oPosition->kKonfigitem);

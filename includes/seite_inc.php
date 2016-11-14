@@ -85,13 +85,14 @@ function gibAuswahlAssistentFragen($Einstellungen)
 
         if (function_exists('gibAAFrage')) {
             $oSpracheStd            = gibStandardsprache(true);
-            $oAuswahlAssistentFrage = gibAAFrage($_SESSION['AuswahlAssistent']['nFrage'], $_SESSION['kSprache'], $oSpracheStd->kSprache);
 
-            return $oAuswahlAssistentFrage;
+            return gibAAFrage($_SESSION['AuswahlAssistent']['nFrage'], $_SESSION['kSprache'], $oSpracheStd->kSprache);
         }
     } else {
         unset($_SESSION['AuswahlAssistent']);
     }
+
+    return null;
 }
 
 /**

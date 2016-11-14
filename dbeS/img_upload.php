@@ -96,12 +96,13 @@ function images_xml($tmpDir, SimpleXMLElement $xml)
  */
 function get_array(SimpleXMLElement $xml)
 {
-    $items = array();
+    $items = [];
+    /** @var SimpleXMLElement $child */
     foreach ($xml->children() as $child) {
-        $items[] = (object)array(
+        $items[] = (object)[
             'kBild' => (int)$child->attributes()->kBild,
             'cPfad' => (string)$child->attributes()->cHash
-        );
+        ];
     }
 
     return $items;

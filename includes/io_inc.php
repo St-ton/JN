@@ -104,6 +104,7 @@ function pushToBasket($kArtikel, $anzahl, $oEigenschaftwerte_arr = '')
 
             return $objResponse;
         }
+        /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
         $_SESSION['Warenkorb']->fuegeEin($kArtikel, $anzahl, $oEigenschaftwerte_arr)
                               ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS)
                               ->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDZUSCHLAG)
@@ -207,7 +208,7 @@ function getBasketItems($nTyp)
             }
 
             $versandkostenfreiAb = gibVersandkostenfreiAb($kKundengruppe, $cLand);
-
+            /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
             $smarty->assign('WarensummeLocalized', $_SESSION['Warenkorb']->gibGesamtsummeWarenLocalized())
                 ->assign('Warensumme', $_SESSION['Warenkorb']->gibGesamtsummeWaren())
                 ->assign('Steuerpositionen', $_SESSION['Warenkorb']->gibSteuerpositionen())
@@ -292,7 +293,7 @@ function getArticleStockInfo($kArtikel, $kEigenschaftWert_arr)
         ];
     }
 
-    return;
+    return null;
 }
 
 /**

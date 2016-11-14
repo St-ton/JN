@@ -823,6 +823,12 @@ function gibAnzahlGenutzteKupons($dVon, $dBis)
     return 0;
 }
 
+/**
+ * @param string $dVon
+ * @param string $dBis
+ * @param array  $nLogLevel_arr
+ * @return array|int|object
+ */
 function getLogEntries($dVon, $dBis, $nLogLevel_arr)
 {
     $dVon = Shop::DB()->escape($dVon);

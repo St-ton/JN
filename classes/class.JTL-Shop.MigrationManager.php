@@ -279,9 +279,9 @@ class MigrationManager
 
     /**
      * @param IMigration $migration
-     * @param            $direction
-     * @param            $state
-     * @param            $message
+     * @param string     $direction
+     * @param string     $state
+     * @param string     $message
      */
     public function log(IMigration $migration, $direction, $state, $message)
     {
@@ -298,8 +298,8 @@ class MigrationManager
 
     /**
      * @param IMigration $migration
-     * @param            $direction
-     * @param            $executed
+     * @param string     $direction
+     * @param DateTime   $executed
      * @return $this
      */
     public function migrated(IMigration $migration, $direction, $executed)

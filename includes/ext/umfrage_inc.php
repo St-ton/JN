@@ -343,11 +343,8 @@ function holeAktuelleUmfrage($kUmfrage)
 {
     // Modulprüfung
     $oNice = Nice::getInstance();
-    if (!$oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
-        return;
-    }
-    if (!$kUmfrage) {
-        return;
+    if (!$oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE) || !$kUmfrage) {
+        return null;
     }
     // Umfrage holen
     return Shop::DB()->query(
@@ -377,7 +374,7 @@ function holeUmfrageUebersicht()
     // Modulprüfung
     $oNice = Nice::getInstance();
     if (!$oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
-        return;
+        return null;
     }
     // Umfrage Übersicht
     return Shop::DB()->query(

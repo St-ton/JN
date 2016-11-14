@@ -870,6 +870,8 @@ class Exportformat
 
             return fwrite($handle, $header . "\n");
         }
+
+        return 0;
     }
 
     /**

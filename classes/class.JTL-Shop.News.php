@@ -418,7 +418,7 @@ class News extends MainModel
      */
     public function load($kKey, $oObj = null, $xOption = null)
     {
-        $kKey = intval($kKey);
+        $kKey = (int)$kKey;
         if ($kKey > 0) {
             $kSprache = null;
             if (isset($_SESSION['kSprache'])) {

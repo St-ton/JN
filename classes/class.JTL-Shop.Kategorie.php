@@ -413,7 +413,7 @@ class Kategorie
             return $res;
         }
 
-        return;
+        return null;
     }
 
     /**

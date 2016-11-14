@@ -339,7 +339,6 @@ class Bestellung
      *
      * @param int  $kBestellung Falls angegeben, wird der Bestellung mit angegebenem kBestellung aus der DB geholt
      * @param bool $bFill
-     * @return Bestellung
      */
     public function __construct($kBestellung = 0, $bFill = false)
     {

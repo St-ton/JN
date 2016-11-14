@@ -32,6 +32,7 @@ class MigrationManager
      *
      * @param int $identifier
      * @return array
+     * @throws Exception
      */
     public function migrate($identifier = null)
     {
@@ -232,7 +233,7 @@ class MigrationManager
             return $oVersion->kMigration;
         }
 
-        return;
+        return 0;
     }
 
     /**

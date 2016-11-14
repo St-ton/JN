@@ -38,7 +38,6 @@ class AdminFavorite
      * Konstruktor
      *
      * @param int $kAdminfav
-     * @return AdminFavorite
      */
     public function __construct($kAdminfav = 0)
     {

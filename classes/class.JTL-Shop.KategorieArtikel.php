@@ -28,7 +28,6 @@ class KategorieArtikel
      * Konstruktor
      *
      * @param int $kKategorieArtikel - Falls angegeben, wird der KategorieArtikel mit angegebenem kKategorieArtikel aus der DB geholt
-     * @return KategorieArtikel
      */
     public function __construct($kKategorieArtikel = 0)
     {

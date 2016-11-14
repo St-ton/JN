@@ -66,7 +66,7 @@ class MigrationHelper
             return $matches[1];
         }
 
-        return;
+        return null;
     }
 
     /**
@@ -86,7 +86,7 @@ class MigrationHelper
             );
         }
 
-        return;
+        return null;
     }
 
     /**
@@ -113,7 +113,7 @@ class MigrationHelper
             return $matches[1];
         }
 
-        return;
+        return null;
     }
 
     /**

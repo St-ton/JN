@@ -1241,7 +1241,7 @@ class Warenkorb
             }
         }
 
-        return;
+        return null;
     }
 
     /**

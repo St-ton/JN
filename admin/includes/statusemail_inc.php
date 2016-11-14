@@ -5,7 +5,6 @@
  */
 
 /**
- * @param array $cPost_arr
  * @return bool
  */
 function speicherStatusemailEinstellungen()

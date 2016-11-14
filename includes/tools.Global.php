@@ -1040,10 +1040,10 @@ function findeKindArtikelZuEigenschaft($kArtikel, $kEigenschaft0, $kEigenschaftW
 }
 
 /**
- * @param Artikel $Artikel
- * @param int     $anzahl
- * @param array   $oEigenschaftwerte_arr
- * @param int     $nGenauigkeit
+ * @param Artikel|object $Artikel
+ * @param int            $anzahl
+ * @param array          $oEigenschaftwerte_arr
+ * @param int            $nGenauigkeit
  * @return array
  */
 function pruefeFuegeEinInWarenkorb($Artikel, $anzahl, $oEigenschaftwerte_arr, $nGenauigkeit = 2)
@@ -2243,11 +2243,11 @@ function valid_email($email)
 }
 
 /**
- * @param string  $lieferland
- * @param string  $versandklassen
- * @param int     $kKundengruppe
- * @param Artikel $oArtikel
- * @param bool    $checkProductDepedency
+ * @param string         $lieferland
+ * @param string         $versandklassen
+ * @param int            $kKundengruppe
+ * @param Artikel|object $oArtikel
+ * @param bool           $checkProductDepedency
  * @return mixed
  */
 function gibGuenstigsteVersandart($lieferland, $versandklassen, $kKundengruppe, $oArtikel, $checkProductDepedency = true)

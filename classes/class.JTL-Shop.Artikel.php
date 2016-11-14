@@ -1047,8 +1047,8 @@ class Artikel
     }
 
     /**
-     * @param int     $kKundengruppe
-     * @param Artikel $oArtikelTMP
+     * @param int            $kKundengruppe
+     * @param Artikel|object $oArtikelTMP
      * @return $this
      */
     public function holPreise($kKundengruppe, $oArtikelTMP)

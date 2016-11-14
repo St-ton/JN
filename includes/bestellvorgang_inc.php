@@ -1387,7 +1387,7 @@ function gibZahlungsarten($kVersandart, $kKundengruppe)
 }
 
 /**
- * @param Zahlungsart $Zahlungsart
+ * @param Zahlungsart|object $Zahlungsart
  * @return bool
  */
 function zahlungsartGueltig($Zahlungsart)

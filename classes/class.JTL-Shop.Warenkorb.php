@@ -201,7 +201,7 @@ class Warenkorb
         $NeuePosition->cUnique     = $cUnique;
         $NeuePosition->kKonfigitem = $kKonfigitem;
 
-        $NeuePosition->setzeGesamtpreisLoacalized();
+        $NeuePosition->setzeGesamtpreisLocalized();
         //posname lokalisiert ablegen
         $cLieferstatus_StdSprache    = $NeuePosition->Artikel->cLieferstatus;
         $NeuePosition->cName         = array();
@@ -280,7 +280,7 @@ class Warenkorb
             case C_WARENKORBPOS_TYP_GRATISGESCHENK:
                 $NeuePosition->fPreisEinzelNetto = 0;
                 $NeuePosition->fPreis            = 0;
-                $NeuePosition->setzeGesamtpreisLoacalized();
+                $NeuePosition->setzeGesamtpreisLocalized();
                 break;
 
             //Pruefen ob eine Versandart hinzugefuegt wird und haenge den Hinweistext an die Position (falls vorhanden)
@@ -628,7 +628,7 @@ class Warenkorb
                     if (isset($_SESSION['Kupon']->kKupon) && $_SESSION['Kupon']->kKupon > 0 && $_SESSION['Kupon']->nGanzenWKRabattieren == '0') {
                         checkeKuponWKPos($this->PositionenArr[$i], $_SESSION['Kupon']);
                     }
-                    $this->PositionenArr[$i]->setzeGesamtpreisLoacalized();
+                    $this->PositionenArr[$i]->setzeGesamtpreisLocalized();
                     unset($this->PositionenArr[$i]->cHinweis);
                 }
             }
@@ -674,7 +674,7 @@ class Warenkorb
                     $this->PositionenArr[$i]->fPreisEinzelNetto = $oArtikel->gibPreis($anz, array());
                     $this->PositionenArr[$i]->fPreis            = $oArtikel->gibPreis($anz, $Position->WarenkorbPosEigenschaftArr);
                     $this->PositionenArr[$i]->fGesamtgewicht    = $this->PositionenArr[$i]->gibGesamtgewicht();
-                    $this->PositionenArr[$i]->setzeGesamtpreisLoacalized();
+                    $this->PositionenArr[$i]->setzeGesamtpreisLocalized();
                     //notify about price changes when the price difference is greater then .01
                     if ($_oldPosition->cGesamtpreisLocalized !== $this->PositionenArr[$i]->cGesamtpreisLocalized &&
                         $_oldPosition->Artikel->Preise->fVK !== $this->PositionenArr[$i]->Artikel->Preise->fVK
@@ -691,7 +691,7 @@ class Warenkorb
                     unset($this->PositionenArr[$i]->cHinweis);
                     if (isset($_SESSION['Kupon']->kKupon) && $_SESSION['Kupon']->kKupon > 0 && intval($_SESSION['Kupon']->nGanzenWKRabattieren) === 0) {
                         $this->PositionenArr[$i] = checkeKuponWKPos($this->PositionenArr[$i], $_SESSION['Kupon']);
-                        $this->PositionenArr[$i]->setzeGesamtpreisLoacalized();
+                        $this->PositionenArr[$i]->setzeGesamtpreisLocalized();
                     }
                 }
             }
@@ -718,7 +718,7 @@ class Warenkorb
                     $oPosition->fPreisEinzelNetto = $oKonfigitem->getPreis(true);
                     $oPosition->fPreis            = $oPosition->fPreisEinzelNetto;
                     $oPosition->kSteuerklasse     = $oKonfigitem->getSteuerklasse();
-                    $oPosition->setzeGesamtpreisLoacalized();
+                    $oPosition->setzeGesamtpreisLocalized();
                 }
                 if ($bName && $oKonfigitem->getUseOwnName() && class_exists('Konfigitemsprache')) {
                     foreach ($_SESSION['Sprachen'] as $Sprache) {
@@ -950,7 +950,7 @@ class Warenkorb
     public function berechnePositionenUst()
     {
         foreach ($this->PositionenArr as $i => $Position) {
-            $Position->setzeGesamtpreisLoacalized();
+            $Position->setzeGesamtpreisLocalized();
         }
 
         return $this;
@@ -1051,7 +1051,7 @@ class Warenkorb
                 if ($oPosition->nPosTyp == C_WARENKORBPOS_TYP_VERSANDPOS) {
                     $this->PositionenArr[$i]->fPreisEinzelNetto = 0.0;
                     $this->PositionenArr[$i]->fPreis            = 0.0;
-                    $this->PositionenArr[$i]->setzeGesamtpreisLoacalized();
+                    $this->PositionenArr[$i]->setzeGesamtpreisLocalized();
                     break;
                 }
             }

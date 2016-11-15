@@ -265,7 +265,7 @@ class LinkHelper
             }
         }
 
-        return;
+        return null;
     }
 
     /**

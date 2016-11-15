@@ -101,7 +101,7 @@ final class Shopsetting implements ArrayAccess
             $section = $this->mapSettingName(null, $offset);
 
             if ($section === false || $section === null) {
-                return;
+                return null;
             }
             $cacheID = 'setting_' . $section;
 
@@ -191,7 +191,7 @@ final class Shopsetting implements ArrayAccess
             return $key;
         }
 
-        return;
+        return null;
     }
 
     /**

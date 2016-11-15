@@ -155,6 +155,7 @@ function get_object(SimpleXMLElement $xml)
         'cloud' => strlen($cloudURL) > 0,
         'items' => array()
     );
+    /** @var SimpleXMLElement $child */
     foreach ($xml->children() as $child) {
         $check->items[] = (object)array(
             'id'   => (int)$child->attributes()->kBild,

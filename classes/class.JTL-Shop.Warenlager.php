@@ -307,7 +307,6 @@ class Warenlager extends MainModel
      * @param int  $kKey
      * @param null $oObj
      * @param null $xOption
-     * @return mixed|void
      */
     public function load($kKey, $oObj = null, $xOption = null)
     {

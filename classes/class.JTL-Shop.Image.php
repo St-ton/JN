@@ -186,7 +186,7 @@ class Image
             return $mapper[$size];
         }
 
-        return;
+        return null;
     }
 
     /**
@@ -204,7 +204,7 @@ class Image
             return $mapper[$type];
         }
 
-        return;
+        return null;
     }
 
     /**
@@ -222,7 +222,7 @@ class Image
             return $mapper[$position];
         }
 
-        return;
+        return null;
     }
 
     /**
@@ -281,7 +281,7 @@ class Image
             return $info['type'];
         }
 
-        return;
+        return null;
     }
 
     /**

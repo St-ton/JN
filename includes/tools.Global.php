@@ -743,6 +743,7 @@ function checkeWarenkorbEingang()
                     // Hauptartikel in den WK legen
                     fuegeEinInWarenkorb($kArtikel, $fAnzahl, $oEigenschaftwerte_arr, 0, $cUnique);
                     // Konfigartikel in den WK legen
+                    /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
                     foreach ($oKonfigitem_arr as $oKonfigitem) {
                         $oKonfigitem->isKonfigItem = true;
                         switch ($oKonfigitem->getPosTyp()) {
@@ -1039,10 +1040,10 @@ function findeKindArtikelZuEigenschaft($kArtikel, $kEigenschaft0, $kEigenschaftW
 }
 
 /**
- * @param Artikel $Artikel
- * @param int     $anzahl
- * @param array   $oEigenschaftwerte_arr
- * @param int     $nGenauigkeit
+ * @param Artikel|object $Artikel
+ * @param int            $anzahl
+ * @param array          $oEigenschaftwerte_arr
+ * @param int            $nGenauigkeit
  * @return array
  */
 function pruefeFuegeEinInWarenkorb($Artikel, $anzahl, $oEigenschaftwerte_arr, $nGenauigkeit = 2)
@@ -1051,7 +1052,7 @@ function pruefeFuegeEinInWarenkorb($Artikel, $anzahl, $oEigenschaftwerte_arr, $n
     $kArtikel      = $Artikel->kArtikel; // relevant für die Berechnung von Artikelsummen im Warenkorb
     $redirectParam = array();
     $conf          = Shop::getSettings(array(CONF_GLOBAL));
-
+    /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
     // Abnahmeintervall
     if ($Artikel->fAbnahmeintervall > 0) {
         if (function_exists('bcdiv')) {
@@ -1547,6 +1548,7 @@ function setzeSteuersaetze($steuerland = 0)
         }
     }
     if (isset($_SESSION['Warenkorb']) && get_class($_SESSION['Warenkorb']) === 'Warenkorb') {
+        /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
         $_SESSION['Warenkorb']->setzePositionsPreise();
     }
 }
@@ -1827,7 +1829,7 @@ function baueSprachURLS($obj, $art)
  */
 function checkeSpracheWaehrung($lang = '')
 {
-    /** @var array('Vergleichsliste' => Vergleichsliste) $_SESSION */
+    /** @var array('Vergleichsliste' => Vergleichsliste,'Warenkorb' => Warenkorb) $_SESSION */
     if (strlen($lang) > 0) {
         //Kategorien zurücksetzen, da sie lokalisiert abgelegt wurden
         if ($lang != $_SESSION['cISOSprache']) {
@@ -2244,11 +2246,11 @@ function valid_email($email)
 }
 
 /**
- * @param string  $lieferland
- * @param string  $versandklassen
- * @param int     $kKundengruppe
- * @param Artikel $oArtikel
- * @param bool    $checkProductDepedency
+ * @param string         $lieferland
+ * @param string         $versandklassen
+ * @param int            $kKundengruppe
+ * @param Artikel|object $oArtikel
+ * @param bool           $checkProductDepedency
  * @return mixed
  */
 function gibGuenstigsteVersandart($lieferland, $versandklassen, $kKundengruppe, $oArtikel, $checkProductDepedency = true)
@@ -5221,9 +5223,7 @@ function make_http_request($cURL, $nTimeout = 15, $cPost = null, $bReturnStatus 
         $cData = '';
     }
 
-    return ($bReturnStatus)
-        ? $nCode
-        : $cData;
+    return ($bReturnStatus) ? $nCode : $cData;
 }
 
 /**
@@ -5395,7 +5395,7 @@ function pruefeWarenkorbStueckliste($oArtikel, $fAnzahl)
         }
     }
 
-    return;
+    return null;
 }
 
 /**
@@ -5520,6 +5520,7 @@ function resetNeuKundenKupon()
 
     unset($_SESSION['NeukundenKupon']);
     unset($_SESSION['NeukundenKuponAngenommen']);
+    /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
     $_SESSION['Warenkorb']->loescheSpezialPos(C_WARENKORBPOS_TYP_NEUKUNDENKUPON)
                           ->setzePositionsPreise();
 }
@@ -5531,9 +5532,11 @@ function resetNeuKundenKupon()
 function holeKonfigBearbeitenModus($kKonfig, &$smarty)
 {
     if (class_exists('Konfigitem')) {
+        /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
         if (isset($_SESSION['Warenkorb']->PositionenArr[$kKonfig])) {
             /** @var WarenkorbPos $oBasePosition */
             $oBasePosition = $_SESSION['Warenkorb']->PositionenArr[$kKonfig];
+            /** @var WarenkorbPos $oBasePosition */
             if ($oBasePosition->istKonfigVater()) {
                 $nKonfigitem_arr         = array();
                 $nKonfigitemAnzahl_arr   = array();

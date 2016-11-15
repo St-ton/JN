@@ -1047,8 +1047,8 @@ class Artikel
     }
 
     /**
-     * @param int     $kKundengruppe
-     * @param Artikel $oArtikelTMP
+     * @param int            $kKundengruppe
+     * @param Artikel|object $oArtikelTMP
      * @return $this
      */
     public function holPreise($kKundengruppe, $oArtikelTMP)
@@ -1103,7 +1103,7 @@ class Artikel
     public function gibPreis($anzahl, $Eigenschaft_arr, $kKundengruppe = 0)
     {
         if (!$_SESSION['Kundengruppe']->darfPreiseSehen) {
-            return;
+            return null;
         }
         if ($this->kArtikel === null) {
             return 0;
@@ -3139,7 +3139,7 @@ class Artikel
             $oArtikelOptionen = self::getDefaultOptions();
         }
         if (!$kArtikel) {
-            return;
+            return null;
         }
         if (!$kKundengruppe) {
             if (!isset($_SESSION['Kundengruppe']) || !$_SESSION['Kundengruppe']->kKundengruppe) {
@@ -3179,7 +3179,7 @@ class Artikel
             $this->cacheID = $cacheID;
             if (($artikel = Shop::Cache()->get($cacheID)) !== false) {
                 if ($artikel === null) {
-                    return;
+                    return null;
                 }
                 foreach (get_object_vars($artikel) as $k => $v) {
                     $this->$k = $v;
@@ -3347,7 +3347,7 @@ class Artikel
                 Shop::Cache()->set($cacheID, null, $cacheTags);
             }
 
-            return;
+            return null;
         }
         //EXPERIMENTAL_MULTILANG_SHOP
         if ($oArtikelTMP->cSeo === null && defined('EXPERIMENTAL_MULTILANG_SHOP') && EXPERIMENTAL_MULTILANG_SHOP === true) {
@@ -3572,7 +3572,7 @@ class Artikel
             (int)$conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL) &&
             $this->cLagerVariation === 'Y' && count($this->Variationen) > 0 && $tmpBestandVariationen === 0) {
             unset($this->kArtikel);
-            return;
+            return null;
         }
 
         /* Sobald ein KindArtikel teurer ist als der Vaterartikel, muss nVariationsAufpreisVorhanden auf 1 gesetzt werden damit in der Artikelvorschau ein "Preis ab ..." erscheint
@@ -4667,7 +4667,7 @@ class Artikel
             return $this->oFavourableShipping;
         }
 
-        return;
+        return null;
     }
 
     /**

@@ -268,9 +268,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
                 if ($kRMAStatus > 0) {
                     return $bPrimary ? $kRMAStatus : true;
                 }
-            } else {
-                return $cPlausi_arr;
             }
+
+            return $cPlausi_arr;
         }
 
         /**

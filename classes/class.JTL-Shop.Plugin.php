@@ -767,26 +767,26 @@ class Plugin
             $plugin = Shop::DB()->select('tplugin', 'kPlugin', $kPlugin);
 
             if ($plugin === null || (bool)$plugin->bBootstrap === false) {
-                return;
+                return null;
             }
 
             $file  = PFAD_ROOT . PFAD_PLUGIN . $plugin->cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $plugin->nVersion . '/' . PLUGIN_BOOTSTRAPPER;
             $class = sprintf('%s\\%s', $plugin->cPluginID, 'Bootstrap');
 
             if (!is_file($file)) {
-                return;
+                return null;
             }
 
             require_once $file;
 
             if (!class_exists($class)) {
-                return;
+                return null;
             }
 
             $bootstrapper = new $class($plugin->cPluginID);
 
             if (!is_subclass_of($bootstrapper, 'AbstractPlugin')) {
-                return;
+                return null;
             }
 
             self::$bootstrapper[$kPlugin] = $bootstrapper;

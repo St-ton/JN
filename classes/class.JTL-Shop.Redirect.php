@@ -267,7 +267,7 @@ class Redirect
             return baueURL($oObj, URLART_ARTIKEL);
         }
 
-        return;
+        return null;
     }
 
     /**
@@ -302,14 +302,14 @@ class Redirect
                 }
 
                 if (!$bExist) {
-                    return;
+                    return null;
                 }
             }
 
             return $cMapping_arr;
         }
 
-        return;
+        return null;
     }
 
     /**

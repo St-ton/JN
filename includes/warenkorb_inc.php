@@ -43,9 +43,8 @@ function loescheWarenkorbPosition($nPos)
             }
         }
     }
-
     loescheAlleSpezialPos();
-
+    /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
     if (!$_SESSION['Warenkorb']->enthaltenSpezialPos(C_WARENKORBPOS_TYP_ARTIKEL)) {
         unset($_SESSION['Kupon']);
         $_SESSION['Warenkorb'] = new Warenkorb();
@@ -80,6 +79,7 @@ function loescheWarenkorbPosition($nPos)
  */
 function uebernehmeWarenkorbAenderungen()
 {
+    /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
     unset($_SESSION['cPlausi_arr']);
     unset($_SESSION['cPost_arr']);
     // Gratis Geschenk wurde hinzugefuegt
@@ -431,11 +431,10 @@ function pruefeBestellMengeUndLagerbestand($Einstellungen = array())
     $cArtikelName = '';
     $bVorhanden   = false;
     $cISOSprache  = $_SESSION['cISOSprache'];
-
     if (!is_array($Einstellungen) || !isset($Einstellungen['global'])) {
         $Einstellungen = Shop::getSettings(array(CONF_GLOBAL));
     }
-
+    /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
     if (is_array($_SESSION['Warenkorb']->PositionenArr) && count($_SESSION['Warenkorb']->PositionenArr) > 0) {
         foreach ($_SESSION['Warenkorb']->PositionenArr as $i => $oPosition) {
             if ($oPosition->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL) {

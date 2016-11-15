@@ -239,11 +239,6 @@ class JTLSmarty extends SmartyBC
     /**
      * @var bool
      */
-    private static $isCached = false;
-
-    /**
-     * @var bool
-     */
     public static $isChildTemplate = false;
 
     /**

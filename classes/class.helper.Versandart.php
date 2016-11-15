@@ -337,7 +337,7 @@ class VersandartHelper
             $_SESSION['shipping_count'] = 0;
         }
         if (!is_array($oArtikel_arr) || count($oArtikel_arr) === 0) {
-            return;
+            return null;
         }
         $cLandISO = (isset($_SESSION['cLieferlandISO'])) ? $_SESSION['cLieferlandISO'] : false;
         if (!$cLandISO) {

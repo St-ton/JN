@@ -250,6 +250,7 @@ class UT extends PaymentMethod
                 $sessionHash    = substr(StringHandler::htmlentities(StringHandler::filterXSS($cSh)), 1);
                 $paymentSession = Shop::DB()->query("SELECT cSID, kBestellung FROM tzahlungsession WHERE cZahlungsID='" . $sessionHash . "'", 1);
                 if (strlen($paymentSession->cSID) > 0) {
+                    /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
                     // Load Session
                     $_COOKIE['JTLSHOP'] = $paymentSession->cSID;
                     new Session();

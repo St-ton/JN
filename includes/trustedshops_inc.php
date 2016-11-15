@@ -11,12 +11,11 @@ function gibTrustedShops()
 {
     unset($_SESSION['TrustedShops']);
     unset($oTrustedShops);
-
     require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.TrustedShops.php';
     $oTrustedShops = new TrustedShops(-1, StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
     $oTrustedShops->holeKaeuferschutzProdukteDB(StringHandler::convertISO2ISO639($_SESSION['cISOSprache']), true);  // Hole alle Käuferschutzprodukte, die in der DB hinterlegt sind
     $oTrustedShopsTMP = new stdClass();
-
+    /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
     $cLandISO = $_SESSION['Lieferadresse']->cLand;
     if (!$cLandISO) {
         $cLandISO = $_SESSION['Kunde']->cLand;

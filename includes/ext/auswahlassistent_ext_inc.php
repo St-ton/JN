@@ -93,6 +93,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
                        ->assign('cRequestURI', $cRequestURI);
             }
         }
+
+        return true;
     }
 
     /**

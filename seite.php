@@ -75,7 +75,9 @@ if ($link->nLinkart == LINKTYP_STARTSEITE) {
            ->assign('Navigation', $Navigation);
     // Auswahlassistent
     if (class_exists('AuswahlAssistent') && AuswahlAssistent::isRequired()) {
-        $oAuswahlAssistent = new AuswahlAssistent(AUSWAHLASSISTENT_ORT_STARTSEITE, 1, Shop::$kSprache);
+        $oAuswahlAssistent = (new AuswahlAssistent(AUSWAHLASSISTENT_ORT_STARTSEITE, 1));
+        $oAuswahlAssistent->filter();
+        $oAuswahlAssistent->assignToSmarty($smarty);
     }
     if (function_exists('starteAuswahlAssistent')) {
         starteAuswahlAssistent(AUSWAHLASSISTENT_ORT_STARTSEITE, 1, Shop::$kSprache, $smarty, $Einstellungen['auswahlassistent']);

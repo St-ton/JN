@@ -16,7 +16,9 @@ $io->register('suggestions')
     ->register('buildConfiguration')
     ->register('getBasketItems')
     ->register('getCategoryMenu')
-    ->register('getRegionsByCountry');
+    ->register('getRegionsByCountry')
+    ->register('setSelectionWizardAnswers');
+
 
 /**
  * @param string $keyword
@@ -608,6 +610,39 @@ function getRegionsByCountry($country)
         $regions = Staat::getRegions($country);
         $regions = utf8_convert_recursive($regions);
         $response->script("this.response = " . json_encode($regions) . ";");
+    }
+
+    return $response;
+}
+
+/**
+ * @param string $cKey
+ * @param int $kKey
+ * @param int $kSprache
+ * @param array $nSelection_arr
+ * @return IOResponse
+ */
+function setSelectionWizardAnswers($cKey, $kKey, $kSprache, $nSelection_arr)
+{
+    global $smarty;
+
+    $response           = new IOResponse();
+    $AWA                = new AuswahlAssistent($cKey, $kKey, $kSprache);
+    $oLastSelectedValue = null;
+
+    foreach ($nSelection_arr as $kMerkmalWert) {
+        $oLastSelectedValue = $AWA->setNextSelection($kMerkmalWert);
+    }
+
+    $NaviFilter = $AWA->filter();
+
+    if ($oLastSelectedValue !== null && $oLastSelectedValue->nAnzahl === 1 ||
+        $AWA->getCurQuestion() === $AWA->getQuestionCount() ||
+        $AWA->getQuestionAttribute($AWA->getCurQuestion())->nTotalValueCount === 0)
+    {
+        $response->script("window.location.href='" . StringHandler::htmlentitydecode(gibNaviURL($NaviFilter, true, null)) . "';");
+    } else {
+        $response->assign('selectionwizard', 'innerHTML', utf8_encode($AWA->fetchForm($smarty)));
     }
 
     return $response;

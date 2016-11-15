@@ -334,7 +334,7 @@ class WarenkorbPos
                     $fPreisNetto  = 0;
                     $fPreisBrutto = 0;
                     $nVaterPos    = null;
-                    /** @var  WarenkorbPos $oPosition */
+                    /** @var WarenkorbPos $oPosition */
                     foreach ($_SESSION['Warenkorb']->PositionenArr as $nPos => $oPosition) {
                         if ($this->cUnique == $oPosition->cUnique) {
                             $fPreisNetto += $oPosition->fPreis * $oPosition->nAnzahl;

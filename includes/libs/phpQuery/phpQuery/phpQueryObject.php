@@ -1232,8 +1232,13 @@ class phpQueryObject implements Iterator, Countable, ArrayAccess
                             '$node, $param',
                             '$prevs = pq($node)->prevAll()->size();
 							$index = 1+$prevs;
-							$bStart = (strpos($param, "+") !== false ? strpos($param, "+") : (strpos($param, "-") ? strpos($param, "-") : false));
-							$b = ($bStart !== false ? intval(substr($param, $bStart)) : 0);
+							$bStart = strpos($param, "+");
+							if ($bStart === false) {
+							    $bStart = strpos($param, "-");
+							}
+							$b = $bStart !== false
+							        ? intval(substr($param, $bStart))
+							        : 0;
 							$a = intval(substr($param, 0, strpos($param, "n")));
 							if ($a > 0) {
 								return ($index-$b)%$a == 0

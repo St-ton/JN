@@ -1058,7 +1058,7 @@ function fakeBestellung()
 
             $bestellung->Positionen[$i]->cName = $bestellung->Positionen[$i]->cName[$_SESSION['cISOSprache']];
             $bestellung->Positionen[$i]->fMwSt = gibUst($oPositionen->kSteuerklasse);
-            $bestellung->Positionen[$i]->setzeGesamtpreisLoacalized();
+            $bestellung->Positionen[$i]->setzeGesamtpreisLocalized();
         }
     }
     if (isset($_SESSION['Bestellung']->GuthabenNutzen) && $_SESSION['Bestellung']->GuthabenNutzen == 1) {

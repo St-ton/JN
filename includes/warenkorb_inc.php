@@ -194,7 +194,7 @@ function uebernehmeWarenkorbAenderungen()
                         $_SESSION['Warenkorb']->PositionenArr[$i]->nAnzahl,
                         $_SESSION['Warenkorb']->PositionenArr[$i]->WarenkorbPosEigenschaftArr
                     );
-                    $_SESSION['Warenkorb']->PositionenArr[$i]->setzeGesamtpreisLoacalized();
+                    $_SESSION['Warenkorb']->PositionenArr[$i]->setzeGesamtpreisLocalized();
                     $_SESSION['Warenkorb']->PositionenArr[$i]->fGesamtgewicht = $_SESSION['Warenkorb']->PositionenArr[$i]->gibGesamtgewicht();
 
                     $bMindestensEinePosGeaendert = true;

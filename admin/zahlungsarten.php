@@ -162,7 +162,7 @@ if ($step === 'einstellen') {
         $hinweis = 'Zahlungsart nicht gefunden.';
     } else {
         // Bei SOAP oder CURL => versuche die Zahlungsart auf nNutzbar = 1 zu stellen, falls nicht schon geschehen
-        if ($zahlungsart->nSOAP == 1 || $zahlungsart->nCURL == 1) {
+        if ($zahlungsart->nSOAP == 1 || $zahlungsart->nCURL == 1 || $zahlungsart->nSOCKETS == 1) {
             aktiviereZahlungsart($zahlungsart);
         }
         // Weiche fuer eine normale Zahlungsart oder eine Zahlungsart via Plugin

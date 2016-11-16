@@ -1745,7 +1745,7 @@ function baueURL($obj, $art, $row = 0, $bForceNonSeo = false, $bFull = false)
  */
 function baueSprachURLS($obj, $art)
 {
-    $urls   = array();
+    $urls   = [];
     $seoobj = null;
     if ($art && $obj && count($_SESSION['Sprachen']) > 0) {
         foreach ($_SESSION['Sprachen'] as $Sprache) {
@@ -3745,9 +3745,11 @@ function setzeSpracheUndWaehrungLink()
         }
         foreach ($_SESSION['Sprachen'] as $i => $oSprache) {
             if (isset($AktuellerArtikel->kArtikel) && $AktuellerArtikel->kArtikel > 0 && isset($AktuellerArtikel->cSprachURL_arr[$oSprache->kSprache])) {
-                $_SESSION['Sprachen'][$i]->cURL = $AktuellerArtikel->cSprachURL_arr[$oSprache->kSprache];
+                $_SESSION['Sprachen'][$i]->cURL     = $AktuellerArtikel->cSprachURL_arr[$oSprache->kSprache];
+                $_SESSION['Sprachen'][$i]->cURLFull = $shopURL . '/' . $AktuellerArtikel->cSprachURL_arr[$oSprache->kSprache];
             } elseif (($kLink > 0 || $kSeite > 0) && isset($sprachURL[$oSprache->cISO])) {
-                $_SESSION['Sprachen'][$i]->cURL = $sprachURL[$oSprache->cISO];
+                $_SESSION['Sprachen'][$i]->cURL     = $sprachURL[$oSprache->cISO];
+                $_SESSION['Sprachen'][$i]->cURLFull = $shopURL . '/' . $sprachURL[$oSprache->cISO];
             } elseif ($AktuelleSeite === 'WARENKORB'
                 || $AktuelleSeite === 'KONTAKT'
                 || $AktuelleSeite === 'REGISTRIEREN'
@@ -3831,15 +3833,15 @@ function setzeSpracheUndWaehrungLink()
 
                 executeHook(HOOK_TOOLSGLOBAL_INC_SWITCH_SETZESPRACHEUNDWAEHRUNG_SPRACHE);
             } else {
-                $sprachURL = gibNaviURL($NaviFilter, true, $oZusatzFilter, $oSprache->kSprache);
+                $cUrl = gibNaviURL($NaviFilter, true, $oZusatzFilter, $oSprache->kSprache);
                 if (!empty($NaviFilter->nSeite) && $NaviFilter->nSeite > 1) {
                     if (strpos($sprachURL, 'navi.php') !== false) {
-                        $sprachURL .= '&amp;seite=' . $NaviFilter->nSeite;
+                        $cUrl .= '&amp;seite=' . $NaviFilter->nSeite;
                     } else {
-                        $sprachURL .= SEP_SEITE . $NaviFilter->nSeite;
+                        $cUrl .= SEP_SEITE . $NaviFilter->nSeite;
                     }
                 }
-                $_SESSION['Sprachen'][$i]->cURL = $sprachURL;
+                $_SESSION['Sprachen'][$i]->cURL = $cUrl;
             }
         }
     }

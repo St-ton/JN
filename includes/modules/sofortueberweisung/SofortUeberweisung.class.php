@@ -171,7 +171,7 @@ class SofortUeberweisung extends PaymentMethod
             $paymentHash = $this->generateHash($order);
             $this->baueSicherheitsHash($order, $paymentHash);
 
-            if (isset($bDebug) && $bDebug) {
+            if ($this->bDebug === true) {
                 echo "<br/><br/>sender_holder: $this->name<br/>";
                 echo "sender_country_id: $this->strSenderCountryID<br/>";
                 echo "amount: $this->strAmount<br/>";
@@ -179,8 +179,8 @@ class SofortUeberweisung extends PaymentMethod
             }
 
             if (!($this->sofortueberweisung_id && $this->sofortueberweisung_project_id && $this->name && $this->strSenderCountryID && $this->strAmount && $order->Waehrung->cISO)) {
-                if (!$bDebug) {
-                    return "Es ist ein Datenbankfehler aufgetreten!";
+                if ($this->bDebug === false) {
+                    return 'Es ist ein Datenbankfehler aufgetreten!';
                 } else {
                     if (!$this->sofortueberweisung_id) {
                         echo "\$this->sofortueberweisung_id is null<br/>";
@@ -228,8 +228,8 @@ class SofortUeberweisung extends PaymentMethod
     }
 
     /**
-     * @param $order
-     * @param $paymentHash
+     * @param Bestellung $order
+     * @param string     $paymentHash
      */
     public function baueSicherheitsHash($order, $paymentHash)
     {

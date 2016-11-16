@@ -56,6 +56,11 @@ class PaymentMethod
     public $bPayAgain;
 
     /**
+     * @var array
+     */
+    public $paymentConfig;
+
+    /**
      * @param string $moduleID
      * @param int    $nAgainCheckout
      */
@@ -403,11 +408,12 @@ class PaymentMethod
         global $Einstellungen;
 
         if (!is_array($Einstellungen)) {
-            $Einstellungen = array();
+            $Einstellungen = [];
         }
         if (!array_key_exists('zahlungsarten', $Einstellungen) || $Einstellungen['zahlungsarten'] === null) {
             $Einstellungen = array_merge($Einstellungen, Shop::getSettings(array(CONF_ZAHLUNGSARTEN)));
         }
+        $this->paymentConfig = $Einstellungen['zahlungsarten'];
 
         return $this;
     }

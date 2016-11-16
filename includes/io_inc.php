@@ -619,30 +619,29 @@ function getRegionsByCountry($country)
  * @param string $cKey
  * @param int $kKey
  * @param int $kSprache
- * @param array $nSelection_arr
+ * @param array $kSelection_arr
  * @return IOResponse
  */
-function setSelectionWizardAnswers($cKey, $kKey, $kSprache, $nSelection_arr)
+function setSelectionWizardAnswers($cKey, $kKey, $kSprache, $kSelection_arr)
 {
     global $smarty;
 
-    $response           = new IOResponse();
-    $AWA                = new AuswahlAssistent($cKey, $kKey, $kSprache);
-    $oLastSelectedValue = null;
+    $response = new IOResponse();
+    $AWA      = AuswahlAssistent::startIfRequired($cKey, $kKey, $kSprache, $smarty, $kSelection_arr);
 
-    foreach ($nSelection_arr as $kMerkmalWert) {
-        $oLastSelectedValue = $AWA->setNextSelection($kMerkmalWert);
-    }
+    if ($AWA !== null) {
+        $oLastSelectedValue = $AWA->getLastSelectedValue();
+        $NaviFilter         = $AWA->getNaviFilter();
 
-    $NaviFilter = $AWA->filter();
-
-    if ($oLastSelectedValue !== null && $oLastSelectedValue->nAnzahl === 1 ||
-        $AWA->getCurQuestion() === $AWA->getQuestionCount() ||
-        $AWA->getQuestionAttribute($AWA->getCurQuestion())->nTotalValueCount === 0)
-    {
-        $response->script("window.location.href='" . StringHandler::htmlentitydecode(gibNaviURL($NaviFilter, true, null)) . "';");
-    } else {
-        $response->assign('selectionwizard', 'innerHTML', utf8_encode($AWA->fetchForm($smarty)));
+        if ($oLastSelectedValue !== null && $oLastSelectedValue->nAnzahl === 1 ||
+            $AWA->getCurQuestion() === $AWA->getQuestionCount() ||
+            $AWA->getQuestionAttribute($AWA->getCurQuestion())->nTotalValueCount === 0)
+        {
+            $response->script("window.location.href='" .
+                StringHandler::htmlentitydecode(gibNaviURL($NaviFilter, true, null)) . "';");
+        } else {
+            $response->assign('selectionwizard', 'innerHTML', utf8_encode($AWA->fetchForm($smarty)));
+        }
     }
 
     return $response;

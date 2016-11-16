@@ -70,12 +70,22 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
         /**
          * @var array
          */
-        private $nSelection_arr = [];
+        private $kSelection_arr = [];
 
         /**
          * @var array
          */
         private $oSelection_arr = [];
+
+        /**
+         * @var stdClass
+         */
+        private $oNaviFilter = null;
+
+        /**
+         * @var stdClass
+         */
+        private $oLastSelectedValue = null;
 
         /**
          * AuswahlAssistent constructor.
@@ -94,7 +104,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
                 $kSprache = Shop::getLanguage();
             }
 
-            if ($cKey !== '' && $kKey > 0 && $kSprache > 0) {
+            if (!empty($cKey) && $kKey > 0 && $kSprache > 0) {
                 $this->loadFromDB($cKey, $kKey, $kSprache, $bOnlyActive);
             }
         }
@@ -118,7 +128,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
                                     " . ($bOnlyActive ? "AND ag.nAktiv = 1" : "") . "
                 ", 1);
 
-            if ($oDbResult !== null) {
+            if ($oDbResult !== null && $oDbResult !== false) {
                 foreach (get_object_vars($oDbResult) as $name => $value) {
                     $this->$name = $value;
                 }
@@ -179,20 +189,19 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
 
         /**
          * @param $kMerkmalWert
-         * @return object
+         * @return $this
          */
         public function setNextSelection($kWert)
         {
             if($this->nCurQuestion < count($this->oFrageMerkmal_arr)) {
-                $this->nSelection_arr[] = $kWert;
-                $oSelectedValue         = $this->oFrageMerkmal_arr[$this->nCurQuestion]->oWert_assoc[$kWert];
-                $this->oSelection_arr[] = $oSelectedValue;
-                $this->nCurQuestion    += 1;
-
-                return $oSelectedValue;
+                $this->kSelection_arr[]   = $kWert;
+                $oSelectedValue           = $this->oFrageMerkmal_arr[$this->nCurQuestion]->oWert_assoc[$kWert];
+                $this->oSelection_arr[]   = $oSelectedValue;
+                $this->nCurQuestion      += 1;
+                $this->oLastSelectedValue = $oSelectedValue;
             }
 
-            return null;
+            return $this;
         }
 
         /**
@@ -200,23 +209,23 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
          */
         public function resetToQuestion($nFrage)
         {
-            array_splice($this->nSelection_arr, $nFrage);
+            array_splice($this->kSelection_arr, $nFrage);
             array_splice($this->oSelection_arr, $nFrage);
             $this->nCurQuestion = $nFrage;
         }
 
         /**
-         * @return object $NaviFilter
+         * @return $this
          */
         public function filter()
         {
             $cParameter_arr = [];
             $NaviFilter     = new stdClass();
 
-            if (count($this->nSelection_arr) > 0) {
+            if (count($this->kSelection_arr) > 0) {
                 $FilterSQL                           = new stdClass();
-                $cParameter_arr['kMerkmalWert']      = $this->nSelection_arr[0];
-                $cParameter_arr['MerkmalFilter_arr'] = $this->nSelection_arr;
+                $cParameter_arr['kMerkmalWert']      = $this->kSelection_arr[0];
+                $cParameter_arr['MerkmalFilter_arr'] = $this->kSelection_arr;
                 $NaviFilter                          = Shop::buildNaviFilter($cParameter_arr, $NaviFilter);
                 $FilterSQL->oMerkmalFilterSQL        = gibMerkmalFilterSQL($NaviFilter);
                 $FilterSQL->oKategorieFilterSQL      = gibKategorieFilterSQL($NaviFilter);
@@ -240,23 +249,29 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
                 $this->oFrageMerkmal_assoc[(int)$oMerkmalFilter->kMerkmal]->nTotalValueCount = $nTotalValueCount;
             }
 
-            return $NaviFilter;
+            $this->oNaviFilter = $NaviFilter;
+
+            return $this;
         }
 
         /**
          * @param Smarty $smarty
+         * @return $this
          */
-        public function assignToSmarty(&$smarty)
+        public function assignToSmarty($smarty)
         {
             $smarty->assign('AWA', $this);
+
+            return $this;
         }
 
         /**
          * Return the HTML for this selection wizard in its current state
          *
          * @param Smarty $smarty
+         * @return string
          */
-        public function fetchForm(&$smarty)
+        public function fetchForm($smarty)
         {
             $this->assignToSmarty($smarty);
 
@@ -356,7 +371,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
          */
         public function getSelections()
         {
-            return $this->nSelection_arr;
+            return $this->kSelection_arr;
         }
 
         /**
@@ -369,6 +384,62 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
         }
 
         /**
+         * @return stdClass
+         */
+        public function getNaviFilter()
+        {
+            return $this->oNaviFilter;
+        }
+
+        /**
+         * @return stdClass
+         */
+        public function getLastSelectedValue()
+        {
+            return $this->oLastSelectedValue;
+        }
+
+        /**
+         * Tells whether the product wizard is enabled in the shop settings
+         *
+         * @return bool
+         */
+        public static function isRequired()
+        {
+            return Shop::getSettings(CONF_AUSWAHLASSISTENT)['auswahlassistent']['auswahlassistent_nutzen'] === 'Y';
+        }
+
+        /**
+         * @param $cKey
+         * @param $kKey
+         * @param int $kSprache
+         * @param int $kKategorie
+         * @return self|null
+         */
+        public static function startIfRequired($cKey, $kKey, $kSprache = 0, $smarty = null, $nSelection_arr = [])
+        {
+            if (self::isRequired()) {
+                $AWA = new self($cKey, $kKey, $kSprache, true);
+
+                if ($AWA->isActive()) {
+                    foreach ($nSelection_arr as $kMerkmalWert) {
+                        $AWA->setNextSelection($kMerkmalWert);
+                    }
+
+                    $AWA->filter();
+
+                    if ($smarty !== null) {
+                        $AWA->assignToSmarty($smarty);
+                    }
+
+                    return $AWA;
+                }
+            }
+
+            return null;
+        }
+
+        /**
          * @return mixed
          */
         public static function getLinks()
@@ -378,16 +449,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
                     FROM tlink
                     WHERE nLinkart = " . LINKTYP_AUSWAHLASSISTENT, 2
             );
-        }
-
-        /**
-         * Tells wether the product wizard is enabled in the shop settings
-         *
-         * @return bool
-         */
-        public static function isRequired()
-        {
-            return Shop::getSettings(CONF_AUSWAHLASSISTENT)['auswahlassistent']['auswahlassistent_nutzen'] === 'Y';
         }
 
         /**

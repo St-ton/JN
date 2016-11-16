@@ -17,9 +17,6 @@
         }
     </script>
     <div id="selectionwizard">
-        <p class="selection-wizard-desc">
-            {$AWA->getDescription()}
-        </p>
         {include file="selectionwizard/form.tpl" AWA=$AWA}
     </div>
 {/if}

@@ -220,20 +220,28 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
         public function filter()
         {
             $cParameter_arr = [];
-            $NaviFilter     = new stdClass();
 
-            if (count($this->kSelection_arr) > 0) {
-                $FilterSQL                           = new stdClass();
-                $cParameter_arr['kMerkmalWert']      = $this->kSelection_arr[0];
-                $cParameter_arr['MerkmalFilter_arr'] = $this->kSelection_arr;
-                $NaviFilter                          = Shop::buildNaviFilter($cParameter_arr, $NaviFilter);
-                $FilterSQL->oMerkmalFilterSQL        = gibMerkmalFilterSQL($NaviFilter);
-                $FilterSQL->oKategorieFilterSQL      = gibKategorieFilterSQL($NaviFilter);
+            if ($this->cKey === AUSWAHLASSISTENT_ORT_KATEGORIE) {
+                $cParameter_arr['kKategorie'] = $this->kKey;
+
+                if (count($this->kSelection_arr) > 0) {
+                    $cParameter_arr['MerkmalFilter_arr'] = $this->kSelection_arr;
+                }
             } else {
-                $FilterSQL = bauFilterSQL($NaviFilter);
+                if (count($this->kSelection_arr) > 0) {
+                    $cParameter_arr['kMerkmalWert'] = $this->kSelection_arr[0];
+
+                    if (count($this->kSelection_arr) > 1) {
+                        $cParameter_arr['MerkmalFilter_arr'] = array_slice($this->kSelection_arr, 1);
+                    }
+                }
             }
 
-            $oMerkmalFilter_arr = gibMerkmalFilterOptionen($FilterSQL, $NaviFilter, null, true);
+            $NaviFilter                     = Shop::buildNaviFilter($cParameter_arr);
+            $FilterSQL                      = new stdClass();
+            $FilterSQL->oMerkmalFilterSQL   = gibMerkmalFilterSQL($NaviFilter);
+            $FilterSQL->oKategorieFilterSQL = gibKategorieFilterSQL($NaviFilter);
+            $oMerkmalFilter_arr             = gibMerkmalFilterOptionen($FilterSQL, $NaviFilter, null, true);
 
             foreach ($oMerkmalFilter_arr as &$oMerkmalFilter) {
                 $nTotalValueCount = 0;
@@ -418,21 +426,28 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
          */
         public static function startIfRequired($cKey, $kKey, $kSprache = 0, $smarty = null, $nSelection_arr = [])
         {
+            // only start if enabled in the backend settings
             if (self::isRequired()) {
-                $AWA = new self($cKey, $kKey, $kSprache, true);
+                $nAnzahlFilter = isset($GLOBALS['NaviFilter']) ? (int)$GLOBALS['NaviFilter']->nAnzahlFilter : 0;
 
-                if ($AWA->isActive()) {
-                    foreach ($nSelection_arr as $kMerkmalWert) {
-                        $AWA->setNextSelection($kMerkmalWert);
+                // only start if no filters are already set
+                if ($nAnzahlFilter === 0) {
+                    $AWA = new self($cKey, $kKey, $kSprache, true);
+
+                    // only start if the respective selection wizard group is enabled (active)
+                    if ($AWA->isActive()) {
+                        foreach ($nSelection_arr as $kMerkmalWert) {
+                            $AWA->setNextSelection($kMerkmalWert);
+                        }
+
+                        $AWA->filter();
+
+                        if ($smarty !== null) {
+                            $AWA->assignToSmarty($smarty);
+                        }
+
+                        return $AWA;
                     }
-
-                    $AWA->filter();
-
-                    if ($smarty !== null) {
-                        $AWA->assignToSmarty($smarty);
-                    }
-
-                    return $AWA;
                 }
             }
 

@@ -84,7 +84,7 @@ if (isset($_POST['einstellungen_bearbeiten']) && isset($_POST['kZahlungsart']) &
                     break;
                 case 'zahl':
                 case 'number':
-                    $aktWert->cWert = intval($aktWert->cWert);
+                    $aktWert->cWert = (int)$aktWert->cWert;
                     break;
                 case 'text':
                     $aktWert->cWert = substr($aktWert->cWert, 0, 255);
@@ -109,7 +109,7 @@ if (isset($_POST['einstellungen_bearbeiten']) && isset($_POST['kZahlungsart']) &
                     break;
                 case 'zahl':
                 case 'number':
-                    $aktWert->cWert = intval($aktWert->cWert);
+                    $aktWert->cWert = (int)$aktWert->cWert;
                     break;
                 case 'text':
                     $aktWert->cWert = substr($aktWert->cWert, 0, 255);
@@ -124,7 +124,7 @@ if (isset($_POST['einstellungen_bearbeiten']) && isset($_POST['kZahlungsart']) &
     if (!isset($zahlungsartSprache)) {
         $zahlungsartSprache = new stdClass();
     }
-    $zahlungsartSprache->kZahlungsart = intval($_POST['kZahlungsart']);
+    $zahlungsartSprache->kZahlungsart = (int)$_POST['kZahlungsart'];
     foreach ($sprachen as $sprache) {
         $zahlungsartSprache->cISOSprache = $sprache->cISO;
         $zahlungsartSprache->cName       = $zahlungsart->cName;
@@ -165,14 +165,13 @@ if ($step === 'einstellen') {
         if ($zahlungsart->nSOAP == 1 || $zahlungsart->nCURL == 1) {
             aktiviereZahlungsart($zahlungsart);
         }
-
         // Weiche fuer eine normale Zahlungsart oder eine Zahlungsart via Plugin
         if (strpos($zahlungsart->cModulId, 'kPlugin_') !== false) {
             $kPlugin     = gibkPluginAuscModulId($zahlungsart->cModulId);
             $cModulId    = gibPlugincModulId($kPlugin, $zahlungsart->cName);
             $Conf        = Shop::DB()->query("SELECT * FROM tplugineinstellungenconf WHERE cWertName LIKE '" . $cModulId . "\_%' ORDER BY nSort", 2);
             $configCount = count($Conf);
-            for ($i = 0; $i < $configCount; $i++) {
+            for ($i = 0; $i < $configCount; ++$i) {
                 if ($Conf[$i]->cInputTyp === 'selectbox') {
                     $Conf[$i]->ConfWerte = Shop::DB()->selectAll('tplugineinstellungenconfwerte', 'kPluginEinstellungenConf', (int)$Conf[$i]->kPluginEinstellungenConf, '*', 'nSort');
                 }
@@ -182,7 +181,7 @@ if ($step === 'einstellen') {
         } else {
             $Conf        = Shop::DB()->selectAll('teinstellungenconf', 'cModulId', $zahlungsart->cModulId, '*', 'nSort');
             $configCount = count($Conf);
-            for ($i = 0; $i < $configCount; $i++) {
+            for ($i = 0; $i < $configCount; ++$i) {
                 if ($Conf[$i]->cInputTyp === 'selectbox') {
                     $Conf[$i]->ConfWerte = Shop::DB()->selectAll('teinstellungenconfwerte', 'kEinstellungenConf', (int)$Conf[$i]->kEinstellungenConf, '*', 'nSort');
                 }
@@ -206,13 +205,13 @@ if ($step === 'einstellen') {
 } elseif ($step === 'log') {
     require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.ZahlungsLog.php';
 
-    $kZahlungsart = intval($_GET['kZahlungsart']);
+    $kZahlungsart = (int)$_GET['kZahlungsart'];
     $oZahlungsart = Shop::DB()->select('tzahlungsart', 'kZahlungsart', $kZahlungsart);
 
     if (isset($oZahlungsart->cModulId) && strlen($oZahlungsart->cModulId) > 0) {
         $oZahlungsLog = new ZahlungsLog($oZahlungsart->cModulId);
         $smarty->assign('oLog_arr', $oZahlungsLog->holeLog())
-            ->assign('kZahlungsart', $kZahlungsart);
+               ->assign('kZahlungsart', $kZahlungsart);
     }
 } elseif ($step === 'payments') {
     if(validateToken() && isset($_POST['action']) && $_POST['action'] === 'paymentwawireset' && isset($_POST['kEingang_arr'])) {
@@ -289,9 +288,9 @@ if ($step === 'uebersicht') {
 
     $oNice = Nice::getInstance();
     $smarty->assign('zahlungsarten', $oZahlungsart_arr)
-        ->assign('nFinanzierungAktiv', ($oNice->checkErweiterung(SHOP_ERWEITERUNG_FINANZIERUNG)) ? 1 : 0);
+           ->assign('nFinanzierungAktiv', ($oNice->checkErweiterung(SHOP_ERWEITERUNG_FINANZIERUNG)) ? 1 : 0);
 }
 $smarty->assign('step', $step)
-    ->assign('waehrung', $standardwaehrung->cName)
-    ->assign('cHinweis', $hinweis)
-    ->display('zahlungsarten.tpl');
+       ->assign('waehrung', $standardwaehrung->cName)
+       ->assign('cHinweis', $hinweis)
+       ->display('zahlungsarten.tpl');

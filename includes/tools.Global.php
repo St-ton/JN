@@ -4964,7 +4964,7 @@ function aktiviereZahlungsart($oZahlungsart)
         $kZahlungsart = (int)$oZahlungsart->kZahlungsart;
         $nNutzbar     = 0;
         // SOAP
-        if ($oZahlungsart->nSOAP) {
+        if (isset($oZahlungsart->nSOAP) && $oZahlungsart->nSOAP) {
             $nNutzbar = (pruefeSOAP()) ? 1 : 0;
         }
         // CURL
@@ -4974,10 +4974,6 @@ function aktiviereZahlungsart($oZahlungsart)
         // SOCKETS
         if (isset($oZahlungsart->nSOCKETS) && $oZahlungsart->nSOCKETS) {
             $nNutzbar = (pruefeSOCKETS()) ? 1 : 0;
-        }
-        // ALLOW URL FOPEN
-        if (isset($oZahlungsart->nALLOWURLFOPEN) && $oZahlungsart->nALLOWURLFOPEN) {
-            $nNutzbar = (pruefeALLOWFOPEN()) ? 1 : 0;
         }
         $upd = new stdClass();
         $upd->nNutzbar = $nNutzbar;
@@ -5375,6 +5371,7 @@ function pruefeWarenkorbStueckliste($oArtikel, $fAnzahl)
         } else {
             $oStuecklisteKomponente_arr = gibStuecklistenKomponente($oArtikel->kStueckliste, true);
         }
+        /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
         foreach ($_SESSION['Warenkorb']->PositionenArr as $oPosition) {
             if ($oPosition->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL) {
                 // Komponente soll hinzugefügt werden aber die Stückliste ist bereits im Warenkorb

@@ -213,10 +213,10 @@ class Hersteller
                 FROM thersteller
                 {$sqlJoin}
                 LEFT JOIN therstellersprache ON therstellersprache.kHersteller = thersteller.kHersteller
-                    AND therstellersprache.kSprache=" . (int) $kSprache . "
+                    AND therstellersprache.kSprache=" . (int)$kSprache . "
                 LEFT JOIN tseo ON tseo.kKey = thersteller.kHersteller
                     AND tseo.cKey = 'kHersteller'
-                    AND tseo.kSprache = " . (int) $kSprache . "
+                    AND tseo.kSprache = " . (int)$kSprache . "
                 {$sqlWhere}
                 GROUP BY  thersteller.kHersteller
                 ORDER BY thersteller.cName", 2

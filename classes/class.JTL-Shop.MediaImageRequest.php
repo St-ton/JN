@@ -83,7 +83,7 @@ class MediaImageRequest
      */
     public function getId()
     {
-        return (int) $this->id;
+        return (int)$this->id;
     }
 
     /**
@@ -128,7 +128,7 @@ class MediaImageRequest
      */
     public function getNumber()
     {
-        return max((int) $this->number, 1);
+        return max((int)$this->number, 1);
     }
 
     /**
@@ -136,7 +136,7 @@ class MediaImageRequest
      */
     public function getRatio()
     {
-        return max((int) $this->ratio, 1);
+        return max((int)$this->ratio, 1);
     }
 
     /**

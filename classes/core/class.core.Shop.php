@@ -780,7 +780,7 @@ final class Shop
                 }
                 $nMatch = preg_match('/[^_](' . SEP_SEITE . '([0-9]+))/', $seo, $cMatch_arr, PREG_OFFSET_CAPTURE);
                 if ($nMatch !== false && $nMatch == 1) {
-                    $seite = (int) $cMatch_arr[2][0];
+                    $seite = (int)$cMatch_arr[2][0];
                     $seo   = substr($seo, 0, $cMatch_arr[1][1]);
                 }
                 //double content work around
@@ -1323,7 +1323,7 @@ final class Shop
             if (!isset($NaviFilter->NewsMonat)) {
                 $NaviFilter->NewsMonat = new stdClass();
             }
-            $NaviFilter->NewsMonat->kNewsMonatsUebersicht = (int) $cParameter_arr['kNewsMonatsUebersicht'];
+            $NaviFilter->NewsMonat->kNewsMonatsUebersicht = (int)$cParameter_arr['kNewsMonatsUebersicht'];
             $oSeo_obj                                     = self::DB()->query("
                 SELECT tseo.cSeo, tseo.kSprache, tnewsmonatsuebersicht.cName
                     FROM tseo

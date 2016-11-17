@@ -1519,7 +1519,7 @@ function pruefeZahlungsartMaxBestellwert($fMaxBestellwert)
 function versandartKorrekt($kVersandart, $aFormValues = 0)
 {
     /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
-    $kVersandart = (int) $kVersandart;
+    $kVersandart = (int)$kVersandart;
     //Verpackung beachten
     $kVerpackung_arr = (isset($_POST['kVerpackung']) && is_array($_POST['kVerpackung']) && count($_POST['kVerpackung']) > 0) ?
         $_POST['kVerpackung'] :

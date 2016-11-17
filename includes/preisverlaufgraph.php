@@ -10,10 +10,10 @@ if (intval($_GET['kArtikel']) > 0 && intval($_GET['kKundengruppe']) > 0 && intva
     $session       = Session::getInstance();
     $Einstellungen = Shop::getSettings(array(CONF_PREISVERLAUF));
     $oConfig_arr   = Shop::DB()->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_PREISVERLAUF);
-    $kArtikel      = (int) $_GET['kArtikel'];
-    $kKundengruppe = (int) $_GET['kKundengruppe'];
-    $kSteuerklasse = (int) $_GET['kSteuerklasse'];
-    $nMonat        = (int) $Einstellungen['preisverlauf']['preisverlauf_anzahl_monate'];
+    $kArtikel      = (int)$_GET['kArtikel'];
+    $kKundengruppe = (int)$_GET['kKundengruppe'];
+    $kSteuerklasse = (int)$_GET['kSteuerklasse'];
+    $nMonat        = (int)$Einstellungen['preisverlauf']['preisverlauf_anzahl_monate'];
 
     if (count($oConfig_arr) > 0) {
         if (!isset($oPreisConfig)) {

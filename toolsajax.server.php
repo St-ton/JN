@@ -1138,7 +1138,7 @@ function checkVarkombiDependencies($kVaterArtikel, $cVaterURL, $kEigenschaft = 0
 
             $kGesetzeEigenschaft_arr       = array_keys($_SESSION['oVarkombiAuswahl']->kGesetzteEigeschaftWert_arr);
             $kNichtGesetzteEigenschaft_arr = array_values(array_diff($oArtikel->kEigenschaftKombi_arr, $kGesetzeEigenschaft_arr));
-            $kNichtGesetzteEigenschaft     = (int) $kNichtGesetzteEigenschaft_arr[0];
+            $kNichtGesetzteEigenschaft     = (int)$kNichtGesetzteEigenschaft_arr[0];
 
             // hole eigenschaftswerte
             $oEigenschaftWert_arr = Shop::DB()->selectAll('teigenschaftwert', 'kEigenschaft', (int)$kNichtGesetzteEigenschaft);

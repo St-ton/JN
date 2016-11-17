@@ -130,8 +130,8 @@ class AdminFavorite
     {
         $urlHelper = new UrlHelper($url);
 
-        $id   = (int) $kAdminlogin;
-        $sort = (int) $sort;
+        $id   = (int)$kAdminlogin;
+        $sort = (int)$sort;
 
         $url = str_replace(
             [Shop::getURL(), Shop::getURL(true)],

@@ -231,10 +231,10 @@ switch ($action) {
         $repeat   = 1;
         $methods  = 'all';
         if (isset($_POST['repeat'])) {
-            $repeat = (int) $_POST['repeat'];
+            $repeat = (int)$_POST['repeat'];
         }
         if (isset($_POST['runcount'])) {
-            $runCount = (int) $_POST['runcount'];
+            $runCount = (int)$_POST['runcount'];
         }
         if (isset($_POST['testdata'])) {
             switch ($_POST['testdata']) {

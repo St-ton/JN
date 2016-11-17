@@ -1144,7 +1144,7 @@ class TrustedShops
 
         $xml             = simplexml_load_string($content);
         $rating          = new stdClass();
-        $rating->nAnzahl = (int) $xml->ratings['amount'];
+        $rating->nAnzahl = (int)$xml->ratings['amount'];
 
         $dDurchschnitt = null;
         foreach ($xml->ratings->result as $result) {

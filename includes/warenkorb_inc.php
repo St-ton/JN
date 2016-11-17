@@ -90,10 +90,10 @@ function uebernehmeWarenkorbAenderungen()
     $drop = null;
     $post = false;
     if (isset($_POST['dropPos'])) {
-        $drop = (int) $_POST['dropPos'];
+        $drop = (int)$_POST['dropPos'];
         $post = true;
     } elseif (isset($_GET['dropPos'])) {
-        $drop = (int) $_GET['dropPos'];
+        $drop = (int)$_GET['dropPos'];
     }
     if ($drop !== null) {
         loescheWarenkorbPosition($drop);

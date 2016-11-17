@@ -95,7 +95,7 @@ class Image
      */
     public static function getByPath($path, $type, $number = 1)
     {
-        $number = (int) $number;
+        $number = (int)$number;
         $path   = Shop::DB()->escape($path);
         $sql    = "SELECT kArtikel AS id, nNr AS number, cPfad AS path FROM tartikelpict WHERE cPfad = '{$path}' AND nNr = '{$number}' LIMIT 1";
         $item   = Shop::DB()->query($sql, 1);
@@ -115,8 +115,8 @@ class Image
      */
     public static function getById($id, $type, $number = 1)
     {
-        $id     = (int) $id;
-        $number = (int) $number;
+        $id     = (int)$id;
+        $number = (int)$number;
         $sql    = "SELECT kArtikel AS id, nNr AS number, cPfad AS path FROM tartikelpict WHERE kArtikel = '{$id}' AND nNr = '{$number}' ORDER BY nNr LIMIT 1";
         $item   = Shop::DB()->query($sql, 1);
 
@@ -140,30 +140,30 @@ class Image
                 'container'  => $settings['container_verwenden'] === 'Y',
                 'format'     => strtolower($settings['bilder_dateiformat']),
                 'scale'      => $settings['bilder_skalieren'] === 'Y',
-                'quality'    => (int) $settings['bilder_jpg_quali'],
+                'quality'    => (int)$settings['bilder_jpg_quali'],
                 'branding'   => isset($branding[self::TYPE_PRODUCT]) ? $branding[self::TYPE_PRODUCT] : null,
                 'size'       => array(
                     self::SIZE_XS => array(
-                        'width'  => (int) $settings['bilder_artikel_mini_breite'],
-                        'height' => (int) $settings['bilder_artikel_mini_hoehe']
+                        'width'  => (int)$settings['bilder_artikel_mini_breite'],
+                        'height' => (int)$settings['bilder_artikel_mini_hoehe']
                     ),
                     self::SIZE_SM => array(
-                        'width'  => (int) $settings['bilder_artikel_klein_breite'],
-                        'height' => (int) $settings['bilder_artikel_klein_hoehe']
+                        'width'  => (int)$settings['bilder_artikel_klein_breite'],
+                        'height' => (int)$settings['bilder_artikel_klein_hoehe']
                     ),
                     self::SIZE_MD => array(
-                        'width'  => (int) $settings['bilder_artikel_normal_breite'],
-                        'height' => (int) $settings['bilder_artikel_normal_hoehe']
+                        'width'  => (int)$settings['bilder_artikel_normal_breite'],
+                        'height' => (int)$settings['bilder_artikel_normal_hoehe']
                     ),
                     self::SIZE_LG => array(
-                        'width'  => (int) $settings['bilder_artikel_gross_breite'],
-                        'height' => (int) $settings['bilder_artikel_gross_hoehe']
+                        'width'  => (int)$settings['bilder_artikel_gross_breite'],
+                        'height' => (int)$settings['bilder_artikel_gross_hoehe']
                     )
                 ),
                 'naming'   => array(
-                    self::TYPE_PRODUCT   => (int) $settings['bilder_artikel_namen'],
-                    self::TYPE_CATEGORY  => (int) $settings['bilder_kategorie_namen'],
-                    self::TYPE_VARIATION => (int) $settings['bilder_variation_namen']
+                    self::TYPE_PRODUCT   => (int)$settings['bilder_artikel_namen'],
+                    self::TYPE_CATEGORY  => (int)$settings['bilder_kategorie_namen'],
+                    self::TYPE_VARIATION => (int)$settings['bilder_variation_namen']
                 )
             );
         }
@@ -242,8 +242,8 @@ class Image
             WHERE tbrandingeinstellung.nAktiv = 1", 2);
 
         foreach ($brandingTmp as $b) {
-            $b->size            = (int) $b->size;
-            $b->transparency    = (int) $b->transparency;
+            $b->size            = (int)$b->size;
+            $b->transparency    = (int)$b->transparency;
             $b->type            = self::mapType($b->type);
             $b->position        = self::mapPosition($b->position);
             $b->path            = PFAD_ROOT . PFAD_BRANDINGBILDER . $b->path;

@@ -26,7 +26,7 @@ try {
 }
 //get disabled cache types
 $deactivated       = Shop::DB()->select('teinstellungen', ['kEinstellungenSektion', 'cName'], [CONF_CACHING, 'caching_types_disabled']);
-$currentlyDisabled = array();
+$currentlyDisabled = [];
 if (is_object($deactivated) && isset($deactivated->cWert)) {
     $currentlyDisabled = ($deactivated->cWert !== '') ? unserialize($deactivated->cWert) : array();
 }
@@ -345,8 +345,8 @@ if (function_exists('opcache_get_status')) {
 }
 
 $tplcacheStats           = new stdClass();
-$tplcacheStats->frontend = array();
-$tplcacheStats->backend  = array();
+$tplcacheStats->frontend = [];
+$tplcacheStats->backend  = [];
 
 $callback = function (array $pParameters) {
     if (!$pParameters['isdir']) {

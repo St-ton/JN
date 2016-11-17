@@ -160,10 +160,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
                     $oFrageMerkmal->nTotalValueCount       = 0;
 
                     $oFrageMerkmal->oWert_arr = Shop::DB()->query("
-                            SELECT mw.kMerkmalWert, mwb.cBildpfad, mws.cWert
+                            SELECT mw.kMerkmalWert, mw.cBildpfad, mws.cWert
                                 FROM tmerkmalwert AS mw
-                                    LEFT JOIN tmerkmalwertbild AS mwb
-                                        ON mw.kMerkmalWert = mwb.kMerkmalWert
                                     LEFT JOIN tmerkmalwertsprache AS mws
                                         ON mw.kMerkmalWert = mws.kMerkmalWert
                                             AND mws.kSprache = " . $this->kSprache . "

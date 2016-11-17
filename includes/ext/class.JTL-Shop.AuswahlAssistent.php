@@ -78,6 +78,11 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
         private $oNaviFilter = null;
 
         /**
+         * @var array
+         */
+        private $config = [];
+
+        /**
          * AuswahlAssistent constructor.
          *
          * @param string $cKey
@@ -87,8 +92,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
          */
         public function __construct($cKey, $kKey, $kSprache = 0, $bOnlyActive = true)
         {
-            $kKey     = (int)$kKey;
-            $kSprache = (int)$kSprache;
+            $kKey         = (int)$kKey;
+            $kSprache     = (int)$kSprache;
+            $this->config = Shop::getSettings(CONF_AUSWAHLASSISTENT)['auswahlassistent'];
 
             if ($kSprache === 0) {
                 $kSprache = Shop::getLanguage();
@@ -360,6 +366,15 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
             $kSelectedValue = end($this->kSelection_arr);
 
             return $oFrage->oWert_assoc[$kSelectedValue];
+        }
+
+        /**
+         * @param $cName
+         * @return mixed
+         */
+        public function getOption($cName)
+        {
+            return $this->config[$cName];
         }
 
         /**

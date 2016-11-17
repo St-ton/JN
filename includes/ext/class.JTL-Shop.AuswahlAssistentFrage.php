@@ -12,80 +12,105 @@ if (class_exists('AuswahlAssistent')) {
         /**
          * @var int
          */
-        public $kAuswahlAssistentFrage;
+        public $kAuswahlAssistentFrage = 0;
 
         /**
          * @var int
          */
-        public $kAuswahlAssistentGruppe;
+        public $kAuswahlAssistentGruppe = 0;
 
         /**
          * @var int
          */
-        public $kMerkmal;
+        public $kMerkmal = 0;
 
         /**
          * @var string
          */
-        public $cFrage;
+        public $cFrage = '';
 
         /**
          * @var int
          */
-        public $nSort;
+        public $nSort = 0;
 
         /**
          * @var int
          */
-        public $nAktiv;
+        public $nAktiv = 0;
 
         /**
-         * @var object
+         * @var array
          */
-        public $oMerkmal;
+        public $oWert_arr = [];
+
+        /**
+         * @var array - mapping from kMerkmalWert to tmerkmalwert object
+         */
+        public $oWert_assoc = [];
+
+        /**
+         * @var int - how many products found that have a value of this attribute
+         */
+        public $nTotalResultCount = 0;
+
+        /**
+         * @var object - used by old AWA
+         */
+        public $oMerkmal = null;
 
         /**
          * @param int  $kAuswahlAssistentFrage
          * @param bool $bAktiv
          */
-        public function __construct($kAuswahlAssistentFrage = 0, $bAktiv = true)
-        {
-            if (intval($kAuswahlAssistentFrage) > 0) {
-                $this->loadFromDB($kAuswahlAssistentFrage, $bAktiv);
-            }
-        }
-
-        /**
-         * @param int  $kAuswahlAssistentFrage
-         * @param bool $bAktiv
-         */
-        private function loadFromDB($kAuswahlAssistentFrage, $bAktiv)
+        public function __construct($kAuswahlAssistentFrage = 0, $bOnlyActive = true)
         {
             $kAuswahlAssistentFrage = (int)$kAuswahlAssistentFrage;
-            if ($kAuswahlAssistentFrage > 0) {
-                $cAktivSQL = '';
-                if ($bAktiv) {
-                    $cAktivSQL = " AND nAktiv = 1";
-                }
-                $oFrage = Shop::DB()->query(
-                    "SELECT *
-                        FROM tauswahlassistentfrage
-                        WHERE kAuswahlAssistentFrage = " . $kAuswahlAssistentFrage . $cAktivSQL, 1
-                );
 
-                if (isset($oFrage->kAuswahlAssistentFrage) && $oFrage->kAuswahlAssistentFrage > 0) {
-                    $cMember_arr = array_keys(get_object_vars($oFrage));
-                    if (is_array($cMember_arr) && count($cMember_arr) > 0) {
-                        foreach ($cMember_arr as $cMember) {
-                            $this->$cMember = $oFrage->$cMember;
-                        }
-                    }
-                    $this->oMerkmal = self::getMerkmal($this->kMerkmal, true);
-                }
+            if ($kAuswahlAssistentFrage > 0) {
+                $this->loadFromDB($kAuswahlAssistentFrage, $bOnlyActive);
             }
         }
 
         /**
+         * @param int  $kAuswahlAssistentFrage
+         * @param bool $bAktiv
+         */
+        private function loadFromDB($kAuswahlAssistentFrage, $bOnlyActive = true)
+        {
+            $oDbResult = Shop::DB()->query("
+                    SELECT af.*, m.cBildpfad, COALESCE(ms.cName, m.cName) AS cName, m.cBildpfad
+                        FROM tauswahlassistentfrage AS af
+                            JOIN tauswahlassistentgruppe as ag
+                                ON ag.kAuswahlAssistentGruppe = af.kAuswahlAssistentGruppe 
+                            JOIN tmerkmal AS m
+                                ON m.kMerkmal = af.kMerkmal 
+                            LEFT JOIN tmerkmalsprache AS ms
+                                ON ms.kMerkmal = m.kMerkmal 
+                                    AND ms.kSprache = ag.kSprache
+                        WHERE af.kAuswahlAssistentFrage = " . $kAuswahlAssistentFrage . "
+                            " . ($bOnlyActive ? "AND af.nAktiv = 1" : "") . "
+                ", 1);
+
+            if ($oDbResult !== null && $oDbResult !== false) {
+                foreach (get_object_vars($oDbResult) as $name => $value) {
+                    $this->$name = $value;
+                }
+
+                $this->kAuswahlAssistentFrage  = (int)$this->kAuswahlAssistentFrage;
+                $this->kAuswahlAssistentGruppe = (int)$this->kAuswahlAssistentGruppe;
+                $this->kMerkmal                = (int)$this->kMerkmal;
+                $this->nSort                   = (int)$this->nSort;
+                $this->nAktiv                  = (int)$this->nAktiv;
+
+                // Used by old AWA
+                $this->oMerkmal = self::getMerkmal($this->kMerkmal, true);
+            }
+        }
+
+        /**
+         * Used by old AWA
+         *
          * @param int  $kAuswahlAssistentGruppe
          * @param bool $bAktiv
          * @return array
@@ -115,6 +140,8 @@ if (class_exists('AuswahlAssistent')) {
         }
 
         /**
+         * Used by old AWA
+         *
          * @param bool $bPrimary
          * @return array|bool
          */
@@ -136,6 +163,8 @@ if (class_exists('AuswahlAssistent')) {
         }
 
         /**
+         * Used by old AWA
+         *
          * @return array|bool
          */
         public function updateQuestion()
@@ -158,6 +187,8 @@ if (class_exists('AuswahlAssistent')) {
         }
 
         /**
+         * Used by old AWA
+         *
          * @param $cParam_arr
          * @return bool
          */
@@ -175,6 +206,8 @@ if (class_exists('AuswahlAssistent')) {
         }
 
         /**
+         * Used by old AWA
+         *
          * @param bool $bUpdate
          * @return array
          */
@@ -211,6 +244,8 @@ if (class_exists('AuswahlAssistent')) {
         }
 
         /**
+         * Used by old AWA
+         *
          * @param int $kMerkmal
          * @param int $kAuswahlAssistentGruppe
          * @return bool
@@ -233,6 +268,8 @@ if (class_exists('AuswahlAssistent')) {
         }
 
         /**
+         * Used by old AWA
+         *
          * @param int  $kMerkmal
          * @param bool $bMMW
          * @return Merkmal|stdClass

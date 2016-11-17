@@ -55,12 +55,12 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
         /**
          * @var array
          */
-        private $oFrageMerkmal_arr = [];
+        private $oFrage_arr = [];
 
         /**
-         * @var array
+         * @var array - mapping from kMerkmal to AuswahlAssistentFrage
          */
-        private $oFrageMerkmal_assoc = [];
+        private $oFrage_assoc = [];
 
         /**
          * @var int
@@ -73,19 +73,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
         private $kSelection_arr = [];
 
         /**
-         * @var array
-         */
-        private $oSelection_arr = [];
-
-        /**
          * @var stdClass
          */
         private $oNaviFilter = null;
-
-        /**
-         * @var stdClass
-         */
-        private $oLastSelectedValue = null;
 
         /**
          * AuswahlAssistent constructor.
@@ -115,7 +105,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
          * @param int $kSprache
          * @param bool $bOnlyActive
          */
-        public function loadFromDB($cKey, $kKey, $kSprache = 0, $bOnlyActive = true)
+        private function loadFromDB($cKey, $kKey, $kSprache, $bOnlyActive = true)
         {
             $oDbResult = Shop::DB()->query("
                     SELECT *
@@ -139,48 +129,20 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
                 $this->kSprache                = (int)$this->kSprache;
                 $this->nAktiv                  = (int)$this->nAktiv;
 
-                $this->oFrageMerkmal_arr = Shop::DB()->query("
-                        SELECT af.kAuswahlAssistentFrage, af.kMerkmal, af.cFrage, af.nAktiv AS nFrageAktiv, m.cBildpfad,
-                                COALESCE(m.cName, ms.cName) AS cName
-                            FROM tauswahlassistentfrage AS af
-                                JOIN tmerkmal AS m
-                                    ON af.kMerkmal = m.kMerkmal
-                                        AND af.kAuswahlAssistentGruppe = " . $this->kAuswahlAssistentGruppe . "
-                                        " . ($bOnlyActive ? "AND af.nAktiv = 1" : "") . "
-                                LEFT JOIN tmerkmalsprache AS ms
-                                    ON m.kMerkmal = ms.kMerkmal
-                                        AND ms.kSprache = " . $kSprache . "
-                            ORDER BY af.nSort
+                $oAuswahlAssistentFrageDB_arr = Shop::DB()->query("
+                        SELECT kAuswahlAssistentFrage
+                            FROM tauswahlassistentfrage
+                            WHERE kAuswahlAssistentGruppe = " . $this->kAuswahlAssistentGruppe . "
+                                " . ($bOnlyActive ? "AND nAktiv = 1" : "") . "
+                            ORDER BY nSort
                     ", 2);
 
-                foreach ($this->oFrageMerkmal_arr as &$oFrageMerkmal) {
-                    $oFrageMerkmal->kAuswahlAssistentFrage = (int)$oFrageMerkmal->kAuswahlAssistentFrage;
-                    $oFrageMerkmal->kMerkmal               = (int)$oFrageMerkmal->kMerkmal;
-                    $oFrageMerkmal->nFrageAktiv            = (int)$oFrageMerkmal->nFrageAktiv;
-                    $oFrageMerkmal->nTotalValueCount       = 0;
+                $this->oFrage_arr = [];
 
-                    $oFrageMerkmal->oWert_arr = Shop::DB()->query("
-                            SELECT mw.kMerkmalWert, mw.cBildpfad, mws.cWert
-                                FROM tmerkmalwert AS mw
-                                    LEFT JOIN tmerkmalwertsprache AS mws
-                                        ON mw.kMerkmalWert = mws.kMerkmalWert
-                                            AND mws.kSprache = " . $this->kSprache . "
-                                WHERE mw.kMerkmal = " . $oFrageMerkmal->kMerkmal . "
-                                ORDER BY mw.nSort
-                        ", 2);
-
-                    $oFrageMerkmal->oWert_assoc = [];
-
-                    foreach ($oFrageMerkmal->oWert_arr as &$oWert) {
-                        $oWert->kMerkmalWert   = (int)$oWert->kMerkmalWert;
-                        $oWert->cBildpfadKlein = !empty($oWert->cBildpfad)
-                            ? PFAD_MERKMALWERTBILDER_KLEIN . $oWert->cBildpfad
-                            : BILD_KEIN_MERKMALWERTBILD_VORHANDEN;
-
-                        $oFrageMerkmal->oWert_assoc[$oWert->kMerkmalWert] = $oWert;
-                    }
-
-                    $this->oFrageMerkmal_assoc[$oFrageMerkmal->kMerkmal] = $oFrageMerkmal;
+                foreach ($oAuswahlAssistentFrageDB_arr as $oFrageDB) {
+                    $oFrage                                = new AuswahlAssistentFrage($oFrageDB->kAuswahlAssistentFrage);
+                    $this->oFrage_arr[]                    = $oFrage;
+                    $this->oFrage_assoc[$oFrage->kMerkmal] = $oFrage;
                 }
             }
         }
@@ -191,25 +153,12 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
          */
         public function setNextSelection($kWert)
         {
-            if($this->nCurQuestion < count($this->oFrageMerkmal_arr)) {
-                $this->kSelection_arr[]   = $kWert;
-                $oSelectedValue           = $this->oFrageMerkmal_arr[$this->nCurQuestion]->oWert_assoc[$kWert];
-                $this->oSelection_arr[]   = $oSelectedValue;
-                $this->nCurQuestion      += 1;
-                $this->oLastSelectedValue = $oSelectedValue;
+            if($this->nCurQuestion < count($this->oFrage_arr)) {
+                $this->kSelection_arr[] = $kWert;
+                $this->nCurQuestion    += 1;
             }
 
             return $this;
-        }
-
-        /**
-         * @param $nFrage
-         */
-        public function resetToQuestion($nFrage)
-        {
-            array_splice($this->kSelection_arr, $nFrage);
-            array_splice($this->oSelection_arr, $nFrage);
-            $this->nCurQuestion = $nFrage;
         }
 
         /**
@@ -242,17 +191,19 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
             $oMerkmalFilter_arr             = gibMerkmalFilterOptionen($FilterSQL, $NaviFilter, null, true);
 
             foreach ($oMerkmalFilter_arr as &$oMerkmalFilter) {
-                $nTotalValueCount = 0;
+                $oFrage                    = $this->oFrage_assoc[(int)$oMerkmalFilter->kMerkmal];
+                $oFrage->oWert_arr         = $oMerkmalFilter->oMerkmalWerte_arr;
+                $oFrage->nTotalResultCount = 0;
+
+                // Used by old AWA
+                $oFrage->oMerkmalWert_arr = $oFrage->oWert_arr;
 
                 foreach($oMerkmalFilter->oMerkmalWerte_arr as &$oWert) {
-                    $this
-                        ->oFrageMerkmal_assoc[(int)$oMerkmalFilter->kMerkmal]
-                        ->oWert_assoc[$oWert->kMerkmalWert]
-                        ->nAnzahl      = (int)$oWert->nAnzahl;
-                    $nTotalValueCount += (int)$oWert->nAnzahl;
+                    $oWert->kMerkmalWert                       = (int)$oWert->kMerkmalWert;
+                    $oWert->nAnzahl                            = (int)$oWert->nAnzahl;
+                    $oFrage->nTotalResultCount                += $oWert->nAnzahl;
+                    $oFrage->oWert_assoc[$oWert->kMerkmalWert] = $oWert;
                 }
-
-                $this->oFrageMerkmal_assoc[(int)$oMerkmalFilter->kMerkmal]->nTotalValueCount = $nTotalValueCount;
             }
 
             $this->oNaviFilter = $NaviFilter;
@@ -341,19 +292,19 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
         }
 
         /**
-         * @return object
+         * @return AuswahlAssistentFrage
          */
-        public function getQuestionAttribute($nFrage)
+        public function getQuestion($nFrage)
         {
-            return $this->oFrageMerkmal_arr[$nFrage];
+            return $this->oFrage_arr[$nFrage];
         }
 
         /**
          * @return array
          */
-        public function getQuestionAttributes()
+        public function getQuestions()
         {
-            return $this->oFrageMerkmal_arr;
+            return $this->oFrage_arr;
         }
 
         /**
@@ -361,7 +312,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
          */
         public function getQuestionCount()
         {
-            return count($this->oFrageMerkmal_arr);
+            return count($this->oFrage_arr);
         }
 
         /**
@@ -386,7 +337,10 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
          */
         public function getSelectedValue($nFrage)
         {
-            return $this->oSelection_arr[$nFrage];
+            $oFrage         = $this->oFrage_arr[$nFrage];
+            $kSelectedValue = $this->kSelection_arr[$nFrage];
+
+            return $oFrage->oWert_assoc[$kSelectedValue];
         }
 
         /**
@@ -402,7 +356,10 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
          */
         public function getLastSelectedValue()
         {
-            return $this->oLastSelectedValue;
+            $oFrage         = end($this->oFrage_arr);
+            $kSelectedValue = end($this->kSelection_arr);
+
+            return $oFrage->oWert_assoc[$kSelectedValue];
         }
 
         /**
@@ -453,6 +410,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
         }
 
         /**
+         * Used by old AWA
+         *
          * @return mixed
          */
         public static function getLinks()
@@ -465,6 +424,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
         }
 
         /**
+         * Used by old AWA
+         *
          * @param string $cKey
          * @param int    $kKey
          * @param int    $kSprache

@@ -635,7 +635,7 @@ function setSelectionWizardAnswers($cKey, $kKey, $kSprache, $kSelection_arr)
 
         if ($oLastSelectedValue !== null && $oLastSelectedValue->nAnzahl === 1 ||
             $AWA->getCurQuestion() === $AWA->getQuestionCount() ||
-            $AWA->getQuestionAttribute($AWA->getCurQuestion())->nTotalValueCount === 0)
+            $AWA->getQuestion($AWA->getCurQuestion())->nTotalResultCount === 0)
         {
             $response->script("window.location.href='" .
                 StringHandler::htmlentitydecode(gibNaviURL($NaviFilter, true, null)) . "';");

@@ -1,6 +1,6 @@
 <div class="list-group-item selection-wizard-question {if $nQuestion > $AWA->getCurQuestion()}disabled{/if}">
     <h4 class="list-group-item-heading selection-wizard-question-heading">
-        {$oFrageMerkmal->cFrage}
+        {$oFrage->cFrage}
         {if $nQuestion < $AWA->getCurQuestion()}
             <a href="#" class="fa fa-edit" onclick="resetSelectionWizardAnswerJS({$nQuestion});return false;"></a>
         {/if}
@@ -14,7 +14,7 @@
             {$oWert->cWert}
         </span>
     {elseif $nQuestion === $AWA->getCurQuestion()}
-        {foreach $oFrageMerkmal->oWert_arr as $i => $oWert}
+        {foreach $oFrage->oWert_arr as $oWert}
             {if isset($oWert->nAnzahl)}
                 <a class="selection-wizard-answer" href="#"
                    onclick="setSelectionWizardAnswerJS({$oWert->kMerkmalWert}, {$oWert->nAnzahl});return false;">
@@ -29,7 +29,7 @@
             {/if}
         {/foreach}
     {elseif $nQuestion > $AWA->getCurQuestion()}
-        {foreach $oFrageMerkmal->oWert_assoc as $oWert}
+        {foreach $oFrage->oWert_arr as $oWert}
             {if isset($oWert->nAnzahl)}
                 <span class="selection-wizard-answer">
                     {if $oWert->cBildpfadKlein !== ''}

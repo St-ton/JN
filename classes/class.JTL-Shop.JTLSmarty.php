@@ -260,7 +260,7 @@ class JTLSmarty extends SmartyBC
              ->setForceCompile(SMARTY_FORCE_COMPILE ? true : false)
              ->setDebugging(SMARTY_DEBUG_CONSOLE ? true : false);
 
-        $this->config = Shop::getSettings(array(CONF_TEMPLATE, CONF_CACHING));
+        $this->config = Shop::getSettings(array(CONF_TEMPLATE, CONF_CACHING, CONF_GLOBAL));
         $template     = ($isAdmin) ? AdminTemplate::getInstance() : Template::getInstance();
         $cTemplate    = $template->getDir();
         $parent       = null;
@@ -604,8 +604,7 @@ class JTLSmarty extends SmartyBC
      */
     public function replaceDelimiters($cText)
     {
-        $Einstellungen = Shop::getSettings(array(CONF_GLOBAL));
-        $cReplace      = $Einstellungen['global']['global_dezimaltrennzeichen_sonstigeangaben'];
+        $cReplace = $this->config['global']['global_dezimaltrennzeichen_sonstigeangaben'];
         if (strlen($cReplace) === 0 || $cReplace !== ',' || $cReplace !== '.') {
             $cReplace = ',';
         }

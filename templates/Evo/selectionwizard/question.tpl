@@ -9,7 +9,7 @@
         <span class="selection-wizard-answer">
             {assign var="oWert" value=$AWA->getSelectedValue($nQuestion)}
             {if $AWA->getOption('auswahlassistent_anzeigeformat')|in_array:['B', 'BT'] && $oWert->cBildpfadKlein !== ''}
-                <img src="{$oWert->cBildpfadKlein}">
+                <img src="{$oWert->cBildpfadKlein}" alt="{$oWert->cWert}" title="{$oWert->cWert}">
             {/if}
             {if $AWA->getOption('auswahlassistent_anzeigeformat')|in_array:['T', 'BT', 'S']}
                 {$oWert->cWert}
@@ -38,7 +38,7 @@
                     <a class="selection-wizard-answer" href="#"
                        onclick="return setSelectionWizardAnswerJS({$oWert->kMerkmalWert});">
                         {if $AWA->getOption('auswahlassistent_anzeigeformat')|in_array:['B', 'BT'] && $oWert->cBildpfadKlein !== ''}
-                            <img src="{$oWert->cBildpfadKlein}">
+                            <img src="{$oWert->cBildpfadKlein}" alt="{$oWert->cWert}" title="{$oWert->cWert}">
                         {/if}
                         {if $AWA->getOption('auswahlassistent_anzeigeformat')|in_array:['T', 'BT']}
                             {$oWert->cWert}
@@ -63,7 +63,7 @@
                 {if isset($oWert->nAnzahl)}
                     <span class="selection-wizard-answer">
                         {if $AWA->getOption('auswahlassistent_anzeigeformat')|in_array:['B', 'BT'] && $oWert->cBildpfadKlein !== ''}
-                            <img src="{$oWert->cBildpfadKlein}">
+                            <img src="{$oWert->cBildpfadKlein}" alt="{$oWert->cWert}" title="{$oWert->cWert}">
                         {/if}
                         {if $AWA->getOption('auswahlassistent_anzeigeformat')|in_array:['T', 'BT']}
                             {$oWert->cWert}

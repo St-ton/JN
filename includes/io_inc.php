@@ -364,7 +364,7 @@ function checkDependencies($aValues)
         $objResponse->jsfunc('$.evo.article().setPrice', $fVK[$nNettoPreise], $cVKLocalized[$nNettoPreise], $cPriceLabel);
         $objResponse->jsfunc('$.evo.article().setUnitWeight', $oArtikel->fGewicht, $weightTotal . ' ' . $cUnitWeightLabel);
         if (!empty($newProductNr)) {
-            $objResponse->jsfunc('$.evo.article().setArticleNumber', $newProductNr);
+            $objResponse->jsfunc('$.evo.article().setProductNumber', $newProductNr);
         }
     }
 

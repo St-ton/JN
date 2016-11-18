@@ -360,8 +360,8 @@
             $('#article-tabs .product-attributes .weight-unit').html(newUnitWeight);
         },
 
-        setArticleNumber: function(articleNumber){
-            $('#product-offer span[itemprop="sku"]').html(articleNumber);
+        setProductNumber: function(productNumber){
+            $('#product-offer span[itemprop="sku"]').html(productNumber);
         },
 
         setArticleContent: function(id, variation, url, variations) {

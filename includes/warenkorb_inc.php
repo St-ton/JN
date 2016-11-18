@@ -135,7 +135,7 @@ function uebernehmeWarenkorbAenderungen()
                     if (function_exists('bcdiv')) {
                         $dVielfache = round($Artikel->fAbnahmeintervall * ceil(bcdiv($_POST['anzahl'][$i],$Artikel->fAbnahmeintervall, 3)), 2);
                     } else {
-                        $dVielfache = round($Artikel->fAbnahmeintervall * ceil($anzahl / $Artikel->fAbnahmeintervall), $nGenauigkeit);
+                        $dVielfache = round($Artikel->fAbnahmeintervall * ceil($_POST['anzahl'][$i] / $Artikel->fAbnahmeintervall), 2);
                     }
 
                     if ($dVielfache != $_POST['anzahl'][$i]) {

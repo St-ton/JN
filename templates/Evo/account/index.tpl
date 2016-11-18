@@ -11,7 +11,7 @@
     <div class="alert alert-info">{lang key="myAccountDesc" section="login"}</div>
 {/if}
 
-{if (isset($nWarenkorb2PersMerge) && $nWarenkorb2PersMerge === 1) || isset($smarty.get.test)}
+{if (isset($nWarenkorb2PersMerge) && $nWarenkorb2PersMerge === 1)}
     <script type="text/javascript">
         $(function() {
             eModal.confirm('{lang key="basket2PersMerge" section="login"}', '{lang key="basket" section="global"}', function(res) {

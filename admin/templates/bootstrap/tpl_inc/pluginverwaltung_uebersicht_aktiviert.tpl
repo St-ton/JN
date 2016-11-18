@@ -47,7 +47,7 @@
                                         <span class="label {if $PluginInstalliert->nStatus == 2}success label-success{elseif $PluginInstalliert->nStatus == 1}success label-info{elseif $PluginInstalliert->nStatus == 3}success label-default{elseif $PluginInstalliert->nStatus == 4 || $PluginInstalliert->nStatus == 5}info label-info{elseif $PluginInstalliert->nStatus == 6}danger label-danger{/if}">
                                             {$PluginInstalliert->cStatus}
                                         </span>
-                                        {if isset($PluginIndex_arr[$PluginInstalliert->cVerzeichnis]['shop4compatible']) && $PluginIndex_arr[$PluginInstalliert->cVerzeichnis]['shop4compatible'] === false}
+                                        {if isset($PluginIndex_arr[$PluginInstalliert->cVerzeichnis]->shop4compatible) && $PluginIndex_arr[$PluginInstalliert->cVerzeichnis]->shop4compatible === false}
                                             <span title="Achtung: Plugin ist nicht vollst&auml;ndig Shop4-kompatibel! Es k&ouml;nnen daher Probleme beim Betrieb entstehen." class="label warning label-warning"><i class="fa fa-warning"></i></span>
                                         {/if}
                                     </h4>
@@ -85,11 +85,6 @@
                                         {/if}
                                         {if (isset($PluginInstalliert->oPluginEinstellung_arr) && $PluginInstalliert->oPluginEinstellung_arr|@count > 0) || (isset($PluginInstalliert->oPluginAdminMenu_arr) && $PluginInstalliert->oPluginAdminMenu_arr|@count > 0)}
                                             <a class="btn btn-default btn-sm" href="plugin.php?kPlugin={$PluginInstalliert->kPlugin}" title="Einstellungen"><i class="fa fa-cogs"></i></a>
-                                        {else}
-                                            {if (isset($PluginInstalliert->cTextReadmePath) && $PluginInstalliert->cTextReadmePath|count_characters > 0) || (isset($PluginInstalliert->cTextLicensePath) && $PluginInstalliert->cTextLicensePath|count_characters > 0)}
-                                            <a class="btn btn-default btn-sm" href="plugin.php?kPlugin={$PluginInstalliert->kPlugin}" title="Dokumentation"><i class="fa fa-copy"></i></a>
-                                            {*<a class="btn btn-default btn-sm" href="plugin.php?kPlugin={$PluginInstalliert->kPlugin}" title="Dokumentation"><i class="fa fa-file-text-o"></i></a>*}
-                                            {/if}
                                         {/if}
                                         {if isset($PluginInstalliert->dUpdate) && $PluginInstalliert->dUpdate|strlen > 0 && $PluginInstalliert->cUpdateFehler == 1}
                                             <a onclick="ackCheck({$PluginInstalliert->kPlugin});return false;" class="btn btn-success btn-sm" title="{#pluginBtnUpdate#}"><i class="fa fa-refresh"></i></a>

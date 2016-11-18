@@ -109,16 +109,7 @@ if (!empty($_FILES['file_data'])) {
             $PluginInstalliert_arr[$i]->cStatus  = $PluginInstalliert->mapPluginStatus($PluginInstalliert->nStatus);
         }
     }
-    if (count($PluginFehlerhaft_arr) > 0) {
-        foreach ($PluginFehlerhaft_arr as $i => $PluginFehlerhaft) {
-            $PluginFehlerhaft_arr[$i] = makeXMLToObj($PluginFehlerhaft);
-        }
-    }
-    if (count($PluginVerfuebar_arr) > 0) {
-        foreach ($PluginVerfuebar_arr as $i => $PluginVerfuebar) {
-            $PluginVerfuebar_arr[$i] = makeXMLToObj($PluginVerfuebar);
-        }
-    }
+
     $errorCount = count($PluginInstalliertByStatus_arr['status_3']) +
         count($PluginInstalliertByStatus_arr['status_4']) +
         count($PluginInstalliertByStatus_arr['status_5']) +
@@ -505,15 +496,10 @@ if ($step === 'pluginverwaltung_uebersicht') {
             $PluginInstalliert_arr[$i]->cStatus  = $PluginInstalliert->mapPluginStatus($PluginInstalliert->nStatus);
         }
     }
-    if (count($PluginFehlerhaft_arr) > 0) {
-        foreach ($PluginFehlerhaft_arr as $i => $PluginFehlerhaft) {
-            $PluginFehlerhaft_arr[$i] = makeXMLToObj($PluginFehlerhaft);
-        }
-    }
+
     if (count($PluginVerfuebar_arr) > 0) {
         foreach ($PluginVerfuebar_arr as $i => $PluginVerfuebar) {
-            $PluginVerfuebar_arr[$i] = makeXMLToObj($PluginVerfuebar);
-            // searching for multiple names of license files (e.g. LICENSE.md or License.md and so on)
+            // searching for multiple names of license file (e.g. LICENSE.md or License.md and so on)
             $szFolder = PFAD_ROOT . PFAD_PLUGIN . $PluginVerfuebar_arr[$i]->cVerzeichnis . '/';
             $vPossibleLicenseNames = [
                   '',

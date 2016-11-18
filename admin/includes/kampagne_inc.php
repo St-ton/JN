@@ -994,7 +994,7 @@ function gibStamp($cStampOld, $nSprung, $nAnsicht)
 }
 
 /**
- * @param object $oKampagne
+ * @param Kampagne $oKampagne
  * @return int
  *
  * Returncodes:

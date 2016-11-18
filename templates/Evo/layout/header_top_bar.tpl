@@ -29,7 +29,7 @@
             {foreach from=$smarty.session.Sprachen item=oSprache}
                 {if $oSprache->kSprache != $smarty.session.kSprache}
                     <li>
-                        <a href="{$oSprache->cURL}" class="link_lang {$oSprache->cISO}" rel="nofollow">{if $lang === 'ger'}{$oSprache->cNameDeutsch}{else}{$oSprache->cNameEnglisch}{/if}</a>
+                        <a href="{if isset($oSprache->cURLFull)}{$oSprache->cURLFull}{else}{$oSprache->cURL}{/if}" class="link_lang {$oSprache->cISO}" rel="nofollow">{if $lang === 'ger'}{$oSprache->cNameDeutsch}{else}{$oSprache->cNameEnglisch}{/if}</a>
                     </li>
                 {/if}
                 {/foreach}

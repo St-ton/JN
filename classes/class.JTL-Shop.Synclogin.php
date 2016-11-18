@@ -25,9 +25,8 @@ class Synclogin
     public $cPass;
 
     /**
-     * Konstruktor - get wawi sync user/pass from db
-     *
-     * @return Synclogin
+     * Synclogin constructor.
+     * get wawi sync user/pass from db
      */
     public function __construct()
     {

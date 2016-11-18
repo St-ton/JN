@@ -270,7 +270,7 @@ class Updater
             return $this->updateToNextVersion();
         }
 
-        return;
+        return null;
     }
 
     /**
@@ -394,7 +394,6 @@ class Updater
     }
 
     /**
-     * @param int $version
      * @throws Exception
      */
     protected function executeMigrations()
@@ -437,7 +436,7 @@ class Updater
             ];
         }
 
-        return;
+        return null;
     }
 
     /**
@@ -457,7 +456,7 @@ class Updater
             }
         }
 
-        return;
+        return null;
     }
 
     /**

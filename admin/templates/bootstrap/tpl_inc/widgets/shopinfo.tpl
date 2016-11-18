@@ -10,30 +10,37 @@
             </p>
         </div>
     {/if}
-    <ul class="infolist clearall">
-        <li class="first">
-            <p><strong>Shopversion:</strong> <span class="value" id="current_shop_version">{$strFileVersion} {if $strMinorVersion != '0'}(Build: {$strMinorVersion}){/if}</span></p>
-        </li>
-        <li>
-            <p><strong>Templateversion:</strong> <span class="value" id="current_tpl_version">{$strTplVersion}</span></p>
-        </li>
-        <li>
-            <p><strong>Datenbankversion:</strong> <span class="value">{$strDBVersion}</span></p>
-        </li>
-        <li>
-            <p><strong>Datenbank zuletzt aktualisiert:</strong> <span class="value">{$strUpdated}</span></p>
-        </li>
-        {if isset($oSubscription->kShop) && $oSubscription->kShop > 0}
-            <li>
-                <p><strong>Subscription g&uuml;ltig bis:</strong> <span class="value">{$oSubscription->dDownloadBis_DE}</span></p>
-            </li>
-        {/if}
-        <li class="last">
-            <div id="version_data_wrapper">
-                <p class="ajax_preloader update">Nach Aktualisierungen suchen...</p>
-            </div>
-        </li>
-    </ul>
+    <table class="table table-condensed table-hover table-blank">
+        <tbody>
+            <tr>
+                <td>Shopversion</td>
+                <td id="current_shop_version">{$strFileVersion} {if $strMinorVersion != '0'}(Build: {$strMinorVersion}){/if}</td>
+            </tr>
+            <tr>
+                <td>Templateversion</td>
+                <td id="current_tpl_version">{$strTplVersion}</td>
+            </tr>
+            <tr>
+                <td>Datenbankversion</td>
+                <td>{$strDBVersion}</td>
+            </tr>
+            <tr>
+                <td>Datenbank zuletzt aktualisiert</td>
+                <td>{$strUpdated}</span>
+            </tr>
+            {if isset($oSubscription->kShop) && $oSubscription->kShop > 0}
+                <tr>
+                    <td>Subscription g&uuml;ltig bis</td>
+                    <td>{$oSubscription->dDownloadBis_DE}</td>
+                </tr>
+            {/if}
+            <tr id="version_data_wrapper">
+                <td colspan="2" class="text-center">
+                    <p class="ajax_preloader update ">Nach Updates suchen...</p>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </div>
 <script type="text/javascript">
     $(document).ready(function () {ldelim}

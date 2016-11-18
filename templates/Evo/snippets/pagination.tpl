@@ -18,7 +18,7 @@
 
 {get_static_route id=$cThisUrl assign=cThisUrl}
 
-<div class="panel panel-blank">
+<div class=pagination-wrapper>
     {if $oPagination->getPageCount() > 1}
         {if in_array('label', $parts) || in_array('pagi', $parts)}
             <div class="form-group pagination-group">

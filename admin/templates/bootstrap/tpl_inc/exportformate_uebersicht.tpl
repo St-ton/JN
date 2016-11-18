@@ -21,13 +21,13 @@
         }
 
         function do_export(cb) {
-            if (typeof cb != 'object') {
+            if (typeof cb !== 'object') {
                 error_export();
             } else if (cb.bFinished) {
                 finish_export(cb);
             } else {
                 show_export_info(cb);
-                $.getJSON(cb.cURL, {token: token, action: 'export', e: cb.kExportqueue, back: 'admin', ajax: '1'}, function (cb) {
+                $.getJSON(cb.cURL, {token: token, action: 'export', e: cb.kExportqueue, back: 'admin', ajax: '1', max: cb.nMax}, function (cb) {
                     do_export(cb);
                 });
             }
@@ -46,7 +46,7 @@
                 textFormat:   'fraction',
                 steps:        cb.bFirst ? 0 : 20,
                 stepDuration: cb.bFirst ? 0 : 20,
-                boxImage: tpl + '/progressbar.gif',
+                boxImage:     tpl + '/progressbar.gif',
                 barImage:     {
                     0: tpl + '/progressbg_red.gif',
                     30: tpl + '/progressbg_orange.gif',
@@ -101,13 +101,13 @@
                                 {$jtl_token}
                                 <input type="hidden" name="kExportformat" value="{$exportformat->kExportformat}" />
                                 <div class="btn-group">
-                                    <button name="action" value="export" class="btn btn-primary btn-sm extract notext" title="{#createExportFile#}"><i class="fa fa-plus"></i></button>
+                                    <button name="action" value="export" class="btn btn-default btn-sm extract notext" title="{#createExportFile#}"><i class="fa fa-plus"></i></button>
                                     {if !$exportformat->bPluginContentExtern}
-                                        <a href="#" onclick="return init_export('{$exportformat->kExportformat}');" class="btn btn-default btn-sm extract_async notext" title="{#createExportFileAsync#}"><i class="fa fa-plus-square"></i></a>
+                                        <a href="#" onclick="return init_export('{$exportformat->kExportformat}');" class="btn btn-primary btn-sm extract_async notext" title="{#createExportFileAsync#}"><i class="fa fa-plus-square"></i></a>
                                     {/if}
                                     <button name="action" value="download" class="btn btn-default btn-sm download notext" title="{#download#}"><i class="fa fa-download"></i></button>
                                     <button name="action" value="edit" class="btn btn-default btn-sm edit notext" title="{#edit#}"><i class="fa fa-edit"></i></button>
-                                    <button name="action" value="delete" class="btn btn-default btn-sm remove notext" title="{#delete#}" onclick="return confirm('Exportformat l&ouml;schen?');"><i class="fa fa-trash"></i></button>
+                                    <button name="action" value="delete" class="btn btn-danger btn-sm remove notext" title="{#delete#}" onclick="return confirm('Exportformat l&ouml;schen?');"><i class="fa fa-trash"></i></button>
                                 </div>
                             </form>
                         </td>
@@ -118,7 +118,7 @@
         </table>
         <div class="panel-footer">
             <div class="submit-wrap btn-group">
-                <a class="btn btn-primary" href="exportformate.php?neuerExport=1&token={$smarty.session.jtl_token}">{#newExportformat#}</a>
+                <a class="btn btn-primary" href="exportformate.php?neuerExport=1&token={$smarty.session.jtl_token}"><i class="fa fa-share"></i> {#newExportformat#}</a>
                 <a class="btn btn-default" href="#" id="exportall">Alle exportieren</a>
             </div>
         </div>

@@ -27,7 +27,7 @@ if (strlen(verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', verifyGPDataString('tab'));
 }
 $Sprachen    = gibAlleSprachen();
-$oSpracheTMP = Shop::DB()->query("SELECT cISO FROM tsprache WHERE kSprache = " . (int)$_SESSION['kSprache'], 1);
+$oSpracheTMP = Shop::DB()->select('tsprache', 'kSprache', (int)$_SESSION['kSprache']);
 // Modulueberpruefung
 $oNice = Nice::getInstance();
 if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
@@ -364,18 +364,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
             }
             $oUmfrageFrage = Shop::DB()->select('tumfragefrage', 'kUmfrageFrage', $kUmfrageFrage);
             if (isset($oUmfrageFrage->kUmfrageFrage) && $oUmfrageFrage->kUmfrageFrage > 0) {
-                $oUmfrageFrage->oUmfrageFrageAntwort_arr = Shop::DB()->query(
-                    "SELECT *
-                        FROM tumfragefrageantwort
-                        WHERE kUmfrageFrage = " . (int)$oUmfrageFrage->kUmfrageFrage . "
-                        ORDER BY nSort", 2
-                );
-                $oUmfrageFrage->oUmfrageMatrixOption_arr = Shop::DB()->query(
-                    "SELECT *
-                        FROM tumfragematrixoption
-                        WHERE kUmfrageFrage = " . (int)$oUmfrageFrage->kUmfrageFrage . "
-                        ORDER BY nSort", 2
-                );
+                $oUmfrageFrage->oUmfrageFrageAntwort_arr = Shop::DB()->selectAll('tumfragefrageantwort', 'kUmfrageFrage', (int)$oUmfrageFrage->kUmfrageFrage, '*', 'nSort');
+                $oUmfrageFrage->oUmfrageMatrixOption_arr = Shop::DB()->selectAll('tumfragematrixoption', 'kUmfrageFrage', (int)$oUmfrageFrage->kUmfrageFrage, '*', 'nSort');
             }
 
             $smarty->assign('oUmfrageFrage', $oUmfrageFrage)
@@ -403,44 +393,35 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                         if ($kKundengruppe == -1) {
                             $oUmfrage->cKundengruppe_arr[] = 'Alle';
                         } else {
-                            $oKundengruppe = Shop::DB()->query(
-                                "SELECT cName
-                                    FROM tkundengruppe
-                                    WHERE kKundengruppe = " . (int)$kKundengruppe, 1
-                            );
-
-                            if (strlen($oKundengruppe->cName) > 0) {
+                            $oKundengruppe = Shop::DB()->select('tkundengruppe', 'kKundengruppe', (int)$kKundengruppe);
+                            if (!empty($oKundengruppe->cName)) {
                                 $oUmfrage->cKundengruppe_arr[] = $oKundengruppe->cName;
                             }
                         }
                     }
 
                     $oUmfrage->oUmfrageFrage_arr = array();
-                    $oUmfrage->oUmfrageFrage_arr = Shop::DB()->query(
-                        "SELECT *
-                            FROM tumfragefrage
-                            WHERE kUmfrage = " . $kUmfrage . "
-                            ORDER BY nSort", 2
-                    );
+                    $oUmfrage->oUmfrageFrage_arr = Shop::DB()->selectAll('tumfragefrage', 'kUmfrage', $kUmfrage, '*', 'nSort');
                     if (count($oUmfrage->oUmfrageFrage_arr) > 0) {
                         foreach ($oUmfrage->oUmfrageFrage_arr as $i => $oUmfrageFrage) {
                             // Mappe Fragentyp
                             $oUmfrage->oUmfrageFrage_arr[$i]->cTypMapped = mappeFragenTyp($oUmfrageFrage->cTyp);
 
                             $oUmfrage->oUmfrageFrage_arr[$i]->oUmfrageFrageAntwort_arr = array();
-                            $oUmfrage->oUmfrageFrage_arr[$i]->oUmfrageFrageAntwort_arr = Shop::DB()->query(
-                                "SELECT kUmfrageFrageAntwort, kUmfrageFrage, cName
-                                    FROM tumfragefrageantwort
-                                    WHERE kUmfrageFrage = " . (int)$oUmfrage->oUmfrageFrage_arr[$i]->kUmfrageFrage . "
-                                    ORDER BY nSort", 2
+                            $oUmfrage->oUmfrageFrage_arr[$i]->oUmfrageFrageAntwort_arr = Shop::DB()->selectAll(
+                                'tumfragefrageantwort',
+                                'kUmfrageFrage',
+                                (int)$oUmfrage->oUmfrageFrage_arr[$i]->kUmfrageFrage,
+                                'kUmfrageFrageAntwort, kUmfrageFrage, cName',
+                                'nSort'
                             );
-
                             $oUmfrage->oUmfrageFrage_arr[$i]->oUmfrageMatrixOption_arr = array();
-                            $oUmfrage->oUmfrageFrage_arr[$i]->oUmfrageMatrixOption_arr = Shop::DB()->query(
-                                "SELECT kUmfrageMatrixOption, kUmfrageFrage, cName
-                                    FROM tumfragematrixoption
-                                    WHERE kUmfrageFrage = " . (int)$oUmfrage->oUmfrageFrage_arr[$i]->kUmfrageFrage . "
-                                    ORDER BY nSort", 2
+                            $oUmfrage->oUmfrageFrage_arr[$i]->oUmfrageMatrixOption_arr = Shop::DB()->selectAll(
+                                'tumfragematrixoption',
+                                'kUmfrageFrage',
+                                (int)$oUmfrage->oUmfrageFrage_arr[$i]->kUmfrageFrage,
+                                'kUmfrageMatrixOption, kUmfrageFrage, cName',
+                                'nSort'
                             );
                         }
                     }
@@ -453,14 +434,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
 
         if ($kUmfrageTMP > 0 && (!isset($_POST['umfrage_frage_edit_speichern']) || intval($_POST['umfrage_frage_edit_speichern']) !== 1) &&
             (!isset($_GET['fe']) || intval($_GET['fe']) !== 1) && validateToken()) {
-            $oUmfrageFrage_arr = Shop::DB()->query(
-                "SELECT *
-                    FROM tumfragefrage
-                    WHERE kUmfrage = " . (int)$kUmfrageTMP . "
-                    ORDER BY nSort", 2
-            );
-
-            $smarty->assign('oUmfrageFrage_arr', $oUmfrageFrage_arr)
+            $smarty->assign('oUmfrageFrage_arr', Shop::DB()->selectAll('tumfragefrage', 'kUmfrage', (int)$kUmfrageTMP, '*', 'nSort'))
                    ->assign('kUmfrageTMP', $kUmfrageTMP);
         }
     }
@@ -501,35 +475,20 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                                 FROM tkundengruppe
                                 WHERE kKundengruppe = " . (int)$kKundengruppe, 1
                         );
-                        if (strlen($oKundengruppe->cName) > 0) {
+                        if (!empty($oKundengruppe->cName)) {
                             $oUmfrage_arr[$i]->cKundengruppe_arr[] = $oKundengruppe->cName;
                         }
                     }
                 }
             }
         }
-        $oConfig_arr = Shop::DB()->query(
-            "SELECT *
-                FROM teinstellungenconf
-                WHERE kEinstellungenSektion = " . CONF_UMFRAGE . "
-                ORDER BY nSort", 2
-        );
+        $oConfig_arr = Shop::DB()->selectAll('teinstellungenconf', 'kEinstellungenSektion', CONF_UMFRAGE, '*', 'nSort');
         $configCount = count($oConfig_arr);
         for ($i = 0; $i < $configCount; $i++) {
             if ($oConfig_arr[$i]->cInputTyp === 'selectbox') {
-                $oConfig_arr[$i]->ConfWerte = Shop::DB()->query(
-                    "SELECT *
-                        FROM teinstellungenconfwerte
-                        WHERE kEinstellungenConf = " . (int)$oConfig_arr[$i]->kEinstellungenConf . "
-                        ORDER BY nSort", 2
-                );
+                $oConfig_arr[$i]->ConfWerte = Shop::DB()->selectAll('teinstellungenconfwerte', 'kEinstellungenConf', (int)$oConfig_arr[$i]->kEinstellungenConf, '*', 'nSort');
             }
-            $oSetValue = Shop::DB()->query(
-                "SELECT cWert
-                    FROM teinstellungen
-                    WHERE kEinstellungenSektion = " . CONF_UMFRAGE . "
-                        AND cName = '" . $oConfig_arr[$i]->cWertName . "'", 1
-            );
+            $oSetValue = Shop::DB()->select('teinstellungen', 'kEinstellungenSektion', CONF_UMFRAGE, 'cName', $oConfig_arr[$i]->cWertName);
             $oConfig_arr[$i]->gesetzterWert = (isset($oSetValue->cWert) ? $oSetValue->cWert : null);
         }
 

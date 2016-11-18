@@ -67,7 +67,7 @@ class WarenkorbHelper
                         self::GROSS => $amountGross
                     ];
 
-                    if ((int) $oPosition->nAnzahl != $oPosition->nAnzahl) {
+                    if ((int)$oPosition->nAnzahl != $oPosition->nAnzahl) {
                         $item->amount[self::NET] *= $oPosition->nAnzahl;
                         $item->amount[self::GROSS] *= $oPosition->nAnzahl;
 
@@ -77,7 +77,7 @@ class WarenkorbHelper
                                 ? $oPosition->Artikel->cEinheit
                                 : 'x', $item->name);
                     } else {
-                        $item->quantity = (int) $oPosition->nAnzahl;
+                        $item->quantity = (int)$oPosition->nAnzahl;
                     }
 
                     $info->article[self::NET] += $item->amount[self::NET] * $item->quantity;
@@ -196,7 +196,7 @@ class WarenkorbHelper
     }
 
     /**
-     * @return currency
+     * @return object
      */
     public function getCurrency()
     {
@@ -205,7 +205,7 @@ class WarenkorbHelper
     }
 
     /**
-     * @return currency iso
+     * @return string
      */
     public function getCurrencyISO()
     {
@@ -213,7 +213,7 @@ class WarenkorbHelper
     }
 
     /**
-     * @return language iso
+     * @return string
      */
     public function getLanguageISO()
     {
@@ -221,7 +221,7 @@ class WarenkorbHelper
     }
 
     /**
-     * @return state iso
+     * @return string
      */
     public function getStateISO()
     {
@@ -231,7 +231,7 @@ class WarenkorbHelper
     }
 
     /**
-     * @return return country iso
+     * @return string
      */
     public function getCountryISO()
     {

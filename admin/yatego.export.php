@@ -43,33 +43,19 @@ if ($bWaehrungsCheck) {
     }
 
     if ($step === 'yategoexport_uebersicht') {
-        $exportformat = Shop::DB()->query("SELECT * FROM texportformat WHERE nSpecial = 1", 1);
+        $exportformat = Shop::DB()->select('texportformat', 'nSpecial', 1);
 
         $exportformat->cKopfzeile = str_replace("\t", "<tab>", $exportformat->cKopfzeile);
         $exportformat->cContent   = str_replace("\t", "<tab>", $exportformat->cContent);
 
-        $Conf = Shop::DB()->query(
-            "SELECT *
-                FROM teinstellungenconf
-                WHERE kEinstellungenSektion='" . CONF_EXPORTFORMATE . "'
-                ORDER BY nSort", 2
-        );
+        $Conf = Shop::DB()->selectAll('teinstellungenconf', 'kEinstellungenSektion', CONF_EXPORTFORMATE, '*', 'nSort');
         $confCount = count($Conf);
         for ($i = 0; $i < $confCount; $i++) {
             if ($Conf[$i]->cInputTyp === 'selectbox') {
-                $Conf[$i]->ConfWerte = Shop::DB()->query(
-                    'SELECT *
-                        FROM teinstellungenconfwerte
-                        WHERE kEinstellungenConf = ' . (int)$Conf[$i]->kEinstellungenConf . '
-                        ORDER BY nSort', 2
-                );
+                $Conf[$i]->ConfWerte = Shop::DB()->selectAll('teinstellungenconfwerte', 'kEinstellungenConf', (int)$Conf[$i]->kEinstellungenConf, '*', 'nSort');
             }
             if ($exportformat->kExportformat) {
-                $setValue = Shop::DB()->query("
-                    SELECT cWert
-                        FROM texportformateinstellungen
-                        WHERE kExportformat = " . (int)$exportformat->kExportformat . "
-                            AND cName = '" . $Conf[$i]->cWertName . "'", 1);
+                $setValue = Shop::DB()->select('texportformateinstellungen', 'kExportformat', (int)$exportformat->kExportformat, 'cName', $Conf[$i]->cWertName);
                 $Conf[$i]->gesetzterWert = (isset($setValue->cWert)) ? $setValue->cWert : null;
             }
         }
@@ -117,7 +103,7 @@ function setzeEinstellung($cPost_arr, $kWaehrung)
         $kExportformat = intval($cPost_arr['kExportformat']);
         Shop::DB()->update('texportformat', 'kExportformat', $kExportformat, $exportformat);
         Shop::DB()->delete('texportformateinstellungen', 'kExportformat', $kExportformat);
-        $Conf      = Shop::DB()->query("SELECT * FROM teinstellungenconf WHERE kEinstellungenSektion = " . CONF_EXPORTFORMATE . " ORDER BY nSort", 2);
+        $Conf      = Shop::DB()->selectAll('teinstellungenconf', 'kEinstellungenSektion', CONF_EXPORTFORMATE, '*', 'nSort');
         $confCount = count($Conf);
         for ($i = 0; $i < $confCount; $i++) {
             unset($aktWert);

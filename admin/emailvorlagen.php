@@ -496,43 +496,47 @@ if (isset($_POST['preview']) && intval($_POST['preview']) > 0) {
             $oAGBWRB = Shop::DB()->select('ttext', ['kKundengruppe', 'kSprache'], [$kunde->kKundengruppe, $Sprache->kSprache]);
         }
         $Emailvorlagesprache[$Sprache->kSprache] = Shop::DB()->select($cTableSprache, ['kEmailvorlage', 'kSprache'], [(int)$Emailvorlage->kEmailvorlage, (int)$Sprache->kSprache]);
+        if (!empty($Emailvorlagesprache[$Sprache->kSprache])) {
 
-        $cModulId = $Emailvorlage->cModulId;
-        if (verifyGPCDataInteger('kPlugin') > 0) {
-            $cModulId = 'kPlugin_' . verifyGPCDataInteger('kPlugin') . '_' . $cModulId;
-        }
+            $cModulId = $Emailvorlage->cModulId;
+            if (verifyGPCDataInteger('kPlugin') > 0) {
+                $cModulId = 'kPlugin_' . verifyGPCDataInteger('kPlugin') . '_' . $cModulId;
+            }
 
-        $bestellung->oEstimatedDelivery->localized = getDeliverytimeEstimationText($bestellung->oEstimatedDelivery->longestMin, $bestellung->oEstimatedDelivery->longestMax);
-        $bestellung->cEstimatedDeliveryEx          = dateAddWeekday($bestellung->dErstellt, $bestellung->oEstimatedDelivery->longestMin)->format('d.m.Y')
-            . ' - ' .
-            dateAddWeekday($bestellung->dErstellt, $bestellung->oEstimatedDelivery->longestMax)->format('d.m.Y');
+            $bestellung->oEstimatedDelivery->localized = getDeliverytimeEstimationText($bestellung->oEstimatedDelivery->longestMin, $bestellung->oEstimatedDelivery->longestMax);
+            $bestellung->cEstimatedDeliveryEx          = dateAddWeekday($bestellung->dErstellt, $bestellung->oEstimatedDelivery->longestMin)->format('d.m.Y')
+                . ' - ' .
+                dateAddWeekday($bestellung->dErstellt, $bestellung->oEstimatedDelivery->longestMax)->format('d.m.Y');
 
-        $kunde->kSprache                       = $Sprache->kSprache;
-        $NewsletterEmpfaenger->kSprache        = $Sprache->kSprache;
-        $obj                                   = new stdClass();
-        $obj->tkunde                           = $kunde;
-        $obj->tkunde->cPasswortKlartext        = 'superGeheim';
-        $obj->tkundengruppe                    = $Kundengruppe;
-        $obj->tbestellung                      = $bestellung;
-        $obj->neues_passwort                   = $Neues_Passwort;
-        $obj->passwordResetLink                = Shop::getURL() . '/pass.php?fpwh=ca68b243f0c1e7e57162055f248218fd&mail=' . $kunde->cMail;
-        $obj->tgutschein                       = $gutschein;
-        $obj->AGB                              = $oAGBWRB;
-        $obj->WRB                              = $oAGBWRB;
-        $obj->tkupon                           = $Kupon;
-        $obj->tnachricht                       = $Nachricht;
-        $obj->tartikel                         = $Artikel;
-        $obj->twunschliste                     = $CWunschliste;
-        $obj->tvonkunde                        = $obj->tkunde;
-        $obj->tverfuegbarkeitsbenachrichtigung = $Benachrichtigung;
-        $obj->NewsletterEmpfaenger             = $NewsletterEmpfaenger;
-        $res                                   = sendeMail($cModulId, $obj);
-        if ($res === false) {
-            $sendStatus = false;
+            $kunde->kSprache                       = $Sprache->kSprache;
+            $NewsletterEmpfaenger->kSprache        = $Sprache->kSprache;
+            $obj                                   = new stdClass();
+            $obj->tkunde                           = $kunde;
+            $obj->tkunde->cPasswortKlartext        = 'superGeheim';
+            $obj->tkundengruppe                    = $Kundengruppe;
+            $obj->tbestellung                      = $bestellung;
+            $obj->neues_passwort                   = $Neues_Passwort;
+            $obj->passwordResetLink                = Shop::getURL() . '/pass.php?fpwh=ca68b243f0c1e7e57162055f248218fd&mail=' . $kunde->cMail;
+            $obj->tgutschein                       = $gutschein;
+            $obj->AGB                              = $oAGBWRB;
+            $obj->WRB                              = $oAGBWRB;
+            $obj->tkupon                           = $Kupon;
+            $obj->tnachricht                       = $Nachricht;
+            $obj->tartikel                         = $Artikel;
+            $obj->twunschliste                     = $CWunschliste;
+            $obj->tvonkunde                        = $obj->tkunde;
+            $obj->tverfuegbarkeitsbenachrichtigung = $Benachrichtigung;
+            $obj->NewsletterEmpfaenger             = $NewsletterEmpfaenger;
+            $res                                   = sendeMail($cModulId, $obj);
+            if ($res === false) {
+                $sendStatus = false;
+            }
+        } else {
+            $cHinweis .= 'Es existiert keine Emailvorlage: ' . $Sprache->cNameDeutsch . '<br/>';
         }
     }
     if ($sendStatus === true) {
-        $cHinweis = 'E-Mail wurde erfolgreich versendet.';
+        $cHinweis .= 'E-Mail wurde erfolgreich versendet.';
     } else {
         $cFehler = 'E-Mail konnte nicht versendet werden.';
     }
@@ -555,6 +559,9 @@ if (isset($_POST['Aendern']) && isset($_POST['kEmailvorlage']) && intval($_POST[
     }
     $Emailvorlagesprache->kEmailvorlage = (int)$_POST['kEmailvorlage'];
     $cAnhangError_arr                   = array();
+
+    $revision = new Revision();
+    $revision->addRevision('mail', (int)$_POST['kEmailvorlage'], true);
 
     foreach ($Sprachen as $Sprache) {
         // PDFs hochladen

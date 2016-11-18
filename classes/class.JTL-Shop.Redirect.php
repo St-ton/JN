@@ -267,7 +267,7 @@ class Redirect
             return baueURL($oObj, URLART_ARTIKEL);
         }
 
-        return;
+        return null;
     }
 
     /**
@@ -302,14 +302,14 @@ class Redirect
                 }
 
                 if (!$bExist) {
-                    return;
+                    return null;
                 }
             }
 
             return $cMapping_arr;
         }
 
-        return;
+        return null;
     }
 
     /**
@@ -533,14 +533,14 @@ class Redirect
      * @param $cLimitSQL
      * @return array
      */
-    public static function getRedirects ($cWhereSQL, $cOrderSQL, $cLimitSQL)
+    public static function getRedirects ($cWhereSQL, $cOrderSQL, $cLimitSQL = '')
     {
         $oRedirect_arr = Shop::DB()->query("
             SELECT *
                 FROM tredirect
                 " . ($cWhereSQL !== '' ? "WHERE " . $cWhereSQL : "") . "
                 ORDER BY " . $cOrderSQL . "
-                LIMIT " . $cLimitSQL,
+                " . ($cLimitSQL !== '' ? "LIMIT " . $cLimitSQL : ""),
             2);
 
         if (is_array($oRedirect_arr) && count($oRedirect_arr) > 0) {

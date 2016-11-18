@@ -49,29 +49,8 @@ if (verifyGPCDataInteger('addproductbundle') === 1 && isset($_POST['a'])) {
         Shop::$kArtikel = (int)$_POST['aBundle'];
     }
 }
-//hole aktuellen Artikel
-$AktuellerArtikel                        = new Artikel();
-$oArtikelOptionen                        = new stdClass();
-$oArtikelOptionen->nMerkmale             = 1;
-$oArtikelOptionen->nKategorie            = 1;
-$oArtikelOptionen->nAttribute            = 1;
-$oArtikelOptionen->nArtikelAttribute     = 1;
-$oArtikelOptionen->nMedienDatei          = 1;
-$oArtikelOptionen->nVariationKombi       = 1;
-$oArtikelOptionen->nVariationKombiKinder = 1;
-$oArtikelOptionen->nWarenlager           = 1;
-$oArtikelOptionen->nVariationDetailPreis = 1;
-$oArtikelOptionen->nRatings              = 1;
-// Warenkorbmatrix noetig? => Varikinder mit Preisen holen
-$oArtikelOptionen->nWarenkorbmatrix = (int)($Einstellungen['artikeldetails']['artikeldetails_warenkorbmatrix_anzeige'] === 'Y');
- // Stückliste noetig? => Stücklistenkomponenten  holen
-$oArtikelOptionen->nStueckliste   = (int)($Einstellungen['artikeldetails']['artikeldetails_stueckliste_anzeigen'] === 'Y');
-$oArtikelOptionen->nProductBundle = (int)($Einstellungen['artikeldetails']['artikeldetails_produktbundle_nutzen'] === 'Y');
-$oArtikelOptionen->nDownload      = 1;
-$oArtikelOptionen->nKonfig        = 1;
-$oArtikelOptionen->nMain          = 1;
-$oArtikelOptionen->bSimilar       = true;
-$AktuellerArtikel->fuelleArtikel(Shop::$kArtikel, $oArtikelOptionen);
+$AktuellerArtikel = new Artikel();
+$AktuellerArtikel->fuelleArtikel(Shop::$kArtikel, Artikel::getDetailOptions());
 if (isset($AktuellerArtikel->nIstVater) && $AktuellerArtikel->nIstVater == 1) {
     $_SESSION['oVarkombiAuswahl']                               = new stdClass();
     $_SESSION['oVarkombiAuswahl']->kGesetzteEigeschaftWert_arr  = array();
@@ -109,17 +88,8 @@ $similarArticles = ((int)($Einstellungen['artikeldetails']['artikeldetails_aehnl
 // Lade VariationKombiKind
 if (Shop::$kVariKindArtikel > 0) {
     $oVariKindArtikel                            = new Artikel();
-    $oArtikelOptionen                            = new stdClass();
-    $oArtikelOptionen->nMerkmale                 = 1;
-    $oArtikelOptionen->nAttribute                = 1;
-    $oArtikelOptionen->nArtikelAttribute         = 1;
-    $oArtikelOptionen->nMedienDatei              = 1;
-    $oArtikelOptionen->nKonfig                   = 1;
-    $oArtikelOptionen->nDownload                 = 1;
-    $oArtikelOptionen->nMain                     = 1;
+    $oArtikelOptionen                            = Artikel::getDetailOptions();
     $oArtikelOptionen->nKeinLagerbestandBeachten = 1;
-    $oArtikelOptionen->nVariationDetailPreis     = 1;
-    $oArtikelOptionen->nProductBundle            = (int)($Einstellungen['artikeldetails']['artikeldetails_produktbundle_nutzen'] === 'Y');
     $oVariKindArtikel->fuelleArtikel(Shop::$kVariKindArtikel, $oArtikelOptionen);
     $AktuellerArtikel = fasseVariVaterUndKindZusammen($AktuellerArtikel, $oVariKindArtikel);
     $bCanonicalURL    = ($Einstellungen['artikeldetails']['artikeldetails_canonicalurl_varkombikind'] === 'N') ? false : true;
@@ -132,8 +102,6 @@ if (Shop::$kVariKindArtikel > 0) {
 // Hat Artikel einen Preisverlauf?
 $smarty->assign('bPreisverlauf', !empty($_SESSION['Kundengruppe']->darfPreiseSehen));
 if ($Einstellungen['preisverlauf']['preisverlauf_anzeigen'] === 'Y' && !empty($_SESSION['Kundengruppe']->darfPreiseSehen)) {
-    require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Preisverlauf.php';
-
     Shop::$kArtikel = Shop::$kVariKindArtikel > 0 ? Shop::$kVariKindArtikel : $AktuellerArtikel->kArtikel;
     $oPreisverlauf  = new Preisverlauf();
     $oPreisverlauf  = $oPreisverlauf->gibPreisverlauf(Shop::$kArtikel, $AktuellerArtikel->Preise->kKundengruppe, (int)$Einstellungen['preisverlauf']['preisverlauf_anzahl_monate']);
@@ -228,7 +196,7 @@ $smarty->assign('Navigation', createNavigation($AktuelleSeite, $AufgeklappteKate
        ->assign('UVPlocalized', $AktuellerArtikel->cUVPLocalized)
        ->assign('UVPBruttolocalized', gibPreisStringLocalized($AktuellerArtikel->fUVPBrutto))
        ->assign('Artikel', $AktuellerArtikel)
-       ->assign('Xselling', (!empty($AktuellerArtikel->kVariKindArtikel)) ? gibArtikelXSelling($AktuellerArtikel->kVariKindArtikel) : gibArtikelXSelling($AktuellerArtikel->kArtikel))
+       ->assign('Xselling', (!empty($AktuellerArtikel->kVariKindArtikel)) ? gibArtikelXSelling($AktuellerArtikel->kVariKindArtikel) : gibArtikelXSelling($AktuellerArtikel->kArtikel, $AktuellerArtikel->nIstVater > 0))
        ->assign('requestURL', $requestURL)
        ->assign('sprachURL', $sprachURL)
        ->assign('Artikelhinweise', $Artikelhinweise)

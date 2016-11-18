@@ -158,7 +158,12 @@
                         <h5 class="panel-title">{lang key="yourConfiguration" section="global"}</h5>
                     </div>
                     <div class="panel-body">
+                        <p class="text-center">
+                            <strong class="price"></strong>
+                        </p>
+                        <hr/>
                         <div class="summary"></div>
+                        <hr/>
                         <p class="text-center">
                             <strong class="price"></strong>
                         </p>

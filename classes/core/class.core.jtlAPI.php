@@ -10,7 +10,7 @@
 final class jtlAPI
 {
     /**
-     * @return mixed
+     * @return object|null
      */
     public static function getSubscription()
     {
@@ -27,12 +27,14 @@ final class jtlAPI
             return json_decode($cReturn);
         } catch (Exception $exc) {
             Jtllog::writeLog("jtlAPI Exception: {$exc->getMessage()}");
+
+            return null;
         }
     }
 
     /**
      * @param int $nVersion
-     * @return mixed
+     * @return object|null
      */
     public static function checkVersion($nVersion)
     {
@@ -49,6 +51,8 @@ final class jtlAPI
             return json_decode($cReturn);
         } catch (Exception $exc) {
             Jtllog::writeLog('jtlAPI Exception: {$exc->getMessage()}');
+
+            return null;
         }
     }
 

@@ -13,9 +13,9 @@
       </div>
       <br/>
       <div id="billpay_links" class="btn-group">
-         <a class="btn btn-default" href="{$cBillpayTermsURL}" target="_blank" onclick="return open_window('{$cBillpayTermsURL}');">AGB Ratenkauf</a>
-         <a class="btn btn-default" href="{$cBillpayPrivacyURL}" target="_blank" onclick="return open_window('{$cBillpayPrivacyURL}');">Datenschutzbestimmungen</a>
-         <a class="btn btn-default" href="{$cBillpayTermsPaymentURL}" target="_blank" onclick="return open_window('{$cBillpayTermsPaymentURL}');">Zahlungsbedingungen</a>
+         <a class="btn btn-default popup" href="{$cBillpayTermsURL}" target="_blank">AGB Ratenkauf</a>
+         <a class="btn btn-default popup" href="{$cBillpayPrivacyURL}" target="_blank">Datenschutzbestimmungen</a>
+         <a class="btn btn-default popup" href="{$cBillpayTermsPaymentURL}" target="_blank">Zahlungsbedingungen</a>
       </div>
    </div>
 

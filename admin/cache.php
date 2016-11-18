@@ -26,7 +26,7 @@ try {
 }
 //get disabled cache types
 $deactivated       = Shop::DB()->select('teinstellungen', ['kEinstellungenSektion', 'cName'], [CONF_CACHING, 'caching_types_disabled']);
-$currentlyDisabled = array();
+$currentlyDisabled = [];
 if (is_object($deactivated) && isset($deactivated->cWert)) {
     $currentlyDisabled = ($deactivated->cWert !== '') ? unserialize($deactivated->cWert) : array();
 }
@@ -197,10 +197,10 @@ switch ($action) {
                             $value->cWert = 'apc';
                         } elseif (in_array('xcache', $availableMethods)) {
                             $value->cWert = 'xcache';
-                        } elseif (in_array('file', $availableMethods)) {
+                        } elseif (in_array('advancedfile', $availableMethods)) {
+                            $value->cWert = 'advancedfile';
+                        }  elseif (in_array('file', $availableMethods)) {
                             $value->cWert = 'file';
-                        } elseif (in_array('mysql', $availableMethods)) {
-                            $value->cWert = 'mysql';
                         } else {
                             $value->cWert = 'null';
                         }
@@ -231,10 +231,10 @@ switch ($action) {
         $repeat   = 1;
         $methods  = 'all';
         if (isset($_POST['repeat'])) {
-            $repeat = (int) $_POST['repeat'];
+            $repeat = (int)$_POST['repeat'];
         }
         if (isset($_POST['runcount'])) {
-            $runCount = (int) $_POST['runcount'];
+            $runCount = (int)$_POST['runcount'];
         }
         if (isset($_POST['testdata'])) {
             switch ($_POST['testdata']) {
@@ -345,8 +345,8 @@ if (function_exists('opcache_get_status')) {
 }
 
 $tplcacheStats           = new stdClass();
-$tplcacheStats->frontend = array();
-$tplcacheStats->backend  = array();
+$tplcacheStats->frontend = [];
+$tplcacheStats->backend  = [];
 
 $callback = function (array $pParameters) {
     if (!$pParameters['isdir']) {

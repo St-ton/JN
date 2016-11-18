@@ -239,11 +239,6 @@ class JTLSmarty extends SmartyBC
     /**
      * @var bool
      */
-    private static $isCached = false;
-
-    /**
-     * @var bool
-     */
     public static $isChildTemplate = false;
 
     /**
@@ -265,7 +260,7 @@ class JTLSmarty extends SmartyBC
              ->setForceCompile(SMARTY_FORCE_COMPILE ? true : false)
              ->setDebugging(SMARTY_DEBUG_CONSOLE ? true : false);
 
-        $this->config = Shop::getSettings(array(CONF_TEMPLATE, CONF_CACHING));
+        $this->config = Shop::getSettings(array(CONF_TEMPLATE, CONF_CACHING, CONF_GLOBAL));
         $template     = ($isAdmin) ? AdminTemplate::getInstance() : Template::getInstance();
         $cTemplate    = $template->getDir();
         $parent       = null;
@@ -312,7 +307,7 @@ class JTLSmarty extends SmartyBC
                  ->registerPlugin('modifier', 'truncate', array($this, 'truncate'));
 
             if ($isAdmin === false) {
-                $this->cache_lifetime = (isset($cacheOptions['expiration']) && ((int) $cacheOptions['expiration'] > 0)) ? $cacheOptions['expiration'] : 86400;
+                $this->cache_lifetime = (isset($cacheOptions['expiration']) && ((int)$cacheOptions['expiration'] > 0)) ? $cacheOptions['expiration'] : 86400;
                 //assign variables moved from $_SESSION to cache to smarty
                 $linkHelper = LinkHelper::getInstance();
                 $linkGroups = $linkHelper->getLinkGroups();
@@ -609,8 +604,7 @@ class JTLSmarty extends SmartyBC
      */
     public function replaceDelimiters($cText)
     {
-        $Einstellungen = Shop::getSettings(array(CONF_GLOBAL));
-        $cReplace      = $Einstellungen['global']['global_dezimaltrennzeichen_sonstigeangaben'];
+        $cReplace = $this->config['global']['global_dezimaltrennzeichen_sonstigeangaben'];
         if (strlen($cReplace) === 0 || $cReplace !== ',' || $cReplace !== '.') {
             $cReplace = ',';
         }
@@ -789,8 +783,6 @@ class JTLSmarty extends SmartyBC
     }
 }
 
-
-
 /**
  * Class jtlTplClass
  */
@@ -828,85 +820,5 @@ class jtlTplClass extends Smarty_Internal_Template
         }
 
         return parent::render($no_output_filter, $display);
-    }
-}
-
-/**
- * Class jtlSmartyCache
- */
-class jtlSmartyCache extends Smarty_CacheResource_KeyValueStore
-{
-    /**
-     * @var JTLCache|null
-     */
-    protected $jtlCache = null;
-
-    /**
-     * the cache tags to identify page cache entries within the object cache
-     *
-     * @var array
-     */
-    private $cacheTag = array('pg_cch');
-
-    /**
-     * @param array $config
-     */
-    public function __construct($config)
-    {
-        $this->jtlCache = new JTLCache(array(), true);
-        $this->jtlCache->setOptions(array(
-            'activated' => true,
-            'method'    => $config['caching']['caching_method'],
-            'prefix'    => 'jcp_' . ((defined('DB_NAME')) ? DB_NAME . '_' : '')
-        ))->init();
-    }
-
-    /**
-     * Read values for a set of keys from cache
-     *
-     * @param array $keys list of keys to fetch
-     * @return array list of values with the given keys used as indexes
-     * @return bool true on success, false on failure
-     */
-    protected function read(array $keys)
-    {
-        return $this->jtlCache->getMulti($keys);
-    }
-
-    /**
-     * Save values for a set of keys to cache
-     *
-     * @param array $keys list of values to save
-     * @param int   $expire expiration time
-     * @return bool true on success, false on failure
-     */
-    protected function write(array $keys, $expire = null)
-    {
-        return $this->jtlCache->setMulti($keys, $this->cacheTag, $expire);
-    }
-
-    /**
-     * Remove values from cache
-     *
-     * @param array $keys list of keys to delete
-     * @return bool true on success, false on failure
-     */
-    protected function delete(array $keys)
-    {
-        foreach ($keys as $k) {
-            $this->jtlCache->flush($k);
-        }
-
-        return true;
-    }
-
-    /**
-     * Remove *all* values from cache
-     *
-     * @return bool true on success, false on failure
-     */
-    protected function purge()
-    {
-        return $this->jtlCache->flushTags($this->cacheTag);
     }
 }

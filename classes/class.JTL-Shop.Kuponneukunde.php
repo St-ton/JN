@@ -86,7 +86,7 @@ class Kuponneukunde
     public function Save()
     {
         if ($this->kKuponNeukunde > 0) {
-            Shop::DB()->delete('tkuponneukunde', 'kKuponNeukunde', (int) $this->kKuponNeukunde);
+            Shop::DB()->delete('tkuponneukunde', 'kKuponNeukunde', (int)$this->kKuponNeukunde);
         }
         $obj = kopiereMembers($this);
         unset($obj->kKuponNeukunde);
@@ -250,7 +250,7 @@ class Kuponneukunde
             }
         }
 
-        return;
+        return null;
     }
 
     /**

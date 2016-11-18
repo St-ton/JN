@@ -16,7 +16,7 @@
                     {if $smarty.foreach.vergleich.iteration <= $nAnzahl}
                         <tr class="item">
                             <td>
-                                <a href="{$oArtikel->cURL}" class="image"><img src="{$oArtikel->Bilder[0]->cPfadMini}" alt="{$oArtikel->cName|strip_tags|escape:"quotes"|truncate:60}" class="img-xs" /></a><br>
+                                <a href="{$oArtikel->cURL}" class="image"><img src="{$oArtikel->Bilder[0]->cPfadMini}" alt="{$oArtikel->cName|strip_tags|truncate:60|escape:"html"}" class="img-xs" /></a><br>
                             </td>
                             <td>
                                 <a href="{$oArtikel->cURL}" class="name">{$oArtikel->cName|truncate:25:"..."}</a>

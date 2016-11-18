@@ -89,7 +89,7 @@ class Bestseller
      */
     public function setCustomergroup($customergroup)
     {
-        $this->_customergrp = (int) $customergroup;
+        $this->_customergrp = (int)$customergroup;
 
         return $this;
     }
@@ -108,7 +108,7 @@ class Bestseller
      */
     public function setLimit($limit)
     {
-        $this->_limit = (int) $limit;
+        $this->_limit = (int)$limit;
 
         return $this;
     }
@@ -127,7 +127,7 @@ class Bestseller
      */
     public function setMinSales($minsales)
     {
-        $this->_minsales = (int) $minsales;
+        $this->_minsales = (int)$minsales;
 
         return $this;
     }
@@ -202,27 +202,22 @@ class Bestseller
             $bestseller = new self($options);
             if ($onlykeys) {
                 return $bestseller->fetch();
-            } else {
-                $bestsellerkeys                = $bestseller->fetch();
-                $bestsellers                   = array();
-                $option                        = new stdClass();
-                $option->nMerkmale             = 1;
-                $option->nAttribute            = 1;
-                $option->nArtikelAttribute     = 1;
-                $option->nVariationKombiKinder = 1;
-                foreach ($bestsellerkeys as $bestsellerkey) {
-                    $product = new Artikel();
-                    $product->fuelleArtikel($bestsellerkey, $option);
-                    if ($product->kArtikel > 0) {
-                        $bestsellers[] = $product;
-                    }
-                }
-
-                return $bestsellers;
             }
+            $bestsellerkeys = $bestseller->fetch();
+            $bestsellers    = array();
+            $defaultOptions = Artikel::getDefaultOptions();
+            foreach ($bestsellerkeys as $bestsellerkey) {
+                $product = new Artikel();
+                $product->fuelleArtikel($bestsellerkey, $defaultOptions);
+                if ($product->kArtikel > 0) {
+                    $bestsellers[] = $product;
+                }
+            }
+
+            return $bestsellers;
         }
 
-        return array();
+        return [];
     }
 
     /**

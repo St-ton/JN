@@ -92,7 +92,7 @@ class LinkHelper
      */
     public function isChildActive($kParentLink, $kLink)
     {
-        $kParentLink = (int) $kParentLink;
+        $kParentLink = (int)$kParentLink;
         if ($kParentLink > 0) {
             $cMember_arr = array_keys(get_object_vars($this->linkGroups));
             foreach ($cMember_arr as $cLinkGruppe) {
@@ -115,14 +115,14 @@ class LinkHelper
      */
     public function getRootLink($kLink)
     {
-        $kLink = (int) $kLink;
+        $kLink = (int)$kLink;
         if ($kLink > 0 && $this->linkGroups !== null) {
             $cMember_arr = array_keys(get_object_vars($this->linkGroups));
             foreach ($cMember_arr as $cLinkGruppe) {
                 if (is_array($this->linkGroups->$cLinkGruppe->Links)) {
                     foreach ($this->linkGroups->$cLinkGruppe->Links as $oLink) {
                         if ($oLink->kLink == $kLink) {
-                            $kParentLink = (int) $oLink->kVaterLink;
+                            $kParentLink = (int)$oLink->kVaterLink;
                             if ($kParentLink > 0) {
                                 return $this->getRootLink($kParentLink);
                             }
@@ -134,7 +134,7 @@ class LinkHelper
             }
         }
 
-        return;
+        return null;
     }
 
     /**
@@ -157,7 +157,7 @@ class LinkHelper
             }
         }
 
-        return;
+        return null;
     }
 
     /**
@@ -183,13 +183,13 @@ class LinkHelper
     /**
      * @param int  $kParentLink
      * @param bool $bAssoc
-     * @return array|null
+     * @return array
      */
     public function getMyLevel($kParentLink, $bAssoc = false)
     {
-        $kParentLink = (int) $kParentLink;
+        $kParentLink = (int)$kParentLink;
+        $oLink_arr   = [];
         if ($kParentLink > 0) {
-            $oLink_arr   = array();
             $cMember_arr = array_keys(get_object_vars($this->linkGroups));
             foreach ($cMember_arr as $cLinkGruppe) {
                 if (is_array($this->linkGroups->$cLinkGruppe->Links)) {
@@ -204,11 +204,9 @@ class LinkHelper
                     }
                 }
             }
-
-            return $oLink_arr;
         }
 
-        return;
+        return $oLink_arr;
     }
 
     /**
@@ -267,7 +265,7 @@ class LinkHelper
             }
         }
 
-        return;
+        return null;
     }
 
     /**
@@ -415,8 +413,8 @@ class LinkHelper
             //versand
             $cKundengruppenSQL = '';
             if (isset($_SESSION['Kundengruppe']->kKundengruppe) && $_SESSION['Kundengruppe']->kKundengruppe > 0) {
-                $cKundengruppenSQL = " AND (tlink.cKundengruppen LIKE '" . (int) $_SESSION['Kundengruppe']->kKundengruppe . ";%'
-                    OR tlink.cKundengruppen LIKE '%;" . (int) $_SESSION['Kundengruppe']->kKundengruppe . ";%'
+                $cKundengruppenSQL = " AND (tlink.cKundengruppen LIKE '" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";%'
+                    OR tlink.cKundengruppen LIKE '%;" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";%'
                     OR tlink.cKundengruppen IS NULL OR tlink.cKundengruppen = 'NULL' OR tlink.cKundengruppen = '')";
             }
             $versand_arr = Shop::DB()->query(

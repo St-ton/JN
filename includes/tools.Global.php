@@ -230,7 +230,7 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
         default:
             $SieSindHierString .= ' &gt; <a href="' . $linkURL . '">' . $linkname . '</a>';
             $SieSindHierString .= '<br />';
-            $oLink      = $linkHelper->getLinkObject($kLink);
+            $oLink      = ($kLink > 0) ? $linkHelper->getLinkObject($kLink) : null;
             $kVaterLink = (isset($oLink->kVaterLink)) ? (int)$oLink->kVaterLink : null;
             $elems      = array();
             do {
@@ -745,6 +745,7 @@ function checkeWarenkorbEingang()
                     // Hauptartikel in den WK legen
                     fuegeEinInWarenkorb($kArtikel, $fAnzahl, $oEigenschaftwerte_arr, 0, $cUnique);
                     // Konfigartikel in den WK legen
+                    /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
                     foreach ($oKonfigitem_arr as $oKonfigitem) {
                         $oKonfigitem->isKonfigItem = true;
                         switch ($oKonfigitem->getPosTyp()) {
@@ -883,11 +884,12 @@ function fuegeVariBoxInWK($variBoxAnzahl_arr, $kArtikel, $bIstVater, $bExtern = 
             }
         }
 
-        $nRedirectErr_arr = array();
+        $nRedirectErr_arr = [];
         if (is_array($oAlleEigenschaft_arr) && count($oAlleEigenschaft_arr) > 0) {
+            $defaultOptions = Artikel::getDefaultOptions();
             foreach ($oAlleEigenschaft_arr as $i => $oAlleEigenschaftPre) {
                 $Artikel = new Artikel();
-                $Artikel->fuelleArtikel($oAlleEigenschaftPre->kArtikel, Artikel::getDefaultOptions());
+                $Artikel->fuelleArtikel($oAlleEigenschaftPre->kArtikel, $defaultOptions);
                 // Prüfe ob er Artikel in den Warenkorb gelegt werden darf
                 $nRedirect_arr = pruefeFuegeEinInWarenkorb($Artikel, doubleval($variBoxAnzahl_arr[$i]), $oAlleEigenschaftPre->oEigenschaft_arr);
 
@@ -961,12 +963,12 @@ function pruefeVariBoxAnzahl($variBoxAnzahl_arr)
 }
 
 /**
- * @param int   $kArtikel
- * @param float $fAnzahl
- * @param array $oEigenschaftwerte_arr
- * @param bool  $cUnique
- * @param int   $kKonfigitem
- * @param int   $nPosTyp
+ * @param int        $kArtikel
+ * @param float      $fAnzahl
+ * @param array      $oEigenschaftwerte_arr
+ * @param bool       $cUnique
+ * @param int        $kKonfigitem
+ * @param int|string $nPosTyp
  */
 function fuegeEinInWarenkorbPers($kArtikel, $fAnzahl, $oEigenschaftwerte_arr, $cUnique = false, $kKonfigitem = 0, $nPosTyp = C_WARENKORBPOS_TYP_ARTIKEL)
 {
@@ -1039,10 +1041,10 @@ function findeKindArtikelZuEigenschaft($kArtikel, $kEigenschaft0, $kEigenschaftW
 }
 
 /**
- * @param Artikel $Artikel
- * @param int     $anzahl
- * @param array   $oEigenschaftwerte_arr
- * @param int     $nGenauigkeit
+ * @param Artikel|object $Artikel
+ * @param int            $anzahl
+ * @param array          $oEigenschaftwerte_arr
+ * @param int            $nGenauigkeit
  * @return array
  */
 function pruefeFuegeEinInWarenkorb($Artikel, $anzahl, $oEigenschaftwerte_arr, $nGenauigkeit = 2)
@@ -1050,10 +1052,14 @@ function pruefeFuegeEinInWarenkorb($Artikel, $anzahl, $oEigenschaftwerte_arr, $n
     $kArtikel      = $Artikel->kArtikel; // relevant für die Berechnung von Artikelsummen im Warenkorb
     $redirectParam = array();
     $conf          = Shop::getSettings(array(CONF_GLOBAL));
-
+    /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
     // Abnahmeintervall
     if ($Artikel->fAbnahmeintervall > 0) {
-        $dVielfache = round($Artikel->fAbnahmeintervall * ceil($anzahl / $Artikel->fAbnahmeintervall), $nGenauigkeit);
+        if (function_exists('bcdiv')) {
+            $dVielfache = round($Artikel->fAbnahmeintervall * ceil(bcdiv($_POST['anzahl'][$i],$Artikel->fAbnahmeintervall, 3)), 2);
+        } else {
+            $dVielfache = round($Artikel->fAbnahmeintervall * ceil($anzahl / $Artikel->fAbnahmeintervall), $nGenauigkeit);
+        }
         if ($dVielfache != $anzahl) {
             $redirectParam[] = R_ARTIKELABNAHMEINTERVALL;
         }
@@ -1225,7 +1231,7 @@ function fuegeEinInWarenkorb($kArtikel, $anzahl, $oEigenschaftwerte_arr = '', $n
         }
         $redirectParam = pruefeFuegeEinInWarenkorb($Artikel, $anzahl, $oEigenschaftwerte_arr);
         // verhindert, dass Konfigitems mit Preis=0 aus der Artikelkonfiguration fallen wenn 'Preis auf Anfrage' eingestellt ist
-        if (!empty($kKonfigitem) && $redirectParam[0] === R_AUFANFRAGE) {
+        if (!empty($kKonfigitem) && isset($redirectParam[0]) && $redirectParam[0] === R_AUFANFRAGE) {
             unset($redirectParam[0]);
         }
 
@@ -1542,6 +1548,7 @@ function setzeSteuersaetze($steuerland = 0)
         }
     }
     if (isset($_SESSION['Warenkorb']) && get_class($_SESSION['Warenkorb']) === 'Warenkorb') {
+        /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
         $_SESSION['Warenkorb']->setzePositionsPreise();
     }
 }
@@ -1738,7 +1745,7 @@ function baueURL($obj, $art, $row = 0, $bForceNonSeo = false, $bFull = false)
  */
 function baueSprachURLS($obj, $art)
 {
-    $urls   = array();
+    $urls   = [];
     $seoobj = null;
     if ($art && $obj && count($_SESSION['Sprachen']) > 0) {
         foreach ($_SESSION['Sprachen'] as $Sprache) {
@@ -1822,6 +1829,7 @@ function baueSprachURLS($obj, $art)
  */
 function checkeSpracheWaehrung($lang = '')
 {
+    /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
     if (strlen($lang) > 0) {
         //Kategorien zurücksetzen, da sie lokalisiert abgelegt wurden
         if ($lang != $_SESSION['cISOSprache']) {
@@ -2238,11 +2246,11 @@ function valid_email($email)
 }
 
 /**
- * @param string  $lieferland
- * @param string  $versandklassen
- * @param int     $kKundengruppe
- * @param Artikel $oArtikel
- * @param bool    $checkProductDepedency
+ * @param string         $lieferland
+ * @param string         $versandklassen
+ * @param int            $kKundengruppe
+ * @param Artikel|object $oArtikel
+ * @param bool           $checkProductDepedency
  * @return mixed
  */
 function gibGuenstigsteVersandart($lieferland, $versandklassen, $kKundengruppe, $oArtikel, $checkProductDepedency = true)
@@ -2351,6 +2359,7 @@ function gibVersandZuschlag($versandart, $cISO, $plz)
  */
 function berechneVersandpreis($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
 {
+    /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
     $fSteuersatz = 0.0;
     if (!isset($oZusatzArtikel->fAnzahl)) {
         if (!isset($oZusatzArtikel)) {
@@ -2371,8 +2380,8 @@ function berechneVersandpreis($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
         case 'vm_versandberechnung_gewicht_jtl':
             $warenkorbgewicht = ($Artikel) ? $Artikel->fGewicht : $_SESSION['Warenkorb']->getWeight();
             $warenkorbgewicht += $oZusatzArtikel->fGewicht;
-            $versand = Shop::DB()->query("
-                SELECT * 
+            $versand = Shop::DB()->query(
+                "SELECT *
                   FROM tversandartstaffel 
                   WHERE kVersandart = " . (int)$versandart->kVersandart . " 
                       AND fBis >= " . $warenkorbgewicht . " 
@@ -2388,8 +2397,8 @@ function berechneVersandpreis($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
         case 'vm_versandberechnung_warenwert_jtl':
             $warenkorbwert = ($Artikel) ? $Artikel->Preise->fVKNetto : $_SESSION['Warenkorb']->gibGesamtsummeWarenExt(array(C_WARENKORBPOS_TYP_ARTIKEL), true);
             $warenkorbwert += $oZusatzArtikel->fWarenwertNetto;
-            $versand = Shop::DB()->query("
-                SELECT * 
+            $versand = Shop::DB()->query(
+                "SELECT *
                     FROM tversandartstaffel 
                     WHERE kVersandart = " . (int)$versandart->kVersandart . " 
                         AND fBis >= " . $warenkorbwert . " 
@@ -2409,8 +2418,8 @@ function berechneVersandpreis($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
             }
 
             $artikelanzahl += $oZusatzArtikel->fAnzahl;
-            $versand = Shop::DB()->query("
-                SELECT * 
+            $versand = Shop::DB()->query(
+                "SELECT *
                     FROM tversandartstaffel 
                     WHERE kVersandart = " . (int)$versandart->kVersandart . " 
                         AND fBis >= " . $artikelanzahl . " 
@@ -2436,27 +2445,44 @@ function berechneVersandpreis($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
         $preis += $versandart->Zuschlag->fZuschlag;
     }
     //versandkostenfrei?
-    $fArtikelPreis = 0;
-    if ($Artikel) {
-        switch ($versandart->eSteuer) {
-            case 'netto':
+    $fArtikelPreis     = 0;
+    $fGesamtsummeWaren = 0;
+    switch ($versandart->eSteuer) {
+        case 'netto':
+            if ($Artikel) {
                 $fArtikelPreis = $Artikel->Preise->fVKNetto;
-                break;
+            }
+            if (isset($_SESSION['Warenkorb'])) {
+                $fGesamtsummeWaren = berechneNetto(
+                    $_SESSION['Warenkorb']->gibGesamtsummeWarenExt(array(C_WARENKORBPOS_TYP_ARTIKEL, C_WARENKORBPOS_TYP_KUPON, C_WARENKORBPOS_TYP_NEUKUNDENKUPON), 1),
+                    gibUst($_SESSION['Warenkorb']->gibVersandkostenSteuerklasse())
+                );
+            }
+            break;
 
-            case 'brutto':
+        case 'brutto':
+            if ($Artikel) {
                 $fArtikelPreis = berechneBrutto($Artikel->Preise->fVKNetto, gibUst($Artikel->kSteuerklasse));
-                break;
+            }
+            if (isset($_SESSION['Warenkorb'])) {
+                $fGesamtsummeWaren = $_SESSION['Warenkorb']->gibGesamtsummeWarenExt(array(C_WARENKORBPOS_TYP_ARTIKEL, C_WARENKORBPOS_TYP_KUPON, C_WARENKORBPOS_TYP_NEUKUNDENKUPON), 1);
+            }
+            break;
 
-        }
     }
+
     if ($Artikel && $fArtikelPreis >= $versandart->fVersandkostenfreiAbX && $versandart->fVersandkostenfreiAbX > 0) {
         $preis = 0;
-    } elseif (isset($_SESSION['Warenkorb'])
-        && ($_SESSION['Warenkorb']->gibGesamtsummeWarenExt(array(C_WARENKORBPOS_TYP_ARTIKEL), 1) + $_SESSION['Warenkorb']->gibGesamtsummeWarenExt(array(C_WARENKORBPOS_TYP_KUPON), 1)) >= $versandart->fVersandkostenfreiAbX
-        && $versandart->fVersandkostenfreiAbX > 0) {
+    } elseif ($fGesamtsummeWaren >= $versandart->fVersandkostenfreiAbX && $versandart->fVersandkostenfreiAbX > 0) {
         $preis = 0;
     }
-    executeHook(HOOK_TOOLSGLOBAL_INC_BERECHNEVERSANDPREIS, array('fPreis' => &$preis));
+    executeHook(HOOK_TOOLSGLOBAL_INC_BERECHNEVERSANDPREIS, [
+        'fPreis'         => &$preis,
+        'versandart'     => $versandart,
+        'cISO'           => $cISO,
+        'oZusatzArtikel' => $oZusatzArtikel,
+        'Artikel'        => $Artikel,
+    ]);
 
     return $preis;
 }
@@ -3082,7 +3108,7 @@ function gibVersandkostenfreiAb($kKundengruppe, $cLand = '')
 {
     // Ticket #1018
     $versandklassen = VersandartHelper::getShippingClasses($_SESSION['Warenkorb']);
-    $cacheID        = 'vkfrei_' . $kKundengruppe . '_' . $cLand . '_' . $versandklassen;
+    $cacheID        = 'vkfrei_' . $kKundengruppe . '_' . $cLand . '_' . $versandklassen . '_' . $_SESSION['cISOSprache'];
     if (($oVersandart = Shop::Cache()->get($cacheID)) === false) {
         if (strlen($cLand) > 0) {
             $cKundeSQLWhere = " AND cLaender LIKE '%" . StringHandler::filterXSS($cLand) . "%'";
@@ -3094,8 +3120,11 @@ function gibVersandkostenfreiAb($kKundengruppe, $cLand = '')
             }
         }
         $oVersandart = Shop::DB()->query(
-            "SELECT * 
+            "SELECT tversandart.*, tversandartsprache.cName AS cNameLocalized 
                 FROM tversandart
+                LEFT JOIN tversandartsprache
+                ON tversandart.kVersandart = tversandartsprache.kVersandart
+                    AND tversandartsprache.cISOSprache = '" . $_SESSION['cISOSprache'] . "'
                 WHERE fVersandkostenfreiAbX > 0
                     AND (cVersandklassen='-1' OR (cVersandklassen LIKE '% " . $versandklassen . " %' OR cVersandklassen LIKE '% " . $versandklassen . "'))
                     AND (cKundengruppen='-1' OR cKundengruppen LIKE '%;" . $kKundengruppe . ";%')
@@ -3114,37 +3143,39 @@ function gibVersandkostenfreiAb($kKundengruppe, $cLand = '')
 }
 
 /**
- * @param Versandart $oVersandart
- * @param float      $fWarenkorbSumme
+ * @param Versandart|object $oVersandart
+ * @param float             $fWarenkorbSumme
  * @return string
  */
 function baueVersandkostenfreiString($oVersandart, $fWarenkorbSumme)
 {
-    if (is_object($oVersandart) && floatval($oVersandart->fVersandkostenfreiAbX) > 0 && isset($_SESSION['Warenkorb']) && isset($_SESSION['Steuerland'])) {
-        $fSummeDiff = floatval($oVersandart->fVersandkostenfreiAbX) - floatval($fWarenkorbSumme);
+    if (is_object($oVersandart) && (float)$oVersandart->fVersandkostenfreiAbX > 0 && isset($_SESSION['Warenkorb']) && isset($_SESSION['Steuerland'])) {
+        $fSummeDiff = (float)$oVersandart->fVersandkostenfreiAbX - (float)$fWarenkorbSumme;
         //check if vkfreiabx is calculated net or gross
-        $calculateNet = ($oVersandart->eSteuer === 'netto') ? true : false;
-        if ($calculateNet === true) {
+        if ($oVersandart->eSteuer === 'netto') {
             //calculate net with default tax class
             $defaultTaxClass = Shop::DB()->select('tsteuerklasse', 'cStandard', 'Y');
             if (isset($defaultTaxClass->kSteuerklasse)) {
                 $taxClasss  = (int)$defaultTaxClass->kSteuerklasse;
                 $defaultTax = Shop::DB()->select('tsteuersatz', 'kSteuerklasse', $taxClasss);
                 if (isset($defaultTax->fSteuersatz)) {
-                    $defaultTaxValue       = $defaultTax->fSteuersatz;
-                    $fVersandkostenfreiAbX = berechneNetto(floatval($oVersandart->fVersandkostenfreiAbX), $defaultTaxValue);
-                    $fSummeDiff            = $fVersandkostenfreiAbX - berechneNetto(floatval($fWarenkorbSumme), $defaultTaxValue);
+                    $defaultTaxValue = $defaultTax->fSteuersatz;
+                    $fSummeDiff      = (float)$oVersandart->fVersandkostenfreiAbX - berechneNetto((float)$fWarenkorbSumme, $defaultTaxValue);
                 }
             }
         }
         // localization - see /jtl-shop/issues#347
-        $VersandartSprache = Shop::DB()->select('tversandartsprache', 'kVersandart', $oVersandart->kVersandart, 'cISOSprache', $_SESSION['cISOSprache']);
-        $cName             = (!empty($VersandartSprache->cName)) ? $VersandartSprache->cName : $oVersandart->cName;
+        if (isset($oVersandart->cNameLocalized)) {
+            $cName = $oVersandart->cNameLocalized;
+        } else {
+            $VersandartSprache = Shop::DB()->select('tversandartsprache', 'kVersandart', $oVersandart->kVersandart, 'cISOSprache', $_SESSION['cISOSprache']);
+            $cName             = (!empty($VersandartSprache->cName)) ? $VersandartSprache->cName : $oVersandart->cName;
+        }
         if ($fSummeDiff <= 0) {
-            return sprintf(Shop::Lang()->get('noShippingCostsReached', 'basket'), strval($oVersandart->cLaender)) . ' ' . Shop::Lang()->get('with', 'global') . " $cName";
+            return sprintf(Shop::Lang()->get('noShippingCostsReached', 'basket'), $cName, baueVersandkostenfreiLaenderString($oVersandart), strval($oVersandart->cLaender));
         }
 
-        return sprintf(Shop::Lang()->get('noShippingCostsAt', 'basket'), strval(gibPreisStringLocalized($fSummeDiff))) . ' ' . Shop::Lang()->get('with', 'global') . " $cName";
+        return sprintf(Shop::Lang()->get('noShippingCostsAt', 'basket'), strval(gibPreisStringLocalized($fSummeDiff)), $cName, baueVersandkostenfreiLaenderString($oVersandart));
     }
 
     return '';
@@ -3193,9 +3224,9 @@ function baueVersandkostenfreiLaenderString($oVersandart, $fWarenkorbSumme = 0.0
 }
 
 /**
- * @param float $preis
- * @param int   $waehrung
- * @param int   $html
+ * @param float      $preis
+ * @param int|object $waehrung
+ * @param int        $html
  * @return string
  */
 function gibPreisLocalizedOhneFaktor($preis, $waehrung = 0, $html = 1)
@@ -3634,7 +3665,7 @@ function baueSuchSpecialURL($kKey)
         return $url;
     }
     $oSeo = Shop::DB()->select('tseo', 'kSprache', (int)$_SESSION['kSprache'], 'cKey', 'suchspecial', 'kKey', (int)$kKey, false, 'cSeo');
-    if ($oSeo === false) {
+    if (!isset($oSeo->cSeo)) {
         $oSeo = new stdClass();
     }
 
@@ -3714,9 +3745,11 @@ function setzeSpracheUndWaehrungLink()
         }
         foreach ($_SESSION['Sprachen'] as $i => $oSprache) {
             if (isset($AktuellerArtikel->kArtikel) && $AktuellerArtikel->kArtikel > 0 && isset($AktuellerArtikel->cSprachURL_arr[$oSprache->kSprache])) {
-                $_SESSION['Sprachen'][$i]->cURL = $AktuellerArtikel->cSprachURL_arr[$oSprache->kSprache];
+                $_SESSION['Sprachen'][$i]->cURL     = $AktuellerArtikel->cSprachURL_arr[$oSprache->kSprache];
+                $_SESSION['Sprachen'][$i]->cURLFull = $shopURL . '/' . $AktuellerArtikel->cSprachURL_arr[$oSprache->kSprache];
             } elseif (($kLink > 0 || $kSeite > 0) && isset($sprachURL[$oSprache->cISO])) {
-                $_SESSION['Sprachen'][$i]->cURL = $sprachURL[$oSprache->cISO];
+                $_SESSION['Sprachen'][$i]->cURL     = $sprachURL[$oSprache->cISO];
+                $_SESSION['Sprachen'][$i]->cURLFull = $shopURL . '/' . $sprachURL[$oSprache->cISO];
             } elseif ($AktuelleSeite === 'WARENKORB'
                 || $AktuelleSeite === 'KONTAKT'
                 || $AktuelleSeite === 'REGISTRIEREN'
@@ -3779,7 +3812,7 @@ function setzeSpracheUndWaehrungLink()
                         $id = 'vergleichsliste.php';
                         break;
 
-                    case 'WUNSCHLISTE' :
+                    case 'WUNSCHLISTE':
                         $id = 'wunschliste.php';
                         break;
 
@@ -3800,7 +3833,15 @@ function setzeSpracheUndWaehrungLink()
 
                 executeHook(HOOK_TOOLSGLOBAL_INC_SWITCH_SETZESPRACHEUNDWAEHRUNG_SPRACHE);
             } else {
-                $_SESSION['Sprachen'][$i]->cURL = gibNaviURL($NaviFilter, true, $oZusatzFilter, $oSprache->kSprache);
+                $cUrl = gibNaviURL($NaviFilter, true, $oZusatzFilter, $oSprache->kSprache);
+                if (!empty($NaviFilter->nSeite) && $NaviFilter->nSeite > 1) {
+                    if (strpos($sprachURL, 'navi.php') !== false) {
+                        $cUrl .= '&amp;seite=' . $NaviFilter->nSeite;
+                    } else {
+                        $cUrl .= SEP_SEITE . $NaviFilter->nSeite;
+                    }
+                }
+                $_SESSION['Sprachen'][$i]->cURL = $cUrl;
             }
         }
     }
@@ -4923,7 +4964,7 @@ function aktiviereZahlungsart($oZahlungsart)
         $kZahlungsart = (int)$oZahlungsart->kZahlungsart;
         $nNutzbar     = 0;
         // SOAP
-        if ($oZahlungsart->nSOAP) {
+        if (isset($oZahlungsart->nSOAP) && $oZahlungsart->nSOAP) {
             $nNutzbar = (pruefeSOAP()) ? 1 : 0;
         }
         // CURL
@@ -4933,10 +4974,6 @@ function aktiviereZahlungsart($oZahlungsart)
         // SOCKETS
         if (isset($oZahlungsart->nSOCKETS) && $oZahlungsart->nSOCKETS) {
             $nNutzbar = (pruefeSOCKETS()) ? 1 : 0;
-        }
-        // ALLOW URL FOPEN
-        if (isset($oZahlungsart->nALLOWURLFOPEN) && $oZahlungsart->nALLOWURLFOPEN) {
-            $nNutzbar = (pruefeALLOWFOPEN()) ? 1 : 0;
         }
         $upd = new stdClass();
         $upd->nNutzbar = $nNutzbar;
@@ -5120,6 +5157,29 @@ function curl_exec_follow($ch, &$maxredirect = 5)
  */
 function http_get_contents($cURL, $nTimeout = 15, $cPost = null)
 {
+    return make_http_request($cURL, $nTimeout, $cPost, false);
+}
+
+/**
+ * @param string $cURL
+ * @param int    $nTimeout
+ * @param null   $cPost
+ * @return int
+ */
+function http_get_status($cURL, $nTimeout = 15, $cPost = null)
+{
+    return make_http_request($cURL, $nTimeout, $cPost, true);
+}
+
+/**
+ * @param string $cURL
+ * @param int    $nTimeout
+ * @param null   $cPost
+ * @param bool   $bReturnStatus - false = return content on success / true = return status code instead of content
+ * @return mixed|string
+ */
+function make_http_request($cURL, $nTimeout = 15, $cPost = null, $bReturnStatus = false)
+{
     $nCode = 0;
     $cData = '';
 
@@ -5163,13 +5223,15 @@ function http_get_contents($cURL, $nTimeout = 15, $cPost = null)
         $cData = '';
     }
 
-    return $cData;
+    return ($bReturnStatus)
+        ? $nCode
+        : $cData;
 }
 
 /**
  * @param string|array|object $xData
  * @param bool                $bEncode
- * @return array
+ * @return string|array|object
  */
 function utf8_convert_recursive($xData, $bEncode = true)
 {
@@ -5309,6 +5371,7 @@ function pruefeWarenkorbStueckliste($oArtikel, $fAnzahl)
         } else {
             $oStuecklisteKomponente_arr = gibStuecklistenKomponente($oArtikel->kStueckliste, true);
         }
+        /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
         foreach ($_SESSION['Warenkorb']->PositionenArr as $oPosition) {
             if ($oPosition->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL) {
                 // Komponente soll hinzugefügt werden aber die Stückliste ist bereits im Warenkorb
@@ -5335,7 +5398,7 @@ function pruefeWarenkorbStueckliste($oArtikel, $fAnzahl)
         }
     }
 
-    return;
+    return null;
 }
 
 /**
@@ -5459,6 +5522,7 @@ function resetNeuKundenKupon()
 
     unset($_SESSION['NeukundenKupon']);
     unset($_SESSION['NeukundenKuponAngenommen']);
+    /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
     $_SESSION['Warenkorb']->loescheSpezialPos(C_WARENKORBPOS_TYP_NEUKUNDENKUPON)
                           ->setzePositionsPreise();
 }
@@ -5470,13 +5534,15 @@ function resetNeuKundenKupon()
 function holeKonfigBearbeitenModus($kKonfig, &$smarty)
 {
     if (class_exists('Konfigitem')) {
+        /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
         if (isset($_SESSION['Warenkorb']->PositionenArr[$kKonfig])) {
             $oBasePosition = $_SESSION['Warenkorb']->PositionenArr[$kKonfig];
+            /** @var WarenkorbPos $oBasePosition */
             if ($oBasePosition->istKonfigVater()) {
                 $nKonfigitem_arr         = array();
                 $nKonfigitemAnzahl_arr   = array();
                 $nKonfiggruppeAnzahl_arr = array();
-
+                /** @var WarenkorbPos $oPosition */
                 foreach ($_SESSION['Warenkorb']->PositionenArr as &$oPosition) {
                     if ($oPosition->istKonfigKind() && $oPosition->cUnique == $oBasePosition->cUnique) {
                         $oKonfigitem                                              = new Konfigitem($oPosition->kKonfigitem);

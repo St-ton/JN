@@ -59,7 +59,7 @@
                     </div>
                     {* Audio *}
                 {elseif $oMedienDatei->nMedienTyp == 2}
-                    {if $oMedienDatei->cName|count_characters > 1}
+                    {if $oMedienDatei->cName|strlen > 1}
                         <div class="col-xs-12">
                             <div class="panel-wrap">
                                 <div class="panel panel-default">
@@ -67,11 +67,17 @@
                                     <div class="panel-body">
                                         <p>{$oMedienDatei->cBeschreibung}</p>
                                         {* Music *}
-                                        {if $oMedienDatei->cPfad|count_characters > 1}
-                                            <audio controls>
-                                                <source src="{$PFAD_MEDIAFILES}{$oMedienDatei->cPfad}" type="audio/mpeg">
-                                                Your browser does not support the audio element.
-                                            </audio>
+                                        {if $oMedienDatei->cPfad|strlen > 1 || $oMedienDatei->cURL|strlen > 1}
+                                            {assign var=audiosrc value=$oMedienDatei->cURL}
+                                            {if $oMedienDatei->cPfad|strlen > 1}
+                                                {assign var=audiosrc value=$PFAD_MEDIAFILES|cat:$oMedienDatei->cPfad}
+                                            {/if}
+                                            {if $audiosrc|strlen > 1}
+                                                <audio controls>
+                                                    <source src="{$audiosrc}" type="audio/mpeg">
+                                                    Your browser does not support the audio element.
+                                                </audio>
+                                            {/if}
                                         {/if}
                                     </div>
                                 </div>

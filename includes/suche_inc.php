@@ -243,12 +243,7 @@ function suchanfragenSpeichern($cSuche, $nAnzahlTreffer, $bEchteSuche = false, $
         if ($kSprache > 0) {
             // Blacklist beachten
             $Suchausdruck_tmp_arr = explode(';', $Suchausdruck);
-            $blacklist_erg        = Shop::DB()->query(
-                "SELECT kSuchanfrageBlacklist
-                    FROM tsuchanfrageblacklist
-                    WHERE kSprache = " . $kSprache . "
-                    AND cSuche = '" . Shop::DB()->escape($Suchausdruck_tmp_arr[0]) . "'", 1
-            );
+            $blacklist_erg        = Shop::DB()->select('tsuchanfrageblacklist', 'kSprache', $kSprache, 'cSuche', Shop::DB()->escape($Suchausdruck_tmp_arr[0]));
             if (!$bSpamFilter || !isset($blacklist_erg->kSuchanfrageBlacklist) || $blacklist_erg->kSuchanfrageBlacklist == 0) {
                 // Ist MD5(IP) bereits X mal im Cache
                 $conf         = Shop::getSettings(array(CONF_ARTIKELUEBERSICHT));

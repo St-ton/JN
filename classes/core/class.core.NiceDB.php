@@ -140,7 +140,7 @@ class NiceDB
         if ($debugOverride === false) {
             if (defined('PROFILE_QUERIES') && PROFILE_QUERIES !== false) {
                 if (defined('DEBUG_LEVEL')) {
-                    $this->debugLevel = (int) DEBUG_LEVEL;
+                    $this->debugLevel = (int)DEBUG_LEVEL;
                 }
                 if (defined('PROFILE_QUERIES_ACTIVATION_FUNCTION') && is_callable(PROFILE_QUERIES_ACTIVATION_FUNCTION)) {
                     $this->collectData = (bool) call_user_func(PROFILE_QUERIES_ACTIVATION_FUNCTION);
@@ -148,7 +148,7 @@ class NiceDB
                     $this->debug = true;
                 }
                 if ($this->debug === true && is_numeric(PROFILE_QUERIES)) {
-                    $this->debugLevel = (int) PROFILE_QUERIES;
+                    $this->debugLevel = (int)PROFILE_QUERIES;
                 }
             }
         }
@@ -296,7 +296,7 @@ class NiceDB
                 Shop::dbg($stmt, false, 'Exception when trying to analyze query: ');
             }
 
-            return;
+            return $this;
         }
         if ($backtrace !== null) {
             $strippedBacktrace = array();
@@ -751,14 +751,14 @@ class NiceDB
                 Shop::dbg(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS), false, 'Backtrace:');
             }
 
-            return;
+            return null;
         }
         if (!$res) {
             if ($this->logErrors && $this->logfileName) {
                 $this->writeLog($stmt . "\n" . $this->pdo->errorCode() . ': ' . $this->pdo->errorInfo());
             }
 
-            return;
+            return null;
         }
         $ret = $s->fetchObject();
         if ($this->debug === true || $this->collectData === true) {

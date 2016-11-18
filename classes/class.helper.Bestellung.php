@@ -190,7 +190,7 @@ class BestellungHelper extends WarenkorbHelper
     }
 
     /**
-     * @return currency
+     * @return object
      */
     public function getCurrency()
     {
@@ -198,12 +198,11 @@ class BestellungHelper extends WarenkorbHelper
     }
 
     /**
-     * @return language iso
+     * @return string iso
      */
     public function getLanguage()
     {
-        return Shop::Lang()->
-        getIsoFromLangID($this->object->kSprache);
+        return Shop::Lang()->getIsoFromLangID($this->object->kSprache);
     }
 
     /**

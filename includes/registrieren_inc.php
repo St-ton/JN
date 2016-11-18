@@ -15,6 +15,7 @@ function kundeSpeichern($cPost_arr)
     unset($_SESSION['Lieferadresse']);
     unset($_SESSION['Versandart']);
     unset($_SESSION['Zahlungsart']);
+    /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
     $_SESSION['Warenkorb']->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS)
                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART);
 
@@ -83,12 +84,7 @@ function kundeSpeichern($cPost_arr)
             $_SESSION['Kunde']->cKundenattribut_arr = $cKundenattribut_arr;
         } else {
             // Guthaben des Neukunden aufstocken insofern er geworben wurde
-            $oNeukunde = Shop::DB()->query(
-                "SELECT kKundenWerbenKunden
-                    FROM tkundenwerbenkunden
-                    WHERE cEmail = '" . $knd->cMail . "'
-                        AND nRegistriert = 0", 1
-            );
+            $oNeukunde = Shop::DB()->select('tkundenwerbenkunden', 'cEmail', $knd->cMail, 'nRegistriert', 0);
             $kKundengruppe = $_SESSION['Kundengruppe']->kKundengruppe;
             if (isset($oNeukunde->kKundenWerbenKunden) && $oNeukunde->kKundenWerbenKunden > 0 &&
                 isset($Einstellungen['kundenwerbenkunden']['kwk_kundengruppen']) &&

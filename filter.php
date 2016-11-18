@@ -3,6 +3,10 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+if (!defined('PFAD_ROOT')) {
+    http_response_code(400);
+    exit();
+}
 require_once PFAD_ROOT . PFAD_INCLUDES . 'filter_inc.php';
 $cachingOptions = Shop::getSettings(array(CONF_CACHING));
 Shop::setPageType(PAGE_ARTIKELLISTE);
@@ -98,13 +102,13 @@ doMainwordRedirect($NaviFilter, count($oSuchergebnisse->Artikel->elemente), true
 if (isset($Einstellungen['artikeluebersicht']['artikelubersicht_bestseller_gruppieren']) && $Einstellungen['artikeluebersicht']['artikelubersicht_bestseller_gruppieren'] === 'Y') {
     $products = array();
     foreach ($oSuchergebnisse->Artikel->elemente as $product) {
-        $products[] = (int) $product->kArtikel;
+        $products[] = (int)$product->kArtikel;
     }
     $limit       = (isset($Einstellungen['artikeluebersicht']['artikeluebersicht_bestseller_anzahl'])) ?
-        (int) $Einstellungen['artikeluebersicht']['artikeluebersicht_bestseller_anzahl'] :
+        (int)$Einstellungen['artikeluebersicht']['artikeluebersicht_bestseller_anzahl'] :
         3;
     $minsells    = (isset($Einstellungen['global']['global_bestseller_minanzahl'])) ?
-        (int) $Einstellungen['global']['global_bestseller_minanzahl'] :
+        (int)$Einstellungen['global']['global_bestseller_minanzahl'] :
         10;
     $bestsellers = Bestseller::buildBestsellers($products, $_SESSION['Kundengruppe']->kKundengruppe, $_SESSION['Kundengruppe']->darfArtikelKategorienSehen, false, $limit, $minsells);
     Bestseller::ignoreProducts($oSuchergebnisse->Artikel->elemente, $bestsellers);

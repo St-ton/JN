@@ -117,7 +117,7 @@ if (isset($_POST['neueZuschlagPLZ']) && intval($_POST['neueZuschlagPLZ']) === 1 
         }
     }
 
-    $versandzuschlag = Shop::DB()->query("SELECT cISO, kVersandart FROM tversandzuschlag WHERE kVersandzuschlag = " . (int)$ZuschlagPLZ->kVersandzuschlag, 1);
+    $versandzuschlag = Shop::DB()->select('tversandzuschlag', 'kVersandzuschlag', (int)$ZuschlagPLZ->kVersandzuschlag);
 
     if ($ZuschlagPLZ->cPLZ || $ZuschlagPLZ->cPLZAb) {
         //schaue, ob sich PLZ ueberscheiden
@@ -221,8 +221,8 @@ if (isset($_POST['neueVersandart']) && intval($_POST['neueVersandart']) > 0 && v
     $Versandart->cAnzeigen                = $_POST['cAnzeigen'];
     $Versandart->cBild                    = $_POST['cBild'];
     $Versandart->nSort                    = $_POST['nSort'];
-    $Versandart->nMinLiefertage           = (int) $_POST['nMinLiefertage'];
-    $Versandart->nMaxLiefertage           = (int) $_POST['nMaxLiefertage'];
+    $Versandart->nMinLiefertage           = (int)$_POST['nMinLiefertage'];
+    $Versandart->nMaxLiefertage           = (int)$_POST['nMaxLiefertage'];
     $Versandart->cNurAbhaengigeVersandart = $_POST['cNurAbhaengigeVersandart'];
     $Versandart->cSendConfirmationMail    = (isset($_POST['cSendConfirmationMail'])) ? $_POST['cSendConfirmationMail'] : 'Y';
     $Versandart->eSteuer                  = $_POST['eSteuer'];

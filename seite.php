@@ -136,8 +136,8 @@ if ($link->nLinkart == LINKTYP_STARTSEITE) {
     gibSeiteSitemap($Einstellungen, $smarty);
 }
 
-executeHook(HOOK_SEITE_PAGE_IF_LINKART);
 require_once PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
+executeHook(HOOK_SEITE_PAGE_IF_LINKART);
 
 if (isset($cFehler) && strlen($cFehler) > 0) {
     $smarty->assign('cFehler', $cFehler);

@@ -291,7 +291,6 @@ class Plugin
      * @param int  $kPlugin - Falls angegeben, wird das Plugin mit angegebenem $kPlugin aus der DB geholt
      * @param bool $invalidateCache - set to true to clear plugin cache
      * @param bool $suppressReload - set to true when the plugin shouldn't be reloaded, not even in plugin dev mode
-     * @return Plugin
      */
     public function __construct($kPlugin = 0, $invalidateCache = false, $suppressReload = false)
     {
@@ -335,7 +334,7 @@ class Plugin
                 $this->$k = $v;
             }
         } else {
-            return;
+            return null;
         }
         $_shopURL    = Shop::getURL();
         $_shopURLSSL = Shop::getURL(true);
@@ -588,10 +587,15 @@ class Plugin
     public static function getPluginById($cPluginID)
     {
         if (strlen($cPluginID) > 0) {
-            $oObj = Shop::DB()->select('tplugin', 'cPluginID', $cPluginID);
-
-            if (isset($oObj->kPlugin) && intval($oObj->kPlugin) > 0) {
-                return new self($oObj->kPlugin);
+            $cacheID = 'plugin_id_list';
+            if (($plugins = Shop::Cache()->get($cacheID)) === false) {
+                $plugins = Shop::DB()->query("SELECT kPlugin, cPluginID FROM tplugin", 2);
+                Shop::Cache()->set($cacheID, $plugins, [CACHING_GROUP_PLUGIN]);
+            }
+            foreach ($plugins as $plugin) {
+                if ($plugin->cPluginID === $cPluginID) {
+                    return new self($plugin->kPlugin);
+                }
             }
         }
 
@@ -763,26 +767,26 @@ class Plugin
             $plugin = Shop::DB()->select('tplugin', 'kPlugin', $kPlugin);
 
             if ($plugin === null || (bool)$plugin->bBootstrap === false) {
-                return;
+                return null;
             }
 
             $file  = PFAD_ROOT . PFAD_PLUGIN . $plugin->cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $plugin->nVersion . '/' . PLUGIN_BOOTSTRAPPER;
             $class = sprintf('%s\\%s', $plugin->cPluginID, 'Bootstrap');
 
             if (!is_file($file)) {
-                return;
+                return null;
             }
 
             require_once $file;
 
             if (!class_exists($class)) {
-                return;
+                return null;
             }
 
             $bootstrapper = new $class($plugin->cPluginID);
 
             if (!is_subclass_of($bootstrapper, 'AbstractPlugin')) {
-                return;
+                return null;
             }
 
             self::$bootstrapper[$kPlugin] = $bootstrapper;

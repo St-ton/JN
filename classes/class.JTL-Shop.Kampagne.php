@@ -53,7 +53,6 @@ class Kampagne
      * Konstruktor
      *
      * @param int $kKampagne - Falls angegeben, wird die Kampagne mit kKampagne aus der DB geholt
-     * @return Kampagne
      */
     public function __construct($kKampagne = 0)
     {

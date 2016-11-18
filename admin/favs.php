@@ -13,7 +13,7 @@ if ($oAccount->logged() !== true) {
     $action = 'login';
 }
 
-$kAdminlogin = (int) $_SESSION['AdminAccount']->kAdminlogin;
+$kAdminlogin = (int)$_SESSION['AdminAccount']->kAdminlogin;
 
 switch ($action) {
     case 'login': {

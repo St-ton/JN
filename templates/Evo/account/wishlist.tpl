@@ -13,11 +13,11 @@
         <input type="hidden" name="cSuche" value="{$wlsearch}" />
     {/if}
 
-    <div class="panel panel-blank">
+    <div id="edit-widhlist-name">
         <div class="input-group">
-        <span class="input-group-addon">
-            <strong>{lang key="name" section="global"}</strong>
-        </span>
+            <span class="input-group-addon">
+                <strong>{lang key="name" section="global"}</strong>
+            </span>
             <input id="wishlist-name" type="text" class="form-control" placeholder="name" name="WunschlisteName" value="{$CWunschliste->cName}" autofocus />
             <input type="submit" class="hidden" />
         </div>

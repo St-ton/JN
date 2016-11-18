@@ -5,8 +5,8 @@
 {/if}
 
 <div class="row">    
-    <div class="col-xs-12 col-md-10 col-md-offset-1">
-    <div class="well panel-wrap">
+    <div class="col-xs-12">
+    <div class="panel-wrap">
         <div class="panel panel-default">
             <div class="panel-heading"><h3 class="panel-title">{lang key="paymentOptions" section="global"}</h3></div>
             <div class="panel-body">
@@ -34,7 +34,7 @@
 <script type="application/javascript">
 var submit = 'ppp-submit';
 var thirdPartyPayment = false;
-var ppp = PAYPAL.apps.PPP({ldelim}
+var ppConfig = {ldelim}
     approvalUrl: "{$approvalUrl}",
     placeholder: "ppp-container",
     mode: "{$mode}",
@@ -73,10 +73,19 @@ var ppp = PAYPAL.apps.PPP({ldelim}
                 {rdelim});
         {rdelim}
     {rdelim},
+    showLoadingIndicator: true,
+    {if $styles}
+        styles: {$styles|@json_encode},
+    {/if}
     {if $thirdPartyPaymentMethods|@count > 0}
         thirdPartyPaymentMethods: {$thirdPartyPaymentMethods|@json_encode}
     {/if}
-{rdelim});
+{rdelim};
+
+try {
+    var ppp = PAYPAL.apps.PPP(ppConfig);
+} catch (d) { }
+
 $(document).ready(function() {ldelim}
     $('#' + submit).click(function() {ldelim}
         ppp.doContinue();

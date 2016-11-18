@@ -25,18 +25,46 @@ function gibInstalliertePlugins()
 }
 
 /**
- * Läuft im Ordner PFAD_ROOT/includes/plugins/ alle Verzeichnisse durch und gibt korrekte Plugins zurück
+ * @see gibAllePlugins
  *
  * @param array $PluginInstalliert_arr
  * @param bool  $bFehlerhaft - Falls bFehlerhaft = true => gib nur fehlerhafte Plugins zurück
  * @return array - array von Plugins
+ * @deprecated since 4.06 - use gibAllePlugins instead
  */
 function gibVerfuegbarePlugins($PluginInstalliert_arr, $bFehlerhaft = false)
 {
-    $cPfad                = PFAD_ROOT . PFAD_PLUGIN;
-    $PluginVerfuegbar_arr = array();
+    static $allPlugins = null;
+
+    if (!isset($allPlugins)) {
+        $allPlugins = gibAllePlugins($PluginInstalliert_arr);
+    }
+
+    return $bFehlerhaft ? $allPlugins->fehlerhaft : $allPlugins->verfuegbar;
+}
+
+/**
+ * Läuft im Ordner PFAD_ROOT/includes/plugins/ alle Verzeichnisse durch und gibt korrekte Plugins zurück
+ *
+ * @param array $PluginInstalliert_arr
+ * @return object - {installiert[], verfuegbar[], fehlerhaft[]}
+ */
+function gibAllePlugins($PluginInstalliert_arr)
+{
+    $cPfad   = PFAD_ROOT . PFAD_PLUGIN;
+    $Plugins = (object)[
+        'index'       => [],
+        'installiert' => [],
+        'verfuegbar'  => [],
+        'fehlerhaft'  => [],
+    ];
+
     if (is_dir($cPfad)) {
-        $Dir = opendir($cPfad);
+        $Dir               = opendir($cPfad);
+        $cInstalledPlugins = array_map(function ($item) {
+            return $item->cVerzeichnis;
+        }, $PluginInstalliert_arr);
+
         while ($cVerzeichnis = readdir($Dir)) {
             if ($cVerzeichnis !== '.' && $cVerzeichnis !== '..') {
                 $cXML = $cPfad . $cVerzeichnis . '/' . PLUGIN_INFO_FILE;
@@ -46,52 +74,39 @@ function gibVerfuegbarePlugins($PluginInstalliert_arr, $bFehlerhaft = false)
                     $XML_arr      = XML_unserialize($xml, 'ISO-8859-1');
                     $XML_arr      = getArrangedArray($XML_arr);
                     $nReturnValue = pluginPlausi(0, $cPfad . $cVerzeichnis);
-                    if (($nReturnValue === 126 || $nReturnValue === 1) && !$bFehlerhaft) {
-                        $XML_arr['cVerzeichnis']    = $cVerzeichnis;
-                        $XML_arr['shop4compatible'] = ($nReturnValue === 1);
-                        $PluginVerfuegbar_arr[]     = $XML_arr;
-                    } elseif ($nReturnValue !== 1 && $nReturnValue !== 126 && $bFehlerhaft) {
-                        $XML_arr['cVerzeichnis'] = $cVerzeichnis;
-                        $XML_arr['cFehlercode']  = $nReturnValue;
-                        $PluginVerfuegbar_arr[]  = $XML_arr;
+                    if ($nReturnValue === 90 && in_array($cVerzeichnis, $cInstalledPlugins)) {
+                        $XML_arr['cVerzeichnis']       = $cVerzeichnis;
+                        $XML_arr['shop4compatible']    = isset($XML_arr['jtlshop3plugin'][0]['Shop4Version']);
+                        $Plugins->index[$cVerzeichnis] = $XML_arr;
+                        $Plugins->installiert[]        =& $Plugins->index[$cVerzeichnis];
+                    } elseif ($nReturnValue === 126 || $nReturnValue === 1) {
+                        $XML_arr['cVerzeichnis']       = $cVerzeichnis;
+                        $XML_arr['shop4compatible']    = ($nReturnValue === 1);
+                        $Plugins->index[$cVerzeichnis] = $XML_arr;
+                        $Plugins->verfuegbar[]         =& $Plugins->index[$cVerzeichnis];
+                    } elseif ($nReturnValue !== 1 && $nReturnValue !== 126) {
+                        $XML_arr['cVerzeichnis']       = $cVerzeichnis;
+                        $XML_arr['cFehlercode']        = $nReturnValue;
+                        $Plugins->index[$cVerzeichnis] = $XML_arr;
+                        $Plugins->fehlerhaft[]         = & $Plugins->index[$cVerzeichnis];
                     }
                 }
             }
         }
-    }
-    // Pluginsortierung nach Name
-    $cNamenSortierung_arr = array();
-    if (count($PluginVerfuegbar_arr) > 0) {
-        foreach ($PluginVerfuegbar_arr as $i => $PluginVerfuegbar) {
-            if (isset($PluginVerfuegbar['jtlshop3plugin'][0]['Name'])) {
-                $cNamenSortierung_arr[] = $PluginVerfuegbar['jtlshop3plugin'][0]['Name'];
-                if (is_array($PluginInstalliert_arr) && count($PluginInstalliert_arr) > 0) {
-                    foreach ($PluginInstalliert_arr as $PluginInstalliert) {
-                        //remove already installed plugins from list
-                        if ($PluginInstalliert->cPluginID == $PluginVerfuegbar['jtlshop3plugin'][0]['PluginID'] && //same plugin-ID
-                            (empty($PluginVerfuegbar['cFehlercode']) ||
-                                $PluginVerfuegbar['cFehlercode'] !== 90 ||
-                                $PluginInstalliert->cVerzeichnis === $PluginVerfuegbar['cVerzeichnis'])) { //or same folder and not code 90 (duplicate id)
-                            unset($PluginVerfuegbar_arr[$i]);
-                        }
-                    }
-                }
-            }
-        }
-    }
-    // Sortierung
-    $oPluginVerfuergbar_arr = array();
-    sort($cNamenSortierung_arr, SORT_STRING);
-    $cCount = count($cNamenSortierung_arr);
-    for ($i = 0; $i < $cCount; $i++) {
-        foreach ($PluginVerfuegbar_arr as $PluginVerfuegbar) {
-            if (isset($PluginVerfuegbar['jtlshop3plugin'][0]['Name']) && $PluginVerfuegbar['jtlshop3plugin'][0]['Name'] == $cNamenSortierung_arr[$i]) {
-                $oPluginVerfuergbar_arr[$i] = $PluginVerfuegbar;
-            }
-        }
+
+        // Pluginsortierung nach Name
+        usort($Plugins->installiert, function ($left, $right) {
+            return strcmp($left['jtlshop3plugin'][0]['Name'], $right['jtlshop3plugin'][0]['Name']);
+        });
+        usort($Plugins->verfuegbar, function ($left, $right) {
+            return strcmp($left['jtlshop3plugin'][0]['Name'], $right['jtlshop3plugin'][0]['Name']);
+        });
+        usort($Plugins->fehlerhaft, function ($left, $right) {
+            return strcmp($left['jtlshop3plugin'][0]['Name'], $right['jtlshop3plugin'][0]['Name']);
+        });
     }
 
-    return $oPluginVerfuergbar_arr;
+    return $Plugins;
 }
 
 /*
@@ -961,8 +976,24 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
                                 preg_match('/[A-Z_]+/', $Method_arr['TSCode'], $cTreffer1_arr);
                                 if (strlen($cTreffer1_arr[0]) === strlen($Method_arr['TSCode'])) {
                                     $cTSCode_arr = array(
-                                        'DIRECT_DEBIT', 'CREDIT_CARD', 'INVOICE', 'CASH_ON_DELIVERY', 'PREPAYMENT', 'CHEQUE', 'PAYBOX', 'PAYPAL', 'CASH_ON_PICKUP', 
-                                        'FINANCING', 'LEASING', 'T_PAY', 'CLICKANDBUY', 'GIROPAY', 'GOOGLE_CHECKOUT', 'SHOP_CARD', 'DIRECT_E_BANKING', 'OTHER');
+                                        'DIRECT_DEBIT',
+                                        'CREDIT_CARD',
+                                        'INVOICE',
+                                        'CASH_ON_DELIVERY',
+                                        'PREPAYMENT',
+                                        'CHEQUE',
+                                        'PAYBOX',
+                                        'PAYPAL',
+                                        'CASH_ON_PICKUP',
+                                        'FINANCING',
+                                        'LEASING',
+                                        'T_PAY',
+                                        'CLICKANDBUY',
+                                        'GIROPAY',
+                                        'GOOGLE_CHECKOUT',
+                                        'SHOP_CARD',
+                                        'DIRECT_E_BANKING',
+                                        'OTHER');
 
                                     if (!in_array($Method_arr['TSCode'], $cTSCode_arr)) {
                                         return 52;// TSCode in den Zahlungsmethoden entspricht nicht der Konvention
@@ -1463,10 +1494,9 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
                                 }
                                 // Encoding prüfen
                                 if (strlen($Format_arr['ContentFile']) > 0 && !file_exists(
-                                        $cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $cVersionsnummer . '/' .
-                                        PFAD_PLUGIN_ADMINMENU . PFAD_PLUGIN_EXPORTFORMAT . $Format_arr['ContentFile']
-                                    )
-                                ) {
+                                    $cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $cVersionsnummer . '/' .
+                                    PFAD_PLUGIN_ADMINMENU . PFAD_PLUGIN_EXPORTFORMAT . $Format_arr['ContentFile']
+                                )) {
                                     return 121;// Format ContentFile entspricht nicht der Konvention
                                 }
                             }
@@ -1479,7 +1509,7 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
                 if (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['ExtendedTemplates']) && is_array($XML_arr['jtlshop3plugin'][0]['Install'][0]['ExtendedTemplates'])) {
                     // Template prüfen
                     if (isset($XML_arr['jtlshop3plugin'][0]['Install'][0]['ExtendedTemplates'][0]['Template'])) {
-                        $cTemplate_arr = (array) $XML_arr['jtlshop3plugin'][0]['Install'][0]['ExtendedTemplates'][0]['Template'];
+                        $cTemplate_arr = (array)$XML_arr['jtlshop3plugin'][0]['Install'][0]['ExtendedTemplates'][0]['Template'];
                         foreach ($cTemplate_arr as $cTemplate) {
                             preg_match('/[a-zA-Z0-9\/_\-]+\.tpl/', $cTemplate, $cTreffer3_arr);
                             if (strlen($cTreffer3_arr[0]) === strlen($cTemplate)) {
@@ -1874,7 +1904,7 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
                 preg_match("/[0-9]+/", $i, $cTreffer2_arr);
                 if (isset($cTreffer1_arr[0]) && strlen($cTreffer1_arr[0]) === strlen($i)) {
                     $nHookID   = (int)$Hook_arr['id'];
-                    $nPriority = (isset($Hook_arr['priority'])) ? (int) $Hook_arr['priority'] : 5;
+                    $nPriority = (isset($Hook_arr['priority'])) ? (int)$Hook_arr['priority'] : 5;
                 } elseif (isset($cTreffer2_arr[0]) && strlen($cTreffer2_arr[0]) === strlen($i)) {
                     $oPluginHook             = new stdClass();
                     $oPluginHook->kPlugin    = $kPlugin;
@@ -1896,7 +1926,7 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
             $oPluginHook             = new stdClass();
             $oPluginHook->kPlugin    = $kPlugin;
             $oPluginHook->nHook      = (int)$Hook_arr['Hook attr']['id'];
-            $oPluginHook->nPriority  = (isset($Hook_arr['Hook attr']['priority'])) ? (int) $Hook_arr['Hook attr']['priority'] : 5;
+            $oPluginHook->nPriority  = (isset($Hook_arr['Hook attr']['priority'])) ? (int)$Hook_arr['Hook attr']['priority'] : 5;
             $oPluginHook->cDateiname = $Hook_arr['Hook'];
 
             $kPluginHook = Shop::DB()->insert('tpluginhook', $oPluginHook);
@@ -3867,7 +3897,7 @@ function gibSprachVariablenALT($kPlugin)
 
 /**
  * @param int    $nFehlerCode
- * @param Plugin $oPlugin
+ * @param object $oPlugin
  * @return string
  */
 function mappePlausiFehler($nFehlerCode, $oPlugin)

@@ -175,16 +175,16 @@ class PreisverlaufGraph
      * @param int $kArtikel
      * @param int $kKundegruppe
      * @param int $nMonat
-     * @return array|null
+     * @return array
      */
     public function holePreisverlauf($kArtikel, $kKundegruppe, $nMonat)
     {
         $oPreisverlauf_arr = Shop::DB()->query(
             "SELECT fVKNetto, UNIX_TIMESTAMP(dDate) AS timestamp
                 FROM tpreisverlauf
-                WHERE kArtikel = " . (int) $kArtikel . "
-                    AND kKundengruppe = " . (int) $kKundegruppe . "
-                    AND DATE_SUB(now(), INTERVAL " . (int) $nMonat . " MONTH) < dDate
+                WHERE kArtikel = " . (int)$kArtikel . "
+                    AND kKundengruppe = " . (int)$kKundegruppe . "
+                    AND DATE_SUB(now(), INTERVAL " . (int)$nMonat . " MONTH) < dDate
                 ORDER BY dDate DESC", 2
         );
         if ($oPreisverlauf_arr !== false && count($oPreisverlauf_arr) > 0) {
@@ -211,7 +211,7 @@ class PreisverlaufGraph
             }
         }
 
-        return;
+        return [];
     }
 
     /**
@@ -226,7 +226,7 @@ class PreisverlaufGraph
     {
         $this->oPreisverlaufData_arr = $this->holePreisverlauf($kArtikel, $kKundegruppe, $nMonat);
 
-        if (count($this->oPreisverlaufData_arr) > 1 && $this->oPreisverlaufData_arr != null && is_array($this->oPreisverlaufData_arr)) {
+        if (is_array($this->oPreisverlaufData_arr) && count($this->oPreisverlaufData_arr) > 1) {
             $fVKNetto_arr = array();
 
             foreach ($this->oPreisverlaufData_arr as $oPreisverlauf) {

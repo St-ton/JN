@@ -977,7 +977,6 @@ class Artikel
      * @param int $kArtikel
      * @param int $kKundengruppe
      * @param int $kSprache
-     * @return Artikel
      */
     public function __construct($kArtikel = 0, $kKundengruppe = 0, $kSprache = 0)
     {
@@ -1048,8 +1047,8 @@ class Artikel
     }
 
     /**
-     * @param int     $kKundengruppe
-     * @param Artikel $oArtikelTMP
+     * @param int            $kKundengruppe
+     * @param Artikel|object $oArtikelTMP
      * @return $this
      */
     public function holPreise($kKundengruppe, $oArtikelTMP)
@@ -1104,7 +1103,7 @@ class Artikel
     public function gibPreis($anzahl, $Eigenschaft_arr, $kKundengruppe = 0)
     {
         if (!$_SESSION['Kundengruppe']->darfPreiseSehen) {
-            return;
+            return null;
         }
         if ($this->kArtikel === null) {
             return 0;
@@ -3060,11 +3059,43 @@ class Artikel
         }
         $given = get_object_vars($options);
         $mask  = '';
+        if (isset($options->nDownload) && $options->nDownload === 1 && !class_exists('Download')) {
+            //unset download-option if there is no license for the download module
+            $options->nDownload = 0;
+        }
         foreach (self::getAllOptions() as $_opt) {
             $mask .= (empty($given[$_opt])) ? 0 : 1;
         }
 
         return $mask;
+    }
+
+    /**
+     * @return stdClass
+     */
+    public static function getDetailOptions()
+    {
+        $conf                                    = Shop::getConfig([CONF_ARTIKELDETAILS]);
+        $oArtikelOptionen                        = new stdClass();
+        $oArtikelOptionen->nMerkmale             = 1;
+        $oArtikelOptionen->nKategorie            = 1;
+        $oArtikelOptionen->nAttribute            = 1;
+        $oArtikelOptionen->nArtikelAttribute     = 1;
+        $oArtikelOptionen->nMedienDatei          = 1;
+        $oArtikelOptionen->nVariationKombi       = 1;
+        $oArtikelOptionen->nVariationKombiKinder = 1;
+        $oArtikelOptionen->nWarenlager           = 1;
+        $oArtikelOptionen->nVariationDetailPreis = 1;
+        $oArtikelOptionen->nRatings              = 1;
+        $oArtikelOptionen->nWarenkorbmatrix      = (int)($conf['artikeldetails']['artikeldetails_warenkorbmatrix_anzeige'] === 'Y');
+        $oArtikelOptionen->nStueckliste          = (int)($conf['artikeldetails']['artikeldetails_stueckliste_anzeigen'] === 'Y');
+        $oArtikelOptionen->nProductBundle        = (int)($conf['artikeldetails']['artikeldetails_produktbundle_nutzen'] === 'Y');
+        $oArtikelOptionen->nDownload             = 1;
+        $oArtikelOptionen->nKonfig               = 1;
+        $oArtikelOptionen->nMain                 = 1;
+        $oArtikelOptionen->bSimilar              = true;
+
+        return $oArtikelOptionen;
     }
 
     /**
@@ -3076,6 +3107,7 @@ class Artikel
         $options->nMerkmale         = 1;
         $options->nAttribute        = 1;
         $options->nArtikelAttribute = 1;
+        $options->nKonfig           = 1;
 
         return $options;
     }
@@ -3098,7 +3130,7 @@ class Artikel
             $oArtikelOptionen = self::getDefaultOptions();
         }
         if (!$kArtikel) {
-            return;
+            return null;
         }
         if (!$kKundengruppe) {
             if (!isset($_SESSION['Kundengruppe']) || !$_SESSION['Kundengruppe']->kKundengruppe) {
@@ -3138,7 +3170,7 @@ class Artikel
             $this->cacheID = $cacheID;
             if (($artikel = Shop::Cache()->get($cacheID)) !== false) {
                 if ($artikel === null) {
-                    return;
+                    return null;
                 }
                 foreach (get_object_vars($artikel) as $k => $v) {
                     $this->$k = $v;
@@ -3296,7 +3328,7 @@ class Artikel
 
         $oArtikelTMP = Shop::DB()->query($productSQL, 1);
         if ($oArtikelTMP === false || $oArtikelTMP === null) {
-            $cacheTags = array(CACHING_GROUP_ARTICLE . '_' . $this->kArtikel, CACHING_GROUP_ARTICLE);
+            $cacheTags = array(CACHING_GROUP_ARTICLE . '_' . $kArtikel, CACHING_GROUP_ARTICLE);
             executeHook(HOOK_ARTIKEL_CLASS_FUELLEARTIKEL, array(
                 'oArtikel'  => &$this,
                 'cacheTags' => &$cacheTags,
@@ -3306,7 +3338,7 @@ class Artikel
                 Shop::Cache()->set($cacheID, null, $cacheTags);
             }
 
-            return;
+            return null;
         }
         //EXPERIMENTAL_MULTILANG_SHOP
         if ($oArtikelTMP->cSeo === null && defined('EXPERIMENTAL_MULTILANG_SHOP') && EXPERIMENTAL_MULTILANG_SHOP === true) {
@@ -3527,11 +3559,11 @@ class Artikel
         foreach ($this->Variationen as $tmpVari) {
             $tmpBestandVariationen += $tmpVari->nLieferbareVariationswerte;
         }
-        if (((int) $conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER ||
-            (int) $conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL) &&
+        if (((int)$conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER ||
+            (int)$conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL) &&
             $this->cLagerVariation === 'Y' && count($this->Variationen) > 0 && $tmpBestandVariationen === 0) {
             unset($this->kArtikel);
-            return;
+            return null;
         }
 
         /* Sobald ein KindArtikel teurer ist als der Vaterartikel, muss nVariationsAufpreisVorhanden auf 1 gesetzt werden damit in der Artikelvorschau ein "Preis ab ..." erscheint
@@ -4626,7 +4658,7 @@ class Artikel
             return $this->oFavourableShipping;
         }
 
-        return;
+        return null;
     }
 
     /**
@@ -4953,10 +4985,10 @@ class Artikel
         $products     = $data['oArtikelArr'];
         $oArtikel_arr = array();
         if (is_array($products) && count($products) > 0) {
-            $oArtikelOptionen = self::getDefaultOptions();
+            $defaultOptions = self::getDefaultOptions();
             foreach ($products as $oProduct) {
                 $oArtikel = new self();
-                $oArtikel->fuelleArtikel(($oProduct->kVaterArtikel > 0) ? $oProduct->kVaterArtikel : $oProduct->kArtikel, $oArtikelOptionen);
+                $oArtikel->fuelleArtikel(($oProduct->kVaterArtikel > 0) ? $oProduct->kVaterArtikel : $oProduct->kArtikel, $defaultOptions);
                 if ($oArtikel->kArtikel > 0) {
                     $oArtikel_arr[] = $oArtikel;
                 }
@@ -4987,12 +5019,13 @@ class Artikel
      */
     public function getSimilarProducts()
     {
+        require_once PFAD_ROOT . PFAD_INCLUDES . 'artikel_inc.php';
         $kArtikel = (int)$this->kArtikel;
         $return   = array('kArtikelXSellerKey_arr', 'oArtikelArr');
         $cLimit   = ' LIMIT 3';
         $conf     = Shop::getSettings(array(CONF_ARTIKELDETAILS));
         // Gibt es X-Seller? Aus der Artikelmenge der änhlichen Artikel, dann alle X-Seller rausfiltern
-        $oXSeller               = gibArtikelXSelling($kArtikel);
+        $oXSeller               = gibArtikelXSelling($kArtikel, $this->nIstVater > 0);
         $kArtikelXSellerKey_arr = array();
         if (isset($oXSeller->Standard->XSellGruppen) && is_array($oXSeller->Standard->XSellGruppen) && count($oXSeller->Standard->XSellGruppen) > 0) {
             foreach ($oXSeller->Standard->XSellGruppen as $oXSeller) {
@@ -5025,28 +5058,29 @@ class Artikel
             if ((int)$conf['artikeldetails']['artikeldetails_aehnlicheartikel_anzahl'] > 0) {
                 $cLimit = " LIMIT " . (int)$conf['artikeldetails']['artikeldetails_aehnlicheartikel_anzahl'];
             }
+            $lagerFilter           = gibLagerfilter();
+            $kundenGruppe          = (int)$_SESSION['Kundengruppe']->kKundengruppe;
             $return['oArtikelArr'] = Shop::DB()->query(
-                "SELECT tartikelmerkmal.kArtikel, tartikel.kVaterArtikel
-                    FROM
-                    (
-                        SELECT kMerkmal, kMerkmalWert
+                "SELECT merkmalartikel.kArtikel, merkmalartikel.kVaterArtikel
+                    FROM (
+                        SELECT DISTINCT tartikelmerkmal.kArtikel, tartikel.kVaterArtikel, tartikelmerkmal.kMerkmal, tartikelmerkmal.kMerkmalWert
                         FROM tartikelmerkmal
-                        WHERE kArtikel = " . $kArtikel . "
-                    ) AS ssMerkmal
-                    JOIN tartikelmerkmal ON tartikelmerkmal.kMerkmal = 	ssMerkmal.kMerkmal
-                        AND tartikelmerkmal.kMerkmalWert = ssMerkmal.kMerkmalWert
-                        AND tartikelmerkmal.kArtikel != " . $kArtikel . "
-                    LEFT JOIN tartikelsichtbarkeit ON tartikelmerkmal.kArtikel = tartikelsichtbarkeit.kArtikel
-                        AND tartikelsichtbarkeit.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
-                    JOIN tartikel ON tartikel.kArtikel = tartikelmerkmal.kArtikel
-                        AND tartikel.kVaterArtikel != " . $kArtikel . "
-                        AND (tartikel.nIstVater = 1 OR tartikel.kEigenschaftKombi = 0)
-                    WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                        " . gibLagerfilter() . "
-                        " . $cSQLXSeller . "
-                    GROUP BY tartikelmerkmal.kArtikel
-                    ORDER BY COUNT(*) DESC
-                    " . $cLimit, 2
+                        JOIN tartikel ON tartikel.kArtikel = tartikelmerkmal.kArtikel
+                            AND tartikel.kVaterArtikel != {$kArtikel}
+                            AND (tartikel.nIstVater = 1 OR tartikel.kEigenschaftKombi = 0)
+                        LEFT JOIN tartikelsichtbarkeit ON tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
+                            AND tartikelsichtbarkeit.kKundengruppe = {$kundenGruppe}
+                        WHERE tartikelsichtbarkeit.kArtikel IS NULL
+                            AND tartikelmerkmal.kArtikel != {$kArtikel}
+                            {$lagerFilter}
+                            {$cSQLXSeller}
+                    ) AS merkmalartikel
+                    JOIN tartikelmerkmal similarMerkmal ON similarMerkmal.kArtikel = {$kArtikel}
+                        AND similarMerkmal.kMerkmal = merkmalartikel.kMerkmal
+                        AND similarMerkmal.kMerkmalWert = merkmalartikel.kMerkmalWert
+                    GROUP BY merkmalartikel.kArtikel
+                    ORDER BY COUNT(similarMerkmal.kMerkmal) DESC
+                " . $cLimit, 2
             );
             if (!is_array($return['oArtikelArr']) || count($return['oArtikelArr']) < 1) { // Falls es keine Merkmale gibt, in tsuchcachetreffer und ttagartikel suchen
                 $return['oArtikelArr'] = Shop::DB()->query(
@@ -5157,6 +5191,7 @@ class Artikel
         $kArtikel      = (int)$kArtikel;
         $kKundengruppe = (int)$kKundengruppe;
         $Rabatt_arr    = [];
+        $maxRabatt     = 0;
         // Existiert für diese Kundengruppe ein Kategorierabatt?
         if (isset($this->kEigenschaftKombi) && $this->kEigenschaftKombi > 0) {
             $oArtikelKatRabatt = Shop::DB()->select('tartikelkategorierabatt', 'kArtikel', $this->kVaterArtikel, 'kKundengruppe', $kKundengruppe);
@@ -5170,7 +5205,9 @@ class Artikel
             }
         }
         // Existiert für diese Kundengruppe ein Rabatt?
-        $kdgrp = Shop::DB()->select('tkundengruppe', 'kKundengruppe', $kKundengruppe, null, null, null, null, false, 'fRabatt');
+        $kdgrp = (isset($_SESSION['Kundengruppe']->fRabatt) && $_SESSION['Kundengruppe']->kKundengruppe == $kKundengruppe)
+            ? $_SESSION['Kundengruppe']
+            : Shop::DB()->select('tkundengruppe', 'kKundengruppe', $kKundengruppe, null, null, null, null, false, 'fRabatt');
         if (isset($kdgrp->fRabatt) && $kdgrp->fRabatt > 0) {
             $Rabatt_arr[] = $kdgrp->fRabatt;
         }
@@ -5185,8 +5222,6 @@ class Artikel
             $maxRabatt = (float)max($Rabatt_arr);
         } elseif (count($Rabatt_arr) == 1) {
             $maxRabatt = (float)$Rabatt_arr[0];
-        } else {
-            $maxRabatt = 0;
         }
 
         return $maxRabatt;

@@ -213,7 +213,7 @@ final class Shopsetting implements ArrayAccess
             $result = array();
             foreach ($mappings as $mappingID => $sectionName) {
                 foreach ($settings as $setting) {
-                    $kEinstellungenSektion = (int) $setting['kEinstellungenSektion'];
+                    $kEinstellungenSektion = (int)$setting['kEinstellungenSektion'];
                     if ($kEinstellungenSektion === $mappingID) {
                         if (!isset($result[$sectionName])) {
                             $result[$sectionName] = array();

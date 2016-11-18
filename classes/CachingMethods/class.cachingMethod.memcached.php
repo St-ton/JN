@@ -36,6 +36,7 @@ class cache_memcached implements ICachingMethod
             //@see http://php.net/manual/de/memcached.expiration.php
             $options['lifetime'] = min(60 * 60 * 24 * 30, $options['lifetime']);
             $this->options       = $options;
+            self::$instance      = $this;
         }
     }
 

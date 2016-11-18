@@ -121,7 +121,7 @@ class Boxen
     public function gibBoxInhalt($kBox, $cISO = '')
     {
         return (strlen($cISO) > 0) ?
-            Shop::DB()->select('tboxsprache', 'kBox', (int) $kBox, 'cISO', $cISO) :
+            Shop::DB()->select('tboxsprache', 'kBox', (int)$kBox, 'cISO', $cISO) :
             Shop::DB()->selectAll('tboxsprache', 'kBox', (int)$kBox);
     }
 
@@ -446,10 +446,10 @@ class Boxen
                             JOIN tumfragefrage ON tumfragefrage.kUmfrage = tumfrage.kUmfrage
                             LEFT JOIN tseo ON tseo.cKey = 'kUmfrage'
                                 AND tseo.kKey = tumfrage.kUmfrage
-                                AND tseo.kSprache = " . (int) Shop::$kSprache . "
+                                AND tseo.kSprache = " . (int)Shop::$kSprache . "
                             WHERE tumfrage.nAktiv = 1
-                                AND tumfrage.kSprache = " . (int) Shop::$kSprache . "
-                                AND (cKundengruppe LIKE '%;-1;%' OR cKundengruppe LIKE '%;" . (int) $_SESSION['Kundengruppe']->kKundengruppe . ";%')
+                                AND tumfrage.kSprache = " . (int)Shop::$kSprache . "
+                                AND (cKundengruppe LIKE '%;-1;%' OR cKundengruppe LIKE '%;" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";%')
                                 AND ((dGueltigVon <= now() AND dGueltigBis >= now()) || (dGueltigVon <= now() AND dGueltigBis = '0000-00-00 00:00:00'))
                             GROUP BY tumfrage.kUmfrage
                             ORDER BY tumfrage.dGueltigVon DESC" . $cSQL, 2
@@ -515,7 +515,7 @@ class Boxen
                 if ((int)$this->boxConfig['news']['news_anzahl_box'] > 0) {
                     $cSQL = " LIMIT " . (int)$this->boxConfig['news']['news_anzahl_box'];
                 }
-                $cacheID = 'bnk_' . (int)Shop::$kSprache . '_' . (int) $_SESSION['Kundengruppe']->kKundengruppe . '_' . md5($cSQL);
+                $cacheID = 'bnk_' . (int)Shop::$kSprache . '_' . (int)$_SESSION['Kundengruppe']->kKundengruppe . '_' . md5($cSQL);
                 if (($oBoxCached = Shop::Cache()->get($cacheID)) === false) {
                     $oNewsKategorie_arr = Shop::DB()->query(
                         "SELECT tnewskategorie.kNewsKategorie, tnewskategorie.kSprache, tnewskategorie.cName,
@@ -528,12 +528,12 @@ class Boxen
                             LEFT JOIN tnews ON tnews.kNews = tnewskategorienews.kNews
                             LEFT JOIN tseo ON tseo.cKey = 'kNewsKategorie'
                                 AND tseo.kKey = tnewskategorie.kNewsKategorie
-                                AND tseo.kSprache = " . (int) Shop::$kSprache . "
-                            WHERE tnewskategorie.kSprache = " . (int) Shop::$kSprache . "
+                                AND tseo.kSprache = " . (int)Shop::$kSprache . "
+                            WHERE tnewskategorie.kSprache = " . (int)Shop::$kSprache . "
                                 AND tnewskategorie.nAktiv = 1
                                 AND tnews.nAktiv = 1
                                 AND tnews.dGueltigVon <= now()
-                                AND (tnews.cKundengruppe LIKE '%;-1;%' OR tnews.cKundengruppe LIKE '%;" . (int) $_SESSION['Kundengruppe']->kKundengruppe . ";%')
+                                AND (tnews.cKundengruppe LIKE '%;-1;%' OR tnews.cKundengruppe LIKE '%;" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";%')
                                 AND tnews.kSprache = " . (int)Shop::$kSprache . "
                             GROUP BY tnewskategorienews.kNewsKategorie
                             ORDER BY tnewskategorie.nSort DESC" . $cSQL, 2

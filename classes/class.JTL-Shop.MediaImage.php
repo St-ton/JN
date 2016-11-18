@@ -142,7 +142,7 @@ class MediaImage implements IMedia
     {
         $directory = PFAD_ROOT . MediaImageRequest::getCachePath($type);
         if ($id !== null) {
-            $directory = $directory . '/' . (int) $id;
+            $directory = $directory . '/' . (int)$id;
         }
 
         try {

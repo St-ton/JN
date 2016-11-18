@@ -1904,7 +1904,7 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
                 preg_match("/[0-9]+/", $i, $cTreffer2_arr);
                 if (isset($cTreffer1_arr[0]) && strlen($cTreffer1_arr[0]) === strlen($i)) {
                     $nHookID   = (int)$Hook_arr['id'];
-                    $nPriority = (isset($Hook_arr['priority'])) ? (int) $Hook_arr['priority'] : 5;
+                    $nPriority = (isset($Hook_arr['priority'])) ? (int)$Hook_arr['priority'] : 5;
                 } elseif (isset($cTreffer2_arr[0]) && strlen($cTreffer2_arr[0]) === strlen($i)) {
                     $oPluginHook             = new stdClass();
                     $oPluginHook->kPlugin    = $kPlugin;
@@ -1926,7 +1926,7 @@ function installPluginTables($XML_arr, $oPlugin, $oPluginOld)
             $oPluginHook             = new stdClass();
             $oPluginHook->kPlugin    = $kPlugin;
             $oPluginHook->nHook      = (int)$Hook_arr['Hook attr']['id'];
-            $oPluginHook->nPriority  = (isset($Hook_arr['Hook attr']['priority'])) ? (int) $Hook_arr['Hook attr']['priority'] : 5;
+            $oPluginHook->nPriority  = (isset($Hook_arr['Hook attr']['priority'])) ? (int)$Hook_arr['Hook attr']['priority'] : 5;
             $oPluginHook->cDateiname = $Hook_arr['Hook'];
 
             $kPluginHook = Shop::DB()->insert('tpluginhook', $oPluginHook);

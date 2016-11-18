@@ -286,6 +286,17 @@ class Plugin
     private static $bootstrapper = [];
 
     /**
+     * @var string  holds the path to a README.md
+     */
+    public $cTextReadmePath = '';
+
+    /**
+     * @var string  holds the path to a license-file ("LICENSE.md", "License.md", "license.md")
+     */
+    public $cTextLicensePath = '';
+
+
+    /**
      * Konstruktor
      *
      * @param int  $kPlugin - Falls angegeben, wird das Plugin mit angegebenem $kPlugin aus der DB geholt
@@ -358,11 +369,32 @@ class Plugin
         $this->oPluginHook_arr = Shop::DB()->selectAll('tpluginhook', 'kPlugin', $kPlugin);
         // Plugin AdminMenu holen
         $this->oPluginAdminMenu_arr = Shop::DB()->selectAll('tpluginadminmenu', 'kPlugin', $kPlugin, '*', 'nSort');
+        // searching for the files README.md and LICENSE.md
+        $szPluginMainPath = PFAD_ROOT . PFAD_PLUGIN . $this->cVerzeichnis . '/';
+        if ('' === $this->cTextReadmePath && $this->checkFileExistence($szPluginMainPath . 'README.md')) {
+            $this->cTextReadmePath = $szPluginMainPath . 'README.md';
+        }
+        if ('' === $this->cTextLicensePath) {
+            // we're only searching for multiple license-files, if we did not done this before yet!
+            $vPossibleLicenseNames = [
+                  '',
+                  'license.md',
+                  'License.md',
+                  'LICENSE.md'
+            ];
+            $i = count($vPossibleLicenseNames) - 1;
+            for (; $i !== 0 && !$this->checkFileExistence($szPluginMainPath . $vPossibleLicenseNames[$i]); $i--) {
+                // we're only couting down to our find (or a empty string, if nothing was found)
+            }
+            if ('' !== $vPossibleLicenseNames[$i]) {
+                $this->cTextLicensePath = $szPluginMainPath . $vPossibleLicenseNames[$i];
+            }
+        }
         // Plugin Einstellungen holen
         $this->oPluginEinstellung_arr = Shop::DB()->query(
             "SELECT tplugineinstellungen.*, tplugineinstellungenconf.cConf
                 FROM tplugineinstellungen
-                LEFT JOIN tplugineinstellungenconf ON tplugineinstellungenconf.kPlugin = tplugineinstellungen.kPlugin 
+                LEFT JOIN tplugineinstellungenconf ON tplugineinstellungenconf.kPlugin = tplugineinstellungen.kPlugin
                     AND tplugineinstellungen.cName = tplugineinstellungenconf.cWertName
                 WHERE tplugineinstellungen.kPlugin = " . $kPlugin, 2
         );
@@ -793,5 +825,25 @@ class Plugin
         }
 
         return self::$bootstrapper[$kPlugin];
+    }
+
+    /**
+     * perform a "search for a particular file" only once
+     *
+     * we want to do expensive checks for files existence only one times!
+     * this function remembers itselfs, if a check was done and did'nt search again this file.
+     *
+     * @param string  full-path file-name of the file to check
+     * @return boolean  true = "file exists", false = "file did not exsist"
+     */
+    private function checkFileExistence($szCanonicalFileName)
+    {
+        static $vfDone = [];
+        if (false === array_key_exists($szCanonicalFileName, $vfDone)) {
+            // only if we did not know that file (in our "remember-array"), we perform this check
+            $vfDone[$szCanonicalFileName] = true; // we're using always a hash here, for speed-up reasons!
+            return file_exists($szCanonicalFileName); // do the actual check
+        }
+        return false;
     }
 }

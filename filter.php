@@ -102,13 +102,13 @@ doMainwordRedirect($NaviFilter, count($oSuchergebnisse->Artikel->elemente), true
 if (isset($Einstellungen['artikeluebersicht']['artikelubersicht_bestseller_gruppieren']) && $Einstellungen['artikeluebersicht']['artikelubersicht_bestseller_gruppieren'] === 'Y') {
     $products = array();
     foreach ($oSuchergebnisse->Artikel->elemente as $product) {
-        $products[] = (int) $product->kArtikel;
+        $products[] = (int)$product->kArtikel;
     }
     $limit       = (isset($Einstellungen['artikeluebersicht']['artikeluebersicht_bestseller_anzahl'])) ?
-        (int) $Einstellungen['artikeluebersicht']['artikeluebersicht_bestseller_anzahl'] :
+        (int)$Einstellungen['artikeluebersicht']['artikeluebersicht_bestseller_anzahl'] :
         3;
     $minsells    = (isset($Einstellungen['global']['global_bestseller_minanzahl'])) ?
-        (int) $Einstellungen['global']['global_bestseller_minanzahl'] :
+        (int)$Einstellungen['global']['global_bestseller_minanzahl'] :
         10;
     $bestsellers = Bestseller::buildBestsellers($products, $_SESSION['Kundengruppe']->kKundengruppe, $_SESSION['Kundengruppe']->darfArtikelKategorienSehen, false, $limit, $minsells);
     Bestseller::ignoreProducts($oSuchergebnisse->Artikel->elemente, $bestsellers);

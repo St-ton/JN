@@ -3559,8 +3559,8 @@ class Artikel
         foreach ($this->Variationen as $tmpVari) {
             $tmpBestandVariationen += $tmpVari->nLieferbareVariationswerte;
         }
-        if (((int) $conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER ||
-            (int) $conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL) &&
+        if (((int)$conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER ||
+            (int)$conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL) &&
             $this->cLagerVariation === 'Y' && count($this->Variationen) > 0 && $tmpBestandVariationen === 0) {
             unset($this->kArtikel);
             return null;

@@ -279,7 +279,7 @@ class Warenlager extends MainModel
      */
     public function setFulfillment($nFulfillment)
     {
-        $this->nFulfillment = (int) $nFulfillment;
+        $this->nFulfillment = (int)$nFulfillment;
 
         return $this;
     }
@@ -298,7 +298,7 @@ class Warenlager extends MainModel
      */
     public function setAktiv($nAktiv)
     {
-        $this->nAktiv = (int) $nAktiv;
+        $this->nAktiv = (int)$nAktiv;
 
         return $this;
     }
@@ -311,14 +311,14 @@ class Warenlager extends MainModel
     public function load($kKey, $oObj = null, $xOption = null)
     {
         if ($kKey !== null) {
-            $kKey = (int) $kKey;
+            $kKey = (int)$kKey;
 
             if ($kKey > 0) {
                 $cSqlSelect = '';
                 $cSqlJoin   = '';
                 // $xOption = kSprache
                 if ($xOption !== null && intval($xOption) > 0) {
-                    $xOption    = (int) $xOption;
+                    $xOption    = (int)$xOption;
                     $cSqlSelect = ", IF (twarenlagersprache.cName IS NOT NULL, twarenlagersprache.cName, twarenlager.cName) AS cName";
                     $cSqlJoin   = "LEFT JOIN twarenlagersprache ON twarenlagersprache.kWarenlager = twarenlager.kWarenlager
                                     AND twarenlagersprache.kSprache = {$xOption}";
@@ -410,7 +410,7 @@ class Warenlager extends MainModel
             "DELETE twarenlager, twarenlagersprache
                 FROM twarenlager
                 LEFT JOIN twarenlagersprache ON twarenlagersprache.kWarenlager = twarenlager.kWarenlager
-                WHERE twarenlager.kWarenlager = " . (int) $this->kWarenlager, 3
+                WHERE twarenlager.kWarenlager = " . (int)$this->kWarenlager, 3
         );
 
         return $nRows;
@@ -479,7 +479,7 @@ class Warenlager extends MainModel
     public static function getByProduct($kArtikel, $kSprache = null, $xOption_arr = null, $bActive = true)
     {
         $oWarenlager_arr = array();
-        $kArtikel        = (int) $kArtikel;
+        $kArtikel        = (int)$kArtikel;
         if ($kArtikel > 0) {
             $cSql = '';
             if ($bActive) {

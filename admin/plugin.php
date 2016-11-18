@@ -95,7 +95,7 @@ if ($step === 'plugin_uebersicht') {
         // check, if we have a README.md in this current plugin and if so, we insert a "DocTab"
         $fAddAsDocTab = false;
         $szReadmeFile = PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/README.md'; // maybe we make this name configurable in the future
-        if (file_exists($szReadmeFile)) {
+        if ('' !== $oPlugin->cTextReadmePath) {
             $szReadmeContent = utf8_decode(file_get_contents($szReadmeFile)); // slurp in the file-content
             // check, if we got a Markdown-parser
             $fMarkDown     = false;
@@ -123,20 +123,8 @@ if ($step === 'plugin_uebersicht') {
         }
         // check, if there is a LICENSE.md too
         $fAddAsLicenseTab  = false;
-        $szFolder          = PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis.'/';
-        $vPossibleLicenseNames = array(
-              ''
-            , 'license.md'
-            , 'License.md'
-            , 'LICENSE.md'
-        );
-        $k = count($vPossibleLicenseNames) -1;
-        for (; $k !== 0 && !file_exists($szFolder.$vPossibleLicenseNames[$k]); $k--) {
-            // we're only couting here, up to our find
-        }
-        // only if we found something, we add it to our array
-        if ('' !== $vPossibleLicenseNames[$k]) {
-            $szLicenseContent = utf8_decode(file_get_contents($szFolder.$vPossibleLicenseNames[$k])); // slurp in the file-content
+        if ('' !== $oPlugin->cTextLicensePath) {
+            $szLicenseContent = utf8_decode(file_get_contents($oPlugin->cTextLicensePath)); // slurp in the file-content
             // check, if we got a Markdown-parser
             $fMarkDown     = false;
             if (class_exists('Parsedown')) {
@@ -161,6 +149,7 @@ if ($step === 'plugin_uebersicht') {
 
             $fAddAsLicenseTab = true;
         }
+        // build the the tabs
         foreach ($oPlugin->oPluginAdminMenu_arr as $_adminMenu) {
             if ($_adminMenu->nConf === '0' && $_adminMenu->cDateiname !== '' && file_exists($oPlugin->cAdminmenuPfad . $_adminMenu->cDateiname)) {
                 ob_start();

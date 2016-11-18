@@ -324,7 +324,7 @@ class CheckBox
                 $checked                       = ($checked === true) ? 1 : 0;
                 $oCheckBoxLogging              = new stdClass();
                 $oCheckBoxLogging->kCheckBox   = $oCheckBox->kCheckBox;
-                $oCheckBoxLogging->kBesucher   = (int) $_SESSION['oBesucher']->kBesucher;
+                $oCheckBoxLogging->kBesucher   = (int)$_SESSION['oBesucher']->kBesucher;
                 $oCheckBoxLogging->kBestellung = (isset($_SESSION['kBestellung'])) ? (int)$_SESSION['kBestellung'] : 0;
                 $oCheckBoxLogging->bChecked    = $checked;
                 $oCheckBoxLogging->dErstellt   = 'now()';

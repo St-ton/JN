@@ -76,8 +76,8 @@ switch (true) {
         $filter = array_merge($defaultFilter, $filter);
 
         // validate filter
-        $filter['limit'] = (int) $filter['limit'];
-        $page            = isset($_GET['page']) ? (int) $_GET['page'] : 1;
+        $filter['limit'] = (int)$filter['limit'];
+        $page            = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 
         if ($page < 1) {
             $page = 1;
@@ -119,7 +119,7 @@ switch (true) {
         // count without limit
         $query = implode(' ', $queryParts);
         $count = Shop::DB()->executeQueryPrepared($query, $queryParams, 3);
-        $pages = (int) ceil($count / $filter['limit']);
+        $pages = (int)ceil($count / $filter['limit']);
 
         // limit
         $queryParams['limit_count']  = $filter['limit'];

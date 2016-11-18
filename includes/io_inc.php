@@ -569,7 +569,7 @@ function getCategoryMenu($categoryId)
 {
     global $smarty;
 
-    $categoryId = (int) $categoryId;
+    $categoryId = (int)$categoryId;
     $auto       = $categoryId === 0;
 
     if ($auto) {

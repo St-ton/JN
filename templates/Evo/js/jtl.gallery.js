@@ -329,7 +329,6 @@
                 img_w_outer = (listElem.outerWidth(true) - listElem.outerWidth(false));
                 prevElem    = $(this.element).find('button[name="btnGalleryPre"]');
                 nextElem    = $(this.element).find('button[name="btnGalleryNext"]');
-                console.log('primary_h: ', primary_h);
                 if ($(this.element).find('.image-thumbs').css('position') === 'absolute') { //V
                     primary_h -= 40;//wegen up / down Buttons
                     $(this.element).find('.thumbs-box').scrollLeft(0);

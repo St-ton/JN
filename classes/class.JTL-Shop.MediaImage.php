@@ -59,16 +59,13 @@ class MediaImage implements IMedia
             'name'   => $name,
             'ext'    => $settings['format']
         ));
-
         $thumb    = $req->getThumb($size);
         $thumbAbs = PFAD_ROOT . $thumb;
         $rawAbs   = PFAD_ROOT . $req->getRaw();
 
-        if (!file_exists($thumbAbs) && !file_exists($rawAbs)) {
-            $thumb = $req->getFallbackThumb($size);
-        }
-
-        return $thumb;
+        return (!file_exists($thumbAbs) && !file_exists($rawAbs))
+            ? $req->getFallbackThumb($size)
+            : $thumb;
     }
 
     /**

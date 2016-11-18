@@ -1,3 +1,4 @@
+{config_load file="$lang.conf" section='systemcheck'}
 <div class="widget-custom-data">
     <table class="table table-condensed table-hover table-blank">
         <tbody>
@@ -21,9 +22,9 @@
                 <td>{$phpVersion}</td>
                 <td></td>
             </tr>
-            {if isset($phpInfo)}
+            {if !empty($phpLT55) && $phpLT55}
             <tr>
-                <td colspan="2"><span class="small">{$phpInfo}</span></td>
+                <td colspan="2" class="small label-warning">{#systemcheckPHPLT55#|sprintf:$phpVersion}</td>
             </tr>
             {/if}
             {if isset($mySQLStats) && $mySQLStats !== '-'}

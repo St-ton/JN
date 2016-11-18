@@ -252,7 +252,7 @@ if ($cache !== null) {
            ->assign('all_methods', $cache->getAllMethods())
            ->assign('stats', $cache->getStats());
 }
-$settings = Shop::DB()->selectAll('teinstellungenconf', ['nStandardAnzeigen', 'kEinstellungenSektion'], [1, CONF_CACHING], '*', 'nSort');
+$settings      = Shop::DB()->selectAll('teinstellungenconf', ['nStandardAnzeigen', 'kEinstellungenSektion'], [1, CONF_CACHING], '*', 'nSort');
 $settingsCount = count($settings);
 for ($i = 0; $i < $settingsCount; ++$i) {
     if ($settings[$i]->cInputTyp === 'selectbox') {

@@ -499,7 +499,7 @@ if ($step === 'pluginverwaltung_uebersicht') {
 
     if (count($PluginVerfuebar_arr) > 0) {
         foreach ($PluginVerfuebar_arr as $i => $PluginVerfuebar) {
-            // searching for multiple names of license file (e.g. LICENSE.md or License.md and so on)
+            // searching for multiple names of license files (e.g. LICENSE.md or License.md and so on)
             $szFolder = PFAD_ROOT . PFAD_PLUGIN . $PluginVerfuebar_arr[$i]->cVerzeichnis . '/';
             $vPossibleLicenseNames = [
                   '',

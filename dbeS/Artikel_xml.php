@@ -822,6 +822,9 @@ function bearbeiteInsert($xml, array $conf)
         $oKundengruppe_arr = Shop::DB()->query("SELECT kKundengruppe FROM tkundengruppe", 2);
         fuelleArtikelKategorieRabatt($artikel_arr[0], $oKundengruppe_arr);
         clearProductCaches($Artikel->kArtikel);
+        if (!empty($artikel_arr[0]->kVaterartikel)) {
+            Shop::Cache()->flushTags([CACHING_GROUP_ARTICLE . '_' . (int)$artikel_arr[0]->kVaterartikel]);
+        }
         //emailbenachrichtigung, wenn verfügbar
         versendeVerfuegbarkeitsbenachrichtigung($artikel_arr[0]);
     }
@@ -1180,7 +1183,7 @@ function checkArtikelBildLoeschung($kArtikel)
 }
 
 /**
- * checks wether the article is a child product in any configurator
+ * checks whether the article is a child product in any configurator
  * and returns the product IDs of parent products if yes
  *
  * @param int $kArtikel

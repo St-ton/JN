@@ -372,7 +372,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
          * @param $cName
          * @return mixed
          */
-        public function getOption($cName)
+        public function getConf($cName)
         {
             return $this->config[$cName];
         }

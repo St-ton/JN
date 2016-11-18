@@ -4,7 +4,7 @@
     </h3>
     <div class="list-group selection-wizard">
         {foreach $AWA->getQuestions() as $nQuestion => $oFrage}
-            {if $AWA->getOption('auswahlassistent_allefragen') === 'Y' || $nQuestion <= $AWA->getCurQuestion()}
+            {if $AWA->getConf('auswahlassistent_allefragen') === 'Y' || $nQuestion <= $AWA->getCurQuestion()}
                 {include file='selectionwizard/question.tpl' AWA=$AWA nQuestion=$nQuestion oFrage=$oFrage}
             {/if}
         {/foreach}

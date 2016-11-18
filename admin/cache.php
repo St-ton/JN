@@ -34,52 +34,6 @@ if ($action !== null && isset($_POST['cache-action'])) {
     $cacheAction = $_POST['cache-action'];
 }
 switch ($action) {
-    case 'flush_page_cache' :
-        //clear the smarty page cache
-        $tab     = 'massaction';
-        $_smarty = new JTLSmarty(true, false, false);
-        $_smarty->setCachingParams();
-        $res = $_smarty->clearAllCache();
-        if ($res === true) {
-            $notice .= 'Seiten-Cache erfolgreich gel&ouml;scht.';
-        } else {
-            $template    = Template::getInstance();
-            $templateDir = $template->getDir();
-            $cache_dir   = PFAD_ROOT . PFAD_COMPILEDIR . $templateDir . '/' . 'page_cache/';
-            $compile_dir = PFAD_ROOT . PFAD_COMPILEDIR . $templateDir . '/';
-            $numNotOK    = 0;
-            if (is_dir($cache_dir)) {
-                foreach (new DirectoryIterator($cache_dir) as $fileInfo) {
-                    if (!$fileInfo->isDot() && !$fileInfo->isDir()) {
-                        $res = unlink($fileInfo->getPathname());
-                        if ($res === false) {
-                            ++$numNotOK;
-                        }
-                    }
-                }
-            } else {
-                $error .= 'Konnte Cache-Verzeichnis ' . $cache_dir . ' nicht finden.';
-            }
-            if (is_dir($compile_dir)) {
-                foreach (new DirectoryIterator($compile_dir) as $fileInfo) {
-                    if (!$fileInfo->isDot() && !$fileInfo->isDir()) {
-                        $res = unlink($fileInfo->getPathname());
-                        if ($res === false) {
-                            ++$numNotOK;
-                        }
-                    }
-                }
-            } else {
-                $error .= '<br />Konnte Compile-Verzeichnis ' . $compile_dir . ' nicht finden.';
-            }
-            if ($numNotOK !== 0) {
-                $error .= 'Konnte ' . $numNotOK . ' Dateien nicht l&ouml;schen.';
-            } else {
-                $notice .= 'Seiten-Cache erfolgreich gel&ouml;scht.';
-            }
-        }
-        executeHook(HOOK_PAGE_CACHE_FLUSH_AFTER);
-        break;
     case 'cacheMassAction' :
         //mass action cache flush
         $tab = 'massaction';
@@ -316,20 +270,6 @@ for ($i = 0; $i < $settingsCount; ++$i) {
     $oSetValue = Shop::DB()->select('teinstellungen', ['kEinstellungenSektion', 'cName'], [CONF_CACHING, $advancedSettings[$i]->cWertName]);
     $advancedSettings[$i]->gesetzterWert = (isset($oSetValue->cWert)) ? $oSetValue->cWert : null;
 }
-$expertSettings = null;
-if (defined('SHOW_PAGE_CACHE') && SHOW_PAGE_CACHE === true) {
-    $expertSettings = Shop::DB()->selectAll('teinstellungenconf', ['nStandardAnzeigen', 'kEinstellungenSektion'], [2, CONF_CACHING], '*', 'nSort');
-    $i             = 0;
-    $settingsCount = count($expertSettings);
-    for ($i = 0; $i < $settingsCount; ++$i) {
-        if ($expertSettings[$i]->cInputTyp === 'selectbox') {
-            $expertSettings[$i]->ConfWerte = Shop::DB()->selectAll('teinstellungenconfwerte', 'kEinstellungenConf', (int)$expertSettings[$i]->kEinstellungenConf, '*', 'nSort');
-        }
-        $oSetValue = Shop::DB()->select('teinstellungen', ['kEinstellungenSektion', 'cName'], [CONF_CACHING, $expertSettings[$i]->cWertName]);
-        $expertSettings[$i]->gesetzterWert = (isset($oSetValue->cWert)) ? $oSetValue->cWert : null;
-    }
-}
-
 if (function_exists('opcache_get_status')) {
     $_opcacheStatus             = opcache_get_status();
     $opcacheStats               = new stdClass();
@@ -385,7 +325,6 @@ $smarty->assign('settings', $settings)
        ->assign('available_methods', json_encode($availableMethods))
        ->assign('non_available_methods', json_encode($nonAvailableMethods))
        ->assign('advanced_settings', $advancedSettings)
-       ->assign('expert_settings', $expertSettings)
        ->assign('disabled_caches', $currentlyDisabled)
        ->assign('cHinweis', $notice)
        ->assign('cFehler', $error)

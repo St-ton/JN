@@ -636,19 +636,15 @@ function bearbeiteInsert($xml, array $conf)
                 if ($ende_jahr > 0) {
                     $nEndStamp = mktime(0, 0, 0, $ende_monat, $ende_tag + 1, $ende_jahr);
                 }
-                if ($nNowStamp >= $nStartStamp && ($nNowStamp < $nEndStamp || intval($ArtikelSonderpreis_arr[0]->dEnde) === 0)) {
-                    $bTesteSonderpreis = true;
-                }
-                if (!empty($ArtikelSonderpreis_arr[0]->nAnzahl) && !empty($xml['tartikel']['fLagerbestand']) && $ArtikelSonderpreis_arr[0]->nAnzahl < (int)($xml['tartikel']['fLagerbestand'])) {
-                    $bTesteSonderpreis = true;
-                } else {
-                    $bTesteSonderpreis = false;
-                }
+                $bTesteSonderpreis = ($nNowStamp >= $nStartStamp &&
+                    ($nNowStamp < $nEndStamp || (int)($ArtikelSonderpreis_arr[0]->dEnde) === 0) &&
+                    ($ArtikelSonderpreis_arr[0]->nIstAnzahl === 0 || ($ArtikelSonderpreis_arr[0]->nIstAnzahl === '1' &&
+                    (int)$ArtikelSonderpreis_arr[0]->nAnzahl < (int)($xml['tartikel']['fLagerbestand']))));
             }
             $spCount = count($ArtikelSonderpreis_arr);
             for ($i = 0; $i < $spCount; ++$i) {
                 $Sonderpreise_arr = mapArray($xml['tartikel']['tartikelsonderpreis'], 'tsonderpreise', $GLOBALS['mSonderpreise']);
-                if ($bTesteSonderpreis == true) {
+                if ($bTesteSonderpreis === true) {
                     foreach ($Sonderpreise_arr as $Sonderpreise) {
                         setzePreisverlauf($ArtikelSonderpreis_arr[0]->kArtikel, $Sonderpreise->kKundengruppe, $Sonderpreise->fNettoPreis);
                     }
@@ -659,7 +655,7 @@ function bearbeiteInsert($xml, array $conf)
         }
         // Preise für Preisverlauf
         // NettoPreis übertragen, falls kein Sonderpreis gesetzt wurde
-        if (!(isset($xml['tartikel']['tartikelsonderpreis']) && is_array($xml['tartikel']['tartikelsonderpreis']) && $bTesteSonderpreis == true)) {
+        if (!(isset($xml['tartikel']['tartikelsonderpreis']) && is_array($xml['tartikel']['tartikelsonderpreis']) && $bTesteSonderpreis === true)) {
             $oPreis_arr = mapArray($xml['tartikel'], 'tpreise', $GLOBALS['mPreise']);
             foreach ($oPreis_arr as $oPreis) {
                 setzePreisverlauf($oPreis->kArtikel, $oPreis->kKundengruppe, $oPreis->fVKNetto);

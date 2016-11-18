@@ -312,7 +312,7 @@ class KategorieListe
                     //ks = ist kategorie leer 1 = nein, 2 = ja
                     $categoryList['ks'][$oKategorie->kKategorie] = 1;
                     //Bildpfad setzen
-                    if ($oKategorie->cPfad) {
+                    if ($oKategorie->cPfad && file_exists(PFAD_ROOT . PFAD_KATEGORIEBILDER . $oKategorie->cPfad)) {
                         $oKategorie->cBildURL     = PFAD_KATEGORIEBILDER . $oKategorie->cPfad;
                         $oKategorie->cBildURLFull = $shopURL . '/' . PFAD_KATEGORIEBILDER . $oKategorie->cPfad;
                     } else {

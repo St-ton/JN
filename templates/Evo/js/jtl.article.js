@@ -360,6 +360,10 @@
             $('#article-tabs .product-attributes .weight-unit').html(newUnitWeight);
         },
 
+        setArticleNumber: function(articleNumber){
+            $('#product-offer span[itemprop="sku"]').html(articleNumber);
+        },
+
         setArticleContent: function(id, variation, url, variations) {
             $.evo.extended().loadContent(url, function(content) {
                 $.evo.extended().register();

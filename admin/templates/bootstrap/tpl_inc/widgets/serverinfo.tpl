@@ -21,6 +21,11 @@
                 <td>{$phpVersion}</td>
                 <td></td>
             </tr>
+            {if isset($phpInfo)}
+            <tr>
+                <td colspan="2"><span class="small">{$phpInfo}</span></td>
+            </tr>
+            {/if}
             {if isset($mySQLStats) && $mySQLStats !== '-'}
                 <tr>
                     <td class="nowrap">MySQL-Statistik</td>

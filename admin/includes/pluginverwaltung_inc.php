@@ -2968,7 +2968,10 @@ function installierePluginVersion($XML_arr, $cVerzeichnis, $oPluginOld, $nXMLVer
  */
 function reloadPlugin($oPlugin, $forceReload = false)
 {
-    $cXMLPath       = PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/' . PLUGIN_INFO_FILE;
+    $cXMLPath = PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/' . PLUGIN_INFO_FILE;
+    if (!file_exists($cXMLPath)) {
+        return -1;
+    }
     $oLastUpdate    = new DateTimeImmutable($oPlugin->dZuletztAktualisiert);
     $nLastUpdate    = $oLastUpdate->getTimestamp();
     $nLastXMLChange = filemtime($cXMLPath);

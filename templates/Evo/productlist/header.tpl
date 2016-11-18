@@ -81,7 +81,7 @@
 {/if}
 {/block}
 
-{include file="productwizard/index.tpl"}
+{include file="selectionwizard/index.tpl"}
 
 {if count($Suchergebnisse->Artikel->elemente) > 0}
     <form id="improve_search" action="navi.php" method="get" class="form-inline clearfix">

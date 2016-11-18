@@ -127,7 +127,7 @@ $oSuchergebnisse->Tags              = gibTagFilterOptionen($FilterSQL, $NaviFilt
 if (isset($Einstellungen['navigationsfilter']['allgemein_tagfilter_benutzen']) && $Einstellungen['navigationsfilter']['allgemein_tagfilter_benutzen'] === 'Y') {
     $oSuchergebnisse->TagsJSON = gibTagFilterJSONOptionen($FilterSQL, $NaviFilter);
 }
-$oSuchergebnisse->MerkmalFilter    = gibMerkmalFilterOptionen($FilterSQL, $NaviFilter, $AktuelleKategorie, function_exists('starteAuswahlAssistent'));
+$oSuchergebnisse->MerkmalFilter    = gibMerkmalFilterOptionen($FilterSQL, $NaviFilter, $AktuelleKategorie, class_exists('AuswahlAssistent'));
 $oSuchergebnisse->Preisspanne      = gibPreisspannenFilterOptionen($FilterSQL, $NaviFilter, $oSuchergebnisse);
 $oSuchergebnisse->Kategorieauswahl = gibKategorieFilterOptionen($FilterSQL, $NaviFilter);
 $oSuchergebnisse->SuchFilter       = gibSuchFilterOptionen($FilterSQL, $NaviFilter);
@@ -261,9 +261,6 @@ if (strpos(basename(gibNaviURL($NaviFilter, true, null)), '.php') === false || !
 if (class_exists('AuswahlAssistent')) {
     AuswahlAssistent::startIfRequired(AUSWAHLASSISTENT_ORT_KATEGORIE, $cParameter_arr['kKategorie'], Shop::$kSprache,
         $smarty);
-}
-if (function_exists('starteAuswahlAssistent')) {
-    starteAuswahlAssistent(AUSWAHLASSISTENT_ORT_KATEGORIE, $cParameter_arr['kKategorie'], Shop::$kSprache, $smarty, $Einstellungen['auswahlassistent']);
 }
 $smarty->assign('SEARCHSPECIALS_TOPREVIEWS', SEARCHSPECIALS_TOPREVIEWS)
        ->assign('PFAD_ART_ABNAHMEINTERVALL', PFAD_ART_ABNAHMEINTERVALL)

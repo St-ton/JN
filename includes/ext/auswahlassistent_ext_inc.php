@@ -6,6 +6,7 @@
 $oNice = Nice::getInstance();
 if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
     /**
+     * @deprecated since 4.05
      * @param string    $cKey
      * @param int       $kKey
      * @param int       $kSprache

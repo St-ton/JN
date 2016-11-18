@@ -4,7 +4,3 @@
         {include file="productwizard/form.tpl"}
     </div>
 {/if}
-
-{if isset($AWA)}
-    {include file="selectionwizard/index.tpl" AWA=$AWA}
-{/if}

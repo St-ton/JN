@@ -77,9 +77,6 @@ if ($link->nLinkart == LINKTYP_STARTSEITE) {
     if (class_exists('AuswahlAssistent')) {
         AuswahlAssistent::startIfRequired(AUSWAHLASSISTENT_ORT_STARTSEITE, 1, Shop::$kSprache, $smarty);
     }
-    if (function_exists('starteAuswahlAssistent')) {
-        starteAuswahlAssistent(AUSWAHLASSISTENT_ORT_STARTSEITE, 1, Shop::$kSprache, $smarty, $Einstellungen['auswahlassistent']);
-    }
     if ($Einstellungen['news']['news_benutzen'] === 'Y') {
         $smarty->assign('oNews_arr', gibNews($Einstellungen));
     }
@@ -133,9 +130,6 @@ if ($link->nLinkart == LINKTYP_STARTSEITE) {
     // Auswahlassistent
     if (class_exists('AuswahlAssistent')) {
         AuswahlAssistent::startIfRequired(AUSWAHLASSISTENT_ORT_LINK, $link->kLink, Shop::$kSprache, $smarty);
-    }
-    if (function_exists('starteAuswahlAssistent')) {
-        starteAuswahlAssistent(AUSWAHLASSISTENT_ORT_LINK, $link->kLink, Shop::$kSprache, $smarty, $Einstellungen['auswahlassistent']);
     }
 } elseif ($link->nLinkart == LINKTYP_404) {
     Shop::setPageType(PAGE_404);

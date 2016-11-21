@@ -162,16 +162,16 @@ class SofortUeberweisung extends PaymentMethod
             if (D_MODE === 1) {
                 writeLog(D_PFAD, ': preparePaymentProcess fGesamtsummeKundenwaehrung > 0', 1);
             }
-            $this->sofortueberweisung_id         = $GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_sofortueberweisung_id'];
-            $this->sofortueberweisung_project_id = $GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_sofortueberweisung_project_id'];
-            if ($GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_sofortueberweisung_debugmode'] === 'Y') {
+            $this->sofortueberweisung_id         = $this->paymentConfig['zahlungsart_sofortueberweisung_id'];
+            $this->sofortueberweisung_project_id = $this->paymentConfig['zahlungsart_sofortueberweisung_project_id'];
+            if ($this->paymentConfig['zahlungsart_sofortueberweisung_debugmode'] === 'Y') {
                 $this->bDebug = true;
             }
 
             $paymentHash = $this->generateHash($order);
             $this->baueSicherheitsHash($order, $paymentHash);
 
-            if (isset($bDebug) && $bDebug) {
+            if ($this->bDebug === true) {
                 echo "<br/><br/>sender_holder: $this->name<br/>";
                 echo "sender_country_id: $this->strSenderCountryID<br/>";
                 echo "amount: $this->strAmount<br/>";
@@ -179,8 +179,8 @@ class SofortUeberweisung extends PaymentMethod
             }
 
             if (!($this->sofortueberweisung_id && $this->sofortueberweisung_project_id && $this->name && $this->strSenderCountryID && $this->strAmount && $order->Waehrung->cISO)) {
-                if (!$bDebug) {
-                    return "Es ist ein Datenbankfehler aufgetreten!";
+                if ($this->bDebug === false) {
+                    return 'Es ist ein Datenbankfehler aufgetreten!';
                 } else {
                     if (!$this->sofortueberweisung_id) {
                         echo "\$this->sofortueberweisung_id is null<br/>";
@@ -228,8 +228,8 @@ class SofortUeberweisung extends PaymentMethod
     }
 
     /**
-     * @param $order
-     * @param $paymentHash
+     * @param Bestellung $order
+     * @param string     $paymentHash
      */
     public function baueSicherheitsHash($order, $paymentHash)
     {
@@ -427,106 +427,106 @@ class SofortUeberweisung extends PaymentMethod
      */
     public function gibEinstellungen($order)
     {
-        $this->sofortueberweisung_id         = $GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_sofortueberweisung_id'];
-        $this->sofortueberweisung_project_id = $GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_sofortueberweisung_project_id'];
+        $this->sofortueberweisung_id         = $this->paymentConfig['zahlungsart_sofortueberweisung_id'];
+        $this->sofortueberweisung_project_id = $this->paymentConfig['zahlungsart_sofortueberweisung_project_id'];
 
-        if ($GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_sofortueberweisung_reason_1'] == 1) {
+        if ($this->paymentConfig['zahlungsart_sofortueberweisung_reason_1'] == 1) {
             $this->reason_1 = '';
-        } elseif ($GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_sofortueberweisung_reason_1'] == 2) {
+        } elseif ($this->paymentConfig['zahlungsart_sofortueberweisung_reason_1'] == 2) {
             $this->reason_1 = $order->cBestellNr;
-        } elseif ($GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_sofortueberweisung_reason_1'] == 3) {
+        } elseif ($this->paymentConfig['zahlungsart_sofortueberweisung_reason_1'] == 3) {
             $this->reason_1 = $order->cBestellNr . ' ' . $order->oRechnungsadresse->cFirma;
-        } elseif ($GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_sofortueberweisung_reason_1'] == 4) {
+        } elseif ($this->paymentConfig['zahlungsart_sofortueberweisung_reason_1'] == 4) {
             $this->reason_1 = $order->cBestellNr . ' ' . $this->getShopTitle();
-        } elseif ($GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_sofortueberweisung_reason_1'] == 5) {
+        } elseif ($this->paymentConfig['zahlungsart_sofortueberweisung_reason_1'] == 5) {
             $this->reason_1 = $order->cBestellNr . ' ' . $order->oRechnungsadresse->cNachname;
-        } elseif ($GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_sofortueberweisung_reason_1'] == 6) {
+        } elseif ($this->paymentConfig['zahlungsart_sofortueberweisung_reason_1'] == 6) {
             $this->reason_1 = $order->oRechnungsadresse->cVorname . ' ' . $order->oRechnungsadresse->cNachname;
-        } elseif ($GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_sofortueberweisung_reason_1'] == 7) {
+        } elseif ($this->paymentConfig['zahlungsart_sofortueberweisung_reason_1'] == 7) {
             $this->reason_1 = $order->oRechnungsadresse->cFirma;
-        } elseif ($GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_sofortueberweisung_reason_1'] == 8) {
+        } elseif ($this->paymentConfig['zahlungsart_sofortueberweisung_reason_1'] == 8) {
             $this->reason_1 = $this->getShopTitle();
         }
         $this->reason_1 = str_replace("\"", "&quot;", $this->reason_1);
 
-        if ($GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_sofortueberweisung_reason_2'] == 1) {
-            $this->reason_2 = "";
-        } elseif ($GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_sofortueberweisung_reason_2'] == 2) {
+        if ($this->paymentConfig['zahlungsart_sofortueberweisung_reason_2'] == 1) {
+            $this->reason_2 = '';
+        } elseif ($this->paymentConfig['zahlungsart_sofortueberweisung_reason_2'] == 2) {
             $this->reason_2 = $order->cBestellNr;
-        } elseif ($GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_sofortueberweisung_reason_2'] == 3) {
+        } elseif ($this->paymentConfig['zahlungsart_sofortueberweisung_reason_2'] == 3) {
             $this->reason_2 = $order->cBestellNr . ' ' . $order->oRechnungsadresse->cFirma;
-        } elseif ($GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_sofortueberweisung_reason_2'] == 4) {
+        } elseif ($this->paymentConfig['zahlungsart_sofortueberweisung_reason_2'] == 4) {
             $this->reason_2 = $order->cBestellNr . ' ' . $this->getShopTitle();
-        } elseif ($GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_sofortueberweisung_reason_2'] == 5) {
+        } elseif ($this->paymentConfig['zahlungsart_sofortueberweisung_reason_2'] == 5) {
             $this->reason_2 = $order->cBestellNr . ' ' . $order->oRechnungsadresse->cNachname;
-        } elseif ($GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_sofortueberweisung_reason_2'] == 6) {
+        } elseif ($this->paymentConfig['zahlungsart_sofortueberweisung_reason_2'] == 6) {
             $this->reason_2 = $order->oRechnungsadresse->cVorname . ' ' . $order->oRechnungsadresse->cNachname;
-        } elseif ($GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_sofortueberweisung_reason_2'] == 7) {
+        } elseif ($this->paymentConfig['zahlungsart_sofortueberweisung_reason_2'] == 7) {
             $this->reason_2 = $order->oRechnungsadresse->cFirma;
-        } elseif ($GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_sofortueberweisung_reason_2'] == 8) {
+        } elseif ($this->paymentConfig['zahlungsart_sofortueberweisung_reason_2'] == 8) {
             $this->reason_2 = $this->getShopTitle();
         }
         $this->reason_2 = str_replace("\"", "&quot;", $this->reason_2);
 
-        if ($GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_sofortueberweisung_user_variable_2'] == 1) {
+        if ($this->paymentConfig['zahlungsart_sofortueberweisung_user_variable_2'] == 1) {
             $this->user_variable_2 = "";
-        } elseif ($GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_sofortueberweisung_user_variable_2'] == 2) {
+        } elseif ($this->paymentConfig['zahlungsart_sofortueberweisung_user_variable_2'] == 2) {
             $this->user_variable_2 = $order->oRechnungsadresse->cFirma;
-        } elseif ($GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_sofortueberweisung_user_variable_2'] == 3) {
+        } elseif ($this->paymentConfig['zahlungsart_sofortueberweisung_user_variable_2'] == 3) {
             $this->user_variable_2 = $order->oRechnungsadresse->cVorname . ' ' . $order->oRechnungsadresse->cNachname;
-        } elseif ($GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_sofortueberweisung_user_variable_2'] == 4) {
+        } elseif ($this->paymentConfig['zahlungsart_sofortueberweisung_user_variable_2'] == 4) {
             $this->user_variable_2 = $order->oRechnungsadresse->cStrasse . ' ' . $order->oRechnungsadresse->cHausnummer;
-        } elseif ($GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_sofortueberweisung_user_variable_2'] == 5) {
+        } elseif ($this->paymentConfig['zahlungsart_sofortueberweisung_user_variable_2'] == 5) {
             $this->user_variable_2 = $order->oRechnungsadresse->cPLZ . ' ' . $order->oRechnungsadresse->cOrt;
-        } elseif ($GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_sofortueberweisung_user_variable_2'] == 6) {
+        } elseif ($this->paymentConfig['zahlungsart_sofortueberweisung_user_variable_2'] == 6) {
             $this->user_variable_2 = $order->oRechnungsadresse->cLand;
-        } elseif ($GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_sofortueberweisung_user_variable_2'] == 7) {
+        } elseif ($this->paymentConfig['zahlungsart_sofortueberweisung_user_variable_2'] == 7) {
             $this->user_variable_2 = $order->oRechnungsadresse->cMail;
-        } elseif ($GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_sofortueberweisung_user_variable_2'] == 8) {
+        } elseif ($this->paymentConfig['zahlungsart_sofortueberweisung_user_variable_2'] == 8) {
             $this->user_variable_2 = $order->oRechnungsadresse->cTel;
-        } elseif ($GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_sofortueberweisung_user_variable_2'] == 9) {
+        } elseif ($this->paymentConfig['zahlungsart_sofortueberweisung_user_variable_2'] == 9) {
             $this->user_variable_2 = $order->oRechnungsadresse->cFax;
         }
         $this->user_variable_2 = str_replace("\"", "&quot;", $this->user_variable_2);
 
-        if ($GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_sofortueberweisung_user_variable_3'] == 1) {
+        if ($this->paymentConfig['zahlungsart_sofortueberweisung_user_variable_3'] == 1) {
             $this->user_variable_3 = "";
-        } elseif ($GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_sofortueberweisung_user_variable_3'] == 2) {
+        } elseif ($this->paymentConfig['zahlungsart_sofortueberweisung_user_variable_3'] == 2) {
             $this->user_variable_3 = $order->oRechnungsadresse->cFirma;
-        } elseif ($GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_sofortueberweisung_user_variable_3'] == 3) {
+        } elseif ($this->paymentConfig['zahlungsart_sofortueberweisung_user_variable_3'] == 3) {
             $this->user_variable_3 = $order->oRechnungsadresse->cVorname . ' ' . $order->oRechnungsadresse->cNachname;
-        } elseif ($GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_sofortueberweisung_user_variable_3'] == 4) {
+        } elseif ($this->paymentConfig['zahlungsart_sofortueberweisung_user_variable_3'] == 4) {
             $this->user_variable_3 = $order->oRechnungsadresse->cStrasse . ' ' . $order->oRechnungsadresse->cHausnummer;
-        } elseif ($GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_sofortueberweisung_user_variable_3'] == 5) {
+        } elseif ($this->paymentConfig['zahlungsart_sofortueberweisung_user_variable_3'] == 5) {
             $this->user_variable_3 = $order->oRechnungsadresse->cPLZ . ' ' . $order->oRechnungsadresse->cOrt;
-        } elseif ($GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_sofortueberweisung_user_variable_3'] == 6) {
+        } elseif ($this->paymentConfig['zahlungsart_sofortueberweisung_user_variable_3'] == 6) {
             $this->user_variable_3 = $order->oRechnungsadresse->cLand;
-        } elseif ($GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_sofortueberweisung_user_variable_3'] == 7) {
+        } elseif ($this->paymentConfig['zahlungsart_sofortueberweisung_user_variable_3'] == 7) {
             $this->user_variable_3 = $order->oRechnungsadresse->cMail;
-        } elseif ($GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_sofortueberweisung_user_variable_3'] == 8) {
+        } elseif ($this->paymentConfig['zahlungsart_sofortueberweisung_user_variable_3'] == 8) {
             $this->user_variable_3 = $order->oRechnungsadresse->cTel;
-        } elseif ($GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_sofortueberweisung_user_variable_3'] == 9) {
+        } elseif ($this->paymentConfig['zahlungsart_sofortueberweisung_user_variable_3'] == 9) {
             $this->user_variable_3 = $order->oRechnungsadresse->cFax;
         }
         $this->user_variable_3 = str_replace("\"", "&quot;", $this->user_variable_3);
 
-        if ($GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_sofortueberweisung_user_variable_4'] == 1) {
+        if ($this->paymentConfig['zahlungsart_sofortueberweisung_user_variable_4'] == 1) {
             $this->user_variable_4 = "";
-        } elseif ($GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_sofortueberweisung_user_variable_4'] == 2) {
+        } elseif ($this->paymentConfig['zahlungsart_sofortueberweisung_user_variable_4'] == 2) {
             $this->user_variable_4 = $order->oRechnungsadresse->cFirma;
-        } elseif ($GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_sofortueberweisung_user_variable_4'] == 3) {
+        } elseif ($this->paymentConfig['zahlungsart_sofortueberweisung_user_variable_4'] == 3) {
             $this->user_variable_4 = $order->oRechnungsadresse->cVorname . ' ' . $order->oRechnungsadresse->cNachname;
-        } elseif ($GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_sofortueberweisung_user_variable_4'] == 4) {
+        } elseif ($this->paymentConfig['zahlungsart_sofortueberweisung_user_variable_4'] == 4) {
             $this->user_variable_4 = $order->oRechnungsadresse->cStrasse . ' ' . $order->oRechnungsadresse->cHausnummer;
-        } elseif ($GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_sofortueberweisung_user_variable_4'] == 5) {
+        } elseif ($this->paymentConfig['zahlungsart_sofortueberweisung_user_variable_4'] == 5) {
             $this->user_variable_4 = $order->oRechnungsadresse->cPLZ . ' ' . $order->oRechnungsadresse->cOrt;
-        } elseif ($GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_sofortueberweisung_user_variable_4'] == 6) {
+        } elseif ($this->paymentConfig['zahlungsart_sofortueberweisung_user_variable_4'] == 6) {
             $this->user_variable_4 = $order->oRechnungsadresse->cLand;
-        } elseif ($GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_sofortueberweisung_user_variable_4'] == 7) {
+        } elseif ($this->paymentConfig['zahlungsart_sofortueberweisung_user_variable_4'] == 7) {
             $this->user_variable_4 = $order->oRechnungsadresse->cMail;
-        } elseif ($GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_sofortueberweisung_user_variable_4'] == 8) {
+        } elseif ($this->paymentConfig['zahlungsart_sofortueberweisung_user_variable_4'] == 8) {
             $this->user_variable_4 = $order->oRechnungsadresse->cTel;
-        } elseif ($GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_sofortueberweisung_user_variable_4'] == 9) {
+        } elseif ($this->paymentConfig['zahlungsart_sofortueberweisung_user_variable_4'] == 9) {
             $this->user_variable_4 = $order->oRechnungsadresse->cFax;
         }
         $this->user_variable_4 = str_replace("\"", "&quot;", $this->user_variable_4);
@@ -551,12 +551,12 @@ class SofortUeberweisung extends PaymentMethod
      */
     public function isValidIntern($args_arr = array())
     {
-        if (strlen($GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_sofortueberweisung_id']) === 0) {
+        if (strlen($this->paymentConfig['zahlungsart_sofortueberweisung_id']) === 0) {
             ZahlungsLog::add($this->moduleID, "Pflichtparameter 'User-ID' ist nicht gesetzt!", null, LOGLEVEL_ERROR);
 
             return false;
         }
-        if (strlen($GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_sofortueberweisung_project_id']) === 0) {
+        if (strlen($this->paymentConfig['zahlungsart_sofortueberweisung_project_id']) === 0) {
             ZahlungsLog::add($this->moduleID, "Pflichtparameter 'Projekt-ID' ist nicht gesetzt!", null, LOGLEVEL_ERROR);
 
             return false;

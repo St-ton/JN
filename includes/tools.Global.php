@@ -1055,11 +1055,9 @@ function pruefeFuegeEinInWarenkorb($Artikel, $anzahl, $oEigenschaftwerte_arr, $n
     /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
     // Abnahmeintervall
     if ($Artikel->fAbnahmeintervall > 0) {
-        if (function_exists('bcdiv')) {
-            $dVielfache = round($Artikel->fAbnahmeintervall * ceil(bcdiv($anzahl, $Artikel->fAbnahmeintervall, 3)), 2);
-        } else {
-            $dVielfache = round($Artikel->fAbnahmeintervall * ceil($anzahl / $Artikel->fAbnahmeintervall), $nGenauigkeit);
-        }
+        $dVielfache = (function_exists('bcdiv'))
+            ? round($Artikel->fAbnahmeintervall * ceil(bcdiv($anzahl,$Artikel->fAbnahmeintervall, $nGenauigkeit + 1)), 2)
+            : round($Artikel->fAbnahmeintervall * ceil($anzahl / $Artikel->fAbnahmeintervall), $nGenauigkeit);
         if ($dVielfache != $anzahl) {
             $redirectParam[] = R_ARTIKELABNAHMEINTERVALL;
         }
@@ -1745,7 +1743,7 @@ function baueURL($obj, $art, $row = 0, $bForceNonSeo = false, $bFull = false)
  */
 function baueSprachURLS($obj, $art)
 {
-    $urls   = array();
+    $urls   = [];
     $seoobj = null;
     if ($art && $obj && count($_SESSION['Sprachen']) > 0) {
         foreach ($_SESSION['Sprachen'] as $Sprache) {
@@ -3743,9 +3741,11 @@ function setzeSpracheUndWaehrungLink()
         }
         foreach ($_SESSION['Sprachen'] as $i => $oSprache) {
             if (isset($AktuellerArtikel->kArtikel) && $AktuellerArtikel->kArtikel > 0 && isset($AktuellerArtikel->cSprachURL_arr[$oSprache->kSprache])) {
-                $_SESSION['Sprachen'][$i]->cURL = $AktuellerArtikel->cSprachURL_arr[$oSprache->kSprache];
+                $_SESSION['Sprachen'][$i]->cURL     = $AktuellerArtikel->cSprachURL_arr[$oSprache->kSprache];
+                $_SESSION['Sprachen'][$i]->cURLFull = $shopURL . '/' . $AktuellerArtikel->cSprachURL_arr[$oSprache->kSprache];
             } elseif (($kLink > 0 || $kSeite > 0) && isset($sprachURL[$oSprache->cISO])) {
-                $_SESSION['Sprachen'][$i]->cURL = $sprachURL[$oSprache->cISO];
+                $_SESSION['Sprachen'][$i]->cURL     = $sprachURL[$oSprache->cISO];
+                $_SESSION['Sprachen'][$i]->cURLFull = $shopURL . '/' . $sprachURL[$oSprache->cISO];
             } elseif ($AktuelleSeite === 'WARENKORB'
                 || $AktuelleSeite === 'KONTAKT'
                 || $AktuelleSeite === 'REGISTRIEREN'
@@ -3829,15 +3829,15 @@ function setzeSpracheUndWaehrungLink()
 
                 executeHook(HOOK_TOOLSGLOBAL_INC_SWITCH_SETZESPRACHEUNDWAEHRUNG_SPRACHE);
             } else {
-                $sprachURL = gibNaviURL($NaviFilter, true, $oZusatzFilter, $oSprache->kSprache);
+                $cUrl = gibNaviURL($NaviFilter, true, $oZusatzFilter, $oSprache->kSprache);
                 if (!empty($NaviFilter->nSeite) && $NaviFilter->nSeite > 1) {
                     if (strpos($sprachURL, 'navi.php') !== false) {
-                        $sprachURL .= '&amp;seite=' . $NaviFilter->nSeite;
+                        $cUrl .= '&amp;seite=' . $NaviFilter->nSeite;
                     } else {
-                        $sprachURL .= SEP_SEITE . $NaviFilter->nSeite;
+                        $cUrl .= SEP_SEITE . $NaviFilter->nSeite;
                     }
                 }
-                $_SESSION['Sprachen'][$i]->cURL = $sprachURL;
+                $_SESSION['Sprachen'][$i]->cURL = $cUrl;
             }
         }
     }
@@ -4960,7 +4960,7 @@ function aktiviereZahlungsart($oZahlungsart)
         $kZahlungsart = (int)$oZahlungsart->kZahlungsart;
         $nNutzbar     = 0;
         // SOAP
-        if ($oZahlungsart->nSOAP) {
+        if (isset($oZahlungsart->nSOAP) && $oZahlungsart->nSOAP) {
             $nNutzbar = (pruefeSOAP()) ? 1 : 0;
         }
         // CURL
@@ -4970,10 +4970,6 @@ function aktiviereZahlungsart($oZahlungsart)
         // SOCKETS
         if (isset($oZahlungsart->nSOCKETS) && $oZahlungsart->nSOCKETS) {
             $nNutzbar = (pruefeSOCKETS()) ? 1 : 0;
-        }
-        // ALLOW URL FOPEN
-        if (isset($oZahlungsart->nALLOWURLFOPEN) && $oZahlungsart->nALLOWURLFOPEN) {
-            $nNutzbar = (pruefeALLOWFOPEN()) ? 1 : 0;
         }
         $upd = new stdClass();
         $upd->nNutzbar = $nNutzbar;
@@ -5369,6 +5365,7 @@ function pruefeWarenkorbStueckliste($oArtikel, $fAnzahl)
         } else {
             $oStuecklisteKomponente_arr = gibStuecklistenKomponente($oArtikel->kStueckliste, true);
         }
+        /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
         foreach ($_SESSION['Warenkorb']->PositionenArr as $oPosition) {
             if ($oPosition->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL) {
                 // Komponente soll hinzugefügt werden aber die Stückliste ist bereits im Warenkorb

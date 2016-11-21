@@ -786,7 +786,7 @@ class Kunde
                 $originalHash = $timestampAndHash[1];
                 //check if the link is not expired (=24 hours valid)
                 $createdAt = new DateTime();
-                $createdAt->setTimestamp((int) $timeStamp);
+                $createdAt->setTimestamp((int)$timeStamp);
                 $now  = new DateTime();
                 $diff = $now->diff($createdAt);
                 $secs = $diff->format('%a') * (60 * 60 * 24); //total days

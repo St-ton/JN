@@ -56,7 +56,7 @@ if ($kArtikel > 0 && $nBildNummer > 0 && $nSize > 0) {
                 if ($cBildformat && $kArtikel !== $nBildNummer) {
                     $im = ladeBild(PFAD_ROOT . $image);
                     if ($im) {
-                        header('Content-type: image/' . $shopURL . $image);
+                        header('Content-type: image/' . $cBildformat);
                         imagepng($im);
                         imagedestroy($im);
                     }

@@ -64,6 +64,7 @@ if (Shop::$is404 === true) {
     $cParameter_arr['is404'] = true;
     Shop::$fileName = null;
 }
+$smarty->assign('NaviFilter', $NaviFilter);
 if (Shop::$fileName !== null) {
     require PFAD_ROOT . Shop::$fileName;
 }

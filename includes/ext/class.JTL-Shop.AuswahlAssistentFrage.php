@@ -61,7 +61,7 @@ if (class_exists('AuswahlAssistent')) {
 
         /**
          * @param int  $kAuswahlAssistentFrage
-         * @param bool $bAktiv
+         * @param bool $bOnlyActive
          */
         public function __construct($kAuswahlAssistentFrage = 0, $bOnlyActive = true)
         {
@@ -74,7 +74,7 @@ if (class_exists('AuswahlAssistent')) {
 
         /**
          * @param int  $kAuswahlAssistentFrage
-         * @param bool $bAktiv
+         * @param bool $bOnlyActive
          */
         private function loadFromDB($kAuswahlAssistentFrage, $bOnlyActive = true)
         {
@@ -103,8 +103,10 @@ if (class_exists('AuswahlAssistent')) {
                 $this->nSort                   = (int)$this->nSort;
                 $this->nAktiv                  = (int)$this->nAktiv;
 
-                // Used by old AWA
-                $this->oMerkmal = self::getMerkmal($this->kMerkmal, true);
+                if (TEMPLATE_COMPATIBILITY === true) {
+                    // Used by old AWA
+                    $this->oMerkmal = self::getMerkmal($this->kMerkmal, true);
+                }
             }
         }
 

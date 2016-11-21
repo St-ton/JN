@@ -122,7 +122,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
                                 AND ao.kKey = " . $kKey . "
                                 AND ag.kSprache = " . $kSprache . "
                                 " . ($bOnlyActive ? "AND ag.nAktiv = 1" : ""),
-                1);
+                1
+            );
 
             if ($oDbResult !== null && $oDbResult !== false) {
                 foreach (get_object_vars($oDbResult) as $name => $value) {
@@ -141,7 +142,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
                         WHERE kAuswahlAssistentGruppe = " . $this->kAuswahlAssistentGruppe . "
                             " . ($bOnlyActive ? "AND nAktiv = 1" : "") . "
                         ORDER BY nSort",
-                    2);
+                    2
+                );
 
                 $this->oFrage_arr = [];
 
@@ -154,12 +156,12 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
         }
 
         /**
-         * @param $kMerkmalWert
+         * @param $kWert
          * @return $this
          */
         public function setNextSelection($kWert)
         {
-            if($this->nCurQuestion < count($this->oFrage_arr)) {
+            if ($this->nCurQuestion < count($this->oFrage_arr)) {
                 $this->kSelection_arr[] = $kWert;
                 $this->nCurQuestion    += 1;
             }
@@ -201,10 +203,12 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
                 $oFrage->oWert_arr         = $oMerkmalFilter->oMerkmalWerte_arr;
                 $oFrage->nTotalResultCount = 0;
 
-                // Used by old AWA
-                $oFrage->oMerkmalWert_arr = $oFrage->oWert_arr;
+                if (TEMPLATE_COMPATIBILITY === true) {
+                    // Used by old AWA
+                    $oFrage->oMerkmalWert_arr = $oFrage->oWert_arr;
+                }
 
-                foreach($oMerkmalFilter->oMerkmalWerte_arr as &$oWert) {
+                foreach ($oMerkmalFilter->oMerkmalWerte_arr as &$oWert) {
                     $oWert->kMerkmalWert                       = (int)$oWert->kMerkmalWert;
                     $oWert->nAnzahl                            = (int)$oWert->nAnzahl;
                     $oFrage->nTotalResultCount                += $oWert->nAnzahl;
@@ -391,7 +395,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
          * @param $cKey
          * @param $kKey
          * @param int $kSprache
-         * @param int $kKategorie
+         * @param JTLSmarty $smarty
+         * @param array $nSelection_arr
          * @return self|null
          */
         public static function startIfRequired($cKey, $kKey, $kSprache = 0, $smarty = null, $nSelection_arr = [])

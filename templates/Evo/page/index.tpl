@@ -2,7 +2,7 @@
     <div class="alert alert-danger">{$cFehler}</div>
 {/if}
 
-{include file="selectionwizard/index.tpl"}
+{include file="productwizard/index.tpl"}
 
 {if isset($StartseiteBoxen) && $StartseiteBoxen|@count > 0}
     <hr>

@@ -74,7 +74,11 @@ if ($link->nLinkart == LINKTYP_STARTSEITE) {
     $smarty->assign('StartseiteBoxen', gibStartBoxen())
            ->assign('Navigation', $Navigation);
     // Auswahlassistent
-    if (class_exists('AuswahlAssistent')) {
+    if (TEMPLATE_COMPATIBILITY === true && function_exists('starteAuswahlAssistent')) {
+        starteAuswahlAssistent(
+            AUSWAHLASSISTENT_ORT_STARTSEITE, 1, Shop::$kSprache, $smarty, $Einstellungen['auswahlassistent']
+        );
+    } elseif (class_exists('AuswahlAssistent')) {
         AuswahlAssistent::startIfRequired(AUSWAHLASSISTENT_ORT_STARTSEITE, 1, Shop::$kSprache, $smarty);
     }
     if ($Einstellungen['news']['news_benutzen'] === 'Y') {
@@ -128,7 +132,11 @@ if ($link->nLinkart == LINKTYP_STARTSEITE) {
 } elseif ($link->nLinkart == LINKTYP_AUSWAHLASSISTENT) {
     Shop::setPageType(PAGE_AUSWAHLASSISTENT);
     // Auswahlassistent
-    if (class_exists('AuswahlAssistent')) {
+    if (TEMPLATE_COMPATIBILITY === true && function_exists('starteAuswahlAssistent')) {
+        starteAuswahlAssistent(
+            AUSWAHLASSISTENT_ORT_LINK, $link->kLink, Shop::$kSprache, $smarty, $Einstellungen['auswahlassistent']
+        );
+    } elseif (class_exists('AuswahlAssistent')) {
         AuswahlAssistent::startIfRequired(AUSWAHLASSISTENT_ORT_LINK, $link->kLink, Shop::$kSprache, $smarty);
     }
 } elseif ($link->nLinkart == LINKTYP_404) {

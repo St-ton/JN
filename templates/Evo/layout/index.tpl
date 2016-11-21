@@ -49,7 +49,7 @@
     {elseif $Link->nLinkart == 25 && empty($nFullscreenTemplate)}
         {include file="$cPluginTemplate"}
     {elseif $Link->nLinkart == 26}
-        {include file='selectionwizard/index.tpl'}
+        {include file='productwizard/index.tpl'}
     {elseif $Link->nLinkart == 29}
         {include file='page/404.tpl'}
     {/if}

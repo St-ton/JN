@@ -258,9 +258,15 @@ if (strpos(basename(gibNaviURL($NaviFilter, true, null)), '.php') === false || !
     $cCanonicalURL = gibNaviURL($NaviFilter, true, null, 0, true) . $cSeite;
 }
 // Auswahlassistent
-if (class_exists('AuswahlAssistent')) {
-    AuswahlAssistent::startIfRequired(AUSWAHLASSISTENT_ORT_KATEGORIE, $cParameter_arr['kKategorie'], Shop::$kSprache,
-        $smarty);
+if (TEMPLATE_COMPATIBILITY === true && function_exists('starteAuswahlAssistent')) {
+    starteAuswahlAssistent(
+        AUSWAHLASSISTENT_ORT_KATEGORIE, $cParameter_arr['kKategorie'], Shop::$kSprache, $smarty,
+        $Einstellungen['auswahlassistent']
+    );
+} elseif (class_exists('AuswahlAssistent')) {
+    AuswahlAssistent::startIfRequired(
+        AUSWAHLASSISTENT_ORT_KATEGORIE, $cParameter_arr['kKategorie'], Shop::$kSprache, $smarty
+    );
 }
 $smarty->assign('SEARCHSPECIALS_TOPREVIEWS', SEARCHSPECIALS_TOPREVIEWS)
        ->assign('PFAD_ART_ABNAHMEINTERVALL', PFAD_ART_ABNAHMEINTERVALL)

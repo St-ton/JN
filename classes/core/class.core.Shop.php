@@ -545,7 +545,7 @@ final class Shop
      */
     public static function getLanguage($iso = false)
     {
-        return ($iso === false) ? self::$kSprache : self::$cISO;
+        return ($iso === false) ? (int)self::$kSprache : self::$cISO;
     }
 
     /**

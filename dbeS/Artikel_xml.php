@@ -159,7 +159,7 @@ function bearbeiteInsert($xml, array $conf)
     }
     if (is_array($xml['tartikel'])) {
         $artikel_arr = mapArray($xml, 'tartikel', $GLOBALS['mArtikel']);
-        // Alten SEO-Pfad merken. Eintrag in tredirect, wenn sich der Pfad geändert hat. 
+        // Alten SEO-Pfad merken. Eintrag in tredirect, wenn sich der Pfad geändert hat.
         $oSeoOld       = Shop::DB()->select('tartikel', 'kArtikel', (int)$Artikel->kArtikel, null, null, null, null, false, 'cSeo');
         $oSeoAssoc_arr = getSeoFromDB($Artikel->kArtikel, 'kArtikel', null, 'kSprache');
         $isParent      = (isset($artikel_arr[0]->nIstVater)) ? 1 : 0;
@@ -181,12 +181,12 @@ function bearbeiteInsert($xml, array $conf)
             foreach ($newArticleCategories as $newArticleCategory) {
                 if (!in_array($newArticleCategory, $currentArticleCategories)) {
                     // the article was previously not associated with this category
-                    $articleCount = Shop::DB()->query("
-                        SELECT count(tkategorieartikel.kArtikel) AS count 
-                          FROM tkategorieartikel 
-                          LEFT JOIN tartikel 
-                            ON tartikel.kArtikel = tkategorieartikel.kArtikel 
-                            WHERE tkategorieartikel.kKategorie = " . $newArticleCategory . " " . gibLagerfilter(), 1
+                    $articleCount = Shop::DB()->query(
+                        "SELECT count(tkategorieartikel.kArtikel) AS count
+                            FROM tkategorieartikel
+                            LEFT JOIN tartikel
+                                ON tartikel.kArtikel = tkategorieartikel.kArtikel
+                            WHERE tkategorieartikel.kKategorie = {$newArticleCategory} " . gibLagerfilter(), 1
                     );
                     if (isset($articleCount->count) && (int)$articleCount->count === 0) {
                         // the category was previously empty - flush cache
@@ -201,12 +201,12 @@ function bearbeiteInsert($xml, array $conf)
                     // check if the article is removed from an existing category
                     if (!in_array($category, $newArticleCategories)) {
                         // check if the article was the only one in at least one of these categories
-                        $articleCount = Shop::DB()->query("
-                            SELECT count(tkategorieartikel.kArtikel) AS count 
-                              FROM tkategorieartikel 
-                              LEFT JOIN tartikel 
-                                ON tartikel.kArtikel = tkategorieartikel.kArtikel 
-                                WHERE tkategorieartikel.kKategorie = " . $category . " " . gibLagerfilter(), 1
+                        $articleCount = Shop::DB()->query(
+                            "SELECT count(tkategorieartikel.kArtikel) AS count
+                                FROM tkategorieartikel
+                                LEFT JOIN tartikel
+                                    ON tartikel.kArtikel = tkategorieartikel.kArtikel
+                                WHERE tkategorieartikel.kKategorie = {$category} " . gibLagerfilter(), 1
                         );
                         if (!isset($articleCount->count) || (int)$articleCount->count === 1) {
                             // the category only had this article in it - flush cache
@@ -234,11 +234,11 @@ function bearbeiteInsert($xml, array $conf)
                     }
                     if ($check === true) {
                         // get count of visible articles in the article's futre categories
-                        $articleCount = Shop::DB()->query("
-                            SELECT tkategorieartikel.kKategorie, count(tkategorieartikel.kArtikel) AS count 
-                              FROM tkategorieartikel 
-                              LEFT JOIN tartikel 
-                                ON tartikel.kArtikel = tkategorieartikel.kArtikel 
+                        $articleCount = Shop::DB()->query(
+                            "SELECT tkategorieartikel.kKategorie, count(tkategorieartikel.kArtikel) AS count
+                                FROM tkategorieartikel
+                                LEFT JOIN tartikel
+                                    ON tartikel.kArtikel = tkategorieartikel.kArtikel
                                 WHERE tkategorieartikel.kKategorie IN (" . implode(',', $newArticleCategories) . ") " . gibLagerfilter() . " GROUP BY tkategorieartikel.kKategorie", 2
                         );
                         if (is_array($newArticleCategories) && !empty($newArticleCategories)) {
@@ -317,18 +317,18 @@ function bearbeiteInsert($xml, array $conf)
             
             //any new orders since last wawi-sync? see https://gitlab.jtl-software.de/jtlshop/jtl-shop/issues/304
             if (isset($artikel_arr[0]->fLagerbestand) && $artikel_arr[0]->fLagerbestand > 0) {
-                $delta = Shop::DB()->query("
-                  SELECT SUM(pos.nAnzahl) AS totalquantity 
-                    FROM tbestellung b 
-                      JOIN twarenkorbpos pos 
-                        ON pos.kWarenkorb = b.kWarenkorb 
-                        WHERE b.cAbgeholt = 'N' 
-                          AND pos.kArtikel = " . (int)$artikel_arr[0]->kArtikel, 1
+                $delta = Shop::DB()->query(
+                    "SELECT SUM(pos.nAnzahl) AS totalquantity
+                        FROM tbestellung b
+                        JOIN twarenkorbpos pos
+                            ON pos.kWarenkorb = b.kWarenkorb
+                        WHERE b.cAbgeholt = 'N'
+                            AND pos.kArtikel = " . (int)$artikel_arr[0]->kArtikel, 1
                 );
-                if($delta->totalquantity > 0) {
+                if ($delta->totalquantity > 0) {
                     $artikel_arr[0]->fLagerbestand = $artikel_arr[0]->fLagerbestand - $delta->totalquantity; //subtract delta from stocklevel
                     if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                        Jtllog::writeLog("Artikel-Sync: Lagerbestand von kArtikel {$artikel_arr[0]->kArtikel} wurde wegen nicht-abgeholter Bestellungen um {$delta->totalquantity} reduziert auf {$artikel_arr[0]->fLagerbestand}." , JTLLOG_LEVEL_DEBUG, false, 'Artikel_xml');
+                        Jtllog::writeLog("Artikel-Sync: Lagerbestand von kArtikel {$artikel_arr[0]->kArtikel} wurde wegen nicht-abgeholter Bestellungen um {$delta->totalquantity} reduziert auf {$artikel_arr[0]->fLagerbestand}.", JTLLOG_LEVEL_DEBUG, false, 'Artikel_xml');
                     }
                 }
             }
@@ -370,8 +370,10 @@ function bearbeiteInsert($xml, array $conf)
                 }
                 $artikelsprache_arr[$i]->cSeo = getSeo($artikelsprache_arr[$i]->cSeo);
                 $artikelsprache_arr[$i]->cSeo = checkSeo($artikelsprache_arr[$i]->cSeo);
+
                 DBUpdateInsert('tartikelsprache', [$artikelsprache_arr[$i]], 'kArtikel', 'kSprache');
                 Shop::DB()->delete('tseo', ['cKey', 'kKey', 'kSprache'], ['kArtikel', (int)$artikelsprache_arr[$i]->kArtikel, (int)$artikelsprache_arr[$i]->kSprache]);
+
                 $oSeo           = new stdClass();
                 $oSeo->cSeo     = $artikelsprache_arr[$i]->cSeo;
                 $oSeo->cKey     = 'kArtikel';
@@ -518,11 +520,11 @@ function bearbeiteInsert($xml, array $conf)
             DBUpdateInsert('tartikelkonfiggruppe', $oArtikelKonfig_arr, 'kArtikel', 'kKonfiggruppe');
         }
         // Sonderpreise
-        Shop::DB()->query("
-            DELETE asp, sp
+        Shop::DB()->query(
+            "DELETE asp, sp
                 FROM tartikelsonderpreis asp LEFT JOIN tsonderpreise sp ON sp.kArtikelSonderpreis = asp.kArtikelSonderpreis
-                WHERE asp.kArtikel = " . (int)$artikel_arr[0]->kArtikel,
-            4);
+                WHERE asp.kArtikel = " . (int)$artikel_arr[0]->kArtikel, 4
+        );
         if (isset($xml['tartikel']['tartikelsonderpreis'])) {
             updateXMLinDB($xml['tartikel']['tartikelsonderpreis'], 'tsonderpreise', $GLOBALS['mSonderpreise'], 'kArtikelSonderpreis', 'kKundengruppe');
         }
@@ -543,8 +545,8 @@ function bearbeiteInsert($xml, array $conf)
         updateXMLinDB($xml['tartikel'], 'tartikelmerkmal', $GLOBALS['mArtikelSichtbarkeit'], 'kMermalWert');
         if ($artikel_arr[0]->nIstVater == 1) {
             //Lagerbestand-Update: Lagerbestand des Vaterartikels berechnet sich aus der Summe der Kindartikel-Lagerbestände
-            Shop::DB()->query("
-                UPDATE tartikel SET fLagerbestand =
+            Shop::DB()->query(
+                "UPDATE tartikel SET fLagerbestand =
                     (SELECT * FROM
                         (SELECT SUM(fLagerbestand) FROM tartikel WHERE kVaterartikel = " . (int)$artikel_arr[0]->kArtikel . ") AS x)
                     WHERE kArtikel = " . (int)$artikel_arr[0]->kArtikel, 3
@@ -560,7 +562,6 @@ function bearbeiteInsert($xml, array $conf)
                     WHERE kArtikel = " . (int)$artikel_arr[0]->kVaterArtikel, 3);
             // Aktualisiere Merkmale in tartikelmerkmal vom Vaterartikel
             Artikel::beachteVarikombiMerkmalLagerbestand($artikel_arr[0]->kVaterArtikel, $conf['global']['artikel_artikelanzeigefilter']);
-            
         }
         // SQL DEL
         if (isset($xml['tartikel']['SQLDEL']) && strlen($xml['tartikel']['SQLDEL']) > 10) { // teigenschaftkombiwert sqls absetzen
@@ -599,9 +600,10 @@ function bearbeiteInsert($xml, array $conf)
         // tkategoriegesamt füllen
         fuelleKategorieGesamt(mapArray($xml['tartikel'], 'tkategorieartikel', $GLOBALS['mKategorieArtikel']));
         // Artikel Warenlager
+        Shop::DB()->delete('tartikelwarenlager', 'kArtikel', (int)$xml['tartikel attr']['kArtikel']);
         if (isset($xml['tartikel']['tartikelwarenlager']) && is_array($xml['tartikel']['tartikelwarenlager'])) {
             $oArtikelWarenlager_arr = mapArray($xml['tartikel'], 'tartikelwarenlager', $GLOBALS['mArtikelWarenlager']);
-            Shop::DB()->delete('tartikelwarenlager', 'kArtikel', (int)$xml['tartikel attr']['kArtikel']);
+
             foreach ($oArtikelWarenlager_arr as $oArtikelWarenlager) {
                 if (isset($oArtikelWarenlager->dZulaufDatum) && $oArtikelWarenlager->dZulaufDatum === '') {
                     $oArtikelWarenlager->dZulaufDatum = '0000-00-00 00:00:00';
@@ -840,12 +842,12 @@ function loescheArtikel($kArtikel, $nIstVater = 0, $bForce = false, $conf = null
         $articleCategories = Shop::DB()->selectAll('tkategorieartikel', 'kArtikel', $kArtikel, 'kKategorie');
         foreach ($articleCategories as $category) {
             // check if the article was the only one in at least one of these categories
-            $categoryCount = Shop::DB()->query("
-                        SELECT count(tkategorieartikel.kArtikel) AS count 
-                          FROM tkategorieartikel 
-                          LEFT JOIN tartikel 
-                            ON tartikel.kArtikel = tkategorieartikel.kArtikel 
-                            WHERE tkategorieartikel.kKategorie = " . (int)$category->kKategorie . " " . gibLagerfilter(), 1
+            $categoryCount = Shop::DB()->query(
+                "SELECT count(tkategorieartikel.kArtikel) AS count
+                    FROM tkategorieartikel
+                    LEFT JOIN tartikel
+                        ON tartikel.kArtikel = tkategorieartikel.kArtikel
+                    WHERE tkategorieartikel.kKategorie = " . (int)$category->kKategorie . " " . gibLagerfilter(), 1
             );
             if (!isset($categoryCount->count) || (int)$categoryCount->count === 1) {
                 // the category only had this article in it - flush cache
@@ -945,7 +947,8 @@ function loescheArtikelEigenschaftWert($kArtikel)
                 FROM teigenschaftwert
                 JOIN teigenschaft
                     ON teigenschaft.kEigenschaft = teigenschaftwert.kEigenschaft
-                WHERE teigenschaft.kArtikel = $kArtikel", 2);
+                WHERE teigenschaft.kArtikel = $kArtikel", 2
+        );
 
         if (is_array($eigenschaftWert_arr) && count($eigenschaftWert_arr)) {
             foreach ($eigenschaftWert_arr as $oEigenschaftWert) {
@@ -1071,7 +1074,7 @@ function loescheArtikelDownload($kArtikel)
     if ($kArtikel > 0) {
         $downloadKeys = getDownloadKeys($kArtikel);
 
-        foreach($downloadKeys as $kDownload) {
+        foreach ($downloadKeys as $kDownload) {
             loescheDownload($kArtikel, $kDownload);
         }
     }
@@ -1152,7 +1155,9 @@ function fuelleKategorieGesamt($oKategorieArtikel_arr)
                 }
             }
         }
-        array_walk($cacheTags, function(&$i) { $i = CACHING_GROUP_CATEGORY . '_' . $i; });
+        array_walk($cacheTags, function (&$i) {
+            $i = CACHING_GROUP_CATEGORY . '_' . $i;
+        });
         Shop::Cache()->flushTags($cacheTags);
     }
 }
@@ -1212,11 +1217,12 @@ function getConfigParents($kArtikel)
  * @param  int $kArtikel
  * @return array
  */
-function getDownloadKeys($kArtikel) {
+function getDownloadKeys($kArtikel)
+{
     $kArtikel = (int)$kArtikel;
     if ($kArtikel > 0) {
         $download_arr = Shop::DB()->selectAll('tartikeldownload', 'kArtikel', $kArtikel, 'kDownload');
-        array_walk($download_arr, function(&$item, $key){
+        array_walk($download_arr, function (&$item, $key) {
             $item = (int)$item->kDownload;
         });
 
@@ -1237,7 +1243,9 @@ function clearProductCaches($kArtikel)
     $kArtikel  = (int)$kArtikel;
     $parentIDs = getConfigParents($kArtikel);
     $cacheTags = [];
-    array_walk($parentIDs, function(&$i) { $i = CACHING_GROUP_ARTICLE . '_' . $i; });
+    array_walk($parentIDs, function (&$i) {
+        $i = CACHING_GROUP_ARTICLE . '_' . $i;
+    });
     //flush config parents cache
     Shop::Cache()->flushTags($parentIDs);
     //flush cache tags associated with the article's manufacturer ID
@@ -1252,7 +1260,9 @@ function clearProductCaches($kArtikel)
             $cacheTags[] = (int)$_articleCategory->kKategorie;
         }
     }
-    array_walk($cacheTags, function(&$i) { $i = CACHING_GROUP_CATEGORY . '_' . $i; });
+    array_walk($cacheTags, function (&$i) {
+        $i = CACHING_GROUP_CATEGORY . '_' . $i;
+    });
     $cacheTags[] = CACHING_GROUP_ARTICLE . '_' . $kArtikel;
     $cacheTags[] = 'jtl_mmf';
     //flush article cache, category cache and cache for gibMerkmalFilterOptionen() and mega menu/category boxes

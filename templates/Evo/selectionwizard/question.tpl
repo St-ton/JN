@@ -67,11 +67,6 @@
                         {/if}
                         {if $AWA->getConf('auswahlassistent_anzeigeformat')|in_array:['T', 'BT']}
                             {$oWert->cWert}
-                            {if $AWA->getConf('auswahlassistent_anzahl_anzeigen') === 'Y'}
-                                <span class="badge">
-                                    {$oWert->nAnzahl}
-                                </span>
-                            {/if}
                         {/if}
                     </span>
                 {/if}

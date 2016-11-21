@@ -78,19 +78,19 @@ if (class_exists('AuswahlAssistent')) {
          */
         private function loadFromDB($kAuswahlAssistentFrage, $bOnlyActive = true)
         {
-            $oDbResult = Shop::DB()->query("
-                    SELECT af.*, m.cBildpfad, COALESCE(ms.cName, m.cName) AS cName, m.cBildpfad
-                        FROM tauswahlassistentfrage AS af
-                            JOIN tauswahlassistentgruppe as ag
-                                ON ag.kAuswahlAssistentGruppe = af.kAuswahlAssistentGruppe 
-                            JOIN tmerkmal AS m
-                                ON m.kMerkmal = af.kMerkmal 
-                            LEFT JOIN tmerkmalsprache AS ms
-                                ON ms.kMerkmal = m.kMerkmal 
-                                    AND ms.kSprache = ag.kSprache
-                        WHERE af.kAuswahlAssistentFrage = " . $kAuswahlAssistentFrage . "
-                            " . ($bOnlyActive ? "AND af.nAktiv = 1" : "") . "
-                ", 1);
+            $oDbResult = Shop::DB()->query(
+                "SELECT af.*, m.cBildpfad, COALESCE(ms.cName, m.cName) AS cName, m.cBildpfad
+                    FROM tauswahlassistentfrage AS af
+                        JOIN tauswahlassistentgruppe as ag
+                            ON ag.kAuswahlAssistentGruppe = af.kAuswahlAssistentGruppe 
+                        JOIN tmerkmal AS m
+                            ON m.kMerkmal = af.kMerkmal 
+                        LEFT JOIN tmerkmalsprache AS ms
+                            ON ms.kMerkmal = m.kMerkmal 
+                                AND ms.kSprache = ag.kSprache
+                    WHERE af.kAuswahlAssistentFrage = " . $kAuswahlAssistentFrage . "
+                        " . ($bOnlyActive ? "AND af.nAktiv = 1" : ""),
+                1);
 
             if ($oDbResult !== null && $oDbResult !== false) {
                 foreach (get_object_vars($oDbResult) as $name => $value) {

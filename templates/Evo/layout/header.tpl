@@ -51,12 +51,11 @@
             <link rel="alternate" type="application/rss+xml" title="Newsfeed {$Einstellungen.global.global_shopname}" href="rss.xml">
         {/if}
         {* Languages *}
-        {if !empty($smarty.session.Sprachen)}
-            {foreach item="oSprache" from=$smarty.session.Sprachen}
-                {if $oSprache->kSprache !== $smarty.session.kSprache}
+        {if !empty($smarty.session.Sprachen) && count($smarty.session.Sprachen) > 1}
+            {foreach item=oSprache from=$smarty.session.Sprachen}
+                {if $oSprache->kSprache != $smarty.session.kSprache}
                     <link rel="alternate" hreflang="{$oSprache->cISO639}" href="{$oSprache->cURL}">
-                {/if}
-                {if $oSprache->kSprache === $smarty.session.kSprache && $oSprache->cStandard === 'Y'}
+                {elseif $oSprache->kSprache == $smarty.session.kSprache && $oSprache->cStandard === 'Y' && isset($oSprache->cURL)}
                     <link rel="alternate" hreflang="x-default" href="{$oSprache->cURL}">
                 {/if}
             {/foreach}

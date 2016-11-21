@@ -429,6 +429,9 @@ class Kategorie
     public function istUnterkategorie()
     {
         if ($this->kKategorie > 0) {
+            if ($this->kOberKategorie !== null && $this->kOberKategorie > 0) {
+                return (int)$this->kOberKategorie;
+            }
             $oObj = Shop::DB()->query(
                 "SELECT kOberKategorie
                     FROM tkategorie

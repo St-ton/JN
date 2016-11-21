@@ -141,6 +141,9 @@ if (class_exists('Upload')) {
                ->assign('oUploadSchema_arr', $oUploadSchema_arr);
     }
 }
+
+WarenkorbHelper::addVariationPictures($_SESSION['Warenkorb']);
+
 //specific assigns
 $smarty->assign('Navigation', createNavigation($AktuelleSeite))
        ->assign('Einstellungen', $Einstellungen)

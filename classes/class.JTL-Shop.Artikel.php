@@ -1334,6 +1334,15 @@ class Artikel
     }
 
     /**
+     * @param object $image
+     * @return string
+     */
+    public function getArtikelImageJSON($image)
+    {
+        return $this->prepareImageDetails($image, true);
+    }
+
+    /**
      *
      */
     public function holArtikelAttribute()
@@ -2712,7 +2721,7 @@ class Artikel
                     LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                         AND tartikelsichtbarkeit.kKundengruppe = " . $kKundengruppe . "
                     " . Preise::getPriceJoinSql($kKundengruppe) . "
-                    " . $cSQL . "
+                    {$cSQL}
                     JOIN tartikelpict ON tartikelpict.kArtikel = tartikel.kArtikel
                         AND tartikelpict.nNr = 1
                     WHERE tartikelsichtbarkeit.kArtikel IS NULL
@@ -2740,8 +2749,8 @@ class Artikel
                             "SELECT teigenschaftsprache.cName
                                 FROM teigenschaftsprache
                                 JOIN teigenschaft ON teigenschaft.kEigenschaft = teigenschaftsprache.kEigenschaft
-                                WHERE teigenschaftsprache.kEigenschaft " . $cVorschauSQL . "
-                                    AND teigenschaftsprache.kSprache = " . $kSprache . "
+                                WHERE teigenschaftsprache.kEigenschaft {$cVorschauSQL}
+                                    AND teigenschaftsprache.kSprache = {$kSprache}
                                 ORDER BY teigenschaft.nSort LIMIT 1", 1
                         );
                         $this->oVariationKombiVorschauText = Shop::Lang()->get('choosevariation', 'global') . ' ' . $oEigenschaft->cName;
@@ -2749,7 +2758,7 @@ class Artikel
                         $oEigenschaft = Shop::DB()->query(
                             "SELECT cName
                                 FROM teigenschaft
-                                WHERE kEigenschaft " . $cVorschauSQL . "
+                                WHERE kEigenschaft {$cVorschauSQL}
                                 ORDER BY nSort LIMIT 1", 1
                         );
                         $this->oVariationKombiVorschauText = $oEigenschaft->cName . ' ' . Shop::Lang()->get('choosevariation', 'global');
@@ -2874,10 +2883,10 @@ class Artikel
             $oVariationDetailPreis_arr = Shop::DB()->query(
                 "SELECT tartikel.kArtikel, teigenschaftkombiwert.kEigenschaft, teigenschaftkombiwert.kEigenschaftWert
                     FROM teigenschaftkombiwert
-                    JOIN tartikel ON tartikel.kVaterArtikel = " . $this->kArtikel . "
+                    JOIN tartikel ON tartikel.kVaterArtikel = {$this->kArtikel}
                         AND tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
                     LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                        AND tartikelsichtbarkeit.kKundengruppe = " . $kKundengruppe . "
+                        AND tartikelsichtbarkeit.kKundengruppe = {$kKundengruppe}
                     " . Preise::getPriceJoinSql($kKundengruppe) . "
                     WHERE tartikelsichtbarkeit.kArtikel IS NULL", 2
             );
@@ -5090,7 +5099,7 @@ class Artikel
                         (
                             SELECT kSuchCache
                             FROM tsuchcachetreffer
-                            WHERE kArtikel = " . $kArtikel . "
+                            WHERE kArtikel = {$kArtikel}
                                 AND nSort <= 10
                         ) AS ssSuchCache
                         JOIN tsuchcachetreffer ON tsuchcachetreffer.kSuchCache = ssSuchCache.kSuchCache
@@ -5101,7 +5110,7 @@ class Artikel
                             AND tartikel.kVaterArtikel != " . $kArtikel . "
                         WHERE tartikelsichtbarkeit.kArtikel IS NULL
                             " . gibLagerfilter() . "
-                            " . $cSQLXSeller . "
+                            {$cSQLXSeller}
                         GROUP BY tsuchcachetreffer.kArtikel
                         ORDER BY COUNT(*) DESC
                         " . $cLimit, 2
@@ -5114,7 +5123,7 @@ class Artikel
                         (
                             SELECT kTag
                             FROM ttagartikel
-                            WHERE kArtikel = " . $kArtikel . "
+                            WHERE kArtikel = {$kArtikel}
                         ) AS ssTag
                         JOIN ttagartikel ON ttagartikel.kTag = ssTag.kTag
                             AND ttagartikel.kArtikel != " . $kArtikel . "
@@ -5124,7 +5133,7 @@ class Artikel
                             AND tartikel.kVaterArtikel != " . $kArtikel . "
                         WHERE tartikelsichtbarkeit.kArtikel IS NULL
                             " . gibLagerfilter() . "
-                            " . $cSQLXSeller . "
+                            {$cSQLXSeller}
                         GROUP BY ttagartikel.kArtikel
                         ORDER BY COUNT(*) DESC
                         " . $cLimit, 2
@@ -5375,16 +5384,12 @@ class Artikel
             $cLaenderAssoc_arr = array();
             for ($i = 0; $i < $nLaender; $i++) {
                 if ($bString) {
-                    $cLaender .= (!isset($_SESSION['cISOSprache']) || $_SESSION['cISOSprache'] === 'ger') ?
-                        $oLand_arr[$i]->cDeutsch :
-                        $oLand_arr[$i]->cEnglisch;
+                    $cLaender .= (!isset($_SESSION['cISOSprache']) || $_SESSION['cISOSprache'] === 'ger') ? $oLand_arr[$i]->cDeutsch : $oLand_arr[$i]->cEnglisch;
                     if ($nLaender > ($i + 1)) {
                         $cLaender .= ', ';
                     }
                 } else {
-                    $cLaender = (!isset($_SESSION['cISOSprache']) || $_SESSION['cISOSprache'] === 'ger') ?
-                        $oLand_arr[$i]->cDeutsch :
-                        $oLand_arr[$i]->cEnglisch;
+                    $cLaender = (!isset($_SESSION['cISOSprache']) || $_SESSION['cISOSprache'] === 'ger') ? $oLand_arr[$i]->cDeutsch : $oLand_arr[$i]->cEnglisch;
                 }
                 $cLaenderAssoc_arr[$oLand_arr[$i]->cISO] = $cLaender;
             }

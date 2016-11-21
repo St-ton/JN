@@ -171,7 +171,7 @@
                             <div id="quantity-grp" class="choose_quantity input-group">
                                 <input type="number"{if $Artikel->fAbnahmeintervall > 0} required step="{$Artikel->fAbnahmeintervall}"{/if} id="quantity"
                                        class="quantity form-control text-right" name="anzahl"
-                                       value="{if $Artikel->fAbnahmeintervall > 0}{if $Artikel->fMindestbestellmenge > $Artikel->fAbnahmeintervall}{$Artikel->fMindestbestellmenge}{else}{$Artikel->fAbnahmeintervall}{/if}{elseif isset($fAnzahl)}{$fAnzahl}}{else}1{/if}" />
+                                       value="{if $Artikel->fAbnahmeintervall > 0}{if $Artikel->fMindestbestellmenge > $Artikel->fAbnahmeintervall}{$Artikel->fMindestbestellmenge}{else}{$Artikel->fAbnahmeintervall}{/if}{elseif isset($fAnzahl)}{$fAnzahl}{else}1{/if}" />
                                 <span class="input-group-btn">
                                     <button name="inWarenkorb" type="submit" value="{lang key="addToCart" section="global"}"
                                             class="submit btn btn-primary">

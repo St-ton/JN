@@ -451,6 +451,10 @@
             return this.stack[s];
         },
 
+        getStacks: function() {
+            return this.stack;
+        },
+
         activate: function(index) {
             $(this.element).find('ul.image-container > li, ul.image-thumbs > li').each(function (index, item) {
                 $(item).removeClass('active');

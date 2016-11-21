@@ -40,6 +40,11 @@ class Warenkorb
     public $cEstimatedDelivery = '';
 
     /**
+     * @var object
+     */
+    public $Waehrung = null;
+
+    /**
      * @var array
      */
     public static $updatedPositions = array();
@@ -264,6 +269,16 @@ class Warenkorb
                                     }
 
                                     $NeuePosition->setzeVariationsWert($EigenschaftWert->kEigenschaft, $EigenschaftWert->kEigenschaftWert);
+
+                                    // aktuellen Eigenschaftswert mit Bild ermitteln und Variationsbild an der Position speichern
+                                    $kEigenschaftWert = $EigenschaftWert->kEigenschaftWert;
+                                    $oVariationWert   = current(array_filter($eWert->Werte, function ($item) use ($kEigenschaftWert) {
+                                        return $item->kEigenschaftWert === $kEigenschaftWert && !empty($item->cPfadNormal);
+                                    }));
+
+                                    if ($oVariationWert !== false) {
+                                        WarenkorbHelper::setVariationPicture($NeuePosition, $oVariationWert);
+                                    }
                                 }
                             }
                         }
@@ -1232,6 +1247,7 @@ class Warenkorb
                     ) {
                         $nZeitLetzteAenderung = $this->PositionenArr[$i]->nZeitLetzteAenderung;
                         $oResult              = $this->PositionenArr[$i]->Artikel;
+                        ArtikelHelper::addVariationPictures($oResult, $this->PositionenArr[$i]->variationPicturesArr);
                     } elseif ($oResult === null) { //Wenn keine nZeitLetzteAenderung gesetzt ist letztes Element des WK-Arrays nehmen
                         $oResult = $this->PositionenArr[$i]->Artikel;
                     }

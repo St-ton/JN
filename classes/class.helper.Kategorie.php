@@ -76,7 +76,7 @@ class KategorieHelper
         if (self::$fullCategories !== null) {
             return self::$fullCategories;
         }
-        $conf        = Shop::getSettings(array(CONF_GLOBAL));
+        $conf        = Shop::getSettings([CONF_GLOBAL]);
         $filterEmpty = ($conf['global']['kategorien_anzeigefilter'] == EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_NICHTLEERE);
         $stockFilter = gibLagerfilter();
         $stockJoin   = '';
@@ -88,7 +88,9 @@ class KategorieHelper
                 return $_SESSION['oKategorie_arr_new'];
             }
             $isDefaultLang = standardspracheAktiv();
-            $select        = ($isDefaultLang) ? '' : ', tkategoriesprache.cName AS cName_spr, tkategoriesprache.cBeschreibung AS cBeschreibung_spr';
+            $select        = ($isDefaultLang)
+                ? ''
+                : ', tkategoriesprache.cName AS cName_spr, tkategoriesprache.cBeschreibung AS cBeschreibung_spr';
             if ($extended) {
                 $select .= ", COUNT(tartikel.kArtikel) AS cnt";
                 $stockJoin = "LEFT JOIN tartikel
@@ -131,12 +133,13 @@ class KategorieHelper
                         COALESCE(tkategorieattributsprache.cWert, tkategorieattribut.cWert) cWert,
                         tkategorieattribut.bIstFunktionsAttribut, tkategorieattribut.nSort
                     FROM tkategorieattribut 
-                    LEFT JOIN tkategorieattributsprache ON tkategorieattributsprache.kAttribut = tkategorieattribut.kKategorieAttribut
+                    LEFT JOIN tkategorieattributsprache 
+                        ON tkategorieattributsprache.kAttribut = tkategorieattribut.kKategorieAttribut
                         AND tkategorieattributsprache.kSprache = " . (int)self::$kSprache . "
                     ORDER BY tkategorieattribut.kKategorie, tkategorieattribut.bIstFunktionsAttribut DESC, tkategorieattribut.nSort", 2
             );
-            $functionAttributes  = array();
-            $localizedAttributes = array();
+            $functionAttributes  = [];
+            $localizedAttributes = [];
             if (is_array($_catAttribut_arr)) {
                 foreach ($_catAttribut_arr as $_catAttribut) {
                     $catID = (int)$_catAttribut->kKategorie;
@@ -148,13 +151,13 @@ class KategorieHelper
                 }
             }
 
-            $fullCats      = array();
+            $fullCats      = [];
             $current       = null;
             $currentParent = null;
-            $hierarchy     = array();
+            $hierarchy     = [];
             $shopURL       = Shop::getURL(true);
             if ($nodes === false) {
-                $nodes = array();
+                $nodes = [];
             }
             foreach ($nodes as $_idx => &$_cat) {
                 //Bildpfad setzen
@@ -184,25 +187,29 @@ class KategorieHelper
                 unset($_cat->cName_spr);
 
                 // Attribute holen
-                $_cat->categoryFunctionAttributes = (isset($functionAttributes[$_cat->kKategorie])) ? $functionAttributes[$_cat->kKategorie] : array();
-                $_cat->categoryAttributes         = (isset($localizedAttributes[$_cat->kKategorie])) ? $localizedAttributes[$_cat->kKategorie] : array();
+                $_cat->categoryFunctionAttributes = (isset($functionAttributes[$_cat->kKategorie]))
+                    ? $functionAttributes[$_cat->kKategorie]
+                    : [];
+                $_cat->categoryAttributes         = (isset($localizedAttributes[$_cat->kKategorie]))
+                    ? $localizedAttributes[$_cat->kKategorie]
+                    : [];
                 /** @deprecated since version 4.05 - usage of KategorieAttribute is deprecated, use categoryFunctionAttributes instead */
                 $_cat->KategorieAttribute         = &$_cat->categoryFunctionAttributes;
 
                 //interne Verlinkung $#k:X:Y#$
                 $_cat->cBeschreibung    = parseNewsText($_cat->cBeschreibung);
                 $_cat->bUnterKategorien = 0;
-                $_cat->Unterkategorien  = array();
+                $_cat->Unterkategorien  = [];
                 if ($_cat->kOberKategorie == 0) {
                     $fullCats[$_cat->kKategorie] = $_cat;
                     $current                     = $_cat;
                     $currentParent               = $_cat;
-                    $hierarchy                   = array($_cat->kKategorie);
+                    $hierarchy                   = [$_cat->kKategorie];
                 } else {
                     if ($current !== null && $_cat->kOberKategorie == $current->kKategorie) {
                         $current->bUnterKategorien = 1;
                         if (!isset($current->Unterkategorien)) {
-                            $current->Unterkategorien = array();
+                            $current->Unterkategorien = [];
                         }
                         $current->Unterkategorien[$_cat->kKategorie] = $_cat;
                         $current                                     = $_cat;
@@ -212,10 +219,7 @@ class KategorieHelper
                         $currentParent->bUnterKategorien                   = 1;
                         $currentParent->Unterkategorien[$_cat->kKategorie] = $_cat;
                         $current                                           = $_cat;
-                        $hierarchy                                         = array(
-                            $_cat->kOberKategorie,
-                            $_cat->kKategorie
-                        );
+                        $hierarchy                                         = [$_cat->kOberKategorie, $_cat->kKategorie];
                     } else {
                         $newCurrent = $fullCats;
                         $i          = 0;
@@ -231,7 +235,7 @@ class KategorieHelper
                                 break;
                             }
                             $newCurrent = $newCurrent[$_i]->Unterkategorien;
-                            $i++;
+                            ++$i;
                         }
                     }
                 }
@@ -239,9 +243,9 @@ class KategorieHelper
             if ($filterEmpty) {
                 $this->filterEmpty($fullCats)->removeRelicts($fullCats);
             }
-            executeHook(HOOK_GET_ALL_CATEGORIES, array('categories' => &$fullCats));
+            executeHook(HOOK_GET_ALL_CATEGORIES, ['categories' => &$fullCats]);
 
-            if (Shop::Cache()->set(self::$cacheID, $fullCats, array(CACHING_GROUP_CATEGORY, 'jtl_category_tree')) === false) {
+            if (Shop::Cache()->set(self::$cacheID, $fullCats, [CACHING_GROUP_CATEGORY, 'jtl_category_tree']) === false) {
                 //object cache disabled - save to session
                 $_SESSION['oKategorie_arr_new'] = $fullCats;
             }
@@ -326,7 +330,7 @@ class KategorieHelper
     {
         $current = $this->getCategoryById((int)$id);
 
-        return (isset($current->Unterkategorien)) ? array_values($current->Unterkategorien) : array();
+        return (isset($current->Unterkategorien)) ? array_values($current->Unterkategorien) : [];
     }
 
     /**
@@ -341,12 +345,12 @@ class KategorieHelper
         if (self::$fullCategories === null) {
             self::$fullCategories = $this->combinedGetAll();
         }
-        $tree = array();
+        $tree = [];
         $next = $this->getCategoryById($id);
         if (isset($next->kKategorie)) {
             if ($noChildren === true) {
                 $cat                  = clone $next;
-                $cat->Unterkategorien = array();
+                $cat->Unterkategorien = [];
             } else {
                 $cat = $next;
             }
@@ -356,7 +360,7 @@ class KategorieHelper
                 if (isset($next->kOberKategorie)) {
                     if ($noChildren === true) {
                         $cat                  = clone $next;
-                        $cat->Unterkategorien = array();
+                        $cat->Unterkategorien = [];
                     } else {
                         $cat = $next;
                     }

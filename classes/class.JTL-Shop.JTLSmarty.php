@@ -260,7 +260,7 @@ class JTLSmarty extends SmartyBC
              ->setForceCompile(SMARTY_FORCE_COMPILE ? true : false)
              ->setDebugging(SMARTY_DEBUG_CONSOLE ? true : false);
 
-        $this->config = Shop::getSettings(array(CONF_TEMPLATE, CONF_CACHING));
+        $this->config = Shop::getSettings(array(CONF_TEMPLATE, CONF_CACHING, CONF_GLOBAL));
         $template     = ($isAdmin) ? AdminTemplate::getInstance() : Template::getInstance();
         $cTemplate    = $template->getDir();
         $parent       = null;
@@ -307,7 +307,7 @@ class JTLSmarty extends SmartyBC
                  ->registerPlugin('modifier', 'truncate', array($this, 'truncate'));
 
             if ($isAdmin === false) {
-                $this->cache_lifetime = (isset($cacheOptions['expiration']) && ((int) $cacheOptions['expiration'] > 0)) ? $cacheOptions['expiration'] : 86400;
+                $this->cache_lifetime = (isset($cacheOptions['expiration']) && ((int)$cacheOptions['expiration'] > 0)) ? $cacheOptions['expiration'] : 86400;
                 //assign variables moved from $_SESSION to cache to smarty
                 $linkHelper = LinkHelper::getInstance();
                 $linkGroups = $linkHelper->getLinkGroups();
@@ -604,8 +604,7 @@ class JTLSmarty extends SmartyBC
      */
     public function replaceDelimiters($cText)
     {
-        $Einstellungen = Shop::getSettings(array(CONF_GLOBAL));
-        $cReplace      = $Einstellungen['global']['global_dezimaltrennzeichen_sonstigeangaben'];
+        $cReplace = $this->config['global']['global_dezimaltrennzeichen_sonstigeangaben'];
         if (strlen($cReplace) === 0 || $cReplace !== ',' || $cReplace !== '.') {
             $cReplace = ',';
         }

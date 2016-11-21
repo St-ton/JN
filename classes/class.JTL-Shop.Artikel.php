@@ -1217,30 +1217,27 @@ class Artikel
                 );
             }
             $imageCount = count($bilder_arr);
-            for ($i = 0; $i < $imageCount; $i++) {
-                $cBildPfad_arr[] = $bilder_arr[$i]->cPfad;
-                if (!isset($this->Bilder[$i])) {
-                    $this->Bilder[$i] = new stdClass();
-                }
-
-                $this->Bilder[$i]->cPfadMini   = MediaImage::getThumb(Image::TYPE_PRODUCT, $this->kArtikel, $this, Image::SIZE_XS, $bilder_arr[$i]->nNr);
-                $this->Bilder[$i]->cPfadKlein  = MediaImage::getThumb(Image::TYPE_PRODUCT, $this->kArtikel, $this, Image::SIZE_SM, $bilder_arr[$i]->nNr);
-                $this->Bilder[$i]->cPfadNormal = MediaImage::getThumb(Image::TYPE_PRODUCT, $this->kArtikel, $this, Image::SIZE_MD, $bilder_arr[$i]->nNr);
-                $this->Bilder[$i]->cPfadGross  = MediaImage::getThumb(Image::TYPE_PRODUCT, $this->kArtikel, $this, Image::SIZE_LG, $bilder_arr[$i]->nNr);
-                $this->Bilder[$i]->nNr         = $bilder_arr[$i]->nNr;
+            for ($i = 0; $i < $imageCount; ++$i) {
+                $image              = new stdClass();
+                $image->cPfadMini   = MediaImage::getThumb(Image::TYPE_PRODUCT, $this->kArtikel, $this, Image::SIZE_XS, $bilder_arr[$i]->nNr);
+                $image->cPfadKlein  = MediaImage::getThumb(Image::TYPE_PRODUCT, $this->kArtikel, $this, Image::SIZE_SM, $bilder_arr[$i]->nNr);
+                $image->cPfadNormal = MediaImage::getThumb(Image::TYPE_PRODUCT, $this->kArtikel, $this, Image::SIZE_MD, $bilder_arr[$i]->nNr);
+                $image->cPfadGross  = MediaImage::getThumb(Image::TYPE_PRODUCT, $this->kArtikel, $this, Image::SIZE_LG, $bilder_arr[$i]->nNr);
+                $image->nNr         = $bilder_arr[$i]->nNr;
 
                 if ($i === 0) {
                     $this->cVorschaubild = $this->Bilder[$i]->cPfadKlein;
                 }
                 //Lookup image alt attribute
-                $this->Bilder[$i]->cAltAttribut = (
-                    isset($this->AttributeAssoc['img_alt_' . $this->Bilder[$i]->nNr])
-                ) ? strip_tags($this->AttributeAssoc['img_alt_' . $this->Bilder[$i]->nNr]) : str_replace(array('"', "'"), '', $this->cName);
+                $image->cAltAttribut = (isset($this->AttributeAssoc['img_alt_' . $image->nNr]))
+                    ? strip_tags($this->AttributeAssoc['img_alt_' . $image->nNr])
+                    : str_replace(['"', "'"], '', $this->cName);
 
-                $this->Bilder[$i]->galleryJSON  = $this->prepareImageDetails($this->Bilder[$i]);
+                $image->galleryJSON = $this->prepareImageDetails($image);
+                $this->Bilder[$i]   = $image;
             }
             if ($imageCount === 0) {
-                $this->Bilder[0]->cAltAttribut = str_replace(array('"', "'"), '', $this->cName);
+                $this->Bilder[0]->cAltAttribut = str_replace(['"', "'"], '', $this->cName);
                 $this->Bilder[0]->galleryJSON  = $this->prepareImageDetails($this->Bilder[0]);
             }
         }
@@ -1295,7 +1292,11 @@ class Artikel
             }
 
             $settings = Image::getSettings();
-            $size     = $settings['size'][$req->getSizeType()];
+            $sizeType = $req->getSizeType();
+            if (!isset($settings['size'][$sizeType])) {
+                return null;
+            }
+            $size = $settings['size'][$sizeType];
 
             if ($settings['container'] === true) {
                 $width  = $size['width'];
@@ -3559,8 +3560,8 @@ class Artikel
         foreach ($this->Variationen as $tmpVari) {
             $tmpBestandVariationen += $tmpVari->nLieferbareVariationswerte;
         }
-        if (((int) $conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER ||
-            (int) $conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL) &&
+        if (((int)$conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER ||
+            (int)$conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL) &&
             $this->cLagerVariation === 'Y' && count($this->Variationen) > 0 && $tmpBestandVariationen === 0) {
             unset($this->kArtikel);
             return null;

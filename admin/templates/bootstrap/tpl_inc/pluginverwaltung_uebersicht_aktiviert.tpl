@@ -85,6 +85,11 @@
                                         {/if}
                                         {if (isset($PluginInstalliert->oPluginEinstellung_arr) && $PluginInstalliert->oPluginEinstellung_arr|@count > 0) || (isset($PluginInstalliert->oPluginAdminMenu_arr) && $PluginInstalliert->oPluginAdminMenu_arr|@count > 0)}
                                             <a class="btn btn-default btn-sm" href="plugin.php?kPlugin={$PluginInstalliert->kPlugin}" title="Einstellungen"><i class="fa fa-cogs"></i></a>
+                                        {else}
+                                            {if (isset($PluginInstalliert->cTextReadmePath) && $PluginInstalliert->cTextReadmePath|count_characters > 0) || (isset($PluginInstalliert->cTextLicensePath) && $PluginInstalliert->cTextLicensePath|count_characters > 0)}
+                                            <a class="btn btn-default btn-sm" href="plugin.php?kPlugin={$PluginInstalliert->kPlugin}" title="Dokumentation"><i class="fa fa-copy"></i></a>
+                                            {*<a class="btn btn-default btn-sm" href="plugin.php?kPlugin={$PluginInstalliert->kPlugin}" title="Dokumentation"><i class="fa fa-file-text-o"></i></a>*}
+                                            {/if}
                                         {/if}
                                         {if isset($PluginInstalliert->dUpdate) && $PluginInstalliert->dUpdate|strlen > 0 && $PluginInstalliert->cUpdateFehler == 1}
                                             <a onclick="ackCheck({$PluginInstalliert->kPlugin});return false;" class="btn btn-success btn-sm" title="{#pluginBtnUpdate#}"><i class="fa fa-refresh"></i></a>

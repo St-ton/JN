@@ -90,10 +90,10 @@ function uebernehmeWarenkorbAenderungen()
     $drop = null;
     $post = false;
     if (isset($_POST['dropPos'])) {
-        $drop = (int) $_POST['dropPos'];
+        $drop = (int)$_POST['dropPos'];
         $post = true;
     } elseif (isset($_GET['dropPos'])) {
-        $drop = (int) $_GET['dropPos'];
+        $drop = (int)$_GET['dropPos'];
     }
     if ($drop !== null) {
         loescheWarenkorbPosition($drop);
@@ -135,7 +135,7 @@ function uebernehmeWarenkorbAenderungen()
                     if (function_exists('bcdiv')) {
                         $dVielfache = round($Artikel->fAbnahmeintervall * ceil(bcdiv($_POST['anzahl'][$i],$Artikel->fAbnahmeintervall, 3)), 2);
                     } else {
-                        $dVielfache = round($Artikel->fAbnahmeintervall * ceil($anzahl / $Artikel->fAbnahmeintervall), $nGenauigkeit);
+                        $dVielfache = round($Artikel->fAbnahmeintervall * ceil($_POST['anzahl'][$i] / $Artikel->fAbnahmeintervall), 2);
                     }
 
                     if ($dVielfache != $_POST['anzahl'][$i]) {

@@ -252,7 +252,7 @@ function holeNewskategorie($kSprache = null, $cLimitSQL = '')
     if (!isset($kSprache)) {
         $kSprache = $_SESSION['kSprache'];
     }
-    $kSprache = (int) $kSprache;
+    $kSprache = (int)$kSprache;
 
     return Shop::DB()->query(
         "SELECT" . (!empty($cLimitSQL) ? " SQL_CALC_FOUND_ROWS" : '') . " *, DATE_FORMAT(dLetzteAktualisierung, '%d.%m.%Y %H:%i') AS dLetzteAktualisierung_de

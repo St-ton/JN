@@ -393,7 +393,7 @@ class PaymentMethod
             );
 
             if (isset($oBestellung->nAnzahl) && count($oBestellung->nAnzahl) > 0) {
-                return intval($oBestellung->nAnzahl);
+                return (int)$oBestellung->nAnzahl;
             }
         }
 

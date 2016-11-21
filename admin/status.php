@@ -36,6 +36,7 @@ switch ($action) {
 
     default: {
         $smarty->assign('status', Status::getInstance())
+            ->assign('phpLT55', (version_compare(phpversion(), '5.5') < 0))
             ->display('status.tpl');
         break;
     }

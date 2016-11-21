@@ -26,8 +26,6 @@ class cache_file implements ICachingMethod
         $this->options       = $options;
         $this->isInitialized = true;
         self::$instance      = $this;
-
-        return $this;
     }
 
     /**

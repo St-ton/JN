@@ -28,12 +28,10 @@ if ($kArtikel > 0 && $nBildNummer > 0 && $nSize > 0) {
     if (!isset($oKundengruppe->kKundengruppe)) {
         exit();
     }
-    $shopURL = Shop::getURL();
-    $qry_bildNr = " AND tartikelpict.nNr = " . $nBildNummer;
-    if ($kArtikel === $nBildNummer) {
-        $qry_bildNr = "";
-    }
-
+    $shopURL          = Shop::getURL() . '/';
+    $qry_bildNr       = ($kArtikel === $nBildNummer)
+        ? ''
+        : " AND tartikelpict.nNr = " . $nBildNummer;
     $oArtikelPict_arr = Shop::DB()->query(
         "SELECT tartikelpict.cPfad, tartikelpict.kArtikel, tartikel.cSeo, tartikelpict.nNr
                 FROM tartikelpict
@@ -48,17 +46,17 @@ if ($kArtikel > 0 && $nBildNummer > 0 && $nSize > 0) {
 
     if (is_array($oArtikelPict_arr) && count($oArtikelPict_arr) > 0) {
         foreach ($oArtikelPict_arr as $oArtikelPict) {
-            $cBildpfad = $shopURL . '/'  . MediaImage::getThumb(Image::TYPE_PRODUCT, $oArtikelPict->kArtikel, $oArtikelPict, gibPfadGroesse($nSize), $oArtikelPict->nNr);
+            $image = MediaImage::getThumb(Image::TYPE_PRODUCT, $oArtikelPict->kArtikel, $oArtikelPict, gibPfadGroesse($nSize), $oArtikelPict->nNr);
             if ($nURL === 1) {
-                echo $cBildpfad . "<br/>\n";
+                echo $shopURL . $image . "<br/>\n";
             } else {
                 // Format ermitteln
-                $cBildformat = gibBildformat($cBildpfad);
+                $cBildformat = gibBildformat(PFAD_ROOT . $image);
                 // @ToDo - Bilder ausgeben wenn alle angefragt wurden?
                 if ($cBildformat && $kArtikel !== $nBildNummer) {
-                    $im = ladeBild($cBildpfad);
+                    $im = ladeBild(PFAD_ROOT . $image);
                     if ($im) {
-                        header('Content-type: image/' . $cBildformat);
+                        header('Content-type: image/' . $shopURL . $image);
                         imagepng($im);
                         imagedestroy($im);
                     }
@@ -93,7 +91,8 @@ function gibPfadGroesse($nSize)
             case 4:
                 return Image::SIZE_XS;
                 break;
-
+            default:
+                return 0;
         }
     }
 
@@ -130,7 +129,8 @@ function gibBildformat($cBildPfad)
                 return 'bmp';
             }
             break;
-
+        default:
+            return false;
     }
 
     return false;

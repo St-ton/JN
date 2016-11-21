@@ -22,7 +22,7 @@
                 <td>{$phpVersion}</td>
                 <td></td>
             </tr>
-            {if !empty($phpLT55) && $phpLT55}
+            {if isset($phpLT55) && $phpLT55}
             <tr>
                 <td colspan="2" class="small label-warning">{#systemcheckPHPLT55#|sprintf:$phpVersion}</td>
             </tr>

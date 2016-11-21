@@ -430,9 +430,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
         }
 
         /**
-         * Used by old AWA
-         *
-         * @return mixed
+         * @return array
          */
         public static function getLinks()
         {
@@ -444,8 +442,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
         }
 
         /**
-         * Used by old AWA
-         *
+         * @deprecated since 4.05 - Used by old AWA
          * @param string $cKey
          * @param int    $kKey
          * @param int    $kSprache

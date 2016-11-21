@@ -945,6 +945,7 @@ function baueArtikelDetail($oArtikel, $xPost_arr)
 }
 
 /**
+ * @deprecated since 4.05
  * @param int $kMerkmalWert
  * @param int $kAuswahlAssistentFrage
  * @param int $nFrage
@@ -998,6 +999,7 @@ function setSelectionWizardAnswerAjax($kMerkmalWert, $kAuswahlAssistentFrage, $n
 }
 
 /**
+ * @deprecated since 4.05
  * @param int $nFrage
  * @param int $kKategorie
  * @return xajaxResponse

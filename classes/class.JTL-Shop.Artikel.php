@@ -1228,7 +1228,7 @@ class Artikel
                 $image->nNr         = $bilder_arr[$i]->nNr;
 
                 if ($i === 0) {
-                    $this->cVorschaubild = $this->Bilder[$i]->cPfadKlein;
+                    $this->cVorschaubild = $image->cPfadKlein;
                 }
                 //Lookup image alt attribute
                 $image->cAltAttribut = (isset($this->AttributeAssoc['img_alt_' . $image->nNr]))
@@ -3835,7 +3835,6 @@ class Artikel
                   WHERE tkategoriesichtbarkeit.kKategorie IS NULL
                     AND tkategorieartikel.kArtikel = " . $kArtikelKey, 2
         );
-
         if (is_array($oKat_arr) && count($oKat_arr) > 0) {
             foreach ($oKat_arr as $oKat) {
                 if (isset($oKat->kKategorie) && $oKat->kKategorie > 0) {

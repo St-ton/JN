@@ -322,7 +322,7 @@ class Bestellung
     /**
      * @var array
      */
-    public $WarensummeLocalized = array();
+    public $WarensummeLocalized = [];
 
     /**
      * @var float
@@ -342,7 +342,7 @@ class Bestellung
      */
     public function __construct($kBestellung = 0, $bFill = false)
     {
-        $kBestellung = intval($kBestellung);
+        $kBestellung = (int)$kBestellung;
         if ($kBestellung > 0) {
             $this->loadFromDB($kBestellung);
             if ($bFill) {
@@ -359,8 +359,8 @@ class Bestellung
      */
     public function loadFromDB($kBestellung)
     {
-        $obj = Shop::DB()->select('tbestellung', 'kBestellung', intval($kBestellung));
-        if ($obj->kBestellung > 0) {
+        $obj = Shop::DB()->select('tbestellung', 'kBestellung', (int)$kBestellung);
+        if (isset($obj->kBestellung) && $obj->kBestellung > 0) {
             foreach (get_object_vars($obj) as $k => $v) {
                 $this->$k = $v;
             }
@@ -500,8 +500,8 @@ class Bestellung
             $positionCount            = count($this->Positionen);
             $defaultOptions           = Artikel::getDefaultOptions();
             for ($i = 0; $i < $positionCount; $i++) {
-                if ($this->Positionen[$i]->nAnzahl == intval($this->Positionen[$i]->nAnzahl)) {
-                    $this->Positionen[$i]->nAnzahl = intval($this->Positionen[$i]->nAnzahl);
+                if ($this->Positionen[$i]->nAnzahl == (int)$this->Positionen[$i]->nAnzahl) {
+                    $this->Positionen[$i]->nAnzahl = (int)$this->Positionen[$i]->nAnzahl;
                 }
                 if ($this->Positionen[$i]->nPosTyp == C_WARENKORBPOS_TYP_VERSANDPOS ||
                     $this->Positionen[$i]->nPosTyp == C_WARENKORBPOS_TYP_VERSANDZUSCHLAG ||
@@ -588,7 +588,7 @@ class Bestellung
                     );
 
                     // Konfigurationsartikel: mapto: 9a87wdgad
-                    if (is_string($this->Positionen[$i]->cUnique) && strlen($this->Positionen[$i]->cUnique) === 10 && intval($this->Positionen[$i]->kKonfigitem) > 0) {
+                    if (is_string($this->Positionen[$i]->cUnique) && strlen($this->Positionen[$i]->cUnique) === 10 && (int)$this->Positionen[$i]->kKonfigitem > 0) {
                         $fPreisNetto  = 0;
                         $fPreisBrutto = 0;
                         $nVaterPos    = null;
@@ -598,7 +598,7 @@ class Bestellung
                                 $fPreisNetto += $oPosition->fPreis * $oPosition->nAnzahl;
                                 $ust = (isset($oPosition->kSteuerklasse)) ? gibUst($oPosition->kSteuerklasse) : gibUst(null);
                                 $fPreisBrutto += berechneBrutto($oPosition->fPreis * $oPosition->nAnzahl, $ust);
-                                if (is_string($oPosition->cUnique) && strlen($oPosition->cUnique) === 10 && intval($oPosition->kKonfigitem) === 0) {
+                                if (is_string($oPosition->cUnique) && strlen($oPosition->cUnique) === 10 && (int)$oPosition->kKonfigitem === 0) {
                                     $nVaterPos = $nPos;
                                 }
                             }
@@ -617,7 +617,7 @@ class Bestellung
                     }
                 }
 
-                $this->Positionen[$i]->kLieferschein_arr   = array();
+                $this->Positionen[$i]->kLieferschein_arr   = [];
                 $this->Positionen[$i]->nAusgeliefert       = 0;
                 $this->Positionen[$i]->nAusgeliefertGesamt = 0;
                 $this->Positionen[$i]->bAusgeliefert       = false;
@@ -638,12 +638,11 @@ class Bestellung
             } else {
                 $oData->cPLZ = $this->Lieferadresse->cPLZ;
             }
-            $this->oLieferschein_arr = array();
-            $kLieferschein_arr       = Shop::DB()->query("SELECT kLieferschein FROM tlieferschein WHERE kInetBestellung = " . (int)$this->kBestellung, 2);
-
+            $this->oLieferschein_arr = [];
+            $kLieferschein_arr       = Shop::DB()->selectAll('tlieferschein', 'kInetBestellung', (int)$this->kBestellung, 'kLieferschein');
             foreach ($kLieferschein_arr as $oLieferschein) {
                 $oLieferschein                = new Lieferschein($oLieferschein->kLieferschein, $oData);
-                $oLieferschein->oPosition_arr = array();
+                $oLieferschein->oPosition_arr = [];
                 /** @var Lieferscheinpos $oLieferscheinPos */
                 foreach ($oLieferschein->oLieferscheinPos_arr as &$oLieferscheinPos) {
                     foreach ($this->Positionen as &$oPosition) {
@@ -682,7 +681,6 @@ class Bestellung
                 }
                 $this->oLieferschein_arr[] = $oLieferschein;
             }
-
             // Wenn Konfig-Vater, alle Kinder ?berpr?fen
             foreach ($this->oLieferschein_arr as &$oLieferschein) {
                 foreach ($oLieferschein->oPosition_arr as &$oPosition) {
@@ -709,7 +707,7 @@ class Bestellung
                 }
             }
 
-            if (!isset($this->oEstimatedDelivery) || empty($this->oEstimatedDelivery->localized)) {
+            if (empty($this->oEstimatedDelivery->localized)) {
                 $this->berechneEstimatedDelivery();
             }
 
@@ -774,7 +772,9 @@ class Bestellung
         $obj->nLongestMaxDelivery  = $this->oEstimatedDelivery->longestMax;
         $obj->dVersandDatum        = $this->dVersandDatum;
         $obj->dBezahltDatum        = $this->dBezahltDatum;
-        $obj->dBewertungErinnerung = ($this->dBewertungErinnerung !== null) ? $this->dBewertungErinnerung : '0000-00-00 00:00:00';
+        $obj->dBewertungErinnerung = ($this->dBewertungErinnerung !== null)
+            ? $this->dBewertungErinnerung
+            : '0000-00-00 00:00:00';
         $obj->cTracking            = $this->cTracking;
         $obj->cKommentar           = $this->cKommentar;
         $obj->cLogistiker          = $this->cLogistiker;
@@ -841,7 +841,7 @@ class Bestellung
      */
     public static function getOrderPositions($kBestellung, $bAssoc = true, $nPosTyp = C_WARENKORBPOS_TYP_ARTIKEL)
     {
-        $oPosition_arr = array();
+        $oPosition_arr = [];
         $kBestellung   = (int)$kBestellung;
         if ($kBestellung > 0) {
             $oObj_arr = Shop::DB()->query(

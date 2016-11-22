@@ -90,28 +90,11 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
         $step = 'edit-group';
         $smarty->assign('oGruppe', new AuswahlAssistentGruppe(intval($_GET['g']), false, false, true));
     } elseif (isset($_POST['a']) && $_POST['a'] === 'saveSettings') {
-        $step = 'uebersicht';
+        $step      = 'uebersicht';
         $cHinweis .= saveAdminSectionSettings(CONF_AUSWAHLASSISTENT, $_POST);
     }
     if ($step === 'uebersicht') {
-        $StdSprache = Shop::DB()->select('tsprache', 'cShopStandard', 'Y');
-        $cSQLSelect = 'tmerkmal.*';
-        $cSQLJoin   = '';
-        if ($StdSprache->kSprache != $_SESSION['kSprache']) {
-            $cSQLSelect = "tmerkmalsprache.*";
-            $cSQLJoin   = " JOIN tmerkmalsprache ON tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal
-                            AND tmerkmalsprache.kSprache = " . (int)$_SESSION['kSprache'];
-        }
-        $oMerkmal_arr = Shop::DB()->query(
-            "SELECT " . $cSQLSelect . "
-                FROM tmerkmal
-                " . $cSQLJoin . "
-                ORDER BY tmerkmal.nSort", 2
-        );
-
-        $smarty->assign('oMerkmal_arr', $oMerkmal_arr)
-               ->assign('oLink_arr', AuswahlAssistent::getLinks())
-               ->assign('oAuswahlAssistentGruppe_arr', AuswahlAssistentGruppe::getGroups($_SESSION['kSprache'], false, false, true));
+        $smarty->assign('oAuswahlAssistentGruppe_arr', AuswahlAssistentGruppe::getGroups($_SESSION['kSprache'], false, false, true));
     } elseif ($step === 'edit-group') {
         $smarty->assign('oLink_arr', AuswahlAssistent::getLinks());
     } elseif ($step === 'edit-question') {

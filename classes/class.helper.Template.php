@@ -240,8 +240,12 @@ class TemplateHelper
      */
     public function getXML($cOrdner, $isAdmin = null)
     {
-        $isAdmin  = ($isAdmin !== null) ? $isAdmin : $this->isAdmin;
-        $cXMLFile = ($isAdmin === false) ? PFAD_ROOT . PFAD_TEMPLATES . $cOrdner . DIRECTORY_SEPARATOR . TEMPLATE_XML : PFAD_ROOT . PFAD_ADMIN . PFAD_TEMPLATES . $cOrdner . DIRECTORY_SEPARATOR . TEMPLATE_XML;
+        $isAdmin  = ($isAdmin !== null) ?
+            $isAdmin
+            : $this->isAdmin;
+        $cXMLFile = ($isAdmin === false)
+            ? PFAD_ROOT . PFAD_TEMPLATES . $cOrdner . DIRECTORY_SEPARATOR . TEMPLATE_XML
+            : PFAD_ROOT . PFAD_ADMIN . PFAD_TEMPLATES . $cOrdner . DIRECTORY_SEPARATOR . TEMPLATE_XML;
         if (file_exists($cXMLFile)) {
             if (defined('LIBXML_NOWARNING')) {
                 //try to suppress warning if opening fails

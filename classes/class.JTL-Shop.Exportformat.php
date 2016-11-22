@@ -640,7 +640,7 @@ class Exportformat
                     foreach ($cMember_arr as $cMember) {
                         $oObj->$cMember = $einstellungAssoc_arr[$cMember];
                     }
-                    $oObj->kExportformat = $this->kExportformat;
+                    $oObj->kExportformat = $this->getExportformat();
                 }
                 $ok = $ok && (Shop::DB()->insert('texportformateinstellungen', $oObj) > 0);
             }
@@ -660,17 +660,15 @@ class Exportformat
             $ok = true;
             foreach ($einstellungenAssoc_arr as $einstellungAssoc_arr) {
                 //Array mit zu importierenden Exportformateinstellungen
-                $cExportEinstellungenToImport_arr = array(
+                $cExportEinstellungenToImport_arr = [
                     'exportformate_semikolon',
                     'exportformate_equot',
                     'exportformate_quot'
-                );
-
+                ];
                 if (in_array($einstellungAssoc_arr['cName'], $cExportEinstellungenToImport_arr)) {
                     $_upd        = new stdClass();
                     $_upd->cWert = $einstellungAssoc_arr['cWert'];
-                    $ok          = $ok && (Shop::DB()->update('tboxensichtbar', array('kExportformat', 'cName'),
-                                array($this->getExportformat(), $einstellungAssoc_arr['cName']), $_upd) >= 0);
+                    $ok          = $ok && (Shop::DB()->update('tboxensichtbar', ['kExportformat', 'cName'], [$this->getExportformat(), $einstellungAssoc_arr['cName']], $_upd) >= 0);
                 }
             }
         }
@@ -764,8 +762,8 @@ class Exportformat
 
         if ($this->config['exportformate_preis_ueber_null'] === 'Y') {
             $join .= " JOIN tpreise ON tpreise.kArtikel = tartikel.kArtikel
-                                AND tpreise.kKundengruppe = " . $this->getKundengruppe() . "
-                                AND tpreise.fVKNetto > 0";
+                            AND tpreise.kKundengruppe = " . $this->getKundengruppe() . "
+                            AND tpreise.fVKNetto > 0";
         }
 
         if ($this->config['exportformate_beschreibung'] === 'Y') {
@@ -773,7 +771,7 @@ class Exportformat
         }
 
         $condition = 'AND NOT (DATE(tartikel.dErscheinungsdatum) > DATE(NOW()))';
-        $conf      = Shop::getSettings(array(CONF_GLOBAL));
+        $conf      = Shop::getSettings([CONF_GLOBAL]);
         if (isset($conf['global']['global_erscheinende_kaeuflich']) && $conf['global']['global_erscheinende_kaeuflich'] === 'Y') {
             $condition = 'AND (
                 NOT (DATE(tartikel.dErscheinungsdatum) > DATE(NOW()))
@@ -849,7 +847,7 @@ class Exportformat
      */
     public function getCaching()
     {
-        return $this->nUseCache;
+        return (int)$this->nUseCache;
     }
 
     /**
@@ -858,9 +856,9 @@ class Exportformat
      */
     private function writeHeader($handle)
     {
-        $header   = $this->getKopfzeile();
-        $encoding = $this->getKodierung();
+        $header = $this->getKopfzeile();
         if (strlen($header) > 0) {
+            $encoding = $this->getKodierung();
             if ($encoding === 'UTF-8' || $encoding === 'UTF-8noBOM') {
                 if ($encoding === 'UTF-8') {
                     fwrite($handle, "\xEF\xBB\xBF");
@@ -880,9 +878,9 @@ class Exportformat
      */
     private function writeFooter($handle)
     {
-        $footer   = $this->getFusszeile();
-        $encoding = $this->getKodierung();
+        $footer = $this->getFusszeile();
         if (strlen($footer) > 0) {
+            $encoding = $this->getKodierung();
             if ($encoding === 'UTF-8' || $encoding === 'UTF-8noBOM') {
                 $footer = utf8_encode($footer);
             }
@@ -900,7 +898,7 @@ class Exportformat
     {
         if ((int)$this->nSplitgroesse > 0 && file_exists(PFAD_ROOT . PFAD_EXPORT . $this->cDateiname)) {
             $fileCounter       = 1;
-            $fileNameSplit_arr = array();
+            $fileNameSplit_arr = [];
             $nFileTypePos      = strrpos($this->cDateiname, '.');
             // Dateiname splitten nach Name + Typ
             if ($nFileTypePos === false) {
@@ -1028,7 +1026,8 @@ class Exportformat
             $max = (int)$max;
         }
 
-        Jtllog::cronLog('Starting exportformat "' . $this->cName . '" for language ' . $this->kSprache . ' and customer group ' . $this->kKundengruppe . ' - ' . $queue->nLimitN . '/' . $max . ' products exported');
+        Jtllog::cronLog('Starting exportformat "' . $this->cName . '" for language ' . $this->kSprache . ' and customer group ' .
+            $this->kKundengruppe . ' - ' . $queue->nLimitN . '/' . $max . ' products exported');
         Jtllog::cronLog('Caching enabled? ' . ((Shop::Cache()->isActive() && $this->useCache()) ? 'Yes' : 'No'), 2);
         // Kopfzeile schreiben
         if ($this->queue->nLimitN == 0) {
@@ -1044,10 +1043,10 @@ class Exportformat
         $oArtikelOptionen->nMedienDatei              = 1;
 
         $shopURL    = Shop::getURL();
-        $find       = array('<br />', '<br>', '</');
-        $replace    = array(' ', ' ', ' </');
-        $findTwo    = array("\r\n", "\r", "\n", "\x0B", "\x0");
-        $replaceTwo = array(' ', ' ', ' ', ' ', '');
+        $find       = ['<br />', '<br>', '</'];
+        $replace    = [' ', ' ', ' </'];
+        $findTwo    = ["\r\n", "\r", "\n", "\x0B", "\x0"];
+        $replaceTwo = [' ', ' ', ' ', ' ', ''];
 
         if (isset($this->config['exportformate_quot']) && $this->config['exportformate_quot'] !== 'N') {
             $findTwo[] = '"';
@@ -1135,7 +1134,11 @@ class Exportformat
 
         if ($isCron === false) {
             if ($max > $this->queue->nLimitN + $this->queue->nLimitM) {
-                Shop::DB()->query("UPDATE texportqueue SET nLimit_n = nLimit_n + " . $this->queue->nLimitM . " WHERE kExportqueue = " . (int)$this->queue->kExportqueue, 4);
+                Shop::DB()->query("
+                    UPDATE texportqueue 
+                      SET nLimit_n = nLimit_n + " . $this->queue->nLimitM . " 
+                      WHERE kExportqueue = " . (int)$this->queue->kExportqueue, 4
+                );
                 $protocol = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') || function_exists('pruefeSSL') && pruefeSSL() === 2) ?
                     'https://' :
                     'http://';
@@ -1224,7 +1227,7 @@ class Exportformat
      */
     public function check($post)
     {
-        $cPlausiValue_arr = array();
+        $cPlausiValue_arr = [];
         // Name
         if (!isset($post['cName']) || strlen($post['cName']) === 0) {
             $cPlausiValue_arr['cName'] = 1;

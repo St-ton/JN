@@ -111,8 +111,6 @@ if (class_exists('AuswahlAssistent')) {
         }
 
         /**
-         * Used by old AWA
-         *
          * @param int  $kAuswahlAssistentGruppe
          * @param bool $bAktiv
          * @return array
@@ -142,8 +140,6 @@ if (class_exists('AuswahlAssistent')) {
         }
 
         /**
-         * Used by old AWA
-         *
          * @param bool $bPrimary
          * @return array|bool
          */
@@ -171,8 +167,6 @@ if (class_exists('AuswahlAssistent')) {
         }
 
         /**
-         * Used by old AWA
-         *
          * @return array|bool
          */
         public function updateQuestion()
@@ -195,8 +189,6 @@ if (class_exists('AuswahlAssistent')) {
         }
 
         /**
-         * Used by old AWA
-         *
          * @param $cParam_arr
          * @return bool
          */
@@ -214,8 +206,6 @@ if (class_exists('AuswahlAssistent')) {
         }
 
         /**
-         * Used by old AWA
-         *
          * @param bool $bUpdate
          * @return array
          */
@@ -252,8 +242,6 @@ if (class_exists('AuswahlAssistent')) {
         }
 
         /**
-         * Used by old AWA
-         *
          * @param int $kMerkmal
          * @param int $kAuswahlAssistentGruppe
          * @return bool
@@ -276,8 +264,6 @@ if (class_exists('AuswahlAssistent')) {
         }
 
         /**
-         * Used by old AWA
-         *
          * @param int  $kMerkmal
          * @param bool $bMMW
          * @return Merkmal|stdClass

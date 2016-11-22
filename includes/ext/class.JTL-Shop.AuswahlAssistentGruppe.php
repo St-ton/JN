@@ -99,8 +99,8 @@ if (class_exists('AuswahlAssistent')) {
                     }
                     // Fragen
                     $this->oAuswahlAssistentFrage_arr = AuswahlAssistentFrage::getQuestions($oGruppe->kAuswahlAssistentGruppe, $bAktivFrage);
-                    $oAuswahlAssistentOrt = new AuswahlAssistentOrt(0, $this->kAuswahlAssistentGruppe, $bBackend);
-                    $this->oAuswahlAssistentOrt_arr = $oAuswahlAssistentOrt->oOrt_arr;
+                    $oAuswahlAssistentOrt             = new AuswahlAssistentOrt(0, $this->kAuswahlAssistentGruppe, $bBackend);
+                    $this->oAuswahlAssistentOrt_arr   = $oAuswahlAssistentOrt->oOrt_arr;
                     if (count($this->oAuswahlAssistentOrt_arr) > 0) {
                         foreach ($this->oAuswahlAssistentOrt_arr as $oAuswahlAssistentOrt) {
                             // Kategorien

@@ -43,6 +43,7 @@ function gibFinanzierungInfo($kArtikel, $fPreis)
 }
 
 /**
+ * @deprecated since 4.05
  * @return xajaxResponse
  */
 function billpayRates()
@@ -85,6 +86,7 @@ function billpayRates()
 }
 
 /**
+ * @deprecated since 4.05
  * @param int  $nVLKeys
  * @param bool $bWarenkorb
  * @return xajaxResponse
@@ -168,6 +170,7 @@ function gibVergleichsliste($nVLKeys = 0, $bWarenkorb = true)
 }
 
 /**
+ * @deprecated since 4.05
  * @return xajaxResponse
  */
 function generateToken()
@@ -183,6 +186,7 @@ function generateToken()
 }
 
 /**
+ * @deprecated since 4.05
  * @param array $oArtikel_arr
  * @return xajaxResponse
  */
@@ -198,6 +202,7 @@ function ermittleVersandkostenAjax($oArtikel_arr)
 }
 
 /**
+ * @deprecated since 4.05
  * @param int $nPos
  * @return xajaxResponse
  */
@@ -224,6 +229,7 @@ function loescheWarenkorbPosAjax($nPos)
 }
 
 /**
+ * @deprecated since 4.05
  * @param int       $kArtikel
  * @param int|float $anzahl
  * @param string    $oEigenschaftwerte_arr
@@ -348,6 +354,7 @@ function fuegeEinInWarenkorbAjax($kArtikel, $anzahl, $oEigenschaftwerte_arr = ''
 }
 
 /**
+ * @deprecated since 4.05
  * @param $nED
  * @return xajaxResponse
  */
@@ -368,6 +375,7 @@ function setzeErweiterteDarstellung($nED)
 /**
  * Kundenformular Ajax PLZ
  *
+ * @deprecated since 4.05
  * @param $cFormValue - Textfeld Wert vom Kundenfomular input Feldes
  * @param $cLandISO - Ausgewähltes Land in der DropDown Box
  * @return xajaxResponse
@@ -398,6 +406,7 @@ function gibPLZInfo($cFormValue, $cLandISO)
 /**
  * Kundenformular Ajax PLZ
  *
+ * @deprecated since 4.05
  * @param string $cFormValue - Textfeld Wert vom Kundenfomular
  * @param string $cLandISO - Ausgewähltes Land in der DropDown Box
  * @return xajaxResponse
@@ -418,6 +427,7 @@ function aenderKundenformularPLZ($cFormValue, $cLandISO)
 }
 
 /**
+ * @deprecated since 4.05
  * @param string $cLandIso
  * @return xajaxResponse
  */
@@ -436,6 +446,7 @@ function gibRegionzuLand($cLandIso)
 /**
  * Textfeld Ajax Suche
  *
+ * @deprecated since 4.05
  * @param string $cValue - Textfeld Wert (input) des Suchfeldes
  * @param string $nkeyCode - Geklickter Tastenwert
  * @param string $cElemSearchID - Suchfeld (input)
@@ -503,6 +514,7 @@ function suchVorschlag($cValue, $nkeyCode, $cElemSearchID, $cElemSuggestID, $cEl
 }
 
 /**
+ * @deprecated since 4.05
  * @param string $cValue
  * @return xajaxResponse
  */
@@ -1048,6 +1060,7 @@ function resetSelectionWizardAnswerAjax($nFrage, $kKategorie)
 }
 
 /**
+ * @deprecated since 4.05
  * @param int   $kVaterArtikel
  * @param array $kGesetzteEigeschaftWert_arr
  * @return mixed

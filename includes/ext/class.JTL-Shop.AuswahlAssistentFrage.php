@@ -151,9 +151,15 @@ if (class_exists('AuswahlAssistent')) {
         {
             $cPlausi_arr = $this->checkQuestion();
             if (count($cPlausi_arr) === 0) {
-                $oObj = kopiereMembers($this);
-                unset($oObj->oMerkmal);
-                $kAuswahlAssistentFrage = Shop::DB()->insert('tauswahlassistentfrage', $oObj);
+                $obj                          = new stdClass();
+                $obj->kAuswahlAssistentFrage  = $this->kAuswahlAssistentFrage;
+                $obj->kAuswahlAssistentGruppe = $this->kAuswahlAssistentGruppe;
+                $obj->kMerkmal                = $this->kMerkmal;
+                $obj->cFrage                  = $this->cFrage;
+                $obj->nSort                   = $this->nSort;
+                $obj->nAktiv                  = $this->nAktiv;
+                $kAuswahlAssistentFrage       = Shop::DB()->insert('tauswahlassistentfrage', $obj);
+
                 if ($kAuswahlAssistentFrage > 0) {
                     return $bPrimary ? $kAuswahlAssistentFrage : true;
                 }

@@ -5,7 +5,7 @@
  */
 require_once dirname(__FILE__) . '/includes/admininclude.php';
 /** @global JTLSmarty $smarty */
-$oAccount->permission('EXTENSION_VOTE_VIEW', true, true);
+$oAccount->permission('EXTENSION_SELECTIONWIZARD_VIEW', true, true);
 $cFehler  = '';
 $cHinweis = '';
 $step     = '';
@@ -18,7 +18,11 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
     if (strlen(verifyGPDataString('tab')) > 0) {
         $cTab = verifyGPDataString('tab');
     }
-    if (isset($_POST['a']) && $_POST['a'] === 'addQuest') {
+    if (isset($_POST['a']) && $_POST['a'] === 'newGrp') {
+        $step = 'edit-group';
+    } elseif (isset($_POST['a']) && $_POST['a'] === 'newQuest') {
+        $step = 'edit-question';
+    } elseif (isset($_POST['a']) && $_POST['a'] === 'addQuest') {
         $oAuswahlAssistentFrage                          = new AuswahlAssistentFrage();
         $oAuswahlAssistentFrage->cFrage                  = htmlspecialchars($_POST['cFrage']);
         $oAuswahlAssistentFrage->kMerkmal                = (int)$_POST['kMerkmal'];
@@ -50,7 +54,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
             $cFehler = 'Fehler: Ihre ausgew&auml;hlte Frage konnten nicht gel&ouml;scht werden.';
         }
     } elseif (isset($_GET['a']) && $_GET['a'] === 'editQuest' && intval($_GET['q']) > 0 && validateToken()) {
-        $cTab = 'frage';
+        $step = 'edit-question';
         $smarty->assign('oFrage', new AuswahlAssistentFrage((int)$_GET['q'], false));
     }
     if (isset($_POST['a']) && $_POST['a'] === 'addGrp' && validateToken()) {
@@ -83,7 +87,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
             $cFehler = 'Fehler: Ihre ausgew&auml;hlten Gruppen konnten nicht gel&ouml;scht werden.';
         }
     } elseif (isset($_GET['a']) && isset($_GET['g']) && $_GET['a'] === 'editGrp' && intval($_GET['g']) > 0 && validateToken()) {
-        $cTab = 'gruppe';
+        $step = 'edit-group';
         $smarty->assign('oGruppe', new AuswahlAssistentGruppe(intval($_GET['g']), false, false, true));
     } elseif (isset($_POST['a']) && $_POST['a'] === 'saveSettings') {
         $step = 'uebersicht';
@@ -108,8 +112,26 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
         $smarty->assign('oMerkmal_arr', $oMerkmal_arr)
                ->assign('oLink_arr', AuswahlAssistent::getLinks())
                ->assign('oAuswahlAssistentGruppe_arr', AuswahlAssistentGruppe::getGroups($_SESSION['kSprache'], false, false, true));
+    } elseif ($step === 'edit-group') {
+        $smarty->assign('oLink_arr', AuswahlAssistent::getLinks());
+    } elseif ($step === 'edit-question') {
+        $StdSprache = Shop::DB()->select('tsprache', 'cShopStandard', 'Y');
+        $cSQLSelect = 'tmerkmal.*';
+        $cSQLJoin   = '';
+        if ($StdSprache->kSprache != $_SESSION['kSprache']) {
+            $cSQLSelect = "tmerkmalsprache.*";
+            $cSQLJoin   = " JOIN tmerkmalsprache ON tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal
+                            AND tmerkmalsprache.kSprache = " . (int)$_SESSION['kSprache'];
+        }
+        $oMerkmal_arr = Shop::DB()->query(
+            "SELECT " . $cSQLSelect . "
+                FROM tmerkmal
+                " . $cSQLJoin . "
+                ORDER BY tmerkmal.nSort", 2
+        );
+        $smarty->assign('oMerkmal_arr', $oMerkmal_arr)
+            ->assign('oAuswahlAssistentGruppe_arr', AuswahlAssistentGruppe::getGroups($_SESSION['kSprache'], false, false, true));
     }
-    //overview
 } else {
     $smarty->assign('noModule', true);
 }

@@ -1172,11 +1172,11 @@ class Warenkorb
      */
     public function insertInDB()
     {
-        $obj = kopiereMembers($this);
-        unset($obj->kWarenkorb);
-        unset($obj->PositionenArr);
-        unset($obj->cEstimatedDelivery);
-        unset($obj->VersandArt);
+        $obj = (object)[
+            'kKunde'         => $this->kKunde,
+            'kLieferadresse' => $this->kLieferadresse,
+            'kZahlungsInfo'  => $this->kZahlungsInfo,
+        ];
         if (!isset($obj->kZahlungsInfo) || $obj->kZahlungsInfo === '' || $obj->kZahlungsInfo === null) {
             $obj->kZahlungsInfo = 0;
         }

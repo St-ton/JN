@@ -3387,7 +3387,7 @@ function gibNaviMetaTitle($NaviFilter, $oSuchergebnisse, $GlobaleMetaAngaben_arr
         $cMetaTitle .= ', ' . Shop::Lang()->get('page', 'global') . " {$oSuchergebnisse->Seitenzahlen->AktuelleSeite}";
     }
     // Globalen Meta Title ueberall anhaengen
-    if ($conf['metaangaben']['global_meta_title_anhaengen'] === 'Y' && strlen($GlobaleMetaAngaben_arr[Shop::$kSprache]->Title) > 0) {
+    if ($conf['metaangaben']['global_meta_title_anhaengen'] === 'Y' && !empty($GlobaleMetaAngaben_arr[Shop::getLanguage()]->Title)) {
         $cMetaTitle .= ' - ' . $GlobaleMetaAngaben_arr[Shop::$kSprache]->Title;
     }
 

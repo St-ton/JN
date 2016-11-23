@@ -3837,7 +3837,8 @@ function setzeSpracheUndWaehrungLink()
                         $cUrl .= SEP_SEITE . $NaviFilter->nSeite;
                     }
                 }
-                $_SESSION['Sprachen'][$i]->cURL = $cUrl;
+                $_SESSION['Sprachen'][$i]->cURL     = $cUrl;
+                $_SESSION['Sprachen'][$i]->cURLFull = $cUrl;
             }
         }
     }

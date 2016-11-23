@@ -85,14 +85,14 @@ class KategorieHelper
         $stockFilter = gibLagerfilter();
         $stockJoin   = '';
         $extended    = !empty($stockFilter);
-        if (true||false === ($fullCats = Shop::Cache()->get(self::$cacheID))) {
+        if (false === ($fullCats = Shop::Cache()->get(self::$cacheID))) {
             if (!empty($_SESSION['oKategorie_arr_new'])) {
                 self::$fullCategories = $_SESSION['oKategorie_arr_new'];
 
                 return $_SESSION['oKategorie_arr_new'];
             }
             $categoryCount        = Shop::DB()->query('SELECT count(*) AS cnt FROM tkategorie', 1);
-            $categoryLimit        = 1000;
+            $categoryLimit        = (int)CATEGORY_FULL_LOAD_LIMIT;
             $functionAttributes   = [];
             $localizedAttributes  = [];
             $fullCats             = [];
@@ -109,18 +109,18 @@ class KategorieHelper
                 (self::$config['template']['megamenu']['show_categories'] === 'N' || self::$config['template']['megamenu']['show_maincategory_info'] === 'N')));
             if ($getDescription === true) {
                 $descriptionSelect = ($isDefaultLang === true)
-                    ? ", node.cBeschreibung"
+                    ? ", node.cBeschreibung" //no category description needed if we don't show category info in mega menu
                     : ", tkategoriesprache.cBeschreibung";
             }
             $imageSelect          = ($categoryCount->cnt >= $categoryLimit &&
                 isset(self::$config['template']['megamenu']['show_category_images']) &&
                 self::$config['template']['megamenu']['show_category_images'] === 'N')
-                ? ", '' AS cPfad"
+                ? ", '' AS cPfad" //select empty path if we don't need category images for the mega menu
                 : ", tkategoriepict.cPfad";
             $imageJoin            = ($categoryCount->cnt >= $categoryLimit &&
                 isset(self::$config['template']['megamenu']['show_category_images']) &&
                 self::$config['template']['megamenu']['show_category_images'] === 'N')
-                ? ""
+                ? "" //the join is not needed if we don't select the category image path
                 : " LEFT JOIN tkategoriepict
                         ON tkategoriepict.kKategorie = node.kKategorie";
             $nameSelect           = ($isDefaultLang === true)

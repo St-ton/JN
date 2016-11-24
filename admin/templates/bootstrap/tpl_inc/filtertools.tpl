@@ -55,9 +55,12 @@
                                             name="{$oFilter->getId()}_{$oField->getId()}"
                                             id="{$oFilter->getId()}_{$oField->getId()}"
                                             {if $oField->getTitleLong() !== ''}data-toggle="tooltip"
-                                            data-placement="bottom" title="{$oField->getTitleLong()}"{/if}>
+                                            data-placement="bottom" title="{$oField->getTitleLong()}"{/if}
+                                            {if $oField->bReloadOnChange}onchange="$('#{$oFilter->getId()}_btn_filter').click()"{/if}>
                                         {foreach $oField->getOptions() as $i => $oOption}
-                                            <option value="{$i}"{if $i == (int)$oField->getValue()} selected{/if}>{$oOption->getTitle()}</option>
+                                            <option value="{$i}"{if $i == (int)$oField->getValue()} selected{/if}>
+                                                {$oOption->getTitle()}
+                                            </option>
                                         {/foreach}
                                     </select>
                                 </div>
@@ -94,10 +97,12 @@
                 <div class="col-md-1 toolbar-col tright">
                     <label>&nbsp;</label>
                     <div class="btn-group">
-                        <button type="submit" class="btn btn-primary" name="action" value="{$oFilter->getId()}_filter" title="Filter anwenden">
+                        <button type="submit" class="btn btn-primary" name="action" value="{$oFilter->getId()}_filter"
+                                title="Filter anwenden" id="{$oFilter->getId()}_btn_filter">
                             <i class="fa fa-search"></i>
                         </button>
-                        <button type="submit" class="btn btn-default" name="action" value="{$oFilter->getId()}_resetfilter" title="Filter zur&uuml;cksetzen">
+                        <button type="submit" class="btn btn-default" name="action" value="{$oFilter->getId()}_resetfilter"
+                                title="Filter zur&uuml;cksetzen" id="{$oFilter->getId()}_btn_resetfilter">
                             <i class="fa fa-eraser"></i>
                         </button>
                     </div>

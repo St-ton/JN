@@ -111,6 +111,14 @@ class Filter
     }
 
     /**
+     * @return array
+     */
+    public function getField($i)
+    {
+        return $this->oField_arr[$i];
+    }
+
+    /**
      * @return string
      */
     public function getAction()

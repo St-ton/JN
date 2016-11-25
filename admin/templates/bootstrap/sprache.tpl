@@ -1,3 +1,10 @@
+{include file='tpl_inc/header.tpl'}
+{config_load file="$lang.conf" section='lang'}
+{if $step === 'overview'}
+    {include file='tpl_inc/sprache_overview.tpl'}
+{/if}
+{include file='tpl_inc/footer.tpl'}
+{*
 {config_load file="$lang.conf" section="lang"}
 {include file='tpl_inc/header.tpl'}
 <script type="text/javascript">
@@ -379,3 +386,4 @@
     {/if}
 </div><!-- #content -->
 {include file='tpl_inc/footer.tpl'}
+*}

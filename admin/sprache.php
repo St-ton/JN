@@ -5,10 +5,56 @@
  *
  * @global smarty
  */
-require_once dirname(__FILE__) . '/includes/admininclude.php';
+require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('LANGUAGE_VIEW', true, true);
 /** @global JTLSmarty $smarty */
+
+$cHinweis = '';
+$cFehler  = '';
+$tab      = 'variables';
+$step     = 'overview';
+setzeSprache();
+$oSprache = Sprache::getInstance();
+
+if ($step === 'overview') {
+    $oSektion_arr                  = Shop::DB()->query("SELECT * FROM tsprachsektion", 2);
+    $oFilter                       = new Filter('langvars');
+    $oSelectfield                  = $oFilter->addSelectfield('Sektion', 'sw.kSprachsektion');
+    $oSelectfield->bReloadOnChange = true;
+    $oSelectfield->addSelectOption('(alle)', '', 0);
+
+    foreach ($oSektion_arr as $oSektion) {
+        $oSelectfield->addSelectOption($oSektion->cName, $oSektion->kSprachsektion, 4);
+    }
+
+    $oFilter->addTextfield(['Suche', 'Suchen im Variablennamen und im Inhalt'], ['sw.cName', 'sw.cWert'], 1);
+    $oFilter->assemble();
+    $cFilterSQL = $oFilter->getWhereSQL();
+
+    $oWert_arr = Shop::DB()->query(
+        "SELECT sw.cName, sw.cWert, ss.kSprachsektion, ss.cName AS cSektionName
+            FROM tsprachwerte AS sw
+                JOIN tsprachsektion AS ss
+                    ON ss.kSprachsektion = sw.kSprachsektion
+            WHERE kSprachISO = " . $oSprache->kSprachISO . "
+                " . ($cFilterSQL !== '' ? "AND " . $cFilterSQL : ""),
+        2
+    );
+    $smarty
+        ->assign('oFilter', $oFilter)
+        ->assign('oWert_arr', $oWert_arr)
+        ->assign('oSprache_arr', Sprache::getInstance()->getInstalled());
+}
+
+$smarty
+    ->assign('tab', $tab)
+    ->assign('step', $step)
+    ->assign('cHinweis', $cHinweis)
+    ->assign('cFehler', $cFehler)
+    ->display('sprache.tpl');
+
+/*
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'template_inc.php';
 
 $cHinweis       = '';
@@ -184,3 +230,4 @@ $smarty->assign('hinweis', $cHinweis)
        ->assign('oInstallierteSprachen', $oSprache->gibInstallierteSprachen())
        ->assign('oVerfuegbareSprachen', $oSprache->gibVerfuegbareSprachen())
        ->display('sprache.tpl');
+*/

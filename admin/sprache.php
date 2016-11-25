@@ -15,12 +15,75 @@ $cFehler  = '';
 $tab      = 'variables';
 $step     = 'overview';
 setzeSprache();
-$oSprache = Sprache::getInstance();
+$oSprache     = Sprache::getInstance();
+$oSprache_arr = $oSprache->getInstalled();
 
 if (validateToken()) {
     if (isset($_GET['action'])) {
         if ($_GET['action'] === 'newvar') {
-            $step = 'newvar';
+            // neue Variable erstellen
+            $step                      = 'newvar';
+            $oVariable                 = new stdClass();
+            $oVariable->kSprachsektion = 1;
+            $oVariable->cName          = '';
+            $oVariable->cWert_arr      = [];
+        }
+    } elseif (isset($_POST['action'])) {
+        if ($_POST['action'] === 'savevar') {
+            // neue Variable speichern
+            $oVariable                 = new stdClass();
+            $oVariable->kSprachsektion = (int)$_POST['kSprachsektion'];
+            $oVariable->cName          = $_POST['cName'];
+            $oVariable->cWert_arr      = $_POST['cWert_arr'];
+            $oVariable->cWertAlt_arr   = [];
+            $oVariable->bOverwrite_arr = isset($_POST['bOverwrite_arr']) ? $_POST['bOverwrite_arr'] : [];
+            $cFehler_arr               = [];
+
+            $oWertDB_arr = Shop::DB()->query(
+                "SELECT s.cNameDeutsch AS cSpracheName, sw.cWert, si.cISO
+                    FROM tsprachwerte AS sw
+                        JOIN tsprachiso AS si
+                            ON si.kSprachISO = sw.kSprachISO
+                        JOIN tsprache AS s
+                            ON s.cISO = si.cISO 
+                    WHERE sw.cName = '" . $oVariable->cName . "'
+                        AND sw.kSprachsektion = " . $oVariable->kSprachsektion,
+                2
+            );
+
+            foreach ($oWertDB_arr as $oWertDB) {
+                $oVariable->cWertAlt_arr[$oWertDB->cISO] = $oWertDB->cWert;
+            }
+
+            if (!preg_match('/([\w\d]+)/', $oVariable->cName)) {
+                $cFehler_arr[] = 'Die Variable darf nur aus Buchstaben und Zahlen bestehen und darf nicht leer sein.';
+            }
+
+            if (count($oVariable->bOverwrite_arr) !== count($oWertDB_arr)) {
+                $cFehler_arr[] = 'Die Variable existiert bereits f&uuml;r die Sprachen ' .
+                    implode(' und ', array_map(function ($oWertDB) { return $oWertDB->cSpracheName; }, $oWertDB_arr)) .
+                    '. Bitte w&auml;hlen Sie aus, welche Versionen sie &Uuml;berschreiben m&ouml;chten!';
+            }
+
+            if (count($cFehler_arr) > 0) {
+                $cFehler = implode('<br>', $cFehler_arr);
+                $step    = 'newvar';
+            } else {
+                foreach ($oVariable->cWert_arr as $cISO => $cWert) {
+                    if (isset($oVariable->cWertAlt_arr[$cISO])) {
+                        // alter Wert verhanden
+                        if ((int)$oVariable->bOverwrite_arr[$cISO] === 1) {
+                            // soll ueberschrieben werden
+                            $oSprache
+                                ->setzeSprache($cISO)
+                                ->set($oVariable->kSprachsektion, $oVariable->cName, $cWert);
+                        }
+                    } else {
+                        // kein alter Wert vorhanden
+                        $oSprache->fuegeEin($cISO, $oVariable->kSprachsektion, $oVariable->cName, $cWert);
+                    }
+                }
+            }
         }
     }
 }
@@ -31,9 +94,11 @@ if ($step === 'newvar') {
             FROM tsprachsektion",
         2
     );
+
     $smarty
         ->assign('oSektion_arr', $oSektion_arr)
-        ->assign('oSprache_arr', Sprache::getInstance()->getInstalled());
+        ->assign('oVariable', $oVariable)
+        ->assign('oSprache_arr', $oSprache_arr);
 } elseif ($step === 'overview') {
     $oSektion_arr                  = Shop::DB()->query("SELECT * FROM tsprachsektion", 2);
     $oFilter                       = new Filter('langvars');
@@ -61,7 +126,7 @@ if ($step === 'newvar') {
     $smarty
         ->assign('oFilter', $oFilter)
         ->assign('oWert_arr', $oWert_arr)
-        ->assign('oSprache_arr', Sprache::getInstance()->getInstalled());
+        ->assign('oSprache_arr', $oSprache_arr);
 }
 
 $smarty

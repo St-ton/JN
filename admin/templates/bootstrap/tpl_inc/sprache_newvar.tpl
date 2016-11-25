@@ -4,46 +4,85 @@
         <div class="panel-heading">
             <h3 class="panel-title">Neue Sprachvariable</h3>
         </div>
-        <div class="panel-body">
-            <div class="input-group">
-                <span class="input-group-addon">
-                    <label for="kSprachsektion">Sprachsektion</label>
-                </span>
-                <span class="input-group-wrap">
-                    <select class="form-control" name="kSprachsektion" id="kSprachsektion">
-                        {foreach $oSektion_arr as $oSektion}
-                            <option value="{$oSektion->kSprachsektion}">{$oSektion->cName}</option>
-                        {/foreach}
-                    </select>
-                </span>
-            </div>
-            <div class="input-group">
-                <span class="input-group-addon">
-                    <label for="cName">Variable</label>
-                </span>
-                <span class="input-group-wrap">
-                    <input type="text" class="form-control" name="cName" id="cName">
-                </span>
-            </div>
-            {foreach $oSprache_arr as $oSprache}
+        <form action="sprache.php" method="post">
+            {$jtl_token}
+            <div class="panel-body">
                 <div class="input-group">
                     <span class="input-group-addon">
-                        <label for="cWert_{$oSprache->cISO}">{$oSprache->cNameDeutsch}</label>
+                        <label for="kSprachsektion">Sprachsektion</label>
                     </span>
                     <span class="input-group-wrap">
-                        <input type="text" class="form-control" name="cWert_{$oSprache->cISO}"
-                               id="cWert_{$oSprache->cISO}">
+                        <select class="form-control" name="kSprachsektion" id="kSprachsektion">
+                            {foreach $oSektion_arr as $oSektion}
+                                <option value="{$oSektion->kSprachsektion}"
+                                        {if $oVariable->kSprachsektion === (int)$oSektion->kSprachsektion}selected{/if}>
+                                    {$oSektion->cName}
+                                </option>
+                            {/foreach}
+                        </select>
                     </span>
                 </div>
-            {/foreach}
-        </div>
-        <div class="panel-footer">
-            <div class="btn-group">
-                <button type="submit" class="btn btn-primary">
-                    <i class="fa fa-save"></i>
-                    Speichern
-                </button>
+                <div class="input-group">
+                    <span class="input-group-addon">
+                        <label for="cName">Variable</label>
+                    </span>
+                    <span class="input-group-wrap">
+                        <input type="text" class="form-control" name="cName" id="cName" value="{$oVariable->cName}">
+                    </span>
+                </div>
+                {foreach $oSprache_arr as $oSprache}
+                    {if isset($oVariable->cWertAlt_arr[$oSprache->cISO])}
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <label for="bOverwrite_{$oSprache->cISO}_yes">
+                                    <input type="radio" id="bOverwrite_{$oSprache->cISO}_yes"
+                                           name="bOverwrite_arr[{$oSprache->cISO}]" value="1">
+                                    {$oSprache->cNameDeutsch} (neu)
+                                </label>
+                            </span>
+                            <span class="input-group-wrap">
+                                <input type="text" class="form-control" name="cWert_arr[{$oSprache->cISO}]"
+                                       id="cWert_{$oSprache->cISO}" value="{$oVariable->cWert_arr[$oSprache->cISO]}">
+                            </span>
+                        </div>
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <label for="bOverwrite_{$oSprache->cISO}_no">
+                                    <input type="radio" id="bOverwrite_{$oSprache->cISO}_no"
+                                           name="bOverwrite_arr[{$oSprache->cISO}]" value="0" checked>
+                                    {$oSprache->cNameDeutsch} (aktuell)
+                                </label>
+                            </span>
+                                <span class="input-group-wrap">
+                                <input type="text" class="form-control" name="cWertAlt_arr[{$oSprache->cISO}]" disabled
+                                       id="cWertAlt_{$oSprache->cISO}"
+                                       value="{$oVariable->cWertAlt_arr[$oSprache->cISO]}">
+                            </span>
+                        </div>
+                    {else}
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <label for="cWert_{$oSprache->cISO}">
+                                    {$oSprache->cNameDeutsch}
+                                </label>
+                            </span>
+                            <span class="input-group-wrap">
+                                <input type="text" class="form-control" name="cWert_arr[{$oSprache->cISO}]"
+                                       id="cWert_{$oSprache->cISO}" value="{$oVariable->cWert_arr[$oSprache->cISO]}">
+                            </span>
+                        </div>
+                    {/if}
+                {/foreach}
             </div>
-        </div>
+            <div class="panel-footer">
+                <div class="btn-group">
+                    <button type="submit" class="btn btn-primary" name="action" value="savevar">
+                        <i class="fa fa-save"></i>
+                        Speichern
+                    </button>
+                    <a href="sprache.php" class="btn btn-danger">{#goBack#}</a>
+                </div>
+            </div>
+        </form>
     </div>
 </div>

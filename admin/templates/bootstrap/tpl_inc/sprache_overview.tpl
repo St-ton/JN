@@ -74,6 +74,14 @@
                         {/foreach}
                     </tbody>
                 </table>
+                <div class="panel-footer">
+                    <div class="btn-group">
+                        <a class="btn btn-primary" href="sprache.php?token={$smarty.session.jtl_token}&action=newvar">
+                            <i class="fa fa-share"></i>
+                            Variable hinzuf&uuml;gen
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
         <div id="notfound" class="tab-pane fade {if $tab === 'notfound'}active in{/if}">

@@ -17,7 +17,24 @@ $step     = 'overview';
 setzeSprache();
 $oSprache = Sprache::getInstance();
 
-if ($step === 'overview') {
+if (validateToken()) {
+    if (isset($_GET['action'])) {
+        if ($_GET['action'] === 'newvar') {
+            $step = 'newvar';
+        }
+    }
+}
+
+if ($step === 'newvar') {
+    $oSektion_arr = Shop::DB()->query(
+        "SELECT *
+            FROM tsprachsektion",
+        2
+    );
+    $smarty
+        ->assign('oSektion_arr', $oSektion_arr)
+        ->assign('oSprache_arr', Sprache::getInstance()->getInstalled());
+} elseif ($step === 'overview') {
     $oSektion_arr                  = Shop::DB()->query("SELECT * FROM tsprachsektion", 2);
     $oFilter                       = new Filter('langvars');
     $oSelectfield                  = $oFilter->addSelectfield('Sektion', 'sw.kSprachsektion', 1);

@@ -115,7 +115,7 @@ if ($step === 'newvar') {
     $cFilterSQL = $oFilter->getWhereSQL();
 
     $oWert_arr = Shop::DB()->query(
-        "SELECT sw.cName, sw.cWert, ss.kSprachsektion, ss.cName AS cSektionName
+        "SELECT sw.cName, sw.cWert, sw.bSystem, ss.kSprachsektion, ss.cName AS cSektionName
             FROM tsprachwerte AS sw
                 JOIN tsprachsektion AS ss
                     ON ss.kSprachsektion = sw.kSprachsektion

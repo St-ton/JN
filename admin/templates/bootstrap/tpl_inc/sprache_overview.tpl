@@ -69,7 +69,15 @@
                                     <textarea id="cWert_{$oWert->kSprachsektion}_{$oWert->cName}" class="form-control"
                                               style="display:none;">{$oWert->cWert}</textarea>
                                 </td>
-                                <td>Aktionen</td>
+                                <td>
+                                    <div class="btn-group">
+                                        {if $oWert->bSystem === '1'}
+                                            <a href="sprache.php" class="btn btn-default">
+                                                <i class="fa fa-refresh"></i>
+                                            </a>
+                                        {/if}
+                                    </div>
+                                </td>
                             </tr>
                         {/foreach}
                     </tbody>

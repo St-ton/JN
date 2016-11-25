@@ -20,7 +20,7 @@ $oSprache = Sprache::getInstance();
 if ($step === 'overview') {
     $oSektion_arr                  = Shop::DB()->query("SELECT * FROM tsprachsektion", 2);
     $oFilter                       = new Filter('langvars');
-    $oSelectfield                  = $oFilter->addSelectfield('Sektion', 'sw.kSprachsektion');
+    $oSelectfield                  = $oFilter->addSelectfield('Sektion', 'sw.kSprachsektion', 1);
     $oSelectfield->bReloadOnChange = true;
     $oSelectfield->addSelectOption('(alle)', '', 0);
 

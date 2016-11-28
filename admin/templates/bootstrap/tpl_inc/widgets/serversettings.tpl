@@ -1,32 +1,73 @@
+{capture name="testfailed"}
+    <a class="label label-warning" href="systemcheck.php" title="Mehr Informationen im Systemcheck">
+        <i class="fa fa-exclamation-triangle" aria-hidden="true"></i><span class="sr-only">Warnung</span>
+    </a>
+{/capture}
+{capture name="testpassed"}
+    <span class="label label-success">
+        <i class="fa fa-check" aria-hidden="true"></i><span class="sr-only">OK</span>
+    </span>
+{/capture}
+
+
 <div class="widget-custom-data">
-    <ul class="infolist">
-        <li class="first">
-            <p>
-                <strong>Maximale PHP Ausf&uuml;hrungszeit:</strong> <span class="value{if $bMaxExecutionTime === false} error{/if}">{$maxExecutionTime}</span>
-            </p>
-        </li>
-        <li>
-            <p>
-                <strong>PHP-Speicherlimit:</strong> <span class="value{if $bMemoryLimit === false} error {/if}">{$memoryLimit}</span>
-            </p>
-        </li>
-        <li>
-            <p>
-                <strong>Maximale PHP &Uuml;bertragungsgr&ouml;&szlig;e (FILE):</strong> <span class="value{if $bMaxFilesize === false} aaaaa error{/if}">{$maxFilesize}</span>
-            </p>
-        </li>
-        <li>
-            <p>
-                <strong>Maximale PHP &Uuml;bertragungsgr&ouml;&szlig;e (POST):</strong> <span class="value{if $bPostMaxSize === false} error{/if}">{$postMaxSize}</span>
-            </p>
-        </li>
-        <li class="last">
-            <p>
-                <strong>allow_url_fopen aktiviert:</strong> <span class="value{if $bAllowUrlFopen == false}">nein{else}">ja{/if}</span>
-            </p>
-        </li>
-        <li class="last">
-            N&auml;here Informationen zu Systemvorraussetzungen finden Sie im <a href="http://guide.jtl-software.de/jtl/JTL-Shop:Installation:Neuinstallation" target="_blank"><i class="fa fa-external-link"></i> Guide</a>.
-        </li>
-    </ul>
+    <table class="table table-condensed table-hover table-blank">
+        <tbody>
+            <tr>
+                    <td>Maximale PHP Ausf&uuml;hrungszeit</td>
+                    <td>{$maxExecutionTime}</td>
+                    <td class="text-right">
+                        {if $bMaxExecutionTime} 
+                            {$smarty.capture.testpassed}
+                        {else}
+                            {$smarty.capture.testfailed}
+                        {/if}
+                    </td>
+            </tr>
+            <tr>
+                    <td>PHP-Speicherlimit</td>
+                    <td>{$memoryLimit}</td>
+                    <td class="text-right">
+                        {if $bMemoryLimit} 
+                            {$smarty.capture.testpassed}
+                        {else}
+                            {$smarty.capture.testfailed}
+                        {/if}
+                    </td>
+            </tr>
+            <tr>
+                    <td>Maximale PHP &Uuml;bertragungsgr&ouml;&szlig;e (FILE)</td>
+                    <td>{$maxFilesize}</td>
+                    <td class="text-right">
+                        {if $bMaxFilesize} 
+                            {$smarty.capture.testpassed}
+                        {else}
+                            {$smarty.capture.testfailed}
+                        {/if}
+                    </td>
+            </tr>
+            <tr>
+                    <td>Maximale PHP &Uuml;bertragungsgr&ouml;&szlig;e (POST)</td>
+                    <td>{$postMaxSize}</td>
+                    <td class="text-right">
+                        {if $bPostMaxSize} 
+                            {$smarty.capture.testpassed}
+                        {else}
+                            {$smarty.capture.testfailed}
+                        {/if}
+                    </td>
+            </tr>
+            <tr>
+                    <td>allow_url_fopen aktiviert</td>
+                    <td>{if $bAllowUrlFopen}ja{else}nein{/if}</td>
+                    <td class="text-right">
+                        {if $bAllowUrlFopen} 
+                            {$smarty.capture.testpassed}
+                        {else}
+                            {$smarty.capture.testfailed}
+                        {/if}
+                    </td>
+            </tr>
+        </tbody>
+    </table>
 </div>

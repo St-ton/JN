@@ -1,4 +1,3 @@
-{nocache}
 {strip}
 {if isset($smarty.session.Waehrungen) && $smarty.session.Waehrungen|@count > 1 || isset($smarty.session.Sprachen) && $smarty.session.Sprachen|@count > 1}
     {block name="top-bar-user-settings"}
@@ -21,7 +20,7 @@
                 <i class="fa fa-language"></i>
                 {foreach from=$smarty.session.Sprachen item=Sprache}
                     {if $Sprache->kSprache == $smarty.session.kSprache}
-                        <span="lang-{$lang}"> {if $lang === 'ger'}{$Sprache->cNameDeutsch}{else}{$Sprache->cNameEnglisch}{/if}</span>
+                        <span class="lang-{$lang}"> {if $lang === 'ger'}{$Sprache->cNameDeutsch}{else}{$Sprache->cNameEnglisch}{/if}</span>
                     {/if}
                 {/foreach}
                 <span class="caret"></span>
@@ -30,7 +29,7 @@
             {foreach from=$smarty.session.Sprachen item=oSprache}
                 {if $oSprache->kSprache != $smarty.session.kSprache}
                     <li>
-                        <a href="{$oSprache->cURL}" class="link_lang {$oSprache->cISO}" rel="nofollow">{if $lang === 'ger'}{$oSprache->cNameDeutsch}{else}{$oSprache->cNameEnglisch}{/if}</a>
+                        <a href="{if isset($oSprache->cURLFull)}{$oSprache->cURLFull}{else}{$oSprache->cURL}{/if}" class="link_lang {$oSprache->cISO}" rel="nofollow">{if $lang === 'ger'}{$oSprache->cNameDeutsch}{else}{$oSprache->cNameEnglisch}{/if}</a>
                     </li>
                 {/if}
                 {/foreach}
@@ -55,4 +54,3 @@
 </ul>
 {/if}
 {/strip}
-{/nocache}

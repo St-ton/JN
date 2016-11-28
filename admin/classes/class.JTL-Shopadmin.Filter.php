@@ -14,6 +14,7 @@ class Filter
     /**
      * Filter constructor.
      * Create a new empty filter object
+     * @param string|null $cId
      */
     public function __construct($cId = null)
     {
@@ -28,22 +29,30 @@ class Filter
     /**
      * Add a text field to a filter object
      *
-     * @param string $cTitle - the label/title for this field
+     * @param string|array $cTitle - either title-string for this field or a pair of short title and long title
      * @param string $cColumn - the column name to be compared
      * @param int    $nTestOp
      *  0 = custom
      *  1 = contains
      *  2 = begins with
      *  3 = ends with
-     *  4 = exact match
+     *  4 = equals
+     *  5 = lower than
+     *  6 = greater than
+     *  7 = lower than or equal
+     *  8 = greater than or equal
+     *  9 = equals not
+     * @param int    $nDataType
+     *  0 = text
+     *  1 = number
      * @return FilterTextField
      */
-    public function addTextfield($cTitle, $cColumn, $nTestOp = 0)
+    public function addTextfield($cTitle, $cColumn, $nTestOp = 0, $nDataType = 0)
     {
-        $oField                               = new FilterTextField($this, $cTitle, $cColumn, $nTestOp);
-        $this->oField_arr[]                   = $oField;
-        $this->cSession_arr[$cColumn]         = $oField->getValue();
-        $this->cSession_arr[$cColumn . '_op'] = $oField->getTestOp();
+        $oField                                       = new FilterTextField($this, $cTitle, $cColumn, $nTestOp, $nDataType);
+        $this->oField_arr[]                           = $oField;
+        $this->cSession_arr[$oField->getId()]         = $oField->getValue();
+        $this->cSession_arr[$oField->getId() . '_op'] = $oField->getTestOp();
 
         return $oField;
     }
@@ -52,17 +61,30 @@ class Filter
      * Add a select field to a filter object. Options can be added with FilterSelectField->addSelectOption() to this
      * select field
      *
-     * @param string $cTitle - the label/title for this field
+     * @param string|array $cTitle - either title-string for this field or a pair of short title and long title
      * @param string $cColumn - the column name to be compared
      * @return FilterSelectField
      */
     public function addSelectfield($cTitle, $cColumn)
     {
-        $oField                       = new FilterSelectField($this, $cTitle, $cColumn);
-        $this->oField_arr[]           = $oField;
-        $this->cSession_arr[$cColumn] = $oField->getValue();
+        $oField                               = new FilterSelectField($this, $cTitle, $cColumn);
+        $this->oField_arr[]                   = $oField;
+        $this->cSession_arr[$oField->getId()] = $oField->getValue();
 
         return $oField;
+    }
+
+    /**
+     * Add a DateRange field to the filter object.
+     *
+     * @param $cTitle
+     * @param $cColumn
+     */
+    public function addDaterangefield($cTitle, $cColumn)
+    {
+        $oField                               = new FilterDateRangeField($this, $cTitle, $cColumn);
+        $this->oField_arr[]                   = $oField;
+        $this->cSession_arr[$oField->getId()] = $oField->getValue();
     }
 
     /**
@@ -121,7 +143,8 @@ class Filter
     }
 
     /**
-     * @return array
+     * @param string $cField
+     * @return bool
      */
     public function hasSessionField($cField)
     {
@@ -129,7 +152,8 @@ class Filter
     }
 
     /**
-     * @return array
+     * @param string $cField
+     * @return mixed
      */
     public function getSessionField($cField)
     {

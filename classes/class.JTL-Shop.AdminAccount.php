@@ -56,7 +56,7 @@ class AdminAccount
                 $originalHash = $timestampAndHash[1];
                 //check if the link is not expired (=24 hours valid)
                 $createdAt = new DateTime();
-                $createdAt->setTimestamp((int) $timeStamp);
+                $createdAt->setTimestamp((int)$timeStamp);
                 $now  = new DateTime();
                 $diff = $now->diff($createdAt);
                 $secs = ($diff->format('%a') * (60 * 60 * 24)); //total days
@@ -297,8 +297,7 @@ class AdminAccount
         $this->_bLogged = false;
         if (isset($_SESSION['AdminAccount']->cLogin) && isset($_SESSION['AdminAccount']->cPass) && isset($_SESSION['AdminAccount']->cURL) &&
             $_SESSION['AdminAccount']->cURL == Shop::getURL()) {
-
-            $oAccount = Shop::DB()->select('tadminlogin', 'cLogin', $_SESSION['AdminAccount']->cLogin, 'cPass', $_SESSION['AdminAccount']->cPass);
+            $oAccount                 = Shop::DB()->select('tadminlogin', 'cLogin', $_SESSION['AdminAccount']->cLogin, 'cPass', $_SESSION['AdminAccount']->cPass);
             $this->twoFaAuthenticated = (isset($oAccount->b2FAauth) && $oAccount->b2FAauth === '1') ?
                 (isset($_SESSION['AdminAccount']->TwoFA_valid) && true === $_SESSION['AdminAccount']->TwoFA_valid) :
                 true;
@@ -315,7 +314,7 @@ class AdminAccount
     {
         if (isset($_SESSION['AdminAccount']->cLogin) && isset($_POST['TwoFA_code'])) {
             $oTwoFA = new TwoFA();
-            $oTwoFA->setUser($_SESSION['AdminAccount']->cLogin);
+            $oTwoFA->setUserByName($_SESSION['AdminAccount']->cLogin);
             // check the 2fa-code here really
             $_SESSION['AdminAccount']->TwoFA_valid = $oTwoFA->isCodeValid($_POST['TwoFA_code']);
 
@@ -323,6 +322,18 @@ class AdminAccount
         }
 
         return false;
+    }
+
+    /**
+     * @return array|int
+     */
+    public function favorites()
+    {
+        if (!$this->logged()) {
+            return [];
+        }
+
+        return AdminFavorite::fetchAll($_SESSION['AdminAccount']->kAdminlogin);
     }
 
     /**
@@ -402,11 +413,7 @@ class AdminAccount
         $kAdminlogingruppe = (int)$kAdminlogingruppe;
         $oGroup            = Shop::DB()->select('tadminlogingruppe', 'kAdminlogingruppe', $kAdminlogingruppe);
         if (isset($oGroup->kAdminlogingruppe)) {
-            $oPermission_arr = Shop::DB()->query("
-                SELECT cRecht
-                    FROM tadminrechtegruppe
-                    WHERE kAdminlogingruppe = " . $kAdminlogingruppe, 2
-            );
+            $oPermission_arr = Shop::DB()->selectAll('tadminrechtegruppe', 'kAdminlogingruppe', $kAdminlogingruppe, 'cRecht');
             if (is_array($oPermission_arr)) {
                 $oGroup->oPermission_arr = array();
                 foreach ($oPermission_arr as $oPermission) {

@@ -86,7 +86,7 @@ wir freuen uns Ihnen mitteilen zu dürfen, dass in unserem Onlineshop folgenden K
 	<br>
 {/if}
 
-Gültig vom {$Kupon->GueltigAb} bis {$Kupon->GueltigBis}<br>
+Gültig vom {$Kupon->cGueltigAbLong}{if $Kupon->dGueltigBis != 0} bis {$Kupon->cGueltigBisLong}{/if}<br>
 <br>
 {if $Kupon->nVerwendungenProKunde>1}
 	Sie dürfen diesen Kupon bei insgesamt {$Kupon->nVerwendungenProKunde} Einkäufen bei uns nutzen.<br>

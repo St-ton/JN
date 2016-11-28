@@ -59,7 +59,6 @@ final class EventDispatcher
      *
      * @param string|object $eventName
      * @param mixed $arguments
-     * @return array|null
      */
     public function fire($eventName, array $arguments = [])
     {

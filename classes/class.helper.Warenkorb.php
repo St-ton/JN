@@ -46,8 +46,8 @@ class WarenkorbHelper
 
             switch ($oPosition->nPosTyp) {
                 case C_WARENKORBPOS_TYP_ARTIKEL:
-                case C_WARENKORBPOS_TYP_GRATISGESCHENK: {
-                    $item = (object) [
+                case C_WARENKORBPOS_TYP_GRATISGESCHENK:
+                    $item = (object)[
                         'name'     => '',
                         'quantity' => 1,
                         'amount'   => []
@@ -67,17 +67,17 @@ class WarenkorbHelper
                         self::GROSS => $amountGross
                     ];
 
-                    if ((int) $oPosition->nAnzahl != $oPosition->nAnzahl) {
+                    if ((int)$oPosition->nAnzahl != $oPosition->nAnzahl) {
                         $item->amount[self::NET] *= $oPosition->nAnzahl;
                         $item->amount[self::GROSS] *= $oPosition->nAnzahl;
 
-                        $item->name = sprintf('%g %s %s',
-                            (float) $oPosition->nAnzahl,
-                            $oPosition->Artikel->cEinheit
-                                ? $oPosition->Artikel->cEinheit
-                                : 'x', $item->name);
+                        $item->name = sprintf(
+                            '%g %s %s',
+                            (float)$oPosition->nAnzahl,
+                            $oPosition->Artikel->cEinheit ? $oPosition->Artikel->cEinheit : 'x', $item->name
+                        );
                     } else {
-                        $item->quantity = (int) $oPosition->nAnzahl;
+                        $item->quantity = (int)$oPosition->nAnzahl;
                     }
 
                     $info->article[self::NET] += $item->amount[self::NET] * $item->quantity;
@@ -85,24 +85,21 @@ class WarenkorbHelper
 
                     $info->items[] = $item;
                     break;
-                }
 
                 case C_WARENKORBPOS_TYP_VERSANDPOS:
                 case C_WARENKORBPOS_TYP_VERSANDZUSCHLAG:
                 case C_WARENKORBPOS_TYP_VERPACKUNG:
-                case C_WARENKORBPOS_TYP_VERSAND_ARTIKELABHAENGIG: {
+                case C_WARENKORBPOS_TYP_VERSAND_ARTIKELABHAENGIG:
                     $info->shipping[self::NET] += $amount * $oPosition->nAnzahl;
                     $info->shipping[self::GROSS] += $amountGross * $oPosition->nAnzahl;
                     break;
-                }
 
                 case C_WARENKORBPOS_TYP_KUPON:
                 case C_WARENKORBPOS_TYP_GUTSCHEIN:
-                case C_WARENKORBPOS_TYP_NEUKUNDENKUPON: {
+                case C_WARENKORBPOS_TYP_NEUKUNDENKUPON:
                     $info->discount[self::NET] += $amount * $oPosition->nAnzahl;
                     $info->discount[self::GROSS] += $amountGross * $oPosition->nAnzahl;
                     break;
-                }
 
                 case C_WARENKORBPOS_TYP_ZAHLUNGSART:
                     if ($amount >= 0) {
@@ -115,15 +112,16 @@ class WarenkorbHelper
                     }
                     break;
 
-                case C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR: {
+                case C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR:
                     $info->surcharge[self::NET] += $amount * $oPosition->nAnzahl;
                     $info->surcharge[self::GROSS] += $amountGross * $oPosition->nAnzahl;
                     break;
-                }
             }
         }
 
-        if (isset($_SESSION['Bestellung']) && $_SESSION['Bestellung']->GuthabenNutzen === 1) {
+        if (isset($_SESSION['Bestellung']) &&
+            isset($_SESSION['Bestellung']->GuthabenNutzen) &&
+            $_SESSION['Bestellung']->GuthabenNutzen === 1) {
             $amountGross = $_SESSION['Bestellung']->fGuthabenGenutzt * -1;
             $amount      = $amountGross;
 
@@ -194,16 +192,15 @@ class WarenkorbHelper
     }
 
     /**
-     * @return currency
+     * @return object
      */
     public function getCurrency()
     {
-        return (is_object($_SESSION['Waehrung']) && $_SESSION['Waehrung']->kWaehrung) ?
-            $_SESSION['Waehrung'] : gibStandardWaehrung();
+        return (is_object($_SESSION['Waehrung']) && $_SESSION['Waehrung']->kWaehrung) ? $_SESSION['Waehrung'] : gibStandardWaehrung();
     }
 
     /**
-     * @return currency iso
+     * @return string
      */
     public function getCurrencyISO()
     {
@@ -211,7 +208,7 @@ class WarenkorbHelper
     }
 
     /**
-     * @return language iso
+     * @return string
      */
     public function getLanguageISO()
     {
@@ -219,17 +216,15 @@ class WarenkorbHelper
     }
 
     /**
-     * @return state iso
+     * @return string
      */
     public function getStateISO()
     {
-        return PayPalHelper::isStateRequired($this->getLanguageISO())
-            ? PayPalHelper::getStateISO(@$this->getShippingAddress()->cBundesland)
-            : @$this->getShippingAddress()->cBundesland;
+        return PayPalHelper::isStateRequired($this->getLanguageISO()) ? PayPalHelper::getStateISO(@$this->getShippingAddress()->cBundesland) : @$this->getShippingAddress()->cBundesland;
     }
 
     /**
-     * @return return country iso
+     * @return string
      */
     public function getCountryISO()
     {
@@ -250,5 +245,43 @@ class WarenkorbHelper
     public function getIdentifier()
     {
         return 0;
+    }
+
+    /**
+     * @param WarenkorbPos $wkPos
+     * @param object $variation
+     * @return void
+     */
+    public static function setVariationPicture(WarenkorbPos $wkPos, $variation)
+    {
+        if (!isset($wkPos->variationPicturesArr)) {
+            $wkPos->variationPicturesArr = [];
+        }
+
+        $oPicture = (object)[
+            'isVariation'  => true,
+            'cPfadMini'    => $variation->cPfadMini,
+            'cPfadKlein'   => $variation->cPfadKlein,
+            'cPfadNormal'  => $variation->cPfadNormal,
+            'cPfadGross'   => $variation->cPfadGross,
+            'nNr'          => count($wkPos->variationPicturesArr) + 1,
+            'cAltAttribut' => str_replace(array('"', "'"), '', $wkPos->Artikel->cName . ' - ' . $variation->cName),
+        ];
+        $oPicture->galleryJSON = $wkPos->Artikel->getArtikelImageJSON($oPicture);
+
+        $wkPos->variationPicturesArr[] = $oPicture;
+    }
+
+    /**
+     * @param Warenkorb $warenkorb
+     * @return void
+     */
+    public static function addVariationPictures(Warenkorb $warenkorb)
+    {
+        foreach ($warenkorb->PositionenArr as $wkPos) {
+            if (isset($wkPos->variationPicturesArr) && count($wkPos->variationPicturesArr) > 0) {
+                ArtikelHelper::addVariationPictures($wkPos->Artikel, $wkPos->variationPicturesArr);
+            }
+        }
     }
 }

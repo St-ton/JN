@@ -9,7 +9,7 @@ we are happy to inform you that you may use the following coupon ({$Kupon->Angez
 
 Coupon code: {$Kupon->cCode}
 
-Valid from {$Kupon->GueltigAb} until {$Kupon->GueltigBis}
+Valid from {$Kupon->cGueltigAbLong}{if $Kupon->dGueltigBis != 0} until {$Kupon->cGueltigBisLong}{/if}
 
 {if $Kupon->fMindestbestellwert>0}Minimum order value: {$Kupon->cLocalizedMBW}
 

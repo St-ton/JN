@@ -5,7 +5,7 @@
  */
 require_once dirname(__FILE__) . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
-
+/** @global JTLSmarty $smarty */
 $oUpdater = new Updater();
 $cFehler  = '';
 
@@ -25,7 +25,6 @@ if ($oUpdater->getCurrentDatabaseVersion() < 308) {
         Shop::DB()->query("UPDATE `tadminlogin` SET `kAdminlogingruppe`=1;", 3);
     }
 }
-
 // Login
 if (isset($_POST['adminlogin']) && intval($_POST['adminlogin']) === 1) {
     $ret['captcha'] = 0;
@@ -50,8 +49,8 @@ if (isset($_POST['adminlogin']) && intval($_POST['adminlogin']) === 1) {
     }
 
     if ($ret['captcha'] === 0 && $ret['csrf'] === 0) {
-        $cLogin  = $_POST['benutzer'];
-        $cPass   = $_POST['passwort'];
+        $cLogin = $_POST['benutzer'];
+        $cPass  = $_POST['passwort'];
 
         $nReturn = $oAccount->login($cLogin, $cPass);
         switch ($nReturn) {
@@ -61,7 +60,7 @@ if (isset($_POST['adminlogin']) && intval($_POST['adminlogin']) === 1) {
 
             case -3:
             case -1:
-                if( isset($_SESSION['AdminAccount']->TwoFA_expired) && true === $_SESSION['AdminAccount']->TwoFA_expired) {
+                if (isset($_SESSION['AdminAccount']->TwoFA_expired) && true === $_SESSION['AdminAccount']->TwoFA_expired) {
                     $cFehler = '2-Faktor-Auth-Code abgelaufen';
                 } else {
                     $cFehler = 'Benutzername oder Passwort falsch';
@@ -77,7 +76,7 @@ if (isset($_POST['adminlogin']) && intval($_POST['adminlogin']) === 1) {
                 break;
 
             case -6:
-                if (isset($_SESSION['AdminAccount']->TwoFA_expired) && true == $_SESSION['AdminAccount']->TwoFA_expired) {
+                if (isset($_SESSION['AdminAccount']->TwoFA_expired) && true === $_SESSION['AdminAccount']->TwoFA_expired) {
                     $cFehler = '2-Faktor-Authentifizierungs-Code abgelaufen';
                 }
                 break;
@@ -87,20 +86,18 @@ if (isset($_POST['adminlogin']) && intval($_POST['adminlogin']) === 1) {
                 break;
 
             case 1:
+                $_SESSION['loginIsValid'] = true; // "enable" the "header.tpl"-navigation again
                 if (file_exists(CAPTCHA_LOCKFILE)) {
                     unlink(CAPTCHA_LOCKFILE);
                 }
                 if ($oAccount->permission('SHOP_UPDATE_VIEW')) {
                     if ($oUpdater->hasPendingUpdates()) {
-                        $_SESSION['loginIsValid'] = true; // "enable" the "header.tpl"-navigation again
                         header('Location: ' . Shop::getURL(true) . '/' . PFAD_ADMIN . 'dbupdater.php');
                         exit;
                     }
                 }
                 if (isset($_REQUEST['uri']) && strlen(trim($_REQUEST['uri'])) > 0) {
-                    $url = base64_decode(trim($_REQUEST['uri']));
-                    header('Location: ' . Shop::getURL(true) . '/' . PFAD_ADMIN . $url);
-                    exit;
+                    redirectToURI($_REQUEST['uri']);
                 }
                 header('Location: ' . Shop::getURL(true) . '/' . PFAD_ADMIN . 'index.php');
                 exit;
@@ -156,18 +153,21 @@ $smarty->assign('bProfilerActive', $profilerState !== 0)
  * opens the dashboard
  * (prevents code duplication)
  */
-function openDashboard() {
-    global $oAccount , $smarty;
+function openDashboard()
+{
+    global $oAccount, $smarty;
 
     $_SESSION['loginIsValid'] = true;
     if ($oAccount->permission('DASHBOARD_VIEW')) {
         require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dashboard_inc.php';
-        require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'permissioncheck_inc.php';
-        $cDirAssoc_arr = checkWriteables();
-        $oTpl          = Template::getInstance();
-        $nTplVersion   = $oTpl->getShopVersion();
+
+        $oFsCheck      = new Systemcheck_Platform_Filesystem(PFAD_ROOT);
+        $cDirAssoc_arr = $oFsCheck->getFoldersChecked();
+
+        $oTpl        = Template::getInstance();
+        $nTplVersion = $oTpl->getShopVersion();
         $smarty->assign('bDashboard', true)
-               ->assign('oPermissionStat', getPermissionStats($cDirAssoc_arr))
+               ->assign('oPermissionStat', $oFsCheck->getFolderStats())
                ->assign('bUpdateError', ((isset($_POST['shopupdate']) && $_POST['shopupdate'] === '1') ? '1' : false))
                ->assign('bTemplateDiffers', JTL_VERSION != $nTplVersion)
                ->assign('oActiveWidget_arr', getWidgets(true))
@@ -175,7 +175,21 @@ function openDashboard() {
                ->assign('bInstallExists', is_dir(PFAD_ROOT . 'install'));
     }
     $smarty->display('dashboard.tpl');
+    exit();
 }
+
+/**
+ * redirects to a given (base64-encoded) URI
+ * (prevents code duplication)
+ * @param string $szURI
+ */
+function redirectToURI($szURI)
+{
+    $url = base64_decode($szURI);
+    header('Location: ' . Shop::getURL(true) . '/' . PFAD_ADMIN . $url);
+    exit;
+}
+
 
 unset($_SESSION['AdminAccount']->TwoFA_active);
 if ($oAccount->getIsAuthenticated()) {
@@ -183,13 +197,17 @@ if ($oAccount->getIsAuthenticated()) {
     if (!$oAccount->getIsTwoFaAuthenticated()) {
         // activate the 2FA-code input-field in the login-template(-page)
         $_SESSION['AdminAccount']->TwoFA_active = true;
+        $_SESSION['jtl_token']                  = isset($_POST['jtl_token']) ? $_POST['jtl_token'] : ''; // restore first generated token from POST!
         // if our check failed, we redirect to login
         if (isset($_POST['TwoFA_code']) && '' !== $_POST['TwoFA_code']) {
-
             if ($oAccount->doTwoFA()) {
                 $_SESSION['AdminAccount']->TwoFA_expired = false;
+                $_SESSION['loginIsValid']                = true; // "enable" the "header.tpl"-navigation again
+
+                if (isset($_REQUEST['uri']) && strlen(trim($_REQUEST['uri'])) > 0) {
+                    redirectToURI($_REQUEST['uri']);
+                }
                 openDashboard();
-                exit();
             }
         } else {
             $_SESSION['AdminAccount']->TwoFA_expired = true;

@@ -3,15 +3,39 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-$smarty->register_function('getCurrencyConversionSmarty', 'getCurrencyConversionSmarty');
-$smarty->register_function('getCurrencyConversionTooltipButton', 'getCurrencyConversionTooltipButton');
-$smarty->register_function('getCurrentPage', 'getCurrentPage');
-$smarty->register_function('SmartyConvertDate', 'SmartyConvertDate');
-$smarty->register_function('getHelpDesc', 'getHelpDesc');
-$smarty->register_function('getExtensionCategory', 'getExtensionCategory');
-$smarty->register_function('formatVersion', 'formatVersion');
-$smarty->register_function('gravatarImage', 'gravatarImage');
-$smarty->register_modifier('permission', 'permission');
+/** @global JTLSmarty $smarty */
+$smarty->registerPlugin('function', 'getCurrencyConversionSmarty', 'getCurrencyConversionSmarty')
+       ->registerPlugin('function', 'getCurrencyConversionTooltipButton', 'getCurrencyConversionTooltipButton')
+       ->registerPlugin('function', 'getCurrentPage', 'getCurrentPage')
+       ->registerPlugin('function', 'SmartyConvertDate', 'SmartyConvertDate')
+       ->registerPlugin('function', 'getHelpDesc', 'getHelpDesc')
+       ->registerPlugin('function', 'getExtensionCategory', 'getExtensionCategory')
+       ->registerPlugin('function', 'formatVersion', 'formatVersion')
+       ->registerPlugin('function', 'gravatarImage', 'gravatarImage')
+       ->registerPlugin('function', 'getRevisions', 'getRevisions')
+       ->registerPlugin('modifier', 'permission', 'permission');
+
+/**
+ * @param array     $params
+ * @param JTLSmarty $smarty
+ * @return mixed
+ */
+function getRevisions($params, &$smarty)
+{
+    $secondary = (isset($params['secondary'])) ?
+       $params['secondary'] :
+        false;
+    $data      = (isset($params['data'])) ?
+        $params['data'] :
+        null;
+    $revision  = new Revision();
+    $smarty->assign('revisions', $revision->getRevisions($params['type'], $params['key']))
+           ->assign('secondary', $secondary)
+           ->assign('data', $data)
+           ->assign('show', $params['show']);
+
+    return $smarty->fetch('tpl_inc/revisions.tpl');
+}
 
 /**
  * @param array $params
@@ -64,13 +88,9 @@ function getCurrencyConversionTooltipButton($params, &$smarty)
 /**
  * @param array $params
  * @param JTLSmarty $smarty
- * @return string
  */
 function getCurrentPage($params, &$smarty)
 {
-    //$pro         = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? 'https' : 'http';
-    //$path        = $pro . $_SERVER['REQUEST_URI'];
-    //$path        = preg_replace('/\\?.*/', '', $path);
     $path = $_SERVER['SCRIPT_NAME'];
     $page = basename($path, '.php');
 
@@ -195,12 +215,12 @@ function getExtensionCategory($params, &$smarty)
 /**
  * @param array     $params
  * @param JTLSmarty $smarty
- * @return mixed|void
+ * @return string|null
  */
 function formatVersion($params, &$smarty)
 {
     if (!isset($params['value'])) {
-        return;
+        return null;
     }
 
     $version = (int) $params['value'];
@@ -211,11 +231,16 @@ function formatVersion($params, &$smarty)
 /**
  * Get either a Gravatar URL or complete image tag for a specified email address.
  *
- * @param string $email The email address
- * @param string $s Size in pixels, defaults to 80px [ 1 - 2048 ]
- * @param string $d Default imageset to use [ 404 | mm | identicon | monsterid | wavatar ]
- * @param string $r Maximum rating (inclusive) [ g | pg | r | x ]
+ * @param array $params
+ *
+ * array['email'] - The email address
+ * array['s']     - Size in pixels, defaults to 80px [ 1 - 2048 ]
+ * array['d']     - Default imageset to use [ 404 | mm | identicon | monsterid | wavatar ]
+ * array['r']     - Maximum rating (inclusive) [ g | pg | r | x ]
+ *
+ * @param JTLSmarty $smarty
  * @source https://gravatar.com/site/implement/images/php/
+ * @return string
  */
 function gravatarImage($params, &$smarty)
 {

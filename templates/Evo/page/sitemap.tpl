@@ -40,19 +40,19 @@
                 <div class="row">
                     {* first: categories with subcategories only *}
                     {foreach name=kategorien from=$oKategorieliste->elemente item=oKategorie}
-                        {if $oKategorie->children|@count > 0}
+                        {if $oKategorie->Unterkategorien|@count > 0}
                             <div class="col-sm-6 col-md-4">
                                 <ul class="list-unstyled">
                                     <li>
                                         <a href="{$oKategorie->cURLFull}" title="{$oKategorie->cName}"><strong>{$oKategorie->cName}</strong></a>
                                     </li>
-                                    {foreach name=Subkategorien from=$oKategorie->children item=oSubKategorie}
+                                    {foreach name=Subkategorien from=$oKategorie->Unterkategorien item=oSubKategorie}
                                         <li>
                                             <a href="{$oSubKategorie->cURLFull}" title="{$oKategorie->cName}">{$oSubKategorie->cName}</a>
                                         </li>
-                                        {if $oSubKategorie->children|@count > 0}
+                                        {if $oSubKategorie->Unterkategorien|@count > 0}
                                             <ul class="list-unstyled">
-                                                {foreach name=SubSubkategorien from=$oSubKategorie->children item=oSubSubKategorie}
+                                                {foreach name=SubSubkategorien from=$oSubKategorie->Unterkategorien item=oSubSubKategorie}
                                                     <li>
                                                         <a href="{$oSubSubKategorie->cURLFull}" title="{$oKategorie->cName}">{$oSubSubKategorie->cName}</a>
                                                     </li>
@@ -70,7 +70,7 @@
                         <ul class="list-unstyled">
                             {* <li><b>{lang key="otherCategories" section="global"}</b></li> *}
                             {foreach name=kategorien from=$oKategorieliste->elemente item=oKategorie}
-                                {if $oKategorie->children|@count == 0}
+                                {if $oKategorie->Unterkategorien|@count == 0}
                                     <li>
                                         &nbsp;&nbsp;<a href="{$oKategorie->cURLFull}" title="{$oKategorie->cName}">{$oKategorie->cName}</a>
                                     </li>

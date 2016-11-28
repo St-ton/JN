@@ -8,7 +8,7 @@ require_once dirname(__FILE__) . '/includes/admininclude.php';
 $oAccount->permission('DISPLAY_ARTICLEOVERLAYS_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'suchspecialoverlay_inc.php';
-
+/** @global JTLSmarty $smarty */
 $cHinweis = '';
 $cFehler  = '';
 $step     = 'suchspecialoverlay_uebersicht';
@@ -34,9 +34,14 @@ if (verifyGPCDataInteger('suchspecialoverlay') === 1) {
     $smarty->assign('oSuchspecialOverlay', gibSuchspecialOverlay(1));
 }
 $oSuchspecialOverlay_arr = gibAlleSuchspecialOverlays();
+$nMaxFileSize            = getMaxFileSize(ini_get('upload_max_filesize'));
+if ((int)($_SESSION['template']->version) >= 4) {
+    $smarty->assign('isDeprecated', true);
+}
 
 $smarty->assign('Sprachen', gibAlleSprachen())
        ->assign('cRnd', time())
+       ->assign('nMaxFileSize', $nMaxFileSize)
        ->assign('oSuchspecialOverlay_arr', $oSuchspecialOverlay_arr)
        ->assign('nSuchspecialOverlayAnzahl', count($oSuchspecialOverlay_arr) + 1)
        ->assign('PFAD_SUCHSPECIALOVERLAY', PFAD_SUCHSPECIALOVERLAY_NORMAL)

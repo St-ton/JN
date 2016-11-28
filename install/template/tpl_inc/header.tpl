@@ -14,9 +14,20 @@
         <link rel="stylesheet" href="{$URL_SHOP}install/template/css/style.css" type="text/css">
         <script src="{$URL_SHOP}{$PFAD_ADMIN_TEMPLATE}js/jquery-1.11.3.min.js" type="text/javascript"></script>
         <title>JTL-Shop4 Installation</title>
+
+        {literal}
+        <style>
+            @media print {
+                .print-container {
+                    width: 90% !important;
+                    font-size: 14px;
+                }
+            }
+        </style>
+        {/literal}
     </head>
     <body>
-        {if $step === 'schritt2'}<div id="confetti" class="no-print"></div>{/if}
+        {if isset($step) && $step === 'schritt2'}<div id="confetti" class="no-print"></div>{/if}
         <div id="content2" class="container">
             <div class="row header no-print">
                 <div class="col-xs-12 col-md-12 col-lg-6">
@@ -31,6 +42,7 @@
                         </span>
                     </h1>
                 </div>
+            {* additionally headline - maybe removed
                 <div class="col-xs-12">
                     <h3 class="step-header">
                     {if $step === 'schritt0'}
@@ -42,4 +54,5 @@
                     {/if}
                     </h3>
                 </div>
+            *}
             </div>

@@ -1058,7 +1058,7 @@ function fakeBestellung()
 
             $bestellung->Positionen[$i]->cName = $bestellung->Positionen[$i]->cName[$_SESSION['cISOSprache']];
             $bestellung->Positionen[$i]->fMwSt = gibUst($oPositionen->kSteuerklasse);
-            $bestellung->Positionen[$i]->setzeGesamtpreisLoacalized();
+            $bestellung->Positionen[$i]->setzeGesamtpreisLocalized();
         }
     }
     if (isset($_SESSION['Bestellung']->GuthabenNutzen) && $_SESSION['Bestellung']->GuthabenNutzen == 1) {
@@ -1153,6 +1153,21 @@ function finalisiereBestellung($cBestellNr = '', $bSendeMail = true)
     $bestellung = new Bestellung($_SESSION['kBestellung']);
     $bestellung->fuelleBestellung(0);
     $bestellung->machGoogleAnalyticsReady();
+
+    if (isset($bestellung->oRechnungsadresse)) {
+        $hash = Kuponneukunde::Hash(
+            null,
+            trim($bestellung->oRechnungsadresse->cNachname),
+            trim($bestellung->oRechnungsadresse->cStrasse),
+            null,
+            trim($bestellung->oRechnungsadresse->cPLZ),
+            trim($bestellung->oRechnungsadresse->cOrt),
+            trim($bestellung->oRechnungsadresse->cLand)
+        );
+        $obj = new stdClass();
+        $obj->cVerwendet = 'Y';
+        Shop::DB()->update('tkuponneukunde', 'cDatenHash', $hash, $obj);
+    }
 
     $_upd              = new stdClass();
     $_upd->kKunde      = (int)$_SESSION['Warenkorb']->kKunde;

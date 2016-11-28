@@ -8,7 +8,7 @@
  * Class Sprache
  *
  * @method Sprache autoload()
- * @method string get(string $cName, string $cSektion = 'global')
+ * @method string get(string $cName, string $cSektion = 'global', mixed ...$arg1)
  * @method bool set(int $kSprachsektion, string $cName, string $cWert)
  * @method bool insert(string $cSprachISO, int $kSprachsektion, string $cName, string $cWert)
  * @method bool delete(int $kSprachsektion, string $cName)
@@ -205,7 +205,7 @@ class Sprache
         if (!isset($this->isoAssociation[$kSprache])) {
             $cacheID = 'lang_iso_ks';
             if (($this->isoAssociation = Shop::Cache()->get($cacheID)) === false || !isset($this->isoAssociation[$kSprache])) {
-                $lang                            = Shop::DB()->query("SELECT cISO FROM tsprache WHERE kSprache = " . (int)$kSprache, 1);
+                $lang                            = Shop::DB()->select('tsprache', 'kSprache', (int)$kSprache, null, null, null, null, false, 'cISO');
                 $this->isoAssociation[$kSprache] = $lang;
                 Shop::Cache()->set($cacheID, $this->isoAssociation, array(CACHING_GROUP_LANGUAGE));
             }
@@ -331,6 +331,7 @@ class Sprache
     /**
      * @param string $cName
      * @param string $cSektion
+     * @param mixed [$arg1, ...]
      * @return string
      * @todo: HTML verhindern
      */
@@ -389,12 +390,7 @@ class Sprache
         }
         $kSektion = (int)$kSektion;
         if ($kSektion > 0) {
-            $oSprachWerte_arr = Shop::DB()->query(
-                "SELECT cName, cWert
-                    FROM tsprachwerte
-                    WHERE kSprachISO = " . $this->kSprachISO . "
-                        AND kSprachsektion = " . $kSektion, 2
-            );
+            $oSprachWerte_arr = Shop::DB()->selectAll('tsprachwerte', ['kSprachISO', 'kSprachsektion'], [$this->kSprachISO, $kSektion], 'cName, cWert');
         }
 
         if (count($oSprachWerte_arr) > 0) {
@@ -417,13 +413,8 @@ class Sprache
     {
         $cName    = Shop::DB()->escape($cName);
         $cSektion = Shop::DB()->escape($cSektion);
-        $nCount   = Shop::DB()->query(
-            "SELECT kSprachISO
-                FROM tsprachlog
-                WHERE kSprachISO = " . (int)$this->kSprachISO . "
-                    AND cSektion = '" . $cSektion . "' AND cName = '" . $cName . "'", 3
-        );
-        if ($nCount == 0) {
+        $exists   = Shop::DB()->select('tsprachlog', 'kSprachISO', (int)$this->kSprachISO, 'cSektion', $cSektion, 'cName', $cName);
+        if ($exists === null) {
             $oLog             = new stdClass();
             $oLog->kSprachISO = $this->kSprachISO;
             $oLog->cSektion   = $cSektion;
@@ -450,12 +441,7 @@ class Sprache
      */
     public function gibLogWerte()
     {
-        return Shop::DB()->query(
-            "SELECT * 
-                FROM tsprachlog 
-                WHERE kSprachISO = " . (int)$this->kSprachISO . " 
-                ORDER BY cName ASC", 2
-        );
+        return Shop::DB()->selectAll('tsprachlog', 'kSprachISO', (int)$this->kSprachISO, '*', 'cName ASC');
     }
 
     /**
@@ -466,11 +452,7 @@ class Sprache
         $oWerte_arr     = array();
         $oSektionen_arr = $this->gibSektionen();
         foreach ($oSektionen_arr as $oSektion) {
-            $oSektion->oWerte_arr = Shop::DB()->query("
-                SELECT *
-                    FROM tsprachwerte
-                    WHERE kSprachISO = " . (int)$this->kSprachISO . "
-                        AND kSprachsektion = " . $oSektion->kSprachsektion, 2);
+            $oSektion->oWerte_arr = Shop::DB()->selectAll('tsprachwerte', ['kSprachISO', 'kSprachsektion'], [(int)$this->kSprachISO, $oSektion->kSprachsektion]);
             $oWerte_arr[] = $oSektion;
         }
 
@@ -727,20 +709,14 @@ class Sprache
                     case 1: // Vorhandene Variablen überschreiben
                         Shop::DB()->query(
                             "REPLACE INTO tsprachwerte
-                                SET kSprachISO=" . $kSprachISO . ", kSprachsektion = " . $kSprachsektion . ",
+                                SET kSprachISO = " . $kSprachISO . ", kSprachsektion = " . $kSprachsektion . ",
                                 cName = '" . $cName . "', cWert='" . $cWert . "', cStandard = '" . $cWert . "', bSystem = " . $bSystem, 4
                         );
                         $nUpdateCount++;
                         break;
 
                     case 2: // Vorhandene Variablen beibehalten
-                        $oWert = Shop::DB()->query(
-                            "SELECT *
-                                FROM tsprachwerte
-                                WHERE kSprachISO = '" . $kSprachISO . "'
-                                    AND kSprachsektion = '" . $kSprachsektion . "'
-                                    AND cName = '" . $cName . "'", 1
-                        );
+                        $oWert = Shop::DB()->select('tsprachwerte', 'kSprachISO', $kSprachISO, 'kSprachsektion', $kSprachsektion, 'cName', $cName);
                         if (!$oWert) {
                             Shop::DB()->query(
                                 "REPLACE INTO tsprachwerte

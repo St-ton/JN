@@ -71,9 +71,8 @@ class WidgetVisitorsOnline extends WidgetBase
     public function getContent()
     {
         $oVisitors_arr = $this->getVisitors();
-        $this->oSmarty->assign('oVisitors_arr', $oVisitors_arr);
-        $this->oSmarty->assign('oVisitorsInfo', $this->getVisitorsInfo($oVisitors_arr));
-
-        return $this->oSmarty->fetch('tpl_inc/widgets/visitors_online.tpl');
+        return $this->oSmarty->assign('oVisitors_arr', $oVisitors_arr)
+            ->assign('oVisitorsInfo', $this->getVisitorsInfo($oVisitors_arr))
+            ->fetch('tpl_inc/widgets/visitors_online.tpl');
     }
 }

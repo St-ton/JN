@@ -1,40 +1,38 @@
 {if isset($boxes)}{* only available in shop versions > 3.19 *}
     {has_boxes position='left' assign='hasLeftBox'}
 {/if}
-{nocache}
-    {if !empty($hinweis)}
-        {if isset($bWarenkorbHinzugefuegt) && $bWarenkorbHinzugefuegt}
-            {include file='productdetails/pushed_success.tpl' type='alert'}
-        {else}
-            <div class="alert alert-success">
-                {$hinweis}
-            </div>
-        {/if}
-    {/if}
-    {if !empty($fehler)}
-        <div class="alert alert-danger">
-            {$fehler}
-        </div>
-    {/if}
-    {if !empty($ProdukttagHinweis)}
+{if !empty($hinweis)}
+    {if isset($bWarenkorbHinzugefuegt) && $bWarenkorbHinzugefuegt}
+        {include file='productdetails/pushed_success.tpl' type='alert'}
+    {else}
         <div class="alert alert-success">
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-            {$ProdukttagHinweis}
+            {$hinweis}
         </div>
     {/if}
-    {if isset($PositiveFeedback) && count($PositiveFeedback) > 0}
-        {foreach name=feedback from=$PositiveFeedback item=Feedback}
-            <div class="alert alert-success">{$Feedback}</div>
-        {/foreach}
-    {/if}
-    {if isset($Artikelhinweise) && count($Artikelhinweise) > 0}
-        {foreach name=hinweise from=$Artikelhinweise item=Artikelhinweis}
-            <div class="alert alert-danger">{$Artikelhinweis}</div>
-        {/foreach}
-    {/if}
-{/nocache}
+{/if}
+{if !empty($fehler)}
+    <div class="alert alert-danger">
+        {$fehler}
+    </div>
+{/if}
+{if !empty($ProdukttagHinweis)}
+    <div class="alert alert-success">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        {$ProdukttagHinweis}
+    </div>
+{/if}
+{if isset($PositiveFeedback) && count($PositiveFeedback) > 0}
+    {foreach name=feedback from=$PositiveFeedback item=Feedback}
+        <div class="alert alert-success">{$Feedback}</div>
+    {/foreach}
+{/if}
+{if isset($Artikelhinweise) && count($Artikelhinweise) > 0}
+    {foreach name=hinweise from=$Artikelhinweise item=Artikelhinweis}
+        <div class="alert alert-danger">{$Artikelhinweis}</div>
+    {/foreach}
+{/if}
 
 <div class="h1 visible-xs text-center">{$Artikel->cName}</div>
 
@@ -79,7 +77,7 @@
                             {/if}
                         </div>
                     {/if}
-                    {if ($Artikel->Bewertungen->oBewertungGesamt->nAnzahl > 0)}
+                    {if ($Einstellungen.bewertung.bewertung_anzeigen === 'Y' && $Artikel->Bewertungen->oBewertungGesamt->nAnzahl > 0)}
                         <div class="rating-wrapper col-xs-4 text-right" itemprop="aggregateRating" itemscope itemtype="http://schema.org/AggregateRating">
                         <span itemprop="ratingValue"
                               class="hidden">{$Artikel->Bewertungen->oBewertungGesamt->fDurchschnitt}</span>
@@ -94,7 +92,7 @@
                 <div class="clearfix top10"></div>
             {/if}
 
-            {if $Artikel->cKurzBeschreibung}
+            {if $Einstellungen.artikeldetails.artikeldetails_kurzbeschreibung_anzeigen === 'Y' && $Artikel->cKurzBeschreibung}
                 {block name="productdetails-info-description"}
                 <div class="shortdesc" itemprop="description">
                     {$Artikel->cKurzBeschreibung}
@@ -105,7 +103,7 @@
 
             {if $Einstellungen.artikeldetails.artikeldetails_kategorie_anzeigen === 'Y'}
                 {block name="productdetails-info-category"}
-                <p class="product-category">
+                <p class="product-category word-break">
                     <span class="text-muted">{lang key="category" section="global"}: </span>
                     {assign var=i_kat value=$Brotnavi|@count}{assign var=i_kat value=$i_kat-2}
                     <a href="{$Brotnavi[$i_kat]->url}">{$Brotnavi[$i_kat]->name}</a>
@@ -148,7 +146,7 @@
                         {include file="productdetails/stock.tpl"}
                     </div>
                 </div>
-                <!-- WARENKORB anzeigen wenn keine variationen mehr auf lager sind?!-->
+                {*WARENKORB anzeigen wenn keine variationen mehr auf lager sind?!*}
                 {include file="productdetails/basket.tpl"}
                 <hr>
             </div>
@@ -159,7 +157,7 @@
         </div>{* /product-info *}
         {if $Artikel->bHasKonfig}
             <div id="product-configurator" class="product-actions top10 col-sm-12">
-                <!-- KONFIGURATOR -->
+                {*KONFIGURATOR*}
                 {if isset($Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ARTIKELKONFIG_TPL]) && file_exists("tpl_inc/{$Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ARTIKELKONFIG_TPL]}")}
                     {include file='tpl_inc/'|cat:$Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ARTIKELKONFIG_TPL]}
                 {else}
@@ -173,12 +171,11 @@
 
 </form>
 
-{include file="productdetails/download.tpl"}
 {include file="productdetails/tabs.tpl"}
 
 <div class="clearfix"></div>
 
-<!-- SLIDERS -->
+{*SLIDERS*}
 {if isset($Einstellungen.artikeldetails.artikeldetails_stueckliste_anzeigen) && $Einstellungen.artikeldetails.artikeldetails_stueckliste_anzeigen === 'Y' && isset($Artikel->oStueckliste_arr) && $Artikel->oStueckliste_arr|@count > 0
     || isset($Einstellungen.artikeldetails.artikeldetails_produktbundle_nutzen) && $Einstellungen.artikeldetails.artikeldetails_produktbundle_nutzen == 'Y' && isset($Artikel->oProduktBundle_arr) && $Artikel->oProduktBundle_arr|@count > 0
     || isset($Xselling->Standard->XSellGruppen) && count($Xselling->Standard->XSellGruppen) > 0

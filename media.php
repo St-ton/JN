@@ -4,7 +4,6 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 require_once dirname(__FILE__) . '/includes/globalinclude.php';
-
 set_exception_handler(function ($e) {
     header('HTTP/1.0 404 Not Found', true, 404);
     echo $e->getMessage();

@@ -127,6 +127,8 @@ class PayPalPlus extends PaymentMethod
             'http.ConnectionTimeOut'                     => 30,
             'http.headers.PayPal-Partner-Attribution-Id' => 'JTL_Cart_REST_Plus',
             'mode'                                       => $this->getModus(),
+            'cache.enabled'                              => true,
+            'cache.FileName'                             => PFAD_ROOT . PFAD_COMPILEDIR . 'paypalplus.auth.cache'
         ]);
 
         return $apiContext;

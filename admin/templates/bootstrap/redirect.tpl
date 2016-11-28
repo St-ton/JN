@@ -1,9 +1,9 @@
 {include file='tpl_inc/header.tpl'}
 {config_load file="$lang.conf" section="redirect"}
 {include file='tpl_inc/seite_header.tpl' cTitel=#redirect# cBeschreibung=#redirectDesc# cDokuURL=#redirectURL#}
+{include file='tpl_inc/sortcontrols.tpl'}
 
-<script>
-    {literal}
+<script>{literal}
     $(document).ready(function () {
         init_simple_search(function (type, res) {
             $('input.simple_search').val(res.cUrl)
@@ -15,14 +15,20 @@
             return false;
         });
         $('.import').click(function () {
-            if ($('.csvimport').css('display') === 'none') {
-                $('.csvimport').fadeIn();
+            var $csvimport = $('.csvimport');
+            if ($csvimport.css('display') === 'none') {
+                $csvimport.fadeIn();
             } else {
-                $('.csvimport').fadeOut();
+                $csvimport.fadeOut();
             }
         });
+        {/literal}
+            {foreach $oRedirect_arr as $oRedirect}
+                check_url({$oRedirect->kRedirect}, '{$oRedirect->cToUrl}');
+            {/foreach}
+            check_url('cToUrl', '{if isset($cPost_arr.cToUrl)}{$cPost_arr.cToUrl}{/if}');
+        {literal}
     });
-    {/literal}
     
     redirect_search = function (id,search) {
         $.ajax({
@@ -30,6 +36,9 @@
             dataType: 'json',
             url: 'redirect.php',
             data: {
+                {/literal}
+                    'jtl_token': '{$smarty.session.jtl_token}',
+                {literal}
                 'aData[action]': 'search',
                 'aData[search]': ( (search.substr(0, 1) != '/') ? search.substr(0) : search.substr(1) )
             },
@@ -37,26 +46,29 @@
                 if (search.length > 1) {
                     var ret = '',
                         i;
-                    $('#resSearch' + id + ' li').remove();
+                    $('#resSearch_' + id + ' li').remove();
                     if (data.article.length > 0) {
                         ret += '<li class="dropdown-header">Artikel</li>';
                         for (i = 0; i < data.article.length; i++) {
-                            ret += '<li onclick="$(\'#url' + id + '\').val(\'/' + data.article[i].cUrl + '\');check_url(\'' + id + '\',$(\'#url' + id + '\').val());return false;"><a href="#">/' + data.article[i].cUrl + '</a></li>';
+                            ret += '<li onclick="$(\'#url_' + id + '\').val(\'/' + data.article[i].cUrl + '\');check_url(\'' + id + '\',$(\'#url_' + id + '\').val());return false;">';
+                            ret += '<a href="#">/' + data.article[i].cUrl + '</a></li>';
                         }
                     }
                     if (data.category.length > 0) {
                         ret += '<li class="dropdown-header">Kategorie</li>';
                         for (i = 0; i < data.category.length; i++) {
-                            ret += '<li onclick="$(\'#url' + id + '\').val(\'/' + data.category[i].cUrl + '\');check_url(\'' + id + '\',$(\'#url' + id + '\').val());return false;"><a href="#">/' + data.category[i].cUrl + '</a></li>';
+                            ret += '<li onclick="$(\'#url_' + id + '\').val(\'/' + data.category[i].cUrl + '\');check_url(\'' + id + '\',$(\'#url_' + id + '\').val());return false;">';
+                            ret += '<a href="#">/' + data.category[i].cUrl + '</a></li>';
                         }
                     }
                     if (data.manufacturer.length > 0) {
                         ret += '<li class="dropdown-header">Hersteller</li>';
                         for (i = 0; i < data.manufacturer.length; i++) {
-                            ret += '<li onclick="$(\'#url' + id + '\').val(\'/' + data.manufacturer[i].cUrl + '\');check_url(\'' + id + '\',$(\'#url' + id + '\').val());return false;"><a href="#">/' + data.manufacturer[i].cUrl + '</a></li>';
+                            ret += '<li onclick="$(\'#url_' + id + '\').val(\'/' + data.manufacturer[i].cUrl + '\');check_url(\'' + id + '\',$(\'#url_' + id + '\').val());return false;">';
+                            ret += '<a href="#">/' + data.manufacturer[i].cUrl + '</a></li>';
                         }
                     }
-                    $('#resSearch' + id).append(ret);
+                    $('#resSearch_' + id).append(ret);
                     if (ret) {
                         $('#frm_' + id + ' .input-group-btn').addClass('open');
                     } else {
@@ -68,27 +80,35 @@
     };
     
     check_url = function(id,url) {
+        var $stateChecking = $('#frm_' + id + ' .state-checking');
+        var $stateAvailable = $('#frm_' + id + ' .state-available');
+        var $stateUnavailable = $('#frm_' + id + ' .state-unavailable');
+        $stateChecking.show();
+        $stateAvailable.hide();
+        $stateUnavailable.hide();
         $.ajax({
             type: 'POST',
             url: 'redirect.php',
             data: {
+                {/literal}
+                    'jtl_token': '{$smarty.session.jtl_token}',
+                {literal}
                 'aData[action]': 'check_url',
                 'aData[url]': url
             },
             success: function (data, textStatus, jqXHR) {
-                $('#frm_' + id + ' .alert-success').hide();
-                $('#frm_' + id + ' .alert-danger').hide();
-
-                if (data == 1) {
-                    $('#frm_' + id + ' .alert-success').show();
+                $stateChecking.hide();
+                $stateAvailable.hide();
+                $stateUnavailable.hide();
+                if (data == '1') {
+                    $stateAvailable.show();
                 } else {
-                    $('#frm_' + id + ' .alert-danger').show();
+                    $stateUnavailable.show();
                 }
             }
         });
     };
-
-</script>
+{/literal}</script>
 
 <div id="content" class="container-fluid">
     <ul class="nav nav-tabs" role="tablist">
@@ -97,72 +117,33 @@
         </li>
         <li class="tab{if isset($cTab) && $cTab === 'new_redirect'} active{/if}">
             <a data-toggle="tab" role="tab" href="#new_redirect">Neuer Redirect</a>
-        </li>{*
-        <li class="tab{if isset($cTab) && $cTab === 'config'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#config">Einstellungen</a>
-        </li>*}
+        </li>
     </ul>
     <div class="tab-content">
         <div id="redirects" class="tab-pane fade {if !isset($cTab) || $cTab === 'redirects'} active in{/if}">
-            {if $oRedirect_arr|@count > 0}
-                <div class="panel panel-default">
-                    <form id="frmFilter" action="redirect.php" method="post">
-                        {$jtl_token}
-                        <input type="hidden" name="cSortierFeld" value="{$cSortierFeld}">
-                        <input type="hidden" name="cSortierung" value="{$cSortierung}">
-
-                        <div class="panel-heading">
-                            <h3 class="panel-title">Redirects</h3>
-                        </div>
-                        <div class="panel-body">
-                            <div class="pull-right p50">
-                                <div class="input-group item">
-                                    <span class="input-group-addon">
-                                        <label for="bUmgeleiteteUrls"> Filter</label>
-                                    </span>
-                                    <span class="input-group-wrap">
-                                        <select class="form-control" id="bUmgeleiteteUrls" name="bUmgeleiteteUrls">
-                                            <option value="0"{if $bUmgeleiteteUrls == '0'} selected="selected"{/if}>alle</option>
-                                            <option value="1"{if $bUmgeleiteteUrls == '1'} selected="selected"{/if}>nur umgeleitet</option>
-                                            <option value="2"{if $bUmgeleiteteUrls == '2'} selected="selected"{/if}>nur ohne Umleitung
-                                            </option>
-                                        </select>
-                                    </span>
-                                    <input type="text" class="form-control" name="cSuchbegriff" value="{$cSuchbegriff}" />
-                                    <span class="input-group-btn">
-                                        <button class="btn btn-default" type="submit"><i class="fa fa-search"></i>&nbsp;</button>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                    <form id="frmRedirect" action="redirect.php?s1={$oBlaetterNavi->nAktuelleSeite}" method="post">
-                        {$jtl_token}
-                        <input type="hidden" name="aData[action]" value="save">
+            <div class="panel panel-default">
+                {if $nRedirectCount > 0}
+                    {include file='tpl_inc/filtertools.tpl' oFilter=$oFilter}
+                {/if}
+                {if $oRedirect_arr|@count > 0}
+                    {include file='tpl_inc/pagination.tpl' oPagination=$oPagination cAnchor='redirects'}
+                {/if}
+                <form id="frmRedirect" action="redirect.php" method="post">
+                    {$jtl_token}
+                    <input type="hidden" name="aData[action]" value="save">
+                    {if $oRedirect_arr|@count > 0}
                         <table class="list table">
                             <thead>
                             <tr>
                                 <th class="tcenter" style="width:24px"></th>
-                                <th class="tleft" style="width:35%;">Url
-                                    {if $cSortierFeld == 'cFromUrl' && $cSortierung == 'DESC'}
-                                    <a href="#" onclick="$('[name=\'cSortierFeld\']').val('cFromUrl');$('[name=\'cSortierung\']').val('ASC');$('#frmFilter').submit();return false;"><i class="fa fa-sort-asc"></i></a>
-                                    {else}
-                                    <a href="#" onclick="$('[name=\'cSortierFeld\']').val('cFromUrl');$('[name=\'cSortierung\']').val('DESC');$('#frmFilter').submit();return false;"><i class="fa fa-sort-desc"></i></a>
-                                    {/if}
+                                <th class="tleft" style="width:35%;">
+                                    URL {call sortControls oPagination=$oPagination nSortBy=0}
                                 </th>
-                                <th class="tleft">Wird weitergeleitet nach
-                                    {if $cSortierFeld == 'cToUrl' && $cSortierung == 'DESC'}
-                                        <a href="#" onclick="$('[name=\'cSortierFeld\']').val('cToUrl');$('[name=\'cSortierung\']').val('ASC');$('#frmFilter').submit();return false;"><i class="fa fa-sort-asc"></i></a>
-                                    {else}
-                                        <a href="#" onclick="$('[name=\'cSortierFeld\']').val('cToUrl');$('[name=\'cSortierung\']').val('DESC');$('#frmFilter').submit();return false;"><i class="fa fa-sort-desc"></i></a>
-                                    {/if}
+                                <th class="tleft">
+                                    Wird weitergeleitet nach {call sortControls oPagination=$oPagination nSortBy=1}
                                 </th>
-                                <th class="tright" style="width:85px">Aufrufe
-                                    {if $cSortierFeld == 'nCount' && $cSortierung == 'DESC'}
-                                        <a href="#" onclick="$('[name=\'cSortierFeld\']').val('nCount');$('[name=\'cSortierung\']').val('ASC');$('#frmFilter').submit();return false;"><i class="fa fa-sort-asc"></i></a>
-                                    {else}
-                                        <a href="#" onclick="$('[name=\'cSortierFeld\']').val('nCount');$('[name=\'cSortierung\']').val('DESC');$('#frmFilter').submit();return false;"><i class="fa fa-sort-desc"></i></a>
-                                    {/if}
+                                <th class="tright" style="width:85px">
+                                    Aufrufe {call sortControls oPagination=$oPagination nSortBy=2}
                                 </th>
                                 <th class="tcenter">Optionen</th>
                             </tr>
@@ -170,7 +151,7 @@
                             <tbody>
                             {foreach from=$oRedirect_arr item="oRedirect"}
                                 <tr>
-                                    {assign var=redirectCount value=$oRedirect->oRedirectReferer_arr|@count}
+                                    {assign var=redirectCount value=$oRedirect->nCount}
                                     <td class="tcenter" style="vertical-align:middle;">
                                         <input type="checkbox"  name="aData[redirect][{$oRedirect->kRedirect}][active]" value="1" />
                                     </td>
@@ -179,12 +160,18 @@
                                     </td>
                                     <td class="tleft">
                                         <div id="frm_{$oRedirect->kRedirect}" class="input-group input-group-sm" style="margin-right:30px;">
-                                            <span class="input-group-addon alert-success" {if $oRedirect->cToUrl == ''}style="display:none;"{/if}><i class="fa fa-check"></i></span>
-                                            <span class="input-group-addon alert-danger" {if $oRedirect->cToUrl != ''}style="display:none;"{/if}><i class="fa fa-warning"></i></span>
-                                            <input id="url{$oRedirect->kRedirect}" name="aData[redirect][{$oRedirect->kRedirect}][url]" type="text" class="form-control cToUrl" autocomplete="off" onblur="check_url('{$oRedirect->kRedirect}',this.value);" onkeyup="redirect_search('{$oRedirect->kRedirect}', this.value );" value="{$oRedirect->cToUrl}"  />
+                                            <span class="input-group-addon alert-info state-checking"><i class="fa fa-spinner"></i></span>
+                                            <span class="input-group-addon alert-success state-available" style="display:none;"><i class="fa fa-check"></i></span>
+                                            <span class="input-group-addon alert-danger state-unavailable" style="display:none;"><i class="fa fa-warning"></i></span>
+                                            <input id="url_{$oRedirect->kRedirect}"
+                                                   name="aData[redirect][{$oRedirect->kRedirect}][url]" type="text"
+                                                   class="form-control cToUrl" autocomplete="off"
+                                                   value="{$oRedirect->cToUrl}"
+                                                   onblur="check_url('{$oRedirect->kRedirect}',this.value);"
+                                                   onkeyup="redirect_search('{$oRedirect->kRedirect}',this.value);">
                                             <div class="input-group-btn" style="width:100%;display:block;top:100%;">
                                                 <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="caret"></span></button>
-                                                <ul class="dropdown-menu" style="min-width:100%;" id="resSearch{$oRedirect->kRedirect}"></ul>
+                                                <ul class="dropdown-menu" style="min-width:100%;" id="resSearch_{$oRedirect->kRedirect}"></ul>
                                             </div>
                                         </div>
                                     </td>
@@ -243,23 +230,38 @@
                             </tr>
                             </tfoot>
                         </table>
-                        <div class="panel-footer">
-                            <div class="btn-group">
-                                <button type="button" onclick="$('[name=\'aData\[action\]\']').val('save');$('#frmRedirect').submit();" value="{#save#}" class="btn btn-primary"><i class="fa fa-save"></i> {#save#}</button>
-                                <button type="button" onclick="$('[name=\'aData\[action\]\']').val('delete');$('#frmRedirect').submit();" name="delete" value="Auswahl l&ouml;schen" class="btn btn-danger"><i class="fa fa-trash"></i> Markierte l&ouml;schen</button>
-                                <button type="button" onclick="$('[name=\'aData\[action\]\']').val('delete_all');$('#frmRedirect').submit();" name="delete_all" value="Alle ohne Weiterleitung l&ouml;schen" class="btn btn-warning">Alle ohne Weiterleitung l&ouml;schen</button>
-                            </div>
-
-                            <div class="pull-right">
-                            <!--  Pagination unten -->
-                            {include file='pagination.tpl' cSite=1 cUrl='redirect.php' oBlaetterNavi=$oBlaetterNavi hash='#redirects'}
-                            </div>
+                    {elseif $nRedirectCount > 0}
+                        <div class="alert alert-info" role="alert">{#noFilterResults#}</div>
+                    {else}
+                        <div class="alert alert-info" role="alert">{#noDataAvailable#}</div>
+                    {/if}
+                    <div class="panel-footer">
+                        <div class="btn-group">
+                            {if $oRedirect_arr|@count > 0}
+                                <button type="button"
+                                        onclick="$('[name=\'aData\[action\]\']').val('save');$('#frmRedirect').submit();"
+                                        value="{#save#}" class="btn btn-primary" title="{#save#}">
+                                    <i class="fa fa-save"></i> {#save#}
+                                </button>
+                                <button type="button"
+                                        onclick="$('[name=\'aData\[action\]\']').val('delete');$('#frmRedirect').submit();"
+                                        name="delete" value="Auswahl l&ouml;schen" title="Auswahl l&ouml;schen"
+                                        class="btn btn-danger">
+                                    <i class="fa fa-trash"></i> {#deleteSelected#}
+                                </button>
+                                <button type="button"
+                                        onclick="$('[name=\'aData\[action\]\']').val('delete_all');$('#frmRedirect').submit();"
+                                        name="delete_all" value="Alle ohne Weiterleitung l&ouml;schen"
+                                        title="Alle ohne Weiterleitung l&ouml;schen" class="btn btn-warning">
+                                    Alle ohne Weiterleitung l&ouml;schen
+                                </button>
+                                {include file='tpl_inc/csv_export_btn.tpl' exporterId='redirects'}
+                            {/if}
+                            {include file='tpl_inc/csv_import_btn.tpl' importerId='redirects'}
                         </div>
-                    </form>
-                </div>
-            {else}
-                <div class="alert alert-info" role="alert">{#noDataAvailable#}</div>
-            {/if}
+                    </div>
+                </form>
+            </div>
         </div>
         <div id="new_redirect" class="tab-pane fade {if isset($cTab) && $cTab === 'new_redirect'} active in{/if}">
             <button class="btn btn-primary import" style="margin-bottom: 15px;">CSV-Import durchf&uuml;hren</button>
@@ -281,9 +283,9 @@
                     </table>
                 </form>
             </div>
-            <form method="post">
+            <form method="post" action="#new_redirect">
                 {$jtl_token}
-                <div class="panel panel-default">
+                <div class="panel panel-default settings">
                     <div class="panel-heading">
                         <h3 class="panel-title">Neue Weiterleitung</h3>
                     </div>
@@ -295,16 +297,21 @@
                             </span>
                             <input class="form-control" id="cSource" name="cSource" type="text" placeholder="Quell Url" value="{if isset($cPost_arr.cSource)}{$cPost_arr.cSource}{/if}" />
                         </div>
-                        <div id="frm_cDestiny" class="input-group" style="margin-right:30px;">
+                        <div id="frm_cToUrl" class="input-group">
                             <span class="input-group-addon">
-                                <label for="cDestiny">Ziel-URL:</label>
+                                <label for="cToUrl">Ziel-URL:</label>
                             </span>
-                            <span class="input-group-addon alert-success"><i class="fa fa-check"></i></span>
-                            <span class="input-group-addon alert-danger" style="display:none;"><i class="fa fa-warning"></i></span>
-                            <input id="urlcDestiny" name="cDestiny" type="text" class="form-control cToUrl" autocomplete="off" onblur="check_url('cDestiny',this.value);" onkeyup="redirect_search('cDestiny', this.value );" placeholder="Ziel-URL" value="{if isset($cPost_arr.cDestiny)}{$cPost_arr.cDestiny}{/if}" />
-                            <div class="input-group-btn" style="min-width:100%;display:block;top:100%;">
+                            <span class="input-group-addon alert-info state-checking"><i class="fa fa-spinner"></i></span>
+                            <span class="input-group-addon alert-success state-available" style="display:none;"><i class="fa fa-check"></i></span>
+                            <span class="input-group-addon alert-danger state-unavailable" style="display:none;"><i class="fa fa-warning"></i></span>
+                            <input id="url_cToUrl" name="cToUrl" type="text" class="form-control cToUrl"
+                                   autocomplete="off" onblur="check_url('cToUrl',this.value);"
+                                   onkeyup="redirect_search('cToUrl', this.value );"
+                                   placeholder="Ziel-URL"
+                                   value="{if isset($cPost_arr.cToUrl)}{$cPost_arr.cToUrl}{/if}">
+                            <div class="input-group-btn">
                                 <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="caret"></span></button>
-                                <ul class="dropdown-menu" style="min-width:100%;" id="resSearchcDestiny"></ul>
+                                <ul class="dropdown-menu dropdown-menu-right" id="resSearch_cToUrl"></ul>
                             </div>
                         </div>
                     </div>

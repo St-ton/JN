@@ -20,14 +20,17 @@
     <form action="shoptemplate.php" method="post" enctype="multipart/form-data">
         {$jtl_token}
         <div id="settings" class="settings">
-            {if isset($oTemplate->eTyp) && $oTemplate->eTyp === 'admin'}
-                <input type="hidden" name="eTyp" value="admin" />
+            {if isset($oTemplate->eTyp) && ($oTemplate->eTyp === 'admin' || ($oTemplate->eTyp !== 'mobil' && $oTemplate->bResponsive))}
+                <input type="hidden" name="eTyp" value="{if !empty($oTemplate->eTyp)}{$oTemplate->eTyp}{else}standard{/if}" />
             {else}
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h3 class="panel-title">Mobil</h3>
                     </div>
                     <div class="panel-body">
+                        {if $oTemplate->eTyp === 'mobil' && $oTemplate->bResponsive}
+                            <div class="alert alert-warning">{#warning_responsive_mobile#}</div>
+                        {/if}
                         <div class="item input-group">
                             <span class="input-group-addon">
                                 <label for="eTyp">Standard-Template f&uuml;r mobile Endger&auml;te?</label>
@@ -115,7 +118,12 @@
                                                 {elseif $oSetting->cType === 'text' || $oSetting->cType === 'float'}
                                                     <input class="form-control" type="text" name="cWert[]" id="{$oSection->cKey}-{$oSetting->cKey}" value="{$oSetting->cValue|escape:"html"}" placeholder="{$oSetting->cPlaceholder}" />
                                                 {elseif $oSetting->cType === 'upload' && isset($oSetting->rawAttributes.target)}
-                                                    <input name="upload-{$smarty.foreach.tplOptions.index}" id="tpl-upload-{$smarty.foreach.tplOptions.index}" type="file" class="file" accept="{if !empty($oSetting->rawAttributes.accept)}{$oSetting->rawAttributes.accept}{else}image/*{/if}" />
+                                                    <div class="template-favicon-upload">
+                                                        <input name="upload-{$smarty.foreach.tplOptions.index}"
+                                                               id="tpl-upload-{$smarty.foreach.tplOptions.index}" type="file"
+                                                               class="file"
+                                                               accept="{if !empty($oSetting->rawAttributes.accept)}{$oSetting->rawAttributes.accept}{else}image/*{/if}">
+                                                    </div>
                                                     <input type="hidden" name="cWert[]" value="upload-{$smarty.foreach.tplOptions.index}" />
                                                     <script>
                                                         $('#tpl-upload-{$smarty.foreach.tplOptions.index}').fileinput({ldelim}

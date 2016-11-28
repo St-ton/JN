@@ -54,9 +54,7 @@ if (isset($_SESSION['oBesucher']->kBesucher) && $_SESSION['oBesucher']->kBesuche
     $_upd->cAusstiegsseite   = $_SERVER['REQUEST_URI'];
     Shop::DB()->update('tbesucher', 'kBesucher', (int)$_SESSION['oBesucher']->kBesucher, $_upd);
 }
-//hole aktuellen besucherzählerstand
-$besucherzaehler = Shop::DB()->query("SELECT * FROM tbesucherzaehler", 1);
-$smarty->assign('Besucherzaehler', (!empty($besucherzaehler->nZaehler)) ? (int)$besucherzaehler->nZaehler : 0);
+
 /**
  * @return string
  */
@@ -66,7 +64,7 @@ function gibBrowser()
     if (strpos($agent, 'msie') !== false) {
         $pos = strpos($agent, 'msie');
 
-        return 'Internet Explorer ' . (int) substr($agent, $pos + 4);
+        return 'Internet Explorer ' . (int)substr($agent, $pos + 4);
     }
     if (strpos($agent, 'opera') !== false) {
         return 'Opera';

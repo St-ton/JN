@@ -166,12 +166,13 @@ function box_trustedshosp_siegelbox()
 
 /**
  * @deprecated since 4.0
- * @param     $filename_cache
- * @param int $timeout
+ * @param string $filename_cache
+ * @param int    $timeout
  * @return bool
  */
 function cachecheck($filename_cache, $timeout = 10800)
 {
+    return false;
 }
 
 /**

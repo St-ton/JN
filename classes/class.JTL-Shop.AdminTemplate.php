@@ -145,8 +145,9 @@ class AdminTemplate
         if (($tplGroups_arr = Shop::Cache()->get($cacheID)) === false) {
             $tplGroups_arr = array();
             foreach ($folders as $cOrdner) {
-                $oXML = self::$helper->getXML($cOrdner);
+                $oXML = self::$helper->getXML($cOrdner, true);
                 if (isset($oXML->Minify->CSS)) {
+                    /** @var SimpleXMLElement $oCSS */
                     foreach ($oXML->Minify->CSS as $oCSS) {
                         $name = (string) $oCSS->attributes()->Name;
                         if (!isset($tplGroups_arr[$name])) {

@@ -15,11 +15,18 @@ abstract class AbstractPlugin implements IPlugin
      */
     private $notifications = [];
 
+    /**
+     * AbstractPlugin constructor.
+     * @param string $pluginId
+     */
     final public function __construct($pluginId)
     {
         $this->pluginId = $pluginId;
     }
 
+    /**
+     * @param EventDispatcher $dispatcher
+     */
     public function boot(EventDispatcher $dispatcher)
     {
         $dispatcher->listen('backend.notification', function (\Notification $notify) use (&$dispatcher) {
@@ -32,6 +39,11 @@ abstract class AbstractPlugin implements IPlugin
         });
     }
 
+    /**
+     * @param int         $type
+     * @param string      $title
+     * @param null|string $description
+     */
     final public function addNotify($type, $title, $description = null)
     {
         $notify = new NotificationEntry($type, $title, $description);
@@ -39,16 +51,30 @@ abstract class AbstractPlugin implements IPlugin
         $this->notifications[] = $notify;
     }
 
+    /**
+     *
+     */
     public function installed()
     {
     }
+
+    /**
+     *
+     */
     public function uninstalled()
     {
     }
 
+    /**
+     *
+     */
     public function enabled()
     {
     }
+
+    /**
+     *
+     */
     public function disabled()
     {
     }

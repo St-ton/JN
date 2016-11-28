@@ -15,7 +15,7 @@
  * @method int insert(string $tablename, object $object, int|bool $echo = false, bool $bExecuteHook = false)
  * @method int delete(string $tablename, string|array $keyname, string|int|array $keyvalue, bool|int $echo = false)
  * @method int update(string $tablename, string|array $keyname, string|int|array $keyvalue, object $object, int|bool $echo = false)
- * @method int|array selectAll(string $tablename, string|array $keys, string|int|array $values, string $select = '*', string $orderBy = '')
+ * @method int|array selectAll(string $tablename, string|array $keys, string|int|array $values, string $select = '*', string $orderBy = '', string $limit = '')
  * @method string realEscape($string)
  * @method string pdoEscape($string)
  * @method string info()
@@ -140,7 +140,7 @@ class NiceDB
         if ($debugOverride === false) {
             if (defined('PROFILE_QUERIES') && PROFILE_QUERIES !== false) {
                 if (defined('DEBUG_LEVEL')) {
-                    $this->debugLevel = (int) DEBUG_LEVEL;
+                    $this->debugLevel = (int)DEBUG_LEVEL;
                 }
                 if (defined('PROFILE_QUERIES_ACTIVATION_FUNCTION') && is_callable(PROFILE_QUERIES_ACTIVATION_FUNCTION)) {
                     $this->collectData = (bool) call_user_func(PROFILE_QUERIES_ACTIVATION_FUNCTION);
@@ -148,7 +148,7 @@ class NiceDB
                     $this->debug = true;
                 }
                 if ($this->debug === true && is_numeric(PROFILE_QUERIES)) {
-                    $this->debugLevel = (int) PROFILE_QUERIES;
+                    $this->debugLevel = (int)PROFILE_QUERIES;
                 }
             }
         }
@@ -296,7 +296,7 @@ class NiceDB
                 Shop::dbg($stmt, false, 'Exception when trying to analyze query: ');
             }
 
-            return;
+            return $this;
         }
         if ($backtrace !== null) {
             $strippedBacktrace = array();
@@ -751,14 +751,14 @@ class NiceDB
                 Shop::dbg(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS), false, 'Backtrace:');
             }
 
-            return;
+            return null;
         }
         if (!$res) {
             if ($this->logErrors && $this->logfileName) {
                 $this->writeLog($stmt . "\n" . $this->pdo->errorCode() . ': ' . $this->pdo->errorInfo());
             }
 
-            return;
+            return null;
         }
         $ret = $s->fetchObject();
         if ($this->debug === true || $this->collectData === true) {
@@ -767,27 +767,27 @@ class NiceDB
             if ($this->debugLevel > 2) {
                 $backtrace = debug_backtrace();
             }
-
             if ($this->debug === true || $this->collectData === true) {
                 $start = microtime(true);
             }
-            if (!is_int($keyvalue)) {
-                $keyvalue = "'" . $keyvalue . "'";
+            $keys    = (is_array($keyname)) ? $keyname : array($keyname, $keyname1, $keyname2);
+            $values  = (is_array($keyvalue)) ? $keyvalue : array($keyvalue, $keyvalue1, $keyvalue2);
+            $assigns = array();
+            $i       = 0;
+            foreach ($keys as &$_key) {
+                if ($_key !== null) {
+                    $_key .= '=';
+                    if (is_string($values[$i])) {
+                        $_key .= '\'' . $values[$i] . '\'';
+                    } else {
+                        $_key .= $values[$i];
+                    }
+                } else {
+                    unset($keys[$i]);
+                }
+                $i++;
             }
-            if (!is_int($keyvalue1)) {
-                $keyvalue1 = "'" . $keyvalue1 . "'";
-            }
-            if (!is_int($keyvalue2)) {
-                $keyvalue1 = "'" . $keyvalue2 . "'";
-            }
-            $stmt = 'SELECT * FROM ' . $tablename . ' WHERE ' . $keyname . '=' . $keyvalue;
-            if ($keyname1 && $keyvalue1) {
-                $stmt .= ' AND ' . $keyname1 . '=' . $keyvalue1;
-            }
-            if ($keyname2 && $keyvalue2) {
-                $stmt .= ' AND ' . $keyname2 . '=' . $keyvalue2;
-            }
-
+            $stmt = 'SELECT ' . $select . ' FROM ' . $tablename . ((count($keys) > 0) ? (' WHERE ' . implode(' AND ', $keys)) : '');
             $this->analyzeQuery('select', $stmt, ($end - $start), $backtrace);
         }
 
@@ -800,10 +800,11 @@ class NiceDB
      * @param string|array $values
      * @param string       $select
      * @param string       $orderBy
+     * @param string       $limit
      * @return array|int|object
      * @throws InvalidArgumentException
      */
-    public function selectArray($tablename, $keys, $values, $select = '*', $orderBy = '')
+    public function selectArray($tablename, $keys, $values, $select = '*', $orderBy = '', $limit = '')
     {
         $keys         = (is_array($keys)) ? $keys : array($keys);
         $values       = (is_array($values)) ? $values : array($values);
@@ -819,7 +820,8 @@ class NiceDB
                 (' WHERE ' . implode(' AND ', $kv)) :
                 ''
             ) .
-            ((!empty($orderBy)) ? (' ORDER BY ' . $orderBy) : '');
+            ((!empty($orderBy)) ? (' ORDER BY ' . $orderBy) : '') .
+            ((!empty($limit)) ? (' LIMIT ' . $limit) : '');
 
         return $this->executeQueryPrepared($stmt, array_combine($keys, $values), 2);
     }
@@ -885,6 +887,7 @@ class NiceDB
      * 1  - single fetched object
      * 2  - array of fetched objects
      * 3  - affected rows
+     * 7  - last inserted id
      * 8  - fetched assoc array
      * 9  - array of fetched assoc arrays
      * 10 - result of querysingle
@@ -985,6 +988,11 @@ class NiceDB
             }
             case 3: {
                 $ret = $res->rowCount();
+                break;
+            }
+            case 7: {
+                $id = $this->pdo->lastInsertId();
+                $ret = ($id > 0) ? $id : 1;
                 break;
             }
             case 8: {

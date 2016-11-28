@@ -122,9 +122,14 @@
                 {else}
                     {lang key="footnoteInclusiveVat" section="global" assign="footnoteVat"}
                 {/if}
+                {if $Einstellungen.global.global_versandhinweis === 'zzgl'}
+                    {lang key="footnoteExclusiveShipping" section="global" printf=$oSpezialseiten_arr[6]->cURL assign="footnoteShipping"}
+                {elseif $Einstellungen.global.global_versandhinweis === 'inkl'}
+                    {lang key="footnoteInclusiveShipping" section="global" printf=$oSpezialseiten_arr[6]->cURL assign="footnoteShipping"}
+                {/if}
                 {block name="footer-vat-notice"}
                     <p class="padded-lg-top">
-                        <span class="footnote-reference">*</span> {$footnoteVat|replace:'#SHIPPING_LINK#':$oSpezialseiten_arr[6]->cURL}
+                        <span class="footnote-reference">*</span> {$footnoteVat}{if isset($footnoteShipping)}{$footnoteShipping}{/if}
                     </p>
                 {/block}
             </div>
@@ -149,7 +154,9 @@
                             {/if}
                         </li>
                         <li class="col-xs-12 col-md-3 text-right" id="system-credits">
+                            {if !Shop::isBrandfree()}
                             Powered by <a href="http://jtl-url.de/jtlshop" title="JTL-Shop" target="_blank" rel="nofollow">JTL-Shop</a>
+                            {/if}
                         </li>
                     </ul>
                      {if isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout !== 'fluid'}

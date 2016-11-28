@@ -11,9 +11,9 @@
                 {else}
                     <div class="slide">
                 {/if}
-                
-                <img alt="{$oSlide->cTitel}" title="{$slideTitle}" src="{$oSlide->cBildAbsolut}" {if !empty($oSlide->cThumbnailAbsolut) && $oSlider->bThumbnail == '1'} data-thumb="{$oSlide->cThumbnailAbsolut}"{/if}/>
-                
+
+                <img alt="{$oSlide->cTitel}" title="{$slideTitle}" src="{$oSlide->cBildAbsolut}"{if !empty($oSlide->cThumbnailAbsolut) && $oSlider->bThumbnail == '1'} data-thumb="{$oSlide->cThumbnailAbsolut}"{/if}/>
+
                 {if !empty($oSlide->cLink)}
                     </a>
                 {else}
@@ -32,13 +32,13 @@
         {/foreach}
     </div>
     <script type="text/javascript">
-        jtl.ready(function () {
-            $('a.slide').click(function() {
-                if (!this.href.match(new RegExp('^'+location.protocol+'\\/\\/'+location.host))) {
-                    this.target = '_blank';
-                }
-            });
+        jtl.ready(function () {ldelim}
             var slider = $('#slider-{$oSlider->kSlider}');
+            $('a.slide').click(function() {ldelim}
+                if (!this.href.match(new RegExp('^'+location.protocol+'\\/\\/'+location.host))) {ldelim}
+                    this.target = '_blank';
+                {rdelim}
+            {rdelim});
             slider.nivoSlider( {ldelim}
                 effect: '{$oSlider->cEffects|replace:';':','}',
                 animSpeed: {$oSlider->nAnimationSpeed},

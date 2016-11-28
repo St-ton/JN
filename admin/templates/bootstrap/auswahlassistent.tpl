@@ -86,7 +86,10 @@
                                                 {else}
                                                     <div>
                                                 {/if}
-                                                <a href="auswahlassistent.php?a=editGrp&g={$oAuswahlAssistentGruppe->kAuswahlAssistentGruppe}&token={$smarty.session.jtl_token}" class="btn btn-default edit"><i class="fa fa-edit"></i></a>
+                                                <a href="auswahlassistent.php?a=editGrp&g={$oAuswahlAssistentGruppe->kAuswahlAssistentGruppe}&token={$smarty.session.jtl_token}"
+                                                   class="btn btn-default edit" title="{#modify#}">
+                                                    <i class="fa fa-edit"></i>
+                                                </a>
                                                 </div>
                                             </td>
                                         </tr>

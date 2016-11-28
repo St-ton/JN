@@ -5,7 +5,8 @@
  */
 require_once dirname(__FILE__) . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
-
+/** @global JTLSmarty $smarty */
+/** @global array $GlobaleEinstellungen */
 if ($GlobaleEinstellungen['global']['wartungsmodus_aktiviert'] === 'N') {
     header('Location: ' . Shop::getURL(), true, 307);
     exit;

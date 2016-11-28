@@ -196,7 +196,7 @@ function checkNewsletterSend()
 					<td>
 						<select name="kKampagne">
 							<option value="0"></option>
-						{foreach name="" from=$oKampagne_arr item=oKampagne}
+						{foreach name="Kampagnen" from=$oKampagne_arr item=oKampagne}
 							<option value="{$oKampagne->kKampagne}"{if $oKampagne->kKampagne == $oNewsletterVorlage->kKampagne || $cPostVar_arr.kKampagne == $oKampagne->kKampagne} selected{/if}>{$oKampagne->cName}</option>
 						{/foreach}
 						</select>

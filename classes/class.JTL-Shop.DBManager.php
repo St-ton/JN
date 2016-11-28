@@ -107,7 +107,7 @@ class DBManager
 
     /**
      * @param string $type
-     * @return array
+     * @return object
      */
     public static function parseType($type)
     {

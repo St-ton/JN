@@ -42,29 +42,34 @@
                                     {/if}
                                 </td>
                                 <td class="tcenter plugin-status">
-                                    <h4 class="label-wrap">
+                                    <h4 class="label-wrap text-nowrap">
                                         <span class="label {if $PluginInstalliert->nStatus == 2}success label-success{elseif $PluginInstalliert->nStatus == 1}success label-info{elseif $PluginInstalliert->nStatus == 3}success label-default{elseif $PluginInstalliert->nStatus == 4 || $PluginInstalliert->nStatus == 5}info label-info{elseif $PluginInstalliert->nStatus == 6}danger label-danger{/if}">
                                             {$PluginInstalliert->cStatus}
                                         </span>
+                                        {if isset($PluginIndex_arr[$PluginInstalliert->cVerzeichnis]['shop4compatible']) && $PluginIndex_arr[$PluginInstalliert->cVerzeichnis]['shop4compatible'] === false}
+                                            <span title="Achtung: Plugin ist nicht vollst&auml;ndig Shop4-kompatibel! Es k&ouml;nnen daher Probleme beim Betrieb entstehen." class="label warning label-warning"><i class="fa fa-warning"></i></span>
+                                        {/if}
                                     </h4>
                                 </td>
-                                <td class="tcenter plugin-version">{$PluginInstalliert->dVersion}{if isset($PluginInstalliert->dUpdate) && $PluginInstalliert->dUpdate|strlen > 0} <span class="label labe-success update-info">{$PluginInstalliert->dUpdate}</span>{/if}</td>
+                                <td class="tcenter plugin-version">{$PluginInstalliert->dVersion}{if isset($PluginInstalliert->dUpdate) && $PluginInstalliert->dUpdate|strlen > 0} <span class="label label-success update-info">{$PluginInstalliert->dUpdate}</span>{/if}</td>
                                 <td class="tcenter plugin-install-date">{$PluginInstalliert->dInstalliert_DE}</td>
                                 <td class="tcenter plugin-folder">{$PluginInstalliert->cVerzeichnis}</td>
                                 <td class="tcenter plugin-lang-vars">
                                     {if isset($PluginInstalliert->oPluginSprachvariableAssoc_arr) && $PluginInstalliert->oPluginSprachvariableAssoc_arr|@count > 0}
-                                        <a href="pluginverwaltung.php?pluginverwaltung_uebersicht=1&sprachvariablen=1&kPlugin={$PluginInstalliert->kPlugin}" class="btn btn-default btn-sm" title="{#pluginEdit#}"><i class="fa fa-edit"></i></a>
+                                        <a href="pluginverwaltung.php?pluginverwaltung_uebersicht=1&sprachvariablen=1&kPlugin={$PluginInstalliert->kPlugin}"
+                                           class="btn btn-default btn-sm" title="{#modify#}"><i class="fa fa-edit"></i></a>
                                     {/if}
                                 </td>
                                 <td class="tcenter plugin-frontend-links">
                                     {if isset($PluginInstalliert->oPluginFrontendLink_arr) && $PluginInstalliert->oPluginFrontendLink_arr|@count > 0}
-                                        <a href="links.php?kPlugin={$PluginInstalliert->kPlugin}" class="btn btn-default btn-sm" title="{#pluginEdit#}"><i class="fa fa-edit"></i></a>
+                                        <a href="links.php?kPlugin={$PluginInstalliert->kPlugin}" class="btn btn-default btn-sm" title="{#modify#}"><i class="fa fa-edit"></i></a>
                                     {/if}
                                 </td>
                                 <td class="tcenter plugin-license">
                                     {if isset($PluginInstalliert->cLizenzKlasse) && $PluginInstalliert->cLizenzKlasse|strlen > 0}
                                         {if isset($PluginInstalliert->cLizenzKlasse) && $PluginInstalliert->cLizenzKlasse|strlen > 0}
-                                            <button name="lizenzkey" type="submit" class="btn {if $PluginInstalliert->cLizenz && $PluginInstalliert->cLizenz|strlen > 0}btn-default{else}btn-primary{/if} btn-sm" value="{$PluginInstalliert->kPlugin}">
+                                            <button name="lizenzkey" type="submit" title="{#modify#}"
+                                                    class="btn {if $PluginInstalliert->cLizenz && $PluginInstalliert->cLizenz|strlen > 0}btn-default{else}btn-primary{/if} btn-sm" value="{$PluginInstalliert->kPlugin}">
                                                 <i class="fa fa-edit"></i>
                                             </button>
                                         {/if}

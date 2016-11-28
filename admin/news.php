@@ -9,8 +9,7 @@ require_once dirname(__FILE__) . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
 
 $oAccount->permission('CONTENT_NEWS_SYSTEM_VIEW', true, true);
-
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'blaetternavi.php';
+/** @global JTLSmarty $smarty */
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'news_inc.php';
 
 $Einstellungen         = Shop::getSettings(array(CONF_NEWS));
@@ -22,8 +21,6 @@ $cUploadVerzeichnisKat = PFAD_ROOT . PFAD_NEWSKATEGORIEBILDER;
 $oNewsKategorie_arr    = array();
 $continueWith          = false;
 setzeSprache();
-$nAnzahlProSeite       = 15;
-$oBlaetterNaviConf     = baueBlaetterNaviGetterSetter(3, $nAnzahlProSeite);
 
 // Tabs
 if (strlen(verifyGPDataString('tab')) > 0) {
@@ -54,7 +51,7 @@ if (strlen(verifyGPDataString('tab')) > 0) {
 $Sprachen     = gibAlleSprachen();
 $oSpracheNews = Shop::Lang()->getIsoFromLangID($_SESSION['kSprache']);
 if (!$oSpracheNews) {
-    $oSpracheNews = Shop::DB()->query("SELECT cISO FROM tsprache WHERE kSprache = " . (int)$_SESSION['kSprache'], 1);
+    $oSpracheNews = Shop::DB()->select('tsprache', 'kSprache', (int)$_SESSION['kSprache']);
 }
 // News
 if (isset($_POST['einstellungen']) && intval($_POST['einstellungen']) > 0 && validateToken()) {
@@ -67,7 +64,7 @@ if (isset($_POST['einstellungen']) && intval($_POST['einstellungen']) > 0 && val
             $oNewsMonatsPraefix           = new stdClass();
             $oNewsMonatsPraefix->kSprache = $oSpracheTMP->kSprache;
             if (strlen($_POST['praefix_' . $oSpracheTMP->cISO]) > 0) {
-                $oNewsMonatsPraefix->cPraefix = $_POST['praefix_' . $oSpracheTMP->cISO];
+                $oNewsMonatsPraefix->cPraefix = htmlspecialchars($_POST['praefix_' . $oSpracheTMP->cISO]);
             } else {
                 $oNewsMonatsPraefix->cPraefix = ($oSpracheTMP->cISO === 'ger') ? 'Newsuebersicht' : 'Newsoverview';
             }
@@ -155,13 +152,13 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
             $oNews                   = new stdClass();
             $oNews->kSprache         = $_SESSION['kSprache'];
             $oNews->cKundengruppe    = ';' . implode(';', $kKundengruppe_arr) . ';';
-            $oNews->cBetreff         = $cBetreff;
+            $oNews->cBetreff         = htmlspecialchars($cBetreff);
             $oNews->cText            = $cText;
             $oNews->cVorschauText    = $cVorschauText;
             $oNews->nAktiv           = $nAktiv;
-            $oNews->cMetaTitle       = $cMetaTitle;
-            $oNews->cMetaDescription = $cMetaDescription;
-            $oNews->cMetaKeywords    = $cMetaKeywords;
+            $oNews->cMetaTitle       = htmlspecialchars($cMetaTitle);
+            $oNews->cMetaDescription = htmlspecialchars($cMetaDescription);
+            $oNews->cMetaKeywords    = htmlspecialchars($cMetaKeywords);
             $oNews->dErstellt        = 'now()';
             $oNews->dGueltigVon      = convertDate($dGueltigVon);
             $oNews->cPreviewImage    = $cPreviewImage;
@@ -170,6 +167,8 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
             if (isset($_POST['news_edit_speichern']) && intval($_POST['news_edit_speichern']) === 1) {
                 $nNewsOld = 1;
                 $kNews    = (int)$_POST['kNews'];
+                $revision = new Revision();
+                $revision->addRevision('news', $kNews);
                 Shop::DB()->delete('tnews', 'kNews', $kNews);
                 // tseo loeschen
                 Shop::DB()->delete('tseo', array('cKey', 'kKey'), array('kNews', $kNews));
@@ -241,14 +240,11 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
                     move_uploaded_file($_FILES['Bilder']['tmp_name'][$i - $nZaehler], $cUploadDatei);
                 }
             }
-            // Text parsen
-            Shop::DB()->query(
-                "UPDATE tnews
-                    SET cText = '" . parseText($cText, $kNews) . "',
-                        cVorschauText = '" . parseText($cVorschauText, $kNews) . "',
-                        cPreviewImage = '" . $oNews->cPreviewImage . "'
-                    WHERE kNews = " . $kNews, 3
-            );
+            $upd                = new stdClass();
+            $upd->cText         = parseText($cText, $kNews);
+            $upd->cVorschauText = parseText($cVorschauText, $kNews);
+            $upd->cPreviewImage = $oNews->cPreviewImage;
+            Shop::DB()->update('tnews', 'kNews', $kNews, $upd);
             Shop::DB()->delete('tseo', array('cKey', 'kKey', 'kSprache'), array('kNews', $kNews, (int)$_SESSION['kSprache']));
             // SEO tseo eintragen
             $oSeo           = new stdClass();
@@ -264,7 +260,6 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
                 $oNewsKategorieNews                 = new stdClass();
                 $oNewsKategorieNews->kNews          = $kNews;
                 $oNewsKategorieNews->kNewsKategorie = (int)$kNewsKategorie;
-
                 Shop::DB()->insert('tnewskategorienews', $oNewsKategorieNews);
             }
             // tnewsmonatsuebersicht updaten
@@ -273,23 +268,12 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
                 $dMonat = $oDatum->Monat;
                 $dJahr  = $oDatum->Jahr;
 
-                $oNewsMonatsUebersicht = Shop::DB()->query(
-                    "SELECT *
-                        FROM tnewsmonatsuebersicht
-                        WHERE kSprache = " . (int)$_SESSION['kSprache'] . "
-                            AND nMonat = " . (int)$dMonat . "
-                            AND nJahr = " . (int)$dJahr, 1
-                );
+                $oNewsMonatsUebersicht = Shop::DB()->select('tnewsmonatsuebersicht', 'kSprache', (int)$_SESSION['kSprache'], 'nMonat', (int)$dMonat, 'nJahr', (int)$dJahr);
                 // Falls dies die erste News des Monats ist, neuen Eintrag in tnewsmonatsuebersicht, ansonsten updaten
                 if (isset($oNewsMonatsUebersicht->kNewsMonatsUebersicht) && $oNewsMonatsUebersicht->kNewsMonatsUebersicht > 0) {
                     unset($oNewsMonatsPraefix);
-                    $oNewsMonatsPraefix = Shop::DB()->query(
-                        "SELECT cPraefix
-                            FROM tnewsmonatspraefix
-                            WHERE kSprache = " . (int)$_SESSION['kSprache'], 1
-                    );
-
-                    if (strlen($oNewsMonatsPraefix->cPraefix) === 0) {
+                    $oNewsMonatsPraefix = Shop::DB()->select('tnewsmonatspraefix', 'kSprache', (int)$_SESSION['kSprache']);
+                    if (empty($oNewsMonatsPraefix->cPraefix)) {
                         $oNewsMonatsPraefix->cPraefix = 'Newsuebersicht';
                     }
                     Shop::DB()->delete('tseo', array('cKey', 'kKey', 'kSprache'), array('kNewsMonatsUebersicht', (int)$oNewsMonatsUebersicht->kNewsMonatsUebersicht, (int)$_SESSION['kSprache']));
@@ -302,16 +286,10 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
                     Shop::DB()->insert('tseo', $oSeo);
                 } else {
                     $oNewsMonatsPraefix = new stdClass();
-                    $oNewsMonatsPraefix = Shop::DB()->query(
-                        "SELECT cPraefix
-                            FROM tnewsmonatspraefix
-                            WHERE kSprache = " . (int)$_SESSION['kSprache'], 1
-                    );
-
-                    if (strlen($oNewsMonatsPraefix->cPraefix) === 0) {
+                    $oNewsMonatsPraefix = Shop::DB()->select('tnewsmonatspraefix', 'kSprache', (int)$_SESSION['kSprache']);
+                    if (empty($oNewsMonatsPraefix->cPraefix)) {
                         $oNewsMonatsPraefix->cPraefix = 'Newsuebersicht';
                     }
-
                     $oNewsMonatsUebersichtTMP           = new stdClass();
                     $oNewsMonatsUebersichtTMP->kSprache = (int)$_SESSION['kSprache'];
                     $oNewsMonatsUebersichtTMP->cName    = mappeDatumName(strval($dMonat), $dJahr, $oSpracheNews->cISO);
@@ -359,11 +337,7 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
 
                 if ($kNews > 0) {
                     ContentAuthor::getInstance()->clearAuthor('NEWS', $kNews);
-                    $oNewsTMP = Shop::DB()->query(
-                        "SELECT dGueltigVon, nAktiv, kSprache
-                            FROM tnews
-                            WHERE kNews = " . $kNews, 1
-                    );
+                    $oNewsTMP = Shop::DB()->select('tnews', 'kNews', $kNews);
                     Shop::DB()->delete('tnews', 'kNews', $kNews);
                     // Bilderverzeichnis loeschen
                     loescheNewsBilderDir($kNews, $cUploadVerzeichnis);
@@ -404,13 +378,13 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
         }
     } elseif (isset($_POST['news_kategorie_speichern']) && intval($_POST['news_kategorie_speichern']) === 1) { //Newskategorie speichern
         $step             = 'news_uebersicht';
-        $cName            = $_POST['cName'];
+        $cName            = htmlspecialchars($_POST['cName']);
         $cSeo             = $_POST['cSeo'];
         $nSort            = $_POST['nSort'];
         $nAktiv           = $_POST['nAktiv'];
-        $cMetaTitle       = $_POST['cMetaTitle'];
-        $cMetaDescription = $_POST['cMetaDescription'];
-        $cBeschreibung    = $_POST['cBeschreibung'];
+        $cMetaTitle       = htmlspecialchars($_POST['cMetaTitle']);
+        $cMetaDescription = htmlspecialchars($_POST['cMetaDescription']);
+        $cBeschreibung    = htmlspecialchars($_POST['cBeschreibung']);
         $cPreviewImage    = $_POST['previewImage'];
         $cPlausiValue_arr = pruefeNewsKategorie($_POST['cName'], (isset($_POST['newskategorie_edit_speichern'])) ? intval($_POST['newskategorie_edit_speichern']) : 0);
 
@@ -464,11 +438,9 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
                 $cUploadDatei = $cUploadVerzeichnisKat . $kNewsKategorie . '/preview.' . $extension;
                 move_uploaded_file($_FILES['previewImage']['tmp_name'], $cUploadDatei);
                 $oNewsKategorie->cPreviewImage = PFAD_NEWSKATEGORIEBILDER . $kNewsKategorie . '/preview.' . $extension;
-                Shop::DB()->query(
-                    "UPDATE tnewskategorie
-                    SET cPreviewImage = '" . $oNewsKategorie->cPreviewImage . "'
-                    WHERE kNewsKategorie = " . $kNewsKategorie, 3
-                );
+                $upd = new stdClass();
+                $upd->cPreviewImage = $oNewsKategorie->cPreviewImage;
+                Shop::DB()->update('tnewskategorie', 'kNewsKategorie', $kNewsKategorie, $upd);
             }
 
             $cHinweis .= 'Ihre Newskategorie "' . $cName . '" wurde erfolgreich eingetragen.<br />';
@@ -479,17 +451,17 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
 
             $oNewsKategorie = editiereNewskategorie(verifyGPCDataInteger('kNewsKategorie'), $_SESSION['kSprache']);
 
-            if (isset($oNewsKategorie->kNewsKategorie) && intval($oNewsKategorie->kNewsKategorie) > 0) {
+            if (isset($oNewsKategorie->kNewsKategorie) && (int)$oNewsKategorie->kNewsKategorie > 0) {
                 $smarty->assign('oNewsKategorie', $oNewsKategorie);
             } else {
                 $step = 'news_uebersicht';
-                $cFehler .= 'Fehler: Die Newskategorie mit der ID "' . $kNewsKategorie . '" konnte nicht gefunden werden.<br />';
+                $cFehler .= 'Fehler: Die Newskategorie mit der ID "' . verifyGPCDataInteger('kNewsKategorie') . '" konnte nicht gefunden werden.<br />';
             }
 
             $smarty->assign('cPlausiValue_arr', $cPlausiValue_arr)
                    ->assign('cPostVar_arr', $_POST);
         }
-    } elseif (isset($_POST['news_kategorie_loeschen']) && intval($_POST['news_kategorie_loeschen']) === 1) { // Newskategorie loeschen
+    } elseif (isset($_POST['news_kategorie_loeschen']) && (int)$_POST['news_kategorie_loeschen'] === 1) { // Newskategorie loeschen
         $step = 'news_uebersicht';
 
         if (loescheNewsKategorie($_POST['kNewsKategorie'])) {
@@ -498,30 +470,27 @@ if (verifyGPCDataInteger('news') === 1 && validateToken()) {
         } else {
             $cFehler .= 'Fehler: Bitte markieren Sie mindestens eine Newskategorie.<br />';
         }
-    } elseif (isset($_GET['newskategorie_editieren']) && intval($_GET['newskategorie_editieren']) === 1) { // Newskategorie editieren
-        if (isset($_GET['kNewsKategorie']) && intval($_GET['kNewsKategorie']) > 0) {
+    } elseif (isset($_GET['newskategorie_editieren']) && (int)$_GET['newskategorie_editieren'] === 1) { // Newskategorie editieren
+        if (isset($_GET['kNewsKategorie']) && (int)$_GET['kNewsKategorie'] > 0) {
             $step = 'news_kategorie_erstellen';
 
             $oNewsKategorie = editiereNewskategorie($_GET['kNewsKategorie'], $_SESSION['kSprache']);
 
-            if (isset($oNewsKategorie->kNewsKategorie) && intval($oNewsKategorie->kNewsKategorie) > 0) {
+            if (isset($oNewsKategorie->kNewsKategorie) && (int)$oNewsKategorie->kNewsKategorie > 0) {
                 $smarty->assign('oNewsKategorie', $oNewsKategorie);
             } else {
                 $step = 'news_uebersicht';
-                $cFehler .= 'Fehler: Die Newskategorie mit der ID "' . $kNewsKategorie . '" konnte nicht gefunden werden.<br />';
+                $cFehler .= 'Fehler: Die Newskategorie mit der ID "' . (int)$_GET['kNewsKategorie'] . '" konnte nicht gefunden werden.<br />';
             }
         }
     } elseif (isset($_POST['newskommentar_freischalten']) && intval($_POST['newskommentar_freischalten']) && !isset($_POST['kommentareloeschenSubmit'])) { // Kommentare freischalten
         if (is_array($_POST['kNewsKommentar']) && count($_POST['kNewsKommentar']) > 0) {
             foreach ($_POST['kNewsKommentar'] as $kNewsKommentar) {
                 $kNewsKommentar = (int)$kNewsKommentar;
-                Shop::DB()->query(
-                    "UPDATE tnewskommentar
-                        SET nAktiv = 1
-                        WHERE kNewsKommentar = " . $kNewsKommentar, 3
-                );
+                $upd            = new stdClass();
+                $upd->nAktiv    = 1;
+                Shop::DB()->update('tnewskommentar', 'kNewsKommentar', $kNewsKommentar, $upd);
             }
-
             $cHinweis .= 'Ihre markierten Newskommentare wurden erfolgreich freigeschaltet.<br />';
             $tab = verifyGPDataString('tab');
             newsRedirect(empty($tab) ? 'inaktiv' : $tab, $cHinweis);
@@ -668,18 +637,11 @@ if ($step === 'news_uebersicht') {
             LEFT JOIN tnewskommentar ON tnewskommentar.kNews = tnews.kNews
             WHERE tnews.kSprache = " . (int)$_SESSION['kSprache'] . "
             GROUP BY tnews.kNews
-            ORDER BY tnews.dGueltigVon DESC" . $oBlaetterNaviConf->cSQL2, 2
+            ORDER BY tnews.dGueltigVon DESC", 2
     );
     $oNewsAnzahl = Shop::DB()->query(
         "SELECT FOUND_ROWS() AS nAnzahl", 1
     );
-
-    if (0 === count($oNews_arr) && $oNewsAnzahl->nAnzahl > 0 && $oBlaetterNaviConf->nAktuelleSeite2 > 1) {
-        // leere Seite angefordert -> Redirect zu Seite 1
-        newsRedirect(verifyGPDataString('tab'), '', array(
-            's2' => 1,
-        ));
-    }
 
     if (is_array($oNews_arr) && count($oNews_arr) > 0) {
         foreach ($oNews_arr as $i => $oNews) {
@@ -691,13 +653,8 @@ if ($step === 'news_uebersicht') {
                 if ($kKundengruppe == -1) {
                     $oNews_arr[$i]->cKundengruppe_arr[] = 'Alle';
                 } else {
-                    $oKundengruppe = Shop::DB()->query(
-                        "SELECT cName
-                            FROM tkundengruppe
-                            WHERE kKundengruppe = " . (int)$kKundengruppe, 1
-                    );
-
-                    if (strlen($oKundengruppe->cName) > 0) {
+                    $oKundengruppe = Shop::DB()->select('tkundengruppe', 'kKundengruppe', (int)$kKundengruppe);
+                    if (!empty($oKundengruppe->cName)) {
                         $oNews_arr[$i]->cKundengruppe_arr[] = $oKundengruppe->cName;
                     }
                 }
@@ -707,7 +664,7 @@ if ($step === 'news_uebersicht') {
                 "SELECT tnewskategorie.cName
                     FROM tnewskategorie
                     LEFT JOIN tnewskategorienews ON tnewskategorienews.kNewsKategorie = tnewskategorie.kNewsKategorie
-                    WHERE tnewskategorienews.kNews = {$oNews->kNews} ORDER BY tnewskategorie.nSort", 2
+                    WHERE tnewskategorienews.kNews = " . (int)$oNews->kNews ." ORDER BY tnewskategorie.nSort", 2
             );
             $Kategoriearray = array();
             foreach ($oCategorytoNews_arr as $j => $KategorieAusgabe) {
@@ -719,7 +676,7 @@ if ($step === 'news_uebersicht') {
                 "SELECT count(tnewskommentar.kNewsKommentar) AS nNewsKommentarAnzahlAktiv
                     FROM tnews
                     LEFT JOIN tnewskommentar ON tnewskommentar.kNews = tnews.kNews
-                    WHERE tnewskommentar.nAktiv = 1 AND tnews.kNews = {$oNews->kNews}
+                    WHERE tnewskommentar.nAktiv = 1 AND tnews.kNews = " . (int)$oNews->kNews . "
                     AND tnews.kSprache = " . (int)$_SESSION['kSprache'], 1
             );
             $oNews_arr[$i]->nNewsKommentarAnzahl = $oNewsKommentarAktiv->nNewsKommentarAnzahlAktiv;
@@ -733,18 +690,11 @@ if ($step === 'news_uebersicht') {
             JOIN tnews ON tnews.kNews = tnewskommentar.kNews
             LEFT JOIN tkunde ON tkunde.kKunde = tnewskommentar.kKunde
             WHERE tnewskommentar.nAktiv=0
-                AND tnews.kSprache = " . (int)$_SESSION['kSprache'] . $oBlaetterNaviConf->cSQL1, 2
+                AND tnews.kSprache = " . (int)$_SESSION['kSprache'], 2
     );
     $oNewsKommentarAnzahl = Shop::DB()->query(
         "SELECT FOUND_ROWS() AS nAnzahl", 1
     );
-
-    if (0 === count($oNewsKommentar_arr) && $oNewsKommentarAnzahl->nAnzahl > 0 && $oBlaetterNaviConf->nAktuelleSeite1 > 1) {
-        // leere Seite angefordert -> Redirect zu Seite 1
-        newsRedirect(verifyGPDataString('tab'), '', array(
-            's1' => 1,
-        ));
-    }
 
     if (is_array($oNewsKommentar_arr) && count($oNewsKommentar_arr) > 0) {
         foreach ($oNewsKommentar_arr as $i => $oNewsKommentar) {
@@ -753,31 +703,14 @@ if ($step === 'news_uebersicht') {
             $oNewsKommentar_arr[$i]->cNachname = $oKunde->cNachname;
         }
     }
-    $smarty->assign('oNews_arr', $oNews_arr)
-           ->assign('oNewsKommentar_arr', $oNewsKommentar_arr);
     // Einstellungen
-    $oConfig_arr = Shop::DB()->query(
-        "SELECT *
-            FROM teinstellungenconf
-            WHERE kEinstellungenSektion = " . CONF_NEWS . "
-            ORDER BY nSort", 2
-    );
+    $oConfig_arr = Shop::DB()->selectAll('teinstellungenconf', 'kEinstellungenSektion', CONF_NEWS, '*', 'nSort');
     $configCount = count($oConfig_arr);
     for ($i = 0; $i < $configCount; $i++) {
         if ($oConfig_arr[$i]->cInputTyp === 'selectbox') {
-            $oConfig_arr[$i]->ConfWerte = Shop::DB()->query(
-                "SELECT *
-                    FROM teinstellungenconfwerte
-                    WHERE kEinstellungenConf = " . (int)$oConfig_arr[$i]->kEinstellungenConf . "
-                    ORDER BY nSort", 2
-            );
+            $oConfig_arr[$i]->ConfWerte = Shop::DB()->selectAll('teinstellungenconfwerte', 'kEinstellungenConf', (int)$oConfig_arr[$i]->kEinstellungenConf, '*', 'nSort');
         }
-        $oSetValue = Shop::DB()->query(
-            "SELECT cWert
-                FROM teinstellungen
-                WHERE kEinstellungenSektion = " . CONF_NEWS . "
-                    AND cName = '" . $oConfig_arr[$i]->cWertName . "'", 1
-        );
+        $oSetValue = Shop::DB()->select('teinstellungen', 'kEinstellungenSektion', CONF_NEWS, 'cName', $oConfig_arr[$i]->cWertName);
         $oConfig_arr[$i]->gesetzterWert = (isset($oSetValue->cWert)) ? $oSetValue->cWert : null;
     }
 
@@ -790,45 +723,44 @@ if ($step === 'news_uebersicht') {
             $oNewsMonatsPraefix_arr[$i]->cNameEnglisch = $oSprache->cNameEnglisch;
             $oNewsMonatsPraefix_arr[$i]->cNameDeutsch  = $oSprache->cNameDeutsch;
             $oNewsMonatsPraefix_arr[$i]->cISOSprache   = $oSprache->cISO;
-            $oNewsMonatsPraefix                        = Shop::DB()->query(
-                "SELECT cPraefix
-                    FROM tnewsmonatspraefix
-                    WHERE kSprache = " . (int)$oSprache->kSprache, 1
-            );
+            $oNewsMonatsPraefix                        = Shop::DB()->select('tnewsmonatspraefix', 'kSprache', (int)$oSprache->kSprache);
 
             $oNewsMonatsPraefix_arr[$i]->cPraefix = (isset($oNewsMonatsPraefix->cPraefix)) ? $oNewsMonatsPraefix->cPraefix : null;
         }
         $smarty->assign('oNewsMonatsPraefix_arr', $oNewsMonatsPraefix_arr);
     }
     // Newskategorie
-    $oNewsKategorie_arr = holeNewskategorie($_SESSION['kSprache'], $oBlaetterNaviConf->cSQL3);
+    $oNewsKategorie_arr = holeNewskategorie($_SESSION['kSprache']);
     $oNewsKatsAnzahl    = Shop::DB()->query(
-        "SELECT FOUND_ROWS() as nAnzahl", 1
+        "SELECT FOUND_ROWS() AS nAnzahl", 1
     );
 
-    if (0 === count($oNewsKategorie_arr) && $oNewsKatsAnzahl->nAnzahl > 0 && $oBlaetterNaviConf->nAktuelleSeite3 > 1) {
-        // leere Seite angefordert -> Redirect zu Seite 1
-        newsRedirect(verifyGPDataString('tab'), '', array(
-            's3' => 1,
-        ));
-    }
-
-    // Baue Blaetternavigation
-    $oBlaetterNaviKommentar = baueBlaetterNavi($oBlaetterNaviConf->nAktuelleSeite1, $oNewsKommentarAnzahl->nAnzahl, $nAnzahlProSeite);
-    $oBlaetterNaviNews      = baueBlaetterNavi($oBlaetterNaviConf->nAktuelleSeite2, $oNewsAnzahl->nAnzahl, $nAnzahlProSeite);
-    $oBlaetterNaviKats      = baueBlaetterNavi($oBlaetterNaviConf->nAktuelleSeite3, $oNewsKatsAnzahl->nAnzahl, $nAnzahlProSeite);
+    // Paginationen
+    $oPagiKommentar = (new Pagination('kommentar'))
+        ->setItemArray($oNewsKommentar_arr)
+        ->assemble();
+    $oPagiNews = (new Pagination('news'))
+        ->setItemArray($oNews_arr)
+        ->assemble();
+    $oPagiKats = (new Pagination('kats'))
+        ->setItemArray($oNewsKategorie_arr)
+        ->assemble();
 
     $smarty->assign('oConfig_arr', $oConfig_arr)
-           ->assign('oNewsKategorie_arr', $oNewsKategorie_arr)
-           ->assign('oBlaetterNaviKommentar', $oBlaetterNaviKommentar)
-           ->assign('oBlaetterNaviNews', $oBlaetterNaviNews)
-           ->assign('oBlaetterNaviKats', $oBlaetterNaviKats);
+        ->assign('oNewsKommentar_arr', $oPagiKommentar->getPageItems())
+        ->assign('oNews_arr', $oPagiNews->getPageItems())
+        ->assign('oNewsKategorie_arr', $oPagiKats->getPageItems())
+        ->assign('oPagiKommentar', $oPagiKommentar)
+        ->assign('oPagiNews', $oPagiNews)
+        ->assign('oPagiKats', $oPagiKats);
 }
 
 if (isset($_SESSION['news.cHinweis']) && !empty($_SESSION['news.cHinweis'])) {
     $cHinweis .= $_SESSION['news.cHinweis'];
     unset($_SESSION['news.cHinweis']);
 }
+
+$nMaxFileSize  = getMaxFileSize(ini_get('upload_max_filesize'));
 
 $oKundengruppe_arr = Shop::DB()->query(
     "SELECT kKundengruppe, cName
@@ -841,6 +773,7 @@ $smarty->assign('oKundengruppe_arr', $oKundengruppe_arr)
        ->assign('fehler', $cFehler)
        ->assign('step', $step)
        ->assign('Sprachen', $Sprachen)
+       ->assign('nMaxFileSize', $nMaxFileSize)
        ->assign('kSprache', (int)$_SESSION['kSprache'])
        ->assign('shopURL', Shop::getURL())
        ->display('news.tpl');

@@ -7,14 +7,16 @@ require_once dirname(__FILE__) . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dbcheck_inc.php';
 
 $oAccount->permission('DBCHECK_VIEW', true, true);
-
+/** @global JTLSmarty $smarty */
 $tables = DBManager::getStatus(DB_NAME);
 $smarty->assign('tables', $tables);
 
-////////////////////////////////////////////////////////////////////////////
-
 $restrictedTables = ['tadminlogin', 'tbrocken', 'tsession', 'tsynclogin'];
 
+/**
+ * @param string $query
+ * @return array|int|object
+ */
 function exec_query($query)
 {
     try {
@@ -29,15 +31,6 @@ function exec_query($query)
     }
 }
 
-/*
-$str = 'select=tadminlogin&filter[where][col][]=kAdminlogin&filter[where][op][]=<&filter[where][val][]=2&filter[limit]=50';
-$output = [];
-parse_str($str, $output);
-dd($output);
-*/
-
-////////////////////////////////////////////////////////////////////////////
-
 $jsTypo = (object)['tables' => []];
 foreach ($tables as $table => $info) {
     $columns                = DBManager::getColumns($table);
@@ -45,8 +38,6 @@ foreach ($tables as $table => $info) {
     $jsTypo->tables[$table] = $columns;
 }
 $smarty->assign('jsTypo', $jsTypo);
-
-////////////////////////////////////////////////////////////////////////////
 
 switch (true) {
     case isset($_GET['table']): {
@@ -85,8 +76,8 @@ switch (true) {
         $filter = array_merge($defaultFilter, $filter);
 
         // validate filter
-        $filter['limit'] = (int) $filter['limit'];
-        $page            = isset($_GET['page']) ? (int) $_GET['page'] : 1;
+        $filter['limit'] = (int)$filter['limit'];
+        $page            = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 
         if ($page < 1) {
             $page = 1;
@@ -98,7 +89,7 @@ switch (true) {
 
         $filter['offset'] = ($page - 1) * $filter['limit'];
 
-        $baseQuery = "SELECT * FROM `{$table}`";
+        $baseQuery = "SELECT * FROM " . $table;
 
         // query parts
         $queryParams = [];
@@ -128,7 +119,7 @@ switch (true) {
         // count without limit
         $query = implode(' ', $queryParts);
         $count = Shop::DB()->executeQueryPrepared($query, $queryParams, 3);
-        $pages = (int) ceil($count / $filter['limit']);
+        $pages = (int)ceil($count / $filter['limit']);
 
         // limit
         $queryParams['limit_count']  = $filter['limit'];

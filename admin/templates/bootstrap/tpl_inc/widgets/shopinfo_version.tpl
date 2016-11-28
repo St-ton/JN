@@ -1,12 +1,13 @@
-<strong>Version:</strong>{if !is_object($oVersion) || $oVersion->nType == -2}
-    <span class="version critical">Version konnte nicht ermittelt werden</span>
+<td>Versionspr&uuml;fung</td>
+<td>
+{if !is_object($oVersion) || $oVersion->nType == -2}
+    <span class="text-warning">Fehler beim Abruf der Information</span>
 {elseif $oVersion->nType == -1}
-    <span class="version">Aktuellste Version bereits vorhanden</span>
+    <span class="text-success"">Aktuellste Version bereits vorhanden</span>
 {elseif $oVersion->nType == -3}
-    <span class="version">Entwicklung (Version {$oVersion->nVersion})</span>
+    <span class="text-info">Entwicklung (Version {$oVersion->nVersion})</span>
 {elseif $oVersion->nType >= 0}
-    <span class="version {if $oVersion->nType == 2}critical{else}new_version{/if}">
-        <a href="{$oVersion->cURL|urldecode}" target="_blank">
+        <a class="btn {if $oVersion->nType == 2}btn-warning{else}btn-info{/if}" href="{$oVersion->cURL|urldecode}" target="_blank">
           {if $oVersion->nType == 0}
               Empfohlenes Update
           {elseif $oVersion->nType == 1}
@@ -16,5 +17,5 @@
           {/if}
           verf&uuml;gbar (Version: {$oVersion->nVersion})
         </a>
-   </span>
 {/if}
+</td>

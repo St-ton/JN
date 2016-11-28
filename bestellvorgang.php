@@ -8,7 +8,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'trustedshops_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
-
+/** @global JTLSmarty $smarty */
 $AktuelleSeite = 'BESTELLVORGANG';
 $Einstellungen = Shop::getSettings(array(
     CONF_GLOBAL,
@@ -156,6 +156,9 @@ $AufgeklappteKategorien = new KategorieListe();
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 $startKat             = new Kategorie();
 $startKat->kKategorie = 0;
+
+WarenkorbHelper::addVariationPictures($_SESSION['Warenkorb']);
+
 //specific assigns
 $smarty->assign('Navigation', createNavigation($AktuelleSeite))
        ->assign('AGB', gibAGBWRB(Shop::$kSprache, $_SESSION['Kundengruppe']->kKundengruppe))

@@ -373,7 +373,7 @@ function bearbeiteInsert($xml)
             //alten Bildpfad nehmen
             // tmerkmalwertbild
             $kMerkmalWert     = $MerkmalWert_arr[$o]->kMerkmalWert;
-            $oMerkmalWertBild = Shop::DB()->query("SELECT * FROM tmerkmalwertbild WHERE kMerkmalWert = " . (int)$kMerkmalWert, 1);
+            $oMerkmalWertBild = Shop::DB()->select('tmerkmalwertbild', 'kMerkmalWert', (int)$kMerkmalWert);
 
             $MerkmalWert_arr[$o]->cBildpfad = (isset($oMerkmalWertBild->cBildpfad)) ? $oMerkmalWertBild->cBildpfad : '';
             DBUpdateInsert('tmerkmalwert', array($MerkmalWert_arr[$o]), 'kMerkmalWert');
@@ -472,7 +472,7 @@ function loescheMerkmal($kMerkmal, $update = 1)
         }
         Shop::DB()->delete('tmerkmal', 'kMerkmal', $kMerkmal);
         Shop::DB()->delete('tmerkmalsprache', 'kMerkmal', $kMerkmal);
-        $werte_arr = Shop::DB()->query("SELECT kMerkmalWert FROM tmerkmalwert WHERE kMerkmal = " . $kMerkmal, 2);
+        $werte_arr = Shop::DB()->selectAll('tmerkmalwert', 'kMerkmal', $kMerkmal, 'kMerkmalWert');
         if (is_array($werte_arr)) {
             foreach ($werte_arr as $wert) {
                 Shop::DB()->delete('tmerkmalwertsprache', 'kMerkmalWert', (int)$wert->kMerkmalWert);
@@ -560,21 +560,12 @@ function merkeBildPfad($kMerkmal)
     $oMerkmal                   = new stdClass();
     $oMerkmal->oMerkmalWert_arr = array();
     if ($kMerkmal > 0) {
-        $oMerkmalTMP = Shop::DB()->query(
-            "SELECT kMerkmal, cBildpfad
-                FROM tmerkmal
-                WHERE kMerkmal = " . $kMerkmal, 1
-        );
+        $oMerkmalTMP = Shop::DB()->select('tmerkmal', 'kMerkmal', $kMerkmal);
         if (isset($oMerkmalTMP->kMerkmal) && $oMerkmalTMP->kMerkmal > 0) {
             $oMerkmal->kMerkmal  = $oMerkmalTMP->kMerkmal;
             $oMerkmal->cBildpfad = $oMerkmalTMP->cBildpfad;
         }
-        $oMerkmalWert_arr = Shop::DB()->query(
-            "SELECT kMerkmalWert, cBildpfad
-                FROM tmerkmalwert
-                WHERE kMerkmal = " . $kMerkmal, 2
-        );
-
+        $oMerkmalWert_arr = Shop::DB()->selectAll('tmerkmalwert', 'kMerkmal', $kMerkmal, 'kMerkmalWert, cBildpfad');
         if (count($oMerkmalWert_arr) > 0) {
             foreach ($oMerkmalWert_arr as $oMerkmalWert) {
                 $oMerkmal->oMerkmalWert_arr[$oMerkmalWert->kMerkmalWert] = $oMerkmalWert->cBildpfad;

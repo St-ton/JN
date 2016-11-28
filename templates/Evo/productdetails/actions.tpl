@@ -22,7 +22,7 @@
             <span class="hidden-sm">{lang key="productQuestion" section="productDetails"}</span>
         </button>
     {/if}
-    {if ($verfuegbarkeitsBenachrichtigung == 2 || $verfuegbarkeitsBenachrichtigung == 3) && $Artikel->cLagerBeachten === 'Y'}
+    {if ($verfuegbarkeitsBenachrichtigung == 2 || $verfuegbarkeitsBenachrichtigung == 3) && $Artikel->cLagerBeachten === 'Y' && $Artikel->cLagerKleinerNull !== 'Y'}
         <button type="button" id="n{$kArtikel}" class="btn btn-default btn-secondary popup-dep notification" title="{lang key="requestNotification" section="global"}">
             <span class="fa fa-bell"></span>
             <span class="hidden-sm">{lang key="requestNotification" section="global"}</span>

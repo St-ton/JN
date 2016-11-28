@@ -178,5 +178,5 @@ function lang_mindestbestellmenge($Artikel, $beabsichtigteKaufmenge, $kKonfigite
     return Shop::Lang()->get('product', 'global') . ' &quot;' . $cName . '&quot; ' .
         Shop::Lang()->get('hasMbm', 'messages') . ' (' .
         $Artikel->fMindestbestellmenge . $Artikel->cEinheit . '). ' .
-        Shop::Lang()->get('yourQuantity', 'messages') . ' ' . $beabsichtigteKaufmenge . $Artikel->cEinheit . '.';
+        Shop::Lang()->get('yourQuantity', 'messages') . ' ' . (float)$beabsichtigteKaufmenge . $Artikel->cEinheit . '.';
 }

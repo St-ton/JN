@@ -2,7 +2,7 @@
 {if $Einstellungen.artikeluebersicht.suchfilter_anzeigen_ab == 0 || count($Suchergebnisse->Artikel->elemente) >= $Einstellungen.artikeluebersicht.suchfilter_anzeigen_ab || $NaviFilter->nAnzahlFilter > 0}
     {assign var='show_filters' value=true}
 {/if}
-<div id="result-options" class="well panel-wrap{if !$show_filters} hidden-xs{/if}">
+<div id="result-options" class="panel-wrap{if !$show_filters} hidden-xs{/if}">
     <div class="row">
         <div class="col-sm-8 col-sm-push-4 displayoptions form-inline text-right hidden-xs">
             {block name="productlist-result-options-sort"}
@@ -157,7 +157,7 @@
             <div class="clearfix top10"></div>
             <div class="active-filters panel panel-default">
             <div class="panel-body">
-                {if $NaviFilter->SuchspecialFilter->kKey > 0 && (!isset($NaviFilter->Suchspecial) || $NaviFilter->Suchspecial->kKey != $NaviFilter->SuchspecialFilter->kKey)}
+                {if isset($NaviFilter->SuchspecialFilter->kKey) && $NaviFilter->SuchspecialFilter->kKey > 0 && (!isset($NaviFilter->Suchspecial) || $NaviFilter->Suchspecial->kKey != $NaviFilter->SuchspecialFilter->kKey)}
                     {strip}
                     <a rel="nofollow" title="{lang key="specificProducts" section="global"}" href="{$NaviFilter->URL->cAlleSuchspecials}" class="label label-info">
                         {if $NaviFilter->SuchspecialFilter->kKey == 1}

@@ -27,25 +27,21 @@ class MigrationHelper
     /**
      * Gets the migration path.
      *
-     * @param int $version Shop version
      * @return string
      */
-    public static function getMigrationPath($version)
+    public static function getMigrationPath()
     {
-        $version = intval($version);
-
-        return PFAD_ROOT . PFAD_UPDATE . $version . DIRECTORY_SEPARATOR;
+        return PFAD_ROOT . PFAD_UPDATE . 'migrations' . DIRECTORY_SEPARATOR;
     }
 
     /**
      * Gets an array of all the existing migration class names.
-     * @param int $version
      * @return string
      */
-    public static function getExistingMigrationClassNames($version)
+    public static function getExistingMigrationClassNames()
     {
         $classNames = array();
-        $path       = static::getMigrationPath($version);
+        $path       = static::getMigrationPath();
 
         $phpFiles = glob($path . '*.php');
         foreach ($phpFiles as $filePath) {
@@ -58,7 +54,7 @@ class MigrationHelper
     }
 
     /**
-     * Get the version from a file name.
+     * Get the id from a file name.
      *
      * @param string $fileName File Name
      * @return string
@@ -70,7 +66,7 @@ class MigrationHelper
             return $matches[1];
         }
 
-        return;
+        return null;
     }
 
     /**
@@ -90,7 +86,7 @@ class MigrationHelper
             );
         }
 
-        return;
+        return null;
     }
 
     /**
@@ -117,7 +113,7 @@ class MigrationHelper
             return $matches[1];
         }
 
-        return;
+        return null;
     }
 
     /**

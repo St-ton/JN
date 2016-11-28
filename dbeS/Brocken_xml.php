@@ -28,12 +28,7 @@ if (auth()) {
             Shop::DB()->insert('tbrocken', $oBrocken);
         } elseif (isset($oBrocken->cBrocken) && strlen($oBrocken->cBrocken) > 0 && $oBrocken->cBrocken != $cBrocken) { // Verändert?
             // Update
-            Shop::DB()->query(
-                "UPDATE tbrocken
-                    SET cBrocken = '" . $cBrocken . "',
-                    dErstellt = now()
-                    WHERE cBrocken = '" . $oBrocken->cBrocken . "'", 3
-            );
+            Shop::DB()->update('tbrocken', 'cBrocken', $oBrocken->cBrocken, (object)['cBrocken' => $cBrocken, 'dErstellt' => 'now()']);
         }
         $return = 0;
         Shop::Cache()->flushTags(array(CACHING_GROUP_CORE));

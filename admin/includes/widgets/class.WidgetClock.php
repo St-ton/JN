@@ -35,18 +35,18 @@ class WidgetClock extends WidgetBase
 
         $xml = simplexml_load_string($file_contents);
 
-        $weather['city']      = (string) $xml->local->city;
-        $weather['curr_temp'] = (int) $xml->currentconditions->temperature;
-        $weather['curr_text'] = (string) $xml->currentconditions->weathertext;
-        $weather['curr_icon'] = (int) $xml->currentconditions->weathericon;
+        $weather['city']      = (string)$xml->local->city;
+        $weather['curr_temp'] = (int)$xml->currentconditions->temperature;
+        $weather['curr_text'] = (string)$xml->currentconditions->weathertext;
+        $weather['curr_icon'] = (int)$xml->currentconditions->weathericon;
 
         $day = 5;
-        for ($i = 0; $i < $day; $i++) {
-            $weather['forecast'][$i]['day_date']  = (string) $xml->forecast->day[$i]->obsdate;
-            $weather['forecast'][$i]['day_text']  = (string) $xml->forecast->day[$i]->daytime->txtshort;
-            $weather['forecast'][$i]['day_icon']  = (int) $xml->forecast->day[$i]->daytime->weathericon;
-            $weather['forecast'][$i]['day_htemp'] = (int) $xml->forecast->day[$i]->daytime->hightemperature;
-            $weather['forecast'][$i]['day_ltemp'] = (int) $xml->forecast->day[$i]->daytime->lowtemperature;
+        for ($i = 0; $i < $day; ++$i) {
+            $weather['forecast'][$i]['day_date']  = (string)$xml->forecast->day[$i]->obsdate;
+            $weather['forecast'][$i]['day_text']  = (string)$xml->forecast->day[$i]->daytime->txtshort;
+            $weather['forecast'][$i]['day_icon']  = (int)$xml->forecast->day[$i]->daytime->weathericon;
+            $weather['forecast'][$i]['day_htemp'] = (int)$xml->forecast->day[$i]->daytime->hightemperature;
+            $weather['forecast'][$i]['day_ltemp'] = (int)$xml->forecast->day[$i]->daytime->lowtemperature;
         }
 
         return json_encode($weather);

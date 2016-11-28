@@ -7,7 +7,7 @@ require_once 'includes/admininclude.php';
 require_once 'includes/news_inc.php';
 
 $oAccount->permission('RESET_SHOP_VIEW', true, true);
-
+/** @global JTLSmarty $smarty */
 $cHinweis = '';
 $cFehler  = '';
 if (isset($_POST['zuruecksetzen']) && intval($_POST['zuruecksetzen']) === 1 && validateToken()) {
@@ -84,6 +84,7 @@ if (isset($_POST['zuruecksetzen']) && intval($_POST['zuruecksetzen']) === 1 && v
                         loescheNewsBilderDir($i->kNews, PFAD_ROOT . PFAD_NEWSBILDER);
                     }
                     Shop::DB()->query("TRUNCATE tnews", 4);
+                    Shop::DB()->delete('trevisions', 'type', 'news', 4);
                     Shop::DB()->query("TRUNCATE tnewskategorie", 4);
                     Shop::DB()->query("TRUNCATE tnewskategorienews", 4);
                     Shop::DB()->query("TRUNCATE tnewskommentar", 4);

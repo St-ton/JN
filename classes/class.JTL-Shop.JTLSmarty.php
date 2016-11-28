@@ -239,11 +239,6 @@ class JTLSmarty extends SmartyBC
     /**
      * @var bool
      */
-    private static $isCached = false;
-
-    /**
-     * @var bool
-     */
     public static $isChildTemplate = false;
 
     /**
@@ -256,7 +251,7 @@ class JTLSmarty extends SmartyBC
      */
     public function __construct($fast_init = false, $isAdmin = false, $tplCache = true, $context = 'frontend')
     {
-        parent::__construct(array());
+        parent::__construct();
         Smarty::$_CHARSET = JTL_CHARSET;
         if (defined('SMARTY_USE_SUB_DIRS') && is_bool(SMARTY_USE_SUB_DIRS)) {
             $this->setUseSubDirs(SMARTY_USE_SUB_DIRS);
@@ -265,7 +260,7 @@ class JTLSmarty extends SmartyBC
              ->setForceCompile(SMARTY_FORCE_COMPILE ? true : false)
              ->setDebugging(SMARTY_DEBUG_CONSOLE ? true : false);
 
-        $this->config = Shop::getSettings(array(CONF_TEMPLATE, CONF_CACHING));
+        $this->config = Shop::getSettings(array(CONF_TEMPLATE, CONF_CACHING, CONF_GLOBAL));
         $template     = ($isAdmin) ? AdminTemplate::getInstance() : Template::getInstance();
         $cTemplate    = $template->getDir();
         $parent       = null;
@@ -312,7 +307,7 @@ class JTLSmarty extends SmartyBC
                  ->registerPlugin('modifier', 'truncate', array($this, 'truncate'));
 
             if ($isAdmin === false) {
-                $this->cache_lifetime = (isset($cacheOptions['expiration']) && ((int) $cacheOptions['expiration'] > 0)) ? $cacheOptions['expiration'] : 86400;
+                $this->cache_lifetime = (isset($cacheOptions['expiration']) && ((int)$cacheOptions['expiration'] > 0)) ? $cacheOptions['expiration'] : 86400;
                 //assign variables moved from $_SESSION to cache to smarty
                 $linkHelper = LinkHelper::getInstance();
                 $linkGroups = $linkHelper->getLinkGroups();
@@ -329,7 +324,7 @@ class JTLSmarty extends SmartyBC
                 $this->template_class = 'jtlTplClass';
             }
             if (!$isAdmin) {
-                $this->setCachingParams(false, $this->config);
+                $this->setCachingParams($this->config);
             }
             $_tplDir = $this->getTemplateDir($this->context);
             if (file_exists($_tplDir . 'php/functions_custom.php')) {
@@ -354,44 +349,19 @@ class JTLSmarty extends SmartyBC
     /**
      * set options
      *
-     * @param bool  $force
-     * @param array $config
+     * @param array|null $config
      * @return $this
      */
-    public function setCachingParams($force = false, $config = null)
+    public function setCachingParams($config = null)
     {
-        $caching      = self::CACHING_OFF;
-        $compileCheck = true;
         //instantiate new cache - we use different options here
         if ($config === null) {
             $config = Shop::getSettings(array(CONF_CACHING));
         }
-        if (isset($config['caching']['caching_page_cache'])) {
-            if ($config['caching']['caching_page_cache'] === '1' || $config['caching']['caching_page_cache'] === '2' || $config['caching']['caching_page_cache'] === '3') {
-                $caching = self::CACHING_LIFETIME_CURRENT;
-            }
-            if ($config['caching']['caching_page_cache'] === '2' && !empty($_SESSION['Kunde']->kKunde)) {
-                //for guests only
-                $caching = self::CACHING_OFF;
-            } elseif ($config['caching']['caching_page_cache'] === '3' && isset($_SESSION['Warenkorb']->PositionenArr) && count($_SESSION['Warenkorb']->PositionenArr) > 0) {
-                //with empty carts only
-                $caching = self::CACHING_OFF;
-            }
-        }
-        if (isset($config['caching']['compile_check']) && $config['caching']['compile_check'] === 'N') {
-            $compileCheck = false;
-        }
-        if ($caching === 1 || $force === true) {
-            if (!file_exists($this->getCacheDir())) {
-                mkdir($this->getCacheDir());
-            }
-            if (isset($config['caching']['advanced_page_cache']) && $config['caching']['advanced_page_cache'] === 'Y') {
-                $this->registerCacheResource('jtlSmartyCache', new jtlSmartyCache($config));
-                $this->caching_type = 'jtlSmartyCache';
-            }
-            $caching = self::CACHING_LIFETIME_CURRENT;
-        }
-        $this->setCaching($caching)
+        $compileCheck = (isset($config['caching']['compile_check']) && $config['caching']['compile_check'] === 'N')
+            ? false
+            : true;
+        $this->setCaching(self::CACHING_OFF)
              ->setCompileCheck($compileCheck);
 
         return $this;
@@ -448,13 +418,7 @@ class JTLSmarty extends SmartyBC
      */
     public function isCached($template = null, $cache_id = null, $compile_id = null, $parent = null)
     {
-        $res            = parent::isCached($template, $cache_id, $compile_id, $parent);
-        self::$isCached = $res;
-        if (isset($this->config['caching']['page_cache_debugging']) && $this->config['caching']['page_cache_debugging'] === 'Y') {
-            header('JTL-Cached: ' . (($res === true) ? 'true' : 'false'));
-        }
-
-        return $res;
+        return false;
     }
 
     /**
@@ -640,8 +604,7 @@ class JTLSmarty extends SmartyBC
      */
     public function replaceDelimiters($cText)
     {
-        $Einstellungen = Shop::getSettings(array(CONF_GLOBAL));
-        $cReplace      = $Einstellungen['global']['global_dezimaltrennzeichen_sonstigeangaben'];
+        $cReplace = $this->config['global']['global_dezimaltrennzeichen_sonstigeangaben'];
         if (strlen($cReplace) === 0 || $cReplace !== ',' || $cReplace !== '.') {
             $cReplace = ',';
         }
@@ -738,153 +701,7 @@ class JTLSmarty extends SmartyBC
      */
     public function getCacheID($resource_name, $conditions, $cache_id = null)
     {
-        if ($this->caching === self::CACHING_OFF || !defined('SHOW_PAGE_CACHE') || SHOW_PAGE_CACHE === false || isAjaxRequest()) {
-            return;
-        }
-        if ($resource_name === 'productlist/index.tpl' || $resource_name === 'layout/index.tpl' ||
-            $resource_name === 'productdetails/index.tpl' || $resource_name === 'blog/index.tpl' ||
-            $resource_name === 'suche.tpl' || $resource_name === 'seite.tpl' ||
-            $resource_name === 'artikel.tpl' || $resource_name === 'filter.tpl' || $resource_name === 'news.tpl'
-        ) {
-            if ($cache_id === null) {
-                $customerGroup = (isset($_SESSION['Kundengruppe'])) ? '|cgrp' . $_SESSION['Kundengruppe']->kKundengruppe : '';
-                $lang          = (isset(Shop::$kSprache)) ? '|lang' . Shop::$kSprache : '';
-                $sslStatus     = (function_exists('pruefeSSL')) ? '|ssl' . pruefeSSL() : '';
-                //news
-                if (($resource_name === 'blog/index.tpl' || $resource_name === $this->getCustomFile('blog/index.tpl') || $resource_name === 'news.tpl') &&
-                    isset($conditions['news'])
-                ) {
-                    $newsId  = (isset($conditions['news']['kNews'])) ? 'news|nid' . $conditions['news']['kNews'] : '';
-                    $newLang = (isset($conditions['news']['lang'])) ? 'lang' . $conditions['news']['lang'] : '';
-                    if (isset($_SESSION['NewsNaviFilter'])) {
-                        $nSort = '|sort' . $_SESSION['NewsNaviFilter']->nSort;
-                        $nNum  = '|num' . $_SESSION['NewsNaviFilter']->nAnzahl;
-                        $date  = '|date' . $_SESSION['NewsNaviFilter']->cDatum;
-                        $cat   = '|cid' . $_SESSION['NewsNaviFilter']->nNewsKat;
-                    } else {
-                        $nSort = $nNum = $date = $cat = '';
-                    }
-                    $cache_id = 'news|' . $newsId . $newLang . $nSort . $nNum . $date . $cat;
-                }
-                //page
-                if (($resource_name === 'seite.tpl' || $resource_name === 'layout/index.tpl') && isset($conditions['link']) &&
-                    $conditions['link'] !== null && is_object($conditions['link'])
-                ) {
-                    $kLink      = (isset($conditions['link']->kLink)) ? 'link|lid' . $conditions['link']->kLink : '';
-                    $naviFilter = $this->getTemplateVars('NaviFilter');
-                    $pageNumber = (isset($naviFilter->nSeite)) ? '|pnum' . $naviFilter->nSeite : '|pnum0';
-                    $sortType   = (isset($conditions['link']->nSort)) ? '|nsort' . $conditions['link']->nSort : '';
-                    $cache_id   = 'page|' . $kLink . $pageNumber . $sortType;
-                } elseif (($resource_name === 'productlist/index.tpl' || $resource_name === 'suche.tpl') &&
-                    isset($conditions['naviFilter']) && $conditions['naviFilter'] !== null && is_object($conditions['naviFilter'])
-                ) { //filter.php
-                    //category ID
-                    $categoryId = (isset($conditions['naviFilter']->Kategorie)) ?
-                        'category|cid' . $conditions['naviFilter']->Kategorie->kKategorie :
-                        '';
-                    //tag page
-                    $tagPage = (isset($conditions['naviFilter']->Tag)) ?
-                        'tag|tid' . $conditions['naviFilter']->Tag->kTag :
-                        '';
-                    //current page when paginating
-                    $pageNumber = (isset($conditions['naviFilter']->Suche) && $conditions['naviFilter']->Suche->cSuche !== '') ?
-                        '|search' . $conditions['naviFilter']->Suche->cSuche :
-                        '';
-                    //custom sort
-                    $sort = '';
-                    if (isset($_SESSION['Usersortierung'])) {
-                        $sort = '|nsort' . $_SESSION['Usersortierung'];
-                    } elseif (isset($_SESSION['UsersortierungVorSuche'])) {
-                        $sort = '|nsort' . $_SESSION['UsersortierungVorSuche'];
-                    } elseif (isset($conditions['oSuchergebnisse']->Sortierung)) {
-                        $sort = '|nsort' . $conditions['oSuchergebnisse']->Sortierung;
-                    }
-                    //custom view mode/articles per page
-                    $extendedView = (isset($_SESSION['ArtikelProSeite'])) ?
-                        ('|nanz' . $_SESSION['ArtikelProSeite']) :
-                        '';
-                    if (!empty(Shop::$nDarstellung)) {
-                        $extendedView .= '|ndarst' . Shop::$nDarstellung;
-                    } elseif (isset($_SESSION['oErweiterteDarstellung']->nDarstellung)) {
-                        $extendedView .= '|ndarst' . $_SESSION['oErweiterteDarstellung']->nDarstellung;
-                    }
-                    $attributeFilter = '';
-                    if (!empty($conditions['naviFilter']->MerkmalFilter)) {
-                        $attributeFilter = '|';
-                        foreach ($conditions['naviFilter']->MerkmalFilter as $filter) {
-                            $attributeFilter .= 'atv' . $filter->kMerkmalWert . '-atid' . $filter->kMerkmal;
-                        }
-                    }
-                    $searchFilter = (isset($conditions['naviFilter']->SuchFilter) && count($conditions['naviFilter']->SuchFilter) > 0) ?
-                        '|sfid' . $conditions['naviFilter']->SuchFilter->kKey :
-                        '';
-                    $searchSpecial = (isset($conditions['naviFilter']->Suchspecial) && count($conditions['naviFilter']->Suchspecial) > 0) ?
-                        '|ssid' . $conditions['naviFilter']->Suchspecial->kKey :
-                        '';
-                    $jtlSearch = (isset($_GET['fq0'])) ?
-                        '|js' . md5(implode('.', $_GET)) :
-                        '';
-                    $searchSpecialFilter = (isset($conditions['naviFilter']->SuchspecialFilter) && count($conditions['naviFilter']->SuchspecialFilter) > 0) ?
-                        '|ssf' . $conditions['naviFilter']->SuchspecialFilter->kKey :
-                        '';
-                    $ratingFilter = (isset($conditions['naviFilter']->BewertungFilter)) ?
-                        'stars' . $conditions['naviFilter']->BewertungFilter->nSterne :
-                        '';
-                    $priceRangeFilter = (isset($conditions['naviFilter']->PreisspannenFilter) && count($conditions['naviFilter']->PreisspannenFilter) > 0) ?
-                        '|price' . $conditions['naviFilter']->PreisspannenFilter->cWert :
-                        '';
-                    $tagFilter = '';
-                    if (isset($conditions['naviFilter']->TagFilter) && count($conditions['naviFilter']->TagFilter) > 0) {
-                        $tagFilter = '|tag-';
-                        foreach ($conditions['naviFilter']->TagFilter as $tag) {
-                            $tagFilter .= $tag->kTag;
-                        }
-                    }
-                    $manufacturer = (isset($conditions['naviFilter']->Hersteller)) ?
-                        'manufacturer|mid' . $conditions['naviFilter']->Hersteller->kHersteller :
-                        '';
-                    $manufacturerFilter = (isset($conditions['naviFilter']->HerstellerFilter)) ?
-                        '|mid' . $conditions['naviFilter']->HerstellerFilter->kHersteller :
-                        '';
-                    $naviPage = (isset($conditions['naviFilter']->nSeite)) ?
-                        '|np' . $conditions['naviFilter']->nSeite :
-                        '';
-                    $cache_id = $manufacturer . $categoryId . $tagPage . $pageNumber .
-                        $naviPage . $attributeFilter . $manufacturerFilter . $searchFilter .
-                        $searchSpecial . $searchSpecialFilter . $ratingFilter . $priceRangeFilter .
-                        $tagFilter . $jtlSearch . $sort . $extendedView;
-                } elseif (($resource_name === 'productdetails/index.tpl' || $resource_name === 'artikel.tpl') &&
-                    isset($conditions['article']) && $conditions['article'] !== null && is_object($conditions['article'])
-                ) {
-                    if (!empty(Shop::$kVariKindArtikel)) {
-                        $articleId = 'aid' . Shop::$kVariKindArtikel;
-                    } else {
-                        $articleId = (isset($conditions['article']->kArtikel)) ? 'aid' . $conditions['article']->kArtikel : '';
-                    }
-                    $taxClass = '';
-                    if (isset($_SESSION['Steuersatz'])) {
-                        $taxClass = '|';
-                        foreach ($_SESSION['Steuersatz'] as $_k => $_v) {
-                            $taxClass .= $_k . '-' . $_v;
-                        }
-                    }
-                    $cache_id = 'article|' . $articleId . $taxClass;
-                }
-                $cache_id = 'jtlc|' . $cache_id . $lang . $customerGroup . $sslStatus . ((isset($_GET['exclusive_content'])) ? '|e' : '');
-                //allow cache_id modification
-                executeHook(HOOK_SMARTY_GENERATE_CACHE_ID, array(
-                        'resource'   => $resource_name,
-                        'conditions' => $conditions,
-                        'cache_id'   => &$cache_id
-                    )
-                );
-
-                return $cache_id;
-            }
-        }
-        $this->caching = self::CACHING_OFF;
-
-        return;
+        return null;
     }
 
     /**
@@ -966,8 +783,6 @@ class JTLSmarty extends SmartyBC
     }
 }
 
-
-
 /**
  * Class jtlTplClass
  */
@@ -992,84 +807,18 @@ class jtlTplClass extends Smarty_Internal_Template
     {
         return parent::_subTemplateRender($this->smarty->getResourceName($template), $cache_id, $compile_id, $caching, $cache_lifetime, $data, $scope, $forceTplCache, $uid, $content_func);
     }
-}
-
-/**
- * Class jtlSmartyCache
- */
-class jtlSmartyCache extends Smarty_CacheResource_KeyValueStore
-{
-    /**
-     * @var JTLCache|null
-     */
-    protected $jtlCache = null;
 
     /**
-     * the cache tags to identify page cache entries within the object cache
-     *
-     * @var array
+     * @param bool $no_output_filter
+     * @param null|int $display
+     * @return string
      */
-    private $cacheTag = array('pg_cch');
-
-    /**
-     * @param array $config
-     */
-    public function __construct($config)
+    public function render($no_output_filter = true, $display = null)
     {
-        $this->jtlCache = new JTLCache(array(), true);
-        $this->jtlCache->setOptions(array(
-            'activated' => true,
-            'method'    => $config['caching']['caching_method'],
-            'prefix'    => 'jcp_' . ((defined('DB_NAME')) ? DB_NAME . '_' : '')
-        ))->init();
-    }
-
-    /**
-     * Read values for a set of keys from cache
-     *
-     * @param array $keys list of keys to fetch
-     * @return array list of values with the given keys used as indexes
-     * @return bool true on success, false on failure
-     */
-    protected function read(array $keys)
-    {
-        return $this->jtlCache->getMulti($keys);
-    }
-
-    /**
-     * Save values for a set of keys to cache
-     *
-     * @param array $keys list of values to save
-     * @param int   $expire expiration time
-     * @return bool true on success, false on failure
-     */
-    protected function write(array $keys, $expire = null)
-    {
-        return $this->jtlCache->setMulti($keys, $this->cacheTag, $expire);
-    }
-
-    /**
-     * Remove values from cache
-     *
-     * @param array $keys list of keys to delete
-     * @return bool true on success, false on failure
-     */
-    protected function delete(array $keys)
-    {
-        foreach ($keys as $k) {
-            $this->jtlCache->flush($k);
+        if ($no_output_filter === false && $display !== 1) {
+            $no_output_filter = true;
         }
 
-        return true;
-    }
-
-    /**
-     * Remove *all* values from cache
-     *
-     * @return bool true on success, false on failure
-     */
-    protected function purge()
-    {
-        return $this->jtlCache->flushTags($this->cacheTag);
+        return parent::render($no_output_filter, $display);
     }
 }

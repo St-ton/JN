@@ -22,7 +22,7 @@ class MediaImageCompatibility implements IMedia
     }
 
     /**
-     * @param $request
+     * @param string $request
      * @return mixed
      */
     public function handle($request)
@@ -30,13 +30,18 @@ class MediaImageCompatibility implements IMedia
         $req = $this->parse($request);
 
         $path     = strtolower(Shop::DB()->escape($req['path']));
-        $fallback = Shop::DB()->executeQuery("SELECT h.kArtikel, h.nNr, a.cSeo, a.cName, a.cArtNr, a.cBarcode FROM tartikelpicthistory h INNER JOIN tartikel a ON h.kArtikel = a.kArtikel WHERE LOWER(h.cPfad) = '{$path}'", 1);
+        $fallback = Shop::DB()->executeQuery("
+          SELECT h.kArtikel, h.nNr, a.cSeo, a.cName, a.cArtNr, a.cBarcode 
+            FROM tartikelpicthistory h 
+            INNER JOIN tartikel a 
+              ON h.kArtikel = a.kArtikel 
+              WHERE LOWER(h.cPfad) = '{$path}'", 1
+        );
 
         if (is_object($fallback)) {
             $req['number'] = (int)$fallback->nNr;
         } elseif ((int)IMAGE_COMPATIBILITY_LEVEL === 2) {
             $name = $req['name'];
-
             // remove number
             if (preg_match('/^(.*)_b?(\d+)$/', $name, $matches)) {
                 $name          = $matches[1];
@@ -44,44 +49,49 @@ class MediaImageCompatibility implements IMedia
             }
 
             $articleNumber = $barcode = $seo = $name;
-
             // remove concat
             $exploded = explode('_', $name, 2);
             if (count($exploded) === 2) {
                 $articleNumber = $exploded[0];
                 $barcode       = $seo       = $name       = $exploded[1];
             }
-
             // replace vowel mutation
             $name          = str_replace('-', ' ', $this->replaceVowelMutation($name));
             $articleNumber = $this->replaceVowelMutation($articleNumber);
             $barcode       = $this->replaceVowelMutation($barcode);
-
             // lowercase + escape
             $name          = strtolower(Shop::DB()->escape($name));
             $articleNumber = strtolower(Shop::DB()->escape($articleNumber));
             $barcode       = strtolower(Shop::DB()->escape($barcode));
             $seo           = strtolower(Shop::DB()->escape($seo));
 
-            $fallback = Shop::DB()->executeQuery("SELECT a.kArtikel, a.cSeo, a.cName, a.cArtNr, a.cBarcode FROM tartikel a WHERE 
-              LOWER(a.cName) = '{$name}' OR 
-              LOWER(a.cSeo) = '{$seo}' OR
-              LOWER(a.cBarcode) = '{$barcode}' OR 
-              LOWER(a.cArtNr) = '{$articleNumber}'", 1);
+            $fallback = Shop::DB()->executeQuery("
+              SELECT a.kArtikel, a.cSeo, a.cName, a.cArtNr, a.cBarcode 
+              FROM tartikel a 
+              WHERE 
+                  LOWER(a.cName) = '{$name}' OR 
+                  LOWER(a.cSeo) = '{$seo}' OR
+                  LOWER(a.cBarcode) = '{$barcode}' OR 
+                  LOWER(a.cArtNr) = '{$articleNumber}'", 1
+            );
         }
 
-        if (is_object($fallback) && (int) $fallback->kArtikel > 0) {
+        if (is_object($fallback) && (int)$fallback->kArtikel > 0) {
             $number   = isset($req['number']) ? (int)$req['number'] : 1;
             $thumbUrl = Shop::getURL() . '/' . MediaImage::getThumb(Image::TYPE_PRODUCT, $fallback->kArtikel, $fallback, Image::mapSize($req['size']), $number);
 
             http_response_code(301);
-            header("location: {$thumbUrl}");
+            header("Location: {$thumbUrl}");
             exit;
         }
 
         return false;
     }
 
+    /**
+     * @param string $str
+     * @return string
+     */
     private function replaceVowelMutation($str)
     {
         $src = array('ä', 'ö', 'ü', 'ß', 'Ä', 'Ö', 'Ü', utf8_decode('ä'), utf8_decode('ö'), utf8_decode('ü'), utf8_decode('ß'), utf8_decode('Ä'), utf8_decode('Ö'), utf8_decode('Ü'));
@@ -97,7 +107,7 @@ class MediaImageCompatibility implements IMedia
     private function parse($request)
     {
         if (!is_string($request) || strlen($request) == 0) {
-            return;
+            return null;
         }
 
         if ($request[0] === '/') {
@@ -108,6 +118,6 @@ class MediaImageCompatibility implements IMedia
             return array_intersect_key($matches, array_flip(array_filter(array_keys($matches), 'is_string')));
         }
 
-        return;
+        return null;
     }
 }

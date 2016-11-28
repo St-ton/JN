@@ -41,7 +41,7 @@
     </div>
 
     {if $oSuchspecialOverlay->kSuchspecialOverlay > 0}
-        <form name="einstellen" method="post" action="suchspecialoverlay.php" enctype="multipart/form-data">
+        <form name="einstellen" method="post" action="suchspecialoverlay.php" enctype="multipart/form-data" onsubmit="checkfile(event)">
             {$jtl_token}
             <input type="hidden" name="suchspecialoverlay" value="1" />
             <input type="hidden" name="kSuchspecialOverlay" value="{$oSuchspecialOverlay->kSuchspecialOverlay}" />
@@ -70,12 +70,12 @@
                             </span>
                         </div>
 
-                        <div class="input-group">
+                        <div class="input-group file-input">
                             <span class="input-group-addon">
                                 <label for="cSuchspecialOverlayBild">{#suchspecialoverlayFileName#}</label>
                             </span>
                             <span class="input-group-wrap">
-                                <input class="form-control" type="file" name="cSuchspecialOverlayBild" maxlength="2097152" accept="image/jpeg,image/gif,image/png,image/bmp" id="cSuchspecialOverlayBild" value="" tabindex="1" />
+                                <input class="form-control" type="file" name="cSuchspecialOverlayBild" accept="image/jpeg,image/gif,image/png,image/bmp" id="cSuchspecialOverlayBild" value="" tabindex="1" />
                             </span>
                             <span class="input-group-addon">
                                 {getHelpDesc cDesc=#suchspecialoverlayFileNameDesc#}
@@ -128,7 +128,7 @@
                                 <label for="nPosition">{#suchspecialoverlayPosition#}</label>
                             </span>
                             <span class="input-group-wrap">
-                                <select name="nPosition" id="nPosition" class="combo form-control">
+                                <select name="nPosition" id="nPosition" class="combo form-control"{if !empty($isDeprecated)} disabled="disabled"{/if}>
                                     <option value="1"{if $oSuchspecialOverlay->nPosition === '1'} selected{/if}>
                                         oben-links
                                     </option>
@@ -171,5 +171,33 @@
         </form>
     {/if}
 </div>
+<script type="text/javascript">
+    {literal}
+    var file2large = false;
 
+    function checkfile(e){
+        e.preventDefault();
+        if (!file2large){
+            document.einstellen.submit();
+        }
+    }
+
+    $(document).ready(function () {
+        $('form #cSuchspecialOverlayBild').change(function(e){
+            $('form div.alert').slideUp();
+            var filesize= this.files[0].size;
+            {/literal}
+            var maxsize = {$nMaxFileSize};
+            {literal}
+            if (filesize >= maxsize) {
+                $('.input-group.file-input').after('<div class="alert alert-danger"><i class="fa fa-warning"></i> Die Datei ist gr&ouml;&szlig;er als das Uploadlimit des Servers.</div>').slideDown();
+                file2large = true;
+            } else {
+                $('form div.alert').slideUp();
+                file2large = false;
+            }
+        });
+    });
+    {/literal}
+</script>
 {include file='tpl_inc/footer.tpl'}

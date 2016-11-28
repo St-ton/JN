@@ -65,11 +65,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         private function loadFromDB($kRMAStatus)
         {
-            $oObj = Shop::DB()->query(
-                "SELECT *
-                  FROM trmastatus
-                  WHERE kRMAStatus = " . intval($kRMAStatus), 1
-            );
+            $oObj = Shop::DB()->select('trmastatus', 'kRMAStatus', (int)$kRMAStatus);
             if (isset($oObj->kRMAStatus) && $oObj->kRMAStatus > 0) {
                 $cMember_arr = array_keys(get_object_vars($oObj));
                 foreach ($cMember_arr as $cMember) {
@@ -272,9 +268,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
                 if ($kRMAStatus > 0) {
                     return $bPrimary ? $kRMAStatus : true;
                 }
-            } else {
-                return $cPlausi_arr;
             }
+
+            return $cPlausi_arr;
         }
 
         /**

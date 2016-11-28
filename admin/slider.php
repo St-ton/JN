@@ -7,13 +7,12 @@
 require_once dirname(__FILE__) . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . 'toolsajax.server.php';
 $oAccount->permission('SLIDER_VIEW', true, true);
-
+/** @global JTLSmarty $smarty */
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'slider_inc.php';
 $cFehler      = '';
 $cHinweis     = '';
 $_kSlider     = 0;
 $cRedirectUrl = Shop::getURL() . '/' . PFAD_ADMIN . 'slider.php';
-
 $cAction = ((isset($_REQUEST['action']) && validateToken()) ? $_REQUEST['action'] : 'view');
 $kSlider = (isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0);
 
@@ -25,9 +24,9 @@ switch ($cAction) {
             $aSlide               = $_REQUEST['aSlide'][$aSlideKey[$i]];
             $oSlide->kSlide       = ((strpos($aSlideKey[$i], 'neu') === false) ? $aSlideKey[$i] : null);
             $oSlide->kSlider      = $kSlider;
-            $oSlide->cTitel       = $aSlide['cTitel'];
+            $oSlide->cTitel       = htmlspecialchars($aSlide['cTitel']);
             $oSlide->cBild        = $aSlide['cBild'];
-            $oSlide->cText        = $aSlide['cText'];
+            $oSlide->cText        = htmlspecialchars($aSlide['cText']);
             $oSlide->cLink        = $aSlide['cLink'];
             $oSlide->nSort        = $aSlide['nSort'];
             if ($aSlide['delete'] == 1) {
@@ -53,7 +52,11 @@ switch ($cAction) {
 
             $cKeyValue = '';
             $cValue    = '';
-            if ($nSeite == 2) {
+            if ($nSeite == PAGE_ARTIKEL) {
+                $cKey      = 'kArtikel';
+                $cKeyValue = 'article_key';
+                $cValue    = $_POST[$cKeyValue];
+            } elseif ($nSeite == PAGE_ARTIKELLISTE) {
                 // data mapping
                 $aFilter_arr = array(
                     'kTag'         => 'tag_key',
@@ -64,6 +67,14 @@ switch ($cAction) {
                 );
 
                 $cKeyValue = $aFilter_arr[$cKey];
+                $cValue    = $_POST[$cKeyValue];
+            } elseif ($nSeite == PAGE_HERSTELLER) {
+                $cKey      = 'kHersteller';
+                $cKeyValue = 'manufacturer_key';
+                $cValue    = $_POST[$cKeyValue];
+            } elseif ($nSeite == PAGE_EIGENE) {
+                $cKey      = 'kLink';
+                $cKeyValue = 'link_key';
                 $cValue    = $_POST[$cKeyValue];
             }
 

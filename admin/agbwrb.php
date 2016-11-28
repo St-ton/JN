@@ -6,7 +6,7 @@
 require_once dirname(__FILE__) . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'agbwrb_inc.php';
-
+/** @global JTLSmarty $smarty */
 $oAccount->permission('ORDER_AGB_WRB_VIEW', true, true);
 
 $cHinweis = '';
@@ -37,18 +37,10 @@ if (verifyGPCDataInteger('agbwrb') === 1 && validateToken()) {
 
 if ($step === 'agbwrb_uebersicht') {
     // Kundengruppen holen
-    $oKundengruppe_arr = Shop::DB()->query(
-        "SELECT kKundengruppe, cName
-            FROM tkundengruppe
-            ORDER BY cStandard DESC", 2
-    );
+    $oKundengruppe_arr = Shop::DB()->selectAll('tkundengruppe', [], [], 'kKundengruppe, cName', 'cStandard DESC');
     // AGB fuer jeweilige Sprache holen
     $oAGBWRB_arr    = array();
-    $oAGBWRBTMP_arr = Shop::DB()->query(
-        "SELECT *
-            FROM ttext
-            WHERE kSprache = " . (int)$_SESSION['kSprache'], 2
-    );
+    $oAGBWRBTMP_arr = Shop::DB()->selectAll('ttext', 'kSprache', (int)$_SESSION['kSprache']);
     // Assoc Array mit kKundengruppe machen
     if (is_array($oAGBWRBTMP_arr) && count($oAGBWRBTMP_arr) > 0) {
         foreach ($oAGBWRBTMP_arr as $i => $oAGBWRBTMP) {

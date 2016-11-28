@@ -5,14 +5,15 @@
  */
 
 /**
- * @param int $kArtikel
+ * @param int       $kArtikel
+ * @param bool|null $isParent
  * @return stdClass|null
  */
-function gibArtikelXSelling($kArtikel)
+function gibArtikelXSelling($kArtikel, $isParent = null)
 {
     $kArtikel = (int)$kArtikel;
     if ($kArtikel <= 0) {
-        return;
+        return null;
     }
     $xSelling = new stdClass();
     $config   = Shop::getSettings(array(CONF_ARTIKELDETAILS));
@@ -22,8 +23,8 @@ function gibArtikelXSelling($kArtikel)
         $cSQLLager          = gibLagerfilter();
         $xsell              = Shop::DB()->query(
             "SELECT txsell.* FROM txsell, tartikel
-                WHERE txsell.kXSellArtikel = tartikel.kArtikel " . $cSQLLager . "
-                    AND txsell.kArtikel = " . $kArtikel . "
+                WHERE txsell.kXSellArtikel = tartikel.kArtikel {$cSQLLager}
+                    AND txsell.kArtikel = {$kArtikel}
                 ORDER BY tartikel.cName", 2
         );
         if (count($xsell) > 0) {
@@ -35,16 +36,12 @@ function gibArtikelXSelling($kArtikel)
             }
             $xSelling->Standard->XSellGruppen = array();
             $xsCount                          = count($xsellgruppen);
+            $defaultOptions                   = Artikel::getDefaultOptions();
             for ($i = 0; $i < $xsCount; $i++) {
                 if (Shop::$kSprache > 0) {
                     //lokalisieren
-                    $objSprache = Shop::DB()->query(
-                        "SELECT cName, cBeschreibung
-                            FROM txsellgruppe
-                            WHERE kXSellGruppe = " . (int)$xsellgruppen[$i] . "
-                            AND kSprache = " . (int)Shop::$kSprache, 1
-                    );
-                    if ($objSprache === false || !isset($objSprache->cName)) {
+                    $objSprache = Shop::DB()->select('txsellgruppe', 'kXSellGruppe', (int)$xsellgruppen[$i], 'kSprache', (int)Shop::$kSprache);
+                    if (!isset($objSprache->cName)) {
                         continue;
                     }
                     $xSelling->Standard->XSellGruppen[$i]               = new stdClass();
@@ -52,11 +49,10 @@ function gibArtikelXSelling($kArtikel)
                     $xSelling->Standard->XSellGruppen[$i]->Beschreibung = $objSprache->cBeschreibung;
                 }
                 $xSelling->Standard->XSellGruppen[$i]->Artikel = array();
-                $oArtikelOptionen                              = Artikel::getDefaultOptions();
                 foreach ($xsell as $xs) {
                     if ($xs->kXSellGruppe == $xsellgruppen[$i]) {
                         $artikel = new Artikel();
-                        $artikel->fuelleArtikel($xs->kXSellArtikel, $oArtikelOptionen);
+                        $artikel->fuelleArtikel($xs->kXSellArtikel, $defaultOptions);
                         if ($artikel->kArtikel > 0 && $artikel->aufLagerSichtbarkeit()) {
                             $xSelling->Standard->XSellGruppen[$i]->Artikel[] = $artikel;
                         }
@@ -67,58 +63,72 @@ function gibArtikelXSelling($kArtikel)
     }
     if (isset($config['artikeldetails_xselling_kauf_anzeigen']) && $config['artikeldetails_xselling_kauf_anzeigen'] === 'Y') {
         $anzahl = (int)$config['artikeldetails_xselling_kauf_anzahl'];
-        if (ArtikelHelper::isParent($kArtikel)) {
-            $inArray = array($kArtikel);
-            $tmps    = ArtikelHelper::getChildren($kArtikel);
-            foreach ($tmps as $_article) {
-                $inArray[] = (int)$_article->kArtikel;
+        if ($isParent === null) {
+            $isParent = ArtikelHelper::isParent($kArtikel);
+        }
+        if ($isParent === true) {
+            if (isset($config['artikeldetails_xselling_kauf_parent']) && $config['artikeldetails_xselling_kauf_parent'] === 'Y') {
+                $selectorXSellArtikel     = 'IF(tartikel.kVaterArtikel = 0, txsellkauf.kXSellArtikel, tartikel.kVaterArtikel)';
+                $filterXSellParentArtikel = 'IF(tartikel.kVaterArtikel = 0, txsellkauf.kXSellArtikel, tartikel.kVaterArtikel)';
+            } else {
+                $selectorXSellArtikel     = 'txsellkauf.kXSellArtikel';
+                $filterXSellParentArtikel = 'tartikel.kVaterArtikel';
             }
             $xsell = Shop::DB()->query(
-                "SELECT *
+                "SELECT {$kArtikel} AS kArtikel,
+                        {$selectorXSellArtikel} AS kXSellArtikel,
+                        SUM(txsellkauf.nAnzahl) nAnzahl
                     FROM txsellkauf
-                    WHERE kArtikel IN (" . implode(', ', $inArray) . ")
-                    GROUP BY kXSellArtikel
-                    ORDER BY nAnzahl DESC, rand()
+                    JOIN tartikel ON tartikel.kArtikel = txsellkauf.kXSellArtikel
+                    WHERE (txsellkauf.kArtikel IN (
+                            SELECT tartikel.kArtikel
+                            FROM tartikel
+                            WHERE tartikel.kVaterArtikel = {$kArtikel}
+                        ) OR txsellkauf.kArtikel = {$kArtikel})
+                        AND {$filterXSellParentArtikel} != {$kArtikel}
+                    GROUP BY 1, 2
+                    ORDER BY SUM(txsellkauf.nAnzahl) DESC, rand()
                     LIMIT {$anzahl}", 2
             );
-            $xsellCount = (is_array($xsell)) ? count($xsell) : 0;
-            if ($xsellCount > 0 && count($tmps) > 0) {
-                $children = array();
-                foreach ($tmps as $child) {
-                    $children[] = $child->kArtikel;
-                }
-                for ($i = 0; $i < $xsellCount; $i++) {
-                    if (in_array($xsell[$i]->kArtikel, $children) && in_array($xsell[$i]->kXSellArtikel, $children)) {
-                        unset($xsell[$i]);
-                    }
-                }
-            }
         } else {
-            $xsell = Shop::DB()->query(
-                "SELECT *
-                    FROM txsellkauf
-                    WHERE kArtikel = {$kArtikel}
-                    ORDER BY nAnzahl DESC, rand()
-                    LIMIT {$anzahl}", 2
-            );
+            if (isset($config['artikeldetails_xselling_kauf_parent']) && $config['artikeldetails_xselling_kauf_parent'] === 'Y') {
+                $xsell = Shop::DB()->query(
+                    "SELECT txsellkauf.kArtikel,
+                            IF(tartikel.kVaterArtikel = 0, txsellkauf.kXSellArtikel, tartikel.kVaterArtikel) AS kXSellArtikel,
+                            SUM(txsellkauf.nAnzahl) nAnzahl
+                        FROM txsellkauf
+                        JOIN tartikel ON tartikel.kArtikel = txsellkauf.kXSellArtikel
+                        WHERE txsellkauf.kArtikel = {$kArtikel}
+                            AND (tartikel.kVaterArtikel != (
+                                SELECT tartikel.kVaterArtikel
+                                FROM tartikel
+                                WHERE tartikel.kArtikel = {$kArtikel}
+                            ) OR tartikel.kVaterArtikel = 0)
+                        GROUP BY 1, 2
+                        ORDER BY SUM(txsellkauf.nAnzahl) DESC, rand()
+                        LIMIT {$anzahl}", 2
+                );
+            } else {
+                $xsell = Shop::DB()->selectAll('txsellkauf', 'kArtikel', $kArtikel, '*', 'nAnzahl DESC, rand()', $anzahl);
+            }
         }
         $xsellCount2 = (is_array($xsell)) ? count($xsell) : 0;
         if ($xsellCount2 > 0) {
             if (!isset($xSelling->Kauf)) {
                 $xSelling->Kauf = new stdClass();
             }
-            $xSelling->Kauf->Artikel = array();
-            $oArtikelOptionen        = Artikel::getDefaultOptions();
+            $xSelling->Kauf->Artikel = [];
+            $defaultOptions          = Artikel::getDefaultOptions();
             foreach ($xsell as $xs) {
                 $artikel = new Artikel();
-                $artikel->fuelleArtikel($xs->kXSellArtikel, $oArtikelOptionen);
+                $artikel->fuelleArtikel($xs->kXSellArtikel, $defaultOptions);
                 if ($artikel->kArtikel > 0 && $artikel->aufLagerSichtbarkeit()) {
                     $xSelling->Kauf->Artikel[] = $artikel;
                 }
             }
         }
     }
-    executeHook(HOOK_ARTIKEL_INC_XSELLING, array('kArtikel' => $kArtikel, 'xSelling' => &$xSelling));
+    executeHook(HOOK_ARTIKEL_INC_XSELLING, ['kArtikel' => $kArtikel, 'xSelling' => &$xSelling]);
 
     return $xSelling;
 }
@@ -171,22 +181,6 @@ function bearbeiteFrageZumProdukt()
     } else {
         $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('productquestionPleaseLogin', 'errorMessages');
     }
-}
-
-/**
- * @deprecated deprecated since version 4.3
- */
-function bearbeiteArtikelWeiterempfehlen()
-{
-}
-
-/**
- * @deprecated deprecated since version 4.
- * @return bool
- */
-function gibFehlendeEingabenArtikelWeiterempfehlenFormular()
-{
-    return;
 }
 
 /**
@@ -422,7 +416,10 @@ function bearbeiteBenachrichtigung()
                     array('oKunde' => $Benachrichtigung, 'oNachricht' => $Benachrichtigung)
                 )->checkLogging(CHECKBOX_ORT_FRAGE_VERFUEGBARKEIT, $kKundengruppe, $_POST, true);
 
-                $kVerfuegbarkeitsbenachrichtigung = Shop::DB()->insert('tverfuegbarkeitsbenachrichtigung', $Benachrichtigung);
+                $kVerfuegbarkeitsbenachrichtigung = Shop::DB()->queryPrepared('INSERT INTO tverfuegbarkeitsbenachrichtigung (cVorname, cNachname, cMail, kSprache, kArtikel, cIP, dErstellt, nStatus) 
+                     VALUES (:cVorname, :cNachname, :cMail, :kSprache, :kArtikel, :cIP, now(), :nStatus)
+                     ON DUPLICATE KEY UPDATE cVorname = :cVorname, cNachname = :cNachname, ksprache = :kSprache, cIP = :cIP, dErstellt = now(), nStatus = :nStatus', get_object_vars($Benachrichtigung), 7);
+
                 // Kampagne
                 if (isset($_SESSION['Kampagnenbesucher'])) {
                     setzeKampagnenVorgang(KAMPAGNE_DEF_VERFUEGBARKEITSANFRAGE, $kVerfuegbarkeitsbenachrichtigung, 1.0); // Verfügbarkeitsbenachrichtigung
@@ -497,8 +494,8 @@ function floodSchutzBenachrichtigung($min)
     if (!$min) {
         return false;
     }
-    $history = Shop::DB()->query('
-        SELECT kVerfuegbarkeitsbenachrichtigung
+    $history = Shop::DB()->query(
+        'SELECT kVerfuegbarkeitsbenachrichtigung
             FROM tverfuegbarkeitsbenachrichtigung
             WHERE cIP = "' . gibIP() . '"
             AND date_sub(now(), interval ' . $min . ' minute) < dErstellt', 1
@@ -568,11 +565,11 @@ function gibNaviBlaettern($kArtikel, $kKategorie)
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
                     AND tartikel.kArtikel = tkategorieartikel.kArtikel
                     AND tkategorieartikel.kKategorie = $kKategorie
-                    AND tpreise.kArtikel=tartikel.kArtikel
+                    AND tpreise.kArtikel = tartikel.kArtikel
                     AND tartikel.kArtikel < $kArtikel
                     AND tpreise.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
                     " . gibLagerfilter() . "
-                ORDER BY tartikel.kArtikel desc
+                ORDER BY tartikel.kArtikel DESC
                 LIMIT 1
                 ", 1
         );
@@ -614,17 +611,19 @@ function gibNichtErlaubteEigenschaftswerte($nEigenschaftWert)
 {
     $nEigenschaftWert = (int)$nEigenschaftWert;
     if ($nEigenschaftWert) {
-        $arNichtErlaubteEigenschaftswerte = Shop::DB()->query(
-            "SELECT kEigenschaftWertZiel AS EigenschaftWert
-                FROM teigenschaftwertabhaengigkeit
-                WHERE kEigenschaftWert = {$nEigenschaftWert}", 2
+        $arNichtErlaubteEigenschaftswerte  = Shop::DB()->selectAll(
+            'teigenschaftwertabhaengigkeit',
+            'kEigenschaftWert',
+            $nEigenschaftWert,
+            'kEigenschaftWertZiel AS EigenschaftWert'
         );
-        $arNichtErlaubteEigenschaftswerte2 = Shop::DB()->query(
-            "SELECT kEigenschaftWert AS EigenschaftWert
-                FROM teigenschaftwertabhaengigkeit
-                WHERE kEigenschaftWertZiel = {$nEigenschaftWert}", 2
+        $arNichtErlaubteEigenschaftswerte2 = Shop::DB()->selectAll(
+            'teigenschaftwertabhaengigkeit',
+            'kEigenschaftWertZiel',
+            $nEigenschaftWert,
+            'kEigenschaftWert AS EigenschaftWert'
         );
-        $arNichtErlaubteEigenschaftswerte = array_merge($arNichtErlaubteEigenschaftswerte, $arNichtErlaubteEigenschaftswerte2);
+        $arNichtErlaubteEigenschaftswerte  = array_merge($arNichtErlaubteEigenschaftswerte, $arNichtErlaubteEigenschaftswerte2);
 
         return $arNichtErlaubteEigenschaftswerte;
     }
@@ -652,9 +651,7 @@ function baueArtikelhinweise($cRedirectParam = null, $bRenew = false, $oArtikel 
         $GLOBALS['PositiveFeedback'] = array();
     }
     if ($cRedirectParam) {
-        $hin_arr = (is_array($cRedirectParam)) ?
-            $cRedirectParam :
-            explode(',', $cRedirectParam);
+        $hin_arr = is_array($cRedirectParam) ? $cRedirectParam : explode(',', $cRedirectParam);
         $hin_arr = array_unique($hin_arr);
 
         foreach ($hin_arr as $hin) {
@@ -703,6 +700,8 @@ function baueArtikelhinweise($cRedirectParam = null, $bRenew = false, $oArtikel 
                     break;
                 case R_EMPTY_VARIBOX:
                     $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('artikelVariBoxEmpty', 'messages');
+                    break;
+                default:
                     break;
             }
             executeHook(HOOK_ARTIKEL_INC_ARTIKELHINWEISSWITCH);
@@ -762,7 +761,7 @@ function bearbeiteProdukttags($AktuellerArtikel)
                     }
                     // Prüfe ob der Tag bereits gemappt wurde
                     $tagmapping_objTMP = Shop::DB()->select('ttagmapping', 'kSprache', (int)Shop::$kSprache, 'cName', Shop::DB()->escape($tag));
-                    $tagmapping_obj = $tagmapping_objTMP;
+                    $tagmapping_obj    = $tagmapping_objTMP;
                     if (isset($tagmapping_obj->cNameNeu) && strlen($tagmapping_obj->cNameNeu) > 0) {
                         $tag = $tagmapping_obj->cNameNeu;
                     }
@@ -822,10 +821,13 @@ function bearbeiteProdukttags($AktuellerArtikel)
             header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true) . '?a=' . (int)$_POST['a'] . '&r=' . R_LOGIN_TAG, true, 303);
             exit();
         } else {
-            header('Location: index.php?a=' . (int)$_POST['a'] . '&r=' . R_EMPTY_TAG, true, 303);
+            $url = (!empty($AktuellerArtikel->cURLFull)) ? ($AktuellerArtikel->cURLFull . '?') : (Shop::getURL() . '/?a=' . (int)$_POST['a'] . '&');
+            header('Location: ' . $url . 'r=' . R_EMPTY_TAG, true, 303);
             exit();
         }
     }
+
+    return null;
 }
 
 /**
@@ -951,7 +953,6 @@ function mappingFehlerCode($cCode, $fGuthaben = 0.0)
             break;
         default:
             $error = '';
-
     }
     executeHook(HOOK_ARTIKEL_INC_BEWERTUNGHINWEISSWITCH, array('error' => $error));
 
@@ -1034,39 +1035,38 @@ function holeAehnlicheArtikel($kArtikel)
         if (intval($conf['artikeldetails']['artikeldetails_aehnlicheartikel_anzahl']) > 0) {
             $cLimit = " LIMIT " . (int)$conf['artikeldetails']['artikeldetails_aehnlicheartikel_anzahl'];
         }
-
+        $lagerFilter         = gibLagerfilter();
+        $kundenGruppe        = (int)$_SESSION['Kundengruppe']->kKundengruppe;
         $oArtikelMerkmal_arr = Shop::DB()->query(
-            "SELECT tartikelmerkmal.kArtikel, tartikel.kVaterArtikel
-                FROM
-                (
-                    SELECT kMerkmal, kMerkmalWert
-                    FROM tartikelmerkmal
-                    WHERE kArtikel = " . $kArtikel . "
-                ) AS ssMerkmal
-                JOIN tartikelmerkmal ON tartikelmerkmal.kMerkmal = 	ssMerkmal.kMerkmal
-                    AND tartikelmerkmal.kMerkmalWert = ssMerkmal.kMerkmalWert
-                    AND tartikelmerkmal.kArtikel != " . $kArtikel . "
-                LEFT JOIN tartikelsichtbarkeit ON tartikelmerkmal.kArtikel = tartikelsichtbarkeit.kArtikel
-                    AND tartikelsichtbarkeit.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
-                JOIN tartikel ON tartikel.kArtikel = tartikelmerkmal.kArtikel
-                    AND tartikel.kVaterArtikel != " . $kArtikel . "
-                    AND (tartikel.nIstVater = 1 OR tartikel.kEigenschaftKombi = 0)
-                WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                    " . gibLagerfilter() . "
-                    " . $cSQLXSeller . "
-                GROUP BY tartikelmerkmal.kArtikel
-                ORDER BY COUNT(*) DESC
+            "SELECT merkmalartikel.kArtikel, merkmalartikel.kVaterArtikel
+                FROM (
+                    SELECT DISTINCT tartikelmerkmal.kArtikel, tartikel.kVaterArtikel, tartikelmerkmal.kMerkmal, tartikelmerkmal.kMerkmalWert
+	                FROM tartikelmerkmal
+	                JOIN tartikel ON tartikel.kArtikel = tartikelmerkmal.kArtikel
+                        AND tartikel.kVaterArtikel != {$kArtikel}
+                        AND (tartikel.nIstVater = 1 OR tartikel.kEigenschaftKombi = 0)
+	                LEFT JOIN tartikelsichtbarkeit ON tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
+                        AND tartikelsichtbarkeit.kKundengruppe = {$kundenGruppe}
+	                WHERE tartikelsichtbarkeit.kArtikel IS NULL
+                        AND tartikelmerkmal.kArtikel != {$kArtikel}
+                        {$lagerFilter}
+                        {$cSQLXSeller}
+                ) AS merkmalartikel
+                JOIN tartikelmerkmal similarMerkmal ON similarMerkmal.kArtikel = {$kArtikel}
+                    AND similarMerkmal.kMerkmal = merkmalartikel.kMerkmal
+                    AND similarMerkmal.kMerkmalWert = merkmalartikel.kMerkmalWert
+                GROUP BY merkmalartikel.kArtikel
+                ORDER BY COUNT(similarMerkmal.kMerkmal) DESC
                 " . $cLimit, 2
         );
-
         if (is_array($oArtikelMerkmal_arr) && count($oArtikelMerkmal_arr) > 0) {
-            $oArtikelOptionen = Artikel::getDefaultOptions();
+            $defaultOptions = Artikel::getDefaultOptions();
             foreach ($oArtikelMerkmal_arr as $oArtikelMerkmal) {
                 $oArtikel = new Artikel();
                 if ($oArtikelMerkmal->kVaterArtikel > 0) {
-                    $oArtikel->fuelleArtikel($oArtikelMerkmal->kVaterArtikel, $oArtikelOptionen);
+                    $oArtikel->fuelleArtikel($oArtikelMerkmal->kVaterArtikel, $defaultOptions);
                 } else {
-                    $oArtikel->fuelleArtikel($oArtikelMerkmal->kArtikel, $oArtikelOptionen);
+                    $oArtikel->fuelleArtikel($oArtikelMerkmal->kArtikel, $defaultOptions);
                 }
                 if ($oArtikel->kArtikel > 0) {
                     $oArtikel_arr[] = $oArtikel;
@@ -1089,21 +1089,21 @@ function holeAehnlicheArtikel($kArtikel)
                     JOIN tartikel ON tartikel.kArtikel = tsuchcachetreffer.kArtikel
                         AND tartikel.kVaterArtikel != " . $kArtikel . "
                     WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                        " . gibLagerfilter() . "
-                        " . $cSQLXSeller . "
+                        {$lagerFilter}
+                        {$cSQLXSeller}
                     GROUP BY tsuchcachetreffer.kArtikel
                     ORDER BY COUNT(*) DESC
                     " . $cLimit, 2
             );
 
             if (is_array($oArtikelSuchcacheTreffer_arr) && count($oArtikelSuchcacheTreffer_arr) > 0) {
-                $oArtikelOptionen = Artikel::getDefaultOptions();
+                $defaultOptions = Artikel::getDefaultOptions();
                 foreach ($oArtikelSuchcacheTreffer_arr as $oArtikelSuchcacheTreffer) {
                     $oArtikel = new Artikel();
                     if ($oArtikelSuchcacheTreffer->kVaterArtikel > 0) {
-                        $oArtikel->fuelleArtikel($oArtikelSuchcacheTreffer->kVaterArtikel, $oArtikelOptionen);
+                        $oArtikel->fuelleArtikel($oArtikelSuchcacheTreffer->kVaterArtikel, $defaultOptions);
                     } else {
-                        $oArtikel->fuelleArtikel($oArtikelSuchcacheTreffer->kArtikel, $oArtikelOptionen);
+                        $oArtikel->fuelleArtikel($oArtikelSuchcacheTreffer->kArtikel, $defaultOptions);
                     }
                     if ($oArtikel->kArtikel > 0) {
                         $oArtikel_arr[] = $oArtikel;
@@ -1125,20 +1125,20 @@ function holeAehnlicheArtikel($kArtikel)
                         JOIN tartikel ON tartikel.kArtikel = ttagartikel.kArtikel
                             AND tartikel.kVaterArtikel != " . $kArtikel . "
                         WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                            " . gibLagerfilter() . "
-                            " . $cSQLXSeller . "
+                            {$lagerFilter}
+                            {$cSQLXSeller}
                         GROUP BY ttagartikel.kArtikel
                         ORDER BY COUNT(*) DESC
                         " . $cLimit, 2
                 );
                 if (is_array($oArtikelTags_arr) && count($oArtikelTags_arr) > 0) {
-                    $oArtikelOptionen = Artikel::getDefaultOptions();
+                    $defaultOptions = Artikel::getDefaultOptions();
                     foreach ($oArtikelTags_arr as $oArtikelTags) {
                         $oArtikel = new Artikel();
                         if ($oArtikelTags->kVaterArtikel > 0) {
-                            $oArtikel->fuelleArtikel($oArtikelTags->kVaterArtikel, $oArtikelOptionen);
+                            $oArtikel->fuelleArtikel($oArtikelTags->kVaterArtikel, $defaultOptions);
                         } else {
-                            $oArtikel->fuelleArtikel($oArtikelTags->kArtikel, $oArtikelOptionen);
+                            $oArtikel->fuelleArtikel($oArtikelTags->kArtikel, $defaultOptions);
                         }
                         if ($oArtikel->kArtikel > 0) {
                             $oArtikel_arr[] = $oArtikel;
@@ -1203,7 +1203,7 @@ function buildConfig($kArtikel, $fAnzahl, $nVariation_arr, $nKonfiggruppe_arr, $
     $oKonfig->cPreisString    = Shop::Lang()->get('priceAsConfigured', 'productDetails');
 
     if (!class_exists('Konfigurator') || !Konfigurator::validateKonfig($kArtikel)) {
-        return;
+        return null;
     }
     foreach ($nVariation_arr as $i => $nVariation) {
         $_POST['eigenschaftwert_' . $i] = $nVariation;
@@ -1238,18 +1238,18 @@ function buildConfig($kArtikel, $fAnzahl, $nVariation_arr, $nKonfiggruppe_arr, $
     $oKonfig->oKonfig_arr = $oArtikel->oKonfig_arr;
 
     foreach ($nKonfiggruppe_arr as $i => $nKonfiggruppe) {
-        $nKonfiggruppe_arr[$i] = (array) $nKonfiggruppe;
+        $nKonfiggruppe_arr[$i] = (array)$nKonfiggruppe;
     }
+    /** @var Konfiggruppe $oKonfiggruppe */
     foreach ($oKonfig->oKonfig_arr as $i => &$oKonfiggruppe) {
         $oKonfiggruppe->bAktiv = false;
         $kKonfiggruppe         = $oKonfiggruppe->getKonfiggruppe();
         $nKonfigitem_arr       = (isset($nKonfiggruppe_arr[$kKonfiggruppe])) ? $nKonfiggruppe_arr[$kKonfiggruppe] : array();
-
         foreach ($oKonfiggruppe->oItem_arr as $j => &$oKonfigitem) {
+            /** @var Konfigitem $oKonfigitem */
             $kKonfigitem          = $oKonfigitem->getKonfigitem();
             $oKonfigitem->fAnzahl = floatval(
-                isset($nKonfiggruppeAnzahl_arr[$oKonfigitem->getKonfiggruppe()]) ?
-                    $nKonfiggruppeAnzahl_arr[$oKonfigitem->getKonfiggruppe()] : $oKonfigitem->getInitial()
+                isset($nKonfiggruppeAnzahl_arr[$oKonfigitem->getKonfiggruppe()]) ? $nKonfiggruppeAnzahl_arr[$oKonfigitem->getKonfiggruppe()] : $oKonfigitem->getInitial()
             );
             if ($oKonfigitem->fAnzahl > $oKonfigitem->getMax() || $oKonfigitem->fAnzahl < $oKonfigitem->getMin()) {
                 $oKonfigitem->fAnzahl = $oKonfigitem->getInitial();
@@ -1328,6 +1328,22 @@ function gibMetaKeywords($Artikel)
 function holeProduktTagging($AktuellerArtikel)
 {
     return $AktuellerArtikel->tags;
+}
+
+/**
+ * @deprecated since version 4.3
+ */
+function bearbeiteArtikelWeiterempfehlen()
+{
+}
+
+/**
+ * @deprecated since version 4.3
+ * @return array
+ */
+function gibFehlendeEingabenArtikelWeiterempfehlenFormular()
+{
+    return [];
 }
 
 if (!function_exists('baueFormularVorgaben')) {

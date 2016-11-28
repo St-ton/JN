@@ -1,4 +1,4 @@
-{if isset($Artikel->Variationen) && $Artikel->Variationen|@count > 0 && (isset($Artikel->nIstVater) && $Artikel->nIstVater == 1 || !$showMatrix)}
+{if isset($Artikel->Variationen) && $Artikel->Variationen|@count > 0 && !$showMatrix}
     {assign var="oVariationKombi_arr" value=$Artikel->getChildVariations()}
     <div class="variations {if $simple}simple{else}switch{/if}-variations top15 row">
         <div class="col-xs-12">
@@ -10,10 +10,12 @@
                     {if $Variation->cTyp === 'SELECTBOX'}
                         <select class="form-control" title="{lang key="pleaseChooseVariation" section="productDetails"}" name="eigenschaftwert[{$Variation->kEigenschaft}]"{if !$showMatrix} required{/if}>
                             {foreach name=Variationswerte from=$Variation->Werte key=y item=Variationswert}
-                            
                                 {assign var="bSelected" value=false}
                                 {if isset($oVariationKombi_arr[$Variationswert->kEigenschaft])}
-                                   {assign var="bSelected" value=in_array($Variationswert->kEigenschaftWert, $oVariationKombi_arr[$Variationswert->kEigenschaft])}
+                                    {assign var="bSelected" value=in_array($Variationswert->kEigenschaftWert, $oVariationKombi_arr[$Variationswert->kEigenschaft])}
+                                {/if}
+                                {if isset($oEigenschaftWertEdit_arr[$Variationswert->kEigenschaft])}
+                                    {assign var="bSelected" value=$Variationswert->kEigenschaftWert == $oEigenschaftWertEdit_arr[$Variationswert->kEigenschaft]->kEigenschaftWert}
                                 {/if}
                                 {if ($Artikel->kVaterArtikel > 0 || $Artikel->nIstVater == 1) && $Artikel->nVariationOhneFreifeldAnzahl == 1 &&
                                 $Einstellungen.global.artikeldetails_variationswertlager == 3 &&
@@ -41,6 +43,9 @@
                             {assign var="bSelected" value=false}
                             {if isset($oVariationKombi_arr[$Variationswert->kEigenschaft])}
                                {assign var="bSelected" value=in_array($Variationswert->kEigenschaftWert, $oVariationKombi_arr[$Variationswert->kEigenschaft])}
+                            {/if}
+                            {if isset($oEigenschaftWertEdit_arr[$Variationswert->kEigenschaft])}
+                                {assign var="bSelected" value=$Variationswert->kEigenschaftWert == $oEigenschaftWertEdit_arr[$Variationswert->kEigenschaft]->kEigenschaftWert}
                             {/if}
                             {if ($Artikel->kVaterArtikel > 0 || $Artikel->nIstVater == 1) && $Artikel->nVariationOhneFreifeldAnzahl == 1 &&
                             $Einstellungen.global.artikeldetails_variationswertlager == 3 &&
@@ -72,6 +77,9 @@
                                 {assign var="bSelected" value=false}
                                 {if isset($oVariationKombi_arr[$Variationswert->kEigenschaft])}
                                     {assign var="bSelected" value=in_array($Variationswert->kEigenschaftWert, $oVariationKombi_arr[$Variationswert->kEigenschaft])}
+                                {/if}
+                                {if isset($oEigenschaftWertEdit_arr[$Variationswert->kEigenschaft])}
+                                    {assign var="bSelected" value=($Variationswert->kEigenschaftWert == $oEigenschaftWertEdit_arr[$Variationswert->kEigenschaft]->kEigenschaftWert)}
                                 {/if}
                                 {if ($Artikel->kVaterArtikel > 0 || $Artikel->nIstVater == 1) && $Artikel->nVariationOhneFreifeldAnzahl == 1 &&
                                 $Einstellungen.global.artikeldetails_variationswertlager == 3 &&
@@ -114,6 +122,7 @@
                         <input type="text"
                            class="form-control"
                            name="eigenschaftwert[{$Variation->kEigenschaft}]"
+                           value="{if isset($oEigenschaftWertEdit_arr[$Variation->kEigenschaft])}{$oEigenschaftWertEdit_arr[$Variation->kEigenschaft]->cEigenschaftWertNameLocalized}{/if}"
                            data-key="{$Variation->kEigenschaft}"{if $Variation->cTyp === 'PFLICHT-FREIFELD'} required{/if}>
                     {/if}
                 </dd>

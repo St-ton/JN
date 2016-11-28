@@ -1,3 +1,15 @@
+{function sprache_buttons}
+    <div class="btn-group">
+        <button type="submit" class="btn btn-primary" name="action" value="saveall">
+            <i class="fa fa-save"></i>
+            Speichern
+        </button>
+        <a class="btn btn-default" href="sprache.php?token={$smarty.session.jtl_token}&action=newvar">
+            <i class="fa fa-share"></i>
+            Variable hinzuf&uuml;gen
+        </a>
+    </div>
+{/function}
 {include file='tpl_inc/seite_header.tpl' cTitel=#lang# cBeschreibung=#langDesc# cDokuURL=#langURL#}
 {assign var="cSearchString" value=$oFilter->getField(1)->getValue()}
 <script>
@@ -42,6 +54,9 @@
                 {include file='tpl_inc/filtertools.tpl' oFilter=$oFilter}
                 <form action="sprache.php" method="post">
                     {$jtl_token}
+                    {*<div class="block">*}
+                        {*{sprache_buttons}*}
+                    {*</div>*}
                     <table class="list table">
                         <thead>
                             <tr>
@@ -91,16 +106,7 @@
                         </tbody>
                     </table>
                     <div class="panel-footer">
-                        <div class="btn-group">
-                            <button type="submit" class="btn btn-primary" name="action" value="saveall">
-                                <i class="fa fa-save"></i>
-                                Speichern
-                            </button>
-                            <a class="btn btn-default" href="sprache.php?token={$smarty.session.jtl_token}&action=newvar">
-                                <i class="fa fa-share"></i>
-                                Variable hinzuf&uuml;gen
-                            </a>
-                        </div>
+                        {sprache_buttons}
                     </div>
                 </form>
             </div>

@@ -9,6 +9,8 @@ require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('LANGUAGE_VIEW', true, true);
 /** @global JTLSmarty $smarty */
+require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'csv_exporter_inc.php';
+require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'csv_importer_inc.php';
 
 $cHinweis = '';
 $cFehler  = '';
@@ -120,7 +122,7 @@ if ($step === 'newvar') {
         ->assign('oVariable', $oVariable)
         ->assign('oSprache_arr', $oSprache_arr);
 } elseif ($step === 'overview') {
-    $oSektion_arr                  = Shop::DB()->query("SELECT * FROM tsprachsektion ORDER BY cName", 2);
+    $oSektion_arr                  = Shop::DB()->selectAll('tsprachsektion', [], [], '*', 'cName');
     $oFilter                       = new Filter('langvars');
     $oSelectfield                  = $oFilter->addSelectfield('Sektion', 'sw.kSprachsektion', 1);
     $oSelectfield->bReloadOnChange = true;
@@ -143,6 +145,20 @@ if ($step === 'newvar') {
                 " . ($cFilterSQL !== '' ? "AND " . $cFilterSQL : ""),
         2
     );
+
+    handleCsvExportAction('langvars', 'langvars.csv', function () use ($oSprache, $cFilterSQL) {
+        return Shop::DB()->query(
+            "SELECT si.cISO AS cSprachISO, ss.cName AS cSprachsektionName, sw.cName, sw.cWert, sw.cStandard, sw.bSystem
+                FROM tsprachwerte AS sw
+                    JOIN tsprachsektion AS ss
+                        ON ss.kSprachsektion = sw.kSprachsektion
+                    JOIN tsprachiso AS si
+                        ON si.kSprachISO = sw.kSprachISO
+                WHERE sw.kSprachISO = " . $oSprache->kSprachISO . "
+                    " . ($cFilterSQL !== '' ? "AND " . $cFilterSQL : ""),
+            2
+        );
+    });
 
     $oPagination = (new Pagination('langvars'))
         ->setRange(4)

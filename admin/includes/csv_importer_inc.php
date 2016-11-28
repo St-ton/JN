@@ -11,10 +11,11 @@
  * DB-tables default value if your DB is configured so.
  *
  * @param string $importerId
- * @param string $cTable
+ * @param string|callable $target - either target table name or callback function that takes an object to be
+ *      imported
  * @return int - -1 if importer-id-mismatch / 0 on success / >1 import error count
  */
-function handleCsvImportAction ($importerId, $cTable)
+function handleCsvImportAction ($importerId, $target)
 {
     if (validateToken() && verifyGPDataString('importcsv') === $importerId) {
         if (isset($_FILES['csvfile']['type']) && $_FILES['csvfile']['type'] === 'text/csv') {
@@ -32,10 +33,19 @@ function handleCsvImportAction ($importerId, $cTable)
                     $obj->$field = $row[$i];
                 }
 
-                $res = Shop::DB()->insert($cTable, $obj);
+                if (is_callable($target)) {
+                    $res = $target($obj);
 
-                if ($res === 0) {
-                    $nErrors ++;
+                    if ($res === false) {
+                        $nErrors ++;
+                    }
+                } else {
+                    $cTable = $target;
+                    $res    = Shop::DB()->insert($cTable, $obj);
+
+                    if ($res === 0) {
+                        $nErrors ++;
+                    }
                 }
             }
 

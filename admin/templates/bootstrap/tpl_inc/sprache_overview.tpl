@@ -5,6 +5,7 @@
     {
         $('#cWert_' + kSektion + '_' + cWertName).show();
         $('#cWert_caption_' + kSektion + '_' + cWertName).hide();
+        $('#bChanged_' + kSektion + '_' + cWertName).val('1');
     }
 </script>
 <div id="content" class="container-fluid">
@@ -39,57 +40,69 @@
         <div id="variables" class="tab-pane fade {if $tab === 'variables'}active in{/if}">
             <div class="panel panel-default">
                 {include file='tpl_inc/filtertools.tpl' oFilter=$oFilter}
-                <table class="list table">
-                    <thead>
-                        <tr>
-                            <th>Sektion</th>
-                            <th>Variable</th>
-                            <th>Inhalt</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {foreach $oWert_arr as $oWert}
+                <form action="sprache.php" method="post">
+                    {$jtl_token}
+                    <table class="list table">
+                        <thead>
                             <tr>
-                                <td>{$oWert->cSektionName}</td>
-                                {if $cSearchString !== ''}
-                                    <td>{$oWert->cName|regex_replace:"/($cSearchString)/i":"<mark>\$1</mark>"}</td>
-                                {else}
-                                    <td>{$oWert->cName}</td>
-                                {/if}
-                                <td onclick="toggleTextarea({$oWert->kSprachsektion}, '{$oWert->cName}');"
-                                    style="cursor:pointer;">
-                                    <span id="cWert_caption_{$oWert->kSprachsektion}_{$oWert->cName}">
-                                        {if $cSearchString !== ''}
-                                            {$oWert->cWert|escape|regex_replace:"/($cSearchString)/i":"<mark>\$1</mark>"}
-                                        {else}
-                                            {$oWert->cWert|escape}
-                                        {/if}
-                                    </span>
-                                    <textarea id="cWert_{$oWert->kSprachsektion}_{$oWert->cName}" class="form-control"
-                                              style="display:none;">{$oWert->cWert}</textarea>
-                                </td>
-                                <td>
-                                    <div class="btn-group">
-                                        {if $oWert->bSystem === '1'}
-                                            <a href="sprache.php" class="btn btn-default">
-                                                <i class="fa fa-refresh"></i>
-                                            </a>
-                                        {/if}
-                                    </div>
-                                </td>
+                                <th>Sektion</th>
+                                <th>Variable</th>
+                                <th>Inhalt</th>
+                                <th></th>
                             </tr>
-                        {/foreach}
-                    </tbody>
-                </table>
-                <div class="panel-footer">
-                    <div class="btn-group">
-                        <a class="btn btn-primary" href="sprache.php?token={$smarty.session.jtl_token}&action=newvar">
-                            <i class="fa fa-share"></i>
-                            Variable hinzuf&uuml;gen
-                        </a>
+                        </thead>
+                        <tbody>
+                            {foreach $oWert_arr as $oWert}
+                                <tr>
+                                    <td>{$oWert->cSektionName}</td>
+                                    {if $cSearchString !== ''}
+                                        <td>{$oWert->cName|regex_replace:"/($cSearchString)/i":"<mark>\$1</mark>"}</td>
+                                    {else}
+                                        <td>{$oWert->cName}</td>
+                                    {/if}
+                                    <td onclick="toggleTextarea({$oWert->kSprachsektion}, '{$oWert->cName}');"
+                                        style="cursor:pointer;">
+                                        <span id="cWert_caption_{$oWert->kSprachsektion}_{$oWert->cName}">
+                                            {if $cSearchString !== ''}
+                                                {$oWert->cWert|escape|regex_replace:"/($cSearchString)/i":"<mark>\$1</mark>"}
+                                            {else}
+                                                {$oWert->cWert|escape}
+                                            {/if}
+                                        </span>
+                                        <label for="cWert_{$oWert->kSprachsektion}_{$oWert->cName}" class="sr-only"></label>
+                                        <textarea id="cWert_{$oWert->kSprachsektion}_{$oWert->cName}" class="form-control"
+                                                  name="cWert_arr[{$oWert->kSprachsektion}][{$oWert->cName}]"
+                                                  style="display:none;">{$oWert->cWert|escape}</textarea>
+                                        <input type="hidden" id="bChanged_{$oWert->kSprachsektion}_{$oWert->cName}"
+                                               name="bChanged_arr[{$oWert->kSprachsektion}][{$oWert->cName}]"
+                                               value="0">
+                                    </td>
+                                    <td>
+                                        <div class="btn-group">
+                                            {if $oWert->bSystem === '1'}
+                                                <button type="button" class="btn btn-default">
+                                                    <i class="fa fa-refresh"></i>
+                                                </button>
+                                            {/if}
+                                        </div>
+                                    </td>
+                                </tr>
+                            {/foreach}
+                        </tbody>
+                    </table>
+                    <div class="panel-footer">
+                        <div class="btn-group">
+                            <button type="submit" class="btn btn-primary" name="action" value="saveall">
+                                <i class="fa fa-save"></i>
+                                Speichern
+                            </button>
+                            <a class="btn btn-default" href="sprache.php?token={$smarty.session.jtl_token}&action=newvar">
+                                <i class="fa fa-share"></i>
+                                Variable hinzuf&uuml;gen
+                            </a>
+                        </div>
                     </div>
-                </div>
+                </form>
             </div>
         </div>
         <div id="notfound" class="tab-pane fade {if $tab === 'notfound'}active in{/if}">

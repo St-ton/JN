@@ -84,23 +84,35 @@ if (validateToken()) {
                     }
                 }
             }
+        } elseif ($_POST['action'] === 'saveall') {
+            $cChanged_arr = [];
+            // geaenderte Variablen speichern
+            foreach ($_POST['cWert_arr'] as $kSektion => $cSektionWert_arr) {
+                foreach ($cSektionWert_arr as $cName => $cWert) {
+                    if ((int)$_POST['bChanged_arr'][$kSektion][$cName] === 1) {
+                        // wurde geaendert => speichern
+                        $oSprache
+                            ->setzeSprache($_SESSION['cISOSprache'])
+                            ->set((int)$kSektion, $cName, $cWert);
+                        $cChanged_arr[] = $cName;
+                    }
+                }
+            }
+
+            $cHinweis = 'Variablen erfolgreich ge&auml;ndert: ' . implode(', ', $cChanged_arr);
         }
     }
 }
 
 if ($step === 'newvar') {
-    $oSektion_arr = Shop::DB()->query(
-        "SELECT *
-            FROM tsprachsektion",
-        2
-    );
+    $oSektion_arr = Shop::DB()->query("SELECT * FROM tsprachsektion ORDER BY cName", 2);
 
     $smarty
         ->assign('oSektion_arr', $oSektion_arr)
         ->assign('oVariable', $oVariable)
         ->assign('oSprache_arr', $oSprache_arr);
 } elseif ($step === 'overview') {
-    $oSektion_arr                  = Shop::DB()->query("SELECT * FROM tsprachsektion", 2);
+    $oSektion_arr                  = Shop::DB()->query("SELECT * FROM tsprachsektion ORDER BY cName", 2);
     $oFilter                       = new Filter('langvars');
     $oSelectfield                  = $oFilter->addSelectfield('Sektion', 'sw.kSprachsektion', 1);
     $oSelectfield->bReloadOnChange = true;

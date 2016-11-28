@@ -22,7 +22,7 @@
     }
     function resetVarText(kSektion, cWertName, cStandard)
     {
-        $('#cWert_' + kSektion + '_' + cWertName).val(cStandard);
+        $('#cWert_' + kSektion + '_' + cWertName).val($('#cStandard_' + kSektion + '_' + cWertName).text());
         toggleTextarea(kSektion, cWertName);
     }
 </script>
@@ -102,13 +102,14 @@
                                         <input type="hidden" id="bChanged_{$oWert->kSprachsektion}_{$oWert->cName}"
                                                name="bChanged_arr[{$oWert->kSprachsektion}][{$oWert->cName}]"
                                                value="0">
+                                        <span style="display:none;"
+                                              id="cStandard_{$oWert->kSprachsektion}_{$oWert->cName}">{$oWert->cStandard|escape}</span>
                                     </td>
                                     <td style="width:6em;">
                                         <div class="btn-group right">
                                             <button type="button" class="btn btn-default"
                                                     onclick="resetVarText({$oWert->kSprachsektion},
-                                                                          '{$oWert->cName}',
-                                                                          '{$oWert->cStandard|escape}');">
+                                                                          '{$oWert->cName}');">
                                                 <i class="fa fa-refresh"></i>
                                             </button>
                                             {if $oWert->bSystem === '0'}
@@ -156,6 +157,14 @@
                         {/foreach}
                     </tbody>
                 </table>
+                <div class="panel-footer">
+                    <div class="btn-group">
+                        <a href="" class="btn btn-danger">
+                            <i class="fa fa-refresh"></i>
+                            Liste leeren
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

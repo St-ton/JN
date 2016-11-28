@@ -103,7 +103,11 @@ if (validateToken()) {
                 }
             }
 
-            $cHinweis = 'Variablen erfolgreich ge&auml;ndert: ' . implode(', ', $cChanged_arr);
+            if (count($cChanged_arr) > 0) {
+                $cHinweis = 'Variablen erfolgreich ge&auml;ndert: ' . implode(', ', $cChanged_arr);
+            } else {
+                $cHinweis = 'Keine Variable wurde ge&auml;ndert';
+            }
         }
     }
 }

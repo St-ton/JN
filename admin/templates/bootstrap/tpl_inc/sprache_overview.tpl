@@ -19,6 +19,11 @@
         $('#cWert_caption_' + kSektion + '_' + cWertName).hide();
         $('#bChanged_' + kSektion + '_' + cWertName).val('1');
     }
+    function resetVarText(kSektion, cWertName, cStandard)
+    {
+        $('#cWert_' + kSektion + '_' + cWertName).val(cStandard);
+        toggleTextarea(kSektion, cWertName);
+    }
 </script>
 <div id="content" class="container-fluid">
     <div class="block">
@@ -70,11 +75,16 @@
                             {foreach $oWert_arr as $oWert}
                                 <tr>
                                     <td>{$oWert->cSektionName}</td>
-                                    {if $cSearchString !== ''}
-                                        <td>{$oWert->cName|regex_replace:"/($cSearchString)/i":"<mark>\$1</mark>"}</td>
-                                    {else}
-                                        <td>{$oWert->cName}</td>
-                                    {/if}
+                                    <td onclick="toggleTextarea({$oWert->kSprachsektion}, '{$oWert->cName}');"
+                                        style="cursor:pointer;">
+                                        <label for="cWert_{$oWert->kSprachsektion}_{$oWert->cName}">
+                                            {if $cSearchString !== ''}
+                                                {$oWert->cName|regex_replace:"/($cSearchString)/i":"<mark>\$1</mark>"}
+                                            {else}
+                                                {$oWert->cName}
+                                            {/if}
+                                        </label>
+                                    </td>
                                     <td onclick="toggleTextarea({$oWert->kSprachsektion}, '{$oWert->cName}');"
                                         style="cursor:pointer;">
                                         <span id="cWert_caption_{$oWert->kSprachsektion}_{$oWert->cName}">
@@ -84,7 +94,6 @@
                                                 {$oWert->cWert|escape}
                                             {/if}
                                         </span>
-                                        <label for="cWert_{$oWert->kSprachsektion}_{$oWert->cName}" class="sr-only"></label>
                                         <textarea id="cWert_{$oWert->kSprachsektion}_{$oWert->cName}" class="form-control"
                                                   name="cWert_arr[{$oWert->kSprachsektion}][{$oWert->cName}]"
                                                   style="display:none;">{$oWert->cWert|escape}</textarea>
@@ -92,12 +101,19 @@
                                                name="bChanged_arr[{$oWert->kSprachsektion}][{$oWert->cName}]"
                                                value="0">
                                     </td>
-                                    <td>
-                                        <div class="btn-group">
-                                            {if $oWert->bSystem === '1'}
-                                                <button type="button" class="btn btn-default">
-                                                    <i class="fa fa-refresh"></i>
-                                                </button>
+                                    <td style="width:6em;">
+                                        <div class="btn-group right">
+                                            <button type="button" class="btn btn-default"
+                                                    onclick="resetVarText({$oWert->kSprachsektion},
+                                                                          '{$oWert->cName}',
+                                                                          '{$oWert->cStandard|escape}');">
+                                                <i class="fa fa-refresh"></i>
+                                            </button>
+                                            {if $oWert->bSystem === '0'}
+                                                <a href="sprache.php?token={$smarty.session.jtl_token}&action=delvar&kSprachsektion={$oWert->kSprachsektion}&cName={$oWert->cName}"
+                                                   class="btn btn-danger">
+                                                    <i class="fa fa-trash"></i>
+                                                </a>
                                             {/if}
                                         </div>
                                     </td>

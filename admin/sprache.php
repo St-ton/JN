@@ -27,6 +27,10 @@ if (validateToken()) {
             $oVariable->kSprachsektion = 1;
             $oVariable->cName          = '';
             $oVariable->cWert_arr      = [];
+        } elseif ($_GET['action'] === 'delvar') {
+            // Variable loeschen
+            $oSprache->loesche($_GET['kSprachsektion'], $_GET['cName']);
+            $cHinweis = 'Variable ' . $_GET['cName'] . ' wurde erfolgreich gel&ouml;scht.';
         }
     } elseif (isset($_POST['action'])) {
         if ($_POST['action'] === 'savevar') {
@@ -127,7 +131,7 @@ if ($step === 'newvar') {
     $cFilterSQL = $oFilter->getWhereSQL();
 
     $oWert_arr = Shop::DB()->query(
-        "SELECT sw.cName, sw.cWert, sw.bSystem, ss.kSprachsektion, ss.cName AS cSektionName
+        "SELECT sw.cName, sw.cWert, sw.cStandard, sw.bSystem, ss.kSprachsektion, ss.cName AS cSektionName
             FROM tsprachwerte AS sw
                 JOIN tsprachsektion AS ss
                     ON ss.kSprachsektion = sw.kSprachsektion

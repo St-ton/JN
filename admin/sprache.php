@@ -24,8 +24,8 @@ if (validateToken()) {
             // neue Variable erstellen
             $step                      = 'newvar';
             $oVariable                 = new stdClass();
-            $oVariable->kSprachsektion = 1;
-            $oVariable->cName          = '';
+            $oVariable->kSprachsektion = isset($_GET['kSprachsektion']) ? (int)$_GET['kSprachsektion'] : 1;
+            $oVariable->cName          = isset($_GET['cName']) ? $_GET['cName'] : '';
             $oVariable->cWert_arr      = [];
         } elseif ($_GET['action'] === 'delvar') {
             // Variable loeschen
@@ -139,10 +139,27 @@ if ($step === 'newvar') {
                 " . ($cFilterSQL !== '' ? "AND " . $cFilterSQL : ""),
         2
     );
+
+    $oPagination = (new Pagination('langvars'))
+        ->setRange(4)
+        ->setItemArray($oWert_arr)
+        ->assemble();
+
+    $oNotFound_arr = Shop::DB()->query(
+        "SELECT sl.*, ss.kSprachsektion
+            FROM tsprachlog AS sl
+                LEFT JOIN tsprachsektion AS ss
+                    ON ss.cName = sl.cSektion
+            WHERE kSprachISO = " . $oSprache->kSprachISO,
+        2
+    );
+
     $smarty
         ->assign('oFilter', $oFilter)
-        ->assign('oWert_arr', $oWert_arr)
-        ->assign('oSprache_arr', $oSprache_arr);
+        ->assign('oPagination', $oPagination)
+        ->assign('oWert_arr', $oPagination->getPageItems())
+        ->assign('oSprache_arr', $oSprache_arr)
+        ->assign('oNotFound_arr', $oNotFound_arr);
 }
 
 $smarty

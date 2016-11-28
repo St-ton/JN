@@ -12,6 +12,7 @@
 {/function}
 {include file='tpl_inc/seite_header.tpl' cTitel=#lang# cBeschreibung=#langDesc# cDokuURL=#langURL#}
 {assign var="cSearchString" value=$oFilter->getField(1)->getValue()}
+{assign var="bAllSections" value=((int)$oFilter->getField(0)->getValue() === 0)}
 <script>
     function toggleTextarea(kSektion, cWertName)
     {
@@ -57,6 +58,7 @@
         <div id="variables" class="tab-pane fade {if $tab === 'variables'}active in{/if}">
             <div class="panel panel-default">
                 {include file='tpl_inc/filtertools.tpl' oFilter=$oFilter}
+                {include file='tpl_inc/pagination.tpl' oPagination=$oPagination}
                 <form action="sprache.php" method="post">
                     {$jtl_token}
                     {*<div class="block">*}
@@ -65,7 +67,7 @@
                     <table class="list table">
                         <thead>
                             <tr>
-                                <th>Sektion</th>
+                                {if $bAllSections}<th>Sektion</th>{/if}
                                 <th>Variable</th>
                                 <th>Inhalt</th>
                                 <th></th>
@@ -74,7 +76,7 @@
                         <tbody>
                             {foreach $oWert_arr as $oWert}
                                 <tr>
-                                    <td>{$oWert->cSektionName}</td>
+                                    {if $bAllSections}<td>{$oWert->cSektionName}</td>{/if}
                                     <td onclick="toggleTextarea({$oWert->kSprachsektion}, '{$oWert->cName}');"
                                         style="cursor:pointer;">
                                         <label for="cWert_{$oWert->kSprachsektion}_{$oWert->cName}">
@@ -128,6 +130,33 @@
             </div>
         </div>
         <div id="notfound" class="tab-pane fade {if $tab === 'notfound'}active in{/if}">
+            <div class="panel panel-default">
+                <table class="list table">
+                    <thead>
+                        <tr>
+                            <th>Sektion</th>
+                            <th>Variable</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {foreach $oNotFound_arr as $oWert}
+                            <tr>
+                                <td>{$oWert->cSektion}</td>
+                                <td>{$oWert->cName}</td>
+                                <td class="right">
+                                    <div class="btn-group">
+                                        <a href="sprache.php?token={$smarty.session.jtl_token}&action=newvar&kSprachsektion={$oWert->kSprachsektion}&cName={$oWert->cName}"
+                                           class="btn btn-primary" title="erstellen">
+                                            <i class="fa fa-plus"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {/foreach}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>

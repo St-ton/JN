@@ -9004,6 +9004,33 @@ ul.filter_state li a.active:before {
   overflow: hidden;
   text-align: center;
 }
+.theme-dark.slider-wrapper.control-nav,
+.theme-light.slider-wrapper.control-nav,
+.theme-dark.slider-wrapper.direction-nav,
+.theme-light.slider-wrapper.direction-nav {
+  position: relative;
+  padding-bottom: 30px;
+}
+.theme-dark.slider-wrapper.control-nav .nivo-controlNav,
+.theme-light.slider-wrapper.control-nav .nivo-controlNav,
+.theme-dark.slider-wrapper.direction-nav .nivo-controlNav,
+.theme-light.slider-wrapper.direction-nav .nivo-controlNav {
+  position: absolute;
+  bottom: 5px;
+}
+.theme-dark.slider-wrapper.thumbnail-nav,
+.theme-light.slider-wrapper.thumbnail-nav {
+  padding-bottom: 10px;
+}
+.theme-dark.slider-wrapper.thumbnail-nav .nivo-controlNav,
+.theme-light.slider-wrapper.thumbnail-nav .nivo-controlNav {
+  position: relative;
+  bottom: auto;
+}
+.theme-dark.slider-wrapper.thumbnail-nav .nivo-controlNav a,
+.theme-light.slider-wrapper.thumbnail-nav .nivo-controlNav a {
+  margin-bottom: 0;
+}
 /*
 #content-wrapper .panel-heading a {
     color: lighten(@text-color,15%);
@@ -9699,7 +9726,6 @@ fieldset {
 }
 #footer .panel .panel-title {
   font-size: 15px;
-  padding-bottom: 5px;
 }
 #footer .panel a {
   color: #9a9a9a;
@@ -11177,11 +11203,15 @@ header.fixed-navbar .visible-affix .cart-dropdown {
   border: none;
   font-size: 20px;
   line-height: 1;
-  padding: 0px;
+  padding: 0;
   width: 19px;
   height: 19px;
   color: #ccc;
   opacity: 0.75;
+}
+.slick-up:hover,
+.stick-down:hover {
+  opacity: 1;
 }
 .btn-gallery-left {
   left: 0px;
@@ -11334,3 +11364,4 @@ header.fixed-navbar .visible-affix .cart-dropdown {
 #footer .panel > div > h5 {
   border-bottom: 1px dotted #777777;
 }
+/*# sourceMappingURL=sourcemap.map */

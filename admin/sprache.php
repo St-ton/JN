@@ -164,24 +164,19 @@ if ($step === 'newvar') {
         );
     }, ['cSektion', 'cName', 'cWert', 'bSystem'], [], ';', false);
 
-    handleCsvImportAction('langvars', function ($obj) use ($oSprachISO) {
-        $oSektion = Shop::DB()->select('tsprachsektion', 'cName', $obj->cSektion);
+    if (validateToken() && verifyGPDataString('importcsv') === 'langvars' && isset($_FILES['csvfile']['type']) &&
+        $_FILES['csvfile']['type'] === 'text/csv'
+    ) {
+        $csvFilename = $_FILES['csvfile']['tmp_name'];
+        $importType  = verifyGPCDataInteger('importType');
+        $res         = Shop::Lang()->import($csvFilename, $oSprachISO->cISO, $importType);
 
-        if ($oSektion !== null) {
-            $oSprachwert = Shop::DB()->select(
-                'tsprachwerte', ['kSprachISO', 'kSprachsektion', 'cName'],
-                [$oSprachISO->kSprachISO, $oSektion->kSprachsektion, $obj->cName]
-            );
-
-            if ($oSprachwert === null) {
-                Shop::Lang()->fuegeEin($oSprachISO->cISO, $oSektion->kSprachsektion, $obj->cName, $obj->cWert);
-            } else {
-                Shop::Lang()
-                    ->setzeSprache($oSprachISO->cISO)
-                    ->set($oSektion->kSprachsektion, $obj->cName, $obj->cWert);
-            }
+        if ($res === false) {
+            $cFehler = 'Fehler beim Importieren der Datei';
+        } else {
+            $cHinweis = 'Es wurden ' . $res . ' Variablen aktualisiert';
         }
-    }, ['cSektion', 'cName', 'cWert', 'bSystem'], ';');
+    }
 
     $oWert_arr = Shop::DB()->query(
         "SELECT sw.cName, sw.cWert, sw.cStandard, sw.bSystem, ss.kSprachsektion, ss.cName AS cSektionName

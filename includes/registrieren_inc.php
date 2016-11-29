@@ -15,6 +15,7 @@ function kundeSpeichern($cPost_arr)
     unset($_SESSION['Lieferadresse']);
     unset($_SESSION['Versandart']);
     unset($_SESSION['Zahlungsart']);
+    /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
     $_SESSION['Warenkorb']->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS)
                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART);
 

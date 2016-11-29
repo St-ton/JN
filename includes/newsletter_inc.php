@@ -3,6 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
 /**
  * @param string $dbfeld

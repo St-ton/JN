@@ -93,7 +93,7 @@ doMainwordRedirect($NaviFilter, count($oSuchergebnisse->Artikel->elemente), true
 if (isset($Einstellungen['artikeluebersicht']['artikelubersicht_bestseller_gruppieren']) && $Einstellungen['artikeluebersicht']['artikelubersicht_bestseller_gruppieren'] === 'Y') {
     $products = array();
     foreach ($oSuchergebnisse->Artikel->elemente as $product) {
-        $products[] = (int) $product->kArtikel;
+        $products[] = (int)$product->kArtikel;
     }
     $limit       = (isset($Einstellungen['artikeluebersicht']['artikeluebersicht_bestseller_anzahl'])) ?
         (int)$Einstellungen['artikeluebersicht']['artikeluebersicht_bestseller_anzahl'] :

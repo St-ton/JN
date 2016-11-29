@@ -146,7 +146,7 @@
                         {include file="productdetails/stock.tpl"}
                     </div>
                 </div>
-                <!-- WARENKORB anzeigen wenn keine variationen mehr auf lager sind?!-->
+                {*WARENKORB anzeigen wenn keine variationen mehr auf lager sind?!*}
                 {include file="productdetails/basket.tpl"}
                 <hr>
             </div>
@@ -157,7 +157,7 @@
         </div>{* /product-info *}
         {if $Artikel->bHasKonfig}
             <div id="product-configurator" class="product-actions top10 col-sm-12">
-                <!-- KONFIGURATOR -->
+                {*KONFIGURATOR*}
                 {if isset($Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ARTIKELKONFIG_TPL]) && file_exists("tpl_inc/{$Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ARTIKELKONFIG_TPL]}")}
                     {include file='tpl_inc/'|cat:$Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ARTIKELKONFIG_TPL]}
                 {else}
@@ -175,7 +175,7 @@
 
 <div class="clearfix"></div>
 
-<!-- SLIDERS -->
+{*SLIDERS*}
 {if isset($Einstellungen.artikeldetails.artikeldetails_stueckliste_anzeigen) && $Einstellungen.artikeldetails.artikeldetails_stueckliste_anzeigen === 'Y' && isset($Artikel->oStueckliste_arr) && $Artikel->oStueckliste_arr|@count > 0
     || isset($Einstellungen.artikeldetails.artikeldetails_produktbundle_nutzen) && $Einstellungen.artikeldetails.artikeldetails_produktbundle_nutzen == 'Y' && isset($Artikel->oProduktBundle_arr) && $Artikel->oProduktBundle_arr|@count > 0
     || isset($Xselling->Standard->XSellGruppen) && count($Xselling->Standard->XSellGruppen) > 0

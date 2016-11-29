@@ -46,7 +46,7 @@ class SmartyResourceNiceDB extends Smarty_Resource_Custom
                         FROM temailvorlageoriginal tevo
                         JOIN temailvorlagesprache tevs
                             ON tevs.kEmailVorlage = tevo.kEmailvorlage
-                            AND tevs.kSprache = " . (int) $pcs[4] . "
+                            AND tevs.kSprache = " . (int)$pcs[4] . "
                         WHERE tevo.cModulId = 'core_jtl_anbieterkennzeichnung'", 1
                 );
             } else {

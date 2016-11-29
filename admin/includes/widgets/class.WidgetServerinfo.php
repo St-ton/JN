@@ -18,6 +18,7 @@ class WidgetServerinfo extends WidgetBase
         $cUrl = parse_url(Shop::getURL());
         $this->oSmarty->assign('phpOS', PHP_OS)
                       ->assign('phpVersion', StringHandler::htmlentities(phpversion()))
+                      ->assign('phpLT55', (version_compare(phpversion(), '5.5') < 0))
                       ->assign('serverAddress', StringHandler::htmlentities($_SERVER['SERVER_ADDR']))
                       ->assign('serverHTTPHost', StringHandler::htmlentities($_SERVER['HTTP_HOST']))
                       ->assign('mySQLVersion', StringHandler::htmlentities(Shop::DB()->info()))

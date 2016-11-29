@@ -1,5 +1,5 @@
 {if isset($oSlider) && count($oSlider->oSlide_arr) > 0}
-    <div class="slider-wrapper theme-{$oSlider->cTheme}">
+    <div class="slider-wrapper theme-{$oSlider->cTheme}{if $oSlider->bControlNav} control-nav{/if}{if $oSlider->bDirectionNav} direction-nav{/if}{if $oSlider->bThumbnail} thumbnail-nav{/if}">
         <div id="slider-{$oSlider->kSlider}" class="nivoSlider">
             {foreach from=$oSlider->oSlide_arr item=oSlide}
                 {assign var="slideTitle" value=$oSlide->cTitel}

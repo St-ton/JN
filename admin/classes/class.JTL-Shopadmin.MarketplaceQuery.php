@@ -113,7 +113,7 @@ final class MarketplaceQuery
      */
     public function setId($id)
     {
-        $this->id = (int) $id;
+        $this->id = (int)$id;
 
         return $this;
     }
@@ -159,7 +159,7 @@ final class MarketplaceQuery
      */
     public function setCategoryId($categoryId)
     {
-        $this->categoryId = (int) $categoryId;
+        $this->categoryId = (int)$categoryId;
 
         return $this;
     }
@@ -182,7 +182,7 @@ final class MarketplaceQuery
      */
     public function setPage($page)
     {
-        $this->page = (int) $page;
+        $this->page = (int)$page;
 
         return $this;
     }
@@ -205,7 +205,7 @@ final class MarketplaceQuery
      */
     public function setEntitiesPerPage($entitiesPerPage)
     {
-        $this->entitiesPerPage = (int) $entitiesPerPage;
+        $this->entitiesPerPage = (int)$entitiesPerPage;
 
         return $this;
     }
@@ -228,7 +228,7 @@ final class MarketplaceQuery
      */
     public function setOffset($offset)
     {
-        $this->offset = (int) $offset;
+        $this->offset = (int)$offset;
 
         return $this;
     }
@@ -251,7 +251,7 @@ final class MarketplaceQuery
      */
     public function setLimit($limit)
     {
-        $this->limit = (int) $limit;
+        $this->limit = (int)$limit;
 
         return $this;
     }
@@ -320,7 +320,7 @@ final class MarketplaceQuery
      */
     public function setServicepartnerId($servicepartnerId)
     {
-        $this->servicepartnerId = (int) $servicepartnerId;
+        $this->servicepartnerId = (int)$servicepartnerId;
 
         return $this;
     }

@@ -568,6 +568,32 @@ ul.filter_state li a.active:before {
     }
 }
 
+.theme-dark, .theme-light {
+    &.slider-wrapper.control-nav,
+    &.slider-wrapper.direction-nav {
+        position: relative;
+        padding-bottom: 30px;
+
+        .nivo-controlNav {
+            position: absolute;
+            bottom: 5px;
+        }
+    }
+
+    &.slider-wrapper.thumbnail-nav {
+        padding-bottom: 10px;
+
+        .nivo-controlNav {
+            position: relative;
+            bottom: auto;
+
+            a {
+                margin-bottom: 0;
+            }
+        }
+    }
+}
+
 /*
 #content-wrapper .panel-heading a {
     color: lighten(@text-color,15%);
@@ -3000,7 +3026,23 @@ header.fixed-navbar {
 /*Artikel Bilder Slider Start*/
 .slick-up:before {content: '\2190';}
 .stick-down:before {content: '\2192';}
-.slick-up, .stick-down {outline: none;font-family: "slick";background:transparent;border:none;font-size: 20px;line-height: 1;padding:0px;width:19px;height:19px;color: #ccc;opacity: 0.75;}
+.slick-up, .stick-down {
+    outline: none;
+    font-family: "slick";
+    background: transparent;
+    border: none;
+    font-size: 20px;
+    line-height: 1;
+    padding: 0;
+    width: 19px;
+    height: 19px;
+    color: #ccc;
+    opacity: 0.75;
+
+    &:hover{
+        opacity: 1;
+    }
+}
 .btn-gallery-left {left:0px;z-index:5;position:absolute;}
 .btn-gallery-right {right:0px;z-index:5;position:absolute;}
 .btn-gallery-up {top:0px;z-index:5;position:absolute;transform:rotate(90deg);}

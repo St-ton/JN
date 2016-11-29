@@ -251,19 +251,38 @@ function checkToggle(selector) {
 }
 
 /**
- * @param form
- * @param cID
- * @constructor
+ * check/un-check all checkboxes of a given form-object,
+ * EXCEPT those, which are contained in the given array
+ * or single string.
+ *
+ * @param Object  object of type HTML.form
+ * @param Array|String  array of strings or single string - name(s), which we did NOT want to "check/un-check"
+ * @return void
  */
-function AllMessagesExcept(form, cID) {
+function AllMessagesExcept(form, IDs) {
     var x,
         y;
-    for (x = 0; x < form.elements.length; x++) {
-        y = form.elements[x];
-        if (y.name !== 'ALLMSGS') {
-            if (cID.length > 0) {
-                if (y.id.indexOf(cID)) {
-                    y.checked = form.ALLMSGS.checked;
+    // check, if we got an array here
+    if (Object.prototype.toString.call(IDs)) {
+        for (x = 0; x < form.elements.length; x++) {
+            // iterate over all checkboxes, except the one with the name "ALLMSGS"
+            if ('checkbox' === form.elements[x].type && 'ALLMSGS' !== form.elements[x].name) {
+                // check, if that element is NOT in our "except-array" ('undefined')..
+                if (typeof IDs[form.elements[x].value] === 'undefined') {
+                    // ..and set the same state, as ALLMSGS has
+                    form.elements[x].checked = form.ALLMSGS.checked;
+                }
+            }
+        }
+    } else {
+        // legacy functionality - "single string except"
+        for (x = 0; x < form.elements.length; x++) {
+            y = form.elements[x];
+            if (y.name !== 'ALLMSGS') {
+                if (IDs.length > 0) {
+                    if (y.id.indexOf(IDs)) {
+                        y.checked = form.ALLMSGS.checked;
+                    }
                 }
             }
         }
@@ -606,7 +625,7 @@ $(document).ready(function () {
     }).on('hide.bs.dropdown', function () {
         hideBackdrop();
     });
-    
+
     $('#nbc-1 .dropdown').on('show.bs.dropdown', function () {
         showBackdrop();
     }).on('hide.bs.dropdown', function () {

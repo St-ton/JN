@@ -65,6 +65,212 @@ class JobQueue
     public $dZuletztGelaufen;
 
     /**
+     * @return int
+     */
+    public function getKJobQueue()
+    {
+        return $this->kJobQueue;
+    }
+
+    /**
+     * @param int $kJobQueue
+     * @return $this
+     */
+    public function setKJobQueue($kJobQueue)
+    {
+        $this->kJobQueue = $kJobQueue;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getKCron()
+    {
+        return $this->kCron;
+    }
+
+    /**
+     * @param int $kCron
+     * @return $this
+     */
+    public function setKCron($kCron)
+    {
+        $this->kCron = (int)$kCron;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getKKey()
+    {
+        return $this->kKey;
+    }
+
+    /**
+     * @param int $kKey
+     * @return $this
+     */
+    public function setKKey($kKey)
+    {
+        $this->kKey = $kKey;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getNLimitN()
+    {
+        return $this->nLimitN;
+    }
+
+    /**
+     * @param int $nLimitN
+     * @return $this
+     */
+    public function setNLimitN($nLimitN)
+    {
+        $this->nLimitN = (int)$nLimitN;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getNLimitM()
+    {
+        return $this->nLimitM;
+    }
+
+    /**
+     * @param int $nLimitM
+     * @return $this
+     */
+    public function setNLimitM($nLimitM)
+    {
+        $this->nLimitM = (int)$nLimitM;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getNInArbeit()
+    {
+        return $this->nInArbeit;
+    }
+
+    /**
+     * @param int $nInArbeit
+     * @return $this
+     */
+    public function setNInArbeit($nInArbeit)
+    {
+        $this->nInArbeit = (int)$nInArbeit;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCJobArt()
+    {
+        return $this->cJobArt;
+    }
+
+    /**
+     * @param string $cJobArt
+     * @return $this
+     */
+    public function setCJobArt($cJobArt)
+    {
+        $this->cJobArt = $cJobArt;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCTabelle()
+    {
+        return $this->cTabelle;
+    }
+
+    /**
+     * @param string $cTabelle
+     * @return $this
+     */
+    public function setCTabelle($cTabelle)
+    {
+        $this->cTabelle = $cTabelle;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCKey()
+    {
+        return $this->cKey;
+    }
+
+    /**
+     * @param string $cKey
+     */
+    public function setCKey($cKey)
+    {
+        $this->cKey = $cKey;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDStartZeit()
+    {
+        return $this->dStartZeit;
+    }
+
+    /**
+     * @param string $dStartZeit
+     * @return $this
+     */
+    public function setDStartZeit($dStartZeit)
+    {
+        $this->dStartZeit = $dStartZeit;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDZuletztGelaufen()
+    {
+        return $this->dZuletztGelaufen;
+    }
+
+    /**
+     * @param string $dZuletztGelaufen
+     * @return $this
+     */
+    public function setDZuletztGelaufen($dZuletztGelaufen)
+    {
+        $this->dZuletztGelaufen = $dZuletztGelaufen;
+
+        return $this;
+    }
+
+    /**
      * @param int|null $kJobQueue
      * @param int      $kCron
      * @param int      $kKey
@@ -93,7 +299,7 @@ class JobQueue
     }
 
     /**
-     * @return mixed
+     * @return object|null
      */
     public function holeJobArt()
     {
@@ -101,7 +307,7 @@ class JobQueue
             return Shop::DB()->select(Shop::DB()->escape($this->cTabelle), Shop::DB()->escape($this->cKey), (int)$this->kKey);
         }
 
-        return;
+        return null;
     }
 
     /**
@@ -148,8 +354,33 @@ class JobQueue
      */
     public function deleteJobInDB()
     {
-        return ($this->kJobQueue > 0) ?
-            Shop::DB()->delete('tjobqueue', 'kJobQueue', (int)$this->kJobQueue) :
-            0;
+        return ($this->kJobQueue > 0)
+            ? Shop::DB()->delete('tjobqueue', 'kJobQueue', (int)$this->kJobQueue)
+            : 0;
+    }
+
+    /**
+     * @return bool
+     */
+    public function updateExportformatQueueBearbeitet()
+    {
+        if ($this->kJobQueue > 0) {
+            Shop::DB()->delete('texportformatqueuebearbeitet', 'kJobQueue', (int)$this->kJobQueue);
+
+            $ins                   = new stdClass();
+            $ins->kJobQueue        = $this->kJobQueue;
+            $ins->kExportformat    = $this->kKey;
+            $ins->nLimitN          = $this->nLimitN;
+            $ins->nLimitM          = $this->nLimitM;
+            $ins->nInArbeit        = $this->nInArbeit;
+            $ins->dStartZeit       = $this->dStartZeit;
+            $ins->dZuletztGelaufen = $this->dZuletztGelaufen;
+
+            Shop::DB()->insert('texportformatqueuebearbeitet', $ins);
+
+            return true;
+        }
+
+        return false;
     }
 }

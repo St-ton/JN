@@ -63,10 +63,10 @@ class ArtikelListe
             Shop::Cache()->set($cacheID, $objArr, array(CACHING_GROUP_CATEGORY));
         }
         if (is_array($objArr)) {
-            $oArtikelOptionen = Artikel::getDefaultOptions();
+            $defaultOptions = Artikel::getDefaultOptions();
             foreach ($objArr as $obj) {
                 $artikel = new Artikel();
-                $artikel->fuelleArtikel($obj->kArtikel, $oArtikelOptionen);
+                $artikel->fuelleArtikel($obj->kArtikel, $defaultOptions);
                 $this->elemente[] = $artikel;
             }
         }
@@ -130,10 +130,10 @@ class ArtikelListe
                     ", 2
             );
             if (is_array($objArr)) {
-                $oArtikelOptionen = Artikel::getDefaultOptions();
+                $defaultOptions = Artikel::getDefaultOptions();
                 foreach ($objArr as $obj) {
                     $artikel = new Artikel();
-                    $artikel->fuelleArtikel($obj->kArtikel, $oArtikelOptionen);
+                    $artikel->fuelleArtikel($obj->kArtikel, $defaultOptions);
                     $this->elemente[] = $artikel;
                 }
                 Shop::Cache()->set($cacheID, $this->elemente, array(CACHING_GROUP_CATEGORY, CACHING_GROUP_CATEGORY . '_' . $kKategorie));
@@ -155,12 +155,12 @@ class ArtikelListe
         if (!$_SESSION['Kundengruppe']->darfArtikelKategorienSehen) {
             return $this->elemente;
         }
-        $cnt              = count($kArtikel_arr);
-        $anz              = 0;
-        $oArtikelOptionen = Artikel::getDefaultOptions();
+        $cnt            = count($kArtikel_arr);
+        $anz            = 0;
+        $defaultOptions = Artikel::getDefaultOptions();
         for ($i = (int)$start; $i < $cnt; $i++) {
             $artikel = new Artikel();
-            $artikel->fuelleArtikel($kArtikel_arr[$i], $oArtikelOptionen);
+            $artikel->fuelleArtikel($kArtikel_arr[$i], $defaultOptions);
             if (!empty($artikel->kArtikel) && $artikel->kArtikel > 0) {
                 ++$anz;
                 $this->elemente[] = $artikel;
@@ -227,11 +227,11 @@ class ArtikelListe
             Shop::Cache()->set($cacheID, $objArr, $cacheTags);
         }
         if (is_array($objArr)) {
-            $res              = array();
-            $oArtikelOptionen = Artikel::getDefaultOptions();
+            $res            = [];
+            $defaultOptions = Artikel::getDefaultOptions();
             foreach ($objArr as $obj) {
                 $artikel = new Artikel();
-                $artikel->fuelleArtikel($obj->kArtikel, $oArtikelOptionen);
+                $artikel->fuelleArtikel($obj->kArtikel, $defaultOptions);
                 $this->elemente[] = $artikel;
                 $res[]            = $artikel;
             }
@@ -309,10 +309,10 @@ class ArtikelListe
         }
         $res = [];
         if (is_array($objArr)) {
-            $oArtikelOptionen = Artikel::getDefaultOptions();
+            $defaultOptions = Artikel::getDefaultOptions();
             foreach ($objArr as $obj) {
                 $artikel = new Artikel();
-                $artikel->fuelleArtikel($obj->kArtikel, $oArtikelOptionen);
+                $artikel->fuelleArtikel($obj->kArtikel, $defaultOptions);
                 $this->elemente[] = $artikel;
                 $res[]            = $artikel;
             }

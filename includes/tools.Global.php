@@ -354,13 +354,9 @@ function getCurrencyConversion($fPreisNetto, $fPreisBrutto, $cClass = '', $bForc
                 }
                 // Wurde geändert weil der Preis nun als Betrag gesehen wird und die Steuer direkt in der Versandart als eSteuer Flag eingestellt wird
                 if ($i > 0) {
-                    $cString .= ($bForceSteuer) ?
-                        ('<br><strong>' . $cPreisBruttoLocalized . '</strong>' . ' (<em>' . $cPreisLocalized . ' ' . Shop::Lang()->get('net') . '</em>)') :
-                        ('<br> ' . $cPreisBruttoLocalized);
+                    $cString .= ($bForceSteuer) ? ('<br><strong>' . $cPreisBruttoLocalized . '</strong>' . ' (<em>' . $cPreisLocalized . ' ' . Shop::Lang()->get('net') . '</em>)') : ('<br> ' . $cPreisBruttoLocalized);
                 } else {
-                    $cString .= ($bForceSteuer) ?
-                        ('<strong>' . $cPreisBruttoLocalized . '</strong>' . ' (<em>' . $cPreisLocalized . ' ' . Shop::Lang()->get('net') . '</em>)') :
-                        '<strong>' . $cPreisBruttoLocalized . '</strong>';
+                    $cString .= ($bForceSteuer) ? ('<strong>' . $cPreisBruttoLocalized . '</strong>' . ' (<em>' . $cPreisLocalized . ' ' . Shop::Lang()->get('net') . '</em>)') : '<strong>' . $cPreisBruttoLocalized . '</strong>';
                 }
             }
             $cString .= '</span>';
@@ -482,6 +478,7 @@ function gibIP($bBestellung = false)
  */
 function checkeWarenkorbEingang()
 {
+    /** @var array('Warenkorb' => Warenkorb) $_SESSION */
     $fAnzahl = 0;
     if (isset($_POST['anzahl'])) {
         $_POST['anzahl'] = str_replace(',', '.', $_POST['anzahl']);
@@ -701,6 +698,7 @@ function checkeWarenkorbEingang()
                         // Alle Artikel können in den WK gelegt werden?
                         if ($oKonfigitem->getPosTyp() == KONFIG_ITEM_TYP_ARTIKEL) {
                             // Varikombi
+                            /** @var Artikel $oTmpArtikel */
                             $oKonfigitem->oEigenschaftwerte_arr = array();
                             $oTmpArtikel                        = $oKonfigitem->getArtikel();
 
@@ -745,6 +743,7 @@ function checkeWarenkorbEingang()
                     // Hauptartikel in den WK legen
                     fuegeEinInWarenkorb($kArtikel, $fAnzahl, $oEigenschaftwerte_arr, 0, $cUnique);
                     // Konfigartikel in den WK legen
+                    /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
                     foreach ($oKonfigitem_arr as $oKonfigitem) {
                         $oKonfigitem->isKonfigItem = true;
                         switch ($oKonfigitem->getPosTyp()) {
@@ -816,6 +815,7 @@ function checkeWarenkorbEingang()
  */
 function fuegeVariBoxInWK($variBoxAnzahl_arr, $kArtikel, $bIstVater, $bExtern = false)
 {
+    /** @var array('Warenkorb' => Warenkorb) $_SESSION */
     if (is_array($variBoxAnzahl_arr) && count($variBoxAnzahl_arr) > 0) {
         $cKeys_arr            = array_keys($variBoxAnzahl_arr);
         $kVaterArtikel        = $kArtikel;
@@ -883,11 +883,12 @@ function fuegeVariBoxInWK($variBoxAnzahl_arr, $kArtikel, $bIstVater, $bExtern = 
             }
         }
 
-        $nRedirectErr_arr = array();
+        $nRedirectErr_arr = [];
         if (is_array($oAlleEigenschaft_arr) && count($oAlleEigenschaft_arr) > 0) {
+            $defaultOptions = Artikel::getDefaultOptions();
             foreach ($oAlleEigenschaft_arr as $i => $oAlleEigenschaftPre) {
                 $Artikel = new Artikel();
-                $Artikel->fuelleArtikel($oAlleEigenschaftPre->kArtikel, Artikel::getDefaultOptions());
+                $Artikel->fuelleArtikel($oAlleEigenschaftPre->kArtikel, $defaultOptions);
                 // Prüfe ob er Artikel in den Warenkorb gelegt werden darf
                 $nRedirect_arr = pruefeFuegeEinInWarenkorb($Artikel, doubleval($variBoxAnzahl_arr[$i]), $oAlleEigenschaftPre->oEigenschaft_arr);
 
@@ -1035,25 +1036,24 @@ function findeKindArtikelZuEigenschaft($kArtikel, $kEigenschaft0, $kEigenschaftW
 }
 
 /**
- * @param Artikel $Artikel
- * @param int     $anzahl
- * @param array   $oEigenschaftwerte_arr
- * @param int     $nGenauigkeit
+ * @param Artikel|object $Artikel
+ * @param int            $anzahl
+ * @param array          $oEigenschaftwerte_arr
+ * @param int            $nGenauigkeit
  * @return array
  */
 function pruefeFuegeEinInWarenkorb($Artikel, $anzahl, $oEigenschaftwerte_arr, $nGenauigkeit = 2)
 {
+    /** @var array('Warenkorb' => Warenkorb) $_SESSION */
     $kArtikel      = $Artikel->kArtikel; // relevant für die Berechnung von Artikelsummen im Warenkorb
     $redirectParam = array();
     $conf          = Shop::getSettings(array(CONF_GLOBAL));
-
+    /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
     // Abnahmeintervall
     if ($Artikel->fAbnahmeintervall > 0) {
-        if (function_exists('bcdiv')) {
-            $dVielfache = round($Artikel->fAbnahmeintervall * ceil(bcdiv($_POST['anzahl'][$i],$Artikel->fAbnahmeintervall, 3)), 2);
-        } else {
-            $dVielfache = round($Artikel->fAbnahmeintervall * ceil($anzahl / $Artikel->fAbnahmeintervall), $nGenauigkeit);
-        }
+        $dVielfache = (function_exists('bcdiv'))
+            ? round($Artikel->fAbnahmeintervall * ceil(bcdiv($anzahl,$Artikel->fAbnahmeintervall, $nGenauigkeit + 1)), 2)
+            : round($Artikel->fAbnahmeintervall * ceil($anzahl / $Artikel->fAbnahmeintervall), $nGenauigkeit);
         if ($dVielfache != $anzahl) {
             $redirectParam[] = R_ARTIKELABNAHMEINTERVALL;
         }
@@ -1213,6 +1213,7 @@ function gibVarKombiEigenschaftsWerte($kArtikel, $bSichtbarkeitBeachten = true)
  */
 function fuegeEinInWarenkorb($kArtikel, $anzahl, $oEigenschaftwerte_arr = '', $nWeiterleitung = 0, $cUnique = false, $kKonfigitem = 0, $oArtikelOptionen = null, $setzePositionsPreise = true)
 {
+    /** @var array('Warenkorb' => Warenkorb) $_SESSION */
     $kArtikel = (int)$kArtikel;
     if ($anzahl > 0 && $kArtikel > 0) {
         $Artikel = new Artikel();
@@ -1235,14 +1236,10 @@ function fuegeEinInWarenkorb($kArtikel, $anzahl, $oEigenschaftwerte_arr = '', $n
             }
             if ($nWeiterleitung == 0) {
                 if ($Artikel->kEigenschaftKombi > 0) {
-                    $url = (!empty($Artikel->cURLFull)) ?
-                        ($Artikel->cURLFull . '?'):
-                        (Shop::getURL() . '/index.php?a=' . $Artikel->kVaterArtikel . '&a2=' . $Artikel->kArtikel . '&');
+                    $url = (!empty($Artikel->cURLFull)) ? ($Artikel->cURLFull . '?') : (Shop::getURL() . '/index.php?a=' . $Artikel->kVaterArtikel . '&a2=' . $Artikel->kArtikel . '&');
                     header('Location: ' . $url . 'n=' . $anzahl . '&r=' . implode(',', $redirectParam), true, 302);
                 } else {
-                    $url = (!empty($Artikel->cURLFull)) ?
-                        ($Artikel->cURLFull . '?'):
-                        (Shop::getURL() . '/index.php?a=' . $Artikel->kArtikel . '&');
+                    $url = (!empty($Artikel->cURLFull)) ? ($Artikel->cURLFull . '?') : (Shop::getURL() . '/index.php?a=' . $Artikel->kArtikel . '&');
                     header('Location: ' . $url . 'n=' . $anzahl . '&r=' . implode(',', $redirectParam), true, 302);
                 }
                 exit;
@@ -1296,6 +1293,7 @@ function fuegeEinInWarenkorb($kArtikel, $anzahl, $oEigenschaftwerte_arr = '', $n
  */
 function altenKuponNeuBerechnen()
 {
+    /** @var array('Warenkorb' => Warenkorb) $_SESSION */
     // Wenn Kupon vorhanden und prozentual auf ganzen Warenkorb, dann verwerfen und neu anlegen
     if (isset($_SESSION['Kupon']) && $_SESSION['Kupon']->cWertTyp === 'prozent' && intval($_SESSION['Kupon']->nGanzenWKRabattieren) === 1) {
         $oKupon = $_SESSION['Kupon'];
@@ -1313,6 +1311,7 @@ function altenKuponNeuBerechnen()
  */
 function checkeKuponWKPos($oWKPosition, $Kupon)
 {
+    /** @var array('Warenkorb' => Warenkorb) $_SESSION */
     if ($oWKPosition->nPosTyp != C_WARENKORBPOS_TYP_ARTIKEL) {
         return $oWKPosition;
     }
@@ -1351,9 +1350,9 @@ function checkeKuponWKPos($oWKPosition, $Kupon)
                 AND fMindestbestellwert <= " . $_SESSION['Warenkorb']->gibGesamtsummeWaren(true, false) . "
                 AND (kKundengruppe = -1 OR kKundengruppe = 0 OR kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . ")
                 AND (nVerwendungen = 0 OR nVerwendungen > nVerwendungenBisher)
-                AND (cArtikel = '' " . $Artikel_qry . ")
-                AND (cKategorien = '' OR cKategorien = '-1' " . $Kategorie_qry . ")
-                AND (cKunden = '' OR cKunden = '-1' " . $Kunden_qry . ")
+                AND (cArtikel = '' {$Artikel_qry})
+                AND (cKategorien = '' OR cKategorien = '-1' {$Kategorie_qry})
+                AND (cKunden = '' OR cKunden = '-1' {$Kunden_qry})
                 AND kKupon = " . (int)$Kupon->kKupon, 1
     );
     if (isset($kupons_mgl->kKupon) && $kupons_mgl->kKupon > 0 && !$_SESSION['Warenkorb']->posTypEnthalten(C_WARENKORBPOS_TYP_KUPON) && $kupons_mgl->cWertTyp === 'prozent') {
@@ -1466,6 +1465,7 @@ function findeVariation($oVariation_arr, $kEigenschaft, $kEigenschaftWert)
  */
 function setzeSteuersaetze($steuerland = 0)
 {
+    /** @var array('Warenkorb' => Warenkorb) $_SESSION */
     $_SESSION['Steuersatz'] = array();
 
     $merchantCountryCode = 'DE';
@@ -1542,6 +1542,7 @@ function setzeSteuersaetze($steuerland = 0)
         }
     }
     if (isset($_SESSION['Warenkorb']) && get_class($_SESSION['Warenkorb']) === 'Warenkorb') {
+        /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
         $_SESSION['Warenkorb']->setzePositionsPreise();
     }
 }
@@ -1738,7 +1739,7 @@ function baueURL($obj, $art, $row = 0, $bForceNonSeo = false, $bFull = false)
  */
 function baueSprachURLS($obj, $art)
 {
-    $urls   = array();
+    $urls   = [];
     $seoobj = null;
     if ($art && $obj && count($_SESSION['Sprachen']) > 0) {
         foreach ($_SESSION['Sprachen'] as $Sprache) {
@@ -1822,6 +1823,7 @@ function baueSprachURLS($obj, $art)
  */
 function checkeSpracheWaehrung($lang = '')
 {
+    /** @var array('Vergleichsliste' => Vergleichsliste,'Warenkorb' => Warenkorb) $_SESSION */
     if (strlen($lang) > 0) {
         //Kategorien zurücksetzen, da sie lokalisiert abgelegt wurden
         if ($lang != $_SESSION['cISOSprache']) {
@@ -2238,11 +2240,11 @@ function valid_email($email)
 }
 
 /**
- * @param string  $lieferland
- * @param string  $versandklassen
- * @param int     $kKundengruppe
- * @param Artikel $oArtikel
- * @param bool    $checkProductDepedency
+ * @param string         $lieferland
+ * @param string         $versandklassen
+ * @param int            $kKundengruppe
+ * @param Artikel|object $oArtikel
+ * @param bool           $checkProductDepedency
  * @return mixed
  */
 function gibGuenstigsteVersandart($lieferland, $versandklassen, $kKundengruppe, $oArtikel, $checkProductDepedency = true)
@@ -2283,6 +2285,7 @@ function gibGuenstigsteVersandart($lieferland, $versandklassen, $kKundengruppe, 
  */
 function gibMoeglicheVerpackungen($kKundengruppe)
 {
+    /** @var array('Warenkorb' => Warenkorb) $_SESSION */
     $fSummeWarenkorb = $_SESSION['Warenkorb']->gibGesamtsummeWarenExt(array(C_WARENKORBPOS_TYP_ARTIKEL), true);
     $oVerpackung_arr = Shop::DB()->query(
         "SELECT * FROM tverpackung
@@ -2351,6 +2354,7 @@ function gibVersandZuschlag($versandart, $cISO, $plz)
  */
 function berechneVersandpreis($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
 {
+    /** @var array('Warenkorb' => Warenkorb) $_SESSION */
     $fSteuersatz = 0.0;
     if (!isset($oZusatzArtikel->fAnzahl)) {
         if (!isset($oZusatzArtikel)) {
@@ -2371,8 +2375,8 @@ function berechneVersandpreis($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
         case 'vm_versandberechnung_gewicht_jtl':
             $warenkorbgewicht = ($Artikel) ? $Artikel->fGewicht : $_SESSION['Warenkorb']->getWeight();
             $warenkorbgewicht += $oZusatzArtikel->fGewicht;
-            $versand = Shop::DB()->query("
-                SELECT * 
+            $versand = Shop::DB()->query(
+                "SELECT *
                   FROM tversandartstaffel 
                   WHERE kVersandart = " . (int)$versandart->kVersandart . " 
                       AND fBis >= " . $warenkorbgewicht . " 
@@ -2388,8 +2392,8 @@ function berechneVersandpreis($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
         case 'vm_versandberechnung_warenwert_jtl':
             $warenkorbwert = ($Artikel) ? $Artikel->Preise->fVKNetto : $_SESSION['Warenkorb']->gibGesamtsummeWarenExt(array(C_WARENKORBPOS_TYP_ARTIKEL), true);
             $warenkorbwert += $oZusatzArtikel->fWarenwertNetto;
-            $versand = Shop::DB()->query("
-                SELECT * 
+            $versand = Shop::DB()->query(
+                "SELECT *
                     FROM tversandartstaffel 
                     WHERE kVersandart = " . (int)$versandart->kVersandart . " 
                         AND fBis >= " . $warenkorbwert . " 
@@ -2409,8 +2413,8 @@ function berechneVersandpreis($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
             }
 
             $artikelanzahl += $oZusatzArtikel->fAnzahl;
-            $versand = Shop::DB()->query("
-                SELECT * 
+            $versand = Shop::DB()->query(
+                "SELECT *
                     FROM tversandartstaffel 
                     WHERE kVersandart = " . (int)$versandart->kVersandart . " 
                         AND fBis >= " . $artikelanzahl . " 
@@ -2439,17 +2443,19 @@ function berechneVersandpreis($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
     $fArtikelPreis     = 0;
     $fGesamtsummeWaren = 0;
     switch ($versandart->eSteuer) {
-        case 'netto' :
+        case 'netto':
             if ($Artikel) {
                 $fArtikelPreis = $Artikel->Preise->fVKNetto;
             }
             if (isset($_SESSION['Warenkorb'])) {
-                $fGesamtsummeWaren = berechneNetto($_SESSION['Warenkorb']->gibGesamtsummeWarenExt(array(C_WARENKORBPOS_TYP_ARTIKEL, C_WARENKORBPOS_TYP_KUPON, C_WARENKORBPOS_TYP_NEUKUNDENKUPON),
-                    1), gibUst($_SESSION['Warenkorb']->gibVersandkostenSteuerklasse()));
+                $fGesamtsummeWaren = berechneNetto(
+                    $_SESSION['Warenkorb']->gibGesamtsummeWarenExt(array(C_WARENKORBPOS_TYP_ARTIKEL, C_WARENKORBPOS_TYP_KUPON, C_WARENKORBPOS_TYP_NEUKUNDENKUPON), 1),
+                    gibUst($_SESSION['Warenkorb']->gibVersandkostenSteuerklasse())
+                );
             }
             break;
 
-        case 'brutto' :
+        case 'brutto':
             if ($Artikel) {
                 $fArtikelPreis = berechneBrutto($Artikel->Preise->fVKNetto, gibUst($Artikel->kSteuerklasse));
             }
@@ -2465,7 +2471,13 @@ function berechneVersandpreis($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
     } elseif ($fGesamtsummeWaren >= $versandart->fVersandkostenfreiAbX && $versandart->fVersandkostenfreiAbX > 0) {
         $preis = 0;
     }
-    executeHook(HOOK_TOOLSGLOBAL_INC_BERECHNEVERSANDPREIS, array('fPreis' => &$preis));
+    executeHook(HOOK_TOOLSGLOBAL_INC_BERECHNEVERSANDPREIS, [
+        'fPreis'         => &$preis,
+        'versandart'     => $versandart,
+        'cISO'           => $cISO,
+        'oZusatzArtikel' => $oZusatzArtikel,
+        'Artikel'        => $Artikel,
+    ]);
 
     return $preis;
 }
@@ -2743,7 +2755,6 @@ function generiereCaptchaCode($sec)
                 $x1 *= $x2;
                 $code->frage = Shop::Lang()->get('captchaMathQuestion', 'global') . ' ' . $x1 . ' ' . Shop::Lang()->get('captchaDivision', 'global') . ' ' . $x2 . '?';
                 break;
-
         }
     } elseif ($sec == 5) { //unsichtbarer Token
         $code->code              = '';
@@ -2864,9 +2875,7 @@ function pruefeVariationAusverkauft($kArtikel = 0, $oArtikel = null)
  */
 function makeHTTPHeader($nStatusCode)
 {
-    $proto = (!empty($_SERVER['SERVER_PROTOCOL']))
-        ? $_SERVER['SERVER_PROTOCOL']
-        : 'HTTP/1.1';
+    $proto = (!empty($_SERVER['SERVER_PROTOCOL'])) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.1';
     $codes = array(
         100 => $proto . ' 100 Continue',
         101 => $proto . ' 101 Switching Protocols',
@@ -3329,12 +3338,12 @@ function parseNewsText($cText)
                         $cSpracheSQL   = " AND tartikelsprache.kSprache = " . (int)$_SESSION['kSprache'];
                     }
                     $oArtikel = Shop::DB()->query(
-                        "SELECT " . $cTabellenname . ".kArtikel, " . $cTabellenname . ".cName, tseo.cSeo
-                            FROM " . $cTabellenname . "
+                        "SELECT {$cTabellenname}.kArtikel, {$cTabellenname}.cName, tseo.cSeo
+                            FROM {$cTabellenname}
                             LEFT JOIN tseo ON tseo.cKey = 'kArtikel'
-                                AND tseo.kKey = " . $cTabellenname . ".kArtikel
-                                AND tseo.kSprache = " . $kSprache . "
-                            WHERE " . $cTabellenname . ".kArtikel=" . (int)$cKey . $cSpracheSQL, 1
+                                AND tseo.kKey = {$cTabellenname}.kArtikel
+                                AND tseo.kSprache = {$kSprache}
+                            WHERE {$cTabellenname}.kArtikel=" . (int)$cKey . $cSpracheSQL, 1
                     );
 
                     if (isset($oArtikel->kArtikel) && $oArtikel->kArtikel > 0) {
@@ -3354,12 +3363,12 @@ function parseNewsText($cText)
                         $cSpracheSQL   = " AND tkategoriesprache.kSprache = " . $kSprache;
                     }
                     $oKategorie = Shop::DB()->query(
-                        "SELECT " . $cTabellenname . ".kKategorie, " . $cTabellenname . ".cName, tseo.cSeo
-                            FROM " . $cTabellenname . "
+                        "SELECT {$cTabellenname}.kKategorie, {$cTabellenname}.cName, tseo.cSeo
+                            FROM {$cTabellenname}
                             LEFT JOIN tseo ON tseo.cKey = 'kKategorie'
-                                AND tseo.kKey = " . $cTabellenname . ".kKategorie
-                                AND tseo.kSprache = " . $kSprache . "
-                            WHERE " . $cTabellenname . ".kKategorie = " . (int)$cKey . $cSpracheSQL, 1
+                                AND tseo.kKey = {$cTabellenname}.kKategorie
+                                AND tseo.kSprache = {$kSprache}
+                            WHERE {$cTabellenname}.kKategorie = " . (int)$cKey . $cSpracheSQL, 1
                     );
 
                     if (isset($oKategorie->kKategorie) && $oKategorie->kKategorie > 0) {
@@ -3377,9 +3386,9 @@ function parseNewsText($cText)
                         "SELECT thersteller.kHersteller, thersteller.cName, tseo.cSeo
                             FROM thersteller
                             LEFT JOIN tseo ON tseo.cKey = 'kHersteller'
-                                AND tseo.kKey = " . $cTabellenname . ".kHersteller
-                                AND tseo.kSprache = " . $kSprache . "
-                            WHERE " . $cTabellenname . ".kHersteller = " . (int)$cKey, 1
+                                AND tseo.kKey = {$cTabellenname}.kHersteller
+                                AND tseo.kSprache = {$kSprache}
+                            WHERE {$cTabellenname}.kHersteller = " . (int)$cKey, 1
                     );
 
                     if (isset($oHersteller->kHersteller) && $oHersteller->kHersteller > 0) {
@@ -3397,7 +3406,7 @@ function parseNewsText($cText)
                             FROM tmerkmalwertsprache
                             LEFT JOIN tseo ON tseo.cKey = 'kMerkmalWert'
                                 AND tseo.kKey = tmerkmalwertsprache.kMerkmalWert
-                                AND tseo.kSprache = " . $kSprache . "
+                                AND tseo.kSprache = {$kSprache}
                             WHERE tmerkmalwertsprache.kMerkmalWert = " . (int)$cKey . "
                                 AND tmerkmalwertsprache.kSprache = " . $kSprache, 1
                     );
@@ -3417,7 +3426,7 @@ function parseNewsText($cText)
                             FROM tnews
                             LEFT JOIN tseo ON tseo.cKey = 'kNews'
                                 AND tseo.kKey = tnews.kNews
-                                AND tseo.kSprache = " . $kSprache . "
+                                AND tseo.kSprache = {$kSprache}
                             WHERE tnews.kNews = " . (int)$cKey, 1
                     );
 
@@ -3435,8 +3444,8 @@ function parseNewsText($cText)
                         "SELECT tumfrage.kUmfrage, tumfrage.cName, tseo.cSeo
                             FROM tumfrage
                             LEFT JOIN tseo ON tseo.cKey = 'kUmfrage'
-                                AND tseo.kKey = tnews.kUmfrage
-                                AND tseo.kSprache = " . $kSprache . "
+                                AND tseo.kKey = tumfrage.kUmfrage
+                                AND tseo.kSprache = {$kSprache}
                             WHERE tumfrage.kUmfrage = " . (int)$cKey, 1
                     );
 
@@ -3455,7 +3464,7 @@ function parseNewsText($cText)
                             FROM ttag
                             LEFT JOIN tseo ON tseo.cKey = 'kTag'
                                 AND tseo.kKey = ttag.kTag
-                                AND tseo.kSprache = " . $kSprache . "
+                                AND tseo.kSprache = {$kSprache}
                             WHERE ttag.kTag = " . (int)$cKey, 1
                     );
 
@@ -3474,7 +3483,7 @@ function parseNewsText($cText)
                             FROM tsuchanfrage
                             LEFT JOIN tseo ON tseo.cKey = 'kSuchanfrage'
                                 AND tseo.kKey = tsuchanfrage.kSuchanfrage
-                                AND tseo.kSprache = " . $kSprache . "
+                                AND tseo.kSprache = {$kSprache}
                             WHERE tsuchanfrage.kSuchanfrage = " . (int)$cKey, 1
                     );
 
@@ -3728,9 +3737,11 @@ function setzeSpracheUndWaehrungLink()
         }
         foreach ($_SESSION['Sprachen'] as $i => $oSprache) {
             if (isset($AktuellerArtikel->kArtikel) && $AktuellerArtikel->kArtikel > 0 && isset($AktuellerArtikel->cSprachURL_arr[$oSprache->kSprache])) {
-                $_SESSION['Sprachen'][$i]->cURL = $AktuellerArtikel->cSprachURL_arr[$oSprache->kSprache];
+                $_SESSION['Sprachen'][$i]->cURL     = $AktuellerArtikel->cSprachURL_arr[$oSprache->kSprache];
+                $_SESSION['Sprachen'][$i]->cURLFull = $shopURL . '/' . $AktuellerArtikel->cSprachURL_arr[$oSprache->kSprache];
             } elseif (($kLink > 0 || $kSeite > 0) && isset($sprachURL[$oSprache->cISO])) {
-                $_SESSION['Sprachen'][$i]->cURL = $sprachURL[$oSprache->cISO];
+                $_SESSION['Sprachen'][$i]->cURL     = $sprachURL[$oSprache->cISO];
+                $_SESSION['Sprachen'][$i]->cURLFull = $shopURL . '/' . $sprachURL[$oSprache->cISO];
             } elseif ($AktuelleSeite === 'WARENKORB'
                 || $AktuelleSeite === 'KONTAKT'
                 || $AktuelleSeite === 'REGISTRIEREN'
@@ -3745,7 +3756,7 @@ function setzeSpracheUndWaehrungLink()
                 || $AktuelleSeite === 'VERGLEICHSLISTE'
             ) {
                 switch ($AktuelleSeite) {
-                    case 'STARTSEITE' :
+                    case 'STARTSEITE':
                         $id                             = null;
                         $_SESSION['Sprachen'][$i]->cURL = gibNaviURL($NaviFilter, SHOP_SEO, $oZusatzFilter, $oSprache->kSprache);
                         if ($_SESSION['Sprachen'][$i]->cURL === $shopURL . '/') {
@@ -3793,7 +3804,7 @@ function setzeSpracheUndWaehrungLink()
                         $id = 'vergleichsliste.php';
                         break;
 
-                    case 'WUNSCHLISTE' :
+                    case 'WUNSCHLISTE':
                         $id = 'wunschliste.php';
                         break;
 
@@ -3814,7 +3825,16 @@ function setzeSpracheUndWaehrungLink()
 
                 executeHook(HOOK_TOOLSGLOBAL_INC_SWITCH_SETZESPRACHEUNDWAEHRUNG_SPRACHE);
             } else {
-                $_SESSION['Sprachen'][$i]->cURL = gibNaviURL($NaviFilter, true, $oZusatzFilter, $oSprache->kSprache);
+                $cUrl = gibNaviURL($NaviFilter, true, $oZusatzFilter, $oSprache->kSprache);
+                if (!empty($NaviFilter->nSeite) && $NaviFilter->nSeite > 1) {
+                    if (strpos($sprachURL, 'navi.php') !== false) {
+                        $cUrl .= '&amp;seite=' . $NaviFilter->nSeite;
+                    } else {
+                        $cUrl .= SEP_SEITE . $NaviFilter->nSeite;
+                    }
+                }
+                $_SESSION['Sprachen'][$i]->cURL     = $cUrl;
+                $_SESSION['Sprachen'][$i]->cURLFull = $cUrl;
             }
         }
     }
@@ -4937,7 +4957,7 @@ function aktiviereZahlungsart($oZahlungsart)
         $kZahlungsart = (int)$oZahlungsart->kZahlungsart;
         $nNutzbar     = 0;
         // SOAP
-        if ($oZahlungsart->nSOAP) {
+        if (isset($oZahlungsart->nSOAP) && $oZahlungsart->nSOAP) {
             $nNutzbar = (pruefeSOAP()) ? 1 : 0;
         }
         // CURL
@@ -4947,10 +4967,6 @@ function aktiviereZahlungsart($oZahlungsart)
         // SOCKETS
         if (isset($oZahlungsart->nSOCKETS) && $oZahlungsart->nSOCKETS) {
             $nNutzbar = (pruefeSOCKETS()) ? 1 : 0;
-        }
-        // ALLOW URL FOPEN
-        if (isset($oZahlungsart->nALLOWURLFOPEN) && $oZahlungsart->nALLOWURLFOPEN) {
-            $nNutzbar = (pruefeALLOWFOPEN()) ? 1 : 0;
         }
         $upd = new stdClass();
         $upd->nNutzbar = $nNutzbar;
@@ -5134,7 +5150,7 @@ function curl_exec_follow($ch, &$maxredirect = 5)
  */
 function http_get_contents($cURL, $nTimeout = 15, $cPost = null)
 {
-    return http_request($cURL, $nTimeout, $cPost, false);
+    return make_http_request($cURL, $nTimeout, $cPost, false);
 }
 
 /**
@@ -5145,7 +5161,7 @@ function http_get_contents($cURL, $nTimeout = 15, $cPost = null)
  */
 function http_get_status($cURL, $nTimeout = 15, $cPost = null)
 {
-    return http_request($cURL, $nTimeout, $cPost, true);
+    return make_http_request($cURL, $nTimeout, $cPost, true);
 }
 
 /**
@@ -5155,7 +5171,7 @@ function http_get_status($cURL, $nTimeout = 15, $cPost = null)
  * @param bool   $bReturnStatus - false = return content on success / true = return status code instead of content
  * @return mixed|string
  */
-function http_request($cURL, $nTimeout = 15, $cPost = null, $bReturnStatus = false)
+function make_http_request($cURL, $nTimeout = 15, $cPost = null, $bReturnStatus = false)
 {
     $nCode = 0;
     $cData = '';
@@ -5200,10 +5216,7 @@ function http_request($cURL, $nTimeout = 15, $cPost = null, $bReturnStatus = fal
         $cData = '';
     }
 
-    if ($bReturnStatus) {
-        return $nCode;
-    }
-    return $cData;
+    return ($bReturnStatus) ? $nCode : $cData;
 }
 
 /**
@@ -5348,6 +5361,7 @@ function pruefeWarenkorbStueckliste($oArtikel, $fAnzahl)
         } else {
             $oStuecklisteKomponente_arr = gibStuecklistenKomponente($oArtikel->kStueckliste, true);
         }
+        /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
         foreach ($_SESSION['Warenkorb']->PositionenArr as $oPosition) {
             if ($oPosition->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL) {
                 // Komponente soll hinzugefügt werden aber die Stückliste ist bereits im Warenkorb
@@ -5374,7 +5388,7 @@ function pruefeWarenkorbStueckliste($oArtikel, $fAnzahl)
         }
     }
 
-    return;
+    return null;
 }
 
 /**
@@ -5483,6 +5497,7 @@ function convertCurrency($price, $iso = null, $id = null, $useRounding = true, $
  */
 function resetNeuKundenKupon()
 {
+    /** @var array('Warenkorb' => Warenkorb) $_SESSION */
     if (isset($_SESSION['Kunde'])) {
         $hash = Kuponneukunde::Hash(
             null,
@@ -5498,6 +5513,7 @@ function resetNeuKundenKupon()
 
     unset($_SESSION['NeukundenKupon']);
     unset($_SESSION['NeukundenKuponAngenommen']);
+    /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
     $_SESSION['Warenkorb']->loescheSpezialPos(C_WARENKORBPOS_TYP_NEUKUNDENKUPON)
                           ->setzePositionsPreise();
 }
@@ -5509,13 +5525,17 @@ function resetNeuKundenKupon()
 function holeKonfigBearbeitenModus($kKonfig, &$smarty)
 {
     if (class_exists('Konfigitem')) {
+        /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
         if (isset($_SESSION['Warenkorb']->PositionenArr[$kKonfig])) {
+            /** @var WarenkorbPos $oBasePosition */
             $oBasePosition = $_SESSION['Warenkorb']->PositionenArr[$kKonfig];
+            /** @var WarenkorbPos $oBasePosition */
             if ($oBasePosition->istKonfigVater()) {
                 $nKonfigitem_arr         = array();
                 $nKonfigitemAnzahl_arr   = array();
                 $nKonfiggruppeAnzahl_arr = array();
 
+                /** @var WarenkorbPos $oPosition */
                 foreach ($_SESSION['Warenkorb']->PositionenArr as &$oPosition) {
                     if ($oPosition->istKonfigKind() && $oPosition->cUnique == $oBasePosition->cUnique) {
                         $oKonfigitem                                              = new Konfigitem($oPosition->kKonfigitem);
@@ -5530,6 +5550,21 @@ function holeKonfigBearbeitenModus($kKonfig, &$smarty)
                        ->assign('nKonfigitem_arr', $nKonfigitem_arr)
                        ->assign('nKonfigitemAnzahl_arr', $nKonfigitemAnzahl_arr)
                        ->assign('nKonfiggruppeAnzahl_arr', $nKonfiggruppeAnzahl_arr);
+            }
+
+            if (isset($oBasePosition->WarenkorbPosEigenschaftArr)) {
+                $oEigenschaftWertEdit_arr = [];
+                foreach ($oBasePosition->WarenkorbPosEigenschaftArr as $oWarenkorbPosEigenschaft) {
+                    $oEigenschaftWertEdit_arr[$oWarenkorbPosEigenschaft->kEigenschaft] = (object)[
+                        'kEigenschaft'                  => $oWarenkorbPosEigenschaft->kEigenschaft,
+                        'kEigenschaftWert'              => $oWarenkorbPosEigenschaft->kEigenschaftWert,
+                        'cEigenschaftWertNameLocalized' => $oWarenkorbPosEigenschaft->cEigenschaftWertName[$_SESSION['cISOSprache']],
+                    ];
+                }
+
+                if (count($oEigenschaftWertEdit_arr) > 0) {
+                    $smarty->assign('oEigenschaftWertEdit_arr', $oEigenschaftWertEdit_arr);
+                }
             }
         }
     }
@@ -5662,7 +5697,7 @@ function validateCaptcha(array $requestData)
 
     // Wenn reCaptcha konfiguriert ist, wird davon ausgegangen, dass reCaptcha verwendet wird, egal was in
     // $confGlobal['global']['anti_spam_method'] angegeben ist.
-     if ($reCaptcha) {
+    if ($reCaptcha) {
         $valid = validateReCaptcha($requestData['g-recaptcha-response']);
     } elseif ($confGlobal['global']['anti_spam_method'] == 5) {
         $valid = validToken();

@@ -545,7 +545,7 @@ final class Shop
      */
     public static function getLanguage($iso = false)
     {
-        return ($iso === false) ? self::$kSprache : self::$cISO;
+        return ($iso === false) ? (int)self::$kSprache : self::$cISO;
     }
 
     /**
@@ -780,7 +780,7 @@ final class Shop
                 }
                 $nMatch = preg_match('/[^_](' . SEP_SEITE . '([0-9]+))/', $seo, $cMatch_arr, PREG_OFFSET_CAPTURE);
                 if ($nMatch !== false && $nMatch == 1) {
-                    $seite = (int) $cMatch_arr[2][0];
+                    $seite = (int)$cMatch_arr[2][0];
                     $seo   = substr($seo, 0, $cMatch_arr[1][1]);
                 }
                 //double content work around
@@ -1281,5 +1281,13 @@ final class Shop
         self::$_logged = $result;
 
         return $result;
+    }
+
+    /**
+     * @return bool
+     */
+    public static function isBrandfree()
+    {
+        return Nice::getInstance()->checkErweiterung(SHOP_ERWEITERUNG_BRANDFREE);
     }
 }

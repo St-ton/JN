@@ -36,7 +36,7 @@ function gibArtikelXSelling($kArtikel, $isParent = null)
             }
             $xSelling->Standard->XSellGruppen = array();
             $xsCount                          = count($xsellgruppen);
-            $oArtikelOptionen                 = Artikel::getDefaultOptions();
+            $defaultOptions                   = Artikel::getDefaultOptions();
             for ($i = 0; $i < $xsCount; $i++) {
                 if (Shop::$kSprache > 0) {
                     //lokalisieren
@@ -52,7 +52,7 @@ function gibArtikelXSelling($kArtikel, $isParent = null)
                 foreach ($xsell as $xs) {
                     if ($xs->kXSellGruppe == $xsellgruppen[$i]) {
                         $artikel = new Artikel();
-                        $artikel->fuelleArtikel($xs->kXSellArtikel, $oArtikelOptionen);
+                        $artikel->fuelleArtikel($xs->kXSellArtikel, $defaultOptions);
                         if ($artikel->kArtikel > 0 && $artikel->aufLagerSichtbarkeit()) {
                             $xSelling->Standard->XSellGruppen[$i]->Artikel[] = $artikel;
                         }
@@ -117,18 +117,18 @@ function gibArtikelXSelling($kArtikel, $isParent = null)
             if (!isset($xSelling->Kauf)) {
                 $xSelling->Kauf = new stdClass();
             }
-            $xSelling->Kauf->Artikel = array();
-            $oArtikelOptionen        = Artikel::getDefaultOptions();
+            $xSelling->Kauf->Artikel = [];
+            $defaultOptions          = Artikel::getDefaultOptions();
             foreach ($xsell as $xs) {
                 $artikel = new Artikel();
-                $artikel->fuelleArtikel($xs->kXSellArtikel, $oArtikelOptionen);
+                $artikel->fuelleArtikel($xs->kXSellArtikel, $defaultOptions);
                 if ($artikel->kArtikel > 0 && $artikel->aufLagerSichtbarkeit()) {
                     $xSelling->Kauf->Artikel[] = $artikel;
                 }
             }
         }
     }
-    executeHook(HOOK_ARTIKEL_INC_XSELLING, array('kArtikel' => $kArtikel, 'xSelling' => &$xSelling));
+    executeHook(HOOK_ARTIKEL_INC_XSELLING, ['kArtikel' => $kArtikel, 'xSelling' => &$xSelling]);
 
     return $xSelling;
 }
@@ -826,6 +826,8 @@ function bearbeiteProdukttags($AktuellerArtikel)
             exit();
         }
     }
+
+    return null;
 }
 
 /**
@@ -1034,38 +1036,37 @@ function holeAehnlicheArtikel($kArtikel)
             $cLimit = " LIMIT " . (int)$conf['artikeldetails']['artikeldetails_aehnlicheartikel_anzahl'];
         }
         $lagerFilter         = gibLagerfilter();
+        $kundenGruppe        = (int)$_SESSION['Kundengruppe']->kKundengruppe;
         $oArtikelMerkmal_arr = Shop::DB()->query(
-            "SELECT tartikelmerkmal.kArtikel, tartikel.kVaterArtikel
-                FROM
-                (
-                    SELECT kMerkmal, kMerkmalWert
-                    FROM tartikelmerkmal
-                    WHERE kArtikel = " . $kArtikel . "
-                ) AS ssMerkmal
-                JOIN tartikelmerkmal ON tartikelmerkmal.kMerkmal = 	ssMerkmal.kMerkmal
-                    AND tartikelmerkmal.kMerkmalWert = ssMerkmal.kMerkmalWert
-                    AND tartikelmerkmal.kArtikel != " . $kArtikel . "
-                LEFT JOIN tartikelsichtbarkeit ON tartikelmerkmal.kArtikel = tartikelsichtbarkeit.kArtikel
-                    AND tartikelsichtbarkeit.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
-                JOIN tartikel ON tartikel.kArtikel = tartikelmerkmal.kArtikel
-                    AND tartikel.kVaterArtikel != " . $kArtikel . "
-                    AND (tartikel.nIstVater = 1 OR tartikel.kEigenschaftKombi = 0)
-                WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                    {$lagerFilter}
-                    {$cSQLXSeller}
-                GROUP BY tartikelmerkmal.kArtikel
-                ORDER BY COUNT(*) DESC
+            "SELECT merkmalartikel.kArtikel, merkmalartikel.kVaterArtikel
+                FROM (
+                    SELECT DISTINCT tartikelmerkmal.kArtikel, tartikel.kVaterArtikel, tartikelmerkmal.kMerkmal, tartikelmerkmal.kMerkmalWert
+	                FROM tartikelmerkmal
+	                JOIN tartikel ON tartikel.kArtikel = tartikelmerkmal.kArtikel
+                        AND tartikel.kVaterArtikel != {$kArtikel}
+                        AND (tartikel.nIstVater = 1 OR tartikel.kEigenschaftKombi = 0)
+	                LEFT JOIN tartikelsichtbarkeit ON tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
+                        AND tartikelsichtbarkeit.kKundengruppe = {$kundenGruppe}
+	                WHERE tartikelsichtbarkeit.kArtikel IS NULL
+                        AND tartikelmerkmal.kArtikel != {$kArtikel}
+                        {$lagerFilter}
+                        {$cSQLXSeller}
+                ) AS merkmalartikel
+                JOIN tartikelmerkmal similarMerkmal ON similarMerkmal.kArtikel = {$kArtikel}
+                    AND similarMerkmal.kMerkmal = merkmalartikel.kMerkmal
+                    AND similarMerkmal.kMerkmalWert = merkmalartikel.kMerkmalWert
+                GROUP BY merkmalartikel.kArtikel
+                ORDER BY COUNT(similarMerkmal.kMerkmal) DESC
                 " . $cLimit, 2
         );
-
         if (is_array($oArtikelMerkmal_arr) && count($oArtikelMerkmal_arr) > 0) {
-            $oArtikelOptionen = Artikel::getDefaultOptions();
+            $defaultOptions = Artikel::getDefaultOptions();
             foreach ($oArtikelMerkmal_arr as $oArtikelMerkmal) {
                 $oArtikel = new Artikel();
                 if ($oArtikelMerkmal->kVaterArtikel > 0) {
-                    $oArtikel->fuelleArtikel($oArtikelMerkmal->kVaterArtikel, $oArtikelOptionen);
+                    $oArtikel->fuelleArtikel($oArtikelMerkmal->kVaterArtikel, $defaultOptions);
                 } else {
-                    $oArtikel->fuelleArtikel($oArtikelMerkmal->kArtikel, $oArtikelOptionen);
+                    $oArtikel->fuelleArtikel($oArtikelMerkmal->kArtikel, $defaultOptions);
                 }
                 if ($oArtikel->kArtikel > 0) {
                     $oArtikel_arr[] = $oArtikel;
@@ -1096,13 +1097,13 @@ function holeAehnlicheArtikel($kArtikel)
             );
 
             if (is_array($oArtikelSuchcacheTreffer_arr) && count($oArtikelSuchcacheTreffer_arr) > 0) {
-                $oArtikelOptionen = Artikel::getDefaultOptions();
+                $defaultOptions = Artikel::getDefaultOptions();
                 foreach ($oArtikelSuchcacheTreffer_arr as $oArtikelSuchcacheTreffer) {
                     $oArtikel = new Artikel();
                     if ($oArtikelSuchcacheTreffer->kVaterArtikel > 0) {
-                        $oArtikel->fuelleArtikel($oArtikelSuchcacheTreffer->kVaterArtikel, $oArtikelOptionen);
+                        $oArtikel->fuelleArtikel($oArtikelSuchcacheTreffer->kVaterArtikel, $defaultOptions);
                     } else {
-                        $oArtikel->fuelleArtikel($oArtikelSuchcacheTreffer->kArtikel, $oArtikelOptionen);
+                        $oArtikel->fuelleArtikel($oArtikelSuchcacheTreffer->kArtikel, $defaultOptions);
                     }
                     if ($oArtikel->kArtikel > 0) {
                         $oArtikel_arr[] = $oArtikel;
@@ -1131,13 +1132,13 @@ function holeAehnlicheArtikel($kArtikel)
                         " . $cLimit, 2
                 );
                 if (is_array($oArtikelTags_arr) && count($oArtikelTags_arr) > 0) {
-                    $oArtikelOptionen = Artikel::getDefaultOptions();
+                    $defaultOptions = Artikel::getDefaultOptions();
                     foreach ($oArtikelTags_arr as $oArtikelTags) {
                         $oArtikel = new Artikel();
                         if ($oArtikelTags->kVaterArtikel > 0) {
-                            $oArtikel->fuelleArtikel($oArtikelTags->kVaterArtikel, $oArtikelOptionen);
+                            $oArtikel->fuelleArtikel($oArtikelTags->kVaterArtikel, $defaultOptions);
                         } else {
-                            $oArtikel->fuelleArtikel($oArtikelTags->kArtikel, $oArtikelOptionen);
+                            $oArtikel->fuelleArtikel($oArtikelTags->kArtikel, $defaultOptions);
                         }
                         if ($oArtikel->kArtikel > 0) {
                             $oArtikel_arr[] = $oArtikel;

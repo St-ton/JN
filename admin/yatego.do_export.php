@@ -76,10 +76,10 @@ $res = Shop::DB()->query(
         ORDER BY tartikel.kArtikel
         LIMIT " . $queue->nLimit_n . ", " . $queue->nLimit_m, 2
 );
-$oArtikelOptionen = Artikel::getDefaultOptions();
+$defaultOptions = Artikel::getDefaultOptions();
 foreach ($res as $tartikel) {
     $Artikel = new Artikel();
-    $Artikel->fuelleArtikel($tartikel->kArtikel, $oArtikelOptionen, $exportformat->kKundengruppe, $exportformat->kSprache, true);
+    $Artikel->fuelleArtikel($tartikel->kArtikel, $defaultOptions, $exportformat->kKundengruppe, $exportformat->kSprache, true);
 
     verarbeiteYategoExport($Artikel, $exportformat, $ExportEinstellungen, $KategorieListe, $oGlobal_arr);
 }

@@ -118,7 +118,7 @@ class JTLCache
     /**
      * @var array
      */
-    private $cachingGroups = array();
+    private $cachingGroups = [];
 
     /**
      * init cache and set default method
@@ -126,7 +126,7 @@ class JTLCache
      * @param array $options
      * @param bool  $ignoreInstance - used for page cache to not overwrite the instance and delete debug output
      */
-    public function __construct($options = array(), $ignoreInstance = false)
+    public function __construct($options = [], $ignoreInstance = false)
     {
         if ($ignoreInstance === false) {
             self::$instance = $this;
@@ -139,10 +139,9 @@ class JTLCache
      * singleton
      *
      * @param array $options
-     *
      * @return JTLCache
      */
-    public static function getInstance($options = array())
+    public static function getInstance($options = [])
     {
         return (self::$instance !== null) ? self::$instance : new self($options);
     }
@@ -150,30 +149,30 @@ class JTLCache
     /**
      * object wrapper
      *
-     * @param $method
-     * @param $arguments
+     * @param string $method
+     * @param array  $arguments
      * @return mixed
      */
     public function __call($method, $arguments)
     {
         $mapping = self::map($method);
 
-        return ($mapping !== null) ? call_user_func_array(array($this, $mapping), $arguments) : null;
+        return ($mapping !== null) ? call_user_func_array([$this, $mapping], $arguments) : null;
     }
 
     /**
      * static wrapper
      * this allows to call Cache::set() etc.
      *
-     * @param $method
-     * @param $arguments
+     * @param string $method
+     * @param array  $arguments
      * @return mixed
      */
     public static function __callStatic($method, $arguments)
     {
         $mapping = self::map($method);
 
-        return ($mapping !== null) ? call_user_func_array(array(self::$instance, $mapping), $arguments) : null;
+        return ($mapping !== null) ? call_user_func_array([self::$instance, $mapping], $arguments) : null;
     }
 
     /**
@@ -184,7 +183,7 @@ class JTLCache
      */
     private static function map($method)
     {
-        $mapping = array(
+        $mapping = [
             'get'                => '_get',
             'fetch'              => '_get',
             'set'                => '_set',
@@ -208,7 +207,7 @@ class JTLCache
             'checkAvailability'  => '_checkAvailability',
             'getResultCode'      => '_getResultCode',
             'benchmark'          => '_benchmark',
-        );
+        ];
 
         return (isset($mapping[$method])) ? $mapping[$method] : null;
     }
@@ -221,68 +220,68 @@ class JTLCache
      */
     private function setCachingGroups()
     {
-        $this->cachingGroups = array(
-            array(
+        $this->cachingGroups = [
+            [
                 'name'        => 'CACHING_GROUP_ARTICLE',
                 'nicename'    => 'cg_article_nicename',
                 'value'       => CACHING_GROUP_ARTICLE,
-                'description' => 'cg_article_description'),
-            array(
+                'description' => 'cg_article_description'],
+            [
                 'name'        => 'CACHING_GROUP_CATEGORY',
                 'nicename'    => 'cg_category_nicename',
                 'value'       => CACHING_GROUP_CATEGORY,
-                'description' => 'cg_category_description'),
-            array(
+                'description' => 'cg_category_description'],
+            [
                 'name'        => 'CACHING_GROUP_LANGUAGE',
                 'nicename'    => 'cg_language_nicename',
                 'value'       => CACHING_GROUP_LANGUAGE,
-                'description' => 'cg_language_description'),
-            array(
+                'description' => 'cg_language_description'],
+            [
                 'name'        => 'CACHING_GROUP_TEMPLATE',
                 'nicename'    => 'cg_template_nicename',
                 'value'       => CACHING_GROUP_TEMPLATE,
-                'description' => 'cg_template_description'),
-            array(
+                'description' => 'cg_template_description'],
+            [
                 'name'        => 'CACHING_GROUP_OPTION',
                 'nicename'    => 'cg_option_nicename',
                 'value'       => CACHING_GROUP_OPTION,
-                'description' => 'cg_option_description'),
-            array(
+                'description' => 'cg_option_description'],
+            [
                 'name'        => 'CACHING_GROUP_PLUGIN',
                 'nicename'    => 'cg_plugin_nicename',
                 'value'       => CACHING_GROUP_PLUGIN,
-                'description' => 'cg_plugin_description'),
-            array(
+                'description' => 'cg_plugin_description'],
+            [
                 'name'        => 'CACHING_GROUP_CORE',
                 'nicename'    => 'cg_core_nicename',
                 'value'       => CACHING_GROUP_CORE,
-                'description' => 'cg_core_description'),
-            array(
+                'description' => 'cg_core_description'],
+            [
                 'name'        => 'CACHING_GROUP_OBJECT',
                 'nicename'    => 'cg_object_nicename',
                 'value'       => CACHING_GROUP_OBJECT,
-                'description' => 'cg_object_description'),
-            array(
+                'description' => 'cg_object_description'],
+            [
                 'name'        => 'CACHING_GROUP_BOX',
                 'nicename'    => 'cg_box_nicename',
                 'value'       => CACHING_GROUP_BOX,
-                'description' => 'cg_box_description'),
-            array(
+                'description' => 'cg_box_description'],
+            [
                 'name'        => 'CACHING_GROUP_NEWS',
                 'nicename'    => 'cg_news_nicename',
                 'value'       => CACHING_GROUP_NEWS,
-                'description' => 'cg_news_description'),
-            array(
+                'description' => 'cg_news_description'],
+            [
                 'name'        => 'CACHING_GROUP_ATTRIBUTE',
                 'nicename'    => 'cg_attribute_nicename',
                 'value'       => CACHING_GROUP_ATTRIBUTE,
-                'description' => 'cg_attribute_description'),
-            array(
+                'description' => 'cg_attribute_description'],
+            [
                 'name'        => 'CACHING_GROUP_MANUFACTURER',
                 'nicename'    => 'cg_manufacturer_nicename',
                 'value'       => CACHING_GROUP_MANUFACTURER,
-                'description' => 'cg_manufacturer_description'),
-        );
+                'description' => 'cg_manufacturer_description'],
+        ];
 
         return $this;
     }
@@ -305,7 +304,7 @@ class JTLCache
      */
     public function setOptions($options = array())
     {
-        $defaults = array(
+        $defaults = [
             'activated'        => false, //main switch
             'method'           => 'null', //caching method to use - init with null to avoid errors after installation
             'redis_port'       => self::DEFAULT_REDIS_PORT, //port of redis server
@@ -324,7 +323,7 @@ class JTLCache
             'file_extension'   => '.fc', //file extension for file cache
             'page_cache'       => false, //smarty page cache switch
             'types_disabled'   => array() //disabled cache groups
-        );
+        ];
         //merge defaults with assigned options and set them
         $this->options = array_merge($defaults, $options);
         //always add trailing slash
@@ -336,7 +335,7 @@ class JTLCache
             self::DEFAULT_LIFETIME :
             (int)$this->options['lifetime'];
         if ($this->options['types_disabled'] === null) {
-            $this->options['types_disabled'] = array();
+            $this->options['types_disabled'] = [];
         }
         if ($this->options['debug'] === true && $this->options['debug_method'] === 'echo') {
             echo '<br />Initialized Cache with method ' . $this->options['method'];
@@ -349,7 +348,6 @@ class JTLCache
      * set caching method by name
      *
      * @param string $methodName
-     *
      * @return bool
      */
     public function setCache($methodName)
@@ -381,7 +379,6 @@ class JTLCache
      * set caching method
      *
      * @param JTLCacheTrait $method
-     *
      * @return $this
      */
     private function setMethod($method)
@@ -400,10 +397,10 @@ class JTLCache
     {
         //the DB class is needed for this
         if (!class_exists('Shop')) {
-            return array();
+            return [];
         }
         $cacheConfig = Shop::DB()->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_CACHING);
-        $cacheInit   = array();
+        $cacheInit   = [];
         if (!empty($cacheConfig)) {
             foreach ($cacheConfig as $_conf) {
                 if ($_conf->cWert === 'Y' || $_conf->cWert === 'y') {
@@ -480,7 +477,6 @@ class JTLCache
      * @param int         $port
      * @param string|null $pass
      * @param int|null    $database
-     *
      * @return $this
      */
     public function setRedisCredentials($host, $port, $pass = null, $database = null)
@@ -498,7 +494,6 @@ class JTLCache
      *
      * @param string $host
      * @param int    $port
-     *
      * @return $this
      */
     public function setMemcacheCredentials($host, $port)
@@ -514,7 +509,6 @@ class JTLCache
      *
      * @param string $host
      * @param int    $port
-     *
      * @return $this
      */
     public function setMemcachedCredentials($host, $port)
@@ -528,7 +522,6 @@ class JTLCache
      * @param string   $cacheID
      * @param callable $callback
      * @param mixed    $customData
-     *
      * @return mixed
      */
     public function _get($cacheID, $callback = null, $customData = null)
@@ -546,7 +539,7 @@ class JTLCache
             $content    = null;
             $tags       = null;
             $expiration = null;
-            $res        = call_user_func_array($callback, array($this, $cacheID, &$content, &$tags, &$expiration, $customData));
+            $res        = call_user_func_array($callback, [$this, $cacheID, &$content, &$tags, &$expiration, $customData]);
             if ($res === true) {
                 $this->_set($cacheID, $content, $tags, $expiration);
 
@@ -564,7 +557,6 @@ class JTLCache
      * @param mixed      $content
      * @param array|null $tags
      * @param int|null   $expiration
-     *
      * @return mixed
      */
     public function _set($cacheID, $content, $tags = null, $expiration = null)
@@ -572,7 +564,7 @@ class JTLCache
         $res = false;
         if ($this->options['activated'] === true && $this->isCacheGroupActive($tags) === true) {
             $res = $this->_method->store($cacheID, $content, $expiration);
-            if ($tags !== null) {
+            if ($res === true && $tags !== null) {
                 $this->_setCacheTag($tags, $cacheID);
             }
         }
@@ -594,14 +586,13 @@ class JTLCache
      * @param array      $keyValue - key=cacheID, value=content
      * @param array|null $tags
      * @param int|null   $expiration
-     *
      * @return bool
      */
     public function _setMulti($keyValue, $tags = null, $expiration = null)
     {
         if ($this->options['activated'] === true && $this->isCacheGroupActive($tags) === true) {
             $res = $this->_method->storeMulti($keyValue, $expiration);
-            if ($tags !== null) {
+            if ($res === true && $tags !== null) {
                 foreach (array_keys($keyValue) as $_cacheID) {
                     $this->_setCacheTag($tags, $_cacheID);
                 }
@@ -619,7 +610,6 @@ class JTLCache
      * get multiple values from cache
      *
      * @param array $cacheIDs
-     *
      * @return array
      */
     public function _getMulti($cacheIDs)
@@ -634,7 +624,6 @@ class JTLCache
      * this allows the disabling of certain cache types
      *
      * @param string $groupID
-     *
      * @return bool
      */
     public function _isCacheGroupActive($groupID)
@@ -659,7 +648,6 @@ class JTLCache
 
     /**
      * @param string|array $tags
-     *
      * @return array
      */
     public function getKeysByTag($tags)
@@ -672,7 +660,6 @@ class JTLCache
      *
      * @param array  $tags
      * @param string $cacheID
-     *
      * @return bool
      */
     public function _setCacheTag($tags, $cacheID)
@@ -684,7 +671,6 @@ class JTLCache
      * set custom cache lifetime
      *
      * @param int $lifetime
-     *
      * @return $this
      */
     public function _setCacheLifetime($lifetime)
@@ -698,7 +684,6 @@ class JTLCache
      * set custom file cache directory
      *
      * @param string $dir
-     *
      * @return $this
      */
     public function _setCacheDir($dir)
@@ -855,7 +840,7 @@ class JTLCache
      */
     public function _getAllMethods()
     {
-        $methodNames = array();
+        $methodNames = [];
         $files       = scandir(CACHING_METHODS_DIR);
         if (is_array($files)) {
             foreach ($files as $_file) {
@@ -875,22 +860,22 @@ class JTLCache
      */
     public function _checkAvailability()
     {
-        $available = array();
+        $available = [];
         foreach ($this->_getAllMethods() as $methodName) {
             $class = 'cache_' . $methodName;
             include_once CACHING_METHODS_DIR . 'class.cachingMethod.' . $methodName . '.php';
             if (class_exists($class)) {
                 /** @var cache_advancedfile|cache_file|cache_apc|cache_memcache|cache_memcached|cache_null|cache_redis|cache_session|cache_xcache $instance */
                 $instance               = new $class($this->options);
-                $available[$methodName] = array(
+                $available[$methodName] = [
                     'available'  => $instance->isAvailable(),
                     'functional' => $instance->test()
-                );
+                ];
             } else {
-                $available[$methodName] = array(
+                $available[$methodName] = [
                     'available'  => false,
                     'functional' => false
-                );
+                ];
             }
         }
 
@@ -982,7 +967,7 @@ class JTLCache
         if (!is_int($repeat) || $repeat < 1) {
             $repeat = 1;
         }
-        $results = array();
+        $results = [];
         if ($methods === 'all') {
             $methods = $this->_getAllMethods();
         }
@@ -1000,11 +985,11 @@ class JTLCache
             if ($echo === true) {
                 echo '### Testing ' . $methods . ' cache ###';
             }
-            $result = array(
+            $result = [
                 'method'  => $methods,
                 'status'  => 'ok',
                 'timings' => array('get' => 0.0, 'set' => 0.0)
-            );
+            ];
             if ($cacheSetRes !== false) {
                 for ($i = 0; $i < $repeat; ++$i) {
                     //set testing
@@ -1054,8 +1039,8 @@ class JTLCache
                     echo '<br />Avg. time for setting: ' . $timesSet . 's (' . $rpsSet . ' requests per second)';
                     echo '<br />Avg. time for getting: ' . $timesGet . 's (' . $rpsGet . ' requests per second)';
                 }
-                $result['timings'] = array('get' => $timesGet, 'set' => $timesSet);
-                $result['rps']     = array('get' => $rpsGet, 'set' => $rpsSet);
+                $result['timings'] = ['get' => $timesGet, 'set' => $timesSet];
+                $result['rps']     = ['get' => $rpsGet, 'set' => $rpsSet];
             }
             if ($validResults === false) {
                 if ($echo === true) {

@@ -4,7 +4,7 @@
     {else}
         {strip}
             <div style="margin:10px 0;">
-                <iframe src="{$url}" width="600" height="400" name="MoneyBookersFrame">
+                <iframe src="{$url}" width="600" height="600" name="MoneyBookersFrame" frameborder="0">
                     {lang key="moneybookersQCDesc" section=""}
                     {if $imageSource}
                         <a href="{$url}">

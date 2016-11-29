@@ -211,7 +211,7 @@
                     <div class="input-group-wrap">
                         <select id="kKampagneselect" name="kKampagne" class="form-control">
                             <option value="0"></option>
-                            {foreach name="" from=$oKampagne_arr item=oKampagne}
+                            {foreach name="Kampagnen" from=$oKampagne_arr item=oKampagne}
                                 <option value="{$oKampagne->kKampagne}"{if (isset($oKampagne->kKampagne) && isset($oNewslettervorlageStd->kKampagn) && $oKampagne->kKampagne == $oNewslettervorlageStd->kKampagne) || (isset($cPostVar_arr.kKampagne) && isset($oKampagne->kKampagne) && $cPostVar_arr.kKampagne == $oKampagne->kKampagne)} selected{/if}>
                                     {$oKampagne->cName}
                                 </option>

@@ -101,7 +101,7 @@ final class Shopsetting implements ArrayAccess
             $section = $this->mapSettingName(null, $offset);
 
             if ($section === false || $section === null) {
-                return;
+                return null;
             }
             $cacheID = 'setting_' . $section;
 
@@ -191,7 +191,7 @@ final class Shopsetting implements ArrayAccess
             return $key;
         }
 
-        return;
+        return null;
     }
 
     /**
@@ -213,7 +213,7 @@ final class Shopsetting implements ArrayAccess
             $result = array();
             foreach ($mappings as $mappingID => $sectionName) {
                 foreach ($settings as $setting) {
-                    $kEinstellungenSektion = (int) $setting['kEinstellungenSektion'];
+                    $kEinstellungenSektion = (int)$setting['kEinstellungenSektion'];
                     if ($kEinstellungenSektion === $mappingID) {
                         if (!isset($result[$sectionName])) {
                             $result[$sectionName] = array();

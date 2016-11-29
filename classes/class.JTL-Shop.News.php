@@ -108,7 +108,7 @@ class News extends MainModel
      */
     public function setNews($kNews)
     {
-        $this->kNews = (int) $kNews;
+        $this->kNews = (int)$kNews;
 
         return $this;
     }
@@ -127,7 +127,7 @@ class News extends MainModel
      */
     public function setSprache($kSprache)
     {
-        $this->kSprache = (int) $kSprache;
+        $this->kSprache = (int)$kSprache;
 
         return $this;
     }
@@ -336,7 +336,7 @@ class News extends MainModel
      */
     public function setAktiv($nAktiv)
     {
-        $this->nAktiv = (int) $nAktiv;
+        $this->nAktiv = (int)$nAktiv;
 
         return $this;
     }
@@ -418,14 +418,14 @@ class News extends MainModel
      */
     public function load($kKey, $oObj = null, $xOption = null)
     {
-        $kKey = intval($kKey);
+        $kKey = (int)$kKey;
         if ($kKey > 0) {
             $kSprache = null;
             if (isset($_SESSION['kSprache'])) {
-                $kSprache = (int) $_SESSION['kSprache'];
+                $kSprache = (int)$_SESSION['kSprache'];
             } else {
                 $oSprache = gibStandardsprache(true);
-                $kSprache = (int) $oSprache->kSprache;
+                $kSprache = (int)$oSprache->kSprache;
             }
 
             $oObj = Shop::DB()->query(
@@ -478,16 +478,16 @@ class News extends MainModel
         }
         $kKundengruppe = null;
         if (isset($_SESSION['Kundengruppe']->kKundengruppe)) {
-            $kKundengruppe = (int) $_SESSION['Kundengruppe']->kKundengruppe;
+            $kKundengruppe = (int)$_SESSION['Kundengruppe']->kKundengruppe;
         } else {
             $kKundengruppe = Kundengruppe::getDefaultGroupID();
         }
         $kSprache = null;
         if (isset($_SESSION['kSprache'])) {
-            $kSprache = (int) $_SESSION['kSprache'];
+            $kSprache = (int)$_SESSION['kSprache'];
         } else {
             $oSprache = gibStandardsprache(true);
-            $kSprache = (int) $oSprache->kSprache;
+            $kSprache = (int)$oSprache->kSprache;
         }
         $oObj_arr = Shop::DB()->query(
             "SELECT tseo.cSeo, tnews.*, DATE_FORMAT(tnews.dGueltigVon, '%Y,%m,%d') AS dGueltigVonJS, count(distinct(tnewskommentar.kNewsKommentar)) AS nNewsKommentarAnzahl

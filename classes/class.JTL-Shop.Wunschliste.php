@@ -370,7 +370,7 @@ class Wunschliste
         $WunschlistePos_arr = Shop::DB()->selectAll('twunschlistepos', 'kWunschliste', (int)$this->kWunschliste, '*, date_format(dHinzugefuegt, \'%d.%m.%Y %H:%i\') AS dHinzugefuegt_de');
         // Wenn Positionen vorhanden sind
         if (count($WunschlistePos_arr) > 0) {
-            $oArtikelOptionen = Artikel::getDefaultOptions();
+            $defaultOptions = Artikel::getDefaultOptions();
             // Hole alle Eigenschaften für eine Position
             foreach ($WunschlistePos_arr as $WunschlistePos) {
                 $CWunschlistePos = new WunschlistePos($WunschlistePos->kArtikel, $WunschlistePos->cArtikelName, $WunschlistePos->fAnzahl, $WunschlistePos->kWunschliste);
@@ -420,7 +420,7 @@ class Wunschliste
                     }
                 }
                 $CWunschlistePos->Artikel = new Artikel($CWunschlistePos->kArtikel);
-                $CWunschlistePos->Artikel->fuelleArtikel($CWunschlistePos->kArtikel, $oArtikelOptionen);
+                $CWunschlistePos->Artikel->fuelleArtikel($CWunschlistePos->kArtikel, $defaultOptions);
                 $CWunschlistePos->cArtikelName = (strlen($CWunschlistePos->Artikel->cName) === 0) ?
                     $cArtikelName :
                     $CWunschlistePos->Artikel->cName;
@@ -565,10 +565,10 @@ class Wunschliste
     {
         if (count($_SESSION['Wunschliste']->CWunschlistePos_arr) > 0) {
             //$_SESSION['Wunschliste'] = new Wunschliste($_SESSION['Wunschliste']->kWunschliste);
-            $oArtikelOptionen = Artikel::getDefaultOptions();
+            $defaultOptions = Artikel::getDefaultOptions();
             foreach ($_SESSION['Wunschliste']->CWunschlistePos_arr as $i => $oWunschlistePos) {
                 $oArtikel = new Artikel();
-                $oArtikel->fuelleArtikel($oWunschlistePos->kArtikel, $oArtikelOptionen);
+                $oArtikel->fuelleArtikel($oWunschlistePos->kArtikel, $defaultOptions);
                 $_SESSION['Wunschliste']->CWunschlistePos_arr[$i]->Artikel      = $oArtikel;
                 $_SESSION['Wunschliste']->CWunschlistePos_arr[$i]->cArtikelName = $oArtikel->cName;
             }

@@ -351,8 +351,8 @@ class PayPalPlus extends PaymentMethod
 
     public function prepareShippingAddress($address)
     {
-        $a = new \PayPal\Api\ShippingAddress();
-        $shippingAddress = utf8_convert_recursive($address);
+        $shippingAddress = clone $address;
+        $shippingAddress = utf8_convert_recursive($shippingAddress);
 
         // 2-letter code for US states, and the equivalent for other countries. 100 characters max.
         if (in_array($shippingAddress->cLand, ['US', 'CA', 'IT', 'NL'])) {
@@ -361,6 +361,8 @@ class PayPalPlus extends PaymentMethod
                 $shippingAddress->state = $state->cCode;
             }
         }
+
+        $a = new \PayPal\Api\ShippingAddress();
 
         $a->setRecipientName("{$shippingAddress->cVorname} {$shippingAddress->cNachname}")
             ->setLine1("{$shippingAddress->cStrasse} {$shippingAddress->cHausnummer}")

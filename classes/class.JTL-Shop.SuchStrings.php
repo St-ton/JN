@@ -33,7 +33,6 @@ class SuchStrings
      * Konstruktor
      *
      * @param int $kSuchStrings - Falls angegeben, wird der SuchStrings mit angegebenem kSuchStrings aus der DB geholt
-     * @return SuchStrings
      */
     public function __construct($kSuchStrings = 0)
     {

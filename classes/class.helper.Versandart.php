@@ -337,7 +337,7 @@ class VersandartHelper
             $_SESSION['shipping_count'] = 0;
         }
         if (!is_array($oArtikel_arr) || count($oArtikel_arr) === 0) {
-            return;
+            return null;
         }
         $cLandISO = (isset($_SESSION['cLieferlandISO'])) ? $_SESSION['cLieferlandISO'] : false;
         if (!$cLandISO) {
@@ -364,12 +364,12 @@ class VersandartHelper
             $nArtikelAssoc_arr[$kArtikel] = (!isset($nArtikelAssoc_arr[$kArtikel])) ? 0 : 1;
         }
 
-        $bMerge           = false;
-        $oArtikelOptionen = Artikel::getDefaultOptions();
+        $bMerge         = false;
+        $defaultOptions = Artikel::getDefaultOptions();
         foreach ($nArtikelAssoc_arr as $kArtikel => $nArtikelAssoc) {
             if ($nArtikelAssoc == 1) {
                 $oArtikelTMP = new Artikel();
-                $oArtikelTMP->fuelleArtikel($kArtikel, $oArtikelOptionen);
+                $oArtikelTMP->fuelleArtikel($kArtikel, $defaultOptions);
                 // Normaler Variationsartikel
                 if (count($oArtikelTMP->Variationen) > 0 && $oArtikelTMP->nIstVater == 0 && $oArtikelTMP->kVaterArtikel == 0) {
                     // Nur wenn artikelabhaengiger Versand gestaffelt als Funktionsattribut gesetzt ist
@@ -397,10 +397,10 @@ class VersandartHelper
             $oArtikel_arr = array_merge($oArtikel_arr);
         }
 
-        $oArtikelOptionen = Artikel::getDefaultOptions();
+        $defaultOptions = Artikel::getDefaultOptions();
         foreach ($oArtikel_arr as $i => $oArtikel) {
             $oArtikelTMP = new Artikel();
-            $oArtikelTMP->fuelleArtikel($oArtikel['kArtikel'], $oArtikelOptionen);
+            $oArtikelTMP->fuelleArtikel($oArtikel['kArtikel'], $defaultOptions);
             $kSteuerklasse = $oArtikelTMP->kSteuerklasse;
 
             if (isset($oArtikelTMP->kArtikel) && $oArtikelTMP->kArtikel > 0) {
@@ -466,7 +466,7 @@ class VersandartHelper
                         $cVariation0                             = substr($oArtikel['cInputData'], 1);
                         list($kEigenschaft0, $kEigenschaftWert0) = explode(':', $cVariation0);
                         $kKindArtikel                            = findeKindArtikelZuEigenschaft($oArtikelTMP->kArtikel, $kEigenschaft0, $kEigenschaftWert0);
-                        $oArtikelKind->fuelleArtikel($kKindArtikel, $oArtikelOptionen);
+                        $oArtikelKind->fuelleArtikel($kKindArtikel, $defaultOptions);
                         //Summen pro Steuerklasse summieren
                         if (!array_key_exists($oArtikelKind->kSteuerklasse, $fWarensummeProSteuerklasse_arr)) {
                             $fWarensummeProSteuerklasse_arr[$oArtikelKind->kSteuerklasse] = 0;
@@ -490,7 +490,7 @@ class VersandartHelper
                         list($kEigenschaft1, $kEigenschaftWert1) = explode(':', $cVariation1);
 
                         $kKindArtikel = findeKindArtikelZuEigenschaft($oArtikelTMP->kArtikel, $kEigenschaft0, $kEigenschaftWert0, $kEigenschaft1, $kEigenschaftWert1);
-                        $oArtikelKind->fuelleArtikel($kKindArtikel, $oArtikelOptionen);
+                        $oArtikelKind->fuelleArtikel($kKindArtikel, $defaultOptions);
                         //Summen pro Steuerklasse summieren
                         if (!array_key_exists($oArtikelKind->kSteuerklasse, $fWarensummeProSteuerklasse_arr)) {
                             $fWarensummeProSteuerklasse_arr[$oArtikelKind->kSteuerklasse] = 0;

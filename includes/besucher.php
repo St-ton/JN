@@ -64,7 +64,7 @@ function gibBrowser()
     if (strpos($agent, 'msie') !== false) {
         $pos = strpos($agent, 'msie');
 
-        return 'Internet Explorer ' . (int) substr($agent, $pos + 4);
+        return 'Internet Explorer ' . (int)substr($agent, $pos + 4);
     }
     if (strpos($agent, 'opera') !== false) {
         return 'Opera';

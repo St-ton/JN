@@ -282,7 +282,7 @@ class PaymentMethod
     {
         $model = (object)array_merge([
             'kBestellung'       => (int)$order->kBestellung,
-            'cZahlungsanbieter' => $this->name,
+            'cZahlungsanbieter' => (empty($order->cZahlungsartName)) ? $this->name : $order->cZahlungsartName,
             'fBetrag'           => 0,
             'fZahlungsgebuehr'  => 0,
             'cISO'              => $_SESSION['Waehrung']->cISO,

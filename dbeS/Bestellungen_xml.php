@@ -561,7 +561,7 @@ function bearbeiteSet($xml)
             if (!empty($dBezahltDatum)) {
                 $upd->dBezahltDatum = Shop::DB()->escape($oBestellungWawi->dBezahltDatum);
             }
-            Shop::DB()->update('tabe', 'kBestellung', (int)$oBestellungWawi->kBestellung, $upd);
+            Shop::DB()->update('tbestellung', 'kBestellung', (int)$oBestellungWawi->kBestellung, $upd);
             $oBestellungUpdated = new Bestellung($oBestellungShop->kBestellung, true);
 
             $kunde = null;

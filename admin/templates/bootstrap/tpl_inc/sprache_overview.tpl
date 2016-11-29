@@ -1,14 +1,18 @@
 {function sprache_buttons}
     <div class="btn-group">
-        <button type="submit" class="btn btn-primary" name="action" value="saveall">
-            <i class="fa fa-save"></i>
-            Speichern
-        </button>
+        {if $oWert_arr|@count > 0}
+            <button type="submit" class="btn btn-primary" name="action" value="saveall">
+                <i class="fa fa-save"></i>
+                Speichern
+            </button>
+        {/if}
         <a class="btn btn-default" href="sprache.php?token={$smarty.session.jtl_token}&action=newvar">
             <i class="fa fa-share"></i>
             Variable hinzuf&uuml;gen
         </a>
-        {include file='tpl_inc/csv_export_btn.tpl' exporterId="langvars"}
+        {if $oWert_arr|@count > 0}
+            {include file='tpl_inc/csv_export_btn.tpl' exporterId="langvars"}
+        {/if}
         {include file='tpl_inc/csv_import_btn.tpl' importerId="langvars"}
     </div>
 {/function}
@@ -138,34 +142,38 @@
         </div>
         <div id="notfound" class="tab-pane fade {if $tab === 'notfound'}active in{/if}">
             <div class="panel panel-default">
-                <table class="list table">
-                    <thead>
-                        <tr>
-                            <th>Sektion</th>
-                            <th>Variable</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {foreach $oNotFound_arr as $oWert}
+                {if $oNotFound_arr|@count > 0}
+                    <table class="list table">
+                        <thead>
                             <tr>
-                                <td>{$oWert->cSektion}</td>
-                                <td>{$oWert->cName}</td>
-                                <td class="right">
-                                    <div class="btn-group">
-                                        <a href="sprache.php?token={$smarty.session.jtl_token}&action=newvar&kSprachsektion={$oWert->kSprachsektion}&cName={$oWert->cName}"
-                                           class="btn btn-primary" title="erstellen">
-                                            <i class="fa fa-plus"></i>
-                                        </a>
-                                    </div>
-                                </td>
+                                <th>Sektion</th>
+                                <th>Variable</th>
+                                <th></th>
                             </tr>
-                        {/foreach}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            {foreach $oNotFound_arr as $oWert}
+                                <tr>
+                                    <td>{$oWert->cSektion}</td>
+                                    <td>{$oWert->cName}</td>
+                                    <td>
+                                        <div class="btn-group right">
+                                            <a href="sprache.php?token={$smarty.session.jtl_token}&action=newvar&kSprachsektion={$oWert->kSprachsektion}&cName={$oWert->cName}&tab=notfound"
+                                               class="btn btn-default" title="erstellen">
+                                                <i class="fa fa-plus"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {/foreach}
+                        </tbody>
+                    </table>
+                {else}
+                    <div class="alert alert-info" role="alert">{#noDataAvailable#}</div>
+                {/if}
                 <div class="panel-footer">
                     <div class="btn-group">
-                        <a href="" class="btn btn-danger">
+                        <a href="sprache.php?token={$smarty.session.jtl_token}&action=clearlog&tab=notfound" class="btn btn-danger">
                             <i class="fa fa-refresh"></i>
                             Liste leeren
                         </a>

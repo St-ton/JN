@@ -6,6 +6,7 @@
         </div>
         <form action="sprache.php" method="post">
             {$jtl_token}
+            <input type="hidden" name="tab" value="{$tab}">
             <div class="panel-body">
                 <div class="input-group">
                     <span class="input-group-addon">
@@ -80,7 +81,7 @@
                         <i class="fa fa-save"></i>
                         Speichern
                     </button>
-                    <a href="sprache.php" class="btn btn-danger">{#goBack#}</a>
+                    <a href="sprache.php?tab={$tab}" class="btn btn-danger">{#goBack#}</a>
                 </div>
             </div>
         </form>

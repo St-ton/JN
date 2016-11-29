@@ -14,36 +14,41 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'csv_importer_inc.php';
 
 $cHinweis = '';
 $cFehler  = '';
-$tab      = 'variables';
+$tab      = isset($_REQUEST['tab']) ? $_REQUEST['tab'] : 'variables';
 $step     = 'overview';
 setzeSprache();
-$oSprache     = Sprache::getInstance();
-$oSprache_arr = $oSprache->getInstalled();
+$kSprache     = (int)$_SESSION['kSprache'];
+$oSprachISO   = Shop::Lang()->getIsoFromLangID($kSprache);
+$oSprache_arr = Shop::Lang()->getInstalled();
 
 if (validateToken()) {
-    if (isset($_GET['action'])) {
-        if ($_GET['action'] === 'newvar') {
+    if (isset($_REQUEST['action'])) {
+        $action = $_REQUEST['action'];
+
+        if ($action === 'newvar') {
             // neue Variable erstellen
             $step                      = 'newvar';
             $oVariable                 = new stdClass();
-            $oVariable->kSprachsektion = isset($_GET['kSprachsektion']) ? (int)$_GET['kSprachsektion'] : 1;
-            $oVariable->cName          = isset($_GET['cName']) ? $_GET['cName'] : '';
+            $oVariable->kSprachsektion = isset($_REQUEST['kSprachsektion']) ? (int)$_REQUEST['kSprachsektion'] : 1;
+            $oVariable->cName          = isset($_REQUEST['cName']) ? $_REQUEST['cName'] : '';
             $oVariable->cWert_arr      = [];
-        } elseif ($_GET['action'] === 'delvar') {
+        } elseif ($action === 'delvar') {
             // Variable loeschen
-            $oSprache->loesche($_GET['kSprachsektion'], $_GET['cName']);
+            Shop::Lang()->loesche($_GET['kSprachsektion'], $_GET['cName']);
             $cHinweis = 'Variable ' . $_GET['cName'] . ' wurde erfolgreich gel&ouml;scht.';
-        }
-    } elseif (isset($_POST['action'])) {
-        if ($_POST['action'] === 'savevar') {
+        } elseif ($action === 'savevar') {
             // neue Variable speichern
             $oVariable                 = new stdClass();
-            $oVariable->kSprachsektion = (int)$_POST['kSprachsektion'];
-            $oVariable->cName          = $_POST['cName'];
-            $oVariable->cWert_arr      = $_POST['cWert_arr'];
+            $oVariable->kSprachsektion = (int)$_REQUEST['kSprachsektion'];
+            $oVariable->cName          = $_REQUEST['cName'];
+            $oVariable->cWert_arr      = $_REQUEST['cWert_arr'];
             $oVariable->cWertAlt_arr   = [];
-            $oVariable->bOverwrite_arr = isset($_POST['bOverwrite_arr']) ? $_POST['bOverwrite_arr'] : [];
+            $oVariable->bOverwrite_arr = isset($_REQUEST['bOverwrite_arr']) ? $_REQUEST['bOverwrite_arr'] : [];
             $cFehler_arr               = [];
+
+            $oVariable->cSprachsektion = Shop::DB()->select(
+                'tsprachsektion', 'kSprachsektion', (int)$oVariable->kSprachsektion
+            )->cName;
 
             $oWertDB_arr = Shop::DB()->query(
                 "SELECT s.cNameDeutsch AS cSpracheName, sw.cWert, si.cISO
@@ -77,28 +82,32 @@ if (validateToken()) {
             } else {
                 foreach ($oVariable->cWert_arr as $cISO => $cWert) {
                     if (isset($oVariable->cWertAlt_arr[$cISO])) {
-                        // alter Wert verhanden
+                        // alter Wert vorhanden
                         if ((int)$oVariable->bOverwrite_arr[$cISO] === 1) {
                             // soll ueberschrieben werden
-                            $oSprache
+                            Shop::Lang()
                                 ->setzeSprache($cISO)
                                 ->set($oVariable->kSprachsektion, $oVariable->cName, $cWert);
                         }
                     } else {
                         // kein alter Wert vorhanden
-                        $oSprache->fuegeEin($cISO, $oVariable->kSprachsektion, $oVariable->cName, $cWert);
+                        Shop::Lang()->fuegeEin($cISO, $oVariable->kSprachsektion, $oVariable->cName, $cWert);
                     }
                 }
+
+                Shop::DB()->delete(
+                    'tsprachlog', ['cSektion', 'cName'], [$oVariable->cSprachsektion, $oVariable->cName]
+                );
             }
-        } elseif ($_POST['action'] === 'saveall') {
-            $cChanged_arr = [];
+        } elseif ($action === 'saveall') {
             // geaenderte Variablen speichern
-            foreach ($_POST['cWert_arr'] as $kSektion => $cSektionWert_arr) {
+            $cChanged_arr = [];
+            foreach ($_REQUEST['cWert_arr'] as $kSektion => $cSektionWert_arr) {
                 foreach ($cSektionWert_arr as $cName => $cWert) {
-                    if ((int)$_POST['bChanged_arr'][$kSektion][$cName] === 1) {
+                    if ((int)$_REQUEST['bChanged_arr'][$kSektion][$cName] === 1) {
                         // wurde geaendert => speichern
-                        $oSprache
-                            ->setzeSprache($_SESSION['cISOSprache'])
+                        Shop::Lang()
+                            ->setzeSprache($oSprachISO->cISO)
                             ->set((int)$kSektion, $cName, $cWert);
                         $cChanged_arr[] = $cName;
                     }
@@ -110,6 +119,12 @@ if (validateToken()) {
             } else {
                 $cHinweis = 'Keine Variable wurde ge&auml;ndert';
             }
+        } elseif ($action === 'clearlog') {
+            // Liste nicht gefundener Variablen leeren
+            Shop::Lang()
+                ->setzeSprache($oSprachISO->cISO)
+                ->clearLog();
+            $cHinweis .= 'Liste erfolgreich zur&uuml;ckgesetzt.';
         }
     }
 }
@@ -141,12 +156,12 @@ if ($step === 'newvar') {
             FROM tsprachwerte AS sw
                 JOIN tsprachsektion AS ss
                     ON ss.kSprachsektion = sw.kSprachsektion
-            WHERE kSprachISO = " . $oSprache->kSprachISO . "
+            WHERE sw.kSprachISO = " . Shop::Lang()->kSprachISO . "
                 " . ($cFilterSQL !== '' ? "AND " . $cFilterSQL : ""),
         2
     );
 
-    handleCsvExportAction('langvars', 'langvars.csv', function () use ($oSprache, $cFilterSQL) {
+    handleCsvExportAction('langvars', 'langvars.csv', function () use ($cFilterSQL) {
         return Shop::DB()->query(
             "SELECT si.cISO AS cSprachISO, ss.cName AS cSprachsektionName, sw.cName, sw.cWert, sw.cStandard, sw.bSystem
                 FROM tsprachwerte AS sw
@@ -154,7 +169,7 @@ if ($step === 'newvar') {
                         ON ss.kSprachsektion = sw.kSprachsektion
                     JOIN tsprachiso AS si
                         ON si.kSprachISO = sw.kSprachISO
-                WHERE sw.kSprachISO = " . $oSprache->kSprachISO . "
+                WHERE sw.kSprachISO = " . Shop::Lang()->kSprachISO . "
                     " . ($cFilterSQL !== '' ? "AND " . $cFilterSQL : ""),
             2
         );
@@ -170,7 +185,7 @@ if ($step === 'newvar') {
             FROM tsprachlog AS sl
                 LEFT JOIN tsprachsektion AS ss
                     ON ss.cName = sl.cSektion
-            WHERE kSprachISO = " . $oSprache->kSprachISO,
+            WHERE kSprachISO = " . Shop::Lang()->kSprachISO,
         2
     );
 

@@ -542,35 +542,26 @@ function bearbeiteSet($xml)
             
 
             executeHook(HOOK_BESTELLUNGEN_XML_BESTELLSTATUS, array('status' => &$status, 'oBestellung' => &$oBestellungShop));
-            $cZahlungsartNameSQL = '';
-            $cZahlungsartName    = Shop::DB()->escape($oBestellungWawi->cZahlungsartName);
-            if (strlen($cZahlungsartName) > 0) {
-                $cZahlungsartNameSQL = "cZahlungsartName = '" . Shop::DB()->escape($oBestellungWawi->cZahlungsartName) . "',";
-            }
-
-            $dBezahltDatumSQL = '';
+            $cZahlungsartName = Shop::DB()->escape($oBestellungWawi->cZahlungsartName);
             $dBezahltDatum    = Shop::DB()->escape($oBestellungWawi->dBezahltDatum);
-            if (strlen($dBezahltDatum) > 0) {
-                $dBezahltDatumSQL = "dBezahltDatum = '" . Shop::DB()->escape($oBestellungWawi->dBezahltDatum) . "', ";
-            }
-
-            $dVersandDatum = Shop::DB()->escape($oBestellungWawi->dVersandt);
+            $dVersandDatum    = Shop::DB()->escape($oBestellungWawi->dVersandt);
             if ($dVersandDatum === null || $dVersandDatum === '') {
                 $dVersandDatum = '0000-00-00';
             }
-            Shop::DB()->query(
-                "UPDATE tbestellung SET
-                    dVersandDatum = '" . $dVersandDatum . "',
-                    " . $dBezahltDatumSQL . "
-                    cTracking = '" . Shop::DB()->escape($oBestellungWawi->cIdentCode) . "',
-                    cLogistiker = '" . Shop::DB()->escape($oBestellungWawi->cLogistik) . "',
-                    cTrackingURL = '" . Shop::DB()->escape($cTrackingURL) . "',
-                    cStatus = '" . Shop::DB()->escape($status) . "',
-                    " . $cZahlungsartNameSQL . "
-                    cVersandInfo = '" . Shop::DB()->escape($oBestellungWawi->cVersandInfo) . "'
-                    WHERE kBestellung = " . (int)$oBestellungWawi->kBestellung, 4
-            );
-            // !
+            $upd                = new stdClass();
+            $upd->dVersandDatum = $dVersandDatum;
+            $upd->cTracking     = Shop::DB()->escape($oBestellungWawi->cIdentCode);
+            $upd->cLogistiker   = Shop::DB()->escape($oBestellungWawi->cLogistik);
+            $upd->cTrackingURL  = Shop::DB()->escape($cTrackingURL);
+            $upd->cStatus       = $status;
+            $upd->cVersandInfo  = Shop::DB()->escape($oBestellungWawi->cVersandInfo);
+            if (strlen($cZahlungsartName) > 0) {
+                $upd->cZahlungsartName = Shop::DB()->escape($oBestellungWawi->cZahlungsartName);
+            }
+            if (!empty($dBezahltDatum)) {
+                $upd->dBezahltDatum = Shop::DB()->escape($oBestellungWawi->dBezahltDatum);
+            }
+            Shop::DB()->update('tabe', 'kBestellung', (int)$oBestellungWawi->kBestellung, $upd);
             $oBestellungUpdated = new Bestellung($oBestellungShop->kBestellung, true);
 
             $kunde = null;

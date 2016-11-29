@@ -151,19 +151,9 @@ if ($step === 'newvar') {
     $oFilter->assemble();
     $cFilterSQL = $oFilter->getWhereSQL();
 
-    $oWert_arr = Shop::DB()->query(
-        "SELECT sw.cName, sw.cWert, sw.cStandard, sw.bSystem, ss.kSprachsektion, ss.cName AS cSektionName
-            FROM tsprachwerte AS sw
-                JOIN tsprachsektion AS ss
-                    ON ss.kSprachsektion = sw.kSprachsektion
-            WHERE sw.kSprachISO = " . Shop::Lang()->kSprachISO . "
-                " . ($cFilterSQL !== '' ? "AND " . $cFilterSQL : ""),
-        2
-    );
-
     handleCsvExportAction('langvars', 'langvars.csv', function () use ($cFilterSQL) {
         return Shop::DB()->query(
-            "SELECT si.cISO AS cSprachISO, ss.cName AS cSprachsektionName, sw.cName, sw.cWert, sw.cStandard, sw.bSystem
+            "SELECT ss.cName AS cSprachsektionName, sw.cName, sw.cWert, sw.bSystem
                 FROM tsprachwerte AS sw
                     JOIN tsprachsektion AS ss
                         ON ss.kSprachsektion = sw.kSprachsektion
@@ -173,7 +163,17 @@ if ($step === 'newvar') {
                     " . ($cFilterSQL !== '' ? "AND " . $cFilterSQL : ""),
             2
         );
-    });
+    }, ['cSprachsektionName', 'cName', 'cWert', 'bSystem'], [], ';', false);
+
+    $oWert_arr = Shop::DB()->query(
+        "SELECT sw.cName, sw.cWert, sw.cStandard, sw.bSystem, ss.kSprachsektion, ss.cName AS cSektionName
+            FROM tsprachwerte AS sw
+                JOIN tsprachsektion AS ss
+                    ON ss.kSprachsektion = sw.kSprachsektion
+            WHERE sw.kSprachISO = " . Shop::Lang()->kSprachISO . "
+                " . ($cFilterSQL !== '' ? "AND " . $cFilterSQL : ""),
+        2
+    );
 
     $oPagination = (new Pagination('langvars'))
         ->setRange(4)

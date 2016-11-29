@@ -1193,10 +1193,12 @@ class Warenkorb
      */
     public function updateInDB()
     {
-        $obj = kopiereMembers($this);
-        unset($obj->PositionenArr);
-        unset($obj->cEstimatedDelivery);
-        unset($obj->VersandArt);
+        $obj = (object)[
+            'kWarenkorb'     => $this->kWarenkorb,
+            'kKunde'         => $this->kKunde,
+            'kLieferadresse' => $this->kLieferadresse,
+            'kZahlungsInfo'  => $this->kZahlungsInfo,
+        ];
 
         return Shop::DB()->update('twarenkorb', 'kWarenkorb', $obj->kWarenkorb, $obj);
     }

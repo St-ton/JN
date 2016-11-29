@@ -568,6 +568,32 @@ ul.filter_state li a.active:before {
     }
 }
 
+.theme-dark, .theme-light {
+    &.slider-wrapper.control-nav,
+    &.slider-wrapper.direction-nav {
+        position: relative;
+        padding-bottom: 30px;
+
+        .nivo-controlNav {
+            position: absolute;
+            bottom: 5px;
+        }
+    }
+
+    &.slider-wrapper.thumbnail-nav {
+        padding-bottom: 10px;
+
+        .nivo-controlNav {
+            position: relative;
+            bottom: auto;
+
+            a {
+                margin-bottom: 0;
+            }
+        }
+    }
+}
+
 /*
 #content-wrapper .panel-heading a {
     color: lighten(@text-color,15%);

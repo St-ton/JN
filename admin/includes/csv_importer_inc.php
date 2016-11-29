@@ -16,9 +16,13 @@
  * @param string[] $fields - array of names of the fields in the order they appear in one data row. If and only if this
  *      array is empty, a header line of field names is expected, otherwise not.
  * @param string|null $cDelim - delimiter character or null to guess it from the first row
+ * @param int $importType -
+ *      0 = reset table, then import (careful!!! again: this will clear the table denoted by $target)
+ *      1 = insert new, overwrite existing
+ *      2 = insert only non-existing
  * @return int - -1 if importer-id-mismatch / 0 on success / >1 import error count
  */
-function handleCsvImportAction ($importerId, $target, $fields = [], $cDelim = null)
+function handleCsvImportAction ($importerId, $target, $fields = [], $cDelim = null, $importType = 2)
 {
     if (validateToken() && verifyGPDataString('importcsv') === $importerId) {
         if (isset($_FILES['csvfile']['type']) && $_FILES['csvfile']['type'] === 'text/csv') {
@@ -35,6 +39,14 @@ function handleCsvImportAction ($importerId, $target, $fields = [], $cDelim = nu
                 $fields = $row;
             }
 
+            if (isset($_REQUEST['importType'])) {
+                $importType = verifyGPCDataInteger('importType');
+            }
+
+            if ($importType === 0 && is_string($target)) {
+                Shop::DB()->delete($target, [], []);
+            }
+
             while($row = fgetcsv($fs, 0, $cDelim)) {
                 $obj = new stdClass();
 
@@ -48,12 +60,22 @@ function handleCsvImportAction ($importerId, $target, $fields = [], $cDelim = nu
                     if ($res === false) {
                         $nErrors ++;
                     }
-                } else {
+                } elseif (is_string($target)) {
                     $cTable = $target;
-                    $res    = Shop::DB()->insert($cTable, $obj);
 
-                    if ($res === 0) {
-                        $nErrors ++;
+                    if ($importType === 0 || $importerId === 2) {
+                        $res = Shop::DB()->insert($cTable, $obj);
+
+                        if ($res === 0) {
+                            $nErrors ++;
+                        }
+                    } elseif ($importType === 1) {
+                        Shop::DB()->query(
+                            "REPLACE INTO " . $target. "
+                                (" . implode(',', $fields). ")
+                                VALUES (" . implode(',', $row) . ")",
+                            4
+                        );
                     }
                 }
             }

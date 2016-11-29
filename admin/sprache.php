@@ -45,10 +45,9 @@ if (validateToken()) {
             $oVariable->cWertAlt_arr   = [];
             $oVariable->bOverwrite_arr = isset($_REQUEST['bOverwrite_arr']) ? $_REQUEST['bOverwrite_arr'] : [];
             $cFehler_arr               = [];
-
-            $oVariable->cSprachsektion = Shop::DB()->select(
-                'tsprachsektion', 'kSprachsektion', (int)$oVariable->kSprachsektion
-            )->cName;
+            $oVariable->cSprachsektion = Shop::DB()
+                ->select('tsprachsektion', 'kSprachsektion', (int)$oVariable->kSprachsektion)
+                ->cName;
 
             $oWertDB_arr = Shop::DB()->query(
                 "SELECT s.cNameDeutsch AS cSpracheName, sw.cWert, si.cISO
@@ -71,7 +70,7 @@ if (validateToken()) {
             }
 
             if (count($oVariable->bOverwrite_arr) !== count($oWertDB_arr)) {
-                $cFehler_arr[] = 'Die Variable existiert bereits f&uuml;r die Sprachen ' .
+                $cFehler_arr[] = 'Die Variable existiert bereits f&uuml;r folgende Sprachen: ' .
                     implode(' und ', array_map(function ($oWertDB) { return $oWertDB->cSpracheName; }, $oWertDB_arr)) .
                     '. Bitte w&auml;hlen Sie aus, welche Versionen sie &Uuml;berschreiben m&ouml;chten!';
             }
@@ -153,7 +152,7 @@ if ($step === 'newvar') {
 
     handleCsvExportAction('langvars', 'langvars.csv', function () use ($cFilterSQL) {
         return Shop::DB()->query(
-            "SELECT ss.cName AS cSprachsektionName, sw.cName, sw.cWert, sw.bSystem
+            "SELECT ss.cName AS cSektion, sw.cName, sw.cWert, sw.bSystem
                 FROM tsprachwerte AS sw
                     JOIN tsprachsektion AS ss
                         ON ss.kSprachsektion = sw.kSprachsektion
@@ -163,7 +162,26 @@ if ($step === 'newvar') {
                     " . ($cFilterSQL !== '' ? "AND " . $cFilterSQL : ""),
             2
         );
-    }, ['cSprachsektionName', 'cName', 'cWert', 'bSystem'], [], ';', false);
+    }, ['cSektion', 'cName', 'cWert', 'bSystem'], [], ';', false);
+
+    handleCsvImportAction('langvars', function ($obj) use ($oSprachISO) {
+        $oSektion = Shop::DB()->select('tsprachsektion', 'cName', $obj->cSektion);
+
+        if ($oSektion !== null) {
+            $oSprachwert = Shop::DB()->select(
+                'tsprachwerte', ['kSprachISO', 'kSprachsektion', 'cName'],
+                [$oSprachISO->kSprachISO, $oSektion->kSprachsektion, $obj->cName]
+            );
+
+            if ($oSprachwert === null) {
+                Shop::Lang()->fuegeEin($oSprachISO->cISO, $oSektion->kSprachsektion, $obj->cName, $obj->cWert);
+            } else {
+                Shop::Lang()
+                    ->setzeSprache($oSprachISO->cISO)
+                    ->set($oSektion->kSprachsektion, $obj->cName, $obj->cWert);
+            }
+        }
+    }, ['cSektion', 'cName', 'cWert', 'bSystem'], ';');
 
     $oWert_arr = Shop::DB()->query(
         "SELECT sw.cName, sw.cWert, sw.cStandard, sw.bSystem, ss.kSprachsektion, ss.cName AS cSektionName

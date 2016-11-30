@@ -1001,6 +1001,26 @@ class Exportformat
         $this->setQueue($queue)->initSession()->initSmarty();
         if ($this->getPlugin() > 0 && strpos($this->getContent(), PLUGIN_EXPORTFORMAT_CONTENTFILE) !== false) {
             $oPlugin = new Plugin($this->getPlugin());
+            global $exportformat, $ExportEinstellungen;
+            $exportformat                   = new stdClass();
+            $exportformat->kKundengruppe    = $this->getKundengruppe();
+            $exportformat->kExportformat    = $this->getExportformat();
+            $exportformat->kSprache         = $this->getSprache();
+            $exportformat->kWaehrung        = $this->getWaehrung();
+            $exportformat->kKampagne        = $this->getKampagne();
+            $exportformat->kPlugin          = $this->getPlugin();
+            $exportformat->cName            = $this->getName();
+            $exportformat->cDateiname       = $this->getDateiname();
+            $exportformat->cKopfzeile       = $this->getKopfzeile();
+            $exportformat->cContent         = $this->getContent();
+            $exportformat->cFusszeile       = $this->getFusszeile();
+            $exportformat->cKodierung       = $this->getKodierung();
+            $exportformat->nSpecial         = $this->getSpecial();
+            $exportformat->nVarKombiOption  = $this->getVarKombiOption();
+            $exportformat->nSplitgroesse    = $this->getSplitgroesse();
+            $exportformat->dZuletztErstellt = $this->getZuletztErstellt();
+            $exportformat->nUseCache        = $this->getCaching();
+            $ExportEinstellungen            = $this->getConfig();
             include $oPlugin->cAdminmenuPfad . PFAD_PLUGIN_EXPORTFORMAT . str_replace(PLUGIN_EXPORTFORMAT_CONTENTFILE, '', $this->getContent());
 
             Shop::DB()->delete('texportqueue', 'kExportqueue', (int)$this->queue->kExportqueue);

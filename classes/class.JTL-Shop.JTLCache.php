@@ -43,7 +43,7 @@ define('CACHING_GROUP_MANUFACTURER', 'mnf');
  * @method mixed getActiveMethod()
  * @method mixed checkAvailability()
  * @method int getResultCode()
- * @method array benchmark(array $methods = 'all', mixed $testData = 'simple string', int $runCount = 1000, int $repeat = 1, bool $echo = true, bool $format = false)
+ * @method array benchmark(array|string $methods = 'all', mixed|string $testData = 'simple string', int $runCount = 1000, int $repeat = 1, bool $echo = true, bool $format = false)
  */
 class JTLCache
 {

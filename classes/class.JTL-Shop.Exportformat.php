@@ -1038,8 +1038,8 @@ class Exportformat
             }
             if (isset($_GET['back']) && $_GET['back'] === 'admin') {
                 header('Location: exportformate.php?action=exported&token=' . $_SESSION['jtl_token'] . '&kExportformat=' . (int)$this->queue->kExportformat);
+                exit;
             }
-            exit;
         }
         $start       = microtime(true);
         $cacheHits   = 0;

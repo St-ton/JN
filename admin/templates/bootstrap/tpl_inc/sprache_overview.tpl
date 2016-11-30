@@ -3,12 +3,12 @@
         {if $oWert_arr|@count > 0}
             <button type="submit" class="btn btn-primary" name="action" value="saveall">
                 <i class="fa fa-save"></i>
-                Speichern
+                {#save#}
             </button>
         {/if}
         <a class="btn btn-default" href="sprache.php?token={$smarty.session.jtl_token}&action=newvar">
             <i class="fa fa-share"></i>
-            Variable hinzuf&uuml;gen
+            {#btnAddVar#}
         </a>
         {if $oWert_arr|@count > 0}
             {include file='tpl_inc/csv_export_btn.tpl' exporterId="langvars"}
@@ -67,16 +67,13 @@
                 {include file='tpl_inc/pagination.tpl' oPagination=$oPagination}
                 <form action="sprache.php" method="post">
                     {$jtl_token}
-                    {*<div class="block">*}
-                        {*{sprache_buttons}*}
-                    {*</div>*}
                     {if $oWert_arr|@count > 0}
                         <table class="list table">
                             <thead>
                                 <tr>
-                                    {if $bAllSections}<th>Sektion</th>{/if}
-                                    <th>Variable</th>
-                                    <th>Inhalt</th>
+                                    {if $bAllSections}<th>{#section#}</th>{/if}
+                                    <th>{#variableName#}</th>
+                                    <th>{#variableContent#}</th>
                                     <th></th>
                                 </tr>
                             </thead>
@@ -146,8 +143,8 @@
                     <table class="list table">
                         <thead>
                             <tr>
-                                <th>Sektion</th>
-                                <th>Variable</th>
+                                <th>{#section#}</th>
+                                <th>{#variableName#}</th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -175,7 +172,7 @@
                     <div class="btn-group">
                         <a href="sprache.php?token={$smarty.session.jtl_token}&action=clearlog&tab=notfound" class="btn btn-danger">
                             <i class="fa fa-refresh"></i>
-                            Liste leeren
+                            {#btnResetLog#}
                         </a>
                     </div>
                 </div>

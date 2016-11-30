@@ -642,9 +642,8 @@ function gibStepZahlung()
         }
     } elseif (!is_array($oZahlungsart_arr) || count($oZahlungsart_arr) === 0) {
         if (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-            Jtllog::writeLog(
-                'Es konnte keine Zahlungsart für folgende Daten gefunden werden: Versandart: ' . $_SESSION['Versandart']->kVersandart .
-                ', Kundengruppe: ' . $_SESSION['Kundengruppe']->kKundengruppe, JTLLOG_LEVEL_ERROR
+            Jtllog::writeLog(utf8_decode('Es konnte keine Zahlungsart für folgende Daten gefunden werden: Versandart: ' . $_SESSION['Versandart']->kVersandart .
+                ', Kundengruppe: ' . $_SESSION['Kundengruppe']->kKundengruppe), JTLLOG_LEVEL_ERROR
             );
         }
     }

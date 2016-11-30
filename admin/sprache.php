@@ -39,6 +39,7 @@ if (validateToken()) {
                 // Variable loeschen
                 Shop::Lang()->loesche($_GET['kSprachsektion'], $_GET['cName']);
                 Shop::Cache()->flushTags([CACHING_GROUP_LANGUAGE]);
+                Shop::DB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
                 $cHinweis = 'Variable ' . $_GET['cName'] . ' wurde erfolgreich gel&ouml;scht.';
                 break;
             case 'savevar':
@@ -103,6 +104,7 @@ if (validateToken()) {
                         'tsprachlog', ['cSektion', 'cName'], [$oVariable->cSprachsektion, $oVariable->cName]
                     );
                     Shop::Cache()->flushTags([CACHING_GROUP_LANGUAGE]);
+                    Shop::DB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
                 }
 
                 break;
@@ -121,7 +123,8 @@ if (validateToken()) {
                     }
                 }
 
-                Shop::Cache()->flushTags([CACHING_GROUP_LANGUAGE]);
+                Shop::Cache()->flushTags([CACHING_GROUP_CORE, CACHING_GROUP_LANGUAGE]);
+                Shop::DB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
 
                 if (count($cChanged_arr) > 0) {
                     $cHinweis = 'Variablen erfolgreich ge&auml;ndert: ' . implode(', ', $cChanged_arr);
@@ -136,6 +139,7 @@ if (validateToken()) {
                     ->setzeSprache($oSprachISO->cISO)
                     ->clearLog();
                 Shop::Cache()->flushTags([CACHING_GROUP_LANGUAGE]);
+                Shop::DB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
                 $cHinweis .= 'Liste erfolgreich zur&uuml;ckgesetzt.';
                 break;
             default:
@@ -189,8 +193,8 @@ if ($step === 'newvar') {
         2
     );
 
-    handleCsvExportAction('langvars', 'langvars.slf', $oWert_arr, ['cSektionName', 'cName', 'cWert', 'bSystem'], [],
-        ';', false);
+    handleCsvExportAction('langvars', $oSprachISO->cISO . '_' . date('YmdHis') . '.slf', $oWert_arr,
+        ['cSektionName', 'cName', 'cWert', 'bSystem'], [], ';', false);
 
     $oPagination = (new Pagination('langvars'))
         ->setRange(4)

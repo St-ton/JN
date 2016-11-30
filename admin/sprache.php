@@ -167,21 +167,7 @@ if ($step === 'newvar') {
     $oFilter->assemble();
     $cFilterSQL = $oFilter->getWhereSQL();
 
-    handleCsvExportAction('langvars', 'langvars.csv', function () use ($cFilterSQL) {
-        return Shop::DB()->query(
-            "SELECT ss.cName AS cSektion, sw.cName, sw.cWert, sw.bSystem
-                FROM tsprachwerte AS sw
-                    JOIN tsprachsektion AS ss
-                        ON ss.kSprachsektion = sw.kSprachsektion
-                    JOIN tsprachiso AS si
-                        ON si.kSprachISO = sw.kSprachISO
-                WHERE sw.kSprachISO = " . Shop::Lang()->kSprachISO . "
-                    " . ($cFilterSQL !== '' ? "AND " . $cFilterSQL : ""),
-            2
-        );
-    }, ['cSektion', 'cName', 'cWert', 'bSystem'], [], ';', false);
-
-    if (validateToken() && verifyGPDataString('importcsv') === 'langvars' && isset($_FILES['csvfile']['type'])) {
+    if (validateToken() && verifyGPDataString('importcsv') === 'langvars' && isset($_FILES['csvfile']['tmp_name'])) {
         $csvFilename = $_FILES['csvfile']['tmp_name'];
         $importType  = verifyGPCDataInteger('importType');
         $res         = Shop::Lang()->import($csvFilename, $oSprachISO->cISO, $importType);
@@ -202,6 +188,9 @@ if ($step === 'newvar') {
                 " . ($cFilterSQL !== '' ? "AND " . $cFilterSQL : ""),
         2
     );
+
+    handleCsvExportAction('langvars', 'langvars.csv', $oWert_arr, ['cSektionName', 'cName', 'cWert', 'bSystem'], [],
+        ';', false);
 
     $oPagination = (new Pagination('langvars'))
         ->setRange(4)

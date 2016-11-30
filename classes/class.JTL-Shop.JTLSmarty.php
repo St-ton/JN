@@ -477,16 +477,21 @@ class JTLSmarty extends SmartyBC
     {
         require_once PFAD_ROOT . PFAD_MINIFY . '/lib/Minify/Loader.php';
         Minify_Loader::register();
-        $options = array();
+        $options = [];
         if ($minifyCSS === true) {
-            $options['cssMinifier'] = array('Minify_CSS', 'minify');
+            $options['cssMinifier'] = ['Minify_CSS', 'minify'];
         }
         if ($minifyJS === true) {
-            $options['jsMinifier'] = array('JSMin', 'minify');
+            $options['jsMinifier'] = ['JSMin', 'minify'];
         }
         $minify = new Minify_HTML($html, $options);
+        try {
+            $res = $minify->process();
+        } catch (JSMin_UnterminatedStringException $e) {
+            $res = $html;
+        }
 
-        return $minify->process();
+        return $res;
     }
 
     /**

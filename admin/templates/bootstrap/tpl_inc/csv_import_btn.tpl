@@ -7,7 +7,7 @@
     function onClickCsvImport_{$importerId} ()
     {
         var $importcsvInput = $('<input>', { type: 'hidden', name: 'importcsv', value: '{$importerId}' });
-        var $fileInput      = $('<input>', { type: 'file', name: 'csvfile', accept: '.csv' });
+        var $fileInput      = $('<input>', { type: 'file', name: 'csvfile', accept: '.csv,.slf' });
         var $tokenInput     = $('{$jtl_token}');
         $form_{$importerId}
             .append($importcsvInput, $fileInput, $tokenInput);
@@ -53,12 +53,14 @@
                     </select>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" onclick="onModalCancel_{$importerId}();">
-                        Close
-                    </button>
-                    <button type="button" class="btn btn-primary" onclick="onModalSubmit_{$importerId}();">
-                        Save changes
-                    </button>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-danger" onclick="onModalCancel_{$importerId}();">
+                            Close
+                        </button>
+                        <button type="button" class="btn btn-primary" onclick="onModalSubmit_{$importerId}();">
+                            Save changes
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

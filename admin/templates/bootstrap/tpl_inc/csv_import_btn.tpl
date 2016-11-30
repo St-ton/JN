@@ -2,7 +2,8 @@
     Display a CSV import button for a CSV importer with the unique $importerId
 *}
 <script>
-    var $form_{$importerId} = $('<form>', { method: 'post', enctype: 'multipart/form-data' });
+    var $form_{$importerId} = $('<form>', { method: 'post', enctype: 'multipart/form-data',
+        action: window.location.pathname });
 
     function onClickCsvImport_{$importerId} ()
     {

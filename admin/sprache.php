@@ -189,7 +189,7 @@ if ($step === 'newvar') {
         2
     );
 
-    handleCsvExportAction('langvars', 'langvars.csv', $oWert_arr, ['cSektionName', 'cName', 'cWert', 'bSystem'], [],
+    handleCsvExportAction('langvars', 'langvars.slf', $oWert_arr, ['cSektionName', 'cName', 'cWert', 'bSystem'], [],
         ';', false);
 
     $oPagination = (new Pagination('langvars'))

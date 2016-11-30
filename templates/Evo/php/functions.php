@@ -81,6 +81,10 @@ function get_product_list($params, &$smarty)
     ];
     // Filter
     $NaviFilter = Shop::buildNaviFilter($cParameter_arr);
+    if (isset($NaviFilter->Suche->cSuche) && strlen($NaviFilter->Suche->cSuche) > 0) {
+        $NaviFilter->Suche->cSuche     = StringHandler::filterXSS($NaviFilter->Suche->cSuche, 1);
+        $NaviFilter->Suche->kSuchCache = bearbeiteSuchCache($NaviFilter);
+    }
     // Artikelattribut
     if (isset($cParameter_arr['cArtAttrib']) && strlen($cParameter_arr['cArtAttrib']) > 0) {
         $NaviFilter->ArtikelAttributFilter->cArtAttrib = $cParameter_arr['cArtAttrib'];

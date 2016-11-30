@@ -51,10 +51,12 @@
   </IfModule>
 </IfModule>
 
-<IfModule mod_deflate.c>
-  <FilesMatch "\\.(js|css|html|htm|php|xml)$">
-    SetOutputFilter DEFLATE
-  </FilesMatch>
+<IfModule !mod_filter.c>
+  <IfModule mod_deflate.c>
+    <FilesMatch "\\.(js|css|html|htm|xml)$">
+      SetOutputFilter DEFLATE
+    </FilesMatch>
+  </IfModule>
 </IfModule>
 
 <IfModule mod_expires.c>
@@ -92,10 +94,6 @@
 
   #Rewrite der JTL-Shop-URLs
   #Aendern Sie an diesen Zeilen nichts!
-  RewriteCond %{QUERY_STRING} ^(.*\.(gz|zip))$ [OR]
-  RewriteCond %{REQUEST_FILENAME} ^(.*\.(gz|zip))$
-  RewriteRule ^(.*)$ $1 [NS,E=no-gzip:1,E=dont-vary:1]
-
   RewriteRule ^((urllist|sitemap_).*\.(xml|txt)(\.gz)?)$ includes/sitemap.php?datei=$1 [L]
   RewriteRule ^export/((sitemap_).*\.(xml|txt)(\.gz)?)$ $1 [L]
   RewriteRule ^asset/(.*)$ includes/libs/minify/?g=$1 [L]

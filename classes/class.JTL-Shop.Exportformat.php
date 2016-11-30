@@ -1026,9 +1026,9 @@ class Exportformat
             $max = (int)$max;
         }
 
-        Jtllog::cronLog('Starting exportformat "' . $this->cName . '" for language ' . $this->kSprache . ' and customer group ' .
-            $this->kKundengruppe . ' - ' . $queue->nLimitN . '/' . $max . ' products exported');
-        Jtllog::cronLog('Caching enabled? ' . ((Shop::Cache()->isActive() && $this->useCache()) ? 'Yes' : 'No'), 2);
+        Jtllog::cronLog('Starting exportformat "' . $this->cName . '" for language ' . $this->kSprache . ' and customer group ' . $this->kKundengruppe .
+            ' with caching ' . ((Shop::Cache()->isActive() && $this->useCache()) ? 'enabled' : 'disabled') .
+             ' - ' . $queue->nLimitN . '/' . $max . ' products exported');
         // Kopfzeile schreiben
         if ($this->queue->nLimitN == 0) {
             $this->writeHeader($datei);

@@ -33,7 +33,7 @@
         {
             $('#modal-{$importerId}').modal('hide');
             $form_{$importerId}
-                .append($('#modal-{$importerId} #importType'))
+                .append($('#importType-{$importerId}'))
                 .submit();
         }
     {/if}
@@ -44,22 +44,23 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title">Wie soll importiert werden?</h4>
+                    <h4 class="modal-title">{#importCsvChooseType#}</h4>
                 </div>
                 <div class="modal-body">
-                    <select class="form-control" name="importType" id="importType">
-                        <option value="0">Vorhandene Eintr&auml;ge l&ouml;schen, dann importieren</option>
-                        <option value="1">Vorhandene Eintr&auml;ge &uuml;berschreiben und neue importieren</option>
-                        <option value="2">Vorhandene Eintr&auml;ge beibehalten und neue importieren</option>
+                    <label for="importType-{$importerId}" class="sr-only">{#importCsvChooseType#}</label>
+                    <select class="form-control" name="importType" id="importType-{$importerId}">
+                        <option value="0">{#importCsvType0#}</option>
+                        <option value="1">{#importCsvType1#}</option>
+                        <option value="2">{#importCsvType2#}</option>
                     </select>
                 </div>
                 <div class="modal-footer">
                     <div class="btn-group">
                         <button type="button" class="btn btn-danger" onclick="onModalCancel_{$importerId}();">
-                            Close
+                            <i class="fa fa-times"></i> {#cancel#}
                         </button>
                         <button type="button" class="btn btn-primary" onclick="onModalSubmit_{$importerId}();">
-                            Save changes
+                            <i class="fa fa-upload"></i> {#importCsv#}
                         </button>
                     </div>
                 </div>

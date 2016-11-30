@@ -78,7 +78,7 @@ if (validateToken()) {
                 if (count($oVariable->bOverwrite_arr) !== count($oWertDB_arr)) {
                     $cFehler_arr[] = 'Die Variable existiert bereits f&uuml;r folgende Sprachen: ' .
                         implode(' und ', array_map(function ($oWertDB) { return $oWertDB->cSpracheName; }, $oWertDB_arr)) .
-                        '. Bitte w&auml;hlen Sie aus, welche Versionen sie &Uuml;berschreiben m&ouml;chten!';
+                        '. Bitte w&auml;hlen Sie aus, welche Versionen sie &uuml;berschreiben m&ouml;chten!';
                 }
 
                 if (count($cFehler_arr) > 0) {

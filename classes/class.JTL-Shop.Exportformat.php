@@ -986,21 +986,31 @@ class Exportformat
     }
 
     /**
-     * @param JobQueue|object $queue
+     * @param JobQueue|object $queueObject
      * @param bool            $isAsync
      * @param bool            $back
      * @param bool            $isCron
      * @param int|null        $max
-     * @return bool|void
+     * @return bool
      */
-    public function startExport($queue, $isAsync = false, $back = false, $isCron = false, $max = null)
+    public function startExport($queueObject, $isAsync = false, $back = false, $isCron = false, $max = null)
     {
         if (!$this->isOK()) {
+            Jtllog::cronLog('Export is not ok.', 1);
             return false;
         }
-        $this->setQueue($queue)->initSession()->initSmarty();
+        $this->setQueue($queueObject)->initSession()->initSmarty();
         if ($this->getPlugin() > 0 && strpos($this->getContent(), PLUGIN_EXPORTFORMAT_CONTENTFILE) !== false) {
+            Jtllog::cronLog('Starting plugin exportformat "' . $this->getName() . '" for language ' . $this->getSprache() . ' and customer group ' . $this->getKundengruppe() .
+                ' with caching ' . ((Shop::Cache()->isActive() && $this->useCache()) ? 'enabled' : 'disabled'));
             $oPlugin = new Plugin($this->getPlugin());
+            if ($isCron === true) {
+                global $oJobQueue;
+                $oJobQueue = $queueObject;
+            } else {
+                global $queue;
+                $queue = $queueObject;
+            }
             global $exportformat, $ExportEinstellungen;
             $exportformat                   = new stdClass();
             $exportformat->kKundengruppe    = $this->getKundengruppe();
@@ -1023,8 +1033,10 @@ class Exportformat
             $ExportEinstellungen            = $this->getConfig();
             include $oPlugin->cAdminmenuPfad . PFAD_PLUGIN_EXPORTFORMAT . str_replace(PLUGIN_EXPORTFORMAT_CONTENTFILE, '', $this->getContent());
 
-            Shop::DB()->delete('texportqueue', 'kExportqueue', (int)$this->queue->kExportqueue);
-            if ($_GET['back'] === 'admin') {
+            if (isset($queueObject->kExportqueue)) {
+                Shop::DB()->delete('texportqueue', 'kExportqueue', (int)$queueObject->kExportqueue);
+            }
+            if (isset($_GET['back']) && $_GET['back'] === 'admin') {
                 header('Location: exportformate.php?action=exported&token=' . $_SESSION['jtl_token'] . '&kExportformat=' . (int)$this->queue->kExportformat);
             }
             exit;
@@ -1046,9 +1058,9 @@ class Exportformat
             $max = (int)$max;
         }
 
-        Jtllog::cronLog('Starting exportformat "' . $this->cName . '" for language ' . $this->kSprache . ' and customer group ' . $this->kKundengruppe .
+        Jtllog::cronLog('Starting exportformat "' . $this->getName() . '" for language ' . $this->getSprache() . ' and customer group ' . $this->getKundengruppe() .
             ' with caching ' . ((Shop::Cache()->isActive() && $this->useCache()) ? 'enabled' : 'disabled') .
-             ' - ' . $queue->nLimitN . '/' . $max . ' products exported');
+             ' - ' . $queueObject->nLimitN . '/' . $max . ' products exported');
         // Kopfzeile schreiben
         if ($this->queue->nLimitN == 0) {
             $this->writeHeader($datei);
@@ -1140,10 +1152,10 @@ class Exportformat
 
                 executeHook(HOOK_DO_EXPORT_OUTPUT_FETCHED);
                 if (!$isAsync) {
-                    ++$queue->nLimitN;
+                    ++$queueObject->nLimitN;
                     //max. 10 status updates per run
-                    if (($queue->nLimitN % max(round($queue->nLimitM / 10), 10)) === 0) {
-                        Jtllog::cronLog($queue->nLimitN . '/' . $max . ' products exported', 2);
+                    if (($queueObject->nLimitN % max(round($queueObject->nLimitM / 10), 10)) === 0) {
+                        Jtllog::cronLog($queueObject->nLimitN . '/' . $max . ' products exported', 2);
                     }
                 }
             }
@@ -1205,15 +1217,15 @@ class Exportformat
             }
             fclose($datei);
         } else {
-            $queue->updateExportformatQueueBearbeitet();
-            $queue->setDZuletztGelaufen(date('Y-m-d H:i'))->setNInArbeit(0)->updateJobInDB();
+            $queueObject->updateExportformatQueueBearbeitet();
+            $queueObject->setDZuletztGelaufen(date('Y-m-d H:i'))->setNInArbeit(0)->updateJobInDB();
             //finalize job when there are no more articles to export
-            if (!(is_array($articles) && count($articles) > 0) || ($queue->nLimitN >= $max)) {
+            if (!(is_array($articles) && count($articles) > 0) || ($queueObject->nLimitN >= $max)) {
                 Jtllog::cronLog('Finalizing job.', 2);
                 $upd                   = new stdClass();
                 $upd->dZuletztErstellt = 'now()';
-                Shop::DB()->update('texportformat', 'kExportformat', (int)$queue->kKey, $upd);
-                $queue->deleteJobInDB();
+                Shop::DB()->update('texportformat', 'kExportformat', (int)$queueObject->kKey, $upd);
+                $queueObject->deleteJobInDB();
 
                 if (file_exists(PFAD_ROOT . PFAD_EXPORT . $this->cDateiname)) {
                     Jtllog::cronLog('Deleting final file ' . PFAD_ROOT . PFAD_EXPORT . $this->cDateiname);
@@ -1228,7 +1240,7 @@ class Exportformat
                 }
                 // Versucht (falls so eingestellt) die erstellte Exportdatei in mehrere Dateien zu splitten
                 $this->splitFile();
-                unset($queue);
+                unset($queueObject);
             }
             Jtllog::cronLog('Finished after ' . round(microtime(true) - $start, 4) . 's. Article cache hits: ' . $cacheHits . ', misses: ' . $cacheMisses);
         }

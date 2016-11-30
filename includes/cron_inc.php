@@ -14,7 +14,7 @@ define('JOBQUEUE_LOCKFILE', PFAD_LOGFILES . 'jobqueue.lock');
 if (file_exists(JOBQUEUE_LOCKFILE)) {
     if ((time() - filemtime(JOBQUEUE_LOCKFILE)) < 600) {
         Jtllog::cronLog('Cron currently locked', 2);
-        exit;
+//        exit;
     } else {
         touch(JOBQUEUE_LOCKFILE);
     }

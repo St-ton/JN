@@ -608,6 +608,71 @@ class Template
                         $oSetting->cValue       = (string)$XMLSetting->attributes()->Value;
                         $oSetting->bEditable    = (string)$XMLSetting->attributes()->Editable;
                         $oSetting->cPlaceholder = (string)$XMLSetting->attributes()->Placeholder;
+                        // negative values for the 'toggle'-attributes of textarea(resizable), check-boxes and radio-buttons
+                        $vToggleValues = ['0', 'no', 'none', 'off', 'false'];
+                        // special handling for textarea-type settings
+                        if ('textarea' === $oSetting->cType) {
+                            // inject the tag-attributes of the TextAreaValue in our oSetting
+                            $oSetting->vTextAreaAttr_arr = [];
+                            // get the SimpleXMLElement-array
+                            $attr = $XMLSetting->TextAreaValue->attributes();
+                            // we insert our default "no resizable"
+                            $oSetting->vTextAreaAttr_arr['Resizable'] = 'none';
+                            foreach ($attr as $_key => $_val) {
+                                $_val                               = (string)$_val; // cast the value(!)
+                                $oSetting->vTextAreaAttr_arr[$_key] = $_val;
+                                // multiple values of 'disable resizing' are allowed,
+                                // but only vertical is ok, if 'resizable' is required
+                                if ('Resizable' === (string)$_key) {
+                                    in_array($_val, $vToggleValues)
+                                        ? $oSetting->vTextAreaAttr_arr[$_key] = 'none'
+                                        : $oSetting->vTextAreaAttr_arr[$_key] = 'vertical'; // only vertical, because horizontal breaks the layout
+                                } else {
+                                    $oSetting->vTextAreaAttr_arr[$_key] = $_val;
+                                }
+                            }
+                            // get the tag-content of "TextAreaValue"; trim leading and trailing spaces
+                            $vszTextLines = mb_split("\n", (string)$XMLSetting->TextAreaValue);
+                            array_walk($vszTextLines, function (&$szLine) { $szLine = trim($szLine); });
+                            $oSetting->cTextAreaValue = join("\n", $vszTextLines);
+                        }
+                        // special handling for checkboxes and radiobuttons
+                        if ('checkbox' === $oSetting->cType || 'radio' === $oSetting->cType) {
+                            $vBox_arr = [];
+                            //$this->oLogger->debug(''.print_r( $XMLSetting ,true )); // --DEBUG--
+                            //$this->oLogger->debug('$oSetting->cName: '.print_r( $oSetting->cName ,true )); // --DEBUG--
+                            foreach ($XMLSetting->children() as $oBoxElement) {
+                                // "we do all only for OUR children"
+                                if ('CheckBox' === $oBoxElement->getName() || 'RadioBox' === $oBoxElement->getName()) {
+                                    //$this->oLogger->debug('child: '.print_r($oBoxElement->getName()  ,true )); // --DEBUG--
+                                    $oBox        = new stdClass();
+                                    $oBox->Value = (string)$oBoxElement->attributes()->Value;
+                                    $oBox->Order = (string)$oBoxElement->attributes()->Order;
+                                    if (isset($oBoxElement->attributes()->Checked)) {
+                                        in_array((string)$oBoxElement->attributes()->Checked, $vToggleValues)
+                                            ? null
+                                            : $oBox->Checked = 'checked';
+                                    }
+                                    //$this->oLogger->debug('oBox: '.print_r( $oBox ,true )); // --DEBUG--
+                                    $oBox->Text  = (string)$oBoxElement;
+                                    // add the possibility to apply a order to the boxes
+                                    if (isset($oBox->Order) && '' !== $oBox->Order) {
+                                        $vBox_arr[$oBox->Order] = $oBox;
+                                    } else {
+                                        $vBox_arr[] = $oBox;
+                                    }
+                                    //$this->oLogger->debug('oBox: '.print_r( $oBox ,true )); // --DEBUG--
+                                }
+                            }
+                            if (1 < count($vBox_arr)) {
+                                ksort($vBox_arr); // make the 'order' possible (better here, as via template!)
+                            }
+                            //$this->oLogger->debug('vBox_arr: '.print_r( $vBox_arr ,true )); // --DEBUG--
+
+                            $oSetting->vBox_arr = $vBox_arr;
+                            //$this->oLogger->debug('oSetting (behind): '.print_r( $oSetting ,true )); // --DEBUG--
+                        }
+                        // -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
                         foreach ($oSection->oSettings_arr as $_setting) {
                             if ($_setting->cKey === $oSetting->cKey) {
                                 $settingExists = true;
@@ -625,10 +690,15 @@ class Template
                             }
                             /** @var SimpleXMLElement $XMLOption */
                             foreach ($XMLSetting->Option as $XMLOption) {
-                                $oOption                  = new stdClass();
-                                $oOption->cName           = (string)$XMLOption;
-                                $oOption->cValue          = (string)$XMLOption->attributes()->Value;
-                                $oOption->cOrdner         = $cOrdner; //add current folder to option - useful for theme previews
+                                $oOption          = new stdClass();
+                                $oOption->cName   = (string)$XMLOption;
+                                $oOption->cValue  = (string)$XMLOption->attributes()->Value;
+                                $oOption->cOrdner = $cOrdner; //add current folder to option - useful for theme previews
+                                if ('' === (string)$XMLOption && '' !== (string)$XMLOption->attributes()->Name) {
+                                    // overwrite the cName (which defaults to the tag-content),
+                                    // if it's empty, with the Option-attribute "Name", if we got that
+                                    $oOption->cName = (string)$XMLOption->attributes()->Name;
+                                }
                                 $oSetting->oOptions_arr[] = $oOption;
                             }
                         }

@@ -56,7 +56,7 @@
                         <h3 class="panel-title">{$oSection->cName}</h3>
                     </div>
                     <div class="panel-body">
-                        <div class="row">                        
+                        <div class="row">
                             {foreach name="tplOptions" from=$oSection->oSettings_arr item=oSetting}
                                 {if $oSetting->cKey === 'theme_default' && isset($themePreviews) && $themePreviews !== null}
                                     <div class="col-xs-12">
@@ -117,6 +117,51 @@
                                                     <input class="form-control" type="number" name="cWert[]" id="{$oSection->cKey}-{$oSetting->cKey}" value="{$oSetting->cValue|escape:"html"}" placeholder="{$oSetting->cPlaceholder}" />
                                                 {elseif $oSetting->cType === 'text' || $oSetting->cType === 'float'}
                                                     <input class="form-control" type="text" name="cWert[]" id="{$oSection->cKey}-{$oSetting->cKey}" value="{$oSetting->cValue|escape:"html"}" placeholder="{$oSetting->cPlaceholder}" />
+                                                {elseif $oSetting->cType === 'textarea' }
+                                                    <textarea style="resize:{if isset($oSetting->vTextAreaAttr_arr.Resizable)}{$oSetting->vTextAreaAttr_arr.Resizable}{/if};max-width:800%;width:100%;border:none"
+                                                              name="cWert[]"
+                                                              cols="{if isset($oSetting->vTextAreaAttr_arr.Cols)}{$oSetting->vTextAreaAttr_arr.Cols}{/if}"
+                                                              rows="{if isset($oSetting->vTextAreaAttr_arr.Rows)}{$oSetting->vTextAreaAttr_arr.Rows}{/if}"
+                                                              id="{$oSection->cKey}-{$oSetting->cKey}"
+                                                              placeholder="{$oSetting->cPlaceholder}"
+                                                    >{$oSetting->cTextAreaValue|escape:'html'}</textarea>
+                                                {elseif $oSetting->cType === 'checkbox' || $oSetting->cType === 'radio'}
+                                                    {if 'checkbox' === $oSetting->cType }
+                                                        <style>
+                                                            #{$oSetting->cType}_wrapper {
+                                                                margin: 8px 2px 8px;
+                                                            }
+                                                            #{$oSetting->cType}_input {
+                                                                float: left;
+                                                            }
+                                                            #{$oSetting->cType}_cont_wrapper {
+                                                                float: left;
+                                                                padding-left: 10px;
+                                                            }
+                                                        </style>
+                                                    {elseif 'radio' === $oSetting->cType }
+                                                        <style>
+                                                            #{$oSetting->cType}_wrapper {
+                                                                margin: 0px 10px 8px;
+                                                            }
+                                                            #{$oSetting->cType}_input {
+                                                                float: left;
+                                                            }
+                                                            #{$oSetting->cType}_cont_wrapper {
+                                                                float: left;
+                                                                padding: 3px 10px;
+                                                            }
+                                                        </style>
+                                                    {/if}
+                                                    {foreach $oSetting->vBox_arr item=oBoxElement }
+                                                        <div id="{$oSetting->cType}_wrapper">
+                                                            <input id="{$oSetting->cType}_input"
+                                                                   type="{$oSetting->cType}"
+                                                                   name="{$oSetting->cName}"
+                                                                   value="{$oBoxElement->Value}"
+                                                                   {if isset($oBoxElement->Checked) && '' !== $oBoxElement->Checked}checked="checked"{/if}><div id="{$oSetting->cType}_cont_wrapper">{$oBoxElement->Text}</div><br>
+                                                        </div>
+                                                    {/foreach}
                                                 {elseif $oSetting->cType === 'upload' && isset($oSetting->rawAttributes.target)}
                                                     <div class="template-favicon-upload">
                                                         <input name="upload-{$smarty.foreach.tplOptions.index}"

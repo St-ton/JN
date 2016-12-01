@@ -493,7 +493,7 @@ function checkeWarenkorbEingang()
     } elseif (isset($_GET['n']) && doubleval($_GET['n']) > 0) {
         $fAnzahl = doubleval($_GET['n']);
     }
-    $kArtikel = (isset($_POST['a'])) ? $_POST['a'] : verifyGPCDataInteger('a');
+    $kArtikel = (isset($_POST['a'])) ? (int)$_POST['a'] : verifyGPCDataInteger('a');
     $conf     = Shop::getSettings(array(CONF_GLOBAL, CONF_VERGLEICHSLISTE));
     executeHook(HOOK_TOOLS_GLOBAL_CHECKEWARENKORBEINGANG_ANFANG, array('kArtikel' => $kArtikel, 'fAnzahl' => $fAnzahl));
     // Wunschliste?
@@ -1239,7 +1239,7 @@ function fuegeEinInWarenkorb($kArtikel, $anzahl, $oEigenschaftwerte_arr = '', $n
                 return false;
             }
             if ($nWeiterleitung == 0) {
-                $con = (strpos($Artikel->cURLFull,'?' === false)) ? '?' : '&';
+                $con = (strpos($Artikel->cURLFull, '?' === false)) ? '?' : '&';
                 if ($Artikel->kEigenschaftKombi > 0) {
                     $url = (!empty($Artikel->cURLFull)) ? ($Artikel->cURLFull . $con) : (Shop::getURL() . '/index.php?a=' . $Artikel->kVaterArtikel . '&a2=' . $Artikel->kArtikel . '&');
                     header('Location: ' . $url . 'n=' . $anzahl . '&r=' . implode(',', $redirectParam), true, 302);

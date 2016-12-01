@@ -7,9 +7,6 @@
 /**
  * @return int
  */
-/**
- * @return int
- */
 function bestellungKomplett()
 {
     require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.CheckBox.php';

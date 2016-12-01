@@ -2500,14 +2500,14 @@ function kuponMoeglich()
 
 
 /**
- * @return int
+ * @return bool
  */
 function freeGiftStillValid()
 {
-    $valid = 1;
+    $valid = true;
     foreach ($_SESSION['Warenkorb']->PositionenArr as $oPosition) {
         if ($oPosition->nPosTyp == C_WARENKORBPOS_TYP_GRATISGESCHENK) {
-            // Prüfen ob der Artikel wirklich ein Gratis Geschenk ist und ob der Gesamtpreis noch zum Gratisgeschenk passt
+            // Prüfen ob der Artikel wirklich ein Gratisgeschenk ist und ob die Mindestsumme erreicht wird
             $oArtikelGeschenk = Shop::DB()->query(
                 "SELECT kArtikel
                     FROM tartikelattribut
@@ -2516,9 +2516,9 @@ function freeGiftStillValid()
                        AND CAST(cWert AS DECIMAL) <= " . $_SESSION['Warenkorb']->gibGesamtsummeWarenExt(array(C_WARENKORBPOS_TYP_ARTIKEL), true), 1
             );
 
-            if ($oArtikelGeschenk->kArtikel == 0) {
+            if (empty($oArtikelGeschenk->kArtikel)) {
                 $_SESSION['Warenkorb']->loescheSpezialPos(C_WARENKORBPOS_TYP_GRATISGESCHENK);
-                $valid = 0;
+                $valid = false;
             }
             break;
         }

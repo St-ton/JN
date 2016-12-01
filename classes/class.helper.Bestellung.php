@@ -43,11 +43,9 @@ class BestellungHelper extends WarenkorbHelper
         $info->currency = $order->Waehrung;
 
         foreach ($order->Positionen as $oPosition) {
-            $amountItem = $oPosition->fPreisEinzelNetto;
-
+            $amountItem  = $oPosition->fPreisEinzelNetto;
             $amount      = $amountItem; /* $order->fWaehrungsFaktor;*/
             $amountGross = $amount + ($amount * $oPosition->fMwSt / 100);
-
             // floating-point precission bug
             $amountGross = (float)(string)$amountGross;
 
@@ -162,7 +160,7 @@ class BestellungHelper extends WarenkorbHelper
     }
 
     /**
-     * @return Lieferadresse
+     * @return Lieferadresse|Rechnungsadresse
      */
     public function getShippingAddress()
     {

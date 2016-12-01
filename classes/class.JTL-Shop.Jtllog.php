@@ -202,10 +202,10 @@ class Jtllog
      */
     public static function getLog($cFilter = '', $nLevel = 0, $nLimitN = 0, $nLimitM = 1000)
     {
-        $oJtllog_arr = array();
+        $oJtllog_arr = [];
         $cSQLWhere   = '';
         if (intval($nLevel) > 0) {
-            $cSQLWhere = " WHERE nLevel = " . intval($nLevel);
+            $cSQLWhere = " WHERE nLevel = " . (int)$nLevel;
         }
         if (strlen($cFilter) > 0 && strlen($cSQLWhere) === 0) {
             $cSQLWhere .= " WHERE cLog LIKE '%" . $cFilter . "%'";
@@ -218,7 +218,7 @@ class Jtllog
                 FROM tjtllog
                 " . $cSQLWhere . "
                 ORDER BY dErstellt DESC, kLog DESC
-                LIMIT " . intval($nLimitN) . ", " . intval($nLimitM), 2
+                LIMIT " . (int)$nLimitN . ", " . (int)$nLimitM, 2
         );
         if (is_array($oLog_arr) && count($oLog_arr) > 0) {
             foreach ($oLog_arr as $oLog) {
@@ -243,7 +243,7 @@ class Jtllog
     {
         $cSQLWhere = '';
         if (intval($nLevel) > 0) {
-            $cSQLWhere = " WHERE nLevel = " . intval($nLevel);
+            $cSQLWhere = " WHERE nLevel = " . (int)$nLevel;
         }
 
         if (strlen($cFilter) > 0 && strlen($cSQLWhere) === 0) {
@@ -254,8 +254,8 @@ class Jtllog
 
         $oLog = Shop::DB()->query("SELECT count(*) AS nAnzahl FROM tjtllog" . $cSQLWhere, 1);
 
-        if (isset($oLog->nAnzahl) && intval($oLog->nAnzahl) > 0) {
-            return $oLog->nAnzahl;
+        if (isset($oLog->nAnzahl) && $oLog->nAnzahl > 0) {
+            return (int)$oLog->nAnzahl;
         }
 
         return 0;
@@ -273,7 +273,7 @@ class Jtllog
         $oObj = Shop::DB()->query("SELECT count(*) AS nCount FROM tjtllog", 1);
 
         if (isset($oObj->nCount) && intval($oObj->nCount) > JTLLOG_MAX_LOGSIZE) {
-            $nLimit = intval($oObj->nCount) - JTLLOG_MAX_LOGSIZE;
+            $nLimit = (int)$oObj->nCount - JTLLOG_MAX_LOGSIZE;
             Shop::DB()->query("DELETE FROM tjtllog ORDER BY dErstellt LIMIT {$nLimit}", 4);
         }
     }

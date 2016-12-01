@@ -302,7 +302,7 @@ class JTLCache
      * @param array $options
      * @return $this
      */
-    public function setOptions($options = array())
+    public function setOptions($options = [])
     {
         $defaults = [
             'activated'        => false, //main switch
@@ -322,7 +322,7 @@ class JTLCache
             'cache_dir'        => (defined('PFAD_ROOT') && defined('PFAD_COMPILEDIR')) ? (PFAD_ROOT . PFAD_COMPILEDIR . 'filecache/') : sys_get_temp_dir(), //file cache directory
             'file_extension'   => '.fc', //file extension for file cache
             'page_cache'       => false, //smarty page cache switch
-            'types_disabled'   => array() //disabled cache groups
+            'types_disabled'   => [] //disabled cache groups
         ];
         //merge defaults with assigned options and set them
         $this->options = array_merge($defaults, $options);
@@ -988,7 +988,7 @@ class JTLCache
             $result = [
                 'method'  => $methods,
                 'status'  => 'ok',
-                'timings' => array('get' => 0.0, 'set' => 0.0)
+                'timings' => ['get' => 0.0, 'set' => 0.0]
             ];
             if ($cacheSetRes !== false) {
                 for ($i = 0; $i < $repeat; ++$i) {

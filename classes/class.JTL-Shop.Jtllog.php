@@ -5,9 +5,7 @@
  */
 
 /**
- * Class Jtllol
- *
- * @access public
+ * Class Jtllog
  */
 class Jtllog
 {

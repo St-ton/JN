@@ -49,7 +49,7 @@ class JTLSmarty extends SmartyBC
     /**
      * @var array
      */
-    private static $_replacer = array(
+    private static $_replacer = [
         'productdetails/index.tpl'                              => 'artikel.tpl',
         'productwizard/index.tpl'                               => 'auswahlassistent.tpl',
         'checkout/order_completed.tpl'                          => 'bestellabschluss.tpl',
@@ -229,7 +229,7 @@ class JTLSmarty extends SmartyBC
         'basket/index.tpl'                                      => 'warenkorb.tpl',
         'snippets/maintenance.tpl'                              => 'wartung.tpl',
         'snippets/wishlist.tpl'                                 => 'wunschliste.tpl'
-    );
+    ];
 
     /**
      * @var int
@@ -260,7 +260,7 @@ class JTLSmarty extends SmartyBC
              ->setForceCompile(SMARTY_FORCE_COMPILE ? true : false)
              ->setDebugging(SMARTY_DEBUG_CONSOLE ? true : false);
 
-        $this->config = Shop::getSettings(array(CONF_TEMPLATE, CONF_CACHING, CONF_GLOBAL));
+        $this->config = Shop::getSettings([CONF_TEMPLATE, CONF_CACHING, CONF_GLOBAL]);
         $template     = ($isAdmin) ? AdminTemplate::getInstance() : Template::getInstance();
         $cTemplate    = $template->getDir();
         $parent       = null;
@@ -270,7 +270,7 @@ class JTLSmarty extends SmartyBC
             if (!file_exists($_compileDir)) {
                 mkdir($_compileDir);
             }
-            $this->setTemplateDir(array($this->context => PFAD_ROOT . PFAD_TEMPLATES . $cTemplate . '/'))
+            $this->setTemplateDir([$this->context => PFAD_ROOT . PFAD_TEMPLATES . $cTemplate . '/'])
                  ->setCompileDir($_compileDir)
                  ->setCacheDir(PFAD_ROOT . PFAD_COMPILEDIR . $cTemplate . '/' . 'page_cache/')
                  ->setPluginsDir(SMARTY_PLUGINS_DIR);
@@ -289,7 +289,7 @@ class JTLSmarty extends SmartyBC
             $this->context = 'backend';
             $this->setCaching(false)
                  ->setDebugging(SMARTY_DEBUG_CONSOLE ? true : false)
-                 ->setTemplateDir(array($this->context => PFAD_ROOT . PFAD_ADMIN . PFAD_TEMPLATES . $cTemplate))
+                 ->setTemplateDir([$this->context => PFAD_ROOT . PFAD_ADMIN . PFAD_TEMPLATES . $cTemplate])
                  ->setCompileDir($_compileDir)
                  ->setConfigDir(PFAD_ROOT . PFAD_ADMIN . PFAD_TEMPLATES . $cTemplate . '/lang/')
                  ->setPluginsDir(SMARTY_PLUGINS_DIR)
@@ -299,12 +299,12 @@ class JTLSmarty extends SmartyBC
         $this->template = $template;
 
         if ($fast_init === false) {
-            $this->registerPlugin('function', 'lang', array($this, '__gibSprachWert'))
-                 ->registerPlugin('modifier', 'replace_delim', array($this, 'replaceDelimiters'))
-                 ->registerPlugin('modifier', 'count_characters', array($this, 'countCharacters'))
-                 ->registerPlugin('modifier', 'string_format', array($this, 'stringFormat'))
-                 ->registerPlugin('modifier', 'string_date_format', array($this, 'dateFormat'))
-                 ->registerPlugin('modifier', 'truncate', array($this, 'truncate'));
+            $this->registerPlugin('function', 'lang', [$this, '__gibSprachWert'])
+                 ->registerPlugin('modifier', 'replace_delim', [$this, 'replaceDelimiters'])
+                 ->registerPlugin('modifier', 'count_characters', [$this, 'countCharacters'])
+                 ->registerPlugin('modifier', 'string_format', [$this, 'stringFormat'])
+                 ->registerPlugin('modifier', 'string_date_format', [$this, 'dateFormat'])
+                 ->registerPlugin('modifier', 'truncate', [$this, 'truncate']);
 
             if ($isAdmin === false) {
                 $this->cache_lifetime = (isset($cacheOptions['expiration']) && ((int)$cacheOptions['expiration'] > 0)) ? $cacheOptions['expiration'] : 86400;
@@ -356,7 +356,7 @@ class JTLSmarty extends SmartyBC
     {
         //instantiate new cache - we use different options here
         if ($config === null) {
-            $config = Shop::getSettings(array(CONF_CACHING));
+            $config = Shop::getSettings([CONF_CACHING]);
         }
         $compileCheck = (isset($config['caching']['compile_check']) && $config['caching']['compile_check'] === 'N')
             ? false
@@ -391,7 +391,7 @@ class JTLSmarty extends SmartyBC
                 count($hookList[HOOK_SMARTY_OUTPUTFILTER]) > 0) ||
             $this->template->isMobileTemplateActive()
         ) {
-            $this->unregisterFilter('output', array($this, '__outputFilter'));
+            $this->unregisterFilter('output', [$this, '__outputFilter']);
             $GLOBALS['doc'] = phpQuery::newDocumentHTML($tplOutput, JTL_CHARSET);
             if ($this->template->isMobileTemplateActive()) {
                 executeHook(HOOK_SMARTY_OUTPUTFILTER_MOBILE);
@@ -441,28 +441,6 @@ class JTLSmarty extends SmartyBC
         $this->debugging = $mode;
 
         return $this;
-    }
-
-    /**
-     * output filter to access cached template parts
-     *
-     * @param string $tplOutput
-     * @return string
-     */
-    public function __cacheOutputFilter($tplOutput)
-    {
-        //only execute phpquery if this hook is used by plugins
-        $hookList = Plugin::getHookList();
-        if (isset($hookList[HOOK_SMARTY_OUTPUTFILTER_CACHE]) &&
-            is_array($hookList[HOOK_SMARTY_OUTPUTFILTER_CACHE]) &&
-            count($hookList[HOOK_SMARTY_OUTPUTFILTER_CACHE]) > 0
-        ) {
-            $doc = phpQuery::newDocumentHTML($tplOutput, JTL_CHARSET);
-            executeHook(HOOK_SMARTY_OUTPUTFILTER_CACHE, array('smarty' => $this));
-            $tplOutput = $doc->htmlOuter();
-        }
-
-        return $tplOutput;
     }
 
     /**
@@ -559,8 +537,8 @@ class JTLSmarty extends SmartyBC
             return $string;
         }
         if (DIRECTORY_SEPARATOR == '\\') {
-            $_win_from = array('%D', '%h', '%n', '%r', '%R', '%t', '%T');
-            $_win_to   = array('%m/%d/%y', '%b', "\n", '%I:%M:%S %p', '%H:%M', "\t", '%H:%M:%S');
+            $_win_from = ['%D', '%h', '%n', '%r', '%R', '%t', '%T'];
+            $_win_to   = ['%m/%d/%y', '%b', "\n", '%I:%M:%S %p', '%H:%M', "\t", '%H:%M:%S'];
             if (strpos($format, '%e') !== false) {
                 $_win_from[] = '%e';
                 $_win_to[]   = sprintf('%\' 2d', date('j', $timestamp));
@@ -576,7 +554,7 @@ class JTLSmarty extends SmartyBC
     }
 
     /**
-     * @param        $string
+     * @param string $string
      * @param int    $length
      * @param string $etc
      * @param bool   $break_words
@@ -690,7 +668,7 @@ class JTLSmarty extends SmartyBC
     public function display($template = null, $cache_id = null, $compile_id = null, $parent = null)
     {
         if ($this->context === 'frontend') {
-            $this->registerFilter('output', array($this, '__outputFilter'));
+            $this->registerFilter('output', [$this, '__outputFilter']);
         }
 
         return parent::display($this->getResourceName($template), $cache_id, $compile_id, $parent);
@@ -724,13 +702,13 @@ class JTLSmarty extends SmartyBC
         $resource_fallback_name = $this->getFallbackFile($resource_custom_name);
         $resource_cfb_name      = $this->getCustomFile($resource_fallback_name);
 
-        executeHook(HOOK_SMARTY_FETCH_TEMPLATE, array(
+        executeHook(HOOK_SMARTY_FETCH_TEMPLATE, [
             'original'  => &$resource_name,
             'custom'    => &$resource_custom_name,
             'fallback'  => &$resource_fallback_name,
             'out'       => &$resource_cfb_name,
             'transform' => $transform
-        ));
+        ]);
 
         return ($transform) ? ('file:' . $resource_cfb_name) : $resource_cfb_name;
     }
@@ -793,6 +771,11 @@ class JTLSmarty extends SmartyBC
  */
 class jtlTplClass extends Smarty_Internal_Template
 {
+    /**
+     * @var JTLSmarty
+     */
+    public $smarty;
+
     /**
      * Runtime function to render sub-template
      *

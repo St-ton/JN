@@ -636,43 +636,6 @@ class Template
                             array_walk($vszTextLines, function (&$szLine) { $szLine = trim($szLine); });
                             $oSetting->cTextAreaValue = join("\n", $vszTextLines);
                         }
-                        // special handling for checkboxes and radiobuttons
-                        if ('checkbox' === $oSetting->cType || 'radio' === $oSetting->cType) {
-                            $vBox_arr = [];
-                            //$this->oLogger->debug(''.print_r( $XMLSetting ,true )); // --DEBUG--
-                            //$this->oLogger->debug('$oSetting->cName: '.print_r( $oSetting->cName ,true )); // --DEBUG--
-                            foreach ($XMLSetting->children() as $oBoxElement) {
-                                // "we do all only for OUR children"
-                                if ('CheckBox' === $oBoxElement->getName() || 'RadioBox' === $oBoxElement->getName()) {
-                                    //$this->oLogger->debug('child: '.print_r($oBoxElement->getName()  ,true )); // --DEBUG--
-                                    $oBox        = new stdClass();
-                                    $oBox->Value = (string)$oBoxElement->attributes()->Value;
-                                    $oBox->Order = (string)$oBoxElement->attributes()->Order;
-                                    if (isset($oBoxElement->attributes()->Checked)) {
-                                        in_array((string)$oBoxElement->attributes()->Checked, $vToggleValues)
-                                            ? null
-                                            : $oBox->Checked = 'checked';
-                                    }
-                                    //$this->oLogger->debug('oBox: '.print_r( $oBox ,true )); // --DEBUG--
-                                    $oBox->Text  = (string)$oBoxElement;
-                                    // add the possibility to apply a order to the boxes
-                                    if (isset($oBox->Order) && '' !== $oBox->Order) {
-                                        $vBox_arr[$oBox->Order] = $oBox;
-                                    } else {
-                                        $vBox_arr[] = $oBox;
-                                    }
-                                    //$this->oLogger->debug('oBox: '.print_r( $oBox ,true )); // --DEBUG--
-                                }
-                            }
-                            if (1 < count($vBox_arr)) {
-                                ksort($vBox_arr); // make the 'order' possible (better here, as via template!)
-                            }
-                            //$this->oLogger->debug('vBox_arr: '.print_r( $vBox_arr ,true )); // --DEBUG--
-
-                            $oSetting->vBox_arr = $vBox_arr;
-                            //$this->oLogger->debug('oSetting (behind): '.print_r( $oSetting ,true )); // --DEBUG--
-                        }
-                        // -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
                         foreach ($oSection->oSettings_arr as $_setting) {
                             if ($_setting->cKey === $oSetting->cKey) {
                                 $settingExists = true;

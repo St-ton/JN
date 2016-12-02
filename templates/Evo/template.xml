@@ -9,6 +9,21 @@
     <Description>JTL-Shop Responsive-Template</Description>
     <Settings>
         <Section Name="Allgemein" Key="general">
+
+            <Setting Description="(new) TextArea field" Key="newTA_key" Type="textarea" Value="newTA_value" Placeholder="Lines of Text (HTML is possible)">
+                <TextAreaValue Rows="11" Cols="12" Resizable="false">
+                    Some lines of text, for Example,
+                    written in the newTA.
+
+                    And it has <![CDATA[<b>bold</b>]]> text in CDATA too.
+                </TextAreaValue>
+            </Setting>
+
+            <Setting Description="(new) PassWord field" Key="newPF_key" Type="password" Value="newPF" Name="passwordfield">
+                <Password Value=""></Password>
+            </Setting>
+
+
             <Setting Description="Komprimierung von JavaScript- und CSS-Dateien" Key="use_minify" Type="select" Value="N">
                 <Option Value="Y">Ja</Option>
                 <Option Value="N">Nein</Option>

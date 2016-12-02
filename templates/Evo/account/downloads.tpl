@@ -28,7 +28,7 @@
                             <input name="a" type="hidden" value="getdl" />
                             <input name="bestellung" type="hidden" value="{$Bestellung->kBestellung}" />
                             <input name="dl" type="hidden" value="{$oDownload->getDownload()}" />
-                            <button class="btn btn-default btn-xs">{lang key="download" sektion="global"}</button>
+                            <button class="btn btn-default btn-xs"><i class="fa fa-download"></i> {lang key="download" sektion="global"}</button>
                         </form>
                     {else}
                         {lang key="downloadPending"}
@@ -69,7 +69,7 @@
                         {/foreach}
                         {if $cStatus == $BESTELLUNG_STATUS_BEZAHLT || $cStatus == $BESTELLUNG_STATUS_VERSANDT}
                             <input name="dl" type="hidden" value="{$oDownload->getDownload()}" />
-                            <button class="btn btn-default"><i class="fa fa-download"></i></button>
+                            <button class="btn btn-default btn-xs"><i class="fa fa-download"></i> {lang key="download" sektion="global"}</button>
                         {else}
                             {lang key="downloadPending"}
                         {/if}

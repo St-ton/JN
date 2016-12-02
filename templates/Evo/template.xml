@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<Template>
+<Template isFullResponsive="true">
     <Name>Evo</Name>
     <Author>JTL-Software-GmbH</Author>
     <URL>https://www.jtl-software.de</URL>
     <Version>4.05</Version>
     <ShopVersion>405</ShopVersion>
-    <Preview>themes/base/images/preview.png</Preview>
+    <Preview>preview.png</Preview>
+    <Description>JTL-Shop Responsive-Template</Description>
     <Settings>
         <Section Name="Allgemein" Key="general">
             <Setting Description="Komprimierung von JavaScript- und CSS-Dateien" Key="use_minify" Type="select" Value="N">
@@ -74,6 +75,10 @@
                 <Option Value="boxed">Ja (Header, Inhalt, Footer werden einheitlich in eine Box eingefasst)</Option>
             </Setting>
             <Setting Description="Full-Width Slider?" Key="slider_full_width" Type="select" Value="N">
+                <Option Value="N">Nein</Option>
+                <Option Value="Y">Ja (funktioniert nur in Kombination mit Boxed Layout = Nein)</Option>
+            </Setting>
+            <Setting Description="Full-Width Banner?" Key="banner_full_width" Type="select" Value="N">
                 <Option Value="N">Nein</Option>
                 <Option Value="Y">Ja (funktioniert nur in Kombination mit Boxed Layout = Nein)</Option>
             </Setting>

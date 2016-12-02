@@ -2,18 +2,17 @@
 
 require_once dirname(__FILE__) . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Jtllog.php';
-require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'blaetternavi.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'statistik_inc.php';
 
 $oAccount->permission('PROFILER_VIEW', true, true);
-
+/** @global JTLSmarty $smarty */
 $tab      = 'uebersicht';
 $cFehler  = '';
 $cHinweis = '';
 $sqlData  = null;
 if (isset($_POST['delete-run-submit']) && validateToken()) {
     if (isset($_POST['run-id']) && is_numeric($_POST['run-id'])) {
-        $res = deleteProfileRun(false, (int) $_POST['run-id']);
+        $res = deleteProfileRun(false, (int)$_POST['run-id']);
         if (is_numeric($res) && $res > 0) {
             $cHinweis = 'Eintrag erfolgreich gel&ouml;scht.';
         } else {

@@ -5,11 +5,18 @@
  */
 define('CACHING_ROOT_DIR', dirname(__FILE__) . '/');
 define('CACHING_METHODS_DIR', CACHING_ROOT_DIR . 'CachingMethods/');
-
-//include helper class
-require_once CACHING_ROOT_DIR . 'class.helper.JTLCache.php';
-//include interface for caching methods
-require_once CACHING_ROOT_DIR . 'interface.JTL-Shop.ICachingMethod.php';
+define('CACHING_GROUP_ARTICLE', 'art');
+define('CACHING_GROUP_CATEGORY', 'cat');
+define('CACHING_GROUP_LANGUAGE', 'lang');
+define('CACHING_GROUP_TEMPLATE', 'tpl');
+define('CACHING_GROUP_OPTION', 'opt');
+define('CACHING_GROUP_PLUGIN', 'plgn');
+define('CACHING_GROUP_CORE', 'core');
+define('CACHING_GROUP_OBJECT', 'obj');
+define('CACHING_GROUP_BOX', 'bx');
+define('CACHING_GROUP_NEWS', 'nws');
+define('CACHING_GROUP_ATTRIBUTE', 'attr');
+define('CACHING_GROUP_MANUFACTURER', 'mnf');
 
 /**
  * Class JTLCache
@@ -36,7 +43,7 @@ require_once CACHING_ROOT_DIR . 'interface.JTL-Shop.ICachingMethod.php';
  * @method mixed getActiveMethod()
  * @method mixed checkAvailability()
  * @method int getResultCode()
- * @method array benchmark(array $methods = 'all', mixed $testData = 'simple string', int $runCount = 1000, int $repeat = 1, bool $echo = true, bool $format = false)
+ * @method array benchmark(array|string $methods = 'all', mixed|string $testData = 'simple string', int $runCount = 1000, int $repeat = 1, bool $echo = true, bool $format = false)
  */
 class JTLCache
 {
@@ -83,7 +90,7 @@ class JTLCache
     /**
      * currently active caching method
      *
-     * @var ICachingMethod
+     * @var cache_apc|cache_file|cache_memcache|cache_memcached|cache_redis|cache_session|cache_xcache
      */
     private $_method = null;
 
@@ -111,7 +118,7 @@ class JTLCache
     /**
      * @var array
      */
-    private $cachingGroups = array();
+    private $cachingGroups = [];
 
     /**
      * init cache and set default method
@@ -119,13 +126,12 @@ class JTLCache
      * @param array $options
      * @param bool  $ignoreInstance - used for page cache to not overwrite the instance and delete debug output
      */
-    public function __construct($options = array(), $ignoreInstance = false)
+    public function __construct($options = [], $ignoreInstance = false)
     {
         if ($ignoreInstance === false) {
             self::$instance = $this;
         }
         $this->setCachingGroups()
-             ->setDefines()
              ->setOptions($options);
     }
 
@@ -133,10 +139,9 @@ class JTLCache
      * singleton
      *
      * @param array $options
-     *
      * @return JTLCache
      */
-    public static function getInstance($options = array())
+    public static function getInstance($options = [])
     {
         return (self::$instance !== null) ? self::$instance : new self($options);
     }
@@ -144,30 +149,30 @@ class JTLCache
     /**
      * object wrapper
      *
-     * @param $method
-     * @param $arguments
+     * @param string $method
+     * @param array  $arguments
      * @return mixed
      */
     public function __call($method, $arguments)
     {
         $mapping = self::map($method);
 
-        return ($mapping !== null) ? call_user_func_array(array($this, $mapping), $arguments) : null;
+        return ($mapping !== null) ? call_user_func_array([$this, $mapping], $arguments) : null;
     }
 
     /**
      * static wrapper
      * this allows to call Cache::set() etc.
      *
-     * @param $method
-     * @param $arguments
+     * @param string $method
+     * @param array  $arguments
      * @return mixed
      */
     public static function __callStatic($method, $arguments)
     {
         $mapping = self::map($method);
 
-        return ($mapping !== null) ? call_user_func_array(array(self::$instance, $mapping), $arguments) : null;
+        return ($mapping !== null) ? call_user_func_array([self::$instance, $mapping], $arguments) : null;
     }
 
     /**
@@ -178,7 +183,7 @@ class JTLCache
      */
     private static function map($method)
     {
-        $mapping = array(
+        $mapping = [
             'get'                => '_get',
             'fetch'              => '_get',
             'set'                => '_set',
@@ -202,7 +207,7 @@ class JTLCache
             'checkAvailability'  => '_checkAvailability',
             'getResultCode'      => '_getResultCode',
             'benchmark'          => '_benchmark',
-        );
+        ];
 
         return (isset($mapping[$method])) ? $mapping[$method] : null;
     }
@@ -215,68 +220,68 @@ class JTLCache
      */
     private function setCachingGroups()
     {
-        $this->cachingGroups = array(
-            array(
+        $this->cachingGroups = [
+            [
                 'name'        => 'CACHING_GROUP_ARTICLE',
                 'nicename'    => 'cg_article_nicename',
-                'value'       => 'art',
-                'description' => 'cg_article_description'),
-            array(
+                'value'       => CACHING_GROUP_ARTICLE,
+                'description' => 'cg_article_description'],
+            [
                 'name'        => 'CACHING_GROUP_CATEGORY',
                 'nicename'    => 'cg_category_nicename',
-                'value'       => 'cat',
-                'description' => 'cg_category_description'),
-            array(
+                'value'       => CACHING_GROUP_CATEGORY,
+                'description' => 'cg_category_description'],
+            [
                 'name'        => 'CACHING_GROUP_LANGUAGE',
                 'nicename'    => 'cg_language_nicename',
-                'value'       => 'lang',
-                'description' => 'cg_language_description'),
-            array(
+                'value'       => CACHING_GROUP_LANGUAGE,
+                'description' => 'cg_language_description'],
+            [
                 'name'        => 'CACHING_GROUP_TEMPLATE',
                 'nicename'    => 'cg_template_nicename',
-                'value'       => 'tpl',
-                'description' => 'cg_template_description'),
-            array(
+                'value'       => CACHING_GROUP_TEMPLATE,
+                'description' => 'cg_template_description'],
+            [
                 'name'        => 'CACHING_GROUP_OPTION',
                 'nicename'    => 'cg_option_nicename',
-                'value'       => 'opt',
-                'description' => 'cg_option_description'),
-            array(
+                'value'       => CACHING_GROUP_OPTION,
+                'description' => 'cg_option_description'],
+            [
                 'name'        => 'CACHING_GROUP_PLUGIN',
                 'nicename'    => 'cg_plugin_nicename',
-                'value'       => 'plgn',
-                'description' => 'cg_plugin_description'),
-            array(
+                'value'       => CACHING_GROUP_PLUGIN,
+                'description' => 'cg_plugin_description'],
+            [
                 'name'        => 'CACHING_GROUP_CORE',
                 'nicename'    => 'cg_core_nicename',
-                'value'       => 'core',
-                'description' => 'cg_core_description'),
-            array(
+                'value'       => CACHING_GROUP_CORE,
+                'description' => 'cg_core_description'],
+            [
                 'name'        => 'CACHING_GROUP_OBJECT',
                 'nicename'    => 'cg_object_nicename',
-                'value'       => 'obj',
-                'description' => 'cg_object_description'),
-            array(
+                'value'       => CACHING_GROUP_OBJECT,
+                'description' => 'cg_object_description'],
+            [
                 'name'        => 'CACHING_GROUP_BOX',
                 'nicename'    => 'cg_box_nicename',
-                'value'       => 'bx',
-                'description' => 'cg_box_description'),
-            array(
+                'value'       => CACHING_GROUP_BOX,
+                'description' => 'cg_box_description'],
+            [
                 'name'        => 'CACHING_GROUP_NEWS',
                 'nicename'    => 'cg_news_nicename',
-                'value'       => 'nws',
-                'description' => 'cg_news_description'),
-            array(
+                'value'       => CACHING_GROUP_NEWS,
+                'description' => 'cg_news_description'],
+            [
                 'name'        => 'CACHING_GROUP_ATTRIBUTE',
                 'nicename'    => 'cg_attribute_nicename',
-                'value'       => 'attr',
-                'description' => 'cg_attribute_description'),
-            array(
+                'value'       => CACHING_GROUP_ATTRIBUTE,
+                'description' => 'cg_attribute_description'],
+            [
                 'name'        => 'CACHING_GROUP_MANUFACTURER',
                 'nicename'    => 'cg_manufacturer_nicename',
-                'value'       => 'mnf',
-                'description' => 'cg_manufacturer_description'),
-        );
+                'value'       => CACHING_GROUP_MANUFACTURER,
+                'description' => 'cg_manufacturer_description'],
+        ];
 
         return $this;
     }
@@ -292,44 +297,14 @@ class JTLCache
     }
 
     /**
-     * set default defines for caching groups
-     *
-     * @return $this
-     */
-    private function setDefines()
-    {
-        if (!defined('CACHING_GROUP_ARTICLE')) {
-            define('CACHING_GROUP_ARTICLE', 'art');
-            define('CACHING_GROUP_CATEGORY', 'cat');
-            define('CACHING_GROUP_LANGUAGE', 'lang');
-            define('CACHING_GROUP_TEMPLATE', 'tpl');
-            define('CACHING_GROUP_OPTION', 'opt');
-            define('CACHING_GROUP_PLUGIN', 'plgn');
-            define('CACHING_GROUP_CORE', 'core');
-            define('CACHING_GROUP_OBJECT', 'obj');
-            define('CACHING_GROUP_BOX', 'bx');
-            define('CACHING_GROUP_NEWS', 'nws');
-            define('CACHING_GROUP_ATTRIBUTE', 'attr');
-            define('CACHING_GROUP_MANUFACTURER', 'mnf');
-            //the following would be more elegant but confuses IDEs
-//            foreach ($this->cachingGroups as $_cachingGroup) {
-//                define($_cachingGroup['name'], $_cachingGroup['value']);
-//            }
-        }
-
-        return $this;
-    }
-
-    /**
      * set options
      *
      * @param array $options
-     *
      * @return $this
      */
-    public function setOptions($options = array())
+    public function setOptions($options = [])
     {
-        $defaults = array(
+        $defaults = [
             'activated'        => false, //main switch
             'method'           => 'null', //caching method to use - init with null to avoid errors after installation
             'redis_port'       => self::DEFAULT_REDIS_PORT, //port of redis server
@@ -344,11 +319,11 @@ class JTLCache
             'collect_stats'    => false, //used to tell caching methods to collect statistical data or not (if not provided transparently)
             'debug'            => false, //enable or disable collecting of debug data
             'debug_method'     => 'echo', //'ssd'/'jtld' for SmarterSmartyDebug/JTLDebug, 'echo' for direct echo
-            'cache_dir'        => (defined('PFAD_ROOT') && defined('PFAD_COMPILEDIR')) ? (PFAD_ROOT . PFAD_COMPILEDIR . 'filecache/') : '/tmp', //file cache directory
-            'file_extension'   => '.fcache', //file extension for file cache
+            'cache_dir'        => (defined('PFAD_ROOT') && defined('PFAD_COMPILEDIR')) ? (PFAD_ROOT . PFAD_COMPILEDIR . 'filecache/') : sys_get_temp_dir(), //file cache directory
+            'file_extension'   => '.fc', //file extension for file cache
             'page_cache'       => false, //smarty page cache switch
-            'types_disabled'   => array() //disabled cache groups
-        );
+            'types_disabled'   => [] //disabled cache groups
+        ];
         //merge defaults with assigned options and set them
         $this->options = array_merge($defaults, $options);
         //always add trailing slash
@@ -356,13 +331,11 @@ class JTLCache
             $this->options['cache_dir'] .= '/';
         }
         //accept only valid integer lifetime values
-        if ($this->options['lifetime'] === '' || (int) $this->options['lifetime'] <= 0) {
-            $this->options['lifetime'] = self::DEFAULT_LIFETIME;
-        } else {
-            $this->options['lifetime'] = (int) $this->options['lifetime'];
-        }
+        $this->options['lifetime'] = ($this->options['lifetime'] === '' || (int)$this->options['lifetime'] <= 0) ?
+            self::DEFAULT_LIFETIME :
+            (int)$this->options['lifetime'];
         if ($this->options['types_disabled'] === null) {
-            $this->options['types_disabled'] = array();
+            $this->options['types_disabled'] = [];
         }
         if ($this->options['debug'] === true && $this->options['debug_method'] === 'echo') {
             echo '<br />Initialized Cache with method ' . $this->options['method'];
@@ -375,7 +348,6 @@ class JTLCache
      * set caching method by name
      *
      * @param string $methodName
-     *
      * @return bool
      */
     public function setCache($methodName)
@@ -383,6 +355,7 @@ class JTLCache
         $cache = null;
         if (file_exists(CACHING_METHODS_DIR . 'class.cachingMethod.' . $methodName . '.php')) {
             require_once CACHING_METHODS_DIR . 'class.cachingMethod.' . $methodName . '.php';
+            /** @var cache_advancedfile|cache_file|cache_apc|cache_memcache|cache_memcached|cache_null|cache_redis|cache_session|cache_xcache $className */
             $className = 'cache_' . $methodName;
             $cache     = $className::getInstance($this->options);
         }
@@ -405,8 +378,7 @@ class JTLCache
     /**
      * set caching method
      *
-     * @param ICachingMethod $method
-     *
+     * @param JTLCacheTrait $method
      * @return $this
      */
     private function setMethod($method)
@@ -425,10 +397,10 @@ class JTLCache
     {
         //the DB class is needed for this
         if (!class_exists('Shop')) {
-            return array();
+            return [];
         }
-        $cacheConfig = Shop::DB()->query("SELECT kEinstellungenSektion, cName, cWert FROM teinstellungen WHERE kEinstellungenSektion = " . CONF_CACHING, 2);
-        $cacheInit   = array();
+        $cacheConfig = Shop::DB()->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_CACHING);
+        $cacheInit   = [];
         if (!empty($cacheConfig)) {
             foreach ($cacheConfig as $_conf) {
                 if ($_conf->cWert === 'Y' || $_conf->cWert === 'y') {
@@ -438,7 +410,7 @@ class JTLCache
                 } elseif ($_conf->cWert === '') {
                     $value = null;
                 } elseif (is_numeric($_conf->cWert)) {
-                    $value = (int) $_conf->cWert;
+                    $value = (int)$_conf->cWert;
                 } else {
                     $value = $_conf->cWert;
                 }
@@ -505,7 +477,6 @@ class JTLCache
      * @param int         $port
      * @param string|null $pass
      * @param int|null    $database
-     *
      * @return $this
      */
     public function setRedisCredentials($host, $port, $pass = null, $database = null)
@@ -523,7 +494,6 @@ class JTLCache
      *
      * @param string $host
      * @param int    $port
-     *
      * @return $this
      */
     public function setMemcacheCredentials($host, $port)
@@ -539,7 +509,6 @@ class JTLCache
      *
      * @param string $host
      * @param int    $port
-     *
      * @return $this
      */
     public function setMemcachedCredentials($host, $port)
@@ -553,7 +522,6 @@ class JTLCache
      * @param string   $cacheID
      * @param callable $callback
      * @param mixed    $customData
-     *
      * @return mixed
      */
     public function _get($cacheID, $callback = null, $customData = null)
@@ -571,11 +539,11 @@ class JTLCache
             $content    = null;
             $tags       = null;
             $expiration = null;
-            $res        = call_user_func_array($callback, array($this, $cacheID, &$content, &$tags, &$expiration, $customData));
+            $res        = call_user_func_array($callback, [$this, $cacheID, &$content, &$tags, &$expiration, $customData]);
             if ($res === true) {
-                $this->set($cacheID, $content, $tags, $expiration);
+                $this->_set($cacheID, $content, $tags, $expiration);
 
-                return $this->get($cacheID);
+                return $this->_get($cacheID);
             }
         }
 
@@ -589,7 +557,6 @@ class JTLCache
      * @param mixed      $content
      * @param array|null $tags
      * @param int|null   $expiration
-     *
      * @return mixed
      */
     public function _set($cacheID, $content, $tags = null, $expiration = null)
@@ -597,8 +564,8 @@ class JTLCache
         $res = false;
         if ($this->options['activated'] === true && $this->isCacheGroupActive($tags) === true) {
             $res = $this->_method->store($cacheID, $content, $expiration);
-            if ($tags !== null) {
-                $this->setCacheTag($tags, $cacheID);
+            if ($res === true && $tags !== null) {
+                $this->_setCacheTag($tags, $cacheID);
             }
         }
         if ($this->options['debug'] === true) {
@@ -619,16 +586,15 @@ class JTLCache
      * @param array      $keyValue - key=cacheID, value=content
      * @param array|null $tags
      * @param int|null   $expiration
-     *
      * @return bool
      */
     public function _setMulti($keyValue, $tags = null, $expiration = null)
     {
         if ($this->options['activated'] === true && $this->isCacheGroupActive($tags) === true) {
             $res = $this->_method->storeMulti($keyValue, $expiration);
-            if ($tags !== null) {
+            if ($res === true && $tags !== null) {
                 foreach (array_keys($keyValue) as $_cacheID) {
-                    $this->setCacheTag($tags, $_cacheID);
+                    $this->_setCacheTag($tags, $_cacheID);
                 }
             }
             $this->resultCode = self::RES_UNDEF; //for now, let's not check every part of the result
@@ -644,7 +610,6 @@ class JTLCache
      * get multiple values from cache
      *
      * @param array $cacheIDs
-     *
      * @return array
      */
     public function _getMulti($cacheIDs)
@@ -659,7 +624,6 @@ class JTLCache
      * this allows the disabling of certain cache types
      *
      * @param string $groupID
-     *
      * @return bool
      */
     public function _isCacheGroupActive($groupID)
@@ -684,7 +648,6 @@ class JTLCache
 
     /**
      * @param string|array $tags
-     *
      * @return array
      */
     public function getKeysByTag($tags)
@@ -697,7 +660,6 @@ class JTLCache
      *
      * @param array  $tags
      * @param string $cacheID
-     *
      * @return bool
      */
     public function _setCacheTag($tags, $cacheID)
@@ -709,12 +671,11 @@ class JTLCache
      * set custom cache lifetime
      *
      * @param int $lifetime
-     *
      * @return $this
      */
     public function _setCacheLifetime($lifetime)
     {
-        $this->options['lifetime'] = ((int) $lifetime > 0) ? (int) $lifetime : self::DEFAULT_LIFETIME;
+        $this->options['lifetime'] = ((int)$lifetime > 0) ? (int)$lifetime : self::DEFAULT_LIFETIME;
 
         return $this;
     }
@@ -723,7 +684,6 @@ class JTLCache
      * set custom file cache directory
      *
      * @param string $dir
-     *
      * @return $this
      */
     public function _setCacheDir($dir)
@@ -749,7 +709,6 @@ class JTLCache
      * @param string|int|null $cacheID
      * @param string|array    $tags
      * @param array|null      $hookInfo
-     *
      * @return bool|int
      */
     public function _flush($cacheID = null, $tags = null, $hookInfo = null)
@@ -758,7 +717,7 @@ class JTLCache
         if ($cacheID !== null && $tags === null) {
             $res = ($this->options['activated'] === true) ? $this->_method->flush($cacheID, $tags) : false;
         } elseif ($tags !== null) {
-            $res = $this->flushTags($tags, $hookInfo);
+            $res = $this->_flushTags($tags, $hookInfo);
         }
         if ($this->options['debug'] === true) {
             if ($this->options['debug_method'] === 'echo') {
@@ -780,7 +739,6 @@ class JTLCache
      *
      * @param array      $tags
      * @param array|null $hookInfo
-     *
      * @return int - number of deleted keys
      */
     public function _flushTags($tags, $hookInfo = null)
@@ -862,7 +820,7 @@ class JTLCache
      */
     public function _isActive()
     {
-        return (bool) $this->options['activated'];
+        return (bool)$this->options['activated'];
     }
 
     /**
@@ -872,7 +830,7 @@ class JTLCache
      */
     public function _isPageCacheEnabled()
     {
-        return (bool) $this->options['page_cache'];
+        return false;
     }
 
     /**
@@ -882,7 +840,7 @@ class JTLCache
      */
     public function _getAllMethods()
     {
-        $methodNames = array();
+        $methodNames = [];
         $files       = scandir(CACHING_METHODS_DIR);
         if (is_array($files)) {
             foreach ($files as $_file) {
@@ -902,21 +860,22 @@ class JTLCache
      */
     public function _checkAvailability()
     {
-        $available = array();
-        foreach ($this->getAllMethods() as $methodName) {
+        $available = [];
+        foreach ($this->_getAllMethods() as $methodName) {
             $class = 'cache_' . $methodName;
             include_once CACHING_METHODS_DIR . 'class.cachingMethod.' . $methodName . '.php';
             if (class_exists($class)) {
+                /** @var cache_advancedfile|cache_file|cache_apc|cache_memcache|cache_memcached|cache_null|cache_redis|cache_session|cache_xcache $instance */
                 $instance               = new $class($this->options);
-                $available[$methodName] = array(
+                $available[$methodName] = [
                     'available'  => $instance->isAvailable(),
                     'functional' => $instance->test()
-                );
+                ];
             } else {
-                $available[$methodName] = array(
+                $available[$methodName] = [
                     'available'  => false,
                     'functional' => false
-                );
+                ];
             }
         }
 
@@ -996,7 +955,6 @@ class JTLCache
      * @param int          $repeat - the number of benchmark repetitions
      * @param bool         $echo - direct string output
      * @param bool         $format - german number format
-     *
      * @return array
      */
     public function _benchmark($methods = 'all', $testData = 'simple string', $runCount = 1000, $repeat = 1, $echo = true, $format = false)
@@ -1009,14 +967,14 @@ class JTLCache
         if (!is_int($repeat) || $repeat < 1) {
             $repeat = 1;
         }
-        $results = array();
+        $results = [];
         if ($methods === 'all') {
-            $methods = $this->getAllMethods();
+            $methods = $this->_getAllMethods();
         }
         if (is_array($methods)) {
             foreach ($methods as $method) {
                 if ($method !== 'null') {
-                    $results[] = $this->benchmark($method, $testData, $runCount, $repeat, $echo, $format);
+                    $results[] = $this->_benchmark($method, $testData, $runCount, $repeat, $echo, $format);
                 }
             }
         } else {
@@ -1027,16 +985,16 @@ class JTLCache
             if ($echo === true) {
                 echo '### Testing ' . $methods . ' cache ###';
             }
-            $result = array(
+            $result = [
                 'method'  => $methods,
                 'status'  => 'ok',
-                'timings' => array('get' => 0.0, 'set' => 0.0)
-            );
+                'timings' => ['get' => 0.0, 'set' => 0.0]
+            ];
             if ($cacheSetRes !== false) {
-                for ($i = 0; $i < $repeat; $i++) {
+                for ($i = 0; $i < $repeat; ++$i) {
                     //set testing
                     $start = microtime(true);
-                    for ($j = 0; $j < $runCount; $j++) {
+                    for ($j = 0; $j < $runCount; ++$j) {
                         $cacheID = 'c_' . $j;
                         $this->set($cacheID, $testData);
                     }
@@ -1045,7 +1003,7 @@ class JTLCache
                     $timesSet += $runTimingSet;
                     //get testing
                     $start = microtime(true);
-                    for ($j = 0; $j < $runCount; $j++) {
+                    for ($j = 0; $j < $runCount; ++$j) {
                         $cacheID = 'c_' . $j;
                         $res     = $this->get($cacheID);
                         if ($res != $testData) {
@@ -1081,8 +1039,8 @@ class JTLCache
                     echo '<br />Avg. time for setting: ' . $timesSet . 's (' . $rpsSet . ' requests per second)';
                     echo '<br />Avg. time for getting: ' . $timesGet . 's (' . $rpsGet . ' requests per second)';
                 }
-                $result['timings'] = array('get' => $timesGet, 'set' => $timesSet);
-                $result['rps']     = array('get' => $rpsGet, 'set' => $rpsSet);
+                $result['timings'] = ['get' => $timesGet, 'set' => $timesSet];
+                $result['rps']     = ['get' => $rpsGet, 'set' => $rpsSet];
             }
             if ($validResults === false) {
                 if ($echo === true) {

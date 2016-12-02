@@ -167,8 +167,9 @@ class PaymentPartner extends ServerPaymentMethod
     }
 
     /**
-     * @return boolean
+     * @return bool
      * @param Bestellung $order
+     * @param string     $paymentHash
      * @param array      $args
      */
     public function verifyNotification($order, $paymentHash, $args)

@@ -49,7 +49,7 @@
             <div class="panel-footer">
                 <form method="post" action="">
                     {$jtl_token}
-                    <button class="btn btn-danger" type="submit" name="actionDelete" value="{#mbDelete#}">{#mbDelete#}</button>
+                    <button class="btn btn-danger" type="submit" name="actionDelete" value="{#mbDelete#}"><i class="fa fa-trash"></i> {#mbDelete#}</button>
                 </form>
             </div>
         </div>
@@ -99,7 +99,7 @@
                 <div class="panel-footer">
                     <form method="post" action="">
                         {$jtl_token}
-                        <button class="btn btn-danger" type="submit" name="actionDeleteSecretWord" value="{#mbDelete#}">{#mbDelete#}</button>
+                        <button class="btn btn-danger" type="submit" name="actionDeleteSecretWord" value="{#mbDelete#}"><i class="fa fa-trash"></i> {#mbDelete#}</button>
                     </form>
                 </div>
             {/if}

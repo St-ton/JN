@@ -146,7 +146,7 @@
                             <span class="input-group-addon">{getHelpDesc cDesc=#customerclassDesc#}</span>
                         </li>
 
-                        <li class="input-group">
+                        <li class="input-group{if isset($versandklassenExceeded) && $versandklassenExceeded == 1} has-error{/if}">
                             <span class="input-group-addon">
                                 <label for="kVersandklasse">{#shippingclass#}</label>
                             </span>
@@ -160,10 +160,11 @@
                                         {/foreach}
                                     {/if}
                                 </select>
+                                {if  isset($versandklassenExceeded) && $versandklassenExceeded == 1}
+                                    <p class="help-block">{#versandklassenExceeded#}</p>
+                                {/if}
                             </span>
                             <span class="input-group-addon">{getHelpDesc cDesc=#shippingclassDesc#}</span>
-                            <br />{if isset($versandklassenExceeded) && $versandklassenExceeded  == 1}<strong>
-                                <font color="red">{#versandklassenExceeded#}</font></strong>{/if}
                         </li>
                         {foreach name=sprachen from=$sprachen item=sprache}
                             {assign var="cISO" value=$sprache->cISO}
@@ -208,7 +209,7 @@
                                         </td>
                                         <td>
                                             <label for="kZahlungsart{$smarty.foreach.zahlungsarten.index}">
-                                                {$zahlungsart->cName}{if isset($zahlungsart->cAnbieter) && $zahlungsart->cAnbieter|count_characters > 0} ({$zahlungsart->cAnbieter}){/if}
+                                                {$zahlungsart->cName}{if isset($zahlungsart->cAnbieter) && $zahlungsart->cAnbieter|strlen > 0} ({$zahlungsart->cAnbieter}){/if}
                                             </label>
                                         </td>
                                         <td>{#discount#}</td>
@@ -251,7 +252,8 @@
                         </li>
                         <li class="input-group">
                             <span class="input-group-addon"><label>{#amount#}</label></span>
-                            <input type="text" id="fVersandkostenfreiAbX" name="fVersandkostenfreiAbX" class="form-control price_large" value="{if isset($Versandart->fVersandkostenfreiAbX)}{$Versandart->fVersandkostenfreiAbX}{/if}">{* onKeyUp="setzePreisAjax(false, 'ajaxversandkostenfrei', this)" /> <span id="ajaxversandkostenfrei"></span>*}    
+                            <input type="text" id="fVersandkostenfreiAbX" name="fVersandkostenfreiAbX" class="form-control price_large" value="{if isset($Versandart->fVersandkostenfreiAbX)}{$Versandart->fVersandkostenfreiAbX}{/if}">{* onKeyUp="setzePreisAjax(false, 'ajaxversandkostenfrei', this)" /> <span id="ajaxversandkostenfrei"></span>*}
+                            <span class="input-group-addon">{getHelpDesc cDesc=#taxshippingcostsDesc#}</span>
                         </li>
                         <li class="input-group">
                             <span class="input-group-addon">
@@ -509,8 +511,13 @@
                 </div>
             </div>
             <div class="save_wrapper">
-                <button type="submit" value="{if !isset($Versandart->kVersandart) || !$Versandart->kVersandart}{#createShippingType#}{else}{#modifyedShippingType#}{/if}" class="btn btn-primary">
-                    {if !isset($Versandart->kVersandart) || !$Versandart->kVersandart}<i class="fa fa-share"></i> {#createShippingType#}{else}<i class="fa fa-edit"></i> {#modifyedShippingType#}{/if}
+                <button type="submit" value="{if !isset($Versandart->kVersandart) || !$Versandart->kVersandart}{#createShippingType#}{else}{#modifyedShippingType#}{/if}"
+                        class="btn btn-primary">
+                    {if !isset($Versandart->kVersandart) || !$Versandart->kVersandart}
+                        <i class="fa fa-share"></i> {#createShippingType#}
+                    {else}
+                        <i class="fa fa-edit"></i> {#modifyedShippingType#}
+                    {/if}
                 </button>
             </div>
         </div>

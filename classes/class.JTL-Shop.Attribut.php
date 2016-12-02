@@ -38,7 +38,6 @@ class Attribut
      * Konstruktor
      *
      * @param int $kAttribut - Falls angegeben, wird Attribut mit angegebenem kAttribut aus der DB geholt
-     * @return Attribut
      */
     public function __construct($kAttribut = 0)
     {

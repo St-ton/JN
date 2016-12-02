@@ -4,7 +4,7 @@ include_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
 
 // Debug
 define('IP_D_MODE', 1); // 1 = An / 0 = Aus
-define('IP_D_PFAD', PFAD_ROOT . 'jtllogs/ipayment.log');
+define('IP_D_PFAD', PFAD_LOGFILES . 'ipayment.log');
 
 /**
  * iPayment
@@ -107,8 +107,9 @@ class iPayment extends PaymentMethod
     }
 
     /**
-     * @return boolean
+     * @return bool
      * @param Bestellung $order
+     * @param string     $paymentHash
      * @param array      $args
      */
     public function verifyNotification($order, $paymentHash, $args)

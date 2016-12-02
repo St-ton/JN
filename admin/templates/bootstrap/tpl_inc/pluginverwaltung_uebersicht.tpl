@@ -16,7 +16,7 @@ function ackCheck(kPlugin, hash) {ldelim}
 {/if}
 </script>
 
-{include file='tpl_inc/seite_header.tpl' cTitel=#pluginverwaltung# cBeschreibung=#pluginverwaltungDesc#}
+{include file='tpl_inc/seite_header.tpl' cTitel=#pluginverwaltung# cBeschreibung=#pluginverwaltungDesc# cDokuURL=#pluginverwaltungURL#}
 <div id="content" class="container-fluid">
     <div id="settings">
         {if $PluginInstalliertByStatus_arr|@count > 0}
@@ -38,6 +38,9 @@ function ackCheck(kPlugin, hash) {ldelim}
                 </li>
                 <li class="tab{if isset($cTab) && $cTab === 'upload'} active{/if}">
                     <a data-toggle="tab" role="tab" href="#upload">Upload</a>
+                </li>
+                <li class="tab">
+                    <a href="marktplatz.php">Marktplatz</a>
                 </li>
             </ul>
             <div class="tab-content">

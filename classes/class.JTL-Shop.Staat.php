@@ -94,7 +94,7 @@ class Staat
      */
     public function setStaat($kStaat)
     {
-        $this->kStaat = (int) $kStaat;
+        $this->kStaat = (int)$kStaat;
 
         return $this;
     }
@@ -139,7 +139,7 @@ class Staat
     public static function getRegions($cLandIso)
     {
         if (strlen($cLandIso) === 2) {
-            $oObj_arr = Shop::DB()->query("SELECT * FROM tstaat WHERE cLandIso = '" . StringHandler::filterXSS($cLandIso) . "'", 2);
+            $oObj_arr = Shop::DB()->selectAll('tstaat', 'cLandIso', $cLandIso);
             if (is_array($oObj_arr) && count($oObj_arr) > 0) {
                 $oStaat_arr = array();
                 foreach ($oObj_arr as $oObj) {
@@ -157,7 +157,7 @@ class Staat
             }
         }
 
-        return;
+        return null;
     }
 
     /**
@@ -187,7 +187,7 @@ class Staat
             }
         }
 
-        return;
+        return null;
     }
 
     /**
@@ -210,6 +210,6 @@ class Staat
             }
         }
 
-        return;
+        return null;
     }
 }

@@ -7,7 +7,7 @@ define('PP_MODE', 0); // 1 = Test / 0 = Live
 
 // Debug
 define('D_MODE', 1); // 1 = An / 0 = Aus
-define('D_PFAD', PFAD_ROOT . 'jtllogs/ut.log');
+define('D_PFAD', PFAD_LOGFILES . 'ut.log');
 
 // Sandbox
 define('URL_TEST', 'http://transfer.uos-test.com/interfaces/payment.php');
@@ -250,6 +250,7 @@ class UT extends PaymentMethod
                 $sessionHash    = substr(StringHandler::htmlentities(StringHandler::filterXSS($cSh)), 1);
                 $paymentSession = Shop::DB()->query("SELECT cSID, kBestellung FROM tzahlungsession WHERE cZahlungsID='" . $sessionHash . "'", 1);
                 if (strlen($paymentSession->cSID) > 0) {
+                    /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
                     // Load Session
                     $_COOKIE['JTLSHOP'] = $paymentSession->cSID;
                     new Session();
@@ -390,9 +391,10 @@ class UT extends PaymentMethod
     }
 
     /**
-     * @return boolean
      * @param Bestellung $order
+     * @param string     $paymentHash
      * @param array      $args
+     * @return bool
      */
     public function verifyNotification($order, $paymentHash, $args)
     {

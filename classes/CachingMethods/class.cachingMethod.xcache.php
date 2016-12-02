@@ -11,8 +11,10 @@
  * @warning Untested
  * @warning Does not support caching groups
  */
-class cache_xcache extends JTLCacheHelper implements ICachingMethod
+class cache_xcache implements ICachingMethod
 {
+    use JTLCacheTrait;
+
     /**
      * @var cache_xcache|null
      */
@@ -31,21 +33,9 @@ class cache_xcache extends JTLCacheHelper implements ICachingMethod
     }
 
     /**
-     * @param array $options
-     *
-     * @return cache_xcache
-     */
-    public static function getInstance($options)
-    {
-        //check if class was initialized before
-        return (self::$instance !== null) ? self::$instance : new self($options);
-    }
-
-    /**
      * @param string   $cacheID
      * @param mixed    $content
      * @param int|null $expiration
-     *
      * @return bool
      */
     public function store($cacheID, $content, $expiration = null)
@@ -56,7 +46,6 @@ class cache_xcache extends JTLCacheHelper implements ICachingMethod
     /**
      * @param array    $keyValue
      * @param int|null $expiration
-     *
      * @return bool
      */
     public function storeMulti($keyValue, $expiration = null)
@@ -71,7 +60,6 @@ class cache_xcache extends JTLCacheHelper implements ICachingMethod
 
     /**
      * @param string $cacheID
-     *
      * @return bool|mixed
      */
     public function load($cacheID)
@@ -87,12 +75,11 @@ class cache_xcache extends JTLCacheHelper implements ICachingMethod
 
     /**
      * @param array $cacheIDs
-     *
      * @return array
      */
     public function loadMulti($cacheIDs)
     {
-        $res = array();
+        $res = [];
         foreach ($cacheIDs as $_cid) {
             $res[$_cid] = $this->load($cacheIDs);
         }
@@ -110,7 +97,6 @@ class cache_xcache extends JTLCacheHelper implements ICachingMethod
 
     /**
      * @param string $cacheID
-     *
      * @return bool
      */
     public function flush($cacheID)
@@ -140,6 +126,6 @@ class cache_xcache extends JTLCacheHelper implements ICachingMethod
      */
     public function getStats()
     {
-        return array();
+        return [];
     }
 }

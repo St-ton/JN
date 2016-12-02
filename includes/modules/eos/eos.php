@@ -208,10 +208,7 @@ function eosZahlungsNachricht($Bestellung)
     // Bezahlung war erfolgreich
     eosZahlungVerbuchen($Zahlung, $Bestellung);
     // ZahlungsID loeschen
-    Shop::DB()->query("
-      DELETE 
-        FROM tzahlungsid 
-        WHERE cId = '" . $ZahlungsHash . "' AND kBestellung = " . (int)$Bestellung->kBestellung, 4);
+    Shop::DB()->delete('tzahlungsid', ['cId', 'kBestellung'], [$ZahlungsHash, (int)$Bestellung->kBestellung]);
 
     return true;
 }

@@ -180,10 +180,7 @@ if (class_exists('AuswahlAssistent')) {
         {
             $kAuswahlAssistentGruppe = (int)$kAuswahlAssistentGruppe;
             if (is_array($cParam_arr) && count($cParam_arr) > 0 && $kAuswahlAssistentGruppe > 0) {
-                $nRow = Shop::DB()->query(
-                    "DELETE FROM tauswahlassistentort
-                        WHERE kAuswahlAssistentGruppe = " . $kAuswahlAssistentGruppe, 3
-                );
+                $nRow = Shop::DB()->delete('tauswahlassistentort', 'kAuswahlAssistentGruppe', $kAuswahlAssistentGruppe);
 
                 if ($nRow > 0) {
                     if (self::saveLocation($cParam_arr, $kAuswahlAssistentGruppe)) {
@@ -375,7 +372,7 @@ if (class_exists('AuswahlAssistent')) {
                 }
             }
 
-            return;
+            return null;
         }
     }
 }

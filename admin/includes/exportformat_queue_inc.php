@@ -22,23 +22,10 @@ function holeExportformatCron()
     if (is_array($oExportformatCron_arr) && count($oExportformatCron_arr) > 0) {
         foreach ($oExportformatCron_arr as $i => $oExportformatCron) {
             $oExportformatCron_arr[$i]->cAlleXStdToDays = rechneUmAlleXStunden($oExportformatCron->nAlleXStd);
-
-            $oExportformatCron_arr[$i]->Sprache = Shop::DB()->query(
-                "SELECT * 
-                    FROM tsprache 
-                    WHERE kSprache = " . (int)$oExportformatCron->kSprache, 1
-            );
-            $oExportformatCron_arr[$i]->Waehrung = Shop::DB()->query(
-                "SELECT * 
-                    FROM twaehrung 
-                    WHERE kWaehrung = " . (int)$oExportformatCron->kWaehrung, 1
-            );
-            $oExportformatCron_arr[$i]->Kundengruppe = Shop::DB()->query(
-                "SELECT * 
-                    FROM tkundengruppe 
-                    WHERE kKundengruppe = " . (int)$oExportformatCron->kKundengruppe, 1
-            );
-            $oExportformatCron_arr[$i]->oJobQueue = Shop::DB()->query(
+            $oExportformatCron_arr[$i]->Sprache         = Shop::DB()->select('tsprache', 'kSprache', (int)$oExportformatCron->kSprache);
+            $oExportformatCron_arr[$i]->Waehrung        = Shop::DB()->select('twaehrung', 'kWaehrung', (int)$oExportformatCron->kWaehrung);
+            $oExportformatCron_arr[$i]->Kundengruppe    = Shop::DB()->select('tkundengruppe', 'kKundengruppe', (int)$oExportformatCron->kKundengruppe);
+            $oExportformatCron_arr[$i]->oJobQueue       = Shop::DB()->query(
                 "SELECT *, DATE_FORMAT(dZuletztGelaufen, '%d.%m.%Y %H:%i') AS dZuletztGelaufen_de 
                     FROM tjobqueue 
                     WHERE kCron = " . (int)$oExportformatCron->kCron, 1
@@ -61,7 +48,7 @@ function holeExportformatCron()
 
 /**
  * @param int $kCron
- * @return int
+ * @return int|object
  */
 function holeCron($kCron)
 {
@@ -124,17 +111,12 @@ function rechneUmAlleXStunden($nAlleXStd)
  */
 function holeAlleExportformate()
 {
-    $oExportformat_arr = Shop::DB()->query(
-        "SELECT *
-            FROM texportformat
-            ORDER BY cName, kSprache, kKundengruppe, kWaehrung", 2
-    );
-
+    $oExportformat_arr = Shop::DB()->selectAll('texportformat', [], [], '*', 'cName, kSprache, kKundengruppe, kWaehrung');
     if (is_array($oExportformat_arr) && count($oExportformat_arr) > 0) {
         foreach ($oExportformat_arr as $i => $oExportformat) {
-            $oExportformat_arr[$i]->Sprache      = Shop::DB()->query("SELECT * FROM tsprache WHERE kSprache = " . (int)$oExportformat->kSprache, 1);
-            $oExportformat_arr[$i]->Waehrung     = Shop::DB()->query("SELECT * FROM twaehrung WHERE kWaehrung = " . (int)$oExportformat->kWaehrung, 1);
-            $oExportformat_arr[$i]->Kundengruppe = Shop::DB()->query("SELECT * FROM tkundengruppe WHERE kKundengruppe = " . (int)$oExportformat->kKundengruppe, 1);
+            $oExportformat_arr[$i]->Sprache      = Shop::DB()->select('tsprache', 'kSprache', (int)$oExportformat->kSprache);
+            $oExportformat_arr[$i]->Waehrung     = Shop::DB()->select('twaehrung', 'kWaehrung', (int)$oExportformat->kWaehrung);
+            $oExportformat_arr[$i]->Kundengruppe = Shop::DB()->select('tkundengruppe', 'kKundengruppe', (int)$oExportformat->kKundengruppe);
         }
 
         return $oExportformat_arr;
@@ -155,7 +137,7 @@ function erstelleExportformatCron($kExportformat, $dStart, $nAlleXStunden, $kCro
     $kExportformat = (int)$kExportformat;
     $nAlleXStunden = (int)$nAlleXStunden;
     $kCron         = (int)$kCron;
-    if ($kExportformat > 0 && $nAlleXStunden > 5 && dStartPruefen($dStart)) {
+    if ($kExportformat > 0 && $nAlleXStunden >= 1 && dStartPruefen($dStart)) {
         if ($kCron > 0) {
             // Editieren
             Shop::DB()->query(
@@ -180,13 +162,7 @@ function erstelleExportformatCron($kExportformat, $dStart, $nAlleXStunden, $kCro
             return 1;
         }
         // Pruefe ob Exportformat nicht bereits vorhanden
-        $oCron = Shop::DB()->query(
-            "SELECT kCron
-                FROM tcron
-                WHERE cKey = 'kExportformat'
-                    AND kKey = " . $kExportformat, 1
-        );
-
+        $oCron = Shop::DB()->select('tcron', 'cKey', 'kExportformat', 'kKey', $kExportformat);
         if (isset($oCron->kCron) && $oCron->kCron > 0) {
             return -1;
         }
@@ -271,12 +247,7 @@ function holeExportformatQueueBearbeitet($nStunden)
     }
     $kSprache = (isset($_SESSION['kSprache'])) ? (int)$_SESSION['kSprache'] : null;
     if (!$kSprache) {
-        $oSpracheTMP = Shop::DB()->query(
-            "SELECT kSprache
-                FROM tsprache
-                WHERE cShopStandard = 'Y'", 1
-        );
-
+        $oSpracheTMP = Shop::DB()->select('tsprache', 'cShopStandard', 'Y');
         if (isset($oSpracheTMP->kSprache) && $oSpracheTMP->kSprache > 0) {
             $kSprache = (int)$oSpracheTMP->kSprache;
         } else {
@@ -417,7 +388,9 @@ function exportformatQueueActionErstellenEintragen(JTLSmarty $smarty, array &$me
 {
     $kExportformat = (int)$_POST['kExportformat'];
     $dStart        = $_POST['dStart'];
-    $nAlleXStunden = (int)$_POST['nAlleXStunden'];
+    $nAlleXStunden = (!empty($_POST['nAlleXStundenCustom']))
+        ? (int)$_POST['nAlleXStundenCustom']
+        : (int)$_POST['nAlleXStunden'];
     $oValues       = new stdClass();
 
     $oValues->kExportformat = $kExportformat;
@@ -426,7 +399,7 @@ function exportformatQueueActionErstellenEintragen(JTLSmarty $smarty, array &$me
 
     if ($kExportformat > 0) {
         if (dStartPruefen($dStart)) {
-            if ($nAlleXStunden > 5) {
+            if ($nAlleXStunden >= 1) {
                 if (isset($_POST['kCron']) && intval($_POST['kCron']) > 0) {
                     $kCron = (int)$_POST['kCron'];
                 } else { // Editieren
@@ -446,7 +419,7 @@ function exportformatQueueActionErstellenEintragen(JTLSmarty $smarty, array &$me
                     $step               = 'erstellen';
                 }
             } else { // Alle X Stunden ist entweder leer oder kleiner als 6
-                $messages['error'] .= 'Fehler: Bitte geben Sie einen Wert gr&ouml;&szlig;er 5 ein.<br />';
+                $messages['error'] .= 'Fehler: Bitte geben Sie einen Wert gr&ouml;&szlig;er oder gleich 1 ein.<br />';
                 $step               = 'erstellen';
                 $smarty->assign('oFehler', $oValues);
             }
@@ -492,7 +465,7 @@ function exportformatQueueRedirect($cTab = '', array &$messages = null)
 }
 
 /**
- * @param $step
+ * @param string $step
  * @param JTLSmarty $smarty
  * @param array $messages
  * @return void
@@ -522,6 +495,17 @@ function exportformatQueueFinalize($step, JTLSmarty $smarty, array &$messages)
             break;
         case 'fertiggestellt':
             exportformatQueueRedirect('fertig', $messages);
+            break;
+        case 'erstellen':
+            if (!empty($messages['error'])) {
+                $nStunden = isset($_SESSION['exportformatQueue.nStunden']) ? $_SESSION['exportformatQueue.nStunden'] : 24;
+                $smarty->assign('oExportformatCron_arr', holeExportformatCron())
+                       ->assign('oExportformatQueueBearbeitet_arr', holeExportformatQueueBearbeitet($nStunden))
+                       ->assign('oExportformat_arr', holeAlleExportformate())
+                       ->assign('nStunden', $nStunden);
+            }
+            break;
+        default:
             break;
     }
 

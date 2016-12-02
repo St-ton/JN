@@ -1,4 +1,5 @@
 {include file='tpl_inc/header.tpl'}
+{config_load file="$lang.conf" section='systemcheck'}
 
 <script>
 {literal}
@@ -177,6 +178,39 @@ $(function() {
                 </div>
             </div>
         </div>
+        
+        {$incorrectPaymentMethods = $status->getPaymentMethodsWithError()}
+        {if count($incorrectPaymentMethods) > 0}
+            <div class="grid-item">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">Zahlungsarten</h4>
+                    </div>
+                    <div class="panel-body">
+                        <div class="alert alert-info">
+                            Folgende Zahlungsarten beinhalten Protokolle mit Status 'Fehler'
+                        </div>
+
+                        <table class="table table-condensed table-hover table-striped table-blank last-child">
+                            <tbody>
+                            {foreach $incorrectPaymentMethods as $s}
+                                <tr class="text-vcenter">
+                                    <td class="text-left" width="55">
+                                        <h4 class="label-wrap"><span class="label label-danger" style="display:inline-block;width:3em">{$s->logs|@count}</span></h4>
+                                    </td>
+                                    <td class="text-muted"><strong>{$s->cName}</strong></td>
+                                    <td class="text-right">
+                                        <a class="btn btn-default btn-xs text-uppercase" href="zahlungsarten.php?a=log&kZahlungsart={$s->kZahlungsart}">Details</a>
+                                    </td>
+                                </tr>
+                            {/foreach}
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+        {/if}
 
         {$shared = $status->getPluginSharedHooks()}
         {if count($shared) > 0}
@@ -255,6 +289,11 @@ $(function() {
                     {else}
                         <div class="alert alert-success">
                             <p>Alle Vorraussetzungen wurden erf&uuml;llt</p>
+                        </div>
+                    {/if}
+                    {if isset($phpLT55) && $phpLT55}
+                        <div class="alert alert-warning">
+                            <p class="small">{#systemcheckPHPLT55#|sprintf:phpversion()}</p>
                         </div>
                     {/if}
                 </div>

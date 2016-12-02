@@ -255,8 +255,8 @@ class PayPalHelper
 
         $rounding = function ($prop) {
             return [
-                WarenkorbHelper::NET   => (float) number_format($prop[WarenkorbHelper::NET], 2, '.', ''),
-                WarenkorbHelper::GROSS => (float) number_format($prop[WarenkorbHelper::GROSS], 2, '.', ''),
+                WarenkorbHelper::NET   => round($prop[WarenkorbHelper::NET], 2),
+                WarenkorbHelper::GROSS => round($prop[WarenkorbHelper::GROSS], 2)
             ];
         };
 
@@ -273,43 +273,49 @@ class PayPalHelper
             $article[WarenkorbHelper::GROSS] += $p->amount[WarenkorbHelper::GROSS] * $p->quantity;
         }
 
-        $total = $basket->total;
-
         $basket->article   = $rounding($article);
         $basket->shipping  = $rounding($basket->shipping);
         $basket->discount  = $rounding($basket->discount);
         $basket->surcharge = $rounding($basket->surcharge);
+        $basket->total     = $rounding($basket->total);
 
-        $basket->total[WarenkorbHelper::NET]   = $basket->article[WarenkorbHelper::NET] + $basket->shipping[WarenkorbHelper::NET] - $basket->discount[WarenkorbHelper::NET] + $basket->surcharge[WarenkorbHelper::NET];
-        $basket->total[WarenkorbHelper::GROSS] = $basket->article[WarenkorbHelper::GROSS] + $basket->shipping[WarenkorbHelper::GROSS] - $basket->discount[WarenkorbHelper::GROSS] + $basket->surcharge[WarenkorbHelper::GROSS];
-        $basket->total                         = $rounding($basket->total);
-
-        $basket->diff = [
-            WarenkorbHelper::NET   => $total[WarenkorbHelper::NET] - $basket->total[WarenkorbHelper::NET],
-            WarenkorbHelper::GROSS => $total[WarenkorbHelper::GROSS] - $basket->total[WarenkorbHelper::GROSS],
+        $calculated = [
+            WarenkorbHelper::NET   => 0,
+            WarenkorbHelper::GROSS => 0,
         ];
 
-        $basket->diff = $rounding($basket->diff);
+        $calculated[WarenkorbHelper::NET]   = $basket->article[WarenkorbHelper::NET] + $basket->shipping[WarenkorbHelper::NET] - $basket->discount[WarenkorbHelper::NET] + $basket->surcharge[WarenkorbHelper::NET];
+        $calculated[WarenkorbHelper::GROSS] = $basket->article[WarenkorbHelper::GROSS] + $basket->shipping[WarenkorbHelper::GROSS] - $basket->discount[WarenkorbHelper::GROSS] + $basket->surcharge[WarenkorbHelper::GROSS];
 
-        $basket->total[WarenkorbHelper::NET] += $basket->diff[WarenkorbHelper::NET];
-        $basket->total[WarenkorbHelper::GROSS] += $basket->diff[WarenkorbHelper::GROSS];
+        $calculated = $rounding($calculated);
 
-        if ($basket->diff[WarenkorbHelper::GROSS] < 0.0) {
-            if ($basket->shipping[WarenkorbHelper::GROSS] >= $basket->diff[WarenkorbHelper::GROSS] * -1) {
-                $basket->shipping[WarenkorbHelper::NET] += $basket->diff[WarenkorbHelper::NET];
-                $basket->shipping[WarenkorbHelper::GROSS] += $basket->diff[WarenkorbHelper::GROSS];
-                $basket->shipping = $rounding($basket->shipping);
+        $difference = [
+            WarenkorbHelper::NET   => $basket->total[WarenkorbHelper::NET] - $calculated[WarenkorbHelper::NET],
+            WarenkorbHelper::GROSS => $basket->total[WarenkorbHelper::GROSS] - $calculated[WarenkorbHelper::GROSS]
+        ];
+
+        $difference = $rounding($difference);
+
+        $addDifference = function($difference, $type) use (&$basket) {
+            if ($difference[$type] < 0.0) {
+                if ($basket->shipping[$type] >= $difference[$type] * -1) {
+                    $basket->shipping[$type] += $difference[$type];
+                } else {
+                    $basket->discount[$type] += $difference[$type] * -1;
+                }
             } else {
-                $basket->discount[WarenkorbHelper::NET] += $basket->diff[WarenkorbHelper::NET] * -1;
-                $basket->discount[WarenkorbHelper::GROSS] += $basket->diff[WarenkorbHelper::GROSS] * -1;
-                $basket->discount = $rounding($basket->discount);
+                $basket->surcharge[$type] += $difference[$type];
             }
-        } else {
-            $basket->surcharge[WarenkorbHelper::NET] += $basket->diff[WarenkorbHelper::NET];
-            $basket->surcharge[WarenkorbHelper::GROSS] += $basket->diff[WarenkorbHelper::GROSS];
-            $basket->surcharge = $rounding($basket->surcharge);
-        }
+        };
+
+        $addDifference($difference, WarenkorbHelper::NET);
+        $addDifference($difference, WarenkorbHelper::GROSS);
 
         return $basket;
+    }
+
+    public static function getBasketV2()
+    {
+
     }
 }

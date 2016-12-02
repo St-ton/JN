@@ -1,14 +1,14 @@
 {includeMailTemplate template=header type=plain}
+=== {$oMailObjekt->cIntervall} ===
 
-{$oMailObjekt->cIntervall}
+--- Zeitraum: {$oMailObjekt->dVon|date_format:"d.m.Y - H:i"} bis {$oMailObjekt->dBis|date_format:"d.m.Y - H:i"} ---
 
-{if is_array($oMailObjekt->oAnzahlArtikelProKundengruppe)}
-Produkte pro Kundengruppe:
-{foreach name=artikelprokgr from=$oMailObjekt->oAnzahlArtikelProKundengruppe item=oArtikelProKundengruppe}
-{$oArtikelProKundengruppe->cName}: {$oArtikelProKundengruppe->nAnzahl}
-{/foreach}
-{/if}
+{if is_array($oMailObjekt->oAnzahlArtikelProKundengruppe)}Produkte pro Kundengruppe:
 
+{foreach $oMailObjekt->oAnzahlArtikelProKundengruppe as $oArtikelProKundengruppe}
+    {$oArtikelProKundengruppe->cName}: {$oArtikelProKundengruppe->nAnzahl}
+
+{/foreach}{/if}
 {if $oMailObjekt->nAnzahlNeukunden != -1}
 Neukunde: {$oMailObjekt->nAnzahlNeukunden}
 {/if}
@@ -51,6 +51,7 @@ Nicht freigeschaltete Bewertungen: {$oMailObjekt->nAnzahlBewertungenNichtFreiges
 
 {if isset($oMailObjekt->oAnzahlGezahltesGuthaben->fSummeGuthaben) && isset($oMailObjekt->oAnzahlGezahltesGuthaben->nAnzahl)}
 Bewertungsguthaben gezahlt: {$oMailObjekt->oAnzahlGezahltesGuthaben->nAnzahl}
+
 Bewertungsguthaben Summe: {$oMailObjekt->oAnzahlGezahltesGuthaben->fSummeGuthaben}
 {/if}
 
@@ -75,7 +76,7 @@ Versendete Wunschlisten: {$oMailObjekt->nAnzahlVersendeterWunschlisten}
 {/if}
 
 {if $oMailObjekt->nAnzahlDurchgefuehrteUmfragen != -1}
-DurchgefÃ¼hrte Umfragen: {$oMailObjekt->nAnzahlDurchgefuehrteUmfragen}
+Durchgeführte Umfragen: {$oMailObjekt->nAnzahlDurchgefuehrteUmfragen}
 {/if}
 
 {if $oMailObjekt->nAnzahlNewskommentare != -1}
@@ -91,7 +92,7 @@ Neue Produktanfragen: {$oMailObjekt->nAnzahlProduktanfrageArtikel}
 {/if}
 
 {if $oMailObjekt->nAnzahlProduktanfrageVerfuegbarkeit != -1}
-Neue VerfÃ¼gbarkeitsanfragen: {$oMailObjekt->nAnzahlProduktanfrageVerfuegbarkeit}
+Neue Verfügbarkeitsanfragen: {$oMailObjekt->nAnzahlProduktanfrageVerfuegbarkeit}
 {/if}
 
 {if $oMailObjekt->nAnzahlVergleiche != -1}
@@ -101,5 +102,4 @@ Produktvergleiche: {$oMailObjekt->nAnzahlVergleiche}
 {if $oMailObjekt->nAnzahlGenutzteKupons != -1}
 Genutzte Kupons: {$oMailObjekt->nAnzahlGenutzteKupons}
 {/if}
-
 {includeMailTemplate template=footer type=plain}

@@ -20,14 +20,17 @@
     <form action="shoptemplate.php" method="post" enctype="multipart/form-data">
         {$jtl_token}
         <div id="settings" class="settings">
-            {if isset($oTemplate->eTyp) && $oTemplate->eTyp === 'admin'}
-                <input type="hidden" name="eTyp" value="admin" />
+            {if isset($oTemplate->eTyp) && ($oTemplate->eTyp === 'admin' || ($oTemplate->eTyp !== 'mobil' && $oTemplate->bResponsive))}
+                <input type="hidden" name="eTyp" value="{if !empty($oTemplate->eTyp)}{$oTemplate->eTyp}{else}standard{/if}" />
             {else}
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h3 class="panel-title">Mobil</h3>
                     </div>
                     <div class="panel-body">
+                        {if $oTemplate->eTyp === 'mobil' && $oTemplate->bResponsive}
+                            <div class="alert alert-warning">{#warning_responsive_mobile#}</div>
+                        {/if}
                         <div class="item input-group">
                             <span class="input-group-addon">
                                 <label for="eTyp">Standard-Template f&uuml;r mobile Endger&auml;te?</label>
@@ -115,7 +118,12 @@
                                                 {elseif $oSetting->cType === 'text' || $oSetting->cType === 'float'}
                                                     <input class="form-control" type="text" name="cWert[]" id="{$oSection->cKey}-{$oSetting->cKey}" value="{$oSetting->cValue|escape:"html"}" placeholder="{$oSetting->cPlaceholder}" />
                                                 {elseif $oSetting->cType === 'upload' && isset($oSetting->rawAttributes.target)}
-                                                    <input name="upload-{$smarty.foreach.tplOptions.index}" id="tpl-upload-{$smarty.foreach.tplOptions.index}" type="file" class="file" accept="{if !empty($oSetting->rawAttributes.accept)}{$oSetting->rawAttributes.accept}{else}image/*{/if}" />
+                                                    <div class="template-favicon-upload">
+                                                        <input name="upload-{$smarty.foreach.tplOptions.index}"
+                                                               id="tpl-upload-{$smarty.foreach.tplOptions.index}" type="file"
+                                                               class="file"
+                                                               accept="{if !empty($oSetting->rawAttributes.accept)}{$oSetting->rawAttributes.accept}{else}image/*{/if}">
+                                                    </div>
                                                     <input type="hidden" name="cWert[]" value="upload-{$smarty.foreach.tplOptions.index}" />
                                                     <script>
                                                         $('#tpl-upload-{$smarty.foreach.tplOptions.index}').fileinput({ldelim}
@@ -169,74 +177,88 @@
         </div>
     </form>
 {else}
-    <div id="settings">
-        <table class="table">
-            <thead>
+    <table class="table">
+        <thead>
+        <tr>
+            <th></th>
+            <th></th>
+            <th class="text-center">Status</th>
+            <th class="text-center">Version</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        {foreach name="template" from=$oTemplate_arr item=oTemplate}
             <tr>
-                <th style="width:120px;">Vorschau</th>
-                <th>Name</th>
-                <th>Status</th>
-                <th>Version</th>
-                <th>Ordner</th>
-                <th>Optionen</th>
-            </tr>
-            </thead>
-            <tbody>
-            {foreach name="template" from=$oTemplate_arr item=oTemplate}
-                <tr>
-                    <td>
-                        <img src="{if $oTemplate->cPreview|strlen > 0}{$shopURL}/templates/{$oTemplate->cOrdner}/{$oTemplate->cPreview}{else}{$shopURL}/gfx/keinBild.gif{/if}" alt="" width="120" />
-                    </td>
-                    <td class="tcenter">
-                        <h4 class="nospacing">{$oTemplate->cName}</h4>
-                        <p>
-                            {if !empty($oTemplate->cURL)}<a href="{$oTemplate->cURL}">{/if}
-                                {$oTemplate->cAuthor}
-                                {if !empty($oTemplate->cURL)}</a>
+                <td class="text-vcenter text-center" width="140">
+                    <div class="thumb-box thumb-sm">
+                        <div class="thumb" style="background-image:url({if $oTemplate->cPreview|strlen > 0}{$shopURL}/templates/{$oTemplate->cOrdner}/{$oTemplate->cPreview}{else}{$shopURL}/gfx/keinBild.gif{/if})"></div>
+                    </div>
+                </td>
+                <td>
+                    <ul class="list-unstyled">
+                        <li>
+                            <h3 style="margin:0">{$oTemplate->cName}</h3>
+                            {if !empty($oTemplate->cDescription)}
+                                <small class="text-muted">{$oTemplate->cDescription}</small>
                             {/if}
-                        </p>
-                        {if $oTemplate->bChild === true}
-                            <p>Erweitert <strong>{$oTemplate->cParent}</strong></p>
+                        </li>
+                        <li>
+                        <!--
+                        {if !empty($oTemplate->cURL)}<a href="{$oTemplate->cURL}">{/if}
+                            {$oTemplate->cAuthor}
+                            {if !empty($oTemplate->cURL)}</a>
                         {/if}
-                        {if !empty($oTemplate->cDescription)}
-                            <p class="description">{$oTemplate->cDescription}</p>
-                        {/if}
-                    </td>
-                    <td class="tcenter">
-                        {if !empty($oTemplate->bHasError) && $oTemplate->bHasError === true}
-                            <h4 class="label-wrap">
-                                <span class="label label-danger">Fehlerhaft</span>
-                            </h4>
-                        {elseif $oTemplate->bAktiv}
-                            <h4 class="label-wrap">
-                                <span class="label label-success">Aktiviert {if $oTemplate->eTyp === 'mobil'}(Mobile Endger&auml;te){/if}</span>
-                            </h4>
-                        {/if}
-                    </td>
-                    <td class="tcenter">{$oTemplate->cVersion}</td>
-                    <td class="tcenter">{$oTemplate->cOrdner}</td>
-                    <td class="tcenter">
-                        {if !empty($oTemplate->bHasError) && $oTemplate->bHasError === true}
-                            <span class="error"><strong>Achtung:</strong><br />Parent-Template fehlt.</span>
-                        {else}
-                            {if !$oTemplate->bAktiv}
-                                {if $oTemplate->bEinstellungen}
-                                    <a class="btn btn-primary" href="shoptemplate.php?settings={$oTemplate->cOrdner}&activate=1&token={$smarty.session.jtl_token}"><i class="fa fa-share"></i> Aktivieren</a>
-                                {else}
-                                    <a class="btn btn-primary" href="shoptemplate.php?switch={$oTemplate->cOrdner}&token={$smarty.session.jtl_token}"><i class="fa fa-share"></i> Aktivieren</a>
-                                {/if}
+                        -->
+                        </li>
+                        <li>
+                            {if $oTemplate->bChild === true}<span class="label label-danger"><abbr title="Vererbt von {$oTemplate->cParent}">{$oTemplate->cParent}</abbr></span>{/if}
+
+                            {if isset($oStoredTemplate_arr[$oTemplate->cOrdner])}
+                                {foreach $oStoredTemplate_arr[$oTemplate->cOrdner] as $oStored}
+                                    <span class="label label-warning"><abbr title="Originalversion {$oStored->cVersion} vorhanden">{$oStored->cVersion}</abbr></span>
+                                {/foreach}
+                            {/if}
+                        </li>
+                    </ul>
+                </td>
+                <td class="text-vcenter text-center">
+                    {if !empty($oTemplate->bHasError) && $oTemplate->bHasError === true}
+                        <h4 class="label-wrap">
+                            <span class="label label-danger">Fehlerhaft</span>
+                        </h4>
+                    {elseif $oTemplate->bAktiv}
+                        <h4 class="label-wrap">
+                            <span class="label label-success">Aktiviert {if $oTemplate->eTyp === 'mobil'}(Mobile Endger&auml;te){/if}</span>
+                        </h4>
+                    {/if}
+                </td>
+                <td class="text-vcenter text-center">
+                    <h4 class="label-wrap">
+                        <span class="label label-default"><abbr title="Verzeichnis: {$oTemplate->cOrdner}">{$oTemplate->cVersion}</abbr></span>
+                    </h4>
+                </td>
+                <td class="text-vcenter text-center">
+                    {if !empty($oTemplate->bHasError) && $oTemplate->bHasError === true}
+                        <span class="error"><strong>Achtung:</strong><br />Parent-Template fehlt.</span>
+                    {else}
+                        {if !$oTemplate->bAktiv}
+                            {if $oTemplate->bEinstellungen}
+                                <a class="btn btn-primary" href="shoptemplate.php?settings={$oTemplate->cOrdner}&activate=1&token={$smarty.session.jtl_token}"><i class="fa fa-share"></i> Aktivieren</a>
                             {else}
-                                {if $oTemplate->bEinstellungen}
-                                    <a class="btn btn-default" href="shoptemplate.php?settings={$oTemplate->cOrdner}&token={$smarty.session.jtl_token}"><i class="fa fa-edit"></i> Einstellungen</a>
-                                {/if}
+                                <a class="btn btn-primary" href="shoptemplate.php?switch={$oTemplate->cOrdner}&token={$smarty.session.jtl_token}"><i class="fa fa-share"></i> Aktivieren</a>
+                            {/if}
+                        {else}
+                            {if $oTemplate->bEinstellungen}
+                                <a class="btn btn-default" href="shoptemplate.php?settings={$oTemplate->cOrdner}&token={$smarty.session.jtl_token}"><i class="fa fa-edit"></i> Einstellungen</a>
                             {/if}
                         {/if}
-                    </td>
-                </tr>
-            {/foreach}
-            </tbody>
-        </table>
-    </div>
+                    {/if}
+                </td>
+            </tr>
+        {/foreach}
+        </tbody>
+    </table>
 {/if}
 </div>
 {include file='tpl_inc/footer.tpl'}

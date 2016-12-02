@@ -86,7 +86,7 @@ we are happy to tell you that you may use the following coupon ({$Kupon->Angezei
 	<br>
 {/if}
 
-Valid from {$Kupon->GueltigAb} until {$Kupon->GueltigBis}<br>
+Valid from {$Kupon->cGueltigAbLong}{if $Kupon->dGueltigBis != 0} until {$Kupon->cGueltigBisLong}{/if}<br>
 <br>
 {if $Kupon->nVerwendungenProKunde>1}
 	You may use this coupon {$Kupon->nVerwendungenProKunde} times in our shop.<br>

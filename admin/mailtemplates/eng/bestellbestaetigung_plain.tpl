@@ -35,6 +35,8 @@ Your order with the order number {$Bestellung->cBestellNr} consists of the follo
 
 Total: {$Bestellung->WarensummeLocalized[0]}
 
+Shipping time: {if isset($Bestellung->cEstimatedDeliveryEx)}{$Bestellung->cEstimatedDeliveryEx}{else}{$Bestellung->cEstimatedDelivery}{/if}
+
 
 Your billing adress:
 

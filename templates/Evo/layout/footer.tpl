@@ -17,7 +17,7 @@
 {if !$bExclusive}
     <div class="clearfix"></div>
     <footer id="footer"{if isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout === 'fluid'} class="container-block"{/if}>
-        <div class="container{if $Einstellungen.template.theme.pagelayout === 'full-width'}-fluid{/if}">
+        <div class="hidden-print container{if $Einstellungen.template.theme.pagelayout === 'full-width'}-fluid{/if}">
             {if isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout !== 'fluid'}
                 <div class="container-block clearfix">
             {/if}
@@ -122,9 +122,14 @@
                 {else}
                     {lang key="footnoteInclusiveVat" section="global" assign="footnoteVat"}
                 {/if}
+                {if $Einstellungen.global.global_versandhinweis === 'zzgl'}
+                    {lang key="footnoteExclusiveShipping" section="global" printf=$oSpezialseiten_arr[6]->cURL assign="footnoteShipping"}
+                {elseif $Einstellungen.global.global_versandhinweis === 'inkl'}
+                    {lang key="footnoteInclusiveShipping" section="global" printf=$oSpezialseiten_arr[6]->cURL assign="footnoteShipping"}
+                {/if}
                 {block name="footer-vat-notice"}
                     <p class="padded-lg-top">
-                        <span class="footnote-reference">*</span> {$footnoteVat|replace:'#SHIPPING_LINK#':$oSpezialseiten_arr[6]->cURL}
+                        <span class="footnote-reference">*</span> {$footnoteVat}{if isset($footnoteShipping)}{$footnoteShipping}{/if}
                     </p>
                 {/block}
             </div>
@@ -149,7 +154,9 @@
                             {/if}
                         </li>
                         <li class="col-xs-12 col-md-3 text-right" id="system-credits">
+                            {if !Shop::isBrandfree()}
                             Powered by <a href="http://jtl-url.de/jtlshop" title="JTL-Shop" target="_blank" rel="nofollow">JTL-Shop</a>
+                            {/if}
                         </li>
                     </ul>
                      {if isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout !== 'fluid'}
@@ -157,16 +164,13 @@
                     {/if}
                 </div>
             {/block}
-            {if (!isset($Einstellungen.template.general.use_cron) || $Einstellungen.template.general.use_cron === 'Y') && $smarty.now % 10 === 0}
-                <img src="includes/cron_inc.php" width="0" height="0" alt="" />
-            {/if}
         </div>
     </footer>
 {/if}
 </div> {* /mainwrapper *}
 
 {* JavaScripts *}
-{block name="footer-js"}   
+{block name="footer-js"}
     {assign var="isFluidContent" value=false}
     {if isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout === 'fluid' && isset($Link) && $Link->bIsFluid}
         {assign var="isFluidContent" value=true}
@@ -189,7 +193,7 @@
               document.cookie = disableStr + '=true; expires=Thu, 31 Dec 2099 23:59:59 UTC; path=/';
               window[disableStr] = true;
             }
-            
+
             var gaProperty = '{$Einstellungen.global.global_google_analytics_id}';
             var disableStr = 'ga-disable-' + gaProperty;
             if (document.cookie.indexOf(disableStr + '=true') > -1) {
@@ -247,6 +251,9 @@
                 "{$customJSPath}?v={$nTemplateVersion}",
             {/if}
         ]{/strip});
+        {if (!isset($Einstellungen.template.general.use_cron) || $Einstellungen.template.general.use_cron === 'Y') && $smarty.now % 10 === 0}
+            $.get('includes/cron_inc.php');
+        {/if}
     </script>
 {/block}
 </body>

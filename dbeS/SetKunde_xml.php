@@ -91,9 +91,9 @@ function bearbeite($xml)
         //Mappe Anrede
         $Kunde->cAnrede = mappeWawiAnrede2ShopAnrede($Kunde->cAnrede);
 
-        $oSprache = Shop::DB()->query("SELECT kSprache FROM tsprache WHERE kSprache = " . (int)$Kunde->kSprache, 1);
+        $oSprache = Shop::DB()->select('tsprache', 'kSprache', (int)$Kunde->kSprache);
         if (empty($oSprache->kSprache)) {
-            $oSprache        = Shop::DB()->query("SELECT kSprache FROM tsprache WHERE cShopStandard = 'Y'", 1);
+            $oSprache        = Shop::DB()->select('tsprache', 'cShopStandard', 'Y');
             $Kunde->kSprache = $oSprache->kSprache;
         }
 
@@ -337,11 +337,7 @@ function speicherKundenattribut($kKunde, $kSprache, $oKundenattribut_arr, $bNeu)
                     continue;
                 }
                 if (!$bNeu) {
-                    Shop::DB()->query(
-                        "DELETE FROM tkundenattribut
-                            WHERE kKunde = " . $kKunde . "
-                                AND kKundenfeld = " . (int)$oKundenfeld->kKundenfeld, 4
-                    );
+                    Shop::DB()->delete('tkundenattribut', ['kKunde', 'kKundenfeld'], [$kKunde, (int)$oKundenfeld->kKundenfeld]);
                 }
                 $oKundenattributTMP              = new stdClass();
                 $oKundenattributTMP->kKunde      = $kKunde;

@@ -61,6 +61,62 @@ function onBlur(obj) {
 <!-- Modal -->
 
 <div id="content">
+    {if $invisibleBoxes|count > 0}
+        <div class="alert alert-danger">{#warningInvisibleBoxes#}</div>
+        <form action="boxen.php" method="post">
+            {$jtl_token}
+            <div class="panel panel-default editorInner">
+                <div class="panel-heading">
+                    <h3 class="panel-title">{#invisibleBoxes#}</h3>
+                </div>
+                <table class="table">
+                    <tr class="boxRow">
+                        <th class="check">&nbsp;</th>
+                        <th>
+                            <strong>Titel</strong>
+                        </th>
+                        <th>
+                            <strong>Name</strong>
+                        </th>
+                        <th>
+                            <strong>Template</strong>
+                        </th>
+                        <th>
+                            <strong>Position</strong>
+                        </th>
+                    </tr>
+                    {foreach from=$invisibleBoxes item=invisibleBox name=invisibleBoxList}
+                        <tr>
+                            <td class="check">
+                                <input name="kInvisibleBox[]" type="checkbox" value="{$invisibleBox->kBox}" id="kInvisibleBox-{$smarty.foreach.invisibleBoxList.index}">
+                            </td>
+                            <td>
+                                <label for="kInvisibleBox-{$smarty.foreach.invisibleBoxList.index}">{$invisibleBox->cTitel}</label>
+                            </td>
+                            <td>
+                                {$invisibleBox->cName}
+                            </td>
+                            <td>
+                                {$invisibleBox->cTemplate}
+                            </td>
+                            <td>
+                                {$invisibleBox->ePosition}
+                            </td>
+                        </tr>
+                    {/foreach}
+                    <tr>
+                        <td class="check">
+                            <input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);">
+                        </td>
+                        <td colspan="4" class="tleft"><label for="ALLMSGS">{#globalSelectAll#}</label></td>
+                    </tr>
+                </table>
+                <div class="panel-footer">
+                    <button name="action" type="submit" class="btn btn-danger" value="delete-invisible"><i class="fa fa-trash"></i> {#deleteSelected#}</button>
+                </div>
+            </div>
+        </form>
+    {/if}
     {if !is_array($oBoxenContainer) || $oBoxenContainer|@count == 0}
         <div class="alert alert-danger">{#noTemplateConfig#}</div>
     {elseif !$oBoxenContainer.left && !$oBoxenContainer.right && !$oBoxenContainer.top && !$oBoxenContainer.bottom}

@@ -29,7 +29,7 @@ if (is_array($oJobQueue_arr) && count($oJobQueue_arr) > 0) {
             $oJobQueueTMP->dStartZeit,
             $oJobQueueTMP->dZuletztGelaufen
         );
-
+        Jtllog::cronLog('Got job ' . $oJobQueue->kJobQueue . ' (kCron = ' . $oJobQueue->kCron . ', type = ' . $oJobQueue->cJobArt . ')');
         if (Jtllog::doLog(JTLLOG_LEVEL_NOTICE)) {
             Jtllog::writeLog(print_r($oJobQueue, true), JTLLOG_LEVEL_NOTICE, false, 'kJobQueue', $oJobQueueTMP->kJobQueue);
         }
@@ -65,4 +65,6 @@ if (is_array($oJobQueue_arr) && count($oJobQueue_arr) > 0) {
         }
         executeHook(HOOK_JOBQUEUE_INC_BEHIND_SWITCH, array('oJobQueue' => &$oJobQueue));
     }
+} else {
+    Jtllog::cronLog('No jobs found', 3);
 }

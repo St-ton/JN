@@ -1,7 +1,7 @@
 <?php
+
 /**
- * WebBrowser plugin.
- *
+ * Class phpQueryObjectPlugin_WebBrowser
  */
 class phpQueryObjectPlugin_WebBrowser
 {
@@ -11,11 +11,12 @@ class phpQueryObjectPlugin_WebBrowser
      * @var array
      */
     public static $phpQueryMethods = null;
+
     /**
-     * Enter description here...
-     *
-     * @param phpQueryObject $self
-     * @todo support 'reset' event
+     * @param      $self
+     * @param null $callback
+     * @param null $location
+     * @throws Exception
      */
     public static function WebBrowser($self, $callback = null, $location = null)
     {
@@ -33,10 +34,24 @@ class phpQueryObjectPlugin_WebBrowser
             $self->bind('submit', array($location, $callback), array('phpQueryPlugin_WebBrowser', 'handleSubmit'));
         }
     }
+
+    /**
+     * @param      $self
+     * @param null $callback
+     * @param null $location
+     * @return mixed
+     */
     public static function browser($self, $callback = null, $location = null)
     {
         return $self->WebBrowser($callback, $location);
     }
+
+    /**
+     * @param      $self
+     * @param null $dir
+     * @param null $filename
+     * @return mixed
+     */
     public static function downloadTo($self, $dir = null, $filename = null)
     {
         $url = null;
@@ -64,12 +79,13 @@ class phpQueryObjectPlugin_WebBrowser
         }
         return $self;
     }
+
     /**
      * Method changing browser location.
      * Fires callback registered with WebBrowser(), if any.
      * @param $self
      * @param $url
-     * @return unknown_type
+     * @return mixed
      */
     public static function location($self, $url = null)
     {
@@ -93,6 +109,10 @@ class phpQueryObjectPlugin_WebBrowser
         return $return;
     }
 }
+
+/**
+ * Class phpQueryPlugin_WebBrowser
+ */
 class phpQueryPlugin_WebBrowser
 {
     /**
@@ -103,9 +123,9 @@ class phpQueryPlugin_WebBrowser
      * @param $param2
      * @param $param3
      * @return Zend_Http_Client
+     * @throws Exception
      */
-    public static function browserGet($url, $callback,
-        $param1 = null, $param2 = null, $param3 = null)
+    public static function browserGet($url, $callback, $param1 = null, $param2 = null, $param3 = null)
     {
         phpQuery::debug("[WebBrowser] GET: $url");
         self::authorizeHost($url);
@@ -124,9 +144,6 @@ class phpQueryPlugin_WebBrowser
                 array(self::browserReceive($xhr)->WebBrowser()),
                 $paramStructure
             );
-//			phpQuery::callbackRun($callback, array(
-//				self::browserReceive($xhr)//->WebBrowser($callback)
-//			));
             return $xhr;
         } else {
             throw new Exception("[WebBrowser] GET request failed; url: $url");
@@ -163,9 +180,6 @@ class phpQueryPlugin_WebBrowser
                 array(self::browserReceive($xhr)->WebBrowser()),
                 $paramStructure
             );
-//			phpQuery::callbackRun($callback, array(
-//				self::browserReceive($xhr)//->WebBrowser($callback)
-//			));
             return $xhr;
         } else {
             return false;
@@ -197,14 +211,15 @@ class phpQueryPlugin_WebBrowser
                 array(self::browserReceive($xhr)->WebBrowser()),
                 $paramStructure
             );
-//			phpQuery::callbackRun($callback, array(
-//				self::browserReceive($xhr)//->WebBrowser($callback)
-//			));
             return $xhr;
         } else {
             return false;
         }
     }
+
+    /**
+     * @param $url
+     */
     protected static function authorizeHost($url)
     {
         $host = parse_url($url, PHP_URL_HOST);
@@ -212,22 +227,27 @@ class phpQueryPlugin_WebBrowser
             phpQuery::ajaxAllowHost($host);
         }
     }
+
+    /**
+     * @param $settings
+     * @return mixed
+     */
     protected static function ajaxSettingsPrepare($settings)
     {
         unset($settings['success']);
         unset($settings['error']);
         return $settings;
     }
+
     /**
      * @param Zend_Http_Client $xhr
+     * @return mixed|phpQueryObject
      */
     public static function browserReceive($xhr)
     {
         phpQuery::debug("[WebBrowser] Received from ".$xhr->getUri(true));
         // TODO handle meta redirects
         $body = $xhr->getLastResponse()->getBody();
-
-        // XXX error ???
         if (strpos($body, '<!doctype html>') !== false) {
             $body = '<html>'
                 .str_replace('<!doctype html>', '', $body)
@@ -236,11 +256,8 @@ class phpQueryPlugin_WebBrowser
         $pq = phpQuery::newDocument($body);
         $pq->document->xhr = $xhr;
         $pq->document->location = $xhr->getUri(true);
-        $refresh = $pq->find('meta[http-equiv=refresh]')
-            ->add('meta[http-equiv=Refresh]');
+        $refresh = $pq->find('meta[http-equiv=refresh]')->add('meta[http-equiv=Refresh]');
         if ($refresh->size()) {
-            //			print htmlspecialchars(var_export($xhr->getCookieJar()->getAllCookies(), true));
-//			print htmlspecialchars(var_export($xhr->getLastResponse()->getHeader('Set-Cookie'), true));
             phpQuery::debug("Meta redirect... '{$refresh->attr('content')}'\n");
             // there is a refresh, so get the new url
             $content = $refresh->attr('content');
@@ -248,7 +265,6 @@ class phpQueryPlugin_WebBrowser
             $urlRefresh = trim($urlRefresh, '\'"');
             // XXX not secure ?!
             phpQuery::ajaxAllowURL($urlRefresh);
-//			$urlRefresh = urldecode($urlRefresh);
             // make ajax call, passing last $xhr object to preserve important stuff
             $xhr = phpQuery::ajax(array(
                 'type' => 'GET',
@@ -265,11 +281,10 @@ class phpQueryPlugin_WebBrowser
             return $pq;
         }
     }
+
     /**
-     *
-     * @param $e
-     * @param $callback
-     * @return unknown_type
+     * @param      $e
+     * @param null $callback
      */
     public static function hadleClick($e, $callback = null)
     {
@@ -296,11 +311,10 @@ class phpQueryPlugin_WebBrowser
             $node->parents('form')->trigger('submit', array($e));
         }
     }
+
     /**
-     * Enter description here...
-     *
-     * @param unknown_type $e
-     * @TODO trigger submit for form after form's  submit button has a click event
+     * @param      $e
+     * @param null $callback
      */
     public static function handleSubmit($e, $callback = null)
     {
@@ -314,12 +328,9 @@ class phpQueryPlugin_WebBrowser
             : null;
         $submit = pq($e->relatedTarget)->is(':submit')
             ? $e->relatedTarget
-                // will this work ?
-//			: $node->find(':submit:first')->get(0);
             : $node->find('*:submit:first')->get(0);
         $data = array();
         foreach ($node->serializeArray($submit) as $r) {// XXXt.c maybe $node->not(':submit')->add($sumit) would be better ?
-//		foreach($node->serializeArray($submit) as $r)
             $data[ $r['name'] ] = $r['value'];
         }
         $options = array(
@@ -329,7 +340,6 @@ class phpQueryPlugin_WebBrowser
             'url' => resolve_url($e->data[0], $node->attr('action')),
             'data' => $data,
             'referer' => $node->document->location,
-//			'success' => $e->data[1],
         );
         if ($node->attr('enctype')) {
             $options['contentType'] = $node->attr('enctype');
@@ -345,35 +355,35 @@ class phpQueryPlugin_WebBrowser
         }
     }
 }
+
 /**
  *
- * @param unknown_type $parsed
- * @return unknown
+ * @param $parsed
+ * @return string
  * @link http://www.php.net/manual/en/function.parse-url.php
  * @author stevenlewis at hotmail dot com
  */
 function glue_url($parsed)
 {
-    if (! is_array($parsed)) {
+    if (!is_array($parsed)) {
         return false;
     }
-    $uri = isset($parsed['scheme']) ? $parsed['scheme'].':'.((strtolower($parsed['scheme']) == 'mailto') ? '':'//'): '';
-    $uri .= isset($parsed['user']) ? $parsed['user'].($parsed['pass']? ':'.$parsed['pass']:'').'@':'';
+    $uri = isset($parsed['scheme']) ? $parsed['scheme'] . ':' . ((strtolower($parsed['scheme']) == 'mailto') ? '' : '//') : '';
+    $uri .= isset($parsed['user']) ? $parsed['user'] . ($parsed['pass'] ? ':' . $parsed['pass'] : '') . '@' : '';
     $uri .= isset($parsed['host']) ? $parsed['host'] : '';
-    $uri .= isset($parsed['port']) ? ':'.$parsed['port'] : '';
+    $uri .= isset($parsed['port']) ? ':' . $parsed['port'] : '';
     if (isset($parsed['path'])) {
-        $uri .= (substr($parsed['path'], 0, 1) == '/')?$parsed['path']:'/'.$parsed['path'];
+        $uri .= (substr($parsed['path'], 0, 1) == '/') ? $parsed['path'] : '/' . $parsed['path'];
     }
-    $uri .= isset($parsed['query']) ? '?'.$parsed['query'] : '';
-    $uri .= isset($parsed['fragment']) ? '#'.$parsed['fragment'] : '';
+    $uri .= isset($parsed['query']) ? '?' . $parsed['query'] : '';
+    $uri .= isset($parsed['fragment']) ? '#' . $parsed['fragment'] : '';
+
     return $uri;
 }
 /**
- * Enter description here...
- *
- * @param unknown_type $base
- * @param unknown_type $url
- * @return unknown
+ * @param string $base
+ * @param string $url
+ * @return string
  * @author adrian-php at sixfingeredman dot net
  */
 function resolve_url($base, $url)
@@ -381,60 +391,60 @@ function resolve_url($base, $url)
     if (!strlen($base)) {
         return $url;
     }
-        // Step 2
-        if (!strlen($url)) {
-            return $base;
-        }
-        // Step 3
-        if (preg_match('!^[a-z]+:!i', $url)) {
-            return $url;
-        }
+    // Step 2
+    if (!strlen($url)) {
+        return $base;
+    }
+    // Step 3
+    if (preg_match('!^[a-z]+:!i', $url)) {
+        return $url;
+    }
     $base = parse_url($base);
     if ($url{0} == "#") {
         // Step 2 (fragment)
-                $base['fragment'] = substr($url, 1);
+        $base['fragment'] = substr($url, 1);
         return unparse_url($base);
     }
     unset($base['fragment']);
     unset($base['query']);
     if (substr($url, 0, 2) == "//") {
         // Step 4
-                return unparse_url(array(
-                        'scheme'=>$base['scheme'],
-                        'path'=>substr($url, 2),
-                ));
+        return unparse_url(array(
+            'scheme' => $base['scheme'],
+            'path' => substr($url, 2),
+        ));
     } elseif ($url{0} == "/") {
         // Step 5
-                $base['path'] = $url;
+        $base['path'] = $url;
     } else {
         // Step 6
-                $path = explode('/', $base['path']);
+        $path     = explode('/', $base['path']);
         $url_path = explode('/', $url);
-                // Step 6a: drop file from base
-                array_pop($path);
-                // Step 6b, 6c, 6e: append url while removing "." and ".." from
-                // the directory portion
-                $end = array_pop($url_path);
+        // Step 6a: drop file from base
+        array_pop($path);
+        // Step 6b, 6c, 6e: append url while removing "." and ".." from
+        // the directory portion
+        $end = array_pop($url_path);
         foreach ($url_path as $segment) {
             if ($segment == '.') {
                 // skip
-            } elseif ($segment == '..' && $path && $path[sizeof($path)-1] != '..') {
+            } elseif ($segment == '..' && $path && $path[sizeof($path) - 1] != '..') {
                 array_pop($path);
             } else {
                 $path[] = $segment;
             }
         }
-                // Step 6d, 6f: remove "." and ".." from file portion
-                if ($end == '.') {
-                    $path[] = '';
-                } elseif ($end == '..' && $path && $path[sizeof($path)-1] != '..') {
-                    $path[sizeof($path)-1] = '';
-                } else {
-                    $path[] = $end;
-                }
-                // Step 6h
-                $base['path'] = join('/', $path);
+        // Step 6d, 6f: remove "." and ".." from file portion
+        if ($end == '.') {
+            $path[] = '';
+        } elseif ($end == '..' && $path && $path[sizeof($path) - 1] != '..') {
+            $path[sizeof($path) - 1] = '';
+        } else {
+            $path[] = $end;
+        }
+        // Step 6h
+        $base['path'] = join('/', $path);
     }
-        // Step 7
-        return glue_url($base);
+    // Step 7
+    return glue_url($base);
 }

@@ -97,7 +97,7 @@
                     <input class="form-control" type="text" name="wsPassword" id="wsPassword" value="{if isset($oZertifikat->cWSPasswort)}{$oZertifikat->cWSPasswort}{/if}" tabindex="1" />
                     <span class="input-group-addon">{getHelpDesc cDesc="Das vom Shopbetreiber eingegebene Passwort"}</span>
                 </div>
-                {if isset($oZertifikat->nAktiv) && $oZertifikat->nAktiv|count_characters > 0 && $oZertifikat->nAktiv == 0}
+                {if isset($oZertifikat->nAktiv) && $oZertifikat->nAktiv|strlen > 0 && $oZertifikat->nAktiv == 0}
                     <div class="alert alert-danger">{#tsDeaktiviated#}</div>
                 {/if}
                 <input type="hidden" name="kSprache" value="0" />
@@ -142,7 +142,7 @@
                 <p>
                     <a href="trustedshops.php?whatisrating=1">{#tsWhatIsRating#}</a>
                 </p>
-                {if $Sprachen[$sessionSprachISO]->cURLKundenBewertung|count_characters > 0}
+                {if $Sprachen[$sessionSprachISO]->cURLKundenBewertung|strlen > 0}
                     <p>
                         <a href="{$Sprachen[$sessionSprachISO]->cURLKundenBewertung}" target="_blank"><i class="fa fa-external-link"></i> {#tsRatingForm#}</a>
                     </p>
@@ -183,10 +183,10 @@
                                 <span class="input-group-addon">
                                     <label for="kb-tsId">Trusted Shops ID (tsId)</label>
                                 </span>
-                                <input class="form-control" type="text" name="tsId" id="kb-tsId" value="{if isset($oTrustedShopsKundenbewertung->cTSID)}{$oTrustedShopsKundenbewertung->cTSID}{/if}" tabindex="1" />
+                                <input class="form-control" type="text" name="kb-tsId" id="kb-tsId" value="{if isset($oTrustedShopsKundenbewertung->cTSID)}{$oTrustedShopsKundenbewertung->cTSID}{/if}" tabindex="1" />
                                 <span class="input-group-addon">{getHelpDesc cDesc="Die vom Shopbetreiber eingegebene Zertifikats-ID"}</span>
                             </div>
-                            {if isset($Sprachen[$sessionSprachISO]->cURLKundenBewertungUebersicht) && $Sprachen[$sessionSprachISO]->cURLKundenBewertungUebersicht|count_characters > 0}
+                            {if isset($Sprachen[$sessionSprachISO]->cURLKundenBewertungUebersicht) && $Sprachen[$sessionSprachISO]->cURLKundenBewertungUebersicht|strlen > 0}
                                 <strong><a href="{$Sprachen[$sessionSprachISO]->cURLKundenBewertungUebersicht}" target="_blank" style="text-decoration: underline;">{#tsRatingOverview#}</a></strong>
                             {/if}
                         </div>
@@ -200,9 +200,9 @@
                         <form method="post" action="trustedshops.php">
                             {$jtl_token}
                             <input type="hidden" name="kundenbewertungupdate" value="1" />
-                            {if isset($oTrustedShopsKundenbewertung->cTSID) && isset($oTrustedShopsKundenbewertung->nStatus) && $oTrustedShopsKundenbewertung->cTSID|count_characters > 0 && $oTrustedShopsKundenbewertung->nStatus == 1}
+                            {if isset($oTrustedShopsKundenbewertung->cTSID) && isset($oTrustedShopsKundenbewertung->nStatus) && $oTrustedShopsKundenbewertung->cTSID|strlen > 0 && $oTrustedShopsKundenbewertung->nStatus == 1}
                                 <button class="btn btn-default" name="tsKundenbewertungDeActive" type="submit">{#tsRatingDeActivate#}</button>
-                            {elseif isset($oTrustedShopsKundenbewertung->cTSID) && isset($oTrustedShopsKundenbewertung->nStatus) && $oTrustedShopsKundenbewertung->cTSID|count_characters > 0 && $oTrustedShopsKundenbewertung->nStatus == 0}
+                            {elseif isset($oTrustedShopsKundenbewertung->cTSID) && isset($oTrustedShopsKundenbewertung->nStatus) && $oTrustedShopsKundenbewertung->cTSID|strlen > 0 && $oTrustedShopsKundenbewertung->nStatus == 0}
                                 <button class="btn btn-default" name="tsKundenbewertungActive" type="submit">{#tsRatingActivate#}</button>
                             {/if}
                         </form>

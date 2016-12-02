@@ -266,7 +266,7 @@ class Profiler
             $runID = Shop::DB()->insert('tprofiler', $run);
             if (is_numeric($runID)) {
                 //set runID for all filtered queries and save to DB
-                $runID = (int) $runID;
+                $runID = (int)$runID;
                 foreach ($filtered as $_queryRun) {
                     $_queryRun->runID = $runID;
                     Shop::DB()->insert('tprofiler_runs', $_queryRun);
@@ -337,7 +337,7 @@ class Profiler
             }
             $runID = Shop::DB()->insert('tprofiler', $run);
             if (is_numeric($runID)) {
-                $runID = (int) $runID;
+                $runID = (int)$runID;
                 foreach (self::$pluginProfile as $_fileRun) {
                     $obj           = new stdClass();
                     $obj->runID    = $runID;
@@ -426,21 +426,11 @@ class Profiler
                     ORDER BY runID DESC", 2
             );
         }
-        $profiles = Shop::DB()->query("
-            SELECT *
-                FROM tprofiler
-                WHERE ptype = '" . $type . "'
-                ORDER BY runID DESC", 2
-        );
+        $profiles = Shop::DB()->selectAll('tprofiler', 'ptype', $type, '*', 'runID DESC');
         $data = array();
         if (is_array($profiles)) {
             foreach ($profiles as $_profile) {
-                $_profile->data = Shop::DB()->query("
-                    SELECT *
-                        FROM tprofiler_runs
-                         WHERE runID = " . (int) $_profile->runID . "
-                         ORDER BY runtime DESC", 2
-                );
+                $_profile->data = Shop::DB()->selectAll('tprofiler_runs', 'runID', (int)$_profile->runID, '*', 'runtime DESC');
                 $data[] = $_profile;
             }
         }

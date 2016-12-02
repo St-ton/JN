@@ -1,6 +1,7 @@
 <script type="text/javascript">
     var i = 10,
-        j = 2;
+        j = 2,
+        file2large = false;
 
     function addInputRow() {ldelim}
         var row = document.getElementById('formtable').insertRow(i),
@@ -30,6 +31,34 @@
         i += 1;
         j += 1;
     {rdelim}
+    {literal}
+
+    $(document).ready(function () {
+
+        $('form input[type=file]').change(function(e){
+            $('form div.alert').slideUp();
+            var filesize= this.files[0].size;
+            {/literal}
+            var maxsize = {$nMaxFileSize};
+            {literal}
+            if (filesize >= maxsize) {
+                $(this).after('<div class="alert alert-danger"><i class="fa fa-warning"></i> Die Datei ist gr&ouml;&szlig;er als das Uploadlimit des Servers.</div>').slideDown();
+                file2large = true;
+            } else {
+                $(this).closest('div.alert').slideUp();
+                file2large = false;
+            }
+        });
+
+    });
+
+    function checkfile(e){
+        e.preventDefault();
+        if (!file2large){
+            document.news.submit();
+        }
+    }
+    {/literal}
 </script>
 
 {include file='tpl_inc/seite_header.tpl' cTitel=#news# cBeschreibung=#newsDesc#}
@@ -115,7 +144,7 @@
                     <tr>
                         <td><label for="dGueltigVon">{#newsValidation#} *</label></td>
                         <td>
-                            <input class="form-control" id="dGueltigVon" name="dGueltigVon" type="text" value="{if isset($cPostVar_arr.dGueltigVon) && $cPostVar_arr.dGueltigVon}{$cPostVar_arr.dGueltigVon}{elseif isset($oNews->dGueltigVon_de) && $oNews->dGueltigVon_de|count_characters > 0}{$oNews->dGueltigVon_de}{else}{$smarty.now|date_format:'%d.%m.%Y %H:%M'}{/if}" />
+                            <input class="form-control" id="dGueltigVon" name="dGueltigVon" type="text" value="{if isset($cPostVar_arr.dGueltigVon) && $cPostVar_arr.dGueltigVon}{$cPostVar_arr.dGueltigVon}{elseif isset($oNews->dGueltigVon_de) && $oNews->dGueltigVon_de|strlen > 0}{$oNews->dGueltigVon_de}{else}{$smarty.now|date_format:'%d.%m.%Y %H:%M'}{/if}" />
                         </td>
                     </tr>
                     <tr>
@@ -146,6 +175,19 @@
                             <input class="form-control" id="cMetaKeywords" name="cMetaKeywords" type="text" value="{if isset($cPostVar_arr.cMetaKeywords) && $cPostVar_arr.cMetaKeywords}{$cPostVar_arr.cMetaKeywords}{elseif isset($oNews->cMetaKeywords)}{$oNews->cMetaKeywords}{/if}" />
                         </td>
                     </tr>
+                    {if $oPossibleAuthors_arr|count > 0}
+                        <tr>
+                            <td><label for="kAuthor">{#newsAuthor#}</label></td>
+                            <td>
+                                <select class="form-control" id="kAuthor" name="kAuthor">
+                                    <option value="0">Autor ausw&auml;hlen</option>
+                                    {foreach name=author from=$oPossibleAuthors_arr item=oPossibleAuthor}
+                                        <option value="{$oPossibleAuthor->kAdminlogin}"{if isset($cPostVar_arr.nAuthor)}{if isset($cPostVar_arr.nAuthor) && $cPostVar_arr.nAuthor == $oPossibleAuthor->kAdminlogin} selected="selected"{/if}{elseif isset($oAuthor->kAdminlogin) && $oAuthor->kAdminlogin == $oPossibleAuthor->kAdminlogin} selected="selected"{/if}>{$oPossibleAuthor->cName}</option>
+                                    {/foreach}
+                                </select>
+                            </td>
+                        </tr>
+                    {/if}
                     <tr>
                         <td><label for="previewImage">{#newsPreview#}</label></td>
                         <td valign="top">
@@ -206,7 +248,7 @@
                 </div>
                 <div class="panel-footer">
                     <span class="btn-group">
-                        <button name="speichern" type="button" value="{#newsSave#}" onclick="document.news.submit();" class="btn btn-primary"><i class="fa fa-save"></i> {#newsSave#}</button>
+                        <button name="speichern" type="button" value="{#newsSave#}" onclick="checkfile(event);" class="btn btn-primary"><i class="fa fa-save"></i> {#newsSave#}</button>
                         {if isset($oNews->kNews) && $oNews->kNews > 0}
                             <button type="submit" name="continue" value="1" class="btn btn-default" id="save-and-continue">{#newsSave#} und weiter bearbeiten</button>
                         {/if}
@@ -216,4 +258,7 @@
             </div>
         </div>
     </form>
+    {if isset($oNews->kNews) && $oNews->kNews > 0}
+        {getRevisions type='news' key=$oNews->kNews show=['cText'] secondary=false data=$oNews}
+    {/if}
 </div>

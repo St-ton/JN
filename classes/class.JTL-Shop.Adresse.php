@@ -144,9 +144,12 @@ class Adresse
         return (array) get_object_vars($this);
     }
 
+    /**
+     * @return object
+     */
     public function toObject()
     {
-        return (object) $this->toArray();
+        return (object)$this->toArray();
     }
 
     /**
@@ -160,6 +163,7 @@ class Adresse
                 $this->{$key} = $value;
             }
         }
+
         return $this;
     }
 
@@ -172,6 +176,9 @@ class Adresse
         return $this->fromArray((array)$object);
     }
 
+    /**
+     * @param string $anrede
+     */
     public function mappeAnrede($anrede)
     {
         switch (strtolower($anrede)) {
@@ -182,10 +189,14 @@ class Adresse
                 Shop::Lang()->get('salutationW', 'global');
                 break;
             default:
-                return null;
+                return;
         }
     }
 
+    /**
+     * @param string $iso
+     * @return string
+     */
     public function pruefeLandISO($iso)
     {
         preg_match('/[a-zA-Z]{2}/', $iso, $matches);
@@ -195,6 +206,7 @@ class Adresse
                 $iso = $o;
             }
         }
+
         return $iso;
     }
 }

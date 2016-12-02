@@ -8,8 +8,10 @@
  * Class cache_null
  * emergency fallback caching method
  */
-class cache_null extends JTLCacheHelper implements ICachingMethod
+class cache_null implements ICachingMethod
 {
+    use JTLCacheTrait;
+    
     /**
      * @var cache_null|null
      */
@@ -27,21 +29,9 @@ class cache_null extends JTLCacheHelper implements ICachingMethod
     }
 
     /**
-     * @param array $options
-     *
-     * @return cache_null
-     */
-    public static function getInstance($options)
-    {
-        //check if class was initialized before
-        return (self::$instance !== null) ? self::$instance : new self($options);
-    }
-
-    /**
      * @param string   $cacheID
      * @param mixed    $content
      * @param int|null $expiration
-     *
      * @return bool
      */
     public function store($cacheID, $content, $expiration = null)
@@ -52,7 +42,6 @@ class cache_null extends JTLCacheHelper implements ICachingMethod
     /**
      * @param array    $keyValue
      * @param int|null $expiration
-     *
      * @return bool
      */
     public function storeMulti($keyValue, $expiration = null)
@@ -62,7 +51,6 @@ class cache_null extends JTLCacheHelper implements ICachingMethod
 
     /**
      * @param string $cacheID
-     *
      * @return bool
      */
     public function load($cacheID)
@@ -72,7 +60,6 @@ class cache_null extends JTLCacheHelper implements ICachingMethod
 
     /**
      * @param array $cacheIDs
-     *
      * @return bool
      */
     public function loadMulti($cacheIDs)
@@ -90,7 +77,6 @@ class cache_null extends JTLCacheHelper implements ICachingMethod
 
     /**
      * @param string $cacheID
-     *
      * @return bool
      */
     public function flush($cacheID)
@@ -111,6 +97,6 @@ class cache_null extends JTLCacheHelper implements ICachingMethod
      */
     public function getStats()
     {
-        return array();
+        return [];
     }
 }

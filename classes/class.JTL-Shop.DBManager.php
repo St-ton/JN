@@ -35,7 +35,7 @@ class DBManager
         $columns = Shop::DB()->query("SHOW FULL COLUMNS FROM `{$table}`", 2);
 
         foreach ($columns as $column) {
-            $column->Type_info = self::parseType($column->Type);
+            $column->Type_info    = self::parseType($column->Type);
             $list[$column->Field] = $column;
         }
 
@@ -56,9 +56,9 @@ class DBManager
         foreach ($indexes as $index) {
             $container = (object)[
                 'Index_type' => 'INDEX',
-                'Columns' => []
+                'Columns'    => []
             ];
-            
+
             if (!isset($list[$index->Key_name])) {
                 $list[$index->Key_name] = $container;
             }
@@ -70,11 +70,9 @@ class DBManager
                 $column = reset($item->Columns);
                 if ($column->Key_name === 'PRIMARY') {
                     $list[$key]->Index_type = 'PRIMARY';
-                }
-                elseif ($column->Index_type === 'FULLTEXT') {
+                } elseif ($column->Index_type === 'FULLTEXT') {
                     $list[$key]->Index_type = 'FULLTEXT';
-                }
-                elseif ((int)$column->Non_unique === 0) {
+                } elseif ((int)$column->Non_unique === 0) {
                     $list[$key]->Index_type = 'UNIQUE';
                 }
             }
@@ -109,13 +107,13 @@ class DBManager
 
     /**
      * @param string $type
-     * @return array
+     * @return object
      */
     public static function parseType($type)
     {
         $result = (object)[
-            'Name' => null,
-            'Size' => null,
+            'Name'     => null,
+            'Size'     => null,
             'Unsigned' => false
         ];
 
@@ -124,13 +122,13 @@ class DBManager
         if (isset($type[1]) && $type[1] === 'unsigned') {
             $result->Unsigned = true;
         }
-        
+
         if (preg_match('/([a-z]+)(?:\((.*)\))?/', $type[0], $m)) {
             $result->Size = 0;
             $result->Name = $m[1];
             if (isset($m[2])) {
-                $size = explode(',', $m[2]);
-                $size = count($size) === 1 ? $size[0] : $size;
+                $size         = explode(',', $m[2]);
+                $size         = count($size) === 1 ? $size[0] : $size;
                 $result->Size = $size;
             }
         }

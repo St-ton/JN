@@ -56,15 +56,14 @@ function bearbeiteNewsletterversand($oJobQueue)
 
     if (in_array('0', explode(';', $oNewsletter->cKundengruppe))) {
         if (is_array($kKundengruppe_arr) && count($kKundengruppe_arr) > 0) {
-            $cSQL .= " OR tkunde.kKundengruppe is null";
+            $cSQL .= " OR tkunde.kKundengruppe IS NULL";
         } else {
-            $cSQL .= "tkunde.kKundengruppe is null";
+            $cSQL .= "tkunde.kKundengruppe IS NULL";
         }
     }
     $cSQL .= ")";
 
-    $oHersteller_arr = gibHerstellerObjekte($kHersteller_arr, $oKampagne, $oNewsletter->kSprache);
-
+    $oHersteller_arr           = gibHerstellerObjekte($kHersteller_arr, $oKampagne, $oNewsletter->kSprache);
     $oNewsletterEmpfaenger_arr = Shop::DB()->query(
         "SELECT tkunde.kKundengruppe, tkunde.kKunde, tsprache.cISO, tnewsletterempfaenger.kNewsletterEmpfaenger, tnewsletterempfaenger.cAnrede, tnewsletterempfaenger.cVorname, tnewsletterempfaenger.cNachname, tnewsletterempfaenger.cEmail, tnewsletterempfaenger.cLoeschCode
             FROM tnewsletterempfaenger
@@ -77,12 +76,12 @@ function bearbeiteNewsletterversand($oJobQueue)
     );
 
     if (is_array($oNewsletterEmpfaenger_arr) && count($oNewsletterEmpfaenger_arr) > 0) {
+        require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Kunde.php';
+        $shopURL = Shop::getURL();
         foreach ($oNewsletterEmpfaenger_arr as $oNewsletterEmpfaenger) {
             unset($oKunde);
-            $oNewsletterEmpfaenger->cLoeschURL = Shop::getURL() . '/newsletter.php?lang=' . $oNewsletterEmpfaenger->cISO . '&lc=' . $oNewsletterEmpfaenger->cLoeschCode;
+            $oNewsletterEmpfaenger->cLoeschURL = $shopURL . '/newsletter.php?lang=' . $oNewsletterEmpfaenger->cISO . '&lc=' . $oNewsletterEmpfaenger->cLoeschCode;
             if ($oNewsletterEmpfaenger->kKunde > 0) {
-                require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Kunde.php';
-
                 $oKunde = new Kunde($oNewsletterEmpfaenger->kKunde);
             }
 
@@ -96,8 +95,8 @@ function bearbeiteNewsletterversand($oJobQueue)
             // Newsletterempfaenger updaten
             Shop::DB()->query(
                 "UPDATE tnewsletterempfaenger
-                    SET dLetzterNewsletter='" . date('Y-m-d H:m:s') . "'
-                    WHERE kNewsletterEmpfaenger=" . $oNewsletterEmpfaenger->kNewsletterEmpfaenger, 3
+                    SET dLetzterNewsletter = '" . date('Y-m-d H:m:s') . "'
+                    WHERE kNewsletterEmpfaenger = " . (int)$oNewsletterEmpfaenger->kNewsletterEmpfaenger, 3
             );
             $oJobQueue->nLimitN += 1;
             $oJobQueue->updateJobInDB();
@@ -107,10 +106,9 @@ function bearbeiteNewsletterversand($oJobQueue)
     } else {
         $oJobQueue->deleteJobInDB();
         // NewsletterQueue löschen
-        Shop::DB()->query(
-            "DELETE FROM tnewsletterqueue
-										WHERE kNewsletter=" . $oJobQueue->kKey, 3
-        );
+        Shop::DB()->delete('tnewsletterqueue', 'kNewsletter', (int)$oJobQueue->kKey);
         unset($oJobQueue);
     }
+
+    return true;
 }

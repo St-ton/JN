@@ -50,18 +50,16 @@ echo $return;
 function bildartikellink_xml(SimpleXMLElement $xml)
 {
     $items           = get_array($xml);
-    $articleIDs      = array();
-    $cacheArticleIDs = array();
+    $articleIDs      = [];
+    $cacheArticleIDs = [];
     foreach ($items as $item) {
         //delete link first. Important because jtl-wawi does not send del_bildartikellink when image is updated.
-        Shop::DB()->query("DELETE FROM tartikelpict WHERE kArtikel = " . (int)$item->kArtikel . " AND nNr = " . (int)$item->nNr, 4);
+        Shop::DB()->delete('tartikelpict', ['kArtikel', 'nNr'], [(int)$item->kArtikel, (int)$item->nNr]);
         $articleIDs[] = (int)$item->kArtikel;
         DBUpdateInsert('tartikelpict', array($item), 'kArtikelPict');
     }
-    $smarty = Shop::Smarty();
     foreach (array_unique($articleIDs) as $_aid) {
-        $smarty->clearCache(null, 'jtlc|article|aid' . $_aid);
-        $cacheArticleIDs = CACHING_GROUP_ARTICLE . '_' . $_aid;
+        $cacheArticleIDs[] = CACHING_GROUP_ARTICLE . '_' . $_aid;
         MediaImage::clearCache(Image::TYPE_PRODUCT, $_aid);
     }
     Shop::Cache()->flushTags($cacheArticleIDs);
@@ -73,16 +71,14 @@ function bildartikellink_xml(SimpleXMLElement $xml)
 function del_bildartikellink_xml(SimpleXMLElement $xml)
 {
     $items           = get_del_array($xml);
-    $articleIDs      = array();
-    $cacheArticleIDs = array();
+    $articleIDs      = [];
+    $cacheArticleIDs = [];
     foreach ($items as $item) {
         del_img_item($item);
         $articleIDs[] = $item->kArtikel;
     }
-    $smarty = Shop::Smarty();
     foreach (array_unique($articleIDs) as $_aid) {
-        $smarty->clearCache(null, 'jtlc|article|aid' . $_aid);
-        $cacheArticleIDs = CACHING_GROUP_ARTICLE . '_' . $_aid;
+        $cacheArticleIDs[] = CACHING_GROUP_ARTICLE . '_' . $_aid;
         MediaImage::clearCache(Image::TYPE_PRODUCT, $_aid);
     }
     Shop::Cache()->flushTags($cacheArticleIDs);
@@ -104,7 +100,7 @@ function del_img_item($item) {
             }
             Jtllog::writeLog('Removed last image link: ' . (int)$image->kBild, JTLLOG_LEVEL_NOTICE, false, 'img_link_xml');
         }
-        Shop::DB()->query("DELETE FROM tartikelpict WHERE kArtikel = " . (int)$item->kArtikel . " AND nNr = " . (int)$item->nNr, 4);
+        Shop::DB()->delete('tartikelpict', ['kArtikel', 'nNr'], [(int)$item->kArtikel, (int)$item->nNr]);
     }
 }
 
@@ -116,10 +112,10 @@ function get_del_array(SimpleXMLElement $xml)
 {
     $items = array();
     foreach ($xml->children() as $child) {
-        $item    = (object)array(
+        $item    = (object)[
             'nNr'      => (int)$child->nNr,
             'kArtikel' => (int)$child->kArtikel
-        );
+        ];
         $items[] = $item;
     }
 
@@ -133,26 +129,22 @@ function get_del_array(SimpleXMLElement $xml)
 function get_array(SimpleXMLElement $xml)
 {
     $items = array();
+    /** @var SimpleXMLElement $child */
     foreach ($xml->children() as $child) {
-        $item = (object)array(
+        $item    = (object)[
             'cPfad'        => '',
             'kBild'        => (int)$child->attributes()->kBild,
             'nNr'          => (int)$child->attributes()->nNr,
             'kArtikel'     => (int)$child->attributes()->kArtikel,
             'kArtikelPict' => (int)$child->attributes()->kArtikelPict
-        );
-
+        ];
         $imageId = (int)$child->attributes()->kBild;
         $image   = Shop::DB()->select('tbild', 'kBild', $imageId);
-
         if (is_object($image)) {
             $item->cPfad = $image->cPfad;
-            $items[] = $item;
-        }
-        else {
-            if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                Jtllog::writeLog('Missing reference in tbild (Key: ' . $imageId . ')', JTLLOG_LEVEL_DEBUG, false, 'img_link_xml');
-            }
+            $items[]     = $item;
+        } elseif (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
+            Jtllog::writeLog('Missing reference in tbild (Key: ' . $imageId . ')', JTLLOG_LEVEL_DEBUG, false, 'img_link_xml');
         }
     }
 

@@ -125,7 +125,7 @@ class Emailhistory
             foreach ($cMember_arr as $cMember) {
                 $cMethod = 'get' . substr($cMember, 1);
                 if (method_exists($this, $cMethod)) {
-                    $mValue = "'" . $this->realEscape(call_user_func(array(&$this, $cMethod))) . "'";
+                    $mValue = "'" . Shop::DB()->realEscape(call_user_func(array(&$this, $cMethod))) . "'";
                     if (call_user_func(array(&$this, $cMethod)) === null) {
                         $mValue = 'NULL';
                     }
@@ -147,12 +147,12 @@ class Emailhistory
      */
     public function delete()
     {
-        return Shop::DB()->query("DELETE FROM temailhistory WHERE kEmailhistory = " . $this->getEmailhistory(), 3);
+        return Shop::DB()->delete('temailhistory', 'kEmailhistory', $this->getEmailhistory());
     }
 
     /**
      * @param string $cSqlLimit
-     * @return array|null
+     * @return array
      */
     public function getAll($cSqlLimit = '')
     {
@@ -169,7 +169,7 @@ class Emailhistory
             return $oEmailhistory_arr;
         }
 
-        return;
+        return [];
     }
 
     /**

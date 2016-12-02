@@ -123,11 +123,14 @@ class PayPalBasic extends PaymentMethod
         }
         $this->config = [
             'mode'            => $this->mode,
+
             'acct1.UserName'  => $this->benutzer,
             'acct1.Password'  => $this->passwort,
             'acct1.Signature' => $this->signatur,
-        ];
 
+            'cache.enabled'   => true,
+            'cache.FileName'  => PFAD_ROOT . PFAD_COMPILEDIR . 'paypalbasic.auth.cache'
+        ];
         parent::__construct($this->pluginbez);
     }
 

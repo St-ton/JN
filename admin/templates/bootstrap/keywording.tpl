@@ -1,6 +1,6 @@
 {include file='tpl_inc/header.tpl'}
 {config_load file="$lang.conf" section="keywording"}
-{include file='tpl_inc/seite_header.tpl' cTitel=#excludeKeywords# cBeschreibung=#keywordingDesc#}
+{include file='tpl_inc/seite_header.tpl' cTitel=#excludeKeywords# cBeschreibung=#keywordingDesc# cDokuURL=#keywordingURL#}
 <div id="content" class="container-fluid">
     <div id="settings">
         <form name="login" method="post" action="keywording.php">

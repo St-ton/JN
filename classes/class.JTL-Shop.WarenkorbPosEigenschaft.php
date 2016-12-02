@@ -62,7 +62,6 @@ class WarenkorbPosEigenschaft
      * Konstruktor
      *
      * @param int $kWarenkorbPosEigenschaft - Falls angegeben, wird der WarenkorbPosEigenschaft mit angegebenem kWarenkorbPosEigenschaft aus der DB geholt
-     * @return WarenkorbPosEigenschaft
      */
     public function __construct($kWarenkorbPosEigenschaft = 0)
     {

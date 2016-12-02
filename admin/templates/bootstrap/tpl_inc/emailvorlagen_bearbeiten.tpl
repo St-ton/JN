@@ -96,6 +96,17 @@
                                 </select>
                             </span>
                         </div>
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <label for="nWRBForm">{#emailAddWRBForm#}</label>
+                            </span>
+                            <span class="input-group-wrap">
+                                <select id="nWRBForm" name="nWRBForm" class="form-control">
+                                    <option value="0"{if $Emailvorlage->nWRBForm == "0"} selected{/if}>{#no#}</option>
+                                    <option value="1"{if $Emailvorlage->nWRBForm == "1"} selected{/if}>{#yes#}</option>
+                                </select>
+                            </span>
+                        </div>
                     </div>
                 </div>
             {else}
@@ -205,4 +216,7 @@
             </div>
         </div>
     </form>
+    {if isset($Emailvorlage->kEmailvorlage)}
+        {getRevisions type='mail' key=$Emailvorlage->kEmailvorlage show=['cContentText','cContentHtml'] secondary=true data=$Emailvorlagesprache}
+    {/if}
 </div>

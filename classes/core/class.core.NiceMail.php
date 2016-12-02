@@ -75,6 +75,8 @@ function SendNiceMailReply($FromName, $FromMail, $ReplyAdresse, $To, $Subject, $
         $Msg .= '--' . $mime_boundary . '--' . $eol . $eol;
     }
     mail($To, encode_iso88591($Subject), $Msg, $headers);
+
+    return true;
 }
 
 /**

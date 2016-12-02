@@ -8,8 +8,10 @@
  * Class cache_session
  * Implements caching via PHP $_SESSION object
  */
-class cache_session extends JTLCacheHelper implements ICachingMethod
+class cache_session implements ICachingMethod
 {
+    use JTLCacheTrait;
+
     /**
      * @var cache_session|null
      */
@@ -26,26 +28,20 @@ class cache_session extends JTLCacheHelper implements ICachingMethod
     }
 
     /**
-     * @param array $options
-     *
-     * @return cache_session
-     */
-    public static function getInstance($options)
-    {
-        //check if class was initialized before
-        return (self::$instance !== null) ? self::$instance : new self($options);
-    }
-
-    /**
      * @param string   $cacheID
      * @param mixed    $content
      * @param int|null $expiration
-     *
      * @return bool
      */
     public function store($cacheID, $content, $expiration = null)
     {
-        $_SESSION[$this->options['prefix'] . $cacheID] = array('value' => $content, 'timestamp' => time(), 'lifetime' => ($expiration === null) ? $this->options['lifetime'] : $expiration);
+        $_SESSION[$this->options['prefix'] . $cacheID] = [
+            'value'     => $content,
+            'timestamp' => time(),
+            'lifetime'  => ($expiration === null)
+                ? $this->options['lifetime']
+                : $expiration
+        ];
 
         return true;
     }
@@ -53,7 +49,6 @@ class cache_session extends JTLCacheHelper implements ICachingMethod
     /**
      * @param array    $keyValue
      * @param int|null $expiration
-     *
      * @return bool
      */
     public function storeMulti($keyValue, $expiration = null)
@@ -67,7 +62,6 @@ class cache_session extends JTLCacheHelper implements ICachingMethod
 
     /**
      * @param string $cacheID
-     *
      * @return bool|mixed
      */
     public function load($cacheID)
@@ -89,12 +83,11 @@ class cache_session extends JTLCacheHelper implements ICachingMethod
 
     /**
      * @param array $cacheIDs
-     *
      * @return array
      */
     public function loadMulti($cacheIDs)
     {
-        $res = array();
+        $res = [];
         foreach ($cacheIDs as $_cid) {
             $res[$_cid] = $this->load($cacheIDs);
         }
@@ -112,7 +105,6 @@ class cache_session extends JTLCacheHelper implements ICachingMethod
 
     /**
      * @param string $cacheID
-     *
      * @return bool
      */
     public function flush($cacheID)
@@ -137,7 +129,7 @@ class cache_session extends JTLCacheHelper implements ICachingMethod
     }
 
     /**
-     * @param $cacheID
+     * @param string $cacheID
      * @return bool
      */
     public function keyExists($cacheID)
@@ -151,7 +143,7 @@ class cache_session extends JTLCacheHelper implements ICachingMethod
     public function getStats()
     {
         $num = 0;
-        $tmp = array();
+        $tmp = [];
         foreach ($_SESSION as $_sessionKey => $_sessionValue) {
             if (strpos($_sessionKey, $this->options['prefix']) === 0) {
                 $num++;
@@ -162,12 +154,12 @@ class cache_session extends JTLCacheHelper implements ICachingMethod
         $_tmp2       = unserialize(serialize($tmp));
         $total       = memory_get_usage() - $startMemory;
 
-        return array(
+        return [
             'entries' => $num,
             'hits'    => null,
             'misses'  => null,
             'inserts' => null,
             'mem'     => $total
-        );
+        ];
     }
 }

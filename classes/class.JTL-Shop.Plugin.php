@@ -279,24 +279,40 @@ class Plugin
      * @var null|array
      */
     private static $hookList = null;
-    
+
     /**
      * @var array
      */
     private static $bootstrapper = [];
 
     /**
+     * @var string  holds the path to a README.md
+     */
+    public $cTextReadmePath = '';
+
+    /**
+     * @var string  holds the path to a license-file ("LICENSE.md", "License.md", "license.md")
+     */
+    public $cTextLicensePath = '';
+
+
+    /**
      * Konstruktor
      *
      * @param int  $kPlugin - Falls angegeben, wird das Plugin mit angegebenem $kPlugin aus der DB geholt
      * @param bool $invalidateCache - set to true to clear plugin cache
-     * @return Plugin
+     * @param bool $suppressReload - set to true when the plugin shouldn't be reloaded, not even in plugin dev mode
      */
-    public function __construct($kPlugin = 0, $invalidateCache = false)
+    public function __construct($kPlugin = 0, $invalidateCache = false, $suppressReload = false)
     {
         $kPlugin = (int)$kPlugin;
         if ($kPlugin > 0) {
             $this->loadFromDB($kPlugin, $invalidateCache);
+
+            if (defined('PLUGIN_DEV_MODE') && PLUGIN_DEV_MODE === true && $suppressReload === false) {
+                reloadPlugin($this);
+                $this->loadFromDB($kPlugin, $invalidateCache);
+            }
         }
     }
 
@@ -350,23 +366,35 @@ class Plugin
         $this->cLicencePfadURL    = $_shopURL . '/' . PFAD_PLUGIN . $this->cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $this->nVersion . '/' . PFAD_PLUGIN_LICENCE;
         $this->cLicencePfadURLSSL = $_shopURLSSL . '/' . PFAD_PLUGIN . $this->cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $this->nVersion . '/' . PFAD_PLUGIN_LICENCE;
         // Plugin Hooks holen
-        $this->oPluginHook_arr = Shop::DB()->query(
-            "SELECT *
-                FROM tpluginhook
-                WHERE kPlugin = " . $kPlugin, 2
-        );
+        $this->oPluginHook_arr = Shop::DB()->selectAll('tpluginhook', 'kPlugin', $kPlugin);
         // Plugin AdminMenu holen
-        $this->oPluginAdminMenu_arr = Shop::DB()->query(
-            "SELECT *
-                FROM tpluginadminmenu
-                WHERE kPlugin = " . $kPlugin . "
-                ORDER BY nSort", 2
-        );
+        $this->oPluginAdminMenu_arr = Shop::DB()->selectAll('tpluginadminmenu', 'kPlugin', $kPlugin, '*', 'nSort');
+        // searching for the files README.md and LICENSE.md
+        $szPluginMainPath = PFAD_ROOT . PFAD_PLUGIN . $this->cVerzeichnis . '/';
+        if ('' === $this->cTextReadmePath && $this->checkFileExistence($szPluginMainPath . 'README.md')) {
+            $this->cTextReadmePath = $szPluginMainPath . 'README.md';
+        }
+        if ('' === $this->cTextLicensePath) {
+            // we're only searching for multiple license-files, if we did not done this before yet!
+            $vPossibleLicenseNames = [
+                  '',
+                  'license.md',
+                  'License.md',
+                  'LICENSE.md'
+            ];
+            $i = count($vPossibleLicenseNames) - 1;
+            for (; $i !== 0 && !$this->checkFileExistence($szPluginMainPath . $vPossibleLicenseNames[$i]); $i--) {
+                // we're only couting down to our find (or a empty string, if nothing was found)
+            }
+            if ('' !== $vPossibleLicenseNames[$i]) {
+                $this->cTextLicensePath = $szPluginMainPath . $vPossibleLicenseNames[$i];
+            }
+        }
         // Plugin Einstellungen holen
         $this->oPluginEinstellung_arr = Shop::DB()->query(
             "SELECT tplugineinstellungen.*, tplugineinstellungenconf.cConf
                 FROM tplugineinstellungen
-                LEFT JOIN tplugineinstellungenconf ON tplugineinstellungenconf.kPlugin = tplugineinstellungen.kPlugin 
+                LEFT JOIN tplugineinstellungenconf ON tplugineinstellungenconf.kPlugin = tplugineinstellungen.kPlugin
                     AND tplugineinstellungen.cName = tplugineinstellungenconf.cWertName
                 WHERE tplugineinstellungen.kPlugin = " . $kPlugin, 2
         );
@@ -379,26 +407,16 @@ class Plugin
             }
         }
         // Plugin Einstellungen Conf holen
-        $oPluginEinstellungConfTMP_arr = Shop::DB()->query(
-            "SELECT *
-                FROM tplugineinstellungenconf
-                WHERE kPlugin = " . $kPlugin . "
-                ORDER BY nSort", 2
-        );
+        $oPluginEinstellungConfTMP_arr = Shop::DB()->selectAll('tplugineinstellungenconf', 'kPlugin', $kPlugin, '*', 'nSort');
         if (count($oPluginEinstellungConfTMP_arr) > 0) {
             foreach ($oPluginEinstellungConfTMP_arr as $i => $oPluginEinstellungConfTMP) {
                 $oPluginEinstellungConfTMP_arr[$i]->oPluginEinstellungenConfWerte_arr = array();
                 if ($oPluginEinstellungConfTMP->cInputTyp === 'selectbox' || $oPluginEinstellungConfTMP->cInputTyp === 'radio') {
-
                     if (!empty($oPluginEinstellungConfTMP->cSourceFile)) {
                         $oPluginEinstellungConfTMP_arr[$i]->oPluginEinstellungenConfWerte_arr = $this->getDynamicOptions($oPluginEinstellungConfTMP);
                     } else {
-                        $oPluginEinstellungConfTMP_arr[$i]->oPluginEinstellungenConfWerte_arr = Shop::DB()->query(
-                            "SELECT *
-                                FROM tplugineinstellungenconfwerte
-                                WHERE kPluginEinstellungenConf = " . (int)$oPluginEinstellungConfTMP->kPluginEinstellungenConf . "
-                                ORDER BY nSort", 2
-                        );
+                        $oPluginEinstellungConfTMP_arr[$i]->oPluginEinstellungenConfWerte_arr = Shop::DB()->selectAll(
+                            'tplugineinstellungenconfwerte', 'kPluginEinstellungenConf', (int)$oPluginEinstellungConfTMP->kPluginEinstellungenConf, '*', 'nSort');
                     }
                 }
             }
@@ -421,19 +439,11 @@ class Plugin
         // Plugin Sprachvariable Assoc
         $this->oPluginSprachvariableAssoc_arr = gibPluginSprachvariablen($this->kPlugin, $cISOSprache);
         // FrontendLink
-        $oPluginFrontendLink_arr = Shop::DB()->query(
-            "SELECT *
-                FROM tlink
-                WHERE kPlugin = " . (int)$this->kPlugin, 2
-        );
+        $oPluginFrontendLink_arr = Shop::DB()->selectAll('tlink', 'kPlugin', (int)$this->kPlugin);
         if (is_array($oPluginFrontendLink_arr) && count($oPluginFrontendLink_arr) > 0) {
             // Link Sprache holen
             foreach ($oPluginFrontendLink_arr as $i => $oPluginFrontendLink) {
-                $oPluginFrontendLink_arr[$i]->oPluginFrontendLinkSprache_arr = Shop::DB()->query(
-                    "SELECT *
-                        FROM tlinksprache
-                        WHERE kLink = " . (int)$oPluginFrontendLink->kLink, 2
-                );
+                $oPluginFrontendLink_arr[$i]->oPluginFrontendLinkSprache_arr = Shop::DB()->selectAll('tlinksprache', 'kLink', (int)$oPluginFrontendLink->kLink);
             }
         }
         $this->oPluginFrontendLink_arr = $oPluginFrontendLink_arr;
@@ -452,11 +462,7 @@ class Plugin
                     PFAD_PLUGIN_VERSION . $this->nVersion . '/' . PFAD_PLUGIN_PAYMENTMETHOD . $oZahlungsmethode->cZusatzschrittTemplate : '';
                 $oZahlungsmethode_arr[$i]->cTemplateFileURL = strlen($oZahlungsmethode->cPluginTemplate) ? PFAD_ROOT . PFAD_PLUGIN . $this->cVerzeichnis . '/' .
                     PFAD_PLUGIN_VERSION . $this->nVersion . '/' . PFAD_PLUGIN_PAYMENTMETHOD . $oZahlungsmethode->cPluginTemplate : '';
-                $oZahlungsmethode_arr[$i]->oZahlungsmethodeSprache_arr = Shop::DB()->query(
-                    "SELECT *
-                        FROM tzahlungsartsprache
-                        WHERE kZahlungsart = " . (int)$oZahlungsmethode->kZahlungsart, 2
-                );
+                $oZahlungsmethode_arr[$i]->oZahlungsmethodeSprache_arr = Shop::DB()->selectAll('tzahlungsartsprache', 'kZahlungsart', (int)$oZahlungsmethode->kZahlungsart);
                 $cModulId                                                  = gibPlugincModulId($kPlugin, $oZahlungsmethode->cName);
                 $oZahlungsmethode_arr[$i]->oZahlungsmethodeEinstellung_arr = Shop::DB()->query(
                     "SELECT *
@@ -471,11 +477,7 @@ class Plugin
         $this->oPluginZahlungsmethode_arr      = $oZahlungsmethode_arr;
         $this->oPluginZahlungsmethodeAssoc_arr = $oZahlungsmethodeAssoc_arr;
         // Zahlungsart Klassen holen
-        $oZahlungsartKlasse_arr = Shop::DB()->query(
-            "SELECT *
-                FROM tpluginzahlungsartklasse
-                WHERE kPlugin = " . (int)$this->kPlugin, 2
-        );
+        $oZahlungsartKlasse_arr = Shop::DB()->selectAll('tpluginzahlungsartklasse', 'kPlugin', (int)$this->kPlugin);
         if (is_array($oZahlungsartKlasse_arr) && count($oZahlungsartKlasse_arr) > 0) {
             foreach ($oZahlungsartKlasse_arr as $oZahlungsartKlasse) {
                 if (isset($oZahlungsartKlasse->cModulId) && strlen($oZahlungsartKlasse->cModulId) > 0) {
@@ -485,20 +487,12 @@ class Plugin
         }
         // Emailvorlage holen
         $oPluginEmailvorlageAssoc_arr = array(); // Assoc als cModulId
-        $oPluginEmailvorlage_arr      = Shop::DB()->query(
-            "SELECT *
-                FROM tpluginemailvorlage
-                WHERE kPlugin = " . (int)$this->kPlugin, 2
-        );
+        $oPluginEmailvorlage_arr      = Shop::DB()->selectAll('tpluginemailvorlage', 'kPlugin', (int)$this->kPlugin);
 
         if (is_array($oPluginEmailvorlage_arr) && count($oPluginEmailvorlage_arr) > 0) {
             foreach ($oPluginEmailvorlage_arr as $i => $oPluginEmailvorlage) {
                 $oPluginEmailvorlage_arr[$i]->oPluginEmailvorlageSprache_arr = array();
-                $oPluginEmailvorlage_arr[$i]->oPluginEmailvorlageSprache_arr = Shop::DB()->query(
-                    "SELECT *
-                        FROM tpluginemailvorlagesprache
-                        WHERE kEmailvorlage = " . (int)$oPluginEmailvorlage->kEmailvorlage, 2
-                );
+                $oPluginEmailvorlage_arr[$i]->oPluginEmailvorlageSprache_arr = Shop::DB()->selectAll('tpluginemailvorlagesprache', 'kEmailvorlage', (int)$oPluginEmailvorlage->kEmailvorlage);
 
                 if (is_array($oPluginEmailvorlage_arr[$i]->oPluginEmailvorlageSprache_arr) && count($oPluginEmailvorlage_arr[$i]->oPluginEmailvorlageSprache_arr) > 0) {
                     $oPluginEmailvorlage_arr[$i]->oPluginEmailvorlageSpracheAssoc_arr = array(); // Assoc kSprache
@@ -513,11 +507,7 @@ class Plugin
         $this->oPluginEmailvorlage_arr      = $oPluginEmailvorlage_arr;
         $this->oPluginEmailvorlageAssoc_arr = $oPluginEmailvorlageAssoc_arr;
         // AdminWidgets
-        $this->oPluginAdminWidget_arr = Shop::DB()->query(
-            "SELECT *
-                FROM tadminwidgets
-                WHERE kPlugin = " . (int)$this->kPlugin, 2
-        );
+        $this->oPluginAdminWidget_arr = Shop::DB()->selectAll('tadminwidgets', 'kPlugin', (int)$this->kPlugin);
         if (is_array($this->oPluginAdminWidget_arr) && count($this->oPluginAdminWidget_arr) > 0) {
             foreach ($this->oPluginAdminWidget_arr as $i => $oPluginAdminWidget) {
                 $this->oPluginAdminWidget_arr[$i]->cClassAbs                     = $this->cAdminmenuPfad . PFAD_PLUGIN_WIDGET . 'class.Widget' . $oPluginAdminWidget->cClass . '.php';
@@ -525,11 +515,7 @@ class Plugin
             }
         }
         // Uninstall
-        $this->oPluginUninstall = Shop::DB()->query(
-            "SELECT *
-                FROM tpluginuninstall
-                WHERE kPlugin = " . (int)$this->kPlugin, 1
-        );
+        $this->oPluginUninstall = Shop::DB()->select('tpluginuninstall', 'kPlugin', (int)$this->kPlugin);
         if (is_object($this->oPluginUninstall)) {
             $this->cPluginUninstallPfad = PFAD_ROOT . PFAD_PLUGIN . $this->cVerzeichnis . '/' .
                 PFAD_PLUGIN_VERSION . $this->nVersion . '/' . PFAD_PLUGIN_UNINSTALL . $this->oPluginUninstall->cDateiname;
@@ -633,18 +619,19 @@ class Plugin
     public static function getPluginById($cPluginID)
     {
         if (strlen($cPluginID) > 0) {
-            $oObj = Shop::DB()->query(
-                "SELECT kPlugin
-                    FROM tplugin
-                    WHERE cPluginID = '" . Shop::DB()->escape($cPluginID) . "'", 1
-            );
-
-            if (isset($oObj->kPlugin) && intval($oObj->kPlugin) > 0) {
-                return new self($oObj->kPlugin);
+            $cacheID = 'plugin_id_list';
+            if (($plugins = Shop::Cache()->get($cacheID)) === false) {
+                $plugins = Shop::DB()->query("SELECT kPlugin, cPluginID FROM tplugin", 2);
+                Shop::Cache()->set($cacheID, $plugins, [CACHING_GROUP_PLUGIN]);
+            }
+            foreach ($plugins as $plugin) {
+                if ($plugin->cPluginID === $cPluginID) {
+                    return new self($plugin->kPlugin);
+                }
             }
         }
 
-        return;
+        return null;
     }
 
     /**
@@ -730,7 +717,8 @@ class Plugin
             "SELECT tpluginhook.nHook, tplugin.kPlugin, tplugin.cVerzeichnis, tplugin.nVersion, tpluginhook.cDateiname
                 FROM tplugin
                 JOIN tpluginhook ON tpluginhook.kPlugin = tplugin.kPlugin
-                WHERE tplugin.nStatus = 2", 2
+                WHERE tplugin.nStatus = 2
+                ORDER BY tpluginhook.nPriority, tplugin.kPlugin", 2
         );
         if (is_array($oPluginHook_arr) && count($oPluginHook_arr) > 0) {
             foreach ($oPluginHook_arr as $oPluginHook) {
@@ -800,7 +788,11 @@ class Plugin
 
         return $dynamicOptions;
     }
-    
+
+    /**
+     * @param int $kPlugin
+     * @return mixed|void
+     */
     public static function bootstrapper($kPlugin)
     {
         if (!isset(self::$bootstrapper[$kPlugin])) {
@@ -810,9 +802,9 @@ class Plugin
                 return null;
             }
 
-            $file = PFAD_ROOT . PFAD_PLUGIN . $plugin->cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $plugin->nVersion . '/' . PLUGIN_BOOTSTRAPPER;
+            $file  = PFAD_ROOT . PFAD_PLUGIN . $plugin->cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $plugin->nVersion . '/' . PLUGIN_BOOTSTRAPPER;
             $class = sprintf('%s\\%s', $plugin->cPluginID, 'Bootstrap');
-            
+
             if (!is_file($file)) {
                 return null;
             }
@@ -828,10 +820,30 @@ class Plugin
             if (!is_subclass_of($bootstrapper, 'AbstractPlugin')) {
                 return null;
             }
-            
+
             self::$bootstrapper[$kPlugin] = $bootstrapper;
         }
 
         return self::$bootstrapper[$kPlugin];
+    }
+
+    /**
+     * perform a "search for a particular file" only once
+     *
+     * we want to do expensive checks for files existence only one times!
+     * this function remembers itselfs, if a check was done and did'nt search again this file.
+     *
+     * @param string  full-path file-name of the file to check
+     * @return boolean  true = "file exists", false = "file did not exsist"
+     */
+    private function checkFileExistence($szCanonicalFileName)
+    {
+        static $vfDone = [];
+        if (false === array_key_exists($szCanonicalFileName, $vfDone)) {
+            // only if we did not know that file (in our "remember-array"), we perform this check
+            $vfDone[$szCanonicalFileName] = true; // we're using always a hash here, for speed-up reasons!
+            return file_exists($szCanonicalFileName); // do the actual check
+        }
+        return false;
     }
 }

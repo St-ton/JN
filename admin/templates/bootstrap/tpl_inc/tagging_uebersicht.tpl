@@ -30,12 +30,11 @@
     <div class="tab-content">
         <div id="freischalten" class="tab-pane fade{if !isset($cTab) || $cTab === 'freischalten' || $cTab === 'tags'} active in{/if}">
             {if $Tags && $Tags|@count > 0}
+                {include file='tpl_inc/pagination.tpl' oPagination=$oPagiTags cAnchor='freischalten'}
                 <form name="login" method="post" action="tagging.php">
                     {$jtl_token}
                     <input type="hidden" name="tagging" value="1" />
-                    <input type="hidden" name="s1" value="{$oBlaetterNaviTags->nAktuelleSeite}" />
                     <input type="hidden" name="tab" value="tags" />
-                    {include file='pagination.tpl' cSite=1 cUrl='tagging.php' oBlaetterNavi=$oBlaetterNaviTags hash='#freischalten'}
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <h3 class="panel-title">{#tags#}</h3>
@@ -81,6 +80,7 @@
         </div>
         <div id="mapping" class="tab-pane fade{if isset($cTab) && $cTab === 'mapping'} active in{/if}">
             {if $Tagmapping && $Tagmapping|@count > 0}
+                {include file='tpl_inc/pagination.tpl' oPagination=$oPagiTagMappings cAnchor='mapping'}
                 <form name="login" method="post" action="tagging.php">
                     {$jtl_token}
                     <input type="hidden" name="tagging" value="2" />

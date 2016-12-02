@@ -66,7 +66,7 @@ class Lieferscheinpos
      */
     private function loadFromDB($kLieferscheinPos = 0)
     {
-        $oObj = Shop::DB()->query("SELECT * FROM tlieferscheinpos WHERE kLieferscheinPos = " . intval($kLieferscheinPos), 1);
+        $oObj = Shop::DB()->select('tlieferscheinpos', 'kLieferscheinPos', (int)$kLieferscheinPos);
         if (!empty($oObj->kLieferscheinPos)) {
             $cMember_arr = array_keys(get_object_vars($oObj));
             foreach ($cMember_arr as $cMember) {

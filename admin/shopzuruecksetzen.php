@@ -7,7 +7,7 @@ require_once 'includes/admininclude.php';
 require_once 'includes/news_inc.php';
 
 $oAccount->permission('RESET_SHOP_VIEW', true, true);
-
+/** @global JTLSmarty $smarty */
 $cHinweis = '';
 $cFehler  = '';
 if (isset($_POST['zuruecksetzen']) && intval($_POST['zuruecksetzen']) === 1 && validateToken()) {
@@ -42,6 +42,7 @@ if (isset($_POST['zuruecksetzen']) && intval($_POST['zuruecksetzen']) === 1 && v
                     Shop::DB()->query("TRUNCATE tkategorie", 4);
                     Shop::DB()->query("TRUNCATE tkategorieartikel", 4);
                     Shop::DB()->query("TRUNCATE tkategorieattribut", 4);
+                    Shop::DB()->query("TRUNCATE tkategorieattributsprache", 4);
                     Shop::DB()->query("TRUNCATE tkategoriekundengruppe", 4);
                     Shop::DB()->query("TRUNCATE tkategoriemapping", 4);
                     Shop::DB()->query("TRUNCATE tkategoriepict", 4);
@@ -83,6 +84,7 @@ if (isset($_POST['zuruecksetzen']) && intval($_POST['zuruecksetzen']) === 1 && v
                         loescheNewsBilderDir($i->kNews, PFAD_ROOT . PFAD_NEWSBILDER);
                     }
                     Shop::DB()->query("TRUNCATE tnews", 4);
+                    Shop::DB()->delete('trevisions', 'type', 'news', 4);
                     Shop::DB()->query("TRUNCATE tnewskategorie", 4);
                     Shop::DB()->query("TRUNCATE tnewskategorienews", 4);
                     Shop::DB()->query("TRUNCATE tnewskommentar", 4);
@@ -113,7 +115,7 @@ if (isset($_POST['zuruecksetzen']) && intval($_POST['zuruecksetzen']) === 1 && v
                     Shop::DB()->query("TRUNCATE tumfragefrageantwort", 4);
                     Shop::DB()->query("TRUNCATE tumfragematrixoption", 4);
 
-                    Shop::DB()->query("DELETE FROM tseo WHERE cKey = 'kUmfrage'", 4);
+                    Shop::DB()->delete('tseo', 'cKey', 'kUmfrage');
                     break;
 
                 case 'verfuegbarkeitsbenachrichtigungen':
@@ -129,7 +131,7 @@ if (isset($_POST['zuruecksetzen']) && intval($_POST['zuruecksetzen']) === 1 && v
                     Shop::DB()->query("TRUNCATE tsuchcache", 4);
                     Shop::DB()->query("TRUNCATE tsuchcachetreffer", 4);
 
-                    Shop::DB()->query("DELETE FROM tseo WHERE cKey = 'kSuchanfrage'", 4);
+                    Shop::DB()->delete('tseo', 'cKey', 'kSuchanfrage');
                     break;
 
                 case 'tags':
@@ -138,7 +140,7 @@ if (isset($_POST['zuruecksetzen']) && intval($_POST['zuruecksetzen']) === 1 && v
                     Shop::DB()->query("TRUNCATE ttagartikel", 4);
                     Shop::DB()->query("TRUNCATE ttagkunde", 4);
 
-                    Shop::DB()->query("DELETE FROM tseo WHERE cKey = 'kTag'", 4);
+                    Shop::DB()->delete('tseo', 'cKey', 'kTag');
                     break;
 
                 case 'bewertungen':

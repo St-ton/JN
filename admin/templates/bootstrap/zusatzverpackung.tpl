@@ -166,7 +166,8 @@
                                         <input name="nAktiv[]" type="checkbox" value="{$oVerpackung->kVerpackung}"{if $oVerpackung->nAktiv == 1} checked{/if}>
                                     </td>
                                     <td class="TD8">
-                                        <a href="zusatzverpackung.php?edit={$oVerpackung->kVerpackung}&token={$smarty.session.jtl_token}" class="btn btn-default" title="{#zusatzverpackungEdit#}"><i class="fa fa-edit"></i></a>
+                                        <a href="zusatzverpackung.php?edit={$oVerpackung->kVerpackung}&token={$smarty.session.jtl_token}"
+                                           class="btn btn-default" title="{#modify#}"><i class="fa fa-edit"></i></a>
                                     </td>
                                 </tr>
                             {/foreach}

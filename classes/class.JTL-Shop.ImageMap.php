@@ -78,7 +78,7 @@ class ImageMap implements IExtensionPoint
             return false;
         }
 
-        $oImageMap->oArea_arr = Shop::DB()->query("SELECT * FROM timagemaparea WHERE kImageMap = " . (int)$oImageMap->kImageMap, 2);
+        $oImageMap->oArea_arr = Shop::DB()->selectAll('timagemaparea', 'kImageMap', (int)$oImageMap->kImageMap);
         $cBildPfad            = PFAD_ROOT . PFAD_IMAGEMAP . $oImageMap->cBildPfad;
         $oImageMap->cBildPfad = Shop::getURL() . '/' . PFAD_IMAGEMAP . $oImageMap->cBildPfad;
         $cParse_arr           = parse_url($oImageMap->cBildPfad);
@@ -86,6 +86,7 @@ class ImageMap implements IExtensionPoint
         list($width, $height) = getimagesize($cBildPfad);
         $oImageMap->fWidth    = $width;
         $oImageMap->fHeight   = $height;
+        $defaultOptions       = Artikel::getDefaultOptions();
 
         foreach ($oImageMap->oArea_arr as &$oArea) {
             $oArea->oCoords = new stdClass();
@@ -101,7 +102,7 @@ class ImageMap implements IExtensionPoint
             if (intval($oArea->kArtikel) > 0) {
                 $oArea->oArtikel = new Artikel();
                 if ($fill === true) {
-                    $oArea->oArtikel->fuelleArtikel($oArea->kArtikel, Artikel::getDefaultOptions(), $this->kKundengruppe, $this->kSprache);
+                    $oArea->oArtikel->fuelleArtikel($oArea->kArtikel, $defaultOptions, $this->kKundengruppe, $this->kSprache);
                 } else {
                     $oArea->oArtikel->kArtikel = $oArea->kArtikel;
                 }

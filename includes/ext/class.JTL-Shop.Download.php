@@ -96,11 +96,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
          */
         private function loadFromDB($kDownload, $kSprache, $bInfo, $kBestellung)
         {
-            $oDownload = Shop::DB()->query(
-                "SELECT *
-                    FROM tdownload
-                    WHERE kDownload = " . (int)$kDownload, 1
-            );
+            $oDownload = Shop::DB()->select('tdownload', 'kDownload', (int)$kDownload);
             $kBestellung = (int)$kBestellung;
             if (isset($oDownload->kDownload) && intval($oDownload->kDownload) > 0) {
                 $cMember_arr = array_keys(get_object_vars($oDownload));
@@ -122,7 +118,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
 
                 if ($kBestellung > 0) {
                     $this->kBestellung = $kBestellung;
-                    $oBestellung       = Shop::DB()->query("SELECT kBestellung, dBezahltDatum FROM tbestellung WHERE kBestellung = " . $kBestellung, 1);
+                    $oBestellung       = Shop::DB()->select('tbestellung', 'kBestellung', $kBestellung, null, null, null, null, false, 'kBestellung, dBezahltDatum');
 
                     if (isset($oBestellung->kBestellung) && $oBestellung->kBestellung > 0 && $oBestellung->dBezahltDatum !== '0000-00-00' && $this->getTage() > 0) {
                         $paymentDate = new DateTime($oBestellung->dBezahltDatum);
@@ -136,7 +132,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
                 $this->oArtikelDownload_arr = Shop::DB()->query(
                     "SELECT tartikeldownload.*
                         FROM tartikeldownload
-                        JOIN tdownload ON tdownload.kDownload = tartikeldownload.kDownload
+                        JOIN tdownload 
+                          ON tdownload.kDownload = tartikeldownload.kDownload
                         WHERE tartikeldownload.kDownload = " . (int)$this->kDownload . "
                         ORDER BY tdownload.nSort", 2
                 );
@@ -157,11 +154,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
             unset($oObj->cLimit);
             unset($oObj->dGueltigBis);
             unset($oObj->kBestellung);
-
             $kDownload = Shop::DB()->insert('tdownload', $oObj);
-
-            self::debug('Speicher Download mit ID: ' . $kDownload . ' wurde hinzugef&uuml;gt.');
-
             if ($kDownload > 0) {
                 return $bPrimary ? $kDownload : true;
             }
@@ -196,7 +189,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
                     JOIN tdownloadsprache ON tdownloadsprache.kDownload = tdownload.kDownload
                     LEFT JOIN tartikeldownload ON tartikeldownload.kDownload = tdownload.kDownload
                     LEFT JOIN tdownloadhistory ON tdownloadhistory.kDownload = tdownload.kDownload
-                    WHERE tdownload.kDownload = " . (int) $this->kDownload, 3
+                    WHERE tdownload.kDownload = " . (int)$this->kDownload, 3
             );
         }
 
@@ -224,7 +217,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
                                    JOIN twarenkorbpos ON twarenkorbpos.kWarenkorb = tbestellung.kWarenkorb
                                         AND twarenkorbpos.nPosTyp = " . C_WARENKORBPOS_TYP_ARTIKEL;
                 } elseif ($kKunde > 0) {
-                    $cSQLSelect = "MAX(tbestellung.kBestellung) as kBestellung, tbestellung.kKunde, tartikeldownload.kDownload";
+                    $cSQLSelect = "MAX(tbestellung.kBestellung) AS kBestellung, tbestellung.kKunde, tartikeldownload.kDownload";
                     $cSQLWhere  = "tartikeldownload.kArtikel = twarenkorbpos.kArtikel";
                     $cSQLJoin   = "JOIN tbestellung ON tbestellung.kKunde = " . $kKunde . "
                                    JOIN tdownload ON tdownload.kDownload = tartikeldownload.kDownload
@@ -530,6 +523,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
             return $this->cPfad;
         }
 
+        /**
+         * @return bool
+         */
         public function hasPreview()
         {
             return (strlen($this->cPfadVorschau) > 0);
@@ -575,6 +571,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
                 case 'mpg':
                 case 'avi':
                 case 'wmv':
+                case 'mp4':
                     return 'video';
 
                 case 'wav':

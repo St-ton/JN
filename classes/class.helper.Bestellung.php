@@ -43,10 +43,11 @@ class BestellungHelper extends WarenkorbHelper
         $info->currency = $order->Waehrung;
 
         foreach ($order->Positionen as $oPosition) {
-            $amountItem = $oPosition->fPreisEinzelNetto;
-
+            $amountItem  = $oPosition->fPreisEinzelNetto;
             $amount      = $amountItem; /* $order->fWaehrungsFaktor;*/
             $amountGross = $amount + ($amount * $oPosition->fMwSt / 100);
+            // floating-point precission bug
+            $amountGross = (float)(string)$amountGross;
 
             switch ($oPosition->nPosTyp) {
                 case C_WARENKORBPOS_TYP_ARTIKEL: {
@@ -122,8 +123,11 @@ class BestellungHelper extends WarenkorbHelper
         $info->discount[self::GROSS] *= -1;
 
         // total
-        $info->total[self::NET]   = $info->article[self::NET] + $info->shipping[self::NET] - $info->discount[self::NET] + $info->surcharge[self::NET];
-        $info->total[self::GROSS] = $info->article[self::GROSS] + $info->shipping[self::GROSS] - $info->discount[self::GROSS] + $info->surcharge[self::GROSS];
+        // $info->total[self::NET]   = $info->article[self::NET] + $info->shipping[self::NET] - $info->discount[self::NET] + $info->surcharge[self::NET];
+        // $info->total[self::GROSS] = $info->article[self::GROSS] + $info->shipping[self::GROSS] - $info->discount[self::GROSS] + $info->surcharge[self::GROSS];
+
+        $info->total[self::NET] = $order->fGesamtsummeNetto;
+        $info->total[self::GROSS] = $order->fGesamtsumme;
 
         $formatter = function ($prop) use ($decimals) {
             return [
@@ -156,7 +160,7 @@ class BestellungHelper extends WarenkorbHelper
     }
 
     /**
-     * @return Lieferadresse
+     * @return Lieferadresse|Rechnungsadresse
      */
     public function getShippingAddress()
     {
@@ -184,7 +188,7 @@ class BestellungHelper extends WarenkorbHelper
     }
 
     /**
-     * @return currency
+     * @return object
      */
     public function getCurrency()
     {
@@ -192,12 +196,11 @@ class BestellungHelper extends WarenkorbHelper
     }
 
     /**
-     * @return language iso
+     * @return string iso
      */
     public function getLanguage()
     {
-        return Shop::Lang()->
-        getIsoFromLangID($this->object->kSprache);
+        return Shop::Lang()->getIsoFromLangID($this->object->kSprache);
     }
 
     /**

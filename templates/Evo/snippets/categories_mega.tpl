@@ -9,7 +9,7 @@
     {/if}
 
     {get_category_array categoryId=0 assign='categories'}
-    {if !empty($categories)}    
+    {if !empty($categories)}
         {if !isset($activeId)}
             {if isset($NaviFilter->Kategorie) && intval($NaviFilter->Kategorie->kKategorie) > 0}
                 {$activeId = $NaviFilter->Kategorie->kKategorie}
@@ -49,7 +49,7 @@
                                         <div class="col-lg-3 visible-lg">
                                             <div class="mega-info-lg top15">
                                                 {if $category->cBildURL !== 'gfx/keinBild.gif'}
-                                                    <a href="{$category->cURL}"><img src="{$category->cBildURLFull}" class="img-responsive" alt="{$category->cName|escape:'quotes'}"></a>
+                                                    <a href="{$category->cURL}"><img src="{$category->cBildURLFull}" class="img-responsive" alt="{$category->cName|escape:'html'}"></a>
                                                     <div class="clearall top15"></div>
                                                 {/if}
                                                 <div class="description text-muted small">{$category->cBeschreibung}</div>
@@ -69,7 +69,7 @@
                                                         <div class="category-wrapper top15{if $sub->kKategorie == $activeId || (isset($activeParents[1]) && $activeParents[1]->kKategorie == $sub->kKategorie)} active{/if}">
                                                             {if isset($Einstellungen.template.megamenu.show_category_images) && $Einstellungen.template.megamenu.show_category_images !== 'N'}
                                                                 <div class="img text-center">
-                                                                    <a href="{$sub->cURL}"><img src="{$sub->cBildURLFull}" class=image alt="{$sub->cName|escape:'quotes'}"></a>
+                                                                    <a href="{$sub->cURL}"><img src="{$sub->cBildURLFull}" class="image" alt="{$sub->cName|escape:'html'}"></a>
                                                                 </div>
                                                             {/if}
                                                             <div class="caption{if isset($Einstellungen.template.megamenu.show_category_images) && $Einstellungen.template.megamenu.show_category_images !== 'N'} text-center{/if}">
@@ -157,7 +157,7 @@
                                             <div class="category-wrapper manufacturer top15{if isset($NaviFilter->Hersteller) && $NaviFilter->Hersteller->kHersteller == $hst->kHersteller} active{/if}">
                                                 {if isset($Einstellungen.template.megamenu.show_category_images) && $Einstellungen.template.megamenu.show_category_images !== 'N'}
                                                     <div class="img text-center">
-                                                        <a href="{$hst->cSeo}"><img src="{$hst->cBildpfadNormal}" class=image alt="{$hst->cName|escape:'quotes'}"></a>
+                                                        <a href="{$hst->cSeo}"><img src="{$hst->cBildpfadNormal}" class=image alt="{$hst->cName|escape:'html'}"></a>
                                                     </div>
                                                 {/if}
                                                 <div class="caption{if isset($Einstellungen.template.megamenu.show_category_images) && $Einstellungen.template.megamenu.show_category_images !== 'N'} text-center{/if}">

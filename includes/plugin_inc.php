@@ -12,10 +12,10 @@ require_once PFAD_ROOT . PFAD_CLASSES . 'interface.JTL-Shop.PluginLizenz.php';
 function executeHook($nHook, $args_arr = array())
 {
     global $smarty;
-    
+
     $dispatcher = EventDispatcher::getInstance();
     $dispatcher->fire("shop.hook.{$nHook}", array_merge((array)$nHook, $args_arr));
-    
+
     $hookList = Plugin::getHookList();
     if (!empty($hookList[$nHook]) && is_array($hookList[$nHook])) {
         foreach ($hookList[$nHook] as $oPluginTmp) {
@@ -55,7 +55,7 @@ function executeHook($nHook, $args_arr = array())
                     $runData = array(
                         'runtime'   => (microtime(true) - $start),
                         'timestamp' => microtime(true),
-                        'hookID'    => (int) $nHook,
+                        'hookID'    => (int)$nHook,
                         'runcount'  => 1,
                         'file'      => $oPlugin->cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $oPlugin->nVersion . '/' . PFAD_PLUGIN_FRONTEND . $cDateiname
                     );

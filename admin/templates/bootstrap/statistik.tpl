@@ -12,32 +12,7 @@
     {include file='tpl_inc/piechart_inc.tpl' piechart=$piechart headline=$headline id='piechart' width='100%' height='400px'}
 {/if}
 
-{if $oBlaetterNavi->nAktiv == 1}
-    <div class="ocontainer pages block">
-        <span class="pageinfo">{#page#}
-            <strong>{$oBlaetterNavi->nAktuelleSeite}</strong> {#from#} {$oBlaetterNavi->nBlaetterAnzahl_arr|@count}
-        </span>
-        <ul class="pagination">
-            <li class="pagination-item">
-                <a class="back" href="statistik.php?s1={$oBlaetterNavi->nVoherige}">&laquo;</a>
-            </li>
-            {if $oBlaetterNavi->nAnfang != 0}
-                <a href="statistik.php?s1={$oBlaetterNavi->nAnfang}">{$oBlaetterNavi->nAnfang}</a> ... {/if}
-            {foreach name=blaetternavi from=$oBlaetterNavi->nBlaetterAnzahl_arr item=Blatt}
-                <li class="pagination-item{if $oBlaetterNavi->nAktuelleSeite == $Blatt} active{/if}">
-                    <a class="page" href="statistik.php?s1={$Blatt}">{$Blatt}</a>
-                </li>
-            {/foreach}
-
-            {if $oBlaetterNavi->nEnde != 0}
-                <li class="pagination-item">... <a class="page" href="statistik.php?s1={$oBlaetterNavi->nEnde}">{$oBlaetterNavi->nEnde}</a></li>
-            {/if}
-            <li class="pagination-item">
-                <a class="next" href="statistik.php?s1={$oBlaetterNavi->nNaechste}">&raquo;</a>
-            </li>
-        </ul>
-    </div>
-{/if}
+{include file='tpl_inc/pagination.tpl' oPagination=$oPagination}
 
 {if isset($oStat_arr) && $oStat_arr|@count > 0}
     <table class="list table">

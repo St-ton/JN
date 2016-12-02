@@ -10,7 +10,7 @@ define('EOS_PP_MODE', 0); // 1 = Test / 0 = Live
 
 // Debug
 define('EOS_D_MODE', 1); // 1 = An / 0 = Aus
-define('EOS_D_PFAD', PFAD_ROOT . 'jtllogs/eos.log');
+define('EOS_D_PFAD', PFAD_LOGFILES . 'eos.log');
 
 // EOS ErgebnisURLs
 define('EOS_BACKURL_CODE', 1);
@@ -230,7 +230,7 @@ class EOS extends ServerPaymentMethod
         }
 
         // Error: Not validated
-        if (($response['status'] !== 'OK') || (substring($response['URL'], 'https') === false)) {
+        if (($response['status'] !== 'OK') || (strpos($response['URL'], 'https') === false)) {
             $smarty->assign('status', 'error');
             $smarty->assign('error', Shop::Lang()->get('errorText', 'paymentMethods'));
             // Error Mail
@@ -284,8 +284,9 @@ class EOS extends ServerPaymentMethod
     }
 
     /**
-     * @return boolean
+     * @return bool
      * @param Bestellung $order
+     * @param string     $paymentHash
      * @param array      $args
      */
     public function verifyNotification($order, $paymentHash, $args)

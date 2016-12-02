@@ -122,20 +122,20 @@ abstract class phpQuery
     public static $ajaxSettings = array(
         'url'         => '',//TODO
         'global'      => true,
-        'type'        => "GET",
+        'type'        => 'GET',
         'timeout'     => null,
-        'contentType' => "application/x-www-form-urlencoded",
+        'contentType' => 'application/x-www-form-urlencoded',
         'processData' => true,
         'data'        => null,
         'username'    => null,
         'password'    => null,
         'accepts'     => array(
-            'xml'      => "application/xml, text/xml",
-            'html'     => "text/html",
-            'script'   => "text/javascript, application/javascript",
-            'json'     => "application/json, text/javascript",
-            'text'     => "text/plain",
-            '_default' => "*/*"
+            'xml'      => 'application/xml, text/xml',
+            'html'     => 'text/html',
+            'script'   => 'text/javascript, application/javascript',
+            'json'     => 'application/json, text/javascript',
+            'text'     => 'text/plain',
+            '_default' => '*/*'
         )
     );
 
@@ -189,7 +189,7 @@ abstract class phpQuery
      */
     public static function pq($arg1, $context = null)
     {
-        if ($arg1 instanceof DOMNODE && !isset($context)) {
+        if ($arg1 instanceof DOMNode && !isset($context)) {
             foreach (phpQuery::$documents as $documentWrapper) {
                 $compare = $arg1 instanceof DOMDocument
                     ? $arg1 : $arg1->ownerDocument;
@@ -207,14 +207,14 @@ abstract class phpQuery
             if (is_object($context) && $context instanceof phpQueryObject) {
                 $domId = $context->getDocumentID();
             } else {
-                if ($context instanceof DOMDOCUMENT) {
+                if ($context instanceof DOMDocument) {
                     $domId = self::getDocumentID($context);
                     if (!$domId) {
                         //throw new Exception('Orphaned DOMDocument');
                         $domId = self::newDocument($context)->getDocumentID();
                     }
                 } else {
-                    if ($context instanceof DOMNODE) {
+                    if ($context instanceof DOMNode) {
                         $domId = self::getDocumentID($context);
                         if (!$domId) {
                             throw new Exception('Orphaned DOMNode');
@@ -235,7 +235,7 @@ abstract class phpQuery
             }
             $class = get_class($arg1);
             // support inheritance by passing old object to overloaded constructor
-            $phpQuery           = $class != 'phpQuery'
+            $phpQuery           = $class !== 'phpQuery'
                 ? new $class($arg1, $domId)
                 : new phpQueryObject($domId);
             $phpQuery->elements = array();
@@ -245,14 +245,14 @@ abstract class phpQuery
 
             return $phpQuery;
         } else {
-            if ($arg1 instanceof DOMNODE || (is_array($arg1) && isset($arg1[0]) && $arg1[0] instanceof DOMNODE)) {
+            if ($arg1 instanceof DOMNode || (is_array($arg1) && isset($arg1[0]) && $arg1[0] instanceof DOMNode)) {
                 $phpQuery = new phpQueryObject($domId);
-                if (!($arg1 instanceof DOMNODELIST) && !is_array($arg1)) {
+                if (!($arg1 instanceof DOMNodeList) && !is_array($arg1)) {
                     $arg1 = array($arg1);
                 }
                 $phpQuery->elements = array();
                 foreach ($arg1 as $node) {
-                    $sameDocument         = $node->ownerDocument instanceof DOMDOCUMENT
+                    $sameDocument         = $node->ownerDocument instanceof DOMDocument
                         && !$node->ownerDocument->isSameNode($phpQuery->document);
                     $phpQuery->elements[] = $sameDocument
                         ? $phpQuery->document->importNode($node, true)
@@ -280,13 +280,13 @@ abstract class phpQuery
                     if ($context && $context instanceof phpQueryObject) {
                         $phpQuery->elements = $context->elements;
                     } else {
-                        if ($context && $context instanceof DOMNODELIST) {
+                        if ($context && $context instanceof DOMNodeList) {
                             $phpQuery->elements = array();
                             foreach ($context as $node) {
                                 $phpQuery->elements[] = $node;
                             }
                         } else {
-                            if ($context && $context instanceof DOMNODE) {
+                            if ($context && $context instanceof DOMNode) {
                                 $phpQuery->elements = array($context);
                             }
                         }
@@ -431,11 +431,6 @@ abstract class phpQuery
             while (preg_match($regex, $php, $matches)) {
                 $php = preg_replace_callback(
                     $regex,
-//					create_function('$m, $charset = "'.$charset.'"',
-//						'return $m[1].$m[2]
-//							.htmlspecialchars("<"."?php".$m[4]."?".">", ENT_QUOTES|ENT_NOQUOTES, $charset)
-//							.$m[5].$m[2];'
-//					),
                     array('phpQuery', '_phpToMarkupCallback'),
                     $php
                 );
@@ -498,12 +493,12 @@ abstract class phpQuery
                     create_function(
                         '$m',
                         'return $m[1].$m[2].$m[3]."<?php "
-							.str_replace(
-								array("%20", "%3E", "%09", "&#10;", "&#9;", "%7B", "%24", "%7D", "%22", "%5B", "%5D"),
-								array(" ", ">", "	", "\n", "	", "{", "$", "}", \'"\', "[", "]"),
-								htmlspecialchars_decode($m[4])
-							)
-							." ?>".$m[5].$m[2];'
+                            .str_replace(
+                                array("%20", "%3E", "%09", "&#10;", "&#9;", "%7B", "%24", "%7D", "%22", "%5B", "%5D"),
+                                array(" ", ">", "	", "\n", "	", "{", "$", "}", \'"\', "[", "]"),
+                                htmlspecialchars_decode($m[4])
+                            )
+                            ." ?>".$m[5].$m[2];'
                     ),
                     $content
                 );
@@ -518,6 +513,7 @@ abstract class phpQuery
      * Chainable.
      *
      * @param string $file URLs allowed. See File wrapper page at php.net for more supported sources.
+     * @param $contentType
      * @return phpQueryObject|QueryTemplatesSource|QueryTemplatesParse|QueryTemplatesSourceQuery
      */
     public static function newDocumentFile($file, $contentType = null)
@@ -620,7 +616,7 @@ abstract class phpQuery
             throw new Exception("Old PHP4 DOM XML extension detected. phpQuery won't work until this extension is enabled.");
         }
         $document = null;
-        if ($html instanceof DOMDOCUMENT) {
+        if ($html instanceof DOMDocument) {
             if (self::getDocumentID($html)) {
                 // document already exists in phpQuery::$documents, make a copy
                 $wrapper = clone $html;
@@ -716,7 +712,7 @@ abstract class phpQuery
                     continue;
                 }
                 if (isset(self::$pluginsStaticMethods[$method])) {
-                    throw new Exception("Duplicate method '{$method}' from plugin '{$c}' conflicts with same method from plugin '" . self::$pluginsStaticMethods[$method] . "'");
+                    throw new Exception("Duplicate method '{$method}' from plugin '{$class}' conflicts with same method from plugin '" . self::$pluginsStaticMethods[$method] . "'");
                 }
                 self::$pluginsStaticMethods[$method] = $class;
             }
@@ -737,7 +733,7 @@ abstract class phpQuery
                     continue;
                 }
                 if (isset(self::$pluginsMethods[$method])) {
-                    throw new Exception("Duplicate method '{$method}' from plugin '{$c}' conflicts with same method from plugin '" . self::$pluginsMethods[$method] . "'");
+                    throw new Exception("Duplicate method '{$method}' from plugin '{$class}' conflicts with same method from plugin '" . self::$pluginsMethods[$method] . "'");
                     continue;
                 }
                 self::$pluginsMethods[$method] = $class;
@@ -820,7 +816,7 @@ abstract class phpQuery
      * Make an AJAX request
      *
      * @param array $options
-     * @param null  $xhr
+     * @param Zend_Http_Client $xhr
      * @return null|Zend_Http_Client
      * @throws Exception
      * @throws Zend_Http_Client_Exception
@@ -854,7 +850,7 @@ abstract class phpQuery
             $client->resetParameters();
         } else {
             // create new XHR object
-            require_once('Zend/Http/Client.php');
+            require_once 'phpQuery/Zend/Http/Client.php';
             $client = new Zend_Http_Client();
             $client->setCookieJar();
         }
@@ -1038,7 +1034,7 @@ abstract class phpQuery
      * @param $data
      * @param $type
      * @param $options
-     * @return mixed|unknown_type
+     * @return mixed
      */
     protected static function httpData($data, $type, $options)
     {
@@ -1198,7 +1194,7 @@ abstract class phpQuery
         if (function_exists('json_encode')) {
             return json_encode($data);
         }
-        require_once 'Zend/Json/Encoder.php';
+        require_once 'phpQuery/Zend/Json/Encoder.php';
 
         return Zend_Json_Encoder::encode($data);
     }
@@ -1219,7 +1215,7 @@ abstract class phpQuery
                 return $return;
             }
         }
-        require_once 'Zend/Json/Decoder.php';
+        require_once 'phpQuery/Zend/Json/Decoder.php';
 
         return Zend_Json_Decoder::decode($json);
     }
@@ -1232,14 +1228,14 @@ abstract class phpQuery
      */
     public static function getDocumentID($source)
     {
-        if ($source instanceof DOMDOCUMENT) {
+        if ($source instanceof DOMDocument) {
             foreach (phpQuery::$documents as $id => $document) {
                 if ($source->isSameNode($document->document)) {
                     return $id;
                 }
             }
         } else {
-            if ($source instanceof DOMNODE) {
+            if ($source instanceof DOMNode) {
                 foreach (phpQuery::$documents as $id => $document) {
                     if ($source->ownerDocument->isSameNode($document->document)) {
                         return $id;
@@ -1266,12 +1262,12 @@ abstract class phpQuery
      */
     public static function getDOMDocument($source)
     {
-        if ($source instanceof DOMDOCUMENT) {
+        if ($source instanceof DOMDocument) {
             return $source;
         }
-        $source = self::getDocumentID($source);
+        $id = self::getDocumentID($source);
 
-        return $source
+        return $id
             ? self::$documents[$id]['document']
             : null;
     }
@@ -1284,7 +1280,7 @@ abstract class phpQuery
     public static function makeArray($object)
     {
         $array = array();
-        if (is_object($object) && $object instanceof DOMNODELIST) {
+        if (is_object($object) && $object instanceof DOMNodeList) {
             foreach ($object as $value) {
                 $array[] = $value;
             }
@@ -1373,7 +1369,7 @@ abstract class phpQuery
     }
 
     /**
-     * @param $callback Callback
+     * @param CallbackParameterToReference|Callback $callback
      * @param $params
      * @param $paramStructure
      * @return bool|mixed|void

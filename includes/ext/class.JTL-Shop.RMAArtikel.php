@@ -71,12 +71,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         private function loadFromDB($kRMA, $kArtikel, $bProductName, $bProductObject, $kSprache, $kKundengruppe)
         {
-            $oObj = Shop::DB()->query(
-                "SELECT *
-                  FROM trmaartikel
-                  WHERE kRMA = " . intval($kRMA) . "
-                    AND kArtikel = " . intval($kArtikel), 1
-            );
+            $oObj = Shop::DB()->select('trmaartikel', 'kRMA', (int)$kRMA, 'kArtikel', (int)$kArtikel);
             if (isset($oObj->kRMA) && $oObj->kRMA > 0) {
                 $cMember_arr = array_keys(get_object_vars($oObj));
                 foreach ($cMember_arr as $cMember) {
@@ -177,10 +172,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         public function delete()
         {
-            return Shop::DB()->query(
-                "DELETE FROM trmaartikel
-                   WHERE kRMA = " . $this->kRMA, 3
-            );
+            return Shop::DB()->delete('trmaartikel', 'kRMA', $this->getRMA());
         }
 
         /**
@@ -192,7 +184,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         public function setRMA($kRMA)
         {
-            $this->kRMA = intval($kRMA);
+            $this->kRMA = (int)$kRMA;
 
             return $this;
         }
@@ -275,7 +267,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         public function getRMA()
         {
-            return $this->kRMA;
+            return (int)$this->kRMA;
         }
 
         /**
@@ -286,7 +278,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         public function getBestellung()
         {
-            return $this->kBestellung;
+            return (int)$this->kBestellung;
         }
 
         /**
@@ -297,7 +289,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
          */
         public function getArtikel()
         {
-            return $this->kArtikel;
+            return (int)$this->kArtikel;
         }
 
         /**

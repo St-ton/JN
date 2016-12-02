@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * @copyright (c) JTL-Software-GmbH
+ * @license http://jtl-url.de/jtlshoplicense
+ */
 require_once '../../includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Bestellung.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
@@ -7,9 +10,9 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
 // Debug
 define('NO_MODE', 0); // 1 = An / 0 = Aus
-define('NO_PFAD', PFAD_ROOT . 'jtllogs/notify.log');
+define('NO_PFAD', PFAD_LOGFILES . 'notify.log');
 
-$Sprache             = Shop::DB()->query("SELECT cISO FROM tsprache WHERE cShopStandard='Y'", 1);
+$Sprache             = Shop::DB()->select('tsprache', 'cShopStandard', 'Y');
 $Einstellungen       = Shop::getSettings(array(CONF_GLOBAL, CONF_KUNDEN, CONF_KAUFABWICKLUNG, CONF_ZAHLUNGSARTEN));
 $cEditZahlungHinweis = '';
 //Session Hash
@@ -51,18 +54,17 @@ if (strlen($cSh) > 0) {
     if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
         Jtllog::writeLog('Session Hash: ' . $cSh . ' ergab tzahlungsession ' . print_r($paymentSession, true), JTLLOG_LEVEL_DEBUG, false, 'Notify');
     }
-    if (session_id() !== $paymentSession->cSID || !isset($_SESSION['Zahlungsart'])) {
+    if (session_id() !== $paymentSession->cSID) {
         session_destroy();
         session_id($paymentSession->cSID);
         $session = Session::getInstance(true, true);
     } else {
         $session = Session::getInstance(false, false);
     }
-    if (!isset($_SESSION['Zahlungsart'])) {
-        Jtllog::writeLog('Session Hash: ' . $cSh . ' ergab keine Zahlungsart nach Laden der Session ' . print_r($paymentSession, true), JTLLOG_LEVEL_ERROR, false, 'Notify');
-
-        die();
-    }
+//    if (!isset($_SESSION['Zahlungsart'])) {
+//        Jtllog::writeLog('Session Hash: ' . $cSh . ' ergab keine Zahlungsart nach Laden der Session ' . print_r($paymentSession, true), JTLLOG_LEVEL_ERROR, false, 'Notify');
+//        die();
+//    }
     require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellabschluss_inc.php';
     // EOS Workaround für Server to Server Kommunikation
     pruefeEOSServerCom($cSh);

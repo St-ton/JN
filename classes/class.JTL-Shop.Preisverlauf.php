@@ -73,8 +73,8 @@ class Preisverlauf
             if (isset($_SESSION['Waehrung'])) {
                 $_currency = $_SESSION['Waehrung'];
             }
-            if (!isset($_SESSION['Waehrung']) || (isset($_SESSION['Waehrungen']) && count($_SESSION['Waehrungen']) > 1)) {
-                $_currency = Shop::DB()->query("SELECT cISO FROM twaehrung WHERE cStandard = 'Y'", 1);
+            if (!isset($_SESSION['Waehrung'])) {
+                $_currency = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
             }
             if (is_array($obj_arr)) {
                 $dt = new DateTime();
@@ -83,8 +83,8 @@ class Preisverlauf
                         $dt->setTimestamp($_pv->timestamp);
                         $_pv->date   = $dt->format('d.m.');
                         $_pv->fPreis = ($_SESSION['Kundengruppe']->nNettoPreise == 1) ?
-                            round($_pv->fVKNetto, 2) :
-                            round(floatval($_pv->fVKNetto + ($_pv->fVKNetto * ($_pv->fMwst / 100.0))), 2);
+                            round($_pv->fVKNetto * $_currency->fFaktor, 2) :
+                            berechneBrutto($_pv->fVKNetto * $_currency->fFaktor, $_pv->fMwst);
                         $_pv->currency = $_currency->cISO;
                     }
                 }

@@ -304,7 +304,7 @@ class Kundengruppe
      */
     public static function getDefault()
     {
-        return Shop::DB()->query("SELECT * FROM tkundengruppe WHERE cStandard = 'Y'", 1);
+        return Shop::DB()->select('tkundengruppe', 'cStandard', 'Y');
     }
 
     /**
@@ -328,12 +328,11 @@ class Kundengruppe
     public static function getDefaultGroupID()
     {
         if (isset($_SESSION['Kundengruppe']->kKundengruppe) && $_SESSION['Kundengruppe']->kKundengruppe > 0) {
-            return $_SESSION['Kundengruppe']->kKundengruppe;
-        } else {
-            $oKundengruppe = self::getDefault();
-            if (isset($oKundengruppe->kKundengruppe) && $oKundengruppe->kKundengruppe > 0) {
-                return $oKundengruppe->kKundengruppe;
-            }
+            return (int)$_SESSION['Kundengruppe']->kKundengruppe;
+        }
+        $oKundengruppe = self::getDefault();
+        if (isset($oKundengruppe->kKundengruppe) && $oKundengruppe->kKundengruppe > 0) {
+            return (int)$oKundengruppe->kKundengruppe;
         }
 
         return 0;
@@ -381,7 +380,7 @@ class Kundengruppe
     {
         $attributes = array();
         if ($kKundengruppe > 0) {
-            $attr_arr = Shop::DB()->query("SELECT * FROM tkundengruppenattribut WHERE kKundengruppe = " . (int)$kKundengruppe, 2);
+            $attr_arr = Shop::DB()->selectAll('tkundengruppenattribut', 'kKundengruppe', (int)$kKundengruppe);
             foreach ($attr_arr as $Att) {
                 $attributes[strtolower($Att->cName)] = $Att->cWert;
             }

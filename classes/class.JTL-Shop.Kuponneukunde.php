@@ -86,7 +86,7 @@ class Kuponneukunde
     public function Save()
     {
         if ($this->kKuponNeukunde > 0) {
-            Shop::DB()->delete('tkuponneukunde', 'kKuponNeukunde', (int) $this->kKuponNeukunde);
+            Shop::DB()->delete('tkuponneukunde', 'kKuponNeukunde', (int)$this->kKuponNeukunde);
         }
         $obj = kopiereMembers($this);
         unset($obj->kKuponNeukunde);
@@ -99,9 +99,9 @@ class Kuponneukunde
      */
     public function Delete()
     {
-        $Effected = Shop::DB()->query("DELETE FROM tkuponneukunde WHERE kKuponNeukunde = " . (int) $this->kKuponNeukunde, 3);
+        $effected = Shop::DB()->delete('tkuponneukunde', 'kKuponNeukunde', (int)$this->kKuponNeukunde);
 
-        return $Effected == 1;
+        return $effected == 1;
     }
 
     /**
@@ -113,7 +113,7 @@ class Kuponneukunde
      */
     public function setKuponNeukunde($kKuponNeukunde)
     {
-        $this->kKuponNeukunde = intval($kKuponNeukunde);
+        $this->kKuponNeukunde = (int)$kKuponNeukunde;
 
         return $this;
     }
@@ -250,7 +250,7 @@ class Kuponneukunde
             }
         }
 
-        return;
+        return null;
     }
 
     /**

@@ -109,11 +109,18 @@ class BillpayData
      */
     public $cSortcode;
 
+    /**
+     * BillpayData constructor.
+     * @param null|array|object $object
+     */
     public function __construct($object = null)
     {
         $this->cast($object);
     }
 
+    /**
+     * @param array|object $object
+     */
     public function cast($object)
     {
         if (is_array($object) || is_object($object)) {

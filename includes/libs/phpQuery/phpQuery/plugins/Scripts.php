@@ -16,11 +16,16 @@ abstract class phpQueryObjectPlugin_Scripts
      * @var array|null
      */
     public static $phpQueryMethods = null;
-    public static $config = array();
+
     /**
-     * Enter description here...
-     *
-     * @param phpQueryObject $self
+     * @var array
+     */
+    public static $config = array();
+
+    /**
+     * @param $self
+     * @param $arg1
+     * @return null
      */
     public static function script($self, $arg1)
     {
@@ -44,9 +49,20 @@ abstract class phpQueryObjectPlugin_Scripts
             : $self;
     }
 }
+
+/**
+ * Class phpQueryPlugin_Scripts
+ */
 abstract class phpQueryPlugin_Scripts
 {
+    /**
+     * @var array
+     */
     public static $scriptMethods = array();
+
+    /**
+     *
+     */
     public static function __initialize()
     {
         if (file_exists(dirname(__FILE__)."/Scripts/__config.php")) {
@@ -66,6 +82,7 @@ abstract class phpQueryPlugin_Scripts
      * @param $name
      * @param $callback
      * @return bool
+     * @throws Exception
      */
     public static function script($name, $callback)
     {

@@ -268,6 +268,7 @@ function mappeDatumName($cMonat, $nJahr, $cISOSprache)
 /**
  * @param object $oNewsNaviFilter
  * @param array  $oNewsUebersicht_arr
+ * @deprecated
  * @return string
  */
 function baueNewsMetaTitle($oNewsNaviFilter, $oNewsUebersicht_arr)
@@ -293,6 +294,7 @@ function baueNewsMetaTitle($oNewsNaviFilter, $oNewsUebersicht_arr)
 /**
  * @param object $oNewsNaviFilter
  * @param array  $oNewsUebersicht_arr
+ * @deprecated
  * @return string
  */
 function baueNewsMetaDescription($oNewsNaviFilter, $oNewsUebersicht_arr)
@@ -323,7 +325,7 @@ function baueNewsMetaDescription($oNewsNaviFilter, $oNewsUebersicht_arr)
  */
 function baueNewsMetaKeywords($oNewsNaviFilter, $oNewsUebersicht_arr)
 {
-    $cMetaKeywords = baueNewsMetaStart($oNewsNaviFilter);
+    $cMetaKeywords = '';
     if (is_array($oNewsUebersicht_arr) && count($oNewsUebersicht_arr) > 0) {
         $nCount = 6;
         if (count($oNewsUebersicht_arr) < $nCount) {
@@ -331,9 +333,9 @@ function baueNewsMetaKeywords($oNewsNaviFilter, $oNewsUebersicht_arr)
         }
         for ($i = 0; $i < $nCount; $i++) {
             if ($i > 0) {
-                $cMetaKeywords .= ' - ' . $oNewsUebersicht_arr[$i]->cBetreff;
+                $cMetaKeywords .= ', ' . $oNewsUebersicht_arr[$i]->cMetaKeywords;
             } else {
-                $cMetaKeywords .= $oNewsUebersicht_arr[$i]->cBetreff;
+                $cMetaKeywords .= $oNewsUebersicht_arr[$i]->cMetaKeywords;
             }
         }
     }
@@ -343,6 +345,7 @@ function baueNewsMetaKeywords($oNewsNaviFilter, $oNewsUebersicht_arr)
 
 /**
  * @param object $oNewsNaviFilter
+ * @deprecated
  * @return string
  */
 function baueNewsMetaStart($oNewsNaviFilter)

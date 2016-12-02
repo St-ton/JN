@@ -89,7 +89,7 @@ class Bestseller
      */
     public function setCustomergroup($customergroup)
     {
-        $this->_customergrp = (int) $customergroup;
+        $this->_customergrp = (int)$customergroup;
 
         return $this;
     }
@@ -108,7 +108,7 @@ class Bestseller
      */
     public function setLimit($limit)
     {
-        $this->_limit = (int) $limit;
+        $this->_limit = (int)$limit;
 
         return $this;
     }
@@ -127,7 +127,7 @@ class Bestseller
      */
     public function setMinSales($minsales)
     {
-        $this->_minsales = (int) $minsales;
+        $this->_minsales = (int)$minsales;
 
         return $this;
     }

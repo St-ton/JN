@@ -59,13 +59,15 @@ class MediaImage implements IMedia
             'name'   => $name,
             'ext'    => $settings['format']
         ));
-
         $thumb    = $req->getThumb($size);
         $thumbAbs = PFAD_ROOT . $thumb;
         $rawAbs   = PFAD_ROOT . $req->getRaw();
 
         if (!file_exists($thumbAbs) && !file_exists($rawAbs)) {
-            $thumb = $req->getFallbackThumb($size);
+            $fallback = $req->getFallbackThumb($size);
+            $thumb    = (file_exists(PFAD_ROOT . $fallback))
+                ? $fallback
+                : BILD_KEIN_ARTIKELBILD_VORHANDEN;
         }
 
         return $thumb;
@@ -142,7 +144,7 @@ class MediaImage implements IMedia
     {
         $directory = PFAD_ROOT . MediaImageRequest::getCachePath($type);
         if ($id !== null) {
-            $directory = $directory . '/' . (int) $id;
+            $directory = $directory . '/' . (int)$id;
         }
 
         try {

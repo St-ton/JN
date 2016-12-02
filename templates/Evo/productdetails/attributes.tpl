@@ -1,5 +1,5 @@
 {assign var="showProductWeight" value=false}
-{if isset($Artikel->cArtikelgewicht)  && $Artikel->fArtikelgewicht > 0
+{if isset($Artikel->cArtikelgewicht) && $Artikel->fArtikelgewicht > 0
 && ($Einstellungen.artikeldetails.artikeldetails_artikelgewicht_anzeigen === 'Y' && $tplscope === 'details'
 ||  $Einstellungen.artikeluebersicht.artikeluebersicht_artikelgewicht_anzeigen === 'Y' && $tplscope === 'productlist')}
     {assign var="showProductWeight" value=true}
@@ -20,7 +20,8 @@
 || $showShippingWeight
 || $Einstellungen.artikeldetails.artikeldetails_abmessungen_anzeigen === 'Y' && (!empty($dimension['length']) || !empty($dimension['width']) || !empty($dimension['height']))
 || isset($Artikel->cMasseinheitName) && isset($Artikel->fMassMenge) && $Artikel->fMassMenge > 0  && $Artikel->cTeilbar !== 'Y' && ($Artikel->fAbnahmeintervall == 0 || $Artikel->fAbnahmeintervall == 1)
-|| ($Einstellungen.artikeldetails.artikeldetails_attribute_anhaengen === 'Y' || $Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ATTRIBUTEANHAENGEN] == 1) && !empty($Artikel->Attribute)
+|| ($Einstellungen.artikeldetails.artikeldetails_attribute_anhaengen === 'Y'
+|| (isset($Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ATTRIBUTEANHAENGEN]) && $Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ATTRIBUTEANHAENGEN] == 1)) && !empty($Artikel->Attribute)
 }
     {assign var="showAttributesTable" value=true}
 {/if}
@@ -106,7 +107,7 @@
                     {/if}
                 {/if}
 
-                {if $Einstellungen.artikeldetails.artikeldetails_attribute_anhaengen === 'Y' || $Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ATTRIBUTEANHAENGEN] == 1}
+                {if $Einstellungen.artikeldetails.artikeldetails_attribute_anhaengen === 'Y' || (isset($Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ATTRIBUTEANHAENGEN]) && $Artikel->FunktionsAttribute[$FKT_ATTRIBUT_ATTRIBUTEANHAENGEN] == 1)}
                     {foreach name=Attribute from=$Artikel->Attribute item=Attribut}
                         <tr class="attr-custom">
                             <td class="attr-label">{$Attribut->cName}: </td><td class="attr-value">{$Attribut->cWert}</td>

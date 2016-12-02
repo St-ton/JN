@@ -304,7 +304,6 @@ class Billpay extends PaymentMethod
 
     /**
      * @param $nPaymentType
-     * @param $fCartAmount
      * @return bool
      */
     public function isUseable($nPaymentType)
@@ -381,7 +380,8 @@ class Billpay extends PaymentMethod
     }
 
     /**
-     * @param $mixedData
+     * @param mixed $mixedData
+     * @param bool  $preauthError
      * @return bool
      */
     public function handleAdditional($mixedData, $preauthError = false)
@@ -1557,7 +1557,8 @@ class BPHelper
     }
 
     /**
-     * @param $cStr
+     * @param string $cStr
+     * @param bool  $from
      * @return string
      */
     public static function mapSalutation($cStr, $from = false)
@@ -1598,7 +1599,8 @@ class BPHelper
     /**
      * https://techdocs.billpay.de/en/For_decision_makers/Possible_Country_and_Payment_Method_Combinations.html
      *
-     * @param $cISO
+     * @param int    $nPaymentType
+     * @param string $cISO
      * @return bool
      */
     public static function isValidCountry($nPaymentType, $cISO)

@@ -29,7 +29,7 @@ function getRevisions($params, &$smarty)
         $params['data'] :
         null;
     $revision  = new Revision();
-    $smarty->assign('revisions', $revision->getRevisions($params['type'], $params['key'], $secondary))
+    $smarty->assign('revisions', $revision->getRevisions($params['type'], $params['key']))
            ->assign('secondary', $secondary)
            ->assign('data', $data)
            ->assign('show', $params['show']);

@@ -22,4 +22,5 @@ $ef = new Exportformat($queue->kExportformat);
 if (!$ef->isOK()) {
     die('2');
 }
-$ef->startExport($queue, isset($_GET['ajax']), (isset($_GET['back']) && $_GET['back'] === 'admin'), false);
+
+$ef->startExport($queue, isset($_GET['ajax']), (isset($_GET['back']) && $_GET['back'] === 'admin'), false, (isset($_GET['max']) ? (int)$_GET['max'] : null));

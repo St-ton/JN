@@ -452,6 +452,8 @@
                                                 </select>
                                             {elseif $setting->cInputTyp === 'number'}
                                                 <input class="form-control" type="number" name="{$setting->cWertName}" id="{$setting->cWertName}" value="{if isset($setting->gesetzterWert)}{$setting->gesetzterWert}{/if}" tabindex="1" />
+                                            {elseif $setting->cInputTyp === 'pass'}
+                                                <input class="form-control" type="password" name="{$setting->cWertName}" id="{$setting->cWertName}" value="{if isset($setting->gesetzterWert)}{$setting->gesetzterWert}{/if}" tabindex="1" />
                                             {else}
                                                 <input class="form-control" type="text" name="{$setting->cWertName}" id="{$setting->cWertName}" value="{if isset($setting->gesetzterWert)}{$setting->gesetzterWert}{/if}" tabindex="1" />
                                             {/if}
@@ -464,40 +466,6 @@
                             {/foreach}
                         </div>
                     </div>
-                    {if isset($expert_settings) && $expert_settings !== null}
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <h3 class="panel-title">Experten</h3>
-                            </div>
-                            <div class="panel-body">
-                                {foreach name=conf from=$expert_settings item=setting}
-                                    {if $setting->cConf === 'Y'}
-                                        <div class="input-group">
-                                            <span class="input-group-addon">
-                                                <label for="{$setting->cWertName}">{$setting->cName}</label>
-                                            </span>
-                                            <span class="input-group-wrap">
-                                                {if $setting->cInputTyp === 'selectbox'}
-                                                    <select name="{$setting->cWertName}" id="{$setting->cWertName}" class="form-control">
-                                                        {foreach name=selectfor from=$setting->ConfWerte item=wert}
-                                                            <option value="{$wert->cWert}" {if isset($setting->gesetzterWert) && $setting->gesetzterWert == $wert->cWert}selected{/if}>{$wert->cName}</option>
-                                                        {/foreach}
-                                                    </select>
-                                                {elseif $setting->cInputTyp === 'number'}
-                                                    <input class="form-control" type="number" name="{$setting->cWertName}" id="{$setting->cWertName}" value="{if isset($setting->gesetzterWert)}{$setting->gesetzterWert}{/if}" tabindex="1" />
-                                                {else}
-                                                    <input class="form-control" type="text" name="{$setting->cWertName}" id="{$setting->cWertName}" value="{if isset($setting->gesetzterWert)}{$setting->gesetzterWert}{/if}" tabindex="1" />
-                                                {/if}
-                                            </span>
-                                            {if isset($setting->cBeschreibung)}
-                                                <span class="input-group-addon">{getHelpDesc cDesc=$setting->cBeschreibung}</span>
-                                            {/if}
-                                        </div>
-                                    {/if}
-                                {/foreach}
-                            </div>
-                        </div>
-                    {/if}
                 </div>
                 <p class="submit">
                     <button name="speichern" type="submit" value="{#save#}" class="btn btn-primary"><i class="fa fa-save"></i> {#save#}</button>

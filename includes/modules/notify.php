@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * @copyright (c) JTL-Software-GmbH
+ * @license http://jtl-url.de/jtlshoplicense
+ */
 require_once '../../includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Bestellung.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
@@ -51,18 +54,17 @@ if (strlen($cSh) > 0) {
     if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
         Jtllog::writeLog('Session Hash: ' . $cSh . ' ergab tzahlungsession ' . print_r($paymentSession, true), JTLLOG_LEVEL_DEBUG, false, 'Notify');
     }
-    if (session_id() !== $paymentSession->cSID || !isset($_SESSION['Zahlungsart'])) {
+    if (session_id() !== $paymentSession->cSID) {
         session_destroy();
         session_id($paymentSession->cSID);
         $session = Session::getInstance(true, true);
     } else {
         $session = Session::getInstance(false, false);
     }
-    if (!isset($_SESSION['Zahlungsart'])) {
-        Jtllog::writeLog('Session Hash: ' . $cSh . ' ergab keine Zahlungsart nach Laden der Session ' . print_r($paymentSession, true), JTLLOG_LEVEL_ERROR, false, 'Notify');
-
-        die();
-    }
+//    if (!isset($_SESSION['Zahlungsart'])) {
+//        Jtllog::writeLog('Session Hash: ' . $cSh . ' ergab keine Zahlungsart nach Laden der Session ' . print_r($paymentSession, true), JTLLOG_LEVEL_ERROR, false, 'Notify');
+//        die();
+//    }
     require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellabschluss_inc.php';
     // EOS Workaround für Server to Server Kommunikation
     pruefeEOSServerCom($cSh);

@@ -266,7 +266,7 @@ class Profiler
             $runID = Shop::DB()->insert('tprofiler', $run);
             if (is_numeric($runID)) {
                 //set runID for all filtered queries and save to DB
-                $runID = (int) $runID;
+                $runID = (int)$runID;
                 foreach ($filtered as $_queryRun) {
                     $_queryRun->runID = $runID;
                     Shop::DB()->insert('tprofiler_runs', $_queryRun);
@@ -337,7 +337,7 @@ class Profiler
             }
             $runID = Shop::DB()->insert('tprofiler', $run);
             if (is_numeric($runID)) {
-                $runID = (int) $runID;
+                $runID = (int)$runID;
                 foreach (self::$pluginProfile as $_fileRun) {
                     $obj           = new stdClass();
                     $obj->runID    = $runID;

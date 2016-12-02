@@ -82,7 +82,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         protected $oSprache;
 
         /**
-         * @var Preise
+         * @var Konfigitempreis
          */
         protected $oPreis;
 

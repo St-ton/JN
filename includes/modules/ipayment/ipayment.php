@@ -3,6 +3,15 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+/**
+ * @param Bestellung $Bestellung
+ * @param string     $trxaccount_id
+ * @param string     $trxuser_id
+ * @param string     $trxpassword
+ * @param string     $returnURL
+ * @return string
+ */
 function gib_ipayment_form($Bestellung, $trxaccount_id, $trxuser_id, $trxpassword, $returnURL)
 {
     if ($Bestellung->fWarensumme > 0) {

@@ -4,8 +4,12 @@
 {function kupons_uebersicht_tab}
     <div id="{$cKuponTyp}" class="tab-pane fade{if $tab === $cKuponTyp} active in{/if}">
         <div class="panel panel-default">
-            {include file='tpl_inc/filtertools.tpl' oFilter=$oFilter cParam_arr=['tab'=>$cKuponTyp]}
-            {include file='tpl_inc/pagination.tpl' oPagination=$oPagination cParam_arr=['tab'=>$cKuponTyp]}
+            {if $nKuponCount > 0}
+                {include file='tpl_inc/filtertools.tpl' oFilter=$oFilter cParam_arr=['tab'=>$cKuponTyp]}
+            {/if}
+            {if $oKupon_arr|@count > 0}
+                {include file='tpl_inc/pagination.tpl' oPagination=$oPagination cParam_arr=['tab'=>$cKuponTyp]}
+            {/if}
             <form method="post" action="kupons.php">
                 {$jtl_token}
                 <input type="hidden" name="cKuponTyp" id="cKuponTyp" value="{$cKuponTyp}">
@@ -25,7 +29,7 @@
                                 <th>{#customerGroup#}</th>
                                 <th>{#restrictions#}</th>
                                 <th>{#restrictionsManufacturers#}</th>
-                                <th>{#validity#}</th>
+                                <th>{#validityPeriod#}</th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -86,6 +90,8 @@
                             </tr>
                         </tfoot>
                     </table>
+                {elseif $nKuponCount > 0}
+                    <div class="alert alert-info" role="alert">{#noFilterResults#}</div>
                 {else}
                     <div class="alert alert-info" role="alert">
                         {#emptySetMessage1#} {$cKuponTypName}s {#emptySetMessage2#}
@@ -93,10 +99,12 @@
                 {/if}
                 <div class="panel-footer">
                     <div class="btn-group">
+                        <button type="submit" class="btn btn-primary" name="kKuponBearbeiten" value="0"><i class="fa fa-share"></i> {$cKuponTypName} {#create#}</button>
                         {if $oKupon_arr|@count > 0}
                             <button type="submit" class="btn btn-danger" name="action" value="loeschen"><i class="fa fa-trash"></i> {#delete#}</button>
+                            {include file='tpl_inc/csv_export_btn.tpl' exporterId=$cKuponTyp}
                         {/if}
-                        <button type="submit" class="btn btn-primary" name="kKuponBearbeiten" value="0"><i class="fa fa-share"></i> {$cKuponTypName} {#create#}</button>
+                        {include file='tpl_inc/csv_import_btn.tpl' importerId="kupon"}
                     </div>
                 </div>
             </form>
@@ -124,7 +132,6 @@
             nKuponCount=$nKuponStandardCount
             oPagination=$oPaginationStandard
             oFilter=$oFilterStandard
-            nSeite=1
         }
         {kupons_uebersicht_tab
             cKuponTyp='versandkupon'
@@ -133,7 +140,6 @@
             nKuponCount=$nKuponVersandCount
             oPagination=$oPaginationVersandkupon
             oFilter=$oFilterVersand
-            nSeite=2
         }
         {kupons_uebersicht_tab
             cKuponTyp='neukundenkupon'
@@ -142,7 +148,6 @@
             nKuponCount=$nKuponNeukundenCount
             oPagination=$oPaginationNeukundenkupon
             oFilter=$oFilterNeukunden
-            nSeite=3
         }
     </div>
 </div>

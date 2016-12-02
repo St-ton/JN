@@ -22,11 +22,10 @@ function holeExportformatCron()
     if (is_array($oExportformatCron_arr) && count($oExportformatCron_arr) > 0) {
         foreach ($oExportformatCron_arr as $i => $oExportformatCron) {
             $oExportformatCron_arr[$i]->cAlleXStdToDays = rechneUmAlleXStunden($oExportformatCron->nAlleXStd);
-
-            $oExportformatCron_arr[$i]->Sprache      = Shop::DB()->select('tsprache', 'kSprache', (int)$oExportformatCron->kSprache);
-            $oExportformatCron_arr[$i]->Waehrung     = Shop::DB()->select('twaehrung', 'kWaehrung', (int)$oExportformatCron->kWaehrung);
-            $oExportformatCron_arr[$i]->Kundengruppe = Shop::DB()->select('tkundengruppe', 'kKundengruppe', (int)$oExportformatCron->kKundengruppe);
-            $oExportformatCron_arr[$i]->oJobQueue    = Shop::DB()->query(
+            $oExportformatCron_arr[$i]->Sprache         = Shop::DB()->select('tsprache', 'kSprache', (int)$oExportformatCron->kSprache);
+            $oExportformatCron_arr[$i]->Waehrung        = Shop::DB()->select('twaehrung', 'kWaehrung', (int)$oExportformatCron->kWaehrung);
+            $oExportformatCron_arr[$i]->Kundengruppe    = Shop::DB()->select('tkundengruppe', 'kKundengruppe', (int)$oExportformatCron->kKundengruppe);
+            $oExportformatCron_arr[$i]->oJobQueue       = Shop::DB()->query(
                 "SELECT *, DATE_FORMAT(dZuletztGelaufen, '%d.%m.%Y %H:%i') AS dZuletztGelaufen_de 
                     FROM tjobqueue 
                     WHERE kCron = " . (int)$oExportformatCron->kCron, 1
@@ -138,7 +137,7 @@ function erstelleExportformatCron($kExportformat, $dStart, $nAlleXStunden, $kCro
     $kExportformat = (int)$kExportformat;
     $nAlleXStunden = (int)$nAlleXStunden;
     $kCron         = (int)$kCron;
-    if ($kExportformat > 0 && $nAlleXStunden > 5 && dStartPruefen($dStart)) {
+    if ($kExportformat > 0 && $nAlleXStunden >= 1 && dStartPruefen($dStart)) {
         if ($kCron > 0) {
             // Editieren
             Shop::DB()->query(
@@ -389,7 +388,9 @@ function exportformatQueueActionErstellenEintragen(JTLSmarty $smarty, array &$me
 {
     $kExportformat = (int)$_POST['kExportformat'];
     $dStart        = $_POST['dStart'];
-    $nAlleXStunden = (int)$_POST['nAlleXStunden'];
+    $nAlleXStunden = (!empty($_POST['nAlleXStundenCustom']))
+        ? (int)$_POST['nAlleXStundenCustom']
+        : (int)$_POST['nAlleXStunden'];
     $oValues       = new stdClass();
 
     $oValues->kExportformat = $kExportformat;
@@ -398,7 +399,7 @@ function exportformatQueueActionErstellenEintragen(JTLSmarty $smarty, array &$me
 
     if ($kExportformat > 0) {
         if (dStartPruefen($dStart)) {
-            if ($nAlleXStunden > 5) {
+            if ($nAlleXStunden >= 1) {
                 if (isset($_POST['kCron']) && intval($_POST['kCron']) > 0) {
                     $kCron = (int)$_POST['kCron'];
                 } else { // Editieren
@@ -418,7 +419,7 @@ function exportformatQueueActionErstellenEintragen(JTLSmarty $smarty, array &$me
                     $step               = 'erstellen';
                 }
             } else { // Alle X Stunden ist entweder leer oder kleiner als 6
-                $messages['error'] .= 'Fehler: Bitte geben Sie einen Wert gr&ouml;&szlig;er 5 ein.<br />';
+                $messages['error'] .= 'Fehler: Bitte geben Sie einen Wert gr&ouml;&szlig;er oder gleich 1 ein.<br />';
                 $step               = 'erstellen';
                 $smarty->assign('oFehler', $oValues);
             }
@@ -494,6 +495,17 @@ function exportformatQueueFinalize($step, JTLSmarty $smarty, array &$messages)
             break;
         case 'fertiggestellt':
             exportformatQueueRedirect('fertig', $messages);
+            break;
+        case 'erstellen':
+            if (!empty($messages['error'])) {
+                $nStunden = isset($_SESSION['exportformatQueue.nStunden']) ? $_SESSION['exportformatQueue.nStunden'] : 24;
+                $smarty->assign('oExportformatCron_arr', holeExportformatCron())
+                       ->assign('oExportformatQueueBearbeitet_arr', holeExportformatQueueBearbeitet($nStunden))
+                       ->assign('oExportformat_arr', holeAlleExportformate())
+                       ->assign('nStunden', $nStunden);
+            }
+            break;
+        default:
             break;
     }
 

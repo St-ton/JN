@@ -292,7 +292,7 @@ class Navigationsfilter
     }
 
     /**
-     * @return FilterHersteller|FilterKategorie|FilterMerkmal|FilterSearch|null
+     * @return FilterHersteller|FilterKategorie|FilterMerkmal|FilterSearch|FilterSearchSpecial|null
      */
     public function getActiveState()
     {
@@ -307,6 +307,9 @@ class Navigationsfilter
         }
         if ($this->Suchanfrage->isInitialized()) {
             return $this->Suchanfrage;
+        }
+        if ($this->Suchspecial->isInitialized()) {
+            return $this->Suchspecial;
         }
 
         return null;

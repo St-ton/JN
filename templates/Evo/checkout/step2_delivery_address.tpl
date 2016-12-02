@@ -325,11 +325,14 @@
     {/block}
 </div>
 </div>
-{if isset($nWarenkorb2PersMerge) && $nWarenkorb2PersMerge == 1}
+{if (isset($nWarenkorb2PersMerge) && $nWarenkorb2PersMerge === 1)}
     <script type="text/javascript">
-        var cAnwort = confirm('{lang key="basket2PersMerge" section="login"}');
-        if (cAnwort) {ldelim}
-            window.location = "{get_static_route id='bestellvorgang.php'}?basket2Pers=1";
-        {rdelim}
+        $(function() {
+            eModal.confirm('{lang key="basket2PersMerge" section="login"}', '{lang key="basket" section="global"}', function(res) {
+                if (res) {
+                    window.location = "{get_static_route id='jtl.php'}?basket2Pers=1"
+                }
+            });
+        });
     </script>
 {/if}

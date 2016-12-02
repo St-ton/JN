@@ -115,15 +115,10 @@ function gibVergleichsliste($nVLKeys = 0, $bWarenkorb = true)
     }
     $oVergleichslisteArr = array();
     if (isset($oVergleichsliste->oArtikel_arr)) {
-        $oArtikelOptionen                             = new stdClass();
-        $oArtikelOptionen->nMerkmale                  = 1;
-        $oArtikelOptionen->nAttribute                 = 1;
-        $oArtikelOptionen->nArtikelAttribute          = 1;
-        $oArtikelOptionen->nVariationKombi            = 1;
-        $oArtikelOptionen->nKeineSichtbarkeitBeachten = 1;
+        $defaultOptions = Artikel::getDefaultOptions();
         foreach ($oVergleichsliste->oArtikel_arr as $article) {
             $oArtikel = new Artikel();
-            $oArtikel->fuelleArtikel($article->kArtikel, $oArtikelOptionen);
+            $oArtikel->fuelleArtikel($article->kArtikel, $defaultOptions);
             $oVergleichslisteArr[] = $oArtikel;
         }
         $oVergleichsliste->oArtikel_arr = $oVergleichslisteArr;
@@ -1143,7 +1138,7 @@ function checkVarkombiDependencies($kVaterArtikel, $cVaterURL, $kEigenschaft = 0
 
             $kGesetzeEigenschaft_arr       = array_keys($_SESSION['oVarkombiAuswahl']->kGesetzteEigeschaftWert_arr);
             $kNichtGesetzteEigenschaft_arr = array_values(array_diff($oArtikel->kEigenschaftKombi_arr, $kGesetzeEigenschaft_arr));
-            $kNichtGesetzteEigenschaft     = (int) $kNichtGesetzteEigenschaft_arr[0];
+            $kNichtGesetzteEigenschaft     = (int)$kNichtGesetzteEigenschaft_arr[0];
 
             // hole eigenschaftswerte
             $oEigenschaftWert_arr = Shop::DB()->selectAll('teigenschaftwert', 'kEigenschaft', (int)$kNichtGesetzteEigenschaft);

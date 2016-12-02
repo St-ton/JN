@@ -172,7 +172,7 @@ class ArtikelHelper
                     ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                     AND tartikelsichtbarkeit.kKundengruppe = " . (int)$kKundengruppe . "
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                " . $cGroupBy . "
+                {$cGroupBy}
                 ORDER BY teigenschaftkombiwert.kEigenschaftWert", 2
         );
     }
@@ -536,5 +536,31 @@ class ArtikelHelper
     protected static function hasSelectedVariationValue($groupId)
     {
         return self::getSelectedVariationValue($groupId) !== false;
+    }
+
+    /**
+     * @param Artikel $artikel
+     * @param object[] $variationPicturesArr
+     * @return void
+     */
+    public static function addVariationPictures(Artikel $artikel, $variationPicturesArr)
+    {
+        if (is_array($variationPicturesArr) && count($variationPicturesArr) > 0) {
+            $artikel->Bilder = array_filter($artikel->Bilder, function ($item) {
+                return !(isset($item->isVariation) && $item->isVariation);
+            });
+            if (count($variationPicturesArr) === 1) {
+                array_unshift($artikel->Bilder, $variationPicturesArr[0]);
+            } else {
+                $artikel->Bilder = array_merge($artikel->Bilder, $variationPicturesArr);
+            }
+
+            $nNr = 1;
+            foreach (array_keys($artikel->Bilder) as $key) {
+                $artikel->Bilder[$key]->nNr = $nNr++;
+            }
+
+            $artikel->cVorschaubild = $artikel->Bilder[0]->cPfadKlein;
+        }
     }
 }

@@ -13,6 +13,7 @@ define('JOBQUEUE_LOCKFILE', PFAD_LOGFILES . 'jobqueue.lock');
 
 if (file_exists(JOBQUEUE_LOCKFILE)) {
     if ((time() - filemtime(JOBQUEUE_LOCKFILE)) < 600) {
+        Jtllog::cronLog('Cron currently locked', 2);
         exit;
     } else {
         touch(JOBQUEUE_LOCKFILE);
@@ -85,6 +86,8 @@ if (is_array($oCron_arr) && count($oCron_arr) > 0) {
         $oCron->speicherInJobQueue($oCron->cJobArt, $oCron->dStart, $nLimitM);
         $oCron->updateCronDB();
     }
+} else {
+    Jtllog::cronLog('No cron jobs found', 2);
 }
 // JobQueue include
 require_once PFAD_ROOT . PFAD_INCLUDES . 'jobqueue_inc.php';

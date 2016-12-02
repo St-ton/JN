@@ -156,6 +156,9 @@ $AufgeklappteKategorien = new KategorieListe();
 $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 $startKat             = new Kategorie();
 $startKat->kKategorie = 0;
+
+WarenkorbHelper::addVariationPictures($_SESSION['Warenkorb']);
+
 //specific assigns
 $smarty->assign('Navigation', createNavigation($AktuelleSeite))
        ->assign('AGB', gibAGBWRB(Shop::$kSprache, $_SESSION['Kundengruppe']->kKundengruppe))

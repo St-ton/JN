@@ -55,7 +55,7 @@ function executeHook($nHook, $args_arr = array())
                     $runData = array(
                         'runtime'   => (microtime(true) - $start),
                         'timestamp' => microtime(true),
-                        'hookID'    => (int) $nHook,
+                        'hookID'    => (int)$nHook,
                         'runcount'  => 1,
                         'file'      => $oPlugin->cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $oPlugin->nVersion . '/' . PFAD_PLUGIN_FRONTEND . $cDateiname
                     );

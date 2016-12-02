@@ -1052,7 +1052,6 @@ function baueExportURL($kKey, $cKey, $dLetzteAktualisierung, $oSprach_arr, $kSpr
                     $NaviFilter->Suche->kSuchanfrage = $GLOBALS['kSuchanfrage'];
                     $NaviFilter->Suche->cSuche       = $oSuchanfrage->cSuche;
                 }
-                $NaviFilter->Suche->kSuchCache = bearbeiteSuchCache($NaviFilter);
             }
             $NaviFilter = Shop::buildNaviFilter($cParameter_arr);
             if (strlen($NaviFilter->Suchanfrage->cSeo[$kSprache]) === 0) {

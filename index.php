@@ -47,43 +47,6 @@ if ($smarty->getTemplateVars('bWarenkorbHinzugefuegt')) {
         $smarty->assign('Xselling', gibArtikelXSelling($_POST['a']));
     }
 }
-//workaround for dynamic header cart
-$warensumme  = array();
-$gesamtsumme = array();
-if (isset($_SESSION['Warenkorb'])) {
-    $cart                  = $_SESSION['Warenkorb'];
-    $numArticles           = $cart->gibAnzahlArtikelExt(array(C_WARENKORBPOS_TYP_ARTIKEL));
-    $warensumme[0]         = gibPreisStringLocalized($cart->gibGesamtsummeWarenExt(array(C_WARENKORBPOS_TYP_ARTIKEL), true));
-    $warensumme[1]         = gibPreisStringLocalized($cart->gibGesamtsummeWarenExt(array(C_WARENKORBPOS_TYP_ARTIKEL), false));
-    $gesamtsumme[0]        = gibPreisStringLocalized($cart->gibGesamtsummeWaren(true, true));
-    $gesamtsumme[1]        = gibPreisStringLocalized($cart->gibGesamtsummeWaren(false, true));
-    $warenpositionenanzahl = $cart->gibAnzahlPositionenExt(array(C_WARENKORBPOS_TYP_ARTIKEL));
-    $weight                = $cart->getWeight();
-} else {
-    $cart                  = new Warenkorb();
-    $numArticles           = 0;
-    $warensumme[0]         = gibPreisStringLocalized(0.0, 1);
-    $warensumme[1]         = gibPreisStringLocalized(0.0, 0);
-    $warenpositionenanzahl = 0;
-    $weight                = 0.0;
-}
-$kKundengruppe   = $_SESSION['Kundengruppe']->kKundengruppe;
-$cKundenherkunft = '';
-if (isset($_SESSION['Kunde']->cLand) && strlen($_SESSION['Kunde']->cLand) > 0) {
-    $cKundenherkunft = $_SESSION['Kunde']->cLand;
-}
-$oVersandartKostenfrei = gibVersandkostenfreiAb($kKundengruppe, $cKundenherkunft);
-$smarty->assign('NaviFilter', $NaviFilter)
-       ->assign('WarenkorbArtikelanzahl', $numArticles)
-       ->assign('WarenkorbArtikelPositionenanzahl', $warenpositionenanzahl)
-       ->assign('WarenkorbWarensumme', $warensumme)
-       ->assign('WarenkorbGesamtsumme', $gesamtsumme)
-       ->assign('WarenkorbGesamtgewicht', $weight)
-       ->assign('Warenkorbtext', lang_warenkorb_warenkorbEnthaeltXArtikel($cart))
-       ->assign('zuletztInWarenkorbGelegterArtikel', $cart->gibLetztenWKArtikel())
-       ->assign('WarenkorbVersandkostenfreiHinweis', baueVersandkostenfreiString($oVersandartKostenfrei,
-           $cart->gibGesamtsummeWarenExt(array(C_WARENKORBPOS_TYP_ARTIKEL, C_WARENKORBPOS_TYP_KUPON, C_WARENKORBPOS_TYP_NEUKUNDENKUPON), true)));
-//end workaround
 if (($cParameter_arr['kArtikel'] > 0 || $cParameter_arr['kKategorie'] > 0) && !$_SESSION['Kundengruppe']->darfArtikelKategorienSehen) {
     //falls Artikel/Kategorien nicht gesehen werden duerfen -> login
     header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true) . '?li=1', true, 303);
@@ -101,6 +64,7 @@ if (Shop::$is404 === true) {
     $cParameter_arr['is404'] = true;
     Shop::$fileName = null;
 }
+$smarty->assign('NaviFilter', $NaviFilter);
 if (Shop::$fileName !== null) {
     require PFAD_ROOT . Shop::$fileName;
 }
@@ -108,9 +72,12 @@ if ($cParameter_arr['is404'] === true) {
     if (!isset($seo)) {
         $seo = null;
     }
-    executeHook(HOOK_INDEX_SEO_404, array('seo' => $seo));
+    executeHook(HOOK_INDEX_SEO_404, ['seo' => $seo]);
     if (!Shop::$kLink) {
-        $hookInfos     = urlNotFoundRedirect(array('key' => 'kLink', 'value' => $cParameter_arr['kLink']));
+        $hookInfos     = urlNotFoundRedirect([
+            'key'   => 'kLink',
+            'value' => $cParameter_arr['kLink']
+        ]);
         $kLink         = $hookInfos['value'];
         $bFileNotFound = $hookInfos['isFileNotFound'];
         if (!$kLink) {

@@ -41,6 +41,8 @@
                                     <option value="{$wert->kKundengruppe}" {foreach name=werte from=$configItem->gesetzterWert item=gesetzterWert}{if $gesetzterWert->cWert == $wert->kKundengruppe}selected{/if}{/foreach}>{$wert->cName}</option>
                                 {/foreach}
                                 </select>
+                            {elseif $configItem->cInputTyp === 'pass'}
+                                <input class="form-control" type="password" name="{$configItem->cWertName}" id="{$configItem->cWertName}"  value="{if isset($configItem->gesetzterWert)}{$configItem->gesetzterWert}{/if}" />
                             {else}
                                 <input class="form-control" type="text" name="{$configItem->cWertName}" id="{$configItem->cWertName}"  value="{if isset($configItem->gesetzterWert)}{$configItem->gesetzterWert}{/if}" tabindex="1"{if $configItem->cWertName|strpos:"_bestandskundenguthaben" || $configItem->cWertName|strpos:"_neukundenguthaben"} onKeyUp="setzePreisAjax(false, 'EinstellungAjax_{$configItem->cWertName}', this);"{/if} />
                             {/if}

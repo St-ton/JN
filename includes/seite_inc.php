@@ -85,13 +85,14 @@ function gibAuswahlAssistentFragen($Einstellungen)
 
         if (function_exists('gibAAFrage')) {
             $oSpracheStd            = gibStandardsprache(true);
-            $oAuswahlAssistentFrage = gibAAFrage($_SESSION['AuswahlAssistent']['nFrage'], $_SESSION['kSprache'], $oSpracheStd->kSprache);
 
-            return $oAuswahlAssistentFrage;
+            return gibAAFrage($_SESSION['AuswahlAssistent']['nFrage'], $_SESSION['kSprache'], $oSpracheStd->kSprache);
         }
     } else {
         unset($_SESSION['AuswahlAssistent']);
     }
+
+    return null;
 }
 
 /**
@@ -708,9 +709,10 @@ function gibGratisGeschenkArtikel($Einstellungen)
     );
 
     if (is_array($oArtikelGeschenkTMP_arr) && count($oArtikelGeschenkTMP_arr) > 0) {
+        $defaultOptions = Artikel::getDefaultOptions();
         foreach ($oArtikelGeschenkTMP_arr as $i => $oArtikelGeschenkTMP) {
             $oArtikel = new Artikel();
-            $oArtikel->fuelleArtikel($oArtikelGeschenkTMP->kArtikel, Artikel::getDefaultOptions());
+            $oArtikel->fuelleArtikel($oArtikelGeschenkTMP->kArtikel, $defaultOptions);
             $oArtikel->cBestellwert = gibPreisStringLocalized(doubleval($oArtikelGeschenkTMP->cWert));
 
             if ($oArtikel->kEigenschaftKombi > 0 || !is_array($oArtikel->Variationen) || count($oArtikel->Variationen) === 0) {

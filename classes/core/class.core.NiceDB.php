@@ -140,7 +140,7 @@ class NiceDB
         if ($debugOverride === false) {
             if (defined('PROFILE_QUERIES') && PROFILE_QUERIES !== false) {
                 if (defined('DEBUG_LEVEL')) {
-                    $this->debugLevel = (int) DEBUG_LEVEL;
+                    $this->debugLevel = (int)DEBUG_LEVEL;
                 }
                 if (defined('PROFILE_QUERIES_ACTIVATION_FUNCTION') && is_callable(PROFILE_QUERIES_ACTIVATION_FUNCTION)) {
                     $this->collectData = (bool) call_user_func(PROFILE_QUERIES_ACTIVATION_FUNCTION);
@@ -148,7 +148,7 @@ class NiceDB
                     $this->debug = true;
                 }
                 if ($this->debug === true && is_numeric(PROFILE_QUERIES)) {
-                    $this->debugLevel = (int) PROFILE_QUERIES;
+                    $this->debugLevel = (int)PROFILE_QUERIES;
                 }
             }
         }

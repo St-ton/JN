@@ -5,6 +5,7 @@
  */
 
 /**
+ * @deprecated since 4.05
  * @param array $cDateinameSplit_arr
  * @param int   $nDateiZaehler
  * @return string
@@ -19,6 +20,7 @@ function gibDateiname($cDateinameSplit_arr, $nDateiZaehler)
 }
 
 /**
+ * @deprecated since 4.05
  * @param array $cDateinameSplit_arr
  * @param int   $nDateiZaehler
  * @return string
@@ -29,6 +31,7 @@ function gibDateiPfad($cDateinameSplit_arr, $nDateiZaehler)
 }
 
 /**
+ * @deprecated since 4.05
  * @return array
  */
 function pruefeExportformat()
@@ -70,6 +73,7 @@ function pruefeExportformat()
 /**
  * Falls eingestellt, wird die Exportdatei in mehrere Dateien gesplittet
  *
+ * @deprecated since 4.05
  * @param object $oExportformat
  */
 function splitteExportDatei($oExportformat)
@@ -126,6 +130,7 @@ function splitteExportDatei($oExportformat)
 }
 
 /**
+ * @deprecated since 4.05
  * @param resource $dateiHandle
  * @param string   $cKopfzeile
  * @param string   $cKodierung
@@ -146,6 +151,7 @@ function schreibeKopfzeile($dateiHandle, $cKopfzeile, $cKodierung)
 }
 
 /**
+ * @deprecated since 4.05
  * @param resource $dateiHandle
  * @param string   $cFusszeile
  * @param string   $cKodierung
@@ -162,6 +168,7 @@ function schreibeFusszeile($dateiHandle, $cFusszeile, $cKodierung)
 }
 
 /**
+ * @deprecated since 4.05
  * @param string $cDateiname
  * @param string $cDateinameSplit
  */
@@ -178,54 +185,6 @@ function loescheExportDateien($cDateiname, $cDateinameSplit)
             closedir($dir);
         }
     }
-}
-
-/**
- * @param string    $tpl_name
- * @param string    $tpl_source
- * @param JTLSmarty $smarty
- * @return bool
- */
-function xdb_get_template($tpl_name, &$tpl_source, $smarty)
-{
-    $exportformat = Shop::DB()->select('texportformat', 'kExportformat', (int)$tpl_name);
-    if (empty($exportformat->kExportformat) || $exportformat->kExportformat <= 0) {
-        return false;
-    }
-    $tpl_source = $exportformat->cContent;
-
-    return true;
-}
-
-/**
- * @param string    $tpl_name
- * @param string    $tpl_timestamp
- * @param JTLSmarty $smarty
- * @return bool
- */
-function xdb_get_timestamp($tpl_name, &$tpl_timestamp, $smarty)
-{
-    $tpl_timestamp = time();
-
-    return true;
-}
-
-/**
- * @param string    $tpl_name
- * @param JTLSmarty $smarty
- * @return bool
- */
-function xdb_get_secure($tpl_name, $smarty)
-{
-    return true;
-}
-
-/**
- * @param string    $tpl_name
- * @param JTLSmarty $smarty
- */
-function xdb_get_trusted($tpl_name, $smarty)
-{
 }
 
 /**
@@ -376,10 +335,10 @@ function verarbeiteYategoExport(&$Artikel, $exportformat, $ExportEinstellungen, 
                         $oEigenschaftKombi_arr = Shop::DB()->query(
                             "SELECT teigenschaftkombiwert.*, tartikel.kArtikel
                                 FROM teigenschaftkombiwert
-                                JOIN tartikel ON tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
-                                WHERE teigenschaftkombiwert.kEigenschaftKombi IN (" . $cSQL . ")
-                                GROUP BY teigenschaftkombiwert.kEigenschaftWert
-                                ORDER BY teigenschaftkombiwert.kEigenschaft, teigenschaftkombiwert.kEigenschaftWert", 2
+                                    JOIN tartikel ON tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
+                                    WHERE teigenschaftkombiwert.kEigenschaftKombi IN (" . $cSQL . ")
+                                    GROUP BY teigenschaftkombiwert.kEigenschaftWert
+                                    ORDER BY teigenschaftkombiwert.kEigenschaft, teigenschaftkombiwert.kEigenschaftWert", 2
                         );
                     }
                 }
@@ -397,15 +356,15 @@ function verarbeiteYategoExport(&$Artikel, $exportformat, $ExportEinstellungen, 
                 $oVariationsListe_arr[] = $oVariation->kEigenschaft;
 
                 if (is_array($oVariation->Werte) && count($oVariation->Werte) > 0) {
+                    $defaultOptions = Artikel::getDefaultOptions();
                     foreach ($oVariation->Werte as $oWert) {
                         $oVariationsKind = new stdClass();
                         if (is_array($oEigenschaftKombi_arr) && count($oEigenschaftKombi_arr) > 0) {
                             $bEigenschaftCheck = false;
-                            $oArtikelOptionen  = new stdClass();
                             foreach ($oEigenschaftKombi_arr as $oEigenschaftKombi) {
                                 if ($oEigenschaftKombi->kEigenschaft == $oVariation->kEigenschaft && $oEigenschaftKombi->kEigenschaftWert == $oWert->kEigenschaftWert) {
                                     $oVariationsKind = new Artikel();
-                                    $oVariationsKind->fuelleArtikel($oEigenschaftKombi->kArtikel, $oArtikelOptionen, $exportformat->kKundengruppe, $exportformat->kSprache, true);
+                                    $oVariationsKind->fuelleArtikel($oEigenschaftKombi->kArtikel, $defaultOptions, $exportformat->kKundengruppe, $exportformat->kSprache, true);
                                     $bEigenschaftCheck = true;
                                     break;
                                 }
@@ -617,6 +576,7 @@ function getEinstellungenExport($kExportformat)
 }
 
 /**
+ * @deprecated since 4.05
  * @param object $oExportformat
  * @return array
  */
@@ -659,6 +619,7 @@ function baueArtikelExportSQL(&$oExportformat)
 }
 
 /**
+ * @deprecated since 4.05
  * @param object $oExportformat
  * @return mixed
  */

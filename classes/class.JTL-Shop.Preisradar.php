@@ -17,9 +17,9 @@ class Preisradar
      */
     public static function getProducts($kKundengruppe, $nLimit = 3, $nTage = 3)
     {
-        $kKundengruppe = (int) $kKundengruppe;
-        $nTage         = (int) $nTage;
-        $nLimit        = (int) $nLimit;
+        $kKundengruppe = (int)$kKundengruppe;
+        $nTage         = (int)$nTage;
+        $nLimit        = (int)$nLimit;
         $oProduct_arr  = array();
         // Hole alle Produkte, die mindestens zwei mal den Preis in der angegebenden Zeit geändert haben
         $oObj_arr = Shop::DB()->query(
@@ -67,7 +67,7 @@ class Preisradar
                       )
                   ) as x
                   WHERE x.{$cArtikelSQL}
-                  LIMIT " . (int) ($nLimit * 2), 2
+                  LIMIT " . (int)($nLimit * 2), 2
             );
             // Hilfs Array bauen, welches nur die letzten zwei Preisänderungen pro Artikel speichert
             // Um damit hinterher die Differenz zu ermitteln

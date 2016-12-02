@@ -43,9 +43,8 @@ function loescheWarenkorbPosition($nPos)
             }
         }
     }
-
     loescheAlleSpezialPos();
-
+    /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
     if (!$_SESSION['Warenkorb']->enthaltenSpezialPos(C_WARENKORBPOS_TYP_ARTIKEL)) {
         unset($_SESSION['Kupon']);
         $_SESSION['Warenkorb'] = new Warenkorb();
@@ -80,6 +79,7 @@ function loescheWarenkorbPosition($nPos)
  */
 function uebernehmeWarenkorbAenderungen()
 {
+    /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
     unset($_SESSION['cPlausi_arr']);
     unset($_SESSION['cPost_arr']);
     // Gratis Geschenk wurde hinzugefuegt
@@ -90,10 +90,10 @@ function uebernehmeWarenkorbAenderungen()
     $drop = null;
     $post = false;
     if (isset($_POST['dropPos'])) {
-        $drop = (int) $_POST['dropPos'];
+        $drop = (int)$_POST['dropPos'];
         $post = true;
     } elseif (isset($_GET['dropPos'])) {
-        $drop = (int) $_GET['dropPos'];
+        $drop = (int)$_GET['dropPos'];
     }
     if ($drop !== null) {
         loescheWarenkorbPosition($drop);
@@ -132,7 +132,11 @@ function uebernehmeWarenkorbAenderungen()
                 $gueltig = true;
                 // Abnahmeintervall
                 if ($Artikel->fAbnahmeintervall > 0) {
-                    $dVielfache = round($Artikel->fAbnahmeintervall * ceil(bcdiv($_POST['anzahl'][$i],$Artikel->fAbnahmeintervall, 3)), 2);
+                    if (function_exists('bcdiv')) {
+                        $dVielfache = round($Artikel->fAbnahmeintervall * ceil(bcdiv($_POST['anzahl'][$i],$Artikel->fAbnahmeintervall, 3)), 2);
+                    } else {
+                        $dVielfache = round($Artikel->fAbnahmeintervall * ceil($_POST['anzahl'][$i] / $Artikel->fAbnahmeintervall), 2);
+                    }
 
                     if ($dVielfache != $_POST['anzahl'][$i]) {
                         $gueltig                         = false;
@@ -190,7 +194,7 @@ function uebernehmeWarenkorbAenderungen()
                         $_SESSION['Warenkorb']->PositionenArr[$i]->nAnzahl,
                         $_SESSION['Warenkorb']->PositionenArr[$i]->WarenkorbPosEigenschaftArr
                     );
-                    $_SESSION['Warenkorb']->PositionenArr[$i]->setzeGesamtpreisLoacalized();
+                    $_SESSION['Warenkorb']->PositionenArr[$i]->setzeGesamtpreisLocalized();
                     $_SESSION['Warenkorb']->PositionenArr[$i]->fGesamtgewicht = $_SESSION['Warenkorb']->PositionenArr[$i]->gibGesamtgewicht();
 
                     $bMindestensEinePosGeaendert = true;
@@ -356,11 +360,11 @@ function gibXSelling()
                 if (!isset($oXselling->Kauf)) {
                     $oXselling->Kauf = new stdClass();
                 }
-                $oXselling->Kauf->Artikel = array();
-                $oArtikelOptionen         = Artikel::getDefaultOptions();
+                $oXselling->Kauf->Artikel = [];
+                $defaultOptions           = Artikel::getDefaultOptions();
                 foreach ($oXsellkauf_arr as $oXsellkauf) {
                     $oArtikel = new Artikel();
-                    $oArtikel->fuelleArtikel($oXsellkauf->kXSellArtikel, $oArtikelOptionen);
+                    $oArtikel->fuelleArtikel($oXsellkauf->kXSellArtikel, $defaultOptions);
 
                     if ($oArtikel->kArtikel > 0 && $oArtikel->aufLagerSichtbarkeit()) {
                         $oXselling->Kauf->Artikel[] = $oArtikel;
@@ -427,11 +431,10 @@ function pruefeBestellMengeUndLagerbestand($Einstellungen = array())
     $cArtikelName = '';
     $bVorhanden   = false;
     $cISOSprache  = $_SESSION['cISOSprache'];
-
     if (!is_array($Einstellungen) || !isset($Einstellungen['global'])) {
         $Einstellungen = Shop::getSettings(array(CONF_GLOBAL));
     }
-
+    /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
     if (is_array($_SESSION['Warenkorb']->PositionenArr) && count($_SESSION['Warenkorb']->PositionenArr) > 0) {
         foreach ($_SESSION['Warenkorb']->PositionenArr as $i => $oPosition) {
             if ($oPosition->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL) {

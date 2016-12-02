@@ -36,7 +36,6 @@ class cache_xcache implements ICachingMethod
      * @param string   $cacheID
      * @param mixed    $content
      * @param int|null $expiration
-     *
      * @return bool
      */
     public function store($cacheID, $content, $expiration = null)
@@ -47,7 +46,6 @@ class cache_xcache implements ICachingMethod
     /**
      * @param array    $keyValue
      * @param int|null $expiration
-     *
      * @return bool
      */
     public function storeMulti($keyValue, $expiration = null)
@@ -62,7 +60,6 @@ class cache_xcache implements ICachingMethod
 
     /**
      * @param string $cacheID
-     *
      * @return bool|mixed
      */
     public function load($cacheID)
@@ -78,12 +75,11 @@ class cache_xcache implements ICachingMethod
 
     /**
      * @param array $cacheIDs
-     *
      * @return array
      */
     public function loadMulti($cacheIDs)
     {
-        $res = array();
+        $res = [];
         foreach ($cacheIDs as $_cid) {
             $res[$_cid] = $this->load($cacheIDs);
         }
@@ -101,7 +97,6 @@ class cache_xcache implements ICachingMethod
 
     /**
      * @param string $cacheID
-     *
      * @return bool
      */
     public function flush($cacheID)
@@ -131,6 +126,6 @@ class cache_xcache implements ICachingMethod
      */
     public function getStats()
     {
-        return array();
+        return [];
     }
 }

@@ -9,6 +9,10 @@ require_once dirname(__FILE__) . '/includes/admininclude.php';
 $oAccount->permission('REDIRECT_VIEW', true, true);
 /** @global JTLSmarty $smarty */
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
+require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'csv_exporter_inc.php';
+require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'csv_importer_inc.php';
+
+handleCsvImportAction('redirects', 'tredirect');
 
 $aData     = (isset($_POST['aData'])) ? $_POST['aData'] : null;
 $oRedirect = new Redirect();
@@ -106,6 +110,10 @@ $oPagination = (new Pagination())
     ->assemble();
 
 $oRedirect_arr = Redirect::getRedirects($oFilter->getWhereSQL(), $oPagination->getOrderSQL(), $oPagination->getLimitSQL());
+
+handleCsvExportAction('redirects', 'redirects.csv', function () use ($oFilter, $oPagination) {
+        return Redirect::getRedirects($oFilter->getWhereSQL(), $oPagination->getOrderSQL());
+    }, ['cFromUrl', 'cToUrl']);
 
 if (!empty($oRedirect_arr) && !empty($urls)) {
     foreach ($oRedirect_arr as &$oRedirect) {

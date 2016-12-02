@@ -35,7 +35,7 @@
                 <input type="hidden" name="tab" value="export" />
 
                 <p class="submit">
-                    <button type="submit" value="{#sitemapExportSubmit#}" class="btn btn-primary">{#sitemapExportSubmit#}</button>
+                    <button type="submit" value="{#sitemapExportSubmit#}" class="btn btn-primary"><i class="fa fa-share"></i> {#sitemapExportSubmit#}</button>
                 </p>
             </form>
         </div>

@@ -12,7 +12,7 @@ $cHinweis = '';
 $sqlData  = null;
 if (isset($_POST['delete-run-submit']) && validateToken()) {
     if (isset($_POST['run-id']) && is_numeric($_POST['run-id'])) {
-        $res = deleteProfileRun(false, (int) $_POST['run-id']);
+        $res = deleteProfileRun(false, (int)$_POST['run-id']);
         if (is_numeric($res) && $res > 0) {
             $cHinweis = 'Eintrag erfolgreich gel&ouml;scht.';
         } else {

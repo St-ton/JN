@@ -40,6 +40,11 @@ class Warenkorb
     public $cEstimatedDelivery = '';
 
     /**
+     * @var object
+     */
+    public $Waehrung = null;
+
+    /**
      * @var array
      */
     public static $updatedPositions = array();
@@ -201,7 +206,7 @@ class Warenkorb
         $NeuePosition->cUnique     = $cUnique;
         $NeuePosition->kKonfigitem = $kKonfigitem;
 
-        $NeuePosition->setzeGesamtpreisLoacalized();
+        $NeuePosition->setzeGesamtpreisLocalized();
         //posname lokalisiert ablegen
         $cLieferstatus_StdSprache    = $NeuePosition->Artikel->cLieferstatus;
         $NeuePosition->cName         = array();
@@ -264,6 +269,16 @@ class Warenkorb
                                     }
 
                                     $NeuePosition->setzeVariationsWert($EigenschaftWert->kEigenschaft, $EigenschaftWert->kEigenschaftWert);
+
+                                    // aktuellen Eigenschaftswert mit Bild ermitteln und Variationsbild an der Position speichern
+                                    $kEigenschaftWert = $EigenschaftWert->kEigenschaftWert;
+                                    $oVariationWert   = current(array_filter($eWert->Werte, function ($item) use ($kEigenschaftWert) {
+                                        return $item->kEigenschaftWert === $kEigenschaftWert && !empty($item->cPfadNormal);
+                                    }));
+
+                                    if ($oVariationWert !== false) {
+                                        WarenkorbHelper::setVariationPicture($NeuePosition, $oVariationWert);
+                                    }
                                 }
                             }
                         }
@@ -280,7 +295,7 @@ class Warenkorb
             case C_WARENKORBPOS_TYP_GRATISGESCHENK:
                 $NeuePosition->fPreisEinzelNetto = 0;
                 $NeuePosition->fPreis            = 0;
-                $NeuePosition->setzeGesamtpreisLoacalized();
+                $NeuePosition->setzeGesamtpreisLocalized();
                 break;
 
             //Pruefen ob eine Versandart hinzugefuegt wird und haenge den Hinweistext an die Position (falls vorhanden)
@@ -509,6 +524,7 @@ class Warenkorb
                 $cnt = Shop::DB()->query("SELECT count(*) AS anz FROM tbestellung WHERE cIP = '" . Shop::DB()->escape($ip) . "' AND dErstellt>now()-INTERVAL 1 DAY", 1);
                 if ($cnt->anz > 0) {
                     $min                = pow(2, $cnt->anz);
+                    $min                = min([$min, 1440]);
                     $bestellungMoeglich = Shop::DB()->query(
                         "SELECT dErstellt+interval $min minute < now() AS moeglich
                             FROM tbestellung
@@ -628,7 +644,7 @@ class Warenkorb
                     if (isset($_SESSION['Kupon']->kKupon) && $_SESSION['Kupon']->kKupon > 0 && $_SESSION['Kupon']->nGanzenWKRabattieren == '0') {
                         checkeKuponWKPos($this->PositionenArr[$i], $_SESSION['Kupon']);
                     }
-                    $this->PositionenArr[$i]->setzeGesamtpreisLoacalized();
+                    $this->PositionenArr[$i]->setzeGesamtpreisLocalized();
                     unset($this->PositionenArr[$i]->cHinweis);
                 }
             }
@@ -642,13 +658,13 @@ class Warenkorb
      */
     public function setzePositionsPreise()
     {
-        $oArtikelOptionen = Artikel::getDefaultOptions();
+        $defaultOptions = Artikel::getDefaultOptions();
         foreach ($this->PositionenArr as $i => $Position) {
             if ($Position->kArtikel > 0 && $Position->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL) {
                 $_oldPosition = clone $Position;
                 $oArtikel     = new Artikel();
 
-                if ($oArtikel->fuelleArtikel($Position->kArtikel, $oArtikelOptionen)) {
+                if ($oArtikel->fuelleArtikel($Position->kArtikel, $defaultOptions)) {
                     // Baue Variationspreise im Warenkorb neu, aber nur wenn es ein gültiger Artikel ist
                     if (is_array($this->PositionenArr[$i]->WarenkorbPosEigenschaftArr) && count($this->PositionenArr[$i]->WarenkorbPosEigenschaftArr) > 0) {
                         foreach ($this->PositionenArr[$i]->WarenkorbPosEigenschaftArr as $j => $oWarenkorbPosEigenschaft) {
@@ -674,7 +690,7 @@ class Warenkorb
                     $this->PositionenArr[$i]->fPreisEinzelNetto = $oArtikel->gibPreis($anz, array());
                     $this->PositionenArr[$i]->fPreis            = $oArtikel->gibPreis($anz, $Position->WarenkorbPosEigenschaftArr);
                     $this->PositionenArr[$i]->fGesamtgewicht    = $this->PositionenArr[$i]->gibGesamtgewicht();
-                    $this->PositionenArr[$i]->setzeGesamtpreisLoacalized();
+                    $this->PositionenArr[$i]->setzeGesamtpreisLocalized();
                     //notify about price changes when the price difference is greater then .01
                     if ($_oldPosition->cGesamtpreisLocalized !== $this->PositionenArr[$i]->cGesamtpreisLocalized &&
                         $_oldPosition->Artikel->Preise->fVK !== $this->PositionenArr[$i]->Artikel->Preise->fVK
@@ -691,7 +707,7 @@ class Warenkorb
                     unset($this->PositionenArr[$i]->cHinweis);
                     if (isset($_SESSION['Kupon']->kKupon) && $_SESSION['Kupon']->kKupon > 0 && intval($_SESSION['Kupon']->nGanzenWKRabattieren) === 0) {
                         $this->PositionenArr[$i] = checkeKuponWKPos($this->PositionenArr[$i], $_SESSION['Kupon']);
-                        $this->PositionenArr[$i]->setzeGesamtpreisLoacalized();
+                        $this->PositionenArr[$i]->setzeGesamtpreisLocalized();
                     }
                 }
             }
@@ -718,7 +734,7 @@ class Warenkorb
                     $oPosition->fPreisEinzelNetto = $oKonfigitem->getPreis(true);
                     $oPosition->fPreis            = $oPosition->fPreisEinzelNetto;
                     $oPosition->kSteuerklasse     = $oKonfigitem->getSteuerklasse();
-                    $oPosition->setzeGesamtpreisLoacalized();
+                    $oPosition->setzeGesamtpreisLocalized();
                 }
                 if ($bName && $oKonfigitem->getUseOwnName() && class_exists('Konfigitemsprache')) {
                     foreach ($_SESSION['Sprachen'] as $Sprache) {
@@ -950,7 +966,7 @@ class Warenkorb
     public function berechnePositionenUst()
     {
         foreach ($this->PositionenArr as $i => $Position) {
-            $Position->setzeGesamtpreisLoacalized();
+            $Position->setzeGesamtpreisLocalized();
         }
 
         return $this;
@@ -1051,7 +1067,7 @@ class Warenkorb
                 if ($oPosition->nPosTyp == C_WARENKORBPOS_TYP_VERSANDPOS) {
                     $this->PositionenArr[$i]->fPreisEinzelNetto = 0.0;
                     $this->PositionenArr[$i]->fPreis            = 0.0;
-                    $this->PositionenArr[$i]->setzeGesamtpreisLoacalized();
+                    $this->PositionenArr[$i]->setzeGesamtpreisLocalized();
                     break;
                 }
             }
@@ -1156,11 +1172,11 @@ class Warenkorb
      */
     public function insertInDB()
     {
-        $obj = kopiereMembers($this);
-        unset($obj->kWarenkorb);
-        unset($obj->PositionenArr);
-        unset($obj->cEstimatedDelivery);
-        unset($obj->VersandArt);
+        $obj = (object)[
+            'kKunde'         => $this->kKunde,
+            'kLieferadresse' => $this->kLieferadresse,
+            'kZahlungsInfo'  => $this->kZahlungsInfo,
+        ];
         if (!isset($obj->kZahlungsInfo) || $obj->kZahlungsInfo === '' || $obj->kZahlungsInfo === null) {
             $obj->kZahlungsInfo = 0;
         }
@@ -1177,10 +1193,12 @@ class Warenkorb
      */
     public function updateInDB()
     {
-        $obj = kopiereMembers($this);
-        unset($obj->PositionenArr);
-        unset($obj->cEstimatedDelivery);
-        unset($obj->VersandArt);
+        $obj = (object)[
+            'kWarenkorb'     => $this->kWarenkorb,
+            'kKunde'         => $this->kKunde,
+            'kLieferadresse' => $this->kLieferadresse,
+            'kZahlungsInfo'  => $this->kZahlungsInfo,
+        ];
 
         return Shop::DB()->update('twarenkorb', 'kWarenkorb', $obj->kWarenkorb, $obj);
     }
@@ -1231,6 +1249,7 @@ class Warenkorb
                     ) {
                         $nZeitLetzteAenderung = $this->PositionenArr[$i]->nZeitLetzteAenderung;
                         $oResult              = $this->PositionenArr[$i]->Artikel;
+                        ArtikelHelper::addVariationPictures($oResult, $this->PositionenArr[$i]->variationPicturesArr);
                     } elseif ($oResult === null) { //Wenn keine nZeitLetzteAenderung gesetzt ist letztes Element des WK-Arrays nehmen
                         $oResult = $this->PositionenArr[$i]->Artikel;
                     }
@@ -1241,7 +1260,7 @@ class Warenkorb
             }
         }
 
-        return;
+        return null;
     }
 
     /**

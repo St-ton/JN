@@ -335,8 +335,8 @@ function buildAttributes(&$arr, $cExclude_arr = [])
 }
 
 /**
- * @param string $zip
- * @param object $xml_obj
+ * @param string       $zip
+ * @param object|array $xml_obj
  */
 function zipRedirect($zip, $xml_obj)
 {

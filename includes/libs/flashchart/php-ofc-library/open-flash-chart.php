@@ -110,7 +110,7 @@ class open_flash_chart
     }
 
     /**
-     * @param area|pie|pie_fade|pie_bounce|pie_value|area_hollow|area_line $e
+     * @param area|pie|pie_fade|pie_bounce|pie_value|area_hollow|area_line|bar $e
      */
     public function add_element($e)
     {

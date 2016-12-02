@@ -642,9 +642,8 @@ function gibStepZahlung()
         }
     } elseif (!is_array($oZahlungsart_arr) || count($oZahlungsart_arr) === 0) {
         if (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-            Jtllog::writeLog(
-                'Es konnte keine Zahlungsart für folgende Daten gefunden werden: Versandart: ' . $_SESSION['Versandart']->kVersandart .
-                ', Kundengruppe: ' . $_SESSION['Kundengruppe']->kKundengruppe, JTLLOG_LEVEL_ERROR
+            Jtllog::writeLog(utf8_decode('Es konnte keine Zahlungsart für folgende Daten gefunden werden: Versandart: ' . $_SESSION['Versandart']->kVersandart .
+                ', Kundengruppe: ' . $_SESSION['Kundengruppe']->kKundengruppe), JTLLOG_LEVEL_ERROR
             );
         }
     }
@@ -1263,7 +1262,7 @@ function gibZahlungsart($kZahlungsart)
 
 /**
  * @param int $kKunde
- * @return bool
+ * @return object|bool
  */
 function gibKundenKontodaten($kKunde)
 {
@@ -1675,8 +1674,9 @@ function angabenKorrekt($fehlendeAngaben)
 }
 
 /**
- * @param int $kundenaccount
- * @param int $checkpass
+ * @param array $data
+ * @param int   $kundenaccount
+ * @param int   $checkpass
  * @return array
  */
 function checkKundenFormularArray($data, $kundenaccount, $checkpass = 1)
@@ -2496,6 +2496,35 @@ function kuponMoeglich()
     }
 
     return $moeglich;
+}
+
+
+/**
+ * @return bool
+ */
+function freeGiftStillValid()
+{
+    $valid = true;
+    foreach ($_SESSION['Warenkorb']->PositionenArr as $oPosition) {
+        if ($oPosition->nPosTyp == C_WARENKORBPOS_TYP_GRATISGESCHENK) {
+            // Prüfen ob der Artikel wirklich ein Gratisgeschenk ist und ob die Mindestsumme erreicht wird
+            $oArtikelGeschenk = Shop::DB()->query(
+                "SELECT kArtikel
+                    FROM tartikelattribut
+                    WHERE kArtikel = " . (int)$oPosition->kArtikel . "
+                       AND cName = '" . FKT_ATTRIBUT_GRATISGESCHENK . "'
+                       AND CAST(cWert AS DECIMAL) <= " . $_SESSION['Warenkorb']->gibGesamtsummeWarenExt(array(C_WARENKORBPOS_TYP_ARTIKEL), true), 1
+            );
+
+            if (empty($oArtikelGeschenk->kArtikel)) {
+                $_SESSION['Warenkorb']->loescheSpezialPos(C_WARENKORBPOS_TYP_GRATISGESCHENK);
+                $valid = false;
+            }
+            break;
+        }
+    }
+
+    return $valid;
 }
 
 /**

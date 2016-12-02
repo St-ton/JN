@@ -27,8 +27,7 @@ class MediaImageCompatibility implements IMedia
      */
     public function handle($request)
     {
-        $req = $this->parse($request);
-
+        $req      = $this->parse($request);
         $path     = strtolower(Shop::DB()->escape($req['path']));
         $fallback = Shop::DB()->executeQuery("
           SELECT h.kArtikel, h.nNr, a.cSeo, a.cName, a.cArtNr, a.cBarcode 
@@ -102,7 +101,7 @@ class MediaImageCompatibility implements IMedia
 
     /**
      * @param string $request
-     * @return MediaImageRequest|null
+     * @return array|null
      */
     private function parse($request)
     {

@@ -155,7 +155,7 @@ class FilterSearchSpecial extends AbstractFilter implements IFilter
                     $nMindestSterne  = (intval($conf['boxen']['boxen_topbewertet_minsterne'] > 0))
                         ? (int)$conf['boxen']['boxen_topbewertet_minsterne']
                         : 4;
-                    return " AND round(taex.fDurchschnittsBewertung) >= " . $nMindestSterne;
+                    return " ROUND(taex.fDurchschnittsBewertung) >= " . $nMindestSterne;
                 }
                 break;
 

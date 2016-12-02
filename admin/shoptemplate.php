@@ -173,7 +173,9 @@ if (isset($_GET['settings']) && strlen($_GET['settings']) > 0 && validateToken()
         //re-init smarty with new template - problematic because of re-including functions.php
         header('Location: ' . $shopURL . PFAD_ADMIN . 'shoptemplate.php', true, 301);
     } else {
+        // iterate over each "Section"
         foreach ($tplConfXML as $_conf) {
+            // iterate over each "Setting" in this "Section"
             foreach ($_conf->oSettings_arr as $_setting) {
                 if ($_setting->cType === 'upload' && isset($_setting->rawAttributes['target']) && isset($_setting->rawAttributes['targetFileName'])) {
                     if (!file_exists(PFAD_ROOT . PFAD_TEMPLATES . $cOrdner . '/' . $_setting->rawAttributes['target'] . $_setting->rawAttributes['targetFileName'])) {

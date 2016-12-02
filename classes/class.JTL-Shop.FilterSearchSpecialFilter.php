@@ -108,7 +108,7 @@ class FilterSearchSpecialFilter extends AbstractFilter implements IFilter
      */
     public function getSQLCondition()
     {
-        $conf = Shop::getSettings(array(CONF_BOXEN, CONF_GLOBAL));
+        $conf = Shop::getSettings([CONF_BOXEN, CONF_GLOBAL]);
         switch ($this->kKey) {
             case SEARCHSPECIALS_BESTSELLER:
                 $nAnzahl = (isset($conf['global']['global_bestseller_minanzahl'])
@@ -151,7 +151,7 @@ class FilterSearchSpecialFilter extends AbstractFilter implements IFilter
                     $nMindestSterne  = (intval($conf['boxen']['boxen_topbewertet_minsterne'] > 0))
                         ? (int)$conf['boxen']['boxen_topbewertet_minsterne']
                         : 4;
-                    return " ROUND(taex.fDurchschnittsBewertung) >= " . $nMindestSterne;
+                    return "ROUND(taex.fDurchschnittsBewertung) >= " . $nMindestSterne;
                 }
                 break;
 
@@ -179,9 +179,15 @@ class FilterSearchSpecialFilter extends AbstractFilter implements IFilter
                     $join = new FilterJoin();
                     $join->setType('JOIN')
                          ->setTable('tartikelsonderpreis AS tasp')
-                         ->setOn('tasp.kArtikel = tartikel.kArtikel\nJOIN tsonderpreise AS tsp ON tsp.kArtikelSonderpreis = tasp.kArtikelSonderpreis')
+                         ->setOn('tasp.kArtikel = tartikel.kArtikel')
                          ->setComment('JOIN from FilterSearchSpecial special offers');
-                    return [$join];
+
+                    $join2 = new FilterJoin();
+                    $join2->setType('JOIN')
+                          ->setTable('tsonderpreise AS tsp')
+                          ->setOn('tsp.kArtikelSonderpreis = tasp.kArtikelSonderpreis')
+                          ->setComment('JOIN2 from FilterSearchSpecial special offers');
+                    return [$join, $join2];
                 }
                 return [];
 

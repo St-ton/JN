@@ -188,7 +188,7 @@ class FilterSearchSpecial extends AbstractFilter implements IFilter
                     $join = new FilterJoin();
                     $join->setType('JOIN')
                          ->setTable('tartikelsonderpreis AS tasp')
-                         ->setOn('tasp.kArtikel = tartikel.kArtikel\nJOIN tsonderpreise AS tsp ON tsp.kArtikelSonderpreis = tasp.kArtikelSonderpreis')
+                         ->setOn('tasp.kArtikel = tartikel.kArtikel JOIN tsonderpreise AS tsp ON tsp.kArtikelSonderpreis = tasp.kArtikelSonderpreis')
                          ->setComment('JOIN from FilterSearchSpecial special offers');
                     return [$join];
 //                    return "JOIN tartikelsonderpreis AS tasp ON tasp.kArtikel = tartikel.kArtikel\nJOIN tsonderpreise AS tsp ON tsp.kArtikelSonderpreis = tasp.kArtikelSonderpreis";

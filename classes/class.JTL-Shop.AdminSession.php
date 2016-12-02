@@ -1,4 +1,8 @@
 <?php
+/**
+ * @copyright (c) JTL-Software-GmbH
+ * @license http://jtl-url.de/jtlshoplicense
+ */
 
 /**
  * Class AdminSession
@@ -16,7 +20,7 @@ class AdminSession
     private static $_instance = null;
 
     /**
-     * @return Session
+     * @return AdminSession
      */
     public static function getInstance()
     {

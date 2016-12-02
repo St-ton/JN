@@ -1038,8 +1038,11 @@ class Exportformat
             }
             if (isset($_GET['back']) && $_GET['back'] === 'admin') {
                 header('Location: exportformate.php?action=exported&token=' . $_SESSION['jtl_token'] . '&kExportformat=' . (int)$this->queue->kExportformat);
+                exit;
             }
-            exit;
+            Jtllog::cronLog('Finished export');
+
+            return true;
         }
         $start       = microtime(true);
         $cacheHits   = 0;
@@ -1058,7 +1061,7 @@ class Exportformat
             $max = (int)$max;
         }
 
-        Jtllog::cronLog('Starting exportformat "' . $this->getName() . '" for language ' . $this->getSprache() . ' and customer group ' . $this->getKundengruppe() .
+        Jtllog::cronLog('Starting exportformat "' . utf8_encode($this->getName()) . '" for language ' . $this->getSprache() . ' and customer group ' . $this->getKundengruppe() .
             ' with caching ' . ((Shop::Cache()->isActive() && $this->useCache()) ? 'enabled' : 'disabled') .
              ' - ' . $queueObject->nLimitN . '/' . $max . ' products exported');
         // Kopfzeile schreiben

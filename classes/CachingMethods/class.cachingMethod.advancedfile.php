@@ -38,7 +38,9 @@ class cache_advancedfile implements ICachingMethod
      */
     private function getFileName($cacheID)
     {
-        return $this->options['cache_dir'] . $cacheID . $this->options['file_extension'];
+        return (is_string($cacheID))
+            ? $this->options['cache_dir'] . $cacheID . $this->options['file_extension']
+            : false;
     }
 
     /**
@@ -219,7 +221,7 @@ class cache_advancedfile implements ICachingMethod
      * @param string $cacheID
      * @return bool
      */
-    public function setCacheTag($tags = array(), $cacheID)
+    public function setCacheTag($tags = [], $cacheID)
     {
         $fileName = $this->getFileName($cacheID);
         if ($fileName === false || !file_exists($fileName)) {
@@ -235,9 +237,11 @@ class cache_advancedfile implements ICachingMethod
                 $dirs = explode('_', $tag);
                 $path = $this->options['cache_dir'];
                 foreach ($dirs as $dir) {
-                    $path .= $dir . '/';
-                    if (!file_exists($path)) {
-                        mkdir($path);
+                    if (strlen($dir) > 0) {
+                        $path .= $dir . '/';
+                        if (!file_exists($path)) {
+                            mkdir($path);
+                        }
                     }
                 }
                 if (!file_exists($path . $cacheID)) {

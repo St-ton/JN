@@ -852,11 +852,11 @@ function setzeSmartyWeiterleitung($bestellung)
     if (class_exists('Upload')) {
         Upload::speicherUploadDateien($_SESSION['Warenkorb'], $bestellung->kBestellung);
     }
-    if (Jtllog::doLog(JTLLOG_LEVEL_NOTICE)) {
+    if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
         Jtllog::writeLog(
             'setzeSmartyWeiterleitung wurde mit folgender Zahlungsart ausgefuehrt: ' .
             print_r($_SESSION['Zahlungsart'], true),
-            JTLLOG_LEVEL_NOTICE,
+            JTLLOG_LEVEL_DEBUG,
             false,
             'cModulId',
             $_SESSION['Zahlungsart']->cModulId

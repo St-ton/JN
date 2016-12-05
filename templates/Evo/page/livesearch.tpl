@@ -18,7 +18,7 @@
                         {foreach name=livesuchen from=$LivesucheTop item=suche}
                             <li class="tag">
                                 <a href="{$suche->cURL}">{$suche->cSuche}</a>
-                                <span class="badge">{$suche->nAnzahlTreffer}</span>
+                                <span class="badge pull-right">{$suche->nAnzahlTreffer}</span>
                             </li>
                         {/foreach}
                     {else}
@@ -38,7 +38,7 @@
                         {foreach name=livesuchen from=$LivesucheLast item=suche}
                             <li class="tag">
                                 <a href="{$suche->cURL}">{$suche->cSuche}</a>
-                                <span class="badge">{$suche->nAnzahlTreffer}</span>
+                                <span class="badge pull-right">{$suche->nAnzahlTreffer}</span>
                             </li>
                         {/foreach}
                     {else}

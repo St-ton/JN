@@ -6,7 +6,7 @@
         <div class="box-body dropdown">
             <ul class="nav nav-list">
                 {foreach name=news from=$oBox->oNewsMonatsUebersicht_arr item=oNewsMonatsUebersicht}
-                    <li><a href="{$oNewsMonatsUebersicht->cURL}"  title="{$oNewsMonatsUebersicht->cName}">{$oNewsMonatsUebersicht->cName} <span class="badge">{$oNewsMonatsUebersicht->nAnzahl}</span></a></li>
+                    <li><a href="{$oNewsMonatsUebersicht->cURL}"  title="{$oNewsMonatsUebersicht->cName}">{$oNewsMonatsUebersicht->cName} <span class="badge pull-right">{$oNewsMonatsUebersicht->nAnzahl}</span></a></li>
                 {/foreach}
             </ul>
         </div>
@@ -19,7 +19,7 @@
         <div class="panel-body">
             <ul>
                 {foreach name=news from=$Boxen.News->oNewsMonatsUebersicht_arr item=oNewsMonatsUebersicht}
-                    <li><a class="tooltip" href="{$oNewsMonatsUebersicht->cURL}" title="{$oNewsMonatsUebersicht->cBeschreibung|escape:"html"}">{$oNewsMonatsUebersicht->cName} <span class="badge">{$oNewsMonatsUebersicht->nAnzahl}</span></a></li>
+                    <li><a class="tooltip" href="{$oNewsMonatsUebersicht->cURL}" title="{$oNewsMonatsUebersicht->cBeschreibung|escape:"html"}">{$oNewsMonatsUebersicht->cName} <span class="badge pull-right">{$oNewsMonatsUebersicht->nAnzahl}</span></a></li>
                 {/foreach}
             </ul>
         </div>

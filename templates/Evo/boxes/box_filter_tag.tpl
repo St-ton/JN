@@ -5,14 +5,16 @@
         </div>
         <div class="box-body">
             <ul class="nav nav-list">
-             {foreach name=tagfilter from=$Suchergebnisse->Tags item=oTagFilter}
-                <li>
-                   <a rel="nofollow" href="{$oTagFilter->cURL}" class="XXXactive">
-                       <i class="fa fa-square-o text-muted"></i> {$oTagFilter->cName}
-                       <span class="badge">{$oTagFilter->nAnzahl}</span>
-                   </a>
-                </li>
-             {/foreach}
+                {foreach name=tagfilter from=$Suchergebnisse->Tags item=oTagFilter}
+                    <li>
+                        <a rel="nofollow" href="{$oTagFilter->cURL}" class="active">
+                            <span class="value">
+                                <i class="fa fa-square-o text-muted"></i> {$oTagFilter->cName}
+                                <span class="badge pull-right">{$oTagFilter->nAnzahl}</span>
+                            </span>
+                        </a>
+                    </li>
+                {/foreach}
             </ul>
         </div>
     </section>

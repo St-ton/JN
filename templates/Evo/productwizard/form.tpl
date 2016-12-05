@@ -79,13 +79,13 @@
                                     {/if}
                                     {if $Einstellungen.auswahlassistent.auswahlassistent_anzeigeformat === 'T'}
                                         {$oMerkmalWert->cWert}{if $Einstellungen.auswahlassistent.auswahlassistent_anzahl_anzeigen === 'Y' && isset($oMerkmalWert->nAnzahl)}
-                                        <span class="badge">{$oMerkmalWert->nAnzahl}</span>{/if}
+                                        <span class="badge pull-right">{$oMerkmalWert->nAnzahl}</span>{/if}
                                     {elseif $Einstellungen.auswahlassistent.auswahlassistent_anzeigeformat === 'B'}
                                         <img src="{$oMerkmalWert->cBildpfadKlein}" class="vmiddle" title="{$oMerkmalWert->cWert}" />
                                     {elseif $Einstellungen.auswahlassistent.auswahlassistent_anzeigeformat === 'BT'}
                                         <img src="{$oMerkmalWert->cBildpfadKlein}" class="vmiddle" title="{$oMerkmalWert->cWert}" />
                                         {$oMerkmalWert->cWert}{if $Einstellungen.auswahlassistent.auswahlassistent_anzahl_anzeigen === 'Y' && isset($oMerkmalWert->nAnzahl)}
-                                        <span class="badge">{$oMerkmalWert->nAnzahl}</span>{/if}
+                                        <span class="badge pull-right">{$oMerkmalWert->nAnzahl}</span>{/if}
                                     {/if}
                                     {if $smarty.session.AuswahlAssistent->nFrage != $nFrage && ($Einstellungen.auswahlassistent.auswahlassistent_allefragen === 'Y' || $smarty.session.AuswahlAssistent->nFrage > $nFrage)}
                                         </span>

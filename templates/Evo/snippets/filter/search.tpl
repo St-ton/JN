@@ -2,8 +2,10 @@
     {foreach name=suchfilter from=$Suchergebnisse->SuchFilter item=oSuchFilter}
         <li>
             <a rel="nofollow" href="{$oSuchFilter->cURL}" class="active">
-                <i class="fa fa-square-o text-muted"></i> {$oSuchFilter->cSuche}
-                <span class="badge">{$oSuchFilter->nAnzahl}</span>
+                <span class="value">
+                    <i class="fa fa-square-o text-muted"></i> {$oSuchFilter->cSuche}
+                    <span class="badge pull-right">{$oSuchFilter->nAnzahl}</span>
+                </span>
             </a>
         </li>
     {/foreach}

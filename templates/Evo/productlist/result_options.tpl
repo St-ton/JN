@@ -87,9 +87,15 @@
                                     {lang key="allManufacturers" section="global"}
                                     <span class="caret"></span>
                                 </a>
-                                <ul class="dropdown-menu" aria-labelledby="manufacturer-filter-label">
+                                <ul class="dropdown-menu" aria-labelledby="manufacturer-filter-label" role="menu">
                                     {foreach name=herstellerauswahl from=$Suchergebnisse->Herstellerauswahl item=Hersteller}
-                                        <li><a href="{$Hersteller->cURL}">{$Hersteller->cName} {if !isset($nMaxAnzahlArtikel) || !$nMaxAnzahlArtikel}({$Hersteller->nAnzahl}){/if}</a></li>
+                                        <li>
+                                            <a href="{$Hersteller->cURL}">
+                                                <span class="value">{$Hersteller->cName}
+                                                    {if !isset($nMaxAnzahlArtikel) || !$nMaxAnzahlArtikel}<span class="badge pull-right">{$Hersteller->nAnzahl}</span>{/if}
+                                                </span>
+                                            </a>
+                                        </li>
                                     {/foreach}
                                 </ul>
                             {/if}

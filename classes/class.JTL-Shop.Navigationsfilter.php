@@ -443,10 +443,10 @@ class Navigationsfilter
             $this->nAnzahlProSeite = (int)$params['nArtikelProSeite'];
         }
         if (strlen($params['cSuche']) > 0) {
-            $params['cSuche']         = StringHandler::filterXSS($params['cSuche']);
+            $params['cSuche'] = StringHandler::filterXSS($params['cSuche']);
 
-            $this->Suche = (new FilterSearch())->init($params['kSuchanfrage'], $this->oSprache_arr);
-            $this->Suche->cSuche = $params['cSuche'];
+            $this->Suche              = (new FilterSearch())->init($params['kSuchanfrage'], $this->oSprache_arr);
+            $this->Suche->cSuche      = $params['cSuche'];
             $this->EchteSuche         = new stdClass();
             $this->EchteSuche->cSuche = $params['cSuche'];
         }

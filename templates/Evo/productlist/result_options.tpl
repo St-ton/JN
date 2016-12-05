@@ -43,7 +43,7 @@
         {/if}
     </div>{* /row *}
     {if $show_filters}
-        <div id="filter-collapsible" class="collapse top10">
+        <div id="filter-collapsible" class="collapse in top10" aria-expanded="true">
         <nav class="panel panel-default">
             <div id="navbar-filter" class="panel-body">
                 <div class="form-inline">

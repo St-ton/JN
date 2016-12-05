@@ -18,6 +18,9 @@ if (auth()) {
     if (!KEEP_SYNC_FILES) {
         delDirRecursively(PFAD_ROOT . PFAD_DBES_TMP);
     }
+
+    SyncStatus::getInstance()->finish();
+
     $oLastJob_arr = getJobs();
     if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
         Jtllog::writeLog('LastJob Job Array: ' . print_r($oLastJob_arr, true), JTLLOG_LEVEL_DEBUG, false, 'LastJob Job Array');

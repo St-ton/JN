@@ -430,6 +430,7 @@ class Navigationsfilter
 
         if ($params['nBewertungSterneFilter'] > 0) {
             $this->BewertungFilter = (new FilterRating())->init($params['nBewertungSterneFilter'], []);
+            ++$count;
         }
         if (strlen($params['cPreisspannenFilter']) > 0) {
             $this->PreisspannenFilter = (new FilterPriceRange())->init($params['cPreisspannenFilter'], []);

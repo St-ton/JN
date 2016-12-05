@@ -207,8 +207,7 @@ class Emailhistory
     {
         // log that event!
         Jtllog::writeLog(utf8_decode('eMail-History gelöscht'), JTLLOG_LEVEL_NOTICE, true, 'Emailhistory');
-        // return, what from NiceDB was coming
-        return Shop::DB()->query('TRUNCATE TABLE temailhistory', 3);
+        return !(Shop::DB()->query('TRUNCATE TABLE temailhistory', 3));
     }
 
     /**

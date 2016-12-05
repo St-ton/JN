@@ -16,7 +16,7 @@ $cAction         = (isset($_POST['a']) && validateToken()) ? $_POST['a'] : '';
 
 if ($cAction === 'delete') {
     if (isset($_POST['remove_all'])) {
-        if ($oEmailhistory->deleteAll()) {
+        if (true !== $oEmailhistory->deleteAll()) {
             // 'true' signalizes 'something went wrong during DB-query'
             $cFehler = 'Fehler: eMail-History konnte nicht gel&ouml;scht werden!';
         }

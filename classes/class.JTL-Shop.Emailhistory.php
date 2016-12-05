@@ -198,6 +198,20 @@ class Emailhistory
     }
 
     /**
+     * truncate the email-history-table
+     *
+     * @param void
+     * @return boolean  true=success, false='something went wrong'
+     */
+    public function deleteAll()
+    {
+        // log that event!
+        Jtllog::writeLog(utf8_decode('eMail-History gelöscht'), JTLLOG_LEVEL_NOTICE, true, 'Emailhistory');
+        // return, what from NiceDB was coming
+        return Shop::DB()->query('TRUNCATE TABLE temailhistory', 3);
+    }
+
+    /**
      * @return int
      */
     public function getEmailhistory()

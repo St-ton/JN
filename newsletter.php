@@ -130,6 +130,9 @@ if (isset($_POST['abonnieren']) && intval($_POST['abonnieren']) === 1) {
     }
 
     $smarty->assign('cPost_arr', StringHandler::filterXSS($_POST));
+} elseif (isset($_POST['abonnieren']) && intval($_POST['abonnieren']) === 2) { // weiterleitung vom Footer zu newsletter.php
+    $oPlausi->cPost_arr['cEmail'] = (isset($_POST['cEmail'])) ? StringHandler::filterXSS(Shop::DB()->escape(strip_tags($_POST['cEmail']))) : null;
+    $smarty->assign('oPlausi', $oPlausi);
 } elseif (isset($_POST['abmelden']) && intval($_POST['abmelden']) === 1) { // Abmelden
     if (valid_email($_POST['cEmail'])) {
         // Pruefen, ob Email bereits vorhanden

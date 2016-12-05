@@ -889,15 +889,15 @@ function erstelleThumbnailBranded($imgFilename, $zielbild, $breite, $hoehe, $qua
 }
 
 /**
- * @param object $oBranding
- * @param string $imgFilename
- * @param string $zielbild
- * @param int    $breite
- * @param int    $hoehe
- * @param int    $vergroessern
- * @param int    $quality
- * @param int    $brand
- * @param string $container
+ * @param object       $oBranding
+ * @param string       $imgFilename
+ * @param string       $zielbild
+ * @param int          $breite
+ * @param int          $hoehe
+ * @param int          $vergroessern
+ * @param int          $quality
+ * @param int|resource $brand
+ * @param string       $container
  * @return int
  */
 function erstelleThumbnail($oBranding, $imgFilename, $zielbild, $breite, $hoehe, $vergroessern = 0, $quality = 80, $brand = 0, $container = 'N')
@@ -1163,7 +1163,7 @@ function loescheEigenschaftwertPict($kEigenschaftwertPict, $kEigenschaftwert = n
 }
 
 /**
- * @param object   $im
+ * @param resource $im
  * @param resource $brand
  * @param object   $oBranding
  * @return mixed
@@ -1278,15 +1278,15 @@ function brandImage($im, $brand, $oBranding)
 }
 
 /**
- * @param $dst_im
- * @param $src_im
- * @param $dst_x
- * @param $dst_y
- * @param $src_x
- * @param $src_y
- * @param $src_w
- * @param $src_h
- * @param $pct
+ * @param resource $dst_im
+ * @param resource $src_im
+ * @param int      $dst_x
+ * @param int      $dst_y
+ * @param int      $src_x
+ * @param int      $src_y
+ * @param int      $src_w
+ * @param int      $src_h
+ * @param int      $pct
  * @return bool
  */
 function imagecopymerge_alpha($dst_im, $src_im, $dst_x, $dst_y, $src_x, $src_y, $src_w, $src_h, $pct)
@@ -1301,8 +1301,8 @@ function imagecopymerge_alpha($dst_im, $src_im, $dst_x, $dst_y, $src_x, $src_y, 
     // Turn alpha blending off
     imagealphablending($src_im, false);
     // Find the most opaque pixel in the image (the one with the smallest alpha value)
-    $minalpha = 127;
     /*
+    $minalpha = 127;
     for( $x = 0; $x < $w; $x++ )
     for( $y = 0; $y < $h; $y++ ){
         $alpha = ( imagecolorat( $src_im, $x, $y ) >> 24 ) & 0xFF;

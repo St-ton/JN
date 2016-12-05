@@ -17,7 +17,7 @@
 <style>.fileinput-upload-button, .kv-file-upload{ldelim}display:none!important;{rdelim}</style>
 <div id="content" class="container-fluid">
 {if isset($oEinstellungenXML) && $oEinstellungenXML}
-    <form action="shoptemplate.php" method="post" enctype="multipart/form-data">
+    <form action="shoptemplate.php" method="post" enctype="multipart/form-data" id="form_settings">
         {$jtl_token}
         <div id="settings" class="settings">
             {if isset($oTemplate->eTyp) && ($oTemplate->eTyp === 'admin' || ($oTemplate->eTyp !== 'mobil' && $oTemplate->bResponsive))}
@@ -56,7 +56,7 @@
                         <h3 class="panel-title">{$oSection->cName}</h3>
                     </div>
                     <div class="panel-body">
-                        <div class="row">                        
+                        <div class="row">
                             {foreach name="tplOptions" from=$oSection->oSettings_arr item=oSetting}
                                 {if $oSetting->cKey === 'theme_default' && isset($themePreviews) && $themePreviews !== null}
                                     <div class="col-xs-12">
@@ -117,6 +117,20 @@
                                                     <input class="form-control" type="number" name="cWert[]" id="{$oSection->cKey}-{$oSetting->cKey}" value="{$oSetting->cValue|escape:"html"}" placeholder="{$oSetting->cPlaceholder}" />
                                                 {elseif $oSetting->cType === 'text' || $oSetting->cType === 'float'}
                                                     <input class="form-control" type="text" name="cWert[]" id="{$oSection->cKey}-{$oSetting->cKey}" value="{$oSetting->cValue|escape:"html"}" placeholder="{$oSetting->cPlaceholder}" />
+                                                {elseif $oSetting->cType === 'textarea' }
+                                                    <div class="form-group">
+                                                        <textarea style="resize:{if isset($oSetting->vTextAreaAttr_arr.Resizable)}{$oSetting->vTextAreaAttr_arr.Resizable}{/if};max-width:800%;width:100%;border:none"
+                                                                  name="cWert[]"
+                                                                  cols="{if isset($oSetting->vTextAreaAttr_arr.Cols)}{$oSetting->vTextAreaAttr_arr.Cols}{/if}"
+                                                                  rows="{if isset($oSetting->vTextAreaAttr_arr.Rows)}{$oSetting->vTextAreaAttr_arr.Rows}{/if}"
+                                                                  id="{$oSection->cKey}-{$oSetting->cKey}"
+                                                                  placeholder="{$oSetting->cPlaceholder}"
+                                                                  >{$oSetting->cTextAreaValue|escape:'html'}</textarea>
+                                                    </div>
+                                                {elseif $oSetting->cType === 'password'}
+                                                    <div class="form-group">
+                                                        <input type="{$oSetting->cType}" size="32" name="cWert[]" value="{$oSetting->cValue}" id="pf_first" class="form-control">
+                                                    </div>
                                                 {elseif $oSetting->cType === 'upload' && isset($oSetting->rawAttributes.target)}
                                                     <div class="template-favicon-upload">
                                                         <input name="upload-{$smarty.foreach.tplOptions.index}"

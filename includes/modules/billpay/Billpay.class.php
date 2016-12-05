@@ -65,6 +65,9 @@ class Billpay extends PaymentMethod
         return $this;
     }
 
+    /**
+     * @return null|mixed
+     */
     public function getOptions()
     {
         $oCustomer   = $_SESSION['Kunde'];
@@ -94,13 +97,13 @@ class Billpay extends PaymentMethod
             $jsonResults = http_get_contents($cOptionsUrl);
 
             if (empty($jsonResults)) {
-                return;
+                return null;
             }
 
             $oResult = json_decode($jsonResults, true);
 
             if (json_last_error() > 0) {
-                return;
+                return null;
             }
 
             if (isset($oResult['responseStatus']) && isset($oResult['responseStatus']['errorCode'])) {
@@ -124,7 +127,7 @@ class Billpay extends PaymentMethod
             }
         }
 
-        return;
+        return null;
     }
 
     /**
@@ -664,7 +667,7 @@ class Billpay extends PaymentMethod
     /**
      * @param string   $cType
      * @param null|int $nPaymentType
-     * @return bool
+     * @return bool|ipl_xml_request
      */
     public function getApi($cType, $nPaymentType = null)
     {
@@ -722,7 +725,6 @@ class Billpay extends PaymentMethod
         // p: private customer, b: business customer
         $eCustomerGroup = $oData->bB2B ? 'b' : 'p';
         $oPreAuth       = $this->getApi('preauthorize', $this->nPaymentType);
-
         // customer address
         $oPreAuth->set_customer_details(
             intval($oCustomer->kKunde),                        // customerid

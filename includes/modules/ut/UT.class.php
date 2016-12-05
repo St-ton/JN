@@ -176,11 +176,7 @@ class UT extends PaymentMethod
      */
     public function isCURL()
     {
-        if (function_exists(curl_init)) {
-            return true;
-        } else {
-            return false;
-        }
+        return (function_exists('curl_init'));
     }
 
     /**

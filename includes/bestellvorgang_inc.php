@@ -1262,7 +1262,7 @@ function gibZahlungsart($kZahlungsart)
 
 /**
  * @param int $kKunde
- * @return bool
+ * @return object|bool
  */
 function gibKundenKontodaten($kKunde)
 {
@@ -1674,8 +1674,9 @@ function angabenKorrekt($fehlendeAngaben)
 }
 
 /**
- * @param int $kundenaccount
- * @param int $checkpass
+ * @param array $data
+ * @param int   $kundenaccount
+ * @param int   $checkpass
  * @return array
  */
 function checkKundenFormularArray($data, $kundenaccount, $checkpass = 1)

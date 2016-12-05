@@ -58,7 +58,7 @@ class Rechnungsadresse extends Adresse
      *
      * @access public
      * @param int $kRechnungsadresse
-     * @return int
+     * @return int|Rechnungsadresse
      */
     public function loadFromDB($kRechnungsadresse)
     {

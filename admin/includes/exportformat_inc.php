@@ -196,22 +196,13 @@ function loescheExportDateien($cDateiname, $cDateinameSplit)
  */
 function verarbeiteYategoExport(&$Artikel, $exportformat, $ExportEinstellungen, &$KategorieListe, &$oGlobal_arr)
 {
-    if ($Artikel->kArtikel > 0) {
-        // Vater
-        if ($Artikel->nIstVater == 1) {
-            if (count($Artikel->Variationen) > 1) {
-                return;
-            }
-        }
-
-        if (($ExportEinstellungen['exportformate_lager_ueber_null'] === 'Y' && $Artikel->fLagerbestand <= 0) ||
-            ($ExportEinstellungen['exportformate_lager_ueber_null'] === 'O' && $Artikel->fLagerbestand <= 0 && $Artikel->cLagerKleinerNull === 'N') ||
-            ($ExportEinstellungen['exportformate_preis_ueber_null'] === 'Y' && $Artikel->Preise->fVKNetto <= 0) ||
-            ($ExportEinstellungen['exportformate_beschreibung'] === 'Y' && !$Artikel->cBeschreibung)
-        ) {
-            return;
-        }
-
+    if ($Artikel->kArtikel > 0 &&
+        !($ExportEinstellungen['exportformate_lager_ueber_null'] === 'Y' && $Artikel->fLagerbestand <= 0 ||
+        $ExportEinstellungen['exportformate_lager_ueber_null'] === 'O' && $Artikel->fLagerbestand <= 0 &&
+            $Artikel->cLagerKleinerNull === 'N' ||
+        $ExportEinstellungen['exportformate_preis_ueber_null'] === 'Y' && $Artikel->Preise->fVKNetto <= 0 ||
+        $ExportEinstellungen['exportformate_beschreibung'] === 'Y' && !$Artikel->cBeschreibung)
+    ) {
         $Artikel->cBeschreibungHTML     = str_replace('"', '&quot;', $Artikel->cBeschreibung);
         $Artikel->cKurzBeschreibungHTML = str_replace('"', '&quot;', $Artikel->cKurzBeschreibung);
         $Artikel->cName                 = strip_tags($Artikel->cName);
@@ -220,9 +211,10 @@ function verarbeiteYategoExport(&$Artikel, $exportformat, $ExportEinstellungen, 
         $Artikel->cKurzBeschreibung     = strip_tags($Artikel->cKurzBeschreibung);
         $Artikel->cKurzBeschreibung     = str_replace('\"', '""', addslashes($Artikel->cKurzBeschreibung));
 
-        $find    = array("\r\n", "\r", "\n", "\x0B", "\x0");
-        $replace = array(' ', ' ', ' ', ' ', '');
+        $find    = ["\r\n", "\r", "\n", "\x0B", "\x0"];
+        $replace = [' ', ' ', ' ', ' ', ''];
 
+        // Zeichenmaskierung
         if ($ExportEinstellungen['exportformate_quot'] !== 'N' && $ExportEinstellungen['exportformate_quot']) {
             $find[] = '"';
             if ($ExportEinstellungen['exportformate_quot'] === 'q' || $ExportEinstellungen['exportformate_quot'] === 'bq') {
@@ -254,12 +246,12 @@ function verarbeiteYategoExport(&$Artikel, $exportformat, $ExportEinstellungen, 
         $Artikel->cBeschreibungHTML     = StringHandler::removeWhitespace(str_replace($find, $replace, $Artikel->cBeschreibungHTML));
         $Artikel->cKurzBeschreibungHTML = StringHandler::removeWhitespace(str_replace($find, $replace, $Artikel->cKurzBeschreibungHTML));
         $Artikel->Preise->fVKBrutto     = berechneBrutto($Artikel->Preise->fVKNetto, gibUst($Artikel->kSteuerklasse));
+
         //Kategoriepfad
         $Artikel->Kategorie     = new Kategorie($Artikel->gibKategorie(), $exportformat->kSprache, $exportformat->kKundengruppe);
-        $Artikel->Kategoriepfad = (isset($Artikel->Kategorie->cKategoriePfad)) ?
-            $Artikel->Kategorie->cKategoriePfad : // calling gibKategoriepfad() should not be necessary since it has already been called in Kategorie::loadFromDB()
-            gibKategoriepfad($Artikel->Kategorie, $exportformat->kKundengruppe, $exportformat->kSprache);
+        $Artikel->Kategoriepfad = $Artikel->Kategorie->cKategoriePfad;
         $Artikel->Versandkosten = gibGuenstigsteVersandkosten($ExportEinstellungen['exportformate_lieferland'], $Artikel, 0, $exportformat->kKundengruppe);
+
         // Kampagne URL
         if (isset($exportformat->tkampagne_cParameter)) {
             $cSep = '?';
@@ -287,21 +279,23 @@ function verarbeiteYategoExport(&$Artikel, $exportformat, $ExportEinstellungen, 
         if ($Artikel->fLagerbestand > 0) {
             $Artikel->Verfuegbarkeit_kelkoo = '001';
         }
+
         // X-Selling
         $oXSellingTMP_arr = Shop::DB()->query(
             "SELECT kXSellArtikel
                 FROM txsell
                 WHERE kArtikel = " . (int)$Artikel->kArtikel, 9
         );
-        $oXSelling_arr = array();
+        $oXSelling_arr    = [];
         if (is_array($oXSellingTMP_arr) && count($oXSellingTMP_arr) > 0) {
             foreach ($oXSellingTMP_arr as $oXSellingTMP) {
                 $oXSelling_arr[] = $oXSellingTMP['kXSellArtikel'];
             }
         }
+
         $cVarianten       = '';
-        $kKategorie_arr   = array(); // Alle Kategorien vom Artikel
-        $kYatKategoie_arr = array(); // Alle Yatego Kategorien vom Artikel
+        $kKategorie_arr   = []; // Alle Kategorien vom Artikel
+        $kYatKategoie_arr = []; // Alle Yatego Kategorien vom Artikel
         $oKategorie_arr   = Shop::DB()->selectAll('tkategorieartikel', 'kArtikel', (int)$Artikel->kArtikel, 'kKategorie');
         if (is_array($oKategorie_arr) && count($oKategorie_arr) > 0) {
             foreach ($oKategorie_arr as $oKategorie) {
@@ -311,14 +305,12 @@ function verarbeiteYategoExport(&$Artikel, $exportformat, $ExportEinstellungen, 
         if ($Artikel->FunktionsAttribute['yategokat']) {
             $kYatKategoie_arr = explode(',', $Artikel->FunktionsAttribute['yategokat']);
         }
-        // Liste von kKategorien vom Artikel inkl. Yatego Kats
         $kKategorieListe_arr = array_merge($kYatKategoie_arr, $kKategorie_arr);
+
         // Varianten
         if (is_array($Artikel->Variationen)) {
-            $oVariationsListe_arr = array();
-            $bEigenschaftCheck    = true;
             // Kinder Prüfen
-            $oEigenschaftKombi_arr = array();
+            $oEigenschaftKombi_arr = [];
             if ($Artikel->nIstVater > 0) {
                 $oVariationsKind_arr = ArtikelHelper::getChildren($Artikel->kArtikel);
 
@@ -333,18 +325,24 @@ function verarbeiteYategoExport(&$Artikel, $exportformat, $ExportEinstellungen, 
                     }
                     if (strlen($cSQL) > 0) {
                         $oEigenschaftKombi_arr = Shop::DB()->query(
-                            "SELECT teigenschaftkombiwert.*, tartikel.kArtikel
-                                FROM teigenschaftkombiwert
-                                    JOIN tartikel ON tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
-                                    WHERE teigenschaftkombiwert.kEigenschaftKombi IN (" . $cSQL . ")
-                                    GROUP BY teigenschaftkombiwert.kEigenschaftWert
-                                    ORDER BY teigenschaftkombiwert.kEigenschaft, teigenschaftkombiwert.kEigenschaftWert", 2
+                            "SELECT ekw.*, a.kArtikel
+                                FROM teigenschaftkombiwert AS ekw
+                                    JOIN tartikel AS a
+                                        ON a.kEigenschaftKombi = ekw.kEigenschaftKombi
+                                WHERE ekw.kEigenschaftKombi IN (" . $cSQL . ")
+                                GROUP BY ekw.kEigenschaftWert
+                                ORDER BY ekw.kEigenschaft, ekw.kEigenschaftWert",
+                            2
                         );
                     }
                 }
             }
+
+            $oVariationsListe_arr = [];
+            $bEigenschaftCheck    = true;
             $shopURL              = Shop::getURL();
-            $oVariationsLager_arr = array();
+            $oVariationsLager_arr = [];
+
             foreach ($Artikel->Variationen as $oVariation) {
                 $oGlobal_arr['varianten'][] = array(
                     'foreign_id'       => $oVariation->kEigenschaft,
@@ -357,6 +355,7 @@ function verarbeiteYategoExport(&$Artikel, $exportformat, $ExportEinstellungen, 
 
                 if (is_array($oVariation->Werte) && count($oVariation->Werte) > 0) {
                     $defaultOptions = Artikel::getDefaultOptions();
+
                     foreach ($oVariation->Werte as $oWert) {
                         $oVariationsKind = new stdClass();
                         if (is_array($oEigenschaftKombi_arr) && count($oEigenschaftKombi_arr) > 0) {
@@ -396,6 +395,7 @@ function verarbeiteYategoExport(&$Artikel, $exportformat, $ExportEinstellungen, 
                                     'picture'        => $cBild,
                                     'price'          => getNum($oWert->fAufpreisNetto)
                                 );
+
                                 $fLagerbestand = -1;
                                 $nAktiv        = 1;
                                 if ($oVariationsKind->cLagerBeachten === 'Y' && $oVariationsKind->cLagerKleinerNull === 'N') {
@@ -512,7 +512,9 @@ function verarbeiteYategoExport(&$Artikel, $exportformat, $ExportEinstellungen, 
             'stock'              => $Artikel->fLagerbestand,
             'cross_selling'      => implode(',', $oXSelling_arr)
         );
+
         $KategorieListe[$Artikel->Kategorie->kKategorie] = 1;
+
         // Lager
         if (count($Artikel->Variationen) === 0) {
             $cEinheit      = (isset($Artikel->cVPEEinheit) && strlen($Artikel->cVPEEinheit) > 0) ? $Artikel->cVPEEinheit : utf8_decode('Stück');

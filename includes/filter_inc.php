@@ -2547,6 +2547,8 @@ function gibMerkmalPosition($oMerkmalauswahl_arr, $kMerkmal)
  */
 function checkMerkmalWertVorhanden($oMerkmalauswahl_arr, $kMerkmalWert)
 {
+    die('checkMerkmalWertVorhanden');
+    //@todo!!!
     if (is_array($oMerkmalauswahl_arr)) {
         foreach ($oMerkmalauswahl_arr as $i => $oMerkmalauswahl) {
             if ($oMerkmalauswahl->kMerkmalWert == $kMerkmalWert) {

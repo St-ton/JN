@@ -755,6 +755,10 @@ class Navigationsfilter
 
         $order = $this->getOrder();
         $state = $this->getCurrentStateData();
+//        Shop::dbg($this->getActiveFilters(), false, 'active filters:');
+//        Shop::dbg($this->getActiveState(), false, 'active state:');
+//        Shop::dbg($this->getActiveState()->getSQLJoin(), false, 'active state join:');
+//        Shop::dbg($state, true, '$state:');
 
         $state->joins[] = $order->join;
 
@@ -837,7 +841,12 @@ class Navigationsfilter
         $data               = new stdClass();
         $data->having       = [];
         $data->joins        = $this->getActiveState()->getSQLJoin();
-        $data->conditions[] = "\n#condition for current state \n" . $this->getActiveState()->getSQLCondition();
+        $data->conditions   = [];
+
+        $stateCondition = $this->getActiveState()->getSQLCondition();
+        if (!empty($stateCondition)) {
+            $data->conditions[] = $stateCondition;
+        }
 
         foreach ($this->getActiveFilters(true) as $type => $filter) {
             $count = count($filter);
@@ -1188,7 +1197,6 @@ class Navigationsfilter
             }
             $order = $this->getOrder();
             $state = $this->getCurrentStateData();
-
             $state->joins[] = $order->join;
 
             $select = 'tmerkmal.cName';
@@ -1201,7 +1209,7 @@ class Navigationsfilter
                      ->setOn('tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal AND tmerkmalsprache.kSprache = ' . $this->languageID);
                 $state->joins[] = $join;
             }
-            if (!$this->MerkmalWert->isInitialized() && count($this->MerkmalFilter) === 0) {
+            if (true||!$this->MerkmalWert->isInitialized() && count($this->MerkmalFilter) === 0) {
                 $join = new FilterJoin();
                 $join->setComment('join2 from getAttributeFilterOptions')
                      ->setType('JOIN')
@@ -1231,16 +1239,21 @@ class Navigationsfilter
             $state->joins[] = $join;
 
             $query = $this->getBaseQuery([
-                'tartikelmerkmal.kMerkmal',
-                'tartikelmerkmal.kMerkmalWert',
-                'tmerkmalwert.cBildPfad AS cMMWBildPfad',
-                'tmerkmalwertsprache.cWert',
-                'tmerkmal.nSort AS nSortMerkmal',
-                'tmerkmalwert.nSort',
-                'tmerkmal.cTyp',
-                'tmerkmal.cBildPfad AS cMMBildPfad',
-                $select
-            ], $state->joins, $state->conditions, $state->having, $order->orderBy, '',
+                    'tartikelmerkmal.kMerkmal',
+                    'tartikelmerkmal.kMerkmalWert',
+                    'tmerkmalwert.cBildPfad AS cMMWBildPfad',
+                    'tmerkmalwertsprache.cWert',
+                    'tmerkmal.nSort AS nSortMerkmal',
+                    'tmerkmalwert.nSort',
+                    'tmerkmal.cTyp',
+                    'tmerkmal.cBildPfad AS cMMBildPfad',
+                    $select
+                ],
+                $state->joins,
+                $state->conditions,
+                $state->having,
+                $order->orderBy,
+                '',
                 ['tartikelmerkmal.kMerkmalWert', 'tartikel.kArtikel']);
 
             $query = "SELECT tseo.cSeo, ssMerkmal.kMerkmal, ssMerkmal.kMerkmalWert, ssMerkmal.cMMWBildPfad, ssMerkmal.cWert, ssMerkmal.cName, ssMerkmal.cTyp, ssMerkmal.cMMBildPfad, COUNT(*) AS nAnzahl
@@ -1255,16 +1268,16 @@ class Navigationsfilter
 
             if (is_array($oMerkmalFilterDB_arr)) {
                 foreach ($oMerkmalFilterDB_arr as $i => $oMerkmalFilterDB) {
-                    $nPos          = $this->getAttributePosition($oMerkmalFilter_arr, $oMerkmalFilterDB->kMerkmal);
+                    $nPos          = $this->getAttributePosition($oMerkmalFilter_arr, (int)$oMerkmalFilterDB->kMerkmal);
                     $oMerkmalWerte = new stdClass();
-                    if ($this->MerkmalWert->getID() == $oMerkmalFilterDB->kMerkmalWert || (checkMerkmalWertVorhanden($this->MerkmalWert, $oMerkmalFilterDB->kMerkmalWert))) {
-                        $oMerkmalWerte->nAktiv = 1;
-                    } else {
-                        $oMerkmalWerte->nAktiv = 0;
-                    }
+
+//                    Shop::dbg($this->MerkmalWert, false, '$this->MerkmalWert:');
                     $oMerkmalWerte->kMerkmalWert = (int)$oMerkmalFilterDB->kMerkmalWert;
                     $oMerkmalWerte->cWert        = $oMerkmalFilterDB->cWert;
                     $oMerkmalWerte->nAnzahl      = (int)$oMerkmalFilterDB->nAnzahl;
+                    $oMerkmalWerte->nAktiv       = ($this->MerkmalWert->getID() === $oMerkmalWerte->kMerkmalWert || ($this->attributeValueIsActive($oMerkmalWerte->kMerkmalWert)))
+                        ? 1
+                        : 0;
 
                     if (strlen($oMerkmalFilterDB->cMMWBildPfad) > 0) {
                         $oMerkmalWerte->cBildpfadKlein  = PFAD_MERKMALWERTBILDER_KLEIN . $oMerkmalFilterDB->cMMWBildPfad;
@@ -2000,7 +2013,6 @@ class Navigationsfilter
         if (!empty($groupBy)) {
             $groupBy = "GROUP BY " . implode(', ', $groupBy);
         }
-
         $query = "SELECT " . implode(', ', $select) . "
             FROM tartikel " . $joins . "
             #default conditions
@@ -2392,5 +2404,20 @@ class Navigationsfilter
         }
 
         return $cURL;
+    }
+
+    /**
+     * @param int $kMerkmalWert
+     * @return bool
+     */
+    private function attributeValueIsActive($kMerkmalWert)
+    {
+        foreach ($this->MerkmalFilter as $i => $oMerkmalauswahl) {
+            if ($oMerkmalauswahl->getID() === $kMerkmalWert) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

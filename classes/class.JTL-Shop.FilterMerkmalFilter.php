@@ -27,10 +27,10 @@ class FilterMerkmalFilter extends FilterMerkmal
     {
         if ($this->getID() > 0) {
             $oSeo_arr = Shop::DB()->query("
-                        SELECT cSeo, kSprache
-                            FROM tseo
-                            WHERE cKey = 'kMerkmalWert' AND kKey = " . $this->getID() . "
-                            ORDER BY kSprache", 2
+                SELECT cSeo, kSprache
+                    FROM tseo
+                    WHERE cKey = 'kMerkmalWert' AND kKey = " . $this->getID() . "
+                    ORDER BY kSprache", 2
             );
 
             foreach ($languages as $language) {
@@ -44,11 +44,11 @@ class FilterMerkmalFilter extends FilterMerkmal
                 }
             }
             $seo_obj = Shop::DB()->query("
-                        SELECT tmerkmalwertsprache.cWert, tmerkmalwert.kMerkmal
-                            FROM tmerkmalwertsprache
-                            JOIN tmerkmalwert ON tmerkmalwert.kMerkmalWert = tmerkmalwertsprache.kMerkmalWert
-                            WHERE tmerkmalwertsprache.kSprache = " . Shop::getLanguage() . "
-                               AND tmerkmalwertsprache.kMerkmalWert = " . $this->getID(), 1
+                SELECT tmerkmalwertsprache.cWert, tmerkmalwert.kMerkmal
+                    FROM tmerkmalwertsprache
+                    JOIN tmerkmalwert ON tmerkmalwert.kMerkmalWert = tmerkmalwertsprache.kMerkmalWert
+                    WHERE tmerkmalwertsprache.kSprache = " . Shop::getLanguage() . "
+                       AND tmerkmalwertsprache.kMerkmalWert = " . $this->getID(), 1
             );
             if (!empty($seo_obj->kMerkmal)) {
                 $this->kMerkmal = $seo_obj->kMerkmal;
@@ -96,6 +96,5 @@ class FilterMerkmalFilter extends FilterMerkmal
              ->setComment('join from FilterMerkmalFilter');
 
         return [$join];
-//        return 'JOIN tartikelmerkmal ON tartikel.kArtikel = tartikelmerkmal.kArtikel';
     }
 }

@@ -23,12 +23,14 @@ class FilterTagFilter extends FilterTag
     public function getSQLJoin()
     {
         $join = new FilterJoin();
-        $join->setType('JOIN')->setTable('ttagartikel')->setOn('tartikel.kArtikel = ttagartikel.kArtikel');
+        $join->setType('JOIN')
+             ->setTable('ttagartikel')
+             ->setOn('tartikel.kArtikel = ttagartikel.kArtikel');
         $join2 = new FilterJoin();
-        $join2->setType('JOIN')->setTable('ttag')->setOn('ttagartikel.kTag = ttag.kTag');
+        $join2->setType('JOIN')
+              ->setTable('ttag')
+              ->setOn('ttagartikel.kTag = ttag.kTag');
 
         return [$join, $join2];
-//        return  'JOiN ttagartikel ON tartikel.kArtikel = ttagartikel.kArtikel
-//                 JOIn ttag ON ttagartikel.kTag = ttag.kTag';
     }
 }

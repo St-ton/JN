@@ -115,6 +115,7 @@ class FilterSearchSpecialFilter extends AbstractFilter implements IFilter
                     && intval($conf['global']['global_bestseller_minanzahl'] > 0))
                     ? (int)$conf['global']['global_bestseller_minanzahl']
                     : 100;
+
                 return "ROUND(tbestseller.fAnzahl) >= " . $nAnzahl;
 
             case SEARCHSPECIALS_SPECIALOFFERS:
@@ -135,9 +136,10 @@ class FilterSearchSpecialFilter extends AbstractFilter implements IFilter
                 break;
 
             case SEARCHSPECIALS_NEWPRODUCTS:
-                $alter_tage      = ($conf['boxen']['box_neuimsortiment_alter_tage'] > 0)
+                $alter_tage = ($conf['boxen']['box_neuimsortiment_alter_tage'] > 0)
                     ? (int)$conf['boxen']['box_neuimsortiment_alter_tage']
                     : 30;
+
                 return "tartikel.cNeu = 'Y' AND DATE_SUB(now(),INTERVAL $alter_tage DAY) < tartikel.dErstellt AND tartikel.cNeu = 'Y'";
 
             case SEARCHSPECIALS_TOPOFFERS:
@@ -148,9 +150,10 @@ class FilterSearchSpecialFilter extends AbstractFilter implements IFilter
 
             case SEARCHSPECIALS_TOPREVIEWS:
                 if (!Shop::getNaviFilter()->BewertungFilter->isInitialized()) {
-                    $nMindestSterne  = (intval($conf['boxen']['boxen_topbewertet_minsterne'] > 0))
+                    $nMindestSterne = (intval($conf['boxen']['boxen_topbewertet_minsterne'] > 0))
                         ? (int)$conf['boxen']['boxen_topbewertet_minsterne']
                         : 4;
+
                     return "ROUND(taex.fDurchschnittsBewertung) >= " . $nMindestSterne;
                 }
                 break;
@@ -187,8 +190,10 @@ class FilterSearchSpecialFilter extends AbstractFilter implements IFilter
                           ->setTable('tsonderpreise AS tsp')
                           ->setOn('tsp.kArtikelSonderpreis = tasp.kArtikelSonderpreis')
                           ->setComment('JOIN2 from FilterSearchSpecial special offers');
+
                     return [$join, $join2];
                 }
+
                 return [];
 
             case SEARCHSPECIALS_NEWPRODUCTS:
@@ -203,8 +208,10 @@ class FilterSearchSpecialFilter extends AbstractFilter implements IFilter
                          ->setTable('tartikelext AS taex ')
                          ->setOn('taex.kArtikel = tartikel.kArtikel')
                          ->setComment('JOIN from FilterSearchSpecial top reviews');
+
                     return [$join];
                 }
+
                 return [];
 
             default:

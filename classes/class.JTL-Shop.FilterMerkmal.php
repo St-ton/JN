@@ -59,7 +59,7 @@ class FilterMerkmal extends AbstractFilter implements IFilter
         $oSQL->cMMSelect = "tmerkmal.cName";
         $oSQL->cMMJOIN   = '';
         $oSQL->cMMWhere  = '';
-        if (Shop::getLanguage()> 0 && !standardspracheAktiv()) {
+        if (Shop::getLanguage() > 0 && !standardspracheAktiv()) {
             $oSQL->cMMSelect = "tmerkmalsprache.cName, tmerkmal.cName AS cMMName";
             $oSQL->cMMJOIN   = " JOIN tmerkmalsprache ON tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal
                                         AND tmerkmalsprache.kSprache = " . Shop::getLanguage();
@@ -134,6 +134,40 @@ class FilterMerkmal extends AbstractFilter implements IFilter
      */
     public function getSQLJoin()
     {
-        return [];
+        $join = new FilterJoin();
+        $join->setType('JOIN')
+             ->setTable('(
+                            SELECT kArtikel
+                            FROM tartikelmerkmal
+                            WHERE kMerkmalWert = ' . $this->getID() . '
+                            GROUP BY tartikelmerkmal.kArtikel
+                            ) AS tmerkmaljoin')
+             ->setOn('tmerkmaljoin.kArtikel = tartikel.kArtikel');
+//        $join2 = new FilterJoin();
+//        $join2->setType('JOIN')
+//              ->setTable('ttag')
+//              ->setOn('ttagartikel.kTag = ttag.kTag');
+
+        return [$join];
+
+
+        $oFilter->cJoin = "JOIN (
+                                SELECT kArtikel
+                                FROM tartikelmerkmal
+                                WHERE kMerkmalWert IN (" . implode(',', $kMerkmalWert_arr) . ")
+                                GROUP BY tartikelmerkmal.kArtikel
+                                HAVING count(*) = " . count($kMerkmalWert_arr) . "
+                                ) AS tmerkmaljoin ON tmerkmaljoin.kArtikel = tartikel.kArtikel ";
+
+        $oFilter->cJoinMMW = " JOIN (
+                                    SELECT kArtikel
+                                    FROM tartikelmerkmal
+                                    WHERE kMerkmalWert IN (" . implode(',', $kMerkmalWert_arr) . " )
+                                    GROUP BY kArtikel
+                                    HAVING count(*) = " . count($kMerkmalWert_arr) . "
+                                    ) AS ssj1 ON tartikel.kArtikel = ssj1.kArtikel";
+
+        $oFilter->cHavingCount = count($kMerkmalWert_arr);
+        $oFilter->cHavingMMW   = "HAVING count(*) >= " . count($kMerkmalWert_arr);
     }
 }

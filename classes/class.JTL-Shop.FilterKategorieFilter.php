@@ -14,7 +14,7 @@ class FilterKategorieFilter extends FilterKategorie
      */
     public function getSQLCondition()
     {
-        $conf = Shop::getSettings(array(CONF_NAVIGATIONSFILTER));
+        $conf = Shop::getSettings([CONF_NAVIGATIONSFILTER]);
         if ($conf['navigationsfilter']['kategoriefilter_anzeigen_als'] === 'HF') {
             return '(tkategorieartikelgesamt.kOberKategorie = ' . $this->getID() . ' OR tkategorieartikelgesamt.kKategorie = ' . $this->getID() . ') ';
         }
@@ -27,17 +27,15 @@ class FilterKategorieFilter extends FilterKategorie
      */
     public function getSQLJoin()
     {
-        $conf = Shop::getSettings(array(CONF_NAVIGATIONSFILTER));
+        $conf = Shop::getSettings([CONF_NAVIGATIONSFILTER]);
         $join = new FilterJoin();
         $join->setComment('join from FilterKategorieFilter')
-            ->setType('JOIN');
+             ->setType('JOIN');
         if ($conf['navigationsfilter']['kategoriefilter_anzeigen_als'] === 'HF') {
             $join->setTable('tkategorieartikelgesamt')->setOn('tartikel.kArtikel = tkategorieartikelgesamt.kArtikel');
-//            return 'JOIN tkategorieartikelgesamt ON tartikel.kArtikel = tkategorieartikelgesamt.kArtikel';
         }
         $join->setTable('tkategorieartikel')->setOn('tartikel.kArtikel = tkategorieartikel.kArtikel');
 
         return [$join];
-//        return 'JOIN tkategorieartikel ON tartikel.kArtikel = tkategorieartikel.kArtikel';
     }
 }

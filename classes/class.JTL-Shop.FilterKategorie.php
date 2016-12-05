@@ -105,11 +105,10 @@ class FilterKategorie extends AbstractFilter implements IFilter
     {
         $join = new FilterJoin();
         $join->setType('JOIN')
-            ->setTable('tkategorieartikel')
-            ->setOn('tartikel.kArtikel = tkategorieartikel.kArtikel')
-            ->setComment('join from FilterKategorie');
+             ->setTable('tkategorieartikel')
+             ->setOn('tartikel.kArtikel = tkategorieartikel.kArtikel')
+             ->setComment('join from FilterKategorie');
 
         return [$join];
-//        return  'JOIN tkategorieartikel ON tartikel.kArtikel = tkategorieartikel.kArtikel';
     }
 }

@@ -108,11 +108,7 @@ class FilterSearchSpecial extends AbstractFilter implements IFilter
      */
     public function getSQLCondition()
     {
-//        $kKey = (isset($NaviFilter->Suchspecial->kKey)) ? $NaviFilter->Suchspecial->kKey : null;
-//        if (isset($NaviFilter->SuchspecialFilter->kKey) && $NaviFilter->SuchspecialFilter->kKey > 0) {
-//            $kKey = $NaviFilter->SuchspecialFilter->kKey;
-//        }
-        $conf = Shop::getSettings(array(CONF_BOXEN, CONF_GLOBAL));
+        $conf = Shop::getSettings([CONF_BOXEN, CONF_GLOBAL]);
         switch ($this->kKey) {
             case SEARCHSPECIALS_BESTSELLER:
                 $nAnzahl = (isset($conf['global']['global_bestseller_minanzahl'])
@@ -139,9 +135,10 @@ class FilterSearchSpecial extends AbstractFilter implements IFilter
                 break;
 
             case SEARCHSPECIALS_NEWPRODUCTS:
-                $alter_tage      = ($conf['boxen']['box_neuimsortiment_alter_tage'] > 0)
+                $alter_tage = ($conf['boxen']['box_neuimsortiment_alter_tage'] > 0)
                     ? (int)$conf['boxen']['box_neuimsortiment_alter_tage']
                     : 30;
+
                 return "tartikel.cNeu = 'Y' AND DATE_SUB(now(),INTERVAL $alter_tage DAY) < tartikel.dErstellt AND tartikel.cNeu = 'Y'";
 
             case SEARCHSPECIALS_TOPOFFERS:
@@ -152,9 +149,10 @@ class FilterSearchSpecial extends AbstractFilter implements IFilter
 
             case SEARCHSPECIALS_TOPREVIEWS:
                 if (!Shop::getNaviFilter()->BewertungFilter->isInitialized()) {
-                    $nMindestSterne  = (intval($conf['boxen']['boxen_topbewertet_minsterne'] > 0))
+                    $nMindestSterne = (intval($conf['boxen']['boxen_topbewertet_minsterne'] > 0))
                         ? (int)$conf['boxen']['boxen_topbewertet_minsterne']
                         : 4;
+
                     return " ROUND(taex.fDurchschnittsBewertung) >= " . $nMindestSterne;
                 }
                 break;
@@ -169,10 +167,6 @@ class FilterSearchSpecial extends AbstractFilter implements IFilter
      */
     public function getSQLJoin()
     {
-        //        $kKey = (isset($NaviFilter->Suchspecial->kKey)) ? $NaviFilter->Suchspecial->kKey : null;
-//        if (isset($NaviFilter->SuchspecialFilter->kKey) && $NaviFilter->SuchspecialFilter->kKey > 0) {
-//            $kKey = $NaviFilter->SuchspecialFilter->kKey;
-//        }
         switch ($this->kKey) {
             case SEARCHSPECIALS_BESTSELLER:
                 $join = new FilterJoin();
@@ -180,8 +174,8 @@ class FilterSearchSpecial extends AbstractFilter implements IFilter
                      ->setTable('tbestseller')
                      ->setOn('tbestseller.kArtikel = tartikel.kArtikel')
                      ->setComment('JOIN from FilterSearchSpecial bestseller');
+
                 return [$join];
-//                return "JOIN tbestseller ON tbestseller.kArtikel = tartikel.kArtikel";
 
             case SEARCHSPECIALS_SPECIALOFFERS:
                 if (!Shop::getNaviFilter()->PreisspannenFilter->isInitialized()) {
@@ -190,9 +184,10 @@ class FilterSearchSpecial extends AbstractFilter implements IFilter
                          ->setTable('tartikelsonderpreis AS tasp')
                          ->setOn('tasp.kArtikel = tartikel.kArtikel JOIN tsonderpreise AS tsp ON tsp.kArtikelSonderpreis = tasp.kArtikelSonderpreis')
                          ->setComment('JOIN from FilterSearchSpecial special offers');
+
                     return [$join];
-//                    return "JOIN tartikelsonderpreis AS tasp ON tasp.kArtikel = tartikel.kArtikel\nJOIN tsonderpreise AS tsp ON tsp.kArtikelSonderpreis = tasp.kArtikelSonderpreis";
                 }
+
                 return [];
 
             case SEARCHSPECIALS_NEWPRODUCTS:
@@ -207,9 +202,10 @@ class FilterSearchSpecial extends AbstractFilter implements IFilter
                          ->setTable('tartikelext AS taex ')
                          ->setOn('taex.kArtikel = tartikel.kArtikel')
                          ->setComment('JOIN from FilterSearchSpecial top reviews');
+
                     return [$join];
-//                    return "JOIN tartikelext AS taex ON taex.kArtikel = tartikel.kArtikel";
                 }
+
                 return [];
 
             default:

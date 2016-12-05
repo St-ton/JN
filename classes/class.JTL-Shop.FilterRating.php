@@ -78,6 +78,5 @@ class FilterRating extends AbstractFilter implements IFilter
              ->setComment('JOIN from FilterRating');
 
         return [$join];
-//        return 'JOIN tartikelext ON tartikel.kArtikel = tartikelext.kArtikel';
     }
 }

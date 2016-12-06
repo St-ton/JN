@@ -9,9 +9,11 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'suche_inc.php';
  * @param object $FilterSQL
  * @param object $NaviFilter
  * @return stdClass
+ * @deprecated since 4.06
  */
 function buildSearchResults($FilterSQL, $NaviFilter)
 {
+    die('buildSearchResults()');
     // Artikelanzahl pro Seite
     $nArtikelProSeite = 20;
     $conf             = Shop::getSettings([CONF_ARTIKELUEBERSICHT]);
@@ -49,6 +51,7 @@ function buildSearchResults($FilterSQL, $NaviFilter)
  * @param object $oSuchergebnisse
  * @param int    $nArtikelProSeite
  * @param int    $nLimitN
+ * @deprecated since 4.06
  */
 function baueArtikelAnzahl($FilterSQL, &$oSuchergebnisse, $nArtikelProSeite = 20, $nLimitN)
 {
@@ -130,6 +133,7 @@ function baueArtikelAnzahl($FilterSQL, &$oSuchergebnisse, $nArtikelProSeite = 20
  * @param int    $nPage
  * @param int    $nProductsPerPage
  * @param int    $nSettingMaxPageCount
+ * @deprecated since 4.06
  */
 function buildSearchResultPage(&$oSearchResult, $nProductCount, $nLimitN, $nPage, $nProductsPerPage = 25, $nSettingMaxPageCount = 25)
 {
@@ -157,6 +161,7 @@ function buildSearchResultPage(&$oSearchResult, $nProductCount, $nLimitN, $nPage
  * @param bool     $bExtern
  * @param stdClass $oSuchergebnisse
  * @return array
+ * @deprecated since 4.06
  */
 function gibArtikelKeys($FilterSQL, $nArtikelProSeite, $NaviFilter, $bExtern, $oSuchergebnisse)
 {
@@ -369,6 +374,7 @@ function gibArtikelKeys($FilterSQL, $nArtikelProSeite, $NaviFilter, $bExtern, $o
 /**
  * @param object $oExtendedJTLSearchResponse
  * @return array
+ * @deprecated since 4.06
  */
 function gibArtikelKeysExtendedJTLSearch($oExtendedJTLSearchResponse)
 {
@@ -402,12 +408,13 @@ function gibArtikelKeysExtendedJTLSearch($oExtendedJTLSearchResponse)
 }
 
 /**
- * @todo
  * @param object $NaviFilter
  * @return int
+ * @deprecated since 4.06
  */
 function gibAnzahlFilter($NaviFilter)
 {
+    die('gibAnzahlFilter()');
     $nCount = 0;
     // Kategoriefilter
     if (isset($NaviFilter->KategorieFilter->kKategorie) && $NaviFilter->KategorieFilter->kKategorie > 0) {
@@ -449,6 +456,7 @@ function gibAnzahlFilter($NaviFilter)
  * @param object $FilterSQL
  * @param object $NaviFilter
  * @return array|mixed
+ * @deprecated since 4.06
  */
 function gibHerstellerFilterOptionen($FilterSQL, $NaviFilter)
 {
@@ -534,6 +542,7 @@ function gibHerstellerFilterOptionen($FilterSQL, $NaviFilter)
  * @param object $FilterSQL
  * @param object $NaviFilter
  * @return array|mixed
+ * @deprecated since 4.06
  */
 function gibKategorieFilterOptionen($FilterSQL, $NaviFilter)
 {
@@ -686,6 +695,7 @@ function sortierKategoriepfade($a, $b)
  * @param object $FilterSQL
  * @param object $NaviFilter
  * @return array|mixed
+ * @deprecated since 4.06
  */
 function gibSuchFilterOptionen($FilterSQL, $NaviFilter)
 {
@@ -812,6 +822,7 @@ function gibSuchFilterOptionen($FilterSQL, $NaviFilter)
  * @param object $FilterSQL
  * @param object $NaviFilter
  * @return array|mixed
+ * @deprecated since 4.06
  */
 function gibBewertungSterneFilterOptionen($FilterSQL, $NaviFilter)
 {
@@ -947,6 +958,7 @@ function gibBewertungSterneFilterOptionen($FilterSQL, $NaviFilter)
  * @param object $NaviFilter
  * @param object $oSuchergebnisse
  * @return array|mixed
+ * @deprecated since 4.06
  */
 function gibPreisspannenFilterOptionen($FilterSQL, $NaviFilter, $oSuchergebnisse)
 {
@@ -1277,6 +1289,7 @@ function gibPreisspannenFilterOptionen($FilterSQL, $NaviFilter, $oSuchergebnisse
  * @param object $FilterSQL
  * @param object $NaviFilter
  * @return array|mixed
+ * @deprecated since 4.06
  */
 function gibTagFilterOptionen($FilterSQL, $NaviFilter)
 {
@@ -1384,6 +1397,7 @@ function gibTagFilterOptionen($FilterSQL, $NaviFilter)
  * @param object $FilterSQL
  * @param object $NaviFilter
  * @return string
+ * @deprecated since 4.06
  */
 function gibSuchFilterJSONOptionen($FilterSQL, $NaviFilter)
 {
@@ -1400,6 +1414,7 @@ function gibSuchFilterJSONOptionen($FilterSQL, $NaviFilter)
  * @param object $FilterSQL
  * @param object $NaviFilter
  * @return string
+ * @deprecated since 4.06
  */
 function gibTagFilterJSONOptionen($FilterSQL, $NaviFilter)
 {
@@ -1418,6 +1433,7 @@ function gibTagFilterJSONOptionen($FilterSQL, $NaviFilter)
  * @param Kategorie|null $oAktuelleKategorie
  * @param bool           $bForce
  * @return array|mixed
+ * @deprecated since 4.06
  */
 function gibMerkmalFilterOptionen($FilterSQL, $NaviFilter, $oAktuelleKategorie = null, $bForce = false)
 {
@@ -1646,6 +1662,7 @@ function sortierMerkmalWerteNumerisch($a, $b)
  * @param object $FilterSQL
  * @param object $NaviFilter
  * @return array|mixed
+ * @deprecated since 4.06
  */
 function gibSuchspecialFilterOptionen($FilterSQL, $NaviFilter)
 {
@@ -1763,6 +1780,7 @@ function gibSuchspecialFilterOptionen($FilterSQL, $NaviFilter)
 }
 
 /**
+ * @todo
  * @param object $NaviFilter
  * @param int    $kSpracheExt
  * @return int
@@ -2155,6 +2173,7 @@ function bearbeiteSuchCache($NaviFilter, $kSpracheExt = 0)
 /**
  * @param object $NaviFilter
  * @return stdClass
+ * @deprecated since 4.06
  */
 function gibSuchFilterSQL($NaviFilter)
 {
@@ -2197,6 +2216,7 @@ function gibSuchFilterSQL($NaviFilter)
 /**
  * @param object $NaviFilter
  * @return stdClass
+ * @deprecated since 4.06
  */
 function gibHerstellerFilterSQL($NaviFilter)
 {
@@ -2219,6 +2239,7 @@ function gibHerstellerFilterSQL($NaviFilter)
 /**
  * @param object $NaviFilter
  * @return stdClass
+ * @deprecated since 4.06
  */
 function gibKategorieFilterSQL($NaviFilter)
 {
@@ -2249,6 +2270,7 @@ function gibKategorieFilterSQL($NaviFilter)
 /**
  * @param object $NaviFilter
  * @return stdClass
+ * @deprecated since 4.06
  */
 function gibBewertungSterneFilterSQL($NaviFilter)
 {
@@ -2268,6 +2290,7 @@ function gibBewertungSterneFilterSQL($NaviFilter)
 /**
  * @param object $NaviFilter
  * @return stdClass
+ * @deprecated since 4.06
  */
 function gibPreisspannenFilterSQL($NaviFilter)
 {
@@ -2349,6 +2372,7 @@ function gibPreisspannenFilterSQL($NaviFilter)
 /**
  * @param object $NaviFilter
  * @return stdClass
+ * @deprecated since 4.06
  */
 function gibTagFilterSQL($NaviFilter)
 {
@@ -2381,6 +2405,7 @@ function gibTagFilterSQL($NaviFilter)
 /**
  * @param object $NaviFilter
  * @return stdClass
+ * @deprecated since 4.06
  */
 function gibMerkmalFilterSQL($NaviFilter)
 {
@@ -2428,6 +2453,7 @@ function gibMerkmalFilterSQL($NaviFilter)
 /**
  * @param object $NaviFilter
  * @return stdClass
+ * @deprecated since 4.06
  */
 function gibSuchspecialFilterSQL($NaviFilter)
 {
@@ -2505,6 +2531,7 @@ function gibSuchspecialFilterSQL($NaviFilter)
 /**
  * @param object $NaviFilter
  * @return stdClass
+ * @deprecated since 4.06
  */
 function gibArtikelAttributFilterSQL($NaviFilter)
 {
@@ -2525,17 +2552,11 @@ function gibArtikelAttributFilterSQL($NaviFilter)
  * @param array $oMerkmalauswahl_arr
  * @param int   $kMerkmal
  * @return int
+ * @deprecated since 4.06
  */
 function gibMerkmalPosition($oMerkmalauswahl_arr, $kMerkmal)
 {
     die('gibMerkmalPosition');
-    if (is_array($oMerkmalauswahl_arr)) {
-        foreach ($oMerkmalauswahl_arr as $i => $oMerkmalauswahl) {
-            if ($oMerkmalauswahl->kMerkmal == $kMerkmal) {
-                return $i;
-            }
-        }
-    }
 
     return -1;
 }
@@ -2544,167 +2565,37 @@ function gibMerkmalPosition($oMerkmalauswahl_arr, $kMerkmal)
  * @param array $oMerkmalauswahl_arr
  * @param int   $kMerkmalWert
  * @return bool
+ * @deprecated since 4.06
  */
 function checkMerkmalWertVorhanden($oMerkmalauswahl_arr, $kMerkmalWert)
 {
     die('checkMerkmalWertVorhanden');
-    //@todo!!!
-    if (is_array($oMerkmalauswahl_arr)) {
-        foreach ($oMerkmalauswahl_arr as $i => $oMerkmalauswahl) {
-            if ($oMerkmalauswahl->kMerkmalWert == $kMerkmalWert) {
-                return true;
-            }
-        }
-    }
 
     return false;
 }
 
 /**
- * @todo
  * @param object $NaviFilter
  * @return string
+ * @deprecated since 4.06
  */
 function gibArtikelsortierung($NaviFilter)
 {
-    $conf              = Shop::getSettings([CONF_ARTIKELUEBERSICHT]);
-    $Artikelsortierung = $conf['artikeluebersicht']['artikeluebersicht_artikelsortierung'];
+    die('gibArtikelsortierung()');
 
-    if (isset($_SESSION['Usersortierung'])) {
-        $Artikelsortierung          = mappeUsersortierung($_SESSION['Usersortierung']);
-        $_SESSION['Usersortierung'] = $Artikelsortierung;
-    }
-    if (isset($NaviFilter->nSortierung) && $NaviFilter->nSortierung > 0 && intval($_SESSION['Usersortierung']) === 100) {
-        $Artikelsortierung = $NaviFilter->nSortierung;
-    }
-    $sort = 'tartikel.nSort, tartikel.cName';
-    switch (intval($Artikelsortierung)) {
-        case SEARCH_SORT_STANDARD:
-            if (isset($NaviFilter->Kategorie) && $NaviFilter->Kategorie->kKategorie > 0) {
-                $sort = 'tartikel.nSort, tartikel.cName';
-            } elseif (isset($NaviFilter->Suche->kSuchCache) && $NaviFilter->Suche->kSuchCache > 0 && isset($_SESSION['Usersortierung']) && intval($_SESSION['Usersortierung']) === 100) {
-                $sort = 'tsuchcachetreffer.nSort';
-            } else {
-                $sort = 'tartikel.nSort, tartikel.cName';
-            }
-            break;
-        case SEARCH_SORT_NAME_ASC:
-            $sort = 'tartikel.cName';
-            break;
-        case SEARCH_SORT_NAME_DESC:
-            $sort = 'tartikel.cName DESC';
-            break;
-        case SEARCH_SORT_PRICE_ASC:
-            $sort = 'tpreise.fVKNetto, tartikel.cName';
-            break;
-        case SEARCH_SORT_PRICE_DESC:
-            $sort = 'tpreise.fVKNetto DESC, tartikel.cName';
-            break;
-        case SEARCH_SORT_EAN:
-            $sort = 'tartikel.cBarcode, tartikel.cName';
-            break;
-        case SEARCH_SORT_NEWEST_FIRST:
-            $sort = 'tartikel.dErstellt DESC, tartikel.cName';
-            break;
-        case SEARCH_SORT_PRODUCTNO:
-            $sort = 'tartikel.cArtNr, tartikel.cName';
-            break;
-        case SEARCH_SORT_AVAILABILITY:
-            $sort = 'tartikel.fLagerbestand DESC, tartikel.cLagerKleinerNull DESC, tartikel.cName';
-            break;
-        case SEARCH_SORT_WEIGHT:
-            $sort = 'tartikel.fGewicht, tartikel.cName';
-            break;
-        case SEARCH_SORT_DATEOFISSUE:
-            $sort = 'tartikel.dErscheinungsdatum DESC, tartikel.cName';
-            break;
-        case SEARCH_SORT_BESTSELLER:
-            $sort = 'tbestseller.fAnzahl DESC, tartikel.cName';
-            break;
-        case SEARCH_SORT_RATING:
-            $sort = 'tbewertung.nSterne DESC, tartikel.cName';
-            break;
-        default:
-            break;
-    }
-
-    return $sort;
+    return Shop::getNaviFilter()->getOrder();
 }
 
 /**
  * Die Usersortierung kann entweder ein Integer sein oder via Kategorieattribut ein String
- * @todo
- * @param string $nUsersortierung
+ * @param string|int $nUsersortierung
  * @return int
+ * @deprecated since 4.06
  */
 function mappeUsersortierung($nUsersortierung)
 {
-    // Ist die Usersortierung ein Integer => Return direkt den Integer
-    preg_match('/[0-9]+/', $nUsersortierung, $cTreffer_arr);
-    if (isset($cTreffer_arr[0]) && strlen($nUsersortierung) === strlen($cTreffer_arr[0])) {
-        return $nUsersortierung;
-    }
-    // Usersortierung ist ein String aus einem Kategorieattribut
-    switch (strtolower($nUsersortierung)) {
-        case SEARCH_SORT_CRITERION_NAME:
-            return SEARCH_SORT_NAME_ASC;
-            break;
-
-        case SEARCH_SORT_CRITERION_NAME_ASC:
-            return SEARCH_SORT_NAME_ASC;
-            break;
-
-        case SEARCH_SORT_CRITERION_NAME_DESC:
-            return SEARCH_SORT_NAME_DESC;
-            break;
-
-        case SEARCH_SORT_CRITERION_PRODUCTNO:
-            return SEARCH_SORT_PRODUCTNO;
-            break;
-
-        case SEARCH_SORT_CRITERION_AVAILABILITY:
-            return SEARCH_SORT_AVAILABILITY;
-            break;
-
-        case SEARCH_SORT_CRITERION_WEIGHT:
-            return SEARCH_SORT_WEIGHT;
-            break;
-
-        case SEARCH_SORT_CRITERION_PRICE:
-            return SEARCH_SORT_PRICE_ASC;
-            break;
-
-        case SEARCH_SORT_CRITERION_PRICE_ASC:
-            return SEARCH_SORT_PRICE_ASC;
-            break;
-
-        case SEARCH_SORT_CRITERION_PRICE_DESC:
-            return SEARCH_SORT_PRICE_DESC;
-            break;
-
-        case SEARCH_SORT_CRITERION_EAN:
-            return SEARCH_SORT_EAN;
-            break;
-
-        case SEARCH_SORT_CRITERION_NEWEST_FIRST:
-            return SEARCH_SORT_NEWEST_FIRST;
-            break;
-
-        case SEARCH_SORT_CRITERION_DATEOFISSUE:
-            return SEARCH_SORT_DATEOFISSUE;
-            break;
-
-        case SEARCH_SORT_CRITERION_BESTSELLER:
-            return SEARCH_SORT_BESTSELLER;
-            break;
-
-        case SEARCH_SORT_CRITERION_RATING:
-            return SEARCH_SORT_RATING;
-
-        default:
-            return SEARCH_SORT_STANDARD;
-            break;
-    }
+    die('mappeUsersortierung()');
+    return Shop::getNaviFilter()->mapUserSorting($nUsersortierung);
 }
 
 /**
@@ -3066,96 +2957,17 @@ function gibNaviURL($NaviFilter, $bSeo, $oZusatzFilter, $kSprache = 0, $bCanonic
  * @param object     $oPreis
  * @param object|int $oPreisspannenfilter_arr
  * @return string
+ * @deprecated since 4.06
  */
 function berechnePreisspannenSQL($oPreis, $oPreisspannenfilter_arr = 0)
 {
-    $cSQL          = '';
-    $fKundenrabatt = 0.0;
-    $conf          = Shop::getSettings([CONF_NAVIGATIONSFILTER]);
-    if (isset($_SESSION['Kunde']->fRabatt) && $_SESSION['Kunde']->fRabatt > 0) {
-        $fKundenrabatt = $_SESSION['Kunde']->fRabatt;
-    }
-    // Wenn Option vorhanden, dann nur Spannen anzeigen, in denen Artikel vorhanden sind
-    if ($conf['navigationsfilter']['preisspannenfilter_anzeige_berechnung'] === 'A') {
-        $nPreisMax = $oPreis->fMaxPreis;
-        $nPreisMin = $oPreis->fMinPreis;
-        $nStep     = $oPreis->fStep;
+    die('berechnePreisspannenSQL()');
 
-        for ($i = 0; $i < $oPreis->nAnzahlSpannen; $i++) {
-            $cSQL .= "COUNT(
-                    IF(";
-
-            $nBis = ($nPreisMin + ($i + 1) * $nStep);
-            if (isset($oPreisspannenfilter_arr->nBis) && $oPreisspannenfilter_arr->nBis > $nPreisMax) {
-                $nBis = $nPreisMax;
-            }
-            // Finde den höchsten und kleinsten Steuersatz
-            if (is_array($_SESSION['Steuersatz']) && intval($_SESSION['Kundengruppe']->nNettoPreise) === 0) {
-                $nSteuersatzKeys_arr = array_keys($_SESSION['Steuersatz']);
-                foreach ($nSteuersatzKeys_arr as $nSteuersatzKeys) {
-                    $fSteuersatz = floatval($_SESSION['Steuersatz'][$nSteuersatzKeys]);
-                    $cSQL .= "IF(tartikel.kSteuerklasse = " . $nSteuersatzKeys . ",
-                                ROUND(LEAST((tpreise.fVKNetto * " . $_SESSION['Waehrung']->fFaktor . ") * ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), " .
-                        $_SESSION['Kundengruppe']->fRabatt . ", " . $fKundenrabatt . ", 0)) / 100), IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * " .
-                        $_SESSION['Waehrung']->fFaktor . "))) * ((100 + " . $fSteuersatz . ") / 100)
-                            , 2),";
-                }
-
-                $cSQL .= "0";
-                $count = count($nSteuersatzKeys_arr);
-                for ($x = 0; $x < $count; $x++) {
-                    $cSQL .= ")";
-                }
-            } elseif (intval($_SESSION['Kundengruppe']->nNettoPreise) > 0) {
-                $cSQL .= "ROUND(LEAST((tpreise.fVKNetto * " . $_SESSION['Waehrung']->fFaktor . ") * ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), " .
-                    $_SESSION['Kundengruppe']->fRabatt . ", " . $fKundenrabatt . ", 0)) / 100), IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * " .
-                    $_SESSION['Waehrung']->fFaktor . "))), 2)";
-            }
-            $cSQL .= " < " . $nBis . ", 1, NULL)
-                    ) AS anz" . $i . ", ";
-        }
-
-        $cSQL = substr($cSQL, 0, strlen($cSQL) - 2);
-    } else {
-        if (is_array($oPreisspannenfilter_arr)) {
-            foreach ($oPreisspannenfilter_arr as $i => $oPreisspannenfilter) {
-                $cSQL .= "count(
-                        if(";
-
-                $nBis = $oPreisspannenfilter->nBis;
-                // Finde den höchsten und kleinsten Steuersatz
-                if (is_array($_SESSION['Steuersatz']) && intval($_SESSION['Kundengruppe']->nNettoPreise) === 0) {
-                    $nSteuersatzKeys_arr = array_keys($_SESSION['Steuersatz']);
-                    foreach ($nSteuersatzKeys_arr as $nSteuersatzKeys) {
-                        $fSteuersatz = floatval($_SESSION['Steuersatz'][$nSteuersatzKeys]);
-                        $cSQL .= "if(tartikel.kSteuerklasse = " . $nSteuersatzKeys . ",
-                                ROUND(LEAST((tpreise.fVKNetto * " . $_SESSION['Waehrung']->fFaktor . ") * ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), " .
-                            $_SESSION['Kundengruppe']->fRabatt . ", " . $fKundenrabatt . ", 0)) / 100), IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * " .
-                            $_SESSION['Waehrung']->fFaktor . "))) * ((100 + " . $fSteuersatz . ") / 100)
-                            , 2),";
-                    }
-                    $cSQL .= "0";
-                    $count = count($nSteuersatzKeys_arr);
-                    for ($x = 0; $x < $count; $x++) {
-                        $cSQL .= ")";
-                    }
-                } elseif (intval($_SESSION['Kundengruppe']->nNettoPreise) > 0) {
-                    $cSQL .= "ROUND(LEAST((tpreise.fVKNetto * " . $_SESSION['Waehrung']->fFaktor . ") * ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), " .
-                        $_SESSION['Kundengruppe']->fRabatt . ", " . $fKundenrabatt . ", 0)) / 100), IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * " . $_SESSION['Waehrung']->fFaktor . "))), 2)";
-                }
-
-                $cSQL .= " < " . $nBis . ", 1, NULL)
-                        ) AS anz" . $i . ", ";
-            }
-
-            $cSQL = substr($cSQL, 0, strlen($cSQL) - 2);
-        }
-    }
-
-    return $cSQL;
+    return Shop::getNaviFilter()->getPriceRangeSQL();
 }
 
 /**
+ * @todo
  * @param float $fMax
  * @param float $fMin
  * @return stdClass
@@ -3205,6 +3017,7 @@ function berechneMaxMinStep($fMax, $fMin)
 
 /**
  * @return null|string
+ * @deprecated since 4.06
  */
 function gibBrotNaviName()
 {
@@ -3234,31 +3047,13 @@ function gibBrotNaviName()
 
 /**
  * @return string
+ * @deprecated since 4.06
  */
 function gibHeaderAnzeige()
 {
     die('gibHeaderAnzeige');
-    global $NaviFilter;
-    if (isset($NaviFilter->Kategorie->kKategorie) && $NaviFilter->Kategorie->kKategorie > 0) {
-        return $NaviFilter->cBrotNaviName;
-    }
-    if (isset($NaviFilter->Hersteller->kHersteller) && $NaviFilter->Hersteller->kHersteller > 0) {
-        return Shop::Lang()->get('productsFrom', 'global') . ' ' . $NaviFilter->cBrotNaviName;
-    }
-    if (isset($NaviFilter->MerkmalWert->kMerkmalWert) && $NaviFilter->MerkmalWert->kMerkmalWert > 0) {
-        return Shop::Lang()->get('productsWith', 'global') . ' ' . $NaviFilter->cBrotNaviName;
-    }
-    if (isset($NaviFilter->Tag->kTag) && $NaviFilter->Tag->kTag > 0) {
-        return Shop::Lang()->get('showAllProductsTaggedWith', 'global') . ' ' . $NaviFilter->cBrotNaviName;
-    }
-    if (isset($NaviFilter->Suchspecial->kKey) && $NaviFilter->Suchspecial->kKey > 0) {
-        return $NaviFilter->cBrotNaviName;
-    }
-    if (isset($NaviFilter->Suche->cSuche) && strlen($NaviFilter->Suche->cSuche) > 0) {
-        return Shop::Lang()->get('for', 'global') . ' ' . $NaviFilter->cBrotNaviName;
-    }
 
-    return '';
+    return Shop::getNaviFilter()->getHeader();
 }
 
 /**
@@ -3358,15 +3153,13 @@ function erstelleFilterLoesenURLs($bSeo, $oSuchergebnisse)
 /**
  * @param string $cTitle
  * @return string
+ * @deprecated since 4.06
  */
 function truncateMetaTitle($cTitle)
 {
-    $conf = Shop::getSettings([CONF_METAANGABEN]);
-    if (isset($conf['metaangaben']['global_meta_maxlaenge_title']) && $conf['metaangaben']['global_meta_maxlaenge_title'] > 0) {
-        return substr($cTitle, 0, intval($conf['metaangaben']['global_meta_maxlaenge_title']));
-    }
+    die('truncateMetaTitle()');
 
-    return $cTitle;
+    return Shop::getNaviFilter()->truncateMetaTitle($cTitle);
 }
 
 /**
@@ -3374,57 +3167,14 @@ function truncateMetaTitle($cTitle)
  * @param object $oSuchergebnisse
  * @param array $GlobaleMetaAngaben_arr
  * @return string
+ * @deprecated since 4.06
  */
 function gibNaviMetaTitle($NaviFilter, $oSuchergebnisse, $GlobaleMetaAngaben_arr)
 {
+    die('gibNaviMetaTitle()');
+
     global $oMeta;
-    $conf = Shop::getSettings([CONF_METAANGABEN]);
-
-    executeHook(HOOK_FILTER_INC_GIBNAVIMETATITLE);
-    // Pruefen ob bereits eingestellte Metas gesetzt sind
-    if (strlen($oMeta->cMetaTitle) > 0) {
-        $oMeta->cMetaTitle = strip_tags($oMeta->cMetaTitle);
-        // Globalen Meta Title anhaengen
-        if ($conf['metaangaben']['global_meta_title_anhaengen'] === 'Y' && strlen($GlobaleMetaAngaben_arr[Shop::$kSprache]->Title) > 0) {
-            return truncateMetaTitle($oMeta->cMetaTitle . ' ' . $GlobaleMetaAngaben_arr[Shop::$kSprache]->Title);
-        }
-
-        return truncateMetaTitle($oMeta->cMetaTitle);
-    }
-    // Set Default Titles
-    $cMetaTitle = gibMetaStart($NaviFilter, $oSuchergebnisse);
-    $cMetaTitle = str_replace('"', "'", $cMetaTitle);
-    $cMetaTitle = StringHandler::htmlentitydecode($cMetaTitle, ENT_NOQUOTES);
-    // Kategorieattribute koennen Standard-Titles ueberschreiben
-    if (isset($NaviFilter->Kategorie->kKategorie) && $NaviFilter->Kategorie->kKategorie > 0) {
-        $oKategorie = new Kategorie($NaviFilter->Kategorie->kKategorie);
-        if (isset($oKategorie->cTitleTag) && strlen($oKategorie->cTitleTag) > 0) {
-            // meta title via new method
-            $cMetaTitle = strip_tags($oKategorie->cTitleTag);
-            $cMetaTitle = str_replace('"', "'", $cMetaTitle);
-            $cMetaTitle = StringHandler::htmlentitydecode($cMetaTitle, ENT_NOQUOTES);
-        } elseif (!empty($oKategorie->categoryAttributes['meta_title']->cWert)) {
-            // Hat die aktuelle Kategorie als Kategorieattribut einen Meta Title gesetzt?
-            $cMetaTitle = strip_tags($oKategorie->categoryAttributes['meta_title']->cWert);
-            $cMetaTitle = str_replace('"', "'", $cMetaTitle);
-            $cMetaTitle = StringHandler::htmlentitydecode($cMetaTitle, ENT_NOQUOTES);
-        } elseif (!empty($oKategorie->KategorieAttribute['meta_title'])) {
-            /** @deprecated since 4.05 - this is for compatibilty only! */
-            $cMetaTitle = strip_tags($oKategorie->KategorieAttribute['meta_title']);
-            $cMetaTitle = str_replace('"', "'", $cMetaTitle);
-            $cMetaTitle = StringHandler::htmlentitydecode($cMetaTitle, ENT_NOQUOTES);
-        }
-    }
-    // Seitenzahl anhaengen ab Seite 2 (Doppelte Titles vermeiden, #5992)
-    if ($oSuchergebnisse->Seitenzahlen->AktuelleSeite > 1) {
-        $cMetaTitle .= ', ' . Shop::Lang()->get('page', 'global') . " {$oSuchergebnisse->Seitenzahlen->AktuelleSeite}";
-    }
-    // Globalen Meta Title ueberall anhaengen
-    if ($conf['metaangaben']['global_meta_title_anhaengen'] === 'Y' && !empty($GlobaleMetaAngaben_arr[Shop::getLanguage()]->Title)) {
-        $cMetaTitle .= ' - ' . $GlobaleMetaAngaben_arr[Shop::$kSprache]->Title;
-    }
-
-    return truncateMetaTitle($cMetaTitle);
+    return Shop::getNaviFilter()->getMetaTitle($oMeta, $oSuchergebnisse, $GlobaleMetaAngaben_arr);
 }
 
 /**
@@ -3433,106 +3183,14 @@ function gibNaviMetaTitle($NaviFilter, $oSuchergebnisse, $GlobaleMetaAngaben_arr
  * @param object $oSuchergebnisse
  * @param array  $GlobaleMetaAngaben_arr
  * @return string
+ * @deprecated since 4.06
  */
 function gibNaviMetaDescription($oArtikel_arr, $NaviFilter, $oSuchergebnisse, $GlobaleMetaAngaben_arr)
 {
+    die('gibNaviMetaDescription()');
+
     global $oMeta;
-
-    executeHook(HOOK_FILTER_INC_GIBNAVIMETADESCRIPTION);
-    // Prüfen ob bereits eingestellte Metas gesetzt sind
-    if (strlen($oMeta->cMetaDescription) > 0) {
-        $oMeta->cMetaDescription = strip_tags($oMeta->cMetaDescription);
-
-        return truncateMetaDescription($oMeta->cMetaDescription);
-    }
-    // Kategorieattribut?
-    $cKatDescription = '';
-    if (isset($NaviFilter->Kategorie->kKategorie) && $NaviFilter->Kategorie->kKategorie > 0) {
-        $oKategorie = new Kategorie($NaviFilter->Kategorie->kKategorie);
-        if (isset($oKategorie->cMetaDescription) && strlen($oKategorie->cMetaDescription) > 0) {
-            // meta description via new method
-            $cKatDescription = strip_tags($oKategorie->cMetaDescription);
-
-            return truncateMetaDescription($cKatDescription);
-        } elseif (!empty($oKategorie->categoryAttributes['meta_description']->cWert)) {
-            // Hat die aktuelle Kategorie als Kategorieattribut eine Meta Description gesetzt?
-            $cKatDescription = strip_tags($oKategorie->categoryAttributes['meta_description']->cWert);
-
-            return truncateMetaDescription($cKatDescription);
-        } elseif (!empty($oKategorie->KategorieAttribute['meta_description'])) {
-            /** @deprecated since 4.05 - this is for compatibilty only! */
-            $cKatDescription = strip_tags($oKategorie->KategorieAttribute['meta_description']);
-
-            return truncateMetaDescription($cKatDescription);
-        } else {
-            // Hat die aktuelle Kategorie eine Beschreibung?
-            if (isset($oKategorie->cBeschreibung) && strlen($oKategorie->cBeschreibung) > 0) {
-                $cKatDescription = strip_tags(str_replace(['<br>', '<br />'], [' ', ' '], $oKategorie->cBeschreibung));
-            } elseif ($oKategorie->bUnterKategorien) { // Hat die aktuelle Kategorie Unterkategorien?
-                $oKategorieListe = new KategorieListe();
-                $oKategorieListe->getAllCategoriesOnLevel($oKategorie->kKategorie);
-
-                if (isset($oKategorieListe->elemente) && is_array($oKategorieListe->elemente) && count($oKategorieListe->elemente) > 0) {
-                    foreach ($oKategorieListe->elemente as $i => $oUnterkat) {
-                        if (isset($oUnterkat->cName) && strlen($oUnterkat->cName) > 0) {
-                            if ($i > 0) {
-                                $cKatDescription .= ', ' . strip_tags($oUnterkat->cName);
-                            } else {
-                                $cKatDescription .= strip_tags($oUnterkat->cName);
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (strlen($cKatDescription) > 1) {
-                $cKatDescription = str_replace('"', '', $cKatDescription);
-                $cKatDescription = StringHandler::htmlentitydecode($cKatDescription, ENT_NOQUOTES);
-                if (isset($GlobaleMetaAngaben_arr[Shop::$kSprache]->Meta_Description_Praefix) && strlen($GlobaleMetaAngaben_arr[Shop::$kSprache]->Meta_Description_Praefix) > 0) {
-                    $cMetaDescription = trim(strip_tags($GlobaleMetaAngaben_arr[Shop::$kSprache]->Meta_Description_Praefix) . " " . $cKatDescription);
-                } else {
-                    $cMetaDescription = trim($cKatDescription);
-                }
-                // Seitenzahl anhaengen ab Seite 2 (Doppelte Meta-Descriptions vermeiden, #5992)
-                if ($oSuchergebnisse->Seitenzahlen->AktuelleSeite > 1 && $oSuchergebnisse->ArtikelVon > 0 && $oSuchergebnisse->ArtikelBis > 0) {
-                    $cMetaDescription .= ', ' . Shop::Lang()->get('products', 'global') . " {$oSuchergebnisse->ArtikelVon} - {$oSuchergebnisse->ArtikelBis}";
-                }
-
-                return truncateMetaDescription($cMetaDescription);
-            }
-        }
-    }
-    // Keine eingestellten Metas vorhanden => generiere Standard Metas
-    $cMetaDescription = '';
-    if (is_array($oArtikel_arr) && count($oArtikel_arr) > 0) {
-        shuffle($oArtikel_arr);
-        $nCount = 12;
-        if (count($oArtikel_arr) < $nCount) {
-            $nCount = count($oArtikel_arr);
-        }
-        $cArtikelName = '';
-        for ($i = 0; $i < $nCount; $i++) {
-            if ($i > 0) {
-                $cArtikelName .= ' - ' . $oArtikel_arr[$i]->cName;
-            } else {
-                $cArtikelName .= $oArtikel_arr[$i]->cName;
-            }
-        }
-        $cArtikelName = str_replace('"', '', $cArtikelName);
-        $cArtikelName = StringHandler::htmlentitydecode($cArtikelName, ENT_NOQUOTES);
-
-        if (isset($GlobaleMetaAngaben_arr[Shop::$kSprache]->Meta_Description_Praefix) && strlen($GlobaleMetaAngaben_arr[Shop::$kSprache]->Meta_Description_Praefix) > 0) {
-            $cMetaDescription = gibMetaStart($NaviFilter, $oSuchergebnisse) . ': ' . $GlobaleMetaAngaben_arr[Shop::$kSprache]->Meta_Description_Praefix . ' ' . $cArtikelName;
-        } else {
-            $cMetaDescription = gibMetaStart($NaviFilter, $oSuchergebnisse) . ': ' . $cArtikelName;
-        }
-        // Seitenzahl anhaengen ab Seite 2 (Doppelte Meta-Descriptions vermeiden, #5992)
-        if ($oSuchergebnisse->Seitenzahlen->AktuelleSeite > 1 && $oSuchergebnisse->ArtikelVon > 0 && $oSuchergebnisse->ArtikelBis > 0) {
-            $cMetaDescription .= ', ' . Shop::Lang()->get('products', 'global') . " {$oSuchergebnisse->ArtikelVon} - {$oSuchergebnisse->ArtikelBis}";
-        }
-    }
-
-    return truncateMetaDescription(strip_tags($cMetaDescription));
+    return Shop::getNaviFilter()->getMetaDescription($oMeta, $oArtikel_arr, $oSuchergebnisse, $GlobaleMetaAngaben_arr);
 }
 
 /**
@@ -3540,114 +3198,14 @@ function gibNaviMetaDescription($oArtikel_arr, $NaviFilter, $oSuchergebnisse, $G
  * @param object $NaviFilter
  * @param array  $oExcludesKeywords_arr
  * @return mixed|string
+ * @deprecated since 4.06
  */
-function gibNaviMetaKeywords($oArtikel_arr, $NaviFilter, $oExcludesKeywords_arr)
+function gibNaviMetaKeywords($oArtikel_arr, $NaviFilter, $oExcludesKeywords_arr = [])
 {
+    die('gibNaviMetaKeywords()');
+
     global $oMeta;
-
-    executeHook(HOOK_FILTER_INC_GIBNAVIMETAKEYWORDS);
-    // Prüfen ob bereits eingestellte Metas gesetzt sind
-    if (strlen($oMeta->cMetaKeywords) > 0) {
-        $oMeta->cMetaKeywords = strip_tags($oMeta->cMetaKeywords);
-
-        return $oMeta->cMetaKeywords;
-    }
-    // Kategorieattribut?
-    $cKatKeywords = '';
-    $oKategorie   = new stdClass();
-    if (isset($NaviFilter->Kategorie->kKategorie) && $NaviFilter->Kategorie->kKategorie > 0) {
-        $oKategorie = new Kategorie($NaviFilter->Kategorie->kKategorie);
-        if (isset($oKategorie->cMetaKeywords) && strlen($oKategorie->cMetaKeywords) > 0) {
-            // meta keywords via new method
-            $cKatKeywords = strip_tags($oKategorie->cMetaKeywords);
-
-            return $cKatKeywords;
-        } elseif (!empty($oKategorie->categoryAttributes['meta_keywords']->cWert)) {
-            // Hat die aktuelle Kategorie als Kategorieattribut einen Meta Keywords gesetzt?
-            $cKatKeywords = strip_tags($oKategorie->categoryAttributes['meta_keywords']->cWert);
-
-            return $cKatKeywords;
-        } elseif (!empty($oKategorie->KategorieAttribute['meta_keywords'])) {
-            /** @deprecated since 4.05 - this is for compatibilty only! */
-            $cKatKeywords = strip_tags($oKategorie->KategorieAttribute['meta_keywords']);
-
-            return $cKatKeywords;
-        }
-    }
-    // Keine eingestellten Metas vorhanden => baue Standard Metas
-    $cMetaKeywords = '';
-    if (is_array($oArtikel_arr) && count($oArtikel_arr) > 0) {
-        shuffle($oArtikel_arr); // Shuffle alle Artikel
-        $nCount = 6;
-        if (count($oArtikel_arr) < $nCount) {
-            $nCount = count($oArtikel_arr);
-        }
-        $cArtikelName = '';
-        for ($i = 0; $i < $nCount; $i++) {
-            $cExcArtikelName = gibExcludesKeywordsReplace($oArtikel_arr[$i]->cName, $oExcludesKeywords_arr); // Filter nicht erlaubte Keywords
-            if (strpos($cExcArtikelName, ' ') !== false) {
-                // Wenn der Dateiname aus mehreren Wörtern besteht
-                $cSubNameTMP_arr = explode(' ', $cExcArtikelName);
-                $cSubName        = '';
-                if (is_array($cSubNameTMP_arr) && count($cSubNameTMP_arr) > 0) {
-                    foreach ($cSubNameTMP_arr as $j => $cSubNameTMP) {
-                        if (strlen($cSubNameTMP) > 2) {
-                            $cSubNameTMP = str_replace(',', '', $cSubNameTMP);
-                            if ($j > 0) {
-                                $cSubName .= ', ' . $cSubNameTMP;
-                            } else {
-                                $cSubName .= $cSubNameTMP;
-                            }
-                        }
-                    }
-                }
-                $cArtikelName .= $cSubName;
-            } elseif ($i > 0) {
-                $cArtikelName .= ', ' . $oArtikel_arr[$i]->cName;
-            } else {
-                $cArtikelName .= $oArtikel_arr[$i]->cName;
-            }
-        }
-        $cMetaKeywords = $cArtikelName;
-        // Prüfe doppelte Einträge und lösche diese
-        $cMetaKeywordsUnique_arr = [];
-        $cMeta_arr               = explode(', ', $cMetaKeywords);
-        if (is_array($cMeta_arr) && count($cMeta_arr) > 1) {
-            foreach ($cMeta_arr as $cMeta) {
-                if (!in_array($cMeta, $cMetaKeywordsUnique_arr)) {
-                    $cMetaKeywordsUnique_arr[] = $cMeta;
-                }
-            }
-            $cMetaKeywords = implode(', ', $cMetaKeywordsUnique_arr);
-        }
-    } elseif (isset($NaviFilter->Kategorie->kKategorie) && $NaviFilter->Kategorie->kKategorie > 0) {
-        // Hat die aktuelle Kategorie Unterkategorien?
-        if ($oKategorie->bUnterKategorien) {
-            $oKategorieListe = new KategorieListe();
-            $oKategorieListe->getAllCategoriesOnLevel($oKategorie->kKategorie);
-            if (isset($oKategorieListe->elemente) && is_array($oKategorieListe->elemente) && count($oKategorieListe->elemente) > 0) {
-                foreach ($oKategorieListe->elemente as $i => $oUnterkat) {
-                    if (isset($oUnterkat->cName) && strlen($oUnterkat->cName) > 0) {
-                        if ($i > 0) {
-                            $cKatKeywords .= ', ' . $oUnterkat->cName;
-                        } else {
-                            $cKatKeywords .= $oUnterkat->cName;
-                        }
-                    }
-                }
-            }
-        } elseif (isset($oKategorie->cBeschreibung) && strlen($oKategorie->cBeschreibung) > 0) { // Hat die aktuelle Kategorie eine Beschreibung?
-            $cKatKeywords = $oKategorie->cBeschreibung;
-        }
-        $cKatKeywords  = str_replace('"', '', $cKatKeywords);
-        $cMetaKeywords = $cKatKeywords;
-
-        return strip_tags($cMetaKeywords);
-    }
-    $cMetaKeywords = str_replace('"', '', $cMetaKeywords);
-    $cMetaKeywords = StringHandler::htmlentitydecode($cMetaKeywords, ENT_NOQUOTES);
-
-    return strip_tags($cMetaKeywords);
+    return Shop::getNaviFilter()->getMetaKeywords($oMeta, $oArtikel_arr);
 }
 
 /**
@@ -3656,86 +3214,13 @@ function gibNaviMetaKeywords($oArtikel_arr, $NaviFilter, $oExcludesKeywords_arr)
  * @param object $NaviFilter
  * @param object $oSuchergebnisse
  * @return string
+ * @deprecated since 4.06
  */
 function gibMetaStart($NaviFilter, $oSuchergebnisse)
 {
-    $cMetaTitle = '';
+    die('gibMetaStart()');
 
-    // MerkmalWert
-    if (isset($NaviFilter->MerkmalWert->kMerkmalWert) && $NaviFilter->MerkmalWert->kMerkmalWert > 0 && isset($NaviFilter->MerkmalWert->cName)) {
-        $cMetaTitle .= $NaviFilter->MerkmalWert->cName;
-    } elseif (isset($NaviFilter->Kategorie->kKategorie) && $NaviFilter->Kategorie->kKategorie > 0 && isset($NaviFilter->Kategorie->cName)) { // Kategorie
-        $cMetaTitle .= $NaviFilter->Kategorie->cName;
-    } elseif (isset($NaviFilter->Hersteller->kHersteller) && $NaviFilter->Hersteller->kHersteller > 0) { // Hersteller
-        $cMetaTitle .= $NaviFilter->Hersteller->cName;
-    } elseif (isset($NaviFilter->Tag->kTag) && $NaviFilter->Tag->kTag > 0 && isset($NaviFilter->Tag->cName)) { // Tag
-        $cMetaTitle .= $NaviFilter->Tag->cName;
-    } elseif (isset($NaviFilter->Suche->cSuche) && strlen($NaviFilter->Suche->cSuche) > 0) { // Suchebegriff
-        $cMetaTitle .= $NaviFilter->Suche->cSuche;
-    } elseif (isset($NaviFilter->Suchspecial->kKey) && $NaviFilter->Suchspecial->kKey > 0 && isset($NaviFilter->Suchspecial->cName)) { // Suchspecial
-        $cMetaTitle .= $NaviFilter->Suchspecial->cName;
-    }
-    // Kategoriefilter
-    if (isset($NaviFilter->KategorieFilter->kKategorie) && $NaviFilter->KategorieFilter->kKategorie > 0) {
-        $cMetaTitle .= ' ' . $NaviFilter->KategorieFilter->cName;
-    }
-    // Herstellerfilter
-    if (isset($NaviFilter->HerstellerFilter->kHersteller) && $NaviFilter->HerstellerFilter->kHersteller > 0 && strlen($oSuchergebnisse->Herstellerauswahl[0]->cName) > 0) {
-        $cMetaTitle .= ' ' . $NaviFilter->HerstellerFilter->cName;
-    }
-    // Tagfilter
-    if (isset($NaviFilter->TagFilter) && is_array($NaviFilter->TagFilter) && count($NaviFilter->TagFilter) > 0 && isset($NaviFilter->TagFilter[0]->cName)) {
-        $cMetaTitle .= ' ' . $NaviFilter->TagFilter[0]->cName;
-    }
-    // Suchbegrifffilter
-    if (is_array($NaviFilter->SuchFilter) && count($NaviFilter->SuchFilter) > 0) {
-        foreach ($NaviFilter->SuchFilter as $i => $oSuchFilter) {
-            if (isset($oSuchFilter->cName)) {
-                $cMetaTitle .= ' ' . $oSuchFilter->cName;
-            }
-        }
-    }
-    // Suchspecialfilter
-    if (isset($NaviFilter->SuchspecialFilter->kKey) && $NaviFilter->SuchspecialFilter->kKey > 0) {
-        switch ($NaviFilter->SuchspecialFilter->kKey) {
-            case SEARCHSPECIALS_BESTSELLER:
-                $cMetaTitle .= ' ' . Shop::Lang()->get('bestsellers', 'global');
-                break;
-
-            case SEARCHSPECIALS_SPECIALOFFERS:
-                $cMetaTitle .= ' ' . Shop::Lang()->get('specialOffers', 'global');
-                break;
-
-            case SEARCHSPECIALS_NEWPRODUCTS:
-                $cMetaTitle .= ' ' . Shop::Lang()->get('newProducts', 'global');
-                break;
-
-            case SEARCHSPECIALS_TOPOFFERS:
-                $cMetaTitle .= ' ' . Shop::Lang()->get('topOffers', 'global');
-                break;
-
-            case SEARCHSPECIALS_UPCOMINGPRODUCTS:
-                $cMetaTitle .= ' ' . Shop::Lang()->get('upcomingProducts', 'global');
-                break;
-
-            case SEARCHSPECIALS_TOPREVIEWS:
-                $cMetaTitle .= ' ' . Shop::Lang()->get('topReviews', 'global');
-                break;
-
-            default:
-                break;
-        }
-    }
-    // MerkmalWertfilter
-    if (is_array($NaviFilter->MerkmalFilter) && count($NaviFilter->MerkmalFilter) > 0) {
-        foreach ($NaviFilter->MerkmalFilter as $oMerkmalFilter) {
-            if (isset($oMerkmalFilter->cName)) {
-                $cMetaTitle .= ' ' . $oMerkmalFilter->cName;
-            }
-        }
-    }
-
-    return ltrim($cMetaTitle);
+    return Shop::getNaviFilter()->getMetaStart($oSuchergebnisse);
 }
 
 /**
@@ -3878,57 +3363,9 @@ function gibErweiterteDarstellung($Einstellungen, $NaviFilter, $nDarstellung = 0
  */
 function setzeUsersortierung($NaviFilter)
 {
+    die('setzeUsersortierung()');
     global $AktuelleKategorie;
     return Shop::getNaviFilter()->setUserSort($AktuelleKategorie);
-    global $Einstellungen, $oSuchergebnisse, $AktuelleKategorie;
-    if (!isset($Einstellungen['artikeluebersicht']) || !isset($Einstellungen['suchspecials'])) {
-        $Einstellungen = Shop::getSettings([CONF_GLOBAL, CONF_ARTIKELUEBERSICHT, CONF_NAVIGATIONSFILTER, CONF_SUCHSPECIAL]);
-    }
-    // Der User möchte die Standardsortierung wiederherstellen
-    if (verifyGPCDataInteger('Sortierung') > 0 && verifyGPCDataInteger('Sortierung') === 100) {
-        unset($_SESSION['Usersortierung']);
-        unset($_SESSION['nUsersortierungWahl']);
-        unset($_SESSION['UsersortierungVorSuche']);
-    }
-    // Wenn noch keine Sortierung gewählt wurde => setze Standard-Sortierung aus Option
-    if (!isset($_SESSION['Usersortierung']) && isset($Einstellungen['artikeluebersicht']['artikeluebersicht_artikelsortierung'])) {
-        unset($_SESSION['nUsersortierungWahl']);
-        $_SESSION['Usersortierung'] = $Einstellungen['artikeluebersicht']['artikeluebersicht_artikelsortierung'];
-    }
-    if (!isset($_SESSION['nUsersortierungWahl']) && isset($Einstellungen['artikeluebersicht']['artikeluebersicht_artikelsortierung'])) {
-        $_SESSION['Usersortierung'] = $Einstellungen['artikeluebersicht']['artikeluebersicht_artikelsortierung'];
-    }
-    // Eine Suche wurde ausgeführt und die Suche wird auf die Suchtreffersuche eingestellt
-    if (isset($NaviFilter->Suche->kSuchCache) && $NaviFilter->Suche->kSuchCache > 0 && !isset($_SESSION['nUsersortierungWahl'])) {
-        // nur bei initialsuche Sortierung zurücksetzen
-        $_SESSION['UsersortierungVorSuche'] = $_SESSION['Usersortierung'];
-        $_SESSION['Usersortierung']         = SEARCH_SORT_STANDARD;
-    }
-    // Kategorie Funktionsattribut
-    if (!empty($AktuelleKategorie->categoryFunctionAttributes[KAT_ATTRIBUT_ARTIKELSORTIERUNG])) {
-        $_SESSION['Usersortierung'] = $AktuelleKategorie->categoryFunctionAttributes[KAT_ATTRIBUT_ARTIKELSORTIERUNG];
-    }
-    // Wurde zuvor etwas gesucht? Dann die Einstellung des Users vor der Suche wiederherstellen
-    if (isset($_SESSION['UsersortierungVorSuche']) && intval($_SESSION['UsersortierungVorSuche']) > 0) {
-        $_SESSION['Usersortierung'] = $_SESSION['UsersortierungVorSuche'];
-    }
-    // Suchspecial sortierung
-    if (isset($NaviFilter->Suchspecial->kKey) && $NaviFilter->Suchspecial->kKey > 0) {
-        // Gibt die Suchspecialeinstellungen als Assoc Array zurück, wobei die Keys des Arrays der kKey vom Suchspecial sind.
-        $oSuchspecialEinstellung_arr = gibSuchspecialEinstellungMapping($Einstellungen['suchspecials']);
-        // -1 = Keine spezielle Sortierung
-        if (count($oSuchspecialEinstellung_arr) > 0 && isset($oSuchspecialEinstellung_arr[$NaviFilter->Suchspecial->kKey]) && $oSuchspecialEinstellung_arr[$NaviFilter->Suchspecial->kKey] != -1) {
-            $_SESSION['Usersortierung'] = $oSuchspecialEinstellung_arr[$NaviFilter->Suchspecial->kKey];
-        }
-    }
-    // Der User hat expliziet eine Sortierung eingestellt
-    if (verifyGPCDataInteger('Sortierung') > 0 && verifyGPCDataInteger('Sortierung') !== 100) {
-        $_SESSION['Usersortierung']         = verifyGPCDataInteger('Sortierung');
-        $_SESSION['UsersortierungVorSuche'] = $_SESSION['Usersortierung'];
-        $_SESSION['nUsersortierungWahl']    = 1;
-        $oSuchergebnisse->Sortierung        = $_SESSION['Usersortierung'];
-        setFsession(0, $_SESSION['Usersortierung'], 0);
-    }
 }
 
 /**
@@ -4069,10 +3506,11 @@ function baueSeitenNaviURL($NaviFilter, $bSeo, $oSeitenzahlen, $nMaxAnzeige = 7,
 /**
  * @param object $NaviFilter
  * @return mixed|stdClass
+ * @deprecated since 4.06
  */
 function bauFilterSQL($NaviFilter)
 {
-    Shop::dbg('d', true, 'bauFilterSQL', 76);
+    die('bauFilterSQL()');
     $cacheID = 'fsql_' . md5(serialize($NaviFilter));
     if (($FilterSQL = Shop::Cache()->get($cacheID)) === false) {
         $FilterSQL = new stdClass();

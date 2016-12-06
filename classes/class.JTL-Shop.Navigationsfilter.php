@@ -756,10 +756,6 @@ class Navigationsfilter
 
         $order = $this->getOrder();
         $state = $this->getCurrentStateData();
-//        Shop::dbg($this->getActiveFilters(), false, 'active filters:');
-//        Shop::dbg($this->getActiveState(), false, 'active state:');
-//        Shop::dbg($this->getActiveState()->getSQLJoin(), false, 'active state join:');
-//        Shop::dbg($state, true, '$state:');
 
         $state->joins[] = $order->join;
 
@@ -835,16 +831,18 @@ class Navigationsfilter
     }
 
     /**
+     * @param null|string $ignore - filter class to ignore
      * @return stdClass
      */
-    private function getCurrentStateData()
+    private function getCurrentStateData($ignore = null)
     {
+        $state              = $this->getActiveState();
         $data               = new stdClass();
         $data->having       = [];
-        $data->joins        = $this->getActiveState()->getSQLJoin();
+        $data->joins        = $state->getSQLJoin();
         $data->conditions   = [];
 
-        $stateCondition = $this->getActiveState()->getSQLCondition();
+        $stateCondition = $state->getSQLCondition();
         if (!empty($stateCondition)) {
             $data->conditions[] = $stateCondition;
         }
@@ -855,23 +853,29 @@ class Navigationsfilter
                 $singleConditions = [];
                 /** @var AbstractFilter $item */
                 foreach ($filter as $idx => $item) {
-                    if ($idx === 0) {
-                        foreach ($item->getSQLJoin() as $filterJoin) {
-                            $data->joins[] = $filterJoin;
+                    if ($ignore === null || get_class($item) !== $ignore) {
+                        if ($idx === 0) {
+                            foreach ($item->getSQLJoin() as $filterJoin) {
+                                $data->joins[] = $filterJoin;
+                            }
+                            if ($item->getType() === AbstractFilter::FILTER_TYPE_AND) {
+                                //filters that decrease the total amount of articles must have a "HAVING" clause
+                                $data->having[] = 'HAVING COUNT(' . $item->getTableName() . '.' . $item->getPrimaryKeyRow() . ') = ' . $count;
+                            }
                         }
-                        if ($item->getType() === AbstractFilter::FILTER_TYPE_AND) {
-                            //filters that decrease the total amount of articles must have a "HAVING" clause
-                            $data->having[] = 'HAVING COUNT(' . $item->getTableName() . '.' . $item->getPrimaryKeyRow() . ') = ' . $count;
-                        }
+                        $singleConditions[] = $item->getSQLCondition();
                     }
-                    $singleConditions[] = $item->getSQLCondition();
                 }
-                $data->conditions[] = $singleConditions;
+                if (!empty($singleConditions)) {
+                    $data->conditions[] = $singleConditions;
+                }
             } elseif ($count === 1)  {
-                foreach ($filter[0]->getSQLJoin() as $filterJoin) {
-                    $data->joins[] = $filterJoin;
+                if ($ignore === null || get_class($filter[0]) !== $ignore) {
+                    foreach ($filter[0]->getSQLJoin() as $filterJoin) {
+                        $data->joins[] = $filterJoin;
+                    }
+                    $data->conditions[] = "\n#condition from filter " . $type . "\n" . $filter[0]->getSQLCondition();
                 }
-                $data->conditions[] = "\n#condition from filter " . $type . "\n" . $filter[0]->getSQLCondition();
             }
         }
 
@@ -1197,7 +1201,7 @@ class Navigationsfilter
                 }
             }
             $order = $this->getOrder();
-            $state = $this->getCurrentStateData();
+            $state = $this->getCurrentStateData('FilterMerkmalFilter');
             $state->joins[] = $order->join;
 
             $select = 'tmerkmal.cName';
@@ -1239,6 +1243,25 @@ class Navigationsfilter
                  ->setOn('tmerkmal.kMerkmal = tartikelmerkmal.kMerkmal');
             $state->joins[] = $join;
 
+            if (count($this->MerkmalFilter) > 0) {
+                $join = new FilterJoin();
+                $activeFilterIDs = [];
+                foreach ($this->MerkmalFilter as $filter) {
+                    $activeFilterIDs[] = $filter->getID();
+                }
+                $join->setComment('join6 from getAttributeFilterOptions')
+                     ->setType('JOIN')
+                     ->setTable('(
+                                SELECT kArtikel
+                                    FROM tartikelmerkmal
+                                        WHERE kMerkmalWert IN (' . implode(', ', $activeFilterIDs) . ' )
+                                    GROUP BY kArtikel
+                                    HAVING count(*) = ' . count($activeFilterIDs) . '
+                                    ) AS ssj1')
+                     ->setOn('tartikel.kArtikel = ssj1.kArtikel');
+                $state->joins[] = $join;
+            }
+
             $query = $this->getBaseQuery([
                     'tartikelmerkmal.kMerkmal',
                     'tartikelmerkmal.kMerkmalWert',
@@ -1272,7 +1295,6 @@ class Navigationsfilter
                     $nPos          = $this->getAttributePosition($oMerkmalFilter_arr, (int)$oMerkmalFilterDB->kMerkmal);
                     $oMerkmalWerte = new stdClass();
 
-//                    Shop::dbg($this->MerkmalWert, false, '$this->MerkmalWert:');
                     $oMerkmalWerte->kMerkmalWert = (int)$oMerkmalFilterDB->kMerkmalWert;
                     $oMerkmalWerte->cWert        = $oMerkmalFilterDB->cWert;
                     $oMerkmalWerte->nAnzahl      = (int)$oMerkmalFilterDB->nAnzahl;

@@ -2,11 +2,11 @@
     {if isset($NaviFilter->PreisspannenFilter) && $NaviFilter->PreisspannenFilter->cWert}
         {if $NaviFilter->PreisspannenFilter->fVon >= 0 && $NaviFilter->PreisspannenFilter->fBis > 0}
             <li>
-                <span class="value">
-                    <a href="{$NaviFilter->URL->cAllePreisspannen}" rel="nofollow" class="active">
+                <a href="{$NaviFilter->URL->cAllePreisspannen}" rel="nofollow" class="active">
+                    <span class="value">
                         <i class="fa fa-check-square-o text-muted"></i> {$NaviFilter->PreisspannenFilter->cVonLocalized} - {$NaviFilter->PreisspannenFilter->cBisLocalized}
-                    </a>
-                </span>
+                    </span>
+                </a>
             </li>
         {/if}
     {else}

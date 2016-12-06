@@ -870,6 +870,7 @@ class Navigationsfilter
                     $data->conditions[] = $singleConditions;
                 }
             } elseif ($count === 1)  {
+                /** @var array(AbstractFilter) $filter*/
                 if ($ignore === null || get_class($filter[0]) !== $ignore) {
                     foreach ($filter[0]->getSQLJoin() as $filterJoin) {
                         $data->joins[] = $filterJoin;
@@ -954,7 +955,6 @@ class Navigationsfilter
                         break;
                 }
                 $qry = $this->getBaseQuery(['tartikel.kArtikel'], $state->joins, $state->conditions, $state->having);
-
                 $oSuchspecialFilterDB  = Shop::DB()->query($qry, 2);
                 $oSuchspecial          = new stdClass();
                 $oSuchspecial->nAnzahl = count($oSuchspecialFilterDB);
@@ -1280,7 +1280,8 @@ class Navigationsfilter
                 '',
                 ['tartikelmerkmal.kMerkmalWert', 'tartikel.kArtikel']);
 
-            $query = "SELECT tseo.cSeo, ssMerkmal.kMerkmal, ssMerkmal.kMerkmalWert, ssMerkmal.cMMWBildPfad, ssMerkmal.cWert, ssMerkmal.cName, ssMerkmal.cTyp, ssMerkmal.cMMBildPfad, COUNT(*) AS nAnzahl
+            $query = "SELECT tseo.cSeo, ssMerkmal.kMerkmal, ssMerkmal.kMerkmalWert, ssMerkmal.cMMWBildPfad, 
+                ssMerkmal.cWert, ssMerkmal.cName, ssMerkmal.cTyp, ssMerkmal.cMMBildPfad, COUNT(*) AS nAnzahl
                 FROM (" . $query . ") AS ssMerkmal
                 LEFT JOIN tseo ON tseo.kKey = ssMerkmal.kMerkmalWert
                     AND tseo.cKey = 'kMerkmalWert'
@@ -2388,7 +2389,11 @@ class Navigationsfilter
                 }
             }
             // Suchspecialfilter
-            if ($this->SuchspecialFilter->isInitialized() && (!$this->Suchspecial->isInitialized() || $this->Suchspecial->getID() !== $this->SuchspecialFilter->getID()) ) {
+            if ((isset($oZusatzFilter->SuchspecialFilter->kKey) && $oZusatzFilter->SuchspecialFilter->kKey > 0) &&
+                (!$this->Suchspecial->isInitialized() || $this->Suchspecial->getID() !== $oZusatzFilter->SuchspecialFilter->kKey)
+            ) {
+                $cURL .= '&amp;qf=' . $oZusatzFilter->SuchspecialFilter->kKey;
+            } elseif ($this->SuchspecialFilter->isInitialized() && (!$this->Suchspecial->isInitialized() || $this->Suchspecial->getID() !== $this->SuchspecialFilter->getID()) ) {
                 if (!isset($oZusatzFilter->FilterLoesen->Suchspecials) || !$oZusatzFilter->FilterLoesen->Suchspecials) {
                     $cSEOURL .= $this->SuchspecialFilter->getSeo($this->languageID);
                     if ($bSeo && strlen($this->SuchspecialFilter->getSeo($this->languageID)) === 0) {
@@ -2396,10 +2401,6 @@ class Navigationsfilter
                     }
                     $cURL .= '&amp;qf=' . $this->SuchspecialFilter->getID();
                 }
-            } elseif ((isset($oZusatzFilter->SuchspecialFilter->kKey) && $oZusatzFilter->SuchspecialFilter->kKey > 0) &&
-                (!$this->Suchspecial->isInitialized() || $this->Suchspecial->getID() !== $oZusatzFilter->SuchspecialFilter->kKey)
-            ) {
-                $cURL .= '&amp;qf=' . $oZusatzFilter->SuchspecialFilter->kKey;
             }
         }
 

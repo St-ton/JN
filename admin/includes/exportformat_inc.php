@@ -441,7 +441,7 @@ function verarbeiteYategoExport(&$Artikel, $exportformat, $ExportEinstellungen, 
         //do not use double quotes here to keep csv column order (https://gitlab.jtl-software.de/jtlshop/shop4/issues/166)
         $cBacklink = "<a href='" . getURL($Artikel->cURL) . "' target='_blank'>{$Artikel->cName}</a>";
 
-        $oGlobal_arr['artikel'][] = array(
+        $oGlobal_arr['artikel'][] = [
             'foreign_id'         => $Artikel->kArtikel,
             'article_nr'         => $Artikel->cArtNr,
             'title'              => $Artikel->cName,
@@ -465,13 +465,13 @@ function verarbeiteYategoExport(&$Artikel, $exportformat, $ExportEinstellungen, 
             'stock'              => $Artikel->cLagerBeachten === 'Y' && $Artikel->cLagerKleinerNull === 'N'
                 ? $Artikel->fLagerbestand : -1,
             'cross_selling'      => implode(',', $oXSelling_arr)
-        );
+        ];
 
         $KategorieListe[$Artikel->Kategorie->kKategorie] = 1;
 
         // Lager
         if (count($Artikel->Variationen) === 0) {
-            $oGlobal_arr['lager'][] = array(
+            $oGlobal_arr['lager'][] = [
                 'foreign_id'    => $Artikel->kArtikel,
                 'article_id'    => $Artikel->kArtikel,
                 'variant_ids'   => $cVarianten,
@@ -489,7 +489,7 @@ function verarbeiteYategoExport(&$Artikel, $exportformat, $ExportEinstellungen, 
                 'info_vs_id'    => '',
                 'info_p_title'  => '',
                 'delitem'       => ''
-            );
+            ];
         } else {
             $oGlobal_arr['lager'] = array_merge($oGlobal_arr['lager'], $oVariationsLager_arr);
         }

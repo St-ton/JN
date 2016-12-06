@@ -10,7 +10,7 @@
         <meta name="robots" content="{if $bNoIndex === true  || (isset($Link->cNoFollow) && $Link->cNoFollow === 'Y')}noindex{else}index, follow{/if}">
     {/block}
 
-    <title>{block name="head-title"}{$meta_title}{/block}</title>
+    <title>{block name="head-title"}{$meta_title|replace:'>':'&gt;'|replace:'<':'&lt;'}{/block}</title>
 
     {if !empty($cCanonicalURL)}
         <link rel="canonical" href="{$cCanonicalURL}">

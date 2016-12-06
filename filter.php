@@ -148,8 +148,7 @@ foreach ($oSuchergebnisse->SuchFilter as $key => $oSuchfilter) {
     $oSuchergebnisse->SuchFilterJSON[$key]->cURL = StringHandler::htmlentitydecode($oSuchfilter->cURL);
 }
 $oSuchergebnisse->SuchFilterJSON = Boxen::gibJSONString($oSuchergebnisse->SuchFilterJSON);
-
-if (!$cParameter_arr['kSuchspecial']) {
+if (!$cParameter_arr['kSuchspecial'] && !$cParameter_arr['kSuchspecialFilter']) {
     $oSuchergebnisse->Suchspecialauswahl = $NaviFilter->getSearchSpecialFilterOptions();
 }
 if (verifyGPCDataInteger('zahl') > 0) {

@@ -163,7 +163,8 @@ class Navigationsfilter
             CONF_NAVIGATIONSFILTER,
             CONF_BOXEN,
             CONF_GLOBAL,
-            CONF_SUCHSPECIAL
+            CONF_SUCHSPECIAL,
+            CONF_METAANGABEN
         ]);
         $this->languageID   = Shop::getLanguage();
         if (!isset($_SESSION['Kundengruppe']->kKundengruppe)) {
@@ -218,11 +219,9 @@ class Navigationsfilter
      */
     public function getActiveFilters($byType = false)
     {
-        if ($byType) {
-            $filters = ['mm' => [], 'ssf' => [], 'tf' => [], 'sf' => [], 'hf' => [], 'bf' => []];
-        } else {
-            $filters = [];
-        }
+        $filters = ($byType !== false)
+            ? ['mm' => [], 'ssf' => [], 'tf' => [], 'sf' => [], 'hf' => [], 'bf' => []]
+            : [];
         if ($this->HerstellerFilter->isInitialized()) {
             if ($byType) {
                 $filters['hf'][] = $this->HerstellerFilter;
@@ -618,13 +617,13 @@ class Navigationsfilter
     /**
      * @return stdClass
      */
-    private function getOrder()
+    public function getOrder()
     {
         $Artikelsortierung = $this->conf['artikeluebersicht']['artikeluebersicht_artikelsortierung'];
         $sort              = new stdClass();
         $sort->join        = new FilterJoin();
         if (isset($_SESSION['Usersortierung'])) {
-            $Artikelsortierung          = mappeUsersortierung($_SESSION['Usersortierung']);
+            $Artikelsortierung          = $this->mapUserSorting($_SESSION['Usersortierung']);
             $_SESSION['Usersortierung'] = $Artikelsortierung;
         }
         if (isset($this->nSortierung) && $this->nSortierung > 0 && (int)$_SESSION['Usersortierung'] === 100) {
@@ -1415,7 +1414,7 @@ class Navigationsfilter
      * @param array|null  $oPreisspannenfilter_arr
      * @return string
      */
-    private function getPriceRangeSQL($oPreis, $currency, $oPreisspannenfilter_arr = null)
+    public function getPriceRangeSQL($oPreis, $currency, $oPreisspannenfilter_arr = null)
     {
         $cSQL          = '';
         $fKundenrabatt = 0.0;
@@ -2081,7 +2080,7 @@ class Navigationsfilter
         }
         // Kategorie Funktionsattribut
         if (!empty($currentCategory->categoryFunctionAttributes[KAT_ATTRIBUT_ARTIKELSORTIERUNG])) {
-            $_SESSION['Usersortierung'] = mappeUsersortierung($currentCategory->categoryFunctionAttributes[KAT_ATTRIBUT_ARTIKELSORTIERUNG]);
+            $_SESSION['Usersortierung'] = $this->mapUserSorting($currentCategory->categoryFunctionAttributes[KAT_ATTRIBUT_ARTIKELSORTIERUNG]);
         }
         // Wurde zuvor etwas gesucht? Dann die Einstellung des Users vor der Suche wiederherstellen
         if (isset($_SESSION['UsersortierungVorSuche']) && intval($_SESSION['UsersortierungVorSuche']) > 0) {
@@ -2441,5 +2440,461 @@ class Navigationsfilter
         }
 
         return false;
+    }
+
+    /**
+     * Die Usersortierung kann entweder ein Integer sein oder via Kategorieattribut ein String
+     *
+     * @param int|string $sort
+     * @return int
+     */
+    public function mapUserSorting($sort)
+    {
+        // Ist die Usersortierung ein Integer => Return direkt den Integer
+        preg_match('/[0-9]+/', $sort, $cTreffer_arr);
+        if (isset($cTreffer_arr[0]) && strlen($sort) === strlen($cTreffer_arr[0])) {
+            return $sort;
+        }
+        // Usersortierung ist ein String aus einem Kategorieattribut
+        switch (strtolower($sort)) {
+            case SEARCH_SORT_CRITERION_NAME:
+                return SEARCH_SORT_NAME_ASC;
+                break;
+
+            case SEARCH_SORT_CRITERION_NAME_ASC:
+                return SEARCH_SORT_NAME_ASC;
+                break;
+
+            case SEARCH_SORT_CRITERION_NAME_DESC:
+                return SEARCH_SORT_NAME_DESC;
+                break;
+
+            case SEARCH_SORT_CRITERION_PRODUCTNO:
+                return SEARCH_SORT_PRODUCTNO;
+                break;
+
+            case SEARCH_SORT_CRITERION_AVAILABILITY:
+                return SEARCH_SORT_AVAILABILITY;
+                break;
+
+            case SEARCH_SORT_CRITERION_WEIGHT:
+                return SEARCH_SORT_WEIGHT;
+                break;
+
+            case SEARCH_SORT_CRITERION_PRICE:
+                return SEARCH_SORT_PRICE_ASC;
+                break;
+
+            case SEARCH_SORT_CRITERION_PRICE_ASC:
+                return SEARCH_SORT_PRICE_ASC;
+                break;
+
+            case SEARCH_SORT_CRITERION_PRICE_DESC:
+                return SEARCH_SORT_PRICE_DESC;
+                break;
+
+            case SEARCH_SORT_CRITERION_EAN:
+                return SEARCH_SORT_EAN;
+                break;
+
+            case SEARCH_SORT_CRITERION_NEWEST_FIRST:
+                return SEARCH_SORT_NEWEST_FIRST;
+                break;
+
+            case SEARCH_SORT_CRITERION_DATEOFISSUE:
+                return SEARCH_SORT_DATEOFISSUE;
+                break;
+
+            case SEARCH_SORT_CRITERION_BESTSELLER:
+                return SEARCH_SORT_BESTSELLER;
+                break;
+
+            case SEARCH_SORT_CRITERION_RATING:
+                return SEARCH_SORT_RATING;
+
+            default:
+                return SEARCH_SORT_STANDARD;
+                break;
+        }
+    }
+
+    /**
+     * @param string $cTitle
+     * @return string
+     */
+    public function truncateMetaTitle($cTitle)
+    {
+        return ($this->conf['metaangaben']['global_meta_maxlaenge_title'] > 0)
+            ? substr($cTitle, 0, (int)$this->conf['metaangaben']['global_meta_maxlaenge_title'])
+            : $cTitle;
+    }
+
+    /**
+     * @param object $oMeta
+     * @param object $oSuchergebnisse
+     * @param array $GlobaleMetaAngaben_arr
+     * @return string
+     */
+    public function getMetaTitle($oMeta, $oSuchergebnisse, $GlobaleMetaAngaben_arr)
+    {
+        executeHook(HOOK_FILTER_INC_GIBNAVIMETATITLE);
+        // Pruefen ob bereits eingestellte Metas gesetzt sind
+        if (strlen($oMeta->cMetaTitle) > 0) {
+            $oMeta->cMetaTitle = strip_tags($oMeta->cMetaTitle);
+            // Globalen Meta Title anhaengen
+            if ($this->conf['metaangaben']['global_meta_title_anhaengen'] === 'Y' && !empty($GlobaleMetaAngaben_arr[Shop::getLanguage()]->Title)) {
+                return $this->truncateMetaTitle($oMeta->cMetaTitle . ' ' . $GlobaleMetaAngaben_arr[Shop::getLanguage()]->Title);
+            }
+
+            return $this->truncateMetaTitle($oMeta->cMetaTitle);
+        }
+        // Set Default Titles
+        $cMetaTitle = $this->getMetaStart($oSuchergebnisse);
+        $cMetaTitle = str_replace('"', "'", $cMetaTitle);
+        $cMetaTitle = StringHandler::htmlentitydecode($cMetaTitle, ENT_NOQUOTES);
+        // Kategorieattribute koennen Standard-Titles ueberschreiben
+        if ($this->Kategorie->isInitialized()) {
+            $oKategorie = new Kategorie($this->Kategorie->getID());
+            if (isset($oKategorie->cTitleTag) && strlen($oKategorie->cTitleTag) > 0) {
+                // meta title via new method
+                $cMetaTitle = strip_tags($oKategorie->cTitleTag);
+                $cMetaTitle = str_replace('"', "'", $cMetaTitle);
+                $cMetaTitle = StringHandler::htmlentitydecode($cMetaTitle, ENT_NOQUOTES);
+            } elseif (!empty($oKategorie->categoryAttributes['meta_title']->cWert)) {
+                // Hat die aktuelle Kategorie als Kategorieattribut einen Meta Title gesetzt?
+                $cMetaTitle = strip_tags($oKategorie->categoryAttributes['meta_title']->cWert);
+                $cMetaTitle = str_replace('"', "'", $cMetaTitle);
+                $cMetaTitle = StringHandler::htmlentitydecode($cMetaTitle, ENT_NOQUOTES);
+            } elseif (!empty($oKategorie->KategorieAttribute['meta_title'])) {
+                /** @deprecated since 4.05 - this is for compatibilty only! */
+                $cMetaTitle = strip_tags($oKategorie->KategorieAttribute['meta_title']);
+                $cMetaTitle = str_replace('"', "'", $cMetaTitle);
+                $cMetaTitle = StringHandler::htmlentitydecode($cMetaTitle, ENT_NOQUOTES);
+            }
+        }
+        // Seitenzahl anhaengen ab Seite 2 (Doppelte Titles vermeiden, #5992)
+        if ($oSuchergebnisse->Seitenzahlen->AktuelleSeite > 1) {
+            $cMetaTitle .= ', ' . Shop::Lang()->get('page', 'global') . " {$oSuchergebnisse->Seitenzahlen->AktuelleSeite}";
+        }
+        // Globalen Meta Title ueberall anhaengen
+        if ($this->conf['metaangaben']['global_meta_title_anhaengen'] === 'Y' && !empty($GlobaleMetaAngaben_arr[Shop::getLanguage()]->Title)) {
+            $cMetaTitle .= ' - ' . $GlobaleMetaAngaben_arr[Shop::$kSprache]->Title;
+        }
+
+        return $this->truncateMetaTitle($cMetaTitle);
+    }
+
+    /**
+     * @param object $oMeta
+     * @param array  $oArtikel_arr
+     * @param object $oSuchergebnisse
+     * @param array  $GlobaleMetaAngaben_arr
+     * @return string
+     */
+    public function getMetaDescription($oMeta, $oArtikel_arr, $oSuchergebnisse, $GlobaleMetaAngaben_arr)
+    {
+        executeHook(HOOK_FILTER_INC_GIBNAVIMETADESCRIPTION);
+        // Prüfen ob bereits eingestellte Metas gesetzt sind
+        if (strlen($oMeta->cMetaDescription) > 0) {
+            $oMeta->cMetaDescription = strip_tags($oMeta->cMetaDescription);
+
+            return truncateMetaDescription($oMeta->cMetaDescription);
+        }
+        // Kategorieattribut?
+        $cKatDescription = '';
+        if ($this->Kategorie->isInitialized()) {
+            $oKategorie = new Kategorie($this->Kategorie->getID());
+            if (isset($oKategorie->cMetaDescription) && strlen($oKategorie->cMetaDescription) > 0) {
+                // meta description via new method
+                $cKatDescription = strip_tags($oKategorie->cMetaDescription);
+
+                return truncateMetaDescription($cKatDescription);
+            }
+            if (!empty($oKategorie->categoryAttributes['meta_description']->cWert)) {
+                // Hat die aktuelle Kategorie als Kategorieattribut eine Meta Description gesetzt?
+                $cKatDescription = strip_tags($oKategorie->categoryAttributes['meta_description']->cWert);
+
+                return truncateMetaDescription($cKatDescription);
+            }
+            if (!empty($oKategorie->KategorieAttribute['meta_description'])) {
+                /** @deprecated since 4.05 - this is for compatibilty only! */
+                $cKatDescription = strip_tags($oKategorie->KategorieAttribute['meta_description']);
+
+                return truncateMetaDescription($cKatDescription);
+            }
+            // Hat die aktuelle Kategorie eine Beschreibung?
+            if (isset($oKategorie->cBeschreibung) && strlen($oKategorie->cBeschreibung) > 0) {
+                $cKatDescription = strip_tags(str_replace(['<br>', '<br />'], [' ', ' '], $oKategorie->cBeschreibung));
+            } elseif ($oKategorie->bUnterKategorien) { // Hat die aktuelle Kategorie Unterkategorien?
+                $oKategorieListe = new KategorieListe();
+                $oKategorieListe->getAllCategoriesOnLevel($oKategorie->kKategorie);
+
+                if (isset($oKategorieListe->elemente) && is_array($oKategorieListe->elemente) && count($oKategorieListe->elemente) > 0) {
+                    foreach ($oKategorieListe->elemente as $i => $oUnterkat) {
+                        if (isset($oUnterkat->cName) && strlen($oUnterkat->cName) > 0) {
+                            if ($i > 0) {
+                                $cKatDescription .= ', ' . strip_tags($oUnterkat->cName);
+                            } else {
+                                $cKatDescription .= strip_tags($oUnterkat->cName);
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (strlen($cKatDescription) > 1) {
+                $cKatDescription  = str_replace('"', '', $cKatDescription);
+                $cKatDescription  = StringHandler::htmlentitydecode($cKatDescription, ENT_NOQUOTES);
+                $cMetaDescription = (isset($GlobaleMetaAngaben_arr[Shop::getLanguage()]->Meta_Description_Praefix) && strlen($GlobaleMetaAngaben_arr[Shop::getLanguage()]->Meta_Description_Praefix) > 0)
+                    ? trim(strip_tags($GlobaleMetaAngaben_arr[Shop::$kSprache]->Meta_Description_Praefix) . " " . $cKatDescription)
+                    : trim($cKatDescription);
+                // Seitenzahl anhaengen ab Seite 2 (Doppelte Meta-Descriptions vermeiden, #5992)
+                if ($oSuchergebnisse->Seitenzahlen->AktuelleSeite > 1 && $oSuchergebnisse->ArtikelVon > 0 && $oSuchergebnisse->ArtikelBis > 0) {
+                    $cMetaDescription .= ', ' . Shop::Lang()->get('products', 'global') . " {$oSuchergebnisse->ArtikelVon} - {$oSuchergebnisse->ArtikelBis}";
+                }
+
+                return truncateMetaDescription($cMetaDescription);
+            }
+        }
+        // Keine eingestellten Metas vorhanden => generiere Standard Metas
+        $cMetaDescription = '';
+        if (is_array($oArtikel_arr) && count($oArtikel_arr) > 0) {
+            shuffle($oArtikel_arr);
+            $nCount = 12;
+            if (count($oArtikel_arr) < $nCount) {
+                $nCount = count($oArtikel_arr);
+            }
+            $cArtikelName = '';
+            for ($i = 0; $i < $nCount; ++$i) {
+                if ($i > 0) {
+                    $cArtikelName .= ' - ' . $oArtikel_arr[$i]->cName;
+                } else {
+                    $cArtikelName .= $oArtikel_arr[$i]->cName;
+                }
+            }
+            $cArtikelName = str_replace('"', '', $cArtikelName);
+            $cArtikelName = StringHandler::htmlentitydecode($cArtikelName, ENT_NOQUOTES);
+
+            if (isset($GlobaleMetaAngaben_arr[Shop::$kSprache]->Meta_Description_Praefix) && strlen($GlobaleMetaAngaben_arr[Shop::getLanguage()]->Meta_Description_Praefix) > 0) {
+                $cMetaDescription = $this->getMetaStart($oSuchergebnisse) . ': ' . $GlobaleMetaAngaben_arr[Shop::getLanguage()]->Meta_Description_Praefix . ' ' . $cArtikelName;
+            } else {
+                $cMetaDescription = $this->getMetaStart($oSuchergebnisse) . ': ' . $cArtikelName;
+            }
+            // Seitenzahl anhaengen ab Seite 2 (Doppelte Meta-Descriptions vermeiden, #5992)
+            if ($oSuchergebnisse->Seitenzahlen->AktuelleSeite > 1 && $oSuchergebnisse->ArtikelVon > 0 && $oSuchergebnisse->ArtikelBis > 0) {
+                $cMetaDescription .= ', ' . Shop::Lang()->get('products', 'global') . " {$oSuchergebnisse->ArtikelVon} - {$oSuchergebnisse->ArtikelBis}";
+            }
+        }
+
+        return truncateMetaDescription(strip_tags($cMetaDescription));
+    }
+
+
+    /**
+     * @param object $oMeta
+     * @param array  $oArtikel_arr
+     * @return mixed|string
+     */
+    public function getMetaKeywords($oMeta, $oArtikel_arr)
+    {
+        executeHook(HOOK_FILTER_INC_GIBNAVIMETAKEYWORDS);
+        // Prüfen ob bereits eingestellte Metas gesetzt sind
+        if (strlen($oMeta->cMetaKeywords) > 0) {
+            $oMeta->cMetaKeywords = strip_tags($oMeta->cMetaKeywords);
+
+            return $oMeta->cMetaKeywords;
+        }
+        // Kategorieattribut?
+        $cKatKeywords = '';
+        $oKategorie   = new stdClass();
+        $oKategorie->kKategorie = 0;
+        if ($this->Kategorie->isInitialized()) {
+            $oKategorie = new Kategorie($this->Kategorie->getID());
+            if (isset($oKategorie->cMetaKeywords) && strlen($oKategorie->cMetaKeywords) > 0) {
+                // meta keywords via new method
+                $cKatKeywords = strip_tags($oKategorie->cMetaKeywords);
+
+                return $cKatKeywords;
+            }
+            if (!empty($oKategorie->categoryAttributes['meta_keywords']->cWert)) {
+                // Hat die aktuelle Kategorie als Kategorieattribut einen Meta Keywords gesetzt?
+                $cKatKeywords = strip_tags($oKategorie->categoryAttributes['meta_keywords']->cWert);
+
+                return $cKatKeywords;
+            }
+            if (!empty($oKategorie->KategorieAttribute['meta_keywords'])) {
+                /** @deprecated since 4.05 - this is for compatibilty only! */
+                $cKatKeywords = strip_tags($oKategorie->KategorieAttribute['meta_keywords']);
+
+                return $cKatKeywords;
+            }
+        }
+        // Keine eingestellten Metas vorhanden => baue Standard Metas
+        $cMetaKeywords = '';
+        if (is_array($oArtikel_arr) && count($oArtikel_arr) > 0) {
+            shuffle($oArtikel_arr); // Shuffle alle Artikel
+            $nCount = 6;
+            if (count($oArtikel_arr) < $nCount) {
+                $nCount = count($oArtikel_arr);
+            }
+            $cArtikelName          = '';
+            $excludes              = holeExcludedKeywords();
+            $oExcludesKeywords_arr = (isset($excludes[$_SESSION['cISOSprache']]->cKeywords))
+                ? explode(' ', $excludes[$_SESSION['cISOSprache']]->cKeywords)
+                : [];
+            for ($i = 0; $i < $nCount; ++$i) {
+                $cExcArtikelName = gibExcludesKeywordsReplace($oArtikel_arr[$i]->cName, $oExcludesKeywords_arr); // Filter nicht erlaubte Keywords
+                if (strpos($cExcArtikelName, ' ') !== false) {
+                    // Wenn der Dateiname aus mehreren Wörtern besteht
+                    $cSubNameTMP_arr = explode(' ', $cExcArtikelName);
+                    $cSubName        = '';
+                    if (is_array($cSubNameTMP_arr) && count($cSubNameTMP_arr) > 0) {
+                        foreach ($cSubNameTMP_arr as $j => $cSubNameTMP) {
+                            if (strlen($cSubNameTMP) > 2) {
+                                $cSubNameTMP = str_replace(',', '', $cSubNameTMP);
+                                if ($j > 0) {
+                                    $cSubName .= ', ' . $cSubNameTMP;
+                                } else {
+                                    $cSubName .= $cSubNameTMP;
+                                }
+                            }
+                        }
+                    }
+                    $cArtikelName .= $cSubName;
+                } elseif ($i > 0) {
+                    $cArtikelName .= ', ' . $oArtikel_arr[$i]->cName;
+                } else {
+                    $cArtikelName .= $oArtikel_arr[$i]->cName;
+                }
+            }
+            $cMetaKeywords = $cArtikelName;
+            // Prüfe doppelte Einträge und lösche diese
+            $cMetaKeywordsUnique_arr = [];
+            $cMeta_arr               = explode(', ', $cMetaKeywords);
+            if (is_array($cMeta_arr) && count($cMeta_arr) > 1) {
+                foreach ($cMeta_arr as $cMeta) {
+                    if (!in_array($cMeta, $cMetaKeywordsUnique_arr)) {
+                        $cMetaKeywordsUnique_arr[] = $cMeta;
+                    }
+                }
+                $cMetaKeywords = implode(', ', $cMetaKeywordsUnique_arr);
+            }
+        } elseif ($oKategorie->kKategorie > 0) {
+            // Hat die aktuelle Kategorie Unterkategorien?
+            if ($oKategorie->bUnterKategorien) {
+                $oKategorieListe = new KategorieListe();
+                $oKategorieListe->getAllCategoriesOnLevel($oKategorie->kKategorie);
+                if (isset($oKategorieListe->elemente) && is_array($oKategorieListe->elemente) && count($oKategorieListe->elemente) > 0) {
+                    foreach ($oKategorieListe->elemente as $i => $oUnterkat) {
+                        if (isset($oUnterkat->cName) && strlen($oUnterkat->cName) > 0) {
+                            if ($i > 0) {
+                                $cKatKeywords .= ', ' . $oUnterkat->cName;
+                            } else {
+                                $cKatKeywords .= $oUnterkat->cName;
+                            }
+                        }
+                    }
+                }
+            } elseif (isset($oKategorie->cBeschreibung) && strlen($oKategorie->cBeschreibung) > 0) { // Hat die aktuelle Kategorie eine Beschreibung?
+                $cKatKeywords = $oKategorie->cBeschreibung;
+            }
+            $cKatKeywords  = str_replace('"', '', $cKatKeywords);
+            $cMetaKeywords = $cKatKeywords;
+
+            return strip_tags($cMetaKeywords);
+        }
+        $cMetaKeywords = str_replace('"', '', $cMetaKeywords);
+        $cMetaKeywords = StringHandler::htmlentitydecode($cMetaKeywords, ENT_NOQUOTES);
+
+        return strip_tags($cMetaKeywords);
+    }
+
+    /**
+     * Baut für die NaviMetas die gesetzten Mainwords + Filter und stellt diese vor jedem Meta vorne an.
+     *
+     * @param object $oSuchergebnisse
+     * @return string
+     */
+    public function getMetaStart($oSuchergebnisse)
+    {
+        $cMetaTitle = '';
+
+        // MerkmalWert
+        if ($this->MerkmalWert->isInitialized()) {
+            $cMetaTitle .= $this->MerkmalWert->getName();
+        } elseif ($this->Kategorie->isInitialized()) { // Kategorie
+            $cMetaTitle .= $this->Kategorie->getName();
+        } elseif ($this->Hersteller->isInitialized()) { // Hersteller
+            $cMetaTitle .= $this->Hersteller->getName();
+        } elseif ($this->Tag->isInitialized()) { // Tag
+            $cMetaTitle .= $this->Tag->getName();
+        } elseif ($this->Suche->isInitialized()) { // Suchebegriff
+            $cMetaTitle .= $this->Suche->cSuche;
+            //@todo: does this work?
+            //$cMetaTitle .= $this->Suche->getName();
+        } elseif ($this->Suchspecial->isInitialized()) { // Suchspecial
+            $cMetaTitle .= $this->Suchspecial->getName();
+        }
+        // Kategoriefilter
+        if ($this->KategorieFilter->isInitialized()) {
+            $cMetaTitle .= ' ' . $this->KategorieFilter->getName();
+        }
+        // Herstellerfilter
+        if ($this->HerstellerFilter->isInitialized() && !empty($oSuchergebnisse->Herstellerauswahl[0]->cName)) {
+            $cMetaTitle .= ' ' . $this->HerstellerFilter->getName();
+        }
+        // Tagfilter
+        if (is_array($this->TagFilter) && count($this->TagFilter) > 0 && isset($this->TagFilter[0]->cName)) {
+            $cMetaTitle .= ' ' . $this->TagFilter[0]->cName;
+        }
+        // Suchbegrifffilter
+        if (is_array($this->SuchFilter) && count($this->SuchFilter) > 0) {
+            foreach ($this->SuchFilter as $i => $oSuchFilter) {
+                if (isset($oSuchFilter->cName)) {
+                    $cMetaTitle .= ' ' . $oSuchFilter->cName;
+                }
+            }
+        }
+        // Suchspecialfilter
+        if ($this->SuchspecialFilter->isInitialized()) {
+            switch ($this->SuchspecialFilter->getID()) {
+                case SEARCHSPECIALS_BESTSELLER:
+                    $cMetaTitle .= ' ' . Shop::Lang()->get('bestsellers', 'global');
+                    break;
+
+                case SEARCHSPECIALS_SPECIALOFFERS:
+                    $cMetaTitle .= ' ' . Shop::Lang()->get('specialOffers', 'global');
+                    break;
+
+                case SEARCHSPECIALS_NEWPRODUCTS:
+                    $cMetaTitle .= ' ' . Shop::Lang()->get('newProducts', 'global');
+                    break;
+
+                case SEARCHSPECIALS_TOPOFFERS:
+                    $cMetaTitle .= ' ' . Shop::Lang()->get('topOffers', 'global');
+                    break;
+
+                case SEARCHSPECIALS_UPCOMINGPRODUCTS:
+                    $cMetaTitle .= ' ' . Shop::Lang()->get('upcomingProducts', 'global');
+                    break;
+
+                case SEARCHSPECIALS_TOPREVIEWS:
+                    $cMetaTitle .= ' ' . Shop::Lang()->get('topReviews', 'global');
+                    break;
+
+                default:
+                    break;
+            }
+        }
+        // MerkmalWertfilter
+        if (is_array($this->MerkmalFilter) && count($this->MerkmalFilter) > 0) {
+            foreach ($this->MerkmalFilter as $oMerkmalFilter) {
+                if (isset($oMerkmalFilter->cName)) {
+                    $cMetaTitle .= ' ' . $oMerkmalFilter->cName;
+                }
+            }
+        }
+
+        return ltrim($cMetaTitle);
     }
 }

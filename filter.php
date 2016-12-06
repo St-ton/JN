@@ -8,12 +8,12 @@ if (!defined('PFAD_ROOT')) {
     exit();
 }
 require_once PFAD_ROOT . PFAD_INCLUDES . 'filter_inc.php';
-$cachingOptions = Shop::getSettings(array(CONF_CACHING));
+$cachingOptions = Shop::getSettings([CONF_CACHING]);
 Shop::setPageType(PAGE_ARTIKELLISTE);
 /** @global JTLSmarty $smarty */
 /** @global Navigationsfilter $NaviFilter*/
 $Einstellungen = Shop::getSettings(
-    array(
+    [
         CONF_GLOBAL,
         CONF_RSS,
         CONF_ARTIKELUEBERSICHT,
@@ -28,7 +28,7 @@ $Einstellungen = Shop::getSettings(
         CONF_PREISVERLAUF,
         CONF_SONSTIGES,
         CONF_AUSWAHLASSISTENT
-    )
+    ]
 );
 $suchanfrage = '';
 // setze Kat in Session
@@ -37,13 +37,7 @@ if (isset($cParameter_arr['kKategorie']) && $cParameter_arr['kKategorie'] > 0) {
     $AktuelleSeite               = 'PRODUKTE';
 }
 // Standardoptionen
-$nArtikelProSeite_arr = array(
-    5,
-    10,
-    25,
-    50,
-    100
-);
+$nArtikelProSeite_arr = [5, 10, 25, 50, 100];
 if ($cParameter_arr['kSuchanfrage'] > 0) {
     $oSuchanfrage = Shop::DB()->select('tsuchanfrage', 'kSuchanfrage', (int)$cParameter_arr['kSuchanfrage'], null, null, null, null, false, 'cSuche');
     if (isset($oSuchanfrage->cSuche) && strlen($oSuchanfrage->cSuche) > 0) {
@@ -91,7 +85,7 @@ $NaviFilter->Suche->kSuchanfrage = gibSuchanfrageKey($NaviFilter->Suche->cSuche,
 doMainwordRedirect($NaviFilter, count($oSuchergebnisse->Artikel->elemente), true);
 // Bestsellers
 if (isset($Einstellungen['artikeluebersicht']['artikelubersicht_bestseller_gruppieren']) && $Einstellungen['artikeluebersicht']['artikelubersicht_bestseller_gruppieren'] === 'Y') {
-    $products = array();
+    $products = [];
     foreach ($oSuchergebnisse->Artikel->elemente as $product) {
         $products[] = (int)$product->kArtikel;
     }
@@ -288,37 +282,34 @@ $smarty->assign('SEARCHSPECIALS_TOPREVIEWS', SEARCHSPECIALS_TOPREVIEWS)
         ->assign('requestURL', (isset($requestURL)) ? $requestURL : null)
         ->assign('sprachURL', (isset($sprachURL)) ? $sprachURL : null)
         ->assign('oNavigationsinfo', $oNavigationsinfo)
-        ->assign('SEP_SEITE', SEP_SEITE)
-        ->assign('SEP_KAT', SEP_KAT)
-        ->assign('SEP_HST', SEP_HST)
-        ->assign('SEP_MERKMAL', SEP_MERKMAL)
         ->assign('SEO', true)
         ->assign('SESSION_NOTWENDIG', false);
 
 executeHook(HOOK_FILTER_PAGE);
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 $oGlobaleMetaAngabenAssoc_arr = holeGlobaleMetaAngaben();
-$oExcludedKeywordsAssoc_arr   = holeExcludedKeywords();
 $smarty->assign(
-    'meta_title', gibNaviMetaTitle(
-        $NaviFilter,
+    'meta_title',
+    $NaviFilter->getMetaTitle(
+        $oMeta,
         $oSuchergebnisse,
         $oGlobaleMetaAngabenAssoc_arr
     )
 );
 $smarty->assign(
-    'meta_description', gibNaviMetaDescription(
+    'meta_description',
+    $NaviFilter->getMetaDescription(
+        $oMeta,
         $oSuchergebnisse->Artikel->elemente,
-        $NaviFilter,
         $oSuchergebnisse,
         $oGlobaleMetaAngabenAssoc_arr
     )
 );
 $smarty->assign(
-    'meta_keywords', gibNaviMetaKeywords(
-        $oSuchergebnisse->Artikel->elemente,
-        $NaviFilter,
-        (isset($oExcludedKeywordsAssoc_arr[$_SESSION['cISOSprache']]->cKeywords) ? explode(' ', $oExcludedKeywordsAssoc_arr[$_SESSION['cISOSprache']]->cKeywords) : array())
+    'meta_keywords',
+    $NaviFilter->getMetaKeywords(
+        $oMeta,
+        $oSuchergebnisse->Artikel->elemente
     )
 );
 executeHook(HOOK_FILTER_ENDE);

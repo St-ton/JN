@@ -133,9 +133,8 @@ if (isset($Einstellungen['navigationsfilter']['allgemein_tagfilter_benutzen']) &
 $oSuchergebnisse->MerkmalFilter    = $NaviFilter->getAttributeFilterOptions($AktuelleKategorie, function_exists('starteAuswahlAssistent'));
 //Shop::dbg($oSuchergebnisse->MerkmalFilter, false, '$oSuchergebnisse->MerkmalFilter');
 
-//@todo
 $oSuchergebnisse->Preisspanne      = $NaviFilter->getPriceRangeFilterOptions($oSuchergebnisse->GesamtanzahlArtikel);
-//Shop::dbg($oSuchergebnisse->Preisspanne, false, '$oSuchergebnisse->Preisspanne');
+//Shop::dbg($oSuchergebnisse->Preisspanne, true, '$oSuchergebnisse->Preisspanne');
 
 $oSuchergebnisse->Kategorieauswahl = $NaviFilter->getCategoryFilterOptions();
 //Shop::dbg($oSuchergebnisse->Kategorieauswahl, false, '$oSuchergebnisse->Kategorieauswahl');

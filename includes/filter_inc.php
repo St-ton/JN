@@ -428,7 +428,7 @@ function gibAnzahlFilter($NaviFilter)
         $nCount++;
     }
     // PreisspannenFilter
-    if (isset($NaviFilter->PreisspannenFilter->fVon) && $NaviFilter->PreisspannenFilter->fVon > 0) {
+    if (isset($NaviFilter->PreisspannenFilter->fVon)) {
         $nCount++;
     }
     // SuchspecialFilter

@@ -1436,7 +1436,7 @@ class Navigationsfilter
 
         if (is_array($oPreisspannenfilter_arr)) {
             foreach ($oPreisspannenfilter_arr as $i => $oPreisspannenfilter) {
-                $cSQL .= "COUNT(
+                $cSQL .= "COUNT(DISTINCT 
                     IF(";
 
                 $nBis = $oPreisspannenfilter->nBis;
@@ -1461,7 +1461,7 @@ class Navigationsfilter
                         $_SESSION['Kundengruppe']->fRabatt . ", " . $fKundenrabatt . ", 0)) / 100), IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * " . $currency->fFaktor . "))), 2)";
                 }
 
-                $cSQL .= " < " . $nBis . ", 1, NULL)
+                $cSQL .= " < " . $nBis . ", tartikel.kArtikel, NULL)
                     ) AS anz" . $i . ", ";
             }
             $cSQL = substr($cSQL, 0, strlen($cSQL) - 2);
@@ -1569,9 +1569,7 @@ class Navigationsfilter
             }
             $state->having = implode(' AND ', $state->having);
             $state->joins  = implode("\n", $state->joins);
-
-            $oPreisspannenFilterMaxMin = Shop::DB()->query(
-                "SELECT max(ssMerkmal.fMax) AS fMax, min(ssMerkmal.fMin) AS fMin
+            $qry = "SELECT max(ssMerkmal.fMax) AS fMax, min(ssMerkmal.fMin) AS fMin
                 FROM (
                     SELECT ROUND(
                         LEAST(
@@ -1589,7 +1587,8 @@ class Navigationsfilter
                     " . $state->conditions . "
                 GROUP BY tartikel.kArtikel
                 " . $state->having . "
-            ) AS ssMerkmal", 1);
+            ) AS ssMerkmal";
+            $oPreisspannenFilterMaxMin = Shop::DB()->query($qry, 1);
             if (isset($oPreisspannenFilterMaxMin->fMax) && $oPreisspannenFilterMaxMin->fMax > 0) {
                 // Berechnet Max, Min, Step, Anzahl, Diff und liefert diese Werte in einem Objekt
                 $oPreis = berechneMaxMinStep($oPreisspannenFilterMaxMin->fMax * $currency->fFaktor, $oPreisspannenFilterMaxMin->fMin * $currency->fFaktor);
@@ -1602,13 +1601,12 @@ class Navigationsfilter
                     }
                     $cSelectSQL .= " SUM(ssMerkmal.anz" . $i . ") AS anz" . $i;
                 }
-                $oPreisspannenFilterDB = Shop::DB()->query(
-                    "SELECT " . $cSelectSQL . "
+                $qry = "SELECT " . $cSelectSQL . "
                     FROM
                     (
                         SELECT " . $this->getPriceRangeSQL($oPreis, $currency) . "
                         FROM tartikel " .
-                        $state->joins . "
+                    $state->joins . "
                         WHERE tartikelsichtbarkeit.kArtikel IS NULL
                             AND tartikel.kVaterArtikel = 0
                             " . $this->getStorageFilter() . "
@@ -1616,8 +1614,8 @@ class Navigationsfilter
                         GROUP BY tartikel.kArtikel
                         " . $state->having . "
                     ) AS ssMerkmal
-                    ", 1
-                );
+                    ";
+                $oPreisspannenFilterDB = Shop::DB()->query($qry, 1);
 
                 $nPreisspannenAnzahl_arr   = (is_object($oPreisspannenFilterDB)) ? get_object_vars($oPreisspannenFilterDB) : null;
                 $oPreisspannenFilterDB_arr = [];

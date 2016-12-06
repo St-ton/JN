@@ -132,7 +132,7 @@
                     {/if}{* /suchspecials *}
                     {if $Einstellungen.navigationsfilter.preisspannenfilter_benutzen === 'content' && (isset($NaviFilter->PreisspannenFilter) || !empty($Suchergebnisse->Preisspanne))}
                         {block name="productlist-result-options-filter-price"}
-                        <div class="form-group dropdown">
+                        <div class="form-group dropdown price-range-dropdown">
                             <a href="#" class="btn btn-default dropdown-toggle form-control" data-toggle="dropdown" role="button" aria-expanded="false">
                                 {lang key="rangeOfPrices" section="global"} <span class="caret"></span>
                             </a>
@@ -212,18 +212,12 @@
                             </a>
                         {/strip}
                     {/if}
-                    {foreach name=merkmalfilter from=$Suchergebnisse->MerkmalFilter item=Merkmal}
-                        {foreach name=merkmalwertfilter from=$Merkmal->oMerkmalWerte_arr item=MerkmalWert}
-                            {if $MerkmalWert->nAktiv}
-                                {assign var=kMerkmalWert value=$MerkmalWert->kMerkmalWert}
-                                {strip}
-                                    <a class="label label-info" rel="nofollow" href="{if !empty($MerkmalWert->cURL)}{$MerkmalWert->cURL}{else}#{/if}">
-                                        {*<a class="label label-info" rel="nofollow" href="{$NaviFilter->URL->cAlleMerkmalWerte[$kMerkmalWert]}">*}
-                                        <i class="fa fa-check-circle-o"></i> {$MerkmalWert->cWert|escape:'html'} &nbsp;<span class="fa fa-trash-o"></span>
-                                    </a>
-                                {/strip}
-                            {/if}
-                        {/foreach}
+                    {foreach $NaviFilter->MerkmalFilter as $Merkmal}
+                        {strip}
+                            <a class="label label-info" rel="nofollow" href="{$NaviFilter->URL->cAlleMerkmalWerte[$Merkmal->kMerkmalWert]}">
+                                {$Merkmal->cWert|escape:'html'} &nbsp;<span class="fa fa-trash-o"></span>
+                            </a>
+                        {/strip}
                     {/foreach}
                     {if !empty($NaviFilter->URL->cNoFilter)}
                         {strip}

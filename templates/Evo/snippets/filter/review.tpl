@@ -12,7 +12,6 @@
                                     {lang key="starPlural"}
                                 {else}
                                     {lang key="starSingular"}
-
                                 {/if})
                             </em>
                         {/if}

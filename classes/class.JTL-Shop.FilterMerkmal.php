@@ -136,6 +136,7 @@ class FilterMerkmal extends AbstractFilter implements IFilter
     {
         $join = new FilterJoin();
         $join->setType('JOIN')
+             ->setComment('join1 from FilterMerkmal')
              ->setTable('(
                             SELECT kArtikel
                             FROM tartikelmerkmal

@@ -412,7 +412,7 @@ Ihr Team von {$Firma->cName}]]></ContentText>
                 <Filename>infos.php</Filename>
             </Customlink>
             <Settingslink sort="2">
-                <Name>Einstellungen EXPRESS</Name>
+                <Name>PayPal Express</Name>
                 <Setting type="text" initialValue="Y" sort="1" conf="N">
                     <Name>Einstellungen für Positionierung des PayPal Buttons im Warenkorb</Name>
                     <Description />
@@ -519,15 +519,15 @@ Ihr Team von {$Firma->cName}]]></ContentText>
             </Settingslink>
 
             <Settingslink sort="3">
-                <Name>Einstellungen PLUS</Name>
-
+                <Name>PayPal <![CDATA[&#10010;]]></Name>
+                
                 <Setting type="text" initialValue="Y" sort="0" conf="N">
-                    <Name>Auswahlseite</Name>
+                    <Name>Allgemein</Name>
                     <Description />
-                    <ValueName>jtl_paypal_style_headline</ValueName>
+                    <ValueName>jtl_paypal_general_headline</ValueName>
                 </Setting>
 
-                <Setting type="selectbox" initialValue="N" sort="0" conf="Y">
+                <Setting type="selectbox" initialValue="N" sort="1" conf="Y">
                     <Name>Styles aktivieren</Name>
                     <Description></Description>
                     <ValueName>jtl_paypal_style_enabled</ValueName>
@@ -536,8 +536,53 @@ Ihr Team von {$Firma->cName}]]></ContentText>
                         <Option value="Y" sort="2">Ja</Option>
                     </SelectboxOptions>
                 </Setting>
+                
+                <Setting type="selectbox" initialValue="0" sort="2" conf="Y">
+                    <Name>Eigene Zahlungsarten</Name>
+                    <Description></Description>
+                    <ValueName>jtl_paypal_psp_type</ValueName>
+                    <SelectboxOptions>
+                        <Option value="0" sort="1">Integriert in PayPal <![CDATA[&#10010;]]> Wallet</Option>
+                        <Option value="1" sort="2">Standard Zahlungsartauswahl</Option>
+                    </SelectboxOptions>
+                </Setting>
+                
+                <Setting type="text" initialValue="Y" sort="3" conf="N">
+                    <Name>Web Profil</Name>
+                    <Description />
+                    <ValueName>jtl_paypal_wp_headline</ValueName>
+                </Setting>
+                
+                <Setting type="text" initialValue="JTL-Shop" sort="4" conf="Y">
+                    <Name>Anzeigename für PayPal Login</Name>
+                    <Description>Verwendeter Name auf der PayPal-Seite</Description>
+                    <ValueName>brand</ValueName>
+                </Setting>
+                <Setting type="text" initialValue="" sort="5" conf="Y">
+                    <Name>Shoplogo</Name>
+                    <Description>Übergeben Sie Ihr offizielles Logo an die PayPal-Seite und erhöhen Ihre Conversion: Bitte nutzen Sie einen sicheren https-Speicherort. Die maximale Größe ist 190 x 60 Pixel.</Description>
+                    <ValueName>shoplogo</ValueName>
+                </Setting>
+            </Settingslink>
 
-                <Setting type="selectbox" initialValue="N" sort="1" conf="Y">
+            <Customlink sort="5">
+                <Name>Zahlungsarten <![CDATA[&#10010;]]></Name>
+                <Filename>payment.php</Filename>
+            </Customlink>
+            <Customlink sort="6">
+                <Name>Webhooks <![CDATA[&#10010;]]></Name>
+                <Filename>webhooks.php</Filename>
+            </Customlink>
+            <Settingslink sort="7">
+                <Name>Styles <![CDATA[&#10010;]]></Name>
+                
+                <Setting type="text" initialValue="Y" sort="0" conf="N">
+                    <Name>Schrift</Name>
+                    <Description />
+                    <ValueName>jtl_paypal_style_font_headline</ValueName>
+                </Setting>
+
+                <Setting type="selectbox" initialValue="Arial" sort="1" conf="Y">
                     <Name>Schriftart</Name>
                     <Description></Description>
                     <ValueName>jtl_paypal_style_font_family</ValueName>
@@ -552,7 +597,7 @@ Ihr Team von {$Firma->cName}]]></ContentText>
                     </SelectboxOptions>
                 </Setting>
 
-                <Setting type="selectbox" initialValue="12" sort="2" conf="Y">
+                <Setting type="selectbox" initialValue="12px" sort="2" conf="Y">
                     <Name>Schriftgröße</Name>
                     <Description></Description>
                     <ValueName>jtl_paypal_style_font_size</ValueName>
@@ -663,28 +708,6 @@ Ihr Team von {$Firma->cName}]]></ContentText>
                     </SelectboxOptions>
                 </Setting>
             </Settingslink>
-
-            <Settingslink sort="4">
-                <Name>Web Profil PLUS</Name>
-                <Setting type="text" initialValue="JTL-Shop" sort="1" conf="Y">
-                    <Name>Anzeigename für PayPal Login</Name>
-                    <Description>Verwendeter Name auf der PayPal-Seite</Description>
-                    <ValueName>brand</ValueName>
-                </Setting>
-                <Setting type="text" initialValue="" sort="2" conf="Y">
-                    <Name>Shoplogo</Name>
-                    <Description>Aobergeben Sie Ihr offizielles Logo an die PayPal-Seite und erhöhen Ihre Conversion: Bitte nutzen Sie einen sicheren https-Speicherort. Die maximale Größe ist 190 x 60 Pixel.</Description>
-                    <ValueName>shoplogo</ValueName>
-                </Setting>
-            </Settingslink>
-            <Customlink sort="5">
-                <Name>Zahlungsarten PLUS</Name>
-                <Filename>payment.php</Filename>
-            </Customlink>
-            <Customlink sort="6">
-                <Name>Webhooks PLUS</Name>
-                <Filename>webhooks.php</Filename>
-            </Customlink>
         </Adminmenu>
     </Install>
 </jtlshop3plugin>

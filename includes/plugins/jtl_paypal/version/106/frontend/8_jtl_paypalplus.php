@@ -33,51 +33,54 @@ if ($api->isConfigured(false) && $api->isUseable($items, $shippingId)) {
 
     if ($payment !== null) {
         $approvalUrl = $payment->getApprovalLink();
+        
+        $settings = $api->getSettings();
+        $embedded = (int)$settings['jtl_paypal_psp_type'] === 0;
 
-        $availablePayments = Shop::DB()->query('SELECT * FROM xplugin_jtl_paypal_additional_payment ORDER BY sort ASC', 2);
-        $defaultPayments   = Shop::Smarty()->get_template_vars('Zahlungsarten');
+        $shopUrl  = Shop()->getURL(true);
+        $link     = PayPalHelper::getLinkByName($oPlugin, 'PayPalPLUS');
+        
+        if ($embedded) {
+            $availablePayments = Shop::DB()->query('SELECT * FROM xplugin_jtl_paypal_additional_payment ORDER BY sort ASC', 2);
+            $defaultPayments   = Shop::Smarty()->get_template_vars('Zahlungsarten');
 
-        $shopUrl = Shop()->getURL(true);
-        $link    = PayPalHelper::getLinkByName($oPlugin, 'PayPalPLUS');
+            $styles                   = null;
+            $sortedPayments           = [];
+            $thirdPartyPaymentMethods = [];
 
-        $styles                   = null;
-        $sortedPayments           = [];
-        $thirdPartyPaymentMethods = [];
-
-        foreach ($availablePayments as $p) {
-            foreach ($defaultPayments as $d) {
-                if (intval($p->paymentId) == intval($d->kZahlungsart)) {
-                    $sortedPayments[] = $d;
+            foreach ($availablePayments as $p) {
+                foreach ($defaultPayments as $d) {
+                    if (intval($p->paymentId) == intval($d->kZahlungsart)) {
+                        $sortedPayments[] = $d;
+                        break;
+                    }
+                }
+            }
+            
+            foreach ($sortedPayments as $i => $p) {
+                if ($i >= 5) {
                     break;
                 }
-            }
-        }
 
-        foreach ($sortedPayments as $i => $p) {
-            if ($i >= 5) {
-                break;
-            }
+                $thirdParty = [
+                    'methodName'  => utf8_encode($p->angezeigterName[Shop::$cISO]),
+                    'redirectUrl' => sprintf('%s/index.php?s=%d&a=payment_method&id=%d', $shopUrl, $link->kLink, $p->kZahlungsart),
+                ];
 
-            $thirdParty = [
-                'methodName'  => utf8_encode($p->angezeigterName[Shop::$cISO]),
-                'redirectUrl' => sprintf('%s/index.php?s=%d&a=payment_method&id=%d', $shopUrl, $link->kLink, $p->kZahlungsart),
-            ];
-
-            if (!empty($p->cBild)) {
-                if (strpos($p->cBild, 'http') !== 0) {
-                    $p->cBild = $shopUrl . '/' . ltrim($p->cBild, '/');
+                if (!empty($p->cBild)) {
+                    if (strpos($p->cBild, 'http') !== 0) {
+                        $p->cBild = $shopUrl . '/' . ltrim($p->cBild, '/');
+                    }
+                    $thirdParty['imageUrl'] = str_replace('http://', 'https://', $p->cBild);
                 }
-                $thirdParty['imageUrl'] = str_replace('http://', 'https://', $p->cBild);
-            }
 
-            if (!empty($p->cHinweisText[Shop::$cISO])) {
-                $thirdParty['description'] = utf8_encode($p->cHinweisText[Shop::$cISO]);
-            }
+                if (!empty($p->cHinweisText[Shop::$cISO])) {
+                    $thirdParty['description'] = utf8_encode($p->cHinweisText[Shop::$cISO]);
+                }
 
-            $thirdPartyPaymentMethods[] = $thirdParty;
+                $thirdPartyPaymentMethods[] = $thirdParty;
+            }
         }
-
-        $settings = $api->getSettings();
 
         if ($settings['jtl_paypal_style_enabled'] === 'Y') {
 
@@ -117,6 +120,7 @@ if ($api->isConfigured(false) && $api->isUseable($items, $shippingId)) {
 
         Shop::Smarty()->assign('language', $language)
             ->assign('country', $country)
+            ->assign('embedded', $embedded)
             ->assign('payPalPlus', true)
             ->assign('mode', $api->getModus())
             ->assign('approvalUrl', $approvalUrl)

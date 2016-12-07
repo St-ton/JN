@@ -4,6 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+require_once PFAD_ROOT . PFAD_INCLUDES . 'filter_inc.php';
+
 /**
  * Class Navigationsfilter
  */
@@ -310,6 +312,9 @@ class Navigationsfilter
         if ($this->Suchspecial->isInitialized()) {
             return $this->Suchspecial;
         }
+        if ($this->Suche->isInitialized()) {
+            return $this->Suche;
+        }
 
         return null;
     }
@@ -443,7 +448,6 @@ class Navigationsfilter
         }
         if (strlen($params['cSuche']) > 0) {
             $params['cSuche'] = StringHandler::filterXSS($params['cSuche']);
-
             $this->Suche              = (new FilterSearch())->init($params['kSuchanfrage'], $this->oSprache_arr);
             $this->Suche->cSuche      = $params['cSuche'];
             $this->EchteSuche         = new stdClass();
@@ -708,15 +712,16 @@ class Navigationsfilter
     private function getArticlesPerPageLimit()
     {
         if (isset($_SESSION['ArtikelProSeite']) && $_SESSION['ArtikelProSeite'] > 0) {
-            return (int)$_SESSION['ArtikelProSeite'];
-        }
-        if ($_SESSION['oErweiterteDarstellung']->nAnzahlArtikel > 0) {
-            return (int)$_SESSION['oErweiterteDarstellung']->nAnzahlArtikel;
+            $limit = (int)$_SESSION['ArtikelProSeite'];
+        } elseif ($_SESSION['oErweiterteDarstellung']->nAnzahlArtikel > 0) {
+            $limit = (int)$_SESSION['oErweiterteDarstellung']->nAnzahlArtikel;
+        } else {
+            $limit = ($this->conf['artikeluebersicht']['artikeluebersicht_artikelproseite'] > 0)
+                ? (int)$this->conf['artikeluebersicht']['artikeluebersicht_artikelproseite']
+                : 20;
         }
 
-        return ($this->conf['artikeluebersicht']['artikeluebersicht_artikelproseite'] > 0)
-            ? (int)$this->conf['artikeluebersicht']['artikeluebersicht_artikelproseite']
-            : 20;
+        return min($limit, ARTICLES_PER_PAGE_HARD_LIMIT);
     }
 
     /**
@@ -755,7 +760,6 @@ class Navigationsfilter
 
         $order = $this->getOrder();
         $state = $this->getCurrentStateData();
-
         $state->joins[] = $order->join;
 
         $query = $this->getBaseQuery(['tartikel.kArtikel'], $state->joins, $state->conditions, $state->having, $order->orderBy);
@@ -845,7 +849,6 @@ class Navigationsfilter
         if (!empty($stateCondition)) {
             $data->conditions[] = $stateCondition;
         }
-
         foreach ($this->getActiveFilters(true) as $type => $filter) {
             $count = count($filter);
             if ($count > 1) {
@@ -2530,12 +2533,13 @@ class Navigationsfilter
     }
 
     /**
-     * @param object $oMeta
-     * @param object $oSuchergebnisse
-     * @param array $GlobaleMetaAngaben_arr
+     * @param object         $oMeta
+     * @param object         $oSuchergebnisse
+     * @param array          $GlobaleMetaAngaben_arr
+     * @param Kategorie|null $oKategorie
      * @return string
      */
-    public function getMetaTitle($oMeta, $oSuchergebnisse, $GlobaleMetaAngaben_arr)
+    public function getMetaTitle($oMeta, $oSuchergebnisse, $GlobaleMetaAngaben_arr, $oKategorie = null)
     {
         executeHook(HOOK_FILTER_INC_GIBNAVIMETATITLE);
         // Pruefen ob bereits eingestellte Metas gesetzt sind
@@ -2554,7 +2558,9 @@ class Navigationsfilter
         $cMetaTitle = StringHandler::htmlentitydecode($cMetaTitle, ENT_NOQUOTES);
         // Kategorieattribute koennen Standard-Titles ueberschreiben
         if ($this->Kategorie->isInitialized()) {
-            $oKategorie = new Kategorie($this->Kategorie->getID());
+            $oKategorie = ($oKategorie !== null)
+                ? $oKategorie
+                : new Kategorie($this->Kategorie->getID());
             if (isset($oKategorie->cTitleTag) && strlen($oKategorie->cTitleTag) > 0) {
                 // meta title via new method
                 $cMetaTitle = strip_tags($oKategorie->cTitleTag);
@@ -2585,13 +2591,14 @@ class Navigationsfilter
     }
 
     /**
-     * @param object $oMeta
-     * @param array  $oArtikel_arr
-     * @param object $oSuchergebnisse
-     * @param array  $GlobaleMetaAngaben_arr
+     * @param object         $oMeta
+     * @param array          $oArtikel_arr
+     * @param object         $oSuchergebnisse
+     * @param array          $GlobaleMetaAngaben_arr
+     * @param Kategorie|null $oKategorie
      * @return string
      */
-    public function getMetaDescription($oMeta, $oArtikel_arr, $oSuchergebnisse, $GlobaleMetaAngaben_arr)
+    public function getMetaDescription($oMeta, $oArtikel_arr, $oSuchergebnisse, $GlobaleMetaAngaben_arr, $oKategorie = null)
     {
         executeHook(HOOK_FILTER_INC_GIBNAVIMETADESCRIPTION);
         // Prüfen ob bereits eingestellte Metas gesetzt sind
@@ -2603,7 +2610,9 @@ class Navigationsfilter
         // Kategorieattribut?
         $cKatDescription = '';
         if ($this->Kategorie->isInitialized()) {
-            $oKategorie = new Kategorie($this->Kategorie->getID());
+            $oKategorie = ($oKategorie !== null)
+                ? $oKategorie
+                : new Kategorie($this->Kategorie->getID());
             if (isset($oKategorie->cMetaDescription) && strlen($oKategorie->cMetaDescription) > 0) {
                 // meta description via new method
                 $cKatDescription = strip_tags($oKategorie->cMetaDescription);
@@ -2689,13 +2698,13 @@ class Navigationsfilter
         return truncateMetaDescription(strip_tags($cMetaDescription));
     }
 
-
     /**
-     * @param object $oMeta
-     * @param array  $oArtikel_arr
+     * @param object         $oMeta
+     * @param array          $oArtikel_arr
+     * @param Kategorie|null $oKategorie
      * @return mixed|string
      */
-    public function getMetaKeywords($oMeta, $oArtikel_arr)
+    public function getMetaKeywords($oMeta, $oArtikel_arr, $oKategorie = null)
     {
         executeHook(HOOK_FILTER_INC_GIBNAVIMETAKEYWORDS);
         // Prüfen ob bereits eingestellte Metas gesetzt sind
@@ -2706,10 +2715,10 @@ class Navigationsfilter
         }
         // Kategorieattribut?
         $cKatKeywords = '';
-        $oKategorie   = new stdClass();
-        $oKategorie->kKategorie = 0;
         if ($this->Kategorie->isInitialized()) {
-            $oKategorie = new Kategorie($this->Kategorie->getID());
+            $oKategorie = ($oKategorie !== null)
+                ? $oKategorie
+                : new Kategorie($this->Kategorie->getID());
             if (isset($oKategorie->cMetaKeywords) && strlen($oKategorie->cMetaKeywords) > 0) {
                 // meta keywords via new method
                 $cKatKeywords = strip_tags($oKategorie->cMetaKeywords);
@@ -2779,7 +2788,7 @@ class Navigationsfilter
                 }
                 $cMetaKeywords = implode(', ', $cMetaKeywordsUnique_arr);
             }
-        } elseif ($oKategorie->kKategorie > 0) {
+        } elseif (!empty($oKategorie->kKategorie)) {
             // Hat die aktuelle Kategorie Unterkategorien?
             if ($oKategorie->bUnterKategorien) {
                 $oKategorieListe = new KategorieListe();

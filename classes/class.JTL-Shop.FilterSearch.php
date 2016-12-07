@@ -54,7 +54,7 @@ class FilterSearch extends AbstractFilter implements IFilter
         );
         foreach ($languages as $language) {
             $this->cSeo[$language->kSprache] = '';
-            if ($language->kSprache == $oSeo_obj->kSprache) {
+            if (isset($oSeo_obj->kSprache) && $language->kSprache == $oSeo_obj->kSprache) {
                 $this->cSeo[$language->kSprache] = $oSeo_obj->cSeo;
             }
         }
@@ -63,6 +63,14 @@ class FilterSearch extends AbstractFilter implements IFilter
         }
 
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->cSuche;
     }
 
     /**
@@ -94,6 +102,31 @@ class FilterSearch extends AbstractFilter implements IFilter
      */
     public function getSQLJoin()
     {
-        return [];
+        $count = 0;
+        $kSucheCache_arr = [];
+        $searchFilter    = Shop::getNaviFilter()->getActiveState();
+        if (is_array($searchFilter)) {
+            $count = count($searchFilter);
+            foreach ($searchFilter as $oSuchFilter) {
+                if (isset($oSuchFilter->kSuchCache)) {
+                    $kSucheCache_arr[] = (int)$oSuchFilter->kSuchCache;
+                }
+            }
+        } elseif (isset($searchFilter->kSuchCache)) {
+            $kSucheCache_arr[] = (int)$searchFilter->kSuchCache;
+            $count = 1;
+        }
+        $join = new FilterJoin();
+        $join->setType('JOIN')
+             ->setTable('(
+                            SELECT tsuchcachetreffer.kArtikel, tsuchcachetreffer.kSuchCache, MIN(tsuchcachetreffer.nSort) AS nSort
+                            FROM tsuchcachetreffer
+                                WHERE tsuchcachetreffer.kSuchCache IN (' . implode(',', $kSucheCache_arr) . ') GROUP BY tsuchcachetreffer.kArtikel
+                                HAVING COUNT(*) = ' . $count . '
+                                ) AS jSuche')
+             ->setOn('jSuche.kArtikel = tartikel.kArtikel')
+             ->setComment('JOIN1 from FilterSearch');
+
+        return [$join];
     }
 }

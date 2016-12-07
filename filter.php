@@ -107,13 +107,8 @@ if (intval($Einstellungen['artikeluebersicht']['suche_max_treffer']) > 0) {
 }
 // Filteroptionen holen
 $oSuchergebnisse->Herstellerauswahl = $NaviFilter->getManufacturerFilterOptions();
-//Shop::dbg($oSuchergebnisse->Herstellerauswahl, false, '$oSuchergebnisse->Herstellerauswahl');
-
 $oSuchergebnisse->Bewertung         = $NaviFilter->getRatingFilterOptions();
-//Shop::dbg($oSuchergebnisse->Bewertung, false, '$oSuchergebnisse->Bewertung');
-
 $oSuchergebnisse->Tags              = $NaviFilter->getTagFilterOptions();
-//Shop::dbg($oSuchergebnisse->Tags, false, '$oSuchergebnisse->Tags');
 
 if (isset($Einstellungen['navigationsfilter']['allgemein_tagfilter_benutzen']) && $Einstellungen['navigationsfilter']['allgemein_tagfilter_benutzen'] === 'Y') {
     $oTags_arr = [];
@@ -125,18 +120,11 @@ if (isset($Einstellungen['navigationsfilter']['allgemein_tagfilter_benutzen']) &
 
 }
 $oSuchergebnisse->MerkmalFilter    = $NaviFilter->getAttributeFilterOptions($AktuelleKategorie, function_exists('starteAuswahlAssistent'));
-//Shop::dbg($oSuchergebnisse->MerkmalFilter, false, '$oSuchergebnisse->MerkmalFilter');
-
 $oSuchergebnisse->Preisspanne      = $NaviFilter->getPriceRangeFilterOptions($oSuchergebnisse->GesamtanzahlArtikel);
-//Shop::dbg($oSuchergebnisse->Preisspanne, true, '$oSuchergebnisse->Preisspanne');
-
 $oSuchergebnisse->Kategorieauswahl = $NaviFilter->getCategoryFilterOptions();
-//Shop::dbg($oSuchergebnisse->Kategorieauswahl, false, '$oSuchergebnisse->Kategorieauswahl');
-
 $oSuchergebnisse->SuchFilter       = $NaviFilter->getSearchFilterOptions();
-//Shop::dbg($oSuchergebnisse->SuchFilter, false, '$oSuchergebnisse->SuchFilter');i
-
 $oSuchergebnisse->SuchFilterJSON   = [];
+
 foreach ($oSuchergebnisse->SuchFilter as $key => $oSuchfilter) {
     $oSuchergebnisse->SuchFilterJSON[$key] = $oSuchfilter;
     $oSuchergebnisse->SuchFilterJSON[$key]->cURL = StringHandler::htmlentitydecode($oSuchfilter->cURL);
@@ -293,7 +281,8 @@ $smarty->assign(
     $NaviFilter->getMetaTitle(
         $oMeta,
         $oSuchergebnisse,
-        $oGlobaleMetaAngabenAssoc_arr
+        $oGlobaleMetaAngabenAssoc_arr,
+        $AktuelleKategorie
     )
 );
 $smarty->assign(
@@ -302,14 +291,16 @@ $smarty->assign(
         $oMeta,
         $oSuchergebnisse->Artikel->elemente,
         $oSuchergebnisse,
-        $oGlobaleMetaAngabenAssoc_arr
+        $oGlobaleMetaAngabenAssoc_arr,
+        $AktuelleKategorie
     )
 );
 $smarty->assign(
     'meta_keywords',
     $NaviFilter->getMetaKeywords(
         $oMeta,
-        $oSuchergebnisse->Artikel->elemente
+        $oSuchergebnisse->Artikel->elemente,
+        $AktuelleKategorie
     )
 );
 executeHook(HOOK_FILTER_ENDE);

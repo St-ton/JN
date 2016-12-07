@@ -317,10 +317,14 @@ function checkDependencies($aValues)
         $oArtikelOptionen->nWarenlager               = 1;
         $oArtikel                                    = new Artikel();
         $oArtikel->fuelleArtikel($kVaterArtikel, $oArtikelOptionen, Kundengruppe::getCurrent(), $_SESSION['kSprache']);
-        $weightDiff = 0;
+        $weightDiff   = 0;
+        $newProductNr = '';
         foreach ($valueID_arr as $valueID) {
-            $currentValue  = new EigenschaftWert($valueID);
+            $currentValue = new EigenschaftWert($valueID);
             $weightDiff   += $currentValue->fGewichtDiff;
+            $newProductNr = (!empty($currentValue->cArtNr) && $oArtikel->cArtNr !== $currentValue->cArtNr)
+                ? $currentValue->cArtNr
+                : $oArtikel->cArtNr;
         }
         $weightTotal      = Trennzeichen::getUnit(JTLSEPARATER_WEIGHT, $_SESSION['kSprache'], $oArtikel->fGewicht + $weightDiff);
         $cUnitWeightLabel = Shop::Lang()->get('weightUnit', 'global');
@@ -353,6 +357,9 @@ function checkDependencies($aValues)
 
         $objResponse->jsfunc('$.evo.article().setPrice', $fVK[$nNettoPreise], $cVKLocalized[$nNettoPreise], $cPriceLabel);
         $objResponse->jsfunc('$.evo.article().setUnitWeight', $oArtikel->fGewicht, $weightTotal . ' ' . $cUnitWeightLabel);
+        if (!empty($newProductNr)) {
+            $objResponse->jsfunc('$.evo.article().setProductNumber', $newProductNr);
+        }
     }
 
     return $objResponse;

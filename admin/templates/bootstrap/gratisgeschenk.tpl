@@ -66,7 +66,7 @@
                         {foreach name=haeufigegeschenke from=$oHaeufigGeschenk_arr item=oHaeufigGeschenk}
                             <tr class="tab_bg{$smarty.foreach.haeufigegeschenke.iteration%2}">
                                 <td class="TD1">
-                                    <a href="../../index.php?a={$oHaeufigGeschenk->kArtikel}" target="_blank">{$oHaeufigGeschenk->cName}</a>
+                                    <a href="{$URL_SHOP}/index.php?a={$oHaeufigGeschenk->kArtikel}" target="_blank">{$oHaeufigGeschenk->cName}</a>
                                 </td>
                                 <td class="tcenter">{$oHaeufigGeschenk->FunktionsAttribute[$cFunAttrib]}</td>
                                 <td class="tcenter">{$oHaeufigGeschenk->nGGAnzahl} mal</td>
@@ -97,7 +97,7 @@
                         {foreach name=letzten100geschenke from=$oLetzten100Geschenk_arr item=oLetzten100Geschenk}
                             <tr class="tab_bg{$smarty.foreach.letzten100geschenke.iteration%2}">
                                 <td class="TD1">
-                                    <a href="../../index.php?a={$oLetzten100Geschenk->kArtikel}" target="_blank">{$oLetzten100Geschenk->cName}</a>
+                                    <a href="{$URL_SHOP}/index.php?a={$oLetzten100Geschenk->kArtikel}" target="_blank">{$oLetzten100Geschenk->cName}</a>
                                 </td>
                                 <td class="tcenter">{$oLetzten100Geschenk->FunktionsAttribute[$cFunAttrib]}</td>
                                 <td class="tcenter">{$oLetzten100Geschenk->nGGAnzahl} mal</td>

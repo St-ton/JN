@@ -18,6 +18,9 @@ if (auth()) {
     if (!KEEP_SYNC_FILES) {
         delDirRecursively(PFAD_ROOT . PFAD_DBES_TMP);
     }
+
+    LastJob::getInstance()->finishStdJobs();
+
     $oLastJob_arr = getJobs();
     if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
         Jtllog::writeLog('LastJob Job Array: ' . print_r($oLastJob_arr, true), JTLLOG_LEVEL_DEBUG, false, 'LastJob Job Array');
@@ -27,11 +30,11 @@ if (auth()) {
         $conf = Shop::getSettings(array(CONF_GLOBAL, CONF_RSS, CONF_SITEMAP));
 
         foreach ($oLastJob_arr as $oLastJob) {
-            if (isset($oLastJob->kJob) && intval($oLastJob->kJob) > 0) {
+            if (isset($oLastJob->nJob) && intval($oLastJob->nJob) > 0) {
                 if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                    Jtllog::writeLog('Lastjobs Job: ' . print_r($oLastJob, true), JTLLOG_LEVEL_DEBUG, false, 'kJob', $oLastJob->kJob);
+                    Jtllog::writeLog('Lastjobs Job: ' . print_r($oLastJob, true), JTLLOG_LEVEL_DEBUG, false, 'nJob', $oLastJob->nJob);
                 }
-                switch (intval($oLastJob->kJob)) {
+                switch (intval($oLastJob->nJob)) {
                     // Bewertungserinnerung
                     case LASTJOBS_BEWERTUNGSERINNNERUNG:
                         require_once PFAD_ROOT . PFAD_ADMIN . 'includes/bewertungserinnerung.php';
@@ -85,33 +88,18 @@ die('3');
 function getJobs()
 {
     $GLOBALS['nIntervall'] = (defined('LASTJOBS_INTERVALL')) ? LASTJOBS_INTERVALL : 12;
-
     executeHook(HOOK_LASTJOBS_HOLEJOBS);
 
-    return Shop::DB()->query(
-        "SELECT *
-            FROM tlastjob
-            WHERE dErstellt = '0000-00-00 00:00:00'
-                OR DATE_ADD(dErstellt, INTERVAL " . (int)$GLOBALS['nIntervall'] . " HOUR) < now()", 2
-    );
+    return LastJob::getInstance()->getRepeatedJobs($GLOBALS['nIntervall']);
 }
 
 /**
  * Setzt das dErstellt Datum neu auf die aktuelle Zeit
  *
- * @param int $kJob
+ * @param int $nJob
  * @return bool
  */
-function updateJob($kJob)
+function updateJob($nJob)
 {
-    $kJob = (int)$kJob;
-    if ($kJob > 0) {
-        $oJob            = new stdClass();
-        $oJob->kJob      = $kJob;
-        $oJob->dErstellt = 'now()';
-
-        return Shop::DB()->update('tlastjob', 'kJob', $kJob, $oJob) >= 0;
-    }
-
-    return false;
+    return LastJob::getInstance()->restartJob($nJob);
 }

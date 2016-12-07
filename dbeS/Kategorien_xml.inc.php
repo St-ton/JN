@@ -8,14 +8,17 @@
  * @param array $kOberKategorie_arr
  * @param int   $nLevel
  */
-function updateKategorieLevel(array $kOberKategorie_arr = null, $nLevel = 1)
+function updateKategorieLevel(array $kOberKategorie_arr = [], $nLevel = 1)
 {
     $nLevel = (int)$nLevel;
-    $cSql   = 'WHERE kOberKategorie = 0';
-    if ($kOberKategorie_arr === null) {
+    $cSql   = "WHERE kOberKategorie = 0";
+    if (count($kOberKategorie_arr) === 0) {
         Shop::DB()->query("TRUNCATE tkategorielevel", 4);
     } else {
-        $cSql = 'WHERE kOberKategorie IN (' . implode(',', $kOberKategorie_arr) . ')';
+        array_walk($kOberKategorie_arr, function (&$k) {
+            $k = (int)$k;
+        });
+        $cSql = "WHERE kOberKategorie IN (" . implode(',', $kOberKategorie_arr) . ")";
     }
 
     $oKategorie_arr = Shop::DB()->query(
@@ -24,7 +27,7 @@ function updateKategorieLevel(array $kOberKategorie_arr = null, $nLevel = 1)
             {$cSql}", 2
     );
     if (count($oKategorie_arr) > 0) {
-        $kKategorie_arr = array();
+        $kKategorie_arr = [];
         foreach ($oKategorie_arr as $oKategorie) {
             $kKategorie_arr[] = (int)$oKategorie->kKategorie;
 
@@ -48,7 +51,7 @@ function updateKategorieLevel(array $kOberKategorie_arr = null, $nLevel = 1)
  */
 function rebuildCategoryTree($parent_id, $left)
 {
-    $left = intval($left);
+    $left = (int)$left;
     // the right value of this node is the left value + 1
     $right = $left + 1;
     // get all children of this node

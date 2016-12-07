@@ -47,7 +47,7 @@ if (auth()) {
                 removeTemporaryFiles($entzippfad . $zip['filename']);
             }
 
-            SyncStatus::getInstance()->run('Kategorien_xml');
+            LastJob::getInstance()->run(LASTJOBS_KATEGORIEUPDATE, 'Kategorien_xml');
             removeTemporaryFiles(substr($entzippfad, 0, -1), true);
         } elseif (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
             Jtllog::writeLog('Error : ' . $archive->errorInfo(true), JTLLOG_LEVEL_ERROR, false, 'Kategorien_xml');

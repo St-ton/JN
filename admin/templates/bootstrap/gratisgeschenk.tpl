@@ -36,7 +36,7 @@
                         {foreach name=aktivegeschenke from=$oAktiveGeschenk_arr item=oAktiveGeschenk}
                             <tr class="tab_bg{$smarty.foreach.aktivegeschenke.iteration%2}">
                                 <td class="TD1">
-                                    <a href="../../index.php?a={$oAktiveGeschenk->kArtikel}" target="_blank">{$oAktiveGeschenk->cName}</a>
+                                    <a href="{$currentTemplateDirFull}index.php?a={$oAktiveGeschenk->kArtikel}" target="_blank">{$oAktiveGeschenk->cName}</a>
                                 </td>
                                 <td class="tcenter">{getCurrencyConversionSmarty fPreisBrutto=$oAktiveGeschenk->FunktionsAttribute[$cFunAttrib]}</td>
                                 <td class="tcenter">{$oAktiveGeschenk->dErstellt_de}</td>

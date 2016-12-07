@@ -78,11 +78,11 @@ if (is_array($oLinkOberGruppe_arr) && count($oLinkOberGruppe_arr) > 0) {
                 $oPlugin_arr[$j]->cURL      = $shopURL . '/' . PFAD_ADMIN . 'plugin.php?kPlugin=' . $oPlugin->kPlugin;
                 $oPlugin_arr[$j]->cRecht    = 'PLUGIN_ADMIN_VIEW';
             }
-            $oLinkOberGruppe_arr[$i]->oLinkGruppe_arr = array();
-            $pluginManager                            = new stdClass();
-            $pluginManager->cName                     = '&Uuml;bersicht';
-            $pluginManager->break                     = false;
-            $pluginManager->oLink_arr                 = Shop::DB()->selectAll('tadminmenu', 'kAdminmenueGruppe', (int)$oLinkOberGruppe->kAdminmenueGruppe, '*', 'cLinkname');
+            $oLinkOberGruppe_arr[$i]->oLinkGruppe_arr   = array();
+            $pluginManager                              = new stdClass();
+            $pluginManager->cName                       = '&Uuml;bersicht';
+            $pluginManager->break                       = false;
+            $pluginManager->oLink_arr                   = Shop::DB()->selectAll('tadminmenu', 'kAdminmenueGruppe', (int)$oLinkOberGruppe->kAdminmenueGruppe, '*', 'cLinkname');
             $oLinkOberGruppe_arr[$i]->oLinkGruppe_arr[] = $pluginManager;
             $pluginCount                                = count($oPlugin_arr);
             $maxEntries                                 = ($pluginCount > 24) ? 10 : 6;
@@ -130,6 +130,7 @@ $smarty->assign('SID', (defined('SID') ? SID : null))
        ->assign('session_name', session_name())
        ->assign('session_id', session_id())
        ->assign('currentTemplateDir', $currentTemplateDir)
+       ->assign('currentTemplateDirFull',  Shop::getURL() . '/' . $currentTemplateDir)
        ->assign('currentTheme', $currentTheme)
        ->assign('lang', 'german')
        ->assign('admin_css', $resourcePaths['css'])

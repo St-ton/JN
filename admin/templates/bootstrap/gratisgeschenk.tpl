@@ -36,7 +36,7 @@
                         {foreach name=aktivegeschenke from=$oAktiveGeschenk_arr item=oAktiveGeschenk}
                             <tr class="tab_bg{$smarty.foreach.aktivegeschenke.iteration%2}">
                                 <td class="TD1">
-                                    <a href="{$URL_SHOP}/index.php?a={$oAktiveGeschenk->kArtikel}" target="_blank">{$oAktiveGeschenk->cName}</a>
+                                    <a href="{$oAktiveGeschenk->cURLFull}" target="_blank">{$oAktiveGeschenk->cName}</a>
                                 </td>
                                 <td class="tcenter">{getCurrencyConversionSmarty fPreisBrutto=$oAktiveGeschenk->FunktionsAttribute[$cFunAttrib]}</td>
                                 <td class="tcenter">{$oAktiveGeschenk->dErstellt_de}</td>
@@ -66,7 +66,7 @@
                         {foreach name=haeufigegeschenke from=$oHaeufigGeschenk_arr item=oHaeufigGeschenk}
                             <tr class="tab_bg{$smarty.foreach.haeufigegeschenke.iteration%2}">
                                 <td class="TD1">
-                                    <a href="{$URL_SHOP}/index.php?a={$oHaeufigGeschenk->kArtikel}" target="_blank">{$oHaeufigGeschenk->cName}</a>
+                                    <a href="{$oAktiveGeschenk->cURLFull}" target="_blank">{$oHaeufigGeschenk->cName}</a>
                                 </td>
                                 <td class="tcenter">{$oHaeufigGeschenk->FunktionsAttribute[$cFunAttrib]}</td>
                                 <td class="tcenter">{$oHaeufigGeschenk->nGGAnzahl} mal</td>
@@ -97,7 +97,7 @@
                         {foreach name=letzten100geschenke from=$oLetzten100Geschenk_arr item=oLetzten100Geschenk}
                             <tr class="tab_bg{$smarty.foreach.letzten100geschenke.iteration%2}">
                                 <td class="TD1">
-                                    <a href="{$URL_SHOP}/index.php?a={$oLetzten100Geschenk->kArtikel}" target="_blank">{$oLetzten100Geschenk->cName}</a>
+                                    <a href="{$oAktiveGeschenk->cURLFull}" target="_blank">{$oLetzten100Geschenk->cName}</a>
                                 </td>
                                 <td class="tcenter">{$oLetzten100Geschenk->FunktionsAttribute[$cFunAttrib]}</td>
                                 <td class="tcenter">{$oLetzten100Geschenk->nGGAnzahl} mal</td>

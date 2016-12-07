@@ -5599,7 +5599,7 @@ class Artikel
         });
 
         if (($excludeWords = Shop::Cache()->get($cacheID)) === false) {
-            $exclude      = Shop::DB()->select('texcludekeywords', 'cISOSprache', $_SESSION['cISOSprache']);
+            $exclude      = Shop::DB()->select('texcludekeywords', 'cISOSprache', isset($_SESSION['cISOSprache']) ? $_SESSION['cISOSprache'] : gibStandardsprache()->cISO);
             $excludeWords = (isset($exclude->cKeywords)) ? explode(' ', $exclude->cKeywords) : [];
             Shop::Cache()->set($cacheID, $excludeWords, [CACHING_GROUP_OPTION]);
         }

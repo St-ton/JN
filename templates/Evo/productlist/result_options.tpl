@@ -48,37 +48,13 @@
         <nav class="panel panel-default">
             <div id="navbar-filter" class="panel-body">
                 <div class="form-inline">
-                    {if $Einstellungen.navigationsfilter.allgemein_kategoriefilter_benutzen === 'Y' && (
-                        (!empty($Suchergebnisse->Kategorieauswahl) && $Suchergebnisse->Kategorieauswahl|@count > 1) ||
-                        isset($NaviFilter->KategorieFilter->kKategorie->kKategorie) && $NaviFilter->KategorieFilter->kKategorie > 0)}
+                    {if $Einstellungen.navigationsfilter.allgemein_kategoriefilter_benutzen === 'Y' && (!empty($Suchergebnisse->Kategorieauswahl) && $Suchergebnisse->Kategorieauswahl|@count > 1)}
                         {block name="productlist-result-options-filter-category"}
-                            <div class="form-group dropdown">
-                                {if !empty($NaviFilter->KategorieFilter->kKategorie) && $NaviFilter->KategorieFilter->kKategorie > 0 ||
-                                $Einstellungen.navigationsfilter.kategoriefilter_anzeigen_als === 'HF' || (empty($NaviFilter->Kategorie->kKategorie) && empty($NaviFilter->KategorieFilter->kKategorie))}
-                                    <a id="category-filter-label" data-target="#" href="#" class="btn btn-default dropdown-toggle form-control" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                                        {lang key="allCategories" section="productOverview"}
-                                        <span class="caret"></span>
-                                    </a>
-                                {/if}
-                                <ul class="dropdown-menu" aria-labelledby="category-filter-label">
-                                    {if !empty($NaviFilter->Kategorie->kKategorie) || !empty($NaviFilter->KategorieFilter->kKategorie)}
-                                        <a href="#" class="{if !empty($NaviFilter->KategorieFilter->kKategorie)}active{/if}">
-                                            {if $Einstellungen.navigationsfilter.kategoriefilter_anzeigen_als === 'HF' && !empty($NaviFilter->KategorieFilter->kKategorie)}
-                                                {$NaviFilter->KategorieFilter->cName}
-                                            {else}
-                                                {$Suchergebnisse->Kategorieauswahl[0]->cName}
-                                            {/if}
-                                        </a>
-                                    {/if}
-
-                                    {if empty($NaviFilter->Kategorie->kKategorie) && (empty($NaviFilter->KategorieFilter->kKategorie) || $Einstellungen.navigationsfilter.kategoriefilter_anzeigen_als === 'HF')}
-                                        {foreach name=kategorieauswahl from=$Suchergebnisse->Kategorieauswahl item=Kategorie}
-                                            {if (isset($Kategorie->kKategorie) && (empty($NaviFilter->KategorieFilter->kKategorie) || ($Kategorie->kKategorie != $NaviFilter->KategorieFilter->kKategorie)))}
-                                                <li><a href="{$Kategorie->cURL}">{$Kategorie->cName} {if !isset($nMaxAnzahlArtikel) || !$nMaxAnzahlArtikel}({$Kategorie->nAnzahl}){/if}</a></li>
-                                            {/if}
-                                        {/foreach}
-                                    {/if}
-                                </ul>
+                            <div class="form-group dropdown filter-type-category">
+                                <a href="#" class="btn btn-default dropdown-toggle form-control" data-toggle="dropdown" role="button" aria-expanded="false">
+                                    {lang key="allCategories" section="global"} <span class="caret"></span>
+                                </a>
+                                {include file='snippets/filter/category.tpl' class="dropdown-menu"}
                             </div>
                         {/block}
                     {/if}

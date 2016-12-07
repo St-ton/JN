@@ -1889,6 +1889,14 @@ class Navigationsfilter
                      ->setOn('tkategorie.kKategorie = tkategorieartikel.kKategorie');
                 $state->joins[] = $join;
             }
+            $join = new FilterJoin();
+            $join->setComment('join5 from getCategoryFilterOptions')
+                 ->setType('LEFT JOIN')
+                 ->setTable('tkategoriesichtbarkeit')
+                 ->setOn('tkategoriesichtbarkeit.kKategorie = tkategorie.kKategorie');
+            $state->joins[] = $join;
+
+            $state->conditions[] = "tkategoriesichtbarkeit.kKategorie IS NULL";
 
             // nicht Standardsprache? Dann hole Namen nicht aus tkategorie sondern aus tkategoriesprache
             $cSQLKategorieSprache        = new stdClass();

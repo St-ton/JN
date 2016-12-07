@@ -997,6 +997,10 @@ final class Shop
             self::$fileName      = 'umfrage.php';
             self::$AktuelleSeite = 'UMFRAGE';
             self::setPageType(PAGE_UMFRAGE);
+        } elseif (!empty(self::$cSuche)) {
+            self::$fileName      = 'filter.php';
+            self::$AktuelleSeite = 'ARTIKEL';
+            self::setPageType(PAGE_ARTIKELLISTE);
         } elseif (!self::$kLink) {
             //check path
             $cPath        = self::getRequestUri();

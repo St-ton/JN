@@ -27,7 +27,7 @@ if (auth()) {
     }
 
     if (is_array($oLastJob_arr) && count($oLastJob_arr) > 0) {
-        $conf = Shop::getSettings(array(CONF_GLOBAL, CONF_RSS, CONF_SITEMAP));
+        $conf = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_SITEMAP]);
 
         foreach ($oLastJob_arr as $oLastJob) {
             if (isset($oLastJob->nJob) && intval($oLastJob->nJob) > 0) {

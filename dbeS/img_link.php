@@ -56,7 +56,7 @@ function bildartikellink_xml(SimpleXMLElement $xml)
         //delete link first. Important because jtl-wawi does not send del_bildartikellink when image is updated.
         Shop::DB()->delete('tartikelpict', ['kArtikel', 'nNr'], [(int)$item->kArtikel, (int)$item->nNr]);
         $articleIDs[] = (int)$item->kArtikel;
-        DBUpdateInsert('tartikelpict', array($item), 'kArtikelPict');
+        DBUpdateInsert('tartikelpict', [$item], 'kArtikelPict');
     }
     foreach (array_unique($articleIDs) as $_aid) {
         $cacheArticleIDs[] = CACHING_GROUP_ARTICLE . '_' . $_aid;
@@ -110,7 +110,7 @@ function del_img_item($item) {
  */
 function get_del_array(SimpleXMLElement $xml)
 {
-    $items = array();
+    $items = [];
     foreach ($xml->children() as $child) {
         $item    = (object)[
             'nNr'      => (int)$child->nNr,
@@ -128,7 +128,7 @@ function get_del_array(SimpleXMLElement $xml)
  */
 function get_array(SimpleXMLElement $xml)
 {
-    $items = array();
+    $items = [];
     /** @var SimpleXMLElement $child */
     foreach ($xml->children() as $child) {
         $item    = (object)[

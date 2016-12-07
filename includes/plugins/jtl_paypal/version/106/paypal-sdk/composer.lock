@@ -150,16 +150,16 @@
         },
         {
             "name": "paypal/sdk-core-php",
-            "version": "3.3.0",
+            "version": "3.3.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/paypal/sdk-core-php.git",
-                "reference": "e74083dbd0a9375c616b71cf0188dce87e5688ec"
+                "reference": "6e4ebde3bc2978f80ddf96441194577f59fe5045"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/paypal/sdk-core-php/zipball/e74083dbd0a9375c616b71cf0188dce87e5688ec",
-                "reference": "e74083dbd0a9375c616b71cf0188dce87e5688ec",
+                "url": "https://api.github.com/repos/paypal/sdk-core-php/zipball/6e4ebde3bc2978f80ddf96441194577f59fe5045",
+                "reference": "6e4ebde3bc2978f80ddf96441194577f59fe5045",
                 "shasum": ""
             },
             "require": {
@@ -177,7 +177,7 @@
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "Apache2"
+                "Apache-2.0"
             ],
             "authors": [
                 {
@@ -192,7 +192,7 @@
                 "php",
                 "sdk"
             ],
-            "time": "2016-05-16 18:04:26"
+            "time": "2016-10-25 17:18:46"
         }
     ],
     "packages-dev": [],

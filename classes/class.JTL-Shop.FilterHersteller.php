@@ -99,4 +99,70 @@ class FilterHersteller extends AbstractFilter implements IFilter
     {
         return [];
     }
+
+    /**
+     * @param null $mixed
+     * @return array|int|object
+     */
+    public function getOptions($mixed = null)
+    {
+        $oHerstellerFilterDB_arr = [];
+        if ($this->navifilter->getConfig()['navigationsfilter']['allgemein_herstellerfilter_benutzen'] !== 'N') {
+            //it's actually stupid to filter by manufacturer if we already got a manufacturer filter active...
+//            if ($this->HerstellerFilter->isInitialized()) {
+//                $filter              = new stdClass();
+//                $filter->cSeo        = $this->HerstellerFilter->getSeo();
+//                $filter->kHersteller = $this->HerstellerFilter->getID();
+//                $filter->cName       = $this->HerstellerFilter->getName();
+//
+//                return $filter;
+//            }
+            $order = $this->navifilter->getOrder();
+            $state = $this->navifilter->getCurrentStateData();
+            $join  = new FilterJoin();
+            $join->setComment('join from FilterHersteller::getOptions()')
+                 ->setType('JOIN')
+                 ->setTable('thersteller')
+                 ->setOn('tartikel.kHersteller = thersteller.kHersteller');
+
+            $state->joins[] = $order->join;
+            $state->joins[] = $join;
+
+            $query = $this->navifilter->getBaseQuery([
+                'thersteller.kHersteller',
+                'thersteller.cName',
+                'thersteller.nSortNr',
+                'tartikel.kArtikel'
+            ], $state->joins, $state->conditions, $state->having, $order->orderBy);
+            $query = "
+            SELECT tseo.cSeo, ssMerkmal.kHersteller, ssMerkmal.cName, ssMerkmal.nSortNr, COUNT(*) AS nAnzahl
+                FROM
+                (" . $query . "
+                ) AS ssMerkmal
+                    LEFT JOIN tseo ON tseo.kKey = ssMerkmal.kHersteller
+                        AND tseo.cKey = 'kHersteller'
+                        AND tseo.kSprache = " . $this->navifilter->getLanguageID() . "
+                    GROUP BY ssMerkmal.kHersteller
+                    ORDER BY ssMerkmal.nSortNr, ssMerkmal.cName";
+
+            $oHerstellerFilterDB_arr = Shop::DB()->query($query, 2);
+            //baue URL
+            $oZusatzFilter = new stdClass();
+            $count         = count($oHerstellerFilterDB_arr);
+            for ($i = 0; $i < $count; ++$i) {
+                $oHerstellerFilterDB_arr[$i]->kHersteller = (int)$oHerstellerFilterDB_arr[$i]->kHersteller;
+                $oHerstellerFilterDB_arr[$i]->nAnzahl     = (int)$oHerstellerFilterDB_arr[$i]->nAnzahl;
+                $oHerstellerFilterDB_arr[$i]->nSortNr     = (int)$oHerstellerFilterDB_arr[$i]->nSortNr;
+
+                $oZusatzFilter->HerstellerFilter              = new stdClass();
+                $oZusatzFilter->HerstellerFilter->kHersteller = (int)$oHerstellerFilterDB_arr[$i]->kHersteller;
+                $oZusatzFilter->HerstellerFilter->cSeo        = $oHerstellerFilterDB_arr[$i]->cSeo;
+
+                $oHerstellerFilterDB_arr[$i]->cURL = $this->navifilter->getURL(true, $oZusatzFilter);
+            }
+            unset($oZusatzFilter);
+        }
+
+        return $oHerstellerFilterDB_arr;
+    }
 }

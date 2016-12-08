@@ -41,4 +41,10 @@ interface IFilter
      * @return FilterJoin[]
      */
     public function getSQLJoin();
+
+    /**
+     * @param mixed|null $mixed
+     * @return []
+     */
+    public function getOptions($mixed);
 }

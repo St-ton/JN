@@ -218,4 +218,93 @@ class FilterSearchSpecialFilter extends AbstractFilter implements IFilter
                 return [];
         }
     }
+
+    /**
+     * @param null $mixed
+     * @return array
+     */
+    public function getOptions($mixed = null)
+    {
+        $oSuchspecialFilterDB_arr = [];
+        if ($this->navifilter->getConfig()['navigationsfilter']['allgemein_suchspecialfilter_benutzen'] === 'Y') {
+            for ($i = 1; $i < 7; ++$i) {
+                $state = $this->navifilter->getCurrentStateData();
+                switch ($i) {
+                    case SEARCHSPECIALS_BESTSELLER:
+                        $nAnzahl = ($this->navifilter->getConfig()['global']['global_bestseller_minanzahl'] > 0)
+                            ? (int)$this->navifilter->getConfig()['global']['global_bestseller_minanzahl']
+                            : 100;
+
+                        $join = new FilterJoin();
+                        $join->setComment('join from FilterSearchSpecialFilter::getOptions() bestseller')
+                             ->setType('JOIN')
+                             ->setTable('tbestseller')
+                             ->setOn('tbestseller.kArtikel = tartikel.kArtikel');
+                        $state->joins[] = $join;
+
+                        $state->conditions[] = 'ROUND(tbestseller.fAnzahl) >= ' . $nAnzahl;
+                        break;
+                    case SEARCHSPECIALS_SPECIALOFFERS:
+                        if (!$this->isInitialized()) {
+                            $join = new FilterJoin();
+                            $join->setComment('join1 from FilterSearchSpecialFilter::getOptions() special offer')
+                                 ->setType('JOIN')
+                                 ->setTable('tartikelsonderpreis')
+                                 ->setOn('tartikelsonderpreis.kArtikel = tartikel.kArtikel');
+                            $state->joins[] = $join;
+
+                            $join = new FilterJoin();
+                            $join->setComment('join2 from FilterSearchSpecialFilter::getOptions() special offer')
+                                 ->setType('JOIN')
+                                 ->setTable('tsonderpreise')
+                                 ->setOn('tsonderpreise.kArtikelSonderpreis = tartikelsonderpreis.kArtikelSonderpreis');
+                            $state->joins[] = $join;
+                            $tsonderpreise  = 'tsonderpreise';
+                        } else {
+                            $tsonderpreise = 'tsonderpreise';//'tspgspqf';
+                        }
+                        $state->conditions[] = "tartikelsonderpreis.cAktiv = 'Y' AND tartikelsonderpreis.dStart <= now()";
+                        $state->conditions[] = "(tartikelsonderpreis.dEnde >= CuRDATE() OR tartikelsonderpreis.dEnde = '0000-00-00')";
+                        $state->conditions[] = $tsonderpreise . ".kKundengruppe = " . $this->navifilter->getCustomerGroupID();
+                        break;
+                    case SEARCHSPECIALS_NEWPRODUCTS:
+                        $alter_tage          = ($this->navifilter->getConfig()['boxen']['box_neuimsortiment_alter_tage'] > 0)
+                            ? (int)$this->navifilter->getConfig()['boxen']['box_neuimsortiment_alter_tage']
+                            : 30;
+                        $state->conditions[] = "tartikel.cNeu = 'Y' AND DATE_SUB(now(),INTERVAL $alter_tage DAY) < tartikel.dErstellt";
+                        break;
+                    case SEARCHSPECIALS_TOPOFFERS:
+                        $state->conditions[] = 'tartikel.cTopArtikel = "Y"';
+                        break;
+                    case SEARCHSPECIALS_UPCOMINGPRODUCTS:
+                        $state->conditions[] = 'now() < tartikel.dErscheinungsdatum';
+                        break;
+                    case SEARCHSPECIALS_TOPREVIEWS:
+                        if (!$this->navifilter->BewertungFilter->isInitialized()) {
+                            $join = new FilterJoin();
+                            $join->setComment('join from FilterSearchSpecialFilter::getOptions() top reviews')
+                                 ->setType('JOIN')
+                                 ->setTable('tartikelext')
+                                 ->setOn('tartikelext.kArtikel = tartikel.kArtikel');
+                            $state->joins[] = $join;
+                        }
+                        $state->conditions[] = "ROUND(tartikelext.fDurchschnittsBewertung) >= " . (int)$this->navifilter->getConfig()['boxen']['boxen_topbewertet_minsterne'];
+                        break;
+                }
+                $qry                   = $this->navifilter->getBaseQuery(['tartikel.kArtikel'], $state->joins, $state->conditions, $state->having);
+                $oSuchspecialFilterDB  = Shop::DB()->query($qry, 2);
+                $oSuchspecial          = new stdClass();
+                $oSuchspecial->nAnzahl = count($oSuchspecialFilterDB);
+                $oSuchspecial->kKey    = $i;
+
+                $oZusatzFilter                          = new stdClass();
+                $oZusatzFilter->SuchspecialFilter       = new stdClass();
+                $oZusatzFilter->SuchspecialFilter->kKey = $i;
+                $oSuchspecial->cURL                     = $this->navifilter->getURL(true, $oZusatzFilter);
+                $oSuchspecialFilterDB_arr[$i]           = $oSuchspecial;
+            }
+        }
+
+        return $oSuchspecialFilterDB_arr;
+    }
 }

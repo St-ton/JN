@@ -5,8 +5,20 @@
  */
 abstract class AbstractFilter implements IFilter
 {
+    /**
+     * filter can increase product amount
+     */
     const FILTER_TYPE_OR = 0;
+
+    /**
+     * filter will decrease product amount
+     */
     const FILTER_TYPE_AND = 1;
+
+    /**
+     * @var Navigationsfilter
+     */
+    protected $navifilter;
 
     /**
      * @var string
@@ -89,9 +101,20 @@ abstract class AbstractFilter implements IFilter
     }
 
     /**
-     * AbstractFilter constructor.
+     * @param mixed $mixed
+     * @return array
      */
-    public function __construct()
+    public function getOptions($mixed = null)
     {
+        return [];
+    }
+
+    /**
+     * AbstractFilter constructor.
+     * @param Navigationsfilter $navifilter
+     */
+    public function __construct($navifilter)
+    {
+        $this->navifilter = $navifilter;
     }
 }

@@ -155,6 +155,21 @@ class Navigationsfilter
     private $customerGroupID = 0;
 
     /**
+     * @var array
+     */
+    private $params = [];
+
+    /**
+     * @var IFilter[]
+     */
+    private $activeFilters = [];
+
+    /**
+     * @var null
+     */
+    private $baseState = null;
+
+    /**
      * @param array $options
      */
     public function __construct(array $options = null)
@@ -170,7 +185,7 @@ class Navigationsfilter
         ]);
         $this->languageID   = Shop::getLanguage();
         if (!isset($_SESSION['Kundengruppe']->kKundengruppe)) {
-            $oKundengruppe = Shop::DB()->select('tkundengruppe', 'cStandard', 'Y');
+            $oKundengruppe         = Shop::DB()->select('tkundengruppe', 'cStandard', 'Y');
             $this->customerGroupID = (int)$oKundengruppe->kKundengruppe;
         } else {
             $this->customerGroupID = (int)$_SESSION['Kundengruppe']->kKundengruppe;
@@ -179,11 +194,19 @@ class Navigationsfilter
     }
 
     /**
+     * @return array
+     */
+    public function getConfig()
+    {
+        return $this->conf;
+    }
+
+    /**
      * @return int
      */
     public function getCustomerGroupID()
     {
-        return (int)$this->customerGroupID;
+        return $this->customerGroupID;
     }
 
     /**
@@ -202,7 +225,7 @@ class Navigationsfilter
      */
     public function getLanguageID()
     {
-        return (int)$this->languageID;
+        return $this->languageID;
     }
 
     /**
@@ -215,6 +238,7 @@ class Navigationsfilter
 
         return $this;
     }
+
     /**
      * @param bool $byType
      * @return array
@@ -288,6 +312,13 @@ class Navigationsfilter
                 }
             }
         }
+        foreach ($this->activeFilters as $filter) {
+            if ($byType) {
+                $filters['custom'][] = $filter;
+            } else {
+                $filters[] = $filter;
+            }
+        }
 
         return $filters;
     }
@@ -324,40 +355,49 @@ class Navigationsfilter
      */
     private function initBaseStates()
     {
-        $this->Kategorie       = new FilterKategorie();
-        $this->KategorieFilter = new FilterKategorieFilter();
+        $this->Kategorie       = new FilterKategorie($this);
+        $this->KategorieFilter = new FilterKategorieFilter($this);
 
-        $this->HerstellerFilter = new FilterHersteller();
-        $this->Hersteller       = new FilterHersteller();
+        $this->HerstellerFilter = new FilterHersteller($this);
+        $this->Hersteller       = new FilterHersteller($this);
 
-        $this->Suchanfrage = new FilterSearchQuery();
+        $this->Suchanfrage = new FilterSearchQuery($this);
 
-        $this->MerkmalWert = new FilterMerkmal();
+        $this->MerkmalWert = new FilterMerkmal($this);
 
-        $this->Tag = new FilterTag();
+        $this->Tag = new FilterTag($this);
 
-        $this->News = new FilterNews();
+        $this->News = new FilterNews($this);
 
-        $this->NewsMonat = new FilterNewsOverview();
+        $this->NewsMonat = new FilterNewsOverview($this);
 
-        $this->NewsKategorie = new FilterNewsCategory();
+        $this->NewsKategorie = new FilterNewsCategory($this);
 
-        $this->Suchspecial = new FilterSearchSpecial();
+        $this->Suchspecial = new FilterSearchSpecial($this);
 
-        $this->MerkmalFilter     = [];
-        $this->SuchFilter        = [];
-        $this->TagFilter         = [];
+        $this->MerkmalFilter = [];
+        $this->SuchFilter    = [];
+        $this->TagFilter     = [];
 
-        $this->SuchspecialFilter = new FilterSearchSpecialFilter();
+        $this->SuchspecialFilter = new FilterSearchSpecialFilter($this);
 
-        $this->BewertungFilter = new FilterRating();
+        $this->BewertungFilter = new FilterRating($this);
 
-        $this->PreisspannenFilter = new FilterPriceRange();
+        $this->PreisspannenFilter = new FilterPriceRange($this);
 
-        $this->Suche = new FilterSearch();
-
+        $this->Suche = new FilterSearch($this);
 
         return $this;
+    }
+
+    public function getBaseState()
+    {
+        return $this->baseState;
+    }
+
+    public function getActiveFilters2()
+    {
+        return $this->activeFilters;
     }
 
     /**
@@ -366,78 +406,96 @@ class Navigationsfilter
      */
     public function initStates($params)
     {
-        $count = 0;
+        $this->params = $params;
+        $count        = 0;
         if ($params['kKategorie'] > 0) {
-            $this->Kategorie = (new FilterKategorie())->init($params['kKategorie'], $this->oSprache_arr);
+            $this->Kategorie = (new FilterKategorie($this))->init($params['kKategorie'], $this->oSprache_arr);
+            $this->baseState = $this->Kategorie;
         }
         if ($params['kKategorieFilter'] > 0) {
-            $this->KategorieFilter = (new FilterKategorieFilter())->init($params['kKategorieFilter'], $this->oSprache_arr);
+            $this->KategorieFilter = (new FilterKategorieFilter($this))->init($params['kKategorieFilter'], $this->oSprache_arr);
+            $this->addFilter($this->KategorieFilter);
             ++$count;
         }
         if ($params['kHersteller'] > 0) {
-            $this->Hersteller = (new FilterHersteller())->init($params['kHersteller'], $this->oSprache_arr);
+            $this->Hersteller = (new FilterHersteller($this))->init($params['kHersteller'], $this->oSprache_arr);
+            $this->baseState  = $this->Hersteller;
         }
         if ($params['kHerstellerFilter'] > 0) {
-            $this->HerstellerFilter = (new FilterHerstellerFilter())->init($params['kHerstellerFilter'], $this->oSprache_arr);
+            $this->HerstellerFilter = (new FilterHerstellerFilter($this))->init($params['kHerstellerFilter'], $this->oSprache_arr);
+            $this->addFilter($this->HerstellerFilter);
             ++$count;
         }
         if ($params['kSuchanfrage'] > 0) {
-            $this->Suchanfrage = (new FilterSearchQuery())->init($params['kSuchanfrage'], $this->oSprache_arr);
+            $this->Suchanfrage = (new FilterSearchQuery($this))->init($params['kSuchanfrage'], $this->oSprache_arr);
+            $this->baseState   = $this->Suchanfrage;
             $oSuchanfrage      = Shop::DB()->select('tsuchanfrage', 'kSuchanfrage', $params['kSuchanfrage']);
             if (isset($oSuchanfrage->cSuche) && strlen($oSuchanfrage->cSuche) > 0) {
-                $this->Suche = (new FilterSearch())->init($params['kSuchanfrage'], $this->oSprache_arr);
+                $this->Suche         = (new FilterSearch($this))->init($params['kSuchanfrage'], $this->oSprache_arr);
                 $this->Suche->cSuche = $oSuchanfrage->cSuche;
             }
         }
         if ($params['kMerkmalWert'] > 0) {
-            $this->MerkmalWert = (new FilterMerkmal())->init($params['kMerkmalWert'], $this->oSprache_arr);
+            $this->MerkmalWert = (new FilterMerkmal($this))->init($params['kMerkmalWert'], $this->oSprache_arr);
+            $this->baseState   = $this->MerkmalWert;
         }
         if (count($params['MerkmalFilter_arr']) > 0) {
             foreach ($params['MerkmalFilter_arr'] as $mmf) {
-                $this->MerkmalFilter[] = (new FilterMerkmalFilter())->init($mmf, $this->oSprache_arr);
+                $filter = (new FilterMerkmalFilter($this))->init($mmf, $this->oSprache_arr);
+                $this->MerkmalFilter[] = $filter;
+                $this->addFilter($filter);
             }
             ++$count;
         }
         if ($params['kTag'] > 0) {
-            $this->Tag = (new FilterTag())->init($params['kTag'], $this->oSprache_arr);
+            $this->Tag       = (new FilterTag($this))->init($params['kTag'], $this->oSprache_arr);
+            $this->baseState = $this->Tag;
         }
         if (count($params['TagFilter_arr']) > 0) {
             foreach ($params['TagFilter_arr'] as $tf) {
-                $this->TagFilter[] = (new FilterTagFilter())->init($tf, $this->oSprache_arr);
+                $filter = (new FilterTagFilter($this))->init($tf, $this->oSprache_arr);
+                $this->TagFilter[] = $filter;
+                $this->addFilter($filter);
             }
             ++$count;
         }
         if ($params['kNews'] > 0) {
-            $this->News = (new FilterNews())->init($params['kNews'], $this->oSprache_arr);
+            $this->News = (new FilterNews($this))->init($params['kNews'], $this->oSprache_arr);
         }
         if ($params['kNewsMonatsUebersicht'] > 0) {
-            $this->NewsMonat = (new FilterNewsOverview())->init($params['kNewsMonatsUebersicht'], $this->oSprache_arr);
+            $this->NewsMonat = (new FilterNewsOverview($this))->init($params['kNewsMonatsUebersicht'], $this->oSprache_arr);
         }
         if ($params['kNewsKategorie'] > 0) {
-            $this->NewsKategorie = (new FilterNewsCategory())->init($params['kNewsKategorie'], $this->oSprache_arr);
+            $this->NewsKategorie = (new FilterNewsCategory($this))->init($params['kNewsKategorie'], $this->oSprache_arr);
         }
         if ($params['kSuchspecial'] > 0) {
-            $this->Suchspecial = (new FilterSearchSpecial())->init($params['kSuchspecial'], $this->oSprache_arr);
+            $this->Suchspecial = (new FilterSearchSpecial($this))->init($params['kSuchspecial'], $this->oSprache_arr);
+            $this->baseState   = $this->Suchspecial;
         }
         if ($params['kSuchspecialFilter'] > 0) {
-            $this->SuchspecialFilter = (new FilterSearchSpecialFilter())->init($params['kSuchspecialFilter'], $this->oSprache_arr);
+            $this->SuchspecialFilter = (new FilterSearchSpecialFilter($this))->init($params['kSuchspecialFilter'], $this->oSprache_arr);
+            $this->addFilter($this->SuchspecialFilter);
             ++$count;
         }
 
         if (count($params['SuchFilter_arr']) > 0) {
             //@todo - same as suchfilter?
             foreach ($params['SuchFilter_arr'] as $sf) {
-                $this->SuchFilter[] = (new FilterSearch())->init($sf, $this->oSprache_arr);
+                $filter = (new FilterSearch($this))->init($sf, $this->oSprache_arr);
+                $this->SuchFilter[] = $filter;
+                $this->addFilter($filter);
             }
             ++$count;
         }
 
         if ($params['nBewertungSterneFilter'] > 0) {
-            $this->BewertungFilter = (new FilterRating())->init($params['nBewertungSterneFilter'], []);
+            $this->BewertungFilter = (new FilterRating($this))->init($params['nBewertungSterneFilter'], []);
+            $this->addFilter($this->BewertungFilter);
             ++$count;
         }
         if (strlen($params['cPreisspannenFilter']) > 0) {
-            $this->PreisspannenFilter = (new FilterPriceRange())->init($params['cPreisspannenFilter'], []);
+            $this->PreisspannenFilter = (new FilterPriceRange($this))->init($params['cPreisspannenFilter'], []);
+            $this->addFilter($this->PreisspannenFilter);
             ++$count;
         }
         if ($params['nSortierung'] > 0) {
@@ -447,8 +505,8 @@ class Navigationsfilter
             $this->nAnzahlProSeite = (int)$params['nArtikelProSeite'];
         }
         if (strlen($params['cSuche']) > 0) {
-            $params['cSuche'] = StringHandler::filterXSS($params['cSuche']);
-            $this->Suche              = (new FilterSearch())->init($params['kSuchanfrage'], $this->oSprache_arr);
+            $params['cSuche']         = StringHandler::filterXSS($params['cSuche']);
+            $this->Suche              = (new FilterSearch($this))->init($params['kSuchanfrage'], $this->oSprache_arr);
             $this->Suche->cSuche      = $params['cSuche'];
             $this->EchteSuche         = new stdClass();
             $this->EchteSuche->cSuche = $params['cSuche'];
@@ -456,14 +514,26 @@ class Navigationsfilter
         if (!empty($this->Suche->cSuche)) {
             //@todo?
             $this->Suche->kSuchCache = bearbeiteSuchCache($this);
+            $this->baseState         = $this->Suche;
         }
-        $this->nSeite = verifyGPCDataInteger('seite');
-        if (!$this->nSeite) {
-            $this->nSeite = 1;
-        }
+        $this->nSeite        = max(1, verifyGPCDataInteger('seite'));
         $this->nAnzahlFilter = $count;
 
+        executeHook(HOOK_NAVIGATIONSFILTER_INIT_FILTER, ['navifilter' => $this, 'params' => $params]);
+
         return $this->validate();
+    }
+
+    /**
+     * @param IFilter $filter
+     * @return $this
+     */
+    public function addFilter(IFilter $filter)
+    {
+        $this->activeFilters[] = $filter;
+        ++$this->nAnzahlFilter;
+
+        return $this;
     }
 
     /**
@@ -589,28 +659,29 @@ class Navigationsfilter
             if (!$this->hasManufacturer() && !$this->hasCategory() &&
                 !$this->hasTag() && !$this->hasSuchanfrage() && !$this->hasNews() &&
                 !$this->hasNewsOverview() && !$this->hasNewsCategory() &&
-                !isset($this->Suche->cSuche) && !$this->hasMerkmalWert() && !$this->hasSearchSpecial()) {
+                !isset($this->Suche->cSuche) && !$this->hasMerkmalWert() && !$this->hasSearchSpecial()
+            ) {
                 //we have a manufacturer filter that doesn't filter anything
-                if ($this->HerstellerFilter->getSeo($this->languageID) !== null) {
+                if ($this->HerstellerFilter->getSeo($this->getLanguageID()) !== null) {
                     http_response_code(301);
-                    header('Location: ' . Shop::getURL() . '/' . $this->HerstellerFilter->getSeo($this->languageID));
+                    header('Location: ' . Shop::getURL() . '/' . $this->HerstellerFilter->getSeo($this->getLanguageID()));
                     exit();
                 }
                 //we have a category filter that doesn't filter anything
-                if ($this->KategorieFilter->getSeo($this->languageID) !== null) {
+                if ($this->KategorieFilter->getSeo($this->getLanguageID()) !== null) {
                     http_response_code(301);
-                    header('Location: ' . Shop::getURL() . '/' . $this->KategorieFilter->getSeo($this->languageID));
+                    header('Location: ' . Shop::getURL() . '/' . $this->KategorieFilter->getSeo($this->getLanguageID()));
                     exit();
                 }
-            } elseif ($this->hasManufacturer() && $this->hasManufacturerFilter() && $this->Hersteller->getSeo($this->languageID) !== null) {
+            } elseif ($this->hasManufacturer() && $this->hasManufacturerFilter() && $this->Hersteller->getSeo($this->getLanguageID()) !== null) {
                 //we have a manufacturer page with some manufacturer filter
                 http_response_code(301);
-                header('Location: ' . Shop::getURL() . '/' . $this->Hersteller->getSeo($this->languageID));
+                header('Location: ' . Shop::getURL() . '/' . $this->Hersteller->getSeo($this->getLanguageID()));
                 exit();
-            } elseif ($this->hasCategory() && $this->hasCategoryFilter() && $this->Kategorie->getSeo($this->languageID) !== null) {
+            } elseif ($this->hasCategory() && $this->hasCategoryFilter() && $this->Kategorie->getSeo($this->getLanguageID()) !== null) {
                 //we have a category page with some category filter
                 http_response_code(301);
-                header('Location: ' . Shop::getURL() . '/' . $this->Kategorie->getSeo($this->languageID));
+                header('Location: ' . Shop::getURL() . '/' . $this->Kategorie->getSeo($this->getLanguageID()));
                 exit();
             }
         }
@@ -655,7 +726,8 @@ class Navigationsfilter
                 $sort->join->setComment('join from SORT by price ASC')
                            ->setType('JOIN')
                            ->setTable('tpreise')
-                           ->setOn('tartikel.kArtikel = tpreise.kArtikel AND tpreise.kKundengruppe = ' . $this->customerGroupID);
+                           ->setOn('tartikel.kArtikel = tpreise.kArtikel 
+                                        AND tpreise.kKundengruppe = ' . $this->getCustomerGroupID());
                 break;
             case SEARCH_SORT_PRICE_DESC:
                 $sort->orderBy = 'tpreise.fVKNetto DESC, tartikel.cName';
@@ -663,7 +735,8 @@ class Navigationsfilter
                 $sort->join->setComment('join from SORT by price DESC')
                            ->setType('JOIN')
                            ->setTable('tpreise')
-                           ->setOn('tartikel.kArtikel = tpreise.kArtikel AND tpreise.kKundengruppe = ' . $this->customerGroupID);
+                           ->setOn('tartikel.kArtikel = tpreise.kArtikel 
+                                        AND tpreise.kKundengruppe = ' . $this->getCustomerGroupID());
                 break;
             case SEARCH_SORT_EAN:
                 $sort->orderBy = 'tartikel.cBarcode, tartikel.cName';
@@ -727,7 +800,7 @@ class Navigationsfilter
     /**
      * @return string
      */
-    private function getStorageFilter()
+    public function getStorageFilter()
     {
         $filterSQL = '';
         if ((int)$this->conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER) {
@@ -758,11 +831,13 @@ class Navigationsfilter
         $oSuchergebnisse->Suchspecial       = [];
         $oSuchergebnisse->SuchFilter        = [];
 
-        $order = $this->getOrder();
-        $state = $this->getCurrentStateData();
+        $order          = $this->getOrder();
+        $state          = $this->getCurrentStateData();
         $state->joins[] = $order->join;
 
         $query = $this->getBaseQuery(['tartikel.kArtikel'], $state->joins, $state->conditions, $state->having, $order->orderBy);
+
+//        Shop::dbg($query, false, 'getProducts qry:');
 
         return Shop::DB()->query($query, 2);
     }
@@ -813,7 +888,7 @@ class Navigationsfilter
 
         if (!empty($this->Suche->cSuche)) {
             suchanfragenSpeichern($this->Suche->cSuche, $oSuchergebnisse->GesamtanzahlArtikel);
-            $this->Suche->kSuchanfrage = gibSuchanfrageKey($this->Suche->cSuche, $this->languageID);
+            $this->Suche->kSuchanfrage = gibSuchanfrageKey($this->Suche->cSuche, $this->getLanguageID());
         }
 
         $nLimitN = $nArtikelProSeite * ($this->nSeite - 1);
@@ -824,8 +899,10 @@ class Navigationsfilter
         $oSuchergebnisse->Seitenzahlen                = new stdClass();
         $oSuchergebnisse->Seitenzahlen->AktuelleSeite = $this->nSeite;
         $oSuchergebnisse->Seitenzahlen->MaxSeiten     = ceil($oSuchergebnisse->GesamtanzahlArtikel / $nArtikelProSeite);
-        $oSuchergebnisse->Seitenzahlen->minSeite      = min(intval($oSuchergebnisse->Seitenzahlen->AktuelleSeite - (int)$this->conf['artikeluebersicht']['artikeluebersicht_max_seitenzahl'] / 2), 0);
-        $oSuchergebnisse->Seitenzahlen->maxSeite      = max($oSuchergebnisse->Seitenzahlen->MaxSeiten, $oSuchergebnisse->Seitenzahlen->minSeite + (int)$this->conf['artikeluebersicht']['artikeluebersicht_max_seitenzahl'] - 1);
+        $oSuchergebnisse->Seitenzahlen->minSeite      = min(intval($oSuchergebnisse->Seitenzahlen->AktuelleSeite - (int)$this->conf['artikeluebersicht']['artikeluebersicht_max_seitenzahl'] / 2),
+            0);
+        $oSuchergebnisse->Seitenzahlen->maxSeite      = max($oSuchergebnisse->Seitenzahlen->MaxSeiten,
+            $oSuchergebnisse->Seitenzahlen->minSeite + (int)$this->conf['artikeluebersicht']['artikeluebersicht_max_seitenzahl'] - 1);
         if ($oSuchergebnisse->Seitenzahlen->maxSeite > $oSuchergebnisse->Seitenzahlen->MaxSeiten) {
             $oSuchergebnisse->Seitenzahlen->maxSeite = $oSuchergebnisse->Seitenzahlen->MaxSeiten;
         }
@@ -837,13 +914,18 @@ class Navigationsfilter
      * @param null|string $ignore - filter class to ignore
      * @return stdClass
      */
-    private function getCurrentStateData($ignore = null)
+    public function getCurrentStateData($ignore = null)
     {
-        $state              = $this->getActiveState();
-        $data               = new stdClass();
-        $data->having       = [];
-        $data->joins        = $state->getSQLJoin();
-        $data->conditions   = [];
+        $state            = $this->getActiveState();
+        $state2 = $this->getBaseState();
+        if ($state != $state2) {
+            Shop::dbg($state, false, 'active state:');
+            Shop::dbg($state2, true, 'active state2:');
+        }
+        $data             = new stdClass();
+        $data->having     = [];
+        $data->joins      = $state->getSQLJoin();
+        $data->conditions = [];
 
         $stateCondition = $state->getSQLCondition();
         if (!empty($stateCondition)) {
@@ -871,8 +953,8 @@ class Navigationsfilter
                 if (!empty($singleConditions)) {
                     $data->conditions[] = $singleConditions;
                 }
-            } elseif ($count === 1)  {
-                /** @var array(AbstractFilter) $filter*/
+            } elseif ($count === 1) {
+                /** @var array(AbstractFilter) $filter */
                 if ($ignore === null || get_class($filter[0]) !== $ignore) {
                     foreach ($filter[0]->getSQLJoin() as $filterJoin) {
                         $data->joins[] = $filterJoin;
@@ -883,6 +965,87 @@ class Navigationsfilter
         }
 
         return $data;
+    }
+
+    /**
+     * @param object         $oSuchergebnisse
+     * @param null|Kategorie $AktuelleKategorie
+     * @return mixed
+     */
+    public function setFilterOptions($oSuchergebnisse, $AktuelleKategorie = null)
+    {
+        // Filteroptionen holen
+        $oSuchergebnisse->Herstellerauswahl = $this->getManufacturerFilterOptions();
+        $test  = $this->HerstellerFilter->getOptions();
+        if ($test != $oSuchergebnisse->Herstellerauswahl) {
+            Shop::dbg($oSuchergebnisse->Herstellerauswahl, false, 'FAILED at $oSuchergebnisse->Herstellerauswahl:');
+            Shop::dbg($test, true, 'vs:');
+        }
+
+        $oSuchergebnisse->Bewertung         = $this->getRatingFilterOptions();
+        $test = $this->BewertungFilter->getOptions();
+        if ($test != $oSuchergebnisse->Bewertung) {
+            Shop::dbg($oSuchergebnisse->Bewertung, false, 'FAILED at $oSuchergebnisse->Bewertung:');
+            Shop::dbg($test, true, 'vs:');
+        }
+
+        $oSuchergebnisse->Tags              = $this->getTagFilterOptions();
+        $test = $this->Tag->getOptions();
+        if (count($test) !== count($oSuchergebnisse->Tags)) {
+            Shop::dbg($oSuchergebnisse->Tags, false, 'FAILED at $oSuchergebnisse->Tags:');
+            Shop::dbg($test, true, 'vs:');
+        }
+
+        if (isset($this->conf['navigationsfilter']['allgemein_tagfilter_benutzen']) && $this->conf['navigationsfilter']['allgemein_tagfilter_benutzen'] === 'Y') {
+            $oTags_arr = [];
+            foreach ($oSuchergebnisse->Tags as $key => $oTags) {
+                $oTags_arr[$key]       = $oTags;
+                $oTags_arr[$key]->cURL = StringHandler::htmlentitydecode($oTags->cURL);
+            }
+            $oSuchergebnisse->TagsJSON = Boxen::gibJSONString($oTags_arr);
+
+        }
+        $oSuchergebnisse->MerkmalFilter    = $this->getAttributeFilterOptions($AktuelleKategorie, function_exists('starteAuswahlAssistent'));
+        $temp = (new FilterMerkmalFilter($this))->init(0, $this->oSprache_arr);
+        $test = $temp->getOptions(['AktuelleKategorie' => $AktuelleKategorie, 'bForce' => function_exists('starteAuswahlAssistent')]);
+        if ($test != $oSuchergebnisse->MerkmalFilter) {
+            Shop::dbg($oSuchergebnisse->MerkmalFilter, false, 'FAILED at $oSuchergebnisse->MerkmalFilter:');
+            Shop::dbg($test, true, 'vs:');
+        }
+
+        $oSuchergebnisse->Preisspanne      = $this->getPriceRangeFilterOptions($oSuchergebnisse->GesamtanzahlArtikel);
+        $test = $this->PreisspannenFilter->getOptions($oSuchergebnisse->GesamtanzahlArtikel);
+        if ($test != $oSuchergebnisse->Preisspanne) {
+            Shop::dbg($oSuchergebnisse->Preisspanne, false, 'FAILED at $oSuchergebnisse->Preisspanne:');
+            Shop::dbg($test, true, 'vs:');
+        }
+
+        $oSuchergebnisse->Kategorieauswahl = $this->getCategoryFilterOptions();
+        $test = $this->KategorieFilter->getOptions();
+        if ($test != $oSuchergebnisse->Kategorieauswahl) {
+            Shop::dbg($oSuchergebnisse->Kategorieauswahl, false, 'FAILED at $oSuchergebnisse->Kategorieauswahl:');
+            Shop::dbg($test, true, 'vs:');
+        }
+
+        $oSuchergebnisse->SuchFilter       = $this->getSearchFilterOptions();
+        $oSuchergebnisse->SuchFilterJSON   = [];
+
+        foreach ($oSuchergebnisse->SuchFilter as $key => $oSuchfilter) {
+            $oSuchergebnisse->SuchFilterJSON[$key]       = $oSuchfilter;
+            $oSuchergebnisse->SuchFilterJSON[$key]->cURL = StringHandler::htmlentitydecode($oSuchfilter->cURL);
+        }
+        $oSuchergebnisse->SuchFilterJSON = Boxen::gibJSONString($oSuchergebnisse->SuchFilterJSON);
+
+        if (!$this->params['kSuchspecial'] && !$this->params['kSuchspecialFilter']) {
+            $oSuchergebnisse->Suchspecialauswahl = $this->getSearchSpecialFilterOptions();
+            $test = $this->SuchspecialFilter->getOptions();
+            if ($test != $oSuchergebnisse->Suchspecialauswahl) {
+                Shop::dbg($oSuchergebnisse->Suchspecialauswahl, false, 'FAILED at $oSuchergebnisse->Suchspecialauswahl:');
+                Shop::dbg($test, true, 'vs:');
+            }
+        }
+
+        return $oSuchergebnisse;
     }
 
     /**
@@ -924,16 +1087,16 @@ class Navigationsfilter
                                  ->setTable('tsonderpreise')
                                  ->setOn('tsonderpreise.kArtikelSonderpreis = tartikelsonderpreis.kArtikelSonderpreis');
                             $state->joins[] = $join;
-                            $tsonderpreise = 'tsonderpreise';
+                            $tsonderpreise  = 'tsonderpreise';
                         } else {
                             $tsonderpreise = 'tsonderpreise';//'tspgspqf';
                         }
                         $state->conditions[] = "tartikelsonderpreis.cAktiv = 'Y' AND tartikelsonderpreis.dStart <= now()";
                         $state->conditions[] = "(tartikelsonderpreis.dEnde >= CuRDATE() OR tartikelsonderpreis.dEnde = '0000-00-00')";
-                        $state->conditions[] = $tsonderpreise . ".kKundengruppe = " . $this->customerGroupID;
+                        $state->conditions[] = $tsonderpreise . ".kKundengruppe = " . $this->getCustomerGroupID();
                         break;
                     case SEARCHSPECIALS_NEWPRODUCTS:
-                        $alter_tage = ($this->conf['boxen']['box_neuimsortiment_alter_tage'] > 0)
+                        $alter_tage          = ($this->conf['boxen']['box_neuimsortiment_alter_tage'] > 0)
                             ? (int)$this->conf['boxen']['box_neuimsortiment_alter_tage']
                             : 30;
                         $state->conditions[] = "tartikel.cNeu = 'Y' AND DATE_SUB(now(),INTERVAL $alter_tage DAY) < tartikel.dErstellt";
@@ -956,7 +1119,7 @@ class Navigationsfilter
                         $state->conditions[] = "ROUND(tartikelext.fDurchschnittsBewertung) >= " . (int)$this->conf['boxen']['boxen_topbewertet_minsterne'];
                         break;
                 }
-                $qry = $this->getBaseQuery(['tartikel.kArtikel'], $state->joins, $state->conditions, $state->having);
+                $qry                   = $this->getBaseQuery(['tartikel.kArtikel'], $state->joins, $state->conditions, $state->having);
                 $oSuchspecialFilterDB  = Shop::DB()->query($qry, 2);
                 $oSuchspecial          = new stdClass();
                 $oSuchspecial->nAnzahl = count($oSuchspecialFilterDB);
@@ -1000,7 +1163,12 @@ class Navigationsfilter
             $state->joins[] = $order->join;
             $state->joins[] = $join;
 
-            $query = $this->getBaseQuery(['thersteller.kHersteller', 'thersteller.cName', 'thersteller.nSortNr', 'tartikel.kArtikel'], $state->joins, $state->conditions, $state->having, $order->orderBy);
+            $query = $this->getBaseQuery([
+                'thersteller.kHersteller',
+                'thersteller.cName',
+                'thersteller.nSortNr',
+                'tartikel.kArtikel'
+            ], $state->joins, $state->conditions, $state->having, $order->orderBy);
             $query = "
             SELECT tseo.cSeo, ssMerkmal.kHersteller, ssMerkmal.cName, ssMerkmal.nSortNr, COUNT(*) AS nAnzahl
                 FROM
@@ -1008,7 +1176,7 @@ class Navigationsfilter
                 ) AS ssMerkmal
                     LEFT JOIN tseo ON tseo.kKey = ssMerkmal.kHersteller
                         AND tseo.cKey = 'kHersteller'
-                        AND tseo.kSprache = " . $this->languageID . "
+                        AND tseo.kSprache = " . $this->getLanguageID() . "
                     GROUP BY ssMerkmal.kHersteller
                     ORDER BY ssMerkmal.nSortNr, ssMerkmal.cName";
 
@@ -1018,14 +1186,14 @@ class Navigationsfilter
             $count         = count($oHerstellerFilterDB_arr);
             for ($i = 0; $i < $count; ++$i) {
                 $oHerstellerFilterDB_arr[$i]->kHersteller = (int)$oHerstellerFilterDB_arr[$i]->kHersteller;
-                $oHerstellerFilterDB_arr[$i]->nAnzahl = (int)$oHerstellerFilterDB_arr[$i]->nAnzahl;
-                $oHerstellerFilterDB_arr[$i]->nSortNr = (int)$oHerstellerFilterDB_arr[$i]->nSortNr;
+                $oHerstellerFilterDB_arr[$i]->nAnzahl     = (int)$oHerstellerFilterDB_arr[$i]->nAnzahl;
+                $oHerstellerFilterDB_arr[$i]->nSortNr     = (int)$oHerstellerFilterDB_arr[$i]->nSortNr;
 
-                $oZusatzFilter->HerstellerFilter = new stdClass();
+                $oZusatzFilter->HerstellerFilter              = new stdClass();
                 $oZusatzFilter->HerstellerFilter->kHersteller = (int)$oHerstellerFilterDB_arr[$i]->kHersteller;
                 $oZusatzFilter->HerstellerFilter->cSeo        = $oHerstellerFilterDB_arr[$i]->cSeo;
 
-                $oHerstellerFilterDB_arr[$i]->cURL            = $this->getURL(true, $oZusatzFilter);
+                $oHerstellerFilterDB_arr[$i]->cURL = $this->getURL(true, $oZusatzFilter);
             }
             unset($oZusatzFilter);
         }
@@ -1052,7 +1220,10 @@ class Navigationsfilter
             $state->joins[] = $order->join;
             $state->joins[] = $join;
 
-            $query = $this->getBaseQuery(['ROUND(tartikelext.fDurchschnittsBewertung, 0) AS nSterne', 'tartikel.kArtikel'], $state->joins, $state->conditions, $state->having, $order->orderBy);
+            $query = $this->getBaseQuery([
+                'ROUND(tartikelext.fDurchschnittsBewertung, 0) AS nSterne',
+                'tartikel.kArtikel'
+            ], $state->joins, $state->conditions, $state->having, $order->orderBy);
             $query = "SELECT ssMerkmal.nSterne, COUNT(*) AS nAnzahl
                         FROM (" . $query . " ) AS ssMerkmal
                         GROUP BY ssMerkmal.nSterne
@@ -1119,14 +1290,20 @@ class Navigationsfilter
             }
 
             $state->conditions[] = "ttag.nAktiv = 1";
-            $state->conditions[] = "ttag.kSprache = " . $this->languageID;
-            $query = $this->getBaseQuery(['ttag.kTag', 'ttag.cName', 'ttagartikel.nAnzahlTagging', 'tartikel.kArtikel'], $state->joins, $state->conditions, $state->having, $order->orderBy, '', ['ttag.kTag', 'tartikel.kArtikel']);
+            $state->conditions[] = "ttag.kSprache = " . $this->getLanguageID();
+            $query               = $this->getBaseQuery([
+                'ttag.kTag',
+                'ttag.cName',
+                'ttagartikel.nAnzahlTagging',
+                'tartikel.kArtikel'
+            ], $state->joins, $state->conditions, $state->having, $order->orderBy, '',
+                ['ttag.kTag', 'tartikel.kArtikel']);
 
-            $query = "SELECT tseo.cSeo, ssMerkmal.kTag, ssMerkmal.cName, COUNT(*) AS nAnzahl, SUM(ssMerkmal.nAnzahlTagging) AS nAnzahlTagging
+            $query            = "SELECT tseo.cSeo, ssMerkmal.kTag, ssMerkmal.cName, COUNT(*) AS nAnzahl, SUM(ssMerkmal.nAnzahlTagging) AS nAnzahlTagging
                     FROM (" . $query . ") AS ssMerkmal
                 LEFT JOIN tseo ON tseo.kKey = ssMerkmal.kTag
                     AND tseo.cKey = 'kTag'
-                    AND tseo.kSprache = " . $this->languageID . "
+                    AND tseo.kSprache = " . $this->getLanguageID() . "
                 GROUP BY ssMerkmal.kTag
                 ORDER BY nAnzahl DESC LIMIT 0, " . (int)$this->conf['navigationsfilter']['tagfilter_max_anzeige'];
             $oTagFilterDB_arr = Shop::DB()->query($query, 2);
@@ -1171,7 +1348,7 @@ class Navigationsfilter
      * @param int   $kMerkmal
      * @return int
      */
-    private function getAttributePosition($oMerkmalauswahl_arr, $kMerkmal)
+    public function getAttributePosition($oMerkmalauswahl_arr, $kMerkmal)
     {
         if (is_array($oMerkmalauswahl_arr)) {
             foreach ($oMerkmalauswahl_arr as $i => $oMerkmalauswahl) {
@@ -1202,51 +1379,52 @@ class Navigationsfilter
                     }
                 }
             }
-            $order = $this->getOrder();
-            $state = $this->getCurrentStateData('FilterMerkmalFilter');
+            $order          = $this->getOrder();
+            $state          = $this->getCurrentStateData('FilterMerkmalFilter');
             $state->joins[] = $order->join;
 
             $select = 'tmerkmal.cName';
-            if (Shop::$kSprache > 0 && !standardspracheAktiv()) {
-                $select = "tmerkmalsprache.cName";
-                $join   = new FilterJoin();
-                $join->setComment('join1 from getAttributeFilterOptions')
-                     ->setType('JOIN')
-                     ->setTable('tmerkmalsprache')
-                     ->setOn('tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal AND tmerkmalsprache.kSprache = ' . $this->languageID);
-                $state->joins[] = $join;
-            }
-            if (true||!$this->MerkmalWert->isInitialized() && count($this->MerkmalFilter) === 0) {
+            if (true || !$this->MerkmalWert->isInitialized() && count($this->MerkmalFilter) === 0) {
                 $join = new FilterJoin();
-                $join->setComment('join2 from getAttributeFilterOptions')
+                $join->setComment('join1 from getAttributeFilterOptions')
                      ->setType('JOIN')
                      ->setTable('tartikelmerkmal')
                      ->setOn('tartikel.kArtikel = tartikelmerkmal.kArtikel');
                 $state->joins[] = $join;
             }
             $join = new FilterJoin();
-            $join->setComment('join3 from getAttributeFilterOptions')
+            $join->setComment('join2 from getAttributeFilterOptions')
                  ->setType('JOIN')
                  ->setTable('tmerkmalwert')
                  ->setOn('tmerkmalwert.kMerkmalWert = tartikelmerkmal.kMerkmalWert');
             $state->joins[] = $join;
 
             $join = new FilterJoin();
-            $join->setComment('join4 from getAttributeFilterOptions')
+            $join->setComment('join3 from getAttributeFilterOptions')
                  ->setType('JOIN')
                  ->setTable('tmerkmalwertsprache')
-                 ->setOn('tmerkmalwertsprache.kMerkmalWert = tartikelmerkmal.kMerkmalWert AND tmerkmalwertsprache.kSprache = ' . $this->languageID);
+                 ->setOn('tmerkmalwertsprache.kMerkmalWert = tartikelmerkmal.kMerkmalWert AND tmerkmalwertsprache.kSprache = ' . $this->getLanguageID());
             $state->joins[] = $join;
 
             $join = new FilterJoin();
-            $join->setComment('join5 from getAttributeFilterOptions')
+            $join->setComment('join4 from getAttributeFilterOptions')
                  ->setType('JOIN')
                  ->setTable('tmerkmal')
                  ->setOn('tmerkmal.kMerkmal = tartikelmerkmal.kMerkmal');
             $state->joins[] = $join;
 
+            if (Shop::$kSprache > 0 && !standardspracheAktiv()) {
+                $select = "tmerkmalsprache.cName";
+                $join   = new FilterJoin();
+                $join->setComment('join5 from getAttributeFilterOptions')
+                     ->setType('JOIN')
+                     ->setTable('tmerkmalsprache')
+                     ->setOn('tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal AND tmerkmalsprache.kSprache = ' . $this->getLanguageID());
+                $state->joins[] = $join;
+            }
+
             if (count($this->MerkmalFilter) > 0) {
-                $join = new FilterJoin();
+                $join            = new FilterJoin();
                 $activeFilterIDs = [];
                 foreach ($this->MerkmalFilter as $filter) {
                     $activeFilterIDs[] = $filter->getID();
@@ -1265,16 +1443,16 @@ class Navigationsfilter
             }
 
             $query = $this->getBaseQuery([
-                    'tartikelmerkmal.kMerkmal',
-                    'tartikelmerkmal.kMerkmalWert',
-                    'tmerkmalwert.cBildPfad AS cMMWBildPfad',
-                    'tmerkmalwertsprache.cWert',
-                    'tmerkmal.nSort AS nSortMerkmal',
-                    'tmerkmalwert.nSort',
-                    'tmerkmal.cTyp',
-                    'tmerkmal.cBildPfad AS cMMBildPfad',
-                    $select
-                ],
+                'tartikelmerkmal.kMerkmal',
+                'tartikelmerkmal.kMerkmalWert',
+                'tmerkmalwert.cBildPfad AS cMMWBildPfad',
+                'tmerkmalwertsprache.cWert',
+                'tmerkmal.nSort AS nSortMerkmal',
+                'tmerkmalwert.nSort',
+                'tmerkmal.cTyp',
+                'tmerkmal.cBildPfad AS cMMBildPfad',
+                $select
+            ],
                 $state->joins,
                 $state->conditions,
                 $state->having,
@@ -1287,7 +1465,7 @@ class Navigationsfilter
                 FROM (" . $query . ") AS ssMerkmal
                 LEFT JOIN tseo ON tseo.kKey = ssMerkmal.kMerkmalWert
                     AND tseo.cKey = 'kMerkmalWert'
-                    AND tseo.kSprache = " . $this->languageID . "
+                    AND tseo.kSprache = " . $this->getLanguageID() . "
                 GROUP BY ssMerkmal.kMerkmalWert
                 ORDER BY ssMerkmal.nSortMerkmal, ssMerkmal.nSort, ssMerkmal.cWert";
 
@@ -1313,8 +1491,8 @@ class Navigationsfilter
                         $oMerkmalWerte->cBildpfadGross = BILD_KEIN_MERKMALWERTBILD_VORHANDEN;
                     }
                     //baue URL
-                    $oZusatzFilter = new stdClass();
-                    $oZusatzFilter->MerkmalFilter = new stdClass();
+                    $oZusatzFilter                              = new stdClass();
+                    $oZusatzFilter->MerkmalFilter               = new stdClass();
                     $oZusatzFilter->MerkmalFilter->kMerkmalWert = (int)$oMerkmalFilterDB->kMerkmalWert;
                     $oZusatzFilter->MerkmalFilter->cSeo         = $oMerkmalFilterDB->cSeo;
                     $oMerkmalWerte->cURL                        = $this->getURL(true, $oZusatzFilter);
@@ -1396,7 +1574,7 @@ class Navigationsfilter
                     }
                 }
                 if ($bAlleNumerisch) {
-                    usort($oMerkmalFilter_arr[$o]->oMerkmalWerte_arr, function($a, $b) {
+                    usort($oMerkmalFilter_arr[$o]->oMerkmalWerte_arr, function ($a, $b) {
                         return ($a == $b)
                             ? 0
                             : (($a->cWert < $b->cWert)
@@ -1412,9 +1590,9 @@ class Navigationsfilter
     }
 
     /**
-     * @param object      $oPreis
-     * @param object      $currency
-     * @param array|null  $oPreisspannenfilter_arr
+     * @param object     $oPreis
+     * @param object     $currency
+     * @param array|null $oPreisspannenfilter_arr
      * @return string
      */
     public function getPriceRangeSQL($oPreis, $currency, $oPreisspannenfilter_arr = null)
@@ -1427,12 +1605,12 @@ class Navigationsfilter
         // Wenn Option vorhanden, dann nur Spannen anzeigen, in denen Artikel vorhanden sind
         if ($this->conf['navigationsfilter']['preisspannenfilter_anzeige_berechnung'] === 'A') {
 //            $nPreisMax = $oPreis->fMaxPreis;
-            $nPreisMin = $oPreis->fMinPreis;
-            $nStep     = $oPreis->fStep;
+            $nPreisMin               = $oPreis->fMinPreis;
+            $nStep                   = $oPreis->fStep;
             $oPreisspannenfilter_arr = [];
             for ($i = 0; $i < $oPreis->nAnzahlSpannen; ++$i) {
-                $fakePriceRange = new stdClass();
-                $fakePriceRange->nBis = ($nPreisMin + ($i + 1) * $nStep);
+                $fakePriceRange              = new stdClass();
+                $fakePriceRange->nBis        = ($nPreisMin + ($i + 1) * $nStep);
                 $oPreisspannenfilter_arr[$i] = $fakePriceRange;
             }
         }
@@ -1480,7 +1658,6 @@ class Navigationsfilter
     public function getPriceRangeFilterOptions($productCount)
     {
         $oPreisspanne_arr = [];
-
         // Prüfe ob es nur einen Artikel in der Artikelübersicht gibt, falls ja und es ist noch kein Preisspannenfilter gesetzt
         // dürfen keine Preisspannenfilter angezeigt werden
         if ($this->conf['navigationsfilter']['preisspannenfilter_benutzen'] === 'N' || ($productCount === 1 && !$this->PreisspannenFilter->isInitialized())) {
@@ -1499,7 +1676,8 @@ class Navigationsfilter
         $join = new FilterJoin();
         $join->setType('LEFT JOIN')
              ->setTable('tartikelkategorierabatt')
-             ->setOn("tartikelkategorierabatt.kKundengruppe = " . $this->customerGroupID . " AND tartikelkategorierabatt.kArtikel = tartikel.kArtikel");
+             ->setOn("tartikelkategorierabatt.kKundengruppe = " . $this->getCustomerGroupID() .
+                 " AND tartikelkategorierabatt.kArtikel = tartikel.kArtikel");
         $state->joins[] = $join;
 
         $join = new FilterJoin();
@@ -1514,7 +1692,8 @@ class Navigationsfilter
         $join = new FilterJoin();
         $join->setType('LEFT JOIN')
              ->setTable('tsonderpreise')
-             ->setOn("tartikelsonderpreis.kArtikelSonderpreis = tsonderpreise.kArtikelSonderpreis AND tsonderpreise.kKundengruppe = " . $this->customerGroupID);
+             ->setOn("tartikelsonderpreis.kArtikelSonderpreis = tsonderpreise.kArtikelSonderpreis 
+                        AND tsonderpreise.kKundengruppe = " . $this->getCustomerGroupID());
         $state->joins[] = $join;
 
         $state->joins[] = $order->join;
@@ -1525,20 +1704,21 @@ class Navigationsfilter
             $join->setComment('join1 from getPriceRangeFilterOptions')
                  ->setTable('tpreise')
                  ->setType('JOIN')
-                 ->setOn('tpreise.kArtikel = tartikel.kArtikel AND tpreise.kKundengruppe = ' . $this->customerGroupID);
+                 ->setOn('tpreise.kArtikel = tartikel.kArtikel AND tpreise.kKundengruppe = ' . $this->getCustomerGroupID());
             $state->joins[] = $join;
 
             $join = new FilterJoin();
             $join->setComment('join2 from getPriceRangeFilterOptions')
                  ->setTable('tartikelsichtbarkeit')
                  ->setType('LEFT JOIN')
-                 ->setOn('tartikel.kArtikel = tartikelsichtbarkeit.kArtikel AND tartikelsichtbarkeit.kKundengruppe = ' . $this->customerGroupID);
+                 ->setOn('tartikel.kArtikel = tartikelsichtbarkeit.kArtikel 
+                            AND tartikelsichtbarkeit.kKundengruppe = ' . $this->getCustomerGroupID());
             $state->joins[] = $join;
 
             //remove duplicate joins
             $joinedTables = [];
             foreach ($state->joins as $i => $stateJoin) {
-                if (is_string($stateJoin)){
+                if (is_string($stateJoin)) {
                     throw new \InvalidArgumentException('getBaseQuery() got join as string: ' . $stateJoin);
                 }
                 if (!in_array($stateJoin->getTable(), $joinedTables)) {
@@ -1559,10 +1739,10 @@ class Navigationsfilter
                 $fSteuersatzMax = 0.0;
                 $fSteuersatzMin = 0.0;
             }
-            $fKundenrabatt = (isset($_SESSION['Kunde']->fRabatt) && $_SESSION['Kunde']->fRabatt > 0)
+            $fKundenrabatt     = (isset($_SESSION['Kunde']->fRabatt) && $_SESSION['Kunde']->fRabatt > 0)
                 ? $_SESSION['Kunde']->fRabatt
                 : 0.0;
-            $state->conditions    = implode(' AND ', array_map(function ($a) {
+            $state->conditions = implode(' AND ', array_map(function ($a) {
                 return (is_string($a))
                     ? ($a)
                     : ('(' . implode(' OR ', $a) . ')');
@@ -1570,9 +1750,9 @@ class Navigationsfilter
             if (!empty($state->conditions)) {
                 $state->conditions = ' AND ' . $state->conditions;
             }
-            $state->having = implode(' AND ', $state->having);
-            $state->joins  = implode("\n", $state->joins);
-            $qry = "SELECT max(ssMerkmal.fMax) AS fMax, min(ssMerkmal.fMin) AS fMin
+            $state->having             = implode(' AND ', $state->having);
+            $state->joins              = implode("\n", $state->joins);
+            $qry                       = "SELECT max(ssMerkmal.fMax) AS fMax, min(ssMerkmal.fMin) AS fMin
                 FROM (
                     SELECT ROUND(
                         LEAST(
@@ -1594,17 +1774,18 @@ class Navigationsfilter
             $oPreisspannenFilterMaxMin = Shop::DB()->query($qry, 1);
             if (isset($oPreisspannenFilterMaxMin->fMax) && $oPreisspannenFilterMaxMin->fMax > 0) {
                 // Berechnet Max, Min, Step, Anzahl, Diff und liefert diese Werte in einem Objekt
-                $oPreis = berechneMaxMinStep($oPreisspannenFilterMaxMin->fMax * $currency->fFaktor, $oPreisspannenFilterMaxMin->fMin * $currency->fFaktor);
+                $oPreis = berechneMaxMinStep($oPreisspannenFilterMaxMin->fMax * $currency->fFaktor,
+                    $oPreisspannenFilterMaxMin->fMin * $currency->fFaktor);
                 // Begrenzung der Preisspannen bei zu großen Preisdifferenzen
                 $oPreis->nAnzahlSpannen = min(20, (int)$oPreis->nAnzahlSpannen);
-                $cSelectSQL = '';
+                $cSelectSQL             = '';
                 for ($i = 0; $i < $oPreis->nAnzahlSpannen; ++$i) {
                     if ($i > 0) {
                         $cSelectSQL .= ', ';
                     }
                     $cSelectSQL .= " SUM(ssMerkmal.anz" . $i . ") AS anz" . $i;
                 }
-                $qry = "SELECT " . $cSelectSQL . "
+                $qry                   = "SELECT " . $cSelectSQL . "
                     FROM
                     (
                         SELECT " . $this->getPriceRangeSQL($oPreis, $currency) . "
@@ -1623,7 +1804,7 @@ class Navigationsfilter
                 $nPreisspannenAnzahl_arr   = (is_object($oPreisspannenFilterDB)) ? get_object_vars($oPreisspannenFilterDB) : null;
                 $oPreisspannenFilterDB_arr = [];
                 for ($i = 0; $i < $oPreis->nAnzahlSpannen; ++$i) {
-                    $sub = ($i === 0)
+                    $sub                         = ($i === 0)
                         ? 0
                         : ($nPreisspannenAnzahl_arr['anz' . ($i - 1)]);
                     $oPreisspannenFilterDB_arr[] = ($nPreisspannenAnzahl_arr['anz' . $i] - $sub);
@@ -1646,8 +1827,10 @@ class Navigationsfilter
                         }
                     }
                     // Localize Preise
-                    $oPreisspannenFilter->cVonLocalized  = gibPreisLocalizedOhneFaktor($oPreisspannenFilter->nVon, $currency);
-                    $oPreisspannenFilter->cBisLocalized  = gibPreisLocalizedOhneFaktor($oPreisspannenFilter->nBis, $currency);
+                    $oPreisspannenFilter->cVonLocalized  = gibPreisLocalizedOhneFaktor($oPreisspannenFilter->nVon,
+                        $currency);
+                    $oPreisspannenFilter->cBisLocalized  = gibPreisLocalizedOhneFaktor($oPreisspannenFilter->nBis,
+                        $currency);
                     $oPreisspannenFilter->nAnzahlArtikel = $oPreisspannenFilterDB_arr[$i];
                     //baue URL
                     if (!isset($oZusatzFilter)) {
@@ -1672,6 +1855,7 @@ class Navigationsfilter
                 );
                 if (!$oPreis->nAnzahlSpannen || !$oPreis->fMaxPreis) {
                     $res = [];
+
 //                    Shop::Cache()->set($cacheID, $res, [CACHING_GROUP_CATEGORY]);
 
                     return $res;
@@ -1685,13 +1869,13 @@ class Navigationsfilter
                     $cSelectSQL .= "SUM(ssMerkmal.anz" . $i . ") AS anz" . $i;
                 }
 
-                $oPreisspannenFilterDB = Shop::DB()->query(
+                $oPreisspannenFilterDB     = Shop::DB()->query(
                     "SELECT " . $cSelectSQL . "
                         FROM
                         (
                             SELECT " . $this->getPriceRangeSQL($oPreis, $currency, $oPreisspannenfilter_arr) . "
                                 FROM tartikel " .
-                                $state->joins . "
+                    $state->joins . "
                                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
                                     AND tartikel.kVaterArtikel = 0
                                     " . $this->getStorageFilter() . "
@@ -1706,7 +1890,7 @@ class Navigationsfilter
                 if (is_array($nPreisspannenAnzahl_arr)) {
                     $count = count($nPreisspannenAnzahl_arr);
                     for ($i = 0; $i < $count; ++$i) {
-                        $sub = ($i === 0)
+                        $sub                         = ($i === 0)
                             ? 0
                             : ($nPreisspannenAnzahl_arr['anz' . ($i - 1)]);
                         $oPreisspannenFilterDB_arr[] = ($nPreisspannenAnzahl_arr['anz' . $i] - $sub);
@@ -1718,8 +1902,10 @@ class Navigationsfilter
                     $oPreisspannenfilterTMP->nBis           = $oPreisspannenfilter->nBis;
                     $oPreisspannenfilterTMP->nAnzahlArtikel = (int)$oPreisspannenFilterDB_arr[$i];
                     // Localize Preise
-                    $oPreisspannenfilterTMP->cVonLocalized = gibPreisLocalizedOhneFaktor($oPreisspannenfilterTMP->nVon, $currency);
-                    $oPreisspannenfilterTMP->cBisLocalized = gibPreisLocalizedOhneFaktor($oPreisspannenfilterTMP->nBis, $currency);
+                    $oPreisspannenfilterTMP->cVonLocalized = gibPreisLocalizedOhneFaktor($oPreisspannenfilterTMP->nVon,
+                        $currency);
+                    $oPreisspannenfilterTMP->cBisLocalized = gibPreisLocalizedOhneFaktor($oPreisspannenfilterTMP->nBis,
+                        $currency);
                     //baue URL
                     $oZusatzFilter                           = new stdClass();
                     $oZusatzFilter->PreisspannenFilter       = new stdClass();
@@ -1779,12 +1965,14 @@ class Navigationsfilter
             $join->setComment('join3 from getSearchFilterOptions')
                  ->setType('JOIN')
                  ->setTable('tsuchanfrage')
-                 ->setOn('tsuchanfrage.cSuche = tsuchcache.cSuche AND tsuchanfrage.kSprache = ' . $this->languageID);
+                 ->setOn('tsuchanfrage.cSuche = tsuchcache.cSuche AND tsuchanfrage.kSprache = ' . $this->getLanguageID());
             $state->joins[] = $join;
 
             $state->conditions[] = "tsuchanfrage.nAktiv = 1";
 
-            $query = $this->getBaseQuery(['tsuchanfrage.kSuchanfrage', 'tsuchanfrage.cSuche', 'tartikel.kArtikel'], $state->joins, $state->conditions, $state->having, $order->orderBy, '', ['tsuchanfrage.kSuchanfrage', 'tartikel.kArtikel']);
+            $query = $this->getBaseQuery(['tsuchanfrage.kSuchanfrage', 'tsuchanfrage.cSuche', 'tartikel.kArtikel'],
+                $state->joins, $state->conditions, $state->having, $order->orderBy, '',
+                ['tsuchanfrage.kSuchanfrage', 'tartikel.kArtikel']);
 
             $query = "SELECT ssMerkmal.kSuchanfrage, ssMerkmal.cSuche, count(*) AS nAnzahl
                 FROM (" . $query . ") AS ssMerkmal
@@ -1821,8 +2009,8 @@ class Navigationsfilter
             //baue URL
             $count = count($oSuchFilterDB_arr);
             for ($i = 0; $i < $count; ++$i) {
-                $oZusatzFilter = new stdClass();
-                $oZusatzFilter->SuchFilter = new stdClass();
+                $oZusatzFilter                           = new stdClass();
+                $oZusatzFilter->SuchFilter               = new stdClass();
                 $oZusatzFilter->SuchFilter->kSuchanfrage = (int)$oSuchFilterDB_arr[$i]->kSuchanfrage;
                 $oSuchFilterDB_arr[$i]->cURL             = $this->getURL(true, $oZusatzFilter);
             }
@@ -1842,7 +2030,7 @@ class Navigationsfilter
 
         return $oSuchFilterDB_arr;
     }
-    
+
     /**
      * @return array
      */
@@ -1908,18 +2096,19 @@ class Navigationsfilter
                 $join->setComment('join5 from getCategoryFilterOptions')
                      ->setType('JOIN')
                      ->setTable('tkategoriesprache')
-                     ->setOn('tkategoriesprache.kKategorie = tkategorie.kKategorie AND tkategoriesprache.kSprache = ' . $this->languageID);
+                     ->setOn('tkategoriesprache.kKategorie = tkategorie.kKategorie AND tkategoriesprache.kSprache = ' . $this->getLanguageID());
                 $state->joins[] = $join;
             } else {
                 $select[] = "tkategorie.cName";
             }
 
-            $query = $this->getBaseQuery($select, $state->joins, $state->conditions, $state->having, $order->orderBy, '', ['tkategorie.kKategorie', 'tartikel.kArtikel']);
-            $query =  "SELECT tseo.cSeo, ssMerkmal.kKategorie, ssMerkmal.cName, ssMerkmal.nSort, COUNT(*) AS nAnzahl
+            $query                  = $this->getBaseQuery($select, $state->joins, $state->conditions, $state->having,
+                $order->orderBy, '', ['tkategorie.kKategorie', 'tartikel.kArtikel']);
+            $query                  = "SELECT tseo.cSeo, ssMerkmal.kKategorie, ssMerkmal.cName, ssMerkmal.nSort, COUNT(*) AS nAnzahl
                 FROM (" . $query . " ) AS ssMerkmal
                     LEFT JOIN tseo ON tseo.kKey = ssMerkmal.kKategorie
                         AND tseo.cKey = 'kKategorie'
-                        AND tseo.kSprache = " .$this->languageID . "
+                        AND tseo.kSprache = " . $this->getLanguageID() . "
                     GROUP BY ssMerkmal.kKategorie
                     ORDER BY ssMerkmal.nSort, ssMerkmal.cName";
             $oKategorieFilterDB_arr = Shop::DB()->query($query, 2);
@@ -1931,7 +2120,7 @@ class Navigationsfilter
                 // Anzeigen als KategoriePfad
                 if ($this->conf['navigationsfilter']['kategoriefilter_anzeigen_als'] === 'KP') {
                     $oKategorie                        = new Kategorie($oKategorieFilterDB_arr[$i]->kKategorie);
-                    $oKategorieFilterDB_arr[$i]->cName = gibKategoriepfad($oKategorie, $this->customerGroupID, $this->languageID);
+                    $oKategorieFilterDB_arr[$i]->cName = gibKategoriepfad($oKategorie, $this->getCustomerGroupID(), $this->getLanguageID());
                 }
                 $oZusatzFilter->KategorieFilter->kKategorie = (int)$oKategorieFilterDB_arr[$i]->kKategorie;
                 $oZusatzFilter->KategorieFilter->cSeo       = $oKategorieFilterDB_arr[$i]->cSeo;
@@ -1954,7 +2143,7 @@ class Navigationsfilter
      */
     public function getHeader()
     {
-        $this->cBrotNaviName =  '';
+        $this->cBrotNaviName = '';
         if ($this->Kategorie->isInitialized()) {
             $this->cBrotNaviName = $this->Kategorie->getName();
         }
@@ -2006,18 +2195,26 @@ class Navigationsfilter
      * @return string
      * @throws InvalidArgumentException
      */
-    private function getBaseQuery($select = ['tartikel.kArtikel'], $joins, $conditions, $having = [], $order = '', $limit = '', $groupBy = ['tartikel.kArtikel'])
-    {
+    public function getBaseQuery(
+        $select = ['tartikel.kArtikel'],
+        $joins,
+        $conditions,
+        $having = [],
+        $order = '',
+        $limit = '',
+        $groupBy = ['tartikel.kArtikel']
+    ) {
         $join = new FilterJoin();
         $join->setComment('article visiblity join from getBaseQuery')
              ->setType('LEFT JOIN')
              ->setTable('tartikelsichtbarkeit')
-             ->setOn('tartikel.kArtikel = tartikelsichtbarkeit.kArtikel AND tartikelsichtbarkeit.kKundengruppe = ' . $this->customerGroupID);
+             ->setOn('tartikel.kArtikel = tartikelsichtbarkeit.kArtikel 
+                        AND tartikelsichtbarkeit.kKundengruppe = ' . $this->getCustomerGroupID());
         $joins[] = $join;
         //remove duplicate joins
         $joinedTables = [];
         foreach ($joins as $i => $stateJoin) {
-            if (is_string($stateJoin)){
+            if (is_string($stateJoin)) {
                 throw new \InvalidArgumentException('getBaseQuery() got join as string: ' . $stateJoin);
             }
             if (!in_array($stateJoin->getTable(), $joinedTables)) {
@@ -2026,13 +2223,13 @@ class Navigationsfilter
                 unset($joins[$i]);
             }
         }
-        $conditions    = implode(' AND ', array_map(function ($a) {
+        $conditions = implode(' AND ', array_map(function ($a) {
             return (is_string($a))
                 ? ($a)
                 : ('(' . implode(' OR ', $a) . ')');
         }, $conditions));
-        $joins         = implode("\n", $joins);
-        $having        = implode(' AND ', $having);
+        $joins      = implode("\n", $joins);
+        $having     = implode(' AND ', $having);
         if (!empty($limit)) {
             $limit = ' LIMIT ' . $limit;
         }
@@ -2052,7 +2249,7 @@ class Navigationsfilter
                 AND tartikel.kVaterArtikel = 0
                 #stock filter
                 " . $this->getStorageFilter() .
-                $conditions . "
+            $conditions . "
             #default group by
             " . $groupBy . "
             " . $having . "
@@ -2116,22 +2313,24 @@ class Navigationsfilter
     }
 
     /**
-     * @param bool $bSeo
+     * @param bool   $bSeo
      * @param object $oZusatzFilter
      * @param bool   $bCanonical
      * @return string
      */
-    private function getURL($bSeo = true, $oZusatzFilter, $bCanonical = false)
+    public function getURL($bSeo = true, $oZusatzFilter, $bCanonical = false)
     {
-        $cSEOURL  = Shop::getURL() . '/';
+        $cSEOURL = Shop::getURL() . '/';
         // Gibt es zu der Suche bereits eine Suchanfrage?
         if (!empty($this->Suche->cSuche)) {
-            $oSuchanfrage = Shop::DB()->select('tsuchanfrage', 'cSuche', Shop::DB()->escape($this->Suche->cSuche), 'kSprache', $this->languageID, 'nAktiv', 1, false, 'kSuchanfrage');
+            $oSuchanfrage = Shop::DB()->select('tsuchanfrage', 'cSuche', Shop::DB()->escape($this->Suche->cSuche),
+                'kSprache', $this->getLanguageID(), 'nAktiv', 1, false, 'kSuchanfrage');
             if (isset($oSuchanfrage->kSuchanfrage) && $oSuchanfrage->kSuchanfrage > 0) {
                 // Hole alle aktiven Sprachen
                 $oSprache_arr = $this->oSprache_arr;
                 $bSprache     = (is_array($oSprache_arr) && count($oSprache_arr) > 0);
-                $oSeo_arr     = Shop::DB()->selectAll('tseo', ['cKey', 'kKey'], ['kSuchanfrage', (int)$oSuchanfrage->kSuchanfrage], 'cSeo, kSprache',  'kSprache');
+                $oSeo_arr     = Shop::DB()->selectAll('tseo', ['cKey', 'kKey'],
+                    ['kSuchanfrage', (int)$oSuchanfrage->kSuchanfrage], 'cSeo, kSprache', 'kSprache');
                 if ($bSprache) {
                     foreach ($oSprache_arr as $oSprache) {
                         $this->Suchanfrage->cSeo[$oSprache->kSprache] = '';
@@ -2170,57 +2369,57 @@ class Navigationsfilter
         $cURL = $cSEOURL . 'index.php?';
         // Mainwords
         if ($this->Kategorie->isInitialized()) {
-            if (strlen($this->Kategorie->getSeo($this->languageID)) === 0) {
+            if (strlen($this->Kategorie->getSeo($this->getLanguageID())) === 0) {
                 $bSeo = false;
             } else {
-                $cSEOURL .= $this->Kategorie->getSeo($this->languageID);
+                $cSEOURL .= $this->Kategorie->getSeo($this->getLanguageID());
             }
             $cURL .= 'k=' . $this->Kategorie->getID();
         } elseif ($this->Hersteller->isInitialized()) {
-            $cSEOURL .= $this->Hersteller->getSeo($this->languageID);
-            if ($bSeo && strlen($this->Hersteller->getSeo($this->languageID)) === 0) {
+            $cSEOURL .= $this->Hersteller->getSeo($this->getLanguageID());
+            if ($bSeo && strlen($this->Hersteller->getSeo($this->getLanguageID())) === 0) {
                 $bSeo = false;
             }
             $cURL .= 'h=' . $this->Hersteller->getID();
         } elseif ($this->Suchanfrage->isInitialized()) {
-            $cSEOURL .= $this->Suchanfrage->getSeo($this->languageID);
-            if ($bSeo && strlen($this->Suchanfrage->getSeo($this->languageID)) === 0) {
+            $cSEOURL .= $this->Suchanfrage->getSeo($this->getLanguageID());
+            if ($bSeo && strlen($this->Suchanfrage->getSeo($this->getLanguageID())) === 0) {
                 $bSeo = false;
             }
             $cURL .= 'l=' . $this->Suchanfrage->getID();
         } elseif ($this->MerkmalWert->isInitialized()) {
-            $cSEOURL .= $this->MerkmalWert->getSeo($this->languageID);
-            if ($bSeo && strlen($this->MerkmalWert->getSeo($this->languageID)) === 0) {
+            $cSEOURL .= $this->MerkmalWert->getSeo($this->getLanguageID());
+            if ($bSeo && strlen($this->MerkmalWert->getSeo($this->getLanguageID())) === 0) {
                 $bSeo = false;
             }
             $cURL .= 'm=' . $this->MerkmalWert->getID();
         } elseif ($this->Tag->isInitialized()) {
-            $cSEOURL .= $this->Tag->getSeo($this->languageID);
-            if ($bSeo && strlen($this->Tag->getSeo($this->languageID)) === 0) {
+            $cSEOURL .= $this->Tag->getSeo($this->getLanguageID());
+            if ($bSeo && strlen($this->Tag->getSeo($this->getLanguageID())) === 0) {
                 $bSeo = false;
             }
             $cURL .= 't=' . $this->Tag->getID();
         } elseif ($this->Suchspecial->isInitialized()) {
-            $cSEOURL .= $this->Suchspecial->getSeo($this->languageID);
-            if ($bSeo && strlen($this->Suchspecial->getSeo($this->languageID)) === 0) {
+            $cSEOURL .= $this->Suchspecial->getSeo($this->getLanguageID());
+            if ($bSeo && strlen($this->Suchspecial->getSeo($this->getLanguageID())) === 0) {
                 $bSeo = false;
             }
             $cURL .= 'q=' . $this->Suchspecial->getID();
         } elseif ($this->News->isInitialized()) {
-            $cSEOURL .= $this->News->getSeo($this->languageID);
-            if ($bSeo && strlen($this->News->getSeo($this->languageID)) === 0) {
+            $cSEOURL .= $this->News->getSeo($this->getLanguageID());
+            if ($bSeo && strlen($this->News->getSeo($this->getLanguageID())) === 0) {
                 $bSeo = false;
             }
             $cURL .= 'n=' . $this->News->getID();
         } elseif ($this->NewsMonat->isInitialized()) {
-            $cSEOURL .= $this->NewsMonat->getSeo($this->languageID);
-            if ($bSeo && strlen($this->NewsMonat->getSeo($this->languageID)) === 0) {
+            $cSEOURL .= $this->NewsMonat->getSeo($this->getLanguageID());
+            if ($bSeo && strlen($this->NewsMonat->getSeo($this->getLanguageID())) === 0) {
                 $bSeo = false;
             }
             $cURL .= 'nm=' . $this->NewsMonat->getID();
         } elseif ($this->NewsKategorie->isInitialized()) {
-            $cSEOURL .= $this->NewsKategorie->getSeo($this->languageID);
-            if ($bSeo && strlen($this->NewsKategorie->getSeo($this->languageID)) === 0) {
+            $cSEOURL .= $this->NewsKategorie->getSeo($this->getLanguageID());
+            if ($bSeo && strlen($this->NewsKategorie->getSeo($this->getLanguageID())) === 0) {
                 $bSeo = false;
             }
             $cURL .= 'nk=' . $this->NewsKategorie->getID();
@@ -2234,20 +2433,20 @@ class Navigationsfilter
         // Filter
         // Kategorie
         if (!$bCanonical) {
-            if ($this->KategorieFilter->isInitialized() && (!$this->Kategorie->isInitialized() || $this->Kategorie->getID() !== $this->KategorieFilter->getID()) ) {
+            if ($this->KategorieFilter->isInitialized() && (!$this->Kategorie->isInitialized() || $this->Kategorie->getID() !== $this->KategorieFilter->getID())) {
                 if (!isset($oZusatzFilter->FilterLoesen->Kategorie) || !$oZusatzFilter->FilterLoesen->Kategorie) {
-                    if (strlen($this->KategorieFilter->getSeo($this->languageID)) === 0) {
+                    if (strlen($this->KategorieFilter->getSeo($this->getLanguageID())) === 0) {
                         $bSeo = false;
                     }
                     if ($this->conf['navigationsfilter']['kategoriefilter_anzeigen_als'] === 'HF' && !empty($oZusatzFilter->KategorieFilter->kKategorie)) {
                         if (!empty($oZusatzFilter->KategorieFilter->cSeo)) {
                             $cSEOURL .= SEP_KAT . $oZusatzFilter->KategorieFilter->cSeo;
                         } else {
-                            $cSEOURL .= SEP_KAT . $this->KategorieFilter->getSeo($this->languageID);
+                            $cSEOURL .= SEP_KAT . $this->KategorieFilter->getSeo($this->getLanguageID());
                         }
                         $cURL .= '&amp;kf=' . $oZusatzFilter->KategorieFilter->kKategorie;
                     } else {
-                        $cSEOURL .= SEP_KAT . $this->KategorieFilter->getSeo($this->languageID);
+                        $cSEOURL .= SEP_KAT . $this->KategorieFilter->getSeo($this->getLanguageID());
                         $cURL .= '&amp;kf=' . $this->KategorieFilter->getID();
                     }
                 }
@@ -2260,8 +2459,8 @@ class Navigationsfilter
             // Hersteller
             if ($this->HerstellerFilter->isInitialized() && (!$this->Hersteller->isInitialized() || $this->Hersteller->getID() !== $this->HerstellerFilter->getID())) {
                 if (empty($oZusatzFilter->FilterLoesen->Hersteller)) {
-                    $cSEOURL .= SEP_HST . $this->HerstellerFilter->getSeo($this->languageID);
-                    if ($bSeo && strlen($this->HerstellerFilter->getSeo($this->languageID)) === 0) {
+                    $cSEOURL .= SEP_HST . $this->HerstellerFilter->getSeo($this->getLanguageID());
+                    if ($bSeo && strlen($this->HerstellerFilter->getSeo($this->getLanguageID())) === 0) {
                         $bSeo = false;
                     }
                     $cURL .= '&amp;hf=' . $this->HerstellerFilter->getID();
@@ -2313,13 +2512,14 @@ class Navigationsfilter
                 if ($oMerkmalFilter->isInitialized() > 0) {
                     if ((!isset($oZusatzFilter->FilterLoesen->Merkmale)) || $oZusatzFilter->FilterLoesen->Merkmale != $oMerkmalFilter->kMerkmal) {
                         if ((!isset($oZusatzFilter->FilterLoesen->MerkmalWert) && isset($oMerkmalFilter->kMerkmalWert)) ||
-                            $oZusatzFilter->FilterLoesen->MerkmalWert != $oMerkmalFilter->kMerkmalWert) {
-                            if (strlen($oMerkmalFilter->cSeo[$this->languageID]) === 0) {
+                            $oZusatzFilter->FilterLoesen->MerkmalWert != $oMerkmalFilter->kMerkmalWert
+                        ) {
+                            if (strlen($oMerkmalFilter->cSeo[$this->getLanguageID()]) === 0) {
                                 $bSeo = false;
                             }
                             $oMerkmalWert_arr[$i]               = new stdClass();
                             $oMerkmalWert_arr[$i]->kMerkmalWert = (int)$oMerkmalFilter->kMerkmalWert;
-                            $oMerkmalWert_arr[$i]->cSeo         = $oMerkmalFilter->cSeo[$this->languageID];
+                            $oMerkmalWert_arr[$i]->cSeo         = $oMerkmalFilter->cSeo[$this->getLanguageID()];
                             ++$nLetzterMerkmalFilter;
                             if (isset($oMerkmalFilter->kMerkmalWert) && isset($oZusatzFilter->MerkmalFilter->kMerkmalWert) && $oMerkmalFilter->kMerkmalWert == $oZusatzFilter->MerkmalFilter->kMerkmalWert) {
                                 $bZusatzMerkmalEnthalten = true;
@@ -2403,10 +2603,10 @@ class Navigationsfilter
                 (!$this->Suchspecial->isInitialized() || $this->Suchspecial->getID() !== $oZusatzFilter->SuchspecialFilter->kKey)
             ) {
                 $cURL .= '&amp;qf=' . $oZusatzFilter->SuchspecialFilter->kKey;
-            } elseif ($this->SuchspecialFilter->isInitialized() && (!$this->Suchspecial->isInitialized() || $this->Suchspecial->getID() !== $this->SuchspecialFilter->getID()) ) {
+            } elseif ($this->SuchspecialFilter->isInitialized() && (!$this->Suchspecial->isInitialized() || $this->Suchspecial->getID() !== $this->SuchspecialFilter->getID())) {
                 if (!isset($oZusatzFilter->FilterLoesen->Suchspecials) || !$oZusatzFilter->FilterLoesen->Suchspecials) {
-                    $cSEOURL .= $this->SuchspecialFilter->getSeo($this->languageID);
-                    if ($bSeo && strlen($this->SuchspecialFilter->getSeo($this->languageID)) === 0) {
+                    $cSEOURL .= $this->SuchspecialFilter->getSeo($this->getLanguageID());
+                    if ($bSeo && strlen($this->SuchspecialFilter->getSeo($this->getLanguageID())) === 0) {
                         $bSeo = false;
                     }
                     $cURL .= '&amp;qf=' . $this->SuchspecialFilter->getID();
@@ -2421,12 +2621,12 @@ class Navigationsfilter
         if ($bSeo) {
             return $cSEOURL;
         }
-        if ($this->languageID != Shop::$kSprache) {
+        if ($this->getLanguageID() != Shop::$kSprache) {
             //@todo@todo: this will probably never happen..?
             $cISOSprache = '';
             if (isset($_SESSION['Sprachen']) && count($_SESSION['Sprachen']) > 0) {
                 foreach ($_SESSION['Sprachen'] as $i => $oSprache) {
-                    if ($oSprache->kSprache == $this->languageID) {
+                    if ($oSprache->kSprache == $this->getLanguageID()) {
                         $cISOSprache = $oSprache->cISO;
                     }
                 }
@@ -2442,7 +2642,7 @@ class Navigationsfilter
      * @param int $kMerkmalWert
      * @return bool
      */
-    private function attributeValueIsActive($kMerkmalWert)
+    public function attributeValueIsActive($kMerkmalWert)
     {
         foreach ($this->MerkmalFilter as $i => $oMerkmalauswahl) {
             if ($oMerkmalauswahl->getID() === $kMerkmalWert) {
@@ -2588,7 +2788,8 @@ class Navigationsfilter
         }
         // Seitenzahl anhaengen ab Seite 2 (Doppelte Titles vermeiden, #5992)
         if ($oSuchergebnisse->Seitenzahlen->AktuelleSeite > 1) {
-            $cMetaTitle .= ', ' . Shop::Lang()->get('page', 'global') . " {$oSuchergebnisse->Seitenzahlen->AktuelleSeite}";
+            $cMetaTitle .= ', ' . Shop::Lang()->get('page',
+                    'global') . " {$oSuchergebnisse->Seitenzahlen->AktuelleSeite}";
         }
         // Globalen Meta Title ueberall anhaengen
         if ($this->conf['metaangaben']['global_meta_title_anhaengen'] === 'Y' && !empty($GlobaleMetaAngaben_arr[Shop::getLanguage()]->Title)) {
@@ -2606,8 +2807,13 @@ class Navigationsfilter
      * @param Kategorie|null $oKategorie
      * @return string
      */
-    public function getMetaDescription($oMeta, $oArtikel_arr, $oSuchergebnisse, $GlobaleMetaAngaben_arr, $oKategorie = null)
-    {
+    public function getMetaDescription(
+        $oMeta,
+        $oArtikel_arr,
+        $oSuchergebnisse,
+        $GlobaleMetaAngaben_arr,
+        $oKategorie = null
+    ) {
         executeHook(HOOK_FILTER_INC_GIBNAVIMETADESCRIPTION);
         // Prüfen ob bereits eingestellte Metas gesetzt sind
         if (strlen($oMeta->cMetaDescription) > 0) {
@@ -2667,7 +2873,8 @@ class Navigationsfilter
                     : trim($cKatDescription);
                 // Seitenzahl anhaengen ab Seite 2 (Doppelte Meta-Descriptions vermeiden, #5992)
                 if ($oSuchergebnisse->Seitenzahlen->AktuelleSeite > 1 && $oSuchergebnisse->ArtikelVon > 0 && $oSuchergebnisse->ArtikelBis > 0) {
-                    $cMetaDescription .= ', ' . Shop::Lang()->get('products', 'global') . " {$oSuchergebnisse->ArtikelVon} - {$oSuchergebnisse->ArtikelBis}";
+                    $cMetaDescription .= ', ' . Shop::Lang()->get('products',
+                            'global') . " {$oSuchergebnisse->ArtikelVon} - {$oSuchergebnisse->ArtikelBis}";
                 }
 
                 return truncateMetaDescription($cMetaDescription);
@@ -2699,7 +2906,8 @@ class Navigationsfilter
             }
             // Seitenzahl anhaengen ab Seite 2 (Doppelte Meta-Descriptions vermeiden, #5992)
             if ($oSuchergebnisse->Seitenzahlen->AktuelleSeite > 1 && $oSuchergebnisse->ArtikelVon > 0 && $oSuchergebnisse->ArtikelBis > 0) {
-                $cMetaDescription .= ', ' . Shop::Lang()->get('products', 'global') . " {$oSuchergebnisse->ArtikelVon} - {$oSuchergebnisse->ArtikelBis}";
+                $cMetaDescription .= ', ' . Shop::Lang()->get('products',
+                        'global') . " {$oSuchergebnisse->ArtikelVon} - {$oSuchergebnisse->ArtikelBis}";
             }
         }
 
@@ -2760,7 +2968,8 @@ class Navigationsfilter
                 ? explode(' ', $excludes[$_SESSION['cISOSprache']]->cKeywords)
                 : [];
             for ($i = 0; $i < $nCount; ++$i) {
-                $cExcArtikelName = gibExcludesKeywordsReplace($oArtikel_arr[$i]->cName, $oExcludesKeywords_arr); // Filter nicht erlaubte Keywords
+                $cExcArtikelName = gibExcludesKeywordsReplace($oArtikel_arr[$i]->cName,
+                    $oExcludesKeywords_arr); // Filter nicht erlaubte Keywords
                 if (strpos($cExcArtikelName, ' ') !== false) {
                     // Wenn der Dateiname aus mehreren Wörtern besteht
                     $cSubNameTMP_arr = explode(' ', $cExcArtikelName);

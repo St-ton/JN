@@ -1223,7 +1223,7 @@ function gibVarKombiEigenschaftsWerte($kArtikel, $bSichtbarkeitBeachten = true)
 function fuegeEinInWarenkorb($kArtikel, $anzahl, $oEigenschaftwerte_arr = '', $nWeiterleitung = 0, $cUnique = false, $kKonfigitem = 0, $oArtikelOptionen = null, $setzePositionsPreise = true)
 {
     $kArtikel = (int)$kArtikel;
-    if ($anzahl > 0 && $kArtikel > 0) {
+    if ($anzahl > 0 && ($kArtikel > 0 || $kArtikel === 0 && !empty($kKonfigitem) && !empty($cUnique))) {
         $Artikel = new Artikel();
         if ($oArtikelOptionen === null) {
             $oArtikelOptionen = Artikel::getDefaultOptions();

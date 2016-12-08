@@ -16,7 +16,6 @@ interface IFilter
      */
     public function getID();
 
-
     /**
      * @param array $languages
      * @return $this

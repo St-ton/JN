@@ -1655,3 +1655,12 @@ define('HOOK_BOXEN_HOME', 224);
  * @param oArtikel
  */
 define('HOOK_QUICKSYNC_XML_BEARBEITEINSERT', 225);
+
+/**
+ * in initStates() after initializing the default filters
+ *
+ * @file class.JTL-Shop.Navigationsfilter.php
+ * @param Navigationsfilter navfilter
+ * @param array params
+ */
+define('HOOK_NAVIGATIONSFILTER_INIT_FILTER', 226);

@@ -64,6 +64,7 @@ class FilterHersteller extends AbstractFilter implements IFilter
             Shop::$kHersteller = 0;
             Shop::$is404       = true;
         }
+
         return $this;
     }
 

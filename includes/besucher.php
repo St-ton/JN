@@ -105,6 +105,7 @@ function gibBot()
     $agent = strtolower($_SERVER['HTTP_USER_AGENT']);
     if (
         strpos($agent, 'googlebot') !== false ||
+        strpos($agent, 'bingbot') !== false ||
         strpos($agent, 'inktomi.com') !== false ||
         strpos($agent, 'yahoo! slurp') !== false ||
         strpos($agent, 'msnbot') !== false ||

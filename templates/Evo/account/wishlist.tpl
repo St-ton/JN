@@ -84,21 +84,21 @@
                             <input name="Anzahl_{$CWunschlistePos->kWunschlistePos}" class="wunschliste_anzahl form-control" type="text" size="1" value="{$CWunschlistePos->fAnzahl|replace_delim}"><br />{$CWunschlistePos->Artikel->cEinheit}
                         </td>
                         <td class="text-right">
-                            <div class="btn-group-vertical">
+                            <div class="btn-group-vertical btn-group-sm">
                                 {* @todo: button href? *}
                                 {if $CWunschlistePos->Artikel->bHasKonfig}
-                                    <a href="{$CWunschlistePos->Artikel->cURL}" class="btn btn-xs btn-default" title="{lang key="product" section="global"} {lang key="configure" section="global"}">
+                                    <a href="{$CWunschlistePos->Artikel->cURL}" class="btn btn-default" title="{lang key="product" section="global"} {lang key="configure" section="global"}">
                                         <span class="fa fa-gears"></span>
                                     </a>
                                 {else}
-                                    <a href="{get_static_route id='jtl.php'}.php?wl={$CWunschliste->kWunschliste}&wlph={$CWunschlistePos->kWunschlistePos}{if isset($wlsearch)}&wlsearch=1&cSuche={$wlsearch}{/if}" class="btn btn-xs btn-default" title="{lang key="wishlistaddToCart" section="login"}">
+                                    <a href="{get_static_route id='jtl.php'}?wl={$CWunschliste->kWunschliste}&wlph={$CWunschlistePos->kWunschlistePos}{if isset($wlsearch)}&wlsearch=1&cSuche={$wlsearch}{/if}" class="btn btn-xs btn-default" title="{lang key="wishlistaddToCart" section="login"}">
                                         <span class="fa fa-shopping-cart"></span>
                                     </a>
                                 {/if}
-                                <a href="#toggle-comment" class="btn btn-xs {if $CWunschlistePos->cKommentar|count_characters > 0}btn-info{else}btn-default{/if}" title="{lang key="wishlistComment" section="login"}">
+                                <a href="#toggle-comment" class="btn {if $CWunschlistePos->cKommentar|count_characters > 0}btn-info{else}btn-default{/if}" title="{lang key="wishlistComment" section="login"}">
                                     <i class="fa fa-comments-o" aria-hidden="true"></i>
                                 </a>
-                                <a href="{get_static_route id='jtl.php'}?wl={$CWunschliste->kWunschliste}&wlplo={$CWunschlistePos->kWunschlistePos}{if isset($wlsearch)}&wlsearch=1&cSuche={$wlsearch}{/if}" class="btn btn-xs btn-default" title="{lang key="wishlistremoveItem" section="login"}">
+                                <a href="{get_static_route id='jtl.php'}?wl={$CWunschliste->kWunschliste}&wlplo={$CWunschlistePos->kWunschlistePos}{if isset($wlsearch)}&wlsearch=1&cSuche={$wlsearch}{/if}" class="btn btn-default" title="{lang key="wishlistremoveItem" section="login"}">
                                     <span class="fa fa-trash-o"></span>
                                 </a>
                             </div>
@@ -109,7 +109,7 @@
             </tbody>
         </table>
         <div class="row">
-            <div class="col-xs-8 col-md-9">
+            <div class="col-xs-6 col-md-9">
                 {block name="wishlist-body"}
                     {if $CWunschliste->nOeffentlich == 1}
                         <div class="input-group input-group-sm">
@@ -126,13 +126,13 @@
                             </span>
                         </div>
                     {else}
-                        <button type="button" name="nstd" value="1" class="btn btn-sm btn-default">
+                        <button type="submit" name="nstd" value="1" class="btn btn-sm btn-default">
                             <span class="fa fa-eye"></span> {lang key="wishlistSetPublic" section="login"}
                         </button>
                     {/if}
                 {/block}
             </div>
-            <div class="col-xs-4 col-md-3 text-right">
+            <div class="col-xs-6 col-md-3 text-right">
                 <div class="btn-group btn-group-sm">
                     <button type="submit" title="{lang key="wishlistUpdate" section="login"}" class="btn btn-default">
                         <i class="fa fa-refresh"></i>

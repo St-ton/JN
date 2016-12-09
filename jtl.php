@@ -726,9 +726,12 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
             }
         }
 
-        $Bestellungen     = array();
+        $Bestellungen = array();
         if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
-            $Bestellungen = Shop::DB()->selectAll('tbestellung', 'kKunde', (int)$_SESSION['Kunde']->kKunde, '*, date_format(dErstellt,\'%d.%m.%Y\') AS dBestelldatum', 'kBestellung DESC', CUSTOMER_ACCOUNT_MAX_ORDERS);
+            $Bestellungen = Shop::DB()->selectAll(
+                'tbestellung', 'kKunde', (int)$_SESSION['Kunde']->kKunde,
+                '*, date_format(dErstellt,\'%d.%m.%Y\') AS dBestelldatum', 'kBestellung DESC'
+            );
             if (is_array($Bestellungen) && count($Bestellungen) > 0) {
                 foreach ($Bestellungen as $i => $oBestellung) {
                     $Bestellungen[$i]->bDownload = false;
@@ -751,7 +754,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
                 if (isset($currencies[(int)$Bestellungen[$i]->kWaehrung])) {
                     $Bestellungen[$i]->Waehrung = $currencies[(int)$Bestellungen[$i]->kWaehrung];
                 } else {
-                    $Bestellungen[$i]->Waehrung = Shop::DB()->select('twaehrung', 'kWaehrung', (int)$Bestellungen[$i]->kWaehrung);
+                    $Bestellungen[$i]->Waehrung                    = Shop::DB()->select('twaehrung', 'kWaehrung', (int)$Bestellungen[$i]->kWaehrung);
                     $currencies[(int)$Bestellungen[$i]->kWaehrung] = $Bestellungen[$i]->Waehrung;
                 }
                 if (isset($Bestellungen[$i]->fWaehrungsFaktor) && $Bestellungen[$i]->fWaehrungsFaktor !== 1 && isset($Bestellungen[$i]->Waehrung->fFaktor)) {
@@ -761,7 +764,15 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
             $Bestellungen[$i]->cBestellwertLocalized = gibPreisStringLocalized($Bestellungen[$i]->fGesamtsumme, $Bestellungen[$i]->Waehrung);
             $Bestellungen[$i]->Status                = lang_bestellstatus($Bestellungen[$i]->cStatus);
         }
-        $smarty->assign('Bestellungen', $Bestellungen);
+
+        $orderPagination = (new Pagination('orders'))
+            ->setItemArray($Bestellungen)
+            ->setItemsPerPage(10)
+            ->assemble();
+
+        $smarty
+            ->assign('orderPagination', $orderPagination)
+            ->assign('Bestellungen', $Bestellungen);
     }
 
     if ($step === 'mein Konto' || $step === 'wunschliste') {

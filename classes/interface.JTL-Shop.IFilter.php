@@ -46,5 +46,10 @@ interface IFilter
      * @param mixed|null $mixed
      * @return []
      */
-    public function getOptions($mixed);
+    public function getOptions($mixed = null);
+
+    /**
+     * @return string
+     */
+    public function getName();
 }

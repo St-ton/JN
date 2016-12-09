@@ -83,6 +83,22 @@
                         {/block}
                     {/if}
 
+                    {if isset($Suchergebnisse->customFilters) && $Suchergebnisse->customFilters|@count > 0}
+                        {block name="productlist-result-options-filter-custom"}
+                            {foreach $Suchergebnisse->customFilters as $customFilter}
+                                {if $customFilter->filterOptions|@count > 0}
+                                    <div class="form-group dropdown">
+                                        <a href="#" class="btn btn-default dropdown-toggle form-control" data-toggle="dropdown" role="button" aria-expanded="false">
+                                            {$customFilter->cName} <span class="caret"></span>
+                                        </a>
+                                        {include file='snippets/filter/custom.tpl' class="dropdown-menu" filter=$customFilter}
+                                    </div>
+                                {/if}
+                            {/foreach}
+                        {/block}
+                    {/if}
+
+
                     {if $Einstellungen.navigationsfilter.merkmalfilter_verwenden === 'content' && $Suchergebnisse->MerkmalFilter|@count > 0 && $Suchergebnisse->Artikel->elemente|@count > 0}
                         {block name="productlist-result-options-filter-attributes"}
                         {foreach name=merkmalfilter from=$Suchergebnisse->MerkmalFilter item=Merkmal}

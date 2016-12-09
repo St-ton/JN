@@ -19,10 +19,6 @@ class Navigationsfilter
     /**
      * @var array
      */
-    private $articleKeys = [];
-    /**
-     * @var array
-     */
     private $conf;
     /**
      * @var array
@@ -396,16 +392,6 @@ class Navigationsfilter
         return $this;
     }
 
-    public function getBaseState()
-    {
-        return $this->baseState;
-    }
-
-    public function getActiveFilters2()
-    {
-        return $this->activeFilters;
-    }
-
     /**
      * @param array $params
      * @return $this
@@ -543,6 +529,24 @@ class Navigationsfilter
     }
 
     /**
+     * @param string $filterName
+     * @return $this
+     * @throws Exception
+     */
+    public function registerFilterByClassName($filterName)
+    {
+        if (class_exists($filterName)) {
+            /** @var IFilter $filter */
+            $filter = new $filterName($this);
+            $this->filters[] = $filter;
+        } else {
+            throw new Exception('Cannot register filter class ' . $filterName);
+        }
+
+        return $this;
+    }
+
+    /**
      * @param IFilter $filter
      * @return $this
      */
@@ -552,6 +556,44 @@ class Navigationsfilter
         ++$this->nAnzahlFilter;
 
         return $this;
+    }
+
+    public function getBaseState()
+    {
+        return $this->baseState;
+    }
+
+    public function getActiveFilters2()
+    {
+        return $this->activeFilters;
+    }
+
+    /**
+     * @param string $filterClassName
+     * @return int|null
+     */
+    public function getFilterValue($filterClassName) {
+        foreach ($this->activeFilters as $filter) {
+            if ($filterClassName === get_class($filter)) {
+                return $filter->getID();
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @param string $filterName
+     * @return bool
+     */
+    public function getFilter($filterName) {
+        foreach ($this->activeFilters as $filter) {
+            if ($filterName === $filter->getName()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -666,7 +708,6 @@ class Navigationsfilter
     {
         return $this->Suchspecial->isInitialized();
     }
-
 
     /**
      * @return $this
@@ -854,8 +895,6 @@ class Navigationsfilter
         $state->joins[] = $order->join;
 
         $query = $this->getBaseQuery(['tartikel.kArtikel'], $state->joins, $state->conditions, $state->having, $order->orderBy);
-
-//        Shop::dbg($query, false, 'getProducts qry:');
 
         return Shop::DB()->query($query, 2);
     }
@@ -1079,12 +1118,17 @@ class Navigationsfilter
                 Shop::dbg($test, true, 'vs:');
             }
         }
-
+        $oSuchergebnisse->customFilters = [];
         foreach($this->filters as $filter) {
-            $class = get_class($filter);
-            $oSuchergebnisse->$class = $filter->getOptions();
+            $filterObject                     = new stdClass();
+            $filterObject->cClassname         = get_class($filter);
+            $filterObject->cName              = $filter->getName();
+            $filterObject->value              = $filter->getID();
+            $filterObject->filterOptions      = $filter->getOptions();
+            $oSuchergebnisse->customFilters[] = $filterObject;
         }
-        Shop::dbg($oSuchergebnisse, true, 'oSuch:');
+//        unset($oSuchergebnisse->Artikel);
+//        Shop::dbg($oSuchergebnisse, true, 'oSuch:');
 
         return $oSuchergebnisse;
     }
@@ -2243,7 +2287,8 @@ class Navigationsfilter
         $having = [],
         $order = '',
         $limit = '',
-        $groupBy = ['tartikel.kArtikel']
+        $groupBy = ['tartikel.kArtikel'],
+        $or = false
     ) {
         $join = new FilterJoin();
         $join->setComment('article visiblity join from getBaseQuery')
@@ -2264,11 +2309,21 @@ class Navigationsfilter
                 unset($joins[$i]);
             }
         }
-        $conditions = implode(' AND ', array_map(function ($a) {
-            return (is_string($a))
-                ? ($a)
-                : ('(' . implode(' OR ', $a) . ')');
-        }, $conditions));
+        if ($or === true) {
+            //testing
+            $conditions = implode(' AND ', array_map(function ($a) {
+                return (is_string($a))
+                    ? ($a)
+                    : ('NOT(' . implode(' OR ', $a) . ')');
+            }, $conditions));
+        } else {
+            $conditions = implode(' AND ', array_map(function ($a) {
+                return (is_string($a))
+                    ? ($a)
+                    : ('(' . implode(' OR ', $a) . ')');
+            }, $conditions));
+        }
+
         $joins      = implode("\n", $joins);
         $having     = implode(' AND ', $having);
         if (!empty($limit)) {

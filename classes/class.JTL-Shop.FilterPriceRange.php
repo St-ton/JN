@@ -220,11 +220,12 @@ class FilterPriceRange extends AbstractFilter implements IFilter
     }
 
     /**
-     * @param int $productCount
+     * @param int $mixed - product count
      * @return array
      */
-    public function getOptions($productCount)
+    public function getOptions($mixed = null)
     {
+        $productCount     = $mixed;
         $oPreisspanne_arr = [];
         // Prüfe ob es nur einen Artikel in der Artikelübersicht gibt, falls ja und es ist noch kein Preisspannenfilter gesetzt
         // dürfen keine Preisspannenfilter angezeigt werden

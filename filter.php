@@ -298,6 +298,8 @@ $smarty->assign(
         $AktuelleKategorie
     )
 );
+//Shop::dbg($NaviFilter->getActiveFilters2(), true, 'active:');
+//Shop::dbg($NaviFilter->getFilterValue('FilterFelixFilter'), true, '$NaviFilter:');
 executeHook(HOOK_FILTER_ENDE);
 $smarty->display('productlist/index.tpl');
 

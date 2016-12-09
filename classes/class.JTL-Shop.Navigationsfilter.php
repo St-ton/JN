@@ -162,6 +162,11 @@ class Navigationsfilter
     /**
      * @var IFilter[]
      */
+    private $filters = [];
+
+    /**
+     * @var IFilter[]
+     */
     private $activeFilters = [];
 
     /**
@@ -386,6 +391,7 @@ class Navigationsfilter
         $this->PreisspannenFilter = new FilterPriceRange($this);
 
         $this->Suche = new FilterSearch($this);
+        executeHook(HOOK_NAVIGATIONSFILTER_INIT, ['navifilter' => $this]);
 
         return $this;
     }
@@ -522,6 +528,18 @@ class Navigationsfilter
         executeHook(HOOK_NAVIGATIONSFILTER_INIT_FILTER, ['navifilter' => $this, 'params' => $params]);
 
         return $this->validate();
+    }
+
+    /**
+     * @param IFilter $filter
+     * @return $this
+     */
+    public function registerFilter(IFilter $filter)
+    {
+        $filter->setNaviFilter($this);
+        $this->filters[] = $filter;
+
+        return $this;
     }
 
     /**
@@ -1061,6 +1079,12 @@ class Navigationsfilter
                 Shop::dbg($test, true, 'vs:');
             }
         }
+
+        foreach($this->filters as $filter) {
+            $class = get_class($filter);
+            $oSuchergebnisse->$class = $filter->getOptions();
+        }
+        Shop::dbg($oSuchergebnisse, true, 'oSuch:');
 
         return $oSuchergebnisse;
     }

@@ -111,9 +111,17 @@ abstract class AbstractFilter implements IFilter
 
     /**
      * AbstractFilter constructor.
+     * @param null|Navigationsfilter $navifilter
+     */
+    public function __construct($navifilter = null)
+    {
+        $this->navifilter = $navifilter;
+    }
+
+    /**
      * @param Navigationsfilter $navifilter
      */
-    public function __construct($navifilter)
+    public function setNaviFilter($navifilter)
     {
         $this->navifilter = $navifilter;
     }

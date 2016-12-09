@@ -23,7 +23,7 @@ class FilterKategorieFilter extends FilterKategorie
     }
 
     /**
-     * @return FilterJoin[]
+     * @return FilterJoin
      */
     public function getSQLJoin()
     {
@@ -36,7 +36,7 @@ class FilterKategorieFilter extends FilterKategorie
         }
         $join->setTable('tkategorieartikel')->setOn('tartikel.kArtikel = tkategorieartikel.kArtikel');
 
-        return [$join];
+        return $join;
     }
 
     /**

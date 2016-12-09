@@ -922,9 +922,14 @@ class Navigationsfilter
             Shop::dbg($state, false, 'active state:');
             Shop::dbg($state2, true, 'active state2:');
         }
+        $stateJoin        = $state->getSQLJoin();
         $data             = new stdClass();
         $data->having     = [];
-        $data->joins      = $state->getSQLJoin();
+        if (is_array($stateJoin)) {
+            $data->joins = $stateJoin;
+        } else {
+            $data->joins = [$stateJoin];
+        }
         $data->conditions = [];
 
         $stateCondition = $state->getSQLCondition();
@@ -939,8 +944,13 @@ class Navigationsfilter
                 foreach ($filter as $idx => $item) {
                     if ($ignore === null || get_class($item) !== $ignore) {
                         if ($idx === 0) {
-                            foreach ($item->getSQLJoin() as $filterJoin) {
-                                $data->joins[] = $filterJoin;
+                            $itemJoin = $item->getSQLJoin();
+                            if (is_array($itemJoin)) {
+                                foreach ($item->getSQLJoin() as $filterJoin) {
+                                    $data->joins[] = $filterJoin;
+                                }
+                            } else {
+                                $data->joins[] = $itemJoin;
                             }
                             if ($item->getType() === AbstractFilter::FILTER_TYPE_AND) {
                                 //filters that decrease the total amount of articles must have a "HAVING" clause
@@ -956,9 +966,15 @@ class Navigationsfilter
             } elseif ($count === 1) {
                 /** @var array(AbstractFilter) $filter */
                 if ($ignore === null || get_class($filter[0]) !== $ignore) {
-                    foreach ($filter[0]->getSQLJoin() as $filterJoin) {
-                        $data->joins[] = $filterJoin;
+                    $itemJoin = $filter[0]->getSQLJoin();
+                    if (is_array($itemJoin)) {
+                        foreach ($itemJoin as $filterJoin) {
+                            $data->joins[] = $filterJoin;
+                        }
+                    } else {
+                        $data->joins[] = $itemJoin;
                     }
+
                     $data->conditions[] = "\n#condition from filter " . $type . "\n" . $filter[0]->getSQLCondition();
                 }
             }
@@ -1035,6 +1051,7 @@ class Navigationsfilter
             $oSuchergebnisse->SuchFilterJSON[$key]->cURL = StringHandler::htmlentitydecode($oSuchfilter->cURL);
         }
         $oSuchergebnisse->SuchFilterJSON = Boxen::gibJSONString($oSuchergebnisse->SuchFilterJSON);
+
 
         if (!$this->params['kSuchspecial'] && !$this->params['kSuchspecialFilter']) {
             $oSuchergebnisse->Suchspecialauswahl = $this->getSearchSpecialFilterOptions();

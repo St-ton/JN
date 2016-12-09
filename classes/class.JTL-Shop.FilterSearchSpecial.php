@@ -175,7 +175,7 @@ class FilterSearchSpecial extends AbstractFilter implements IFilter
                      ->setOn('tbestseller.kArtikel = tartikel.kArtikel')
                      ->setComment('JOIN from FilterSearchSpecial bestseller');
 
-                return [$join];
+                return $join;
 
             case SEARCHSPECIALS_SPECIALOFFERS:
                 if (!Shop::getNaviFilter()->PreisspannenFilter->isInitialized()) {
@@ -185,7 +185,7 @@ class FilterSearchSpecial extends AbstractFilter implements IFilter
                          ->setOn('tasp.kArtikel = tartikel.kArtikel JOIN tsonderpreise AS tsp ON tsp.kArtikelSonderpreis = tasp.kArtikelSonderpreis')
                          ->setComment('JOIN from FilterSearchSpecial special offers');
 
-                    return [$join];
+                    return $join;
                 }
 
                 return [];
@@ -203,7 +203,7 @@ class FilterSearchSpecial extends AbstractFilter implements IFilter
                          ->setOn('taex.kArtikel = tartikel.kArtikel')
                          ->setComment('JOIN from FilterSearchSpecial top reviews');
 
-                    return [$join];
+                    return $join;
                 }
 
                 return [];

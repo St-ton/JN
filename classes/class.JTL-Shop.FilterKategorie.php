@@ -99,7 +99,7 @@ class FilterKategorie extends AbstractFilter implements IFilter
     }
 
     /**
-     * @return FilterJoin[]
+     * @return FilterJoin
      */
     public function getSQLJoin()
     {
@@ -109,6 +109,6 @@ class FilterKategorie extends AbstractFilter implements IFilter
              ->setOn('tartikel.kArtikel = tkategorieartikel.kArtikel')
              ->setComment('join from FilterKategorie');
 
-        return [$join];
+        return $join;
     }
 }

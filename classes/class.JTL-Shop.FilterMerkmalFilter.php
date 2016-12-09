@@ -85,7 +85,7 @@ class FilterMerkmalFilter extends FilterMerkmal
     }
 
     /**
-     * @return FilterJoin[]
+     * @return FilterJoin
      */
     public function getSQLJoin()
     {
@@ -95,7 +95,7 @@ class FilterMerkmalFilter extends FilterMerkmal
              ->setOn('tartikel.kArtikel = tartikelmerkmal.kArtikel')
              ->setComment('join from FilterMerkmalFilter');
 
-        return [$join];
+        return $join;
     }
 
     /**

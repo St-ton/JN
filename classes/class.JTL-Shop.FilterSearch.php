@@ -98,11 +98,11 @@ class FilterSearch extends AbstractFilter implements IFilter
     }
 
     /**
-     * @return FilterJoin[]
+     * @return FilterJoin
      */
     public function getSQLJoin()
     {
-        $count = 0;
+        $count           = 0;
         $kSucheCache_arr = [];
         $searchFilter    = Shop::getNaviFilter()->getActiveState();
         if (is_array($searchFilter)) {
@@ -127,6 +127,6 @@ class FilterSearch extends AbstractFilter implements IFilter
              ->setOn('jSuche.kArtikel = tartikel.kArtikel')
              ->setComment('JOIN1 from FilterSearch');
 
-        return [$join];
+        return $join;
     }
 }

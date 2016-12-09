@@ -130,7 +130,7 @@ class FilterMerkmal extends AbstractFilter implements IFilter
     }
 
     /**
-     * @return FilterJoin[]
+     * @return FilterJoin
      */
     public function getSQLJoin()
     {
@@ -149,7 +149,7 @@ class FilterMerkmal extends AbstractFilter implements IFilter
 //              ->setTable('ttag')
 //              ->setOn('ttagartikel.kTag = ttag.kTag');
 
-        return [$join];
+        return $join;
 
 
         $oFilter->cJoin = "JOIN (

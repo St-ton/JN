@@ -67,7 +67,7 @@ class FilterRating extends AbstractFilter implements IFilter
     }
 
     /**
-     * @return FilterJoin[]
+     * @return FilterJoin
      */
     public function getSQLJoin()
     {
@@ -77,7 +77,7 @@ class FilterRating extends AbstractFilter implements IFilter
              ->setOn('tartikel.kArtikel = tartikelext.kArtikel')
              ->setComment('JOIN from FilterRating');
 
-        return [$join];
+        return $join;
     }
 
     /**
@@ -91,14 +91,8 @@ class FilterRating extends AbstractFilter implements IFilter
             $order = $this->navifilter->getOrder();
             $state = $this->navifilter->getCurrentStateData();
 
-            $join = new FilterJoin();
-            $join->setComment('join from FilterRating::getOptions()')
-                 ->setType('JOIN')
-                 ->setTable('tartikelext')
-                 ->setOn('tartikel.kArtikel = tartikelext.kArtikel');
-
             $state->joins[] = $order->join;
-            $state->joins[] = $join;
+            $state->joins[] = $this->getSQLJoin();
 
             $query = $this->navifilter->getBaseQuery([
                 'ROUND(tartikelext.fDurchschnittsBewertung, 0) AS nSterne',

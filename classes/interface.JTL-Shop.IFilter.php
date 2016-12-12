@@ -94,6 +94,11 @@ interface IFilter
     public function getUrlParam();
 
     /**
+     * @return bool
+     */
+    public function isCustom();
+
+    /**
      * @param Navigationsfilter $navifilter
      */
     public function setNaviFilter($navifilter);

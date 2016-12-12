@@ -1327,11 +1327,11 @@ class Navigationsfilter
             unset($_SESSION['UsersortierungVorSuche']);
         }
         // Wenn noch keine Sortierung gewählt wurde => setze Standard-Sortierung aus Option
-        if (!isset($_SESSION['Usersortierung']) && isset($this->conf['artikeluebersicht']['artikeluebersicht_artikelsortierung'])) {
+        if (!isset($_SESSION['Usersortierung'])) {
             unset($_SESSION['nUsersortierungWahl']);
             $_SESSION['Usersortierung'] = (int)$this->conf['artikeluebersicht']['artikeluebersicht_artikelsortierung'];
         }
-        if (!isset($_SESSION['nUsersortierungWahl']) && isset($this->conf['artikeluebersicht']['artikeluebersicht_artikelsortierung'])) {
+        if (!isset($_SESSION['nUsersortierungWahl'])) {
             $_SESSION['Usersortierung'] = (int)$this->conf['artikeluebersicht']['artikeluebersicht_artikelsortierung'];
         }
         // Eine Suche wurde ausgeführt und die Suche wird auf die Suchtreffersuche eingestellt
@@ -1350,7 +1350,7 @@ class Navigationsfilter
         }
         // Suchspecial sortierung
         if ($this->Suchspecial->isInitialized()) {
-            // Gibt die Suchspecial$this->conf als Assoc Array zurück, wobei die Keys des Arrays der kKey vom Suchspecial sind.
+            // Gibt die Suchspecials als Assoc Array zurück, wobei die Keys des Arrays der kKey vom Suchspecial sind.
             $oSuchspecialEinstellung_arr = gibSuchspecialEinstellungMapping($this->conf['suchspecials']);
             // -1 = Keine spezielle Sortierung
             if (count($oSuchspecialEinstellung_arr) > 0 && isset($oSuchspecialEinstellung_arr[$this->Suchspecial->getValue()]) && $oSuchspecialEinstellung_arr[$this->Suchspecial->getValue()] !== -1) {
@@ -1900,11 +1900,12 @@ class Navigationsfilter
     public function getMetaTitle($oMeta, $oSuchergebnisse, $GlobaleMetaAngaben_arr, $oKategorie = null)
     {
         executeHook(HOOK_FILTER_INC_GIBNAVIMETATITLE);
+        $append = $this->conf['metaangaben']['global_meta_title_anhaengen'] === 'Y';
         // Pruefen ob bereits eingestellte Metas gesetzt sind
         if (strlen($oMeta->cMetaTitle) > 0) {
             $oMeta->cMetaTitle = strip_tags($oMeta->cMetaTitle);
             // Globalen Meta Title anhaengen
-            if ($this->conf['metaangaben']['global_meta_title_anhaengen'] === 'Y' && !empty($GlobaleMetaAngaben_arr[Shop::getLanguage()]->Title)) {
+            if ($append === true && !empty($GlobaleMetaAngaben_arr[Shop::getLanguage()]->Title)) {
                 return $this->truncateMetaTitle($oMeta->cMetaTitle . ' ' . $GlobaleMetaAngaben_arr[Shop::getLanguage()]->Title);
             }
 
@@ -1942,7 +1943,7 @@ class Navigationsfilter
                     'global') . " {$oSuchergebnisse->Seitenzahlen->AktuelleSeite}";
         }
         // Globalen Meta Title ueberall anhaengen
-        if ($this->conf['metaangaben']['global_meta_title_anhaengen'] === 'Y' && !empty($GlobaleMetaAngaben_arr[Shop::getLanguage()]->Title)) {
+        if ($append === true && !empty($GlobaleMetaAngaben_arr[Shop::getLanguage()]->Title)) {
             $cMetaTitle .= ' - ' . $GlobaleMetaAngaben_arr[Shop::getLanguage()]->Title;
         }
 

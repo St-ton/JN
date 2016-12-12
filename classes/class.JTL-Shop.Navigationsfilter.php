@@ -445,7 +445,7 @@ class Navigationsfilter
         }
         if ($params['kKategorieFilter'] > 0) {
             $this->KategorieFilter = (new FilterKategorieFilter($this))->init($params['kKategorieFilter'], $this->oSprache_arr);
-            $this->addFilter($this->KategorieFilter);
+            $this->addActiveFilter($this->KategorieFilter);
             ++$count;
         }
         if ($params['kHersteller'] > 0) {
@@ -454,7 +454,7 @@ class Navigationsfilter
         }
         if ($params['kHerstellerFilter'] > 0) {
             $this->HerstellerFilter = (new FilterHerstellerFilter($this))->init($params['kHerstellerFilter'], $this->oSprache_arr);
-            $this->addFilter($this->HerstellerFilter);
+            $this->addActiveFilter($this->HerstellerFilter);
             ++$count;
         }
         if ($params['kSuchanfrage'] > 0) {
@@ -474,7 +474,7 @@ class Navigationsfilter
             foreach ($params['MerkmalFilter_arr'] as $mmf) {
                 $filter = (new FilterAttributeFilter($this))->init($mmf, $this->oSprache_arr);
                 $this->MerkmalFilter[] = $filter;
-                $this->addFilter($filter);
+                $this->addActiveFilter($filter);
             }
             ++$count;
         }
@@ -486,7 +486,7 @@ class Navigationsfilter
             foreach ($params['TagFilter_arr'] as $tf) {
                 $filter = (new FilterTagFilter($this))->init($tf, $this->oSprache_arr);
                 $this->TagFilter[] = $filter;
-                $this->addFilter($filter);
+                $this->addActiveFilter($filter);
             }
             ++$count;
         }
@@ -505,7 +505,7 @@ class Navigationsfilter
         }
         if ($params['kSuchspecialFilter'] > 0) {
             $this->SuchspecialFilter = (new FilterSearchSpecialFilter($this))->init($params['kSuchspecialFilter'], $this->oSprache_arr);
-            $this->addFilter($this->SuchspecialFilter);
+            $this->addActiveFilter($this->SuchspecialFilter);
             ++$count;
         }
 
@@ -514,19 +514,19 @@ class Navigationsfilter
             foreach ($params['SuchFilter_arr'] as $sf) {
                 $filter = (new FilterSearch($this))->init($sf, $this->oSprache_arr);
                 $this->SuchFilter[] = $filter;
-                $this->addFilter($filter);
+                $this->addActiveFilter($filter);
             }
             ++$count;
         }
 
         if ($params['nBewertungSterneFilter'] > 0) {
             $this->BewertungFilter = (new FilterRating($this))->init($params['nBewertungSterneFilter'], []);
-            $this->addFilter($this->BewertungFilter);
+            $this->addActiveFilter($this->BewertungFilter);
             ++$count;
         }
         if (strlen($params['cPreisspannenFilter']) > 0) {
             $this->PreisspannenFilter = (new FilterPriceRange($this))->init($params['cPreisspannenFilter'], []);
-            $this->addFilter($this->PreisspannenFilter);
+            $this->addActiveFilter($this->PreisspannenFilter);
             ++$count;
         }
         if ($params['nSortierung'] > 0) {
@@ -589,7 +589,7 @@ class Navigationsfilter
      * @param IFilter $filter
      * @return $this
      */
-    public function addFilter(IFilter $filter)
+    public function addActiveFilter(IFilter $filter)
     {
         $this->activeFilters[] = $filter;
         ++$this->nAnzahlFilter;
@@ -612,11 +612,6 @@ class Navigationsfilter
         ++$this->nAnzahlFilter;
 
         return $this;
-    }
-
-    public function getBaseState()
-    {
-        return $this->baseState;
     }
 
     public function getActiveFilters2()
@@ -642,7 +637,7 @@ class Navigationsfilter
      * @param string $filterName
      * @return bool
      */
-    public function getFilter($filterName) {
+    public function hasFilter($filterName) {
         foreach ($this->activeFilters as $filter) {
             if ($filterName === $filter->getName()) {
                 return true;
@@ -751,7 +746,7 @@ class Navigationsfilter
     /**
      * @return bool
      */
-    public function hasMerkmalWert()
+    public function hasAttributeValue()
     {
         return $this->MerkmalWert->isInitialized();
     }
@@ -773,7 +768,7 @@ class Navigationsfilter
             if (!$this->hasManufacturer() && !$this->hasCategory() &&
                 !$this->hasTag() && !$this->hasSuchanfrage() && !$this->hasNews() &&
                 !$this->hasNewsOverview() && !$this->hasNewsCategory() &&
-                !isset($this->Suche->cSuche) && !$this->hasMerkmalWert() && !$this->hasSearchSpecial()
+                !isset($this->Suche->cSuche) && !$this->hasAttributeValue() && !$this->hasSearchSpecial()
             ) {
                 //we have a manufacturer filter that doesn't filter anything
                 if ($this->HerstellerFilter->getSeo($this->getLanguageID()) !== null) {
@@ -903,8 +898,8 @@ class Navigationsfilter
         } elseif ($_SESSION['oErweiterteDarstellung']->nAnzahlArtikel > 0) {
             $limit = (int)$_SESSION['oErweiterteDarstellung']->nAnzahlArtikel;
         } else {
-            $limit = ($this->conf['artikeluebersicht']['artikeluebersicht_artikelproseite'] > 0)
-                ? (int)$this->conf['artikeluebersicht']['artikeluebersicht_artikelproseite']
+            $limit = (($max = $this->conf['artikeluebersicht']['artikeluebersicht_artikelproseite']) > 0)
+                ? (int)$max
                 : 20;
         }
 
@@ -916,14 +911,17 @@ class Navigationsfilter
      */
     public function getStorageFilter()
     {
-        $filterSQL = '';
-        if ((int)$this->conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER) {
-            $filterSQL = "AND (NOT (tartikel.fLagerbestand <= 0 AND tartikel.cLagerBeachten = 'Y') OR tartikel.cLagerVariation = 'Y')";
-        } elseif ((int)$this->conf['global']['artikel_artikelanzeigefilter'] === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL) {
-            $filterSQL = "AND (NOT (tartikel.fLagerbestand <= 0 AND tartikel.cLagerBeachten = 'Y') OR tartikel.cLagerKleinerNull = 'Y' OR tartikel.cLagerVariation = 'Y')";
+        $filterSQL  = '';
+        $filterType = (int)$this->conf['global']['artikel_artikelanzeigefilter'];
+        if ($filterType === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGER) {
+            $filterSQL = "AND (NOT (tartikel.fLagerbestand <= 0 AND tartikel.cLagerBeachten = 'Y') 
+                            OR tartikel.cLagerVariation = 'Y')";
+        } elseif ($filterType === EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL) {
+            $filterSQL = "AND (NOT (tartikel.fLagerbestand <= 0 AND tartikel.cLagerBeachten = 'Y') 
+                            OR tartikel.cLagerKleinerNull = 'Y' OR tartikel.cLagerVariation = 'Y')";
         }
         executeHook(HOOK_STOCK_FILTER, [
-            'conf'      => (int)$this->conf['global']['artikel_artikelanzeigefilter'],
+            'conf'      => $filterType,
             'filterSQL' => &$filterSQL
         ]);
 
@@ -1004,6 +1002,7 @@ class Navigationsfilter
         }
 
         $nLimitN = $nArtikelProSeite * ($this->nSeite - 1);
+        $max     = (int)$this->conf['artikeluebersicht']['artikeluebersicht_max_seitenzahl'];
 
         $oSuchergebnisse->ArtikelVon = $nLimitN + 1;
         $oSuchergebnisse->ArtikelBis = min($nLimitN + $nArtikelProSeite, $oSuchergebnisse->GesamtanzahlArtikel);
@@ -1011,10 +1010,9 @@ class Navigationsfilter
         $oSuchergebnisse->Seitenzahlen                = new stdClass();
         $oSuchergebnisse->Seitenzahlen->AktuelleSeite = $this->nSeite;
         $oSuchergebnisse->Seitenzahlen->MaxSeiten     = ceil($oSuchergebnisse->GesamtanzahlArtikel / $nArtikelProSeite);
-        $oSuchergebnisse->Seitenzahlen->minSeite      = min(intval($oSuchergebnisse->Seitenzahlen->AktuelleSeite - (int)$this->conf['artikeluebersicht']['artikeluebersicht_max_seitenzahl'] / 2),
-            0);
+        $oSuchergebnisse->Seitenzahlen->minSeite      = min(intval($oSuchergebnisse->Seitenzahlen->AktuelleSeite - $max / 2), 0);
         $oSuchergebnisse->Seitenzahlen->maxSeite      = max($oSuchergebnisse->Seitenzahlen->MaxSeiten,
-            $oSuchergebnisse->Seitenzahlen->minSeite + (int)$this->conf['artikeluebersicht']['artikeluebersicht_max_seitenzahl'] - 1);
+            $oSuchergebnisse->Seitenzahlen->minSeite + $max - 1);
         if ($oSuchergebnisse->Seitenzahlen->maxSeite > $oSuchergebnisse->Seitenzahlen->MaxSeiten) {
             $oSuchergebnisse->Seitenzahlen->maxSeite = $oSuchergebnisse->Seitenzahlen->MaxSeiten;
         }
@@ -1029,34 +1027,24 @@ class Navigationsfilter
     public function getCurrentStateData($ignore = null)
     {
         $state            = $this->getActiveState();
-        $state2 = $this->getBaseState();
-        if ($state != $state2) {
-            Shop::dbg($state, false, 'active state:');
-            Shop::dbg($state2, true, 'active state2:');
-        }
         $stateJoin        = $state->getSQLJoin();
         $data             = new stdClass();
         $data->having     = [];
-        if (is_array($stateJoin)) {
-            $data->joins = $stateJoin;
-        } else {
-            $data->joins = [$stateJoin];
-        }
         $data->conditions = [];
-
-        $stateCondition = $state->getSQLCondition();
+        $data->joins      = (is_array($stateJoin))
+            ? $stateJoin
+            : [$stateJoin];
+        $stateCondition   = $state->getSQLCondition();
         if (!empty($stateCondition)) {
             $data->conditions[] = $stateCondition;
         }
         foreach ($this->getActiveFilters(true) as $type => $filter) {
             $count = count($filter);
-
-
+            //@todo: simplify.
             if ($type === 'custom') {
                 // $filter is an array of n custom filters
                 /** @var AbstractFilter $_f */
                 foreach ($filter as $_f) {
-//                    Shop::dbg($_f->getValue(), false, '$_f->getValue():');
                     if ($ignore === null || get_class($_f) !== $ignore) {
                         $itemJoin = $_f->getSQLJoin();
                         if (is_array($itemJoin)) {

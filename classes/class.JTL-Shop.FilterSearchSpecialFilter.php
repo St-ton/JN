@@ -236,8 +236,8 @@ class FilterSearchSpecialFilter extends AbstractFilter implements IFilter
                 $state = $this->navifilter->getCurrentStateData();
                 switch ($i) {
                     case SEARCHSPECIALS_BESTSELLER:
-                        $nAnzahl = ($this->navifilter->getConfig()['global']['global_bestseller_minanzahl'] > 0)
-                            ? (int)$this->navifilter->getConfig()['global']['global_bestseller_minanzahl']
+                        $nAnzahl = (($min = $this->navifilter->getConfig()['global']['global_bestseller_minanzahl']) > 0)
+                            ? (int)$min
                             : 100;
 
                         $join = new FilterJoin();
@@ -273,8 +273,8 @@ class FilterSearchSpecialFilter extends AbstractFilter implements IFilter
                         $state->conditions[] = $tsonderpreise . ".kKundengruppe = " . $this->navifilter->getCustomerGroupID();
                         break;
                     case SEARCHSPECIALS_NEWPRODUCTS:
-                        $alter_tage          = ($this->navifilter->getConfig()['boxen']['box_neuimsortiment_alter_tage'] > 0)
-                            ? (int)$this->navifilter->getConfig()['boxen']['box_neuimsortiment_alter_tage']
+                        $alter_tage          = (($age = $this->navifilter->getConfig()['boxen']['box_neuimsortiment_alter_tage']) > 0)
+                            ? (int)$age
                             : 30;
                         $state->conditions[] = "tartikel.cNeu = 'Y' AND DATE_SUB(now(),INTERVAL $alter_tage DAY) < tartikel.dErstellt";
                         break;

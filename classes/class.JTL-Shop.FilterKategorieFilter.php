@@ -52,13 +52,14 @@ class FilterKategorieFilter extends FilterKategorie
     {
         $oKategorieFilterDB_arr = [];
         if ($this->navifilter->getConfig()['navigationsfilter']['allgemein_kategoriefilter_benutzen'] !== 'N') {
-            $order = $this->navifilter->getOrder();
-            $state = $this->navifilter->getCurrentStateData();
+            $categoryFilterType = $this->navifilter->getConfig()['navigationsfilter']['kategoriefilter_anzeigen_als'];
+            $order              = $this->navifilter->getOrder();
+            $state              = $this->navifilter->getCurrentStateData();
 
             $state->joins[] = $order->join;
 
             // Kategoriefilter anzeige
-            if ($this->navifilter->getConfig()['navigationsfilter']['kategoriefilter_anzeigen_als'] === 'HF' && (!$this->navifilter->Kategorie->isInitialized())) {
+            if ($categoryFilterType === 'HF' && (!$this->navifilter->Kategorie->isInitialized())) {
                 //@todo: $this instead of $this->navifilter->KategorieFilter?
                 $kKatFilter = ($this->navifilter->KategorieFilter->isInitialized())
                     ? ''
@@ -77,7 +78,6 @@ class FilterKategorieFilter extends FilterKategorie
                      ->setTable('tkategorie')
                      ->setOn('tkategorie.kKategorie = tkategorieartikelgesamt.kKategorie');
                 $state->joins[] = $join;
-
             } else {
                 //@todo: this instead of $this->navifilter->Kategorie?
                 if (!$this->navifilter->Kategorie->isInitialized()) {
@@ -136,7 +136,7 @@ class FilterKategorieFilter extends FilterKategorie
             $oZusatzFilter->KategorieFilter = new stdClass();
             for ($i = 0; $i < $count; ++$i) {
                 // Anzeigen als KategoriePfad
-                if ($this->navifilter->getConfig()['navigationsfilter']['kategoriefilter_anzeigen_als'] === 'KP') {
+                if ($categoryFilterType === 'KP') {
                     $oKategorie                        = new Kategorie($oKategorieFilterDB_arr[$i]->kKategorie);
                     $oKategorieFilterDB_arr[$i]->cName = gibKategoriepfad($oKategorie, $this->navifilter->getCustomerGroupID(), $this->navifilter->getLanguageID());
                 }
@@ -148,7 +148,7 @@ class FilterKategorieFilter extends FilterKategorie
                 $oKategorieFilterDB_arr[$i]->nSort          = (int)$oKategorieFilterDB_arr[$i]->nSort;
             }
             //neue Sortierung
-            if ($this->navifilter->getConfig()['navigationsfilter']['kategoriefilter_anzeigen_als'] === 'KP') {
+            if ($categoryFilterType === 'KP') {
                 usort($oKategorieFilterDB_arr, 'sortierKategoriepfade');
             }
         }

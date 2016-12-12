@@ -268,9 +268,8 @@ class FilterAttributeFilter extends FilterAttribute
                         $oMerkmalFilter_arr[$nPos]->oMerkmalWerte_arr[] = $oMerkmalWerte;
                     } else {
                         //#533 Anzahl max Merkmale erreicht?
-                        if (isset($this->navifilter->getConfig()['navigationsfilter']['merkmalfilter_maxmerkmale']) &&
-                            $this->navifilter->getConfig()['navigationsfilter']['merkmalfilter_maxmerkmale'] > 0 &&
-                            count($oMerkmalFilter_arr) >= $this->navifilter->getConfig()['navigationsfilter']['merkmalfilter_maxmerkmale']
+                        if (($max = $this->navifilter->getConfig()['navigationsfilter']['merkmalfilter_maxmerkmale']) > 0 &&
+                            count($oMerkmalFilter_arr) >= $max
                         ) {
                             continue;
                         }
@@ -282,8 +281,8 @@ class FilterAttributeFilter extends FilterAttribute
             //Filter durchgehen und die Merkmalwerte entfernen, die zuviel sind und deren Anzahl am geringsten ist.
             foreach ($oMerkmalFilter_arr as $o => $oMerkmalFilter) {
                 //#534 Anzahl max Merkmalwerte erreicht?
-                if (isset($this->navifilter->getConfig()['navigationsfilter']['merkmalfilter_maxmerkmalwerte']) && $this->navifilter->getConfig()['navigationsfilter']['merkmalfilter_maxmerkmalwerte'] > 0) {
-                    while (count($oMerkmalFilter_arr[$o]->oMerkmalWerte_arr) > $this->navifilter->getConfig()['navigationsfilter']['merkmalfilter_maxmerkmalwerte']) {
+                if (($max = $this->navifilter->getConfig()['navigationsfilter']['merkmalfilter_maxmerkmalwerte']) > 0) {
+                    while (count($oMerkmalFilter_arr[$o]->oMerkmalWerte_arr) > $max) {
                         $nMinAnzahl = 999999;
                         $nIndex     = -1;
                         $count      = count($oMerkmalFilter_arr[$o]->oMerkmalWerte_arr);

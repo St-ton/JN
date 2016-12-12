@@ -276,91 +276,7 @@ class Navigationsfilter
     }
 
     /**
-     * @param bool $byType
-     * @return array
-     */
-    public function getActiveFilters($byType = false)
-    {
-        $filters = ($byType !== false)
-            ? ['mm' => [], 'ssf' => [], 'tf' => [], 'sf' => [], 'hf' => [], 'bf' => []]
-            : [];
-        if ($this->HerstellerFilter->isInitialized()) {
-            if ($byType) {
-                $filters['hf'][] = $this->HerstellerFilter;
-            } else {
-                $filters[] = $this->HerstellerFilter;
-            }
-        }
-        if ($this->BewertungFilter->isInitialized()) {
-            if ($byType) {
-                $filters['bf'][] = $this->BewertungFilter;
-            } else {
-                $filters[] = $this->BewertungFilter;
-            }
-        }
-        if ($this->PreisspannenFilter->isInitialized()) {
-            if ($byType) {
-                $filters['pf'][] = $this->PreisspannenFilter;
-            } else {
-                $filters[] = $this->PreisspannenFilter;
-            }
-        }
-        foreach ($this->MerkmalFilter as $filter) {
-            if ($filter->isInitialized()) {
-                if ($byType) {
-                    $filters['mm'][] = $filter;
-                } else {
-                    $filters[] = $filter;
-                }
-            }
-        }
-//        foreach ($this->SuchspecialFilter as $filter) {
-//            if ($filter->isInitialized()) {
-//                if ($byType) {
-//                    $filters['ssf'][] = $filter;
-//                } else {
-//                    $filters[] = $filter;
-//                }
-//            }
-//        }
-        if ($this->SuchspecialFilter->isInitialized()) {
-            if ($byType) {
-                $filters['ssf'][] = $this->SuchspecialFilter;
-            } else {
-                $filters[] = $this->SuchspecialFilter;
-            }
-        }
-        foreach ($this->TagFilter as $filter) {
-            if ($filter->isInitialized()) {
-                if ($byType) {
-                    $filters['tf'][] = $filter;
-                } else {
-                    $filters[] = $filter;
-                }
-            }
-        }
-        foreach ($this->SuchFilter as $filter) {
-            if ($filter->isInitialized()) {
-                if ($byType) {
-                    $filters['sf'][] = $filter;
-                } else {
-                    $filters[] = $filter;
-                }
-            }
-        }
-        foreach ($this->activeFilters as $filter) {
-            if ($byType) {
-                $filters['custom'][] = $filter;
-            } else {
-                $filters[] = $filter;
-            }
-        }
-
-        return $filters;
-    }
-
-    /**
-     * @return FilterHersteller|FilterKategorie|FilterMerkmal|FilterSearch|FilterSearchSpecial|null
+     * @return FilterHersteller|FilterKategorie|FilterAttribute|FilterSearch|FilterSearchSpecial|null
      */
     public function getActiveState()
     {
@@ -612,11 +528,6 @@ class Navigationsfilter
         ++$this->nAnzahlFilter;
 
         return $this;
-    }
-
-    public function getActiveFilters2()
-    {
-        return $this->activeFilters;
     }
 
     /**
@@ -1018,6 +929,100 @@ class Navigationsfilter
         }
 
         return $oSuchergebnisse;
+    }
+
+    /**
+     * @todo unify
+     * @return IFilter[]
+     */
+    public function getActiveFilters2()
+    {
+        return $this->activeFilters;
+    }
+
+    /**
+     * @todo unify
+     * @param bool $byType
+     * @return array
+     */
+    public function getActiveFilters($byType = false)
+    {
+        $filters = ($byType !== false)
+            ? ['mm' => [], 'ssf' => [], 'tf' => [], 'sf' => [], 'hf' => [], 'bf' => []]
+            : [];
+        if ($this->HerstellerFilter->isInitialized()) {
+            if ($byType) {
+                $filters['hf'][] = $this->HerstellerFilter;
+            } else {
+                $filters[] = $this->HerstellerFilter;
+            }
+        }
+        if ($this->BewertungFilter->isInitialized()) {
+            if ($byType) {
+                $filters['bf'][] = $this->BewertungFilter;
+            } else {
+                $filters[] = $this->BewertungFilter;
+            }
+        }
+        if ($this->PreisspannenFilter->isInitialized()) {
+            if ($byType) {
+                $filters['pf'][] = $this->PreisspannenFilter;
+            } else {
+                $filters[] = $this->PreisspannenFilter;
+            }
+        }
+        foreach ($this->MerkmalFilter as $filter) {
+            if ($filter->isInitialized()) {
+                if ($byType) {
+                    $filters['mm'][] = $filter;
+                } else {
+                    $filters[] = $filter;
+                }
+            }
+        }
+//        foreach ($this->SuchspecialFilter as $filter) {
+//            if ($filter->isInitialized()) {
+//                if ($byType) {
+//                    $filters['ssf'][] = $filter;
+//                } else {
+//                    $filters[] = $filter;
+//                }
+//            }
+//        }
+        if ($this->SuchspecialFilter->isInitialized()) {
+            if ($byType) {
+                $filters['ssf'][] = $this->SuchspecialFilter;
+            } else {
+                $filters[] = $this->SuchspecialFilter;
+            }
+        }
+        foreach ($this->TagFilter as $filter) {
+            if ($filter->isInitialized()) {
+                if ($byType) {
+                    $filters['tf'][] = $filter;
+                } else {
+                    $filters[] = $filter;
+                }
+            }
+        }
+        foreach ($this->SuchFilter as $filter) {
+            if ($filter->isInitialized()) {
+                if ($byType) {
+                    $filters['sf'][] = $filter;
+                } else {
+                    $filters[] = $filter;
+                }
+            }
+        }
+        foreach ($this->activeFilters as $filter) {
+            if ($byType) {
+                $filters['custom'][] = $filter;
+            } else {
+                $filters[] = $filter;
+            }
+        }
+
+        return $filters;
     }
 
     /**

@@ -12,11 +12,11 @@
     <div class="col-xs-3">
         <input type="hidden" name="box[]" value="{$oBox->kBox}" />
         {if $nPage == 0}
-        {if $oBox->bAktiv == 1}
-        <input type="hidden" name="aktiv[]" value="{$oBox->kBox}" />
-        {/if}
+            {if $oBox->bAktiv == 1}
+                <input type="hidden" name="aktiv[]" value="{$oBox->kBox}" />
+            {/if}
         {else}
-        <input class="left" style="margin-right: 5px;" type="checkbox" name="aktiv[]" {if $oBox->bAktiv == 1}checked="checked"{/if} value="{$oBox->kBox}" />
+            <input class="left" style="margin-right: 5px;" type="checkbox" name="aktiv[]" {if $oBox->bAktiv == 1}checked="checked"{/if} value="{$oBox->kBox}" />
         {/if}
         <input class="form-control text-right" type="number" size="3" name="sort[]" value="{$oBox->nSort}" autocomplete="off" id="{$oBox->nSort}" />
     </div>

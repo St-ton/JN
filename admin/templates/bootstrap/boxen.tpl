@@ -1,24 +1,22 @@
 {config_load file="$lang.conf" section="boxen"}
 {include file='tpl_inc/header.tpl'}
+{include file='tpl_inc/seite_header.tpl' cTitel=#boxen# cBeschreibung=#boxenDesc# cDokuURL=#boxenURL#}
 
-<script type="text/javascript" src="{$PFAD_CKEDITOR}ckeditor.js"></script>
 <script type="text/javascript">
-{literal}
-function confirmDelete(cName) {
-    return confirm('Sind Sie sicher, dass Sie die Box "' + cName + '" l\u00f6schen m\u00f6chten?');
-}
+    function confirmDelete(cName) {
+        return confirm('Sind Sie sicher, dass Sie die Box "' + cName + '" l\u00f6schen m\u00f6chten?');
+    }
 
-function onFocus(obj) {
-   obj.id = obj.value;
-   obj.value = '';
-}
+    function onFocus(obj) {
+       obj.id = obj.value;
+       obj.value = '';
+    }
 
-function onBlur(obj) {
-   if (obj.value.length === 0) {
-       obj.value = obj.id;
-   }
-}
-{/literal}
+    function onBlur(obj) {
+       if (obj.value.length === 0) {
+           obj.value = obj.id;
+       }
+    }
 </script>
 <div class="modal fade" id="boxFilterModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
     <div class="modal-dialog" role="document">
@@ -57,7 +55,6 @@ function onBlur(obj) {
         </div>
     </div>
 </div>
-{include file='tpl_inc/seite_header.tpl' cTitel=#boxen# cBeschreibung=#boxenDesc# cDokuURL=#boxenURL#}
 <!-- Modal -->
 
 <div id="content">
@@ -228,8 +225,8 @@ function onBlur(obj) {
 </div>
 
 <script type="text/javascript">
-    $(function() {ldelim}
-        $('#boxFilterModal').on('show.bs.modal', function (event) {ldelim}
+    $(function() {
+        $('#boxFilterModal').on('show.bs.modal', function (event) {
             var button = $(event.relatedTarget),
                 filter = button.data('filter'),
                 boxTitle = button.data('box-title'),
@@ -239,13 +236,13 @@ function onBlur(obj) {
             modal.find('#filter-target').val(filter);
             modal.find('#filter-target-id').val(boxID);
             $('#boxFilterModal #selected-items').append($('#box-active-filters-' + boxID).find('.selected-item').clone());
-        {rdelim}).on('hide.bs.modal', function (event) {ldelim}
+        }).on('hide.bs.modal', function (event) {
             $('#boxFilterModal .selected-item').remove(); //cleanup selected items
             $('#boxFilterModal .filter-input').val(''); //cleanup input
-        {rdelim});
+        });
 
-        function onSelect (item, selectorAdd, selectorRemove) {ldelim}
-            if (item.value > 0) {ldelim}
+        function onSelect (item, selectorAdd, selectorRemove) {
+            if (item.value > 0) {
                 var button = $('<a />'),
                     text = $('<span />'),
                     input = $('<input />'),
@@ -257,60 +254,60 @@ function onBlur(obj) {
                 text.html(item.text);
                 element.append(button).append(text).append(input);
                 $(selectorAdd).append(element);
-            {rdelim}
-        {rdelim}
+            }
+        }
         {if $nPage == 1}
-        $('#products').typeahead({ldelim}
+        $('#products').typeahead({
             ajax: '{$shopURL}/{$PFAD_ADMIN}ajax.php?type=product&token={$smarty.session.jtl_token}',
-            onSelect: function (item) {ldelim}
+            onSelect: function (item) {
                 onSelect(item, '#selected-items', '#products');
-                {rdelim}
-            {rdelim});
+                }
+            });
         {elseif $nPage == 31}
-        $('#pages').typeahead({ldelim}
+        $('#pages').typeahead({
             ajax: '{$shopURL}/{$PFAD_ADMIN}ajax.php?type=page&token={$smarty.session.jtl_token}',
-            onSelect: function (item) {ldelim}
+            onSelect: function (item) {
                 onSelect(item, '#selected-items', '#pages');
-                {rdelim}
-            {rdelim});
+                }
+            });
         {elseif $nPage == 2}
-        $('#categories').typeahead({ldelim}
+        $('#categories').typeahead({
             ajax: '{$shopURL}/{$PFAD_ADMIN}ajax.php?type=category&token={$smarty.session.jtl_token}',
-            onSelect: function (item) {ldelim}
+            onSelect: function (item) {
                 onSelect(item, '#selected-items', '#categories');
-                {rdelim}
-            {rdelim});
+                }
+            });
         {elseif $nPage == 24}
-        $('#manufacturers').typeahead({ldelim}
+        $('#manufacturers').typeahead({
             ajax: '{$shopURL}/{$PFAD_ADMIN}ajax.php?type=manufacturer&token={$smarty.session.jtl_token}',
-            onSelect: function (item) {ldelim}
+            onSelect: function (item) {
                 onSelect(item, '#selected-items', '#manufacturers');
-            {rdelim}
-        {rdelim});
+            }
+        });
         {/if}
 
-        $('#modal-save').click(function () {ldelim}
+        $('#modal-save').click(function () {
             var idList = $('#modal-filter-form .new-filter'),
                 numElements = idList.length,
                 boxID = $('#filter-target-id').val(),
                 target,
                 targetSelector = $('#filter-target').val();
 
-            if (targetSelector) {ldelim}
+            if (targetSelector) {
                 $('#box-active-filters-' + boxID).empty().append($('#boxFilterModal .selected-item'));
                 $('#boxFilterModal').modal('hide'); //hide modal
-            {rdelim}
-        {rdelim});
+            }
+        });
 
-        $('#modal-cancel').click(function () {ldelim}
+        $('#modal-cancel').click(function () {
             $('#boxFilterModal').modal('hide'); //hide modal
-        {rdelim});
+        });
 
-        $('#boxFilterModal .selected-items').on('click', 'a', function (e) {ldelim}
+        $('#boxFilterModal .selected-items').on('click', 'a', function (e) {
             e.preventDefault();
             $('#elem-' + $(this).attr('data-ref')).remove();
             return false;
-        {rdelim});
-    {rdelim});
+        });
+    });
 </script>
 {include file='tpl_inc/footer.tpl'}

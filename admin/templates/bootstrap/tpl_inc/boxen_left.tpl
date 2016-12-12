@@ -19,7 +19,6 @@
                             <a href="boxen.php?action=container&position=left&value=1&token={$smarty.session.jtl_token}" title="Auf jeder Seite aktivieren"><i class="fa fa-lg fa-eye"></i></a>
                             <span>Sidebar links auf jeder Seite anzeigen</span>
                         {/if}
-
                     {/if}
                 </div>
             </div>

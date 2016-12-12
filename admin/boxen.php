@@ -3,17 +3,16 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once dirname(__FILE__) . '/includes/admininclude.php';
+require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'template_inc.php';
-
 $oAccount->permission('BOXES_VIEW', true, true);
 /** @global JTLSmarty $smarty */
-$oTemplate = Template::getInstance();
-$cHinweis  = '';
-$cFehler   = '';
-$nPage     = 0;
-$oBoxen    = Boxen::getInstance();
-$bOk       = false;
+
+$cHinweis = '';
+$cFehler  = '';
+$nPage    = 0;
+$oBoxen   = Boxen::getInstance();
+$bOk      = false;
 
 if (isset($_REQUEST['page'])) {
     $nPage = (int)$_REQUEST['page'];
@@ -162,7 +161,7 @@ if (isset($_REQUEST['action']) && validateToken()) {
 }
 $oBoxen_arr      = $oBoxen->holeBoxen($nPage, false, true, true);
 $oVorlagen_arr   = $oBoxen->holeVorlagen($nPage);
-$oBoxenContainer = $oTemplate->getBoxLayoutXML();
+$oBoxenContainer = Template::getInstance()->getBoxLayoutXML();
 
 $smarty->assign('hinweis', $cHinweis)
        ->assign('fehler', $cFehler)

@@ -134,4 +134,104 @@ class FilterSearch extends AbstractFilter implements IFilter
 
         return $join;
     }
+
+    /**
+     * @param null $mixed
+     * @return array|int|object
+     */
+    public function getOptions($mixed = null)
+    {
+        $oSuchFilterDB_arr = [];
+        if ($this->navifilter->getConfig()['navigationsfilter']['suchtrefferfilter_nutzen'] !== 'N') {
+            $nLimit = (isset($this->navifilter->getConfig()['navigationsfilter']['suchtrefferfilter_anzahl']) && ($limit = (int)$this->navifilter->getConfig()['navigationsfilter']['suchtrefferfilter_anzahl']) > 0)
+                ? " LIMIT " . $limit
+                : '';
+
+            $order = $this->navifilter->getOrder();
+            $state = $this->navifilter->getCurrentStateData();
+
+            $state->joins[] = $order->join;
+            $join           = new FilterJoin();
+            $join->setComment('join1 from getSearchFilterOptions')
+                 ->setType('JOIN')
+                 ->setTable('tsuchcachetreffer')
+                 ->setOn('tartikel.kArtikel = tsuchcachetreffer.kArtikel');
+            $state->joins[] = $join;
+
+            $join = new FilterJoin();
+            $join->setComment('join2 from getSearchFilterOptions')
+                 ->setType('JOIN')
+                 ->setTable('tsuchcache')
+                 ->setOn('tsuchcache.kSuchCache = tsuchcachetreffer.kSuchCache');
+            $state->joins[] = $join;
+
+            $join = new FilterJoin();
+            $join->setComment('join3 from getSearchFilterOptions')
+                 ->setType('JOIN')
+                 ->setTable('tsuchanfrage')
+                 ->setOn('tsuchanfrage.cSuche = tsuchcache.cSuche AND tsuchanfrage.kSprache = ' . $this->navifilter->getLanguageID());
+            $state->joins[] = $join;
+
+            $state->conditions[] = "tsuchanfrage.nAktiv = 1";
+
+            $query = $this->navifilter->getBaseQuery(['tsuchanfrage.kSuchanfrage', 'tsuchanfrage.cSuche', 'tartikel.kArtikel'],
+                $state->joins, $state->conditions, $state->having, $order->orderBy, '',
+                ['tsuchanfrage.kSuchanfrage', 'tartikel.kArtikel']);
+
+            $query = "SELECT ssMerkmal.kSuchanfrage, ssMerkmal.cSuche, count(*) AS nAnzahl
+                FROM (" . $query . ") AS ssMerkmal
+                    GROUP BY ssMerkmal.kSuchanfrage
+                    ORDER BY ssMerkmal.cSuche" . $nLimit;
+
+            $oSuchFilterDB_arr = Shop::DB()->query($query, 2);
+
+            $kSuchanfrage_arr = [];
+            if ($this->navifilter->Suche->kSuchanfrage > 0) {
+                $kSuchanfrage_arr[] = (int)$this->$this->navifilter->kSuchanfrage;
+            }
+            if (count($this->navifilter->SuchFilter) > 0) {
+                foreach ($this->navifilter->SuchFilter as $oSuchFilter) {
+                    if (isset($oSuchFilter->kSuchanfrage)) {
+                        $kSuchanfrage_arr[] = (int)$oSuchFilter->kSuchanfrage;
+                    }
+                }
+            }
+            // Werfe bereits gesetzte Filter aus dem Ergebnis Array
+            $nCount = count($oSuchFilterDB_arr);
+            $count  = count($kSuchanfrage_arr);
+            for ($j = 0; $j < $nCount; ++$j) {
+                for ($i = 0; $i < $count; ++$i) {
+                    if ($oSuchFilterDB_arr[$j]->kSuchanfrage == $kSuchanfrage_arr[$i]) {
+                        unset($oSuchFilterDB_arr[$j]);
+                        break;
+                    }
+                }
+            }
+            if (is_array($oSuchFilterDB_arr)) {
+                $oSuchFilterDB_arr = array_merge($oSuchFilterDB_arr);
+            }
+            //baue URL
+            $count = count($oSuchFilterDB_arr);
+            for ($i = 0; $i < $count; ++$i) {
+                $oZusatzFilter                           = new stdClass();
+                $oZusatzFilter->SuchFilter               = new stdClass();
+                $oZusatzFilter->SuchFilter->kSuchanfrage = (int)$oSuchFilterDB_arr[$i]->kSuchanfrage;
+                $oSuchFilterDB_arr[$i]->cURL             = $this->navifilter->getURL(true, $oZusatzFilter);
+            }
+            // Priorität berechnen
+            $nPrioStep = 0;
+            $nCount    = count($oSuchFilterDB_arr);
+            if ($nCount > 0) {
+                $nPrioStep = ($oSuchFilterDB_arr[0]->nAnzahl - $oSuchFilterDB_arr[$nCount - 1]->nAnzahl) / 9;
+            }
+            foreach ($oSuchFilterDB_arr as $i => $oSuchFilterDB) {
+                $oSuchFilterDB_arr[$i]->Klasse = rand(1, 10);
+                if (isset($oSuchFilterDB->kSuchCache) && $oSuchFilterDB->kSuchCache > 0 && $nPrioStep >= 0) {
+                    $oSuchFilterDB_arr[$i]->Klasse = round(($oSuchFilterDB->nAnzahl - $oSuchFilterDB_arr[$nCount - 1]->nAnzahl) / $nPrioStep) + 1;
+                }
+            }
+        }
+
+        return $oSuchFilterDB_arr;
+    }
 }

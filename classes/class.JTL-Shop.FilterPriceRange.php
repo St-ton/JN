@@ -225,6 +225,68 @@ class FilterPriceRange extends AbstractFilter implements IFilter
     }
 
     /**
+     * @param object     $oPreis
+     * @param object     $currency
+     * @param array|null $oPreisspannenfilter_arr
+     * @return string
+     */
+    public function getPriceRangeSQL($oPreis, $currency, $oPreisspannenfilter_arr = null)
+    {
+        $cSQL          = '';
+        $fKundenrabatt = 0.0;
+        if (isset($_SESSION['Kunde']->fRabatt) && $_SESSION['Kunde']->fRabatt > 0) {
+            $fKundenrabatt = $_SESSION['Kunde']->fRabatt;
+        }
+        // Wenn Option vorhanden, dann nur Spannen anzeigen, in denen Artikel vorhanden sind
+        if ($this->navifilter->getConfig()['navigationsfilter']['preisspannenfilter_anzeige_berechnung'] === 'A') {
+//            $nPreisMax = $oPreis->fMaxPreis;
+            $nPreisMin               = $oPreis->fMinPreis;
+            $nStep                   = $oPreis->fStep;
+            $oPreisspannenfilter_arr = [];
+            for ($i = 0; $i < $oPreis->nAnzahlSpannen; ++$i) {
+                $fakePriceRange              = new stdClass();
+                $fakePriceRange->nBis        = ($nPreisMin + ($i + 1) * $nStep);
+                $oPreisspannenfilter_arr[$i] = $fakePriceRange;
+            }
+        }
+
+        if (is_array($oPreisspannenfilter_arr)) {
+            foreach ($oPreisspannenfilter_arr as $i => $oPreisspannenfilter) {
+                $cSQL .= "COUNT(DISTINCT 
+                    IF(";
+
+                $nBis = $oPreisspannenfilter->nBis;
+                // Finde den höchsten und kleinsten Steuersatz
+                if (is_array($_SESSION['Steuersatz']) && intval($_SESSION['Kundengruppe']->nNettoPreise) === 0) {
+                    $nSteuersatzKeys_arr = array_keys($_SESSION['Steuersatz']);
+                    foreach ($nSteuersatzKeys_arr as $nSteuersatzKeys) {
+                        $fSteuersatz = floatval($_SESSION['Steuersatz'][$nSteuersatzKeys]);
+                        $cSQL .= "IF(tartikel.kSteuerklasse = " . $nSteuersatzKeys . ",
+                            ROUND(LEAST((tpreise.fVKNetto * " . $currency->fFaktor . ") * ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), " .
+                            $_SESSION['Kundengruppe']->fRabatt . ", " . $fKundenrabatt . ", 0)) / 100), IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * " .
+                            $currency->fFaktor . "))) * ((100 + " . $fSteuersatz . ") / 100)
+                        , 2),";
+                    }
+                    $cSQL .= "0";
+                    $count = count($nSteuersatzKeys_arr);
+                    for ($x = 0; $x < $count; $x++) {
+                        $cSQL .= ")";
+                    }
+                } elseif ($_SESSION['Kundengruppe']->nNettoPreise > 0) {
+                    $cSQL .= "ROUND(LEAST((tpreise.fVKNetto * " . $currency->fFaktor . ") * ((100 - GREATEST(IFNULL(tartikelkategorierabatt.fRabatt, 0), " .
+                        $_SESSION['Kundengruppe']->fRabatt . ", " . $fKundenrabatt . ", 0)) / 100), IFNULL(tsonderpreise.fNettoPreis, (tpreise.fVKNetto * " . $currency->fFaktor . "))), 2)";
+                }
+
+                $cSQL .= " < " . $nBis . ", tartikel.kArtikel, NULL)
+                    ) AS anz" . $i . ", ";
+            }
+            $cSQL = substr($cSQL, 0, strlen($cSQL) - 2);
+        }
+
+        return $cSQL;
+    }
+
+    /**
      * @param int $mixed - product count
      * @return array
      */
@@ -363,7 +425,7 @@ class FilterPriceRange extends AbstractFilter implements IFilter
                 $qry                   = "SELECT " . $cSelectSQL . "
                     FROM
                     (
-                        SELECT " . $this->navifilter->getPriceRangeSQL($oPreis, $currency) . "
+                        SELECT " . $this->getPriceRangeSQL($oPreis, $currency) . "
                         FROM tartikel " .
                     $state->joins . "
                         WHERE tartikelsichtbarkeit.kArtikel IS NULL
@@ -449,7 +511,7 @@ class FilterPriceRange extends AbstractFilter implements IFilter
                     "SELECT " . $cSelectSQL . "
                         FROM
                         (
-                            SELECT " . $this->navifilter->getPriceRangeSQL($oPreis, $currency, $oPreisspannenfilter_arr) . "
+                            SELECT " . $this->getPriceRangeSQL($oPreis, $currency, $oPreisspannenfilter_arr) . "
                                 FROM tartikel " .
                     $state->joins . "
                                 WHERE tartikelsichtbarkeit.kArtikel IS NULL

@@ -5,9 +5,9 @@
  */
 
 /**
- * Class FilterMerkmal
+ * Class FilterAttribute
  */
-class FilterMerkmal extends AbstractFilter implements IFilter
+class FilterAttribute extends AbstractFilter implements IFilter
 {
     /**
      * @var bool
@@ -141,7 +141,7 @@ class FilterMerkmal extends AbstractFilter implements IFilter
     {
         $join = new FilterJoin();
         $join->setType('JOIN')
-             ->setComment('join1 from FilterMerkmal')
+             ->setComment('join1 from FilterAttribute')
              ->setTable('(
                             SELECT kArtikel
                             FROM tartikelmerkmal

@@ -351,8 +351,8 @@ class PayPalPlus extends PaymentMethod
 
     public function prepareShippingAddress($address)
     {
-        $a = new \PayPal\Api\ShippingAddress();
-        $shippingAddress = utf8_convert_recursive($address);
+        $shippingAddress = clone $address;
+        $shippingAddress = utf8_convert_recursive($shippingAddress);
 
         // 2-letter code for US states, and the equivalent for other countries. 100 characters max.
         if (in_array($shippingAddress->cLand, ['US', 'CA', 'IT', 'NL'])) {
@@ -361,6 +361,8 @@ class PayPalPlus extends PaymentMethod
                 $shippingAddress->state = $state->cCode;
             }
         }
+
+        $a = new \PayPal\Api\ShippingAddress();
 
         $a->setRecipientName("{$shippingAddress->cVorname} {$shippingAddress->cNachname}")
             ->setLine1("{$shippingAddress->cStrasse} {$shippingAddress->cHausnummer}")
@@ -552,7 +554,9 @@ class PayPalPlus extends PaymentMethod
         try {
             $paymentId = $this->getCache('paymentId');
             $payerId   = $this->getCache('payerId');
-            $basket    = PayPalHelper::getBasket();
+
+            $helper = new BestellungHelper($order);
+            $basket = PayPalHelper::getBasket($helper);
 
             $apiContext      = $this->getContext();
             $payment         = Payment::get($paymentId, $apiContext);
@@ -581,7 +585,7 @@ class PayPalPlus extends PaymentMethod
 
                 $transaction = new Transaction();
                 $transaction->setAmount($amount)
-                    //->setInvoiceNumber($order->cBestellNr)
+                    //->setInvoiceNumber($order->cBestellNr) // #437
                     ->setCustom($order->kBestellung);
 
                 $execution->addTransaction($transaction);
@@ -590,38 +594,41 @@ class PayPalPlus extends PaymentMethod
                 $this->logResult('ExecutePayment', $execution, $payment);
 
                 if ($instruction = $payment->getPaymentInstruction()) {
-                    $banking = $instruction->getRecipientBankingInstruction();
-                    $amount  = $instruction->getAmount();
-
                     $type = $instruction->getInstructionType();
-                    // MANUAL_BANK_TRANSFER - PAY_UPON_INVOICE
 
-                    $company = new Firma();
-                    $date    = strftime('%d.%m.%Y', strtotime($instruction->getPaymentDueDate()));
+                    $this->logResult('PaymentInstruction', 'InstructionType', $type);
 
-                    $replacement = [
-                        '%reference_number%'                  => $instruction->getReferenceNumber(),
-                        '%bank_name%'                         => $banking->getBankName(),
-                        '%account_holder_name%'               => $banking->getAccountHolderName(),
-                        '%international_bank_account_number%' => $banking->getInternationalBankAccountNumber(),
-                        '%bank_identifier_code%'              => $banking->getBankIdentifierCode(),
-                        '%value%'                             => $amount->getValue(),
-                        '%currency%'                          => $amount->getCurrency(),
-                        '%payment_due_date%'                  => $date,
-                        '%company%'                           => $company->cName,
-                    ];
+                    if ($type == 'PAY_UPON_INVOICE') {
+                        $banking = $instruction->getRecipientBankingInstruction();
+                        $amount  = $instruction->getAmount();
 
-                    $pui = sprintf("%s\r\n\r\n%s",
-                        $this->plugin->oPluginSprachvariableAssoc_arr['jtl_paypal_pui'],
-                        $this->plugin->oPluginSprachvariableAssoc_arr['jtl_paypal_pui_legal']);
+                        $company = new Firma();
+                        $date    = strftime('%d.%m.%Y', strtotime($instruction->getPaymentDueDate()));
 
-                    $order->cPUIZahlungsdaten = str_replace(
-                        array_keys($replacement), array_values($replacement), $pui);
+                        $replacement = [
+                            '%reference_number%'                  => $instruction->getReferenceNumber(),
+                            '%bank_name%'                         => $banking->getBankName(),
+                            '%account_holder_name%'               => $banking->getAccountHolderName(),
+                            '%international_bank_account_number%' => $banking->getInternationalBankAccountNumber(),
+                            '%bank_identifier_code%'              => $banking->getBankIdentifierCode(),
+                            '%value%'                             => $amount->getValue(),
+                            '%currency%'                          => $amount->getCurrency(),
+                            '%payment_due_date%'                  => $date,
+                            '%company%'                           => $company->cName,
+                        ];
 
-                    $paymentName = $this->plugin->oPluginSprachvariableAssoc_arr['jtl_paypal_payment_invoice_name'];
+                        $pui = sprintf("%s\r\n\r\n%s",
+                            $this->plugin->oPluginSprachvariableAssoc_arr['jtl_paypal_pui'],
+                            $this->plugin->oPluginSprachvariableAssoc_arr['jtl_paypal_pui_legal']);
 
-                    $order->cZahlungsartName = strlen($paymentName) > 0
-                        ? $paymentName : $order->cZahlungsartName;
+                        $order->cPUIZahlungsdaten = str_replace(
+                            array_keys($replacement), array_values($replacement), $pui);
+
+                        $paymentName = $this->plugin->oPluginSprachvariableAssoc_arr['jtl_paypal_payment_invoice_name'];
+
+                        $order->cZahlungsartName = strlen($paymentName) > 0
+                            ? $paymentName : $order->cZahlungsartName;
+                    }
                 }
 
                 $order->updateInDB();
@@ -646,21 +653,21 @@ class PayPalPlus extends PaymentMethod
 
                         $this->setOrderStatusToPaid($order);
                         $this->addIncomingPayment($order, $ip);
-                        $this->sendConfirmationMail($order);
+                        
+                        //send confirmationMail - except for payment upon invoice (see https://gitlab.jtl-software.de/jtlshop/shop4/issues/618)
+                        if(empty($order->cPUIZahlungsdaten)) {
+                            $this->sendConfirmationMail($order);
+                        }
                     }
                 }
             } else {
                 $this->logResult('ExecutePayment', 'Unhandled payment state', $payment->getState(), JTLLOG_LEVEL_ERROR);
             }
-
-            $this->unsetCache();
-            return;
-
         } catch (Exception $ex) {
             $this->handleException('ExecutePayment', $payment, $ex);
         }
 
-        header("location: bestellvorgang.php?editZahlungsart=1");
+        $this->unsetCache();
     }
 
     /**

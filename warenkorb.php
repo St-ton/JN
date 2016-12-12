@@ -48,6 +48,9 @@ if (isset($_POST['Kuponcode']) && strlen($_POST['Kuponcode']) > 0 && !$_SESSION[
                 if (isset($Kupon->kKupon) && $Kupon->kKupon > 0 && $Kupon->cKuponTyp === 'standard') {
                     kuponAnnehmen($Kupon);
                     executeHook(HOOK_WARENKORB_PAGE_KUPONANNEHMEN);
+                    if (freeGiftStillValid() === false) {
+                        $MsgWarning = Shop::Lang()->get('freegiftsMinimum', 'errorMessages');
+                    }
                 } elseif (!empty($Kupon->kKupon) && $Kupon->cKuponTyp === 'versandkupon') {
                     // Versandfrei Kupon
                     $_SESSION['oVersandfreiKupon'] = $Kupon;
@@ -141,6 +144,9 @@ if (class_exists('Upload')) {
                ->assign('oUploadSchema_arr', $oUploadSchema_arr);
     }
 }
+
+WarenkorbHelper::addVariationPictures($_SESSION['Warenkorb']);
+
 //specific assigns
 $smarty->assign('Navigation', createNavigation($AktuelleSeite))
        ->assign('Einstellungen', $Einstellungen)

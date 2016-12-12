@@ -10,8 +10,9 @@
     {*<param name="FlashVars" value="data-file={$ShopURL}/includes/preisverlaufgraph_ofc.php?cOption={if isset($Artikel->kVariKindArtikel)}{$Artikel->kVariKindArtikel}{else}{$Artikel->kArtikel}{/if};{$Artikel->Preise->kKundengruppe};{$Artikel->kSteuerklasse};{$Artikel->fMwSt}">*}
 {*</object>*}
 {*<div id="chart_wrapper"></div>*}
-
-<canvas id="priceHistoryChart" width="400" height="150"></canvas>
+<div>
+    <canvas id="priceHistoryChart" width="400" height="150"></canvas>
+</div>
 
 <script>
     var ctx = document.getElementById('priceHistoryChart').getContext('2d'),

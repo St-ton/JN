@@ -24,7 +24,7 @@ class Migration_20160523175400 extends Migration implements IMigration
 
     public function up()
     {
-        $this->execute("ALTER TABLE `texportformat` ADD COLUMN `nUseCache` TINYINT(3) UNSIGNED NOT NULL DEFAULT 0");
+        $this->execute("ALTER TABLE `texportformat` ADD COLUMN `nUseCache` TINYINT(3) UNSIGNED NOT NULL DEFAULT 1");
     }
 
     public function down()

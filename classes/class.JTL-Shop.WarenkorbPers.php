@@ -49,13 +49,13 @@ class WarenkorbPers
     /**
      * fügt eine Position zur WarenkorbPers hinzu
      *
-     * @param int    $kArtikel
-     * @param string $cArtikelName
-     * @param array  $oEigenschaftwerte_arr
-     * @param float  $fAnzahl
-     * @param string $cUnique
-     * @param int    $kKonfigitem
-     * @param int    $nPosTyp
+     * @param int        $kArtikel
+     * @param string     $cArtikelName
+     * @param array      $oEigenschaftwerte_arr
+     * @param float      $fAnzahl
+     * @param string     $cUnique
+     * @param int        $kKonfigitem
+     * @param int|string $nPosTyp
      * @return $this
      */
     public function fuegeEin($kArtikel, $cArtikelName, $oEigenschaftwerte_arr, $fAnzahl, $cUnique = '', $kKonfigitem = 0, $nPosTyp = C_WARENKORBPOS_TYP_ARTIKEL)
@@ -68,7 +68,9 @@ class WarenkorbPers
                 if ($bBereitsEnthalten) {
                     break;
                 }
-                if ($oWarenkorbPersPos->kArtikel == $kArtikel && count($oWarenkorbPersPos->oWarenkorbPersPosEigenschaft_arr) > 0) {
+                if ($oWarenkorbPersPos->kArtikel == $kArtikel &&
+                    count($oWarenkorbPersPos->oWarenkorbPersPosEigenschaft_arr) > 0 &&
+                    (int)$oWarenkorbPersPos->kKonfigitem === (int)$kKonfigitem) {
                     $nPosition         = $i;
                     $bBereitsEnthalten = true;
                     foreach ($oEigenschaftwerte_arr as $oEigenschaftwerte) {
@@ -80,7 +82,9 @@ class WarenkorbPers
                             break;
                         }
                     }
-                } elseif ($oWarenkorbPersPos->kArtikel == $kArtikel && $cUnique !== '' && $oWarenkorbPersPos->cUnique === $cUnique) {
+                } elseif ($oWarenkorbPersPos->kArtikel == $kArtikel && $cUnique !== '' &&
+                    $oWarenkorbPersPos->cUnique === $cUnique &&
+                    (int)$oWarenkorbPersPos->kKonfigitem === (int)$kKonfigitem) {
                     $nPosition         = $i;
                     $bBereitsEnthalten = true;
                     break;
@@ -232,8 +236,8 @@ class WarenkorbPers
                 );
                 // Wenn Positionen vorhanden sind
                 if (is_array($oWarenkorbPersPos_arr) && count($oWarenkorbPersPos_arr) > 0) {
-                    $fWarenwert       = 0.0;
-                    $oArtikelOptionen = Artikel::getDefaultOptions();
+                    $fWarenwert     = 0.0;
+                    $defaultOptions = Artikel::getDefaultOptions();
                     if (!isset($_SESSION['Steuersatz'])) {
                         setzeSteuersaetze();
                     }
@@ -270,7 +274,7 @@ class WarenkorbPers
                         }
                         if ($bArtikel) {
                             $oWarenkorbPersPos->Artikel = new Artikel();
-                            $oWarenkorbPersPos->Artikel->fuelleArtikel($oWarenkorbPersPos->kArtikel, $oArtikelOptionen);
+                            $oWarenkorbPersPos->Artikel->fuelleArtikel($oWarenkorbPersPos->kArtikel, $defaultOptions);
                             $oWarenkorbPersPos->cArtikelName = $oWarenkorbPersPos->Artikel->cName;
 
                             $fWarenwert += $oWarenkorbPersPos->Artikel->Preise->fVK[$oWarenkorbPersPos->Artikel->kSteuerklasse];

@@ -230,7 +230,6 @@ class Kunde
      * Konstruktor
      *
      * @param int $kKunde - Falls angegeben, wird der Kunde mit angegebenem kKunde aus der DB geholt
-     * @return Kunde
      */
     public function __construct($kKunde = 0)
     {
@@ -255,7 +254,7 @@ class Kunde
             }
         }
 
-        return;
+        return null;
     }
 
     /**
@@ -787,7 +786,7 @@ class Kunde
                 $originalHash = $timestampAndHash[1];
                 //check if the link is not expired (=24 hours valid)
                 $createdAt = new DateTime();
-                $createdAt->setTimestamp((int) $timeStamp);
+                $createdAt->setTimestamp((int)$timeStamp);
                 $now  = new DateTime();
                 $diff = $now->diff($createdAt);
                 $secs = $diff->format('%a') * (60 * 60 * 24); //total days

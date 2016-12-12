@@ -87,12 +87,7 @@ function sendeMail($ModulId, $Object, $mail = null)
     $Object->tfirma        = Shop::DB()->query("SELECT * FROM tfirma", 1);
     $Object->tkundengruppe = Shop::DB()->select('tkundengruppe', 'kKundengruppe', (int)$Object->tkunde->kKundengruppe);
     if (isset($Object->tkunde->kSprache) && $Object->tkunde->kSprache > 0) {
-        $kundengruppensprache = Shop::DB()->query(
-            "SELECT *
-                FROM tkundengruppensprache
-                WHERE kKundengruppe = " . (int)$Object->tkunde->kKundengruppe . "
-                AND kSprache = " . (int)$Object->tkunde->kSprache, 1
-        );
+        $kundengruppensprache = Shop::DB()->select('tkundengruppensprache', 'kKundengruppe', (int)$Object->tkunde->kKundengruppe, 'kSprache', (int)$Object->tkunde->kSprache);
         if (isset($kundengruppensprache->cName) && $kundengruppensprache->cName != $Object->tkundengruppe->cName) {
             $Object->tkundengruppe->cName = $kundengruppensprache->cName;
         }
@@ -174,7 +169,8 @@ function sendeMail($ModulId, $Object, $mail = null)
     }
     $mail->kEmailvorlage = $Emailvorlage->kEmailvorlage;
 
-    $Emailvorlagesprache = Shop::DB()->select($cTableSprache, ['kEmailvorlage', 'kSprache'], [(int)$Emailvorlage->kEmailvorlage, (int)$Sprache->kSprache]);
+    $Emailvorlagesprache    = Shop::DB()->select($cTableSprache, ['kEmailvorlage', 'kSprache'],
+        [(int)$Emailvorlage->kEmailvorlage, (int)$Sprache->kSprache]);
     $Emailvorlage->cBetreff = injectSubject($Object, (isset($Emailvorlagesprache->cBetreff) ? $Emailvorlagesprache->cBetreff : null));
 
     if (isset($Emailvorlage->oEinstellungAssoc_arr['cEmailSenderName'])) {
@@ -517,7 +513,7 @@ function sendeMail($ModulId, $Object, $mail = null)
         $mail->cPDFS_arr = bauePDFArrayZumVeschicken($Emailvorlagesprache->cPDFS);
     }
     if (isset($Emailvorlagesprache->cDateiname) && strlen($Emailvorlagesprache->cDateiname) > 0) {
-        $mail->cDateiname_arr = baueDateinameArrayZumVeschicken($Emailvorlagesprache->cDateiname);
+        $mail->cDateiname_arr = StringHandler::parseSSK($Emailvorlagesprache->cDateiname);
     }
     executeHook(
         HOOK_MAILTOOLS_SENDEMAIL_ENDE, array(
@@ -809,6 +805,7 @@ function bauePDFArrayZumVeschicken($cPDF)
 /**
  * @param string $cDateiname
  * @return array
+ * @deprecated since 4.05
  */
 function baueDateinameArrayZumVeschicken($cDateiname)
 {

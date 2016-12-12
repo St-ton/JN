@@ -47,52 +47,26 @@
         <nav class="panel panel-default">
             <div id="navbar-filter" class="panel-body">
                 <div class="form-inline">
-                    {if $Einstellungen.navigationsfilter.allgemein_kategoriefilter_benutzen === 'Y' && ((!empty($Suchergebnisse->Kategorieauswahl) && $Suchergebnisse->Kategorieauswahl|@count > 1) || isset($NaviFilter->KategorieFilter->kKategorie->kKategorie) && $NaviFilter->KategorieFilter->kKategorie > 0)}
+                    {if $Einstellungen.navigationsfilter.allgemein_kategoriefilter_benutzen === 'Y' && (!empty($Suchergebnisse->Kategorieauswahl) && $Suchergebnisse->Kategorieauswahl|@count > 1)}
                         {block name="productlist-result-options-filter-category"}
-                        <div class="form-group">
-                            <select name="kf" onchange="$('#improve_search').submit();" class="form-control form-small">
-                                {if !empty($NaviFilter->KategorieFilter->kKategorie) && $NaviFilter->KategorieFilter->kKategorie > 0 || $Einstellungen.navigationsfilter.kategoriefilter_anzeigen_als === 'HF' || (empty($NaviFilter->Kategorie->kKategorie) && empty($NaviFilter->KategorieFilter->kKategorie))}
-                                    <option value="0">{lang key="allCategories" section="productOverview"}</option>
-                                {/if}
-                                {if !empty($NaviFilter->Kategorie->kKategorie) || !empty($NaviFilter->KategorieFilter->kKategorie)}
-                                    <option value="{if !empty($NaviFilter->KategorieFilter->kKategorie)}{$NaviFilter->KategorieFilter->kKategorie}{else}{$NaviFilter->Kategorie->kKategorie}{/if}" {if !empty($NaviFilter->KategorieFilter->kKategorie)}selected="selected"{/if}>
-                                        {if $Einstellungen.navigationsfilter.kategoriefilter_anzeigen_als === 'HF' && !empty($NaviFilter->KategorieFilter->kKategorie)}
-                                            {$NaviFilter->KategorieFilter->cName}
-                                        {else}
-                                            {$Suchergebnisse->Kategorieauswahl[0]->cName}
-                                        {/if}
-                                    </option>
-                                {/if}
-                                {if empty($NaviFilter->Kategorie->kKategorie) && (empty($NaviFilter->KategorieFilter->kKategorie) || $Einstellungen.navigationsfilter.kategoriefilter_anzeigen_als === 'HF')}
-                                    {foreach name=kategorieauswahl from=$Suchergebnisse->Kategorieauswahl item=Kategorie}
-                                        {if (isset($Kategorie->kKategorie) && (empty($NaviFilter->KategorieFilter->kKategorie) || ($Kategorie->kKategorie != $NaviFilter->KategorieFilter->kKategorie)))}
-                                            <option value="{$Kategorie->kKategorie}">{$Kategorie->cName} {if !isset($nMaxAnzahlArtikel) || !$nMaxAnzahlArtikel}({$Kategorie->nAnzahl}){/if}</option>
-                                        {/if}
-                                    {/foreach}
-                                {/if}
-                            </select>
+                        <div class="form-group dropdown filter-type-category">
+                            <a href="#" class="btn btn-default dropdown-toggle form-control" data-toggle="dropdown" role="button" aria-expanded="false">
+                                {lang key="allCategories" section="global"} <span class="caret"></span>
+                            </a>
+                            {include file='snippets/filter/category.tpl' class="dropdown-menu"}
                         </div>
                         {/block}
                     {/if}
 
-                    {if $Einstellungen.navigationsfilter.allgemein_herstellerfilter_benutzen === 'Y' && !isset($oExtendedJTLSearchResponse) && (!empty($Suchergebnisse->Herstellerauswahl) || !empty($NaviFilter->HerstellerFilter))}
+                    {if $Einstellungen.navigationsfilter.allgemein_herstellerfilter_benutzen === 'Y' &&
+                        !isset($oExtendedJTLSearchResponse) &&
+                        (!empty($Suchergebnisse->Herstellerauswahl) && $Suchergebnisse->Herstellerauswahl|@count > 1)}
                         {block name="productlist-result-options-filter-manufacturer"}
-                        <div class="form-group">
-                            <select id="hf" name="hf" class="form-control form-small suche_improve_search" onchange="$('#improve_search').submit();">
-                                {if (isset($NaviFilter->Hersteller->kHersteller) && $NaviFilter->Hersteller->kHersteller > 0) || (isset($NaviFilter->HerstellerFilter->kHersteller) && $NaviFilter->HerstellerFilter->kHersteller > 0)}
-                                    {if !empty($NaviFilter->HerstellerFilter->kHersteller)}
-                                        <option value="0">{lang key="allManufacturers" section="global"}</option>
-                                    {/if}
-                                    {if !empty($NaviFilter->Hersteller->kHersteller)}
-                                        <option value="{$NaviFilter->Hersteller->kHersteller}" selected="selected">{$NaviFilter->Hersteller->cName}</option>
-                                    {/if}
-                                {else}
-                                    <option value="0">{lang key="allManufacturers" section="global"}</option>
-                                    {foreach name=herstellerauswahl from=$Suchergebnisse->Herstellerauswahl item=Hersteller}
-                                        <option value="{$Hersteller->kHersteller}">{$Hersteller->cName} {if !isset($nMaxAnzahlArtikel) || !$nMaxAnzahlArtikel}({$Hersteller->nAnzahl}){/if}</option>
-                                    {/foreach}
-                                {/if}
-                            </select>
+                        <div class="form-group dropdown filter-type-manufacturer">
+                            <a href="#" class="btn btn-default dropdown-toggle form-control" data-toggle="dropdown" role="button" aria-expanded="false">
+                                {lang key="allManufacturers" section="global"} <span class="caret"></span>
+                            </a>
+                            {include file='snippets/filter/manufacturer.tpl' class="dropdown-menu"}
                         </div>
                         {/block}
                     {/if}
@@ -100,7 +74,7 @@
                     {if $Einstellungen.navigationsfilter.merkmalfilter_verwenden === 'content' && $Suchergebnisse->MerkmalFilter|@count > 0 && $Suchergebnisse->Artikel->elemente|@count > 0}
                         {block name="productlist-result-options-filter-attributes"}
                         {foreach name=merkmalfilter from=$Suchergebnisse->MerkmalFilter item=Merkmal}
-                            <div class="form-group dropdown">
+                            <div class="form-group dropdown filter-type-characteristic">
                                 <a href="#" class="btn btn-default dropdown-toggle form-control" data-toggle="dropdown" role="button" aria-expanded="false">
                                     {$Merkmal->cName} <span class="caret"></span>
                                 </a>
@@ -116,16 +90,16 @@
                     (isset($Suchergebnisse->Suchspecialauswahl[4]->nAnzahl) && $Suchergebnisse->Suchspecialauswahl[4]->nAnzahl > 0) ||
                     (isset($Suchergebnisse->Suchspecialauswahl[5]->nAnzahl) && $Suchergebnisse->Suchspecialauswahl[5]->nAnzahl > 0) ||
                     (isset($Suchergebnisse->Suchspecialauswahl[6]->nAnzahl) && $Suchergebnisse->Suchspecialauswahl[6]->nAnzahl > 0))}
-                        <div class="form-group dropdown">
+                        <div class="form-group dropdown filter-type-special">
                             <a href="#" class="btn btn-default dropdown-toggle form-control" data-toggle="dropdown" role="button" aria-expanded="false">
                                 {lang key="specificProducts" section="global"} <span class="caret"></span>
                             </a>
                             {include file='snippets/filter/special.tpl' class="dropdown-menu"}
                         </div>
                     {/if}{* /suchspecials *}
-                    {if $Einstellungen.navigationsfilter.preisspannenfilter_benutzen === 'content' && (isset($NaviFilter->PreisspannenFilter) || !empty($Suchergebnisse->Preisspanne))}
+                    {if $Einstellungen.navigationsfilter.preisspannenfilter_benutzen === 'content' && (empty($NaviFilter->PreisspannenFilter) && !empty($Suchergebnisse->Preisspanne))}
                         {block name="productlist-result-options-filter-price"}
-                        <div class="form-group dropdown">
+                        <div class="form-group dropdown filter-type-pricerange">
                             <a href="#" class="btn btn-default dropdown-toggle form-control" data-toggle="dropdown" role="button" aria-expanded="false">
                                 {lang key="rangeOfPrices" section="global"} <span class="caret"></span>
                             </a>
@@ -136,9 +110,9 @@
                         <input type="hidden" name="pf" value="{$NaviFilter->PreisspannenFilter->cWert}">
                     {/if}{* /preisspannenfilter *}
 
-                    {if $Einstellungen.navigationsfilter.bewertungsfilter_benutzen === 'content' && !empty($Suchergebnisse->Bewertung)}
+                    {if $Einstellungen.navigationsfilter.bewertungsfilter_benutzen === 'content' && (empty($NaviFilter->BewertungFilter) && !empty($Suchergebnisse->Bewertung))}
                         {block name="productlist-result-options-filter-rating"}
-                        <div class="form-group dropdown">
+                        <div class="form-group dropdown filter-type-review">
                             <a href="#" class="btn btn-default dropdown-toggle form-control" data-toggle="dropdown" role="button" aria-expanded="false">
                                 {lang key="Votes" section="global"} <span class="caret"></span>
                             </a>
@@ -159,7 +133,7 @@
             <div class="panel-body">
                 {if isset($NaviFilter->SuchspecialFilter->kKey) && $NaviFilter->SuchspecialFilter->kKey > 0 && (!isset($NaviFilter->Suchspecial) || $NaviFilter->Suchspecial->kKey != $NaviFilter->SuchspecialFilter->kKey)}
                     {strip}
-                    <a rel="nofollow" title="{lang key="specificProducts" section="global"}" href="{$NaviFilter->URL->cAlleSuchspecials}" class="label label-info">
+                    <a href="{$NaviFilter->URL->cAlleSuchspecials}" rel="nofollow" title="{lang key="specificProducts" section="global"} {lang key="delete" section="global"}" class="label label-info filter-type-special">
                         {if $NaviFilter->SuchspecialFilter->kKey == 1}
                             {lang key="bestsellers" section="global"}
                         {elseif $NaviFilter->SuchspecialFilter->kKey == 2}
@@ -180,48 +154,49 @@
                 {/if}
                 {if !empty($NaviFilter->KategorieFilter->kKategorie)}
                     {strip}
-                        <a href="{$NaviFilter->URL->cAlleKategorien}" class="label label-info">{if $Einstellungen.navigationsfilter.kategoriefilter_anzeigen_als === 'HF' && !empty($NaviFilter->KategorieFilter->kKategorie) && $NaviFilter->KategorieFilter->kKategorie > 0}{$NaviFilter->KategorieFilter->cName}{else}{$Suchergebnisse->Kategorieauswahl[0]->cName}{/if}
+                        <a href="{$NaviFilter->URL->cAlleKategorien}" rel="nofollow" title="{lang key="category" section="global"} {lang key="delete" section="global"}" class="label label-info filter-type-category">{if $Einstellungen.navigationsfilter.kategoriefilter_anzeigen_als === 'HF' && !empty($NaviFilter->KategorieFilter->kKategorie) && $NaviFilter->KategorieFilter->kKategorie > 0}{$NaviFilter->KategorieFilter->cName}{else}{$Suchergebnisse->Kategorieauswahl[0]->cName}{/if}
                             &nbsp;<span class="fa fa-trash-o"></span>
                         </a>
                     {/strip}
                 {/if}
                 {if !empty($NaviFilter->Hersteller->kHersteller) || !empty($NaviFilter->HerstellerFilter->kHersteller)}
                     {strip}
-                        <a href="{$NaviFilter->URL->cAlleHersteller}" class="label label-info">{$Suchergebnisse->Herstellerauswahl[0]->cName}
+                        <a href="{$NaviFilter->URL->cAlleHersteller}" rel="nofollow" title="{lang key="manufacturers" section="global"} {lang key="delete" section="global"}" class="label label-info filter-type-manufacturer">{$Suchergebnisse->Herstellerauswahl[0]->cName}
                             &nbsp;<span class="fa fa-trash-o"></span>
                         </a>
                     {/strip}
                 {/if}
                 {if !empty($NaviFilter->PreisspannenFilter->fBis)}
                     {strip}
-                        <a href="{$NaviFilter->URL->cAllePreisspannen}" class="label label-info">{$NaviFilter->PreisspannenFilter->cVonLocalized}
+                        <a href="{$NaviFilter->URL->cAllePreisspannen}" rel="nofollow" title="{lang key="rangeOfPrices" section="global"} {lang key="delete" section="global"}" class="label label-info  filter-type-pricerange">{$NaviFilter->PreisspannenFilter->cVonLocalized}
                         - {$NaviFilter->PreisspannenFilter->cBisLocalized}
                         &nbsp;<span class="fa fa-trash-o"></span>
                         </a>{/strip}
                 {/if}
                 {if !empty($NaviFilter->BewertungFilter->nSterne)}
                     {strip}
-                        <a href="{$NaviFilter->URL->cAlleBewertungen}" class="label label-info">{lang key="from" section="productDetails"} {$NaviFilter->BewertungFilter->nSterne} {if $NaviFilter->BewertungFilter->nSterne > 1}{lang key="starPlural"}{else}{lang key="starSingular"}{/if}
+                        <a href="{$NaviFilter->URL->cAlleBewertungen}" rel="nofollow" title="{lang key="paginationOrderByRating" section="global"} {lang key="delete" section="global"}" class="label label-info filter-type-review">{lang key="from" section="productDetails"} {$NaviFilter->BewertungFilter->nSterne} {if $NaviFilter->BewertungFilter->nSterne > 1}{lang key="starPlural"}{else}{lang key="starSingular"}{/if}
                             &nbsp;<span class="fa fa-trash-o"></span>
                         </a>
                     {/strip}
                 {/if}
-                {foreach name=merkmalfilter from=$Suchergebnisse->MerkmalFilter item=Merkmal}
-                    {foreach name=merkmalwertfilter from=$Merkmal->oMerkmalWerte_arr item=MerkmalWert}
-                        {if $MerkmalWert->nAktiv}
-                            {assign var=kMerkmalWert value=$MerkmalWert->kMerkmalWert}
-                            {strip}
-                                <a class="label label-info" rel="nofollow" href="{if !empty($MerkmalWert->cURL)}{$MerkmalWert->cURL}{else}#{/if}">
-                                    {*<a class="label label-info" rel="nofollow" href="{$NaviFilter->URL->cAlleMerkmalWerte[$kMerkmalWert]}">*}
-                                    <i class="fa fa-check-circle-o"></i> {$MerkmalWert->cWert} &nbsp;<span class="fa fa-trash-o"></span>
-                                </a>
-                            {/strip}
-                        {/if}
-                    {/foreach}
+                {if !empty($NaviFilter->TagFilter[0]->kTag)}
+                    {strip}
+                        <a href="{$NaviFilter->URL->cAlleTags}" rel="nofollow" title="{lang key="tags" section="global"} {lang key="delete" section="global"}" class="label label-info filter-type-tag">{$NaviFilter->TagFilter[0]->cName}
+                            &nbsp;<span class="fa fa-trash-o"></span>
+                        </a>
+                    {/strip}
+                {/if}
+                {foreach name=merkmalfilter from=$NaviFilter->MerkmalFilter item=Merkmal}
+                    {strip}
+                        <a href="{$NaviFilter->URL->cAlleMerkmalWerte[$Merkmal->kMerkmalWert]}" rel="nofollow" title="{lang key="characteristics" section="comparelist"} {lang key="delete" section="global"}" class="label label-info filter-type-characteristic">
+                            {$Merkmal->cName|escape:'html'} &nbsp;<span class="fa fa-trash-o"></span>
+                        </a>
+                    {/strip}
                 {/foreach}
                 {if !empty($NaviFilter->URL->cNoFilter)}
                     {strip}
-                        <a href="{$NaviFilter->URL->cNoFilter}" class="label label-warning">
+                        <a href="{$NaviFilter->URL->cNoFilter}" title="{lang key="removeFilters" section="global"} {lang key="delete" section="global"}" class="label label-warning">
                             {lang key="removeFilters" section="global"}
                         </a>
                     {/strip}

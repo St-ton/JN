@@ -12,7 +12,30 @@ $smarty->registerPlugin('function', 'getCurrencyConversionSmarty', 'getCurrencyC
        ->registerPlugin('function', 'getExtensionCategory', 'getExtensionCategory')
        ->registerPlugin('function', 'formatVersion', 'formatVersion')
        ->registerPlugin('function', 'gravatarImage', 'gravatarImage')
+       ->registerPlugin('function', 'getRevisions', 'getRevisions')
        ->registerPlugin('modifier', 'permission', 'permission');
+
+/**
+ * @param array     $params
+ * @param JTLSmarty $smarty
+ * @return mixed
+ */
+function getRevisions($params, &$smarty)
+{
+    $secondary = (isset($params['secondary'])) ?
+       $params['secondary'] :
+        false;
+    $data      = (isset($params['data'])) ?
+        $params['data'] :
+        null;
+    $revision  = new Revision();
+    $smarty->assign('revisions', $revision->getRevisions($params['type'], $params['key']))
+           ->assign('secondary', $secondary)
+           ->assign('data', $data)
+           ->assign('show', $params['show']);
+
+    return $smarty->fetch('tpl_inc/revisions.tpl');
+}
 
 /**
  * @param array $params

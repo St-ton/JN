@@ -109,4 +109,6 @@ function bearbeiteNewsletterversand($oJobQueue)
         Shop::DB()->delete('tnewsletterqueue', 'kNewsletter', (int)$oJobQueue->kKey);
         unset($oJobQueue);
     }
+
+    return true;
 }

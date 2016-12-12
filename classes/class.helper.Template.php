@@ -117,7 +117,9 @@ class TemplateHelper
 
         foreach ($childFolders as $version => $dirs) {
             $intersect = array_intersect(
-                array_values($folders), array_keys($dirs));
+                array_values($folders),
+                array_keys($dirs)
+            );
             foreach ($intersect as $dir) {
                 $d = $subTemplateDir . $version . DIRECTORY_SEPARATOR . $dir;
                 if ($data = $this->getData($d, false)) {
@@ -177,9 +179,7 @@ class TemplateHelper
         foreach (scandir($path) as $key => $value) {
             if (!in_array($value, array('.', '..'))) {
                 if (is_dir($path . DIRECTORY_SEPARATOR . $value)) {
-                    $result[$value] = $depht > 1 ?
-                        $this->getFolders($path . DIRECTORY_SEPARATOR . $value, $depht - 1) :
-                        array();
+                    $result[$value] = $depht > 1 ? $this->getFolders($path . DIRECTORY_SEPARATOR . $value, $depht - 1) : array();
                 }
             }
         }
@@ -240,9 +240,12 @@ class TemplateHelper
      */
     public function getXML($cOrdner, $isAdmin = null)
     {
-        $isAdmin  = ($isAdmin !== null) ? $isAdmin : $this->isAdmin;
-        $cXMLFile = ($isAdmin === false) ? PFAD_ROOT . PFAD_TEMPLATES . $cOrdner . DIRECTORY_SEPARATOR . TEMPLATE_XML :
-            PFAD_ROOT . PFAD_ADMIN . PFAD_TEMPLATES . $cOrdner . DIRECTORY_SEPARATOR . TEMPLATE_XML;
+        $isAdmin  = ($isAdmin !== null) ?
+            $isAdmin
+            : $this->isAdmin;
+        $cXMLFile = ($isAdmin === false)
+            ? PFAD_ROOT . PFAD_TEMPLATES . $cOrdner . DIRECTORY_SEPARATOR . TEMPLATE_XML
+            : PFAD_ROOT . PFAD_ADMIN . PFAD_TEMPLATES . $cOrdner . DIRECTORY_SEPARATOR . TEMPLATE_XML;
         if (file_exists($cXMLFile)) {
             if (defined('LIBXML_NOWARNING')) {
                 //try to suppress warning if opening fails
@@ -292,7 +295,7 @@ class TemplateHelper
     {
         $isAdmin = ($isAdmin !== null) ? $isAdmin : $this->isAdmin;
         $cacheID = 'tpl_' . $cOrdner . (($isAdmin) ? '_admin' : '');
-        if ($this->cachingEnabled === true  && ($oTemplate = Shop::Cache()->get($cacheID)) !== false) {
+        if ($this->cachingEnabled === true && ($oTemplate = Shop::Cache()->get($cacheID)) !== false) {
             return $oTemplate;
         }
 
@@ -309,8 +312,9 @@ class TemplateHelper
         $oTemplate->cShopVersion = (string)trim($oXMLTemplate->ShopVersion);
         $oTemplate->cPreview     = (string)trim($oXMLTemplate->Preview);
         $oTemplate->cDokuURL     = (string)trim($oXMLTemplate->DokuURL);
-        $oTemplate->bChild       = (!empty($oXMLTemplate->Parent));
-        $oTemplate->cParent      = (!empty($oXMLTemplate->Parent)) ? (string)trim($oXMLTemplate->Parent) : '';
+        $oTemplate->bChild       = !empty($oXMLTemplate->Parent);
+        $oTemplate->cParent      = !empty($oXMLTemplate->Parent) ? (string)trim($oXMLTemplate->Parent) : '';
+        $oTemplate->bResponsive  = empty($oXMLTemplate['isFullResponsive']) ? false : (strtolower((string)$oXMLTemplate['isFullResponsive']) === 'true' ? true : false);
         $oTemplate->bHasError    = false;
         $oTemplate->eTyp         = '';
         $oTemplate->cDescription = (!empty($oXMLTemplate->Description)) ? (string)trim($oXMLTemplate->Description) : '';

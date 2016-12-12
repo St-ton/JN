@@ -517,7 +517,154 @@ Ihr Team von {$Firma->cName}]]></ContentText>
                     </SelectboxOptions>
                 </Setting>
             </Settingslink>
+
             <Settingslink sort="3">
+                <Name>Einstellungen PLUS</Name>
+
+                <Setting type="text" initialValue="Y" sort="0" conf="N">
+                    <Name>Auswahlseite</Name>
+                    <Description />
+                    <ValueName>jtl_paypal_style_headline</ValueName>
+                </Setting>
+
+                <Setting type="selectbox" initialValue="N" sort="0" conf="Y">
+                    <Name>Styles aktivieren</Name>
+                    <Description></Description>
+                    <ValueName>jtl_paypal_style_enabled</ValueName>
+                    <SelectboxOptions>
+                        <Option value="N" sort="1">Nein</Option>
+                        <Option value="Y" sort="2">Ja</Option>
+                    </SelectboxOptions>
+                </Setting>
+
+                <Setting type="selectbox" initialValue="N" sort="1" conf="Y">
+                    <Name>Schriftart</Name>
+                    <Description></Description>
+                    <ValueName>jtl_paypal_style_font_family</ValueName>
+                    <SelectboxOptions>
+                        <Option value="Arial" sort="1">Arial</Option>
+                        <Option value="Helvetica" sort="2">Helvetica</Option>
+                        <Option value="Times New Roman" sort="3">Times New Roman</Option>
+                        <Option value="Times" sort="4">Times</Option>
+                        <Option value="Courier New" sort="5">Courier New</Option>
+                        <Option value="Courier" sort="6">Courier</Option>
+                        <Option value="Sans Serif" sort="7">Sans Serif</Option>
+                    </SelectboxOptions>
+                </Setting>
+
+                <Setting type="selectbox" initialValue="12" sort="2" conf="Y">
+                    <Name>Schriftgröße</Name>
+                    <Description></Description>
+                    <ValueName>jtl_paypal_style_font_size</ValueName>
+                    <SelectboxOptions>
+                        <Option value="12px" sort="1">12px</Option>
+                        <Option value="13px" sort="2">13px</Option>
+                        <Option value="14px" sort="3">14px</Option>
+                        <Option value="15px" sort="4">15px</Option>
+                        <Option value="16px" sort="5">16px</Option>
+                    </SelectboxOptions>
+                </Setting>
+
+                <Setting type="selectbox" initialValue="normal" sort="3" conf="Y">
+                    <Name>Schriftstil</Name>
+                    <Description></Description>
+                    <ValueName>jtl_paypal_style_font_style</ValueName>
+                    <SelectboxOptions>
+                        <Option value="normal" sort="1">Normal</Option>
+                        <Option value="italic" sort="2">Kursiv</Option>
+                    </SelectboxOptions>
+                </Setting>
+
+                <Setting type="text" initialValue="Y" sort="4" conf="N">
+                    <Name>Link</Name>
+                    <Description />
+                    <ValueName>jtl_paypal_style_link_headline</ValueName>
+                </Setting>
+
+                <Setting type="text" initialValue="black" sort="5" conf="Y">
+                    <Name>Farbe</Name>
+                    <Description />
+                    <ValueName>jtl_paypal_style_link_color</ValueName>
+                </Setting>
+
+                <Setting type="selectbox" initialValue="none" sort="6" conf="Y">
+                    <Name>Schriftdekoration</Name>
+                    <Description></Description>
+                    <ValueName>jtl_paypal_style_link_text_decoration</ValueName>
+                    <SelectboxOptions>
+                        <Option value="none" sort="1">Keine</Option>
+                        <Option value="underline" sort="2">Unterstrichen</Option>
+                    </SelectboxOptions>
+                </Setting>
+
+                <Setting type="text" initialValue="Y" sort="7" conf="N">
+                    <Name>Link (visited)</Name>
+                    <Description />
+                    <ValueName>jtl_paypal_style_visited_headline</ValueName>
+                </Setting>
+
+                <Setting type="text" initialValue="black" sort="8" conf="Y">
+                    <Name>Farbe</Name>
+                    <Description />
+                    <ValueName>jtl_paypal_style_visited_color</ValueName>
+                </Setting>
+
+                <Setting type="selectbox" initialValue="none" sort="9" conf="Y">
+                    <Name>Schriftdekoration</Name>
+                    <Description></Description>
+                    <ValueName>jtl_paypal_style_visited_text_decoration</ValueName>
+                    <SelectboxOptions>
+                        <Option value="none" sort="1">Keine</Option>
+                        <Option value="underline" sort="2">Unterstrichen</Option>
+                    </SelectboxOptions>
+                </Setting>
+
+                <Setting type="text" initialValue="Y" sort="10" conf="N">
+                    <Name>Link (active)</Name>
+                    <Description />
+                    <ValueName>jtl_paypal_style_active_headline</ValueName>
+                </Setting>
+
+                <Setting type="text" initialValue="black" sort="11" conf="Y">
+                    <Name>Farbe</Name>
+                    <Description />
+                    <ValueName>jtl_paypal_style_active_color</ValueName>
+                </Setting>
+
+                <Setting type="selectbox" initialValue="none" sort="12" conf="Y">
+                    <Name>Schriftdekoration</Name>
+                    <Description></Description>
+                    <ValueName>jtl_paypal_style_active_text_decoration</ValueName>
+                    <SelectboxOptions>
+                        <Option value="none" sort="1">Keine</Option>
+                        <Option value="underline" sort="2">Unterstrichen</Option>
+                    </SelectboxOptions>
+                </Setting>
+
+                <Setting type="text" initialValue="Y" sort="13" conf="N">
+                    <Name>Link (hover)</Name>
+                    <Description />
+                    <ValueName>jtl_paypal_style_hover_headline</ValueName>
+                </Setting>
+
+                <Setting type="text" initialValue="black" sort="14" conf="Y">
+                    <Name>Farbe</Name>
+                    <Description />
+                    <ValueName>jtl_paypal_style_hover_color</ValueName>
+                </Setting>
+
+                <Setting type="selectbox" initialValue="none" sort="15" conf="Y">
+                    <Name>Schriftdekoration</Name>
+                    <Description></Description>
+                    <ValueName>jtl_paypal_style_hover_text_decoration</ValueName>
+                    <SelectboxOptions>
+                        <Option value="none" sort="1">Keine</Option>
+                        <Option value="underline" sort="2">Unterstrichen</Option>
+                    </SelectboxOptions>
+                </Setting>
+            </Settingslink>
+
+            <Settingslink sort="4">
                 <Name>Web Profil PLUS</Name>
                 <Setting type="text" initialValue="JTL-Shop" sort="1" conf="Y">
                     <Name>Anzeigename für PayPal Login</Name>
@@ -530,11 +677,11 @@ Ihr Team von {$Firma->cName}]]></ContentText>
                     <ValueName>shoplogo</ValueName>
                 </Setting>
             </Settingslink>
-            <Customlink sort="4">
+            <Customlink sort="5">
                 <Name>Zahlungsarten PLUS</Name>
                 <Filename>payment.php</Filename>
             </Customlink>
-            <Customlink sort="5">
+            <Customlink sort="6">
                 <Name>Webhooks PLUS</Name>
                 <Filename>webhooks.php</Filename>
             </Customlink>

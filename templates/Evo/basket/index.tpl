@@ -6,7 +6,7 @@
 
 {if !empty($WarenkorbVersandkostenfreiHinweis) && $Warenkorb->PositionenArr|@count > 0}
     <div class="alert alert-info">
-        <span class="basket_notice">{$WarenkorbVersandkostenfreiHinweis} {$WarenkorbVersandkostenfreiLaenderHinweis|lcfirst}</span>
+        <span class="basket_notice">{$WarenkorbVersandkostenfreiHinweis}</span>
     </div>
 {/if}
 {if $Schnellkaufhinweis}
@@ -46,158 +46,50 @@
     {/if}
     {block name="basket"}
         <div class="basket_wrapper">
-            <form id="cart-form" method="post" action="{get_static_route id='warenkorb.php'}">
-                {$jtl_token}
-                <input type="hidden" name="wka" value="1" />
-                {if $Schnellkaufhinweis}
-                    <div class="alert alert-info">{$Schnellkaufhinweis}</div>
-                {/if}
-                {block name="basket-note"}
-                    <div class="panel-wrap basket-well">
-                        <div class="panel panel-default">
-                            <div class="panel-body">
-                                {include file='checkout/inc_order_items.tpl' tplscope='cart'}
-                                {include file="productdetails/uploads.tpl"}
-
-                                <div class="panel-note">
-                                    <a href="{get_static_route id='bestellvorgang.php'}?wk=1" class="submit btn btn-primary pull-right">{lang key="nextStepCheckout" section="checkout"}</a>
-                                </div>
+            {if $Schnellkaufhinweis}
+                <div class="alert alert-info">{$Schnellkaufhinweis}</div>
+            {/if}
+            <div class="panel-wrap basket-well">
+                {block name="basket-items"}
+                    <form id="cart-form" method="post" action="{get_static_route id='warenkorb.php'}">
+                        {$jtl_token}
+                        <input type="hidden" name="wka" value="1" />
+                        {include file='checkout/inc_order_items.tpl' tplscope='cart'}
+                        {include file="productdetails/uploads.tpl"}
+                    </form>
+                    <div class="next-actions row">
+                        {assign var="showCoupon" value=false}
+                        {if $Einstellungen.kaufabwicklung.warenkorb_kupon_anzeigen === 'Y' && $KuponMoeglich == 1}
+                            {assign var="showCoupon" value=true}
+                            <div class="apply-coupon col-sm-6 col-lg-4">
+                                <form class="form-inline" id="basket-coupon-form" method="post" action="{get_static_route id='warenkorb.php'}">
+                                    {$jtl_token}
+                                    {block name="basket-coupon"}
+                                        <div class="form-group{if !empty($invalidCouponCode) || !empty($cKuponfehler)} has-error{/if}">
+                                            <p class="input-group">
+                                                <input class="form-control" type="text" name="Kuponcode" id="couponCode" maxlength="32" placeholder="{lang key="couponCode" section="account data"}" />
+                                                <span class="input-group-btn">
+                                                    <input class="btn btn-default" type="submit" value="{lang key="useCoupon" section="checkout"}" />
+                                                </span>
+                                            </p>
+                                        </div>
+                                    {/block}
+                                </form>
                             </div>
+                        {/if}
+                        <div class="proceed col-xs-12{if $showCoupon} col-sm-6 col-lg-8{/if}">
+                            <a href="{get_static_route id='bestellvorgang.php'}?wk=1" class="submit btn btn-primary btn-lg pull-right">{lang key="nextStepCheckout" section="checkout"}</a>
                         </div>
                     </div>
                 {/block}
-
-            </form>
-
-            <form id="basket-coupon-form" method="post" action="{get_static_route id='warenkorb.php'}">
-                {$jtl_token}
-                {if $Einstellungen.kaufabwicklung.warenkorb_kupon_anzeigen === 'Y' && $KuponMoeglich == 1}
-                    {block name="basket-coupon"}
-                        <div id="coupon" class="panel panel-default">
-                            <div class="panel-heading"><h4 class="panel-title">{lang key="useCoupon" section="checkout"}</h4>
-                            </div>
-                            <div class="panel-body">
-                                <div class="input-group col-xs-12 col-md-8 col-lg-6 col-xl-4">
-                                    <input class="form-control" type="text" name="Kuponcode" id="couponCode" maxlength="32" placeholder="{lang key="couponCode" section="account data"}" />
-                                    <span class="input-group-btn">
-                                        <input class="btn btn-default" type="submit" value="{lang key="useCoupon" section="checkout"}" />
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    {/block}
-                {/if}
-            </form>
-
-            <form id="basket-shipping-estimate-form" method="post" action="{get_static_route id='warenkorb.php'}">
-                {$jtl_token}
-                {if $Einstellungen.kaufabwicklung.warenkorb_versandermittlung_anzeigen === 'Y'}
-                    {block name="basket-shipping-estimate"}
-
-                        {if !isset($Versandarten) || !$Versandarten}
-                            {block name="basket-shipping-estimate-form"}
-                                <div class="panel panel-default" id="basket-shipping-estimate-form">
-                                    <div class="panel-heading">
-                                        <h4 class="panel-title">{block name="basket-shipping-estimate-form-title"}{lang key="estimateShippingCostsTo" section="checkout"}{/block}</h4>
-                                    </div>
-                                    <div class="panel-body form-inline">
-                                        {block name="basket-shipping-estimate-form-body"}
-                                            <label for="country">{lang key="country" section="account data"}</label>
-                                            <select name="land" id="country" class="form-control">
-                                                {foreach name=land from=$laender item=land}
-                                                    <option value="{$land->cISO}" {if ($Einstellungen.kunden.kundenregistrierung_standardland==$land->cISO && (!isset($smarty.session.Kunde->cLand) || !$smarty.session.Kunde->cLand)) || (isset($smarty.session.Kunde->cLand) && $smarty.session.Kunde->cLand==$land->cISO)}selected{/if}>{$land->cName}</option>
-                                                {/foreach}
-                                            </select>
-                                            &nbsp;
-                                            <label for="plz">{lang key="plz" section="forgot password"}</label>
-                                            <span class="input-group">
-                                                <input type="text" name="plz" maxlength="20" value="{if isset($smarty.session.Kunde->cPLZ)}{$smarty.session.Kunde->cPLZ}{/if}" id="plz" class="form-control" />
-                                                <span class="input-group-btn">
-                                                    <button name="versandrechnerBTN" class="btn btn-default" type="submit">{lang key="estimateShipping" section="checkout"}</button>
-                                                </span>
-                                            </span>
-                                        {/block}
-                                    </div>
-                                </div>
-                            {/block}
-                        {else}
-                            {block name="basket-shipping-estimated"}
-                                <div class="panel panel-default" id="basket-shipping-estimated">
-                                    <div class="panel-heading">
-                                        <h4 class="panel-title">{block name="basket-shipping-estimated-title"}{lang key="estimateShippingCostsTo" section="checkout"} {$Versandland}, {lang key="plz" section="forgot password"} {$VersandPLZ}{/block}</h4>
-                                    </div>
-                                    <div class="panel-body">
-                                        {block name="basket-shipping-estimated-body"}
-                                            {if !empty($Versandarten)}
-                                                {foreach name=versand from=$Versandarten item=versandart}
-                                                    <div class="row">
-                                                        <div class="col-xs-8 col-md-10 col-lg-10">
-                                                            {if !empty($versandart->cBild)}
-                                                                <img src="{$versandart->cBild}" alt="{$versandart->angezeigterName|trans}" />
-                                                            {else}
-                                                                <p>{$versandart->angezeigterName|trans}</p>
-                                                            {/if}
-                                                        </div>
-                                                        <div class="col-xs-4 col-md-2 col-lg-2">
-                                                            <b><small>{$versandart->cPreisLocalized}</small></b>
-                                                        </div>
-                                                    </div>
-                                                    {if isset($versandart->specificShippingcosts_arr)}
-                                                        {foreach name=specificShippingcosts from=$versandart->specificShippingcosts_arr item=specificShippingcosts}
-                                                            <div class="row">
-                                                                <div class="col-xs-8 col-md-10 col-lg-10">
-                                                                    <ul>
-                                                                        <li>
-                                                                            <small>{$specificShippingcosts->cName|trans}</small>
-                                                                        </li>
-                                                                    </ul>
-                                                                </div>
-                                                                <div class="col-xs-4 col-md-2 col-lg-2">
-                                                                    <small>
-                                                                        {$specificShippingcosts->cPreisLocalized}
-                                                                    </small>
-                                                                </div>
-                                                            </div>
-                                                        {/foreach}
-                                                    {/if}
-                                                    {if !empty($versandart->angezeigterHinweistext|trans) && $versandart->angezeigterHinweistext|has_trans}
-                                                        <p>
-                                                            <small>{$versandart->angezeigterHinweistext|trans}</small>
-                                                        </p>
-                                                    {/if}
-                                                    {if isset($versandart->Zuschlag) && $versandart->Zuschlag->fZuschlag != 0}
-                                                        <p>
-                                                            <small>{$versandart->Zuschlag->angezeigterName|trans}
-                                                                (+{$versandart->Zuschlag->cPreisLocalized})
-                                                            </small>
-                                                        </p>
-                                                    {/if}
-                                                    {if !empty($versandart->cLieferdauer|trans) && $Einstellungen.global.global_versandermittlung_lieferdauer_anzeigen === 'Y'}
-                                                        <p>
-                                                            <small>{lang key="shippingTimeLP" section="global"}: {$versandart->cLieferdauer|trans}</small>
-                                                        </p>
-                                                    {/if}
-                                                    {if !$smarty.foreach.versand.last}
-                                                        <hr>
-                                                    {/if}
-                                                {/foreach}
-                                                <a href="{get_static_route id='warenkorb.php'}" class="btn btn-default">{lang key="newEstimation" section="checkout"}</a>
-                                            {else}
-                                                {lang key="noShippingAvailable" section="checkout"}
-                                            {/if}
-                                        {/block}
-                                    </div>
-                                </div>
-                            {/block}
-                        {/if}
-
-                        {if !empty($cErrorVersandkosten)}
-                            <div class="alert alert-info">{$cErrorVersandkosten}</div>
-                        {/if}
-
-                    {/block}
-                {/if}
-            </form>
+            </div>
+            <hr>
+            {if $Einstellungen.kaufabwicklung.warenkorb_versandermittlung_anzeigen === 'Y'}
+                <form id="basket-shipping-estimate-form" method="post" action="{get_static_route id='warenkorb.php'}">
+                    {$jtl_token}
+                    {include file='snippets/shipping_calculator.tpl' checkout=true}
+                </form>
+            {/if}
 
             {if $oArtikelGeschenk_arr|@count > 0}
                 {block name="basket-freegift"}

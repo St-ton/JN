@@ -113,7 +113,7 @@ class MoneyBookersQC extends ServerPaymentMethod
         $paymentHash = $this->generateHash($order, 32);
         $cReturnURL  = $this->getReturnURL($order);
 
-        if ($_SESSION['Zahlungsart']->nWaehrendBestellung == 1) {
+        if (isset($_SESSION['Zahlungsart']->nWaehrendBestellung) && $_SESSION['Zahlungsart']->nWaehrendBestellung == 1) {
             $cReturnURL = $this->getNotificationURL($paymentHash);
         }
 

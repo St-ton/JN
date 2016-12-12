@@ -124,12 +124,15 @@ if (isset($_POST['abonnieren']) && intval($_POST['abonnieren']) === 1) {
         $smarty->assign('oPlausi', fuegeNewsletterEmpfaengerEin($oKunde, true));
         Shop::DB()->delete('tnewsletterempfaengerblacklist', 'cMail', $oKunde->cEmail);
     } else {
-        $cFehler .= (empty($_POST['cEmail'])) ?
-            (Shop::Lang()->get('invalidEmail', 'global') . '<br />') :
-            (Shop::Lang()->get('kwkEmailblocked', 'errorMessages') . '<br />');
+        $cFehler .= (valid_email($_POST['cEmail'])) ?
+            (Shop::Lang()->get('kwkEmailblocked', 'errorMessages') . '<br />') :
+            (Shop::Lang()->get('invalidEmail', 'global') . '<br />');
     }
 
     $smarty->assign('cPost_arr', StringHandler::filterXSS($_POST));
+} elseif (isset($_POST['abonnieren']) && intval($_POST['abonnieren']) === 2) { // weiterleitung vom Footer zu newsletter.php
+    $oPlausi->cPost_arr['cEmail'] = (isset($_POST['cEmail'])) ? StringHandler::filterXSS(Shop::DB()->escape(strip_tags($_POST['cEmail']))) : null;
+    $smarty->assign('oPlausi', $oPlausi);
 } elseif (isset($_POST['abmelden']) && intval($_POST['abmelden']) === 1) { // Abmelden
     if (valid_email($_POST['cEmail'])) {
         // Pruefen, ob Email bereits vorhanden
@@ -175,8 +178,7 @@ if (isset($_POST['abonnieren']) && intval($_POST['abonnieren']) === 1) {
     $oNewsletterHistory = Shop::DB()->query(
         "SELECT kNewsletterHistory, nAnzahl, cBetreff, DATE_FORMAT(dStart, '%d.%m.%Y %H:%i') AS Datum, cHTMLStatic, cKundengruppeKey
             FROM tnewsletterhistory
-            WHERE kNewsletterHistory = " . $kNewsletterHistory . "
-            ", 1
+            WHERE kNewsletterHistory = " . $kNewsletterHistory, 1
     );
     $kKundengruppe = 0;
     if (isset($_SESSION['Kunde']->kKundengruppe) && intval($_SESSION['Kunde']->kKundengruppe) > 0) {

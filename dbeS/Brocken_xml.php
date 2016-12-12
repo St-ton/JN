@@ -31,7 +31,7 @@ if (auth()) {
             Shop::DB()->update('tbrocken', 'cBrocken', $oBrocken->cBrocken, (object)['cBrocken' => $cBrocken, 'dErstellt' => 'now()']);
         }
         $return = 0;
-        Shop::Cache()->flushTags(array(CACHING_GROUP_CORE));
+        Shop::Cache()->flushTags([CACHING_GROUP_CORE]);
     }
 }
 

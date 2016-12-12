@@ -118,6 +118,26 @@ function normalizeDate($string)
 }
 
 /**
+ * @param string $cKuponTyp
+ * @param array $columns
+ * @param string $cWhereSQL
+ * @param string $cOrderSQL
+ * @param string $cLimitSQL
+ * @return array|int|object
+ */
+function getRawCoupons($cKuponTyp = 'standard', $columns = [], $cWhereSQL = '', $cOrderSQL = '', $cLimitSQL = '')
+{
+    return Shop::DB()->query("
+        SELECT " . (count($columns) > 0 ? implode(',', $columns) : '*') . "
+            FROM tkupon
+            WHERE cKuponTyp = '" . Shop::DB()->escape($cKuponTyp) . "' " .
+            ($cWhereSQL !== '' ? " AND " . $cWhereSQL : "") .
+            ($cOrderSQL !== '' ? " ORDER BY " . $cOrderSQL : "") .
+            ($cLimitSQL !== '' ? " LIMIT " . $cLimitSQL : ""),
+        2);
+}
+
+/**
  * Get instances of existing coupons, each with some enhanced information that can be displayed
  * 
  * @param string $cKuponTyp
@@ -128,14 +148,7 @@ function normalizeDate($string)
  */
 function getCoupons($cKuponTyp = 'standard', $cWhereSQL = '', $cOrderSQL = '', $cLimitSQL = '')
 {
-    $oKuponDB_arr = Shop::DB()->query("
-        SELECT kKupon
-            FROM tkupon
-            WHERE cKuponTyp = '" . Shop::DB()->escape($cKuponTyp) . "'" .
-            ($cWhereSQL !== '' ? " AND " . $cWhereSQL : "") .
-            ($cOrderSQL !== '' ? " ORDER BY " . $cOrderSQL : "") .
-            ($cLimitSQL !== '' ? " LIMIT " . $cLimitSQL : ""),
-        2);
+    $oKuponDB_arr = getRawCoupons($cKuponTyp, ['kKupon'], $cWhereSQL, $cOrderSQL, $cLimitSQL);
     $oKupon_arr   = array();
 
     if (is_array($oKuponDB_arr)) {
@@ -507,7 +520,7 @@ function informCouponCustomers($oKupon)
     $oStdWaehrung = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
 
     // Artikel Default Optionen
-    $oArtikelOptions = Artikel::getDefaultOptions();
+    $defaultOptions = Artikel::getDefaultOptions();
 
     // lokalisierter Kuponwert und MBW
     $oKupon->cLocalizedWert = ($oKupon->cWertTyp === 'festpreis') ?
@@ -567,7 +580,7 @@ function informCouponCustomers($oKupon)
         $oArtikel_arr = array();
         foreach ($oArtikelDB_arr as $oArtikelDB) {
             $oArtikel = new Artikel();
-            $oArtikel->fuelleArtikel($oArtikelDB->kArtikel, $oArtikelOptions, $oKunde->kKundengruppe, $oKunde->kSprache, true);
+            $oArtikel->fuelleArtikel($oArtikelDB->kArtikel, $defaultOptions, $oKunde->kKundengruppe, $oKunde->kSprache, true);
             $oArtikel_arr[] = $oArtikel;
         }
 

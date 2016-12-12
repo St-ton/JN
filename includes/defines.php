@@ -24,7 +24,6 @@ ifndef('PROFILE_PLUGINS', false);
 ifndef('PROFILE_SHOP', false);
 ifndef('PROFILE_QUERIES', false);
 ifndef('PROFILE_QUERIES_ECHO', false);
-ifndef('SHOW_PAGE_CACHE', false);
 ifndef('IO_LOG_CONSOLE', false);
 // PHP memory_limit work around
 if (intval(str_replace('M', '', ini_get('memory_limit'))) < 64) {
@@ -156,6 +155,8 @@ ifndef('BILD_KEIN_HERSTELLERBILD_VORHANDEN', PFAD_GFX . 'keinBild.gif');
 ifndef('BILD_KEIN_MERKMALBILD_VORHANDEN', PFAD_GFX . 'keinBild.gif');
 ifndef('BILD_KEIN_MERKMALWERTBILD_VORHANDEN', PFAD_GFX . 'keinBild_kl.gif');
 ifndef('BILD_UPLOAD_ZUGRIFF_VERWEIGERT', PFAD_GFX . 'keinBild.gif');
+//MediaImage Regex
+ifndef('MEDIAIMAGE_REGEX', '/^media\/image\/(?P<type>product|category|variation|manufacturer)\/(?P<id>\d+)\/(?P<size>xs|sm|md|lg)\/(?P<name>[a-zA-Z0-9\-_]+)(?:(?:~(?P<number>\d+))?)\.(?P<ext>jpg|jpeg|png|gif)$/');
 // Suchcache Lebensdauer in Minuten nach letzter Artikeländerung durch JTL-Wawi
 ifndef('SUCHCACHE_LEBENSDAUER', 60);
 // Customer max order count
@@ -167,6 +168,11 @@ ifndef('JTLLOG_MAX_LOGSIZE', 200000);
 ifndef('PCLZIP_TEMPORARY_DIR', PFAD_ROOT . PFAD_COMPILEDIR);
 
 ifndef('IMAGE_PRELOAD_LIMIT', 10);
+//when the shop has up to n categories, all category data will be loaded by KategorieHelper::combinedGetAll()
+//with more then n categories, some db fields will only be selected if the corresponding options are active
+ifndef('CATEGORY_FULL_LOAD_LIMIT', 1000);
+
+ifndef('UNIFY_CACHE_IDS', false);
 
 /**
  * @param string     $constant

@@ -20,8 +20,8 @@ function gibVaterSQL()
  */
 function gibTopAngebote($nLimit, $kKundengruppe = 0)
 {
-    $kKundengruppe = (int) $kKundengruppe;
-    $nLimit        = (int) $nLimit;
+    $kKundengruppe = (int)$kKundengruppe;
+    $nLimit        = (int)$nLimit;
     if (!$nLimit) {
         $nLimit = 20;
     }
@@ -66,8 +66,8 @@ function array_random_assoc($arr, $num = 1)
  */
 function gibBestseller($nLimit, $kKundengruppe = 0)
 {
-    $kKundengruppe = (int) $kKundengruppe;
-    $nLimit        = (int) $nLimit;
+    $kKundengruppe = (int)$kKundengruppe;
+    $nLimit        = (int)$nLimit;
     if (!$nLimit) {
         $nLimit = 20;
     }
@@ -102,8 +102,8 @@ function gibBestseller($nLimit, $kKundengruppe = 0)
  */
 function gibSonderangebote($nLimit, $kKundengruppe = 0)
 {
-    $kKundengruppe = (int) $kKundengruppe;
-    $nLimit        = (int) $nLimit;
+    $kKundengruppe = (int)$kKundengruppe;
+    $nLimit        = (int)$nLimit;
     if (!$nLimit) {
         $nLimit = 20;
     }
@@ -148,7 +148,7 @@ function gibNeuImSortiment($nLimit, $kKundengruppe = 0)
     }
     $config     = Shop::getSettings(array(CONF_BOXEN));
     $nAlterTage = ($config['boxen']['box_neuimsortiment_alter_tage'] > 0) ?
-        (int) $config['boxen']['box_neuimsortiment_alter_tage'] :
+        (int)$config['boxen']['box_neuimsortiment_alter_tage'] :
         30;
     $new = Shop::DB()->query(
         "SELECT tartikel.kArtikel

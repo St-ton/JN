@@ -34,7 +34,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
 
         /**
          * @access protected
-         * @var enum
+         * @var string
          */
         protected $eFunktion;
 
@@ -47,7 +47,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         /**
          * Constructor
          *
-         * @param int kRMAStatus primarykey
+         * @param int $kRMAStatus
          * @access public
          */
         public function __construct($kRMAStatus = 0)
@@ -60,7 +60,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
         /**
          * Loads database member into class member
          *
-         * @param int $kRMAStatus primarykey
+         * @param int $kRMAStatus
          * @access private
          */
         private function loadFromDB($kRMAStatus)
@@ -268,9 +268,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_RMA)) {
                 if ($kRMAStatus > 0) {
                     return $bPrimary ? $kRMAStatus : true;
                 }
-            } else {
-                return $cPlausi_arr;
             }
+
+            return $cPlausi_arr;
         }
 
         /**

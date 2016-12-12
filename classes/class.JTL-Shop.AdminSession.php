@@ -1,4 +1,8 @@
 <?php
+/**
+ * @copyright (c) JTL-Software-GmbH
+ * @license http://jtl-url.de/jtlshoplicense
+ */
 
 /**
  * Class AdminSession
@@ -16,7 +20,7 @@ class AdminSession
     private static $_instance = null;
 
     /**
-     * @return Session
+     * @return AdminSession
      */
     public static function getInstance()
     {
@@ -96,7 +100,7 @@ class AdminSession
         }
         if (!isset($_SESSION['kSprache'])) {
             $lang                 = Shop::DB()->select('tsprache', 'cISO', 'ger');
-            $_SESSION['kSprache'] = (isset($lang->kSprache)) ? (int) $lang->kSprache : 1;
+            $_SESSION['kSprache'] = (isset($lang->kSprache)) ? (int)$lang->kSprache : 1;
         }
     }
 

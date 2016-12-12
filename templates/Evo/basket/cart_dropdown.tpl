@@ -14,7 +14,7 @@
                             {$oPosition->nAnzahl|replace_delim} {if $oPosition->cEinheit|strlen > 0} {$oPosition->cEinheit}{else} &times; {/if}
                         </td>
                         <td class="item-name">
-                            <a href="{$oPosition->Artikel->cURL}" title="{$oPosition->cName|trans|escape:"quotes"}">
+                            <a href="{$oPosition->Artikel->cURL}" title="{$oPosition->cName|trans|escape:"html"}">
                                 {$oPosition->cName|trans}
                             </a>
                         </td>
@@ -36,7 +36,7 @@
                     <td class="text-nowrap text-right"><strong>{$WarensummeLocalized[$NettoPreise]}</strong></td>
                 </tr>
             {/if}
-            {if $Einstellungen.global.global_steuerpos_anzeigen !== 'N' && $Steuerpositionen|@count > 0}
+            {if $Einstellungen.global.global_steuerpos_anzeigen !== 'N' && isset($Steuerpositionen) && $Steuerpositionen|@count > 0}
                 {foreach name=steuerpositionen from=$Steuerpositionen item=Steuerposition}
                     <tr class="text-muted tax">
                         <td colspan="3">{$Steuerposition->cName}</td>
@@ -51,7 +51,11 @@
             </tfoot>
         </table>
         {if !empty($WarenkorbVersandkostenfreiHinweis)}
-            <p class="small text-muted">{$WarenkorbVersandkostenfreiHinweis} <a href="{if !empty($oSpezialseiten_arr) && isset($oSpezialseiten_arr[6])}{$oSpezialseiten_arr[6]->cURL}{else}#{/if}" data-toggle="tooltip"  data-placement="bottom" title="{$WarenkorbVersandkostenfreiLaenderHinweis}"><i class="fa fa-info-circle"></i></a></p>
+            <p class="small text-muted">{$WarenkorbVersandkostenfreiHinweis|truncate:120:"..."}
+                <a href="{if !empty($oSpezialseiten_arr) && isset($oSpezialseiten_arr[6])}{$oSpezialseiten_arr[6]->cURL}{else}#{/if}" data-toggle="tooltip"  data-placement="bottom" title="{lang section="login" key="shippingInfo"}">
+                    <i class="fa fa-info-circle"></i>
+                </a>
+            </p>
         {/if}
         <div class="btn-group btn-group-justified btn-group-full">
             <a href="{get_static_route id='warenkorb.php'}" class="btn btn-primary"><i class="fa fa-shopping-cart"></i> {lang key="gotoBasket"}</a>

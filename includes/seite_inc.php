@@ -85,13 +85,14 @@ function gibAuswahlAssistentFragen($Einstellungen)
 
         if (function_exists('gibAAFrage')) {
             $oSpracheStd            = gibStandardsprache(true);
-            $oAuswahlAssistentFrage = gibAAFrage($_SESSION['AuswahlAssistent']['nFrage'], $_SESSION['kSprache'], $oSpracheStd->kSprache);
 
-            return $oAuswahlAssistentFrage;
+            return gibAAFrage($_SESSION['AuswahlAssistent']['nFrage'], $_SESSION['kSprache'], $oSpracheStd->kSprache);
         }
     } else {
         unset($_SESSION['AuswahlAssistent']);
     }
+
+    return null;
 }
 
 /**
@@ -357,12 +358,7 @@ function gibTagging($Einstellungen)
  */
 function gibNewsletterHistory()
 {
-    $oNewsletterHistory_arr = Shop::DB()->query(
-        "SELECT kNewsletterHistory, cBetreff, DATE_FORMAT(dStart, '%d.%m.%Y %H:%i') AS Datum, cHTMLStatic
-            FROM tnewsletterhistory
-            WHERE kSprache = " . (int)$_SESSION['kSprache'] . "
-            ORDER BY dStart DESC", 2
-    );
+    $oNewsletterHistory_arr = Shop::DB()->selectAll('tnewsletterhistory', 'kSprache', (int)$_SESSION['kSprache'], 'kNewsletterHistory, cBetreff, DATE_FORMAT(dStart, \'%d.%m.%Y %H:%i\') AS Datum, cHTMLStatic', 'dStart DESC');
     // URLs bauen
     if (is_array($oNewsletterHistory_arr) && count($oNewsletterHistory_arr) > 0) {
         foreach ($oNewsletterHistory_arr as $i => $oNewsletterHistory) {
@@ -378,8 +374,9 @@ function gibNewsletterHistory()
  */
 function gibSitemapKategorien()
 {
-    $oKategorieliste = new KategorieListe();
-    $oKategorieliste->holKategorienAufEinenBlick(3, $_SESSION['Kundengruppe']->kKundengruppe, $_SESSION['kSprache']);
+    $helper                    = KategorieHelper::getInstance();
+    $oKategorieliste           = new KategorieListe();
+    $oKategorieliste->elemente = $helper->combinedGetAll();
 
     return $oKategorieliste;
 }
@@ -712,9 +709,10 @@ function gibGratisGeschenkArtikel($Einstellungen)
     );
 
     if (is_array($oArtikelGeschenkTMP_arr) && count($oArtikelGeschenkTMP_arr) > 0) {
+        $defaultOptions = Artikel::getDefaultOptions();
         foreach ($oArtikelGeschenkTMP_arr as $i => $oArtikelGeschenkTMP) {
             $oArtikel = new Artikel();
-            $oArtikel->fuelleArtikel($oArtikelGeschenkTMP->kArtikel, Artikel::getDefaultOptions());
+            $oArtikel->fuelleArtikel($oArtikelGeschenkTMP->kArtikel, $defaultOptions);
             $oArtikel->cBestellwert = gibPreisStringLocalized(doubleval($oArtikelGeschenkTMP->cWert));
 
             if ($oArtikel->kEigenschaftKombi > 0 || !is_array($oArtikel->Variationen) || count($oArtikel->Variationen) === 0) {

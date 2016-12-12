@@ -94,7 +94,7 @@ class Staat
      */
     public function setStaat($kStaat)
     {
-        $this->kStaat = (int) $kStaat;
+        $this->kStaat = (int)$kStaat;
 
         return $this;
     }
@@ -187,7 +187,7 @@ class Staat
             }
         }
 
-        return;
+        return null;
     }
 
     /**
@@ -210,6 +210,6 @@ class Staat
             }
         }
 
-        return;
+        return null;
     }
 }

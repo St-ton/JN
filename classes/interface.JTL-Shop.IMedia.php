@@ -6,13 +6,13 @@
 interface IMedia
 {
     /**
-     * @param $request
+     * @param string $request
      * @return mixed
      */
     public function isValid($request);
 
     /**
-     * @param $request
+     * @param string $request
      * @return mixed
      */
     public function handle($request);

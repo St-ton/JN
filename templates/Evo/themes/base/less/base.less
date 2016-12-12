@@ -455,6 +455,9 @@ hr.hr-sm {
 
 .item_desc.custom_content {
     margin-bottom: 25px;
+    ul {
+        overflow: hidden;
+    }
 }
 
 /* SIDEBAR */
@@ -562,6 +565,32 @@ ul.filter_state li a.active:before {
     > .carousel.slide {
         overflow: hidden;
         text-align: center;
+    }
+}
+
+.theme-dark, .theme-light {
+    &.slider-wrapper.control-nav,
+    &.slider-wrapper.direction-nav {
+        position: relative;
+        padding-bottom: 30px;
+
+        .nivo-controlNav {
+            position: absolute;
+            bottom: 5px;
+        }
+    }
+
+    &.slider-wrapper.thumbnail-nav {
+        padding-bottom: 10px;
+
+        .nivo-controlNav {
+            position: relative;
+            bottom: auto;
+
+            a {
+                margin-bottom: 0;
+            }
+        }
     }
 }
 
@@ -979,6 +1008,10 @@ table.matrix tbody>tr>td {
     border-radius: 2px;
 }
 
+.banner .img-responsive{
+    width: 100%;
+}
+
 .backstretch {
     left: 0;
     top: 0;
@@ -1163,6 +1196,11 @@ table.matrix tbody>tr>td {
     .form-group {
         margin-top: @panel-body-padding;
     }
+}
+
+#navbar-filter .dropdown-menu span.value,
+.box .nav-list span.value{
+    padding-right:45px;
 }
 
 @media(max-width: 480px) {
@@ -1399,7 +1437,6 @@ fieldset {
 
         .panel-title {
             font-size: @font-size-base;
-            padding-bottom: 5px;
         }
         a {
             color: lighten(@footer-bg,50%);
@@ -1487,14 +1524,6 @@ fieldset {
 /* Order confirm fix */
 
 @media (max-width: 480px) {
-    #order-confirm {
-        > .panel > .panel-body {
-            padding: 0;
-        }
-        &.col-xs-12, .col-xs-6 {
-            padding: 0;
-        }
-    }
     .order-submit {
         padding: 0;
 
@@ -1680,12 +1709,6 @@ fieldset {
 .navbar-form.navbar-left.filter-select {
     margin-left: 5px;
     margin-right: 10px;
-}
-
-.panel.panel-blank {
-    border: none!important;
-    box-shadow: none!important;
-    background-color: transparent;
 }
 
 /* product variations */
@@ -3008,7 +3031,23 @@ header.fixed-navbar {
 /*Artikel Bilder Slider Start*/
 .slick-up:before {content: '\2190';}
 .stick-down:before {content: '\2192';}
-.slick-up, .stick-down {outline: none;font-family: "slick";background:transparent;border:none;font-size: 20px;line-height: 1;padding:0px;width:19px;height:19px;color: #ccc;opacity: 0.75;}
+.slick-up, .stick-down {
+    outline: none;
+    font-family: "slick";
+    background: transparent;
+    border: none;
+    font-size: 20px;
+    line-height: 1;
+    padding: 0;
+    width: 19px;
+    height: 19px;
+    color: #ccc;
+    opacity: 0.75;
+
+    &:hover{
+        opacity: 1;
+    }
+}
 .btn-gallery-left {left:0px;z-index:5;position:absolute;}
 .btn-gallery-right {right:0px;z-index:5;position:absolute;}
 .btn-gallery-up {top:0px;z-index:5;position:absolute;transform:rotate(90deg);}

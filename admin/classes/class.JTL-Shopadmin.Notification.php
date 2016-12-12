@@ -83,6 +83,7 @@ class Notification implements IteratorAggregate, Countable
      */
     public function buildDefault()
     {
+        /** @var Status $status */
         $status     = Status::getInstance();
         $confGlobal = Shop::getSettings(array(CONF_GLOBAL));
 
@@ -102,6 +103,14 @@ class Notification implements IteratorAggregate, Countable
             $this->add(NotificationEntry::TYPE_WARNING, 'Template', 'Ihre Template-Version unterscheidet sich von Ihrer Shop-Version.<br />Weitere Hilfe zu Template-Updates finden Sie im <i class="fa fa-external-link"></i> Wiki', 'shoptemplate.php');
         }
 
+        if ($status->hasMobileTemplateIssue()) {
+            $this->add(NotificationEntry::TYPE_INFO, 'Template', 'Sie nutzen ein Full-Responsive-Template. Die Aktivierung eines separaten Mobile-Templates ist in diesem Fall nicht notwendig.', 'shoptemplate.php');
+        }
+
+        if ($status->hasStandardTemplateIssue()) {
+            $this->add(NotificationEntry::TYPE_WARNING, 'Template', 'Sie haben kein Standard-Template aktiviert!', 'shoptemplate.php');
+        }
+
         if ($status->hasActiveProfiler()) {
             $this->add(NotificationEntry::TYPE_WARNING, 'Plugin', 'Der Profiler ist aktiv. Dies kann zu starken Leistungseinbu&szlig;en im Shop f&uuml;hren.');
         }
@@ -111,8 +120,8 @@ class Notification implements IteratorAggregate, Countable
         }
 
         if ($subscription = $status->getSubscription()) {
-            if ((int) $subscription->bUpdate === 1) {
-                if ((int) $subscription->nDayDiff <= 0) {
+            if ((int)$subscription->bUpdate === 1) {
+                if ((int)$subscription->nDayDiff <= 0) {
                     $this->add(NotificationEntry::TYPE_WARNING, 'Subscription', 'Ihre Subscription ist abgelaufen. Jetzt erneuern.', 'http://jtl-url.de/subscription');
                 } else {
                     $this->add(NotificationEntry::TYPE_INFO, 'Subscription', "Ihre Subscription l&auml;uft in {$subscription->nDayDiff} Tagen ab.", 'http://jtl-url.de/subscription');

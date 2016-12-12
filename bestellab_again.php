@@ -19,8 +19,8 @@ $bestellung->fuelleBestellung();
 
 //abfragen, ob diese Bestellung dem Kunden auch gehoert
 //bei Gastbestellungen ist ggf das Kundenobjekt bereits entfernt bzw nRegistriert = 0
-if (isset($bestellung->oKunde) && (int) $bestellung->oKunde->nRegistriert === 1) {
-    if ((int) $bestellung->kKunde !== (int) $_SESSION['Kunde']->kKunde) {
+if (isset($bestellung->oKunde) && (int)$bestellung->oKunde->nRegistriert === 1) {
+    if ((int)$bestellung->kKunde !== (int)$_SESSION['Kunde']->kKunde) {
         header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true), true, 303);
         exit;
     }
@@ -173,11 +173,6 @@ if ($kPlugin > 0) {
 } elseif ($bestellung->Zahlungsart->cModulId === 'za_safetypay') {
     require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'safetypay/confirmation.php';
     $smarty->assign('safetypay_form', show_confirmation($bestellung));
-} elseif ($bestellung->Zahlungsart->cModulId === 'za_heidelpay_jtl') {
-    require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'heidelpay/HeidelPay.class.php';
-    $paymentMethod           = new HeidelPay($bestellung->Zahlungsart->cModulId);
-    $paymentMethod->cModulId = $bestellung->Zahlungsart->cModulId;
-    $paymentMethod->preparePaymentProcess($bestellung);
 } elseif ($bestellung->Zahlungsart->cModulId === 'za_wirecard_jtl') {
     require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'wirecard/Wirecard.class.php';
     $paymentMethod           = new Wirecard($bestellung->Zahlungsart->cModulId);

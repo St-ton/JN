@@ -27,13 +27,14 @@ if (strlen(verifyGPCDataInteger('nLevel')) > 0) {
     $nLevel = verifyGPCDataInteger('nLevel');
 }
 if (isset($_POST['einstellungen']) && intval($_POST['einstellungen']) === 1 && validateToken()) {
-    Shop::DB()->query("DELETE FROM teinstellungen WHERE kEinstellungenSektion = 1 AND cName = 'systemlog_flag'", 3);
-    if (isset($_POST['nFlag']) && count($_POST['nFlag']) > 0) {
-        $nFlag_arr = array_map('cleanSystemFlag', $_POST['nFlag']);
-        Shop::DB()->query("INSERT INTO teinstellungen (kEinstellungenSektion, cName, cWert) VALUES(1, 'systemlog_flag', " . Jtllog::setBitFlag($nFlag_arr) . ")", 3);
-    } else {
-        Shop::DB()->query("INSERT INTO teinstellungen (kEinstellungenSektion, cName, cWert) VALUES(1, 'systemlog_flag', 0)", 3);
-    }
+    Shop::DB()->delete('teinstellungen', ['kEinstellungenSektion', 'cName'], [1, 'systemlog_flag']);
+    $ins                        = new stdClass();
+    $ins->kEinstellungenSektion = 1;
+    $ins->cName                 = 'systemlog_flag';
+    $ins->cWert                 = (isset($_POST['nFlag']) && count($_POST['nFlag']) > 0)
+        ? Jtllog::setBitFlag(array_map('cleanSystemFlag', $_POST['nFlag']))
+        : 0;
+    Shop::DB()->insert('teinstellungen', $ins);
     Shop::Cache()->flushTags(array(CACHING_GROUP_OPTION));
 
     $cHinweis = 'Ihre Einstellungen wurden erfolgreich gespeichert.';

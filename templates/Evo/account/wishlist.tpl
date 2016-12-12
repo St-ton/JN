@@ -127,7 +127,7 @@
                         </div>
                     {else}
                         <button type="submit" name="nstd" value="1" class="btn btn-sm btn-default">
-                            <span class="fa fa-eye"></span> {lang key="wishlistSetPublic" section="login"}
+                            <i class="fa fa-eye"></i> <span class="hidden-xs">{lang key="wishlistSetPublic" section="login"}</span>
                         </button>
                     {/if}
                 {/block}

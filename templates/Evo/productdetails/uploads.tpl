@@ -125,7 +125,7 @@
                 {foreach from=$oUploadSchema->oUpload_arr item=oUpload name=upload}
                 <div class="row">
                     {if !empty($oUpload->cName) || !empty($oUpload->cBeschreibung)}
-                        <div class="col-xs-4">
+                        <div class="col-xs-6">
                             {if !empty($oUpload->cName)}
                                 <p class="upload_title">{$oUpload->cName}</p>
                             {/if}
@@ -134,7 +134,7 @@
                             {/if}
                         </div>
                     {/if}
-                    <div class="col-xs-8 word-break">
+                    <div class="col-xs-6 word-break">
                         <div id="queue{$smarty.foreach.schema.index}{$smarty.foreach.upload.index}" style="margin-bottom: 15px;" class="uploadifyMsg {if isset($smarty.get.fillOut) && $smarty.get.fillOut == 12 && ($oUpload->nPflicht && !$oUpload->bVorhanden)}alert-danger{/if}{if $oUpload->bVorhanden}alert-success{/if}">
                             {if isset($smarty.get.fillOut) && $smarty.get.fillOut == 12 && ($oUpload->nPflicht && !$oUpload->bVorhanden)}
                                 {lang key="selectUpdateFile"}

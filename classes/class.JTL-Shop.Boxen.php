@@ -1450,7 +1450,7 @@ class Boxen
      */
     public function holeContainer($ePosition)
     {
-        return Shop::DB()->selectAll('tboxen', ['kBoxvorlage', 'ePosition'], [0, $ePosition], 'kBox', 'ePosition ASC');
+        return Shop::DB()->selectAll('tboxen', ['kBoxvorlage', 'ePosition'], [0, $ePosition], 'kBox', 'kBox ASC');
     }
 
     /**

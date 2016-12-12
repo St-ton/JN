@@ -411,7 +411,7 @@
                     <input 
                     type="date"
                     name="geburtstag" 
-                    value="{if isset($Kunde->dGeburtstag) && $Kunde->dGeburtstag !== '00.00.0000'}{$Kunde->dGeburtstag}{/if}"
+                    value="{if isset($Kunde->dGeburtstag) && $Kunde->dGeburtstag !== '00.00.0000'}{$Kunde->dGeburtstag|date_format:"%Y-%m-%d"}{/if}"
                     id="birthday" 
                     class="birthday form-control" 
                     placeholder="{lang key="birthday" section="account data"}" 

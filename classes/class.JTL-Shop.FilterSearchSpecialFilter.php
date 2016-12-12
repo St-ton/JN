@@ -10,6 +10,11 @@
 class FilterSearchSpecialFilter extends AbstractFilter implements IFilter
 {
     /**
+     * @var bool
+     */
+    public $isCustom = false;
+
+    /**
      * @var int
      */
     public $kKey = 0;

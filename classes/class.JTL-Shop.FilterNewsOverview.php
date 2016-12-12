@@ -10,6 +10,11 @@
 class FilterNewsOverview extends AbstractFilter implements IFilter
 {
     /**
+     * @var bool
+     */
+    public $isCustom = false;
+
+    /**
      * @var int
      */
     public $kNewsMonatsUebersicht = 0;

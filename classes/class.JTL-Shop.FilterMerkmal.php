@@ -10,6 +10,11 @@
 class FilterMerkmal extends AbstractFilter implements IFilter
 {
     /**
+     * @var bool
+     */
+    public $isCustom = false;
+
+    /**
      * @var int
      */
     public $kMerkmalWert = 0;

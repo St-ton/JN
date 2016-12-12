@@ -16,6 +16,11 @@ abstract class AbstractFilter implements IFilter
     const FILTER_TYPE_AND = 1;
 
     /**
+     * @var bool
+     */
+    public $isCustom = true;
+
+    /**
      * @var Navigationsfilter
      */
     public $navifilter;
@@ -153,5 +158,13 @@ abstract class AbstractFilter implements IFilter
     public function getUrlParam()
     {
         return $this->urlParam;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isCustom()
+    {
+        return $this->isCustom;
     }
 }

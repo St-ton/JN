@@ -10,6 +10,11 @@
 class FilterTag extends AbstractFilter implements IFilter
 {
     /**
+     * @var bool
+     */
+    public $isCustom = false;
+
+    /**
      * @var int
      */
     public $kTag = 0;

@@ -10,6 +10,11 @@
 class FilterRating extends AbstractFilter implements IFilter
 {
     /**
+     * @var bool
+     */
+    public $isCustom = false;
+
+    /**
      * @var int
      */
     public $nSterne = 0;

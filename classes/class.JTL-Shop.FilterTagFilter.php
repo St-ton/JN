@@ -10,6 +10,11 @@
 class FilterTagFilter extends FilterTag
 {
     /**
+     * @var bool
+     */
+    public $isCustom = false;
+
+    /**
      * @return string
      */
     public function getSQLCondition()

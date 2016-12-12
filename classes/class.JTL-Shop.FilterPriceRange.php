@@ -10,6 +10,11 @@
 class FilterPriceRange extends AbstractFilter implements IFilter
 {
     /**
+     * @var bool
+     */
+    public $isCustom = false;
+
+    /**
      * @var float
      */
     public $fVon;

@@ -10,6 +10,11 @@
 class FilterNews extends AbstractFilter implements IFilter
 {
     /**
+     * @var bool
+     */
+    public $isCustom = false;
+
+    /**
      * @var int
      */
     public $kNews = 0;

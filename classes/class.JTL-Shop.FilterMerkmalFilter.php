@@ -10,6 +10,11 @@
 class FilterMerkmalFilter extends FilterMerkmal
 {
     /**
+     * @var bool
+     */
+    public $isCustom = false;
+
+    /**
      * @var string
      */
     public $cWert;

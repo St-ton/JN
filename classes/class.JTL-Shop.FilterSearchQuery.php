@@ -10,6 +10,11 @@
 class FilterSearchQuery extends AbstractFilter implements IFilter
 {
     /**
+     * @var bool
+     */
+    public $isCustom = false;
+
+    /**
      * @var int
      */
     public $kSuchanfrage = 0;

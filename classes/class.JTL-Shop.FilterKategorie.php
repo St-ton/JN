@@ -15,6 +15,11 @@ class FilterKategorie extends AbstractFilter implements IFilter
     public $kKategorie;
 
     /**
+     * @var bool
+     */
+    public $isCustom = false;
+
+    /**
      * @param int $id
      * @return $this
      */

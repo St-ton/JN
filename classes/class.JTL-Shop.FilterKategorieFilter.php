@@ -10,6 +10,11 @@
 class FilterKategorieFilter extends FilterKategorie
 {
     /**
+     * @var bool
+     */
+    public $isCustom = false;
+
+    /**
      * @return string
      */
     public function getSQLCondition()

@@ -10,6 +10,11 @@
 class FilterNewsCategory extends AbstractFilter implements IFilter
 {
     /**
+     * @var bool
+     */
+    public $isCustom = false;
+
+    /**
      * @var int
      */
     public $kNewsKategorie = 0;

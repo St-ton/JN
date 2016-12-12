@@ -10,6 +10,11 @@
 class FilterHerstellerFilter extends FilterHersteller
 {
     /**
+     * @var bool
+     */
+    public $isCustom = false;
+
+    /**
      * @return string
      */
     public function getPrimaryKeyRow()

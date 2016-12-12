@@ -409,7 +409,7 @@
                 <div class="form-group float-label-control{if isset($fehlendeAngaben.geburtstag)} has-error{/if}{if $Einstellungen.kunden.kundenregistrierung_abfragen_geburtstag === 'Y'} required{/if}">
                     <label class="control-label" for="birthday">{lang key="birthday" section="account data"}</label>
                     <input 
-                    type="text" 
+                    type="date"
                     name="geburtstag" 
                     value="{if isset($Kunde->dGeburtstag) && $Kunde->dGeburtstag !== '00.00.0000'}{$Kunde->dGeburtstag}{/if}"
                     id="birthday" 

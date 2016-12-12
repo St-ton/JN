@@ -154,13 +154,13 @@
             {*/.navbar-collapse*}
         </nav>
         </div>{* /collapse *}
-        {if $NaviFilter->nAnzahlFilter > 0}
+        {if $NaviFilter->getFilterCount() > 0}
             <div class="clearfix top10"></div>
                 <div class="active-filters panel panel-default">
                 <div class="panel-body">
                     {if isset($NaviFilter->SuchspecialFilter->kKey) && $NaviFilter->SuchspecialFilter->kKey > 0 && (!isset($NaviFilter->Suchspecial) || $NaviFilter->Suchspecial->kKey != $NaviFilter->SuchspecialFilter->kKey)}
                         {strip}
-                        <a rel="nofollow" title="{lang key="specificProducts" section="global"}" href="{$NaviFilter->URL->cAlleSuchspecials}" class="label label-info">
+                        <a rel="nofollow" title="{lang key="specificProducts" section="global"}" href="{$NaviFilter->URL->cAlleSuchspecials}" class="label label-info" id="filter-remove-all-search-specials">
                             {if $NaviFilter->SuchspecialFilter->kKey == 1}
                                 {lang key="bestsellers" section="global"}
                             {elseif $NaviFilter->SuchspecialFilter->kKey == 2}
@@ -181,42 +181,58 @@
                     {/if}
                     {if !empty($NaviFilter->KategorieFilter->kKategorie)}
                         {strip}
-                            <a href="{$NaviFilter->URL->cAlleKategorien}" class="label label-info">{if $Einstellungen.navigationsfilter.kategoriefilter_anzeigen_als === 'HF' && !empty($NaviFilter->KategorieFilter->kKategorie) && $NaviFilter->KategorieFilter->kKategorie > 0}{$NaviFilter->KategorieFilter->cName}{else}{$Suchergebnisse->Kategorieauswahl[0]->cName}{/if}
+                            <a id="filter-remove-all-categories" href="{$NaviFilter->URL->cAlleKategorien}" class="label label-info">{if $Einstellungen.navigationsfilter.kategoriefilter_anzeigen_als === 'HF' && !empty($NaviFilter->KategorieFilter->kKategorie) && $NaviFilter->KategorieFilter->kKategorie > 0}{$NaviFilter->KategorieFilter->cName}{else}{$Suchergebnisse->Kategorieauswahl[0]->cName}{/if}
                                 &nbsp;<span class="fa fa-trash-o"></span>
                             </a>
                         {/strip}
                     {/if}
                     {if !empty($NaviFilter->Hersteller->kHersteller) || !empty($NaviFilter->HerstellerFilter->kHersteller)}
                         {strip}
-                            <a href="{$NaviFilter->URL->cAlleHersteller}" class="label label-info">{$Suchergebnisse->Herstellerauswahl[0]->cName}
+                            <a id="filter-remove-all-manufacturers" href="{$NaviFilter->URL->cAlleHersteller}" class="label label-info">{$Suchergebnisse->Herstellerauswahl[0]->cName}
                                 &nbsp;<span class="fa fa-trash-o"></span>
                             </a>
                         {/strip}
                     {/if}
                     {if !empty($NaviFilter->PreisspannenFilter->fBis)}
                         {strip}
-                            <a href="{$NaviFilter->URL->cAllePreisspannen}" class="label label-info">{$NaviFilter->PreisspannenFilter->cVonLocalized}
+                            <a id="filter-remove-all-price-ranges" href="{$NaviFilter->URL->cAllePreisspannen}" class="label label-info">{$NaviFilter->PreisspannenFilter->cVonLocalized}
                             - {$NaviFilter->PreisspannenFilter->cBisLocalized}
                             &nbsp;<span class="fa fa-trash-o"></span>
                             </a>{/strip}
                     {/if}
                     {if !empty($NaviFilter->BewertungFilter->nSterne)}
                         {strip}
-                            <a href="{$NaviFilter->URL->cAlleBewertungen}" class="label label-info">{lang key="from" section="productDetails"} {$NaviFilter->BewertungFilter->nSterne} {if $NaviFilter->BewertungFilter->nSterne > 1}{lang key="starPlural"}{else}{lang key="starSingular"}{/if}
+                            <a id="filter-remove-all-ratings" href="{$NaviFilter->URL->cAlleBewertungen}" class="label label-info">{lang key="from" section="productDetails"} {$NaviFilter->BewertungFilter->nSterne} {if $NaviFilter->BewertungFilter->nSterne > 1}{lang key="starPlural"}{else}{lang key="starSingular"}{/if}
                                 &nbsp;<span class="fa fa-trash-o"></span>
                             </a>
                         {/strip}
                     {/if}
                     {foreach $NaviFilter->MerkmalFilter as $Merkmal}
                         {strip}
-                            <a class="label label-info" rel="nofollow" href="{$NaviFilter->URL->cAlleMerkmalWerte[$Merkmal->kMerkmalWert]}">
+                            <a id="filter-remove-all-attribute-values" class="label label-info" rel="nofollow" href="{$NaviFilter->URL->cAlleMerkmalWerte[$Merkmal->kMerkmalWert]}">
                                 {$Merkmal->cWert|escape:'html'} &nbsp;<span class="fa fa-trash-o"></span>
                             </a>
                         {/strip}
                     {/foreach}
+                    {foreach $NaviFilter->getActiveFilters2() as $filter}
+                        {if $filter->isCustom()}
+                            {assign var=filterValues value=$filter->getValue()}
+                            {if is_array($filterValues)}
+                                {foreach $filterValues as $filterValue}
+                                    <a class="filter-remove-custom-filter label label-info" rel="nofollow" href="#">
+                                        {$filter->getName()}: {$filterValue} &nbsp;<span class="fa fa-trash-o"></span>
+                                    </a> &nbsp;
+                                {/foreach}
+                            {else}
+                                <a class="filter-remove-custom-filter label label-info" rel="nofollow" href="#">
+                                    {$filter->getName()}: {$filterValues} &nbsp;<span class="fa fa-trash-o"></span>
+                                </a>
+                            {/if}
+                        {/if}
+                    {/foreach}
                     {if !empty($NaviFilter->URL->cNoFilter)}
                         {strip}
-                            <a href="{$NaviFilter->URL->cNoFilter}" class="label label-warning">
+                            <a id="filter-remove-all-filters" href="{$NaviFilter->URL->cNoFilter}" class="label label-warning">
                                 {lang key="removeFilters" section="global"}
                             </a>
                         {/strip}

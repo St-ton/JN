@@ -1124,29 +1124,11 @@ class Navigationsfilter
      */
     public function setFilterOptions($oSuchergebnisse, $AktuelleKategorie = null)
     {
-        // Filteroptionen holen
-        $oSuchergebnisse->Herstellerauswahl = $this->Hersteller->getOptions();
-        $test  = $this->HerstellerFilter->getOptions();
-        if ($test != $oSuchergebnisse->Herstellerauswahl) {
-            Shop::dbg($oSuchergebnisse->Herstellerauswahl, false, 'FAILED at $oSuchergebnisse->Herstellerauswahl:');
-            Shop::dbg($test, true, 'vs:');
-        }
-
+        $oSuchergebnisse->Herstellerauswahl = $this->HerstellerFilter->getOptions();
         $oSuchergebnisse->Bewertung         = $this->BewertungFilter->getOptions();
-        $test = $this->BewertungFilter->getOptions();
-        if ($test != $oSuchergebnisse->Bewertung) {
-            Shop::dbg($oSuchergebnisse->Bewertung, false, 'FAILED at $oSuchergebnisse->Bewertung:');
-            Shop::dbg($test, true, 'vs:');
-        }
+        $oSuchergebnisse->Tags              = $this->Tag->getOptions();
 
-        $oSuchergebnisse->Tags              = $this->tagFilterCompat->getOptions();
-        $test = $this->Tag->getOptions();
-        if (count($test) !== count($oSuchergebnisse->Tags)) {
-            Shop::dbg($oSuchergebnisse->Tags, false, 'FAILED at $oSuchergebnisse->Tags:');
-            Shop::dbg($test, true, 'vs:');
-        }
-
-        if (isset($this->conf['navigationsfilter']['allgemein_tagfilter_benutzen']) && $this->conf['navigationsfilter']['allgemein_tagfilter_benutzen'] === 'Y') {
+        if ($this->conf['navigationsfilter']['allgemein_tagfilter_benutzen'] === 'Y') {
             $oTags_arr = [];
             foreach ($oSuchergebnisse->Tags as $key => $oTags) {
                 $oTags_arr[$key]       = $oTags;
@@ -1155,11 +1137,12 @@ class Navigationsfilter
             $oSuchergebnisse->TagsJSON = Boxen::gibJSONString($oTags_arr);
 
         }
-        $oSuchergebnisse->MerkmalFilter = $this->attributeFilterCompat->getOptions(['oAktuelleKategorie' => $AktuelleKategorie, 'bForce' => function_exists('starteAuswahlAssistent')]);
-        $oSuchergebnisse->Preisspanne   = $this->PreisspannenFilter->getOptions($oSuchergebnisse->GesamtanzahlArtikel);
-
+        $oSuchergebnisse->MerkmalFilter    = $this->attributeFilterCompat->getOptions([
+            'oAktuelleKategorie' => $AktuelleKategorie,
+            'bForce'             => function_exists('starteAuswahlAssistent')
+        ]);
+        $oSuchergebnisse->Preisspanne      = $this->PreisspannenFilter->getOptions($oSuchergebnisse->GesamtanzahlArtikel);
         $oSuchergebnisse->Kategorieauswahl = $this->KategorieFilter->getOptions();
-
         $oSuchergebnisse->SuchFilter       = $this->searchFilterCompat->getOptions();
         $oSuchergebnisse->SuchFilterJSON   = [];
 
@@ -1394,6 +1377,7 @@ class Navigationsfilter
      * @param bool   $bSeo
      * @param object $oZusatzFilter
      * @param bool   $bCanonical
+     * @param bool   $debug
      * @return string
      */
     public function getURL($bSeo = true, $oZusatzFilter, $bCanonical = false, $debug = false)
@@ -1908,8 +1892,8 @@ class Navigationsfilter
      */
     public function truncateMetaTitle($cTitle)
     {
-        return ($this->conf['metaangaben']['global_meta_maxlaenge_title'] > 0)
-            ? substr($cTitle, 0, (int)$this->conf['metaangaben']['global_meta_maxlaenge_title'])
+        return (($length = $this->conf['metaangaben']['global_meta_maxlaenge_title']) > 0)
+            ? substr($cTitle, 0, (int)$length)
             : $cTitle;
     }
 

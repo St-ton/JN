@@ -10,6 +10,9 @@
                 {/if}
             {/foreach}
 
+            {include file='snippets/pagination.tpl' oPagination=$orderPagination cThisUrl='jtl.php'
+                     cParam_arr=['bestellungen'=>1] parts=['pagi', 'label']}
+
             <table class="table table-striped">
                 <thead class="hidden-xs">
                 <tr>
@@ -24,7 +27,7 @@
                 </tr>
                 </thead>
                 <tbody class="small">
-                {foreach name=bestellungen from=$Bestellungen item=Bestellung}
+                {foreach name=bestellungen from=$orderPagination->getPageItems() item=Bestellung}
                     <tr>
                         <td>{$Bestellung->cBestellNr}</td>
                         <td>{$Bestellung->cBestellwertLocalized}</td>

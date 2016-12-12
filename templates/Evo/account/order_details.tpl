@@ -181,24 +181,26 @@
 {if $Bestellung->oLieferschein_arr|@count > 0}
 {block name="order-details-delivery-note"}
     <h2>{if $Bestellung->cStatus == BESTELLUNG_STATUS_TEILVERSANDT}{lang key="partialShipped" section="order"}{else}{lang key="shipped" section="order"}{/if}</h2>
-    <table class="table table-striped table-bordered">
-        <thead>
-            <tr>
-                <th>{lang key="shippingOrder" section="order"}</th>
-                <th>{lang key="shippedOn" section="login"}</th>
-                <th class="text-right">{lang key="packageTracking" section="order"}</th>
-            </tr>
-        </thead>
-        <tbody>
-            {foreach from=$Bestellung->oLieferschein_arr item="oLieferschein"}
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered">
+            <thead>
                 <tr>
-                    <td><a class="popup-dep" id="{$oLieferschein->getLieferschein()}" href="#" title="{$oLieferschein->getLieferscheinNr()}">{$oLieferschein->getLieferscheinNr()}</a></td>
-                    <td>{$oLieferschein->getErstellt()|date_format:"%d.%m.%Y %H:%M"}</td>
-                    <td class="text-right">{foreach from=$oLieferschein->oVersand_arr name="versand" item="oVersand"}{if $oVersand->getIdentCode()}<p><a href="{$oVersand->getLogistikVarUrl()}" target="_blank" class="shipment" title="{$oVersand->getIdentCode()}">{lang key="packageTracking" section="order"}</a></p>{/if}{/foreach}</td>
+                    <th>{lang key="shippingOrder" section="order"}</th>
+                    <th>{lang key="shippedOn" section="login"}</th>
+                    <th class="text-right">{lang key="packageTracking" section="order"}</th>
                 </tr>
-            {/foreach}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                {foreach from=$Bestellung->oLieferschein_arr item="oLieferschein"}
+                    <tr>
+                        <td><a class="popup-dep" id="{$oLieferschein->getLieferschein()}" href="#" title="{$oLieferschein->getLieferscheinNr()}">{$oLieferschein->getLieferscheinNr()}</a></td>
+                        <td>{$oLieferschein->getErstellt()|date_format:"%d.%m.%Y %H:%M"}</td>
+                        <td class="text-right">{foreach from=$oLieferschein->oVersand_arr name="versand" item="oVersand"}{if $oVersand->getIdentCode()}<p><a href="{$oVersand->getLogistikVarUrl()}" target="_blank" class="shipment" title="{$oVersand->getIdentCode()}">{lang key="packageTracking" section="order"}</a></p>{/if}{/foreach}</td>
+                    </tr>
+                {/foreach}
+            </tbody>
+        </table>
+    </div>
 
     {* Lieferschein Popups *}
     {foreach from=$Bestellung->oLieferschein_arr item="oLieferschein"}

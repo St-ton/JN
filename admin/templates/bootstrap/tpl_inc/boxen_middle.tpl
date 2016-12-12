@@ -250,17 +250,19 @@
                         </li>
                         {foreach name="box" from=$oBoxenBottom_arr item=oBox}
                             {if $oBox->bContainer}
-                                <li class="list-group-item boxRow{if isset($oBox->bGlobal) && $oBox->bGlobal && $nPage != 0}boxGlobal{else}boxRowBaseContainer{/if}">
-                                    <div class="col-xs-8">
+                                <li class="list-group-item boxRow {if isset($oBox->bGlobal) && $oBox->bGlobal && $nPage != 0}boxGlobal{else}boxRowBaseContainer{/if}">
+                                    <div class="col-xs-7">
                                         <b>Container #{$oBox->kBox}</b>
                                     </div>
                                     <div class="boxOptions">
                                         {if !isset($oBox->bGlobal) || !$oBox->bGlobal || $nPage == 0}
-                                            <input type="hidden" name="box[]" value="{$oBox->kBox}" />
-                                            <input class="form-control" type="text" size="3" name="sort[]"
-                                                   value="{$oBox->nSort}" autocomplete="off" id="{$oBox->nSort}"
-                                                   onfocus="onFocus(this)" onblur="onBlur(this)">
-                                            <div class="modify-wrap">
+                                            <div class="col-xs-3">
+                                                <input type="hidden" name="box[]" value="{$oBox->kBox}">
+                                                <input class="form-control" type="text" size="3" name="sort[]"
+                                                       value="{$oBox->nSort}" autocomplete="off" id="{$oBox->nSort}"
+                                                       onfocus="onFocus(this)" onblur="onBlur(this)">
+                                            </div>
+                                            <div class="col-xs-2 modify-wrap">
                                                 <input type="checkbox" name="aktiv[]"
                                                        {if $oBox->bAktiv == 1}checked="checked"{/if} value="{$oBox->kBox}">
                                                 {if $oBox->eTyp === 'text' || $oBox->eTyp === 'link' || $oBox->eTyp === 'catbox'}
@@ -278,48 +280,48 @@
                                             <b>{$oBox->nSort}</b>
                                         {/if}
                                     </div>
-                                    <div class="boxBlockContainer clear container-child">
-                                        {foreach from=$oBox->oContainer_arr item=oContainerBox}
-                                            <div class="boxRowContainer">
-                                                <div class="boxRow">
-                                                    <div class="col-xs-8">
-                                                        {$oContainerBox->cTitel}
-                                                    </div>
-                                                    <div class="boxOptions">
-                                                        {if !isset($oBox->bGlobal) || !$oBox->bGlobal || $nPage == 0}
-                                                            <input type="hidden" name="box[]" value="{$oContainerBox->kBox}">
-                                                            <input class="form-control" type="text" size="3" name="sort[]"
-                                                                   value="{$oContainerBox->nSort}" autocomplete="off"
-                                                                   id="{$oContainerBox->nSort}" onfocus="onFocus(this)"
-                                                                   onblur="onBlur(this)">
-                                                            <div class="modify-wrap">
-                                                                <input type="checkbox" name="aktiv[]"
-                                                                       {if $oContainerBox->bAktiv == 1}checked="checked"{/if}
-                                                                       value="{$oContainerBox->kBox}">
-                                                                {if isset($oContainerBox->eTyp) &&
-                                                                    ($oContainerBox->eTyp === 'text' ||
-                                                                        $oContainerBox->eTyp === 'link' || $oContainerBox->eTyp === 'catbox')
-                                                                }
-                                                                    <a href="boxen.php?action=edit_mode&page={$nPage}&position=bottom&item={$oContainerBox->kBox}&token={$smarty.session.jtl_token}"
-                                                                       title="{#edit#}">
-                                                                        <i class="fa fa-lg fa-edit"></i>
-                                                                    </a>
-                                                                {/if}
-                                                                <a href="boxen.php?action=del&page={$nPage}&position=bottom&item={$oContainerBox->kBox}&token={$smarty.session.jtl_token}"
-                                                                   onclick="return confirmDelete('{$oContainerBox->cTitel}');"
-                                                                   title="{#remove#}">
-                                                                    <i class="fa fa-lg fa-trash"></i>
-                                                                </a>
-                                                            </div>
-                                                        {else}
-                                                            <b>{$oContainerBox->nSort}</b>
-                                                        {/if}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        {/foreach}
-                                    </div>
                                 </li>
+                                {foreach from=$oBox->oContainer_arr item=oContainerBox}
+                                    <li class="list-group-item boxRow boxRowContainer">
+                                        <div class="boxRow">
+                                            <div class="col-xs-7 boxSubName">
+                                                {$oContainerBox->cTitel}
+                                            </div>
+                                            <div class="boxOptions">
+                                                {if !isset($oBox->bGlobal) || !$oBox->bGlobal || $nPage == 0}
+                                                    <div class="col-xs-3">
+                                                        <input type="hidden" name="box[]" value="{$oContainerBox->kBox}">
+                                                        <input class="form-control" type="text" size="3" name="sort[]"
+                                                               value="{$oContainerBox->nSort}" autocomplete="off"
+                                                               id="{$oContainerBox->nSort}" onfocus="onFocus(this)"
+                                                               onblur="onBlur(this)">
+                                                    </div>
+                                                    <div class="col-xs-2 modify-wrap">
+                                                        <input type="checkbox" name="aktiv[]"
+                                                               {if $oContainerBox->bAktiv == 1}checked="checked"{/if}
+                                                               value="{$oContainerBox->kBox}">
+                                                        {if isset($oContainerBox->eTyp) &&
+                                                            ($oContainerBox->eTyp === 'text' ||
+                                                                $oContainerBox->eTyp === 'link' || $oContainerBox->eTyp === 'catbox')
+                                                        }
+                                                            <a href="boxen.php?action=edit_mode&page={$nPage}&position=bottom&item={$oContainerBox->kBox}&token={$smarty.session.jtl_token}"
+                                                               title="{#edit#}">
+                                                                <i class="fa fa-lg fa-edit"></i>
+                                                            </a>
+                                                        {/if}
+                                                        <a href="boxen.php?action=del&page={$nPage}&position=bottom&item={$oContainerBox->kBox}&token={$smarty.session.jtl_token}"
+                                                           onclick="return confirmDelete('{$oContainerBox->cTitel}');"
+                                                           title="{#remove#}">
+                                                            <i class="fa fa-lg fa-trash"></i>
+                                                        </a>
+                                                    </div>
+                                                {else}
+                                                    <b>{$oContainerBox->nSort}</b>
+                                                {/if}
+                                            </div>
+                                        </div>
+                                    </li>
+                                {/foreach}
                             {else}
                                 {include file="tpl_inc/box_single.tpl" oBox=$oBox nPage=$nPage position='bottom'}
                             {/if}

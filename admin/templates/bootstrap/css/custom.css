@@ -277,7 +277,7 @@ table .input-group {
 }
 
 .list-group-item .boxOptions {
-    float: right;
+    /*float: right;*/
 }
 
 .list-group-item .left {
@@ -286,9 +286,9 @@ table .input-group {
 }
 
 .modify-wrap {
-    float: right;
-    text-align: right;
-    min-width: 105px;
+    /*float: right;*/
+    /*text-align: right;*/
+    /*min-width: 105px;*/
 }
 
 tr.highlight {
@@ -1119,8 +1119,12 @@ table tbody td div.sub {
     width: 100%;
 }
 
+.boxSubName {
+    padding-left: 40px;
+}
+
 .container-child {
-    margin-left: 20px;
+    /*margin-left: 20px;*/
 }
 
 #install-header-image {

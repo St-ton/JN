@@ -242,7 +242,7 @@ if ($cParameter_arr['kHersteller'] > 0 ||
     if (!$bExtendedJTLSearch) {
         if (isset($NaviFilter->Suche->cSuche)) {
             suchanfragenSpeichern($NaviFilter->Suche->cSuche, $oSuchergebnisse->GesamtanzahlArtikel, $bEchteSuche);
-            $NaviFilter->Suche->kSuchanfrage = gibSuchanfrageKey($NaviFilter->Suche->cSuche, Shop::$kSprache);
+            $NaviFilter->Suche->kSuchanfrage = gibSuchanfrageKey($NaviFilter->Suche->cSuche, Shop::getLanguage());
         } else {
             if (!isset($NaviFilter->Suche)) {
                 $NaviFilter->Suche = new stdClass();
@@ -479,7 +479,7 @@ if ($cParameter_arr['kHersteller'] > 0 ||
     }
     // Auswahlassistent
     if (function_exists('starteAuswahlAssistent')) {
-        starteAuswahlAssistent(AUSWAHLASSISTENT_ORT_KATEGORIE, $cParameter_arr['kKategorie'], Shop::$kSprache, $smarty, $Einstellungen['auswahlassistent']);
+        starteAuswahlAssistent(AUSWAHLASSISTENT_ORT_KATEGORIE, $cParameter_arr['kKategorie'], Shop::getLanguage(), $smarty, $Einstellungen['auswahlassistent']);
     }
     // Work around fürs Template
     $smarty->assign('SEARCHSPECIALS_TOPREVIEWS', SEARCHSPECIALS_TOPREVIEWS)

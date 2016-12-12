@@ -18,7 +18,7 @@ class FilterNews extends AbstractFilter implements IFilter
      * @param int $id
      * @return $this
      */
-    public function setID($id)
+    public function setValue($id)
     {
         $this->kNews = (int)$id;
 
@@ -28,7 +28,7 @@ class FilterNews extends AbstractFilter implements IFilter
     /**
      * @return int
      */
-    public function getID()
+    public function getValue()
     {
         return $this->kNews;
     }
@@ -45,7 +45,7 @@ class FilterNews extends AbstractFilter implements IFilter
                     LEFT JOIN tnews
                         ON tnews.kNews = tseo.kKey                        
                     WHERE cKey = 'kNews'
-                        AND kKey = " . $this->getID() . "
+                        AND kKey = " . $this->getValue() . "
                     ORDER BY kSprache", 1
         );
         foreach ($languages as $language) {

@@ -18,7 +18,7 @@ class FilterHersteller extends AbstractFilter implements IFilter
      * @param int $id
      * @return $this
      */
-    public function setID($id)
+    public function setValue($id)
     {
         $this->kHersteller = (int)$id;
 
@@ -28,7 +28,7 @@ class FilterHersteller extends AbstractFilter implements IFilter
     /**
      * @return int
      */
-    public function getID()
+    public function getValue()
     {
         return $this->kHersteller;
     }
@@ -44,7 +44,7 @@ class FilterHersteller extends AbstractFilter implements IFilter
                     FROM tseo
                         LEFT JOIN thersteller
                         ON thersteller.kHersteller = tseo.kKey
-                    WHERE cKey = 'kHersteller' AND kKey = " . $this->getID() . "
+                    WHERE cKey = 'kHersteller' AND kKey = " . $this->getValue() . "
                     ORDER BY kSprache", 2
         );
         foreach ($languages as $language) {
@@ -89,7 +89,7 @@ class FilterHersteller extends AbstractFilter implements IFilter
      */
     public function getSQLCondition()
     {
-        return 'tartikel.' . $this->getPrimaryKeyRow() . ' = ' . $this->getID();
+        return 'tartikel.' . $this->getPrimaryKeyRow() . ' = ' . $this->getValue();
     }
 
     /**
@@ -112,7 +112,7 @@ class FilterHersteller extends AbstractFilter implements IFilter
 //            if ($this->HerstellerFilter->isInitialized()) {
 //                $filter              = new stdClass();
 //                $filter->cSeo        = $this->HerstellerFilter->getSeo();
-//                $filter->kHersteller = $this->HerstellerFilter->getID();
+//                $filter->kHersteller = $this->HerstellerFilter->getValue();
 //                $filter->cName       = $this->HerstellerFilter->getName();
 //
 //                return $filter;

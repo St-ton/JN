@@ -18,7 +18,7 @@ class FilterKategorie extends AbstractFilter implements IFilter
      * @param int $id
      * @return $this
      */
-    public function setID($id)
+    public function setValue($id)
     {
         $this->kKategorie = (int)$id;
 
@@ -28,7 +28,7 @@ class FilterKategorie extends AbstractFilter implements IFilter
     /**
      * @return int
      */
-    public function getID()
+    public function getValue()
     {
         return $this->kKategorie;
     }
@@ -47,7 +47,7 @@ class FilterKategorie extends AbstractFilter implements IFilter
                         LEFT JOIN tkategoriesprache
                             ON tkategoriesprache.kKategorie = tkategorie.kKategorie
                             AND tkategoriesprache.kSprache = tseo.kSprache
-                    WHERE cKey = 'kKategorie' AND kKey = " . $this->getID() . "
+                    WHERE cKey = 'kKategorie' AND kKey = " . $this->getValue() . "
                     ORDER BY tseo.kSprache", 2
         );
         foreach ($languages as $language) {
@@ -95,7 +95,7 @@ class FilterKategorie extends AbstractFilter implements IFilter
      */
     public function getSQLCondition()
     {
-        return 'tkategorieartikel.kKategorie = ' . $this->getID();
+        return 'tkategorieartikel.kKategorie = ' . $this->getValue();
     }
 
     /**

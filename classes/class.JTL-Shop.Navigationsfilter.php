@@ -558,6 +558,23 @@ class Navigationsfilter
         return $this;
     }
 
+    /**
+     * @param IFilter $filter
+     * @return $this
+     */
+    public function enableFilter(IFilter $filter)
+    {
+        foreach ($this->filters as $idx => $registeredFilter) {
+            if ($filter->getName() === $registeredFilter->getName()) {
+                $this->filters[$idx] = $filter;
+            }
+        }
+        $this->activeFilters[] = $filter;
+        ++$this->nAnzahlFilter;
+
+        return $this;
+    }
+
     public function getBaseState()
     {
         return $this->baseState;
@@ -575,7 +592,7 @@ class Navigationsfilter
     public function getFilterValue($filterClassName) {
         foreach ($this->activeFilters as $filter) {
             if ($filterClassName === get_class($filter)) {
-                return $filter->getID();
+                return $filter->getValue();
             }
         }
 
@@ -995,44 +1012,66 @@ class Navigationsfilter
         }
         foreach ($this->getActiveFilters(true) as $type => $filter) {
             $count = count($filter);
-            if ($count > 1) {
-                $singleConditions = [];
-                /** @var AbstractFilter $item */
-                foreach ($filter as $idx => $item) {
-                    if ($ignore === null || get_class($item) !== $ignore) {
-                        if ($idx === 0) {
-                            $itemJoin = $item->getSQLJoin();
-                            if (is_array($itemJoin)) {
-                                foreach ($item->getSQLJoin() as $filterJoin) {
-                                    $data->joins[] = $filterJoin;
-                                }
-                            } else {
-                                $data->joins[] = $itemJoin;
-                            }
-                            if ($item->getType() === AbstractFilter::FILTER_TYPE_AND) {
-                                //filters that decrease the total amount of articles must have a "HAVING" clause
-                                $data->having[] = 'HAVING COUNT(' . $item->getTableName() . '.' . $item->getPrimaryKeyRow() . ') = ' . $count;
-                            }
-                        }
-                        $singleConditions[] = $item->getSQLCondition();
-                    }
-                }
-                if (!empty($singleConditions)) {
-                    $data->conditions[] = $singleConditions;
-                }
-            } elseif ($count === 1) {
-                /** @var array(AbstractFilter) $filter */
-                if ($ignore === null || get_class($filter[0]) !== $ignore) {
-                    $itemJoin = $filter[0]->getSQLJoin();
-                    if (is_array($itemJoin)) {
-                        foreach ($itemJoin as $filterJoin) {
-                            $data->joins[] = $filterJoin;
-                        }
-                    } else {
-                        $data->joins[] = $itemJoin;
-                    }
 
-                    $data->conditions[] = "\n#condition from filter " . $type . "\n" . $filter[0]->getSQLCondition();
+
+            if ($type === 'custom') {
+                // $filter is an array of n custom filters
+                /** @var AbstractFilter $_f */
+                foreach ($filter as $_f) {
+//                    Shop::dbg($_f->getValue(), false, '$_f->getValue():');
+                    if ($ignore === null || get_class($_f) !== $ignore) {
+                        $itemJoin = $_f->getSQLJoin();
+                        if (is_array($itemJoin)) {
+                            foreach ($itemJoin as $filterJoin) {
+                                $data->joins[] = $filterJoin;
+                            }
+                        } else {
+                            $data->joins[] = $itemJoin;
+                        }
+
+                        $data->conditions[] = "\n#condition from CUSTOM filter " . $type . "\n" . $_f->getSQLCondition();
+                    }
+                }
+            } else {
+                if ($count > 1) {
+                    $singleConditions = [];
+                    /** @var AbstractFilter $item */
+                    foreach ($filter as $idx => $item) {
+                        if ($ignore === null || get_class($item) !== $ignore) {
+                            if ($idx === 0) {
+                                $itemJoin = $item->getSQLJoin();
+                                if (is_array($itemJoin)) {
+                                    foreach ($item->getSQLJoin() as $filterJoin) {
+                                        $data->joins[] = $filterJoin;
+                                    }
+                                } else {
+                                    $data->joins[] = $itemJoin;
+                                }
+                                if ($item->getType() === AbstractFilter::FILTER_TYPE_AND) {
+                                    //filters that decrease the total amount of articles must have a "HAVING" clause
+                                    $data->having[] = 'HAVING COUNT(' . $item->getTableName() . '.' . $item->getPrimaryKeyRow() . ') = ' . $count;
+                                }
+                            }
+                            $singleConditions[] = $item->getSQLCondition();
+                        }
+                    }
+                    if (!empty($singleConditions)) {
+                        $data->conditions[] = $singleConditions;
+                    }
+                } elseif ($count === 1) {
+                    /** @var array(AbstractFilter) $filter */
+                    if ($ignore === null || get_class($filter[0]) !== $ignore) {
+                        $itemJoin = $filter[0]->getSQLJoin();
+                        if (is_array($itemJoin)) {
+                            foreach ($itemJoin as $filterJoin) {
+                                $data->joins[] = $filterJoin;
+                            }
+                        } else {
+                            $data->joins[] = $itemJoin;
+                        }
+
+                        $data->conditions[] = "\n#condition from filter " . $type . "\n" . $filter[0]->getSQLCondition();
+                    }
                 }
             }
         }
@@ -1123,7 +1162,7 @@ class Navigationsfilter
             $filterObject                     = new stdClass();
             $filterObject->cClassname         = get_class($filter);
             $filterObject->cName              = $filter->getName();
-            $filterObject->value              = $filter->getID();
+            $filterObject->value              = $filter->getValue();
             $filterObject->filterOptions      = $filter->getOptions();
             $oSuchergebnisse->customFilters[] = $filterObject;
         }
@@ -1232,7 +1271,7 @@ class Navigationsfilter
 //            if ($this->HerstellerFilter->isInitialized()) {
 //                $filter              = new stdClass();
 //                $filter->cSeo        = $this->HerstellerFilter->getSeo();
-//                $filter->kHersteller = $this->HerstellerFilter->getID();
+//                $filter->kHersteller = $this->HerstellerFilter->getValue();
 //                $filter->cName       = $this->HerstellerFilter->getName();
 //
 //                return $filter;
@@ -1512,7 +1551,7 @@ class Navigationsfilter
                 $join            = new FilterJoin();
                 $activeFilterIDs = [];
                 foreach ($this->MerkmalFilter as $filter) {
-                    $activeFilterIDs[] = $filter->getID();
+                    $activeFilterIDs[] = $filter->getValue();
                 }
                 $join->setComment('join6 from getAttributeFilterOptions')
                      ->setType('JOIN')
@@ -1564,7 +1603,7 @@ class Navigationsfilter
                     $oMerkmalWerte->kMerkmalWert = (int)$oMerkmalFilterDB->kMerkmalWert;
                     $oMerkmalWerte->cWert        = $oMerkmalFilterDB->cWert;
                     $oMerkmalWerte->nAnzahl      = (int)$oMerkmalFilterDB->nAnzahl;
-                    $oMerkmalWerte->nAktiv       = ($this->MerkmalWert->getID() === $oMerkmalWerte->kMerkmalWert || ($this->attributeValueIsActive($oMerkmalWerte->kMerkmalWert)))
+                    $oMerkmalWerte->nAktiv       = ($this->MerkmalWert->getValue() === $oMerkmalWerte->kMerkmalWert || ($this->attributeValueIsActive($oMerkmalWerte->kMerkmalWert)))
                         ? 1
                         : 0;
 
@@ -2395,8 +2434,8 @@ class Navigationsfilter
             // Gibt die Suchspecial$this->conf als Assoc Array zurück, wobei die Keys des Arrays der kKey vom Suchspecial sind.
             $oSuchspecialEinstellung_arr = gibSuchspecialEinstellungMapping($this->conf['suchspecials']);
             // -1 = Keine spezielle Sortierung
-            if (count($oSuchspecialEinstellung_arr) > 0 && isset($oSuchspecialEinstellung_arr[$this->Suchspecial->getID()]) && $oSuchspecialEinstellung_arr[$this->Suchspecial->getID()] !== -1) {
-                $_SESSION['Usersortierung'] = (int)$oSuchspecialEinstellung_arr[$this->Suchspecial->getID()];
+            if (count($oSuchspecialEinstellung_arr) > 0 && isset($oSuchspecialEinstellung_arr[$this->Suchspecial->getValue()]) && $oSuchspecialEinstellung_arr[$this->Suchspecial->getValue()] !== -1) {
+                $_SESSION['Usersortierung'] = (int)$oSuchspecialEinstellung_arr[$this->Suchspecial->getValue()];
             }
         }
         // Der User hat expliziet eine Sortierung eingestellt
@@ -2470,55 +2509,55 @@ class Navigationsfilter
             } else {
                 $cSEOURL .= $this->Kategorie->getSeo($this->getLanguageID());
             }
-            $cURL .= 'k=' . $this->Kategorie->getID();
+            $cURL .= 'k=' . $this->Kategorie->getValue();
         } elseif ($this->Hersteller->isInitialized()) {
             $cSEOURL .= $this->Hersteller->getSeo($this->getLanguageID());
             if ($bSeo && strlen($this->Hersteller->getSeo($this->getLanguageID())) === 0) {
                 $bSeo = false;
             }
-            $cURL .= 'h=' . $this->Hersteller->getID();
+            $cURL .= 'h=' . $this->Hersteller->getValue();
         } elseif ($this->Suchanfrage->isInitialized()) {
             $cSEOURL .= $this->Suchanfrage->getSeo($this->getLanguageID());
             if ($bSeo && strlen($this->Suchanfrage->getSeo($this->getLanguageID())) === 0) {
                 $bSeo = false;
             }
-            $cURL .= 'l=' . $this->Suchanfrage->getID();
+            $cURL .= 'l=' . $this->Suchanfrage->getValue();
         } elseif ($this->MerkmalWert->isInitialized()) {
             $cSEOURL .= $this->MerkmalWert->getSeo($this->getLanguageID());
             if ($bSeo && strlen($this->MerkmalWert->getSeo($this->getLanguageID())) === 0) {
                 $bSeo = false;
             }
-            $cURL .= 'm=' . $this->MerkmalWert->getID();
+            $cURL .= 'm=' . $this->MerkmalWert->getValue();
         } elseif ($this->Tag->isInitialized()) {
             $cSEOURL .= $this->Tag->getSeo($this->getLanguageID());
             if ($bSeo && strlen($this->Tag->getSeo($this->getLanguageID())) === 0) {
                 $bSeo = false;
             }
-            $cURL .= 't=' . $this->Tag->getID();
+            $cURL .= 't=' . $this->Tag->getValue();
         } elseif ($this->Suchspecial->isInitialized()) {
             $cSEOURL .= $this->Suchspecial->getSeo($this->getLanguageID());
             if ($bSeo && strlen($this->Suchspecial->getSeo($this->getLanguageID())) === 0) {
                 $bSeo = false;
             }
-            $cURL .= 'q=' . $this->Suchspecial->getID();
+            $cURL .= 'q=' . $this->Suchspecial->getValue();
         } elseif ($this->News->isInitialized()) {
             $cSEOURL .= $this->News->getSeo($this->getLanguageID());
             if ($bSeo && strlen($this->News->getSeo($this->getLanguageID())) === 0) {
                 $bSeo = false;
             }
-            $cURL .= 'n=' . $this->News->getID();
+            $cURL .= 'n=' . $this->News->getValue();
         } elseif ($this->NewsMonat->isInitialized()) {
             $cSEOURL .= $this->NewsMonat->getSeo($this->getLanguageID());
             if ($bSeo && strlen($this->NewsMonat->getSeo($this->getLanguageID())) === 0) {
                 $bSeo = false;
             }
-            $cURL .= 'nm=' . $this->NewsMonat->getID();
+            $cURL .= 'nm=' . $this->NewsMonat->getValue();
         } elseif ($this->NewsKategorie->isInitialized()) {
             $cSEOURL .= $this->NewsKategorie->getSeo($this->getLanguageID());
             if ($bSeo && strlen($this->NewsKategorie->getSeo($this->getLanguageID())) === 0) {
                 $bSeo = false;
             }
-            $cURL .= 'nk=' . $this->NewsKategorie->getID();
+            $cURL .= 'nk=' . $this->NewsKategorie->getValue();
         }
         if ((isset($this->EchteSuche->cSuche) && strlen($this->EchteSuche->cSuche) > 0) &&
             (!isset($this->Suchanfrage->kSuchanfrage) || intval($this->Suchanfrage->kSuchanfrage) === 0)
@@ -2529,7 +2568,7 @@ class Navigationsfilter
         // Filter
         // Kategorie
         if (!$bCanonical) {
-            if ($this->KategorieFilter->isInitialized() && (!$this->Kategorie->isInitialized() || $this->Kategorie->getID() !== $this->KategorieFilter->getID())) {
+            if ($this->KategorieFilter->isInitialized() && (!$this->Kategorie->isInitialized() || $this->Kategorie->getValue() !== $this->KategorieFilter->getValue())) {
                 if (!isset($oZusatzFilter->FilterLoesen->Kategorie) || !$oZusatzFilter->FilterLoesen->Kategorie) {
                     if (strlen($this->KategorieFilter->getSeo($this->getLanguageID())) === 0) {
                         $bSeo = false;
@@ -2543,25 +2582,25 @@ class Navigationsfilter
                         $cURL .= '&amp;kf=' . $oZusatzFilter->KategorieFilter->kKategorie;
                     } else {
                         $cSEOURL .= SEP_KAT . $this->KategorieFilter->getSeo($this->getLanguageID());
-                        $cURL .= '&amp;kf=' . $this->KategorieFilter->getID();
+                        $cURL .= '&amp;kf=' . $this->KategorieFilter->getValue();
                     }
                 }
             } elseif ((isset($oZusatzFilter->KategorieFilter->kKategorie) && $oZusatzFilter->KategorieFilter->kKategorie > 0) &&
-                (!$this->Kategorie->isInitialized() || $this->Kategorie->getID() !== $oZusatzFilter->KategorieFilter->kKategorie)
+                (!$this->Kategorie->isInitialized() || $this->Kategorie->getValue() !== $oZusatzFilter->KategorieFilter->kKategorie)
             ) {
                 $cSEOURL .= SEP_KAT . $oZusatzFilter->KategorieFilter->cSeo;
                 $cURL .= '&amp;kf=' . $oZusatzFilter->KategorieFilter->kKategorie;
             }
             // Hersteller
-            if ($this->HerstellerFilter->isInitialized() && (!$this->Hersteller->isInitialized() || $this->Hersteller->getID() !== $this->HerstellerFilter->getID())) {
+            if ($this->HerstellerFilter->isInitialized() && (!$this->Hersteller->isInitialized() || $this->Hersteller->getValue() !== $this->HerstellerFilter->getValue())) {
                 if (empty($oZusatzFilter->FilterLoesen->Hersteller)) {
                     $cSEOURL .= SEP_HST . $this->HerstellerFilter->getSeo($this->getLanguageID());
                     if ($bSeo && strlen($this->HerstellerFilter->getSeo($this->getLanguageID())) === 0) {
                         $bSeo = false;
                     }
-                    $cURL .= '&amp;hf=' . $this->HerstellerFilter->getID();
+                    $cURL .= '&amp;hf=' . $this->HerstellerFilter->getValue();
                 }
-            } elseif (!empty($oZusatzFilter->HerstellerFilter->kHersteller) && (!$this->Hersteller->isInitialized() || $this->Hersteller->getID() !== $oZusatzFilter->HerstellerFilter->kHersteller)) {
+            } elseif (!empty($oZusatzFilter->HerstellerFilter->kHersteller) && (!$this->Hersteller->isInitialized() || $this->Hersteller->getValue() !== $oZusatzFilter->HerstellerFilter->kHersteller)) {
                 $cSEOURL .= SEP_HST . $oZusatzFilter->HerstellerFilter->cSeo;
                 $cURL .= '&amp;hf=' . $oZusatzFilter->HerstellerFilter->kHersteller;
             }
@@ -2654,7 +2693,7 @@ class Navigationsfilter
             if (isset($this->BewertungFilter->nSterne) && $this->BewertungFilter->nSterne > 0 &&
                 !isset($oZusatzFilter->FilterLoesen->Bewertungen) && !isset($oZusatzFilter->BewertungFilter->nSterne)
             ) {
-                $cURL .= '&amp;bf=' . $this->BewertungFilter->getID();
+                $cURL .= '&amp;bf=' . $this->BewertungFilter->getValue();
             } elseif (isset($oZusatzFilter->BewertungFilter->nSterne) && $oZusatzFilter->BewertungFilter->nSterne > 0) {
                 $cURL .= '&amp;bf=' . $oZusatzFilter->BewertungFilter->nSterne;
             }
@@ -2696,22 +2735,34 @@ class Navigationsfilter
             }
             // Suchspecialfilter
             if ((isset($oZusatzFilter->SuchspecialFilter->kKey) && $oZusatzFilter->SuchspecialFilter->kKey > 0) &&
-                (!$this->Suchspecial->isInitialized() || $this->Suchspecial->getID() !== $oZusatzFilter->SuchspecialFilter->kKey)
+                (!$this->Suchspecial->isInitialized() || $this->Suchspecial->getValue() !== $oZusatzFilter->SuchspecialFilter->kKey)
             ) {
                 $cURL .= '&amp;qf=' . $oZusatzFilter->SuchspecialFilter->kKey;
-            } elseif ($this->SuchspecialFilter->isInitialized() && (!$this->Suchspecial->isInitialized() || $this->Suchspecial->getID() !== $this->SuchspecialFilter->getID())) {
+            } elseif ($this->SuchspecialFilter->isInitialized() && (!$this->Suchspecial->isInitialized() || $this->Suchspecial->getValue() !== $this->SuchspecialFilter->getValue())) {
                 if (!isset($oZusatzFilter->FilterLoesen->Suchspecials) || !$oZusatzFilter->FilterLoesen->Suchspecials) {
                     $cSEOURL .= $this->SuchspecialFilter->getSeo($this->getLanguageID());
                     if ($bSeo && strlen($this->SuchspecialFilter->getSeo($this->getLanguageID())) === 0) {
                         $bSeo = false;
                     }
-                    $cURL .= '&amp;qf=' . $this->SuchspecialFilter->getID();
+                    $cURL .= '&amp;qf=' . $this->SuchspecialFilter->getValue();
                 }
             }
         }
 
         if (strlen($cSEOURL) > 254) {
             $bSeo = false;
+        }
+        foreach ($this->getActiveFilters2() as $filter) {
+            $bSeo   = false;
+            $param  = $filter->getUrlParam();
+            $values = $filter->getValue();
+            if ($filter->getType() === AbstractFilter::FILTER_TYPE_OR) {
+                foreach ($values as $value) {
+                    $cURL .= '&' . $param . '[]=' . $value;
+                }
+            } else {
+                $cURL .= '&' . $param . '=' . $values;
+            }
         }
 
         if ($bSeo) {
@@ -2741,7 +2792,7 @@ class Navigationsfilter
     public function attributeValueIsActive($kMerkmalWert)
     {
         foreach ($this->MerkmalFilter as $i => $oMerkmalauswahl) {
-            if ($oMerkmalauswahl->getID() === $kMerkmalWert) {
+            if ($oMerkmalauswahl->getValue() === $kMerkmalWert) {
                 return true;
             }
         }
@@ -2864,7 +2915,7 @@ class Navigationsfilter
         if ($this->Kategorie->isInitialized()) {
             $oKategorie = ($oKategorie !== null)
                 ? $oKategorie
-                : new Kategorie($this->Kategorie->getID());
+                : new Kategorie($this->Kategorie->getValue());
             if (isset($oKategorie->cTitleTag) && strlen($oKategorie->cTitleTag) > 0) {
                 // meta title via new method
                 $cMetaTitle = strip_tags($oKategorie->cTitleTag);
@@ -2922,7 +2973,7 @@ class Navigationsfilter
         if ($this->Kategorie->isInitialized()) {
             $oKategorie = ($oKategorie !== null)
                 ? $oKategorie
-                : new Kategorie($this->Kategorie->getID());
+                : new Kategorie($this->Kategorie->getValue());
             if (isset($oKategorie->cMetaDescription) && strlen($oKategorie->cMetaDescription) > 0) {
                 // meta description via new method
                 $cKatDescription = strip_tags($oKategorie->cMetaDescription);
@@ -3030,7 +3081,7 @@ class Navigationsfilter
         if ($this->Kategorie->isInitialized()) {
             $oKategorie = ($oKategorie !== null)
                 ? $oKategorie
-                : new Kategorie($this->Kategorie->getID());
+                : new Kategorie($this->Kategorie->getValue());
             if (isset($oKategorie->cMetaKeywords) && strlen($oKategorie->cMetaKeywords) > 0) {
                 // meta keywords via new method
                 $cKatKeywords = strip_tags($oKategorie->cMetaKeywords);
@@ -3179,7 +3230,7 @@ class Navigationsfilter
         }
         // Suchspecialfilter
         if ($this->SuchspecialFilter->isInitialized()) {
-            switch ($this->SuchspecialFilter->getID()) {
+            switch ($this->SuchspecialFilter->getValue()) {
                 case SEARCHSPECIALS_BESTSELLER:
                     $cMetaTitle .= ' ' . Shop::Lang()->get('bestsellers', 'global');
                     break;

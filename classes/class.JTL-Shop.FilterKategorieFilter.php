@@ -16,10 +16,10 @@ class FilterKategorieFilter extends FilterKategorie
     {
         $conf = Shop::getSettings([CONF_NAVIGATIONSFILTER]);
         if ($conf['navigationsfilter']['kategoriefilter_anzeigen_als'] === 'HF') {
-            return '(tkategorieartikelgesamt.kOberKategorie = ' . $this->getID() . ' OR tkategorieartikelgesamt.kKategorie = ' . $this->getID() . ') ';
+            return '(tkategorieartikelgesamt.kOberKategorie = ' . $this->getValue() . ' OR tkategorieartikelgesamt.kKategorie = ' . $this->getValue() . ') ';
         }
 
-        return ' tkategorieartikel.kKategorie = ' . $this->getID();
+        return ' tkategorieartikel.kKategorie = ' . $this->getValue();
     }
 
     /**

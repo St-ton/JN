@@ -14,7 +14,7 @@ class FilterTagFilter extends FilterTag
      */
     public function getSQLCondition()
     {
-        return 'ttag.nAktiv = 1 AND ttagartikel.kTag = ' . $this->getID();
+        return 'ttag.nAktiv = 1 AND ttagartikel.kTag = ' . $this->getValue();
     }
 
     /**

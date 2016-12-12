@@ -80,7 +80,7 @@ if ($doSearch) {
         $NaviFilter->Suche->kSuchCache = bearbeiteSuchCache($NaviFilter);
     }
     if ($NaviFilter->hasCategory()) {
-        $kKategorie        = $NaviFilter->getActiveState()->getID();
+        $kKategorie        = $NaviFilter->getActiveState()->getValue();
         $AktuelleKategorie = new Kategorie($kKategorie);
         if (!isset($AktuelleKategorie->kKategorie) || $AktuelleKategorie->kKategorie === null) {
             //temp. workaround: do not return 404 when non-localized existing category is loaded
@@ -144,7 +144,7 @@ if ($doSearch) {
             // hole alle enthaltenen Kategorien
             $KategorieInhalt                  = new stdClass();
             $KategorieInhalt->Unterkategorien = new KategorieListe();
-            $KategorieInhalt->Unterkategorien->getAllCategoriesOnLevel($NaviFilter->Kategorie->getID());
+            $KategorieInhalt->Unterkategorien->getAllCategoriesOnLevel($NaviFilter->Kategorie->getValue());
             // wenn keine eigenen Artikel in dieser Kat, Top Angebote / Bestseller
             // aus unterkats + unterunterkats rausholen und anzeigen?
             if ($Einstellungen['artikeluebersicht']['topbest_anzeigen'] === 'Top' || $Einstellungen['artikeluebersicht']['topbest_anzeigen'] === 'TopBest') {
@@ -190,7 +190,7 @@ if ($NaviFilter->Kategorie->isInitialized()) {
     }
     $cBrotNavi = createNavigation('PRODUKTE', $AufgeklappteKategorien);
 } elseif ($NaviFilter->Hersteller->isInitialized()) {
-    $oNavigationsinfo->oHersteller = new Hersteller($NaviFilter->Hersteller->getID());
+    $oNavigationsinfo->oHersteller = new Hersteller($NaviFilter->Hersteller->getValue());
 
     if ($Einstellungen['navigationsfilter']['hersteller_bild_anzeigen'] === 'Y') {
         $oNavigationsinfo->cName = $oNavigationsinfo->oHersteller->cName;
@@ -211,7 +211,7 @@ if ($NaviFilter->Kategorie->isInitialized()) {
     }
     $cBrotNavi = createNavigation('', '', 0, $NaviFilter->cBrotNaviName, $NaviFilter->getURL(true, null));
 } elseif ($NaviFilter->MerkmalWert->isInitialized()) {
-    $oNavigationsinfo->oMerkmalWert = new MerkmalWert($NaviFilter->MerkmalWert->getID());
+    $oNavigationsinfo->oMerkmalWert = new MerkmalWert($NaviFilter->MerkmalWert->getValue());
 
     if ($Einstellungen['navigationsfilter']['merkmalwert_bild_anzeigen'] === 'Y') {
         $oNavigationsinfo->cName = $oNavigationsinfo->oMerkmalWert->cWert;

@@ -25,11 +25,11 @@ class FilterMerkmalFilter extends FilterMerkmal
      */
     public function setSeo($languages)
     {
-        if ($this->getID() > 0) {
+        if ($this->getValue() > 0) {
             $oSeo_arr = Shop::DB()->query("
                 SELECT cSeo, kSprache
                     FROM tseo
-                    WHERE cKey = 'kMerkmalWert' AND kKey = " . $this->getID() . "
+                    WHERE cKey = 'kMerkmalWert' AND kKey = " . $this->getValue() . "
                     ORDER BY kSprache", 2
             );
 
@@ -48,7 +48,7 @@ class FilterMerkmalFilter extends FilterMerkmal
                     FROM tmerkmalwertsprache
                     JOIN tmerkmalwert ON tmerkmalwert.kMerkmalWert = tmerkmalwertsprache.kMerkmalWert
                     WHERE tmerkmalwertsprache.kSprache = " . Shop::getLanguage() . "
-                       AND tmerkmalwertsprache.kMerkmalWert = " . $this->getID(), 1
+                       AND tmerkmalwertsprache.kMerkmalWert = " . $this->getValue(), 1
             );
             if (!empty($seo_obj->kMerkmal)) {
                 $this->kMerkmal = $seo_obj->kMerkmal;
@@ -81,7 +81,7 @@ class FilterMerkmalFilter extends FilterMerkmal
      */
     public function getSQLCondition()
     {
-        return 'tartikelmerkmal.kMerkmalWert = ' . $this->getID();
+        return 'tartikelmerkmal.kMerkmalWert = ' . $this->getValue();
     }
 
     /**
@@ -169,7 +169,7 @@ class FilterMerkmalFilter extends FilterMerkmal
                 $join            = new FilterJoin();
                 $activeFilterIDs = [];
                 foreach ($this->navifilter->MerkmalFilter as $filter) {
-                    $activeFilterIDs[] = $filter->getID();
+                    $activeFilterIDs[] = $filter->getValue();
                 }
                 $join->setComment('join6 from FilterMerkmalFilter::getOptions()')
                      ->setType('JOIN')
@@ -221,7 +221,7 @@ class FilterMerkmalFilter extends FilterMerkmal
                     $oMerkmalWerte->kMerkmalWert = (int)$oMerkmalFilterDB->kMerkmalWert;
                     $oMerkmalWerte->cWert        = $oMerkmalFilterDB->cWert;
                     $oMerkmalWerte->nAnzahl      = (int)$oMerkmalFilterDB->nAnzahl;
-                    $oMerkmalWerte->nAktiv       = ($this->navifilter->MerkmalWert->getID() === $oMerkmalWerte->kMerkmalWert || ($this->navifilter->attributeValueIsActive($oMerkmalWerte->kMerkmalWert)))
+                    $oMerkmalWerte->nAktiv       = ($this->navifilter->MerkmalWert->getValue() === $oMerkmalWerte->kMerkmalWert || ($this->navifilter->attributeValueIsActive($oMerkmalWerte->kMerkmalWert)))
                         ? 1
                         : 0;
 

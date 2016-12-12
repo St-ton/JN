@@ -18,7 +18,7 @@ class FilterMerkmal extends AbstractFilter implements IFilter
      * @param int $id
      * @return $this
      */
-    public function setID($id)
+    public function setValue($id)
     {
         $this->kMerkmalWert = (int)$id;
 
@@ -28,7 +28,7 @@ class FilterMerkmal extends AbstractFilter implements IFilter
     /**
      * @return int
      */
-    public function getID()
+    public function getValue()
     {
         return $this->kMerkmalWert;
     }
@@ -42,7 +42,7 @@ class FilterMerkmal extends AbstractFilter implements IFilter
         $oSeo_arr = Shop::DB()->query("
                 SELECT cSeo, kSprache
                     FROM tseo
-                    WHERE cKey = 'kMerkmalWert' AND kKey = " . $this->getID() . "
+                    WHERE cKey = 'kMerkmalWert' AND kKey = " . $this->getValue() . "
                     ORDER BY kSprache", 2
         );
         foreach ($languages as $language) {
@@ -64,7 +64,7 @@ class FilterMerkmal extends AbstractFilter implements IFilter
             $oSQL->cMMJOIN   = " JOIN tmerkmalsprache ON tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal
                                         AND tmerkmalsprache.kSprache = " . Shop::getLanguage();
         }
-        $oSQL->cMMWhere = "tmerkmalwert.kMerkmalWert = " . $this->getID();
+        $oSQL->cMMWhere = "tmerkmalwert.kMerkmalWert = " . $this->getValue();
 
 //        if (isset($cParameter_arr['MerkmalFilter_arr']) && is_array($cParameter_arr['MerkmalFilter_arr']) && count($cParameter_arr['MerkmalFilter_arr']) > 0) {
 //            foreach ($cParameter_arr['MerkmalFilter_arr'] as $kMerkmalWert) {
@@ -140,7 +140,7 @@ class FilterMerkmal extends AbstractFilter implements IFilter
              ->setTable('(
                             SELECT kArtikel
                             FROM tartikelmerkmal
-                            WHERE kMerkmalWert = ' . $this->getID() . '
+                            WHERE kMerkmalWert = ' . $this->getValue() . '
                             GROUP BY tartikelmerkmal.kArtikel
                             ) AS tmerkmaljoin')
              ->setOn('tmerkmaljoin.kArtikel = tartikel.kArtikel');

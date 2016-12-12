@@ -18,7 +18,7 @@ class FilterNewsOverview extends AbstractFilter implements IFilter
      * @param int $id
      * @return $this
      */
-    public function setID($id)
+    public function setValue($id)
     {
         $this->kNewsMonatsUebersicht = (int)$id;
 
@@ -28,7 +28,7 @@ class FilterNewsOverview extends AbstractFilter implements IFilter
     /**
      * @return int
      */
-    public function getID()
+    public function getValue()
     {
         return $this->kNewsMonatsUebersicht;
     }
@@ -45,7 +45,7 @@ class FilterNewsOverview extends AbstractFilter implements IFilter
                     LEFT JOIN tnewsmonatsuebersicht
                         ON tnewsmonatsuebersicht.kNewsMonatsUebersicht = tseo.kKey
                     WHERE tseo.cKey = 'kNewsMonatsUebersicht'
-                        AND tseo.kKey = " . $this->getID(), 1
+                        AND tseo.kKey = " . $this->getValue(), 1
         );
         foreach ($languages as $language) {
             $this->cSeo[$language->kSprache] = '';

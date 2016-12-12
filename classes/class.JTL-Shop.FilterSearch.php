@@ -23,7 +23,7 @@ class FilterSearch extends AbstractFilter implements IFilter
      * @param int $id
      * @return $this
      */
-    public function setID($id)
+    public function setValue($id)
     {
         $this->kSuchanfrage = (int)$id;
 
@@ -33,7 +33,7 @@ class FilterSearch extends AbstractFilter implements IFilter
     /**
      * @return int
      */
-    public function getID()
+    public function getValue()
     {
         return $this->kSuchanfrage;
     }
@@ -50,7 +50,7 @@ class FilterSearch extends AbstractFilter implements IFilter
                     LEFT JOIN tsuchanfrage
                         ON tsuchanfrage.kSuchanfrage = tseo.kKey
                         AND tsuchanfrage.kSprache = tseo.kSprache
-                    WHERE cKey = 'kSuchanfrage' AND kKey = " . $this->getID(), 1
+                    WHERE cKey = 'kSuchanfrage' AND kKey = " . $this->getValue(), 1
         );
         foreach ($languages as $language) {
             $this->cSeo[$language->kSprache] = '';

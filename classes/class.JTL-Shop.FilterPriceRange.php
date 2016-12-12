@@ -43,7 +43,7 @@ class FilterPriceRange extends AbstractFilter implements IFilter
      * @param int $id
      * @return $this
      */
-    public function setID($id)
+    public function setValue($id)
     {
         $this->cWert = (int)$id;
 
@@ -53,7 +53,7 @@ class FilterPriceRange extends AbstractFilter implements IFilter
     /**
      * @return int
      */
-    public function getID()
+    public function getValue()
     {
         return $this->cWert;
     }

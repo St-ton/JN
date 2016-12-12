@@ -30,7 +30,7 @@ class FilterHerstellerFilter extends FilterHersteller
      */
     public function getSQLCondition()
     {
-        return 'tartikel.' . $this->getPrimaryKeyRow() . ' = ' . $this->getID();
+        return 'tartikel.' . $this->getPrimaryKeyRow() . ' = ' . $this->getValue();
     }
 
     /**

@@ -18,7 +18,7 @@ abstract class AbstractFilter implements IFilter
     /**
      * @var Navigationsfilter
      */
-    protected $navifilter;
+    public $navifilter;
 
     /**
      * @var string
@@ -36,20 +36,41 @@ abstract class AbstractFilter implements IFilter
     private $type = self::FILTER_TYPE_AND;
 
     /**
+     * @var string
+     */
+    public $urlParam = '';
+
+    /**
+     * @var int|string|array
+     */
+    public $value;
+
+    /**
      * @var bool
      */
     protected $isInitialized = false;
 
     /**
-     * @param int   $id
+     * @param int|array $value
      * @param array $languages
      * @return $this
      */
-    public function init($id, $languages)
+    public function init($value, $languages)
     {
         $this->isInitialized = true;
 
-        return $this->setID($id)->setSeo($languages);
+        return $this->setValue($value)->setSeo($languages);
+    }
+
+    /**
+     * @param int|string $value
+     * @return $this
+     */
+    public function addValue($value)
+    {
+        $this->value[] = (int)$value;
+
+        return $this;
     }
 
     /**
@@ -124,5 +145,13 @@ abstract class AbstractFilter implements IFilter
     public function setNaviFilter($navifilter)
     {
         $this->navifilter = $navifilter;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUrlParam()
+    {
+        return $this->urlParam;
     }
 }

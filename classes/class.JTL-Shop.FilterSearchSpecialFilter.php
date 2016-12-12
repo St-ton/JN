@@ -18,7 +18,7 @@ class FilterSearchSpecialFilter extends AbstractFilter implements IFilter
      * @param int $id
      * @return $this
      */
-    public function setID($id)
+    public function setValue($id)
     {
         $this->kKey = (int)$id;
 
@@ -28,7 +28,7 @@ class FilterSearchSpecialFilter extends AbstractFilter implements IFilter
     /**
      * @return int
      */
-    public function getID()
+    public function getValue()
     {
         return $this->kKey;
     }
@@ -43,7 +43,7 @@ class FilterSearchSpecialFilter extends AbstractFilter implements IFilter
                 SELECT cSeo, kSprache
                     FROM tseo
                     WHERE cKey = 'suchspecial'
-                        AND kKey = " . $this->getID() . "
+                        AND kKey = " . $this->getValue() . "
                     ORDER BY kSprache", 2
         );
 
@@ -57,7 +57,7 @@ class FilterSearchSpecialFilter extends AbstractFilter implements IFilter
                 }
             }
         }
-        switch ($this->getID()) {
+        switch ($this->getValue()) {
             case SEARCHSPECIALS_BESTSELLER:
                 $this->cName = Shop::Lang()->get('bestsellers', 'global');
                 break;

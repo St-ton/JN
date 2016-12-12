@@ -6,21 +6,56 @@
 interface IFilter
 {
     /**
-     * @param int $id
+     * @param int|array $value - the current filter value(s)
+     * @param array $languages
      * @return $this
      */
-    public function setID($id);
+    public function init($value, $languages);
 
     /**
-     * @return int
+     * @return bool
      */
-    public function getID();
+    public function isInitialized();
+
+    /**
+     * @return int|string|array
+     */
+    public function getValue();
+
+    /**
+     * @param int|string|array $value
+     * @return $this
+     */
+    public function setValue($value);
+
+    /**
+     * @param int|string $value
+     * @return $this
+     */
+    public function addValue($value);
+
+    /**
+     * @param int $idx
+     * @return string|null|array
+     */
+    public function getSeo($idx = null);
 
     /**
      * @param array $languages
      * @return $this
      */
     public function setSeo($languages);
+
+    /**
+     * @return int
+     */
+    public function getType();
+
+    /**
+     * @param int $type
+     * @return $this
+     */
+    public function setType($type);
 
     /**
      * @return string
@@ -52,4 +87,14 @@ interface IFilter
      * @return string
      */
     public function getName();
+
+    /**
+     * @return string
+     */
+    public function getUrlParam();
+
+    /**
+     * @param Navigationsfilter $navifilter
+     */
+    public function setNaviFilter($navifilter);
 }

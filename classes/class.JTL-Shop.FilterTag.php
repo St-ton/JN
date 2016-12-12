@@ -18,7 +18,7 @@ class FilterTag extends AbstractFilter implements IFilter
      * @param int $id
      * @return $this
      */
-    public function setID($id)
+    public function setValue($id)
     {
         $this->kTag = (int)$id;
 
@@ -28,7 +28,7 @@ class FilterTag extends AbstractFilter implements IFilter
     /**
      * @return int
      */
-    public function getID()
+    public function getValue()
     {
         return $this->kTag;
     }
@@ -44,7 +44,7 @@ class FilterTag extends AbstractFilter implements IFilter
                     FROM tseo
                     LEFT JOIN ttag
                         ON tseo.kKey = ttag.kTag
-                    WHERE tseo.cKey = 'kTag' AND tseo.kKey = " . $this->getID(), 1
+                    WHERE tseo.cKey = 'kTag' AND tseo.kKey = " . $this->getValue(), 1
         );
         foreach ($languages as $language) {
             $this->cSeo[$language->kSprache] = '';
@@ -80,7 +80,7 @@ class FilterTag extends AbstractFilter implements IFilter
      */
     public function getSQLCondition()
     {
-        return "ttag.nAktiv = 1 AND ttagartikel.kTag = " . $this->getID();
+        return "ttag.nAktiv = 1 AND ttagartikel.kTag = " . $this->getValue();
     }
 
     /**

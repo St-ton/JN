@@ -18,7 +18,7 @@ class FilterNewsCategory extends AbstractFilter implements IFilter
      * @param int $id
      * @return $this
      */
-    public function setID($id)
+    public function setValue($id)
     {
         $this->kNewsKategorie = (int)$id;
 
@@ -28,7 +28,7 @@ class FilterNewsCategory extends AbstractFilter implements IFilter
     /**
      * @return int
      */
-    public function getID()
+    public function getValue()
     {
         return $this->kNewsKategorie;
     }
@@ -45,7 +45,7 @@ class FilterNewsCategory extends AbstractFilter implements IFilter
                     LEFT JOIN tnewskategorie
                         ON tnewskategorie.kNewsKategorie = tseo.kKey
                     WHERE cKey = 'kNewsKategorie'
-                        AND kKey = " . $this->getID(), 1
+                        AND kKey = " . $this->getValue(), 1
         );
         foreach ($languages as $language) {
             $this->cSeo[$language->kSprache] = '';

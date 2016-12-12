@@ -162,7 +162,7 @@ if ($doSearch) {
             $oSuchergebnisse->SucheErfolglos = 1;
         }
     }
-    erstelleFilterLoesenURLs(true, $oSuchergebnisse);
+    $NaviFilter->createUnsetFilterURLs(true, $oSuchergebnisse);
 }
 // Header bauen
 $oSuchergebnisse->SuchausdruckWrite = $NaviFilter->getHeader();

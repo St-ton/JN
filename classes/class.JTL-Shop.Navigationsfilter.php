@@ -1039,6 +1039,7 @@ class Navigationsfilter
     public function getCurrentStateData($ignore = null)
     {
         $state            = $this->getActiveState();
+        $stateCondition   = $state->getSQLCondition();
         $stateJoin        = $state->getSQLJoin();
         $data             = new stdClass();
         $data->having     = [];
@@ -1046,7 +1047,6 @@ class Navigationsfilter
         $data->joins      = (is_array($stateJoin))
             ? $stateJoin
             : [$stateJoin];
-        $stateCondition   = $state->getSQLCondition();
         if (!empty($stateCondition)) {
             $data->conditions[] = $stateCondition;
         }
@@ -1196,20 +1196,15 @@ class Navigationsfilter
         $this->cBrotNaviName = '';
         if ($this->Kategorie->isInitialized()) {
             $this->cBrotNaviName = $this->Kategorie->getName();
-        }
-        if ($this->Hersteller->isInitialized()) {
+        } elseif ($this->Hersteller->isInitialized()) {
             $this->cBrotNaviName = $this->Hersteller->getName();
-        }
-        if ($this->MerkmalWert->isInitialized()) {
+        } elseif ($this->MerkmalWert->isInitialized()) {
             $this->cBrotNaviName = $this->MerkmalWert->getName();
-        }
-        if ($this->Tag->isInitialized()) {
+        } elseif ($this->Tag->isInitialized()) {
             $this->cBrotNaviName = $this->Tag->getName();
-        }
-        if ($this->Suchspecial->isInitialized()) {
+        } elseif ($this->Suchspecial->isInitialized()) {
             $this->cBrotNaviName = $this->Suchspecial->getName();
-        }
-        if ($this->Suche->isInitialized()) {
+        } elseif ($this->Suche->isInitialized()) {
             $this->cBrotNaviName = $this->Suche->getName();
         }
         if ($this->Kategorie->isInitialized()) {

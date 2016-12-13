@@ -593,6 +593,10 @@ function getCustomerList($searchString, $kKundeSelected_arr)
             $oKunde_arr = [];
             $listTitle  = 'Bisher sind keine Kunden ausgew&auml;hlt. Suchen Sie jetzt nach Kunden!';
         } else {
+            foreach ($kKundeSelected_arr as &$kKundeSelected) {
+                $kKundeSelected = (int)$kKundeSelected;
+            }
+
             $oKunde_arr = Shop::DB()->query("
                 SELECT kKunde
                     FROM tkunde
@@ -604,10 +608,10 @@ function getCustomerList($searchString, $kKundeSelected_arr)
         $oKunde_arr = Shop::DB()->query("
             SELECT kKunde
                 FROM tkunde
-                WHERE cVorname LIKE '%" . $searchString . "%' OR
-                      cMail LIKE '%" . $searchString . "%' OR
-                      cOrt LIKE '%" . $searchString . "%' OR
-                      cPLZ LIKE '%" . $searchString . "%'
+                WHERE cVorname LIKE '%" . Shop()::DB()->escape($searchString) . "%' OR
+                      cMail LIKE '%" . Shop()::DB()->escape($searchString) . "%' OR
+                      cOrt LIKE '%" . Shop()::DB()->escape($searchString) . "%' OR
+                      cPLZ LIKE '%" . Shop()::DB()->escape($searchString) . "%'
                 LIMIT 100
             ", 2);
         $listTitle  = 'Gefundene Kunden: ' . (count($oKunde_arr) >= 100 ? '>= ' : '') . count($oKunde_arr);

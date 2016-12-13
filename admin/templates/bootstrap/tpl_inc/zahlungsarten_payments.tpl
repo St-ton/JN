@@ -1,11 +1,13 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=#payments#|cat:$oZahlungsart->cName cBeschreibung=#paymentsDesc# cDokuURL=#paymentsURL#}
 <div id="content" class="container-fluid">
-    {include file='tpl_inc/filtertools.tpl' oFilter=$oFilter cParam_arr=['a'=>$smarty.get.a,
-        'token'=>$smarty.session.jtl_token, 'kZahlungsart'=>$smarty.get.kZahlungsart]}
-    {include file='tpl_inc/pagination.tpl' oPagination=$oPagination cParam_arr=['a'=>$smarty.get.a,
-        'token'=>$smarty.session.jtl_token, 'kZahlungsart'=>$smarty.get.kZahlungsart]}
-    <form method="post" action="{$smarty.server.REQUEST_URI}">
+    {include file='tpl_inc/filtertools.tpl' oFilter=$oFilter cParam_arr=['a'=>'payments',
+        'token'=>$smarty.session.jtl_token, 'kZahlungsart'=>$oZahlungsart->kZahlungsart]}
+    {include file='tpl_inc/pagination.tpl' oPagination=$oPagination cParam_arr=['a'=>'payments',
+        'token'=>$smarty.session.jtl_token, 'kZahlungsart'=>$oZahlungsart->kZahlungsart]}
+    <form method="post" action="zahlungsarten.php">
         {$jtl_token}
+        <input type="hidden" name="a" value="payments" />
+        <input type="hidden" name="kZahlungsart" value="{$oZahlungsart->kZahlungsart}" />
         <div class="panel panel-default">
             {if $oZahlunseingang_arr|@count > 0}
                 <table class="table">
@@ -35,7 +37,7 @@
                                 <td>{$oZahlungseingang->cBestellNr}</td>
                                 <td>
                                     {$oZahlungseingang->cVorname} {$oZahlungseingang->cNachname}<br>
-                                    &lt;{$oZahlungseingang->cZahler}&gt;
+                                    {if !empty($oZahlungseingang->cZahler)}&lt;{$oZahlungseingang->cZahler}&gt;{/if}
                                 </td>
                                 <td>
                                     {$oZahlungseingang->fBetrag|number_format:2:',':'.'}

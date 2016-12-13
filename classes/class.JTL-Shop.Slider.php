@@ -93,6 +93,11 @@ class Slider implements IExtensionPoint
     public $bDirectionNav = true;
 
     /**
+     * @var bool
+     */
+    public $bUseKB = true;
+
+    /**
      *
      */
     private function __clone()

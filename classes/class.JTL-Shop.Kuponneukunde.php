@@ -43,6 +43,12 @@ class Kuponneukunde
     public $dErstellt;
 
     /**
+     * @access public
+     * @var string
+     */
+    public $cVerwendet;
+
+    /**
      * Constructor
      *
      * @access public
@@ -173,6 +179,18 @@ class Kuponneukunde
         } else {
             $this->dErstellt = $dErstellt;
         }
+    }
+
+    /**
+     * Sets the cVerwendet
+     *
+     * @access public
+     * @param string $cVerwendet
+     * @var string
+     */
+    public function setVerwendet($cVerwendet)
+    {
+        $this->cVerwendet = $cVerwendet;
     }
 
     /**

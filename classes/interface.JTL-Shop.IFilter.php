@@ -99,7 +99,25 @@ interface IFilter
     public function isCustom();
 
     /**
-     * @param Navigationsfilter $navifilter
+     * @param int   $languageID
+     * @param int   $customerGroupID
+     * @param array $config
+     * @return $this
      */
-    public function setNaviFilter($navifilter);
+    public function setData($languageID, $customerGroupID, $config);
+
+    /**
+     * @return int
+     */
+    public function getLanguageID();
+
+    /**
+     * @return int
+     */
+    public function getCustomerGroupID();
+
+    /**
+     * @return array
+     */
+    public function getConfig();
 }

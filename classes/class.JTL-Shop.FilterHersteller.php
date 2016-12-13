@@ -112,7 +112,7 @@ class FilterHersteller extends AbstractFilter implements IFilter
     public function getOptions($mixed = null)
     {
         $oHerstellerFilterDB_arr = [];
-        if ($this->navifilter->getConfig()['navigationsfilter']['allgemein_herstellerfilter_benutzen'] !== 'N') {
+        if ($this->getConfig()['navigationsfilter']['allgemein_herstellerfilter_benutzen'] !== 'N') {
             //it's actually stupid to filter by manufacturer if we already got a manufacturer filter active...
 //            if ($this->HerstellerFilter->isInitialized()) {
 //                $filter              = new stdClass();
@@ -122,9 +122,10 @@ class FilterHersteller extends AbstractFilter implements IFilter
 //
 //                return $filter;
 //            }
-            $order = $this->navifilter->getOrder();
-            $state = $this->navifilter->getCurrentStateData();
-            $join  = new FilterJoin();
+            $naviFilter = Shop::getNaviFilter();
+            $order      = $naviFilter->getOrder();
+            $state      = $naviFilter->getCurrentStateData();
+            $join       = new FilterJoin();
             $join->setComment('join from FilterHersteller::getOptions()')
                  ->setType('JOIN')
                  ->setTable('thersteller')
@@ -133,7 +134,7 @@ class FilterHersteller extends AbstractFilter implements IFilter
             $state->joins[] = $order->join;
             $state->joins[] = $join;
 
-            $query = $this->navifilter->getBaseQuery([
+            $query = $naviFilter->getBaseQuery([
                 'thersteller.kHersteller',
                 'thersteller.cName',
                 'thersteller.nSortNr',
@@ -146,7 +147,7 @@ class FilterHersteller extends AbstractFilter implements IFilter
                 ) AS ssMerkmal
                     LEFT JOIN tseo ON tseo.kKey = ssMerkmal.kHersteller
                         AND tseo.cKey = 'kHersteller'
-                        AND tseo.kSprache = " . $this->navifilter->getLanguageID() . "
+                        AND tseo.kSprache = " . $this->getLanguageID() . "
                     GROUP BY ssMerkmal.kHersteller
                     ORDER BY ssMerkmal.nSortNr, ssMerkmal.cName";
 
@@ -163,7 +164,7 @@ class FilterHersteller extends AbstractFilter implements IFilter
                 $oZusatzFilter->HerstellerFilter->kHersteller = (int)$oHerstellerFilterDB_arr[$i]->kHersteller;
                 $oZusatzFilter->HerstellerFilter->cSeo        = $oHerstellerFilterDB_arr[$i]->cSeo;
 
-                $oHerstellerFilterDB_arr[$i]->cURL = $this->navifilter->getURL(true, $oZusatzFilter);
+                $oHerstellerFilterDB_arr[$i]->cURL = $naviFilter->getURL(true, $oZusatzFilter);
             }
             unset($oZusatzFilter);
         }

@@ -21,11 +21,6 @@ abstract class AbstractFilter implements IFilter
     public $isCustom = true;
 
     /**
-     * @var Navigationsfilter
-     */
-    public $navifilter;
-
-    /**
      * @var string
      */
     public $cName;
@@ -49,6 +44,21 @@ abstract class AbstractFilter implements IFilter
      * @var int|string|array
      */
     public $value;
+
+    /**
+     * @var int
+     */
+    private $languageID = 0;
+
+    /**
+     * @var int
+     */
+    private $customerGroupID = 0;
+
+    /**
+     * @var array
+     */
+    private $config = [];
 
     /**
      * @var bool
@@ -136,20 +146,30 @@ abstract class AbstractFilter implements IFilter
     }
 
     /**
-     * AbstractFilter constructor.
-     * @param null|Navigationsfilter $navifilter
+     * AbstractFilter constructor
+     *
+     * @param int   $languageID
+     * @param int   $customerGroupID
+     * @param array $config
      */
-    public function __construct($navifilter = null)
+    public function __construct($languageID, $customerGroupID, $config)
     {
-        $this->navifilter = $navifilter;
+        $this->setData($languageID, $customerGroupID, $config);
     }
 
     /**
-     * @param Navigationsfilter $navifilter
+     * @param int   $languageID
+     * @param int   $customerGroupID
+     * @param array $config
+     * @return $this
      */
-    public function setNaviFilter($navifilter)
+    public function setData($languageID, $customerGroupID, $config)
     {
-        $this->navifilter = $navifilter;
+        $this->languageID      = $languageID;
+        $this->customerGroupID = $customerGroupID;
+        $this->config          = $config;
+
+        return $this;
     }
 
     /**
@@ -166,5 +186,29 @@ abstract class AbstractFilter implements IFilter
     public function isCustom()
     {
         return $this->isCustom;
+    }
+
+    /**
+     * @return int
+     */
+    public function getLanguageID()
+    {
+        return $this->languageID;
+    }
+
+    /**
+     * @return int
+     */
+    public function getCustomerGroupID()
+    {
+        return $this->customerGroupID;
+    }
+
+    /**
+     * @return array
+     */
+    public function getConfig()
+    {
+        return $this->config;
     }
 }

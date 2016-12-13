@@ -113,12 +113,10 @@ class FilterSearchSpecial extends AbstractFilter implements IFilter
      */
     public function getSQLCondition()
     {
-        $conf = Shop::getSettings([CONF_BOXEN, CONF_GLOBAL]);
         switch ($this->kKey) {
             case SEARCHSPECIALS_BESTSELLER:
-                $nAnzahl = (isset($conf['global']['global_bestseller_minanzahl'])
-                    && intval($conf['global']['global_bestseller_minanzahl'] > 0))
-                    ? (int)$conf['global']['global_bestseller_minanzahl']
+                $nAnzahl = (($min = $this->getConfig()['global']['global_bestseller_minanzahl']) > 0)
+                    ? (int)$min
                     : 100;
                 return "ROUND(tbestseller.fAnzahl) >= " . $nAnzahl;
 
@@ -140,8 +138,8 @@ class FilterSearchSpecial extends AbstractFilter implements IFilter
                 break;
 
             case SEARCHSPECIALS_NEWPRODUCTS:
-                $alter_tage = ($conf['boxen']['box_neuimsortiment_alter_tage'] > 0)
-                    ? (int)$conf['boxen']['box_neuimsortiment_alter_tage']
+                $alter_tage = (($age = $this->getConfig()['boxen']['box_neuimsortiment_alter_tage']) > 0)
+                    ? (int)$age
                     : 30;
 
                 return "tartikel.cNeu = 'Y' AND DATE_SUB(now(),INTERVAL $alter_tage DAY) < tartikel.dErstellt AND tartikel.cNeu = 'Y'";
@@ -154,8 +152,8 @@ class FilterSearchSpecial extends AbstractFilter implements IFilter
 
             case SEARCHSPECIALS_TOPREVIEWS:
                 if (!Shop::getNaviFilter()->BewertungFilter->isInitialized()) {
-                    $nMindestSterne = (intval($conf['boxen']['boxen_topbewertet_minsterne'] > 0))
-                        ? (int)$conf['boxen']['boxen_topbewertet_minsterne']
+                    $nMindestSterne = (($min = $this->getConfig()['boxen']['boxen_topbewertet_minsterne']) > 0)
+                        ? (int)$min
                         : 4;
 
                     return " ROUND(taex.fDurchschnittsBewertung) >= " . $nMindestSterne;

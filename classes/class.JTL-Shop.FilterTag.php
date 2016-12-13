@@ -114,10 +114,11 @@ class FilterTag extends AbstractFilter implements IFilter
     public function getOptions($mixed = null)
     {
         $oTagFilter_arr = [];
-        if ($this->navifilter->getConfig()['navigationsfilter']['allgemein_tagfilter_benutzen'] !== 'N') {
+        if ($this->getConfig()['navigationsfilter']['allgemein_tagfilter_benutzen'] !== 'N') {
+            $naviFilter   = Shop::getNaviFilter();
             $joinedTables = [];
-            $order        = $this->navifilter->getOrder();
-            $state        = $this->navifilter->getCurrentStateData();
+            $order        = $naviFilter->getOrder();
+            $state        = $naviFilter->getCurrentStateData();
 
             $join = new FilterJoin();
             $join->setComment('join1 from FilterTag::getOptions()')
@@ -146,8 +147,8 @@ class FilterTag extends AbstractFilter implements IFilter
             }
 
             $state->conditions[] = "ttag.nAktiv = 1";
-            $state->conditions[] = "ttag.kSprache = " . $this->navifilter->getLanguageID();
-            $query               = $this->navifilter->getBaseQuery([
+            $state->conditions[] = "ttag.kSprache = " . $this->getLanguageID();
+            $query               = $naviFilter->getBaseQuery([
                 'ttag.kTag',
                 'ttag.cName',
                 'ttagartikel.nAnzahlTagging',
@@ -159,9 +160,9 @@ class FilterTag extends AbstractFilter implements IFilter
                     FROM (" . $query . ") AS ssMerkmal
                 LEFT JOIN tseo ON tseo.kKey = ssMerkmal.kTag
                     AND tseo.cKey = 'kTag'
-                    AND tseo.kSprache = " . $this->navifilter->getLanguageID() . "
+                    AND tseo.kSprache = " . $this->getLanguageID() . "
                 GROUP BY ssMerkmal.kTag
-                ORDER BY nAnzahl DESC LIMIT 0, " . (int)$this->navifilter->getConfig()['navigationsfilter']['tagfilter_max_anzeige'];
+                ORDER BY nAnzahl DESC LIMIT 0, " . (int)$this->getConfig()['navigationsfilter']['tagfilter_max_anzeige'];
             $oTagFilterDB_arr = Shop::DB()->query($query, 2);
             foreach ($oTagFilterDB_arr as $oTagFilterDB) {
                 $oTagFilter = new stdClass();
@@ -173,7 +174,7 @@ class FilterTag extends AbstractFilter implements IFilter
                 }
                 //baue URL
                 $oZusatzFilter->TagFilter->kTag = $oTagFilterDB->kTag;
-                $oTagFilter->cURL               = $this->navifilter->getURL(true, $oZusatzFilter);
+                $oTagFilter->cURL               = $naviFilter->getURL(true, $oZusatzFilter);
                 $oTagFilter->kTag               = $oTagFilterDB->kTag;
                 $oTagFilter->cName              = $oTagFilterDB->cName;
                 $oTagFilter->nAnzahl            = $oTagFilterDB->nAnzahl;

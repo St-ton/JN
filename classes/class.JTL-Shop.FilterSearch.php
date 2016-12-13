@@ -142,13 +142,13 @@ class FilterSearch extends AbstractFilter implements IFilter
     public function getOptions($mixed = null)
     {
         $oSuchFilterDB_arr = [];
-        if ($this->navifilter->getConfig()['navigationsfilter']['suchtrefferfilter_nutzen'] !== 'N') {
-            $nLimit = (isset($this->navifilter->getConfig()['navigationsfilter']['suchtrefferfilter_anzahl']) && ($limit = (int)$this->navifilter->getConfig()['navigationsfilter']['suchtrefferfilter_anzahl']) > 0)
+        if ($this->getConfig()['navigationsfilter']['suchtrefferfilter_nutzen'] !== 'N') {
+            $naviFilter = Shop::getNaviFilter();
+            $nLimit     = (isset($this->getConfig()['navigationsfilter']['suchtrefferfilter_anzahl']) && ($limit = (int)$this->getConfig()['navigationsfilter']['suchtrefferfilter_anzahl']) > 0)
                 ? " LIMIT " . $limit
                 : '';
-
-            $order = $this->navifilter->getOrder();
-            $state = $this->navifilter->getCurrentStateData();
+            $order      = $naviFilter->getOrder();
+            $state      = $naviFilter->getCurrentStateData();
 
             $state->joins[] = $order->join;
             $join           = new FilterJoin();
@@ -169,12 +169,12 @@ class FilterSearch extends AbstractFilter implements IFilter
             $join->setComment('join3 from getSearchFilterOptions')
                  ->setType('JOIN')
                  ->setTable('tsuchanfrage')
-                 ->setOn('tsuchanfrage.cSuche = tsuchcache.cSuche AND tsuchanfrage.kSprache = ' . $this->navifilter->getLanguageID());
+                 ->setOn('tsuchanfrage.cSuche = tsuchcache.cSuche AND tsuchanfrage.kSprache = ' . $this->getLanguageID());
             $state->joins[] = $join;
 
             $state->conditions[] = "tsuchanfrage.nAktiv = 1";
 
-            $query = $this->navifilter->getBaseQuery(['tsuchanfrage.kSuchanfrage', 'tsuchanfrage.cSuche', 'tartikel.kArtikel'],
+            $query = $naviFilter->getBaseQuery(['tsuchanfrage.kSuchanfrage', 'tsuchanfrage.cSuche', 'tartikel.kArtikel'],
                 $state->joins, $state->conditions, $state->having, $order->orderBy, '',
                 ['tsuchanfrage.kSuchanfrage', 'tartikel.kArtikel']);
 
@@ -186,11 +186,11 @@ class FilterSearch extends AbstractFilter implements IFilter
             $oSuchFilterDB_arr = Shop::DB()->query($query, 2);
 
             $kSuchanfrage_arr = [];
-            if ($this->navifilter->Suche->kSuchanfrage > 0) {
-                $kSuchanfrage_arr[] = (int)$this->$this->navifilter->kSuchanfrage;
+            if ($naviFilter->Suche->kSuchanfrage > 0) {
+                $kSuchanfrage_arr[] = (int)$naviFilter->Suche->kSuchanfrage;
             }
-            if (count($this->navifilter->SuchFilter) > 0) {
-                foreach ($this->navifilter->SuchFilter as $oSuchFilter) {
+            if (count($naviFilter->SuchFilter) > 0) {
+                foreach ($naviFilter->SuchFilter as $oSuchFilter) {
                     if (isset($oSuchFilter->kSuchanfrage)) {
                         $kSuchanfrage_arr[] = (int)$oSuchFilter->kSuchanfrage;
                     }
@@ -216,7 +216,7 @@ class FilterSearch extends AbstractFilter implements IFilter
                 $oZusatzFilter                           = new stdClass();
                 $oZusatzFilter->SuchFilter               = new stdClass();
                 $oZusatzFilter->SuchFilter->kSuchanfrage = (int)$oSuchFilterDB_arr[$i]->kSuchanfrage;
-                $oSuchFilterDB_arr[$i]->cURL             = $this->navifilter->getURL(true, $oZusatzFilter);
+                $oSuchFilterDB_arr[$i]->cURL             = $naviFilter->getURL(true, $oZusatzFilter);
             }
             // Priorität berechnen
             $nPrioStep = 0;

@@ -92,14 +92,15 @@ class FilterRating extends AbstractFilter implements IFilter
     public function getOptions($mixed = null)
     {
         $oBewertungFilter_arr = [];
-        if ($this->navifilter->getConfig()['navigationsfilter']['bewertungsfilter_benutzen'] !== 'N') {
-            $order = $this->navifilter->getOrder();
-            $state = $this->navifilter->getCurrentStateData();
+        if ($this->getConfig()['navigationsfilter']['bewertungsfilter_benutzen'] !== 'N') {
+            $naviFilter = Shop::getNaviFilter();
+            $order      = $naviFilter->getOrder();
+            $state      = $naviFilter->getCurrentStateData();
 
             $state->joins[] = $order->join;
             $state->joins[] = $this->getSQLJoin();
 
-            $query = $this->navifilter->getBaseQuery([
+            $query = $naviFilter->getBaseQuery([
                 'ROUND(tartikelext.fDurchschnittsBewertung, 0) AS nSterne',
                 'tartikel.kArtikel'
             ], $state->joins, $state->conditions, $state->having, $order->orderBy);
@@ -122,7 +123,7 @@ class FilterRating extends AbstractFilter implements IFilter
                         $oZusatzFilter->BewertungFilter = new stdClass();
                     }
                     $oZusatzFilter->BewertungFilter->nSterne = $oBewertung->nStern;
-                    $oBewertung->cURL                        = $this->navifilter->getURL(true, $oZusatzFilter);
+                    $oBewertung->cURL                        = $naviFilter->getURL(true, $oZusatzFilter);
                     $oBewertungFilter_arr[]                  = $oBewertung;
                 }
             }

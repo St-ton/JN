@@ -307,41 +307,45 @@ class Navigationsfilter
      */
     private function initBaseStates()
     {
-        $this->Kategorie       = new FilterKategorie($this);
-        $this->KategorieFilter = new FilterKategorieFilter($this);
+        $languageID      = $this->getLanguageID();
+        $customerGroupID = $this->getCustomerGroupID();
+        $config          = $this->getConfig();
 
-        $this->HerstellerFilter = new FilterHersteller($this);
-        $this->Hersteller       = new FilterHersteller($this);
+        $this->Kategorie       = new FilterKategorie($languageID, $customerGroupID, $config);
+        $this->KategorieFilter = new FilterKategorieFilter($languageID, $customerGroupID, $config);
 
-        $this->Suchanfrage = new FilterSearchQuery($this);
+        $this->HerstellerFilter = new FilterHersteller($languageID, $customerGroupID, $config);
+        $this->Hersteller       = new FilterHersteller($languageID, $customerGroupID, $config);
 
-        $this->MerkmalWert = new FilterAttribute($this);
+        $this->Suchanfrage = new FilterSearchQuery($languageID, $customerGroupID, $config);
 
-        $this->Tag = new FilterTag($this);
+        $this->MerkmalWert = new FilterAttribute($languageID, $customerGroupID, $config);
 
-        $this->News = new FilterNews($this);
+        $this->Tag = new FilterTag($languageID, $customerGroupID, $config);
 
-        $this->NewsMonat = new FilterNewsOverview($this);
+        $this->News = new FilterNews($languageID, $customerGroupID, $config);
 
-        $this->NewsKategorie = new FilterNewsCategory($this);
+        $this->NewsMonat = new FilterNewsOverview($languageID, $customerGroupID, $config);
 
-        $this->Suchspecial = new FilterSearchSpecial($this);
+        $this->NewsKategorie = new FilterNewsCategory($languageID, $customerGroupID, $config);
+
+        $this->Suchspecial = new FilterSearchSpecial($languageID, $customerGroupID, $config);
 
         $this->MerkmalFilter = [];
         $this->SuchFilter    = [];
         $this->TagFilter     = [];
 
-        $this->SuchspecialFilter = new FilterSearchSpecialFilter($this);
+        $this->SuchspecialFilter = new FilterSearchSpecialFilter($languageID, $customerGroupID, $config);
 
-        $this->BewertungFilter = new FilterRating($this);
+        $this->BewertungFilter = new FilterRating($languageID, $customerGroupID, $config);
 
-        $this->PreisspannenFilter = new FilterPriceRange($this);
+        $this->PreisspannenFilter = new FilterPriceRange($languageID, $customerGroupID, $config);
 
-        $this->tagFilterCompat = new FilterTagFilter($this);
-        $this->attributeFilterCompat = new FilterAttributeFilter($this);
-        $this->searchFilterCompat = new FilterSearch($this);
+        $this->tagFilterCompat       = new FilterTagFilter($languageID, $customerGroupID, $config);
+        $this->attributeFilterCompat = new FilterAttributeFilter($languageID, $customerGroupID, $config);
+        $this->searchFilterCompat    = new FilterSearch($languageID, $customerGroupID, $config);
 
-        $this->Suche = new FilterSearch($this);
+        $this->Suche = new FilterSearch($languageID, $customerGroupID, $config);
         executeHook(HOOK_NAVIGATIONSFILTER_INIT, ['navifilter' => $this]);
 
         return $this;
@@ -353,74 +357,77 @@ class Navigationsfilter
      */
     public function initStates($params)
     {
-        $this->params = $params;
-        $count        = 0;
+        $this->params    = $params;
+        $count           = 0;
+        $languageID      = $this->getLanguageID();
+        $customerGroupID = $this->getCustomerGroupID();
+        $config          = $this->getConfig();
         if ($params['kKategorie'] > 0) {
-            $this->Kategorie = (new FilterKategorie($this))->init($params['kKategorie'], $this->oSprache_arr);
+            $this->Kategorie = (new FilterKategorie($languageID, $customerGroupID, $config))->init($params['kKategorie'], $this->oSprache_arr);
             $this->baseState = $this->Kategorie;
         }
         if ($params['kKategorieFilter'] > 0) {
-            $this->KategorieFilter = (new FilterKategorieFilter($this))->init($params['kKategorieFilter'], $this->oSprache_arr);
+            $this->KategorieFilter = (new FilterKategorieFilter($languageID, $customerGroupID, $config))->init($params['kKategorieFilter'], $this->oSprache_arr);
             $this->addActiveFilter($this->KategorieFilter);
             ++$count;
         }
         if ($params['kHersteller'] > 0) {
-            $this->Hersteller = (new FilterHersteller($this))->init($params['kHersteller'], $this->oSprache_arr);
+            $this->Hersteller = (new FilterHersteller($languageID, $customerGroupID, $config))->init($params['kHersteller'], $this->oSprache_arr);
             $this->baseState  = $this->Hersteller;
         }
         if ($params['kHerstellerFilter'] > 0) {
-            $this->HerstellerFilter = (new FilterHerstellerFilter($this))->init($params['kHerstellerFilter'], $this->oSprache_arr);
+            $this->HerstellerFilter = (new FilterHerstellerFilter($languageID, $customerGroupID, $config))->init($params['kHerstellerFilter'], $this->oSprache_arr);
             $this->addActiveFilter($this->HerstellerFilter);
             ++$count;
         }
         if ($params['kSuchanfrage'] > 0) {
-            $this->Suchanfrage = (new FilterSearchQuery($this))->init($params['kSuchanfrage'], $this->oSprache_arr);
+            $this->Suchanfrage = (new FilterSearchQuery($languageID, $customerGroupID, $config))->init($params['kSuchanfrage'], $this->oSprache_arr);
             $this->baseState   = $this->Suchanfrage;
             $oSuchanfrage      = Shop::DB()->select('tsuchanfrage', 'kSuchanfrage', $params['kSuchanfrage']);
             if (isset($oSuchanfrage->cSuche) && strlen($oSuchanfrage->cSuche) > 0) {
-                $this->Suche         = (new FilterSearch($this))->init($params['kSuchanfrage'], $this->oSprache_arr);
+                $this->Suche         = (new FilterSearch($languageID, $customerGroupID, $config))->init($params['kSuchanfrage'], $this->oSprache_arr);
                 $this->Suche->cSuche = $oSuchanfrage->cSuche;
             }
         }
         if ($params['kMerkmalWert'] > 0) {
-            $this->MerkmalWert = (new FilterAttribute($this))->init($params['kMerkmalWert'], $this->oSprache_arr);
+            $this->MerkmalWert = (new FilterAttribute($languageID, $customerGroupID, $config))->init($params['kMerkmalWert'], $this->oSprache_arr);
             $this->baseState   = $this->MerkmalWert;
         }
         if (count($params['MerkmalFilter_arr']) > 0) {
             foreach ($params['MerkmalFilter_arr'] as $mmf) {
-                $filter = (new FilterAttributeFilter($this))->init($mmf, $this->oSprache_arr);
+                $filter = (new FilterAttributeFilter($languageID, $customerGroupID, $config))->init($mmf, $this->oSprache_arr);
                 $this->MerkmalFilter[] = $filter;
                 $this->addActiveFilter($filter);
             }
             ++$count;
         }
         if ($params['kTag'] > 0) {
-            $this->Tag       = (new FilterTag($this))->init($params['kTag'], $this->oSprache_arr);
+            $this->Tag       = (new FilterTag($languageID, $customerGroupID, $config))->init($params['kTag'], $this->oSprache_arr);
             $this->baseState = $this->Tag;
         }
         if (count($params['TagFilter_arr']) > 0) {
             foreach ($params['TagFilter_arr'] as $tf) {
-                $filter = (new FilterTagFilter($this))->init($tf, $this->oSprache_arr);
+                $filter = (new FilterTagFilter($languageID, $customerGroupID, $config))->init($tf, $this->oSprache_arr);
                 $this->TagFilter[] = $filter;
                 $this->addActiveFilter($filter);
             }
             ++$count;
         }
         if ($params['kNews'] > 0) {
-            $this->News = (new FilterNews($this))->init($params['kNews'], $this->oSprache_arr);
+            $this->News = (new FilterNews($languageID, $customerGroupID, $config))->init($params['kNews'], $this->oSprache_arr);
         }
         if ($params['kNewsMonatsUebersicht'] > 0) {
-            $this->NewsMonat = (new FilterNewsOverview($this))->init($params['kNewsMonatsUebersicht'], $this->oSprache_arr);
+            $this->NewsMonat = (new FilterNewsOverview($languageID, $customerGroupID, $config))->init($params['kNewsMonatsUebersicht'], $this->oSprache_arr);
         }
         if ($params['kNewsKategorie'] > 0) {
-            $this->NewsKategorie = (new FilterNewsCategory($this))->init($params['kNewsKategorie'], $this->oSprache_arr);
+            $this->NewsKategorie = (new FilterNewsCategory($languageID, $customerGroupID, $config))->init($params['kNewsKategorie'], $this->oSprache_arr);
         }
         if ($params['kSuchspecial'] > 0) {
-            $this->Suchspecial = (new FilterSearchSpecial($this))->init($params['kSuchspecial'], $this->oSprache_arr);
+            $this->Suchspecial = (new FilterSearchSpecial($languageID, $customerGroupID, $config))->init($params['kSuchspecial'], $this->oSprache_arr);
             $this->baseState   = $this->Suchspecial;
         }
         if ($params['kSuchspecialFilter'] > 0) {
-            $this->SuchspecialFilter = (new FilterSearchSpecialFilter($this))->init($params['kSuchspecialFilter'], $this->oSprache_arr);
+            $this->SuchspecialFilter = (new FilterSearchSpecialFilter($languageID, $customerGroupID, $config))->init($params['kSuchspecialFilter'], $this->oSprache_arr);
             $this->addActiveFilter($this->SuchspecialFilter);
             ++$count;
         }
@@ -428,7 +435,7 @@ class Navigationsfilter
         if (count($params['SuchFilter_arr']) > 0) {
             //@todo - same as suchfilter?
             foreach ($params['SuchFilter_arr'] as $sf) {
-                $filter = (new FilterSearch($this))->init($sf, $this->oSprache_arr);
+                $filter = (new FilterSearch($languageID, $customerGroupID, $config))->init($sf, $this->oSprache_arr);
                 $this->SuchFilter[] = $filter;
                 $this->addActiveFilter($filter);
             }
@@ -436,12 +443,12 @@ class Navigationsfilter
         }
 
         if ($params['nBewertungSterneFilter'] > 0) {
-            $this->BewertungFilter = (new FilterRating($this))->init($params['nBewertungSterneFilter'], []);
+            $this->BewertungFilter = (new FilterRating($languageID, $customerGroupID, $config))->init($params['nBewertungSterneFilter'], []);
             $this->addActiveFilter($this->BewertungFilter);
             ++$count;
         }
         if (strlen($params['cPreisspannenFilter']) > 0) {
-            $this->PreisspannenFilter = (new FilterPriceRange($this))->init($params['cPreisspannenFilter'], []);
+            $this->PreisspannenFilter = (new FilterPriceRange($languageID, $customerGroupID, $config))->init($params['cPreisspannenFilter'], []);
             $this->addActiveFilter($this->PreisspannenFilter);
             ++$count;
         }
@@ -453,14 +460,14 @@ class Navigationsfilter
         }
         if (strlen($params['cSuche']) > 0) {
             $params['cSuche']         = StringHandler::filterXSS($params['cSuche']);
-            $this->Suche              = (new FilterSearch($this))->init($params['kSuchanfrage'], $this->oSprache_arr);
+            $this->Suche              = (new FilterSearch($languageID, $customerGroupID, $config))->init($params['kSuchanfrage'], $this->oSprache_arr);
             $this->Suche->cSuche      = $params['cSuche'];
             $this->EchteSuche         = new stdClass();
             $this->EchteSuche->cSuche = $params['cSuche'];
         }
         if (!empty($this->Suche->cSuche)) {
             //@todo?
-            $this->Suche->kSuchCache = bearbeiteSuchCache($this);
+            $this->Suche->kSuchCache = bearbeiteSuchCache($languageID, $customerGroupID, $config);
             $this->baseState         = $this->Suche;
         }
         $this->nSeite        = max(1, verifyGPCDataInteger('seite'));
@@ -477,7 +484,7 @@ class Navigationsfilter
      */
     public function registerFilter(IFilter $filter)
     {
-        $filter->setNaviFilter($this);
+        $filter->setData($this->getLanguageID(), $this->getCustomerGroupID(), $this->getConfig());
         $this->filters[] = $filter;
 
         return $this;
@@ -492,7 +499,7 @@ class Navigationsfilter
     {
         if (class_exists($filterName)) {
             /** @var IFilter $filter */
-            $filter = new $filterName($this);
+            $filter = new $filterName($this->getLanguageID(), $this->getCustomerGroupID(), $this->getConfig());
             $this->filters[] = $filter;
         } else {
             throw new Exception('Cannot register filter class ' . $filterName);

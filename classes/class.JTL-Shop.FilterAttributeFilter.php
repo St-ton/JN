@@ -109,6 +109,7 @@ class FilterAttributeFilter extends FilterAttribute
      */
     public function getOptions($mixed = null)
     {
+        $naviFilter                  = Shop::getNaviFilter();
         $oAktuelleKategorie          = (isset($mixed['oAktuelleKategorie']))
             ? $mixed['oAktuelleKategorie']
             : null;
@@ -117,21 +118,21 @@ class FilterAttributeFilter extends FilterAttribute
             : false;
         $oMerkmalFilter_arr          = [];
         $cKatAttribMerkmalFilter_arr = [];
-        if (isset($this->navifilter->getConfig()['navigationsfilter']['merkmalfilter_verwenden']) && $this->navifilter->getConfig()['navigationsfilter']['merkmalfilter_verwenden'] !== 'N' || $bForce) {
+        if (isset($this->getConfig()['navigationsfilter']['merkmalfilter_verwenden']) && $this->getConfig()['navigationsfilter']['merkmalfilter_verwenden'] !== 'N' || $bForce) {
             // Ist Kategorie Mainword, dann prüfe die Kategorie-Funktionsattribute auf merkmalfilter
-            if ($this->navifilter->KategorieFilter->isInitialized()) {
+            if ($naviFilter->KategorieFilter->isInitialized()) {
                 if (isset($oAktuelleKategorie->categoryFunctionAttributes) && is_array($oAktuelleKategorie->categoryFunctionAttributes) && count($oAktuelleKategorie->categoryFunctionAttributes) > 0) {
                     if (!empty($oAktuelleKategorie->categoryFunctionAttributes[KAT_ATTRIBUT_MERKMALFILTER])) {
                         $cKatAttribMerkmalFilter_arr = explode(';', $oAktuelleKategorie->categoryFunctionAttributes[KAT_ATTRIBUT_MERKMALFILTER]);
                     }
                 }
             }
-            $order          = $this->navifilter->getOrder();
-            $state          = $this->navifilter->getCurrentStateData('FilterAttributeFilter');
+            $order          = $naviFilter->getOrder();
+            $state          = $naviFilter->getCurrentStateData('FilterAttributeFilter');
             $state->joins[] = $order->join;
 
             $select = 'tmerkmal.cName';
-            if (true || !$this->$this->navifilter->isInitialized() && count($this->navifilter->MerkmalFilter) === 0) {
+            if (true || !$naviFilter->MerkmalWert->isInitialized() && count($naviFilter->MerkmalFilter) === 0) {
                 $join = new FilterJoin();
                 $join->setComment('join1 from FilterAttributeFilter::getOptions()')
                      ->setType('JOIN')
@@ -150,7 +151,7 @@ class FilterAttributeFilter extends FilterAttribute
             $join->setComment('join3 from FilterAttributeFilter::getOptions()')
                  ->setType('JOIN')
                  ->setTable('tmerkmalwertsprache')
-                 ->setOn('tmerkmalwertsprache.kMerkmalWert = tartikelmerkmal.kMerkmalWert AND tmerkmalwertsprache.kSprache = ' . $this->navifilter->getLanguageID());
+                 ->setOn('tmerkmalwertsprache.kMerkmalWert = tartikelmerkmal.kMerkmalWert AND tmerkmalwertsprache.kSprache = ' . $this->getLanguageID());
             $state->joins[] = $join;
 
             $join = new FilterJoin();
@@ -166,14 +167,14 @@ class FilterAttributeFilter extends FilterAttribute
                 $join->setComment('join5 from FilterAttributeFilter::getOptions()')
                      ->setType('JOIN')
                      ->setTable('tmerkmalsprache')
-                     ->setOn('tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal AND tmerkmalsprache.kSprache = ' . $this->navifilter->getLanguageID());
+                     ->setOn('tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal AND tmerkmalsprache.kSprache = ' . $this->getLanguageID());
                 $state->joins[] = $join;
             }
 
-            if (count($this->navifilter->MerkmalFilter) > 0) {
+            if (count($naviFilter->MerkmalFilter) > 0) {
                 $join            = new FilterJoin();
                 $activeFilterIDs = [];
-                foreach ($this->navifilter->MerkmalFilter as $filter) {
+                foreach ($naviFilter->MerkmalFilter as $filter) {
                     $activeFilterIDs[] = $filter->getValue();
                 }
                 $join->setComment('join6 from FilterAttributeFilter::getOptions()')
@@ -189,7 +190,7 @@ class FilterAttributeFilter extends FilterAttribute
                 $state->joins[] = $join;
             }
 
-            $query = $this->navifilter->getBaseQuery([
+            $query = $naviFilter->getBaseQuery([
                 'tartikelmerkmal.kMerkmal',
                 'tartikelmerkmal.kMerkmalWert',
                 'tmerkmalwert.cBildPfad AS cMMWBildPfad',
@@ -212,7 +213,7 @@ class FilterAttributeFilter extends FilterAttribute
                 FROM (" . $query . ") AS ssMerkmal
                 LEFT JOIN tseo ON tseo.kKey = ssMerkmal.kMerkmalWert
                     AND tseo.cKey = 'kMerkmalWert'
-                    AND tseo.kSprache = " . $this->navifilter->getLanguageID() . "
+                    AND tseo.kSprache = " . $this->getLanguageID() . "
                 GROUP BY ssMerkmal.kMerkmalWert
                 ORDER BY ssMerkmal.nSortMerkmal, ssMerkmal.nSort, ssMerkmal.cWert";
 
@@ -220,13 +221,13 @@ class FilterAttributeFilter extends FilterAttribute
 
             if (is_array($oMerkmalFilterDB_arr)) {
                 foreach ($oMerkmalFilterDB_arr as $i => $oMerkmalFilterDB) {
-                    $nPos          = $this->navifilter->getAttributePosition($oMerkmalFilter_arr, (int)$oMerkmalFilterDB->kMerkmal);
+                    $nPos          = $naviFilter->getAttributePosition($oMerkmalFilter_arr, (int)$oMerkmalFilterDB->kMerkmal);
                     $oMerkmalWerte = new stdClass();
 
                     $oMerkmalWerte->kMerkmalWert = (int)$oMerkmalFilterDB->kMerkmalWert;
                     $oMerkmalWerte->cWert        = $oMerkmalFilterDB->cWert;
                     $oMerkmalWerte->nAnzahl      = (int)$oMerkmalFilterDB->nAnzahl;
-                    $oMerkmalWerte->nAktiv       = ($this->navifilter->MerkmalWert->getValue() === $oMerkmalWerte->kMerkmalWert || ($this->navifilter->attributeValueIsActive($oMerkmalWerte->kMerkmalWert)))
+                    $oMerkmalWerte->nAktiv       = ($naviFilter->MerkmalWert->getValue() === $oMerkmalWerte->kMerkmalWert || ($naviFilter->attributeValueIsActive($oMerkmalWerte->kMerkmalWert)))
                         ? 1
                         : 0;
 
@@ -242,7 +243,7 @@ class FilterAttributeFilter extends FilterAttribute
                     $oZusatzFilter->MerkmalFilter               = new stdClass();
                     $oZusatzFilter->MerkmalFilter->kMerkmalWert = (int)$oMerkmalFilterDB->kMerkmalWert;
                     $oZusatzFilter->MerkmalFilter->cSeo         = $oMerkmalFilterDB->cSeo;
-                    $oMerkmalWerte->cURL                        = $this->navifilter->getURL(true, $oZusatzFilter);
+                    $oMerkmalWerte->cURL                        = $naviFilter->getURL(true, $oZusatzFilter);
 
                     //hack for #4815
                     if ($oMerkmalWerte->nAktiv === 1 && isset($oZusatzFilter->MerkmalFilter->cSeo)) {
@@ -268,7 +269,7 @@ class FilterAttributeFilter extends FilterAttribute
                         $oMerkmalFilter_arr[$nPos]->oMerkmalWerte_arr[] = $oMerkmalWerte;
                     } else {
                         //#533 Anzahl max Merkmale erreicht?
-                        if (($max = $this->navifilter->getConfig()['navigationsfilter']['merkmalfilter_maxmerkmale']) > 0 &&
+                        if (($max = $this->getConfig()['navigationsfilter']['merkmalfilter_maxmerkmale']) > 0 &&
                             count($oMerkmalFilter_arr) >= $max
                         ) {
                             continue;
@@ -281,7 +282,7 @@ class FilterAttributeFilter extends FilterAttribute
             //Filter durchgehen und die Merkmalwerte entfernen, die zuviel sind und deren Anzahl am geringsten ist.
             foreach ($oMerkmalFilter_arr as $o => $oMerkmalFilter) {
                 //#534 Anzahl max Merkmalwerte erreicht?
-                if (($max = $this->navifilter->getConfig()['navigationsfilter']['merkmalfilter_maxmerkmalwerte']) > 0) {
+                if (($max = $this->getConfig()['navigationsfilter']['merkmalfilter_maxmerkmalwerte']) > 0) {
                     while (count($oMerkmalFilter_arr[$o]->oMerkmalWerte_arr) > $max) {
                         $nMinAnzahl = 999999;
                         $nIndex     = -1;

@@ -231,12 +231,13 @@ class FilterSearchSpecialFilter extends AbstractFilter implements IFilter
     public function getOptions($mixed = null)
     {
         $oSuchspecialFilterDB_arr = [];
-        if ($this->navifilter->getConfig()['navigationsfilter']['allgemein_suchspecialfilter_benutzen'] === 'Y') {
+        if ($this->getConfig()['navigationsfilter']['allgemein_suchspecialfilter_benutzen'] === 'Y') {
+            $naviFilter = Shop::getNaviFilter();
             for ($i = 1; $i < 7; ++$i) {
-                $state = $this->navifilter->getCurrentStateData();
+                $state = $naviFilter->getCurrentStateData();
                 switch ($i) {
                     case SEARCHSPECIALS_BESTSELLER:
-                        $nAnzahl = (($min = $this->navifilter->getConfig()['global']['global_bestseller_minanzahl']) > 0)
+                        $nAnzahl = (($min = $this->getConfig()['global']['global_bestseller_minanzahl']) > 0)
                             ? (int)$min
                             : 100;
 
@@ -270,10 +271,10 @@ class FilterSearchSpecialFilter extends AbstractFilter implements IFilter
                         }
                         $state->conditions[] = "tartikelsonderpreis.cAktiv = 'Y' AND tartikelsonderpreis.dStart <= now()";
                         $state->conditions[] = "(tartikelsonderpreis.dEnde >= CuRDATE() OR tartikelsonderpreis.dEnde = '0000-00-00')";
-                        $state->conditions[] = $tsonderpreise . ".kKundengruppe = " . $this->navifilter->getCustomerGroupID();
+                        $state->conditions[] = $tsonderpreise . ".kKundengruppe = " . $this->getCustomerGroupID();
                         break;
                     case SEARCHSPECIALS_NEWPRODUCTS:
-                        $alter_tage          = (($age = $this->navifilter->getConfig()['boxen']['box_neuimsortiment_alter_tage']) > 0)
+                        $alter_tage          = (($age = $this->getConfig()['boxen']['box_neuimsortiment_alter_tage']) > 0)
                             ? (int)$age
                             : 30;
                         $state->conditions[] = "tartikel.cNeu = 'Y' AND DATE_SUB(now(),INTERVAL $alter_tage DAY) < tartikel.dErstellt";
@@ -285,7 +286,7 @@ class FilterSearchSpecialFilter extends AbstractFilter implements IFilter
                         $state->conditions[] = 'now() < tartikel.dErscheinungsdatum';
                         break;
                     case SEARCHSPECIALS_TOPREVIEWS:
-                        if (!$this->navifilter->BewertungFilter->isInitialized()) {
+                        if (!$naviFilter->BewertungFilter->isInitialized()) {
                             $join = new FilterJoin();
                             $join->setComment('join from FilterSearchSpecialFilter::getOptions() top reviews')
                                  ->setType('JOIN')
@@ -293,10 +294,10 @@ class FilterSearchSpecialFilter extends AbstractFilter implements IFilter
                                  ->setOn('tartikelext.kArtikel = tartikel.kArtikel');
                             $state->joins[] = $join;
                         }
-                        $state->conditions[] = "ROUND(tartikelext.fDurchschnittsBewertung) >= " . (int)$this->navifilter->getConfig()['boxen']['boxen_topbewertet_minsterne'];
+                        $state->conditions[] = "ROUND(tartikelext.fDurchschnittsBewertung) >= " . (int)$this->getConfig()['boxen']['boxen_topbewertet_minsterne'];
                         break;
                 }
-                $qry                   = $this->navifilter->getBaseQuery(['tartikel.kArtikel'], $state->joins, $state->conditions, $state->having);
+                $qry                   = $naviFilter->getBaseQuery(['tartikel.kArtikel'], $state->joins, $state->conditions, $state->having);
                 $oSuchspecialFilterDB  = Shop::DB()->query($qry, 2);
                 $oSuchspecial          = new stdClass();
                 $oSuchspecial->nAnzahl = count($oSuchspecialFilterDB);
@@ -305,7 +306,7 @@ class FilterSearchSpecialFilter extends AbstractFilter implements IFilter
                 $oZusatzFilter                          = new stdClass();
                 $oZusatzFilter->SuchspecialFilter       = new stdClass();
                 $oZusatzFilter->SuchspecialFilter->kKey = $i;
-                $oSuchspecial->cURL                     = $this->navifilter->getURL(true, $oZusatzFilter);
+                $oSuchspecial->cURL                     = $naviFilter->getURL(true, $oZusatzFilter);
                 $oSuchspecialFilterDB_arr[$i]           = $oSuchspecial;
             }
         }

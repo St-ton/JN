@@ -238,7 +238,7 @@ class FilterPriceRange extends AbstractFilter implements IFilter
             $fKundenrabatt = $_SESSION['Kunde']->fRabatt;
         }
         // Wenn Option vorhanden, dann nur Spannen anzeigen, in denen Artikel vorhanden sind
-        if ($this->navifilter->getConfig()['navigationsfilter']['preisspannenfilter_anzeige_berechnung'] === 'A') {
+        if ($this->getConfig()['navigationsfilter']['preisspannenfilter_anzeige_berechnung'] === 'A') {
 //            $nPreisMax = $oPreis->fMaxPreis;
             $nPreisMin               = $oPreis->fMinPreis;
             $nStep                   = $oPreis->fStep;
@@ -292,11 +292,12 @@ class FilterPriceRange extends AbstractFilter implements IFilter
      */
     public function getOptions($mixed = null)
     {
+        $naviFilter       = Shop::getNaviFilter();
         $productCount     = $mixed;
         $oPreisspanne_arr = [];
         // Prüfe ob es nur einen Artikel in der Artikelübersicht gibt, falls ja und es ist noch kein Preisspannenfilter gesetzt
         // dürfen keine Preisspannenfilter angezeigt werden
-        if ($this->navifilter->getConfig()['navigationsfilter']['preisspannenfilter_benutzen'] === 'N' || ($productCount === 1 && !$this->isInitialized())) {
+        if ($this->getConfig()['navigationsfilter']['preisspannenfilter_benutzen'] === 'N' || ($productCount === 1 && !$this->isInitialized())) {
             return $oPreisspanne_arr;
         }
         $currency = (isset($_SESSION['Waehrung']))
@@ -306,13 +307,13 @@ class FilterPriceRange extends AbstractFilter implements IFilter
             $currency = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
         }
 
-        $order = $this->navifilter->getOrder();
-        $state = $this->navifilter->getCurrentStateData();
+        $order = $naviFilter->getOrder();
+        $state = $naviFilter->getCurrentStateData();
 
         $join = new FilterJoin();
         $join->setType('LEFT JOIN')
              ->setTable('tartikelkategorierabatt')
-             ->setOn("tartikelkategorierabatt.kKundengruppe = " . $this->navifilter->getCustomerGroupID() .
+             ->setOn("tartikelkategorierabatt.kKundengruppe = " . $this->getCustomerGroupID() .
                  " AND tartikelkategorierabatt.kArtikel = tartikel.kArtikel");
         $state->joins[] = $join;
 
@@ -329,19 +330,19 @@ class FilterPriceRange extends AbstractFilter implements IFilter
         $join->setType('LEFT JOIN')
              ->setTable('tsonderpreise')
              ->setOn("tartikelsonderpreis.kArtikelSonderpreis = tsonderpreise.kArtikelSonderpreis 
-                        AND tsonderpreise.kKundengruppe = " . $this->navifilter->getCustomerGroupID());
+                        AND tsonderpreise.kKundengruppe = " . $this->getCustomerGroupID());
         $state->joins[] = $join;
 
         $state->joins[] = $order->join;
 
         // Automatisch
-        if ($this->navifilter->getConfig()['navigationsfilter']['preisspannenfilter_anzeige_berechnung'] === 'A') {
+        if ($this->getConfig()['navigationsfilter']['preisspannenfilter_anzeige_berechnung'] === 'A') {
             $join = new FilterJoin();
             $join->setComment('join1 from FilterPriceRange::getOptions()')
                  ->setTable('tpreise')
                  ->setType('JOIN')
                  ->setOn('tpreise.kArtikel = tartikel.kArtikel 
-                            AND tpreise.kKundengruppe = ' . $this->navifilter->getCustomerGroupID());
+                            AND tpreise.kKundengruppe = ' . $this->getCustomerGroupID());
             $state->joins[] = $join;
 
             $join = new FilterJoin();
@@ -349,7 +350,7 @@ class FilterPriceRange extends AbstractFilter implements IFilter
                  ->setTable('tartikelsichtbarkeit')
                  ->setType('LEFT JOIN')
                  ->setOn('tartikel.kArtikel = tartikelsichtbarkeit.kArtikel 
-                            AND tartikelsichtbarkeit.kKundengruppe = ' . $this->navifilter->getCustomerGroupID());
+                            AND tartikelsichtbarkeit.kKundengruppe = ' . $this->getCustomerGroupID());
             $state->joins[] = $join;
 
             //remove duplicate joins
@@ -403,7 +404,7 @@ class FilterPriceRange extends AbstractFilter implements IFilter
                 " . $state->joins . "
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
                     AND tartikel.kVaterArtikel = 0
-                    " . $this->navifilter->getStorageFilter() . "
+                    " . $naviFilter->getStorageFilter() . "
                     " . $state->conditions . "
                 GROUP BY tartikel.kArtikel
                 " . $state->having . "
@@ -430,7 +431,7 @@ class FilterPriceRange extends AbstractFilter implements IFilter
                     $state->joins . "
                         WHERE tartikelsichtbarkeit.kArtikel IS NULL
                             AND tartikel.kVaterArtikel = 0
-                            " . $this->navifilter->getStorageFilter() . "
+                            " . $naviFilter->getStorageFilter() . "
                             " . $state->conditions . "
                         GROUP BY tartikel.kArtikel
                         " . $state->having . "
@@ -479,7 +480,7 @@ class FilterPriceRange extends AbstractFilter implements IFilter
                     }
                     $oZusatzFilter->PreisspannenFilter->fVon = $oPreisspannenFilter->nVon;
                     $oZusatzFilter->PreisspannenFilter->fBis = $oPreisspannenFilter->nBis;
-                    $oPreisspannenFilter->cURL               = $this->navifilter->getURL(true, $oZusatzFilter);
+                    $oPreisspannenFilter->cURL               = $naviFilter->getURL(true, $oZusatzFilter);
                     $oPreisspanne_arr[]                      = $oPreisspannenFilter;
                 }
             }
@@ -516,7 +517,7 @@ class FilterPriceRange extends AbstractFilter implements IFilter
                     $state->joins . "
                                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
                                     AND tartikel.kVaterArtikel = 0
-                                    " . $this->navifilter->getStorageFilter() . "
+                                    " . $naviFilter->getStorageFilter() . "
                                     " . $state->where . "
                                 GROUP BY tartikel.kArtikel
                                 " . $state->having . "
@@ -549,13 +550,13 @@ class FilterPriceRange extends AbstractFilter implements IFilter
                     $oZusatzFilter->PreisspannenFilter       = new stdClass();
                     $oZusatzFilter->PreisspannenFilter->fVon = $oPreisspannenfilterTMP->nVon;
                     $oZusatzFilter->PreisspannenFilter->fBis = $oPreisspannenfilterTMP->nBis;
-                    $oPreisspannenfilterTMP->cURL            = $this->navifilter->getURL(true, $oZusatzFilter);
+                    $oPreisspannenfilterTMP->cURL            = $naviFilter->getURL(true, $oZusatzFilter);
                     $oPreisspanne_arr[]                      = $oPreisspannenfilterTMP;
                 }
             }
         }
         // Preisspannen ohne Artikel ausblenden (falls im Backend eingestellt)
-        if ($this->navifilter->getConfig()['navigationsfilter']['preisspannenfilter_spannen_ausblenden'] === 'Y') {
+        if ($this->getConfig()['navigationsfilter']['preisspannenfilter_spannen_ausblenden'] === 'Y') {
             if (count($oPreisspanne_arr) > 0) {
                 $oPreisspanneTMP_arr = [];
                 foreach ($oPreisspanne_arr as $oPreisspanne) {

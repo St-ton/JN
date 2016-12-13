@@ -258,13 +258,22 @@
                                         {if !isset($oBox->bGlobal) || !$oBox->bGlobal || $nPage == 0}
                                             <div class="col-xs-3">
                                                 <input type="hidden" name="box[]" value="{$oBox->kBox}">
-                                                <input class="form-control" type="text" size="3" name="sort[]"
-                                                       value="{$oBox->nSort}" autocomplete="off" id="{$oBox->nSort}"
-                                                       onfocus="onFocus(this)" onblur="onBlur(this)">
+                                                <input class="form-control text-right" type="number" size="3"
+                                                       name="sort[]" value="{$oBox->nSort}"
+                                                       autocomplete="off" id="{$oBox->nSort}">
                                             </div>
                                             <div class="col-xs-2 modify-wrap">
-                                                <input type="checkbox" name="aktiv[]"
-                                                       {if $oBox->bAktiv == 1}checked="checked"{/if} value="{$oBox->kBox}">
+                                                {if $oBox->bAktiv == 0}
+                                                    <a href="boxen.php?action=activate&position={$position}&item={$oBox->kBox}&value=1&token={$smarty.session.jtl_token}"
+                                                       title="Auf jeder Seite aktivieren">
+                                                        <i class="fa fa-lg fa-eye"></i>
+                                                    </a>
+                                                {else}
+                                                    <a href="boxen.php?action=activate&position={$position}&item={$oBox->kBox}&value=0&token={$smarty.session.jtl_token}"
+                                                       title="Auf jeder Seite deaktivieren">
+                                                        <i class="fa fa-lg fa-eye-slash"></i>
+                                                    </a>
+                                                {/if}
                                                 {if $oBox->eTyp === 'text' || $oBox->eTyp === 'link' || $oBox->eTyp === 'catbox'}
                                                     <a href="boxen.php?action=edit_mode&page={$nPage}&position=bottom&item={$oBox->kBox}&token={$smarty.session.jtl_token}"
                                                        title="{#edit#}">
@@ -291,15 +300,22 @@
                                                 {if !isset($oBox->bGlobal) || !$oBox->bGlobal || $nPage == 0}
                                                     <div class="col-xs-3">
                                                         <input type="hidden" name="box[]" value="{$oContainerBox->kBox}">
-                                                        <input class="form-control" type="text" size="3" name="sort[]"
-                                                               value="{$oContainerBox->nSort}" autocomplete="off"
-                                                               id="{$oContainerBox->nSort}" onfocus="onFocus(this)"
-                                                               onblur="onBlur(this)">
+                                                        <input class="form-control text-right" type="number" size="3"
+                                                               name="sort[]" value="{$oContainerBox->nSort}"
+                                                               autocomplete="off" id="{$oContainerBox->nSort}">
                                                     </div>
                                                     <div class="col-xs-2 modify-wrap">
-                                                        <input type="checkbox" name="aktiv[]"
-                                                               {if $oContainerBox->bAktiv == 1}checked="checked"{/if}
-                                                               value="{$oContainerBox->kBox}">
+                                                        {if $oContainerBox->bAktiv == 0}
+                                                            <a href="boxen.php?action=activate&position={$position}&item={$oContainerBox->kBox}&value=1&token={$smarty.session.jtl_token}"
+                                                               title="Auf jeder Seite aktivieren">
+                                                                <i class="fa fa-lg fa-eye"></i>
+                                                            </a>
+                                                        {else}
+                                                            <a href="boxen.php?action=activate&position={$position}&item={$oContainerBox->kBox}&value=0&token={$smarty.session.jtl_token}"
+                                                               title="Auf jeder Seite deaktivieren">
+                                                                <i class="fa fa-lg fa-eye-slash"></i>
+                                                            </a>
+                                                        {/if}
                                                         {if isset($oContainerBox->eTyp) &&
                                                             ($oContainerBox->eTyp === 'text' ||
                                                                 $oContainerBox->eTyp === 'link' || $oContainerBox->eTyp === 'catbox')

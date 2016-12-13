@@ -4,13 +4,14 @@
             <form action="boxen.php" method="post">
                 {$jtl_token}
                 <div class="panel-heading">
-                    <h3 class="panel-title">Top (Container &uuml;ber dem Seiteninhalt)</h3>
+                    <h3>Top</h3>
                     <hr>
-                </div>
+                </div><!-- .panel-heading -->
                 <div class="panel-heading">
                     <div class="boxShow">
                         {if $nPage > 0}
-                            <input type="checkbox" name="box_show" id="box_top_show"
+                            <input type="checkbox" name="box_show"
+                                   id="box_top_show"
                                    {if isset($bBoxenAnzeigen.top) && $bBoxenAnzeigen.top}checked="checked"{/if}>
                             <label for="box_top_show">Container anzeigen</label>
                         {else}
@@ -19,35 +20,62 @@
                                    title="Auf jeder Seite deaktivieren">
                                     <i class="fa fa-lg fa-eye-slash"></i>
                                 </a>
-                                <span>Container Top ausblenden</span>
+                                <span>Top ausblenden</span>
                             {else}
                                 <a href="boxen.php?action=container&position=top&value=1&token={$smarty.session.jtl_token}"
                                    title="Auf jeder Seite aktivieren">
                                     <i class="fa fa-lg fa-eye"></i>
                                 </a>
-                                <span>Container Top auf jeder Seite anzeigen</span>
+                                <span>Top auf jeder Seite anzeigen</span>
                             {/if}
                         {/if}
                     </div>
-                </div>
+                </div><!-- .panel-heading -->
                 <ul class="list-group">
                     {if $oBoxenTop_arr|@count > 0}
+                        <li class="boxRow">
+                            <div class="col-xs-3">
+                                <strong>Name</strong>
+                            </div>
+                            <div class="col-xs-2">
+                                <strong>Typ</strong>
+                            </div>
+                            <div class="col-xs-2">
+                                <strong>Bezeichnung</strong>
+                            </div>
+                            <div class="col-xs-3">
+                                <strong>Sortierung</strong>
+                            </div>
+                            <div class="col-xs-2">
+                                <strong>Aktionen</strong>
+                            </div>
+                        </li>
                         {foreach name="box" from=$oBoxenTop_arr item=oBox}
                             {if $oBox->bContainer}
                                 <li class="list-group-item boxRow {if isset($oBox->bGlobal) && $oBox->bGlobal && $nPage != 0}boxGlobal{else}boxRowBaseContainer{/if}">
-                                    <div class="left">
+                                    <div class="col-xs-7">
                                         <b>Container #{$oBox->kBox}</b>
                                     </div>
                                     <div class="boxOptions">
                                         {if !isset($oBox->bGlobal) || !$oBox->bGlobal || $nPage == 0}
-                                            <input type="hidden" name="box[]" value="{$oBox->kBox}">
-                                            <input class="form-control" type="text" size="3" name="sort[]"
-                                                   value="{$oBox->nSort}" autocomplete="off" id="{$oBox->nSort}"
-                                                   onfocus="onFocus(this)" onblur="onBlur(this)">
-                                            <div class="modify-wrap">
-                                                <input type="checkbox" name="aktiv[]"
-                                                       {if $oBox->bAktiv == 1}checked="checked"{/if}
-                                                       value="{$oBox->kBox}">
+                                            <div class="col-xs-3">
+                                                <input type="hidden" name="box[]" value="{$oBox->kBox}">
+                                                <input class="form-control text-right" type="number" size="3"
+                                                       name="sort[]" value="{$oBox->nSort}"
+                                                       autocomplete="off" id="{$oBox->nSort}">
+                                            </div>
+                                            <div class="col-xs-2 modify-wrap">
+                                                {if $oBox->bAktiv == 0}
+                                                    <a href="boxen.php?action=activate&position=top&item={$oBox->kBox}&value=1&token={$smarty.session.jtl_token}"
+                                                       title="Auf jeder Seite aktivieren">
+                                                        <i class="fa fa-lg fa-eye"></i>
+                                                    </a>
+                                                {else}
+                                                    <a href="boxen.php?action=activate&position=top&item={$oBox->kBox}&value=0&token={$smarty.session.jtl_token}"
+                                                       title="Auf jeder Seite deaktivieren">
+                                                        <i class="fa fa-lg fa-eye-slash"></i>
+                                                    </a>
+                                                {/if}
                                                 {if $oBox->eTyp === 'text' || $oBox->eTyp === 'link' || $oBox->eTyp === 'catbox'}
                                                     <a href="boxen.php?action=edit_mode&page={$nPage}&position=top&item={$oBox->kBox}&token={$smarty.session.jtl_token}"
                                                        title="{#edit#}">
@@ -63,89 +91,66 @@
                                             <b>{$oBox->nSort}</b>
                                         {/if}
                                     </div>
-                                    <div class="boxBlockContainer clear container-child">
-                                        <!-- container -->
-                                        {foreach from=$oBox->oContainer_arr item=oContainerBox}
-                                            <div class="boxRowContainer">
-                                                <div class="boxRow">
-                                                    <div class="left">
-                                                        {$oContainerBox->cTitel}
+                                </li>
+                                {foreach from=$oBox->oContainer_arr item=oContainerBox}
+                                    <li class="list-group-item boxRow boxRowContainer">
+                                        <div class="boxRow">
+                                            <div class="col-xs-7 boxSubName">
+                                                {$oContainerBox->cTitel}
+                                            </div>
+                                            <div class="boxOptions">
+                                                {if !isset($oBox->bGlobal) || !$oBox->bGlobal || $nPage == 0}
+                                                    <div class="col-xs-3">
+                                                        <input type="hidden" name="box[]" value="{$oContainerBox->kBox}">
+                                                        <input class="form-control text-right" type="number" size="3"
+                                                               name="sort[]" value="{$oContainerBox->nSort}"
+                                                               autocomplete="off" id="{$oContainerBox->nSort}">
                                                     </div>
-                                                    <div class="boxOptions">
-                                                        {if !isset($oBox->bGlobal) || !$oBox->bGlobal || $nPage == 0}
-                                                            <input type="hidden" name="box[]" value="{$oContainerBox->kBox}">
-                                                            <input class="form-control" type="text" size="3" name="sort[]"
-                                                                   value="{$oContainerBox->nSort}" autocomplete="off"
-                                                                   id="{$oContainerBox->nSort}" onfocus="onFocus(this)"
-                                                                   onblur="onBlur(this)">
-                                                            <div class="modify-wrap">
-                                                                <input type="checkbox" name="aktiv[]"
-                                                                       {if $oContainerBox->bAktiv == 1}checked="checked"{/if}
-                                                                       value="{$oContainerBox->kBox}">
-                                                                {if isset($oContainerBox->eTyp) &&
-                                                                    ($oContainerBox->eTyp === 'text' ||
-                                                                        $oContainerBox->eTyp === 'link' ||
-                                                                        $oContainerBox->eTyp === 'catbox')
-                                                                }
-                                                                    <a href="boxen.php?action=edit_mode&page={$nPage}&position=top&item={$oContainerBox->kBox}&token={$smarty.session.jtl_token}"
-                                                                       title="{#edit#}">
-                                                                        <i class="fa fa-lg fa-edit"></i>
-                                                                    </a>
-                                                                {/if}
-                                                                <a href="boxen.php?action=del&page={$nPage}&position=top&item={$oContainerBox->kBox}&token={$smarty.session.jtl_token}"
-                                                                   onclick="return confirmDelete('{$oContainerBox->cTitel}');"
-                                                                   title="{#remove#}">
-                                                                    <i class="fa fa-lg fa-trash"></i>
-                                                                </a>
-                                                            </div>
+                                                    <div class="col-xs-2 modify-wrap">
+                                                        {if $oContainerBox->bAktiv == 0}
+                                                            <a href="boxen.php?action=activate&position=top&item={$oContainerBox->kBox}&value=1&token={$smarty.session.jtl_token}"
+                                                               title="Auf jeder Seite aktivieren">
+                                                                <i class="fa fa-lg fa-eye"></i>
+                                                            </a>
                                                         {else}
-                                                            <b>{$oContainerBox->nSort}</b>
+                                                            <a href="boxen.php?action=activate&position=top&item={$oContainerBox->kBox}&value=0&token={$smarty.session.jtl_token}"
+                                                               title="Auf jeder Seite deaktivieren">
+                                                                <i class="fa fa-lg fa-eye-slash"></i>
+                                                            </a>
                                                         {/if}
+                                                        {if isset($oContainerBox->eTyp) &&
+                                                            ($oContainerBox->eTyp === 'text' ||
+                                                                $oContainerBox->eTyp === 'link' || $oContainerBox->eTyp === 'catbox')
+                                                        }
+                                                            <a href="boxen.php?action=edit_mode&page={$nPage}&position=top&item={$oContainerBox->kBox}&token={$smarty.session.jtl_token}"
+                                                               title="{#edit#}">
+                                                                <i class="fa fa-lg fa-edit"></i>
+                                                            </a>
+                                                        {/if}
+                                                        <a href="boxen.php?action=del&page={$nPage}&position=top&item={$oContainerBox->kBox}&token={$smarty.session.jtl_token}"
+                                                           onclick="return confirmDelete('{$oContainerBox->cTitel}');"
+                                                           title="{#remove#}">
+                                                            <i class="fa fa-lg fa-trash"></i>
+                                                        </a>
                                                     </div>
-                                                </div>
-                                            </div>
-                                        {/foreach}
-                                        <!-- //container -->
-                                    </div>
-                                </li>
-                            {else}
-                                <li class="list-group-item boxRow {if isset($oBox->bGlobal) && $oBox->bGlobal && $nPage != 0}boxGlobal{/if}">
-                                    <div class="left">
-                                        {$oBox->cTitel}
-                                    </div>
-                                    <div class="boxOptions">
-                                        {if !isset($oBox->bGlobal) || !$oBox->bGlobal || $nPage == 0}
-                                            <input type="hidden" name="box[]" value="{$oBox->kBox}" />
-                                            <input class="form-control" type="text" size="3" name="sort[]"
-                                                   value="{$oBox->nSort}" autocomplete="off" id="{$oBox->nSort}"
-                                                   onfocus="onFocus(this)" onblur="onBlur(this)">
-                                            <div class="modify-wrap">
-                                                <input type="checkbox" name="aktiv[]"
-                                                       {if $oBox->bAktiv == 1}checked="checked"{/if}
-                                                       value="{$oBox->kBox}">
-                                                {if $oBox->eTyp === 'text' || $oBox->eTyp === 'link' || $oBox->eTyp === 'catbox'}
-                                                    <a href="boxen.php?action=edit_mode&page={$nPage}&position=top&item={$oBox->kBox}&token={$smarty.session.jtl_token}"
-                                                       title="{#edit#}">
-                                                        <i class="fa fa-lg fa-edit"></i>
-                                                    </a>
+                                                {else}
+                                                    <b>{$oContainerBox->nSort}</b>
                                                 {/if}
-                                                <a href="boxen.php?action=del&page={$nPage}&position=top&item={$oBox->kBox}&token={$smarty.session.jtl_token}"
-                                                   onclick="return confirmDelete('{$oBox->cTitel}');" title="{#remove#}">
-                                                    <i class="fa fa-lg fa-trash"></i>
-                                                </a>
                                             </div>
-                                        {else}
-                                            <b>{$oBox->nSort}</b>
-                                        {/if}
-                                    </div>
-                                </li>
+                                        </div>
+                                    </li>
+                                {/foreach}
+                            {else}
+                                {include file="tpl_inc/box_single.tpl" oBox=$oBox nPage=$nPage position='top'}
                             {/if}
                         {/foreach}
                         <li class="list-group-item boxSaveRow">
                             <input type="hidden" name="position" value="top" />
                             <input type="hidden" name="page" value="{$nPage}" />
                             <input type="hidden" name="action" value="resort" />
-                            <button type="submit" value="aktualisieren" class="btn btn-primary">aktualisieren</button>
+                            <button type="submit" value="aktualisieren" class="btn btn-primary">
+                                <i class="fa fa-refresh"></i> aktualisieren
+                            </button>
                         </li>
                     {/if}
                 </ul>
@@ -154,7 +159,7 @@
                 <form name="newBoxTop" action="boxen.php" method="post" class="form-horizontal">
                     {$jtl_token}
                     <div class="form-group">
-                        <label for="newBoxTop" class="col-sm-3 control-label">{#new#}:</label>
+                        <label class="col-sm-3 control-label" for="newBoxTop">{#new#}:</label>
                         <div class="col-sm-9">
                             <select id="newBoxTop" name="item" class="form-control">
                                 <option value="" selected="selected">{#pleaseSelect#}</option>
@@ -171,8 +176,9 @@
                             </select>
                         </div>
                     </div>
+
                     <div class="form-group" style="margin-bottom: 0;">
-                        <label for="containerTop" class="col-sm-3 control-label">{#inContainer#}:</label>
+                        <label class="col-sm-3 control-label" for="containerTop">{#inContainer#}:</label>
                         <div class="col-sm-6">
                             <select id="containerTop" name="container" class="form-control">
                                 <option value="0">Standard</option>
@@ -191,9 +197,9 @@
                     <input type="hidden" name="page" value="{$nPage}" />
                     <input type="hidden" name="action" value="new" />
                 </form>
-            </div>
+            </div><!-- .panel-footer -->
         </div><!-- .boxContainer.panel -->
-    </div>
+    </div><!-- .boxCenter -->
 {/if}
 
 {if isset($oBoxenContainer.bottom) && $oBoxenContainer.bottom === true}
@@ -264,12 +270,12 @@
                                             </div>
                                             <div class="col-xs-2 modify-wrap">
                                                 {if $oBox->bAktiv == 0}
-                                                    <a href="boxen.php?action=activate&position={$position}&item={$oBox->kBox}&value=1&token={$smarty.session.jtl_token}"
+                                                    <a href="boxen.php?action=activate&position=bottom&item={$oBox->kBox}&value=1&token={$smarty.session.jtl_token}"
                                                        title="Auf jeder Seite aktivieren">
                                                         <i class="fa fa-lg fa-eye"></i>
                                                     </a>
                                                 {else}
-                                                    <a href="boxen.php?action=activate&position={$position}&item={$oBox->kBox}&value=0&token={$smarty.session.jtl_token}"
+                                                    <a href="boxen.php?action=activate&position=bottom&item={$oBox->kBox}&value=0&token={$smarty.session.jtl_token}"
                                                        title="Auf jeder Seite deaktivieren">
                                                         <i class="fa fa-lg fa-eye-slash"></i>
                                                     </a>
@@ -306,12 +312,12 @@
                                                     </div>
                                                     <div class="col-xs-2 modify-wrap">
                                                         {if $oContainerBox->bAktiv == 0}
-                                                            <a href="boxen.php?action=activate&position={$position}&item={$oContainerBox->kBox}&value=1&token={$smarty.session.jtl_token}"
+                                                            <a href="boxen.php?action=activate&position=bottom&item={$oContainerBox->kBox}&value=1&token={$smarty.session.jtl_token}"
                                                                title="Auf jeder Seite aktivieren">
                                                                 <i class="fa fa-lg fa-eye"></i>
                                                             </a>
                                                         {else}
-                                                            <a href="boxen.php?action=activate&position={$position}&item={$oContainerBox->kBox}&value=0&token={$smarty.session.jtl_token}"
+                                                            <a href="boxen.php?action=activate&position=bottom&item={$oContainerBox->kBox}&value=0&token={$smarty.session.jtl_token}"
                                                                title="Auf jeder Seite deaktivieren">
                                                                 <i class="fa fa-lg fa-eye-slash"></i>
                                                             </a>

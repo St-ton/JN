@@ -94,6 +94,11 @@ interface IFilter
     public function getUrlParam();
 
     /**
+     * @return string
+     */
+    public function getUrlParamSEO();
+
+    /**
      * @return bool
      */
     public function isCustom();

@@ -41,6 +41,11 @@ abstract class AbstractFilter implements IFilter
     public $urlParam = '';
 
     /**
+     * @var string
+     */
+    public $urlParamSEO = '';
+
+    /**
      * @var int|string|array
      */
     public $value;
@@ -178,6 +183,14 @@ abstract class AbstractFilter implements IFilter
     public function getUrlParam()
     {
         return $this->urlParam;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUrlParamSEO()
+    {
+        return $this->urlParamSEO;
     }
 
     /**

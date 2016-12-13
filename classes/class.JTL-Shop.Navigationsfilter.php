@@ -939,16 +939,6 @@ class Navigationsfilter
     }
 
     /**
-     * @todo unify
-     * @return IFilter[]
-     */
-    public function getActiveFilters2()
-    {
-        return $this->activeFilters;
-    }
-
-    /**
-     * @todo unify
      * @param bool $byType
      * @return array
      */
@@ -1022,10 +1012,12 @@ class Navigationsfilter
             }
         }
         foreach ($this->activeFilters as $filter) {
-            if ($byType) {
-                $filters['custom'][] = $filter;
-            } else {
-                $filters[] = $filter;
+            if ($filter->isCustom()) {
+                if ($byType) {
+                    $filters['custom'][] = $filter;
+                } else {
+                    $filters[] = $filter;
+                }
             }
         }
 
@@ -1050,66 +1042,49 @@ class Navigationsfilter
         if (!empty($stateCondition)) {
             $data->conditions[] = $stateCondition;
         }
+
         foreach ($this->getActiveFilters(true) as $type => $filter) {
             $count = count($filter);
-            //@todo: simplify.
-            if ($type === 'custom') {
-                // $filter is an array of n custom filters
-                /** @var AbstractFilter $_f */
-                foreach ($filter as $_f) {
-                    if ($ignore === null || get_class($_f) !== $ignore) {
-                        $itemJoin = $_f->getSQLJoin();
-                        if (is_array($itemJoin)) {
-                            foreach ($itemJoin as $filterJoin) {
-                                $data->joins[] = $filterJoin;
+            if ($count > 1) {
+                Shop::dbg($filter, true, 'filter with count > 1:');
+                $singleConditions = [];
+                /** @var AbstractFilter $item */
+                foreach ($filter as $idx => $item) {
+                    if ($ignore === null || get_class($item) !== $ignore) {
+                        if ($idx === 0) {
+                            $itemJoin = $item->getSQLJoin();
+                            if (is_array($itemJoin)) {
+                                foreach ($item->getSQLJoin() as $filterJoin) {
+                                    $data->joins[] = $filterJoin;
+                                }
+                            } else {
+                                $data->joins[] = $itemJoin;
                             }
-                        } else {
-                            $data->joins[] = $itemJoin;
+                            if ($item->getType() === AbstractFilter::FILTER_TYPE_AND) {
+                                //filters that decrease the total amount of articles must have a "HAVING" clause
+                                $data->having[] = 'HAVING COUNT(' . $item->getTableName() . '.' . $item->getPrimaryKeyRow() . ') = ' . $count;
+                                Shop::dbg('HAVING COUNT(' . $item->getTableName() . '.' . $item->getPrimaryKeyRow() . ') = ' . $count, false, 'added HAVING:');
+                            }
                         }
-
-                        $data->conditions[] = "\n#condition from CUSTOM filter " . $type . "\n" . $_f->getSQLCondition();
+                        $singleConditions[] = $item->getSQLCondition();
                     }
                 }
-            } else {
-                if ($count > 1) {
-                    $singleConditions = [];
-                    /** @var AbstractFilter $item */
-                    foreach ($filter as $idx => $item) {
-                        if ($ignore === null || get_class($item) !== $ignore) {
-                            if ($idx === 0) {
-                                $itemJoin = $item->getSQLJoin();
-                                if (is_array($itemJoin)) {
-                                    foreach ($item->getSQLJoin() as $filterJoin) {
-                                        $data->joins[] = $filterJoin;
-                                    }
-                                } else {
-                                    $data->joins[] = $itemJoin;
-                                }
-                                if ($item->getType() === AbstractFilter::FILTER_TYPE_AND) {
-                                    //filters that decrease the total amount of articles must have a "HAVING" clause
-                                    $data->having[] = 'HAVING COUNT(' . $item->getTableName() . '.' . $item->getPrimaryKeyRow() . ') = ' . $count;
-                                }
-                            }
-                            $singleConditions[] = $item->getSQLCondition();
+                if (!empty($singleConditions)) {
+                    $data->conditions[] = $singleConditions;
+                }
+            } elseif ($count === 1) {
+                /** @var array(AbstractFilter) $filter */
+                if ($ignore === null || get_class($filter[0]) !== $ignore) {
+                    $itemJoin = $filter[0]->getSQLJoin();
+                    if (is_array($itemJoin)) {
+                        foreach ($itemJoin as $filterJoin) {
+                            $data->joins[] = $filterJoin;
                         }
+                    } else {
+                        $data->joins[] = $itemJoin;
                     }
-                    if (!empty($singleConditions)) {
-                        $data->conditions[] = $singleConditions;
-                    }
-                } elseif ($count === 1) {
-                    /** @var array(AbstractFilter) $filter */
-                    if ($ignore === null || get_class($filter[0]) !== $ignore) {
-                        $itemJoin = $filter[0]->getSQLJoin();
-                        if (is_array($itemJoin)) {
-                            foreach ($itemJoin as $filterJoin) {
-                                $data->joins[] = $filterJoin;
-                            }
-                        } else {
-                            $data->joins[] = $itemJoin;
-                        }
 
-                        $data->conditions[] = "\n#condition from filter " . $type . "\n" . $filter[0]->getSQLCondition();
-                    }
+                    $data->conditions[] = "\n#condition from filter " . $type . "\n" . $filter[0]->getSQLCondition();
                 }
             }
         }
@@ -1744,7 +1719,11 @@ class Navigationsfilter
                 Shop::dbg($cURL, false, 'zusatz curl after:');
             }
         }
-        foreach ($this->getActiveFilters2() as $filter) {
+        foreach ($this->getActiveFilters() as $filter) {
+            if (!method_exists($filter, 'isCustom')) {
+                //@todo: remove
+                throw new Exception('Filter' . get_class($filter) . ' has not isCustom method');
+            }
             if ($filter->isCustom()) {
                 if ((!isset($oZusatzFilter->FilterLoesen->Kategorie) || $oZusatzFilter->FilterLoesen->Kategorie !== true) && //cAlleKategorien
                     $oZusatzFilter !== null//cNoFilter

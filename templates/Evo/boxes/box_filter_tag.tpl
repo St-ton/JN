@@ -5,7 +5,7 @@
         <div class="box-body">
             <ul class="nav nav-list">
              {foreach name=tagfilter from=$Suchergebnisse->Tags item=oTag}
-                 {if isset($NaviFilter->TagFilter) && $NaviFilter->TagFilter[0]->kTag == $oTag->kTag}
+                 {if isset($NaviFilter->TagFilter[0]) && $NaviFilter->TagFilter[0]->kTag == $oTag->kTag}
                      <li>
                          <a rel="nofollow" href="{$NaviFilter->URL->cAlleTags}" class="active">
                              <i class="fa fa-check-square-o text-muted"></i>

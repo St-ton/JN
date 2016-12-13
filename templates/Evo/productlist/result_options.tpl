@@ -36,7 +36,7 @@
         </div>
         {if $show_filters}
             <div class="col-sm-4 col-sm-pull-8 filter-collapsible-control">
-                <a class="btn btn-default" data-toggle="collapse" href="#filter-collapsible" aria-expanded="false" aria-controls="filter-collapsible">
+                <a class="btn btn-default" data-toggle="collapse" href="#filter-collapsible" aria-expanded="true" aria-controls="filter-collapsible">
                     <span class="fa fa-filter"></span> {lang key='filterBy' section='global'}
                     <span class="caret"></span>
                 </a>
@@ -211,7 +211,7 @@
                         </a>
                     {/strip}
                 {/foreach}
-                {foreach $NaviFilter->getActiveFilters2() as $filter}
+                {foreach $NaviFilter->getActiveFilters() as $filter}
                     {if $filter->isCustom()}
                         {assign var=filterValues value=$filter->getValue()}
                         {if is_array($filterValues)}

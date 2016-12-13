@@ -68,8 +68,7 @@ if ($doSearch) {
         $AktuelleSeite               = 'PRODUKTE';
     }
     if ($cParameter_arr['kSuchanfrage'] > 0) {
-        $oSuchanfrage = Shop::DB()->select('tsuchanfrage', 'kSuchanfrage', (int)$cParameter_arr['kSuchanfrage'], null,
-            null, null, null, false, 'cSuche');
+        $oSuchanfrage = Shop::DB()->select('tsuchanfrage', 'kSuchanfrage', (int)$cParameter_arr['kSuchanfrage'], null, null, null, null, false, 'cSuche');
         if (isset($oSuchanfrage->cSuche) && strlen($oSuchanfrage->cSuche) > 0) {
             $NaviFilter->Suche->kSuchanfrage = $cParameter_arr['kSuchanfrage'];
             $NaviFilter->Suche->cSuche       = $oSuchanfrage->cSuche;
@@ -101,13 +100,15 @@ if ($doSearch) {
     // Erweiterte Darstellung Artikelübersicht
     gibErweiterteDarstellung($Einstellungen, $NaviFilter, $cParameter_arr['nDarstellung']);
     $oSuchergebnisse = $NaviFilter->getProducts();
-
+    if (count($oSuchergebnisse->Artikel->elemente) === 0) {
+        Shop::dbg($oSuchergebnisse, true, 'no results:');
+    }
     suchanfragenSpeichern($NaviFilter->Suche->cSuche, $oSuchergebnisse->GesamtanzahlArtikel);
     $NaviFilter->Suche->kSuchanfrage = gibSuchanfrageKey($NaviFilter->Suche->cSuche, Shop::$kSprache);
     // Umleiten falls SEO keine Artikel ergibt
     doMainwordRedirect($NaviFilter, count($oSuchergebnisse->Artikel->elemente), true);
     // Bestsellers
-    if (isset($Einstellungen['artikeluebersicht']['artikelubersicht_bestseller_gruppieren']) && $Einstellungen['artikeluebersicht']['artikelubersicht_bestseller_gruppieren'] === 'Y') {
+    if ($Einstellungen['artikeluebersicht']['artikelubersicht_bestseller_gruppieren'] === 'Y') {
         $products = [];
         foreach ($oSuchergebnisse->Artikel->elemente as $product) {
             $products[] = (int)$product->kArtikel;

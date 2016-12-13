@@ -3,7 +3,9 @@
         {assign var=kTag value=$oTagFilter->kTag}
         <li>
             <a rel="nofollow" href="{$NaviFilter->URL->cAlleTags}" class="active">
-                <i class="fa fa-check-square-o text-muted"></i> {$oTagFilter->cName}
+                <span class="value">
+                    <i class="fa fa-check-square-o text-muted"></i> {$oTagFilter->cName}
+                </span>
             </a>
         </li>
     {/foreach}

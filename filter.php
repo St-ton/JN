@@ -125,7 +125,6 @@ if ($doSearch) {
     }
 
     $oSuchergebnisse = $NaviFilter->setFilterOptions($oSuchergebnisse, $AktuelleKategorie);
-//Shop::dbg($oSuchergebnisse->MerkmalFilter, true, '$oSuchergebnisse->MerkmalFilter:');
     if (verifyGPCDataInteger('zahl') > 0) {
         $_SESSION['ArtikelProSeite'] = verifyGPCDataInteger('zahl');
         setFsession(0, 0, $_SESSION['ArtikelProSeite']);

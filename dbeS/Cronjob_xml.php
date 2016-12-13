@@ -44,8 +44,8 @@ class SyncCronjob extends NetSyncHandler
                             $oExport->cName,
                             $oExport->dStart_de,
                             $oExport->nAlleXStd,
-                            intval($oExport->oJobQueue->nLimitN),
-                            intval($oExport->nAnzahlArtikel->nAnzahl),
+                            (int)$oExport->oJobQueue->nLimitN,
+                            (int)$oExport->nAnzahlArtikel->nAnzahl,
                             $oExport->dLetzterStart_de,
                             $oExport->dNaechsterStart_de
                         );

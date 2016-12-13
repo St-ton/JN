@@ -31,7 +31,8 @@ if (auth()) {
                 if ($elem['filename'] === 'images.xml') {
                     $found = true;
                 } elseif (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                    Jtllog::writeLog('Received image: ' . $newTmpDir . $elem['filename'] . ' size: ' . filesize($newTmpDir . $elem['filename']), JTLLOG_LEVEL_DEBUG, false, 'img_upload_xml');
+                    Jtllog::writeLog('Received image: ' . $newTmpDir . $elem['filename'] . ' size: ' .
+                        filesize($newTmpDir . $elem['filename']), JTLLOG_LEVEL_DEBUG, false, 'img_upload_xml');
                 }
             }
             
@@ -57,19 +58,6 @@ if (auth()) {
 }
 echo $return;
 
-/*
-$xmlString = <<<XML
-<?xml version='1.0'?>
-<bilder>
-   <bild kBild="136" cHash="800_800_1a0b9fc820b03727b996be74c4867cba_62ad684d97bba865b7105a486120b8fb718feb1fe62a9a2ea0a46deb754424de2a26096788151100f3e938c3e4d7eea023e2488e774a0fa66f2e49f323492f62.jpg"/>
-   <bild kBild="144" cHash="800_800_1a0b9fc820b03727b996be74c4867cba_62ad684d97bba865b7105a486120b8fb718feb1fe62a9a2ea0a46deb754424de2a26096788151100f3e938c3e4d7eea023e2488e774a0fa66f2e49f323492f62.jpg"/>
-</bilder>
-XML;
-
-$xml = simplexml_load_string($xmlString);
-images_xml($xml);
-*/
-
 /**
  * @param string           $tmpDir
  * @param SimpleXMLElement $xml
@@ -81,7 +69,7 @@ function images_xml($tmpDir, SimpleXMLElement $xml)
         $tmpfile = $tmpDir . $item->kBild;
         if (file_exists($tmpfile)) {
             if (copy($tmpfile, PFAD_ROOT . PFAD_MEDIA_IMAGE_STORAGE . $item->cPfad)) {
-                DBUpdateInsert('tbild', array($item), 'kBild');
+                DBUpdateInsert('tbild', [$item], 'kBild');
                 Shop::DB()->update('tartikelpict', 'kBild', (int)$item->kBild, (object)['cPfad' => $item->cPfad]);
             } else {
                 Jtllog::writeLog(sprintf('Copy "%s" to "%s"', $tmpfile, PFAD_ROOT . PFAD_MEDIA_IMAGE_STORAGE . $item->cPfad), JTLLOG_LEVEL_ERROR, false, 'img_upload_xml');

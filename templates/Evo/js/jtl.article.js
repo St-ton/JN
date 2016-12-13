@@ -383,6 +383,10 @@
             $('#article-tabs .product-attributes .weight-unit').html(newUnitWeight);
         },
 
+        setProductNumber: function(productNumber){
+            $('#product-offer span[itemprop="sku"]').html(productNumber);
+        },
+
         setArticleContent: function(id, variation, url, variations) {
             $.evo.extended().loadContent(url, function(content) {
                 $.evo.extended().register();

@@ -55,7 +55,7 @@
                                 <form method="post" action="{get_static_route id='newsletter.php'}" class="form col-xs-12 col-sm-6">
                                     <fieldset>
                                         {$jtl_token}
-                                        <input type="hidden" name="abonnieren" value="1"/>
+                                        <input type="hidden" name="abonnieren" value="2"/>
                                         <div class="form-group">
                                             <label class="control-label sr-only" for="newsletter_email">{lang key="emailadress"}</label>
                                             <div class="input-group">

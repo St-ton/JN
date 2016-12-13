@@ -31,9 +31,8 @@ if (auth()) {
  */
 function handleData($kBestellung, $dRechnungErstellt, $kSprache)
 {
-    $kBestellung = intval($kBestellung);
-    $kSprache    = intval($kSprache);
-
+    $kBestellung = (int)$kBestellung;
+    $kSprache    = (int)$kSprache;
     if ($kBestellung > 0 && $kSprache > 0) {
         $oBestellung = Shop::DB()->query(
             "SELECT tbestellung.kBestellung, tbestellung.fGesamtsumme, tzahlungsart.cModulId

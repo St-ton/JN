@@ -20,23 +20,23 @@
                             <td class="text-right">
                                 <form method="post" action="{get_static_route id='jtl.php'}?wllist=1">
                                     {$jtl_token}
-                                    <span class="btn-group">
+                                    <span class="btn-group btn-group-xs">
                                                 {if $Wunschliste->nStandard != 1}
-                                                    <button class="btn btn-default btn-xs" name="wls" value="{$Wunschliste->kWunschliste}">
+                                                    <button class="btn btn-default" name="wls" value="{$Wunschliste->kWunschliste}">
                                                         <span class="fa fa-ok"></span> {lang key="wishlistStandard" section="login"}
                                                     </button>
                                                 {/if}
                                         {if $Wunschliste->nOeffentlich == 1}
-                                            <button type="submit" class="btn btn-default btn-xs" name="wl" value="{$Wunschliste->kWunschliste}" title="{lang key="wishlistPrivat" section="login"}">
+                                            <button type="submit" class="btn btn-default" name="wl" value="{$Wunschliste->kWunschliste}" title="{lang key="wishlistPrivat" section="login"}">
                                                         <span class="fa fa-eye-close"></span><span class="hidden-xs"> {lang key="wishlistSetPrivate" section="login"}</span>
                                                     </button>
                                         {/if}
                                         {if $Wunschliste->nOeffentlich == 0}
-                                            <button type="submit" class="btn btn-default btn-xs" name="wl" value="{$Wunschliste->kWunschliste}" title="{lang key="wishlistNotPrivat" section="login"}">
+                                            <button type="submit" class="btn btn-default" name="wl" value="{$Wunschliste->kWunschliste}" title="{lang key="wishlistNotPrivat" section="login"}">
                                                         <span class="fa fa-eye-slash"></span><span class="hidden-xs"> {lang key="wishlistNotPrivat" section="login"}</span>
                                                     </button>
                                         {/if}
-                                        <button type="submit" class="btn btn-danger btn-xs" name="wllo" value="{$Wunschliste->kWunschliste}">
+                                        <button type="submit" class="btn btn-danger" name="wllo" value="{$Wunschliste->kWunschliste}">
                                                     <span class="fa fa-trash-o"></span>
                                                 </button>
                                             </span>

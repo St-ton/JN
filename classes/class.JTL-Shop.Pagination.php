@@ -124,17 +124,28 @@ class Pagination
     }
 
     /**
+     * @param int $nItemsPerPage
+     */
+    public function setItemsPerPage($nItemsPerPage)
+    {
+        $this->nItemsPerPage = $nItemsPerPage;
+
+        return $this;
+    }
+
+    /**
      * Load parameters from GET, POST or SESSION store
      * @return $this
      */
     public function loadParameters()
     {
         $this->nItemsPerPage =
+            isset($this->nItemsPerPage)                     ? $this->nItemsPerPage : (
             isset($_GET[$this->cId . '_nItemsPerPage'])     ? (int)$_GET[$this->cId . '_nItemsPerPage'] : (
             isset($_POST[$this->cId . '_nItemsPerPage'])    ? (int)$_POST[$this->cId . '_nItemsPerPage'] : (
             isset($_SESSION[$this->cId . '_nItemsPerPage']) ? (int)$_SESSION[$this->cId . '_nItemsPerPage'] : (
             $this->nDefaultItemsPerPage >= -1               ? $this->nDefaultItemsPerPage :
-                                                              $this->nItemsPerPageOption_arr[0] )));
+                                                              $this->nItemsPerPageOption_arr[0] ))));
 
         $this->nSortByDir =
             isset($_GET[$this->cId . '_nSortByDir'])     ? (int)$_GET[$this->cId . '_nSortByDir'] : (

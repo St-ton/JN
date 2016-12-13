@@ -7,7 +7,7 @@
 require_once dirname(__FILE__) . '/syncinclude.php';
 
 $return  = 3;
-$xml_obj = array();
+$xml_obj = [];
 if (auth()) {
     $return = 0;
     // verfuegbarkeitsbenachrichtigungen
@@ -23,7 +23,7 @@ if (auth()) {
             buildAttributes($xml_obj['queueddata']['verfuegbarkeitsbenachrichtigungen']['tverfuegbarkeitsbenachrichtigung'][$i]);
         Shop::DB()->query("UPDATE tverfuegbarkeitsbenachrichtigung
             SET cAbgeholt = 'Y'
-            WHERE kVerfuegbarkeitsbenachrichtigung = " . intval($xml_obj['queueddata']['verfuegbarkeitsbenachrichtigungen']['tverfuegbarkeitsbenachrichtigung'][$i . ' attr']['kVerfuegbarkeitsbenachrichtigung']), 4);
+            WHERE kVerfuegbarkeitsbenachrichtigung = " . (int)$xml_obj['queueddata']['verfuegbarkeitsbenachrichtigungen']['tverfuegbarkeitsbenachrichtigung'][$i . ' attr']['kVerfuegbarkeitsbenachrichtigung'], 4);
     }
 
     // uploadqueue

@@ -45,6 +45,16 @@ class FilterPriceRange extends AbstractFilter implements IFilter
     private $oFilter;
 
     /**
+     * @var string
+     */
+    public $urlParam = 'pf';
+
+    /**
+     * @var string
+     */
+    public $urlParamSEO = null;
+
+    /**
      * @param int $id
      * @return $this
      */

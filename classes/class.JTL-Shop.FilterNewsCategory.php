@@ -20,6 +20,11 @@ class FilterNewsCategory extends AbstractFilter implements IFilter
     public $kNewsKategorie = 0;
 
     /**
+     * @var string
+     */
+    public $urlParam = 'nk';
+
+    /**
      * @param int $id
      * @return $this
      */

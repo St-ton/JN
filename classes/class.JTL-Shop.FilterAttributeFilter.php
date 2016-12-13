@@ -25,6 +25,16 @@ class FilterAttributeFilter extends FilterAttribute
     public $kMerkmal;
 
     /**
+     * @var string
+     */
+    public $urlParam = 'mf';
+
+    /**
+     * @var string
+     */
+    public $urlParamSEO = SEP_MERKMAL;
+
+    /**
      * @param array $languages
      * @return $this
      */

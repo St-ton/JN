@@ -20,6 +20,16 @@ class FilterSearchSpecial extends AbstractFilter implements IFilter
     public $kKey = 0;
 
     /**
+     * @var string
+     */
+    public $urlParam = 'qf';
+
+    /**
+     * @var string
+     */
+    public $urlParamSEO = null;
+
+    /**
      * @param int $id
      * @return $this
      */

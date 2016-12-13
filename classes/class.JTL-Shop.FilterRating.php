@@ -20,6 +20,16 @@ class FilterRating extends AbstractFilter implements IFilter
     public $nSterne = 0;
 
     /**
+     * @var string
+     */
+    public $urlParam = 'bf';
+
+    /**
+     * @var string
+     */
+    public $urlParamSEO = null;
+
+    /**
      * @param int $id
      * @return $this
      */

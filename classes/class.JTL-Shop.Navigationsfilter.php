@@ -1735,33 +1735,35 @@ class Navigationsfilter
             if ($debug === true) {
                 Shop::dbg($cURL, false, 'zusatz curl before:');
             }
-            if ($oZusatzFilter->nType === AbstractFilter::FILTER_TYPE_OR) {
-                $cURL .= '&' . $oZusatzFilter->cParam . '[]=' . $oZusatzFilter->mValue;
-            } else {
-                $cURL .= '&' . $oZusatzFilter->cParam . '=' . $oZusatzFilter->mValue;
-            }
+            $cURL .= '&amp;' . $oZusatzFilter->cParam .
+                (($oZusatzFilter->nType === AbstractFilter::FILTER_TYPE_OR)
+                    ? '[]'
+                    : '')
+                . '=' . $oZusatzFilter->mValue;
             if ($debug === true) {
                 Shop::dbg($cURL, false, 'zusatz curl after:');
             }
         }
         foreach ($this->getActiveFilters2() as $filter) {
-            if ((!isset($oZusatzFilter->FilterLoesen->Kategorie) || $oZusatzFilter->FilterLoesen->Kategorie !== true) && //cAlleKategorien
-                    $oZusatzFilter !== null && //cNoFilter
-                $filter->isCustom()) {
-                //@todo: custom filters do not  support SEO URLs yet
-                if ($debug === true) {
-                    echo '<br>bSeo=>false if15 - custom filter';
+            if ($filter->isCustom()) {
+                if ((!isset($oZusatzFilter->FilterLoesen->Kategorie) || $oZusatzFilter->FilterLoesen->Kategorie !== true) && //cAlleKategorien
+                    $oZusatzFilter !== null//cNoFilter
+                ) {
+                    //@todo: custom filters do not  support SEO URLs yet
+                    if ($debug === true) {
+                        echo '<br>bSeo=>false if15 - custom filter';
+                    }
+                    $bSeo = false;
                 }
-                $bSeo   = false;
-            }
-            $param  = $filter->getUrlParam();
-            $values = $filter->getValue();
-            if ($filter->getType() === AbstractFilter::FILTER_TYPE_OR) {
-                foreach ($values as $value) {
-                    $cURL .= '&' . $param . '[]=' . $value;
+                $param  = $filter->getUrlParam();
+                $values = $filter->getValue();
+                if ($filter->getType() === AbstractFilter::FILTER_TYPE_OR) {
+                    foreach ($values as $value) {
+                        $cURL .= '&amp;' . $param . '[]=' . $value;
+                    }
+                } else {
+                    $cURL .= '&amp;' . $param . '=' . $values;
                 }
-            } else {
-                $cURL .= '&' . $param . '=' . $values;
             }
         }
         if ($debug === true) {

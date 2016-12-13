@@ -20,6 +20,16 @@ class FilterTag extends AbstractFilter implements IFilter
     public $kTag = 0;
 
     /**
+     * @var string
+     */
+    public $urlParam = 'tf';
+
+    /**
+     * @var string
+     */
+    public $urlParamSEO = null;
+
+    /**
      * @param int $id
      * @return $this
      */

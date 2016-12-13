@@ -15,6 +15,16 @@ class FilterKategorieFilter extends FilterKategorie
     public $isCustom = false;
 
     /**
+     * @var string
+     */
+    public $urlParam = 'kf';
+
+    /**
+     * @var string
+     */
+    public $urlParamSEO = SEP_KAT;
+
+    /**
      * @return string
      */
     public function getSQLCondition()

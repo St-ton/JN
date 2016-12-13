@@ -20,6 +20,16 @@ class FilterHersteller extends AbstractFilter implements IFilter
     public $kHersteller = 0;
 
     /**
+     * @var string
+     */
+    public $urlParam = 'hf';
+
+    /**
+     * @var string
+     */
+    public $urlParamSEO = SEP_HST;
+
+    /**
      * @param int $id
      * @return $this
      */

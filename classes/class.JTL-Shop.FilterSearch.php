@@ -25,6 +25,16 @@ class FilterSearch extends AbstractFilter implements IFilter
     public $cSuche;
 
     /**
+     * @var string
+     */
+    public $urlParam = 'sf';
+
+    /**
+     * @var string
+     */
+    public $urlParamSEO = null;
+
+    /**
      * @param int $id
      * @return $this
      */

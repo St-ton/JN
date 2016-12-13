@@ -1541,17 +1541,17 @@ class Navigationsfilter
                         } else {
                             $cSEOURL .= SEP_KAT . $this->KategorieFilter->getSeo($this->getLanguageID());
                         }
-                        $cURL .= '&amp;kf=' . $oZusatzFilter->KategorieFilter->kKategorie;
+                        $cURL .= '&kf=' . $oZusatzFilter->KategorieFilter->kKategorie;
                     } else {
                         $cSEOURL .= SEP_KAT . $this->KategorieFilter->getSeo($this->getLanguageID());
-                        $cURL .= '&amp;kf=' . $this->KategorieFilter->getValue();
+                        $cURL .= '&kf=' . $this->KategorieFilter->getValue();
                     }
                 }
             } elseif ((isset($oZusatzFilter->KategorieFilter->kKategorie) && $oZusatzFilter->KategorieFilter->kKategorie > 0) &&
                 (!$this->Kategorie->isInitialized() || $this->Kategorie->getValue() !== $oZusatzFilter->KategorieFilter->kKategorie)
             ) {
                 $cSEOURL .= SEP_KAT . $oZusatzFilter->KategorieFilter->cSeo;
-                $cURL .= '&amp;kf=' . $oZusatzFilter->KategorieFilter->kKategorie;
+                $cURL .= '&kf=' . $oZusatzFilter->KategorieFilter->kKategorie;
             }
             // Hersteller
             if ($this->HerstellerFilter->isInitialized() && (!$this->Hersteller->isInitialized() || $this->Hersteller->getValue() !== $this->HerstellerFilter->getValue())) {
@@ -1563,11 +1563,11 @@ class Navigationsfilter
                         }
                         $bSeo = false;
                     }
-                    $cURL .= '&amp;hf=' . $this->HerstellerFilter->getValue();
+                    $cURL .= '&hf=' . $this->HerstellerFilter->getValue();
                 }
             } elseif (!empty($oZusatzFilter->HerstellerFilter->kHersteller) && (!$this->Hersteller->isInitialized() || $this->Hersteller->getValue() !== $oZusatzFilter->HerstellerFilter->kHersteller)) {
                 $cSEOURL .= SEP_HST . $oZusatzFilter->HerstellerFilter->cSeo;
-                $cURL .= '&amp;hf=' . $oZusatzFilter->HerstellerFilter->kHersteller;
+                $cURL .= '&hf=' . $oZusatzFilter->HerstellerFilter->kHersteller;
             }
             // Suche
             $nLetzterSuchFilter   = 1;
@@ -1604,7 +1604,7 @@ class Navigationsfilter
             $oSuchanfrage_arr = sortiereFilter($oSuchanfrage_arr, 'kSuchanfrage');
             if (is_array($oSuchanfrage_arr) && count($oSuchanfrage_arr) > 0) {
                 foreach ($oSuchanfrage_arr as $i => $oSuchanfrage) {
-                    $cURL .= '&amp;sf' . ($i + 1) . '=' . (int)$oSuchanfrage->kSuchanfrage;
+                    $cURL .= '&sf' . ($i + 1) . '=' . (int)$oSuchanfrage->kSuchanfrage;
                 }
             }
             // Merkmale
@@ -1646,7 +1646,7 @@ class Navigationsfilter
             if (is_array($oMerkmalWert_arr) && count($oMerkmalWert_arr) > 0) {
                 foreach ($oMerkmalWert_arr as $i => $oMerkmalWert) {
                     $cSEOURL .= SEP_MERKMAL . $oMerkmalWert->cSeo;
-                    $cURL .= '&amp;mf' . ($i + 1) . '=' . (int)$oMerkmalWert->kMerkmalWert;
+                    $cURL .= '&mf' . ($i + 1) . '=' . (int)$oMerkmalWert->kMerkmalWert;
                 }
             }
             // Preisspannen
@@ -1654,19 +1654,19 @@ class Navigationsfilter
                 isset($this->PreisspannenFilter->fBis) && $this->PreisspannenFilter->fBis > 0 &&
                 !isset($oZusatzFilter->FilterLoesen->Preisspannen)
             ) {
-                $cURL .= '&amp;pf=' . $this->PreisspannenFilter->fVon . '_' . $this->PreisspannenFilter->fBis;
+                $cURL .= '&pf=' . $this->PreisspannenFilter->fVon . '_' . $this->PreisspannenFilter->fBis;
             } elseif (isset($oZusatzFilter->PreisspannenFilter->fVon) && $oZusatzFilter->PreisspannenFilter->fVon >= 0 &&
                 isset($oZusatzFilter->PreisspannenFilter->fBis) && $oZusatzFilter->PreisspannenFilter->fBis > 0
             ) {
-                $cURL .= '&amp;pf=' . $oZusatzFilter->PreisspannenFilter->fVon . '_' . $oZusatzFilter->PreisspannenFilter->fBis;
+                $cURL .= '&pf=' . $oZusatzFilter->PreisspannenFilter->fVon . '_' . $oZusatzFilter->PreisspannenFilter->fBis;
             }
             // Bewertung
             if (isset($this->BewertungFilter->nSterne) && $this->BewertungFilter->nSterne > 0 &&
                 !isset($oZusatzFilter->FilterLoesen->Bewertungen) && !isset($oZusatzFilter->BewertungFilter->nSterne)
             ) {
-                $cURL .= '&amp;bf=' . $this->BewertungFilter->getValue();
+                $cURL .= '&bf=' . $this->BewertungFilter->getValue();
             } elseif (isset($oZusatzFilter->BewertungFilter->nSterne) && $oZusatzFilter->BewertungFilter->nSterne > 0) {
-                $cURL .= '&amp;bf=' . $oZusatzFilter->BewertungFilter->nSterne;
+                $cURL .= '&bf=' . $oZusatzFilter->BewertungFilter->nSterne;
             }
             // Tag
             $nLetzterTagFilter   = 1;
@@ -1690,7 +1690,7 @@ class Navigationsfilter
             }
             // Zusatz Tagfilter
             if (isset($oZusatzFilter->TagFilter->kTag) && $oZusatzFilter->TagFilter->kTag > 0 && !$bZusatzTagEnthalten) {
-                //$cURL .= "&amp;tf" . $nLetzterTagFilter . "=" . $oZusatzFilter->TagFilter->kTag;
+                //$cURL .= "&tf" . $nLetzterTagFilter . "=" . $oZusatzFilter->TagFilter->kTag;
                 $nPos = count($oTag_arr);
                 if (!isset($oTag_arr[$nPos])) {
                     $oTag_arr[$nPos] = new stdClass();
@@ -1701,14 +1701,14 @@ class Navigationsfilter
             $oTag_arr = sortiereFilter($oTag_arr, 'kTag');
             if (is_array($oTag_arr) && count($oTag_arr) > 0) {
                 foreach ($oTag_arr as $i => $oTag) {
-                    $cURL .= '&amp;tf' . ($i + 1) . '=' . (int)$oTag->kTag;
+                    $cURL .= '&tf' . ($i + 1) . '=' . (int)$oTag->kTag;
                 }
             }
             // Suchspecialfilter
             if ((isset($oZusatzFilter->SuchspecialFilter->kKey) && $oZusatzFilter->SuchspecialFilter->kKey > 0) &&
                 (!$this->Suchspecial->isInitialized() || $this->Suchspecial->getValue() !== $oZusatzFilter->SuchspecialFilter->kKey)
             ) {
-                $cURL .= '&amp;qf=' . $oZusatzFilter->SuchspecialFilter->kKey;
+                $cURL .= '&qf=' . $oZusatzFilter->SuchspecialFilter->kKey;
             } elseif ($this->SuchspecialFilter->isInitialized() && (!$this->Suchspecial->isInitialized() || $this->Suchspecial->getValue() !== $this->SuchspecialFilter->getValue())) {
                 if (!isset($oZusatzFilter->FilterLoesen->Suchspecials) || !$oZusatzFilter->FilterLoesen->Suchspecials) {
                     $cSEOURL .= $this->SuchspecialFilter->getSeo($this->getLanguageID());
@@ -1718,7 +1718,7 @@ class Navigationsfilter
                         }
                         $bSeo = false;
                     }
-                    $cURL .= '&amp;qf=' . $this->SuchspecialFilter->getValue();
+                    $cURL .= '&qf=' . $this->SuchspecialFilter->getValue();
                 }
             }
         }
@@ -1735,7 +1735,7 @@ class Navigationsfilter
             if ($debug === true) {
                 Shop::dbg($cURL, false, 'zusatz curl before:');
             }
-            $cURL .= '&amp;' . $oZusatzFilter->cParam .
+            $cURL .= '&' . $oZusatzFilter->cParam .
                 (($oZusatzFilter->nType === AbstractFilter::FILTER_TYPE_OR)
                     ? '[]'
                     : '')
@@ -1759,10 +1759,10 @@ class Navigationsfilter
                 $values = $filter->getValue();
                 if ($filter->getType() === AbstractFilter::FILTER_TYPE_OR) {
                     foreach ($values as $value) {
-                        $cURL .= '&amp;' . $param . '[]=' . $value;
+                        $cURL .= '&' . $param . '[]' . '=' . $value;
                     }
                 } else {
-                    $cURL .= '&amp;' . $param . '=' . $values;
+                    $cURL .= '&' . $param . '=' . $values;
                 }
             }
         }
@@ -1786,7 +1786,7 @@ class Navigationsfilter
                 }
             }
 
-            return $cURL . '&amp;lang=' . $cISOSprache;
+            return urlencode($cURL . '&lang=' . $cISOSprache);
         }
 
         return $cURL;

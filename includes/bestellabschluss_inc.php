@@ -782,14 +782,19 @@ function KuponVerwendungen()
         $KuponKunde                = new stdClass();
         $KuponKunde->kKupon        = $kKupon;
         $KuponKunde->kKunde        = $_SESSION['Warenkorb']->kKunde;
+        $KuponKunde->cMail         = StringHandler::filterXSS($_SESSION['Kunde']->cMail);
         $KuponKunde->dErstellt     = 'now()';
         $KuponKunde->nVerwendungen = 1;
-        $KuponKundeBisher          = Shop::DB()->select('tkuponkunde', 'kKupon', $kKupon);
+        $KuponKundeBisher          = Shop::DB()->query('SELECT SUM(nVerwendungen) AS nVerwendungen FROM tkuponkunde WHERE cMail = "' . $KuponKunde->cMail . '";',1);
         if (isset($KuponKundeBisher->nVerwendungen) && $KuponKundeBisher->nVerwendungen > 0) {
             $KuponKunde->nVerwendungen += $KuponKundeBisher->nVerwendungen;
         }
-        Shop::DB()->delete('tkuponkunde', ['kKunde', 'kKupon'], [(int)$KuponKunde->kKunde, $kKupon]);
+        Shop::DB()->delete('tkuponkunde', ['kKunde', 'kKupon'], [(int) $KuponKunde->kKunde, $kKupon]);
         Shop::DB()->insert('tkuponkunde', $KuponKunde);
+
+        if (isset($_SESSION['NeukundenKupon']->kKupon) && $_SESSION['NeukundenKupon']->kKupon > 0) {
+            Shop::DB()->delete('tkuponneukunde',['kKupon', 'cEmail'], [$kKupon, $_SESSION['Kunde']->cMail]);
+        }
 
         if (isset($_SESSION['kBestellung']) && $_SESSION['kBestellung'] > 0) {
             $kBestellung = (int)$_SESSION['kBestellung'];

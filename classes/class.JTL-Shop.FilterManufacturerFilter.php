@@ -5,9 +5,9 @@
  */
 
 /**
- * Class FilterHerstellerFilter
+ * Class FilterManufacturerFilter
  */
-class FilterHerstellerFilter extends FilterHersteller
+class FilterManufacturerFilter extends FilterManufacturer
 {
     /**
      * @var bool

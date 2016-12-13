@@ -5,9 +5,9 @@
  */
 
 /**
- * Class FilterKategorieFilter
+ * Class FilterCategoryFilter
  */
-class FilterKategorieFilter extends FilterKategorie
+class FilterCategoryFilter extends FilterCategory
 {
     /**
      * @var bool
@@ -44,7 +44,7 @@ class FilterKategorieFilter extends FilterKategorie
     {
         $conf = Shop::getSettings([CONF_NAVIGATIONSFILTER]);
         $join = new FilterJoin();
-        $join->setComment('join from FilterKategorieFilter')
+        $join->setComment('join from FilterCategoryFilter')
              ->setType('JOIN');
         if ($conf['navigationsfilter']['kategoriefilter_anzeigen_als'] === 'HF') {
             $join->setTable('tkategorieartikelgesamt')->setOn('tartikel.kArtikel = tkategorieartikelgesamt.kArtikel');
@@ -77,14 +77,14 @@ class FilterKategorieFilter extends FilterKategorie
                     : " AND tkategorieartikelgesamt.kOberKategorie = 0";
 
                 $join = new FilterJoin();
-                $join->setComment('join1 from FilterKategorieFilter::getOptions()')
+                $join->setComment('join1 from FilterCategoryFilter::getOptions()')
                      ->setType('JOIN')
                      ->setTable('tkategorieartikelgesamt')
                      ->setOn('tartikel.kArtikel = tkategorieartikelgesamt.kArtikel ' . $kKatFilter);
                 $state->joins[] = $join;
 
                 $join = new FilterJoin();
-                $join->setComment('join2 from FilterKategorieFilter::getOptions()')
+                $join->setComment('join2 from FilterCategoryFilter::getOptions()')
                      ->setType('JOIN')
                      ->setTable('tkategorie')
                      ->setOn('tkategorie.kKategorie = tkategorieartikelgesamt.kKategorie');
@@ -93,21 +93,21 @@ class FilterKategorieFilter extends FilterKategorie
                 //@todo: this instead of $naviFilter->Kategorie?
                 if (!$naviFilter->Kategorie->isInitialized()) {
                     $join = new FilterJoin();
-                    $join->setComment('join3 from FilterKategorieFilter::getOptions()')
+                    $join->setComment('join3 from FilterCategoryFilter::getOptions()')
                          ->setType('JOIN')
                          ->setTable('tkategorieartikel')
                          ->setOn('tartikel.kArtikel = tkategorieartikel.kArtikel');
                     $state->joins[] = $join;
                 }
                 $join = new FilterJoin();
-                $join->setComment('join4 from FilterKategorieFilter::getOptions()')
+                $join->setComment('join4 from FilterCategoryFilter::getOptions()')
                      ->setType('JOIN')
                      ->setTable('tkategorie')
                      ->setOn('tkategorie.kKategorie = tkategorieartikel.kKategorie');
                 $state->joins[] = $join;
             }
             $join = new FilterJoin();
-            $join->setComment('join5 from FilterKategorieFilter::getOptions()')
+            $join->setComment('join5 from FilterCategoryFilter::getOptions()')
                  ->setType('LEFT JOIN')
                  ->setTable('tkategoriesichtbarkeit')
                  ->setOn('tkategoriesichtbarkeit.kKategorie = tkategorie.kKategorie');
@@ -122,7 +122,7 @@ class FilterKategorieFilter extends FilterKategorie
             if (!standardspracheAktiv()) {
                 $select[] = "IF(tkategoriesprache.cName = '', tkategorie.cName, tkategoriesprache.cName) AS cName";
                 $join     = new FilterJoin();
-                $join->setComment('join5 from FilterKategorieFilter::getOptions()')
+                $join->setComment('join5 from FilterCategoryFilter::getOptions()')
                      ->setType('JOIN')
                      ->setTable('tkategoriesprache')
                      ->setOn('tkategoriesprache.kKategorie = tkategorie.kKategorie AND tkategoriesprache.kSprache = ' . $this->getLanguageID());

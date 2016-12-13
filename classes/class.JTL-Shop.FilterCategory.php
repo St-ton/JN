@@ -5,9 +5,9 @@
  */
 
 /**
- * Class FilterKategorie
+ * Class FilterCategory
  */
-class FilterKategorie extends AbstractFilter implements IFilter
+class FilterCategory extends AbstractFilter implements IFilter
 {
     /**
      * @var int
@@ -112,7 +112,7 @@ class FilterKategorie extends AbstractFilter implements IFilter
         $join->setType('JOIN')
              ->setTable('tkategorieartikel')
              ->setOn('tartikel.kArtikel = tkategorieartikel.kArtikel')
-             ->setComment('join from FilterKategorie');
+             ->setComment('join from FilterCategory');
 
         return $join;
     }

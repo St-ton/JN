@@ -5,9 +5,9 @@
  */
 
 /**
- * Class FilterHersteller
+ * Class FilterManufacturer
  */
-class FilterHersteller extends AbstractFilter implements IFilter
+class FilterManufacturer extends AbstractFilter implements IFilter
 {
     /**
      * @var bool
@@ -136,7 +136,7 @@ class FilterHersteller extends AbstractFilter implements IFilter
             $order      = $naviFilter->getOrder();
             $state      = $naviFilter->getCurrentStateData();
             $join       = new FilterJoin();
-            $join->setComment('join from FilterHersteller::getOptions()')
+            $join->setComment('join from FilterManufacturer::getOptions()')
                  ->setType('JOIN')
                  ->setTable('thersteller')
                  ->setOn('tartikel.kHersteller = thersteller.kHersteller');

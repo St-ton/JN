@@ -140,7 +140,7 @@ if (isset($_POST['einstellungen_bearbeiten']) && isset($_POST['kZahlungsart']) &
     $hinweis = 'Zahlungsart gespeichert.';
 }
 
-if (verifyGPCDataInteger('kZahlungsart') > 0 && validateToken()) {
+if (verifyGPCDataInteger('kZahlungsart') > 0 && $action !== 'logreset' && validateToken()) {
     if (verifyGPDataString('a') === 'payments') {
         // Zahlungseingaenge
         $step = 'payments';

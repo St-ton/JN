@@ -100,9 +100,6 @@ if ($doSearch) {
     // Erweiterte Darstellung Artikelübersicht
     gibErweiterteDarstellung($Einstellungen, $NaviFilter, $cParameter_arr['nDarstellung']);
     $oSuchergebnisse = $NaviFilter->getProducts();
-    if (count($oSuchergebnisse->Artikel->elemente) === 0) {
-        Shop::dbg($oSuchergebnisse, true, 'no results:');
-    }
     suchanfragenSpeichern($NaviFilter->Suche->cSuche, $oSuchergebnisse->GesamtanzahlArtikel);
     $NaviFilter->Suche->kSuchanfrage = gibSuchanfrageKey($NaviFilter->Suche->cSuche, Shop::$kSprache);
     // Umleiten falls SEO keine Artikel ergibt

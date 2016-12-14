@@ -102,6 +102,11 @@ class Zahlungsart extends MainModel
     /**
      * @var string
      */
+    public $cHinweisTextShop;
+
+    /**
+     * @var string
+     */
     public $cGebuehrname;
 
     /**
@@ -447,6 +452,25 @@ class Zahlungsart extends MainModel
     public function setHinweisText($cHinweisText)
     {
         $this->cHinweisText = $cHinweisText;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getHinweisTextShop()
+    {
+        return $this->cHinweisTextShop;
+    }
+
+    /**
+     * @param string $cHinweisTextShop
+     * @return $this
+     */
+    public function setHinweisTextShop($cHinweisTextShop)
+    {
+        $this->cHinweisTextShop = $cHinweisTextShop;
 
         return $this;
     }

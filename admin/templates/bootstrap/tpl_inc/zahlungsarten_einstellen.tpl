@@ -62,9 +62,9 @@
                         {assign var="cISO" value=$sprache->cISO}
                         <li class="input-group">
                             <span class="input-group-addon">
-                                <label for="cHinweisText_{$cISO}">{#noticeTextShop#} ({$sprache->cNameDeutsch})</label>
+                                <label for="cHinweisTextShop_{$cISO}">{#noticeTextShop#} ({$sprache->cNameDeutsch})</label>
                             </span>
-                            <textarea class="form-control" id="cHinweisText_{$cISO}" name="cHinweisText_{$cISO}">{if isset($cHinweistexte_arr[$cISO]['Shop'])}{$cHinweistexte_arr[$cISO]['Shop']}{/if}</textarea>
+                            <textarea class="form-control" id="cHinweisTextShop_{$cISO}" name="cHinweisTextShop_{$cISO}">{if isset($cHinweisTexteShop_arr[$cISO])}{$cHinweisTexteShop_arr[$cISO]}{/if}</textarea>
                         </li>
                     {/foreach}
 
@@ -72,9 +72,9 @@
                         {assign var="cISO" value=$sprache->cISO}
                         <li class="input-group">
                             <span class="input-group-addon">
-                                <label for="cHinweistextEmail_{$cISO}">{#noticeTextEmail#} ({$sprache->cNameDeutsch})</label>
+                                <label for="cHinweisText_{$cISO}">{#noticeTextEmail#} ({$sprache->cNameDeutsch})</label>
                             </span>
-                            <textarea class="form-control" id="cHinweistextEmail_{$cISO}" name="cHinweistextEmail_{$cISO}">{if isset($cHinweistexte_arr[$cISO]['Email'])}{$cHinweistexte_arr[$cISO]['Email']}{/if}</textarea>
+                            <textarea class="form-control" id="cHinweisText_{$cISO}" name="cHinweisText_{$cISO}">{if isset($cHinweisTexte_arr[$cISO])}{$cHinweisTexte_arr[$cISO]}{/if}</textarea>
                         </li>
                     {/foreach}
 

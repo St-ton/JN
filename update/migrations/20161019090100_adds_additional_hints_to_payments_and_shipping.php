@@ -26,15 +26,15 @@ class Migration_20161019090100 extends Migration implements IMigration
 
     public function up()
     {
-        $this->execute('ALTER TABLE tversandartsprache ADD COLUMN cHinweistextEmail TEXT NULL DEFAULT NULL AFTER cHinweistext;');
+        $this->execute('ALTER TABLE tversandartsprache ADD COLUMN cHinweistextShop TEXT NULL DEFAULT NULL AFTER cHinweistext;');
 
-        $this->execute('ALTER TABLE tzahlungsartsprache ADD COLUMN cHinweistextEmail TEXT NULL DEFAULT NULL AFTER cHinweisText;');
+        $this->execute('ALTER TABLE tzahlungsartsprache ADD COLUMN cHinweisTextShop TEXT NULL DEFAULT NULL AFTER cHinweisText;');
     }
 
     public function down()
     {
-        $this->dropColumn('tversandartsprache', 'cHinweistextEmail');
+        $this->dropColumn('tversandartsprache', 'cHinweistextShop');
 
-        $this->dropColumn('tzahlungsartsprache', 'cHinweistextEmail');
+        $this->dropColumn('tzahlungsartsprache', 'cHinweistextShop');
     }
 }

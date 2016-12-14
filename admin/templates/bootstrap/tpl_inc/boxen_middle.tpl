@@ -299,8 +299,14 @@
                                 {foreach from=$oBox->oContainer_arr item=oContainerBox}
                                     <li class="list-group-item boxRow boxRowContainer">
                                         <div class="boxRow">
-                                            <div class="col-xs-7 boxSubName">
+                                            <div class="col-xs-3 boxSubName">
                                                 {$oContainerBox->cTitel}
+                                            </div>
+                                            <div class="col-xs-2{if $oContainerBox->bAktiv == 0} inactive text-muted{/if}">
+                                                {$oContainerBox->eTyp|ucfirst}
+                                            </div>
+                                            <div class="col-xs-2{if $oContainerBox->bAktiv == 0} inactive text-muted{/if}">
+                                                {$oContainerBox->cName}
                                             </div>
                                             <div class="boxOptions">
                                                 {if !isset($oBox->bGlobal) || !$oBox->bGlobal || $nPage == 0}

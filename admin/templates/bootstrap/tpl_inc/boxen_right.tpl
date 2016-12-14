@@ -4,6 +4,7 @@
             {$jtl_token}
             <div class="panel-heading boxShow">
                 <h3>Sidebar rechts</h3>
+                <hr>
             </div>
             <div class="panel-heading boxShow">
                 <input type="{if $nPage > 0}checkbox{else}hidden{/if}" name="box_show" id="box_right_show" {if isset($bBoxenAnzeigen.right) && $bBoxenAnzeigen.right}checked="checked"{/if} />

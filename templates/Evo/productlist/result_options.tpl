@@ -217,14 +217,21 @@
                         {if is_array($filterValues)}
                             {foreach $filterValues as $filterValue}
                                 {strip}
-                                <a class="filter-remove-custom-filter label label-info" rel="nofollow" href="#">
-                                    {$filter->getName()}: {$filterValue} &nbsp;<span class="fa fa-trash-o"></span>
-                                </a>
+                                    {assign var=idx value='cAlle'|cat:$filter->getClassName()}
+                                    {if is_array($NaviFilter->URL->$idx)}
+                                        {assign var=temp value=$NaviFilter->URL->$idx}
+                                        {assign var=removeCustomFilterUrl value=$temp[$filterValue]}
+                                    {else}
+                                        {assign var=removeCustomFilterUrl value=$NaviFilter->URL->$idx}
+                                    {/if}
+                                    <a class="filter-remove-custom-filter label label-info" rel="nofollow" href="{$removeCustomFilterUrl}">
+                                        {$filter->getName()}: {$filterValue} &nbsp;<span class="fa fa-trash-o"></span>
+                                    </a>
                                 {/strip}
                             {/foreach}
                         {else}
                             {strip}
-                            <a class="filter-remove-custom-filter label label-info" rel="nofollow" href="#">
+                            <a class="filter-remove-custom-filter label label-info" rel="nofollow" href="{$NaviFilter->URL->cAlle|cat:$filter->getClassName()}">
                                 {$filter->getName()}: {$filterValues} &nbsp;<span class="fa fa-trash-o"></span>
                             </a>
                             {/strip}

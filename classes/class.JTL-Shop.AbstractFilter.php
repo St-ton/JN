@@ -224,4 +224,12 @@ abstract class AbstractFilter implements IFilter
     {
         return $this->config;
     }
+
+    /**
+     * @return string
+     */
+    public function getClassName()
+    {
+        return get_class($this);
+    }
 }

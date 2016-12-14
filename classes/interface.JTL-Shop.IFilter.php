@@ -125,4 +125,9 @@ interface IFilter
      * @return array
      */
     public function getConfig();
+
+    /**
+     * @return string
+     */
+    public function getClassName();
 }

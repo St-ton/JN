@@ -55,7 +55,7 @@
                                 <form method="post" action="{get_static_route id='newsletter.php'}" class="form col-xs-12 col-sm-6">
                                     <fieldset>
                                         {$jtl_token}
-                                        <input type="hidden" name="abonnieren" value="1"/>
+                                        <input type="hidden" name="abonnieren" value="2"/>
                                         <div class="form-group">
                                             <label class="control-label sr-only" for="newsletter_email">{lang key="emailadress"}</label>
                                             <div class="input-group">
@@ -154,7 +154,9 @@
                             {/if}
                         </li>
                         <li class="col-xs-12 col-md-3 text-right" id="system-credits">
+                            {if !Shop::isBrandfree()}
                             Powered by <a href="http://jtl-url.de/jtlshop" title="JTL-Shop" target="_blank" rel="nofollow">JTL-Shop</a>
+                            {/if}
                         </li>
                     </ul>
                      {if isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout !== 'fluid'}

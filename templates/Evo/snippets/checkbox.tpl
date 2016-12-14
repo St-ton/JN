@@ -30,9 +30,9 @@
                 </label>
             </div>
             {if !empty($cb->cBeschreibung)}
-                    <p class="description text-muted small">
-                        {$cb->cBeschreibung}
-                    </p>
+                <p class="description text-muted small">
+                    {$cb->cBeschreibung}
+                </p>
             {/if}
         </div>
     {/foreach}

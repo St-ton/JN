@@ -372,7 +372,7 @@ if (class_exists('AuswahlAssistent')) {
                 }
             }
 
-            return;
+            return null;
         }
     }
 }

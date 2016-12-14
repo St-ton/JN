@@ -85,7 +85,7 @@ class PreisverlaufGraph
      * PreisverlaufGraph Members
      *
      * @access public
-     * @var image
+     * @var string image
      */
     public $image; // Bild vom Graphen
 
@@ -182,9 +182,9 @@ class PreisverlaufGraph
         $oPreisverlauf_arr = Shop::DB()->query(
             "SELECT fVKNetto, UNIX_TIMESTAMP(dDate) AS timestamp
                 FROM tpreisverlauf
-                WHERE kArtikel = " . (int) $kArtikel . "
-                    AND kKundengruppe = " . (int) $kKundegruppe . "
-                    AND DATE_SUB(now(), INTERVAL " . (int) $nMonat . " MONTH) < dDate
+                WHERE kArtikel = " . (int)$kArtikel . "
+                    AND kKundengruppe = " . (int)$kKundegruppe . "
+                    AND DATE_SUB(now(), INTERVAL " . (int)$nMonat . " MONTH) < dDate
                 ORDER BY dDate DESC", 2
         );
         if ($oPreisverlauf_arr !== false && count($oPreisverlauf_arr) > 0) {

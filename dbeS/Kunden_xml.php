@@ -24,7 +24,8 @@ if (auth()) {
             $return = 0;
             foreach ($list as $zip) {
                 if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                    Jtllog::writeLog('bearbeite: ' . PFAD_SYNC_TMP . $zip['filename'] . ' size: ' . filesize(PFAD_SYNC_TMP . $zip['filename']), JTLLOG_LEVEL_DEBUG, false, 'Kunden_xml');
+                    Jtllog::writeLog('bearbeite: ' . PFAD_SYNC_TMP . $zip['filename'] . ' size: ' .
+                        filesize(PFAD_SYNC_TMP . $zip['filename']), JTLLOG_LEVEL_DEBUG, false, 'Kunden_xml');
                 }
                 $d   = file_get_contents(PFAD_SYNC_TMP . $zip['filename']);
                 $xml = XML_unserialize($d);
@@ -59,7 +60,7 @@ echo $return;
  */
 function aktiviereKunden($xml)
 {
-    $kunden = mapArray($xml['aktiviere_kunden'], 'tkunde', array());
+    $kunden = mapArray($xml['aktiviere_kunden'], 'tkunde', []);
     foreach ($kunden as $kunde) {
         if ($kunde->kKunde > 0 && $kunde->kKundenGruppe > 0) {
             $kunde_db = new Kunde($kunde->kKunde);
@@ -84,7 +85,7 @@ function aktiviereKunden($xml)
  */
 function generiereNeuePasswoerter($xml)
 {
-    $oKundeXML_arr = mapArray($xml['passwort_kunden'], 'tkunde', array());
+    $oKundeXML_arr = mapArray($xml['passwort_kunden'], 'tkunde', []);
     foreach ($oKundeXML_arr as $oKundeXML) {
         if (isset($oKundeXML->kKunde) && $oKundeXML->kKunde > 0) {
             $oKunde = new Kunde((int)$oKundeXML->kKunde);
@@ -134,7 +135,7 @@ function bearbeiteAck($xml)
 {
     if (isset($xml['ack_kunden']['kKunde'])) {
         if (!is_array($xml['ack_kunden']['kKunde']) && (int)$xml['ack_kunden']['kKunde'] > 0) {
-            $xml['ack_kunden']['kKunde'] = array($xml['ack_kunden']['kKunde']);
+            $xml['ack_kunden']['kKunde'] = [$xml['ack_kunden']['kKunde']];
         }
         if (is_array($xml['ack_kunden']['kKunde'])) {
             foreach ($xml['ack_kunden']['kKunde'] as $kKunde) {
@@ -163,11 +164,20 @@ function bearbeiteGutscheine($xml)
                 if (!isset($gutschein_exists->kGutschein) || !$gutschein_exists->kGutschein) {
                     $kGutschein = Shop::DB()->insert('tgutschein', $gutschein);
                     if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                        Jtllog::writeLog('Gutschein fuer kKunde ' . intval($gutschein->kKunde) . ' wurde eingeloest. ' . print_r($gutschein, true), JTLLOG_LEVEL_DEBUG, 'kGutschein', $kGutschein);
+                        Jtllog::writeLog('Gutschein fuer kKunde ' . (int)$gutschein->kKunde . ' wurde eingeloest. ' .
+                            print_r($gutschein, true), JTLLOG_LEVEL_DEBUG, 'kGutschein', $kGutschein);
                     }
                     //kundenkto erhöhen
-                    Shop::DB()->query("UPDATE tkunde SET fGuthaben = fGuthaben+" . floatval($gutschein->fWert) . " WHERE kKunde = " . (int)$gutschein->kKunde, 4);
-                    Shop::DB()->query("UPDATE tkunde SET fGuthaben = 0 WHERE kKunde = " . (int)$gutschein->kKunde . " AND fGuthaben < 0", 3);
+                    Shop::DB()->query("
+                        UPDATE tkunde 
+                          SET fGuthaben = fGuthaben+" . floatval($gutschein->fWert) . " 
+                          WHERE kKunde = " . (int)$gutschein->kKunde, 4
+                    );
+                    Shop::DB()->query("
+                        UPDATE tkunde 
+                          SET fGuthaben = 0 
+                          WHERE kKunde = " . (int)$gutschein->kKunde . " AND fGuthaben < 0", 3
+                    );
                     //mail
                     $kunde           = new Kunde((int)$gutschein->kKunde);
                     $obj             = new stdClass();

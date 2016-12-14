@@ -15,6 +15,21 @@ class ZahlungsLog
     public $cModulId;
 
     /**
+     * @var array
+     */
+    public $oLog_arr = [];
+
+    /**
+     * @var int
+     */
+    public $nEingangAnzahl = 0;
+
+    /**
+     * @var bool
+     */
+    public $hasError = false;
+
+    /**
      * @param string $cModulId
      */
     public function __construct($cModulId)

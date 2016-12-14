@@ -221,8 +221,8 @@ if (isset($_POST['neueVersandart']) && intval($_POST['neueVersandart']) > 0 && v
     $Versandart->cAnzeigen                = $_POST['cAnzeigen'];
     $Versandart->cBild                    = $_POST['cBild'];
     $Versandart->nSort                    = $_POST['nSort'];
-    $Versandart->nMinLiefertage           = (int) $_POST['nMinLiefertage'];
-    $Versandart->nMaxLiefertage           = (int) $_POST['nMaxLiefertage'];
+    $Versandart->nMinLiefertage           = (int)$_POST['nMinLiefertage'];
+    $Versandart->nMaxLiefertage           = (int)$_POST['nMaxLiefertage'];
     $Versandart->cNurAbhaengigeVersandart = $_POST['cNurAbhaengigeVersandart'];
     $Versandart->cSendConfirmationMail    = (isset($_POST['cSendConfirmationMail'])) ? $_POST['cSendConfirmationMail'] : 'Y';
     $Versandart->eSteuer                  = $_POST['eSteuer'];

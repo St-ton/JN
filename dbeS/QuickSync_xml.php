@@ -28,7 +28,8 @@ if (auth()) {
             $return = 0;
             foreach ($list as $i => $zip) {
                 if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                    Jtllog::writeLog('bearbeite: ' . $entzippfad . $zip['filename'] . ' size: ' . filesize($entzippfad . $zip['filename']), JTLLOG_LEVEL_DEBUG, false, 'QuickSync_xml');
+                    Jtllog::writeLog('bearbeite: ' . $entzippfad . $zip['filename'] . ' size: ' .
+                        filesize($entzippfad . $zip['filename']), JTLLOG_LEVEL_DEBUG, false, 'QuickSync_xml');
                 }
                 $d   = file_get_contents($entzippfad . $zip['filename']);
                 $xml = XML_unserialize($d);
@@ -65,7 +66,6 @@ function bearbeiteInsert($xml)
     if (is_array($xml['quicksync']['tartikel'])) {
         $oArtikel_arr = mapArray($xml['quicksync'], 'tartikel', $GLOBALS['mArtikelQuickSync']);
         $nCount       = count($oArtikel_arr);
-
         //PREISE
         if ($nCount < 2) {
             updateXMLinDB($xml['quicksync']['tartikel'], 'tpreise', $GLOBALS['mPreise'], 'kKundengruppe', 'kArtikel');
@@ -82,7 +82,7 @@ function bearbeiteInsert($xml)
                 setzePreisverlauf($oPreis->kArtikel, $oPreis->kKundengruppe, $oPreis->fVKNetto);
             }
         } else {
-            for ($i = 0; $i < $nCount; $i++) {
+            for ($i = 0; $i < $nCount; ++$i) {
                 updateXMLinDB($xml['quicksync']['tartikel'][$i], 'tpreise', $GLOBALS['mPreise'], 'kKundengruppe', 'kArtikel');
 
                 if (version_compare($_POST['vers'], '099976', '>=')) {
@@ -117,7 +117,8 @@ function bearbeiteInsert($xml)
                 if ($delta->totalquantity > 0) {
                     $oArtikel->fLagerbestand = $oArtikel->fLagerbestand - $delta->totalquantity; //subtract delta from stocklevel
                     if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                        Jtllog::writeLog("Artikel-Quicksync: Lagerbestand von kArtikel {$oArtikel->kArtikel} wurde wegen nicht-abgeholter Bestellungen um {$delta->totalquantity} reduziert auf {$oArtikel->fLagerbestand}." , JTLLOG_LEVEL_DEBUG, false, 'Artikel_xml');
+                        Jtllog::writeLog("Artikel-Quicksync: Lagerbestand von kArtikel {$oArtikel->kArtikel} wurde wegen nicht-abgeholter Bestellungen "
+                        . "um {$delta->totalquantity} auf {$oArtikel->fLagerbestand} reduziert." , JTLLOG_LEVEL_DEBUG, false, 'Artikel_xml');
                     }
                 }
             }

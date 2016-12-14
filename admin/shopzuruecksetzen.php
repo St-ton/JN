@@ -77,6 +77,10 @@ if (isset($_POST['zuruecksetzen']) && intval($_POST['zuruecksetzen']) === 1 && v
                     Shop::DB()->query("DELETE FROM tseo WHERE cKey = 'kArtikel' OR cKey = 'kKategorie' OR cKey = 'kMerkmalWert' OR cKey = 'kHersteller'", 4);
                     break;
 
+                case 'revisions':
+                    Shop::DB()->query("TRUNCATE trevisions", 4);
+                    break;
+
                 // Shopinhalte
                 case 'news':
                     $_index = Shop::DB()->query("SELECT kNews FROM tnews;", 2);

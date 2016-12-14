@@ -62,7 +62,21 @@
         <div class="panel-body">
             <ul class="jtl-list-group">
                 <li class="list-group-item item">
-
+                    <div class="name">
+                        <label for="bControlNav">Ken-Burns-Effekt</label>
+                    </div>
+                    <div class="for">
+                        <select class="form-control" id="bUseKB" name="bUseKB">
+                            <option value="0" {if $oSlider->bUseKB == "0"} selected="selected" {/if}>Deaktiviert</option>
+                            <option value="1" {if $oSlider->bUseKB == "1"} selected="selected" {/if}>Aktiviert</option>
+                        </select>
+                    </div>
+                    <p><i class="fa fa-warning"></i> Wenn diese Option aktiviert ist, &uuml;berschreibt sie andere <a
+                                href="#" data-toggle="tooltip"
+                                title="Es werden &uuml;berschrieben: zuf&auml;lliger Start, Pause bei Hover, Navigation, Thumbnail Navigation, Navigation (Richtung), Effekte.">Einstellungen</a>.
+                    </p>
+                </li>
+                <li class="list-group-item item">
                     <div class="name">
                         <label for="bControlNav">Navigation</label>
                     </div>

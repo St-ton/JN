@@ -10,7 +10,6 @@ use Imanee\Imanee;
  */
 class MediaImage implements IMedia
 {
-    const REGEX = '/^media\/image\/(?P<type>product|category|variation|manufacturer)\/(?P<id>\d+)\/(?P<size>xs|sm|md|lg)\/(?P<name>[a-zA-Z0-9\-_]+)(?:(?:~(?P<number>\d+))?)\.(?P<ext>jpg|jpeg|png|gif)$/';
 
     /**
      *
@@ -60,13 +59,15 @@ class MediaImage implements IMedia
             'name'   => $name,
             'ext'    => $settings['format']
         ));
-
         $thumb    = $req->getThumb($size);
         $thumbAbs = PFAD_ROOT . $thumb;
         $rawAbs   = PFAD_ROOT . $req->getRaw();
 
         if (!file_exists($thumbAbs) && !file_exists($rawAbs)) {
-            $thumb = $req->getFallbackThumb($size);
+            $fallback = $req->getFallbackThumb($size);
+            $thumb    = (file_exists(PFAD_ROOT . $fallback))
+                ? $fallback
+                : BILD_KEIN_ARTIKELBILD_VORHANDEN;
         }
 
         return $thumb;
@@ -143,7 +144,7 @@ class MediaImage implements IMedia
     {
         $directory = PFAD_ROOT . MediaImageRequest::getCachePath($type);
         if ($id !== null) {
-            $directory = $directory . '/' . (int) $id;
+            $directory = $directory . '/' . (int)$id;
         }
 
         try {
@@ -398,7 +399,7 @@ class MediaImage implements IMedia
             $request = substr($request, 1);
         }
 
-        if (preg_match(self::REGEX, $request, $matches)) {
+        if (preg_match(MEDIAIMAGE_REGEX, $request, $matches)) {
             return array_intersect_key($matches, array_flip(array_filter(array_keys($matches), 'is_string')));
         }
 

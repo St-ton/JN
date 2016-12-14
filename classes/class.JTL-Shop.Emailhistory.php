@@ -125,7 +125,7 @@ class Emailhistory
             foreach ($cMember_arr as $cMember) {
                 $cMethod = 'get' . substr($cMember, 1);
                 if (method_exists($this, $cMethod)) {
-                    $mValue = "'" . $this->realEscape(call_user_func(array(&$this, $cMethod))) . "'";
+                    $mValue = "'" . Shop::DB()->realEscape(call_user_func(array(&$this, $cMethod))) . "'";
                     if (call_user_func(array(&$this, $cMethod)) === null) {
                         $mValue = 'NULL';
                     }
@@ -195,6 +195,19 @@ class Emailhistory
         }
 
         return false;
+    }
+
+    /**
+     * truncate the email-history-table
+     *
+     * @param void
+     * @return boolean  true=success, false='something went wrong'
+     */
+    public function deleteAll()
+    {
+        // log that event!
+        Jtllog::writeLog(utf8_decode('eMail-History gelöscht'), JTLLOG_LEVEL_NOTICE, true, 'Emailhistory');
+        return !(Shop::DB()->query('TRUNCATE TABLE temailhistory', 3));
     }
 
     /**

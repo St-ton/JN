@@ -3,43 +3,43 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+if (!defined('PFAD_ROOT')) {
+    http_response_code(400);
+    exit();
+}
 require_once PFAD_ROOT . PFAD_INCLUDES . 'filter_inc.php';
-$cachingOptions = Shop::getSettings(array(CONF_CACHING));
 Shop::setPageType(PAGE_ARTIKELLISTE);
 /** @global JTLSmarty $smarty */
 /** @global object $NaviFilter*/
-$Einstellungen = Shop::getSettings(
-    array(
-        CONF_GLOBAL,
-        CONF_RSS,
-        CONF_ARTIKELUEBERSICHT,
-        CONF_VERGLEICHSLISTE,
-        CONF_BEWERTUNG,
-        CONF_NAVIGATIONSFILTER,
-        CONF_BOXEN,
-        CONF_ARTIKELDETAILS,
-        CONF_METAANGABEN,
-        CONF_SUCHSPECIAL,
-        CONF_BILDER,
-        CONF_PREISVERLAUF,
-        CONF_SONSTIGES,
-        CONF_AUSWAHLASSISTENT
-    )
-);
-$suchanfrage = '';
-// setze Kat in Session
-if (isset($cParameter_arr['kKategorie']) && $cParameter_arr['kKategorie'] > 0) {
-    $_SESSION['LetzteKategorie'] = $cParameter_arr['kKategorie'];
-    $AktuelleSeite               = 'PRODUKTE';
-}
-// Standardoptionen
-$nArtikelProSeite_arr = array(
+$Einstellungen        = Shop::getSettings([
+    CONF_GLOBAL,
+    CONF_RSS,
+    CONF_ARTIKELUEBERSICHT,
+    CONF_VERGLEICHSLISTE,
+    CONF_BEWERTUNG,
+    CONF_NAVIGATIONSFILTER,
+    CONF_BOXEN,
+    CONF_ARTIKELDETAILS,
+    CONF_METAANGABEN,
+    CONF_SUCHSPECIAL,
+    CONF_BILDER,
+    CONF_PREISVERLAUF,
+    CONF_SONSTIGES,
+    CONF_AUSWAHLASSISTENT
+]);
+$nArtikelProSeite_arr = [
     5,
     10,
     25,
     50,
     100
-);
+];
+$suchanfrage          = '';
+// setze Kat in Session
+if (isset($cParameter_arr['kKategorie']) && $cParameter_arr['kKategorie'] > 0) {
+    $_SESSION['LetzteKategorie'] = $cParameter_arr['kKategorie'];
+    $AktuelleSeite               = 'PRODUKTE';
+}
 if ($cParameter_arr['kSuchanfrage'] > 0) {
     $oSuchanfrage = Shop::DB()->select('tsuchanfrage', 'kSuchanfrage', (int)$cParameter_arr['kSuchanfrage'], null, null, null, null, false, 'cSuche');
     if (isset($oSuchanfrage->cSuche) && strlen($oSuchanfrage->cSuche) > 0) {
@@ -91,20 +91,20 @@ if (!isset($NaviFilter->Suche->cSuche)) {
 }
 $oSuchergebnisse = buildSearchResults($FilterSQL, $NaviFilter);
 suchanfragenSpeichern($NaviFilter->Suche->cSuche, $oSuchergebnisse->GesamtanzahlArtikel);
-$NaviFilter->Suche->kSuchanfrage = gibSuchanfrageKey($NaviFilter->Suche->cSuche, Shop::$kSprache);
+$NaviFilter->Suche->kSuchanfrage = gibSuchanfrageKey($NaviFilter->Suche->cSuche, Shop::getLanguage());
 // Umleiten falls SEO keine Artikel ergibt
 doMainwordRedirect($NaviFilter, count($oSuchergebnisse->Artikel->elemente), true);
 // Bestsellers
 if (isset($Einstellungen['artikeluebersicht']['artikelubersicht_bestseller_gruppieren']) && $Einstellungen['artikeluebersicht']['artikelubersicht_bestseller_gruppieren'] === 'Y') {
-    $products = array();
+    $products = [];
     foreach ($oSuchergebnisse->Artikel->elemente as $product) {
-        $products[] = (int) $product->kArtikel;
+        $products[] = (int)$product->kArtikel;
     }
     $limit       = (isset($Einstellungen['artikeluebersicht']['artikeluebersicht_bestseller_anzahl'])) ?
-        (int) $Einstellungen['artikeluebersicht']['artikeluebersicht_bestseller_anzahl'] :
+        (int)$Einstellungen['artikeluebersicht']['artikeluebersicht_bestseller_anzahl'] :
         3;
     $minsells    = (isset($Einstellungen['global']['global_bestseller_minanzahl'])) ?
-        (int) $Einstellungen['global']['global_bestseller_minanzahl'] :
+        (int)$Einstellungen['global']['global_bestseller_minanzahl'] :
         10;
     $bestsellers = Bestseller::buildBestsellers($products, $_SESSION['Kundengruppe']->kKundengruppe, $_SESSION['Kundengruppe']->darfArtikelKategorienSehen, false, $limit, $minsells);
     Bestseller::ignoreProducts($oSuchergebnisse->Artikel->elemente, $bestsellers);
@@ -255,7 +255,7 @@ if (strpos(basename(gibNaviURL($NaviFilter, true, null)), '.php') === false || !
 }
 // Auswahlassistent
 if (function_exists('starteAuswahlAssistent')) {
-    starteAuswahlAssistent(AUSWAHLASSISTENT_ORT_KATEGORIE, $cParameter_arr['kKategorie'], Shop::$kSprache, $smarty, $Einstellungen['auswahlassistent']);
+    starteAuswahlAssistent(AUSWAHLASSISTENT_ORT_KATEGORIE, $cParameter_arr['kKategorie'], Shop::getLanguage(), $smarty, $Einstellungen['auswahlassistent']);
 }
 $smarty->assign('SEARCHSPECIALS_TOPREVIEWS', SEARCHSPECIALS_TOPREVIEWS)
        ->assign('PFAD_ART_ABNAHMEINTERVALL', PFAD_ART_ABNAHMEINTERVALL)
@@ -298,7 +298,7 @@ $smarty->assign(
     'meta_keywords', gibNaviMetaKeywords(
         $oSuchergebnisse->Artikel->elemente,
         $NaviFilter,
-        (isset($oExcludedKeywordsAssoc_arr[$_SESSION['cISOSprache']]->cKeywords) ? explode(' ', $oExcludedKeywordsAssoc_arr[$_SESSION['cISOSprache']]->cKeywords) : array())
+        (isset($oExcludedKeywordsAssoc_arr[$_SESSION['cISOSprache']]->cKeywords) ? explode(' ', $oExcludedKeywordsAssoc_arr[$_SESSION['cISOSprache']]->cKeywords) : [])
     )
 );
 executeHook(HOOK_FILTER_ENDE);

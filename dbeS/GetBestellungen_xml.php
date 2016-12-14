@@ -7,7 +7,7 @@
 require_once dirname(__FILE__) . '/syncinclude.php';
 
 $return  = 3;
-$xml_obj = array();
+$xml_obj = [];
 if (auth()) {
     $return = 0;
     $oBestellung_arr = Shop::DB()->query(
@@ -50,7 +50,7 @@ if (auth()) {
             for ($o = 0; $o < $warenkorbpos_anz; $o++) {
                 $xml_obj['bestellungen']['tbestellung'][$i]['twarenkorbpos'][$o . ' attr']                   = buildAttributes(
                     $xml_obj['bestellungen']['tbestellung'][$i]['twarenkorbpos'][$o],
-                    array('cUnique', 'kKonfigitem', 'kBestellpos')
+                    ['cUnique', 'kKonfigitem', 'kBestellpos']
                 );
                 $xml_obj['bestellungen']['tbestellung'][$i]['twarenkorbpos'][$o . ' attr']['kBestellung']    = $xml_obj['bestellungen']['tbestellung'][$i . ' attr']['kBestellung'];
                 $xml_obj['bestellungen']['tbestellung'][$i]['twarenkorbpos'][$o]['twarenkorbposeigenschaft'] = Shop::DB()->query(

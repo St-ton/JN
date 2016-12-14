@@ -6,7 +6,7 @@
 
 require_once dirname(__FILE__) . '/syncinclude.php';
 $return  = 3;
-$xml_obj = array();
+$xml_obj = [];
 if (auth()) {
     $return = 0;
 
@@ -49,7 +49,8 @@ function gibDirInhaltXML($dir, $nNurFiles)
                     $cXML .= gibDirInhaltXML($dir . '/' . $file, 1);
                     $cXML .= "</dir>\n";
                 } elseif ($nNurFiles && !is_dir($dir . '/' . $file)) {
-                    $cXML .= '<file cName="' . $file . '" nSize="' . filesize($dir . '/' . $file) . '" dTime="' . date('Y-m-d H:i:s', filemtime($dir . '/' . $file)) . '"/>' . "\n";
+                    $cXML .= '<file cName="' . $file . '" nSize="' . filesize($dir . '/' . $file) . '" dTime="' .
+                        date('Y-m-d H:i:s', filemtime($dir . '/' . $file)) . '"/>' . "\n";
                 }
             }
         }

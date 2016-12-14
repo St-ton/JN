@@ -11,7 +11,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'seite_inc.php';
 /** @global JTLSmarty $smarty */
 Shop::setPageType(PAGE_EIGENE);
 $AktuelleSeite = 'SEITE';
-$Einstellungen = Shop::getSettings(array(
+$Einstellungen = Shop::getSettings([
     CONF_GLOBAL,
     CONF_RSS,
     CONF_KUNDEN,
@@ -21,7 +21,7 @@ $Einstellungen = Shop::getSettings(array(
     CONF_ARTIKELUEBERSICHT,
     CONF_AUSWAHLASSISTENT,
     CONF_CACHING
-));
+]);
 
 //hole alle OberKategorien
 $AufgeklappteKategorien = new KategorieListe();
@@ -75,7 +75,7 @@ if ($link->nLinkart == LINKTYP_STARTSEITE) {
            ->assign('Navigation', $Navigation);
     // Auswahlassistent
     if (function_exists('starteAuswahlAssistent')) {
-        starteAuswahlAssistent(AUSWAHLASSISTENT_ORT_STARTSEITE, 1, Shop::$kSprache, $smarty, $Einstellungen['auswahlassistent']);
+        starteAuswahlAssistent(AUSWAHLASSISTENT_ORT_STARTSEITE, 1, Shop::getLanguage(), $smarty, $Einstellungen['auswahlassistent']);
     }
     if ($Einstellungen['news']['news_benutzen'] === 'Y') {
         $smarty->assign('oNews_arr', gibNews($Einstellungen));
@@ -84,10 +84,10 @@ if ($link->nLinkart == LINKTYP_STARTSEITE) {
     Shop::setPageType(PAGE_DATENSCHUTZ);
 } elseif ($link->nLinkart == LINKTYP_AGB) {
     Shop::setPageType(PAGE_AGB);
-    $smarty->assign('AGB', gibAGBWRB(Shop::$kSprache, $_SESSION['Kundengruppe']->kKundengruppe));
+    $smarty->assign('AGB', gibAGBWRB(Shop::getLanguage(), $_SESSION['Kundengruppe']->kKundengruppe));
 } elseif ($link->nLinkart == LINKTYP_WRB) {
     Shop::setPageType(PAGE_WRB);
-    $smarty->assign('WRB', gibAGBWRB(Shop::$kSprache, $_SESSION['Kundengruppe']->kKundengruppe));
+    $smarty->assign('WRB', gibAGBWRB(Shop::getLanguage(), $_SESSION['Kundengruppe']->kKundengruppe));
 } elseif ($link->nLinkart == LINKTYP_VERSAND) {
     Shop::setPageType(PAGE_VERSAND);
     if (isset($_POST['land']) && isset($_POST['plz'])) {
@@ -129,7 +129,7 @@ if ($link->nLinkart == LINKTYP_STARTSEITE) {
     Shop::setPageType(PAGE_AUSWAHLASSISTENT);
     // Auswahlassistent
     if (function_exists('starteAuswahlAssistent')) {
-        starteAuswahlAssistent(AUSWAHLASSISTENT_ORT_LINK, $link->kLink, Shop::$kSprache, $smarty, $Einstellungen['auswahlassistent']);
+        starteAuswahlAssistent(AUSWAHLASSISTENT_ORT_LINK, $link->kLink, Shop::getLanguage(), $smarty, $Einstellungen['auswahlassistent']);
     }
 } elseif ($link->nLinkart == LINKTYP_404) {
     Shop::setPageType(PAGE_404);
@@ -163,7 +163,7 @@ $cMetaTitle       = (isset($link->Sprache->cMetaTitle)) ? $link->Sprache->cMetaT
 $cMetaDescription = (isset($link->Sprache->cMetaDescription)) ? $link->Sprache->cMetaDescription : null;
 $cMetaKeywords    = (isset($link->Sprache->cMetaKeywords)) ? $link->Sprache->cMetaKeywords : null;
 if (strlen($cMetaTitle) === 0 || strlen($cMetaDescription) === 0 || strlen($cMetaKeywords) === 0) {
-    $kSprache            = Shop::$kSprache;
+    $kSprache            = Shop::getLanguage();
     $oGlobaleMetaAngaben = (isset($oGlobaleMetaAngabenAssoc_arr[$kSprache])) ? $oGlobaleMetaAngabenAssoc_arr[$kSprache] : null;
 
     if (is_object($oGlobaleMetaAngaben)) {

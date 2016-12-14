@@ -642,9 +642,8 @@ function gibStepZahlung()
         }
     } elseif (!is_array($oZahlungsart_arr) || count($oZahlungsart_arr) === 0) {
         if (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-            Jtllog::writeLog(
-                'Es konnte keine Zahlungsart für folgende Daten gefunden werden: Versandart: ' . $_SESSION['Versandart']->kVersandart .
-                ', Kundengruppe: ' . $_SESSION['Kundengruppe']->kKundengruppe, JTLLOG_LEVEL_ERROR
+            Jtllog::writeLog(utf8_decode('Es konnte keine Zahlungsart für folgende Daten gefunden werden: Versandart: ' . $_SESSION['Versandart']->kVersandart .
+                ', Kundengruppe: ' . $_SESSION['Kundengruppe']->kKundengruppe), JTLLOG_LEVEL_ERROR
             );
         }
     }
@@ -828,30 +827,34 @@ function plausiNeukundenKupon()
                         OR tkunde.kKunde = " . (int)$_SESSION['Kunde']->kKunde . "
                     LIMIT 1", 1
             );
-            if (empty($oBestellung->kBestellung)) {
+            $verwendet = Shop::DB()->select('tkuponneukunde', 'cEmail', $_SESSION['Kunde']->cMail);
+            $verwendet = !empty($verwendet) ? $verwendet->cVerwendet : null;
+            if ($oBestellung === false || (!empty($oBestellung->kBestellung) && $verwendet === 'N')) {
                 $NeukundenKupons = Shop::DB()->query("SELECT * FROM tkupon WHERE cKuponTyp = 'neukundenkupon' AND cAktiv = 'Y' ORDER BY fWert DESC", 2);
                 foreach ($NeukundenKupons as $NeukundenKupon) {
-                    if (angabenKorrekt(checkeKupon($NeukundenKupon))) {
+                    if (angabenKorrekt(checkeKupon($NeukundenKupon)) && (empty($verwendet) || $verwendet === 'N')) {
                         kuponAnnehmen($NeukundenKupon);
-                        $hash = Kuponneukunde::Hash(
-                            null,
-                            trim($_SESSION['Kunde']->cNachname),
-                            trim($_SESSION['Kunde']->cStrasse),
-                            null,
-                            trim($_SESSION['Kunde']->cPLZ),
-                            trim($_SESSION['Kunde']->cOrt),
-                            trim($_SESSION['Kunde']->cLand)
-                        );
-                        $Options = array(
-                            'Kupon'     => $NeukundenKupon->kKupon,
-                            'Email'     => $_SESSION['Kunde']->cMail,
-                            'DatenHash' => $hash,
-                            'Erstellt'  => 'now()'
-                        );
-                        $Kuponneukunde = new Kuponneukunde();
-                        $Kuponneukunde->setOptions($Options);
-                        $Kuponneukunde->Save();
-
+                        if (empty($verwendet)) {
+                            $hash = Kuponneukunde::Hash(
+                                null,
+                                trim($_SESSION['Kunde']->cNachname),
+                                trim($_SESSION['Kunde']->cStrasse),
+                                trim(StringHandler::filterXSS($_SESSION['Kunde']->cMail)),
+                                trim($_SESSION['Kunde']->cPLZ),
+                                trim($_SESSION['Kunde']->cOrt),
+                                trim($_SESSION['Kunde']->cLand)
+                            );
+                            $Options = array(
+                                'Kupon'     => $NeukundenKupon->kKupon,
+                                'Email'     => $_SESSION['Kunde']->cMail,
+                                'DatenHash' => $hash,
+                                'Erstellt'  => 'now()',
+                                'Verwendet' => 'N'
+                            );
+                            $Kuponneukunde = new Kuponneukunde();
+                            $Kuponneukunde->setOptions($Options);
+                            $Kuponneukunde->Save();
+                        }
                         break;
                     }
                 }
@@ -865,7 +868,7 @@ function plausiNeukundenKupon()
                 null,
                 trim($_SESSION['Kunde']->cNachname),
                 trim($_SESSION['Kunde']->cStrasse),
-                null,
+                trim(StringHandler::filterXSS($_SESSION['Kunde']->cMail)),
                 trim($_SESSION['Kunde']->cPLZ),
                 trim($_SESSION['Kunde']->cOrt),
                 trim($_SESSION['Kunde']->cLand)
@@ -880,19 +883,23 @@ function plausiNeukundenKupon()
                      WHERE cKuponTyp = 'neukundenkupon'
                          AND cAktiv = 'Y'", 2
             );
+            $verwendet = Shop::DB()->select('tkuponneukunde', 'cEmail', StringHandler::filterXSS($_SESSION['Kunde']->cMail), null, null, null, null, false, 'cVerwendet');
+            $verwendet = !empty($verwendet) ? $verwendet->cVerwendet : null;
             foreach ($NeukundenKupons as $NeukundenKupon) {
-                if (angabenKorrekt(checkeKupon($NeukundenKupon))) {
+                if (angabenKorrekt(checkeKupon($NeukundenKupon)) && (empty($verwendet) || $verwendet === 'N')) {
                     kuponAnnehmen($NeukundenKupon);
-
-                    $Options = array(
-                        'Kupon'     => $NeukundenKupon->kKupon,
-                        'Email'     => $_SESSION['Kunde']->cMail,
-                        'DatenHash' => $hash,
-                        'Erstellt'  => 'now()'
-                    );
-                    $Kuponneukunde = new Kuponneukunde();
-                    $Kuponneukunde->setOptions($Options);
-                    $Kuponneukunde->Save();
+                    if (empty($verwendet)) {
+                        $Options = array(
+                            'Kupon'     => $NeukundenKupon->kKupon,
+                            'Email'     => $_SESSION['Kunde']->cMail,
+                            'DatenHash' => $hash,
+                            'Erstellt'  => 'now()',
+                            'Verwendet' => 'N'
+                        );
+                        $Kuponneukunde = new Kuponneukunde();
+                        $Kuponneukunde->setOptions($Options);
+                        $Kuponneukunde->Save();
+                    }
                     break;
                 }
             }
@@ -901,7 +908,7 @@ function plausiNeukundenKupon()
 }
 
 /**
- * @param Zahlungsart $paymentMethod
+ * @param Zahlungsart|object $paymentMethod
  * @return array
  */
 function checkAdditionalPayment($paymentMethod)
@@ -1036,6 +1043,7 @@ function gibPostZahlungsInfo()
  */
 function zahlungsartKorrekt($kZahlungsart)
 {
+    /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
     $kZahlungsart = (int)$kZahlungsart;
     unset($_SESSION['Zahlungsart']);
     $_SESSION['Warenkorb']->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART)
@@ -1051,12 +1059,7 @@ function zahlungsartKorrekt($kZahlungsart)
                     AND tversandartzahlungsart.kZahlungsart = " . $kZahlungsart, 1
         );
         if (isset($Zahlungsart->cModulId) && strlen($Zahlungsart->cModulId) > 0) {
-            $einstellungen = Shop::DB()->query("
-                SELECT *
-                    FROM teinstellungen
-                    WHERE kEinstellungenSektion = " . CONF_ZAHLUNGSARTEN . "
-                        AND cModulId = '" . $Zahlungsart->cModulId . "'", 2
-            );
+            $einstellungen = Shop::DB()->selectAll('teinstellungen', ['kEinstellungenSektion', 'cModulId'], [CONF_ZAHLUNGSARTEN, $Zahlungsart->cModulId]);
             foreach ($einstellungen as $einstellung) {
                 $Zahlungsart->einstellungen[$einstellung->cName] = $einstellung->cWert;
             }
@@ -1267,7 +1270,7 @@ function gibZahlungsart($kZahlungsart)
 
 /**
  * @param int $kKunde
- * @return bool
+ * @return object|bool
  */
 function gibKundenKontodaten($kKunde)
 {
@@ -1311,7 +1314,7 @@ function gibZahlungsarten($kVersandart, $kKundengruppe)
     $kVersandart   = (int)$kVersandart;
     $kKundengruppe = (int)$kKundengruppe;
     $fSteuersatz   = 0.0;
-    $Zahlungsarten = array();
+    $Zahlungsarten = [];
     if ($kVersandart > 0) {
         $Zahlungsarten = Shop::DB()->query(
             "SELECT tversandartzahlungsart.*, tzahlungsart.*
@@ -1325,10 +1328,9 @@ function gibZahlungsarten($kVersandart, $kKundengruppe)
                 ORDER BY tzahlungsart.nSort", 2
         );
     }
-
-    $gueltigeZahlungsarten = array();
+    $gueltigeZahlungsarten = [];
     $zaCount               = count($Zahlungsarten);
-    for ($i = 0; $i < $zaCount; $i++) {
+    for ($i = 0; $i < $zaCount; ++$i) {
         if (!$Zahlungsarten[$i]->kZahlungsart) {
             continue;
         }
@@ -1343,12 +1345,7 @@ function gibZahlungsarten($kVersandart, $kKundengruppe)
                 $Zahlungsarten[$i]->cHinweisText[$Sprache->cISO]    = $name_spr->cHinweisText;
             }
         }
-        $einstellungen = Shop::DB()->query(
-            "SELECT *
-                FROM teinstellungen
-                WHERE kEinstellungenSektion = " . CONF_ZAHLUNGSARTEN . "
-                AND cModulId = '" . $Zahlungsarten[$i]->cModulId . "'", 2
-        );
+        $einstellungen = Shop::DB()->selectAll('teinstellungen', ['kEinstellungenSektion', 'cModulId'], [CONF_ZAHLUNGSARTEN, $Zahlungsarten[$i]->cModulId]);
         foreach ($einstellungen as $einstellung) {
             $Zahlungsarten[$i]->einstellungen[$einstellung->cName] = $einstellung->cWert;
         }
@@ -1387,7 +1384,7 @@ function gibZahlungsarten($kVersandart, $kKundengruppe)
 }
 
 /**
- * @param Zahlungsart $Zahlungsart
+ * @param Zahlungsart|object $Zahlungsart
  * @return bool
  */
 function zahlungsartGueltig($Zahlungsart)
@@ -1399,11 +1396,6 @@ function zahlungsartGueltig($Zahlungsart)
     require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
     $kPlugin = gibkPluginAuscModulId($Zahlungsart->cModulId);
     if ($kPlugin > 0) {
-        if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-            Jtllog::writeLog(utf8_decode('Die Zahlungsart "' . $Zahlungsart->cName . '" ist ein Plugin und wird auf Gültigkeit geprüft!'),
-                JTLLOG_LEVEL_DEBUG, false, 'cModulId', $Zahlungsart->cModulId);
-        }
-
         $oPlugin = new Plugin($kPlugin);
         if ($oPlugin->kPlugin > 0) {
             // Plugin muss aktiv sein
@@ -1533,7 +1525,8 @@ function pruefeZahlungsartMaxBestellwert($fMaxBestellwert)
  */
 function versandartKorrekt($kVersandart, $aFormValues = 0)
 {
-    $kVersandart = (int) $kVersandart;
+    /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
+    $kVersandart = (int)$kVersandart;
     //Verpackung beachten
     $kVerpackung_arr = (isset($_POST['kVerpackung']) && is_array($_POST['kVerpackung']) && count($_POST['kVerpackung']) > 0) ?
         $_POST['kVerpackung'] :
@@ -1689,8 +1682,9 @@ function angabenKorrekt($fehlendeAngaben)
 }
 
 /**
- * @param int $kundenaccount
- * @param int $checkpass
+ * @param array $data
+ * @param int   $kundenaccount
+ * @param int   $checkpass
  * @return array
  */
 function checkKundenFormularArray($data, $kundenaccount, $checkpass = 1)
@@ -2147,6 +2141,7 @@ function kuponAnnehmen($Kupon)
         $_SESSION['Warenkorb']->loescheSpezialPos(C_WARENKORBPOS_TYP_NEUKUNDENKUPON);
         $_SESSION['NeukundenKupon']           = $Kupon;
         $_SESSION['NeukundenKuponAngenommen'] = true;
+        //@todo: erst loggen wenn wirklich bestellt wird. hier kann noch abgebrochen werden
         if (Jtllog::doLog(JTLLOG_LEVEL_NOTICE)) {
             Jtllog::writeLog('Der Neukundenkupon' . print_r($Kupon, true) . ' wurde genutzt.', JTLLOG_LEVEL_NOTICE, false, 'kKupon', $Kupon->kKupon);
         }
@@ -2510,6 +2505,35 @@ function kuponMoeglich()
     }
 
     return $moeglich;
+}
+
+
+/**
+ * @return bool
+ */
+function freeGiftStillValid()
+{
+    $valid = true;
+    foreach ($_SESSION['Warenkorb']->PositionenArr as $oPosition) {
+        if ($oPosition->nPosTyp == C_WARENKORBPOS_TYP_GRATISGESCHENK) {
+            // Prüfen ob der Artikel wirklich ein Gratisgeschenk ist und ob die Mindestsumme erreicht wird
+            $oArtikelGeschenk = Shop::DB()->query(
+                "SELECT kArtikel
+                    FROM tartikelattribut
+                    WHERE kArtikel = " . (int)$oPosition->kArtikel . "
+                       AND cName = '" . FKT_ATTRIBUT_GRATISGESCHENK . "'
+                       AND CAST(cWert AS DECIMAL) <= " . $_SESSION['Warenkorb']->gibGesamtsummeWarenExt(array(C_WARENKORBPOS_TYP_ARTIKEL), true), 1
+            );
+
+            if (empty($oArtikelGeschenk->kArtikel)) {
+                $_SESSION['Warenkorb']->loescheSpezialPos(C_WARENKORBPOS_TYP_GRATISGESCHENK);
+                $valid = false;
+            }
+            break;
+        }
+    }
+
+    return $valid;
 }
 
 /**

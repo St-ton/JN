@@ -196,7 +196,7 @@
                 {/foreach}
                 {if !empty($NaviFilter->URL->cNoFilter)}
                     {strip}
-                        <a href="{$NaviFilter->URL->cNoFilter}" title="{lang key="removeFilters" section="global"} {lang key="delete" section="global"}" class="label label-warning">
+                        <a href="{$NaviFilter->URL->cNoFilter}" title="{lang key="removeFilters" section="global"}" class="label label-warning">
                             {lang key="removeFilters" section="global"}
                         </a>
                     {/strip}

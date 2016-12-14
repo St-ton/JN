@@ -1397,18 +1397,12 @@ class Navigationsfilter
                 (isset($oZusatzFilter->SuchspecialFilter->kKey) && $oZusatzFilter->SuchspecialFilter->kKey > 0) ||
                 (isset($oZusatzFilter->SuchFilter->kSuchanfrage) && $oZusatzFilter->SuchFilter->kSuchanfrage > 0))
         ) {
-            if ($debug === true) {
-                echo '<br>bSeo=>false main';
-            }
             $bSeo = false;
         }
         $cURL = $cSEOURL . 'index.php?';
         // Mainwords
         if ($this->Kategorie->isInitialized()) {
             if (strlen($this->Kategorie->getSeo($this->getLanguageID())) === 0) {
-                if ($debug === true) {
-                    echo '<br>bSeo=>false if0';
-                }
                 $bSeo = false;
             } else {
                 $cSEOURL .= $this->Kategorie->getSeo($this->getLanguageID());
@@ -1417,72 +1411,48 @@ class Navigationsfilter
         } elseif ($this->Hersteller->isInitialized()) {
             $cSEOURL .= $this->Hersteller->getSeo($this->getLanguageID());
             if ($bSeo && strlen($this->Hersteller->getSeo($this->getLanguageID())) === 0) {
-                if ($debug === true) {
-                    echo '<br>bSeo=>false if1';
-                }
                 $bSeo = false;
             }
             $cURL .= 'h=' . $this->Hersteller->getValue();
         } elseif ($this->Suchanfrage->isInitialized()) {
             $cSEOURL .= $this->Suchanfrage->getSeo($this->getLanguageID());
             if ($bSeo && strlen($this->Suchanfrage->getSeo($this->getLanguageID())) === 0) {
-                if ($debug === true) {
-                    echo '<br>bSeo=>false if2';
-                }
                 $bSeo = false;
             }
             $cURL .= 'l=' . $this->Suchanfrage->getValue();
         } elseif ($this->MerkmalWert->isInitialized()) {
             $cSEOURL .= $this->MerkmalWert->getSeo($this->getLanguageID());
             if ($bSeo && strlen($this->MerkmalWert->getSeo($this->getLanguageID())) === 0) {
-                if ($debug === true) {
-                    echo '<br>bSeo=>false if3';
-                }
                 $bSeo = false;
             }
             $cURL .= 'm=' . $this->MerkmalWert->getValue();
         } elseif ($this->Tag->isInitialized()) {
             $cSEOURL .= $this->Tag->getSeo($this->getLanguageID());
             if ($bSeo && strlen($this->Tag->getSeo($this->getLanguageID())) === 0) {
-                if ($debug === true) {
-                    echo '<br>bSeo=>false if4';
-                }
                 $bSeo = false;
             }
             $cURL .= 't=' . $this->Tag->getValue();
         } elseif ($this->Suchspecial->isInitialized()) {
             $cSEOURL .= $this->Suchspecial->getSeo($this->getLanguageID());
             if ($bSeo && strlen($this->Suchspecial->getSeo($this->getLanguageID())) === 0) {
-                if ($debug === true) {
-                    echo '<br>bSeo=>false if5';
-                }
                 $bSeo = false;
             }
             $cURL .= 'q=' . $this->Suchspecial->getValue();
         } elseif ($this->News->isInitialized()) {
             $cSEOURL .= $this->News->getSeo($this->getLanguageID());
             if ($bSeo && strlen($this->News->getSeo($this->getLanguageID())) === 0) {
-                if ($debug === true) {
-                    echo '<br>bSeo=>false if6';
-                }
                 $bSeo = false;
             }
             $cURL .= 'n=' . $this->News->getValue();
         } elseif ($this->NewsMonat->isInitialized()) {
             $cSEOURL .= $this->NewsMonat->getSeo($this->getLanguageID());
             if ($bSeo && strlen($this->NewsMonat->getSeo($this->getLanguageID())) === 0) {
-                if ($debug === true) {
-                    echo '<br>bSeo=>false if7';
-                }
                 $bSeo = false;
             }
             $cURL .= 'nm=' . $this->NewsMonat->getValue();
         } elseif ($this->NewsKategorie->isInitialized()) {
             $cSEOURL .= $this->NewsKategorie->getSeo($this->getLanguageID());
             if ($bSeo && strlen($this->NewsKategorie->getSeo($this->getLanguageID())) === 0) {
-                if ($debug === true) {
-                    echo '<br>bSeo=>false if8';
-                }
                 $bSeo = false;
             }
             $cURL .= 'nk=' . $this->NewsKategorie->getValue();
@@ -1490,9 +1460,6 @@ class Navigationsfilter
         if ((isset($this->EchteSuche->cSuche) && strlen($this->EchteSuche->cSuche) > 0) &&
             (!isset($this->Suchanfrage->kSuchanfrage) || intval($this->Suchanfrage->kSuchanfrage) === 0)
         ) {
-            if ($debug === true) {
-                echo '<br>bSeo=>false if9';
-            }
             $bSeo = false;
             $cURL .= 'suche=' . urlencode($this->EchteSuche->cSuche);
         }
@@ -1505,9 +1472,6 @@ class Navigationsfilter
             if ($this->KategorieFilter->isInitialized() && (!$this->Kategorie->isInitialized() || $this->Kategorie->getValue() !== $this->KategorieFilter->getValue())) {
                 if (!isset($oZusatzFilter->FilterLoesen->Kategorie) || !$oZusatzFilter->FilterLoesen->Kategorie) {
                     if (strlen($this->KategorieFilter->getSeo($this->getLanguageID())) === 0) {
-                        if ($debug === true) {
-                            echo '<br>bSeo=>false if10';
-                        }
                         $bSeo = false;
                     }
                     if ($this->conf['navigationsfilter']['kategoriefilter_anzeigen_als'] === 'HF' && !empty($oZusatzFilter->KategorieFilter->kKategorie)) {
@@ -1533,9 +1497,6 @@ class Navigationsfilter
                 if (empty($oZusatzFilter->FilterLoesen->Hersteller)) {
                     $cSEOURL .= SEP_HST . $this->HerstellerFilter->getSeo($this->getLanguageID());
                     if ($bSeo && strlen($this->HerstellerFilter->getSeo($this->getLanguageID())) === 0) {
-                        if ($debug === true) {
-                            echo '<br>bSeo=>false if11';
-                        }
                         $bSeo = false;
                     }
                     $cURL .= '&hf=' . $this->HerstellerFilter->getValue();
@@ -1552,9 +1513,6 @@ class Navigationsfilter
                 foreach ($this->SuchFilter as $i => $oSuchFilter) {
                     if (isset($oSuchFilter->kSuchanfrage) && $oSuchFilter->kSuchanfrage > 0) {
                         if (isset($oZusatzFilter->FilterLoesen->SuchFilter) && $oZusatzFilter->FilterLoesen->SuchFilter != $oSuchFilter->kSuchanfrage) {
-                            if ($debug === true) {
-                                echo '<br>bSeo=>false if12';
-                            }
                             $bSeo = false;
                             if ($oSuchFilter->kSuchanfrage != $this->Suche->kSuchanfrage) {
                                 $oSuchanfrage_arr[$i]->kSuchanfrage = $oSuchFilter->kSuchanfrage;
@@ -1593,9 +1551,6 @@ class Navigationsfilter
                             $oZusatzFilter->FilterLoesen->MerkmalWert != $oMerkmalFilter->kMerkmalWert
                         ) {
                             if (strlen($oMerkmalFilter->cSeo[$this->getLanguageID()]) === 0) {
-                                if ($debug === true) {
-                                    echo '<br>bSeo=>false if13';
-                                }
                                 $bSeo = false;
                             }
                             $oMerkmalWert_arr[$i]               = new stdClass();
@@ -1688,9 +1643,6 @@ class Navigationsfilter
                 if (!isset($oZusatzFilter->FilterLoesen->Suchspecials) || !$oZusatzFilter->FilterLoesen->Suchspecials) {
                     $cSEOURL .= $this->SuchspecialFilter->getSeo($this->getLanguageID());
                     if ($bSeo && strlen($this->SuchspecialFilter->getSeo($this->getLanguageID())) === 0) {
-                        if ($debug === true) {
-                            echo '<br>bSeo=>false if14';
-                        }
                         $bSeo = false;
                     }
                     $cURL .= '&qf=' . $this->SuchspecialFilter->getValue();
@@ -1720,28 +1672,33 @@ class Navigationsfilter
             }
         }
         foreach ($this->getActiveFilters() as $filter) {
-            if (!method_exists($filter, 'isCustom')) {
-                //@todo: remove
-                throw new Exception('Filter' . get_class($filter) . ' has not isCustom method');
-            }
             if ($filter->isCustom()) {
+                $className = get_class($filter);
                 if ((!isset($oZusatzFilter->FilterLoesen->Kategorie) || $oZusatzFilter->FilterLoesen->Kategorie !== true) && //cAlleKategorien
-                    $oZusatzFilter !== null//cNoFilter
+                    $oZusatzFilter !== null && //cNoFilter
+                    !isset($oZusatzFilter->FilterLoesen->$className)
                 ) {
                     //@todo: custom filters do not  support SEO URLs yet
-                    if ($debug === true) {
-                        echo '<br>bSeo=>false if15 - custom filter';
-                    }
                     $bSeo = false;
                 }
-                $param  = $filter->getUrlParam();
-                $values = $filter->getValue();
-                if ($filter->getType() === AbstractFilter::FILTER_TYPE_OR) {
-                    foreach ($values as $value) {
-                        $cURL .= '&' . $param . '[]' . '=' . $value;
+                if (!isset($oZusatzFilter->FilterLoesen->$className) || $oZusatzFilter->FilterLoesen->$className > 0) {
+                    $param  = $filter->getUrlParam();
+                    $values = $filter->getValue();
+                    if ($filter->getType() === AbstractFilter::FILTER_TYPE_OR) {
+                        $ignore = (isset($oZusatzFilter->FilterLoesen->$className) && $oZusatzFilter->FilterLoesen->$className !== true)
+                            ? $oZusatzFilter->FilterLoesen->$className
+                            : null;
+                        if ($ignore !== null && count($values) > 1) {
+                            $bSeo = false;
+                        }
+                        foreach ($values as $value) {
+                            if ($value !== $ignore) {
+                                $cURL .= '&' . $param . '[]' . '=' . $value;
+                            }
+                        }
+                    } else {
+                        $cURL .= '&' . $param . '=' . $values;
                     }
-                } else {
-                    $cURL .= '&' . $param . '=' . $values;
                 }
             }
         }
@@ -2318,12 +2275,29 @@ class Navigationsfilter
 
         $this->URL->cAlleErscheinungsdatums = $this->getURL(false, $oZusatzFilter);
 
-        $oZusatzFilter               = new stdClass();
         $oZusatzFilter->FilterLoesen = new stdClass();
         foreach ($this->SuchFilter as $oSuchFilter) {
             if (isset($oSuchFilter->kSuchanfrage) && $oSuchFilter->kSuchanfrage > 0) {
                 $oZusatzFilter->FilterLoesen->SuchFilter                = $oSuchFilter->kSuchanfrage;
                 $this->URL->cAlleSuchFilter[$oSuchFilter->kSuchanfrage] = $this->getURL($bSeo, $oZusatzFilter);
+            }
+        }
+
+        $oZusatzFilter->FilterLoesen = new stdClass();
+        foreach ($this->filters as $filter) {
+            if ($filter->isInitialized() && $filter->isCustom()) {
+                $className       = (get_class($filter));
+                $idx             = 'cAlle' . $className;
+                $this->URL->$idx = [];
+                if ($filter->getType() === AbstractFilter::FILTER_TYPE_OR) {
+                    foreach ($filter->getValue() as $filterValue) {
+                        $oZusatzFilter->FilterLoesen->$className = $filterValue;
+                        $this->URL->$idx[$filterValue] = $this->getURL($bSeo, $oZusatzFilter);
+                    }
+                } else {
+                    $oZusatzFilter->FilterLoesen->$className = true;
+                    $this->URL->$idx = $this->getURL($bSeo, $oZusatzFilter);
+                }
             }
         }
         // Filter reset

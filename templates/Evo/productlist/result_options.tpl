@@ -212,13 +212,14 @@
                     {/strip}
                 {/foreach}
                 {foreach $NaviFilter->getActiveFilters() as $filter}
+                    {strip}
                     {if $filter->isCustom()}
                         {assign var=filterValues value=$filter->getValue()}
                         {if is_array($filterValues)}
                             {foreach $filterValues as $filterValue}
                                 <a class="filter-remove-custom-filter label label-info" rel="nofollow" href="#">
                                     {$filter->getName()}: {$filterValue} &nbsp;<span class="fa fa-trash-o"></span>
-                                </a> &nbsp;
+                                </a>
                             {/foreach}
                         {else}
                             <a class="filter-remove-custom-filter label label-info" rel="nofollow" href="#">
@@ -226,10 +227,11 @@
                             </a>
                         {/if}
                     {/if}
+                    {/strip}
                 {/foreach}
                 {if !empty($NaviFilter->URL->cNoFilter)}
                     {strip}
-                        <a href="{$NaviFilter->URL->cNoFilter}" title="{lang key="removeFilters" section="global"} {lang key="delete" section="global"}" class="label label-warning">
+                        <a href="{$NaviFilter->URL->cNoFilter}" title="{lang key="removeFilters" section="global"}" class="label label-warning">
                             {lang key="removeFilters" section="global"}
                         </a>
                     {/strip}

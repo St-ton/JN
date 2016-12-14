@@ -230,17 +230,9 @@ function augmentCoupon($oKupon)
         $oKupon->cKundengruppe = $oKundengruppe->cName;
     }
 
-    if ($oKupon->cArtikel === '') {
-        $oKupon->cArtikelInfo = 'Alle';
-    } else {
-        $oKupon->cArtikelInfo = 'eingeschr&auml;nkt';
-    }
+    $oKupon->cArtikelInfo = ($oKupon->cArtikel === '') ? 'Alle' : 'eingeschr&auml;nkt';
 
-    if (empty($oKupon->cHersteller) || $oKupon->cHersteller === '-1') {
-        $oKupon->cHerstellerInfo = 'Alle';
-    } else {
-        $oKupon->cHerstellerInfo = 'eingeschr&auml;nkt';
-    }
+    $oKupon->cHerstellerInfo = (empty($oKupon->cHersteller) || $oKupon->cHersteller === '-1') ? 'Alle' : 'eingeschr&auml;nkt';
 
     $oMaxErstelltDB   = Shop::DB()->query("
         SELECT max(dErstellt) as dLastUse

@@ -413,14 +413,14 @@ You have chosen the following shipping option: {$Bestellung->cZahlungsartName}<b
 {elseif $Bestellung->Zahlungsart->cModulId=="za_moneybookers_jtl"}
 {/if}
 
-{if isset($Zahlungsart->cHinweistext) && $Zahlungsart->cHinweistext|strlen > 0}
-    {$Zahlungsart->cHinweistext}<br>
+{if isset($Zahlungsart->cHinweisText) && $Zahlungsart->cHinweisText|strlen > 0}
+    {$Zahlungsart->cHinweisText}<br>
     <br>
 {/if}
 <br>
 You will be notified of the subsequent status of your order separately.
 
-{if !empty($oTrustedShopsBewertenButton->cURL)}
+{if $oTrustedShopsBewertenButton->cURL|strlen > 0}
     <br><br>
     Were you satisfied with your order? If so, we hope you'll take a minute to write a recommendation.<br>
     <a href="{$oTrustedShopsBewertenButton->cURL}"><img src="{$oTrustedShopsBewertenButton->cPicURL}" alt="Please rate our Shop!"></a>

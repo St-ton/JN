@@ -515,13 +515,13 @@ Sie haben folgende Zahlungsart gewählt: {$Bestellung->cZahlungsartName}<br>
 {elseif $Bestellung->Zahlungsart->cModulId=="za_moneybookers_jtl"}
 {/if}
 
-{if isset($Zahlungsart->cHinweistext) && $Zahlungsart->cHinweistext|strlen > 0}
-    {$Zahlungsart->cHinweistext}<br>
+{if isset($Zahlungsart->cHinweisText) && $Zahlungsart->cHinweisText|strlen > 0}
+    {$Zahlungsart->cHinweisText}<br>
     <br>
 {/if}
 Über den weiteren Verlauf Ihrer Bestellung werden wir Sie jeweils gesondert informieren.
 
-{if !empty($oTrustedShopsBewertenButton->cURL)}
+{if $oTrustedShopsBewertenButton->cURL|strlen > 0}
     <br><br>
     Waren Sie mit Ihrer Bestellung zufrieden? Dann würden wir uns über eine Empfehlung freuen ... es dauert auch nur eine Minute.<br>
     <a href="{$oTrustedShopsBewertenButton->cURL}"><img src="{$oTrustedShopsBewertenButton->cPicURL}" alt="Bewerten Sie uns!"></a>

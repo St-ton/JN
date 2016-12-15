@@ -1069,10 +1069,10 @@ function zahlungsartKorrekt($kZahlungsart)
             return 0;
         }
         // Hinweistext
-        $oObj                      = Shop::DB()->select('tzahlungsartsprache', 'kZahlungsart', (int)$Zahlungsart->kZahlungsart, 'cISOSprache', $_SESSION['cISOSprache'], null, null, false, 'cHinweisText');
+        $oObj                      = Shop::DB()->select('tzahlungsartsprache', 'kZahlungsart', (int)$Zahlungsart->kZahlungsart, 'cISOSprache', $_SESSION['cISOSprache'], null, null, false, 'cHinweisTextShop');
         $Zahlungsart->cHinweisText = '';
-        if (isset($oObj->cHinweisText)) {
-            $Zahlungsart->cHinweisText = $oObj->cHinweisText;
+        if (isset($oObj->cHinweisTextShop)) {
+            $Zahlungsart->cHinweisText = $oObj->cHinweisTextShop;
         }
         if (isset($_SESSION['VersandKupon']->cZusatzgebuehren) && $_SESSION['VersandKupon']->cZusatzgebuehren === 'Y' && $Zahlungsart->fAufpreis > 0) {
             if ($Zahlungsart->cName === 'Nachnahme') {

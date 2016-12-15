@@ -97,7 +97,7 @@ Gesamtsumme:{$Bestellung->WarensummeLocalized[0]}
 {elseif $Bestellung->Zahlungsart->cModulId=="za_moneybookers_jtl"}
 {/if}
 
-{if isset($Zahlungsart->cHinweistext) && $Zahlungsart->cHinweistext|strlen > 0}  {$Zahlungsart->cHinweistext}
+{if isset($Zahlungsart->cHinweisText) && $Zahlungsart->cHinweisText|strlen > 0}  {$Zahlungsart->cHinweisText}
 
 
 {/if}

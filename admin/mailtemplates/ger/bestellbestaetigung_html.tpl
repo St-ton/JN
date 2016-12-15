@@ -571,8 +571,8 @@ Sie haben folgende Zahlungsart gewählt: {$Bestellung->cZahlungsartName}<br>
 {elseif $Bestellung->Zahlungsart->cModulId === "za_paypal_jtl"}
 {elseif $Bestellung->Zahlungsart->cModulId === "za_moneybookers_jtl"}
 {/if}
-{if isset($Zahlungsart->cHinweistext) && $Zahlungsart->cHinweistext|strlen > 0}
-    {$Zahlungsart->cHinweistext}<br>
+{if isset($Zahlungsart->cHinweisText) && $Zahlungsart->cHinweisText|strlen > 0}
+    {$Zahlungsart->cHinweisText}<br>
     <br>
 {/if}
 {if $Bestellung->Zahlungsart->cModulId === "za_rechnung_jtl"}

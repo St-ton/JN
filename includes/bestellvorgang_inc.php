@@ -1338,11 +1338,11 @@ function gibZahlungsarten($kVersandart, $kKundengruppe)
         $Zahlungsarten[$i]->angezeigterName = array();
         $Zahlungsarten[$i]->cGebuehrname    = array();
         foreach ($_SESSION['Sprachen'] as $Sprache) {
-            $name_spr = Shop::DB()->select('tzahlungsartsprache', 'kZahlungsart', (int)$Zahlungsarten[$i]->kZahlungsart, 'cISOSprache', $Sprache->cISO, null, null, false, 'cName, cGebuehrname, cHinweisText');
+            $name_spr = Shop::DB()->select('tzahlungsartsprache', 'kZahlungsart', (int)$Zahlungsarten[$i]->kZahlungsart, 'cISOSprache', $Sprache->cISO, null, null, false, 'cName, cGebuehrname, cHinweisTextShop');
             if (isset($name_spr->cName)) {
                 $Zahlungsarten[$i]->angezeigterName[$Sprache->cISO] = $name_spr->cName;
                 $Zahlungsarten[$i]->cGebuehrname[$Sprache->cISO]    = $name_spr->cGebuehrname;
-                $Zahlungsarten[$i]->cHinweisText[$Sprache->cISO]    = $name_spr->cHinweisText;
+                $Zahlungsarten[$i]->cHinweisText[$Sprache->cISO]    = $name_spr->cHinweisTextShop;
             }
         }
         $einstellungen = Shop::DB()->selectAll('teinstellungen', ['kEinstellungenSektion', 'cModulId'], [CONF_ZAHLUNGSARTEN, $Zahlungsarten[$i]->cModulId]);
@@ -1612,11 +1612,11 @@ function versandartKorrekt($kVersandart, $aFormValues = 0)
             }
             $Spezialpos->cName = array();
             foreach ($_SESSION['Sprachen'] as $Sprache) {
-                $name_spr = Shop::DB()->select('tversandartsprache', 'kVersandart', (int)$versandart->kVersandart, 'cISOSprache', $Sprache->cISO, null, null, false, 'cName, cHinweisText');
+                $name_spr = Shop::DB()->select('tversandartsprache', 'kVersandart', (int)$versandart->kVersandart, 'cISOSprache', $Sprache->cISO, null, null, false, 'cName, cHinweisTextShop');
                 if (isset($name_spr->cName)) {
                     $Spezialpos->cName[$Sprache->cISO]                  = $name_spr->cName;
                     $versandart->angezeigterName[$Sprache->cISO]        = $name_spr->cName;
-                    $versandart->angezeigterHinweistext[$Sprache->cISO] = $name_spr->cHinweisText;
+                    $versandart->angezeigterHinweistext[$Sprache->cISO] = $name_spr->cHinweisTextShop;
                 }
             }
             //auskommentiert - $versandart->eSteuer soll eigentlich NUR die Versandkostenfrei-Grenze beeinflussen

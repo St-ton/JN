@@ -31,6 +31,17 @@ if (($action = verifyGPDataString('a')) !== '' && ($kZahlungsart = verifyGPCData
         $hinweis = 'Der Fehlerlog von ' . $oZahlungsart->cName . ' wurde erfolgreich zur&uuml;ckgesetzt.';
     }
 }
+if (verifyGPCDataInteger('kZahlungsart') > 0 && $action !== 'logreset' && validateToken()) {
+    if ($action === 'payments') {
+        // Zahlungseingaenge
+        $step = 'payments';
+    } elseif ($action === 'log') {
+        // Log einsehen
+        $step = 'log';
+    } else {
+        $step = 'einstellen';
+    }
+}
 
 if (isset($_POST['einstellungen_bearbeiten']) && isset($_POST['kZahlungsart']) && (int)$_POST['einstellungen_bearbeiten'] === 1 && (int)$_POST['kZahlungsart'] > 0 && validateToken()) {
     $step              = 'uebersicht';
@@ -137,25 +148,14 @@ if (isset($_POST['einstellungen_bearbeiten']) && isset($_POST['kZahlungsart']) &
         Shop::DB()->delete('tzahlungsartsprache', ['kZahlungsart', 'cISOSprache'], [(int)$_POST['kZahlungsart'], $sprache->cISO]);
         Shop::DB()->insert('tzahlungsartsprache', $zahlungsartSprache);
     }
-    Shop::dbg($_POST, false, 'zahlungsart');
+
     Shop::Cache()->flushAll();
     $hinweis = 'Zahlungsart gespeichert.';
-}
-
-if (verifyGPCDataInteger('kZahlungsart') > 0 && $action !== 'logreset' && validateToken()) {
-    if (verifyGPDataString('a') === 'payments') {
-        // Zahlungseingaenge
-        $step = 'payments';
-    } elseif (verifyGPDataString('a') === 'log') {
-        // Log einsehen
-        $step = 'log';
-    } else {
-        $step = 'einstellen';
-    }
+    $step    = 'uebersicht';
 }
 
 if ($step === 'einstellen') {
-    $zahlungsart = Shop::DB()->select('tzahlungsart', 'kZahlungsart', (int)$_GET['kZahlungsart']);
+    $zahlungsart = Shop::DB()->select('tzahlungsart', 'kZahlungsart', verifyGPCDataInteger('kZahlungsart'));
     if ($zahlungsart === false) {
         $step    = 'uebersicht';
         $hinweis = 'Zahlungsart nicht gefunden.';
@@ -205,7 +205,7 @@ if ($step === 'einstellen') {
 } elseif ($step === 'log') {
     require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.ZahlungsLog.php';
 
-    $kZahlungsart = (int)$_GET['kZahlungsart'];
+    $kZahlungsart = verifyGPCDataInteger('kZahlungsart');
     $oZahlungsart = Shop::DB()->select('tzahlungsart', 'kZahlungsart', $kZahlungsart);
 
     if (isset($oZahlungsart->cModulId) && strlen($oZahlungsart->cModulId) > 0) {

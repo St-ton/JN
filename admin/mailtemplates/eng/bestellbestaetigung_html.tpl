@@ -571,8 +571,8 @@ You have chosen the following payment option: {$Bestellung->cZahlungsartName}<br
 {elseif $Bestellung->Zahlungsart->cModulId=="za_paypal_jtl"}
 {elseif $Bestellung->Zahlungsart->cModulId=="za_moneybookers_jtl"}
 {/if}
-{if isset($Zahlungsart->cHinweistextEmail) && $Zahlungsart->cHinweistextEmail|strlen > 0}
-    {$Zahlungsart->cHinweistextEmail}<br>
+{if isset($Zahlungsart->cHinweistext) && $Zahlungsart->cHinweistext|strlen > 0}
+    {$Zahlungsart->cHinweistext}<br>
     <br>
 {/if}
 {if $Bestellung->Zahlungsart->cModulId=="za_rechnung_jtl"}

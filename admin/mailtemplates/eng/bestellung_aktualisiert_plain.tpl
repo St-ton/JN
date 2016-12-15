@@ -72,7 +72,7 @@ Email: {$Kunde->cMail}
 
 You have chosen the following shipping option: {$Bestellung->cZahlungsartName}
 
-{if isset($Zahlungsart->cHinweistextEmail) && $Zahlungsart->cHinweistextEmail|strlen > 0} {$Zahlungsart->cHinweistextEmail}
+{if isset($Zahlungsart->cHinweistext) && $Zahlungsart->cHinweistext|strlen > 0} {$Zahlungsart->cHinweistext}
 
 
 {/if}

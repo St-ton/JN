@@ -413,8 +413,8 @@ You have chosen the following shipping option: {$Bestellung->cZahlungsartName}<b
 {elseif $Bestellung->Zahlungsart->cModulId=="za_moneybookers_jtl"}
 {/if}
 
-{if isset($Zahlungsart->cHinweistextEmail) && $Zahlungsart->cHinweistextEmail|strlen > 0}
-    {$Zahlungsart->cHinweistextEmail}<br>
+{if isset($Zahlungsart->cHinweistext) && $Zahlungsart->cHinweistext|strlen > 0}
+    {$Zahlungsart->cHinweistext}<br>
     <br>
 {/if}
 <br>

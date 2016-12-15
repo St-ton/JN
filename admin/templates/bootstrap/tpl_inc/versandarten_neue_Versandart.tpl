@@ -171,9 +171,9 @@
                             {if isset($oVersandartSpracheAssoc_arr[$cISO])}
                                 <li class="input-group">
                                     <span class="input-group-addon">
-                                        <label for="cHinweistext_{$cISO}">{#shippingNoteShop#} ({$sprache->cNameDeutsch})</label>
+                                        <label for="cHinweistextShop_{$cISO}">{#shippingNoteShop#} ({$sprache->cNameDeutsch})</label>
                                     </span>
-                                    <textarea id="cHinweistext_{$cISO}" class="form-control combo" name="cHinweistext_{$cISO}">{if isset($oVersandartSpracheAssoc_arr[$cISO]->cHinweistext)}{$oVersandartSpracheAssoc_arr[$cISO]->cHinweistext}{/if}</textarea>
+                                    <textarea id="cHinweistextShop_{$cISO}" class="form-control combo" name="cHinweistextShop_{$cISO}">{if isset($oVersandartSpracheAssoc_arr[$cISO]->cHinweistextShop)}{$oVersandartSpracheAssoc_arr[$cISO]->cHinweistextShop}{/if}</textarea>
                                 </li>
                             {/if}
                         {/foreach}
@@ -183,9 +183,9 @@
                             {if isset($oVersandartSpracheAssoc_arr[$cISO])}
                                 <li class="input-group">
                                     <span class="input-group-addon">
-                                        <label for="cHinweistextEmail_{$cISO}">{#shippingNoteEmail#} ({$sprache->cNameDeutsch})</label>
+                                        <label for="cHinweistext_{$cISO}">{#shippingNoteEmail#} ({$sprache->cNameDeutsch})</label>
                                     </span>
-                                    <textarea id="cHinweistextEmail_{$cISO}" class="form-control combo" name="cHinweistextEmail_{$cISO}">{if isset($oVersandartSpracheAssoc_arr[$cISO]->cHinweistextEmail)}{$oVersandartSpracheAssoc_arr[$cISO]->cHinweistextEmail}{/if}</textarea>
+                                    <textarea id="cHinweistext_{$cISO}" class="form-control combo" name="cHinweistext_{$cISO}">{if isset($oVersandartSpracheAssoc_arr[$cISO]->cHinweistext)}{$oVersandartSpracheAssoc_arr[$cISO]->cHinweistext}{/if}</textarea>
                                 </li>
                             {/if}
                         {/foreach}

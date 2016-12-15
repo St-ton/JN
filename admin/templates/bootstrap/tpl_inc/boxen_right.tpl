@@ -31,9 +31,11 @@
         <div class="boxOptionRow panel-footer">
             <form name="newBoxRight" action="boxen.php" method="post" class="form-horizontal">
                 {$jtl_token}
-                <div class="form-group" style="margin-bottom: 0;">
-                    <label class="col-sm-3 control-label" for="newBoxRight">{#new#}:</label>
-                    <div class="col-sm-9">
+                <div class="form-group row" style="margin-bottom: 0;">
+                    <div class="col-sm-2">
+                        <label class="control-label" for="newBoxRight">{#new#}:</label>
+                    </div>
+                    <div class="col-sm-10">
                         <select id="newBoxRight" name="item" class="form-control" onchange="document.newBoxRight.submit();">
                             <option value="0">{#pleaseSelect#}</option>
                             {foreach from=$oVorlagen_arr item=oVorlagen}

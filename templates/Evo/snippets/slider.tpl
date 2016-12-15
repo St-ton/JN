@@ -63,6 +63,7 @@
             var durationFactor = 1.25;                      // firstslide pausetime adjustment factor
 
             function KBInit () {ldelim}
+                $('.nivoSlider img').css('visibility', 'hidden');
                 $('.nivoSlider .nivo-nextNav').trigger('click');
                 $('.nivoSlider, .nivo-control').css('opacity',1);
                 setTimeout (function(){ldelim}
@@ -85,14 +86,14 @@
             function NivoKenBurns () {ldelim}
                 $('.nivo-main-image').css('opacity',1);
                 setTimeout (function(){ldelim}
-                    $('.nivoSlider img').css('width',100+zoomFactor+'%');
+                    $('.nivoSlider .nivo-slice img').css('width',100+zoomFactor+'%');
                 {rdelim},10);
                 setTimeout (function(){ldelim}
                     var nivoWidth=$('.nivoSlider').width(), nivoHeight=$('.nivoSlider').height();
                     var xScope=nivoWidth*zoomFactor/100, yScope=nivoHeight*zoomFactor/105;
                     var xStart=-xScope*Math.floor(Math.random()*2);
                     var yStart=-yScope*Math.floor(Math.random()*2);
-                    $('.nivoSlider img').css('left',xStart).css('top',yStart).animate({ldelim}width:'100%', left:0, top:0{rdelim},pauseTime*durationFactor);durationFactor=1.02;
+                    $('.nivoSlider .nivo-slice img').css('left',xStart).css('top',yStart).animate({ldelim}width:'100%', left:0, top:0{rdelim},pauseTime*durationFactor);durationFactor=1.02;
                     $('.nivo-main-image').css('cssText','left:0 !important;top:0 !important;');
                 {rdelim},10);
             {rdelim}
@@ -118,6 +119,7 @@
                     manualAdvance: false,
                     randomStart: false,
                     startSlide: endSlide,
+                    slices: 1,
                     beforeChange: function (){ldelim}NivoKenBurns();{rdelim},
                     afterLoad: function (){ldelim}
                         KBInit();

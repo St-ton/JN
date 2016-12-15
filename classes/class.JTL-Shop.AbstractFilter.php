@@ -66,20 +66,24 @@ abstract class AbstractFilter implements IFilter
     private $config = [];
 
     /**
+     * @var array
+     */
+    private $availableLanguages = [];
+
+    /**
      * @var bool
      */
     protected $isInitialized = false;
 
     /**
      * @param int|array $value
-     * @param array $languages
      * @return $this
      */
-    public function init($value, $languages)
+    public function init($value)
     {
         $this->isInitialized = true;
 
-        return $this->setValue($value)->setSeo($languages);
+        return $this->setValue($value)->setSeo($this->availableLanguages);
     }
 
     /**
@@ -153,26 +157,31 @@ abstract class AbstractFilter implements IFilter
     /**
      * AbstractFilter constructor
      *
-     * @param int   $languageID
-     * @param int   $customerGroupID
-     * @param array $config
+     * @param int|null   $languageID
+     * @param int|null   $customerGroupID
+     * @param array|null $config
+     * @param array|null $languages
      */
-    public function __construct($languageID, $customerGroupID, $config)
+    public function __construct($languageID = null, $customerGroupID = null, $config = null, $languages = null)
     {
-        $this->setData($languageID, $customerGroupID, $config);
+        if ($languageID !== null && $customerGroupID !== null && $config !== null && $languages !== null) {
+            $this->setData($languageID, $customerGroupID, $config, $languages);
+        }
     }
 
     /**
      * @param int   $languageID
      * @param int   $customerGroupID
      * @param array $config
+     * @param array $languages
      * @return $this
      */
-    public function setData($languageID, $customerGroupID, $config)
+    public function setData($languageID, $customerGroupID, $config, $languages = [])
     {
-        $this->languageID      = $languageID;
-        $this->customerGroupID = $customerGroupID;
-        $this->config          = $config;
+        $this->languageID         = $languageID;
+        $this->customerGroupID    = $customerGroupID;
+        $this->config             = $config;
+        $this->availableLanguages = $languages;
 
         return $this;
     }

@@ -84,10 +84,9 @@ class FilterPriceRange extends AbstractFilter implements IFilter
 
     /**
      * @param int   $id
-     * @param array $languages
      * @return $this
      */
-    public function init($id, $languages)
+    public function init($id)
     {
         list($fVon, $fBis) = explode('_', $id);
         $this->fVon  = doubleval($fVon);

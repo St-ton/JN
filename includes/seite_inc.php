@@ -432,9 +432,9 @@ function gibSitemapGlobaleMerkmale()
 
                         verarbeiteMerkmalWertBild($oMerkmalWert);
                         // cURL bauen
-                        $oMerkmalWert->cURL = (strlen($oMerkmalWert->cSeo) > 0) ?
-                            Shop::getURL() . '/' . $oMerkmalWert->cSeo :
-                            Shop::getURL() . '/' . $cDatei . '?m=' . $oMerkmalWert->kMerkmalWert;
+                        $oMerkmalWert->cURL = (strlen($oMerkmalWert->cSeo) > 0)
+                            ? $shopURL . $oMerkmalWert->cSeo
+                            : $shopURL . $cDatei . '?m=' . $oMerkmalWert->kMerkmalWert;
 
                         $oMerkmal_arr[$nPos]->oMerkmalWert_arr[] = $oMerkmalWert;
                     } else {
@@ -453,14 +453,14 @@ function gibSitemapGlobaleMerkmale()
 
                         verarbeiteMerkmalWertBild($oMerkmalWert);
                         // cURL bauen
-                        $oMerkmalWert->cURL = (strlen($oMerkmalWert->cSeo) > 0) ?
-                            Shop::getURL() . '/' . $oMerkmalWert->cSeo :
-                            Shop::getURL() . '/' . $cDatei . '?m=' . $oMerkmalWert->kMerkmalWert;
+                        $oMerkmalWert->cURL = (strlen($oMerkmalWert->cSeo) > 0)
+                            ? $shopURL . $oMerkmalWert->cSeo
+                            : $shopURL . $cDatei . '?m=' . $oMerkmalWert->kMerkmalWert;
 
                         $oMerkmal->oMerkmalWert_arr[] = $oMerkmalWert;
                         $oMerkmal_arr[]               = $oMerkmal;
 
-                        $nPos++;
+                        ++$nPos;
                     }
                 } else { // Erster Durchlauf
                     $oMerkmal->kMerkmal         = (isset($oMerkmalTMP->kMerkmal)) ? $oMerkmalTMP->kMerkmal : null;

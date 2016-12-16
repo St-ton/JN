@@ -2473,7 +2473,6 @@ function berechneVersandpreis($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
                 $fGesamtsummeWaren = $_SESSION['Warenkorb']->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL, C_WARENKORBPOS_TYP_KUPON, C_WARENKORBPOS_TYP_NEUKUNDENKUPON], 1);
             }
             break;
-
     }
 
     if ($Artikel && $fArtikelPreis >= $versandart->fVersandkostenfreiAbX && $versandart->fVersandkostenfreiAbX > 0) {
@@ -5642,6 +5641,15 @@ function urlNotFoundRedirect(array $hookInfos = null, $forceExit = false)
  */
 function getDeliverytimeEstimationText($minDeliveryDays, $maxDeliveryDays)
 {
+    $settings = Shop::getSettings([CONF_KAUFABWICKLUNG]);
+    $addDays  = isset($settings['kaufabwicklung']['addDeliveryDayOnSaturday']) ? (int)$settings['kaufabwicklung']['addDeliveryDayOnSaturday'] : 0;
+    $dow      = (int)date('N');
+
+    if ($addDays > 0 && $dow >= (7 - $addDays)) {
+        $minDeliveryDays = $minDeliveryDays + 7 - $dow;
+        $maxDeliveryDays = $maxDeliveryDays + 7 - $dow;
+    }
+
     $deliveryText = ($minDeliveryDays == $maxDeliveryDays) ? str_replace(
         '#DELIVERYDAYS#', $minDeliveryDays, Shop::Lang()->get('deliverytimeEstimationSimple', 'global')
     ) : str_replace(

@@ -320,6 +320,9 @@
                                         quantityWrapper.slideDown(200);
                                     }
                                 } else {
+                                    if (!(form.quantity[grp.kKonfiggruppe])) {
+                                        quantityInput.val(item.fInitial);
+                                    }
                                     quantityWrapper.slideDown(200);
                                     quantityInput
                                         .attr('disabled', false)

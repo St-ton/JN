@@ -433,7 +433,7 @@ function checkVarkombiDependencies($aValues, $kEigenschaft = 0, $kEigenschaftWer
 
                 // Wir befinden uns im Kind-Artikel -> Weiterleitung auf Vater-Artikel
                 if ($kArtikelKind > 0) {
-                    $objResponse->jsfunc('$.evo.article().setArticleContent', $oArtikel->Artikel, 0, $oArtikel->cURL, []);
+                    $objResponse->jsfunc('$.evo.article().setArticleContent', $oArtikel->kArtikel, 0, $oArtikel->cURL, []);
 
                     return $objResponse;
                 }

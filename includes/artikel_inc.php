@@ -38,7 +38,7 @@ function gibArtikelXSelling($kArtikel, $isParent = null)
             $xsCount                          = count($xsellgruppen);
             $defaultOptions                   = Artikel::getDefaultOptions();
             for ($i = 0; $i < $xsCount; ++$i) {
-                if (Shop::$kSprache > 0) {
+                if (Shop::getLanguage() > 0) {
                     //lokalisieren
                     $objSprache = Shop::DB()->select('txsellgruppe', 'kXSellGruppe', (int)$xsellgruppen[$i], 'kSprache', (int)Shop::$kSprache);
                     if (!isset($objSprache->cName)) {
@@ -391,7 +391,7 @@ function bearbeiteBenachrichtigung()
         if ($nReturnValue) {
             if (!floodSchutzBenachrichtigung($conf['artikeldetails']['benachrichtigung_sperre_minuten'])) {
                 $Benachrichtigung            = baueFormularVorgabenBenachrichtigung();
-                $Benachrichtigung->kSprache  = (int)Shop::$kSprache;
+                $Benachrichtigung->kSprache  = Shop::getLanguage();
                 $Benachrichtigung->kArtikel  = (int)$_POST['a'];
                 $Benachrichtigung->cIP       = gibIP();
                 $Benachrichtigung->dErstellt = 'now()';
@@ -760,13 +760,13 @@ function bearbeiteProdukttags($AktuellerArtikel)
                         return Shop::Lang()->get('pleaseLoginToAddTags', 'messages');
                     }
                     // Prüfe ob der Tag bereits gemappt wurde
-                    $tagmapping_objTMP = Shop::DB()->select('ttagmapping', 'kSprache', (int)Shop::$kSprache, 'cName', Shop::DB()->escape($tag));
+                    $tagmapping_objTMP = Shop::DB()->select('ttagmapping', 'kSprache', Shop::getLanguage(), 'cName', Shop::DB()->escape($tag));
                     $tagmapping_obj    = $tagmapping_objTMP;
                     if (isset($tagmapping_obj->cNameNeu) && strlen($tagmapping_obj->cNameNeu) > 0) {
                         $tag = $tagmapping_obj->cNameNeu;
                     }
                     // Prüfe ob der Tag bereits vorhanden ist
-                    $tag_obj = Shop::DB()->select('ttag', 'kSprache', (int)Shop::$kSprache, 'cName', $tag);
+                    $tag_obj = Shop::DB()->select('ttag', 'kSprache', Shop::getLanguage(), 'cName', $tag);
                     $kTag    = (isset($tag_obj->kTag)) ? (int)$tag_obj->kTag : null;
                     if ($kTag > 0) {
                         $count = Shop::DB()->query(
@@ -785,7 +785,7 @@ function bearbeiteProdukttags($AktuellerArtikel)
                     } else {
                         require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
                         $neuerTag           = new stdClass();
-                        $neuerTag->kSprache = Shop::$kSprache;
+                        $neuerTag->kSprache = Shop::getLanguage();
                         $neuerTag->cName    = $tag;
                         $neuerTag->cSeo     = getSeo($tag);
                         $neuerTag->cSeo     = checkSeo($neuerTag->cSeo);

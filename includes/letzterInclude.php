@@ -3,6 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+/** @global JTLSmarty $smarty */
 $oBrowser              = getBrowser();
 $linkHelper            = LinkHelper::getInstance();
 $oTemplate             = Template::getInstance();
@@ -11,21 +12,20 @@ $currentTemplateFolder = $oTemplate->getDir();
 $currentTemplateDir    = PFAD_TEMPLATES . $currentTemplateFolder . '/';
 $bMobile               = false;
 $cart                  = (isset($_SESSION['Warenkorb'])) ? $_SESSION['Warenkorb'] : new Warenkorb();
-$EinstellungenTmp      = Shop::getSettings(
-    array(
-        CONF_TEMPLATE,
-        CONF_ARTIKELDETAILS,
-        CONF_BOXEN,
-        CONF_GLOBAL,
-        CONF_RSS,
-        CONF_BEWERTUNG,
-        CONF_KUNDENWERBENKUNDEN,
-        CONF_METAANGABEN,
-        CONF_BILDER,
-        CONF_PREISVERLAUF,
-        CONF_VERGLEICHSLISTE,
-        CONF_KAUFABWICKLUNG)
-);
+$EinstellungenTmp      = Shop::getSettings([
+    CONF_TEMPLATE,
+    CONF_ARTIKELDETAILS,
+    CONF_BOXEN,
+    CONF_GLOBAL,
+    CONF_RSS,
+    CONF_BEWERTUNG,
+    CONF_KUNDENWERBENKUNDEN,
+    CONF_METAANGABEN,
+    CONF_BILDER,
+    CONF_PREISVERLAUF,
+    CONF_VERGLEICHSLISTE,
+    CONF_KAUFABWICKLUNG
+]);
 $Einstellungen = (isset($Einstellungen)) ? array_merge($Einstellungen, $EinstellungenTmp) : $EinstellungenTmp;
 $themeDir      = (!empty($Einstellungen['template']['theme']['theme_default'])) ? $Einstellungen['template']['theme']['theme_default'] : 'evo';
 $cShopName     = (!empty($Einstellungen['global']['global_shopname'])) ? $Einstellungen['global']['global_shopname'] : 'JTL-Shop';
@@ -35,32 +35,31 @@ if ($oTemplate->hasMobileTemplate() && !$bMobilAktiv && $oBrowser->bMobile && !i
     $bMobile               = true;
 }
 $cMinify_arr = $oTemplate->getMinifyArray();
-$cCSS_arr    = (isset($cMinify_arr["{$themeDir}.css"])) ? $cMinify_arr["{$themeDir}.css"] : array();
-$cJS_arr     = (isset($cMinify_arr['jtl3.js'])) ? $cMinify_arr['jtl3.js'] : array();
+$cCSS_arr    = (isset($cMinify_arr["{$themeDir}.css"])) ? $cMinify_arr["{$themeDir}.css"] : [];
+$cJS_arr     = (isset($cMinify_arr['jtl3.js'])) ? $cMinify_arr['jtl3.js'] : [];
 if (!$bMobilAktiv) {
-    executeHook(
-        HOOK_LETZTERINCLUDE_CSS_JS, array(
-            'cCSS_arr'                  => &$cCSS_arr,
-            'cJS_arr'                   => &$cJS_arr,
-            'cPluginCss_arr'            => &$cMinify_arr['plugin_css'],
-            'cPluginCssConditional_arr' => &$cMinify_arr['plugin_css_conditional'],
-            'cPluginJsHead_arr'         => &$cMinify_arr['plugin_js_head'],
-            'cPluginJsBody_arr'         => &$cMinify_arr['plugin_js_body']
-        )
-    );
+    executeHook(HOOK_LETZTERINCLUDE_CSS_JS, [
+        'cCSS_arr'                  => &$cCSS_arr,
+        'cJS_arr'                   => &$cJS_arr,
+        'cPluginCss_arr'            => &$cMinify_arr['plugin_css'],
+        'cPluginCssConditional_arr' => &$cMinify_arr['plugin_css_conditional'],
+        'cPluginJsHead_arr'         => &$cMinify_arr['plugin_js_head'],
+        'cPluginJsBody_arr'         => &$cMinify_arr['plugin_js_body']
+    ]);
 }
-$kKundengruppe = (isset($_SESSION['Kunde']->kKundengruppe) && $_SESSION['Kunde']->kKundengruppe > 0) ?
-    $_SESSION['Kunde']->kKundengruppe :
-    $_SESSION['Kundengruppe']->kKundengruppe;
-$cKundenherkunft = (isset($_SESSION['Kunde']->cLand) && strlen($_SESSION['Kunde']->cLand) > 0) ?
-    $_SESSION['Kunde']->cLand :
-    '';
-$warensumme[0]         = gibPreisStringLocalized($cart->gibGesamtsummeWarenExt(array(C_WARENKORBPOS_TYP_ARTIKEL), true));
-$warensumme[1]         = gibPreisStringLocalized($cart->gibGesamtsummeWarenExt(array(C_WARENKORBPOS_TYP_ARTIKEL), false));
+$kKundengruppe = (isset($_SESSION['Kunde']->kKundengruppe) && $_SESSION['Kunde']->kKundengruppe > 0)
+    ? $_SESSION['Kunde']->kKundengruppe
+    : $_SESSION['Kundengruppe']->kKundengruppe;
+$cKundenherkunft = (isset($_SESSION['Kunde']->cLand) && strlen($_SESSION['Kunde']->cLand) > 0)
+    ? $_SESSION['Kunde']->cLand
+    : '';
+$warensumme[0]         = gibPreisStringLocalized($cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true));
+$warensumme[1]         = gibPreisStringLocalized($cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], false));
 $gesamtsumme[0]        = gibPreisStringLocalized($cart->gibGesamtsummeWaren(true, true));
 $gesamtsumme[1]        = gibPreisStringLocalized($cart->gibGesamtsummeWaren(false, true));
 $oVersandartKostenfrei = gibVersandkostenfreiAb($kKundengruppe, $cKundenherkunft);
 $oGlobaleMetaAngaben   = (isset($oGlobaleMetaAngabenAssoc_arr[$_SESSION['kSprache']])) ? $oGlobaleMetaAngabenAssoc_arr[$_SESSION['kSprache']] : null;
+$pagetType             = Shop::getPageType();
 
 if (is_object($oGlobaleMetaAngaben)) {
     if (empty($cMetaTitle)) {
@@ -111,14 +110,15 @@ $smarty->assign('cPluginCss_arr', $cMinify_arr['plugin_css'])
        ->assign('oTrennzeichenMenge', Trennzeichen::getUnit(JTLSEPARATER_AMOUNT, $_SESSION['kSprache']))
        ->assign('cShopName', $cShopName)
        ->assign('KaufabwicklungsURL', $linkHelper->getStaticRoute('bestellvorgang.php'))
-       ->assign('WarenkorbArtikelanzahl', $cart->gibAnzahlArtikelExt(array(C_WARENKORBPOS_TYP_ARTIKEL)))
-       ->assign('WarenkorbArtikelPositionenanzahl', $cart->gibAnzahlPositionenExt(array(C_WARENKORBPOS_TYP_ARTIKEL)))
+       ->assign('WarenkorbArtikelanzahl', $cart->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]))
+       ->assign('WarenkorbArtikelPositionenanzahl', $cart->gibAnzahlPositionenExt([C_WARENKORBPOS_TYP_ARTIKEL]))
        ->assign('WarenkorbWarensumme', $warensumme)
        ->assign('WarenkorbGesamtsumme', $gesamtsumme)
        ->assign('WarenkorbGesamtgewicht', $cart->getWeight())
        ->assign('Warenkorbtext', lang_warenkorb_warenkorbEnthaeltXArtikel($cart))
        ->assign('zuletztInWarenkorbGelegterArtikel', $cart->gibLetztenWKArtikel())
-       ->assign('WarenkorbVersandkostenfreiHinweis', baueVersandkostenfreiString($oVersandartKostenfrei, ($cart->gibGesamtsummeWarenExt(array(C_WARENKORBPOS_TYP_ARTIKEL, C_WARENKORBPOS_TYP_KUPON, C_WARENKORBPOS_TYP_NEUKUNDENKUPON), true))))
+       ->assign('WarenkorbVersandkostenfreiHinweis', baueVersandkostenfreiString($oVersandartKostenfrei,
+           ($cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL, C_WARENKORBPOS_TYP_KUPON, C_WARENKORBPOS_TYP_NEUKUNDENKUPON], true))))
        ->assign('meta_title', (isset($cMetaTitle)) ? $cMetaTitle : '')
        ->assign('meta_description', (isset($cMetaDescription)) ? $cMetaDescription : '')
        ->assign('meta_keywords', (isset($cMetaKeywords)) ? $cMetaKeywords : '')
@@ -149,7 +149,7 @@ $smarty->assign('cPluginCss_arr', $cMinify_arr['plugin_css'])
        ->assign('CHECKBOX_ORT_NEWSLETTERANMELDUNG', CHECKBOX_ORT_NEWSLETTERANMELDUNG)
        ->assign('CHECKBOX_ORT_KUNDENDATENEDITIEREN', CHECKBOX_ORT_KUNDENDATENEDITIEREN)
        ->assign('CHECKBOX_ORT_KONTAKT', CHECKBOX_ORT_KONTAKT)
-       ->assign('nSeitenTyp', Shop::getPageType())
+       ->assign('nSeitenTyp', $pagetType)
        ->assign('bExclusive', isset($_GET['exclusive_content']))
        ->assign('bAdminWartungsmodus', ((isset($bAdminWartungsmodus)) ? $bAdminWartungsmodus : false))
        ->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())
@@ -172,24 +172,25 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'filter_inc.php';
 pruefeKampagnenParameter();
 // Währungs- und Sprachlinks (um die Sprache oder Währung zu wechseln ohne die aktuelle Seite zu verlieren)
 setzeSpracheUndWaehrungLink();
-$linkGroups = Shop::getPageType() ? $linkHelper->activate(Shop::getPageType()) : $smarty->getTemplateVars('linkGroups');
+$linkGroups = ($pagetType) ? $linkHelper->activate($pagetType) : $smarty->getTemplateVars('linkGroups');
 // Extension Point
 if (!isset($cParameter_arr)) {
-    $cParameter_arr = array();
+    $cParameter_arr = [];
 }
-$oExtension = new ExtensionPoint(Shop::getPageType(), $cParameter_arr, Shop::$kSprache, $kKundengruppe);
+$oExtension = new ExtensionPoint($pagetType, $cParameter_arr, Shop::getLanguage(), $kKundengruppe);
 $oExtension->load();
 
 executeHook(HOOK_LETZTERINCLUDE_INC);
 $boxes       = Boxen::getInstance();
-$boxesToShow = $boxes->build(Shop::getPageType(), true)->render();
+$boxesToShow = $boxes->build($pagetType, true)->render();
+/* @global Artikel $AktuellerArtikel */
 if (isset($AktuellerArtikel->kArtikel) && $AktuellerArtikel->kArtikel > 0) {
     // Letzten angesehenden Artikel hinzufügen
     $boxes->addRecentlyViewed($AktuellerArtikel->kArtikel);
 }
-$besucherzaehler = ($Einstellungen['global']['global_zaehler_anzeigen'] === 'Y') ?
-    Shop::DB()->query("SELECT * FROM tbesucherzaehler", 1) :
-    null;
+$besucherzaehler = ($Einstellungen['global']['global_zaehler_anzeigen'] === 'Y')
+    ? Shop::DB()->query("SELECT * FROM tbesucherzaehler", 1)
+    : null;
 $smarty->assign('bCookieErlaubt', isset($_COOKIE['JTLSHOP']))
        ->assign('nIsSSL', pruefeSSL())
        ->assign('boxes', $boxesToShow)

@@ -48,7 +48,7 @@ function gibTrustedShops()
     }
 
     if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-        Jtllog::writeLog(utf8_decode("Der TrustedShops Käuferschutz im Bestellvorgang wurde mit folgendem Ergebnis geladen: ") . print_r($oTrustedShopsTMP, 1), JTLLOG_LEVEL_DEBUG);
+        Jtllog::writeLog(utf8_decode("Der TrustedShops Käuferschutz im Bestellvorgang wurde mit folgendem Ergebnis geladen: ") . print_r($oTrustedShopsTMP, true), JTLLOG_LEVEL_DEBUG);
     }
 
     return $oTrustedShopsTMP;
@@ -63,8 +63,7 @@ function gibTrustedShops()
  */
 function filterNichtGebrauchteKaeuferschutzProdukte($oKaeuferschutzProdukte_arr, $fGesamtSumme)
 {
-    $oKaeuferschutzProdukteFilter_arr = array();
-
+    $oKaeuferschutzProdukteFilter_arr = [];
     if (is_array($oKaeuferschutzProdukte_arr) && count($oKaeuferschutzProdukte_arr) > 0) {
         foreach ($oKaeuferschutzProdukte_arr as $oKaeuferschutzProdukte) {
             $oKaeuferschutzProdukteFilter_arr[] = $oKaeuferschutzProdukte;
@@ -85,7 +84,7 @@ function filterNichtGebrauchteKaeuferschutzProdukte($oKaeuferschutzProdukte_arr,
  */
 function gibKaeuferschutzProdukteAssocID($oKaeuferschutzProdukte_arr)
 {
-    $oKaeuferschutzProdukteAssocID_arr = array();
+    $oKaeuferschutzProdukteAssocID_arr = [];
     if (is_array($oKaeuferschutzProdukte_arr) && count($oKaeuferschutzProdukte_arr) > 0) {
         foreach ($oKaeuferschutzProdukte_arr as $oKaeuferschutzProdukte) {
             $oKaeuferschutzProdukteAssocID_arr[$oKaeuferschutzProdukte->tsProductID] = $oKaeuferschutzProdukte->netFee;
@@ -108,7 +107,8 @@ function gibVorausgewaehltesProdukt($oKaeuferschutzProdukte_arr, $fGesamtSumme)
     $fLetzterWert = 0.0;
     if (is_array($oKaeuferschutzProdukte_arr) && count($oKaeuferschutzProdukte_arr) > 0) {
         foreach ($oKaeuferschutzProdukte_arr as $oKaeuferschutzProdukte) {
-            if (doubleval($fGesamtSumme) <= doubleval($oKaeuferschutzProdukte->protectedAmountDecimal) && (doubleval($oKaeuferschutzProdukte->protectedAmountDecimal) < $fLetzterWert || $fLetzterWert == 0.0)) {
+            if (doubleval($fGesamtSumme) <= doubleval($oKaeuferschutzProdukte->protectedAmountDecimal) &&
+                (doubleval($oKaeuferschutzProdukte->protectedAmountDecimal) < $fLetzterWert || $fLetzterWert == 0.0)) {
                 $tsProductID  = $oKaeuferschutzProdukte->tsProductID;
                 $fLetzterWert = doubleval($oKaeuferschutzProdukte->protectedAmountDecimal);
             }

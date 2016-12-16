@@ -4,7 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 require_once PFAD_ROOT . 'toolsajax.common.php';
-
+/** @global JTLSmarty $smarty */
+/** @global xajax $xajax*/
 if (!isset($xajax) || !$xajax) {
     $xajax = $GLOBALS['xajax'];
 }

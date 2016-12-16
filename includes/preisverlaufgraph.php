@@ -8,7 +8,7 @@ if (intval($_GET['kArtikel']) > 0 && intval($_GET['kKundengruppe']) > 0 && intva
     require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.PreisverlaufGraph.php';
     //session starten
     $session       = Session::getInstance();
-    $Einstellungen = Shop::getSettings(array(CONF_PREISVERLAUF));
+    $Einstellungen = Shop::getSettings([CONF_PREISVERLAUF]);
     $oConfig_arr   = Shop::DB()->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_PREISVERLAUF);
     $kArtikel      = (int)$_GET['kArtikel'];
     $kKundengruppe = (int)$_GET['kKundengruppe'];

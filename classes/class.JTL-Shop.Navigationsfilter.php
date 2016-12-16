@@ -355,7 +355,7 @@ class Navigationsfilter
      * @param array $params
      * @return $this
      */
-    public function initStates($params)
+    public function initStates(&$params)
     {
         $this->params    = $params;
         $count           = 0;
@@ -473,6 +473,23 @@ class Navigationsfilter
         }
         $this->nSeite        = max(1, verifyGPCDataInteger('seite'));
         $this->nAnzahlFilter = $count;
+
+        foreach ($this->filters as $filter) {
+            //auto init custom filters
+            if ($filter->isCustom()) {
+                $filterParam = $filter->getUrlParam();
+                if (isset($_GET[$filterParam])) {
+                    if (
+                        ($filter->getType() === AbstractFilter::FILTER_TYPE_AND &&
+                            (verifyGPCDataInteger($filterParam) > 0 || verifyGPDataString($filterParam) !== '')) ||
+                        ($filter->getType() === AbstractFilter::FILTER_TYPE_OR && is_array($_GET[$filterParam]))
+                    ) {
+                        $this->addActiveFilter($filter, $_GET[$filterParam]);
+                        $params[$filterParam] = $_GET[$filterParam];
+                    }
+                }
+            }
+        }
 
         executeHook(HOOK_NAVIGATIONSFILTER_INIT_FILTER, ['navifilter' => $this, 'params' => $params]);
 

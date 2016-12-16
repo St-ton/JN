@@ -358,32 +358,29 @@ class Navigationsfilter
     public function initStates(&$params)
     {
         $this->params    = $params;
-        $count           = 0;
         $languageID      = $this->getLanguageID();
         $customerGroupID = $this->getCustomerGroupID();
         $config          = $this->getConfig();
         if ($params['kKategorie'] > 0) {
-            $this->Kategorie = (new FilterCategory($languageID, $customerGroupID, $config, $this->oSprache_arr))->init($params['kKategorie']);
+            $this->Kategorie->init($params['kKategorie']);
             $this->baseState = $this->Kategorie;
         }
         if ($params['kKategorieFilter'] > 0) {
-            $this->KategorieFilter = $this->addActiveFilter(new FilterCategoryFilter(), $params['kKategorieFilter']);
-            ++$count;
+            $this->addActiveFilter($this->KategorieFilter, $params['kKategorieFilter']);
         }
         if ($params['kHersteller'] > 0) {
-            $this->Hersteller = (new FilterManufacturer($languageID, $customerGroupID, $config, $this->oSprache_arr))->init($params['kHersteller']);
-            $this->baseState  = $this->Hersteller;
+            $this->Hersteller->init($params['kHersteller']);
+            $this->baseState = $this->Hersteller;
         }
         if ($params['kHerstellerFilter'] > 0) {
-            $this->HerstellerFilter = $this->addActiveFilter(new FilterManufacturerFilter(), $params['kHerstellerFilter']);
-            ++$count;
+            $this->addActiveFilter($this->HerstellerFilter, $params['kHerstellerFilter']);
         }
         if ($params['kSuchanfrage'] > 0) {
-            $this->Suchanfrage = (new FilterSearchQuery($languageID, $customerGroupID, $config, $this->oSprache_arr))->init($params['kSuchanfrage']);
-            $this->baseState   = $this->Suchanfrage;
-            $oSuchanfrage      = Shop::DB()->select('tsuchanfrage', 'kSuchanfrage', $params['kSuchanfrage']);
+            $this->Suchanfrage->init($params['kSuchanfrage']);
+            $this->baseState = $this->Suchanfrage;
+            $oSuchanfrage    = Shop::DB()->select('tsuchanfrage', 'kSuchanfrage', $params['kSuchanfrage']);
             if (isset($oSuchanfrage->cSuche) && strlen($oSuchanfrage->cSuche) > 0) {
-                $this->Suche         = (new FilterSearch($languageID, $customerGroupID, $config, $this->oSprache_arr))->init($params['kSuchanfrage']);
+                $this->Suche->init($params['kSuchanfrage']);
                 $this->Suche->cSuche = $oSuchanfrage->cSuche;
             }
         }
@@ -395,44 +392,31 @@ class Navigationsfilter
             foreach ($params['MerkmalFilter_arr'] as $mmf) {
                 $this->MerkmalFilter[] = $this->addActiveFilter(new FilterAttributeFilter(), $mmf);
             }
-            ++$count;
         }
         if ($params['kTag'] > 0) {
-            $this->Tag       = (new FilterTag())
-                ->init($params['kTag'])
-                ->setData($languageID, $customerGroupID, $config, $this->oSprache_arr);
+            $this->Tag->init($params['kTag']);
             $this->baseState = $this->Tag;
         }
         if (count($params['TagFilter_arr']) > 0) {
             foreach ($params['TagFilter_arr'] as $tf) {
                 $this->TagFilter[] = $this->addActiveFilter(new FilterTagFilter(), $tf);
             }
-            ++$count;
         }
         if ($params['kNews'] > 0) {
-            $this->News = (new FilterNews())
-                ->init($params['kNews'])
-                ->setData($languageID, $customerGroupID, $config, $this->oSprache_arr);
+            $this->News->init($params['kNews']);
         }
         if ($params['kNewsMonatsUebersicht'] > 0) {
-            $this->NewsMonat = (new FilterNewsOverview())
-                ->init($params['kNewsMonatsUebersicht'])
-                ->setData($languageID, $customerGroupID, $config, $this->oSprache_arr);
+            $this->NewsMonat->init($params['kNewsMonatsUebersicht']);
         }
         if ($params['kNewsKategorie'] > 0) {
-            $this->NewsKategorie = (new FilterNewsCategory())
-                ->init($params['kNewsKategorie'])
-                ->setData($languageID, $customerGroupID, $config, $this->oSprache_arr);
+            $this->NewsKategorie->init($params['kNewsKategorie']);
         }
         if ($params['kSuchspecial'] > 0) {
-            $this->Suchspecial = (new FilterSearchSpecial())
-                ->init($params['kSuchspecial'])
-                ->setData($languageID, $customerGroupID, $config, $this->oSprache_arr);
-            $this->baseState   = $this->Suchspecial;
+            $this->Suchspecial->init($params['kSuchspecial']);
+            $this->baseState = $this->Suchspecial;
         }
         if ($params['kSuchspecialFilter'] > 0) {
-            $this->SuchspecialFilter = $this->addActiveFilter(new FilterSearchSpecialFilter(), $params['kSuchspecialFilter']);
-            ++$count;
+            $this->addActiveFilter($this->SuchspecialFilter, $params['kSuchspecialFilter']);
         }
 
         if (count($params['SuchFilter_arr']) > 0) {
@@ -440,16 +424,13 @@ class Navigationsfilter
             foreach ($params['SuchFilter_arr'] as $sf) {
                 $this->SuchFilter[] = $this->addActiveFilter(new FilterSearch(), $sf);
             }
-            ++$count;
         }
 
         if ($params['nBewertungSterneFilter'] > 0) {
-            $this->BewertungFilter = $this->addActiveFilter(new FilterRating(), $params['nBewertungSterneFilter']);
-            ++$count;
+            $this->addActiveFilter($this->BewertungFilter, $params['nBewertungSterneFilter']);
         }
         if (strlen($params['cPreisspannenFilter']) > 0) {
-            $this->PreisspannenFilter = $this->addActiveFilter(new FilterPriceRange(), $params['cPreisspannenFilter']);
-            ++$count;
+            $this->addActiveFilter($this->PreisspannenFilter, $params['cPreisspannenFilter']);
         }
         if ($params['nSortierung'] > 0) {
             $this->nSortierung = (int)$params['nSortierung'];
@@ -458,10 +439,8 @@ class Navigationsfilter
             $this->nAnzahlProSeite = (int)$params['nArtikelProSeite'];
         }
         if (strlen($params['cSuche']) > 0) {
-            $params['cSuche']         = StringHandler::filterXSS($params['cSuche']);
-            $this->Suche              = (new FilterSearch())
-                ->init($params['kSuchanfrage'])
-                ->setData($languageID, $customerGroupID, $config, $this->oSprache_arr);
+            $params['cSuche'] = StringHandler::filterXSS($params['cSuche']);
+            $this->Suche->init($params['kSuchanfrage']);
             $this->Suche->cSuche      = $params['cSuche'];
             $this->EchteSuche         = new stdClass();
             $this->EchteSuche->cSuche = $params['cSuche'];
@@ -471,9 +450,7 @@ class Navigationsfilter
             $this->Suche->kSuchCache = bearbeiteSuchCache($this);
             $this->baseState         = $this->Suche;
         }
-        $this->nSeite        = max(1, verifyGPCDataInteger('seite'));
-        $this->nAnzahlFilter = $count;
-
+        $this->nSeite = max(1, verifyGPCDataInteger('seite'));
         foreach ($this->filters as $filter) {
             //auto init custom filters
             if ($filter->isCustom()) {
@@ -494,12 +471,10 @@ class Navigationsfilter
                         }
                         $this->addActiveFilter($filter, $filterValue);
                         $params[$filterParam] = $filterValue;
-                        ++$count;
                     }
                 }
             }
         }
-
         executeHook(HOOK_NAVIGATIONSFILTER_INIT_FILTER, ['navifilter' => $this, 'params' => $params]);
 
         return $this->validate();
@@ -537,7 +512,7 @@ class Navigationsfilter
 
     /**
      * @param IFilter $filter
-     * @param mixed   $filterValue - shortcut to set active value (same as calling init($filterValue
+     * @param mixed   $filterValue - shortcut to set active value (same as calling init($filterValue)
      * @return IFilter
      */
     public function addActiveFilter(IFilter $filter, $filterValue)
@@ -975,7 +950,7 @@ class Navigationsfilter
     public function getActiveFilters($byType = false)
     {
         $filters = ($byType !== false)
-            ? ['mm' => [], 'ssf' => [], 'tf' => [], 'sf' => [], 'hf' => [], 'bf' => []]
+            ? ['mm' => [], 'ssf' => [], 'tf' => [], 'sf' => [], 'hf' => [], 'bf' => [], 'custom' => []]
             : [];
         if ($this->HerstellerFilter->isInitialized()) {
             if ($byType) {
@@ -1076,7 +1051,6 @@ class Navigationsfilter
         foreach ($this->getActiveFilters(true) as $type => $filter) {
             $count = count($filter);
             if ($count > 1) {
-                Shop::dbg($filter, true, 'filter with count > 1:');
                 $singleConditions = [];
                 /** @var AbstractFilter $item */
                 foreach ($filter as $idx => $item) {
@@ -1093,7 +1067,6 @@ class Navigationsfilter
                             if ($item->getType() === AbstractFilter::FILTER_TYPE_AND) {
                                 //filters that decrease the total amount of articles must have a "HAVING" clause
                                 $data->having[] = 'HAVING COUNT(' . $item->getTableName() . '.' . $item->getPrimaryKeyRow() . ') = ' . $count;
-                                Shop::dbg('HAVING COUNT(' . $item->getTableName() . '.' . $item->getPrimaryKeyRow() . ') = ' . $count, false, 'added HAVING:');
                             }
                         }
                         $singleConditions[] = $item->getSQLCondition();

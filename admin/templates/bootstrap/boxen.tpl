@@ -244,15 +244,13 @@
         function onSelect (item, selectorAdd, selectorRemove) {
             if (item.value > 0) {
                 var button = $('<a />'),
-                    text = $('<span />'),
                     input = $('<input />'),
                     element = $('<li />'),
                     boxID = $('#filter-target-id').val();
-                input.attr('class', 'new-filter').attr('type', 'hidden').attr('name', 'box-filter-' + boxID + '[]').attr('value', item.value);
-                element.addClass('selected-item').attr('id', 'elem-' + item.value);
-                button.attr('href', '#').attr('data-ref', item.value).html('<i class="fa fa-trash"></i>');
-                text.html(item.text);
-                element.append(button).append(text).append(input);
+                input.attr({ 'class': 'new-filter', type: 'hidden', name: 'box-filter-' + boxID + '[]', value: item.value });
+                element.attr({ 'class': 'selected-item', id: 'elem-' + item.value });
+                button.attr({ 'class': 'btn btn-default btn-xs', href: '#', 'data-ref': item.value }).html('<i class="fa fa-trash"></i>');
+                element.append(button).append(' ' + item.text).append(input);
                 $(selectorAdd).append(element);
             }
         }

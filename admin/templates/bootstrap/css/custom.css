@@ -1868,7 +1868,7 @@ select.form-control {
 }
 
 .box-active-filters i {
-    display: none;
+    /*display: none;*/
 }
 
 .input-group-wrap .file-input .input-group {

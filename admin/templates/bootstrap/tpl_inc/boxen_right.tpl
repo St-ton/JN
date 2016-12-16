@@ -51,7 +51,9 @@
                     <input type="hidden" name="position" value="right" />
                     <input type="hidden" name="page" value="{$nPage}" />
                     <input type="hidden" name="action" value="resort" />
-                    <button type="submit" value="aktualisieren" class="btn btn-primary"><i class="fa fa-refresh"></i> aktualisieren</button>
+                    <button type="submit" value="aktualisieren" class="btn btn-primary">
+                        <i class="fa fa-refresh"></i> {#save#}
+                    </button>
                 </li>
             </ul>
         </form>

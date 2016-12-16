@@ -52,7 +52,8 @@
                         </li>
                         {foreach name="box" from=$oBox_arr item=oBox}
                             {if $oBox->bContainer}
-                                <li class="list-group-item boxRow {if isset($oBox->bGlobal) && $oBox->bGlobal && $nPage != 0}boxGlobal{else}boxRowBaseContainer{/if}">
+                                <li class="list-group-item bosRow {if isset($oBox->bGlobal) && $oBox->bGlobal && $nPage != 0}boxGlobal{else}boxRowBaseContainer{/if}">
+                                    <div class="row">
                                     <div class="col-xs-8{if $oBox->bAktiv == 0} inactive text-muted{/if}">
                                         <b>Container #{$oBox->kBox}</b>
                                     </div>
@@ -101,10 +102,11 @@
                                             <b>{$oBox->nSort}</b>
                                         {/if}
                                     </div>
+                                    </div>
                                 </li>
                                 {foreach from=$oBox->oContainer_arr item=oContainerBox}
                                     <li class="list-group-item boxRow boxRowContainer">
-                                        <div class="boxRow">
+                                        <div class="row">
                                             <div class="col-xs-3 boxSubName
                                                         {if $oContainerBox->bAktiv == 0 || $oBox->bAktiv == 0}inactive text-muted{/if}">
                                                 {$oContainerBox->cTitel}
@@ -178,7 +180,7 @@
                             <input type="hidden" name="page" value="{$nPage}" />
                             <input type="hidden" name="action" value="resort" />
                             <button type="submit" value="aktualisieren" class="btn btn-primary">
-                                <i class="fa fa-refresh"></i> aktualisieren
+                                <i class="fa fa-refresh"></i> {#save#}
                             </button>
                         </li>
                     {/if}
@@ -240,7 +242,7 @@
                       oContainer_arr=$oContainerTop_arr}
 {/if}
 
-{if isset($oBoxenContainer.top) && $oBoxenContainer.top === true}
+{if isset($oBoxenContainer.bottom) && $oBoxenContainer.bottom === true}
     {containerSection direction='bottom' directionName='Footer' oBox_arr=$oBoxenBottom_arr
                       oContainer_arr=$oContainerBottom_arr}
 {/if}

@@ -13,11 +13,17 @@
                         <label for="box_left_show">Container anzeigen</label>
                     {else}
                         {if isset($bBoxenAnzeigen.left) && $bBoxenAnzeigen.left}
-                            <a href="boxen.php?action=container&position=left&value=0&token={$smarty.session.jtl_token}" title="Auf jeder Seite deaktivieren"><i class="fa fa-lg fa-eye-slash"></i></a>
-                            <span>Sidebar links ausblenden</span>
+                            <a href="boxen.php?action=container&position=left&value=0&token={$smarty.session.jtl_token}"
+                               title="Sidebar links auf jeder Seite deaktivieren" class="btn btn-danger"
+                               data-toggle="tooltip" data-placement="right">
+                                <i class="fa fa-eye-slash"></i>
+                            </a>
                         {else}
-                            <a href="boxen.php?action=container&position=left&value=1&token={$smarty.session.jtl_token}" title="Auf jeder Seite aktivieren"><i class="fa fa-lg fa-eye"></i></a>
-                            <span>Sidebar links auf jeder Seite anzeigen</span>
+                            <a href="boxen.php?action=container&position=left&value=1&token={$smarty.session.jtl_token}"
+                               title="Sidebar links auf jeder Seite aktivieren" class="btn btn-success"
+                               data-toggle="tooltip" data-placement="right">
+                                <i class="fa fa-eye"></i>
+                            </a>
                         {/if}
                     {/if}
                 </div>
@@ -30,10 +36,10 @@
                     <div class="col-xs-2">
                         <strong>Typ</strong>
                     </div>
-                    <div class="col-xs-2">
+                    <div class="col-xs-3">
                         <strong>Bezeichnung</strong>
                     </div>
-                    <div class="col-xs-3">
+                    <div class="col-xs-2">
                         <strong>Sortierung</strong>
                     </div>
                     <div class="col-xs-2">

@@ -17,16 +17,16 @@
                         {else}
                             {if isset($bBoxenAnzeigen.$direction) && $bBoxenAnzeigen.$direction}
                                 <a href="boxen.php?action=container&position={$direction}&value=0&token={$smarty.session.jtl_token}"
-                                   title="Auf jeder Seite deaktivieren">
-                                    <i class="fa fa-lg fa-eye-slash"></i>
+                                   title="{$directionName} auf jeder Seite deaktivieren" class="btn btn-danger"
+                                   data-toggle="tooltip" data-placement="right">
+                                    <i class="fa fa-eye-slash"></i>
                                 </a>
-                                <span>{$directionName} ausblenden</span>
                             {else}
                                 <a href="boxen.php?action=container&position={$direction}&value=1&token={$smarty.session.jtl_token}"
-                                   title="Auf jeder Seite aktivieren">
-                                    <i class="fa fa-lg fa-eye"></i>
+                                   title="{$directionName} auf jeder Seite aktivieren" class="btn btn-success"
+                                   data-toggle="tooltip" data-placement="right">
+                                    <i class="fa fa-eye"></i>
                                 </a>
-                                <span>{$directionName} auf jeder Seite anzeigen</span>
                             {/if}
                         {/if}
                     </div>
@@ -40,10 +40,10 @@
                             <div class="col-xs-2">
                                 <strong>Typ</strong>
                             </div>
-                            <div class="col-xs-2">
+                            <div class="col-xs-3">
                                 <strong>Bezeichnung</strong>
                             </div>
-                            <div class="col-xs-3">
+                            <div class="col-xs-2">
                                 <strong>Sortierung</strong>
                             </div>
                             <div class="col-xs-2">
@@ -53,12 +53,12 @@
                         {foreach name="box" from=$oBox_arr item=oBox}
                             {if $oBox->bContainer}
                                 <li class="list-group-item boxRow {if isset($oBox->bGlobal) && $oBox->bGlobal && $nPage != 0}boxGlobal{else}boxRowBaseContainer{/if}">
-                                    <div class="col-xs-7{if $oBox->bAktiv == 0} inactive text-muted{/if}">
+                                    <div class="col-xs-8{if $oBox->bAktiv == 0} inactive text-muted{/if}">
                                         <b>Container #{$oBox->kBox}</b>
                                     </div>
                                     <div class="boxOptions">
                                         {if !isset($oBox->bGlobal) || !$oBox->bGlobal || $nPage == 0}
-                                            <div class="col-xs-3">
+                                            <div class="col-xs-2">
                                                 <input type="hidden" name="box[]" value="{$oBox->kBox}">
                                                 {if $nPage == 0}
                                                     {if $oBox->bAktiv == 1}
@@ -72,29 +72,29 @@
                                                        name="sort[]" value="{$oBox->nSort}"
                                                        autocomplete="off" id="{$oBox->nSort}">
                                             </div>
-                                            <div class="col-xs-2">
+                                            <div class="col-xs-2 btn-group">
                                                 {if $nPage == 0}
                                                     {if $oBox->bAktiv == 0}
                                                         <a href="boxen.php?action=activate&position={$direction}&item={$oBox->kBox}&value=1&token={$smarty.session.jtl_token}"
-                                                           title="Auf jeder Seite aktivieren">
-                                                            <i class="fa fa-lg fa-eye"></i>
+                                                           title="Auf jeder Seite aktivieren" class="btn btn-default">
+                                                            <i class="fa fa-eye"></i>
                                                         </a>
                                                     {else}
                                                         <a href="boxen.php?action=activate&position={$direction}&item={$oBox->kBox}&value=0&token={$smarty.session.jtl_token}"
-                                                           title="Auf jeder Seite deaktivieren">
-                                                            <i class="fa fa-lg fa-eye-slash"></i>
+                                                           title="Auf jeder Seite deaktivieren" class="btn btn-default">
+                                                            <i class="fa fa-eye-slash"></i>
                                                         </a>
                                                     {/if}
                                                 {/if}
                                                 {if $oBox->eTyp === 'text' || $oBox->eTyp === 'link' || $oBox->eTyp === 'catbox'}
                                                     <a href="boxen.php?action=edit_mode&page={$nPage}&position={$direction}&item={$oBox->kBox}&token={$smarty.session.jtl_token}"
-                                                       title="{#edit#}">
-                                                        <i class="fa fa-lg fa-edit"></i>
+                                                       title="{#edit#}" class="btn btn-default">
+                                                        <i class="fa fa-edit"></i>
                                                     </a>
                                                 {/if}
                                                 <a href="boxen.php?action=del&page={$nPage}&position={$direction}&item={$oBox->kBox}&token={$smarty.session.jtl_token}"
-                                                   onclick="return confirmDelete('{$oBox->cTitel}');" title="{#remove#}">
-                                                    <i class="fa fa-lg fa-trash"></i>
+                                                   onclick="return confirmDelete('{$oBox->cTitel}');" title="{#remove#}" class="btn btn-default">
+                                                    <i class="fa fa-trash"></i>
                                                 </a>
                                             </div>
                                         {else}
@@ -113,13 +113,13 @@
                                                         {if $oContainerBox->bAktiv == 0 || $oBox->bAktiv == 0}inactive text-muted{/if}">
                                                 {$oContainerBox->eTyp|ucfirst}
                                             </div>
-                                            <div class="col-xs-2
+                                            <div class="col-xs-3
                                                         {if $oContainerBox->bAktiv == 0 || $oBox->bAktiv == 0}inactive text-muted{/if}">
                                                 {$oContainerBox->cName}
                                             </div>
                                             <div class="boxOptions">
                                                 {if !isset($oBox->bGlobal) || !$oBox->bGlobal || $nPage == 0}
-                                                    <div class="col-xs-3">
+                                                    <div class="col-xs-2">
                                                         <input type="hidden" name="box[]" value="{$oContainerBox->kBox}">
                                                         {if $nPage == 0}
                                                             {if $oContainerBox->bAktiv == 1}
@@ -133,17 +133,17 @@
                                                                name="sort[]" value="{$oContainerBox->nSort}"
                                                                autocomplete="off" id="{$oContainerBox->nSort}">
                                                     </div>
-                                                    <div class="col-xs-2">
+                                                    <div class="col-xs-2 btn-group">
                                                         {if $nPage == 0}
                                                             {if $oContainerBox->bAktiv == 0}
                                                                 <a href="boxen.php?action=activate&position={$direction}&item={$oContainerBox->kBox}&value=1&token={$smarty.session.jtl_token}"
-                                                                   title="Auf jeder Seite aktivieren">
-                                                                    <i class="fa fa-lg fa-eye"></i>
+                                                                   title="Auf jeder Seite aktivieren" class="btn btn-default">
+                                                                    <i class="fa fa-eye"></i>
                                                                 </a>
                                                             {else}
                                                                 <a href="boxen.php?action=activate&position={$direction}&item={$oContainerBox->kBox}&value=0&token={$smarty.session.jtl_token}"
-                                                                   title="Auf jeder Seite deaktivieren">
-                                                                    <i class="fa fa-lg fa-eye-slash"></i>
+                                                                   title="Auf jeder Seite deaktivieren" class="btn btn-default">
+                                                                    <i class="fa fa-eye-slash"></i>
                                                                 </a>
                                                             {/if}
                                                         {/if}
@@ -152,14 +152,14 @@
                                                                 $oContainerBox->eTyp === 'link' || $oContainerBox->eTyp === 'catbox')
                                                         }
                                                             <a href="boxen.php?action=edit_mode&page={$nPage}&position={$direction}&item={$oContainerBox->kBox}&token={$smarty.session.jtl_token}"
-                                                               title="{#edit#}">
-                                                                <i class="fa fa-lg fa-edit"></i>
+                                                               title="{#edit#}" class="btn btn-default">
+                                                                <i class="fa fa-edit"></i>
                                                             </a>
                                                         {/if}
                                                         <a href="boxen.php?action=del&page={$nPage}&position={$direction}&item={$oContainerBox->kBox}&token={$smarty.session.jtl_token}"
                                                            onclick="return confirmDelete('{$oContainerBox->cTitel}');"
-                                                           title="{#remove#}">
-                                                            <i class="fa fa-lg fa-trash"></i>
+                                                           title="{#remove#}" class="btn btn-default">
+                                                            <i class="fa fa-trash"></i>
                                                         </a>
                                                     </div>
                                                 {else}

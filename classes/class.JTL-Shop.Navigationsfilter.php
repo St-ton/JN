@@ -486,6 +486,7 @@ class Navigationsfilter
                     ) {
                         $this->addActiveFilter($filter, $_GET[$filterParam]);
                         $params[$filterParam] = $_GET[$filterParam];
+                        ++$count;
                     }
                 }
             }

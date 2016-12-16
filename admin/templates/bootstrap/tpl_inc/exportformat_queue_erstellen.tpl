@@ -51,7 +51,7 @@
                         <td><label for="nAlleXStunden">{#exportformatEveryXHour#}</label></td>
                         <td>
                             {assign var=showCustomInput value=false}
-                            <input type="number" min="1" value="{if !empty($oCron->nAlleXStd) && $oCron->nAlleXStd != 24 && $oCron->nAlleXStd != 48 && $oCron->nAlleXStd != 168}{assign var=showCustomInput value=true}{$oCron->nAlleXStd}{/if}" class="form-control" name=""{if !$showCustomInput} style="display:none;"{/if} id="custom-freq-input" />
+                            <input type="number" min="1" value="{if !empty($oCron->nAlleXStd) && $oCron->nAlleXStd != 24 && $oCron->nAlleXStd != 48 && $oCron->nAlleXStd != 168}{assign var=showCustomInput value=true}{$oCron->nAlleXStd}{/if}" class="form-control" name="{if $showCustomInput}nAlleXStundenCustom{/if}"{if !$showCustomInput} style="display:none;"{/if} id="custom-freq-input" />
                             <select id="nAlleXStunden" name="nAlleXStunden" class="form-control">
                                 <option value="24"{if (isset($oFehler->nAlleXStunden) && $oFehler->nAlleXStunden|strlen > 0 && $oFehler->nAlleXStunden == 24) || (isset($oCron->nAlleXStd) && $oCron->nAlleXStd|strlen > 0 && $oCron->nAlleXStd == 24)} selected{/if}>
                                     24 Stunden

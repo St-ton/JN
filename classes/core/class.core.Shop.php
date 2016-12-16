@@ -330,7 +330,9 @@ final class Shop
     {
         $mapping = self::map($method);
 
-        return ($mapping !== null) ? call_user_func_array(array($this, $mapping), $arguments) : null;
+        return ($mapping !== null)
+            ? call_user_func_array([$this, $mapping], $arguments)
+            : null;
     }
 
     /**
@@ -344,7 +346,9 @@ final class Shop
     {
         $mapping = self::map($method);
 
-        return ($mapping !== null) ? call_user_func_array(array(self::getInstance(), $mapping), $arguments) : null;
+        return ($mapping !== null)
+            ? call_user_func_array([self::getInstance(), $mapping], $arguments)
+            : null;
     }
 
     /**
@@ -385,7 +389,7 @@ final class Shop
      */
     private static function map($method)
     {
-        $mapping = array(
+        $mapping = [
             'DB'       => '_DB',
             'Cache'    => '_Cache',
             'Lang'     => '_Language',
@@ -395,7 +399,7 @@ final class Shop
             'has'      => '_has',
             'set'      => '_set',
             'get'      => '_get'
-        );
+        ];
 
         return (isset($mapping[$method])) ? $mapping[$method] : null;
     }
@@ -556,7 +560,7 @@ final class Shop
      */
     public static function setLanguage($languageID, $cISO = null)
     {
-        self::$kSprache = intval($languageID);
+        self::$kSprache = (int)$languageID;
         if ($cISO !== null) {
             self::$cISO = $cISO;
         }
@@ -589,8 +593,13 @@ final class Shop
     {
         $cacheID = 'plgnbtsrp';
         if (($plugins = Shop::Cache()->get($cacheID)) === false) {
-            $plugins = self::DB()->executeQuery("SELECT kPlugin FROM tplugin WHERE nStatus = 2 AND bBootstrap = 1 ORDER BY nPrio ASC", 2) ?: [];
-            Shop::Cache()->set($cacheID, $plugins, array(CACHING_GROUP_PLUGIN));
+            $plugins = self::DB()->executeQuery("
+                SELECT kPlugin 
+                  FROM tplugin 
+                  WHERE nStatus = 2 
+                    AND bBootstrap = 1 
+                  ORDER BY nPrio ASC", 2) ?: [];
+            Shop::Cache()->set($cacheID, $plugins, [CACHING_GROUP_PLUGIN]);
         }
 
         foreach ($plugins as $plugin) {
@@ -640,7 +649,7 @@ final class Shop
 
         self::$nSterne = verifyGPCDataInteger('nSterne');
 
-        self::$isSeoMainword = (!isset($oSeo) || !is_object($oSeo) || !isset($oSeo->cSeo) || strlen(trim($oSeo->cSeo)) === 0) ? false : true;
+        self::$isSeoMainword = !(!isset($oSeo) || !is_object($oSeo) || !isset($oSeo->cSeo) || strlen(trim($oSeo->cSeo)) === 0);
 
         self::$kWunschliste = checkeWunschlisteParameter();
 
@@ -703,7 +712,7 @@ final class Shop
             self::$kArtikel         = ArtikelHelper::getParent(self::$kArtikel);
         }
 
-        return array(
+        return [
             'kKategorie'             => self::$kKategorie,
             'kKonfigPos'             => self::$kKonfigPos,
             'kHersteller'            => self::$kHersteller,
@@ -746,7 +755,7 @@ final class Shop
             'cDatum'                 => self::$cDatum,
             'nAnzahl'                => self::$nAnzahl,
             'nSterne'                => self::$nSterne,
-        );
+        ];
     }
 
     /**
@@ -762,7 +771,7 @@ final class Shop
         self::$bSEOMerkmalNotFound       = false;
         self::$bKatFilterNotFound        = false;
         self::$bHerstellerFilterNotFound = false;
-
+        //@todo@todo@todo
         if (true||strpos($uri, 'index.php') === false) {
             executeHook(HOOK_SEOCHECK_ANFANG, array('uri' => &$uri));
             $seite        = 0;
@@ -770,7 +779,11 @@ final class Shop
             $katseo       = '';
             $xShopurl_arr = parse_url(self::getURL());
             $xBaseurl_arr = parse_url($uri);
-            $seo          = (isset($xBaseurl_arr['path'])) ? substr($xBaseurl_arr['path'], (isset($xShopurl_arr['path'])) ? (strlen($xShopurl_arr['path']) + 1) : 1) : false;
+            $seo          = (isset($xBaseurl_arr['path']))
+                ? substr($xBaseurl_arr['path'], (isset($xShopurl_arr['path']))
+                    ? (strlen($xShopurl_arr['path']) + 1)
+                    : 1)
+                : false;
             //Fremdparameter
             $seo = extFremdeParameter($seo);
             if ($seo) {
@@ -852,7 +865,8 @@ final class Shop
                 }
                 $oSeo = self::DB()->select('tseo', 'cSeo', $seo);
                 //EXPERIMENTAL_MULTILANG_SHOP
-                if (isset($oSeo->kSprache) && self::$kSprache !== $oSeo->kSprache && defined('EXPERIMENTAL_MULTILANG_SHOP') && EXPERIMENTAL_MULTILANG_SHOP === true) {
+                if (isset($oSeo->kSprache) && self::$kSprache !== $oSeo->kSprache &&
+                    defined('EXPERIMENTAL_MULTILANG_SHOP') && EXPERIMENTAL_MULTILANG_SHOP === true) {
                     $oSeo->kSprache = self::$kSprache;
                 }
                 //EXPERIMENTAL_MULTILANG_SHOP END
@@ -1085,11 +1099,7 @@ final class Shop
      */
     public static function buildNaviFilter($cParameter_arr, $NaviFilter = null)
     {
-        $NaviFilter = new Navigationsfilter();
-        $NaviFilter->initStates($cParameter_arr);
-        self::$NaviFilter = $NaviFilter;
-
-        return $NaviFilter;
+        return (self::$NaviFilter = (new Navigationsfilter())->initStates($cParameter_arr));
     }
 
     /**
@@ -1122,12 +1132,14 @@ final class Shop
                     header('Location: ' . Shop::getURL() . '/' . $NaviFilter->KategorieFilter->cSeo[Shop::$kSprache]);
                     exit();
                 }
-            } elseif (!empty($NaviFilter->Hersteller->kHersteller) && !empty($NaviFilter->HerstellerFilter->kHersteller) && !empty($NaviFilter->Hersteller->cSeo[Shop::$kSprache])) {
+            } elseif (!empty($NaviFilter->Hersteller->kHersteller) && !empty($NaviFilter->HerstellerFilter->kHersteller) &&
+                !empty($NaviFilter->Hersteller->cSeo[Shop::$kSprache])) {
                 //we have a manufacturer page with some manufacturer filter
                 http_response_code(301);
                 header('Location: ' . Shop::getURL() . '/' . $NaviFilter->Hersteller->cSeo[Shop::$kSprache]);
                 exit();
-            } elseif (!empty($NaviFilter->Kategorie->kKategorie) && !empty($NaviFilter->KategorieFilter->kKategorie) && !empty($NaviFilter->Kategorie->cSeo[Shop::$kSprache])) {
+            } elseif (!empty($NaviFilter->Kategorie->kKategorie) && !empty($NaviFilter->KategorieFilter->kKategorie) &&
+                !empty($NaviFilter->Kategorie->cSeo[Shop::$kSprache])) {
                 //we have a category page with some category filter
                 http_response_code(301);
                 header('Location: ' . Shop::getURL() . '/' . $NaviFilter->Kategorie->cSeo[Shop::$kSprache]);
@@ -1143,7 +1155,9 @@ final class Shop
     {
         $oVersion = self::DB()->query("SELECT nVersion FROM tversion", 1);
 
-        return (isset($oVersion->nVersion) && intval($oVersion->nVersion) > 0) ? intval($oVersion->nVersion) : 0;
+        return (isset($oVersion->nVersion) && intval($oVersion->nVersion) > 0)
+            ? (int)$oVersion->nVersion
+            : 0;
     }
 
     /**
@@ -1153,7 +1167,7 @@ final class Shop
      */
     public static function getVersion()
     {
-        return intval(JTL_VERSION);
+        return JTL_VERSION;
     }
 
     /**
@@ -1165,7 +1179,7 @@ final class Shop
     public static function getLogo($fullUrl = false)
     {
         $ret  = null;
-        $conf = self::getSettings(array(CONF_LOGO));
+        $conf = self::getSettings([CONF_LOGO]);
         $file = (isset($conf['logo']['shop_logo'])) ? $conf['logo']['shop_logo'] : null;
         if ($file !== null && $file !== '') {
             $ret = PFAD_SHOPLOGO . $file;
@@ -1225,7 +1239,7 @@ final class Shop
     {
         self::$pageType        = $pageType;
         $GLOBALS['nSeitenTyp'] = $pageType;
-        executeHook(HOOK_SHOP_SET_PAGE_TYPE, array('pageType' => $pageType));
+        executeHook(HOOK_SHOP_SET_PAGE_TYPE, ['pageType' => $pageType]);
     }
 
     /**

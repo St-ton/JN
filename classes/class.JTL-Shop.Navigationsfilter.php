@@ -950,8 +950,15 @@ class Navigationsfilter
     public function getActiveFilters($byType = false)
     {
         $filters = ($byType !== false)
-            ? ['mm' => [], 'ssf' => [], 'tf' => [], 'sf' => [], 'hf' => [], 'bf' => [], 'custom' => []]
+            ? ['kf' => [], 'mm' => [], 'ssf' => [], 'tf' => [], 'sf' => [], 'hf' => [], 'bf' => [], 'custom' => []]
             : [];
+        if ($this->KategorieFilter->isInitialized()) {
+            if ($byType) {
+                $filters['kf'][] = $this->KategorieFilter;
+            } else {
+                $filters[] = $this->KategorieFilter;
+            }
+        }
         if ($this->HerstellerFilter->isInitialized()) {
             if ($byType) {
                 $filters['hf'][] = $this->HerstellerFilter;

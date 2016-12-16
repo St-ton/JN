@@ -484,8 +484,16 @@ class Navigationsfilter
                             (verifyGPCDataInteger($filterParam) > 0 || verifyGPDataString($filterParam) !== '')) ||
                         ($filter->getType() === AbstractFilter::FILTER_TYPE_OR && is_array($_GET[$filterParam]))
                     ) {
-                        $this->addActiveFilter($filter, $_GET[$filterParam]);
-                        $params[$filterParam] = $_GET[$filterParam];
+                        if (is_array($_GET[$filterParam])) {
+                            $filterValue = [];
+                            foreach ($_GET[$filterParam] as $idx => $param) {
+                                $filterValue[$idx] = Shop::DB()->realEscape($param);
+                            }
+                        } else {
+                            $filterValue = Shop::DB()->realEscape($_GET[$filterParam]);
+                        }
+                        $this->addActiveFilter($filter, $filterValue);
+                        $params[$filterParam] = $filterValue;
                         ++$count;
                     }
                 }

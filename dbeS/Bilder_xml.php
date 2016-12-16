@@ -860,7 +860,7 @@ function erstelleThumbnailBranded($imgFilename, $zielbild, $breite, $hoehe, $qua
         $vergroessern = 1;
     }
     $ret                         = 0;
-    $Bildformat                  = gibBildformat($imgFilename);
+    $Bildformat                  = $GLOBALS['Einstellungen']['bilder']['bilder_dateiformat'];//gibBildformat($imgFilename);
     list($width, $height, $type) = getimagesize($imgFilename);
     if ($width > 0 && $height > 0) {
         if (!$vergroessern && $width < $breite && $height < $hoehe) {
@@ -925,7 +925,7 @@ function erstelleThumbnail($oBranding, $imgFilename, $zielbild, $breite, $hoehe,
         $vergroessern = 1;
     }
     $ret        = 0;
-    $Bildformat = gibBildformat($imgFilename);
+    $Bildformat = $GLOBALS['Einstellungen']['bilder']['bilder_dateiformat'];//gibBildformat($imgFilename);
     $im         = imageload_alpha($imgFilename);
     if ($im) {
         //bild skalieren
@@ -1458,7 +1458,7 @@ function imageload_container($img, $nWidth, $nHeight, $nContainerWidth, $nContai
     $newImg  = imagecreatetruecolor($nContainerWidth, $nContainerHeight);
     // hintergrundfarbe
     $format = strtolower($GLOBALS['Einstellungen']['bilder']['bilder_dateiformat']);
-    if ($format == 'jpg') {
+    if ($format === 'jpg') {
         $rgb   = html2rgb($GLOBALS['Einstellungen']['bilder']['bilder_hintergrundfarbe']);
         $color = imagecolorallocate($newImg, $rgb[0], $rgb[1], $rgb[2]);
     } else {
@@ -1515,7 +1515,7 @@ function imageload_alpha($img, $nWidth = 0, $nHeight = 0)
 
     // hintergrundfarbe
     $format = strtolower($GLOBALS['Einstellungen']['bilder']['bilder_dateiformat']);
-    if ($format == 'jpg') {
+    if ($format === 'jpg') {
         $rgb   = html2rgb($GLOBALS['Einstellungen']['bilder']['bilder_hintergrundfarbe']);
         $color = imagecolorallocate($newImg, $rgb[0], $rgb[1], $rgb[2]);
     } else {
@@ -1562,7 +1562,7 @@ function speichereBild($im, $format, $pfad, $quality = 80)
 
     $pfad = neuerDateiname($pfad);
 
-    switch ($format) {
+    switch (strtolower($format)) {
         case 'jpg':
             if (!function_exists('imagejpeg')) {
                 return false;

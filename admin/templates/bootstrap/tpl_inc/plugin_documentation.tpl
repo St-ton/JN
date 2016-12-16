@@ -5,10 +5,10 @@
         padding: 0px 10px;
     }
     div.markdown ul li {
-        list-style: outside none disc;
+        list-style: disc outside none;
     }
     div.markdown ol li {
-        list-style: outside none decimal;
+        list-style: decimal outside none;
     }
     div.markdown p {
         text-align: justify;

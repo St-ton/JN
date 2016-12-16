@@ -49,23 +49,7 @@ function loescheWarenkorbPosition($nPos)
         unset($_SESSION['Kupon']);
         $_SESSION['Warenkorb'] = new Warenkorb();
     }
-    foreach ($_SESSION['Warenkorb']->PositionenArr as $oPosition) {
-        if ($oPosition->nPosTyp == C_WARENKORBPOS_TYP_GRATISGESCHENK) {
-            // Prüfen ob der Artikel wirklich ein Gratis Geschenk ist und ob der Gesamtpreis noch zum Gratisgeschenk passt
-            $oArtikelGeschenk = Shop::DB()->query(
-                "SELECT kArtikel
-                    FROM tartikelattribut
-                    WHERE kArtikel = " . (int)$oPosition->kArtikel . "
-                       AND cName = '" . FKT_ATTRIBUT_GRATISGESCHENK . "'
-                       AND CAST(cWert AS DECIMAL) <= " . $_SESSION['Warenkorb']->gibGesamtsummeWarenExt(array(C_WARENKORBPOS_TYP_ARTIKEL), true), 1
-            );
-
-            if ($oArtikelGeschenk->kArtikel == 0) {
-                $_SESSION['Warenkorb']->loescheSpezialPos(C_WARENKORBPOS_TYP_GRATISGESCHENK);
-            }
-            break;
-        }
-    }
+    freeGiftStillValid();
     // Lösche Position aus dem WarenkorbPersPos
     if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']->kKunde > 0) {
         $oWarenkorbPers = new WarenkorbPers($_SESSION['Kunde']->kKunde);

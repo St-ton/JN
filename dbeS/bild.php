@@ -6,11 +6,13 @@
 
 require_once dirname(__FILE__) . '/syncinclude.php';
 // Einstellungen holen
-$Einstellungen = Shop::getSettings(array(CONF_BILDER));
+$Einstellungen = Shop::getSettings([CONF_BILDER]);
 
-if ($Einstellungen['bilder']['bilder_externe_bildschnittstelle'] === 'N') { // Schnittstelle ist deaktiviert
+if ($Einstellungen['bilder']['bilder_externe_bildschnittstelle'] === 'N') {
+    // Schnittstelle ist deaktiviert
     exit();
-} elseif ($Einstellungen['bilder']['bilder_externe_bildschnittstelle'] === 'W') { // Nur Wawi darf zugreifen
+} elseif ($Einstellungen['bilder']['bilder_externe_bildschnittstelle'] === 'W') {
+    // Nur Wawi darf zugreifen
     if (!auth()) {
         exit();
     }

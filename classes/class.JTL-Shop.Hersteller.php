@@ -120,7 +120,7 @@ class Hersteller
     public function loadFromDB($kHersteller, $kSprache = 0, $noCache = false)
     {
         //noCache param to avoid problem with de-serialization of class properties with jtl search
-        $kSprache = (intval($kSprache) > 0) ? intval($kSprache) : Shop::$kSprache;
+        $kSprache = (intval($kSprache) > 0) ? (int)$kSprache : Shop::$kSprache;
         if (!isset($kSprache) || $kSprache === null) {
             $oSprache = gibStandardsprache();
             $kSprache = $oSprache->kSprache;
@@ -128,13 +128,13 @@ class Hersteller
         $kHersteller = (int)$kHersteller;
         $kSprache    = (int)$kSprache;
         $cacheID     = 'manuf_' . $kHersteller . '_' . $kSprache . Shop::Cache()->getBaseID();
-        $cacheTags   = array(CACHING_GROUP_MANUFACTURER);
+        $cacheTags   = [CACHING_GROUP_MANUFACTURER];
         $cached      = true;
         if ($noCache === true || ($oHersteller = Shop::Cache()->get($cacheID)) === false) {
             $oHersteller = Shop::DB()->query(
-                "SELECT thersteller.kHersteller, thersteller.cName, thersteller.cHomepage, thersteller.nSortNr, thersteller.cBildpfad,
-                        therstellersprache.cMetaTitle, therstellersprache.cMetaKeywords, therstellersprache.cMetaDescription, therstellersprache.cBeschreibung,
-                        tseo.cSeo
+                "SELECT thersteller.kHersteller, thersteller.cName, thersteller.cHomepage, thersteller.nSortNr, 
+                    thersteller.cBildpfad, therstellersprache.cMetaTitle, therstellersprache.cMetaKeywords, 
+                    therstellersprache.cMetaDescription, therstellersprache.cBeschreibung, tseo.cSeo
                     FROM thersteller
                     LEFT JOIN therstellersprache ON therstellersprache.kHersteller = thersteller.kHersteller
                         AND therstellersprache.kSprache = " . $kSprache . "
@@ -144,24 +144,20 @@ class Hersteller
                     WHERE thersteller.kHersteller = " . $kHersteller, 1
             );
             $cached = false;
-            executeHook(
-                HOOK_HERSTELLER_CLASS_LOADFROMDB,
-                array(
+            executeHook(HOOK_HERSTELLER_CLASS_LOADFROMDB, [
                     'oHersteller' => &$oHersteller,
                     'cached'      => false,
                     'cacheTags'   => &$cacheTags
-                )
+                ]
             );
             Shop::Cache()->set($cacheID, $oHersteller, $cacheTags);
         }
         if ($cached === true) {
-            executeHook(
-                HOOK_HERSTELLER_CLASS_LOADFROMDB,
-                array(
+            executeHook(HOOK_HERSTELLER_CLASS_LOADFROMDB, [
                     'oHersteller' => &$oHersteller,
                     'cached'      => true,
                     'cacheTags'   => &$cacheTags
-                )
+                ]
             );
         }
         if ($oHersteller !== false) {
@@ -179,7 +175,9 @@ class Hersteller
     {
         if (isset($obj->kHersteller) && $obj->kHersteller > 0) {
             // URL bauen
-            $this->cURL = (isset($obj->cSeo) && strlen($obj->cSeo) > 0) ? Shop::getURL() . '/' . $obj->cSeo : Shop::getURL() . '/index.php?h=' . $obj->kHersteller;
+            $this->cURL = (isset($obj->cSeo) && strlen($obj->cSeo) > 0)
+                ? Shop::getURL() . '/' . $obj->cSeo
+                : Shop::getURL() . '/index.php?h=' . $obj->kHersteller;
             $this->cBeschreibung = parseNewsText($this->cBeschreibung);
         }
         if (strlen($this->cBildpfad) > 0) {
@@ -215,8 +213,9 @@ class Hersteller
                         )";
         }
         $objs = Shop::DB()->query(
-            "SELECT thersteller.kHersteller, thersteller.cName, thersteller.cHomepage, thersteller.nSortNr, thersteller.cBildpfad,
-                    therstellersprache.cMetaTitle, therstellersprache.cMetaKeywords, therstellersprache.cMetaDescription, therstellersprache.cBeschreibung, tseo.cSeo
+            "SELECT thersteller.kHersteller, thersteller.cName, thersteller.cHomepage, thersteller.nSortNr, 
+                thersteller.cBildpfad, therstellersprache.cMetaTitle, therstellersprache.cMetaKeywords, 
+                therstellersprache.cMetaDescription, therstellersprache.cBeschreibung, tseo.cSeo
                 FROM thersteller
                 LEFT JOIN therstellersprache ON therstellersprache.kHersteller = thersteller.kHersteller
                     AND therstellersprache.kSprache = {$kSprache}
@@ -226,7 +225,7 @@ class Hersteller
                 {$sqlWhere}
                 ORDER BY thersteller.cName", 2
         );
-        $results = array();
+        $results = [];
         if (is_array($objs)) {
             foreach ($objs as $obj) {
                 $hersteller = new self(0, 0, true);

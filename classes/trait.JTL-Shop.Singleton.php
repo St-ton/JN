@@ -10,12 +10,12 @@
 trait SingletonTrait
 {
     /**
-     * @var SingletonTrait
+     * @var static
      */
     private static $_instance;
 
     /**
-     * @return SingletonTrait
+     * @return static
      */
     final public static function getInstance()
     {

@@ -13,7 +13,7 @@ class PlausiCMS extends Plausi
     /**
      * @param null|string $cType
      * @param bool        $bUpdate
-     * @return bool|void
+     * @return bool
      */
     public function doPlausi($cType = null, $bUpdate = false)
     {

@@ -148,37 +148,37 @@ class Plugin
     /**
      * @var array
      */
-    public $oPluginHook_arr = array();
+    public $oPluginHook_arr = [];
 
     /**
      * @var array
      */
-    public $oPluginAdminMenu_arr = array();
+    public $oPluginAdminMenu_arr = [];
 
     /**
      * @var array
      */
-    public $oPluginEinstellung_arr = array();
+    public $oPluginEinstellung_arr = [];
 
     /**
      * @var array
      */
-    public $oPluginEinstellungConf_arr = array();
+    public $oPluginEinstellungConf_arr = [];
 
     /**
      * @var array
      */
-    public $oPluginEinstellungAssoc_arr = array();
+    public $oPluginEinstellungAssoc_arr = [];
 
     /**
      * @var array
      */
-    public $oPluginSprachvariable_arr = array();
+    public $oPluginSprachvariable_arr = [];
 
     /**
      * @var array
      */
-    public $oPluginSprachvariableAssoc_arr = array();
+    public $oPluginSprachvariableAssoc_arr = [];
 
     /**
      * @var array
@@ -188,37 +188,37 @@ class Plugin
     /**
      * @var array
      */
-    public $oPluginZahlungsmethode_arr = array();
+    public $oPluginZahlungsmethode_arr = [];
 
     /**
      * @var array
      */
-    public $oPluginZahlungsmethodeAssoc_arr = array();
+    public $oPluginZahlungsmethodeAssoc_arr = [];
 
     /**
      * @var array
      */
-    public $oPluginZahlungsKlasseAssoc_arr = array();
+    public $oPluginZahlungsKlasseAssoc_arr = [];
 
     /**
      * @var array
      */
-    public $oPluginEmailvorlage_arr = array();
+    public $oPluginEmailvorlage_arr = [];
 
     /**
      * @var array
      */
-    public $oPluginEmailvorlageAssoc_arr = array();
+    public $oPluginEmailvorlageAssoc_arr = [];
 
     /**
      * @var array
      */
-    public $oPluginAdminWidget_arr = array();
+    public $oPluginAdminWidget_arr = [];
 
     /**
      * @var array
      */
-    public $oPluginAdminWidgetAssoc_arr = array();
+    public $oPluginAdminWidgetAssoc_arr = [];
 
     /**
      * @var stdClass
@@ -331,7 +331,7 @@ class Plugin
         if ($invalidateCache === true) {
             //plugin options were save in admin backend, so invalidate the cache
             Shop::Cache()->flush('hook_list');
-            Shop::Cache()->flushTags(array(CACHING_GROUP_PLUGIN, CACHING_GROUP_PLUGIN . '_' . $kPlugin));
+            Shop::Cache()->flushTags([CACHING_GROUP_PLUGIN, CACHING_GROUP_PLUGIN . '_' . $kPlugin]);
         } elseif (($plugin = Shop::Cache()->get($cacheID)) !== false) {
             foreach (get_object_vars($plugin) as $k => $v) {
                 $this->$k = $v;
@@ -410,7 +410,7 @@ class Plugin
         $oPluginEinstellungConfTMP_arr = Shop::DB()->selectAll('tplugineinstellungenconf', 'kPlugin', $kPlugin, '*', 'nSort');
         if (count($oPluginEinstellungConfTMP_arr) > 0) {
             foreach ($oPluginEinstellungConfTMP_arr as $i => $oPluginEinstellungConfTMP) {
-                $oPluginEinstellungConfTMP_arr[$i]->oPluginEinstellungenConfWerte_arr = array();
+                $oPluginEinstellungConfTMP_arr[$i]->oPluginEinstellungenConfWerte_arr = [];
                 if ($oPluginEinstellungConfTMP->cInputTyp === 'selectbox' || $oPluginEinstellungConfTMP->cInputTyp === 'radio') {
                     if (!empty($oPluginEinstellungConfTMP->cSourceFile)) {
                         $oPluginEinstellungConfTMP_arr[$i]->oPluginEinstellungenConfWerte_arr = $this->getDynamicOptions($oPluginEinstellungConfTMP);
@@ -448,7 +448,7 @@ class Plugin
         }
         $this->oPluginFrontendLink_arr = $oPluginFrontendLink_arr;
         // Zahlungsmethoden holen
-        $oZahlungsmethodeAssoc_arr = array(); // Assoc an cModulId
+        $oZahlungsmethodeAssoc_arr = []; // Assoc an cModulId
         $oZahlungsmethode_arr      = Shop::DB()->query(
             "SELECT *
                 FROM tzahlungsart
@@ -458,11 +458,15 @@ class Plugin
         if (is_array($oZahlungsmethode_arr) && count($oZahlungsmethode_arr) > 0) {
             // Zahlungsmethode Sprache holen
             foreach ($oZahlungsmethode_arr as $i => $oZahlungsmethode) {
-                $oZahlungsmethode_arr[$i]->cZusatzschrittTemplate = strlen($oZahlungsmethode->cZusatzschrittTemplate) ? PFAD_ROOT . PFAD_PLUGIN . $this->cVerzeichnis . '/' .
-                    PFAD_PLUGIN_VERSION . $this->nVersion . '/' . PFAD_PLUGIN_PAYMENTMETHOD . $oZahlungsmethode->cZusatzschrittTemplate : '';
-                $oZahlungsmethode_arr[$i]->cTemplateFileURL = strlen($oZahlungsmethode->cPluginTemplate) ? PFAD_ROOT . PFAD_PLUGIN . $this->cVerzeichnis . '/' .
-                    PFAD_PLUGIN_VERSION . $this->nVersion . '/' . PFAD_PLUGIN_PAYMENTMETHOD . $oZahlungsmethode->cPluginTemplate : '';
-                $oZahlungsmethode_arr[$i]->oZahlungsmethodeSprache_arr = Shop::DB()->selectAll('tzahlungsartsprache', 'kZahlungsart', (int)$oZahlungsmethode->kZahlungsart);
+                $oZahlungsmethode_arr[$i]->cZusatzschrittTemplate = strlen($oZahlungsmethode->cZusatzschrittTemplate)
+                    ? PFAD_ROOT . PFAD_PLUGIN . $this->cVerzeichnis . '/' .
+                        PFAD_PLUGIN_VERSION . $this->nVersion . '/' . PFAD_PLUGIN_PAYMENTMETHOD . $oZahlungsmethode->cZusatzschrittTemplate
+                    : '';
+                $oZahlungsmethode_arr[$i]->cTemplateFileURL = strlen($oZahlungsmethode->cPluginTemplate)
+                    ? PFAD_ROOT . PFAD_PLUGIN . $this->cVerzeichnis . '/' .
+                        PFAD_PLUGIN_VERSION . $this->nVersion . '/' . PFAD_PLUGIN_PAYMENTMETHOD . $oZahlungsmethode->cPluginTemplate
+                    : '';
+                $oZahlungsmethode_arr[$i]->oZahlungsmethodeSprache_arr     = Shop::DB()->selectAll('tzahlungsartsprache', 'kZahlungsart', (int)$oZahlungsmethode->kZahlungsart);
                 $cModulId                                                  = gibPlugincModulId($kPlugin, $oZahlungsmethode->cName);
                 $oZahlungsmethode_arr[$i]->oZahlungsmethodeEinstellung_arr = Shop::DB()->query(
                     "SELECT *
@@ -486,16 +490,16 @@ class Plugin
             }
         }
         // Emailvorlage holen
-        $oPluginEmailvorlageAssoc_arr = array(); // Assoc als cModulId
+        $oPluginEmailvorlageAssoc_arr = []; // Assoc als cModulId
         $oPluginEmailvorlage_arr      = Shop::DB()->selectAll('tpluginemailvorlage', 'kPlugin', (int)$this->kPlugin);
 
         if (is_array($oPluginEmailvorlage_arr) && count($oPluginEmailvorlage_arr) > 0) {
             foreach ($oPluginEmailvorlage_arr as $i => $oPluginEmailvorlage) {
-                $oPluginEmailvorlage_arr[$i]->oPluginEmailvorlageSprache_arr = array();
+                $oPluginEmailvorlage_arr[$i]->oPluginEmailvorlageSprache_arr = [];
                 $oPluginEmailvorlage_arr[$i]->oPluginEmailvorlageSprache_arr = Shop::DB()->selectAll('tpluginemailvorlagesprache', 'kEmailvorlage', (int)$oPluginEmailvorlage->kEmailvorlage);
 
                 if (is_array($oPluginEmailvorlage_arr[$i]->oPluginEmailvorlageSprache_arr) && count($oPluginEmailvorlage_arr[$i]->oPluginEmailvorlageSprache_arr) > 0) {
-                    $oPluginEmailvorlage_arr[$i]->oPluginEmailvorlageSpracheAssoc_arr = array(); // Assoc kSprache
+                    $oPluginEmailvorlage_arr[$i]->oPluginEmailvorlageSpracheAssoc_arr = []; // Assoc kSprache
                     foreach ($oPluginEmailvorlage_arr[$i]->oPluginEmailvorlageSprache_arr as $oPluginEmailvorlageSprache) {
                         $oPluginEmailvorlage_arr[$i]->oPluginEmailvorlageSpracheAssoc_arr[$oPluginEmailvorlageSprache->kSprache] = $oPluginEmailvorlageSprache;
                     }
@@ -523,7 +527,7 @@ class Plugin
         $this->pluginCacheID    = 'plgn_' . $this->kPlugin . '_' . $this->nVersion;
         $this->pluginCacheGroup = CACHING_GROUP_PLUGIN . '_' . $this->kPlugin;
         //save to cache
-        Shop::Cache()->set($cacheID, $this, array(CACHING_GROUP_PLUGIN, $this->pluginCacheGroup));
+        Shop::Cache()->set($cacheID, $this, [CACHING_GROUP_PLUGIN, $this->pluginCacheGroup]);
 
         return $this;
     }
@@ -586,10 +590,10 @@ class Plugin
     {
         if (strlen($cName) > 0) {
             if (!isset($_SESSION['PluginSession'])) {
-                $_SESSION['PluginSession'] = array();
+                $_SESSION['PluginSession'] = [];
             }
             if (!isset($_SESSION['PluginSession'][$this->kPlugin])) {
-                $_SESSION['PluginSession'][$this->kPlugin] = array();
+                $_SESSION['PluginSession'][$this->kPlugin] = [];
             }
             $_SESSION['PluginSession'][$this->kPlugin][$cName] = $xWert;
 
@@ -648,7 +652,7 @@ class Plugin
 
                 $nLastVersionKey = count($XML_arr['jtlshop3plugin'][0]['Install'][0]['Version']) / 2 - 1;
 
-                return intval($XML_arr['jtlshop3plugin'][0]['Install'][0]['Version'][$nLastVersionKey . ' attr']['nr']);
+                return (int)$XML_arr['jtlshop3plugin'][0]['Install'][0]['Version'][$nLastVersionKey . ' attr']['nr'];
             }
         }
 
@@ -711,8 +715,8 @@ class Plugin
 
             return $oPluginHookListe_arr;
         }
-
-        $oPluginHookListe_arr = array();
+        $oPluginHook          = null;
+        $oPluginHookListe_arr = [];
         $oPluginHook_arr      = Shop::DB()->query(
             "SELECT tpluginhook.nHook, tplugin.kPlugin, tplugin.cVerzeichnis, tplugin.nVersion, tpluginhook.cDateiname
                 FROM tplugin
@@ -752,7 +756,7 @@ class Plugin
                 }
             }
         }
-        Shop::Cache()->set($cacheID, $oPluginHookListe_arr, array(CACHING_GROUP_PLUGIN));
+        Shop::Cache()->set($cacheID, $oPluginHookListe_arr, [CACHING_GROUP_PLUGIN]);
         self::$hookList = $oPluginHookListe_arr;
 
         return $oPluginHookListe_arr;
@@ -770,7 +774,7 @@ class Plugin
     }
 
     /**
-     * @param array $conf
+     * @param object $conf
      * @return array
      */
     public function getDynamicOptions($conf)
@@ -791,7 +795,7 @@ class Plugin
 
     /**
      * @param int $kPlugin
-     * @return mixed|void
+     * @return mixed
      */
     public static function bootstrapper($kPlugin)
     {
@@ -833,8 +837,8 @@ class Plugin
      * we want to do expensive checks for files existence only one times!
      * this function remembers itselfs, if a check was done and did'nt search again this file.
      *
-     * @param string  full-path file-name of the file to check
-     * @return boolean  true = "file exists", false = "file did not exsist"
+     * @param string $szCanonicalFileName - full-path file-name of the file to check
+     * @return bool - true = "file exists", false = "file did not exsist"
      */
     private function checkFileExistence($szCanonicalFileName)
     {

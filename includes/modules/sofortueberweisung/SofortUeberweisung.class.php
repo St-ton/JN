@@ -98,8 +98,8 @@ class SofortUeberweisung extends PaymentMethod
     public function init($nAgainCheckout = 0)
     {
         parent::init($nAgainCheckout);
-        $this->name    = 'SofortUeberweisung';
-        $this->caption = 'SofortUeberweisung';
+        $this->name    = utf8_decode('SOFORT Überweisung');
+        $this->caption = utf8_decode('SOFORT Überweisung');
 
         return $this;
     }
@@ -234,23 +234,17 @@ class SofortUeberweisung extends PaymentMethod
     public function baueSicherheitsHash($order, $paymentHash)
     {
         $this->gibEinstellungen($order);
-        $this->user_variable_0 = $paymentHash;
-        $this->user_variable_1 = ($this->duringCheckout) ? 'sh' : 'ph';
-        $this->user_variable_5 = 'JTL-Shop-3';
-
-        $this->name = $order->oRechnungsadresse->cVorname . ' ' . $order->oRechnungsadresse->cNachname;
+        $this->user_variable_0    = $paymentHash;
+        $this->user_variable_1    = ($this->duringCheckout) ? 'sh' : 'ph';
+        $this->user_variable_5    = 'JTL-Shop-3';
+        $this->strAmount          = round($order->fGesamtsummeKundenwaehrung, 2);
+        $this->strSenderCountryID = ($order->kLieferadresse > 0)
+            ? $order->Lieferadresse->cLand
+            : $order->oRechnungsadresse->cLand;
+        $this->name               = $order->oRechnungsadresse->cVorname . ' ' . $order->oRechnungsadresse->cNachname;
         if (strlen($order->oRechnungsadresse->cFirma) > 2) {
             $this->name = $order->oRechnungsadresse->cFirma;
         }
-
-        $this->strAmount = round($order->fGesamtsummeKundenwaehrung, 2);
-
-        if ($order->kLieferadresse > 0) {
-            $this->strSenderCountryID = $order->Lieferadresse->cLand;
-        } else {
-            $this->strSenderCountryID = $order->oRechnungsadresse->cLand;
-        }
-
         // ISO pruefen
         preg_match("/[a-zA-Z]{2}/", $this->strSenderCountryID, $cTreffer1_arr);
         if (strlen($cTreffer1_arr[0]) != strlen($this->strSenderCountryID)) {
@@ -259,10 +253,8 @@ class SofortUeberweisung extends PaymentMethod
                 $this->strSenderCountryID = $cISO;
             }
         }
-
         //Sonderzeichen entfernen
         $this->removeEntities();
-
         //Sicherheits-Hash erstellen
         $data = array(
             $this->sofortueberweisung_id,           // user_id
@@ -283,20 +275,12 @@ class SofortUeberweisung extends PaymentMethod
             $this->user_variable_5,                 // user_variable_5
             $this->getProjectPassword(),            // Project Password
         );
+        $data_implode = implode('|', $data);
+        $this->hash   = sha1(utf8_encode($data_implode));
 
         if (D_MODE === 1) {
             writeLog(D_PFAD, ': baueSicherheitsHash data: ' . print_r($data, true), 1);
-        }
-
-        $data_implode = implode('|', $data);
-
-        if (D_MODE === 1) {
             writeLog(D_PFAD, ': baueSicherheitsHash data_implode: ' . $data_implode, 1);
-        }
-
-        $this->hash = sha1(utf8_encode($data_implode));
-
-        if (D_MODE === 1) {
             writeLog(D_PFAD, ': baueSicherheitsHash hash: ' . $this->hash, 1);
         }
     }
@@ -344,15 +328,10 @@ class SofortUeberweisung extends PaymentMethod
     {
         if (D_MODE === 1) {
             writeLog(D_PFAD, ': verifyNotification args: ' . print_r($args, true), 1);
-        }
-
-        if (D_MODE === 1) {
             writeLog(D_PFAD, ': verifyNotification args als REQUEST: ' . print_r($_REQUEST, true), 1);
         }
-
         extract($args);
-
-        $data = array(
+        $data                  = [
             'transaction'               => (isset($args['transaction'])) ? $args['transaction'] : null,
             'user_id'                   => (isset($args['user_id'])) ? $args['user_id'] : null,
             'project_id'                => (isset($args['project_id'])) ? $args['project_id'] : null,
@@ -383,31 +362,21 @@ class SofortUeberweisung extends PaymentMethod
             'user_variable_4'           => (isset($args['user_variable_4'])) ? $args['user_variable_4'] : null,
             'user_variable_5'           => (isset($args['user_variable_5'])) ? $args['user_variable_5'] : null,
             'created'                   => (isset($args['created'])) ? $args['created'] : null,
-        );
-
-        $hash = (isset($args['hash'])) ? $args['hash'] : null;
-
+        ];
+        $hash                  = (isset($args['hash'])) ? $args['hash'] : null;
         $cNotificationPassword = $this->getNotificationPassword();
         if (strlen($cNotificationPassword) > 0) {
             $data['notification_password'] = $cNotificationPassword;
         }
-
-        if (D_MODE === 1) {
-            writeLog(D_PFAD, ': verifyNotification data: ' . print_r($data, true), 1);
-        }
-
         $data_implode = implode('|', $data);
         $hashTMP      = sha1($data_implode);
 
         if (D_MODE === 1) {
+            writeLog(D_PFAD, ': verifyNotification data: ' . print_r($data, true), 1);
             writeLog(D_PFAD, ': verifyNotification hashTMP: ' . $hashTMP . ' - hash: ' . $hash, 1);
         }
 
-        if ($hashTMP != $hash) {
-            return false;
-        }
-
-        return true;
+        return ($hashTMP === $hash);
     }
 
     /**

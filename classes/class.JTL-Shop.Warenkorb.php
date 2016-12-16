@@ -81,7 +81,7 @@ class Warenkorb
                     isset($Position->Artikel->cLagerVariation) && $Position->Artikel->fLagerbestand <= 0 && $Position->Artikel->cLagerBeachten === 'Y' &&
                     $Position->Artikel->cLagerKleinerNull !== 'Y' && $Position->Artikel->cLagerVariation !== 'Y') {
                     $delete = true;
-                } elseif (isset($Position->fPreisEinzelNetto) && $Position->fPreisEinzelNetto == 0 &&
+                } elseif (empty($Position->kKonfigitem) && $Position->nPosTyp !== C_WARENKORBPOS_TYP_GRATISGESCHENK && isset($Position->fPreisEinzelNetto) && $Position->fPreisEinzelNetto == 0 &&
                     isset($conf['global']['global_preis0']) && $conf['global']['global_preis0'] === 'N') {
                     $delete = true;
                 } elseif (isset($Position->Artikel->FunktionsAttribute[FKT_ATTRIBUT_UNVERKAEUFLICH]) &&
@@ -1193,10 +1193,12 @@ class Warenkorb
      */
     public function updateInDB()
     {
-        $obj = kopiereMembers($this);
-        unset($obj->PositionenArr);
-        unset($obj->cEstimatedDelivery);
-        unset($obj->VersandArt);
+        $obj = (object)[
+            'kWarenkorb'     => $this->kWarenkorb,
+            'kKunde'         => $this->kKunde,
+            'kLieferadresse' => $this->kLieferadresse,
+            'kZahlungsInfo'  => $this->kZahlungsInfo,
+        ];
 
         return Shop::DB()->update('twarenkorb', 'kWarenkorb', $obj->kWarenkorb, $obj);
     }

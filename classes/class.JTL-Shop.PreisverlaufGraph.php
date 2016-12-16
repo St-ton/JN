@@ -85,7 +85,7 @@ class PreisverlaufGraph
      * PreisverlaufGraph Members
      *
      * @access public
-     * @var image
+     * @var string image
      */
     public $image; // Bild vom Graphen
 

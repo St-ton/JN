@@ -975,27 +975,23 @@ class NiceDB
         }
 
         switch ($return) {
-            case 1: {
+            case 1:
                 $ret = $res->fetchObject();
                 break;
-            }
-            case 2: {
+            case 2:
                 $ret = array();
                 while ($row = $res->fetchObject()) {
                     $ret[] = $row;
                 }
                 break;
-            }
-            case 3: {
+            case 3:
                 $ret = $res->rowCount();
                 break;
-            }
-            case 7: {
+            case 7:
                 $id = $this->pdo->lastInsertId();
                 $ret = ($id > 0) ? $id : 1;
                 break;
-            }
-            case 8: {
+            case 8:
                 $ret = $res->fetchAll(PDO::FETCH_NAMED);
                 if (is_array($ret) && isset($ret[0])) {
                     $ret = $ret[0];
@@ -1003,23 +999,18 @@ class NiceDB
                     $ret = null;
                 }
                 break;
-            }
-            case 9: {
+            case 9:
                 $ret = $res->fetchAll(PDO::FETCH_ASSOC);
                 break;
-            }
-            case 10: {
+            case 10:
                 $ret = $res;
                 break;
-            }
-            case 11: {
+            case 11:
                 $ret = $res->fetchAll(PDO::FETCH_BOTH);
                 break;
-            }
-            default: {
+            default:
                 $ret = true;
                 break;
-            }
         }
 
         if ($this->debug === true || $this->collectData === true) {

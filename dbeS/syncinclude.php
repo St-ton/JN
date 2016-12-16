@@ -119,7 +119,8 @@ function checkFile()
     }
     if ($_FILES['data']['error'] || (isset($_FILES['data']['size']) && $_FILES['data']['size'] == 0)) {
         if (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-            Jtllog::writeLog('ERROR: incoming: ' . $_FILES['data']['name'] . ' size:' . $_FILES['data']['size'] . ' err:' . $_FILES['data']['error'], JTLLOG_LEVEL_ERROR, false, 'syncinclude_xml');
+            Jtllog::writeLog('ERROR: incoming: ' . $_FILES['data']['name'] . ' size:' . $_FILES['data']['size'] .
+                ' err:' . $_FILES['data']['error'], JTLLOG_LEVEL_ERROR, false, 'syncinclude_xml');
         }
         $cFehler = 'Fehler beim Datenaustausch - Datei kam nicht an oder Größe 0!';
         switch ($_FILES['data']['error']) {
@@ -180,7 +181,8 @@ function DBinsert($tablename, $object)
 {
     $key = Shop::DB()->insert($tablename, $object);
     if (!$key && Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-        Jtllog::writeLog('DBinsert fehlgeschlagen! Tabelle: ' . $tablename . ', Objekt: ' . print_r($object, true), JTLLOG_LEVEL_ERROR, false, 'syncinclude_xml');
+        Jtllog::writeLog('DBinsert fehlgeschlagen! Tabelle: ' . $tablename . ', Objekt: ' .
+            print_r($object, true), JTLLOG_LEVEL_ERROR, false, 'syncinclude_xml');
     }
 
     return $key;
@@ -206,7 +208,8 @@ function DBDelInsert($tablename, $object_arr, $del)
             }
             $key = Shop::DB()->insert($tablename, $object);
             if (!$key && Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-                Jtllog::writeLog('DBDelInsert fehlgeschlagen! Tabelle: ' . $tablename . ', Objekt: ' . print_r($object, true), JTLLOG_LEVEL_ERROR, false, 'syncinclude_xml');
+                Jtllog::writeLog('DBDelInsert fehlgeschlagen! Tabelle: ' . $tablename . ', Objekt: ' .
+                    print_r($object, true), JTLLOG_LEVEL_ERROR, false, 'syncinclude_xml');
             }
         }
     }
@@ -230,7 +233,8 @@ function DBUpdateInsert($tablename, $object_arr, $pk1, $pk2 = 0)
             }
             $key = Shop::DB()->insert($tablename, $object);
             if (!$key && Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-                Jtllog::writeLog('DBUpdateInsert fehlgeschlagen! Tabelle: ' . $tablename . ', Objekt: ' . print_r($object, true), JTLLOG_LEVEL_ERROR, false, 'syncinclude_xml');
+                Jtllog::writeLog('DBUpdateInsert fehlgeschlagen! Tabelle: ' . $tablename . ', Objekt: ' .
+                    print_r($object, true), JTLLOG_LEVEL_ERROR, false, 'syncinclude_xml');
             }
         }
     }
@@ -253,7 +257,8 @@ function getObjectArray($elements, $child)
                 foreach ($keys as $key) {
                     if (!$elements[$child . ' attr'][$key]) {
                         if (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-                            Jtllog::writeLog($child . '->' . $key . ' fehlt! XML:' . $elements[$child], JTLLOG_LEVEL_ERROR, false, 'syncinclude');
+                            Jtllog::writeLog($child . '->' . $key . ' fehlt! XML:' .
+                                $elements[$child], JTLLOG_LEVEL_ERROR, false, 'syncinclude');
                         }
                     }
                     $obj->$key = $elements[$child . ' attr'][$key];
@@ -335,8 +340,8 @@ function buildAttributes(&$arr, $cExclude_arr = [])
 }
 
 /**
- * @param string $zip
- * @param object $xml_obj
+ * @param string       $zip
+ * @param object|array $xml_obj
  */
 function zipRedirect($zip, $xml_obj)
 {
@@ -428,7 +433,7 @@ function mapArray($xml, $name, $map)
             mapAttributes($obj, $xml[$name . ' attr']);
             mappe($obj, $xml[$name], $map);
 
-            return array($obj);
+            return [$obj];
         }
         if (count($xml[$name]) > 2) {
             $cnt = count($xml[$name]) / 2;
@@ -564,7 +569,9 @@ function versendeVerfuegbarkeitsbenachrichtigung($oArtikel)
                 $obj->tartikel->cName                  = StringHandler::htmlentitydecode($obj->tartikel->cName);
                 $mail                                  = new stdClass();
                 $mail->toEmail                         = $Benachrichtigung->cMail;
-                $mail->toName                          = ($Benachrichtigung->cVorname || $Benachrichtigung->cNachname) ? ($Benachrichtigung->cVorname . ' ' . $Benachrichtigung->cNachname) : $Benachrichtigung->cMail;
+                $mail->toName                          = ($Benachrichtigung->cVorname || $Benachrichtigung->cNachname) ?
+                    ($Benachrichtigung->cVorname . ' ' . $Benachrichtigung->cNachname)
+                    : $Benachrichtigung->cMail;
                 $obj->mail                             = $mail;
                 sendeMail(MAILTEMPLATE_PRODUKT_WIEDER_VERFUEGBAR, $obj);
 
@@ -658,10 +665,10 @@ function convert($size)
 function translateError($cMessage)
 {
     if (preg_match('/Maximum execution time of (\d+) second.? exceeded/', $cMessage, $cMatch_arr)) {
-        $nSeconds = intval($cMatch_arr[1]);
+        $nSeconds = (int)$cMatch_arr[1];
         $cMessage = utf8_decode("Maximale Ausführungszeit von $nSeconds Sekunden überschritten");
     } elseif (preg_match("/Allowed memory size of (\d+) bytes exhausted/", $cMessage, $cMatch_arr)) {
-        $nLimit   = intval($cMatch_arr[1]);
+        $nLimit   = (int)$cMatch_arr[1];
         $cMessage = utf8_decode("Erlaubte Speichergröße von $nLimit Bytes erschöpft");
     }
 
@@ -832,7 +839,7 @@ function getSeoFromDB($kKey, $cKey, $kSprache = null, $cAssoc = null)
             $oSeo_arr = Shop::DB()->selectAll('tseo', ['kKey', 'cKey'], [$kKey, $cKey]);
             if (is_array($oSeo_arr) && count($oSeo_arr) > 0) {
                 if ($cAssoc !== null && strlen($cAssoc) > 0) {
-                    $oAssoc_arr = array();
+                    $oAssoc_arr = [];
                     foreach ($oSeo_arr as $oSeo) {
                         if (isset($oSeo->{$cAssoc})) {
                             $oAssoc_arr[$oSeo->{$cAssoc}] = $oSeo;
@@ -921,7 +928,7 @@ function handleNewPriceFormat($xml)
                     LEFT JOIN tpreisdetail AS d ON d.kPreis = p.kPreis
                     WHERE p.kArtikel = {$kArtikel}", 3
             );
-            $customerGroupHandled = array();
+            $customerGroupHandled = [];
             foreach ($preise as $i => $preis) {
                 $kPreis = handlePriceFormat($preis->kArtikel, $preis->kKundenGruppe, $preis->kKunde);
                 if (!empty($xml['tpreis'][$i])) {

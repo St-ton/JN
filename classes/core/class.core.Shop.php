@@ -805,7 +805,6 @@ final class Shop
                 $cSEOMerkmal_arr = explode(SEP_MERKMAL, $seo);
                 $seo             = $cSEOMerkmal_arr[0];
                 $oHersteller_arr = explode(SEP_HST, $seo);
-                $nMerkmalZaehler = 0;
                 if (is_array($oHersteller_arr) && count($oHersteller_arr) > 1) {
                     $seo    = $oHersteller_arr[0];
                     $hstseo = $oHersteller_arr[1];
@@ -832,7 +831,7 @@ final class Shop
                 if (strlen($katseo) > 0) {
                     $oSeo = self::DB()->select('tseo', 'cKey', 'kKategorie', 'cSeo', $katseo);
                     if (isset($oSeo->kKey) && strcasecmp($oSeo->cSeo, $katseo) === 0) {
-                        self::$kKategorieFilter = $oSeo->kKey;
+                        self::$kKategorieFilter = (int)$oSeo->kKey;
                     } else {
                         self::$bKatFilterNotFound = true;
                     }
@@ -841,7 +840,7 @@ final class Shop
                 if (strlen($hstseo) > 0) {
                     $oSeo = self::DB()->select('tseo', 'cKey', 'kHersteller', 'cSeo', $hstseo);
                     if (isset($oSeo->kKey) && strcasecmp($oSeo->cSeo, $hstseo) === 0) {
-                        self::$kHerstellerFilter = $oSeo->kKey;
+                        self::$kHerstellerFilter = (int)$oSeo->kKey;
                     } else {
                         self::$bHerstellerFilterNotFound = true;
                     }
@@ -853,8 +852,8 @@ final class Shop
                         if (strlen($cSEOMerkmal) > 0 && $i > 0) {
                             $oSeo = self::DB()->select('tseo', 'cKey', 'kMerkmalWert', 'cSeo', $cSEOMerkmal);
                             if (isset($oSeo->kKey) && strcasecmp($oSeo->cSeo, $cSEOMerkmal) === 0) {
-                                //hänge an GET, damit baueMerkmalFilter die Merkmalfilter setzen kann im NAvifilter.
-                                $_GET['mf' . $nMerkmalZaehler] = $oSeo->kKey;
+                                //haenge an GET, damit baueMerkmalFilter die Merkmalfilter setzen kann - @todo?
+                                $_GET['mf' . $nMerkmalZaehler] = (int)$oSeo->kKey;
                                 ++$nMerkmalZaehler;
                                 self::$bSEOMerkmalNotFound = false;
                             } else {
@@ -882,7 +881,7 @@ final class Shop
                 if (isset($oSeo->kKey) && strcasecmp($oSeo->cSeo, $seo) === 0) {
                     //canonical
                     self::$cCanonicalURL = self::getURL() . '/' . $oSeo->cSeo;
-
+                    $oSeo->kKey = (int)$oSeo->kKey;
                     switch ($oSeo->cKey) {
                         case 'kKategorie':
                             self::$kKategorie = $oSeo->kKey;

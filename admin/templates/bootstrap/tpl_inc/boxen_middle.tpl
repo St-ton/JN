@@ -72,7 +72,7 @@
                                                        name="sort[]" value="{$oBox->nSort}"
                                                        autocomplete="off" id="{$oBox->nSort}">
                                             </div>
-                                            <div class="col-xs-2 modify-wrap">
+                                            <div class="col-xs-2">
                                                 {if $nPage == 0}
                                                     {if $oBox->bAktiv == 0}
                                                         <a href="boxen.php?action=activate&position={$direction}&item={$oBox->kBox}&value=1&token={$smarty.session.jtl_token}"
@@ -133,7 +133,7 @@
                                                                name="sort[]" value="{$oContainerBox->nSort}"
                                                                autocomplete="off" id="{$oContainerBox->nSort}">
                                                     </div>
-                                                    <div class="col-xs-2 modify-wrap">
+                                                    <div class="col-xs-2">
                                                         {if $nPage == 0}
                                                             {if $oContainerBox->bAktiv == 0}
                                                                 <a href="boxen.php?action=activate&position={$direction}&item={$oContainerBox->kBox}&value=1&token={$smarty.session.jtl_token}"

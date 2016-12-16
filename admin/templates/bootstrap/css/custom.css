@@ -285,12 +285,6 @@ table .input-group {
     line-height: 34px;
 }
 
-.modify-wrap {
-    /*float: right;*/
-    /*text-align: right;*/
-    /*min-width: 105px;*/
-}
-
 tr.highlight {
     background-color: #f5f5f5;
 }
@@ -1121,10 +1115,6 @@ table tbody td div.sub {
 
 .boxSubName {
     padding-left: 40px;
-}
-
-.container-child {
-    /*margin-left: 20px;*/
 }
 
 #install-header-image {

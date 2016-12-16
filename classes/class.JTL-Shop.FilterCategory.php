@@ -20,6 +20,16 @@ class FilterCategory extends AbstractFilter implements IFilter
     public $isCustom = false;
 
     /**
+     * @var string
+     */
+    public $urlParam = 'k';
+
+    /**
+     * @var string
+     */
+    public $urlParamSEO = SEP_KAT;
+
+    /**
      * @param int $id
      * @return $this
      */

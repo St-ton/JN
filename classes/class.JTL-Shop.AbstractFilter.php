@@ -76,6 +76,11 @@ abstract class AbstractFilter implements IFilter
     protected $isInitialized = false;
 
     /**
+     * @var ''
+     */
+    private $className = '';
+
+    /**
      * @param int|array $value
      * @return $this
      */
@@ -239,6 +244,17 @@ abstract class AbstractFilter implements IFilter
      */
     public function getClassName()
     {
-        return get_class($this);
+        return $this->className;
+    }
+
+    /**
+     * @param string $className
+     * @return $this
+     */
+    public function setClassName($className)
+    {
+        $this->className = $className;
+
+        return $this;
     }
 }

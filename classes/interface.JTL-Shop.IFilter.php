@@ -176,4 +176,12 @@ interface IFilter
      * @return string
      */
     public function getClassName();
+
+    /**
+     * set the filter's class name
+     *
+     * @param string $className
+     * @return $this
+     */
+    public function setClassName($className);
 }

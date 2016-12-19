@@ -66,6 +66,7 @@ class ExtensionPoint
             $oHandle = null;
             $cClass  = ucfirst($oExtension->cClass);
             if (class_exists($cClass)) {
+                /** @var IExtensionPoint $oHandle */
                 $oHandle = new $cClass();
                 $oHandle->init($oExtension->kInitial);
             } else {

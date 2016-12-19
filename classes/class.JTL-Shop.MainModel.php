@@ -28,7 +28,7 @@ abstract class MainModel
     }
 
     /**
-     * @param in   $kKey
+     * @param int  $kKey
      * @param null $oObj
      * @param null $xOption
      */

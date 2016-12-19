@@ -3,6 +3,10 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+/**
+ * Class MigrationTableTrait
+ */
 trait MigrationTableTrait
 {
     /**
@@ -11,7 +15,7 @@ trait MigrationTableTrait
     public function getLocaleSections()
     {
         $result = [];
-        $items  = $this->fetchAll("SELECT kSprachsektion as id, cName as name FROM tsprachsektion");
+        $items  = $this->fetchAll("SELECT kSprachsektion AS id, cName AS name FROM tsprachsektion");
         foreach ($items as $item) {
             $result[$item->name] = $item->id;
         }
@@ -25,7 +29,7 @@ trait MigrationTableTrait
     public function getLocales()
     {
         $result = [];
-        $items  = $this->fetchAll("SELECT kSprachISO as id, cISO as name FROM tsprachiso");
+        $items  = $this->fetchAll("SELECT kSprachISO AS id, cISO AS name FROM tsprachiso");
         foreach ($items as $item) {
             $result[$item->name] = $item->id;
         }
@@ -68,14 +72,14 @@ trait MigrationTableTrait
             throw new Exception("section name '{$section}' not found");
         }
 
-        $this->execute("insert into tsprachwerte set
+        $this->execute("INSERT INTO tsprachwerte SET
             kSprachISO = '{$locales[$locale]}', 
             kSprachsektion = '{$sections[$section]}', 
             cName = '{$key}', 
             cWert = '{$value}', 
             cStandard = '{$value}', 
             bSystem = '{$system}' 
-            on duplicate key update cWert=IF(cWert = cStandard, VALUES(cStandard), cWert), cStandard=VALUES(cStandard)");
+            ON DUPLICATE KEY UPDATE cWert=IF(cWert = cStandard, VALUES(cStandard), cWert), cStandard=VALUES(cStandard)");
     }
 
     /**
@@ -113,14 +117,14 @@ trait MigrationTableTrait
     }
 
     /**
-     * @param string $configName internal config name
-     * @param string $configValue default config value
-     * @param int $configSection config section
-     * @param string $externalName displayed config name
-     * @param string $inputType config input type (set to NULL and set additionalProperties->cConf to "N" for section header)
-     * @param int $sort internal sorting number
-     * @param array|null $additionalProperties
-     * @param bool $overwrite force overwrite of already existing config
+     * @param string      $configName internal config name
+     * @param string      $configValue default config value
+     * @param int         $configSection config section
+     * @param string      $externalName displayed config name
+     * @param string      $inputType config input type (set to NULL and set additionalProperties->cConf to "N" for section header)
+     * @param int         $sort internal sorting number
+     * @param object|null $additionalProperties
+     * @param bool        $overwrite force overwrite of already existing config
      * @throws Exception
      */
     public function setConfig(
@@ -155,15 +159,15 @@ trait MigrationTableTrait
         ) {
             throw new Exception('additionalProperties->inputOptions has to be provided if inputType is "' . $inputType . '"');
         } elseif ($overwrite !== true) {
-            $count = $this->fetchOne("SELECT COUNT(*) as count FROM teinstellungen WHERE cName='{$configName}'");
+            $count = $this->fetchOne("SELECT COUNT(*) AS count FROM teinstellungen WHERE cName='{$configName}'");
             if ($count->count != 0) {
                 throw new Exception('another entry already present in teinstellungen and overwrite is disabled');
             }
-            $count = $this->fetchOne("SELECT COUNT(*) as count FROM teinstellungenconf WHERE cWertName='{$configName}' OR kEinstellungenConf={$kEinstellungenConf}");
+            $count = $this->fetchOne("SELECT COUNT(*) AS count FROM teinstellungenconf WHERE cWertName='{$configName}' OR kEinstellungenConf={$kEinstellungenConf}");
             if ($count->count != 0) {
                 throw new Exception('another entry already present in teinstellungenconf and overwrite is disabled');
             }
-            $count = $this->fetchOne("SELECT COUNT(*) as count FROM teinstellungenconfwerte WHERE kEinstellungenConf={$kEinstellungenConf}");
+            $count = $this->fetchOne("SELECT COUNT(*) AS count FROM teinstellungenconfwerte WHERE kEinstellungenConf={$kEinstellungenConf}");
             if ($count->count != 0) {
                 throw new Exception('another entry already present in teinstellungenconfwerte and overwrite is disabled');
             }

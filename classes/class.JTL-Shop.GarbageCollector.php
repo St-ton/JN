@@ -20,68 +20,68 @@ class GarbageCollector
     public function __construct()
     {
         // cInterval = Days
-        $this->cTable_arr = array(
-            'tbesucherarchiv'                  => array(
+        $this->cTable_arr = [
+            'tbesucherarchiv'                  => [
                 'cDate'     => 'dZeit',
-                'cSubTable' => array(
+                'cSubTable' => [
                     'tbesuchersuchausdruecke' => 'kBesucher'
-                ),
+                ],
                 'cInterval' => '180'
-            ),
-            'tcheckboxlogging'                 => array(
+            ],
+            'tcheckboxlogging'                 => [
                 'cDate'     => 'dErstellt',
                 'cSubTable' => null,
                 'cInterval' => '365'
-            ),
-            'texportformatqueuebearbeitet'     => array(
+            ],
+            'texportformatqueuebearbeitet'     => [
                 'cDate'     => 'dZuletztGelaufen',
                 'cSubTable' => null,
                 'cInterval' => '60'
-            ),
-            'tkampagnevorgang'                 => array(
+            ],
+            'tkampagnevorgang'                 => [
                 'cDate'     => 'dErstellt',
                 'cSubTable' => null,
                 'cInterval' => '365'
-            ),
-            'tpreisverlauf'                    => array(
+            ],
+            'tpreisverlauf'                    => [
                 'cDate'     => 'dDate',
                 'cSubTable' => null,
                 'cInterval' => '120'
-            ),
-            'tredirectreferer'                 => array(
+            ],
+            'tredirectreferer'                 => [
                 'cDate'     => 'dDate',
                 'cSubTable' => null,
                 'cInterval' => '60'
-            ),
-            'tsitemapreport'                   => array(
+            ],
+            'tsitemapreport'                   => [
                 'cDate'     => 'dErstellt',
-                'cSubTable' => array(
+                'cSubTable' => [
                     'tsitemapreportfile' => 'kSitemapReport'
-                ),
+                ],
                 'cInterval' => '120'
-            ),
-            'tsuchanfrage'                     => array(
+            ],
+            'tsuchanfrage'                     => [
                 'cDate'     => 'dZuletztGesucht',
-                'cSubTable' => array(
+                'cSubTable' => [
                     'tsuchanfrageerfolglos' => 'cSuche',
                     'tsuchanfrageblacklist' => 'cSuche',
                     'tsuchanfragencache'    => 'cSuche'
-                ),
+                ],
                 'cInterval' => '120'
-            ),
-            'tsuchcache'                       => array(
+            ],
+            'tsuchcache'                       => [
                 'cDate'     => 'dGueltigBis',
-                'cSubTable' => array(
+                'cSubTable' => [
                     'tsuchcachetreffer' => 'kSuchCache'
-                ),
+                ],
                 'cInterval' => '30'
-            ),
-            'tverfuegbarkeitsbenachrichtigung' => array(
+            ],
+            'tverfuegbarkeitsbenachrichtigung' => [
                 'cDate'     => 'dBenachrichtigtAm',
                 'cSubTable' => null,
                 'cInterval' => '90'
-            )
-        );
+            ]
+        ];
     }
 
     /**

@@ -161,12 +161,12 @@ class Redirect
      */
     public function doImport($cFile)
     {
-        $cError_arr = array();
+        $cError_arr = [];
         if (file_exists($cFile)) {
             $handle = fopen($cFile, 'r');
             if ($handle) {
                 $oSprache     = gibStandardsprache(true);
-                $cMapping_arr = array();
+                $cMapping_arr = [];
                 $i            = 0;
                 while (($csv = fgetcsv($handle, 30000, ';')) !== false) {
                     if ($i > 0) {
@@ -208,9 +208,7 @@ class Redirect
         if (isset($xParse_arr['query'])) {
             $cFromUrl .= '?' . $xParse_arr['query'];
         }
-        $options = array(
-            'cFromUrl' => $cFromUrl
-        );
+        $options = ['cFromUrl' => $cFromUrl];
         $options['cArtNr'] = null;
         if (isset($csv[$cMapping_arr['articlenumber']])) {
             $options['cArtNr'] = $csv[$cMapping_arr['articlenumber']];
@@ -278,12 +276,9 @@ class Redirect
      */
     public function readHeadRow($cRow_arr)
     {
-        $cMapping_arr = array(
-            'sourceurl' => null
-        );
+        $cMapping_arr = ['sourceurl' => null];
         // Must not be present in the file
-        $cOption_arr = array('articlenumber', 'destinyurl', 'languageiso');
-
+        $cOption_arr = ['articlenumber', 'destinyurl', 'languageiso'];
         if (is_array($cRow_arr) && count($cRow_arr) > 0) {
             $cMember_arr = array_keys($cMapping_arr);
             foreach ($cRow_arr as $i => $cRow) {
@@ -354,7 +349,7 @@ class Redirect
                 }
                 $oItem = $this->find($cUrl);
                 if (!is_object($oItem)) {
-                    $conf = Shop::getConfig(array(CONF_GLOBAL));
+                    $conf = Shop::getConfig([CONF_GLOBAL]);
                     if (!isset($_GET['notrack']) && (!isset($conf['global']['redirect_save_404']) || $conf['global']['redirect_save_404'] === 'Y')) {
                         $oItem           = new self();
                         $oItem->cFromUrl = $cUrl;
@@ -407,7 +402,7 @@ class Redirect
     public function isValid($cUrl)
     {
         $cPath_arr       = pathinfo($cUrl);
-        $cInvalidExt_arr = array(
+        $cInvalidExt_arr = [
             'jpg',
             'gif',
             'bmp',
@@ -415,8 +410,7 @@ class Redirect
             'ico',
             'txt',
             'png'
-        );
-
+        ];
         if (isset($cPath_arr['extension']) && strlen($cPath_arr['extension']) > 0) {
             $cExt = strtolower($cPath_arr['extension']);
             if (in_array($cExt, $cInvalidExt_arr)) {
@@ -495,7 +489,7 @@ class Redirect
      */
     public function getList($nStart, $nLimit, $bUmgeleiteteUrls, $cSortierFeld, $cSortierung, $cSuchbegriff, $cMitVerweis = true)
     {
-        $cWhereSQL_arr = array();
+        $cWhereSQL_arr = [];
         $cOrderSQL     = $cSortierFeld . ' ' . $cSortierung;
         $cLimitSQL     = (int)$nStart . ',' . (int)$nLimit;
 

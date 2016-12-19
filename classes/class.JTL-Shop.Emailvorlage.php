@@ -129,7 +129,7 @@ class Emailvorlage
             $this->oEinstellung_arr = Shop::DB()->selectAll($cTableSetting, 'kEmailvorlage', $this->kEmailvorlage);
             // Assoc bauen
             if (isset($Emailvorlage) && is_array($Emailvorlage->oEinstellung_arr) && count($this->oEinstellung_arr) > 0) {
-                $this->oEinstellungAssoc_arr = array();
+                $this->oEinstellungAssoc_arr = [];
                 foreach ($this->oEinstellung_arr as $oEinstellung) {
                     $this->oEinstellungAssoc_arr[$oEinstellung->cKey] = $oEinstellung->cValue;
                 }

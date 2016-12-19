@@ -105,7 +105,7 @@ class MerkmalWert
                 $this->$cMember = $oMerkmalWert->$cMember;
             }
             $this->cURL = baueURL($this, URLART_MERKMAL);
-            executeHook(HOOK_MERKMALWERT_CLASS_LOADFROMDB, array('oMerkmalWert' => &$this));
+            executeHook(HOOK_MERKMALWERT_CLASS_LOADFROMDB, ['oMerkmalWert' => &$this]);
         }
 
         $this->cBildpfadKlein       = BILD_KEIN_MERKMALWERTBILD_VORHANDEN;
@@ -132,7 +132,7 @@ class MerkmalWert
      */
     public function holeAlleMerkmalWerte($kMerkmal)
     {
-        $oMerkmalWert_arr = array();
+        $oMerkmalWert_arr = [];
         if ($kMerkmal > 0) {
             $kSprache = Shop::$kSprache;
             if (!$kSprache) {

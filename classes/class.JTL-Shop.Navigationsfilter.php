@@ -577,7 +577,7 @@ class Navigationsfilter
      * @param string $filterClassName
      * @return IFilter|null
      */
-    public function getFilerByClassName($filterClassName)
+    public function getFilterByClassName($filterClassName)
     {
         foreach ($this->filters as $filter) {
             if ($filter->getClassName() === $filterClassName) {

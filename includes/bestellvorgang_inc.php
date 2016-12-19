@@ -2225,8 +2225,8 @@ function kuponAnnehmen($Kupon)
         }
     }
 
+    $postyp = C_WARENKORBPOS_TYP_KUPON;
     if ($Kupon->cKuponTyp === 'standard') {
-        $postyp = C_WARENKORBPOS_TYP_KUPON;
         $_SESSION['Warenkorb']->loescheSpezialPos(C_WARENKORBPOS_TYP_KUPON);
         $_SESSION['Kupon'] = $Kupon;
         if (Jtllog::doLog(JTLLOG_LEVEL_NOTICE)) {
@@ -2242,19 +2242,19 @@ function kuponAnnehmen($Kupon)
             Jtllog::writeLog('Der Neukundenkupon' . print_r($Kupon, true) . ' wurde genutzt.', JTLLOG_LEVEL_NOTICE, false, 'kKupon', $Kupon->kKupon);
         }
     } elseif ($Kupon->cKuponTyp === 'versandkupon') {
-        $postyp = C_WARENKORBPOS_TYP_KUPON;
         $_SESSION['Warenkorb']->loescheSpezialPos(C_WARENKORBPOS_TYP_KUPON);
         // Darf nicht gelöscht werden sondern den Preis nur auf 0 setzen!
         //$_SESSION['Warenkorb']->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS);
         $_SESSION['Warenkorb']->setzeVersandfreiKupon();
-        $_SESSION['VersandKupon']          = $Kupon;
-        $maxPreisKupon                     = 0;
-        $Spezialpos->cName[$Sprache->cISO] = $Kupon->cName;
+        $_SESSION['VersandKupon'] = $Kupon;
+        $maxPreisKupon            = 0;
+        $Spezialpos->cName[$_SESSION['kSprachISO']] = $Kupon->cName;
         $_SESSION['Warenkorb']->erstelleSpezialPos($Spezialpos->cName, 1, $maxPreisKupon * -1, $Kupon->kSteuerklasse, $postyp);
         if (Jtllog::doLog(JTLLOG_LEVEL_NOTICE)) {
             Jtllog::writeLog('Der Versandkupon ' . print_r($Kupon, true) . ' wurde genutzt.', JTLLOG_LEVEL_NOTICE, false, 'kKupon', $Kupon->kKupon);
         }
     }
+    // Pos erstellen für alle ausser Versandkupon (schon erstellt; hat keinen cWertTyp), $postyp bereits gesetzt
     if ($Kupon->cWertTyp === 'prozent' && $Kupon->nGanzenWKRabattieren != 0) { // %-Kupon + Ganzen WK rabattieren
         $_SESSION['Warenkorb']->erstelleSpezialPos($Spezialpos->cName, 1, $maxPreisKupon * -1, $Kupon->kSteuerklasse, $postyp);
     } elseif ($Kupon->cWertTyp === 'prozent' && $Kupon->nGanzenWKRabattieren == 0 && $Kupon->cKuponTyp !== 'neukundenkupon') { // %-Kupon + nicht Ganzen WK rabattieren

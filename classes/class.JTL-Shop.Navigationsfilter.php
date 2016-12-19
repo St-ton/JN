@@ -976,85 +976,92 @@ class Navigationsfilter
     public function getActiveFilters($byType = false)
     {
         $filters = ($byType !== false)
-            ? ['kf' => [], 'mm' => [], 'ssf' => [], 'tf' => [], 'sf' => [], 'hf' => [], 'bf' => [], 'custom' => []]
+            ? ['kf' => [], 'mm' => [], 'ssf' => [], 'tf' => [], 'sf' => [], 'hf' => [], 'bf' => [], 'custom' => [], 'misc' => []]
             : [];
-        if ($this->KategorieFilter->isInitialized()) {
-            if ($byType) {
-                $filters['kf'][] = $this->KategorieFilter;
-            } else {
-                $filters[] = $this->KategorieFilter;
-            }
-        }
-        if ($this->HerstellerFilter->isInitialized()) {
-            if ($byType) {
-                $filters['hf'][] = $this->HerstellerFilter;
-            } else {
-                $filters[] = $this->HerstellerFilter;
-            }
-        }
-        if ($this->BewertungFilter->isInitialized()) {
-            if ($byType) {
-                $filters['bf'][] = $this->BewertungFilter;
-            } else {
-                $filters[] = $this->BewertungFilter;
-            }
-        }
-        if ($this->PreisspannenFilter->isInitialized()) {
-            if ($byType) {
-                $filters['pf'][] = $this->PreisspannenFilter;
-            } else {
-                $filters[] = $this->PreisspannenFilter;
-            }
-        }
-        foreach ($this->MerkmalFilter as $filter) {
-            if ($filter->isInitialized()) {
+        foreach ($this->activeFilters as $activeFilter) {
+            //get custom filters
+            if ($activeFilter->isCustom()) {
                 if ($byType) {
-                    $filters['mm'][] = $filter;
+                    $filters['custom'][] = $activeFilter;
                 } else {
-                    $filters[] = $filter;
+                    $filters[] = $activeFilter;
                 }
-            }
-        }
-//        foreach ($this->SuchspecialFilter as $filter) {
-//            if ($filter->isInitialized()) {
-//                if ($byType) {
-//                    $filters['ssf'][] = $filter;
-//                } else {
-//                    $filters[] = $filter;
-//                }
-//            }
-//        }
-        if ($this->SuchspecialFilter->isInitialized()) {
-            if ($byType) {
-                $filters['ssf'][] = $this->SuchspecialFilter;
             } else {
-                $filters[] = $this->SuchspecialFilter;
-            }
-        }
-        foreach ($this->TagFilter as $filter) {
-            if ($filter->isInitialized()) {
-                if ($byType) {
-                    $filters['tf'][] = $filter;
-                } else {
-                    $filters[] = $filter;
+                //get build-in filters
+                $found = false;
+                if ($this->KategorieFilter->isInitialized() && $activeFilter === $this->KategorieFilter) {
+                    $found = true;
+                    if ($byType) {
+                        $filters['kf'][] = $this->KategorieFilter;
+                    } else {
+                        $filters[] = $this->KategorieFilter;
+                    }
+                } elseif ($this->HerstellerFilter->isInitialized() && $activeFilter === $this->KategorieFilter) {
+                    $found = true;
+                    if ($byType) {
+                        $filters['hf'][] = $this->HerstellerFilter;
+                    } else {
+                        $filters[] = $this->HerstellerFilter;
+                    }
+                } elseif ($this->BewertungFilter->isInitialized() && $activeFilter === $this->KategorieFilter) {
+                    $found = true;
+                    if ($byType) {
+                        $filters['bf'][] = $this->BewertungFilter;
+                    } else {
+                        $filters[] = $this->BewertungFilter;
+                    }
+                } elseif ($this->PreisspannenFilter->isInitialized() && $activeFilter === $this->KategorieFilter) {
+                    $found = true;
+                    if ($byType) {
+                        $filters['pf'][] = $this->PreisspannenFilter;
+                    } else {
+                        $filters[] = $this->PreisspannenFilter;
+                    }
+                } elseif ($this->SuchspecialFilter->isInitialized() && $activeFilter === $this->KategorieFilter) {
+                    $found = true;
+                    if ($byType) {
+                        $filters['ssf'][] = $this->SuchspecialFilter;
+                    } else {
+                        $filters[] = $this->SuchspecialFilter;
+                    }
                 }
-            }
-        }
-        foreach ($this->SuchFilter as $filter) {
-            if ($filter->isInitialized()) {
-                if ($byType) {
-                    $filters['sf'][] = $filter;
-                } else {
-                    $filters[] = $filter;
+                foreach ($this->MerkmalFilter as $filter) {
+                    if ($filter->isInitialized() && $activeFilter === $filter) {
+                        $found = true;
+                        if ($byType) {
+                            $filters['mm'][] = $filter;
+                        } else {
+                            $filters[] = $filter;
+                        }
+                    }
                 }
-            }
-        }
-        foreach ($this->activeFilters as $filter) {
-            if ($filter->isCustom()) {
-                if ($byType) {
-                    $filters['custom'][] = $filter;
-                } else {
-                    $filters[] = $filter;
+                foreach ($this->TagFilter as $filter) {
+                    if ($filter->isInitialized() && $activeFilter === $filter) {
+                        $found = true;
+                        if ($byType) {
+                            $filters['tf'][] = $filter;
+                        } else {
+                            $filters[] = $filter;
+                        }
+                    }
+                }
+                foreach ($this->SuchFilter as $filter) {
+                    if ($filter->isInitialized() && $activeFilter === $filter) {
+                        $found = true;
+                        if ($byType) {
+                            $filters['sf'][] = $filter;
+                        } else {
+                            $filters[] = $filter;
+                        }
+                    }
+                }
+                //get built-in filters that were manually set
+                if ($found === false) {
+                    if ($byType) {
+                        $filters['misc'][] = $activeFilter;
+                    } else {
+                        $filters[] = $activeFilter;
+                    }
                 }
             }
         }
@@ -1080,14 +1087,13 @@ class Navigationsfilter
         if (!empty($stateCondition)) {
             $data->conditions[] = $stateCondition;
         }
-
         foreach ($this->getActiveFilters(true) as $type => $filter) {
             $count = count($filter);
             if ($count > 1) {
                 $singleConditions = [];
                 /** @var AbstractFilter $item */
                 foreach ($filter as $idx => $item) {
-                    if ($ignore === null || get_class($item) !== $ignore) {
+                    if ($ignore === null || $item->getClassName() !== $ignore) {
                         if ($idx === 0) {
                             $itemJoin = $item->getSQLJoin();
                             if (is_array($itemJoin)) {
@@ -1110,7 +1116,7 @@ class Navigationsfilter
                 }
             } elseif ($count === 1) {
                 /** @var array(AbstractFilter) $filter */
-                if ($ignore === null || get_class($filter[0]) !== $ignore) {
+                if ($ignore === null || $filter[0]->getClassName() !== $ignore) {
                     $itemJoin = $filter[0]->getSQLJoin();
                     if (is_array($itemJoin)) {
                         foreach ($itemJoin as $filterJoin) {

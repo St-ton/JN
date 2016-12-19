@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -530,7 +529,7 @@ class Bestellung
                     }
                     // Downloads
                     if (class_exists('Download')) {
-                        $this->oDownload_arr = Download::getDownloads(array('kBestellung' => $this->kBestellung), $kSprache);
+                        $this->oDownload_arr = Download::getDownloads(['kBestellung' => $this->kBestellung], $kSprache);
                     }
                     // Uploads
                     if (class_exists('Upload')) {
@@ -646,7 +645,7 @@ class Bestellung
                 /** @var Lieferscheinpos $oLieferscheinPos */
                 foreach ($oLieferschein->oLieferscheinPos_arr as &$oLieferscheinPos) {
                     foreach ($this->Positionen as &$oPosition) {
-                        if (in_array($oPosition->nPosTyp, array(C_WARENKORBPOS_TYP_ARTIKEL, C_WARENKORBPOS_TYP_GRATISGESCHENK))) {
+                        if (in_array($oPosition->nPosTyp, [C_WARENKORBPOS_TYP_ARTIKEL, C_WARENKORBPOS_TYP_GRATISGESCHENK])) {
                             if ($oLieferscheinPos->getBestellPos() == $oPosition->kBestellpos) {
                                 $oPosition->kLieferschein_arr[] = $oLieferschein->getLieferschein();
                                 $oPosition->nAusgeliefert       = $oLieferscheinPos->getAnzahl();

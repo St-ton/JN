@@ -26,7 +26,7 @@ class Session
     private static $_instance;
 
     /**
-     * @var null|SessionHandler
+     * @var SessionHandlerInterface
      */
     protected static $_handler = null;
 
@@ -46,16 +46,16 @@ class Session
         if (!isset($sessionName)) {
             $sessionName = self::$_sessionName;
         }
-        
         if (self::$_sessionName !== $sessionName) {
             $force = true;
         }
-
         if ($force === true) {
             return new self($start, $sessionName);
         }
 
-        return (self::$_instance === null) ? new self($start, $sessionName) : self::$_instance;
+        return (self::$_instance === null)
+            ? new self($start, $sessionName)
+            : self::$_instance;
     }
 
     /**
@@ -84,7 +84,7 @@ class Session
             } else {
                 self::$_handler = new \JTL\core\SessionHandler();
             }
-            self::$_storage = new SessionStorage(self::$_handler, array(), $start);
+            self::$_storage = new SessionStorage(self::$_handler, [], $start);
             $this->setStandardSessionVars();
         } else {
             if ($saveBotSession === 1 || $saveBotSession === 2) {
@@ -117,7 +117,9 @@ class Session
     public static function getIsCrawler($userAgent)
     {
         return preg_match(
-            '/Google|ApacheBench|sqlmap|loader.io|bot|Rambler|Yahoo|AbachoBOT|accoona|spider|AcioRobot|ASPSeek|CocoCrawler|Dumbot|FAST-WebCrawler|GeonaBot|Gigabot|Lycos|alexa|AltaVista|IDBot|Scrubby/', $userAgent
+            '/Google|ApacheBench|sqlmap|loader.io|bot|Rambler|Yahoo|AbachoBOT|accoona' .
+            '|spider|AcioRobot|ASPSeek|CocoCrawler|Dumbot|FAST-WebCrawler|GeonaBot' .
+            '|Gigabot|Lycos|alexa|AltaVista|IDBot|Scrubby/', $userAgent
         ) > 0;
     }
 
@@ -151,14 +153,18 @@ class Session
         $globalsAktualisieren = true;
         $updateLanguage       = false;
         Shop::Lang()->autoload();
-        $_SESSION['FremdParameter'] = array();
+        $_SESSION['FremdParameter'] = [];
 
         if (!isset($_SESSION['Warenkorb'])) {
             $_SESSION['Warenkorb'] = new Warenkorb();
         }
         if (isset($_SESSION['Globals_TS'])) {
             $globalsAktualisieren = false;
-            $ts                   = Shop::DB()->query("SELECT dLetzteAenderung FROM tglobals WHERE dLetzteAenderung > '" . $_SESSION['Globals_TS'] . "'", 1);
+            $ts                   = Shop::DB()->query("
+                  SELECT dLetzteAenderung 
+                      FROM tglobals 
+                      WHERE dLetzteAenderung > '" . $_SESSION['Globals_TS'] . "'", 1
+            );
             if (isset($ts->dLetzteAenderung)) {
                 $_SESSION['Globals_TS'] = $ts->dLetzteAenderung;
                 $globalsAktualisieren   = true;
@@ -182,9 +188,9 @@ class Session
             unset($_SESSION['cTemplate']);
             unset($_SESSION['template']);
             unset($_SESSION['oKategorie_arr_new']);
-            $_SESSION['oKategorie_arr']                   = array();
-            $_SESSION['kKategorieVonUnterkategorien_arr'] = array();
-            $_SESSION['ks']                               = array();
+            $_SESSION['oKategorie_arr']                   = [];
+            $_SESSION['kKategorieVonUnterkategorien_arr'] = [];
+            $_SESSION['ks']                               = [];
             $_SESSION['Waehrungen']                       = Shop::DB()->query("SELECT * FROM twaehrung", 2);
             $_SESSION['Sprachen']                         = Sprache::getInstance(false)->gibInstallierteSprachen();
             if (!isset($_SESSION['jtl_token'])) {
@@ -192,7 +198,7 @@ class Session
             }
             // Sprache anhand der Browsereinstellung ermitteln
             $cLangDefault = '';
-            $cAllowed_arr = array();
+            $cAllowed_arr = [];
             foreach ($_SESSION['Sprachen'] as $oSprache) {
                 $cISO              = StringHandler::convertISO2ISO639($oSprache->cISO);
                 $oSprache->cISO639 = $cISO;
@@ -241,7 +247,7 @@ class Session
                 $_SESSION['Kundengruppe']                             = Kundengruppe::getDefault();
                 $_SESSION['Kundengruppe']->darfPreiseSehen            = 1;
                 $_SESSION['Kundengruppe']->darfArtikelKategorienSehen = 1;
-                $conf                                                 = Shop::getSettings(array(CONF_GLOBAL));
+                $conf                                                 = Shop::getSettings([CONF_GLOBAL]);
                 if ($_SESSION['Kundengruppe']->cStandard === 'Y' && $conf['global']['global_sichtbarkeit'] == 2) {
                     $_SESSION['Kundengruppe']->darfPreiseSehen = 0;
                 }
@@ -251,13 +257,20 @@ class Session
                 }
                 if (isset($_SESSION['Kundengruppe']->kKundengruppe) && $_SESSION['Kundengruppe']->kKundengruppe &&
                     isset($_SESSION['kSprache']) && $_SESSION['kSprache'] > 0) {
-                    $oKundengruppeSprache = Shop::DB()->select('tkundengruppensprache', 'kKundengruppe', (int)$_SESSION['Kundengruppe']->kKundengruppe, 'kSprache', (int)$_SESSION['kSprache']);
+                    $oKundengruppeSprache = Shop::DB()->select(
+                        'tkundengruppensprache',
+                        'kKundengruppe',
+                        (int)$_SESSION['Kundengruppe']->kKundengruppe,
+                        'kSprache',
+                        (int)$_SESSION['kSprache']
+                    );
                     if (isset($oKundengruppeSprache->cName)) {
                         $_SESSION['Kundengruppe']->cNameLocalized = $oKundengruppeSprache->cName;
                     }
                 }
             } elseif ($globalsAktualisieren && $updateLanguage) {
                 // Kundensprache ändern, wenn im eingeloggten Zustand die Sprache geändert wird
+                /** @var array('Kunde' => Kunde) $_SESSION */
                 $_SESSION['Kunde']->kSprache = $_SESSION['kSprache'];
                 $_SESSION['Kunde']->updateInDB();
             }
@@ -300,7 +313,9 @@ class Session
         Kampagne::getAvailable();
         if (!isset($_SESSION['cISOSprache'])) {
             session_destroy();
-            die(utf8_decode('<h1>Ihr Shop wurde installiert. Lesen Sie in unserem Guide <a href="https://guide.jtl-software.de/jtl/JTL-Shop:Installation:Erste_Schritte#Einrichtung_und_Grundkonfiguration">mehr zu ersten Schritten mit JTL-Shop, der Grundkonfiguration und dem erstem Abgleich mit JTL-Wawi</a>.</h1>'));
+            die(utf8_decode('<h1>Ihr Shop wurde installiert. Lesen Sie in unserem Guide ' .
+                '<a href="https://guide.jtl-software.de/jtl/JTL-Shop:Installation:Erste_Schritte#Einrichtung_und_Grundkonfiguration">' .
+                'mehr zu ersten Schritten mit JTL-Shop, der Grundkonfiguration und dem erstem Abgleich mit JTL-Wawi</a>.</h1>'));
         }
 
         //wurde kunde über wawi aktualisiert?
@@ -451,6 +466,7 @@ class Session
      */
     public function setCustomer($Kunde)
     {
+        /** @var array('Warenkorb' => Warenkorb) $_SESSION */
         $Kunde->angezeigtesLand                               = ISO2land($Kunde->cLand);
         $_SESSION['Kunde']                                    = $Kunde;
         $_SESSION['Kundengruppe']                             = Shop::DB()->select('tkundengruppe', 'kKundengruppe', (int)$Kunde->kKundengruppe);

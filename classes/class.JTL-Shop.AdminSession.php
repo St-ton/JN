@@ -44,17 +44,17 @@ class AdminSession
         if (ES_SESSIONS === 1) {
             // Sessions in DB speichern
             session_set_save_handler(
-                array(&$this, 'open'),
-                array(&$this, 'close'),
-                array(&$this, 'read'),
-                array(&$this, 'write'),
-                array(&$this, 'destroy'),
-                array(&$this, 'gc')
+                [&$this, 'open'],
+                [&$this, 'close'],
+                [&$this, 'read'],
+                [&$this, 'write'],
+                [&$this, 'destroy'],
+                [&$this, 'gc']
             );
             register_shutdown_function('session_write_close');
         }
 
-        $conf           = Shop::getConfig(array(CONF_GLOBAL));
+        $conf           = Shop::getConfig([CONF_GLOBAL]);
         $cookieDefaults = session_get_cookie_params();
         $set            = false;
         $lifetime       = (isset($cookieDefaults['lifetime'])) ? $cookieDefaults['lifetime'] : 0;

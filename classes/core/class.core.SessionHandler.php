@@ -71,7 +71,7 @@ class SessionHandler
         while (count($keys) > 1) {
             $key = array_shift($keys);
             if (!isset($array[$key]) || !is_array($array[$key])) {
-                $array[$key] = array();
+                $array[$key] = [];
             }
             $array = &$array[$key];
         }
@@ -90,7 +90,7 @@ class SessionHandler
     public function put($key, $value = null)
     {
         if (!is_array($key)) {
-            $key = array($key => $value);
+            $key = [$key => $value];
         }
         foreach ($key as $arrayKey => $arrayValue) {
             $this->set($arrayKey, $arrayValue);
@@ -106,7 +106,7 @@ class SessionHandler
      */
     public function push($key, $value)
     {
-        $array   = $this->get($key, array());
+        $array   = $this->get($key, []);
         $array[] = $value;
         $this->put($key, $array);
     }

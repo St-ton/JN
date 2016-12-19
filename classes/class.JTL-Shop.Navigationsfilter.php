@@ -133,7 +133,7 @@ class Navigationsfilter
     /**
      * @var int
      */
-    public $nSeite = 0;
+    public $nSeite = 1;
 
     /**
      * @var int
@@ -276,7 +276,7 @@ class Navigationsfilter
     }
 
     /**
-     * @return FilterManufacturer|FilterCategory|FilterAttribute|FilterSearch|FilterSearchSpecial|null
+     * @return FilterManufacturer|FilterCategory|FilterAttribute|FilterSearch|FilterSearchSpecial|FilterDummyState
      */
     public function getActiveState()
     {
@@ -299,7 +299,7 @@ class Navigationsfilter
             return $this->Suche;
         }
 
-        return null;
+        return new FilterDummyState();
     }
 
     /**
@@ -494,20 +494,22 @@ class Navigationsfilter
 
     /**
      * @param string $filterName
-     * @return $this
+     * @return IFilter
      * @throws Exception
      */
     public function registerFilterByClassName($filterName)
     {
+        $filter = null;
         if (class_exists($filterName)) {
             /** @var IFilter $filter */
             $filter = new $filterName($this->getLanguageID(), $this->getCustomerGroupID(), $this->getConfig());
+            $filter->setClassName($filterName);
             $this->filters[] = $filter;
         } else {
             throw new Exception('Cannot register filter class ' . $filterName);
         }
 
-        return $this;
+        return $filter;
     }
 
     /**
@@ -546,9 +548,10 @@ class Navigationsfilter
      * @param string $filterClassName
      * @return int|null
      */
-    public function getFilterValue($filterClassName) {
+    public function getFilterValue($filterClassName)
+    {
         foreach ($this->activeFilters as $filter) {
-            if ($filterClassName === get_class($filter)) {
+            if ($filterClassName === $filter->getClassName()) {
                 return $filter->getValue();
             }
         }
@@ -568,6 +571,29 @@ class Navigationsfilter
         }
 
         return false;
+    }
+
+    /**
+     * @param string $filterClassName
+     * @return IFilter|null
+     */
+    public function getFilerByClassName($filterClassName)
+    {
+        foreach ($this->filters as $filter) {
+            if ($filter->getClassName() === $filterClassName) {
+                return $filter;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @return IFilter[]
+     */
+    public function getAvailableFilters()
+    {
+        return $this->filters;
     }
 
     /**
@@ -852,7 +878,7 @@ class Navigationsfilter
     }
 
     /**
-     * @return stdClass|string
+     * @return array
      */
     public function getProductKeys()
     {
@@ -876,9 +902,10 @@ class Navigationsfilter
     }
 
     /**
+     * @param bool $forProductListing
      * @return stdClass
      */
-    public function getProducts()
+    public function getProducts($forProductListing = true)
     {
         $oSuchergebnisse                         = new stdClass();
         $oSuchergebnisse->Artikel                = new stdClass();
@@ -890,7 +917,6 @@ class Navigationsfilter
         $oArtikelOptionen->nArtikelAttribute     = 1;
         $oArtikelOptionen->nVariationKombiKinder = 1;
         $oArtikelOptionen->nWarenlager           = 1;
-
         $nArtikelProSeite = $this->getArticlesPerPageLimit();
         $nLimitN          = ($this->nSeite - 1) * $nArtikelProSeite;
         // 50 nach links und 50 nach rechts für Artikeldetails blättern rausholen
@@ -940,12 +966,12 @@ class Navigationsfilter
             $oSuchergebnisse->Seitenzahlen->maxSeite = $oSuchergebnisse->Seitenzahlen->MaxSeiten;
         }
 
-        return $oSuchergebnisse;
+        return ($forProductListing === true) ? $oSuchergebnisse : $oSuchergebnisse->Artikel->elemente;
     }
 
     /**
      * @param bool $byType
-     * @return array
+     * @return array|IFilter[]
      */
     public function getActiveFilters($byType = false)
     {
@@ -1145,7 +1171,7 @@ class Navigationsfilter
         $oSuchergebnisse->customFilters = [];
         foreach($this->filters as $filter) {
             $filterObject                     = new stdClass();
-            $filterObject->cClassname         = get_class($filter);
+            $filterObject->cClassname         = $filter->getClassName();
             $filterObject->cName              = $filter->getName();
             $filterObject->value              = $filter->getValue();
             $filterObject->filterOptions      = $filter->getOptions();
@@ -1683,7 +1709,7 @@ class Navigationsfilter
         }
         foreach ($this->getActiveFilters() as $filter) {
             if ($filter->isCustom()) {
-                $className = get_class($filter);
+                $className = $filter->getClassName();
                 if ((!isset($oZusatzFilter->FilterLoesen->Kategorie) || $oZusatzFilter->FilterLoesen->Kategorie !== true) && //cAlleKategorien
                     $oZusatzFilter !== null && //cNoFilter
                     !isset($oZusatzFilter->FilterLoesen->$className)
@@ -2296,7 +2322,7 @@ class Navigationsfilter
         $oZusatzFilter->FilterLoesen = new stdClass();
         foreach ($this->filters as $filter) {
             if ($filter->isInitialized() && $filter->isCustom()) {
-                $className       = (get_class($filter));
+                $className       = $filter->getClassName();
                 $idx             = 'cAlle' . $className;
                 $this->URL->$idx = [];
                 if ($filter->getType() === AbstractFilter::FILTER_TYPE_OR) {

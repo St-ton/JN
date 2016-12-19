@@ -172,6 +172,7 @@ abstract class AbstractFilter implements IFilter
         if ($languageID !== null && $customerGroupID !== null && $config !== null && $languages !== null) {
             $this->setData($languageID, $customerGroupID, $config, $languages);
         }
+        $this->setClassName(get_class($this));
     }
 
     /**

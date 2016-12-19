@@ -304,10 +304,10 @@ class cache_advancedfile implements ICachingMethod
      * clean up journal after deleting cache entries
      * not needed for this method
      *
-     * @param string|array $cacheID
+     * @param string|array $tags
      * @return bool
      */
-    public function clearCacheTags($cacheID)
+    public function clearCacheTags($tags)
     {
         return true;
     }

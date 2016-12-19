@@ -424,9 +424,9 @@ class NiceDB
      */
     public function insertRow($tablename, $object, $echo = false, $bExecuteHook = false)
     {
-        if ($this->debug === true || $this->collectData === true) {
-            $start = microtime(true);
-        }
+        $start   = ($this->debug === true || $this->collectData === true)
+            ? microtime(true)
+            : 0;
         $arr     = get_object_vars($object);
         $keys    = []; //column names
         $values  = []; //column values - either sql statement like "now()" or prepared like ":my-var-name"
@@ -591,9 +591,9 @@ class NiceDB
      */
     public function updateRow($tablename, $keyname, $keyvalue, $object, $echo = false)
     {
-        if ($this->debug === true || $this->collectData === true) {
-            $start = microtime(true);
-        }
+        $start   = ($this->debug === true || $this->collectData === true)
+            ? microtime(true)
+            : 0;
         $arr     = get_object_vars($object);
         $updates = []; //list of "<column name>=?" or "<column name>=now()" strings
         $assigns = []; //list of values to insert as param for ->prepare()
@@ -918,10 +918,9 @@ class NiceDB
             echo $stmt;
         }
 
-        if ($this->debug === true || $this->collectData === true || $bExecuteHook === true || $fnInfo !== null) {
-            $start = microtime(true);
-        }
-
+        $start = ($this->debug === true || $this->collectData === true || $bExecuteHook === true || $fnInfo !== null)
+            ? microtime(true)
+            : 0;
         try {
             if ($type === 0) {
                 $res = $this->pdo->query($stmt);

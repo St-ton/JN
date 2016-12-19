@@ -9,29 +9,124 @@
  */
 class Pagination
 {
+    /**
+     * @var string
+     */
     private $cId                     = 'pagi';
+
+    /**
+     * @var int
+     */
     private $nDispPagesRadius        = 2;
+
+    /**
+     * @var array
+     */
     private $nItemsPerPageOption_arr = [10, 20, 50, 100];
+
+    /**
+     * @var array
+     */
     private $cSortByOption_arr       = [];
+
+    /**
+     * @var int
+     */
     private $nItemCount              = 0;
+
+    /**
+     * @var int
+     */
     private $nItemsPerPage           = 10;
+
+    /**
+     * @var int
+     */
     private $nSortBy                 = 0;
+
+    /**
+     * @var int
+     */
     private $nSortDir                = 0;
+
+    /**
+     * @var int
+     */
     private $nSortByDir              = 0;
+
+    /**
+     * @var int
+     */
     private $nPage                   = 0;
+
+    /**
+     * @var int
+     */
     private $nPageCount              = 0;
+
+    /**
+     * @var int
+     */
     private $nPrevPage               = 0;
+
+    /**
+     * @var int
+     */
     private $nNextPage               = 0;
+
+    /**
+     * @var int
+     */
     private $nLeftRangePage          = 0;
+
+    /**
+     * @var int
+     */
     private $nRightRangePage         = 0;
+
+    /**
+     * @var int
+     */
     private $nFirstPageItem          = 0;
+
+    /**
+     * @var int
+     */
     private $nPageItemCount          = 0;
+
+    /**
+     * @var string
+     */
     private $cSortBy                 = '';
+
+    /**
+     * @var string
+     */
     private $cSortDir                = '';
+
+    /**
+     * @var string
+     */
     private $cLimitSQL               = '';
+
+    /**
+     * @var string
+     */
     private $cOrderSQL               = '';
+
+    /**
+     * @var null|array
+     */
     private $oItem_arr               = null;
+
+    /**
+     * @var null|array
+     */
     private $oPageItem_arr           = null;
+
+    /**
+     * @var int
+     */
     private $nDefaultItemsPerPage    = 0;
 
     /**
@@ -125,6 +220,7 @@ class Pagination
 
     /**
      * @param int $nItemsPerPage
+     * @return $this
      */
     public function setItemsPerPage($nItemsPerPage)
     {

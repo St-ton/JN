@@ -724,7 +724,6 @@ class Bestellung
         $positionCount = count($this->Positionen);
         for ($i = 0; $i < $positionCount; $i++) {
             if ($this->Positionen[$i]->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL && $this->Positionen[$i]->kArtikel > 0) {
-                //$artikel = new Artikel($this->Positionen[$i]->kArtikel);
                 $artikel                = new Artikel();
                 $artikel->kArtikel      = $this->Positionen[$i]->kArtikel;
                 $AufgeklappteKategorien = new KategorieListe();

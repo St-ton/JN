@@ -151,14 +151,12 @@ class EOS extends ServerPaymentMethod
 
         $amount    = number_format($order->fGesamtsummeKundenwaehrung, 2, ',', '');
         $customer  = $_SESSION['Kunde'];
-        $firstItem = new Artikel($order->Positionen[0]->kArtikel);
         $hash      = $this->generateHash($order);
         // ISO des Lieferlandes
         $lieferland = $_SESSION['Lieferadresse']->cLand;
         if (!$lieferland) {
             $lieferland = $_SESSION['Kunde']->cLand;
         }
-        $cISO = $lieferland;
         if (EOS_D_MODE === 1) {
             writeLog(EOS_D_PFAD, 'preparePaymentProcess switchModule: ' . $this->cModulId, 1);
         }

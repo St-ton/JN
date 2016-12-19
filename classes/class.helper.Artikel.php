@@ -61,7 +61,7 @@ class ArtikelHelper
         $kArtikel            = (int)$kArtikel;
         $kKundengruppe       = (int)$_SESSION['Kundengruppe']->kKundengruppe;
         $properties          = self::getChildPropertiesForParent($kArtikel, $kKundengruppe);
-        $kVariationKombi_arr = array();
+        $kVariationKombi_arr = [];
         $nGueltig            = 1;
         if (count($properties) > 0) {
             foreach ($properties as $i => $kAlleEigenschaftWerteProEigenschaft) {
@@ -130,13 +130,13 @@ class ArtikelHelper
     public static function getChildPropertiesForParent($kArtikel, $kKundengruppe)
     {
         $varCombinations = self::getPossibleVariationCombinations($kArtikel, $kKundengruppe);
-        $properties      = array();
+        $properties      = [];
         if (is_array($varCombinations) && count($varCombinations) > 0) {
             foreach ($varCombinations as $oAlleVariationKombi) {
                 if (!isset($properties[$oAlleVariationKombi->kEigenschaft]) ||
                     !is_array($properties[$oAlleVariationKombi->kEigenschaft])
                 ) {
-                    $properties[$oAlleVariationKombi->kEigenschaft] = array();
+                    $properties[$oAlleVariationKombi->kEigenschaft] = [];
                 }
                 if (!isset($oAlleVariationKombi->kEigenschaftWert, $properties[$oAlleVariationKombi->kEigenschaft]) ||
                     !in_array($oAlleVariationKombi->kEigenschaftWert, $properties[$oAlleVariationKombi->kEigenschaft])
@@ -185,8 +185,8 @@ class ArtikelHelper
      */
     public static function getSelectedPropertiesForVarCombiArticle($kArtikel, $nArtikelVariAufbau = 0)
     {
-        $oProperties    = array();
-        $propertyValues = array();
+        $oProperties    = [];
+        $propertyValues = [];
         $nVorhanden     = 1;
         $kArtikel       = (int)$kArtikel;
         if ($kArtikel > 0) {
@@ -351,7 +351,7 @@ class ArtikelHelper
         }
         // Wie beim Artikel die Variationen aufbauen
         if ($nArtikelVariAufbau > 0) {
-            $variations = array();
+            $variations = [];
             if (is_array($oProperties) && count($oProperties) > 0) {
                 foreach ($oProperties as $i => $oEigenschaftwerte) {
                     $oEigenschaftWert                   = new stdClass();
@@ -365,7 +365,7 @@ class ArtikelHelper
                     $variations[$i]->cWaehlbar    = 'Y';
                     $variations[$i]->cTyp         = $oEigenschaftwerte->cTyp;
                     $variations[$i]->cName        = $oEigenschaftwerte->cEigenschaftName;
-                    $variations[$i]->Werte        = array();
+                    $variations[$i]->Werte        = [];
                     $variations[$i]->Werte[]      = $oEigenschaftWert;
                 }
 
@@ -396,7 +396,7 @@ class ArtikelHelper
                     AND teigenschaftsichtbarkeit.kEigenschaft IS NULL", 2
         );
         // $oProperties anlegen
-        $oProperties = array();
+        $oProperties = [];
         $nVorhanden  = 1;
         if (is_array($oEigenschaft_arr) && count($oEigenschaft_arr) > 0) {
             foreach ($oEigenschaft_arr as $oEigenschaft) {
@@ -470,7 +470,7 @@ class ArtikelHelper
      */
     public static function getChildren($kVaterArtikel)
     {
-        $oVariationsKind_arr = array();
+        $oVariationsKind_arr = [];
         if ($kVaterArtikel > 0) {
             $oVariationsKind_arr = Shop::DB()->selectAll('tartikel', 'kVaterArtikel', (int)$kVaterArtikel, 'kArtikel, kEigenschaftKombi');
         }

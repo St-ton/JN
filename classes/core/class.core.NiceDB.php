@@ -102,25 +102,25 @@ class NiceDB
      */
     public function __construct($dbHost, $dbUser, $dbPass, $dbName, $debugOverride = false)
     {
-        $this->config = array(
+        $this->config = [
             'driver'   => 'mysql',
             'host'     => $dbHost,
             'database' => $dbName,
             'username' => $dbUser,
             'password' => $dbPass,
             'charset'  => 'latin1',
-        );
-        $options = array();
+        ];
+        $options = [];
         $dsn     = 'mysql:dbname=' . $dbName;
         if (defined('DB_SOCKET')) {
             $dsn .= ';unix_socket=' . DB_SOCKET;
         } else {
             if (defined('DB_SSL_KEY') && defined('DB_SSL_CERT') && defined('DB_SSL_CA')) {
-                $options = array(
+                $options = [
                     PDO::MYSQL_ATTR_SSL_KEY  => DB_SSL_KEY,
                     PDO::MYSQL_ATTR_SSL_CERT => DB_SSL_CERT,
                     PDO::MYSQL_ATTR_SSL_CA   => DB_SSL_CA
-                );
+                ];
             }
             $dsn .= ';host=' . $dbHost;
         }
@@ -227,7 +227,9 @@ class NiceDB
     {
         $mapping = self::map($method);
 
-        return ($mapping !== null) ? call_user_func_array(array($this, $mapping), $arguments) : null;
+        return ($mapping !== null)
+            ? call_user_func_array([$this, $mapping], $arguments)
+            : null;
     }
 
     /**
@@ -242,7 +244,9 @@ class NiceDB
     {
         $mapping = self::map($method);
 
-        return ($mapping !== null) ? call_user_func_array(array(self::$instance, $mapping), $arguments) : null;
+        return ($mapping !== null)
+            ? call_user_func_array([self::$instance, $mapping], $arguments)
+            : null;
     }
 
     /**
@@ -253,7 +257,7 @@ class NiceDB
      */
     private static function map($method)
     {
-        $mapping = array(
+        $mapping = [
             'query'           => 'executeQuery',
             'queryPrepared'   => 'executeQueryPrepared',
             'exQuery'         => 'executeExQuery',
@@ -270,7 +274,7 @@ class NiceDB
             'getError'        => '_getError',
             'selectAll'       => 'selectArray',
             'isConnected'     => 'isConnected'
-        );
+        ];
 
         return (isset($mapping[$method])) ? $mapping[$method] : null;
     }
@@ -299,7 +303,7 @@ class NiceDB
             return $this;
         }
         if ($backtrace !== null) {
-            $strippedBacktrace = array();
+            $strippedBacktrace = [];
             foreach ($backtrace as $_bt) {
                 if (!isset($_bt['class'])) {
                     $_bt['class'] = '';
@@ -308,12 +312,12 @@ class NiceDB
                     $_bt['function'] = '';
                 }
                 if (isset($_bt['file']) && strpos($_bt['file'], 'class.core.NiceDB.php') === false && !($_bt['class'] === 'NiceDB' && $_bt['function'] === '__call')) {
-                    $strippedBacktrace[] = array(
+                    $strippedBacktrace[] = [
                         'file'     => $_bt['file'],
                         'line'     => $_bt['line'],
                         'class'    => $_bt['class'],
                         'function' => $_bt['function']
-                    );
+                    ];
                 }
             }
             $backtrace = $strippedBacktrace;
@@ -424,9 +428,9 @@ class NiceDB
             $start = microtime(true);
         }
         $arr     = get_object_vars($object);
-        $keys    = array(); //column names
-        $values  = array(); //column values - either sql statement like "now()" or prepared like ":my-var-name"
-        $assigns = array(); //assignments from prepared var name to values, will be inserted in ->prepare()
+        $keys    = []; //column names
+        $values  = []; //column values - either sql statement like "now()" or prepared like ":my-var-name"
+        $assigns = []; //assignments from prepared var name to values, will be inserted in ->prepare()
 
         if (!is_array($arr)) {
             if ($this->logErrors && $this->logfileName) {
@@ -470,11 +474,10 @@ class NiceDB
         }
 
         if ($bExecuteHook) {
-            executeHook(HOOK_NICEDB_CLASS_INSERTROW, array(
-                    'mysqlerrno' => $this->pdo->errorCode(),
-                    'statement'  => $stmt
-                )
-            );
+            executeHook(HOOK_NICEDB_CLASS_INSERTROW, [
+                'mysqlerrno' => $this->pdo->errorCode(),
+                'statement'  => $stmt
+            ]);
         }
 
         if (!$res) {
@@ -592,8 +595,8 @@ class NiceDB
             $start = microtime(true);
         }
         $arr     = get_object_vars($object);
-        $updates = array(); //list of "<column name>=?" or "<column name>=now()" strings
-        $assigns = array(); //list of values to insert as param for ->prepare()
+        $updates = []; //list of "<column name>=?" or "<column name>=now()" strings
+        $assigns = []; //list of values to insert as param for ->prepare()
         if (!is_array($arr)) {
             if ($this->logErrors && $this->logfileName) {
                 $this->writeLog('updateRow: Objekt enthaelt nichts! - Tablename:' . $tablename);
@@ -676,7 +679,7 @@ class NiceDB
                 $backtrace = debug_backtrace();
             }
             $arr     = get_object_vars($object);
-            $updates = array();
+            $updates = [];
             foreach ($arr as $_key => $_val) {
                 if ($_val === '_DBNULL_') {
                     $_val = null;
@@ -686,7 +689,7 @@ class NiceDB
                 $updates[] = $_key . '="' . $_val . '"';
             }
             if (is_array($keyname) && is_array($keyvalue)) {
-                $combined = array();
+                $combined = [];
                 foreach ($keyname as $i => $key) {
                     $combined[] = $key . '=' . $keyvalue[$i];
                 }
@@ -718,12 +721,12 @@ class NiceDB
      */
     public function selectSingleRow($tablename, $keyname, $keyvalue, $keyname1 = null, $keyvalue1 = null, $keyname2 = null, $keyvalue2 = null, $echo = false, $select = '*')
     {
-        if ($this->debug === true || $this->collectData === true) {
-            $start = microtime(true);
-        }
-        $keys    = (is_array($keyname)) ? $keyname : array($keyname, $keyname1, $keyname2);
-        $values  = (is_array($keyvalue)) ? $keyvalue : array($keyvalue, $keyvalue1, $keyvalue2);
-        $assigns = array();
+        $start   = ($this->debug === true || $this->collectData === true)
+            ? microtime(true)
+            : 0;
+        $keys    = (is_array($keyname)) ? $keyname : [$keyname, $keyname1, $keyname2];
+        $values  = (is_array($keyvalue)) ? $keyvalue : [$keyvalue, $keyvalue1, $keyvalue2];
+        $assigns = [];
         $i       = 0;
         foreach ($keys as &$_key) {
             if ($_key !== null) {
@@ -732,7 +735,7 @@ class NiceDB
             } else {
                 unset($keys[$i]);
             }
-            $i++;
+            ++$i;
         }
         $stmt = 'SELECT ' . $select . ' FROM ' . $tablename . ((count($keys) > 0) ? (' WHERE ' . implode(' AND ', $keys)) : '');
         if ($echo) {
@@ -770,9 +773,8 @@ class NiceDB
             if ($this->debug === true || $this->collectData === true) {
                 $start = microtime(true);
             }
-            $keys    = (is_array($keyname)) ? $keyname : array($keyname, $keyname1, $keyname2);
-            $values  = (is_array($keyvalue)) ? $keyvalue : array($keyvalue, $keyvalue1, $keyvalue2);
-            $assigns = array();
+            $keys    = (is_array($keyname)) ? $keyname : [$keyname, $keyname1, $keyname2];
+            $values  = (is_array($keyvalue)) ? $keyvalue : [$keyvalue, $keyvalue1, $keyvalue2];
             $i       = 0;
             foreach ($keys as &$_key) {
                 if ($_key !== null) {
@@ -785,7 +787,7 @@ class NiceDB
                 } else {
                     unset($keys[$i]);
                 }
-                $i++;
+                ++$i;
             }
             $stmt = 'SELECT ' . $select . ' FROM ' . $tablename . ((count($keys) > 0) ? (' WHERE ' . implode(' AND ', $keys)) : '');
             $this->analyzeQuery('select', $stmt, ($end - $start), $backtrace);
@@ -806,9 +808,9 @@ class NiceDB
      */
     public function selectArray($tablename, $keys, $values, $select = '*', $orderBy = '', $limit = '')
     {
-        $keys         = (is_array($keys)) ? $keys : array($keys);
-        $values       = (is_array($values)) ? $values : array($values);
-        $kv           = array();
+        $keys         = (is_array($keys)) ? $keys : [$keys];
+        $values       = (is_array($values)) ? $values : [$values];
+        $kv           = [];
         if (count($keys) !== count($values)) {
             throw new InvalidArgumentException('Number of keys must be equal to number of given keys. Got ' . count($keys) . ' key(s) and ' . count($values) . ' value(s).');
         }
@@ -979,7 +981,7 @@ class NiceDB
                 $ret = $res->fetchObject();
                 break;
             case 2:
-                $ret = array();
+                $ret = [];
                 while ($row = $res->fetchObject()) {
                     $ret[] = $row;
                 }
@@ -1042,7 +1044,7 @@ class NiceDB
         if ($this->debug === true || $this->collectData === true) {
             $start = microtime(true);
         }
-        $assigns = array();
+        $assigns = [];
         if (is_array($keyvalue) && is_array($keyvalue)) {
             if (count($keyname) !== count($keyvalue)) {
                 if ($this->logErrors && $this->logfileName) {

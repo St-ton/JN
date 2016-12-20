@@ -60,7 +60,8 @@
                     </a>
                 {elseif $nPage == 1 || $nPage == 2 || $nPage == 24 || $nPage == 31}
                     <a href="#" data-filter="box-filter-{$oBox->kBox}" data-box-id="{$oBox->kBox}" class="btn btn-default"
-                       data-box-title="{$oBox->cTitel}" data-toggle="modal" data-target="#boxFilterModal">
+                       data-box-title="{if $oBox->bContainer}Container #{$oBox->kBox}{else}{$oBox->cTitel}{/if}"
+                       data-toggle="modal" data-target="#boxFilterModal">
                         <i class="fa fa-filter"></i>
                     </a>
                 {/if}

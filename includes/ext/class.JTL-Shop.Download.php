@@ -205,7 +205,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
             $kKunde        = (isset($kKey_arr['kKunde'])) ? (int)$kKey_arr['kKunde'] : 0;
             $kSprache      = (isset($kSprache)) ? (int)$kSprache : 0;
             $oDownload_arr = [];
-            if ($kArtikel > 0 && ($kBestellung > 0 || $kKunde > 0) && $kSprache > 0) {
+            if ($kArtikel > 0 & $kSprache > 0) {
                 $cSQLSelect = "tartikeldownload.kDownload";
                 $cSQLWhere  = "kArtikel = " . $kArtikel;
                 $cSQLJoin   = "LEFT JOIN tdownload ON tartikeldownload.kDownload = tdownload.kDownload";

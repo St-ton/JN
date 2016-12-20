@@ -304,6 +304,11 @@ final class Shop
     private static $_logged = null;
 
     /**
+     * @var array
+     */
+    private static $url = [];
+
+    /**
      *
      */
     private function __construct()
@@ -764,7 +769,7 @@ final class Shop
     public static function seoCheck()
     {
         $uri = $_SERVER['REQUEST_URI'];
-        if (isset($_SERVER['HTTP_X_REWRITE_URL'])) {
+        if (isset($_SERVER['HTTP_X_REWRITE$'])) {
             $uri = $_SERVER['HTTP_X_REWRITE_URL'];
         }
         self::$uri                       = $uri;
@@ -1205,6 +1210,10 @@ final class Shop
      */
     public static function getURL($bForceSSL = false, $bMultilang = true)
     {
+        $idx = (int)$bForceSSL;
+        if (isset(self::$url[self::$kSprache][$idx])) {
+            return self::$url[self::$kSprache][$idx];
+        }
         $cShopURL = URL_SHOP;
         //EXPERIMENTAL_MULTILANG_SHOP
         if ($bMultilang === true && isset($_SESSION['cISOSprache']) && defined('URL_SHOP_' . strtoupper($_SESSION['cISOSprache']))) {
@@ -1217,7 +1226,10 @@ final class Shop
             $cShopURL = str_replace('http://', 'https://', $cShopURL);
         }
 
-        return rtrim($cShopURL, '/');
+        $url = rtrim($cShopURL, '/');
+        self::$url[self::$kSprache][$idx] = $url;
+
+        return $url;
     }
 
     /**

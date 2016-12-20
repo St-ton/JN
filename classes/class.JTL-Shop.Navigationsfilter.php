@@ -896,19 +896,64 @@ class Navigationsfilter
         $state          = $this->getCurrentStateData();
         $state->joins[] = $order->join;
 
-        $query = $this->getBaseQuery(['tartikel.kArtikel'], $state->joins, $state->conditions, $state->having, $order->orderBy);
+        $keys = Shop::DB()->query($this->getBaseQuery(['tartikel.kArtikel'], $state->joins, $state->conditions, $state->having, $order->orderBy), 2);
+        $res = [];
+        foreach ($keys as $key) {
+            $res[] = (int)$key->kArtikel;
+        }
 
-        return Shop::DB()->query($query, 2);
+        return $res;
     }
 
     /**
-     * @param bool $forProductListing
+     * @return string
+     */
+    private function getHash()
+    {
+        $state = $this->getActiveState();
+        $hash = [];
+        $hash['state'] = $state->getClassName() . $state->getValue();
+
+        foreach ($this->getActiveFilters() as $filter) {
+            $hash[$filter->getClassName()][] = $filter->getValue();
+        }
+
+        return md5(json_encode($hash));
+    }
+
+    /**
+     * @param bool           $forProductListing
+     * @param Kategorie|null $currentCategory
      * @return stdClass
      */
-    public function getProducts($forProductListing = true)
+    public function getProducts($forProductListing = true, $currentCategory = null)
     {
+        $hash = $this->getHash();
+        if (($oSuchergebnisse = Shop::Cache()->get($hash)) !== false) {
+            $oArtikelOptionen                        = new stdClass();
+            $oArtikelOptionen->nMerkmale             = 1;
+            $oArtikelOptionen->nKategorie            = 1;
+            $oArtikelOptionen->nAttribute            = 1;
+            $oArtikelOptionen->nArtikelAttribute     = 1;
+            $oArtikelOptionen->nVariationKombiKinder = 1;
+            $oArtikelOptionen->nWarenlager           = 1;
+            foreach ($oSuchergebnisse->Artikel->articleKeys as $articleKey) {
+                $oArtikel = new Artikel();
+                //$oArtikelOptionen->nVariationDetailPreis = 1;
+                $oArtikel->fuelleArtikel($articleKey, $oArtikelOptionen);
+                // Aktuelle Artikelmenge in die Session (Keine Vaterartikel)
+                if ($oArtikel->nIstVater == 0) {
+                    $_SESSION['nArtikelUebersichtVLKey_arr'][] = $oArtikel->kArtikel;
+                }
+                $oSuchergebnisse->Artikel->elemente[] = $oArtikel;
+            }
+
+            return $oSuchergebnisse;
+        }
+
         $oSuchergebnisse                         = new stdClass();
         $oSuchergebnisse->Artikel                = new stdClass();
+        $oSuchergebnisse->Artikel->articleKeys   = [];
         $oSuchergebnisse->Artikel->elemente      = [];
         $oArtikelOptionen                        = new stdClass();
         $oArtikelOptionen->nMerkmale             = 1;
@@ -929,21 +974,9 @@ class Navigationsfilter
         $nArtikelProSeiteBlaetter = max(100, $nArtikelProSeite + 50);
         $offsetEnd                = $nArtikelProSeiteBlaetter - $nLimitNBlaetter;
 
-        $keys = $this->getProductKeys();
-        foreach (array_slice($keys, $nLimitNBlaetter, $offsetEnd) as $i => $oArtikelKey) {
-            $nLaufLimitN = $i + $nLimitNBlaetter;
-            if ($nLaufLimitN >= $nLimitN && $nLaufLimitN < $nLimitN + $nArtikelProSeite) {
-                $oArtikel = new Artikel();
-                //$oArtikelOptionen->nVariationDetailPreis = 1;
-                $oArtikel->fuelleArtikel($oArtikelKey->kArtikel, $oArtikelOptionen);
-                // Aktuelle Artikelmenge in die Session (Keine Vaterartikel)
-                if ($oArtikel->nIstVater == 0) {
-                    $_SESSION['nArtikelUebersichtVLKey_arr'][] = $oArtikel->kArtikel;
-                }
-                $oSuchergebnisse->Artikel->elemente[] = $oArtikel;
-            }
-        }
-        $oSuchergebnisse->GesamtanzahlArtikel = count($keys);
+        $oSuchergebnisse->Artikel->articleKeys = $this->getProductKeys();
+
+        $oSuchergebnisse->GesamtanzahlArtikel = count($oSuchergebnisse->Artikel->articleKeys);
 
         if (!empty($this->Suche->cSuche)) {
             suchanfragenSpeichern($this->Suche->cSuche, $oSuchergebnisse->GesamtanzahlArtikel);
@@ -964,6 +997,26 @@ class Navigationsfilter
             $oSuchergebnisse->Seitenzahlen->minSeite + $max - 1);
         if ($oSuchergebnisse->Seitenzahlen->maxSeite > $oSuchergebnisse->Seitenzahlen->MaxSeiten) {
             $oSuchergebnisse->Seitenzahlen->maxSeite = $oSuchergebnisse->Seitenzahlen->MaxSeiten;
+        }
+
+        if ($currentCategory !== null) {
+            $oSuchergebnisse = $this->setFilterOptions($oSuchergebnisse, $currentCategory);
+        }
+
+        Shop::Cache()->set($hash, $oSuchergebnisse, [CACHING_GROUP_CATEGORY]);
+
+        foreach (array_slice($oSuchergebnisse->Artikel->articleKeys, $nLimitNBlaetter, $offsetEnd) as $i => $key) {
+            $nLaufLimitN = $i + $nLimitNBlaetter;
+            if ($nLaufLimitN >= $nLimitN && $nLaufLimitN < $nLimitN + $nArtikelProSeite) {
+                $oArtikel = new Artikel();
+                //$oArtikelOptionen->nVariationDetailPreis = 1;
+                $oArtikel->fuelleArtikel($key, $oArtikelOptionen);
+                // Aktuelle Artikelmenge in die Session (Keine Vaterartikel)
+                if ($oArtikel->nIstVater == 0) {
+                    $_SESSION['nArtikelUebersichtVLKey_arr'][] = $oArtikel->kArtikel;
+                }
+                $oSuchergebnisse->Artikel->elemente[] = $oArtikel;
+            }
         }
 
         return ($forProductListing === true) ? $oSuchergebnisse : $oSuchergebnisse->Artikel->elemente;
@@ -1076,6 +1129,7 @@ class Navigationsfilter
     public function getCurrentStateData($ignore = null)
     {
         $state            = $this->getActiveState();
+        $hash             = ['state' => $state->getClassName() . $state->getValue()];
         $stateCondition   = $state->getSQLCondition();
         $stateJoin        = $state->getSQLJoin();
         $data             = new stdClass();
@@ -1095,6 +1149,7 @@ class Navigationsfilter
                 foreach ($filter as $idx => $item) {
                     if ($ignore === null || $item->getClassName() !== $ignore) {
                         if ($idx === 0) {
+                            $hash[$item->getClassName()][] = $item->getValue();
                             $itemJoin = $item->getSQLJoin();
                             if (is_array($itemJoin)) {
                                 foreach ($item->getSQLJoin() as $filterJoin) {
@@ -1117,6 +1172,7 @@ class Navigationsfilter
             } elseif ($count === 1) {
                 /** @var array(AbstractFilter) $filter */
                 if ($ignore === null || $filter[0]->getClassName() !== $ignore) {
+                    $hash[$filter[0]->getClassName()][] = $filter[0]->getValue();
                     $itemJoin = $filter[0]->getSQLJoin();
                     if (is_array($itemJoin)) {
                         foreach ($itemJoin as $filterJoin) {
@@ -1130,6 +1186,7 @@ class Navigationsfilter
                 }
             }
         }
+        $data->hash = $hash;
 
         return $data;
     }

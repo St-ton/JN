@@ -74,9 +74,10 @@ class KategorieHelper
     }
 
     /**
+     * @param int $depth
      * @return array
      */
-    public function combinedGetAll()
+    public function combinedGetAll($depth = 0)
     {
         if (self::$fullCategories !== null) {
             return self::$fullCategories;
@@ -103,6 +104,7 @@ class KategorieHelper
             $shopURL              = Shop::getURL(true);
             $isDefaultLang        = standardspracheAktiv();
             $visibilityWhere      = " AND tartikelsichtbarkeit.kArtikel IS NULL";
+            $depthWhere           = $depth > 0 ? " AND node.nLevel <= " . (int)$depth : '';
             $getDescription       = ($categoryCount->cnt < $categoryLimit || //always get description if there aren't that many categories
                 !(isset(self::$config['template']['megamenu']['show_maincategory_info']) && //otherwise check template config
                 isset(self::$config['template']['megamenu']['show_categories']) &&
@@ -171,7 +173,7 @@ class KategorieHelper
                         AND tkategoriesichtbarkeit.kKundengruppe = " . self::$kKundengruppe . $seoJoin . $imageJoin .
                 $hasArticlesCheckJoin . $stockJoin . $visibilityJoin . "                     
                 WHERE tkategoriesichtbarkeit.kKategorie IS NULL AND node.lft BETWEEN parent.lft AND parent.rght 
-                    AND parent.kOberKategorie = 0 " . $visibilityWhere . "  
+                    AND parent.kOberKategorie = 0 " . $visibilityWhere . $depthWhere . "
                     
                 GROUP BY node.kKategorie
                 ORDER BY node.lft";

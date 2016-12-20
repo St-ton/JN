@@ -43,7 +43,8 @@
                 <select id="kSprache" name="kSprache" class="form-control" onchange="this.form.submit();">
                     {foreach $oSprache_arr as $oSprache}
                         <option value="{$oSprache->kSprache}"
-                                {if (int)$smarty.session.kSprache === (int)$oSprache->kSprache}selected{/if}>
+                                {if (int)$smarty.session.kSprache === (int)$oSprache->kSprache}selected{/if}
+                                {if !$oSprache->bImported}class="alert-success"{/if}>
                             {$oSprache->cNameDeutsch}
                             {if $oSprache->cShopStandard === 'Y'}(Standard){/if}
                         </option>
@@ -63,8 +64,10 @@
     <div class="tab-content">
         <div id="variables" class="tab-pane fade {if $tab === 'variables'}active in{/if}">
             <div class="panel panel-default">
-                {include file='tpl_inc/filtertools.tpl' oFilter=$oFilter}
-                {include file='tpl_inc/pagination.tpl' oPagination=$oPagination}
+                {if $bSpracheAktiv}
+                    {include file='tpl_inc/filtertools.tpl' oFilter=$oFilter}
+                    {include file='tpl_inc/pagination.tpl' oPagination=$oPagination}
+                {/if}
                 <form action="sprache.php" method="post">
                     {$jtl_token}
                     {if $oWert_arr|@count > 0}
@@ -128,8 +131,10 @@
                                 {/foreach}
                             </tbody>
                         </table>
-                    {else}
+                    {elseif $bSpracheAktiv}
                         <div class="alert alert-info" role="alert">{#noFilterResults#}</div>
+                    {else}
+                        <div class="alert alert-info" role="alert">{#notImportedYet#}</div>
                     {/if}
                     <div class="panel-footer">
                         {sprache_buttons}

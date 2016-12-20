@@ -17,10 +17,42 @@ $cFehler  = '';
 $tab      = isset($_REQUEST['tab']) ? $_REQUEST['tab'] : 'variables';
 $step     = 'overview';
 setzeSprache();
-$kSprache     = (int)$_SESSION['kSprache'];
-$oSprachISO   = Shop::Lang()->getIsoFromLangID($kSprache);
-$oSprache_arr = Shop::Lang()->getInstalled();
-$oSektion_arr = Shop::Lang()->getSections();
+$kSprache    = (int)$_SESSION['kSprache'];
+$cISOSprache = $_SESSION['cISOSprache'];
+
+if (validateToken() && verifyGPDataString('importcsv') === 'langvars' && isset($_FILES['csvfile']['tmp_name'])) {
+    $csvFilename = $_FILES['csvfile']['tmp_name'];
+    $importType  = verifyGPCDataInteger('importType');
+    $res         = Shop::Lang()->import($csvFilename, $cISOSprache, $importType);
+
+    if ($res === false) {
+        $cFehler = 'Fehler beim Importieren der Datei';
+    } else {
+        $cHinweis = 'Es wurden ' . $res . ' Variablen aktualisiert';
+    }
+}
+
+$oSprachISO            = Shop::Lang()->getLangIDFromIso($cISOSprache);
+$kSprachISO            = isset($oSprachISO->kSprachISO) ? $oSprachISO->kSprachISO : 0;
+$oSpracheInstalled_arr = Shop::Lang()->getInstalled();
+$oSpracheAvailable_arr = Shop::Lang()->getAvailable();
+$oSektion_arr          = Shop::Lang()->getSections();
+$bSpracheAktiv         = false;
+
+if (count($oSpracheInstalled_arr) !== count($oSpracheAvailable_arr)) {
+    $cHinweis = 'Es sind neue Sprache(n) verf&uuml;gbar.';
+}
+
+foreach ($oSpracheInstalled_arr as $oSprache) {
+    if ($oSprache->cISO === $cISOSprache) {
+        $bSpracheAktiv = true;
+        break;
+    }
+}
+
+foreach ($oSpracheAvailable_arr as $oSprache) {
+    $oSprache->bImported = in_array($oSprache, $oSpracheInstalled_arr);
+}
 
 if (validateToken()) {
     if (isset($_REQUEST['action'])) {
@@ -116,7 +148,7 @@ if (validateToken()) {
                         if ((int)$_REQUEST['bChanged_arr'][$kSektion][$cName] === 1) {
                             // wurde geaendert => speichern
                             Shop::Lang()
-                                ->setzeSprache($oSprachISO->cISO)
+                                ->setzeSprache($cISOSprache)
                                 ->set((int)$kSektion, $cName, $cWert);
                             $cChanged_arr[] = $cName;
                         }
@@ -136,7 +168,7 @@ if (validateToken()) {
             case 'clearlog':
                 // Liste nicht gefundener Variablen leeren
                 Shop::Lang()
-                    ->setzeSprache($oSprachISO->cISO)
+                    ->setzeSprache($cISOSprache)
                     ->clearLog();
                 Shop::Cache()->flushTags([CACHING_GROUP_LANGUAGE]);
                 Shop::DB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
@@ -152,7 +184,7 @@ if ($step === 'newvar') {
     $smarty
         ->assign('oSektion_arr', $oSektion_arr)
         ->assign('oVariable', $oVariable)
-        ->assign('oSprache_arr', $oSprache_arr);
+        ->assign('oSprache_arr', $oSpracheAvailable_arr);
 } elseif ($step === 'overview') {
     $oFilter                       = new Filter('langvars');
     $oSelectfield                  = $oFilter->addSelectfield('Sektion', 'sw.kSprachsektion', 0);
@@ -171,29 +203,17 @@ if ($step === 'newvar') {
     $oFilter->assemble();
     $cFilterSQL = $oFilter->getWhereSQL();
 
-    if (validateToken() && verifyGPDataString('importcsv') === 'langvars' && isset($_FILES['csvfile']['tmp_name'])) {
-        $csvFilename = $_FILES['csvfile']['tmp_name'];
-        $importType  = verifyGPCDataInteger('importType');
-        $res         = Shop::Lang()->import($csvFilename, $oSprachISO->cISO, $importType);
-
-        if ($res === false) {
-            $cFehler = 'Fehler beim Importieren der Datei';
-        } else {
-            $cHinweis = 'Es wurden ' . $res . ' Variablen aktualisiert';
-        }
-    }
-
     $oWert_arr = Shop::DB()->query(
         "SELECT sw.cName, sw.cWert, sw.cStandard, sw.bSystem, ss.kSprachsektion, ss.cName AS cSektionName
             FROM tsprachwerte AS sw
                 JOIN tsprachsektion AS ss
                     ON ss.kSprachsektion = sw.kSprachsektion
-            WHERE sw.kSprachISO = " . Shop::Lang()->kSprachISO . "
+            WHERE sw.kSprachISO = " . (int)$kSprachISO . "
                 " . ($cFilterSQL !== '' ? "AND " . $cFilterSQL : ""),
         2
     );
 
-    handleCsvExportAction('langvars', $oSprachISO->cISO . '_' . date('YmdHis') . '.slf', $oWert_arr,
+    handleCsvExportAction('langvars', $cISOSprache . '_' . date('YmdHis') . '.slf', $oWert_arr,
         ['cSektionName', 'cName', 'cWert', 'bSystem'], [], ';', false);
 
     $oPagination = (new Pagination('langvars'))
@@ -206,7 +226,7 @@ if ($step === 'newvar') {
             FROM tsprachlog AS sl
                 LEFT JOIN tsprachsektion AS ss
                     ON ss.cName = sl.cSektion
-            WHERE kSprachISO = " . Shop::Lang()->kSprachISO,
+            WHERE kSprachISO = " . (int)Shop::Lang()->kSprachISO,
         2
     );
 
@@ -214,7 +234,8 @@ if ($step === 'newvar') {
         ->assign('oFilter', $oFilter)
         ->assign('oPagination', $oPagination)
         ->assign('oWert_arr', $oPagination->getPageItems())
-        ->assign('oSprache_arr', $oSprache_arr)
+        ->assign('bSpracheAktiv', $bSpracheAktiv)
+        ->assign('oSprache_arr', $oSpracheAvailable_arr)
         ->assign('oNotFound_arr', $oNotFound_arr);
 }
 

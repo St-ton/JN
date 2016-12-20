@@ -286,7 +286,8 @@ function setzeSprache()
     if (!isset($_SESSION['kSprache'])) {
         $StdSprache = Shop::DB()->select('tsprache', 'cShopStandard', 'Y');
         if ($StdSprache->kSprache > 0) {
-            $_SESSION['kSprache'] = $StdSprache->kSprache;
+            $_SESSION['kSprache']    = $StdSprache->kSprache;
+            $_SESSION['cISOSprache'] = $StdSprache->cISO;
         }
     }
     //setze explizit ausgewählte Sprache

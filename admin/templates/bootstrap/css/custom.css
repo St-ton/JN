@@ -51,16 +51,6 @@ a {
     margin-right: 2px;
 }
 
-.boxCenterDisabled {
-    background-color: #eee;
-    color: #ddd;
-    font-size: 38px;
-    line-height: 80px;
-    margin: 10px 0;
-    text-align: center;
-    width: 100%;
-}
-
 .boxWrapper .panel .list-group {
     margin-bottom: 0;
 }
@@ -274,10 +264,6 @@ table .input-group {
 
 .list-group-item.boxRow {
     overflow: hidden;
-}
-
-.list-group-item .boxOptions {
-    /*float: right;*/
 }
 
 .list-group-item .left {
@@ -1813,10 +1799,6 @@ body {
     overflow-y: scroll;
 }
 
-.boxOptions input[type=text] {
-    float: left;
-}
-
 .boxRowContainer {
     padding-top: 10px;
 }
@@ -1865,10 +1847,6 @@ select.form-control {
 .box-active-filters {
     margin: 0;
     padding: 0 0 0 15px;
-}
-
-.box-active-filters i {
-    /*display: none;*/
 }
 
 .input-group-wrap .file-input .input-group {

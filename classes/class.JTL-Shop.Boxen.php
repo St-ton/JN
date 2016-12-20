@@ -220,8 +220,8 @@ class Boxen
                         $oVisible_arr     = Shop::DB()->query("
                               SELECT * 
                                 FROM tboxensichtbar 
-                                WHERE kBox = " . (int)$oBox->kBox . " 
-                                AND bAktiv = 1", 2
+                                WHERE kBox = " . (int)$oBox->kBox,
+                            2
                         );
                         if (count($oVisible_arr) >= PAGE_MAX) {
                             $oBox->cVisibleOn = "\n- Auf allen Seiten";
@@ -1591,6 +1591,7 @@ class Boxen
     public function filterBoxVisibility($kBox, $kSeite, $cFilter = '')
     {
         if (is_array($cFilter)) {
+            $cFilter = array_unique($cFilter);
             $cFilter = implode(',', $cFilter);
         }
 

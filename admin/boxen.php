@@ -180,3 +180,4 @@ $smarty->assign('hinweis', $cHinweis)
        ->assign('nPage', $nPage)
        ->assign('invisibleBoxes', $oBoxen->getInvisibleBoxes())
        ->display('boxen.tpl');
+$i = 0;

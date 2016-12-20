@@ -947,75 +947,73 @@ class Navigationsfilter
                 }
                 $oSuchergebnisse->Artikel->elemente[] = $oArtikel;
             }
+        } else {
+            $oSuchergebnisse                         = new stdClass();
+            $oSuchergebnisse->Artikel                = new stdClass();
+            $oSuchergebnisse->Artikel->articleKeys   = [];
+            $oSuchergebnisse->Artikel->elemente      = [];
+            $oArtikelOptionen                        = new stdClass();
+            $oArtikelOptionen->nMerkmale             = 1;
+            $oArtikelOptionen->nKategorie            = 1;
+            $oArtikelOptionen->nAttribute            = 1;
+            $oArtikelOptionen->nArtikelAttribute     = 1;
+            $oArtikelOptionen->nVariationKombiKinder = 1;
+            $oArtikelOptionen->nWarenlager           = 1;
+            $nArtikelProSeite = $this->getArticlesPerPageLimit();
+            $nLimitN          = ($this->nSeite - 1) * $nArtikelProSeite;
+            // 50 nach links und 50 nach rechts für Artikeldetails blättern rausholen
+            $nLimitNBlaetter = $nLimitN;
+            if ($nLimitNBlaetter >= 50) {
+                $nLimitNBlaetter -= 50;
+            } elseif ($nLimitNBlaetter < 50) {
+                $nLimitNBlaetter = 0;
+            }
+            $nArtikelProSeiteBlaetter = max(100, $nArtikelProSeite + 50);
+            $offsetEnd                = $nArtikelProSeiteBlaetter - $nLimitNBlaetter;
 
-            return $oSuchergebnisse;
-        }
+            $oSuchergebnisse->Artikel->articleKeys = $this->getProductKeys();
 
-        $oSuchergebnisse                         = new stdClass();
-        $oSuchergebnisse->Artikel                = new stdClass();
-        $oSuchergebnisse->Artikel->articleKeys   = [];
-        $oSuchergebnisse->Artikel->elemente      = [];
-        $oArtikelOptionen                        = new stdClass();
-        $oArtikelOptionen->nMerkmale             = 1;
-        $oArtikelOptionen->nKategorie            = 1;
-        $oArtikelOptionen->nAttribute            = 1;
-        $oArtikelOptionen->nArtikelAttribute     = 1;
-        $oArtikelOptionen->nVariationKombiKinder = 1;
-        $oArtikelOptionen->nWarenlager           = 1;
-        $nArtikelProSeite = $this->getArticlesPerPageLimit();
-        $nLimitN          = ($this->nSeite - 1) * $nArtikelProSeite;
-        // 50 nach links und 50 nach rechts für Artikeldetails blättern rausholen
-        $nLimitNBlaetter = $nLimitN;
-        if ($nLimitNBlaetter >= 50) {
-            $nLimitNBlaetter -= 50;
-        } elseif ($nLimitNBlaetter < 50) {
-            $nLimitNBlaetter = 0;
-        }
-        $nArtikelProSeiteBlaetter = max(100, $nArtikelProSeite + 50);
-        $offsetEnd                = $nArtikelProSeiteBlaetter - $nLimitNBlaetter;
+            $oSuchergebnisse->GesamtanzahlArtikel = count($oSuchergebnisse->Artikel->articleKeys);
 
-        $oSuchergebnisse->Artikel->articleKeys = $this->getProductKeys();
+            if (!empty($this->Suche->cSuche)) {
+                suchanfragenSpeichern($this->Suche->cSuche, $oSuchergebnisse->GesamtanzahlArtikel);
+                $this->Suche->kSuchanfrage = gibSuchanfrageKey($this->Suche->cSuche, $this->getLanguageID());
+            }
 
-        $oSuchergebnisse->GesamtanzahlArtikel = count($oSuchergebnisse->Artikel->articleKeys);
+            $nLimitN = $nArtikelProSeite * ($this->nSeite - 1);
+            $max     = (int)$this->conf['artikeluebersicht']['artikeluebersicht_max_seitenzahl'];
 
-        if (!empty($this->Suche->cSuche)) {
-            suchanfragenSpeichern($this->Suche->cSuche, $oSuchergebnisse->GesamtanzahlArtikel);
-            $this->Suche->kSuchanfrage = gibSuchanfrageKey($this->Suche->cSuche, $this->getLanguageID());
-        }
+            $oSuchergebnisse->ArtikelVon = $nLimitN + 1;
+            $oSuchergebnisse->ArtikelBis = min($nLimitN + $nArtikelProSeite, $oSuchergebnisse->GesamtanzahlArtikel);
 
-        $nLimitN = $nArtikelProSeite * ($this->nSeite - 1);
-        $max     = (int)$this->conf['artikeluebersicht']['artikeluebersicht_max_seitenzahl'];
+            $oSuchergebnisse->Seitenzahlen                = new stdClass();
+            $oSuchergebnisse->Seitenzahlen->AktuelleSeite = $this->nSeite;
+            $oSuchergebnisse->Seitenzahlen->MaxSeiten     = ceil($oSuchergebnisse->GesamtanzahlArtikel / $nArtikelProSeite);
+            $oSuchergebnisse->Seitenzahlen->minSeite      = min(intval($oSuchergebnisse->Seitenzahlen->AktuelleSeite - $max / 2), 0);
+            $oSuchergebnisse->Seitenzahlen->maxSeite      = max($oSuchergebnisse->Seitenzahlen->MaxSeiten,
+                $oSuchergebnisse->Seitenzahlen->minSeite + $max - 1);
+            if ($oSuchergebnisse->Seitenzahlen->maxSeite > $oSuchergebnisse->Seitenzahlen->MaxSeiten) {
+                $oSuchergebnisse->Seitenzahlen->maxSeite = $oSuchergebnisse->Seitenzahlen->MaxSeiten;
+            }
 
-        $oSuchergebnisse->ArtikelVon = $nLimitN + 1;
-        $oSuchergebnisse->ArtikelBis = min($nLimitN + $nArtikelProSeite, $oSuchergebnisse->GesamtanzahlArtikel);
+            if ($currentCategory !== null) {
+                $oSuchergebnisse = $this->setFilterOptions($oSuchergebnisse, $currentCategory);
+            }
 
-        $oSuchergebnisse->Seitenzahlen                = new stdClass();
-        $oSuchergebnisse->Seitenzahlen->AktuelleSeite = $this->nSeite;
-        $oSuchergebnisse->Seitenzahlen->MaxSeiten     = ceil($oSuchergebnisse->GesamtanzahlArtikel / $nArtikelProSeite);
-        $oSuchergebnisse->Seitenzahlen->minSeite      = min(intval($oSuchergebnisse->Seitenzahlen->AktuelleSeite - $max / 2), 0);
-        $oSuchergebnisse->Seitenzahlen->maxSeite      = max($oSuchergebnisse->Seitenzahlen->MaxSeiten,
-            $oSuchergebnisse->Seitenzahlen->minSeite + $max - 1);
-        if ($oSuchergebnisse->Seitenzahlen->maxSeite > $oSuchergebnisse->Seitenzahlen->MaxSeiten) {
-            $oSuchergebnisse->Seitenzahlen->maxSeite = $oSuchergebnisse->Seitenzahlen->MaxSeiten;
-        }
+            Shop::Cache()->set($hash, $oSuchergebnisse, [CACHING_GROUP_CATEGORY]);
 
-        if ($currentCategory !== null) {
-            $oSuchergebnisse = $this->setFilterOptions($oSuchergebnisse, $currentCategory);
-        }
-
-        Shop::Cache()->set($hash, $oSuchergebnisse, [CACHING_GROUP_CATEGORY]);
-
-        foreach (array_slice($oSuchergebnisse->Artikel->articleKeys, $nLimitNBlaetter, $offsetEnd) as $i => $key) {
-            $nLaufLimitN = $i + $nLimitNBlaetter;
-            if ($nLaufLimitN >= $nLimitN && $nLaufLimitN < $nLimitN + $nArtikelProSeite) {
-                $oArtikel = new Artikel();
-                //$oArtikelOptionen->nVariationDetailPreis = 1;
-                $oArtikel->fuelleArtikel($key, $oArtikelOptionen);
-                // Aktuelle Artikelmenge in die Session (Keine Vaterartikel)
-                if ($oArtikel->nIstVater == 0) {
-                    $_SESSION['nArtikelUebersichtVLKey_arr'][] = $oArtikel->kArtikel;
+            foreach (array_slice($oSuchergebnisse->Artikel->articleKeys, $nLimitNBlaetter, $offsetEnd) as $i => $key) {
+                $nLaufLimitN = $i + $nLimitNBlaetter;
+                if ($nLaufLimitN >= $nLimitN && $nLaufLimitN < $nLimitN + $nArtikelProSeite) {
+                    $oArtikel = new Artikel();
+                    //$oArtikelOptionen->nVariationDetailPreis = 1;
+                    $oArtikel->fuelleArtikel($key, $oArtikelOptionen);
+                    // Aktuelle Artikelmenge in die Session (Keine Vaterartikel)
+                    if ($oArtikel->nIstVater == 0) {
+                        $_SESSION['nArtikelUebersichtVLKey_arr'][] = $oArtikel->kArtikel;
+                    }
+                    $oSuchergebnisse->Artikel->elemente[] = $oArtikel;
                 }
-                $oSuchergebnisse->Artikel->elemente[] = $oArtikel;
             }
         }
 

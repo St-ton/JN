@@ -12,7 +12,7 @@ require_once PFAD_ROOT . PFAD_CLASSES_CORE . 'class.core.Shop.php';
 function baueSitemap($nDatei, $data)
 {
     Jtllog::writeLog('Baue "' . PFAD_EXPORT . 'sitemap_' . $nDatei . '.xml", Datenlaenge "' . strlen($data) . '"', JTLLOG_LEVEL_DEBUG);
-    $conf = Shop::getSettings(array(CONF_SITEMAP));
+    $conf = Shop::getSettings([CONF_SITEMAP]);
     if (!empty($data)) {
         if (function_exists('gzopen')) {
             // Sitemap-Dateien anlegen
@@ -45,7 +45,7 @@ function baueSitemap($nDatei, $data)
 function getSitemapBaseURL($ssl = false)
 {
     if (pruefeSSL() === 2 && !$ssl) {
-        $conf       = Shop::getSettings(array(CONF_GLOBAL));
+        $conf       = Shop::getSettings([CONF_GLOBAL]);
         $cSSLNutzen = $conf['global']['kaufabwicklung_ssl_nutzen'];
         if ($cSSLNutzen === 'Z') {
             return str_replace('https://', 'http://', Shop::getURL());
@@ -63,7 +63,7 @@ function getSitemapBaseURL($ssl = false)
 function baueSitemapIndex($nDatei, $bGZ)
 {
     $shopURL = getSitemapBaseURL();
-    $conf    = Shop::getSettings(array(CONF_SITEMAP));
+    $conf    = Shop::getSettings([CONF_SITEMAP]);
     $cIndex  = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
     $cIndex .= '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
     for ($i = 0; $i <= $nDatei; $i++) {
@@ -144,14 +144,14 @@ function spracheEnthalten($cISO, $Sprachen)
  */
 function isSitemapBlocked($cUrl)
 {
-    $cExclude_arr = array(
+    $cExclude_arr = [
         'navi.php',
         'suche.php',
         'jtl.php',
         'pass.php',
         'registrieren.php',
         'warenkorb.php'
-    );
+    ];
 
     foreach ($cExclude_arr as $cExclude) {
         if (strpos($cUrl, $cExclude) !== false) {
@@ -169,7 +169,7 @@ function generateSitemapXML()
 {
     Jtllog::writeLog('Sitemap wird erstellt', JTLLOG_LEVEL_NOTICE);
     $nStartzeit = microtime(true);
-    $conf       = Shop::getSettings(array(CONF_ARTIKELUEBERSICHT, CONF_SITEMAP));
+    $conf       = Shop::getSettings([CONF_ARTIKELUEBERSICHT, CONF_SITEMAP]);
     require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Artikel.php';
     require_once PFAD_ROOT . PFAD_INCLUDES . 'filter_inc.php';
     if (!isset($conf['sitemap']['sitemap_insert_lastmod'])) {
@@ -228,7 +228,7 @@ function generateSitemapXML()
     }
     $_SESSION['Kundengruppe']->kKundengruppe = $stdKundengruppe->kKundengruppe;
     // Stat Array
-    $nStat_arr = array(
+    $nStat_arr = [
         'artikel'          => 0,
         'artikelbild'      => 0,
         'artikelsprache'   => 0,
@@ -244,7 +244,7 @@ function generateSitemapXML()
         'merkmalsprache'   => 0,
         'news'             => 0,
         'newskategorie'    => 0
-    );
+    ];
     // Artikelübersicht - max. Artikel pro Seite
     $nArtikelProSeite = (intval($conf['artikeluebersicht']['artikeluebersicht_artikelproseite']) > 0) ?
         intval($conf['artikeluebersicht']['artikeluebersicht_artikelproseite']) :
@@ -270,7 +270,7 @@ function generateSitemapXML()
     }
     $nDatei         = 0;
     $nSitemap       = 1;
-    $nAnzahlURL_arr = array();
+    $nAnzahlURL_arr = [];
     $nSitemapLimit  = 25000;
     $sitemap_data   = '';
     $shopURL        = getSitemapBaseURL();
@@ -857,7 +857,7 @@ function generateSitemapXML()
         fclose($file);
         $nEndzeit   = microtime(true);
         $fTotalZeit = $nEndzeit - $nStartzeit;
-        executeHook(HOOK_SITEMAP_EXPORT_GENERATED, array('nAnzahlURL_arr' => $nAnzahlURL_arr, 'fTotalZeit' => $fTotalZeit));
+        executeHook(HOOK_SITEMAP_EXPORT_GENERATED, ['nAnzahlURL_arr' => $nAnzahlURL_arr, 'fTotalZeit' => $fTotalZeit]);
         // Sitemap Report
         baueSitemapReport($nAnzahlURL_arr, $fTotalZeit);
         // ping sitemap to Google and Bing
@@ -1005,7 +1005,7 @@ function baueExportURL($kKey, $cKey, $dLetzteAktualisierung, $oSprach_arr, $kSpr
     $FilterSQL                   = new stdClass();
     $GLOBALS['oSuchergebnisse']  = new stdClass();
     $GLOBALS['nArtikelProSeite'] = $nArtikelProSeite;
-    $cURL_arr                    = array();
+    $cURL_arr                    = [];
     $bSeoCheck                   = true;
     Shop::$kSprache              = $kSprache;
     Shop::$nArtikelProSeite      = $nArtikelProSeite;
@@ -1095,8 +1095,8 @@ function baueExportURL($kKey, $cKey, $dLetzteAktualisierung, $oSprach_arr, $kSpr
 
     $shopURL    = getSitemapBaseURL();
     $shopURLSSL = getSitemapBaseURL(true);
-    $search     = array($shopURL . '/', $shopURLSSL . '/');
-    $replace    = array('', '');
+    $search     = [$shopURL . '/', $shopURLSSL . '/'];
+    $replace    = ['', ''];
     if ($GLOBALS['oSuchergebnisse']->GesamtanzahlArtikel > 0) {
         if ($GLOBALS['oSuchergebnisse']->Seitenzahlen->MaxSeiten > 1) {
             for ($i = 1; $i <= $GLOBALS['oSuchergebnisse']->Seitenzahlen->MaxSeiten; $i++) {
@@ -1138,7 +1138,7 @@ function baueExportURL($kKey, $cKey, $dLetzteAktualisierung, $oSprach_arr, $kSpr
  */
 function gibAlleSprachenAssoc($Sprachen)
 {
-    $oSpracheAssoc_arr = array();
+    $oSpracheAssoc_arr = [];
     if (is_array($Sprachen) && count($Sprachen) > 0) {
         foreach ($Sprachen as $oSprache) {
             $oSpracheAssoc_arr[$oSprache->cISO] = $oSprache->kSprache;

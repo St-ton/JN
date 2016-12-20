@@ -56,7 +56,7 @@ function bildartikellink_xml(SimpleXMLElement $xml)
         //delete link first. Important because jtl-wawi does not send del_bildartikellink when image is updated.
         Shop::DB()->delete('tartikelpict', ['kArtikel', 'nNr'], [(int)$item->kArtikel, (int)$item->nNr]);
         $articleIDs[] = (int)$item->kArtikel;
-        DBUpdateInsert('tartikelpict', array($item), 'kArtikelPict');
+        DBUpdateInsert('tartikelpict', [$item], 'kArtikelPict');
     }
     foreach (array_unique($articleIDs) as $_aid) {
         $cacheArticleIDs[] = CACHING_GROUP_ARTICLE . '_' . $_aid;
@@ -91,7 +91,7 @@ function del_img_item($item) {
     $image = Shop::DB()->select('tartikelpict', 'kArtikel', $item->kArtikel, 'nNr', $item->nNr);
     if (is_object($image)) {
         // is last reference
-        $res = Shop::DB()->query("SELECT COUNT(*) AS cnt FROM tbild WHERE kBild = " . (int)$image->kBild, 1);
+        $res = Shop::DB()->query("SELECT COUNT(*) AS cnt FROM tartikelpict WHERE kBild = " . (int)$image->kBild, 1);
         if ($res->cnt == 1) {
             Shop::DB()->delete('tbild', 'kBild', (int)$image->kBild);
             $storage = PFAD_ROOT . PFAD_MEDIA_IMAGE_STORAGE . $image->cPfad;
@@ -110,12 +110,12 @@ function del_img_item($item) {
  */
 function get_del_array(SimpleXMLElement $xml)
 {
-    $items = array();
+    $items = [];
     foreach ($xml->children() as $child) {
-        $item    = (object)array(
+        $item    = (object)[
             'nNr'      => (int)$child->nNr,
             'kArtikel' => (int)$child->kArtikel
-        );
+        ];
         $items[] = $item;
     }
 
@@ -128,27 +128,23 @@ function get_del_array(SimpleXMLElement $xml)
  */
 function get_array(SimpleXMLElement $xml)
 {
-    $items = array();
+    $items = [];
+    /** @var SimpleXMLElement $child */
     foreach ($xml->children() as $child) {
-        $item = (object)array(
+        $item    = (object)[
             'cPfad'        => '',
             'kBild'        => (int)$child->attributes()->kBild,
             'nNr'          => (int)$child->attributes()->nNr,
             'kArtikel'     => (int)$child->attributes()->kArtikel,
             'kArtikelPict' => (int)$child->attributes()->kArtikelPict
-        );
-
+        ];
         $imageId = (int)$child->attributes()->kBild;
         $image   = Shop::DB()->select('tbild', 'kBild', $imageId);
-
         if (is_object($image)) {
             $item->cPfad = $image->cPfad;
-            $items[] = $item;
-        }
-        else {
-            if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                Jtllog::writeLog('Missing reference in tbild (Key: ' . $imageId . ')', JTLLOG_LEVEL_DEBUG, false, 'img_link_xml');
-            }
+            $items[]     = $item;
+        } elseif (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
+            Jtllog::writeLog('Missing reference in tbild (Key: ' . $imageId . ')', JTLLOG_LEVEL_DEBUG, false, 'img_link_xml');
         }
     }
 

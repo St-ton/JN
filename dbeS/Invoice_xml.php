@@ -31,15 +31,14 @@ if (auth()) {
  */
 function handleData($kBestellung, $dRechnungErstellt, $kSprache)
 {
-    $kBestellung = intval($kBestellung);
-    $kSprache    = intval($kSprache);
-
+    $kBestellung = (int)$kBestellung;
+    $kSprache    = (int)$kSprache;
     if ($kBestellung > 0 && $kSprache > 0) {
         $oBestellung = Shop::DB()->query(
             "SELECT tbestellung.kBestellung, tbestellung.fGesamtsumme, tzahlungsart.cModulId
                 FROM tbestellung
                 LEFT JOIN tzahlungsart
-                ON tbestellung.kZahlungsart = tzahlungsart.kZahlungsart
+                  ON tbestellung.kZahlungsart = tzahlungsart.kZahlungsart
                 WHERE tbestellung.kBestellung = " . $kBestellung . " 
                 LIMIT 1", 1
         );
@@ -82,10 +81,11 @@ function handleData($kBestellung, $dRechnungErstellt, $kSprache)
  */
 function createResponse($kBestellung, $cTyp, $cComment)
 {
-    $aResponse                               = array('tbestellung' => array());
+    $aResponse                               = ['tbestellung' => []];
     $aResponse['tbestellung']['kBestellung'] = $kBestellung;
     $aResponse['tbestellung']['cTyp']        = $cTyp;
-    $aResponse['tbestellung']['cKommentar']  = html_entity_decode( $cComment, ENT_COMPAT | ENT_HTML401, 'ISO-8859-1' ); // decode entities for jtl-wawi. Entities are html-encoded since https://gitlab.jtl-software.de/jtlshop/jtl-shop/commit/e81f7a93797d8e57d00a1705cc5f13191eee9ca1
+    $aResponse['tbestellung']['cKommentar']  = html_entity_decode( $cComment, ENT_COMPAT | ENT_HTML401, 'ISO-8859-1' ); // decode entities for jtl-wawi.
+    //Entities are html-encoded since https://gitlab.jtl-software.de/jtlshop/jtl-shop/commit/e81f7a93797d8e57d00a1705cc5f13191eee9ca1
 
     return $aResponse;
 }

@@ -132,7 +132,7 @@ function gibAnzahlHaeufigGekaufteGeschenke()
     );
 
     if (isset($nAnzahlGeschenke->nAnzahl) && $nAnzahlGeschenke->nAnzahl > 0) {
-        return (int) $nAnzahlGeschenke->nAnzahl;
+        return (int)$nAnzahlGeschenke->nAnzahl;
     }
 
     return 0;

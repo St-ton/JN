@@ -46,7 +46,7 @@ function checkSeo($cSeo)
  */
 function iso2ascii($str)
 {
-    $arr = array(
+    $arr = [
         chr(161) => 'A', chr(163) => 'L', chr(165) => 'L', chr(166) => 'S', chr(169) => 'S',
         chr(170) => 'S', chr(171) => 'T', chr(172) => 'Z', chr(174) => 'Z', chr(175) => 'Z',
         chr(177) => 'a', chr(179) => 'l', chr(181) => 'l', chr(182) => 's', chr(185) => 's',
@@ -65,7 +65,7 @@ function iso2ascii($str)
         chr(249) => 'u', chr(250) => 'u', chr(251) => 'u', chr(252) => 'ue', chr(253) => 'y',
         chr(254) => 't', chr(32) => '-', chr(58) => '-', chr(59) => '-',
         chr(92)  => '-', chr(43) => '-', chr(38) => '-', chr(180) => ''
-    );
+    ];
     $str = preg_replace('~[^\w-/]~', '', strtr($str, $arr));
 
     while (strpos($str, '--') !== false) {
@@ -78,7 +78,7 @@ function iso2ascii($str)
 /**
  * Get flat SEO-URL path (removes all slashes from seo-url-path, including leading and trailing slashes)
  *
- * @param string $cSeoPath the seo path e.g. "My/Product/Name"
+ * @param string $cSeoPath - the seo path e.g. "My/Product/Name"
  * @return string - flat SEO-URL Path e.g. "My-Product-Name"
  */
 function getFlatSeoPath($cSeoPath)

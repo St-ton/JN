@@ -47,7 +47,7 @@ class Lieferadresse extends Adresse
      *
      * @access public
      * @param int $kLieferadresse
-     * @return $this|int
+     * @return Lieferadresse|int
      */
     public function loadFromDB($kLieferadresse)
     {

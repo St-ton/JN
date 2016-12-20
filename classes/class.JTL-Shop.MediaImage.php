@@ -59,13 +59,15 @@ class MediaImage implements IMedia
             'name'   => $name,
             'ext'    => $settings['format']
         ));
-
         $thumb    = $req->getThumb($size);
         $thumbAbs = PFAD_ROOT . $thumb;
         $rawAbs   = PFAD_ROOT . $req->getRaw();
 
         if (!file_exists($thumbAbs) && !file_exists($rawAbs)) {
-            $thumb = $req->getFallbackThumb($size);
+            $fallback = $req->getFallbackThumb($size);
+            $thumb    = (file_exists(PFAD_ROOT . $fallback))
+                ? $fallback
+                : BILD_KEIN_ARTIKELBILD_VORHANDEN;
         }
 
         return $thumb;
@@ -86,8 +88,8 @@ class MediaImage implements IMedia
     }
 
     /**
-     * @param $type
-     * @param bool $filesize
+     * @param string $type
+     * @param bool   $filesize
      * @return object
      * @throws Exception
      */
@@ -116,7 +118,7 @@ class MediaImage implements IMedia
             $raw = $image->getRaw(true);
             $result->total++;
             if (!file_exists($raw)) {
-                $result->corrupted++;
+                ++$result->corrupted;
             } else {
                 foreach ([Image::SIZE_XS, Image::SIZE_SM, Image::SIZE_MD, Image::SIZE_LG] as $size) {
                     $thumb = $image->getThumb($size, true);
@@ -142,7 +144,7 @@ class MediaImage implements IMedia
     {
         $directory = PFAD_ROOT . MediaImageRequest::getCachePath($type);
         if ($id !== null) {
-            $directory = $directory . '/' . (int) $id;
+            $directory = $directory . '/' . (int)$id;
         }
 
         try {
@@ -304,7 +306,7 @@ class MediaImage implements IMedia
      * @param bool     $notCached
      * @param int|null $offset
      * @param int|null $limit
-     * @return array
+     * @return MediaImageRequest[]
      * @throws Exception
      */
     public static function getImages($type, $notCached = false, $offset = null, $limit = null)

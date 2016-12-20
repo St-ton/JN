@@ -13,7 +13,7 @@ class PlausiKundenfeld extends Plausi
     /**
      * @param null|string $cTyp
      * @param bool        $bUpdate
-     * @return bool|void
+     * @return bool
      */
     public function doPlausi($cTyp = null, $bUpdate = false)
     {

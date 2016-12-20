@@ -85,7 +85,7 @@ class PreisverlaufGraph
      * PreisverlaufGraph Members
      *
      * @access public
-     * @var image
+     * @var string image
      */
     public $image; // Bild vom Graphen
 
@@ -144,12 +144,12 @@ class PreisverlaufGraph
         $this->fMinPreis       = 0.0;
         $this->fDiffPreis      = 0.0;
         $this->nStep           = 0;
-        $this->fStepWert_arr   = array(0.25, 0.5, 1.0, 2.5, 5.0, 7.5, 10.0, 12.5, 15.0, 25.0, 50.0, 100.0, 250.0, 2500.0, 25000.0);
-        $this->ColorBackground = array(255, 255, 255);
-        $this->ColorGrid       = array(255, 255, 255);
-        $this->ColorGraph      = array(255, 255, 255);
-        $this->ColorBox        = array(255, 255, 255);
-        $this->ColorText       = array(255, 255, 255);
+        $this->fStepWert_arr   = [0.25, 0.5, 1.0, 2.5, 5.0, 7.5, 10.0, 12.5, 15.0, 25.0, 50.0, 100.0, 250.0, 2500.0, 25000.0];
+        $this->ColorBackground = [255, 255, 255];
+        $this->ColorGrid       = [255, 255, 255];
+        $this->ColorGraph      = [255, 255, 255];
+        $this->ColorBox        = [255, 255, 255];
+        $this->ColorText       = [255, 255, 255];
         $this->nSchriftgroesse = 8;
         //$this->cSchriftart = 'arial.ttf';
         //$this->cSchriftverzeichnis = dirname(__FILE__) . '/';
@@ -182,9 +182,9 @@ class PreisverlaufGraph
         $oPreisverlauf_arr = Shop::DB()->query(
             "SELECT fVKNetto, UNIX_TIMESTAMP(dDate) AS timestamp
                 FROM tpreisverlauf
-                WHERE kArtikel = " . (int) $kArtikel . "
-                    AND kKundengruppe = " . (int) $kKundegruppe . "
-                    AND DATE_SUB(now(), INTERVAL " . (int) $nMonat . " MONTH) < dDate
+                WHERE kArtikel = " . (int)$kArtikel . "
+                    AND kKundengruppe = " . (int)$kKundegruppe . "
+                    AND DATE_SUB(now(), INTERVAL " . (int)$nMonat . " MONTH) < dDate
                 ORDER BY dDate DESC", 2
         );
         if ($oPreisverlauf_arr !== false && count($oPreisverlauf_arr) > 0) {
@@ -227,7 +227,7 @@ class PreisverlaufGraph
         $this->oPreisverlaufData_arr = $this->holePreisverlauf($kArtikel, $kKundegruppe, $nMonat);
 
         if (is_array($this->oPreisverlaufData_arr) && count($this->oPreisverlaufData_arr) > 1) {
-            $fVKNetto_arr = array();
+            $fVKNetto_arr = [];
 
             foreach ($this->oPreisverlaufData_arr as $oPreisverlauf) {
                 $fVKNetto_arr[] = $oPreisverlauf->fVKNetto;
@@ -497,7 +497,7 @@ class PreisverlaufGraph
         if (count($this->oConfig_arr) > 0) {
             foreach ($this->oConfig_arr as $i => $oConfig) {
                 if (preg_match("/#[A-Fa-f0-9]{6}/", $oConfig->cWert) == 1) {
-                    $nDecZahl_arr = array();
+                    $nDecZahl_arr = [];
 
                     $cWertSub       = substr($oConfig->cWert, 1, strlen($oConfig->cWert) - 1);
                     $nDecZahl_arr[] = hexdec(substr($cWertSub, 0, 2));

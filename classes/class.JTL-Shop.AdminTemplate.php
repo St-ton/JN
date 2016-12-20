@@ -81,7 +81,7 @@ class AdminTemplate
     }
 
     /**
-     * @return Template
+     * @return AdminTemplate
      */
     public static function getInstance()
     {
@@ -119,7 +119,7 @@ class AdminTemplate
             $oTemplate = Shop::DB()->select('ttemplate', 'eTyp', 'admin');
             if ($oTemplate) {
                 self::$cTemplate = $oTemplate->cTemplate;
-                Shop::Cache()->set($cacheID, $oTemplate, array(CACHING_GROUP_TEMPLATE));
+                Shop::Cache()->set($cacheID, $oTemplate, [CACHING_GROUP_TEMPLATE]);
 
                 return $oTemplate->cTemplate;
             }
@@ -139,18 +139,19 @@ class AdminTemplate
     public function getMinifyArray($absolute = false)
     {
         $cOrdner   = $this->getDir();
-        $folders   = array();
+        $folders   = [];
         $folders[] = $cOrdner;
         $cacheID   = 'template_minify_data_adm_' . $cOrdner . (($absolute == true) ? '_a' : '');
         if (($tplGroups_arr = Shop::Cache()->get($cacheID)) === false) {
-            $tplGroups_arr = array();
+            $tplGroups_arr = [];
             foreach ($folders as $cOrdner) {
                 $oXML = self::$helper->getXML($cOrdner, true);
                 if (isset($oXML->Minify->CSS)) {
+                    /** @var SimpleXMLElement $oCSS */
                     foreach ($oXML->Minify->CSS as $oCSS) {
                         $name = (string) $oCSS->attributes()->Name;
                         if (!isset($tplGroups_arr[$name])) {
-                            $tplGroups_arr[$name] = array();
+                            $tplGroups_arr[$name] = [];
                         }
                         foreach ($oCSS->File as $oFile) {
                             $cFile     = (string) $oFile->attributes()->Path;
@@ -179,27 +180,27 @@ class AdminTemplate
                         }
                     }
                 } else {
-                    $tplGroups_arr['admin_css'] = array();
+                    $tplGroups_arr['admin_css'] = [];
                 }
                 if (isset($oXML->Minify->JS)) {
                     foreach ($oXML->Minify->JS as $oJS) {
-                        $name = (string) $oJS->attributes()->Name;
+                        $name = (string)$oJS->attributes()->Name;
                         if (!isset($tplGroups_arr[$name])) {
-                            $tplGroups_arr[$name] = array();
+                            $tplGroups_arr[$name] = [];
                         }
                         foreach ($oJS->File as $oFile) {
                             $tplGroups_arr[$name][] = (($absolute === true) ? PFAD_ROOT : '') .
                                 ((self::$isAdmin === true) ? PFAD_ADMIN : '') .
-                                PFAD_TEMPLATES . $cOrdner . '/' . (string) $oFile->attributes()->Path;
+                                PFAD_TEMPLATES . $cOrdner . '/' . (string)$oFile->attributes()->Path;
                         }
                     }
                 } else {
-                    $tplGroups_arr['admin_js'] = array();
+                    $tplGroups_arr['admin_js'] = [];
                 }
             }
-            $cacheTags = array(CACHING_GROUP_OPTION, CACHING_GROUP_TEMPLATE, CACHING_GROUP_PLUGIN);
+            $cacheTags = [CACHING_GROUP_OPTION, CACHING_GROUP_TEMPLATE, CACHING_GROUP_PLUGIN];
             if (!self::$isAdmin) {
-                executeHook(HOOK_CSS_JS_LIST, array('groups' => &$tplGroups_arr, 'cache_tags' => &$cacheTags));
+                executeHook(HOOK_CSS_JS_LIST, ['groups' => &$tplGroups_arr, 'cache_tags' => &$cacheTags]);
             }
             Shop::Cache()->set($cacheID, $tplGroups_arr, $cacheTags);
         }
@@ -236,6 +237,6 @@ class AdminTemplate
             $outputJS   = '<script type="text/javascript" src="' . $baseURL . '/' . PFAD_MINIFY . '/index.php?g=admin_js&tpl=' . $tplString . $fileSuffix . '"></script>';
         }
 
-        return array('js' => $outputJS, 'css' => $outputCSS);
+        return ['js' => $outputJS, 'css' => $outputCSS];
     }
 }

@@ -89,7 +89,7 @@ class Bestseller
      */
     public function setCustomergroup($customergroup)
     {
-        $this->_customergrp = (int) $customergroup;
+        $this->_customergrp = (int)$customergroup;
 
         return $this;
     }
@@ -108,7 +108,7 @@ class Bestseller
      */
     public function setLimit($limit)
     {
-        $this->_limit = (int) $limit;
+        $this->_limit = (int)$limit;
 
         return $this;
     }
@@ -127,7 +127,7 @@ class Bestseller
      */
     public function setMinSales($minsales)
     {
-        $this->_minsales = (int) $minsales;
+        $this->_minsales = (int)$minsales;
 
         return $this;
     }
@@ -137,7 +137,7 @@ class Bestseller
      */
     public function fetch()
     {
-        $products = array();
+        $products = [];
         if ($this->_customergrp !== null) {
             // Product SQL
             $productsql = '';
@@ -193,18 +193,18 @@ class Bestseller
     public static function buildBestsellers($products, $customergrp, $viewallowed = true, $onlykeys = true, $limit = 3, $minsells = 10)
     {
         if ($viewallowed && is_array($products) && count($products) > 0) {
-            $options = array(
+            $options = [
                 'Products'      => $products,
                 'Customergroup' => $customergrp,
                 'Limit'         => $limit,
                 'MinSales'      => $minsells
-            );
+            ];
             $bestseller = new self($options);
             if ($onlykeys) {
                 return $bestseller->fetch();
             }
             $bestsellerkeys = $bestseller->fetch();
-            $bestsellers    = array();
+            $bestsellers    = [];
             $defaultOptions = Artikel::getDefaultOptions();
             foreach ($bestsellerkeys as $bestsellerkey) {
                 $product = new Artikel();
@@ -227,7 +227,7 @@ class Bestseller
      */
     public static function ignoreProducts(&$products, $bestsellers)
     {
-        $ignoredkeys = array();
+        $ignoredkeys = [];
         if (is_array($products) && count($products) > 0 && is_array($bestsellers) && count($bestsellers) > 0) {
             foreach ($products as $i => $product) {
                 if (count($products) === 1) {

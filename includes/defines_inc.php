@@ -335,6 +335,7 @@ define('LASTJOBS_BEWERTUNGSERINNNERUNG', 1); // Bewertungserinnerungskey
 define('LASTJOBS_SITEMAP', 2); // Sitemapkey
 define('LASTJOBS_RSS', 3); // RSSkey
 define('LASTJOBS_GARBAGECOLLECTOR', 4); // GarbageCollector
+define('LASTJOBS_KATEGORIEUPDATE', 5); // Kategorielevel update, nested set build
 // Seitentypen
 define('PAGE_UNBEKANNT', 0);
 define('PAGE_ARTIKEL', 1); // Artikeldetails

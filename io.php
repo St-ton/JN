@@ -29,10 +29,10 @@ if (!isset($_REQUEST['io'])) {
 
 $request = $_REQUEST['io'];
 
-executeHook(HOOK_IO_HANDLE_REQUEST, array(
+executeHook(HOOK_IO_HANDLE_REQUEST, [
     'io'      => &$io,
     'request' => &$request
-));
+]);
 
 try {
     $data = $io->handleRequest($request);

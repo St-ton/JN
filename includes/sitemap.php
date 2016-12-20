@@ -7,8 +7,9 @@ define('JTL_INCLUDE_ONLY_DB', 1);
 require_once dirname(__FILE__) . '/globalinclude.php';
 include PFAD_ROOT . PFAD_INCLUDES . 'spiderlist_inc.php';
 
-$cDatei = isset($_GET['datei']) ?
-    getRequestFile($_GET['datei']) : null;
+$cDatei = (isset($_GET['datei']))
+    ? getRequestFile($_GET['datei'])
+    : null;
 
 if ($cDatei === null) {
     http_response_code(503);
@@ -17,7 +18,13 @@ if ($cDatei === null) {
 }
 
 $cIP              = Shop::DB()->escape(getRealIp());
-$nFloodProtection = (int) Shop::DB()->query("SELECT * FROM `tsitemaptracker` WHERE `cIP` = '{$cIP}' AND DATE_ADD(`dErstellt`, INTERVAL 2 MINUTE) >= NOW() ORDER BY `dErstellt` DESC", 3);
+$nFloodProtection = (int)Shop::DB()->query("
+    SELECT * 
+      FROM `tsitemaptracker` 
+      WHERE `cIP` = '{$cIP}' 
+        AND DATE_ADD(`dErstellt`, INTERVAL 2 MINUTE) >= NOW() 
+    ORDER BY `dErstellt` DESC", 3
+);
 
 if ($nFloodProtection === 0) {
     // Track request
@@ -56,7 +63,6 @@ function getRequestBot()
 
 /**
  * @param string $cDatei
- *
  * @return null|string
  */
 function getRequestFile($cDatei)
@@ -64,17 +70,17 @@ function getRequestFile($cDatei)
     $cDateiInfo_arr = pathinfo($cDatei);
 
     if (!isset($cDateiInfo_arr['extension']) || !in_array($cDateiInfo_arr['extension'], ['xml', 'txt', 'gz'])) {
-        return;
+        return null;
     }
 
     if ($cDatei !== $cDateiInfo_arr['basename']) {
-        return;
+        return null;
     }
 
     $cDatei = $cDateiInfo_arr['basename'];
 
     if (!file_exists(PFAD_ROOT . PFAD_EXPORT . $cDatei)) {
-        return;
+        return null;
     }
 
     return $cDatei;

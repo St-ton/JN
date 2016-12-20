@@ -371,18 +371,14 @@ class PayPalExpress extends PaymentMethod
 
                 $this->setOrderStatusToPaid($order);
             }
+        }
 
-            Session::getInstance()->cleanUp();
+        Session::getInstance()->cleanUp();
 
-            unset($_SESSION['reshash'], $_SESSION['paypalexpress']);
+        unset($_SESSION['reshash'], $_SESSION['paypalexpress']);
 
-            if (isset($_SESSION['Kunde']) && intval($_SESSION['Kunde']->nRegistriert) === 0) {
-                unset($_SESSION['Kunde']);
-            }
-        } else {
-            $r = print_r($response, true);
-            $this->doLog("Response: DoExpressCheckoutPayment:\n\n<pre>{$r}</pre>", LOGLEVEL_NOTICE);
-            PayPalHelper::setFlashMessage($response->Errors[0]->LongMessage);
+        if (isset($_SESSION['Kunde']) && intval($_SESSION['Kunde']->nRegistriert) === 0) {
+            unset($_SESSION['Kunde']);
         }
     }
 

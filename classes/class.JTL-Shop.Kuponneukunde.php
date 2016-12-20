@@ -43,6 +43,12 @@ class Kuponneukunde
     public $dErstellt;
 
     /**
+     * @access public
+     * @var string
+     */
+    public $cVerwendet;
+
+    /**
      * Constructor
      *
      * @access public
@@ -56,7 +62,7 @@ class Kuponneukunde
                 foreach ($cMember_arr as $cMember) {
                     $cMethod = 'set' . substr($cMember, 1);
                     if (method_exists($this, $cMethod)) {
-                        call_user_func(array(&$this, $cMethod), $oObj->$cMember);
+                        call_user_func([&$this, $cMethod], $oObj->$cMember);
                     }
                 }
             }
@@ -86,7 +92,7 @@ class Kuponneukunde
     public function Save()
     {
         if ($this->kKuponNeukunde > 0) {
-            Shop::DB()->delete('tkuponneukunde', 'kKuponNeukunde', (int) $this->kKuponNeukunde);
+            Shop::DB()->delete('tkuponneukunde', 'kKuponNeukunde', (int)$this->kKuponNeukunde);
         }
         $obj = kopiereMembers($this);
         unset($obj->kKuponNeukunde);
@@ -173,6 +179,18 @@ class Kuponneukunde
         } else {
             $this->dErstellt = $dErstellt;
         }
+    }
+
+    /**
+     * Sets the cVerwendet
+     *
+     * @access public
+     * @param string $cVerwendet
+     * @var string
+     */
+    public function setVerwendet($cVerwendet)
+    {
+        $this->cVerwendet = $cVerwendet;
     }
 
     /**

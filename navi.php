@@ -242,7 +242,7 @@ if ($cParameter_arr['kHersteller'] > 0 ||
     if (!$bExtendedJTLSearch) {
         if (isset($NaviFilter->Suche->cSuche)) {
             suchanfragenSpeichern($NaviFilter->Suche->cSuche, $oSuchergebnisse->GesamtanzahlArtikel, $bEchteSuche);
-            $NaviFilter->Suche->kSuchanfrage = gibSuchanfrageKey($NaviFilter->Suche->cSuche, Shop::$kSprache);
+            $NaviFilter->Suche->kSuchanfrage = gibSuchanfrageKey($NaviFilter->Suche->cSuche, Shop::getLanguage());
         } else {
             if (!isset($NaviFilter->Suche)) {
                 $NaviFilter->Suche = new stdClass();
@@ -480,12 +480,12 @@ if ($cParameter_arr['kHersteller'] > 0 ||
     // Auswahlassistent
     if (TEMPLATE_COMPATIBILITY === true && function_exists('starteAuswahlAssistent')) {
         starteAuswahlAssistent(
-            AUSWAHLASSISTENT_ORT_KATEGORIE, $cParameter_arr['kKategorie'], Shop::$kSprache, $smarty,
+            AUSWAHLASSISTENT_ORT_KATEGORIE, $cParameter_arr['kKategorie'], Shop::getLanguage(), $smarty,
             $Einstellungen['auswahlassistent']
         );
     } elseif (class_exists('AuswahlAssistent')) {
         AuswahlAssistent::startIfRequired(
-            AUSWAHLASSISTENT_ORT_KATEGORIE, $cParameter_arr['kKategorie'], Shop::$kSprache, $smarty
+            AUSWAHLASSISTENT_ORT_KATEGORIE, $cParameter_arr['kKategorie'], Shop::getLanguage(), $smarty
         );
     }
     // Work around fürs Template

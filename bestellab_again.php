@@ -19,8 +19,8 @@ $bestellung->fuelleBestellung();
 
 //abfragen, ob diese Bestellung dem Kunden auch gehoert
 //bei Gastbestellungen ist ggf das Kundenobjekt bereits entfernt bzw nRegistriert = 0
-if (isset($bestellung->oKunde) && (int) $bestellung->oKunde->nRegistriert === 1) {
-    if ((int) $bestellung->kKunde !== (int) $_SESSION['Kunde']->kKunde) {
+if (isset($bestellung->oKunde) && (int)$bestellung->oKunde->nRegistriert === 1) {
+    if ((int)$bestellung->kKunde !== (int)$_SESSION['Kunde']->kKunde) {
         header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true), true, 303);
         exit;
     }

@@ -13,7 +13,7 @@
     <form id="frm_filter" name="frm_filter" action="{get_static_route id='news.php'}" method="post" class="form-inline text-center">
         {$jtl_token}
 
-        <select name="nSort" onchange="this.form.submit();" class="form-control">
+        <select name="nSort" onchange="this.form.submit();" class="form-control form-group">
             <option value="-1"{if $nSort == -1} selected{/if}>{lang key="newsSort" section="news"}</option>
             <option value="1"{if $nSort == 1} selected{/if}>{lang key="newsSortDateDESC" section="news"}</option>
             <option value="2"{if $nSort == 2} selected{/if}>{lang key="newsSortDateASC" section="news"}</option>
@@ -23,7 +23,7 @@
             <option value="6"{if $nSort == 6} selected{/if}>{lang key="newsSortCommentsASC" section="news"}</option>
         </select>
 
-        <select name="cDatum" onchange="this.form.submit();" class="form-control">
+        <select name="cDatum" onchange="this.form.submit();" class="form-control form-group">
             <option value="-1"{if $cDatum == -1} selected{/if}>{lang key="newsDateFilter" section="news"}</option>
             {if !empty($oDatum_arr)}
                 {foreach name="datum" from=$oDatum_arr item=oDatum}
@@ -33,7 +33,7 @@
         </select>
 
         {lang key="newsCategorie" section="news" assign="cCurrentKategorie"}
-        <select name="nNewsKat" onchange="this.form.submit();" class="form-control">
+        <select name="nNewsKat" onchange="this.form.submit();" class="form-control form-group">
             <option value="-1"{if $nNewsKat == -1} selected{/if}>{lang key="newsCategorie" section="news"}</option>
             {if !empty($oNewsKategorie_arr)}
                 {foreach name="newskats" from=$oNewsKategorie_arr item=oNewsKategorie}
@@ -43,7 +43,7 @@
             {/if}
         </select>
 
-        <select class="form-control" name="{$oPagination->getId()}_nItemsPerPage" id="{$oPagination->getId()}_nItemsPerPage"
+        <select class="form-control form-group" name="{$oPagination->getId()}_nItemsPerPage" id="{$oPagination->getId()}_nItemsPerPage"
                 onchange="this.form.submit();">
             <option value="0" {if $oPagination->getItemsPerPage() == 0} selected{/if}>
                 {lang key='newsPerSite' section='news'}

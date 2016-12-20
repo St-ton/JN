@@ -75,7 +75,7 @@ class Slider implements IExtensionPoint
     /**
      * @var array
      */
-    public $oSlide_arr = array();
+    public $oSlide_arr = [];
 
     /**
      * @var bool
@@ -91,6 +91,11 @@ class Slider implements IExtensionPoint
      * @var bool
      */
     public $bDirectionNav = true;
+
+    /**
+     * @var bool
+     */
+    public $bUseKB = true;
 
     /**
      *
@@ -167,7 +172,7 @@ class Slider implements IExtensionPoint
                     WHERE kSlider = " . $kSlider . "
                     ORDER BY nSort ASC", 9
             );
-            $oSlide_arr = array();
+            $oSlide_arr = [];
             foreach ($kSlide_arr as $kSlide) {
                 $oSlide          = new Slide();
                 $oSlide->kSlider = (int)$cSlider_arr['kSlider'];

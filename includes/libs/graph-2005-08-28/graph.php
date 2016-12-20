@@ -274,7 +274,7 @@ public function init()
 public function draw_set($order, $set, $offset)
 {
     // defaults
-  
+
   //
   if ($offset) {
       if (isset($this->y_format[$set]['shadow'])) {
@@ -285,7 +285,7 @@ public function draw_set($order, $set, $offset)
   } else {
       $colour   = $this->y_format[$set]['colour'];
   }
-    
+
     $point     = isset($this->y_format[$set]['point'])      ? $this->y_format[$set]['point']      : 'none';
     $pointSize = isset($this->y_format[$set]['point_size']) ? $this->y_format[$set]['point_size'] : $this->parameter['point_size'];
     $line      = isset($this->y_format[$set]['line'])       ? $this->y_format[$set]['line']       : 'none';
@@ -310,7 +310,7 @@ public function draw_set($order, $set, $offset)
 
     //print "$thisX, $thisY <BR>";
     //_p("thisX=$thisX, thisY=$thisY, bar=$bar, barSize=$barSize, colour=$colour, offset=$offset, set=$set");
-    
+
     /*    */
 
 
@@ -357,7 +357,7 @@ public function draw_set($order, $set, $offset)
       if (isset($this->y_format[$set]['shadow'])) {
           $colour =  $this->y_format[$set]['shadow'];
       }
-    
+
       if (isset($colour)) {
           if ($colour != 'none') {
               $this->draw_set($order, $set, $offset);
@@ -1405,7 +1405,7 @@ public function update_boundaryBox(&$boundaryBox, $coords)
         $angle   = $message['angle'];
         $font    = $this->parameter['path_to_fonts'].$message['font'];
         $text    = $message['text'];
-  
+
   //print ('get_boundaryBox');
   //expandPre($message);
 
@@ -1621,7 +1621,7 @@ public function plot($x, $y, $type, $size, $colour, $offset)
     public function bar($x, $y, $type, $size, $colour, $offset, $index)
     {
         //_p($index);
-  
+
   $index_offset = $this->calculated['bar_offset_index'][$index];
         $bar_offset = $this->calculated['bar_offset_x'][$index_offset];
   //$this->dbug("drawing bar at offset = $offset : index = $index: bar_offset = $bar_offset");

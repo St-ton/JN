@@ -29,7 +29,7 @@ class KategorieListe
      *
      * @var array
      */
-    private static $allCats = array();
+    private static $allCats = [];
 
     /**
      * Holt die ersten 3 Ebenen von Kategorien, jeweils nach Name sortiert
@@ -41,7 +41,7 @@ class KategorieListe
      */
     public function holKategorienAufEinenBlick($levels = 2, $kKundengruppe = 0, $kSprache = 0)
     {
-        $this->elemente = array();
+        $this->elemente = [];
         if (!$_SESSION['Kundengruppe']->darfArtikelKategorienSehen) {
             return $this->elemente;
         }
@@ -59,14 +59,14 @@ class KategorieListe
         $objArr1 = $this->holUnterkategorien(0, $kKundengruppe, $kSprache);
         foreach ($objArr1 as $obj1) {
             $kategorie1           = $obj1;
-            $kategorie1->children = array();
+            $kategorie1->children = [];
 
             if ($levels > 1) {
                 //2nd level
                 $objArr2 = $this->holUnterkategorien($kategorie1->kKategorie, $kKundengruppe, $kSprache);
                 foreach ($objArr2 as $obj2) {
                     $kategorie2           = $obj2;
-                    $kategorie2->children = array();
+                    $kategorie2->children = [];
 
                     if ($levels > 2) {
                         //3rd level
@@ -91,7 +91,7 @@ class KategorieListe
      */
     public function getAllCategoriesOnLevel($kKategorie, $kKundengruppe = 0, $kSprache = 0)
     {
-        $this->elemente = array();
+        $this->elemente = [];
         if (!$_SESSION['Kundengruppe']->darfArtikelKategorienSehen) {
             return $this->elemente;
         }
@@ -101,7 +101,7 @@ class KategorieListe
         if (!$kSprache) {
             $kSprache = Shop::$kSprache;
         }
-        $conf   = Shop::getSettings(array(CONF_NAVIGATIONSFILTER));
+        $conf   = Shop::getSettings([CONF_NAVIGATIONSFILTER]);
         $objArr = $this->holUnterkategorien($kKategorie, $kKundengruppe, $kSprache);
         if (is_array($objArr)) {
             foreach ($objArr as $kategorie) {
@@ -114,7 +114,7 @@ class KategorieListe
         }
         if ($kKategorie == 0 && self::$wasModified === true) {
             $cacheID = CACHING_GROUP_CATEGORY . '_list_' . $kKundengruppe . '_' . $kSprache;
-            $res     = Shop::Cache()->set($cacheID, self::$allCats[$cacheID], array(CACHING_GROUP_CATEGORY));
+            $res     = Shop::Cache()->set($cacheID, self::$allCats[$cacheID], [CACHING_GROUP_CATEGORY]);
             if ($res === false) {
                 //could not save to cache - so save to session like in 3.18 base
                 $_SESSION['kKategorieVonUnterkategorien_arr'] = self::$allCats[$cacheID]['kKategorieVonUnterkategorien_arr'];
@@ -144,13 +144,16 @@ class KategorieListe
             return $allCategories;
         }
         if (!isset($_SESSION['oKategorie_arr'])) {
-            $_SESSION['oKategorie_arr'] = array();
+            $_SESSION['oKategorie_arr'] = [];
         }
         if (!isset($_SESSION['kKategorieVonUnterkategorien_arr'])) {
-            $_SESSION['kKategorieVonUnterkategorien_arr'] = array();
+            $_SESSION['kKategorieVonUnterkategorien_arr'] = [];
         }
 
-        return array('oKategorie_arr' => $_SESSION['oKategorie_arr'], 'kKategorieVonUnterkategorien_arr' => $_SESSION['kKategorieVonUnterkategorien_arr']);
+        return [
+            'oKategorie_arr' => $_SESSION['oKategorie_arr'],
+            'kKategorieVonUnterkategorien_arr' => $_SESSION['kKategorieVonUnterkategorien_arr']
+        ];
     }
 
     /**
@@ -174,7 +177,7 @@ class KategorieListe
      */
     public function getOpenCategories($AktuelleKategorie, $kKundengruppe = 0, $kSprache = 0)
     {
-        $this->elemente = array();
+        $this->elemente = [];
         if (!isset($_SESSION['Kundengruppe']->darfArtikelKategorienSehen) || !$_SESSION['Kundengruppe']->darfArtikelKategorienSehen) {
             return $this->elemente;
         }
@@ -213,7 +216,7 @@ class KategorieListe
      */
     public function getUnterkategorien($AktuelleKategorie, $kKundengruppe = 0, $kSprache = 0)
     {
-        $this->elemente = array();
+        $this->elemente = [];
         if (!$_SESSION['Kundengruppe']->darfArtikelKategorienSehen) {
             return $this->elemente;
         }
@@ -223,7 +226,7 @@ class KategorieListe
         if (!$kSprache) {
             $kSprache = Shop::$kSprache;
         }
-        $zuDurchsuchen   = array();
+        $zuDurchsuchen   = [];
         $zuDurchsuchen[] = $AktuelleKategorie;
         $kSprache        = (int)$kSprache;
         $kKundengruppe   = (int)$kKundengruppe;
@@ -251,7 +254,7 @@ class KategorieListe
     {
         $kKategorie = (int)$kKategorie;
         if (!$_SESSION['Kundengruppe']->darfArtikelKategorienSehen) {
-            return array();
+            return [];
         }
         if (!$kKundengruppe) {
             $kKundengruppe = $_SESSION['Kundengruppe']->kKundengruppe;
@@ -281,24 +284,25 @@ class KategorieListe
             if (!$kKategorie) {
                 $kKategorie = 0;
             }
-            $categorySQL = "SELECT tkategorie.kKategorie, tkategorie.cName, tkategorie.cBeschreibung, tkategorie.kOberKategorie,
-                                tkategorie.nSort, tkategorie.dLetzteAktualisierung, tkategoriesprache.cName AS cName_spr,
-                                tkategoriesprache.cBeschreibung AS cBeschreibung_spr, tseo.cSeo, tkategoriepict.cPfad
-                                FROM tkategorie
-                                LEFT JOIN tkategoriesprache ON tkategoriesprache.kKategorie = tkategorie.kKategorie
-                                    AND tkategoriesprache.kSprache = " . intval($kSprache) . "
-                                LEFT JOIN tkategoriesichtbarkeit ON tkategorie.kKategorie=tkategoriesichtbarkeit.kKategorie
-                                AND tkategoriesichtbarkeit.kKundengruppe = " . intval($kKundengruppe) . "
-                                LEFT JOIN tseo ON tseo.cKey = 'kKategorie'
-                                    AND tseo.kKey = tkategorie.kKategorie
-                                    AND tseo.kSprache = " . intval($kSprache) . "
-                                LEFT JOIN tkategoriepict ON tkategoriepict.kKategorie = tkategorie.kKategorie
-                                WHERE tkategoriesichtbarkeit.kKategorie IS NULL
-                                    AND tkategorie.kOberKategorie = " . intval($kKategorie) . "
-                                GROUP BY tkategorie.kKategorie
-                                ORDER BY tkategorie.nSort, " . $cSortSQLName . "tkategorie.cName";
+            $categorySQL = "
+                SELECT tkategorie.kKategorie, tkategorie.cName, tkategorie.cBeschreibung, tkategorie.kOberKategorie,
+                    tkategorie.nSort, tkategorie.dLetzteAktualisierung, tkategoriesprache.cName AS cName_spr,
+                    tkategoriesprache.cBeschreibung AS cBeschreibung_spr, tseo.cSeo, tkategoriepict.cPfad
+                    FROM tkategorie
+                    LEFT JOIN tkategoriesprache ON tkategoriesprache.kKategorie = tkategorie.kKategorie
+                        AND tkategoriesprache.kSprache = " . intval($kSprache) . "
+                    LEFT JOIN tkategoriesichtbarkeit ON tkategorie.kKategorie=tkategoriesichtbarkeit.kKategorie
+                    AND tkategoriesichtbarkeit.kKundengruppe = " . intval($kKundengruppe) . "
+                    LEFT JOIN tseo ON tseo.cKey = 'kKategorie'
+                        AND tseo.kKey = tkategorie.kKategorie
+                        AND tseo.kSprache = " . intval($kSprache) . "
+                    LEFT JOIN tkategoriepict ON tkategoriepict.kKategorie = tkategorie.kKategorie
+                    WHERE tkategoriesichtbarkeit.kKategorie IS NULL
+                        AND tkategorie.kOberKategorie = " . intval($kKategorie) . "
+                    GROUP BY tkategorie.kKategorie
+                    ORDER BY tkategorie.nSort, " . $cSortSQLName . "tkategorie.cName";
             $oKategorie_arr                                                = Shop::DB()->query($categorySQL, 2);
-            $categoryList['kKategorieVonUnterkategorien_arr'][$kKategorie] = array();
+            $categoryList['kKategorieVonUnterkategorien_arr'][$kKategorie] = [];
             if (is_array($oKategorie_arr) && count($oKategorie_arr) > 0) {
                 $shopURL     = Shop::getURL();
                 $oSpracheTmp = gibStandardsprache();
@@ -312,7 +316,7 @@ class KategorieListe
                     //ks = ist kategorie leer 1 = nein, 2 = ja
                     $categoryList['ks'][$oKategorie->kKategorie] = 1;
                     //Bildpfad setzen
-                    if ($oKategorie->cPfad) {
+                    if ($oKategorie->cPfad && file_exists(PFAD_ROOT . PFAD_KATEGORIEBILDER . $oKategorie->cPfad)) {
                         $oKategorie->cBildURL     = PFAD_KATEGORIEBILDER . $oKategorie->cPfad;
                         $oKategorie->cBildURLFull = $shopURL . '/' . PFAD_KATEGORIEBILDER . $oKategorie->cPfad;
                     } else {
@@ -350,8 +354,8 @@ class KategorieListe
                     unset($oKategorie->cBeschreibung_spr);
                     unset($oKategorie->cName_spr);
                     // Attribute holen
-                    $oKategorie->categoryFunctionAttributes = array();
-                    $oKategorie->categoryAttributes         = array();
+                    $oKategorie->categoryFunctionAttributes = [];
+                    $oKategorie->categoryAttributes         = [];
                     $oKategorieAttribut_arr                 = Shop::DB()->query(
                         "SELECT COALESCE(tkategorieattributsprache.cName, tkategorieattribut.cName) cName,
                                 COALESCE(tkategorieattributsprache.cWert, tkategorieattribut.cWert) cWert,
@@ -398,7 +402,7 @@ class KategorieListe
             self::setCategoryList($categoryList, $kKundengruppe, $kSprache);
         }
 
-        return (isset($oKategorie_arr)) ? $oKategorie_arr : array();
+        return (isset($oKategorie_arr)) ? $oKategorie_arr : [];
     }
 
     /**
@@ -408,7 +412,7 @@ class KategorieListe
      */
     public function nichtLeer($kKategorie, $kKundengruppe)
     {
-        $conf = Shop::getSettings(array(CONF_GLOBAL));
+        $conf = Shop::getSettings([CONF_GLOBAL]);
         if ($conf['global']['kategorien_anzeigefilter'] == EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_ALLE) {
             return true;
         }
@@ -426,7 +430,7 @@ class KategorieListe
                     return false;
                 }
             }
-            $kats   = array();
+            $kats   = [];
             $kats[] = $kKategorie;
             while (count($kats) > 0) {
                 $kat = array_pop($kats);

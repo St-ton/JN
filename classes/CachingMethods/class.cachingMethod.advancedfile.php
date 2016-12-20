@@ -30,8 +30,6 @@ class cache_advancedfile implements ICachingMethod
         $this->options       = $options;
         $this->isInitialized = true;
         self::$instance      = $this;
-
-        return $this;
     }
 
     /**
@@ -40,7 +38,9 @@ class cache_advancedfile implements ICachingMethod
      */
     private function getFileName($cacheID)
     {
-        return $this->options['cache_dir'] . $cacheID . $this->options['file_extension'];
+        return (is_string($cacheID))
+            ? $this->options['cache_dir'] . $cacheID . $this->options['file_extension']
+            : false;
     }
 
     /**
@@ -60,12 +60,12 @@ class cache_advancedfile implements ICachingMethod
         return (file_put_contents(
                 $fileName,
                 serialize(
-                    array(
+                    [
                         'value'    => $content,
                         'lifetime' => ($expiration === null) ?
                             $this->options['lifetime'] :
                             $expiration
-                    )
+                    ]
                 )
             ) !== false) ? true : false;
     }
@@ -108,7 +108,7 @@ class cache_advancedfile implements ICachingMethod
      */
     public function loadMulti($cacheIDs)
     {
-        $res = array();
+        $res = [];
         foreach ($cacheIDs as $_cid) {
             $res[$_cid] = $this->load($cacheIDs);
         }
@@ -207,13 +207,13 @@ class cache_advancedfile implements ICachingMethod
             closedir($dir);
         }
 
-        return array(
+        return [
             'entries' => $num,
             'hits'    => null,
             'misses'  => null,
             'inserts' => null,
             'mem'     => $total
-        );
+        ];
     }
 
     /**
@@ -221,7 +221,7 @@ class cache_advancedfile implements ICachingMethod
      * @param string $cacheID
      * @return bool
      */
-    public function setCacheTag($tags = array(), $cacheID)
+    public function setCacheTag($tags = [], $cacheID)
     {
         $fileName = $this->getFileName($cacheID);
         if ($fileName === false || !file_exists($fileName)) {
@@ -237,9 +237,11 @@ class cache_advancedfile implements ICachingMethod
                 $dirs = explode('_', $tag);
                 $path = $this->options['cache_dir'];
                 foreach ($dirs as $dir) {
-                    $path .= $dir . '/';
-                    if (!file_exists($path)) {
-                        mkdir($path);
+                    if (strlen($dir) > 0) {
+                        $path .= $dir . '/';
+                        if (!file_exists($path)) {
+                            mkdir($path);
+                        }
                     }
                 }
                 if (!file_exists($path . $cacheID)) {
@@ -302,10 +304,10 @@ class cache_advancedfile implements ICachingMethod
      * clean up journal after deleting cache entries
      * not needed for this method
      *
-     * @param string|array $cacheID
+     * @param string|array $tags
      * @return bool
      */
-    public function clearCacheTags($cacheID)
+    public function clearCacheTags($tags)
     {
         return true;
     }

@@ -183,7 +183,7 @@ class cache_redis implements ICachingMethod
 
     /**
      * @param string $cacheID
-     * @return bool|void
+     * @return bool|int
      */
     public function flush($cacheID)
     {
@@ -277,11 +277,9 @@ class cache_redis implements ICachingMethod
                 $matchTags[] = $this->_keyFromTagName($_tag);
             }
         }
-        if (count($tags) === 1) {
-            $res = $this->_redis->sMembers($matchTags[0]);
-        } else {
-            $res = $this->_redis->sInter($matchTags);
-        }
+        $res = (count($tags) === 1)
+            ? $this->_redis->sMembers($matchTags[0])
+            : $this->_redis->sInter($matchTags);
         //for some stupid reason, hhvm does not unserialize values
         foreach ($res as &$_cid) {
             //and phpredis will throw an exception when unserializing unserialized data

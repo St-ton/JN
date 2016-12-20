@@ -105,7 +105,7 @@ switch ($action) {
         break;
 
     case 'cache_image':
-        $index = isset($_GET['index']) ? (int) $_GET['index'] : null;
+        $index = isset($_GET['index']) ? (int)$_GET['index'] : null;
 
         if ($type === null || $index === null) {
             makeResponse(null, 'Invalid argument request', 500);

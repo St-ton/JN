@@ -21,8 +21,15 @@
         onLoad: function() {
             var that = this;
             var form = $.evo.io().getFormValues('buy_form');
-            
-            history.replaceState({ a: form.a, a2: form.VariKindArtikel || form.a, url: document.location.href, variations: {} }, document.title, document.location.href);
+
+            if (typeof history.replaceState === 'function') {
+                history.replaceState({
+                    a: form.a,
+                    a2: form.VariKindArtikel || form.a,
+                    url: document.location.href,
+                    variations: {}
+                }, document.title, document.location.href);
+            }
 
             window.addEventListener('popstate', function(event) {
                 if (event.state) {
@@ -96,20 +103,39 @@
                     });
             }
             
-            inner = function(context) {
+            inner = function(context, temporary, force) {
                 var id = $(context).attr('data-key'),
                     value = $(context).attr('data-value'),
                     data  = $(context).data('list'),
                     title = $(context).attr('data-title'),
                     gallery = $.evo.article().gallery;
 
+                if (typeof temporary === 'undefined') {
+                    temporary = true;
+                }
+
                 $.evo.article().galleryIndex = gallery.index;
                 $.evo.article().galleryLastIdent = gallery.ident;
 
-                if (!$(context).hasClass('active')) {
+                if (!$(context).hasClass('active') || force) {
                     if (!!data) {
                         gallery.setItems([data], value);
-                        gallery.render(value);
+
+                        if (!temporary) {
+                            var items  = [data];
+                            var stacks = gallery.getStacks();
+                            for (var s in stacks) {
+                                if (stacks.hasOwnProperty(s) && s.match(/^_[0-9a-zA-Z]*$/) && s != '_' + id) {
+                                    items = $.merge(items, stacks[s]);
+                                }
+                            }
+
+                            gallery.setItems([data], '_' + id);
+                            gallery.setItems(items, '__');
+                            gallery.render('__');
+                        } else {
+                            gallery.render(value);
+                        }
                     }
                 }
             };
@@ -144,7 +170,7 @@
             });
             
             $('.variations .variation').click(function() {
-                inner(this);
+                inner(this, false);
             });
             
             $('.variations .variation').hover(function() {
@@ -165,7 +191,11 @@
                     gallery.activate($.evo.article().galleryIndex);
                 }
             });
-            
+
+            $('.variations .variation.active, .variations option.variation[selected]').each(function (idx, el) {
+                inner(el, false, true);
+            });
+
             $('#jump-to-votes-tab').click(function () {
                 $('#content a[href="#tab-votes"]').tab('show');
             });
@@ -290,6 +320,9 @@
                                         quantityWrapper.slideDown(200);
                                     }
                                 } else {
+                                    if (!(form.quantity[grp.kKonfiggruppe])) {
+                                        quantityInput.val(item.fInitial);
+                                    }
                                     quantityWrapper.slideDown(200);
                                     quantityInput
                                         .attr('disabled', false)
@@ -358,6 +391,10 @@
 
         setUnitWeight: function(UnitWeight, newUnitWeight) {
             $('#article-tabs .product-attributes .weight-unit').html(newUnitWeight);
+        },
+
+        setProductNumber: function(productNumber){
+            $('#product-offer span[itemprop="sku"]').html(productNumber);
         },
 
         setArticleContent: function(id, variation, url, variations) {
@@ -585,12 +622,19 @@
         }
     };
 
-    $v = new ArticleClass();
-
-    $(window).on('load', function () {
-        $v.onLoad();
-        $v.register();
-    });
+    $v     = new ArticleClass();
+    var ie = /(msie|trident)/i.test(navigator.userAgent) ? navigator.userAgent.match(/(msie |rv:)(\d+(.\d+)?)/i)[2] : false;
+    if (ie && parseInt(ie) <= 9) {
+        $(document).ready(function () {
+            $v.onLoad();
+            $v.register();
+        });
+    } else {
+        $(window).on('load', function () {
+            $v.onLoad();
+            $v.register();
+        });
+    }
 
     $(window).resize(
         viewport.changed(function(){

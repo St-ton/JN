@@ -1,12 +1,10 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=#paymentmethods# cBeschreibung=#installedPaymentmethods# cDokuURL=#paymentmethodsURL#}
 <div id="content" class="container-fluid">
-<!--
     <form method="post" action="zahlungsarten.php" class="top" style="margin-bottom: 15px;">
         {$jtl_token}
         <input type="hidden" name="checkNutzbar" value="1" />
-        <button name="checkSubmit" type="submit" value="{#paymentmethodsCheckAll#}" class="btn btn-info button">{#paymentmethodsCheckAll#}</button>
+        <button name="checkSubmit" type="submit" value="{#paymentmethodsCheckAll#}" class="btn btn-info button"><i class="fa fa-refresh"></i> {#paymentmethodsCheckAll#}</button>
     </form>
--->
     <div class="panel panel-default">
         <div class="panel-heading">
             <h3 class="panel-title">Installierte Zahlungsarten</h3>

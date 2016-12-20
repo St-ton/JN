@@ -131,7 +131,12 @@
             {/if}
             {if $Artikel->verfuegbarkeitsBenachrichtigung == 3 && (($Artikel->cLagerBeachten === 'Y' && $Artikel->cLagerKleinerNull !== 'Y') || $Artikel->cLagerBeachten !== 'Y')}
                 <div class="btn-group btn-group-xs" role="group">
-                    <button type="button" id="n{$Artikel->kArtikel}" class="popup notification btn btn-secondary btn-left" title="{lang key="requestNotification" section="global"}"></button>
+                    <button type="button" id="n{$Artikel->kArtikel}" class="popup-dep notification btn btn-default btn-left" title="{lang key="requestNotification" section="global"}">
+                        <span class="fa fa-bell"></span>
+                    </button>
+                </div>
+                <div id="popupn{$Artikel->kArtikel}" class="hidden">
+                    {include file='productdetails/availability_notification_form.tpl' position="popup" tplscope='artikeldetails'}
                 </div>
             {/if}
         </div>
@@ -139,5 +144,4 @@
         <input type="hidden" name="a" value="{$Artikel->kArtikel}" />
     </form>
     *}
-
 </div>{* /product-cell *}

@@ -48,8 +48,7 @@
                         <div class="row">
                             {if $Einstellungen.kontakt.kontakt_abfragen_vorname !== 'N'}
                                 <div class="col-xs-12 col-md-6">
-                                    {include    file="snippets/form_group_simple.tpl"
-                                        options=[ "text" , "firstName", "vorname", {$Vorgaben->cVorname}, {lang key="firstName" section="account data"}, {$Einstellungen.kontakt.kontakt_abfragen_vorname}]}
+                                    {include file="snippets/form_group_simple.tpl" options=["text", "firstName", "vorname", {$Vorgaben->cVorname}, {lang key="firstName" section="account data"}, {$Einstellungen.kontakt.kontakt_abfragen_vorname}]}
                                 </div>
                             {/if}
                             {if $Einstellungen.kontakt.kontakt_abfragen_nachname !== 'N'}
@@ -62,8 +61,7 @@
                                             {lang assign="invalidReason" key="lastNameNotNumeric" section="account data"}
                                         {/if}
                                     {/if}
-                                    {include    file="snippets/form_group_simple.tpl"
-                                        options=[ "text" , "lastName", "nachname", {$Vorgaben->cNachname}, {lang key="lastName" section="account data"}, {$Einstellungen.kontakt.kontakt_abfragen_nachname}, {$invalidReason}]}
+                                    {include file="snippets/form_group_simple.tpl" options=["text" , "lastName", "nachname", {$Vorgaben->cNachname}, {lang key="lastName" section="account data"}, {$Einstellungen.kontakt.kontakt_abfragen_nachname}, {$invalidReason}]}
                                 </div>
                             {/if}
                         </div>
@@ -97,16 +95,14 @@
                                 <div class="col-xs-12  col-md-6">
                                     {assign var='invalidReason' value=null}
                                     {if isset($fehlendeAngaben.tel) && $fehlendeAngaben.tel === 1}{lang assign="invalidReason" key="fillOut" section="global"}{elseif isset($fehlendeAngaben.tel) && $fehlendeAngaben.tel === 2}{lang assign="invalidReason" key="invalidTel" section="global"}{/if}
-                                    {include file="snippets/form_group_simple.tpl"
-                                        options=[ "tel" , "tel", "tel", {$Vorgaben->cTel}, {lang key="tel" section="account data"}, {$Einstellungen.kontakt.kontakt_abfragen_tel}, {$invalidReason}]}
+                                    {include file="snippets/form_group_simple.tpl" options=["tel" , "tel", "tel", {$Vorgaben->cTel}, {lang key="tel" section="account data"}, {$Einstellungen.kontakt.kontakt_abfragen_tel}, {$invalidReason}]}
                                 </div>
                             {/if}
                             {if $Einstellungen.kontakt.kontakt_abfragen_mobil !== 'N'}
                                 <div class="col-xs-12 col-md-6">
                                     {assign var='invalidReason' value=null}
                                     {if isset($fehlendeAngaben.mobil) && $fehlendeAngaben.mobil === 1}{lang assign="invalidReason" key="fillOut" section="global"}{elseif isset($fehlendeAngaben.mobil) && $fehlendeAngaben.mobil === 2}{lang assign="invalidReason" key="invalidTel" section="global"}{/if}
-                                    {include file="snippets/form_group_simple.tpl"
-                                        options=[ "tel" , "mobile", "mobil", {$Vorgaben->cMobil}, {lang key="mobile" section="account data"}, {$Einstellungen.kontakt.kontakt_abfragen_mobil}, {$invalidReason}]}
+                                    {include file="snippets/form_group_simple.tpl" options=["tel" , "mobile", "mobil", {$Vorgaben->cMobil}, {lang key="mobile" section="account data"}, {$Einstellungen.kontakt.kontakt_abfragen_mobil}, {$invalidReason}]}
                                 </div>
                             {/if}
                         </div>
@@ -117,8 +113,7 @@
                             <div class="col-xs-12 col-md-6">
                                 {assign var='invalidReason' value=null}
                                 {if !empty($fehlendeAngaben.fax) && $fehlendeAngaben.fax === 1}{lang assign="invalidReason" key="fillOut" section="global"}{elseif isset($fehlendeAngaben.fax) && $fehlendeAngaben.fax === 2}{lang assign="invalidReason" key="invalidTel" section="global"}{/if}
-                                {include file="snippets/form_group_simple.tpl"
-                                        options=[ "tel" , "fax", "fax", {$Vorgaben->cFax}, {lang key="fax" section="account data"}, {$Einstellungen.kontakt.kontakt_abfragen_fax}, {$invalidReason}]}
+                                {include file="snippets/form_group_simple.tpl" options=["tel" , "fax", "fax", {$Vorgaben->cFax}, {lang key="fax" section="account data"}, {$Einstellungen.kontakt.kontakt_abfragen_fax}, {$invalidReason}]}
                             </div>
                         </div>
                     {/if}

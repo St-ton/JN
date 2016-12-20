@@ -110,6 +110,11 @@ class WarenkorbPos
     public $WarenkorbPosEigenschaftArr = array();
 
     /**
+     * @var object[]
+     */
+    public $variationPicturesArr = [];
+
+    /**
      * @var int
      */
     public $nZeitLetzteAenderung = 0;
@@ -293,14 +298,23 @@ class WarenkorbPos
     }
 
     /**
-     * gibt Gesamtpreis inkl. aller Aufpreise * Positionsanzahl lokalisiert als String zurück
-     *
+     * typo in function name - for compatibility reasons only
+     * @deprecated since 4.05
      * @return $this
      */
     public function setzeGesamtpreisLoacalized()
     {
-        /** @var array('Warenkorb' => Warenkorb) $_SESSION */
+        return $this->setzeGesamtpreisLocalized();
+    }
 
+    /**
+     * gibt Gesamtpreis inkl. aller Aufpreise * Positionsanzahl lokalisiert als String zurück
+     *
+     * @return $this
+     */
+    public function setzeGesamtpreisLocalized()
+    {
+        /** @var array('Warenkorb' => Warenkorb) $_SESSION */
         if (is_array($_SESSION['Waehrungen'])) {
             foreach ($_SESSION['Waehrungen'] as $Waehrung) {
                 // Standardartikel
@@ -309,7 +323,7 @@ class WarenkorbPos
                 $this->cEinzelpreisLocalized[0][$Waehrung->cName] = gibPreisStringLocalized(berechneBrutto($this->fPreis, gibUst($this->kSteuerklasse)), $Waehrung);
                 $this->cEinzelpreisLocalized[1][$Waehrung->cName] = gibPreisStringLocalized($this->fPreis, $Waehrung);
 
-                if ($this->Artikel->cVPE === 'Y' && $this->Artikel->fVPEWert > 0 && !empty($this->Artikel->cVPEEinheit)) {
+                if (!empty($this->Artikel->cVPEEinheit) && isset($this->Artikel->cVPE) && $this->Artikel->cVPE === 'Y' && $this->Artikel->fVPEWert > 0) {
                     $this->Artikel->baueVPE($this->fPreis);
                 }
 
@@ -325,8 +339,7 @@ class WarenkorbPos
                     $fPreisNetto  = 0;
                     $fPreisBrutto = 0;
                     $nVaterPos    = null;
-
-                    /** @var  WarenkorbPos $oPosition */
+                    /** @var WarenkorbPos $oPosition */
                     foreach ($_SESSION['Warenkorb']->PositionenArr as $nPos => $oPosition) {
                         if ($this->cUnique == $oPosition->cUnique) {
                             $fPreisNetto += $oPosition->fPreis * $oPosition->nAnzahl;

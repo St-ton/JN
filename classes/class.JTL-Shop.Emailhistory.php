@@ -63,7 +63,7 @@ class Emailhistory
                 foreach ($cMember_arr as $cMember) {
                     $cMethod = 'set' . substr($cMember, 1);
                     if (method_exists($this, $cMethod)) {
-                        call_user_func(array(&$this, $cMethod), $oObj->$cMember);
+                        call_user_func([&$this, $cMethod], $oObj->$cMember);
                     }
                 }
             }
@@ -119,14 +119,14 @@ class Emailhistory
     public function update()
     {
         $cQuery      = 'UPDATE temailhistory SET ';
-        $cSet_arr    = array();
+        $cSet_arr    = [];
         $cMember_arr = array_keys(get_object_vars($this));
         if (is_array($cMember_arr) && count($cMember_arr) > 0) {
             foreach ($cMember_arr as $cMember) {
                 $cMethod = 'get' . substr($cMember, 1);
                 if (method_exists($this, $cMethod)) {
-                    $mValue = "'" . $this->realEscape(call_user_func(array(&$this, $cMethod))) . "'";
-                    if (call_user_func(array(&$this, $cMethod)) === null) {
+                    $mValue = "'" . Shop::DB()->realEscape(call_user_func([&$this, $cMethod])) . "'";
+                    if (call_user_func([&$this, $cMethod]) === null) {
                         $mValue = 'NULL';
                     }
                     $cSet_arr[] = "{$cMember} = {$mValue}";
@@ -161,7 +161,7 @@ class Emailhistory
         }
         $oObj_arr = Shop::DB()->query("SELECT * FROM temailhistory ORDER BY dSent DESC" . $cSqlLimit, 2);
         if (is_array($oObj_arr) && count($oObj_arr) > 0) {
-            $oEmailhistory_arr = array();
+            $oEmailhistory_arr = [];
             foreach ($oObj_arr as $oObj) {
                 $oEmailhistory_arr[] = new self(null, $oObj);
             }
@@ -195,6 +195,19 @@ class Emailhistory
         }
 
         return false;
+    }
+
+    /**
+     * truncate the email-history-table
+     *
+     * @param void
+     * @return boolean  true=success, false='something went wrong'
+     */
+    public function deleteAll()
+    {
+        // log that event!
+        Jtllog::writeLog(utf8_decode('eMail-History gelöscht'), JTLLOG_LEVEL_NOTICE, true, 'Emailhistory');
+        return !(Shop::DB()->query('TRUNCATE TABLE temailhistory', 3));
     }
 
     /**

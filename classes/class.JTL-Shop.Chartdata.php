@@ -103,7 +103,7 @@ class Chartdata
      */
     public function toArray()
     {
-        $array   = array();
+        $array   = [];
         $members = array_keys(get_object_vars($this));
         foreach ($members as $member) {
             $array[substr($member, 1)] = $this->$member;

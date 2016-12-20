@@ -176,11 +176,27 @@ if ($oSprache->gueltig() || (isset($_REQUEST['action']) && $_REQUEST['action'] =
            ->assign('oLogWerte_arr', $oSprache->gibLogWerte());
 }
 
+$oInstallierteSprachen = $oSprache->gibInstallierteSprachen();
+$oVerfuegbareSprachen  = $oSprache->gibVerfuegbareSprachen();
+if (count($oInstallierteSprachen) != count($oVerfuegbareSprachen)) {
+    $cHinweis = "neue Sprache verf&uuml;gbar!";
+}
+$bSpracheAktiv = false;
+foreach ($oInstallierteSprachen as $ilang) {
+    if ($cISO === $ilang->cISO) {
+        $bSpracheAktiv = true;
+    }
+}
+foreach ($oVerfuegbareSprachen as $vlang) {
+    $vlang->isImported = (in_array($vlang, $oInstallierteSprachen)) ? true : false;
+}
+
 $smarty->assign('hinweis', $cHinweis)
        ->assign('fehler', $cFehler)
        ->assign('cTab', $cTab)
        ->assign('cISO', $cISO)
+       ->assign('bSpracheAktiv', $bSpracheAktiv)
        ->assign('kSprachsektion', $kSprachsektion)
-       ->assign('oInstallierteSprachen', $oSprache->gibInstallierteSprachen())
-       ->assign('oVerfuegbareSprachen', $oSprache->gibVerfuegbareSprachen())
+       ->assign('oInstallierteSprachen', $oInstallierteSprachen)
+       ->assign('oVerfuegbareSprachen', $oVerfuegbareSprachen)
        ->display('sprache.tpl');

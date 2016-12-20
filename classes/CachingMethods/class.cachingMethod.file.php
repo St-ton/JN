@@ -26,8 +26,6 @@ class cache_file implements ICachingMethod
         $this->options       = $options;
         $this->isInitialized = true;
         self::$instance      = $this;
-
-        return $this;
     }
 
     /**
@@ -36,7 +34,9 @@ class cache_file implements ICachingMethod
      */
     private function getFileName($cacheID)
     {
-        return $this->options['cache_dir'] . $cacheID . $this->options['file_extension'];
+        return (is_string($cacheID))
+            ? $this->options['cache_dir'] . $cacheID . $this->options['file_extension']
+            : false;
     }
 
     /**

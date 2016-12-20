@@ -139,17 +139,16 @@ if (isset($_POST['livesuche']) && intval($_POST['livesuche']) === 1) { //Formula
 
         if (count($Suchanfragen) > 0) {
             foreach ($Suchanfragen as $sucheanfrage) {
-                if (strtolower($sucheanfrage->cSuche) != strtolower($_POST['mapping_' . $sucheanfrage->kSuchanfrage])) {
-                    if (strlen($_POST['mapping_' . $sucheanfrage->kSuchanfrage]) > 0) {
+                if (!isset($_POST['mapping_' . $sucheanfrage->kSuchanfrage]) || strtolower($sucheanfrage->cSuche) !== strtolower($_POST['mapping_' . $sucheanfrage->kSuchanfrage])) {
+                    if (!empty($_POST['mapping_' . $sucheanfrage->kSuchanfrage])) {
                         $nMappingVorhanden                      = 1;
                         $suchanfragemapping_obj                 = new stdClass();
                         $suchanfragemapping_obj->kSprache       = $_SESSION['kSprache'];
                         $suchanfragemapping_obj->cSuche         = $sucheanfrage->cSuche;
                         $suchanfragemapping_obj->cSucheNeu      = $_POST['mapping_' . $sucheanfrage->kSuchanfrage];
                         $suchanfragemapping_obj->nAnzahlGesuche = $sucheanfrage->nAnzahlGesuche;
-
                         $Neuesuche = Shop::DB()->select('tsuchanfrage', 'cSuche', $suchanfragemapping_obj->cSucheNeu);
-                        if ($Neuesuche->kSuchanfrage > 0) {
+                        if (isset($Neuesuche->kSuchanfrage) && $Neuesuche->kSuchanfrage > 0) {
                             Shop::DB()->insert('tsuchanfragemapping', $suchanfragemapping_obj);
                             Shop::DB()->query(
                                 "UPDATE tsuchanfrage
@@ -180,7 +179,7 @@ if (isset($_POST['livesuche']) && intval($_POST['livesuche']) === 1) { //Formula
                     $oSuchanfrage = Shop::DB()->select('tsuchanfrage', 'kSuchanfrage', (int)$kSuchanfrage);
 
                     if ($oSuchanfrage->kSuchanfrage > 0) {
-                        if (strtolower($oSuchanfrage->cSuche) != strtolower($cMapping)) {
+                        if (strtolower($oSuchanfrage->cSuche) !== strtolower($cMapping)) {
                             $oSuchanfrageNeu = Shop::DB()->select('tsuchanfrage', 'cSuche', Shop::DB()->escape($cMapping));
                             if (isset($oSuchanfrageNeu->kSuchanfrage) && $oSuchanfrageNeu->kSuchanfrage > 0) {
                                 $oSuchanfrageMapping                 = new stdClass();

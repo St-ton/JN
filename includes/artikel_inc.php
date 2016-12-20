@@ -16,7 +16,7 @@ function gibArtikelXSelling($kArtikel, $isParent = null)
         return null;
     }
     $xSelling = new stdClass();
-    $config   = Shop::getSettings(array(CONF_ARTIKELDETAILS));
+    $config   = Shop::getSettings([CONF_ARTIKELDETAILS]);
     $config   = $config['artikeldetails'];
     if ($config['artikeldetails_xselling_standard_anzeigen'] === 'Y') {
         $xSelling->Standard = new stdClass();
@@ -28,17 +28,17 @@ function gibArtikelXSelling($kArtikel, $isParent = null)
                 ORDER BY tartikel.cName", 2
         );
         if (count($xsell) > 0) {
-            $xsellgruppen = array();
+            $xsellgruppen = [];
             foreach ($xsell as $xs) {
                 if (!in_array($xs->kXSellGruppe, $xsellgruppen)) {
                     $xsellgruppen[] = $xs->kXSellGruppe;
                 }
             }
-            $xSelling->Standard->XSellGruppen = array();
+            $xSelling->Standard->XSellGruppen = [];
             $xsCount                          = count($xsellgruppen);
             $defaultOptions                   = Artikel::getDefaultOptions();
-            for ($i = 0; $i < $xsCount; $i++) {
-                if (Shop::$kSprache > 0) {
+            for ($i = 0; $i < $xsCount; ++$i) {
+                if (Shop::getLanguage() > 0) {
                     //lokalisieren
                     $objSprache = Shop::DB()->select('txsellgruppe', 'kXSellGruppe', (int)$xsellgruppen[$i], 'kSprache', (int)Shop::$kSprache);
                     if (!isset($objSprache->cName)) {
@@ -48,7 +48,7 @@ function gibArtikelXSelling($kArtikel, $isParent = null)
                     $xSelling->Standard->XSellGruppen[$i]->Name         = $objSprache->cName;
                     $xSelling->Standard->XSellGruppen[$i]->Beschreibung = $objSprache->cBeschreibung;
                 }
-                $xSelling->Standard->XSellGruppen[$i]->Artikel = array();
+                $xSelling->Standard->XSellGruppen[$i]->Artikel = [];
                 foreach ($xsell as $xs) {
                     if ($xs->kXSellGruppe == $xsellgruppen[$i]) {
                         $artikel = new Artikel();
@@ -138,7 +138,7 @@ function gibArtikelXSelling($kArtikel, $isParent = null)
  */
 function bearbeiteFrageZumProdukt()
 {
-    $conf = Shop::getSettings(array(CONF_ARTIKELDETAILS));
+    $conf = Shop::getSettings([CONF_ARTIKELDETAILS]);
     if ($conf['artikeldetails']['artikeldetails_fragezumprodukt_anzeigen'] !== 'N') {
         $fehlendeAngaben = gibFehlendeEingabenProduktanfrageformular();
         Shop::Smarty()->assign('fehlendeAngaben_fragezumprodukt', $fehlendeAngaben);
@@ -162,10 +162,8 @@ function bearbeiteFrageZumProdukt()
                     $oAnfrage->cVorname = '';
                 }
                 // CheckBox Spezialfunktion ausfuehren
-                $oCheckBox->triggerSpecialFunction(
-                    CHECKBOX_ORT_FRAGE_ZUM_PRODUKT, $kKundengruppe, true, $_POST,
-                    array('oKunde' => $oAnfrage, 'oNachricht' => $oAnfrage)
-                )->checkLogging(CHECKBOX_ORT_FRAGE_ZUM_PRODUKT, $kKundengruppe, $_POST, true);
+                $oCheckBox->triggerSpecialFunction(CHECKBOX_ORT_FRAGE_ZUM_PRODUKT, $kKundengruppe, true, $_POST, ['oKunde' => $oAnfrage, 'oNachricht' => $oAnfrage])
+                          ->checkLogging(CHECKBOX_ORT_FRAGE_ZUM_PRODUKT, $kKundengruppe, $_POST, true);
                 sendeProduktanfrage();
             } else {
                 $GLOBALS['Artikelhinweise'][] = Shop::Lang()->get('questionNotPossible', 'messages');
@@ -188,8 +186,8 @@ function bearbeiteFrageZumProdukt()
  */
 function gibFehlendeEingabenProduktanfrageformular()
 {
-    $ret  = array();
-    $conf = Shop::getSettings(array(CONF_ARTIKELDETAILS, CONF_GLOBAL));
+    $ret  = [];
+    $conf = Shop::getSettings([CONF_ARTIKELDETAILS, CONF_GLOBAL]);
     if (!$_POST['nachricht']) {
         $ret['nachricht'] = 1;
     }
@@ -279,7 +277,7 @@ function sendeProduktanfrage()
 {
     require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
-    $conf               = Shop::getSettings(array(CONF_EMAILS, CONF_ARTIKELDETAILS, CONF_GLOBAL));
+    $conf               = Shop::getSettings([CONF_EMAILS, CONF_ARTIKELDETAILS, CONF_GLOBAL]);
     $Objekt             = new stdClass();
     $Objekt->tartikel   = $GLOBALS['AktuellerArtikel'];
     $Objekt->tnachricht = baueProduktanfrageFormularVorgaben();
@@ -383,7 +381,7 @@ function floodSchutzArtikelWeiterempfehlen($min = 0)
  */
 function bearbeiteBenachrichtigung()
 {
-    $conf = Shop::getSettings(array(CONF_ARTIKELDETAILS));
+    $conf = Shop::getSettings([CONF_ARTIKELDETAILS]);
     if (isset($conf['artikeldetails']['benachrichtigung_nutzen']) && $conf['artikeldetails']['benachrichtigung_nutzen'] !== 'N' && intval($_POST['a']) > 0) {
         $fehlendeAngaben = gibFehlendeEingabenBenachrichtigungsformular();
         Shop::Smarty()->assign('fehlendeAngaben_benachrichtigung', $fehlendeAngaben);
@@ -393,7 +391,7 @@ function bearbeiteBenachrichtigung()
         if ($nReturnValue) {
             if (!floodSchutzBenachrichtigung($conf['artikeldetails']['benachrichtigung_sperre_minuten'])) {
                 $Benachrichtigung            = baueFormularVorgabenBenachrichtigung();
-                $Benachrichtigung->kSprache  = (int)Shop::$kSprache;
+                $Benachrichtigung->kSprache  = Shop::getLanguage();
                 $Benachrichtigung->kArtikel  = (int)$_POST['a'];
                 $Benachrichtigung->cIP       = gibIP();
                 $Benachrichtigung->dErstellt = 'now()';
@@ -411,10 +409,8 @@ function bearbeiteBenachrichtigung()
                     $Benachrichtigung->cVorname = '';
                 }
                 // CheckBox Spezialfunktion ausfuehren
-                $oCheckBox->triggerSpecialFunction(
-                    CHECKBOX_ORT_FRAGE_VERFUEGBARKEIT, $kKundengruppe, true, $_POST,
-                    array('oKunde' => $Benachrichtigung, 'oNachricht' => $Benachrichtigung)
-                )->checkLogging(CHECKBOX_ORT_FRAGE_VERFUEGBARKEIT, $kKundengruppe, $_POST, true);
+                $oCheckBox->triggerSpecialFunction(CHECKBOX_ORT_FRAGE_VERFUEGBARKEIT, $kKundengruppe, true, $_POST, ['oKunde' => $Benachrichtigung, 'oNachricht' => $Benachrichtigung])
+                          ->checkLogging(CHECKBOX_ORT_FRAGE_VERFUEGBARKEIT, $kKundengruppe, $_POST, true);
 
                 $kVerfuegbarkeitsbenachrichtigung = Shop::DB()->queryPrepared('INSERT INTO tverfuegbarkeitsbenachrichtigung (cVorname, cNachname, cMail, kSprache, kArtikel, cIP, dErstellt, nStatus) 
                      VALUES (:cVorname, :cNachname, :cMail, :kSprache, :kArtikel, :cIP, now(), :nStatus)
@@ -444,8 +440,8 @@ function bearbeiteBenachrichtigung()
  */
 function gibFehlendeEingabenBenachrichtigungsformular()
 {
-    $ret  = array();
-    $conf = Shop::getSettings(array(CONF_ARTIKELDETAILS, CONF_GLOBAL));
+    $ret  = [];
+    $conf = Shop::getSettings([CONF_ARTIKELDETAILS, CONF_GLOBAL]);
     if (!$_POST['email']) {
         $ret['email'] = 1;
     } elseif (!valid_email($_POST['email'])) {
@@ -528,7 +524,9 @@ function gibNaviBlaettern($kArtikel, $kKategorie)
         }
         if ($nArrayPos == 0) {
             // Artikel ist an der ersten Position => es gibt nur einen nächsten Artikel (oder keinen :))
-            $kArtikelNaechster = (isset($_SESSION['oArtikelUebersichtKey_arr'][$nArrayPos + 1]->kArtikel)) ? $_SESSION['oArtikelUebersichtKey_arr'][$nArrayPos + 1]->kArtikel : null;
+            $kArtikelNaechster = (isset($_SESSION['oArtikelUebersichtKey_arr'][$nArrayPos + 1]->kArtikel))
+                ? $_SESSION['oArtikelUebersichtKey_arr'][$nArrayPos + 1]->kArtikel
+                : null;
         } elseif ($nArrayPos == (count($_SESSION['oArtikelUebersichtKey_arr']) - 1)) {
             // Artikel ist an der letzten Position => es gibt nur einen voherigen Artikel
             $kArtikelVorheriger = $_SESSION['oArtikelUebersichtKey_arr'][$nArrayPos - 1]->kArtikel;
@@ -628,7 +626,7 @@ function gibNichtErlaubteEigenschaftswerte($nEigenschaftWert)
         return $arNichtErlaubteEigenschaftswerte;
     }
 
-    return array();
+    return [];
 }
 
 /**
@@ -645,10 +643,10 @@ function baueArtikelhinweise($cRedirectParam = null, $bRenew = false, $oArtikel 
         $cRedirectParam = $_GET['r'];
     }
     if (!isset($GLOBALS['Artikelhinweise']) || !is_array($GLOBALS['Artikelhinweise']) || $bRenew) {
-        $GLOBALS['Artikelhinweise'] = array();
+        $GLOBALS['Artikelhinweise'] = [];
     }
     if (!isset($GLOBALS['PositiveFeedback']) || !is_array($GLOBALS['PositiveFeedback']) || $bRenew) {
-        $GLOBALS['PositiveFeedback'] = array();
+        $GLOBALS['PositiveFeedback'] = [];
     }
     if ($cRedirectParam) {
         $hin_arr = is_array($cRedirectParam) ? $cRedirectParam : explode(',', $cRedirectParam);
@@ -722,11 +720,13 @@ function bearbeiteProdukttags($AktuellerArtikel)
         $tag = StringHandler::filterXSS(verifyGPDataString('tag'));
         // Wurde ein Tag gepostet?
         if (strlen($tag) > 0) {
-            $conf = Shop::getSettings(array(CONF_ARTIKELDETAILS));
+            $conf = Shop::getSettings([CONF_ARTIKELDETAILS]);
             // Prüfe ob Kunde eingeloggt
             if ($conf['artikeldetails']['tagging_freischaltung'] === 'Y' && empty($_SESSION['Kunde']->kKunde)) {
                 $linkHelper = LinkHelper::getInstance();
-                header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true) . '?a=' . (int)$_POST['a'] . '&tag=' . StringHandler::htmlentities(StringHandler::filterXSS($_POST['tag'])) .
+                header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true) .
+                    '?a=' . (int)$_POST['a'] . '&tag=' .
+                    StringHandler::htmlentities(StringHandler::filterXSS($_POST['tag'])) .
                     '&r=' . R_LOGIN_TAG . '&produktTag=1', true, 303);
                 exit();
             }
@@ -760,13 +760,13 @@ function bearbeiteProdukttags($AktuellerArtikel)
                         return Shop::Lang()->get('pleaseLoginToAddTags', 'messages');
                     }
                     // Prüfe ob der Tag bereits gemappt wurde
-                    $tagmapping_objTMP = Shop::DB()->select('ttagmapping', 'kSprache', (int)Shop::$kSprache, 'cName', Shop::DB()->escape($tag));
+                    $tagmapping_objTMP = Shop::DB()->select('ttagmapping', 'kSprache', Shop::getLanguage(), 'cName', Shop::DB()->escape($tag));
                     $tagmapping_obj    = $tagmapping_objTMP;
                     if (isset($tagmapping_obj->cNameNeu) && strlen($tagmapping_obj->cNameNeu) > 0) {
                         $tag = $tagmapping_obj->cNameNeu;
                     }
                     // Prüfe ob der Tag bereits vorhanden ist
-                    $tag_obj = Shop::DB()->select('ttag', 'kSprache', (int)Shop::$kSprache, 'cName', $tag);
+                    $tag_obj = Shop::DB()->select('ttag', 'kSprache', Shop::getLanguage(), 'cName', $tag);
                     $kTag    = (isset($tag_obj->kTag)) ? (int)$tag_obj->kTag : null;
                     if ($kTag > 0) {
                         $count = Shop::DB()->query(
@@ -785,7 +785,7 @@ function bearbeiteProdukttags($AktuellerArtikel)
                     } else {
                         require_once PFAD_ROOT . PFAD_DBES . 'seo.php';
                         $neuerTag           = new stdClass();
-                        $neuerTag->kSprache = Shop::$kSprache;
+                        $neuerTag->kSprache = Shop::getLanguage();
                         $neuerTag->cName    = $tag;
                         $neuerTag->cSeo     = getSeo($tag);
                         $neuerTag->cSeo     = checkSeo($neuerTag->cSeo);
@@ -821,11 +821,15 @@ function bearbeiteProdukttags($AktuellerArtikel)
             header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true) . '?a=' . (int)$_POST['a'] . '&r=' . R_LOGIN_TAG, true, 303);
             exit();
         } else {
-            $url = (!empty($AktuellerArtikel->cURLFull)) ? ($AktuellerArtikel->cURLFull . '?') : (Shop::getURL() . '/?a=' . (int)$_POST['a'] . '&');
+            $url = (!empty($AktuellerArtikel->cURLFull))
+                ? ($AktuellerArtikel->cURLFull . '?')
+                : (Shop::getURL() . '/?a=' . (int)$_POST['a'] . '&');
             header('Location: ' . $url . 'r=' . R_EMPTY_TAG, true, 303);
             exit();
         }
     }
+
+    return null;
 }
 
 /**
@@ -847,7 +851,7 @@ function baueBewertungNavi($bewertung_seite, $bewertung_sterne, $nAnzahlBewertun
     // Ist die Anzahl der Bewertungen für einen bestimmten Artikel, in einer bestimmten Sprache größer als
     // die im Backend eingestellte maximale Anzahl an Bewertungen für eine Seite?
     if ((int)$nAnzahlBewertungen > (int)$nAnzahlSeiten) {
-        $nBlaetterAnzahl_arr = array();
+        $nBlaetterAnzahl_arr = [];
         // Anzahl an Seiten
         $nSeiten     = ceil(intval($nAnzahlBewertungen) / intval($nAnzahlSeiten));
         $nMaxAnzeige = 5; // Zeige in der Navigation nur maximal X Seiten an
@@ -952,7 +956,7 @@ function mappingFehlerCode($cCode, $fGuthaben = 0.0)
         default:
             $error = '';
     }
-    executeHook(HOOK_ARTIKEL_INC_BEWERTUNGHINWEISSWITCH, array('error' => $error));
+    executeHook(HOOK_ARTIKEL_INC_BEWERTUNGHINWEISSWITCH, ['error' => $error]);
 
     return $error;
 }
@@ -975,14 +979,14 @@ function fasseVariVaterUndKindZusammen($oVaterArtikel, $oKindArtikel)
     $oArtikel->fDurchschnittsBewertung          = $oVaterArtikel->fDurchschnittsBewertung;
     $oArtikel->Bewertungen                      = (isset($oVaterArtikel->Bewertungen)) ? $oVaterArtikel->Bewertungen : null;
     $oArtikel->HilfreichsteBewertung            = (isset($oVaterArtikel->HilfreichsteBewertung)) ? $oVaterArtikel->HilfreichsteBewertung : null;
-    $oArtikel->oVariationKombiVorschau_arr      = (isset($oVaterArtikel->oVariationKombiVorschau_arr)) ? $oVaterArtikel->oVariationKombiVorschau_arr : array();
+    $oArtikel->oVariationKombiVorschau_arr      = (isset($oVaterArtikel->oVariationKombiVorschau_arr)) ? $oVaterArtikel->oVariationKombiVorschau_arr : [];
     $oArtikel->oVariationDetailPreis_arr        = $oVaterArtikel->oVariationDetailPreis_arr;
     $oArtikel->nVariationKombiNichtMoeglich_arr = $oVaterArtikel->nVariationKombiNichtMoeglich_arr;
     $oArtikel->oVariationKombiVorschauText      = (isset($oVaterArtikel->oVariationKombiVorschauText)) ? $oVaterArtikel->oVariationKombiVorschauText : null;
     $oArtikel->cVaterURL                        = $oVaterArtikel->cURL;
     $oArtikel->VaterFunktionsAttribute          = $oVaterArtikel->FunktionsAttribute;
 
-    executeHook(HOOK_ARTIKEL_INC_FASSEVARIVATERUNDKINDZUSAMMEN, array('article' => $oArtikel));
+    executeHook(HOOK_ARTIKEL_INC_FASSEVARIVATERUNDKINDZUSAMMEN, ['article' => $oArtikel]);
 
     return $oArtikel;
 }
@@ -995,12 +999,12 @@ function holeAehnlicheArtikel($kArtikel)
 {
     // Aktueller Artikel
     $kArtikel     = (int)$kArtikel;
-    $oArtikel_arr = array();
+    $oArtikel_arr = [];
     $cLimit       = ' LIMIT 3';
-    $conf         = Shop::getSettings(array(CONF_ARTIKELDETAILS));
+    $conf         = Shop::getSettings([CONF_ARTIKELDETAILS]);
     // Gibt es X-Seller? Aus der Artikelmenge der änhlichen Artikel, dann alle X-Seller rausfiltern
     $oXSeller               = gibArtikelXSelling($kArtikel);
-    $kArtikelXSellerKey_arr = array();
+    $kArtikelXSellerKey_arr = [];
     if (isset($oXSeller->Standard->XSellGruppen) && is_array($oXSeller->Standard->XSellGruppen) && count($oXSeller->Standard->XSellGruppen) > 0) {
         foreach ($oXSeller->Standard->XSellGruppen as $oXSeller) {
             if (is_array($oXSeller->Artikel) && count($oXSeller->Artikel) > 0) {
@@ -1075,10 +1079,10 @@ function holeAehnlicheArtikel($kArtikel)
                 "SELECT tsuchcachetreffer.kArtikel, tartikel.kVaterArtikel
                     FROM
                     (
-                    SELECT kSuchCache
-                    FROM tsuchcachetreffer
-                    WHERE kArtikel = " . $kArtikel . "
-                    AND nSort <= 10
+                        SELECT kSuchCache
+                        FROM tsuchcachetreffer
+                        WHERE kArtikel = " . $kArtikel . "
+                        AND nSort <= 10
                     ) AS ssSuchCache
                     JOIN tsuchcachetreffer ON tsuchcachetreffer.kSuchCache = ssSuchCache.kSuchCache
                         AND tsuchcachetreffer.kArtikel != " . $kArtikel . "
@@ -1098,11 +1102,10 @@ function holeAehnlicheArtikel($kArtikel)
                 $defaultOptions = Artikel::getDefaultOptions();
                 foreach ($oArtikelSuchcacheTreffer_arr as $oArtikelSuchcacheTreffer) {
                     $oArtikel = new Artikel();
-                    if ($oArtikelSuchcacheTreffer->kVaterArtikel > 0) {
-                        $oArtikel->fuelleArtikel($oArtikelSuchcacheTreffer->kVaterArtikel, $defaultOptions);
-                    } else {
-                        $oArtikel->fuelleArtikel($oArtikelSuchcacheTreffer->kArtikel, $defaultOptions);
-                    }
+                    $id       = ($oArtikelSuchcacheTreffer->kVaterArtikel > 0)
+                        ? $oArtikelSuchcacheTreffer->kVaterArtikel
+                        : $oArtikelSuchcacheTreffer->kArtikel;
+                    $oArtikel->fuelleArtikel($id, $defaultOptions);
                     if ($oArtikel->kArtikel > 0) {
                         $oArtikel_arr[] = $oArtikel;
                     }
@@ -1133,11 +1136,10 @@ function holeAehnlicheArtikel($kArtikel)
                     $defaultOptions = Artikel::getDefaultOptions();
                     foreach ($oArtikelTags_arr as $oArtikelTags) {
                         $oArtikel = new Artikel();
-                        if ($oArtikelTags->kVaterArtikel > 0) {
-                            $oArtikel->fuelleArtikel($oArtikelTags->kVaterArtikel, $defaultOptions);
-                        } else {
-                            $oArtikel->fuelleArtikel($oArtikelTags->kArtikel, $defaultOptions);
-                        }
+                        $id       = ($oArtikelTags->kVaterArtikel > 0)
+                            ? $oArtikelTags->kVaterArtikel
+                            : $oArtikelTags->kArtikel;
+                        $oArtikel->fuelleArtikel($id, $defaultOptions);
                         if ($oArtikel->kArtikel > 0) {
                             $oArtikel_arr[] = $oArtikel;
                         }
@@ -1146,7 +1148,7 @@ function holeAehnlicheArtikel($kArtikel)
             }
         }
     }
-    executeHook(HOOK_ARTIKEL_INC_AEHNLICHEARTIKEL, array('oArtikel_arr' => &$oArtikel_arr));
+    executeHook(HOOK_ARTIKEL_INC_AEHNLICHEARTIKEL, ['oArtikel_arr' => &$oArtikel_arr]);
 
     if (is_array($oArtikel_arr) && count($oArtikel_arr) > 0) {
         // X-Seller aus Menge werfen
@@ -1178,7 +1180,7 @@ function ProductBundleWK($Productkey)
         $oOption->nArtikelAttribute          = 1;
         $oOption->nKeineSichtbarkeitBeachten = 1;
 
-        return fuegeEinInWarenkorb($Productkey, 1, array(), 0, false, 0, $oOption);
+        return fuegeEinInWarenkorb($Productkey, 1, [], 0, false, 0, $oOption);
     }
 
     return false;
@@ -1196,8 +1198,8 @@ function ProductBundleWK($Productkey)
 function buildConfig($kArtikel, $fAnzahl, $nVariation_arr, $nKonfiggruppe_arr, $nKonfiggruppeAnzahl_arr, $nKonfigitemAnzahl_arr)
 {
     $oKonfig                  = new stdClass;
-    $oKonfig->fGesamtpreis    = array(0.0, 0.0);
-    $oKonfig->cPreisLocalized = array();
+    $oKonfig->fGesamtpreis    = [0.0, 0.0];
+    $oKonfig->cPreisLocalized = [];
     $oKonfig->cPreisString    = Shop::Lang()->get('priceAsConfigured', 'productDetails');
 
     if (!class_exists('Konfigurator') || !Konfigurator::validateKonfig($kArtikel)) {
@@ -1222,17 +1224,15 @@ function buildConfig($kArtikel, $fAnzahl, $nVariation_arr, $nKonfiggruppe_arr, $
     $oArtikelOptionen->nVariationKombiKinder = 1;
     $oArtikel->fuelleArtikel($kArtikel, $oArtikelOptionen);
 
-    if ($fAnzahl < 1) {
-        $fAnzahl = 1;
-    }
+    $fAnzahl = max($fAnzahl, 1);
     if ($oArtikel->cTeilbar !== 'Y' && intval($fAnzahl) != $fAnzahl) {
         $fAnzahl = (int)$fAnzahl;
     }
 
-    $oKonfig->fGesamtpreis = array(
+    $oKonfig->fGesamtpreis = [
         berechneBrutto($oArtikel->gibPreis($fAnzahl, $oEigenschaftwerte_arr), gibUst($oArtikel->kSteuerklasse)) * $fAnzahl,
         $oArtikel->gibPreis($fAnzahl, $oEigenschaftwerte_arr) * $fAnzahl
-    );
+    ];
     $oKonfig->oKonfig_arr = $oArtikel->oKonfig_arr;
 
     foreach ($nKonfiggruppe_arr as $i => $nKonfiggruppe) {
@@ -1242,7 +1242,7 @@ function buildConfig($kArtikel, $fAnzahl, $nVariation_arr, $nKonfiggruppe_arr, $
     foreach ($oKonfig->oKonfig_arr as $i => &$oKonfiggruppe) {
         $oKonfiggruppe->bAktiv = false;
         $kKonfiggruppe         = $oKonfiggruppe->getKonfiggruppe();
-        $nKonfigitem_arr       = (isset($nKonfiggruppe_arr[$kKonfiggruppe])) ? $nKonfiggruppe_arr[$kKonfiggruppe] : array();
+        $nKonfigitem_arr       = (isset($nKonfiggruppe_arr[$kKonfiggruppe])) ? $nKonfiggruppe_arr[$kKonfiggruppe] : [];
         foreach ($oKonfiggruppe->oItem_arr as $j => &$oKonfigitem) {
             /** @var Konfigitem $oKonfigitem */
             $kKonfigitem          = $oKonfigitem->getKonfigitem();
@@ -1273,14 +1273,12 @@ function buildConfig($kArtikel, $fAnzahl, $nVariation_arr, $nKonfiggruppe_arr, $
         $oKonfiggruppe->oItem_arr = array_values($oKonfiggruppe->oItem_arr);
     }
     if ($_SESSION['Kundengruppe']->darfPreiseSehen) {
-        $oKonfig->cPreisLocalized = array(
+        $oKonfig->cPreisLocalized = [
             gibPreisStringLocalized($oKonfig->fGesamtpreis[0]),
             gibPreisStringLocalized($oKonfig->fGesamtpreis[1])
-        );
+        ];
     } else {
-        $oKonfig->cPreisLocalized = array(
-            Shop::Lang()->get('priceHidden', 'global'),
-        );
+        $oKonfig->cPreisLocalized = [Shop::Lang()->get('priceHidden', 'global')];
     }
     $oKonfig->nNettoPreise = $_SESSION['Kundengruppe']->nNettoPreise;
 

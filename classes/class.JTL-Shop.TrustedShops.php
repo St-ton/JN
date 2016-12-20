@@ -347,7 +347,7 @@ class TrustedShops
      * Lädt anhand der tsID von der TrustedShops API, die Käuferschutzprodukte und
      * speichert diese direkt in die DB
      *
-     * @param $kTrustedShopsZertifikat
+     * @param int $kTrustedShopsZertifikat
      * @return $this
      */
     public function holeKaeuferschutzProdukte($kTrustedShopsZertifikat)
@@ -701,7 +701,7 @@ class TrustedShops
     /**
      * Holt anhand der cISOSprache das Trusted Shops Zertifikat aus der Datenbank
      *
-     * @param        $cISOSprache
+     * @param string $cISOSprache
      * @param string $tsId
      * @return null|stdClass
      */
@@ -846,7 +846,7 @@ class TrustedShops
     /**
      * Löscht ein Zertifikat aus der Datenbank
      *
-     * @param $kTrustedShopsZertifikat
+     * @param int $kTrustedShopsZertifikat
      * @return bool
      */
     public function loescheTrustedShopsZertifikat($kTrustedShopsZertifikat)
@@ -863,8 +863,8 @@ class TrustedShops
     /**
      * Gibt den aktuellen Kundenbewertungsstatus aus der DB zurück
      *
-     * @param $cISOSprache
-     * @return bool
+     * @param string $cISOSprache
+     * @return object|bool
      */
     public function holeKundenbewertungsstatus($cISOSprache)
     {
@@ -1144,7 +1144,7 @@ class TrustedShops
 
         $xml             = simplexml_load_string($content);
         $rating          = new stdClass();
-        $rating->nAnzahl = (int) $xml->ratings['amount'];
+        $rating->nAnzahl = (int)$xml->ratings['amount'];
 
         $dDurchschnitt = null;
         foreach ($xml->ratings->result as $result) {

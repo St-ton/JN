@@ -266,7 +266,7 @@ class WarenkorbHelper
             'cPfadNormal'  => $variation->cPfadNormal,
             'cPfadGross'   => $variation->cPfadGross,
             'nNr'          => count($wkPos->variationPicturesArr) + 1,
-            'cAltAttribut' => str_replace(array('"', "'"), '', $wkPos->Artikel->cName . ' - ' . $variation->cName),
+            'cAltAttribut' => str_replace(['"', "'"], '', $wkPos->Artikel->cName . ' - ' . $variation->cName),
         ];
         $oPicture->galleryJSON = $wkPos->Artikel->getArtikelImageJSON($oPicture);
 

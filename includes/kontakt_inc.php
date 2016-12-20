@@ -10,8 +10,8 @@
  */
 function gibFehlendeEingabenKontaktformular()
 {
-    $ret  = array();
-    $conf = Shop::getSettings(array(CONF_KONTAKTFORMULAR, CONF_GLOBAL));
+    $ret  = [];
+    $conf = Shop::getSettings([CONF_KONTAKTFORMULAR, CONF_GLOBAL]);
     if (!$_POST['nachricht']) {
         $ret['nachricht'] = 1;
     }
@@ -176,16 +176,16 @@ function pruefeBetreffVorhanden()
  */
 function bearbeiteNachricht()
 {
-    $betreff = (isset($_POST['subject'])) ?
-        Shop::DB()->select('tkontaktbetreff', 'kKontaktBetreff', (int)$_POST['subject']) :
-        null;
+    $betreff = (isset($_POST['subject']))
+        ? Shop::DB()->select('tkontaktbetreff', 'kKontaktBetreff', (int)$_POST['subject'])
+        : null;
     if (!empty($betreff->kKontaktBetreff)) {
         $betreffSprache               = Shop::DB()->select('tkontaktbetreffsprache', 'kKontaktBetreff', (int)$betreff->kKontaktBetreff, 'cISOSprache', $_SESSION['cISOSprache']);
         $Objekt                       = new stdClass();
         $Objekt->tnachricht           = baueKontaktFormularVorgaben();
         $Objekt->tnachricht->cBetreff = $betreffSprache->cName;
 
-        $conf     = Shop::getSettings(array(CONF_KONTAKTFORMULAR, CONF_GLOBAL));
+        $conf     = Shop::getSettings([CONF_KONTAKTFORMULAR, CONF_GLOBAL]);
         $from     = new stdClass();
         $from_arr = Shop::DB()->selectAll('temailvorlageeinstellungen', 'kEmailvorlage', 11);
         if (!isset($mail)) {
@@ -270,8 +270,12 @@ function floodSchutz($min)
     if (!$min) {
         return false;
     }
-    $min     = intval($min);
-    $history = Shop::DB()->query("SELECT kKontaktHistory FROM tkontakthistory WHERE cIP='" . Shop::DB()->escape(gibIP()) . "' AND date_sub(now(),INTERVAL $min MINUTE) < dErstellt", 1);
+    $min     = (int)$min;
+    $history = Shop::DB()->query("
+        SELECT kKontaktHistory 
+            FROM tkontakthistory 
+            WHERE cIP = '" . Shop::DB()->escape(gibIP()) . "' AND date_sub(now(),INTERVAL $min MINUTE) < dErstellt", 1
+    );
 
     return (isset($history->kKontaktHistory) && $history->kKontaktHistory > 0);
 }

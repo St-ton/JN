@@ -24,7 +24,7 @@ function loescheWarenkorbPosition($nPos)
     if (strlen($cUnique) > 0 && $_SESSION['Warenkorb']->PositionenArr[$nPos]->kKonfigitem > 0) {
         return;
     }
-    executeHook(HOOK_WARENKORB_LOESCHE_POSITION, array('nPos' => $nPos, 'position' => &$_SESSION['Warenkorb']->PositionenArr[$nPos]));
+    executeHook(HOOK_WARENKORB_LOESCHE_POSITION, ['nPos' => $nPos, 'position' => &$_SESSION['Warenkorb']->PositionenArr[$nPos]]);
 
     if (class_exists('Upload')) {
         Upload::deleteArtikelUploads($_SESSION['Warenkorb']->PositionenArr[$nPos]->kArtikel);
@@ -111,7 +111,7 @@ function uebernehmeWarenkorbAenderungen()
                 $_POST['anzahl'][$i] = str_replace(',', '.', $_POST['anzahl'][$i]);
 
                 if (intval($_POST['anzahl'][$i]) != $_POST['anzahl'][$i] && $Artikel->cTeilbar !== 'Y') {
-                    $_POST['anzahl'][$i] = min(intval($_POST['anzahl'][$i]), 1);
+                    $_POST['anzahl'][$i] = min((int)$_POST['anzahl'][$i], 1);
                 }
                 $gueltig = true;
                 // Abnahmeintervall
@@ -137,7 +137,8 @@ function uebernehmeWarenkorbAenderungen()
                 //hole akt. lagerbestand vom artikel
                 if ($Artikel->cLagerBeachten === 'Y' && $Artikel->cLagerVariation !== 'Y' &&
                     $Artikel->cLagerKleinerNull !== 'Y' &&
-                    $Artikel->fPackeinheit * (floatval($_POST['anzahl'][$i]) + $_SESSION['Warenkorb']->gibAnzahlEinesArtikels($_SESSION['Warenkorb']->PositionenArr[$i]->kArtikel, $i)) > $Artikel->fLagerbestand
+                    $Artikel->fPackeinheit * (floatval($_POST['anzahl'][$i]) +
+                        $_SESSION['Warenkorb']->gibAnzahlEinesArtikels($_SESSION['Warenkorb']->PositionenArr[$i]->kArtikel, $i)) > $Artikel->fLagerbestand
                 ) {
                     $gueltig                         = false;
                     $_SESSION['Warenkorbhinweise'][] = Shop::Lang()->get('quantityNotAvailable', 'messages');
@@ -157,7 +158,8 @@ function uebernehmeWarenkorbAenderungen()
                     foreach ($_SESSION['Warenkorb']->PositionenArr[$i]->WarenkorbPosEigenschaftArr as $eWert) {
                         $EigenschaftWert = new EigenschaftWert($eWert->kEigenschaftWert);
                         if ($EigenschaftWert->fPackeinheit * (floatval($_POST['anzahl'][$i]) +
-                                $_SESSION['Warenkorb']->gibAnzahlEinerVariation($_SESSION['Warenkorb']->PositionenArr[$i]->kArtikel, $eWert->kEigenschaftWert, $i)) > $EigenschaftWert->fLagerbestand
+                                $_SESSION['Warenkorb']->gibAnzahlEinerVariation($_SESSION['Warenkorb']->PositionenArr[$i]->kArtikel, $eWert->kEigenschaftWert, $i))
+                            > $EigenschaftWert->fLagerbestand
                         ) {
                             $_SESSION['Warenkorbhinweise'][] = Shop::Lang()->get('quantityNotAvailableVar', 'messages');
                             $gueltig                         = false;
@@ -216,7 +218,7 @@ function uebernehmeWarenkorbAenderungen()
         $oKuponTmp = null;
         //existiert ein proz. Kupon, der auf die neu eingefügte Pos greift?
         if (isset($_SESSION['Kupon']) && $_SESSION['Kupon']->cWertTyp === 'prozent' && $_SESSION['Kupon']->nGanzenWKRabattieren == 0) {
-            if ($_SESSION['Warenkorb']->gibGesamtsummeWarenExt(array(C_WARENKORBPOS_TYP_ARTIKEL), true) >= $_SESSION['Kupon']->fMindestbestellwert) {
+            if ($_SESSION['Warenkorb']->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true) >= $_SESSION['Kupon']->fMindestbestellwert) {
                 $oKuponTmp = $_SESSION['Kupon'];
             }
         }
@@ -239,7 +241,7 @@ function uebernehmeWarenkorbAenderungen()
                 FROM tartikelattribut
                 WHERE kArtikel = " . $kArtikelGratisgeschenk . "
                     AND cName = '" . FKT_ATTRIBUT_GRATISGESCHENK . "'
-                    AND CAST(cWert AS DECIMAL) <= " . $_SESSION['Warenkorb']->gibGesamtsummeWarenExt(array(C_WARENKORBPOS_TYP_ARTIKEL), true), 1
+                    AND CAST(cWert AS DECIMAL) <= " . $_SESSION['Warenkorb']->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true), 1
         );
 
         if (empty($oArtikelGeschenk->kArtikel)) {
@@ -282,6 +284,7 @@ function checkeSchnellkauf()
  */
 function loescheAlleSpezialPos()
 {
+    /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
     $_SESSION['Warenkorb']->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART)
                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZINSAUFSCHLAG)
                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_BEARBEITUNGSGEBUEHR)
@@ -312,7 +315,7 @@ function loescheAlleSpezialPos()
 function gibXSelling()
 {
     $oXselling = new stdClass();
-    $conf      = Shop::getSettings(array(CONF_KAUFABWICKLUNG));
+    $conf      = Shop::getSettings([CONF_KAUFABWICKLUNG]);
 
     if ($conf['kaufabwicklung']['warenkorb_xselling_anzeigen'] === 'Y') {
         $oWarenkorbPos_arr = $_SESSION['Warenkorb']->PositionenArr;
@@ -337,7 +340,7 @@ function gibXSelling()
                     " . $cSQL2 . "
                     GROUP BY kXSellArtikel
                     ORDER BY nAnzahl DESC, rand()
-                    LIMIT " . intval($conf['kaufabwicklung']['warenkorb_xselling_anzahl']), 2
+                    LIMIT " . (int)$conf['kaufabwicklung']['warenkorb_xselling_anzahl'], 2
             );
 
             if (is_array($oXsellkauf_arr) && count($oXsellkauf_arr) > 0) {
@@ -367,8 +370,7 @@ function gibXSelling()
  */
 function gibGratisGeschenke($Einstellungen)
 {
-    $oArtikelGeschenke_arr = array();
-
+    $oArtikelGeschenke_arr = [];
     if ($Einstellungen['sonstiges']['sonstiges_gratisgeschenk_nutzen'] === 'Y') {
         $cSQLSort = ' ORDER BY CAST(tartikelattribut.cWert AS DECIMAL) DESC';
         if ($Einstellungen['sonstiges']['sonstiges_gratisgeschenk_sortierung'] === 'N') {
@@ -383,7 +385,7 @@ function gibGratisGeschenke($Einstellungen)
                 JOIN tartikelattribut ON tartikelattribut.kArtikel = tartikel.kArtikel
                 WHERE (tartikel.fLagerbestand > 0 || (tartikel.fLagerbestand <= 0 && (tartikel.cLagerBeachten = 'N' || tartikel.cLagerKleinerNull = 'Y')))
                     AND tartikelattribut.cName = '" . FKT_ATTRIBUT_GRATISGESCHENK . "'
-                    AND CAST(tartikelattribut.cWert AS DECIMAL) <= " . $_SESSION['Warenkorb']->gibGesamtsummeWarenExt(array(C_WARENKORBPOS_TYP_ARTIKEL), true) .
+                    AND CAST(tartikelattribut.cWert AS DECIMAL) <= " . $_SESSION['Warenkorb']->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true) .
             $cSQLSort . " LIMIT 20", 2
         );
 
@@ -409,14 +411,14 @@ function gibGratisGeschenke($Einstellungen)
  * @param array $Einstellungen
  * @return string
  */
-function pruefeBestellMengeUndLagerbestand($Einstellungen = array())
+function pruefeBestellMengeUndLagerbestand($Einstellungen = [])
 {
     $cHinweis     = '';
     $cArtikelName = '';
     $bVorhanden   = false;
     $cISOSprache  = $_SESSION['cISOSprache'];
     if (!is_array($Einstellungen) || !isset($Einstellungen['global'])) {
-        $Einstellungen = Shop::getSettings(array(CONF_GLOBAL));
+        $Einstellungen = Shop::getSettings([CONF_GLOBAL]);
     }
     /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
     if (is_array($_SESSION['Warenkorb']->PositionenArr) && count($_SESSION['Warenkorb']->PositionenArr) > 0) {

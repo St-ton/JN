@@ -9,7 +9,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
 /** @global JTLSmarty $smarty */
 Shop::setPageType(PAGE_VERGLEICHSLISTE);
 $AktuelleSeite  = 'VERGLEICHSLISTE';
-$conf           = Shop::getSettings(array(CONF_VERGLEICHSLISTE, CONF_ARTIKELDETAILS));
+$conf           = Shop::getSettings([CONF_VERGLEICHSLISTE, CONF_ARTIKELDETAILS]);
 $cExclude       = [];
 $oMerkVaria_arr = [[], []];
 loeseHttps();
@@ -41,7 +41,7 @@ if (isset($_GET['vlph']) && intval($_GET['vlph']) === 1) {
     $oMerkVaria_arr   = baueMerkmalundVariation($oVergleichsliste);
     // Füge den Vergleich für Statistikzwecke in die DB ein
     setzeVergleich($oVergleichsliste);
-    for ($i = 0; $i < 8; $i++) {
+    for ($i = 0; $i < 8; ++$i) {
         $cElement = gibMaxPrioSpalteV($cExclude, $conf);
         if (strlen($cElement) > 1) {
             $cExclude[] = $cElement;
@@ -67,12 +67,12 @@ if (isset($oVergleichsliste->oArtikel_arr)) {
     $oVergleichsliste->oArtikel_arr = $oArtikel_arr;
 }
 // Spaltenbreite
-$nBreiteAttribut = (intval($conf['vergleichsliste']['vergleichsliste_spaltengroesseattribut']) > 0) ?
-    intval($conf['vergleichsliste']['vergleichsliste_spaltengroesseattribut']) :
-    100;
-$nBreiteArtikel = (intval($conf['vergleichsliste']['vergleichsliste_spaltengroesse']) > 0) ?
-    intval($conf['vergleichsliste']['vergleichsliste_spaltengroesse']) :
-    200;
+$nBreiteAttribut = (intval($conf['vergleichsliste']['vergleichsliste_spaltengroesseattribut']) > 0)
+    ? (int)$conf['vergleichsliste']['vergleichsliste_spaltengroesseattribut']
+    : 100;
+$nBreiteArtikel = (intval($conf['vergleichsliste']['vergleichsliste_spaltengroesse']) > 0)
+    ? (int)$conf['vergleichsliste']['vergleichsliste_spaltengroesse']
+    : 200;
 $nBreiteTabelle = $nBreiteArtikel * count($oVergleichsliste->oArtikel_arr) + $nBreiteAttribut;
 //specific assigns
 $smarty->assign('nBreiteTabelle', $nBreiteTabelle)

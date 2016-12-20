@@ -23,7 +23,7 @@ function speicherBewertung($kArtikel, $kKunde, $kSprache, $cTitel, $cText, $nSte
     $nSterne  = (int)$nSterne;
     // Prüfe ob Kunde eingeloggt
     if ($kKunde > 0) {
-        $conf = Shop::getSettings(array(CONF_BEWERTUNG));
+        $conf = Shop::getSettings([CONF_BEWERTUNG]);
         // Sollen Bewertungen überhaupt aktiv sein
         if ($conf['bewertung']['bewertung_anzeigen'] === 'Y') {
             $cTitel  = StringHandler::htmlentities(StringHandler::filterXSS($cTitel));
@@ -55,7 +55,7 @@ function speicherBewertung($kArtikel, $kKunde, $kSprache, $cTitel, $cText, $nSte
                 $oBewertung->nAktiv          = ($conf['bewertung']['bewertung_freischalten'] === 'N') ? 1 : 0;
                 $oBewertung->dDatum          = date('Y-m-d H:i:s', time());
 
-                executeHook(HOOK_BEWERTUNG_INC_SPEICHERBEWERTUNG, array('rating' => &$oBewertung));
+                executeHook(HOOK_BEWERTUNG_INC_SPEICHERBEWERTUNG, ['rating' => &$oBewertung]);
                 // Speicher Bewertung
                 $kBewertung    = Shop::DB()->insert('tbewertung', $oBewertung);
                 $nFreischalten = 1;
@@ -64,7 +64,7 @@ function speicherBewertung($kArtikel, $kKunde, $kSprache, $cTitel, $cText, $nSte
                     aktualisiereDurchschnitt($kArtikel, $conf['bewertung']['bewertung_freischalten']);
                     $fBelohnung = checkeBewertungGuthabenBonus($kBewertung, $conf);
                     // Clear Cache
-                    Shop::Cache()->flushTags(array(CACHING_GROUP_ARTICLE . '_' . $kArtikel));
+                    Shop::Cache()->flushTags([CACHING_GROUP_ARTICLE . '_' . $kArtikel]);
                 }
                 unset($oBewertungBereitsVorhanden);
                 if ($nFreischalten === 0) {
@@ -107,7 +107,7 @@ function speicherHilfreich($kArtikel, $kKunde, $kSprache, $bewertung_seite = 1, 
     // Prüfe ob Kunde eingeloggt
     if ($kKunde > 0) {
         // Sollen Bewertungen überhaupt aktiv sein
-        $conf = Shop::getSettings(array(CONF_BEWERTUNG));
+        $conf = Shop::getSettings([CONF_BEWERTUNG]);
         if ($conf['bewertung']['bewertung_anzeigen'] === 'Y') {
             // Sollen Bewertungen hilfreich überhaupt aktiv sein
             if ($conf['bewertung']['bewertung_hilfreich_anzeigen'] === 'Y') {
@@ -159,7 +159,7 @@ function speicherHilfreich($kArtikel, $kKunde, $kSprache, $bewertung_seite = 1, 
                                     );
                                 }
 
-                                executeHook(HOOK_BEWERTUNG_INC_SPEICHERBEWERTUNGHILFREICH, array('rating' => &$oBewertungHilfreich));
+                                executeHook(HOOK_BEWERTUNG_INC_SPEICHERBEWERTUNGHILFREICH, ['rating' => &$oBewertungHilfreich]);
 
                                 Shop::DB()->insert('tbewertunghilfreich', $oBewertungHilfreich);
                                 header('Location: index.php?a=' . $kArtikel . '&bewertung_anzeigen=1&cHinweis=h02' . $cWeiterleitung, true, 303);
@@ -188,7 +188,7 @@ function speicherHilfreich($kArtikel, $kKunde, $kSprache, $bewertung_seite = 1, 
                                     WHERE kBewertung = " . $kBewertung . "
                                         AND kKunde = " . $kKunde, 3
                             );
-                            header('Location: index.php?a=' . $kArtikel . '&bewertung_anzeigen=1&cHinweis=h03' . $cWeiterleitung, true, 303);
+                            header('Location: ' . Shop::getURL() . '/index.php?a=' . $kArtikel . '&bewertung_anzeigen=1&cHinweis=h03' . $cWeiterleitung, true, 303);
                             exit;
                         }
                     }
@@ -252,7 +252,7 @@ function pruefeKundeArtikelBewertet($kArtikel, $kKunde)
 {
     // Pürfen ob der Bewerter schon diesen Artikel bewertet hat
     if ($kKunde > 0) {
-        $oBewertung = Shop::DB()->select('tbewertung', ['kKunde', 'kArtikel', 'kSprache'], [(int)$kKunde, (int)$kArtikel, (int)Shop::$kSprache]);
+        $oBewertung = Shop::DB()->select('tbewertung', ['kKunde', 'kArtikel', 'kSprache'], [(int)$kKunde, (int)$kArtikel, Shop::getLanguage()]);
         // Kunde hat den Artikel schon bewertet
         if (isset($oBewertung->kKunde) && $oBewertung->kKunde > 0) {
             return 1;
@@ -273,7 +273,7 @@ function pruefeKundeArtikelGekauft($kArtikel, $kKunde)
     $kKunde   = (int)$kKunde;
     // Prüfen ob der Bewerter diesen Artikel bereits gekauft hat
     if ($kKunde > 0 && $kArtikel > 0) {
-        $conf = Shop::getSettings(array(CONF_BEWERTUNG));
+        $conf = Shop::getSettings([CONF_BEWERTUNG]);
         if ($conf['bewertung']['bewertung_artikel_gekauft'] === 'Y') {
             $oBestellung = Shop::DB()->query(
                 "SELECT tbestellung.kBestellung

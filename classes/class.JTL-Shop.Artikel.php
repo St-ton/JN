@@ -3140,6 +3140,7 @@ class Artikel
         $options->nAttribute        = 1;
         $options->nArtikelAttribute = 1;
         $options->nKonfig           = 1;
+        $options->nDownload         = 1;
 
         return $options;
     }

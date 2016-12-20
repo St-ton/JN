@@ -35,7 +35,7 @@ class SyncCronjob extends NetSyncHandler
     protected function request($eRequest)
     {
         switch ($eRequest) {
-            case NetSyncRequest::CronjobStatus: {
+            case NetSyncRequest::CronjobStatus:
                 $oExport_arr = holeExportformatCron();
                 if (is_array($oExport_arr)) {
                     foreach ($oExport_arr as &$oExport) {
@@ -54,9 +54,8 @@ class SyncCronjob extends NetSyncHandler
 
                 self::throwResponse(NetSyncResponse::Ok, $oExport_arr);
                 break;
-            }
 
-            case NetSyncRequest::CronjobHistory: {
+            case NetSyncRequest::CronjobHistory:
                 $oExport_arr = holeExportformatQueueBearbeitet(24 * 7);
                 if (is_array($oExport_arr)) {
                     foreach ($oExport_arr as &$oExport) {
@@ -71,15 +70,13 @@ class SyncCronjob extends NetSyncHandler
 
                 self::throwResponse(NetSyncResponse::Ok, $oExport_arr);
                 break;
-            }
 
-            case NetSyncRequest::CronjobTrigger: {
+            case NetSyncRequest::CronjobTrigger:
                 $bCronManuell = true;
                 require_once PFAD_ROOT . PFAD_INCLUDES . 'cron_inc.php';
 
                 self::throwResponse(NetSyncResponse::Ok, true);
                 break;
-            }
         }
     }
 }

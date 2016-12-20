@@ -218,7 +218,7 @@ function getBasketItems($nTyp)
                 ->assign('Steuerpositionen', $_SESSION['Warenkorb']->gibSteuerpositionen())
                 ->assign('Einstellungen', $Einstellungen)
                 ->assign('WarenkorbArtikelPositionenanzahl', $nAnzahl)
-                ->assign('WarenkorbArtikelanzahl', $_SESSION['Warenkorb']->gibAnzahlArtikelExt(array(C_WARENKORBPOS_TYP_ARTIKEL)))
+                ->assign('WarenkorbArtikelanzahl', $_SESSION['Warenkorb']->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]))
                 ->assign('zuletztInWarenkorbGelegterArtikel', $_SESSION['Warenkorb']->gibLetztenWKArtikel())
                 ->assign('WarenkorbGesamtgewicht', $_SESSION['Warenkorb']->getWeight())
                 ->assign('Warenkorbtext', lang_warenkorb_warenkorbEnthaeltXArtikel($_SESSION['Warenkorb']))
@@ -254,7 +254,7 @@ function buildConfiguration($aValues)
     $items           = isset($aValues['item']) ? $aValues['item'] : [];
     $quantities      = isset($aValues['quantity']) ? $aValues['quantity'] : [];
     $variationValues = isset($aValues['eigenschaftwert']) ? $aValues['eigenschaftwert'] : [];
-    $oKonfig         = buildConfig($articleId, $aValues['anzahl'], $variationValues, $items, $quantities, array());
+    $oKonfig         = buildConfig($articleId, $aValues['anzahl'], $variationValues, $items, $quantities, []);
 
     $smarty->assign('oKonfig', $oKonfig);
     $oKonfig->cTemplate = utf8_encode(
@@ -433,7 +433,7 @@ function checkVarkombiDependencies($aValues, $kEigenschaft = 0, $kEigenschaftWer
 
                 // Wir befinden uns im Kind-Artikel -> Weiterleitung auf Vater-Artikel
                 if ($kArtikelKind > 0) {
-                    $objResponse->jsfunc('$.evo.article().setArticleContent', $oArtikel->Artikel, 0, $oArtikel->cURL, []);
+                    $objResponse->jsfunc('$.evo.article().setArticleContent', $oArtikel->kArtikel, 0, $oArtikel->cURL, []);
 
                     return $objResponse;
                 }

@@ -80,7 +80,6 @@ class PaymentPartner extends ServerPaymentMethod
         $smarty      = Shop::Smarty();
         $amount      = number_format($order->fGesamtsummeKundenwaehrung, 2, '.', '');
         $customer    = $_SESSION['Kunde'];
-        $firstItem   = new Artikel($order->Positionen[0]->kArtikel);
         $paymentHash = $this->generateHash($order);
 
         $fields = array(

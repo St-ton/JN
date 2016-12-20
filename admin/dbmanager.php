@@ -40,7 +40,7 @@ foreach ($tables as $table => $info) {
 $smarty->assign('jsTypo', $jsTypo);
 
 switch (true) {
-    case isset($_GET['table']): {
+    case isset($_GET['table']):
         $table   = $_GET['table'];
         $status  = DBManager::getStatus(DB_NAME, $table);
         $columns = DBManager::getColumns($table);
@@ -53,13 +53,12 @@ switch (true) {
                ->assign('sub', 'table')
                ->display('dbmanager.tpl');
         break;
-    }
 
-    case isset($_GET['select']): {
+    case isset($_GET['select']):
         $table = $_GET['select'];
 
         if (!preg_match('/^\w+$/i', $table, $m)) {
-            die('no no no');
+            die('Not allowed.');
         }
 
         $status  = DBManager::getStatus(DB_NAME, $table);
@@ -127,12 +126,8 @@ switch (true) {
         $queryParts['limit']         = "LIMIT :limit_offset, :limit_count";
 
         $query = implode(' ', $queryParts);
-
-        //$q = Shop::DB()->readableQuery($query, $queryParams);
-        //dd($q, $query, $queryParts, $queryParams);
-
-        $info = null;
-        $data = Shop::DB()->executeQueryPrepared($query, $queryParams, 9, false, false, function ($o) use (&$info) {
+        $info  = null;
+        $data  = Shop::DB()->executeQueryPrepared($query, $queryParams, 9, false, false, function ($o) use (&$info) {
             $info = $o;
         });
 
@@ -148,9 +143,8 @@ switch (true) {
                ->assign('sub', 'select')
                ->display('dbmanager.tpl');
         break;
-    }
 
-    case isset($_GET['command']): {
+    case isset($_GET['command']):
         $command = $_GET['command'];
 
         if (isset($_POST['query'])) {
@@ -204,14 +198,12 @@ switch (true) {
         $smarty->assign('sub', 'command')
                ->display('dbmanager.tpl');
         break;
-    }
 
-    default: {
+    default:
         $definedTables = array_keys(getDBFileStruct() ?: []);
 
         $smarty->assign('definedTables', $definedTables)
                ->assign('sub', 'default')
                ->display('dbmanager.tpl');
         break;
-    }
 }

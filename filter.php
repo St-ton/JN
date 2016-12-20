@@ -99,7 +99,7 @@ if ($doSearch) {
     $NaviFilter->setUserSort($AktuelleKategorie);
     // Erweiterte Darstellung Artikelübersicht
     gibErweiterteDarstellung($Einstellungen, $NaviFilter, $cParameter_arr['nDarstellung']);
-    $oSuchergebnisse = $NaviFilter->getProducts();
+    $oSuchergebnisse = $NaviFilter->getProducts(true, $AktuelleKategorie);
     suchanfragenSpeichern($NaviFilter->Suche->cSuche, $oSuchergebnisse->GesamtanzahlArtikel);
     $NaviFilter->Suche->kSuchanfrage = gibSuchanfrageKey($NaviFilter->Suche->cSuche, Shop::$kSprache);
     // Umleiten falls SEO keine Artikel ergibt
@@ -122,7 +122,7 @@ if ($doSearch) {
         $smarty->assign('oBestseller_arr', $bestsellers);
     }
 
-    $oSuchergebnisse = $NaviFilter->setFilterOptions($oSuchergebnisse, $AktuelleKategorie);
+//    $oSuchergebnisse = $NaviFilter->setFilterOptions($oSuchergebnisse, $AktuelleKategorie);
     if (verifyGPCDataInteger('zahl') > 0) {
         $_SESSION['ArtikelProSeite'] = verifyGPCDataInteger('zahl');
         setFsession(0, 0, $_SESSION['ArtikelProSeite']);

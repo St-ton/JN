@@ -370,8 +370,11 @@ function generateSitemapXML()
         //Links alle sprachen
         $strSQL = "SELECT tlink.nLinkart, tlinksprache.kLink, tlinksprache.cISOSprache, tlink.bSSL
                      FROM tlink
+                     JOIN tlinkgruppe ON tlink.kLinkgruppe = tlinkgruppe.kLinkgruppe
                      JOIN tlinksprache ON tlinksprache.kLink = tlink.kLink
                      WHERE tlink.cSichtbarNachLogin = 'N'
+                        AND tlinkgruppe.cName != 'hidden'
+                        AND tlinkgruppe.cTemplatename != 'hidden'
                         AND (tlink.cKundengruppen IS NULL
                           OR tlink.cKundengruppen = 'NULL'
                           OR tlink.cKundengruppen LIKE '" . $stdKundengruppe->kKundengruppe . ";%'

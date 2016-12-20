@@ -63,7 +63,7 @@ class Bewertung
      */
     public function holeHilfreichsteBewertung($kArtikel, $kSprache)
     {
-        $this->oBewertung_arr = array();
+        $this->oBewertung_arr = [];
         if ($kArtikel > 0 && $kSprache > 0) {
             $oBewertungHilfreich = Shop::DB()->query(
                 "SELECT *, DATE_FORMAT(dDatum, '%d.%m.%Y') AS Datum
@@ -103,9 +103,9 @@ class Bewertung
         $nAnzahlSeite         = (int)$nAnzahlSeite;
         $nSeite               = (int)$nSeite;
         $nSterne              = (int)$nSterne;
-        $this->oBewertung_arr = array();
+        $this->oBewertung_arr = [];
         if ($kArtikel > 0 && $kSprache > 0) {
-            $oBewertungAnzahl_arr = array();
+            $oBewertungAnzahl_arr = [];
             $cSQL                 = '';
             // Sortierung beachten
             switch ($nOption) {
@@ -201,14 +201,14 @@ class Bewertung
                 foreach ($this->oBewertung_arr as $i => $oBewertung) {
                     $this->oBewertung_arr[$i]->nAnzahlHilfreich = $oBewertung->nHilfreich + $oBewertung->nNichtHilfreich;
                 }
-                $nSterne_arr = array(0, 0, 0, 0, 0);
+                $nSterne_arr = [0, 0, 0, 0, 0];
                 foreach ($oBewertungAnzahl_arr as $oBewertungAnzahl) {
                     $nSterne_arr[5 - $oBewertungAnzahl->nSterne] = $oBewertungAnzahl->nAnzahl;
                 }
 
                 $this->nSterne_arr = $nSterne_arr;
             }
-            executeHook(HOOK_BEWERTUNG_CLASS_BEWERTUNG, array('oBewertung' => &$this));
+            executeHook(HOOK_BEWERTUNG_CLASS_BEWERTUNG, ['oBewertung' => &$this]);
         }
 
         return $this;

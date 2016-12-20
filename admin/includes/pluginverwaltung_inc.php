@@ -77,17 +77,17 @@ function gibAllePlugins($PluginInstalliert_arr)
                     if ($nReturnValue === 90 && in_array($cVerzeichnis, $cInstalledPlugins)) {
                         $XML_arr['cVerzeichnis']       = $cVerzeichnis;
                         $XML_arr['shop4compatible']    = isset($XML_arr['jtlshop3plugin'][0]['Shop4Version']);
-                        $Plugins->index[$cVerzeichnis] = $XML_arr;
+                        $Plugins->index[$cVerzeichnis] = makeXMLToObj($XML_arr);
                         $Plugins->installiert[]        =& $Plugins->index[$cVerzeichnis];
                     } elseif ($nReturnValue === 126 || $nReturnValue === 1) {
                         $XML_arr['cVerzeichnis']       = $cVerzeichnis;
                         $XML_arr['shop4compatible']    = ($nReturnValue === 1);
-                        $Plugins->index[$cVerzeichnis] = $XML_arr;
+                        $Plugins->index[$cVerzeichnis] = makeXMLToObj($XML_arr);
                         $Plugins->verfuegbar[]         =& $Plugins->index[$cVerzeichnis];
                     } elseif ($nReturnValue !== 1 && $nReturnValue !== 126) {
                         $XML_arr['cVerzeichnis']       = $cVerzeichnis;
                         $XML_arr['cFehlercode']        = $nReturnValue;
-                        $Plugins->index[$cVerzeichnis] = $XML_arr;
+                        $Plugins->index[$cVerzeichnis] = makeXMLToObj($XML_arr);
                         $Plugins->fehlerhaft[]         = & $Plugins->index[$cVerzeichnis];
                     }
                 }
@@ -96,13 +96,13 @@ function gibAllePlugins($PluginInstalliert_arr)
 
         // Pluginsortierung nach Name
         usort($Plugins->installiert, function ($left, $right) {
-            return strcmp($left['jtlshop3plugin'][0]['Name'], $right['jtlshop3plugin'][0]['Name']);
+            return strcmp($left->cName, $right->cName);
         });
         usort($Plugins->verfuegbar, function ($left, $right) {
-            return strcmp($left['jtlshop3plugin'][0]['Name'], $right['jtlshop3plugin'][0]['Name']);
+            return strcmp($left->cName, $right->cName);
         });
         usort($Plugins->fehlerhaft, function ($left, $right) {
-            return strcmp($left['jtlshop3plugin'][0]['Name'], $right['jtlshop3plugin'][0]['Name']);
+            return strcmp($left->cName, $right->cName);
         });
     }
 

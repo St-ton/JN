@@ -53,10 +53,10 @@ class UrlHelper
     /**
      * @var array
      */
-    private $default_scheme_ports = array('http' => 80, 'https' => 443,);
+    private $default_scheme_ports = ['http' => 80, 'https' => 443];
 
     /**
-     * @param null $url
+     * @param string|null $url
      */
     public function __construct($url = null)
     {
@@ -66,7 +66,7 @@ class UrlHelper
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getUrl()
     {
@@ -163,7 +163,7 @@ class UrlHelper
      */
     public function urlDecodeUnreservedChars($string)
     {
-        $unreserved = array();
+        $unreserved = [];
         for ($octet = 65; $octet <= 90; $octet++) {
             $unreserved[] = dechex($octet);
         }

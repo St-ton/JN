@@ -57,7 +57,7 @@ function sendeMail($ModulId, $Object, $mail = null)
     if (!is_object($mail)) {
         $mail = new stdClass();
     }
-    $Einstellungen = Shop::getSettings(array(
+    $Einstellungen = Shop::getSettings([
         CONF_EMAILS,
         CONF_ZAHLUNGSARTEN,
         CONF_GLOBAL,
@@ -65,7 +65,7 @@ function sendeMail($ModulId, $Object, $mail = null)
         CONF_KONTAKTFORMULAR,
         CONF_ARTIKELDETAILS,
         CONF_TRUSTEDSHOPS
-    ));
+    ]);
     $absender_name = $Einstellungen['emails']['email_master_absender_name'];
     $absender_mail = $Einstellungen['emails']['email_master_absender'];
     $kopie         = '';
@@ -163,7 +163,8 @@ function sendeMail($ModulId, $Object, $mail = null)
     }
 
     if (!isset($Emailvorlage->kEmailvorlage) || intval($Emailvorlage->kEmailvorlage) === 0) {
-        Jtllog::writeLog('Keine Emailvorlage mit der ModulId ' . $ModulId . ' vorhanden oder diese Emailvorlage ist nicht aktiv!', JTLLOG_LEVEL_ERROR, false, 'kEmailvorlage');
+        Jtllog::writeLog('Keine Emailvorlage mit der ModulId ' . $ModulId .
+            ' vorhanden oder diese Emailvorlage ist nicht aktiv!', JTLLOG_LEVEL_ERROR, false, 'kEmailvorlage');
 
         return false;
     }
@@ -171,7 +172,10 @@ function sendeMail($ModulId, $Object, $mail = null)
 
     $Emailvorlagesprache    = Shop::DB()->select($cTableSprache, ['kEmailvorlage', 'kSprache'],
         [(int)$Emailvorlage->kEmailvorlage, (int)$Sprache->kSprache]);
-    $Emailvorlage->cBetreff = injectSubject($Object, (isset($Emailvorlagesprache->cBetreff) ? $Emailvorlagesprache->cBetreff : null));
+    $Emailvorlage->cBetreff = injectSubject($Object, (isset($Emailvorlagesprache->cBetreff)
+        ? $Emailvorlagesprache->cBetreff
+        : null)
+    );
 
     if (isset($Emailvorlage->oEinstellungAssoc_arr['cEmailSenderName'])) {
         $absender_name = $Emailvorlage->oEinstellungAssoc_arr['cEmailSenderName'];
@@ -515,15 +519,14 @@ function sendeMail($ModulId, $Object, $mail = null)
     if (isset($Emailvorlagesprache->cDateiname) && strlen($Emailvorlagesprache->cDateiname) > 0) {
         $mail->cDateiname_arr = StringHandler::parseSSK($Emailvorlagesprache->cDateiname);
     }
-    executeHook(
-        HOOK_MAILTOOLS_SENDEMAIL_ENDE, array(
-            'mailsmarty'    => &$mailSmarty,
-            'mail'          => &$mail,
-            'kEmailvorlage' => $Emailvorlage->kEmailvorlage,
-            'kSprache'      => $Sprache->kSprache,
-            'cPluginBody'   => $cPluginBody,
-            'Emailvorlage'  => $Emailvorlage)
-    );
+    executeHook(HOOK_MAILTOOLS_SENDEMAIL_ENDE, [
+        'mailsmarty'    => &$mailSmarty,
+        'mail'          => &$mail,
+        'kEmailvorlage' => $Emailvorlage->kEmailvorlage,
+        'kSprache'      => $Sprache->kSprache,
+        'cPluginBody'   => $cPluginBody,
+        'Emailvorlage'  => $Emailvorlage
+    ]);
 
     verschickeMail($mail);
 
@@ -587,7 +590,7 @@ function verschickeMail($mail)
     }
 
     // EmailBlacklist beachten
-    $Emailconfig = Shop::getSettings(array(CONF_EMAILBLACKLIST));
+    $Emailconfig = Shop::getSettings([CONF_EMAILBLACKLIST]);
     if ($Emailconfig['emailblacklist']['blacklist_benutzen'] === 'Y') {
         if (pruefeGlobaleEmailBlacklist($mail->toEmail)) {
             return;
@@ -696,8 +699,8 @@ function verschickeMail($mail)
  */
 function injectSubject($Object, $Betreff)
 {
-    $a     = array();
-    $b     = array();
+    $a     = [];
+    $b     = [];
     $keys1 = array_keys(get_object_vars($Object));
     if (is_array($keys1)) {
         foreach ($keys1 as $obj) {
@@ -733,7 +736,7 @@ function lokalisiereInhalt($Object)
 }
 
 /**
- * @param Sprache $sprache
+ * @param object $sprache
  * @param Kunde   $kunde
  * @return mixed
  */
@@ -767,7 +770,7 @@ function lokalisiereKunde($sprache, $kunde)
 }
 
 /**
- * @param Sprache       $oSprache
+ * @param object        $oSprache
  * @param Lieferadresse $oLieferadresse
  * @return object
  */
@@ -789,7 +792,7 @@ function lokalisiereLieferadresse($oSprache, $oLieferadresse)
 function bauePDFArrayZumVeschicken($cPDF)
 {
     $cPDFTMP_arr        = explode(';', $cPDF);
-    $cPDF_arr           = array();
+    $cPDF_arr           = [];
     $cUploadVerzeichnis = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_EMAILPDFS;
     if (count($cPDFTMP_arr) > 0) {
         foreach ($cPDFTMP_arr as $cPDFTMP) {
@@ -810,7 +813,7 @@ function bauePDFArrayZumVeschicken($cPDF)
 function baueDateinameArrayZumVeschicken($cDateiname)
 {
     $cDateinameTMP_arr = explode(';', $cDateiname);
-    $cDateiname_arr    = array();
+    $cDateiname_arr    = [];
     if (count($cDateinameTMP_arr) > 0) {
         foreach ($cDateinameTMP_arr as $cDateinameTMP) {
             if (strlen($cDateinameTMP) > 0) {

@@ -12,7 +12,7 @@ class Vergleichsliste
     /**
      * @var array
      */
-    public $oArtikel_arr = array();
+    public $oArtikel_arr = [];
 
     /**
      * Konstruktor

@@ -110,7 +110,7 @@ class KategorieHelper
             if ($getDescription === true) {
                 $descriptionSelect = ($isDefaultLang === true)
                     ? ", node.cBeschreibung" //no category description needed if we don't show category info in mega menu
-                    : ", tkategoriesprache.cBeschreibung";
+                    : ", node.cBeschreibung, tkategoriesprache.cBeschreibung AS cBeschreibung_spr";
             }
             $imageSelect          = ($categoryCount->cnt >= $categoryLimit &&
                 isset(self::$config['template']['megamenu']['show_category_images']) &&
@@ -125,7 +125,7 @@ class KategorieHelper
                         ON tkategoriepict.kKategorie = node.kKategorie";
             $nameSelect           = ($isDefaultLang === true)
                 ? ", node.cName"
-                : ", tkategoriesprache.cName";
+                : ", node.cName, tkategoriesprache.cName AS cName_spr";
             $seoSelect            = ($isDefaultLang === true)
                 ? ", node.cSeo"
                 : ", tseo.cSeo";
@@ -218,7 +218,9 @@ class KategorieHelper
                 // lokalisieren
                 if (self::$kSprache > 0 && !$isDefaultLang) {
                     if (!empty($_cat->cName_spr)) {
-                        $_cat->cName         = $_cat->cName_spr;
+                        $_cat->cName = $_cat->cName_spr;
+                    }
+                    if (!empty($_cat->cBeschreibung_spr)) {
                         $_cat->cBeschreibung = $_cat->cBeschreibung_spr;
                     }
                 }

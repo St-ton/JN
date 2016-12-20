@@ -39,6 +39,10 @@
                     <input type="checkbox" name="cOption_arr[]" value="verfuegbarkeitsbenachrichtigungen" tabindex="10" id="Verfugbarkeitsbenachrichtigungen" />
                     <label for="Verfugbarkeitsbenachrichtigungen">Verf&uuml;gbarkeitsbenachrichtigungen l&ouml;schen</label>
                 </div>
+                <div class="item">
+                    <input type="checkbox" name="cOption_arr[]" value="revisions" tabindex="11" id="Revisions" />
+                    <label for="Revisions">Revisionen l&ouml;schen</label>
+                </div>
             </div>
             <div class="panel-footer">
                 <input type="checkbox" id="ALLMSGS1" class="Boxen" />

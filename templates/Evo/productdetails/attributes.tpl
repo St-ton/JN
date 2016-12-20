@@ -48,19 +48,22 @@
                                 {/if}
 *}
                             </td>
-                             <td class="attr-value">{strip}
-                                {foreach name="attr_characteristics" from=$oMerkmal->oMerkmalWert_arr item=oMerkmalWert}
-                                    {if $oMerkmal->cTyp === 'TEXT' || $oMerkmal->cTyp === 'SELECTBOX' || $oMerkmal->cTyp === ''}
-                                        <span class="value"><a href="{$oMerkmalWert->cURL}" class="label label-primary">{$oMerkmalWert->cWert}</a> </span>
-                                    {else}
-                                        <span class="value">
-                                            <a href="{$oMerkmalWert->cURL}" data-toggle="tooltip" data-placement="top" title="{$oMerkmalWert->cWert|escape:"html"}">
-                                                {if $oMerkmalWert->cBildpfadKlein !== 'gfx/keinBild_kl.gif'}
-                                                <img src="{$oMerkmalWert->cBildpfadKlein}" title="{$oMerkmalWert->cWert}" alt="{$oMerkmalWert->cWert}" />
-                                                {/if}
-                                            </a>
-                                        </span>
-                                    {/if}
+                             <td class="attr-value">
+                                 {strip}
+                                 {foreach name="attr_characteristics" from=$oMerkmal->oMerkmalWert_arr item=oMerkmalWert}
+                                         {if $oMerkmal->cTyp === 'TEXT' || $oMerkmal->cTyp === 'SELECTBOX' || $oMerkmal->cTyp === ''}
+                                             <span class="value"><a href="{$oMerkmalWert->cURL}" class="label label-primary">{$oMerkmalWert->cWert|escape:"html"}</a> </span>
+                                         {else}
+                                             <span class="value">
+                                                <a href="{$oMerkmalWert->cURL}" data-toggle="tooltip" data-placement="top" title="{$oMerkmalWert->cWert|escape:"html"}">
+                                                    {if $oMerkmalWert->cBildpfadKlein !== 'gfx/keinBild_kl.gif'}
+                                                        <img src="{$oMerkmalWert->cBildpfadKlein}" title="{$oMerkmalWert->cWert|escape:"html"}" alt="{$oMerkmalWert->cWert|escape:"html"}" />
+                                                    {else}
+                                                        <span class="value"><a href="{$oMerkmalWert->cURL}" class="label label-primary">{$oMerkmalWert->cWert|escape:"html"}</a> </span>
+                                                    {/if}
+                                                </a>
+                                            </span>
+                                         {/if}
                                 {/foreach}
                                 {/strip}
                             </td>

@@ -277,6 +277,16 @@ hr.hr-sm {
     .center-sm {
         text-align: center;
     }
+    /* Fix for form-group buttons with icon inside */
+    .btn .fa.visible-xs,
+    .btn i.glyphicon{
+        line-height: 22px;
+    }
+    .tags .label,
+    .active-filters .label{
+        display: inline-block;
+        margin-bottom: 5px;
+    }
 }
 
 .attr-label {
@@ -565,6 +575,32 @@ ul.filter_state li a.active:before {
     > .carousel.slide {
         overflow: hidden;
         text-align: center;
+    }
+}
+
+.theme-dark, .theme-light {
+    &.slider-wrapper.control-nav,
+    &.slider-wrapper.direction-nav {
+        position: relative;
+        padding-bottom: 30px;
+
+        .nivo-controlNav {
+            position: absolute;
+            bottom: 5px;
+        }
+    }
+
+    &.slider-wrapper.thumbnail-nav {
+        padding-bottom: 10px;
+
+        .nivo-controlNav {
+            position: relative;
+            bottom: auto;
+
+            a {
+                margin-bottom: 0;
+            }
+        }
     }
 }
 
@@ -1170,6 +1206,11 @@ table.matrix tbody>tr>td {
     .form-group {
         margin-top: @panel-body-padding;
     }
+}
+
+#navbar-filter .dropdown-menu span.value,
+.box .nav-list span.value{
+    padding-right:45px;
 }
 
 @media(max-width: 480px) {
@@ -3039,4 +3080,9 @@ header.fixed-navbar {
 
 .hide-overflow {
     overflow: hidden;
+}
+
+.pagination-wrapper .pagination {
+    margin-top: 0;
+    margin-bottom: 0;
 }

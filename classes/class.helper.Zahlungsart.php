@@ -14,7 +14,7 @@ class ZahlungsartHelper
             return false;
         }
         require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
-        $einstellungen              = Shop::getConfig(array(CONF_ZAHLUNGSARTEN));
+        $einstellungen              = Shop::getConfig([CONF_ZAHLUNGSARTEN]);
         $Zahlungsart->einstellungen = $einstellungen['zahlungsarten'];
         switch ($Zahlungsart->cModulId) {
             case 'za_ueberweisung_jtl':

@@ -21,14 +21,13 @@ class WarenkorbHelper
         $info            = new stdClass();
         $info->type      = $_SESSION['Kundengruppe']->nNettoPreise == 1 ? self::NET : self::GROSS;
         $info->currency  = null;
-        $info->article   = array(0, 0);
-        $info->shipping  = array(0, 0);
-        $info->discount  = array(0, 0);
-        $info->surcharge = array(0, 0);
-        $info->total     = array(0, 0);
-        $info->items     = array();
-
-        $info->currency = $this->getCurrency();
+        $info->article   = [0, 0];
+        $info->shipping  = [0, 0];
+        $info->discount  = [0, 0];
+        $info->surcharge = [0, 0];
+        $info->total     = [0, 0];
+        $info->items     = [];
+        $info->currency  = $this->getCurrency();
 
         foreach ($_SESSION['Warenkorb']->PositionenArr as $oPosition) {
             $amountItem = $oPosition->fPreisEinzelNetto;
@@ -220,7 +219,9 @@ class WarenkorbHelper
      */
     public function getStateISO()
     {
-        return PayPalHelper::isStateRequired($this->getLanguageISO()) ? PayPalHelper::getStateISO(@$this->getShippingAddress()->cBundesland) : @$this->getShippingAddress()->cBundesland;
+        return PayPalHelper::isStateRequired($this->getLanguageISO())
+            ? PayPalHelper::getStateISO(@$this->getShippingAddress()->cBundesland)
+            : @$this->getShippingAddress()->cBundesland;
     }
 
     /**
@@ -265,7 +266,7 @@ class WarenkorbHelper
             'cPfadNormal'  => $variation->cPfadNormal,
             'cPfadGross'   => $variation->cPfadGross,
             'nNr'          => count($wkPos->variationPicturesArr) + 1,
-            'cAltAttribut' => str_replace(array('"', "'"), '', $wkPos->Artikel->cName . ' - ' . $variation->cName),
+            'cAltAttribut' => str_replace(['"', "'"], '', $wkPos->Artikel->cName . ' - ' . $variation->cName),
         ];
         $oPicture->galleryJSON = $wkPos->Artikel->getArtikelImageJSON($oPicture);
 

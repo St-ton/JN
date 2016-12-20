@@ -12,33 +12,32 @@ $oAccount->permission('EXPORT_SCHEDULE_VIEW', true, true);
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'exportformat_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'exportformat_queue_inc.php';
 
-if (isset($_GET['action'])) {
-    $action = array($_GET['action'] => 1);
-} else {
-    $action = isset($_POST['action']) ? $_POST['action'] : array('uebersicht' => 1);
-}
-
+$action   = (isset($_GET['action']))
+    ? [$_GET['action'] => 1]
+    : (isset($_POST['action'])
+        ? $_POST['action']
+        : ['uebersicht' => 1]);
 $step     = 'uebersicht';
-$messages = array(
+$messages = [
     'notice' => '',
     'error'  => '',
-);
-if (isset($action['erstellen']) && intval($action['erstellen']) === 1 && validateToken()) {
+];
+if (isset($action['erstellen']) && (int)$action['erstellen'] === 1 && validateToken()) {
     $step = exportformatQueueActionErstellen($smarty, $messages);
 }
-if (isset($action['editieren']) && intval($action['editieren']) === 1 && validateToken()) {
+if (isset($action['editieren']) && (int)$action['editieren'] === 1 && validateToken()) {
     $step = exportformatQueueActionEditieren($smarty, $messages);
 }
-if (isset($action['loeschen']) && intval($action['loeschen']) === 1 && validateToken()) {
+if (isset($action['loeschen']) && (int)$action['loeschen'] === 1 && validateToken()) {
     $step = exportformatQueueActionLoeschen($smarty, $messages);
 }
-if (isset($action['triggern']) && intval($action['triggern']) === 1 && validateToken()) {
+if (isset($action['triggern']) && (int)$action['triggern'] === 1 && validateToken()) {
     $step = exportformatQueueActionTriggern($smarty, $messages);
 }
-if (isset($action['fertiggestellt']) && intval($action['fertiggestellt']) === 1 && validateToken()) {
+if (isset($action['fertiggestellt']) && (int)$action['fertiggestellt'] === 1 && validateToken()) {
     $step = exportformatQueueActionFertiggestellt($smarty, $messages);
 }
-if (isset($action['erstellen_eintragen']) && intval($action['erstellen_eintragen']) === 1 && validateToken()) {
+if (isset($action['erstellen_eintragen']) && (int)$action['erstellen_eintragen'] === 1 && validateToken()) {
     $step = exportformatQueueActionErstellenEintragen($smarty, $messages);
 }
 

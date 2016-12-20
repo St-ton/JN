@@ -66,6 +66,7 @@ class ExtensionPoint
             $oHandle = null;
             $cClass  = ucfirst($oExtension->cClass);
             if (class_exists($cClass)) {
+                /** @var IExtensionPoint $oHandle */
                 $oHandle = new $cClass();
                 $oHandle->init($oExtension->kInitial);
             } else {
@@ -117,7 +118,7 @@ class ExtensionPoint
                 $oKey->cValue = intval($this->cParam_arr['kUmfrage']);
                 break;
 
-            case PAGE_ARTIKELLISTE: {
+            case PAGE_ARTIKELLISTE:
                 $oNaviFilter = $this->getNaviFilter();
                 // MerkmalWert
                 if (isset($oNaviFilter->MerkmalWert->kMerkmalWert) && $oNaviFilter->MerkmalWert->kMerkmalWert > 0) {
@@ -141,7 +142,6 @@ class ExtensionPoint
                 }
 
                 break;
-            }
 
             case PAGE_NEWSLETTERARCHIV:
             case PAGE_PLUGIN:

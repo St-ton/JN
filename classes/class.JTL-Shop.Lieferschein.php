@@ -61,18 +61,18 @@ class Lieferschein
      * @access protected
      * @var array
      */
-    public $oLieferscheinPos_arr = array();
+    public $oLieferscheinPos_arr = [];
 
     /**
      * @access protected
      * @var array
      */
-    public $oVersand_arr = array();
+    public $oVersand_arr = [];
 
     /**
      * @var array
      */
-    public $oPosition_arr = array();
+    public $oPosition_arr = [];
 
     /**
      * Constructor
@@ -110,7 +110,7 @@ class Lieferschein
 
             foreach ($kLieferscheinPos_arr as $oLieferscheinPos) {
                 $oLieferscheinpos                           = new Lieferscheinpos($oLieferscheinPos->kLieferscheinPos);
-                $oLieferscheinpos->oLieferscheinPosInfo_arr = array();
+                $oLieferscheinpos->oLieferscheinPosInfo_arr = [];
 
                 $kLieferscheinPosInfo_arr = Shop::DB()->selectAll('tlieferscheinposinfo', 'kLieferscheinPos', (int)$oLieferscheinPos->kLieferscheinPos, 'kLieferscheinPosInfo');
                 if (is_array($kLieferscheinPosInfo_arr) && !empty($kLieferscheinPosInfo_arr)) {

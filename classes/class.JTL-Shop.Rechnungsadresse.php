@@ -58,7 +58,7 @@ class Rechnungsadresse extends Adresse
      *
      * @access public
      * @param int $kRechnungsadresse
-     * @return int
+     * @return int|Rechnungsadresse
      */
     public function loadFromDB($kRechnungsadresse)
     {
@@ -139,7 +139,28 @@ class Rechnungsadresse extends Adresse
     public function gibRechnungsadresseAssoc()
     {
         if ($this->kRechnungsadresse > 0) {
-            return $this->toArray();
+            //wawi needs these attributes in exactly this order
+            return [
+                'cAnrede'          => $this->cAnrede,
+                'cTitel'           => $this->cTitel,
+                'cVorname'         => $this->cVorname,
+                'cNachname'        => $this->cNachname,
+                'cFirma'           => $this->cFirma,
+                'cStrasse'         => $this->cStrasse,
+                'cAdressZusatz'    => $this->cAdressZusatz,
+                'cPLZ'             => $this->cPLZ,
+                'cOrt'             => $this->cOrt,
+                'cBundesland'      => $this->cBundesland,
+                'cLand'            => $this->cLand,
+                'cTel'             => $this->cTel,
+                'cMobil'           => $this->cMobil,
+                'cFax'             => $this->cFax,
+                'cUSTID'           => $this->cUSTID,
+                'cWWW'             => $this->cWWW,
+                'cMail'            => $this->cMail,
+                'cZusatz'          => $this->cZusatz,
+                'cAnredeLocalized' => $this->cAnredeLocalized,
+            ];
         }
 
         return [];

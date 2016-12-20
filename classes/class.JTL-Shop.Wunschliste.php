@@ -299,7 +299,7 @@ class Wunschliste
                         }
                     }
 
-                    $oWunschlistePosSuche_arr[$i]->Artikel = new Artikel($oSuchergebnis->kArtikel);
+                    $oWunschlistePosSuche_arr[$i]->Artikel = new Artikel();
                     $oWunschlistePosSuche_arr[$i]->Artikel->fuelleArtikel($oSuchergebnis->kArtikel, Artikel::getDefaultOptions());
                     $oWunschlistePosSuche_arr[$i]->cArtikelName = $oWunschlistePosSuche_arr[$i]->Artikel->cName;
 

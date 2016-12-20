@@ -896,8 +896,15 @@ class Navigationsfilter
         $state          = $this->getCurrentStateData();
         $state->joins[] = $order->join;
 
-        $keys = Shop::DB()->query($this->getBaseQuery(['tartikel.kArtikel'], $state->joins, $state->conditions, $state->having, $order->orderBy), 2);
-        $res = [];
+        $qry  = $this->getBaseQuery(
+            ['tartikel.kArtikel'],
+            $state->joins,
+            $state->conditions,
+            $state->having,
+            $order->orderBy
+        );
+        $keys = Shop::DB()->query($qry, 2);
+        $res  = [];
         foreach ($keys as $key) {
             $res[] = (int)$key->kArtikel;
         }
@@ -1120,7 +1127,6 @@ class Navigationsfilter
     public function getCurrentStateData($ignore = null)
     {
         $state            = $this->getActiveState();
-        $hash             = ['state' => $state->getClassName() . $state->getValue()];
         $stateCondition   = $state->getSQLCondition();
         $stateJoin        = $state->getSQLJoin();
         $data             = new stdClass();
@@ -1132,39 +1138,38 @@ class Navigationsfilter
         if (!empty($stateCondition)) {
             $data->conditions[] = $stateCondition;
         }
-        foreach ($this->getActiveFilters(true) as $type => $filter) {
-            $count = count($filter);
-            if ($count > 1) {
+        foreach ($this->getActiveFilters(true) as $type => $filters) {
+            $count = count($filters);
+            if ($count > 1 && $type !== 'misc' && $type !== 'custom') {
                 $singleConditions = [];
-                /** @var AbstractFilter $item */
-                foreach ($filter as $idx => $item) {
-                    if ($ignore === null || $item->getClassName() !== $ignore) {
+                /** @var AbstractFilter $filter */
+                foreach ($filters as $idx => $filter) {
+                    //the built-in filter behave quite strangely and have to be combined this way
+                    if ($ignore === null || $filter->getClassName() !== $ignore) {
                         if ($idx === 0) {
-                            $hash[$item->getClassName()][] = $item->getValue();
-                            $itemJoin = $item->getSQLJoin();
+                            $itemJoin = $filter->getSQLJoin();
                             if (is_array($itemJoin)) {
-                                foreach ($item->getSQLJoin() as $filterJoin) {
+                                foreach ($filter->getSQLJoin() as $filterJoin) {
                                     $data->joins[] = $filterJoin;
                                 }
                             } else {
                                 $data->joins[] = $itemJoin;
                             }
-                            if ($item->getType() === AbstractFilter::FILTER_TYPE_AND) {
+                            if ($filter->getType() === AbstractFilter::FILTER_TYPE_AND) {
                                 //filters that decrease the total amount of articles must have a "HAVING" clause
-                                $data->having[] = 'HAVING COUNT(' . $item->getTableName() . '.' . $item->getPrimaryKeyRow() . ') = ' . $count;
+                                $data->having[] = 'HAVING COUNT(' . $filter->getTableName() . '.' . $filter->getPrimaryKeyRow() . ') = ' . $count;
                             }
                         }
-                        $singleConditions[] = $item->getSQLCondition();
+                        $singleConditions[] = $filter->getSQLCondition();
                     }
                 }
                 if (!empty($singleConditions)) {
                     $data->conditions[] = $singleConditions;
                 }
             } elseif ($count === 1) {
-                /** @var array(AbstractFilter) $filter */
-                if ($ignore === null || $filter[0]->getClassName() !== $ignore) {
-                    $hash[$filter[0]->getClassName()][] = $filter[0]->getValue();
-                    $itemJoin = $filter[0]->getSQLJoin();
+                /** @var array(AbstractFilter) $filters */
+                if ($ignore === null || $filters[0]->getClassName() !== $ignore) {
+                    $itemJoin = $filters[0]->getSQLJoin();
                     if (is_array($itemJoin)) {
                         foreach ($itemJoin as $filterJoin) {
                             $data->joins[] = $filterJoin;
@@ -1173,11 +1178,25 @@ class Navigationsfilter
                         $data->joins[] = $itemJoin;
                     }
 
-                    $data->conditions[] = "\n#condition from filter " . $type . "\n" . $filter[0]->getSQLCondition();
+                    $data->conditions[] = "\n#condition from filter " . $type . "\n" . $filters[0]->getSQLCondition();
+                }
+            } elseif ($count > 0 && ($type !== 'misc' || $type !== 'custom')) {
+                //this is the most clean and usual behaviour.
+                //'misc' and custom contain clean new filters that can be calculated by just iterating over the array
+                foreach ($filters as $filter) {
+                    $itemJoin = $filter->getSQLJoin();
+                    if (is_array($itemJoin)) {
+                        foreach ($itemJoin as $filterJoin) {
+                            $data->joins[] = $filterJoin;
+                        }
+                    } else {
+                        $data->joins[] = $itemJoin;
+                    }
+
+                    $data->conditions[] = "\n#condition from filter " . $type . "\n" . $filter->getSQLCondition();
                 }
             }
         }
-        $data->hash = $hash;
 
         return $data;
     }

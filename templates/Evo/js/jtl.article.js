@@ -300,9 +300,12 @@
                                 } else {
                                     that.setConfigItemImage(grp.kKonfiggruppe, grp.cBildPfad);
                                 }
-
                                 if (item.kArtikel > 0) {
-                                    cBeschreibung = item.cKurzBeschreibung;
+                                    if (item.hasOwnProperty('length') && item.cKurzBeschreibung.length > 0) {
+                                        cBeschreibung = item.cKurzBeschreibung;
+                                    } else {
+                                        cBeschreibung = "";
+                                    }
                                 } else {
                                     cBeschreibung = item.cBeschreibung;
                                 }
@@ -320,7 +323,7 @@
                                         quantityWrapper.slideDown(200);
                                     }
                                 } else {
-                                    if (!(form.quantity[grp.kKonfiggruppe])) {
+                                    if (quantityWrapper.css('display') == 'none' && !init) {
                                         quantityInput.val(item.fInitial);
                                     }
                                     quantityWrapper.slideDown(200);
@@ -350,7 +353,7 @@
         },
 
         getConfigGroupQuantityInput: function (groupId) {
-            return $('.cfg-group[data-id="' + groupId + '"] .quantity input[type="number"]');
+            return $('.cfg-group[data-id="' + groupId + '"] .quantity input');
         },
 
         getConfigGroupImage: function (groupId) {

@@ -3786,6 +3786,7 @@ function setzeSpracheUndWaehrungLink()
                         if ($_SESSION['Sprachen'][$i]->cURL === $shopURL . '/') {
                             $_SESSION['Sprachen'][$i]->cURL .= '?lang=' . $oSprache->cISO;
                         }
+                        $_SESSION['Sprachen'][$i]->cURLFull = $_SESSION['Sprachen'][$i]->cURL;
                         break;
 
                     case 'WARENKORB':
@@ -3844,7 +3845,8 @@ function setzeSpracheUndWaehrungLink()
                     } else { //there is a SEO link - make it a full URL
                         $url = $helper->getStaticRoute($id, true, false, $oSprache->cISO);
                     }
-                    $_SESSION['Sprachen'][$i]->cURL = $url;
+                    $_SESSION['Sprachen'][$i]->cURL     = $url;
+                    $_SESSION['Sprachen'][$i]->cURLFull = $url;
                 }
 
                 executeHook(HOOK_TOOLSGLOBAL_INC_SWITCH_SETZESPRACHEUNDWAEHRUNG_SPRACHE);
@@ -3943,18 +3945,15 @@ function setzeSpracheUndWaehrungLink()
             }
         }
     }
-
-    executeHook(
-        HOOK_TOOLSGLOBAL_INC_SETZESPRACHEUNDWAEHRUNG_WAEHRUNG, [
-            'oNaviFilter'       => &$NaviFilter,
-            'oZusatzFilter'     => &$oZusatzFilter,
-            'cSprachURL'        => &$sprachURL,
-            'oAktuellerArtikel' => &$AktuellerArtikel,
-            'kSeite'            => &$kSeite,
-            'kLink'             => &$kLink,
-            'AktuelleSeite'     => &$AktuelleSeite
-        ]
-    );
+    executeHook(HOOK_TOOLSGLOBAL_INC_SETZESPRACHEUNDWAEHRUNG_WAEHRUNG, [
+        'oNaviFilter'       => &$NaviFilter,
+        'oZusatzFilter'     => &$oZusatzFilter,
+        'cSprachURL'        => &$sprachURL,
+        'oAktuellerArtikel' => &$AktuellerArtikel,
+        'kSeite'            => &$kSeite,
+        'kLink'             => &$kLink,
+        'AktuelleSeite'     => &$AktuelleSeite
+    ]);
 }
 
 /**

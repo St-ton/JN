@@ -25,6 +25,11 @@ class KategorieHelper
     private static $kKundengruppe;
 
     /**
+     * @var int
+     */
+    private static $depth;
+
+    /**
      * @var string
      */
     private static $cacheID;
@@ -50,9 +55,10 @@ class KategorieHelper
     /**
      * @param int $kSprache
      * @param int $kKundengruppe
+     * @param int $depth
      * @return KategorieHelper
      */
-    public static function getInstance($kSprache = 0, $kKundengruppe = 0)
+    public static function getInstance($kSprache = 0, $kKundengruppe = 0, $depth = 0)
     {
         $kSprache      = ($kSprache === 0)
             ? Shop::getLanguage()
@@ -61,13 +67,15 @@ class KategorieHelper
             ? (int)$_SESSION['Kundengruppe']->kKundengruppe
             : (int)$kKundengruppe;
         $config        = Shop::getSettings([CONF_GLOBAL, CONF_TEMPLATE]);
-        if (self::$instance !== null && self::$kSprache !== $kSprache) {
-            //reset cached categories when language was changed
+        if (self::$instance !== null && (self::$kSprache !== $kSprache || self::$depth !== $depth)) {
+            //reset cached categories when language or depth was changed
             self::$fullCategories = null;
+            unset($_SESSION['oKategorie_arr_new']);
         }
-        self::$cacheID       = 'allcategories_' . $kKundengruppe . '_' . $kSprache . '_' . $config['global']['kategorien_anzeigefilter'];
+        self::$cacheID       = 'allcategories_' . $kKundengruppe . '_' . $kSprache . '_' . $depth . '_' . $config['global']['kategorien_anzeigefilter'];
         self::$kSprache      = $kSprache;
         self::$kKundengruppe = $kKundengruppe;
+        self::$depth         = (int)$depth;
         self::$config        = $config;
 
         return (self::$instance === null) ? new self() : self::$instance;
@@ -103,6 +111,7 @@ class KategorieHelper
             $shopURL              = Shop::getURL(true);
             $isDefaultLang        = standardspracheAktiv();
             $visibilityWhere      = " AND tartikelsichtbarkeit.kArtikel IS NULL";
+            $depthWhere           = self::$depth > 0 ? " AND node.nLevel <= " . self::$depth : '';
             $getDescription       = ($categoryCount->cnt < $categoryLimit || //always get description if there aren't that many categories
                 !(isset(self::$config['template']['megamenu']['show_maincategory_info']) && //otherwise check template config
                 isset(self::$config['template']['megamenu']['show_categories']) &&
@@ -171,7 +180,7 @@ class KategorieHelper
                         AND tkategoriesichtbarkeit.kKundengruppe = " . self::$kKundengruppe . $seoJoin . $imageJoin .
                 $hasArticlesCheckJoin . $stockJoin . $visibilityJoin . "                     
                 WHERE tkategoriesichtbarkeit.kKategorie IS NULL AND node.lft BETWEEN parent.lft AND parent.rght 
-                    AND parent.kOberKategorie = 0 " . $visibilityWhere . "  
+                    AND parent.kOberKategorie = 0 " . $visibilityWhere . $depthWhere . "
                     
                 GROUP BY node.kKategorie
                 ORDER BY node.lft";

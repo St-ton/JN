@@ -180,13 +180,7 @@ class Warenkorb
         $NeuePosition = new WarenkorbPos();
         //kopiere Artikel in Warenkorbpos
         $NeuePosition->Artikel               = new Artikel();
-        $oArtikelOptionen                    = new stdClass();
-        $oArtikelOptionen->nMerkmale         = 1;
-        $oArtikelOptionen->nAttribute        = 1;
-        $oArtikelOptionen->nArtikelAttribute = 1;
-        $oArtikelOptionen->nDownload         = 1;
-        $oArtikelOptionen->nKonfig           = 1;
-
+        $oArtikelOptionen                    = Artikel::getDefaultOptions();
         if ($kKonfigitem > 0) {
             $oArtikelOptionen->nKeineSichtbarkeitBeachten = 1;
         }

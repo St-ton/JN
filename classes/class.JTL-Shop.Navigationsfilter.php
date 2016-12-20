@@ -928,15 +928,16 @@ class Navigationsfilter
      */
     public function getProducts($forProductListing = true, $currentCategory = null)
     {
-        $hash = $this->getHash();
+        $hash                                    = $this->getHash();
+        $oArtikelOptionen                        = new stdClass();
+        $oArtikelOptionen->nMerkmale             = 1;
+        $oArtikelOptionen->nKategorie            = 1;
+        $oArtikelOptionen->nAttribute            = 1;
+        $oArtikelOptionen->nArtikelAttribute     = 1;
+        $oArtikelOptionen->nVariationKombiKinder = 1;
+        $oArtikelOptionen->nWarenlager           = 1;
+        $_SESSION['nArtikelUebersichtVLKey_arr'] = []; // Nur Artikel die auch wirklich auf der Seite angezeigt werden
         if (($oSuchergebnisse = Shop::Cache()->get($hash)) !== false) {
-            $oArtikelOptionen                        = new stdClass();
-            $oArtikelOptionen->nMerkmale             = 1;
-            $oArtikelOptionen->nKategorie            = 1;
-            $oArtikelOptionen->nAttribute            = 1;
-            $oArtikelOptionen->nArtikelAttribute     = 1;
-            $oArtikelOptionen->nVariationKombiKinder = 1;
-            $oArtikelOptionen->nWarenlager           = 1;
             foreach ($oSuchergebnisse->Artikel->articleKeys as $articleKey) {
                 $oArtikel = new Artikel();
                 //$oArtikelOptionen->nVariationDetailPreis = 1;
@@ -952,13 +953,6 @@ class Navigationsfilter
             $oSuchergebnisse->Artikel                = new stdClass();
             $oSuchergebnisse->Artikel->articleKeys   = [];
             $oSuchergebnisse->Artikel->elemente      = [];
-            $oArtikelOptionen                        = new stdClass();
-            $oArtikelOptionen->nMerkmale             = 1;
-            $oArtikelOptionen->nKategorie            = 1;
-            $oArtikelOptionen->nAttribute            = 1;
-            $oArtikelOptionen->nArtikelAttribute     = 1;
-            $oArtikelOptionen->nVariationKombiKinder = 1;
-            $oArtikelOptionen->nWarenlager           = 1;
             $nArtikelProSeite = $this->getArticlesPerPageLimit();
             $nLimitN          = ($this->nSeite - 1) * $nArtikelProSeite;
             // 50 nach links und 50 nach rechts für Artikeldetails blättern rausholen
@@ -1001,7 +995,6 @@ class Navigationsfilter
             }
 
             Shop::Cache()->set($hash, $oSuchergebnisse, [CACHING_GROUP_CATEGORY]);
-
             foreach (array_slice($oSuchergebnisse->Artikel->articleKeys, $nLimitNBlaetter, $offsetEnd) as $i => $key) {
                 $nLaufLimitN = $i + $nLimitNBlaetter;
                 if ($nLaufLimitN >= $nLimitN && $nLaufLimitN < $nLimitN + $nArtikelProSeite) {

@@ -4,8 +4,6 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-require_once PFAD_ROOT . PFAD_INCLUDES . 'filter_inc.php';
-
 /**
  * Class Navigationsfilter
  */
@@ -306,6 +304,9 @@ class Navigationsfilter
         return new FilterDummyState();
     }
 
+    /**
+     * @return array - default array keys
+     */
     private function getParamsPrototype()
     {
         return [
@@ -538,8 +539,12 @@ class Navigationsfilter
      */
     public function registerFilter(IFilter $filter)
     {
-        $filter->setData($this->getLanguageID(), $this->getCustomerGroupID(), $this->getConfig(), $this->oSprache_arr);
-        $this->filters[] = $filter;
+        $this->filters[] = $filter->setData(
+            $this->getLanguageID(),
+            $this->getCustomerGroupID(),
+            $this->getConfig(),
+            $this->oSprache_arr
+        );
 
         return $this;
     }
@@ -554,9 +559,13 @@ class Navigationsfilter
         $filter = null;
         if (class_exists($filterName)) {
             /** @var IFilter $filter */
-            $filter = new $filterName($this->getLanguageID(), $this->getCustomerGroupID(), $this->getConfig());
-            $filter->setClassName($filterName);
-            $this->filters[] = $filter;
+            $filter = new $filterName(
+                $this->getLanguageID(),
+                $this->getCustomerGroupID(),
+                $this->getConfig(),
+                $this->oSprache_arr
+            );
+            $this->filters[] = $filter->setClassName($filterName);
         } else {
             throw new Exception('Cannot register filter class ' . $filterName);
         }
@@ -571,9 +580,12 @@ class Navigationsfilter
      */
     public function addActiveFilter(IFilter $filter, $filterValue)
     {
-        $filter->setData($this->getLanguageID(), $this->getCustomerGroupID(), $this->getConfig(), $this->oSprache_arr)
-               ->init($filterValue);
-        $this->activeFilters[] = $filter;
+        $this->activeFilters[] = $filter->setData(
+            $this->getLanguageID(),
+            $this->getCustomerGroupID(),
+            $this->getConfig(),
+            $this->oSprache_arr
+        )->init($filterValue);
         ++$this->nAnzahlFilter;
 
         return $filter;

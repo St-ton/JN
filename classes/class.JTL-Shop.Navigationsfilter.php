@@ -195,15 +195,19 @@ class Navigationsfilter
      */
     public function __construct(array $options = null)
     {
-        $this->oSprache_arr = Shop::Lang()->getLangArray();
-        $this->conf         = Shop::getSettings([
-            CONF_ARTIKELUEBERSICHT,
-            CONF_NAVIGATIONSFILTER,
-            CONF_BOXEN,
-            CONF_GLOBAL,
-            CONF_SUCHSPECIAL,
-            CONF_METAANGABEN
-        ]);
+        $this->oSprache_arr = (empty($options['languages']))
+            ? Shop::Lang()->getLangArray()
+            : $options['languages'];
+        $this->conf         = (empty($options['config']))
+            ? Shop::getSettings([
+                CONF_ARTIKELUEBERSICHT,
+                CONF_NAVIGATIONSFILTER,
+                CONF_BOXEN,
+                CONF_GLOBAL,
+                CONF_SUCHSPECIAL,
+                CONF_METAANGABEN
+            ])
+            : $options['config'];
         $this->languageID   = Shop::getLanguage();
         if (!isset($_SESSION['Kundengruppe']->kKundengruppe)) {
             $oKundengruppe         = Shop::DB()->select('tkundengruppe', 'cStandard', 'Y');
@@ -980,9 +984,10 @@ class Navigationsfilter
      * @param bool           $forProductListing
      * @param Kategorie|null $currentCategory
      * @param bool           $fillArticles
+     * @param int            $limit
      * @return stdClass
      */
-    public function getProducts($forProductListing = true, $currentCategory = null, $fillArticles = true)
+    public function getProducts($forProductListing = true, $currentCategory = null, $fillArticles = true, $limit = 0)
     {
         $hash                                    = $this->getHash();
         $oArtikelOptionen                        = new stdClass();
@@ -1011,7 +1016,7 @@ class Navigationsfilter
             $oSuchergebnisse->Artikel                = new stdClass();
             $oSuchergebnisse->Artikel->articleKeys   = [];
             $oSuchergebnisse->Artikel->elemente      = [];
-            $nArtikelProSeite = $this->getArticlesPerPageLimit();
+            $nArtikelProSeite = ($limit > 0) ? $limit : $this->getArticlesPerPageLimit();
             $nLimitN          = ($this->nSeite - 1) * $nArtikelProSeite;
             // 50 nach links und 50 nach rechts für Artikeldetails blättern rausholen
             $nLimitNBlaetter = $nLimitN;

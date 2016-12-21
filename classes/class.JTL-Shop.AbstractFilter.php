@@ -81,6 +81,15 @@ abstract class AbstractFilter implements IFilter
     private $className = '';
 
     /**
+     * workaround since built-in filters can be registered multiple times (for example Navigationsfilter->KategorieFilter)
+     * this makes sure there value is not used more then once when Navigationsfilter::getURL()
+     * generates the current URL.
+     *
+     * @var bool
+     */
+    public $isChecked = false;
+
+    /**
      * @param int|array $value
      * @return $this
      */

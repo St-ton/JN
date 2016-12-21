@@ -10,6 +10,11 @@
 class FilterSearchQuery extends AbstractFilter implements IFilter
 {
     /**
+     * @var string
+     */
+    public $urlParam = 'l';
+
+    /**
      * @var bool
      */
     public $isCustom = false;

@@ -10,6 +10,16 @@
 class FilterManufacturerFilter extends FilterManufacturer
 {
     /**
+     * @var string
+     */
+    public $urlParam = 'hf';
+
+    /**
+     * @var string
+     */
+    public $urlParamSEO = SEP_HST;
+
+    /**
      * @var bool
      */
     public $isCustom = false;

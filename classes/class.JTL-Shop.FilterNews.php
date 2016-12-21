@@ -10,6 +10,11 @@
 class FilterNews extends AbstractFilter implements IFilter
 {
     /**
+     * @var string
+     */
+    public $urlParam = 'n';
+
+    /**
      * @var bool
      */
     public $isCustom = false;

@@ -10,6 +10,10 @@
 class FilterAttribute extends AbstractFilter implements IFilter
 {
     /**
+     * @var string
+     */
+    public $urlParam = 'm';
+    /**
      * @var bool
      */
     public $isCustom = false;

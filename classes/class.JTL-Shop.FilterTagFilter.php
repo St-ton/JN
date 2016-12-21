@@ -10,6 +10,11 @@
 class FilterTagFilter extends FilterTag
 {
     /**
+     * @var string
+     */
+    public $urlParam = 'tf';
+
+    /**
      * @var bool
      */
     public $isCustom = false;

@@ -22,7 +22,7 @@ class FilterTag extends AbstractFilter implements IFilter
     /**
      * @var string
      */
-    public $urlParam = 'tf';
+    public $urlParam = 't';
 
     /**
      * @var string

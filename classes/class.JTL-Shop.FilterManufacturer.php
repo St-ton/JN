@@ -22,7 +22,7 @@ class FilterManufacturer extends AbstractFilter implements IFilter
     /**
      * @var string
      */
-    public $urlParam = 'hf';
+    public $urlParam = 'h';
 
     /**
      * @var string

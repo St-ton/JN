@@ -22,7 +22,7 @@ class FilterSearchSpecial extends AbstractFilter implements IFilter
     /**
      * @var string
      */
-    public $urlParam = 'qf';
+    public $urlParam = 'q';
 
     /**
      * @var string

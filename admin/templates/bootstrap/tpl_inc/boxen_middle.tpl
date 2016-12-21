@@ -15,7 +15,7 @@
                     {else}
                         {if isset($bBoxenAnzeigen.$direction) && $bBoxenAnzeigen.$direction}
                             <a href="boxen.php?action=container&position={$direction}&value=0&token={$smarty.session.jtl_token}"
-                               title="{$directionName} auf jeder Seite deaktivieren" class="btn btn-danger"
+                               title="{$directionName} auf jeder Seite deaktivieren" class="btn btn-warning"
                                data-toggle="tooltip" data-placement="right">
                                 <i class="fa fa-eye-slash"></i>
                             </a>

@@ -15,7 +15,7 @@
                     {else}
                         {if isset($bBoxenAnzeigen.$direction) && $bBoxenAnzeigen.$direction}
                             <a href="boxen.php?action=container&position={$direction}&value=0&token={$smarty.session.jtl_token}"
-                               title="{#deactivateOnAnyPage#|replace:'%s':$directionName}" class="btn btn-danger"
+                               title="{#deactivateOnAnyPage#|replace:'%s':$directionName}" class="btn btn-warning"
                                data-toggle="tooltip" data-placement="right">
                                 <i class="fa fa-eye-slash"></i>
                             </a>
@@ -30,21 +30,23 @@
                 </div>
                 {if $oBox_arr|@count > 0}
                     <ul class="list-group">
-                        <li class="boxRow">
-                            <div class="col-xs-3">
-                                <strong>{#boxTitle#}</strong>
-                            </div>
-                            <div class="col-xs-2">
-                                <strong>{#boxType#}</strong>
-                            </div>
-                            <div class="col-xs-3">
-                                <strong>{#boxLabel#}</strong>
-                            </div>
-                            <div class="col-xs-2">
-                                <strong>{#boxSort#}</strong>
-                            </div>
-                            <div class="col-xs-2">
-                                <strong>{#boxActions#}</strong>
+                        <li class="list-group-item boxRow">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <strong>{#boxTitle#}</strong>
+                                </div>
+                                <div class="col-xs-2">
+                                    <strong>{#boxType#}</strong>
+                                </div>
+                                <div class="col-xs-3">
+                                    <strong>{#boxLabel#}</strong>
+                                </div>
+                                <div class="col-xs-2">
+                                    <strong>{#boxSort#}</strong>
+                                </div>
+                                <div class="col-xs-2">
+                                    <strong>{#boxActions#}</strong>
+                                </div>
                             </div>
                         </li>
                         {foreach name="box" from=$oBox_arr item=oBox}
@@ -55,7 +57,7 @@
                             <input type="hidden" name="page" value="{$nPage}" />
                             <input type="hidden" name="action" value="resort" />
                             <button type="submit" value="aktualisieren" class="btn btn-primary">
-                                <i class="fa fa-refresh"></i> {#save#}
+                                <i class="fa fa-save"></i> {#save#}
                             </button>
                         </li>
                     </ul>

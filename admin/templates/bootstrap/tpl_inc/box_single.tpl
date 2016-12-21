@@ -1,4 +1,4 @@
-<li class="list-group-item boxRow {if $oBox->kContainer > 0}boxRowContainer{/if}">
+<li class="list-group-item {if $oBox->kContainer > 0}boxRowContainer{/if}">
     <div class="row">
         {if $oBox->bContainer}
             <div class="col-xs-8{if $oBox->bAktiv == 0} inactive text-muted{/if}">
@@ -33,31 +33,32 @@
             {if $nPage == 0}
                 {if $oBox->bAktiv == 0}
                     <a href="boxen.php?action=activate&position={$position}&item={$oBox->kBox}&value=1&token={$smarty.session.jtl_token}"
-                       title="Auf jeder Seite aktivieren" class="btn btn-default">
+                       title="Auf jeder Seite aktivieren" class="btn btn-success">
                         <i class="fa fa-eye"></i>
                     </a>
                 {else}
                     <a href="boxen.php?action=activate&position={$position}&item={$oBox->kBox}&value=0&token={$smarty.session.jtl_token}"
-                       title="Auf jeder Seite deaktivieren" class="btn btn-default">
+                       title="Auf jeder Seite deaktivieren" class="btn btn-warning">
                         <i class="fa fa-eye-slash"></i>
                     </a>
                 {/if}
             {/if}
-            {if isset($oBox->eTyp) && ($oBox->eTyp === 'text' || $oBox->eTyp === 'link' || $oBox->eTyp === 'catbox')}
-                <a href="boxen.php?action=edit_mode&page={$nPage}&position={$position}&item={$oBox->kBox}&token={$smarty.session.jtl_token}"
-                   title="{#edit#}" class="btn btn-default">
-                    <i class="fa fa-edit"></i>
-                </a>
-            {/if}
             <a href="boxen.php?action=del&page={$nPage}&position={$position}&item={$oBox->kBox}&token={$smarty.session.jtl_token}"
-               onclick="return confirmDelete('{$oBox->cTitel}');" title="{#remove#}" class="btn btn-default">
+               onclick="return confirmDelete('{if $oBox->bContainer}Container #{$oBox->kBox}{else}{$oBox->cTitel}{/if}');"
+               title="{#remove#}" class="btn btn-danger">
                 <i class="fa fa-trash"></i>
+            </a>
+            <a href="boxen.php?action=edit_mode&page={$nPage}&position={$position}&item={$oBox->kBox}&token={$smarty.session.jtl_token}"
+               title="{#edit#}" class="btn btn-default
+                    {if !isset($oBox->eTyp) || ($oBox->eTyp !== 'text' && $oBox->eTyp !== 'link' && $oBox->eTyp !== 'catbox')}disabled{/if}">
+                <i class="fa fa-edit"></i>
             </a>
             {if $oBox->kContainer == 0}
                 {if $nPage == 0}
-                    <a href="#" title="{#visibleOnPages#}: {$oBox->cVisibleOn}" class="btn btn-default">
+                    <button type="button" data-toggle="tooltip" data-html="true" data-placement="left" data-container="body"
+                            title="{#visibleOnPages#}: {$oBox->cVisibleOn|replace:"\n":"<br>"}" class="btn btn-info">
                         <i class="fa fa-info"></i>
-                    </a>
+                    </button>
                 {elseif $nPage == 1 || $nPage == 2 || $nPage == 24 || $nPage == 31}
                     <a href="#" data-filter="box-filter-{$oBox->kBox}" data-box-id="{$oBox->kBox}" class="btn btn-default"
                        data-box-title="{if $oBox->bContainer}Container #{$oBox->kBox}{else}{$oBox->cTitel}{/if}"

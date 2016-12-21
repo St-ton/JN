@@ -892,7 +892,7 @@ class Navigationsfilter
     {
         if (isset($_SESSION['ArtikelProSeite']) && $_SESSION['ArtikelProSeite'] > 0) {
             $limit = (int)$_SESSION['ArtikelProSeite'];
-        } elseif ($_SESSION['oErweiterteDarstellung']->nAnzahlArtikel > 0) {
+        } elseif (isset($_SESSION['oErweiterteDarstellung']->nAnzahlArtikel) && $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel > 0) {
             $limit = (int)$_SESSION['oErweiterteDarstellung']->nAnzahlArtikel;
         } else {
             $limit = (($max = $this->conf['artikeluebersicht']['artikeluebersicht_artikelproseite']) > 0)
@@ -979,9 +979,10 @@ class Navigationsfilter
     /**
      * @param bool           $forProductListing
      * @param Kategorie|null $currentCategory
+     * @param bool           $fillArticles
      * @return stdClass
      */
-    public function getProducts($forProductListing = true, $currentCategory = null)
+    public function getProducts($forProductListing = true, $currentCategory = null, $fillArticles = true)
     {
         $hash                                    = $this->getHash();
         $oArtikelOptionen                        = new stdClass();
@@ -993,15 +994,17 @@ class Navigationsfilter
         $oArtikelOptionen->nWarenlager           = 1;
         $_SESSION['nArtikelUebersichtVLKey_arr'] = []; // Nur Artikel die auch wirklich auf der Seite angezeigt werden
         if (($oSuchergebnisse = Shop::Cache()->get($hash)) !== false) {
-            foreach ($oSuchergebnisse->Artikel->articleKeys as $articleKey) {
-                $oArtikel = new Artikel();
-                //$oArtikelOptionen->nVariationDetailPreis = 1;
-                $oArtikel->fuelleArtikel($articleKey, $oArtikelOptionen);
-                // Aktuelle Artikelmenge in die Session (Keine Vaterartikel)
-                if ($oArtikel->nIstVater == 0) {
-                    $_SESSION['nArtikelUebersichtVLKey_arr'][] = $oArtikel->kArtikel;
+            if ($fillArticles === true) {
+                foreach ($oSuchergebnisse->Artikel->articleKeys as $articleKey) {
+                    $oArtikel = new Artikel();
+                    //$oArtikelOptionen->nVariationDetailPreis = 1;
+                    $oArtikel->fuelleArtikel($articleKey, $oArtikelOptionen);
+                    // Aktuelle Artikelmenge in die Session (Keine Vaterartikel)
+                    if ($oArtikel->nIstVater == 0) {
+                        $_SESSION['nArtikelUebersichtVLKey_arr'][] = $oArtikel->kArtikel;
+                    }
+                    $oSuchergebnisse->Artikel->elemente[] = $oArtikel;
                 }
-                $oSuchergebnisse->Artikel->elemente[] = $oArtikel;
             }
         } else {
             $oSuchergebnisse                         = new stdClass();
@@ -1050,17 +1053,19 @@ class Navigationsfilter
             }
 
             Shop::Cache()->set($hash, $oSuchergebnisse, [CACHING_GROUP_CATEGORY]);
-            foreach (array_slice($oSuchergebnisse->Artikel->articleKeys, $nLimitNBlaetter, $offsetEnd) as $i => $key) {
-                $nLaufLimitN = $i + $nLimitNBlaetter;
-                if ($nLaufLimitN >= $nLimitN && $nLaufLimitN < $nLimitN + $nArtikelProSeite) {
-                    $oArtikel = new Artikel();
-                    //$oArtikelOptionen->nVariationDetailPreis = 1;
-                    $oArtikel->fuelleArtikel($key, $oArtikelOptionen);
-                    // Aktuelle Artikelmenge in die Session (Keine Vaterartikel)
-                    if ($oArtikel->nIstVater == 0) {
-                        $_SESSION['nArtikelUebersichtVLKey_arr'][] = $oArtikel->kArtikel;
+            if ($fillArticles === true) {
+                foreach (array_slice($oSuchergebnisse->Artikel->articleKeys, $nLimitNBlaetter, $offsetEnd) as $i => $key) {
+                    $nLaufLimitN = $i + $nLimitNBlaetter;
+                    if ($nLaufLimitN >= $nLimitN && $nLaufLimitN < $nLimitN + $nArtikelProSeite) {
+                        $oArtikel = new Artikel();
+                        //$oArtikelOptionen->nVariationDetailPreis = 1;
+                        $oArtikel->fuelleArtikel($key, $oArtikelOptionen);
+                        // Aktuelle Artikelmenge in die Session (Keine Vaterartikel)
+                        if ($oArtikel->nIstVater == 0) {
+                            $_SESSION['nArtikelUebersichtVLKey_arr'][] = $oArtikel->kArtikel;
+                        }
+                        $oSuchergebnisse->Artikel->elemente[] = $oArtikel;
                     }
-                    $oSuchergebnisse->Artikel->elemente[] = $oArtikel;
                 }
             }
         }
@@ -1507,7 +1512,7 @@ class Navigationsfilter
      * @param bool   $debug
      * @return string
      */
-    public function getURL($bSeo = true, $oZusatzFilter, $bCanonical = false, $debug = false)
+    public function getURL($bSeo = true, $oZusatzFilter = null, $bCanonical = false, $debug = false)
     {
         $cSEOURL = Shop::getURL() . '/';
         if ($debug === true) {

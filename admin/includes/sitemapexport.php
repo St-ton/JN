@@ -1014,121 +1014,141 @@ function baueExportURL($kKey, $cKey, $dLetzteAktualisierung, $oSprach_arr, $kSpr
     Shop::$nArtikelProSeite      = $nArtikelProSeite;
     Shop::$bSeo                  = true;
 
+    $naviFilter = new Navigationsfilter();
+
     $NaviFilter->oSprache_arr = $oSprach_arr;
 
-    switch ($cKey) {
+    switch ((int)$cKey) {
         case 'kKategorie':
-            $GLOBALS['kKategorie']        = $kKey;
-            $cParameter_arr['kKategorie'] = $kKey;
-            $NaviFilter                   = Shop::buildNaviFilter($cParameter_arr);
-            if (strlen($NaviFilter->Kategorie->cSeo[$kSprache]) === 0) {
-                $bSeoCheck = false;
-            }
-            $FilterSQL->oKategorieFilterSQL = gibKategorieFilterSQL($NaviFilter);
+            $filter    = $naviFilter->addActiveFilter(new FilterCategory(), $kKey);
+            $filterSeo = $filter->getSeo($kSprache);
+            $bSeoCheck = empty($filterSeo);
             break;
 
         case 'kHersteller':
-            $GLOBALS['kHersteller']        = $kKey;
-            $cParameter_arr['kHersteller'] = $kKey;
-            $NaviFilter                    = Shop::buildNaviFilter($cParameter_arr);
-            if (strlen($NaviFilter->Hersteller->cSeo[$kSprache]) === 0) {
-                $bSeoCheck = false;
-            }
-            $FilterSQL->oHerstellerFilterSQL = gibHerstellerFilterSQL($NaviFilter);
+            $filter    = $naviFilter->addActiveFilter(new FilterManufacturer(), $kKey);
+            $filterSeo = $filter->getSeo($kSprache);
+            $bSeoCheck = empty($filterSeo);
+
+//            $GLOBALS['kHersteller']        = $kKey;
+//            $cParameter_arr['kHersteller'] = $kKey;
+//            $NaviFilter                    = Shop::buildNaviFilter($cParameter_arr);
+//            if (strlen($NaviFilter->Hersteller->cSeo[$kSprache]) === 0) {
+//                $bSeoCheck = false;
+//            }
+//            $FilterSQL->oHerstellerFilterSQL = gibHerstellerFilterSQL($NaviFilter);
             break;
 
         case 'kSuchanfrage':
-            $GLOBALS['kSuchanfrage']        = $kKey;
-            $cParameter_arr['kSuchanfrage'] = $kKey;
-            if ($GLOBALS['kSuchanfrage'] > 0) {
-                $oSuchanfrage = Shop::DB()->query(
-                    "SELECT cSuche
-                        FROM tsuchanfrage
-                        WHERE kSuchanfrage = " . (int)$GLOBALS['kSuchanfrage'] . "
-                        ORDER BY kSuchanfrage", 1
-                );
+            $filter    = $naviFilter->addActiveFilter(new FilterManufacturer(), $kKey);
+            $filterSeo = $filter->getSeo($kSprache);
+            $bSeoCheck = empty($filterSeo);
 
-                if (strlen($oSuchanfrage->cSuche) > 0) {
-                    if (!isset($NaviFilter->Suche)) {
-                        $NaviFilter->Suche = new stdClass();
-                    }
-                    $NaviFilter->Suche->kSuchanfrage = $GLOBALS['kSuchanfrage'];
-                    $NaviFilter->Suche->cSuche       = $oSuchanfrage->cSuche;
-                }
-            }
-            $NaviFilter = Shop::buildNaviFilter($cParameter_arr);
-            if (strlen($NaviFilter->Suchanfrage->cSeo[$kSprache]) === 0) {
-                $bSeoCheck = false;
-            }
-            $FilterSQL->oSuchFilterSQL = gibSuchFilterSQL($NaviFilter);
+//            $GLOBALS['kSuchanfrage']        = $kKey;
+//            $cParameter_arr['kSuchanfrage'] = $kKey;
+//            if ($GLOBALS['kSuchanfrage'] > 0) {
+//                $oSuchanfrage = Shop::DB()->query(
+//                    "SELECT cSuche
+//                        FROM tsuchanfrage
+//                        WHERE kSuchanfrage = " . (int)$GLOBALS['kSuchanfrage'] . "
+//                        ORDER BY kSuchanfrage", 1
+//                );
+//
+//                if (strlen($oSuchanfrage->cSuche) > 0) {
+//                    if (!isset($NaviFilter->Suche)) {
+//                        $NaviFilter->Suche = new stdClass();
+//                    }
+//                    $NaviFilter->Suche->kSuchanfrage = $GLOBALS['kSuchanfrage'];
+//                    $NaviFilter->Suche->cSuche       = $oSuchanfrage->cSuche;
+//                }
+//            }
+//            $NaviFilter = Shop::buildNaviFilter($cParameter_arr);
+//            if (strlen($NaviFilter->Suchanfrage->cSeo[$kSprache]) === 0) {
+//                $bSeoCheck = false;
+//            }
+//            $FilterSQL->oSuchFilterSQL = gibSuchFilterSQL($NaviFilter);
             break;
 
         case 'kMerkmalWert':
-            $GLOBALS['kMerkmalWert']        = $kKey;
-            $cParameter_arr['kMerkmalWert'] = $kKey;
-            $NaviFilter                     = Shop::buildNaviFilter($cParameter_arr);
-            if (strlen($NaviFilter->MerkmalWert->cSeo[$kSprache]) === 0) {
-                $bSeoCheck = false;
-            }
-            $FilterSQL->oMerkmalFilterSQL = gibMerkmalFilterSQL($NaviFilter);
+            $filter    = $naviFilter->addActiveFilter(new FilterAttribute(), $kKey);
+            $filterSeo = $filter->getSeo($kSprache);
+            $bSeoCheck = empty($filterSeo);
+
+//            $GLOBALS['kMerkmalWert']        = $kKey;
+//            $cParameter_arr['kMerkmalWert'] = $kKey;
+//            $NaviFilter                     = Shop::buildNaviFilter($cParameter_arr);
+//            if (strlen($NaviFilter->MerkmalWert->cSeo[$kSprache]) === 0) {
+//                $bSeoCheck = false;
+//            }
+//            $FilterSQL->oMerkmalFilterSQL = gibMerkmalFilterSQL($NaviFilter);
             break;
 
         case 'kTag':
-            $GLOBALS['kTag']        = $kKey;
-            $cParameter_arr['kTag'] = $kKey;
-            $NaviFilter             = Shop::buildNaviFilter($cParameter_arr);
-            if (strlen($NaviFilter->Tag->cSeo[$kSprache]) === 0) {
-                $bSeoCheck = false;
-            }
-            $FilterSQL->oTagFilterSQL = gibTagFilterSQL($NaviFilter);
+            $filter    = $naviFilter->addActiveFilter(new FilterTag(), $kKey);
+            $filterSeo = $filter->getSeo($kSprache);
+            $bSeoCheck = empty($filterSeo);
+
+//            $GLOBALS['kTag']        = $kKey;
+//            $cParameter_arr['kTag'] = $kKey;
+//            $NaviFilter             = Shop::buildNaviFilter($cParameter_arr);
+//            if (strlen($NaviFilter->Tag->cSeo[$kSprache]) === 0) {
+//                $bSeoCheck = false;
+//            }
+//            $FilterSQL->oTagFilterSQL = gibTagFilterSQL($NaviFilter);
             break;
 
         case 'kSuchspecial':
-            $GLOBALS['kSuchspecial']        = $kKey;
-            $cParameter_arr['kSuchspecial'] = $kKey;
-            $NaviFilter                     = Shop::buildNaviFilter($cParameter_arr);
-            if (strlen($NaviFilter->Suchspecial->cSeo[$kSprache]) === 0) {
-                $bSeoCheck = false;
-            }
-            $FilterSQL->oSuchspecialFilterSQL = gibSuchspecialFilterSQL($NaviFilter);
+            $filter    = $naviFilter->addActiveFilter(new FilterSearchSpecial(), $kKey);
+            $filterSeo = $filter->getSeo($kSprache);
+            $bSeoCheck = empty($filterSeo);
+
+//            $GLOBALS['kSuchspecial']        = $kKey;
+//            $cParameter_arr['kSuchspecial'] = $kKey;
+//            $NaviFilter                     = Shop::buildNaviFilter($cParameter_arr);
+//            if (strlen($NaviFilter->Suchspecial->cSeo[$kSprache]) === 0) {
+//                $bSeoCheck = false;
+//            }
+//            $FilterSQL->oSuchspecialFilterSQL = gibSuchspecialFilterSQL($NaviFilter);
             break;
     }
 
-    baueArtikelAnzahl($FilterSQL, $GLOBALS['oSuchergebnisse'], $nArtikelProSeite, 0);
+//    baueArtikelAnzahl($FilterSQL, $GLOBALS['oSuchergebnisse'], $nArtikelProSeite, 0);
+    $oSuchergebnisse = $naviFilter->getProducts(true, null, false);
+//    Shop::dbg($oSuchergebnisse, true);
 
     $shopURL    = getSitemapBaseURL();
     $shopURLSSL = getSitemapBaseURL(true);
     $search     = [$shopURL . '/', $shopURLSSL . '/'];
     $replace    = ['', ''];
-    if ($GLOBALS['oSuchergebnisse']->GesamtanzahlArtikel > 0) {
-        if ($GLOBALS['oSuchergebnisse']->Seitenzahlen->MaxSeiten > 1) {
-            for ($i = 1; $i <= $GLOBALS['oSuchergebnisse']->Seitenzahlen->MaxSeiten; $i++) {
+    if ($oSuchergebnisse->GesamtanzahlArtikel > 0) {
+        if ($oSuchergebnisse->Seitenzahlen->MaxSeiten > 1) {
+            for ($i = 1; $i <= $oSuchergebnisse->Seitenzahlen->MaxSeiten; ++$i) {
                 if ($bSeoCheck) {
                     if ($i > 1) {
-                        $cURL_arr[] = makeURL(str_replace($search, $replace, gibNaviURL($NaviFilter, true, null, $kSprache)) . '_s' . $i, $dLetzteAktualisierung, FREQ_WEEKLY, PRIO_NORMAL);
+                        $cURL_arr[] = makeURL(str_replace($search, $replace, $naviFilter->getURL(true)) . '_s' . $i, $dLetzteAktualisierung, FREQ_WEEKLY, PRIO_NORMAL);
                     } else {
-                        $cURL_arr[] = makeURL(str_replace($search, $replace, gibNaviURL($NaviFilter, true, null, $kSprache)), $dLetzteAktualisierung, FREQ_WEEKLY, PRIO_NORMAL);
+                        $cURL_arr[] = makeURL(str_replace($search, $replace, $naviFilter->getURL(true)), $dLetzteAktualisierung, FREQ_WEEKLY, PRIO_NORMAL);
                     }
                 } else {
                     if ($i > 1) {
-                        $cURL_arr[] = makeURL(str_replace($search, $replace, gibNaviURL($NaviFilter, false, null, $kSprache)) . '&seite=' . $i, $dLetzteAktualisierung, FREQ_WEEKLY, PRIO_NORMAL);
+                        $cURL_arr[] = makeURL(str_replace($search, $replace, $naviFilter->getURL(false)) . '&seite=' . $i, $dLetzteAktualisierung, FREQ_WEEKLY, PRIO_NORMAL);
                     } else {
-                        $cURL_arr[] = makeURL(str_replace($search, $replace, gibNaviURL($NaviFilter, false, null, $kSprache)), $dLetzteAktualisierung, FREQ_WEEKLY, PRIO_NORMAL);
+                        $cURL_arr[] = makeURL(str_replace($search, $replace, $naviFilter->getURL(false)), $dLetzteAktualisierung, FREQ_WEEKLY, PRIO_NORMAL);
                     }
                 }
             }
         } else {
             if ($bSeoCheck) {
-                $cURL_arr[] = makeURL(str_replace($search, $replace, gibNaviURL($NaviFilter, true, null, $kSprache)), $dLetzteAktualisierung, FREQ_WEEKLY, PRIO_NORMAL);
+                $cURL_arr[] = makeURL(str_replace($search, $replace, $naviFilter->getURL(true)), $dLetzteAktualisierung, FREQ_WEEKLY, PRIO_NORMAL);
             } else {
-                $cURL_arr[] = makeURL(str_replace($search, $replace, gibNaviURL($NaviFilter, false, null, $kSprache)), $dLetzteAktualisierung, FREQ_WEEKLY, PRIO_NORMAL);
+                $cURL_arr[] = makeURL(str_replace($search, $replace, $naviFilter->getURL(false)), $dLetzteAktualisierung, FREQ_WEEKLY, PRIO_NORMAL);
             }
         }
     } elseif (isset($GLOBALS['kKategorie']) && $GLOBALS['kKategorie'] > 0) {
         if ($bSeoCheck) {
-            $cURL_arr[] = makeURL(str_replace($search, $replace, gibNaviURL($NaviFilter, true, null, $kSprache)), $dLetzteAktualisierung, FREQ_WEEKLY, PRIO_NORMAL);
+            $cURL_arr[] = makeURL(str_replace($search, $replace, $naviFilter->getURL(true)), $dLetzteAktualisierung, FREQ_WEEKLY, PRIO_NORMAL);
         } else {
-            $cURL_arr[] = makeURL(str_replace($search, $replace, gibNaviURL($NaviFilter, false, null, $kSprache)), $dLetzteAktualisierung, FREQ_WEEKLY, PRIO_NORMAL);
+            $cURL_arr[] = makeURL(str_replace($search, $replace, $naviFilter->getURL(false)), $dLetzteAktualisierung, FREQ_WEEKLY, PRIO_NORMAL);
         }
     }
 

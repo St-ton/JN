@@ -302,6 +302,53 @@ class Navigationsfilter
         return new FilterDummyState();
     }
 
+    private function getParamsPrototype()
+    {
+        return [
+            'kKategorie'             => 0,
+            'kKonfigPos'             => 0,
+            'kHersteller'            => 0,
+            'kArtikel'               => 0,
+            'kVariKindArtikel'       => 0,
+            'kSeite'                 => 0,
+            'kLink'                  => 0,
+            'kSuchanfrage'           => 0,
+            'kMerkmalWert'           => 0,
+            'kTag'                   => 0,
+            'kSuchspecial'           => 0,
+            'kNews'                  => 0,
+            'kNewsMonatsUebersicht'  => 0,
+            'kNewsKategorie'         => 0,
+            'kUmfrage'               => 0,
+            'kKategorieFilter'       => 0,
+            'kHerstellerFilter'      => 0,
+            'nBewertungSterneFilter' => 0,
+            'cPreisspannenFilter'    => '',
+            'kSuchspecialFilter'     => 0,
+            'nSortierung'            => 0,
+            'nSort'                  => 0,
+            'MerkmalFilter_arr'      => [],
+            'TagFilter_arr'          => [],
+            'SuchFilter_arr'         => [],
+            'nArtikelProSeite'       => null,
+            'cSuche'                 => null,
+            'seite'                  => null,
+            'show'                   => true,
+            'kSuchFilter'            => 0,
+            'kWunschliste'           => 0,
+            'MerkmalFilter'          => null,
+            'SuchFilter'             => null,
+            'TagFilter'              => null,
+            'vergleichsliste'        => null,
+            'nDarstellung'           => 0,
+            'isSeoMainword'          => false,
+            'nNewsKat'               => 0,
+            'cDatum'                 => '',
+            'nAnzahl'                => 0,
+            'nSterne'                => 0
+        ];
+    }
+
     /**
      * @return $this
      */
@@ -357,6 +404,7 @@ class Navigationsfilter
      */
     public function initStates(&$params)
     {
+        $params          = array_merge($this->getParamsPrototype(), $params);
         $this->params    = $params;
         $languageID      = $this->getLanguageID();
         $customerGroupID = $this->getCustomerGroupID();

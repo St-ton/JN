@@ -1710,8 +1710,8 @@ class Navigationsfilter
                 }
             } elseif (!empty($oZusatzFilter->HerstellerFilter->kHersteller) && (!$this->Hersteller->isInitialized() || $this->Hersteller->getValue() !== $oZusatzFilter->HerstellerFilter->kHersteller)) {
                 $this->HerstellerFilter->isChecked = true;
-                $cSEOURL .= $this->HerstellerFilter->getUrlParamSEO() . $oZusatzFilter->getURL();
-                $cURL .= '&' . $this->HerstellerFilter->getUrlParam() . '=' . $oZusatzFilter->getValue();
+                $cSEOURL .= $this->HerstellerFilter->getUrlParamSEO() . $oZusatzFilter->HerstellerFilter->cSeo;
+                $cURL .= '&' . $this->HerstellerFilter->getUrlParam() . '=' . $oZusatzFilter->HerstellerFilter->kHersteller;
             }
             // Suche
             $nLetzterSuchFilter   = 1;

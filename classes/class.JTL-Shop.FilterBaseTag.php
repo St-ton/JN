@@ -5,9 +5,9 @@
  */
 
 /**
- * Class FilterTag
+ * Class FilterBaseTag
  */
-class FilterTag extends AbstractFilter implements IFilter
+class FilterBaseTag extends AbstractFilter implements IFilter
 {
     /**
      * @var bool
@@ -107,12 +107,12 @@ class FilterTag extends AbstractFilter implements IFilter
         $join->setType('JOIN')
              ->setTable('ttagartikel')
              ->setOn('tartikel.kArtikel = ttagartikel.kArtikel')
-             ->setComment('JOIN1 from FilterTag');
+             ->setComment('JOIN1 from FilterBaseTag');
         $join2 = new FilterJoin();
         $join2->setType('JOIN')
               ->setTable('ttag')
               ->setOn('ttagartikel.kTag = ttag.kTag')
-              ->setComment('JOIN2 from FilterTag');
+              ->setComment('JOIN2 from FilterBaseTag');
 
         return [$join, $join2];
     }
@@ -131,7 +131,7 @@ class FilterTag extends AbstractFilter implements IFilter
             $state        = $naviFilter->getCurrentStateData();
 
             $join = new FilterJoin();
-            $join->setComment('join1 from FilterTag::getOptions()')
+            $join->setComment('join1 from FilterBaseTag::getOptions()')
                  ->setType('JOIN')
                  ->setTable('ttagartikel')
                  ->setOn('ttagartikel.kArtikel = tartikel.kArtikel');
@@ -139,7 +139,7 @@ class FilterTag extends AbstractFilter implements IFilter
             $state->joins[] = $join;
 
             $join = new FilterJoin();
-            $join->setComment('join2 from FilterTag::getOptions()')
+            $join->setComment('join2 from FilterBaseTag::getOptions()')
                  ->setType('JOIN')
                  ->setTable('ttag')
                  ->setOn('ttagartikel.kTag = ttag.kTag');

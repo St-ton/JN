@@ -5,9 +5,9 @@
  */
 
 /**
- * Class FilterSearchSpecial
+ * Class FilterBaseSearchSpecial
  */
-class FilterSearchSpecial extends AbstractFilter implements IFilter
+class FilterBaseSearchSpecial extends AbstractFilter implements IFilter
 {
     /**
      * @var bool
@@ -186,7 +186,7 @@ class FilterSearchSpecial extends AbstractFilter implements IFilter
                 $join->setType('JOIN')
                      ->setTable('tbestseller')
                      ->setOn('tbestseller.kArtikel = tartikel.kArtikel')
-                     ->setComment('JOIN from FilterSearchSpecial bestseller');
+                     ->setComment('JOIN from FilterBaseSearchSpecial bestseller');
 
                 return $join;
 
@@ -196,7 +196,7 @@ class FilterSearchSpecial extends AbstractFilter implements IFilter
                     $join->setType('JOIN')
                          ->setTable('tartikelsonderpreis AS tasp')
                          ->setOn('tasp.kArtikel = tartikel.kArtikel JOIN tsonderpreise AS tsp ON tsp.kArtikelSonderpreis = tasp.kArtikelSonderpreis')
-                         ->setComment('JOIN from FilterSearchSpecial special offers');
+                         ->setComment('JOIN from FilterBaseSearchSpecial special offers');
 
                     return $join;
                 }
@@ -214,7 +214,7 @@ class FilterSearchSpecial extends AbstractFilter implements IFilter
                     $join->setType('JOIN')
                          ->setTable('tartikelext AS taex ')
                          ->setOn('taex.kArtikel = tartikel.kArtikel')
-                         ->setComment('JOIN from FilterSearchSpecial top reviews');
+                         ->setComment('JOIN from FilterBaseSearchSpecial top reviews');
 
                     return $join;
                 }

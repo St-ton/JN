@@ -5,9 +5,9 @@
  */
 
 /**
- * Class FilterSearchQuery
+ * Class FilterBaseSearchQuery
  */
-class FilterSearchQuery extends AbstractFilter implements IFilter
+class FilterBaseSearchQuery extends AbstractFilter implements IFilter
 {
     /**
      * @var string

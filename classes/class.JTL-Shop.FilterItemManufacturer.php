@@ -5,10 +5,12 @@
  */
 
 /**
- * Class FilterManufacturerFilter
+ * Class FilterItemManufacturer
  */
-class FilterManufacturerFilter extends FilterManufacturer
+class FilterItemManufacturer extends FilterBaseManufacturer
 {
+    use FilterItemTrait;
+
     /**
      * @var string
      */

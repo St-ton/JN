@@ -5,10 +5,12 @@
  */
 
 /**
- * Class FilterRating
+ * Class FilterItemRating
  */
-class FilterRating extends AbstractFilter implements IFilter
+class FilterItemRating extends AbstractFilter implements IFilter
 {
+    use FilterItemTrait;
+
     /**
      * @var bool
      */
@@ -90,7 +92,7 @@ class FilterRating extends AbstractFilter implements IFilter
         $join->setType('JOIN')
              ->setTable('tartikelext')
              ->setOn('tartikel.kArtikel = tartikelext.kArtikel')
-             ->setComment('JOIN from FilterRating');
+             ->setComment('JOIN from FilterItemRating');
 
         return $join;
     }

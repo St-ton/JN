@@ -5,9 +5,9 @@
  */
 
 /**
- * Class FilterCategory
+ * Class FilterBaseCategory
  */
-class FilterCategory extends AbstractFilter implements IFilter
+class FilterBaseCategory extends AbstractFilter implements IFilter
 {
     /**
      * @var int
@@ -62,7 +62,8 @@ class FilterCategory extends AbstractFilter implements IFilter
                         LEFT JOIN tkategoriesprache
                             ON tkategoriesprache.kKategorie = tkategorie.kKategorie
                             AND tkategoriesprache.kSprache = tseo.kSprache
-                    WHERE cKey = 'kKategorie' AND kKey = " . $this->getValue() . "
+                    WHERE cKey = 'kKategorie' 
+                        AND kKey = " . $this->getValue() . "
                     ORDER BY tseo.kSprache", 2
         );
         foreach ($languages as $language) {
@@ -122,7 +123,7 @@ class FilterCategory extends AbstractFilter implements IFilter
         $join->setType('JOIN')
              ->setTable('tkategorieartikel')
              ->setOn('tartikel.kArtikel = tkategorieartikel.kArtikel')
-             ->setComment('join from FilterCategory');
+             ->setComment('join from FilterBaseCategory');
 
         return $join;
     }

@@ -5,10 +5,12 @@
  */
 
 /**
- * Class FilterSearchSpecialFilter
+ * Class FilterItemSearchSpecial
  */
-class FilterSearchSpecialFilter extends AbstractFilter implements IFilter
+class FilterItemSearchSpecial extends AbstractFilter implements IFilter
 {
+    use FilterItemTrait;
+
     /**
      * @var string
      */
@@ -184,7 +186,7 @@ class FilterSearchSpecialFilter extends AbstractFilter implements IFilter
                 $join->setType('JOIN')
                      ->setTable('tbestseller')
                      ->setOn('tbestseller.kArtikel = tartikel.kArtikel')
-                     ->setComment('JOIN from FilterSearchSpecial bestseller');
+                     ->setComment('JOIN from FilterItemSearchSpecial bestseller');
                 return $join;
 
             case SEARCHSPECIALS_SPECIALOFFERS:
@@ -193,13 +195,13 @@ class FilterSearchSpecialFilter extends AbstractFilter implements IFilter
                     $join->setType('JOIN')
                          ->setTable('tartikelsonderpreis AS tasp')
                          ->setOn('tasp.kArtikel = tartikel.kArtikel')
-                         ->setComment('JOIN from FilterSearchSpecial special offers');
+                         ->setComment('JOIN from FilterItemSearchSpecial special offers');
 
                     $join2 = new FilterJoin();
                     $join2->setType('JOIN')
                           ->setTable('tsonderpreise AS tsp')
                           ->setOn('tsp.kArtikelSonderpreis = tasp.kArtikelSonderpreis')
-                          ->setComment('JOIN2 from FilterSearchSpecial special offers');
+                          ->setComment('JOIN2 from FilterItemSearchSpecial special offers');
 
                     return [$join, $join2];
                 }
@@ -217,7 +219,7 @@ class FilterSearchSpecialFilter extends AbstractFilter implements IFilter
                     $join->setType('JOIN')
                          ->setTable('tartikelext AS taex ')
                          ->setOn('taex.kArtikel = tartikel.kArtikel')
-                         ->setComment('JOIN from FilterSearchSpecial top reviews');
+                         ->setComment('JOIN from FilterItemSearchSpecial top reviews');
 
                     return $join;
                 }
@@ -247,7 +249,7 @@ class FilterSearchSpecialFilter extends AbstractFilter implements IFilter
                             : 100;
 
                         $join = new FilterJoin();
-                        $join->setComment('join from FilterSearchSpecialFilter::getOptions() bestseller')
+                        $join->setComment('join from FilterItemSearchSpecial::getOptions() bestseller')
                              ->setType('JOIN')
                              ->setTable('tbestseller')
                              ->setOn('tbestseller.kArtikel = tartikel.kArtikel');
@@ -258,14 +260,14 @@ class FilterSearchSpecialFilter extends AbstractFilter implements IFilter
                     case SEARCHSPECIALS_SPECIALOFFERS:
                         if (!$this->isInitialized()) {
                             $join = new FilterJoin();
-                            $join->setComment('join1 from FilterSearchSpecialFilter::getOptions() special offer')
+                            $join->setComment('join1 from FilterItemSearchSpecial::getOptions() special offer')
                                  ->setType('JOIN')
                                  ->setTable('tartikelsonderpreis')
                                  ->setOn('tartikelsonderpreis.kArtikel = tartikel.kArtikel');
                             $state->joins[] = $join;
 
                             $join = new FilterJoin();
-                            $join->setComment('join2 from FilterSearchSpecialFilter::getOptions() special offer')
+                            $join->setComment('join2 from FilterItemSearchSpecial::getOptions() special offer')
                                  ->setType('JOIN')
                                  ->setTable('tsonderpreise')
                                  ->setOn('tsonderpreise.kArtikelSonderpreis = tartikelsonderpreis.kArtikelSonderpreis');
@@ -293,7 +295,7 @@ class FilterSearchSpecialFilter extends AbstractFilter implements IFilter
                     case SEARCHSPECIALS_TOPREVIEWS:
                         if (!$naviFilter->BewertungFilter->isInitialized()) {
                             $join = new FilterJoin();
-                            $join->setComment('join from FilterSearchSpecialFilter::getOptions() top reviews')
+                            $join->setComment('join from FilterItemSearchSpecial::getOptions() top reviews')
                                  ->setType('JOIN')
                                  ->setTable('tartikelext')
                                  ->setOn('tartikelext.kArtikel = tartikel.kArtikel');

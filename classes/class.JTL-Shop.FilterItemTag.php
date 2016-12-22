@@ -5,10 +5,12 @@
  */
 
 /**
- * Class FilterTagFilter
+ * Class FilterItemTag
  */
-class FilterTagFilter extends FilterTag
+class FilterItemTag extends FilterBaseTag
 {
+    use FilterItemTrait;
+
     /**
      * @var string
      */

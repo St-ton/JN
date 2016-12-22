@@ -5,9 +5,9 @@
  */
 
 /**
- * Class FilterAttributeFilter
+ * Class FilterItemAttribute
  */
-class FilterAttributeFilter extends FilterAttribute
+class FilterItemAttribute extends FilterBaseAttribute
 {
     /**
      * @var bool
@@ -108,7 +108,7 @@ class FilterAttributeFilter extends FilterAttribute
         $join->setType('JOIN')
              ->setTable('tartikelmerkmal')
              ->setOn('tartikel.kArtikel = tartikelmerkmal.kArtikel')
-             ->setComment('join from FilterAttributeFilter');
+             ->setComment('join from FilterItemAttribute');
 
         return $join;
     }
@@ -138,34 +138,34 @@ class FilterAttributeFilter extends FilterAttribute
                 }
             }
             $order          = $naviFilter->getOrder();
-            $state          = $naviFilter->getCurrentStateData('FilterAttributeFilter');
+            $state          = $naviFilter->getCurrentStateData('FilterItemAttribute');
             $state->joins[] = $order->join;
 
             $select = 'tmerkmal.cName';
             if (true || !$naviFilter->MerkmalWert->isInitialized() && count($naviFilter->MerkmalFilter) === 0) {
                 $join = new FilterJoin();
-                $join->setComment('join1 from FilterAttributeFilter::getOptions()')
+                $join->setComment('join1 from FilterItemAttribute::getOptions()')
                      ->setType('JOIN')
                      ->setTable('tartikelmerkmal')
                      ->setOn('tartikel.kArtikel = tartikelmerkmal.kArtikel');
                 $state->joins[] = $join;
             }
             $join = new FilterJoin();
-            $join->setComment('join2 from FilterAttributeFilter::getOptions()')
+            $join->setComment('join2 from FilterItemAttribute::getOptions()')
                  ->setType('JOIN')
                  ->setTable('tmerkmalwert')
                  ->setOn('tmerkmalwert.kMerkmalWert = tartikelmerkmal.kMerkmalWert');
             $state->joins[] = $join;
 
             $join = new FilterJoin();
-            $join->setComment('join3 from FilterAttributeFilter::getOptions()')
+            $join->setComment('join3 from FilterItemAttribute::getOptions()')
                  ->setType('JOIN')
                  ->setTable('tmerkmalwertsprache')
                  ->setOn('tmerkmalwertsprache.kMerkmalWert = tartikelmerkmal.kMerkmalWert AND tmerkmalwertsprache.kSprache = ' . $this->getLanguageID());
             $state->joins[] = $join;
 
             $join = new FilterJoin();
-            $join->setComment('join4 from FilterAttributeFilter::getOptions()')
+            $join->setComment('join4 from FilterItemAttribute::getOptions()')
                  ->setType('JOIN')
                  ->setTable('tmerkmal')
                  ->setOn('tmerkmal.kMerkmal = tartikelmerkmal.kMerkmal');
@@ -174,7 +174,7 @@ class FilterAttributeFilter extends FilterAttribute
             if (Shop::$kSprache > 0 && !standardspracheAktiv()) {
                 $select = "tmerkmalsprache.cName";
                 $join   = new FilterJoin();
-                $join->setComment('join5 from FilterAttributeFilter::getOptions()')
+                $join->setComment('join5 from FilterItemAttribute::getOptions()')
                      ->setType('JOIN')
                      ->setTable('tmerkmalsprache')
                      ->setOn('tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal AND tmerkmalsprache.kSprache = ' . $this->getLanguageID());
@@ -187,7 +187,7 @@ class FilterAttributeFilter extends FilterAttribute
                 foreach ($naviFilter->MerkmalFilter as $filter) {
                     $activeFilterIDs[] = $filter->getValue();
                 }
-                $join->setComment('join6 from FilterAttributeFilter::getOptions()')
+                $join->setComment('join6 from FilterItemAttribute::getOptions()')
                      ->setType('JOIN')
                      ->setTable('(
                                 SELECT kArtikel

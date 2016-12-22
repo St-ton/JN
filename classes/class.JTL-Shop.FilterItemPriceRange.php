@@ -5,10 +5,12 @@
  */
 
 /**
- * Class FilterPriceRange
+ * Class FilterItemPriceRange
  */
-class FilterPriceRange extends AbstractFilter implements IFilter
+class FilterItemPriceRange extends AbstractFilter implements IFilter
 {
+    use FilterItemTrait;
+
     /**
      * @var bool
      */
@@ -200,21 +202,21 @@ class FilterPriceRange extends AbstractFilter implements IFilter
         $res = [];
 
         $join = new FilterJoin();
-        $join->setComment('join1 from FilterPriceRange')
+        $join->setComment('join1 from FilterItemPriceRange')
              ->setType('JOIN')
              ->setTable('tpreise')
              ->setOn('tartikel.kArtikel = tpreise.kArtikel AND tpreise.kKundengruppe = ' . (int)$_SESSION['Kundengruppe']->kKundengruppe);
         $res[] = $join;
 
         $join = new FilterJoin();
-        $join->setComment('join2 from FilterPriceRange')
+        $join->setComment('join2 from FilterItemPriceRange')
              ->setType('LEFT JOIN')
              ->setTable('tartikelkategorierabatt')
              ->setOn('tartikelkategorierabatt.kKundengruppe = ' . (int)$_SESSION['Kundengruppe']->kKundengruppe . ' AND tartikelkategorierabatt.kArtikel = tartikel.kArtikel');
         $res[] = $join;
 
         $join = new FilterJoin();
-        $join->setComment('join3 from FilterPriceRange')
+        $join->setComment('join3 from FilterItemPriceRange')
              ->setType('LEFT JOIN')
              ->setTable('tartikelsonderpreis')
              ->setOn("tartikelsonderpreis.kArtikel = tartikel.kArtikel
@@ -224,7 +226,7 @@ class FilterPriceRange extends AbstractFilter implements IFilter
         $res[] = $join;
 
         $join = new FilterJoin();
-        $join->setComment('join4 from FilterPriceRange')
+        $join->setComment('join4 from FilterItemPriceRange')
              ->setType('LEFT JOIN')
              ->setTable('tsonderpreise')
              ->setOn('tartikelsonderpreis.kArtikelSonderpreis = tsonderpreise.kArtikelSonderpreis AND tsonderpreise.kKundengruppe = ' . (int)$_SESSION['Kundengruppe']->kKundengruppe);
@@ -347,7 +349,7 @@ class FilterPriceRange extends AbstractFilter implements IFilter
         // Automatisch
         if ($this->getConfig()['navigationsfilter']['preisspannenfilter_anzeige_berechnung'] === 'A') {
             $join = new FilterJoin();
-            $join->setComment('join1 from FilterPriceRange::getOptions()')
+            $join->setComment('join1 from FilterItemPriceRange::getOptions()')
                  ->setTable('tpreise')
                  ->setType('JOIN')
                  ->setOn('tpreise.kArtikel = tartikel.kArtikel 
@@ -355,7 +357,7 @@ class FilterPriceRange extends AbstractFilter implements IFilter
             $state->joins[] = $join;
 
             $join = new FilterJoin();
-            $join->setComment('join2 from FilterPriceRange::getOptions()')
+            $join->setComment('join2 from FilterItemPriceRange::getOptions()')
                  ->setTable('tartikelsichtbarkeit')
                  ->setType('LEFT JOIN')
                  ->setOn('tartikel.kArtikel = tartikelsichtbarkeit.kArtikel 

@@ -5,9 +5,9 @@
  */
 
 /**
- * Class FilterManufacturer
+ * Class FilterBaseManufacturer
  */
-class FilterManufacturer extends AbstractFilter implements IFilter
+class FilterBaseManufacturer extends AbstractFilter implements IFilter
 {
     /**
      * @var bool

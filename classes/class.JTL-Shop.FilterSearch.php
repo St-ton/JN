@@ -9,6 +9,8 @@
  */
 class FilterSearch extends AbstractFilter implements IFilter
 {
+    use FilterItemTrait;
+
     /**
      * @var bool
      */

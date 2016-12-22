@@ -267,4 +267,23 @@ abstract class AbstractFilter implements IFilter
 
         return $this;
     }
+
+    /**
+     * @return FilterExtra
+     */
+    public function getExtraFilter()
+    {
+        return new FilterExtra();
+    }
+
+    /**
+     * @return array
+     */
+    public function __debugInfo()
+    {
+        $res           = get_object_vars($this);
+        $res['config'] = '*truncated*';
+
+        return $res;
+    }
 }

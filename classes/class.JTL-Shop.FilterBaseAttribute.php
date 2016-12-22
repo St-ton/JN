@@ -5,9 +5,9 @@
  */
 
 /**
- * Class FilterAttribute
+ * Class FilterBaseAttribute
  */
-class FilterAttribute extends AbstractFilter implements IFilter
+class FilterBaseAttribute extends AbstractFilter implements IFilter
 {
     /**
      * @var string
@@ -145,7 +145,7 @@ class FilterAttribute extends AbstractFilter implements IFilter
     {
         $join = new FilterJoin();
         $join->setType('JOIN')
-             ->setComment('join1 from FilterAttribute')
+             ->setComment('join1 from FilterBaseAttribute')
              ->setTable('(
                             SELECT kArtikel
                             FROM tartikelmerkmal

@@ -286,4 +286,23 @@ abstract class AbstractFilter implements IFilter
 
         return $res;
     }
+
+    /**
+     * @return bool
+     */
+    public function getIsChecked()
+    {
+        return $this->isChecked;
+    }
+
+    /**
+     * @param bool $isChecked
+     * @return $this
+     */
+    public function setIsChecked($isChecked)
+    {
+        $this->isChecked = $isChecked;
+
+        return $this;
+    }
 }

@@ -188,4 +188,15 @@ interface IFilter
      * @return $this
      */
     public function setClassName($className);
+
+    /**
+     * @return bool
+     */
+    public function getIsChecked();
+
+    /**
+     * @param bool $isChecked
+     * @return bool
+     */
+    public function setIsChecked($isChecked);
 }

@@ -658,6 +658,39 @@ class Navigationsfilter
                 return $filter;
             }
         }
+//        if ($filterClassName === $this->BewertungFilter->getClassName()) {
+//            return $this->BewertungFilter;
+//        }
+//        if ($filterClassName === $this->HerstellerFilter->getClassName()) {
+//            return $this->HerstellerFilter;
+//        }
+//        if (count($this->TagFilter) > 0 && $filterClassName === $this->TagFilter[0]->getClassName()) {
+//            return $this->TagFilter[0];
+//        }
+//        if (count($this->SuchFilter) > 0 && $filterClassName === $this->SuchFilter[0]->getClassName()) {
+//            return $this->SuchFilter[0];
+//        }
+//        if ($filterClassName === $this->SuchspecialFilter->getClassName()) {
+//            return $this->SuchspecialFilter;
+//        }
+//        if (count($this->MerkmalFilter) > 0 && $filterClassName === $this->MerkmalFilter[0]->getClassName()) {
+//            return $this->MerkmalFilter[0];
+//        }
+
+        return null;
+    }
+
+    /**
+     * @param string $filterClassName
+     * @return IFilter|null
+     */
+    public function getActiveFilterByClassName($filterClassName)
+    {
+        foreach ($this->activeFilters as $filter) {
+            if ($filter->getClassName() === $filterClassName) {
+                return $filter;
+            }
+        }
 
         return null;
     }
@@ -1545,11 +1578,11 @@ class Navigationsfilter
         if (isset($extraFilter->FilterLoesen)) {
             $filter->setDoUnset(true);
             if (isset($extraFilter->FilterLoesen->Kategorie) && $extraFilter->FilterLoesen->Kategorie === true){
-                $filter->setClassName('FilterBaseCategory');
+                $filter->setClassName('FilterItemCategory');
             } elseif (isset($extraFilter->FilterLoesen->Hersteller) && $extraFilter->FilterLoesen->Hersteller === true){
-                $filter->setClassName('FilterBaseManufacturer');
+                $filter->setClassName('FilterItemManufacturer');
             } elseif (isset($extraFilter->FilterLoesen->Merkmale)){
-                $filter->setClassName('FilterBaseAttribute');
+                $filter->setClassName('FilterItemAttribute');
             } elseif (isset($extraFilter->FilterLoesen->MerkmalWert)){
                 $filter->setClassName('FilterItemAttribute');
             } elseif (isset($extraFilter->FilterLoesen->Preisspannen) && $extraFilter->FilterLoesen->Preisspannen === true){
@@ -1557,9 +1590,9 @@ class Navigationsfilter
             } elseif (isset($extraFilter->FilterLoesen->Bewertungen) && $extraFilter->FilterLoesen->Bewertungen === true){
                 $filter->setClassName('FilterItemRating');
             } elseif (isset($extraFilter->FilterLoesen->Tags) && $extraFilter->FilterLoesen->Tags === true){
-                $filter->setClassName('FilterBaseTag');
+                $filter->setClassName('FilterItemTag');
             } elseif (isset($extraFilter->FilterLoesen->Suchspecials) && $extraFilter->FilterLoesen->Suchspecials === true){
-                $filter->setClassName('FilterBaseSearchSpecial');
+                $filter->setClassName('FilterItemSearchSpecial');
             }  elseif (isset($extraFilter->FilterLoesen->SuchFilter)){
                 $filter->setClassName('FilterSearch');
             } elseif (isset($extraFilter->FilterLoesen->Erscheinungsdatum) && $extraFilter->FilterLoesen->Erscheinungsdatum === true){
@@ -1588,8 +1621,7 @@ class Navigationsfilter
                        ->setURL($extraFilter->MerkmalFilter->cSeo);
             } elseif (isset($extraFilter->PreisspannenFilter->fVon)) {
                 $filter->setValue($extraFilter->PreisspannenFilter->fVon . '_' . $extraFilter->PreisspannenFilter->fBis)
-                       ->setClassName('FilterItemPriceRange')
-                       ->setURL($extraFilter->PreisspannenFilter->cSeo);
+                       ->setClassName('FilterItemPriceRange');
             } elseif (isset($extraFilter->BewertungFilter->nSterne)) {
                 $filter->setValue((int)$extraFilter->BewertungFilter->nSterne)
                        ->setClassName('FilterItemRating');
@@ -1671,10 +1703,146 @@ class Navigationsfilter
             Shop::dbg($bSeo, false, 'bseo after:');
         }
         // Filter
+
         // Kategorie
+        $testURL = $cURL;
+        $testURLSEO = $cSEOURL;
         if (!$bCanonical) {
-            if ($this->KategorieFilter->isInitialized() && (!$this->Kategorie->isInitialized() || $this->Kategorie->getValue() !== $this->KategorieFilter->getValue())) {
-                if (!isset($oZusatzFilter->FilterLoesen->Kategorie) || !$oZusatzFilter->FilterLoesen->Kategorie) {
+            $currentState = $this->getBaseState();
+            $currentStateClass = $currentState->getClassName();
+            $extraFilter = $this->convertFilter($oZusatzFilter);
+            $extraClassName = $extraFilter->getClassName();
+
+//            Shop::dbg($extraFilter, false, 'zusatzConv:');
+//            Shop::dbg($oZusatzFilter, false, 'zusatz:');
+
+
+            Shop::dbg($extraClassName, false, 'extra class name:');
+
+            foreach ($this->getActiveFilters() as $activeFilter) {
+                if (!$activeFilter->isCustom()) {
+                    $correspondingBaseStateClass = $activeFilter->getCorrespondingBaseState();
+//                    Shop::dbg($correspondingBaseStateClass, false, 'base state for filter ' . $activeFilter->getClassName());
+
+                    if ($currentStateClass !== $correspondingBaseStateClass || $currentState->getValue() !== $activeFilter->getValue()) { //corresponds to condition I1
+//                        echo '<br>testif0';
+
+                        if ($extraClassName !== $activeFilter->getClassName() || $extraFilter->getDoUnset() === false) {// I1b
+//                            echo '<br>testif0b';
+
+                            $activeFilter->isChecked = true;
+                            $seo = $activeFilter->getSeo($this->getLanguageID());
+//                            Shop::dbg($seo, false, 'seo:');
+//                            Shop::dbg($activeFilter->getUrlParam(), false, 'urlparam:');
+                            if (strlen($seo) === 0) {
+                                $bSeo = false;
+                            }
+                            $testURLSEO .= $activeFilter->getUrlParamSEO() . $seo;
+                            $testURL .= '&' . $activeFilter->getUrlParam() . '=' . $activeFilter->getValue();
+
+
+                        }
+                    } elseif (
+                        ($extraClassName === $activeFilter->getClassName())
+                        &&
+                        (
+                            $currentStateClass !== $correspondingBaseStateClass
+                            ||
+                            $this->baseState->getValue() !== $extraFilter->getValue()
+                        )
+                    ) { //corresponds to condition I2
+                        $activeFilter->setIsChecked(true);
+                        $extraUrl = $extraFilter->getURL();
+                        if (empty($extraUrl)) {
+                            $bSeo = false;
+                        }
+                        $testURLSEO .= $activeFilter->getUrlParamSEO() . $extraUrl;
+                        $testURL .= '&' . $activeFilter->getUrlParam() . '=' . $extraFilter->getValue();
+                    }
+                }
+            }
+
+            //extra filter
+            $existingFilter = $this->getActiveFilterByClassName($extraClassName);
+            if ($existingFilter === null && class_exists($extraClassName)) {
+                $existingFilter = new $extraClassName;
+            }
+            if (($existingFilter) !== null && $existingFilter->isInitialized() === false) {
+                $testURL .= '&'. $existingFilter->getUrlParam() . '=' . $extraFilter->getValue();
+                $existingFilter->setIsChecked(true);
+            }
+
+            // Tag
+            $nLetzterTagFilter   = 1;
+            $bZusatzTagEnthalten = false;
+            $oTag_arr            = [];
+
+            if (!isset($oZusatzFilter->FilterLoesen->Tags)) {
+                if (isset($this->TagFilter) && is_array($this->TagFilter)) {
+                    foreach ($this->TagFilter as $i => $oTagFilter) {
+                        $oTagFilter->isChecked = true;
+                        if ($oTagFilter->kTag > 0) {
+                            if (!isset($oTag_arr[$i])) {
+                                $oTag_arr[$i] = new stdClass();
+                            }
+                            $oTag_arr[$i]->kTag = (int)$oTagFilter->kTag;
+                            ++$nLetzterTagFilter;
+                            if (isset($oZusatzFilter->TagFilter->kTag) && $oTagFilter->kTag == $oZusatzFilter->TagFilter->kTag) {
+                                $bZusatzTagEnthalten = true;
+                            }
+                        }
+                    }
+                }
+            }
+            // Zusatz Tagfilter
+            if (isset($oZusatzFilter->TagFilter->kTag) && $oZusatzFilter->TagFilter->kTag > 0 && !$bZusatzTagEnthalten) {
+                $nPos = count($oTag_arr);
+                if (!isset($oTag_arr[$nPos])) {
+                    $oTag_arr[$nPos] = new stdClass();
+                }
+                $oTag_arr[$nPos]->kTag = (int)$oZusatzFilter->TagFilter->kTag;
+            }
+            // Baue TagFilter URL
+            $oTag_arr = sortiereFilter($oTag_arr, 'kTag');
+            Shop::dbg($oTag_arr, false, '$oTag_arr');
+            if (is_array($oTag_arr) && count($oTag_arr) > 0) {
+                foreach ($oTag_arr as $i => $oTag) {
+                    $cURL .= '&tf' . ($i + 1) . '=' . (int)$oTag->kTag;
+                }
+            }
+
+
+
+
+
+
+
+            // Hersteller
+            if ($this->HerstellerFilter->isInitialized() && (!$this->Hersteller->isInitialized() || $this->Hersteller->getValue() !== $this->HerstellerFilter->getValue())) {
+//                Shop::dbg($oZusatzFilter, false, '$oZusatzFilter:');
+                if (empty($oZusatzFilter->FilterLoesen->Hersteller)) {
+//                    echo '<br>if0';
+                    $this->HerstellerFilter->isChecked = true;
+                    $cSEOURL .= $this->HerstellerFilter->getUrlParamSEO() . $this->HerstellerFilter->getSeo($this->getLanguageID());
+                    if ($bSeo && strlen($this->HerstellerFilter->getSeo($this->getLanguageID())) === 0) {
+                        $bSeo = false;
+                    }
+                    $cURL .= '&' . $this->HerstellerFilter->getUrlParam() . '=' . $this->HerstellerFilter->getValue();
+                }
+            } elseif (!empty($oZusatzFilter->HerstellerFilter->kHersteller) && (!$this->Hersteller->isInitialized() || $this->Hersteller->getValue() !== $oZusatzFilter->HerstellerFilter->kHersteller)) {
+//                echo '<br>if1';
+                $this->HerstellerFilter->isChecked = true;
+                $cSEOURL .= $this->HerstellerFilter->getUrlParamSEO() . $oZusatzFilter->HerstellerFilter->cSeo;
+                $cURL .= '&' . $this->HerstellerFilter->getUrlParam() . '=' . $oZusatzFilter->HerstellerFilter->kHersteller;
+            }
+
+
+//            Shop::dbg($cURL, false, 'ori');
+//            Shop::dbg($testURL, true, 'test');
+
+            if ($this->KategorieFilter->isInitialized() && (!$this->Kategorie->isInitialized() || $this->Kategorie->getValue() !== $this->KategorieFilter->getValue())) { // I1
+
+                if (!isset($oZusatzFilter->FilterLoesen->Kategorie) || !$oZusatzFilter->FilterLoesen->Kategorie) { // I1b
                     $this->KategorieFilter->isChecked = true;
                     if (strlen($this->KategorieFilter->getSeo($this->getLanguageID())) === 0) {
                         $bSeo = false;
@@ -1687,32 +1855,21 @@ class Navigationsfilter
                         }
                         $cURL .= '&' . $this->KategorieFilter->getUrlParam() . '=' . $oZusatzFilter->KategorieFilter->kKategorie;
                     } else {
-                        $cSEOURL .= SEP_KAT . $this->KategorieFilter->getSeo($this->getLanguageID());
+                        $cSEOURL .= $this->KategorieFilter->getUrlParamSEO() . $this->KategorieFilter->getSeo($this->getLanguageID());
                         $cURL .= '&' . $this->KategorieFilter->getUrlParam() . '=' . $this->KategorieFilter->getValue();
                     }
                 }
-            } elseif ((isset($oZusatzFilter->KategorieFilter->kKategorie) && $oZusatzFilter->KategorieFilter->kKategorie > 0) &&
+            } elseif (
+                (isset($oZusatzFilter->KategorieFilter->kKategorie) && $oZusatzFilter->KategorieFilter->kKategorie > 0) &&
                 (!$this->Kategorie->isInitialized() || $this->Kategorie->getValue() !== $oZusatzFilter->KategorieFilter->kKategorie)
-            ) {
+            ) { // I2
                 $cSEOURL .= $this->KategorieFilter->getUrlParamSEO() . $oZusatzFilter->KategorieFilter->cSeo;
                 $cURL .= '&' . $this->KategorieFilter->getUrlParam() . '=' . $oZusatzFilter->KategorieFilter->kKategorie;
                 $this->KategorieFilter->isChecked = true;
             }
-            // Hersteller
-            if ($this->HerstellerFilter->isInitialized() && (!$this->Hersteller->isInitialized() || $this->Hersteller->getValue() !== $this->HerstellerFilter->getValue())) {
-                if (empty($oZusatzFilter->FilterLoesen->Hersteller)) {
-                    $this->HerstellerFilter->isChecked = true;
-                    $cSEOURL .= $this->HerstellerFilter->getUrlParamSEO() . $this->HerstellerFilter->getSeo($this->getLanguageID());
-                    if ($bSeo && strlen($this->HerstellerFilter->getSeo($this->getLanguageID())) === 0) {
-                        $bSeo = false;
-                    }
-                    $cURL .= '&' . $this->HerstellerFilter->getUrlParam() . '=' . $this->HerstellerFilter->getValue();
-                }
-            } elseif (!empty($oZusatzFilter->HerstellerFilter->kHersteller) && (!$this->Hersteller->isInitialized() || $this->Hersteller->getValue() !== $oZusatzFilter->HerstellerFilter->kHersteller)) {
-                $this->HerstellerFilter->isChecked = true;
-                $cSEOURL .= $this->HerstellerFilter->getUrlParamSEO() . $oZusatzFilter->HerstellerFilter->cSeo;
-                $cURL .= '&' . $this->HerstellerFilter->getUrlParam() . '=' . $oZusatzFilter->HerstellerFilter->kHersteller;
-            }
+
+
+
             // Suche
             $nLetzterSuchFilter   = 1;
             $bZusatzSuchEnthalten = false;
@@ -1814,44 +1971,7 @@ class Navigationsfilter
                 $cURL .= '&'. $this->BewertungFilter->getUrlParam() . '=' . $oZusatzFilter->BewertungFilter->nSterne;
                 $this->BewertungFilter->isChecked = true;
             }
-            // Tag
-            $nLetzterTagFilter   = 1;
-            $bZusatzTagEnthalten = false;
-            $oTag_arr            = [];
 
-            if (!isset($oZusatzFilter->FilterLoesen->Tags)) {
-                if (isset($this->TagFilter) && is_array($this->TagFilter)) {
-                    foreach ($this->TagFilter as $i => $oTagFilter) {
-                        $oTagFilter->isChecked = true;
-                        if ($oTagFilter->kTag > 0) {
-                            if (!isset($oTag_arr[$i])) {
-                                $oTag_arr[$i] = new stdClass();
-                            }
-                            $oTag_arr[$i]->kTag = (int)$oTagFilter->kTag;
-                            ++$nLetzterTagFilter;
-                            if (isset($oZusatzFilter->TagFilter->kTag) && $oTagFilter->kTag == $oZusatzFilter->TagFilter->kTag) {
-                                $bZusatzTagEnthalten = true;
-                            }
-                        }
-                    }
-                }
-            }
-            // Zusatz Tagfilter
-            if (isset($oZusatzFilter->TagFilter->kTag) && $oZusatzFilter->TagFilter->kTag > 0 && !$bZusatzTagEnthalten) {
-                //$cURL .= "&tf" . $nLetzterTagFilter . "=" . $oZusatzFilter->TagFilter->kTag;
-                $nPos = count($oTag_arr);
-                if (!isset($oTag_arr[$nPos])) {
-                    $oTag_arr[$nPos] = new stdClass();
-                }
-                $oTag_arr[$nPos]->kTag = (int)$oZusatzFilter->TagFilter->kTag;
-            }
-            // Baue TagFilter URL
-            $oTag_arr = sortiereFilter($oTag_arr, 'kTag');
-            if (is_array($oTag_arr) && count($oTag_arr) > 0) {
-                foreach ($oTag_arr as $i => $oTag) {
-                    $cURL .= '&tf' . ($i + 1) . '=' . (int)$oTag->kTag;
-                }
-            }
             // Suchspecialfilter
             if ((isset($oZusatzFilter->SuchspecialFilter->kKey) && $oZusatzFilter->SuchspecialFilter->kKey > 0) &&
                 (!$this->Suchspecial->isInitialized() || $this->Suchspecial->getValue() !== $oZusatzFilter->SuchspecialFilter->kKey)
@@ -1868,6 +1988,16 @@ class Navigationsfilter
                 }
             }
         }
+
+        if ($testURL !== $cURL) {
+            Shop::dbg($testURL, false, 'test:');
+            Shop::dbg($cURL, false, 'original:');
+            Shop::dbg($testURLSEO, false, 'testSEO:');
+            Shop::dbg($cSEOURL, false, 'originalSEO:');
+//            Shop::dbg($oZusatzFilter, false, '$oZusatzFilter');
+//            Shop::dbg($extraFilter, true, '$extraFilter');
+        }
+
 
         if (strlen($cSEOURL) > 254) {
             $bSeo = false;
@@ -2435,6 +2565,7 @@ class Navigationsfilter
      */
     public function createUnsetFilterURLs($bSeo, $oSuchergebnisse)
     {
+        return;
         if ($this->SuchspecialFilter->isInitialized()) {
             $bSeo = false;
         }

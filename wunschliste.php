@@ -10,12 +10,12 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
 Shop::run();
 $cParameter_arr   = Shop::getParameters();
 $cURLID           = StringHandler::filterXSS(verifyGPDataString('wlid'));
-$Einstellungen    = Shop::getSettings(array(CONF_GLOBAL, CONF_RSS));
-$kWunschliste     = (verifyGPCDataInteger('wl') > 0 && verifyGPCDataInteger('wlvm') === 0) ?
-    verifyGPCDataInteger('wl') : //one of multiple customer wishlists
-    ((isset($cParameter_arr['kWunschliste'])) ?
-        $cParameter_arr['kWunschliste'] : //default wishlist from Shop class
-        $cURLID); //public link
+$Einstellungen    = Shop::getSettings([CONF_GLOBAL, CONF_RSS]);
+$kWunschliste     = (verifyGPCDataInteger('wl') > 0 && verifyGPCDataInteger('wlvm') === 0)
+    ? verifyGPCDataInteger('wl') //one of multiple customer wishlists
+    : ((isset($cParameter_arr['kWunschliste']))
+        ? $cParameter_arr['kWunschliste'] //default wishlist from Shop class
+        : $cURLID); //public link
 $AktuelleSeite    = 'WUNSCHLISTE';
 $cHinweis         = '';
 $cFehler          = '';
@@ -25,7 +25,7 @@ $CWunschliste     = null;
 $action           = null;
 $action           = null;
 $kWunschlistePos  = null;
-$oWunschliste_arr = array();
+$oWunschliste_arr = [];
 $linkHelper       = LinkHelper::getInstance();
 
 if ($kWunschliste === 0 && !empty($_SESSION['Kunde']->kKunde) && empty($_SESSION['Wunschliste']->kWunschliste)) {
@@ -97,7 +97,8 @@ if ($action !== null && isset($_POST['kWunschliste']) && isset($_SESSION['Kunde'
                     $oEigenschaftwerte_arr = (ArtikelHelper::isVariChild($oWunschlistePos->kArtikel)) ?
                         gibVarKombiEigenschaftsWerte($oWunschlistePos->kArtikel) :
                         gibEigenschaftenZuWunschliste($kWunschliste, $oWunschlistePos->kWunschlistePos);
-                    if (!$oWunschlistePos->Artikel->bHasKonfig && empty($oWunschlistePos->bKonfig) && isset($oWunschlistePos->Artikel->inWarenkorbLegbar) && $oWunschlistePos->Artikel->inWarenkorbLegbar > 0) {
+                    if (!$oWunschlistePos->Artikel->bHasKonfig && empty($oWunschlistePos->bKonfig) &&
+                        isset($oWunschlistePos->Artikel->inWarenkorbLegbar) && $oWunschlistePos->Artikel->inWarenkorbLegbar > 0) {
                         fuegeEinInWarenkorb($oWunschlistePos->kArtikel, $oWunschlistePos->fAnzahl, $oEigenschaftwerte_arr);
                     }
                 }
@@ -119,7 +120,7 @@ if ($action !== null && isset($_POST['kWunschliste']) && isset($_SESSION['Kunde'
                 if ($oWunschliste->kKunde == $_SESSION['Kunde']->kKunde && $oWunschliste->kKunde) {
                     $oWunschliste->entferneAllePos();
                     if ($_SESSION['Wunschliste']->kWunschliste == $oWunschliste->kWunschliste) {
-                        $_SESSION['Wunschliste']->CWunschlistePos_arr = array();
+                        $_SESSION['Wunschliste']->CWunschlistePos_arr = [];
                     }
                     $cHinweis .= Shop::Lang()->get('wishlistDelAll', 'messages');
                 }
@@ -135,7 +136,9 @@ if ($action !== null && isset($_POST['kWunschliste']) && isset($_SESSION['Kunde'
                 }
                 if (!empty($oWunschliste->kKunde) && !empty($_SESSION['Kunde']->kKunde) && (int)$oWunschliste->kKunde === (int)$_SESSION['Kunde']->kKunde) {
                     $cHinweis .= wunschlisteAktualisieren($kWunschliste);
-                    $CWunschliste            = (isset($_SESSION['Wunschliste']->kWunschliste)) ? new Wunschliste($_SESSION['Wunschliste']->kWunschliste) : new Wunschliste($kWunschliste);
+                    $CWunschliste            = (isset($_SESSION['Wunschliste']->kWunschliste))
+                        ? new Wunschliste($_SESSION['Wunschliste']->kWunschliste)
+                        : new Wunschliste($kWunschliste);
                     $_SESSION['Wunschliste'] = $CWunschliste;
                 }
             }

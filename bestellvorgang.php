@@ -10,7 +10,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
 /** @global JTLSmarty $smarty */
 $AktuelleSeite = 'BESTELLVORGANG';
-$Einstellungen = Shop::getSettings(array(
+$Einstellungen = Shop::getSettings([
     CONF_GLOBAL,
     CONF_RSS,
     CONF_KUNDEN,
@@ -18,7 +18,7 @@ $Einstellungen = Shop::getSettings(array(
     CONF_KUNDENFELD,
     CONF_TRUSTEDSHOPS,
     CONF_ARTIKELDETAILS
-));
+]);
 Shop::setPageType(PAGE_BESTELLVORGANG);
 $step    = 'accountwahl';
 $hinweis = '';
@@ -161,7 +161,7 @@ WarenkorbHelper::addVariationPictures($_SESSION['Warenkorb']);
 
 //specific assigns
 $smarty->assign('Navigation', createNavigation($AktuelleSeite))
-       ->assign('AGB', gibAGBWRB(Shop::$kSprache, $_SESSION['Kundengruppe']->kKundengruppe))
+       ->assign('AGB', gibAGBWRB(Shop::getLanguage(), $_SESSION['Kundengruppe']->kKundengruppe))
        ->assign('Ueberschrift', Shop::Lang()->get('orderStep0Title', 'checkout'))
        ->assign('UeberschriftKlein', Shop::Lang()->get('orderStep0Title2', 'checkout'))
        ->assign('Einstellungen', $Einstellungen)

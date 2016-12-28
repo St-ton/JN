@@ -6,7 +6,7 @@
 
 require_once dirname(__FILE__) . '/syncinclude.php';
 $return  = 3;
-$xml_obj = array();
+$xml_obj = [];
 
 if (auth()) {
     $return                      = 0;
@@ -22,7 +22,7 @@ if (auth()) {
     );
     if (is_array($xml_obj['kunden']['tkunde']) && count($xml_obj['kunden']['tkunde']) > 0) {
         $xml_obj['kunden attr']['anzahl'] = count($xml_obj['kunden']['tkunde']);
-        for ($i = 0; $i < $xml_obj['kunden attr']['anzahl']; $i++) {
+        for ($i = 0; $i < $xml_obj['kunden attr']['anzahl']; ++$i) {
             $xml_obj['kunden']['tkunde'][$i]['cAnrede']   = mappeKundenanrede($xml_obj['kunden']['tkunde'][$i]['cAnrede'], $xml_obj['kunden']['tkunde'][$i]['kSprache']);
             $xml_obj['kunden']['tkunde'][$i]['cNachname'] = trim(entschluesselXTEA($xml_obj['kunden']['tkunde'][$i]['cNachname']));
             $xml_obj['kunden']['tkunde'][$i]['cFirma']    = trim(entschluesselXTEA($xml_obj['kunden']['tkunde'][$i]['cFirma']));

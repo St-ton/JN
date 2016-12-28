@@ -37,7 +37,8 @@ if (auth()) {
             $conf = Shop::getSettings(array(CONF_GLOBAL));
             foreach ($list as $i => $zip) {
                 if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                    Jtllog::writeLog('bearbeite: ' . $entzippfad . $zip['filename'] . ' size: ' . filesize($entzippfad . $zip['filename']), JTLLOG_LEVEL_DEBUG, false, 'Artikel_xml');
+                    Jtllog::writeLog('bearbeite: ' . $entzippfad . $zip['filename'] . ' size: ' .
+                        filesize($entzippfad . $zip['filename']), JTLLOG_LEVEL_DEBUG, false, 'Artikel_xml');
                 }
                 $d   = file_get_contents($entzippfad . $zip['filename']);
                 $xml = XML_unserialize($d);
@@ -113,17 +114,17 @@ function bearbeiteDeletes($xml, $conf)
         }
     } else {
         if (is_array($xml['del_artikel']) && intval($xml['del_artikel']['kArtikel']) > 0) {
-            $kVaterArtikel = ArtikelHelper::getParent(intval($xml['del_artikel']['kArtikel']));
+            $kVaterArtikel = ArtikelHelper::getParent((int)$xml['del_artikel']['kArtikel']);
             $nIstVater     = $kVaterArtikel > 0 ? 0 : 1;
-            checkArtikelBildLoeschung(intval($xml['del_artikel']['kArtikel']));
+            checkArtikelBildLoeschung((int)$xml['del_artikel']['kArtikel']);
             Shop::DB()->query(
                 "DELETE teigenschaftkombiwert
                     FROM teigenschaftkombiwert
-                    JOIN tartikel ON tartikel.kArtikel = " . intval($xml['del_artikel']['kArtikel']) . "
+                    JOIN tartikel ON tartikel.kArtikel = " . (int)$xml['del_artikel']['kArtikel'] . "
                     AND tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi", 4
             );
 
-            loescheArtikel(intval($xml['del_artikel']['kArtikel']), $nIstVater, false, $conf);
+            loescheArtikel((int)$xml['del_artikel']['kArtikel'], $nIstVater, false, $conf);
             // Lösche Artikel aus tartikelkategorierabatt
             Shop::DB()->delete('tartikelkategorierabatt', 'kArtikel', (int)$xml['del_artikel']['kArtikel']);
             // Aktualisiere Merkmale in tartikelmerkmal vom Vaterartikel
@@ -164,7 +165,8 @@ function bearbeiteInsert($xml, array $conf)
         $oSeoAssoc_arr = getSeoFromDB($Artikel->kArtikel, 'kArtikel', null, 'kSprache');
         $isParent      = (isset($artikel_arr[0]->nIstVater)) ? 1 : 0;
 
-        if (isset($xml['tartikel']['tkategorieartikel']) && $conf['global']['kategorien_anzeigefilter'] == EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_NICHTLEERE && Shop::Cache()->isCacheGroupActive(CACHING_GROUP_CATEGORY)) {
+        if (isset($xml['tartikel']['tkategorieartikel']) && $conf['global']['kategorien_anzeigefilter'] == EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_NICHTLEERE &&
+            Shop::Cache()->isCacheGroupActive(CACHING_GROUP_CATEGORY)) {
             $currentArticleCategories = [];
             $newArticleCategories     = [];
             $flush                    = false;
@@ -226,7 +228,8 @@ function bearbeiteInsert($xml, array $conf)
                     } elseif ($currentStatus->fLagerbestand > 0 && $xml['tartikel']['fLagerbestand'] <= 0) {
                         // article was in stock before but is not anymore - check if flush is necessary
                         $check = true;
-                    } elseif ($conf['global']['artikel_artikelanzeigefilter'] == EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL && $currentStatus->cLagerKleinerNull !== $xml['tartikel']['cLagerKleinerNull']) {
+                    } elseif ($conf['global']['artikel_artikelanzeigefilter'] == EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL &&
+                        $currentStatus->cLagerKleinerNull !== $xml['tartikel']['cLagerKleinerNull']) {
                         // overselling status changed - check if flush is necessary
                         $check = true;
                     } elseif ($currentStatus->cLagerBeachten !== $xml['tartikel']['cLagerBeachten'] && $xml['tartikel']['fLagerbestand'] <= 0) {
@@ -239,7 +242,8 @@ function bearbeiteInsert($xml, array $conf)
                                 FROM tkategorieartikel
                                 LEFT JOIN tartikel
                                     ON tartikel.kArtikel = tkategorieartikel.kArtikel
-                                WHERE tkategorieartikel.kKategorie IN (" . implode(',', $newArticleCategories) . ") " . gibLagerfilter() . " GROUP BY tkategorieartikel.kKategorie", 2
+                                WHERE tkategorieartikel.kKategorie IN (" . implode(',', $newArticleCategories) . ") " . gibLagerfilter() . " 
+                                GROUP BY tkategorieartikel.kKategorie", 2
                         );
                         if (is_array($newArticleCategories) && !empty($newArticleCategories)) {
                             foreach ($newArticleCategories as $nac) {
@@ -328,7 +332,8 @@ function bearbeiteInsert($xml, array $conf)
                 if ($delta->totalquantity > 0) {
                     $artikel_arr[0]->fLagerbestand = $artikel_arr[0]->fLagerbestand - $delta->totalquantity; //subtract delta from stocklevel
                     if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                        Jtllog::writeLog("Artikel-Sync: Lagerbestand von kArtikel {$artikel_arr[0]->kArtikel} wurde wegen nicht-abgeholter Bestellungen um {$delta->totalquantity} reduziert auf {$artikel_arr[0]->fLagerbestand}.", JTLLOG_LEVEL_DEBUG, false, 'Artikel_xml');
+                        Jtllog::writeLog("Artikel-Sync: Lagerbestand von kArtikel {$artikel_arr[0]->kArtikel} wurde wegen nicht-abgeholter Bestellungen " .
+                            "um {$delta->totalquantity} auf {$artikel_arr[0]->fLagerbestand} reduziert.", JTLLOG_LEVEL_DEBUG, false, 'Artikel_xml');
                     }
                 }
             }
@@ -436,7 +441,7 @@ function bearbeiteInsert($xml, array $conf)
                 }
             } else {
                 $oArtikelDownload            = new stdClass();
-                $oArtikelDownload->kDownload = intval($xml['tartikel']['tArtikelDownload']['kDownload']);
+                $oArtikelDownload->kDownload = (int)$xml['tartikel']['tArtikelDownload']['kDownload'];
                 $oArtikelDownload->kArtikel  = $Artikel->kArtikel;
                 $oDownload_arr[]             = $oArtikelDownload;
 
@@ -1052,7 +1057,8 @@ function loescheDownload($kArtikel, $kDownload = null)
     $kArtikel  = (int)$kArtikel;
     $kDownload = (int)$kDownload;
     if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-        Jtllog::writeLog('loescheDownload: kArtikel:' . var_export($kArtikel, true) . '- kDownload:' . var_export($kDownload, true), JTLLOG_LEVEL_DEBUG, false, 'Artikel_xml');
+        Jtllog::writeLog('loescheDownload: kArtikel:' . var_export($kArtikel, true) . '- kDownload:' .
+            var_export($kDownload, true), JTLLOG_LEVEL_DEBUG, false, 'Artikel_xml');
     }
     if ($kArtikel > 0 && $kDownload > 0) {
         Shop::DB()->delete('tartikeldownload', ['kArtikel', 'kDownload'], [$kArtikel, $kDownload]);
@@ -1251,7 +1257,7 @@ function clearProductCaches($kArtikel)
     //flush cache tags associated with the article's manufacturer ID
     $oArticleManufacturer = Shop::DB()->query("SELECT kHersteller FROM tartikel WHERE kArtikel = " . $kArtikel, 1);
     if (isset($oArticleManufacturer->kHersteller) && intval($oArticleManufacturer->kHersteller) > 0) {
-        Shop::Cache()->flushTags(array(CACHING_GROUP_MANUFACTURER . '_' . $oArticleManufacturer->kHersteller));
+        Shop::Cache()->flushTags([CACHING_GROUP_MANUFACTURER . '_' . $oArticleManufacturer->kHersteller]);
     }
     //flush cache tags associated with the article's category IDs
     $oArticleCategories = Shop::DB()->selectAll('tkategorieartikel', 'kArtikel', $kArtikel);

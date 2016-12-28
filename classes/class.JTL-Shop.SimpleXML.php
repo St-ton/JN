@@ -38,7 +38,7 @@ class SimpleXML
     /**
      * @var array
      */
-    public $result = array();
+    public $result = [];
 
     /**
      * @var int
@@ -87,9 +87,9 @@ class SimpleXML
      */
     public function xml_tags($array)
     {
-        $repeats_temp  = array();
-        $repeats_count = array();
-        $repeats       = array();
+        $repeats_temp  = [];
+        $repeats_count = [];
+        $repeats       = [];
 
         if (is_array($array)) {
             $n = count($array) - 1;
@@ -176,7 +176,7 @@ class SimpleXML
                         if (is_numeric($keys)) {
                             $array[$keys] = $this->array_reindex($items);
                         } else {
-                            $array[$keys] = $this->array_reindex(array_merge(array(), $items));
+                            $array[$keys] = $this->array_reindex(array_merge([], $items));
                         }
                     }
                 }
@@ -195,7 +195,7 @@ class SimpleXML
         $count       = count($array);
         $repeat      = $this->xml_tags($array);
         $repeatedone = false;
-        $tags        = array();
+        $tags        = [];
         $k           = 0;
         for ($i = 0; $i < $count; $i++) {
             switch ($array[$i]['type']) {

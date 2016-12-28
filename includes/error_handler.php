@@ -13,7 +13,7 @@ if (PHP_ERROR_HANDLER) {
      */
     function jtlErrorHandler($errno, $errstr, $errfile, $errline, $errcontext)
     {
-        $types = array(
+        $types = [
             E_ERROR             => 'E_ERROR',
             E_WARNING           => 'E_WARNING',
             E_PARSE             => 'E_PARSE',
@@ -29,7 +29,7 @@ if (PHP_ERROR_HANDLER) {
             E_RECOVERABLE_ERROR => 'E_RECOVERABLE_ERROR',
             E_DEPRECATED        => 'E_DEPRECATED',
             E_USER_DEPRECATED   => 'E_USER_DEPRECATED'
-        );
+        ];
         file_put_contents(PFAD_LOGFILES . "php_error.log", date("[Y-m-d H:i:s] ") . "(" . $types[$errno] . ") File ({$errfile}, {$errline}): {$errstr}\n", FILE_APPEND);
     }
 

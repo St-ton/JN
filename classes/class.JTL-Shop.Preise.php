@@ -182,22 +182,22 @@ class Preise
     /**
      * @var array
      */
-    public $nAnzahl_arr = array();
+    public $nAnzahl_arr = [];
 
     /**
      * @var array
      */
-    public $fPreis_arr = array();
+    public $fPreis_arr = [];
 
     /**
      * @var array
      */
-    public $fStaffelpreis_arr = array();
+    public $fStaffelpreis_arr = [];
 
     /**
      * @var array
      */
-    public $cPreisLocalized_arr = array();
+    public $cPreisLocalized_arr = [];
 
     /**
      * @var string
@@ -516,10 +516,10 @@ class Preise
         $this->cPreis5Localized[1] = gibPreisStringLocalized($this->fPreis5);
 
         foreach ($this->fPreis_arr as $fPreis) {
-            $this->cPreisLocalized_arr[] = array(
+            $this->cPreisLocalized_arr[] = [
                 gibPreisStringLocalized(berechneBrutto($fPreis, $this->fUst)),
                 gibPreisStringLocalized($fPreis)
-            );
+            ];
         }
 
         $this->cVKLocalized[0] = gibPreisStringLocalized(berechneBrutto($this->fVKNetto, $this->fUst));
@@ -565,10 +565,10 @@ class Preise
         $this->fStaffelpreis5[1] = $this->fPreis5 * $waehrung->fFaktor;
 
         foreach ($this->fPreis_arr as $fPreis) {
-            $this->fStaffelpreis_arr[] = array(
+            $this->fStaffelpreis_arr[] = [
                 berechneBrutto($fPreis * $waehrung->fFaktor, $this->fUst),
                 ($fPreis * $waehrung->fFaktor)
-            );
+            ];
         }
 
         return $this;

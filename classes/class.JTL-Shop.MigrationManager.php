@@ -138,7 +138,7 @@ class MigrationManager
 
         try {
             Shop::DB()->beginTransaction();
-            call_user_func(array(&$migration, $direction));
+            call_user_func([&$migration, $direction]);
             Shop::DB()->commit();
             $this->migrated($migration, $direction, $start);
         } catch (Exception $e) {
@@ -179,7 +179,7 @@ class MigrationManager
     public function getMigrations()
     {
         if (!is_array(static::$migrations) || count(static::$migrations) === 0) {
-            $migrations = array();
+            $migrations = [];
             $executed   = $this->_getExecutedMigrations();
             $path       = MigrationHelper::getMigrationPath();
 
@@ -243,7 +243,7 @@ class MigrationManager
     {
         $migrations = $this->_getExecutedMigrations();
         if (!is_array($migrations)) {
-            $migrations = array();
+            $migrations = [];
         }
 
         return array_keys($migrations);

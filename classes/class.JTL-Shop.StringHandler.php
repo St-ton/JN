@@ -97,11 +97,11 @@ class StringHandler
         }
         $cString = trim(strip_tags($input));
         $cString = ($nSuche == 1) ?
-            str_replace(array('\\\'', '\\'), '', $cString) :
-            str_replace(array('\"', '\\\'', '\\', '"', '\''), '', $cString);
+            str_replace(['\\\'', '\\'], '', $cString) :
+            str_replace(['\"', '\\\'', '\\', '"', '\''], '', $cString);
 
         if (strlen($cString) > 10 && $nSuche == 1) {
-            $cString = substr(str_replace(array('(', ')', ';'), '', $cString), 0, 50);
+            $cString = substr(str_replace(['(', ')', ';'], '', $cString), 0, 50);
         }
 
         return $cString;
@@ -151,7 +151,7 @@ class StringHandler
             $data    = utf8_encode($data);
         }
         // Fix &entity\n;
-        $data = str_replace(array('&amp;', '&lt;', '&gt;'), array('&amp;amp;', '&amp;lt;', '&amp;gt;'), $data);
+        $data = str_replace(['&amp;', '&lt;', '&gt;'], ['&amp;amp;', '&amp;lt;', '&amp;gt;'], $data);
         $data = preg_replace('/(&#*\w+)[\x00-\x20]+;/u', '$1;', $data);
         $data = preg_replace('/(&#x*[0-9A-F]+);*/iu', '$1;', $data);
         $data = html_entity_decode($data, ENT_COMPAT, 'UTF-8');
@@ -234,7 +234,7 @@ class StringHandler
      */
     public static function getISOMappings()
     {
-        $cIso639_2To639_1 = array(
+        $cIso639_2To639_1 = [
             'aar' => 'aa', // Afar
             'abk' => 'ab', // Abkhazian
             'afr' => 'af', // Afrikaans
@@ -419,7 +419,7 @@ class StringHandler
             'yor' => 'yo', // Yoruba
             'zha' => 'za', // Zhuang; Chuang
             'zul' => 'zu'
-        );
+        ];
 
         return $cIso639_2To639_1;
     }
@@ -474,7 +474,7 @@ class StringHandler
             return array_filter(explode(';', $ssk));
         }
 
-        return array();
+        return [];
     }
 
     /**

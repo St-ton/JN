@@ -109,9 +109,6 @@
                                 <span class="submit_wrap btn-group">
                                     <button name="a" type="submit" value="flush_object_cache" class="btn btn-default delete"{if !$cache_enabled} disabled="disabled"{/if}><i class="fa fa-trash"></i>&nbsp;{#clearObjectCache#}</button>
                                     <button name="a" type="submit" value="flush_template_cache" class="btn btn-default delete"><i class="fa fa-trash"></i>&nbsp;{#clearTemplateCache#}</button>
-                                    {if isset($options.page_cache) && $options.page_cache !== 0 && $options.page_cache !== false}
-                                        <button name="a" type="submit" value="flush_page_cache" class="btn btn-default delete"><i class="fa fa-trash"></i>&nbsp;{#clearPageCache#}</button>
-                                    {/if}
                                 </span>
                             </form>
                         </div>

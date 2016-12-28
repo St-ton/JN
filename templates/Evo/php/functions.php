@@ -61,10 +61,6 @@ function get_product_list($params, &$smarty)
         'kMerkmalWert'           => (isset($params['kMerkmalWert'])) ? $params['kMerkmalWert'] : null,
         'kTag'                   => (isset($params['kTag'])) ? $params['kTag'] : null,
         'kSuchspecial'           => (isset($params['kSuchspecial'])) ? $params['kSuchspecial'] : null,
-        'kNews'                  => (isset($params['kNews'])) ? $params['kNews'] : null,
-        'kNewsMonatsUebersicht'  => (isset($params['kNewsMonatsUebersicht'])) ? $params['kNewsMonatsUebersicht'] : null,
-        'kNewsKategorie'         => (isset($params['kNewsKategorie'])) ? $params['kNewsKategorie'] : null,
-        'kUmfrage'               => (isset($params['kUmfrage'])) ? $params['kUmfrage'] : null,
         'kKategorieFilter'       => (isset($params['kKategorieFilter'])) ? $params['kKategorieFilter'] : null,
         'kHerstellerFilter'      => (isset($params['kHerstellerFilter'])) ? $params['kHerstellerFilter'] : null,
         'nBewertungSterneFilter' => (isset($params['nBewertungSterneFilter'])) ? $params['nBewertungSterneFilter'] : null,
@@ -76,23 +72,34 @@ function get_product_list($params, &$smarty)
         'SuchFilter_arr'         => $cSuchFilter_arr,
         'nArtikelProSeite'       => (isset($params['nArtikelProSeite'])) ? $params['nArtikelProSeite'] : null,
         'cSuche'                 => (isset($params['cSuche'])) ? $params['cSuche'] : null,
-        'seite'                  => (isset($params['seite'])) ? $params['seite'] : null,
-        'cArtAttrib'             => (isset($params['cArtAttrib'])) ? $params['cArtAttrib'] : null
+        'seite'                  => (isset($params['seite'])) ? $params['seite'] : null
     ];
-    // Filter
-    $NaviFilter = Shop::buildNaviFilter($cParameter_arr);
-    if (isset($NaviFilter->Suche->cSuche) && strlen($NaviFilter->Suche->cSuche) > 0) {
-        $NaviFilter->Suche->cSuche     = StringHandler::filterXSS($NaviFilter->Suche->cSuche, 1);
-        $NaviFilter->Suche->kSuchCache = bearbeiteSuchCache($NaviFilter);
+    if ($cParameter_arr['kArtikel'] !== null) {
+        $oArtikel_arr = [];
+        if (!is_array($cParameter_arr['kArtikel'])) {
+            $cParameter_arr['kArtikel'] = [$cParameter_arr['kArtikel']];
+        }
+        foreach ($cParameter_arr['kArtikel'] as $kArtikel) {
+            $article = new Artikel();
+            $article->fuelleArtikel($kArtikel, Artikel::getDefaultOptions());
+            $oArtikel_arr[] = $article;
+        }
+    } else {
+        // Filter
+        $NaviFilter = Shop::buildNaviFilter($cParameter_arr);
+        if (isset($NaviFilter->Suche->cSuche) && strlen($NaviFilter->Suche->cSuche) > 0) {
+            $NaviFilter->Suche->cSuche     = StringHandler::filterXSS($NaviFilter->Suche->cSuche, 1);
+            $NaviFilter->Suche->kSuchCache = bearbeiteSuchCache($NaviFilter);
+        }
+        // Artikelattribut
+        if (isset($cParameter_arr['cArtAttrib']) && strlen($cParameter_arr['cArtAttrib']) > 0) {
+            $NaviFilter->ArtikelAttributFilter->cArtAttrib = $cParameter_arr['cArtAttrib'];
+        }
+        //Filter SQLs Objekte
+        $FilterSQL = bauFilterSQL($NaviFilter);
+        // Artikelliste
+        $oArtikel_arr = gibArtikelKeys($FilterSQL, $nLimit, $NaviFilter, true, null);
     }
-    // Artikelattribut
-    if (isset($cParameter_arr['cArtAttrib']) && strlen($cParameter_arr['cArtAttrib']) > 0) {
-        $NaviFilter->ArtikelAttributFilter->cArtAttrib = $cParameter_arr['cArtAttrib'];
-    }
-    //Filter SQLs Objekte
-    $FilterSQL = bauFilterSQL($NaviFilter);
-    // Artikelliste
-    $oArtikel_arr = gibArtikelKeys($FilterSQL, $nLimit, $NaviFilter, true, null);
 
     $smarty->assign($cAssign, $oArtikel_arr);
 

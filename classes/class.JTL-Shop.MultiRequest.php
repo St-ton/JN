@@ -30,7 +30,7 @@ class MultiRequest
     {
         foreach ($urls as $url) {
             $ch = curl_init($url);
-            curl_setopt_array($ch, array(CURLOPT_RETURNTRANSFER => true));
+            curl_setopt_array($ch, [CURLOPT_RETURNTRANSFER => true]);
             curl_multi_add_handle($this->handle, $ch);
         }
 

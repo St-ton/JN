@@ -54,7 +54,7 @@ require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.JTLCache.php';
 $cache = JTLCache::getInstance();
 $cache->setJtlCacheConfig();
 
-$conf = Shop::getSettings(array(CONF_GLOBAL));
+$conf = Shop::getSettings([CONF_GLOBAL]);
 
 if ($conf['global']['kaufabwicklung_ssl_nutzen'] === 'P' && (!isset($_SERVER['HTTPS']) || (strtolower($_SERVER['HTTPS']) !== 'on' && intval($_SERVER['HTTPS'] !== 1))) && PHP_SAPI !== 'cli') {
     $https = false;
@@ -106,7 +106,7 @@ if (!JTL_INCLUDE_ONLY_DB) {
     $template = Template::getInstance();
     $template->check(true);
     // Globale Einstellungen
-    $GlobaleEinstellungen = Shop::getSettings(array(CONF_GLOBAL, CONF_RSS, CONF_METAANGABEN, CONF_KUNDENWERBENKUNDEN, CONF_BILDER));
+    $GlobaleEinstellungen = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_METAANGABEN, CONF_KUNDENWERBENKUNDEN, CONF_BILDER]);
     // Globale Metaangaben
     $oGlobaleMetaAngabenAssoc_arr = holeGlobaleMetaAngaben();
     executeHook(HOOK_GLOBALINCLUDE_INC);

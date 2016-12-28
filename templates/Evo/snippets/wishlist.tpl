@@ -182,14 +182,14 @@
                     <div class="col-xs-12">
                         <div class="pull-right btn-group">
                             <button class="btn btn-primary submit" name="action" value="addAllToCart">
-                                <i class="fa fa-shopping-cart"></i> {lang key="wishlistAddAllToCart" section="login"}
+                                <i class="fa fa-shopping-cart"></i> <span class="hidden-xs">{lang key="wishlistAddAllToCart" section="login"}</span>
                             </button>
                             {if $isCurrenctCustomer === true}
                                 <button type="submit" title="{lang key="wishlistUpdate" section="login"}" class="btn btn-default" name="action" value="update">
-                                    <i class="fa fa-refresh"></i> {lang key="wishlistUpdate" section="login"}
+                                    <i class="fa fa-refresh"></i> <span class="hidden-xs">{lang key="wishlistUpdate" section="login"}</span>
                                 </button>
                                 <button class="btn btn-default submit" name="action" value="removeAll">
-                                    <i class="fa fa-trash"></i> {lang key="wishlistDelAll" section="login"}
+                                    <i class="fa fa-trash-o"></i> <span class="hidden-xs">{lang key="wishlistDelAll" section="login"}</span>
                                 </button>
                             {/if}
                         </div>
@@ -264,30 +264,30 @@
                                                     {$jtl_token}
                                                     <input type="hidden" name="kWunschliste" value="{$CWunschliste->kWunschliste}"/>
                                                     <input type="hidden" name="kWunschlisteTarget" value="{$Wunschliste->kWunschliste}"/>
-                                                    <span class="btn-group">
+                                                    <span class="btn-group btn-group-sm">
                                                         {if $Wunschliste->nStandard != 1}
-                                                            <button class="btn btn-default btn-xs" name="action" value="setAsDefault">
-                                                                <span class="fa fa-check"></span> {lang key="wishlistStandard" section="login"}
+                                                            <button class="btn btn-default" name="action" value="setAsDefault">
+                                                                <i class="fa fa-check"></i> <span class="hidden-xs">{lang key="wishlistStandard" section="login"}</span>
                                                             </button>
                                                         {else}
-                                                            <button class="btn btn-success btn-xs disabled" name="action" value="setAsDefault">
-                                                                <span class="fa fa-check"></span> {lang key="wishlistStandard" section="login"}
+                                                            <button class="btn btn-success disabled" name="action" value="setAsDefault">
+                                                            <i class="fa fa-check"></i> <span class="hidden-xs">{lang key="wishlistStandard" section="login"}</span>
                                                             </button>
                                                         {/if}
                                                         {if $Wunschliste->nOeffentlich == 1}
                                                             <button type="submit" name="action" value="setPrivate"
-                                                                    class="btn btn-default btn-xs"
+                                                                    class="btn btn-default"
                                                                     title="{lang key="wishlistSetPrivate" section="login"}">
-                                                                <i class="fa fa-eye-slash"></i> {lang key="wishlistSetPrivate" section="login"}
+                                                                <i class="fa fa-eye-slash"></i> <span class="hidden-xs">{lang key="wishlistSetPrivate" section="login"}</span>
                                                             </button>
                                                         {/if}
                                                         {if $Wunschliste->nOeffentlich == 0}
-                                                            <button type="submit" name="action" value="setPublic" class="btn btn-default btn-xs">
-                                                                <span class="fa fa-eye"></span> {lang key="wishlistSetPublic" section="login"}
+                                                            <button type="submit" name="action" value="setPublic" class="btn btn-default">
+                                                                <i class="fa fa-eye"></i> <span class="hidden-xs">{lang key="wishlistSetPublic" section="login"}</span>
                                                             </button>
                                                         {/if}
-                                                        <button type="submit" class="btn btn-danger btn-xs" name="action" value="delete">
-                                                            <span class="fa fa-trash-o"></span>
+                                                        <button type="submit" class="btn btn-danger" name="action" value="delete">
+                                                            <i class="fa fa-trash-o"></i>
                                                         </button>
                                                     </span>
                                                 </form>

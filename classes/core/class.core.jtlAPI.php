@@ -16,7 +16,7 @@ final class jtlAPI
     {
         try {
             $oNice      = Nice::getInstance();
-            $cParam_arr = array('a' => 'getsubscription', 'key' => $oNice->getAPIKey(), 'domain' => $oNice->getDomain());
+            $cParam_arr = ['a' => 'getsubscription', 'key' => $oNice->getAPIKey(), 'domain' => $oNice->getDomain()];
 
             $oSecurity = new SecurityAPI();
             $oSecurity->setParam_arr($cParam_arr);
@@ -183,7 +183,7 @@ final class SecurityAPI
     public function __construct()
     {
         $this->cSHA1Key   = '';
-        $this->cParam_arr = array();
+        $this->cParam_arr = [];
     }
 
     /**

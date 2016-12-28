@@ -198,17 +198,17 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
          * @param int   $kSprache
          * @return array
          */
-        public static function getDownloads($kKey_arr = array(), $kSprache)
+        public static function getDownloads($kKey_arr = [], $kSprache)
         {
             $kArtikel      = (isset($kKey_arr['kArtikel'])) ? (int)$kKey_arr['kArtikel'] : 0;
             $kBestellung   = (isset($kKey_arr['kBestellung'])) ? (int)$kKey_arr['kBestellung'] : 0;
             $kKunde        = (isset($kKey_arr['kKunde'])) ? (int)$kKey_arr['kKunde'] : 0;
             $kSprache      = (isset($kSprache)) ? (int)$kSprache : 0;
-            $oDownload_arr = array();
-            if (($kArtikel > 0 || $kBestellung > 0 || $kKunde > 0) && $kSprache > 0) {
+            $oDownload_arr = [];
+            if ($kArtikel > 0 & $kSprache > 0) {
                 $cSQLSelect = "tartikeldownload.kDownload";
                 $cSQLWhere  = "kArtikel = " . $kArtikel;
-                $cSQLJoin   = "LEFT JOIN tdownload ON tartikeldownload.kDownload=tdownload.kDownload";
+                $cSQLJoin   = "LEFT JOIN tdownload ON tartikeldownload.kDownload = tdownload.kDownload";
                 if ($kBestellung > 0) {
                     $cSQLSelect = "tbestellung.kBestellung, tbestellung.kKunde, tartikeldownload.kDownload";
                     $cSQLWhere  = "tartikeldownload.kArtikel = twarenkorbpos.kArtikel";
@@ -238,11 +238,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
                         if (($kBestellung > 0 || $kKunde > 0) && $oDownload_arr[$i]->getAnzahl() > 0) {
                             $oDownloadHistory_arr = DownloadHistory::getOrderHistory($oDown->kKunde, $oDown->kBestellung);
                             $kDownload            = $oDownload_arr[$i]->getDownload();
-                            if (isset($oDownloadHistory_arr[$kDownload])) {
-                                $count = count($oDownloadHistory_arr[$kDownload]);
-                            } else {
-                                $count = 0;
-                            }
+                            $count                = (isset($oDownloadHistory_arr[$kDownload]))
+                                ? count($oDownloadHistory_arr[$kDownload])
+                                : 0;
                             $oDownload_arr[$i]->cLimit      = $count . ' / ' . $oDownload_arr[$i]->getAnzahl();
                             $oDownload_arr[$i]->kBestellung = $oDown->kBestellung;
                         }

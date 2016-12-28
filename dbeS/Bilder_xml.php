@@ -9,7 +9,7 @@ $Einstellungen = null;
 $oBranding_arr = null;
 if (auth()) {
     checkFile();
-    $Einstellungen = Shop::getSettings(array(CONF_BILDER));
+    $Einstellungen = Shop::getSettings([CONF_BILDER]);
     // Branding Einstellungen pro Bildkategorie
     $oBranding_arr = holeBilderEinstellungen();
 
@@ -149,7 +149,8 @@ if (auth()) {
                     case 'bilder_mw.xml':
                     case 'bilder_h.xml':
                         if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                            Jtllog::writeLog('bearbeite: ' . $unzipPath . $zip['filename'] . ' size: ' . filesize($unzipPath . $zip['filename']), JTLLOG_LEVEL_DEBUG, false, 'Bilder_xml');
+                            Jtllog::writeLog('bearbeite: ' . $unzipPath . $zip['filename'] . ' size: ' .
+                                filesize($unzipPath . $zip['filename']), JTLLOG_LEVEL_DEBUG, false, 'Bilder_xml');
                         }
                         $d   = file_get_contents($unzipPath . $zip['filename']);
                         $xml = XML_unserialize($d);
@@ -165,7 +166,8 @@ if (auth()) {
                     case 'del_bilder_mw.xml':
                     case 'del_bilder_h.xml':
                         if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                            Jtllog::writeLog('bearbeite: ' . $unzipPath . $zip['filename'] . ' size: ' . filesize($unzipPath . $zip['filename']), JTLLOG_LEVEL_DEBUG, false, 'Bilder_xml');
+                            Jtllog::writeLog('bearbeite: ' . $unzipPath . $zip['filename'] . ' size: ' .
+                                filesize($unzipPath . $zip['filename']), JTLLOG_LEVEL_DEBUG, false, 'Bilder_xml');
                         }
                         $d   = file_get_contents($unzipPath . $zip['filename']);
                         $xml = XML_unserialize($d);
@@ -207,27 +209,26 @@ function bearbeite($xml, $unzipPath)
     $merkmalbild_arr         = mapArray($xml['bilder'], 'tMerkmalbild', $GLOBALS['mEigenschaftWertPict']);
     $konfigartikelbild_arr   = mapArray($xml['bilder'], 'tkonfiggruppebild', $GLOBALS['mKonfiggruppePict']);
 
-    executeHook(
-        HOOK_BILDER_XML_BEARBEITE, array(
-            'Pfad'             => $unzipPath,
-            'Artikel'          => &$img_arr,
-            'Kategorie'        => &$kategoriebild_arr,
-            'Eigenschaftswert' => &$eigenschaftwertbild_arr,
-            'Hersteller'       => &$herstellerbild_arr,
-            'Merkmalwert'      => &$merkmalwertbild_arr,
-            'Merkmal'          => &$merkmalbild_arr,
-            'Konfiggruppe'     => &$konfigartikelbild_arr
-        )
-    );
+    executeHook(HOOK_BILDER_XML_BEARBEITE, [
+        'Pfad'             => $unzipPath,
+        'Artikel'          => &$img_arr,
+        'Kategorie'        => &$kategoriebild_arr,
+        'Eigenschaftswert' => &$eigenschaftwertbild_arr,
+        'Hersteller'       => &$herstellerbild_arr,
+        'Merkmalwert'      => &$merkmalwertbild_arr,
+        'Merkmal'          => &$merkmalbild_arr,
+        'Konfiggruppe'     => &$konfigartikelbild_arr
+    ]);
     //Artikelbilder
     foreach ($img_arr as $img) {
         if (strlen($img->cPfad) > 0) {
-            $img->nNr           = intval($img->nNr);
+            $img->nNr           = (int)$img->nNr;
             $imgFilename        = $img->cPfad;
             $Bildformat         = gibBildformat($unzipPath . $imgFilename);
             if (!$Bildformat) {
                 if (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-                    Jtllog::writeLog('Bildformat des Artikelbildes konnte nicht ermittelt werden. Datei keine Bilddatei?: ' . $imgFilename, JTLLOG_LEVEL_ERROR, false, 'Bilder_xml');
+                    Jtllog::writeLog('Bildformat des Artikelbildes konnte nicht ermittelt werden. Datei keine Bilddatei?: ' .
+                        $imgFilename, JTLLOG_LEVEL_ERROR, false, 'Bilder_xml');
                 }
                 continue;
             }
@@ -244,7 +245,7 @@ function bearbeite($xml, $unzipPath)
                 $oMainArtikelBild = Shop::DB()->select('tartikelpict', 'kArtikelPict', (int)$img->kMainArtikelBild);
                 if (isset($oMainArtikelBild->cPfad) && strlen($oMainArtikelBild->cPfad) > 0) {
                     $img->cPfad = neuerDateiname($oMainArtikelBild->cPfad);
-                    DBUpdateInsert('tartikelpict', array($img), 'kArtikel', 'kArtikelpict');
+                    DBUpdateInsert('tartikelpict', [$img], 'kArtikel', 'kArtikelpict');
                 } else {
                     erstelleArtikelBild($img, $Bildformat, $unzipPath, $imgFilename);
                 }
@@ -283,7 +284,8 @@ function bearbeite($xml, $unzipPath)
             $Bildformat   = gibBildformat($unzipPath . $imgFilename);
             if (!$Bildformat) {
                 if (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-                    Jtllog::writeLog('Bildformat des Kategoriebildes konnte nicht ermittelt werden. Datei keine Bilddatei?: ' . $imgFilename, JTLLOG_LEVEL_ERROR, false, 'Bilder_xml');
+                    Jtllog::writeLog('Bildformat des Kategoriebildes konnte nicht ermittelt werden. Datei keine Bilddatei?: ' .
+                        $imgFilename, JTLLOG_LEVEL_ERROR, false, 'Bilder_xml');
                 }
                 continue;
             }
@@ -303,7 +305,7 @@ function bearbeite($xml, $unzipPath)
                 1,
                 $GLOBALS['Einstellungen']['bilder']['container_verwenden']
             )) {
-                DBUpdateInsert('tkategoriepict', array($Kategoriebild), 'kKategorie');
+                DBUpdateInsert('tkategoriepict', [$Kategoriebild], 'kKategorie');
             }
             unlink($unzipPath . $imgFilename);
         }
@@ -315,7 +317,8 @@ function bearbeite($xml, $unzipPath)
             $Bildformat   = gibBildformat($unzipPath . $imgFilename);
             if (!$Bildformat) {
                 if (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-                    Jtllog::writeLog('Bildformat des Eigenschaftwertbildes konnte nicht ermittelt werden. Datei keine Bilddatei?: ' . $imgFilename, JTLLOG_LEVEL_ERROR, false, 'Bilder_xml');
+                    Jtllog::writeLog('Bildformat des Eigenschaftwertbildes konnte nicht ermittelt werden. Datei keine Bilddatei?: ' .
+                        $imgFilename, JTLLOG_LEVEL_ERROR, false, 'Bilder_xml');
                 }
                 continue;
             }
@@ -349,7 +352,7 @@ function bearbeite($xml, $unzipPath)
                 $GLOBALS['Einstellungen']['bilder']['bilder_jpg_quali'],
                 $GLOBALS['Einstellungen']['bilder']['container_verwenden']
             )) {
-                DBUpdateInsert('teigenschaftwertpict', array($Eigenschaftwertbild), 'kEigenschaftWert');
+                DBUpdateInsert('teigenschaftwertpict', [$Eigenschaftwertbild], 'kEigenschaftWert');
             }
             unlink($unzipPath . $imgFilename);
         }
@@ -362,7 +365,8 @@ function bearbeite($xml, $unzipPath)
             $Bildformat   = gibBildformat($unzipPath . $imgFilename);
             if (!$Bildformat) {
                 if (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-                    Jtllog::writeLog('Bildformat des Herstellerbildes konnte nicht ermittelt werden. Datei keine Bilddatei?: ' . $imgFilename, JTLLOG_LEVEL_ERROR, false, 'Bilder_xml');
+                    Jtllog::writeLog('Bildformat des Herstellerbildes konnte nicht ermittelt werden. Datei keine Bilddatei?: ' .
+                        $imgFilename, JTLLOG_LEVEL_ERROR, false, 'Bilder_xml');
                 }
                 continue;
             }
@@ -409,13 +413,14 @@ function bearbeite($xml, $unzipPath)
     }
     //Merkmalbilder
     foreach ($merkmalbild_arr as $Merkmalbild) {
-        $Merkmalbild->kMerkmal = intval($Merkmalbild->kMerkmal);
+        $Merkmalbild->kMerkmal = (int)$Merkmalbild->kMerkmal;
         if (strlen($Merkmalbild->cPfad) > 0 && $Merkmalbild->kMerkmal > 0) {
             $imgFilename  = $Merkmalbild->cPfad;
             $Bildformat   = gibBildformat($unzipPath . $imgFilename);
             if (!$Bildformat) {
                 if (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-                    Jtllog::writeLog('Bildformat des Merkmalbildes konnte nicht ermittelt werden. Datei keine Bilddatei?: ' . $imgFilename, JTLLOG_LEVEL_ERROR, false, 'Bilder_xml');
+                    Jtllog::writeLog('Bildformat des Merkmalbildes konnte nicht ermittelt werden. Datei keine Bilddatei?: ' .
+                        $imgFilename, JTLLOG_LEVEL_ERROR, false, 'Bilder_xml');
                 }
                 continue;
             }
@@ -448,13 +453,14 @@ function bearbeite($xml, $unzipPath)
     }
     //Merkmalbilder
     foreach ($merkmalwertbild_arr as $Merkmalwertbild) {
-        $Merkmalwertbild->kMerkmalWert = intval($Merkmalwertbild->kMerkmalWert);
+        $Merkmalwertbild->kMerkmalWert = (int)$Merkmalwertbild->kMerkmalWert;
         if (strlen($Merkmalwertbild->cPfad) > 0 && $Merkmalwertbild->kMerkmalWert > 0) {
             $imgFilename  = $Merkmalwertbild->cPfad;
             $Bildformat   = gibBildformat($unzipPath . $imgFilename);
             if (!$Bildformat) {
                 if (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-                    Jtllog::writeLog('Bildformat des Merkmalwertbildes konnte nicht ermittelt werden. Datei keine Bilddatei?: ' . $imgFilename, JTLLOG_LEVEL_ERROR, false, 'Bilder_xml');
+                    Jtllog::writeLog('Bildformat des Merkmalwertbildes konnte nicht ermittelt werden. Datei keine Bilddatei?: ' .
+                        $imgFilename, JTLLOG_LEVEL_ERROR, false, 'Bilder_xml');
                 }
                 continue;
             }
@@ -485,7 +491,7 @@ function bearbeite($xml, $unzipPath)
                 $oMerkmalwertbild->kMerkmalWert = (int)$Merkmalwertbild->kMerkmalWert;
                 $oMerkmalwertbild->cBildpfad    = $Merkmalwertbild->cPfad;
 
-                DBUpdateInsert('tmerkmalwertbild', array($oMerkmalwertbild), 'kMerkmalWert');
+                DBUpdateInsert('tmerkmalwertbild', [$oMerkmalwertbild], 'kMerkmalWert');
             }
             unlink($unzipPath . $imgFilename);
         }
@@ -501,7 +507,8 @@ function bearbeite($xml, $unzipPath)
             $Bildformat   = gibBildformat($unzipPath . $imgFilename);
             if (!$Bildformat) {
                 if (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-                    Jtllog::writeLog('Bildformat des Konfiggruppenbildes konnte nicht ermittelt werden. Datei keine Bilddatei?: ' . $imgFilename, JTLLOG_LEVEL_ERROR, false, 'Bilder_xml');
+                    Jtllog::writeLog('Bildformat des Konfiggruppenbildes konnte nicht ermittelt werden. Datei keine Bilddatei?: ' .
+                        $imgFilename, JTLLOG_LEVEL_ERROR, false, 'Bilder_xml');
                 }
                 continue;
             }
@@ -530,16 +537,15 @@ function bearbeite($xml, $unzipPath)
         }
     }
 
-    executeHook(
-        HOOK_BILDER_XML_BEARBEITE_ENDE, array(
-                                          'Artikel'          => &$img_arr,
-                                          'Kategorie'        => &$kategoriebild_arr,
-                                          'Eigenschaftswert' => &$eigenschaftwertbild_arr,
-                                          'Hersteller'       => &$herstellerbild_arr,
-                                          'Merkmalwert'      => &$merkmalwertbild_arr,
-                                          'Merkmal'          => &$merkmalbild_arr,
-                                          'Konfiggruppe'     => &$konfigartikelbild_arr
-                                      )
+    executeHook(HOOK_BILDER_XML_BEARBEITE_ENDE, [
+            'Artikel'          => &$img_arr,
+            'Kategorie'        => &$kategoriebild_arr,
+            'Eigenschaftswert' => &$eigenschaftwertbild_arr,
+            'Hersteller'       => &$herstellerbild_arr,
+            'Merkmalwert'      => &$merkmalwertbild_arr,
+            'Merkmal'          => &$merkmalbild_arr,
+            'Konfiggruppe'     => &$konfigartikelbild_arr
+        ]
     );
 }
 
@@ -551,7 +557,7 @@ function bearbeite($xml, $unzipPath)
  */
 function erstelleArtikelBild($img, $Bildformat, $unzipPath, $imgFilename)
 {
-    $conf               = Shop::getSettings(array(CONF_BILDER));
+    $conf               = Shop::getSettings([CONF_BILDER]);
     $Bildname           = gibArtikelbildname($img, $conf['bilder']['container_verwenden'] === 'Y' ? 'png' : $Bildformat);
     $img->cPfad         = $Bildname;
     $img->cPfad         = neuerDateiname($img->cPfad);
@@ -590,7 +596,7 @@ function erstelleArtikelBild($img, $Bildformat, $unzipPath, $imgFilename)
         $conf['bilder']['bilder_jpg_quali'],
         $conf['bilder']['container_verwenden']
     )) {
-        DBUpdateInsert('tartikelpict', array($img), 'kArtikel', 'kArtikelPict');
+        DBUpdateInsert('tartikelpict', [$img], 'kArtikel', 'kArtikelPict');
     }
 
     if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
@@ -608,7 +614,9 @@ function gibEigenschaftwertbildname($Eigenschaftwertbild, $Bildformat)
     global $cSQL;
 
     if (!$GLOBALS['Einstellungen']['bilder']['bilder_variation_namen'] || !$Eigenschaftwertbild->kEigenschaftWert) {
-        return (stripos(strrev($Eigenschaftwertbild->cPfad), strrev($Bildformat)) === 0) ? $Eigenschaftwertbild->cPfad : $Eigenschaftwertbild->cPfad . '.' . $Bildformat;
+        return (stripos(strrev($Eigenschaftwertbild->cPfad), strrev($Bildformat)) === 0)
+            ? $Eigenschaftwertbild->cPfad
+            : $Eigenschaftwertbild->cPfad . '.' . $Bildformat;
     }
     $Eigenschaftwert = Shop::DB()->query(
         "SELECT kEigenschaftWert, cArtNr, cName, kEigenschaft
@@ -657,9 +665,13 @@ function gibEigenschaftwertbildname($Eigenschaftwertbild, $Bildformat)
                 $Eigenschaft = Shop::DB()->query("SELECT cName FROM teigenschaft WHERE kEigenschaft = " . $Eigenschaftwert->kEigenschaft, 1);
                 if ((!empty($Artikel->cSeo) || !empty($Artikel->cName)) &&  !empty($Eigenschaft->cName) && !empty($Eigenschaftwert->cName)) {
                     if ($Artikel->cSeo) {
-                        $Bildname = $Artikel->cSeo . '_' . gibAusgeschriebeneUmlaute($Eigenschaft->cName) . '_' . gibAusgeschriebeneUmlaute($Eigenschaftwert->cName);
+                        $Bildname = $Artikel->cSeo . '_' .
+                            gibAusgeschriebeneUmlaute($Eigenschaft->cName) . '_' .
+                            gibAusgeschriebeneUmlaute($Eigenschaftwert->cName);
                     } else {
-                        $Bildname = gibAusgeschriebeneUmlaute($Artikel->cName) . '_' . gibAusgeschriebeneUmlaute($Eigenschaft->cName) . '_' . gibAusgeschriebeneUmlaute($Eigenschaftwert->cName);
+                        $Bildname = gibAusgeschriebeneUmlaute($Artikel->cName) . '_' .
+                            gibAusgeschriebeneUmlaute($Eigenschaft->cName) . '_' .
+                            gibAusgeschriebeneUmlaute($Eigenschaftwert->cName);
                     }
                 }
                 break;
@@ -680,7 +692,9 @@ function gibKategoriebildname($Kategoriebild, $Bildformat)
     global $cSQL;
 
     if (!$GLOBALS['Einstellungen']['bilder']['bilder_kategorie_namen'] || !$Kategoriebild->kKategorie) {
-        return (stripos(strrev($Kategoriebild->cPfad), strrev($Bildformat)) === 0) ? $Kategoriebild->cPfad : $Kategoriebild->cPfad . '.' . $Bildformat;
+        return (stripos(strrev($Kategoriebild->cPfad), strrev($Bildformat)) === 0)
+            ? $Kategoriebild->cPfad
+            : $Kategoriebild->cPfad . '.' . $Bildformat;
     }
     $attr = Shop::DB()->select('tkategorieattribut', 'kKategorie', (int)$Kategoriebild->kKategorie, 'cName', KAT_ATTRIBUT_BILDNAME, null, null, false, 'cWert');
     if (isset($attr->cWert)) {
@@ -738,7 +752,8 @@ function gibArtikelbildname($img, $Bildformat)
         }
     }
 
-    if (!$GLOBALS['Einstellungen']['bilder']['bilder_artikel_namen'] || !$img->kArtikel) { //keine Einstellung bzw Einstellung = PK vom Artikel oder kein PK gesetzt
+    if (!$GLOBALS['Einstellungen']['bilder']['bilder_artikel_namen'] || !$img->kArtikel) {
+        //keine Einstellung bzw Einstellung = PK vom Artikel oder kein PK gesetzt
         return $img->cPfad . '.' . $Bildformat;
     }
     //Einstellung der Bildbenennung ist nicht PK
@@ -811,8 +826,8 @@ function gibArtikelbildname($img, $Bildformat)
  */
 function gibAusgeschriebeneUmlaute($str)
 {
-    $src = array('ä', 'ö', 'ü', 'ß', 'Ä', 'Ö', 'Ü', utf8_decode('ä'), utf8_decode('ö'), utf8_decode('ü'), utf8_decode('ß'), utf8_decode('Ä'), utf8_decode('Ö'), utf8_decode('Ü'));
-    $rpl = array('ae', 'oe', 'ue', 'ss', 'AE', 'OE', 'UE', 'ae', 'oe', 'ue', 'ss', 'AE', 'OE', 'UE');
+    $src = ['ä', 'ö', 'ü', 'ß', 'Ä', 'Ö', 'Ü', utf8_decode('ä'), utf8_decode('ö'), utf8_decode('ü'), utf8_decode('ß'), utf8_decode('Ä'), utf8_decode('Ö'), utf8_decode('Ü')];
+    $rpl = ['ae', 'oe', 'ue', 'ss', 'AE', 'OE', 'UE', 'ae', 'oe', 'ue', 'ss', 'AE', 'OE', 'UE'];
 
     return str_replace($src, $rpl, $str);
 }
@@ -845,7 +860,7 @@ function erstelleThumbnailBranded($imgFilename, $zielbild, $breite, $hoehe, $qua
         $vergroessern = 1;
     }
     $ret                         = 0;
-    $Bildformat                  = gibBildformat($imgFilename);
+    $Bildformat                  = $GLOBALS['Einstellungen']['bilder']['bilder_dateiformat'];//gibBildformat($imgFilename);
     list($width, $height, $type) = getimagesize($imgFilename);
     if ($width > 0 && $height > 0) {
         if (!$vergroessern && $width < $breite && $height < $hoehe) {
@@ -858,7 +873,8 @@ function erstelleThumbnailBranded($imgFilename, $zielbild, $breite, $hoehe, $qua
             @chmod(PFAD_ROOT . $zielbild, 0644);
             if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
                 Jtllog::writeLog('Bild erfolgreich erstellt: ' . $zielbild, JTLLOG_LEVEL_DEBUG, false, 'Bilder_xml');
-                Jtllog::writeLog('Reservierter Speicher: ' . convert(memory_get_usage()) . ' / ' . convert(memory_get_usage(true)), JTLLOG_LEVEL_DEBUG, false, 'Bilder_xml');
+                Jtllog::writeLog('Reservierter Speicher: ' . convert(memory_get_usage()) . ' / ' .
+                    convert(memory_get_usage(true)), JTLLOG_LEVEL_DEBUG, false, 'Bilder_xml');
             }
 
             return 1;
@@ -879,10 +895,12 @@ function erstelleThumbnailBranded($imgFilename, $zielbild, $breite, $hoehe, $qua
             $ret = 1;
             @chmod(PFAD_ROOT . $zielbild, 0644);
         } elseif (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-            Jtllog::writeLog('Bild konnte nicht erstellt werden. Fehler beim Speichern des Bildes: ' . $zielbild, JTLLOG_LEVEL_ERROR, false, 'Bilder_xml');
+            Jtllog::writeLog('Bild konnte nicht erstellt werden. Fehler beim Speichern des Bildes: ' .
+                $zielbild, JTLLOG_LEVEL_ERROR, false, 'Bilder_xml');
         }
     } elseif (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-        Jtllog::writeLog('Bild konnte nicht erstellt werden. Fehler beim Speichern des Bildes: ' . $imgFilename, JTLLOG_LEVEL_ERROR, false, 'Bilder_xml');
+        Jtllog::writeLog('Bild konnte nicht erstellt werden. Fehler beim Speichern des Bildes: ' .
+            $imgFilename, JTLLOG_LEVEL_ERROR, false, 'Bilder_xml');
     }
 
     return $ret;
@@ -907,7 +925,7 @@ function erstelleThumbnail($oBranding, $imgFilename, $zielbild, $breite, $hoehe,
         $vergroessern = 1;
     }
     $ret        = 0;
-    $Bildformat = gibBildformat($imgFilename);
+    $Bildformat = $GLOBALS['Einstellungen']['bilder']['bilder_dateiformat'];//gibBildformat($imgFilename);
     $im         = imageload_alpha($imgFilename);
     if ($im) {
         //bild skalieren
@@ -923,7 +941,8 @@ function erstelleThumbnail($oBranding, $imgFilename, $zielbild, $breite, $hoehe,
             @chmod(PFAD_ROOT . $zielbild, 0644);
             if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
                 Jtllog::writeLog('Bild erfolgreich erstellt: ' . $zielbild, JTLLOG_LEVEL_DEBUG, false, 'Bilder_xml');
-                Jtllog::writeLog('Reservierter Speicher: ' . convert(memory_get_usage()) . ' / ' . convert(memory_get_usage(true)), JTLLOG_LEVEL_DEBUG, false, 'Bilder_xml');
+                Jtllog::writeLog('Reservierter Speicher: ' . convert(memory_get_usage()) . ' / ' .
+                    convert(memory_get_usage(true)), JTLLOG_LEVEL_DEBUG, false, 'Bilder_xml');
             }
 
             return 1;
@@ -945,13 +964,16 @@ function erstelleThumbnail($oBranding, $imgFilename, $zielbild, $breite, $hoehe,
             @chmod(PFAD_ROOT . $zielbild, 0644);
             if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
                 Jtllog::writeLog('Bild erfolgreich erstellt: ' . $zielbild, JTLLOG_LEVEL_DEBUG, false, 'Bilder_xml');
-                Jtllog::writeLog('Reservierter Speicher: ' . convert(memory_get_usage()) . ' / ' . convert(memory_get_usage(true)), JTLLOG_LEVEL_DEBUG, false, 'Bilder_xml');
+                Jtllog::writeLog('Reservierter Speicher: ' . convert(memory_get_usage()) . ' / ' .
+                    convert(memory_get_usage(true)), JTLLOG_LEVEL_DEBUG, false, 'Bilder_xml');
             }
         } elseif (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-            Jtllog::writeLog('Bild konnte nicht erstellt werden. Fehler beim Speichern des Bildes: ' . $zielbild, JTLLOG_LEVEL_ERROR, false, 'Bilder_xml');
+            Jtllog::writeLog('Bild konnte nicht erstellt werden. Fehler beim Speichern des Bildes: ' .
+                $zielbild, JTLLOG_LEVEL_ERROR, false, 'Bilder_xml');
         }
     } elseif (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-        Jtllog::writeLog('Bild konnte nicht erstellt werden. Datei kein Bild?: ' . $imgFilename, JTLLOG_LEVEL_ERROR, false, 'Bilder_xml');
+        Jtllog::writeLog('Bild konnte nicht erstellt werden. Datei kein Bild?: ' .
+            $imgFilename, JTLLOG_LEVEL_ERROR, false, 'Bilder_xml');
     }
 
     return $ret;
@@ -962,17 +984,15 @@ function erstelleThumbnail($oBranding, $imgFilename, $zielbild, $breite, $hoehe,
  */
 function bearbeiteDeletes($xml)
 {
-    executeHook(
-        HOOK_BILDER_XML_BEARBEITEDELETES, array(
-            'Artikel'          => (isset($xml['del_bilder']['kArtikelPict'])) ? $xml['del_bilder']['kArtikelPict'] : array(),
-            'Kategorie'        => (isset($xml['del_bilder']['kKategoriePict'])) ? $xml['del_bilder']['kKategoriePict'] : array(),
-            'KategoriePK'      => (isset($xml['del_bilder']['kKategorie'])) ? $xml['del_bilder']['kKategorie'] : array(),
-            'Eigenschaftswert' => (isset($xml['del_bilder']['kEigenschaftWertPict'])) ? $xml['del_bilder']['kEigenschaftWertPict'] : array(),
-            'Hersteller'       => (isset($xml['del_bilder']['kHersteller'])) ? $xml['del_bilder']['kHersteller'] : array(),
-            'Merkmal'          => (isset($xml['del_bilder']['kMerkmal'])) ? $xml['del_bilder']['kMerkmal'] : array(),
-            'Merkmalwert'      => (isset($xml['del_bilder']['kMerkmalWert'])) ? $xml['del_bilder']['kMerkmalWert'] : array(),
-        )
-    );
+    executeHook(HOOK_BILDER_XML_BEARBEITEDELETES, [
+        'Artikel'          => (isset($xml['del_bilder']['kArtikelPict'])) ? $xml['del_bilder']['kArtikelPict'] : [],
+        'Kategorie'        => (isset($xml['del_bilder']['kKategoriePict'])) ? $xml['del_bilder']['kKategoriePict'] : [],
+        'KategoriePK'      => (isset($xml['del_bilder']['kKategorie'])) ? $xml['del_bilder']['kKategorie'] : [],
+        'Eigenschaftswert' => (isset($xml['del_bilder']['kEigenschaftWertPict'])) ? $xml['del_bilder']['kEigenschaftWertPict'] : [],
+        'Hersteller'       => (isset($xml['del_bilder']['kHersteller'])) ? $xml['del_bilder']['kHersteller'] : [],
+        'Merkmal'          => (isset($xml['del_bilder']['kMerkmal'])) ? $xml['del_bilder']['kMerkmal'] : [],
+        'Merkmalwert'      => (isset($xml['del_bilder']['kMerkmalWert'])) ? $xml['del_bilder']['kMerkmalWert'] : [],
+    ]);
 
     //Artikelbilder löschen Wawi <= .99923
     if (isset($xml['del_bilder']['kArtikelPict'])) {
@@ -1008,7 +1028,7 @@ function bearbeiteDeletes($xml)
                 }
             }
         } elseif (intval($xml['del_bilder']['kKategoriePict']) > 0) {
-            loescheKategoriePict(intval($xml['del_bilder']['kKategoriePict']));
+            loescheKategoriePict((int)$xml['del_bilder']['kKategoriePict']);
         }
     }
     //Kategoriebilder löschen Wawi > .99923
@@ -1028,7 +1048,7 @@ function bearbeiteDeletes($xml)
                 }
             }
         } elseif (intval($xml['del_bilder']['kEigenschaftWertPict']) > 0) {
-            loescheEigenschaftwertPict(intval($xml['del_bilder']['kEigenschaftWertPict']));
+            loescheEigenschaftwertPict($xml['del_bilder']['kEigenschaftWertPict']);
         }
     }
     //Variationsbilder löschen Wawi > .99923
@@ -1040,7 +1060,7 @@ function bearbeiteDeletes($xml)
                 }
             }
         } elseif (intval($xml['del_bilder']['kEigenschaftWert']) > 0) {
-            loescheEigenschaftwertPict(null, intval($xml['del_bilder']['kEigenschaftWert']));
+            loescheEigenschaftwertPict(null, $xml['del_bilder']['kEigenschaftWert']);
         }
     }
     //Herstellerbilder löschen
@@ -1121,7 +1141,7 @@ function loescheArtikelPict($kArtikelPict, $nNr = null)
 function loescheKategoriePict($kKategoriePict, $kKategorie = null)
 {
     if (!is_null($kKategoriePict)) {
-        $kKategoriePict = intval($kKategoriePict);
+        $kKategoriePict = (int)$kKategoriePict;
         if ($kKategoriePict > 0) {
             Shop::DB()->delete('tkategoriepict', 'kKategoriePict', $kKategoriePict);
             if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
@@ -1129,7 +1149,7 @@ function loescheKategoriePict($kKategoriePict, $kKategorie = null)
             }
         }
     } else {
-        $kKategorie = intval($kKategorie);
+        $kKategorie = (int)$kKategorie;
         if ($kKategorie > 0) {
             Shop::DB()->delete('tkategoriepict', 'kKategorie', $kKategorie);
             if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
@@ -1438,7 +1458,7 @@ function imageload_container($img, $nWidth, $nHeight, $nContainerWidth, $nContai
     $newImg  = imagecreatetruecolor($nContainerWidth, $nContainerHeight);
     // hintergrundfarbe
     $format = strtolower($GLOBALS['Einstellungen']['bilder']['bilder_dateiformat']);
-    if ($format == 'jpg') {
+    if ($format === 'jpg') {
         $rgb   = html2rgb($GLOBALS['Einstellungen']['bilder']['bilder_hintergrundfarbe']);
         $color = imagecolorallocate($newImg, $rgb[0], $rgb[1], $rgb[2]);
     } else {
@@ -1495,7 +1515,7 @@ function imageload_alpha($img, $nWidth = 0, $nHeight = 0)
 
     // hintergrundfarbe
     $format = strtolower($GLOBALS['Einstellungen']['bilder']['bilder_dateiformat']);
-    if ($format == 'jpg') {
+    if ($format === 'jpg') {
         $rgb   = html2rgb($GLOBALS['Einstellungen']['bilder']['bilder_hintergrundfarbe']);
         $color = imagecolorallocate($newImg, $rgb[0], $rgb[1], $rgb[2]);
     } else {
@@ -1542,7 +1562,7 @@ function speichereBild($im, $format, $pfad, $quality = 80)
 
     $pfad = neuerDateiname($pfad);
 
-    switch ($format) {
+    switch (strtolower($format)) {
         case 'jpg':
             if (!function_exists('imagejpeg')) {
                 return false;
@@ -1585,7 +1605,7 @@ function speichereBild($im, $format, $pfad, $quality = 80)
  */
 function holeBilderEinstellungen()
 {
-    $oBranding_arr    = array();
+    $oBranding_arr    = [];
     $oBrandingTMP_arr = Shop::DB()->query("SELECT * FROM tbranding", 2);
 
     if (is_array($oBrandingTMP_arr) && count($oBrandingTMP_arr) > 0) {

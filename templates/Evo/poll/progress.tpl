@@ -18,7 +18,7 @@
         {foreach name=umfragefrage from=$oUmfrage->oUmfrageFrage_arr item=oUmfrageFrage}
             {assign var=kUmfrageFrage value=$oUmfrageFrage->kUmfrageFrage}
             <input name="kUmfrageFrage[]" type="hidden" value="{$oUmfrageFrage->kUmfrageFrage}">
-            <div class="panel-wrap {if $oUmfrageFrage->nNotwendig == 1} required{/if}">
+            <div {if $oUmfrageFrage->nNotwendig == 1}class="required"{/if}>
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h3 class="panel-title">{$oUmfrageFrage->cName} {if $oUmfrageFrage->nNotwendig == 1} *{/if}</h3>

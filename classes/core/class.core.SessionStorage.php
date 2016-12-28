@@ -13,14 +13,14 @@ class SessionStorage
     /**
      * @var array
      */
-    public $sessionData = array();
+    public $sessionData = [];
 
     /**
      * @param SessionHandler $handler
      * @param array $options
      * @param bool  $start - call session_start()?
      */
-    public function __construct($handler = null, array $options = array(), $start = true)
+    public function __construct($handler = null, array $options = [], $start = true)
     {
         ini_set('session.use_cookies', 1);
         if (version_compare(phpversion(), '5.4.0', '>=')) {
@@ -52,12 +52,12 @@ class SessionStorage
                 $res = session_set_save_handler($this->_handler, true);
             } else {
                 $res = session_set_save_handler(
-                    array($this->_handler, 'open'),
-                    array($this->_handler, 'close'),
-                    array($this->_handler, 'read'),
-                    array($this->_handler, 'write'),
-                    array($this->_handler, 'destroy'),
-                    array($this->_handler, 'gc')
+                    [$this->_handler, 'open'],
+                    [$this->_handler, 'close'],
+                    [$this->_handler, 'read'],
+                    [$this->_handler, 'write'],
+                    [$this->_handler, 'destroy'],
+                    [$this->_handler, 'gc']
                 );
             }
         } else {
@@ -65,7 +65,7 @@ class SessionStorage
         }
 
         if ($res === true) {
-            $conf           = Shop::getConfig(array(CONF_GLOBAL));
+            $conf           = Shop::getConfig([CONF_GLOBAL]);
             $cookieDefaults = session_get_cookie_params();
             $set            = false;
             $lifetime       = (isset($cookieDefaults['lifetime'])) ?
@@ -113,7 +113,7 @@ class SessionStorage
             }
             if (isset($conf['global']['global_cookie_lifetime']) && is_numeric($conf['global']['global_cookie_lifetime']) && intval($conf['global']['global_cookie_lifetime']) > 0) {
                 $set      = true;
-                $lifetime = intval($conf['global']['global_cookie_lifetime']);
+                $lifetime = (int)$conf['global']['global_cookie_lifetime'];
             }
             if (!empty($conf['global']['global_cookie_path'])) {
                 $set  = true;

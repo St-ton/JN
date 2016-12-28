@@ -12,15 +12,15 @@ $AktuelleSeite = 'BEWERTUNG';
 Shop::run();
 Shop::setPageType(PAGE_BEWERTUNG);
 $cParameter_arr = Shop::getParameters();
-$Einstellungen  = Shop::getSettings(array(CONF_GLOBAL, CONF_RSS, CONF_BEWERTUNG));
+$Einstellungen  = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_BEWERTUNG]);
 // Bewertung in die Datenbank speichern
 if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
     if (pruefeKundeArtikelBewertet($cParameter_arr['kArtikel'], $_SESSION['Kunde']->kKunde)) {
         $artikel = new Artikel();
         $artikel->fuelleArtikel($cParameter_arr['kArtikel'], Artikel::getDefaultOptions());
-        $url = (!empty($artikel->cURLFull)) ?
-            ($artikel->cURLFull . '?') :
-            (Shop::getURL() . '/?a=' . $cParameter_arr['kArtikel']);
+        $url = (!empty($artikel->cURLFull))
+            ? ($artikel->cURLFull . '?')
+            : (Shop::getURL() . '/?a=' . $cParameter_arr['kArtikel']);
 
         header('Location: ' . $url . 'bewertung_anzeigen=1&cFehler=f02', true, 301);
         exit();
@@ -29,7 +29,7 @@ if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
         speicherBewertung(
             $cParameter_arr['kArtikel'],
             $_SESSION['Kunde']->kKunde,
-            Shop::$kSprache,
+            Shop::getLanguage(),
             verifyGPDataString('cTitel'),
             verifyGPDataString('cText'),
             $cParameter_arr['nSterne']
@@ -39,7 +39,7 @@ if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
     // Bewertungen holen
     $bewertung_seite  = verifyGPCDataInteger('btgseite');
     $bewertung_sterne = verifyGPCDataInteger('btgsterne');
-    speicherHilfreich($cParameter_arr['kArtikel'], $_SESSION['Kunde']->kKunde, Shop::$kSprache, $bewertung_seite, $bewertung_sterne);
+    speicherHilfreich($cParameter_arr['kArtikel'], $_SESSION['Kunde']->kKunde, Shop::getLanguage(), $bewertung_seite, $bewertung_sterne);
 } elseif (verifyGPCDataInteger('bfa') === 1) {
     // Prüfe ob Kunde eingeloggt
     if (empty($_SESSION['Kunde']->kKunde)) {
@@ -61,14 +61,14 @@ if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
     $startKat->kKategorie   = 0;
     if (!isset($AktuellerArtikel->Bewertungen)) {
         $AktuellerArtikel->holeBewertung(
-            Shop::$kSprache,
+            Shop::getLanguage(),
             $Einstellungen['bewertung']['bewertung_anzahlseite'],
             0,
             -1,
             $Einstellungen['bewertung']['bewertung_freischalten'],
             $cParameter_arr['nSortierung']
         );
-        $AktuellerArtikel->holehilfreichsteBewertung(Shop::$kSprache);
+        $AktuellerArtikel->holehilfreichsteBewertung(Shop::getLanguage());
     }
 
     if ($Einstellungen['bewertung']['bewertung_artikel_gekauft'] === 'Y') {

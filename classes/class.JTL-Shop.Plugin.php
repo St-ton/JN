@@ -90,6 +90,12 @@ class Plugin
 
     /**
      * @var string
+     * @since 4.05
+     */
+    public $cPluginPfad;
+
+    /**
+     * @var string
      */
     public $cFrontendPfad;
 
@@ -295,7 +301,6 @@ class Plugin
      */
     public $cTextLicensePath = '';
 
-
     /**
      * Konstruktor
      *
@@ -353,6 +358,7 @@ class Plugin
         $this->dInstalliert_DE         = $this->gibDateTimeLokalisiert($this->dInstalliert);
         $this->dZuletztAktualisiert_DE = $this->gibDateTimeLokalisiert($this->dZuletztAktualisiert);
         $this->dErstellt_DE            = $this->gibDateTimeLokalisiert($this->dErstellt, true);
+        $this->cPluginPfad             = PFAD_ROOT . PFAD_PLUGIN . $this->cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $this->nVersion . '/';
         // FrontendPfad
         $this->cFrontendPfad       = PFAD_ROOT . PFAD_PLUGIN . $this->cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $this->nVersion . '/' . PFAD_PLUGIN_FRONTEND;
         $this->cFrontendPfadURL    = $_shopURL . '/' . PFAD_PLUGIN . $this->cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $this->nVersion . '/' . PFAD_PLUGIN_FRONTEND; // deprecated
@@ -416,7 +422,12 @@ class Plugin
                         $oPluginEinstellungConfTMP_arr[$i]->oPluginEinstellungenConfWerte_arr = $this->getDynamicOptions($oPluginEinstellungConfTMP);
                     } else {
                         $oPluginEinstellungConfTMP_arr[$i]->oPluginEinstellungenConfWerte_arr = Shop::DB()->selectAll(
-                            'tplugineinstellungenconfwerte', 'kPluginEinstellungenConf', (int)$oPluginEinstellungConfTMP->kPluginEinstellungenConf, '*', 'nSort');
+                            'tplugineinstellungenconfwerte',
+                            'kPluginEinstellungenConf',
+                            (int)$oPluginEinstellungConfTMP->kPluginEinstellungenConf,
+                            '*',
+                            'nSort'
+                        );
                     }
                 }
             }

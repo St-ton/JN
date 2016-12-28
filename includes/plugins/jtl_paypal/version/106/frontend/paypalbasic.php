@@ -9,10 +9,6 @@ $paypal = new PayPalBasic();
 $type   = isset($_GET['t']) ? $_GET['t'] : null;
 
 switch ($type) {
-    default:
-        d('ERROR');
-        break;
-
     case 's': {
         $type   = isset($_GET['t']) ? $_GET['t'] : null;
         $return = isset($_GET['r']) && (int)$_GET['r'] > 0;
@@ -33,4 +29,6 @@ switch ($type) {
 
         break;
     }
+    default:
+        break;
 }

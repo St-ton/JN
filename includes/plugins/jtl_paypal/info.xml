@@ -5,7 +5,7 @@
     <Author>JTL-Software-GmbH</Author>
     <URL>http://www.jtl-software.de</URL>
     <XMLVersion>100</XMLVersion>
-    <Shop4Version>400</Shop4Version>
+    <Shop4Version>405</Shop4Version>
     <PluginID>jtl_paypal</PluginID>
     <Install>
         <Version nr="100">
@@ -90,6 +90,22 @@
                     <MetaTitle>PayPalBasic</MetaTitle>
                     <MetaKeywords>PayPalBasic</MetaKeywords>
                     <MetaDescription>PayPalBasic</MetaDescription>
+                </LinkLanguage>
+            </Link>
+            <Link>
+                <Filename>paypalfinance.php</Filename>
+                <Name>PayPalFinance</Name>
+                <FullscreenTemplate>paypalfinance.tpl</FullscreenTemplate>
+                <VisibleAfterLogin>N</VisibleAfterLogin>
+                <PrintButton>N</PrintButton>
+                <SSL>2</SSL>
+                <LinkLanguage iso="GER">
+                    <Seo>PayPalFinance</Seo>
+                    <Name>PayPalFinance</Name>
+                    <Title>PayPalFinance</Title>
+                    <MetaTitle>PayPalFinance</MetaTitle>
+                    <MetaKeywords>PayPalFinance</MetaKeywords>
+                    <MetaDescription>PayPalFinance</MetaDescription>
                 </LinkLanguage>
             </Link>
         </FrontendLink>
@@ -204,6 +220,94 @@ Referenznummer: %reference_number%]]></VariableLocalized>
                     <Description>Tragen Sie hier den Secret-Key ein</Description>
                     <ValueName>api_sandbox_secret</ValueName>
                 </Setting>
+            </Method>
+            <Method>
+                <Name>PayPal Finance</Name>
+                <PictureURL>images/paypal_installments_260.png</PictureURL>
+                <Sort>1</Sort>
+                <SendMail>1</SendMail>
+                <Provider>PayPal</Provider>
+                <TSCode>PAYPAL</TSCode>
+                <PreOrder>1</PreOrder>
+                <Soap>0</Soap>
+                <Curl>1</Curl>
+                <Sockets>0</Sockets>
+                <ClassFile>class/PayPalFinance.class.php</ClassFile>
+                <TemplateFile>template/paypalfinance.tpl</TemplateFile>
+                <AdditionalTemplateFile>template/paypalfinance.tpl</AdditionalTemplateFile>
+                <ClassName>PayPalFinance</ClassName>
+                <MethodLanguage iso="GER">
+                    <Name>PayPal Ratenkauf</Name>
+                    <ChargeName>PayPal Ratenkauf</ChargeName>
+                    <InfoText/>
+                </MethodLanguage>
+                <MethodLanguage iso="ENG">
+                    <Name>PayPal Rate Payment</Name>
+                    <ChargeName>PayPal Rate Payment</ChargeName>
+                    <InfoText/>
+                </MethodLanguage>
+                <Setting type="selectbox" initialValue="sandbox" sort="1" conf="Y">
+                    <Name>Live oder Sandbox</Name>
+                    <Description>Liveschaltung oder Test?</Description>
+                    <ValueName>api_live_sandbox</ValueName>
+                    <SelectboxOptions>
+                        <Option value="live" sort="1">Live</Option>
+                        <Option value="sandbox" sort="2">Sandbox</Option>
+                    </SelectboxOptions>
+                </Setting>
+                <Setting type="text" initialValue="" sort="6" conf="Y">
+                    <Name>PayPal-API-Client-ID (Rest) (Live)</Name>
+                    <Description>Tragen Sie hier die Client-ID ein</Description>
+                    <ValueName>api_live_client_id</ValueName>
+                </Setting>
+                <Setting type="password" initialValue="" sort="7" conf="Y">
+                    <Name>PayPal-API-Secret (Rest) (Live)</Name>
+                    <Description>Tragen Sie hier den Secret-Key ein</Description>
+                    <ValueName>api_live_secret</ValueName>
+                </Setting>
+                <Setting type="text" initialValue="" sort="8" conf="Y">
+                    <Name>PayPal-API-Client-ID (Rest) (Sandbox)</Name>
+                    <Description>Tragen Sie hier die Client-ID ein</Description>
+                    <ValueName>api_sandbox_client_id</ValueName>
+                </Setting>
+                <Setting type="password" initialValue="" sort="9" conf="Y">
+                    <Name>PayPal-API-Secret (Rest) (Sandbox)</Name>
+                    <Description>Tragen Sie hier den Secret-Key ein</Description>
+                    <ValueName>api_sandbox_secret</ValueName>
+                </Setting>
+                
+                <Setting type="text" initialValue="" sort="10" conf="Y">
+                    <Name>PayPal-API-Benutzer (NVP) (Live)</Name>
+                    <Description>Tragen Sie hier den Benutzernamen ein</Description>
+                    <ValueName>api_live_user</ValueName>
+                </Setting>
+                <Setting type="password" initialValue="" sort="11" conf="Y">
+                    <Name>PayPal-API-Passwort (NVP) (Live)</Name>
+                    <Description>Tragen Sie hier das Passwort ein</Description>
+                    <ValueName>api_live_pass</ValueName>
+                </Setting>
+                <Setting type="password" initialValue="" sort="12" conf="Y">
+                    <Name>PayPal-API-Signatur (NVP) (Live)</Name>
+                    <Description>Tragen Sie hier API Signatur ein</Description>
+                    <ValueName>api_live_signatur</ValueName>
+                </Setting>
+                <Setting type="text" initialValue="" sort="13" conf="Y">
+                    <Name>PayPal-API-Benutzer (NVP) (Sandbox)</Name>
+                    <Description>Tragen Sie hier den Benutzernamen ein</Description>
+                    <ValueName>api_sandbox_user</ValueName>
+                </Setting>
+                <Setting type="password" initialValue="" sort="14" conf="Y">
+                    <Name>PayPal-API-Passwort (NVP) (Sandbox)</Name>
+                    <Description>Tragen Sie hier das Passwort ein</Description>
+                    <ValueName>api_sandbox_pass</ValueName>
+                </Setting>
+                <Setting type="password" initialValue="" sort="15" conf="Y">
+                    <Name>PayPal-API-Signatur (NVP) (Sandbox)</Name>
+                    <Description>Tragen Sie hier API Signatur ein</Description>
+                    <ValueName>api_sandbox_signatur</ValueName>
+                </Setting>
+                
+                
             </Method>
             <Method>
                 <Name>PayPal Express</Name>
@@ -519,7 +623,7 @@ Ihr Team von {$Firma->cName}]]></ContentText>
             </Settingslink>
 
             <Settingslink sort="3">
-                <Name>PayPal <![CDATA[&#10010;]]></Name>
+                <Name>PayPal PLUS</Name>
                 
                 <Setting type="text" initialValue="Y" sort="0" conf="N">
                     <Name>Allgemein</Name>
@@ -566,15 +670,15 @@ Ihr Team von {$Firma->cName}]]></ContentText>
             </Settingslink>
 
             <Customlink sort="5">
-                <Name>Zahlungsarten <![CDATA[&#10010;]]></Name>
+                <Name>Zahlungsarten PLUS</Name>
                 <Filename>payment.php</Filename>
             </Customlink>
             <Customlink sort="6">
-                <Name>Webhooks <![CDATA[&#10010;]]></Name>
+                <Name>Webhooks PLUS</Name>
                 <Filename>webhooks.php</Filename>
             </Customlink>
             <Settingslink sort="7">
-                <Name>Styles <![CDATA[&#10010;]]></Name>
+                <Name>Styles PLUS</Name>
                 
                 <Setting type="text" initialValue="Y" sort="0" conf="N">
                     <Name>Schrift</Name>

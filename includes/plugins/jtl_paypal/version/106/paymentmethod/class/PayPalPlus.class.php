@@ -19,6 +19,8 @@ use PayPal\Api\PaymentExecution;
 use PayPal\Api\RedirectUrls;
 use PayPal\Api\Sale;
 use PayPal\Api\Transaction;
+use PayPal\Api\Presentment;
+use PayPal\Api\Currency;
 use PayPal\Rest\ApiContext;
 use PayPal\Auth\OAuthTokenCredential;
 
@@ -544,6 +546,30 @@ class PayPalPlus extends PaymentMethod
         $patchRequest->setPatches([$patch]);
 
         $payment->update($patchRequest, $this->getContext());
+    }
+    
+    public function getPresentment($amount, $currencyCode)
+    {
+        $currency = new Currency();
+        $currency->setCurrencyCode($currencyCode);
+        $currency->setValue($amount);
+
+        $presentment = new Presentment();
+        $presentment->setFinancingCountryCode('DE');
+        $presentment->setTransactionAmount($currency);
+        
+        $request = clone $presentment;
+        
+        try {
+            $presentment->create($this->getContext());
+            $this->logResult('CreatePresentment', $request, $presentment);
+
+            return $presentment;
+        } catch (Exception $ex) {
+            $this->handleException('CreatePresentment', $presentment, $ex);
+        }
+        
+        return null;
     }
 
     /**

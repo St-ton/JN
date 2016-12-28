@@ -222,7 +222,7 @@ class PayPalExpress extends PaymentMethod
 
         $paymentDetails->PaymentAction    = 'Sale';
         $paymentDetails->ItemTotal        = new BasicAmountType($basket->currency->cISO, $basket->article[WarenkorbHelper::GROSS]);
-        $paymentDetails->TaxTotal         = new BasicAmountType($basket->currency->cISO, '0.00'); // $basket->diff[WarenkorbHelper::GROSS]
+        $paymentDetails->TaxTotal         = new BasicAmountType($basket->currency->cISO, '0.00');
         $paymentDetails->ShippingTotal    = new BasicAmountType($basket->currency->cISO, $basket->shipping[WarenkorbHelper::GROSS]);
         $paymentDetails->OrderTotal       = new BasicAmountType($basket->currency->cISO, $basket->total[WarenkorbHelper::GROSS]);
         $paymentDetails->HandlingTotal    = new BasicAmountType($basket->currency->cISO, $basket->surcharge[WarenkorbHelper::GROSS]);
@@ -237,6 +237,12 @@ class PayPalExpress extends PaymentMethod
         $setExpressCheckoutRequestDetails->cppheaderbordercolor = $borderColor;
         $setExpressCheckoutRequestDetails->PaymentDetails       = [$paymentDetails];
         $setExpressCheckoutRequestDetails->LocaleCode           = strtoupper(StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
+
+        /*
+        $setExpressCheckoutRequestDetails->LandingPage          = "Billing";
+        $setExpressCheckoutRequestDetails->FundingSourceDetails = new \PayPal\EBLBaseComponents\FundingSourceDetailsType();
+        $setExpressCheckoutRequestDetails->FundingSourceDetails->UserSelectedFundingSource = "Finance"; // €278,95
+        */
 
         $setExpressCheckoutRequestType                    = new PayPalAPI\SetExpressCheckoutRequestType($setExpressCheckoutRequestDetails);
         $setExpressCheckoutReq                            = new PayPalAPI\SetExpressCheckoutReq();

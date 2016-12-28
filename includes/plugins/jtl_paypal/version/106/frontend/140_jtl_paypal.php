@@ -4,12 +4,55 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-/**
- * HOOK_SMARTY_OUTPUTFILTER.
- *
- * adds buttons to article or cart pages, inserts css
- */
 $pageType = Shop::getPageType();
+
+if ($pageType === PAGE_ARTIKEL) {
+    require_once str_replace(
+        'frontend', 'paymentmethod', $oPlugin->cFrontendPfad) . '/class/PayPalFinance.class.php';
+
+    $payPalFinance = new PayPalFinance();
+
+    if ($payPalFinance->isConfigured()) {
+        $article = $smarty->getTemplateVars('Artikel');
+
+        $amount = 1399;//$article->Preise->fVKBrutto;
+        $currency = $_SESSION['Waehrung']->cISO;
+
+        if ($presentment = $payPalFinance->getPresentment($amount, $currency)) {
+
+            $financingOptions = $presentment->getFinancingOptions();
+            $financingOptions = $financingOptions[0]->getQualifyingFinancingOptions();
+            
+            if (count($financingOptions) > 0) {
+
+                usort($financingOptions, function ($a, $b) {
+                    if ($a->getCreditFinancing()->getTerm() > $b->getCreditFinancing()->getTerm()) {
+                        return 1;
+                    }
+                    elseif ($a->getCreditFinancing()->getTerm() < $b->getCreditFinancing()->getTerm()) {
+                        return -1;
+                    }
+                    return 0;
+                });
+
+                $company = new Firma(true);
+                $bestFinancingOption = end($financingOptions);
+                $transactionAmount = $presentment->getTransactionAmount();
+
+                $tplData = $smarty
+                    ->assign('plugin', $oPlugin)
+                    ->assign('company', $company)
+                    ->assign('financingOptions', $financingOptions)
+                    ->assign('transactionAmount', $transactionAmount)
+                    ->assign('bestFinancingOption', $bestFinancingOption)
+                    ->fetch($oPlugin->cFrontendPfad . 'template/presentment-modal.tpl');
+
+                pq('#add-to-cart')->prepend($tplData);
+            }
+        }
+    }
+}
+
 
 if ($pageType === PAGE_WARENKORB || ($pageType === PAGE_ARTIKEL && $oPlugin->oPluginEinstellungAssoc_arr['jtl_paypal_express_article'] === 'Y')) {
     require_once str_replace('frontend', 'paymentmethod', $oPlugin->cFrontendPfad) . '/class/PayPalExpress.class.php';

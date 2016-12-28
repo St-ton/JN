@@ -452,7 +452,7 @@ class PayPalFinance extends PaymentMethod
             'Finanzierungskosten', 1, $info->FinancingTotalCost->value,
             $_SESSION['Warenkorb']->gibVersandkostenSteuerklasse(''),
             C_WARENKORBPOS_TYP_ZINSAUFSCHLAG,
-            true, true, $label
+            true, true, ''/*$label*/
         );
     }
     

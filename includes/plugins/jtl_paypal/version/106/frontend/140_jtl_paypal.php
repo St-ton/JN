@@ -6,18 +6,13 @@
 
 $pageType = Shop::getPageType();
 
-if ($pageType === PAGE_ARTIKEL) {
+$buildPresentment = function($amount, $currency) use (&$oPlugin) {
     require_once str_replace(
         'frontend', 'paymentmethod', $oPlugin->cFrontendPfad) . '/class/PayPalFinance.class.php';
 
     $payPalFinance = new PayPalFinance();
 
     if ($payPalFinance->isConfigured()) {
-        $article = $smarty->getTemplateVars('Artikel');
-
-        $amount = 1399;//$article->Preise->fVKBrutto;
-        $currency = $_SESSION['Waehrung']->cISO;
-
         if ($presentment = $payPalFinance->getPresentment($amount, $currency)) {
 
             $financingOptions = $presentment->getFinancingOptions();
@@ -39,20 +34,52 @@ if ($pageType === PAGE_ARTIKEL) {
                 $bestFinancingOption = end($financingOptions);
                 $transactionAmount = $presentment->getTransactionAmount();
 
-                $tplData = $smarty
+                $tplData = Shop::Smarty()
                     ->assign('plugin', $oPlugin)
                     ->assign('company', $company)
                     ->assign('financingOptions', $financingOptions)
                     ->assign('transactionAmount', $transactionAmount)
                     ->assign('bestFinancingOption', $bestFinancingOption)
                     ->fetch($oPlugin->cFrontendPfad . 'template/presentment-modal.tpl');
+                    
+                return $tplData;
 
-                pq('#add-to-cart')->prepend($tplData);
+                /*
+                $selector = $oPlugin->oPluginEinstellungAssoc_arr['jtl_paypal_finance_article_selector'];
+                $method = $oPlugin->oPluginEinstellungAssoc_arr['jtl_paypal_finance_article_method'];
+
+                pq($selector)->{$method}($tplData);
+                */
             }
         }
     }
+    return null;
+};
+
+if ($pageType === PAGE_ARTIKEL && $oPlugin->oPluginEinstellungAssoc_arr['jtl_paypal_finance_article'] === 'Y') {
+    $article = $smarty->getTemplateVars('Artikel');
+    $amount = $article->Preise->fVKBrutto;
+    $currency = $_SESSION['Waehrung']->cISO;
+    
+    $tplData = $buildPresentment($amount, $currency);
+
+    $selector = $oPlugin->oPluginEinstellungAssoc_arr['jtl_paypal_finance_article_selector'];
+    $method = $oPlugin->oPluginEinstellungAssoc_arr['jtl_paypal_finance_article_method'];
+
+    pq($selector)->{$method}($tplData);
 }
 
+if ($pageType === PAGE_WARENKORB && $oPlugin->oPluginEinstellungAssoc_arr['jtl_paypal_finance_cart_box'] === 'Y') {
+    $amount = $_SESSION['Warenkorb']->gibGesamtsummeWarenOhne(array(C_WARENKORBPOS_TYP_ZINSAUFSCHLAG), true);
+    $currency = $_SESSION['Waehrung']->cISO;
+    
+    $tplData = $buildPresentment($amount, $currency);
+
+    $selector = $oPlugin->oPluginEinstellungAssoc_arr['jtl_paypal_finance_cart_box_selector'];
+    $method = $oPlugin->oPluginEinstellungAssoc_arr['jtl_paypal_finance_cart_box_method'];
+
+    pq($selector)->{$method}($tplData);
+}
 
 if ($pageType === PAGE_WARENKORB || ($pageType === PAGE_ARTIKEL && $oPlugin->oPluginEinstellungAssoc_arr['jtl_paypal_express_article'] === 'Y')) {
     require_once str_replace('frontend', 'paymentmethod', $oPlugin->cFrontendPfad) . '/class/PayPalExpress.class.php';
@@ -60,7 +87,7 @@ if ($pageType === PAGE_WARENKORB || ($pageType === PAGE_ARTIKEL && $oPlugin->oPl
     $payPalExpress    = new PayPalExpress();
     $pqMethodCart     = $oPlugin->oPluginEinstellungAssoc_arr['jtl_paypal_express_cart_button_method'];
     $pqSelectorCart   = $oPlugin->oPluginEinstellungAssoc_arr['jtl_paypal_express_cart_button_selector'];
-    $cartClass        = 'paypalexpress btn-ppe-cart';//$oPlugin->oPluginEinstellungAssoc_arr['jtl_paypal_express_cart_button_class'];
+    $cartClass        = 'paypalexpress btn-ppe-cart';
     $pqMethodArticle  = $oPlugin->oPluginEinstellungAssoc_arr['jtl_paypal_express_article_method'];
     $pqSeletorArticle = $oPlugin->oPluginEinstellungAssoc_arr['jtl_paypal_express_article_selector'];
     $articleClass     = 'paypalexpress';

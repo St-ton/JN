@@ -4,7 +4,7 @@
 {$ti = $financingOption->getTotalInterest()}
 {$bcf = $bestFinancingOption->getCreditFinancing()}
 
-<table class="table table-condensed table-financing-option">
+<table class="table table-condensed2 table-financing-option">
     <thead>
         <tr>
             <th colspan="2">

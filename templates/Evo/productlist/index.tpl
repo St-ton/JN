@@ -2,7 +2,10 @@
     {include file='layout/header.tpl'}
 {/if}
 <div id="result-wrapper">
+    {block name="productlist-header"}
     {include file='productlist/header.tpl'}
+    {/block}
+    
     {assign var='style' value='gallery'}
     {assign var='grid' value='col-xs-6 col-lg-4'}
     {if isset($oErweiterteDarstellung->nDarstellung) && isset($Einstellungen.artikeluebersicht.artikeluebersicht_erw_darstellung) && $Einstellungen.artikeluebersicht.artikeluebersicht_erw_darstellung === 'Y'  && $oErweiterteDarstellung->nDarstellung == 1 
@@ -16,10 +19,13 @@
     
     {* Bestseller *}
     {if isset($oBestseller_arr) && $oBestseller_arr|@count > 0}
+        {block name="productlist-bestseller"}
         {lang key='bestseller' section='global' assign='slidertitle'}
         {include file='snippets/product_slider.tpl' id='slider-top-products' productlist=$oBestseller_arr title=$slidertitle}
+        {/block}
     {/if}
     
+    {block name="productlist-results"}
     <div class="row {if $style !== 'list'}row-eq-height row-eq-img-height{/if} {$style}" id="product-list">
         {foreach name=artikel from=$Suchergebnisse->Artikel->elemente item=Artikel}
             <div class="product-wrapper {$grid}">
@@ -31,7 +37,11 @@
             </div>
         {/foreach}
     </div>
+    {/block}
+    
+    {block name="productlist-footer"}
     {include file='productlist/footer.tpl'}
+    {/block}
 </div>
 {if !isset($bAjaxRequest) || !$bAjaxRequest}
     {include file='layout/footer.tpl'}

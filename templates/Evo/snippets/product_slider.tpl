@@ -17,10 +17,10 @@
             {/if}
         </div>
         <div{if $title|strlen > 0} class="panel-body"{/if}>
-            <div class="{if $tplscope == 'box'}evo-box-slider{else}evo-slider{/if}">
+            <div class="{if $tplscope == 'box'}{block name="product-box-slider-class"}evo-box-slider{/block}{else}{block name="product-slider-class"}evo-slider{/block}{/if}">
                 {foreach name="sliderproducts" from=$productlist item='product'}
                     <div class="product-wrapper{if isset($style)} {$style}{/if}">
-                        {include file='productlist/item_slider.tpl' Artikel=$product tplscope=$tplscope}
+                        {include file='productlist/item_slider.tpl' Artikel=$product tplscope=$tplscope class=''}
                     </div>
                 {/foreach}
             </div>

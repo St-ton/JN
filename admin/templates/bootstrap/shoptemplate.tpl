@@ -247,9 +247,7 @@
                     {/if}
                 </td>
                 <td class="text-vcenter text-center">
-                    <h4 class="label-wrap">
-                        <span class="label label-default">{$oTemplate->cVersion}</span>
-                    </h4>
+                    {$oTemplate->cVersion}
                 </td>
                 <td class="text-vcenter text-center">
                     {if !empty($oTemplate->bHasError) && $oTemplate->bHasError === true}

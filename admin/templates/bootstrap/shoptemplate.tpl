@@ -214,25 +214,24 @@
                         <li>
                             <h3 style="margin:0">{$oTemplate->cName}</h3>
                             {if !empty($oTemplate->cDescription)}
-                                <small class="text-muted">{$oTemplate->cDescription}</small>
+                                <p class="small">{$oTemplate->cDescription}</p>
                             {/if}
-                        </li>
-                        <li>
-                        <!--
-                        {if !empty($oTemplate->cURL)}<a href="{$oTemplate->cURL}">{/if}
-                            {$oTemplate->cAuthor}
-                            {if !empty($oTemplate->cURL)}</a>
-                        {/if}
-                        -->
-                        </li>
-                        <li>
-                            {if $oTemplate->bChild === true}<span class="label label-danger"><abbr title="Vererbt von {$oTemplate->cParent}">{$oTemplate->cParent}</abbr></span>{/if}
+                            <span class="label label-default">
+                             <i class="fa fa-folder-o" aria-hidden="true"></i> {$oTemplate->cOrdner}
+                            </span> 
+                            {if $oTemplate->bChild === true}<span class="label label-info"><i class="fa fa-level-up" aria-hidden="true"></i> <abbr title="Erbt von {$oTemplate->cParent}">{$oTemplate->cParent}</abbr></span>{/if}
 
                             {if isset($oStoredTemplate_arr[$oTemplate->cOrdner])}
                                 {foreach $oStoredTemplate_arr[$oTemplate->cOrdner] as $oStored}
-                                    <span class="label label-warning"><abbr title="Originalversion {$oStored->cVersion} vorhanden">{$oStored->cVersion}</abbr></span>
+                                    <span class="label label-warning"><i class="fa fa-info-circle" aria-hidden="true"></i> <abbr title="Originalversion {$oStored->cVersion} vorhanden">{$oStored->cVersion}</abbr></span>
                                 {/foreach}
+                            {/if}                            
+                            <!--
+                            {if !empty($oTemplate->cURL)}<a href="{$oTemplate->cURL}">{/if}
+                                {$oTemplate->cAuthor}
+                                {if !empty($oTemplate->cURL)}</a>
                             {/if}
+                            -->
                         </li>
                     </ul>
                 </td>
@@ -249,7 +248,7 @@
                 </td>
                 <td class="text-vcenter text-center">
                     <h4 class="label-wrap">
-                        <span class="label label-default"><abbr title="Verzeichnis: {$oTemplate->cOrdner}">{$oTemplate->cVersion}</abbr></span>
+                        <span class="label label-default">{$oTemplate->cVersion}</span>
                     </h4>
                 </td>
                 <td class="text-vcenter text-center">

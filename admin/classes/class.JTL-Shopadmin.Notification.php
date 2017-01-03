@@ -130,7 +130,7 @@ class Notification implements IteratorAggregate, Countable
         }
 
         if ($status->hasInvalidPollCoupons()) {
-            $this->add(NotificationEntry::TYPE_WARNING, 'Umfrage', 'In einer Umfrage wird ein Kupon verwendet, welcher inaktiv ist oder nicht mehr exisitert.');
+            $this->add(NotificationEntry::TYPE_WARNING, 'Umfrage', 'In einer Umfrage wird ein Kupon verwendet, welcher inaktiv ist oder nicht mehr existiert.');
         }
     }
 }

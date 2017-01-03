@@ -46,7 +46,7 @@ if (isset($_SESSION['paypalexpress']) && $step === 'Versand') {
     $oVerpackung_arr = gibMoeglicheVerpackungen($_SESSION['Kundengruppe']->kKundengruppe);
 
     foreach ($oVersandart_arr as $key => $oVersandart) {
-        $pp_in            = false;
+        $pp_in = false;
         $oZahlungsart_arr = gibZahlungsarten($oVersandart->kVersandart, $_SESSION['Kundengruppe']->kKundengruppe);
         foreach ($oZahlungsart_arr as $oZahlungsart) {
             if ($oZahlungsart->kZahlungsart == $_SESSION['paypalexpress']->sZahlungsart->kZahlungsart) {
@@ -67,10 +67,10 @@ if (isset($_SESSION['paypalexpress']) && $step === 'Versand') {
     } elseif (is_array($oVersandart_arr) && count($oVersandart_arr) === 1 && (is_array($oVerpackung_arr) && count($oVerpackung_arr) === 0)) {
         pruefeVersandartWahl($oVersandart_arr[0]->kVersandart);
     } elseif (!is_array($oVersandart_arr) || count($oVersandart_arr) === 0) {
-        Jtllog::writeLog('Es konnte keine Versandart fuer folgende Daten gefunden werden: ' .
-            'Lieferland: ' . $lieferland .
-            ', PLZ: ' . $plz .
-            ', Versandklasse: ' . $shippingClasses .
-            ', Kundengruppe: ' . $kKundengruppe, JTLLOG_LEVEL_ERROR);
+        Jtllog::writeLog('Es konnte keine Versandart fuer folgende Daten gefunden werden: '.
+            'Lieferland: '.$lieferland.
+            ', PLZ: '.$plz.
+            ', Versandklasse: '.$shippingClasses.
+            ', Kundengruppe: '.$kKundengruppe, JTLLOG_LEVEL_ERROR);
     }
 }

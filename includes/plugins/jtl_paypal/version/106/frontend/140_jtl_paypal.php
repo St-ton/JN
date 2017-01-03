@@ -3,30 +3,27 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-
 $pageType = Shop::getPageType();
 
-$buildPresentment = function($amount, $currency) use (&$oPlugin) {
+$buildPresentment = function ($amount, $currency) use (&$oPlugin) {
     require_once str_replace(
-        'frontend', 'paymentmethod', $oPlugin->cFrontendPfad) . '/class/PayPalFinance.class.php';
+        'frontend', 'paymentmethod', $oPlugin->cFrontendPfad).'/class/PayPalFinance.class.php';
 
     $payPalFinance = new PayPalFinance();
 
     if ($payPalFinance->isConfigured()) {
         if ($presentment = $payPalFinance->getPresentment($amount, $currency)) {
-
             $financingOptions = $presentment->getFinancingOptions();
             $financingOptions = $financingOptions[0]->getQualifyingFinancingOptions();
-            
-            if (count($financingOptions) > 0) {
 
+            if (count($financingOptions) > 0) {
                 usort($financingOptions, function ($a, $b) {
                     if ($a->getCreditFinancing()->getTerm() > $b->getCreditFinancing()->getTerm()) {
                         return 1;
-                    }
-                    elseif ($a->getCreditFinancing()->getTerm() < $b->getCreditFinancing()->getTerm()) {
+                    } elseif ($a->getCreditFinancing()->getTerm() < $b->getCreditFinancing()->getTerm()) {
                         return -1;
                     }
+
                     return 0;
                 });
 
@@ -40,8 +37,8 @@ $buildPresentment = function($amount, $currency) use (&$oPlugin) {
                     ->assign('financingOptions', $financingOptions)
                     ->assign('transactionAmount', $transactionAmount)
                     ->assign('bestFinancingOption', $bestFinancingOption)
-                    ->fetch($oPlugin->cFrontendPfad . 'template/presentment-modal.tpl');
-                    
+                    ->fetch($oPlugin->cFrontendPfad.'template/presentment-modal.tpl');
+
                 return $tplData;
 
                 /*
@@ -53,14 +50,15 @@ $buildPresentment = function($amount, $currency) use (&$oPlugin) {
             }
         }
     }
-    return null;
+
+    return;
 };
 
 if ($pageType === PAGE_ARTIKEL && $oPlugin->oPluginEinstellungAssoc_arr['jtl_paypal_finance_article'] === 'Y') {
     $article = $smarty->getTemplateVars('Artikel');
     $amount = $article->Preise->fVKBrutto;
     $currency = $_SESSION['Waehrung']->cISO;
-    
+
     $tplData = $buildPresentment($amount, $currency);
 
     $selector = $oPlugin->oPluginEinstellungAssoc_arr['jtl_paypal_finance_article_selector'];
@@ -72,7 +70,7 @@ if ($pageType === PAGE_ARTIKEL && $oPlugin->oPluginEinstellungAssoc_arr['jtl_pay
 if ($pageType === PAGE_WARENKORB && $oPlugin->oPluginEinstellungAssoc_arr['jtl_paypal_finance_cart_box'] === 'Y') {
     $amount = $_SESSION['Warenkorb']->gibGesamtsummeWarenOhne(array(C_WARENKORBPOS_TYP_ZINSAUFSCHLAG), true);
     $currency = $_SESSION['Waehrung']->cISO;
-    
+
     $tplData = $buildPresentment($amount, $currency);
 
     $selector = $oPlugin->oPluginEinstellungAssoc_arr['jtl_paypal_finance_cart_box_selector'];
@@ -82,24 +80,24 @@ if ($pageType === PAGE_WARENKORB && $oPlugin->oPluginEinstellungAssoc_arr['jtl_p
 }
 
 if ($pageType === PAGE_WARENKORB || ($pageType === PAGE_ARTIKEL && $oPlugin->oPluginEinstellungAssoc_arr['jtl_paypal_express_article'] === 'Y')) {
-    require_once str_replace('frontend', 'paymentmethod', $oPlugin->cFrontendPfad) . '/class/PayPalExpress.class.php';
+    require_once str_replace('frontend', 'paymentmethod', $oPlugin->cFrontendPfad).'/class/PayPalExpress.class.php';
 
-    $payPalExpress    = new PayPalExpress();
-    $pqMethodCart     = $oPlugin->oPluginEinstellungAssoc_arr['jtl_paypal_express_cart_button_method'];
-    $pqSelectorCart   = $oPlugin->oPluginEinstellungAssoc_arr['jtl_paypal_express_cart_button_selector'];
-    $cartClass        = 'paypalexpress btn-ppe-cart';
-    $pqMethodArticle  = $oPlugin->oPluginEinstellungAssoc_arr['jtl_paypal_express_article_method'];
+    $payPalExpress = new PayPalExpress();
+    $pqMethodCart = $oPlugin->oPluginEinstellungAssoc_arr['jtl_paypal_express_cart_button_method'];
+    $pqSelectorCart = $oPlugin->oPluginEinstellungAssoc_arr['jtl_paypal_express_cart_button_selector'];
+    $cartClass = 'paypalexpress btn-ppe-cart';
+    $pqMethodArticle = $oPlugin->oPluginEinstellungAssoc_arr['jtl_paypal_express_article_method'];
     $pqSeletorArticle = $oPlugin->oPluginEinstellungAssoc_arr['jtl_paypal_express_article_selector'];
-    $articleClass     = 'paypalexpress';
-    $btnType          = ($oPlugin->oPluginEinstellungAssoc_arr['jtl_paypal_express_cart_button_type'] === 'silver') ? '-alt' : '';
-    $btnSize          = (isset($oPlugin->oPluginEinstellungAssoc_arr['jtl_paypal_express_cart_button_size'])) ? $oPlugin->oPluginEinstellungAssoc_arr['jtl_paypal_express_cart_button_size'] : 'medium'; //@todo: remove check.
-    $allowedISO       = ['de', 'en', 'es', 'fr', 'nl'];
-    $iso              = StringHandler::convertISO2ISO639($_SESSION['cISOSprache']);
-    $iso              = (!in_array($iso, $allowedISO)) ? 'de' : $iso;
-    $countries        = '';
-    $BoxOpen          = '';
-    $ArtikelForm      = '';
-    $paypal_btn       = $oPlugin->cFrontendPfadURLSSL . 'images/buttons/' . $iso . '/checkout-logo-' . $btnSize . $btnType . '-' . $iso . '.png';
+    $articleClass = 'paypalexpress';
+    $btnType = ($oPlugin->oPluginEinstellungAssoc_arr['jtl_paypal_express_cart_button_type'] === 'silver') ? '-alt' : '';
+    $btnSize = (isset($oPlugin->oPluginEinstellungAssoc_arr['jtl_paypal_express_cart_button_size'])) ? $oPlugin->oPluginEinstellungAssoc_arr['jtl_paypal_express_cart_button_size'] : 'medium'; //@todo: remove check.
+    $allowedISO = ['de', 'en', 'es', 'fr', 'nl'];
+    $iso = StringHandler::convertISO2ISO639($_SESSION['cISOSprache']);
+    $iso = (!in_array($iso, $allowedISO)) ? 'de' : $iso;
+    $countries = '';
+    $BoxOpen = '';
+    $ArtikelForm = '';
+    $paypal_btn = $oPlugin->cFrontendPfadURLSSL.'images/buttons/'.$iso.'/checkout-logo-'.$btnSize.$btnType.'-'.$iso.'.png';
 
     if ($pageType === PAGE_WARENKORB && $oPlugin->oPluginEinstellungAssoc_arr['jtl_paypal_express_cart_button'] === 'Y') {
         $oArtikel_arr = PayPalHelper::getProducts();
@@ -107,24 +105,24 @@ if ($pageType === PAGE_WARENKORB || ($pageType === PAGE_ARTIKEL && $oPlugin->oPl
             $link = PayPalHelper::getLinkByName($oPlugin, 'PayPalExpress');
             if ($link !== null) {
                 pq($pqSelectorCart)->$pqMethodCart(
-                    '<a href="index.php?s=' . $link->kLink . '&jtl_paypal_checkout_cart=1" class="' . $cartClass . '">' .
-                    '  <img src="' . $paypal_btn . '" alt="' . $oPlugin->cName . '" />' .
+                    '<a href="index.php?s='.$link->kLink.'&jtl_paypal_checkout_cart=1" class="'.$cartClass.'">'.
+                    '  <img src="'.$paypal_btn.'" alt="'.$oPlugin->cName.'" />'.
                     '</a>'
                 );
-                pq('head')->append('<link type="text/css" href="' . $oPlugin->cFrontendPfadURLSSL . 'css/style.css" rel="stylesheet" media="screen">');
+                pq('head')->append('<link type="text/css" href="'.$oPlugin->cFrontendPfadURLSSL.'css/style.css" rel="stylesheet" media="screen">');
                 $footer_class = $cartClass;
-                $baseURL      = 'warenkorb.php?';
+                $baseURL = 'warenkorb.php?';
             }
         }
     } elseif ($pageType === PAGE_ARTIKEL && $oPlugin->oPluginEinstellungAssoc_arr['jtl_paypal_express_article'] === 'Y') {
         $oArtikel = $smarty->get_template_vars('Artikel');
         if ($payPalExpress->zahlungErlaubt([$oArtikel])) {
             pq($pqSeletorArticle)->$pqMethodArticle(
-                '<button name="jtl_paypal_redirect" type="submit" value="2" class="' . $articleClass . '">' .
-                '  <img src="' . $paypal_btn . '" alt="' . $oPlugin->cName . '" />' .
+                '<button name="jtl_paypal_redirect" type="submit" value="2" class="'.$articleClass.'">'.
+                '  <img src="'.$paypal_btn.'" alt="'.$oPlugin->cName.'" />'.
                 '</button>'
             );
-            pq('head')->append('<link type="text/css" href="' . $oPlugin->cFrontendPfadURLSSL . 'css/style.css" rel="stylesheet" media="screen">');
+            pq('head')->append('<link type="text/css" href="'.$oPlugin->cFrontendPfadURLSSL.'css/style.css" rel="stylesheet" media="screen">');
         }
     }
 }

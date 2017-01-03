@@ -473,7 +473,7 @@ class PayPalFinance extends PaymentMethod
         $doExpressCheckoutPaymentRequestDetails               = new \PayPal\EBLBaseComponents\DoExpressCheckoutPaymentRequestDetailsType();
         $doExpressCheckoutPaymentRequestDetails->Token        = $details->Token;
         $doExpressCheckoutPaymentRequestDetails->PayerID      = $details->PayerInfo->PayerID;
-        $doExpressCheckoutPaymentRequestDetails->ButtonSource = 'JTL_Cart_ECM_CPI2';
+        $doExpressCheckoutPaymentRequestDetails->ButtonSource = 'JTL4_Cart_Inst';
 
         $shippingAddress = $helper->getShippingAddress();
         $paymentAddress  = new \PayPal\EBLBaseComponents\AddressType();
@@ -488,7 +488,7 @@ class PayPalFinance extends PaymentMethod
         $paymentAddress->PostalCode      = $shippingAddress->cPLZ;
 
         $paymentDetails                   = new PaymentDetailsType();
-        $paymentDetails->PaymentAction    = 'Order';
+        $paymentDetails->PaymentAction    = 'Authorization';//'Order';
         $paymentDetails->ShipToAddress    = utf8_convert_recursive($paymentAddress);
         $paymentDetails->ButtonSource     = $doExpressCheckoutPaymentRequestDetails->ButtonSource;
         $paymentDetails->OrderDescription = Shop::Lang()->get('order', 'global') . ' ' . $helper->getInvoiceID();
@@ -587,6 +587,8 @@ class PayPalFinance extends PaymentMethod
     
     public function setExpressCheckout($helper)
     {
+        $this->unsetCache('token');
+        
         $order  = $helper->getObject();
         $basket = PayPalHelper::getBasket($helper);
 
@@ -628,8 +630,8 @@ class PayPalFinance extends PaymentMethod
         $borderColor = str_replace('#', '', $this->plugin->oPluginEinstellungAssoc_arr[$this->pluginbez . '_bordercolor']);
         $brandName   = utf8_encode($this->plugin->oPluginEinstellungAssoc_arr[$this->pluginbez . '_brand']);
 
-        $paymentDetails->PaymentAction    = 'Order';
-        $paymentDetails->ButtonSource     = 'JTL_Cart_ECM_CPI2';
+        $paymentDetails->PaymentAction    = 'Authorization';//'Order';
+        $paymentDetails->ButtonSource     = 'JTL4_Cart_Inst';
         $paymentDetails->ItemTotal        = new BasicAmountType($helper->getCurrencyISO(), $basket->article[WarenkorbHelper::GROSS]);
         $paymentDetails->TaxTotal         = new BasicAmountType($helper->getCurrencyISO(), '0.00');
         $paymentDetails->ShippingTotal    = new BasicAmountType($helper->getCurrencyISO(), $basket->shipping[WarenkorbHelper::GROSS]);
@@ -684,8 +686,6 @@ class PayPalFinance extends PaymentMethod
         } catch (Exception $e) {
             $exception = $e;
         }
-
-        $this->unsetCache('token');
 
         if (isset($response->Ack) && $response->Ack === 'Success') {
             $redirect = $this->getApiUrl($response->Token);

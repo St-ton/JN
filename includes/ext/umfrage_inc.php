@@ -403,6 +403,7 @@ function holeUmfrageUebersicht()
 function bearbeiteUmfrageAuswertung($oUmfrage)
 {
     global $cHinweis;
+    global $cFehler;
 
     // Modulprüfung
     $oNice = Nice::getInstance();
@@ -437,20 +438,20 @@ function bearbeiteUmfrageAuswertung($oUmfrage)
 
             // Gültig
             if ($oKupon->kKupon > 0) {
-                $nBonus     = 1;
-                $nBonusWert = $oKupon->cCode;
-                $cHinweis   = sprintf(Shop::Lang()->get('pollCoupon', 'messages'), $oKupon->cCode);
+                $cHinweis = sprintf(Shop::Lang()->get('pollCoupon', 'messages'), $oKupon->cCode);
+            } else {
+                Jtllog::writeLog(sprintf('Fehlerhafter Kupon in Umfragebelohnung. Kunde: %s  Kupon: %s', $_SESSION['Kunde']->kKunde, $oUmfrage->kKupon),JTLLOG_LEVEL_ERROR);
+                $cFehler = Shop::Lang()->get('pollError', 'messages');
             }
         } elseif ($oUmfrage->fGuthaben > 0) { // Guthaben?
-            $nBonus     = 2;
-            $nBonusWert = $oUmfrage->fGuthaben;
-            $cHinweis   = sprintf(Shop::Lang()->get('pollCredit', 'messages'), gibPreisStringLocalized($oUmfrage->fGuthaben));
+            $cHinweis = sprintf(Shop::Lang()->get('pollCredit', 'messages'), gibPreisStringLocalized($oUmfrage->fGuthaben));
 
             // Kunde Guthaben gutschreiben
-            gibKundeGuthaben($oUmfrage->fGuthaben, $_SESSION['Kunde']->kKunde);
+            if(!gibKundeGuthaben($oUmfrage->fGuthaben, $_SESSION['Kunde']->kKunde)){
+                Jtllog::writeLog(sprintf('Umfragebelohnung: Guthaben konnte nicht verrechnet werden. Kunde: %s', $_SESSION['Kunde']->kKunde),JTLLOG_LEVEL_ERROR);
+                $cFehler = Shop::Lang()->get('pollError', 'messages');
+            }
         } elseif ($oUmfrage->nBonuspunkte > 0) { // Bonuspunkte?
-            $nBonus     = 3;
-            $nBonusWert = $oUmfrage->nBonuspunkte;
             $cHinweis   = sprintf(Shop::Lang()->get('pollExtrapoint', 'messages'), $oUmfrage->nBonuspunkte);
             // ToDo: Bonuspunkte dem Kunden gutschreiben
         } else {

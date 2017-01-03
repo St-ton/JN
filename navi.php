@@ -46,22 +46,21 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'filter_inc.php';
 // Usersortierung
 setzeUsersortierung($NaviFilter);
 $doSearch      = true;
-$Einstellungen = Shop::getSettings(
-    array(
-        CONF_GLOBAL,
-        CONF_RSS,
-        CONF_VERGLEICHSLISTE,
-        CONF_ARTIKELUEBERSICHT,
-        CONF_ARTIKELDETAILS,
-        CONF_BEWERTUNG,
-        CONF_NAVIGATIONSFILTER,
-        CONF_BOXEN,
-        CONF_METAANGABEN,
-        CONF_SUCHSPECIAL,
-        CONF_BILDER,
-        CONF_SONSTIGES,
-        CONF_AUSWAHLASSISTENT)
-);
+$Einstellungen = Shop::getSettings([
+    CONF_GLOBAL,
+    CONF_RSS,
+    CONF_VERGLEICHSLISTE,
+    CONF_ARTIKELUEBERSICHT,
+    CONF_ARTIKELDETAILS,
+    CONF_BEWERTUNG,
+    CONF_NAVIGATIONSFILTER,
+    CONF_BOXEN,
+    CONF_METAANGABEN,
+    CONF_SUCHSPECIAL,
+    CONF_BILDER,
+    CONF_SONSTIGES,
+    CONF_AUSWAHLASSISTENT
+]);
 // Suche prüfen
 if (strlen($cParameter_arr['cSuche']) > 0 || (isset($_GET['qs']) && strlen($_GET['qs']) === 0)) {
     $nMindestzeichen = ((int)$Einstellungen['artikeluebersicht']['suche_min_zeichen'] > 0) ?
@@ -126,19 +125,19 @@ if ($cParameter_arr['kHersteller'] > 0 ||
         }
     }
     $oSuchergebnisse->Artikel           = new ArtikelListe();
-    $oArtikel_arr                       = array();
-    $oSuchergebnisse->MerkmalFilter     = array();
-    $oSuchergebnisse->Herstellerauswahl = array();
-    $oSuchergebnisse->Tags              = array();
-    $oSuchergebnisse->Bewertung         = array();
-    $oSuchergebnisse->Preisspanne       = array();
-    $oSuchergebnisse->Suchspecial       = array();
-    $oSuchergebnisse->SuchFilter        = array();
+    $oArtikel_arr                       = [];
+    $oSuchergebnisse->MerkmalFilter     = [];
+    $oSuchergebnisse->Herstellerauswahl = [];
+    $oSuchergebnisse->Tags              = [];
+    $oSuchergebnisse->Bewertung         = [];
+    $oSuchergebnisse->Preisspanne       = [];
+    $oSuchergebnisse->Suchspecial       = [];
+    $oSuchergebnisse->SuchFilter        = [];
     // JTL Search
     $oExtendedJTLSearchResponse = null;
     $bExtendedJTLSearch         = false;
 
-    executeHook(HOOK_NAVI_PRESUCHE, array('cValue' => &$NaviFilter->EchteSuche->cSuche, 'bExtendedJTLSearch' => &$bExtendedJTLSearch));
+    executeHook(HOOK_NAVI_PRESUCHE, ['cValue' => &$NaviFilter->EchteSuche->cSuche, 'bExtendedJTLSearch' => &$bExtendedJTLSearch]);
     // Keine Suche sondern vielleicht nur ein Filter?
     if (strlen($cParameter_arr['cSuche']) === 0) {
         $bExtendedJTLSearch = false;
@@ -184,10 +183,10 @@ if ($cParameter_arr['kHersteller'] > 0 ||
     // Filter SQL
     $FilterSQL = bauFilterSQL($NaviFilter);
     // Hook
-    executeHook(HOOK_NAVI_CREATE, array(
+    executeHook(HOOK_NAVI_CREATE, [
         'naviFilter' => &$NaviFilter,
         'filterSQL'  => &$FilterSQL
-    ));
+    ]);
     // Erweiterte Darstellung Artikelübersicht
     gibErweiterteDarstellung($Einstellungen, $NaviFilter, $cParameter_arr['nDarstellung']);
 
@@ -210,7 +209,7 @@ if ($cParameter_arr['kHersteller'] > 0 ||
 
     executeHook(
         HOOK_NAVI_SUCHE,
-        array(
+        [
             'bExtendedJTLSearch'         => $bExtendedJTLSearch,
             'oExtendedJTLSearchResponse' => &$oExtendedJTLSearchResponse,
             'cValue'                     => &$NaviFilter->EchteSuche->cSuche,
@@ -218,12 +217,12 @@ if ($cParameter_arr['kHersteller'] > 0 ||
             'nSeite'                     => &$NaviFilter->nSeite,
             'nSortierung'                => (isset($_SESSION['Usersortierung'])) ? $_SESSION['Usersortierung'] : null,
             'bLagerbeachten'             => $Einstellungen['global']['artikel_artikelanzeigefilter'] == EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL ? true : false
-        )
+        ]
     );
     //Ab diesen Artikel rausholen
     $nLimitN = ($NaviFilter->nSeite - 1) * $cParameter_arr['nArtikelProSeite'];
     if ($doSearch === false) {
-        $oSuchergebnisse->Artikel->elemente           = array();
+        $oSuchergebnisse->Artikel->elemente           = [];
         $oSuchergebnisse->GesamtanzahlArtikel         = 0;
         $oSuchergebnisse->SucheErfolglos              = 1;
         $oSuchergebnisse->Seitenzahlen                = new stdClass();
@@ -272,7 +271,7 @@ if ($cParameter_arr['kHersteller'] > 0 ||
     if (isset($Einstellungen['artikeluebersicht']['artikelubersicht_bestseller_gruppieren']) &&
         $Einstellungen['artikeluebersicht']['artikelubersicht_bestseller_gruppieren'] === 'Y'
     ) {
-        $products = array();
+        $products = [];
         foreach ($oSuchergebnisse->Artikel->elemente as $product) {
             $products[] = $product->kArtikel;
         }
@@ -500,6 +499,9 @@ if ($cParameter_arr['kHersteller'] > 0 ||
 
     $oGlobaleMetaAngabenAssoc_arr = holeGlobaleMetaAngaben(); // Globale Metaangaben
     $oExcludedKeywordsAssoc_arr   = holeExcludedKeywords(); // Excluded Meta Keywords
+    $keyWords                     = (isset($oExcludedKeywordsAssoc_arr[$_SESSION['cISOSprache']]->cKeywords))
+        ? $oExcludedKeywordsAssoc_arr[$_SESSION['cISOSprache']]->cKeywords
+        : '';
     $smarty->assign(
         'meta_title', gibNaviMetaTitle(
             $NaviFilter,
@@ -517,7 +519,7 @@ if ($cParameter_arr['kHersteller'] > 0 ||
         'meta_keywords', gibNaviMetaKeywords(
             $oSuchergebnisse->Artikel->elemente,
             $NaviFilter,
-            explode(' ', $oExcludedKeywordsAssoc_arr[$_SESSION['cISOSprache']]->cKeywords)
+            explode(' ', $keyWords)
         )
     );
 
@@ -546,10 +548,13 @@ if ($cParameter_arr['kHersteller'] > 0 ||
     }
     if ($cParameter_arr['is404'] === true) {
         if (isset($seo) && strlen($seo) > 0) {
-            executeHook(HOOK_INDEX_SEO_404, array('seo' => $seo));
+            executeHook(HOOK_INDEX_SEO_404, ['seo' => $seo]);
         }
         if (!Shop::$kLink) {
-            $hookInfos     = urlNotFoundRedirect(array('key' => 'kLink', 'value' => $cParameter_arr['kLink']));
+            $hookInfos     = urlNotFoundRedirect([
+                'key'   => 'kLink',
+                'value' => $cParameter_arr['kLink']
+            ]);
             $kLink         = $hookInfos['value'];
             $bFileNotFound = $hookInfos['isFileNotFound'];
             if (!$kLink) {

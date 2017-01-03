@@ -417,6 +417,7 @@ class KategorieHelper
                 LEFT JOIN tkategorieattributsprache 
                     ON tkategorieattributsprache.kAttribut = tkategorieattribut.kKategorieAttribut
                     AND tkategorieattributsprache.kSprache = " . self::$kSprache . "
+                WHERE tkategorieattribut.kKategorie = " . $categoryID . "
                 ORDER BY tkategorieattribut.kKategorie, tkategorieattribut.bIstFunktionsAttribut DESC, tkategorieattribut.nSort", 2
         );
         if (is_array($_catAttribut_arr)) {

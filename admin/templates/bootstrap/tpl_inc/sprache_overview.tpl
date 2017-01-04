@@ -35,6 +35,7 @@
 <div id="content" class="container-fluid">
     <div class="block">
         <form method="post" action="sprache.php">
+            {$jtl_token}
             <input type="hidden" name="sprachwechsel" value="1">
             <div class="input-group p25">
                 <div class="input-group-addon">

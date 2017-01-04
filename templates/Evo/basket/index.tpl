@@ -94,7 +94,7 @@
             {if $oArtikelGeschenk_arr|@count > 0}
                 {block name="basket-freegift"}
                     <div id="freegift" class="panel panel-info">
-                        <div class="panel-heading">{block name="basket-freegift-title"}{lang key="freeGiftFromOrderValueBasket" section="global"}{/block}</div>
+                        <div class="panel-heading"><div class="panel-title">{block name="basket-freegift-title"}{lang key="freeGiftFromOrderValueBasket" section="global"}{/block}</div></div>
                         <div class="panel-body">
                             {block name="basket-freegift-body"}
                                 <form method="post" name="freegift" action="{get_static_route id='warenkorb.php'}">
@@ -104,12 +104,11 @@
                                             <div class="col-sm-6 col-md-4 text-center">
                                                 <label class="thumbnail" for="gift{$oArtikelGeschenk->kArtikel}">
                                                     <img src="{$oArtikelGeschenk->Bilder[0]->cPfadKlein}" class="image" />
-
-                                                    <span class="small text-muted">{lang key="freeGiftFrom1" section="global"} {$oArtikelGeschenk->cBestellwert} {lang key="freeGiftFrom2" section="global"}</span>
-                                                    <br />
-                                                    <span>{$oArtikelGeschenk->cName}</span>
-                                                    <br />
-                                                    <input name="gratisgeschenk" type="radio" value="{$oArtikelGeschenk->kArtikel}" id="gift{$oArtikelGeschenk->kArtikel}" />
+                                                    <div class="caption">
+                                                        <p class="small text-muted">{lang key="freeGiftFrom1" section="global"} {$oArtikelGeschenk->cBestellwert} {lang key="freeGiftFrom2" section="global"}</p>
+                                                        <p>{$oArtikelGeschenk->cName}</p>
+                                                        <input name="gratisgeschenk" type="radio" value="{$oArtikelGeschenk->kArtikel}" id="gift{$oArtikelGeschenk->kArtikel}" />
+                                                    </div>
                                                 </label>
                                             </div>
                                         {/foreach}

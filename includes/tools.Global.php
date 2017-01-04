@@ -4536,11 +4536,15 @@ function phpLinkCheck($url)
  */
 function gibKategoriepfad($Kategorie, $kKundengruppe, $kSprache, $bString = true)
 {
-    $h     = KategorieHelper::getInstance($kSprache, $kKundengruppe);
-    $tree  = $h->getFlatTree($Kategorie->kKategorie);
-    $names = [];
-    foreach ($tree as $item) {
-        $names[] = $item->cName;
+    if (empty($Kategorie->cKategoriePfad_arr) || empty($Kategorie->kSprache) || ($Kategorie->kSprache != $kSprache)) {
+        $h     = KategorieHelper::getInstance($kSprache, $kKundengruppe);
+        $tree  = $h->getFlatTree($Kategorie->kKategorie);
+        $names = [];
+        foreach ($tree as $item) {
+            $names[] = $item->cName;
+        }
+    } else {
+        $names = $Kategorie->cKategoriePfad_arr;
     }
 
     return ($bString) ? implode(' > ', $names) : $names;

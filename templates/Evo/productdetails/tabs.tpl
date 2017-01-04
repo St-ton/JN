@@ -20,11 +20,12 @@
         {* ARTIKELBESCHREIBUNG *}
         <div role="tabpanel" class="{if $tabanzeige}tab-pane{else}panel panel-default{/if}" id="tab-description">
             <div class="panel-heading" {if $tabanzeige}data-toggle="collapse" {/if}data-parent="#article-tabs" data-target="#tab-description">
-                <h3 class="panel-title">{lang key="description" section="productDetails"}</h3>
+                <h3 class="panel-title">{block name="tab-description-title"}{lang key="description" section="productDetails"}{/block}</h3>
             </div>
             {assign var=cArtikelBeschreibung value=$Artikel->cBeschreibung}
             <div class="panel-body">
                 <div class="tab-content-wrapper">
+                    {block name="tab-description-content"}
                     <div class="desc">
                         {$cArtikelBeschreibung}
 
@@ -38,7 +39,10 @@
                             {/if}
                         {/if}
                     </div>
+                    {/block}
+                    {block name="tab-description-attributes"}
                     {include file="productdetails/attributes.tpl" tplscope="details"}
+                    {/block}
                 </div>
             </div>
         </div>

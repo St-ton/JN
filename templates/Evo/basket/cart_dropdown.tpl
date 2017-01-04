@@ -1,4 +1,4 @@
-<li>
+<li class="table-responsive">
     {if $smarty.session.Warenkorb->PositionenArr|@count > 0}
         <table class="table table-striped dropdown-cart-items hyphens">
             <tbody>

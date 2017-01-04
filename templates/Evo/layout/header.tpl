@@ -103,14 +103,18 @@
 
 <header class="hidden-print {if isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout === 'fluid'}container-block{/if}{if $Einstellungen.template.theme.static_header === 'Y'} fixed-navbar{/if}" id="evo-nav-wrapper">
     <div class="container">
+        {block name="header-container-inner"}
         {if isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout !== 'fluid'}
             <div class="container-block clearfix">
         {/if}
         <div id="header-branding" >
             {block name="header-branding"}
+                {block name="header-branding-top-bar"}
                 <div id="top-bar" class="text-right hidden-xs clearfix">
                     {include file="layout/header_top_bar.tpl"}
                 </div>
+                {/block}
+                {block name="header-branding-content"}
                 <div class="row">
                     <div class="col-xs-4" id="logo">
                         {block name="logo"}
@@ -123,30 +127,42 @@
                         </a>
                         {/block}
                     </div>
-
                     <div class="col-xs-8" id="shop-nav">
+                    {block name="header-branding-shop-nav"}
                         {include file='layout/header_shop_nav.tpl'}
+                    {/block}
                     </div>
                 </div>
+                {/block}
             {/block}{* /header-branding *}
         </div>
         {if isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout !== 'fluid'}
             </div>{* /container-block *}
         {/if}
+        {/block}
     </div>{* /container *}
     {if isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout !== 'fluid'}
         <div class="container">
     {/if}
+    
+    {block name="header-category-nav"}
     <div class="category-nav navbar-wrapper hidden-xs">
         {include file="layout/header_category_nav.tpl"}
     </div>{* /category-nav *}
+    {/block}
+    
+    
     {if isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout !== 'fluid'}
-        </div>{* /container *}
+        </div>{* /container-block *}
     {/if}
     {include file="layout/header_xs_nav.tpl"}
 </header>
 {/if}
+
+{block name="content-wrapper-starttag"}
 <div id="content-wrapper">
+{/block}
+
     {assign var="isFluidBanner" value=isset($Einstellungen.template.theme.banner_full_width) && $Einstellungen.template.theme.banner_full_width === 'Y' &&  isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout === 'fluid' && isset($oImageMap)}
     {if $isFluidBanner}
         {include file="snippets/banner.tpl"}
@@ -156,15 +172,23 @@
         {include file="snippets/slider.tpl"}
     {/if}
     <div{if !$bExclusive} class="container{if $isFluidContent}-fluid{/if}{/if}">
+        {block name="content-container-block-starttag"}
         <div class="container-block{if !$isFluidContent} beveled{/if}">
+        {/block}
             {if $Einstellungen.artikeldetails.artikeldetails_navi_blaettern === 'Y' && isset($NavigationBlaettern)}
+            {block name="product-pagination"}
                 <div class="visible-lg product-pagination next">
                     {if isset($NavigationBlaettern->naechsterArtikel) && $NavigationBlaettern->naechsterArtikel->kArtikel}<a href="{$NavigationBlaettern->naechsterArtikel->cURL}" title="{$NavigationBlaettern->naechsterArtikel->cName}"><span class="fa fa-chevron-right"></span></a>{/if}
                 </div>
                 <div class="visible-lg product-pagination previous">
                     {if isset($NavigationBlaettern->vorherigerArtikel) && $NavigationBlaettern->vorherigerArtikel->kArtikel}<a href="{$NavigationBlaettern->vorherigerArtikel->cURL}" title="{$NavigationBlaettern->vorherigerArtikel->cName}"><span class="fa fa-chevron-left"></span></a>{/if}
                 </div>
+            {/block}
             {/if}
             <div class="row">
+                {block name="content-closingtag"}
                 <div id="content" class="col-xs-12{if isset($boxes.left) && !$bExclusive && !empty($boxes.left)} {if $nSeitenTyp === 2} col-md-8 col-md-push-4 {/if} col-lg-9 col-lg-push-3{/if}">
+                {/block}
+                    {block name="header-breadcrumb"}
                     {include file='layout/breadcrumb.tpl'}
+                    {/block}

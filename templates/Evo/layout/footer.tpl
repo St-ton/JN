@@ -1,4 +1,6 @@
+{block name="content-closingtag"}
 </div>{* /content *}
+{/block}
 
 {has_boxes position='left' assign='hasLeftBox'}
 {if !$bExclusive && $hasLeftBox && isset($boxes) && !empty($boxes.left)}
@@ -10,9 +12,16 @@
     {/block}
 {/if}
 </div>{* /row *}
-</div>
+
+{block name="content-container-block-closingtag"}
+</div>{* /container-block *}
+{/block}
+
 </div>{* /container *}
-</div>{* /container-wrapper*}
+
+{block name="content-wrapper-closingtag"}
+</div>{* /content-wrapper*}
+{/block}
 
 {if !$bExclusive}
     <div class="clearfix"></div>

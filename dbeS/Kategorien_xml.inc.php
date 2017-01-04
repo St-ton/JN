@@ -5,51 +5,14 @@
  */
 
 /**
- * @param array $kOberKategorie_arr
- * @param int   $nLevel
- */
-function updateKategorieLevel(array $kOberKategorie_arr = [], $nLevel = 1)
-{
-    $nLevel = (int)$nLevel;
-    $cSql   = "WHERE kOberKategorie = 0";
-    if (count($kOberKategorie_arr) === 0) {
-        Shop::DB()->query("TRUNCATE tkategorielevel", 4);
-    } else {
-        array_walk($kOberKategorie_arr, function (&$k) {
-            $k = (int)$k;
-        });
-        $cSql = "WHERE kOberKategorie IN (" . implode(',', $kOberKategorie_arr) . ")";
-    }
-
-    $oKategorie_arr = Shop::DB()->query(
-        "SELECT kKategorie, kOberKategorie
-            FROM tkategorie
-            {$cSql}", 2
-    );
-    if (count($oKategorie_arr) > 0) {
-        $kKategorie_arr = [];
-        foreach ($oKategorie_arr as $oKategorie) {
-            $kKategorie_arr[] = (int)$oKategorie->kKategorie;
-
-            $oKategorieLevel             = new stdClass();
-            $oKategorieLevel->kKategorie = (int)$oKategorie->kKategorie;
-            $oKategorieLevel->nLevel     = (int)$nLevel;
-
-            Shop::DB()->insert('tkategorielevel', $oKategorieLevel);
-        }
-
-        updateKategorieLevel($kKategorie_arr, $nLevel + 1);
-    }
-}
-
-/**
  * update lft/rght values for categories in the nested set model
  *
  * @param int $parent_id
  * @param int $left
+ * @param int $level
  * @return int
  */
-function rebuildCategoryTree($parent_id, $left)
+function rebuildCategoryTree($parent_id, $left, $level = 0)
 {
     $left = (int)$left;
     // the right value of this node is the left value + 1
@@ -57,10 +20,14 @@ function rebuildCategoryTree($parent_id, $left)
     // get all children of this node
     $result = Shop::DB()->selectAll('tkategorie', 'kOberKategorie', (int)$parent_id, 'kKategorie', 'nSort, cName');
     foreach ($result as $_res) {
-        $right = rebuildCategoryTree($_res->kKategorie, $right);
+        $right = rebuildCategoryTree($_res->kKategorie, $right, $level + 1);
     }
     // we've got the left value, and now that we've processed the children of this node we also know the right value
-    Shop::DB()->update('tkategorie', 'kKategorie', $parent_id, (object)['lft' => $left, 'rght' => $right]);
+    Shop::DB()->update('tkategorie', 'kKategorie', $parent_id, (object)[
+        'lft'    => $left,
+        'rght'   => $right,
+        'nLevel' => $level,
+    ]);
 
     // return the right value of this node + 1
     return $right + 1;
@@ -72,6 +39,5 @@ function rebuildCategoryTree($parent_id, $left)
 function Kategorien_xml_Finish()
 {
     Jtllog::writeLog('Finish Kategorien_xml: updateKategorieLevel, rebuildCategoryTree', JTLLOG_LEVEL_DEBUG);
-    updateKategorieLevel();
     rebuildCategoryTree(0, 1);
 }

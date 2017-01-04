@@ -304,4 +304,24 @@ class Status
 
         return $incorrectPaymentMethods;
     }
+
+    /**
+     * @return bool
+     */
+    protected function hasInvalidPollCoupons()
+    {
+        $aPollCoupons        = Shop::DB()->selectAll('tumfrage', 'nAktiv', 1);
+        $invalidCouponsFound = false;
+
+        if (count($aPollCoupons > 0)) {
+            foreach ($aPollCoupons as $Kupon) {
+                if ($Kupon->kKupon > 0){
+                    $kKupon = Shop::DB()->select('tkupon', 'kKupon', $Kupon->kKupon, 'cAktiv', 'Y', null, null, false, 'kKupon');
+                    $invalidCouponsFound = empty($kKupon);
+                }
+            }
+        }
+
+        return $invalidCouponsFound;
+    }
 }

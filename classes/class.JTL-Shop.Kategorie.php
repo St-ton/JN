@@ -111,6 +111,11 @@ class Kategorie
     public $cTitleTag;
 
     /**
+     * @var int
+     */
+    public $kSprache;
+
+    /**
      * @param int  $kKategorie Falls angegeben, wird der Kategorie mit angegebenem kKategorie aus der DB geholt
      * @param int  $kSprache
      * @param int  $kKundengruppe
@@ -118,6 +123,7 @@ class Kategorie
      */
     public function __construct($kKategorie = 0, $kSprache = 0, $kKundengruppe = 0, $noCache = false)
     {
+        $this->kSprache = (int)$kSprache;
         if ((int)$kKategorie > 0) {
             $this->loadFromDB((int)$kKategorie, (int)$kSprache, (int)$kKundengruppe, $noCache);
         }
@@ -149,9 +155,10 @@ class Kategorie
                 $kSprache    = $oSpracheTmp->kSprache;
             }
         }
-        $kSprache      = (int)$kSprache;
-        $kKundengruppe = (int)$kKundengruppe;
-        $kKategorie    = (int)$kKategorie;
+        $kSprache       = (int)$kSprache;
+        $kKundengruppe  = (int)$kKundengruppe;
+        $kKategorie     = (int)$kKategorie;
+        $this->kSprache = $kSprache;
         //exculpate session
         $cacheID = CACHING_GROUP_CATEGORY . '_' . $kKategorie . '_' . $kSprache . '_cg_' . $kKundengruppe . '_ssl_' . pruefeSSL();
         if (!$noCache && ($category = Shop::Cache()->get($cacheID)) !== false) {

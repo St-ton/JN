@@ -172,6 +172,8 @@ ifndef('IMAGE_PRELOAD_LIMIT', 10);
 //with more then n categories, some db fields will only be selected if the corresponding options are active
 ifndef('CATEGORY_FULL_LOAD_LIMIT', 10000);
 ifndef('CATEGORY_FULL_LOAD_MAX_LEVEL', 3);
+//maximum number of entries in category filter, -1 for no limit
+ifndef('CATEGORY_FILTER_ITEM_LIMIT', -1);
 
 ifndef('UNIFY_CACHE_IDS', false);
 

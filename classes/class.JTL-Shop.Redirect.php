@@ -121,9 +121,6 @@ class Redirect
         if (strlen($cSource) > 0 && substr($cSource, 0, 1) !== '/') {
             $cSource = '/' . $cSource;
         }
-        if (strlen($cDestination) > 0 && substr($cDestination, 0, 1) !== '/') {
-            $cDestination = '/' . $cDestination;
-        }
 
         if (self::checkAvailability($cDestination) &&
             strlen($cSource) > 1 && strlen($cDestination) > 1 && $cSource !== $cDestination || $bForce)

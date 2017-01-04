@@ -103,9 +103,9 @@ class Redirect
      */
     public function isDeadlock($cSource, $cDestination)
     {
-        $xPath_arr     = parse_url(Shop::getURL());
-        $cDestination  = (isset($xPath_arr['path'])) ? $xPath_arr['path'] . '/' . $cDestination : $cDestination;
-        $oObj          = Shop::DB()->select('tredirect', 'cFromUrl', $cDestination, 'cToUrl', $cSource);
+        $xPath_arr    = parse_url(Shop::getURL());
+        $cDestination = (isset($xPath_arr['path'])) ? $xPath_arr['path'] . '/' . $cDestination : $cDestination;
+        $oObj         = Shop::DB()->select('tredirect', 'cFromUrl', $cDestination, 'cToUrl', $cSource);
 
         return (isset($oObj->kRedirect) && intval($oObj->kRedirect) > 0);
     }
@@ -125,7 +125,7 @@ class Redirect
             $cDestination = '/' . $cDestination;
         }
 
-        if (self::checkAvailability(Shop::getURL() . $cDestination) &&
+        if (self::checkAvailability($cDestination) &&
             strlen($cSource) > 1 && strlen($cDestination) > 1 && $cSource !== $cDestination || $bForce)
         {
             if ($this->isDeadlock($cSource, $cDestination)) {
@@ -572,46 +572,45 @@ class Redirect
         return Shop::DB()->query("SELECT count(kRedirect) AS nCount FROM tredirect", 1)->nCount;
     }
 
-    /**
-     * @param $cUrl - full URL (http://www.shop.com/path/to/page) or url path (/path/to/page)
+    /*
+     * @param $cUrl - one of
+     *   * full URL (must be inside the same shop) e.g. http://www.shop.com/path/to/page
+     *   * url path e.g. /path/to/page
+     *   * path relative to the shop root url
      * @return bool
      */
     public static function checkAvailability($cUrl)
     {
-        $parsedUrl = parse_url($cUrl);
+        $parsedUrl     = parse_url($cUrl);
+        $parsedShopUrl = parse_url(Shop::getURL() . '/');
+        $fullUrlParts  = $parsedUrl;
 
         if (!isset($parsedUrl['host'])) {
-            $parsedShopUrl       = parse_url(Shop::getURL() . '/');
-            $parsedUrl['scheme'] = $parsedShopUrl['scheme'];
-            $parsedUrl['host']   = $parsedShopUrl['host'];
-            if (!isset($parsedUrl['path'])) {
-                $parsedUrl['path'] = '/';
-            }
-            if ($parsedUrl['path'][0] !== '/') {
-                $parsedUrl['path'] = '/' . $parsedUrl['path'];
-            }
-            if (strpos($parsedUrl['path'], $parsedShopUrl['path']) === false) {
-                $parsedUrl['path'] = rtrim($parsedShopUrl['path'], '/') . $parsedUrl['path'];
+            $fullUrlParts['scheme'] = $parsedShopUrl['scheme'];
+            $fullUrlParts['host']   = $parsedShopUrl['host'];
+        } elseif ($parsedUrl['host'] !== $parsedShopUrl['host']) {
+            return false;
+        }
+
+        if (!isset($parsedUrl['path'])) {
+            $fullUrlParts['path'] = $parsedShopUrl['path'];
+        } elseif (strpos($parsedUrl['path'], $parsedShopUrl['path']) !== 0) {
+            if (!isset($parsedUrl['host'])) {
+                $fullUrlParts['path'] = $parsedShopUrl['path'] . ltrim($parsedUrl['path'], '/');
+            } else {
+                return false;
             }
         }
 
         if (isset($parsedUrl['query'])) {
-            $parsedUrl['query'] .= '&notrack';
+            $fullUrlParts['query'] .= '&notrack';
         } else {
-            $parsedUrl['query'] = 'notrack';
+            $fullUrlParts['query'] = 'notrack';
         }
 
-        $rebuildUrl = StringHandler::buildUrl($parsedUrl);
+        $rebuiltUrl  = StringHandler::buildUrl($fullUrlParts);
+        $cHeader_arr = get_headers($rebuiltUrl);
 
-        $cHeader_arr = @get_headers($rebuildUrl);
-        if (empty($cHeader_arr)) {
-            return false;
-        }
-        //Nur der letzte Status Code ist relevant (Redirects werden übersprungen)
-        if (preg_match('/^HTTP\\/\\d+\\.\\d+\\s+2\\d\\d\\s+.*$/', $cHeader_arr[0])) {
-            return true;
-        }
-
-        return false;
+        return $cHeader_arr !== false && preg_match('/^HTTP\\/\\d+\\.\\d+\\s+2\\d\\d\\s+.*$/', $cHeader_arr[0]);
     }
 }

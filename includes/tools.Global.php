@@ -2941,11 +2941,27 @@ function setzeMerkmalFilter($nFilter_arr = [])
     if (is_array($nFilter_arr) && count($nFilter_arr) > 1) {
         foreach ($nFilter_arr as $nFilter) {
             if (intval($nFilter) > 0) {
-                $filter[] = 'mf' . (int)$nFilter;
+                $filter[] = (int)$nFilter;
             }
         }
     } else {
-        if (count($_GET) > 0) {
+        if (isset($_GET['mf'])) {
+            if (is_string($_GET['mf'])) {
+                $filter[] = $_GET['mf'];
+            } else {
+                foreach ($_GET['mf'] as $mf => $value) {
+                    $filter[] = $value;
+                }
+            }
+        } elseif (isset($_POST['mf'])) {
+            if (is_string($_POST['mf'])) {
+                $filter[] = $_POST['mf'];
+            } else {
+                foreach ($_POST['mf'] as $mf => $value) {
+                    $filter[] = $value;
+                }
+            }
+        } elseif (count($_GET) > 0) {
             foreach ($_GET as $key => $value) {
                 if (preg_match('/mf\d+/i', $key)) {
                     $filter[] = $value;
@@ -2970,20 +2986,37 @@ function setzeMerkmalFilter($nFilter_arr = [])
 function setzeSuchFilter($nFilter_arr = [])
 {
     $filter = [];
-
     if (is_array($nFilter_arr) && count($nFilter_arr) > 1) {
         foreach ($nFilter_arr as $nFilter) {
             if (intval($nFilter) > 0) {
-                $filter[] = 'sf' . (int)$nFilter;
+                $filter[] = (int)$nFilter;
             }
         }
     } else {
-        $i = 1;
-        while ($i < 20) {
-            if (verifyGPCDataInteger('sf' . $i) > 0) {
-                $filter[] = verifyGPCDataInteger('sf' . $i);
+        if (isset($_GET['sf'])) {
+            if (is_string($_GET['sf'])) {
+                $filter[] = $_GET['sf'];
+            } else {
+                foreach ($_GET['sf'] as $mf => $value) {
+                    $filter[] = $value;
+                }
             }
-            $i++;
+        } elseif (isset($_POST['sf'])) {
+            if (is_string($_POST['sf'])) {
+                $filter[] = $_POST['sf'];
+            } else {
+                foreach ($_POST['sf'] as $mf => $value) {
+                    $filter[] = $value;
+                }
+            }
+        } else {
+            $i = 1;
+            while ($i < 20) {
+                if (verifyGPCDataInteger('sf' . $i) > 0) {
+                    $filter[] = verifyGPCDataInteger('sf' . $i);
+                }
+                ++$i;
+            }
         }
     }
 
@@ -2997,20 +3030,37 @@ function setzeSuchFilter($nFilter_arr = [])
 function setzeTagFilter($nFilter_arr = [])
 {
     $filter = [];
-
     if (is_array($nFilter_arr) && count($nFilter_arr) > 1) {
         foreach ($nFilter_arr as $nFilter) {
             if (intval($nFilter) > 0) {
-                $filter[] = 'tf' . (int)$nFilter;
+                $filter[] = (int)$nFilter;
             }
         }
     } else {
-        $i = 1;
-        while ($i < 20) {
-            if (verifyGPCDataInteger('tf' . $i) > 0) {
-                $filter[] = verifyGPCDataInteger('tf' . $i);
+        if (isset($_GET['tf'])) {
+            if (is_string($_GET['tf'])) {
+                $filter[] = $_GET['tf'];
+            } else {
+                foreach ($_GET['tf'] as $mf => $value) {
+                    $filter[] = $value;
+                }
             }
-            $i++;
+        } elseif (isset($_POST['tf'])) {
+            if (is_string($_POST['tf'])) {
+                $filter[] = $_POST['tf'];
+            } else {
+                foreach ($_POST['tf'] as $mf => $value) {
+                    $filter[] = $value;
+                }
+            }
+        } else {
+            $i = 1;
+            while ($i < 20) {
+                if (verifyGPCDataInteger('tf' . $i) > 0) {
+                    $filter[] = verifyGPCDataInteger('tf' . $i);
+                }
+                ++$i;
+            }
         }
     }
 

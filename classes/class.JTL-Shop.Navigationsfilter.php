@@ -1752,9 +1752,10 @@ class Navigationsfilter
      */
     public function getURL($bSeo = true, $oZusatzFilter = null, $bCanonical = false, $debug = false)
     {
-        $baseURL = Shop::getURL() . '/';
-        $urlParams = [];
-        $extraFilter   = $this->convertExtraFilter($oZusatzFilter);
+        $baseURL         = Shop::getURL() . '/';
+        $urlParams       = [];
+        $extraFilter     = $this->convertExtraFilter($oZusatzFilter);
+        $hasQuestionMark = false;
 
         if (($baseState = $this->getBaseState())->isInitialized()) {
             $filterSeoUrl = $baseState->getSeo($this->getLanguageID());
@@ -1770,16 +1771,15 @@ class Navigationsfilter
         if ($bCanonical === true) {
             return $baseURL;
         }
-
+        $url           = $baseURL;
         $activeFilters = $this->getActiveFilters();
+
+        //we need the base state + all active filters + optionally the additional filter to generate the correct url
         if ($oZusatzFilter !== null && $extraFilter !== null && !$extraFilter->getDoUnset()) {
             $activeFilters[] = $extraFilter;
         }
-
+        //add all filter urls to an array indexed by the filter's url param
         foreach ($activeFilters as $filter) {
-            if (!method_exists($filter, 'getSeo')) {
-                Shop::dbg($filter, true);
-            }
             $filterSeo = $filter->getSeo($this->getLanguageID());
             if (strlen($filterSeo) === 0) {
                 $bSeo = false;
@@ -1788,26 +1788,15 @@ class Navigationsfilter
             if (!isset($urlParams[$urlParam])) {
                 $urlParams[$urlParam] = [];
             }
-            $filterSeoData = new stdClass();
-            $filterSeoData->value = $filter->getValue();
-            $filterSeoData->sep =  $filter->getUrlParamSEO();
-            $filterSeoData->seo   = $filterSeo;
-            $filterSeoData->type   = $filter->getType();
+            $filterSeoData          = new stdClass();
+            $filterSeoData->value   = $filter->getValue();
+            $filterSeoData->sep     = $filter->getUrlParamSEO();
+            $filterSeoData->seo     = $filterSeo;
+            $filterSeoData->type    = $filter->getType();
             $urlParams[$urlParam][] = $filterSeoData;
         }
+        //remove extra filters from url array if getDoUnset equals true
         if (method_exists($extraFilter, 'getDoUnset') && $extraFilter->getDoUnset()) {
-
-        }
-
-//        Shop::dbg($extraFilter, false, 'zusatz:');
-//        Shop::dbg($urlParams, false, '$urlParams:');
-
-        $real = $this->getURL2($bSeo, $oZusatzFilter, $bCanonical, $debug);
-
-        $die = false;
-        if (method_exists($extraFilter, 'getDoUnset') && $extraFilter->getDoUnset()) {
-//            Shop::dbg($extraFilter, false, 'unsetting with exxtrafilter:');
-//            Shop::dbg($extraFilter->getValue(), false, 'extra->getValue:');
             if ($extraFilter->getValue() === 0) {
                 unset($urlParams[$extraFilter->getUrlParam()]);
             } else {
@@ -1816,24 +1805,14 @@ class Navigationsfilter
                     foreach ($urlParams[$urlParam] as $active) {
                         foreach ($active->value as $idx => $value) {
                             if ($value == $extraFilter->getValue()) {
-//                                Shop::dbg($idx, false, 'found at idx');
-//                                $die = true;
                                 unset($active->value[$idx]);
                             }
                         }
-//                        Shop::dbg($active, false, 'active after:');
                     }
-//                    Shop::dbg($urlParam, false, 'unsetting param:');
-//                    Shop::dbg($extraFilter->getValue(), false, 'unsetting value:');
                 }
-//                Shop::dbg($urlParams, false, '$urlParams after unsetting:');
             }
         }
-
-
-        $url = $baseURL;
-        $hasQuestionMark = false;
-
+        //build url string from url array
         foreach ($urlParams as $filterID => $filters) {
             $filters = array_map('unserialize', array_unique(array_map('serialize', $filters)));
             foreach ($filters as $filterItem) {
@@ -1854,10 +1833,9 @@ class Navigationsfilter
             }
         }
 
-        if ($die) {
-            Shop::dbg($real, false, 'real url:');
+        if ($debug) {
+            Shop::dbg($this->getURL2($bSeo, $oZusatzFilter, $bCanonical, $debug), false, 'real url:');
             Shop::dbg($url, false, 'new url:');
-//          Shop::dbg($extraFilter, false, 'extra:');
             Shop::dbg($urlParams, false, 'params:');
         }
 
@@ -1918,9 +1896,6 @@ class Navigationsfilter
             $cURL .= $baseState->getUrlParam() . '=' . $baseState->getValue();
         }
 
-
-
-
         if ((isset($this->EchteSuche->cSuche) && strlen($this->EchteSuche->cSuche) > 0) &&
             (!isset($this->Suchanfrage->kSuchanfrage) || intval($this->Suchanfrage->kSuchanfrage) === 0)
         ) {
@@ -1942,37 +1917,15 @@ class Navigationsfilter
             $extraFilter = $this->convertFilter($oZusatzFilter);
             $extraClassName = $extraFilter->getClassName();
 
-//            if ($debug) {
-//                Shop::dbg($extraFilter, false, 'zusatzConv:');
-//                Shop::dbg($oZusatzFilter, false, 'zusatz:');
-//            }
-
-
-//            Shop::dbg($extraClassName, false, 'extra class name:');
-
             //extra filter
             $existingFilter = $this->getActiveFilterByClassName($extraClassName);
-//            if ($debug) {
-//                Shop::dbg($this->getActiveFilters(), false, 'existing:');
-//                foreach ($this->getActiveFilters() as $f) {
-//                    Shop::dbg($f->getValue(), false, 'getValue():');
-//                }
-//            }
-//            Shop::dbg($extraClassName, false, '$extraClassName:');
             if ($existingFilter === null && class_exists($extraClassName)) {
                 $existingFilter = new $extraClassName;
-            } else {
-//                $existingFilter =
             }
-//            if ($debug) {
-//                Shop::dbg($existingFilter, false, 'existingfilter:');
-//                Shop::dbg($extraFilter, false, 'extrafilter:');
-//            }
             if (($existingFilter !== null) && ($existingFilter->isInitialized() === false || $existingFilter->getValue() !== $extraFilter->getValue())) {
                 $extraUrl = $extraFilter->getURL();
                 if (empty($extraUrl) && !$extraFilter->getDoUnset()) {
                     $bSeo = false;
-                    if ($debug) echo '<br>bseo false1';
                 }
                 $urlParam = $existingFilter->getUrlParam();
                 if (!isset($testURLs[$urlParam])) {
@@ -1987,30 +1940,22 @@ class Navigationsfilter
                     Shop::dbg($existingFilter, false, 'extra');
                     Shop::dbg($testURLs, false, '$testURLs@extra filter:');
                 }
-//                $testURL .= '&'. $existingFilter->getUrlParam() . '=' . $extraFilter->getValue();
                 $existingFilter->setIsChecked(true);
             }
 
             foreach ($this->getActiveFilters() as $activeFilter) {
                 if (!$activeFilter->isCustom()) {
                     $correspondingBaseStateClass = $activeFilter->getCorrespondingBaseState();
-//                    Shop::dbg($correspondingBaseStateClass, false, 'base state for filter ' . $activeFilter->getClassName());
 
                     if ($currentStateClass !== $correspondingBaseStateClass || $currentState->getValue() !== $activeFilter->getValue()) { //corresponds to condition I1
-//                        echo '<br>testif0';
                         if ($debug) {
                             Shop::dbg($extraClassName, false, '$extraClassName@active filter:');
                         }
                         if ($extraClassName !== $activeFilter->getClassName() || $extraFilter->getDoUnset() === false) {// I1b
-//                            echo '<br>testif0b';
-
                             $activeFilter->isChecked = true;
                             $seo = $activeFilter->getSeo($this->getLanguageID());
-//                            Shop::dbg($seo, false, 'seo:');
-//                            Shop::dbg($activeFilter->getUrlParam(), false, 'urlparam:');
                             if (strlen($seo) === 0) {
                                 $bSeo = false;
-                                if ($debug) echo '<br>bseo false2';
                             }
                             $urlParam = $activeFilter->getUrlParam();
                             if (!isset($testURLs[$urlParam])) {
@@ -2018,12 +1963,6 @@ class Navigationsfilter
                             }
                             $testURLs[$urlParam][] = $activeFilter->getValue();
                             $testURLSEO .= $activeFilter->getUrlParamSEO() . $seo;
-//                            $testURL .= '&' . $urlParam . '=' . $activeFilter->getValue();
-                            if ($debug) {
-                                Shop::dbg($testURLs, false, '$testURLs@active filter:');
-                            }
-
-
                         }
                     } elseif (
                         ($extraClassName === $activeFilter->getClassName())
@@ -2038,7 +1977,6 @@ class Navigationsfilter
                         $extraUrl = $extraFilter->getURL();
                         if (empty($extraUrl)) {
                             $bSeo = false;
-                            if ($debug) echo '<br>bseo false3';
                         }
                         $testURLSEO .= $activeFilter->getUrlParamSEO() . $extraUrl;
 
@@ -2047,12 +1985,9 @@ class Navigationsfilter
                             $testURLs[$urlParam] = [];
                         }
                         $testURLs[$urlParam][] = $extraFilter->getValue();
-//                        $testURL .= '&' . $urlParam . '=' . $extraFilter->getValue();
                     }
                 }
             }
-
-
             // Tag
             $nLetzterTagFilter   = 1;
             $bZusatzTagEnthalten = false;
@@ -2090,18 +2025,9 @@ class Navigationsfilter
                     $cURL .= '&tf' . ($i + 1) . '=' . (int)$oTag->kTag;
                 }
             }
-
-
-
-
-
-
-
             // Hersteller
             if ($this->HerstellerFilter->isInitialized() && (!$this->Hersteller->isInitialized() || $this->Hersteller->getValue() !== $this->HerstellerFilter->getValue())) {
-//                Shop::dbg($oZusatzFilter, false, '$oZusatzFilter:');
                 if (empty($oZusatzFilter->FilterLoesen->Hersteller)) {
-//                    echo '<br>if0';
                     $this->HerstellerFilter->isChecked = true;
                     $cSEOURL .= $this->HerstellerFilter->getUrlParamSEO() . $this->HerstellerFilter->getSeo($this->getLanguageID());
                     if ($bSeo && strlen($this->HerstellerFilter->getSeo($this->getLanguageID())) === 0) {
@@ -2111,18 +2037,12 @@ class Navigationsfilter
                     $cURL .= '&' . $this->HerstellerFilter->getUrlParam() . '=' . $this->HerstellerFilter->getValue();
                 }
             } elseif (!empty($oZusatzFilter->HerstellerFilter->kHersteller) && (!$this->Hersteller->isInitialized() || $this->Hersteller->getValue() !== $oZusatzFilter->HerstellerFilter->kHersteller)) {
-//                echo '<br>if1';
                 $this->HerstellerFilter->isChecked = true;
                 $cSEOURL .= $this->HerstellerFilter->getUrlParamSEO() . $oZusatzFilter->HerstellerFilter->cSeo;
                 $cURL .= '&' . $this->HerstellerFilter->getUrlParam() . '=' . $oZusatzFilter->HerstellerFilter->kHersteller;
             }
 
-
-//            Shop::dbg($cURL, false, 'ori');
-//            Shop::dbg($testURL, true, 'test');
-
             if ($this->KategorieFilter->isInitialized() && (!$this->Kategorie->isInitialized() || $this->Kategorie->getValue() !== $this->KategorieFilter->getValue())) { // I1
-
                 if (!isset($oZusatzFilter->FilterLoesen->Kategorie) || !$oZusatzFilter->FilterLoesen->Kategorie) { // I1b
                     $this->KategorieFilter->isChecked = true;
                     if (strlen($this->KategorieFilter->getSeo($this->getLanguageID())) === 0) {
@@ -2148,9 +2068,6 @@ class Navigationsfilter
                 $cURL .= '&' . $this->KategorieFilter->getUrlParam() . '=' . $oZusatzFilter->KategorieFilter->kKategorie;
                 $this->KategorieFilter->isChecked = true;
             }
-
-
-
             // Suche
             $nLetzterSuchFilter   = 1;
             $bZusatzSuchEnthalten = false;
@@ -2228,10 +2145,6 @@ class Navigationsfilter
                     $cSEOURL .= SEP_MERKMAL . $oMerkmalWert->cSeo;
                     $cURL .= '&mf' . ($i + 1) . '=' . (int)$oMerkmalWert->kMerkmalWert;
                 }
-//                if ($i == 2) {
-//                    Shop::dbg($oZusatzFilter);
-//                    Shop::dbg($cURL, true, '##########################################i:');
-//                }
             }
             // Preisspannen
             if (isset($this->PreisspannenFilter->fVon) && $this->PreisspannenFilter->fVon >= 0 &&
@@ -2331,9 +2244,6 @@ class Navigationsfilter
                 }
             }
         }
-//    if ($debug)
-//        Shop::dbg($testURLs);
-//        Shop::dbg(array_unique($testURLs), false, 'juniq');
         foreach ($testURLs as $param => $value) {
             if (is_array($value)) {
                 $value = array_unique($value);
@@ -2350,20 +2260,6 @@ class Navigationsfilter
                 $testURL .= '&' . $param . '=' . $value;
             }
         }
-
-        if (false && $debug && $testURL !== $cURL) {
-//            Shop::dbg($testURLs, false, 'testURLs:');
-            Shop::dbg($testURL, false, 'test:');
-            Shop::dbg($cURL, false, 'original:');
-//            Shop::dbg($oZusatzFilter, false, '$oZusatzFilter');
-//            Shop::dbg($extraFilter, true, '$extraFilter');
-        }
-        if (false && $debug && $testURLSEO !== $cSEOURL) {
-            Shop::dbg($testURLSEO, false, 'testSEO:');
-            Shop::dbg($cSEOURL, false, 'originalSEO:');
-        }
-
-
         if (strlen($cSEOURL) > 254) {
             $bSeo = false;
         }

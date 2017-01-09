@@ -809,10 +809,54 @@ final class Shop
                 }
                 $cSEOMerkmal_arr = explode(SEP_MERKMAL, $seo);
                 $seo             = $cSEOMerkmal_arr[0];
+                foreach ($cSEOMerkmal_arr as $i => &$merkmal) {
+                    if ($i > 0) {
+                        if (($idx = strpos($merkmal, SEP_KAT)) !== false && $idx !== strpos($merkmal, SEP_HST)) {
+                            $arr = explode(SEP_KAT, $merkmal);
+                            $merkmal = $arr[0];
+                            $seo .= SEP_KAT . $arr[1];
+                        }
+                        if (strpos($merkmal, SEP_HST) !== false) {
+                            $arr = explode(SEP_HST, $merkmal);
+                            $merkmal = $arr[0];
+                            $seo .= SEP_HST . $arr[1];
+                        }
+                        if (strpos($merkmal, SEP_MM_MMW) !== false) {
+                            $arr = explode(SEP_MM_MMW, $merkmal);
+                            $merkmal = $arr[0];
+                            $seo .= SEP_MM_MMW . $arr[1];
+                        }
+                        if (strpos($merkmal, SEP_SEITE) !== false) {
+                            $arr = explode(SEP_SEITE, $merkmal);
+                            $merkmal = $arr[0];
+                            $seo .= SEP_SEITE . $arr[1];
+                        }
+                    }
+                }
                 $oHersteller_arr = explode(SEP_HST, $seo);
                 if (is_array($oHersteller_arr) && count($oHersteller_arr) > 1) {
                     $seo    = $oHersteller_arr[0];
                     $hstseo = $oHersteller_arr[1];
+                    if (($idx = strpos($hstseo, SEP_KAT)) !== false && $idx !== strpos($hstseo, SEP_HST)) {
+                        $oHersteller_arr = explode(SEP_KAT, $hstseo);
+                        $hstseo = $oHersteller_arr[0];
+                        $seo .= SEP_KAT . $oHersteller_arr[1];
+                    }
+                    if (strpos($hstseo, SEP_MERKMAL) !== false) {
+                        $arr = explode(SEP_MERKMAL, $hstseo);
+                        $hstseo = $arr[0];
+                        $seo .= SEP_MERKMAL . $arr[1];
+                    }
+                    if (strpos($hstseo, SEP_MM_MMW) !== false) {
+                        $arr = explode(SEP_MM_MMW, $hstseo);
+                        $hstseo = $arr[0];
+                        $seo .= SEP_MM_MMW . $arr[1];
+                    }
+                    if (strpos($hstseo, SEP_SEITE) !== false) {
+                        $arr = explode(SEP_SEITE, $hstseo);
+                        $hstseo = $arr[0];
+                        $seo .= SEP_SEITE . $arr[1];
+                    }
                 } else {
                     $seo = $oHersteller_arr[0];
                 }
@@ -820,6 +864,26 @@ final class Shop
                 if (is_array($oKategorie_arr) && count($oKategorie_arr) > 1) {
                     $seo    = $oKategorie_arr[0];
                     $katseo = $oKategorie_arr[1];
+                    if (strpos($katseo, SEP_HST) !== false) {
+                        $arr = explode(SEP_HST, $katseo);
+                        $katseo = $arr[0];
+                        $seo .= SEP_HST . $arr[1];
+                    }
+                    if (strpos($katseo, SEP_MERKMAL) !== false) {
+                        $arr = explode(SEP_MERKMAL, $katseo);
+                        $katseo = $arr[0];
+                        $seo .= SEP_MERKMAL . $arr[1];
+                    }
+                    if (strpos($katseo, SEP_MM_MMW) !== false) {
+                        $arr = explode(SEP_MM_MMW, $katseo);
+                        $katseo = $arr[0];
+                        $seo .= SEP_MM_MMW . $arr[1];
+                    }
+                    if (strpos($katseo, SEP_SEITE) !== false) {
+                        $arr = explode(SEP_SEITE, $katseo);
+                        $katseo = $arr[0];
+                        $seo .= SEP_SEITE . $arr[1];
+                    }
                 } else {
                     $seo = $oKategorie_arr[0];
                 }
@@ -853,14 +917,12 @@ final class Shop
                 //attribute filter
                 if (count($cSEOMerkmal_arr) > 1) {
                     $nMerkmalZaehler = 1;
+                    $_GET['mf'] = [];
                     foreach ($cSEOMerkmal_arr as $i => $cSEOMerkmal) {
                         if (strlen($cSEOMerkmal) > 0 && $i > 0) {
-                            $_GET['mf'] = [];
                             $oSeo = self::DB()->select('tseo', 'cKey', 'kMerkmalWert', 'cSeo', $cSEOMerkmal);
                             if (isset($oSeo->kKey) && strcasecmp($oSeo->cSeo, $cSEOMerkmal) === 0) {
                                 //haenge an GET, damit baueMerkmalFilter die Merkmalfilter setzen kann - @todo?
-                                //@todo
-//                                $_GET['mf' . $nMerkmalZaehler] = (int)$oSeo->kKey;
                                 $_GET['mf'][] = (int)$oSeo->kKey;
                                 ++$nMerkmalZaehler;
                                 self::$bSEOMerkmalNotFound = false;

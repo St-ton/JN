@@ -324,6 +324,10 @@ class Kategorie
         if (!$noCache) {
             Shop::Cache()->set($cacheID, $this, $cacheTags);
         }
+        // Kurzbezeichnung
+        if (isset($this->categoryAttributes['shortname'])) {
+            $this->cKurzbezeichnung = $this->categoryAttributes['shortname']->cWert;
+        }
 
         return $this;
     }

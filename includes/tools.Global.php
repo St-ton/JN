@@ -74,7 +74,8 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
                     $SieSindHierString .= ' &gt; ...';
                 }
                 $ele        = new stdClass();
-                $ele->name  = $KategorieListe->elemente[$i]->cName;
+                $ele->name  = isset($KategorieListe->elemente[$i]->cKurzbezeichnung)
+                    ? $KategorieListe->elemente[$i]->cKurzbezeichnung : $KategorieListe->elemente[$i]->cName;
                 $ele->url   = $KategorieListe->elemente[$i]->cURL;
                 $brotnavi[] = $ele;
             }

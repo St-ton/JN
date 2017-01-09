@@ -90,6 +90,13 @@ abstract class AbstractFilter implements IFilter
     public $isChecked = false;
 
     /**
+     * used to create FilterLoesenURLs
+     *
+     * @var bool
+     */
+    private $doUnset = false;
+
+    /**
      * @param int|array $value
      * @return $this
      */
@@ -302,6 +309,25 @@ abstract class AbstractFilter implements IFilter
     public function setIsChecked($isChecked)
     {
         $this->isChecked = $isChecked;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getDoUnset()
+    {
+        return $this->doUnset;
+    }
+
+    /**
+     * @param bool $doUnset
+     * @return $this
+     */
+    public function setDoUnset($doUnset)
+    {
+        $this->doUnset = $doUnset;
 
         return $this;
     }

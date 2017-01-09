@@ -199,4 +199,15 @@ interface IFilter
      * @return bool
      */
     public function setIsChecked($isChecked);
+
+    /**
+     * @return bool
+     */
+    public function getDoUnset();
+
+    /**
+     * @param bool $doUnset
+     * @return $this
+     */
+    public function setDoUnset($doUnset);
 }

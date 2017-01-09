@@ -9,6 +9,8 @@
  */
 class FilterItemAttribute extends FilterBaseAttribute
 {
+    use FilterItemTrait;
+
     /**
      * @var bool
      */

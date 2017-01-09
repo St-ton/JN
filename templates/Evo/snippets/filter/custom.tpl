@@ -1,11 +1,11 @@
 <ul class="{if isset($class)}{$class}{else}nav nav-list{/if}">
     {foreach $filter->filterOptions as $filterOption}
         <li>
-            <a rel="nofollow" href="{$filterOption->cURL}">
+            <a rel="nofollow" href="{$filterOption->getURL()}">
                 <span class="value">
                     <i class="fa {if $NaviFilter->getFilterValue($filter->cClassname) == $filterOption->mValue}fa-check-square-o{else}fa-square-o{/if} text-muted"></i>
-                    {$filterOption->cName|escape:'html'}
-                    <span class="badge pull-right">{$filterOption->nAnzahl}</span>
+                    {$filterOption->getName()|escape:'html'}
+                    <span class="badge pull-right">{$filterOption->getCount()}</span>
                 </span>
             </a>
         </li>

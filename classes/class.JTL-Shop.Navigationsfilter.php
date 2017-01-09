@@ -1654,7 +1654,7 @@ class Navigationsfilter
     /**
      * converts legacy stdClass filters to real filter instances
      *
-     * @param object|Filter|FilterExtra $extraFilter
+     * @param object|IFilter $extraFilter
      * @return IFilter
      * @throws InvalidArgumentException
      */
@@ -1666,79 +1666,64 @@ class Navigationsfilter
         $languageID      = $this->getLanguageID();
         $customerGroupID = $this->getCustomerGroupID();
         $config          = $this->getConfig();
-        $filter = null;
-
-//        $filter = new FilterExtra();
-
-
-            if (isset($extraFilter->KategorieFilter->kKategorie) || isset($extraFilter->FilterLoesen->Kategorie) && $extraFilter->FilterLoesen->Kategorie === true){
-                $filter = (new FilterItemCategory($languageID, $customerGroupID, $config, $this->oSprache_arr))->init(isset($extraFilter->KategorieFilter->kKategorie) ? $extraFilter->KategorieFilter->kKategorie : null);
-            } elseif (isset($extraFilter->HerstellerFilter->kHersteller) || isset($extraFilter->FilterLoesen->Hersteller) && $extraFilter->FilterLoesen->Hersteller === true){
-                $filter = (new FilterItemManufacturer($languageID, $customerGroupID, $config, $this->oSprache_arr))->init(isset($extraFilter->HerstellerFilter->kHersteller) ? $extraFilter->HerstellerFilter->kHersteller : null);
-            } elseif (isset($extraFilter->MerkmalFilter->kMerkmalWert) || isset($extraFilter->FilterLoesen->Merkmale)){
-                $filter = (new FilterItemAttribute($languageID, $customerGroupID, $config, $this->oSprache_arr))->init(isset($extraFilter->MerkmalFilter->kMerkmalWert) ? $extraFilter->MerkmalFilter->kMerkmalWert : null);
-            } elseif (isset($extraFilter->MerkmalFilter->kMerkmalWert) || isset($extraFilter->FilterLoesen->MerkmalWert)){
-                $filter = (new FilterItemAttribute($languageID, $customerGroupID, $config, $this->oSprache_arr))->init(isset($extraFilter->MerkmalFilter->kMerkmalWert) ? $extraFilter->MerkmalFilter->kMerkmalWert : null);
-            } elseif (isset($extraFilter->PreisspannenFilter->fVon) || isset($extraFilter->FilterLoesen->Preisspannen) && $extraFilter->FilterLoesen->Preisspannen === true){
-                $filter = (new FilterItemPriceRange($languageID, $customerGroupID, $config, $this->oSprache_arr))->init(isset($extraFilter->PreisspannenFilter->fVon) ? ($extraFilter->PreisspannenFilter->fVon . '_' . $extraFilter->PreisspannenFilter->fBis) : null);
-            } elseif (isset($extraFilter->BewertungFilter->nSterne) || isset($extraFilter->FilterLoesen->Bewertungen) && $extraFilter->FilterLoesen->Bewertungen === true){
-                $filter = (new FilterItemRating($languageID, $customerGroupID, $config, $this->oSprache_arr))->init(isset($extraFilter->BewertungFilter->nSterne) ? $extraFilter->BewertungFilter->nSterne : null);
-            } elseif (isset($extraFilter->TagFilter->kTag) || isset($extraFilter->FilterLoesen->Tags) && $extraFilter->FilterLoesen->Tags === true){
-                $filter = (new FilterItemTag($languageID, $customerGroupID, $config, $this->oSprache_arr))->init(isset($extraFilter->TagFilter->kTag) ? $extraFilter->TagFilter->kTag : null);
-            } elseif (isset($extraFilter->SuchspecialFilter->kKey) || isset($extraFilter->FilterLoesen->Suchspecials) && $extraFilter->FilterLoesen->Suchspecials === true){
-                $filter = (new FilterItemSearchSpecial($languageID, $customerGroupID, $config, $this->oSprache_arr))->init(isset($extraFilter->SuchspecialFilter->kKey) ? $extraFilter->SuchspecialFilter->kKey : null);
-            } elseif (isset($extraFilter->SuchFilter->kSuchanfrage) || !empty($extraFilter->FilterLoesen->SuchFilter)){
-                $filter = (new FilterBaseSearchQuery($languageID, $customerGroupID, $config, $this->oSprache_arr))->init(isset($extraFilter->SuchFilter->kSuchanfrage) ? $extraFilter->SuchFilter->kSuchanfrage : null);
-            }    elseif (isset($extraFilter->FilterLoesen->SuchFilter)){
-                $filter = new FilterBaseSearchQuery($languageID, $customerGroupID, $config, $this->oSprache_arr);
-            } elseif (isset($extraFilter->customClassName)){
-                $filter = new $extraFilter->customClassName($languageID, $customerGroupID, $config, $this->oSprache_arr);
+        $filter          = null;
+        if (isset($extraFilter->KategorieFilter->kKategorie) || isset($extraFilter->FilterLoesen->Kategorie) && $extraFilter->FilterLoesen->Kategorie === true) {
+            $filter = (new FilterItemCategory(
+                $languageID,
+                $customerGroupID,
+                $config,
+                $this->oSprache_arr)
+            )->init(isset($extraFilter->KategorieFilter->kKategorie) ? $extraFilter->KategorieFilter->kKategorie : null);
+        } elseif (isset($extraFilter->HerstellerFilter->kHersteller) || isset($extraFilter->FilterLoesen->Hersteller) && $extraFilter->FilterLoesen->Hersteller === true) {
+            $filter = (new FilterItemManufacturer(
+                $languageID,
+                $customerGroupID,
+                $config,
+                $this->oSprache_arr)
+            )->init(isset($extraFilter->HerstellerFilter->kHersteller) ? $extraFilter->HerstellerFilter->kHersteller : null);
+        } elseif (isset($extraFilter->MerkmalFilter->kMerkmalWert) || isset($extraFilter->FilterLoesen->Merkmale)) {
+            $filter = (new FilterItemAttribute(
+                $languageID,
+                $customerGroupID,
+                $config,
+                $this->oSprache_arr)
+            )->init(isset($extraFilter->MerkmalFilter->kMerkmalWert) ? $extraFilter->MerkmalFilter->kMerkmalWert : null);
+        } elseif (isset($extraFilter->MerkmalFilter->kMerkmalWert) || isset($extraFilter->FilterLoesen->MerkmalWert)) {
+            $filter = (new FilterItemAttribute(
+                $languageID,
+                $customerGroupID,
+                $config,
+                $this->oSprache_arr)
+            )->init(isset($extraFilter->MerkmalFilter->kMerkmalWert) ? $extraFilter->MerkmalFilter->kMerkmalWert : null);
+        } elseif (isset($extraFilter->PreisspannenFilter->fVon) || isset($extraFilter->FilterLoesen->Preisspannen) && $extraFilter->FilterLoesen->Preisspannen === true) {
+            $filter = (new FilterItemPriceRange($languageID, $customerGroupID, $config,
+                $this->oSprache_arr))->init(isset($extraFilter->PreisspannenFilter->fVon) ? ($extraFilter->PreisspannenFilter->fVon . '_' . $extraFilter->PreisspannenFilter->fBis) : null);
+        } elseif (isset($extraFilter->BewertungFilter->nSterne) || isset($extraFilter->FilterLoesen->Bewertungen) && $extraFilter->FilterLoesen->Bewertungen === true) {
+            $filter = (new FilterItemRating($languageID, $customerGroupID, $config,
+                $this->oSprache_arr))->init(isset($extraFilter->BewertungFilter->nSterne) ? $extraFilter->BewertungFilter->nSterne : null);
+        } elseif (isset($extraFilter->TagFilter->kTag) || isset($extraFilter->FilterLoesen->Tags) && $extraFilter->FilterLoesen->Tags === true) {
+            $filter = (new FilterItemTag($languageID, $customerGroupID, $config,
+                $this->oSprache_arr))->init(isset($extraFilter->TagFilter->kTag) ? $extraFilter->TagFilter->kTag : null);
+        } elseif (isset($extraFilter->SuchspecialFilter->kKey) || isset($extraFilter->FilterLoesen->Suchspecials) && $extraFilter->FilterLoesen->Suchspecials === true) {
+            $filter = (new FilterItemSearchSpecial($languageID, $customerGroupID, $config,
+                $this->oSprache_arr))->init(isset($extraFilter->SuchspecialFilter->kKey) ? $extraFilter->SuchspecialFilter->kKey : null);
+        } elseif (isset($extraFilter->SuchFilter->kSuchanfrage) || !empty($extraFilter->FilterLoesen->SuchFilter)) {
+            $filter = (new FilterBaseSearchQuery($languageID, $customerGroupID, $config,
+                $this->oSprache_arr))->init(isset($extraFilter->SuchFilter->kSuchanfrage) ? $extraFilter->SuchFilter->kSuchanfrage : null);
+        } elseif (isset($extraFilter->FilterLoesen->SuchFilter)) {
+            $filter = new FilterBaseSearchQuery($languageID, $customerGroupID, $config, $this->oSprache_arr);
+        } elseif (isset($extraFilter->customClassName)) {
+            $filter = new $extraFilter->customClassName($languageID, $customerGroupID, $config, $this->oSprache_arr);
 //                $filter->setValue($extraFilter->customValue)->setClassName($extraFilter->customClassName);
-            } elseif (isset($extraFilter->FilterLoesen->Erscheinungsdatum) && $extraFilter->FilterLoesen->Erscheinungsdatum === true) {
-                //@todo@todo@todo
-                return $filter;
-            }  else {
-                Shop::dbg($extraFilter, false, 'ExtraFilter:');
-                throw new InvalidArgumentException('Unrecognized additional unset filter: ' . json_encode($extraFilter));
-            }
+        } elseif (isset($extraFilter->FilterLoesen->Erscheinungsdatum) && $extraFilter->FilterLoesen->Erscheinungsdatum === true) {
+            //@todo@todo@todo
+            return $filter;
+        } else {
+            Shop::dbg($extraFilter, false, 'ExtraFilter:');
+            throw new InvalidArgumentException('Unrecognized additional unset filter: ' . json_encode($extraFilter));
+        }
 
-            $filter->setDoUnset(isset($extraFilter->FilterLoesen));
-
-//        } elseif ($extraFilter !== null && get_class($extraFilter) === 'stdClass') {
-//            if (isset($extraFilter->HerstellerFilter->kHersteller)) {
-//                $filter->setValue((int)$extraFilter->HerstellerFilter->kHersteller)
-//                       ->setClassName('FilterItemManufacturer')
-//                       ->setURL($extraFilter->HerstellerFilter->cSeo);
-//            } elseif (isset($extraFilter->KategorieFilter->kKategorie)) {
-//                $filter->setValue((int)$extraFilter->KategorieFilter->kKategorie)
-//                       ->setClassName('FilterItemCategory')
-//                       ->setURL($extraFilter->KategorieFilter->cSeo);
-//            } elseif (isset($extraFilter->SuchFilter->kSuchanfrage)) {
-//                $filter->setValue((int)$extraFilter->SuchFilter->kSuchanfrage)
-//                       ->setClassName('FilterSearchFilter')
-//                       ->setURL($extraFilter->SuchFilter->cSeo);
-//            } elseif (isset($extraFilter->MerkmalFilter->kMerkmalWert)) {
-//                $filter->setValue((int)$extraFilter->MerkmalFilter->kMerkmalWert)
-//                       ->setClassName('FilterItemAttribute')
-//                       ->setURL($extraFilter->MerkmalFilter->cSeo);
-//            } elseif (isset($extraFilter->PreisspannenFilter->fVon)) {
-//                $filter->setValue($extraFilter->PreisspannenFilter->fVon . '_' . $extraFilter->PreisspannenFilter->fBis)
-//                       ->setClassName('FilterItemPriceRange');
-//            } elseif (isset($extraFilter->BewertungFilter->nSterne)) {
-//                $filter->setValue((int)$extraFilter->BewertungFilter->nSterne)
-//                       ->setClassName('FilterItemRating');
-//            } elseif (isset($extraFilter->TagFilter->kTag)) {
-//                $filter->setValue((int)$extraFilter->TagFilter->kTag)
-//                       ->setClassName('FilterItemTag');
-//            } elseif (isset($extraFilter->SuchspecialFilter->kKey)) {
-//                $filter->setValue((int)$extraFilter->SuchspecialFilter->kKey)
-//                       ->setClassName('FilterItemSearchSpecial');
-//
-//            } else {
-//                Shop::dbg($extraFilter, false, 'ExtraFilter:');
-//                throw new InvalidArgumentException('Unrecognized additional filter: ' . json_encode($extraFilter));
-//            }
-//        }
+        $filter->setDoUnset(isset($extraFilter->FilterLoesen));
 
         return $filter;
     }
@@ -1810,10 +1795,16 @@ class Navigationsfilter
             } else {
                 $urlParam = $extraFilter->getUrlParam();
                 if (isset($urlParams[$urlParam])) {
-                    foreach ($urlParams[$urlParam] as $active) {
-                        foreach ($active->value as $idx => $value) {
-                            if ($value == $extraFilter->getValue()) {
-                                unset($active->value[$idx]);
+                    foreach ($urlParams[$urlParam] as $i => $active) {
+                        if (is_array($active->value)) {
+                            foreach ($active->value as $idx => $value) {
+                                if ($value == $extraFilter->getValue()) {
+                                    unset($active->value[$idx]);
+                                }
+                            }
+                        } else {
+                            if ($extraFilter->getValue() == $active->value) {
+                                unset($urlParams[$urlParam][$i]);
                             }
                         }
                     }
@@ -2277,15 +2268,12 @@ class Navigationsfilter
                     $extraFilter->setDoUnset(true);
                     foreach ($filter->getValue() as $filterValue) {
                         $extraFilter->setValue($filterValue);
-//                        Shop::dbg($extraFilter, false, 'custom unsetter:');
-//                        Shop::dbg($extraFilter->getValue(), false, 'custom unsetter value:');
                         $this->URL->$idx[$filterValue] = $this->getURL($bSeo, $extraFilter);
-//                        Shop::dbg($this->URL->$idx[$filterValue], true, 'url0');
                     }
                 } else {
-                    $oZusatzFilter->FilterLoesen->customValue = $filter->getValue();
-                    $this->URL->$idx = $this->getURL($bSeo, $oZusatzFilter);
-                    Shop::dbg($this->URL->$idx, false, 'url1');
+                    $extraFilter = clone $filter;
+                    $extraFilter->setDoUnset(true)->setValue($filter->getValue());
+                    $this->URL->$idx = $this->getURL($bSeo, $extraFilter);
                 }
             }
         }

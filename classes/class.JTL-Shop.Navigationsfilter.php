@@ -1676,10 +1676,8 @@ class Navigationsfilter
             } elseif (isset($extraFilter->HerstellerFilter->kHersteller) || isset($extraFilter->FilterLoesen->Hersteller) && $extraFilter->FilterLoesen->Hersteller === true){
                 $filter = (new FilterItemManufacturer($languageID, $customerGroupID, $config, $this->oSprache_arr))->init(isset($extraFilter->HerstellerFilter->kHersteller) ? $extraFilter->HerstellerFilter->kHersteller : null);
             } elseif (isset($extraFilter->MerkmalFilter->kMerkmalWert) || isset($extraFilter->FilterLoesen->Merkmale)){
-//                $filter->setClassName('FilterItemAttribute');
                 $filter = (new FilterItemAttribute($languageID, $customerGroupID, $config, $this->oSprache_arr))->init(isset($extraFilter->MerkmalFilter->kMerkmalWert) ? $extraFilter->MerkmalFilter->kMerkmalWert : null);
             } elseif (isset($extraFilter->MerkmalFilter->kMerkmalWert) || isset($extraFilter->FilterLoesen->MerkmalWert)){
-//                $filter->setClassName('FilterItemAttribute');
                 $filter = (new FilterItemAttribute($languageID, $customerGroupID, $config, $this->oSprache_arr))->init(isset($extraFilter->MerkmalFilter->kMerkmalWert) ? $extraFilter->MerkmalFilter->kMerkmalWert : null);
             } elseif (isset($extraFilter->PreisspannenFilter->fVon) || isset($extraFilter->FilterLoesen->Preisspannen) && $extraFilter->FilterLoesen->Preisspannen === true){
                 $filter = (new FilterItemPriceRange($languageID, $customerGroupID, $config, $this->oSprache_arr))->init(isset($extraFilter->PreisspannenFilter->fVon) ? ($extraFilter->PreisspannenFilter->fVon . '_' . $extraFilter->PreisspannenFilter->fBis) : null);
@@ -1689,7 +1687,9 @@ class Navigationsfilter
                 $filter = (new FilterItemTag($languageID, $customerGroupID, $config, $this->oSprache_arr))->init(isset($extraFilter->TagFilter->kTag) ? $extraFilter->TagFilter->kTag : null);
             } elseif (isset($extraFilter->SuchspecialFilter->kKey) || isset($extraFilter->FilterLoesen->Suchspecials) && $extraFilter->FilterLoesen->Suchspecials === true){
                 $filter = (new FilterItemSearchSpecial($languageID, $customerGroupID, $config, $this->oSprache_arr))->init(isset($extraFilter->SuchspecialFilter->kKey) ? $extraFilter->SuchspecialFilter->kKey : null);
-            }  elseif (isset($extraFilter->FilterLoesen->SuchFilter)){
+            } elseif (isset($extraFilter->SuchFilter->kSuchanfrage) || !empty($extraFilter->FilterLoesen->SuchFilter)){
+                $filter = (new FilterBaseSearchQuery($languageID, $customerGroupID, $config, $this->oSprache_arr))->init(isset($extraFilter->SuchFilter->kSuchanfrage) ? $extraFilter->SuchFilter->kSuchanfrage : null);
+            }    elseif (isset($extraFilter->FilterLoesen->SuchFilter)){
                 $filter = new FilterBaseSearchQuery($languageID, $customerGroupID, $config, $this->oSprache_arr);
             } elseif (isset($extraFilter->customClassName)){
                 $filter = new $extraFilter->customClassName($languageID, $customerGroupID, $config, $this->oSprache_arr);

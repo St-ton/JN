@@ -12,23 +12,21 @@
 {if $Schnellkaufhinweis}
     <div class="alert alert-info">{$Schnellkaufhinweis}</div>
 {/if}
+{if count($Warenkorbhinweise)>0}
+    <div class="alert alert-warning">
+        {foreach name=hinweise from=$Warenkorbhinweise item=Warenkorbhinweis}
+            {$Warenkorbhinweis}
+            <br />
+        {/foreach}
+    </div>
+{/if}
+{if !empty($MsgWarning)}
+    <p class="alert alert-danger">{$MsgWarning}</p>
+{/if}
 
 {if ($Warenkorb->PositionenArr|@count > 0)}
-    {if count($Warenkorbhinweise)>0}
-        <div class="alert alert-warning">
-            {foreach name=hinweise from=$Warenkorbhinweise item=Warenkorbhinweis}
-                {$Warenkorbhinweis}
-                <br />
-            {/foreach}
-        </div>
-    {/if}
-
     {if !empty($BestellmengeHinweis)}
         <div class="alert alert-warning">{$BestellmengeHinweis}</div>
-    {/if}
-
-    {if !empty($MsgWarning)}
-        <p class="alert alert-danger">{$MsgWarning}</p>
     {/if}
 
     {if !empty($invalidCouponCode)}

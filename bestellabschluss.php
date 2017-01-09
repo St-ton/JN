@@ -6,6 +6,7 @@
 require_once dirname(__FILE__) . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellabschluss_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
+require_once PFAD_ROOT . PFAD_INCLUDES . 'warenkorb_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'trustedshops_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
@@ -61,6 +62,16 @@ if (isset($_GET['i'])) {
         }
 
         if (!isset($_SESSION['Zahlungsart']->nWaehrendBestellung) || $_SESSION['Zahlungsart']->nWaehrendBestellung == 0) {
+            $_SESSION['Warenkorb']->loescheDeaktiviertePositionen();
+            $wkChecksum = Warenkorb::getChecksum($_SESSION['Warenkorb']);
+            if (!empty($_SESSION['Warenkorb']->cChecksumme) && $wkChecksum != $_SESSION['Warenkorb']->cChecksumme) {
+                if (!$_SESSION['Warenkorb']->enthaltenSpezialPos(C_WARENKORBPOS_TYP_ARTIKEL)) {
+                    loescheAlleSpezialPos();
+                }
+                $_SESSION['Warenkorbhinweise'][] = Shop::Lang()->get('yourbasketismutating', 'checkout');
+                header('Location: ' . $linkHelper->getStaticRoute('warenkorb.php'), true, 303);
+                exit;
+            }
             $bestellung = finalisiereBestellung();
             $bestellid  = (isset($bestellung->kBestellung) && $bestellung->kBestellung > 0) ? Shop::DB()->select('tbestellid', 'kBestellung', $bestellung->kBestellung) : false;
             if (is_null($bestellung->Lieferadresse) && isset($_SESSION['Lieferadresse']) && strlen($_SESSION['Lieferadresse']->cVorname) > 0) {

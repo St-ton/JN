@@ -63,7 +63,7 @@ class FilterBaseTag extends AbstractFilter implements IFilter
         );
         foreach ($languages as $language) {
             $this->cSeo[$language->kSprache] = '';
-            if ($language->kSprache == $oSeo_obj->kSprache) {
+            if (isset($oSeo_obj->kSprache) && $language->kSprache == $oSeo_obj->kSprache) {
                 $this->cSeo[$language->kSprache] = $oSeo_obj->cSeo;
             }
         }

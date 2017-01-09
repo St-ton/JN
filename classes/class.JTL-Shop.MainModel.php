@@ -28,10 +28,9 @@ abstract class MainModel
     }
 
     /**
-     * @param      $kKey
+     * @param int  $kKey
      * @param null $oObj
      * @param null $xOption
-     * @return mixed
      */
     abstract public function load($kKey, $oObj = null, $xOption = null);
 

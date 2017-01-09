@@ -20,6 +20,11 @@ class Preise
     public $kArtikel;
 
     /**
+     * @var int
+     */
+    public $kKunde;
+
+    /**
      * @var string
      */
     public $cPreis1Localized;
@@ -177,22 +182,22 @@ class Preise
     /**
      * @var array
      */
-    public $nAnzahl_arr = array();
+    public $nAnzahl_arr = [];
 
     /**
      * @var array
      */
-    public $fPreis_arr = array();
+    public $fPreis_arr = [];
 
     /**
      * @var array
      */
-    public $fStaffelpreis_arr = array();
+    public $fStaffelpreis_arr = [];
 
     /**
      * @var array
      */
-    public $cPreisLocalized_arr = array();
+    public $cPreisLocalized_arr = [];
 
     /**
      * @var string
@@ -285,34 +290,56 @@ class Preise
     public $Sonderpreis_aktiv = false;
 
     /**
+     * @var bool
+     */
+    public $Kundenpreis_aktiv = false;
+
+    /**
      * Konstruktor
      *
      * @param int $kKundengruppe
      * @param int $kArtikel
-     *
-     * @return Preise Object
+     * @param int $kKunde
+     * @param int $kSteuerklasse
      */
-    public function __construct($kKundengruppe, $kArtikel)
+    public function __construct($kKundengruppe, $kArtikel, $kKunde = 0, $kSteuerklasse = 0)
     {
         $kKundengruppe = (int)$kKundengruppe;
         $kArtikel      = (int)$kArtikel;
-        $prices        = Shop::DB()->query("
+        $kKunde        = (int)$kKunde;
+        $filterKunde   = 'AND p.kKunde IS NULL';
+
+        if ($kKunde > 0 && $this->hasCustomPrice($kArtikel, $kKunde)) {
+            $kKundengruppe = 0;
+            $filterKunde   = "AND p.kKunde = {$kKunde}";
+        }
+
+        $prices = Shop::DB()->query("
             SELECT *
                 FROM tpreis AS p
                 JOIN tpreisdetail AS d ON d.kPreis = p.kPreis
                 WHERE p.kArtikel = {$kArtikel}
-                    AND p.kKundengruppe = {$kKundengruppe}
+                    AND p.kKundengruppe = {$kKundengruppe} {$filterKunde}
                 ORDER BY d.nAnzahlAb", 2);
+
         if (count($prices) > 0) {
-            $tax                 = Shop::DB()->query("SELECT kSteuerklasse FROM tartikel WHERE kArtikel = " . $kArtikel, 1);
-            $this->fUst          = gibUst($tax->kSteuerklasse);
+            if ($kSteuerklasse === 0) {
+                $tax           = Shop::DB()->select('tartikel', 'kArtikel', $kArtikel, null, null, null, null, false, 'kSteuerklasse');
+                $kSteuerklasse = (int)$tax->kSteuerklasse;
+            }
+            $this->fUst          = gibUst($kSteuerklasse);
             $this->kArtikel      = $kArtikel;
             $this->kKundengruppe = $kKundengruppe;
+            $this->kKunde        = $kKunde;
             $specialPriceValue   = null;
             foreach ($prices as $i => $price) {
+                // Kundenpreis?
+                if ((int)$price->kKunde > 0) {
+                    $this->Kundenpreis_aktiv = true;
+                }
                 // Standardpreis
                 if ($price->nAnzahlAb < 1) {
-                    $this->fVKNetto = (float) $price->fVKNetto;
+                    $this->fVKNetto = (float)$price->fVKNetto;
                     $specialPrice   = Shop::DB()->query("
                         SELECT tsonderpreise.fNettoPreis, tartikelsonderpreis.dEnde AS dEnde_en,
                             DATE_FORMAT(tartikelsonderpreis.dEnde, '%d.%m.%Y') AS dEnde_de
@@ -326,9 +353,10 @@ class Preise
                                 AND (tartikelsonderpreis.nAnzahl <= tartikel.fLagerbestand OR tartikelsonderpreis.nIstAnzahl = 0)
                             WHERE tsonderpreise.kKundengruppe = {$kKundengruppe}", 1);
 
-                    if (isset($specialPrice->fNettoPreis) && (double) $specialPrice->fNettoPreis < $this->fVKNetto) {
+                    if (isset($specialPrice->fNettoPreis) && (double)$specialPrice->fNettoPreis < $this->fVKNetto) {
+                        $specialPriceValue       = (double)$specialPrice->fNettoPreis;
                         $this->alterVKNetto      = $this->fVKNetto;
-                        $this->fVKNetto          = $specialPriceValue          = (double) $specialPrice->fNettoPreis;
+                        $this->fVKNetto          = $specialPriceValue;
                         $this->Sonderpreis_aktiv = 1;
                         $this->SonderpreisBis_de = $specialPrice->dEnde_de;
                         $this->SonderpreisBis_en = $specialPrice->dEnde_en;
@@ -339,16 +367,47 @@ class Preise
                         $scaleGetter = "nAnzahl{$i}";
                         $priceGetter = "fPreis{$i}";
 
-                        $this->{$scaleGetter} = (int) $price->nAnzahlAb;
-                        $this->{$priceGetter} = ($specialPriceValue !== null) ? $specialPriceValue : (double) $price->fVKNetto;
+                        $this->{$scaleGetter} = (int)$price->nAnzahlAb;
+                        $this->{$priceGetter} = ($specialPriceValue !== null) ? $specialPriceValue : (double)$price->fVKNetto;
                     }
 
-                    $this->nAnzahl_arr[] = (int) $price->nAnzahlAb;
-                    $this->fPreis_arr[]  = ($specialPriceValue !== null && $specialPriceValue < (double) $price->fVKNetto) ? $specialPriceValue : (double) $price->fVKNetto;
+                    $this->nAnzahl_arr[] = (int)$price->nAnzahlAb;
+                    $this->fPreis_arr[]  = ($specialPriceValue !== null && $specialPriceValue < (double)$price->fVKNetto) ? $specialPriceValue : (double)$price->fVKNetto;
                 }
             }
         }
         $this->berechneVKs();
+    }
+
+    /**
+     * @param int $kArtikel
+     * @param int $kKunde
+     * @return bool
+     */
+    protected function hasCustomPrice($kArtikel, $kKunde)
+    {
+        $kKunde   = (int)$kKunde;
+        $kArtikel = (int)$kArtikel;
+        if ($kKunde > 0 && $kArtikel > 0) {
+            $cacheID = 'custprice_' . $kKunde;
+            if (($oCustomPrice = Shop::Cache()->get($cacheID)) === false) {
+                $oCustomPrice = Shop::DB()->query(
+                    "SELECT count(kPreis) AS nAnzahl 
+                        FROM tpreis
+                        WHERE kArtikel = {$kArtikel} AND kKunde = {$kKunde}",
+                    1
+                );
+
+                if (is_object($oCustomPrice)) {
+                    $cacheTags = [CACHING_GROUP_ARTICLE];
+                    Shop::Cache()->set($cacheID, $oCustomPrice, $cacheTags);
+                }
+            }
+
+            return is_object($oCustomPrice) && $oCustomPrice->nAnzahl > 0;
+        }
+
+        return false;
     }
 
     /**
@@ -419,7 +478,7 @@ class Preise
      */
     public function rabbatierePreise($Rabatt, $offset = 0.0)
     {
-        if ($Rabatt != 0 && !$this->Sonderpreis_aktiv) {
+        if ($Rabatt != 0 && !$this->Sonderpreis_aktiv && !$this->Kundenpreis_aktiv) {
             $this->rabatt       = $Rabatt;
             $this->alterVKNetto = $this->fVKNetto;
 
@@ -457,10 +516,10 @@ class Preise
         $this->cPreis5Localized[1] = gibPreisStringLocalized($this->fPreis5);
 
         foreach ($this->fPreis_arr as $fPreis) {
-            $this->cPreisLocalized_arr[] = array(
+            $this->cPreisLocalized_arr[] = [
                 gibPreisStringLocalized(berechneBrutto($fPreis, $this->fUst)),
                 gibPreisStringLocalized($fPreis)
-            );
+            ];
         }
 
         $this->cVKLocalized[0] = gibPreisStringLocalized(berechneBrutto($this->fVKNetto, $this->fUst));
@@ -506,10 +565,10 @@ class Preise
         $this->fStaffelpreis5[1] = $this->fPreis5 * $waehrung->fFaktor;
 
         foreach ($this->fPreis_arr as $fPreis) {
-            $this->fStaffelpreis_arr[] = array(
+            $this->fStaffelpreis_arr[] = [
                 berechneBrutto($fPreis * $waehrung->fFaktor, $this->fUst),
                 ($fPreis * $waehrung->fFaktor)
-            );
+            ];
         }
 
         return $this;
@@ -554,7 +613,7 @@ class Preise
         $this->fPreisPrivat = Shop::DB()->escape($_POST['ArtikelVKBrutto']);
         $this->fPreisHaendler = Shop::DB()->escape($_POST['ArtikelVKHaendlerBrutto']);
         $this->dDate = 'now()';
-        */
+         */
         if ($this->kArtikel > 0) {
             return true;
         }
@@ -571,7 +630,7 @@ class Preise
      */
     public static function getPriceJoinSql($kKundengruppe, $priceAlias = 'tpreis', $detailAlias = 'tpreisdetail', $productAlias = 'tartikel')
     {
-        $kKundengruppe = (int) $kKundengruppe;
+        $kKundengruppe = (int)$kKundengruppe;
 
         return "JOIN tpreis AS {$priceAlias} ON {$priceAlias}.kArtikel = {$productAlias}.kArtikel
                     AND {$priceAlias}.kKundengruppe = {$kKundengruppe}

@@ -13,29 +13,14 @@ function getAdminSectionSettings($kEinstellungenSektion)
     $kEinstellungenSektion = intval($kEinstellungenSektion);
     $oConfig_arr           = array();
     if ($kEinstellungenSektion > 0) {
-        $oConfig_arr = Shop::DB()->query(
-            "SELECT *
-                FROM teinstellungenconf
-                WHERE kEinstellungenSektion = " . $kEinstellungenSektion . "
-                ORDER BY nSort", 2
-        );
+        $oConfig_arr = Shop::DB()->selectAll('teinstellungenconf', 'kEinstellungenSektion', $kEinstellungenSektion, '*', 'nSort');
         if (is_array($oConfig_arr) && count($oConfig_arr) > 0) {
             $count = count($oConfig_arr);
             for ($i = 0; $i < $count; $i++) {
                 if ($oConfig_arr[$i]->cInputTyp === 'selectbox') {
-                    $oConfig_arr[$i]->ConfWerte = Shop::DB()->query(
-                        "SELECT *
-                            FROM teinstellungenconfwerte
-                            WHERE kEinstellungenConf = " . intval($oConfig_arr[$i]->kEinstellungenConf) . "
-                            ORDER BY nSort", 2
-                    );
+                    $oConfig_arr[$i]->ConfWerte = Shop::DB()->selectAll('teinstellungenconfwerte', 'kEinstellungenConf', $oConfig_arr[$i]->kEinstellungenConf, '*', 'nSort');
                 }
-                $oSetValue = Shop::DB()->query(
-                    "SELECT cWert
-                        FROM teinstellungen
-                        WHERE kEinstellungenSektion = " . $kEinstellungenSektion . "
-                            AND cName = '" . $oConfig_arr[$i]->cWertName . "'", 1
-                );
+                $oSetValue = Shop::DB()->select('teinstellungen', ['kEinstellungenSektion', 'cName'], [$kEinstellungenSektion, $oConfig_arr[$i]->cWertName]);
                 $oConfig_arr[$i]->gesetzterWert = (isset($oSetValue->cWert)) ? $oSetValue->cWert : null;
             }
         }
@@ -115,11 +100,7 @@ function bearbeiteListBox($cListBox_arr, $cWertName, $kEinstellungenSektion)
         // Leere Kundengruppen Work Around
         if ($cWertName === 'bewertungserinnerung_kundengruppen' || $cWertName === 'kwk_kundengruppen') {
             // Standard Kundengruppe aus DB holen
-            $oKundengruppe = Shop::DB()->query(
-                "SELECT kKundengruppe
-                    FROM tkundengruppe
-                    WHERE cStandard = 'Y'", 1
-            );
+            $oKundengruppe = Shop::DB()->select('tkundengruppe', 'cStandard', 'Y');
             if ($oKundengruppe->kKundengruppe > 0) {
                 Shop::DB()->delete('teinstellungen', array('kEinstellungenSektion', 'cName'), array($kEinstellungenSektion, $cWertName));
                 $oAktWert                        = new stdClass();
@@ -145,13 +126,7 @@ function saveAdminSectionSettings($kEinstellungenSektion, &$cPost_arr, $tags = a
         return 'Fehler: Cross site request forgery.';
     }
     $kEinstellungenSektion = intval($kEinstellungenSektion);
-    $oConfig_arr           = Shop::DB()->query(
-        "SELECT *
-             FROM teinstellungenconf
-             WHERE kEinstellungenSektion = " . $kEinstellungenSektion . "
-                AND cConf = 'Y'
-             ORDER BY nSort", 2
-    );
+    $oConfig_arr           = Shop::DB()->selectAll('teinstellungenconf', ['kEinstellungenSektion', 'cConf'], [$kEinstellungenSektion, 'Y'], '*', 'nSort');
 
     if (is_array($oConfig_arr) && count($oConfig_arr) > 0) {
         $count = count($oConfig_arr);
@@ -281,11 +256,7 @@ function holeBewertungserinnerungSettings()
 {
     $Einstellungen = array();
     // Einstellungen für die Bewertung holen
-    $oEinstellungen_arr = Shop::DB()->query("
-        SELECT cName, cWert 
-          FROM teinstellungen 
-          WHERE kEinstellungenSektion = " . CONF_BEWERTUNG, 2
-    );
+    $oEinstellungen_arr = Shop::DB()->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_BEWERTUNG);
     if (is_array($oEinstellungen_arr) && count($oEinstellungen_arr) > 0) {
         $Einstellungen['bewertung']                                       = array();
         $Einstellungen['bewertung']['bewertungserinnerung_kundengruppen'] = array();
@@ -313,7 +284,7 @@ function setzeSprache()
 {
     //setze std Sprache als aktuelle Sprache
     if (!isset($_SESSION['kSprache'])) {
-        $StdSprache = Shop::DB()->query("SELECT kSprache FROM tsprache ORDER BY cShopStandard DESC LIMIT 1", 1);
+        $StdSprache = Shop::DB()->select('tsprache', 'cShopStandard', 'Y');
         if ($StdSprache->kSprache > 0) {
             $_SESSION['kSprache'] = $StdSprache->kSprache;
         }

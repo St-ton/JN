@@ -82,7 +82,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         protected $oSprache;
 
         /**
-         * @var Preise
+         * @var Konfigitempreis
          */
         protected $oPreis;
 
@@ -100,6 +100,26 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          * @var int
          */
         protected $kKundengruppe;
+
+        /**
+         * @var int
+         */
+        protected $nSort = 0;
+
+        /**
+         * @var int|null
+         */
+        public $fAnzahl;
+
+        /**
+         * @var int|null
+         */
+        public $fAnzahlWK;
+
+        /**
+         * @var bool|null
+         */
+        public $bAktiv;
 
         /**
          * Constructor
@@ -219,14 +239,22 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         public function save($bPrim = true)
         {
-            $oObj        = new stdClass();
-            $cMember_arr = array_keys(get_object_vars($this));
-            if (is_array($cMember_arr) && count($cMember_arr) > 0) {
-                foreach ($cMember_arr as $cMember) {
-                    $oObj->$cMember = $this->$cMember;
-                }
-            }
-            unset($oObj->kKonfigitem);
+            $oObj                    = new stdClass();
+            $oObj->kKonfiggruppe     = $this->kKonfiggruppe;
+            $oObj->kArtikel          = $this->kArtikel;
+            $oObj->nPosTyp           = $this->nPosTyp;
+            $oObj->bSelektiert       = $this->bSelektiert;
+            $oObj->bEmpfohlen        = $this->bEmpfohlen;
+            $oObj->bName             = $this->bName;
+            $oObj->bPreis            = $this->bPreis;
+            $oObj->bRabatt           = $this->bRabatt;
+            $oObj->bZuschlag         = $this->bZuschlag;
+            $oObj->bIgnoreMultiplier = $this->bIgnoreMultiplier;
+            $oObj->fMin              = $this->fMin;
+            $oObj->fMax              = $this->fMax;
+            $oObj->fInitial          = $this->fInitial;
+            $oObj->nSort             = $this->nSort;
+
             $kPrim = Shop::DB()->insert('tkonfigitem', $oObj);
             if ($kPrim > 0) {
                 return $bPrim ? $kPrim : true;
@@ -241,6 +269,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         public function update()
         {
             $_upd                    = new stdClass();
+            $_upd->kKonfiggruppe     = $this->kKonfiggruppe;
             $_upd->kArtikel          = $this->kArtikel;
             $_upd->nPosTyp           = $this->nPosTyp;
             $_upd->bSelektiert       = $this->bSelektiert;
@@ -253,6 +282,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
             $_upd->fMin              = $this->fMin;
             $_upd->fMax              = $this->fMax;
             $_upd->fInitial          = $this->fInitial;
+            $_upd->nSort             = $this->nSort;
 
             return Shop::DB()->update('tkonfigitem', 'kKonfigitem', (int)$this->kKonfigitem, $_upd);
         }
@@ -474,7 +504,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 }
             }
 
-            return;
+            return null;
         }
 
         /**

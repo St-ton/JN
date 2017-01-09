@@ -65,6 +65,9 @@ class Billpay extends PaymentMethod
         return $this;
     }
 
+    /**
+     * @return null|mixed
+     */
     public function getOptions()
     {
         $oCustomer   = $_SESSION['Kunde'];
@@ -94,13 +97,13 @@ class Billpay extends PaymentMethod
             $jsonResults = http_get_contents($cOptionsUrl);
 
             if (empty($jsonResults)) {
-                return;
+                return null;
             }
 
             $oResult = json_decode($jsonResults, true);
 
             if (json_last_error() > 0) {
-                return;
+                return null;
             }
 
             if (isset($oResult['responseStatus']) && isset($oResult['responseStatus']['errorCode'])) {
@@ -124,7 +127,7 @@ class Billpay extends PaymentMethod
             }
         }
 
-        return;
+        return null;
     }
 
     /**
@@ -304,7 +307,6 @@ class Billpay extends PaymentMethod
 
     /**
      * @param $nPaymentType
-     * @param $fCartAmount
      * @return bool
      */
     public function isUseable($nPaymentType)
@@ -381,7 +383,8 @@ class Billpay extends PaymentMethod
     }
 
     /**
-     * @param $mixedData
+     * @param mixed $mixedData
+     * @param bool  $preauthError
      * @return bool
      */
     public function handleAdditional($mixedData, $preauthError = false)
@@ -662,9 +665,9 @@ class Billpay extends PaymentMethod
     }
 
     /**
-     * @param      $cType
-     * @param null $nPaymentType
-     * @return bool
+     * @param string   $cType
+     * @param null|int $nPaymentType
+     * @return bool|ipl_xml_request
      */
     public function getApi($cType, $nPaymentType = null)
     {
@@ -722,7 +725,6 @@ class Billpay extends PaymentMethod
         // p: private customer, b: business customer
         $eCustomerGroup = $oData->bB2B ? 'b' : 'p';
         $oPreAuth       = $this->getApi('preauthorize', $this->nPaymentType);
-
         // customer address
         $oPreAuth->set_customer_details(
             intval($oCustomer->kKunde),                        // customerid
@@ -1380,6 +1382,11 @@ class Billpay extends PaymentMethod
         Shop::Smarty()->assign('billpay_message', $oMessage);
     }
 
+    /**
+     * @param string $key
+     * @param bool   $root
+     * @return null
+     */
     public function getCoreSetting($key, $root = false)
     {
         global $Einstellungen;
@@ -1552,7 +1559,8 @@ class BPHelper
     }
 
     /**
-     * @param $cStr
+     * @param string $cStr
+     * @param bool  $from
      * @return string
      */
     public static function mapSalutation($cStr, $from = false)
@@ -1593,7 +1601,8 @@ class BPHelper
     /**
      * https://techdocs.billpay.de/en/For_decision_makers/Possible_Country_and_Payment_Method_Combinations.html
      *
-     * @param $cISO
+     * @param int    $nPaymentType
+     * @param string $cISO
      * @return bool
      */
     public static function isValidCountry($nPaymentType, $cISO)
@@ -1657,6 +1666,10 @@ class BPHelper
             'AUT' => 'https://www.billpay.de/api/agb-at');
     }
 
+    /**
+     * @param int $nType
+     * @return string|null
+     */
     public static function getPaymentType($nType)
     {
         switch ($nType) {
@@ -1672,7 +1685,7 @@ class BPHelper
                 return 'paylaterCollateralPromise';
         }
 
-        return;
+        return null;
     }
 
     /**

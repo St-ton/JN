@@ -278,9 +278,9 @@
 
             if (typeof grecaptcha == 'undefined' && !this.options.captcha.loaded) {
                 this.options.captcha.loaded = true;
-                $.getScript("https://www.google.com/recaptcha/api.js?render=explicit&onload=g_recaptcha_callback");
-            }
-            else {
+                var lang                    = document.documentElement.lang;
+                $.getScript("https://www.google.com/recaptcha/api.js?render=explicit&onload=g_recaptcha_callback&hl=" + lang);
+            } else {
                 $('.g-recaptcha').each(function(index, item) {
                     parameters = $.extend({}, $(item).data(), parameters);
                     try {
@@ -466,9 +466,16 @@
         }
     };
 
-    $(window).on('load', function () {
-        $.evo.extended().register();
-    });
+    var ie = /(msie|trident)/i.test(navigator.userAgent) ? navigator.userAgent.match(/(msie |rv:)(\d+(.\d+)?)/i)[2] : false;
+    if (ie && parseInt(ie) <= 9) {
+        $(document).ready(function () {
+            $.evo.extended().register();
+        });
+    } else {
+        $(window).on('load', function () {
+            $.evo.extended().register();
+        });
+    }
 
     $(window).on('resize', function () {
         $.evo.extended().autoheight();

@@ -8,10 +8,10 @@ $session = Session::getInstance();
 require_once PFAD_ROOT . PFAD_INCLUDES . 'kontakt_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
-
+/** @global JTLSmarty $smarty */
 Shop::setPageType(PAGE_KONTAKT);
 $AktuelleSeite = 'KONTAKT';
-$Einstellungen = Shop::getSettings(array(CONF_GLOBAL, CONF_RSS, CONF_KONTAKTFORMULAR));
+$Einstellungen = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_KONTAKTFORMULAR]);
 $linkHelper    = LinkHelper::getInstance();
 $kLink         = $linkHelper->getSpecialPageLinkKey(LINKTYP_KONTAKT);
 //hole alle OberKategorien
@@ -25,7 +25,7 @@ $cCanonicalURL        = '';
 pruefeHttps();
 if (pruefeBetreffVorhanden()) {
     $step            = 'formular';
-    $fehlendeAngaben = array();
+    $fehlendeAngaben = [];
     if (isset($_POST['kontakt']) && intval($_POST['kontakt']) === 1) {
         $fehlendeAngaben = gibFehlendeEingabenKontaktformular();
         $kKundengruppe   = Kundengruppe::getCurrent();
@@ -41,7 +41,7 @@ if (pruefeBetreffVorhanden()) {
                 $oNachricht = baueKontaktFormularVorgaben();
                 // CheckBox Spezialfunktion ausfuehren
                 $oCheckBox->triggerSpecialFunction(CHECKBOX_ORT_KONTAKT, $kKundengruppe, true, $_POST,
-                    array('oKunde' => $oNachricht, 'oNachricht' => $oNachricht))
+                    ['oKunde' => $oNachricht, 'oNachricht' => $oNachricht])
                           ->checkLogging(CHECKBOX_ORT_KONTAKT, $kKundengruppe, $_POST, true);
                 bearbeiteNachricht();
                 $step = 'nachricht versendet';
@@ -53,12 +53,7 @@ if (pruefeBetreffVorhanden()) {
         }
     }
     $lang     = $_SESSION['cISOSprache'];
-    $Contents = Shop::DB()->query("
-        SELECT *
-            FROM tspezialcontentsprache
-            WHERE nSpezialContent = " . (int) SC_KONTAKTFORMULAR . "
-            AND cISOSprache = '" . $lang . "'", 2
-    );
+    $Contents = Shop::DB()->selectAll('tspezialcontentsprache', ['nSpezialContent', 'cISOSprache'], [(int)SC_KONTAKTFORMULAR, $lang]);
     $SpezialContent = new stdClass();
     foreach ($Contents as $Content) {
         $SpezialContent->{$Content->cTyp} = $Content->cContent;

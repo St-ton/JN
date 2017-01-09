@@ -6,17 +6,13 @@
 require_once dirname(__FILE__) . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
 require_once PFAD_ROOT . 'toolsajax.common.php';
+/** @global JTLSmarty $smarty */
 
-$smarty->setCaching(false);
-
-if (isset($_SERVER['HTTP_REFERER'])) {
-    $cAktuelleSeite = substr(strrchr($_SERVER['HTTP_REFERER'], '/'), 1, strlen(strrchr($_SERVER['HTTP_REFERER'], '/')));
-} else {
-    $cAktuelleSeite = '';
-}
+$cAktuelleSeite = (isset($_SERVER['HTTP_REFERER']))
+    ? substr(strrchr($_SERVER['HTTP_REFERER'], '/'), 1, strlen(strrchr($_SERVER['HTTP_REFERER'], '/')))
+    : '';
 if ($cAktuelleSeite === 'warenkorb.php?') {
-    $Einstellungen = Shop::getSettings(
-        array(
+    $Einstellungen        = Shop::getSettings([
             CONF_GLOBAL,
             CONF_NAVIGATIONSFILTER,
             CONF_RSS,
@@ -26,7 +22,8 @@ if ($cAktuelleSeite === 'warenkorb.php?') {
             CONF_KUNDENWERBENKUNDEN,
             CONF_TRUSTEDSHOPS,
             CONF_AUSWAHLASSISTENT,
-            CONF_METAANGABEN)
+            CONF_METAANGABEN
+        ]
     );
     $GlobaleEinstellungen = $Einstellungen['global'];
 }
@@ -62,7 +59,7 @@ function billpayRates()
         $oRates = $oBillpay->calculateRates($_SESSION['Warenkorb']);
         if (is_object($oRates)) {
             $oResponse->nType         = 2;
-            $oResponse->cRateHTML_arr = array();
+            $oResponse->cRateHTML_arr = [];
             $oResponse->nRates_arr    = $oRates->nAvailable_arr;
             // special link
             $cPortalHash      = md5($oBillpay->getSetting('pid'));
@@ -99,11 +96,11 @@ function gibVergleichsliste($nVLKeys = 0, $bWarenkorb = true)
 
     $objResponse                   = new xajaxResponse();
     $session                       = Session::getInstance();
-    $Einstellungen_Vergleichsliste = Shop::getSettings(array(CONF_VERGLEICHSLISTE, CONF_ARTIKELDETAILS));
+    $Einstellungen_Vergleichsliste = Shop::getSettings([CONF_VERGLEICHSLISTE, CONF_ARTIKELDETAILS]);
     $oVergleichsliste              = new Vergleichsliste();
     // Falls $nVLKeys 1 ist, nimm die kArtikel von $_SESSION['nArtikelUebersichtVLKey_arr'] und baue eine neue TMP Vergleichsliste
     if ($nVLKeys == 1 && isset($_SESSION['nArtikelUebersichtVLKey_arr']) && is_array($_SESSION['nArtikelUebersichtVLKey_arr']) && count($_SESSION['nArtikelUebersichtVLKey_arr']) > 0) {
-        $oVergleichsliste->oArtikel_arr = array();
+        $oVergleichsliste->oArtikel_arr = [];
         foreach ($_SESSION['nArtikelUebersichtVLKey_arr'] as $nArtikelUebersichtVLKey) {
             $oVergleichsliste->fuegeEin($nArtikelUebersichtVLKey, false);
         }
@@ -116,17 +113,12 @@ function gibVergleichsliste($nVLKeys = 0, $bWarenkorb = true)
             }
         }
     }
-    $oVergleichslisteArr = array();
+    $oVergleichslisteArr = [];
     if (isset($oVergleichsliste->oArtikel_arr)) {
-        $oArtikelOptionen                             = new stdClass();
-        $oArtikelOptionen->nMerkmale                  = 1;
-        $oArtikelOptionen->nAttribute                 = 1;
-        $oArtikelOptionen->nArtikelAttribute          = 1;
-        $oArtikelOptionen->nVariationKombi            = 1;
-        $oArtikelOptionen->nKeineSichtbarkeitBeachten = 1;
+        $defaultOptions = Artikel::getDefaultOptions();
         foreach ($oVergleichsliste->oArtikel_arr as $article) {
             $oArtikel = new Artikel();
-            $oArtikel->fuelleArtikel($article->kArtikel, $oArtikelOptionen);
+            $oArtikel->fuelleArtikel($article->kArtikel, $defaultOptions);
             $oVergleichslisteArr[] = $oArtikel;
         }
         $oVergleichsliste->oArtikel_arr = $oVergleichslisteArr;
@@ -135,7 +127,7 @@ function gibVergleichsliste($nVLKeys = 0, $bWarenkorb = true)
     // Füge den Vergleich für Statistikzwecke in die DB ein
     setzeVergleich($oVergleichsliste);
 
-    $cExclude = array();
+    $cExclude = [];
     for ($i = 0; $i < 8; $i++) {
         $cElement = gibMaxPrioSpalteV($cExclude, $Einstellungen_Vergleichsliste);
         if (strlen($cElement) > 1) {
@@ -183,7 +175,7 @@ function generateToken()
     $objResponse             = new xajaxResponse();
     $cToken                  = gibToken();
     $cName                   = gibTokenName();
-    $token_arr               = array('name' => $cName, 'token' => $cToken);
+    $token_arr               = ['name' => $cName, 'token' => $cToken];
     $_SESSION['xcrsf_token'] = json_encode($token_arr);
     $objResponse->script("doXcsrfToken('" . $cName . "', '" . $cToken . "');");
 
@@ -251,9 +243,7 @@ function fuegeEinInWarenkorbAjax($kArtikel, $anzahl, $oEigenschaftwerte_arr = ''
     $kArtikel            = intval($kArtikel);
     if ($anzahl > 0 && $kArtikel > 0) {
         $Artikel                     = new Artikel();
-        $oArtikelOptionen            = Artikel::getDefaultOptions();
-        $oArtikelOptionen->nDownload = 1;
-        $Artikel->fuelleArtikel($kArtikel, $oArtikelOptionen);
+        $Artikel->fuelleArtikel($kArtikel, Artikel::getDefaultOptions());
         // Falls der Artikel ein Variationskombikind ist, hole direkt seine Eigenschaften
         if (isset($Artikel->kEigenschaftKombi) && $Artikel->kEigenschaftKombi > 0) {
             $oEigenschaftwerte_arr = gibVarKombiEigenschaftsWerte($Artikel->kArtikel);
@@ -313,8 +303,8 @@ function fuegeEinInWarenkorbAjax($kArtikel, $anzahl, $oEigenschaftwerte_arr = ''
         $pageType    = (Shop::getPageType() !== null) ? Shop::getPageType() : PAGE_UNBEKANNT;
         $boxesToShow = $boxes->build($pageType, true)->render();
         $smarty->assign('Boxen', $boxesToShow);
-        $warensumme[0] = gibPreisStringLocalized($_SESSION['Warenkorb']->gibGesamtsummeWarenExt(array(C_WARENKORBPOS_TYP_ARTIKEL), true));
-        $warensumme[1] = gibPreisStringLocalized($_SESSION['Warenkorb']->gibGesamtsummeWarenExt(array(C_WARENKORBPOS_TYP_ARTIKEL), false));
+        $warensumme[0] = gibPreisStringLocalized($_SESSION['Warenkorb']->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true));
+        $warensumme[1] = gibPreisStringLocalized($_SESSION['Warenkorb']->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], false));
         $smarty->assign('WarenkorbWarensumme', $warensumme);
 
         $kKundengruppe = $_SESSION['Kundengruppe']->kKundengruppe;
@@ -323,8 +313,8 @@ function fuegeEinInWarenkorbAjax($kArtikel, $anzahl, $oEigenschaftwerte_arr = ''
         }
         $oXSelling = gibArtikelXSelling($kArtikel);
 
-        $smarty->assign('WarenkorbVersandkostenfreiHinweis', baueVersandkostenfreiString(gibVersandkostenfreiAb($kKundengruppe), $_SESSION['Warenkorb']->gibGesamtsummeWaren(true, true)))
-               ->assign('WarenkorbVersandkostenfreiLaenderHinweis', baueVersandkostenfreiLaenderString(gibVersandkostenfreiAb($kKundengruppe)))
+        $smarty->assign('WarenkorbVersandkostenfreiHinweis', baueVersandkostenfreiString(gibVersandkostenfreiAb($kKundengruppe),
+            $_SESSION['Warenkorb']->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL, C_WARENKORBPOS_TYP_KUPON, C_WARENKORBPOS_TYP_NEUKUNDENKUPON], true)))
                ->assign('oArtikel', $Artikel)// deprecated 3.12
                ->assign('zuletztInWarenkorbGelegterArtikel', $Artikel)
                ->assign('fAnzahl', $anzahl)
@@ -368,7 +358,7 @@ function setzeErweiterteDarstellung($nED)
     require_once PFAD_ROOT . PFAD_INCLUDES . 'filter_inc.php';
 
     unset($NaviFilter);
-    $NaviFilter = Shop::buildNaviFilter(array());
+    $NaviFilter = Shop::buildNaviFilter([]);
     gibErweiterteDarstellung($Einstellungen, $NaviFilter, $nED);
 
     return $objResponse;
@@ -384,13 +374,13 @@ function setzeErweiterteDarstellung($nED)
 function gibPLZInfo($cFormValue, $cLandISO)
 {
     $objResponse = new xajaxResponse();
-    $oPlz_arr    = array();
+    $oPlz_arr    = [];
     if (strlen($cFormValue) >= 4) {
-        $oPlz_arr = Shop::DB()->query(
-            "SELECT cOrt
-                FROM tplz
-                WHERE cPLZ='" . StringHandler::htmlentities(StringHandler::filterXSS($cFormValue)) . "'
-                    AND cLandISO='" . StringHandler::htmlentities(StringHandler::filterXSS($cLandISO)) . "'", 2
+        $oPlz_arr = Shop::DB()->selectAll(
+            'tplz',
+            ['cPLZ', 'cLandISO'],
+            [StringHandler::htmlentities(StringHandler::filterXSS($cFormValue)), StringHandler::htmlentities(StringHandler::filterXSS($cLandISO))],
+            'cOrt'
         );
     }
     foreach ($oPlz_arr as $i => $oPlz) {
@@ -475,7 +465,7 @@ function suchVorschlag($cValue, $nkeyCode, $cElemSearchID, $cElemSuggestID, $cEl
                 FROM tsuchanfrage
                 WHERE cSuche LIKE '" . $cValue . "%'
                     AND nAktiv = 1
-                    AND kSprache = " . intval(Shop::$kSprache) . "
+                    AND kSprache = " . Shop::getLanguage() . "
                 ORDER BY nAnzahlGesuche DESC, cSuche
                 LIMIT " . $nMaxAnzahl, 2
         );
@@ -498,15 +488,14 @@ function suchVorschlag($cValue, $nkeyCode, $cElemSearchID, $cElemSuggestID, $cEl
         }
     }
 
-    executeHook(
-        HOOK_TOOLSAJAXSERVER_PAGE_SUCHVORSCHLAG, array(
-            'cValue'         => &$cValue,
-            'nkeyCode'       => &$nkeyCode,
-            'cElemSearchID'  => &$cElemSearchID,
-            'cElemSuggestID' => &$cElemSuggestID,
-            'cElemSubmitID'  => &$cElemSubmitID,
-            'objResponse'    => &$objResponse)
-    );
+    executeHook(HOOK_TOOLSAJAXSERVER_PAGE_SUCHVORSCHLAG, [
+        'cValue'         => &$cValue,
+        'nkeyCode'       => &$nkeyCode,
+        'cElemSearchID'  => &$cElemSearchID,
+        'cElemSuggestID' => &$cElemSuggestID,
+        'cElemSubmitID'  => &$cElemSubmitID,
+        'objResponse'    => &$objResponse
+    ]);
 
     return $objResponse;
 }
@@ -519,7 +508,7 @@ function suggestions($cValue)
 {
     global $Einstellungen;
 
-    $cSuch_arr   = array();
+    $cSuch_arr   = [];
     $cValue      = StringHandler::filterXSS($cValue);
     $objResponse = new xajaxResponse();
     $nMaxAnzahl  = 10;
@@ -531,8 +520,8 @@ function suggestions($cValue)
             "SELECT cSuche, nAnzahlTreffer
                 FROM tsuchanfrage
                 WHERE cSuche LIKE '" . $cValue . "%'
-                    AND nAktiv=1
-                    AND kSprache = " . Shop::$kSprache . "
+                    AND nAktiv = 1
+                    AND kSprache = " . Shop::getLanguage() . "
                 ORDER BY nAnzahlGesuche DESC, cSuche
                 LIMIT " . $nMaxAnzahl, 2
         );
@@ -540,19 +529,18 @@ function suggestions($cValue)
             foreach ($oSuchanfrage_arr as $i => $oSuchanfrage) {
                 $cSuche                 = utf8_encode($oSuchanfrage->cSuche);
                 $i                      = count($cSuch_arr);
-                $cSuch_arr[$i]['value'] = $cSuche . ' <span class="ac_resultcount">' . $oSuchanfrage->nAnzahlTreffer . ' ' . StringHandler::htmlentities(Shop::Lang()->get('matches', 'global')) .
-                    ' </span>';
+                $cSuch_arr[$i]['value'] = $cSuche . ' <span class="ac_resultcount">' . $oSuchanfrage->nAnzahlTreffer .
+                    ' ' . StringHandler::htmlentities(Shop::Lang()->get('matches', 'global')) . ' </span>';
                 $cSuch_arr[$i]['result'] = $cSuche;
             }
         }
     }
 
-    executeHook(
-        HOOK_TOOLSAJAXSERVER_PAGE_SUCHVORSCHLAG, array(
-            'cValue'      => &$cValue,
-            'objResponse' => &$objResponse,
-            'cSuch_arr'   => &$cSuch_arr)
-    );
+    executeHook(HOOK_TOOLSAJAXSERVER_PAGE_SUCHVORSCHLAG, [
+        'cValue'      => &$cValue,
+        'objResponse' => &$objResponse,
+        'cSuch_arr'   => &$cSuch_arr
+    ]);
 
     $objResponse->script('this.ac_data = ' . json_encode($cSuch_arr) . ';');
 
@@ -576,19 +564,18 @@ function tauscheVariationKombi($aFormValues, $nVater = 0, $kEigenschaft = 0, $kE
     Shop::$AktuelleSeite = 'ARTIKEL';
     $objResponse         = new xajaxResponse();
     $cVariationKombiKind = '';
-    $Einstellungen       = Shop::getSettings(
-        array(
-            CONF_GLOBAL,
-            CONF_NAVIGATIONSFILTER,
-            CONF_RSS,
-            CONF_ARTIKELUEBERSICHT,
-            CONF_ARTIKELDETAILS,
-            CONF_PREISVERLAUF,
-            CONF_BEWERTUNG,
-            CONF_BOXEN,
-            CONF_PREISVERLAUF,
-            CONF_METAANGABEN)
-    );
+    $Einstellungen       = Shop::getSettings([
+        CONF_GLOBAL,
+        CONF_NAVIGATIONSFILTER,
+        CONF_RSS,
+        CONF_ARTIKELUEBERSICHT,
+        CONF_ARTIKELDETAILS,
+        CONF_PREISVERLAUF,
+        CONF_BEWERTUNG,
+        CONF_BOXEN,
+        CONF_PREISVERLAUF,
+        CONF_METAANGABEN
+    ]);
     //hole aktuellen Vater Artikel
     if (isset($aFormValues['a']) && $aFormValues['a'] > 0) {
         $oVaterArtikel    = new Artikel();
@@ -616,7 +603,7 @@ function tauscheVariationKombi($aFormValues, $nVater = 0, $kEigenschaft = 0, $kE
         $bKindVorhanden = false;
         if (!$nVater) {
             if (is_array($oVaterArtikel->Variationen) && count($oVaterArtikel->Variationen) > 0) {
-                $kVariationKombi_arr = array();
+                $kVariationKombi_arr = [];
                 foreach ($oVaterArtikel->Variationen as $oVariation) {
                     if ($oVariation->cTyp !== 'FREIFELD' && $oVariation->cTyp !== 'PFLICHT-FREIFELD') {
                         if (isset($aFormValues['eigenschaftwert_' . $oVariation->kEigenschaft]) && intval($aFormValues['eigenschaftwert_' . $oVariation->kEigenschaft]) > 0) {
@@ -734,9 +721,9 @@ function tauscheVariationKombi($aFormValues, $nVater = 0, $kEigenschaft = 0, $kE
                             ORDER BY nSort ASC, cName ASC", 2
                     );
                     // Durchlaufe alle Eigenschaften
-                    $oEigenschaftWert_arr = array();
+                    $oEigenschaftWert_arr = [];
                     foreach ($oEigenschaft_arr as $i => $oEigenschaft) {
-                        $oEigenschaftWert_arr[$i] = Shop::DB()->query("SELECT * FROM teigenschaftwert WHERE kEigenschaft = " . intval($oEigenschaft->kEigenschaft), 2);
+                        $oEigenschaftWert_arr[$i] = Shop::DB()->selectAll('teigenschaftwert', 'kEigenschaft', (int)$oEigenschaft->kEigenschaft);
                     }
                     // Baue mögliche Kindartikel
                     $oKombiFilter_arr = gibMoeglicheVariationen($oVaterArtikel->kArtikel, $oEigenschaftWert_arr, $_SESSION['oVarkombiAuswahl']->kGesetzteEigeschaftWert_arr);
@@ -763,8 +750,8 @@ function tauscheVariationKombi($aFormValues, $nVater = 0, $kEigenschaft = 0, $kE
                     foreach ($oVariationKombiKind_arr as $f => $oVariationKombiKind) {
                         $kNichtGesetzteEigenschaft = $oVariationKombiKind->kEigenschaft;
                         // hole eigenschaftswerte
-                        $kBereitsGesetzt      = array();
-                        $oEigenschaftWert_arr = Shop::DB()->query("SELECT * FROM teigenschaftwert WHERE kEigenschaft = " . intval($kNichtGesetzteEigenschaft), 2);
+                        $kBereitsGesetzt      = [];
+                        $oEigenschaftWert_arr = Shop::DB()->selectAll('teigenschaftwert', 'kEigenschaft', (int)$kNichtGesetzteEigenschaft);
                         foreach ($oEigenschaftWert_arr as $oEigenschaftWert) {
                             $kMoeglicheEigenschaftWert_arr                             = $_SESSION['oVarkombiAuswahl']->kGesetzteEigeschaftWert_arr;
                             $kMoeglicheEigenschaftWert_arr[$kNichtGesetzteEigenschaft] = $oEigenschaftWert->kEigenschaftWert;
@@ -789,7 +776,7 @@ function tauscheVariationKombi($aFormValues, $nVater = 0, $kEigenschaft = 0, $kE
                                 $oArtikelOptionen->nMain                     = 0;
                                 $oArtikelOptionen->nWarenlager               = 0;
 
-                                $oTestArtikel->fuelleArtikel($oTMPArtikel->kArtikel, $oArtikelOptionen, Kundengruppe::getCurrent(), Shop::$kSprache);
+                                $oTestArtikel->fuelleArtikel($oTMPArtikel->kArtikel, $oArtikelOptionen, Kundengruppe::getCurrent(), Shop::getLanguage());
 
                                 if ($oTestArtikel->cLagerBeachten === 'Y' && $oTestArtikel->cLagerKleinerNull !== 'Y' && $oTestArtikel->fLagerbestand == 0) {
                                     $objResponse->script("setzeVarInfo({$oEigenschaftWert->kEigenschaftWert}, '{$oTestArtikel->Lageranzeige->AmpelText}', '{$oTestArtikel->Lageranzeige->nStatus}');");
@@ -808,16 +795,16 @@ function tauscheVariationKombi($aFormValues, $nVater = 0, $kEigenschaft = 0, $kE
             $cVariationKombiKind = "{$kEigenschaft}_{$kEigenschaftWert}";
             $objResponse->script("setzeEigenschaftWerte('" . $cVariationKombiKind . "');");
             // Kein Kind vorhanden, gesetzte Werte zurücksetzen
-            $_SESSION['oVarkombiAuswahl']->kGesetzteEigeschaftWert_arr = array($kEigenschaft => $kEigenschaftWert);
+            $_SESSION['oVarkombiAuswahl']->kGesetzteEigeschaftWert_arr = [$kEigenschaft => $kEigenschaftWert];
             $kArtikel                                                  = intval($aFormValues['a']);
-            checkVarkombiDependencies($kArtikel, '', $kEigenschaft, $kEigenschaftWert, array('objResponse' => $objResponse));
+            checkVarkombiDependencies($kArtikel, '', $kEigenschaft, $kEigenschaftWert, ['objResponse' => $objResponse]);
             // Nachricht an den Benutzer
             $cMessage = Shop::Lang()->get('selectionNotAvailable', 'productDetails');
             $objResponse->script("setBuyfieldMessage('{$cMessage}');");
         }
     }
 
-    executeHook(HOOK_TOOLSAJAXSERVER_PAGE_TAUSCHEVARIATIONKOMBI, array('objResponse' => &$objResponse, 'oArtikel' => &$oArtikel));
+    executeHook(HOOK_TOOLSAJAXSERVER_PAGE_TAUSCHEVARIATIONKOMBI, ['objResponse' => &$objResponse, 'oArtikel' => &$oArtikel]);
 
     return $objResponse;
 }
@@ -830,13 +817,13 @@ function baueArtikelDetail($oArtikel, $xPost_arr)
 {
     global $kKategorie, $AktuelleKategorie, $smarty;
 
-    $conf = Shop::getSettings(array(
+    $conf = Shop::getSettings([
         CONF_BOXEN,
         CONF_GLOBAL,
         CONF_ARTIKELDETAILS,
         CONF_PREISVERLAUF,
         CONF_BEWERTUNG
-    ));
+    ]);
     Shop::setPageType(PAGE_ARTIKEL);
     // Letzten angesehenden Artikel hinzufügen
     if ($conf['boxen']['box_zuletztangesehen_anzeigen'] === 'Y') {
@@ -844,7 +831,7 @@ function baueArtikelDetail($oArtikel, $xPost_arr)
         $boxes->addRecentlyViewed($oArtikel->kArtikel, $conf['boxen']['box_zuletztangesehen_anzahl']);
     }
     $oArtikel->berechneSieSparenX($conf['artikeldetails']['sie_sparen_x_anzeigen']);
-    $Artikelhinweise = array();
+    $Artikelhinweise = [];
     baueArtikelhinweise();
 
     if (isset($xPost_arr['fragezumprodukt']) && intval($xPost_arr['fragezumprodukt']) === 1) {
@@ -887,27 +874,28 @@ function baueArtikelDetail($oArtikel, $xPost_arr)
         $bewertung_seite = 1;
     }
     // Bewertungen holen
-    $oArtikel->holeBewertung(
-        $_SESSION['kSprache'],
-        $conf['bewertung']['bewertung_anzahlseite'],
-        $bewertung_seite,
-        $bewertung_sterne,
-        $conf['bewertung']['bewertung_freischalten'],
-        $nSortierung
-    );
-    $oArtikel->holehilfreichsteBewertung(Shop::$kSprache);
-    $oArtikel->Bewertungen->Sortierung = $nSortierung;
-    if ($bewertung_sterne == 0) {
-        //$nAnzahlBewertungen = $oArtikel->Bewertungen->oBewertungGesamt->nAnzahl;
-        $nAnzahlBewertungen = $oArtikel->Bewertungen->nAnzahlSprache;
-    } else {
-        $nAnzahlBewertungen = $oArtikel->Bewertungen->nSterne_arr[5 - $bewertung_sterne];
+    if (!isset($oArtikel->Bewertungen)) {
+        $oArtikel->holeBewertung(
+            $_SESSION['kSprache'],
+            $conf['bewertung']['bewertung_anzahlseite'],
+            $bewertung_seite,
+            $bewertung_sterne,
+            $conf['bewertung']['bewertung_freischalten'],
+            $nSortierung
+        );
+        $oArtikel->holehilfreichsteBewertung(Shop::getLanguage());
     }
+    $oArtikel->Bewertungen->Sortierung = $nSortierung;
+    //$nAnzahlBewertungen = $oArtikel->Bewertungen->oBewertungGesamt->nAnzahl;
+    $nAnzahlBewertungen = ($bewertung_sterne == 0) ?
+        $oArtikel->Bewertungen->nAnzahlSprache :
+        $oArtikel->Bewertungen->nSterne_arr[5 - $bewertung_sterne];
     // Baue Blätter Navigation
     $oBlaetterNavi = baueBewertungNavi($bewertung_seite, $bewertung_sterne, $nAnzahlBewertungen, $conf['bewertung']['bewertung_anzahlseite']);
     // Baue Gewichte für Smarty
-    $oTrennzeichen = Trennzeichen::getUnit(JTLSEPARATER_WEIGHT, Shop::$kSprache);
-    baueGewicht(array($oArtikel), $oTrennzeichen->getDezimalstellen(), $oTrennzeichen->getDezimalstellen());
+    $oTrennzeichen = Trennzeichen::getUnit(JTLSEPARATER_WEIGHT, Shop::getLanguage());
+    $shopURL       = Shop::getURL() . '/';
+    baueGewicht([$oArtikel], $oTrennzeichen->getDezimalstellen(), $oTrennzeichen->getDezimalstellen());
 
     $smarty->assign('Navigation', createNavigation('ARTIKEL', $AufgeklappteKategorien, $oArtikel))
            ->assign('Ueberschrift', $oArtikel->cName)
@@ -929,10 +917,10 @@ function baueArtikelDetail($oArtikel, $xPost_arr)
            ->assign('BewertungsTabAnzeigen', $BewertungsTabAnzeigen)
            ->assign('hinweis', ((isset($cHinweis)) ? $cHinweis : null))
            ->assign('fehler', ((isset($cFehler)) ? $cFehler : null))
-           ->assign('PFAD_IMAGESLIDER', Shop::getURL() . '/' . PFAD_IMAGESLIDER)
-           ->assign('PFAD_MEDIAFILES', Shop::getURL() . '/' . PFAD_MEDIAFILES)
-           ->assign('PFAD_FLASHPLAYER', Shop::getURL() . '/' . PFAD_FLASHPLAYER)
-           ->assign('PFAD_BILDER', Shop::getURL() . '/' . PFAD_BILDER)
+           ->assign('PFAD_IMAGESLIDER', $shopURL . PFAD_IMAGESLIDER)
+           ->assign('PFAD_MEDIAFILES', $shopURL . PFAD_MEDIAFILES)
+           ->assign('PFAD_FLASHPLAYER', $shopURL . PFAD_FLASHPLAYER)
+           ->assign('PFAD_BILDER', $shopURL . PFAD_BILDER)
            ->assign('KONFIG_ITEM_TYP_ARTIKEL', KONFIG_ITEM_TYP_ARTIKEL)
            ->assign('KONFIG_ITEM_TYP_SPEZIAL', KONFIG_ITEM_TYP_SPEZIAL)
            ->assign('KONFIG_ANZEIGE_TYP_CHECKBOX', KONFIG_ANZEIGE_TYP_CHECKBOX)
@@ -965,13 +953,13 @@ function setSelectionWizardAnswerAjax($kMerkmalWert, $kAuswahlAssistentFrage, $n
 
     require_once PFAD_ROOT . PFAD_INCLUDES_EXT . 'auswahlassistent_ext_inc.php';
 
-    $Einstellungen = Shop::getSettings(array(
+    $Einstellungen = Shop::getSettings([
         CONF_GLOBAL,
         CONF_RSS,
         CONF_NAVIGATIONSFILTER,
         CONF_ARTIKELUEBERSICHT,
         CONF_AUSWAHLASSISTENT
-    ));
+    ]);
     $objResponse             = new xajaxResponse();
     $bMerkmalFilterVorhanden = false;
     $bFragenEnde             = false;
@@ -985,7 +973,8 @@ function setSelectionWizardAnswerAjax($kMerkmalWert, $kAuswahlAssistentFrage, $n
         foreach ($_SESSION['AuswahlAssistent']->oAuswahl_arr as $i => $oAuswahl) {
             $cAusgabe = $oAuswahl->cWert;
             if ($_SESSION['AuswahlAssistent']->nFrage > $i) {
-                $cAusgabe .= " <span class='edit fa fa-edit list-group-item-text' title='" . Shop::Lang()->get('edit', 'global') . "' onClick='return resetSelectionWizardAnswer(" . $i . ", " . $kKategorie . ");'></span>";
+                $cAusgabe .= " <span class='edit fa fa-edit list-group-item-text' title='" . Shop::Lang()->get('edit', 'global') .
+                    "' onClick='return resetSelectionWizardAnswer(" . $i . ", " . $kKategorie . ");'></span>";
             }
             if ($i != $_SESSION['AuswahlAssistent']->nFrage) {
                 $objResponse->assign('answer_' . $_SESSION['AuswahlAssistent']->oAuswahlAssistent->oAuswahlAssistentFrage_arr[$i]->kAuswahlAssistentFrage, 'innerHTML', $cAusgabe);
@@ -1016,14 +1005,14 @@ function resetSelectionWizardAnswerAjax($nFrage, $kKategorie)
 
     require_once PFAD_ROOT . PFAD_INCLUDES_EXT . 'auswahlassistent_ext_inc.php';
 
-    $Einstellungen = Shop::getSettings(array(CONF_GLOBAL, CONF_RSS, CONF_NAVIGATIONSFILTER, CONF_ARTIKELUEBERSICHT, CONF_AUSWAHLASSISTENT));
+    $Einstellungen = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_NAVIGATIONSFILTER, CONF_ARTIKELUEBERSICHT, CONF_AUSWAHLASSISTENT]);
     $objResponse   = new xajaxResponse();
 
     $_SESSION['AuswahlAssistent']->nFrage            = $nFrage;
     $_SESSION['AuswahlAssistent']->oAuswahlAssistent = AuswahlAssistent::getGroupsByLocation(
         $_SESSION['AuswahlAssistent']->oAuswahlAssistentOrt->cKey,
         $_SESSION['AuswahlAssistent']->oAuswahlAssistentOrt->kKey,
-        Shop::$kSprache
+        Shop::getLanguage()
     );
     // Bereits ausgewaehlte Antworten loeschen
     foreach ($_SESSION['AuswahlAssistent']->oAuswahl_arr as $i => $oAuswahl) {
@@ -1036,9 +1025,9 @@ function resetSelectionWizardAnswerAjax($nFrage, $kKategorie)
     //@todo: undefined vars..:
     baueFilterSelectionWizard($kKategorie, $NaviFilter, $FilterSQL, $oSuchergebnisse, $nArtikelProSeite, $nLimitN);
     filterSelectionWizard($oSuchergebnisse->MerkmalFilter, $bMerkmalFilterVorhanden);
-    $smarty->assign('Einstellungen', $Einstellungen);
-    $smarty->assign('NaviFilter', $NaviFilter);
-    $smarty->assign('oAuswahlAssistent', $_SESSION['AuswahlAssistent']->oAuswahlAssistent);
+    $smarty->assign('Einstellungen', $Einstellungen)
+           ->assign('NaviFilter', $NaviFilter)
+           ->assign('oAuswahlAssistent', $_SESSION['AuswahlAssistent']->oAuswahlAssistent);
     $objResponse->assign('selection_wizard', 'innerHTML', $smarty->fetch('productwizard/form.tpl'));
     $objResponse->script('aaDeleteSelectBTN();');
     foreach ($_SESSION['AuswahlAssistent']->oAuswahl_arr as $i => $oAuswahl) {
@@ -1086,7 +1075,7 @@ function getValidVarkombis($kVaterArtikel, $kGesetzteEigeschaftWert_arr)
  * @param array  $oParam_arr
  * @return xajaxResponse
  */
-function checkVarkombiDependencies($kVaterArtikel, $cVaterURL, $kEigenschaft = 0, $kEigenschaftWert = 0, $oParam_arr = array())
+function checkVarkombiDependencies($kVaterArtikel, $cVaterURL, $kEigenschaft = 0, $kEigenschaftWert = 0, $oParam_arr = [])
 {
     $objResponse = (isset($oParam_arr['objResponse'])) ?
         $oParam_arr['objResponse'] :
@@ -1113,9 +1102,9 @@ function checkVarkombiDependencies($kVaterArtikel, $cVaterURL, $kEigenschaft = 0
             ORDER BY nSort ASC, cName ASC", 2
         );
         // Durchlaufe alle Eigenschaften
-        $oEigenschaftWert_arr = array();
+        $oEigenschaftWert_arr = [];
         foreach ($oEigenschaft_arr as $i => $oEigenschaft) {
-            $oEigenschaftWert_arr[$i] = Shop::DB()->query("SELECT * FROM teigenschaftwert WHERE kEigenschaft = " . (int)$oEigenschaft->kEigenschaft, 2);
+            $oEigenschaftWert_arr[$i] = Shop::DB()->selectAll('teigenschaftwert', 'kEigenschaft', (int)$oEigenschaft->kEigenschaft);
         }
         // Baue mögliche Kindartikel
         $oKombiFilter_arr = gibMoeglicheVariationen($kVaterArtikel, $oEigenschaftWert_arr, $_SESSION['oVarkombiAuswahl']->kGesetzteEigeschaftWert_arr);
@@ -1142,15 +1131,14 @@ function checkVarkombiDependencies($kVaterArtikel, $cVaterURL, $kEigenschaft = 0
             $oArtikelOptionen->nMain                     = 1;
             $oArtikelOptionen->nWarenlager               = 1;
 
-            $oArtikel->fuelleArtikel($kVaterArtikel, $oArtikelOptionen, Kundengruppe::getCurrent(), Shop::$kSprache);
+            $oArtikel->fuelleArtikel($kVaterArtikel, $oArtikelOptionen, Kundengruppe::getCurrent(), Shop::getLanguage());
 
             $kGesetzeEigenschaft_arr       = array_keys($_SESSION['oVarkombiAuswahl']->kGesetzteEigeschaftWert_arr);
             $kNichtGesetzteEigenschaft_arr = array_values(array_diff($oArtikel->kEigenschaftKombi_arr, $kGesetzeEigenschaft_arr));
-            $kNichtGesetzteEigenschaft     = (int) $kNichtGesetzteEigenschaft_arr[0];
+            $kNichtGesetzteEigenschaft     = (int)$kNichtGesetzteEigenschaft_arr[0];
 
             // hole eigenschaftswerte
-            $oEigenschaftWert_arr = Shop::DB()->query("SELECT * FROM teigenschaftwert WHERE kEigenschaft = " . (int)$kNichtGesetzteEigenschaft, 2);
-
+            $oEigenschaftWert_arr = Shop::DB()->selectAll('teigenschaftwert', 'kEigenschaft', (int)$kNichtGesetzteEigenschaft);
             foreach ($oEigenschaftWert_arr as $oEigenschaftWert) {
                 $kMoeglicheEigenschaftWert_arr                             = $_SESSION['oVarkombiAuswahl']->kGesetzteEigeschaftWert_arr;
                 $kMoeglicheEigenschaftWert_arr[$kNichtGesetzteEigenschaft] = $oEigenschaftWert->kEigenschaftWert;
@@ -1170,7 +1158,7 @@ function checkVarkombiDependencies($kVaterArtikel, $cVaterURL, $kEigenschaft = 0
                     $oArtikelOptionen->nMain                     = 0;
                     $oArtikelOptionen->nWarenlager               = 0;
 
-                    $oTestArtikel->fuelleArtikel($oTMPArtikel->kArtikel, $oArtikelOptionen, Kundengruppe::getCurrent(), Shop::$kSprache);
+                    $oTestArtikel->fuelleArtikel($oTMPArtikel->kArtikel, $oArtikelOptionen, Kundengruppe::getCurrent(), Shop::getLanguage());
 
                     if ($oTestArtikel->cLagerBeachten === 'Y' && $oTestArtikel->cLagerKleinerNull !== 'Y' && $oTestArtikel->fLagerbestand == 0) {
                         $objResponse->script("setzeVarInfo({$oEigenschaftWert->kEigenschaftWert}, '{$oTestArtikel->Lageranzeige->AmpelText}', '{$oTestArtikel->Lageranzeige->nStatus}');");
@@ -1197,11 +1185,11 @@ function checkVarkombiDependencies($kVaterArtikel, $cVaterURL, $kEigenschaft = 0
  */
 function gibMoeglicheVariationen($kVaterArtikel, $oEigenschaftWert_arr, $kGesetzteEigeschaftWert_arr)
 {
-    $oMoeglicheEigenschaften_arr = array();
+    $oMoeglicheEigenschaften_arr = [];
 
     foreach ($oEigenschaftWert_arr as $group) {
         $i    = 2;
-        $cSQL = array();
+        $cSQL = [];
         foreach ($kGesetzteEigeschaftWert_arr as $kEigenschaft => $kEigenschaftWert) {
             if ($group[0]->kEigenschaft != $kEigenschaft) {
                 $cSQL[] = "INNER JOIN teigenschaftkombiwert e{$i} ON e1.kEigenschaftKombi = e{$i}.kEigenschaftKombi AND e{$i}.kEigenschaftWert ={$kEigenschaftWert}";
@@ -1261,6 +1249,6 @@ function gibArtikelByVariationen($kArtikel, $kVariationKombi_arr)
 
     return $oArtikelTMP;
 }
-
+/** @global xajax $xajax */
 $xajax->processRequest();
 header('Content-Type:text/html;charset=' . JTL_CHARSET . ';');

@@ -48,6 +48,7 @@ define('CONF_RMA', 122);
 define('CONF_OBJECTCACHING', 123);
 define('CONF_CACHING', 124);
 define('CONF_LOGO', 125);
+define('CONF_PLUGINZAHLUNGSARTEN', 126);
 //
 define('C_WARENKORBPOS_TYP_ARTIKEL', '1');
 define('C_WARENKORBPOS_TYP_VERSANDPOS', '2');
@@ -196,6 +197,8 @@ define('LINKTYP_BATTERIEGESETZ_HINWEISE', 30);
 define('LINKTYP_WRB_FORMULAR', 31);
 define('LINKTYP_BESTELLVORGANG', 32);
 define('LINKTYP_BESTELLABSCHLUSS', 33);
+define('LINKTYP_WUNSCHLISTE', 34);
+define('LINKTYP_VERGLEICHSLISTE', 35);
 // Artikel
 define('INWKNICHTLEGBAR_LAGER', -1);
 define('INWKNICHTLEGBAR_LAGERVAR', -2);
@@ -332,6 +335,7 @@ define('LASTJOBS_BEWERTUNGSERINNNERUNG', 1); // Bewertungserinnerungskey
 define('LASTJOBS_SITEMAP', 2); // Sitemapkey
 define('LASTJOBS_RSS', 3); // RSSkey
 define('LASTJOBS_GARBAGECOLLECTOR', 4); // GarbageCollector
+define('LASTJOBS_KATEGORIEUPDATE', 5); // Kategorielevel update, nested set build
 // Seitentypen
 define('PAGE_UNBEKANNT', 0);
 define('PAGE_ARTIKEL', 1); // Artikeldetails

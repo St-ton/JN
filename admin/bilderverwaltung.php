@@ -10,7 +10,7 @@ require_once dirname(__FILE__) . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Updater.php';
 
 $hasPermission = $oAccount->permission('DISPLAY_IMAGES_VIEW', false, false);
-
+/** @global JTLSmarty $smarty */
 $action = isset($_GET['action']) ? $_GET['action'] : null;
 $type   = isset($_GET['type']) ? $_GET['type'] : null;
 
@@ -33,46 +33,49 @@ switch ($action) {
         break;
 
     case 'cache':
-        $index = isset($_GET['index']) ? (int) $_GET['index'] : null;
+        $index = isset($_GET['index']) ? (int)$_GET['index'] : null;
 
         if ($type === null || $index === null) {
             makeResponse(null, 'Invalid argument request', 500);
         }
 
         $started = time();
-        $result  = (object) [
-            'total'      => 0,
-            'renderTime' => 0,
-            'nextIndex'  => 0,
-            'images'     => []
+        $result  = (object)[
+            'total'          => 0,
+            'renderTime'     => 0,
+            'nextIndex'      => 0,
+            'renderedImages' => 0,
+            'images'         => []
         ];
 
         if ($index === 0) {
-            $_SESSION['image_queue'] = MediaImage::getImages($type, true);
+            $_SESSION['image_count'] = count(MediaImage::getImages($type, true));
+            $_SESSION['renderedImages'] = 0;
         }
 
-        $imageCount = count($_SESSION['image_queue']);
-        $i          = $index;
-
-        for (; $i < $imageCount; $i++) {
-            $image = $_SESSION['image_queue'][$i];
-
+        $total  = $_SESSION['image_count'];
+        $images = MediaImage::getImages($type, true, $index, IMAGE_PRELOAD_LIMIT);
+        while (count($images) === 0 && $index < $total) {
+            $index += 10;
+            $images = MediaImage::getImages($type, true, $index, IMAGE_PRELOAD_LIMIT);
+        }
+        foreach ($images as $image) {
             $seconds = time() - $started;
             if ($seconds >= 10) {
                 break;
             }
-
-            $result->images[] =
-                MediaImage::cacheImage($image);
-
-            if ($i - $index >= 10) {
-                break;
-            }
+            $result->images[] = MediaImage::cacheImage($image);
+            ++$index;
+            ++$_SESSION['renderedImages'];
         }
-
-        $result->total      = $imageCount;
-        $result->renderTime = time() - $started;
-        $result->nextIndex  = $i;
+        $result->total          = $total;
+        $result->renderTime     = time() - $started;
+        $result->nextIndex      = $index;
+        $result->renderedImages = $_SESSION['renderedImages'];
+        if ($_SESSION['renderedImages'] >= $total) {
+            unset($_SESSION['image_count']);
+            unset($_SESSION['renderedImages']);
+        }
 
         /*
         $urls = [];
@@ -102,7 +105,7 @@ switch ($action) {
         break;
 
     case 'cache_image':
-        $index = isset($_GET['index']) ? (int) $_GET['index'] : null;
+        $index = isset($_GET['index']) ? (int)$_GET['index'] : null;
 
         if ($type === null || $index === null) {
             makeResponse(null, 'Invalid argument request', 500);
@@ -127,6 +130,8 @@ switch ($action) {
     case 'clear':
         if ($type !== null && preg_match('/[a-z]*/', $type)) {
             MediaImage::clearCache($type);
+            unset($_SESSION['image_count']);
+            unset($_SESSION['renderedImages']);
             if (isset($_GET['isAjax']) && $_GET['isAjax'] === 'true') {
                 makeResponse((object)['success' => 'Cache wurde erfolgreich zur&uuml;ckgesetzt']);
             }

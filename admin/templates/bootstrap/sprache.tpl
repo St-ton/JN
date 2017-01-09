@@ -26,14 +26,13 @@
             <div class="input-group p25 left">
                 <span class="input-group-addon">
                     <label for="{#lang#}">Installierte Sprachen:</label>
-                    {$cISO}
                 </span>
                 <input type="hidden" name="sprache" value="1" />
                 <span class="input-group-wrap last">
                     <select class="form-control" name="cISO" id="{#lang#}" onchange="document.sprache.submit();">
                         <option value="">Bitte w&auml;hlen</option>
-                        {foreach from=$oInstallierteSprachen item=oSprache}
-                            <option value="{$oSprache->cISO}" {if $cISO === $oSprache->cISO}selected="selected"{/if}>{$oSprache->cNameDeutsch} {if $oSprache->cShopStandard === 'Y'}(Standard){/if}</option>
+                        {foreach from=$oVerfuegbareSprachen item=oSprache}
+                            <option value="{$oSprache->cISO}" {if $cISO === $oSprache->cISO}selected="selected"{/if}{if !$oSprache->isImported} class="alert-success"{/if}>{$oSprache->cNameDeutsch} {if $oSprache->cShopStandard === 'Y'}(Standard){/if}</option>
                         {/foreach}
                     </select>
                 </span>
@@ -41,7 +40,7 @@
 
         </div>
     </form>
-    {if $cISO|strlen > 0}
+    {if $cISO|strlen > 0 && $bSpracheAktiv === true}
         <ul class="nav nav-tabs" role="tablist">
             <li class="tab{if !isset($cTab) || $cTab === 'sprachvariablen'} active{/if}">
                 <a data-toggle="tab" role="tab" href="#sprachvariablen">Sprachvariablen</a>
@@ -325,6 +324,65 @@
                 </div>
             </div>
             <div id="import" class="tab-pane fade{if isset($cTab) && $cTab === 'import'} active in{/if}">
+                <form action="sprache.php" method="post" enctype="multipart/form-data">
+                    {$jtl_token}
+                    <div id="settings">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">Sprache importieren</h3>
+                            </div>
+                            <div class="panel-body">
+                                <div class="item input-group">
+                                    <span class="input-group-addon">
+                                        <label for="cSprachISO">Sprache</label>
+                                    </span>
+                                    <span class="input-group-wrap">
+                                        <select name="cSprachISO" class="form-control selectBox" id="cSprachISO">
+                                            {foreach from=$oVerfuegbareSprachen item=oSprache}
+                                                <option value="{$oSprache->cISO}" {if $oSprache->cISO === $cISO}selected="selected"{/if}>{$oSprache->cNameDeutsch}</option>
+                                            {/foreach}
+                                        </select>
+                                    </span>
+                                </div>
+
+                                <div class="item input-group">
+                                    <span class="input-group-addon">
+                                        <label for="nTyp">Typ</label>
+                                    </span>
+                                    <span class="input-group-wrap">
+                                        <select name="nTyp" id="nTyp" class="form-control">
+                                            <option value="0">Vorhandene l&ouml;schen, dann importieren</option>
+                                            <option value="1">Vorhandene &uuml;berschreiben, neue importieren</option>
+                                            <option value="2">Vorhandene beibehalten, neue importieren</option>
+                                        </select>
+                                    </span>
+                                </div>
+
+                                <div class="item input-group">
+                                    <span class="input-group-addon">
+                                        <label for="importfile">Datei</label>
+                                    </span>
+                                    <input class="form-control" id="importfile" name="langfile" type="file" size="55" />
+                                </div>
+                            </div>
+                            <div class="panel-footer">
+                                <input type="hidden" name="action" value="import" />
+                                <input type="hidden" name="cISO" value="{$cISO}" />
+                                <button type="submit" value="Importieren" class="btn btn-primary">Importieren</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    {elseif $cISO|strlen > 0 && $bSpracheAktiv === false}
+        <ul class="nav nav-tabs" role="tablist">
+            <li class="tab">
+                <a data-toggle="tab" role="tab" href="#import">Import</a>
+            </li>
+        </ul>
+        <div class="tab-content">
+            <div id="import" class="tab-pane fade active in">
                 <form action="sprache.php" method="post" enctype="multipart/form-data">
                     {$jtl_token}
                     <div id="settings">

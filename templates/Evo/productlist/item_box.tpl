@@ -4,7 +4,7 @@
     {block name="productlist-image"}
     <a class="image-wrapper" href="{$Artikel->cURL}">
         {if isset($Artikel->Bilder[0]->cAltAttribut)}
-            {assign var="alt" value=$Artikel->Bilder[0]->cAltAttribut|strip_tags|escape:"quotes"|truncate:60}
+            {assign var="alt" value=$Artikel->Bilder[0]->cAltAttribut|strip_tags|truncate:60|escape:"html"}
         {else}
             {assign var="alt" value=$Artikel->cName}
         {/if}
@@ -19,7 +19,7 @@
     {block name="productlist-image-caption"}
     <div class="caption">
         <h4 class="title"><a href="{$Artikel->cURL}">{$Artikel->cName}</a></h4>
-        {if $Artikel->fDurchschnittsBewertung > 0}{include file='productdetails/rating.tpl' stars=$Artikel->fDurchschnittsBewertung}<br>{/if}
+        {if $Einstellungen.bewertung.bewertung_anzeigen === 'Y' && $Artikel->fDurchschnittsBewertung > 0}{include file='productdetails/rating.tpl' stars=$Artikel->fDurchschnittsBewertung}<br>{/if}
         {assign var=price_image value=""}
         {if isset($Artikel->Preise->strPreisGrafik_Suche)}
             {assign var=$price_image value=$Artikel->Preise->strPreisGrafik_Suche}
@@ -131,7 +131,12 @@
             {/if}
             {if $Artikel->verfuegbarkeitsBenachrichtigung == 3 && (($Artikel->cLagerBeachten === 'Y' && $Artikel->cLagerKleinerNull !== 'Y') || $Artikel->cLagerBeachten !== 'Y')}
                 <div class="btn-group btn-group-xs" role="group">
-                    <button type="button" id="n{$Artikel->kArtikel}" class="popup notification btn btn-secondary btn-left" title="{lang key="requestNotification" section="global"}"></button>
+                    <button type="button" id="n{$Artikel->kArtikel}" class="popup-dep notification btn btn-default btn-left" title="{lang key="requestNotification" section="global"}">
+                        <span class="fa fa-bell"></span>
+                    </button>
+                </div>
+                <div id="popupn{$Artikel->kArtikel}" class="hidden">
+                    {include file='productdetails/availability_notification_form.tpl' position="popup" tplscope='artikeldetails'}
                 </div>
             {/if}
         </div>
@@ -139,5 +144,4 @@
         <input type="hidden" name="a" value="{$Artikel->kArtikel}" />
     </form>
     *}
-
 </div>{* /product-cell *}

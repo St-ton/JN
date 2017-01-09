@@ -10,13 +10,13 @@
 final class jtlAPI
 {
     /**
-     * @return mixed
+     * @return object|null
      */
     public static function getSubscription()
     {
         try {
             $oNice      = Nice::getInstance();
-            $cParam_arr = array('a' => 'getsubscription', 'key' => $oNice->getAPIKey(), 'domain' => $oNice->getDomain());
+            $cParam_arr = ['a' => 'getsubscription', 'key' => $oNice->getAPIKey(), 'domain' => $oNice->getDomain()];
 
             $oSecurity = new SecurityAPI();
             $oSecurity->setParam_arr($cParam_arr);
@@ -27,12 +27,14 @@ final class jtlAPI
             return json_decode($cReturn);
         } catch (Exception $exc) {
             Jtllog::writeLog("jtlAPI Exception: {$exc->getMessage()}");
+
+            return null;
         }
     }
 
     /**
      * @param int $nVersion
-     * @return mixed
+     * @return object|null
      */
     public static function checkVersion($nVersion)
     {
@@ -49,6 +51,8 @@ final class jtlAPI
             return json_decode($cReturn);
         } catch (Exception $exc) {
             Jtllog::writeLog('jtlAPI Exception: {$exc->getMessage()}');
+
+            return null;
         }
     }
 
@@ -179,7 +183,7 @@ final class SecurityAPI
     public function __construct()
     {
         $this->cSHA1Key   = '';
-        $this->cParam_arr = array();
+        $this->cParam_arr = [];
     }
 
     /**

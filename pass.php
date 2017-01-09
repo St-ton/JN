@@ -6,11 +6,11 @@
 require_once dirname(__FILE__) . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
-
+/** @global JTLSmarty $smarty */
 Shop::setPageType(PAGE_PASSWORTVERGESSEN);
 $AktuelleSeite                   = 'PASSWORT VERGESSEN';
 Shop::$AktuelleSeite             = 'PASSWORT VERGESSEN';
-$Einstellungen                   = Shop::getSettings(array(CONF_GLOBAL, CONF_RSS));
+$Einstellungen                   = Shop::getSettings([CONF_GLOBAL, CONF_RSS]);
 $GLOBALS['GlobaleEinstellungen'] = array_merge($GLOBALS['GlobaleEinstellungen'], $Einstellungen);
 
 pruefeHttps();

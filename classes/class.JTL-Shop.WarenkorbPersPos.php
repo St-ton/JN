@@ -55,6 +55,11 @@ class WarenkorbPersPos
     public $kKonfigitem;
 
     /**
+     * @var int
+     */
+    public $nPosTyp;
+
+    /**
      * @var array
      */
     public $oWarenkorbPersPosEigenschaft_arr = array();
@@ -70,22 +75,24 @@ class WarenkorbPersPos
     public $Artikel;
 
     /**
-     * @param int    $kArtikel
-     * @param string $cArtikelName
-     * @param float  $fAnzahl
-     * @param int    $kWarenkorbPers
-     * @param string $cUnique
-     * @param int    $kKonfigitem
+     * @param int        $kArtikel
+     * @param string     $cArtikelName
+     * @param float      $fAnzahl
+     * @param int        $kWarenkorbPers
+     * @param string     $cUnique
+     * @param int        $kKonfigitem
+     * @param int|string $nPosTyp
      */
-    public function __construct($kArtikel, $cArtikelName, $fAnzahl, $kWarenkorbPers, $cUnique = '', $kKonfigitem = 0)
+    public function __construct($kArtikel, $cArtikelName, $fAnzahl, $kWarenkorbPers, $cUnique = '', $kKonfigitem = 0, $nPosTyp = C_WARENKORBPOS_TYP_ARTIKEL)
     {
-        $this->kArtikel       = intval($kArtikel);
+        $this->kArtikel       = (int)$kArtikel;
         $this->cArtikelName   = $cArtikelName;
         $this->fAnzahl        = $fAnzahl;
         $this->dHinzugefuegt  = 'now()';
-        $this->kWarenkorbPers = intval($kWarenkorbPers);
+        $this->kWarenkorbPers = (int)$kWarenkorbPers;
         $this->cUnique        = $cUnique;
         $this->kKonfigitem    = $kKonfigitem;
+        $this->nPosTyp        = $nPosTyp;
     }
 
     /**
@@ -95,16 +102,18 @@ class WarenkorbPersPos
     public function erstellePosEigenschaften($oEigenschaftwerte_arr)
     {
         foreach ($oEigenschaftwerte_arr as $oEigenschaftwerte) {
-            $oWarenkorbPersPosEigenschaft = new WarenkorbPersPosEigenschaft(
-                $oEigenschaftwerte->kEigenschaft,
-                ((isset($oEigenschaftwerte->kEigenschaftWert)) ? $oEigenschaftwerte->kEigenschaftWert : null),
-                ((isset($oEigenschaftwerte->cFreifeldWert)) ? $oEigenschaftwerte->cFreifeldWert : null),
-                ((isset($oEigenschaftwerte->cEigenschaftName)) ? $oEigenschaftwerte->cEigenschaftName : null),
-                ((isset($oEigenschaftwerte->cEigenschaftWertName)) ? $oEigenschaftwerte->cEigenschaftWertName : null),
-                $this->kWarenkorbPersPos
-            );
-            $oWarenkorbPersPosEigenschaft->schreibeDB();
-            $this->oWarenkorbPersPosEigenschaft_arr[] = $oWarenkorbPersPosEigenschaft;
+            if (isset($oEigenschaftwerte->kEigenschaft)) {
+                $oWarenkorbPersPosEigenschaft = new WarenkorbPersPosEigenschaft(
+                    $oEigenschaftwerte->kEigenschaft,
+                    ((isset($oEigenschaftwerte->kEigenschaftWert)) ? $oEigenschaftwerte->kEigenschaftWert : null),
+                    ((isset($oEigenschaftwerte->cFreifeldWert)) ? $oEigenschaftwerte->cFreifeldWert : null),
+                    ((isset($oEigenschaftwerte->cEigenschaftName)) ? $oEigenschaftwerte->cEigenschaftName : null),
+                    ((isset($oEigenschaftwerte->cEigenschaftWertName)) ? $oEigenschaftwerte->cEigenschaftWertName : null),
+                    $this->kWarenkorbPersPos
+                );
+                $oWarenkorbPersPosEigenschaft->schreibeDB();
+                $this->oWarenkorbPersPosEigenschaft_arr[] = $oWarenkorbPersPosEigenschaft;
+            }
         }
 
         return $this;
@@ -123,6 +132,7 @@ class WarenkorbPersPos
         $oTemp->dHinzugefuegt    = $this->dHinzugefuegt;
         $oTemp->cUnique          = $this->cUnique;
         $oTemp->kKonfigitem      = $this->kKonfigitem;
+        $oTemp->nPosTyp          = $this->nPosTyp;
         $this->kWarenkorbPersPos = Shop::DB()->insert('twarenkorbperspos', $oTemp);
 
         return $this;
@@ -142,6 +152,7 @@ class WarenkorbPersPos
         $oTemp->dHinzugefuegt     = $this->dHinzugefuegt;
         $oTemp->cUnique           = $this->cUnique;
         $oTemp->kKonfigitem       = $this->kKonfigitem;
+        $oTemp->nPosTyp           = $this->nPosTyp;
 
         return Shop::DB()->update('twarenkorbperspos', 'kWarenkorbPersPos', $this->kWarenkorbPersPos, $oTemp);
     }

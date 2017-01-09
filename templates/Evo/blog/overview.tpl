@@ -13,7 +13,7 @@
     <form id="frm_filter" name="frm_filter" action="{get_static_route id='news.php'}" method="post" class="form-inline text-center">
         {$jtl_token}
 
-        <select name="nSort" onchange="this.form.submit();" class="form-control">
+        <select name="nSort" onchange="this.form.submit();" class="form-control form-group">
             <option value="-1"{if $nSort == -1} selected{/if}>{lang key="newsSort" section="news"}</option>
             <option value="1"{if $nSort == 1} selected{/if}>{lang key="newsSortDateDESC" section="news"}</option>
             <option value="2"{if $nSort == 2} selected{/if}>{lang key="newsSortDateASC" section="news"}</option>
@@ -23,7 +23,7 @@
             <option value="6"{if $nSort == 6} selected{/if}>{lang key="newsSortCommentsASC" section="news"}</option>
         </select>
 
-        <select name="cDatum" onchange="this.form.submit();" class="form-control">
+        <select name="cDatum" onchange="this.form.submit();" class="form-control form-group">
             <option value="-1"{if $cDatum == -1} selected{/if}>{lang key="newsDateFilter" section="news"}</option>
             {if !empty($oDatum_arr)}
                 {foreach name="datum" from=$oDatum_arr item=oDatum}
@@ -33,7 +33,7 @@
         </select>
 
         {lang key="newsCategorie" section="news" assign="cCurrentKategorie"}
-        <select name="nNewsKat" onchange="this.form.submit();" class="form-control">
+        <select name="nNewsKat" onchange="this.form.submit();" class="form-control form-group">
             <option value="-1"{if $nNewsKat == -1} selected{/if}>{lang key="newsCategorie" section="news"}</option>
             {if !empty($oNewsKategorie_arr)}
                 {foreach name="newskats" from=$oNewsKategorie_arr item=oNewsKategorie}
@@ -43,68 +43,34 @@
             {/if}
         </select>
 
-        <select name="nAnzahl" onchange="this.form.submit();" class="form-control">
-            <option value="-1"{if $smarty.session.NewsNaviFilter->nAnzahl == -1} selected{/if}>{lang key="newsPerSite" section="news"}</option>
-            <option value="2"{if $smarty.session.NewsNaviFilter->nAnzahl == 2} selected{/if}>2</option>
-            <option value="5"{if $smarty.session.NewsNaviFilter->nAnzahl == 5} selected{/if}>5</option>
-            <option value="10"{if $smarty.session.NewsNaviFilter->nAnzahl == 10} selected{/if}>10</option>
-            <option value="20"{if $smarty.session.NewsNaviFilter->nAnzahl == 20} selected{/if}>20</option>
+        <select class="form-control form-group" name="{$oPagination->getId()}_nItemsPerPage" id="{$oPagination->getId()}_nItemsPerPage"
+                onchange="this.form.submit();">
+            <option value="0" {if $oPagination->getItemsPerPage() == 0} selected{/if}>
+                {lang key='newsPerSite' section='news'}
+            </option>
+            {foreach $oPagination->getItemsPerPageOptions() as $nItemsPerPageOption}
+                <option value="{$nItemsPerPageOption}"{if $oPagination->getItemsPerPage() == $nItemsPerPageOption} selected{/if}>
+                    {$nItemsPerPageOption}
+                </option>
+            {/foreach}
         </select>
 
-        <input name="submitGo" type="submit" value="{lang key="filterGo" section="global"}" class="btn btn-default" />
+        <button name="submitGo" type="submit" value="{lang key="filterGo" section="global"}" class="btn btn-default">{lang key="filterGo" section="global"}</button>
     </form>
 </div>
 
 {if isset($noarchiv) && $noarchiv}
     <div class="alert alert-info">{lang key="noNewsArchiv" section="news"}.</div>
-{else}
-    {if !empty($oNewsUebersicht_arr)}
-        <div id="newsContent">
-            {if !empty($cCurrentKategorie)}
-                <h2>{$cCurrentKategorie}</h2>
-                <hr>
-            {/if}
-            {foreach name=uebersicht from=$oNewsUebersicht_arr item=oNewsUebersicht}
-                {include file="blog/preview.tpl"}
-            {/foreach}
-        </div>
-    {/if}
-
-    {if isset($oBlaetterNavi->nAktiv) && $oBlaetterNavi->nAktiv == 1}
-        <div class="row">
-            <div class="col-xs-7 col-md-8 col-lg-9">
-                <ul class="pagination">
-                    {if $oBlaetterNavi->nAktuelleSeite > 1}
-                        <li>
-                            <a href="{get_static_route id='news.php'}?s={$oBlaetterNavi->nVoherige}">&laquo; {lang key="previous" section="productOverview"}</a>
-                        </li>
-                    {/if}
-                    {if $oBlaetterNavi->nAnfang != 0}
-                        <li><a href="{get_static_route id='news.php'}?s={$oBlaetterNavi->nAnfang}">{$oBlaetterNavi->nAnfang}</a> ...</li>
-                    {/if}
-                    {foreach name=blaetternavi from=$oBlaetterNavi->nBlaetterAnzahl_arr item=Blatt}
-                        {if $oBlaetterNavi->nAktuelleSeite == $Blatt}
-                            <li class="active"><span>{$Blatt}</span></li>
-                        {else}
-                            <li><a href="{get_static_route id='news.php'}?s={$Blatt}">{$Blatt}</a></li>
-                        {/if}
-                    {/foreach}
-                    {if $oBlaetterNavi->nEnde != 0}
-                        <li> ... <a href="{get_static_route id='news.php'}?s={$oBlaetterNavi->nEnde}">{$oBlaetterNavi->nEnde}</a></li>
-                    {/if}
-                    {if $oBlaetterNavi->nAktuelleSeite < $oBlaetterNavi->nSeiten}
-                        <li>
-                            <a href="{get_static_route id='news.php'}?s={$oBlaetterNavi->nNaechste}">{lang key="next" section="productOverview"} &raquo;</a>
-                        </li>
-                    {/if}
-                </ul>
-            </div>
-            <div class="col-xs-6 col-md-4 col-lg-3 text-right">
-                <div class="pagination pagination-text">
-                    {$oBlaetterNavi->nVon}
-                    - {$oBlaetterNavi->nBis} {lang key="from" section="product rating"} {$oBlaetterNavi->nAnzahl}
-                </div>
-            </div>
-        </div>
-    {/if}
+{elseif !empty($oNewsUebersicht_arr)}
+    <div id="newsContent">
+        {if !empty($cCurrentKategorie)}
+            <h2>{$cCurrentKategorie}</h2>
+            <hr>
+            {include file='snippets/pagination.tpl' oPagination=$oPagination cThisUrl='news.php' parts=['label']}
+        {/if}
+        {foreach name=uebersicht from=$oNewsUebersicht_arr item=oNewsUebersicht}
+            {include file="blog/preview.tpl"}
+        {/foreach}
+    </div>
+    {include file='snippets/pagination.tpl' oPagination=$oPagination cThisUrl='news.php' parts=['pagi']}
 {/if}

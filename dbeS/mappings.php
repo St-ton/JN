@@ -5,7 +5,7 @@
  */
 
 //mappings
-$mKunde = array(
+$mKunde = [
     'cKundenNr',
     'cAnrede',
     'cTitel',
@@ -28,48 +28,48 @@ $mKunde = array(
     'fRabatt',
     'cBundesland',
     'cZusatz'
-);
+];
 
-$mKategorie = array(
+$mKategorie = [
     'cName',
     'cSeo',
     'cBeschreibung',
     'nSort'
-);
+];
 
-$mKategorieSprache = array(
+$mKategorieSprache = [
     'cName',
     'cSeo',
     'cBeschreibung',
     'cMetaDescription',
     'cMetaKeywords',
     'cTitleTag',
-);
+];
 
-$mKategorieKundengruppe = array(
+$mKategorieKundengruppe = [
     'fRabatt'
-);
+];
 
-$mKategorieAttribut = array(
+$mKategorieAttribut = [
     'cName',
     'cWert'
-);
+];
 
-$mNormalKategorieAttribut = array(
+$mNormalKategorieAttribut = [
     'cName'                 => null,
     'cWert'                 => null,
     'nSort'                 => 0,
     'bIstFunktionsAttribut' => 0,
-);
+];
 
-$mKategorieAttributSprache = array(
+$mKategorieAttributSprache = [
     'cName',
     'cWert',
-);
+];
 
-$mKategorieSichtbarkeit = array();
+$mKategorieSichtbarkeit = [];
 
-$mLieferadresse = array(
+$mLieferadresse = [
     'cFirma',
     'cLand',
     'cNachname',
@@ -82,9 +82,9 @@ $mLieferadresse = array(
     'cAdressZusatz',
     'cZusatz',
     'cAnrede'
-);
+];
 
-$mFirma = array(
+$mFirma = [
     'cName',
     'cUnternehmer',
     'cStrasse',
@@ -103,67 +103,67 @@ $mFirma = array(
     'cIBAN',
     'cBIC',
     'cKontoinhaber'
-);
+];
 
-$mHersteller = array(
+$mHersteller = [
     'cName',
     'cSeo',
     'cHomepage',
     'nSortNr'
-);
+];
 
-$mHerstellerSprache = array(
+$mHerstellerSprache = [
     'cMetaTitle',
     'cMetaKeywords',
     'cMetaDescription',
     'cBeschreibung'
-);
+];
 
 //
-$mHerstellerSpracheSeo = array(
+$mHerstellerSpracheSeo = [
     'cSeo'
-);
+];
 
-$mLieferstatus = array(
+$mLieferstatus = [
     'cName'
-);
+];
 
-$mXsellgruppe = array(
+$mXsellgruppe = [
     'cName',
     'cBeschreibung'
-);
+];
 
-$mEinheit = array(
+$mEinheit = [
     'cName'
-);
+];
 
-$mKundengruppe = array(
+$mKundengruppe = [
     'cName',
     'fRabatt',
     'cStandard',
     'cShopLogin',
     'nNettoPreise'
-);
+];
 
-$mKundengruppensprache = array(
+$mKundengruppensprache = [
     'cName'
-);
+];
 
-$mKundengruppenattribut = array(
+$mKundengruppenattribut = [
     'cName',
     'cWert'
-);
+];
 
-$mSprache = array(
+$mSprache = [
     'cNameEnglisch',
     'cNameDeutsch',
     'cISO',
     'cStandard',
     'cShopStandard',
     'cWawiStandard'
-);
+];
 
-$mWaehrung = array(
+$mWaehrung = [
     'cName',
     'cNameHTML',
     'fFaktor',
@@ -172,9 +172,9 @@ $mWaehrung = array(
     'cVorBetrag',
     'cTrennzeichenCent',
     'cTrennzeichenTausend'
-);
+];
 
-$mArtikel = array(
+$mArtikel = [
     'cArtNr',
     'cName',
     'cHAN',
@@ -235,13 +235,13 @@ $mArtikel = array(
     'nLiefertageWennAusverkauft',
     'nAutomatischeLiefertageberechnung',
     'nBearbeitungszeit'
-);
+];
 
-$mArtikelQuickSync = array(
+$mArtikelQuickSync = [
     'fLagerbestand'
-);
+];
 
-$mPreise = array(
+$mPreise = [
     'fVKNetto' => 0,
     'nAnzahl1' => 0,
     'nAnzahl2' => 0,
@@ -253,71 +253,71 @@ $mPreise = array(
     'fPreis3'  => 0,
     'fPreis4'  => 0,
     'fPreis5'  => 0
-);
+];
 
-$mPreis = array(
+$mPreis = [
     'tpreisdetail'
-);
+];
 
-$mPreisDetail = array(
+$mPreisDetail = [
     'nAnzahlAb',
     'fNettoPreis'
-);
+];
 
-$mArtikelSonderpreis = array(
+$mArtikelSonderpreis = [
     'cAktiv'     => 'Y',
     'dStart'     => null,
     'nAnzahl'    => 0,
     'nIstAnzahl' => 0,
     'nIstDatum'  => 0,
     'dEnde'      => '0000-00-00'
-);
+];
 
-$mSonderpreise = array(
+$mSonderpreise = [
     'fNettoPreis'
-);
+];
 
-$mKategorieArtikel = array();
+$mKategorieArtikel = [];
 
-$mArtikelSprache = array(
+$mArtikelSprache = [
     'cName',
     'cSeo',
     'cBeschreibung',
     'cKurzBeschreibung'
-);
+];
 
-$mArtikelAttribut = array(
+$mArtikelAttribut = [
     'cName',
     'cWert'
-);
+];
 
-$mAttribut = array(
+$mAttribut = [
     'cName',
     'cStringWert',
     'cTextWert',
     'nSort'
-);
+];
 
-$mAttributSprache = array(
+$mAttributSprache = [
     'cName',
     'cStringWert',
     'cTextWert'
-);
+];
 
-$mEigenschaftsichtbarkeit = array();
+$mEigenschaftsichtbarkeit = [];
 
-$mEigenschaft = array(
+$mEigenschaft = [
     'cName',
     'cTyp',
     'cWaehlbar',
     'nSort'
-);
+];
 
-$mEigenschaftSprache = array(
+$mEigenschaftSprache = [
     'cName'
-);
+];
 
-$mEigenschaftWert = array(
+$mEigenschaftWert = [
     'cName'          => null,
     'fAufpreisNetto' => 0,
     'fGewichtDiff'   => 0,
@@ -325,52 +325,52 @@ $mEigenschaftWert = array(
     'nSort'          => 0,
     'fLagerbestand'  => 0,
     'fPackeinheit'   => 0
-);
+];
 
-$mArtikelSichtbarkeit = array();
+$mArtikelSichtbarkeit = [];
 
-$mEigenschaftWertSprache = array(
+$mEigenschaftWertSprache = [
     'cName'
-);
+];
 
-$mEigenschaftWertAufpreis = array(
+$mEigenschaftWertAufpreis = [
     'fAufpreisNetto'
-);
+];
 
-$mEigenschaftWertSichtbarkeit = array();
+$mEigenschaftWertSichtbarkeit = [];
 
-$mXSell = array();
+$mXSell = [];
 
-$mArtikelPict = array(
+$mArtikelPict = [
     'cPfad',
     'nNr'
-);
+];
 
-$mtArtikelPict = array(
+$mtArtikelPict = [
     'kArtikel',
     'nNr'
-);
+];
 
-$mKategoriePict = array(
+$mKategoriePict = [
     'cPfad',
     'cType'
-);
+];
 
-$mKonfiggruppePict = array(
+$mKonfiggruppePict = [
     'cPfad',
     'cType'
-);
+];
 
-$mEigenschaftWertPict = array(
+$mEigenschaftWertPict = [
     'cPfad',
     'cType'
-);
+];
 
-$mDelEigenschaftWertPict = array(
+$mDelEigenschaftWertPict = [
     'kEigenschaftWert'
-);
+];
 
-$mBestellung = array(
+$mBestellung = [
     'dVersandt',
     'cIdentCode',
     'cVersandInfo',
@@ -387,26 +387,26 @@ $mBestellung = array(
     'fWaehrungsFaktor',
     'cBezahlt',
     'cPUIZahlungsdaten'
-);
+];
 
-$mGutschein = array(
+$mGutschein = [
     'fWert',
     'cGrund'
-);
+];
 
-$mSteuerzone = array(
+$mSteuerzone = [
     'cName'
-);
+];
 
-$mSteuerzoneland = array(
+$mSteuerzoneland = [
     'cISO'
-);
+];
 
-$mWarengruppe = array(
+$mWarengruppe = [
     'cName'
-);
+];
 
-$mWarenlager = array(
+$mWarenlager = [
     'cName',
     'cKuerzel',
     'cLagerTyp',
@@ -416,123 +416,123 @@ $mWarenlager = array(
     'cOrt',
     'cLand',
     'nFulfillment'
-);
+];
 
-$mMasseinheit = array(
+$mMasseinheit = [
     'cCode',
-);
+];
 
-$mMasseinheitsprache = array(
+$mMasseinheitsprache = [
     'cName',
-);
+];
 
-$mArtikelWarenlager = array(
+$mArtikelWarenlager = [
     'fBestand',
     'fZulauf',
     'dZulaufDatum'
-);
+];
 
-$mArtikelAbnahme = array(
+$mArtikelAbnahme = [
     'fMindestabnahme',
     'fIntervall'
-);
+];
 
-$mSteuerklasse = array(
+$mSteuerklasse = [
     'cName',
     'cStandard'
-);
+];
 
-$mSteuersatz = array(
+$mSteuersatz = [
     'fSteuersatz',
     'nPrio'
-);
+];
 
-$mEigenschaftWertAbhaengigkeit = array();
+$mEigenschaftWertAbhaengigkeit = [];
 
-$mVersandklasse = array(
+$mVersandklasse = [
     'cName'
-);
+];
 
-$mMerkmal = array(
+$mMerkmal = [
     'nSort',
     'cName',
     'nGlobal',
     'cTyp'
-);
+];
 
-$mMerkmalSprache = array(
+$mMerkmalSprache = [
     'cName'
-);
+];
 
-$mMerkmalWert = array(
+$mMerkmalWert = [
     'nSort'
-);
+];
 
-$mMerkmalWertSprache = array(
+$mMerkmalWertSprache = [
     'cWert',
     'cSeo',
     'cMetaTitle',
     'cMetaKeywords',
     'cMetaDescription',
     'cBeschreibung'
-);
+];
 
-$mMediendatei = array(
+$mMediendatei = [
     'cPfad',
     'cURL',
     'cTyp',
     'nSort'
-);
+];
 
-$mStueckliste = array(
+$mStueckliste = [
     'fAnzahl'
-);
+];
 
-$mMediendateisprache = array(
+$mMediendateisprache = [
     'cName',
     'cBeschreibung'
-);
+];
 
-$mMediendateiattribut = array(
+$mMediendateiattribut = [
     'cName',
     'cWert'
-);
+];
 
-$mArtikelUpload = array(
+$mArtikelUpload = [
     'nTyp',
     'cName',
     'cBeschreibung',
     'cDateiTyp',
     'nPflicht'
-);
+];
 
-$mArtikelUploadSprache = array(
+$mArtikelUploadSprache = [
     'cName',
     'cBeschreibung'
-);
+];
 
-$mArtikelkonfiggruppe = array(
+$mArtikelkonfiggruppe = [
     'nSort'
-);
+];
 
-$mHerstellerBild = array(
+$mHerstellerBild = [
     'cPfad',
     'cType'
-);
+];
 
-$mMerkmalWertBild = array(
+$mMerkmalWertBild = [
     'cPfad',
     'cType'
-);
+];
 
-$mMerkmalBild = array(
+$mMerkmalBild = [
     'cPfad',
     'cType'
-);
+];
 
-$mEigenschaftKombiWert = array();
+$mEigenschaftKombiWert = [];
 
-$mRechnungsadresse = array(
+$mRechnungsadresse = [
     'cAnrede',
     'cTitel',
     'cVorname',
@@ -551,9 +551,9 @@ $mRechnungsadresse = array(
     'cWWW',
     'cMail',
     'cZusatz'
-);
+];
 
-$mWarenkorbpos = array(
+$mWarenkorbpos = [
     'cUnique',
     'cName',
     'cLieferstatus',
@@ -565,16 +565,16 @@ $mWarenkorbpos = array(
     'nAnzahl',
     'nPosTyp',
     'cHinweis'
-);
+];
 
-$mWarenkorbposeigenschaft = array(
+$mWarenkorbposeigenschaft = [
     'cEigenschaftName',
     'cEigenschaftWertName',
     'cFreifeldWert',
     'fAufpreis'
-);
+];
 
-$mDownload = array(
+$mDownload = [
     'cID',
     'cPfad',
     'cPfadVorschau',
@@ -582,27 +582,27 @@ $mDownload = array(
     'nTage',
     'dErstellt',
     'nSort',
-);
+];
 
-$mDownloadSprache = array(
+$mDownloadSprache = [
     'cName',
     'cBeschreibung'
-);
+];
 
-$mKonfigSprache = array(
+$mKonfigSprache = [
     'cName',
     'cBeschreibung'
-);
+];
 
-$mKonfigGruppe = array(
+$mKonfigGruppe = [
     'nMin',
     'nMax',
     'nTyp',
     'nSort',
     'cKommentar'
-);
+];
 
-$mKonfigItem = array(
+$mKonfigItem = [
     'nPosTyp',
     'bSelektiert',
     'bEmpfohlen',
@@ -615,16 +615,16 @@ $mKonfigItem = array(
     'fInitial',
     'bIgnoreMultiplier',
     'nSort'
-);
+];
 
-$mKonfigItemPreis = array(
+$mKonfigItemPreis = [
     'kKundengruppe',
     'kSteuerklasse',
     'fPreis',
     'nTyp'
-);
+];
 
-$mLieferschein = array(
+$mLieferschein = [
     'kLieferschein',
     'kInetBestellung',
     'cLieferscheinNr',
@@ -633,24 +633,24 @@ $mLieferschein = array(
     'nStatus',
     'dErstellt',
     'bEmailVerschickt'
-);
+];
 
-$mLieferscheinpos = array(
+$mLieferscheinpos = [
     'kLieferscheinPos',
     'kLieferschein',
     'kBestellPos',
     'kWarenlager',
     'fAnzahl'
-);
+];
 
-$mLieferscheinposinfo = array(
+$mLieferscheinposinfo = [
     'kLieferscheinPos',
     'dMHD',
     'cChargeNr',
     'cSeriennummer'
-);
+];
 
-$mVersand = array(
+$mVersand = [
     'kVersand',
     'kLieferschein',
     'cLogistik',
@@ -658,4 +658,4 @@ $mVersand = array(
     'cIdentCode',
     'cHinweis',
     'dErstellt'
-);
+];

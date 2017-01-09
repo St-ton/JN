@@ -70,7 +70,10 @@
                                 <td class="tcenter">{$oBewertung->nSterne}</td>
                                 <td class="tcenter">{$oBewertung->Datum}</td>
                                 <td class="tcenter">
-                                    <a href="bewertung.php?a=editieren&kBewertung={$oBewertung->kBewertung}&tab=freischalten&token={$smarty.session.jtl_token}" class="btn btn-default"><i class="fa fa-edit"></i></a>
+                                    <a href="bewertung.php?a=editieren&kBewertung={$oBewertung->kBewertung}&tab=freischalten&token={$smarty.session.jtl_token}"
+                                       class="btn btn-default" title="{#modify#}">
+                                        <i class="fa fa-edit"></i>
+                                    </a>
                                 </td>
                             </tr>
                             </tbody>
@@ -128,7 +131,10 @@
                                     <td class="tcenter">{$oBewertungLetzten50->nSterne}</td>
                                     <td class="tcenter">{$oBewertungLetzten50->Datum}</td>
                                     <td class="tcenter7">
-                                        <a href="bewertung.php?a=editieren&kBewertung={$oBewertungLetzten50->kBewertung}&tab=letzten50&token={$smarty.session.jtl_token}" class="btn btn-default"><i class="fa fa-edit"></i></a>
+                                        <a href="bewertung.php?a=editieren&kBewertung={$oBewertungLetzten50->kBewertung}&tab=letzten50&token={$smarty.session.jtl_token}"
+                                           class="btn btn-default" title="{#modify#}">
+                                            <i class="fa fa-edit"></i>
+                                        </a>
                                     </td>
                                 </tr>
                             {/foreach}
@@ -141,7 +147,7 @@
                             </tfoot>
                         </table>
                         <div class="panel-footer">
-                            <button name="loeschen" type="submit" value="{#ratingDelete#}" class="btn btn-danger"><i class="fa fa-trash"></i> Markierte l&ouml;schen</button>
+                            <button name="loeschen" type="submit" value="{#ratingDelete#}" class="btn btn-danger"><i class="fa fa-trash"></i> {#deleteSelected#}</button>
                         </div>
                     </div>
                 </form>
@@ -193,7 +199,12 @@
                                     <td class="TD4"><b>{$oBewertungAktiv->cTitel}</b><br />{$oBewertungAktiv->cText}</td>
                                     <td class="tcenter">{$oBewertungAktiv->nSterne}</td>
                                     <td class="tcenter">{$oBewertungAktiv->Datum}</td>
-                                    <td class="tcenter"><a href="bewertung.php?a=editieren&kBewertung={$oBewertungAktiv->kBewertung}&tab=artikelbewertung" class="btn btn-default"><i class="fa fa-edit"></i></a></td>
+                                    <td class="tcenter">
+                                        <a href="bewertung.php?a=editieren&kBewertung={$oBewertungAktiv->kBewertung}&tab=artikelbewertung"
+                                           class="btn btn-default" title="{#modify#}">
+                                            <i class="fa fa-edit"></i>
+                                        </a>
+                                    </td>
                                 </tr>
                             {/foreach}
                             </tbody>

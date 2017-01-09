@@ -178,7 +178,7 @@ function ipl_core_send_curl_request($requestUrl, $requestData)
  * Send a HTTP request over a plain socket connection
  * @param string $requestUrl
  * @param string $requestData
- * @param Array|null $basicAuthParams
+ * @param array|null $basicAuthParams
  * @param int $redirects
  * @return bool|string
  */
@@ -677,7 +677,7 @@ function ipl_core_build_list($tagName, $attributes)
 
 /**
  * Joins associative array keys with values and returns them as a string
- * @param $a Array Values to be joined
+ * @param $a array Values to be joined
  * @return string Joined string
  */
 function ipl_core_build_attr_string($a)
@@ -2206,7 +2206,7 @@ class XMLParser
     /**
      * Gets the reference to the current direct parent
      *
-     * @return object
+     * @return string
      */
     public function GetStackLocation()
     {

@@ -177,8 +177,8 @@ $(document).ready(function() {
                             </span>
                             <span class="input-group-wrap">
                                 <select id="b2FAauth" class="form-control" name="b2FAauth">
-                                    <option value="0"{if !isset($oAccount->b2FAauth) || (isset($oAccount->b2FAauth) && $oAccount->b2FAauth == 0)} selected="selected"{/if}>Nein</option>
-                                    <option value="1"{if isset($oAccount->b2FAauth) && $oAccount->b2FAauth == 1} selected="selected"{/if}>Ja</option>
+                                    <option value="0"{if !isset($oAccount->b2FAauth) || (isset($oAccount->b2FAauth) && (bool)$oAccount->b2FAauth === false)} selected="selected"{/if}>Nein</option>
+                                    <option value="1"{if isset($oAccount->b2FAauth) && (bool)$oAccount->b2FAauth === true} selected="selected"{/if}>Ja</option>
                                 </select>
                             </span>
                         </div>
@@ -220,7 +220,7 @@ $(document).ready(function() {
                             }
                         </script>
                         {/literal}
-                        <div id="TwoFAwrapper" {if isset($cError_arr.c2FAsecret)}class="error"{/if} style="border:1px solid lightgrey;padding:10px;">
+                        <div id="TwoFAwrapper" {if isset($cError_arr.c2FAsecret)}class="error"{/if} style="border:1px solid {if isset($cError_arr.c2FAsecret)}red{else}lightgrey{/if};padding:10px;">
                             <div id="QRcodeCanvas" style="display:{if '' !== $QRcodeString }block{else}none{/if}">
                                 <div class="alert alert-danger" role="alert">
                                     <strong>Achtung:</strong> Bitte beachten Sie, dass Sie mit diesem Account keine M&ouml;glichkeit mehr haben, in das Shop-Backend zu gelangen,<br>
@@ -228,7 +228,7 @@ $(document).ready(function() {
                                 </div>
                                 Scannen Sie den hier abgebildeten QR-Code mit der "Google-Authenticator"-app auf Ihrem Handy.<br>
                                 <div id="QRcode" class="qrcode">{$QRcodeString}</div><br>
-                                <input type="hidden" id="c2FAsecret" name="c2FAsecret" value="">
+                                <input type="hidden" id="c2FAsecret" name="c2FAsecret" value="{$cKnownSecret}">
                                 <br>
                             </div>
                             Um einen neuen QR-Code zu erzeugen, klicken Sie bitte hier:<br>
@@ -268,7 +268,7 @@ $(document).ready(function() {
             {if !empty($extContent)}
                 {$extContent}
             {/if}
-		</div>
+        </div>
         <div class="panel-footer">
             <div class="btn-group">
                 <input type="hidden" name="action" value="account_edit" />
@@ -282,4 +282,3 @@ $(document).ready(function() {
         </div>
     </form>
 </div>
-

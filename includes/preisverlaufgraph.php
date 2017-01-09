@@ -8,12 +8,12 @@ if (intval($_GET['kArtikel']) > 0 && intval($_GET['kKundengruppe']) > 0 && intva
     require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.PreisverlaufGraph.php';
     //session starten
     $session       = Session::getInstance();
-    $Einstellungen = Shop::getSettings(array(CONF_PREISVERLAUF));
-    $oConfig_arr   = Shop::DB()->query("SELECT * FROM teinstellungen WHERE kEinstellungenSektion = " . CONF_PREISVERLAUF, 2);
-    $kArtikel      = (int) $_GET['kArtikel'];
-    $kKundengruppe = (int) $_GET['kKundengruppe'];
-    $kSteuerklasse = (int) $_GET['kSteuerklasse'];
-    $nMonat        = (int) $Einstellungen['preisverlauf']['preisverlauf_anzahl_monate'];
+    $Einstellungen = Shop::getSettings([CONF_PREISVERLAUF]);
+    $oConfig_arr   = Shop::DB()->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_PREISVERLAUF);
+    $kArtikel      = (int)$_GET['kArtikel'];
+    $kKundengruppe = (int)$_GET['kKundengruppe'];
+    $kSteuerklasse = (int)$_GET['kSteuerklasse'];
+    $nMonat        = (int)$Einstellungen['preisverlauf']['preisverlauf_anzahl_monate'];
 
     if (count($oConfig_arr) > 0) {
         if (!isset($oPreisConfig)) {

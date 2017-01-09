@@ -56,7 +56,7 @@ function getCurrencyConversionAjax($fPreisNetto, $fPreisBrutto, $cTargetID)
 /**
  * @param float  $fPreisNetto
  * @param float  $fPreisBrutto
- * @param string $cTargetID
+ * @param string $cTooltipID
  * @return xajaxResponse
  */
 function setCurrencyConversionAjaxTooltip($fPreisNetto, $fPreisBrutto, $cTooltipID)
@@ -462,6 +462,33 @@ function getAttributeList($cSearch, $cWrapperID)
 }
 
 /**
+ * @param string $cSearch
+ * @param array $aParam
+ * @return xajaxResponse
+ */
+function getLinkList($cSearch, $aParam)
+{
+    $cSearch      = Shop::DB()->escape($cSearch);
+    $cSearch      = utf8_decode($cSearch);
+    $oArticle_arr = array();
+    $oResponse    = new xajaxResponse();
+    if (strlen($cSearch) >= 2) {
+        $oArticle_arr = Shop::DB()->query("
+          SELECT kLink AS kPrimary, kLink AS cBase, cName 
+            FROM tlink 
+            WHERE cName LIKE '" . $cSearch . "%' LIMIT 50", 2
+        );
+        foreach ($oArticle_arr as &$oArticle) {
+            $oArticle->cName = utf8_encode($oArticle->cName);
+        }
+    }
+    $oResponse->script('this.search_arr = ' . json_encode($oArticle_arr) . ';');
+
+    return $oResponse;
+}
+
+
+/**
  * Auswahlassistent
  *
  * @param array $kMM_arr
@@ -573,6 +600,7 @@ $xajax->registerFunction('getCategoryList');
 $xajax->registerFunction('getCategoryListFromString');
 $xajax->registerFunction('getTagList');
 $xajax->registerFunction('getAttributeList');
+$xajax->registerFunction('getLinkList');
 $xajax->registerFunction('getMerkmalWerteAA');
 $xajax->registerFunction('setRMAStatusAjax');
 $xajax->registerFunction('saveBannerAreas');

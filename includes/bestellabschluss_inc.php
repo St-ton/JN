@@ -24,6 +24,8 @@ function bestellungKomplett()
         $_SESSION['Lieferadresse'] &&
         $_SESSION['Versandart'] &&
         $_SESSION['Zahlungsart'] &&
+        (int)$_SESSION['Versandart']->kVersandart > 0 &&
+        (int)$_SESSION['Zahlungsart']->kZahlungsart > 0 &&
         verifyGPCDataInteger('abschluss') === 1 &&
         count($_SESSION['cPlausi_arr']) === 0
     ) ? 1 : 0;
@@ -40,10 +42,10 @@ function gibFehlendeEingabe()
     if (!isset($_SESSION['Lieferadresse']) || !$_SESSION['Lieferadresse']) {
         return 2;
     }
-    if (!isset($_SESSION['Versandart']) || !$_SESSION['Versandart']) {
+    if (!isset($_SESSION['Versandart']) || !$_SESSION['Versandart'] || (int)$_SESSION['Versandart']->kVersandart == 0) {
         return 3;
     }
-    if (!isset($_SESSION['Zahlungsart']) || !$_SESSION['Zahlungsart']) {
+    if (!isset($_SESSION['Zahlungsart']) || !$_SESSION['Zahlungsart'] || (int)$_SESSION['Zahlungsart']->kZahlungsart == 0) {
         return 4;
     }
     if (count($_SESSION['cPlausi_arr']) > 0) {
@@ -780,14 +782,19 @@ function KuponVerwendungen()
         $KuponKunde                = new stdClass();
         $KuponKunde->kKupon        = $kKupon;
         $KuponKunde->kKunde        = $_SESSION['Warenkorb']->kKunde;
+        $KuponKunde->cMail         = StringHandler::filterXSS($_SESSION['Kunde']->cMail);
         $KuponKunde->dErstellt     = 'now()';
         $KuponKunde->nVerwendungen = 1;
-        $KuponKundeBisher          = Shop::DB()->select('tkuponkunde', 'kKupon', $kKupon);
+        $KuponKundeBisher          = Shop::DB()->query('SELECT SUM(nVerwendungen) AS nVerwendungen FROM tkuponkunde WHERE cMail = "' . $KuponKunde->cMail . '";',1);
         if (isset($KuponKundeBisher->nVerwendungen) && $KuponKundeBisher->nVerwendungen > 0) {
             $KuponKunde->nVerwendungen += $KuponKundeBisher->nVerwendungen;
         }
-        Shop::DB()->delete('tkuponkunde', ['kKunde', 'kKupon'], [(int)$KuponKunde->kKunde, $kKupon]);
+        Shop::DB()->delete('tkuponkunde', ['kKunde', 'kKupon'], [(int) $KuponKunde->kKunde, $kKupon]);
         Shop::DB()->insert('tkuponkunde', $KuponKunde);
+
+        if (isset($_SESSION['NeukundenKupon']->kKupon) && $_SESSION['NeukundenKupon']->kKupon > 0) {
+            Shop::DB()->delete('tkuponneukunde',['kKupon', 'cEmail'], [$kKupon, $_SESSION['Kunde']->cMail]);
+        }
 
         if (isset($_SESSION['kBestellung']) && $_SESSION['kBestellung'] > 0) {
             $kBestellung = (int)$_SESSION['kBestellung'];
@@ -850,11 +857,11 @@ function setzeSmartyWeiterleitung($bestellung)
     if (class_exists('Upload')) {
         Upload::speicherUploadDateien($_SESSION['Warenkorb'], $bestellung->kBestellung);
     }
-    if (Jtllog::doLog(JTLLOG_LEVEL_NOTICE)) {
+    if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
         Jtllog::writeLog(
             'setzeSmartyWeiterleitung wurde mit folgender Zahlungsart ausgefuehrt: ' .
             print_r($_SESSION['Zahlungsart'], true),
-            JTLLOG_LEVEL_NOTICE,
+            JTLLOG_LEVEL_DEBUG,
             false,
             'cModulId',
             $_SESSION['Zahlungsart']->cModulId
@@ -1058,7 +1065,7 @@ function fakeBestellung()
 
             $bestellung->Positionen[$i]->cName = $bestellung->Positionen[$i]->cName[$_SESSION['cISOSprache']];
             $bestellung->Positionen[$i]->fMwSt = gibUst($oPositionen->kSteuerklasse);
-            $bestellung->Positionen[$i]->setzeGesamtpreisLoacalized();
+            $bestellung->Positionen[$i]->setzeGesamtpreisLocalized();
         }
     }
     if (isset($_SESSION['Bestellung']->GuthabenNutzen) && $_SESSION['Bestellung']->GuthabenNutzen == 1) {
@@ -1153,6 +1160,21 @@ function finalisiereBestellung($cBestellNr = '', $bSendeMail = true)
     $bestellung = new Bestellung($_SESSION['kBestellung']);
     $bestellung->fuelleBestellung(0);
     $bestellung->machGoogleAnalyticsReady();
+
+    if (isset($bestellung->oRechnungsadresse)) {
+        $hash = Kuponneukunde::Hash(
+            null,
+            trim($bestellung->oRechnungsadresse->cNachname),
+            trim($bestellung->oRechnungsadresse->cStrasse),
+            null,
+            trim($bestellung->oRechnungsadresse->cPLZ),
+            trim($bestellung->oRechnungsadresse->cOrt),
+            trim($bestellung->oRechnungsadresse->cLand)
+        );
+        $obj = new stdClass();
+        $obj->cVerwendet = 'Y';
+        Shop::DB()->update('tkuponneukunde', 'cDatenHash', $hash, $obj);
+    }
 
     $_upd              = new stdClass();
     $_upd->kKunde      = (int)$_SESSION['Warenkorb']->kKunde;

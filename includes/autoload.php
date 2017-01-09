@@ -17,12 +17,12 @@ require PFAD_ROOT . PFAD_INCLUDES . 'vendor/autoload.php';
  */
 function ShopAutoload($class)
 {
-    $classPaths = array(
+    $classPaths = [
         PFAD_ROOT . PFAD_CLASSES,
         PFAD_ROOT . PFAD_ADMIN . PFAD_CLASSES,
         PFAD_ROOT . PFAD_INCLUDES_EXT,
         PFAD_ROOT . PFAD_CLASSES_CORE
-    );
+    ];
 
     $endsWith = function ($haystack, $needle) {
         $length = strlen($needle);

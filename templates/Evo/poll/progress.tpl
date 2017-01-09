@@ -4,10 +4,10 @@
  *}
 <h1>{lang key="umfrage" section="umfrage"}</h1>
 
-{if $hinweis}
+{if !empty($hinweis)}
     <div class="alert alert-info">{$hinweis}</div>
 {/if}
-{if $fehler}
+{if !empty($fehler)}
     <div class="alert alert-danger">{$fehler}</div>
 {/if}
 
@@ -18,7 +18,7 @@
         {foreach name=umfragefrage from=$oUmfrage->oUmfrageFrage_arr item=oUmfrageFrage}
             {assign var=kUmfrageFrage value=$oUmfrageFrage->kUmfrageFrage}
             <input name="kUmfrageFrage[]" type="hidden" value="{$oUmfrageFrage->kUmfrageFrage}">
-            <div class="well panel-wrap {if $oUmfrageFrage->nNotwendig == 1} required{/if}">
+            <div {if $oUmfrageFrage->nNotwendig == 1}class="required"{/if}>
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h3 class="panel-title">{$oUmfrageFrage->cName} {if $oUmfrageFrage->nNotwendig == 1} *{/if}</h3>
@@ -255,15 +255,17 @@
             </div>{* /well *}
         {/foreach}
         <div class="row">
-            <div class="col-xs-6">
+            <div class="col-xs-4">
                 {if $nAktuelleSeite <= $nAnzahlSeiten && $nAktuelleSeite != 1}
                     <button class="btn btn-default pull-left" name="back" type="submit" value="back">
                         <span>&laquo; {lang key="umfrageBack" section="umfrage"}</span>
                     </button>
                 {/if}
+            </div>
+            <div class="col-xs-4 text-center">
                 <b>{lang key="umfrageQPage" section="umfrage"} {$nAktuelleSeite}</b> {lang key="from" section="product rating"} {$nAnzahlSeiten}
             </div>
-            <div class="col-xs-6">
+            <div class="col-xs-4">
                 {if $nAktuelleSeite > 0 && $nAktuelleSeite < $nAnzahlSeiten}
                     <button class="btn btn-default pull-right" name="next" type="submit" value="next">
                         <span>{lang key="umfrageNext" section="umfrage"}</span>
@@ -274,7 +276,7 @@
 
         <input name="s" type="hidden" value="{$nAktuelleSeite}" />
         {if $nAktuelleSeite == $nAnzahlSeiten}
-            <input name="end" type="submit" value="{lang key="umfrageSubmit" section="umfrage"}" class="btn btn-primary submit" />
+            <input name="end" type="submit" value="{lang key="umfrageSubmit" section="umfrage"}" class="btn btn-primary submit top17" />
         {/if}
     </form>
 {/if}

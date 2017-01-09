@@ -1,4 +1,4 @@
-{include file='tpl_inc/seite_header.tpl' cTitel=#kampagneDetailStats#}
+{include file='tpl_inc/seite_header.tpl' cTitel=#kampagneDetailStatsDef#}
 <div id="content" class="container-fluid">
     <div id="tabellenLivesuche">
         <table class="table">
@@ -14,9 +14,12 @@
         </table>
     </div>
 
-    <div id="payment">
+    <div class="panel panel-default" id="payment">
         {if isset($oKampagneStat_arr) && $oKampagneStat_arr|@count > 0 && isset($oKampagneDef->kKampagneDef) && $oKampagneDef->kKampagneDef > 0}
-            {include file='pagination.tpl' cSite=1 cUrl='kampagne.php' oBlaetterNavi=$oBlaetterNaviDefDetail hash=''}
+            {include file='tpl_inc/pagination.tpl' oPagination=$oPagiDefDetail
+                     cParam_arr=['kKampagne'=>$oKampagne->kKampagne, 'defdetail'=>1,
+                                 'kKampagneDef'=>$oKampagneDef->kKampagneDef, 'cZeitParam'=>$cZeitraumParam,
+                                 'token'=>$smarty.session.jtl_token]}
             <div id="tabellenLivesuche">
                 <table class="table">
                     <tr>
@@ -34,12 +37,13 @@
                     {/foreach}
                 </table>
             </div>
-            {include file='pagination.tpl' cSite=1 cUrl='kampagne.php' oBlaetterNavi=$oBlaetterNaviDefDetail hash=''}
         {else}
             <div class="alert alert-info" role="alert">{#noDataAvailable#}</div>
-            <div class="container-fluid">
-                <a href="kampagne.php?kKampagne={$oKampagne->kKampagne}&detail=1&token={$smarty.session.jtl_token}"><i class="fa fa-angle-double-left"></i> {#kampagneBackBTN#}</a>
-            </div>
         {/if}
+        <div class="panel-footer">
+            <a class="btn btn-default" href="kampagne.php?kKampagne={$oKampagne->kKampagne}&detail=1&token={$smarty.session.jtl_token}">
+                <i class="fa fa-angle-double-left"></i> {#kampagneBackBTN#}
+            </a>
+        </div>
     </div>
 </div>

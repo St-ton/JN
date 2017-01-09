@@ -32,7 +32,7 @@ class Nice
     /**
      * @var array
      */
-    private $kShopModul_arr = array();
+    private $kShopModul_arr = [];
 
     /**
      * @return Nice
@@ -58,8 +58,8 @@ class Nice
                 $cPassE         = substr(base64_decode($oBrocken->cBrocken), (strlen(base64_decode($oBrocken->cBrocken)) - 11));
                 $cBlowfishKey   = $cPassA . $cPassE;
                 $oXTEA          = new XTEA($cBlowfishKey);
-                $this->cBrocken = $oXTEA->decrypt(str_replace(array($cPassA, $cPassE), array('', ''), base64_decode($oBrocken->cBrocken)));
-                Shop::Cache()->set('cbrocken', $this->cBrocken, array(CACHING_GROUP_CORE));
+                $this->cBrocken = $oXTEA->decrypt(str_replace([$cPassA, $cPassE], ['', ''], base64_decode($oBrocken->cBrocken)));
+                Shop::Cache()->set('cbrocken', $this->cBrocken, [CACHING_GROUP_CORE]);
             }
         }
         // Brocken zerlegen
@@ -75,7 +75,7 @@ class Nice
                 $bCount = count($cBrocken_arr);
                 if ($bCount > 2) {
                     for ($i = 2; $i < $bCount; $i++) {
-                        $this->kShopModul_arr[] = intval($cBrocken_arr[$i]);
+                        $this->kShopModul_arr[] = (int)$cBrocken_arr[$i];
                     }
                 }
             }
@@ -91,15 +91,9 @@ class Nice
      */
     public function checkErweiterung($kShopModulCheck)
     {
-        if (isset($this->cAPIKey) && strlen($this->cAPIKey) > 0 && !empty($this->cDomain) && count($this->kShopModul_arr) > 0) {
-            foreach ($this->kShopModul_arr as $kShopModul) {
-                if ($kShopModul === intval($kShopModulCheck)) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
+        return (isset($this->cAPIKey) && strlen($this->cAPIKey) > 0 && !empty($this->cDomain) && count($this->kShopModul_arr) > 0)
+            ? in_array(intval($kShopModulCheck), $this->kShopModul_arr, true)
+            : false;
     }
 
     /**
@@ -121,6 +115,10 @@ class Nice
         defined('SHOP_ERWEITERUNG_DOWNLOADS') || define('SHOP_ERWEITERUNG_DOWNLOADS', 8051);
         // Konfigurator Modul
         defined('SHOP_ERWEITERUNG_KONFIGURATOR') || define('SHOP_ERWEITERUNG_KONFIGURATOR', 8061);
+        // Warenrücksendung Modul
+        defined('SHOP_ERWEITERUNG_WARENRUECKSENDUNG') || define('SHOP_ERWEITERUNG_WARENRUECKSENDUNG', 8071);
+        // Brandfree Option
+        defined('SHOP_ERWEITERUNG_BRANDFREE') || define('SHOP_ERWEITERUNG_BRANDFREE', 8081);
 
         return $this;
     }
@@ -130,7 +128,7 @@ class Nice
      */
     public function gibAlleMoeglichenModule()
     {
-        $oModul_arr = array();
+        $oModul_arr = [];
         if (!defined(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
             $this->ladeDefines();
         }
@@ -176,7 +174,14 @@ class Nice
         $oModul->cDefine  = 'SHOP_ERWEITERUNG_KONFIGURATOR';
         $oModul->cURL     = '';
         $oModul_arr[]     = $oModul;
-
+        // Brandfree Option
+        $oModul           = new stdClass();
+        $oModul->kModulId = SHOP_ERWEITERUNG_BRANDFREE;
+        $oModul->cName    = 'Brandfree Option';
+        $oModul->cDefine  = 'SHOP_ERWEITERUNG_BRANDFREE';
+        $oModul->cURL     = '';
+        $oModul_arr[]     = $oModul;
+        
         return $oModul_arr;
     }
 

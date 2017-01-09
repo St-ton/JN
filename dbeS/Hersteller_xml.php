@@ -29,7 +29,8 @@ if (auth()) {
             $return = 0;
             foreach ($list as $zip) {
                 if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                    Jtllog::writeLog('bearbeite: ' . PFAD_SYNC_TMP . $zip['filename'] . ' size: ' . filesize(PFAD_SYNC_TMP . $zip['filename']), JTLLOG_LEVEL_DEBUG, false, 'Hersteller_xml');
+                    Jtllog::writeLog('bearbeite: ' . PFAD_SYNC_TMP . $zip['filename'] . ' size: ' .
+                        filesize(PFAD_SYNC_TMP . $zip['filename']), JTLLOG_LEVEL_DEBUG, false, 'Hersteller_xml');
                 }
                 $d   = file_get_contents(PFAD_SYNC_TMP . $zip['filename']);
                 $xml = XML_unserialize($d);
@@ -59,24 +60,23 @@ echo $return;
  */
 function bearbeiteHerstellerDeletes($xml)
 {
-    $cacheTags = array();
+    $cacheTags = [];
     if (isset($xml['del_hersteller']['kHersteller']) && intval($xml['del_hersteller']['kHersteller']) > 0) {
-        $xml['del_hersteller']['kHersteller'] = array($xml['del_hersteller']['kHersteller']);
+        $xml['del_hersteller']['kHersteller'] = [$xml['del_hersteller']['kHersteller']];
     }
-
     if (isset($xml['del_hersteller']['kHersteller']) && is_array($xml['del_hersteller']['kHersteller'])) {
         foreach ($xml['del_hersteller']['kHersteller'] as $kHersteller) {
             $kHersteller = (int)$kHersteller;
             if ($kHersteller > 0) {
-                $affectedArticles = Shop::DB()->query("SELECT kArtikel FROM tartikel WHERE kHersteller = " . $kHersteller, 2);
+                $affectedArticles = Shop::DB()->selectAll('tartikel', 'kHersteller', $kHersteller, 'kArtikel');
                 Shop::DB()->delete('tseo', ['kKey', 'cKey'], [$kHersteller, 'kHersteller']);
                 Shop::DB()->delete('thersteller', 'kHersteller', $kHersteller);
                 Shop::DB()->delete('therstellersprache', 'kHersteller', $kHersteller);
 
-                executeHook(HOOK_HERSTELLER_XML_BEARBEITEDELETES, array('kHersteller' => $kHersteller));
+                executeHook(HOOK_HERSTELLER_XML_BEARBEITEDELETES, ['kHersteller' => $kHersteller]);
                 $cacheTags[] = CACHING_GROUP_MANUFACTURER . '_' . $kHersteller;
                 if (is_array($affectedArticles)) {
-                    $articleCacheTags = array();
+                    $articleCacheTags = [];
                     foreach ($affectedArticles as $article) {
                         $articleCacheTags[] = CACHING_GROUP_ARTICLE . '_' . $article->kArtikel;
                     }
@@ -85,12 +85,6 @@ function bearbeiteHerstellerDeletes($xml)
             }
         }
         Shop::Cache()->flushTags($cacheTags);
-        if (Shop::Cache()->isPageCacheEnabled()) {
-            if (!isset($smarty)) {
-                $smarty = Shop::Smarty();
-            }
-            $smarty->clearCache(null, 'jtlc|manufacturer');
-        }
     }
 }
 
@@ -104,9 +98,9 @@ function bearbeiteHersteller($xml)
         if (is_array($hersteller_arr)) {
             $oSprache_arr = gibAlleSprachen();
             $mfCount      = count($hersteller_arr);
-            $cacheTags    = array();
+            $cacheTags    = [];
             for ($i = 0; $i < $mfCount; $i++) {
-                $affectedArticles = Shop::DB()->query("SELECT kArtikel FROM tartikel WHERE kHersteller = " . (int)$hersteller_arr[$i]->kHersteller, 2);
+                $affectedArticles = Shop::DB()->selectAll('tartikel', 'kHersteller', (int)$hersteller_arr[$i]->kHersteller, 'kArtikel');
                 Shop::DB()->delete('tseo', ['kKey', 'cKey'], [(int)$hersteller_arr[$i]->kHersteller,'kHersteller']);
                 if (!trim($hersteller_arr[$i]->cSeo)) {
                     $hersteller_arr[$i]->cSeo = getFlatSeoPath($hersteller_arr[$i]->cName);
@@ -117,7 +111,7 @@ function bearbeiteHersteller($xml)
                 //seo checken
                 $hersteller_arr[$i]->cSeo = getSeo($hersteller_arr[$i]->cSeo);
                 $hersteller_arr[$i]->cSeo = checkSeo($hersteller_arr[$i]->cSeo);
-                DBUpdateInsert('thersteller', array($hersteller_arr[$i]), 'kHersteller');
+                DBUpdateInsert('thersteller', [$hersteller_arr[$i]], 'kHersteller');
 
                 $cXMLSprache = '';
                 if (isset($xml['hersteller']['thersteller'][$i])) {
@@ -148,10 +142,10 @@ function bearbeiteHersteller($xml)
 
                 updateXMLinDB($cXMLSprache, 'therstellersprache', $GLOBALS['mHerstellerSprache'], 'kHersteller', 'kSprache');
 
-                executeHook(HOOK_HERSTELLER_XML_BEARBEITEINSERT, array('oHersteller' => $hersteller_arr[$i]));
+                executeHook(HOOK_HERSTELLER_XML_BEARBEITEINSERT, ['oHersteller' => $hersteller_arr[$i]]);
                 $cacheTags[] = CACHING_GROUP_MANUFACTURER . '_' . (int)$hersteller_arr[$i]->kHersteller;
                 if (is_array($affectedArticles)) {
-                    $articleCacheTags = array();
+                    $articleCacheTags = [];
                     foreach ($affectedArticles as $article) {
                         $articleCacheTags[] = CACHING_GROUP_ARTICLE . '_' . $article->kArtikel;
                     }
@@ -159,12 +153,6 @@ function bearbeiteHersteller($xml)
                 }
             }
             Shop::Cache()->flushTags($cacheTags);
-            if (Shop::Cache()->isPageCacheEnabled()) {
-                if (!isset($smarty)) {
-                    $smarty = Shop::Smarty();
-                }
-                $smarty->clearCache(null, 'jtlc|manufacturer');
-            }
         }
     }
 }

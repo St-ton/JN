@@ -97,11 +97,11 @@ class StringHandler
         }
         $cString = trim(strip_tags($input));
         $cString = ($nSuche == 1) ?
-            str_replace(array('\\\'', '\\'), '', $cString) :
-            str_replace(array('\"', '\\\'', '\\', '"', '\''), '', $cString);
+            str_replace(['\\\'', '\\'], '', $cString) :
+            str_replace(['\"', '\\\'', '\\', '"', '\''], '', $cString);
 
         if (strlen($cString) > 10 && $nSuche == 1) {
-            $cString = substr(str_replace(array('(', ')', ';'), '', $cString), 0, 50);
+            $cString = substr(str_replace(['(', ')', ';'], '', $cString), 0, 50);
         }
 
         return $cString;
@@ -116,7 +116,7 @@ class StringHandler
      */
     public static function is_utf8($string)
     {
-        return preg_match(
+        $res = preg_match(
             '%^(?:[\x09\x0A\x0D\x20-\x7E]  # ASCII
                                 | [\xC2-\xDF][\x80-\xBF]             # non-overlong 2-byte
                                 |  \xE0[\xA0-\xBF][\x80-\xBF]        # excluding overlongs
@@ -127,6 +127,15 @@ class StringHandler
                                 |  \xF4[\x80-\x8F][\x80-\xBF]{2}     # plane 16
                             )*$%xs', $string
         );
+        if ($res === false) {
+            //some kind of pcre error happend - probably PREG_JIT_STACKLIMIT_ERROR.
+            //we could check this via preg_last_error()
+            $res = (function_exists('mb_detect_encoding'))
+                ? (int)(mb_detect_encoding($string, 'UTF-8', true) === 'UTF-8')
+                : 0;
+        }
+
+        return $res;
     }
 
     /**
@@ -142,7 +151,7 @@ class StringHandler
             $data    = utf8_encode($data);
         }
         // Fix &entity\n;
-        $data = str_replace(array('&amp;', '&lt;', '&gt;'), array('&amp;amp;', '&amp;lt;', '&amp;gt;'), $data);
+        $data = str_replace(['&amp;', '&lt;', '&gt;'], ['&amp;amp;', '&amp;lt;', '&amp;gt;'], $data);
         $data = preg_replace('/(&#*\w+)[\x00-\x20]+;/u', '$1;', $data);
         $data = preg_replace('/(&#x*[0-9A-F]+);*/iu', '$1;', $data);
         $data = html_entity_decode($data, ENT_COMPAT, 'UTF-8');
@@ -225,7 +234,7 @@ class StringHandler
      */
     public static function getISOMappings()
     {
-        $cIso639_2To639_1 = array(
+        $cIso639_2To639_1 = [
             'aar' => 'aa', // Afar
             'abk' => 'ab', // Abkhazian
             'afr' => 'af', // Afrikaans
@@ -410,7 +419,7 @@ class StringHandler
             'yor' => 'yo', // Yoruba
             'zha' => 'za', // Zhuang; Chuang
             'zul' => 'zu'
-        );
+        ];
 
         return $cIso639_2To639_1;
     }
@@ -465,7 +474,7 @@ class StringHandler
             return array_filter(explode(';', $ssk));
         }
 
-        return array();
+        return [];
     }
 
     /**
@@ -508,5 +517,22 @@ class StringHandler
         return ($validate) ?
             filter_var($sanitized, FILTER_VALIDATE_URL) :
             $sanitized;
+    }
+
+    /**
+     * Build an URL string from a given associative array of parts according to PHP's parse_url()
+     *
+     * @param array $parts
+     * @return string - the resulting URL
+     */
+    public static function buildUrl($parts)
+    {
+        return (isset($parts['scheme']) ? $parts['scheme'] . '://' : '') .
+            (isset($parts['user']) ? $parts['user'] . (isset($parts['pass']) ? ':' . $parts['pass'] : '') . '@' : '') .
+            (isset($parts['host']) ? $parts['host'] : '') .
+            (isset($parts['port']) ? ':' . $parts['port'] : '') .
+            (isset($parts['path']) ? $parts['path'] : '') .
+            (isset($parts['query']) ? '?' . $parts['query'] : '') .
+            (isset($parts['fragment']) ? '#' . $parts['fragment'] : '');
     }
 }

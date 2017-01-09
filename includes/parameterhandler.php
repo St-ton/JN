@@ -8,7 +8,7 @@
  * Affiliate trennen
  *
  * @param string $seo
- * @return mixed
+ * @return string
  */
 function extFremdeParameter($seo)
 {

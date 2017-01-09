@@ -1,12 +1,14 @@
 {if is_array($oNews_arr)}
     <ul class="linklist">
+        {strip}
         {foreach name="news" from=$oNews_arr item=oNews}
             <li>
-                <img src="https://images.jtl-software.de/shop/icon_info.gif" alt="" title="{$oNews->cBetreff}" />
-                <a href="{$oNews->cUrlExt|urldecode}" title="{$oNews->cBetreff}" target="_blank">{$oNews->cBetreff|truncate:'50':'...'}</a>
-                <span class="date">{$oNews->dGueltigVon|date_format:"%d.%m.%Y"}</span>
+                <p>
+                    <a class="" href="{$oNews->cUrlExt|urldecode}" target="_blank"><span class="date label label-default pull-right">{$oNews->dErstellt|date_format:"%d.%m.%Y"}</span>{$oNews->cBetreff}</a>
+                </p>
             </li>
         {/foreach}
+        {/strip}
     </ul>
 {else}
     <div class="widget-container"><div class="alert alert-error">Keine Daten verf&uuml;gbar</div></div>

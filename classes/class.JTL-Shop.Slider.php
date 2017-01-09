@@ -75,7 +75,7 @@ class Slider implements IExtensionPoint
     /**
      * @var array
      */
-    public $oSlide_arr = array();
+    public $oSlide_arr = [];
 
     /**
      * @var bool
@@ -93,6 +93,11 @@ class Slider implements IExtensionPoint
     public $bDirectionNav = true;
 
     /**
+     * @var bool
+     */
+    public $bUseKB = true;
+
+    /**
      *
      */
     private function __clone()
@@ -105,13 +110,14 @@ class Slider implements IExtensionPoint
      */
     public function init($kSlider)
     {
-        if (intval($kSlider) != 0) {
+        $kSlider = (int)$kSlider;
+        if ($kSlider > 0) {
             global $smarty;
 
             if ($this->load($kSlider, 'AND bAktiv = 1') === true) {
                 if ($this->bAktiv == 1) {
-                    $smarty->assign('PFAD_SLIDER', Shop::getURL() . '/' . PFAD_BILDER_SLIDER);
-                    $smarty->assign('oSlider', $this);
+                    $smarty->assign('PFAD_SLIDER', Shop::getURL() . '/' . PFAD_BILDER_SLIDER)
+                           ->assign('oSlider', $this);
                 }
             }
         }
@@ -138,18 +144,19 @@ class Slider implements IExtensionPoint
     }
 
     /**
-     * @param string $kSlider
+     * @param string|int $kSlider
      * @param string $filter
-     * @param string $limit
+     * @param int $limit
      * @return bool
      */
-    public function load($kSlider = '', $filter = '', $limit = '1')
+    public function load($kSlider = '', $filter = '', $limit = 1)
     {
         if (isset($kSlider) && intval($kSlider !== 0) || !empty($this->kSlider) && intval($this->kSlider !== 0)) {
             if (empty($kSlider) || (int)$kSlider === 0) {
                 $kSlider = $this->kSlider;
             }
             $kSlider     = (int)$kSlider;
+            $limit       = (int)$limit;
             $cSlider_arr = Shop::DB()->query("
                 SELECT *
                     FROM tslider
@@ -165,7 +172,7 @@ class Slider implements IExtensionPoint
                     WHERE kSlider = " . $kSlider . "
                     ORDER BY nSort ASC", 9
             );
-            $oSlide_arr = array();
+            $oSlide_arr = [];
             foreach ($kSlide_arr as $kSlide) {
                 $oSlide          = new Slide();
                 $oSlide->kSlider = (int)$cSlider_arr['kSlider'];

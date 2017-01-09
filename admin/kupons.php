@@ -6,16 +6,28 @@
 require_once dirname(__FILE__) . '/includes/admininclude.php';
 
 $oAccount->permission('ORDER_COUPON_VIEW', true, true);
-
+/** @global JTLSmarty $smarty */
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'toolsajax_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'kupons_inc.php';
+require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'csv_exporter_inc.php';
+require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'csv_importer_inc.php';
 
-$cHinweis        = '';
-$cFehler         = '';
-$action          = '';
-$tab             = 'standard';
-$oSprache_arr    = gibAlleSprachen();
-$oKupon          = null;
+$cHinweis     = '';
+$cFehler      = '';
+$action       = '';
+$tab          = 'standard';
+$oSprache_arr = gibAlleSprachen();
+$oKupon       = null;
+
+// CSV Import ausgelöst?
+
+$res = handleCsvImportAction('kupon', 'tkupon');
+
+if ($res > 0) {
+    $cFehler = 'Konnte CSV Datei nicht importieren.';
+} elseif ($res === 0) {
+    $cHinweis = 'CSV-Datei wurde erfolgreich importiert.';
+}
 
 // Aktion ausgeloest?
 
@@ -66,7 +78,7 @@ if ($action === 'bearbeiten') {
         // Validierung erfolgreich => Kupon speichern
         if (saveCoupon($oKupon, $oSprache_arr) > 0) {
             // erfolgreich gespeichert => evtl. Emails versenden
-            if (isset($_POST['informieren']) && $_POST['informieren'] === 'Y') {
+            if (isset($_POST['informieren']) && $_POST['informieren'] === 'Y' && ($oKupon->cKuponTyp === 'standard' || $oKupon->cKuponTyp === 'versandkupon') && $oKupon->cAktiv === 'Y') {
                 informCouponCustomers($oKupon);
             }
             $cHinweis = 'Der Kupon wurde erfolgreich gespeichert.';
@@ -96,7 +108,17 @@ if ($action === 'bearbeiten') {
     $oKundengruppe_arr = Shop::DB()->query("SELECT kKundengruppe, cName FROM tkundengruppe", 2);
     $oKategorie_arr    = getCategories($oKupon->cKategorien);
     $oKunde_arr        = getCustomers($oKupon->cKunden);
-    $oKuponName_arr    = getCouponNames((int)$oKupon->kKupon);
+    if ($oKupon->kKupon > 0) {
+        $oKuponName_arr = getCouponNames((int)$oKupon->kKupon);
+    } else {
+        $oKuponName_arr = [];
+        foreach ($oSprache_arr as $oSprache) {
+            $oKuponName_arr[$oSprache->cISO] =
+                (isset($_POST['cName_' . $oSprache->cISO]) && $_POST['cName_' . $oSprache->cISO] !== '')
+                    ? $_POST['cName_' . $oSprache->cISO]
+                    : $oKupon->cName;
+        }
+    }
 
     $smarty->assign('oSteuerklasse_arr', $oSteuerklasse_arr)
         ->assign('oKundengruppe_arr', $oKundengruppe_arr)
@@ -142,10 +164,23 @@ if ($action === 'bearbeiten') {
     $oAktivSelect->addSelectOption('inaktiv', 'N', 4);
     $oFilterNeukunden->assemble();
 
-    $cSortByOption_arr   = [['cName', 'Name'], ['cCode', 'Code'], ['nVerwendungenBisher', 'Verwendungen'], ['dLastUse', 'Zuletzt verwendet']];
-    $oKuponStandard_arr  = getCoupons('standard', $oFilterStandard->getWhereSQL());
-    $oKuponVersand_arr   = getCoupons('versandkupon', $oFilterVersand->getWhereSQL());
-    $oKuponNeukunden_arr = getCoupons('neukundenkupon', $oFilterNeukunden->getWhereSQL());
+    $cSortByOption_arr    = [['cName', 'Name'], ['cCode', 'Code'], ['nVerwendungenBisher', 'Verwendungen'], ['dLastUse', 'Zuletzt verwendet']];
+    $oKuponStandard_arr   = getCoupons('standard', $oFilterStandard->getWhereSQL());
+    $oKuponVersand_arr    = getCoupons('versandkupon', $oFilterVersand->getWhereSQL());
+    $oKuponNeukunden_arr  = getCoupons('neukundenkupon', $oFilterNeukunden->getWhereSQL());
+    $nKuponStandardCount  = getCouponCount('standard');
+    $nKuponVersandCount   = getCouponCount('versandkupon');
+    $nKuponNeukundenCount = getCouponCount('neukundenkupon');
+
+    handleCsvExportAction('standard', 'standard.csv', function () use ($oFilterStandard) {
+            return getRawCoupons('standard', [], $oFilterStandard->getWhereSQL());
+        }, [], ['kKupon']);
+    handleCsvExportAction('versandkupon', 'versandkupon.csv', function () use ($oFilterVersand) {
+            return getRawCoupons('versandkupon', [], $oFilterVersand->getWhereSQL());
+        }, [], ['kKupon']);
+    handleCsvExportAction('neukundenkupon', 'neukundenkupon.csv', function () use ($oFilterNeukunden) {
+            return getRawCoupons('neukundenkupon', [], $oFilterNeukunden->getWhereSQL());
+        }, [], ['kKupon']);
 
     $oPaginationStandard = (new Pagination('standard'))
         ->setSortByOptions($cSortByOption_arr)
@@ -162,10 +197,6 @@ if ($action === 'bearbeiten') {
         ->setItemArray($oKuponNeukunden_arr)
         ->assemble();
 
-    $oKuponStandard_arr  = $oPaginationStandard->getPageItems();
-    $oKuponVersand_arr   = $oPaginationVersand->getPageItems();
-    $oKuponNeukunden_arr = $oPaginationNeukunden->getPageItems();
-
     $smarty->assign('tab', $tab)
         ->assign('oFilterStandard', $oFilterStandard)
         ->assign('oFilterVersand', $oFilterVersand)
@@ -173,9 +204,12 @@ if ($action === 'bearbeiten') {
         ->assign('oPaginationStandard', $oPaginationStandard)
         ->assign('oPaginationVersandkupon', $oPaginationVersand)
         ->assign('oPaginationNeukundenkupon', $oPaginationNeukunden)
-        ->assign('oKuponStandard_arr', $oKuponStandard_arr)
-        ->assign('oKuponVersandkupon_arr', $oKuponVersand_arr)
-        ->assign('oKuponNeukundenkupon_arr', $oKuponNeukunden_arr);
+        ->assign('oKuponStandard_arr', $oPaginationStandard->getPageItems())
+        ->assign('oKuponVersandkupon_arr', $oPaginationVersand->getPageItems())
+        ->assign('oKuponNeukundenkupon_arr', $oPaginationNeukunden->getPageItems())
+        ->assign('nKuponStandardCount', $nKuponStandardCount)
+        ->assign('nKuponVersandCount', $nKuponVersandCount)
+        ->assign('nKuponNeukundenCount', $nKuponNeukundenCount);
 }
 
 $smarty->assign('action', $action)

@@ -7,7 +7,7 @@ require_once 'includes/admininclude.php';
 require_once 'includes/news_inc.php';
 
 $oAccount->permission('RESET_SHOP_VIEW', true, true);
-
+/** @global JTLSmarty $smarty */
 $cHinweis = '';
 $cFehler  = '';
 if (isset($_POST['zuruecksetzen']) && intval($_POST['zuruecksetzen']) === 1 && validateToken()) {
@@ -77,6 +77,10 @@ if (isset($_POST['zuruecksetzen']) && intval($_POST['zuruecksetzen']) === 1 && v
                     Shop::DB()->query("DELETE FROM tseo WHERE cKey = 'kArtikel' OR cKey = 'kKategorie' OR cKey = 'kMerkmalWert' OR cKey = 'kHersteller'", 4);
                     break;
 
+                case 'revisions':
+                    Shop::DB()->query("TRUNCATE trevisions", 4);
+                    break;
+
                 // Shopinhalte
                 case 'news':
                     $_index = Shop::DB()->query("SELECT kNews FROM tnews;", 2);
@@ -84,6 +88,7 @@ if (isset($_POST['zuruecksetzen']) && intval($_POST['zuruecksetzen']) === 1 && v
                         loescheNewsBilderDir($i->kNews, PFAD_ROOT . PFAD_NEWSBILDER);
                     }
                     Shop::DB()->query("TRUNCATE tnews", 4);
+                    Shop::DB()->delete('trevisions', 'type', 'news', 4);
                     Shop::DB()->query("TRUNCATE tnewskategorie", 4);
                     Shop::DB()->query("TRUNCATE tnewskategorienews", 4);
                     Shop::DB()->query("TRUNCATE tnewskommentar", 4);

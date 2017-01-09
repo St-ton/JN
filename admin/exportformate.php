@@ -4,11 +4,10 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 require_once dirname(__FILE__) . '/includes/admininclude.php';
-
-$oAccount->permission('EXPORT_FORMATS_VIEW', true, true);
-
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'exportformat_inc.php';
 
+$oAccount->permission('EXPORT_FORMATS_VIEW', true, true);
+/** @global JTLSmarty $smarty */
 $fehler              = '';
 $hinweis             = '';
 $step                = 'uebersicht';
@@ -34,46 +33,25 @@ if (isset($_GET['kExportformat']) && (int)$_GET['kExportformat'] > 0 && !isset($
     }
 }
 if (isset($_POST['neu_export']) && (int)$_POST['neu_export'] === 1 && validateToken()) {
-    // Plausi
-    $cPlausiValue_arr = pruefeExportformat();
-
-    if (count($cPlausiValue_arr) === 0) {
-        if (!isset($exportformat)) {
-            $exportformat = new stdClass();
-        }
-        $exportformat->cName           = $_POST['cName'];
-        $exportformat->cContent        = str_replace("<tab>", "\t", $_POST['cContent']);
-        $exportformat->cDateiname      = $_POST['cDateiname'];
-        $exportformat->cKopfzeile      = (isset($_POST['cKopfzeile'])) ? str_replace("<tab>", "\t", $_POST['cKopfzeile']) : '';
-        $exportformat->cFusszeile      = (isset($_POST['cFusszeile'])) ? str_replace("<tab>", "\t", $_POST['cFusszeile']) : '';
-        $exportformat->kSprache        = (int)$_POST['kSprache'];
-        $exportformat->kWaehrung       = (int)$_POST['kWaehrung'];
-        $exportformat->kKampagne       = ((int)$_POST['kKampagne'] > 0) ? (int)$_POST['kKampagne'] : 0;
-        $exportformat->kKundengruppe   = (int)$_POST['kKundengruppe'];
-        $exportformat->cKodierung      = Shop::DB()->escape($_POST['cKodierung']);
-        $exportformat->nVarKombiOption = (int)$_POST['nVarKombiOption'];
-        $exportformat->nSplitgroesse   = (int)$_POST['nSplitgroesse'];
-        $exportformat->nUseCache       = (int)$_POST['nUseCache'];
-        $kExportformat                 = null;
-
-        if ((int)$_POST['kExportformat'] > 0) {
+    $ef          = new Exportformat();
+    $checkResult = $ef->check($_POST);
+    if ($checkResult === true) {
+        $kExportformat = $ef->getExportformat();
+        if ($kExportformat > 0) {
             //update
             $kExportformat = (int)$_POST['kExportformat'];
-            Shop::DB()->update('texportformat', 'kExportformat', $kExportformat, $exportformat);
-            $hinweis .= "Das Exportformat <strong>$exportformat->cName</strong> wurde erfolgreich ge&auml;ndert.";
+            $revision = new Revision();
+            $revision->addRevision('export', $kExportformat);
+            $ef->update();
+            $hinweis .= 'Das Exportformat <strong>' . $ef->getName() . '</strong> wurde erfolgreich ge&auml;ndert.';
         } else {
             //insert
-            $kExportformat = Shop::DB()->insert('texportformat', $exportformat);
-            $hinweis .= "Das Exportformat <strong>$exportformat->cName</strong> wurde erfolgreich erstellt.";
+            $kExportformat = $ef->save();
+            $hinweis .= 'Das Exportformat <strong>' . $ef->getName() . '</strong> wurde erfolgreich erstellt.';
         }
 
         Shop::DB()->delete('texportformateinstellungen', 'kExportformat', $kExportformat);
-        $Conf        = Shop::DB()->query("
-            SELECT * 
-              FROM teinstellungenconf 
-              WHERE kEinstellungenSektion = " . CONF_EXPORTFORMATE . " 
-              ORDER BY nSort", 2
-        );
+        $Conf        = Shop::DB()->selectAll('teinstellungenconf', 'kEinstellungenSektion', CONF_EXPORTFORMATE, '*', 'nSort');
         $configCount = count($Conf);
         for ($i = 0; $i < $configCount; $i++) {
             $aktWert                = new stdClass();
@@ -86,7 +64,7 @@ if (isset($_POST['neu_export']) && (int)$_POST['neu_export'] === 1 && validateTo
                     break;
                 case 'zahl':
                 case 'number':
-                    $aktWert->cWert = intval($aktWert->cWert);
+                    $aktWert->cWert = (int)$aktWert->cWert;
                     break;
                 case 'text':
                     $aktWert->cWert = substr($aktWert->cWert, 0, 255);
@@ -94,27 +72,17 @@ if (isset($_POST['neu_export']) && (int)$_POST['neu_export'] === 1 && validateTo
             }
             Shop::DB()->insert('texportformateinstellungen', $aktWert);
         }
-        $smartyExport = new JTLSmarty(true, false, false, 'export');
-        $smartyExport->setCaching(0)
-                     ->setDebugging(0)
-                     ->registerResource('xdb', array('xdb_get_template', 'xdb_get_timestamp', 'xdb_get_secure', 'xdb_get_trusted'))
-                     ->setTemplateDir(PFAD_TEMPLATES);
-        $error = false;
-        try {
-            $cOutput = $smartyExport->fetch('xdb:' . $kExportformat);
-        } catch (Exception $e) {
-            $error  = true;
+        $step  = 'uebersicht';
+        $error = $ef->checkSyntax();
+        if ($error !== false) {
             $step   = 'neuer Export';
-            $fehler = '<b>Smarty-Syntaxfehler.</b><br />';
-            $fehler .= $e->getMessage();
-            $hinweis = '';
+            $fehler = $error;
         }
-        $step = ($error) ? $step : 'uebersicht';
     } else {
-        $_POST['cContent']   = str_replace("<tab>", "\t", $_POST['cContent']);
-        $_POST['cKopfzeile'] = str_replace("<tab>", "\t", $_POST['cKopfzeile']);
-        $_POST['cFusszeile'] = str_replace("<tab>", "\t", $_POST['cFusszeile']);
-        $smarty->assign('cPlausiValue_arr', $cPlausiValue_arr)
+        $_POST['cContent']   = str_replace('<tab>', "\t", $_POST['cContent']);
+        $_POST['cKopfzeile'] = str_replace('<tab>', "\t", $_POST['cKopfzeile']);
+        $_POST['cFusszeile'] = str_replace('<tab>', "\t", $_POST['cFusszeile']);
+        $smarty->assign('cPlausiValue_arr', $checkResult)
                ->assign('cPostVar_arr', StringHandler::filterXSS($_POST));
         $step   = 'neuer Export';
         $fehler = 'Fehler: Bitte &uuml;berpr&uuml;fen Sie Ihre Eingaben.';
@@ -187,7 +155,7 @@ if ($cAction !== null && $kExportformat !== null && validateToken()) {
             $exportformat = Shop::DB()->select('texportformat', 'kExportformat', $kExportformat);
             if ($exportformat->cDateiname && (file_exists(PFAD_ROOT . PFAD_EXPORT . $exportformat->cDateiname) ||
                     file_exists(PFAD_ROOT . PFAD_EXPORT . $exportformat->cDateiname . '.zip') ||
-                    (isset($oExportformat->nSplitgroesse) && (int)$oExportformat->nSplitgroesse > 0))
+                    (isset($exportformat->nSplitgroesse) && (int)$exportformat->nSplitgroesse > 0))
             ) {
                 $hinweis = 'Das Exportformat <b>' . $exportformat->cName . '</b> wurde erfolgreich erstellt.';
             } else {
@@ -230,19 +198,14 @@ if ($step === 'neuer Export') {
         $smarty->assign('Exportformat', $exportformat);
     }
 
-    $Conf      = Shop::DB()->query("SELECT * FROM teinstellungenconf WHERE kEinstellungenSektion = " . CONF_EXPORTFORMATE . " ORDER BY nSort", 2);
+    $Conf      = Shop::DB()->selectAll('teinstellungenconf', 'kEinstellungenSektion', CONF_EXPORTFORMATE, '*', 'nSort');
     $confCount = count($Conf);
     for ($i = 0; $i < $confCount; $i++) {
         if ($Conf[$i]->cInputTyp === 'selectbox') {
-            $Conf[$i]->ConfWerte = Shop::DB()->query("SELECT * FROM teinstellungenconfwerte WHERE kEinstellungenConf = " . (int)$Conf[$i]->kEinstellungenConf . " ORDER BY nSort", 2);
+            $Conf[$i]->ConfWerte = Shop::DB()->selectAll('teinstellungenconfwerte', 'kEinstellungenConf', (int)$Conf[$i]->kEinstellungenConf, '*', 'nSort');
         }
         if (isset($exportformat->kExportformat)) {
-            $setValue = Shop::DB()->query("
-                SELECT cWert
-                    FROM texportformateinstellungen
-                    WHERE kExportformat = " . (int)$exportformat->kExportformat . "
-                        AND cName = '" . $Conf[$i]->cWertName . "'", 1
-            );
+            $setValue = Shop::DB()->select('texportformateinstellungen', ['kExportformat', 'cName'], [(int)$exportformat->kExportformat, $Conf[$i]->cWertName]);
             $Conf[$i]->gesetzterWert = (isset($setValue->cWert)) ? $setValue->cWert : null;
         }
     }

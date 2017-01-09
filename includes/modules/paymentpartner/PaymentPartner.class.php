@@ -80,7 +80,6 @@ class PaymentPartner extends ServerPaymentMethod
         $smarty      = Shop::Smarty();
         $amount      = number_format($order->fGesamtsummeKundenwaehrung, 2, '.', '');
         $customer    = $_SESSION['Kunde'];
-        $firstItem   = new Artikel($order->Positionen[0]->kArtikel);
         $paymentHash = $this->generateHash($order);
 
         $fields = array(
@@ -167,8 +166,9 @@ class PaymentPartner extends ServerPaymentMethod
     }
 
     /**
-     * @return boolean
+     * @return bool
      * @param Bestellung $order
+     * @param string     $paymentHash
      * @param array      $args
      */
     public function verifyNotification($order, $paymentHash, $args)

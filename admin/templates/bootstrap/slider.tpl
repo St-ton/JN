@@ -43,7 +43,7 @@
                                 <td>
                                     <div class="btn-group">
                                         <a class="btn btn-default add" href="slider.php?action=slides&id={$oSlider->kSlider}&token={$smarty.session.jtl_token}" title="Slides"><i class="fa fa-image"></i></a>
-                                        <a class="btn btn-default" href="slider.php?action=edit&id={$oSlider->kSlider}&token={$smarty.session.jtl_token}" title="Bearbeiten"><i class="fa fa-edit"></i></a>
+                                        <a class="btn btn-default" href="slider.php?action=edit&id={$oSlider->kSlider}&token={$smarty.session.jtl_token}" title="{#modify#}"><i class="fa fa-edit"></i></a>
                                         <a class="btn btn-danger" href="slider.php?action=delete&id={$oSlider->kSlider}&token={$smarty.session.jtl_token}" title="L&ouml;schen"><i class="fa fa-trash"></i></a>
                                     </div>
                                 </td>

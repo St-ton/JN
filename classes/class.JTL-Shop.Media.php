@@ -15,7 +15,7 @@ class Media
     private static $_instance = null;
 
     /**
-     * @var array
+     * @var MediaImage[]|MediaImageCompatibility[]
      */
     private $types = array();
 
@@ -33,12 +33,12 @@ class Media
     public function __construct()
     {
         self::$_instance = $this;
-        $this->register(new MediaImage());
-        $this->register(new MediaImageCompatibility());
+        $this->register(new MediaImage())
+             ->register(new MediaImageCompatibility());
     }
 
     /**
-     * @param $media
+     * @param MediaImage|MediaImageCompatibility $media
      * @return $this
      */
     public function register($media)
@@ -49,7 +49,7 @@ class Media
     }
 
     /**
-     * @param $requestUri
+     * @param string $requestUri
      * @return bool
      */
     public function isValidRequest($requestUri)
@@ -64,7 +64,7 @@ class Media
     }
 
     /**
-     * @param $requestUri
+     * @param string $requestUri
      * @return bool
      */
     public function handleRequest($requestUri)

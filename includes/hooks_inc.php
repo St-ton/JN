@@ -1426,14 +1426,6 @@ define('HOOK_FILTER_INC_BAUFILTERSQL', 184);
 define('HOOK_CACHE_FLUSH_AFTER', 200);
 
 /**
- * after flushing of page cache
- *
- * @since 4.0
- * @file class.JTL-Shop.JTLCache.php
- */
-define('HOOK_PAGE_CACHE_FLUSH_AFTER', 201);
-
-/**
  * after flushing cache ID/tag
  *
  * @since 4.0
@@ -1655,3 +1647,11 @@ define('HOOK_BACKEND_ACCOUNT_PREPARE_EDIT', 223);
  * @param boxes - list of boxes for the home page
  */
 define('HOOK_BOXEN_HOME', 224);
+
+/**
+ * in bearbeiteInsert() after inserting an article into the database
+ *
+ * @file QuickSync_xml.php
+ * @param oArtikel
+ */
+define('HOOK_QUICKSYNC_XML_BEARBEITEINSERT', 225);

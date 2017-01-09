@@ -41,7 +41,7 @@ if (!empty($_FILES)) {
     if (isset($fileData['error']) && $fileData['error'] == 0) {
         if (move_uploaded_file($cTempFile, $cTargetFile)) {
             $oFile         = new stdClass();
-            $oFile->cName  = $fileData['name'];
+            $oFile->cName = !empty($_REQUEST['variation']) ? $_REQUEST['cname'] . '_' . $_REQUEST['variation'] . '_' . $fileData['name'] : $_REQUEST['cname'] . '_' . $fileData['name'];
             $oFile->nBytes = $fileData['size'];
             $oFile->cKB    = round($fileData['size'] / 1024, 2);
 

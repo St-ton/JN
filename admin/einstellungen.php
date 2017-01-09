@@ -5,7 +5,7 @@
  */
 require_once dirname(__FILE__) . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'einstellungen_inc.php';
-
+/** @global JTLSmarty $smarty */
 $kSektion = isset($_REQUEST['kSektion']) ? (int)$_REQUEST['kSektion'] : 0;
 $bSuche   = isset($_REQUEST['einstellungen_suchen']) && (int)$_REQUEST['einstellungen_suchen'] === 1;
 
@@ -46,7 +46,7 @@ switch ($kSektion) {
         break;
 }
 
-$standardwaehrung = Shop::DB()->query("SELECT * FROM twaehrung WHERE cStandard = 'Y'", 1);
+$standardwaehrung = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
 $cHinweis         = '';
 $cFehler          = '';
 $section          = null;
@@ -129,13 +129,10 @@ if (isset($_POST['einstellungen_bearbeiten']) && (int)$_POST['einstellungen_bear
         $tagsToFlush[] = CACHING_GROUP_CORE;
         $tagsToFlush[] = CACHING_GROUP_ARTICLE;
         $tagsToFlush[] = CACHING_GROUP_CATEGORY;
+    } elseif ($kSektion === 8) {
+        $tagsToFlush[] = CACHING_GROUP_BOX;
     }
     Shop::Cache()->flushTags($tagsToFlush);
-    if (Shop::Cache()->isPageCacheEnabled()) {
-        $_smarty = new JTLSmarty(true, false, true, 'cache');
-        $_smarty->setCachingParams(true)->clearCache(null, 'jtlc');
-    }
-
     // Einstellungen zurücksetzen und Notifications neu laden
     Shopsetting::getInstance()->reset();
 }
@@ -189,19 +186,14 @@ if ($step === 'einstellungen bearbeiten') {
                     ORDER BY cStandard DESC", 2
             );
         } elseif (in_array($Conf[$i]->cInputTyp, array('selectbox', 'listbox'), true)) {
-            $Conf[$i]->ConfWerte = Shop::DB()->query(
-                "SELECT *
-                    FROM teinstellungenconfwerte
-                    WHERE kEinstellungenConf = " . (int)$Conf[$i]->kEinstellungenConf . "
-                    ORDER BY nSort", 2
-            );
+            $Conf[$i]->ConfWerte = Shop::DB()->selectAll('teinstellungenconfwerte', 'kEinstellungenConf', (int)$Conf[$i]->kEinstellungenConf, '*', 'nSort');
         }
 
         if ($Conf[$i]->cInputTyp === 'listbox') {
-            $setValue = Shop::DB()->select('teinstellungen', 'kEinstellungenSektion', CONF_BEWERTUNG, 'cName', $Conf[$i]->cWertName);
+            $setValue                = Shop::DB()->select('teinstellungen', 'kEinstellungenSektion', CONF_BEWERTUNG, 'cName', $Conf[$i]->cWertName);
             $Conf[$i]->gesetzterWert = $setValue;
         } else {
-            $setValue = Shop::DB()->select('teinstellungen', 'kEinstellungenSektion', (int)$Conf[$i]->kEinstellungenSektion, 'cName', $Conf[$i]->cWertName);
+            $setValue                = Shop::DB()->select('teinstellungen', 'kEinstellungenSektion', (int)$Conf[$i]->kEinstellungenSektion, 'cName', $Conf[$i]->cWertName);
             $Conf[$i]->gesetzterWert = (isset($setValue->cWert)) ? StringHandler::htmlentities($setValue->cWert) : null;
         }
     }

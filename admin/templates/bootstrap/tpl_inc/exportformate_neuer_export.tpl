@@ -11,6 +11,9 @@
         {if isset($Exportformat->bPluginContentFile) && $Exportformat->bPluginContentFile}
             <input type="hidden" name="bPluginContentFile" value="1" />
         {/if}
+        {if !empty($Exportformat->kPlugin)}
+            <input type="hidden" name="kPlugin" value="{$Exportformat->kPlugin}" />
+        {/if}
         <div class="panel panel-default settings">
             <div class="panel-body">
                 <ul class="jtl-list-group">
@@ -168,4 +171,8 @@
             </button>
         </div>
     </form>
+
+    {if isset($Exportformat->kExportformat)}
+        {getRevisions type='export' key=$Exportformat->kExportformat show=['cContent','cKopfzeile','cFusszeile'] data=$Exportformat}
+    {/if}
 </div>

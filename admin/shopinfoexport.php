@@ -6,8 +6,8 @@
 require_once dirname(__FILE__) . '/includes/admininclude.php';
 
 $oAccount->permission('EXPORT_SHOPINFO_VIEW', true, true);
-
-$arShopInfo  = Shop::DB()->query("SELECT cName, cWert FROM teinstellungen WHERE kEinstellungensektion = 103", 2);
+/** @global JTLSmarty $smarty */
+$arShopInfo  = Shop::DB()->selectAll('teinstellungen', 'kEinstellungensektion', 103, 'cName, cWert');
 $objShopInfo = new stdClass();
 foreach ($arShopInfo as $obj) {
     $tmp               = $obj->cName;

@@ -10,7 +10,6 @@ use Imanee\Imanee;
  */
 class MediaImage implements IMedia
 {
-    const REGEX = '/^media\/image\/(?P<type>product|category|variation|manufacturer)\/(?P<id>\d+)\/(?P<size>xs|sm|md|lg)\/(?P<name>[a-zA-Z0-9\-_]+)(?:(?:~(?P<number>\d+))?)\.(?P<ext>jpg|jpeg|png|gif)$/';
 
     /**
      *
@@ -60,13 +59,15 @@ class MediaImage implements IMedia
             'name'   => $name,
             'ext'    => $settings['format']
         ));
-
         $thumb    = $req->getThumb($size);
         $thumbAbs = PFAD_ROOT . $thumb;
         $rawAbs   = PFAD_ROOT . $req->getRaw();
 
         if (!file_exists($thumbAbs) && !file_exists($rawAbs)) {
-            $thumb = $req->getFallbackThumb($size);
+            $fallback = $req->getFallbackThumb($size);
+            $thumb    = (file_exists(PFAD_ROOT . $fallback))
+                ? $fallback
+                : BILD_KEIN_ARTIKELBILD_VORHANDEN;
         }
 
         return $thumb;
@@ -87,8 +88,8 @@ class MediaImage implements IMedia
     }
 
     /**
-     * @param $type
-     * @param bool $filesize
+     * @param string $type
+     * @param bool   $filesize
      * @return object
      * @throws Exception
      */
@@ -117,7 +118,7 @@ class MediaImage implements IMedia
             $raw = $image->getRaw(true);
             $result->total++;
             if (!file_exists($raw)) {
-                $result->corrupted++;
+                ++$result->corrupted;
             } else {
                 foreach ([Image::SIZE_XS, Image::SIZE_SM, Image::SIZE_MD, Image::SIZE_LG] as $size) {
                     $thumb = $image->getThumb($size, true);
@@ -143,7 +144,7 @@ class MediaImage implements IMedia
     {
         $directory = PFAD_ROOT . MediaImageRequest::getCachePath($type);
         if ($id !== null) {
-            $directory = $directory . '/' . (int) $id;
+            $directory = $directory . '/' . (int)$id;
         }
 
         try {
@@ -301,33 +302,61 @@ class MediaImage implements IMedia
     }
 
     /**
-     * @param $type
-     * @param bool $notCached
-     * @return array
+     * @param string   $type
+     * @param bool     $notCached
+     * @param int|null $offset
+     * @param int|null $limit
+     * @return MediaImageRequest[]
      * @throws Exception
      */
-    public static function getImages($type, $notCached = false)
+    public static function getImages($type, $notCached = false, $offset = null, $limit = null)
     {
         $requests = [];
-
         switch ($type) {
             case Image::TYPE_PRODUCT:
-            {
-                $images = Shop::DB()->executeQuery('
-                    SELECT `tartikelpict`.`cPfad` as `path`, `tartikelpict`.`nNr` as `number`, `tartikelpict`.`kArtikel` as `id`,
-                           `tartikel`.`kArtikel`, `tartikel`.`cArtNr`, `tartikel`.`cSeo`, `tartikel`.`cName`, `tartikel`.`cBarcode`
-                    FROM `tartikelpict`
-                    INNER JOIN `tartikel`
-                    ON `tartikelpict`.`kArtikel` = `tartikel`.`kArtikel`', 2);
+                //only select the necessary columns to save memory
+                $cols = '';
+                $conf = Image::getSettings();
+                switch ($conf['naming']['product']) {
+                    case 0:
+                        break;
+                    case 1:
+                        $cols = ', tartikel.cArtNr';
+                        break;
+                    case 2:
+                        $cols = ', tartikel.cSeo, tartikel.cName';
+                        break;
+                    case 3:
+                        $cols = ', tartikel.cArtNr, tartikel.cSeo, tartikel.cName';
+                        break;
+                    case 4:
+                        $cols = ', tartikel.cBarcode';
+                        break;
+                    default:
+                        break;
+                }
+                $limitStmt = '';
+                if ($limit !== null) {
+                    $limitStmt = ' LIMIT ';
+                    if ($offset !== null) {
+                        $limitStmt .= (int)$offset . ', ';
+                    }
+                    $limitStmt .= (int)$limit;
+                }
+                $images = Shop::DB()->query('
+                    SELECT tartikelpict.cPfad AS path, tartikelpict.nNr AS number, tartikelpict.kArtikel ' . $cols . '
+                        FROM tartikelpict
+                        INNER JOIN tartikel
+                          ON tartikelpict.kArtikel = tartikel.kArtikel' . $limitStmt, 10);
                 break;
-            }
+
             default:
                 throw new Exception('Not implemented');
         }
 
-        foreach ($images as $i => $image) {
+        while ($image = $images->fetch(PDO::FETCH_OBJ)) {
             $req = MediaImageRequest::create([
-                'id'     => $image->id,
+                'id'     => $image->kArtikel,
                 'type'   => $type,
                 'name'   => Image::getCustomName($type, $image),
                 'number' => $image->number,
@@ -358,23 +387,23 @@ class MediaImage implements IMedia
 
     /**
      * @param string $request
-     * @return MediaImageRequest|null
+     * @return array|null
      */
     private function parse($request)
     {
         if (!is_string($request) || strlen($request) == 0) {
-            return;
+            return null;
         }
 
         if ($request[0] === '/') {
             $request = substr($request, 1);
         }
 
-        if (preg_match(self::REGEX, $request, $matches)) {
+        if (preg_match(MEDIAIMAGE_REGEX, $request, $matches)) {
             return array_intersect_key($matches, array_flip(array_filter(array_keys($matches), 'is_string')));
         }
 
-        return;
+        return null;
     }
 
     /**

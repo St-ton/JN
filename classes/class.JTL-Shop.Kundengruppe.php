@@ -285,7 +285,7 @@ class Kundengruppe
      */
     public static function getGroups()
     {
-        $oKdngrp_arr = array();
+        $oKdngrp_arr = [];
         $oObj_arr    = Shop::DB()->query("SELECT kKundengruppe FROM tkundengruppe", 2);
 
         if (is_array($oObj_arr) && count($oObj_arr) > 0) {
@@ -328,12 +328,11 @@ class Kundengruppe
     public static function getDefaultGroupID()
     {
         if (isset($_SESSION['Kundengruppe']->kKundengruppe) && $_SESSION['Kundengruppe']->kKundengruppe > 0) {
-            return $_SESSION['Kundengruppe']->kKundengruppe;
-        } else {
-            $oKundengruppe = self::getDefault();
-            if (isset($oKundengruppe->kKundengruppe) && $oKundengruppe->kKundengruppe > 0) {
-                return $oKundengruppe->kKundengruppe;
-            }
+            return (int)$_SESSION['Kundengruppe']->kKundengruppe;
+        }
+        $oKundengruppe = self::getDefault();
+        if (isset($oKundengruppe->kKundengruppe) && $oKundengruppe->kKundengruppe > 0) {
+            return (int)$oKundengruppe->kKundengruppe;
         }
 
         return 0;
@@ -358,7 +357,7 @@ class Kundengruppe
                 $_SESSION['Kundengruppe']                             = $oKundengruppe;
                 $_SESSION['Kundengruppe']->darfPreiseSehen            = 1;
                 $_SESSION['Kundengruppe']->darfArtikelKategorienSehen = 1;
-                $conf                                                 = Shop::getSettings(array(CONF_GLOBAL));
+                $conf                                                 = Shop::getSettings([CONF_GLOBAL]);
                 if ($conf['global']['global_sichtbarkeit'] == 2) {
                     $_SESSION['Kundengruppe']->darfPreiseSehen = 0;
                 }
@@ -379,9 +378,9 @@ class Kundengruppe
      */
     public static function getAttributes($kKundengruppe)
     {
-        $attributes = array();
+        $attributes = [];
         if ($kKundengruppe > 0) {
-            $attr_arr = Shop::DB()->query("SELECT * FROM tkundengruppenattribut WHERE kKundengruppe = " . (int)$kKundengruppe, 2);
+            $attr_arr = Shop::DB()->selectAll('tkundengruppenattribut', 'kKundengruppe', (int)$kKundengruppe);
             foreach ($attr_arr as $Att) {
                 $attributes[strtolower($Att->cName)] = $Att->cWert;
             }

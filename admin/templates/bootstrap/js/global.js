@@ -131,6 +131,9 @@ function get_list_callback(type, id) {
         case 'attribute':
             return (id == 0) ? 'getAttributeList' :
                 'getAttributeListFromString';
+        case 'link':
+            return (id == 0) ? 'getLinkList' :
+                'getLinkListFromString';
     }
     return false;
 }
@@ -152,7 +155,7 @@ function init_simple_search(callback) {
         simple_search_list(type, search, function (result) {
             $(result).each(function (k, v) {
                 browser.find('select').append(
-                    $('<option></option>').attr('primary', v.kPrimary).attr('url', v.cUrl).val(v.cBase).html(v.cName).dblclick(function () {
+                    $('<option></option>').attr('primary', v.kPrimary).attr('url', v.cUrl).val(v.kPrimary).html(v.cName).dblclick(function () {
                         browser.find('.button.add').trigger('click');
                     })
                 );
@@ -248,19 +251,38 @@ function checkToggle(selector) {
 }
 
 /**
- * @param form
- * @param cID
- * @constructor
+ * check/un-check all checkboxes of a given form-object,
+ * EXCEPT those, which are contained in the given array
+ * or single string.
+ *
+ * @param Object  object of type HTML.form
+ * @param Array|String  array of strings or single string - name(s), which we did NOT want to "check/un-check"
+ * @return void
  */
-function AllMessagesExcept(form, cID) {
+function AllMessagesExcept(form, IDs) {
     var x,
         y;
-    for (x = 0; x < form.elements.length; x++) {
-        y = form.elements[x];
-        if (y.name !== 'ALLMSGS') {
-            if (cID.length > 0) {
-                if (y.id.indexOf(cID)) {
-                    y.checked = form.ALLMSGS.checked;
+    // check, if we got an array here
+    if (Object.prototype.toString.call(IDs)) {
+        for (x = 0; x < form.elements.length; x++) {
+            // iterate over all checkboxes, except the one with the name "ALLMSGS"
+            if ('checkbox' === form.elements[x].type && 'ALLMSGS' !== form.elements[x].name) {
+                // check, if that element is NOT in our "except-array" ('undefined')..
+                if (typeof IDs[form.elements[x].value] === 'undefined') {
+                    // ..and set the same state, as ALLMSGS has
+                    form.elements[x].checked = form.ALLMSGS.checked;
+                }
+            }
+        }
+    } else {
+        // legacy functionality - "single string except"
+        for (x = 0; x < form.elements.length; x++) {
+            y = form.elements[x];
+            if (y.name !== 'ALLMSGS') {
+                if (IDs.length > 0) {
+                    if (y.id.indexOf(IDs)) {
+                        y.checked = form.ALLMSGS.checked;
+                    }
                 }
             }
         }
@@ -315,6 +337,7 @@ function ajaxCall(url, params, callback) {
     return $.ajax({
         type: "GET",
         dataType: "json",
+        cache: false,
         url: url,
         data: params,
         success: function (data, textStatus, jqXHR) {
@@ -469,6 +492,34 @@ function updateNotifyDrop() {
     });
 }
 
+function massCreationCoupons() {
+    var checkboxCreationCoupons = $("#couponCreation").prop("checked");
+    $("#massCreationCouponsBody").toggleClass("hidden", !checkboxCreationCoupons);
+    $("#singleCouponCode").toggleClass("hidden", checkboxCreationCoupons);
+    $("#limitedByCustomers").toggleClass("hidden", checkboxCreationCoupons);
+    $("#informCustomers").toggleClass("hidden", checkboxCreationCoupons);
+}
+
+function addFav(title, url, success) {
+    ajaxCallV2('favs.php?action=add', { title: title, url: url }, function(result, error) {
+        if (!error) {
+            reloadFavs();
+            if (typeof success == 'function') {
+                success();
+            }
+        }
+    });
+}
+
+function reloadFavs() {
+    ajaxCallV2('favs.php?action=list', {}, function(result, error) {
+        if (!error) {
+            console.log(result.data.tpl);
+            $('#favs-drop').html(result.data.tpl);
+        }
+    });
+}
+
 /**
  * document ready
  */
@@ -524,6 +575,16 @@ $(document).ready(function () {
 
     });
 
+    $('#fav-add').click(function() {
+        var title = $('.content-header h1').text();
+        var url = window.location.href;
+        addFav(title, url, function() {
+            showNotify('success', 'Favoriten', 'Wurde erfolgreich hinzugef&uuml;gt');
+        });
+
+        return false;
+    });
+
     $('button.blue, input[type=submit].blue').addClass('btn btn-primary');
     $('button.orange, input[type=submit].orange').addClass('btn btn-default');
 
@@ -564,11 +625,16 @@ $(document).ready(function () {
     }).on('hide.bs.dropdown', function () {
         hideBackdrop();
     });
-    
+
     $('#nbc-1 .dropdown').on('show.bs.dropdown', function () {
         showBackdrop();
     }).on('hide.bs.dropdown', function () {
         hideBackdrop();
+    });
+
+    // Massenerstellung von Kupons de-/aktivieren
+    $("#couponCreation").change(function () {
+        massCreationCoupons();
     });
 });
 

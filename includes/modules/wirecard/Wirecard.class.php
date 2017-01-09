@@ -11,12 +11,15 @@ class Wirecard extends PaymentMethod
 {
     /**
      * @param int $nAgainCheckout
+     * @return $this
      */
     public function init($nAgainCheckout = 0)
     {
         parent::init($nAgainCheckout);
         $this->name    = 'Wirecard';
         $this->caption = 'Wirecard';
+
+        return $this;
     }
 
     /**
@@ -45,7 +48,6 @@ class Wirecard extends PaymentMethod
     public function preparePaymentProcess($order)
     {
         $amount      = number_format($order->fGesamtsummeKundenwaehrung, 2, '.', '');
-        $firstItem   = new Artikel($order->Positionen[0]->kArtikel);
         $paymentHash = $this->generateHash($order);
 
         $cFailureURL = $this->getReturnURL($order);
@@ -119,9 +121,10 @@ class Wirecard extends PaymentMethod
     }
 
     /**
-     * @return boolean
      * @param Bestellung $order
+     * @param string     $paymentHash
      * @param array      $args
+     * @return bool
      */
     public function verifyNotification($order, $paymentHash, $args)
     {

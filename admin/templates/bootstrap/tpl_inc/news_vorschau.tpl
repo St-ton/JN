@@ -38,7 +38,7 @@
                                             {else}
                                                 <label for="nk-{$oNewsKommentar->kNewsKommentar}">{$oNewsKommentar->cName}, {$oNewsKommentar->dErstellt_de}</label>
                                             {/if}
-                                            <a href="news.php?news=1&kNews={$oNews->kNews}&kNewsKommentar={$oNewsKommentar->kNewsKommentar}{if isset($cBackPage)}&{$cBackPage}{elseif isset($cTab)}&tab={$cTab}{/if}&nkedit=1&token={$smarty.session.jtl_token}" class="btn btn-default" title="{#newsEdit#}"><i class="fa fa-edit"></i></a>
+                                            <a href="news.php?news=1&kNews={$oNews->kNews}&kNewsKommentar={$oNewsKommentar->kNewsKommentar}{if isset($cBackPage)}&{$cBackPage}{elseif isset($cTab)}&tab={$cTab}{/if}&nkedit=1&token={$smarty.session.jtl_token}" class="btn btn-default" title="{#modify#}"><i class="fa fa-edit"></i></a>
                                         </strong>
                                     </td>
                                 </tr>

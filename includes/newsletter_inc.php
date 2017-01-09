@@ -3,6 +3,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
 /**
  * @param string $dbfeld
@@ -41,12 +42,12 @@ function fuegeNewsletterEmpfaengerEin($oKunde, $bPruefeDaten = false)
     global $cFehler, $cHinweis, $Einstellungen;
 
     if (!isset($Einstellungen['newsletter'])) {
-        $oSettings_arr               = Shop::getSettings(array(CONF_NEWSLETTER));
+        $oSettings_arr               = Shop::getSettings([CONF_NEWSLETTER]);
         $Einstellungen['newsletter'] = $oSettings_arr['newsletter'];
     }
-
-    $oPlausi              = new stdClass();
-    $oPlausi->nPlausi_arr = array();
+    $oPlausi                    = new stdClass();
+    $oPlausi->nPlausi_arr       = [];
+    $oNewsletterEmpfaengerKunde = null;
 
     if (valid_email($oKunde->cEmail) || !$bPruefeDaten) {
         $oPlausi->nPlausi_arr = newsletterAnmeldungPlausi($oKunde);
@@ -82,7 +83,7 @@ function fuegeNewsletterEmpfaengerEin($oKunde, $bPruefeDaten = false)
                 $cFehler = Shop::Lang()->get('newsletterExists', 'errorMessages');
             } else {
                 // CheckBox Spezialfunktion ausführen
-                $oCheckBox->triggerSpecialFunction(CHECKBOX_ORT_NEWSLETTERANMELDUNG, $kKundengruppe, true, $_POST, array('oKunde' => $oKunde));
+                $oCheckBox->triggerSpecialFunction(CHECKBOX_ORT_NEWSLETTERANMELDUNG, $kKundengruppe, true, $_POST, ['oKunde' => $oKunde]);
                 $oCheckBox->checkLogging(CHECKBOX_ORT_NEWSLETTERANMELDUNG, $kKundengruppe, $_POST, true);
 
                 unset($oNewsletterEmpfaenger);
@@ -108,7 +109,7 @@ function fuegeNewsletterEmpfaengerEin($oKunde, $bPruefeDaten = false)
                 $oNewsletterEmpfaenger->dEingetragen       = 'now()';
                 $oNewsletterEmpfaenger->dLetzterNewsletter = '0000-00-00';
 
-                executeHook(HOOK_NEWSLETTER_PAGE_EMPFAENGEREINTRAGEN, array('oNewsletterEmpfaenger' => $oNewsletterEmpfaenger));
+                executeHook(HOOK_NEWSLETTER_PAGE_EMPFAENGEREINTRAGEN, ['oNewsletterEmpfaenger' => $oNewsletterEmpfaenger]);
 
                 Shop::DB()->insert('tnewsletterempfaenger', $oNewsletterEmpfaenger);
                 // Protokollieren (hinzufügen)
@@ -128,7 +129,7 @@ function fuegeNewsletterEmpfaengerEin($oKunde, $bPruefeDaten = false)
 
                 $kNewsletterEmpfaengerHistory = Shop::DB()->insert('tnewsletterempfaengerhistory', $oNewsletterEmpfaengerHistory);
 
-                executeHook(HOOK_NEWSLETTER_PAGE_HISTORYEMPFAENGEREINTRAGEN, array('oNewsletterEmpfaengerHistory' => $oNewsletterEmpfaengerHistory));
+                executeHook(HOOK_NEWSLETTER_PAGE_HISTORYEMPFAENGEREINTRAGEN, ['oNewsletterEmpfaengerHistory' => $oNewsletterEmpfaengerHistory]);
 
                 if (($Einstellungen['newsletter']['newsletter_doubleopt'] === 'U' && !$_SESSION['Kunde']->kKunde) || $Einstellungen['newsletter']['newsletter_doubleopt'] === 'A') {
                     $oNewsletterEmpfaenger->cLoeschURL     = Shop::getURL() . '/newsletter.php?lang=' . $_SESSION['cISOSprache'] . '&lc=' . $oNewsletterEmpfaenger->cLoeschCode;
@@ -165,9 +166,9 @@ function fuegeNewsletterEmpfaengerEin($oKunde, $bPruefeDaten = false)
  */
 function newsletterAnmeldungPlausi($oKunde)
 {
-    global $cFehler, $Einstellungen;
+    global $Einstellungen;
 
-    $nPlausi_arr = array();
+    $nPlausi_arr = [];
     if ($Einstellungen['newsletter']['newsletter_sicherheitscode'] !== 'N' && !validateCaptcha($_POST)) {
         $nPlausi_arr['captcha'] = 2;
     }
@@ -202,7 +203,7 @@ function pruefeObBereitsAbonnent($kKunde)
 function pruefeNLHistoryKundengruppe($kKundengruppe, $cKundengruppeKey)
 {
     if (strlen($cKundengruppeKey) > 0) {
-        $kKundengruppe_arr    = array();
+        $kKundengruppe_arr    = [];
         $cKundengruppeKey_arr = explode(';', $cKundengruppeKey);
         if (is_array($cKundengruppeKey_arr) && count($cKundengruppeKey_arr) > 0) {
             foreach ($cKundengruppeKey_arr as $cKundengruppeKey) {

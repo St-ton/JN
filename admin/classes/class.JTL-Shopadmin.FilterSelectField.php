@@ -34,6 +34,7 @@ class FilterSelectField extends FilterField
      *  6 = greater than
      *  7 = lower than or equal
      *  8 = greater than or equal
+     *  9 = equals not
      * @return FilterSelectOption
      */
     public function addSelectOption($cTitle, $cValue, $nTestOp = 0)
@@ -60,7 +61,7 @@ class FilterSelectField extends FilterField
         $cValue  = $this->oOption_arr[(int)$this->cValue]->getValue();
         $nTestOp = $this->oOption_arr[(int)$this->cValue]->getTestOp();
 
-        if ($cValue !== '' || $nTestOp == 4) {
+        if ($cValue !== '' || $nTestOp == 4 || $nTestOp == 9) {
             switch ($nTestOp) {
                 case 1: return $this->cColumn . " LIKE '%" . Shop::DB()->escape($cValue) . "%'";
                 case 2: return $this->cColumn . " LIKE '" . Shop::DB()->escape($cValue) . "%'";
@@ -70,6 +71,7 @@ class FilterSelectField extends FilterField
                 case 6: return $this->cColumn . " > '" . Shop::DB()->escape($cValue) . "'";
                 case 7: return $this->cColumn . " <= '" . Shop::DB()->escape($cValue) . "'";
                 case 8: return $this->cColumn . " >= '" . Shop::DB()->escape($cValue) . "'";
+                case 9: return $this->cColumn . " != '" . Shop::DB()->escape($cValue) . "'";
             }
         }
 

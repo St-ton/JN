@@ -6,7 +6,7 @@
 
 require_once dirname(__FILE__) . '/syncinclude.php';
 $return  = 3;
-$xml_obj = array();
+$xml_obj = [];
 if (auth()) {
     $return                                           = 0;
     $xml_obj['zahlungseingaenge']['tzahlungseingang'] = Shop::DB()->query(

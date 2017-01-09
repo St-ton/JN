@@ -64,7 +64,7 @@ function gibBrowser()
     if (strpos($agent, 'msie') !== false) {
         $pos = strpos($agent, 'msie');
 
-        return 'Internet Explorer ' . (int) substr($agent, $pos + 4);
+        return 'Internet Explorer ' . (int)substr($agent, $pos + 4);
     }
     if (strpos($agent, 'opera') !== false) {
         return 'Opera';
@@ -105,6 +105,7 @@ function gibBot()
     $agent = strtolower($_SERVER['HTTP_USER_AGENT']);
     if (
         strpos($agent, 'googlebot') !== false ||
+        strpos($agent, 'bingbot') !== false ||
         strpos($agent, 'inktomi.com') !== false ||
         strpos($agent, 'yahoo! slurp') !== false ||
         strpos($agent, 'msnbot') !== false ||
@@ -147,7 +148,7 @@ function gibBot()
  */
 function werteRefererAus($kBesucher, $referer)
 {
-    $kBesucher           = intval($kBesucher);
+    $kBesucher           = (int)$kBesucher;
     $roh                 = $_SERVER['HTTP_REFERER'];
     $ausdruck            = new stdClass();
     $ausdruck->kBesucher = $kBesucher;
@@ -228,7 +229,7 @@ function istSpider($cUserAgent)
         }
     }
 
-    return (isset($oBesucherBot->kBesucherBot) && intval($oBesucherBot->kBesucherBot) > 0) ?
-        (int)$oBesucherBot->kBesucherBot :
-        0;
+    return (isset($oBesucherBot->kBesucherBot) && intval($oBesucherBot->kBesucherBot) > 0)
+        ? (int)$oBesucherBot->kBesucherBot
+        : 0;
 }

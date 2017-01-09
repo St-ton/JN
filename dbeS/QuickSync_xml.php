@@ -28,7 +28,8 @@ if (auth()) {
             $return = 0;
             foreach ($list as $i => $zip) {
                 if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                    Jtllog::writeLog('bearbeite: ' . $entzippfad . $zip['filename'] . ' size: ' . filesize($entzippfad . $zip['filename']), JTLLOG_LEVEL_DEBUG, false, 'QuickSync_xml');
+                    Jtllog::writeLog('bearbeite: ' . $entzippfad . $zip['filename'] . ' size: ' .
+                        filesize($entzippfad . $zip['filename']), JTLLOG_LEVEL_DEBUG, false, 'QuickSync_xml');
                 }
                 $d   = file_get_contents($entzippfad . $zip['filename']);
                 $xml = XML_unserialize($d);
@@ -65,7 +66,6 @@ function bearbeiteInsert($xml)
     if (is_array($xml['quicksync']['tartikel'])) {
         $oArtikel_arr = mapArray($xml['quicksync'], 'tartikel', $GLOBALS['mArtikelQuickSync']);
         $nCount       = count($oArtikel_arr);
-
         //PREISE
         if ($nCount < 2) {
             updateXMLinDB($xml['quicksync']['tartikel'], 'tpreise', $GLOBALS['mPreise'], 'kKundengruppe', 'kArtikel');
@@ -82,7 +82,7 @@ function bearbeiteInsert($xml)
                 setzePreisverlauf($oPreis->kArtikel, $oPreis->kKundengruppe, $oPreis->fVKNetto);
             }
         } else {
-            for ($i = 0; $i < $nCount; $i++) {
+            for ($i = 0; $i < $nCount; ++$i) {
                 updateXMLinDB($xml['quicksync']['tartikel'][$i], 'tpreise', $GLOBALS['mPreise'], 'kKundengruppe', 'kArtikel');
 
                 if (version_compare($_POST['vers'], '099976', '>=')) {
@@ -102,7 +102,7 @@ function bearbeiteInsert($xml)
                 }
             }
         }
-        $clearTags = array();
+        $clearTags = [];
         foreach ($oArtikel_arr as $oArtikel) {
             //any new orders since last wawi-sync? see https://gitlab.jtl-software.de/jtlshop/jtl-shop/issues/304
             if (isset($oArtikel->fLagerbestand) && $oArtikel->fLagerbestand > 0) {
@@ -117,7 +117,8 @@ function bearbeiteInsert($xml)
                 if ($delta->totalquantity > 0) {
                     $oArtikel->fLagerbestand = $oArtikel->fLagerbestand - $delta->totalquantity; //subtract delta from stocklevel
                     if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                        Jtllog::writeLog("Artikel-Quicksync: Lagerbestand von kArtikel {$oArtikel->kArtikel} wurde wegen nicht-abgeholter Bestellungen um {$delta->totalquantity} reduziert auf {$oArtikel->fLagerbestand}." , JTLLOG_LEVEL_DEBUG, false, 'Artikel_xml');
+                        Jtllog::writeLog("Artikel-Quicksync: Lagerbestand von kArtikel {$oArtikel->kArtikel} wurde wegen nicht-abgeholter Bestellungen "
+                        . "um {$delta->totalquantity} auf {$oArtikel->fLagerbestand} reduziert." , JTLLOG_LEVEL_DEBUG, false, 'Artikel_xml');
                     }
                 }
             }
@@ -125,21 +126,21 @@ function bearbeiteInsert($xml)
             if ($oArtikel->fLagerbestand < 0) {
                 $oArtikel->fLagerbestand = 0;
             }
-            Shop::DB()->query("UPDATE tartikel SET fLagerbestand = " . $oArtikel->fLagerbestand . " WHERE kArtikel = " . (int)$oArtikel->kArtikel, 4);
-
-            // Clear Artikel Cache
-            $clearTags[] = CACHING_GROUP_ARTICLE . '_' . (int)$oArtikel->kArtikel;
-            if (Shop::Cache()->isPageCacheEnabled()) {
-                if (!isset($smarty)) {
-                    $smarty = Shop::Smarty();
-                }
-                if (isset($smarty)) {
-                    //@todo: smarty is null...
-                    $smarty->clearCache(null, 'jtlc|article|aid' . (int)$oArtikel->kArtikel);
-                }
+            $upd                        = new stdClass();
+            $upd->fLagerbestand         = $oArtikel->fLagerbestand;
+            $upd->dLetzteAktualisierung = 'now()';
+            Shop::DB()->update('tartikel', 'kArtikel', (int)$oArtikel->kArtikel, $upd);
+            executeHook(HOOK_QUICKSYNC_XML_BEARBEITEINSERT, ['oArtikel' => $oArtikel]);
+            // clear object cache for this article and its parent if there is any
+            $parentArticle = Shop::DB()->select('tartikel', 'kArtikel', $oArtikel->kArtikel, null, null, null, null, false, 'kVaterArtikel');
+            if (!empty($parentArticle->kVaterArtikel)) {
+                $clearTags[] = (int)$parentArticle->kVaterArtikel;
             }
+            $clearTags[] = (int)$oArtikel->kArtikel;
             versendeVerfuegbarkeitsbenachrichtigung($oArtikel);
         }
+        $clearTags = array_unique($clearTags);
+        array_walk($clearTags, function(&$i) { $i = CACHING_GROUP_ARTICLE . '_' . $i; });
         Shop::Cache()->flushTags($clearTags);
     }
 }

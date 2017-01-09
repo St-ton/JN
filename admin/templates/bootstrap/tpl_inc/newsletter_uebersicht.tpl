@@ -54,27 +54,19 @@
                     {if isset($cSucheInaktiv) && $cSucheInaktiv|strlen > 0}
                         <input type="hidden" name="cSucheInaktiv" value="{$cSucheInaktiv}" />
                     {/if}
-                    <input type="hidden" name="s1" value="{$oBlaetterNaviInaktiveAbonnenten->nAktuelleSeite}" />
-
-                    <div id="newsletter-inactive-search">
-                        <table class="table2">
-                            <tr>
-                                <td>
-                                    <div class="input-group">
-                                        <span class="input-group-addon">
-                                            <label for="cSucheInaktiv">{#newslettersubscriberSearch#}:</label>
-                                        </span>
-                                        <input class="form-control" id="cSucheInaktiv" name="cSucheInaktiv" type="text" value="{if isset($cSucheInaktiv) && $cSucheInaktiv|strlen > 0}{$cSucheInaktiv}{/if}" />
-                                        <span class="input-group-btn">
-                                            <button name="submitInaktiveAbonnentenSuche" type="submit" class="btn btn-primary" value="{#newsletterSearchBTN#}"><i class="fa fa-search"></i> {#newsletterSearchBTN#}</button>
-                                        </span>
-                                    </div>
-                                </td>
-                            </tr>
-                        </table>
+                    <div class="input-group">
+                        <span class="input-group-addon">
+                            <label for="cSucheInaktiv">{#newslettersubscriberSearch#}:</label>
+                        </span>
+                        <input class="form-control" id="cSucheInaktiv" name="cSucheInaktiv" type="text" value="{if isset($cSucheInaktiv) && $cSucheInaktiv|strlen > 0}{$cSucheInaktiv}{/if}" />
+                        <span class="input-group-btn">
+                            <button name="submitInaktiveAbonnentenSuche" type="submit" class="btn btn-primary" value="{#newsletterSearchBTN#}">
+                                <i class="fa fa-search"></i> {#newsletterSearchBTN#}
+                            </button>
+                        </span>
                     </div>
                 </form>
-                {include file='pagination.tpl' cSite=1 cUrl='newsletter.php' oBlaetterNavi=$oBlaetterNaviInaktiveAbonnenten hash='#inaktiveabonnenten'}
+                {include file='tpl_inc/pagination.tpl' oPagination=$oPagiInaktiveAbos cAnchor='inaktiveabonnenten'}
                 <div id="newsletter-inactive-content">
                     <form name="inaktiveabonnentenForm" method="post" action="newsletter.php">
                         {$jtl_token}
@@ -83,7 +75,6 @@
                         {if isset($cSucheInaktiv) && $cSucheInaktiv|strlen > 0}
                             <input type="hidden" name="cSucheInaktiv" value="{$cSucheInaktiv}" />
                         {/if}
-                        <input type="hidden" name="s1" value="{$oBlaetterNaviInaktiveAbonnenten->nAktuelleSeite}" />
                         <div class="panel panel-default">
                             <table class="table">
                                 <tr>
@@ -132,30 +123,24 @@
                     {$jtl_token}
                     <input type="hidden" name="Suche" value="1" />
                     <input type="hidden" name="tab" value="alleabonnenten" />
-                    <input type="hidden" name="s5" value="{$oBlaetterNaviAlleAbonnenten->nAktuelleSeite}" />
                     {if isset($cSucheAktiv) && $cSucheAktiv|strlen > 0}
                         <input type="hidden" name="cSucheAktiv" value="{$cSucheAktiv}" />
                     {/if}
                     <div id="newsletter-all-search">
-                        <table class="table2">
-                            <tr>
-                                <td>
-                                    <div class="input-group">
-                                        <span class="input-group-addon">
-                                            <label for="cSucheAktiv">{#newslettersubscriberSearch#}</label>
-                                        </span>
-                                        <input id="cSucheAktiv" name="cSucheAktiv" class="form-control" type="text" value="{if isset($cSucheAktiv) && $cSucheAktiv|strlen > 0}{$cSucheAktiv}{/if}" />
-                                        <span class="input-group-btn">
-                                            <button name="submitSuche" type="submit" value="{#newsletterSearchBTN#}" class="btn btn-info"><i class="fa fa-search"></i> {#newsletterSearchBTN#}</button>
-                                        </span>
-                                    </div>
-                                </td>
-                            </tr>
-                        </table>
-                        <br />
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <label for="cSucheAktiv">{#newslettersubscriberSearch#}</label>
+                            </span>
+                            <input id="cSucheAktiv" name="cSucheAktiv" class="form-control" type="text" value="{if isset($cSucheAktiv) && $cSucheAktiv|strlen > 0}{$cSucheAktiv}{/if}" />
+                            <span class="input-group-btn">
+                                <button name="submitSuche" type="submit" value="{#newsletterSearchBTN#}" class="btn btn-primary">
+                                    <i class="fa fa-search"></i> {#newsletterSearchBTN#}
+                                </button>
+                            </span>
+                        </div>
                     </div>
                 </form>
-                {include file='pagination.tpl' cSite=5 cUrl='newsletter.php' oBlaetterNavi=$oBlaetterNaviAlleAbonnenten hash='#alleabonnenten'}
+                {include file='tpl_inc/pagination.tpl' oPagination=$oPagiAlleAbos cAnchor='alleabonnenten'}
                 <!-- Uebersicht Newsletterhistory -->
                 <form method="post" action="newsletter.php">
                     {$jtl_token}
@@ -195,7 +180,7 @@
                                 </tr>
                             </table>
                             <div class="panel-footer">
-                                <button name="loeschen" type="submit" class="btn btn-danger"><i class="fa fa-trash"></i> markierte l&ouml;schen</button>
+                                <button name="loeschen" type="submit" class="btn btn-danger"><i class="fa fa-trash"></i> {#deleteSelected#}</button>
                             </div>
                         </div>
                     </div>
@@ -216,7 +201,7 @@
                 {$jtl_token}
                 <input type="hidden" name="newsletterabonnent_neu" value="1">
                 <input name="tab" type="hidden" value="neuerabonnenten">
-                <div class="panel panel-default">
+                <div class="panel panel-default settings">
                     <div class="panel-heading">
                         <h3 class="panel-title">{#newsletterNewSubscriber#}</h3>
                     </div>
@@ -274,12 +259,11 @@
         </div>
         <div id="newsletterqueue" class="tab-pane fade{if isset($cTab) && $cTab === 'newsletterqueue'} active in{/if}">
             {if isset($oNewsletterQueue_arr) && $oNewsletterQueue_arr|@count > 0}
+                {include file='tpl_inc/pagination.tpl' oPagination=$oPagiWarteschlange cAnchor='newsletterqueue'}
                 <form method="post" action="newsletter.php">
                     {$jtl_token}
                     <input name="newsletterqueue" type="hidden" value="1">
                     <input name="tab" type="hidden" value="newsletterqueue">
-                    <input name="s2" type="hidden" value="{$oBlaetterNaviNLWarteschlage->nAktuelleSeite}">
-                    {include file='pagination.tpl' cSite=2 cUrl='newsletter.php' oBlaetterNavi=$oBlaetterNaviNLWarteschlage hash='#newsletterqueue'}
                     <div id="newsletter-queue-content">
                         <div class="panel panel-default">
                             <div class="panel-heading">
@@ -337,13 +321,9 @@
                 {$jtl_token}
                 <input name="newslettervorlagen" type="hidden" value="1">
                 <input name="tab" type="hidden" value="newslettervorlagen">
-                <input name="s3" type="hidden" value="{$oBlaetterNaviNLVorlagen->nAktuelleSeite}">
 
                 {if isset($oNewsletterVorlage_arr) && $oNewsletterVorlage_arr|@count > 0}
-                    {include file='pagination.tpl' cSite=3 cUrl='newsletter.php' oBlaetterNavi=$oBlaetterNaviNLVorlagen hash='#newslettervorlagen'}
-                {/if}
-
-                {if isset($oNewsletterVorlage_arr) && $oNewsletterVorlage_arr|@count > 0}
+                    {include file='tpl_inc/pagination.tpl' oPagination=$oPagiVorlagen cAnchor='newslettervorlagen'}
                     <div id="newsletter-vorlagen-content">
                         <div class="panel panel-default">
                             <div class="panel-heading">
@@ -375,9 +355,9 @@
                                             <div class="btn-group">
                                                 <a class="btn btn-default" href="newsletter.php?&vorschau={$oNewsletterVorlage->kNewsletterVorlage}&iframe=1&tab=newslettervorlagen&token={$smarty.session.jtl_token}" title="{#newsletterPreview#}"><i class="fa fa-eye"></i></a>
                                                 {if $oNewsletterVorlage->kNewslettervorlageStd > 0}
-                                                    <a class="btn btn-default" href="newsletter.php?newslettervorlagenstd=1&editieren={$oNewsletterVorlage->kNewsletterVorlage}&tab=newslettervorlagen&token={$smarty.session.jtl_token}" title="Bearbeiten"><i class="fa fa-edit"></i></a>
+                                                    <a class="btn btn-default" href="newsletter.php?newslettervorlagenstd=1&editieren={$oNewsletterVorlage->kNewsletterVorlage}&tab=newslettervorlagen&token={$smarty.session.jtl_token}" title="{#modify#}"><i class="fa fa-edit"></i></a>
                                                 {else}
-                                                    <a class="btn btn-default" href="newsletter.php?newslettervorlagen=1&editieren={$oNewsletterVorlage->kNewsletterVorlage}&tab=newslettervorlagen&token={$smarty.session.jtl_token}" title="Bearbeiten"><i class="fa fa-edit"></i></a>
+                                                    <a class="btn btn-default" href="newsletter.php?newslettervorlagen=1&editieren={$oNewsletterVorlage->kNewsletterVorlage}&tab=newslettervorlagen&token={$smarty.session.jtl_token}" title="{#modify#}"><i class="fa fa-edit"></i></a>
                                                 {/if}
                                                 <a class="btn btn-default" href="newsletter.php?newslettervorlagen=1&vorbereiten={$oNewsletterVorlage->kNewsletterVorlage}&tab=newslettervorlagen&token={$smarty.session.jtl_token}" title="{#newsletterprepare#}">{#newsletterprepare#}</a>
                                             </div>
@@ -419,7 +399,6 @@
                     <input name="newslettervorlagenstd" type="hidden" value="1" />
                     <input name="vorlage_std_erstellen" type="hidden" value="1" />
                     <input name="tab" type="hidden" value="newslettervorlagenstd" />
-                    <input name="s6" type="hidden" value="{$oBlaetterNaviNLVorlagen->nAktuelleSeite}" />
 
                     <div id="newsletter-vorlage-std-content">
                         <div class="panel panel-default">
@@ -452,12 +431,11 @@
         </div>
         <div id="newsletterhistory" class="tab-pane fade{if isset($cTab) && $cTab === 'newsletterhistory'} active in{/if}">
             {if isset($oNewsletterHistory_arr) && $oNewsletterHistory_arr|@count > 0}
+                {include file='tpl_inc/pagination.tpl' oPagination=$oPagiHistory cAnchor='newsletterhistory'}
                 <form method="post" action="newsletter.php">
                     {$jtl_token}
                     <input name="newsletterhistory" type="hidden" value="1">
                     <input name="tab" type="hidden" value="newsletterhistory">
-                    <input name="s4" type="hidden" value="{$oBlaetterNaviNLHistory->nAktuelleSeite}">
-                    {include file='pagination.tpl' cSite=4 cUrl='newsletter.php' oBlaetterNavi=$oBlaetterNaviNLHistory hash='#newsletterhistory'}
                     <div id="newsletter-history-content">
                         <div class="panel panel-default">
                             <div class="panel-heading">

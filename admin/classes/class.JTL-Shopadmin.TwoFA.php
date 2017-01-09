@@ -1,20 +1,11 @@
 <?php
 /**
- *
- * PRE-REQUISITES
- * prepare the database:
- *     mysql$ ALTER TABLE tadminlogin ADD b2FAauth tinyint(1) default 0, ADD c2FAauthSecret varchar(100) default '';
- *
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
- *
- * @author clemens, 2016-07-11
  */
 
-// TwoFA - we need name-space-definitions for the QRCode-generator (mandatory!)
-use chillerlan\QRCode\QRCode;
-use chillerlan\QRCode\Output\QRString;
-use chillerlan\QRCode\Output\QRStringOptions;
+use qrcodegenerator\QRCode\QRCode;
+use qrcodegenerator\QRCode\Output\QRString;
 
 /**
  * Class TwoFA
@@ -45,12 +36,11 @@ class TwoFA
     /**
      * tell the asker if 2FA is active for the "object-known" user
      *
-     * @param void
      * @return bool - true="2FA is active"|false="2FA inactive"
      */
     public function is2FAauth()
     {
-        return (bool)$this->oUserTupel->b2FAauth;;
+        return (bool)$this->oUserTupel->b2FAauth;
     }
 
     /**
@@ -67,7 +57,6 @@ class TwoFA
     /**
      * generate a new secret
      *
-     * @param void
      * @return $this
      */
     public function createNewSecret()
@@ -88,7 +77,6 @@ class TwoFA
     /**
      * to save this secret, if the user decides to save the new admin-credetials
      *
-     * @param void
      * @return string - something like "2BHAADRCQLA7IMH7"
      */
     public function getSecret()
@@ -117,7 +105,6 @@ class TwoFA
      * deliver a QR-code for the given user and his secret
      * (fetch only the name of the current shop from the DB too)
      *
-     * @param void
      * @return string - generated QR-code
      */
     public function getQRcode()
@@ -148,7 +135,7 @@ class TwoFA
      * fetch a tupel of user-data from the DB, by his ID(`kAdminlogin`)
      * (store the fetched data in this object)
      *
-     * @param integer - the (DB-)id of this user-account
+     * @param int - the (DB-)id of this user-account
      * @return void
      */
     public function setUserByID($iID)
@@ -166,12 +153,9 @@ class TwoFA
      */
     public function setUserByName($szUserName)
     {
-        // write at least the users name we get via e.g. ajax
-        //
+        // write at least the user's name we get via e.g. ajax
         $this->oUserTupel->cLogin = $szUserName;
-
-        // look if we know that user yet
-        //
+        // check if we know that user yet
         if($oTupel = Shop::DB()->select('tadminlogin', 'cLogin', $szUserName)) {
             $this->oUserTupel = $oTupel;
         }
@@ -181,7 +165,6 @@ class TwoFA
      * serialize this objects data into a string,
      * mostly for debugging and logging
      *
-     * @param void
      * @return string - object-data
      */
     public function __toString()

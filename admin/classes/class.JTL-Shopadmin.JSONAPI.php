@@ -1,7 +1,16 @@
 <?php
+/**
+ * @copyright (c) JTL-Software-GmbH
+ * @license http://jtl-url.de/jtlshoplicense
+ */
 
 /**
  * Class JSONAPI
+ *
+ * @method mixed getPages(array $arguments = [])
+ * @method mixed getCategories(array $arguments = [])
+ * @method mixed getProducts(array $arguments = [])
+ * @method mixed getManufacturers(array $arguments = [])
  */
 class JSONAPI
 {

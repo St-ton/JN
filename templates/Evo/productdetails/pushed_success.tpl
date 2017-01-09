@@ -1,10 +1,12 @@
 <div id="pushed-success" class="alert alert-info panel-wrap{if isset($inline)} no-margin{/if}">
-    {if !isset($Artikel) && isset($zuletztInWarenkorbGelegterArtikel)}
-        {assign var=Artikel value=$zuletztInWarenkorbGelegterArtikel}
+    {if isset($zuletztInWarenkorbGelegterArtikel)}
+        {assign var=pushedArtikel value=$zuletztInWarenkorbGelegterArtikel}
+    {else}
+        {assign var=pushedArtikel value=$Artikel}
     {/if}
-    <div class="panel panel-default clearfix">
+    <div class="panel panel-default ">
         <div class="panel-body">
-            <div class="row">
+            <div class="row clearfix">
                 {assign var="showXSellingCart" value=false}
                 {if isset($Xselling->Kauf) && count($Xselling->Kauf->Artikel) > 0}
                     {assign var="showXSellingCart" value=true}
@@ -15,11 +17,11 @@
                         <div class="row">
                             <div class="col-xs-4 col-xs-offset-4">
                                 {counter assign=imgcounter print=0}
-                                <img src="{$Artikel->Bilder[0]->cPfadNormal}" alt="{if isset($Artikel->Bilder[0]->cAltAttribut)}{$Artikel->Bilder[0]->cAltAttribut|strip_tags|escape:"quotes"|truncate:60}{else}{$Artikel->cName}{/if}" id="image{$Artikel->kArtikel}_{$imgcounter}" class="image img-responsive" />
+                                <img src="{$pushedArtikel->Bilder[0]->cPfadNormal}" alt="{if isset($pushedArtikel->Bilder[0]->cAltAttribut)}{$pushedArtikel->Bilder[0]->cAltAttribut|strip_tags|truncate:60|escape:"html"}{else}{$pushedArtikel->cName}{/if}" id="image{$pushedArtikel->kArtikel}_{$imgcounter}" class="image img-responsive" />
                             </div>
                             <div class="col-xs-12">
                                 <div class="caption">
-                                    <span class="title">{$Artikel->cName}</span>
+                                    <span class="title">{$pushedArtikel->cName}</span>
                                 </div>
                             </div>{* /caption *}
                         </div>

@@ -29,16 +29,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 //#7482
                 return self::$oGruppen_arr[$kArtikel];
             }
-            $oGruppen_arr = Shop::DB()->query(
-                "SELECT kArtikel, kKonfigGruppe
-                    FROM tartikelkonfiggruppe
-                    WHERE tartikelkonfiggruppe.kArtikel = " . (int)$kArtikel . "
-                    ORDER BY tartikelkonfiggruppe.nSort
-                    ASC", 2
-            );
-
+            $oGruppen_arr = Shop::DB()->selectAll('tartikelkonfiggruppe', 'kArtikel', (int)$kArtikel, 'kArtikel, kKonfigGruppe', 'nSort ASC');
             if (!is_array($oGruppen_arr) || count($oGruppen_arr) === 0) {
-                return;
+                return [];
             }
             if (!$kSprache) {
                 $kSprache = $_SESSION['kSprache'];

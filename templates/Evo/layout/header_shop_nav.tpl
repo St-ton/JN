@@ -24,7 +24,17 @@
     {/if}
     {if isset($smarty.session.Waehrungen) && $smarty.session.Waehrungen|@count > 1}
         <li class="currency-dropdown dropdown visible-xs">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">{if $smarty.session.Waehrung->cName === 'EUR'}<i class="fa fa-eur" title="{$smarty.session.Waehrung->cName}"></i>{else}{$smarty.session.Waehrung->cName}{/if} <span class="caret"></span></a>
+            <a id="xxxxx" href="#" class="dropdown-toggle" data-toggle="dropdown">
+                {if $smarty.session.Waehrung->cISO === 'EUR'}
+                    <i class="fa fa-eur" title="{$smarty.session.Waehrung->cName}"></i>
+                {elseif $smarty.session.Waehrung->cISO === 'USD'}
+                    <i class="fa fa-usd" title="{$smarty.session.Waehrung->cName}"></i>
+                {elseif $smarty.session.Waehrung->cISO === 'GBP'}
+                    <i class="fa fa-gbp" title="{$smarty.session.Waehrung->cName}"></i>
+                {else}
+                    else{$smarty.session.Waehrung->cName}
+                {/if} <span class="caret"></span>
+            </a>
             <ul id="currency-dropdown-small" class="dropdown-menu dropdown-menu-right">
                 {foreach from=$smarty.session.Waehrungen item=oWaehrung}
                     <li>
@@ -49,7 +59,6 @@
         </li>
     {/block}{* /navbar-productsearch *}
 
-    {nocache}
     {block name="navbar-top-user"}
     {*  ACCOUNT *}
     <li class="dropdown hidden-xs">
@@ -108,7 +117,7 @@
     {*  COMPARE LIST *}
     {if isset($smarty.session.Vergleichsliste) && $smarty.session.Vergleichsliste->oArtikel_arr|count > 1}
     <li class="hidden-xs compare-list-menu">
-        <a href="vergleichsliste.php" title="{lang key="compare" sektion="global"}"{if $Einstellungen.vergleichsliste.vergleichsliste_target === 'blank'} target="_blank"{/if} class="link_to_comparelist{if $Einstellungen.vergleichsliste.vergleichsliste_target === 'popup'} popup{/if}"><span class="fa fa-tasks"></span><sup class="badge"><em>{$smarty.session.Vergleichsliste->oArtikel_arr|count}</em></sup></a>
+        <a href="{get_static_route id='vergleichsliste.php'}" title="{lang key="compare" sektion="global"}"{if $Einstellungen.vergleichsliste.vergleichsliste_target === 'blank'} target="_blank"{/if} class="link_to_comparelist{if $Einstellungen.vergleichsliste.vergleichsliste_target === 'popup'} popup{/if}"><span class="fa fa-tasks"></span><sup class="badge"><em>{$smarty.session.Vergleichsliste->oArtikel_arr|count}</em></sup></a>
     </li>
     {/if}
     {*  COMPARE LIST *}
@@ -116,7 +125,7 @@
     {*  WISH LIST *}
     {if isset($smarty.session.Wunschliste->kWunschliste) && $smarty.session.Wunschliste->CWunschlistePos_arr|count > 0}
     <li class="hidden-xs wish-list-menu">
-        <a href="{get_static_route id='jtl.php'}?wl={$smarty.session.Wunschliste->kWunschliste}" title="{lang key="goToWishlist" sektion="global"}"><span class="fa fa-heart"></span><sup class="badge"><em>{$smarty.session.Wunschliste->CWunschlistePos_arr|count}</em></sup></a>
+        <a href="{get_static_route id='wunschliste.php'}" title="{lang key="goToWishlist" sektion="global"}" class="link_to_wishlist{if $Einstellungen.vergleichsliste.vergleichsliste_target === 'popup'} popup{/if}"><span class="fa fa-heart"></span><sup class="badge"><em>{$smarty.session.Wunschliste->CWunschlistePos_arr|count}</em></sup></a>
     </li>
     {/if}
     {*  WISH LIST *}
@@ -127,6 +136,5 @@
     </li>
     {*  CART END *}
     {/block}{* /navbar-top-user *}
-    {/nocache}
 </ul>{* /shop-nav *}
 {/strip}

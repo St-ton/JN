@@ -26,7 +26,8 @@ if (auth()) {
             $return = 0;
             foreach ($list as $zip) {
                 if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                    Jtllog::writeLog('bearbeite: ' . PFAD_SYNC_TMP . $zip['filename'] . ' size: ' . filesize(PFAD_SYNC_TMP . $zip['filename']), JTLLOG_LEVEL_DEBUG, false, 'SetKunde_xml');
+                    Jtllog::writeLog('bearbeite: ' . PFAD_SYNC_TMP . $zip['filename'] . ' size: ' .
+                        filesize(PFAD_SYNC_TMP . $zip['filename']), JTLLOG_LEVEL_DEBUG, false, 'SetKunde_xml');
                 }
                 $d   = file_get_contents(PFAD_SYNC_TMP . $zip['filename']);
                 $xml = XML_unserialize($d);
@@ -56,15 +57,15 @@ if (is_array($res)) {
  */
 function bearbeite($xml)
 {
-    $res_obj              = array();
+    $res_obj              = [];
     $nr                   = 0;
     $Kunde                = new Kunde();
     $Kunde->kKundengruppe = 0;
-    $oKundenattribut_arr  = array();
+    $oKundenattribut_arr  = [];
 
     if (is_array($xml['tkunde attr'])) {
-        $Kunde->kKundengruppe = intval($xml['tkunde attr']['kKundengruppe']);
-        $Kunde->kSprache      = intval($xml['tkunde attr']['kSprache']);
+        $Kunde->kKundengruppe = (int)$xml['tkunde attr']['kKundengruppe'];
+        $Kunde->kSprache      = (int)$xml['tkunde attr']['kSprache'];
     }
     if (is_array($xml['tkunde'])) {
         mappe($Kunde, $xml['tkunde'], $GLOBALS['mKunde']);
@@ -91,13 +92,13 @@ function bearbeite($xml)
         //Mappe Anrede
         $Kunde->cAnrede = mappeWawiAnrede2ShopAnrede($Kunde->cAnrede);
 
-        $oSprache = Shop::DB()->query("SELECT kSprache FROM tsprache WHERE kSprache = " . (int)$Kunde->kSprache, 1);
+        $oSprache = Shop::DB()->select('tsprache', 'kSprache', (int)$Kunde->kSprache);
         if (empty($oSprache->kSprache)) {
-            $oSprache        = Shop::DB()->query("SELECT kSprache FROM tsprache WHERE cShopStandard = 'Y'", 1);
+            $oSprache        = Shop::DB()->select('tsprache', 'cShopStandard', 'Y');
             $Kunde->kSprache = $oSprache->kSprache;
         }
 
-        $kInetKunde = intval($xml['tkunde attr']['kKunde']);
+        $kInetKunde = (int)$xml['tkunde attr']['kKunde'];
         $oKundeAlt  = new stdClass();
         if ($kInetKunde > 0) {
             $oKundeAlt = new Kunde($kInetKunde);
@@ -129,7 +130,7 @@ function bearbeite($xml)
             }
             // Hausnummer extrahieren
             extractStreet($Kunde);
-            //DBUpdateInsert('tkunde', array($Kunde), 'kKunde');
+            //DBUpdateInsert('tkunde', [$Kunde], 'kKunde');
 
             $Kunde->updateInDB();
             // Kundendatenhistory
@@ -148,13 +149,14 @@ function bearbeite($xml)
                 $res_obj['keys']['tkunde']                = '';
 
                 if (Jtllog::doLog(JTLLOG_LEVEL_ERROR)) {
-                    Jtllog::writeLog('Verknuepfter Kunde in Wawi existiert nicht im Shop: ' . XML_serialize($res_obj), JTLLOG_LEVEL_ERROR, false, 'SetKunde_xml');
+                    Jtllog::writeLog('Verknuepfter Kunde in Wawi existiert nicht im Shop: ' .
+                        XML_serialize($res_obj), JTLLOG_LEVEL_ERROR, false, 'SetKunde_xml');
                 }
 
                 return $res_obj;
             }
             //Kunde existiert nicht im Shop - check, ob email schon belegt
-            $oKundeAlt = Shop::DB()->query("SELECT kKunde FROM tkunde WHERE nRegistriert = 1 AND cMail = '" . Shop::DB()->escape($Kunde->cMail) . "'", 1);
+            $oKundeAlt = Shop::DB()->select('tkunde', 'nRegistriert', 1, 'cMail', Shop::DB()->escape($Kunde->cMail), null, null, false, 'kKunde');
             if (isset($oKundeAlt->kKunde) && $oKundeAlt->kKunde > 0) {
                 //EMAIL SCHON BELEGT -> Kunde wird nicht neu angelegt, sondern der Kunde wird an Wawi zurückgegeben
                 $xml_obj['kunden']['tkunde']      = Shop::DB()->query(
@@ -244,7 +246,7 @@ function bearbeite($xml)
                         $Lieferadresse->cZusatz   = verschluesselXTEA(trim($Lieferadresse->cZusatz));
                         $Lieferadresse->cStrasse  = verschluesselXTEA(trim($Lieferadresse->cStrasse));
                         $Lieferadresse->cAnrede   = mappeWawiAnrede2ShopAnrede($Lieferadresse->cAnrede);
-                        DBUpdateInsert('tlieferadresse', array($Lieferadresse), 'kLieferadresse');
+                        DBUpdateInsert('tlieferadresse', [$Lieferadresse], 'kLieferadresse');
                     } else {
                         $Lieferadresse->kKunde = $kInetKunde;
                         mappe($Lieferadresse, $xml['tkunde']['tadresse'][$i], $GLOBALS['mLieferadresse']);
@@ -283,7 +285,7 @@ function bearbeite($xml)
                     $Lieferadresse->cZusatz   = verschluesselXTEA(trim($Lieferadresse->cZusatz));
                     $Lieferadresse->cStrasse  = verschluesselXTEA(trim($Lieferadresse->cStrasse));
                     $Lieferadresse->cAnrede   = mappeWawiAnrede2ShopAnrede($Lieferadresse->cAnrede);
-                    DBUpdateInsert('tlieferadresse', array($Lieferadresse), 'kLieferadresse');
+                    DBUpdateInsert('tlieferadresse', [$Lieferadresse], 'kLieferadresse');
                 } else {
                     if (!isset($Lieferadresse)) {
                         $Lieferadresse = new stdClass();

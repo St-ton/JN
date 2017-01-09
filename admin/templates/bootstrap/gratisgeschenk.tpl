@@ -22,7 +22,7 @@
     <div class="tab-content">
         <div id="aktivegeschenke" class="tab-pane fade {if !isset($cTab) || $cTab === 'aktivegeschenke'} active in{/if}">
             {if isset($oAktiveGeschenk_arr) && $oAktiveGeschenk_arr|@count > 0}
-                {include file='pagination.tpl' cSite=1 cUrl='gratisgeschenk.php' oBlaetterNavi=$oBlaetterNaviNewsKommentar cParams='' hash='#aktivegeschenke'}
+                {include file='tpl_inc/pagination.tpl' oPagination=$oPagiAktiv cAnchor='aktivegeschenke'}
                 <div class="settings panel panel-default">
                     <table class="table">
                         <thead>
@@ -36,7 +36,7 @@
                         {foreach name=aktivegeschenke from=$oAktiveGeschenk_arr item=oAktiveGeschenk}
                             <tr class="tab_bg{$smarty.foreach.aktivegeschenke.iteration%2}">
                                 <td class="TD1">
-                                    <a href="../../index.php?a={$oAktiveGeschenk->kArtikel}" target="_blank">{$oAktiveGeschenk->cName}</a>
+                                    <a href="{$oAktiveGeschenk->cURLFull}" target="_blank">{$oAktiveGeschenk->cName}</a>
                                 </td>
                                 <td class="tcenter">{getCurrencyConversionSmarty fPreisBrutto=$oAktiveGeschenk->FunktionsAttribute[$cFunAttrib]}</td>
                                 <td class="tcenter">{$oAktiveGeschenk->dErstellt_de}</td>
@@ -51,7 +51,7 @@
         </div>
         <div id="haeufigegeschenke" class="tab-pane fade {if isset($cTab) && $cTab === 'haeufigegeschenke'} active in{/if}">
             {if isset($oHaeufigGeschenk_arr) && $oHaeufigGeschenk_arr|@count > 0}
-                {include file='pagination.tpl' cSite=1 cUrl='gratisgeschenk.php' oBlaetterNavi=$oBlaetterNaviHaeufig cParams='' hash='#haeufigegeschenke'}
+                {include file='tpl_inc/pagination.tpl' oPagination=$oPagiHaeufig cAnchor='haeufigegeschenke'}
                 <div class="settings panel panel-default">
                     <table class="table">
                         <thead>
@@ -66,7 +66,7 @@
                         {foreach name=haeufigegeschenke from=$oHaeufigGeschenk_arr item=oHaeufigGeschenk}
                             <tr class="tab_bg{$smarty.foreach.haeufigegeschenke.iteration%2}">
                                 <td class="TD1">
-                                    <a href="../../index.php?a={$oHaeufigGeschenk->kArtikel}" target="_blank">{$oHaeufigGeschenk->cName}</a>
+                                    <a href="{$oAktiveGeschenk->cURLFull}" target="_blank">{$oHaeufigGeschenk->cName}</a>
                                 </td>
                                 <td class="tcenter">{$oHaeufigGeschenk->FunktionsAttribute[$cFunAttrib]}</td>
                                 <td class="tcenter">{$oHaeufigGeschenk->nGGAnzahl} mal</td>
@@ -82,7 +82,7 @@
         </div>
         <div id="letzten100geschenke" class="tab-pane fade {if isset($cTab) && $cTab === 'letzten100geschenke'} active in{/if}">
             {if isset($oLetzten100Geschenk_arr) && $oLetzten100Geschenk_arr|@count > 0}
-                {include file='pagination.tpl' cSite=3 cUrl='gratisgeschenk.php' oBlaetterNavi=$oBlaetterNaviLetzten100 cParams='' hash='#letzten100geschenke'}
+                {include file='tpl_inc/pagination.tpl' oPagination=$oPagiLetzte100 cAnchor='letzten100geschenke'}
                 <div class="settings panel panel-default">
                     <table class="table">
                         <thead>
@@ -97,7 +97,7 @@
                         {foreach name=letzten100geschenke from=$oLetzten100Geschenk_arr item=oLetzten100Geschenk}
                             <tr class="tab_bg{$smarty.foreach.letzten100geschenke.iteration%2}">
                                 <td class="TD1">
-                                    <a href="../../index.php?a={$oLetzten100Geschenk->kArtikel}" target="_blank">{$oLetzten100Geschenk->cName}</a>
+                                    <a href="{$oAktiveGeschenk->cURLFull}" target="_blank">{$oLetzten100Geschenk->cName}</a>
                                 </td>
                                 <td class="tcenter">{$oLetzten100Geschenk->FunktionsAttribute[$cFunAttrib]}</td>
                                 <td class="tcenter">{$oLetzten100Geschenk->nGGAnzahl} mal</td>

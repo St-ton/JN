@@ -63,13 +63,7 @@ function speicherEinstellung($kSuchspecialOverlay, $cPost_arr, $cFiles_arr)
     if (strlen($cFiles_arr['cSuchspecialOverlayBild']['name']) > 0) {
         $oSuchspecialoverlaySprache->cBildPfad = 'kSuchspecialOverlay_' . $_SESSION['kSprache'] . '_' . (int)$kSuchspecialOverlay . mappeFileTyp($cFiles_arr['cSuchspecialOverlayBild']['type']);
     } else {
-        $oSuchspecialoverlaySpracheTMP = Shop::DB()->query(
-            "SELECT cBildPfad
-                FROM tsuchspecialoverlaysprache
-                WHERE kSuchspecialOverlay = " . (int)$kSuchspecialOverlay . "
-                    AND kSprache = " . (int)$_SESSION['kSprache'], 1
-        );
-
+        $oSuchspecialoverlaySpracheTMP = Shop::DB()->select('tsuchspecialoverlaysprache', 'kSuchspecialOverlay', (int)$kSuchspecialOverlay, 'kSprache', (int)$_SESSION['kSprache']);
         if (isset($oSuchspecialoverlaySpracheTMP->cBildPfad) && strlen($oSuchspecialoverlaySpracheTMP->cBildPfad)) {
             $oSuchspecialoverlaySprache->cBildPfad = $oSuchspecialoverlaySpracheTMP->cBildPfad;
         }
@@ -99,7 +93,7 @@ function speicherEinstellung($kSuchspecialOverlay, $cPost_arr, $cFiles_arr)
  * @param int      $src_w
  * @param int      $src_h
  * @param int      $pct
- * @return void|bool
+ * @return bool
  */
 function imagecopymerge_alpha($dst_im, $src_im, $dst_x, $dst_y, $src_x, $src_y, $src_w, $src_h, $pct)
 {
@@ -143,7 +137,7 @@ function imagecopymerge_alpha($dst_im, $src_im, $dst_x, $dst_y, $src_x, $src_y, 
  * @param string $img
  * @param int    $width
  * @param int    $height
- * @return resource
+ * @return resource|null
  */
 function imageload_alpha($img, $width, $height)
 {
@@ -158,6 +152,8 @@ function imageload_alpha($img, $width, $height)
         case 3:
             $im = imagecreatefrompng($img);
             break;
+        default:
+            return null;
     }
 
     $new = imagecreatetruecolor($width, $height);
@@ -299,7 +295,7 @@ function speicherBild($cFiles_arr, $oSuchspecialoverlaySprache)
         $cFiles_arr['cSuchspecialOverlayBild']['type'] === 'image/jpg' || $cFiles_arr['cSuchspecialOverlayBild']['type'] === 'image/gif' ||
         $cFiles_arr['cSuchspecialOverlayBild']['type'] === 'image/png' || $cFiles_arr['cSuchspecialOverlayBild']['type'] === 'image/bmp' ||
         $cFiles_arr['cSuchspecialOverlayBild']['type'] === 'image/x-png') {
-        if ($cFiles_arr['cSuchspecialOverlayBild']['size'] <= 2097152) {
+        if (empty($cFiles_arr['cSuchspecialOverlayBild']['error'])) {
             $cFormat   = mappeFileTyp($cFiles_arr['cSuchspecialOverlayBild']['type']);
             $cName     = 'kSuchspecialOverlay_' . $oSuchspecialoverlaySprache->kSprache . '_' . $oSuchspecialoverlaySprache->kSuchspecialOverlay . $cFormat;
             $cOriginal = $cFiles_arr['cSuchspecialOverlayBild']['tmp_name'];

@@ -20,18 +20,11 @@ class MigrationManager
     protected $executedMigrations;
 
     /**
-     * @var array
-     */
-    protected $version;
-
-    /**
      * Construct
-     * @param int $version
      */
-    public function __construct($version)
+    public function __construct()
     {
         static::$migrations = [];
-        $this->version      = (int) $version;
     }
 
     /**
@@ -39,6 +32,7 @@ class MigrationManager
      *
      * @param int $identifier
      * @return array
+     * @throws Exception
      */
     public function migrate($identifier = null)
     {
@@ -144,7 +138,7 @@ class MigrationManager
 
         try {
             Shop::DB()->beginTransaction();
-            call_user_func(array(&$migration, $direction));
+            call_user_func([&$migration, $direction]);
             Shop::DB()->commit();
             $this->migrated($migration, $direction, $start);
         } catch (Exception $e) {
@@ -161,7 +155,7 @@ class MigrationManager
      */
     public function setMigrations(array $migrations)
     {
-        static::$migrations[$this->version] = $migrations;
+        static::$migrations = $migrations;
 
         return $this;
     }
@@ -184,10 +178,10 @@ class MigrationManager
      */
     public function getMigrations()
     {
-        if (!array_key_exists($this->version, static::$migrations) || static::$migrations[$this->version] === null) {
-            $migrations = array();
+        if (!is_array(static::$migrations) || count(static::$migrations) === 0) {
+            $migrations = [];
             $executed   = $this->_getExecutedMigrations();
-            $path       = MigrationHelper::getMigrationPath($this->version);
+            $path       = MigrationHelper::getMigrationPath();
 
             foreach (glob($path . '*.php') as $filePath) {
                 $baseName = basename($filePath);
@@ -195,7 +189,7 @@ class MigrationManager
                     $id    = MigrationHelper::getIdFromFileName($baseName);
                     $info  = MigrationHelper::getInfoFromFileName($baseName);
                     $class = MigrationHelper::mapFileNameToClassName($baseName);
-                    $date  = isset($executed[(int) $id]) ? $executed[(int) $id] : null;
+                    $date  = isset($executed[(int)$id]) ? $executed[(int)$id] : null;
 
                     require_once $filePath;
 
@@ -224,22 +218,22 @@ class MigrationManager
             $this->setMigrations($migrations);
         }
 
-        return static::$migrations[$this->version];
+        return static::$migrations;
     }
 
     /**
-     * Get last executed migration version.
+     * Get lastest executed migration id.
      *
      * @return int
      */
     public function getCurrentId()
     {
-        $oVersion = Shop::DB()->executeQuery(sprintf("SELECT kMigration FROM %s WHERE nVersion='%s' ORDER BY kMigration DESC", 'tmigration', $this->version), 1);
+        $oVersion = Shop::DB()->executeQuery("SELECT kMigration FROM tmigration ORDER BY kMigration DESC", 1);
         if ($oVersion) {
             return $oVersion->kMigration;
         }
 
-        return;
+        return 0;
     }
 
     /**
@@ -249,7 +243,7 @@ class MigrationManager
     {
         $migrations = $this->_getExecutedMigrations();
         if (!is_array($migrations)) {
-            $migrations = array();
+            $migrations = [];
         }
 
         return array_keys($migrations);
@@ -274,7 +268,7 @@ class MigrationManager
     protected function _getExecutedMigrations()
     {
         if ($this->executedMigrations === null) {
-            $migrations = Shop::DB()->executeQuery(sprintf("SELECT * FROM %s WHERE nVersion='%d' ORDER BY kMigration ASC", 'tmigration', $this->version), 2);
+            $migrations = Shop::DB()->executeQuery("SELECT * FROM tmigration ORDER BY kMigration ASC", 2);
             foreach ($migrations as $m) {
                 $this->executedMigrations[$m->kMigration] = new DateTime($m->dExecuted);
             }
@@ -285,9 +279,9 @@ class MigrationManager
 
     /**
      * @param IMigration $migration
-     * @param            $direction
-     * @param            $state
-     * @param            $message
+     * @param string     $direction
+     * @param string     $state
+     * @param string     $message
      */
     public function log(IMigration $migration, $direction, $state, $message)
     {
@@ -304,16 +298,16 @@ class MigrationManager
 
     /**
      * @param IMigration $migration
-     * @param            $direction
-     * @param            $executed
+     * @param string     $direction
+     * @param DateTime   $executed
      * @return $this
      */
     public function migrated(IMigration $migration, $direction, $executed)
     {
         if (strcasecmp($direction, IMigration::UP) === 0) {
             $sql = sprintf(
-                "INSERT INTO tmigration (kMigration, nVersion, dExecuted) VALUES ('%s', '%d', '%s');",
-                $migration->getId(), $this->version, $executed->format('Y-m-d H:i:s')
+                "INSERT INTO tmigration (kMigration, dExecuted) VALUES ('%s', '%s');",
+                $migration->getId(), $executed->format('Y-m-d H:i:s')
             );
             Shop::DB()->executeQuery($sql, 3);
         } else {

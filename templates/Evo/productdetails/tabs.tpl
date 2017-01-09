@@ -13,33 +13,40 @@
     {/if}
 
     <div id="article-tabs" {if $tabanzeige}class="tab-content"{/if}>
+        {* DOWNLOADS *}
+        {if isset($Artikel->oDownload_arr) && $Artikel->oDownload_arr|@count > 0}
+            {include file="productdetails/download.tpl"}
+        {/if}
         {* ARTIKELBESCHREIBUNG *}
-        {if $Artikel->cBeschreibung|strlen > 0 || $Einstellungen.artikeldetails.merkmale_anzeigen === 'Y' && $Artikel->oMerkmale_arr|count > 1}
-            <div role="tabpanel" class="{if $tabanzeige}tab-pane{else}panel panel-default{/if}" id="tab-description">
-                <div class="panel-heading" {if $tabanzeige}data-toggle="collapse" {/if}data-parent="#article-tabs" data-target="#tab-description">
-                    <h3 class="panel-title">{lang key="description" section="productDetails"}</h3>
-                </div>
-                {assign var=cArtikelBeschreibung value=$Artikel->cBeschreibung}
-                <div class="panel-body">
-                    <div class="tab-content-wrapper">
-                        <div class="desc">
-                            {$cArtikelBeschreibung}
+        <div role="tabpanel" class="{if $tabanzeige}tab-pane{else}panel panel-default{/if}" id="tab-description">
+            <div class="panel-heading" {if $tabanzeige}data-toggle="collapse" {/if}data-parent="#article-tabs" data-target="#tab-description">
+                <h3 class="panel-title">{block name="tab-description-title"}{lang key="description" section="productDetails"}{/block}</h3>
+            </div>
+            {assign var=cArtikelBeschreibung value=$Artikel->cBeschreibung}
+            <div class="panel-body">
+                <div class="tab-content-wrapper">
+                    {block name="tab-description-content"}
+                    <div class="desc">
+                        {$cArtikelBeschreibung}
 
-                            {if ($Einstellungen.artikeldetails.mediendatei_anzeigen === 'YA' && $Artikel->cMedienDateiAnzeige !== 'tab') || $Artikel->cMedienDateiAnzeige === 'beschreibung'}
-                                {if !empty($Artikel->cMedienTyp_arr)}
-                                    {foreach name="mediendateigruppen" from=$Artikel->cMedienTyp_arr item=cMedienTyp}
-                                        <div class="media">
-                                            {include file='productdetails/mediafile.tpl'}
-                                        </div>
-                                    {/foreach}
-                                {/if}
+                        {if ($Einstellungen.artikeldetails.mediendatei_anzeigen === 'YA' && $Artikel->cMedienDateiAnzeige !== 'tab') || $Artikel->cMedienDateiAnzeige === 'beschreibung'}
+                            {if !empty($Artikel->cMedienTyp_arr)}
+                                {foreach name="mediendateigruppen" from=$Artikel->cMedienTyp_arr item=cMedienTyp}
+                                    <div class="media">
+                                        {include file='productdetails/mediafile.tpl'}
+                                    </div>
+                                {/foreach}
                             {/if}
-                        </div>
-                        {include file="productdetails/attributes.tpl" tplscope="details"}
+                        {/if}
                     </div>
+                    {/block}
+                    {block name="tab-description-attributes"}
+                    {include file="productdetails/attributes.tpl" tplscope="details"}
+                    {/block}
                 </div>
             </div>
-        {/if}
+        </div>
+
         {section name=iterator start=1 loop=10}
             {assign var=tab value=tab}
             {assign var=tabname value=$tab|cat:$smarty.section.iterator.index|cat:" name"}
@@ -98,7 +105,7 @@
             </div>
         {/if}
         {* VERFUEGBARKEITSBENACHRICHTIGUNG *}
-        {if $verfuegbarkeitsBenachrichtigung == 1 && $Artikel->cLagerBeachten === 'Y'}
+        {if $verfuegbarkeitsBenachrichtigung == 1 && $Artikel->cLagerBeachten === 'Y' && $Artikel->cLagerKleinerNull !== 'Y'}
             <div role="tabpanel" class="{if $tabanzeige}tab-pane{else}panel panel-default{/if}" id="tab-benachrichtigung">
                 <div class="panel-heading" {if $tabanzeige}data-toggle="collapse" {/if}data-parent="#article-tabs" data-target="#tab-benachrichtigung">
                     <h3 class="panel-title">{lang key="notifyMeWhenProductAvailableAgain" section="global"}</h3>

@@ -174,7 +174,7 @@ class Slide
         unset($oSlide->cThumbnailAbsolut);
         unset($oSlide->kSlide);
 
-        return Shop::DB()->update('tslide', 'kSlide', (int) $this->kSlide, $oSlide);
+        return Shop::DB()->update('tslide', 'kSlide', (int)$this->kSlide, $oSlide);
     }
 
     /**
@@ -197,7 +197,7 @@ class Slide
                 $oSlide->nSort = (!is_object($oSort) || $oSort->nSort == 0) ? 1 : ($oSort->nSort + 1);
             }
             $kSlide = Shop::DB()->insert('tslide', $oSlide);
-            if ((int) $kSlide > 0) {
+            if ((int)$kSlide > 0) {
                 $this->kSlide = $kSlide;
 
                 return true;
@@ -212,8 +212,8 @@ class Slide
      */
     public function delete()
     {
-        if (isset($this->kSlide) && (int) $this->kSlide > 0) {
-            $bSuccess = Shop::DB()->delete('tslide', 'kSlide', (int) $this->kSlide);
+        if (isset($this->kSlide) && (int)$this->kSlide > 0) {
+            $bSuccess = Shop::DB()->delete('tslide', 'kSlide', (int)$this->kSlide);
 
             return ($bSuccess != 0);
         }

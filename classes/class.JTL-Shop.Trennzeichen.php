@@ -51,7 +51,7 @@ class Trennzeichen
     /**
      * @var array
      */
-    private static $unitObject = array();
+    private static $unitObject = [];
 
     /**
      * Constructor
@@ -78,12 +78,8 @@ class Trennzeichen
         $kTrennzeichen = (int)$kTrennzeichen;
         $cacheID       = 'units_lfdb_' . $kTrennzeichen;
         if (($oObj = Shop::Cache()->get($cacheID)) === false) {
-            $oObj = Shop::DB()->query(
-                "SELECT *
-                  FROM ttrennzeichen
-                  WHERE kTrennzeichen = " . $kTrennzeichen, 1
-            );
-            Shop::Cache()->set($cacheID, $oObj, array(CACHING_GROUP_CORE));
+            $oObj = Shop::DB()->select('ttrennzeichen', 'kTrennzeichen', $kTrennzeichen);
+            Shop::Cache()->set($cacheID, $oObj, [CACHING_GROUP_CORE]);
         }
         if (isset($oObj->kTrennzeichen) && $oObj->kTrennzeichen > 0) {
             $cMember_arr = array_keys(get_object_vars($oObj));
@@ -111,16 +107,11 @@ class Trennzeichen
         }
         $cacheID = 'units_' . (int)$nEinheit . '_' . (int)$kSprache;
         if (($oObj = Shop::Cache()->get($cacheID)) === false) {
-            $oObj = Shop::DB()->query(
-                "SELECT *
-                    FROM ttrennzeichen
-                    WHERE nEinheit = " . $nEinheit . "
-                        AND kSprache = " . (int)$kSprache, 1
-            );
-            Shop::Cache()->set($cacheID, $oObj, array(CACHING_GROUP_CORE));
+            $oObj = Shop::DB()->select('ttrennzeichen', 'nEinheit', $nEinheit, 'kSprache', (int)$kSprache);
+            Shop::Cache()->set($cacheID, $oObj, [CACHING_GROUP_CORE]);
         }
         if (!isset(self::$unitObject[$kSprache])) {
-            self::$unitObject[$kSprache] = array();
+            self::$unitObject[$kSprache] = [];
         }
         self::$unitObject[$kSprache][$nEinheit] = $oObj;
 
@@ -168,19 +159,19 @@ class Trennzeichen
     public static function insertMissingRow($nEinheit, $kSprache)
     {
         // Standardwert [kSprache][nEinheit]
-        $xRowAssoc_arr       = array();
-        $xRowAssoc_arr[1][1] = array('nDezimalstellen' => 2, 'cDezimalZeichen' => ',', 'cTausenderZeichen' => '.');
-        $xRowAssoc_arr[1][3] = array('nDezimalstellen' => 2, 'cDezimalZeichen' => ',', 'cTausenderZeichen' => '.');
-        $xRowAssoc_arr[2][1] = array('nDezimalstellen' => 2, 'cDezimalZeichen' => ',', 'cTausenderZeichen' => '.');
-        $xRowAssoc_arr[2][3] = array('nDezimalstellen' => 2, 'cDezimalZeichen' => ',', 'cTausenderZeichen' => '.');
+        $xRowAssoc_arr       = [];
+        $xRowAssoc_arr[1][1] = ['nDezimalstellen' => 2, 'cDezimalZeichen' => ',', 'cTausenderZeichen' => '.'];
+        $xRowAssoc_arr[1][3] = ['nDezimalstellen' => 2, 'cDezimalZeichen' => ',', 'cTausenderZeichen' => '.'];
+        $xRowAssoc_arr[2][1] = ['nDezimalstellen' => 2, 'cDezimalZeichen' => ',', 'cTausenderZeichen' => '.'];
+        $xRowAssoc_arr[2][3] = ['nDezimalstellen' => 2, 'cDezimalZeichen' => ',', 'cTausenderZeichen' => '.'];
 
         $nEinheit = (int)$nEinheit;
         $kSprache = (int)$kSprache;
 
         if ($nEinheit > 0 && $kSprache > 0) {
             if (!isset($xRowAssoc_arr[$kSprache][$nEinheit])) {
-                $xRowAssoc_arr[$kSprache]            = array();
-                $xRowAssoc_arr[$kSprache][$nEinheit] = array('nDezimalstellen' => 2, 'cDezimalZeichen' => ',', 'cTausenderZeichen' => '.');
+                $xRowAssoc_arr[$kSprache]            = [];
+                $xRowAssoc_arr[$kSprache][$nEinheit] = ['nDezimalstellen' => 2, 'cDezimalZeichen' => ',', 'cTausenderZeichen' => '.'];
             }
 
             return Shop::DB()->query(
@@ -204,23 +195,16 @@ class Trennzeichen
         $kSprache = (int)$kSprache;
         $cacheID  = 'units_all_' . $kSprache;
         if (($oObjAssoc_arr = Shop::Cache()->get($cacheID)) === false) {
-            $oObjAssoc_arr = array();
-
+            $oObjAssoc_arr = [];
             if ($kSprache > 0) {
-                $oObjTMP_arr = Shop::DB()->query(
-                    "SELECT kTrennzeichen
-                        FROM ttrennzeichen
-                        WHERE kSprache = " . $kSprache . "
-                        ORDER BY nEinheit", 2
-                );
-
+                $oObjTMP_arr = Shop::DB()->selectAll('ttrennzeichen', 'kSprache', $kSprache, 'kTrennzeichen', 'nEinheit');
                 if (is_array($oObjTMP_arr) && count($oObjTMP_arr) > 0) {
                     foreach ($oObjTMP_arr as $oObjTMP) {
                         if (isset($oObjTMP->kTrennzeichen) && $oObjTMP->kTrennzeichen > 0) {
                             $oTrennzeichen = new self($oObjTMP->kTrennzeichen);
 
                             if (!isset($oObjAssoc_arr[$oTrennzeichen->getEinheit()])) {
-                                $oObjAssoc_arr[$oTrennzeichen->getEinheit()] = array();
+                                $oObjAssoc_arr[$oTrennzeichen->getEinheit()] = [];
                             }
 
                             $oObjAssoc_arr[$oTrennzeichen->getEinheit()] = $oTrennzeichen;
@@ -228,7 +212,7 @@ class Trennzeichen
                     }
                 }
             }
-            Shop::Cache()->set($cacheID, $oObjAssoc_arr, array(CACHING_GROUP_CORE));
+            Shop::Cache()->set($cacheID, $oObjAssoc_arr, [CACHING_GROUP_CORE]);
         }
 
         return $oObjAssoc_arr;
@@ -269,16 +253,14 @@ class Trennzeichen
      */
     public function update()
     {
-        return Shop::DB()->query(
-            "UPDATE ttrennzeichen
-               SET kTrennzeichen = " . (int) $this->kTrennzeichen . ",
-                   kSprache = " . (int) $this->kSprache . ",
-                   nEinheit = " . $this->nEinheit . ",
-                   nDezimalstellen = " . $this->nDezimalstellen . ",
-                   cDezimalZeichen = '" . $this->cDezimalZeichen . "',
-                   cTausenderZeichen = '" . $this->cTausenderZeichen . "'
-               WHERE kTrennzeichen = " . (int) $this->kTrennzeichen, 3
-        );
+        $upd                    = new stdClass();
+        $upd->kSprache          = (int)$this->kSprache;
+        $upd->nEinheit          = $this->nEinheit;
+        $upd->nDezimalstellen   = $this->nDezimalstellen;
+        $upd->cDezimalZeichen   = $this->cDezimalZeichen;
+        $upd->cTausenderZeichen = $this->cTausenderZeichen;
+        
+        return Shop::DB()->update('ttrennzeichen', 'kTrennzeichen', (int)$this->kTrennzeichen, $upd);
     }
 
     /**
@@ -447,14 +429,12 @@ class Trennzeichen
      */
     public static function migrateUpdate()
     {
-        $oEinstellungen = Shop::getSettings(array(CONF_ARTIKELDETAILS, CONF_ARTIKELUEBERSICHT));
+        $oEinstellungen = Shop::getSettings([CONF_ARTIKELDETAILS, CONF_ARTIKELUEBERSICHT]);
         $oSprache_arr   = gibAlleSprachen();
 
         if (is_array($oSprache_arr) && count($oSprache_arr) > 0) {
             Shop::DB()->query("TRUNCATE ttrennzeichen", 3);
-
-            //$nEinheit_arr = array(JTLSEPARATER_WEIGHT, JTLSEPARATER_LENGTH, JTLSEPARATER_AMOUNT);
-            $nEinheit_arr = array(JTLSEPARATER_WEIGHT, JTLSEPARATER_AMOUNT);
+            $nEinheit_arr = [JTLSEPARATER_WEIGHT, JTLSEPARATER_AMOUNT];
             foreach ($oSprache_arr as $oSprache) {
                 foreach ($nEinheit_arr as $nEinheit) {
                     $oTrennzeichen = new self();

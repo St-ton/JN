@@ -110,6 +110,11 @@ class WarenkorbPos
     public $WarenkorbPosEigenschaftArr = array();
 
     /**
+     * @var object[]
+     */
+    public $variationPicturesArr = [];
+
+    /**
      * @var int
      */
     public $nZeitLetzteAenderung = 0;
@@ -140,7 +145,7 @@ class WarenkorbPos
     public $nAnzahlEinzel;
 
     /**
-     * @var string
+     * @var string[]
      */
     public $cEinzelpreisLocalized;
 
@@ -167,7 +172,6 @@ class WarenkorbPos
      * Konstruktor
      *
      * @param int $kWarenkorbPos Falls angegeben, wird der WarenkorbPos mit angegebenem kWarenkorbPos aus der DB geholt
-     * @return WarenkorbPos
      */
     public function __construct($kWarenkorbPos = 0)
     {
@@ -196,12 +200,7 @@ class WarenkorbPos
         $NeueWarenkorbPosEigenschaft->kEigenschaftWert   = $kEigenschaftWert;
         $NeueWarenkorbPosEigenschaft->fGewichtsdifferenz = $EigenschaftWert->fGewichtDiff;
         $NeueWarenkorbPosEigenschaft->fAufpreis          = $EigenschaftWert->fAufpreisNetto;
-        $Aufpreis_obj                                    = Shop::DB()->query(
-            "SELECT fAufpreisNetto
-                FROM teigenschaftwertaufpreis
-                WHERE kEigenschaftWert = " . (int)$NeueWarenkorbPosEigenschaft->kEigenschaftWert . "
-                AND kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe, 1
-        );
+        $Aufpreis_obj                                    = Shop::DB()->select('teigenschaftwertaufpreis', 'kEigenschaftWert', (int)$NeueWarenkorbPosEigenschaft->kEigenschaftWert, 'kKundengruppe', (int)$_SESSION['Kundengruppe']->kKundengruppe);
         if (isset($Aufpreis_obj->fAufpreisNetto) && $Aufpreis_obj->fAufpreisNetto) {
             if ($this->Artikel->Preise->rabatt > 0) {
                 $NeueWarenkorbPosEigenschaft->fAufpreis = $Aufpreis_obj->fAufpreisNetto - (($this->Artikel->Preise->rabatt / 100) * $Aufpreis_obj->fAufpreisNetto);
@@ -220,21 +219,11 @@ class WarenkorbPos
             $NeueWarenkorbPosEigenschaft->cEigenschaftWertName[$Sprache->cISO] = $EigenschaftWert->cName;
 
             if ($Sprache->cStandard !== 'Y') {
-                $eigenschaft_spr = Shop::DB()->query(
-                    "SELECT cName
-                        FROM teigenschaftsprache
-                        WHERE kEigenschaft = " . (int)$NeueWarenkorbPosEigenschaft->kEigenschaft . " 
-                        AND kSprache = " . (int)$Sprache->kSprache, 1
-                );
+                $eigenschaft_spr = Shop::DB()->select('teigenschaftsprache', 'kEigenschaft', (int)$NeueWarenkorbPosEigenschaft->kEigenschaft, 'kSprache', (int)$Sprache->kSprache);
                 if (isset($eigenschaft_spr->cName) && $eigenschaft_spr->cName) {
                     $NeueWarenkorbPosEigenschaft->cEigenschaftName[$Sprache->cISO] = $eigenschaft_spr->cName;
                 }
-                $eigenschaftwert_spr = Shop::DB()->query(
-                    "SELECT cName
-                        FROM teigenschaftwertsprache
-                        WHERE kEigenschaftWert = " . (int)$NeueWarenkorbPosEigenschaft->kEigenschaftWert . "  
-                        AND kSprache = " . (int)$Sprache->kSprache, 1
-                );
+                $eigenschaftwert_spr = Shop::DB()->select('teigenschaftwertsprache', 'kEigenschaftWert', (int)$NeueWarenkorbPosEigenschaft->kEigenschaftWert, 'kSprache', (int)$Sprache->kSprache);
                 if (isset($eigenschaftwert_spr->cName) && $eigenschaftwert_spr->cName) {
                     $NeueWarenkorbPosEigenschaft->cEigenschaftWertName[$Sprache->cISO] = $eigenschaftwert_spr->cName;
                 }
@@ -309,14 +298,23 @@ class WarenkorbPos
     }
 
     /**
-     * gibt Gesamtpreis inkl. aller Aufpreise * Positionsanzahl lokalisiert als String zurück
-     *
+     * typo in function name - for compatibility reasons only
+     * @deprecated since 4.05
      * @return $this
      */
     public function setzeGesamtpreisLoacalized()
     {
-        /** @var array('Warenkorb' => Warenkorb) $_SESSION */
+        return $this->setzeGesamtpreisLocalized();
+    }
 
+    /**
+     * gibt Gesamtpreis inkl. aller Aufpreise * Positionsanzahl lokalisiert als String zurück
+     *
+     * @return $this
+     */
+    public function setzeGesamtpreisLocalized()
+    {
+        /** @var array('Warenkorb' => Warenkorb) $_SESSION */
         if (is_array($_SESSION['Waehrungen'])) {
             foreach ($_SESSION['Waehrungen'] as $Waehrung) {
                 // Standardartikel
@@ -324,6 +322,10 @@ class WarenkorbPos
                 $this->cGesamtpreisLocalized[1][$Waehrung->cName] = gibPreisStringLocalized($this->fPreis * $this->nAnzahl, $Waehrung);
                 $this->cEinzelpreisLocalized[0][$Waehrung->cName] = gibPreisStringLocalized(berechneBrutto($this->fPreis, gibUst($this->kSteuerklasse)), $Waehrung);
                 $this->cEinzelpreisLocalized[1][$Waehrung->cName] = gibPreisStringLocalized($this->fPreis, $Waehrung);
+
+                if (!empty($this->Artikel->cVPEEinheit) && isset($this->Artikel->cVPE) && $this->Artikel->cVPE === 'Y' && $this->Artikel->fVPEWert > 0) {
+                    $this->Artikel->baueVPE($this->fPreis);
+                }
 
                 if ($this->istKonfigVater()) {
                     $this->cKonfigpreisLocalized[0][$Waehrung->cName]       = gibPreisStringLocalized(berechneBrutto($this->fPreis * $this->nAnzahl, gibUst($this->kSteuerklasse)), $Waehrung);
@@ -337,8 +339,7 @@ class WarenkorbPos
                     $fPreisNetto  = 0;
                     $fPreisBrutto = 0;
                     $nVaterPos    = null;
-
-                    /** @var  WarenkorbPos $oPosition */
+                    /** @var WarenkorbPos $oPosition */
                     foreach ($_SESSION['Warenkorb']->PositionenArr as $nPos => $oPosition) {
                         if ($this->cUnique == $oPosition->cUnique) {
                             $fPreisNetto += $oPosition->fPreis * $oPosition->nAnzahl;
@@ -420,8 +421,12 @@ class WarenkorbPos
         $obj->kKonfigitem               = $this->kKonfigitem;
         $obj->kBestellpos               = $this->kBestellpos;
         $obj->fLagerbestandVorAbschluss = $this->fLagerbestandVorAbschluss;
-        $obj->nLongestMinDelivery       = $this->oEstimatedDelivery->longestMin;
-        $obj->nLongestMaxDelivery       = $this->oEstimatedDelivery->longestMax;
+
+        if (isset($this->oEstimatedDelivery)) {
+            // Lieferzeiten nur speichern, wenn sie gesetzt sind, also z.B. nicht bei Versandkosten etc.
+            $obj->nLongestMinDelivery = $this->oEstimatedDelivery->longestMin;
+            $obj->nLongestMaxDelivery = $this->oEstimatedDelivery->longestMax;
+        }
 
         $this->kWarenkorbPos = Shop::DB()->insert('twarenkorbpos', $obj);
 

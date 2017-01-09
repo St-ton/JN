@@ -20,7 +20,8 @@ function getAdminList()
 {
     return Shop::DB()->query(
         "SELECT * FROM tadminlogin
-            LEFT JOIN tadminlogingruppe ON tadminlogin.kAdminlogingruppe = tadminlogingruppe.kAdminlogingruppe
+            LEFT JOIN tadminlogingruppe
+            ON tadminlogin.kAdminlogingruppe = tadminlogingruppe.kAdminlogingruppe
          ORDER BY kAdminlogin", 2
     );
 }
@@ -32,7 +33,11 @@ function getAdminGroups()
 {
     $oGroups_arr = Shop::DB()->query("SELECT * FROM tadminlogingruppe", 2);
     foreach ($oGroups_arr as &$oGroup) {
-        $oCount         = Shop::DB()->query("SELECT COUNT(*) AS nCount FROM tadminlogin WHERE kAdminlogingruppe = " . (int)$oGroup->kAdminlogingruppe, 1);
+        $oCount         = Shop::DB()->query("
+            SELECT COUNT(*) AS nCount
+              FROM tadminlogin
+              WHERE kAdminlogingruppe = " . (int)$oGroup->kAdminlogingruppe, 1
+        );
         $oGroup->nCount = $oCount->nCount;
     }
 
@@ -44,9 +49,9 @@ function getAdminGroups()
  */
 function getAdminDefPermissions()
 {
-    $oGroups_arr = Shop::DB()->query("SELECT * FROM tadminrechtemodul ORDER BY nSort ASC", 2);
+    $oGroups_arr = Shop::DB()->selectAll('tadminrechtemodul', [], [], '*', 'nSort ASC');
     foreach ($oGroups_arr as &$oGroup) {
-        $oGroup->oPermission_arr = Shop::DB()->query("SELECT * FROM tadminrecht WHERE kAdminrechtemodul = " . (int)$oGroup->kAdminrechtemodul, 2);
+        $oGroup->oPermission_arr = Shop::DB()->selectAll('tadminrecht', 'kAdminrechtemodul', (int)$oGroup->kAdminrechtemodul);
     }
 
     return $oGroups_arr;
@@ -68,7 +73,7 @@ function getAdminGroup($kAdminlogingruppe)
 function getAdminGroupPermissions($kAdminlogingruppe)
 {
     $oPerm_arr       = array();
-    $oPermission_arr = Shop::DB()->query("SELECT * FROM tadminrechtegruppe WHERE kAdminlogingruppe = " . (int)$kAdminlogingruppe, 2);
+    $oPermission_arr = Shop::DB()->selectAll('tadminrechtegruppe', 'kAdminlogingruppe', (int)$kAdminlogingruppe);
 
     foreach ($oPermission_arr as $oPermission) {
         $oPerm_arr[] = $oPermission->cRecht;
@@ -95,12 +100,7 @@ function getInfoInUse($cRow, $cValue)
  */
 function benutzerverwaltungGetAttributes($kAdminlogin)
 {
-    $extAttribs = Shop::DB()->query(
-        'SELECT kAttribut, cName, cAttribValue, cAttribText
-            FROM tadminloginattribut
-            WHERE kAdminlogin = ' . (int)$kAdminlogin . ' ORDER BY cName ASC', 2
-    );
-
+    $extAttribs = Shop::DB()->selectAll('tadminloginattribut', 'kAdminlogin', (int)$kAdminlogin, 'kAttribut, cName, cAttribValue, cAttribText', 'cName ASC');
     if (version_compare(phpversion(), '7.0', '<')) {
         $result = array();
         foreach ($extAttribs as $attrib) {
@@ -256,33 +256,36 @@ function benutzerverwaltungActionAccountUnLock(JTLSmarty $smarty, array &$messag
  */
 function benutzerverwaltungActionAccountEdit(JTLSmarty $smarty, array &$messages)
 {
-	$_SESSION['AdminAccount']->TwoFA_valid = true;
+    $_SESSION['AdminAccount']->TwoFA_valid = true;
 
     $kAdminlogin = (isset($_POST['id']) ? (int)$_POST['id'] : null);
 
-	// find out, if 2FA ist active and if there is a secret
-	$szQRcodeString = '';
-	if(null !== $kAdminlogin) {
-		$oTwoFA = new TwoFA();
-		$oTwoFA->setUserByID($_POST['id']);
+    // find out, if 2FA ist active and if there is a secret
+    $szQRcodeString = '';
+    $szKnownSecret  = '';
+    if (null !== $kAdminlogin) {
+        $oTwoFA = new TwoFA();
+        $oTwoFA->setUserByID($_POST['id']);
 
-		if(true === $oTwoFA->is2FAauthSecretExist()) {
-			$szQRcodeString = $oTwoFA->getQRcode();
-		}
-	}
-	$smarty->assign('QRcodeString', $szQRcodeString); // transfer via smarty-var (to prevent session-pollution)
+        if (true === $oTwoFA->is2FAauthSecretExist()) {
+            $szQRcodeString = $oTwoFA->getQRcode();
+            $szKnownSecret  = $oTwoFA->getSecret();
+        }
+    }
+    $smarty->assign('QRcodeString', $szQRcodeString); // transfer via smarty-var (to prevent session-pollution)
+    $smarty->assign('cKnownSecret', $szKnownSecret); // not nice to "show" the secret, but needed to prevent empty creations
 
     if (isset($_POST['save'])) {
-        $cError_arr              = array();
-        $oTmpAcc                 = new stdClass();
-        $oTmpAcc->kAdminlogin    = (isset($_POST['kAdminlogin'])) ? (int)$_POST['kAdminlogin'] : 0;
-        $oTmpAcc->cName          = trim($_POST['cName']);
-        $oTmpAcc->cMail          = trim($_POST['cMail']);
-        $oTmpAcc->cLogin         = trim($_POST['cLogin']);
-        $oTmpAcc->cPass          = trim($_POST['cPass']);
-		$oTmpAcc->b2FAauth       = (int)$_POST['b2FAauth'];
-		(0 < strlen($_POST['c2FAsecret'])) ? $oTmpAcc->c2FAauthSecret = trim($_POST['c2FAsecret']) : null;
-        $tmpAttribs              = isset($_POST['extAttribs']) ? $_POST['extAttribs'] : array();
+        $cError_arr           = array();
+        $oTmpAcc              = new stdClass();
+        $oTmpAcc->kAdminlogin = (isset($_POST['kAdminlogin'])) ? (int)$_POST['kAdminlogin'] : 0;
+        $oTmpAcc->cName       = htmlspecialchars(trim($_POST['cName']));
+        $oTmpAcc->cMail       = htmlspecialchars(trim($_POST['cMail']));
+        $oTmpAcc->cLogin      = trim($_POST['cLogin']);
+        $oTmpAcc->cPass       = trim($_POST['cPass']);
+        $oTmpAcc->b2FAauth    = (int)$_POST['b2FAauth'];
+        $tmpAttribs           = isset($_POST['extAttribs']) ? $_POST['extAttribs'] : array();
+        (0 < strlen($_POST['c2FAsecret'])) ? $oTmpAcc->c2FAauthSecret = trim($_POST['c2FAsecret']) : null;
 
         $dGueltigBisAktiv = (isset($_POST['dGueltigBisAktiv']) && ($_POST['dGueltigBisAktiv'] === '1'));
         if ($dGueltigBisAktiv) {
@@ -297,7 +300,7 @@ function benutzerverwaltungActionAccountEdit(JTLSmarty $smarty, array &$messages
         }
         $oTmpAcc->kAdminlogingruppe = (int)$_POST['kAdminlogingruppe'];
 
-        if((bool)$oTmpAcc->b2FAauth && isset($oTmpAcc->c2FAauthSecret) && 0 === strlen($oTmpAcc->c2FAauthSecret)) {
+        if ((bool)$oTmpAcc->b2FAauth && !isset($oTmpAcc->c2FAauthSecret)) {
             $cError_arr['c2FAsecret'] = 1;
         }
         if (strlen($oTmpAcc->cName) === 0) {
@@ -337,8 +340,17 @@ function benutzerverwaltungActionAccountEdit(JTLSmarty $smarty, array &$messages
                 if (!$dGueltigBisAktiv) {
                     $oTmpAcc->dGueltigBis = '_DBNULL_';
                 }
+                // if we change the current admin-user, we have to update his session-credentials too!
+                if ((int)$oTmpAcc->kAdminlogin === (int)$_SESSION['AdminAccount']->kAdminlogin
+                    && $oTmpAcc->cLogin !== $_SESSION['AdminAccount']->cLogin) {
+                    $_SESSION['AdminAccount']->cLogin = $oTmpAcc->cLogin;
+                }
                 if (strlen($oTmpAcc->cPass) > 0) {
                     $oTmpAcc->cPass = AdminAccount::generatePasswordHash($oTmpAcc->cPass);
+                    // if we change the current admin-user, we have to update his session-credentials too!
+                    if ((int)$oTmpAcc->kAdminlogin === (int)$_SESSION['AdminAccount']->kAdminlogin) {
+                        $_SESSION['AdminAccount']->cPass = $oTmpAcc->cPass;
+                    }
                 } else {
                     unset($oTmpAcc->cPass);
                 }
@@ -488,8 +500,8 @@ function benutzerverwaltungActionGroupEdit(JTLSmarty $smarty, array &$messages)
         $cError_arr                     = array();
         $oAdminGroup                    = new stdClass();
         $oAdminGroup->kAdminlogingruppe = (isset($_POST['kAdminlogingruppe'])) ? (int)$_POST['kAdminlogingruppe'] : 0;
-        $oAdminGroup->cGruppe           = trim($_POST['cGruppe']);
-        $oAdminGroup->cBeschreibung     = trim($_POST['cBeschreibung']);
+        $oAdminGroup->cGruppe           = htmlspecialchars(trim($_POST['cGruppe']));
+        $oAdminGroup->cBeschreibung     = htmlspecialchars(trim($_POST['cBeschreibung']));
         $oAdminGroupPermission_arr      = $_POST['perm'];
 
         if (strlen($oAdminGroup->cGruppe) === 0) {
@@ -565,6 +577,25 @@ function benutzerverwaltungActionGroupEdit(JTLSmarty $smarty, array &$messages)
 function benutzerverwaltungActionGroupDelete(JTLSmarty $smarty, array &$messages)
 {
     $kAdminlogingruppe = (int)$_POST['id'];
+
+    $oResult = Shop::DB()->query('
+                    SELECT count(*) AS member_count
+                      FROM tadminlogin
+                      WHERE kAdminlogingruppe = ' . $kAdminlogingruppe, 1
+    );
+    // stop the deletion with a message, if there are accounts in this group
+    if (0 !== (int)$oResult->member_count) {
+        $messages['error'] .= 'Die Gruppe kann nicht entfernt werden, da sich noch '
+                            . (2 > $oResult->member_count ? 'ein' : $oResult->member_count)
+                            . ' Mitglied' . (2 > $oResult->member_count ? '' : 'er' )
+                            . ' in dieser Gruppe befind' . (2 > $oResult->member_count ? 'et' : 'en') . '.<br>'
+                            . 'Bitte entfernen Sie dies' . (2 > $oResult->member_count ? 'es' : 'e')
+                            . ' Gruppenmitglied'  . (2 > $oResult->member_count ? '' : 'er')
+                            . ' oder weisen Sie ' . (2 > $oResult->member_count ? 'es' : 'sie')
+                            . ' einer anderen Gruppe zu, bevor Sie die Gruppe l&ouml;schen!';
+
+        return 'group_redirect';
+    }
 
     if ($kAdminlogingruppe !== ADMINGROUP) {
         Shop::DB()->delete('tadminlogingruppe', 'kAdminlogingruppe', $kAdminlogingruppe);

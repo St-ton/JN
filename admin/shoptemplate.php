@@ -3,11 +3,14 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+/**
+ * @global JTLSmarty $smarty
+ */
 require_once dirname(__FILE__) . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'template_inc.php';
 
 $oAccount->permission('DISPLAY_TEMPLATE_VIEW', true, true);
-
+/** @global JTLSmarty $smarty */
 if (isset($_POST['key']) && isset($_POST['upload'])) {
     $file     = PFAD_ROOT . PFAD_TEMPLATES . $_POST['upload'];
     $response = new stdClass();
@@ -27,7 +30,8 @@ $lessVarsSkin   = array();
 $lessColors_arr = array();
 $lessColorsSkin = array();
 $oTemplate      = Template::getInstance();
-$templateHelper = $oTemplate->getHelper();
+$templateHelper = TemplateHelper::getInstance(true);
+$templateHelper->disableCaching();
 $admin          = (isset($_GET['admin']) && $_GET['admin'] === 'true');
 if (isset($_GET['check'])) {
     if ($_GET['check'] === 'true') {
@@ -77,7 +81,7 @@ if (isset($_POST['type']) && $_POST['type'] === 'settings' && validateToken()) {
     $parentFolder = null;
     $tplXML       = $oTemplate->leseXML($cOrdner);
     if (!empty($tplXML->Parent)) {
-        $parentFolder = (string) $tplXML->Parent;
+        $parentFolder = (string)$tplXML->Parent;
         $parentTplXML = $oTemplate->leseXML($parentFolder);
     }
     $tplConfXML   = $oTemplate->leseEinstellungenXML($cOrdner, $parentFolder);
@@ -144,12 +148,12 @@ if (isset($_POST['type']) && $_POST['type'] === 'settings' && validateToken()) {
 if (isset($_GET['settings']) && strlen($_GET['settings']) > 0 && validateToken()) {
     $cOrdner      = Shop::DB()->escape($_GET['settings']);
     $oTpl         = $templateHelper->getData($cOrdner, $admin);
-    $tplXML       = $templateHelper->getXML($cOrdner);
+    $tplXML       = $templateHelper->getXML($cOrdner, false);
     $preview      = array();
     $parentFolder = null;
     if (!empty($tplXML->Parent)) {
-        $parentFolder = (string) $tplXML->Parent;
-        $parentTplXML = $templateHelper->getXML($parentFolder);
+        $parentFolder = (string)$tplXML->Parent;
+        $parentTplXML = $templateHelper->getXML($parentFolder, false);
     }
     $tplConfXML       = $oTemplate->leseEinstellungenXML($cOrdner, $parentFolder);
     $tplLessXML       = $oTemplate->leseLessXML($cOrdner);
@@ -169,7 +173,9 @@ if (isset($_GET['settings']) && strlen($_GET['settings']) > 0 && validateToken()
         //re-init smarty with new template - problematic because of re-including functions.php
         header('Location: ' . $shopURL . PFAD_ADMIN . 'shoptemplate.php', true, 301);
     } else {
+        // iterate over each "Section"
         foreach ($tplConfXML as $_conf) {
+            // iterate over each "Setting" in this "Section"
             foreach ($_conf->oSettings_arr as $_setting) {
                 if ($_setting->cType === 'upload' && isset($_setting->rawAttributes['target']) && isset($_setting->rawAttributes['targetFileName'])) {
                     if (!file_exists(PFAD_ROOT . PFAD_TEMPLATES . $cOrdner . '/' . $_setting->rawAttributes['target'] . $_setting->rawAttributes['targetFileName'])) {

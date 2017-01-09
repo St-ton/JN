@@ -12,7 +12,7 @@ class IO
     /**
      * @var array
      */
-    private static $functions = array();
+    private static $functions = [];
 
     /**
      * Registers a PHP function or method.

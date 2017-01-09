@@ -230,7 +230,6 @@ class Kunde
      * Konstruktor
      *
      * @param int $kKunde - Falls angegeben, wird der Kunde mit angegebenem kKunde aus der DB geholt
-     * @return Kunde
      */
     public function __construct($kKunde = 0)
     {
@@ -255,7 +254,7 @@ class Kunde
             }
         }
 
-        return;
+        return null;
     }
 
     /**
@@ -264,7 +263,7 @@ class Kunde
      */
     public function verifyLoginCaptcha($post)
     {
-        $conf          = Shop::getConfig(array(CONF_KUNDEN));
+        $conf          = Shop::getConfig([CONF_KUNDEN]);
         $cBenutzername = $post['email'];
         if (isset($conf['kunden']['kundenlogin_max_loginversuche']) && $conf['kunden']['kundenlogin_max_loginversuche'] !== '' &&
             $conf['kunden']['kundenlogin_max_loginversuche'] > 1 && strlen($cBenutzername) > 0
@@ -316,12 +315,12 @@ class Kunde
                     Shop::DB()->update('tkunde', 'kKunde', (int)$oUser->kKunde, $_upd);
                 }
             }
-            executeHook(HOOK_KUNDE_CLASS_HOLLOGINKUNDE, array(
+            executeHook(HOOK_KUNDE_CLASS_HOLLOGINKUNDE, [
                 'oKunde'        => &$this,
                 'oUser'         => $oUser,
                 'cBenutzername' => $cBenutzername,
                 'cPasswort'     => $cPasswort
-            ));
+            ]);
             if ($this->kKunde > 0) {
                 $this->entschluesselKundendaten();
                 // Anrede mappen
@@ -345,7 +344,17 @@ class Kunde
         $cBenutzername = StringHandler::filterXSS($cBenutzername);
         $cPasswort     = StringHandler::filterXSS($cPasswort);
         // Work Around Passwort 32, 40 oder mehr Zeichen
-        $oUser           = Shop::DB()->select('tkunde', 'cMail', $cBenutzername, 'nRegistriert', 1, null, null, false, 'kKunde, cPasswort, cSperre, cAktiv, nLoginversuche');
+        $oUser           = Shop::DB()->select(
+            'tkunde',
+            'cMail',
+            $cBenutzername,
+            'nRegistriert',
+            1,
+            null,
+            null,
+            false,
+            'kKunde, cPasswort, cSperre, cAktiv, nLoginversuche'
+        );
         $updatePassword  = false;
         $verify          = false;
         $oldPasswordHash = '';
@@ -365,18 +374,35 @@ class Kunde
 
         if ($updatePassword === true) {
             //get customer by mail and old password hash
-            $obj = Shop::DB()->query("
-                SELECT *, date_format(dGeburtstag, '%d.%m.%Y') AS dGeburtstag
-                    FROM tkunde
-                    WHERE cMail = '$cBenutzername'
-                        AND cPasswort = '" . $oldPasswordHash . "' AND kKunde = " . (int)$oUser->kKunde, 1
+            $obj = Shop::DB()->select(
+                'tkunde',
+                'cMail',
+                $cBenutzername,
+                'cPasswort',
+                $oldPasswordHash,
+                'kKunde',
+                (int)$oUser->kKunde,
+                false,
+                '*, date_format(dGeburtstag, \'%d.%m.%Y\') AS dGeburtstag'
             );
         } elseif ($verify === true) {
             //get customer by mail since new hash verification was successful
-            $obj = Shop::DB()->query("SELECT *, date_format(dGeburtstag, '%d.%m.%Y') AS dGeburtstag FROM tkunde WHERE kKunde = " . (int)$oUser->kKunde, 1);
+            $obj = Shop::DB()->select(
+                'tkunde',
+                'kKunde',
+                (int)$oUser->kKunde,
+                null,
+                null,
+                null,
+                null,
+                false,
+                '*, date_format(dGeburtstag, \'%d.%m.%Y\') AS dGeburtstag'
+            );
             //reset unsuccessful login attempts
             if ($oUser->nLoginversuche > 0) {
-                Shop::DB()->query("UPDATE tkunde SET nLoginversuche = 0 WHERE kKunde = " . (int)$oUser->kKunde, 3);
+                $upd = new stdClass();
+                $upd->nLoginversuche = 0;
+                Shop::DB()->update('tkunde', 'kKunde', (int)$oUser->kKunde, $upd);
             }
         } else {
             $obj = false;
@@ -476,7 +502,7 @@ class Kunde
      */
     public function insertInDB()
     {
-        executeHook(HOOK_KUNDE_DB_INSERT, array('oKunde' => &$this));
+        executeHook(HOOK_KUNDE_DB_INSERT, ['oKunde' => &$this]);
 
         $this->verschluesselKundendaten();
         $obj                 = new stdClass();
@@ -546,7 +572,7 @@ class Kunde
         $this->verschluesselKundendaten();
         $obj = kopiereMembers($this);
 
-        $cKundenattribut_arr = array();
+        $cKundenattribut_arr = [];
         if (is_array($obj->cKundenattribut_arr)) {
             $cKundenattribut_arr = $obj->cKundenattribut_arr;
         }
@@ -588,8 +614,8 @@ class Kunde
      */
     public function holeKundenattribute()
     {
-        $this->cKundenattribut_arr = array();
-        $oKundenattribut_arr       = Shop::DB()->query("SELECT * FROM tkundenattribut WHERE kKunde = " . (int)$this->kKunde . " ORDER BY kKundenAttribut", 2);
+        $this->cKundenattribut_arr = [];
+        $oKundenattribut_arr       = Shop::DB()->selectAll('tkundenattribut', 'kKunde', (int)$this->kKunde, '*', 'kKundenAttribut');
         if (is_array($oKundenattribut_arr) && count($oKundenattribut_arr) > 0) {
             foreach ($oKundenattribut_arr as $oKundenattribut) {
                 $this->cKundenattribut_arr[$oKundenattribut->kKundenfeld] = $oKundenattribut;
@@ -609,7 +635,7 @@ class Kunde
     {
         // ISO prüfen
         preg_match('/[a-zA-Z]{2}/', $cLandISO, $cTreffer1_arr);
-        if (strlen($cTreffer1_arr[0]) != strlen($cLandISO)) {
+        if (strlen($cTreffer1_arr[0]) !== strlen($cLandISO)) {
             $cISO = landISO($cLandISO);
             if (strlen($cISO) > 0 && $cISO !== 'noISO') {
                 $cLandISO = $cISO;
@@ -790,7 +816,7 @@ class Kunde
                 $originalHash = $timestampAndHash[1];
                 //check if the link is not expired (=24 hours valid)
                 $createdAt = new DateTime();
-                $createdAt->setTimestamp((int) $timeStamp);
+                $createdAt->setTimestamp((int)$timeStamp);
                 $now  = new DateTime();
                 $diff = $now->diff($createdAt);
                 $secs = $diff->format('%a') * (60 * 60 * 24); //total days

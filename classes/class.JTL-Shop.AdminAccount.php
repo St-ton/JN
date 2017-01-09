@@ -56,7 +56,7 @@ class AdminAccount
                 $originalHash = $timestampAndHash[1];
                 //check if the link is not expired (=24 hours valid)
                 $createdAt = new DateTime();
-                $createdAt->setTimestamp((int) $timeStamp);
+                $createdAt->setTimestamp((int)$timeStamp);
                 $now  = new DateTime();
                 $diff = $now->diff($createdAt);
                 $secs = ($diff->format('%a') * (60 * 60 * 24)); //total days
@@ -143,7 +143,17 @@ class AdminAccount
             $_SESSION['AdminAccount']->cLogin = $cLogin;
             $verified                         = true;
             if ($this->checkAndUpdateHash($cPass) === true) {
-                $oAdmin = Shop::DB()->select('tadminlogin', 'cLogin', $cLogin, null, null, null, null, false, '*, UNIX_TIMESTAMP(dGueltigBis) AS dGueltigTS');
+                $oAdmin = Shop::DB()->select(
+                    'tadminlogin',
+                    'cLogin',
+                    $cLogin,
+                    null,
+                    null,
+                    null,
+                    null,
+                    false,
+                    '*, UNIX_TIMESTAMP(dGueltigBis) AS dGueltigTS'
+                );
             }
         } elseif (strlen($oAdmin->cPass) === 40) {
             //default login until Shop4
@@ -283,7 +293,7 @@ class AdminAccount
             $cHost .= ':' . $xParse_arr['port'];
         }
 
-        if (isset($_SERVER['HTTP_HOST']) && strlen($_SERVER['HTTP_HOST']) > 0 && $cHost != $_SERVER['HTTP_HOST']) {
+        if (isset($_SERVER['HTTP_HOST']) && strlen($_SERVER['HTTP_HOST']) > 0 && $cHost !== $_SERVER['HTTP_HOST']) {
             header("Location: {$cUrl}");
             exit;
         }
@@ -295,13 +305,18 @@ class AdminAccount
     private function _validateSession()
     {
         $this->_bLogged = false;
-        if (isset($_SESSION['AdminAccount']->cLogin) && isset($_SESSION['AdminAccount']->cPass) && isset($_SESSION['AdminAccount']->cURL) &&
-            $_SESSION['AdminAccount']->cURL == Shop::getURL()) {
-
-            $oAccount = Shop::DB()->select('tadminlogin', 'cLogin', $_SESSION['AdminAccount']->cLogin, 'cPass', $_SESSION['AdminAccount']->cPass);
-            $this->twoFaAuthenticated = (isset($oAccount->b2FAauth) && $oAccount->b2FAauth === '1') ?
-                (isset($_SESSION['AdminAccount']->TwoFA_valid) && true === $_SESSION['AdminAccount']->TwoFA_valid) :
-                true;
+        if (isset($_SESSION['AdminAccount']->cLogin) && isset($_SESSION['AdminAccount']->cPass) &&
+            isset($_SESSION['AdminAccount']->cURL) && $_SESSION['AdminAccount']->cURL == Shop::getURL()) {
+            $oAccount                 = Shop::DB()->select(
+                'tadminlogin',
+                'cLogin',
+                $_SESSION['AdminAccount']->cLogin,
+                'cPass',
+                $_SESSION['AdminAccount']->cPass
+            );
+            $this->twoFaAuthenticated = (isset($oAccount->b2FAauth) && $oAccount->b2FAauth === '1')
+                ? (isset($_SESSION['AdminAccount']->TwoFA_valid) && true === $_SESSION['AdminAccount']->TwoFA_valid)
+                : true;
             $this->_bLogged = isset($oAccount->cLogin);
         }
 
@@ -326,6 +341,18 @@ class AdminAccount
     }
 
     /**
+     * @return array|int
+     */
+    public function favorites()
+    {
+        if (!$this->logged()) {
+            return [];
+        }
+
+        return AdminFavorite::fetchAll($_SESSION['AdminAccount']->kAdminlogin);
+    }
+
+    /**
      * @param stdClass $oAdmin
      * @return $this
      */
@@ -340,7 +367,7 @@ class AdminAccount
             $_SESSION['AdminAccount']->cMail       = $oAdmin->cMail;
             $_SESSION['AdminAccount']->cPass       = $oAdmin->cPass;
 
-            $_SESSION['KCFINDER']             = array();
+            $_SESSION['KCFINDER']             = [];
             $_SESSION['KCFINDER']['disabled'] = false;
 
             if (!is_object($oGroup)) {
@@ -395,20 +422,16 @@ class AdminAccount
 
     /**
      * @param int $kAdminlogingruppe
-     * @return bool
+     * @return bool|object
      */
     private function _getPermissionsByGroup($kAdminlogingruppe)
     {
         $kAdminlogingruppe = (int)$kAdminlogingruppe;
         $oGroup            = Shop::DB()->select('tadminlogingruppe', 'kAdminlogingruppe', $kAdminlogingruppe);
         if (isset($oGroup->kAdminlogingruppe)) {
-            $oPermission_arr = Shop::DB()->query("
-                SELECT cRecht
-                    FROM tadminrechtegruppe
-                    WHERE kAdminlogingruppe = " . $kAdminlogingruppe, 2
-            );
+            $oPermission_arr = Shop::DB()->selectAll('tadminrechtegruppe', 'kAdminlogingruppe', $kAdminlogingruppe, 'cRecht');
             if (is_array($oPermission_arr)) {
-                $oGroup->oPermission_arr = array();
+                $oGroup->oPermission_arr = [];
                 foreach ($oPermission_arr as $oPermission) {
                     $oGroup->oPermission_arr[] = $oPermission->cRecht;
                 }

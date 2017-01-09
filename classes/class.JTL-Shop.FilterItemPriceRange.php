@@ -90,10 +90,13 @@ class FilterItemPriceRange extends AbstractFilter implements IFilter
      */
     public function init($id)
     {
+        if ($id === null) {
+            $id = '0_0';
+        }
         list($fVon, $fBis) = explode('_', $id);
         $this->fVon  = doubleval($fVon);
         $this->fBis  = doubleval($fBis);
-        $this->cWert = $this->fVon . '_' . $this->fBis;
+        $this->cWert = ($id === '0_0') ? 0 : ($this->fVon . '_' . $this->fBis);
         //localize prices
         $this->cVonLocalized = gibPreisLocalizedOhneFaktor($this->fVon);
         $this->cBisLocalized = gibPreisLocalizedOhneFaktor($this->fBis);

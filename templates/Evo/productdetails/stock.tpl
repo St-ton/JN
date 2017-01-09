@@ -26,11 +26,11 @@
     {/if}
 
     {* rich snippet availability *}
-    {if $Artikel->cLagerBeachten === 'N' || $Artikel->fLagerbestand > 0 || $Artikel->cLagerKleinerNull === 'Y'}
+    {if ($Artikel->cLagerBeachten === 'N' || $Artikel->fLagerbestand > 0 || $Artikel->cLagerKleinerNull === 'Y') && !($Artikel->nIstVater)}
         <link itemprop="availability" href="http://schema.org/InStock" />
-    {elseif $Artikel->nErscheinendesProdukt && $Artikel->Erscheinungsdatum_de !== '00.00.0000' && $Einstellungen.global.global_erscheinende_kaeuflich === 'Y'}
+    {elseif $Artikel->nErscheinendesProdukt && $Artikel->Erscheinungsdatum_de !== '00.00.0000' && $Einstellungen.global.global_erscheinende_kaeuflich === 'Y' && !($Artikel->nIstVater)}
         <link itemprop="availability" href="http://schema.org/PreOrder" />
-    {elseif $Artikel->cLagerBeachten === 'Y' && $Artikel->cLagerKleinerNull === 'N' && $Artikel->fLagerbestand <= 0}
+    {elseif $Artikel->cLagerBeachten === 'Y' && $Artikel->cLagerKleinerNull === 'N' && $Artikel->fLagerbestand <= 0 && !($Artikel->nIstVater)}
         <link itemprop="availability" href="http://schema.org/OutOfStock" />
     {/if}
 

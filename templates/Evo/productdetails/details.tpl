@@ -36,9 +36,9 @@
 
 <div class="h1 visible-xs text-center">{$Artikel->cName}</div>
 
-<form id="buy_form" method="post" action="{$Artikel->cURLFull}">
+<form id="buy_form" method="post" action="{$Artikel->cURLFull}" >
     {$jtl_token}
-    <div class="row product-primary" itemscope itemtype="http://schema.org/Product" id="product-offer">
+    <div class="row product-primary" id="product-offer">
         <div class="product-gallery{if $hasLeftBox} col-sm-5{else} col-sm-6{/if}">
             {include file="productdetails/image.tpl"}
         </div>
@@ -47,13 +47,15 @@
             <div class="product-info-inner">
                 {if $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen !== 'N' && isset($Artikel->cHersteller)}
                     {block name="product-info-manufacturer"}
-                    <div class="manufacturer-row text-right small">
-                        <a href="{$Artikel->cHerstellerSeo}"{if $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen !== 'B'} data-toggle="tooltip" data-placement="left" title="{$Artikel->cHersteller}"{/if}>
+                    <div class="manufacturer-row text-right small" itemprop="brand" itemscope itemtype="http://schema.org/Brand">
+                        <a href="{$Artikel->cHerstellerSeo}"{if $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen !== 'B'} data-toggle="tooltip" data-placement="left" title="{$Artikel->cHersteller}"{/if} itemprop="url">
                             {if $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen !== 'Y' && (!empty($Artikel->cBildpfad_thersteller) || $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen === 'B') && isset($Artikel->cHerstellerBildKlein)}
-                                <img src="{$Artikel->cHerstellerBildKlein}" alt="{$Artikel->cHersteller}" class="img-sm">
+                                <span itemprop="logo" itemscope="" itemtype="http://schema.org/ImageObject">
+                                    <img src="{$Artikel->cHerstellerBildKlein}" alt="{$Artikel->cHersteller}" class="img-sm" itemprop="contentUrl">
+                                </span>
                             {/if}
                             {if $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen !== 'B'}
-                                {$Artikel->cHersteller}
+                                <span itemprop="name">{$Artikel->cHersteller}</span>
                             {/if}
                         </a>
                     </div>
@@ -107,14 +109,16 @@
                     <p class="product-category word-break">
                         <span class="text-muted">{lang key="category" section="global"}: </span>
                         {assign var=i_kat value=$Brotnavi|@count}{assign var=i_kat value=$i_kat-2}
-                        <a href="{$Brotnavi[$i_kat]->url}">{$Brotnavi[$i_kat]->name}</a>
+                        <a href="{$Brotnavi[$i_kat]->url}" itemprop="category">{$Brotnavi[$i_kat]->name}</a>
                     </p>
                     {/block}
                 {/if}
                 
-                <div class="product-offer" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+                <div class="product-offer" {if !($Artikel->nIstVater)}itemprop="offers" {if $showMatrix}itemref="product-var-matrix"{/if} itemscope itemtype="http://schema.org/Offer"{/if}>
                     {block name="productdetails-info-hidden"}
-                    <link itemprop="url" href="{$Artikel->cURLFull}" />
+                    {if !($Artikel->nIstVater)}
+                        <link itemprop="url" href="{$Artikel->cURLFull}" />
+                    {/if}
                     <input type="submit" name="inWarenkorb" value="1" class="hidden" />
                     {if $Artikel->kArtikelVariKombi > 0}
                         <input type="hidden" name="aK" value="{$Artikel->kArtikelVariKombi}" />

@@ -154,7 +154,7 @@
                     {/if}
                     <ul class="row list-unstyled">
                         <li class="col-xs-12 col-md-3">
-                            {if !empty($meta_copyright)}&copy; {$meta_copyright}{/if}
+                            {if !empty($meta_copyright)}<span itemprop="copyrightHolder">&copy; {$meta_copyright}</span>{/if}
                             {if $Einstellungen.global.global_zaehler_anzeigen === 'Y'}{lang key="counter" section="global"}: {$Besucherzaehler}{/if}
                         </li>
                         <li class="col-xs-12 col-md-6 text-center">

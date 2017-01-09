@@ -9,17 +9,22 @@
 {if !empty($cNewsErr)}
     <div class="alert alert-danger">{lang key='newsRestricted' section='news'}</div>
 {else}
-    <div itemscope itemtype="https://schema.org/Article">
+    <div itemprop="hasPart" itemscope itemtype="https://schema.org/Article">
         <h1 itemprop="headline">
             {$oNewsArchiv->cBetreff}
         </h1>
+        <img itemprop="image" src="{$oNewsArchiv->cPreviewImage}" alt="{$oNewsArchiv->cBetreff}"  class="hidden"/>
         <p class="text-muted">
             {if empty($oNewsArchiv->dGueltigVon)}{assign var=dDate value=$oNewsArchiv->dErstellt}{else}{assign var=dDate value=$oNewsArchiv->dGueltigVon}{/if}
-            {if !empty($Einstellungen.global.global_shopname)}
-                <span itemprop="publisher" class="hidden">{$Einstellungen.global.global_shopname}</span>
-            {/if}
             {if (isset($oNewsArchiv->oAuthor))}
                 {include file="snippets/author.tpl" oAuthor=$oNewsArchiv->oAuthor dDate=$dDate cDate=$oNewsArchiv->dGueltigVon_de}
+            {else}
+                <div itemprop="author" itemscope itemtype="http://schema.org/Organization" class="hidden">
+                    <span itemprop="name">{$meta_publisher}</span>
+                    <span itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+                        <img itemprop="contentUrl" src="{$ShopLogoURL}" />
+                    </span>
+                </div>
             {/if}
             {if isset($oNewsArchiv->dErstellt)}<time itemprop="dateModified" class="hidden">{$oNewsArchiv->dErstellt}</time>{/if}
             <time itemprop="datePublished" datetime="{$dDate}" class="hidden">{$dDate}</time><span class="v-box">{$oNewsArchiv->dGueltigVon_de}</span>

@@ -25,11 +25,11 @@
         {/if}
         {if isset($smarty.session.Sprachen) && $smarty.session.Sprachen|@count > 1}
         <li class="language-dropdown dropdown">
-            <a href="#" class="dropdown-toggle btn btn-default btn-xs" data-toggle="dropdown">
+            <a href="#" class="dropdown-toggle btn btn-default btn-xs" data-toggle="dropdown" itemprop="inLanguage" itemscope itemtype="http://schema.org/Language">
                 <i class="fa fa-language"></i>
                 {foreach from=$smarty.session.Sprachen item=Sprache}
                     {if $Sprache->kSprache == $smarty.session.kSprache}
-                        <span class="lang-{$lang}"> {if $lang === 'ger'}{$Sprache->cNameDeutsch}{else}{$Sprache->cNameEnglisch}{/if}</span>
+                        <span class="lang-{$lang}" itemprop="name"> {if $lang === 'ger'}{$Sprache->cNameDeutsch}{else}{$Sprache->cNameEnglisch}{/if}</span>
                     {/if}
                 {/foreach}
                 <span class="caret"></span>

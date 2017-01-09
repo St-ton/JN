@@ -1,16 +1,16 @@
 <!DOCTYPE html>
-<html lang="{$meta_language}">
+<html lang="{$meta_language}" itemscope itemtype="http://schema.org/WebPage">
 <head>
     {block name="head-meta"}
         <meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
-        <meta name="description" content={block name="head-meta-description"}"{$meta_description|truncate:1000:"":true}{/block}">
-        <meta name="keywords" content="{block name="head-meta-keywords"}{$meta_keywords|truncate:255:"":true}{/block}">
+        <meta name="description" itemprop="description" content={block name="head-meta-description"}"{$meta_description|truncate:1000:"":true}{/block}">
+        <meta name="keywords" itemprop="keywords" content="{block name="head-meta-keywords"}{$meta_keywords|truncate:255:"":true}{/block}">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="robots" content="{if $bNoIndex === true  || (isset($Link->cNoFollow) && $Link->cNoFollow === 'Y')}noindex{else}index, follow{/if}">
     {/block}
 
-    <title>{block name="head-title"}{$meta_title}{/block}</title>
+    <title  itemprop="name">{block name="head-title"}{$meta_title}{/block}</title>
 
     {if !empty($cCanonicalURL)}
         <link rel="canonical" href="{$cCanonicalURL}">
@@ -116,11 +116,14 @@
                 {/block}
                 {block name="header-branding-content"}
                 <div class="row">
-                    <div class="col-xs-4" id="logo">
+                    <div class="col-xs-4" id="logo" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
                         {block name="logo"}
+                        <span itemprop="name" class="hidden">{$meta_publisher}</span>
                         <a href="{$ShopURL}" title="{$Einstellungen.global.global_shopname}">
                             {if isset($ShopLogoURL)}
-                                {image src=$ShopLogoURL alt=$Einstellungen.global.global_shopname class="img-responsive"}
+                                <span itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+                                    {image src=$ShopLogoURL alt=$Einstellungen.global.global_shopname class="img-responsive" itemprop="contentUrl"}
+                                </span>
                             {else}
                                 <span class="h1">{$Einstellungen.global.global_shopname}</span>
                             {/if}

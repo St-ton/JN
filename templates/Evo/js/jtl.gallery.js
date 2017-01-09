@@ -122,14 +122,18 @@
                 $(template).find('.image-container')
                     .append(image);
 
-                thumb = $('<li />').addClass('item').append(
+                thumb = $('<li />').addClass('item')
+                                   .attr('itemprop', 'image')
+                                   .attr('itemscope', '')
+                                   .attr('itemtype', 'http://schema.org/ImageObject')
+                                   .append(
                     $('<img />')
                         .attr('src', item.xs.src)
                         .attr('alt', alt)
                         .attr('width', item.xs.size.width)
                         .attr('height', item.xs.size.height)
+                        .attr('itemprop', 'contentUrl')
                 );
-
                 $(template).find('.image-thumbs')
                     .append(thumb);
             }

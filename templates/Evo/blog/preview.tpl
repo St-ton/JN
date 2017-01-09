@@ -1,16 +1,20 @@
-<div itemscope itemtype="https://schema.org/Article" class="panel panel-default">
+<div itemprop="hasPart" itemscope itemtype="https://schema.org/Article" class="panel panel-default">
     <div class="panel-heading hide-overflow">
         <div class="panel-title">
-            <a href="{$oNewsUebersicht->cURL}">
+            <a itemprop="mainEntityOfPage" href="{$oNewsUebersicht->cURL}">
                 <strong><span itemprop="headline">{$oNewsUebersicht->cBetreff}</span></strong>
             </a>
             <div class="text-muted pull-right v-box">
                 {if empty($oNewsUebersicht->dGueltigVon)}{assign var="dDate" value=$oNewsUebersicht->dErstellt}{else}{assign var="dDate" value=$oNewsUebersicht->dGueltigVon}{/if}
-                {if !empty($Einstellungen.global.global_shopname)}
-                    <span itemprop="publisher" class="hidden">{$Einstellungen.global.global_shopname}</span>
-                {/if}
                 {if (isset($oNewsUebersicht->oAuthor))}
                     <div class="hidden-xs v-box">{include file="snippets/author.tpl" oAuthor=$oNewsUebersicht->oAuthor}</div>
+                {else}
+                    <div itemprop="author" itemscope itemtype="http://schema.org/Organization" class="hidden">
+                        <span itemprop="name">{$meta_publisher}</span>
+                        <span itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+                            <img itemprop="contentUrl" src="{$ShopLogoURL}" />
+                        </span>
+                    </div>
                 {/if}
                 {if isset($oNewsUebersicht->dErstellt)}<time itemprop="dateModified" class="hidden">{$oNewsUebersicht->dErstellt}</time>{/if}
                 <time itemprop="datePublished" datetime="{$dDate}" class="hidden">{$dDate}</time><span class="v-box">{$oNewsUebersicht->dErstellt_de}</span>

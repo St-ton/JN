@@ -19,11 +19,9 @@
         {/block}
     {/if}
     {block name="productdetails-review-content"}
-    <div class="top5" itemref="product-offer" itemscope itemtype="http://schema.org/Review">
+    <div class="top5" itemprop="review" itemscope itemtype="http://schema.org/Review">
         <span itemprop="name" class="hidden">{$oBewertung->cTitel}</span>
-        <span itemprop="itemReviewed" itemscope itemtype="http://schema.org/Product">
-            <span itemprop="name" class="hidden">{$Artikel->cName}</span>
-        </span>
+
         <span itemprop="reviewRating" itemscope itemtype="http://schema.org/Rating">
             <span class="pull-right">
                 {include file='productdetails/rating.tpl' stars=$oBewertung->nSterne}

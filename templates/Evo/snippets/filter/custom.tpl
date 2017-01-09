@@ -4,7 +4,7 @@
             <a rel="nofollow" href="{$filterOption->getURL()}">
                 <span class="value">
                     <i class="fa {if $NaviFilter->getFilterValue($filter->cClassname) == $filterOption->mValue}fa-check-square-o{else}fa-square-o{/if} text-muted"></i>
-                    {$filterOption->getName()|escape:'html'}
+                    {$filterOption->getName()|escape:'html'} - {$filterOption|get_class}
                     <span class="badge pull-right">{$filterOption->getCount()}</span>
                 </span>
             </a>

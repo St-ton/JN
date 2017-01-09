@@ -855,10 +855,13 @@ final class Shop
                     $nMerkmalZaehler = 1;
                     foreach ($cSEOMerkmal_arr as $i => $cSEOMerkmal) {
                         if (strlen($cSEOMerkmal) > 0 && $i > 0) {
+                            $_GET['mf'] = [];
                             $oSeo = self::DB()->select('tseo', 'cKey', 'kMerkmalWert', 'cSeo', $cSEOMerkmal);
                             if (isset($oSeo->kKey) && strcasecmp($oSeo->cSeo, $cSEOMerkmal) === 0) {
                                 //haenge an GET, damit baueMerkmalFilter die Merkmalfilter setzen kann - @todo?
-                                $_GET['mf' . $nMerkmalZaehler] = (int)$oSeo->kKey;
+                                //@todo
+//                                $_GET['mf' . $nMerkmalZaehler] = (int)$oSeo->kKey;
+                                $_GET['mf'][] = (int)$oSeo->kKey;
                                 ++$nMerkmalZaehler;
                                 self::$bSEOMerkmalNotFound = false;
                             } else {

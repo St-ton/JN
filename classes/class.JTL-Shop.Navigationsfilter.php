@@ -1849,7 +1849,7 @@ class Navigationsfilter
             Shop::dbg($urlParams, false, 'params:');
         }
 
-        return urlencode($url);
+        return $url;
     }
 
     /**

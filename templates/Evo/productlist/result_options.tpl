@@ -231,7 +231,8 @@
                             {/foreach}
                         {else}
                             {strip}
-                            <a class="filter-remove-custom-filter label label-info" rel="nofollow" href="{$NaviFilter->URL->cAlle|cat:$filter->getClassName()}">
+                            {assign var=idx value='cAlle'|cat:$filter->getClassName()}
+                            <a class="filter-remove-custom-filter label label-info" rel="nofollow" href="{$NaviFilter->URL->$idx}">
                                 {$filter->getName()}: {$filterValues} &nbsp;<span class="fa fa-trash-o"></span>
                             </a>
                             {/strip}

@@ -1735,6 +1735,9 @@ class Artikel
             case ART_ATTRIBUT_AMPELTEXT_ROT:
                 return true;
                 break;
+            case ART_ATTRIBUT_SHORTNAME:
+                return true;
+                break;
         }
 
         return false;

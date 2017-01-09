@@ -255,9 +255,9 @@ class KategorieHelper
                 $_cat->bUnterKategorien = 0;
                 $_cat->Unterkategorien  = [];
                 // Kurzbezeichnung
-                if (isset($_cat->categoryAttributes['shortname'])) {
-                    $_cat->cKurzbezeichnung = $_cat->categoryAttributes['shortname']->cWert;
-                }
+                $_cat->cKurzbezeichnung = isset($_cat->categoryAttributes[ART_ATTRIBUT_SHORTNAME])
+                    ? $_cat->categoryAttributes[ART_ATTRIBUT_SHORTNAME]->cWert
+                    : $_cat->cName;
                 if ($_cat->kOberKategorie == 0) {
                     $fullCats[$_cat->kKategorie] = $_cat;
                     $current                     = $_cat;

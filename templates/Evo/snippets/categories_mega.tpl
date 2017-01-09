@@ -31,7 +31,7 @@
             {/if}
             <li class="{if $isDropdown}dropdown megamenu-fw{/if}{if $category->kKategorie == $activeId || (isset($activeParents[0]) && $activeParents[0]->kKategorie == $category->kKategorie)} active{/if}">
                 <a href="{$category->cURL}"{if $isDropdown} class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-delay="300" data-hover-delay="100" data-close-others="true"{/if}>
-                    {$category->cKurzbezeichnung|default:$category->cName}
+                    {$category->cKurzbezeichnung}
                     {if $isDropdown}<span class="caret"></span>{/if}
                 </a>
                 {if $isDropdown}
@@ -53,7 +53,7 @@
                                                 {if $category->cBildURL !== 'gfx/keinBild.gif'}
                                                     <a href="{$category->cURL}">
                                                         <img src="{$category->cBildURLFull}" class="img-responsive"
-                                                             alt="{$category->cKurzbezeichnung|default:$category->cName|escape:'html'}">
+                                                             alt="{$category->cKurzbezeichnung|escape:'html'}">
                                                     </a>
                                                     <div class="clearall top15"></div>
                                                 {/if}
@@ -76,7 +76,7 @@
                                                                 <div class="img text-center">
                                                                     <a href="{$sub->cURL}">
                                                                         <img src="{$sub->cBildURLFull}" class="image"
-                                                                             alt="{$category->cKurzbezeichnung|default:$category->cName|escape:'html'}">
+                                                                             alt="{$category->cKurzbezeichnung|escape:'html'}">
                                                                     </a>
                                                                 </div>
                                                             {/if}
@@ -84,7 +84,7 @@
                                                                 <h5 class="title">
                                                                     <a href="{$sub->cURL}">
                                                                         <span>
-                                                                            {$sub->cKurzbezeichnung|default:$sub->cName}
+                                                                            {$sub->cKurzbezeichnung}
                                                                         </span>
                                                                     </a>
                                                                 </h5>
@@ -101,7 +101,7 @@
                                                                         {if $smarty.foreach.subsub_categories.iteration <= $max_subsub_items}
                                                                             <li{if $subsub->kKategorie == $activeId || (isset($activeParents[2]) && $activeParents[2]->kKategorie == $subsub->kKategorie)} class="active"{/if}>
                                                                                 <a href="{$subsub->cURL}">
-                                                                                    {$subsub->cKurzbezeichnung|default:$subsub->cName}
+                                                                                    {$subsub->cKurzbezeichnung}
                                                                                 </a>
                                                                             </li>
                                                                         {else}

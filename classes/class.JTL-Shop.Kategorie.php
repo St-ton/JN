@@ -116,6 +116,11 @@ class Kategorie
     public $kSprache;
 
     /**
+     * @var string
+     */
+    public $cKurzbezeichnung = '';
+
+    /**
      * @param int  $kKategorie Falls angegeben, wird der Kategorie mit angegebenem kKategorie aus der DB geholt
      * @param int  $kSprache
      * @param int  $kKundengruppe
@@ -325,9 +330,9 @@ class Kategorie
             Shop::Cache()->set($cacheID, $this, $cacheTags);
         }
         // Kurzbezeichnung
-        if (isset($this->categoryAttributes['shortname'])) {
-            $this->cKurzbezeichnung = $this->categoryAttributes['shortname']->cWert;
-        }
+        $this->cKurzbezeichnung = isset($this->categoryAttributes[ART_ATTRIBUT_SHORTNAME])
+            ? $this->categoryAttributes[ART_ATTRIBUT_SHORTNAME]->cWert
+            : $this->cName;
 
         return $this;
     }

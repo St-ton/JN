@@ -46,14 +46,14 @@
                                     <li>
                                         <a href="{$oKategorie->cURLFull}" title="{$oKategorie->cName}">
                                             <strong>
-                                                {$oKategorie->cKurzbezeichnung|default:$oKategorie->cName}
+                                                {$oKategorie->cKurzbezeichnung}
                                             </strong>
                                         </a>
                                     </li>
                                     {foreach name=Subkategorien from=$oKategorie->Unterkategorien item=oSubKategorie}
                                         <li>
                                             <a href="{$oSubKategorie->cURLFull}" title="{$oKategorie->cName}">
-                                                {$oSubKategorie->cKurzbezeichnung|default:$oSubKategorie->cName}
+                                                {$oSubKategorie->cKurzbezeichnung}
                                             </a>
                                         </li>
                                         {if $oSubKategorie->Unterkategorien|@count > 0}
@@ -62,7 +62,7 @@
                                                     <li>
                                                         <a href="{$oSubSubKategorie->cURLFull}"
                                                            title="{$oKategorie->cName}">
-                                                            {$oSubSubKategorie->cKurzbezeichnung|default:$oSubSubKategorie->cName}
+                                                            {$oSubSubKategorie->cKurzbezeichnung}
                                                         </a>
                                                     </li>
                                                 {/foreach}
@@ -82,7 +82,7 @@
                                 {if $oKategorie->Unterkategorien|@count == 0}
                                     <li>
                                         &nbsp;&nbsp;<a href="{$oKategorie->cURLFull}" title="{$oKategorie->cName}">
-                                            {$oKategorie->cKurzbezeichnung|default:$oKategorie->cName}
+                                            {$oKategorie->cKurzbezeichnung}
                                         </a>
                                     </li>
                                 {/if}

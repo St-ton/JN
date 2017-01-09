@@ -972,6 +972,11 @@ class Artikel
     public $cacheHit = false;
 
     /**
+     * @var string
+     */
+    public $cKurzbezeichnung = '';
+
+    /**
      * Konstruktor
      *
      * @param int $kArtikel
@@ -3809,6 +3814,10 @@ class Artikel
             $this->oVariationKombiKinderAssoc_arr = $children;
         }
         $this->rabattierePreise();
+
+        $this->cKurzbezeichnung = isset($this->AttributeAssoc[ART_ATTRIBUT_SHORTNAME])
+            ? $this->AttributeAssoc[ART_ATTRIBUT_SHORTNAME]
+            : $this->cName;
 
         return $this;
     }

@@ -1573,87 +1573,6 @@ class Navigationsfilter
     /**
      * converts legacy stdClass filters to real filter instances
      *
-     * @param object|Filter|FilterExtra $extraFilter
-     * @return FilterExtra
-     * @throws InvalidArgumentException
-     */
-    private function convertFilter($extraFilter)
-    {
-        if (get_class($extraFilter) === 'FilterExtra') {
-            return $extraFilter;
-        }
-        $filter = new FilterExtra();
-        if (isset($extraFilter->FilterLoesen)) {
-            $filter->setDoUnset(true);
-            if (isset($extraFilter->FilterLoesen->Kategorie) && $extraFilter->FilterLoesen->Kategorie === true){
-                $filter->setClassName('FilterItemCategory');
-            } elseif (isset($extraFilter->FilterLoesen->Hersteller) && $extraFilter->FilterLoesen->Hersteller === true){
-                $filter->setClassName('FilterItemManufacturer');
-            } elseif (isset($extraFilter->FilterLoesen->Merkmale)){
-                $filter->setClassName('FilterItemAttribute');
-            } elseif (isset($extraFilter->FilterLoesen->MerkmalWert)){
-                $filter->setClassName('FilterItemAttribute');
-            } elseif (isset($extraFilter->FilterLoesen->Preisspannen) && $extraFilter->FilterLoesen->Preisspannen === true){
-                $filter->setClassName('FilterItemPriceRange');
-            } elseif (isset($extraFilter->FilterLoesen->Bewertungen) && $extraFilter->FilterLoesen->Bewertungen === true){
-                $filter->setClassName('FilterItemRating');
-            } elseif (isset($extraFilter->FilterLoesen->Tags) && $extraFilter->FilterLoesen->Tags === true){
-                $filter->setClassName('FilterItemTag');
-            } elseif (isset($extraFilter->FilterLoesen->Suchspecials) && $extraFilter->FilterLoesen->Suchspecials === true){
-                $filter->setClassName('FilterItemSearchSpecial');
-            }  elseif (isset($extraFilter->FilterLoesen->SuchFilter)){
-                $filter->setClassName('FilterSearch');
-            } elseif (isset($extraFilter->FilterLoesen->Erscheinungsdatum) && $extraFilter->FilterLoesen->Erscheinungsdatum === true) {
-                //@todo@todo@todo
-                return $filter;
-            } elseif (isset($extraFilter->customClassName)){
-                $filter->setValue($extraFilter->customValue)->setClassName($extraFilter->customClassName);
-            }  else {
-                Shop::dbg($extraFilter, false, 'ExtraFilter:');
-                throw new InvalidArgumentException('Unrecognized additional unset filter: ' . json_encode($extraFilter));
-            }
-        } elseif ($extraFilter !== null && get_class($extraFilter) === 'stdClass') {
-            if (isset($extraFilter->HerstellerFilter->kHersteller)) {
-                $filter->setValue((int)$extraFilter->HerstellerFilter->kHersteller)
-                       ->setClassName('FilterItemManufacturer')
-                       ->setURL($extraFilter->HerstellerFilter->cSeo);
-            } elseif (isset($extraFilter->KategorieFilter->kKategorie)) {
-                $filter->setValue((int)$extraFilter->KategorieFilter->kKategorie)
-                       ->setClassName('FilterItemCategory')
-                       ->setURL($extraFilter->KategorieFilter->cSeo);
-            } elseif (isset($extraFilter->SuchFilter->kSuchanfrage)) {
-                $filter->setValue((int)$extraFilter->SuchFilter->kSuchanfrage)
-                       ->setClassName('FilterSearchFilter')
-                       ->setURL($extraFilter->SuchFilter->cSeo);
-            } elseif (isset($extraFilter->MerkmalFilter->kMerkmalWert)) {
-                $filter->setValue((int)$extraFilter->MerkmalFilter->kMerkmalWert)
-                       ->setClassName('FilterItemAttribute')
-                       ->setURL($extraFilter->MerkmalFilter->cSeo);
-            } elseif (isset($extraFilter->PreisspannenFilter->fVon)) {
-                $filter->setValue($extraFilter->PreisspannenFilter->fVon . '_' . $extraFilter->PreisspannenFilter->fBis)
-                       ->setClassName('FilterItemPriceRange');
-            } elseif (isset($extraFilter->BewertungFilter->nSterne)) {
-                $filter->setValue((int)$extraFilter->BewertungFilter->nSterne)
-                       ->setClassName('FilterItemRating');
-            } elseif (isset($extraFilter->TagFilter->kTag)) {
-                $filter->setValue((int)$extraFilter->TagFilter->kTag)
-                       ->setClassName('FilterItemTag');
-            } elseif (isset($extraFilter->SuchspecialFilter->kKey)) {
-                $filter->setValue((int)$extraFilter->SuchspecialFilter->kKey)
-                       ->setClassName('FilterItemSearchSpecial');
-
-            } else {
-                Shop::dbg($extraFilter, false, 'ExtraFilter:');
-                throw new InvalidArgumentException('Unrecognized additional filter: ' . json_encode($extraFilter));
-            }
-        }
-
-        return $filter;
-    }
-
-    /**
-     * converts legacy stdClass filters to real filter instances
-     *
      * @param object|IFilter $extraFilter
      * @return IFilter
      * @throws InvalidArgumentException
@@ -1681,20 +1600,20 @@ class Navigationsfilter
                 $config,
                 $this->oSprache_arr)
             )->init(isset($extraFilter->HerstellerFilter->kHersteller) ? $extraFilter->HerstellerFilter->kHersteller : null);
-        } elseif (isset($extraFilter->MerkmalFilter->kMerkmalWert) || isset($extraFilter->FilterLoesen->Merkmale)) {
-            $filter = (new FilterItemAttribute(
-                $languageID,
-                $customerGroupID,
-                $config,
-                $this->oSprache_arr)
-            )->init(isset($extraFilter->MerkmalFilter->kMerkmalWert) ? $extraFilter->MerkmalFilter->kMerkmalWert : null);
         } elseif (isset($extraFilter->MerkmalFilter->kMerkmalWert) || isset($extraFilter->FilterLoesen->MerkmalWert)) {
             $filter = (new FilterItemAttribute(
                 $languageID,
                 $customerGroupID,
                 $config,
                 $this->oSprache_arr)
-            )->init(isset($extraFilter->MerkmalFilter->kMerkmalWert) ? $extraFilter->MerkmalFilter->kMerkmalWert : null);
+            )->init(isset($extraFilter->MerkmalFilter->kMerkmalWert) ? $extraFilter->MerkmalFilter->kMerkmalWert : $extraFilter->FilterLoesen->MerkmalWert);
+        } elseif (isset($extraFilter->MerkmalFilter->kMerkmalWert) || isset($extraFilter->FilterLoesen->Merkmale)) {
+            $filter = (new FilterItemAttribute(
+                $languageID,
+                $customerGroupID,
+                $config,
+                $this->oSprache_arr)
+            )->init(isset($extraFilter->MerkmalFilter->kMerkmalWert) ? $extraFilter->MerkmalFilter->kMerkmalWert : $extraFilter->FilterLoesen->Merkmale);
         } elseif (isset($extraFilter->PreisspannenFilter->fVon) || isset($extraFilter->FilterLoesen->Preisspannen) && $extraFilter->FilterLoesen->Preisspannen === true) {
             $filter = (new FilterItemPriceRange(
                 $languageID,
@@ -1778,9 +1697,6 @@ class Navigationsfilter
         }
         $url           = $baseURL;
         $activeFilters = $this->getActiveFilters();
-        if ($debug) {
-        }
-
         //we need the base state + all active filters + optionally the additional filter to generate the correct url
         if ($oZusatzFilter !== null && $extraFilter !== null && !$extraFilter->getDoUnset()) {
             $activeFilters[] = $extraFilter;
@@ -1803,11 +1719,17 @@ class Navigationsfilter
                 $filterSeoData->seo     = $filterSeo;
                 $filterSeoData->type    = $filter->getType();
                 $urlParams[$urlParam][] = $filterSeoData;
-            } elseif (is_array($filterSeoData->value)) {
-                $filterSeoData->value[] = $filter->getValue();
+            } elseif (isset($urlParams[$urlParam]->value) && is_array($urlParams[$urlParam]->value)) {
+                $urlParams[$urlParam]->value[] = $filter->getValue();
+            } else {
+                $filterSeoData          = new stdClass();
+                $filterSeoData->value   = $filter->getValue();
+                $filterSeoData->sep     = $filter->getUrlParamSEO();
+                $filterSeoData->seo     = $filterSeo;
+                $filterSeoData->type    = $filter->getType();
+                $urlParams[$urlParam][] = $filterSeoData;
             }
         }
-        if ($debug) Shop::dbg($urlParams, false, '$urlParams:');
         //remove extra filters from url array if getDoUnset equals true
         if (method_exists($extraFilter, 'getDoUnset') && $extraFilter->getDoUnset()) {
             if ($extraFilter->getValue() === 0) {

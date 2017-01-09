@@ -1696,25 +1696,47 @@ class Navigationsfilter
                 $this->oSprache_arr)
             )->init(isset($extraFilter->MerkmalFilter->kMerkmalWert) ? $extraFilter->MerkmalFilter->kMerkmalWert : null);
         } elseif (isset($extraFilter->PreisspannenFilter->fVon) || isset($extraFilter->FilterLoesen->Preisspannen) && $extraFilter->FilterLoesen->Preisspannen === true) {
-            $filter = (new FilterItemPriceRange($languageID, $customerGroupID, $config,
-                $this->oSprache_arr))->init(isset($extraFilter->PreisspannenFilter->fVon) ? ($extraFilter->PreisspannenFilter->fVon . '_' . $extraFilter->PreisspannenFilter->fBis) : null);
+            $filter = (new FilterItemPriceRange(
+                $languageID,
+                $customerGroupID,
+                $config,
+                $this->oSprache_arr)
+            )->init(isset($extraFilter->PreisspannenFilter->fVon) ? ($extraFilter->PreisspannenFilter->fVon . '_' . $extraFilter->PreisspannenFilter->fBis) : null);
         } elseif (isset($extraFilter->BewertungFilter->nSterne) || isset($extraFilter->FilterLoesen->Bewertungen) && $extraFilter->FilterLoesen->Bewertungen === true) {
-            $filter = (new FilterItemRating($languageID, $customerGroupID, $config,
-                $this->oSprache_arr))->init(isset($extraFilter->BewertungFilter->nSterne) ? $extraFilter->BewertungFilter->nSterne : null);
+            $filter = (new FilterItemRating(
+                $languageID,
+                $customerGroupID,
+                $config,
+                $this->oSprache_arr)
+            )->init(isset($extraFilter->BewertungFilter->nSterne) ? $extraFilter->BewertungFilter->nSterne : null);
         } elseif (isset($extraFilter->TagFilter->kTag) || isset($extraFilter->FilterLoesen->Tags) && $extraFilter->FilterLoesen->Tags === true) {
-            $filter = (new FilterItemTag($languageID, $customerGroupID, $config,
-                $this->oSprache_arr))->init(isset($extraFilter->TagFilter->kTag) ? $extraFilter->TagFilter->kTag : null);
+            $filter = (new FilterItemTag(
+                $languageID,
+                $customerGroupID,
+                $config,
+                $this->oSprache_arr)
+            )->init(isset($extraFilter->TagFilter->kTag) ? $extraFilter->TagFilter->kTag : null);
         } elseif (isset($extraFilter->SuchspecialFilter->kKey) || isset($extraFilter->FilterLoesen->Suchspecials) && $extraFilter->FilterLoesen->Suchspecials === true) {
-            $filter = (new FilterItemSearchSpecial($languageID, $customerGroupID, $config,
-                $this->oSprache_arr))->init(isset($extraFilter->SuchspecialFilter->kKey) ? $extraFilter->SuchspecialFilter->kKey : null);
+            $filter = (new FilterItemSearchSpecial(
+                $languageID,
+                $customerGroupID,
+                $config,
+                $this->oSprache_arr)
+            )->init(isset($extraFilter->SuchspecialFilter->kKey) ? $extraFilter->SuchspecialFilter->kKey : null);
         } elseif (isset($extraFilter->SuchFilter->kSuchanfrage) || !empty($extraFilter->FilterLoesen->SuchFilter)) {
-            $filter = (new FilterBaseSearchQuery($languageID, $customerGroupID, $config,
-                $this->oSprache_arr))->init(isset($extraFilter->SuchFilter->kSuchanfrage) ? $extraFilter->SuchFilter->kSuchanfrage : null);
+            $filter = (new FilterBaseSearchQuery(
+                $languageID,
+                $customerGroupID,
+                $config,
+                $this->oSprache_arr)
+            )->init(isset($extraFilter->SuchFilter->kSuchanfrage) ? $extraFilter->SuchFilter->kSuchanfrage : null);
         } elseif (isset($extraFilter->FilterLoesen->SuchFilter)) {
-            $filter = new FilterBaseSearchQuery($languageID, $customerGroupID, $config, $this->oSprache_arr);
-        } elseif (isset($extraFilter->customClassName)) {
-            $filter = new $extraFilter->customClassName($languageID, $customerGroupID, $config, $this->oSprache_arr);
-//                $filter->setValue($extraFilter->customValue)->setClassName($extraFilter->customClassName);
+            $filter = (new FilterBaseSearchQuery(
+                $languageID,
+                $customerGroupID,
+                $config,
+                $this->oSprache_arr)
+            )->init($extraFilter->FilterLoesen->SuchFilter);
         } elseif (isset($extraFilter->FilterLoesen->Erscheinungsdatum) && $extraFilter->FilterLoesen->Erscheinungsdatum === true) {
             //@todo@todo@todo
             return $filter;
@@ -1723,9 +1745,7 @@ class Navigationsfilter
             throw new InvalidArgumentException('Unrecognized additional unset filter: ' . json_encode($extraFilter));
         }
 
-        $filter->setDoUnset(isset($extraFilter->FilterLoesen));
-
-        return $filter;
+        return $filter->setDoUnset(isset($extraFilter->FilterLoesen));
     }
 
     /**

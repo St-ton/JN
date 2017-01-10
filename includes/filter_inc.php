@@ -492,7 +492,7 @@ function gibHerstellerFilterOptionen($FilterSQL, $NaviFilter)
                 AND tseo.cKey = 'kHersteller'
                 AND tseo.kSprache = " . Shop::$kSprache . "
             GROUP BY ssMerkmal.kHersteller
-            ORDER BY ssMerkmal.nSortNr, ssMerkmal.cName", 2
+            ORDER BY ssMerkmal.cName", 2
         );
         //baue URL
         $oZusatzFilter = new stdClass();

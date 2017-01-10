@@ -2473,7 +2473,6 @@ function berechneVersandpreis($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
                 $fGesamtsummeWaren = $_SESSION['Warenkorb']->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL, C_WARENKORBPOS_TYP_KUPON, C_WARENKORBPOS_TYP_NEUKUNDENKUPON], 1);
             }
             break;
-
     }
 
     if ($Artikel && $fArtikelPreis >= $versandart->fVersandkostenfreiAbX && $versandart->fVersandkostenfreiAbX > 0) {
@@ -3787,6 +3786,7 @@ function setzeSpracheUndWaehrungLink()
                         if ($_SESSION['Sprachen'][$i]->cURL === $shopURL . '/') {
                             $_SESSION['Sprachen'][$i]->cURL .= '?lang=' . $oSprache->cISO;
                         }
+                        $_SESSION['Sprachen'][$i]->cURLFull = $_SESSION['Sprachen'][$i]->cURL;
                         break;
 
                     case 'WARENKORB':
@@ -3845,7 +3845,8 @@ function setzeSpracheUndWaehrungLink()
                     } else { //there is a SEO link - make it a full URL
                         $url = $helper->getStaticRoute($id, true, false, $oSprache->cISO);
                     }
-                    $_SESSION['Sprachen'][$i]->cURL = $url;
+                    $_SESSION['Sprachen'][$i]->cURL     = $url;
+                    $_SESSION['Sprachen'][$i]->cURLFull = $url;
                 }
 
                 executeHook(HOOK_TOOLSGLOBAL_INC_SWITCH_SETZESPRACHEUNDWAEHRUNG_SPRACHE);
@@ -3944,18 +3945,15 @@ function setzeSpracheUndWaehrungLink()
             }
         }
     }
-
-    executeHook(
-        HOOK_TOOLSGLOBAL_INC_SETZESPRACHEUNDWAEHRUNG_WAEHRUNG, [
-            'oNaviFilter'       => &$NaviFilter,
-            'oZusatzFilter'     => &$oZusatzFilter,
-            'cSprachURL'        => &$sprachURL,
-            'oAktuellerArtikel' => &$AktuellerArtikel,
-            'kSeite'            => &$kSeite,
-            'kLink'             => &$kLink,
-            'AktuelleSeite'     => &$AktuelleSeite
-        ]
-    );
+    executeHook(HOOK_TOOLSGLOBAL_INC_SETZESPRACHEUNDWAEHRUNG_WAEHRUNG, [
+        'oNaviFilter'       => &$NaviFilter,
+        'oZusatzFilter'     => &$oZusatzFilter,
+        'cSprachURL'        => &$sprachURL,
+        'oAktuellerArtikel' => &$AktuellerArtikel,
+        'kSeite'            => &$kSeite,
+        'kLink'             => &$kLink,
+        'AktuelleSeite'     => &$AktuelleSeite
+    ]);
 }
 
 /**
@@ -4542,11 +4540,15 @@ function phpLinkCheck($url)
  */
 function gibKategoriepfad($Kategorie, $kKundengruppe, $kSprache, $bString = true)
 {
-    $h     = KategorieHelper::getInstance($kSprache, $kKundengruppe);
-    $tree  = $h->getFlatTree($Kategorie->kKategorie);
-    $names = [];
-    foreach ($tree as $item) {
-        $names[] = $item->cName;
+    if (empty($Kategorie->cKategoriePfad_arr) || empty($Kategorie->kSprache) || ($Kategorie->kSprache != $kSprache)) {
+        $h     = KategorieHelper::getInstance($kSprache, $kKundengruppe);
+        $tree  = $h->getFlatTree($Kategorie->kKategorie);
+        $names = [];
+        foreach ($tree as $item) {
+            $names[] = $item->cName;
+        }
+    } else {
+        $names = $Kategorie->cKategoriePfad_arr;
     }
 
     return ($bString) ? implode(' > ', $names) : $names;
@@ -5642,6 +5644,15 @@ function urlNotFoundRedirect(array $hookInfos = null, $forceExit = false)
  */
 function getDeliverytimeEstimationText($minDeliveryDays, $maxDeliveryDays)
 {
+    $settings = Shop::getSettings([CONF_KAUFABWICKLUNG]);
+    $addDays  = isset($settings['kaufabwicklung']['addDeliveryDayOnSaturday']) ? (int)$settings['kaufabwicklung']['addDeliveryDayOnSaturday'] : 0;
+    $dow      = (int)date('N');
+
+    if ($addDays > 0 && $dow >= (7 - $addDays)) {
+        $minDeliveryDays = $minDeliveryDays + 7 - $dow;
+        $maxDeliveryDays = $maxDeliveryDays + 7 - $dow;
+    }
+
     $deliveryText = ($minDeliveryDays == $maxDeliveryDays) ? str_replace(
         '#DELIVERYDAYS#', $minDeliveryDays, Shop::Lang()->get('deliverytimeEstimationSimple', 'global')
     ) : str_replace(

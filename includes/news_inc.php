@@ -81,8 +81,8 @@ function baueFilterSQL($bActiveOnly = false)
  */
 function pruefeKundenKommentar($cKommentar, $cName = '', $cEmail = '', $kNews, $Einstellungen)
 {
-    $nPlausiValue_arr = array();
-    $conf             = Shop::getSettings(array(CONF_NEWS));
+    $nPlausiValue_arr = [];
+    $conf             = Shop::getSettings([CONF_NEWS]);
     // Kommentar prüfen
     if (strlen($cKommentar) === 0) {
         $nPlausiValue_arr['cKommentar'] = 1;
@@ -196,7 +196,7 @@ function holeNewsKategorien($cDatumSQL, $bActiveOnly = false)
  */
 function baueDatum($oDatum_arr)
 {
-    $oDatumTMP_arr = array();
+    $oDatumTMP_arr = [];
     if (is_array($oDatum_arr) && count($oDatum_arr) > 0) {
         foreach ($oDatum_arr as $oDatum) {
             $oTMP            = new stdClass();
@@ -268,8 +268,8 @@ function mappeDatumName($cMonat, $nJahr, $cISOSprache)
 /**
  * @param object $oNewsNaviFilter
  * @param array  $oNewsUebersicht_arr
- * @deprecated
  * @return string
+ * @deprecated since 4.04
  */
 function baueNewsMetaTitle($oNewsNaviFilter, $oNewsUebersicht_arr)
 {
@@ -294,8 +294,8 @@ function baueNewsMetaTitle($oNewsNaviFilter, $oNewsUebersicht_arr)
 /**
  * @param object $oNewsNaviFilter
  * @param array  $oNewsUebersicht_arr
- * @deprecated
  * @return string
+ * @deprecated since 4.04
  */
 function baueNewsMetaDescription($oNewsNaviFilter, $oNewsUebersicht_arr)
 {
@@ -345,8 +345,8 @@ function baueNewsMetaKeywords($oNewsNaviFilter, $oNewsUebersicht_arr)
 
 /**
  * @param object $oNewsNaviFilter
- * @deprecated
  * @return string
+ * @deprecated since 4.04
  */
 function baueNewsMetaStart($oNewsNaviFilter)
 {
@@ -415,7 +415,8 @@ function getNewsArchive($kNews, $bActiveOnly = false)
             LEFT JOIN tseo ON tseo.cKey = 'kNews'
                 AND tseo.kKey = tnews.kNews
                 AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
-            WHERE tnews.kNews = " . (int)$kNews . " AND (tnews.cKundengruppe LIKE '%;-1;%' OR tnews.cKundengruppe LIKE '%;" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";%')
+            WHERE tnews.kNews = " . (int)$kNews . " 
+                AND (tnews.cKundengruppe LIKE '%;-1;%' OR tnews.cKundengruppe LIKE '%;" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";%')
                 AND tnews.kSprache = " . (int)$_SESSION['kSprache']
                 . $activeFilter, 1
     );

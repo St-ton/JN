@@ -243,9 +243,7 @@ function fuegeEinInWarenkorbAjax($kArtikel, $anzahl, $oEigenschaftwerte_arr = ''
     $kArtikel            = intval($kArtikel);
     if ($anzahl > 0 && $kArtikel > 0) {
         $Artikel                     = new Artikel();
-        $oArtikelOptionen            = Artikel::getDefaultOptions();
-        $oArtikelOptionen->nDownload = 1;
-        $Artikel->fuelleArtikel($kArtikel, $oArtikelOptionen);
+        $Artikel->fuelleArtikel($kArtikel, Artikel::getDefaultOptions());
         // Falls der Artikel ein Variationskombikind ist, hole direkt seine Eigenschaften
         if (isset($Artikel->kEigenschaftKombi) && $Artikel->kEigenschaftKombi > 0) {
             $oEigenschaftwerte_arr = gibVarKombiEigenschaftsWerte($Artikel->kArtikel);

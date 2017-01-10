@@ -79,7 +79,7 @@ class DoExpressCheckoutPaymentRequestDetailsType
 
 	/**
 	 * Information about the payment Required 
-     * @array
+         * @array
 	 * @access public
 	 
 	 * @namespace ebl

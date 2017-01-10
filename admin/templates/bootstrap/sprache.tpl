@@ -26,7 +26,6 @@
             <div class="input-group p25 left">
                 <span class="input-group-addon">
                     <label for="{#lang#}">Installierte Sprachen:</label>
-                    {$cISO}
                 </span>
                 <input type="hidden" name="sprache" value="1" />
                 <span class="input-group-wrap last">

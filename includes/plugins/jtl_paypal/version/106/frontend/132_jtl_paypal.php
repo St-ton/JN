@@ -24,26 +24,26 @@ if ((isset($_POST['jtl_paypal_redirect']) && $_POST['jtl_paypal_redirect'] === '
     $oKampagne = false;
     //article details page button
     if (isset($_POST['jtl_paypal_redirect']) && $_POST['jtl_paypal_redirect'] === '2') {
-        $sql       = "SELECT * FROM tkampagne WHERE cParameter LIKE 'jtl_paypal_redirect'";
+        $sql = "SELECT * FROM tkampagne WHERE cParameter LIKE 'jtl_paypal_redirect'";
         $oKampagne = (class_exists('Shop')) ? Shop::DB()->query($sql, 1) : $GLOBALS['DB']->executeQuery($sql, 1);
     }
     //cart button
     if (isset($_GET['jtl_paypal_checkout_cart']) && $_GET['jtl_paypal_checkout_cart'] === '1') {
-        $sql       = "SELECT * FROM tkampagne WHERE cParameter LIKE 'jtl_paypal_checkout_cart'";
+        $sql = "SELECT * FROM tkampagne WHERE cParameter LIKE 'jtl_paypal_checkout_cart'";
         $oKampagne = (class_exists('Shop')) ? Shop::DB()->query($sql, 1) : $GLOBALS['DB']->executeQuery($sql, 1);
     }
     if ($oKampagne !== false && $oKampagne !== null) {
-        $oKampagnenVorgang               = new stdClass();
-        $oKampagnenVorgang->kKampagne    = $oKampagne->kKampagne;
+        $oKampagnenVorgang = new stdClass();
+        $oKampagnenVorgang->kKampagne = $oKampagne->kKampagne;
         $oKampagnenVorgang->kKampagneDef = 1;
-        $oKampagnenVorgang->kKey         = $_SESSION['oBesucher']->kBesucher;
-        $oKampagnenVorgang->fWert        = 1.0;
-        $oKampagnenVorgang->cParamWert   = $oKampagne->cWert;
-        $oKampagnenVorgang->dErstellt    = 'now()';
+        $oKampagnenVorgang->kKey = $_SESSION['oBesucher']->kBesucher;
+        $oKampagnenVorgang->fWert = 1.0;
+        $oKampagnenVorgang->cParamWert = $oKampagne->cWert;
+        $oKampagnenVorgang->dErstellt = 'now()';
         if (!function_exists('gibReferer')) {
-            require_once PFAD_ROOT . PFAD_INCLUDES . 'besucher.php';
+            require_once PFAD_ROOT.PFAD_INCLUDES.'besucher.php';
         }
-        $oKampagnenVorgang->cCustomData = $_SERVER['REQUEST_URI'] . ';' . gibReferer();
+        $oKampagnenVorgang->cCustomData = $_SERVER['REQUEST_URI'].';'.gibReferer();
 
         if (class_exists('Shop')) {
             Shop::DB()->insert('tkampagnevorgang', $oKampagnenVorgang);

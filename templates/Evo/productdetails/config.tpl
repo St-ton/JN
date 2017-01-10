@@ -138,9 +138,11 @@
                                                     </div>
                                                 </div>
                                             {else}
-                                                <input type="hidden" id="quantity{$oGruppe->getKonfiggruppe()}"
-                                                       name="quantity[{$oGruppe->getKonfiggruppe()}]"
-                                                       value="{$quantity}" />
+                                                <div class="quantity">
+                                                    <input type="hidden" id="quantity{$oGruppe->getKonfiggruppe()}"
+                                                           name="quantity[{$oGruppe->getKonfiggruppe()}]"
+                                                           value="{$quantity}" />
+                                                </div>
                                             {/if}
                                         {/if}
                                     </div>

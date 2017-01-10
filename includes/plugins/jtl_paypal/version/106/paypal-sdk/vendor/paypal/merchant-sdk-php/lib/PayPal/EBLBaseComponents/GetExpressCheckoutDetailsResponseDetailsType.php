@@ -164,6 +164,17 @@ class GetExpressCheckoutDetailsResponseDetailsType
 	 */ 
 	public $PaymentDetails;
 
+        /**
+         * Information about the payment Required
+         * @access public
+
+         * @namespace ebl
+
+
+         * @var PayPal\EBLBaseComponents\PaymentInfoType
+         */
+        public $PaymentInfo;
+
 	/**
 	 * Information about the user selected options. 
 	 * @access public

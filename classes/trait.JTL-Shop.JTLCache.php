@@ -248,24 +248,24 @@ trait JTLCacheTrait
     /**
      * clean up journal after deleting cache entries
      *
-     * @param string|array $cacheID
+     * @param string|array $tags
      * @return bool
      */
-    public function clearCacheTags($cacheID)
+    public function clearCacheTags($tags)
     {
-        if (is_array($cacheID)) {
-            foreach ($cacheID as $_cid) {
-                $this->clearCacheTags($_cid);
+        if (is_array($tags)) {
+            foreach ($tags as $tag) {
+                $this->clearCacheTags($tag);
             }
         }
         $this->getJournal();
         //avoid infinite loops
-        if ($cacheID !== $this->journalID) {
+        if ($tags !== $this->journalID) {
             //load meta data
             if ($this->journal !== false) {
                 foreach ($this->journal as $tagName => $value) {
                     //search for key in meta values
-                    if (($index = array_search($cacheID, $value)) !== false) {
+                    if (($index = array_search($tags, $value)) !== false) {
                         unset($this->journal[$tagName][$index]);
                         if (count($this->journal[$tagName]) === 0) {
                             //remove empty tag nodes

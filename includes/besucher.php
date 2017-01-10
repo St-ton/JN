@@ -148,7 +148,7 @@ function gibBot()
  */
 function werteRefererAus($kBesucher, $referer)
 {
-    $kBesucher           = intval($kBesucher);
+    $kBesucher           = (int)$kBesucher;
     $roh                 = $_SERVER['HTTP_REFERER'];
     $ausdruck            = new stdClass();
     $ausdruck->kBesucher = $kBesucher;
@@ -229,7 +229,7 @@ function istSpider($cUserAgent)
         }
     }
 
-    return (isset($oBesucherBot->kBesucherBot) && intval($oBesucherBot->kBesucherBot) > 0) ?
-        (int)$oBesucherBot->kBesucherBot :
-        0;
+    return (isset($oBesucherBot->kBesucherBot) && intval($oBesucherBot->kBesucherBot) > 0)
+        ? (int)$oBesucherBot->kBesucherBot
+        : 0;
 }

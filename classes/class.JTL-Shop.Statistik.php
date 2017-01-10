@@ -55,8 +55,8 @@ class Statistik
     {
         $this->nAnzeigeIntervall = 0;
         $this->nTage             = 0;
-        $this->cDatumVon_arr     = array();
-        $this->cDatumBis_arr     = array();
+        $this->cDatumVon_arr     = [];
+        $this->cDatumBis_arr     = [];
         $this->nStampVon         = 0;
         $this->nStampBis         = 0;
 
@@ -108,7 +108,7 @@ class Statistik
             return $this->mergeDaten($oStatTMP_arr);
         }
 
-        return array();
+        return [];
     }
 
     /**
@@ -143,7 +143,7 @@ class Statistik
             return $oStatTMP_arr;
         }
 
-        return array();
+        return [];
     }
 
     /**
@@ -178,7 +178,7 @@ class Statistik
             return $oStatTMP_arr;
         }
 
-        return array();
+        return [];
     }
 
     /**
@@ -207,7 +207,7 @@ class Statistik
             return $this->mergeDaten($oStatTMP_arr);
         }
 
-        return array();
+        return [];
     }
 
     /**
@@ -243,7 +243,7 @@ class Statistik
             return $oStatTMP_arr;
         }
 
-        return array();
+        return [];
     }
 
     /**
@@ -347,10 +347,10 @@ class Statistik
     private function vordefStats()
     {
         if (!$this->nAnzeigeIntervall) {
-            return array();
+            return [];
         }
         // $oStat_arr vorbelegen
-        $oStat_arr = array();
+        $oStat_arr = [];
 
         switch ($this->nAnzeigeIntervall) {
             case 1: // Stunden
@@ -516,7 +516,7 @@ class Statistik
             return $oStat_arr;
         }
 
-        return array();
+        return [];
     }
 
     /**

@@ -48,7 +48,6 @@ class Wirecard extends PaymentMethod
     public function preparePaymentProcess($order)
     {
         $amount      = number_format($order->fGesamtsummeKundenwaehrung, 2, '.', '');
-        $firstItem   = new Artikel($order->Positionen[0]->kArtikel);
         $paymentHash = $this->generateHash($order);
 
         $cFailureURL = $this->getReturnURL($order);

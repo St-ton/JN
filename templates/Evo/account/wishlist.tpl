@@ -1,6 +1,7 @@
-{if $hinweis}
-    <div class="alert alert-info">{$hinweis}</div>
-{/if}
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license http://jtl-url.de/jtlshoplicense
+ *}
 
 <form method="post" action="{get_static_route id='jtl.php'}" name="Wunschliste">
     {$jtl_token}

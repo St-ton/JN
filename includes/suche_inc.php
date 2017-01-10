@@ -8,6 +8,7 @@
  * @param string $Suchausdruck
  * @param int    $kSpracheExt
  * @return mixed
+ * @deprecated since 4.05
  */
 function mappingBeachten($Suchausdruck, $kSpracheExt = 0)
 {

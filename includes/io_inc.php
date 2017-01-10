@@ -10,6 +10,7 @@ $io = new IO();
 
 $io->register('suggestions')
     ->register('pushToBasket')
+    ->register('pushToComparelist')
     ->register('checkDependencies')
     ->register('checkVarkombiDependencies')
     ->register('generateToken')
@@ -175,6 +176,67 @@ function pushToBasket($kArtikel, $anzahl, $oEigenschaftwerte_arr = '')
             return $objResponse;
         }
     }
+
+    return $objResponse;
+}
+
+function pushToComparelist($kArtikel)
+{
+    global $Einstellungen;
+
+    if (!isset($Einstellungen['vergleichsliste'])) {
+        if (isset($Einstellungen)) {
+            $Einstellungen = array_merge($Einstellungen, Shop::getSettings(array(CONF_VERGLEICHSLISTE)));
+        } else {
+            $Einstellungen = Shop::getSettings(array(CONF_VERGLEICHSLISTE));
+        }
+    }
+
+    $oResponse   = new stdClass();
+    $objResponse = new IOResponse();
+
+    $_POST['Vergleichsliste'] = 1;
+    $_POST['a']               = $kArtikel;
+
+    checkeWarenkorbEingang();
+    $error  = Shop::Smarty()->getTemplateVars('fehler');
+    $notice = Shop::Smarty()->getTemplateVars('hinweis');
+
+    $oResponse->nType         = 2;
+    $oResponse->nCount        = count($_SESSION['Vergleichsliste']->oArtikel_arr);
+    $oResponse->cTitle        = utf8_encode(Shop::Lang()->get('compare', 'global'));
+    $oResponse->cNotification = utf8_encode(
+        Shop::Smarty()
+            ->assign('type', empty($error) ? 'info' : 'danger')
+            ->assign('body', empty($error) ? $notice : $error)
+            ->assign('buttons', [
+                (object)['href' => 'vergleichsliste.php', 'fa' => 'fa-tasks', 'title' => Shop::Lang()->get('compare', 'global')],
+                (object)['href' => '#', 'fa' => 'fa fa-arrow-circle-right', 'title' => Shop::Lang()->get('continueShopping', 'checkout'), 'primary' => true, 'dismiss' => 'modal'],
+            ])
+            ->fetch('snippets/notification.tpl')
+    );
+
+    if ($oResponse->nCount > 1) {
+        $oResponse->cNavBadge = utf8_encode(
+            Shop::Smarty()
+                ->assign('Einstellungen', $Einstellungen)
+                ->fetch('layout/header_shop_nav_compare.tpl')
+        );
+
+        $boxes = Boxen::getInstance();
+        $oBox  = $boxes->prepareBox(BOX_VERGLEICHSLISTE, new stdClass());
+        $oResponse->cBoxContainer = utf8_encode(
+            Shop::Smarty()
+                ->assign('Einstellungen', $Einstellungen)
+                ->assign('oBox', $oBox)
+                ->fetch('boxes/box_comparelist.tpl')
+        );
+    } else {
+        $oResponse->cNavBadge     = '';
+        $oResponse->cBoxContainer = '';
+    }
+
+    $objResponse->script('this.response = ' . json_encode($oResponse) . ';');
 
     return $objResponse;
 }

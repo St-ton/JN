@@ -53,7 +53,7 @@
                 </fieldset>
                 <fieldset>
                     <input type="hidden" name="lieferdaten" value="1" />
-                    <input type="submit" value="{lang key="continueOrder" section="account data"}" class="submit btn btn-primary btn-lg pull-right{if $kLieferadresse > 0} hidden-initial{/if}" />
+                    <input type="submit" value="{lang key="continueOrder" section="account data"}" class="submit btn btn-primary btn-lg pull-right{if $kLieferadresse != 0} hidden-initial{/if}" />
                 </fieldset>
             </form>
             

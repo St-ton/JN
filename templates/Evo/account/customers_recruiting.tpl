@@ -1,15 +1,7 @@
 <h1 class="text-center">{lang key="kwkName" section="login"}</h1>
-{if $cHinweis}
-    <div class="alert alert-info">{$cHinweis}</div>
-{/if}
-{if $cFehler}
+{if !empty($cFehler)}
     <div class="alert alert-danger">{$cFehler}</div>
 {/if}
-{*
-{if !$cHinweis && !$cFehler}
-  <div class="alert alert-info">{lang key="kwkNameDesc" section="login"}</div>
-{/if}
-*}
 {block name="customers-recruiting"}
 <form id="kwk" action="{get_static_route id='jtl.php'}" method="post" class="form form-horizontal col-md-6 col-md-offset-3">
     {$jtl_token}

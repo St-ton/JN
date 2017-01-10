@@ -555,10 +555,10 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
             (isset($_POST['neuesPasswort2']) && !isset($_POST['neuesPasswort1'])) ||
             $_POST['neuesPasswort1'] !== $_POST['neuesPasswort2']
         ) {
-            $cHinweis .= Shop::Lang()->get('changepasswordPassesNotEqual', 'login');
+            $cFehler .= Shop::Lang()->get('changepasswordPassesNotEqual', 'login');
         }
         if (isset($_POST['neuesPasswort1']) && strlen($_POST['neuesPasswort1']) < $Einstellungen['kunden']['kundenregistrierung_passwortlaenge']) {
-            $cHinweis .= Shop::Lang()->get('changepasswordPassTooShort', 'login') . ' ' . lang_passwortlaenge($Einstellungen['kunden']['kundenregistrierung_passwortlaenge']);
+            $cFehler .= Shop::Lang()->get('changepasswordPassTooShort', 'login') . ' ' . lang_passwortlaenge($Einstellungen['kunden']['kundenregistrierung_passwortlaenge']);
         }
         if (isset($_POST['neuesPasswort1']) && isset($_POST['neuesPasswort2']) &&
             $_POST['neuesPasswort1'] && $_POST['neuesPasswort1'] === $_POST['neuesPasswort2'] &&
@@ -573,7 +573,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
                     $step = 'mein Konto';
                     $cHinweis .= Shop::Lang()->get('changepasswordSuccess', 'login');
                 } else {
-                    $cHinweis .= Shop::Lang()->get('changepasswordWrongPass', 'login');
+                    $cFehler .= Shop::Lang()->get('changepasswordWrongPass', 'login');
                 }
             }
         }

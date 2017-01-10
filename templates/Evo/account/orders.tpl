@@ -10,8 +10,7 @@
                 {/if}
             {/foreach}
 
-            {include file='snippets/pagination.tpl' oPagination=$orderPagination cThisUrl='jtl.php'
-                     cParam_arr=['bestellungen'=>1] parts=['pagi', 'label']}
+            {include file='snippets/pagination.tpl' oPagination=$orderPagination cThisUrl='jtl.php' cParam_arr=['bestellungen'=>1] parts=['pagi', 'label']}
 
             <table class="table table-striped">
                 <thead class="hidden-xs">
@@ -50,5 +49,7 @@
                 </tbody>
             </table>
         {/block}
+    {else}
+        <div class="alert alert-info">{lang key='noEntriesAvailable' section='global'}</div>
     {/if}
 {/block}

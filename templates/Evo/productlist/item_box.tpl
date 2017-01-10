@@ -19,7 +19,7 @@
     {/block}
     {block name="productlist-image-caption"}
         <div class="caption">
-            <h4 class="title"><a href="{$Artikel->cURL}">{$Artikel->cName}</a></h4>
+            <h4 class="title"><a href="{$Artikel->cURL}">{$Artikel->cKurzbezeichnung}</a></h4>
             {if $Einstellungen.bewertung.bewertung_anzeigen === 'Y' && $Artikel->fDurchschnittsBewertung > 0}
                 {include file='productdetails/rating.tpl' stars=$Artikel->fDurchschnittsBewertung}<br>
             {/if}

@@ -391,7 +391,7 @@ class MediaImage implements IMedia
     private function parse($request)
     {
         if (!is_string($request) || strlen($request) === 0) {
-            return;
+            return null;
         }
 
         if ($request[0] === '/') {
@@ -402,7 +402,7 @@ class MediaImage implements IMedia
             return array_intersect_key($matches, array_flip(array_filter(array_keys($matches), 'is_string')));
         }
 
-        return;
+        return null;
     }
 
     /**
@@ -449,10 +449,8 @@ class MediaImage implements IMedia
             default:
                 break;
         }
-        if (!empty($imageCount)) {
-            return true;
-        } else {
-            return false;
-        }
+        
+        return (!empty($imageCount));
+        
     }
 }

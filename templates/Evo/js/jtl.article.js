@@ -403,7 +403,7 @@
             var $container = $('#product-offer');
             $('.base-price .value', $container).html(fmtVPEPrice);
             $.each(fmtVPEPrices, function(index, value){
-                $('.bulk-price-' + index + ' .bulk-vpe-price', $container).html(value);
+                $('.bulk-price-' + index + ' .bulk-base-price', $container).html(value);
             });
         },
 

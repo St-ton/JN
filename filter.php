@@ -67,17 +67,6 @@ if ($doSearch) {
         $_SESSION['LetzteKategorie'] = $cParameter_arr['kKategorie'];
         $AktuelleSeite               = 'PRODUKTE';
     }
-    if ($cParameter_arr['kSuchanfrage'] > 0) {
-        $oSuchanfrage = Shop::DB()->select('tsuchanfrage', 'kSuchanfrage', (int)$cParameter_arr['kSuchanfrage'], null, null, null, null, false, 'cSuche');
-        if (isset($oSuchanfrage->cSuche) && strlen($oSuchanfrage->cSuche) > 0) {
-            $NaviFilter->Suche->kSuchanfrage = $cParameter_arr['kSuchanfrage'];
-            $NaviFilter->Suche->cSuche       = $oSuchanfrage->cSuche;
-        }
-    }
-    // Suchcache beachten / erstellen
-    if (isset($NaviFilter->Suche->cSuche) && strlen($NaviFilter->Suche->cSuche) > 0) {
-        $NaviFilter->Suche->kSuchCache = bearbeiteSuchCache($NaviFilter);
-    }
     if ($NaviFilter->hasCategory()) {
         $kKategorie        = $NaviFilter->getActiveState()->getValue();
         $AktuelleKategorie = new Kategorie($kKategorie);

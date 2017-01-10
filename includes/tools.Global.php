@@ -2364,8 +2364,6 @@ function gibVersandZuschlag($versandart, $cISO, $plz)
  */
 function berechneVersandpreis($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
 {
-    /** @var array('Warenkorb' => Warenkorb) $_SESSION */
-    $fSteuersatz = 0.0;
     if (!isset($oZusatzArtikel->fAnzahl)) {
         if (!isset($oZusatzArtikel)) {
             $oZusatzArtikel = new stdClass();

@@ -223,7 +223,7 @@ class Hersteller
                     AND tseo.cKey = 'kHersteller'
                     AND tseo.kSprache = {$kSprache}
                 {$sqlWhere}
-                ORDER BY thersteller.cName", 2
+                ORDER BY thersteller.nSortNr, thersteller.cName", 2
         );
         $results = [];
         if (is_array($objs)) {

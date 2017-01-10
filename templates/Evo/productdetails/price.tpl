@@ -92,8 +92,8 @@
                 
                 {* --- Staffelpreise? --- *}
                 {if !empty($Artikel->staffelPreis_arr)}
-                    <div class="differential-price">
-                        {block name="detail-differential-price"}
+                    <div class="bulk-price">
+                        {block name="detail-bulk-price"}
                         <table class="table table-condensed table-hover">
                             <thead>
                                 <tr>
@@ -103,19 +103,19 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                {foreach $Artikel->staffelPreis_arr as $differentialPrice}
-                                    {if $differentialPrice.nAnzahl > 0}
-                                        <tr class="differential-price-{$differentialPrice.nAnzahl}">
-                                            <td class="text-right">{$differentialPrice.nAnzahl}</td>
-                                            <td class="text-right differential-price">{$differentialPrice.cPreisLocalized[$NettoPreise]}</td>
-                                            {if !empty($differentialPrice.cBasePriceLocalized)}<td class="text-muted differential-vpe-price">{$differentialPrice.cBasePriceLocalized[$NettoPreise]}</td>{/if}
+                                {foreach $Artikel->staffelPreis_arr as $bulkPrice}
+                                    {if $bulkPrice.nAnzahl > 0}
+                                        <tr class="bulk-price-{$bulkPrice.nAnzahl}">
+                                            <td class="text-right">{$bulkPrice.nAnzahl}</td>
+                                            <td class="text-right bulk-price">{$bulkPrice.cPreisLocalized[$NettoPreise]}</td>
+                                            {if !empty($bulkPrice.cBasePriceLocalized)}<td class="text-muted bulk-vpe-price">{$bulkPrice.cBasePriceLocalized[$NettoPreise]}</td>{/if}
                                         </tr>
                                     {/if}
                                 {/foreach}
                             </tbody>
                         </table>
                         {/block}
-                    </div>{* /differential-price *}
+                    </div>{* /bulk-price *}
                 {/if}
             </div>{* /price-note *}
         {else}{* scope productlist *}

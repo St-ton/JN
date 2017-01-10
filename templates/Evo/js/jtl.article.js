@@ -395,7 +395,7 @@
         setStaffelPrice: function(prices, fmtPrices) {
             var $container = $('#product-offer');
             $.each(fmtPrices, function(index, value){
-                $('.differential-price-' + index + ' .differential-price', $container).html(value);
+                $('.bulk-price-' + index + ' .bulk-price', $container).html(value);
             });
         },
 
@@ -403,7 +403,7 @@
             var $container = $('#product-offer');
             $('.base-price .value', $container).html(fmtVPEPrice);
             $.each(fmtVPEPrices, function(index, value){
-                $('.differential-price-' + index + ' .differential-vpe-price', $container).html(value);
+                $('.bulk-price-' + index + ' .bulk-vpe-price', $container).html(value);
             });
         },
 

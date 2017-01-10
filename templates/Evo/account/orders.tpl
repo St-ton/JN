@@ -50,7 +50,5 @@
                 </tbody>
             </table>
         {/block}
-    {else}
-        KEINE BESTELLUNGEN
     {/if}
 {/block}

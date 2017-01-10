@@ -995,14 +995,15 @@ class Artikel
             } elseif (!empty($this->oKategorie_arr)) {
                 //oKategorie_arr already has all categories for this article in it
                 if (isset($_SESSION['LetzteKategorie'])) {
-                    foreach ($this->oKategorie_arr as $category) {
-                        if ($category->kKategorie == (int)$_SESSION['LetzteKategorie']) {
-                            return (int)$category->kKategorie;
+                    $lastCategoryID = (int)$_SESSION['LetzteKategorie'];
+                    foreach ($this->oKategorie_arr as $categoryID) {
+                        if ($categoryID === $lastCategoryID) {
+                            return $categoryID;
                         }
                     }
                 }
 
-                return $this->oKategorie_arr[0]->kKategorie;
+                return $this->oKategorie_arr[0];
             }
             $categoryFilter = (isset($_SESSION['LetzteKategorie']))
                 ? " AND tkategorieartikel.kKategorie = " . (int)$_SESSION['LetzteKategorie']
@@ -3586,7 +3587,7 @@ class Artikel
         // Kategorie
         if (isset($oArtikelOptionen->nKategorie) && $oArtikelOptionen->nKategorie == 1) {
             $kArtikel             = ($this->kVaterArtikel > 0) ? $this->kVaterArtikel : $this->kArtikel;
-            $this->oKategorie_arr = $this->getCategories($kArtikel, $kSprache, $kKundengruppe);
+            $this->oKategorie_arr = $this->getCategories($kArtikel, $kKundengruppe);
         }
         if (!isset($oArtikelOptionen->nVariationKombi)) {
             $oArtikelOptionen->nVariationKombi = 0;
@@ -3814,11 +3815,10 @@ class Artikel
 
     /**
      * @param int $kArtikel
-     * @param int $kSprache
      * @param int $kKundengruppe
      * @return array
      */
-    private function getCategories($kArtikel = 0, $kSprache = 0, $kKundengruppe = 0)
+    private function getCategories($kArtikel = 0, $kKundengruppe = 0)
     {
         $oKategorie_arr = [];
         $kArtikelKey    = (int)$this->kArtikel;
@@ -3829,23 +3829,21 @@ class Artikel
         if ($kKundengruppe > 0) {
             $kKdgKey = (int)$kKundengruppe;
         }
-        if (!$kSprache) {
-            $oSprache = gibStandardsprache(true);
-            $kSprache = $oSprache->kSprache;
-        }
         $oKat_arr = Shop::DB()->query(
             "SELECT tkategorieartikel.kKategorie
-                  FROM tkategorieartikel
-                  LEFT JOIN tkategoriesichtbarkeit ON tkategoriesichtbarkeit.kKategorie = tkategorieartikel.kKategorie
+                FROM tkategorieartikel
+                LEFT JOIN tkategoriesichtbarkeit 
+                    ON tkategoriesichtbarkeit.kKategorie = tkategorieartikel.kKategorie
                     AND tkategoriesichtbarkeit.kKundengruppe = " . $kKdgKey . "
-                  JOIN tkategorie ON tkategorie.kKategorie = tkategorieartikel.kKategorie
-                  WHERE tkategoriesichtbarkeit.kKategorie IS NULL
+                JOIN tkategorie 
+                    ON tkategorie.kKategorie = tkategorieartikel.kKategorie
+                WHERE tkategoriesichtbarkeit.kKategorie IS NULL
                     AND tkategorieartikel.kArtikel = " . $kArtikelKey, 2
         );
         if (is_array($oKat_arr) && count($oKat_arr) > 0) {
             foreach ($oKat_arr as $oKat) {
-                if (isset($oKat->kKategorie) && $oKat->kKategorie > 0) {
-                    $oKategorie_arr[] = new Kategorie($oKat->kKategorie, (int)$kSprache, $kKdgKey);
+                if (!empty($oKat->kKategorie)) {
+                    $oKategorie_arr[] = (int)$oKat->kKategorie;//new Kategorie($oKat->kKategorie, (int)$kSprache, $kKdgKey);
                 }
             }
         }

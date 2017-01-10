@@ -170,8 +170,10 @@ ifndef('PCLZIP_TEMPORARY_DIR', PFAD_ROOT . PFAD_COMPILEDIR);
 ifndef('IMAGE_PRELOAD_LIMIT', 10);
 //when the shop has up to n categories, all category data will be loaded by KategorieHelper::combinedGetAll()
 //with more then n categories, some db fields will only be selected if the corresponding options are active
-ifndef('CATEGORY_FULL_LOAD_LIMIT', 1000);
+ifndef('CATEGORY_FULL_LOAD_LIMIT', 10000);
 ifndef('CATEGORY_FULL_LOAD_MAX_LEVEL', 3);
+//maximum number of entries in category filter, -1 for no limit
+ifndef('CATEGORY_FILTER_ITEM_LIMIT', -1);
 
 ifndef('UNIFY_CACHE_IDS', false);
 

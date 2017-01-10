@@ -463,6 +463,21 @@
             }
         },
 
+        setStaffelPrice: function(prices, fmtPrices) {
+            var $container = $('#product-offer');
+            $.each(fmtPrices, function(index, value){
+                $('.bulk-price-' + index + ' .bulk-price', $container).html(value);
+            });
+        },
+
+        setVPEPrice: function(fmtVPEPrice, VPEPrices, fmtVPEPrices) {
+            var $container = $('#product-offer');
+            $('.base-price .value', $container).html(fmtVPEPrice);
+            $.each(fmtVPEPrices, function(index, value){
+                $('.bulk-price-' + index + ' .bulk-base-price', $container).html(value);
+            });
+        },
+
         setUnitWeight: function(UnitWeight, newUnitWeight) {
             $('#article-tabs .product-attributes .weight-unit').html(newUnitWeight);
         },

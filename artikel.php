@@ -122,7 +122,7 @@ if (isset($_POST['fragezumprodukt']) && (int)$_POST['fragezumprodukt'] === 1) {
 }
 // url
 $requestURL = baueURL($AktuellerArtikel, URLART_ARTIKEL);
-$sprachURL  = baueSprachURLS($AktuellerArtikel, URLART_ARTIKEL);
+$sprachURL  = $AktuellerArtikel->getLanguageURLs();
 // hole aktuelle Kategorie, falls eine gesetzt
 $kKategorie             = $AktuellerArtikel->gibKategorie();
 $AktuelleKategorie      = new Kategorie($kKategorie);

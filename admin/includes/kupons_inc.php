@@ -304,8 +304,8 @@ function createCouponFromInput()
     if (isset($_POST['kKategorien']) && is_array($_POST['kKategorien']) && count($_POST['kKategorien']) > 0 && !in_array('-1', $_POST['kKategorien'])) {
         $oKupon->cKategorien = StringHandler::createSSK($_POST['kKategorien']);
     }
-    if (isset($_POST['kKunden']) && is_array($_POST['kKunden']) && count($_POST['kKunden']) > 0 && !in_array('-1', $_POST['kKunden'])) {
-        $oKupon->cKunden = StringHandler::createSSK($_POST['kKunden']);
+    if (isset($_POST['cKunden'])) {
+        $oKupon->cKunden = $_POST['cKunden'];
     }
     if (isset($_POST['couponCreation'])) {
         $massCreationCoupon                  = new stdClass();

@@ -288,7 +288,7 @@ function suchanfragenSpeichern($cSuche, $nAnzahlTreffer, $bEchteSuche = false, $
                         $kSuchanfrage = Shop::DB()->insert('tsuchanfrage', $suchanfrage);
                         writeLog(PFAD_LOGFILES . 'suchanfragen.log', print_r($suchanfrage, true), 1);
 
-                        return $kSuchanfrage;
+                        return (int)$kSuchanfrage;
                     }
                 } else {
                     $suchanfrageerfolglos                  = new stdClass();

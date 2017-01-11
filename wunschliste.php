@@ -266,7 +266,7 @@ if (verifyGPCDataInteger('error') === 1) {
 }
 $link       = ($cParameter_arr['kLink'] > 0) ? $linkHelper->getPageLink($cParameter_arr['kLink']) : null;
 $requestURL = baueURL($link, URLART_SEITE);
-$sprachURL  = baueSprachURLS($link, URLART_SEITE);
+$sprachURL  = (isset($link->languageURLs)) ? $link->languageURLs : baueSprachURLS($link, URLART_SEITE);
 // Wunschliste aufbauen und cPreis setzen (Artikelanzahl mit eingerechnet)
 if (empty($CWunschliste)) {
     $CWunschliste = bauecPreis(new Wunschliste($kWunschliste));

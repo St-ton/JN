@@ -189,6 +189,11 @@ class Navigationsfilter
     public $searchFilterCompat;
 
     /**
+     * @var string
+     */
+    private $baseURL;
+
+    /**
      * @param array $options
      */
     public function __construct(array $options = null)
@@ -210,6 +215,7 @@ class Navigationsfilter
         $this->customerGroupID = (!isset($_SESSION['Kundengruppe']->kKundengruppe))
             ? (int)Shop::DB()->select('tkundengruppe', 'cStandard', 'Y')->kKundengruppe
             : (int)$_SESSION['Kundengruppe']->kKundengruppe;
+        $this->baseURL         = Shop::getURL() . '/';
 
         $this->initBaseStates();
 
@@ -493,28 +499,24 @@ class Navigationsfilter
             $this->nAnzahlProSeite = (int)$params['nArtikelProSeite'];
         }
         if ($params['kSuchanfrage'] > 0) {
-//            $this->Suche->init($params['kSuchanfrage']);
-//            $this->baseState = $this->Suchanfrage;
-            $oSuchanfrage    = Shop::DB()->select('tsuchanfrage', 'kSuchanfrage', $params['kSuchanfrage']);
+            $oSuchanfrage = Shop::DB()->select('tsuchanfrage', 'kSuchanfrage', $params['kSuchanfrage']);
             if (isset($oSuchanfrage->cSuche) && strlen($oSuchanfrage->cSuche) > 0) {
-//                $this->Suche->init($oSuchanfrage->kSuchanfrage);
-                $this->Suche->cSuche = $oSuchanfrage->cSuche;
+                $this->Suche->cSuche       = $oSuchanfrage->cSuche;
                 $this->Suchanfrage->cSuche = $oSuchanfrage->cSuche;
             }
             // Suchcache beachten / erstellen
             if (!empty($this->Suche->cSuche)) {
                 $this->Suche->kSuchCache = $this->editSearchCache();
-//                Shop::dbg($this->Suche->kSuchCache, false, 'kSuchCache:');
                 $this->Suchanfrage->init($oSuchanfrage->kSuchanfrage);
                 $this->Suchanfrage->kSuchCache = $this->Suche->kSuchCache;
-                $this->baseState         = $this->Suchanfrage;
+                $this->baseState               = $this->Suchanfrage;
             }
         } elseif (strlen($params['cSuche']) > 0) {
             $params['cSuche']    = StringHandler::filterXSS($params['cSuche']);
             $this->Suche->cSuche = $params['cSuche'];
             $kSuchCache          = $this->editSearchCache();
 
-            $oSuchanfrage = Shop::DB()->select(
+            $oSuchanfrage                  = Shop::DB()->select(
                 'tsuchanfrage',
                 'cSuche',
                 Shop::DB()->escape($this->Suche->cSuche),
@@ -525,21 +527,16 @@ class Navigationsfilter
                 false,
                 'kSuchanfrage'
             );
-            $kSuchAnfrage = (isset($oSuchanfrage->kSuchanfrage))
+            $kSuchAnfrage                  = (isset($oSuchanfrage->kSuchanfrage))
                 ? $oSuchanfrage->kSuchanfrage
                 : $params['kSuchanfrage'];
-
-//            Shop::dbg($kSuchAnfrage, false, 'kSuchanfrage:');
-
-            $this->Suche->kSuchCache  = $kSuchCache;
-            $this->Suchanfrage->kSuchCache  = $kSuchCache;
+            $this->Suche->kSuchCache       = $kSuchCache;
+            $this->Suchanfrage->kSuchCache = $kSuchCache;
             $this->Suchanfrage->init($kSuchAnfrage);
             $this->EchteSuche         = new stdClass();
             $this->EchteSuche->cSuche = $params['cSuche'];
-            $this->baseState = $this->Suchanfrage;
+            $this->baseState          = $this->Suchanfrage;
         }
-//        Shop::dbg($params);
-//        Shop::dbg($this->baseState, true);
         $this->nSeite = max(1, verifyGPCDataInteger('seite'));
         foreach ($this->filters as $filter) {
             //auto init custom filters
@@ -844,24 +841,24 @@ class Navigationsfilter
                 //we have a manufacturer filter that doesn't filter anything
                 if ($this->HerstellerFilter->getSeo($this->getLanguageID()) !== null) {
                     http_response_code(301);
-                    header('Location: ' . Shop::getURL() . '/' . $this->HerstellerFilter->getSeo($this->getLanguageID()));
+                    header('Location: ' . $this->baseURL . $this->HerstellerFilter->getSeo($this->getLanguageID()));
                     exit();
                 }
                 //we have a category filter that doesn't filter anything
                 if ($this->KategorieFilter->getSeo($this->getLanguageID()) !== null) {
                     http_response_code(301);
-                    header('Location: ' . Shop::getURL() . '/' . $this->KategorieFilter->getSeo($this->getLanguageID()));
+                    header('Location: ' . $this->baseURL . $this->KategorieFilter->getSeo($this->getLanguageID()));
                     exit();
                 }
             } elseif ($this->hasManufacturer() && $this->hasManufacturerFilter() && $this->Hersteller->getSeo($this->getLanguageID()) !== null) {
                 //we have a manufacturer page with some manufacturer filter
                 http_response_code(301);
-                header('Location: ' . Shop::getURL() . '/' . $this->Hersteller->getSeo($this->getLanguageID()));
+                header('Location: ' . $this->baseURL . $this->Hersteller->getSeo($this->getLanguageID()));
                 exit();
             } elseif ($this->hasCategory() && $this->hasCategoryFilter() && $this->Kategorie->getSeo($this->getLanguageID()) !== null) {
                 //we have a category page with some category filter
                 http_response_code(301);
-                header('Location: ' . Shop::getURL() . '/' . $this->Kategorie->getSeo($this->getLanguageID()));
+                header('Location: ' . $this->baseURL . $this->Kategorie->getSeo($this->getLanguageID()));
                 exit();
             }
         }
@@ -1724,7 +1721,7 @@ class Navigationsfilter
      */
     public function getURL($bSeo = true, $oZusatzFilter = null, $bCanonical = false, $debug = false)
     {
-        $baseURL         = Shop::getURL() . '/';
+        $baseURL         = $this->baseURL;
         $urlParams       = [];
         $extraFilter     = $this->convertExtraFilter($oZusatzFilter);
         $hasQuestionMark = false;
@@ -2527,7 +2524,7 @@ class Navigationsfilter
             // Shop2 Suche - mehr als 3 Suchwörter *
             if (count($cSuch_arr) > 3) {
                 $cSQL .= " 1 ";
-                if (Shop::$kSprache > 0 && !standardspracheAktiv()) {
+                if ($this->getLanguageID() > 0 && !standardspracheAktiv()) {
                     $cSQL .= " FROM tartikelsprache
                                     LEFT JOIN tartikel 
                                         ON tartikelsprache.kArtikel = tartikel.kArtikel";
@@ -2816,7 +2813,7 @@ class Navigationsfilter
                     $cSQL .= ")";
                 }
 
-                if (Shop::$kSprache > 0 && !standardspracheAktiv()) {
+                if ($this->getLanguageID() > 0 && !standardspracheAktiv()) {
                     $cSQL .= " FROM tartikelsprache
                                 LEFT JOIN tartikel 
                                     ON tartikelsprache.kArtikel = tartikel.kArtikel";
@@ -2824,7 +2821,7 @@ class Navigationsfilter
                     $cSQL .= " FROM tartikel ";
                 }
                 $cSQL .= " WHERE ";
-                if (Shop::$kSprache > 0 && !standardspracheAktiv()) {
+                if ($this->getLanguageID() > 0 && !standardspracheAktiv()) {
                     $cSQL .= " tartikelsprache.kSprache = " . $this->getLanguageID() . " AND ";
                 }
                 foreach ($cSuchspalten_arr as $i => $cSuchspalten) {

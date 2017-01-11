@@ -8,12 +8,13 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'suche_inc.php';
 
 $oAccount->permission('SETTINGS_ARTICLEOVERVIEW_VIEW', true, true);
 /** @global JTLSmarty $smarty */
-$kSektion      = CONF_ARTIKELUEBERSICHT;
-$Einstellungen = Shop::getSettings(array($kSektion));
-$step          = 'einstellungen bearbeiten';
-$cHinweis      = '';
-$cFehler       = '';
-$Conf          = array();
+$kSektion         = CONF_ARTIKELUEBERSICHT;
+$Einstellungen    = Shop::getSettings(array($kSektion));
+$standardwaehrung = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
+$step             = 'einstellungen bearbeiten';
+$cHinweis         = '';
+$cFehler          = '';
+$Conf             = array();
 
 if (isset($_POST['einstellungen_bearbeiten']) && (int)$_POST['einstellungen_bearbeiten'] === 1 && $kSektion > 0 && validateToken()) {
     if ($_POST['suche_fulltext'] === 'Y') {

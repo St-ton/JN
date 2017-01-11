@@ -608,10 +608,10 @@ function getCustomerList($searchString, $kKundeSelected_arr)
         $oKunde_arr = Shop::DB()->query("
             SELECT kKunde
                 FROM tkunde
-                WHERE cVorname LIKE '%" . Shop()::DB()->escape($searchString) . "%' OR
-                      cMail LIKE '%" . Shop()::DB()->escape($searchString) . "%' OR
-                      cOrt LIKE '%" . Shop()::DB()->escape($searchString) . "%' OR
-                      cPLZ LIKE '%" . Shop()::DB()->escape($searchString) . "%'
+                WHERE cVorname LIKE '%" . Shop::DB()->escape($searchString) . "%' OR
+                      cMail LIKE '%" . Shop::DB()->escape($searchString) . "%' OR
+                      cOrt LIKE '%" . Shop::DB()->escape($searchString) . "%' OR
+                      cPLZ LIKE '%" . Shop::DB()->escape($searchString) . "%'
                 LIMIT 100
             ", 2);
         $listTitle  = 'Gefundene Kunden: ' . (count($oKunde_arr) >= 100 ? '>= ' : '') . count($oKunde_arr);

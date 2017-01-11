@@ -2161,19 +2161,40 @@ function bearbeiteSuchCacheFulltext($oSuchCache, $cSuchspalten_arr, $cSuch_arr, 
     $nLimit = (int)$nLimit;
 
     if ($oSuchCache->kSuchCache > 0) {
-        $cArtikelSpalten_arr = array_filter($cSuchspalten_arr)
-        $match = "MATCH (" . implode(', ', $cSuchspalten_arr) . ") AGAINST ('" . implode(' ', $cSuch_arr) . "' IN NATURAL LANGUAGE MODE)";
-        $cSQL  = "SELECT {$oSuchCache->kSuchCache} AS kSuchCache, IF(tartikel.kVaterArtikel > 0, tartikel.kVaterArtikel, tartikel.kArtikel) AS kArtikelTMP, MAX(15 - $match) * 10 AS score ";
+        $cArtikelSpalten_arr = array_map(function ($item) {
+            $item_arr = explode('.', $item, 2);
+
+            return 'tartikel.' . $item_arr[1];
+        }, $cSuchspalten_arr);
+
+        $cSprachSpalten_arr = array_filter($cSuchspalten_arr, function ($item) {
+            return preg_match('/tartikelsprache\.(.*)/', $item) ? true : false;
+        });
+
+        $match = "MATCH (" . implode(', ', $cArtikelSpalten_arr) . ") AGAINST ('" . implode(' ', $cSuch_arr) . "' IN NATURAL LANGUAGE MODE)";
+        $cSQL  = "SELECT {$oSuchCache->kSuchCache} AS kSuchCache,
+                    IF(tartikel.kVaterArtikel > 0, tartikel.kVaterArtikel, tartikel.kArtikel) AS kArtikelTMP,
+                    $match AS score
+                    FROM tartikel
+                    WHERE $match ";
 
         if (Shop::$kSprache > 0 && !standardspracheAktiv()) {
-            $cSQL .= "FROM tartikel INNER JOIN tartikelsprache ON tartikelsprache.kArtikel = tartikel.kArtikel ";
-        } else {
-            $cSQL .= "FROM tartikel ";
+            $match  = "MATCH (" . implode(', ', $cSprachSpalten_arr) . ") AGAINST ('" . implode(' ', $cSuch_arr) . "' IN NATURAL LANGUAGE MODE)";
+            $cSQL  .= "UNION DISTINCT
+                SELECT {$oSuchCache->kSuchCache} AS kSuchCache,
+                    IF(tartikel.kVaterArtikel > 0, tartikel.kVaterArtikel, tartikel.kArtikel) AS kArtikelTMP,
+                    $match AS score
+                    FROM tartikel
+                    INNER JOIN tartikelsprache ON tartikelsprache.kArtikel = tartikel.kArtikel
+                    WHERE $match ";
         }
 
-        $cSQL = "INSERT INTO tsuchcachetreffer $cSQL WHERE $match GROUP BY kSuchCache, kArtikelTMP" . ($nLimit > 0 ? " LIMIT $nLimit" : '');
+        $cISQL = "INSERT INTO tsuchcachetreffer
+                    SELECT kSuchCache, kArtikelTMP, ROUND(MAX(15 - score) * 10)
+                    FROM ($cSQL) AS i
+                    GROUP BY kSuchCache, kArtikelTMP" . ($nLimit > 0 ? " LIMIT $nLimit" : '');
 
-        Shop::DB()->query($cSQL, 3);
+        Shop::DB()->query($cISQL, 3);
     }
 
     return $oSuchCache->kSuchCache;

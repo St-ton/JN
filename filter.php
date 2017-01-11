@@ -34,9 +34,9 @@ $nArtikelProSeite_arr   = [5, 10, 25, 50, 100];
 $doSearch               = true;
 $suchanfrage            = '';
 $AktuelleKategorie      = new stdClass();
+$oSuchergebnisse        = new stdClass();
 $AufgeklappteKategorien = new stdClass();
 $startKat               = new Kategorie();
-$oSuchergebnisse        = new stdClass();
 $startKat->kKategorie   = 0;
 if (strlen($cParameter_arr['cSuche']) > 0 || (isset($_GET['qs']) && strlen($_GET['qs']) === 0)) {
     $nMindestzeichen = ((int)$Einstellungen['artikeluebersicht']['suche_min_zeichen'] > 0)
@@ -89,7 +89,6 @@ if ($doSearch) {
     // Erweiterte Darstellung Artikelübersicht
     gibErweiterteDarstellung($Einstellungen, $NaviFilter, $cParameter_arr['nDarstellung']);
     $oSuchergebnisse = $NaviFilter->getProducts(true, $AktuelleKategorie);
-    suchanfragenSpeichern($NaviFilter->Suche->cSuche, $oSuchergebnisse->GesamtanzahlArtikel);
     $NaviFilter->Suche->kSuchanfrage = gibSuchanfrageKey($NaviFilter->Suche->cSuche, Shop::$kSprache);
     // Umleiten falls SEO keine Artikel ergibt
     doMainwordRedirect($NaviFilter, count($oSuchergebnisse->Artikel->elemente), true);
@@ -105,13 +104,17 @@ if ($doSearch) {
         $minsells    = (isset($Einstellungen['global']['global_bestseller_minanzahl'])) ?
             (int)$Einstellungen['global']['global_bestseller_minanzahl'] :
             10;
-        $bestsellers = Bestseller::buildBestsellers($products, $_SESSION['Kundengruppe']->kKundengruppe,
-            $_SESSION['Kundengruppe']->darfArtikelKategorienSehen, false, $limit, $minsells);
+        $bestsellers = Bestseller::buildBestsellers(
+            $products,
+            $_SESSION['Kundengruppe']->kKundengruppe,
+            $_SESSION['Kundengruppe']->darfArtikelKategorienSehen,
+            false,
+            $limit,
+            $minsells
+        );
         Bestseller::ignoreProducts($oSuchergebnisse->Artikel->elemente, $bestsellers);
         $smarty->assign('oBestseller_arr', $bestsellers);
     }
-
-//    $oSuchergebnisse = $NaviFilter->setFilterOptions($oSuchergebnisse, $AktuelleKategorie);
     if (verifyGPCDataInteger('zahl') > 0) {
         $_SESSION['ArtikelProSeite'] = verifyGPCDataInteger('zahl');
         setFsession(0, 0, $_SESSION['ArtikelProSeite']);
@@ -148,11 +151,7 @@ if ($doSearch) {
             $oSuchergebnisse->SucheErfolglos = 1;
         }
     }
-    $NaviFilter->createUnsetFilterURLs(true, $oSuchergebnisse);
 }
-// Header bauen
-$oSuchergebnisse->SuchausdruckWrite = $NaviFilter->getHeader();
-
 // Mainword NaviBilder
 $oNavigationsinfo           = new stdClass();
 $oNavigationsinfo->cName    = '';
@@ -226,7 +225,7 @@ if ($NaviFilter->Kategorie->isInitialized()) {
         $NaviFilter->cBrotNaviName, $NaviFilter->getURL(true, null));
 }
 // Canonical
-if (strpos(basename($NaviFilter->getURL(true, null)), '.php') === false || !SHOP_SEO) {
+if (strpos(basename($NaviFilter->getURL(true, null)), '.php') === false) {
     $cSeite = '';
     if (isset($oSuchergebnisse->Seitenzahlen->AktuelleSeite) && $oSuchergebnisse->Seitenzahlen->AktuelleSeite > 1) {
         $cSeite = SEP_SEITE . $oSuchergebnisse->Seitenzahlen->AktuelleSeite;
@@ -284,8 +283,6 @@ $smarty->assign(
         $AktuelleKategorie
     )
 );
-//Shop::dbg($NaviFilter->getActiveFilters2(), true, 'active:');
-//Shop::dbg($NaviFilter->getFilterValue('FilterFelixFilter'), true, '$NaviFilter:');
 executeHook(HOOK_FILTER_ENDE);
 $smarty->display('productlist/index.tpl');
 

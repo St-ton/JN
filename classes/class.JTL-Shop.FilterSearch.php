@@ -37,6 +37,16 @@ class FilterSearch extends AbstractFilter implements IFilter
     public $urlParamSEO = null;
 
     /**
+     * @var int
+     */
+    public $kSuchCache = 0;
+
+    /**
+     * @var string
+     */
+    public $Fehler;
+
+    /**
      * @param int $id
      * @return $this
      */
@@ -62,12 +72,13 @@ class FilterSearch extends AbstractFilter implements IFilter
     public function setSeo($languages)
     {
         $oSeo_obj = Shop::DB()->query("
-                SELECT tseo.cSeo, tseo.kSprache, tsuchanfrage.cSuche
-                    FROM tseo
-                    LEFT JOIN tsuchanfrage
-                        ON tsuchanfrage.kSuchanfrage = tseo.kKey
-                        AND tsuchanfrage.kSprache = tseo.kSprache
-                    WHERE cKey = 'kSuchanfrage' AND kKey = " . $this->getValue(), 1
+            SELECT tseo.cSeo, tseo.kSprache, tsuchanfrage.cSuche
+                FROM tseo
+                LEFT JOIN tsuchanfrage
+                    ON tsuchanfrage.kSuchanfrage = tseo.kKey
+                    AND tsuchanfrage.kSprache = tseo.kSprache
+                WHERE cKey = 'kSuchanfrage' 
+                    AND kKey = " . $this->getValue(), 1
         );
         foreach ($languages as $language) {
             $this->cSeo[$language->kSprache] = '';
@@ -131,7 +142,10 @@ class FilterSearch extends AbstractFilter implements IFilter
             }
         } elseif (isset($searchFilter->kSuchCache)) {
             $kSucheCache_arr[] = (int)$searchFilter->kSuchCache;
-            $count = 1;
+            $count             = 1;
+        } elseif (($value = $searchFilter->getValue()) > 0) {
+            $kSucheCache_arr = [$value];
+            $count           = 1;
         }
         $join = new FilterJoin();
         $join->setType('JOIN')

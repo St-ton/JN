@@ -198,6 +198,20 @@ class Navigationsfilter
      */
     public function __construct(array $options = null)
     {
+        $urls                          = new stdClass();
+        $urls->cAllePreisspannen       = '';
+        $urls->cAlleBewertungen        = '';
+        $urls->cAlleTags               = '';
+        $urls->cAlleSuchspecials       = '';
+        $urls->cAlleErscheinungsdatums = '';
+        $urls->cAlleKategorien         = '';
+        $urls->cAlleHersteller         = '';
+        $urls->cAlleMerkmale           = [];
+        $urls->cAlleMerkmalWerte       = [];
+        $urls->cAlleSuchFilter         = [];
+        $urls->cNoFilter               = null;
+
+        $this->URL             = $urls;
         $this->oSprache_arr    = (empty($options['languages']))
             ? Shop::Lang()->getLangArray()
             : $options['languages'];
@@ -218,21 +232,6 @@ class Navigationsfilter
         $this->baseURL         = Shop::getURL() . '/';
 
         $this->initBaseStates();
-
-        $urls                          = new stdClass();
-        $urls->cAllePreisspannen       = '';
-        $urls->cAlleBewertungen        = '';
-        $urls->cAlleTags               = '';
-        $urls->cAlleSuchspecials       = '';
-        $urls->cAlleErscheinungsdatums = '';
-        $urls->cAlleKategorien         = '';
-        $urls->cAlleHersteller         = '';
-        $urls->cAlleMerkmale           = [];
-        $urls->cAlleMerkmalWerte       = [];
-        $urls->cAlleSuchFilter         = [];
-        $urls->cNoFilter               = null;
-
-        $this->URL = $urls;
     }
 
     /**
@@ -501,14 +500,14 @@ class Navigationsfilter
         if ($params['kSuchanfrage'] > 0) {
             $oSuchanfrage = Shop::DB()->select('tsuchanfrage', 'kSuchanfrage', $params['kSuchanfrage']);
             if (isset($oSuchanfrage->cSuche) && strlen($oSuchanfrage->cSuche) > 0) {
-                $this->Suche->cSuche       = $oSuchanfrage->cSuche;
-                $this->Suchanfrage->cSuche = $oSuchanfrage->cSuche;
+                $this->Suche->cSuche = $oSuchanfrage->cSuche;
             }
             // Suchcache beachten / erstellen
             if (!empty($this->Suche->cSuche)) {
                 $this->Suche->kSuchCache = $this->editSearchCache();
                 $this->Suchanfrage->init($oSuchanfrage->kSuchanfrage);
                 $this->Suchanfrage->kSuchCache = $this->Suche->kSuchCache;
+                $this->Suchanfrage->cSuche     = $this->Suche->cSuche;
                 $this->baseState               = $this->Suchanfrage;
             }
         } elseif (strlen($params['cSuche']) > 0) {
@@ -528,14 +527,15 @@ class Navigationsfilter
                 'kSuchanfrage'
             );
             $kSuchAnfrage                  = (isset($oSuchanfrage->kSuchanfrage))
-                ? $oSuchanfrage->kSuchanfrage
+                ? (int)$oSuchanfrage->kSuchanfrage
                 : $params['kSuchanfrage'];
             $this->Suche->kSuchCache       = $kSuchCache;
             $this->Suchanfrage->kSuchCache = $kSuchCache;
             $this->Suchanfrage->init($kSuchAnfrage);
-            $this->EchteSuche         = new stdClass();
-            $this->EchteSuche->cSuche = $params['cSuche'];
-            $this->baseState          = $this->Suchanfrage;
+            $this->Suchanfrage->cSuche = $params['cSuche'];
+            $this->EchteSuche          = new stdClass();
+            $this->EchteSuche->cSuche  = $params['cSuche'];
+            $this->baseState           = $this->Suchanfrage;
         }
         $this->nSeite = max(1, verifyGPCDataInteger('seite'));
         foreach ($this->filters as $filter) {

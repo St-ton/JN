@@ -558,7 +558,7 @@ class PayPalPlus extends PaymentMethod
             $paymentId = $this->getCache('paymentId');
             $payerId   = $this->getCache('payerId');
 
-            $helper = new BestellungHelper($order);
+            $helper = new WarenkorbHelper();
             $basket = PayPalHelper::getBasket($helper);
 
             $apiContext      = $this->getContext();

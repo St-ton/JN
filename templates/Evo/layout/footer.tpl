@@ -31,11 +31,12 @@
                 <div class="container-block clearfix">
             {/if}
 
+            {block name="footer-boxes"}
             {load_boxes_raw type='bottom' assign='arrBoxBottom' array=true}
             {if isset($arrBoxBottom) && count($arrBoxBottom) > 0}
                 <div class="row" id="footer-boxes">
                     {foreach name=bottomBoxes from=$arrBoxBottom item=box}
-                        <div class="col-xs-6 col-md-3">
+                        <div class="{block name="footer-boxes-class"}col-xs-6 col-md-3{/block}">
                             {if isset($box.obj) && isset($box.tpl)}
                                 {if $smarty.foreach.bottomBoxes.iteration < 10}
                                     {assign var=oBox value=$box.obj}
@@ -46,6 +47,7 @@
                     {/foreach}
                 </div>
             {/if}
+            {/block}
 
             {block name="footer-additional"}
             {if $Einstellungen.template.footer.socialmedia_footer === 'Y' || $Einstellungen.template.footer.newsletter_footer === 'Y'}

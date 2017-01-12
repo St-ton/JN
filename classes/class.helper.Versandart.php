@@ -162,7 +162,7 @@ class VersandartHelper
      */
     public static function getPossibleShippingMethods($lieferland, $plz, $versandklassen, $kKundengruppe)
     {
-        $steuerSatz               = null;
+        $kSteuerklasse            = $_SESSION['Warenkorb']->gibVersandkostenSteuerklasse();
         $moeglicheVersandarten    = [];
         $minVersand               = 10000;
         $cISO                     = $lieferland;
@@ -184,13 +184,9 @@ class VersandartHelper
         );
         $cnt             = count($versandarten);
         $netPricesActive = $_SESSION['Kundengruppe']->nNettoPreise === '1';
-        // Steuersatz nur benötigt, wenn Nettokunde
-        /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
-        if ($netPricesActive === true) {
-            $steuerDaten = Shop::DB()->select('tsteuersatz', 'kSteuerklasse', (int)$_SESSION['Warenkorb']->gibVersandkostenSteuerklasse());
-            $steuerSatz  = $steuerDaten->fSteuersatz;
-        }
+
         for ($i = 0; $i < $cnt; $i++) {
+            $bSteuerPos                  = $versandarten[$i]->eSteuer === 'netto' ? false : true;
             $versandarten[$i]->Zuschlag  = gibVersandZuschlag($versandarten[$i], $cISO, $plz);
             $versandarten[$i]->fEndpreis = berechneVersandpreis($versandarten[$i], $cISO, null);
             if ($versandarten[$i]->fEndpreis == -1) {
@@ -198,10 +194,18 @@ class VersandartHelper
                 continue;
             }
             if ($netPricesActive === true) {
-                $shippingCosts = berechneNetto(floatval($versandarten[$i]->fEndpreis), $steuerSatz);
+                if ($bSteuerPos) {
+                    $shippingCosts = $versandarten[$i]->fEndpreis / (100 + gibUst($kSteuerklasse)) * 100.0;
+                } else {
+                    $shippingCosts = round($versandarten[$i]->fEndpreis, 2);
+                }
                 $vatNote       = ' ' . Shop::Lang()->get('plus', 'productDetails') . ' ' . Shop::Lang()->get('vat', 'productDetails');
             } else {
-                $shippingCosts = $versandarten[$i]->fEndpreis;
+                if ($bSteuerPos) {
+                    $shippingCosts = $versandarten[$i]->fEndpreis;
+                } else {
+                    $shippingCosts = round($versandarten[$i]->fEndpreis * (100 + gibUst($kSteuerklasse)) / 100, 2);
+                }
             }
             //posname lokalisiert ablegen
             $versandarten[$i]->angezeigterName           = [];

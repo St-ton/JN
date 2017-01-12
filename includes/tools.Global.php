@@ -2368,8 +2368,6 @@ function gibVersandZuschlag($versandart, $cISO, $plz)
  */
 function berechneVersandpreis($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
 {
-    /** @var array('Warenkorb' => Warenkorb) $_SESSION */
-    $fSteuersatz = 0.0;
     if (!isset($oZusatzArtikel->fAnzahl)) {
         if (!isset($oZusatzArtikel)) {
             $oZusatzArtikel = new stdClass();
@@ -2383,7 +2381,7 @@ function berechneVersandpreis($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
     $preis             = 0;
     switch ($versandberechnung->cModulId) {
         case 'vm_versandkosten_pauschale_jtl':
-            $preis = $versandart->fPreis * ((100 + $fSteuersatz) / 100);
+            $preis = $versandart->fPreis;
             break;
 
         case 'vm_versandberechnung_gewicht_jtl':
@@ -2397,7 +2395,7 @@ function berechneVersandpreis($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
                   ORDER BY fBis ASC", 1
             );
             if (isset($versand->kVersandartStaffel)) {
-                $preis = $versand->fPreis * ((100 + $fSteuersatz) / 100);
+                $preis = $versand->fPreis;
             } else {
                 return -1;
             }
@@ -2414,7 +2412,7 @@ function berechneVersandpreis($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
                     ORDER BY fBis ASC", 1
             );
             if (isset($versand->kVersandartStaffel)) {
-                $preis = $versand->fPreis * ((100 + $fSteuersatz) / 100);
+                $preis = $versand->fPreis;
             } else {
                 return -1;
             }
@@ -2435,7 +2433,7 @@ function berechneVersandpreis($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
                     ORDER BY fBis ASC", 1
             );
             if (isset($versand->kVersandartStaffel)) {
-                $preis = $versand->fPreis * ((100 + $fSteuersatz) / 100);
+                $preis = $versand->fPreis;
             } else {
                 return -1;
             }

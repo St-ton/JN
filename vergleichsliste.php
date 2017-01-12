@@ -16,7 +16,7 @@ loeseHttps();
 
 if (isset($Link)) {
     $requestURL = baueURL($Link, URLART_SEITE);
-    $sprachURL  = baueSprachURLS($Link, URLART_SEITE);
+    $sprachURL  = (isset($Link->languageURLs)) ? $Link->languageURLs : baueSprachURLS($Link, URLART_SEITE);
 } else {
     $sprachURL  = null;
     $requestURL = null;

@@ -376,7 +376,7 @@ if('POST'==oRequest.method){oRequest.applyRequestHeaders=function(){this.setComm
 xajax.request=function(){var numArgs=arguments.length;if(0==numArgs)
 return false;var oRequest={}
 if(1 < numArgs)
-oRequest=arguments[1];oRequest.functionName=arguments[0];var xx=xajax;xx.initializeRequest(oRequest);xx.processParameters(oRequest);while(0 < oRequest.requestRetry){try{--oRequest.requestRetry;xx.prepareRequest(oRequest);return xx.submitRequest(oRequest);}catch(e){xajax.callback.execute(
+oRequest=arguments[1];oRequest.functionName=arguments[0];var xx=xajax;xx.initializeRequest(oRequest);xx.processParameters(oRequest);while(0 < oRequest.requestRetry){try{--oRequest.requestRetry;xx.prepareRequest(oRequest);xx.submitRequest(oRequest);return oRequest;}catch(e){xajax.callback.execute(
 [xajax.callback.global,oRequest.callback],
 'onFailure',oRequest);if(0==oRequest.requestRetry)
 throw e;}
@@ -393,7 +393,7 @@ throw e;}
 }
 xajax.submitRequest=function(oRequest){oRequest.status.onRequest();var xcb=xajax.callback;var gcb=xcb.global;var lcb=oRequest.callback;xcb.execute([gcb,lcb],'onResponseDelay',oRequest);xcb.execute([gcb,lcb],'onExpiration',oRequest);xcb.execute([gcb,lcb],'onRequest',oRequest);oRequest.open();oRequest.applyRequestHeaders();oRequest.cursor.onWaiting();oRequest.status.onWaiting();xajax._internalSend(oRequest);return oRequest.finishRequest();}
 xajax._internalSend=function(oRequest){oRequest.request.send(oRequest.requestData);}
-xajax.abortRequest=function(oRequest){oRequest.aborted=true;oRequest.request.abort();xajax.completeResponse(oRequest);}
+xajax.abortRequest=function(oRequest){if (oRequest && oRequest.request) {oRequest.aborted=true;oRequest.request.abort();xajax.completeResponse(oRequest);}}
 xajax.responseReceived=function(oRequest){var xx=xajax;var xcb=xx.callback;var gcb=xcb.global;var lcb=oRequest.callback;if(oRequest.aborted)
 return;xcb.clearTimer([gcb,lcb],'onExpiration');xcb.clearTimer([gcb,lcb],'onResponseDelay');xcb.execute([gcb,lcb],'beforeResponseProcessing',oRequest);var fProc=xx.getResponseProcessor(oRequest);if('undefined'==typeof fProc){xcb.execute([gcb,lcb],'onFailure',oRequest);xx.completeResponse(oRequest);return;}
 return fProc(oRequest);}

@@ -796,7 +796,7 @@ class LinkHelper
                     LEFT JOIN tseo
                         ON tseo.cKey = 'kLink'
                         AND tseo.kKey = " . $kLink . "
-                    JOIN tsprache
+                    LEFT JOIN tsprache
 						ON tsprache.kSprache = tseo.kSprache
                     WHERE tlink.bIsActive = 1 AND tlink.kLink = " . $kLink .
                         $loginSichtbarkeit . "
@@ -809,6 +809,11 @@ class LinkHelper
             if (!empty($links)) {
                 //collect language URLs
                 foreach ($links as $item) {
+                    if ($item->kSprache === null && $item->cISO === null) {
+                        //there may be no entries in tseo if there is only one active language
+                        $item->kSprache = Shop::getLanguage();
+                        $item->cISO     = Shop::getLanguage(true);
+                    }
                     $item->nHTTPRedirectCode = 0;
                     $item->bHideContent      = false;
                     $urls[$item->cISO] = (!empty($item->cSeo))
@@ -832,7 +837,8 @@ class LinkHelper
             if ($link->kLink != $kLink) {
                 $link->nHTTPRedirectCode = 301;
             } else {
-                $link->bHideContent = true;
+                $link->nHTTPRedirectCode = 0;
+                $link->bHideContent      = true;
             }
         }
 

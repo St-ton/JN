@@ -48,9 +48,7 @@
     {/if}
 </head>
 <body>
-
-{* {if $account} *}
-{if isset($smarty.session.loginIsValid) && true ===  $smarty.session.loginIsValid }
+{if $account !== false && isset($smarty.session.loginIsValid) && true ===  $smarty.session.loginIsValid }
     {if permission('SETTINGS_SEARCH_VIEW')}
         <div id="main-search" class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">

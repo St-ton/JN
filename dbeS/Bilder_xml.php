@@ -697,7 +697,7 @@ function gibKategoriebildname($Kategoriebild, $Bildformat)
             : $Kategoriebild->cPfad . '.' . $Bildformat;
     }
     $attr = Shop::DB()->select('tkategorieattribut', 'kKategorie', (int)$Kategoriebild->kKategorie, 'cName', KAT_ATTRIBUT_BILDNAME, null, null, false, 'cWert');
-    if (isset($attr->cWert)) {
+    if (!empty($attr->cWert)) {
         return $attr->cWert . '.' . $Bildformat;
     }
     $Kategorie = Shop::DB()->query(

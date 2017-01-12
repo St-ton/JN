@@ -10,6 +10,7 @@ $io = new IO();
 
 $io->register('suggestions')
     ->register('pushToBasket')
+    ->register('pushToComparelist')
     ->register('checkDependencies')
     ->register('checkVarkombiDependencies')
     ->register('generateToken')
@@ -60,7 +61,7 @@ function suggestions($keyword)
 function pushToBasket($kArtikel, $anzahl, $oEigenschaftwerte_arr = '')
 {
     /** @var array('Warenkorb' => Warenkorb) $_SESSION */
-    global $Einstellungen, $Kunde, $smarty;
+    global $Einstellungen, $smarty;
 
     require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Artikel.php';
     require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Sprache.php';
@@ -175,6 +176,67 @@ function pushToBasket($kArtikel, $anzahl, $oEigenschaftwerte_arr = '')
             return $objResponse;
         }
     }
+
+    return $objResponse;
+}
+
+function pushToComparelist($kArtikel)
+{
+    global $Einstellungen;
+
+    if (!isset($Einstellungen['vergleichsliste'])) {
+        if (isset($Einstellungen)) {
+            $Einstellungen = array_merge($Einstellungen, Shop::getSettings(array(CONF_VERGLEICHSLISTE)));
+        } else {
+            $Einstellungen = Shop::getSettings(array(CONF_VERGLEICHSLISTE));
+        }
+    }
+
+    $oResponse   = new stdClass();
+    $objResponse = new IOResponse();
+
+    $_POST['Vergleichsliste'] = 1;
+    $_POST['a']               = $kArtikel;
+
+    checkeWarenkorbEingang();
+    $error  = Shop::Smarty()->getTemplateVars('fehler');
+    $notice = Shop::Smarty()->getTemplateVars('hinweis');
+
+    $oResponse->nType         = 2;
+    $oResponse->nCount        = count($_SESSION['Vergleichsliste']->oArtikel_arr);
+    $oResponse->cTitle        = utf8_encode(Shop::Lang()->get('compare', 'global'));
+    $oResponse->cNotification = utf8_encode(
+        Shop::Smarty()
+            ->assign('type', empty($error) ? 'info' : 'danger')
+            ->assign('body', empty($error) ? $notice : $error)
+            ->assign('buttons', [
+                (object)['href' => 'vergleichsliste.php', 'fa' => 'fa-tasks', 'title' => Shop::Lang()->get('compare', 'global')],
+                (object)['href' => '#', 'fa' => 'fa fa-arrow-circle-right', 'title' => Shop::Lang()->get('continueShopping', 'checkout'), 'primary' => true, 'dismiss' => 'modal'],
+            ])
+            ->fetch('snippets/notification.tpl')
+    );
+
+    if ($oResponse->nCount > 1) {
+        $oResponse->cNavBadge = utf8_encode(
+            Shop::Smarty()
+                ->assign('Einstellungen', $Einstellungen)
+                ->fetch('layout/header_shop_nav_compare.tpl')
+        );
+
+        $boxes = Boxen::getInstance();
+        $oBox  = $boxes->prepareBox(BOX_VERGLEICHSLISTE, new stdClass());
+        $oResponse->cBoxContainer = utf8_encode(
+            Shop::Smarty()
+                ->assign('Einstellungen', $Einstellungen)
+                ->assign('oBox', $oBox)
+                ->fetch('boxes/box_comparelist.tpl')
+        );
+    } else {
+        $oResponse->cNavBadge     = '';
+        $oResponse->cBoxContainer = '';
+    }
+
+    $objResponse->script('this.response = ' . json_encode($oResponse) . ';');
 
     return $objResponse;
 }
@@ -361,6 +423,38 @@ function checkDependencies($aValues)
 
         $objResponse->jsfunc('$.evo.article().setPrice', $fVK[$nNettoPreise], $cVKLocalized[$nNettoPreise], $cPriceLabel);
         $objResponse->jsfunc('$.evo.article().setUnitWeight', $oArtikel->fGewicht, $weightTotal . ' ' . $cUnitWeightLabel);
+
+        if (!empty($oArtikel->staffelPreis_arr)) {
+            $fStaffelVK = [0 => [], 1 => []];
+            $cStaffelVK = [0 => [], 1 => []];
+            foreach ($oArtikel->staffelPreis_arr as $staffelPreis) {
+                $nAnzahl                 = &$staffelPreis['nAnzahl'];
+                $fStaffelVKNetto         = $oArtikel->gibPreis($nAnzahl, $valueID_arr, Kundengruppe::getCurrent());
+                $fStaffelVK[0][$nAnzahl] = berechneBrutto($fStaffelVKNetto, $_SESSION['Steuersatz'][$oArtikel->kSteuerklasse]);
+                $fStaffelVK[1][$nAnzahl] = $fStaffelVKNetto;
+                $cStaffelVK[0][$nAnzahl] = gibPreisStringLocalized($fStaffelVK[0][$nAnzahl]);
+                $cStaffelVK[1][$nAnzahl] = gibPreisStringLocalized($fStaffelVK[1][$nAnzahl]);
+            }
+
+            $objResponse->jsfunc('$.evo.article().setStaffelPrice', $fStaffelVK[$nNettoPreise], $cStaffelVK[$nNettoPreise]);
+        }
+
+        if ($oArtikel->cVPE === 'Y' && $oArtikel->fVPEWert > 0 && $oArtikel->cVPEEinheit && !empty($oArtikel->Preise)) {
+            $oArtikel->baueVPE($fVKNetto);
+            $fStaffelVPE = [0 => [], 1 => []];
+            $cStaffelVPE = [0 => [], 1 => []];
+            foreach ($oArtikel->staffelPreis_arr as $staffelPreis) {
+                $nAnzahl = &$staffelPreis['nAnzahl'];
+                $fStaffelVPENetto = $oArtikel->gibPreis($nAnzahl, $valueID_arr, Kundengruppe::getCurrent());
+                $fStaffelVPE[0][$nAnzahl] = berechneBrutto($fStaffelVPENetto / $oArtikel->fVPEWert, $_SESSION['Steuersatz'][$oArtikel->kSteuerklasse]);
+                $fStaffelVPE[1][$nAnzahl] = $fStaffelVPENetto / $oArtikel->fVPEWert;
+                $cStaffelVPE[0][$nAnzahl] = gibPreisStringLocalized($fStaffelVPE[0][$nAnzahl]);
+                $cStaffelVPE[1][$nAnzahl] = gibPreisStringLocalized($fStaffelVPE[1][$nAnzahl]);
+            }
+
+            $objResponse->jsfunc('$.evo.article().setVPEPrice', $oArtikel->cLocalizedVPE[$nNettoPreise], $fStaffelVPE[$nNettoPreise], $cStaffelVPE[$nNettoPreise]);
+        }
+
         if (!empty($newProductNr)) {
             $objResponse->jsfunc('$.evo.article().setProductNumber', $newProductNr);
         }

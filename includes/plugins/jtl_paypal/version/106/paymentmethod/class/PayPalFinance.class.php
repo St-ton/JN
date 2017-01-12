@@ -447,12 +447,14 @@ class PayPalFinance extends PaymentMethod
             $info->FinancingTerm, 
             gibPreisStringLocalized($info->FinancingMonthlyPayment->value)
         );
-        
+
+		$feeAmount = $info->FinancingFeeAmount->value;
+		$taxClass = $_SESSION['Warenkorb']->gibVersandkostenSteuerklasse('');
+
         $_SESSION['Warenkorb']->erstelleSpezialPos(
-            'Finanzierungskosten', 1, $info->FinancingTotalCost->value,
-            $_SESSION['Warenkorb']->gibVersandkostenSteuerklasse(''),
+            'Finanzierungskosten', 1, $feeAmount, $taxClass,
             C_WARENKORBPOS_TYP_ZINSAUFSCHLAG,
-            true, true, ''/*$label*/
+            true, true, $label
         );
     }
     
@@ -488,16 +490,32 @@ class PayPalFinance extends PaymentMethod
         $paymentAddress->PostalCode      = $shippingAddress->cPLZ;
 
         $paymentDetails                   = new PaymentDetailsType();
-        $paymentDetails->PaymentAction    = 'Authorization';//'Order';
+        $paymentDetails->PaymentAction    = 'Order';//'Authorization';
         $paymentDetails->ShipToAddress    = utf8_convert_recursive($paymentAddress);
         $paymentDetails->ButtonSource     = $doExpressCheckoutPaymentRequestDetails->ButtonSource;
         $paymentDetails->OrderDescription = Shop::Lang()->get('order', 'global') . ' ' . $helper->getInvoiceID();
         $paymentDetails->ItemTotal        = new BasicAmountType($helper->getCurrencyISO(), $basket->article[WarenkorbHelper::GROSS]);
         $paymentDetails->TaxTotal         = new BasicAmountType($helper->getCurrencyISO(), '0.00');
         $paymentDetails->ShippingTotal    = new BasicAmountType($helper->getCurrencyISO(), $basket->shipping[WarenkorbHelper::GROSS]);
-        $paymentDetails->OrderTotal       = new BasicAmountType($helper->getCurrencyISO(), $basket->total[WarenkorbHelper::GROSS]);
-        $paymentDetails->ShippingDiscount = new BasicAmountType($helper->getCurrencyISO(), $basket->discount[WarenkorbHelper::GROSS] * -1);
-        $paymentDetails->HandlingTotal    = new BasicAmountType($helper->getCurrencyISO(), $basket->surcharge[WarenkorbHelper::GROSS]);
+        
+        $paymentDetails->ShippingDiscount = new BasicAmountType($helper->getCurrencyISO(), $basket->discount[WarenkorbHelper::GROSS]);
+
+		/**********************************************************************/
+		
+		$total = (float) $basket->total[WarenkorbHelper::GROSS];
+		$handling = (float) $basket->surcharge[WarenkorbHelper::GROSS];
+		$fee = (float) $details->PaymentInfo->FinancingFeeAmount->value;
+
+		$handling -= $fee;
+		$total -= $fee;
+		
+		/**********************************************************************/
+
+        $paymentDetails->HandlingTotal    = new BasicAmountType($helper->getCurrencyISO(), $handling);
+		$paymentDetails->OrderTotal       = new BasicAmountType($helper->getCurrencyISO(), $total);
+		
+        $paymentDetails->InvoiceID        = $helper->getInvoiceID();
+        $paymentDetails->Custom           = $helper->getIdentifier();
 
         $doExpressCheckoutPaymentRequestDetails->PaymentDetails       = [$paymentDetails];
         $doExpressCheckoutPaymentRequest                              = new PayPalAPI\DoExpressCheckoutPaymentRequestType($doExpressCheckoutPaymentRequestDetails);
@@ -545,6 +563,7 @@ class PayPalFinance extends PaymentMethod
             $this->doLog("Response: DoExpressCheckoutPayment:\n\n<pre>{$r}</pre>", LOGLEVEL_NOTICE);
 
             PayPalHelper::setFlashMessage($response->Errors[0]->LongMessage);
+			dd($response, $response->Errors[0]->LongMessage);
         }
 
         return false;
@@ -630,14 +649,14 @@ class PayPalFinance extends PaymentMethod
         $borderColor = str_replace('#', '', $this->plugin->oPluginEinstellungAssoc_arr[$this->pluginbez . '_bordercolor']);
         $brandName   = utf8_encode($this->plugin->oPluginEinstellungAssoc_arr[$this->pluginbez . '_brand']);
 
-        $paymentDetails->PaymentAction    = 'Authorization';//'Order';
+        $paymentDetails->PaymentAction    = 'Order';//'Authorization';
         $paymentDetails->ButtonSource     = 'JTL4_Cart_Inst';
         $paymentDetails->ItemTotal        = new BasicAmountType($helper->getCurrencyISO(), $basket->article[WarenkorbHelper::GROSS]);
         $paymentDetails->TaxTotal         = new BasicAmountType($helper->getCurrencyISO(), '0.00');
         $paymentDetails->ShippingTotal    = new BasicAmountType($helper->getCurrencyISO(), $basket->shipping[WarenkorbHelper::GROSS]);
         $paymentDetails->OrderTotal       = new BasicAmountType($helper->getCurrencyISO(), $basket->total[WarenkorbHelper::GROSS]);
         $paymentDetails->HandlingTotal    = new BasicAmountType($helper->getCurrencyISO(), $basket->surcharge[WarenkorbHelper::GROSS]);
-        $paymentDetails->ShippingDiscount = new BasicAmountType($helper->getCurrencyISO(), $basket->discount[WarenkorbHelper::GROSS] * -1);
+        $paymentDetails->ShippingDiscount = new BasicAmountType($helper->getCurrencyISO(), $basket->discount[WarenkorbHelper::GROSS]);
 
         $paymentDetails->InvoiceID = $helper->getInvoiceID();
         $paymentDetails->Custom    = $helper->getIdentifier();
@@ -709,17 +728,17 @@ class PayPalFinance extends PaymentMethod
      */
     public function createPaymentSession($kVersandart = false)
     {
-        $payment           = $this->getPayment();
-        $payment->cModulId = gibPlugincModulId($this->plugin->kPlugin, $payment->cName);
+        $_SESSION['Zahlungsart']                        = $this->payment;
+        $_SESSION['Zahlungsart']->cModulId              = $this->moduleID;
+        //$_SESSION['Zahlungsart']->nWaehrendBestellung   = 1;
 
-        $sql         = "SELECT cName, cISOSprache FROM tzahlungsartsprache WHERE kZahlungsart='" . $this->getPaymentId() . "'";
-        $sprache_arr = Shop::DB()->query($sql, 2);
+        $languages = Shop::DB()->query("SELECT cName, cISOSprache FROM tzahlungsartsprache WHERE kZahlungsart='" . $this->paymentId . "'", 2);
 
-        foreach ($sprache_arr as $sprache) {
-            $payment->angezeigterName[$sprache->cISOSprache] = $sprache->cName;
+        foreach ($languages as $language) {
+            $_SESSION['Zahlungsart']->angezeigterName[$language->cISOSprache] = $language->cName;
         }
 
-        return $payment;
+        PayPalHelper::addSurcharge();
     }
     
     public function duringCheckout()

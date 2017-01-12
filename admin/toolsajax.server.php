@@ -579,6 +579,62 @@ function truncateJtllog()
     return $oResponse;
 }
 
+/**
+ * @param string $searchString
+ * @param array  $kKundeSelected_arr
+ * @return xajaxResponse
+ */
+function getCustomerList($searchString, $kKundeSelected_arr)
+{
+    global $smarty;
+
+    if ($searchString === '') {
+        if (count($kKundeSelected_arr) === 0) {
+            $oKunde_arr = [];
+            $listTitle  = 'Bisher sind keine Kunden ausgew&auml;hlt. Suchen Sie jetzt nach Kunden!';
+        } else {
+            foreach ($kKundeSelected_arr as &$kKundeSelected) {
+                $kKundeSelected = (int)$kKundeSelected;
+            }
+
+            $oKunde_arr = Shop::DB()->query("
+                SELECT kKunde
+                    FROM tkunde
+                    WHERE kKunde IN (" . implode(',', $kKundeSelected_arr) . ")
+                ", 2);
+            $listTitle  = 'Alle ausgew&auml;hlten Kunden: '. count($oKunde_arr);
+        }
+    } else {
+        $oKunde_arr = Shop::DB()->query("
+            SELECT kKunde
+                FROM tkunde
+                WHERE cVorname LIKE '%" . Shop::DB()->escape($searchString) . "%' OR
+                      cMail LIKE '%" . Shop::DB()->escape($searchString) . "%' OR
+                      cOrt LIKE '%" . Shop::DB()->escape($searchString) . "%' OR
+                      cPLZ LIKE '%" . Shop::DB()->escape($searchString) . "%'
+                LIMIT 100
+            ", 2);
+        $listTitle  = 'Gefundene Kunden: ' . (count($oKunde_arr) >= 100 ? '>= ' : '') . count($oKunde_arr);
+    }
+
+    $oKundeFull_arr = [];
+    foreach ($oKunde_arr as $oKunde) {
+        $oKundeFull_arr[] = new Kunde($oKunde->kKunde);
+    }
+
+    $customerListHtml = $smarty->assign('cPart', 'customerlist')
+        ->assign('oKunde_arr', $oKundeFull_arr)
+        ->assign('kKundeSelected_arr', $kKundeSelected_arr)
+        ->fetch('tpl_inc/customer_search.tpl');
+
+    $oResponse = new xajaxResponse();
+    $oResponse->assign('customer-search-result-list', 'innerHTML', $customerListHtml);
+    $oResponse->assign('customer-list-title', 'innerHTML', $listTitle);
+    $oResponse->script('shownCustomers=[' . implode(',', array_map(function ($e) { return $e->kKunde; }, $oKunde_arr)) . ']');
+
+    return $oResponse;
+}
+
 executeHook(HOOK_TOOLSAJAX_SERVER_ADMIN, array('xajax' => &$xajax));
 
 $xajax->registerFunction('reloadAdminLoginCaptcha');
@@ -606,6 +662,7 @@ $xajax->registerFunction('setRMAStatusAjax');
 $xajax->registerFunction('saveBannerAreas');
 $xajax->registerFunction('getContentTemplate');
 $xajax->registerFunction('truncateJtllog');
+$xajax->registerFunction('getCustomerList');
 
 $xajax->processRequest();
 header('Content-Type:text/html;charset=' . JTL_CHARSET . ';');

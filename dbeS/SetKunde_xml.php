@@ -7,6 +7,7 @@
 require_once dirname(__FILE__) . '/syncinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
+require_once PFAD_ROOT . PFAD_INCLUDES . 'tools.Global.php';
 
 $return = 3;
 $kKunde = 0;
@@ -113,10 +114,23 @@ function bearbeite($xml)
             $Kunde->cAktiv       = 'Y';
             $Kunde->dVeraendert  = 'now()';
             
-            //keep login-credentials! fixes jtlshop/jtl-shop#267
-            $Kunde->cMail        = $oKundeAlt->cMail;
+            if ($Kunde->cMail !== $oKundeAlt->cMail) {
+                // E-Mail Adresse geändert - Verwendung prüfen!
+                if (!valid_email($Kunde->cMail) || pruefeEmailblacklist($Kunde->cMail) || Shop::DB()->select('tkunde', 'cMail', $Kunde->cMail, 'nRegistriert', 1) !== null) {
+                    // E-Mail ist invalid, blacklisted bzw. wird bereits im Shop verwendet - die Änderung wird zurückgewiesen.
+                    $res_obj['keys']['tkunde attr']['kKunde'] = 0;
+                    $res_obj['keys']['tkunde']   = '';
+
+                    return $res_obj;
+                }
+
+                // Mail an Kunden mit Info, dass Zugang verändert wurde
+                $obj         = new stdClass();
+                $obj->tkunde = $Kunde;
+                sendeMail(MAILTEMPLATE_ACCOUNTERSTELLUNG_DURCH_BETREIBER, $obj);
+            }
+
             $Kunde->cPasswort    = $oKundeAlt->cPasswort;
-            
             $Kunde->nRegistriert = $oKundeAlt->nRegistriert;
             $Kunde->dErstellt    = $oKundeAlt->dErstellt;
             $Kunde->fGuthaben    = $oKundeAlt->fGuthaben;

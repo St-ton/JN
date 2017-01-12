@@ -841,7 +841,7 @@ function baueArtikelDetail($oArtikel, $xPost_arr)
     }
     //url
     $requestURL = baueURL($oArtikel, URLART_ARTIKEL);
-    $sprachURL  = baueSprachURLS($oArtikel, URLART_ARTIKEL);
+    $sprachURL  = ($oArtikel->cSprachURL_arr !== null) ? $oArtikel->cSprachURL_arr : baueSprachURLS($oArtikel, URLART_ARTIKEL);
     //hole aktuelle Kategorie, falls eine gesetzt
     $kKategorie             = $oArtikel->gibKategorie();
     $AktuelleKategorie      = new Kategorie($kKategorie);

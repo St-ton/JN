@@ -12,10 +12,25 @@
             this.init();
         };
 
+    ArticleClass.DEFAULTS = {
+        input: {
+            id: 'a'
+        },
+        action: {
+            compareList: 'Vergleichsliste'
+        },
+        selector: {
+            navBadgeUpdate: '#shop-nav li.compare-list-menu',
+            navBadgeAppend: '#shop-nav li.cart-menu',
+            boxContainer: 'section.box-compare'
+        }
+    };
+
     ArticleClass.prototype = {
         constructor: ArticleClass,
 
         init: function () {
+            this.options = ArticleClass.DEFAULTS;
         },
         
         onLoad: function() {
@@ -203,6 +218,52 @@
             if ($('.switch-variations').length == 1) {
                 this.variationSwitch();
             }
+
+            $('*[data-toggle="product-actions"] button').on('click', function(event) {
+                if ($.evo.article().handleProductAction(this, $(this.form))) {
+                    event.preventDefault();
+                }
+            });
+        },
+
+        addToComparelist: function(data) {
+            var productId = parseInt(data[this.options.input.id]);
+            if (productId > 0) {
+                var that = this;
+                $.evo.io().call('pushToComparelist', [productId], that, function(error, data) {
+                    if (error) {
+                        return;
+                    }
+
+                    var response = data.response;
+
+                    if (response) {
+                        switch (response.nType) {
+                            case 0: // error
+                                var errorlist = '<ul><li>' + response.cHints.join('</li><li>') + '</li></ul>';
+                                eModal.alert({
+                                    title: response.cTitle,
+                                    message: errorlist
+                                });
+                                break;
+                            case 1: // forwarding
+                                window.location.href = response.cLocation;
+                                break;
+                            case 2: // added to comparelist
+                                that.updateComparelist(response);
+                                eModal.alert({
+                                    title: response.cTitle,
+                                    message: response.cNotification
+                                });
+                                break;
+                        }
+                    }
+                });
+
+                return true;
+            }
+
+            return false;
         },
 
         configurator: function (init) {
@@ -360,6 +421,16 @@
             return $('.cfg-group[data-id="' + groupId + '"] .group-image img');
         },
 
+        handleProductAction: function(action, $form) {
+            var data = $form.serializeObject();
+            switch (action.name) {
+                case this.options.action.compareList:
+                    return this.addToComparelist(data);
+            }
+
+            return false;
+        },
+
         setConfigItemImage: function (groupId, img) {
             $('.cfg-group[data-id="' + groupId + '"] .group-image img').attr('src', img).first();
         },
@@ -392,6 +463,21 @@
             }
         },
 
+        setStaffelPrice: function(prices, fmtPrices) {
+            var $container = $('#product-offer');
+            $.each(fmtPrices, function(index, value){
+                $('.bulk-price-' + index + ' .bulk-price', $container).html(value);
+            });
+        },
+
+        setVPEPrice: function(fmtVPEPrice, VPEPrices, fmtVPEPrices) {
+            var $container = $('#product-offer');
+            $('.base-price .value', $container).html(fmtVPEPrice);
+            $.each(fmtVPEPrices, function(index, value){
+                $('.bulk-price-' + index + ' .bulk-base-price', $container).html(value);
+            });
+        },
+
         setUnitWeight: function(UnitWeight, newUnitWeight) {
             $('#article-tabs .product-attributes .weight-unit').html(newUnitWeight);
         },
@@ -415,6 +501,38 @@
             }, function() {
                 $.evo.error('Error loading ' + url);
             });
+        },
+
+        updateComparelist: function(response) {
+            if (response.nCount > 1) {
+                if (response.cNavBadge.length) {
+                    var badge    = $(response.cNavBadge);
+                    var badgeUpd = $(this.options.selector.navBadgeUpdate);
+                    if (badgeUpd.size() > 0) {
+                        badgeUpd.replaceWith(badge);
+                    } else {
+                        $(this.options.selector.navBadgeAppend).before(badge);
+                    }
+
+                    badge.on('click', '.popup', function (e) {
+                        var url = e.currentTarget.href;
+                        url += (url.indexOf('?') === -1) ? '?isAjax=true' : '&isAjax=true';
+                        eModal.ajax({
+                            'size': 'lg',
+                            'url': url
+                        });
+                        e.stopPropagation();
+                        return false;
+                    });
+                }
+
+                if (response.cBoxContainer.length) {
+                    var list = $(this.options.selector.boxContainer);
+                    if (list.size() > 0) {
+                        list.replaceWith(response.cBoxContainer);
+                    }
+                }
+            }
         },
 
         variationResetAll: function() {

@@ -977,6 +977,11 @@ class Artikel
     public $cKurzbezeichnung = '';
 
     /**
+     * @var array
+     */
+    public $languageURLs = [];
+
+    /**
      * Konstruktor
      *
      * @param int $kArtikel
@@ -3015,12 +3020,12 @@ class Artikel
      * @param bool $bSeo
      * @return $this
      */
-    public function baueArtikelSprachURL($bSeo)
+    public function baueArtikelSprachURL($bSeo = true)
     {
         // Baue SprachwechselURLs
         if (is_array($_SESSION['Sprachen']) && count($_SESSION['Sprachen']) > 0) {
             foreach ($_SESSION['Sprachen'] as $oSprache) {
-                $this->cSprachURL_arr[$oSprache->kSprache] = 'navi.php?a=' . $this->kArtikel . '&amp;lang=' . $oSprache->cISO;
+                $this->cSprachURL_arr[$oSprache->cISO] = 'navi.php?a=' . $this->kArtikel . '&amp;lang=' . $oSprache->cISO;
             }
         }
         // Baue SprachwechselURLs
@@ -3048,7 +3053,7 @@ class Artikel
                         }
                         if ($bSprachSeo) {
                             if (isset($oSeoAssoc_arr[$oSprache->kSprache])) {
-                                $this->cSprachURL_arr[$oSprache->kSprache] = $oSeoAssoc_arr[$oSprache->kSprache]->cSeo;
+                                $this->cSprachURL_arr[$oSprache->cISO] = $oSeoAssoc_arr[$oSprache->kSprache]->cSeo;
                             }
                         }
                     }
@@ -3083,6 +3088,7 @@ class Artikel
             'nWarenlager',
             'bSimilar',
             'nRatings',
+            'nLanguageURLs',
         ];
     }
 
@@ -3135,6 +3141,7 @@ class Artikel
         $oArtikelOptionen->nKonfig               = 1;
         $oArtikelOptionen->nMain                 = 1;
         $oArtikelOptionen->bSimilar              = true;
+        $oArtikelOptionen->nLanguageURLs         = 1;
 
         return $oArtikelOptionen;
     }
@@ -3800,6 +3807,9 @@ class Artikel
             $this->holehilfreichsteBewertung($kSprache)
                  ->holeBewertung($kSprache, -1, 1, 0, $conf['bewertung']['bewertung_freischalten'], 0);
         }
+        if (isset($oArtikelOptionen->nLanguageURLs) && $oArtikelOptionen->nLanguageURLs === 1 && count($_SESSION['Sprachen']) > 0) {
+            $this->baueArtikelSprachURL();
+        }
 
         $cacheTags = [CACHING_GROUP_ARTICLE . '_' . $this->kArtikel, CACHING_GROUP_ARTICLE];
         executeHook(HOOK_ARTIKEL_CLASS_FUELLEARTIKEL, [
@@ -3823,6 +3833,14 @@ class Artikel
             : $this->cName;
 
         return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getLanguageURLs()
+    {
+        return $this->cSprachURL_arr;
     }
 
     /**

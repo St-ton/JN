@@ -36,27 +36,28 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
             $cntchr    = 0;
             $elemCount = count($KategorieListe->elemente) - 1;
             for ($i = $elemCount; $i >= 0; $i--) {
-                $cntchr += strlen($KategorieListe->elemente[$i]->cName);
+                $cntchr += strlen($KategorieListe->elemente[$i]->cKurzbezeichnung);
             }
             for ($i = $elemCount; $i >= 0; $i--) {
-                if (isset($KategorieListe->elemente[$i]->cName) && isset($KategorieListe->elemente[$i]->cURL)) {
+                if (isset($KategorieListe->elemente[$i]->cKurzbezeichnung) && isset($KategorieListe->elemente[$i]->cURL)) {
                     if ($cntchr < 80) {
-                        $SieSindHierString .= ' &gt; <a href="' . $KategorieListe->elemente[$i]->cURL . '">' . $KategorieListe->elemente[$i]->cName . '</a>';
+                        $SieSindHierString .= ' &gt; <a href="' . $KategorieListe->elemente[$i]->cURL . '">'
+                            . $KategorieListe->elemente[$i]->cKurzbezeichnung . '</a>';
                     } else {
-                        $cntchr -= strlen($KategorieListe->elemente[$i]->cName);
+                        $cntchr            -= strlen($KategorieListe->elemente[$i]->cKurzbezeichnung);
                         $SieSindHierString .= ' &gt; ...';
                     }
                     $ele        = new stdClass();
-                    $ele->name  = $KategorieListe->elemente[$i]->cName;
+                    $ele->name  = $KategorieListe->elemente[$i]->cKurzbezeichnung;
                     $ele->url   = $KategorieListe->elemente[$i]->cURL;
                     $brotnavi[] = $ele;
                 }
             }
-            $SieSindHierString .= ' &gt; <a href="' . $Artikel->cURLFull . '">' . $Artikel->cName . '</a>';
-            $ele        = new stdClass();
-            $ele->name  = $Artikel->cName;
-            $ele->url   = $Artikel->cURLFull;
-            $brotnavi[] = $ele;
+            $SieSindHierString .= ' &gt; <a href="' . $Artikel->cURLFull . '">' . $Artikel->cKurzbezeichnung . '</a>';
+            $ele                = new stdClass();
+            $ele->name          = $Artikel->cKurzbezeichnung;
+            $ele->url           = $Artikel->cURLFull;
+            $brotnavi[]         = $ele;
             $SieSindHierString .= '<br />';
             break;
 
@@ -64,17 +65,18 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
             $cntchr    = 0;
             $elemCount = (isset($KategorieListe->elemente)) ? count($KategorieListe->elemente) : 0;
             for ($i = $elemCount - 1; $i >= 0; $i--) {
-                $cntchr += strlen($KategorieListe->elemente[$i]->cName);
+                $cntchr += strlen($KategorieListe->elemente[$i]->cKurzbezeichnung);
             }
             for ($i = $elemCount - 1; $i >= 0; $i--) {
                 if ($cntchr < 80) {
-                    $SieSindHierString .= ' &gt; <a href="' . $KategorieListe->elemente[$i]->cURL . '">' . $KategorieListe->elemente[$i]->cName . '</a>';
+                    $SieSindHierString .= ' &gt; <a href="' . $KategorieListe->elemente[$i]->cURL . '">'
+                        . $KategorieListe->elemente[$i]->cKurzbezeichnung . '</a>';
                 } else {
-                    $cntchr -= strlen($KategorieListe->elemente[$i]->cName);
+                    $cntchr            -= strlen($KategorieListe->elemente[$i]->cKurzbezeichnung);
                     $SieSindHierString .= ' &gt; ...';
                 }
                 $ele        = new stdClass();
-                $ele->name  = $KategorieListe->elemente[$i]->cName;
+                $ele->name  = $KategorieListe->elemente[$i]->cKurzbezeichnung;
                 $ele->url   = $KategorieListe->elemente[$i]->cURL;
                 $brotnavi[] = $ele;
             }
@@ -1243,7 +1245,7 @@ function fuegeEinInWarenkorb($kArtikel, $anzahl, $oEigenschaftwerte_arr = '', $n
                 return false;
             }
             if ($nWeiterleitung == 0) {
-                $con = (strpos($Artikel->cURLFull, '?' === false)) ? '?' : '&';
+                $con = (strpos($Artikel->cURLFull, '?') === false) ? '?' : '&';
                 if ($Artikel->kEigenschaftKombi > 0) {
                     $url = (!empty($Artikel->cURLFull)) ? ($Artikel->cURLFull . $con) : (Shop::getURL() . '/index.php?a=' . $Artikel->kVaterArtikel . '&a2=' . $Artikel->kArtikel . '&');
                     header('Location: ' . $url . 'n=' . $anzahl . '&r=' . implode(',', $redirectParam), true, 302);
@@ -1755,6 +1757,7 @@ function baueSprachURLS($obj, $art)
             if ($Sprache->kSprache != $_SESSION['kSprache']) {
                 switch ($art) {
                     case URLART_ARTIKEL:
+                        //@deprecated since 4.05 - this is now done within the article class itself
                         if ($Sprache->cStandard !== 'Y') {
                             $seoobj = Shop::DB()->query(
                                 "SELECT tseo.cSeo
@@ -1775,7 +1778,9 @@ function baueSprachURLS($obj, $art)
                                     WHERE tartikel.kArtikel = " . (int)$obj->kArtikel, 1
                             );
                         }
-                        $url = (isset($seoobj->cSeo) && $seoobj->cSeo) ? $seoobj->cSeo : 'index.php?a=' . $obj->kArtikel . '&amp;lang=' . $Sprache->cISO;
+                        $url = (isset($seoobj->cSeo) && $seoobj->cSeo)
+                            ? $seoobj->cSeo
+                            : 'index.php?a=' . $obj->kArtikel . '&amp;lang=' . $Sprache->cISO;
                         break;
 
                     case URLART_KATEGORIE:
@@ -1803,6 +1808,7 @@ function baueSprachURLS($obj, $art)
                         break;
 
                     case URLART_SEITE:
+                        //@deprecated since 4.05 - this is now done within the link helper
                         $seoobj = Shop::DB()->query(
                             "SELECT tseo.cSeo
                                 FROM tlinksprache
@@ -2364,8 +2370,6 @@ function gibVersandZuschlag($versandart, $cISO, $plz)
  */
 function berechneVersandpreis($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
 {
-    /** @var array('Warenkorb' => Warenkorb) $_SESSION */
-    $fSteuersatz = 0.0;
     if (!isset($oZusatzArtikel->fAnzahl)) {
         if (!isset($oZusatzArtikel)) {
             $oZusatzArtikel = new stdClass();
@@ -2379,7 +2383,7 @@ function berechneVersandpreis($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
     $preis             = 0;
     switch ($versandberechnung->cModulId) {
         case 'vm_versandkosten_pauschale_jtl':
-            $preis = $versandart->fPreis * ((100 + $fSteuersatz) / 100);
+            $preis = $versandart->fPreis;
             break;
 
         case 'vm_versandberechnung_gewicht_jtl':
@@ -2393,7 +2397,7 @@ function berechneVersandpreis($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
                   ORDER BY fBis ASC", 1
             );
             if (isset($versand->kVersandartStaffel)) {
-                $preis = $versand->fPreis * ((100 + $fSteuersatz) / 100);
+                $preis = $versand->fPreis;
             } else {
                 return -1;
             }
@@ -2410,7 +2414,7 @@ function berechneVersandpreis($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
                     ORDER BY fBis ASC", 1
             );
             if (isset($versand->kVersandartStaffel)) {
-                $preis = $versand->fPreis * ((100 + $fSteuersatz) / 100);
+                $preis = $versand->fPreis;
             } else {
                 return -1;
             }
@@ -2431,7 +2435,7 @@ function berechneVersandpreis($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
                     ORDER BY fBis ASC", 1
             );
             if (isset($versand->kVersandartStaffel)) {
-                $preis = $versand->fPreis * ((100 + $fSteuersatz) / 100);
+                $preis = $versand->fPreis;
             } else {
                 return -1;
             }
@@ -3749,23 +3753,23 @@ function cryptPasswort($cPasswort, $cHashPasswort = null)
 function setzeSpracheUndWaehrungLink()
 {
     global $NaviFilter, $oZusatzFilter, $sprachURL, $AktuellerArtikel, $kSeite, $kLink, $AktuelleSeite;
-    $shopURL = Shop::getURL();
+    $shopURL = Shop::getURL() . '/';
     $helper  = LinkHelper::getInstance();
     if (isset($kSeite) && $kSeite > 0) {
         $kLink = $kSeite;
     }
     // Sprachauswahl
     if (isset($_SESSION['Sprachen']) && count($_SESSION['Sprachen']) > 1) {
-        if (isset($AktuellerArtikel->kArtikel) && $AktuellerArtikel->kArtikel > 0) {
-            $AktuellerArtikel->baueArtikelSprachURL(SHOP_SEO);
+        if (isset($AktuellerArtikel->kArtikel) && $AktuellerArtikel->kArtikel > 0 && empty($AktuellerArtikel->cSprachURL_arr)) {
+            $AktuellerArtikel->baueArtikelSprachURL();
         }
         foreach ($_SESSION['Sprachen'] as $i => $oSprache) {
-            if (isset($AktuellerArtikel->kArtikel) && $AktuellerArtikel->kArtikel > 0 && isset($AktuellerArtikel->cSprachURL_arr[$oSprache->kSprache])) {
-                $_SESSION['Sprachen'][$i]->cURL     = $AktuellerArtikel->cSprachURL_arr[$oSprache->kSprache];
-                $_SESSION['Sprachen'][$i]->cURLFull = $shopURL . '/' . $AktuellerArtikel->cSprachURL_arr[$oSprache->kSprache];
+            if (isset($AktuellerArtikel->kArtikel) && $AktuellerArtikel->kArtikel > 0 && isset($AktuellerArtikel->cSprachURL_arr[$oSprache->cISO])) {
+                $_SESSION['Sprachen'][$i]->cURL     = $AktuellerArtikel->cSprachURL_arr[$oSprache->cISO];
+                $_SESSION['Sprachen'][$i]->cURLFull = $shopURL . $AktuellerArtikel->cSprachURL_arr[$oSprache->cISO];
             } elseif (($kLink > 0 || $kSeite > 0) && isset($sprachURL[$oSprache->cISO])) {
                 $_SESSION['Sprachen'][$i]->cURL     = $sprachURL[$oSprache->cISO];
-                $_SESSION['Sprachen'][$i]->cURLFull = $shopURL . '/' . $sprachURL[$oSprache->cISO];
+                $_SESSION['Sprachen'][$i]->cURLFull = $shopURL . $sprachURL[$oSprache->cISO];
             } elseif ($AktuelleSeite === 'WARENKORB'
                 || $AktuelleSeite === 'KONTAKT'
                 || $AktuelleSeite === 'REGISTRIEREN'
@@ -3783,7 +3787,7 @@ function setzeSpracheUndWaehrungLink()
                     case 'STARTSEITE':
                         $id                             = null;
                         $_SESSION['Sprachen'][$i]->cURL = gibNaviURL($NaviFilter, SHOP_SEO, $oZusatzFilter, $oSprache->kSprache);
-                        if ($_SESSION['Sprachen'][$i]->cURL === $shopURL . '/') {
+                        if ($_SESSION['Sprachen'][$i]->cURL === $shopURL) {
                             $_SESSION['Sprachen'][$i]->cURL .= '?lang=' . $oSprache->cISO;
                         }
                         $_SESSION['Sprachen'][$i]->cURLFull = $_SESSION['Sprachen'][$i]->cURL;
@@ -3841,7 +3845,7 @@ function setzeSpracheUndWaehrungLink()
                     $url = $helper->getStaticRoute($id, false, false, $oSprache->cISO);
                     //check if there is a SEO link for the given file
                     if ($url === $id) { //no SEO link - fall back to php file with GET param
-                        $url = $shopURL . '/' . $id . '?lang=' . $oSprache->cISO;
+                        $url = $shopURL . $id . '?lang=' . $oSprache->cISO;
                     } else { //there is a SEO link - make it a full URL
                         $url = $helper->getStaticRoute($id, true, false, $oSprache->cISO);
                     }
@@ -3866,12 +3870,12 @@ function setzeSpracheUndWaehrungLink()
     }
     // Währungsauswahl
     if (count($_SESSION['Waehrungen']) > 1) {
-        if (isset($AktuellerArtikel->kArtikel) && $AktuellerArtikel->kArtikel > 0 && $AktuellerArtikel->cSprachURL_arr === null) {
+        if (isset($AktuellerArtikel->kArtikel) && $AktuellerArtikel->kArtikel > 0 && empty($AktuellerArtikel->cSprachURL_arr)) {
             $AktuellerArtikel->baueArtikelSprachURL(false);
         }
         foreach ($_SESSION['Waehrungen'] as $i => $oWaehrung) {
-            if (isset($AktuellerArtikel->kArtikel) && $AktuellerArtikel->kArtikel > 0 && isset($_SESSION['kSprache']) && isset($AktuellerArtikel->cSprachURL_arr[$_SESSION['kSprache']])) {
-                $_SESSION['Waehrungen'][$i]->cURL = $AktuellerArtikel->cSprachURL_arr[$_SESSION['kSprache']] . '?curr=' . $oWaehrung->cISO;
+            if (isset($AktuellerArtikel->kArtikel) && $AktuellerArtikel->kArtikel > 0 && isset($_SESSION['kSprache']) && isset($AktuellerArtikel->cSprachURL_arr[$_SESSION['cISOSprache']])) {
+                $_SESSION['Waehrungen'][$i]->cURL = $AktuellerArtikel->cSprachURL_arr[$_SESSION['cISOSprache']] . '?curr=' . $oWaehrung->cISO;
             } elseif ($AktuelleSeite === 'WARENKORB'
                 || $AktuelleSeite === 'KONTAKT'
                 || $AktuelleSeite === 'REGISTRIEREN'
@@ -3932,7 +3936,7 @@ function setzeSpracheUndWaehrungLink()
                     $url = $helper->getStaticRoute($id, false, false);
                     //check if there is a SEO link for the given file
                     if ($url === $id) { //no SEO link - fall back to php file with GET param
-                        $url = $shopURL . '/' . $id . '?lang=' . $_SESSION['cISOSprache'] . '&curr=' . $oWaehrung->cISO;
+                        $url = $shopURL . $id . '?lang=' . $_SESSION['cISOSprache'] . '&curr=' . $oWaehrung->cISO;
                     } else { //there is a SEO link - make it a full URL
                         $url = $helper->getStaticRoute($id, true, false) . '?curr=' . $oWaehrung->cISO;
                     }
@@ -3943,6 +3947,7 @@ function setzeSpracheUndWaehrungLink()
             } else {
                 $_SESSION['Waehrungen'][$i]->cURL = gibNaviURL($NaviFilter, true, $oZusatzFilter, $_SESSION['kSprache']) . '?curr=' . $oWaehrung->cISO;
             }
+            $_SESSION['Waehrungen'][$i]->cURLFull = $shopURL . $_SESSION['Waehrungen'][$i]->cURL;
         }
     }
     executeHook(HOOK_TOOLSGLOBAL_INC_SETZESPRACHEUNDWAEHRUNG_WAEHRUNG, [

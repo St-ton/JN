@@ -129,8 +129,11 @@ function get_static_route($params, &$smarty)
         if (count($qp) > 0) {
             $url = $url . (parse_url($url, PHP_URL_QUERY) ? '&' : '?') . http_build_query($qp, '', '&');
         }
-
-        return $url;
+        if (isset($params['assign'])) {
+            $smarty->assign($params['assign'], $url);
+        } else {
+            return $url;
+        }
     }
 
     return false;

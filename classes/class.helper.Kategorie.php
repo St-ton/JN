@@ -102,22 +102,22 @@ class KategorieHelper
 
                 return $_SESSION['oKategorie_arr_new'];
             }
-            $categoryCountObj     = Shop::DB()->query('SELECT count(*) AS cnt FROM tkategorie', 1);
-            $categoryCount        = (int)$categoryCountObj->cnt;
-            $categoryLimit        = CATEGORY_FULL_LOAD_LIMIT;
-            self::$limitReached   = ($categoryCount >= $categoryLimit);
-            $functionAttributes   = [];
-            $localizedAttributes  = [];
-            $fullCats             = [];
-            $hierarchy            = [];
-            $current              = null;
-            $currentParent        = null;
-            $descriptionSelect    = ", '' AS cBeschreibung";
-            $shopURL              = Shop::getURL(true);
-            $isDefaultLang        = standardspracheAktiv();
-            $visibilityWhere      = " AND tartikelsichtbarkeit.kArtikel IS NULL";
-            $depthWhere           = (self::$limitReached === true) ? " AND node.nLevel <= " . CATEGORY_FULL_LOAD_MAX_LEVEL : '';
-            $getDescription       = ($categoryCount < $categoryLimit || //always get description if there aren't that many categories
+            $categoryCountObj    = Shop::DB()->query('SELECT count(*) AS cnt FROM tkategorie', 1);
+            $categoryCount       = (int)$categoryCountObj->cnt;
+            $categoryLimit       = CATEGORY_FULL_LOAD_LIMIT;
+            self::$limitReached  = ($categoryCount >= $categoryLimit);
+            $functionAttributes  = [];
+            $localizedAttributes = [];
+            $fullCats            = [];
+            $hierarchy           = [];
+            $current             = null;
+            $currentParent       = null;
+            $descriptionSelect   = ", '' AS cBeschreibung";
+            $shopURL             = Shop::getURL(true);
+            $isDefaultLang       = standardspracheAktiv();
+            $visibilityWhere     = " AND tartikelsichtbarkeit.kArtikel IS NULL";
+            $depthWhere          = (self::$limitReached === true) ? " AND node.nLevel <= " . CATEGORY_FULL_LOAD_MAX_LEVEL : '';
+            $getDescription      = ($categoryCount < $categoryLimit || //always get description if there aren't that many categories
                 !(isset(self::$config['template']['megamenu']['show_maincategory_info']) && //otherwise check template config
                 isset(self::$config['template']['megamenu']['show_categories']) &&
                 (self::$config['template']['megamenu']['show_categories'] === 'N' || self::$config['template']['megamenu']['show_maincategory_info'] === 'N')));
@@ -254,6 +254,10 @@ class KategorieHelper
                 $_cat->cBeschreibung    = parseNewsText($_cat->cBeschreibung);
                 $_cat->bUnterKategorien = 0;
                 $_cat->Unterkategorien  = [];
+                // Kurzbezeichnung
+                $_cat->cKurzbezeichnung = isset($_cat->categoryAttributes[ART_ATTRIBUT_SHORTNAME])
+                    ? $_cat->categoryAttributes[ART_ATTRIBUT_SHORTNAME]->cWert
+                    : $_cat->cName;
                 if ($_cat->kOberKategorie == 0) {
                     $fullCats[$_cat->kKategorie] = $_cat;
                     $current                     = $_cat;

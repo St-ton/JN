@@ -1707,8 +1707,7 @@ function versandartKorrekt($kVersandart, $aFormValues = 0)
                     $versandart->angezeigterHinweistext[$Sprache->cISO] = $name_spr->cHinweisText;
                 }
             }
-            //auskommentiert - $versandart->eSteuer soll eigentlich NUR die Versandkostenfrei-Grenze beeinflussen
-            //$bSteuerPos = $versandart->eSteuer === 'netto' ? false : true;
+            $bSteuerPos = $versandart->eSteuer === 'netto' ? false : true;
             // Ticket #1298 Inselzuschläge müssen bei Versandkostenfrei berücksichtigt werden
             $fVersandpreis = $versandart->fEndpreis;
             if (isset($versandart->Zuschlag->fZuschlag)) {
@@ -1724,7 +1723,7 @@ function versandartKorrekt($kVersandart, $aFormValues = 0)
                 $_SESSION['Warenkorb']->gibVersandkostenSteuerklasse($cISO),
                 C_WARENKORBPOS_TYP_VERSANDPOS,
                 true,
-                true//$bSteuerPos
+                $bSteuerPos
             );
             pruefeVersandkostenfreiKuponVorgemerkt();
             //Zuschlag?
@@ -1751,7 +1750,7 @@ function versandartKorrekt($kVersandart, $aFormValues = 0)
                     $versandart->Zuschlag->fZuschlag,
                     $_SESSION['Warenkorb']->gibVersandkostenSteuerklasse($cISO), C_WARENKORBPOS_TYP_VERSANDZUSCHLAG,
                     true,
-                    true//$bSteuerPos
+                    $bSteuerPos
                 );
             }
             $_SESSION['Versandart'] = $versandart;

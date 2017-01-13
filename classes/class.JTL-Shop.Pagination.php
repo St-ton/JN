@@ -12,12 +12,12 @@ class Pagination
     /**
      * @var string
      */
-    private $cId                     = 'pagi';
+    private $cId = 'pagi';
 
     /**
      * @var int
      */
-    private $nDispPagesRadius        = 2;
+    private $nDispPagesRadius = 2;
 
     /**
      * @var array
@@ -27,107 +27,112 @@ class Pagination
     /**
      * @var array
      */
-    private $cSortByOption_arr       = [];
+    private $cSortByOption_arr = [];
 
     /**
      * @var int
      */
-    private $nItemCount              = 0;
+    private $nItemCount = 0;
 
     /**
      * @var int
      */
-    private $nItemsPerPage           = 10;
+    private $nItemsPerPage = 10;
+
+    /**
+     * @var bool
+     */
+    private $bItemsPerPageExplicit = false;
 
     /**
      * @var int
      */
-    private $nSortBy                 = 0;
+    private $nSortBy = 0;
 
     /**
      * @var int
      */
-    private $nSortDir                = 0;
+    private $nSortDir = 0;
 
     /**
      * @var int
      */
-    private $nSortByDir              = 0;
+    private $nSortByDir = 0;
 
     /**
      * @var int
      */
-    private $nPage                   = 0;
+    private $nPage = 0;
 
     /**
      * @var int
      */
-    private $nPageCount              = 0;
+    private $nPageCount = 0;
 
     /**
      * @var int
      */
-    private $nPrevPage               = 0;
+    private $nPrevPage = 0;
 
     /**
      * @var int
      */
-    private $nNextPage               = 0;
+    private $nNextPage = 0;
 
     /**
      * @var int
      */
-    private $nLeftRangePage          = 0;
+    private $nLeftRangePage = 0;
 
     /**
      * @var int
      */
-    private $nRightRangePage         = 0;
+    private $nRightRangePage = 0;
 
     /**
      * @var int
      */
-    private $nFirstPageItem          = 0;
+    private $nFirstPageItem = 0;
 
     /**
      * @var int
      */
-    private $nPageItemCount          = 0;
+    private $nPageItemCount = 0;
 
     /**
      * @var string
      */
-    private $cSortBy                 = '';
+    private $cSortBy = '';
 
     /**
      * @var string
      */
-    private $cSortDir                = '';
+    private $cSortDir = '';
 
     /**
      * @var string
      */
-    private $cLimitSQL               = '';
+    private $cLimitSQL = '';
 
     /**
      * @var string
      */
-    private $cOrderSQL               = '';
+    private $cOrderSQL = '';
 
     /**
      * @var null|array
      */
-    private $oItem_arr               = null;
+    private $oItem_arr = null;
 
     /**
      * @var null|array
      */
-    private $oPageItem_arr           = null;
+    private $oPageItem_arr = null;
 
     /**
      * @var int
      */
-    private $nDefaultItemsPerPage    = 0;
+    private $nDefaultItemsPerPage = 0;
 
     /**
      * Pagination constructor.
@@ -219,12 +224,15 @@ class Pagination
     }
 
     /**
+     * Explicitly set the number of items per page. This overrides any custom selection.
+     *
      * @param int $nItemsPerPage
      * @return $this
      */
     public function setItemsPerPage($nItemsPerPage)
     {
-        $this->nItemsPerPage = $nItemsPerPage;
+        $this->bItemsPerPageExplicit = true;
+        $this->nItemsPerPage         = $nItemsPerPage;
 
         return $this;
     }
@@ -236,7 +244,7 @@ class Pagination
     public function loadParameters()
     {
         $this->nItemsPerPage =
-            isset($this->nItemsPerPage)                     ? $this->nItemsPerPage : (
+            $this->bItemsPerPageExplicit                    ? $this->nItemsPerPage : (
             isset($_GET[$this->cId . '_nItemsPerPage'])     ? (int)$_GET[$this->cId . '_nItemsPerPage'] : (
             isset($_POST[$this->cId . '_nItemsPerPage'])    ? (int)$_POST[$this->cId . '_nItemsPerPage'] : (
             isset($_SESSION[$this->cId . '_nItemsPerPage']) ? (int)$_SESSION[$this->cId . '_nItemsPerPage'] : (

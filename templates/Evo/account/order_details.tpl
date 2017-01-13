@@ -1,3 +1,7 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license http://jtl-url.de/jtlshoplicense
+ *}
 <script type="text/javascript">
     if (top.location !== self.location) {ldelim}
         top.location = self.location.href;
@@ -254,4 +258,3 @@
 {if !empty($oTrustedShopsBewertenButton->cPicURL)}
     <a href="{$oTrustedShopsBewertenButton->cURL}" target="_blank"><img src="{$oTrustedShopsBewertenButton->cPicURL}" /></a>
 {/if}
-

@@ -972,6 +972,16 @@ class Artikel
     public $cacheHit = false;
 
     /**
+     * @var string
+     */
+    public $cKurzbezeichnung = '';
+
+    /**
+     * @var array
+     */
+    public $languageURLs = [];
+
+    /**
      * Konstruktor
      *
      * @param int $kArtikel
@@ -995,14 +1005,15 @@ class Artikel
             } elseif (!empty($this->oKategorie_arr)) {
                 //oKategorie_arr already has all categories for this article in it
                 if (isset($_SESSION['LetzteKategorie'])) {
-                    foreach ($this->oKategorie_arr as $category) {
-                        if ($category->kKategorie == (int)$_SESSION['LetzteKategorie']) {
-                            return (int)$category->kKategorie;
+                    $lastCategoryID = (int)$_SESSION['LetzteKategorie'];
+                    foreach ($this->oKategorie_arr as $categoryID) {
+                        if ($categoryID === $lastCategoryID) {
+                            return $categoryID;
                         }
                     }
                 }
 
-                return $this->oKategorie_arr[0]->kKategorie;
+                return $this->oKategorie_arr[0];
             }
             $categoryFilter = (isset($_SESSION['LetzteKategorie']))
                 ? " AND tkategorieartikel.kKategorie = " . (int)$_SESSION['LetzteKategorie']
@@ -1727,6 +1738,9 @@ class Artikel
                 return true;
                 break;
             case ART_ATTRIBUT_AMPELTEXT_ROT:
+                return true;
+                break;
+            case ART_ATTRIBUT_SHORTNAME:
                 return true;
                 break;
         }
@@ -3006,12 +3020,12 @@ class Artikel
      * @param bool $bSeo
      * @return $this
      */
-    public function baueArtikelSprachURL($bSeo)
+    public function baueArtikelSprachURL($bSeo = true)
     {
         // Baue SprachwechselURLs
         if (is_array($_SESSION['Sprachen']) && count($_SESSION['Sprachen']) > 0) {
             foreach ($_SESSION['Sprachen'] as $oSprache) {
-                $this->cSprachURL_arr[$oSprache->kSprache] = 'navi.php?a=' . $this->kArtikel . '&amp;lang=' . $oSprache->cISO;
+                $this->cSprachURL_arr[$oSprache->cISO] = 'navi.php?a=' . $this->kArtikel . '&amp;lang=' . $oSprache->cISO;
             }
         }
         // Baue SprachwechselURLs
@@ -3039,7 +3053,7 @@ class Artikel
                         }
                         if ($bSprachSeo) {
                             if (isset($oSeoAssoc_arr[$oSprache->kSprache])) {
-                                $this->cSprachURL_arr[$oSprache->kSprache] = $oSeoAssoc_arr[$oSprache->kSprache]->cSeo;
+                                $this->cSprachURL_arr[$oSprache->cISO] = $oSeoAssoc_arr[$oSprache->kSprache]->cSeo;
                             }
                         }
                     }
@@ -3074,6 +3088,7 @@ class Artikel
             'nWarenlager',
             'bSimilar',
             'nRatings',
+            'nLanguageURLs',
         ];
     }
 
@@ -3126,6 +3141,7 @@ class Artikel
         $oArtikelOptionen->nKonfig               = 1;
         $oArtikelOptionen->nMain                 = 1;
         $oArtikelOptionen->bSimilar              = true;
+        $oArtikelOptionen->nLanguageURLs         = 1;
 
         return $oArtikelOptionen;
     }
@@ -3586,7 +3602,7 @@ class Artikel
         // Kategorie
         if (isset($oArtikelOptionen->nKategorie) && $oArtikelOptionen->nKategorie == 1) {
             $kArtikel             = ($this->kVaterArtikel > 0) ? $this->kVaterArtikel : $this->kArtikel;
-            $this->oKategorie_arr = $this->getCategories($kArtikel, $kSprache, $kKundengruppe);
+            $this->oKategorie_arr = $this->getCategories($kArtikel, $kKundengruppe);
         }
         if (!isset($oArtikelOptionen->nVariationKombi)) {
             $oArtikelOptionen->nVariationKombi = 0;
@@ -3791,6 +3807,9 @@ class Artikel
             $this->holehilfreichsteBewertung($kSprache)
                  ->holeBewertung($kSprache, -1, 1, 0, $conf['bewertung']['bewertung_freischalten'], 0);
         }
+        if (isset($oArtikelOptionen->nLanguageURLs) && $oArtikelOptionen->nLanguageURLs === 1 && count($_SESSION['Sprachen']) > 0) {
+            $this->baueArtikelSprachURL();
+        }
 
         $cacheTags = [CACHING_GROUP_ARTICLE . '_' . $this->kArtikel, CACHING_GROUP_ARTICLE];
         executeHook(HOOK_ARTIKEL_CLASS_FUELLEARTIKEL, [
@@ -3809,16 +3828,27 @@ class Artikel
         }
         $this->rabattierePreise();
 
+        $this->cKurzbezeichnung = isset($this->AttributeAssoc[ART_ATTRIBUT_SHORTNAME])
+            ? $this->AttributeAssoc[ART_ATTRIBUT_SHORTNAME]
+            : $this->cName;
+
         return $this;
     }
 
     /**
+     * @return array
+     */
+    public function getLanguageURLs()
+    {
+        return $this->cSprachURL_arr;
+    }
+
+    /**
      * @param int $kArtikel
-     * @param int $kSprache
      * @param int $kKundengruppe
      * @return array
      */
-    private function getCategories($kArtikel = 0, $kSprache = 0, $kKundengruppe = 0)
+    private function getCategories($kArtikel = 0, $kKundengruppe = 0)
     {
         $oKategorie_arr = [];
         $kArtikelKey    = (int)$this->kArtikel;
@@ -3829,23 +3859,21 @@ class Artikel
         if ($kKundengruppe > 0) {
             $kKdgKey = (int)$kKundengruppe;
         }
-        if (!$kSprache) {
-            $oSprache = gibStandardsprache(true);
-            $kSprache = $oSprache->kSprache;
-        }
         $oKat_arr = Shop::DB()->query(
             "SELECT tkategorieartikel.kKategorie
-                  FROM tkategorieartikel
-                  LEFT JOIN tkategoriesichtbarkeit ON tkategoriesichtbarkeit.kKategorie = tkategorieartikel.kKategorie
+                FROM tkategorieartikel
+                LEFT JOIN tkategoriesichtbarkeit 
+                    ON tkategoriesichtbarkeit.kKategorie = tkategorieartikel.kKategorie
                     AND tkategoriesichtbarkeit.kKundengruppe = " . $kKdgKey . "
-                  JOIN tkategorie ON tkategorie.kKategorie = tkategorieartikel.kKategorie
-                  WHERE tkategoriesichtbarkeit.kKategorie IS NULL
+                JOIN tkategorie 
+                    ON tkategorie.kKategorie = tkategorieartikel.kKategorie
+                WHERE tkategoriesichtbarkeit.kKategorie IS NULL
                     AND tkategorieartikel.kArtikel = " . $kArtikelKey, 2
         );
         if (is_array($oKat_arr) && count($oKat_arr) > 0) {
             foreach ($oKat_arr as $oKat) {
-                if (isset($oKat->kKategorie) && $oKat->kKategorie > 0) {
-                    $oKategorie_arr[] = new Kategorie($oKat->kKategorie, (int)$kSprache, $kKdgKey);
+                if (!empty($oKat->kKategorie)) {
+                    $oKategorie_arr[] = (int)$oKat->kKategorie;//new Kategorie($oKat->kKategorie, (int)$kSprache, $kKdgKey);
                 }
             }
         }

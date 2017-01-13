@@ -318,16 +318,15 @@ class LinkHelper
                     $linkGroups->{$Linkgruppe->cTemplatename}->cLocalizedName[$Linkgruppesprache->cISOSprache] = $Linkgruppesprache->cName;
                 }
 
-                $active = " AND tlink.bIsActive = 1 ";
-                $loginSichtbarkeit = (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) ?
-                    '' :
-                    " AND tlink.cSichtbarNachLogin = 'N' ";
+                $loginSichtbarkeit = (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0)
+                    ? ''
+                    : " AND tlink.cSichtbarNachLogin = 'N' ";
                 $Links = Shop::DB()->query(
                     "SELECT tlink.*, tplugin.nStatus AS nPluginStatus
                         FROM tlink
                         LEFT JOIN tplugin
                             ON tplugin.kPlugin = tlink.kPlugin
-                        WHERE tlink.kLinkgruppe = " . $Linkgruppe->kLinkgruppe . " " . $loginSichtbarkeit . " " . $active . "
+                        WHERE tlink.bIsActive = 1 AND tlink.kLinkgruppe = " . $Linkgruppe->kLinkgruppe . $loginSichtbarkeit . "
                             AND (tlink.cKundengruppen IS NULL
                             OR tlink.cKundengruppen = 'NULL'
                             OR tlink.cKundengruppen LIKE '" . $customerGroupID . ";%'
@@ -773,52 +772,77 @@ class LinkHelper
     public function getPageLink($kLink)
     {
         $kLink   = (int)$kLink;
-        $cacheID = 'page_' . $kLink . '_' . Shop::$kSprache . ((isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) ? 'vis' : 'nvis');
-        if (($Link = Shop::Cache()->get($cacheID)) !== false) {
-            return $Link;
+        $cacheID = 'page_' . $kLink . '_' . ((isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) ? 'vis' : 'nvis');
+        if (($links = Shop::Cache()->get($cacheID)) !== false) {
+            if (is_array($links)) {
+                foreach ($links as $link) {
+                    if ($link->kSprache == Shop::getLanguage()) {
+                        return $link;
+                    }
+                }
+            }
         }
-        $Link = new stdClass();
+        $urls = [];
+        $link = new stdClass();
         if ($kLink > 0) {
             //hole Link
-            $active = " AND tlink.bIsActive = 1 ";
-            $loginSichtbarkeit = " AND tlink.cSichtbarNachLogin = 'N' ";
-            if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
-                $loginSichtbarkeit = '';
-            }
-            $Link = Shop::DB()->query("
-                SELECT tlink.*, tseo.cSeo
+            $loginSichtbarkeit = (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0)
+                ? ''
+                : " AND tlink.cSichtbarNachLogin = 'N' ";
+            //get links for ALL languages
+            $links = Shop::DB()->query("
+                SELECT tlink.*, tseo.cSeo, tseo.kSprache, tsprache.cISO
                     FROM tlink
                     LEFT JOIN tseo
                         ON tseo.cKey = 'kLink'
                         AND tseo.kKey = " . $kLink . "
-                        AND tseo.kSprache = " . (int)Shop::$kSprache . "
-                    WHERE tlink.kLink = " . $kLink . "
-                        " . $active . "
-                        " . $loginSichtbarkeit . "
+                    LEFT JOIN tsprache
+						ON tsprache.kSprache = tseo.kSprache
+                    WHERE tlink.bIsActive = 1 AND tlink.kLink = " . $kLink .
+                        $loginSichtbarkeit . "
                         AND (tlink.cKundengruppen IS NULL
                         OR tlink.cKundengruppen = 'NULL'
                         OR tlink.cKundengruppen LIKE '" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";%'
-                        OR tlink.cKundengruppen LIKE '%;" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";%')", 1
+                        OR tlink.cKundengruppen LIKE '%;" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";%')", 2
             );
-            if ($Link === null || $Link === false) {
-                $Link = new stdClass();
+            $link = new stdClass();
+            if (!empty($links)) {
+                //collect language URLs
+                foreach ($links as $item) {
+                    if ($item->kSprache === null && $item->cISO === null) {
+                        //there may be no entries in tseo if there is only one active language
+                        $item->kSprache = Shop::getLanguage();
+                        $item->cISO     = Shop::getLanguage(true);
+                    }
+                    $item->nHTTPRedirectCode = 0;
+                    $item->bHideContent      = false;
+                    $urls[$item->cISO] = (!empty($item->cSeo))
+                        ? $item->cSeo :
+                        'index.php?s=' . $item->kLink . '&amp;lang=' . $item->cISO;
+                    if ($item->kSprache == Shop::getLanguage()) {
+                        $link = $item;
+                    }
+                    $item->cLocalizedSeo = [];
+                    $item->cLocalizedSeo[$item->cISO] = $item->cSeo;
+                }
+                //append language URLs to all links
+                foreach ($links as $item) {
+                    $item->languageURLs = $urls;
+                }
             }
+            Shop::Cache()->set($cacheID, $links, [CACHING_GROUP_CORE]);
         }
-        $Link->nHTTPRedirectCode = 0;
-        $Link->bHideContent      = false;
-        if (!isset($Link->kLink)) {
-            $Link = Shop::DB()->select('tlink', 'nLinkart', LINKTYP_STARTSEITE);
-            if ($Link->kLink != $kLink) {
-                $Link->nHTTPRedirectCode = 301;
+        if (!isset($link->kLink)) {
+            $link = Shop::DB()->select('tlink', 'nLinkart', LINKTYP_STARTSEITE);
+            if ($link->kLink != $kLink) {
+                $link->nHTTPRedirectCode = 301;
             } else {
-                $Link->bHideContent = true;
+                $link->nHTTPRedirectCode = 0;
+                $link->bHideContent      = true;
             }
-        } elseif (isset($Link->cSeo) && strlen($Link->cSeo) > 0) {
-            $Link->cLocalizedSeo[Shop::$cISO] = $Link->cSeo;
         }
-        Shop::Cache()->set($cacheID, $Link, [CACHING_GROUP_CATEGORY, CACHING_GROUP_CORE]);
 
-        return $Link;
+        return $link;
     }
 
     /**

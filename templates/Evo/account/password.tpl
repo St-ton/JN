@@ -2,7 +2,6 @@
 <h1>{lang key="forgotPassword" section="global"}</h1>
 
 {include file="snippets/extension.tpl"}
-
 {if !empty($cFehler)}
     <div class="alert alert-danger">{$cFehler}</div>
 {/if}

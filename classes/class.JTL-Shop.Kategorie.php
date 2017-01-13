@@ -116,6 +116,11 @@ class Kategorie
     public $kSprache;
 
     /**
+     * @var string
+     */
+    public $cKurzbezeichnung = '';
+
+    /**
      * @param int  $kKategorie Falls angegeben, wird der Kategorie mit angegebenem kKategorie aus der DB geholt
      * @param int  $kSprache
      * @param int  $kKundengruppe
@@ -315,6 +320,10 @@ class Kategorie
         }
         //interne Verlinkung $#k:X:Y#$
         $this->cBeschreibung         = parseNewsText($this->cBeschreibung);
+        // Kurzbezeichnung
+        $this->cKurzbezeichnung      = (isset($this->categoryAttributes[ART_ATTRIBUT_SHORTNAME]))
+            ? $this->categoryAttributes[ART_ATTRIBUT_SHORTNAME]->cWert
+            : $this->cName;
         $cacheTags                   = [CACHING_GROUP_CATEGORY . '_' . $kKategorie, CACHING_GROUP_CATEGORY];
         executeHook(HOOK_KATEGORIE_CLASS_LOADFROMDB, [
             'oKategorie' => &$this,

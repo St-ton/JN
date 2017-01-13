@@ -1363,7 +1363,6 @@ class Navigationsfilter
                 $oTags_arr[$key]->cURL = StringHandler::htmlentitydecode($oTags->cURL);
             }
             $oSuchergebnisse->TagsJSON = Boxen::gibJSONString($oTags_arr);
-
         }
         $oSuchergebnisse->MerkmalFilter    = $this->attributeFilterCompat->getOptions([
             'oAktuelleKategorie' => $AktuelleKategorie,
@@ -1378,14 +1377,12 @@ class Navigationsfilter
             $oSuchergebnisse->SuchFilterJSON[$key]       = $oSuchfilter;
             $oSuchergebnisse->SuchFilterJSON[$key]->cURL = StringHandler::htmlentitydecode($oSuchfilter->cURL);
         }
-        $oSuchergebnisse->SuchFilterJSON = Boxen::gibJSONString($oSuchergebnisse->SuchFilterJSON);
-
-
+        $oSuchergebnisse->SuchFilterJSON     = Boxen::gibJSONString($oSuchergebnisse->SuchFilterJSON);
         $oSuchergebnisse->Suchspecialauswahl = (!$this->params['kSuchspecial'] && !$this->params['kSuchspecialFilter'])
             ? $this->SuchspecialFilter->getOptions()
             : null;
-
-        $oSuchergebnisse->customFilters = [];
+        $oSuchergebnisse->customFilters      = [];
+        
         foreach($this->filters as $filter) {
             $filterObject                     = new stdClass();
             $filterObject->cClassname         = $filter->getClassName();
@@ -1529,7 +1526,7 @@ class Navigationsfilter
         if (!empty($groupBy)) {
             $groupBy = "GROUP BY " . implode(', ', $groupBy);
         }
-        $query = "SELECT " . implode(', ', $select) . "
+        return "SELECT " . implode(', ', $select) . "
             FROM tartikel " . $joins . "
             #default conditions
             WHERE tartikelsichtbarkeit.kArtikel IS NULL
@@ -1544,8 +1541,6 @@ class Navigationsfilter
             " . $order . "
             #limit sql
             " . $limit;
-
-        return $query;
     }
 
     /**
@@ -1819,7 +1814,7 @@ class Navigationsfilter
             }
         }
         //remove extra filters from url array if getDoUnset equals true
-        if (method_exists($extraFilter, 'getDoUnset') && $extraFilter->getDoUnset()) {
+        if (method_exists($extraFilter, 'getDoUnset') && $extraFilter->getDoUnset() === true) {
             if ($extraFilter->getValue() === 0) {
                 unset($urlParams[$extraFilter->getUrlParam()]);
             } else {
@@ -2025,62 +2020,48 @@ class Navigationsfilter
         switch (strtolower($sort)) {
             case SEARCH_SORT_CRITERION_NAME:
                 return SEARCH_SORT_NAME_ASC;
-                break;
 
             case SEARCH_SORT_CRITERION_NAME_ASC:
                 return SEARCH_SORT_NAME_ASC;
-                break;
 
             case SEARCH_SORT_CRITERION_NAME_DESC:
                 return SEARCH_SORT_NAME_DESC;
-                break;
 
             case SEARCH_SORT_CRITERION_PRODUCTNO:
                 return SEARCH_SORT_PRODUCTNO;
-                break;
 
             case SEARCH_SORT_CRITERION_AVAILABILITY:
                 return SEARCH_SORT_AVAILABILITY;
-                break;
 
             case SEARCH_SORT_CRITERION_WEIGHT:
                 return SEARCH_SORT_WEIGHT;
-                break;
 
             case SEARCH_SORT_CRITERION_PRICE:
                 return SEARCH_SORT_PRICE_ASC;
-                break;
 
             case SEARCH_SORT_CRITERION_PRICE_ASC:
                 return SEARCH_SORT_PRICE_ASC;
-                break;
 
             case SEARCH_SORT_CRITERION_PRICE_DESC:
                 return SEARCH_SORT_PRICE_DESC;
-                break;
 
             case SEARCH_SORT_CRITERION_EAN:
                 return SEARCH_SORT_EAN;
-                break;
 
             case SEARCH_SORT_CRITERION_NEWEST_FIRST:
                 return SEARCH_SORT_NEWEST_FIRST;
-                break;
 
             case SEARCH_SORT_CRITERION_DATEOFISSUE:
                 return SEARCH_SORT_DATEOFISSUE;
-                break;
 
             case SEARCH_SORT_CRITERION_BESTSELLER:
                 return SEARCH_SORT_BESTSELLER;
-                break;
 
             case SEARCH_SORT_CRITERION_RATING:
                 return SEARCH_SORT_RATING;
 
             default:
                 return SEARCH_SORT_STANDARD;
-                break;
         }
     }
 
@@ -2090,8 +2071,8 @@ class Navigationsfilter
      */
     public function truncateMetaTitle($cTitle)
     {
-        return (($length = $this->conf['metaangaben']['global_meta_maxlaenge_title']) > 0)
-            ? substr($cTitle, 0, (int)$length)
+        return (($length = (int)$this->conf['metaangaben']['global_meta_maxlaenge_title']) > 0)
+            ? substr($cTitle, 0, $length)
             : $cTitle;
     }
 
@@ -2321,11 +2302,9 @@ class Navigationsfilter
                         foreach ($cSubNameTMP_arr as $j => $cSubNameTMP) {
                             if (strlen($cSubNameTMP) > 2) {
                                 $cSubNameTMP = str_replace(',', '', $cSubNameTMP);
-                                if ($j > 0) {
-                                    $cSubName .= ', ' . $cSubNameTMP;
-                                } else {
-                                    $cSubName .= $cSubNameTMP;
-                                }
+                                $cSubName .= ($j > 0)
+                                    ? ', ' . $cSubNameTMP
+                                    : $cSubNameTMP;
                             }
                         }
                     }
@@ -2356,11 +2335,9 @@ class Navigationsfilter
                 if (!empty($oKategorieListe->elemente) && count($oKategorieListe->elemente) > 0) {
                     foreach ($oKategorieListe->elemente as $i => $oUnterkat) {
                         if (isset($oUnterkat->cName) && strlen($oUnterkat->cName) > 0) {
-                            if ($i > 0) {
-                                $cKatKeywords .= ', ' . $oUnterkat->cName;
-                            } else {
-                                $cKatKeywords .= $oUnterkat->cName;
-                            }
+                            $cKatKeywords .= ($i > 0)
+                                ? ', ' . $oUnterkat->cName
+                                : $oUnterkat->cName;
                         }
                     }
                 }

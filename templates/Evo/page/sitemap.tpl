@@ -44,17 +44,26 @@
                             <div class="col-sm-6 col-md-4">
                                 <ul class="list-unstyled">
                                     <li>
-                                        <a href="{$oKategorie->cURLFull}" title="{$oKategorie->cName}"><strong>{$oKategorie->cName}</strong></a>
+                                        <a href="{$oKategorie->cURLFull}" title="{$oKategorie->cName}">
+                                            <strong>
+                                                {$oKategorie->cKurzbezeichnung}
+                                            </strong>
+                                        </a>
                                     </li>
                                     {foreach name=Subkategorien from=$oKategorie->Unterkategorien item=oSubKategorie}
                                         <li>
-                                            <a href="{$oSubKategorie->cURLFull}" title="{$oKategorie->cName}">{$oSubKategorie->cName}</a>
+                                            <a href="{$oSubKategorie->cURLFull}" title="{$oKategorie->cName}">
+                                                {$oSubKategorie->cKurzbezeichnung}
+                                            </a>
                                         </li>
                                         {if $oSubKategorie->Unterkategorien|@count > 0}
                                             <ul class="list-unstyled">
                                                 {foreach name=SubSubkategorien from=$oSubKategorie->Unterkategorien item=oSubSubKategorie}
                                                     <li>
-                                                        <a href="{$oSubSubKategorie->cURLFull}" title="{$oKategorie->cName}">{$oSubSubKategorie->cName}</a>
+                                                        <a href="{$oSubSubKategorie->cURLFull}"
+                                                           title="{$oKategorie->cName}">
+                                                            {$oSubSubKategorie->cKurzbezeichnung}
+                                                        </a>
                                                     </li>
                                                 {/foreach}
                                             </ul>
@@ -72,7 +81,9 @@
                             {foreach name=kategorien from=$oKategorieliste->elemente item=oKategorie}
                                 {if $oKategorie->Unterkategorien|@count == 0}
                                     <li>
-                                        &nbsp;&nbsp;<a href="{$oKategorie->cURLFull}" title="{$oKategorie->cName}">{$oKategorie->cName}</a>
+                                        &nbsp;&nbsp;<a href="{$oKategorie->cURLFull}" title="{$oKategorie->cName}">
+                                            {$oKategorie->cKurzbezeichnung}
+                                        </a>
                                     </li>
                                 {/if}
                             {/foreach}

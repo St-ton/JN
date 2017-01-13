@@ -87,7 +87,7 @@ class HerstellerHelper
                                         AND tartikelsichtbarkeit.kKundengruppe = " . Kundengruppe::getDefaultGroupID() . "
 							        )
                             )
-                        ORDER BY thersteller.cName", 2
+                        ORDER BY thersteller.nSortNr, thersteller.cName", 2
                 );
                 if (is_array($manufacturers) && count($manufacturers) > 0) {
                     foreach ($manufacturers as $i => $oHersteller) {

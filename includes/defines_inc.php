@@ -224,6 +224,7 @@ define('ART_ATTRIBUT_GRATISGESCHENKAB', 'gratisgeschenk ab');
 define('ART_ATTRIBUT_AMPELTEXT_GRUEN', 'ampel_text_gruen');
 define('ART_ATTRIBUT_AMPELTEXT_GELB', 'ampel_text_gelb');
 define('ART_ATTRIBUT_AMPELTEXT_ROT', 'ampel_text_rot');
+define('ART_ATTRIBUT_SHORTNAME', 'shortname');
 define('KNDGRP_ATTRIBUT_MINDESTBESTELLWERT', 'mindestbestellwert');
 // Fkt Attribute
 define('FKT_ATTRIBUT_KEINE_PREISSUCHMASCHINEN', 'keine preissuchmaschinen');

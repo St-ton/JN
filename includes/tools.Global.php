@@ -36,27 +36,28 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
             $cntchr    = 0;
             $elemCount = count($KategorieListe->elemente) - 1;
             for ($i = $elemCount; $i >= 0; $i--) {
-                $cntchr += strlen($KategorieListe->elemente[$i]->cName);
+                $cntchr += strlen($KategorieListe->elemente[$i]->cKurzbezeichnung);
             }
             for ($i = $elemCount; $i >= 0; $i--) {
-                if (isset($KategorieListe->elemente[$i]->cName) && isset($KategorieListe->elemente[$i]->cURL)) {
+                if (isset($KategorieListe->elemente[$i]->cKurzbezeichnung) && isset($KategorieListe->elemente[$i]->cURL)) {
                     if ($cntchr < 80) {
-                        $SieSindHierString .= ' &gt; <a href="' . $KategorieListe->elemente[$i]->cURL . '">' . $KategorieListe->elemente[$i]->cName . '</a>';
+                        $SieSindHierString .= ' &gt; <a href="' . $KategorieListe->elemente[$i]->cURL . '">'
+                            . $KategorieListe->elemente[$i]->cKurzbezeichnung . '</a>';
                     } else {
-                        $cntchr -= strlen($KategorieListe->elemente[$i]->cName);
+                        $cntchr            -= strlen($KategorieListe->elemente[$i]->cKurzbezeichnung);
                         $SieSindHierString .= ' &gt; ...';
                     }
                     $ele        = new stdClass();
-                    $ele->name  = $KategorieListe->elemente[$i]->cName;
+                    $ele->name  = $KategorieListe->elemente[$i]->cKurzbezeichnung;
                     $ele->url   = $KategorieListe->elemente[$i]->cURL;
                     $brotnavi[] = $ele;
                 }
             }
-            $SieSindHierString .= ' &gt; <a href="' . $Artikel->cURLFull . '">' . $Artikel->cName . '</a>';
-            $ele        = new stdClass();
-            $ele->name  = $Artikel->cName;
-            $ele->url   = $Artikel->cURLFull;
-            $brotnavi[] = $ele;
+            $SieSindHierString .= ' &gt; <a href="' . $Artikel->cURLFull . '">' . $Artikel->cKurzbezeichnung . '</a>';
+            $ele                = new stdClass();
+            $ele->name          = $Artikel->cKurzbezeichnung;
+            $ele->url           = $Artikel->cURLFull;
+            $brotnavi[]         = $ele;
             $SieSindHierString .= '<br />';
             break;
 
@@ -64,17 +65,18 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
             $cntchr    = 0;
             $elemCount = (isset($KategorieListe->elemente)) ? count($KategorieListe->elemente) : 0;
             for ($i = $elemCount - 1; $i >= 0; $i--) {
-                $cntchr += strlen($KategorieListe->elemente[$i]->cName);
+                $cntchr += strlen($KategorieListe->elemente[$i]->cKurzbezeichnung);
             }
             for ($i = $elemCount - 1; $i >= 0; $i--) {
                 if ($cntchr < 80) {
-                    $SieSindHierString .= ' &gt; <a href="' . $KategorieListe->elemente[$i]->cURL . '">' . $KategorieListe->elemente[$i]->cName . '</a>';
+                    $SieSindHierString .= ' &gt; <a href="' . $KategorieListe->elemente[$i]->cURL . '">'
+                        . $KategorieListe->elemente[$i]->cKurzbezeichnung . '</a>';
                 } else {
-                    $cntchr -= strlen($KategorieListe->elemente[$i]->cName);
+                    $cntchr            -= strlen($KategorieListe->elemente[$i]->cKurzbezeichnung);
                     $SieSindHierString .= ' &gt; ...';
                 }
                 $ele        = new stdClass();
-                $ele->name  = $KategorieListe->elemente[$i]->cName;
+                $ele->name  = $KategorieListe->elemente[$i]->cKurzbezeichnung;
                 $ele->url   = $KategorieListe->elemente[$i]->cURL;
                 $brotnavi[] = $ele;
             }
@@ -2364,8 +2366,6 @@ function gibVersandZuschlag($versandart, $cISO, $plz)
  */
 function berechneVersandpreis($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
 {
-    /** @var array('Warenkorb' => Warenkorb) $_SESSION */
-    $fSteuersatz = 0.0;
     if (!isset($oZusatzArtikel->fAnzahl)) {
         if (!isset($oZusatzArtikel)) {
             $oZusatzArtikel = new stdClass();
@@ -2379,7 +2379,7 @@ function berechneVersandpreis($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
     $preis             = 0;
     switch ($versandberechnung->cModulId) {
         case 'vm_versandkosten_pauschale_jtl':
-            $preis = $versandart->fPreis * ((100 + $fSteuersatz) / 100);
+            $preis = $versandart->fPreis;
             break;
 
         case 'vm_versandberechnung_gewicht_jtl':
@@ -2393,7 +2393,7 @@ function berechneVersandpreis($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
                   ORDER BY fBis ASC", 1
             );
             if (isset($versand->kVersandartStaffel)) {
-                $preis = $versand->fPreis * ((100 + $fSteuersatz) / 100);
+                $preis = $versand->fPreis;
             } else {
                 return -1;
             }
@@ -2410,7 +2410,7 @@ function berechneVersandpreis($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
                     ORDER BY fBis ASC", 1
             );
             if (isset($versand->kVersandartStaffel)) {
-                $preis = $versand->fPreis * ((100 + $fSteuersatz) / 100);
+                $preis = $versand->fPreis;
             } else {
                 return -1;
             }
@@ -2431,7 +2431,7 @@ function berechneVersandpreis($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
                     ORDER BY fBis ASC", 1
             );
             if (isset($versand->kVersandartStaffel)) {
-                $preis = $versand->fPreis * ((100 + $fSteuersatz) / 100);
+                $preis = $versand->fPreis;
             } else {
                 return -1;
             }

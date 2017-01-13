@@ -972,6 +972,11 @@ class Artikel
     public $cacheHit = false;
 
     /**
+     * @var string
+     */
+    public $cKurzbezeichnung = '';
+
+    /**
      * @var array
      */
     public $languageURLs = [];
@@ -1733,6 +1738,9 @@ class Artikel
                 return true;
                 break;
             case ART_ATTRIBUT_AMPELTEXT_ROT:
+                return true;
+                break;
+            case ART_ATTRIBUT_SHORTNAME:
                 return true;
                 break;
         }
@@ -3819,6 +3827,10 @@ class Artikel
             $this->oVariationKombiKinderAssoc_arr = $children;
         }
         $this->rabattierePreise();
+
+        $this->cKurzbezeichnung = isset($this->AttributeAssoc[ART_ATTRIBUT_SHORTNAME])
+            ? $this->AttributeAssoc[ART_ATTRIBUT_SHORTNAME]
+            : $this->cName;
 
         return $this;
     }

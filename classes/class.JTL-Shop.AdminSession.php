@@ -54,7 +54,7 @@ class AdminSession
             register_shutdown_function('session_write_close');
         }
 
-        $conf           = Shop::getConfig([CONF_GLOBAL]);
+        $conf           = Shop::getSettings([CONF_GLOBAL]);
         $cookieDefaults = session_get_cookie_params();
         $set            = false;
         $lifetime       = (isset($cookieDefaults['lifetime'])) ? $cookieDefaults['lifetime'] : 0;

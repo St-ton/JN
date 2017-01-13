@@ -22,7 +22,7 @@ function editiereBewertung($cPost_arr)
     require_once PFAD_ROOT . PFAD_INCLUDES . 'bewertung_inc.php';
 
     $kBewertung = verifyGPCDataInteger('kBewertung');
-    $conf       = Shop::getConfig([CONF_BEWERTUNG]);
+    $conf       = Shop::getSettings([CONF_BEWERTUNG]);
     if ($kBewertung > 0 && !empty($cPost_arr['cName']) && !empty($cPost_arr['cTitel']) && isset($cPost_arr['nSterne']) && intval($cPost_arr['nSterne']) > 0) {
         $oBewertung = holeBewertung($kBewertung);
         if (isset($oBewertung->kBewertung) && $oBewertung->kBewertung > 0) {

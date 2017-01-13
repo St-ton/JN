@@ -158,7 +158,7 @@ if (isset($_POST['kaeuferschutzeinstellungen']) && intval($_POST['kaeuferschutze
     }
     $settings = Shopsetting::getInstance();
     $settings->reset();
-    $Einstellungen = Shop::getConfig([CONF_TRUSTEDSHOPS]);
+    $Einstellungen = Shop::getSettings([CONF_TRUSTEDSHOPS]);
     if ($Einstellungen['trustedshops']['trustedshops_kundenbewertung_anzeigen'] === 'N') {
         $oTrustedShops->aenderKundenbewertungsstatusDB(0, $_SESSION['TrustedShops']->oSprache->cISOSprache);
         $oTrustedShops->aenderKundenbewertungsstatus(0, $_SESSION['TrustedShops']->oSprache->cISOSprache);

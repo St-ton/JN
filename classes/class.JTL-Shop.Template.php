@@ -285,7 +285,7 @@ class Template
         $_settingValue      = (string)$node->attributes()->DependsOnSettingValue;
         $_settingComparison = (string)$node->attributes()->DependsOnSettingComparison;
         $_setting           = (string)$node->attributes()->DependsOnSetting;
-        $conf               = Shop::getConfig([$_settingsGroup]);
+        $conf               = Shop::getSettings([$_settingsGroup]);
         $hierarchy          = explode('.', $_setting);
         $iterations         = count($hierarchy);
         $i                  = 0;

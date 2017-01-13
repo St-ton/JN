@@ -174,6 +174,21 @@ final class Shopsetting implements ArrayAccess
     }
 
     /**
+     * @param string $section
+     * @param string $option
+     * @return string|array|int
+     */
+    public function getValue($section, $option)
+    {
+        $settings    = $this->getSettings([$section]);
+        $sectionName = self::mapSettingName($section);
+
+        return (isset($settings[$sectionName][$option]))
+            ? $settings[$sectionName][$option]
+            : null;
+    }
+
+    /**
      * @param null|string $section
      * @param null|string $name
      * @return mixed|null

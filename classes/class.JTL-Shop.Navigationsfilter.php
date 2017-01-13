@@ -289,7 +289,7 @@ class Navigationsfilter
     }
 
     /**
-     * @return FilterBaseManufacturer|FilterBaseCategory|FilterBaseAttribute|FilterBaseSearchQuery|FilterSearch|FilterBaseSearchSpecial|FilterDummyState
+     * @return IFilter
      */
     public function getActiveState()
     {
@@ -313,6 +313,9 @@ class Navigationsfilter
         }
         if (!empty($this->EchteSuche->cSuche)) {
             return $this->Suche;
+        }
+        if ($this->Tag->isInitialized()) {
+            return $this->Tag;
         }
 
         return new FilterDummyState();
@@ -566,7 +569,10 @@ class Navigationsfilter
                 }
             }
         }
-        executeHook(HOOK_NAVIGATIONSFILTER_INIT_FILTER, ['navifilter' => $this, 'params' => $params]);
+        executeHook(HOOK_NAVIGATIONSFILTER_INIT_FILTER, [
+            'navifilter' => $this,
+            'params'     => $params]
+        );
 
         $this->params = $params;
 
@@ -836,7 +842,8 @@ class Navigationsfilter
             if (!$this->hasManufacturer() && !$this->hasCategory() &&
                 !$this->hasTag() && !$this->hasSuchanfrage() && !$this->hasNews() &&
                 !$this->hasNewsOverview() && !$this->hasNewsCategory() &&
-                !isset($this->Suche->cSuche) && !$this->hasAttributeValue() && !$this->hasSearchSpecial()
+                !isset($this->Suche->cSuche) && !$this->hasAttributeValue() &&
+                !$this->hasSearchSpecial()
             ) {
                 //we have a manufacturer filter that doesn't filter anything
                 if ($this->HerstellerFilter->getSeo($this->getLanguageID()) !== null) {
@@ -850,12 +857,16 @@ class Navigationsfilter
                     header('Location: ' . $this->baseURL . $this->KategorieFilter->getSeo($this->getLanguageID()));
                     exit();
                 }
-            } elseif ($this->hasManufacturer() && $this->hasManufacturerFilter() && $this->Hersteller->getSeo($this->getLanguageID()) !== null) {
+            } elseif ($this->hasManufacturer() && $this->hasManufacturerFilter() &&
+                $this->Hersteller->getSeo($this->getLanguageID()) !== null
+            ) {
                 //we have a manufacturer page with some manufacturer filter
                 http_response_code(301);
                 header('Location: ' . $this->baseURL . $this->Hersteller->getSeo($this->getLanguageID()));
                 exit();
-            } elseif ($this->hasCategory() && $this->hasCategoryFilter() && $this->Kategorie->getSeo($this->getLanguageID()) !== null) {
+            } elseif ($this->hasCategory() && $this->hasCategoryFilter() &&
+                $this->Kategorie->getSeo($this->getLanguageID()) !== null)
+            {
                 //we have a category page with some category filter
                 http_response_code(301);
                 header('Location: ' . $this->baseURL . $this->Kategorie->getSeo($this->getLanguageID()));
@@ -886,7 +897,9 @@ class Navigationsfilter
             case SEARCH_SORT_STANDARD:
                 if ($this->Kategorie->kKategorie > 0) {
                     $sort->orderBy = 'tartikel.nSort, tartikel.cName';
-                } elseif ($this->Suche->isInitialized() && isset($_SESSION['Usersortierung']) && (int)$_SESSION['Usersortierung'] === 100) {
+                } elseif ($this->Suche->isInitialized() &&
+                    isset($_SESSION['Usersortierung']) && (int)$_SESSION['Usersortierung'] === 100)
+                {
                     $sort->orderBy = 'tsuchcachetreffer.nSort';
                 } else {
                     $sort->orderBy = 'tartikel.nSort, tartikel.cName';
@@ -963,7 +976,9 @@ class Navigationsfilter
     {
         if (isset($_SESSION['ArtikelProSeite']) && $_SESSION['ArtikelProSeite'] > 0) {
             $limit = (int)$_SESSION['ArtikelProSeite'];
-        } elseif (isset($_SESSION['oErweiterteDarstellung']->nAnzahlArtikel) && $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel > 0) {
+        } elseif (isset($_SESSION['oErweiterteDarstellung']->nAnzahlArtikel) &&
+            $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel > 0)
+        {
             $limit = (int)$_SESSION['oErweiterteDarstellung']->nAnzahlArtikel;
         } else {
             $limit = (($max = $this->conf['artikeluebersicht']['artikeluebersicht_artikelproseite']) > 0)
@@ -1613,7 +1628,10 @@ class Navigationsfilter
                 $customerGroupID,
                 $config,
                 $this->oSprache_arr)
-            )->init(isset($extraFilter->KategorieFilter->kKategorie) ? $extraFilter->KategorieFilter->kKategorie : null);
+            )->init(isset($extraFilter->KategorieFilter->kKategorie)
+                ? $extraFilter->KategorieFilter->kKategorie
+                : null
+            );
         } elseif (
             isset($extraFilter->HerstellerFilter->kHersteller) ||
             (isset($extraFilter->FilterLoesen->Hersteller) && $extraFilter->FilterLoesen->Hersteller === true)
@@ -1623,7 +1641,10 @@ class Navigationsfilter
                 $customerGroupID,
                 $config,
                 $this->oSprache_arr)
-            )->init(isset($extraFilter->HerstellerFilter->kHersteller) ? $extraFilter->HerstellerFilter->kHersteller : null);
+            )->init(isset($extraFilter->HerstellerFilter->kHersteller)
+                ? $extraFilter->HerstellerFilter->kHersteller
+                : null
+            );
         } elseif (
             isset($extraFilter->MerkmalFilter->kMerkmalWert) ||
             isset($extraFilter->FilterLoesen->MerkmalWert)
@@ -1633,7 +1654,10 @@ class Navigationsfilter
                 $customerGroupID,
                 $config,
                 $this->oSprache_arr)
-            )->init(isset($extraFilter->MerkmalFilter->kMerkmalWert) ? $extraFilter->MerkmalFilter->kMerkmalWert : $extraFilter->FilterLoesen->MerkmalWert);
+            )->init(isset($extraFilter->MerkmalFilter->kMerkmalWert)
+                ? $extraFilter->MerkmalFilter->kMerkmalWert
+                : $extraFilter->FilterLoesen->MerkmalWert
+            );
         } elseif (
             isset($extraFilter->MerkmalFilter->kMerkmalWert) ||
             isset($extraFilter->FilterLoesen->Merkmale))
@@ -1643,7 +1667,10 @@ class Navigationsfilter
                 $customerGroupID,
                 $config,
                 $this->oSprache_arr)
-            )->init(isset($extraFilter->MerkmalFilter->kMerkmalWert) ? $extraFilter->MerkmalFilter->kMerkmalWert : $extraFilter->FilterLoesen->Merkmale);
+            )->init(isset($extraFilter->MerkmalFilter->kMerkmalWert)
+                ? $extraFilter->MerkmalFilter->kMerkmalWert
+                : $extraFilter->FilterLoesen->Merkmale
+            );
         } elseif (
             isset($extraFilter->PreisspannenFilter->fVon) ||
             (isset($extraFilter->FilterLoesen->Preisspannen) && $extraFilter->FilterLoesen->Preisspannen === true)
@@ -1653,7 +1680,10 @@ class Navigationsfilter
                 $customerGroupID,
                 $config,
                 $this->oSprache_arr)
-            )->init(isset($extraFilter->PreisspannenFilter->fVon) ? ($extraFilter->PreisspannenFilter->fVon . '_' . $extraFilter->PreisspannenFilter->fBis) : null);
+            )->init(isset($extraFilter->PreisspannenFilter->fVon)
+                ? ($extraFilter->PreisspannenFilter->fVon . '_' . $extraFilter->PreisspannenFilter->fBis)
+                : null
+            );
         } elseif (
             isset($extraFilter->BewertungFilter->nSterne) ||
             (isset($extraFilter->FilterLoesen->Bewertungen) && $extraFilter->FilterLoesen->Bewertungen === true)
@@ -1663,7 +1693,10 @@ class Navigationsfilter
                 $customerGroupID,
                 $config,
                 $this->oSprache_arr)
-            )->init(isset($extraFilter->BewertungFilter->nSterne) ? $extraFilter->BewertungFilter->nSterne : null);
+            )->init(isset($extraFilter->BewertungFilter->nSterne)
+                ? $extraFilter->BewertungFilter->nSterne
+                : null
+            );
         } elseif (
             isset($extraFilter->TagFilter->kTag) ||
             (isset($extraFilter->FilterLoesen->Tags) && $extraFilter->FilterLoesen->Tags === true)
@@ -1673,7 +1706,10 @@ class Navigationsfilter
                 $customerGroupID,
                 $config,
                 $this->oSprache_arr)
-            )->init(isset($extraFilter->TagFilter->kTag) ? $extraFilter->TagFilter->kTag : null);
+            )->init(isset($extraFilter->TagFilter->kTag)
+                ? $extraFilter->TagFilter->kTag
+                : null
+            );
         } elseif (
             isset($extraFilter->SuchspecialFilter->kKey) ||
             (isset($extraFilter->FilterLoesen->Suchspecials) && $extraFilter->FilterLoesen->Suchspecials === true)
@@ -1683,7 +1719,10 @@ class Navigationsfilter
                 $customerGroupID,
                 $config,
                 $this->oSprache_arr)
-            )->init(isset($extraFilter->SuchspecialFilter->kKey) ? $extraFilter->SuchspecialFilter->kKey : null);
+            )->init(isset($extraFilter->SuchspecialFilter->kKey)
+                ? $extraFilter->SuchspecialFilter->kKey
+                : null
+            );
         } elseif (
             isset($extraFilter->SuchFilter->kSuchanfrage) ||
             !empty($extraFilter->FilterLoesen->SuchFilter)
@@ -1693,7 +1732,10 @@ class Navigationsfilter
                 $customerGroupID,
                 $config,
                 $this->oSprache_arr)
-            )->init(isset($extraFilter->SuchFilter->kSuchanfrage) ? $extraFilter->SuchFilter->kSuchanfrage : null);
+            )->init(isset($extraFilter->SuchFilter->kSuchanfrage)
+                ? $extraFilter->SuchFilter->kSuchanfrage
+                : null
+            );
         } elseif (isset($extraFilter->FilterLoesen->SuchFilter)) {
             $filter = (new FilterBaseSearchQuery(
                 $languageID,
@@ -2331,7 +2373,6 @@ class Navigationsfilter
     public function getMetaStart($oSuchergebnisse)
     {
         $cMetaTitle = '';
-
         // MerkmalWert
         if ($this->MerkmalWert->isInitialized()) {
             $cMetaTitle .= $this->MerkmalWert->getName();

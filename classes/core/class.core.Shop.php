@@ -304,11 +304,17 @@ final class Shop
     private static $_logged = null;
 
     /**
+     * @var Shopsetting
+     */
+    private static $_settings;
+
+    /**
      *
      */
     private function __construct()
     {
         self::$_instance = $this;
+        self::$_settings = Shopsetting::getInstance();
     }
 
     /**
@@ -328,9 +334,7 @@ final class Shop
      */
     public function __call($method, $arguments)
     {
-        $mapping = self::map($method);
-
-        return ($mapping !== null)
+        return (($mapping = self::map($method))!== null)
             ? call_user_func_array([$this, $mapping], $arguments)
             : null;
     }
@@ -344,9 +348,7 @@ final class Shop
      */
     public static function __callStatic($method, $arguments)
     {
-        $mapping = self::map($method);
-
-        return ($mapping !== null)
+        return (($mapping = self::map($method)) !== null)
             ? call_user_func_array([self::getInstance(), $mapping], $arguments)
             : null;
     }
@@ -357,7 +359,9 @@ final class Shop
      */
     public function _get($key)
     {
-        return (isset($this->registry[$key]) ? $this->registry[$key] : null);
+        return (isset($this->registry[$key]))
+            ? $this->registry[$key]
+            : null;
     }
 
     /**
@@ -401,7 +405,9 @@ final class Shop
             'get'      => '_get'
         ];
 
-        return (isset($mapping[$method])) ? $mapping[$method] : null;
+        return (isset($mapping[$method]))
+            ? $mapping[$method]
+            : null;
     }
 
     /**
@@ -441,7 +447,7 @@ final class Shop
      */
     public function Config()
     {
-        return Shopsetting::getInstance();
+        return self::$_settings;
     }
 
     /**
@@ -581,9 +587,27 @@ final class Shop
      */
     public static function getSettings($config)
     {
-        $settings = Shopsetting::getInstance();
+        return self::$_settings->getSettings($config);
+    }
 
-        return $settings->getSettings($config);
+    /**
+     * @param string $section
+     * @param string $option
+     * @return string|array|int
+     */
+    public static function getSettingValue($section, $option)
+    {
+        return self::getConfigValue($section, $option);
+    }
+
+    /**
+     * @param string $section
+     * @param string $option
+     * @return string|array|int
+     */
+    public static function getConfigValue($section, $option)
+    {
+        return self::$_settings->getValue($section, $option);
     }
 
     /**

@@ -159,8 +159,6 @@ ifndef('BILD_UPLOAD_ZUGRIFF_VERWEIGERT', PFAD_GFX . 'keinBild.gif');
 ifndef('MEDIAIMAGE_REGEX', '/^media\/image\/(?P<type>product|category|variation|manufacturer)\/(?P<id>\d+)\/(?P<size>xs|sm|md|lg)\/(?P<name>[a-zA-Z0-9\-_]+)(?:(?:~(?P<number>\d+))?)\.(?P<ext>jpg|jpeg|png|gif)$/');
 // Suchcache Lebensdauer in Minuten nach letzter Artikeländerung durch JTL-Wawi
 ifndef('SUCHCACHE_LEBENSDAUER', 60);
-// Customer max order count
-ifndef('CUSTOMER_ACCOUNT_MAX_ORDERS', 50);
 // Steuersatz Standardland OVERRIDE - setzt ein anderes Steuerland, als im Shop angegeben (upper case, ISO 3166-2)
 // ifndef('STEUERSATZ_STANDARD_LAND', 'DE')
 ifndef('JTLLOG_MAX_LOGSIZE', 200000);

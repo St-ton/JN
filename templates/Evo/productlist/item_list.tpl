@@ -13,7 +13,7 @@
 
                     {include file="snippets/image.tpl" src=$Artikel->Bilder[0]->cPfadNormal alt=$alt tplscope=$tplscope}
                     {if !empty($Artikel->Bilder[0]->cPfadNormal)}
-                        <meta itemprop="image" content="{$ShopURL}/{$Artikel->Bilder[0]->cPfadNormal}"
+                        <meta itemprop="image" content="{$ShopURL}/{$Artikel->Bilder[0]->cPfadNormal}">
                     {/if}
                     {if isset($Artikel->oSuchspecialBild)}
                         <img class="overlay-img visible-lg" src="{$Artikel->oSuchspecialBild->cPfadKlein}" alt="{if isset($Artikel->oSuchspecialBild->cSuchspecial)}{$Artikel->oSuchspecialBild->cSuchspecial}{else}{$Artikel->cName}{/if}">

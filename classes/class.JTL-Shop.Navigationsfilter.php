@@ -1382,7 +1382,7 @@ class Navigationsfilter
             ? $this->SuchspecialFilter->getOptions()
             : null;
         $oSuchergebnisse->customFilters      = [];
-        
+
         foreach($this->filters as $filter) {
             $filterObject                     = new stdClass();
             $filterObject->cClassname         = $filter->getClassName();

@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html lang="{$meta_language}" itemscope itemtype="http://schema.org/WebPage">
+<html lang="{$meta_language}" itemscope {if $nSeitenTyp == URLART_ARTIKEL}itemtype="http://schema.org/ItemPage"
+      {elseif $nSeitenTyp == URLART_KATEGORIE}itemtype="http://schema.org/CollectionPage"
+      {else}itemtype="http://schema.org/WebPage"{/if}>
 <head>
     {block name="head-meta"}
         <meta http-equiv="content-type" content="text/html; charset=iso-8859-1">

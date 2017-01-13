@@ -78,7 +78,7 @@ class Warenkorb
      */
     public function loescheDeaktiviertePositionen()
     {
-        $conf = Shop::getConfig([CONF_GLOBAL]);
+        $conf = Shop::getSettings([CONF_GLOBAL]);
         foreach ($this->PositionenArr as $i => $Position) {
             $delete = false;
             if (!empty($Position->Artikel)) {

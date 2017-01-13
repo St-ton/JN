@@ -2824,7 +2824,7 @@ function gibNaviURL($NaviFilter, $bSeo, $oZusatzFilter, $kSprache = 0, $bCanonic
                 if (strlen($NaviFilter->KategorieFilter->cSeo[$kSprache]) === 0) {
                     $bSeo = false;
                 }
-                $conf = Shop::getConfig([CONF_NAVIGATIONSFILTER]);
+                $conf = Shop::getSettings([CONF_NAVIGATIONSFILTER]);
                 if ($conf['navigationsfilter']['kategoriefilter_anzeigen_als'] === 'HF' && !empty($oZusatzFilter->KategorieFilter->kKategorie)) {
                     if (!empty($oZusatzFilter->KategorieFilter->cSeo)) {
                         $cSEOURL .= SEP_KAT . $oZusatzFilter->KategorieFilter->cSeo;

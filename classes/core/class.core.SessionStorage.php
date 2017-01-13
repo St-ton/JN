@@ -65,7 +65,7 @@ class SessionStorage
         }
 
         if ($res === true) {
-            $conf           = Shop::getConfig([CONF_GLOBAL]);
+            $conf           = Shop::getSettings([CONF_GLOBAL]);
             $cookieDefaults = session_get_cookie_params();
             $set            = false;
             $lifetime       = (isset($cookieDefaults['lifetime'])) ?

@@ -346,7 +346,7 @@ class Redirect
                 }
                 $oItem = $this->find($cUrl);
                 if (!is_object($oItem)) {
-                    $conf = Shop::getConfig([CONF_GLOBAL]);
+                    $conf = Shop::getSettings([CONF_GLOBAL]);
                     if (!isset($_GET['notrack']) && (!isset($conf['global']['redirect_save_404']) || $conf['global']['redirect_save_404'] === 'Y')) {
                         $oItem           = new self();
                         $oItem->cFromUrl = $cUrl;

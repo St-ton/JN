@@ -59,7 +59,7 @@ class Boxen
      */
     public function __construct()
     {
-        $this->boxConfig = Shop::getConfig([
+        $this->boxConfig = Shop::getSettings([
             CONF_GLOBAL,
             CONF_BOXEN,
             CONF_VERGLEICHSLISTE,

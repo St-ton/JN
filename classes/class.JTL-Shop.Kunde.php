@@ -263,7 +263,7 @@ class Kunde
      */
     public function verifyLoginCaptcha($post)
     {
-        $conf          = Shop::getConfig([CONF_KUNDEN]);
+        $conf          = Shop::getSettings([CONF_KUNDEN]);
         $cBenutzername = $post['email'];
         if (isset($conf['kunden']['kundenlogin_max_loginversuche']) && $conf['kunden']['kundenlogin_max_loginversuche'] !== '' &&
             $conf['kunden']['kundenlogin_max_loginversuche'] > 1 && strlen($cBenutzername) > 0

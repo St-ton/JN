@@ -198,18 +198,17 @@ class Navigationsfilter
      */
     public function __construct(array $options = null)
     {
-        $urls                          = new stdClass();
-        $urls->cAllePreisspannen       = '';
-        $urls->cAlleBewertungen        = '';
-        $urls->cAlleTags               = '';
-        $urls->cAlleSuchspecials       = '';
-        $urls->cAlleErscheinungsdatums = '';
-        $urls->cAlleKategorien         = '';
-        $urls->cAlleHersteller         = '';
-        $urls->cAlleMerkmale           = [];
-        $urls->cAlleMerkmalWerte       = [];
-        $urls->cAlleSuchFilter         = [];
-        $urls->cNoFilter               = null;
+        $urls                    = new stdClass();
+        $urls->cAllePreisspannen = '';
+        $urls->cAlleBewertungen  = '';
+        $urls->cAlleTags         = '';
+        $urls->cAlleSuchspecials = '';
+        $urls->cAlleKategorien   = '';
+        $urls->cAlleHersteller   = '';
+        $urls->cAlleMerkmale     = [];
+        $urls->cAlleMerkmalWerte = [];
+        $urls->cAlleSuchFilter   = [];
+        $urls->cNoFilter         = null;
 
         $this->URL             = $urls;
         $this->oSprache_arr    = (empty($options['languages']))
@@ -1881,22 +1880,31 @@ class Navigationsfilter
      */
     public function createUnsetFilterURLs($bSeo, $oSuchergebnisse)
     {
+        $languageID                  = $this->getLanguageID();
+        $customerGroupID             = $this->getCustomerGroupID();
+        $config                      = $this->getConfig();
+        $oZusatzFilter               = new stdClass();
+        $oZusatzFilter->FilterLoesen = new stdClass();
         if ($this->SuchspecialFilter->isInitialized()) {
             $bSeo = false;
         }
         // URLs bauen, die Filter lösen
-        $oZusatzFilter                          = new stdClass();
-        $oZusatzFilter->FilterLoesen            = new stdClass();
-        $oZusatzFilter->FilterLoesen->Kategorie = true;
 
-        $this->URL->cAlleKategorien = $this->getURL($bSeo, $oZusatzFilter, false, false);
+        $extraFilter = (new FilterItemCategory(
+            $languageID,
+            $customerGroupID,
+            $config,
+            $this->oSprache_arr)
+        )->init(null)->setDoUnset(true);
+        $this->URL->cAlleKategorien = $this->getURL($bSeo, $extraFilter);
 
-        $oZusatzFilter->FilterLoesen             = new stdClass();
-        $oZusatzFilter->FilterLoesen->Hersteller = true;
-
-        $this->URL->cAlleHersteller = $this->getURL($bSeo, $oZusatzFilter);
-
-        $oZusatzFilter->FilterLoesen = new stdClass();
+        $extraFilter = (new FilterItemManufacturer(
+            $languageID,
+            $customerGroupID,
+            $config,
+            $this->oSprache_arr)
+        )->init(null)->setDoUnset(true);
+        $this->URL->cAlleHersteller = $this->getURL($bSeo, $extraFilter);
 
         foreach ($this->MerkmalFilter as $oMerkmal) {
             if (isset($oMerkmal->kMerkmal) && $oMerkmal->kMerkmal > 0) {
@@ -1915,31 +1923,37 @@ class Navigationsfilter
                 $this->URL->cAlleMerkmalWerte[$this->MerkmalWert->getValue()] = $_mmwSeo;
             }
         }
+        $extraFilter = (new FilterItemPriceRange(
+            $languageID,
+            $customerGroupID,
+            $config,
+            $this->oSprache_arr)
+        )->init(null)->setDoUnset(true);
+        $this->URL->cAllePreisspannen = $this->getURL($bSeo, $extraFilter);
 
-        $oZusatzFilter->FilterLoesen               = new stdClass();
-        $oZusatzFilter->FilterLoesen->Preisspannen = true;
+        $extraFilter = (new FilterItemRating(
+            $languageID,
+            $customerGroupID,
+            $config,
+            $this->oSprache_arr)
+        )->init(null)->setDoUnset(true);
+        $this->URL->cAlleBewertungen = $this->getURL($bSeo, $extraFilter);
 
-        $this->URL->cAllePreisspannen = $this->getURL($bSeo, $oZusatzFilter);
+        $extraFilter = (new FilterItemTag(
+            $languageID,
+            $customerGroupID,
+            $config,
+            $this->oSprache_arr)
+        )->init(null)->setDoUnset(true);
+        $this->URL->cAlleTags = $this->getURL($bSeo, $extraFilter);
 
-        $oZusatzFilter->FilterLoesen              = new stdClass();
-        $oZusatzFilter->FilterLoesen->Bewertungen = true;
-
-        $this->URL->cAlleBewertungen = $this->getURL($bSeo, $oZusatzFilter);
-
-        $oZusatzFilter->FilterLoesen       = new stdClass();
-        $oZusatzFilter->FilterLoesen->Tags = true;
-
-        $this->URL->cAlleTags = $this->getURL($bSeo, $oZusatzFilter);
-
-        $oZusatzFilter->FilterLoesen               = new stdClass();
-        $oZusatzFilter->FilterLoesen->Suchspecials = true;
-
-        $this->URL->cAlleSuchspecials = $this->getURL($bSeo, $oZusatzFilter);
-
-        $oZusatzFilter->FilterLoesen                    = new stdClass();
-        $oZusatzFilter->FilterLoesen->Erscheinungsdatum = true;
-
-        $this->URL->cAlleErscheinungsdatums = $this->getURL(false, $oZusatzFilter);
+        $extraFilter = (new FilterItemSearchSpecial(
+            $languageID,
+            $customerGroupID,
+            $config,
+            $this->oSprache_arr)
+        )->init(null)->setDoUnset(true);
+        $this->URL->cAlleSuchspecials = $this->getURL($bSeo, $extraFilter);
 
         $oZusatzFilter->FilterLoesen = new stdClass();
         foreach ($this->SuchFilter as $oSuchFilter) {

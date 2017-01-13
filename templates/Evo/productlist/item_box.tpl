@@ -10,7 +10,9 @@
         {/if}
 
         {include file="snippets/image.tpl" src=$Artikel->Bilder[0]->cPfadNormal alt=$alt}
-
+        {if !empty($Artikel->Bilder[0]->cPfadNormal)}
+            <meta itemprop="image" content="{$ShopURL}/{$Artikel->Bilder[0]->cPfadNormal}"
+        {/if}
         {if isset($Artikel->oSuchspecialBild)}
             <img class="overlay-img hidden-xs" src="{$Artikel->oSuchspecialBild->cPfadKlein}" alt="{if isset($Artikel->oSuchspecialBild->cSuchspecial)}{$Artikel->oSuchspecialBild->cSuchspecial}{else}{$Artikel->cName}{/if}" />
         {/if}
@@ -18,8 +20,11 @@
     {/block}
     {block name="productlist-image-caption"}
     <div class="caption">
-        <h4 class="title"><a href="{$Artikel->cURL}">{$Artikel->cName}</a></h4>
-        {if $Einstellungen.bewertung.bewertung_anzeigen === 'Y' && $Artikel->fDurchschnittsBewertung > 0}{include file='productdetails/rating.tpl' stars=$Artikel->fDurchschnittsBewertung}<br>{/if}
+        <h4 class="title" itemprop="name"><a href="{$Artikel->cURL}">{$Artikel->cName}</a></h4>
+        <meta itemprop="url" content="{$ShopURL}/{$Artikel->cURL}">
+        {if $Einstellungen.bewertung.bewertung_anzeigen === 'Y' && $Artikel->fDurchschnittsBewertung > 0}
+            {include file='productdetails/rating.tpl' stars=$Artikel->fDurchschnittsBewertung}<br>
+        {/if}
         {assign var=price_image value=""}
         {if isset($Artikel->Preise->strPreisGrafik_Suche)}
             {assign var=$price_image value=$Artikel->Preise->strPreisGrafik_Suche}

@@ -12,6 +12,7 @@
                                     <span class="fa fa-home"></span>
                                     <span itemprop="name" class="hidden">{$oItem->name|escape:"html"}</span>
                                 </a>
+                                <meta itemprop="url" content="{$oItem->url}" />
                                 <meta itemprop="position" content="{$smarty.foreach.navi.iteration}" />
                             </li>
                         {elseif $smarty.foreach.navi.last}
@@ -27,9 +28,10 @@
                             </li>
                         {else}
                             <li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
-                                <a itemprop="item" href="{$oItem->url}" title="{$oItem->name|escape:"html"}">
+                                <a itemprop="item" href="{$Shop}/{$oItem->url}" title="{$oItem->name|escape:"html"}">
                                     <span itemprop="name">{$oItem->name}</span>
                                 </a>
+                                <meta itemprop="url" content="{$ShopURL}/{$oItem->url}" />
                                 <meta itemprop="position" content="{$smarty.foreach.navi.iteration}" />
                             </li>
                         {/if}

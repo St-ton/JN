@@ -242,13 +242,12 @@ function get_img_tag($params, &$smarty)
     $imageALT      = isset($params['alt']) ? ' alt="' . truncate($params['alt'], 75) . '"' : '';
     $imageTITLE    = isset($params['title']) ? ' title="' . truncate($params['title'], 75) . '"' : '';
     $imageCLASS    = isset($params['class']) ? ' class="' . truncate($params['class'], 75) . '"' : '';
-    $imageITEMPROP = isset($params['itemprop']) ? ' itemprop="' . truncate($params['itemprop'], 75) . '"' : '';
     if ($oImgSize != null && $oImgSize->size->width > 0 && $oImgSize->size->height > 0) {
         return '<img src="' . $imageURL . '" width="' . $oImgSize->size->width . '" height="' .
-            $oImgSize->size->height . '"' . $imageID . $imageALT . $imageTITLE . $imageCLASS . $imageITEMPROP . ' />';
+            $oImgSize->size->height . '"' . $imageID . $imageALT . $imageTITLE . $imageCLASS . ' />';
     }
 
-    return '<img src="' . $imageURL . '"' . $imageID . $imageALT . $imageTITLE . $imageCLASS . $imageITEMPROP . ' />';
+    return '<img src="' . $imageURL . '"' . $imageID . $imageALT . $imageTITLE . $imageCLASS . ' />';
 }
 
 /**

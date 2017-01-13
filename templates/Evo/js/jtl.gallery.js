@@ -123,17 +123,14 @@
                     .append(image);
 
                 thumb = $('<li />').addClass('item')
-                                   .attr('itemprop', 'image')
-                                   .attr('itemscope', '')
-                                   .attr('itemtype', 'http://schema.org/ImageObject')
                                    .append(
                     $('<img />')
                         .attr('src', item.xs.src)
                         .attr('alt', alt)
                         .attr('width', item.xs.size.width)
                         .attr('height', item.xs.size.height)
-                        .attr('itemprop', 'contentUrl')
                 );
+                thumb = thumb.append($('<meta>').attr('itemprop', 'image').attr('content', item.xs.src));
                 $(template).find('.image-thumbs')
                     .append(thumb);
             }

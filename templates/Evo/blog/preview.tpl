@@ -1,19 +1,19 @@
-<div itemprop="hasPart" itemscope itemtype="https://schema.org/Article" class="panel panel-default">
+<div itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting" class="panel panel-default">
     <div class="panel-heading hide-overflow">
         <div class="panel-title">
-            <a itemprop="mainEntityOfPage" href="{$oNewsUebersicht->cURL}">
+            <a itemprop="url" href="{$oNewsUebersicht->cURL}">
                 <strong><span itemprop="headline">{$oNewsUebersicht->cBetreff}</span></strong>
             </a>
+            <meta itemprop="mainEntityOfPage" content="{$ShopURL}/{$oNewsUebersicht->cURL}">
             <div class="text-muted pull-right v-box">
                 {if empty($oNewsUebersicht->dGueltigVon)}{assign var="dDate" value=$oNewsUebersicht->dErstellt}{else}{assign var="dDate" value=$oNewsUebersicht->dGueltigVon}{/if}
                 {if (isset($oNewsUebersicht->oAuthor))}
                     <div class="hidden-xs v-box">{include file="snippets/author.tpl" oAuthor=$oNewsUebersicht->oAuthor}</div>
                 {else}
-                    <div itemprop="author" itemscope itemtype="http://schema.org/Organization" class="hidden">
+                    <div itemprop="author publisher" itemscope itemtype="http://schema.org/Organization" class="hidden">
                         <span itemprop="name">{$meta_publisher}</span>
-                        <span itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
-                            <img itemprop="contentUrl" src="{$ShopLogoURL}" />
-                        </span>
+                        <meta itemprop="url" content="{$ShopURL}">
+                        <meta itemprop="logo" content="{$ShopURL}/{$ShopLogoURL}">
                     </div>
                 {/if}
                 {if isset($oNewsUebersicht->dErstellt)}<time itemprop="dateModified" class="hidden">{$oNewsUebersicht->dErstellt}</time>{/if}
@@ -39,8 +39,9 @@
         <div class=" row">
             {if !empty($oNewsUebersicht->cPreviewImage)}
                 <div class="col-sm-4 col-xs-12">
-                    <a href="{$oNewsUebersicht->cURL}">
-                        <img itemprop="image" src="{$ShopURL}/{$oNewsUebersicht->cPreviewImage}" alt="" class="img-responsive center-block"/>
+                    <a href="{$oNewsUebersicht->cURL}" >
+                        <img src="{$ShopURL}/{$oNewsUebersicht->cPreviewImage}" alt="" class="img-responsive center-block"/>
+                        <meta itemprop="image" content="{$ShopURL}/{$oNewsUebersicht->cPreviewImage}">
                     </a>
                 </div>
             {/if}

@@ -22,19 +22,13 @@
             <span class="price_img">{$price_image}</span>
         {else}
             <strong class="price text-nowrap{if isset($Artikel->Preise->Sonderpreis_aktiv) && $Artikel->Preise->Sonderpreis_aktiv} special-price{/if}">
-                {if !($Artikel->nIstVater) && $tplscope === 'matrix'}
-                    <meta itemprop="price" content="{$Artikel->Preise->fVKBrutto}">
-                    <meta itemprop="priceCurrency" content="{$smarty.session.Waehrung->cName}">
-                {/if}
                 <span>{$Artikel->Preise->cVKLocalized[$NettoPreise]}</span>{if $tplscope !== 'detail'} <span class="footnote-reference">*</span>{/if}
             </strong>
         {/if}
         {if $tplscope === 'detail'}
             {block name="price-snippets"}
-                {if !($Artikel->nIstVater)}
-                    <meta itemprop="price" content="{$Artikel->Preise->fVKBrutto}">
-                    <meta itemprop="priceCurrency" content="{$smarty.session.Waehrung->cName}">
-                {/if}
+                <meta itemprop="price" content="{$Artikel->Preise->fVKBrutto}">
+                <meta itemprop="priceCurrency" content="{$smarty.session.Waehrung->cName}">
             {/block}
             <div class="price-note">
                 {if $Artikel->cEinheit && ($Artikel->fMindestbestellmenge > 1 || $Artikel->fAbnahmeintervall > 1)}

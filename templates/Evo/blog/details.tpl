@@ -9,21 +9,22 @@
 {if !empty($cNewsErr)}
     <div class="alert alert-danger">{lang key='newsRestricted' section='news'}</div>
 {else}
-    <div itemprop="hasPart" itemscope itemtype="https://schema.org/Article">
+    <article itemprop="mainEntity" itemscope itemtype="https://schema.org/BlogPosting">
+        <meta itemprop="mainEntityOfPage" content="{$ShopURL}/{$oNewsArchiv->cSeo}">
         <h1 itemprop="headline">
             {$oNewsArchiv->cBetreff}
         </h1>
-        <img itemprop="image" src="{$oNewsArchiv->cPreviewImage}" alt="{$oNewsArchiv->cBetreff}"  class="hidden"/>
+        {if isset({$oNewsArchiv->cPreviewImage})}
+            <meta itemprop="image" content="{$ShopURL}/{$oNewsArchiv->cPreviewImage}">
+        {/if}
         <p class="text-muted">
             {if empty($oNewsArchiv->dGueltigVon)}{assign var=dDate value=$oNewsArchiv->dErstellt}{else}{assign var=dDate value=$oNewsArchiv->dGueltigVon}{/if}
             {if (isset($oNewsArchiv->oAuthor))}
                 {include file="snippets/author.tpl" oAuthor=$oNewsArchiv->oAuthor dDate=$dDate cDate=$oNewsArchiv->dGueltigVon_de}
             {else}
-                <div itemprop="author" itemscope itemtype="http://schema.org/Organization" class="hidden">
+                <div itemprop="author publisher" itemscope itemtype="http://schema.org/Organization" class="hidden">
                     <span itemprop="name">{$meta_publisher}</span>
-                    <span itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
-                        <img itemprop="contentUrl" src="{$ShopLogoURL}" />
-                    </span>
+                    <meta itemprop="logo" content="{$ShopUrl}/{$ShopLogoURL}" />
                 </div>
             {/if}
             {if isset($oNewsArchiv->dErstellt)}<time itemprop="dateModified" class="hidden">{$oNewsArchiv->dErstellt}</time>{/if}
@@ -163,5 +164,5 @@
                 <div class="alert alert-danger">{lang key="newsLogin" section="news"}</div>
             {/if}
         {/if}
-    </div>
+    </article>
 {/if}

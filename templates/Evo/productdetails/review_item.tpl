@@ -27,7 +27,9 @@
                 {include file='productdetails/rating.tpl' stars=$oBewertung->nSterne}
                 <small class="hide">
                     <span itemprop="ratingValue">{$oBewertung->nSterne}</span> {lang key="from" section="global"}
-                    <span itemprop="bestRating">5</span></small>
+                    <span itemprop="bestRating">5</span>
+                    <meta itemprop="worstRating" content="1">
+                </small>
             </span>
             <strong>{$oBewertung->cTitel}</strong>
             {if $Einstellungen.bewertung.bewertung_hilfreich_anzeigen === 'Y'}

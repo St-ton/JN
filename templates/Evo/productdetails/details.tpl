@@ -47,12 +47,12 @@
             <div class="product-info-inner">
                 {if $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen !== 'N' && isset($Artikel->cHersteller)}
                     {block name="product-info-manufacturer"}
-                    <div class="manufacturer-row text-right small" itemprop="brand" itemscope itemtype="http://schema.org/Brand">
+                    <div class="manufacturer-row text-right small" itemprop="manufacturer" itemscope itemtype="http://schema.org/Organization">
                         <a href="{$Artikel->cHerstellerSeo}"{if $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen !== 'B'} data-toggle="tooltip" data-placement="left" title="{$Artikel->cHersteller}"{/if} itemprop="url">
                             {if $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen !== 'Y' && (!empty($Artikel->cBildpfad_thersteller) || $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen === 'B') && isset($Artikel->cHerstellerBildKlein)}
-                                <span itemprop="logo" itemscope="" itemtype="http://schema.org/ImageObject">
-                                    <img src="{$Artikel->cHerstellerBildKlein}" alt="{$Artikel->cHersteller}" class="img-sm" itemprop="contentUrl">
-                                </span>
+                                <img src="{$Artikel->cHerstellerBildKlein}" alt="{$Artikel->cHersteller}" class="img-sm">
+                                <meta itemprop="image" content="{$ShopURL}/{$Artikel->cHerstellerBildKlein}">
+                                <meta itemprop="url" content="{$ShopURL}/{$Artikel->cHerstellerSeo}">
                             {/if}
                             {if $Einstellungen.artikeldetails.artikeldetails_hersteller_anzeigen !== 'B'}
                                 <span itemprop="name">{$Artikel->cHersteller}</span>
@@ -114,7 +114,8 @@
                     {/block}
                 {/if}
                 
-                <div class="product-offer" {if !($Artikel->nIstVater)}itemprop="offers" {if $showMatrix}itemref="product-var-matrix"{/if} itemscope itemtype="http://schema.org/Offer"{/if}>
+                <div class="product-offer" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+                    <link itemprop="businessFunction" href="http://purl.org/goodrelations/v1#Sell" />
                     {block name="productdetails-info-hidden"}
                     {if !($Artikel->nIstVater)}
                         <link itemprop="url" href="{$Artikel->cURLFull}" />

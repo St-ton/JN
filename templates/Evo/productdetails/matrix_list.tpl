@@ -10,14 +10,13 @@
                     {/if}
                     {assign var=cVariBox value=$cVariBox|cat:$variation->kEigenschaft|cat:':'|cat:$variation->kEigenschaftWert}
                 {/foreach}
-                <tr class="row" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
-                    <td class="hidden-xs col-sm-1" itemprop="image" itemscope itemtype="http://schema.org/ImageObject">
-                        <img class="img-responsive" src="{$child->Bilder[0]->cPfadMini}" alt="{$child->Bilder[0]->cAltAttribut}" itemprop="contentUrl">
+                <tr class="row">
+                    <td class="hidden-xs col-sm-1">
+                        <img class="img-responsive" src="{$child->Bilder[0]->cPfadMini}" alt="{$child->Bilder[0]->cAltAttribut}">
                     </td>
                     <td class="col-xs-6">
-                        <div itemprop="itemOffered" itemscope itemtype="http://schema.org/Product">
-                            <a href="{$child->cSeo}" itemprop="url"><span itemprop="name">{$child->cName}</span></a>
-                            <meta itemprop="sku" content="{$child->cArtNr}">
+                        <div >
+                            <a href="{$child->cSeo}"><span itemprop="name">{$child->cName}</span></a>
                         </div>
                         <div class="small">
                             {if $child->nErscheinendesProdukt}

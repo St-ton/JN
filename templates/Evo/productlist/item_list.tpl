@@ -12,7 +12,9 @@
                     {/if}
 
                     {include file="snippets/image.tpl" src=$Artikel->Bilder[0]->cPfadNormal alt=$alt tplscope=$tplscope}
-
+                    {if !empty($Artikel->Bilder[0]->cPfadNormal)}
+                        <meta itemprop="image" content="{$ShopURL}/{$Artikel->Bilder[0]->cPfadNormal}"
+                    {/if}
                     {if isset($Artikel->oSuchspecialBild)}
                         <img class="overlay-img visible-lg" src="{$Artikel->oSuchspecialBild->cPfadKlein}" alt="{if isset($Artikel->oSuchspecialBild->cSuchspecial)}{$Artikel->oSuchspecialBild->cSuchspecial}{else}{$Artikel->cName}{/if}">
                     {/if}
@@ -23,7 +25,12 @@
             {/if}
         </div>
         <div class="col-xs-6 col-lg-5">
-            {block name="product-title"}<h4 class="title"><a href="{$Artikel->cURL}">{$Artikel->cName}</a></h4>{/block}
+            {block name="product-title"}
+                <h4 class="title" itemprop="name">
+                    <a href="{$Artikel->cURL}">{$Artikel->cName}</a>
+                </h4>
+                <meta itemprop="url" content="{$ShopURL}/{$Artikel->cURL}">
+            {/block}
             {block name="product-manufacturer"}
                 {if $Einstellungen.artikeluebersicht.artikeluebersicht_hersteller_anzeigen !== 'N'}
                     <div class="media hidden-xs top0 bottom5">

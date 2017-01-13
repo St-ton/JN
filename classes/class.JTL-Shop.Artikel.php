@@ -3810,6 +3810,9 @@ class Artikel
         if (isset($oArtikelOptionen->nLanguageURLs) && $oArtikelOptionen->nLanguageURLs === 1 && count($_SESSION['Sprachen']) > 0) {
             $this->baueArtikelSprachURL();
         }
+        $this->cKurzbezeichnung = (isset($this->AttributeAssoc[ART_ATTRIBUT_SHORTNAME]))
+            ? $this->AttributeAssoc[ART_ATTRIBUT_SHORTNAME]
+            : $this->cName;
 
         $cacheTags = [CACHING_GROUP_ARTICLE . '_' . $this->kArtikel, CACHING_GROUP_ARTICLE];
         executeHook(HOOK_ARTIKEL_CLASS_FUELLEARTIKEL, [
@@ -3827,10 +3830,6 @@ class Artikel
             $this->oVariationKombiKinderAssoc_arr = $children;
         }
         $this->rabattierePreise();
-
-        $this->cKurzbezeichnung = isset($this->AttributeAssoc[ART_ATTRIBUT_SHORTNAME])
-            ? $this->AttributeAssoc[ART_ATTRIBUT_SHORTNAME]
-            : $this->cName;
 
         return $this;
     }

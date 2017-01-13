@@ -1241,7 +1241,7 @@ function fuegeEinInWarenkorb($kArtikel, $anzahl, $oEigenschaftwerte_arr = '', $n
                 return false;
             }
             if ($nWeiterleitung == 0) {
-                $con = (strpos($Artikel->cURLFull, '?' === false)) ? '?' : '&';
+                $con = (strpos($Artikel->cURLFull, '?') === false) ? '?' : '&';
                 if ($Artikel->kEigenschaftKombi > 0) {
                     $url = (!empty($Artikel->cURLFull)) ? ($Artikel->cURLFull . $con) : (Shop::getURL() . '/index.php?a=' . $Artikel->kVaterArtikel . '&a2=' . $Artikel->kArtikel . '&');
                     header('Location: ' . $url . 'n=' . $anzahl . '&r=' . implode(',', $redirectParam), true, 302);

@@ -1810,7 +1810,7 @@ function bearbeiteSuchCache($NaviFilter, $kSpracheExt = 0)
             $oSuchCache->dErstellt  = 'now()';
             $kSuchCache             = Shop::DB()->insert('tsuchcache', $oSuchCache);
 
-            if (isset($conf['artikeluebersicht']['suche_fulltext']) && $conf['artikeluebersicht']['suche_fulltext'] === 'Y') {
+            if (isset($conf['artikeluebersicht']['suche_fulltext']) && $conf['artikeluebersicht']['suche_fulltext'] === 'Y' && isFulltextIndexActive()) {
                 $oSuchCache->kSuchCache = $kSuchCache;
 
                 return bearbeiteSuchCacheFulltext($oSuchCache, $cSuchspalten_arr, $cSuch_arr, $conf['artikeluebersicht']['suche_max_treffer']);
@@ -2198,6 +2198,21 @@ function bearbeiteSuchCacheFulltext($oSuchCache, $cSuchspalten_arr, $cSuch_arr, 
     }
 
     return $oSuchCache->kSuchCache;
+}
+
+/**
+ * @return bool
+ */
+function isFulltextIndexActive()
+{
+    static $active = null;
+
+    if (!isset($active)) {
+        $active = Shop::DB()->query("SHOW INDEX FROM tartikel WHERE KEY_NAME = 'idx_tartikel_fulltext'", 1)
+            && Shop::DB()->query("SHOW INDEX FROM tartikelsprache WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'", 1) ? true : false;
+    }
+
+    return $active;
 }
 
 /**

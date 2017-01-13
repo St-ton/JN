@@ -487,6 +487,8 @@ function updateNotifyDrop() {
         else if(!result.error) {
             if (result.data.tpl) {
                 $('#notify-drop').html(result.data.tpl);
+            } else {
+                $('#notify-drop').html('');
             }
         }
     });

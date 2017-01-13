@@ -16,6 +16,79 @@ $cHinweis         = '';
 $cFehler          = '';
 $Conf             = array();
 
+if (isset($_GET['action']) && $_GET['action'] === 'createIndex') {
+    header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+    header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
+    header('Cache-Control: no-cache, must-revalidate');
+    header('Pragma: no-cache');
+    header('Content-type: application/json');
+
+    $index = strtolower(StringHandler::xssClean($_GET['index']));
+
+    if ((!in_array($index, ['tartikel', 'tartikelsprache']))) {
+        header(makeHTTPHeader(403), true);
+        echo json_encode((object)['error' => 'Ungültiger Index angegeben']);
+        exit;
+    }
+
+    try {
+        if (Shop::DB()->query("SHOW INDEX FROM $index WHERE KEY_NAME = 'idx_{$index}_fulltext'", 1)) {
+            Shop::DB()->executeQuery("ALTER IGNORE TABLE $index DROP KEY idx_{$index}_fulltext", 10);
+        }
+    } catch (Exception $e) {
+        // Fehler beim Index löschen ignorieren
+        null;
+    }
+
+    if ($_GET['create'] === 'Y') {
+        $cSuchspalten_arr = array_map(function ($item) {
+            $item_arr = explode('.', $item, 2);
+
+            return $item_arr[1];
+        }, gibSuchSpalten());
+
+        switch ($index) {
+            case 'tartikel':
+                $cSpalten_arr = array_intersect($cSuchspalten_arr, ['cName', 'cSeo', 'cSuchbegriffe', 'cArtNr', 'cKurzBeschreibung', 'cBeschreibung', 'cBarcode', 'cISBN', 'cHAN', 'cAnmerkung']);
+                break;
+            case 'tartikelsprache':
+                $cSpalten_arr = array_intersect($cSuchspalten_arr, ['cName', 'cSeo', 'cKurzBeschreibung', 'cBeschreibung']);
+                break;
+            default:
+                header(makeHTTPHeader(403), true);
+                echo json_encode((object)['error' => 'Ungültiger Index angegeben']);
+                exit;
+        }
+
+        try {
+            $res = Shop::DB()->executeQuery(
+                "ALTER TABLE $index
+                    ADD FULLTEXT KEY idx_{$index}_fulltext (" . implode(', ', $cSpalten_arr) . ")",
+                10
+            );
+        } catch (Exception $e) {
+            $res = 0;
+        }
+
+        if ($res === 0) {
+            $cFehler = 'Der Index für die Volltextsuche konnte nicht angelegt werden! Die Volltextsuche wird deaktiviert.';
+            $param   = ['suche_fulltext' => 'N'];
+            saveAdminSectionSettings($kSektion, $param);
+
+            Shop::Cache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_CORE, CACHING_GROUP_ARTICLE, CACHING_GROUP_CATEGORY]);
+            $shopSettings->reset();
+        } else {
+            $cHinweis = 'Der Volltextindex für ' . $index . ' wurde angelegt!';
+        }
+    } else {
+        $cHinweis = 'Der Volltextindex für ' . $index . ' wurde gelöscht!';
+    }
+
+    header(makeHTTPHeader(200), true);
+    echo json_encode((object)['error' => $cFehler, 'hinweis' => $cHinweis]);
+    exit;
+}
+
 if (isset($_POST['einstellungen_bearbeiten']) && (int)$_POST['einstellungen_bearbeiten'] === 1 && $kSektion > 0 && validateToken()) {
     if ($_POST['suche_fulltext'] === 'Y') {
         // Bei Volltextsuche die Mindeswortlänge an den DB-Parameter anpassen
@@ -48,59 +121,20 @@ if (isset($_POST['einstellungen_bearbeiten']) && (int)$_POST['einstellungen_bear
         }
     }
     if ($fulltextChanged) {
-        try {
-            if (Shop::DB()->query("SHOW INDEX FROM tartikel WHERE KEY_NAME = 'idx_tartikel_fulltext'", 1)) {
-                Shop::DB()->executeQuery("ALTER IGNORE TABLE tartikel DROP KEY idx_tartikel_fulltext", 10);
-            }
-            if (Shop::DB()->query("SHOW INDEX FROM tartikelsprache WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'", 1)
-            ) {
-                Shop::DB()->executeQuery("ALTER IGNORE TABLE tartikelsprache DROP KEY idx_tartikelsprache_fulltext", 10);
-            }
-        } catch (Exception $e) {
-            // Fehler beim Index löschen ignorieren
-            null;
-        }
+        $smarty->assign('createIndex', $_POST['suche_fulltext']);
+    } else {
+        $smarty->assign('createIndex', false);
     }
 
     if ($_POST['suche_fulltext'] === 'Y' && $fulltextChanged) {
-        $cSuchspalten_arr = array_map(function ($item) {
-            $item_arr = explode('.', $item, 2);
-
-            return $item_arr[1];
-        }, gibSuchSpalten());
-
-        $cSpaltenArtikel_arr = array_intersect($cSuchspalten_arr, ['cName', 'cSeo', 'cSuchbegriffe', 'cArtNr', 'cKurzBeschreibung', 'cBeschreibung', 'cBarcode', 'cISBN', 'cHAN', 'cAnmerkung']);
-        $cSpaltenSprache_arr = array_intersect($cSuchspalten_arr, ['cName', 'cSeo', 'cKurzBeschreibung', 'cBeschreibung']);
-
-        try {
-            $res = Shop::DB()->executeQuery(
-                "ALTER TABLE tartikel
-                    ADD FULLTEXT KEY idx_tartikel_fulltext (" . implode(', ', $cSpaltenArtikel_arr) . ")",
-                10
-            ) + Shop::DB()->executeQuery(
-                "ALTER TABLE tartikelsprache
-                    ADD FULLTEXT KEY idx_tartikelsprache_fulltext (" . implode(', ', $cSpaltenSprache_arr) . ")",
-                10
-            );
-        } catch (Exception $e) {
-            $res = 0;
-        }
-
-        if ($res < 2) {
-            $cFehler = 'Die Indizes für die Volltextsuche konnten nicht angelegt werden! Die Volltextsuche wird deaktiviert.';
-            $param   = ['suche_fulltext' => 'N'];
-            saveAdminSectionSettings($kSektion, $param);
-
-            Shop::Cache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_CORE, CACHING_GROUP_ARTICLE, CACHING_GROUP_CATEGORY]);
-            $shopSettings->reset();
-        } else {
-            $cHinweis .= ' Volltextsuche wurde aktiviert.';
-        }
+        $cHinweis .= ' Volltextsuche wurde aktiviert.';
     } elseif ($fulltextChanged) {
         $cHinweis .= ' Volltextsuche wurde deaktiviert.';
     }
 
     $Einstellungen = Shop::getSettings(array($kSektion));
+} else {
+    $smarty->assign('createIndex', false);
 }
 
 $section = Shop::DB()->select('teinstellungensektion', 'kEinstellungenSektion', $kSektion);
@@ -123,6 +157,13 @@ for ($i = 0; $i < $configCount; $i++) {
     }
 }
 
+if ($Einstellungen['artikeluebersicht']['suche_fulltext'] === 'Y'
+    && (!Shop::DB()->query("SHOW INDEX FROM tartikel WHERE KEY_NAME = 'idx_tartikel_fulltext'", 1)
+        || !Shop::DB()->query("SHOW INDEX FROM tartikelsprache WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'", 1))) {
+    $cFehler = 'Der Volltextindex ist nicht vorhanden! Die Erstellung des Index kann jedoch einige Zeit in Anspruch nehmen. <a href="sucheinstellungen.php" title="Aktualisieren"><i class="alert-danger fa fa-refresh"></i></a>';
+    Notification::getInstance()->add(NotificationEntry::TYPE_WARNING, 'Der Volltextindex wird erstellt!', 'sucheinstellungen.php');
+}
+
 $smarty->configLoad('german.conf', 'einstellungen')
     ->assign('action', 'sucheinstellungen.php')
     ->assign('kEinstellungenSektion', $kSektion)
@@ -134,4 +175,4 @@ $smarty->configLoad('german.conf', 'einstellungen')
     ->assign('cHinweis', $cHinweis)
     ->assign('cFehler', $cFehler)
     ->assign('waehrung', $standardwaehrung->cName)
-    ->display('einstellungen.tpl');
+    ->display('sucheinstellungen.tpl');

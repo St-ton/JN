@@ -947,38 +947,37 @@ function checkAdditionalPayment($paymentMethod)
             break;
 
         case 'za_lastschrift_jtl':
-            if (!isset($_POST['bankname']) || !$_POST['bankname'] || trim($_POST['bankname']) === '') {
+            if (empty($_POST['bankname']) || trim($_POST['bankname']) === '') {
                 $errors['bankname'] = 1;
             }
-            if ($conf['zahlungsarten']['zahlungsart_lastschrift_kontoinhaber_abfrage'] === 'Y' && (!isset($_POST['inhaber']) ||
-                    !$_POST['inhaber'] || trim($_POST['inhaber']) === '')
+            if ($conf['zahlungsarten']['zahlungsart_lastschrift_kontoinhaber_abfrage'] === 'Y' && (empty($_POST['inhaber']) ||
+                    trim($_POST['inhaber']) === '')
             ) {
                 $errors['inhaber'] = 1;
             }
-            if (((isset($_POST['blz']) && $_POST['blz'] && $conf['zahlungsarten']['zahlungsart_lastschrift_kontonummer_abfrage'] !== 'N') ||
+            if (((!empty($_POST['blz']) && $conf['zahlungsarten']['zahlungsart_lastschrift_kontonummer_abfrage'] !== 'N') ||
                     $conf['zahlungsarten']['zahlungsart_lastschrift_kontonummer_abfrage'] === 'Y')
-                && (!isset($_POST['kontonr']) || !$_POST['kontonr'] || isset($_POST['kontonr']) && trim($_POST['kontonr']) == '')
+                && (empty($_POST['kontonr']) || trim($_POST['kontonr']) === '')
             ) {
                 $errors['kontonr'] = 1;
             }
-            if (((isset($_POST['kontonr']) && $_POST['kontonr'] && $conf['zahlungsarten']['zahlungsart_lastschrift_blz_abfrage'] !== 'N') ||
+            if (((!empty($_POST['kontonr']) && $conf['zahlungsarten']['zahlungsart_lastschrift_blz_abfrage'] !== 'N') ||
                     $conf['zahlungsarten']['zahlungsart_lastschrift_blz_abfrage'] === 'Y')
-                && (!isset($_POST['blz']) || !$_POST['blz'] || (isset($_POST['blz']) && trim($_POST['blz']) === ''))
+                && (empty($_POST['blz']) || trim($_POST['blz']) === '')
             ) {
                 $errors['blz'] = 1;
             }
-            if ($conf['zahlungsarten']['zahlungsart_lastschrift_bic_abfrage'] === 'Y' && (!isset($_POST['bic']) || !$_POST['bic'])) {
+            if ($conf['zahlungsarten']['zahlungsart_lastschrift_bic_abfrage'] === 'Y' && empty($_POST['bic'])) {
                 $errors['bic'] = 1;
             }
-            if (((isset($_POST['bic']) && $conf['zahlungsarten']['zahlungsart_lastschrift_iban_abfrage'] !== 'N') ||
-                    $conf['zahlungsarten']['zahlungsart_lastschrift_iban_abfrage'] === 'Y') && !$_POST['iban']
+            if (!empty($_POST['bic']) && $conf['zahlungsarten']['zahlungsart_lastschrift_iban_abfrage'] !== 'N' ||
+                $conf['zahlungsarten']['zahlungsart_lastschrift_iban_abfrage'] === 'Y'
             ) {
-                $errors['iban'] = 1;
-            }
-            if (((isset($_POST['bic']) && $conf['zahlungsarten']['zahlungsart_lastschrift_iban_abfrage'] !== 'N') ||
-                    $conf['zahlungsarten']['zahlungsart_lastschrift_iban_abfrage'] === 'Y') && !plausiIban($_POST['iban'])
-            ) {
-                $errors['iban'] = 2;
+                if (empty($_POST['iban'])) {
+                    $errors['iban'] = 1;
+                } elseif (!plausiIban($_POST['iban'])) {
+                    $errors['iban'] = 2;
+                }
             }
             if (!isset($_POST['kontonr']) && !isset($_POST['blz']) && !isset($_POST['iban']) && !isset($_POST['bic'])) {
                 $errors['kontonr'] = 2;
@@ -998,7 +997,7 @@ function checkAdditionalPayment($paymentMethod)
  */
 function plausiIban($iban)
 {
-    if ($iban === '') {
+    if ($iban === '' || strlen($iban) < 6) {
         return false;
     }
     $iban  = str_replace(' ', '', $iban);

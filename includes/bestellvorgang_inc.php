@@ -1896,9 +1896,12 @@ function checkKundenFormularArray($data, $kundenaccount, $checkpass = 1)
             }
         }
         //existiert diese email bereits?
-        $obj = Shop::DB()->query("SELECT kKunde FROM tkunde WHERE cMail = '" . Shop::DB()->escape($data['email']) . "' AND cPasswort != ''", 1);
-        if (isset($obj->kKunde) && $obj->kKunde > 0) {
-            $ret['email_vorhanden'] = 1;
+        $obj = Shop::DB()->selectAll('tkunde', 'cMail', Shop::DB()->escape($data['email']));
+        foreach ($obj as $customer) {
+            if (!empty($customer->cPasswort) || !empty($customer->kKunde)) {
+                $ret['email_vorhanden'] = 1;
+                break;
+            }
         }
         if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
             //emailadresse anders und existiert dennoch?

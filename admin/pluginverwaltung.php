@@ -102,7 +102,8 @@ if (!empty($_FILES['file_data'])) {
                 if ($nReturnValue == 1 || $nReturnValue == 90) {
                     $PluginInstalliert_arr[$i]->cUpdateFehler = 1;
                 } else {
-                    $PluginInstalliert_arr[$i]->cUpdateFehler = StringHandler::htmlentities(mappePlausiFehler($nReturnValue, $PluginInstalliert));
+                    $PluginInstalliert_arr[$i]->cUpdateFehler =
+                        StringHandler::htmlentities(mappePlausiFehler($nReturnValue, $PluginInstalliert));
                 }
             }
             $PluginInstalliert_arr[$i]->dVersion = number_format(doubleval($PluginInstalliert->nVersion) / 100, 2);
@@ -142,7 +143,8 @@ if (verifyGPCDataInteger('pluginverwaltung_uebersicht') === 1 && validateToken()
         $smarty->assign('oPlugin', $oPlugin)
                ->assign('kPlugin', $kPlugin);
         Shop::Cache()->flushTags([CACHING_GROUP_CORE, CACHING_GROUP_LANGUAGE, CACHING_GROUP_PLUGIN]);
-    } elseif (isset($_POST['lizenzkeyadd']) && intval($_POST['lizenzkeyadd']) === 1 && intval($_POST['kPlugin']) > 0 && validateToken()) { // Lizenzkey eingeben
+    } elseif (isset($_POST['lizenzkeyadd']) && intval($_POST['lizenzkeyadd']) === 1 &&
+        intval($_POST['kPlugin']) > 0 && validateToken()) { // Lizenzkey eingeben
         $step    = 'pluginverwaltung_lizenzkey';
         $kPlugin = (int)$_POST['kPlugin'];
         $oPlugin = Shop::DB()->select('tplugin', 'kPlugin', $kPlugin);
@@ -417,9 +419,19 @@ if (verifyGPCDataInteger('pluginverwaltung_uebersicht') === 1 && validateToken()
         $kPlugin = verifyGPCDataInteger('kPlugin');
         // Zuruecksetzen
         if (verifyGPCDataInteger('kPluginSprachvariable') > 0) {
-            $oPluginSprachvariable = Shop::DB()->select('tpluginsprachvariable', 'kPlugin', $kPlugin, 'kPluginSprachvariable', verifyGPCDataInteger('kPluginSprachvariable'));
+            $oPluginSprachvariable = Shop::DB()->select(
+                'tpluginsprachvariable',
+                'kPlugin',
+                $kPlugin,
+                'kPluginSprachvariable',
+                verifyGPCDataInteger('kPluginSprachvariable')
+            );
             if (isset($oPluginSprachvariable->kPluginSprachvariable) && $oPluginSprachvariable->kPluginSprachvariable > 0) {
-                $nRow = Shop::DB()->delete('tpluginsprachvariablecustomsprache', ['kPlugin', 'cSprachvariable'], [$kPlugin, $oPluginSprachvariable->cName]);
+                $nRow = Shop::DB()->delete(
+                    'tpluginsprachvariablecustomsprache',
+                    ['kPlugin', 'cSprachvariable'],
+                    [$kPlugin, $oPluginSprachvariable->cName]
+                );
                 if ($nRow >= 0) {
                     $cHinweis = 'Sie haben den Installationszustand der ausgew&auml;hlten Variable erfolgreich wiederhergestellt.';
                 } else {
@@ -440,7 +452,11 @@ if (verifyGPCDataInteger('pluginverwaltung_uebersicht') === 1 && validateToken()
                             $cISO                  = strtoupper($oSprache->cISO);
 
                             if (strlen($_POST[$kPluginSprachvariable . '_' . $cISO]) >= 0) {
-                                Shop::DB()->delete('tpluginsprachvariablecustomsprache', ['kPlugin', 'cSprachvariable', 'cISO'], [$kPlugin, $cSprachvariable, $cISO]);
+                                Shop::DB()->delete(
+                                    'tpluginsprachvariablecustomsprache',
+                                    ['kPlugin', 'cSprachvariable', 'cISO'],
+                                    [$kPlugin, $cSprachvariable, $cISO]
+                                );
                                 $oPluginSprachvariableCustomSprache                        = new stdClass();
                                 $oPluginSprachvariableCustomSprache->kPlugin               = $kPlugin;
                                 $oPluginSprachvariableCustomSprache->cSprachvariable       = $cSprachvariable;
@@ -490,7 +506,9 @@ if ($step === 'pluginverwaltung_uebersicht') {
                 $nReturnValue                       = pluginPlausi($PluginInstalliert->kPlugin);
                 $PluginInstalliert_arr[$i]->dUpdate = number_format(doubleval($nVersion) / 100, 2);
 
-                $PluginInstalliert_arr[$i]->cUpdateFehler = ($nReturnValue == 1 || $nReturnValue == 90) ? 1 : StringHandler::htmlentities(mappePlausiFehler($nReturnValue, $PluginInstalliert));
+                $PluginInstalliert_arr[$i]->cUpdateFehler = ($nReturnValue == 1 || $nReturnValue == 90)
+                    ? 1
+                    : StringHandler::htmlentities(mappePlausiFehler($nReturnValue, $PluginInstalliert));
             }
             $PluginInstalliert_arr[$i]->dVersion = number_format(doubleval($PluginInstalliert->nVersion) / 100, 2);
             $PluginInstalliert_arr[$i]->cStatus  = $PluginInstalliert->mapPluginStatus($PluginInstalliert->nStatus);
@@ -546,12 +564,11 @@ if ($reload === true) {
     exit();
 }
 if (defined('PLUGIN_DEV_MODE') && PLUGIN_DEV_MODE === true) {
-    $pluginDevNotice = 'Ihr Shop befindet sich im Plugin-Entwicklungsmodus. &Auml;nderungen an der XML-Datei eines aktivierten Plugins bewirken ein automatisches Update.';
-    if (empty($cHinweis)) {
-        $cHinweis = $pluginDevNotice;
-    } else {
-        $cHinweis = $pluginDevNotice . '<br>' . $cHinweis;
-    }
+    $pluginDevNotice = 'Ihr Shop befindet sich im Plugin-Entwicklungsmodus. ' .
+        '&Auml;nderungen an der XML-Datei eines aktivierten Plugins bewirken ein automatisches Update.';
+    $cHinweis        = (empty($cHinweis))
+        ? $pluginDevNotice
+        : $pluginDevNotice . '<br>' . $cHinweis;
 }
 
 $smarty->assign('hinweis', $cHinweis)

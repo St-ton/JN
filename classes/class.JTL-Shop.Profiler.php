@@ -525,7 +525,8 @@ class Profiler
                 file_put_contents($filename, serialize(self::$data));
             }
             $html = '<div class="profile-wrapper" style="position:fixed;z-index:9999;bottom:5px;left:5px;">
-                        <a class="btn btn-danger" target="_blank" rel="nofollow" href="' . Shop::getURL() . '/xhprof_html/index.php?run=' . $runID . '&source=xhprof_jtl">
+                        <a class="btn btn-danger" target="_blank" rel="nofollow" href="' .
+                            Shop::getURL() . '/xhprof_html/index.php?run=' . $runID . '&source=xhprof_jtl">
                         View profile
                         </a>
                     </div>';
@@ -600,7 +601,9 @@ class Profiler
                     echo '<ul class="backtrace">';
                     foreach ($_query->backtrace as $_bt) {
                         echo '<li class="backtrace-item">' .
-                            $_bt['file'] . ':' . $_bt['line'] . ' - ' . ((isset($_bt['class'])) ? ($_bt['class'] . '::') : '') . $_bt['function'] . '()' .
+                            $_bt['file'] . ':' . $_bt['line'] . ' - ' . ((isset($_bt['class']))
+                                ? ($_bt['class'] . '::')
+                                : '') . $_bt['function'] . '()' .
                             '</li>';
                     }
                     echo '</ul>';

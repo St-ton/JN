@@ -1911,7 +1911,6 @@ function checkKundenFormularArray($data, $kundenaccount, $checkpass = 1)
             }
         }
     }
-
     // Selbstdef. Kundenfelder
     if (isset($conf['kundenfeld']['kundenfeld_anzeigen']) && $conf['kundenfeld']['kundenfeld_anzeigen'] === 'Y') {
         $oKundenfeld_arr = Shop::DB()->selectAll('tkundenfeld', 'kSprache', Shop::getLanguage(), 'kKundenfeld, cName, cTyp, nPflicht, nEditierbar');

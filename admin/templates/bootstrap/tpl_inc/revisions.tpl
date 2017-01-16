@@ -35,7 +35,7 @@
                                         {foreach $revision->content->references as $secondaryKey => $ref}
                                             {foreach $show as $attribute}
                                                 {if isset($ref->$attribute)}
-                                                    <h4>{$attribute}:</h4>
+                                                    <h4>{$attribute} ({$secondaryKey}):</h4>
                                                     <div id="diff-{$revision@iteration}-{$attribute}-{$secondaryKey}"></div>
                                                     <div class="hidden" data-references="{$attribute}" data-references-secondary="{$secondaryKey}">{$ref->$attribute|utf8_decode}</div>
                                                 {/if}

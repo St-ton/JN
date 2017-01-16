@@ -42,17 +42,4 @@
                         </span>
                     </h1>
                 </div>
-            {* additionally headline - maybe removed
-                <div class="col-xs-12">
-                    <h3 class="step-header">
-                    {if $step === 'schritt0'}
-                        System-Check
-                    {elseif $step === 'schritt1'}
-                        Benutzerdaten
-                    {elseif $step === 'schritt2'}
-                        Installation abgeschlossen
-                    {/if}
-                    </h3>
-                </div>
-            *}
             </div>

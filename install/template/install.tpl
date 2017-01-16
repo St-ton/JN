@@ -3,7 +3,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  *}
 {include file='tpl_inc/header.tpl'}
-{include file='tpl_inc/test_result.tpl'}    {* --NOTE-- function for rendering the results of each test *}
+{include file='tpl_inc/test_result.tpl'}
 <div class="backend-wrapper container">
     <div class="container-fluid">
         <div class="col-xs-12 print-container">

@@ -5115,7 +5115,7 @@ function getSytemlogFlag($cache = true)
 }
 
 /**
- * @param $gesamtsumme
+ * @param float $gesamtsumme
  * @return float
  */
 function optionaleRundung($gesamtsumme)

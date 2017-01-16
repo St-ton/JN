@@ -261,8 +261,7 @@ class PayPal extends PaymentMethod
                         return false;
                     }
                     // check that txn_id has not been previously processed
-
-                    $txn_id_obj = Shop::DB()->query("SELECT * FROM tzahlungsid WHERE txn_id='" . $args['txn_id'] . "'", 1);
+                    $txn_id_obj = Shop::DB()->select('tzahlungsid', 'txn_id', $args['txn_id']);
                     if (isset($txn_id_obj->kBestellung) && $txn_id_obj->kBestellung > 0) {
                         if (PP_D_MODE == 1) {
                             writeLog(PP_D_PFAD, "ZahlungsID " . $args['txn_id'] . " bereits gehabt.", 1);
@@ -285,7 +284,7 @@ class PayPal extends PaymentMethod
                     if ($_POST['custom']{0} === '_') {
                         checkeExterneZahlung($args['custom']);
                     } else {
-                        $zahlungsid = Shop::DB()->query("SELECT * FROM tzahlungsid WHERE cId='" . $args['custom'] . "'", 1);
+                        $zahlungsid = Shop::DB()->select('tzahlungsid', 'cId', $args['custom']);
                         if (!$zahlungsid->kBestellung) {
                             if (PP_D_MODE == 1) {
                                 writeLog(PP_D_PFAD, "ZahlungsID ist unbekannt: " . $args['custom'], 1);

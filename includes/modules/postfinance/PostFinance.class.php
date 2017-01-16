@@ -104,13 +104,9 @@ class PostFinance extends PaymentMethod
     public function countryMapping($cLand, $kSprache)
     {
         if (strlen($cLand) > 0 && $kSprache > 0) {
-            $oSprache = Shop::DB()->query(
-                "SELECT *
-                    FROM tsprache
-                    WHERE kSprache = " . intval($kSprache), 1
-            );
+            $oSprache = Shop::DB()->select('tsprache', 'kSprache', (int)$kSprache);
 
-            return StringHandler::convertISO2ISO639($oSprache->cISO) . "_" . $cLand;
+            return StringHandler::convertISO2ISO639($oSprache->cISO) . '_' . $cLand;
         }
 
         return '';

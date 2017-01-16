@@ -757,7 +757,7 @@ function lokalisiereKunde($sprache, $kunde)
         if (strtolower($sprache->cISO) !== 'ger') {
             $sel_var = 'cEnglisch';
         }
-        $land = Shop::DB()->query("SELECT cISO, $sel_var AS cName FROM tland WHERE cISO = '" . $kunde->cLand . "'", 1);
+        $land = Shop::DB()->select('tland', 'cISO', $kunde->cLand, null, null, null, null, false, $sel_var . ' AS cName, cISO');
         if (isset($land->cName)) {
             $kunde->cLand = $land->cName;
         }
@@ -777,8 +777,8 @@ function lokalisiereKunde($sprache, $kunde)
 function lokalisiereLieferadresse($oSprache, $oLieferadresse)
 {
     $langRow = (strtolower($oSprache->cISO) === 'ger') ? 'cDeutsch' : 'cEnglisch';
-    $land    = Shop::DB()->query("SELECT cISO, $langRow AS cName FROM tland WHERE cISO = '" . $oLieferadresse->cLand . "'", 1);
-    if (isset($land->cName) && $land->cName) {
+    $land    = Shop::DB()->select('tland', 'cISO', $oLieferadresse->cLand, null, null, null, null, false, $langRow . ' AS cName, cISO');
+    if (!empty($land->cName)) {
         $oLieferadresse->cLand = $land->cName;
     }
 

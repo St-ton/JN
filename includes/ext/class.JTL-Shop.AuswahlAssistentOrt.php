@@ -60,22 +60,14 @@ if (class_exists('AuswahlAssistent')) {
         {
             if ($kAuswahlAssistentGruppe > 0) {
                 $this->oOrt_arr = array();
-                $oOrtTMP_arr    = Shop::DB()->query(
-                    "SELECT *
-                        FROM tauswahlassistentort
-                        WHERE kAuswahlAssistentGruppe = " . (int)$kAuswahlAssistentGruppe, 2
-                );
+                $oOrtTMP_arr    = Shop::DB()->selectAll('tauswahlassistentort', 'kAuswahlAssistentGruppe', (int)$kAuswahlAssistentGruppe);
                 if (is_array($oOrtTMP_arr) && count($oOrtTMP_arr) > 0) {
                     foreach ($oOrtTMP_arr as $oOrtTMP) {
                         $this->oOrt_arr[] = new self($oOrtTMP->kAuswahlAssistentOrt, 0, $bBackend);
                     }
                 }
             } elseif ($kAuswahlAssistentOrt > 0) {
-                $oOrt = Shop::DB()->query(
-                    "SELECT *
-                        FROM tauswahlassistentort
-                        WHERE kAuswahlAssistentOrt = " . (int)$kAuswahlAssistentOrt, 1
-                );
+                $oOrt = Shop::DB()->select('tauswahlassistentort', 'kAuswahlAssistentOrt', (int)$kAuswahlAssistentOrt);
                 if (isset($oOrt->kAuswahlAssistentOrt) && $oOrt->kAuswahlAssistentOrt > 0) {
                     $cMember_arr = array_keys(get_object_vars($oOrt));
                     if (is_array($cMember_arr) && count($cMember_arr) > 0) {
@@ -92,22 +84,12 @@ if (class_exists('AuswahlAssistent')) {
                             }
                             $oKategorie = new Kategorie($this->kKey, AuswahlAssistentGruppe::getLanguage($this->kAuswahlAssistentGruppe));
 
-                            $this->cOrt = $oKategorie->cName . "(Kategorie)";
+                            $this->cOrt = $oKategorie->cName . '(Kategorie)';
                             break;
 
                         case AUSWAHLASSISTENT_ORT_LINK:
-                            $oSprache = Shop::DB()->query(
-                                "SELECT cISO
-                                    FROM tsprache
-                                    WHERE kSprache = " . AuswahlAssistentGruppe::getLanguage($this->kAuswahlAssistentGruppe), 1
-                            );
-
-                            $oLink = Shop::DB()->query(
-                                "SELECT cName
-                                    FROM tlinksprache
-                                    WHERE kLink = " . $this->kKey . "
-                                        AND cISOSprache = '" . $oSprache->cISO . "'", 1
-                            );
+                            $oSprache   = Shop::DB()->select('tsprache', 'kSprache', AuswahlAssistentGruppe::getLanguage($this->kAuswahlAssistentGruppe));
+                            $oLink      = Shop::DB()->select('tlinksprache', 'kLink', $this->kKey, 'cISOSprache', $oSprache->cISO, null, null, false, 'cName');
                             $this->cOrt = (isset($oLink->cName)) ? ($oLink->cName . '(CMS)') : null;
                             break;
 
@@ -282,7 +264,8 @@ if (class_exists('AuswahlAssistent')) {
             $oOrt = Shop::DB()->query(
                 "SELECT kAuswahlAssistentOrt
                     FROM tauswahlassistentort
-                    JOIN tauswahlassistentgruppe ON tauswahlassistentgruppe.kAuswahlAssistentGruppe = tauswahlassistentort.kAuswahlAssistentGruppe
+                    JOIN tauswahlassistentgruppe 
+                        ON tauswahlassistentgruppe.kAuswahlAssistentGruppe = tauswahlassistentort.kAuswahlAssistentGruppe
                         AND tauswahlassistentgruppe.kSprache = " . (int)$kSprache . "
                     WHERE tauswahlassistentort.cKey = '" . AUSWAHLASSISTENT_ORT_KATEGORIE . "'
                         " . $cOrtSQL . "
@@ -310,7 +293,8 @@ if (class_exists('AuswahlAssistent')) {
             $oOrt = Shop::DB()->query(
                 "SELECT kAuswahlAssistentOrt
                     FROM tauswahlassistentort
-                    JOIN tauswahlassistentgruppe ON tauswahlassistentgruppe.kAuswahlAssistentGruppe = tauswahlassistentort.kAuswahlAssistentGruppe
+                    JOIN tauswahlassistentgruppe 
+                        ON tauswahlassistentgruppe.kAuswahlAssistentGruppe = tauswahlassistentort.kAuswahlAssistentGruppe
                         AND tauswahlassistentgruppe.kSprache = " . (int)$kSprache . "
                     WHERE tauswahlassistentort.cKey = '" . AUSWAHLASSISTENT_ORT_LINK . "'
                         " . $cOrtSQL . "
@@ -338,7 +322,8 @@ if (class_exists('AuswahlAssistent')) {
             $oOrt = Shop::DB()->query(
                 "SELECT kAuswahlAssistentOrt
                     FROM tauswahlassistentort
-                    JOIN tauswahlassistentgruppe ON tauswahlassistentgruppe.kAuswahlAssistentGruppe = tauswahlassistentort.kAuswahlAssistentGruppe
+                    JOIN tauswahlassistentgruppe 
+                        ON tauswahlassistentgruppe.kAuswahlAssistentGruppe = tauswahlassistentort.kAuswahlAssistentGruppe
                         AND tauswahlassistentgruppe.kSprache = " . (int)$kSprache . "
                     WHERE tauswahlassistentort.cKey = '" . AUSWAHLASSISTENT_ORT_STARTSEITE . "'
                         " . $cOrtSQL . "
@@ -361,7 +346,8 @@ if (class_exists('AuswahlAssistent')) {
                 $oOrt = Shop::DB()->query(
                     "SELECT kAuswahlAssistentOrt
                         FROM tauswahlassistentort
-                        JOIN tauswahlassistentgruppe ON tauswahlassistentgruppe.kAuswahlAssistentGruppe = tauswahlassistentort.kAuswahlAssistentGruppe
+                        JOIN tauswahlassistentgruppe 
+                            ON tauswahlassistentgruppe.kAuswahlAssistentGruppe = tauswahlassistentort.kAuswahlAssistentGruppe
                             AND tauswahlassistentgruppe.kSprache = " . (int)$kSprache . "
                         WHERE tauswahlassistentort.cKey = '" . Shop::DB()->escape($cKey) . "'
                             AND tauswahlassistentort.kKey = " . (int)$kKey, 1

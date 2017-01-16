@@ -118,9 +118,19 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
 
                 if ($kBestellung > 0) {
                     $this->kBestellung = $kBestellung;
-                    $oBestellung       = Shop::DB()->select('tbestellung', 'kBestellung', $kBestellung, null, null, null, null, false, 'kBestellung, dBezahltDatum');
-
-                    if (isset($oBestellung->kBestellung) && $oBestellung->kBestellung > 0 && $oBestellung->dBezahltDatum !== '0000-00-00' && $this->getTage() > 0) {
+                    $oBestellung       = Shop::DB()->select(
+                        'tbestellung',
+                        'kBestellung',
+                        $kBestellung,
+                        null,
+                        null,
+                        null,
+                        null,
+                        false,
+                        'kBestellung, dBezahltDatum'
+                    );
+                    if (isset($oBestellung->kBestellung) && $oBestellung->kBestellung > 0 &&
+                        $oBestellung->dBezahltDatum !== '0000-00-00' && $this->getTage() > 0) {
                         $paymentDate = new DateTime($oBestellung->dBezahltDatum);
                         $modifyBy    = $this->getTage() + 1;
                         $paymentDate->modify('+' . $modifyBy . ' day');
@@ -133,7 +143,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
                     "SELECT tartikeldownload.*
                         FROM tartikeldownload
                         JOIN tdownload 
-                          ON tdownload.kDownload = tartikeldownload.kDownload
+                            ON tdownload.kDownload = tartikeldownload.kDownload
                         WHERE tartikeldownload.kDownload = " . (int)$this->kDownload . "
                         ORDER BY tdownload.nSort", 2
                 );
@@ -186,9 +196,12 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
             return Shop::DB()->query(
                 "DELETE tdownload, tdownloadhistory, tdownloadsprache, tartikeldownload
                     FROM tdownload
-                    JOIN tdownloadsprache ON tdownloadsprache.kDownload = tdownload.kDownload
-                    LEFT JOIN tartikeldownload ON tartikeldownload.kDownload = tdownload.kDownload
-                    LEFT JOIN tdownloadhistory ON tdownloadhistory.kDownload = tdownload.kDownload
+                    JOIN tdownloadsprache 
+                        ON tdownloadsprache.kDownload = tdownload.kDownload
+                    LEFT JOIN tartikeldownload 
+                        ON tartikeldownload.kDownload = tdownload.kDownload
+                    LEFT JOIN tdownloadhistory 
+                        ON tdownloadhistory.kDownload = tdownload.kDownload
                     WHERE tdownload.kDownload = " . (int)$this->kDownload, 3
             );
         }

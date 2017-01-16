@@ -69,11 +69,7 @@ function fuegeNewsletterEmpfaengerEin($oKunde, $bPruefeDaten = false)
             }
             // Pruefen ob Kunde bereits eingetragen
             if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
-                $oNewsletterEmpfaengerKunde = Shop::DB()->query(
-                    "SELECT kKunde
-                        FROM tnewsletterempfaenger
-                        WHERE kKunde = " . (int)$_SESSION['Kunde']->kKunde, 1
-                );
+                $oNewsletterEmpfaengerKunde = Shop::DB()->select('tnewsletterempfaenger', 'kKunde', (int)$_SESSION['Kunde']->kKunde);
             }
             if ((isset($oNewsletterEmpfaenger->cEmail) && strlen($oNewsletterEmpfaenger->cEmail) > 0) ||
                 (isset($oNewsletterEmpfaengerKunde->kKunde) && $oNewsletterEmpfaengerKunde->kKunde > 0)
@@ -181,11 +177,7 @@ function newsletterAnmeldungPlausi($oKunde)
 function pruefeObBereitsAbonnent($kKunde)
 {
     if ($kKunde > 0) {
-        $oNewsletterEmpfaenger = Shop::DB()->query(
-            "SELECT kKunde
-                FROM tnewsletterempfaenger
-                WHERE kKunde = " . (int)$kKunde, 1
-        );
+        $oNewsletterEmpfaenger = Shop::DB()->select('tnewsletterempfaenger', 'kKunde', (int)$kKunde);
 
         return (isset($oNewsletterEmpfaenger->kKunde) && $oNewsletterEmpfaenger->kKunde > 0);
     }

@@ -2551,7 +2551,7 @@ function gibBelieferbareLaender($kKundengruppe = 0, $bIgnoreSetting = false, $bF
     }
     if (!$bForceAll && ($conf['kunden']['kundenregistrierung_nur_lieferlaender'] === 'Y' || $bIgnoreSetting)) {
         $laender_arr = [];
-        $ll_obj_arr  = Shop::DB()->query("SELECT cLaender FROM tversandart WHERE (cKundengruppen='-1' OR cKundengruppen LIKE '%;" . $kKundengruppe . ";%')", 2);
+        $ll_obj_arr  = Shop::DB()->query("SELECT cLaender FROM tversandart WHERE (cKundengruppen = '-1' OR cKundengruppen LIKE '%;" . $kKundengruppe . ";%')", 2);
         $where       = '';
         foreach ($ll_obj_arr as $cLaender) {
             $pcs = explode(' ', $cLaender->cLaender);
@@ -3324,7 +3324,7 @@ function parseNewsText($cText)
     if (is_array($cTreffer_arr[0]) && count($cTreffer_arr[0]) > 0) {
         if (!isset($_SESSION['kSprache'])) {
             $_lang    = gibStandardsprache();
-            $kSprache = $_lang->kSprache;
+            $kSprache = (int)$_lang->kSprache;
         } else {
             $kSprache = (int)$_SESSION['kSprache'];
         }
@@ -5018,8 +5018,8 @@ function archiviereBesucher()
     Shop::DB()->query(
         "INSERT INTO tbesucherarchiv
             (kBesucher, kKunde, kBestellung, cReferer, cEinstiegsseite, cBrowser, cAusstiegsseite, nBesuchsdauer, kBesucherBot, dZeit)
-            SELECT kBesucher, kKunde, kBestellung, cReferer, cEinstiegsseite, cBrowser, cAusstiegsseite, (UNIX_TIMESTAMP(now()) - UNIX_TIMESTAMP(dLetzteAktivitaet))
-              AS nLetzteAktivitaetStamp, kBesucherBot, dZeit 
+            SELECT kBesucher, kKunde, kBestellung, cReferer, cEinstiegsseite, cBrowser, kBesucherBot, dZeit, 
+                cAusstiegsseite, (UNIX_TIMESTAMP(now()) - UNIX_TIMESTAMP(dLetzteAktivitaet)) AS nLetzteAktivitaetStamp 
               FROM tbesucher 
               WHERE dLetzteAktivitaet <= date_sub(now(),INTERVAL 3 HOUR)", 4
     );

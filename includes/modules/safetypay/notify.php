@@ -45,9 +45,9 @@ if ($Result['ErrorManager']['ErrorNumber'] == '0') {
             // $MerchantOrderNo = 'YOUR ORDER NUMBER';
             // else $MerchantOrderNo = $value['MerchantReferenceNo'];
 
-            $zahlungsid = Shop::DB()->query("SELECT kBestellung FROM tbestellung WHERE cBestellNr = '" . $MerchantOrderNo . "'", 1);
-            $b          = Shop::DB()->query("SELECT kKunde FROM tbestellung WHERE kBestellung = " . $zahlungsid->kBestellung, 1);
-            $kunde      = Shop::DB()->query("SELECT * FROM tkunde WHERE kKunde = " . (int)$b->kKunde, 1);
+            $zahlungsid = Shop::DB()->select('tbestellung', 'cBestellNr', $MerchantOrderNo);
+            $b          = Shop::DB()->query("SELECT kKunde FROM tbestellung WHERE kBestellung = " . (int)$zahlungsid->kBestellung, 1);
+            $kunde      = Shop::DB()->select('tkunde', 'kKunde', (int)$b->kKunde);
             $Sprache    = Shop::DB()->query("SELECT cISO FROM tsprache WHERE kSprache = " . (int)$kunde->kSprache, 1);
             if (!$Sprache) {
                 $Sprache = Shop::DB()->query("SELECT cISO FROM tsprache WHERE cStandard = 'Y'", 1);

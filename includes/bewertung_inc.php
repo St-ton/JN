@@ -208,7 +208,7 @@ function aktualisiereDurchschnitt($kArtikel, $cFreischalten)
     $cFreiSQL = '';
     $kArtikel = (int)$kArtikel;
     if ($cFreischalten === 'Y') {
-        $cFreiSQL = ' AND nAktiv=1';
+        $cFreiSQL = ' AND nAktiv = 1';
     }
 
     $oAnzahlBewertung = Shop::DB()->query(
@@ -316,7 +316,7 @@ function checkeBewertungGuthabenBonus($kBewertung, $Einstellungen)
             "SELECT sum(fGuthabenBonus) AS fGuthabenProMonat
                 FROM tbewertungguthabenbonus
                 WHERE kKunde = " . $kKunde . "
-                    AND YEAR(dDatum)=" . date("Y") ."
+                    AND YEAR(dDatum) = " . date('Y') . "
                     AND MONTH(dDatum) = " . date('m'), 1
         );
         if (doubleval($oBewertungGuthabenBonus->fGuthabenProMonat) <= doubleval($Einstellungen['bewertung']['bewertung_max_guthaben'])) {

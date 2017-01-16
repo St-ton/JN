@@ -2143,14 +2143,20 @@ function checkeKupon($Kupon)
     }
     $alreadyUsedSQL = '';
     if (!empty($_SESSION['Kunde']->kKunde) && !empty($_SESSION['Kunde']->cMail)) {
-        $alreadyUsedSQL = "SELECT SUM(nVerwendungen) AS nVerwendungen FROM tkuponkunde WHERE (kKunde = " . intval($_SESSION['Kunde']->kKunde) .
-            " OR cMail = '" . Shop::DB()->escape($_SESSION['Kunde']->cMail) . "') AND kKupon = " . intval($Kupon->kKupon);
+        $alreadyUsedSQL = "SELECT SUM(nVerwendungen) AS nVerwendungen 
+                              FROM tkuponkunde 
+                              WHERE (kKunde = " . (int)$_SESSION['Kunde']->kKunde . " OR cMail = '" . Shop::DB()->escape($_SESSION['Kunde']->cMail) . "') 
+                                  AND kKupon = " . (int)$Kupon->kKupon;
     } elseif (!empty($_SESSION['Kunde']->cMail)) {
-        $alreadyUsedSQL = "SELECT SUM(nVerwendungen) AS nVerwendungen FROM tkuponkunde WHERE (cMail = '" . Shop::DB()->escape($_SESSION['Kunde']->cMail) .
-            "') AND kKupon = " . (int)$Kupon->kKupon;
+        $alreadyUsedSQL = "SELECT SUM(nVerwendungen) AS nVerwendungen 
+                              FROM tkuponkunde 
+                              WHERE (cMail = '" . Shop::DB()->escape($_SESSION['Kunde']->cMail) ."') 
+                                  AND kKupon = " . (int)$Kupon->kKupon;
     } elseif (!empty($_SESSION['Kunde']->kKunde)) {
-        $alreadyUsedSQL = "SELECT SUM(nVerwendungen) AS nVerwendungen FROM tkuponkunde WHERE (kKunde = " . intval($_SESSION['Kunde']->kKunde) .
-            ") AND kKupon = " . (int)$Kupon->kKupon;
+        $alreadyUsedSQL = "SELECT SUM(nVerwendungen) AS nVerwendungen 
+                              FROM tkuponkunde 
+                              WHERE (kKunde = " . (int)$_SESSION['Kunde']->kKunde . ") 
+                                  AND kKupon = " . (int)$Kupon->kKupon;
     }
     if ($alreadyUsedSQL !== '') {
         //hat der kunde schon die max. Verwendungsanzahl erreicht?
@@ -3105,18 +3111,12 @@ function plausiLieferadresse($cPost_arr)
     }
     if (intval($cPost_arr['kLieferadresse']) > 0) {
         //vorhandene lieferadresse
-        $oLieferadresse = Shop::DB()->query(
-            "SELECT kLieferadresse
-                FROM tlieferadresse
-                WHERE kKunde = " . intval($_SESSION['Kunde']->kKunde) . "
-                AND kLieferadresse = " . intval($cPost_arr['kLieferadresse']), 1
-        );
-        if ($oLieferadresse->kLieferadresse > 0) {
+        $oLieferadresse = Shop::DB()->select('tlieferadresse', 'kKunde', (int)$_SESSION['Kunde']->kKunde, 'kLieferadresse', (int)$cPost_arr['kLieferadresse']);
+        if (isset($oLieferadresse->kLieferadresse) && $oLieferadresse->kLieferadresse > 0) {
             $oLieferadresse = new Lieferadresse($oLieferadresse->kLieferadresse);
             setzeInSession('Lieferadresse', $oLieferadresse);
         }
-    } //lieferadresse gleich rechnungsadresse
-    elseif (intval($cPost_arr['kLieferadresse']) === 0) {
+    } elseif (intval($cPost_arr['kLieferadresse']) === 0) { //lieferadresse gleich rechnungsadresse
         setzeLieferadresseAusRechnungsadresse();
     }
     setzeSteuersaetze();

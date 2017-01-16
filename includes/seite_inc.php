@@ -114,9 +114,11 @@ function gibNews($Einstellungen)
             $cSQL = ' LIMIT ' . (int)$Einstellungen['news']['news_anzahl_content'];
         }
         $oNews_arr = Shop::DB()->query(
-            "SELECT tnews.kNews, tnews.kSprache, tnews.cKundengruppe, tnews.cBetreff, tnews.cText, tnews.cVorschauText, tnews.cMetaTitle,
-                tnews.cMetaDescription, tnews.cMetaKeywords, tnews.nAktiv, tnews.dErstellt, tnews.cPreviewImage, tseo.cSeo,
-                count(tnewskommentar.kNewsKommentar) AS nNewsKommentarAnzahl, DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y  %H:%i') AS dErstellt_de,
+            "SELECT tnews.kNews, tnews.kSprache, tnews.cKundengruppe, tnews.cBetreff, tnews.cText, 
+                tnews.cVorschauText, tnews.cMetaTitle, tnews.cMetaDescription, tnews.cMetaKeywords, 
+                tnews.nAktiv, tnews.dErstellt, tnews.cPreviewImage, tseo.cSeo,
+                count(tnewskommentar.kNewsKommentar) AS nNewsKommentarAnzahl, 
+                DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y  %H:%i') AS dErstellt_de,
                 DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y  %H:%i') AS dGueltigVon_de
                 FROM tnews
                 JOIN tnewskategorienews ON tnewskategorienews.kNews = tnews.kNews
@@ -130,7 +132,10 @@ function gibNews($Einstellungen)
                 WHERE tnews.kSprache = " . (int)$_SESSION['kSprache'] . "
                     AND tnews.nAktiv = 1
                     AND tnews.dGueltigVon <= now()
-                    AND (tnews.cKundengruppe LIKE '%;-1;%' OR tnews.cKundengruppe LIKE '%;" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";%')
+                    AND (
+                            tnews.cKundengruppe LIKE '%;-1;%' 
+                            OR tnews.cKundengruppe LIKE '%;" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";%'
+                        )
                 GROUP BY tnews.kNews
                 ORDER BY tnews.dGueltigVon DESC" . $cSQL, 2
         );
@@ -223,7 +228,10 @@ function gibLivesucheTop($Einstellungen)
         "SELECT tsuchanfrage.kSuchanfrage, tsuchanfrage.kSprache, tsuchanfrage.cSuche, tsuchanfrage.nAktiv, tsuchanfrage.nAnzahlTreffer,
             tsuchanfrage.nAnzahlGesuche, DATE_FORMAT(tsuchanfrage.dZuletztGesucht, '%d.%m.%Y  %H:%i') AS dZuletztGesucht_de, tseo.cSeo
             FROM tsuchanfrage
-            LEFT JOIN tseo ON tseo.cKey = 'kSuchanfrage' AND tseo.kKey = tsuchanfrage.kSuchanfrage AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
+            LEFT JOIN tseo 
+                ON tseo.cKey = 'kSuchanfrage' 
+                AND tseo.kKey = tsuchanfrage.kSuchanfrage 
+                AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
             WHERE tsuchanfrage.kSprache = " . (int)$_SESSION['kSprache'] . "
                 AND tsuchanfrage.nAktiv = 1
             ORDER BY tsuchanfrage.nAnzahlGesuche DESC
@@ -280,7 +288,10 @@ function gibLivesucheLast($Einstellungen)
         "SELECT tsuchanfrage.kSuchanfrage, tsuchanfrage.kSprache, tsuchanfrage.cSuche, tsuchanfrage.nAktiv, tsuchanfrage.nAnzahlTreffer,
             tsuchanfrage.nAnzahlGesuche, DATE_FORMAT(tsuchanfrage.dZuletztGesucht, '%d.%m.%Y  %H:%i') AS dZuletztGesucht_de, tseo.cSeo
             FROM tsuchanfrage
-            LEFT JOIN tseo ON tseo.cKey = 'kSuchanfrage' AND tseo.kKey = tsuchanfrage.kSuchanfrage AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
+            LEFT JOIN tseo 
+                ON tseo.cKey = 'kSuchanfrage' 
+                AND tseo.kKey = tsuchanfrage.kSuchanfrage 
+                AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
             WHERE tsuchanfrage.kSprache = " . (int)$_SESSION['kSprache'] . "
                 AND tsuchanfrage.nAktiv = 1
             ORDER BY tsuchanfrage.dZuletztGesucht DESC
@@ -319,8 +330,12 @@ function gibTagging($Einstellungen)
     $tagwolke_objs = Shop::DB()->query(
         "SELECT ttag.kTag, ttag.cName, tseo.cSeo, sum(ttagartikel.nAnzahlTagging) AS Anzahl
             FROM ttag
-            JOIN ttagartikel ON ttagartikel.kTag = ttag.kTag
-            LEFT JOIN tseo ON tseo.cKey = 'kTag' AND tseo.kKey = ttag.kTag AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
+            JOIN ttagartikel 
+                ON ttagartikel.kTag = ttag.kTag
+            LEFT JOIN tseo 
+                ON tseo.cKey = 'kTag' 
+                AND tseo.kKey = ttag.kTag 
+                AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
             WHERE ttag.nAktiv = 1
                 AND ttag.kSprache = " . (int)$_SESSION['kSprache'] . "
             GROUP BY ttag.cName
@@ -357,7 +372,12 @@ function gibTagging($Einstellungen)
  */
 function gibNewsletterHistory()
 {
-    $oNewsletterHistory_arr = Shop::DB()->selectAll('tnewsletterhistory', 'kSprache', (int)$_SESSION['kSprache'], 'kNewsletterHistory, cBetreff, DATE_FORMAT(dStart, \'%d.%m.%Y %H:%i\') AS Datum, cHTMLStatic', 'dStart DESC');
+    $oNewsletterHistory_arr = Shop::DB()->selectAll(
+        'tnewsletterhistory',
+        'kSprache',
+        (int)$_SESSION['kSprache'],
+        'kNewsletterHistory, cBetreff, DATE_FORMAT(dStart, \'%d.%m.%Y %H:%i\') AS Datum, cHTMLStatic', 'dStart DESC'
+    );
     // URLs bauen
     if (is_array($oNewsletterHistory_arr) && count($oNewsletterHistory_arr) > 0) {
         foreach ($oNewsletterHistory_arr as $i => $oNewsletterHistory) {
@@ -406,12 +426,14 @@ function gibSitemapGlobaleMerkmale()
                 tmerkmal.nSort, tmerkmal.nGlobal, tmerkmal.cTyp, tmerkmalwert.cBildPfad AS cBildPfadMW, tmerkmal.cBildpfad
                 FROM {$cMerkmalTabelle}
                 {$cSQL}
-                JOIN tartikelmerkmal ON tartikelmerkmal.kMerkmalWert = tmerkmalwertsprache.kMerkmalWert
-                LEFT JOIN tseo ON tseo.cKey = 'kMerkmalWert'
+                JOIN tartikelmerkmal 
+                    ON tartikelmerkmal.kMerkmalWert = tmerkmalwertsprache.kMerkmalWert
+                LEFT JOIN tseo 
+                    ON tseo.cKey = 'kMerkmalWert'
                     AND tseo.kKey = tmerkmalwertsprache.kMerkmalWert
-                    AND tseo.kSprache = {$_SESSION['kSprache']}
+                    AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
                 WHERE tmerkmal.nGlobal = 1
-                    AND tmerkmalwertsprache.kSprache = {$_SESSION['kSprache']}
+                    AND tmerkmalwertsprache.kSprache = " . (int)$_SESSION['kSprache'] . "
                     {$cMerkmalWhere}
                 GROUP BY tmerkmalwertsprache.kMerkmalWert
                 ORDER BY tmerkmal.nSort, {$cMerkmalTabelle}.cName, tmerkmalwert.nSort, tmerkmalwertsprache.cWert", 2
@@ -546,11 +568,15 @@ function gibBoxNews($BoxenEinstellungen)
         : 3;
 
     return Shop::DB()->query(
-        "SELECT DATE_FORMAT(dErstellt, '%M, %Y') AS Datum, count(*) AS nAnzahl, DATE_FORMAT(dErstellt, '%m') AS nMonat
+        "SELECT DATE_FORMAT(dErstellt, '%M, %Y') AS Datum, count(*) AS nAnzahl, 
+            DATE_FORMAT(dErstellt, '%m') AS nMonat
             FROM tnews
             WHERE kSprache = " . (int)$_SESSION['kSprache'] . "
                 AND nAktiv = 1
-                AND (cKundengruppe LIKE '%;-1;%' OR cKundengruppe LIKE '%;" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";%')
+                AND (
+                    cKundengruppe LIKE '%;-1;%' 
+                    OR cKundengruppe LIKE '%;" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";%'
+                    )
             GROUP BY DATE_FORMAT(dErstellt, '%M')
             ORDER BY dErstellt DESC
             LIMIT " . $nBoxenLimit, 2
@@ -583,9 +609,10 @@ function gibSitemapNews()
         if (is_array($oNewsMonatsUebersicht_arr) && count($oNewsMonatsUebersicht_arr) > 0) {
             foreach ($oNewsMonatsUebersicht_arr as $i => $oNewsMonatsUebersicht) {
                 $oNews_arr = Shop::DB()->query(
-                    "SELECT tnews.kNews, tnews.kSprache, tnews.cKundengruppe, tnews.cBetreff, tnews.cText, tnews.cVorschauText, tnews.cMetaTitle,
-                        tnews.cMetaDescription, tnews.cMetaKeywords, tnews.nAktiv, tnews.dErstellt, tseo.cSeo,
-                        count(tnewskommentar.kNewsKommentar) AS nNewsKommentarAnzahl, DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y  %H:%i') AS dGueltigVon_de
+                    "SELECT tnews.kNews, tnews.kSprache, tnews.cKundengruppe, tnews.cBetreff, tnews.cText, tnews.cVorschauText, 
+                        tnews.cMetaTitle, tnews.cMetaDescription, tnews.cMetaKeywords, tnews.nAktiv, tnews.dErstellt, tseo.cSeo,
+                        count(tnewskommentar.kNewsKommentar) AS nNewsKommentarAnzahl, 
+                        DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y  %H:%i') AS dGueltigVon_de
                         FROM tnews
                         LEFT JOIN tnewskommentar ON tnews.kNews = tnewskommentar.kNews
                         LEFT JOIN tseo ON tseo.cKey = 'kNews'
@@ -593,7 +620,10 @@ function gibSitemapNews()
                             AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
                         WHERE tnews.kSprache = " . (int)$_SESSION['kSprache'] . "
                             AND tnews.nAktiv = 1
-                            AND (tnews.cKundengruppe LIKE '%;-1;%' OR tnews.cKundengruppe LIKE '%;" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";%')
+                            AND (
+                                    tnews.cKundengruppe LIKE '%;-1;%' 
+                                    OR tnews.cKundengruppe LIKE '%;" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";%'
+                                )
                             AND (MONTH(tnews.dGueltigVon) = '" . $oNewsMonatsUebersicht->nMonat . "') && (tnews.dGueltigVon <= now())
                             AND (YEAR(tnews.dGueltigVon) = '" . $oNewsMonatsUebersicht->nJahr . "') && (tnews.dGueltigVon <= now())
                         GROUP BY tnews.kNews
@@ -640,7 +670,10 @@ function gibNewsKategorie()
                     AND tnewskategorie.nAktiv = 1
                     AND tnews.nAktiv = 1
                     AND tnews.dGueltigVon <= now()
-                    AND (tnews.cKundengruppe LIKE '%;-1;%' OR tnews.cKundengruppe LIKE '%;" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";%')
+                    AND (
+                            tnews.cKundengruppe LIKE '%;-1;%' 
+                            OR tnews.cKundengruppe LIKE '%;" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";%'
+                        )
                 GROUP BY tnewskategorienews.kNewsKategorie
                 ORDER BY tnewskategorie.nSort DESC", 2
         );
@@ -651,19 +684,22 @@ function gibNewsKategorie()
                 $oNewsKategorie_arr[$i]->cURLFull  = baueURL($oNewsKategorie, URLART_NEWSKATEGORIE, 0, false, true);
 
                 $oNews_arr = Shop::DB()->query(
-                    "SELECT tnews.kNews, tnews.kSprache, tnews.cKundengruppe, tnews.cBetreff, tnews.cText, tnews.cVorschauText, tnews.cMetaTitle,
-                        tnews.cMetaDescription, tnews.cMetaKeywords, tnews.nAktiv, tnews.dErstellt, tseo.cSeo,
-                        DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y  %H:%i') AS dGueltigVon_de
+                    "SELECT tnews.kNews, tnews.kSprache, tnews.cKundengruppe, tnews.cBetreff, tnews.cText, tnews.cVorschauText, 
+                        tnews.cMetaTitle, tnews.cMetaDescription, tnews.cMetaKeywords, tnews.nAktiv, tnews.dErstellt, 
+                        tseo.cSeo, DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y  %H:%i') AS dGueltigVon_de
                         FROM tnews
                         JOIN tnewskategorienews ON tnewskategorienews.kNews = tnews.kNews
                         LEFT JOIN tseo ON tseo.cKey = 'kNews'
                             AND tseo.kKey = tnews.kNews
                             AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
                         WHERE tnews.kSprache = " . (int)$_SESSION['kSprache'] . "
-                            AND tnewskategorienews.kNewsKategorie = " . $oNewsKategorie->kNewsKategorie . "
+                            AND tnewskategorienews.kNewsKategorie = " . (int)$oNewsKategorie->kNewsKategorie . "
                             AND tnews.nAktiv = 1
                             AND tnews.dGueltigVon <= now()
-                            AND (tnews.cKundengruppe LIKE '%;-1;%' OR tnews.cKundengruppe LIKE '%;" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";%')
+                            AND (
+                                    tnews.cKundengruppe LIKE '%;-1;%' 
+                                    OR tnews.cKundengruppe LIKE '%;" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";%'
+                                )
                         GROUP BY tnews.kNews
                         ORDER BY tnews.dGueltigVon DESC", 2
                 );
@@ -707,7 +743,10 @@ function gibGratisGeschenkArtikel($Einstellungen)
             LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                     AND tartikelsichtbarkeit.kKundengruppe = {$_SESSION['Kundengruppe']->kKundengruppe}
             WHERE tartikelsichtbarkeit.kArtikel IS NULL
-            AND tartikelattribut.cName = '" . FKT_ATTRIBUT_GRATISGESCHENK . "' " . gibLagerfilter() . $cSQLSort . $cSQLLimit, 2
+            AND tartikelattribut.cName = '" . FKT_ATTRIBUT_GRATISGESCHENK . "' " .
+            gibLagerfilter() .
+            $cSQLSort .
+            $cSQLLimit, 2
     );
 
     if (is_array($oArtikelGeschenkTMP_arr) && count($oArtikelGeschenkTMP_arr) > 0) {
@@ -827,10 +866,12 @@ function holeSeitenLinkSprache($kLink)
 function gibNewsArchiv()
 {
     return Shop::DB()->query(
-        "SELECT tnews.kNews, tnews.kSprache, tnews.cKundengruppe, tnews.cBetreff, tnews.cText, tnews.cVorschauText, tnews.cMetaTitle,
-            tnews.cMetaDescription, tnews.cMetaKeywords, tnews.nAktiv, tnews.dErstellt, tseo.cSeo,
-            count(tnewskommentar.kNewsKommentar) AS nNewsKommentarAnzahl, DATE_FORMAT(tnews.dErstellt, '%d.%m.%Y  %H:%i') AS dErstellt_de,
-            DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y  %H:%i') AS dGueltigVon_de, DATE_FORMAT(tnews.dGueltigBis, '%d.%m.%Y  %H:%i') AS dGueltigBis_de
+        "SELECT tnews.kNews, tnews.kSprache, tnews.cKundengruppe, tnews.cBetreff, tnews.cText, tnews.cVorschauText, 
+            tnews.cMetaTitle, tnews.cMetaDescription, tnews.cMetaKeywords, tnews.nAktiv, tnews.dErstellt, tseo.cSeo,
+            count(tnewskommentar.kNewsKommentar) AS nNewsKommentarAnzahl, 
+            DATE_FORMAT(tnews.dErstellt, '%d.%m.%Y  %H:%i') AS dErstellt_de,
+            DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y  %H:%i') AS dGueltigVon_de, 
+            DATE_FORMAT(tnews.dGueltigBis, '%d.%m.%Y  %H:%i') AS dGueltigBis_de
             FROM tnews
             LEFT JOIN tnewskommentar ON tnewskommentar.kNews = tnews.kNews
             LEFT JOIN tseo ON tseo.cKey = 'kNews'
@@ -838,8 +879,11 @@ function gibNewsArchiv()
                 AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
             WHERE tnews.kSprache = " . (int)$_SESSION['kSprache'] . "
                 AND tnews.nAktiv = 1
-                AND MONTH(tnews.dErstellt)='" . date('m') . "'
-                AND (tnews.cKundengruppe LIKE '%;-1;%' OR tnews.cKundengruppe LIKE '%;" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";%')
+                AND MONTH(tnews.dErstellt) = '" . date('m') . "'
+                AND (
+                        tnews.cKundengruppe LIKE '%;-1;%' 
+                        OR tnews.cKundengruppe LIKE '%;" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";%'
+                    )
             GROUP BY tnews.kNews
             ORDER BY tnews.dErstellt DESC", 2
     );

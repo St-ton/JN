@@ -299,7 +299,7 @@ class LinkHelper
             $session = [];
             //fixes for admin backend
             $customerGroupID = (isset($_SESSION['Kundengruppe']->kKundengruppe))
-                ? $_SESSION['Kundengruppe']->kKundengruppe
+                ? (int)$_SESSION['Kundengruppe']->kKundengruppe
                 : Kundengruppe::getDefaultGroupID();
             $Linkgruppen = Shop::DB()->query("SELECT * FROM tlinkgruppe", 2);
             $linkGroups  = new stdClass();
@@ -326,7 +326,7 @@ class LinkHelper
                         FROM tlink
                         LEFT JOIN tplugin
                             ON tplugin.kPlugin = tlink.kPlugin
-                        WHERE tlink.bIsActive = 1 AND tlink.kLinkgruppe = " . $Linkgruppe->kLinkgruppe . $loginSichtbarkeit . "
+                        WHERE tlink.bIsActive = 1 AND tlink.kLinkgruppe = " . (int)$Linkgruppe->kLinkgruppe . $loginSichtbarkeit . "
                             AND (tlink.cKundengruppen IS NULL
                             OR tlink.cKundengruppen = 'NULL'
                             OR tlink.cKundengruppen LIKE '" . $customerGroupID . ";%'

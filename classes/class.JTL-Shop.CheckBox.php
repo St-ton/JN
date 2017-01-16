@@ -199,7 +199,7 @@ class CheckBox
     {
         if (!$kKundengruppe) {
             if (isset($_SESSION['Kundengruppe']->kKundengruppe)) {
-                $kKundengruppe = $_SESSION['Kundengruppe']->kKundengruppe;
+                $kKundengruppe = (int)$_SESSION['Kundengruppe']->kKundengruppe;
             } else {
                 $kKundengruppe = Kundengruppe::getDefaultGroupID();
             }

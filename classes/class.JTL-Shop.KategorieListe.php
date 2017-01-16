@@ -260,27 +260,30 @@ class KategorieListe
             $kKundengruppe = $_SESSION['Kundengruppe']->kKundengruppe;
         }
         if (!$kSprache) {
-            $kSprache = Shop::$kSprache;
+            $kSprache = Shop::getLanguage();
         }
         $kSprache      = (int)$kSprache;
         $kKundengruppe = (int)$kKundengruppe;
         $categoryList  = self::getCategoryList($kKundengruppe, $kSprache);
-        $subCategories = (isset($categoryList['kKategorieVonUnterkategorien_arr'][$kKategorie])) ? $categoryList['kKategorieVonUnterkategorien_arr'][$kKategorie] : null;
+        $subCategories = (isset($categoryList['kKategorieVonUnterkategorien_arr'][$kKategorie]))
+            ? $categoryList['kKategorieVonUnterkategorien_arr'][$kKategorie]
+            : null;
 
         if (isset($subCategories) && is_array($subCategories)) {
             //nimm kats aus session
             foreach ($subCategories as $kUnterKategorie) {
-                $oKategorie_arr[$kUnterKategorie] = !isset($categoryList['oKategorie_arr'][$kUnterKategorie]) ? new Kategorie($kUnterKategorie) : $categoryList['oKategorie_arr'][$kUnterKategorie];
+                $oKategorie_arr[$kUnterKategorie] = (!isset($categoryList['oKategorie_arr'][$kUnterKategorie]))
+                    ? new Kategorie($kUnterKategorie)
+                    : $categoryList['oKategorie_arr'][$kUnterKategorie];
             }
         } else {
             if ($kKategorie > 0) {
                 self::$wasModified = true;
             }
             //ist nicht im cache, muss holen
-            $cSortSQLName = '';
-            if (!standardspracheAktiv()) {
-                $cSortSQLName = "tkategoriesprache.cName, ";
-            }
+            $cSortSQLName = (!standardspracheAktiv())
+                ? "tkategoriesprache.cName, "
+                : '';
             if (!$kKategorie) {
                 $kKategorie = 0;
             }
@@ -290,15 +293,15 @@ class KategorieListe
                     tkategoriesprache.cBeschreibung AS cBeschreibung_spr, tseo.cSeo, tkategoriepict.cPfad
                     FROM tkategorie
                     LEFT JOIN tkategoriesprache ON tkategoriesprache.kKategorie = tkategorie.kKategorie
-                        AND tkategoriesprache.kSprache = " . intval($kSprache) . "
+                        AND tkategoriesprache.kSprache = " . $kSprache . "
                     LEFT JOIN tkategoriesichtbarkeit ON tkategorie.kKategorie=tkategoriesichtbarkeit.kKategorie
-                    AND tkategoriesichtbarkeit.kKundengruppe = " . intval($kKundengruppe) . "
+                    AND tkategoriesichtbarkeit.kKundengruppe = " . $kKundengruppe . "
                     LEFT JOIN tseo ON tseo.cKey = 'kKategorie'
                         AND tseo.kKey = tkategorie.kKategorie
-                        AND tseo.kSprache = " . intval($kSprache) . "
+                        AND tseo.kSprache = " . $kSprache . "
                     LEFT JOIN tkategoriepict ON tkategoriepict.kKategorie = tkategorie.kKategorie
                     WHERE tkategoriesichtbarkeit.kKategorie IS NULL
-                        AND tkategorie.kOberKategorie = " . intval($kKategorie) . "
+                        AND tkategorie.kOberKategorie = " . $kKategorie . "
                     GROUP BY tkategorie.kKategorie
                     ORDER BY tkategorie.nSort, " . $cSortSQLName . "tkategorie.cName";
             $oKategorie_arr                                                = Shop::DB()->query($categorySQL, 2);
@@ -362,7 +365,7 @@ class KategorieListe
                                 tkategorieattribut.bIstFunktionsAttribut, tkategorieattribut.nSort
                             FROM tkategorieattribut
                             LEFT JOIN tkategorieattributsprache ON tkategorieattributsprache.kAttribut = tkategorieattribut.kKategorieAttribut
-                                AND tkategorieattributsprache.kSprache = " . (int)Shop::getLanguage() . "
+                                AND tkategorieattributsprache.kSprache = " . Shop::getLanguage() . "
                             WHERE kKategorie = " . (int)$oKategorie->kKategorie . "
                             ORDER BY tkategorieattribut.bIstFunktionsAttribut DESC, tkategorieattribut.nSort", 2
                     );
@@ -453,7 +456,7 @@ class KategorieListe
                     );
                     if (is_array($objArr)) {
                         foreach ($objArr as $obj) {
-                            $kats[] = $obj->kKategorie;
+                            $kats[] = (int)$obj->kKategorie;
                         }
                     }
                 }
@@ -488,8 +491,7 @@ class KategorieListe
                     AND tartikel.kArtikel = tkategorieartikel.kArtikel
                     AND tkategorieartikel.kKategorie = $kKategorie
                     $lagerfilter
-                LIMIT 1
-                ", 1
+                LIMIT 1", 1
         );
 
         return isset($obj->kArtikel) && $obj->kArtikel > 0;

@@ -236,9 +236,9 @@ class MediaImageRequest
             WHERE kArtikel = {$id} AND nNr = {$number} ORDER BY nNr LIMIT 1", 1
         );
 
-        return (isset($item->path)) ?
-            $item->path :
-            null;
+        return (isset($item->path))
+            ? $item->path
+            : null;
     }
 
     /**

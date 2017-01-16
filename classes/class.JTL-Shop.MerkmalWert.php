@@ -78,12 +78,12 @@ class MerkmalWert
     {
         $kSprache = null;
         if (isset($_SESSION['kSprache'])) {
-            $kSprache = $_SESSION['kSprache'];
+            $kSprache = (int)$_SESSION['kSprache'];
         }
         if (!$kSprache) {
             $oSprache = gibStandardsprache();
             if (isset($oSprache->kSprache) && $oSprache->kSprache > 0) {
-                $kSprache = $oSprache->kSprache;
+                $kSprache = (int)$oSprache->kSprache;
             }
         }
         $kSprache     = (int)$kSprache;
@@ -134,11 +134,11 @@ class MerkmalWert
     {
         $oMerkmalWert_arr = [];
         if ($kMerkmal > 0) {
-            $kSprache = Shop::$kSprache;
+            $kSprache = Shop::getLanguage();
             if (!$kSprache) {
                 $oSprache = gibStandardsprache();
                 if (isset($oSprache->kSprache) && $oSprache->kSprache > 0) {
-                    $kSprache = $oSprache->kSprache;
+                    $kSprache = (int)$oSprache->kSprache;
                 }
             }
             $oMerkmalWert_arr = Shop::DB()->query(
@@ -150,8 +150,8 @@ class MerkmalWert
                     LEFT JOIN tseo ON tseo.cKey = 'kMerkmalWert'
                         AND tseo.kKey = tmerkmalwertsprache.kMerkmalWert
                         AND tseo.kSprache = tmerkmalwertsprache.kSprache
-                    WHERE tmerkmalwertsprache.kSprache = " . (int)$kSprache . "
-                        AND tmerkmalwert.kMerkmal = " . (int)$kMerkmal . "
+                    WHERE tmerkmalwertsprache.kSprache = " . $kSprache . "
+                        AND tmerkmalwert.kMerkmal = " . $kMerkmal . "
                     GROUP BY tmerkmalwert.kMerkmalWert
                     ORDER BY tmerkmalwert.nSort", 2
             );

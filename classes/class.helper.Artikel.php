@@ -230,7 +230,7 @@ class ArtikelHelper
                     $j++;
                 }
             }
-            $kSprache                     = (isset($_SESSION['kSprache'])) ? (int)$_SESSION['kSprache'] : (int)Shop::$kSprache;
+            $kSprache                     = (isset($_SESSION['kSprache'])) ? (int)$_SESSION['kSprache'] : Shop::getLanguage();
             $oSQLEigenschaft              = new stdClass();
             $oSQLEigenschaft->cSELECT     = '';
             $oSQLEigenschaft->cJOIN       = '';
@@ -240,11 +240,11 @@ class ArtikelHelper
             if ($kSprache > 0 && !standardspracheAktiv()) {
                 $oSQLEigenschaft->cSELECT = "teigenschaftsprache.cName AS cName_teigenschaftsprache, ";
                 $oSQLEigenschaft->cJOIN   = "LEFT JOIN teigenschaftsprache ON teigenschaftsprache.kEigenschaft = teigenschaft.kEigenschaft
-                                            AND teigenschaftsprache.kSprache=" . $kSprache;
+                                            AND teigenschaftsprache.kSprache = " . $kSprache;
 
                 $oSQLEigenschaftWert->cSELECT = "teigenschaftwertsprache.cName AS cName_teigenschaftwertsprache, ";
                 $oSQLEigenschaftWert->cJOIN   = "LEFT JOIN teigenschaftwertsprache ON teigenschaftwertsprache.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
-                                                AND teigenschaftwertsprache.kSprache=" . $kSprache;
+                                                AND teigenschaftwertsprache.kSprache = " . $kSprache;
             }
 
             $oEigenschaft_arr = Shop::DB()->query(

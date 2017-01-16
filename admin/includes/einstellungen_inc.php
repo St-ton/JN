@@ -17,15 +17,13 @@ function bearbeiteEinstellungsSuche($cSuche, $bSpeichern = false)
     $oSQL->cWHERE           = '';
     $oSQL->nSuchModus       = 0;
     $oSQL->cSuche           = $cSuche;
-    $oSQL->oEinstellung_arr = array();
-
+    $oSQL->oEinstellung_arr = [];
     if (strlen($cSuche) > 0) {
         //Einstellungen die zu den Exportformaten gehören nicht holen
         $oSQL->cWHERE = "AND kEinstellungenSektion != 101 ";
         // Einstellungen Kommagetrennt?
         $kEinstellungenConf_arr = explode(',', $cSuche);
-
-        $bKommagetrennt = false;
+        $bKommagetrennt         = false;
         if (is_array($kEinstellungenConf_arr) && count($kEinstellungenConf_arr) > 1) {
             $bKommagetrennt = true;
             foreach ($kEinstellungenConf_arr as $i => $kEinstellungenConf) {
@@ -34,7 +32,6 @@ function bearbeiteEinstellungsSuche($cSuche, $bSpeichern = false)
                 }
             }
         }
-
         if ($bKommagetrennt) {
             $oSQL->nSuchModus = 1;
             $oSQL->cSearch    = "Suche nach ID: ";
@@ -42,40 +39,35 @@ function bearbeiteEinstellungsSuche($cSuche, $bSpeichern = false)
             foreach ($kEinstellungenConf_arr as $i => $kEinstellungenConf) {
                 if ($kEinstellungenConf > 0) {
                     if ($i > 0) {
-                        $oSQL->cSearch .= ", " . $kEinstellungenConf;
-                        $oSQL->cWHERE .= ", " . Shop::DB()->escape($kEinstellungenConf);
+                        $oSQL->cSearch .= ", " . (int)$kEinstellungenConf;
+                        $oSQL->cWHERE .= ", " . (int)$kEinstellungenConf;
                     } else {
-                        $oSQL->cSearch .= $kEinstellungenConf;
-                        $oSQL->cWHERE .= Shop::DB()->escape($kEinstellungenConf);
+                        $oSQL->cSearch .= (int)$kEinstellungenConf;
+                        $oSQL->cWHERE .= (int)$kEinstellungenConf;
                     }
                 }
             }
             $oSQL->cWHERE .= ")";
-        } // Range von Einstellungen?
-        else {
+        } else { // Range von Einstellungen?
             $kEinstellungenConf_arr = explode('-', $cSuche);
-
-            $bRange = false;
+            $bRange                 = false;
             if (is_array($kEinstellungenConf_arr) && count($kEinstellungenConf_arr) === 2) {
                 $kEinstellungenConf_arr[0] = (int)$kEinstellungenConf_arr[0];
                 $kEinstellungenConf_arr[1] = (int)$kEinstellungenConf_arr[1];
-
                 if ($kEinstellungenConf_arr[0] > 0 && $kEinstellungenConf_arr[1] > 0) {
                     $bRange = true;
                 }
             }
-
             if ($bRange) {
                 // Suche war eine Range
                 $oSQL->nSuchModus = 2;
-                $oSQL->cSearch    = "Suche nach ID Range: " . $kEinstellungenConf_arr[0] . " - " . $kEinstellungenConf_arr[1];
-                $oSQL->cWHERE .= " AND ((kEinstellungenConf BETWEEN " . Shop::DB()->escape($kEinstellungenConf_arr[0]) . " AND " . Shop::DB()->escape($kEinstellungenConf_arr[1]) . ") AND cConf = 'Y')";
-            } // Suche in cName oder kEinstellungenConf suchen
-            else {
+                $oSQL->cSearch    = "Suche nach ID Range: " . (int)$kEinstellungenConf_arr[0] . " - " . (int)$kEinstellungenConf_arr[1];
+                $oSQL->cWHERE .= " AND ((kEinstellungenConf BETWEEN " . (int)$kEinstellungenConf_arr[0] . " AND " . (int)$kEinstellungenConf_arr[1] . ") AND cConf = 'Y')";
+            } else { // Suche in cName oder kEinstellungenConf suchen
                 if (intval($cSuche) > 0) {
                     $oSQL->nSuchModus = 3;
                     $oSQL->cSearch    = "Suche nach ID: " . $cSuche;
-                    $oSQL->cWHERE .= " AND kEinstellungenConf = '" . Shop::DB()->escape($cSuche) . "'";
+                    $oSQL->cWHERE .= " AND kEinstellungenConf = '" . (int)$cSuche . "'";
                 } else {
                     $cSuche    = strtolower($cSuche);
                     $cSucheEnt = StringHandler::htmlentities($cSuche);    // HTML Entities

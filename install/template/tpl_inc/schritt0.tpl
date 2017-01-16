@@ -68,21 +68,18 @@
                 ? summary('summary_server', 'warning') // we did NOT close the canvas
                 : $("[id$=canvas_server]").slideUp(1)
                     && toggleArrow('canvas_server')
-                    && summary('summary_server', 'ok')
-        ;
+                    && summary('summary_server', 'ok');
         // if errors, change the summary-icon to 'danger'
         $('#canvas_server').find('span').find('.label-danger').length
                 ? summary('summary_server', 'failed')
-                : null
-        ;
+                : null;
 
         // colse folders-canvas if no warnings
         $('ul#canvas_folders').find('li.alert-danger').length
                 ? summary('summary_folders', 'failed') // we did NOT close the canvas and summarize it to 'failed'
                 : $("[id$=canvas_folders]").slideUp(1) // we fold the canvas and summarize 'ok'
                     && toggleArrow('canvas_folders')
-                    && summary('summary_folders', 'ok')
-        ;
+                    && summary('summary_folders', 'ok');
     }
 
 
@@ -317,7 +314,7 @@
                 </div>
             </div>
         </div>
-        <button type="submit" class="btn btn-primary pull-right">Installation starten</button>
+        <button type="submit" class="btn btn-primary pull-right"><i class="fa fa-share"></i> Installation starten</button>
     </form>
 {/if} {* bOk *}
 

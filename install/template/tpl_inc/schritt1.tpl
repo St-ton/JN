@@ -80,6 +80,6 @@
     </div>
 
     <p class="tcenter">
-        <button type="submit" class="submit btn btn-primary pull-right">Installation abschlieﬂen</button>
+        <button type="submit" class="submit btn btn-primary pull-right"><i class="fa fa-share"></i> Installation abschlieﬂen</button>
     </p>
 </form>

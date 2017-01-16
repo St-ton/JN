@@ -22,7 +22,7 @@
             <h3 class="panel-title">Webshop-Einstellungen in JTL Wawi eintragen</h3>
         </div>
         <div class="panel-body">
-            <p>Tragen Sie nun die nachfolgenden Daten in der JTL Wawi, im Men&uuml; <code>Webshop -&gt; Webshop-Einstellungen</code>, ein.</p>
+            <p>Tragen Sie nun die nachfolgenden Daten im Men&uuml; <code>Webshop -&gt; Webshop-Einstellungen</code> der JTL Wawi ein.</p>
 
             <table class="table table-bordered">
                 <tr>
@@ -65,8 +65,9 @@
                     <td>{$cPostVar_arr.adminpass}</td>
                 </tr>
                 <tr>
-                    <td><strong>Geheimer Schl&uuml;ssel</strong><br><small>(Sensible Kundendaten werden in der Datenbank verschl&uuml;sselt gespeichert.<br> Ohne diesen Schl&uuml;ssel sind
-                        die Daten nicht mehr rekonstruierbar)</small></td>
+                    <td><strong>Geheimer Schl&uuml;ssel</strong><br><small>Sensible Kundendaten werden in der Datenbank verschl&uuml;sselt gespeichert.<br> Ohne diesen Schl&uuml;ssel sind
+                        die Daten nicht mehr rekonstruierbar</small>
+                    </td>
                     <td>{$BLOWFISH_KEY}</td>
                 </tr>
             </table>
@@ -84,7 +85,7 @@
 
     <div class="row hidden-print no-print">
         <div class="col-xs-12 col-md-6">
-            <input type="button" value="Diese Seite drucken" class="btn btn-default pull-left" onClick="javascript:window.print()">
+            <button type="button" class="btn btn-default pull-left" onClick="javascript:window.print(); return false;"><i class="fa fa-print"></i> Diese Seite drucken</button>
         </div>
         <div class="btn-group col-xs-12 col-md-6 pull-right" style="height:80px;" role="group">
             <a href="{$URL_SHOP}" class="btn btn-default" style="text-align:left;width:330px;position:absolute;right:15px"><i class="fa fa-share"></i> Hier gelangen Sie zu Ihrem Shop</a><br>

@@ -62,14 +62,12 @@ function fuegeNewsletterEmpfaengerEin($oKunde, $bPruefeDaten = false)
         $oPlausi->cPost_arr['cEmail']    = $oKunde->cEmail;
         $oPlausi->cPost_arr['captcha']   = (isset($_POST['captcha'])) ? StringHandler::htmlentities(StringHandler::filterXSS($_POST['captcha'])) : null;
         if (count($oPlausi->nPlausi_arr) === 0 || !$bPruefeDaten) {
-            // Prüfen ob Email bereits vorhanden
-            $oNewsletterEmpfaenger = Shop::DB()->query(
-                "SELECT *, DATE_FORMAT(dEingetragen, '%d.%m.%Y %H:%i') AS Datum
-                    FROM tnewsletterempfaenger
-                    WHERE cEmail = '" . $oKunde->cEmail . "'", 1
-            );
-
-            // Prüfen ob Kunde bereits eingetragen
+            // Pruefen ob Email bereits vorhanden
+            $oNewsletterEmpfaenger = Shop::DB()->select('tnewsletterempfaenger', 'cEmail', $oKunde->cEmail);
+            if (!empty($oNewsletterEmpfaenger->dEingetragen)) {
+                $oNewsletterEmpfaenger->Datum = (new DateTime($oNewsletterEmpfaenger->dEingetragen))->format('d.m.Y H:i');
+            }
+            // Pruefen ob Kunde bereits eingetragen
             if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
                 $oNewsletterEmpfaengerKunde = Shop::DB()->query(
                     "SELECT kKunde
@@ -88,12 +86,12 @@ function fuegeNewsletterEmpfaengerEin($oKunde, $bPruefeDaten = false)
 
                 unset($oNewsletterEmpfaenger);
 
-                // Neuen Newsletterempfaenger hinzufügen
+                // Neuen Newsletterempfaenger hinzufuegen
                 $oNewsletterEmpfaenger           = new stdClass();
-                $oNewsletterEmpfaenger->kSprache = $_SESSION['kSprache'];
-                $oNewsletterEmpfaenger->kKunde   = (isset($_SESSION['Kunde']->kKunde)) ? $_SESSION['Kunde']->kKunde : 0;
+                $oNewsletterEmpfaenger->kSprache = (int)$_SESSION['kSprache'];
+                $oNewsletterEmpfaenger->kKunde   = (isset($_SESSION['Kunde']->kKunde)) ? (int)$_SESSION['Kunde']->kKunde : 0;
                 $oNewsletterEmpfaenger->nAktiv   = 0;
-                // Double OPT nur für unregistrierte? --> Kunden brauchen nichts bestätigen
+                // Double OPT nur für unregistrierte? --> Kunden brauchen nichts bestaetigen
                 if ($Einstellungen['newsletter']['newsletter_doubleopt'] === 'U' && isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
                     $oNewsletterEmpfaenger->nAktiv = 1;
                 }
@@ -101,7 +99,7 @@ function fuegeNewsletterEmpfaengerEin($oKunde, $bPruefeDaten = false)
                 $oNewsletterEmpfaenger->cVorname  = $oKunde->cVorname;
                 $oNewsletterEmpfaenger->cNachname = $oKunde->cNachname;
                 $oNewsletterEmpfaenger->cEmail    = $oKunde->cEmail;
-                // OptCode erstellen und überprüfen
+                // OptCode erstellen und ueberpruefen
                 // Werte für $dbfeld 'cOptCode','cLoeschCode'
 
                 $oNewsletterEmpfaenger->cOptCode           = create_NewsletterCode('cOptCode', $oKunde->cEmail);
@@ -112,9 +110,9 @@ function fuegeNewsletterEmpfaengerEin($oKunde, $bPruefeDaten = false)
                 executeHook(HOOK_NEWSLETTER_PAGE_EMPFAENGEREINTRAGEN, ['oNewsletterEmpfaenger' => $oNewsletterEmpfaenger]);
 
                 Shop::DB()->insert('tnewsletterempfaenger', $oNewsletterEmpfaenger);
-                // Protokollieren (hinzufügen)
+                // Protokollieren (hinzufuegen)
                 $oNewsletterEmpfaengerHistory               = new stdClass();
-                $oNewsletterEmpfaengerHistory->kSprache     = $_SESSION['kSprache'];
+                $oNewsletterEmpfaengerHistory->kSprache     = (int)$_SESSION['kSprache'];
                 $oNewsletterEmpfaengerHistory->kKunde       = (isset($_SESSION['Kunde']->kKunde)) ? $_SESSION['Kunde']->kKunde : 0;
                 $oNewsletterEmpfaengerHistory->cAnrede      = $oKunde->cAnrede;
                 $oNewsletterEmpfaengerHistory->cVorname     = $oKunde->cVorname;

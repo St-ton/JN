@@ -17,7 +17,11 @@ $Kupons_arr    = Shop::DB()->query("SELECT kKupon, cName FROM tkupon ORDER BY cN
 
 if (isset($_POST['formFilter']) && $_POST['formFilter'] > 0 && validateToken()) {
     if (intval($_POST['kKupon']) > -1) {
-        $cWhere = "(SELECT kKupon FROM tkuponbestellung WHERE tkuponbestellung.kBestellung = tbestellung.kBestellung LIMIT 0,1) = " . (int)$_POST['kKupon'] . " AND";
+        $cWhere = "(SELECT kKupon 
+                        FROM tkuponbestellung 
+                        WHERE tkuponbestellung.kBestellung = tbestellung.kBestellung 
+                        LIMIT 0, 1
+                    ) = " . (int)$_POST['kKupon'] . " AND";
         foreach ($Kupons_arr as $key => $value) {
             if ($value['kKupon'] == (int)$_POST['kKupon']) {
                 $Kupons_arr[$key]['aktiv'] = 1;
@@ -40,13 +44,15 @@ if (isset($_POST['formFilter']) && $_POST['formFilter'] > 0 && validateToken()) 
     $cToDate_arr['nMonat'] = (int)$_POST['cToMonth'];
     $cToDate_arr['nJahr']  = (int)$_POST['cToYear'];
 
-    if (!checkdate($cToDate_arr['nMonat'], $cToDate_arr['nTag'], $cToDate_arr['nJahr']) || mktime(0, 0, 0, $cToDate_arr['nMonat'], $cToDate_arr['nTag'], $cToDate_arr['nJahr']) > time()) {
+    if (!checkdate($cToDate_arr['nMonat'], $cToDate_arr['nTag'], $cToDate_arr['nJahr']) ||
+        mktime(0, 0, 0, $cToDate_arr['nMonat'], $cToDate_arr['nTag'], $cToDate_arr['nJahr']) > time()) {
         $cToDate_arr['nJahr']  = date('Y');
         $cToDate_arr['nMonat'] = date('m');
         $cToDate_arr['nTag']   = date('d');
     }
 
-    if (mktime(0, 0, 0, $cFromDate_arr['nMonat'], $cFromDate_arr['nTag'], $cFromDate_arr['nJahr']) > mktime(0, 0, 0, $cToDate_arr['nMonat'], $cToDate_arr['nTag'], $cToDate_arr['nJahr'])) {
+    if (mktime(0, 0, 0, $cFromDate_arr['nMonat'], $cFromDate_arr['nTag'], $cFromDate_arr['nJahr']) >
+        mktime(0, 0, 0, $cToDate_arr['nMonat'], $cToDate_arr['nTag'], $cToDate_arr['nJahr'])) {
         $cFromDate_arr['nJahr']  = 2011;
         $cFromDate_arr['nMonat'] = 1;
         $cFromDate_arr['nTag']   = 1;
@@ -153,8 +159,8 @@ $nCountUsedKupons    = 0;
 $nCountUser          = 0;
 $nSummeWarenkorbAlle = 0;
 $nSummeKuponAlle     = 0;
-$tmpUser             = array();
-$datum               = array();
+$tmpUser             = [];
+$datum               = [];
 if (isset($usedKupons) && is_array($usedKupons)) {
     if (isset($usedBeschraenkteProzenteKupons) && is_array($usedBeschraenkteProzenteKupons)) {
         $usedKupons = array_merge($usedKupons, $usedBeschraenkteProzenteKupons);
@@ -167,14 +173,18 @@ if (isset($usedKupons) && is_array($usedKupons)) {
         $usedKupons[$key]['nSummeWarenkorb'] = gibPreisLocalizedOhneFaktor($usedKupon['nSummeWarenkorb'] + (float)substr($usedKupon['nWertKupon'], 1));
         $usedKupons[$key]['nSummeGesamt']    = gibPreisLocalizedOhneFaktor($usedKupon['nSummeWarenkorb']);
         $usedKupons[$key]['cBestellPos_arr'] = Shop::DB()->query("
-            SELECT CONCAT_WS(' ',cName,cHinweis) AS cName, fPreis+(fPreis/100*fMwSt) AS nPreisNetto, nAnzahl
+            SELECT CONCAT_WS(' ',cName,cHinweis) AS cName, 
+                fPreis+(fPreis/100*fMwSt) AS nPreisNetto, nAnzahl
                 FROM twarenkorbpos
                 WHERE kWarenkorb = " . (int)$usedKupon['kWarenkorb'], 9
         );
         foreach ($usedKupons[$key]['cBestellPos_arr'] as $posKey => $value) {
-            $usedKupons[$key]['cBestellPos_arr'][$posKey]['nPreisNetto']       = gibPreisLocalizedOhneFaktor($value['nPreisNetto']);
-            $usedKupons[$key]['cBestellPos_arr'][$posKey]['nAnzahl']           = str_replace('.', ',', number_format($value['nAnzahl'], 2));
-            $usedKupons[$key]['cBestellPos_arr'][$posKey]['nGesamtPreisNetto'] = gibPreisLocalizedOhneFaktor($value['nAnzahl'] * $value['nPreisNetto']);
+            $usedKupons[$key]['cBestellPos_arr'][$posKey]['nPreisNetto']       =
+                gibPreisLocalizedOhneFaktor($value['nPreisNetto']);
+            $usedKupons[$key]['cBestellPos_arr'][$posKey]['nAnzahl']           =
+                str_replace('.', ',', number_format($value['nAnzahl'], 2));
+            $usedKupons[$key]['cBestellPos_arr'][$posKey]['nGesamtPreisNetto'] =
+                gibPreisLocalizedOhneFaktor($value['nAnzahl'] * $value['nPreisNetto']);
         }
 
         $nCountUsedKupons++;
@@ -189,17 +199,17 @@ if (isset($usedKupons) && is_array($usedKupons)) {
     array_multisort($datum, SORT_DESC, $usedKupons);
 }
 
-$nProzentCountUsedKupons = (isset($nCountBestellungen_arr['nCount']) && intval($nCountBestellungen_arr['nCount']) > 0) ?
-    number_format(100 / intval($nCountBestellungen_arr['nCount']) * $nCountUsedKupons, 2) :
-    0;
-$zusammenfassung_arr     = array(
+$nProzentCountUsedKupons = (isset($nCountBestellungen_arr['nCount']) && intval($nCountBestellungen_arr['nCount']) > 0)
+    ? number_format(100 / intval($nCountBestellungen_arr['nCount']) * $nCountUsedKupons, 2)
+    : 0;
+$zusammenfassung_arr     = [
     'nCountUsedKupons'        => $nCountUsedKupons,
     'nCountUser'              => $nCountUser,
     'nCountBestellungen'      => $nCountBestellungen_arr['nCount'],
     'nProzentCountUsedKupons' => $nProzentCountUsedKupons,
     'nSummeWarenkorbAlle'     => gibPreisLocalizedOhneFaktor($nSummeWarenkorbAlle),
     'nSummeKuponAlle'         => gibPreisLocalizedOhneFaktor($nSummeKuponAlle)
-);
+];
 
 $smarty->assign('zusammenfassung_arr', $zusammenfassung_arr)
        ->assign('usedKupons', $usedKupons)

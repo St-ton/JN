@@ -211,7 +211,17 @@ class Sprache
         if (!isset($this->isoAssociation[$kSprache])) {
             $cacheID = 'lang_iso_ks';
             if (($this->isoAssociation = Shop::Cache()->get($cacheID)) === false || !isset($this->isoAssociation[$kSprache])) {
-                $lang                            = Shop::DB()->select('tsprache', 'kSprache', (int)$kSprache, null, null, null, null, false, 'cISO');
+                $lang                            = Shop::DB()->select(
+                    'tsprache',
+                    'kSprache',
+                    (int)$kSprache,
+                    null,
+                    null,
+                    null,
+                    null,
+                    false,
+                    'cISO'
+                );
                 $this->isoAssociation[$kSprache] = $lang;
                 Shop::Cache()->set($cacheID, $this->isoAssociation, [CACHING_GROUP_LANGUAGE]);
             }
@@ -372,7 +382,8 @@ class Sprache
             $this->logWert($cSektion, $cName);
             $cValue = '#' . $cSektion . '.' . $cName . '#';
         } elseif (func_num_args() > 2) {
-            // String formatieren, vsprintf gibt false zurück, sollte die Anzahl der Parameter nicht der Anzahl der Format-Liste entsprechen!
+            // String formatieren, vsprintf gibt false zurück,
+            // sollte die Anzahl der Parameter nicht der Anzahl der Format-Liste entsprechen!
             $cArg_arr = [];
             for ($i = 2; $i < func_num_args(); $i++) {
                 $cArg_arr[] = func_get_arg($i);
@@ -400,7 +411,12 @@ class Sprache
         }
         $kSektion = (int)$kSektion;
         if ($kSektion > 0) {
-            $oSprachWerte_arr = Shop::DB()->selectAll('tsprachwerte', ['kSprachISO', 'kSprachsektion'], [$this->kSprachISO, $kSektion], 'cName, cWert');
+            $oSprachWerte_arr = Shop::DB()->selectAll(
+                'tsprachwerte',
+                ['kSprachISO', 'kSprachsektion'],
+                [$this->kSprachISO, $kSektion],
+                'cName, cWert'
+            );
         }
 
         if (count($oSprachWerte_arr) > 0) {
@@ -590,11 +606,15 @@ class Sprache
         $cSuchwort = Shop::DB()->escape($cSuchwort);
 
         return Shop::DB()->query(
-            "SELECT tsprachwerte.kSprachsektion, tsprachwerte.cName, tsprachwerte.cWert, tsprachwerte.cStandard,
-                tsprachwerte.bSystem, tsprachsektion.cName AS cSektionName
+            "SELECT tsprachwerte.kSprachsektion, tsprachwerte.cName, tsprachwerte.cWert, 
+                tsprachwerte.cStandard, tsprachwerte.bSystem, tsprachsektion.cName AS cSektionName
                 FROM tsprachwerte
-                LEFT JOIN tsprachsektion ON tsprachwerte.kSprachsektion = tsprachsektion.kSprachsektion
-                WHERE (tsprachwerte.cWert LIKE '%" . $cSuchwort . "%' OR tsprachwerte.cName LIKE '%" . $cSuchwort . "%')
+                LEFT JOIN tsprachsektion 
+                    ON tsprachwerte.kSprachsektion = tsprachsektion.kSprachsektion
+                WHERE (
+                    tsprachwerte.cWert LIKE '%" . $cSuchwort . "%' 
+                    OR tsprachwerte.cName LIKE '%" . $cSuchwort . "%'
+                    )
                     AND kSprachISO = " . (int)$this->kSprachISO, 2
         );
     }
@@ -612,9 +632,11 @@ class Sprache
             default:
             case 0: // Alle
                 $oWerte_arr = Shop::DB()->query(
-                    "SELECT tsprachsektion.cName AS cSektionName, tsprachwerte.cName, tsprachwerte.cWert, tsprachwerte.bSystem
+                    "SELECT tsprachsektion.cName AS cSektionName, tsprachwerte.cName, 
+                        tsprachwerte.cWert, tsprachwerte.bSystem
                         FROM tsprachwerte
-                        LEFT JOIN tsprachsektion ON tsprachwerte.kSprachsektion = tsprachsektion.kSprachsektion
+                        LEFT JOIN tsprachsektion 
+                            ON tsprachwerte.kSprachsektion = tsprachsektion.kSprachsektion
                         WHERE kSprachISO = " . (int)$this->kSprachISO, 2
                 );
                 break;
@@ -732,19 +754,35 @@ class Sprache
                     case 1: // Vorhandene Variablen überschreiben
                         Shop::DB()->query(
                             "REPLACE INTO tsprachwerte
-                                SET kSprachISO = " . $kSprachISO . ", kSprachsektion = " . $kSprachsektion . ",
-                                cName = '" . $cName . "', cWert='" . $cWert . "', cStandard = '" . $cWert . "', bSystem = " . $bSystem, 4
+                                SET kSprachISO = " . $kSprachISO . ", 
+                                    kSprachsektion = " . $kSprachsektion . ",
+                                    cName = '" . $cName . "', 
+                                    cWert='" . $cWert . "', 
+                                    cStandard = '" . $cWert . "', 
+                                    bSystem = " . $bSystem, 4
                         );
                         $nUpdateCount++;
                         break;
 
                     case 2: // Vorhandene Variablen beibehalten
-                        $oWert = Shop::DB()->select('tsprachwerte', 'kSprachISO', $kSprachISO, 'kSprachsektion', $kSprachsektion, 'cName', $cName);
+                        $oWert = Shop::DB()->select(
+                            'tsprachwerte',
+                            'kSprachISO',
+                            $kSprachISO,
+                            'kSprachsektion',
+                            $kSprachsektion,
+                            'cName',
+                            $cName
+                        );
                         if (!$oWert) {
                             Shop::DB()->query(
                                 "REPLACE INTO tsprachwerte
-                                    SET kSprachISO = " . $kSprachISO . ", kSprachsektion = " . $kSprachsektion . ",
-                                    cName = '" . $cName . "', cWert = '" . $cWert . "', cStandard = '" . $cWert . "', bSystem = " . $bSystem, 4
+                                    SET kSprachISO = " . $kSprachISO . ", 
+                                        kSprachsektion = " . $kSprachsektion . ",
+                                        cName = '" . $cName . "', 
+                                        cWert = '" . $cWert . "', 
+                                        cStandard = '" . $cWert . "', 
+                                        bSystem = " . $bSystem, 4
                             );
                             $nUpdateCount++;
                         }

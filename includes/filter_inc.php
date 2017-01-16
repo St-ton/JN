@@ -1773,12 +1773,16 @@ function bearbeiteSuchCache($NaviFilter, $kSpracheExt = 0)
                 AND DATE_ADD(tsuchcache.dGueltigBis, INTERVAL 5 MINUTE) < now()", 3
     );
 
+    // Suchergebnis ist abhängig von Kundengruppe und Lagerfiltereinstellungen
+    $conf     = Shop::getSettings([CONF_ARTIKELUEBERSICHT, CONF_GLOBAL]);
+    $keySuche = $cSuche . ';' . $conf['global']['artikel_artikelanzeigefilter'] . ';' . $_SESSION['Kundengruppe']->kKundengruppe;
+
     // Suchcache checken, ob bereits vorhanden
     $oSuchCache = Shop::DB()->query(
         "SELECT kSuchCache
             FROM tsuchcache
             WHERE kSprache =  " . $kSprache . "
-                AND cSuche = '" . Shop::DB()->escape($cSuche) . "'
+                AND cSuche = '" . Shop::DB()->escape($keySuche) . "'
                 AND (dGueltigBis > now() OR dGueltigBis IS NULL)", 1
     );
 
@@ -1787,7 +1791,7 @@ function bearbeiteSuchCache($NaviFilter, $kSpracheExt = 0)
     } else {
         // wenn kein Suchcache vorhanden
         $nMindestzeichen = 3;
-        $conf            = Shop::getSettings([CONF_ARTIKELUEBERSICHT]);
+
         if (intval($conf['artikeluebersicht']['suche_min_zeichen']) > 0) {
             $nMindestzeichen = intval($conf['artikeluebersicht']['suche_min_zeichen']);
         }
@@ -1806,7 +1810,7 @@ function bearbeiteSuchCache($NaviFilter, $kSpracheExt = 0)
             $cSuchspaltenKlasse_arr = gibSuchspaltenKlassen($cSuchspalten_arr);
             $oSuchCache             = new stdClass();
             $oSuchCache->kSprache   = $kSprache;
-            $oSuchCache->cSuche     = $cSuche;
+            $oSuchCache->cSuche     = $keySuche;
             $oSuchCache->dErstellt  = 'now()';
             $kSuchCache             = Shop::DB()->insert('tsuchcache', $oSuchCache);
 
@@ -1820,16 +1824,20 @@ function bearbeiteSuchCache($NaviFilter, $kSpracheExt = 0)
                 if (Shop::$kSprache > 0 && !standardspracheAktiv()) {
                     $cSQL = "SELECT '" . $kSuchCache . "', IF(tartikel.kVaterArtikel > 0, tartikel.kVaterArtikel, tartikelsprache.kArtikel) AS kArtikelTMP, ";
                 } else {
-                    $cSQL = "SELECT '" . $kSuchCache . "', IF(kVaterArtikel > 0, kVaterArtikel, kArtikel) AS kArtikelTMP, ";
+                    $cSQL = "SELECT '" . $kSuchCache . "', IF(tartikel.kVaterArtikel > 0, tartikel.kVaterArtikel, tartikel.kArtikel) AS kArtikelTMP, ";
                 }
                 // Shop2 Suche - mehr als 3 Suchwörter *
                 if (count($cSuch_arr) > 3) {
                     $cSQL .= " 1 ";
                     if (Shop::$kSprache > 0 && !standardspracheAktiv()) {
                         $cSQL .= "  FROM tartikelsprache
-                                        LEFT JOIN tartikel ON tartikelsprache.kArtikel = tartikel.kArtikel";
+                                        LEFT JOIN tartikel ON tartikelsprache.kArtikel = tartikel.kArtikel
+                                        LEFT JOIN tartikelsichtbarkeit ON tartikelsichtbarkeit.kArtikel = IF(tartikel.kVaterArtikel > 0, tartikel.kVaterArtikel, tartikelsprache.kArtikel)
+                                            AND tartikelsichtbarkeit.kKundengruppe = " . ((int)$_SESSION['Kundengruppe']->kKundengruppe);
                     } else {
-                        $cSQL .= " FROM tartikel ";
+                        $cSQL .= " FROM tartikel
+                                        LEFT JOIN tartikelsichtbarkeit ON tartikelsichtbarkeit.kArtikel = IF(tartikel.kVaterArtikel > 0, tartikel.kVaterArtikel, tartikel.kArtikel)
+                                            AND tartikelsichtbarkeit.kKundengruppe = " . ((int)$_SESSION['Kundengruppe']->kKundengruppe);
                     }
                     $cSQL .= " WHERE ";
 
@@ -2115,13 +2123,18 @@ function bearbeiteSuchCache($NaviFilter, $kSpracheExt = 0)
 
                     if (Shop::$kSprache > 0 && !standardspracheAktiv()) {
                         $cSQL .= " FROM tartikelsprache
-                                        LEFT JOIN tartikel ON tartikelsprache.kArtikel = tartikel.kArtikel";
+                                        LEFT JOIN tartikel ON tartikelsprache.kArtikel = tartikel.kArtikel
+                                        LEFT JOIN tartikelsichtbarkeit ON tartikelsichtbarkeit.kArtikel = IF(tartikel.kVaterArtikel > 0, tartikel.kVaterArtikel, tartikelsprache.kArtikel)
+                                            AND tartikelsichtbarkeit.kKundengruppe = " . ((int)$_SESSION['Kundengruppe']->kKundengruppe);
                     } else {
-                        $cSQL .= " FROM tartikel ";
+                        $cSQL .= " FROM tartikel
+                                        LEFT JOIN tartikelsichtbarkeit ON tartikelsichtbarkeit.kArtikel = IF(tartikel.kVaterArtikel > 0, tartikel.kVaterArtikel, tartikel.kArtikel)
+                                            AND tartikelsichtbarkeit.kKundengruppe = " . ((int)$_SESSION['Kundengruppe']->kKundengruppe);
                     }
-                    $cSQL .= " WHERE ";
+
+                    $cSQL .= " WHERE tartikelsichtbarkeit.kArtikel IS NULL " . gibLagerfilter() . " AND ";
                     if (Shop::$kSprache > 0 && !standardspracheAktiv()) {
-                        $cSQL .= " tartikelsprache.kSprache = " . Shop::$kSprache . " AND ";
+                        $cSQL .= " tartikelsprache.kSprache = " . Shop::$kSprache . " AND (";
                     }
                     foreach ($cSuchspalten_arr as $i => $cSuchspalten) {
                         if ($i > 0) {
@@ -2137,8 +2150,9 @@ function bearbeiteSuchCache($NaviFilter, $kSpracheExt = 0)
                         }
                         $cSQL .= ")";
                     }
+                    $cSQL .= ")";
                 }
-                Shop::DB()->query("INSERT INTO tsuchcachetreffer " . $cSQL . " GROUP BY kArtikelTMP LIMIT " . (int)$conf['artikeluebersicht']['suche_max_treffer'], 3);
+                Shop::DB()->query("INSERT INTO tsuchcachetreffer $cSQL GROUP BY kArtikelTMP LIMIT " . (int)$conf['artikeluebersicht']['suche_max_treffer'], 3);
             }
 
             return $kSuchCache;
@@ -2176,7 +2190,7 @@ function bearbeiteSuchCacheFulltext($oSuchCache, $cSuchspalten_arr, $cSuch_arr, 
                     IF(tartikel.kVaterArtikel > 0, tartikel.kVaterArtikel, tartikel.kArtikel) AS kArtikelTMP,
                     $match AS score
                     FROM tartikel
-                    WHERE $match ";
+                    WHERE $match " . gibLagerfilter() . " ";
 
         if (Shop::$kSprache > 0 && !standardspracheAktiv()) {
             $match  = "MATCH (" . implode(', ', $cSprachSpalten_arr) . ") AGAINST ('" . implode(' ', $cSuch_arr) . "' IN NATURAL LANGUAGE MODE)";
@@ -2186,12 +2200,15 @@ function bearbeiteSuchCacheFulltext($oSuchCache, $cSuchspalten_arr, $cSuch_arr, 
                     $match AS score
                     FROM tartikel
                     INNER JOIN tartikelsprache ON tartikelsprache.kArtikel = tartikel.kArtikel
-                    WHERE $match ";
+                    WHERE $match " . gibLagerfilter() . " ";
         }
 
         $cISQL = "INSERT INTO tsuchcachetreffer
                     SELECT kSuchCache, kArtikelTMP, ROUND(MAX(15 - score) * 10)
                     FROM ($cSQL) AS i
+                    LEFT JOIN tartikelsichtbarkeit ON tartikelsichtbarkeit.kArtikel = i.kArtikelTMP
+                        AND tartikelsichtbarkeit.kKundengruppe = " . ((int)$_SESSION['Kundengruppe']->kKundengruppe) . "
+                    WHERE tartikelsichtbarkeit.kKundengruppe IS NULL
                     GROUP BY kSuchCache, kArtikelTMP" . ($nLimit > 0 ? " LIMIT $nLimit" : '');
 
         Shop::DB()->query($cISQL, 3);

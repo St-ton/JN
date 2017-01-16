@@ -246,6 +246,7 @@ deploy_create_initial_schema()
 
 deploy_prepare_zip()
 {
+    rm -r ${BUILD_DIR}/build
     rm ${BUILD_DIR}/includes/config.JTL-Shop.ini.php
 }
 

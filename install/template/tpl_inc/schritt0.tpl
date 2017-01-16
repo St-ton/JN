@@ -91,11 +91,11 @@
 </script>
 {/if}
 
-<h2 class="welcome">Herzlich Willkommen bei der Installation Ihres neuen JTL Shops</h2>
+<h2 class="welcome">Herzlich Willkommen bei der Installation Ihres neuen JTL-Shops</h2>
 <div class="well">
-    <p>Wir freuen uns, dass Sie sich für JTL Shop entschieden haben. Bei dieser Installation führen wir Sie Schritt für Schritt durch die Installation Ihres neuen Shops.</p>
+    <p>Wir freuen uns, dass Sie sich für JTL-Shop entschieden haben. Bei dieser Installation führen wir Sie Schritt für Schritt durch die Installation Ihres neuen Shops.</p>
     <p>Tipps und Hilfestellungen zur Installation finden Sie in unserem <a href="http://jtl-url.de/shop3inst" target="_blank"><i class="fa fa-external-link"></i> Installationsguide</a>. Bei offenen Fragen können Sie eine Anfrage im <a href="http://kundencenter.jtl-software.de/" target="_blank"><i class="fa fa-external-link"></i> Kundencenter</a> stellen. Einer unserer Mitarbeiter hilft Ihnen gerne weiter.</p>
-    {if isset($versionAbort) && $versionAbort === false }<p><strong>Wir wünschen Ihnen viel Erfolg und viel Freude mit Ihrem neuen JTL Shop!</strong></p> {/if}
+    {if isset($versionAbort) && $versionAbort === false }<p><strong>Wir wünschen Ihnen viel Erfolg und viel Freude mit Ihrem neuen JTL-Shop!</strong></p> {/if}
 </div>
 
 {if isset($cHinweis) && $cHinweis|@count_characters > 0}
@@ -254,7 +254,7 @@
             </div>
             <div class="panel-body">
                 <div class="well">
-                    <p>Für die Installation des JTL Shops benötigen wir eine Datenbank.</p>
+                    <p>Für die Installation des JTL-Shops benötigen wir eine MySQL-Datenbank.</p>
 
                     <p>Meistens müssen der Benutzer und die Datenbank erst manuell erstellt werden. Bei Problemen wenden Sie sich
                         bitte an Ihren Administrator bzw. Webhoster, da dieser Vorgang von Hoster zu Hoster unterschiedlich ist und von der eingesetzten Software abhängt.</p>
@@ -262,7 +262,7 @@
                     <p>Der Benutzer benötigt Lese-, Schreib- und Löschrechte (<i>Create, Insert, Update, Delete</i>) für diese Datenbank.</p>
 
                     <p>Als <strong>Host</strong> ist "localhost" zumeist die richtige Einstellung. Diese Information bekommen Sie ebenfalls von Ihrem Webhoster.</p>
-                    <p>Das Feld <strong>Socket</strong> füllen Sie bitte nur aus, wenn Sie ganz sicher sind, dass Ihre Datenbank über einen Sockets erreichbar ist. In diesem Fall tragen Sie bitte den absoluten Pfad zum Socket ein.</p>
+                    <p>Das Feld <strong>Socket</strong> füllen Sie bitte nur aus, wenn Sie ganz sicher sind, dass Ihre Datenbank über einen Socket erreichbar ist. In diesem Fall tragen Sie bitte den absoluten Pfad zum Socket ein.</p>
                 </div>
                 <div class="col-xs-12">
                     <div class="form-group">

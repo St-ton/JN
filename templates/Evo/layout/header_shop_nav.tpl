@@ -1,7 +1,7 @@
 {strip}
 <ul class="header-shop-nav nav navbar-nav force-float horizontal pull-right">
     {if isset($smarty.session.Sprachen) && $smarty.session.Sprachen|@count > 1}
-        <li class="language-dropdown dropdown visible-xs">
+        <li class="language-dropdown dropdown hidden-xs">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                 <i class="fa fa-language"></i>
                 <span class="caret"></span>
@@ -23,7 +23,7 @@
         </li>
     {/if}
     {if isset($smarty.session.Waehrungen) && $smarty.session.Waehrungen|@count > 1}
-        <li class="currency-dropdown dropdown visible-xs">
+        <li class="currency-dropdown dropdown hidden-xs">
             <a id="xxxxx" href="#" class="dropdown-toggle" data-toggle="dropdown">
                 {if $smarty.session.Waehrung->cISO === 'EUR'}
                     <i class="fa fa-eur" title="{$smarty.session.Waehrung->cName}"></i>

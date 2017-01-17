@@ -26,11 +26,21 @@ if (isset($oLink->kLink) && $oLink->kLink > 0) {
     $Link = $linkHelper->getPageLink($oLink->kLink);
     //url
     $requestURL    = baueURL($Link, URLART_SEITE);
-    $sprachURL     = (isset($Link->languageURLs)) ? $Link->languageURLs : baueSprachURLS($Link, URLART_SEITE);
+    $sprachURL     = (isset($Link->languageURLs))
+        ? $Link->languageURLs
+        : baueSprachURLS($Link, URLART_SEITE);
     $Link->Sprache = $linkHelper->getPageLinkLanguage($oLink->kLink);
     $smarty->assign('Navigation', createNavigation($AktuelleSeite, 0, 0, $Link->Sprache->cName, $requestURL));
 } else {
-    $smarty->assign('Navigation', createNavigation($AktuelleSeite, 0, 0, Shop::Lang()->get('newsletter', 'breadcrumb'), 'newsletter.php'));
+    $smarty->assign('Navigation',
+        createNavigation(
+            $AktuelleSeite,
+            0,
+            0,
+            Shop::Lang()->get('newsletter', 'breadcrumb'),
+            'newsletter.php'
+        )
+    );
 }
 
 $cHinweis      = '';
@@ -53,10 +63,16 @@ if (isset($_GET['fc']) && strlen($_GET['fc']) > 0) {
     $oNewsletterEmpfaenger = Shop::DB()->select('tnewsletterempfaenger', 'cOptCode', $cFreischaltCode);
 
     if (isset($oNewsletterEmpfaenger->kNewsletterEmpfaenger) && $oNewsletterEmpfaenger->kNewsletterEmpfaenger > 0) {
-        executeHook(HOOK_NEWSLETTER_PAGE_EMPFAENGERFREISCHALTEN, array('oNewsletterEmpfaenger' => $oNewsletterEmpfaenger));
+        executeHook(HOOK_NEWSLETTER_PAGE_EMPFAENGERFREISCHALTEN, ['oNewsletterEmpfaenger' => $oNewsletterEmpfaenger]);
         // Newsletterempfaenger freischalten
-        Shop::DB()->update('tnewsletterempfaenger', 'kNewsletterEmpfaenger', (int)$oNewsletterEmpfaenger->kNewsletterEmpfaenger, (object)['nAktiv' => 1]);
-        // Pruefen, ob mittlerweile ein Kundenkonto existiert und wenn ja, dann kKunde in tnewsletterempfänger aktualisieren
+        Shop::DB()->update(
+            'tnewsletterempfaenger',
+            'kNewsletterEmpfaenger',
+            (int)$oNewsletterEmpfaenger->kNewsletterEmpfaenger,
+            (object)['nAktiv' => 1]
+        );
+        // Pruefen, ob mittlerweile ein Kundenkonto existiert
+        // und wenn ja, dann kKunde in tnewsletterempfänger aktualisieren
         Shop::DB()->query(
             "UPDATE tnewsletterempfaenger, tkunde
                 SET tnewsletterempfaenger.kKunde = tkunde.kKunde
@@ -67,18 +83,28 @@ if (isset($_GET['fc']) && strlen($_GET['fc']) > 0) {
         $upd           = new stdClass();
         $upd->dOptCode = 'now()';
         $upd->cOptIp   = gibIP();
-        Shop::DB()->update('tnewsletterempfaengerhistory', ['cOptCode', 'cAktion'], [$cFreischaltCode, 'Eingetragen'], $upd);
+        Shop::DB()->update(
+            'tnewsletterempfaengerhistory',
+            ['cOptCode', 'cAktion'],
+            [$cFreischaltCode, 'Eingetragen'],
+            $upd
+        );
         $cHinweis = Shop::Lang()->get('newsletterActive', 'messages');
     } else {
         $cFehler = Shop::Lang()->get('newsletterNoactive', 'errorMessages');
     }
 } elseif (isset($_GET['lc']) && strlen($_GET['lc']) > 0) { // Loeschcode wurde uebergeben
     $cOption               = 'loeschen';
-    $cLoeschCode           = StringHandler::htmlentities(StringHandler::filterXSS(Shop::DB()->escape(strip_tags($_GET['lc']))));
+    $cLoeschCode           = StringHandler::htmlentities(
+        StringHandler::filterXSS(Shop::DB()->escape(strip_tags($_GET['lc'])))
+    );
     $oNewsletterEmpfaenger = Shop::DB()->select('tnewsletterempfaenger', 'cLoeschCode', $cLoeschCode);
 
     if (!empty($oNewsletterEmpfaenger->cLoeschCode)) {
-        executeHook(HOOK_NEWSLETTER_PAGE_EMPFAENGERLOESCHEN, array('oNewsletterEmpfaenger' => $oNewsletterEmpfaenger));
+        executeHook(
+            HOOK_NEWSLETTER_PAGE_EMPFAENGERLOESCHEN,
+            ['oNewsletterEmpfaenger' => $oNewsletterEmpfaenger]
+        );
 
         Shop::DB()->delete('tnewsletterempfaenger', 'cLoeschCode', $cLoeschCode);
         $oNewsletterEmpfaengerHistory               = new stdClass();
@@ -97,7 +123,10 @@ if (isset($_GET['fc']) && strlen($_GET['fc']) > 0) {
 
         Shop::DB()->insert('tnewsletterempfaengerhistory', $oNewsletterEmpfaengerHistory);
 
-        executeHook(HOOK_NEWSLETTER_PAGE_HISTORYEMPFAENGEREINTRAGEN, array('oNewsletterEmpfaengerHistory' => $oNewsletterEmpfaengerHistory));
+        executeHook(
+            HOOK_NEWSLETTER_PAGE_HISTORYEMPFAENGEREINTRAGEN,
+            ['oNewsletterEmpfaengerHistory' => $oNewsletterEmpfaengerHistory]
+        );
         // Blacklist
         $oBlacklist            = new stdClass();
         $oBlacklist->cMail     = $oNewsletterEmpfaenger->cEmail;
@@ -115,10 +144,18 @@ if (isset($_POST['abonnieren']) && intval($_POST['abonnieren']) === 1) {
     require_once PFAD_ROOT . PFAD_INCLUDES . 'newsletter_inc.php';
 
     $oKunde            = new stdClass();
-    $oKunde->cAnrede   = (isset($_POST['cAnrede'])) ? StringHandler::filterXSS(Shop::DB()->escape(strip_tags($_POST['cAnrede']))) : null;
-    $oKunde->cVorname  = (isset($_POST['cVorname'])) ? StringHandler::filterXSS(Shop::DB()->escape(strip_tags($_POST['cVorname']))) : null;
-    $oKunde->cNachname = (isset($_POST['cNachname'])) ? StringHandler::filterXSS(Shop::DB()->escape(strip_tags($_POST['cNachname']))) : null;
-    $oKunde->cEmail    = (isset($_POST['cEmail'])) ? StringHandler::filterXSS(Shop::DB()->escape(strip_tags($_POST['cEmail']))) : null;
+    $oKunde->cAnrede   = (isset($_POST['cAnrede']))
+        ? StringHandler::filterXSS(Shop::DB()->escape(strip_tags($_POST['cAnrede'])))
+        : null;
+    $oKunde->cVorname  = (isset($_POST['cVorname']))
+        ? StringHandler::filterXSS(Shop::DB()->escape(strip_tags($_POST['cVorname'])))
+        : null;
+    $oKunde->cNachname = (isset($_POST['cNachname']))
+        ? StringHandler::filterXSS(Shop::DB()->escape(strip_tags($_POST['cNachname'])))
+        : null;
+    $oKunde->cEmail    = (isset($_POST['cEmail']))
+        ? StringHandler::filterXSS(Shop::DB()->escape(strip_tags($_POST['cEmail'])))
+        : null;
 
     if (!pruefeEmailblacklist($oKunde->cEmail)) {
         $smarty->assign('oPlausi', fuegeNewsletterEmpfaengerEin($oKunde, true));
@@ -130,18 +167,32 @@ if (isset($_POST['abonnieren']) && intval($_POST['abonnieren']) === 1) {
     }
 
     $smarty->assign('cPost_arr', StringHandler::filterXSS($_POST));
-} elseif (isset($_POST['abonnieren']) && intval($_POST['abonnieren']) === 2) { // weiterleitung vom Footer zu newsletter.php
-    $oPlausi->cPost_arr['cEmail'] = (isset($_POST['cEmail'])) ? StringHandler::filterXSS(Shop::DB()->escape(strip_tags($_POST['cEmail']))) : null;
+} elseif (isset($_POST['abonnieren']) && intval($_POST['abonnieren']) === 2) {
+    // weiterleitung vom Footer zu newsletter.php
+    $oPlausi->cPost_arr['cEmail'] = (isset($_POST['cEmail']))
+        ? StringHandler::filterXSS(Shop::DB()->escape(strip_tags($_POST['cEmail'])))
+        : null;
     $smarty->assign('oPlausi', $oPlausi);
 } elseif (isset($_POST['abmelden']) && intval($_POST['abmelden']) === 1) { // Abmelden
     if (valid_email($_POST['cEmail'])) {
         // Pruefen, ob Email bereits vorhanden
-        $oNewsletterEmpfaenger = Shop::DB()->select('tnewsletterempfaenger', 'cEmail', StringHandler::htmlentities(StringHandler::filterXSS(Shop::DB()->escape($_POST['cEmail']))));
+        $oNewsletterEmpfaenger = Shop::DB()->select(
+            'tnewsletterempfaenger',
+            'cEmail',
+            StringHandler::htmlentities(StringHandler::filterXSS(Shop::DB()->escape($_POST['cEmail'])))
+        );
 
-        if (isset($oNewsletterEmpfaenger->kNewsletterEmpfaenger) && $oNewsletterEmpfaenger->kNewsletterEmpfaenger > 0) {
-            executeHook(HOOK_NEWSLETTER_PAGE_EMPFAENGERLOESCHEN, array('oNewsletterEmpfaenger' => $oNewsletterEmpfaenger));
+        if (!empty($oNewsletterEmpfaenger->kNewsletterEmpfaenger)) {
+            executeHook(
+                HOOK_NEWSLETTER_PAGE_EMPFAENGERLOESCHEN,
+                ['oNewsletterEmpfaenger' => $oNewsletterEmpfaenger]
+            );
             // Newsletterempfaenger loeschen
-            Shop::DB()->delete('tnewsletterempfaenger', 'cEmail', StringHandler::htmlentities(StringHandler::filterXSS(Shop::DB()->escape($_POST['cEmail']))));
+            Shop::DB()->delete(
+                'tnewsletterempfaenger',
+                'cEmail',
+                StringHandler::htmlentities(StringHandler::filterXSS(Shop::DB()->escape($_POST['cEmail'])))
+            );
             $oNewsletterEmpfaengerHistory               = new stdClass();
             $oNewsletterEmpfaengerHistory->kSprache     = $oNewsletterEmpfaenger->kSprache;
             $oNewsletterEmpfaengerHistory->kKunde       = $oNewsletterEmpfaenger->kKunde;
@@ -158,7 +209,10 @@ if (isset($_POST['abonnieren']) && intval($_POST['abonnieren']) === 1) {
 
             Shop::DB()->insert('tnewsletterempfaengerhistory', $oNewsletterEmpfaengerHistory);
 
-            executeHook(HOOK_NEWSLETTER_PAGE_HISTORYEMPFAENGEREINTRAGEN, array('oNewsletterEmpfaengerHistory' => $oNewsletterEmpfaengerHistory));
+            executeHook(
+                HOOK_NEWSLETTER_PAGE_HISTORYEMPFAENGEREINTRAGEN,
+                ['oNewsletterEmpfaengerHistory' => $oNewsletterEmpfaengerHistory]
+            );
             // Blacklist
             $oBlacklist            = new stdClass();
             $oBlacklist->cMail     = $oNewsletterEmpfaenger->cEmail;
@@ -176,12 +230,13 @@ if (isset($_POST['abonnieren']) && intval($_POST['abonnieren']) === 1) {
     $cOption            = 'anzeigen';
     $kNewsletterHistory = (int)$_GET['show'];
     $oNewsletterHistory = Shop::DB()->query(
-        "SELECT kNewsletterHistory, nAnzahl, cBetreff, DATE_FORMAT(dStart, '%d.%m.%Y %H:%i') AS Datum, cHTMLStatic, cKundengruppeKey
+        "SELECT kNewsletterHistory, nAnzahl, cBetreff, cHTMLStatic, cKundengruppeKey, 
+            DATE_FORMAT(dStart, '%d.%m.%Y %H:%i') AS Datum
             FROM tnewsletterhistory
             WHERE kNewsletterHistory = " . $kNewsletterHistory, 1
     );
     $kKundengruppe = 0;
-    if (isset($_SESSION['Kunde']->kKundengruppe) && intval($_SESSION['Kunde']->kKundengruppe) > 0) {
+    if (isset($_SESSION['Kunde']->kKundengruppe) && (int)$_SESSION['Kunde']->kKundengruppe > 0) {
         $kKundengruppe = (int)$_SESSION['Kunde']->kKundengruppe;
     }
     if ($oNewsletterHistory->kNewsletterHistory > 0) {
@@ -197,9 +252,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
     $smarty->assign('bBereitsAbonnent', pruefeObBereitsAbonnent($oKunde->kKunde))
            ->assign('oKunde', $oKunde);
 }
-// Canonical
-$cCanonicalURL = Shop::getURL() . '/newsletter.php';
-// Metaangaben
+$cCanonicalURL    = Shop::getURL() . '/newsletter.php';
 $oMeta            = $linkHelper->buildSpecialPageMeta(LINKTYP_NEWSLETTER);
 $cMetaTitle       = $oMeta->cTitle;
 $cMetaDescription = $oMeta->cDesc;

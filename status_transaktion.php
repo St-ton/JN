@@ -10,9 +10,8 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
 
 $strHTML    = '';
 $strErrDesc = '';
-
 //Clickpay
-$arResultResponseCode = array(
+$arResultResponseCode = [
     '0'   => 'Funktion fehlerfrei durchgeführt',
     '2'   => 'Zahlung abgelehnt',
     '3'   => 'Unzulässige Händlernummer',
@@ -82,7 +81,7 @@ $arResultResponseCode = array(
     '-97' => 'Online Konverter nicht verfügbar',
     '-98' => 'System nicht verfügbar',
     '-99' => 'Zahlung mit Test-Kreditkartennummer (nur auf Demo-System)',
-);
+];
 $strResultCode         = $_GET['tcphResultCode'];
 $strResultResponseCode = $_GET['tcphResultResponseCode'];
 $strErrDesc            = $arResultResponseCode[$strResultResponseCode];
@@ -92,7 +91,8 @@ $strHTML .= '<div style="font-family:arial,helvetica;text-align:middle;"><br /><
 
 switch ($strResultCode) {
     case 'OK':
-        $strHTML .= '<p>Ihre Transaktion mit Click & Pay easy war erfolgreich und wurde als bezahlt markiert. Ihre Bestellung wird nun so schnell wie möglich verschickt.</p>';
+        $strHTML .= '<p>Ihre Transaktion mit Click & Pay easy war erfolgreich und wurde als bezahlt markiert. ' .
+            'Ihre Bestellung wird nun so schnell wie möglich verschickt.</p>';
         break;
     case 'FAILURE':
     case 'ERROR':
@@ -107,8 +107,8 @@ switch ($strResultResponseCode) {
     case '-63':
     case '-62':
         //Zurück zur WalletPage (vorherige Seite)
-        $strHTML .=
-            "<p>Sie k&ouml;nnen mit dem \"Zur&uuml;ck\-Button Ihres Browsers die Eingaben in dem Formular wiederholen.</p>";
+        $strHTML .= '<p>Sie k&ouml;nnen mit dem Zur&uuml;ck-Button ' .
+            'Ihres Browsers die Eingaben in dem Formular wiederholen.</p>';
         break;
 }
 

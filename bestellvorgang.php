@@ -53,14 +53,18 @@ if (class_exists('Download')) {
     }
 }
 // oneClick? Darf nur einmal ausgeführt werden und nur dann, wenn man vom Warenkorb kommt.
-if ($Einstellungen['kaufabwicklung']['bestellvorgang_kaufabwicklungsmethode'] === 'NO' && verifyGPCDataInteger('wk') === 1) {
+if ($Einstellungen['kaufabwicklung']['bestellvorgang_kaufabwicklungsmethode'] === 'NO' &&
+    verifyGPCDataInteger('wk') === 1
+) {
     $kKunde = 0;
     if (isset($_SESSION['Kunde']->kKunde)) {
         $kKunde = $_SESSION['Kunde']->kKunde;
     }
     $oWarenkorbPers = new WarenkorbPers($kKunde);
-    if (!(count($oWarenkorbPers->oWarenkorbPersPos_arr) > 0 && isset($_POST['login']) && (int)$_POST['login'] === 1 &&
-        $Einstellungen['global']['warenkorbpers_nutzen'] === 'Y' && $Einstellungen['kaufabwicklung']['warenkorb_warenkorb2pers_merge'] === 'P')
+    if (!(count($oWarenkorbPers->oWarenkorbPersPos_arr) > 0 &&
+        isset($_POST['login']) && (int)$_POST['login'] === 1 &&
+        $Einstellungen['global']['warenkorbpers_nutzen'] === 'Y' &&
+        $Einstellungen['kaufabwicklung']['warenkorb_warenkorb2pers_merge'] === 'P')
     ) {
         pruefeAjaxEinKlick();
     }
@@ -74,10 +78,14 @@ pruefeHttps();
 if (isset($_POST['versandartwahl']) && (int)$_POST['versandartwahl'] === 1) {
     pruefeVersandartWahl((isset($_POST['Versandart'])) ? $_POST['Versandart'] : null);
 }
-if (isset($_POST['unreg_form']) && (int)$_POST['unreg_form'] === 1 && $Einstellungen['kaufabwicklung']['bestellvorgang_unregistriert'] === 'Y') {
+if (isset($_POST['unreg_form']) && (int)$_POST['unreg_form'] === 1 &&
+    $Einstellungen['kaufabwicklung']['bestellvorgang_unregistriert'] === 'Y'
+) {
     pruefeUnregistriertBestellen($_POST);
 }
-if (isset($_GET['unreg']) && (int)$_GET['unreg'] === 1 && $Einstellungen['kaufabwicklung']['bestellvorgang_unregistriert'] === 'Y') {
+if (isset($_GET['unreg']) && (int)$_GET['unreg'] === 1 &&
+    $Einstellungen['kaufabwicklung']['bestellvorgang_unregistriert'] === 'Y'
+) {
     $step = 'unregistriert bestellen';
 }
 if (isset($_POST['lieferdaten']) && (int)$_POST['lieferdaten'] === 1) {
@@ -91,7 +99,9 @@ if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']) {
 if (class_exists('Download')) {
     if (Download::hasDownloads($_SESSION['Warenkorb'])) {
         // Falls unregistrierter Kunde bereits im Checkout war und einen Downloadartikel hinzugefuegt hat
-        if ((!isset($_SESSION['Kunde']->cPasswort) || strlen($_SESSION['Kunde']->cPasswort) === 0) && $step !== 'accountwahl') {
+        if ((!isset($_SESSION['Kunde']->cPasswort) || strlen($_SESSION['Kunde']->cPasswort) === 0) &&
+            $step !== 'accountwahl'
+        ) {
             $step = 'accountwahl';
             unset($_SESSION['Kunde']);
         }
@@ -145,12 +155,22 @@ if ($step === 'Bestaetigung') {
     Warenkorb::refreshChecksum($_SESSION['Warenkorb']);
 }
 //SafetyPay Work Around
-if (isset($_SESSION['Zahlungsart']->cModulId) && $_SESSION['Zahlungsart']->cModulId === 'za_safetypay' && $step === 'Bestaetigung') {
+if (isset($_SESSION['Zahlungsart']->cModulId) &&
+    $_SESSION['Zahlungsart']->cModulId === 'za_safetypay' &&
+    $step === 'Bestaetigung'
+) {
     require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'safetypay/safetypay.php';
-    $smarty->assign('safetypay_form', gib_safetypay_form($_SESSION['Kunde'], $_SESSION['Warenkorb'], $Einstellungen['zahlungsarten']));
+    $smarty->assign('safetypay_form', gib_safetypay_form(
+        $_SESSION['Kunde'],
+        $_SESSION['Warenkorb'],
+        $Einstellungen['zahlungsarten'])
+    );
 }
 //Billpay
-if (isset($_SESSION['Zahlungsart']) && $_SESSION['Zahlungsart']->cModulId === 'za_billpay_jtl' && $step === 'Bestaetigung') {
+if (isset($_SESSION['Zahlungsart']) &&
+    $_SESSION['Zahlungsart']->cModulId === 'za_billpay_jtl' &&
+    $step === 'Bestaetigung'
+) {
     $paymentMethod = PaymentMethod::create('za_billpay_jtl');
     $paymentMethod->handleConfirmation();
 }

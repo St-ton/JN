@@ -775,5 +775,4 @@ $smarty->assign('oKundengruppe_arr', $oKundengruppe_arr)
        ->assign('Sprachen', $Sprachen)
        ->assign('nMaxFileSize', $nMaxFileSize)
        ->assign('kSprache', (int)$_SESSION['kSprache'])
-       ->assign('shopURL', Shop::getURL())
        ->display('news.tpl');

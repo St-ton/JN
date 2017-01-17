@@ -70,7 +70,8 @@ class WarenkorbPers
                 }
                 if ($oWarenkorbPersPos->kArtikel == $kArtikel &&
                     count($oWarenkorbPersPos->oWarenkorbPersPosEigenschaft_arr) > 0 &&
-                    (int)$oWarenkorbPersPos->kKonfigitem === (int)$kKonfigitem) {
+                    (int)$oWarenkorbPersPos->kKonfigitem === (int)$kKonfigitem &&
+                    $oWarenkorbPersPos->cUnique === $cUnique) {
                     $nPosition         = $i;
                     $bBereitsEnthalten = true;
                     foreach ($oEigenschaftwerte_arr as $oEigenschaftwerte) {

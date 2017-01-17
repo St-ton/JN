@@ -89,8 +89,9 @@
                 };
 
                 var query = $(event.target).val() || '';
-                if (query.length < 3) {
+                if (query.length < 3 || event.keyCode == 27) {
                     setResult(null);
+                    lastQuery = null;
                 }
                 else if(query != lastQuery) {
                     lastQuery = query;

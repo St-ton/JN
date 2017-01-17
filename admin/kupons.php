@@ -30,10 +30,7 @@ if ($res > 0) {
 
 // Aktion ausgeloest?
 if (validateToken()) {
-    if (isset($_GET['kKupon']) && verifyGPCDataInteger('kKupon') > 0) {
-        $action = 'bearbeiten';
-    }
-    elseif (isset($_POST['action'])) {
+    if (isset($_POST['action'])) {
         if ($_POST['action'] === 'speichern') {
             // Kupon speichern
             $action = 'speichern';
@@ -41,7 +38,7 @@ if (validateToken()) {
             // Kupons loeschen
             $action = 'loeschen';
         }
-    } elseif (isset($_POST['kKuponBearbeiten'])) {
+    } elseif (isset($_GET['kKupon']) && verifyGPCDataInteger('kKupon') > 0) {
         // Kupon bearbeiten
         $action = 'bearbeiten';
     }

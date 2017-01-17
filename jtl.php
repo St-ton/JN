@@ -117,7 +117,7 @@ if (isset($_POST['login']) && intval($_POST['login']) === 1 && isset($_POST['ema
                             if (!isset($oWunschlistePos->Artikel->bHasKonfig) || !$oWunschlistePos->Artikel->bHasKonfig) {
                                 // Gratisgeschenk in Warenkorb legen
                                 if ((int)$oWarenkorbPersPos->nPosTyp === (int)C_WARENKORBPOS_TYP_GRATISGESCHENK) {
-                                    $kArtikelGeschenk = $oWarenkorbPersPos->kArtikel;
+                                    $kArtikelGeschenk = (int)$oWarenkorbPersPos->kArtikel;
                                     $oArtikelGeschenk = Shop::DB()->query(
                                         "SELECT tartikelattribut.kArtikel, tartikel.fLagerbestand, tartikel.cLagerKleinerNull, tartikel.cLagerBeachten
                                             FROM tartikelattribut

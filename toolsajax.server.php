@@ -135,15 +135,13 @@ function gibVergleichsliste($nVLKeys = 0, $bWarenkorb = true)
         }
     }
     // Spaltenbreite
-    $nBreiteAttribut = 100;
-    if (intval($Einstellungen_Vergleichsliste['vergleichsliste']['vergleichsliste_spaltengroesseattribut']) > 0) {
-        $nBreiteAttribut = intval($Einstellungen_Vergleichsliste['vergleichsliste']['vergleichsliste_spaltengroesseattribut']);
-    }
-    $nBreiteArtikel = 200;
-    if (intval($Einstellungen_Vergleichsliste['vergleichsliste']['vergleichsliste_spaltengroesse']) > 0) {
-        $nBreiteArtikel = intval($Einstellungen_Vergleichsliste['vergleichsliste']['vergleichsliste_spaltengroesse']);
-    }
-    $nBreiteTabelle = $nBreiteArtikel * count($oVergleichsliste->oArtikel_arr) + $nBreiteAttribut;
+    $nBreiteAttribut = (intval($Einstellungen_Vergleichsliste['vergleichsliste']['vergleichsliste_spaltengroesseattribut']) > 0)
+        ? (int)$Einstellungen_Vergleichsliste['vergleichsliste']['vergleichsliste_spaltengroesseattribut']
+        : 100;
+    $nBreiteArtikel  = (intval($Einstellungen_Vergleichsliste['vergleichsliste']['vergleichsliste_spaltengroesse']) > 0)
+        ? (int)$Einstellungen_Vergleichsliste['vergleichsliste']['vergleichsliste_spaltengroesse']
+        : 200;
+    $nBreiteTabelle  = $nBreiteArtikel * count($oVergleichsliste->oArtikel_arr) + $nBreiteAttribut;
     //specific assigns
     global $AktuelleSeite;
     if (!isset($AktuelleSeite)) {
@@ -240,7 +238,7 @@ function fuegeEinInWarenkorbAjax($kArtikel, $anzahl, $oEigenschaftwerte_arr = ''
     $oResponse           = new stdClass();
     $objResponse         = new xajaxResponse();
     $GLOBALS['oSprache'] = Sprache::getInstance();
-    $kArtikel            = intval($kArtikel);
+    $kArtikel            = (int)$kArtikel;
     if ($anzahl > 0 && $kArtikel > 0) {
         $Artikel                     = new Artikel();
         $Artikel->fuelleArtikel($kArtikel, Artikel::getDefaultOptions());
@@ -444,7 +442,7 @@ function gibRegionzuLand($cLandIso)
  */
 function suchVorschlag($cValue, $nkeyCode, $cElemSearchID, $cElemSuggestID, $cElemSubmitID)
 {
-    $nkeyCode       = intval($nkeyCode);
+    $nkeyCode       = (int)$nkeyCode;
     $cValue         = StringHandler::htmlentities(StringHandler::filterXSS($cValue));
     $cElemSearchID  = StringHandler::htmlentities(StringHandler::filterXSS($cElemSearchID));
     $cElemSuggestID = StringHandler::htmlentities(StringHandler::filterXSS($cElemSuggestID));
@@ -452,9 +450,9 @@ function suchVorschlag($cValue, $nkeyCode, $cElemSearchID, $cElemSuggestID, $cEl
 
     global $Einstellungen;
     // Maximale Suchvorschläge
-    $nMaxAnzahl = (intval($Einstellungen['artikeluebersicht']['suche_ajax_anzahl']) > 0) ?
-        intval($Einstellungen['artikeluebersicht']['suche_ajax_anzahl']) :
-        10;
+    $nMaxAnzahl = (intval($Einstellungen['artikeluebersicht']['suche_ajax_anzahl']) > 0)
+        ? (int)$Einstellungen['artikeluebersicht']['suche_ajax_anzahl']
+        : 10;
 
     $objResponse = new xajaxResponse();
     $objResponse->assign($cElemSuggestID, 'innerHTML', '');
@@ -511,10 +509,9 @@ function suggestions($cValue)
     $cSuch_arr   = [];
     $cValue      = StringHandler::filterXSS($cValue);
     $objResponse = new xajaxResponse();
-    $nMaxAnzahl  = 10;
-    if (intval($Einstellungen['artikeluebersicht']['suche_ajax_anzahl']) > 0) {
-        $nMaxAnzahl = intval($Einstellungen['artikeluebersicht']['suche_ajax_anzahl']);
-    }
+    $nMaxAnzahl  = (intval($Einstellungen['artikeluebersicht']['suche_ajax_anzahl']) > 0)
+        ? (int)$Einstellungen['artikeluebersicht']['suche_ajax_anzahl']
+        : 10;
     if (strlen($cValue) >= 3) {
         $oSuchanfrage_arr = Shop::DB()->query(
             "SELECT cSuche, nAnzahlTreffer
@@ -598,7 +595,7 @@ function tauscheVariationKombi($aFormValues, $nVater = 0, $kEigenschaft = 0, $kE
         // Stückliste nötig? => Stücklistenkomponenten  holen
         $oArtikelOptionen->nStueckliste   = intval($Einstellungen['artikeldetails']['artikeldetails_stueckliste_anzeigen'] === 'Y');
         $oArtikelOptionen->nProductBundle = intval($Einstellungen['artikeldetails']['artikeldetails_produktbundle_nutzen'] === 'Y');
-        $oVaterArtikel->fuelleArtikel(intval($aFormValues['a']), $oArtikelOptionen, intval($aFormValues['kKundengruppe']), intval($aFormValues['kSprache']));
+        $oVaterArtikel->fuelleArtikel((int)$aFormValues['a'], $oArtikelOptionen, (int)$aFormValues['kKundengruppe'], (int)$aFormValues['kSprache']);
 
         $bKindVorhanden = false;
         if (!$nVater) {
@@ -607,7 +604,7 @@ function tauscheVariationKombi($aFormValues, $nVater = 0, $kEigenschaft = 0, $kE
                 foreach ($oVaterArtikel->Variationen as $oVariation) {
                     if ($oVariation->cTyp !== 'FREIFELD' && $oVariation->cTyp !== 'PFLICHT-FREIFELD') {
                         if (isset($aFormValues['eigenschaftwert_' . $oVariation->kEigenschaft]) && intval($aFormValues['eigenschaftwert_' . $oVariation->kEigenschaft]) > 0) {
-                            $kVariationKombi_arr[$oVariation->kEigenschaft] = intval($aFormValues['eigenschaftwert_' . $oVariation->kEigenschaft]);
+                            $kVariationKombi_arr[$oVariation->kEigenschaft] = (int)$aFormValues['eigenschaftwert_' . $oVariation->kEigenschaft];
                         }
                     }
                 }
@@ -660,10 +657,10 @@ function tauscheVariationKombi($aFormValues, $nVater = 0, $kEigenschaft = 0, $kE
                         "SELECT teigenschaftkombiwert.kEigenschaftWert, teigenschaftkombiwert.kEigenschaft
                             FROM teigenschaftkombiwert
                             JOIN tartikel ON tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
-                                AND tartikel.kVaterArtikel = " . intval($oVaterArtikel->kArtikel) . "
-                                AND tartikel.kArtikel = " . intval($oArtikel->kArtikelVariKombi) . "
+                                AND tartikel.kVaterArtikel = " . (int)$oVaterArtikel->kArtikel . "
+                                AND tartikel.kArtikel = " . (int)$oArtikel->kArtikelVariKombi . "
                             LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                                AND tartikelsichtbarkeit.kKundengruppe = " . intval($_SESSION['Kundengruppe']->kKundengruppe) . "
+                                AND tartikelsichtbarkeit.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
                             WHERE tartikelsichtbarkeit.kArtikel IS NULL
                             ORDER BY tartikel.kArtikel", 2
                     );
@@ -715,9 +712,8 @@ function tauscheVariationKombi($aFormValues, $nVater = 0, $kEigenschaft = 0, $kE
                     $oEigenschaft_arr = Shop::DB()->query(
                         "SELECT *
                             FROM teigenschaft
-                            WHERE kArtikel = " . intval($oVaterArtikel->kArtikel) . "
-                            AND (cTyp = 'RADIO'
-                            OR cTyp = 'SELECTBOX')
+                            WHERE kArtikel = " . (int)$oVaterArtikel->kArtikel . "
+                                AND (cTyp = 'RADIO' OR cTyp = 'SELECTBOX')
                             ORDER BY nSort ASC, cName ASC", 2
                     );
                     // Durchlaufe alle Eigenschaften
@@ -796,7 +792,7 @@ function tauscheVariationKombi($aFormValues, $nVater = 0, $kEigenschaft = 0, $kE
             $objResponse->script("setzeEigenschaftWerte('" . $cVariationKombiKind . "');");
             // Kein Kind vorhanden, gesetzte Werte zurücksetzen
             $_SESSION['oVarkombiAuswahl']->kGesetzteEigeschaftWert_arr = [$kEigenschaft => $kEigenschaftWert];
-            $kArtikel                                                  = intval($aFormValues['a']);
+            $kArtikel                                                  = (int)$aFormValues['a'];
             checkVarkombiDependencies($kArtikel, '', $kEigenschaft, $kEigenschaftWert, ['objResponse' => $objResponse]);
             // Nachricht an den Benutzer
             $cMessage = Shop::Lang()->get('selectionNotAvailable', 'productDetails');
@@ -1098,7 +1094,7 @@ function checkVarkombiDependencies($kVaterArtikel, $cVaterURL, $kEigenschaft = 0
           SELECT * 
             FROM teigenschaft 
             WHERE kArtikel = " . (int)$kVaterArtikel . " 
-            AND (cTyp = 'RADIO' OR cTyp = 'SELECTBOX') 
+                AND (cTyp = 'RADIO' OR cTyp = 'SELECTBOX') 
             ORDER BY nSort ASC, cName ASC", 2
         );
         // Durchlaufe alle Eigenschaften
@@ -1192,6 +1188,7 @@ function gibMoeglicheVariationen($kVaterArtikel, $oEigenschaftWert_arr, $kGesetz
         $cSQL = [];
         foreach ($kGesetzteEigeschaftWert_arr as $kEigenschaft => $kEigenschaftWert) {
             if ($group[0]->kEigenschaft != $kEigenschaft) {
+                $kEigenschaftWert = (int)$kEigenschaftWert;
                 $cSQL[] = "INNER JOIN teigenschaftkombiwert e{$i} ON e1.kEigenschaftKombi = e{$i}.kEigenschaftKombi AND e{$i}.kEigenschaftWert ={$kEigenschaftWert}";
                 $i++;
             }
@@ -1223,10 +1220,10 @@ function gibArtikelByVariationen($kArtikel, $kVariationKombi_arr)
         foreach ($kVariationKombi_arr as $i => $kVariationKombi) {
             if ($j > 0) {
                 $cSQL1 .= ',' . $i;
-                $cSQL2 .= ',' . $kVariationKombi;
+                $cSQL2 .= ',' . (int)$kVariationKombi;
             } else {
                 $cSQL1 .= $i;
-                $cSQL2 .= $kVariationKombi;
+                $cSQL2 .= (int)$kVariationKombi;
             }
             $j++;
         }

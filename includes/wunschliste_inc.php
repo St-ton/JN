@@ -123,8 +123,8 @@ function wunschlisteStandard($kWunschliste)
         $oWunschliste = Shop::DB()->select('twunschliste', 'kWunschliste', $kWunschliste);
         if ($oWunschliste->kKunde == $_SESSION['Kunde']->kKunde && $oWunschliste->kKunde) {
             // Wunschliste auf Standard setzen
-            Shop::DB()->query("UPDATE twunschliste SET nStandard = 0 WHERE kKunde = " . (int)$_SESSION['Kunde']->kKunde, 3);
-            Shop::DB()->query("UPDATE twunschliste SET nStandard = 1 WHERE kWunschliste = " . $kWunschliste, 3);
+            Shop::DB()->update('twunschliste', 'kKunde', (int)$_SESSION['Kunde']->kKunde, (object)['nStandard' => 0]);
+            Shop::DB()->update('twunschliste', 'kWunschliste', $kWunschliste, (object)['nStandard' => 1]);
             // Session updaten
             unset($_SESSION['Wunschliste']);
             $_SESSION['Wunschliste'] = new Wunschliste($kWunschliste);

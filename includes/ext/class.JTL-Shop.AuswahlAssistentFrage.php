@@ -70,7 +70,8 @@ if (class_exists('AuswahlAssistent')) {
                 $oFrage = Shop::DB()->query(
                     "SELECT *
                         FROM tauswahlassistentfrage
-                        WHERE kAuswahlAssistentFrage = " . $kAuswahlAssistentFrage . $cAktivSQL, 1
+                        WHERE kAuswahlAssistentFrage = " . $kAuswahlAssistentFrage .
+                        $cAktivSQL, 1
                 );
 
                 if (isset($oFrage->kAuswahlAssistentFrage) && $oFrage->kAuswahlAssistentFrage > 0) {
@@ -101,7 +102,8 @@ if (class_exists('AuswahlAssistent')) {
                 $oFrage_arr = Shop::DB()->query(
                     "SELECT *
                         FROM tauswahlassistentfrage
-                        WHERE kAuswahlAssistentGruppe = " . (int)$kAuswahlAssistentGruppe . $cAktivSQL . "
+                        WHERE kAuswahlAssistentGruppe = " . (int)$kAuswahlAssistentGruppe .
+                        $cAktivSQL . "
                         ORDER BY nSort", 2
                 );
                 if (count($oFrage_arr) > 0) {
@@ -163,7 +165,9 @@ if (class_exists('AuswahlAssistent')) {
          */
         public static function deleteQuestion($cParam_arr)
         {
-            if (isset($cParam_arr['kAuswahlAssistentFrage_arr']) && is_array($cParam_arr['kAuswahlAssistentFrage_arr']) && count($cParam_arr['kAuswahlAssistentFrage_arr']) > 0) {
+            if (isset($cParam_arr['kAuswahlAssistentFrage_arr']) &&
+                is_array($cParam_arr['kAuswahlAssistentFrage_arr']) &&
+                count($cParam_arr['kAuswahlAssistentFrage_arr']) > 0) {
                 foreach ($cParam_arr['kAuswahlAssistentFrage_arr'] as $kAuswahlAssistentFrage) {
                     Shop::DB()->delete('tauswahlassistentfrage', 'kAuswahlAssistentFrage', (int)$kAuswahlAssistentFrage);
                 }
@@ -218,12 +222,7 @@ if (class_exists('AuswahlAssistent')) {
         private function isMerkmalTaken($kMerkmal, $kAuswahlAssistentGruppe)
         {
             if ($kMerkmal > 0 && $kAuswahlAssistentGruppe > 0) {
-                $oFrage = Shop::DB()->query(
-                    "SELECT kAuswahlAssistentFrage
-                        FROM tauswahlassistentfrage
-                        WHERE kMerkmal = " . (int)$kMerkmal . "
-                            AND kAuswahlAssistentGruppe = " . (int)$kAuswahlAssistentGruppe, 1
-                );
+                $oFrage = Shop::DB()->select('tauswahlassistentfrage', 'kMerkmal', (int)$kMerkmal, 'kAuswahlAssistentGruppe', (int)$kAuswahlAssistentGruppe);
                 if (isset($oFrage->kAuswahlAssistentFrage) && $oFrage->kAuswahlAssistentFrage > 0) {
                     return true;
                 }

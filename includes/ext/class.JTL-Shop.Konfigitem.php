@@ -303,14 +303,14 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         {
             $oItem_arr = Shop::DB()->query("
                 SELECT kKonfigitem 
-                  FROM tkonfigitem 
-                  WHERE kKonfiggruppe = " . (int)$kKonfiggruppe . " 
-                  ORDER BY nSort ASC", 2
+                    FROM tkonfigitem 
+                    WHERE kKonfiggruppe = " . (int)$kKonfiggruppe . " 
+                    ORDER BY nSort ASC", 2
             );
             if (!is_array($oItem_arr)) {
                 return false;
             }
-            $oItemEx_arr = array();
+            $oItemEx_arr = [];
             foreach ($oItem_arr as &$oItem) {
                 $kKonfigitem = $oItem->kKonfigitem;
                 $oItem       = new self($kKonfigitem);

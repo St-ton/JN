@@ -15,19 +15,19 @@
     <h2 class="welcome no-print">Herzlichen Gl&uuml;ckwunsch!</h2>
 
     <div class="alert alert-success no-print">
-        <i class="fa fa-thumbs-up"></i> JTL Shop-Installation erfolgreich abgeschlossen!
+        <i class="fa fa-thumbs-up"></i> JTL-Shop-Installation erfolgreich abgeschlossen!
     </div>
     <div class="panel panel-default">
         <div class="panel-heading">
-            <h3 class="panel-title">Webshop-Einstellungen in JTL Wawi eintragen</h3>
+            <h3 class="panel-title">Webshop-Einstellungen in JTL-Wawi eintragen</h3>
         </div>
         <div class="panel-body">
-            <p>Tragen Sie nun die nachfolgenden Daten im Men&uuml; <code>Webshop -&gt; Webshop-Einstellungen</code> der JTL Wawi ein.</p>
+            <p>Tragen Sie nun die nachfolgenden Daten im Men&uuml; <code>Webshop -&gt; Webshop-Einstellungen</code> der JTL-Wawi ein.</p>
 
             <table class="table table-bordered">
                 <tr>
                     <td><strong>Lizenzschl&uuml;ssel</strong></td>
-                    <td>Den Lizenzschl&uuml;ssel f&uuml;r den JTL Shop finden Sie im
+                    <td>Den Lizenzschl&uuml;ssel f&uuml;r den JTL-Shop finden Sie im
                     <a target="_blank" href="https://kundencenter.jtl-software.de/"><i class="fa fa-external-link"></i>
                         JTL Kundencenter</a>
                     </td>
@@ -80,7 +80,7 @@
         <p>Bitte l&ouml;schen Sie nun das Installationsverzeichnis des Shops (/install) und entziehen Sie die Schreibrechte
             von der Datei <code>includes/config.JTL-Shop.ini.php</code>.</p>
 
-        <p><strong>Wir w&uuml;nschen Ihnen viel Erfolg und Spa&szlig; mit Ihrem neuen JTL Shop!</strong></p>
+        <p><strong>Wir w&uuml;nschen Ihnen viel Erfolg und Spa&szlig; mit Ihrem neuen JTL-Shop!</strong></p>
     </div>
 
     <div class="row hidden-print no-print">

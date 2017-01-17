@@ -2,7 +2,7 @@
 {assign var=anzeige value=$Einstellungen.artikeldetails.artikel_lagerbestandsanzeige}
 {if $anzeige !== 'nichts' && isset($Artikel->oWarenlager_arr) && $Artikel->oWarenlager_arr|@count > 1 && ($Artikel->cLagerBeachten !== 'Y' || $Artikel->cLagerKleinerNull === 'Y' || $Artikel->fLagerbestand > 0 || $Artikel->fZulauf > 0)}
     {if $tplscope === 'detail'}
-        <a href="#" class="btn-store-availability" data-toggle="popover" data-placement="left" data-ref="#popover-warehouse"><i class="fa fa-map-marker" title="{lang key="availability" section="productDetails"}"></i></a>
+        <a class="btn-store-availability" data-toggle="popover" data-placement="left" data-ref="#popover-warehouse" data-trigger="click hover"><i class="fa fa-map-marker" title="{lang key="availability" section="productDetails"}"></i></a>
     {/if}
     <div class="hidden" id="popover-warehouse">
         <table class="table warehouse-table">

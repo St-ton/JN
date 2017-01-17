@@ -134,9 +134,9 @@ class Bewertung
             }
             executeHook(HOOK_BEWERTUNG_CLASS_SWITCH_SORTIERUNG);
 
-            $cSQLFreischalten = ($cFreischalten === 'Y') ?
-                ' AND nAktiv=1' :
-                '';
+            $cSQLFreischalten = ($cFreischalten === 'Y')
+                ? ' AND nAktiv = 1'
+                : '';
             // Bewertungen nur in einer bestimmten Sprache oder in allen Sprachen?
             $cSprachSQL = ' AND kSprache = ' . $kSprache;
             if ($bAlleSprachen) {
@@ -158,11 +158,9 @@ class Bewertung
             if ($nSeite > 0) {
                 $nLimit = '';
                 if ($nAnzahlSeite > 0) {
-                    if ($nSeite > 1) {
-                        $nLimit = ' LIMIT ' . (($nSeite - 1) * $nAnzahlSeite) . ', ' . $nAnzahlSeite;
-                    } else {
-                        $nLimit = ' LIMIT ' . $nAnzahlSeite;
-                    }
+                    $nLimit = ($nSeite > 1)
+                        ? ' LIMIT ' . (($nSeite - 1) * $nAnzahlSeite) . ', ' . $nAnzahlSeite
+                        : ' LIMIT ' . $nAnzahlSeite;
                 }
                 $this->oBewertung_arr = Shop::DB()->query(
                     "SELECT *, DATE_FORMAT(dDatum, '%d.%m.%Y') AS Datum
@@ -194,9 +192,9 @@ class Bewertung
                 $oBewertungGesamt->nAnzahl       = 0;
                 $this->oBewertungGesamt          = $oBewertungGesamt;
             }
-            $this->nAnzahlSprache = ((int)$oBewertungGesamtSprache->nAnzahlSprache > 0) ?
-                (int)$oBewertungGesamtSprache->nAnzahlSprache :
-                0;
+            $this->nAnzahlSprache = ((int)$oBewertungGesamtSprache->nAnzahlSprache > 0)
+                ? (int)$oBewertungGesamtSprache->nAnzahlSprache
+                : 0;
             if (is_array($this->oBewertung_arr) && count($this->oBewertung_arr) > 0) {
                 foreach ($this->oBewertung_arr as $i => $oBewertung) {
                     $this->oBewertung_arr[$i]->nAnzahlHilfreich = $oBewertung->nHilfreich + $oBewertung->nNichtHilfreich;

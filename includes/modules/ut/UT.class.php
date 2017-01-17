@@ -105,7 +105,7 @@ class UT extends PaymentMethod
      */
     public function getISOLang($kSprache)
     {
-        $kSprache = intval($kSprache);
+        $kSprache = (int)$kSprache;
         if ($kSprache > 0) {
             $oSprache = Shop::DB()->query(
                 "SELECT kSprache, cISO

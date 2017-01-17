@@ -66,8 +66,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
                     FROM tuploadschema
                     LEFT JOIN tuploadschemasprache
                         ON tuploadschemasprache.kArtikelUpload = tuploadschema.kUploadSchema
-                        AND tuploadschemasprache.kSprache = " . (int) $_SESSION['kSprache'] . "
-                    WHERE kUploadSchema =  " . (int) $kUploadSchema, 1
+                        AND tuploadschemasprache.kSprache = " . (int)$_SESSION['kSprache'] . "
+                    WHERE kUploadSchema =  " . (int)$kUploadSchema, 1
             );
 
             if (isset($oUpload->kUploadSchema) && intval($oUpload->kUploadSchema) > 0) {
@@ -118,8 +118,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
                     FROM tuploadschema
                     LEFT JOIN tuploadschemasprache
                         ON tuploadschemasprache.kArtikelUpload = tuploadschema.kUploadSchema
-                        AND tuploadschemasprache.kSprache = " . (int) $_SESSION['kSprache'] . "
-                    WHERE nTyp = " . intval($nTyp) . $cSql, 2);
+                        AND tuploadschemasprache.kSprache = " . (int)$_SESSION['kSprache'] . "
+                    WHERE nTyp = " . (int)$nTyp . $cSql, 2
+            );
         }
 
         /**

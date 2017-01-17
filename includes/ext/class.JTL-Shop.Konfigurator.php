@@ -29,7 +29,13 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 //#7482
                 return self::$oGruppen_arr[$kArtikel];
             }
-            $oGruppen_arr = Shop::DB()->selectAll('tartikelkonfiggruppe', 'kArtikel', (int)$kArtikel, 'kArtikel, kKonfigGruppe', 'nSort ASC');
+            $oGruppen_arr = Shop::DB()->selectAll(
+                'tartikelkonfiggruppe',
+                'kArtikel',
+                (int)$kArtikel,
+                'kArtikel, kKonfigGruppe',
+                'nSort ASC'
+            );
             if (!is_array($oGruppen_arr) || count($oGruppen_arr) === 0) {
                 return [];
             }
@@ -53,10 +59,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         {
             $oGruppen_arr = Shop::DB()->query(
                 "SELECT kArtikel, kKonfigGruppe
-                    FROM tartikelkonfiggruppe
-                    WHERE tartikelkonfiggruppe.kArtikel = " . (int)$kArtikel . "
-                    ORDER BY tartikelkonfiggruppe.nSort
-                    ASC", 2
+                     FROM tartikelkonfiggruppe
+                     WHERE tartikelkonfiggruppe.kArtikel = " . (int)$kArtikel . "
+                     ORDER BY tartikelkonfiggruppe.nSort ASC", 2
             );
 
             return (is_array($oGruppen_arr) && count($oGruppen_arr) > 0);
@@ -116,7 +121,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                         if ($bDeleted) {
                             // $Warenkorbhinweise
                             $cISO = $_SESSION['cISOSprache'];
-                            Jtllog::writeLog("Validierung der Konfiguration fehlgeschlagen - Warenkorbposition wurde entfernt: {$oPosition->cName[$cISO]} ({$oPosition->kArtikel})", JTLLOG_LEVEL_ERROR);
+                            Jtllog::writeLog('Validierung der Konfiguration fehlgeschlagen - Warenkorbposition wurde entfernt: ' .
+                                $oPosition->cName[$cISO] . '(' . $oPosition->kArtikel . ')', JTLLOG_LEVEL_ERROR);
                         }
                     }
                 }
@@ -146,7 +152,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
             }
             // Anzahl
             foreach ($oKonfigitem_arr as $oKonfigitem) {
-                if (!isset($oKonfigitem->fAnzahl) || $oKonfigitem->fAnzahl < $oKonfigitem->getMin() || $oKonfigitem->fAnzahl > $oKonfigitem->getMax()) {
+                if (!isset($oKonfigitem->fAnzahl) ||
+                    $oKonfigitem->fAnzahl < $oKonfigitem->getMin() ||
+                    $oKonfigitem->fAnzahl > $oKonfigitem->getMax()) {
                     $oKonfigitem->fAnzahl = $oKonfigitem->getInitial();
                 }
                 $fFinalPrice += $oKonfigitem->getPreis(true) * $oKonfigitem->fAnzahl;
@@ -170,9 +178,11 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                     $aError_arr[$kKonfiggruppe] .= self::langComponent($oGruppe->getMin() > 1);
                 } elseif ($nItemCount > $oGruppe->getMax() && $oGruppe->getMax() > 0) {
                     if ($oGruppe->getMin() == $oGruppe->getMax()) {
-                        $aError_arr[$kKonfiggruppe] = Shop::Lang()->get('configChooseNComponents', 'productDetails', $oGruppe->getMin()) . self::langComponent($oGruppe->getMin() > 1);
+                        $aError_arr[$kKonfiggruppe] = Shop::Lang()->get('configChooseNComponents', 'productDetails', $oGruppe->getMin()) .
+                            self::langComponent($oGruppe->getMin() > 1);
                     } else {
-                        $aError_arr[$kKonfiggruppe] = Shop::Lang()->get('configChooseMaxComponents', 'productDetails', $oGruppe->getMax()) . self::langComponent($oGruppe->getMax() > 1);
+                        $aError_arr[$kKonfiggruppe] = Shop::Lang()->get('configChooseMaxComponents', 'productDetails', $oGruppe->getMax()) .
+                            self::langComponent($oGruppe->getMax() > 1);
                     }
                 }
             }

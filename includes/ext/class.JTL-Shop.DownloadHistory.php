@@ -90,7 +90,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
         {
             $kBestellung  = (int)$kBestellung;
             $kKunde       = (int)$kKunde;
-            $oHistory_arr = array();
+            $oHistory_arr = [];
             if ($kBestellung > 0 || $kKunde > 0) {
                 $cSQLWhere = "kBestellung = " . $kBestellung;
                 if ($kBestellung > 0) {
@@ -106,7 +106,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
                 if (is_array($oHistoryTMP_arr) && count($oHistoryTMP_arr) > 0) {
                     foreach ($oHistoryTMP_arr as $oHistoryTMP) {
                         if (!isset($oHistory_arr[$oHistoryTMP->kDownload]) || !is_array($oHistory_arr[$oHistoryTMP->kDownload])) {
-                            $oHistory_arr[$oHistoryTMP->kDownload] = array();
+                            $oHistory_arr[$oHistoryTMP->kDownload] = [];
                         }
                         $oHistory_arr[$oHistoryTMP->kDownload][] = new self($oHistoryTMP->kDownloadHistory);
                     }

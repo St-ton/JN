@@ -13,7 +13,7 @@
         <link rel="stylesheet" href="{$URL_SHOP}{$PFAD_ADMIN_TEMPLATE}css/custom.css" type="text/css">
         <link rel="stylesheet" href="{$URL_SHOP}install/template/css/style.css" type="text/css">
         <script src="{$URL_SHOP}{$PFAD_ADMIN_TEMPLATE}js/jquery-1.11.3.min.js" type="text/javascript"></script>
-        <title>JTL-Shop4 Installation</title>
+        <title>JTL-Shop Installation</title>
 
         {literal}
         <style>

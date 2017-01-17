@@ -242,7 +242,7 @@ function gibYategoExport($exportformat, $oJobQueue, $ExportEinstellungen)
     define('DESCRIPTION_TAGS', '<a><b><i><u><p><br><hr><h1><h2><h3><h4><h5><h6><ul><ol><li><span><font><table><colgroup>');
 
     if (!pruefeYategoExportPfad()) {
-        Shop::DB()->query("UPDATE texportformat SET dZuletztErstellt=now() WHERE kExportformat = " . (int)$oJobQueue->kKey, 4);
+        Shop::DB()->query("UPDATE texportformat SET dZuletztErstellt = now() WHERE kExportformat = " . (int)$oJobQueue->kKey, 4);
         $oJobQueue->deleteJobInDB();
         unset($oJobQueue);
 
@@ -262,8 +262,8 @@ function gibYategoExport($exportformat, $oJobQueue, $ExportEinstellungen)
         unlink(PATH . 'lager.csv');
     }
     // Global Array
-    $oGlobal_arr          = array();
-    $oGlobal_arr['lager'] = array();
+    $oGlobal_arr          = [];
+    $oGlobal_arr['lager'] = [];
 
     setzeSteuersaetze();
     $_SESSION['Kundengruppe']->darfPreiseSehen            = 1;
@@ -272,15 +272,16 @@ function gibYategoExport($exportformat, $oJobQueue, $ExportEinstellungen)
     $_SESSION['kKundengruppe']                            = $exportformat->kKundengruppe;
     $_SESSION['Kundengruppe']->kKundengruppe              = $exportformat->kKundengruppe;
 
-    $KategorieListe = array();
+    $KategorieListe = [];
     $oArtikel_arr   = Shop::DB()->query(
         "SELECT tartikel.kArtikel
             FROM tartikel
-            JOIN tartikelattribut ON tartikelattribut.kArtikel = tartikel.kArtikel
-            WHERE tartikelattribut.cName='yategokat'
+            JOIN tartikelattribut 
+                ON tartikelattribut.kArtikel = tartikel.kArtikel
+            WHERE tartikelattribut.cName = 'yategokat'
                 AND tartikel.kVaterArtikel = 0
             ORDER BY tartikel.kArtikel
-            LIMIT " . $oJobQueue->nLimitN . ", " . $oJobQueue->nLimitM, 2
+            LIMIT " . (int)$oJobQueue->nLimitN . ", " . (int)$oJobQueue->nLimitM, 2
     );
 
     if (is_array($oArtikel_arr) && count($oArtikel_arr) > 0) {
@@ -297,12 +298,14 @@ function gibYategoExport($exportformat, $oJobQueue, $ExportEinstellungen)
 
         if ($exportformat->cKodierung === 'UTF-8' || $exportformat->cKodierung === 'UTF-8noBOM') {
             $cHeader = $exportformat->cKodierung === 'UTF-8' ? "\xEF\xBB\xBF" : '';
-            writeFile(PATH . 'varianten.csv', $cHeader . utf8_encode(makecsv($oGlobal_arr['varianten'], $oJobQueue->nLimitN) . CRLF . makecsv($oGlobal_arr['variantenwerte'], $oJobQueue->nLimitN)));
+            writeFile(PATH . 'varianten.csv', $cHeader . utf8_encode(makecsv($oGlobal_arr['varianten'], $oJobQueue->nLimitN) . CRLF .
+                    makecsv($oGlobal_arr['variantenwerte'], $oJobQueue->nLimitN)));
             writeFile(PATH . 'artikel.csv', $cHeader . utf8_encode(makecsv($oGlobal_arr['artikel'], $oJobQueue->nLimitN)));
             writeFile(PATH . 'shopkategorien.csv', $cHeader . utf8_encode(makecsv($oGlobal_arr['shopkategorien'], $oJobQueue->nLimitN)));
             writeFile(PATH . 'lager.csv', $cHeader . utf8_encode(makecsv($oGlobal_arr['lager'], $oJobQueue->nLimitN)));
         } else {
-            writeFile(PATH . 'varianten.csv', makecsv($oGlobal_arr['varianten'], $oJobQueue->nLimitN) . CRLF . makecsv($oGlobal_arr['variantenwerte'], $oJobQueue->nLimitN));
+            writeFile(PATH . 'varianten.csv', makecsv($oGlobal_arr['varianten'], $oJobQueue->nLimitN) . CRLF .
+                makecsv($oGlobal_arr['variantenwerte'], $oJobQueue->nLimitN));
             writeFile(PATH . 'artikel.csv', makecsv($oGlobal_arr['artikel'], $oJobQueue->nLimitN));
             writeFile(PATH . 'shopkategorien.csv', makecsv($oGlobal_arr['shopkategorien'], $oJobQueue->nLimitN));
             writeFile(PATH . 'lager.csv', makecsv($oGlobal_arr['lager'], $oJobQueue->nLimitN));
@@ -314,7 +317,7 @@ function gibYategoExport($exportformat, $oJobQueue, $ExportEinstellungen)
         $oJobQueue->updateJobInDB();
         updateExportformatQueueBearbeitet($oJobQueue);
     } else {
-        Shop::DB()->query("UPDATE texportformat SET dZuletztErstellt=now() WHERE kExportformat = " . (int)$oJobQueue->kKey, 4);
+        Shop::DB()->query("UPDATE texportformat SET dZuletztErstellt = now() WHERE kExportformat = " . (int)$oJobQueue->kKey, 4);
         $oJobQueue->deleteJobInDB();
         unset($oJobQueue);
     }

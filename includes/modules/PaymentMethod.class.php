@@ -103,9 +103,9 @@ class PaymentMethod
      */
     public function getOrderHash($order)
     {
-        $orderId = (isset($order->kBestellung)) ?
-            Shop::DB()->query("SELECT cId FROM tbestellid WHERE kBestellung = " . (int) $order->kBestellung, 1) :
-            null;
+        $orderId = (isset($order->kBestellung))
+            ? Shop::DB()->query("SELECT cId FROM tbestellid WHERE kBestellung = " . (int)$order->kBestellung, 1)
+            : null;
 
         return (isset($orderId->cId)) ? $orderId->cId : null;
     }
@@ -202,7 +202,10 @@ class PaymentMethod
         $mail->toName    = $Einstellungen['emails']['email_master_absender_name'];
         $mail->fromEmail = $mail->toEmail;
         $mail->fromName  = $mail->toName;
-        $mail->subject   = sprintf(Shop::Lang()->get('errorMailSubject', 'paymentMethods'), $Einstellungen['global']['global_meta_title']);
+        $mail->subject   = sprintf(
+            Shop::Lang()->get('errorMailSubject', 'paymentMethods'),
+            $Einstellungen['global']['global_meta_title']
+        );
         $mail->bodyText  = $body;
         // Method
         $mail->methode       = $Einstellungen['eMails']['eMail_methode'];
@@ -388,7 +391,7 @@ class PaymentMethod
                 "SELECT count(*) AS nAnzahl
                     FROM tbestellung
                     WHERE (cStatus = '2' || cStatus = '3' || cStatus = '4')
-                        AND kKunde = " . intval($kKunde), 1
+                        AND kKunde = " . (int)$kKunde, 1
             );
 
             if (isset($oBestellung->nAnzahl) && count($oBestellung->nAnzahl) > 0) {
@@ -445,16 +448,21 @@ class PaymentMethod
             if (isset($customer->kKunde) && $customer->kKunde > 0) {
                 $res = Shop::DB()->query("
                   SELECT count(*) AS cnt 
-                    FROM tbestellung 
-                    WHERE kKunde = " . (int) $customer->kKunde . " AND (
-                        cStatus = '" . BESTELLUNG_STATUS_BEZAHLT . "' OR cStatus = '" . BESTELLUNG_STATUS_VERSANDT .
-                    "')", 1
+                      FROM tbestellung 
+                      WHERE kKunde = " . (int) $customer->kKunde . " 
+                          AND (
+                                cStatus = '" . BESTELLUNG_STATUS_BEZAHLT . "' 
+                                OR cStatus = '" . BESTELLUNG_STATUS_VERSANDT .
+                            "')", 1
                 );
                 $count = (int)$res->cnt;
                 if ($count < $this->getSetting('min_bestellungen')) {
                     ZahlungsLog::add($this->moduleID,
-                        'Bestellanzahl ' . $count . ' ist kleiner als der Mindestanzahl von ' . $this->getSetting('min_bestellungen'),
-                        null, LOGLEVEL_NOTICE);
+                        'Bestellanzahl ' . $count . ' ist kleiner als der Mindestanzahl von ' .
+                            $this->getSetting('min_bestellungen'),
+                        null,
+                        LOGLEVEL_NOTICE
+                    );
 
                     return false;
                 }
@@ -467,16 +475,22 @@ class PaymentMethod
 
         if ($this->getSetting('min') > 0 && $cart->gibGesamtsummeWaren(1) <= $this->getSetting('min')) {
             ZahlungsLog::add($this->moduleID,
-                'Bestellwert ' . $cart->gibGesamtsummeWaren(1) . ' ist kleiner als der Mindestbestellwert von ' . $this->getSetting('min_bestellungen'),
-                null, LOGLEVEL_NOTICE);
+                'Bestellwert ' . $cart->gibGesamtsummeWaren(1) .
+                    ' ist kleiner als der Mindestbestellwert von ' . $this->getSetting('min_bestellungen'),
+                null,
+                LOGLEVEL_NOTICE
+            );
 
             return false;
         }
 
         if ($this->getSetting('max') > 0 && $cart->gibGesamtsummeWaren(1) >= $this->getSetting('max')) {
             ZahlungsLog::add($this->moduleID,
-                'Bestellwert ' . $cart->gibGesamtsummeWaren(1) . ' ist groesser als der Mindestbestellwert von ' . $this->getSetting('min_bestellungen'),
-                null, LOGLEVEL_NOTICE);
+                'Bestellwert ' . $cart->gibGesamtsummeWaren(1) .
+                    ' ist groesser als der Mindestbestellwert von ' . $this->getSetting('min_bestellungen'),
+                null,
+                LOGLEVEL_NOTICE
+            );
 
             return false;
         }
@@ -722,7 +736,8 @@ class PaymentMethod
             $GLOBALS['oPlugin'] = $oPlugin;
 
             if ($oPlugin->kPlugin > 0) {
-                require_once PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $oPlugin->nVersion . '/' .
+                require_once PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/' .
+                    PFAD_PLUGIN_VERSION . $oPlugin->nVersion . '/' .
                     PFAD_PLUGIN_PAYMENTMETHOD . $oPlugin->oPluginZahlungsKlasseAssoc_arr[$moduleId]->cClassPfad;
                 $className               = $oPlugin->oPluginZahlungsKlasseAssoc_arr[$moduleId]->cClassName;
                 $paymentMethod           = new $className($moduleId);

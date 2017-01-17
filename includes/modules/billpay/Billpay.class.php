@@ -208,7 +208,7 @@ class Billpay extends PaymentMethod
 
                         case IPL_CORE_PAYMENT_TYPE_RATE_PAYMENT:
                             $oMail                  = new stdClass();
-                            $oMail->oAttachment_arr = array();
+                            $oMail->oAttachment_arr = [];
 
                             $oPDFAttach = BPHelper::savePDF(BILLPAY_PDF_ATTACHMENT, $cOrderNumber, $oCapture->get_email_attachment_pdf());
                             $oPDFInfo   = BPHelper::savePDF(BILLPAY_PDF_INFORMATION, $cOrderNumber, $oCapture->get_standard_information_pdf());
@@ -460,7 +460,7 @@ class Billpay extends PaymentMethod
             }
 
             // validation
-            $cMissing_arr = array();
+            $cMissing_arr = [];
 
             if (!$oData->bToc) {
                 $cMissing_arr[] = 'payment_toc';
@@ -884,21 +884,14 @@ class Billpay extends PaymentMethod
         // order history
         if ($eCustomerType == 'e') {
             $oOrder_arr = Shop::DB()->query(
-                "SELECT
-                     tbestellung.dErstellt, tbestellung.fGesamtsumme, twaehrung.cISO, tbestellung.kBestellung
-                  FROM
-                     tbestellung
-                  LEFT JOIN
-                     twaehrung
-                  ON
-                     tbestellung.kWaehrung = twaehrung.kWaehrung
-                  WHERE
-                     kKunde = " . (int) $oCustomer->kKunde . "
-                  ORDER BY
-                     dErstellt
-                  DESC LIMIT 20", 2
+                "SELECT tbestellung.dErstellt, tbestellung.fGesamtsumme, twaehrung.cISO, tbestellung.kBestellung
+                    FROM tbestellung
+                    LEFT JOIN twaehrung
+                        ON tbestellung.kWaehrung = twaehrung.kWaehrung
+                    WHERE kKunde = " . (int)$oCustomer->kKunde . "
+                    ORDER BY dErstellt DESC 
+                    LIMIT 20", 2
             );
-
             if (is_array($oOrder_arr) && count($oOrder_arr) > 0) {
                 foreach ($oOrder_arr as $oOrder) {
                     $oPreAuth->add_order_history(
@@ -927,12 +920,12 @@ class Billpay extends PaymentMethod
                     $oData->cTXID = $oPreAuth->get_bptid();
 
                     if ($this->nPaymentType == IPL_CORE_PAYMENT_TYPE_RATE_PAYMENT) {
-                        // $cNotice = 'Zinsaufschlag f&uuml;r ' . $oRate->nRate . ' Raten (' . $oRate->fBaseFmt . ' x ' . $oRate->fInterest . ' x ' . $oRate->nRate . ') / 100';
-                        // $cNotice = html_entity_decode(utf8_decode($cNotice));
                         // new positions
                         $cName['ger']   = 'Zinsaufschlag';
                         $cName['eng']   = 'Interest charge';
-                        $currencyFactor = (isset($oBasketInfo->cCurrency) && isset($oBasketInfo->cCurrency->fFaktor)) ? $oBasketInfo->cCurrency->fFaktor : 1;
+                        $currencyFactor = (isset($oBasketInfo->cCurrency) && isset($oBasketInfo->cCurrency->fFaktor))
+                            ? $oBasketInfo->cCurrency->fFaktor
+                            : 1;
                         $this->addSpecialPosition($cName, 1, $oRate->feeAbsolute / $currencyFactor, C_WARENKORBPOS_TYP_ZINSAUFSCHLAG, true, true/*, $cNotice*/);
                         $cName['ger'] = 'Bearbeitungsgeb&uuml;hr';
                         $cName['eng'] = 'Processing fee';
@@ -1232,8 +1225,8 @@ class Billpay extends PaymentMethod
     public function calculateRates($oBasket)
     {
         $oRateInfo                 = new stdClass();
-        $oRateInfo->aRates_arr     = array();
-        $oRateInfo->nAvailable_arr = array();
+        $oRateInfo->aRates_arr     = [];
+        $oRateInfo->nAvailable_arr = [];
         $oBasketInfo               = $this->getBasketTotal($oBasket);
         // load from cache if exists
         $oRateInfo = $this->getCachedRate($oBasketInfo);
@@ -1275,7 +1268,7 @@ class Billpay extends PaymentMethod
                     $oRateInfo->aRates_arr[$nRate]->fOtherSurchargeFmt = BPHelper::fmtAmount($oBasketInfo->fSurcharge[AMT_GROSS] + $oBasketInfo->fShipping[AMT_GROSS], false, true);
 
                     $oRateInfo->nAvailable_arr[]              = $nRate;
-                    $oRateInfo->aRates_arr[$nRate]->oDues_arr = array();
+                    $oRateInfo->aRates_arr[$nRate]->oDues_arr = [];
                     foreach ($aRates['dues'] as $i => $cDue_arr) {
                         $oRateInfo->aRates_arr[$nRate]->oDues_arr[$i]             = new stdClass();
                         $oRateInfo->aRates_arr[$nRate]->oDues_arr[$i]->cType      = BPHelper::strDecode($cDue_arr['type']);
@@ -1323,7 +1316,7 @@ class Billpay extends PaymentMethod
     {
         $cHash = $this->getRateHash($oRateInfo->oBasketInfo);
         if (!isset($_SESSION['za_billpay_jtl']['oCashedRates_arr'])) {
-            $_SESSION['za_billpay_jtl']['oCashedRates_arr'] = array();
+            $_SESSION['za_billpay_jtl']['oCashedRates_arr'] = [];
         }
         $_SESSION['za_billpay_jtl']['oCashedRates_arr'][$cHash] = $oRateInfo;
     }

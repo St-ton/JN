@@ -346,13 +346,13 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         {
             $oCount = Shop::DB()->query("
                 SELECT COUNT(*) AS nCount 
-                  FROM tkonfigitem 
-                  WHERE kKonfiggruppe = " . (int) $this->kKonfiggruppe, 1
+                    FROM tkonfigitem 
+                    WHERE kKonfiggruppe = " . (int)$this->kKonfiggruppe, 1
             );
 
-            return (isset($oCount->nCount)) ?
-                (int)$oCount->nCount :
-                0;
+            return (isset($oCount->nCount))
+                ? (int)$oCount->nCount
+                : 0;
         }
 
         /**

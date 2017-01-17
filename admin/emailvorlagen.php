@@ -541,12 +541,17 @@ if (isset($_POST['preview']) && intval($_POST['preview']) > 0) {
         $cFehler = 'E-Mail konnte nicht versendet werden.';
     }
 }
-if (isset($_POST['Aendern']) && isset($_POST['kEmailvorlage']) && intval($_POST['Aendern']) === 1 && intval($_POST['kEmailvorlage']) > 0) {
+if (isset($_POST['Aendern']) && isset($_POST['kEmailvorlage']) && (int)$_POST['Aendern'] === 1 && (int)$_POST['kEmailvorlage'] > 0) {
     $step                        = 'uebersicht';
     $cFehlerAnhang_arr           = null;
     $kEmailvorlage               = (int)$_POST['kEmailvorlage'];
     $cUploadVerzeichnis          = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_EMAILPDFS;
-    $oEmailvorlageSpracheTMP_arr = Shop::DB()->selectAll($cTableSprache, 'kEmailvorlage', (int)$_POST['kEmailvorlage'], 'cPDFS, cDateiname, kSprache');
+    $oEmailvorlageSpracheTMP_arr = Shop::DB()->selectAll(
+        $cTableSprache,
+        'kEmailvorlage',
+        (int)$_POST['kEmailvorlage'],
+        'cPDFS, cDateiname, kSprache'
+    );
     $oEmailvorlageSprache_arr = [];
     if (is_array($oEmailvorlageSpracheTMP_arr) && count($oEmailvorlageSpracheTMP_arr) > 0) {
         foreach ($oEmailvorlageSpracheTMP_arr as $oEmailvorlageSpracheTMP) {
@@ -567,9 +572,15 @@ if (isset($_POST['Aendern']) && isset($_POST['kEmailvorlage']) && intval($_POST[
         // PDFs hochladen
         $cDateiname_arr    = [];
         $cPDFS_arr         = [];
-        $cPDFSTMP_arr      = (isset($oEmailvorlageSprache_arr[$Sprache->kSprache]->cPDFS)) ? bauePDFArray($oEmailvorlageSprache_arr[$Sprache->kSprache]->cPDFS) : [];
-        $cDateinameTMP_arr = (isset($oEmailvorlageSprache_arr[$Sprache->kSprache]->cDateiname)) ? baueDateinameArray($oEmailvorlageSprache_arr[$Sprache->kSprache]->cDateiname) : [];
-        if (!isset($oEmailvorlageSprache_arr[$Sprache->kSprache]->cPDFS) || strlen($oEmailvorlageSprache_arr[$Sprache->kSprache]->cPDFS) === 0 || count($cPDFSTMP_arr) < 3) {
+        $cPDFSTMP_arr      = (isset($oEmailvorlageSprache_arr[$Sprache->kSprache]->cPDFS))
+            ? bauePDFArray($oEmailvorlageSprache_arr[$Sprache->kSprache]->cPDFS)
+            : [];
+        $cDateinameTMP_arr = (isset($oEmailvorlageSprache_arr[$Sprache->kSprache]->cDateiname))
+            ? baueDateinameArray($oEmailvorlageSprache_arr[$Sprache->kSprache]->cDateiname)
+            : [];
+        if (!isset($oEmailvorlageSprache_arr[$Sprache->kSprache]->cPDFS) ||
+            strlen($oEmailvorlageSprache_arr[$Sprache->kSprache]->cPDFS) === 0 ||
+            count($cPDFSTMP_arr) < 3) {
             if (count($cPDFSTMP_arr) < 3) {
                 foreach ($cPDFSTMP_arr as $i => $cPDFSTMP) {
                     $cPDFS_arr[] = $cPDFSTMP;
@@ -593,23 +604,28 @@ if (isset($_POST['Aendern']) && isset($_POST['kEmailvorlage']) && intval($_POST[
             }
 
             for ($i = 1; $i <= 3; $i++) {
-                if (isset($_FILES['pdf_' . $i . '_' . $Sprache->kSprache]['name']) && strlen($_FILES['pdf_' . $i . '_' . $Sprache->kSprache]['name']) > 0 &&
+                if (isset($_FILES['pdf_' . $i . '_' . $Sprache->kSprache]['name']) &&
+                    strlen($_FILES['pdf_' . $i . '_' . $Sprache->kSprache]['name']) > 0 &&
                     strlen($_POST['dateiname_' . $i . '_' . $Sprache->kSprache]) > 0
                 ) {
                     if ($_FILES['pdf_' . $i . '_' . $Sprache->kSprache]['size'] <= 2097152) {
-                        if (!strrpos($_FILES['pdf_' . $i . '_' . $Sprache->kSprache]['name'], ';') && !strrpos($_POST['dateiname_' . $i . '_' . $Sprache->kSprache], ';')) {
+                        if (!strrpos($_FILES['pdf_' . $i . '_' . $Sprache->kSprache]['name'], ';') &&
+                            !strrpos($_POST['dateiname_' . $i . '_' . $Sprache->kSprache], ';')) {
                             $cPlugin = '';
                             if (verifyGPCDataInteger('kPlugin') > 0) {
                                 $cPlugin = '_' . verifyGPCDataInteger('kPlugin');
                             }
-                            $cUploadDatei = $cUploadVerzeichnis . $Emailvorlagesprache->kEmailvorlage . '_' . $Sprache->kSprache . '_' . $i . $cPlugin . '.pdf';
+                            $cUploadDatei = $cUploadVerzeichnis . $Emailvorlagesprache->kEmailvorlage .
+                                '_' . $Sprache->kSprache . '_' . $i . $cPlugin . '.pdf';
                             if (!move_uploaded_file($_FILES['pdf_' . $i . '_' . $Sprache->kSprache]['tmp_name'], $cUploadDatei)) {
-                                $cFehler .= 'Fehler: Die Dateien konnte nicht geschrieben werden. Pr&uuml;fen Sie bitte ob das PDF Verzeichnis Schreibrechte besitzt.<br />';
+                                $cFehler .= 'Fehler: Die Dateien konnte nicht geschrieben werden. ' .
+                                    'Pr&uuml;fen Sie bitte ob das PDF Verzeichnis Schreibrechte besitzt.<br />';
                                 $nFehler = 1;
                                 break;
                             }
                             $cDateiname_arr[] = $_POST['dateiname_' . $i . '_' . $Sprache->kSprache];
-                            $cPDFS_arr[]      = $Emailvorlagesprache->kEmailvorlage . '_' . $Sprache->kSprache . '_' . $i . $cPlugin . '.pdf';
+                            $cPDFS_arr[]      = $Emailvorlagesprache->kEmailvorlage . '_' .
+                                $Sprache->kSprache . '_' . $i . $cPlugin . '.pdf';
                         } else {
                             $cFehler .= 'Fehler: Bitte geben Sie zu jeder Datei auch einen Dateinamen (Wunschnamen) ein.<br />';
                             $nFehler = 1;
@@ -622,7 +638,8 @@ if (isset($_POST['Aendern']) && isset($_POST['kEmailvorlage']) && intval($_POST[
                     }
                 } elseif (isset($_FILES['pdf_' . $i . '_' . $Sprache->kSprache]['name']) &&
                     isset($_POST['dateiname_' . $i . '_' . $Sprache->kSprache]) &&
-                    strlen($_FILES['pdf_' . $i . '_' . $Sprache->kSprache]['name']) > 0 && strlen($_POST['dateiname_' . $i . '_' . $Sprache->kSprache]) === 0
+                    strlen($_FILES['pdf_' . $i . '_' . $Sprache->kSprache]['name']) > 0 &&
+                    strlen($_POST['dateiname_' . $i . '_' . $Sprache->kSprache]) === 0
                 ) {
                     $cFehlerAnhang_arr[$Sprache->kSprache][$i] = 1;
                     $cFehler .= 'Fehler: Sie haben zu einem PDF keinen Dateinamen angegeben.<br />';
@@ -654,26 +671,39 @@ if (isset($_POST['Aendern']) && isset($_POST['kEmailvorlage']) && intval($_POST[
             }
         }
         $Emailvorlagesprache->kSprache     = $Sprache->kSprache;
-        $Emailvorlagesprache->cBetreff     = (isset($_POST['cBetreff_' . $Sprache->kSprache])) ? $_POST['cBetreff_' . $Sprache->kSprache] : null;
-        $Emailvorlagesprache->cContentHtml = (isset($_POST['cContentHtml_' . $Sprache->kSprache])) ? $_POST['cContentHtml_' . $Sprache->kSprache] : null;
-        $Emailvorlagesprache->cContentText = (isset($_POST['cContentText_' . $Sprache->kSprache])) ? $_POST['cContentText_' . $Sprache->kSprache] : null;
+        $Emailvorlagesprache->cBetreff     = (isset($_POST['cBetreff_' . $Sprache->kSprache]))
+            ? $_POST['cBetreff_' . $Sprache->kSprache]
+            : null;
+        $Emailvorlagesprache->cContentHtml = (isset($_POST['cContentHtml_' . $Sprache->kSprache]))
+            ? $_POST['cContentHtml_' . $Sprache->kSprache]
+            : null;
+        $Emailvorlagesprache->cContentText = (isset($_POST['cContentText_' . $Sprache->kSprache]))
+            ? $_POST['cContentText_' . $Sprache->kSprache]
+            : null;
 
         if (count($cPDFS_arr) > 0) {
             $Emailvorlagesprache->cPDFS = ';' . implode(';', $cPDFS_arr) . ';';
-        } elseif (isset($oEmailvorlageSprache_arr[$Sprache->kSprache]->cPDFS) && strlen($oEmailvorlageSprache_arr[$Sprache->kSprache]->cPDFS) > 0) {
+        } elseif (isset($oEmailvorlageSprache_arr[$Sprache->kSprache]->cPDFS) &&
+            strlen($oEmailvorlageSprache_arr[$Sprache->kSprache]->cPDFS) > 0) {
             $Emailvorlagesprache->cPDFS = $oEmailvorlageSprache_arr[$Sprache->kSprache]->cPDFS;
         } else {
             $Emailvorlagesprache->cPDFS = '';
         }
         if (count($cDateiname_arr) > 0) {
             $Emailvorlagesprache->cDateiname = ';' . implode(';', $cDateiname_arr) . ';';
-        } elseif (isset($oEmailvorlageSprache_arr[$Sprache->kSprache]->cDateiname) && strlen($oEmailvorlageSprache_arr[$Sprache->kSprache]->cDateiname) > 0) {
+        } elseif (isset($oEmailvorlageSprache_arr[$Sprache->kSprache]->cDateiname) &&
+            strlen($oEmailvorlageSprache_arr[$Sprache->kSprache]->cDateiname) > 0) {
             $Emailvorlagesprache->cDateiname = $oEmailvorlageSprache_arr[$Sprache->kSprache]->cDateiname;
         } else {
             $Emailvorlagesprache->cDateiname = '';
         }
         if ($nFehler == 0) {
-            Shop::DB()->delete($cTableSprache, ['kSprache', 'kEmailvorlage'], [(int)$Sprache->kSprache, (int)$_POST['kEmailvorlage']]);
+            Shop::DB()->delete(
+                $cTableSprache,
+                ['kSprache', 'kEmailvorlage'],
+                [(int)$Sprache->kSprache,
+                 (int)$_POST['kEmailvorlage']]
+            );
             Shop::DB()->insert($cTableSprache, $Emailvorlagesprache);
             //Smarty Objekt bauen
             $mailSmarty = new JTLSmarty(true, false, false, 'mail');
@@ -683,8 +713,10 @@ if (isset($_POST['Aendern']) && isset($_POST['kEmailvorlage']) && intval($_POST[
                        ->setDebugging(0)
                        ->setCompileDir(PFAD_ROOT . PFAD_COMPILEDIR);
             try {
-                $mailSmarty->fetch('db:html_' . $Emailvorlagesprache->kEmailvorlage . '_' . $Sprache->kSprache . '_' . $cTableSprache);
-                $mailSmarty->fetch('db:text_' . $Emailvorlagesprache->kEmailvorlage . '_' . $Sprache->kSprache . '_' . $cTableSprache);
+                $mailSmarty->fetch('db:html_' . $Emailvorlagesprache->kEmailvorlage .
+                    '_' . $Sprache->kSprache . '_' . $cTableSprache);
+                $mailSmarty->fetch('db:text_' . $Emailvorlagesprache->kEmailvorlage .
+                    '_' . $Sprache->kSprache . '_' . $cTableSprache);
             } catch (Exception $e) {
                 $oSmartyError->cText = $e->getMessage();
                 $oSmartyError->nCode = 1;
@@ -732,18 +764,32 @@ if (isset($_POST['Aendern']) && isset($_POST['kEmailvorlage']) && intval($_POST[
 
     $smarty->assign('cFehlerAnhang_arr', $cFehlerAnhang_arr);
 }
-if ((isset($_POST['kEmailvorlage']) && intval($_POST['kEmailvorlage']) > 0 && $continue === true) || $step === 'prebearbeiten' || (isset($_GET['a']) && $_GET['a'] === 'pdfloeschen')) {
+if ((isset($_POST['kEmailvorlage']) && intval($_POST['kEmailvorlage']) > 0 && $continue === true) ||
+    $step === 'prebearbeiten' || (isset($_GET['a']) && $_GET['a'] === 'pdfloeschen')) {
     $cUploadVerzeichnis  = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_EMAILPDFS;
     $Emailvorlagesprache = [];
 
     if (empty($_POST['kEmailvorlage']) || intval($_POST['kEmailvorlage']) === 0) {
-        $_POST['kEmailvorlage'] = (isset($_GET['a']) && $_GET['a'] === 'pdfloeschen' && isset($_GET['kEmailvorlage'])) ? $_GET['kEmailvorlage'] : $kEmailvorlage;
+        $_POST['kEmailvorlage'] = (isset($_GET['a']) && $_GET['a'] === 'pdfloeschen' && isset($_GET['kEmailvorlage']))
+            ? $_GET['kEmailvorlage']
+            : $kEmailvorlage;
     }
     // PDF loeschen
-    if (isset($_GET['kS']) && isset($_GET['a']) && $_GET['a'] === 'pdfloeschen' && isset($_GET['token']) && $_GET['token'] === $_SESSION['jtl_token']) {
+    if (isset($_GET['kS']) && isset($_GET['a']) && $_GET['a'] === 'pdfloeschen' &&
+        isset($_GET['token']) && $_GET['token'] === $_SESSION['jtl_token']) {
         $_POST['kEmailvorlage'] = $_GET['kEmailvorlage'];
         $_POST['kS']            = $_GET['kS'];
-        $oEmailvorlageSprache   = Shop::DB()->select($cTableSprache, 'kEmailvorlage', (int)$_POST['kEmailvorlage'], 'kSprache', (int)$_POST['kS'], null, null, false, 'cPDFS, cDateiname');
+        $oEmailvorlageSprache   = Shop::DB()->select(
+            $cTableSprache,
+            'kEmailvorlage',
+            (int)$_POST['kEmailvorlage'],
+            'kSprache',
+            (int)$_POST['kS'],
+            null,
+            null,
+            false,
+            'cPDFS, cDateiname'
+        );
         $cPDFS_arr = bauePDFArray($oEmailvorlageSprache->cPDFS);
 
         if (is_array($cPDFS_arr) && count($cPDFS_arr) > 0) {
@@ -756,7 +802,13 @@ if ((isset($_POST['kEmailvorlage']) && intval($_POST['kEmailvorlage']) > 0 && $c
         $upd             = new stdClass();
         $upd->cPDFS      = '';
         $upd->cDateiname = '';
-        Shop::DB()->update($cTableSprache, ['kEmailvorlage', 'kSprache'], [(int)$_POST['kEmailvorlage'], (int)$_POST['kS']], $upd);
+        Shop::DB()->update(
+            $cTableSprache,
+            ['kEmailvorlage', 'kSprache'],
+            [(int)$_POST['kEmailvorlage'],
+             (int)$_POST['kS']],
+            $upd
+        );
         $cHinweis .= 'Ihre Dateianh&auml;nge f&uuml;r Ihre gew&auml;hlte Sprache, wurden erfolgreich gel&ouml;scht.<br />';
     }
 
@@ -775,11 +827,17 @@ if ((isset($_POST['kEmailvorlage']) && intval($_POST['kEmailvorlage']) > 0 && $c
     }
 
     foreach ($Sprachen as $Sprache) {
-        $Emailvorlagesprache[$Sprache->kSprache] = Shop::DB()->select($cTableSprache, 'kEmailvorlage', (int)$_POST['kEmailvorlage'], 'kSprache', (int)$Sprache->kSprache);
+        $Emailvorlagesprache[$Sprache->kSprache] = Shop::DB()->select(
+            $cTableSprache,
+            'kEmailvorlage',
+            (int)$_POST['kEmailvorlage'],
+            'kSprache',
+            (int)$Sprache->kSprache
+        );
         // PDF Name und Dateiname vorbereiten
         $cPDFS_arr      = [];
         $cDateiname_arr = [];
-        if (isset($Emailvorlagesprache[$Sprache->kSprache]->cPDFS) && strlen($Emailvorlagesprache[$Sprache->kSprache]->cPDFS) > 0) {
+        if (!empty($Emailvorlagesprache[$Sprache->kSprache]->cPDFS) > 0) {
             $cPDFSTMP_arr = bauePDFArray($Emailvorlagesprache[$Sprache->kSprache]->cPDFS);
             foreach ($cPDFSTMP_arr as $cPDFSTMP) {
                 $cPDFS_arr[] = $cPDFSTMP;
@@ -789,7 +847,9 @@ if ((isset($_POST['kEmailvorlage']) && intval($_POST['kEmailvorlage']) > 0 && $c
                 $cDateiname_arr[] = $cDateinameTMP;
             }
         }
-        if (!isset($Emailvorlagesprache[$Sprache->kSprache]) || $Emailvorlagesprache[$Sprache->kSprache] === null || $Emailvorlagesprache[$Sprache->kSprache] === false) {
+        if (!isset($Emailvorlagesprache[$Sprache->kSprache]) ||
+            $Emailvorlagesprache[$Sprache->kSprache] === null ||
+            $Emailvorlagesprache[$Sprache->kSprache] === false) {
             $Emailvorlagesprache[$Sprache->kSprache] = new stdClass();
         }
         $Emailvorlagesprache[$Sprache->kSprache]->cPDFS_arr      = $cPDFS_arr;

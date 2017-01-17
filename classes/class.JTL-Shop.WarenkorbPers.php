@@ -146,7 +146,7 @@ class WarenkorbPers
      */
     public function entfernePos($kWarenkorbPersPos)
     {
-        $kWarenkorbPersPos = intval($kWarenkorbPersPos);
+        $kWarenkorbPersPos = (int)$kWarenkorbPersPos;
         $oKunde            = Shop::DB()->query(
             "SELECT twarenkorbpers.kKunde
                 FROM twarenkorbpers

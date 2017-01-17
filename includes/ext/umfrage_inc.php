@@ -91,10 +91,16 @@ function speicherFragenInSession($cPost_arr)
                 if ($oUmfrageFrage->cTyp === 'matrix_single') {
                     $_SESSION['Umfrage']->oUmfrageFrage_arr[$kUmfrageFrage]->oUmfrageFrageAntwort_arr = [];
 
-                    $oUmfrageFrageAntwort_arr = Shop::DB()->selectAll('tumfragefrageantwort', 'kUmfrageFrage', $kUmfrageFrage, 'kUmfrageFrageAntwort');
+                    $oUmfrageFrageAntwort_arr = Shop::DB()->selectAll(
+                        'tumfragefrageantwort',
+                        'kUmfrageFrage',
+                        $kUmfrageFrage,
+                        'kUmfrageFrageAntwort'
+                    );
                     if (is_array($oUmfrageFrageAntwort_arr) && count($oUmfrageFrageAntwort_arr) > 0) {
                         foreach ($oUmfrageFrageAntwort_arr as $oUmfrageFrageAntwort) {
-                            $_SESSION['Umfrage']->oUmfrageFrage_arr[$kUmfrageFrage]->oUmfrageFrageAntwort_arr[] = $cPost_arr[$kUmfrageFrage . '_' . $oUmfrageFrageAntwort->kUmfrageFrageAntwort];
+                            $_SESSION['Umfrage']->oUmfrageFrage_arr[$kUmfrageFrage]->oUmfrageFrageAntwort_arr[] =
+                                $cPost_arr[$kUmfrageFrage . '_' . $oUmfrageFrageAntwort->kUmfrageFrageAntwort];
                         }
                     }
                 } elseif ($oUmfrageFrage->cTyp === 'matrix_multi') {
@@ -142,7 +148,10 @@ function findeFragenInSession($oUmfrageFrage_arr)
         foreach ($oUmfrageFrage_arr as $oUmfrageFrage) {
             foreach ($_SESSION['Umfrage']->oUmfrageFrage_arr as $i => $oUmfrageFrageSession) {
                 if ($oUmfrageFrageSession->kUmfrageFrage == $oUmfrageFrage->kUmfrageFrage) {
-                    if (isset($oUmfrageFrageSession->oUmfrageFrageAntwort_arr) && is_array($oUmfrageFrageSession->oUmfrageFrageAntwort_arr) && count($oUmfrageFrageSession->oUmfrageFrageAntwort_arr) > 0) {
+                    if (isset($oUmfrageFrageSession->oUmfrageFrageAntwort_arr) &&
+                        is_array($oUmfrageFrageSession->oUmfrageFrageAntwort_arr) &&
+                        count($oUmfrageFrageSession->oUmfrageFrageAntwort_arr) > 0
+                    ) {
                         if ($oUmfrageFrageSession->cTyp === 'matrix_single' || $oUmfrageFrageSession->cTyp === 'matrix_multi') {
                             $nSessionFragenWerte_arr[$oUmfrageFrageSession->kUmfrageFrage]->cUmfrageFrageAntwort_arr = [];
                             foreach ($oUmfrageFrageSession->oUmfrageFrageAntwort_arr as $cUmfrageFrageAntwort) {
@@ -172,7 +181,10 @@ function findeFragenInSession($oUmfrageFrage_arr)
  */
 function setzeUmfrageErgebnisse()
 {
-    if (isset($_SESSION['Umfrage']) && is_array($_SESSION['Umfrage']->oUmfrageFrage_arr) && count($_SESSION['Umfrage']->oUmfrageFrage_arr)) {
+    if (isset($_SESSION['Umfrage']) &&
+        is_array($_SESSION['Umfrage']->oUmfrageFrage_arr) &&
+        count($_SESSION['Umfrage']->oUmfrageFrage_arr)
+    ) {
         // Eintrag in tumfragedurchfuehrung
         $oUmfrageDurchfuehrung = new stdClass();
         if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
@@ -192,7 +204,11 @@ function setzeUmfrageErgebnisse()
             if ($oUmfrageFrage->cTyp !== 'text_statisch' && $oUmfrageFrage->cTyp !== 'text_statisch_seitenwechsel') {
                 if (is_array($oUmfrageFrage->oUmfrageFrageAntwort_arr) && count($oUmfrageFrage->oUmfrageFrageAntwort_arr) > 0) {
                     foreach ($oUmfrageFrage->oUmfrageFrageAntwort_arr as $i => $cUmfrageFrageAntwort) {
-                        if (isset($cUmfrageFrageAntwort) && isset($oUmfrageFrage->oUmfrageFrageAntwort_arr[$i]) && strlen($cUmfrageFrageAntwort) > 0 && $oUmfrageFrage->oUmfrageFrageAntwort_arr[$i] != '-1') {
+                        if (isset($cUmfrageFrageAntwort) &&
+                            isset($oUmfrageFrage->oUmfrageFrageAntwort_arr[$i]) &&
+                            strlen($cUmfrageFrageAntwort) > 0 &&
+                            $oUmfrageFrage->oUmfrageFrageAntwort_arr[$i] != '-1'
+                        ) {
                             unset($oUmfrageDurchfuehrungAntwort);
                             $oUmfrageDurchfuehrungAntwort                        = new stdClass();
                             $oUmfrageDurchfuehrungAntwort->kUmfrageDurchfuehrung = $kUmfrageDurchfuehrung;
@@ -201,7 +217,9 @@ function setzeUmfrageErgebnisse()
                             if ($oUmfrageFrage->cTyp === 'text_klein' || $oUmfrageFrage->cTyp === 'text_gross') {
                                 $oUmfrageDurchfuehrungAntwort->kUmfrageFrageAntwort = 0;
                                 $oUmfrageDurchfuehrungAntwort->kUmfrageMatrixOption = 0;
-                                $oUmfrageDurchfuehrungAntwort->cText                = (!empty($cUmfrageFrageAntwort)) ? StringHandler::htmlentities(StringHandler::filterXSS(ltrim($cUmfrageFrageAntwort))) : '';
+                                $oUmfrageDurchfuehrungAntwort->cText                = (!empty($cUmfrageFrageAntwort)) ?
+                                    StringHandler::htmlentities(StringHandler::filterXSS(ltrim($cUmfrageFrageAntwort)))
+                                    : '';
                             } elseif ($oUmfrageFrage->cTyp === 'matrix_single' || $oUmfrageFrage->cTyp === 'matrix_multi') {
                                 list($kUmfrageFrageAntwort, $kUmfrageMatrixOption)  = explode('_', $cUmfrageFrageAntwort);
                                 $oUmfrageDurchfuehrungAntwort->kUmfrageFrageAntwort = $kUmfrageFrageAntwort;
@@ -211,7 +229,9 @@ function setzeUmfrageErgebnisse()
                                 if ($cUmfrageFrageAntwort == '-1') {
                                     $oUmfrageDurchfuehrungAntwort->kUmfrageFrageAntwort = 0;
                                     $oUmfrageDurchfuehrungAntwort->kUmfrageMatrixOption = 0;
-                                    $oUmfrageDurchfuehrungAntwort->cText                = (!empty($oUmfrageFrage->oUmfrageFrageAntwort_arr[$i + 1])) ? StringHandler::htmlentities(StringHandler::filterXSS($oUmfrageFrage->oUmfrageFrageAntwort_arr[$i + 1])) : '';
+                                    $oUmfrageDurchfuehrungAntwort->cText                = (!empty($oUmfrageFrage->oUmfrageFrageAntwort_arr[$i + 1]))
+                                        ? StringHandler::htmlentities(StringHandler::filterXSS($oUmfrageFrage->oUmfrageFrageAntwort_arr[$i + 1]))
+                                        : '';
                                     array_pop($_SESSION['Umfrage']->oUmfrageFrage_arr[$j]->oUmfrageFrageAntwort_arr);
                                 } else {
                                     $oUmfrageDurchfuehrungAntwort->kUmfrageFrageAntwort = $cUmfrageFrageAntwort;
@@ -243,7 +263,12 @@ function pruefeEingabe($cPost_arr)
             $kUmfrageFrage = intval($kUmfrageFrage);
             $oUmfrageFrage = Shop::DB()->select('tumfragefrage', 'kUmfrageFrage', $kUmfrageFrage);
             if ($oUmfrageFrage->nNotwendig == 1) {
-                $oUmfrageFrageAntwort_arr = Shop::DB()->selectAll('tumfragefrageantwort', 'kUmfrageFrage', (int)$oUmfrageFrage->kUmfrageFrage, 'kUmfrageFrageAntwort, cName');
+                $oUmfrageFrageAntwort_arr = Shop::DB()->selectAll(
+                    'tumfragefrageantwort',
+                    'kUmfrageFrage',
+                    (int)$oUmfrageFrage->kUmfrageFrage,
+                    'kUmfrageFrageAntwort, cName'
+                );
                 if ($oUmfrageFrage->cTyp === 'matrix_single' || $oUmfrageFrage->cTyp === 'matrix_multi') {
                     if (is_array($oUmfrageFrageAntwort_arr) && count($oUmfrageFrageAntwort_arr) > 0) {
                         foreach ($oUmfrageFrageAntwort_arr as $oUmfrageFrageAntwort) {
@@ -273,7 +298,9 @@ function pruefeEingabe($cPost_arr)
                         }
                     }
                 } elseif ($oUmfrageFrage->cTyp === 'text_klein' || $oUmfrageFrage->cTyp === 'text_gross') {
-                    if (!isset($cPost_arr[$oUmfrageFrage->kUmfrageFrage]) || strlen(trim($cPost_arr[$oUmfrageFrage->kUmfrageFrage][0])) === 0) {
+                    if (!isset($cPost_arr[$oUmfrageFrage->kUmfrageFrage]) ||
+                        strlen(trim($cPost_arr[$oUmfrageFrage->kUmfrageFrage][0])) === 0
+                    ) {
                         return $oUmfrageFrage->kUmfrageFrage;
                     }
                 } else {
@@ -369,8 +396,8 @@ function holeAktuelleUmfrage($kUmfrage)
     // Umfrage holen
     return Shop::DB()->query(
         "SELECT tumfrage.kUmfrage, tumfrage.kSprache, tumfrage.kKupon, tumfrage.cKundengruppe, tumfrage.cName, 
-            tumfrage.cBeschreibung, tumfrage.fGuthaben, tumfrage.nBonuspunkte, tumfrage.nAktiv, tumfrage.dGueltigVon,
-             tumfrage.dGueltigBis, tumfrage.dErstellt, tseo.cSeo, count(tumfragefrage.kUmfrageFrage) AS nAnzahlFragen
+            tumfrage.cBeschreibung, tumfrage.fGuthaben, tumfrage.nBonuspunkte, tumfrage.nAktiv, tumfrage.dGueltigVon, 
+            tumfrage.dGueltigBis, tumfrage.dErstellt, tseo.cSeo, count(tumfragefrage.kUmfrageFrage) AS nAnzahlFragen
             FROM tumfrage
             JOIN tumfragefrage 
                 ON tumfragefrage.kUmfrage = tumfrage.kUmfrage
@@ -467,7 +494,8 @@ function bearbeiteUmfrageAuswertung($oUmfrage)
             $oKupon   = Shop::DB()->query(
                 "SELECT tkuponsprache.cName, tkupon.kKupon, tkupon.cCode
                     FROM tkupon
-                    JOIN tkuponsprache ON tkuponsprache.kKupon = tkupon.kKupon
+                    JOIN tkuponsprache 
+                        ON tkuponsprache.kKupon = tkupon.kKupon
                     WHERE tkupon.kKupon = " . (int)$oUmfrage->kKupon . "
                         AND tkuponsprache.cISOSprache = '" . $oSprache->cISO . "'
                         AND tkupon.cAktiv = 'Y'

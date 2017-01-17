@@ -40,7 +40,12 @@ function bearbeiteNewsletterversand($oJobQueue)
     $cSQL = '';
     if (is_array($kKundengruppe_arr) && count($kKundengruppe_arr) > 0) {
         foreach ($kKundengruppe_arr as $kKundengruppe) {
-            $oArtikel_arr[$kKundengruppe]   = gibArtikelObjekte($kArtikel_arr, $oKampagne, $kKundengruppe, $oNewsletter->kSprache);
+            $oArtikel_arr[$kKundengruppe]   = gibArtikelObjekte(
+                $kArtikel_arr,
+                $oKampagne,
+                $kKundengruppe,
+                $oNewsletter->kSprache
+            );
             $oKategorie_arr[$kKundengruppe] = gibKategorieObjekte($kKategorie_arr, $oKampagne);
         }
 

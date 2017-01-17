@@ -186,9 +186,9 @@ function pushToComparelist($kArtikel)
 
     if (!isset($Einstellungen['vergleichsliste'])) {
         if (isset($Einstellungen)) {
-            $Einstellungen = array_merge($Einstellungen, Shop::getSettings(array(CONF_VERGLEICHSLISTE)));
+            $Einstellungen = array_merge($Einstellungen, Shop::getSettings([CONF_VERGLEICHSLISTE]));
         } else {
-            $Einstellungen = Shop::getSettings(array(CONF_VERGLEICHSLISTE));
+            $Einstellungen = Shop::getSettings([CONF_VERGLEICHSLISTE]);
         }
     }
 
@@ -210,10 +210,19 @@ function pushToComparelist($kArtikel)
             ->assign('type', empty($error) ? 'info' : 'danger')
             ->assign('body', empty($error) ? $notice : $error)
             ->assign('buttons', [
-                (object)['href' => 'vergleichsliste.php', 'fa' => 'fa-tasks', 'title' => Shop::Lang()->get('compare', 'global')],
-                (object)['href' => '#', 'fa' => 'fa fa-arrow-circle-right', 'title' => Shop::Lang()->get('continueShopping', 'checkout'), 'primary' => true, 'dismiss' => 'modal'],
-            ])
-            ->fetch('snippets/notification.tpl')
+                (object)[
+                    'href'  => 'vergleichsliste.php',
+                    'fa'    => 'fa-tasks',
+                    'title' => Shop::Lang()->get('compare', 'global')
+                ],
+                (object)[
+                    'href'    => '#',
+                    'fa'      => 'fa fa-arrow-circle-right',
+                    'title'   => Shop::Lang()->get('continueShopping', 'checkout'),
+                    'primary' => true,
+                    'dismiss' => 'modal'
+                ],
+            ])->fetch('snippets/notification.tpl')
     );
 
     if ($oResponse->nCount > 1) {
@@ -286,7 +295,10 @@ function getBasketItems($nTyp)
                 ->assign('Warenkorbtext', lang_warenkorb_warenkorbEnthaeltXArtikel($_SESSION['Warenkorb']))
                 ->assign('NettoPreise', $_SESSION['Kundengruppe']->nNettoPreise)
                 ->assign('WarenkorbVersandkostenfreiHinweis', baueVersandkostenfreiString($versandkostenfreiAb, 
-                    $_SESSION['Warenkorb']->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL, C_WARENKORBPOS_TYP_KUPON, C_WARENKORBPOS_TYP_NEUKUNDENKUPON], true)))
+                    $_SESSION['Warenkorb']->gibGesamtsummeWarenExt(
+                        [C_WARENKORBPOS_TYP_ARTIKEL, C_WARENKORBPOS_TYP_KUPON, C_WARENKORBPOS_TYP_NEUKUNDENKUPON],
+                        true)
+                ))
                 ->assign('oSpezialseiten_arr', LinkHelper::getInstance()->getSpecialPages());
 
             VersandartHelper::getShippingCosts($cLand, $cPLZ, $error);
@@ -345,7 +357,12 @@ function getArticleStockInfo($kArtikel, $kEigenschaftWert_arr)
         $oArtikelOptionen->nVariationKombi           = 0;
         $oArtikelOptionen->nKeinLagerbestandBeachten = 1;
 
-        $oTestArtikel->fuelleArtikel($oTMPArtikel->kArtikel, $oArtikelOptionen, Kundengruppe::getCurrent(), $_SESSION['kSprache']);
+        $oTestArtikel->fuelleArtikel(
+            $oTMPArtikel->kArtikel,
+            $oArtikelOptionen,
+            Kundengruppe::getCurrent(),
+            $_SESSION['kSprache']
+        );
         $oTestArtikel->Lageranzeige->AmpelText = utf8_encode($oTestArtikel->Lageranzeige->AmpelText);
 
         return (object)[

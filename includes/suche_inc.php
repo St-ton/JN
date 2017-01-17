@@ -25,7 +25,10 @@ function mappingBeachten($Suchausdruck, $kSpracheExt = 0)
             'cSucheNeu'
         );
         $Suchausdruckmapping    = $SuchausdruckmappingTMP;
-        while ($SuchausdruckmappingTMP !== null && isset($SuchausdruckmappingTMP->cSucheNeu) && strlen($SuchausdruckmappingTMP->cSucheNeu) > 0) {
+        while ($SuchausdruckmappingTMP !== null &&
+            isset($SuchausdruckmappingTMP->cSucheNeu) &&
+            strlen($SuchausdruckmappingTMP->cSucheNeu) > 0
+        ) {
             $SuchausdruckmappingTMP = Shop::DB()->select(
                 'tsuchanfragemapping',
                 'kSprache',
@@ -343,7 +346,11 @@ function suchanfragenSpeichern($cSuche, $nAnzahlTreffer, $bEchteSuche = false, $
                                 WHERE kSuchanfrage = " . (int)$suchanfrage_old->kSuchanfrage, 4
                         );
                     } elseif (!isset($suchanfrage_old->kSuchanfrage) || !$suchanfrage_old->kSuchanfrage) {
-                        Shop::DB()->delete('tsuchanfrageerfolglos', ['kSprache', 'cSuche'], [(int)$suchanfrage->kSprache, Shop::DB()->realEscape($Suchausdruck)]);
+                        Shop::DB()->delete(
+                            'tsuchanfrageerfolglos',
+                            ['kSprache', 'cSuche'],
+                            [(int)$suchanfrage->kSprache, Shop::DB()->realEscape($Suchausdruck)]
+                        );
                         $kSuchanfrage = Shop::DB()->insert('tsuchanfrage', $suchanfrage);
                         writeLog(PFAD_LOGFILES . 'suchanfragen.log', print_r($suchanfrage, true), 1);
 
@@ -376,7 +383,11 @@ function suchanfragenSpeichern($cSuche, $nAnzahlTreffer, $bEchteSuche = false, $
                                 WHERE kSuchanfrageErfolglos = " . (int)$suchanfrageerfolglos_old->kSuchanfrageErfolglos, 4
                         );
                     } else {
-                        Shop::DB()->delete('tsuchanfrage', ['kSprache', 'cSuche'], [(int)$suchanfrageerfolglos->kSprache, Shop::DB()->realEscape($Suchausdruck)]);
+                        Shop::DB()->delete(
+                            'tsuchanfrage',
+                            ['kSprache', 'cSuche'],
+                            [(int)$suchanfrageerfolglos->kSprache, Shop::DB()->realEscape($Suchausdruck)]
+                        );
                         Shop::DB()->insert('tsuchanfrageerfolglos', $suchanfrageerfolglos);
                     }
                 }

@@ -37,7 +37,8 @@ function includeMailTemplate($params, &$smarty)
                 $params['type'] = 'text';
             }
 
-            return $smarty->fetch('db:' . $params['type'] . '_' . $vorlage->kEmailvorlage . '_' . $currenLanguage->kSprache);
+            return $smarty->fetch('db:' . $params['type'] . '_' .
+                $vorlage->kEmailvorlage . '_' . $currenLanguage->kSprache);
         }
     }
 
@@ -85,9 +86,19 @@ function sendeMail($ModulId, $Object, $mail = null)
         $Object->tkunde->kKundengruppe = Kundengruppe::getDefaultGroupID();
     }
     $Object->tfirma        = Shop::DB()->query("SELECT * FROM tfirma", 1);
-    $Object->tkundengruppe = Shop::DB()->select('tkundengruppe', 'kKundengruppe', (int)$Object->tkunde->kKundengruppe);
+    $Object->tkundengruppe = Shop::DB()->select(
+        'tkundengruppe',
+        'kKundengruppe',
+        (int)$Object->tkunde->kKundengruppe
+    );
     if (isset($Object->tkunde->kSprache) && $Object->tkunde->kSprache > 0) {
-        $kundengruppensprache = Shop::DB()->select('tkundengruppensprache', 'kKundengruppe', (int)$Object->tkunde->kKundengruppe, 'kSprache', (int)$Object->tkunde->kSprache);
+        $kundengruppensprache = Shop::DB()->select(
+            'tkundengruppensprache',
+            'kKundengruppe',
+            (int)$Object->tkunde->kKundengruppe,
+            'kSprache',
+            (int)$Object->tkunde->kSprache
+        );
         if (isset($kundengruppensprache->cName) && $kundengruppensprache->cName != $Object->tkundengruppe->cName) {
             $Object->tkundengruppe->cName = $kundengruppensprache->cName;
         }
@@ -115,7 +126,11 @@ function sendeMail($ModulId, $Object, $mail = null)
     $AGB     = new stdClass();
     $WRB     = new stdClass();
     $WRBForm = new stdClass();
-    $oAGBWRB = Shop::DB()->select('ttext', ['kSprache', 'kKundengruppe'], [(int)$Sprache->kSprache, (int)$Object->tkunde->kKundengruppe]);
+    $oAGBWRB = Shop::DB()->select(
+        'ttext',
+        ['kSprache', 'kKundengruppe'],
+        [(int)$Sprache->kSprache, (int)$Object->tkunde->kKundengruppe]
+    );
     $AGB->cContentText     = isset($oAGBWRB->cAGBContentText) ? $oAGBWRB->cAGBContentText : '';
     $AGB->cContentHtml     = isset($oAGBWRB->cAGBContentHtml) ? $oAGBWRB->cAGBContentHtml : '';
     $WRB->cContentText     = isset($oAGBWRB->cWRBContentText) ? $oAGBWRB->cWRBContentText : '';
@@ -146,16 +161,25 @@ function sendeMail($ModulId, $Object, $mail = null)
     $Emailvorlage = Shop::DB()->query("SELECT * FROM " . $cTable . " WHERE " . $cSQLWhere, 1);
     // Email aktiv?
     if (isset($Emailvorlage->cAktiv) && $Emailvorlage->cAktiv === 'N') {
-        Jtllog::writeLog('Emailvorlage mit der ModulId ' . $ModulId . ' ist deaktiviert!', JTLLOG_LEVEL_NOTICE, false, 'kEmailvorlage');
+        Jtllog::writeLog(
+            'Emailvorlage mit der ModulId ' . $ModulId . ' ist deaktiviert!',
+            JTLLOG_LEVEL_NOTICE,
+            false,
+            'kEmailvorlage'
+        );
 
         return false;
     }
     // Emailvorlageneinstellungen laden
     if (isset($Emailvorlage->kEmailvorlage) && $Emailvorlage->kEmailvorlage > 0) {
-        $Emailvorlage->oEinstellung_arr = Shop::DB()->selectAll($cTableSetting, 'kEmailvorlage', $Emailvorlage->kEmailvorlage);
+        $Emailvorlage->oEinstellung_arr = Shop::DB()->selectAll(
+            $cTableSetting,
+            'kEmailvorlage',
+            $Emailvorlage->kEmailvorlage
+        );
         // Assoc bauen
         if (is_array($Emailvorlage->oEinstellung_arr) && count($Emailvorlage->oEinstellung_arr) > 0) {
-            $Emailvorlage->oEinstellungAssoc_arr = array();
+            $Emailvorlage->oEinstellungAssoc_arr = [];
             foreach ($Emailvorlage->oEinstellung_arr as $oEinstellung) {
                 $Emailvorlage->oEinstellungAssoc_arr[$oEinstellung->cKey] = $oEinstellung->cValue;
             }
@@ -163,8 +187,12 @@ function sendeMail($ModulId, $Object, $mail = null)
     }
 
     if (!isset($Emailvorlage->kEmailvorlage) || intval($Emailvorlage->kEmailvorlage) === 0) {
-        Jtllog::writeLog('Keine Emailvorlage mit der ModulId ' . $ModulId .
-            ' vorhanden oder diese Emailvorlage ist nicht aktiv!', JTLLOG_LEVEL_ERROR, false, 'kEmailvorlage');
+        Jtllog::writeLog(
+            'Keine Emailvorlage mit der ModulId ' . $ModulId . ' vorhanden oder diese Emailvorlage ist nicht aktiv!',
+            JTLLOG_LEVEL_ERROR,
+            false,
+            'kEmailvorlage'
+        );
 
         return false;
     }
@@ -193,11 +221,14 @@ function sendeMail($ModulId, $Object, $mail = null)
 
         case MAILTEMPLATE_BESTELLBESTAETIGUNG:
             // Lieferadresse lokalisieren - nach jtl-shop/issues#270 entfernt
-            /*if (isset($Object->tbestellung->Lieferadresse->kLieferadresse) && $Object->tbestellung->Lieferadresse->kLieferadresse > 0) {
+            /*if (isset($Object->tbestellung->Lieferadresse->kLieferadresse) &&
+                $Object->tbestellung->Lieferadresse->kLieferadresse > 0) {
                 $Object->tbestellung->Lieferadresse = lokalisiereLieferadresse($Sprache, $Object->tbestellung->Lieferadresse);
             }*/
             $mailSmarty->assign('Bestellung', $Object->tbestellung)
-                       ->assign('Verfuegbarkeit_arr', (isset($Object->cVerfuegbarkeit_arr)) ? $Object->cVerfuegbarkeit_arr : null)
+                       ->assign('Verfuegbarkeit_arr', (isset($Object->cVerfuegbarkeit_arr))
+                           ? $Object->cVerfuegbarkeit_arr
+                           : null)
                        ->assign('oTrustedShopsBewertenButton', null);
             // Zahlungsart Einstellungen
             if (isset($Object->tbestellung->Zahlungsart->cModulId) && strlen($Object->tbestellung->Zahlungsart->cModulId) > 0) {
@@ -205,7 +236,8 @@ function sendeMail($ModulId, $Object, $mail = null)
                 $oZahlungsartConf = Shop::DB()->query(
                     "SELECT tzahlungsartsprache.*
                         FROM tzahlungsartsprache
-                        JOIN tzahlungsart ON tzahlungsart.kZahlungsart = tzahlungsartsprache.kZahlungsart
+                        JOIN tzahlungsart 
+                            ON tzahlungsart.kZahlungsart = tzahlungsartsprache.kZahlungsart
                             AND tzahlungsart.cModulId = '" . $cModulId . "'
                         WHERE tzahlungsartsprache.cISOSprache = '" . $Sprache->cISO . "'", 1
                 );
@@ -220,7 +252,12 @@ function sendeMail($ModulId, $Object, $mail = null)
                 $oTrustedShops                = new TrustedShops(-1, StringHandler::convertISO2ISO639($langID));
                 $oTrustedShopsKundenbewertung = $oTrustedShops->holeKundenbewertungsstatus(StringHandler::convertISO2ISO639($langID));
                 if (strlen($oTrustedShopsKundenbewertung->cTSID) > 0 && $oTrustedShopsKundenbewertung->nStatus == 1) {
-                    $mailSmarty->assign('oTrustedShopsBewertenButton', gibTrustedShopsBewertenButton($Object->tbestellung->oRechnungsadresse->cMail, $Object->tbestellung->cBestellNr));
+                    $mailSmarty->assign('oTrustedShopsBewertenButton',
+                        gibTrustedShopsBewertenButton(
+                            $Object->tbestellung->oRechnungsadresse->cMail,
+                            $Object->tbestellung->cBestellNr
+                        )
+                    );
                 }
             }
 
@@ -234,7 +271,8 @@ function sendeMail($ModulId, $Object, $mail = null)
                 $oZahlungsartConf = Shop::DB()->query(
                     "SELECT tzahlungsartsprache.*
                         FROM tzahlungsartsprache
-                        JOIN tzahlungsart ON tzahlungsart.kZahlungsart = tzahlungsartsprache.kZahlungsart
+                        JOIN tzahlungsart 
+                            ON tzahlungsart.kZahlungsart = tzahlungsartsprache.kZahlungsart
                             AND tzahlungsart.cModulId = '" . $cModulId . "'
                         WHERE tzahlungsartsprache.cISOSprache = '" . $Sprache->cISO . "'", 1
                 );
@@ -246,10 +284,18 @@ function sendeMail($ModulId, $Object, $mail = null)
             // Trusted Shops
             if ($Einstellungen['trustedshops']['trustedshops_kundenbewertung_anzeigen'] === 'Y') {
                 require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.TrustedShops.php';
-                $oTrustedShops                = new TrustedShops(-1, StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
+                $oTrustedShops                = new TrustedShops(
+                    -1,
+                    StringHandler::convertISO2ISO639($_SESSION['cISOSprache'])
+                );
                 $oTrustedShopsKundenbewertung = $oTrustedShops->holeKundenbewertungsstatus(StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
                 if (strlen($oTrustedShopsKundenbewertung->cTSID) > 0 && $oTrustedShopsKundenbewertung->nStatus == 1) {
-                    $mailSmarty->assign('oTrustedShopsBewertenButton', gibTrustedShopsBewertenButton($Object->tbestellung->oRechnungsadresse->cMail, $Object->tbestellung->cBestellNr));
+                    $mailSmarty->assign('oTrustedShopsBewertenButton',
+                        gibTrustedShopsBewertenButton(
+                            $Object->tbestellung->oRechnungsadresse->cMail,
+                            $Object->tbestellung->cBestellNr
+                        )
+                    );
                 }
             }
 
@@ -282,10 +328,18 @@ function sendeMail($ModulId, $Object, $mail = null)
             // Trusted Shops
             if ($Einstellungen['trustedshops']['trustedshops_kundenbewertung_anzeigen'] === 'Y') {
                 require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.TrustedShops.php';
-                $oTrustedShops                = new TrustedShops(-1, StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
+                $oTrustedShops                = new TrustedShops(
+                    -1,
+                    StringHandler::convertISO2ISO639($_SESSION['cISOSprache'])
+                );
                 $oTrustedShopsKundenbewertung = $oTrustedShops->holeKundenbewertungsstatus(StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
                 if (strlen($oTrustedShopsKundenbewertung->cTSID) > 0 && $oTrustedShopsKundenbewertung->nStatus == 1) {
-                    $mailSmarty->assign('oTrustedShopsBewertenButton', gibTrustedShopsBewertenButton($Object->tbestellung->oRechnungsadresse->cMail, $Object->tbestellung->cBestellNr));
+                    $mailSmarty->assign('oTrustedShopsBewertenButton',
+                        gibTrustedShopsBewertenButton(
+                            $Object->tbestellung->oRechnungsadresse->cMail,
+                            $Object->tbestellung->cBestellNr
+                        )
+                    );
                 }
             }
 
@@ -343,10 +397,18 @@ function sendeMail($ModulId, $Object, $mail = null)
             // Trusted Shops
             if ($Einstellungen['trustedshops']['trustedshops_kundenbewertung_anzeigen'] === 'Y') {
                 require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.TrustedShops.php';
-                $oTrustedShops                = new TrustedShops(-1, StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
+                $oTrustedShops                = new TrustedShops(
+                    -1,
+                    StringHandler::convertISO2ISO639($_SESSION['cISOSprache'])
+                );
                 $oTrustedShopsKundenbewertung = $oTrustedShops->holeKundenbewertungsstatus(StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
                 if (strlen($oTrustedShopsKundenbewertung->cTSID) > 0 && $oTrustedShopsKundenbewertung->nStatus == 1) {
-                    $mailSmarty->assign('oTrustedShopsBewertenButton', gibTrustedShopsBewertenButton($Object->tbestellung->oRechnungsadresse->cMail, $Object->tbestellung->cBestellNr));
+                    $mailSmarty->assign('oTrustedShopsBewertenButton',
+                        gibTrustedShopsBewertenButton(
+                            $Object->tbestellung->oRechnungsadresse->cMail,
+                            $Object->tbestellung->cBestellNr
+                        )
+                    );
                 }
             }
             break;
@@ -388,7 +450,11 @@ function sendeMail($ModulId, $Object, $mail = null)
             break;
         case MAILTEMPLATE_BEWERTUNG_GUTHABEN:
             $waehrung                                                 = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
-            $Object->oBewertungGuthabenBonus->fGuthabenBonusLocalized = gibPreisStringLocalized($Object->oBewertungGuthabenBonus->fGuthabenBonus, $waehrung, 0);
+            $Object->oBewertungGuthabenBonus->fGuthabenBonusLocalized = gibPreisStringLocalized(
+                $Object->oBewertungGuthabenBonus->fGuthabenBonus,
+                $waehrung,
+                0
+            );
             $mailSmarty->assign('oKunde', $Object->tkunde)
                        ->assign('oBewertungGuthabenBonus', $Object->oBewertungGuthabenBonus);
             break;
@@ -603,7 +669,15 @@ function verschickeMail($mail)
 
     $bSent = false;
     if (!$mail->methode) {
-        SendNiceMailReply($mail->fromName, $mail->fromEmail, $mail->fromEmail, $mail->toEmail, $mail->subject, $mail->bodyText, $mail->bodyHtml);
+        SendNiceMailReply(
+            $mail->fromName,
+            $mail->fromEmail,
+            $mail->fromEmail,
+            $mail->toEmail,
+            $mail->subject,
+            $mail->bodyText,
+            $mail->bodyHtml
+        );
     } else {
         //phpmailer
         $phpmailer = new PHPMailer();
@@ -652,11 +726,19 @@ function verschickeMail($mail)
             $phpmailer->isHTML(false);
             $phpmailer->Body = $mail->bodyText;
         }
-        if (isset($mail->cPDFS_arr) && count($mail->cPDFS_arr) > 0 && isset($mail->cDateiname_arr) && count($mail->cDateiname_arr) > 0) {
+        if (isset($mail->cPDFS_arr) &&
+            count($mail->cPDFS_arr) > 0 &&
+            isset($mail->cDateiname_arr) &&
+            count($mail->cDateiname_arr) > 0
+        ) {
             $cUploadVerzeichnis = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_EMAILPDFS;
 
             foreach ($mail->cPDFS_arr as $i => $cPDFS) {
-                $phpmailer->addAttachment($cUploadVerzeichnis . $cPDFS, $mail->cDateiname_arr[$i] . '.pdf', 'base64', 'application/pdf');
+                $phpmailer->addAttachment(
+                    $cUploadVerzeichnis . $cPDFS, $mail->cDateiname_arr[$i] . '.pdf',
+                    'base64',
+                    'application/pdf'
+                );
             }
         }
         if (isset($mail->oAttachment_arr) && count($mail->oAttachment_arr) > 0) {
@@ -667,7 +749,12 @@ function verschickeMail($mail)
                 if (empty($oAttachment->cType)) {
                     $oAttachment->cType = 'application/octet-stream';
                 }
-                $phpmailer->addAttachment($oAttachment->cFilePath, $oAttachment->cName, $oAttachment->cEncoding, $oAttachment->cType);
+                $phpmailer->addAttachment(
+                    $oAttachment->cFilePath,
+                    $oAttachment->cName,
+                    $oAttachment->cEncoding,
+                    $oAttachment->cType
+                );
             }
         }
 
@@ -686,7 +773,12 @@ function verschickeMail($mail)
                       ->setSent('now()')
                       ->save();
     } else {
-        Jtllog::writeLog('Email konnte nicht versendet werden! Fehler: ' . $mail->cFehler, JTLLOG_LEVEL_DEBUG, false, 'kEmailvorlage');
+        Jtllog::writeLog(
+            'Email konnte nicht versendet werden! Fehler: ' . $mail->cFehler,
+            JTLLOG_LEVEL_DEBUG,
+            false,
+            'kEmailvorlage'
+        );
     }
 
     executeHook(HOOK_MAILTOOLS_VERSCHICKEMAIL_GESENDET);
@@ -708,7 +800,10 @@ function injectSubject($Object, $Betreff)
                 $keys2 = array_keys(get_object_vars($Object->$obj));
                 if (is_array($keys2)) {
                     foreach ($keys2 as $member) {
-                        if ($member{0} != 'k' && !is_array($Object->$obj->$member) && !is_object($Object->$obj->$member)) {
+                        if ($member{0} !== 'k' &&
+                            !is_array($Object->$obj->$member) &&
+                            !is_object($Object->$obj->$member)
+                        ) {
                             $a[] = '#' . strtolower(substr($obj, 1)) . '.' . strtolower(substr($member, 1)) . '#';
                             $b[] = $Object->$obj->$member;
                         }
@@ -757,7 +852,17 @@ function lokalisiereKunde($sprache, $kunde)
         if (strtolower($sprache->cISO) !== 'ger') {
             $sel_var = 'cEnglisch';
         }
-        $land = Shop::DB()->select('tland', 'cISO', $kunde->cLand, null, null, null, null, false, $sel_var . ' AS cName, cISO');
+        $land = Shop::DB()->select(
+            'tland',
+            'cISO',
+            $kunde->cLand,
+            null,
+            null,
+            null,
+            null,
+            false,
+            $sel_var . ' AS cName, cISO'
+        );
         if (isset($land->cName)) {
             $kunde->cLand = $land->cName;
         }
@@ -777,7 +882,17 @@ function lokalisiereKunde($sprache, $kunde)
 function lokalisiereLieferadresse($oSprache, $oLieferadresse)
 {
     $langRow = (strtolower($oSprache->cISO) === 'ger') ? 'cDeutsch' : 'cEnglisch';
-    $land    = Shop::DB()->select('tland', 'cISO', $oLieferadresse->cLand, null, null, null, null, false, $langRow . ' AS cName, cISO');
+    $land    = Shop::DB()->select(
+        'tland',
+        'cISO',
+        $oLieferadresse->cLand,
+        null,
+        null,
+        null,
+        null,
+        false,
+        $langRow . ' AS cName, cISO'
+    );
     if (!empty($land->cName)) {
         $oLieferadresse->cLand = $land->cName;
     }

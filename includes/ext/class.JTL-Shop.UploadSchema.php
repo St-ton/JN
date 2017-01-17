@@ -61,8 +61,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
         private function loadFromDB($kUploadSchema)
         {
             $oUpload = Shop::DB()->query(
-                "SELECT tuploadschema.kUploadSchema, tuploadschema.kCustomID, tuploadschema.nTyp, tuploadschema.cDateiTyp,
-                    tuploadschema.nPflicht, tuploadschemasprache.cName, tuploadschemasprache.cBeschreibung
+                "SELECT tuploadschema.kUploadSchema, tuploadschema.kCustomID, tuploadschema.nTyp, 
+                    tuploadschema.cDateiTyp, tuploadschema.nPflicht, tuploadschemasprache.cName, 
+                    tuploadschemasprache.cBeschreibung
                     FROM tuploadschema
                     LEFT JOIN tuploadschemasprache
                         ON tuploadschemasprache.kArtikelUpload = tuploadschema.kUploadSchema
@@ -88,7 +89,12 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
          */
         public function update()
         {
-            return Shop::DB()->update('tuploadschema', 'kUploadSchema', (int)$this->kUploadSchema, self::copyMembers($this));
+            return Shop::DB()->update(
+                'tuploadschema',
+                'kUploadSchema',
+                (int)$this->kUploadSchema,
+                self::copyMembers($this)
+            );
         }
 
         /**
@@ -112,8 +118,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
             }
 
             return Shop::DB()->query(
-                "SELECT tuploadschema.kUploadSchema, tuploadschema.kCustomID, tuploadschema.nTyp, tuploadschema.cDateiTyp,
-                    tuploadschema.nPflicht, IFNULL(tuploadschemasprache.cName,tuploadschema.cName ) cName,
+                "SELECT tuploadschema.kUploadSchema, tuploadschema.kCustomID, tuploadschema.nTyp, 
+                    tuploadschema.cDateiTyp, tuploadschema.nPflicht, 
+                    IFNULL(tuploadschemasprache.cName,tuploadschema.cName ) cName,
                     IFNULL(tuploadschemasprache.cBeschreibung, tuploadschema.cBeschreibung) cBeschreibung
                     FROM tuploadschema
                     LEFT JOIN tuploadschemasprache
@@ -124,8 +131,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
         }
 
         /**
-         * @param object $objFrom
-         * @param null   $objTo
+         * @param object      $objFrom
+         * @param object|null $objTo
          * @return null|stdClass
          */
         private static function copyMembers($objFrom, &$objTo = null)

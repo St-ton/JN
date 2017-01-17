@@ -143,10 +143,10 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         public function jsonSerialize()
         {
-            $virtual = array(
+            $virtual = [
                 'bAktiv' => $this->{"bAktiv"}
-            );
-            $override = array(
+            ];
+            $override = [
                 'cName'             => $this->getName(),
                 'kArtikel'          => $this->getArtikelKey(),
                 'cBeschreibung'     => $this->getBeschreibung(),
@@ -156,15 +156,15 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 'fMin'              => (float) $this->getMin(),
                 'fMax'              => (float) $this->getMax(),
                 'cBildPfad'         => $this->getBildPfad(),
-                'fPreis'            => array(
+                'fPreis'            => [
                     (float) $this->getPreis(),
                     (float) $this->getPreis(true)
-                ),
-                'fPreisLocalized' => array(
+                ],
+                'fPreisLocalized' => [
                     gibPreisStringLocalized($this->getPreis()),
                     gibPreisStringLocalized($this->getPreis(true))
-                )
-            );
+                ]
+            ];
             $result = array_merge($override, $virtual);
 
             return utf8_convert_recursive($result);
@@ -189,7 +189,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 }
 
                 if (!$kSprache) {
-                    $kSprache = (isset($_SESSION['kSprache'])) ? $_SESSION['kSprache'] : getDefaultLanguageID();
+                    $kSprache = (isset($_SESSION['kSprache']))
+                        ? (int)$_SESSION['kSprache']
+                        : getDefaultLanguageID();
                 }
                 if (!$kKundengruppe) {
                     $kKundengruppe = $_SESSION['Kundengruppe']->kKundengruppe;

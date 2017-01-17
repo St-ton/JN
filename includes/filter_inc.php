@@ -1839,7 +1839,12 @@ function bearbeiteSuchCache($NaviFilter, $kSpracheExt = 0)
                                         LEFT JOIN tartikelsichtbarkeit ON tartikelsichtbarkeit.kArtikel = IF(tartikel.kVaterArtikel > 0, tartikel.kVaterArtikel, tartikel.kArtikel)
                                             AND tartikelsichtbarkeit.kKundengruppe = " . ((int)$_SESSION['Kundengruppe']->kKundengruppe);
                     }
-                    $cSQL .= " WHERE ";
+                    $cSQL .= " WHERE tartikelsichtbarkeit.kArtikel IS NULL " . gibLagerfilter() . " AND ";
+                    if (Shop::$kSprache > 0 && !standardspracheAktiv()) {
+                        $cSQL .= " tartikelsprache.kSprache = " . Shop::$kSprache . " AND (";
+                    } else {
+                        $cSQL .= "(";
+                    }
 
                     foreach ($cSuchspalten_arr as $i => $cSuchspalten) {
                         if ($i > 0) {
@@ -1854,6 +1859,8 @@ function bearbeiteSuchCache($NaviFilter, $kSpracheExt = 0)
                         }
                         $cSQL .= ")";
                     }
+
+                    $cSQL .= ")";
                 } else {
                     $nKlammern = 0;
                     $nPrio     = 1;
@@ -2135,7 +2142,10 @@ function bearbeiteSuchCache($NaviFilter, $kSpracheExt = 0)
                     $cSQL .= " WHERE tartikelsichtbarkeit.kArtikel IS NULL " . gibLagerfilter() . " AND ";
                     if (Shop::$kSprache > 0 && !standardspracheAktiv()) {
                         $cSQL .= " tartikelsprache.kSprache = " . Shop::$kSprache . " AND (";
+                    } else {
+                        $cSQL .= "(";
                     }
+
                     foreach ($cSuchspalten_arr as $i => $cSuchspalten) {
                         if ($i > 0) {
                             $cSQL .= " OR";
@@ -2150,6 +2160,7 @@ function bearbeiteSuchCache($NaviFilter, $kSpracheExt = 0)
                         }
                         $cSQL .= ")";
                     }
+
                     $cSQL .= ")";
                 }
                 Shop::DB()->query("INSERT INTO tsuchcachetreffer $cSQL GROUP BY kArtikelTMP LIMIT " . (int)$conf['artikeluebersicht']['suche_max_treffer'], 3);

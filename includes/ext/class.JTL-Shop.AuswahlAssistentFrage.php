@@ -151,7 +151,12 @@ if (class_exists('AuswahlAssistent')) {
                 $_upd->nSort                   = $this->nSort;
                 $_upd->nAktiv                  = $this->nAktiv;
 
-                Shop::DB()->update('tauswahlassistentfrage', 'kAuswahlAssistentFrage', (int)$this->kAuswahlAssistentFrage, $_upd);
+                Shop::DB()->update(
+                    'tauswahlassistentfrage',
+                    'kAuswahlAssistentFrage',
+                    (int)$this->kAuswahlAssistentFrage,
+                    $_upd
+                );
 
                 return true;
             }
@@ -222,7 +227,13 @@ if (class_exists('AuswahlAssistent')) {
         private function isMerkmalTaken($kMerkmal, $kAuswahlAssistentGruppe)
         {
             if ($kMerkmal > 0 && $kAuswahlAssistentGruppe > 0) {
-                $oFrage = Shop::DB()->select('tauswahlassistentfrage', 'kMerkmal', (int)$kMerkmal, 'kAuswahlAssistentGruppe', (int)$kAuswahlAssistentGruppe);
+                $oFrage = Shop::DB()->select(
+                    'tauswahlassistentfrage',
+                    'kMerkmal',
+                    (int)$kMerkmal,
+                    'kAuswahlAssistentGruppe',
+                    (int)$kAuswahlAssistentGruppe
+                );
                 if (isset($oFrage->kAuswahlAssistentFrage) && $oFrage->kAuswahlAssistentFrage > 0) {
                     return true;
                 }

@@ -99,7 +99,10 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
 
                             // Alle Kinder suchen
                             foreach ($oBasket->PositionenArr as $oChildPosition) {
-                                if ($oChildPosition->cUnique && $oChildPosition->cUnique == $oPosition->cUnique && $oChildPosition->kKonfigitem > 0) {
+                                if ($oChildPosition->cUnique &&
+                                    $oChildPosition->cUnique == $oPosition->cUnique &&
+                                    $oChildPosition->kKonfigitem > 0
+                                ) {
                                     $oKonfigitem_arr[] = new Konfigitem($oChildPosition->kKonfigitem);
                                 }
                             }
@@ -208,9 +211,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         private static function langComponent($bPlural = false, $bSpace = true)
         {
             $cComponent = $bSpace ? ' ' : '';
-            $cComponent .= ($bPlural) ?
-                Shop::Lang()->get('configComponents', 'productDetails') :
-                Shop::Lang()->get('configComponent', 'productDetails');
+            $cComponent .= ($bPlural)
+                ? Shop::Lang()->get('configComponents', 'productDetails')
+                : Shop::Lang()->get('configComponent', 'productDetails');
 
             return $cComponent;
         }

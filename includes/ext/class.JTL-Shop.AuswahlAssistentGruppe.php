@@ -133,7 +133,7 @@ if (class_exists('AuswahlAssistent')) {
          */
         public static function getGroups($kSprache, $bAktiv = true, $bAktivFrage = true, $bBackend = false)
         {
-            $oGruppe_arr = array();
+            $oGruppe_arr = [];
             $cAktivSQL   = '';
             if ($bAktiv) {
                 $cAktivSQL = " AND nAktiv = 1";
@@ -211,7 +211,7 @@ if (class_exists('AuswahlAssistent')) {
          */
         public function checkGroup($cParam_arr, $bUpdate = false)
         {
-            $cPlausi_arr = array();
+            $cPlausi_arr = [];
             // Name
             if (strlen($this->cName) === 0) {
                 $cPlausi_arr['cName'] = 1;

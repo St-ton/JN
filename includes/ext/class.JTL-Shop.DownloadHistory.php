@@ -51,7 +51,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
         private function loadFromDB($kDownloadHistory)
         {
             $oDownloadHistory = Shop::DB()->select('tdownloadhistory', 'kDownloadHistory', (int)$kDownloadHistory);
-            if (isset($oDownloadHistory->kDownloadHistory) && intval($oDownloadHistory->kDownloadHistory) > 0) {
+            if (isset($oDownloadHistory->kDownloadHistory) && (int)$oDownloadHistory->kDownloadHistory > 0) {
                 $cMember_arr = array_keys(get_object_vars($oDownloadHistory));
                 if (is_array($cMember_arr) && count($cMember_arr) > 0) {
                     foreach ($cMember_arr as $cMember) {
@@ -68,9 +68,15 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
         public static function getHistorys($kDownload)
         {
             $kDownload            = (int)$kDownload;
-            $oDownloadHistory_arr = array();
+            $oDownloadHistory_arr = [];
             if ($kDownload > 0) {
-                $oHistory_arr = Shop::DB()->selectAll('tdownloadhistory', 'kDownload', $kDownload, 'kDownloadHistory', 'dErstellt DESC');
+                $oHistory_arr = Shop::DB()->selectAll(
+                    'tdownloadhistory',
+                    'kDownload',
+                    $kDownload,
+                    'kDownloadHistory',
+                    'dErstellt DESC'
+                );
                 if (count($oHistory_arr) > 0) {
                     foreach ($oHistory_arr as $oHistory) {
                         $oDownloadHistory_arr[] = new self($oHistory->kDownloadHistory);
@@ -105,7 +111,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
                 );
                 if (is_array($oHistoryTMP_arr) && count($oHistoryTMP_arr) > 0) {
                     foreach ($oHistoryTMP_arr as $oHistoryTMP) {
-                        if (!isset($oHistory_arr[$oHistoryTMP->kDownload]) || !is_array($oHistory_arr[$oHistoryTMP->kDownload])) {
+                        if (!isset($oHistory_arr[$oHistoryTMP->kDownload]) ||
+                            !is_array($oHistory_arr[$oHistoryTMP->kDownload])
+                        ) {
                             $oHistory_arr[$oHistoryTMP->kDownload] = [];
                         }
                         $oHistory_arr[$oHistoryTMP->kDownload][] = new self($oHistoryTMP->kDownloadHistory);

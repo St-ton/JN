@@ -16,7 +16,7 @@ function gibBackendStatistik($nTyp, $nDateStampVon, $nDateStampBis, &$nAnzeigeIn
     if ($nTyp > 0 && $nDateStampVon > 0 && $nDateStampBis > 0) {
         $oStatistik        = new Statistik($nDateStampVon, $nDateStampBis);
         $nAnzeigeIntervall = $oStatistik->getAnzeigeIntervall();
-        $oStat_arr         = array();
+        $oStat_arr         = [];
 
         switch ($nTyp) {
             // Besucher Stats
@@ -48,7 +48,7 @@ function gibBackendStatistik($nTyp, $nDateStampVon, $nDateStampBis, &$nAnzeigeIn
         return $oStat_arr;
     }
 
-    return array();
+    return [];
 }
 
 /**
@@ -207,7 +207,7 @@ function getJSON($oStat_arr, $nAnzeigeIntervall, $nTyp)
         case STATS_ADMIN_TYPE_BESUCHER:
             $cSpalteX = 'dZeit';
             // x achse daten
-            $x_labels_arr = array();
+            $x_labels_arr = [];
             foreach ($oStat_arr as $oStat) {
                 $x_labels_arr[] = (string) $oStat->$cSpalteX;
             }
@@ -219,7 +219,7 @@ function getJSON($oStat_arr, $nAnzeigeIntervall, $nTyp)
         case STATS_ADMIN_TYPE_KUNDENHERKUNFT:
             $cSpalteX = 'cReferer';
             // x achse daten
-            $x_labels_arr = array();
+            $x_labels_arr = [];
             foreach ($oStat_arr as $oStat) {
                 $x_labels_arr[] = (string) $oStat->$cSpalteX;
             }
@@ -231,7 +231,7 @@ function getJSON($oStat_arr, $nAnzeigeIntervall, $nTyp)
         case STATS_ADMIN_TYPE_SUCHMASCHINE:
             $cSpalteX = 'cUserAgent';
             // x achse daten
-            $x_labels_arr = array();
+            $x_labels_arr = [];
             foreach ($oStat_arr as $oStat) {
                 if (strlen($oStat->$cSpalteX) > 0) {
                     $x_labels_arr[] = (string) $oStat->$cSpalteX;
@@ -248,7 +248,7 @@ function getJSON($oStat_arr, $nAnzeigeIntervall, $nTyp)
         case STATS_ADMIN_TYPE_UMSATZ:
             $cSpalteX = 'dZeit';
             // x achse daten
-            $x_labels_arr = array();
+            $x_labels_arr = [];
             foreach ($oStat_arr as $oStat) {
                 $x_labels_arr[] = (string) $oStat->$cSpalteX;
             }
@@ -266,7 +266,7 @@ function getJSON($oStat_arr, $nAnzeigeIntervall, $nTyp)
         case STATS_ADMIN_TYPE_EINSTIEGSSEITEN:
             $cSpalteX = 'cEinstiegsseite';
             // x achse daten
-            $x_labels_arr = array();
+            $x_labels_arr = [];
             foreach ($oStat_arr as $oStat) {
                 $x_labels_arr[] = (string) $oStat->$cSpalteX;
             }
@@ -338,7 +338,7 @@ function setDot($data, $x_labels_arr, $y_labels_arr, $fMin, $fMax, $fStep, $cToo
  */
 function setPie($data_arr, $x_labels_arr)
 {
-    $merge_arr = array();
+    $merge_arr = [];
     // Nur max. 10 Werte anzeigen, danach als Sonstiges
     foreach ($data_arr as $i => $data) {
         if ($i > 5) {
@@ -406,15 +406,33 @@ function cmpStat($a, $b)
 function gibMappingDaten($nTyp)
 {
     if (!$nTyp) {
-        return array();
+        return [];
     }
 
-    $cMapping_arr                                   = array();
-    $cMapping_arr[STATS_ADMIN_TYPE_BESUCHER]        = array('nCount' => 'Anzahl', 'dZeit' => 'Datum');
-    $cMapping_arr[STATS_ADMIN_TYPE_KUNDENHERKUNFT]  = array('nCount' => 'Anzahl', 'dZeit' => 'Datum', 'cReferer' => 'Herkunft');
-    $cMapping_arr[STATS_ADMIN_TYPE_SUCHMASCHINE]    = array('nCount' => 'Anzahl', 'dZeit' => 'Datum', 'cUserAgent' => 'UserAgent');
-    $cMapping_arr[STATS_ADMIN_TYPE_UMSATZ]          = array('nCount' => 'Betrag', 'dZeit' => 'Datum');
-    $cMapping_arr[STATS_ADMIN_TYPE_EINSTIEGSSEITEN] = array('nCount' => 'Anzahl', 'dZeit' => 'Datum', 'cEinstiegsseite' => 'Einstiegsseite');
+    $cMapping_arr                                   = [];
+    $cMapping_arr[STATS_ADMIN_TYPE_BESUCHER]        = [
+        'nCount' => 'Anzahl',
+        'dZeit'  => 'Datum'
+    ];
+    $cMapping_arr[STATS_ADMIN_TYPE_KUNDENHERKUNFT]  = [
+        'nCount'   => 'Anzahl',
+        'dZeit'    => 'Datum',
+        'cReferer' => 'Herkunft'
+    ];
+    $cMapping_arr[STATS_ADMIN_TYPE_SUCHMASCHINE]    = [
+        'nCount'     => 'Anzahl',
+        'dZeit'      => 'Datum',
+        'cUserAgent' => 'UserAgent'
+    ];
+    $cMapping_arr[STATS_ADMIN_TYPE_UMSATZ]          = [
+        'nCount' => 'Betrag',
+        'dZeit'  => 'Datum'
+    ];
+    $cMapping_arr[STATS_ADMIN_TYPE_EINSTIEGSSEITEN] = [
+        'nCount'          => 'Anzahl',
+        'dZeit'           => 'Datum',
+        'cEinstiegsseite' => 'Einstiegsseite'
+    ];
 
     return $cMapping_arr[$nTyp];
 }
@@ -479,7 +497,7 @@ function mappeDatenMember($cMemberRow_arr, $cMapping_arr)
     if (is_array($cMemberRow_arr) && count($cMemberRow_arr) > 0) {
         foreach ($cMemberRow_arr as $i => $cMember_arr) {
             foreach ($cMember_arr as $j => $cMember) {
-                $cMemberRow_arr[$i][$j]    = array();
+                $cMemberRow_arr[$i][$j]    = [];
                 $cMemberRow_arr[$i][$j][0] = $cMember;
                 $cMemberRow_arr[$i][$j][1] = $cMapping_arr[$cMember];
             }
@@ -504,7 +522,7 @@ function prepareLineChartStats($stats, $name = 'Serie', $axis, $mod = 1)
 
     if (is_array($stats) && count($stats) > 0) {
         $chart->setActive(true);
-        $data = array();
+        $data = [];
         $y    = $axis->y;
         $x    = $axis->x;
         foreach ($stats as $j => $stat) {
@@ -542,14 +560,14 @@ function preparePieChartStats($stats, $name = 'Serie', $axis, $maxEntries = 6)
 
     if (is_array($stats) && count($stats) > 0) {
         $chart->setActive(true);
-        $data = array();
+        $data = [];
 
         $y = $axis->y;
         $x = $axis->x;
 
         // Zeige nur $maxEntries Main Member + 1 Sonstige an, sonst wird es zu unuebersichtlich
         if (count($stats) > $maxEntries) {
-            $statstmp  = array();
+            $statstmp  = [];
             $other     = new stdClass();
             $other->$y = 0;
             $other->$x = 'Sonstige';
@@ -593,7 +611,7 @@ function prepareLineChartStatsMulti($Series, $axis, $mod = 1)
         foreach ($Series as $Name => $Serie) {
             if (is_array($Serie) && count($Serie) > 0) {
                 $chart->setActive(true);
-                $data = array();
+                $data = [];
                 $y    = $axis->y;
                 $x    = $axis->x;
                 foreach ($Serie as $j => $stat) {

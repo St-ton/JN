@@ -176,14 +176,16 @@ function mappeFehlerCode($nFehlerCode)
     if (intval($nFehlerCode) > 0) {
         switch (intval($nFehlerCode)) {
             case 1:
-                return 'Fehler: Ein SQL Befehl im Update konnte nicht ausgef&uuml;hrt werden. Bitte versuchen Sie es erneut.';
+                return 'Fehler: Ein SQL-Befehl im Update konnte nicht ausgef&uuml;hrt werden. ' .
+                    'Bitte versuchen Sie es erneut.';
                 break;
             case 100:
-                return 'Ihr Update wurde erfolgreich abgeschlossen.<br>';
+                return 'Das Update wurde erfolgreich abgeschlossen.<br>';
                 break;
             case 999:
-                return 'Fehler: Ein SQL-Befehl im Update hat 3 mal nicht funktioniert. Das Update wurde abgebrochen. Bitte kontaktieren Sie den Support!<br /><br />
-                    <a href="mailto:' . JTLSUPPORT_EMAIL . '?subject=Shop-Update Fehler">Support kontaktieren</a>';
+                return 'Fehler: Ein SQL-Befehl im Update hat 3 mal nicht funktioniert. ' .
+                    'Das Update wurde abgebrochen. Bitte kontaktieren Sie den Support!<br /><br />' .
+                    '<a href="mailto:' . JTLSUPPORT_EMAIL . '?subject=Shop-Update Fehler">Support kontaktieren</a>';
                 break;
             default:
                 return 'Unbekannter Fehler';

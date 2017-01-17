@@ -8,7 +8,7 @@
  */
 function build_navigation_subs_admin($oLink_arr, $kVaterLink = 0, $nLevel = 0)
 {
-    $oNew_arr = array();
+    $oNew_arr = [];
     foreach ($oLink_arr as &$oLink) {
         if ($oLink->kVaterLink == $kVaterLink) {
             $oLink->nLevel   = $nLevel;
@@ -27,7 +27,7 @@ function build_navigation_subs_admin($oLink_arr, $kVaterLink = 0, $nLevel = 0)
 function gibLetzteBildNummer($kLink)
 {
     $cUploadVerzeichnis = PFAD_ROOT . PFAD_BILDER . PFAD_LINKBILDER;
-    $cBild_arr          = array();
+    $cBild_arr          = [];
     if (is_dir($cUploadVerzeichnis . $kLink)) {
         $DirHandle = opendir($cUploadVerzeichnis . $kLink);
         while (false !== ($Datei = readdir($DirHandle))) {
@@ -58,13 +58,17 @@ function gibLetzteBildNummer($kLink)
 function parseText($cText, $kLink)
 {
     $cUploadVerzeichnis = PFAD_ROOT . PFAD_BILDER . PFAD_LINKBILDER;
-    $cBild_arr          = array();
-    $nSort_arr          = array();
+    $cBild_arr          = [];
+    $nSort_arr          = [];
     if (is_dir($cUploadVerzeichnis . $kLink)) {
         $DirHandle = opendir($cUploadVerzeichnis . $kLink);
         while (false !== ($Datei = readdir($DirHandle))) {
             if ($Datei !== '.' && $Datei !== '..') {
-                $nBild             = intval(substr(str_replace('Bild', '', $Datei), 0, strpos(str_replace('Bild', '', $Datei), '.')));
+                $nBild             = intval(substr(
+                    str_replace('Bild', '', $Datei),
+                    0,
+                    strpos(str_replace('Bild', '', $Datei), '.'))
+                );
                 $cBild_arr[$nBild] = $Datei;
                 $nSort_arr[]       = $nBild;
             }
@@ -73,7 +77,9 @@ function parseText($cText, $kLink)
     usort($nSort_arr, 'cmp');
 
     foreach ($nSort_arr as $nSort) {
-        $cText = str_replace('$#Bild' . $nSort . '#$', '<img src="' . Shop::getURL() . '/' . PFAD_BILDER . PFAD_LINKBILDER . $kLink . '/' . $cBild_arr[$nSort] . '" />', $cText);
+        $cText = str_replace('$#Bild' . $nSort . '#$', '<img src="' .
+            Shop::getURL() . '/' . PFAD_BILDER . PFAD_LINKBILDER . $kLink . '/' . $cBild_arr[$nSort] .
+            '" />', $cText);
     }
 
     return $cText;
@@ -118,9 +124,8 @@ function cmp_obj($a, $b)
 function calcRatio($cDatei, $nMaxBreite, $nMaxHoehe)
 {
     list($ImageBreite, $ImageHoehe) = getimagesize($cDatei);
-    //$f = min($nMaxBreite / $ImageBreite, $nMaxHoehe / $ImageHoehe, 1);
-    //return array(round($f * $nMaxBreite), round($f * $nMaxHoehe));
-    return array($ImageBreite, $ImageHoehe);
+
+    return [$ImageBreite, $ImageHoehe];
 }
 
 /**
@@ -152,7 +157,7 @@ function removeLink($kLink, $kLinkgruppe)
  */
 function getLinkVar($kLink, $var)
 {
-    $namen = array();
+    $namen = [];
 
     if (!$kLink) {
         return $namen;
@@ -163,8 +168,10 @@ function getLinkVar($kLink, $var)
         $linknamen = Shop::DB()->query(
             "SELECT tlinksprache.cISOSprache, tseo.cSeo
                 FROM tlinksprache
-                JOIN tsprache ON tsprache.cISO = tlinksprache.cISOSprache
-                LEFT JOIN tseo ON tseo.cKey = 'kLink'
+                JOIN tsprache 
+                    ON tsprache.cISO = tlinksprache.cISOSprache
+                LEFT JOIN tseo 
+                    ON tseo.cKey = 'kLink'
                     AND tseo.kKey = tlinksprache.kLink
                     AND tseo.kSprache = tsprache.kSprache
                 WHERE tlinksprache.kLink = " . $kLink, 2
@@ -186,7 +193,7 @@ function getLinkVar($kLink, $var)
  */
 function getGesetzteKundengruppen($link)
 {
-    $ret = array();
+    $ret = [];
     if (!isset($link->cKundengruppen) || !$link->cKundengruppen || $link->cKundengruppen == 'NULL') {
         $ret[0] = true;
 
@@ -208,7 +215,7 @@ function getGesetzteKundengruppen($link)
  */
 function getLinkgruppeNames($kLinkgruppe)
 {
-    $namen = array();
+    $namen = [];
     if (!$kLinkgruppe) {
         return $namen;
     }

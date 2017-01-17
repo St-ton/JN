@@ -233,7 +233,10 @@ function bearbeiteNachricht()
         if ($conf['kontakt']['kontakt_kopiekunde'] === 'Y') {
             $mail->toEmail = $Objekt->tnachricht->cMail;
             $mail->toName  = $mail->toEmail;
-            if (isset($Objekt->tnachricht->cVorname) || isset($Objekt->tnachricht->cNachname) || isset($Objekt->tnachricht->cFirma)) {
+            if (isset($Objekt->tnachricht->cVorname) ||
+                isset($Objekt->tnachricht->cNachname) ||
+                isset($Objekt->tnachricht->cFirma)
+            ) {
                 $mail->toName = '';
                 if (isset($Objekt->tnachricht->cVorname)) {
                     $mail->toName .= $Objekt->tnachricht->cVorname . ' ';

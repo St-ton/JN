@@ -623,8 +623,9 @@ function gibSitemapNews()
         if (is_array($oNewsMonatsUebersicht_arr) && count($oNewsMonatsUebersicht_arr) > 0) {
             foreach ($oNewsMonatsUebersicht_arr as $i => $oNewsMonatsUebersicht) {
                 $oNews_arr = Shop::DB()->query(
-                    "SELECT tnews.kNews, tnews.kSprache, tnews.cKundengruppe, tnews.cBetreff, tnews.cText, tnews.cVorschauText, 
-                        tnews.cMetaTitle, tnews.cMetaDescription, tnews.cMetaKeywords, tnews.nAktiv, tnews.dErstellt, tseo.cSeo,
+                    "SELECT tnews.kNews, tnews.kSprache, tnews.cKundengruppe, tnews.cBetreff, tnews.cText, 
+                        tnews.cVorschauText, tnews.cMetaTitle, tnews.cMetaDescription, tnews.cMetaKeywords,
+                        tnews.nAktiv, tnews.dErstellt, tseo.cSeo,
                         count(tnewskommentar.kNewsKommentar) AS nNewsKommentarAnzahl, 
                         DATE_FORMAT(tnews.dGueltigVon, '%d.%m.%Y  %H:%i') AS dGueltigVon_de
                         FROM tnews
@@ -637,11 +638,13 @@ function gibSitemapNews()
                         WHERE tnews.kSprache = " . (int)$_SESSION['kSprache'] . "
                             AND tnews.nAktiv = 1
                             AND (
-                                    tnews.cKundengruppe LIKE '%;-1;%' 
-                                    OR tnews.cKundengruppe LIKE '%;" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";%'
+                                tnews.cKundengruppe LIKE '%;-1;%' 
+                                OR tnews.cKundengruppe LIKE '%;" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";%'
                                 )
-                            AND (MONTH(tnews.dGueltigVon) = '" . $oNewsMonatsUebersicht->nMonat . "') && (tnews.dGueltigVon <= now())
-                            AND (YEAR(tnews.dGueltigVon) = '" . $oNewsMonatsUebersicht->nJahr . "') && (tnews.dGueltigVon <= now())
+                            AND (MONTH(tnews.dGueltigVon) = '" . $oNewsMonatsUebersicht->nMonat . "') 
+                            && (tnews.dGueltigVon <= now())
+                            AND (YEAR(tnews.dGueltigVon) = '" . $oNewsMonatsUebersicht->nJahr . "') 
+                            && (tnews.dGueltigVon <= now())
                         GROUP BY tnews.kNews
                         ORDER BY dGueltigVon DESC", 2
                 );

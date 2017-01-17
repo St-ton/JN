@@ -220,18 +220,15 @@ function sendeMail($ModulId, $Object, $mail = null)
             break;
 
         case MAILTEMPLATE_BESTELLBESTAETIGUNG:
-            // Lieferadresse lokalisieren - nach jtl-shop/issues#270 entfernt
-            /*if (isset($Object->tbestellung->Lieferadresse->kLieferadresse) &&
-                $Object->tbestellung->Lieferadresse->kLieferadresse > 0) {
-                $Object->tbestellung->Lieferadresse = lokalisiereLieferadresse($Sprache, $Object->tbestellung->Lieferadresse);
-            }*/
             $mailSmarty->assign('Bestellung', $Object->tbestellung)
                        ->assign('Verfuegbarkeit_arr', (isset($Object->cVerfuegbarkeit_arr))
                            ? $Object->cVerfuegbarkeit_arr
                            : null)
                        ->assign('oTrustedShopsBewertenButton', null);
             // Zahlungsart Einstellungen
-            if (isset($Object->tbestellung->Zahlungsart->cModulId) && strlen($Object->tbestellung->Zahlungsart->cModulId) > 0) {
+            if (isset($Object->tbestellung->Zahlungsart->cModulId) &&
+                strlen($Object->tbestellung->Zahlungsart->cModulId) > 0
+            ) {
                 $cModulId         = $Object->tbestellung->Zahlungsart->cModulId;
                 $oZahlungsartConf = Shop::DB()->query(
                     "SELECT tzahlungsartsprache.*
@@ -247,10 +244,14 @@ function sendeMail($ModulId, $Object, $mail = null)
             }
             // Trusted Shops
             if ($Einstellungen['trustedshops']['trustedshops_kundenbewertung_anzeigen'] === 'Y') {
-                $langID = (isset($_SESSION['cISOSprache'])) ? $_SESSION['cISOSprache'] : 'ger'; //workaround for testmails from backend
+                $langID = (isset($_SESSION['cISOSprache']))
+                    ? $_SESSION['cISOSprache']
+                    : 'ger'; //workaround for testmails from backend
                 require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.TrustedShops.php';
                 $oTrustedShops                = new TrustedShops(-1, StringHandler::convertISO2ISO639($langID));
-                $oTrustedShopsKundenbewertung = $oTrustedShops->holeKundenbewertungsstatus(StringHandler::convertISO2ISO639($langID));
+                $oTrustedShopsKundenbewertung = $oTrustedShops->holeKundenbewertungsstatus(
+                    StringHandler::convertISO2ISO639($langID)
+                );
                 if (strlen($oTrustedShopsKundenbewertung->cTSID) > 0 && $oTrustedShopsKundenbewertung->nStatus == 1) {
                     $mailSmarty->assign('oTrustedShopsBewertenButton',
                         gibTrustedShopsBewertenButton(
@@ -266,7 +267,9 @@ function sendeMail($ModulId, $Object, $mail = null)
         case MAILTEMPLATE_BESTELLUNG_AKTUALISIERT:
             $mailSmarty->assign('Bestellung', $Object->tbestellung);
             // Zahlungsart Einstellungen
-            if (isset($Object->tbestellung->Zahlungsart->cModulId) && strlen($Object->tbestellung->Zahlungsart->cModulId) > 0) {
+            if (isset($Object->tbestellung->Zahlungsart->cModulId) &&
+                strlen($Object->tbestellung->Zahlungsart->cModulId) > 0
+            ) {
                 $cModulId         = $Object->tbestellung->Zahlungsart->cModulId;
                 $oZahlungsartConf = Shop::DB()->query(
                     "SELECT tzahlungsartsprache.*
@@ -288,7 +291,9 @@ function sendeMail($ModulId, $Object, $mail = null)
                     -1,
                     StringHandler::convertISO2ISO639($_SESSION['cISOSprache'])
                 );
-                $oTrustedShopsKundenbewertung = $oTrustedShops->holeKundenbewertungsstatus(StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
+                $oTrustedShopsKundenbewertung = $oTrustedShops->holeKundenbewertungsstatus(
+                    StringHandler::convertISO2ISO639($_SESSION['cISOSprache'])
+                );
                 if (strlen($oTrustedShopsKundenbewertung->cTSID) > 0 && $oTrustedShopsKundenbewertung->nStatus == 1) {
                     $mailSmarty->assign('oTrustedShopsBewertenButton',
                         gibTrustedShopsBewertenButton(
@@ -332,7 +337,9 @@ function sendeMail($ModulId, $Object, $mail = null)
                     -1,
                     StringHandler::convertISO2ISO639($_SESSION['cISOSprache'])
                 );
-                $oTrustedShopsKundenbewertung = $oTrustedShops->holeKundenbewertungsstatus(StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
+                $oTrustedShopsKundenbewertung = $oTrustedShops->holeKundenbewertungsstatus(
+                    StringHandler::convertISO2ISO639($_SESSION['cISOSprache'])
+                );
                 if (strlen($oTrustedShopsKundenbewertung->cTSID) > 0 && $oTrustedShopsKundenbewertung->nStatus == 1) {
                     $mailSmarty->assign('oTrustedShopsBewertenButton',
                         gibTrustedShopsBewertenButton(
@@ -401,7 +408,9 @@ function sendeMail($ModulId, $Object, $mail = null)
                     -1,
                     StringHandler::convertISO2ISO639($_SESSION['cISOSprache'])
                 );
-                $oTrustedShopsKundenbewertung = $oTrustedShops->holeKundenbewertungsstatus(StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
+                $oTrustedShopsKundenbewertung = $oTrustedShops->holeKundenbewertungsstatus(
+                    StringHandler::convertISO2ISO639($_SESSION['cISOSprache'])
+                );
                 if (strlen($oTrustedShopsKundenbewertung->cTSID) > 0 && $oTrustedShopsKundenbewertung->nStatus == 1) {
                     $mailSmarty->assign('oTrustedShopsBewertenButton',
                         gibTrustedShopsBewertenButton(

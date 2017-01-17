@@ -322,7 +322,7 @@ function bestellungInDB($nBezahlt = 0, $cBestellNr = '')
     $_SESSION['BestellNr']   = $Bestellung->cBestellNr;
     $_SESSION['kBestellung'] = $Bestellung->kBestellung;
     //evtl. Kupon  Verwendungen hochzählen
-    KuponVerwendungen();
+    KuponVerwendungen($Bestellung);
     // Kampagne
     if (isset($_SESSION['Kampagnenbesucher'])) {
         setzeKampagnenVorgang(KAMPAGNE_DEF_VERKAUF, $Bestellung->kBestellung, 1.0); // Verkauf
@@ -762,19 +762,34 @@ function AktualisiereLagerStuecklisten($oArtikel, $nAnzahl = null, $bStueckliste
 }
 
 /**
- *
+ * @param $oBestellung
  */
-function KuponVerwendungen()
+function KuponVerwendungen($oBestellung)
 {
-    $kKupon = 0;
+    $kKupon           = 0;
+    $cKuponTyp        = '';
+    $fKuponwertBrutto = 0;
     if (isset($_SESSION['VersandKupon']->kKupon) && $_SESSION['VersandKupon']->kKupon > 0) {
-        $kKupon = $_SESSION['VersandKupon']->kKupon;
+        $kKupon           = $_SESSION['VersandKupon']->kKupon;
+        $cKuponTyp        = 'versand';
+        $fKuponwertBrutto = $_SESSION['Versandart']->fPreis;
     }
     if (isset($_SESSION['NeukundenKupon']->kKupon) && $_SESSION['NeukundenKupon']->kKupon > 0) {
-        $kKupon = $_SESSION['NeukundenKupon']->kKupon;
+        $kKupon    = $_SESSION['NeukundenKupon']->kKupon;
+        $cKuponTyp = 'neukunden';
     }
     if (isset($_SESSION['Kupon']->kKupon) && $_SESSION['Kupon']->kKupon > 0) {
         $kKupon = $_SESSION['Kupon']->kKupon;
+        if (isset($_SESSION['Kupon']->cWertTyp) && ($_SESSION['Kupon']->cWertTyp === 'prozent' || $_SESSION['Kupon']->cWertTyp === 'festpreis')) {
+            $cKuponTyp = $_SESSION['Kupon']->cWertTyp;
+        }
+    }
+    if (is_array($_SESSION['Warenkorb']->PositionenArr) && count($_SESSION['Warenkorb']->PositionenArr) > 0) {
+        foreach ($_SESSION['Warenkorb']->PositionenArr as $i => $Position) {
+            if (!isset($_SESSION['VersandKupon']) && ($Position->nPosTyp == 3 || $Position->nPosTyp == 7)) {
+                $fKuponwertBrutto = berechneBrutto($Position->fPreisEinzelNetto, gibUst($Position->kSteuerklasse))*(-1);
+            }
+        }
     }
     $kKupon = (int)$kKupon;
     if ($kKupon > 0) {
@@ -796,17 +811,16 @@ function KuponVerwendungen()
             Shop::DB()->delete('tkuponneukunde',['kKupon', 'cEmail'], [$kKupon, $_SESSION['Kunde']->cMail]);
         }
 
-        if (isset($_SESSION['kBestellung']) && $_SESSION['kBestellung'] > 0) {
-            $kBestellung = (int)$_SESSION['kBestellung'];
-        } elseif (isset($_SESSION['oBesucher']->kBestellung) && $_SESSION['oBesucher']->kBestellung > 0) {
-            $kBestellung = (int)$_SESSION['oBesucher']->kBestellung;
-        } else {
-            $kBestellung = -1;
-        }
-        $KuponBestellung              = new stdClass();
-        $KuponBestellung->kKupon      = $kKupon;
-        $KuponBestellung->kBestellung = $kBestellung;
-        Shop::DB()->insert('tkuponbestellung', $KuponBestellung);
+        $oKuponBestellung                     = new KuponBestellung();
+        $oKuponBestellung->kKupon             = $kKupon;
+        $oKuponBestellung->kBestellung        = $oBestellung->kBestellung;
+        $oKuponBestellung->kKunde             = $_SESSION['Warenkorb']->kKunde;
+        $oKuponBestellung->cBestellNr         = $oBestellung->cBestellNr;
+        $oKuponBestellung->fGesamtsummeBrutto = $oBestellung->fGesamtsumme;
+        $oKuponBestellung->fKuponwertBrutto   = $fKuponwertBrutto;
+        $oKuponBestellung->cKuponTyp          = $cKuponTyp;
+        $oKuponBestellung->dErstellt          = 'now()';
+        $oKuponBestellung->save();
     }
 }
 

@@ -1831,7 +1831,7 @@ function bearbeiteSuchCache($NaviFilter, $kSpracheExt = 0)
                     $cSQL .= " 1 ";
                     if (Shop::$kSprache > 0 && !standardspracheAktiv()) {
                         $cSQL .= "  FROM tartikelsprache
-                                        LEFT JOIN tartikel ON tartikelsprache.kArtikel = tartikel.kArtikel
+                                        INNER JOIN tartikel ON tartikelsprache.kArtikel = tartikel.kArtikel
                                         LEFT JOIN tartikelsichtbarkeit ON tartikelsichtbarkeit.kArtikel = IF(tartikel.kVaterArtikel > 0, tartikel.kVaterArtikel, tartikelsprache.kArtikel)
                                             AND tartikelsichtbarkeit.kKundengruppe = " . ((int)$_SESSION['Kundengruppe']->kKundengruppe);
                     } else {
@@ -2130,7 +2130,7 @@ function bearbeiteSuchCache($NaviFilter, $kSpracheExt = 0)
 
                     if (Shop::$kSprache > 0 && !standardspracheAktiv()) {
                         $cSQL .= " FROM tartikelsprache
-                                        LEFT JOIN tartikel ON tartikelsprache.kArtikel = tartikel.kArtikel
+                                        INNER JOIN tartikel ON tartikelsprache.kArtikel = tartikel.kArtikel
                                         LEFT JOIN tartikelsichtbarkeit ON tartikelsichtbarkeit.kArtikel = IF(tartikel.kVaterArtikel > 0, tartikel.kVaterArtikel, tartikelsprache.kArtikel)
                                             AND tartikelsichtbarkeit.kKundengruppe = " . ((int)$_SESSION['Kundengruppe']->kKundengruppe);
                     } else {

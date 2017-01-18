@@ -1,8 +1,8 @@
 <p>Hallo,</p>
 
 <p>
-	fÃ¼r Ihren Account wurde ein neues Passwort angefordert.
-	Ã–ffnen Sie zum BestÃ¤tigen bitte den folgenden Link:
+	für Ihren Account wurde ein neues Passwort angefordert.
+	öffnen Sie zum Bestätigen bitte den folgenden Link:
 </p>
 
 <p><a href="{$passwordResetLink}" target="_blank">{$passwordResetLink}</a></p>

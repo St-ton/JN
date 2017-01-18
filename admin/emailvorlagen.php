@@ -19,6 +19,7 @@ $nFehler               = 0;
 $continue              = true;
 $oEmailvorlage         = null;
 $Emailvorlagesprache   = [];
+$cFehlerAnhang_arr     = [];
 $step                  = 'uebersicht';
 $Einstellungen         = Shop::getSettings([CONF_EMAILS]);
 $oSmartyError          = new stdClass();
@@ -35,7 +36,6 @@ if (verifyGPCDataInteger('kPlugin') > 0) {
     $cTableSetting         = 'tpluginemailvorlageeinstellungen';
 }
 // Errorhandler
-
 if (isset($_GET['err'])) {
     setzeFehler($_GET['kEmailvorlage'], true);
     $cFehler = '<b>Die Emailvorlage ist fehlerhaft.</b>';
@@ -543,7 +543,6 @@ if (isset($_POST['preview']) && intval($_POST['preview']) > 0) {
 }
 if (isset($_POST['Aendern']) && isset($_POST['kEmailvorlage']) && (int)$_POST['Aendern'] === 1 && (int)$_POST['kEmailvorlage'] > 0) {
     $step                        = 'uebersicht';
-    $cFehlerAnhang_arr           = null;
     $kEmailvorlage               = (int)$_POST['kEmailvorlage'];
     $cUploadVerzeichnis          = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_EMAILPDFS;
     $oEmailvorlageSpracheTMP_arr = Shop::DB()->selectAll(
@@ -761,8 +760,6 @@ if (isset($_POST['Aendern']) && isset($_POST['kEmailvorlage']) && (int)$_POST['A
         $cFehler = '<b>Die E-Mail Vorlage ist fehlerhaft</b><br />' . $oSmartyError->cText;
         setzeFehler(intval($_POST['kEmailvorlage']), true);
     }
-
-    $smarty->assign('cFehlerAnhang_arr', $cFehlerAnhang_arr);
 }
 if ((isset($_POST['kEmailvorlage']) && intval($_POST['kEmailvorlage']) > 0 && $continue === true) ||
     $step === 'prebearbeiten' || (isset($_GET['a']) && $_GET['a'] === 'pdfloeschen')) {
@@ -870,6 +867,7 @@ if ($step === 'bearbeiten') {
            ->assign('Emailvorlagesprache', $Emailvorlagesprache);
 }
 $smarty->assign('kPlugin', verifyGPCDataInteger('kPlugin'))
+       ->assign('cFehlerAnhang_arr', $cFehlerAnhang_arr)
        ->assign('step', $step)
        ->assign('hinweis', $cHinweis)
        ->assign('fehler', $cFehler)

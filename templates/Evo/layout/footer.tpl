@@ -133,7 +133,7 @@
                             <i class="fa fa-language"></i>
                             <span class="caret"></span>
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-right">
+                        <ul id="language-dropdown-small" class="dropdown-menu dropdown-menu-right">
                             {foreach from=$smarty.session.Sprachen item=Sprache}
                                 {if $Sprache->kSprache == $smarty.session.kSprache}
                                     <li class="active lang-{$lang} visible-xs"><a>{if $lang === 'ger'}{$Sprache->cNameDeutsch}{else}{$Sprache->cNameEnglisch}{/if}</a></li>
@@ -151,7 +151,7 @@
                 {/if}
                 {if isset($smarty.session.Waehrungen) && $smarty.session.Waehrungen|@count > 1}
                     <div class="currency-dropdown dropdown visible-xs col-xs-6 text-center">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        <a id="xxxxx" href="#" class="dropdown-toggle" data-toggle="dropdown">
                             {if $smarty.session.Waehrung->cISO === 'EUR'}
                                 <i class="fa fa-eur" title="{$smarty.session.Waehrung->cName}"></i>
                             {elseif $smarty.session.Waehrung->cISO === 'USD'}
@@ -162,7 +162,7 @@
                                 else{$smarty.session.Waehrung->cName}
                             {/if} <span class="caret"></span>
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-right">
+                        <ul id="currency-dropdown-small" class="dropdown-menu dropdown-menu-right">
                             {foreach from=$smarty.session.Waehrungen item=oWaehrung}
                                 <li>
                                     <a href="{$oWaehrung->cURL}" rel="nofollow">{$oWaehrung->cName}</a>

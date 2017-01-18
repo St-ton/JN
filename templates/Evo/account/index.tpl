@@ -13,7 +13,7 @@
     <div class="alert alert-info">{$hinweis}</div>
 {/if}
 
-{if true||(isset($nWarenkorb2PersMerge) && $nWarenkorb2PersMerge === 1)}
+{if isset($nWarenkorb2PersMerge) && $nWarenkorb2PersMerge === 1}
     <script type="text/javascript">
         $(function() {
             eModal.confirm({ldelim}message: '{lang key="basket2PersMerge" section="login"}', label1: '{lang key="no" section="global"}', label2: '{lang key="yes" section="global"}'{rdelim}, '{lang key="basket" section="global"}', function(res) {

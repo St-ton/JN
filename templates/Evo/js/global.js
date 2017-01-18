@@ -184,7 +184,6 @@ $(document).ready(function () {
     $('.footnote-vat a, .versand, .popup').click(function(e) {
         var url = e.currentTarget.href;
         url += (url.indexOf('?') === -1) ? '?isAjax=true' : '&isAjax=true';
-        console.log('url: ', url);
         eModal.ajax({
             'size': 'lg',
             'url': url,

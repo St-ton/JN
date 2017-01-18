@@ -134,14 +134,17 @@ if ($cAction !== null && $kExportformat !== null && validateToken()) {
             $bDeleted = Shop::DB()->query(
                 "DELETE tcron, texportformat, tjobqueue, texportqueue
                    FROM texportformat
-                   LEFT JOIN tcron ON tcron.kKey = texportformat.kExportformat
+                   LEFT JOIN tcron 
+                      ON tcron.kKey = texportformat.kExportformat
                       AND tcron.cKey = 'kExportformat'
                       AND tcron.cTabelle = 'texportformat'
-                   LEFT JOIN tjobqueue ON tjobqueue.kKey = texportformat.kExportformat
+                   LEFT JOIN tjobqueue 
+                      ON tjobqueue.kKey = texportformat.kExportformat
                       AND tjobqueue.cKey = 'kExportformat'
                       AND tjobqueue.cTabelle = 'texportformat'
                       AND tjobqueue.cJobArt = 'exportformat'
-                   LEFT JOIN texportqueue ON texportqueue.kExportformat = texportformat.kExportformat
+                   LEFT JOIN texportqueue 
+                      ON texportqueue.kExportformat = texportformat.kExportformat
                    WHERE texportformat.kExportformat = " . $kExportformat, 3
             );
 
@@ -202,11 +205,23 @@ if ($step === 'neuer Export') {
     $confCount = count($Conf);
     for ($i = 0; $i < $confCount; $i++) {
         if ($Conf[$i]->cInputTyp === 'selectbox') {
-            $Conf[$i]->ConfWerte = Shop::DB()->selectAll('teinstellungenconfwerte', 'kEinstellungenConf', (int)$Conf[$i]->kEinstellungenConf, '*', 'nSort');
+            $Conf[$i]->ConfWerte = Shop::DB()->selectAll(
+                'teinstellungenconfwerte',
+                'kEinstellungenConf',
+                (int)$Conf[$i]->kEinstellungenConf,
+                '*',
+                'nSort'
+            );
         }
         if (isset($exportformat->kExportformat)) {
-            $setValue = Shop::DB()->select('texportformateinstellungen', ['kExportformat', 'cName'], [(int)$exportformat->kExportformat, $Conf[$i]->cWertName]);
-            $Conf[$i]->gesetzterWert = (isset($setValue->cWert)) ? $setValue->cWert : null;
+            $setValue = Shop::DB()->select(
+                'texportformateinstellungen',
+                ['kExportformat', 'cName'],
+                [(int)$exportformat->kExportformat, $Conf[$i]->cWertName]
+            );
+            $Conf[$i]->gesetzterWert = (isset($setValue->cWert))
+                ? $setValue->cWert
+                : null;
         }
     }
     $smarty->assign('Conf', $Conf);

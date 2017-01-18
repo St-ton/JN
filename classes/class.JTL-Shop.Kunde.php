@@ -192,7 +192,7 @@ class Kunde
     public $dVeraendert;
 
     /**
-     * @var string array
+     * @var array
      */
     public $cKundenattribut_arr;
 

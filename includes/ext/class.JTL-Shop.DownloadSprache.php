@@ -47,8 +47,13 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
          */
         private function loadFromDB($kDownload, $kSprache)
         {
-            $oDownloadSprache = Shop::DB()->select('tdownloadsprache', 'kDownload', (int)$kDownload, 'kSprache', (int)$kSprache);
-
+            $oDownloadSprache = Shop::DB()->select(
+                'tdownloadsprache',
+                'kDownload',
+                (int)$kDownload,
+                'kSprache',
+                (int)$kSprache
+            );
             if (isset($oDownloadSprache->kDownload) && intval($oDownloadSprache->kDownload) > 0) {
                 $cMember_arr = array_keys(get_object_vars($oDownloadSprache));
                 if (is_array($cMember_arr) && count($cMember_arr) > 0) {
@@ -83,7 +88,12 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
             $_upd->cName         = $this->getName();
             $_upd->cBeschreibung = $this->getBeschreibung();
 
-            return Shop::DB()->update('tdownloadsprache', array('kDownload', 'kSprache'), array($this->getDownload(), $this->getSprache()), $_upd);
+            return Shop::DB()->update(
+                'tdownloadsprache',
+                ['kDownload', 'kSprache'],
+                [$this->getDownload(), $this->getSprache()],
+                $_upd
+            );
         }
 
         /**

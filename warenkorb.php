@@ -32,11 +32,15 @@ uebernehmeWarenkorbAenderungen();
 //validiere Konfigurationen
 validiereWarenkorbKonfig();
 //Versandermittlung?
-if (isset($_POST['land']) && isset($_POST['plz']) && !VersandartHelper::getShippingCosts($_POST['land'], $_POST['plz'], $MsgWarning)) {
+if (isset($_POST['land']) && isset($_POST['plz']) &&
+    !VersandartHelper::getShippingCosts($_POST['land'], $_POST['plz'], $MsgWarning)
+) {
     $MsgWarning = Shop::Lang()->get('missingParamShippingDetermination', 'errorMessages');
 }
 //Kupons bearbeiten
-if (isset($_POST['Kuponcode']) && strlen($_POST['Kuponcode']) > 0 && !$cart->posTypEnthalten(C_WARENKORBPOS_TYP_KUPON)) {
+if (isset($_POST['Kuponcode']) && strlen($_POST['Kuponcode']) > 0 &&
+    !$cart->posTypEnthalten(C_WARENKORBPOS_TYP_KUPON)
+) {
     // Kupon darf nicht im leeren Warenkorb eingelöst werden
     if ($cart !== null && $cart->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]) > 0) {
         $Kupon             = Shop::DB()->select('tkupon', 'cCode', $_POST['Kuponcode']);
@@ -44,7 +48,10 @@ if (isset($_POST['Kuponcode']) && strlen($_POST['Kuponcode']) > 0 && !$cart->pos
         if (isset($Kupon->kKupon)) {
             $Kuponfehler  = checkeKupon($Kupon);
             $nReturnValue = angabenKorrekt($Kuponfehler);
-            executeHook(HOOK_WARENKORB_PAGE_KUPONANNEHMEN_PLAUSI, ['error' => &$Kuponfehler, 'nReturnValue' => &$nReturnValue]);
+            executeHook(HOOK_WARENKORB_PAGE_KUPONANNEHMEN_PLAUSI, [
+                'error'        => &$Kuponfehler,
+                'nReturnValue' => &$nReturnValue
+            ]);
             if ($nReturnValue) {
                 if (isset($Kupon->kKupon) && $Kupon->kKupon > 0 && $Kupon->cKuponTyp === 'standard') {
                     kuponAnnehmen($Kupon);
@@ -91,7 +98,10 @@ if (isset($_POST['gratis_geschenk']) && intval($_POST['gratis_geschenk']) === 1 
         . $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true), 1
     );
     if (isset($oArtikelGeschenk->kArtikel) && $oArtikelGeschenk->kArtikel > 0) {
-        if ($oArtikelGeschenk->fLagerbestand <= 0 && $oArtikelGeschenk->cLagerKleinerNull === 'N' && $oArtikelGeschenk->cLagerBeachten === 'Y') {
+        if ($oArtikelGeschenk->fLagerbestand <= 0 &&
+            $oArtikelGeschenk->cLagerKleinerNull === 'N' &&
+            $oArtikelGeschenk->cLagerBeachten === 'Y'
+        ) {
             $MsgWarning = Shop::Lang()->get('freegiftsNostock', 'errorMessages');
         } else {
             executeHook(HOOK_WARENKORB_PAGE_GRATISGESCHENKEINFUEGEN);
@@ -108,7 +118,8 @@ $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
 $startKat             = new Kategorie();
 $startKat->kKategorie = 0;
 if (isset($_GET['fillOut'])) {
-    if (intval($_GET['fillOut']) === 9 && isset($_SESSION['Kundengruppe']->Attribute[KNDGRP_ATTRIBUT_MINDESTBESTELLWERT]) &&
+    if ((int)$_GET['fillOut'] === 9 &&
+        isset($_SESSION['Kundengruppe']->Attribute[KNDGRP_ATTRIBUT_MINDESTBESTELLWERT]) &&
         $_SESSION['Kundengruppe']->Attribute[KNDGRP_ATTRIBUT_MINDESTBESTELLWERT] > 0 &&
         $cart->gibGesamtsummeWaren(1, 0) < $_SESSION['Kundengruppe']->Attribute[KNDGRP_ATTRIBUT_MINDESTBESTELLWERT]
     ) {

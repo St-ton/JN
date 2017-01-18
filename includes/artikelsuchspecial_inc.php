@@ -31,7 +31,8 @@ function gibTopAngebote($nLimit, $kKundengruppe = 0)
     $topArticles = Shop::DB()->query(
         "SELECT tartikel.kArtikel
             FROM tartikel
-            LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
+            LEFT JOIN tartikelsichtbarkeit 
+                ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                 AND tartikelsichtbarkeit.kKundengruppe = " . $kKundengruppe . "
             WHERE tartikelsichtbarkeit.kArtikel IS NULL
                 AND tartikel.cTopArtikel = 'Y'
@@ -81,11 +82,12 @@ function gibBestseller($nLimit, $kKundengruppe = 0)
     $bestsellers = Shop::DB()->query(
         "SELECT tartikel.kArtikel, tbestseller.fAnzahl
             FROM tbestseller, tartikel
-            LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
+            LEFT JOIN tartikelsichtbarkeit 
+                ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                 AND tartikelsichtbarkeit.kKundengruppe = " . $kKundengruppe . "
             WHERE tartikelsichtbarkeit.kArtikel IS NULL
                 AND tbestseller.kArtikel = tartikel.kArtikel
-                 AND round(tbestseller.fAnzahl) >= " . $nSchwelleBestseller . "
+                AND round(tbestseller.fAnzahl) >= " . $nSchwelleBestseller . "
                 " . gibVaterSQL() . "
                 " . gibLagerfilter() . "
             ORDER BY fAnzahl DESC
@@ -113,9 +115,12 @@ function gibSonderangebote($nLimit, $kKundengruppe = 0)
     $specialOffers = Shop::DB()->query(
         "SELECT tartikel.kArtikel, tsonderpreise.fNettoPreis
             FROM tartikel
-            JOIN tartikelsonderpreis ON tartikelsonderpreis.kArtikel = tartikel.kArtikel
-            JOIN tsonderpreise ON tsonderpreise.kArtikelSonderpreis = tartikelsonderpreis.kArtikelSonderpreis
-            LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel=tartikelsichtbarkeit.kArtikel
+            JOIN tartikelsonderpreis 
+                ON tartikelsonderpreis.kArtikel = tartikel.kArtikel
+            JOIN tsonderpreise 
+                ON tsonderpreise.kArtikelSonderpreis = tartikelsonderpreis.kArtikelSonderpreis
+            LEFT JOIN tartikelsichtbarkeit 
+                ON tartikel.kArtikel=tartikelsichtbarkeit.kArtikel
                 AND tartikelsichtbarkeit.kKundengruppe = " . $kKundengruppe . "
             WHERE tartikelsichtbarkeit.kArtikel IS NULL
                 AND tartikelsonderpreis.kArtikel = tartikel.kArtikel
@@ -153,7 +158,8 @@ function gibNeuImSortiment($nLimit, $kKundengruppe = 0)
     $new = Shop::DB()->query(
         "SELECT tartikel.kArtikel
             FROM tartikel
-            LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
+            LEFT JOIN tartikelsichtbarkeit 
+                ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                 AND tartikelsichtbarkeit.kKundengruppe = " . $kKundengruppe . "
             WHERE tartikelsichtbarkeit.kArtikel IS NULL
                 AND tartikel.cNeu = 'Y'

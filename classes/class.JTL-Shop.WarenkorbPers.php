@@ -146,7 +146,7 @@ class WarenkorbPers
      */
     public function entfernePos($kWarenkorbPersPos)
     {
-        $kWarenkorbPersPos = intval($kWarenkorbPersPos);
+        $kWarenkorbPersPos = (int)$kWarenkorbPersPos;
         $oKunde            = Shop::DB()->query(
             "SELECT twarenkorbpers.kKunde
                 FROM twarenkorbpers
@@ -279,6 +279,7 @@ class WarenkorbPers
 
                             $fWarenwert += $oWarenkorbPersPos->Artikel->Preise->fVK[$oWarenkorbPersPos->Artikel->kSteuerklasse];
                         }
+                        $oWarenkorbPersPos->fAnzahl = floatval($oWarenkorbPersPos->fAnzahl);
                         $this->oWarenkorbPersPos_arr[] = $oWarenkorbPersPos;
                     }
                     $this->cWarenwertLocalized = gibPreisStringLocalized($fWarenwert);

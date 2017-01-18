@@ -10,7 +10,14 @@
  */
 function kundeSpeichern($cPost_arr)
 {
-    global $smarty, $Kunde, $GlobaleEinstellungen, $Einstellungen, $step, $editRechnungsadresse, $knd, $cKundenattribut_arr;
+    global $smarty,
+           $Kunde,
+           $GlobaleEinstellungen,
+           $Einstellungen,
+           $step,
+           $editRechnungsadresse,
+           $knd,
+           $cKundenattribut_arr;
 
     unset($_SESSION['Lieferadresse']);
     unset($_SESSION['Versandart']);
@@ -33,15 +40,26 @@ function kundeSpeichern($cPost_arr)
     // CheckBox Plausi
     require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.CheckBox.php';
     $oCheckBox       = new CheckBox();
-    $fehlendeAngaben = array_merge($fehlendeAngaben, $oCheckBox->validateCheckBox(CHECKBOX_ORT_REGISTRIERUNG, $kKundengruppe, $cPost_arr, true));
+    $fehlendeAngaben = array_merge(
+        $fehlendeAngaben,
+        $oCheckBox->validateCheckBox(CHECKBOX_ORT_REGISTRIERUNG, $kKundengruppe, $cPost_arr, true)
+    );
     $nReturnValue    = angabenKorrekt($fehlendeAngaben);
 
-    executeHook(HOOK_REGISTRIEREN_PAGE_REGISTRIEREN_PLAUSI, ['nReturnValue' => &$nReturnValue, 'fehlendeAngaben' => &$fehlendeAngaben]);
+    executeHook(HOOK_REGISTRIEREN_PAGE_REGISTRIEREN_PLAUSI, [
+        'nReturnValue'    => &$nReturnValue,
+        'fehlendeAngaben' => &$fehlendeAngaben
+    ]);
 
     if ($nReturnValue) {
         // CheckBox Spezialfunktion ausführen
-        $oCheckBox->triggerSpecialFunction(CHECKBOX_ORT_REGISTRIERUNG, $kKundengruppe, true, $cPost_arr, ['oKunde' => $knd]);
-        $oCheckBox->checkLogging(CHECKBOX_ORT_REGISTRIERUNG, $kKundengruppe, $cPost_arr, true);
+        $oCheckBox->triggerSpecialFunction(
+            CHECKBOX_ORT_REGISTRIERUNG,
+            $kKundengruppe,
+            true,
+            $cPost_arr,
+            ['oKunde' => $knd]
+        )->checkLogging(CHECKBOX_ORT_REGISTRIERUNG, $kKundengruppe, $cPost_arr, true);
 
         if ($editRechnungsadresse && $_SESSION['Kunde']->kKunde > 0) {
             $knd->cAbgeholt = 'N';
@@ -156,7 +174,9 @@ function kundeSpeichern($cPost_arr)
                 Shop::DB()->update('tkundenwerbenkunden', 'cEmail', $knd->cMail, $_upd);
             }
         }
-        if ((isset($_SESSION['Warenkorb']->kWarenkorb)) && $_SESSION['Warenkorb']->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]) > 0) {
+        if ((isset($_SESSION['Warenkorb']->kWarenkorb)) &&
+            $_SESSION['Warenkorb']->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]) > 0
+        ) {
             setzeSteuersaetze();
             $_SESSION['Warenkorb']->gibGesamtsummeWarenLocalized();
         }

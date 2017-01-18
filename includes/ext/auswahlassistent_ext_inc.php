@@ -25,8 +25,12 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
                 return false;
             }
             if (strlen($cKey) > 0 && intval($kKey) > 0 && intval($kSprache) > 0) {
-                $Einstellungen = Shop::getSettings(array(CONF_GLOBAL, CONF_RSS, CONF_ARTIKELUEBERSICHT, CONF_AUSWAHLASSISTENT));
-
+                $Einstellungen = Shop::getSettings([
+                    CONF_GLOBAL, 
+                    CONF_RSS, 
+                    CONF_ARTIKELUEBERSICHT, 
+                    CONF_AUSWAHLASSISTENT
+                ]);
                 if (isset($_GET['aaParams']) && strlen($_GET['aaParams']) > 0) {
                     // a href geklickt
                     extract(extractAAURL($_GET['aaParams']));
@@ -49,10 +53,14 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
                         $_SESSION['AuswahlAssistent'] = new stdClass();
                     }
                     $_SESSION['AuswahlAssistent']->nFrage               = 0;
-                    $_SESSION['AuswahlAssistent']->oAuswahl_arr         = array();
-                    $_SESSION['AuswahlAssistent']->kMerkmalGesetzt_arr  = array();
+                    $_SESSION['AuswahlAssistent']->oAuswahl_arr         = [];
+                    $_SESSION['AuswahlAssistent']->kMerkmalGesetzt_arr  = [];
                     $_SESSION['AuswahlAssistent']->oAuswahlAssistent    = $oAuswahlAssistent;
-                    $_SESSION['AuswahlAssistent']->oAuswahlAssistentOrt = AuswahlAssistentOrt::getLocation($cKey, $kKey, $_SESSION['kSprache']);
+                    $_SESSION['AuswahlAssistent']->oAuswahlAssistentOrt = AuswahlAssistentOrt::getLocation(
+                        $cKey,
+                        $kKey,
+                        $_SESSION['kSprache']
+                    );
                     if ($_SESSION['AuswahlAssistent']->oAuswahlAssistentOrt !== null) {
                         if (!isset($bMerkmalFilterVorhanden)) {
                             $bMerkmalFilterVorhanden = null;
@@ -75,7 +83,12 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
                             if (!isset($oSuchergebnisse)) {
                                 $oSuchergebnisse = new stdClass();
                             }
-                            $oSuchergebnisse->MerkmalFilter = gibMerkmalFilterOptionen($FilterSQL, $NaviFilter, $AktuelleKategorie, true);
+                            $oSuchergebnisse->MerkmalFilter = gibMerkmalFilterOptionen(
+                                $FilterSQL,
+                                $NaviFilter,
+                                $AktuelleKategorie,
+                                true
+                            );
                             filterSelectionWizard($oSuchergebnisse->MerkmalFilter, $bMerkmalFilterVorhanden);
                         }
                     }
@@ -112,7 +125,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
             }
         }
         $kKategorie     = (int)$kKategorie;
-        $cParameter_arr = array();
+        $cParameter_arr = [];
         if ($kKategorie > 0) {
             $cParameter_arr['kKategorie'] = $kKategorie;
         } else {
@@ -152,12 +165,13 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
             if (!isset($bFragenEnde)) {
                 $bFragenEnde = false;
             }
-            if (!$bFragenEnde && isset($_SESSION['AuswahlAssistent']->kMerkmalGesetzt_arr) && !in_array($MerkmalFilter->kMerkmal, $_SESSION['AuswahlAssistent']->kMerkmalGesetzt_arr) &&
+            if (!$bFragenEnde && isset($_SESSION['AuswahlAssistent']->kMerkmalGesetzt_arr) &&
+                !in_array($MerkmalFilter->kMerkmal, $_SESSION['AuswahlAssistent']->kMerkmalGesetzt_arr) &&
                 isset($_SESSION['AuswahlAssistent']->oAuswahlAssistent->oAuswahlAssistentFrage_arr[$_SESSION['AuswahlAssistent']->nFrage]->oMerkmal->kMerkmal) &&
                 $MerkmalFilter->kMerkmal == $_SESSION['AuswahlAssistent']->oAuswahlAssistent->oAuswahlAssistentFrage_arr[$_SESSION['AuswahlAssistent']->nFrage]->oMerkmal->kMerkmal
             ) {
                 if (isset($_SESSION['AuswahlAssistent']->oAuswahlAssistent->oAuswahlAssistentFrage_arr[$_SESSION['AuswahlAssistent']->nFrage]->oMerkmal->oMerkmalWert_arr)) {
-                    $kMerkmalWertDrin_arr = array();
+                    $kMerkmalWertDrin_arr = [];
                     foreach ($_SESSION['AuswahlAssistent']->oAuswahlAssistent->oAuswahlAssistentFrage_arr[$_SESSION['AuswahlAssistent']->nFrage]->oMerkmal->oMerkmalWert_arr as $i => $oMerkmalWertAlle) {
                         foreach ($MerkmalFilter->oMerkmalWerte_arr as $oMerkmalWertMoeglich) {
                             if ($oMerkmalWertMoeglich->kMerkmalWert == $oMerkmalWertAlle->kMerkmalWert) {
@@ -296,7 +310,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
     {
         $cParams         = base64_decode($aaParams);
         $cParams_arr     = explode(';', $cParams);
-        $cParamAssoc_arr = array();
+        $cParamAssoc_arr = [];
 
         if (count($cParams_arr) > 1) {
             foreach ($cParams_arr as $cParams) {

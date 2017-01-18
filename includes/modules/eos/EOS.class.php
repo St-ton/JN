@@ -53,10 +53,14 @@ class EOS extends ServerPaymentMethod
         global $Einstellungen;
 
         if (!isset($Einstellungen['zahlungsarten']['zahlungsart_' . $this->payment . '_haendlerid'])) {
-            $cSetting_arr = Shop::getSettings(array(CONF_ZAHLUNGSARTEN));
-            $cSetting     = (isset($cSetting_arr['zahlungsarten']['zahlungsart_' . $this->payment . '_haendlerid'])) ? $cSetting_arr['zahlungsarten']['zahlungsart_' . $this->payment . '_haendlerid'] : null;
+            $cSetting_arr = Shop::getSettings([CONF_ZAHLUNGSARTEN]);
+            $cSetting     = (isset($cSetting_arr['zahlungsarten']['zahlungsart_' . $this->payment . '_haendlerid']))
+                ? $cSetting_arr['zahlungsarten']['zahlungsart_' . $this->payment . '_haendlerid']
+                : null;
         } else {
-            $cSetting = (isset($Einstellungen['zahlungsarten']['zahlungsart_' . $this->payment . '_haendlerid'])) ? $Einstellungen['zahlungsarten']['zahlungsart_' . $this->payment . '_haendlerid'] : null;
+            $cSetting = (isset($Einstellungen['zahlungsarten']['zahlungsart_' . $this->payment . '_haendlerid']))
+                ? $Einstellungen['zahlungsarten']['zahlungsart_' . $this->payment . '_haendlerid']
+                : null;
         }
 
         return $cSetting;
@@ -70,7 +74,7 @@ class EOS extends ServerPaymentMethod
         global $Einstellungen;
 
         if (!isset($Einstellungen['zahlungsarten']['zahlungsart_' . $this->payment . '_haendlercode'])) {
-            $cSetting_arr = Shop::getSettings(array(CONF_ZAHLUNGSARTEN));
+            $cSetting_arr = Shop::getSettings([CONF_ZAHLUNGSARTEN]);
             $cSetting     = $cSetting_arr['zahlungsarten']['zahlungsart_' . $this->payment . '_haendlercode'];
         } else {
             $cSetting = $Einstellungen['zahlungsarten']['zahlungsart_' . $this->payment . '_haendlercode'];
@@ -172,7 +176,7 @@ class EOS extends ServerPaymentMethod
             $cCSSURL = Shop::getURL() . '/' . PFAD_TEMPLATES . $cTemplate . '/tpl_inc/modules/eos/eos.css';
         }
         // Test
-        $fields = array(
+        $fields = [
             'referenz'     => $order->cBestellNr,
             'haendlerid'   => $this->getHaendlerID(),
             'haendlercode' => $this->getHaendlerCode(),
@@ -184,7 +188,8 @@ class EOS extends ServerPaymentMethod
             'FailURL'      => $cReturnURL . '&eos=' . EOS_FAILURL_CODE,
             'ErrorURL'     => $cReturnURL . '&eos=' . EOS_ERRORURL_CODE,
             '_stylesheet'  => $cCSSURL,
-            'EndURL'       => $cReturnURL);
+            'EndURL'       => $cReturnURL
+        ];
 
         if ($this->payment === 'eos_ewallet') {
             $fields['Buchen'] = 1;
@@ -392,7 +397,7 @@ class EOS extends ServerPaymentMethod
      */
     public function parse($resultURL)
     {
-        $returnvalue = array();
+        $returnvalue = [];
         $r_arr       = explode('&', $resultURL);
         foreach ($r_arr as $buf) {
             $temp = urldecode($buf);
@@ -411,7 +416,7 @@ class EOS extends ServerPaymentMethod
      * @param array $args_arr
      * @return bool
      */
-    public function isValidIntern($args_arr = array())
+    public function isValidIntern($args_arr = [])
     {
         if (strlen($this->getHaendlerID()) == 0) {
             ZahlungsLog::add($this->moduleID, "Pflichtparameter 'HaendlerID' ist nicht gesetzt!", null, LOGLEVEL_ERROR);

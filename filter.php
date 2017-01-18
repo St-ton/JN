@@ -11,28 +11,62 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'filter_inc.php';
 $cachingOptions = Shop::getSettings([CONF_CACHING]);
 Shop::setPageType(PAGE_ARTIKELLISTE);
 /** @global JTLSmarty $smarty */
-/** @global Navigationsfilter $NaviFilter */
 /** @global array $cParameter_arr */
-$Einstellungen          = Shop::getSettings([
-        CONF_GLOBAL,
-        CONF_RSS,
-        CONF_ARTIKELUEBERSICHT,
-        CONF_VERGLEICHSLISTE,
-        CONF_BEWERTUNG,
-        CONF_NAVIGATIONSFILTER,
-        CONF_BOXEN,
-        CONF_ARTIKELDETAILS,
-        CONF_METAANGABEN,
-        CONF_SUCHSPECIAL,
-        CONF_BILDER,
-        CONF_PREISVERLAUF,
-        CONF_SONSTIGES,
-        CONF_AUSWAHLASSISTENT
-    ]
-);
-$nArtikelProSeite_arr   = [5, 10, 25, 50, 100];
-$doSearch               = true;
-$suchanfrage            = '';
+/** @global object $NaviFilter*/
+$Einstellungen        = Shop::getSettings([
+    CONF_GLOBAL,
+    CONF_RSS,
+    CONF_ARTIKELUEBERSICHT,
+    CONF_VERGLEICHSLISTE,
+    CONF_BEWERTUNG,
+    CONF_NAVIGATIONSFILTER,
+    CONF_BOXEN,
+    CONF_ARTIKELDETAILS,
+    CONF_METAANGABEN,
+    CONF_SUCHSPECIAL,
+    CONF_BILDER,
+    CONF_PREISVERLAUF,
+    CONF_SONSTIGES,
+    CONF_AUSWAHLASSISTENT
+]);
+$nArtikelProSeite_arr = [
+    5,
+    10,
+    25,
+    50,
+    100
+];
+$suchanfrage          = '';
+// setze Kat in Session
+if (isset($cParameter_arr['kKategorie']) && $cParameter_arr['kKategorie'] > 0) {
+    $_SESSION['LetzteKategorie'] = $cParameter_arr['kKategorie'];
+    $AktuelleSeite               = 'PRODUKTE';
+}
+if ($cParameter_arr['kSuchanfrage'] > 0) {
+    $oSuchanfrage = Shop::DB()->select(
+        'tsuchanfrage',
+        'kSuchanfrage',
+        (int)$cParameter_arr['kSuchanfrage'],
+        null,
+        null,
+        null,
+        null,
+        false,
+        'cSuche'
+    );
+    if (isset($oSuchanfrage->cSuche) && strlen($oSuchanfrage->cSuche) > 0) {
+        if (!isset($NaviFilter->Suche)) {
+            $NaviFilter->Suche = new stdClass();
+        }
+        $NaviFilter->Suche->kSuchanfrage = $cParameter_arr['kSuchanfrage'];
+        $NaviFilter->Suche->cSuche       = $oSuchanfrage->cSuche;
+    }
+}
+// Suchcache beachten / erstellen
+if (isset($NaviFilter->Suche->cSuche) && strlen($NaviFilter->Suche->cSuche) > 0) {
+    $NaviFilter->Suche->kSuchCache = bearbeiteSuchCache($NaviFilter);
+}
+
 $AktuelleKategorie      = new stdClass();
 $oSuchergebnisse        = new stdClass();
 $AufgeklappteKategorien = new stdClass();
@@ -215,14 +249,6 @@ if ($NaviFilter->Kategorie->isInitialized()) {
     if (isset($oNavigationsinfo->oMerkmalWert->cMetaKeywords)) {
         $oMeta->cMetaKeywords = $oNavigationsinfo->oMerkmalWert->cMetaKeywords;
     }
-    $cBrotNavi = createNavigation('', '', 0, $NaviFilter->cBrotNaviName, $NaviFilter->getURL(true, null));
-} elseif ($NaviFilter->Tag->isInitialized()) {
-    $cBrotNavi = createNavigation('', '', 0, $NaviFilter->cBrotNaviName, $NaviFilter->getURL(true, null));
-} elseif ($NaviFilter->Suchspecial->isInitialized()) {
-    $cBrotNavi = createNavigation('', '', 0, $NaviFilter->cBrotNaviName, $NaviFilter->getURL(true, null));
-} elseif ($NaviFilter->Suche->isInitialized()) {
-    $cBrotNavi = createNavigation('', '', 0, Shop::Lang()->get('search', 'breadcrumb') . ': ' .
-        $NaviFilter->cBrotNaviName, $NaviFilter->getURL(true, null));
 }
 // Canonical
 if (strpos(basename($NaviFilter->getURL(true, null)), '.php') === false) {
@@ -234,7 +260,13 @@ if (strpos(basename($NaviFilter->getURL(true, null)), '.php') === false) {
 }
 // Auswahlassistent
 if (function_exists('starteAuswahlAssistent')) {
-    starteAuswahlAssistent(AUSWAHLASSISTENT_ORT_KATEGORIE, $cParameter_arr['kKategorie'], Shop::getLanguage(), $smarty, $Einstellungen['auswahlassistent']);
+    starteAuswahlAssistent(
+        AUSWAHLASSISTENT_ORT_KATEGORIE,
+        $cParameter_arr['kKategorie'],
+        Shop::getLanguage(),
+        $smarty,
+        $Einstellungen['auswahlassistent']
+    );
 }
 $smarty->assign('SEARCHSPECIALS_TOPREVIEWS', SEARCHSPECIALS_TOPREVIEWS)
         ->assign('code_benachrichtigung_verfuegbarkeit', generiereCaptchaCode($Einstellungen['artikeldetails']['benachrichtigung_abfragen_captcha']))

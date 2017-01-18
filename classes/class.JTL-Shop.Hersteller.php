@@ -120,10 +120,10 @@ class Hersteller
     public function loadFromDB($kHersteller, $kSprache = 0, $noCache = false)
     {
         //noCache param to avoid problem with de-serialization of class properties with jtl search
-        $kSprache = (intval($kSprache) > 0) ? (int)$kSprache : Shop::$kSprache;
+        $kSprache = (intval($kSprache) > 0) ? (int)$kSprache : Shop::getLanguage();
         if (!isset($kSprache) || $kSprache === null) {
             $oSprache = gibStandardsprache();
-            $kSprache = $oSprache->kSprache;
+            $kSprache = (int)$oSprache->kSprache;
         }
         $kHersteller = (int)$kHersteller;
         $kSprache    = (int)$kSprache;

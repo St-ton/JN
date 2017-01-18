@@ -11,7 +11,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'trustedshops_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
 /** @global JTLSmarty $smarty */
-$Einstellungen = Shop::getSettings(array(
+$Einstellungen = Shop::getSettings([
     CONF_GLOBAL,
     CONF_RSS,
     CONF_KUNDEN,
@@ -19,7 +19,7 @@ $Einstellungen = Shop::getSettings(array(
     CONF_ZAHLUNGSARTEN,
     CONF_EMAILS,
     CONF_TRUSTEDSHOPS
-));
+]);
 $linkHelper    = LinkHelper::getInstance();
 $AktuelleSeite = 'BESTELLVORGANG';
 Shop::setPageType(PAGE_BESTELLABSCHLUSS);
@@ -46,10 +46,12 @@ if (isset($_GET['i'])) {
         $_SESSION['kommentar'] = '';
     }
     if (pruefeEmailblacklist($_SESSION['Kunde']->cMail)) {
-        header('Location: ' . $linkHelper->getStaticRoute('bestellvorgang.php') . '?mailBlocked=1', true, 303);
+        header('Location: ' . $linkHelper->getStaticRoute('bestellvorgang.php') .
+            '?mailBlocked=1', true, 303);
         exit;
     } elseif (!bestellungKomplett()) {
-        header('Location: ' . $linkHelper->getStaticRoute('bestellvorgang.php') . '?fillOut=' . gibFehlendeEingabe(), true, 303);
+        header('Location: ' . $linkHelper->getStaticRoute('bestellvorgang.php') .
+            '?fillOut=' . gibFehlendeEingabe(), true, 303);
         exit;
     } else {
         //pruefen, ob von jedem Artikel im WK genug auf Lager sind. Wenn nicht, WK verkleinern und Redirect zum WK
@@ -61,10 +63,14 @@ if (isset($_GET['i'])) {
             exit;
         }
 
-        if (!isset($_SESSION['Zahlungsart']->nWaehrendBestellung) || $_SESSION['Zahlungsart']->nWaehrendBestellung == 0) {
+        if (!isset($_SESSION['Zahlungsart']->nWaehrendBestellung) ||
+            $_SESSION['Zahlungsart']->nWaehrendBestellung == 0
+        ) {
             $_SESSION['Warenkorb']->loescheDeaktiviertePositionen();
             $wkChecksum = Warenkorb::getChecksum($_SESSION['Warenkorb']);
-            if (!empty($_SESSION['Warenkorb']->cChecksumme) && $wkChecksum != $_SESSION['Warenkorb']->cChecksumme) {
+            if (!empty($_SESSION['Warenkorb']->cChecksumme) &&
+                $wkChecksum != $_SESSION['Warenkorb']->cChecksumme
+            ) {
                 if (!$_SESSION['Warenkorb']->enthaltenSpezialPos(C_WARENKORBPOS_TYP_ARTIKEL)) {
                     loescheAlleSpezialPos();
                 }
@@ -73,12 +79,19 @@ if (isset($_GET['i'])) {
                 exit;
             }
             $bestellung = finalisiereBestellung();
-            $bestellid  = (isset($bestellung->kBestellung) && $bestellung->kBestellung > 0) ? Shop::DB()->select('tbestellid', 'kBestellung', $bestellung->kBestellung) : false;
-            if (is_null($bestellung->Lieferadresse) && isset($_SESSION['Lieferadresse']) && strlen($_SESSION['Lieferadresse']->cVorname) > 0) {
+            $bestellid  = (isset($bestellung->kBestellung) && $bestellung->kBestellung > 0)
+                ? Shop::DB()->select('tbestellid', 'kBestellung', $bestellung->kBestellung)
+                : false;
+            if (is_null($bestellung->Lieferadresse) &&
+                isset($_SESSION['Lieferadresse']) &&
+                strlen($_SESSION['Lieferadresse']->cVorname) > 0
+            ) {
                 $bestellung->Lieferadresse = gibLieferadresseAusSession();
             }
             $orderCompleteURL  = $linkHelper->getStaticRoute('bestellabschluss.php', true);
-            $successPaymentURL = (!empty($bestellid->cId)) ? ($orderCompleteURL . '?i=' . $bestellid->cId) : Shop::getURL();
+            $successPaymentURL = (!empty($bestellid->cId)) ?
+                ($orderCompleteURL . '?i=' . $bestellid->cId)
+                : Shop::getURL();
             $smarty->assign('Bestellung', $bestellung);
         } else {
             $bestellung = fakeBestellung();
@@ -118,9 +131,14 @@ if ($kPlugin > 0) {
     $oPlugin = new Plugin($kPlugin);
     $smarty->assign('oPlugin', $oPlugin);
 }
-if (!isset($_SESSION['Zahlungsart']->nWaehrendBestellung) || $_SESSION['Zahlungsart']->nWaehrendBestellung == 0 || isset($_GET['i'])) {
+if (!isset($_SESSION['Zahlungsart']->nWaehrendBestellung) ||
+    $_SESSION['Zahlungsart']->nWaehrendBestellung == 0 ||
+    isset($_GET['i'])
+) {
     if ($Einstellungen['trustedshops']['trustedshops_kundenbewertung_anzeigen'] === 'Y') {
-        $smarty->assign('oTrustedShopsBewertenButton', gibTrustedShopsBewertenButton($bestellung->oRechnungsadresse->cMail, $bestellung->cBestellNr));
+        $smarty->assign('oTrustedShopsBewertenButton',
+            gibTrustedShopsBewertenButton($bestellung->oRechnungsadresse->cMail, $bestellung->cBestellNr)
+        );
     }
     $session->cleanUp();
     require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';

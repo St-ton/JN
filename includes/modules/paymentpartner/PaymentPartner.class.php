@@ -39,7 +39,9 @@ class PaymentPartner extends ServerPaymentMethod
     {
         global $Einstellungen;
 
-        return (isset($Einstellungen['zahlungsarten']['zahlungsart_paymentpartner_login'])) ? $Einstellungen['zahlungsarten']['zahlungsart_paymentpartner_login'] : null;
+        return (isset($Einstellungen['zahlungsarten']['zahlungsart_paymentpartner_login']))
+            ? $Einstellungen['zahlungsarten']['zahlungsart_paymentpartner_login']
+            : null;
     }
 
     /**
@@ -49,7 +51,9 @@ class PaymentPartner extends ServerPaymentMethod
     {
         global $Einstellungen;
 
-        return (isset($Einstellungen['zahlungsarten']['zahlungsart_paymentpartner_password'])) ? $Einstellungen['zahlungsarten']['zahlungsart_paymentpartner_password'] : null;
+        return (isset($Einstellungen['zahlungsarten']['zahlungsart_paymentpartner_password']))
+            ? $Einstellungen['zahlungsarten']['zahlungsart_paymentpartner_password']
+            : null;
     }
 
     /**
@@ -59,7 +63,9 @@ class PaymentPartner extends ServerPaymentMethod
     {
         global $Einstellungen;
 
-        return (isset($Einstellungen['zahlungsarten']['zahlungsart_paymentpartner_channel'])) ? $Einstellungen['zahlungsarten']['zahlungsart_paymentpartner_channel'] : null;
+        return (isset($Einstellungen['zahlungsarten']['zahlungsart_paymentpartner_channel']))
+            ? $Einstellungen['zahlungsarten']['zahlungsart_paymentpartner_channel']
+            : null;
     }
 
     /**
@@ -69,7 +75,9 @@ class PaymentPartner extends ServerPaymentMethod
     {
         global $Einstellungen;
 
-        return (isset($Einstellungen['zahlungsarten']['zahlungsart_paymentpartner_sender'])) ? $Einstellungen['zahlungsarten']['zahlungsart_paymentpartner_sender'] : null;
+        return (isset($Einstellungen['zahlungsarten']['zahlungsart_paymentpartner_sender']))
+            ? $Einstellungen['zahlungsarten']['zahlungsart_paymentpartner_sender']
+            : null;
     }
 
     /**
@@ -82,7 +90,7 @@ class PaymentPartner extends ServerPaymentMethod
         $customer    = $_SESSION['Kunde'];
         $paymentHash = $this->generateHash($order);
 
-        $fields = array(
+        $fields = [
             'REQUEST.VERSION'              => '1.0',
             'SECURITY.SENDER'              => $this->getSender(),
             'USER.LOGIN'                   => $this->getLogin(),
@@ -108,7 +116,8 @@ class PaymentPartner extends ServerPaymentMethod
             'FRONTEND.POPUP'               => 'true',
             'FRONTEND.MODE'                => 'DEFAULT',
             'FRONTEND.LANGUAGE'            => $customer->cLand,
-            'FRONTEND.RESPONSE_URL'        => $this->getNotificationURL($paymentHash));
+            'FRONTEND.RESPONSE_URL'        => $this->getNotificationURL($paymentHash)
+        ];
         $request = $this->postRequest($fields);
         // HTTP Error
         if ($request['status'] === 'error') {
@@ -116,7 +125,13 @@ class PaymentPartner extends ServerPaymentMethod
             $smarty->assign('error', Shop::Lang()->get('errorText', 'paymentMethods'));
             // Error Mail
             $error = Shop::Lang()->get('paymentPartnerHttpError', 'paymentMethods');
-            $body  = sprintf(Shop::Lang()->get('errorMailBody', 'paymentMethods'), $this->getShopTitle(), $order->cBestellNr, $this->caption, $error);
+            $body  = sprintf(
+                Shop::Lang()->get('errorMailBody', 'paymentMethods'),
+                $this->getShopTitle(),
+                $order->cBestellNr,
+                $this->caption,
+                $error
+            );
             $this->sendErrorMail($body);
 
             return;
@@ -130,7 +145,13 @@ class PaymentPartner extends ServerPaymentMethod
             $smarty->assign('error', Shop::Lang()->get('errorText', 'paymentMethods'));
             // Error Mail
             $error = sprintf(Shop::Lang()->get('paymentPartnerError', 'paymentMethods'), $request['body']);
-            $body  = sprintf(Shop::Lang()->get('errorMailBody', 'paymentMethods'), $this->getShopTitle(), $order->cBestellNr, $this->caption, $error);
+            $body  = sprintf(
+                Shop::Lang()->get('errorMailBody', 'paymentMethods'),
+                $this->getShopTitle(),
+                $order->cBestellNr,
+                $this->caption,
+                $error
+            );
             $this->sendErrorMail($body);
 
             return;
@@ -211,7 +232,7 @@ class PaymentPartner extends ServerPaymentMethod
      */
     public function parse($resultURL)
     {
-        $returnvalue = array();
+        $returnvalue = [];
         $r_arr       = explode('&', $resultURL);
 
         foreach ($r_arr as $buf) {
@@ -231,10 +252,10 @@ class PaymentPartner extends ServerPaymentMethod
      * @param array $args_arr
      * @return bool
      */
-    public function isValidIntern($args_arr = array())
+    public function isValidIntern($args_arr = [])
     {
         if (strlen($this->getSender()) == 0) {
-            ZahlungsLog::add($this->moduleID, "Pflichtparameter 'Sender' ist nicht gesetzt!", null, LOGLEVEL_ERROR);
+            ZahlungsLog::add($this->moduleID, 'Pflichtparameter "Sender" ist nicht gesetzt!', null, LOGLEVEL_ERROR);
 
             return false;
         }

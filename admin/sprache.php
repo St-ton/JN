@@ -14,10 +14,13 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'template_inc.php';
 $cHinweis       = '';
 $cFehler        = '';
 $cTab           = 'sprachvariablen';
-$cISO           = (isset($_REQUEST['cISO']) ? $_REQUEST['cISO'] : null);
-$kSprachsektion = (isset($_REQUEST['kSprachsektion']) ? intval($_REQUEST['kSprachsektion']) : null);
-
-$oSprache = Sprache::getInstance(false);
+$cISO           = (isset($_REQUEST['cISO']))
+    ? $_REQUEST['cISO']
+    : null;
+$kSprachsektion = (isset($_REQUEST['kSprachsektion']))
+    ? (int)$_REQUEST['kSprachsektion']
+    : null;
+$oSprache       = Sprache::getInstance(false);
 $oSprache->setzeSprache($cISO);
 if (isset($_POST['clearLog'])) {
     $clear = $oSprache->clearLog();
@@ -37,7 +40,7 @@ if ($oSprache->gueltig() || (isset($_REQUEST['action']) && $_REQUEST['action'] =
                     $oSprache->setzeWert($kSprachsektion, $cName, $cWert_arr[$i]);
                 }
                 $cHinweis = 'Variablen wurden erfolgreich aktualisiert.';
-                Shop::Cache()->flushTags(array(CACHING_GROUP_CORE, CACHING_GROUP_LANGUAGE));
+                Shop::Cache()->flushTags([CACHING_GROUP_CORE, CACHING_GROUP_LANGUAGE]);
                 break;
 
             case 'search':
@@ -49,7 +52,7 @@ if ($oSprache->gueltig() || (isset($_REQUEST['action']) && $_REQUEST['action'] =
                         $oSprache->setzeWert($kSprachsektion_arr[$i], $cName, $cWert_arr[$i]);
                     }
                     $cHinweis = 'Variablen wurden erfolgreich aktualisiert.';
-                    Shop::Cache()->flushTags(array(CACHING_GROUP_CORE, CACHING_GROUP_LANGUAGE));
+                    Shop::Cache()->flushTags([CACHING_GROUP_CORE, CACHING_GROUP_LANGUAGE]);
                 }
                 $cTab      = 'suche';
                 $cSuchwort = $_POST['cSuchwort'];
@@ -92,7 +95,7 @@ if ($oSprache->gueltig() || (isset($_REQUEST['action']) && $_REQUEST['action'] =
                     $nUpdateCount = $oSprache->import($cTmpFile, $cSprachISO, $nTyp);
                     if ($nUpdateCount !== false) {
                         $cHinweis = 'Es wurden ' . $nUpdateCount . ' Variablen aktualisiert';
-                        Shop::Cache()->flushTags(array(CACHING_GROUP_LANGUAGE));
+                        Shop::Cache()->flushTags([CACHING_GROUP_LANGUAGE]);
                     } else {
                         $cFehler = 'Fehler beim Importieren der Datei.';
                     }
@@ -108,7 +111,7 @@ if ($oSprache->gueltig() || (isset($_REQUEST['action']) && $_REQUEST['action'] =
 
                 if ($oSprache->loesche($kSprachsektion, $cName)) {
                     $cHinweis = 'Variable wurde erfolgreich gel&ouml;scht.';
-                    Shop::Cache()->flushTags(array(CACHING_GROUP_LANGUAGE));
+                    Shop::Cache()->flushTags([CACHING_GROUP_LANGUAGE]);
                 } else {
                     $cFehler = 'Variable konnte nicht gel&ouml;scht werden.';
                 }
@@ -121,7 +124,7 @@ if ($oSprache->gueltig() || (isset($_REQUEST['action']) && $_REQUEST['action'] =
                 $cName          = $_POST['cName'];
                 $cSprachISO_arr = $_POST['cSprachISO'];
                 $cWert_arr      = $_POST['cWert'];
-                $bForceInsert   = isset($_POST['forceInsert']) && (int)$_POST['forceInsert'] === 1 ? true : false;
+                $bForceInsert   = isset($_POST['forceInsert']) && (int)$_POST['forceInsert'] === 1;
 
                 if (!preg_match('/([\w\d]+)/', $cName)) {
                     $cFehler = 'Die Variable darf nur aus Buchstaben und Zahlen bestehen.';
@@ -146,21 +149,21 @@ if ($oSprache->gueltig() || (isset($_REQUEST['action']) && $_REQUEST['action'] =
                         }
                     }
                     if ($bError) {
-                        $cFehler = 'Die Variable ' . $cLastName . ' existiert bereits in ' . strtoupper(implode(', ', array_keys($cExistArr))) . '.';
+                        $cFehler = 'Die Variable ' . $cLastName . ' existiert bereits in ' .
+                            strtoupper(implode(', ', array_keys($cExistArr))) . '.';
                         if (count($cInsertArr) > 0) {
-                            $cHinweis = 'Die Variable ' . $cLastName . ' wurde f&uuml;r ' . strtoupper(implode(', ', $cInsertArr)) . ' hinzugef&uuml;gt.';
+                            $cHinweis = 'Die Variable ' . $cLastName . ' wurde f&uuml;r ' .
+                                strtoupper(implode(', ', $cInsertArr)) . ' hinzugef&uuml;gt.';
                         }
-                        $smarty
-                            ->assign('cPostArr', [
+                        $smarty->assign('cPostArr', [
                                     'kSprachsektion' => $kSprachsektion,
                                     'cName'          => $cName,
                                     'cWert'          => $cWert_arr,
                                     'cExist'         => $cExistArr,
-                                ])
-                            ->assign('forceInsert', true);
+                                ])->assign('forceInsert', true);
                     } else {
                         $cHinweis = 'Variable wurde erfolgreich gespeichert.';
-                        Shop::Cache()->flushTags(array(CACHING_GROUP_LANGUAGE));
+                        Shop::Cache()->flushTags([CACHING_GROUP_LANGUAGE]);
                     }
                 }
                 break;
@@ -178,8 +181,8 @@ if ($oSprache->gueltig() || (isset($_REQUEST['action']) && $_REQUEST['action'] =
 
 $oInstallierteSprachen = $oSprache->gibInstallierteSprachen();
 $oVerfuegbareSprachen  = $oSprache->gibVerfuegbareSprachen();
-if (count($oInstallierteSprachen) != count($oVerfuegbareSprachen)) {
-    $cHinweis = "neue Sprache verf&uuml;gbar!";
+if (count($oInstallierteSprachen) !== count($oVerfuegbareSprachen)) {
+    $cHinweis = 'neue Sprache verf&uuml;gbar!';
 }
 $bSpracheAktiv = false;
 foreach ($oInstallierteSprachen as $ilang) {
@@ -188,7 +191,7 @@ foreach ($oInstallierteSprachen as $ilang) {
     }
 }
 foreach ($oVerfuegbareSprachen as $vlang) {
-    $vlang->isImported = (in_array($vlang, $oInstallierteSprachen)) ? true : false;
+    $vlang->isImported = (in_array($vlang, $oInstallierteSprachen));
 }
 
 $smarty->assign('hinweis', $cHinweis)

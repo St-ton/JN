@@ -87,11 +87,11 @@ class Merkmal
      */
     public function loadFromDB($kMerkmal, $bMMW = false)
     {
-        $kSprache = Shop::$kSprache;
+        $kSprache = Shop::getLanguage();
         if (!$kSprache) {
             $oSprache = Shop::DB()->select('tsprache', 'cShopStandard', 'Y');
             if ($oSprache->kSprache > 0) {
-                $kSprache = $oSprache->kSprache;
+                $kSprache = (int)$oSprache->kSprache;
             }
         }
         $kSprache             = (int)$kSprache;
@@ -107,7 +107,7 @@ class Merkmal
             "SELECT tmerkmal.* " . $oSQLMerkmal->cSELECT . "
                 FROM tmerkmal
                 " . $oSQLMerkmal->cJOIN . "
-                WHERE tmerkmal.kMerkmal = " . intval($kMerkmal) . "
+                WHERE tmerkmal.kMerkmal = " . (int)$kMerkmal . "
                 ORDER BY tmerkmal.nSort", 1
         );
         if (isset($oMerkmal->kMerkmal) && $oMerkmal->kMerkmal > 0) {

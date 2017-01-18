@@ -26,11 +26,6 @@ if (isset($_POST['delete-run-submit']) && validateToken()) {
             $cFehler = 'Eintr&auml;ge konnten nicht gel&ouml;scht werden. ';
         }
     }
-} elseif (isset($_POST['reset-sql-stats']) && validateToken()) {
-    //clear sql profiler data
-    Shop::DB()->resetCollectedData();
-    $cHinweis .= 'Statstik erfolgreich zur&uuml;ckgesetzt.';
-    $tab = 'sqlprofiler';
 }
 
 $pluginProfilerData = Profiler::getPluginProfiles();
@@ -38,17 +33,28 @@ if (count($pluginProfilerData) > 0) {
     $axis    = new stdClass();
     $axis->x = 'filename';
     $axis->y = 'runtime';
-    $colors  = array('#7cb5ec', '#434348', '#90ed7d', '#f7a35c', '#8085e9', '#f15c80', '#e4d354', '#8085e8', '#8d4653', '#91e8e1');
     $idx     = 0;
+    $colors  = [
+        '#7cb5ec',
+        '#434348',
+        '#90ed7d',
+        '#f7a35c',
+        '#8085e9',
+        '#f15c80',
+        '#e4d354',
+        '#8085e8',
+        '#8d4653',
+        '#91e8e1'
+    ];
     foreach ($pluginProfilerData as $_run) {
-        $hooks      = array();
-        $categories = array();
-        $data       = array();
+        $hooks      = [];
+        $categories = [];
+        $data       = [];
         $runtime    = 0.0;
         foreach ($_run->data as $_hookExecution) {
             if (isset($_hookExecution->hookID)) {
                 if (!isset($hooks[$_hookExecution->hookID])) {
-                    $hooks[$_hookExecution->hookID] = array();
+                    $hooks[$_hookExecution->hookID] = [];
                 }
                 $hooks[$_hookExecution->hookID][] = $_hookExecution;
             }
@@ -62,9 +68,9 @@ if (count($pluginProfilerData) > 0) {
             $hookData->color                 = $colors[$idx];
             $hookData->drilldown             = new stdClass();
             $hookData->drilldown->name       = 'Hook ' . $hookID;
-            $hookData->drilldown->categories = array();
-            $hookData->drilldown->data       = array();
-            $hookData->drilldown->runcount   = array();
+            $hookData->drilldown->categories = [];
+            $hookData->drilldown->data       = [];
+            $hookData->drilldown->runcount   = [];
             $hookData->color                 = $colors[$idx];
             foreach ($_hook as $_file) {
                 $hookData->y += (floatval($_file->runtime) * 1000);

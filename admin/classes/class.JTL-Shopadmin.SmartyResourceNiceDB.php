@@ -39,7 +39,8 @@ class SmartyResourceNiceDB extends Smarty_Resource_Custom
             $source = $exportformat->cContent;
         } elseif ($this->type === 'mail') {
             $pcs = explode('_', $name);
-            if (isset($pcs[0]) && isset($pcs[1]) && isset($pcs[2]) && isset($pcs[3]) && $pcs[3] === 'anbieterkennzeichnung') {
+            if (isset($pcs[0]) && isset($pcs[1]) && isset($pcs[2]) && isset($pcs[3]) &&
+                $pcs[3] === 'anbieterkennzeichnung') {
                 // Anbieterkennzeichnungsvorlage holen
                 $vl = Shop::DB()->query(
                     "SELECT tevs.cContentHtml, tevs.cContentText
@@ -68,7 +69,8 @@ class SmartyResourceNiceDB extends Smarty_Resource_Custom
                 }
             } else {
                 $source = '';
-                Jtllog::writeLog('Emailvorlage mit der ID ' . (int)$pcs[1] . ' in der Sprache ' . (int)$pcs[2] . ' wurde nicht gefunden', JTLLOG_LEVEL_NOTICE);
+                Jtllog::writeLog('Emailvorlage mit der ID ' . (int)$pcs[1] .
+                    ' in der Sprache ' . (int)$pcs[2] . ' wurde nicht gefunden', JTLLOG_LEVEL_NOTICE);
             }
         } elseif ($this->type === 'newsletter') {
             $cTeile_arr = explode('_', $name);

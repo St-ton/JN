@@ -30,7 +30,11 @@ if (PHP_ERROR_HANDLER) {
             E_DEPRECATED        => 'E_DEPRECATED',
             E_USER_DEPRECATED   => 'E_USER_DEPRECATED'
         ];
-        file_put_contents(PFAD_LOGFILES . "php_error.log", date("[Y-m-d H:i:s] ") . "(" . $types[$errno] . ") File ({$errfile}, {$errline}): {$errstr}\n", FILE_APPEND);
+        file_put_contents(
+            PFAD_LOGFILES . 'php_error.log',
+            date("[Y-m-d H:i:s] ") . "(" . $types[$errno] . ") File ({$errfile}, {$errline}): {$errstr}\n",
+            FILE_APPEND
+        );
     }
 
     set_error_handler('jtlErrorHandler', E_ALL ^ E_NOTICE);

@@ -118,9 +118,19 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
 
                 if ($kBestellung > 0) {
                     $this->kBestellung = $kBestellung;
-                    $oBestellung       = Shop::DB()->select('tbestellung', 'kBestellung', $kBestellung, null, null, null, null, false, 'kBestellung, dBezahltDatum');
-
-                    if (isset($oBestellung->kBestellung) && $oBestellung->kBestellung > 0 && $oBestellung->dBezahltDatum !== '0000-00-00' && $this->getTage() > 0) {
+                    $oBestellung       = Shop::DB()->select(
+                        'tbestellung',
+                        'kBestellung',
+                        $kBestellung,
+                        null,
+                        null,
+                        null,
+                        null,
+                        false,
+                        'kBestellung, dBezahltDatum'
+                    );
+                    if (isset($oBestellung->kBestellung) && $oBestellung->kBestellung > 0 &&
+                        $oBestellung->dBezahltDatum !== '0000-00-00' && $this->getTage() > 0) {
                         $paymentDate = new DateTime($oBestellung->dBezahltDatum);
                         $modifyBy    = $this->getTage() + 1;
                         $paymentDate->modify('+' . $modifyBy . ' day');
@@ -133,7 +143,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
                     "SELECT tartikeldownload.*
                         FROM tartikeldownload
                         JOIN tdownload 
-                          ON tdownload.kDownload = tartikeldownload.kDownload
+                            ON tdownload.kDownload = tartikeldownload.kDownload
                         WHERE tartikeldownload.kDownload = " . (int)$this->kDownload . "
                         ORDER BY tdownload.nSort", 2
                 );
@@ -186,9 +196,12 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
             return Shop::DB()->query(
                 "DELETE tdownload, tdownloadhistory, tdownloadsprache, tartikeldownload
                     FROM tdownload
-                    JOIN tdownloadsprache ON tdownloadsprache.kDownload = tdownload.kDownload
-                    LEFT JOIN tartikeldownload ON tartikeldownload.kDownload = tdownload.kDownload
-                    LEFT JOIN tdownloadhistory ON tdownloadhistory.kDownload = tdownload.kDownload
+                    JOIN tdownloadsprache 
+                        ON tdownloadsprache.kDownload = tdownload.kDownload
+                    LEFT JOIN tartikeldownload 
+                        ON tartikeldownload.kDownload = tdownload.kDownload
+                    LEFT JOIN tdownloadhistory 
+                        ON tdownloadhistory.kDownload = tdownload.kDownload
                     WHERE tdownload.kDownload = " . (int)$this->kDownload, 3
             );
         }
@@ -234,7 +247,12 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
                 );
                 if (is_array($oDown_arr) && count($oDown_arr) > 0) {
                     foreach ($oDown_arr as $i => &$oDown) {
-                        $oDownload_arr[$i] = new self($oDown->kDownload, $kSprache, true, (isset($oDown->kBestellung) ? $oDown->kBestellung : 0));
+                        $oDownload_arr[$i] = new self(
+                            $oDown->kDownload,
+                            $kSprache,
+                            true,
+                            (isset($oDown->kBestellung) ? $oDown->kBestellung : 0)
+                        );
                         if (($kBestellung > 0 || $kKunde > 0) && $oDownload_arr[$i]->getAnzahl() > 0) {
                             $oDownloadHistory_arr = DownloadHistory::getOrderHistory($oDown->kKunde, $oDown->kBestellung);
                             $kDownload            = $oDownload_arr[$i]->getDownload();
@@ -292,7 +310,11 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
                     $oDownloadHistory->setErstellt('now()');
                     $oDownloadHistory->save();
 
-                    self::send_file_to_browser(PFAD_DOWNLOADS . $oDownload->getPfad(), 'application/octet-stream', true);
+                    self::send_file_to_browser(
+                        PFAD_DOWNLOADS . $oDownload->getPfad(),
+                        'application/octet-stream',
+                        true
+                    );
 
                     return 1;
                 }
@@ -326,7 +348,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
             if ($kDownload > 0 && $kKunde > 0 && $kBestellung > 0) {
                 $oBestellung = new Bestellung($kBestellung);
                 // Existiert die Bestellung und wurde Sie bezahlt?
-                if ($oBestellung->kBestellung > 0 && ($oBestellung->dBezahltDatum !== '0000-00-00' || $oBestellung->dBezahltDatum !== null)) {
+                if ($oBestellung->kBestellung > 0 &&
+                    ($oBestellung->dBezahltDatum !== '0000-00-00' || $oBestellung->dBezahltDatum !== null)
+                ) {
                     // Stimmt der Kunde?
                     if ($oBestellung->kKunde == $kKunde) {
                         $oBestellung->fuelleBestellung();
@@ -338,7 +362,10 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_DOWNLOADS)) {
                                     if ($oPosition->kArtikel == $oArtikelDownload->kArtikel) {
                                         // Check Anzahl
                                         if ($oDownload->getAnzahl() > 0) {
-                                            $oDownloadHistory_arr = DownloadHistory::getOrderHistory($kKunde, $kBestellung);
+                                            $oDownloadHistory_arr = DownloadHistory::getOrderHistory(
+                                                $kKunde,
+                                                $kBestellung
+                                            );
                                             if (count($oDownloadHistory_arr[$oDownload->kDownload]) >= $oDownload->getAnzahl()) {
                                                 return 5;
                                             }

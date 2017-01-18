@@ -332,7 +332,7 @@ class Plugin
     public function loadFromDB($kPlugin, $invalidateCache = false)
     {
         $kPlugin = (int)$kPlugin;
-        $cacheID = CACHING_GROUP_PLUGIN . '_' . $kPlugin . '_' . pruefeSSL() . '_' . (int)Shop::$kSprache;
+        $cacheID = CACHING_GROUP_PLUGIN . '_' . $kPlugin . '_' . pruefeSSL() . '_' . Shop::getLanguage();
         if ($invalidateCache === true) {
             //plugin options were save in admin backend, so invalidate the cache
             Shop::Cache()->flush('hook_list');

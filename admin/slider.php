@@ -13,8 +13,12 @@ $cFehler      = '';
 $cHinweis     = '';
 $_kSlider     = 0;
 $cRedirectUrl = Shop::getURL() . '/' . PFAD_ADMIN . 'slider.php';
-$cAction = ((isset($_REQUEST['action']) && validateToken()) ? $_REQUEST['action'] : 'view');
-$kSlider = (isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0);
+$cAction      = (isset($_REQUEST['action']) && validateToken())
+    ? $_REQUEST['action']
+    : 'view';
+$kSlider      = (isset($_REQUEST['id']))
+    ? (int)$_REQUEST['id']
+    : 0;
 
 switch ($cAction) {
     case 'slide_set':
@@ -22,7 +26,9 @@ switch ($cAction) {
         for ($i = 0;$i < count($aSlideKey);$i++) {
             $oSlide               = new Slide();
             $aSlide               = $_REQUEST['aSlide'][$aSlideKey[$i]];
-            $oSlide->kSlide       = ((strpos($aSlideKey[$i], 'neu') === false) ? $aSlideKey[$i] : null);
+            $oSlide->kSlide       = (strpos($aSlideKey[$i], 'neu') === false)
+                ? $aSlideKey[$i]
+                : null;
             $oSlide->kSlider      = $kSlider;
             $oSlide->cTitel       = htmlspecialchars($aSlide['cTitel']);
             $oSlide->cBild        = $aSlide['cBild'];
@@ -45,7 +51,7 @@ switch ($cAction) {
             $oSlider->load($kSlider);
             $oSlider->set($_REQUEST);
             // extensionpoint
-            $kSprache      = $_POST['kSprache'];
+            $kSprache      = (int)$_POST['kSprache'];
             $kKundengruppe = $_POST['kKundengruppe'];
             $nSeite        = $_POST['nSeitenTyp'];
             $cKey          = $_POST['cKey'];
@@ -58,13 +64,13 @@ switch ($cAction) {
                 $cValue    = $_POST[$cKeyValue];
             } elseif ($nSeite == PAGE_ARTIKELLISTE) {
                 // data mapping
-                $aFilter_arr = array(
+                $aFilter_arr = [
                     'kTag'         => 'tag_key',
                     'kMerkmalWert' => 'attribute_key',
                     'kKategorie'   => 'categories_key',
                     'kHersteller'  => 'manufacturer_key',
                     'cSuche'       => 'keycSuche'
-                );
+                ];
 
                 $cKeyValue = $aFilter_arr[$cKey];
                 $cValue    = $_POST[$cKeyValue];
@@ -82,7 +88,7 @@ switch ($cAction) {
                 $oSlider->cEffects = 'random';
             }
             if ($oSlider->save() === true) {
-                Shop::DB()->delete('textensionpoint', array('cClass', 'kInitial'), array('Slider', $oSlider->kSlider));
+                Shop::DB()->delete('textensionpoint', ['cClass', 'kInitial'], ['Slider', $oSlider->kSlider]);
                 // save extensionpoint
                 $oExtension                = new stdClass();
                 $oExtension->kSprache      = $kSprache;

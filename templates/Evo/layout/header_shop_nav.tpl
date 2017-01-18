@@ -24,7 +24,7 @@
     {/if}
     {if isset($smarty.session.Waehrungen) && $smarty.session.Waehrungen|@count > 1}
         <li class="currency-dropdown dropdown visible-xs">
-            <a id="xxxxx" href="#" class="dropdown-toggle" data-toggle="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                 {if $smarty.session.Waehrung->cISO === 'EUR'}
                     <i class="fa fa-eur" title="{$smarty.session.Waehrung->cName}"></i>
                 {elseif $smarty.session.Waehrung->cISO === 'USD'}

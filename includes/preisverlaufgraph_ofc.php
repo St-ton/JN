@@ -35,7 +35,7 @@ function expandPriceArray($data, $max)
 
 if (isset($_GET['kArtikel'])) {
     $session       = Session::getInstance();
-    $Einstellungen = Shop::getSettings(array(CONF_PREISVERLAUF));
+    $Einstellungen = Shop::getSettings([CONF_PREISVERLAUF]);
     $kArtikel      = (int)$_GET['kArtikel'];
     $kKundengruppe = (int)$_GET['kKundengruppe'];
     $kSteuerklasse = (int)$_GET['kSteuerklasse'];
@@ -53,7 +53,7 @@ if (isset($_GET['kArtikel'])) {
         $oVerlauf_arr = $oVerlauf->gibPreisverlauf($kArtikel, $kKundengruppe, $nMonat);
         // Array drehen :D
         $oVerlauf_arr = array_reverse($oVerlauf_arr);
-        $data         = array();
+        $data         = [];
         foreach ($oVerlauf_arr as $oItem) {
             $fPreis = round(floatval($oItem->fVKNetto + ($oItem->fVKNetto * ($oPreisConfig->Netto / 100.0))), 2);
             $data[] = $fPreis;
@@ -77,7 +77,7 @@ if (isset($_GET['kArtikel'])) {
         $x = new x_axis();
         $x->set_colour('#bfbfbf');
         $x->set_grid_colour('#f0f0f0');
-        $x_labels = array();
+        $x_labels = [];
 
         foreach ($oVerlauf_arr as $oItem) {
             $x_labels[] = date('d.m.', $oItem->timestamp);

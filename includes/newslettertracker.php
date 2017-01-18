@@ -15,7 +15,17 @@ if (verifyGPCDataInteger('kK') > 0 && verifyGPCDataInteger('kN') > 0 && verifyGP
     $kNewsletter           = verifyGPCDataInteger('kN');
     $kNewsletterEmpfaenger = verifyGPCDataInteger('kNE');
     // Prüfe ob der Newsletter vom Newsletterempfänger bereits geöffnet wurde.
-    $oNewsletterTrackTMP = Shop::DB()->select('tnewslettertrack', 'kKampagne', $kKampagne, 'kNewsletter', $kNewsletter, 'kNewsletterEmpfaenger', $kNewsletterEmpfaenger, false, 'kNewsletterTrack');
+    $oNewsletterTrackTMP = Shop::DB()->select(
+        'tnewslettertrack',
+        'kKampagne',
+        $kKampagne,
+        'kNewsletter',
+        $kNewsletter,
+        'kNewsletterEmpfaenger',
+        $kNewsletterEmpfaenger,
+        false,
+        'kNewsletterTrack'
+    );
     if (!isset($oNewsletterTrackTMP->kNewsletterTrack)) {
         $oNewsletterTrack                        = new stdClass();
         $oNewsletterTrack->kKampagne             = $kKampagne;

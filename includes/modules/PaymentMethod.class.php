@@ -87,8 +87,12 @@ class PaymentMethod
         $this->name = '';
         // Fetch Caption/Name and Image from DB
         $result               = Shop::DB()->select('tzahlungsart', 'cModulId', $this->moduleID);
-        $this->caption        = (isset($result->cName)) ? $result->cName : null;
-        $this->duringCheckout = (isset($result->nWaehrendBestellung)) ? $result->nWaehrendBestellung : 0;
+        $this->caption        = (isset($result->cName))
+            ? $result->cName
+            : null;
+        $this->duringCheckout = (isset($result->nWaehrendBestellung))
+            ? (int)$result->nWaehrendBestellung
+            : 0;
 
         if ($nAgainCheckout == 1) {
             $this->duringCheckout = 0;
@@ -120,8 +124,13 @@ class PaymentMethod
     {
         if (!isset($_SESSION['Zahlungsart']->nWaehrendBestellung) || $_SESSION['Zahlungsart']->nWaehrendBestellung == 0) {
             global $Einstellungen;
-            if ($Einstellungen['kaufabwicklung']['bestellabschluss_abschlussseite'] === 'A') { // Abschlussseite
-                $oZahlungsID = Shop::DB()->query("SELECT cId FROM tbestellid WHERE kBestellung = " . (int)$order->kBestellung, 1);
+            if ($Einstellungen['kaufabwicklung']['bestellabschluss_abschlussseite'] === 'A') {
+                // Abschlussseite
+                $oZahlungsID = Shop::DB()->query("
+                    SELECT cId 
+                        FROM tbestellid 
+                        WHERE kBestellung = " . (int)$order->kBestellung, 1
+                );
                 if (is_object($oZahlungsID)) {
                     return Shop::getURL() . '/bestellabschluss.php?i=' . $oZahlungsID->cId;
                 }
@@ -194,7 +203,7 @@ class PaymentMethod
         global $Einstellungen;
         // Load Mail Settings
         if (!isset($Einstellungen['emails'])) {
-            $Einstellungen = Shop::getSettings(array(CONF_EMAILS));
+            $Einstellungen = Shop::getSettings([CONF_EMAILS]);
         }
         $mail = new stdClass();
         // Content
@@ -413,7 +422,7 @@ class PaymentMethod
             $Einstellungen = [];
         }
         if (!array_key_exists('zahlungsarten', $Einstellungen) || $Einstellungen['zahlungsarten'] === null) {
-            $Einstellungen = array_merge($Einstellungen, Shop::getSettings(array(CONF_ZAHLUNGSARTEN)));
+            $Einstellungen = array_merge($Einstellungen, Shop::getSettings([CONF_ZAHLUNGSARTEN]));
         }
         $this->paymentConfig = $Einstellungen['zahlungsarten'];
 
@@ -426,7 +435,7 @@ class PaymentMethod
      */
     public function getSetting($key)
     {
-        $Einstellungen = Shop::getSettings(array(CONF_ZAHLUNGSARTEN, CONF_PLUGINZAHLUNGSARTEN));
+        $Einstellungen = Shop::getSettings([CONF_ZAHLUNGSARTEN, CONF_PLUGINZAHLUNGSARTEN]);
 
         return (isset($Einstellungen['zahlungsarten']['zahlungsart_' . $this->moduleAbbr . '_' . $key]))
             ? $Einstellungen['zahlungsarten']['zahlungsart_' . $this->moduleAbbr . '_' . $key]
@@ -506,7 +515,7 @@ class PaymentMethod
      * @param array $args_arr
      * @return bool
      */
-    public function isValidIntern($args_arr = array())
+    public function isValidIntern($args_arr = [])
     {
         // Overwrite
         return true;

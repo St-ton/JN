@@ -125,7 +125,12 @@ function pruefeKategorieSichtbarkeit($kKundengruppe)
         $categoryList = $_SESSION;
     }
 
-    $oKatSichtbarkeit_arr = Shop::DB()->selectAll('tkategoriesichtbarkeit', 'kKundengruppe', $kKundengruppe, 'kKategorie');
+    $oKatSichtbarkeit_arr = Shop::DB()->selectAll(
+        'tkategoriesichtbarkeit',
+        'kKundengruppe',
+        $kKundengruppe,
+        'kKategorie'
+    );
 
     if (is_array($oKatSichtbarkeit_arr) && count($oKatSichtbarkeit_arr) > 0) {
         $cKatKey_arr = array_keys($categoryList);
@@ -135,7 +140,8 @@ function pruefeKategorieSichtbarkeit($kKundengruppe)
                     unset($categoryList['kKategorieVonUnterkategorien_arr'][0][$i]);
                     $save = true;
                 }
-                $categoryList['kKategorieVonUnterkategorien_arr'][0] = array_merge($categoryList['kKategorieVonUnterkategorien_arr'][0]);
+                $categoryList['kKategorieVonUnterkategorien_arr'][0] =
+                    array_merge($categoryList['kKategorieVonUnterkategorien_arr'][0]);
             }
 
             if (isset($categoryList['kKategorieVonUnterkategorien_arr'][$oKatSichtbarkeit->kKategorie])) {
@@ -179,19 +185,35 @@ function setzeWarenkorbPersInWarenkorb($kKunde)
             if ($oWarenkorbPos->nPosTyp === C_WARENKORBPOS_TYP_GRATISGESCHENK) {
                 $kArtikelGeschenk = (int)$oWarenkorbPos->kArtikel;
                 // Pruefen ob der Artikel wirklich ein Gratis Geschenk ist
-                $oArtikelGeschenk = Shop::DB()->query(
-                    "SELECT tartikelattribut.kArtikel, tartikel.fLagerbestand, tartikel.cLagerKleinerNull, tartikel.cLagerBeachten
+                $oArtikelGeschenk = Shop::DB()->query("
+                    SELECT tartikelattribut.kArtikel, tartikel.fLagerbestand, 
+                      tartikel.cLagerKleinerNull, tartikel.cLagerBeachten
                     FROM tartikelattribut
-                        JOIN tartikel ON tartikel.kArtikel = tartikelattribut.kArtikel
+                        JOIN tartikel 
+                            ON tartikel.kArtikel = tartikelattribut.kArtikel
                     WHERE tartikelattribut.kArtikel = " . $kArtikelGeschenk . "
                         AND tartikelattribut.cName = '" . FKT_ATTRIBUT_GRATISGESCHENK . "'
-                        AND CAST(tartikelattribut.cWert AS DECIMAL) <= " . $_SESSION['Warenkorb']->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true), 1
+                        AND CAST(tartikelattribut.cWert AS DECIMAL) <= " .
+                            $_SESSION['Warenkorb']->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true), 1
                 );
                 if (isset($oArtikelGeschenk->kArtikel) && $oArtikelGeschenk->kArtikel > 0) {
-                    fuegeEinInWarenkorbPers($kArtikelGeschenk, 1, [], null, null, (int)C_WARENKORBPOS_TYP_GRATISGESCHENK);
+                    fuegeEinInWarenkorbPers(
+                        $kArtikelGeschenk,
+                        1,
+                        [],
+                        null,
+                        null,
+                        (int)C_WARENKORBPOS_TYP_GRATISGESCHENK
+                    );
                 }
             } else {
-                fuegeEinInWarenkorbPers($oWarenkorbPos->kArtikel, $oWarenkorbPos->nAnzahl, $oWarenkorbPos->WarenkorbPosEigenschaftArr, $oWarenkorbPos->cUnique, $oWarenkorbPos->kKonfigitem);
+                fuegeEinInWarenkorbPers(
+                    $oWarenkorbPos->kArtikel,
+                    $oWarenkorbPos->nAnzahl,
+                    $oWarenkorbPos->WarenkorbPosEigenschaftArr,
+                    $oWarenkorbPos->cUnique,
+                    $oWarenkorbPos->kKonfigitem
+                );
             }
         }
         $_SESSION['Warenkorb']->PositionenArr = [];
@@ -203,16 +225,22 @@ function setzeWarenkorbPersInWarenkorb($kKunde)
             if ($oWarenkorbPersPos->nPosTyp === C_WARENKORBPOS_TYP_GRATISGESCHENK) {
                 $kArtikelGeschenk = (int)$oWarenkorbPersPos->kArtikel;
                 // Pruefen ob der Artikel wirklich ein Gratis Geschenk ist
-                $oArtikelGeschenk = Shop::DB()->query(
-                    "SELECT tartikelattribut.kArtikel, tartikel.fLagerbestand, tartikel.cLagerKleinerNull, tartikel.cLagerBeachten
+                $oArtikelGeschenk = Shop::DB()->query("
+                    SELECT tartikelattribut.kArtikel, tartikel.fLagerbestand, 
+                    tartikel.cLagerKleinerNull, tartikel.cLagerBeachten
                     FROM tartikelattribut
-                        JOIN tartikel ON tartikel.kArtikel = tartikelattribut.kArtikel
+                        JOIN tartikel 
+                          ON tartikel.kArtikel = tartikelattribut.kArtikel
                     WHERE tartikelattribut.kArtikel = " . $kArtikelGeschenk . "
                         AND tartikelattribut.cName = '" . FKT_ATTRIBUT_GRATISGESCHENK . "'
-                        AND CAST(tartikelattribut.cWert AS DECIMAL) <= " . $_SESSION['Warenkorb']->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true), 1
+                        AND CAST(tartikelattribut.cWert AS DECIMAL) <= " .
+                            $_SESSION['Warenkorb']->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true), 1
                 );
                 if (isset($oArtikelGeschenk->kArtikel) && $oArtikelGeschenk->kArtikel > 0) {
-                    if ($oArtikelGeschenk->fLagerbestand <= 0 && $oArtikelGeschenk->cLagerKleinerNull === 'N' && $oArtikelGeschenk->cLagerBeachten === 'Y') {
+                    if ($oArtikelGeschenk->fLagerbestand <= 0 &&
+                        $oArtikelGeschenk->cLagerKleinerNull === 'N' &&
+                        $oArtikelGeschenk->cLagerBeachten === 'Y'
+                    ) {
                         break;
                     } else {
                         executeHook(HOOK_WARENKORB_PAGE_GRATISGESCHENKEINFUEGEN);
@@ -221,7 +249,14 @@ function setzeWarenkorbPersInWarenkorb($kKunde)
                     }
                 }
             } else {
-                fuegeEinInWarenkorb($oWarenkorbPersPos->kArtikel, $oWarenkorbPersPos->fAnzahl, $oWarenkorbPersPos->oWarenkorbPersPosEigenschaft_arr, 1, $oWarenkorbPersPos->cUnique, $oWarenkorbPersPos->kKonfigitem);
+                fuegeEinInWarenkorb(
+                    $oWarenkorbPersPos->kArtikel,
+                    $oWarenkorbPersPos->fAnzahl,
+                    $oWarenkorbPersPos->oWarenkorbPersPosEigenschaft_arr,
+                    1,
+                    $oWarenkorbPersPos->cUnique,
+                    $oWarenkorbPersPos->kKonfigitem
+                );
             }
         }
     }
@@ -237,7 +272,10 @@ function setzeWarenkorbPersInWarenkorb($kKunde)
 function pruefeWarenkorbArtikelSichtbarkeit($kKundengruppe)
 {
     $kKundengruppe = (int)$kKundengruppe;
-    if ($kKundengruppe > 0 && isset($_SESSION['Warenkorb']->PositionenArr) && count($_SESSION['Warenkorb']->PositionenArr) > 0) {
+    if ($kKundengruppe > 0 &&
+        isset($_SESSION['Warenkorb']->PositionenArr) &&
+        count($_SESSION['Warenkorb']->PositionenArr) > 0
+    ) {
         foreach ($_SESSION['Warenkorb']->PositionenArr as $i => $oPosition) {
             // Wenn die Position ein Artikel ist
             $bKonfig = (isset($oPosition->cUnique) && strlen($oPosition->cUnique) === 10);
@@ -250,10 +288,12 @@ function pruefeWarenkorbArtikelSichtbarkeit($kKundengruppe)
                         AND kKundengruppe = " . $kKundengruppe, 1
                 );
 
-                if (isset($oArtikelSichtbarkeit->kArtikel) && $oArtikelSichtbarkeit->kArtikel > 0 && intval($_SESSION['Warenkorb']->PositionenArr[$i]->kKonfigitem) === 0) {
+                if (isset($oArtikelSichtbarkeit->kArtikel) &&
+                    $oArtikelSichtbarkeit->kArtikel > 0 &&
+                    intval($_SESSION['Warenkorb']->PositionenArr[$i]->kKonfigitem) === 0
+                ) {
                     unset($_SESSION['Warenkorb']->PositionenArr[$i]);
                 }
-
                 // Auf vorhandenen Preis prüfen
                 $oArtikelPreis = Shop::DB()->query(
                     "SELECT fVKNetto

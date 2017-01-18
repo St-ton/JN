@@ -60,15 +60,15 @@ if (class_exists('AuswahlAssistent')) {
         public $cKategorie;
 
         /**
-         * @param int  $kAuswahlAssistentGruppe
+         * @param int  $groupID
          * @param bool $bAktiv
          * @param bool $bAktivFrage
          * @param bool $bBackend
          */
-        public function __construct($kAuswahlAssistentGruppe = 0, $bAktiv = true, $bAktivFrage = true, $bBackend = false)
+        public function __construct($groupID = 0, $bAktiv = true, $bAktivFrage = true, $bBackend = false)
         {
-            if ($kAuswahlAssistentGruppe > 0) {
-                $this->loadFromDB($kAuswahlAssistentGruppe, $bAktiv, $bAktivFrage, $bBackend);
+            if ($groupID > 0) {
+                $this->loadFromDB($groupID, $bAktiv, $bAktivFrage, $bBackend);
             }
         }
 
@@ -99,7 +99,10 @@ if (class_exists('AuswahlAssistent')) {
                         }
                     }
                     // Fragen
-                    $this->oAuswahlAssistentFrage_arr = AuswahlAssistentFrage::getQuestions($oGruppe->kAuswahlAssistentGruppe, $bAktivFrage);
+                    $this->oAuswahlAssistentFrage_arr = AuswahlAssistentFrage::getQuestions(
+                        $oGruppe->kAuswahlAssistentGruppe,
+                        $bAktivFrage
+                    );
                     $oAuswahlAssistentOrt = new AuswahlAssistentOrt(0, $this->kAuswahlAssistentGruppe, $bBackend);
                     $this->oAuswahlAssistentOrt_arr = $oAuswahlAssistentOrt->oOrt_arr;
                     if (count($this->oAuswahlAssistentOrt_arr) > 0) {
@@ -195,7 +198,12 @@ if (class_exists('AuswahlAssistent')) {
                 $_upd->cBeschreibung = $this->cBeschreibung;
                 $_upd->nAktiv        = $this->nAktiv;
 
-                Shop::DB()->update('tauswahlassistentgruppe', 'kAuswahlAssistentGruppe', (int)$this->kAuswahlAssistentGruppe, $_upd);
+                Shop::DB()->update(
+                    'tauswahlassistentgruppe',
+                    'kAuswahlAssistentGruppe',
+                    (int)$this->kAuswahlAssistentGruppe,
+                    $_upd
+                );
                 AuswahlAssistentOrt::updateLocation($cParam_arr, $this->kAuswahlAssistentGruppe);
 
                 return true;

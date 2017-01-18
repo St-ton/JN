@@ -93,7 +93,7 @@ if (class_exists('AuswahlAssistent')) {
          */
         public static function getQuestions($kAuswahlAssistentGruppe, $bAktiv = true)
         {
-            $oAuswahlAssistentFrage_arr = array();
+            $oAuswahlAssistentFrage_arr = [];
             if (intval($kAuswahlAssistentGruppe) > 0) {
                 $cAktivSQL = '';
                 if ($bAktiv) {
@@ -174,7 +174,11 @@ if (class_exists('AuswahlAssistent')) {
                 is_array($cParam_arr['kAuswahlAssistentFrage_arr']) &&
                 count($cParam_arr['kAuswahlAssistentFrage_arr']) > 0) {
                 foreach ($cParam_arr['kAuswahlAssistentFrage_arr'] as $kAuswahlAssistentFrage) {
-                    Shop::DB()->delete('tauswahlassistentfrage', 'kAuswahlAssistentFrage', (int)$kAuswahlAssistentFrage);
+                    Shop::DB()->delete(
+                        'tauswahlassistentfrage',
+                        'kAuswahlAssistentFrage',
+                        (int)$kAuswahlAssistentFrage
+                    );
                 }
 
                 return true;
@@ -189,7 +193,7 @@ if (class_exists('AuswahlAssistent')) {
          */
         public function checkQuestion($bUpdate = false)
         {
-            $cPlausi_arr = array();
+            $cPlausi_arr = [];
             // Frage
             if (strlen($this->cFrage) === 0) {
                 $cPlausi_arr['cFrage'] = 1;

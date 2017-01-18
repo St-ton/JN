@@ -13,7 +13,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         /**
          * @var array
          */
-        private static $oGruppen_arr = array();
+        private static $oGruppen_arr = [];
 
         /**
          * getKonfig
@@ -95,7 +95,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                     if ($oPosition->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL) {
                         // Konfigvater
                         if ($oPosition->cUnique && $oPosition->kKonfigitem == 0) {
-                            $oKonfigitem_arr = array();
+                            $oKonfigitem_arr = [];
 
                             // Alle Kinder suchen
                             foreach ($oBasket->PositionenArr as $oChildPosition) {
@@ -163,7 +163,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 $fFinalPrice += $oKonfigitem->getPreis(true) * $oKonfigitem->fAnzahl;
             }
 
-            $aError_arr = array();
+            $aError_arr = [];
             foreach (self::getKonfig($kArtikel) as $oGruppe) {
                 $nItemCount    = 0;
                 $kKonfiggruppe = $oGruppe->getKonfiggruppe();
@@ -174,17 +174,21 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 }
                 if ($nItemCount < $oGruppe->getMin() && $oGruppe->getMin() > 0) {
                     if ($oGruppe->getMin() == $oGruppe->getMax()) {
-                        $aError_arr[$kKonfiggruppe] = Shop::Lang()->get('configChooseNComponents', 'productDetails', $oGruppe->getMin());
+                        $aError_arr[$kKonfiggruppe] =
+                            Shop::Lang()->get('configChooseNComponents', 'productDetails', $oGruppe->getMin());
                     } else {
-                        $aError_arr[$kKonfiggruppe] = Shop::Lang()->get('configChooseMinComponents', 'productDetails', $oGruppe->getMin());
+                        $aError_arr[$kKonfiggruppe] =
+                            Shop::Lang()->get('configChooseMinComponents', 'productDetails', $oGruppe->getMin());
                     }
                     $aError_arr[$kKonfiggruppe] .= self::langComponent($oGruppe->getMin() > 1);
                 } elseif ($nItemCount > $oGruppe->getMax() && $oGruppe->getMax() > 0) {
                     if ($oGruppe->getMin() == $oGruppe->getMax()) {
-                        $aError_arr[$kKonfiggruppe] = Shop::Lang()->get('configChooseNComponents', 'productDetails', $oGruppe->getMin()) .
+                        $aError_arr[$kKonfiggruppe] =
+                            Shop::Lang()->get('configChooseNComponents', 'productDetails', $oGruppe->getMin()) .
                             self::langComponent($oGruppe->getMin() > 1);
                     } else {
-                        $aError_arr[$kKonfiggruppe] = Shop::Lang()->get('configChooseMaxComponents', 'productDetails', $oGruppe->getMax()) .
+                        $aError_arr[$kKonfiggruppe] =
+                            Shop::Lang()->get('configChooseMaxComponents', 'productDetails', $oGruppe->getMax()) .
                             self::langComponent($oGruppe->getMax() > 1);
                     }
                 }

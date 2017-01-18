@@ -8,8 +8,16 @@ require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Bestellung.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
-$einstellungApiKey       = Shop::DB()->query("SELECT cWert FROM teinstellungen WHERE cName = 'zahlungsart_safetypay_apikey'", 1);
-$einstellungSignatureKey = Shop::DB()->query("SELECT cWert FROM teinstellungen WHERE cName = 'zahlungsart_safetypay_signaturekey'", 1);
+$einstellungApiKey       = Shop::DB()->query("
+    SELECT cWert 
+        FROM teinstellungen 
+        WHERE cName = 'zahlungsart_safetypay_apikey'", 1
+);
+$einstellungSignatureKey = Shop::DB()->query("
+    SELECT cWert 
+        FROM teinstellungen 
+        WHERE cName = 'zahlungsart_safetypay_signaturekey'", 1
+);
 
 define('SAFETYPAY_APIKEY', $einstellungApiKey->cWert);
 define('SAFETYPAY_SIGNTATURE_KEY', $einstellungSignatureKey->cWert);
@@ -23,7 +31,7 @@ $Result = $proxySTP->GetNewPaidOrders();
 
 if ($Result['ErrorManager']['ErrorNumber'] == '0') {
     $txtGetNewPaidOrders  = '';
-    $confirmnewpaidorders = array('Items' => array());
+    $confirmnewpaidorders = ['Items' => []];
     $nCounter             = 0;
     if (is_array($Result['ListOfNewPaidOrders']['Items'])) {
         if (isset($Result['ListOfNewPaidOrders']['Items']['ReferenceNo'])) {
@@ -46,9 +54,17 @@ if ($Result['ErrorManager']['ErrorNumber'] == '0') {
             // else $MerchantOrderNo = $value['MerchantReferenceNo'];
 
             $zahlungsid = Shop::DB()->select('tbestellung', 'cBestellNr', $MerchantOrderNo);
-            $b          = Shop::DB()->query("SELECT kKunde FROM tbestellung WHERE kBestellung = " . (int)$zahlungsid->kBestellung, 1);
+            $b          = Shop::DB()->query("
+                SELECT kKunde 
+                    FROM tbestellung 
+                    WHERE kBestellung = " . (int)$zahlungsid->kBestellung, 1
+            );
             $kunde      = Shop::DB()->select('tkunde', 'kKunde', (int)$b->kKunde);
-            $Sprache    = Shop::DB()->query("SELECT cISO FROM tsprache WHERE kSprache = " . (int)$kunde->kSprache, 1);
+            $Sprache    = Shop::DB()->query("
+                SELECT cISO 
+                    FROM tsprache 
+                    WHERE kSprache = " . (int)$kunde->kSprache, 1
+            );
             if (!$Sprache) {
                 $Sprache = Shop::DB()->query("SELECT cISO FROM tsprache WHERE cStandard = 'Y'", 1);
             }
@@ -84,12 +100,12 @@ if ($Result['ErrorManager']['ErrorNumber'] == '0') {
 
             sendeMail(MAILTEMPLATE_BESTELLUNG_BEZAHLT, $obj);
 
-            $confirmnewpaidorders['Items'][] = array(
+            $confirmnewpaidorders['Items'][] = [
                 'ReferenceNo'     => $value['ReferenceNo'],
                 'PaymentDate'     => $value['PaymentDate'],
                 'MerchantOrderNo' => $MerchantOrderNo,
                 'IssueCode'       => $value['IssueCode']
-            );
+            ];
         }
         $nCounter = count($confirmnewpaidorders['Items']);
         // 6. Confirm the "SAFETYPAY Merchant Order Number" and execute function ConfirmNewPaidOrders
@@ -97,7 +113,8 @@ if ($Result['ErrorManager']['ErrorNumber'] == '0') {
         if ($Result['ErrorManager']['ErrorNumber'] == '') {
             $txtGetNewPaidOrders = 'Confirmed Transactions Reference No: ' . "\n" . $strTransConfirmeds;
         } else {
-            $txtGetNewPaidOrders = 'Error: ' . $Result['ErrorManager']['ErrorNumber'] . ' - ' . $Result['ErrorManager']['Description'];
+            $txtGetNewPaidOrders = 'Error: ' . $Result['ErrorManager']['ErrorNumber'] .
+                ' - ' . $Result['ErrorManager']['Description'];
         }
     } else {
         $txtGetNewPaidOrders .= 'No New Paid Orders';
@@ -114,5 +131,6 @@ if ($Result['ErrorManager']['ErrorNumber'] == '0') {
 } else {
     // Error in Conection to SAFETYPAY Web Service
     echo 'Error in GetNewPaidOrders Method: Invalid Credentials!<br />';
-    echo 'Error Number: ' . $Result['ErrorManager']['ErrorNumber'] . '<br />Severity: ' . $Result['ErrorManager']['Severity'] . '<br />Description: ' . $Result['ErrorManager']['Description'];
+    echo 'Error Number: ' . $Result['ErrorManager']['ErrorNumber'] . '<br />Severity: ' .
+        $Result['ErrorManager']['Severity'] . '<br />Description: ' . $Result['ErrorManager']['Description'];
 }

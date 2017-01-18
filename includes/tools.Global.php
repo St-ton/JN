@@ -1010,13 +1010,10 @@ function fuegeVariBoxInWK($variBoxAnzahl_arr, $kArtikel, $bIstVater, $bExtern = 
 
             if (count($nRedirectErr_arr) > 0) {
                 //redirekt zum artikel, um variation/en zu wählen / MBM beachten
-                if ($bIstVater) {
-                    header('Location: index.php?a=' . $kVaterArtikel .
-                        '&r=' . implode(',', $nRedirectErr_arr), true, 302);
-                } else {
-                    header('Location: index.php?a=' . $kVaterArtikel .
-                        '&r=' . implode(',', $nRedirectErr_arr), true, 302);
-                }
+                $articleID = ($bIstVater)
+                    ? $kVaterArtikel
+                    : $kArtikel;
+                header('Location: index.php?a=' . $articleID . '&r=' . implode(',', $nRedirectErr_arr), true, 302);
                 exit();
             } else {
                 foreach ($oAlleEigenschaft_arr as $i => $oAlleEigenschaftPost) {

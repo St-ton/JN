@@ -1972,9 +1972,11 @@ function checkKundenFormularArray($data, $kundenaccount, $checkpass = 1)
         //skip
     } elseif ($conf['kunden']['kundenregistrierung_abfragen_ustid'] === 'Y' && (empty($data['ustid']))) {
         $ret['ustid'] = 1;
-    } elseif ($conf['kunden']['kundenregistrierung_abfragen_ustid'] !== 'N') {
-        if ((!isset($_SESSION['Kunde']->cUSTID) && $data['ustid'] !== '') ||
-            (isset($_SESSION['Kunde']->cUSTID) && $_SESSION['Kunde']->cUSTID != $data['ustid'])
+    } elseif ($conf['kunden']['kundenregistrierung_abfragen_ustid'] !== 'N' &&
+        isset($data['ustid']) && $data['ustid'] !== ''
+    ) {
+        if (!isset($_SESSION['Kunde']->cUSTID) ||
+            (isset($_SESSION['Kunde']->cUSTID) && $_SESSION['Kunde']->cUSTID !== $data['ustid'])
         ) {
             $oUstID = new UstID(
                 $conf['kunden']['shop_ustid'],

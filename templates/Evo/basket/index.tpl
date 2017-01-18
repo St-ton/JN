@@ -123,8 +123,10 @@
             {/if}
 
             {if !empty($xselling->Kauf) && count($xselling->Kauf->Artikel) > 0}
-                {lang key="basketCustomerWhoBoughtXBoughtAlsoY" section="global" assign="panelTitle"}
-                {include file='snippets/product_slider.tpl' productlist=$xselling->Kauf->Artikel title=$panelTitle}
+                {block name="basket-xsell"}
+                    {lang key="basketCustomerWhoBoughtXBoughtAlsoY" section="global" assign="panelTitle"}
+                    {include file='snippets/product_slider.tpl' productlist=$xselling->Kauf->Artikel title=$panelTitle}
+                {/block}
             {/if}
         </div>
     {/block}

@@ -13,7 +13,7 @@ Shop::setPageType(PAGE_ARTIKELLISTE);
 /** @global JTLSmarty $smarty */
 /** @global array $cParameter_arr */
 /** @global object $NaviFilter*/
-$Einstellungen        = Shop::getSettings([
+$Einstellungen          = Shop::getSettings([
     CONF_GLOBAL,
     CONF_RSS,
     CONF_ARTIKELUEBERSICHT,
@@ -29,44 +29,15 @@ $Einstellungen        = Shop::getSettings([
     CONF_SONSTIGES,
     CONF_AUSWAHLASSISTENT
 ]);
-$nArtikelProSeite_arr = [
+$nArtikelProSeite_arr   = [
     5,
     10,
     25,
     50,
     100
 ];
-$suchanfrage          = '';
-// setze Kat in Session
-if (isset($cParameter_arr['kKategorie']) && $cParameter_arr['kKategorie'] > 0) {
-    $_SESSION['LetzteKategorie'] = $cParameter_arr['kKategorie'];
-    $AktuelleSeite               = 'PRODUKTE';
-}
-if ($cParameter_arr['kSuchanfrage'] > 0) {
-    $oSuchanfrage = Shop::DB()->select(
-        'tsuchanfrage',
-        'kSuchanfrage',
-        (int)$cParameter_arr['kSuchanfrage'],
-        null,
-        null,
-        null,
-        null,
-        false,
-        'cSuche'
-    );
-    if (isset($oSuchanfrage->cSuche) && strlen($oSuchanfrage->cSuche) > 0) {
-        if (!isset($NaviFilter->Suche)) {
-            $NaviFilter->Suche = new stdClass();
-        }
-        $NaviFilter->Suche->kSuchanfrage = $cParameter_arr['kSuchanfrage'];
-        $NaviFilter->Suche->cSuche       = $oSuchanfrage->cSuche;
-    }
-}
-// Suchcache beachten / erstellen
-if (isset($NaviFilter->Suche->cSuche) && strlen($NaviFilter->Suche->cSuche) > 0) {
-    $NaviFilter->Suche->kSuchCache = bearbeiteSuchCache($NaviFilter);
-}
-
+$suchanfrage            = '';
+$doSearch               = true;
 $AktuelleKategorie      = new stdClass();
 $oSuchergebnisse        = new stdClass();
 $AufgeklappteKategorien = new stdClass();

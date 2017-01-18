@@ -1235,22 +1235,14 @@ function baueExportURL($kKey, $cKey, $dLetzteAktualisierung, $oSprach_arr, $kSpr
                 if ($bSeoCheck) {
                     if ($i > 1) {
                         $cURL_arr[] = makeURL(
-                            str_replace(
-                                $search,
-                                $replace,
-                                gibNaviURL($NaviFilter, true, null, $kSprache)
-                            ) . '_s' . $i,
+                            str_replace($search, $replace, $naviFilter->getURL(true)) . '_s' . $i,
                             $dLetzteAktualisierung,
                             FREQ_WEEKLY,
                             PRIO_NORMAL
                         );
                     } else {
                         $cURL_arr[] = makeURL(
-                            str_replace(
-                                $search,
-                                $replace,
-                                gibNaviURL($NaviFilter, true, null, $kSprache)
-                            ),
+                            str_replace($search, $replace, $naviFilter->getURL(true)),
                             $dLetzteAktualisierung,
                             FREQ_WEEKLY,
                             PRIO_NORMAL
@@ -1259,22 +1251,14 @@ function baueExportURL($kKey, $cKey, $dLetzteAktualisierung, $oSprach_arr, $kSpr
                 } else {
                     if ($i > 1) {
                         $cURL_arr[] = makeURL(
-                            str_replace(
-                                $search,
-                                $replace,
-                                gibNaviURL($NaviFilter, false, null, $kSprache)
-                            ) . '&seite=' . $i,
+                            str_replace($search, $replace, $naviFilter->getURL(false)) . '&seite=' . $i,
                             $dLetzteAktualisierung,
                             FREQ_WEEKLY,
                             PRIO_NORMAL
                         );
                     } else {
                         $cURL_arr[] = makeURL(
-                            str_replace(
-                                $search,
-                                $replace,
-                                gibNaviURL($NaviFilter, false, null, $kSprache)
-                            ),
+                            str_replace($search, $replace, $naviFilter->getURL(false)),
                             $dLetzteAktualisierung,
                             FREQ_WEEKLY,
                             PRIO_NORMAL
@@ -1283,58 +1267,21 @@ function baueExportURL($kKey, $cKey, $dLetzteAktualisierung, $oSprach_arr, $kSpr
                 }
             }
         } else {
-            if ($bSeoCheck) {
-                $cURL_arr[] = makeURL(
-                    str_replace(
-                        $search,
-                        $replace,
-                        gibNaviURL($NaviFilter, true, null, $kSprache)
-                    ),
-                    $dLetzteAktualisierung,
-                    FREQ_WEEKLY,
-                    PRIO_NORMAL
-                );
-            } else {
-                $cURL_arr[] = makeURL(
-                    str_replace(
-                        $search,
-                        $replace,
-                        gibNaviURL($NaviFilter, false, null, $kSprache)
-                    ),
-                    $dLetzteAktualisierung,
-                    FREQ_WEEKLY,
-                    PRIO_NORMAL
-                );
-            }
-        }
-    } elseif (isset($GLOBALS['kKategorie']) && $GLOBALS['kKategorie'] > 0) {
-        if ($bSeoCheck) {
             $cURL_arr[] = makeURL(
-                str_replace(
-                    $search,
-                    $replace,
-                    gibNaviURL($NaviFilter, true, null, $kSprache)
-                ),
-                $dLetzteAktualisierung,
-                FREQ_WEEKLY,
-                PRIO_NORMAL
-            );
-        } else {
-            $cURL_arr[] = makeURL(
-                str_replace(
-                    $search,
-                    $replace,
-                    gibNaviURL($NaviFilter, false, null, $kSprache)
-                ),
+                str_replace($search, $replace, $naviFilter->getURL($bSeoCheck)),
                 $dLetzteAktualisierung,
                 FREQ_WEEKLY,
                 PRIO_NORMAL
             );
         }
     } elseif ($cKey === 'kKategorie' && $kKey > 0) {
-        $cURL_arr[] = makeURL(str_replace($search, $replace, $naviFilter->getURL($bSeoCheck)), $dLetzteAktualisierung, FREQ_WEEKLY, PRIO_NORMAL);
+        $cURL_arr[] = makeURL(
+            str_replace($search, $replace, $naviFilter->getURL($bSeoCheck)),
+            $dLetzteAktualisierung,
+            FREQ_WEEKLY,
+            PRIO_NORMAL
+        );
     }
-
     return $cURL_arr;
 }
 

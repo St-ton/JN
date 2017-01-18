@@ -598,7 +598,7 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
                             $cVersionsnummer = $Version['nr'];
                             // Entpricht die Versionsnummer
                             preg_match("/[0-9]+/", $Version['nr'], $cTreffer_arr);
-                            if (strlen($cTreffer_arr[0]) != strlen($Version['nr'])) {
+                            if (strlen($cTreffer_arr[0]) !== strlen($Version['nr'])) {
                                 return 10; //Die Versionsnummer entspricht nicht der Konvention
                             }
                         } elseif (strlen($cTreffer2_arr[0]) === strlen($i)) {
@@ -619,7 +619,7 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
                                 $Version['CreateDate'],
                                 $cTreffer_arr
                             );
-                            if (strlen($cTreffer_arr[0]) != strlen($Version['CreateDate'])) {
+                            if (strlen($cTreffer_arr[0]) !== strlen($Version['CreateDate'])) {
                                 return 11;//Das Versionsdatum entspricht nicht der Konvention
                             }
                         }
@@ -688,7 +688,7 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
                                     $Customlink_arr['Name'],
                                     $cTreffer_arr
                                 );
-                                if (strlen($cTreffer_arr[0]) != strlen($Customlink_arr['Name']) || strlen($Customlink_arr['Name']) === 0) {
+                                if (strlen($cTreffer_arr[0]) !== strlen($Customlink_arr['Name']) || strlen($Customlink_arr['Name']) === 0) {
                                     return 15;//CustomLink Name entspricht nicht der Konvention
                                 }
                                 if (strlen($Customlink_arr['Filename']) > 0) {
@@ -907,7 +907,7 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
                                     $Link_arr['Name'],
                                     $cTreffer1_arr
                                 );
-                                if (strlen($cTreffer1_arr[0]) != strlen($Link_arr['Name'])) {
+                                if (strlen($cTreffer1_arr[0]) !== strlen($Link_arr['Name'])) {
                                     return 40;// LinkName entspricht nicht der Konvention
                                 }
                                 // Templatename UND Fullscreen Templatename vorhanden?
@@ -959,12 +959,12 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
                                 }
                                 // Angabe ob erst Sichtbar nach Login prüfen
                                 preg_match("/[NY]{1,1}/", $Link_arr['VisibleAfterLogin'], $cTreffer2_arr);
-                                if (strlen($cTreffer2_arr[0]) != strlen($Link_arr['VisibleAfterLogin'])) {
+                                if (strlen($cTreffer2_arr[0]) !== strlen($Link_arr['VisibleAfterLogin'])) {
                                     return 41;// Angabe ob erst Sichtbar nach Login entspricht nicht der Konvention
                                 }
                                 // Abgabe ob ein Druckbutton gezeigt werden soll prüfen
                                 preg_match("/[NY]{1,1}/", $Link_arr['PrintButton'], $cTreffer3_arr);
-                                if (strlen($cTreffer3_arr[0]) != strlen($Link_arr['PrintButton'])) {
+                                if (strlen($cTreffer3_arr[0]) !== strlen($Link_arr['PrintButton'])) {
                                     return 42;// Abgabe ob eine Druckbutton gezeigt werden soll entspricht nicht der Konvention
                                 }
                                 // Abgabe ob NoFollow Attribut gezeigt werden soll prüfen
@@ -973,7 +973,7 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
                                 } else {
                                     $cTreffer3_arr = [];
                                 }
-                                if (isset($cTreffer3_arr[0]) && strlen($cTreffer3_arr[0]) != strlen($Link_arr['NoFollow'])) {
+                                if (isset($cTreffer3_arr[0]) && strlen($cTreffer3_arr[0]) !== strlen($Link_arr['NoFollow'])) {
                                     return 104;// Frontend Link Attribut NoFollow entspricht nicht der Konvention
                                 }
                                 // LinkSprachen prüfen
@@ -988,7 +988,7 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
                                             // ISO prüfen
                                             preg_match("/[A-Z]{3}/", $LinkLanguage_arr['iso'], $cTreffer_arr);
                                             if (strlen($LinkLanguage_arr['iso']) === 0 ||
-                                                strlen($cTreffer_arr[0]) != strlen($LinkLanguage_arr['iso'])
+                                                strlen($cTreffer_arr[0]) !== strlen($LinkLanguage_arr['iso'])
                                             ) {
                                                 return 43;//  Die ISO der Linksprache entspricht nicht der Konvention
                                             }
@@ -1087,17 +1087,17 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
                                     $Method_arr['Name'],
                                     $cTreffer1_arr
                                 );
-                                if (strlen($cTreffer1_arr[0]) != strlen($Method_arr['Name'])) {
+                                if (strlen($cTreffer1_arr[0]) !== strlen($Method_arr['Name'])) {
                                     return 50;// Der Name in den Zahlungsmethoden entspricht nicht der Konvention
                                 }
                                 // Sort prüfen
                                 preg_match("/[0-9]+/", $Method_arr['Sort'], $cTreffer1_arr);
-                                if (strlen($cTreffer1_arr[0]) != strlen($Method_arr['Sort'])) {
+                                if (strlen($cTreffer1_arr[0]) !== strlen($Method_arr['Sort'])) {
                                     return 71;// Die Sortierung in den Zahlungsmethoden entspricht nicht der Konvention
                                 }
                                 // SendMail prüfen
                                 preg_match("/[0-1]{1}/", $Method_arr['SendMail'], $cTreffer1_arr);
-                                if (strlen($cTreffer1_arr[0]) != strlen($Method_arr['SendMail'])) {
+                                if (strlen($cTreffer1_arr[0]) !== strlen($Method_arr['SendMail'])) {
                                     return 51;// Sende Mail in den Zahlungsmethoden entspricht nicht der Konvention
                                 }
                                 // TSCode prüfen
@@ -1131,22 +1131,22 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
                                 }
                                 // PreOrder (nWaehrendbestellung) prüfen
                                 preg_match("/[0-1]{1}/", $Method_arr['PreOrder'], $cTreffer1_arr);
-                                if (strlen($cTreffer1_arr[0]) != strlen($Method_arr['PreOrder'])) {
+                                if (strlen($cTreffer1_arr[0]) !== strlen($Method_arr['PreOrder'])) {
                                     return 53;// PreOrder in den Zahlungsmethoden entspricht nicht der Konvention
                                 }
                                 // Soap prüfen
                                 preg_match("/[0-1]{1}/", $Method_arr['Soap'], $cTreffer1_arr);
-                                if (strlen($cTreffer1_arr[0]) != strlen($Method_arr['Soap'])) {
+                                if (strlen($cTreffer1_arr[0]) !== strlen($Method_arr['Soap'])) {
                                     return 72;// Soap in den Zahlungsmethoden entspricht nicht der Konvention
                                 }
                                 // Curl prüfen
                                 preg_match("/[0-1]{1}/", $Method_arr['Curl'], $cTreffer1_arr);
-                                if (strlen($cTreffer1_arr[0]) != strlen($Method_arr['Curl'])) {
+                                if (strlen($cTreffer1_arr[0]) !== strlen($Method_arr['Curl'])) {
                                     return 73;// Curl in den Zahlungsmethoden entspricht nicht der Konvention
                                 }
                                 // Sockets prüfen
                                 preg_match('/[0-1]{1}/', $Method_arr['Sockets'], $cTreffer1_arr);
-                                if (strlen($cTreffer1_arr[0]) != strlen($Method_arr['Sockets'])) {
+                                if (strlen($cTreffer1_arr[0]) !== strlen($Method_arr['Sockets'])) {
                                     return 74;// Sockets in den Zahlungsmethoden entspricht nicht der Konvention
                                 }
                                 // ClassFile prüfen
@@ -1166,7 +1166,7 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
                                 // ClassName prüfen
                                 if (isset($Method_arr['ClassName'])) {
                                     preg_match("/[a-zA-Z0-9\/_\-]+/", $Method_arr['ClassName'], $cTreffer1_arr);
-                                    if (strlen($cTreffer1_arr[0]) != strlen($Method_arr['ClassName'])) {
+                                    if (strlen($cTreffer1_arr[0]) !== strlen($Method_arr['ClassName'])) {
                                         return 75;// ClassName in den Zahlungsmethoden entspricht nicht der Konvention
                                     }
                                 }
@@ -1540,7 +1540,7 @@ function pluginPlausiIntern($XML_arr, $cVerzeichnis)
                                     if (isset($Variable_arr['VariableLocalized attr']['iso'])) {
                                         // ISO prüfen
                                         preg_match("/[A-Z]{3}/", $Variable_arr['VariableLocalized attr']['iso'], $cTreffer_arr);
-                                        if (strlen($cTreffer_arr[0]) != strlen($Variable_arr['VariableLocalized attr']['iso'])) {
+                                        if (strlen($cTreffer_arr[0]) !== strlen($Variable_arr['VariableLocalized attr']['iso'])) {
                                             return 29;//Die ISO der lokalisierten Sprachvariable entspricht nicht der Konvention
                                         }
                                         // Name prüfen

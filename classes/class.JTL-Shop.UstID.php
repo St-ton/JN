@@ -102,7 +102,8 @@ class UstID
                         $cURL = 'http://evatr.bff-online.de/evatrRPC?UstId_1=' . $this->cUstId_1 . '&UstId_2=' .
                             $this->cUstId_2 . '&Firmenname=' . $this->cFirmenname . '&Ort=' . $this->cOrt . '&PLZ=' .
                             $this->cPLZ . '&Strasse=' . $this->cStrasse . ' ' . $this->cHausnummer . '&Druck=' . $this->cDruck;
-                        $this->cAntwort = XML_unserialize(file_get_contents(str_replace(' ', '%20', $cURL)));
+                        $xml = file_get_contents(str_replace(' ', '%20', $cURL));
+                        $this->cAntwort = XML_unserialize($xml);
                         $paramCount     = count($this->cAntwort['params']['param']);
                         for ($i = 0; $i < $paramCount; $i++) {
                             $oInfo        = new stdClass();

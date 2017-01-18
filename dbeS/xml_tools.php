@@ -17,7 +17,7 @@
  * @param string $cEncoding
  * @return array|null
  */
-function XML_unserialize(&$xml, $cEncoding = "UTF-8")
+function XML_unserialize($xml, $cEncoding = "UTF-8")
 {
     $xml_parser = new XML($cEncoding);
     $data       = $xml_parser->parse($xml);
@@ -120,7 +120,7 @@ class XML
      * @param mixed $data
      * @return array|null
      */
-    function parse(&$data)
+    function parse($data)
     {
         $this->document = [];
         $this->stack    = [];

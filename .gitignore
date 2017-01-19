@@ -33,6 +33,15 @@
 # media
 /media/image/product/*
 /media/image/storage/*
+/media/image/avatare/*
+
+# mediafiles
+/mediafiles/Bilder/*
+/mediafiles/Musik/*
+/mediafiles/Sonstiges/*
+/mediafiles/Videos/*
+/mediafiles/.htaccess
+/mediafiles/.thumbs
 
 # other
 /admin/templates_c/*

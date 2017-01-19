@@ -19,6 +19,8 @@ use PayPal\Api\PaymentExecution;
 use PayPal\Api\RedirectUrls;
 use PayPal\Api\Sale;
 use PayPal\Api\Transaction;
+use PayPal\Api\Presentment;
+use PayPal\Api\Currency;
 use PayPal\Rest\ApiContext;
 use PayPal\Auth\OAuthTokenCredential;
 
@@ -351,22 +353,23 @@ class PayPalPlus extends PaymentMethod
 
     public function prepareShippingAddress($address)
     {
-        $a = new \PayPal\Api\ShippingAddress();
-        $shippingAddress = utf8_convert_recursive($address);
+        $shippingAddress = clone $address;
+        $shippingAddress = utf8_convert_recursive($shippingAddress);
 
-        // 2-letter code for US states, and the equivalent for other countries. 100 characters max.
-        if (in_array($shippingAddress->cLand, ['US', 'CA', 'IT', 'NL'])) {
-            $state = Staat::getRegionByName($address->cBundesland);
-            if ($state !== null) {
-                $shippingAddress->state = $state->cCode;
-            }
-        }
+        $a = new \PayPal\Api\ShippingAddress();
 
         $a->setRecipientName("{$shippingAddress->cVorname} {$shippingAddress->cNachname}")
             ->setLine1("{$shippingAddress->cStrasse} {$shippingAddress->cHausnummer}")
             ->setCity($shippingAddress->cOrt)
             ->setPostalCode($shippingAddress->cPLZ)
             ->setCountryCode($shippingAddress->cLand);
+			
+        if (in_array($shippingAddress->cLand, ['AR', 'BR', 'IN', 'US', 'CA', 'IT', 'JP', 'MX', 'TH'])) {
+            $state = Staat::getRegionByName($address->cBundesland);
+            if ($state !== null) {
+				$a->setState($state->cCode);
+            }
+        }
 
         return $a;
     }
@@ -505,9 +508,11 @@ class PayPalPlus extends PaymentMethod
      */
     public function createPaymentSession()
     {
-        $_SESSION['Zahlungsart']           = $this->payment;
-        $_SESSION['Zahlungsart']->cModulId = $this->moduleID;
-        $languages                         = Shop::DB()->query("SELECT cName, cISOSprache FROM tzahlungsartsprache WHERE kZahlungsart='" . $this->paymentId . "'", 2);
+        $_SESSION['Zahlungsart']                        = $this->payment;
+        $_SESSION['Zahlungsart']->cModulId              = $this->moduleID;
+        $_SESSION['Zahlungsart']->nWaehrendBestellung   = 1;
+
+        $languages = Shop::DB()->query("SELECT cName, cISOSprache FROM tzahlungsartsprache WHERE kZahlungsart='" . $this->paymentId . "'", 2);
 
         foreach ($languages as $language) {
             $_SESSION['Zahlungsart']->angezeigterName[$language->cISOSprache] = $language->cName;
@@ -552,49 +557,56 @@ class PayPalPlus extends PaymentMethod
         try {
             $paymentId = $this->getCache('paymentId');
             $payerId   = $this->getCache('payerId');
-            $basket    = PayPalHelper::getBasket();
+
+            $helper = new WarenkorbHelper();
+            $basket = PayPalHelper::getBasket($helper);
 
             $apiContext      = $this->getContext();
+            $orderNumber     = baueBestellnummer();
             $payment         = Payment::get($paymentId, $apiContext);
-            $order->cSession = $paymentId;
+            
+            if ($payment->getState() != 'created') {
+                throw new Exception('Unhandled payment state', $payment->getState());
+            }
 
             /**
              * #437 Update invoice number
              */
-            $this->patchInvoiceNumber($payment, $order->cBestellNr);
+            $this->patchInvoiceNumber($payment, $orderNumber);
 
-            if ($payment->getState() == 'created') {
-                $execution = new PaymentExecution();
-                $execution->setPayerId($payerId);
+            $execution = new PaymentExecution();
+            $execution->setPayerId($payerId);
 
-                $details = new Details();
-                $details->setShipping($basket->shipping[WarenkorbHelper::GROSS])
-                    ->setSubtotal($basket->article[WarenkorbHelper::GROSS])
-                    ->setHandlingFee($basket->surcharge[WarenkorbHelper::GROSS])
-                    ->setShippingDiscount($basket->discount[WarenkorbHelper::GROSS] * -1)
-                    ->setTax(0.00);
+            $details = new Details();
+            $details->setShipping($basket->shipping[WarenkorbHelper::GROSS])
+                ->setSubtotal($basket->article[WarenkorbHelper::GROSS])
+                ->setHandlingFee($basket->surcharge[WarenkorbHelper::GROSS])
+                ->setShippingDiscount($basket->discount[WarenkorbHelper::GROSS] * -1)
+                ->setTax(0.00);
 
-                $amount = new Amount();
-                $amount->setCurrency($basket->currency->cISO)
-                    ->setTotal($basket->total[WarenkorbHelper::GROSS])
-                    ->setDetails($details);
+            $amount = new Amount();
+            $amount->setCurrency($basket->currency->cISO)
+                ->setTotal($basket->total[WarenkorbHelper::GROSS])
+                ->setDetails($details);
 
-                $transaction = new Transaction();
-                $transaction->setAmount($amount)
-                    //->setInvoiceNumber($order->cBestellNr)
-                    ->setCustom($order->kBestellung);
+            $transaction = new Transaction();
+            $transaction->setAmount($amount);
+                //->setInvoiceNumber($orderNumber) // #437
 
-                $execution->addTransaction($transaction);
+            $execution->addTransaction($transaction);
 
-                $payment->execute($execution, $apiContext);
-                $this->logResult('ExecutePayment', $execution, $payment);
+            $payment->execute($execution, $apiContext);
+            $this->logResult('ExecutePayment', $execution, $payment);
+            
+            $order = finalisiereBestellung($orderNumber, false);
+            $order->cSession = $paymentId;
 
-                if ($instruction = $payment->getPaymentInstruction()) {
+            if ($instruction = $payment->getPaymentInstruction()) {
+                $type = $instruction->getInstructionType();
+
+                if ($type == 'PAY_UPON_INVOICE') {
                     $banking = $instruction->getRecipientBankingInstruction();
                     $amount  = $instruction->getAmount();
-
-                    $type = $instruction->getInstructionType();
-                    // MANUAL_BANK_TRANSFER - PAY_UPON_INVOICE
 
                     $company = new Firma();
                     $date    = strftime('%d.%m.%Y', strtotime($instruction->getPaymentDueDate()));
@@ -623,44 +635,51 @@ class PayPalPlus extends PaymentMethod
                     $order->cZahlungsartName = strlen($paymentName) > 0
                         ? $paymentName : $order->cZahlungsartName;
                 }
+            }
 
-                $order->updateInDB();
+            $order->updateInDB();
 
-                if ($payment->getState() === 'approved') {
-                    $state = $payment->getTransactions()[0]
-                        ->getRelatedResources()[0]
-                        ->getSale()
-                        ->getState();
+            if ($payment->getState() === 'approved') {
+                $state = $payment->getTransactions()[0]
+                    ->getRelatedResources()[0]
+                    ->getSale()
+                    ->getState();
 
-                    if ($state === 'completed') {
-                        $ip = new stdClass();
+                if ($state === 'completed') {
+                    $ip = new stdClass();
 
-                        $ip->cISO    = $basket->currency->cISO;
-                        $ip->fBetrag = $basket->total[WarenkorbHelper::GROSS];
+                    $ip->cISO    = $basket->currency->cISO;
+                    $ip->fBetrag = $basket->total[WarenkorbHelper::GROSS];
 
-                        $ip->cEmpfaenger = '';
-                        $ip->cZahler     = $payment->getPayer()->getPayerInfo()->getEmail();
+                    $ip->cEmpfaenger = '';
+                    $ip->cZahler     = $payment->getPayer()->getPayerInfo()->getEmail();
 
-                        $ip->cHinweis         = $this->getSaleId($payment);
-                        $ip->fZahlungsgebuehr = $basket->surcharge[WarenkorbHelper::GROSS];
+                    $ip->cHinweis         = $this->getSaleId($payment);
+                    $ip->fZahlungsgebuehr = $basket->surcharge[WarenkorbHelper::GROSS];
 
-                        $this->setOrderStatusToPaid($order);
-                        $this->addIncomingPayment($order, $ip);
+                    $this->setOrderStatusToPaid($order);
+                    $this->addIncomingPayment($order, $ip);
+                    
+                    // send confirmationMail - except for payment upon invoice (see https://gitlab.jtl-software.de/jtlshop/shop4/issues/618)
+                    if (empty($order->cPUIZahlungsdaten)) {
                         $this->sendConfirmationMail($order);
                     }
                 }
-            } else {
-                $this->logResult('ExecutePayment', 'Unhandled payment state', $payment->getState(), JTLLOG_LEVEL_ERROR);
             }
 
+            // smarty
+            Shop::Smarty()->assign('abschlussseite', 1);
+
+            // clean up
+            $session = Session::getInstance();
+            $session->cleanUp();
+
             $this->unsetCache();
-            return;
 
         } catch (Exception $ex) {
             $this->handleException('ExecutePayment', $payment, $ex);
+            Shop::Smarty()->assign('error', $ex->getMessage());
         }
-
-        header("location: bestellvorgang.php?editZahlungsart=1");
     }
 
     /**

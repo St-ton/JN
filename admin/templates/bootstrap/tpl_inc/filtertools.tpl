@@ -37,30 +37,55 @@
                                     </div>
                                     <div class="col-md-2 toolbar-col">
                                         <label>&nbsp;</label>
-                                        <input type="text" class="form-control"
-                                               name="{$oFilter->getId()}_{$oField->getId()}"
-                                               id="{$oFilter->getId()}_{$oField->getId()}"
-                                               value="{$oField->getValue()}" placeholder="{$oField->getTitle()}">
-                                    </div>
                                 {else}
                                     <div class="col-md-2 toolbar-col">
                                         <label for="{$oFilter->getId()}_{$oField->getId()}">{$oField->getTitle()}</label>
+                                {/if}
                                         <input type="text" class="form-control"
                                                name="{$oFilter->getId()}_{$oField->getId()}"
                                                id="{$oFilter->getId()}_{$oField->getId()}"
-                                               value="{$oField->getValue()}" placeholder="{$oField->getTitle()}">
+                                               value="{$oField->getValue()}" placeholder="{$oField->getTitle()}"
+                                               {if $oField->getTitleLong() !== ''}data-toggle="tooltip"
+                                               data-placement="bottom" title="{$oField->getTitleLong()}"{/if}>
                                     </div>
-                                {/if}
                             {elseif $oField->getType() === 'select'}
                                 <div class="col-md-2 toolbar-col">
                                     <label for="{$oFilter->getId()}_{$oField->getId()}">{$oField->getTitle()}</label>
                                     <select class="form-control"
                                             name="{$oFilter->getId()}_{$oField->getId()}"
-                                            id="{$oFilter->getId()}_{$oField->getId()}">
+                                            id="{$oFilter->getId()}_{$oField->getId()}"
+                                            {if $oField->getTitleLong() !== ''}data-toggle="tooltip"
+                                            data-placement="bottom" title="{$oField->getTitleLong()}"{/if}>
                                         {foreach $oField->getOptions() as $i => $oOption}
                                             <option value="{$i}"{if $i == (int)$oField->getValue()} selected{/if}>{$oOption->getTitle()}</option>
                                         {/foreach}
                                     </select>
+                                </div>
+                            {elseif $oField->getType() === 'daterange'}
+                                <div class="col-md-3 toolbar-col">
+                                    <label for="{$oFilter->getId()}_{$oField->getId()}">{$oField->getTitle()}</label>
+                                    <input type="text"  class="form-control"
+                                           name="{$oFilter->getId()}_{$oField->getId()}"
+                                           id="{$oFilter->getId()}_{$oField->getId()}">
+                                    <script>
+                                        $(function () {
+                                            var $datepicker = $('#{$oFilter->getId()}_{$oField->getId()}');
+                                            $datepicker.daterangepicker({
+                                                locale: { format: 'DD.MM.YYYY', separator: ' - ' },
+                                                autoUpdateInput: false,
+                                            });
+                                            $datepicker.on('apply.daterangepicker', function(ev, picker) {
+                                                $(this).val(picker.startDate.format('DD.MM.YYYY') + ' - '
+                                                        + picker.endDate.format('DD.MM.YYYY'));
+                                            });
+                                            var curDateRange = '{$oField->getValue()}'.split(' - ');
+                                            if (curDateRange.length == 2) {
+                                                $datepicker.val(curDateRange[0] + ' - ' + curDateRange[1]);
+                                                $datepicker.data('daterangepicker').setStartDate(curDateRange[0]);
+                                                $datepicker.data('daterangepicker').setEndDate(curDateRange[1]);
+                                            }
+                                        });
+                                    </script>
                                 </div>
                             {/if}
                         {/foreach}

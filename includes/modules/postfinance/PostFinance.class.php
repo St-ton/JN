@@ -2,8 +2,10 @@
 
 include_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
 
-define('POST_FINANCE_URL', 'https://e-payment.postfinance.ch/ncol/prod/orderstandard.asp'); // Production
-define('POST_FINANCE_URL_TEST', 'https://e-payment.postfinance.ch/ncol/test/orderstandard.asp'); // Test
+// Production
+define('POST_FINANCE_URL', 'https://e-payment.postfinance.ch/ncol/prod/orderstandard.asp');
+// Test
+define('POST_FINANCE_URL_TEST', 'https://e-payment.postfinance.ch/ncol/test/orderstandard.asp');
 
 /**
  * PostFinance
@@ -24,43 +26,51 @@ class PostFinance extends PaymentMethod
     }
 
     /**
-     * @return null
+     * @return string|null
      */
     public function getPSPID()
     {
         global $Einstellungen;
 
-        return (isset($Einstellungen['zahlungsarten']['zahlungsart_postfinance_pspid'])) ? $Einstellungen['zahlungsarten']['zahlungsart_postfinance_pspid'] : null;
+        return (isset($Einstellungen['zahlungsarten']['zahlungsart_postfinance_pspid']))
+            ? $Einstellungen['zahlungsarten']['zahlungsart_postfinance_pspid']
+            : null;
     }
 
     /**
-     * @return null
+     * @return string|null
      */
     public function getSHA1InSignature()
     {
         global $Einstellungen;
 
-        return (isset($Einstellungen['zahlungsarten']['zahlungsart_postfinance_sha1in'])) ? $Einstellungen['zahlungsarten']['zahlungsart_postfinance_sha1in'] : null;
+        return (isset($Einstellungen['zahlungsarten']['zahlungsart_postfinance_sha1in']))
+            ? $Einstellungen['zahlungsarten']['zahlungsart_postfinance_sha1in']
+            : null;
     }
 
     /**
-     * @return null
+     * @return string|null
      */
     public function getSHA1OutSignature()
     {
         global $Einstellungen;
 
-        return (isset($Einstellungen['zahlungsarten']['zahlungsart_postfinance_sha1out'])) ? $Einstellungen['zahlungsarten']['zahlungsart_postfinance_sha1out'] : null;
+        return (isset($Einstellungen['zahlungsarten']['zahlungsart_postfinance_sha1out']))
+            ? $Einstellungen['zahlungsarten']['zahlungsart_postfinance_sha1out']
+            : null;
     }
 
     /**
-     * @return null
+     * @return string|null
      */
     public function getServer()
     {
         global $Einstellungen;
 
-        return (isset($Einstellungen['zahlungsarten']['zahlungsart_postfinance_server'])) ? $Einstellungen['zahlungsarten']['zahlungsart_postfinance_server'] : null;
+        return (isset($Einstellungen['zahlungsarten']['zahlungsart_postfinance_server']))
+            ? $Einstellungen['zahlungsarten']['zahlungsart_postfinance_server']
+            : null;
     }
 
     /**
@@ -73,9 +83,11 @@ class PostFinance extends PaymentMethod
         $paymentHash = $this->generateHash($order);
         $kBestellung = $order->kBestellung;
         if (!$order->kBestellung) {
-            $kBestellung = str_replace(array(".", " "), "", microtime());
+            $kBestellung = str_replace(['.', ' '], '', microtime());
         }
-        $stringToBeHashed = $order->cBestellNr . (round(strval($order->fGesamtsummeKundenwaehrung), 2) * 100) . $order->Waehrung->cISO . $this->getPSPID() . $this->getSHA1InSignature();
+        $stringToBeHashed = $order->cBestellNr .
+            (round(strval($order->fGesamtsummeKundenwaehrung), 2) * 100) .
+            $order->Waehrung->cISO . $this->getPSPID() . $this->getSHA1InSignature();
         $shaSign          = sha1($stringToBeHashed);
         $url              = POST_FINANCE_URL;
         $mode             = $this->getSetting('server');
@@ -97,20 +109,16 @@ class PostFinance extends PaymentMethod
     }
 
     /**
-     * @param $cLand
-     * @param $kSprache
+     * @param string $cLand
+     * @param int    $kSprache
      * @return string
      */
     public function countryMapping($cLand, $kSprache)
     {
         if (strlen($cLand) > 0 && $kSprache > 0) {
-            $oSprache = Shop::DB()->query(
-                "SELECT *
-                    FROM tsprache
-                    WHERE kSprache = " . intval($kSprache), 1
-            );
+            $oSprache = Shop::DB()->select('tsprache', 'kSprache', (int)$kSprache);
 
-            return StringHandler::convertISO2ISO639($oSprache->cISO) . "_" . $cLand;
+            return StringHandler::convertISO2ISO639($oSprache->cISO) . '_' . $cLand;
         }
 
         return '';
@@ -125,7 +133,7 @@ class PostFinance extends PaymentMethod
     {
         $this->doLog(print_r($args, true));
         if ($this->verifyNotification($order, $paymentHash, $args)) {
-            if (in_array($args['STATUS'], array(5, 9, 41, 51, 91))) {
+            if (in_array($args['STATUS'], [5, 9, 41, 51, 91])) {
                 $this->setOrderStatusToPaid($order);
                 if (($args['STATUS'] == 5) || ($args['STATUS'] == 9)) {
                     $incomingPayment          = new stdClass();
@@ -144,15 +152,18 @@ class PostFinance extends PaymentMethod
     }
 
     /**
-     * @return boolean
      * @param Bestellung $order
+     * @param string     $paymentHash
      * @param array      $args
+     * @return bool
      */
     public function verifyNotification($order, $paymentHash, $args)
     {
         extract($args);
 
-        $str = $orderID . $currency . $amount . $PM . $ACCEPTANCE . $STATUS . $CARDNO . $PAYID . $NCERROR . $BRAND . $this->getSHA1OutSignature();
+        $str = $orderID . $currency . $amount . $PM .
+            $ACCEPTANCE . $STATUS . $CARDNO . $PAYID .
+            $NCERROR . $BRAND . $this->getSHA1OutSignature();
 
         if (strtolower($SHASIGN) != sha1($str)) {
             $this->doLog('SHASign falsch ( IST: ' . sha1($str) . ' SOLL: ' . strtolower($SHASIGN) . ')');
@@ -162,7 +173,8 @@ class PostFinance extends PaymentMethod
         $amount1 = round(strval($order->fGesamtsummeKundenwaehrung), 2) * 100;
         $amount2 = round(strval($amount), 2) * 100;
         if ($amount1 != $amount2) {
-            $this->doLog('Summe falsch (amount = ' . $amount2 . ', $order->fGesamtsummeKundenwaehrung=' . $amount1 . ')');
+            $this->doLog('Summe falsch (amount = ' . $amount2 .
+                ', $order->fGesamtsummeKundenwaehrung=' . $amount1 . ')');
 
             return false;
         }
@@ -191,25 +203,25 @@ class PostFinance extends PaymentMethod
      * @param array $args_arr
      * @return bool
      */
-    public function isValidIntern($args_arr = array())
+    public function isValidIntern($args_arr = [])
     {
         if (strlen($this->getPSPID()) == 0) {
-            ZahlungsLog::add($this->moduleID, "Pflichtparameter 'PSPID' ist nicht gesetzt!", null, LOGLEVEL_ERROR);
+            ZahlungsLog::add($this->moduleID, 'Pflichtparameter "PSPID" ist nicht gesetzt!', null, LOGLEVEL_ERROR);
 
             return false;
         }
         if (strlen($this->getSHA1InSignature()) == 0) {
-            ZahlungsLog::add($this->moduleID, "Pflichtparameter 'SHA1-In-Signatur' ist nicht gesetzt!", null, LOGLEVEL_ERROR);
+            ZahlungsLog::add($this->moduleID, 'Pflichtparameter "SHA1-In-Signatur" ist nicht gesetzt!', null, LOGLEVEL_ERROR);
 
             return false;
         }
         if (strlen($this->getSHA1OutSignature()) == 0) {
-            ZahlungsLog::add($this->moduleID, "Pflichtparameter 'SHA1-Out-Signatur' ist nicht gesetzt!", null, LOGLEVEL_ERROR);
+            ZahlungsLog::add($this->moduleID, 'Pflichtparameter "SHA1-Out-Signatur" ist nicht gesetzt!', null, LOGLEVEL_ERROR);
 
             return false;
         }
         if (strlen($this->getServer()) == 0) {
-            ZahlungsLog::add($this->moduleID, "Pflichtparameter 'Server' ist nicht gesetzt!", null, LOGLEVEL_ERROR);
+            ZahlungsLog::add($this->moduleID, 'Pflichtparameter "Server" ist nicht gesetzt!', null, LOGLEVEL_ERROR);
 
             return false;
         }

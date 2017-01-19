@@ -15,9 +15,9 @@ class Media
     private static $_instance = null;
 
     /**
-     * @var array
+     * @var MediaImage[]|MediaImageCompatibility[]
      */
-    private $types = array();
+    private $types = [];
 
     /**
      * @return Media

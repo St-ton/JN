@@ -40,7 +40,6 @@ class Eigenschaft
      * Konstruktor
      *
      * @param int $kEigenschaft - Falls angegeben, wird der Eigenschaft mit angegebenem kEigenschaft aus der DB geholt
-     * @return Eigenschaft
      */
     public function __construct($kEigenschaft = 0)
     {
@@ -57,7 +56,7 @@ class Eigenschaft
      */
     public function loadFromDB($kEigenschaft)
     {
-        $obj = Shop::DB()->select('teigenschaft', 'kEigenschaft', intval($kEigenschaft));
+        $obj = Shop::DB()->select('teigenschaft', 'kEigenschaft', (int)$kEigenschaft);
         foreach (get_object_vars($obj) as $k => $v) {
             $this->$k = $v;
         }
@@ -100,8 +99,8 @@ class Eigenschaft
      */
     public function setzePostDaten()
     {
-        $this->kEigenschaft = intval($_POST['KeyEigenschaft']);
-        $this->kArtikel     = intval($_POST['KeyArtikel']);
+        $this->kEigenschaft = (int)$_POST['KeyEigenschaft'];
+        $this->kArtikel     = (int)$_POST['KeyArtikel'];
         $this->cName        = StringHandler::htmlentities(StringHandler::filterXSS($_POST['Name']));
         $this->cWaehlbar    = StringHandler::htmlentities(StringHandler::filterXSS($_POST['Waehlbar']));
 

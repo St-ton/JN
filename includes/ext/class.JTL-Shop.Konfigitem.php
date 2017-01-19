@@ -82,7 +82,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         protected $oSprache;
 
         /**
-         * @var Preise
+         * @var Konfigitempreis
          */
         protected $oPreis;
 
@@ -143,10 +143,10 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
          */
         public function jsonSerialize()
         {
-            $virtual = array(
+            $virtual = [
                 'bAktiv' => $this->{"bAktiv"}
-            );
-            $override = array(
+            ];
+            $override = [
                 'cName'             => $this->getName(),
                 'kArtikel'          => $this->getArtikelKey(),
                 'cBeschreibung'     => $this->getBeschreibung(),
@@ -156,15 +156,15 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 'fMin'              => (float) $this->getMin(),
                 'fMax'              => (float) $this->getMax(),
                 'cBildPfad'         => $this->getBildPfad(),
-                'fPreis'            => array(
+                'fPreis'            => [
                     (float) $this->getPreis(),
                     (float) $this->getPreis(true)
-                ),
-                'fPreisLocalized' => array(
+                ],
+                'fPreisLocalized' => [
                     gibPreisStringLocalized($this->getPreis()),
                     gibPreisStringLocalized($this->getPreis(true))
-                )
-            );
+                ]
+            ];
             $result = array_merge($override, $virtual);
 
             return utf8_convert_recursive($result);
@@ -189,7 +189,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 }
 
                 if (!$kSprache) {
-                    $kSprache = (isset($_SESSION['kSprache'])) ? $_SESSION['kSprache'] : getDefaultLanguageID();
+                    $kSprache = (isset($_SESSION['kSprache']))
+                        ? (int)$_SESSION['kSprache']
+                        : getDefaultLanguageID();
                 }
                 if (!$kKundengruppe) {
                     $kKundengruppe = $_SESSION['Kundengruppe']->kKundengruppe;
@@ -303,14 +305,14 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
         {
             $oItem_arr = Shop::DB()->query("
                 SELECT kKonfigitem 
-                  FROM tkonfigitem 
-                  WHERE kKonfiggruppe = " . (int)$kKonfiggruppe . " 
-                  ORDER BY nSort ASC", 2
+                    FROM tkonfigitem 
+                    WHERE kKonfiggruppe = " . (int)$kKonfiggruppe . " 
+                    ORDER BY nSort ASC", 2
             );
             if (!is_array($oItem_arr)) {
                 return false;
             }
-            $oItemEx_arr = array();
+            $oItemEx_arr = [];
             foreach ($oItem_arr as &$oItem) {
                 $kKonfigitem = $oItem->kKonfigitem;
                 $oItem       = new self($kKonfigitem);
@@ -504,7 +506,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_KONFIGURATOR)) {
                 }
             }
 
-            return;
+            return null;
         }
 
         /**

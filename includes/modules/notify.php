@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * @copyright (c) JTL-Software-GmbH
+ * @license http://jtl-url.de/jtlshoplicense
+ */
 require_once '../../includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Bestellung.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'sprachfunktionen.php';
@@ -10,7 +13,12 @@ define('NO_MODE', 0); // 1 = An / 0 = Aus
 define('NO_PFAD', PFAD_LOGFILES . 'notify.log');
 
 $Sprache             = Shop::DB()->select('tsprache', 'cShopStandard', 'Y');
-$Einstellungen       = Shop::getSettings(array(CONF_GLOBAL, CONF_KUNDEN, CONF_KAUFABWICKLUNG, CONF_ZAHLUNGSARTEN));
+$Einstellungen       = Shop::getSettings([
+    CONF_GLOBAL,
+    CONF_KUNDEN,
+    CONF_KAUFABWICKLUNG,
+    CONF_ZAHLUNGSARTEN
+]);
 $cEditZahlungHinweis = '';
 //Session Hash
 $cPh = verifyGPDataString('ph');
@@ -42,32 +50,50 @@ if (strlen($cSh) > 0) {
     }
     // Load from Session Hash / Session Hash starts with "_"
     $sessionHash    = substr(StringHandler::htmlentities(StringHandler::filterXSS($cSh)), 1);
-    $paymentSession = Shop::DB()->select('tzahlungsession', 'cZahlungsID', $sessionHash, null, null, null, null, false, 'cSID, kBestellung');
+    $paymentSession = Shop::DB()->select(
+        'tzahlungsession',
+        'cZahlungsID',
+        $sessionHash,
+        null,
+        null,
+        null,
+        null,
+        false,
+        'cSID, kBestellung'
+    );
     if ($paymentSession === false) {
-        Jtllog::writeLog('Session Hash: ' . $cSh . ' ergab keine Bestellung aus tzahlungsession', JTLLOG_LEVEL_ERROR, false, 'Notify');
+        Jtllog::writeLog(
+            'Session Hash: ' . $cSh . ' ergab keine Bestellung aus tzahlungsession',
+            JTLLOG_LEVEL_ERROR,
+            false,
+            'Notify'
+        );
 
         die();
     }
     if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-        Jtllog::writeLog('Session Hash: ' . $cSh . ' ergab tzahlungsession ' . print_r($paymentSession, true), JTLLOG_LEVEL_DEBUG, false, 'Notify');
+        Jtllog::writeLog(
+            'Session Hash: ' . $cSh . ' ergab tzahlungsession ' . print_r($paymentSession, true),
+            JTLLOG_LEVEL_DEBUG,
+            false,
+            'Notify'
+        );
     }
-    if (session_id() !== $paymentSession->cSID || !isset($_SESSION['Zahlungsart'])) {
+    if (session_id() !== $paymentSession->cSID) {
         session_destroy();
         session_id($paymentSession->cSID);
         $session = Session::getInstance(true, true);
     } else {
         $session = Session::getInstance(false, false);
     }
-    if (!isset($_SESSION['Zahlungsart'])) {
-        Jtllog::writeLog('Session Hash: ' . $cSh . ' ergab keine Zahlungsart nach Laden der Session ' . print_r($paymentSession, true), JTLLOG_LEVEL_ERROR, false, 'Notify');
-
-        die();
-    }
     require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellabschluss_inc.php';
     // EOS Workaround für Server to Server Kommunikation
     pruefeEOSServerCom($cSh);
 
-    Jtllog::writeLog('Session Hash: ' . $cSh . ' ergab cModulId aus Session: ' . ((isset($_SESSION['Zahlungsart']->cModulId)) ? $_SESSION['Zahlungsart']->cModulId : '---'),
+    Jtllog::writeLog('Session Hash: ' . $cSh . ' ergab cModulId aus Session: ' .
+        ((isset($_SESSION['Zahlungsart']->cModulId))
+            ? $_SESSION['Zahlungsart']->cModulId
+            : '---'),
         JTLLOG_LEVEL_DEBUG,
         false,
         'Notify'
@@ -76,10 +102,17 @@ if (strlen($cSh) > 0) {
         // Generate fake Order and ask PaymentMethod if order should be finalized
         $order = fakeBestellung();
         include_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
-        $paymentMethod = (isset($_SESSION['Zahlungsart']->cModulId)) ? PaymentMethod::create($_SESSION['Zahlungsart']->cModulId) : null;
+        $paymentMethod = (isset($_SESSION['Zahlungsart']->cModulId))
+            ? PaymentMethod::create($_SESSION['Zahlungsart']->cModulId)
+            : null;
         if (isset($paymentMethod)) {
             if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
-                Jtllog::writeLog('Session Hash: ' . $cSh . ' ergab Methode: ' . print_r($paymentMethod, true), JTLLOG_LEVEL_DEBUG, false, 'Notify');
+                Jtllog::writeLog(
+                    'Session Hash: ' . $cSh . ' ergab Methode: ' . print_r($paymentMethod, true),
+                    JTLLOG_LEVEL_DEBUG,
+                    false,
+                    'Notify'
+                );
             }
 
             $kPlugin = gibkPluginAuscModulId($_SESSION['Zahlungsart']->cModulId);
@@ -89,7 +122,12 @@ if (strlen($cSh) > 0) {
             }
 
             if ($paymentMethod->finalizeOrder($order, $sessionHash, $_REQUEST)) {
-                Jtllog::writeLog('Session Hash: ' . $cSh . ' ergab finalizeOrder passed', JTLLOG_LEVEL_DEBUG, false, 'Notify');
+                Jtllog::writeLog(
+                    'Session Hash: ' . $cSh . ' ergab finalizeOrder passed',
+                    JTLLOG_LEVEL_DEBUG,
+                    false,
+                    'Notify'
+                );
 
                 $order = finalisiereBestellung();
                 $session->cleanUp();
@@ -112,20 +150,25 @@ if (strlen($cSh) > 0) {
                 $linkHelper = LinkHelper::getInstance();
                 // UOS Work Around
                 if ($paymentMethod->redirectOnCancel() || strpos($_SESSION['Zahlungsart']->cModulId, 'za_uos_') !== false ||
-                    strpos($_SESSION['Zahlungsart']->cModulId, 'za_ut_') !== false || $_SESSION['Zahlungsart']->cModulId === 'za_sofortueberweisung_jtl'
+                    strpos($_SESSION['Zahlungsart']->cModulId, 'za_ut_') !== false ||
+                    $_SESSION['Zahlungsart']->cModulId === 'za_sofortueberweisung_jtl'
                 ) {
                     // Go to 'Edit PaymentMethod' Page
-                    $header = 'Location: ' . $linkHelper->getStaticRoute('bestellvorgang.php') . '?editZahlungsart=1';
+                    $header = 'Location: ' . $linkHelper->getStaticRoute('bestellvorgang.php') .
+                        '?editZahlungsart=1';
                     if (strlen($cEditZahlungHinweis) > 0) {
-                        $header = 'Location: ' . $linkHelper->getStaticRoute('bestellvorgang.php') . '?editZahlungsart=1&nHinweis=' . $cEditZahlungHinweis;
+                        $header = 'Location: ' . $linkHelper->getStaticRoute('bestellvorgang.php') .
+                            '?editZahlungsart=1&nHinweis=' . $cEditZahlungHinweis;
                     }
                     header($header);
                     exit();
                 } else {
                     if (strlen($cEditZahlungHinweis) > 0) {
-                        echo $linkHelper->getStaticRoute('bestellvorgang.php') . '?editZahlungsart=1&nHinweis=' . $cEditZahlungHinweis;
+                        echo $linkHelper->getStaticRoute('bestellvorgang.php') .
+                            '?editZahlungsart=1&nHinweis=' . $cEditZahlungHinweis;
                     } else {
-                        echo $linkHelper->getStaticRoute('bestellvorgang.php') . '?editZahlungsart=1';
+                        echo $linkHelper->getStaticRoute('bestellvorgang.php') .
+                            '?editZahlungsart=1';
                     }
                 }
             }
@@ -134,7 +177,13 @@ if (strlen($cSh) > 0) {
         $order = new Bestellung($paymentSession->kBestellung);
         $order->fuelleBestellung(0);
         include_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
-        Jtllog::writeLog('Session Hash ' . $cSh . ' hat kBestellung. Modul ' . $order->Zahlungsart->cModulId . ' wird aufgerufen', JTLLOG_LEVEL_DEBUG, false, 'Notify');
+        Jtllog::writeLog(
+            'Session Hash ' . $cSh . ' hat kBestellung. Modul ' .
+                $order->Zahlungsart->cModulId . ' wird aufgerufen',
+            JTLLOG_LEVEL_DEBUG,
+            false,
+            'Notify'
+        );
 
         $paymentMethod = PaymentMethod::create($order->Zahlungsart->cModulId);
         $paymentMethod->handleNotification($order, '_' . $sessionHash, $_REQUEST);
@@ -158,7 +207,7 @@ if (strlen($cPh) > 0) {
         writeLog(NO_PFAD, 'Payment Hash ' . $cPh, 1);
     }
     // Payment Hash
-    $paymentHash = StringHandler::htmlentities(StringHandler::filterXSS($cPh));
+    $paymentHash = Shop::DB()->escape(StringHandler::htmlentities(StringHandler::filterXSS($cPh)));
     $paymentId   = Shop::DB()->query(
         "SELECT ZID.kBestellung, ZA.cModulId
             FROM tzahlungsid ZID

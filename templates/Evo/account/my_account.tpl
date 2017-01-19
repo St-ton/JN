@@ -1,3 +1,8 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license http://jtl-url.de/jtlshoplicense
+ *}
+
 <h1 class="menu-title">{lang key="welcome" section="login"} {if $Kunde->cAnrede === 'w'}{$Anrede_w}{elseif $Kunde->cAnrede === 'm'}{$Anrede_m}{/if} {$smarty.session.Kunde->cNachname}</h1>
 
 <div class="row">
@@ -5,16 +10,16 @@
         {block name="account-billing-address"}
             <div class="panel panel-default" id="panel-billing-address">
                 <div class="panel-heading">
-                    <h3 class="panel-title">{block name="account-billing-address-title"}{lang key="billingAdress" section="account data"}{/block}</h3>
+                    <h3 class="panel-title">{block name="account-billing-address-title"}<span class="fa fa-home"></span> {lang key="billingAdress" section="account data"}{/block}</h3>
                 </div>
                 <div class="panel-body">
                     {block name="account-billing-address-body"}
-                        {include file='checkout/inc_billing_address.tpl' additional=false}
                         <p>
-                            <a class="btn btn-default btn-sm top15" href="{get_static_route id='jtl.php' params=['editRechnungsadresse' => 1]}">
-                                <span class="fa fa-home"></span> {lang key="modifyBillingAdress" section="global"}
-                            </a>
+                            {include file='checkout/inc_billing_address.tpl' additional=false}
                         </p>
+                        <a class="small edit top15" href="{get_static_route id='jtl.php' params=['editRechnungsadresse' => 1]}">
+                            <span class="fa fa-pencil"></span> {lang key="modifyBillingAdress" section="global"}
+                        </a>
                     {/block}
                 </div>
             </div>
@@ -48,8 +53,8 @@
                     </a>
                 </p>
 
-                <p class="text-center">
-                    <a href="{get_static_route id='jtl.php' params=['del' => 1]}">
+                <p>
+                    <a class="btn btn-danger btn-group-justified" href="{get_static_route id='jtl.php' params=['del' => 1]}">
                         <span class="fa fa-chain-broken"></span> {lang key="deleteAccount" section="login"}
                     </a>
                 </p>

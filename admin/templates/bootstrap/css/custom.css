@@ -17,6 +17,9 @@ body {
 .btn {
     font-size: 16px;
 }
+.btn.btn-xs {
+    font-size: 14px;
+}
 .input-group .btn {
     font-size: 14px;
 }
@@ -1966,8 +1969,7 @@ tr.text-vtop > td,tr.text-vtop > th {
 }
 
 .tooltip-inner {
-    max-width: 99999px;
-    white-space: nowrap;
+    max-width: 500px;
     padding: 5px 10px;
     font-size: 13px;
 }

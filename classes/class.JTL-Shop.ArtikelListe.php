@@ -12,10 +12,9 @@ class ArtikelListe
     /**
      * Array mit Artikeln
      *
-     * @access public
      * @var array
      */
-    public $elemente = array();
+    public $elemente = [];
 
     /**
      *
@@ -32,18 +31,21 @@ class ArtikelListe
      * @param int    $anzahl wieviele Top-Angebot Artikel geholt werden sollen
      * @param int    $kKundengruppe
      * @param int    $kSprache
-     * @return array
+     * @return Artikel[]
      */
     public function getTopNeuArtikel($topneu, $anzahl = 3, $kKundengruppe = 0, $kSprache = 0)
     {
-        $this->elemente = array();
+        $this->elemente = [];
         if (!$_SESSION['Kundengruppe']->darfArtikelKategorienSehen) {
             return $this->elemente;
         }
-        $kKundengruppe = (int) $kKundengruppe;
-        $kSprache      = (int) $kSprache;
-        $anzahl        = (int) $anzahl;
-        $cacheID       = 'jtl_tpnw_' . ((is_string($topneu)) ? $topneu : '') . '_' . $anzahl . '_' . $kSprache . '_' . $kKundengruppe;
+        $kKundengruppe = (int)$kKundengruppe;
+        $kSprache      = (int)$kSprache;
+        $anzahl        = (int)$anzahl;
+        $cacheID       = 'jtl_tpnw_' . ((is_string($topneu)) ? $topneu : '') .
+            '_' . $anzahl .
+            '_' . $kSprache .
+            '_' . $kKundengruppe;
         $objArr        = Shop::Cache()->get($cacheID);
         if ($objArr === false) {
             $qry = ($topneu === 'neu') ?
@@ -55,19 +57,20 @@ class ArtikelListe
             $objArr = Shop::DB()->query(
                 "SELECT tartikel.kArtikel
                     FROM tartikel
-                    LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel=tartikelsichtbarkeit.kArtikel
+                    LEFT JOIN tartikelsichtbarkeit 
+                        ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                         AND tartikelsichtbarkeit.kKundengruppe = $kKundengruppe
                     WHERE tartikelsichtbarkeit.kArtikel IS NULL
                         AND $qry
                     ORDER BY rand() LIMIT " . $anzahl, 2
             );
-            Shop::Cache()->set($cacheID, $objArr, array(CACHING_GROUP_CATEGORY));
+            Shop::Cache()->set($cacheID, $objArr, [CACHING_GROUP_CATEGORY]);
         }
         if (is_array($objArr)) {
-            $oArtikelOptionen = Artikel::getDefaultOptions();
+            $defaultOptions = Artikel::getDefaultOptions();
             foreach ($objArr as $obj) {
                 $artikel = new Artikel();
-                $artikel->fuelleArtikel($obj->kArtikel, $oArtikelOptionen);
+                $artikel->fuelleArtikel($obj->kArtikel, $defaultOptions);
                 $this->elemente[] = $artikel;
             }
         }
@@ -86,16 +89,13 @@ class ArtikelListe
      * @param string $order
      * @param int    $kKundengruppe
      * @param int    $kSprache
-     * @return array|null
+     * @return Artikel[]
      */
     public function getArtikelFromKategorie($kKategorie, $limitStart, $limitAnzahl, $order, $kKundengruppe = 0, $kSprache = 0)
     {
-        $this->elemente = array();
-        if (!$_SESSION['Kundengruppe']->darfArtikelKategorienSehen) {
+        $this->elemente = [];
+        if (!$_SESSION['Kundengruppe']->darfArtikelKategorienSehen || !$kKategorie) {
             return $this->elemente;
-        }
-        if (!$kKategorie) {
-            return;
         }
         if (!$kKundengruppe) {
             $kKundengruppe = $_SESSION['Kundengruppe']->kKundengruppe;
@@ -114,7 +114,7 @@ class ArtikelListe
         } else {
             $hstSQL = '';
             if (isset($GLOBALS['NaviFilter']->Hersteller->kHersteller) && $GLOBALS['NaviFilter']->Hersteller->kHersteller > 0) {
-                $hstSQL = ' AND tartikel.kHersteller = ' . $GLOBALS['NaviFilter']->Hersteller->kHersteller . ' ';
+                $hstSQL = ' AND tartikel.kHersteller = ' . (int)$GLOBALS['NaviFilter']->Hersteller->kHersteller . ' ';
             }
             $lagerfilter = gibLagerfilter();
             $objArr      = Shop::DB()->query(
@@ -134,13 +134,17 @@ class ArtikelListe
                     ", 2
             );
             if (is_array($objArr)) {
-                $oArtikelOptionen = Artikel::getDefaultOptions();
+                $defaultOptions = Artikel::getDefaultOptions();
                 foreach ($objArr as $obj) {
                     $artikel = new Artikel();
-                    $artikel->fuelleArtikel($obj->kArtikel, $oArtikelOptionen);
+                    $artikel->fuelleArtikel($obj->kArtikel, $defaultOptions);
                     $this->elemente[] = $artikel;
                 }
-                Shop::Cache()->set($cacheID, $this->elemente, array(CACHING_GROUP_CATEGORY, CACHING_GROUP_CATEGORY . '_' . $kKategorie));
+                Shop::Cache()->set(
+                    $cacheID,
+                    $this->elemente,
+                    [CACHING_GROUP_CATEGORY, CACHING_GROUP_CATEGORY . '_' . $kKategorie]
+                );
             }
         }
 
@@ -151,20 +155,20 @@ class ArtikelListe
      * @param array $kArtikel_arr
      * @param int   $start
      * @param int   $maxAnzahl
-     * @return array
+     * @return Artikel[]
      */
     public function getArtikelByKeys($kArtikel_arr, $start, $maxAnzahl)
     {
-        $this->elemente = array();
+        $this->elemente = [];
         if (!$_SESSION['Kundengruppe']->darfArtikelKategorienSehen) {
             return $this->elemente;
         }
-        $cnt              = count($kArtikel_arr);
-        $anz              = 0;
-        $oArtikelOptionen = Artikel::getDefaultOptions();
-        for ($i = (int) $start; $i < $cnt; $i++) {
+        $cnt            = count($kArtikel_arr);
+        $anz            = 0;
+        $defaultOptions = Artikel::getDefaultOptions();
+        for ($i = (int)$start; $i < $cnt; $i++) {
             $artikel = new Artikel();
-            $artikel->fuelleArtikel($kArtikel_arr[$i], $oArtikelOptionen);
+            $artikel->fuelleArtikel($kArtikel_arr[$i], $defaultOptions);
             if (!empty($artikel->kArtikel) && $artikel->kArtikel > 0) {
                 ++$anz;
                 $this->elemente[] = $artikel;
@@ -179,17 +183,17 @@ class ArtikelListe
 
     /**
      * @param KategorieListe $katListe
-     * @return Artikel
+     * @return Artikel[]
      */
     public function holeTopArtikel($katListe)
     {
-        $arr_kKategorie = array();
+        $arr_kKategorie = [];
         if (!empty($katListe->elemente)) {
             foreach ($katListe->elemente as $i => $kategorie) {
-                $arr_kKategorie[] = (int) $kategorie->kKategorie;
+                $arr_kKategorie[] = (int)$kategorie->kKategorie;
                 if (isset($kategorie->Unterkategorien) && is_array($kategorie->Unterkategorien)) {
                     foreach ($kategorie->Unterkategorien as $kategorie_lvl2) {
-                        $arr_kKategorie[] = (int) $kategorie_lvl2->kKategorie;
+                        $arr_kKategorie[] = (int)$kategorie_lvl2->kKategorie;
                     }
                 }
             }
@@ -200,10 +204,10 @@ class ArtikelListe
             if (!$_SESSION['Kundengruppe']->darfArtikelKategorienSehen) {
                 return $this->elemente;
             }
-            $Einstellungen = Shop::getSettings(array(CONF_ARTIKELUEBERSICHT));
+            $Einstellungen = Shop::getSettings([CONF_ARTIKELUEBERSICHT]);
             $kKundengruppe = (int)$_SESSION['Kundengruppe']->kKundengruppe;
             $cLimitSql     = (isset($Einstellungen['artikeluebersicht']['artikelubersicht_topbest_anzahl'])) ?
-                ('LIMIT ' . (int) $Einstellungen['artikeluebersicht']['artikelubersicht_topbest_anzahl']) :
+                ('LIMIT ' . (int)$Einstellungen['artikeluebersicht']['artikelubersicht_topbest_anzahl']) :
                 'LIMIT 6';
 
             //top-Artikel
@@ -224,18 +228,18 @@ class ArtikelListe
                     {$cLimitSql}
                     ", 2
             );
-            $cacheTags = array(CACHING_GROUP_CATEGORY, CACHING_GROUP_OPTION);
+            $cacheTags = [CACHING_GROUP_CATEGORY, CACHING_GROUP_OPTION];
             foreach ($arr_kKategorie as $category) {
                 $cacheTags[] = CACHING_GROUP_CATEGORY . '_' . $category;
             }
             Shop::Cache()->set($cacheID, $objArr, $cacheTags);
         }
         if (is_array($objArr)) {
-            $res              = array();
-            $oArtikelOptionen = Artikel::getDefaultOptions();
+            $res            = [];
+            $defaultOptions = Artikel::getDefaultOptions();
             foreach ($objArr as $obj) {
                 $artikel = new Artikel();
-                $artikel->fuelleArtikel($obj->kArtikel, $oArtikelOptionen);
+                $artikel->fuelleArtikel($obj->kArtikel, $defaultOptions);
                 $this->elemente[] = $artikel;
                 $res[]            = $artikel;
             }
@@ -247,17 +251,17 @@ class ArtikelListe
     /**
      * @param Kategorieliste    $katListe
      * @param ArtikelListe|null $topArtikelliste
-     * @return array
+     * @return Artikel[]
      */
     public function holeBestsellerArtikel($katListe, $topArtikelliste = null)
     {
-        $arr_kKategorie = array();
+        $arr_kKategorie = [];
         if (isset($katListe->elemente) && is_array($katListe->elemente)) {
             foreach ($katListe->elemente as $i => $kategorie) {
-                $arr_kKategorie[] = (int) $kategorie->kKategorie;
+                $arr_kKategorie[] = (int)$kategorie->kKategorie;
                 if (isset($kategorie->Unterkategorien) && is_array($kategorie->Unterkategorien)) {
                     foreach ($kategorie->Unterkategorien as $kategorie_lvl2) {
-                        $arr_kKategorie[] = (int) $kategorie_lvl2->kKategorie;
+                        $arr_kKategorie[] = (int)$kategorie_lvl2->kKategorie;
                     }
                 }
             }
@@ -269,7 +273,7 @@ class ArtikelListe
                 return $this->elemente;
             }
             if (!isset($Einstellungen['artikeluebersicht'])) {
-                $Einstellungen = Shop::getSettings(array(CONF_ARTIKELUEBERSICHT));
+                $Einstellungen = Shop::getSettings([CONF_ARTIKELUEBERSICHT]);
             }
             $kKundengruppe = $_SESSION['Kundengruppe']->kKundengruppe;
             //top artikel nicht nochmal in den bestsellen vorkommen lassen
@@ -284,7 +288,7 @@ class ArtikelListe
                 }
             }
             $cLimitSql = (isset($Einstellungen['artikeluebersicht']['artikelubersicht_topbest_anzahl'])) ?
-                ('LIMIT ' . (int) $Einstellungen['artikeluebersicht']['artikelubersicht_topbest_anzahl']) :
+                ('LIMIT ' . (int)$Einstellungen['artikeluebersicht']['artikelubersicht_topbest_anzahl']) :
                 'LIMIT 6';
             //top-Artikel
             $lagerfilter = gibLagerfilter();
@@ -305,18 +309,18 @@ class ArtikelListe
                     {$cLimitSql}
                     ", 2
             );
-            $cacheTags = array(CACHING_GROUP_CATEGORY, CACHING_GROUP_OPTION);
+            $cacheTags = [CACHING_GROUP_CATEGORY, CACHING_GROUP_OPTION];
             foreach ($arr_kKategorie as $category) {
                 $cacheTags[] = CACHING_GROUP_CATEGORY . '_' . $category;
             }
             Shop::Cache()->set($cacheID, $objArr, $cacheTags);
         }
-        $res = array();
+        $res = [];
         if (is_array($objArr)) {
-            $oArtikelOptionen = Artikel::getDefaultOptions();
+            $defaultOptions = Artikel::getDefaultOptions();
             foreach ($objArr as $obj) {
                 $artikel = new Artikel();
-                $artikel->fuelleArtikel($obj->kArtikel, $oArtikelOptionen);
+                $artikel->fuelleArtikel($obj->kArtikel, $defaultOptions);
                 $this->elemente[] = $artikel;
                 $res[]            = $artikel;
             }

@@ -112,6 +112,19 @@
 
                         <li class="input-group">
                             <span class="input-group-addon">
+                                <label for="eSteuer">{#taxshippingcosts#}</label>
+                            </span>
+                            <span class="input-group-wrap">
+                                <select name="eSteuer" id="eSteuer" class="combo form-control">
+                                    <option value="brutto" {if isset($Versandart->eSteuer) && $Versandart->eSteuer === 'brutto'}selected{/if}>{#gross#}</option>
+                                    <option value="netto" {if isset($Versandart->eSteuer) && $Versandart->eSteuer === 'netto'}selected{/if}>{#net#}</option>
+                                </select>
+                            </span>
+                            <span class="input-group-addon">{getHelpDesc cDesc=#taxshippingcostsDesc#}</span>
+                        </li>
+
+                        <li class="input-group">
+                            <span class="input-group-addon">
                                 <label for="cSendConfirmationMail">Versandbest&auml;tigung senden?</label>
                             </span>
                             <span class="input-group-wrap">
@@ -146,7 +159,7 @@
                             <span class="input-group-addon">{getHelpDesc cDesc=#customerclassDesc#}</span>
                         </li>
 
-                        <li class="input-group">
+                        <li class="input-group{if isset($versandklassenExceeded) && $versandklassenExceeded == 1} has-error{/if}">
                             <span class="input-group-addon">
                                 <label for="kVersandklasse">{#shippingclass#}</label>
                             </span>
@@ -160,10 +173,11 @@
                                         {/foreach}
                                     {/if}
                                 </select>
+                                {if  isset($versandklassenExceeded) && $versandklassenExceeded == 1}
+                                    <p class="help-block">{#versandklassenExceeded#}</p>
+                                {/if}
                             </span>
                             <span class="input-group-addon">{getHelpDesc cDesc=#shippingclassDesc#}</span>
-                            <br />{if isset($versandklassenExceeded) && $versandklassenExceeded  == 1}<strong>
-                                <font color="red">{#versandklassenExceeded#}</font></strong>{/if}
                         </li>
                         {foreach name=sprachen from=$sprachen item=sprache}
                             {assign var="cISO" value=$sprache->cISO}
@@ -251,19 +265,7 @@
                         </li>
                         <li class="input-group">
                             <span class="input-group-addon"><label>{#amount#}</label></span>
-                            <input type="text" id="fVersandkostenfreiAbX" name="fVersandkostenfreiAbX" class="form-control price_large" value="{if isset($Versandart->fVersandkostenfreiAbX)}{$Versandart->fVersandkostenfreiAbX}{/if}">{* onKeyUp="setzePreisAjax(false, 'ajaxversandkostenfrei', this)" /> <span id="ajaxversandkostenfrei"></span>*}    
-                        </li>
-                        <li class="input-group">
-                            <span class="input-group-addon">
-                                <label for="eSteuer">{#taxshippingcosts#}</label>
-                            </span>
-                            <span class="input-group-wrap">
-                                <select name="eSteuer" id="eSteuer" class="combo form-control">
-                                    <option value="brutto" {if isset($Versandart->eSteuer) && $Versandart->eSteuer === 'brutto'}selected{/if}>{#gross#}</option>
-                                    <option value="netto" {if isset($Versandart->eSteuer) && $Versandart->eSteuer === 'netto'}selected{/if}>{#net#}</option>
-                                </select>
-                            </span>
-                            <span class="input-group-addon">{getHelpDesc cDesc=#taxshippingcostsDesc#}</span>
+                            <input type="text" id="fVersandkostenfreiAbX" name="fVersandkostenfreiAbX" class="form-control price_large" value="{if isset($Versandart->fVersandkostenfreiAbX)}{$Versandart->fVersandkostenfreiAbX}{/if}">{* onKeyUp="setzePreisAjax(false, 'ajaxversandkostenfrei', this)" /> <span id="ajaxversandkostenfrei"></span>*}
                         </li>
                     </ul>
                 </div>

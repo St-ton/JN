@@ -10,11 +10,19 @@
  */
 function kundeSpeichern($cPost_arr)
 {
-    global $smarty, $Kunde, $GlobaleEinstellungen, $Einstellungen, $step, $editRechnungsadresse, $knd, $cKundenattribut_arr;
+    global $smarty,
+           $Kunde,
+           $GlobaleEinstellungen,
+           $Einstellungen,
+           $step,
+           $editRechnungsadresse,
+           $knd,
+           $cKundenattribut_arr;
 
     unset($_SESSION['Lieferadresse']);
     unset($_SESSION['Versandart']);
     unset($_SESSION['Zahlungsart']);
+    /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
     $_SESSION['Warenkorb']->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS)
                           ->loescheSpezialPos(C_WARENKORBPOS_TYP_ZAHLUNGSART);
 
@@ -32,15 +40,26 @@ function kundeSpeichern($cPost_arr)
     // CheckBox Plausi
     require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.CheckBox.php';
     $oCheckBox       = new CheckBox();
-    $fehlendeAngaben = array_merge($fehlendeAngaben, $oCheckBox->validateCheckBox(CHECKBOX_ORT_REGISTRIERUNG, $kKundengruppe, $cPost_arr, true));
+    $fehlendeAngaben = array_merge(
+        $fehlendeAngaben,
+        $oCheckBox->validateCheckBox(CHECKBOX_ORT_REGISTRIERUNG, $kKundengruppe, $cPost_arr, true)
+    );
     $nReturnValue    = angabenKorrekt($fehlendeAngaben);
 
-    executeHook(HOOK_REGISTRIEREN_PAGE_REGISTRIEREN_PLAUSI, array('nReturnValue' => &$nReturnValue, 'fehlendeAngaben' => &$fehlendeAngaben));
+    executeHook(HOOK_REGISTRIEREN_PAGE_REGISTRIEREN_PLAUSI, [
+        'nReturnValue'    => &$nReturnValue,
+        'fehlendeAngaben' => &$fehlendeAngaben
+    ]);
 
     if ($nReturnValue) {
         // CheckBox Spezialfunktion ausführen
-        $oCheckBox->triggerSpecialFunction(CHECKBOX_ORT_REGISTRIERUNG, $kKundengruppe, true, $cPost_arr, array('oKunde' => $knd));
-        $oCheckBox->checkLogging(CHECKBOX_ORT_REGISTRIERUNG, $kKundengruppe, $cPost_arr, true);
+        $oCheckBox->triggerSpecialFunction(
+            CHECKBOX_ORT_REGISTRIERUNG,
+            $kKundengruppe,
+            true,
+            $cPost_arr,
+            ['oKunde' => $knd]
+        )->checkLogging(CHECKBOX_ORT_REGISTRIERUNG, $kKundengruppe, $cPost_arr, true);
 
         if ($editRechnungsadresse && $_SESSION['Kunde']->kKunde > 0) {
             $knd->cAbgeholt = 'N';
@@ -58,9 +77,9 @@ function kundeSpeichern($cPost_arr)
                     $cSQL .= ' AND (';
                     foreach ($oKundenfeldNichtEditierbar_arr as $i => $oKundenfeldNichtEditierbar) {
                         if ($i == 0) {
-                            $cSQL .= 'kKundenfeld != ' . $oKundenfeldNichtEditierbar->kKundenfeld;
+                            $cSQL .= 'kKundenfeld != ' . (int)$oKundenfeldNichtEditierbar->kKundenfeld;
                         } else {
-                            $cSQL .= ' AND kKundenfeld != ' . $oKundenfeldNichtEditierbar->kKundenfeld;
+                            $cSQL .= ' AND kKundenfeld != ' . (int)$oKundenfeldNichtEditierbar->kKundenfeld;
                         }
                     }
                     $cSQL .= ')';
@@ -83,12 +102,7 @@ function kundeSpeichern($cPost_arr)
             $_SESSION['Kunde']->cKundenattribut_arr = $cKundenattribut_arr;
         } else {
             // Guthaben des Neukunden aufstocken insofern er geworben wurde
-            $oNeukunde = Shop::DB()->query(
-                "SELECT kKundenWerbenKunden
-                    FROM tkundenwerbenkunden
-                    WHERE cEmail = '" . $knd->cMail . "'
-                        AND nRegistriert = 0", 1
-            );
+            $oNeukunde = Shop::DB()->select('tkundenwerbenkunden', 'cEmail', $knd->cMail, 'nRegistriert', 0);
             $kKundengruppe = $_SESSION['Kundengruppe']->kKundengruppe;
             if (isset($oNeukunde->kKundenWerbenKunden) && $oNeukunde->kKundenWerbenKunden > 0 &&
                 isset($Einstellungen['kundenwerbenkunden']['kwk_kundengruppen']) &&
@@ -100,15 +114,14 @@ function kundeSpeichern($cPost_arr)
             $knd->kKundengruppe = $kKundengruppe;
             $knd->kSprache      = $_SESSION['kSprache'];
             $knd->cAbgeholt     = 'N';
-            $knd->cAktiv        = 'Y';
             $knd->cSperre       = 'N';
             //konto sofort aktiv?
-            if ($GlobaleEinstellungen['global']['global_kundenkonto_aktiv'] === 'A') {
-                $knd->cAktiv = 'N';
-            }
+            $knd->cAktiv = ($GlobaleEinstellungen['global']['global_kundenkonto_aktiv'] === 'A')
+                ? 'N'
+                : 'Y';
             $customer             = new Kunde();
             $cPasswortKlartext    = $knd->cPasswort;
-            $knd->cPasswort       = $customer->generatePasswordHash($cPasswortKlartext);//cryptPasswort($cPasswortKlartext);
+            $knd->cPasswort       = $customer->generatePasswordHash($cPasswortKlartext);
             $knd->dErstellt       = 'now()';
             $knd->nRegistriert    = 1;
             $knd->angezeigtesLand = ISO2land($knd->cLand);
@@ -161,7 +174,9 @@ function kundeSpeichern($cPost_arr)
                 Shop::DB()->update('tkundenwerbenkunden', 'cEmail', $knd->cMail, $_upd);
             }
         }
-        if ((isset($_SESSION['Warenkorb']->kWarenkorb)) && $_SESSION['Warenkorb']->gibAnzahlArtikelExt(array(C_WARENKORBPOS_TYP_ARTIKEL)) > 0) {
+        if ((isset($_SESSION['Warenkorb']->kWarenkorb)) &&
+            $_SESSION['Warenkorb']->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]) > 0
+        ) {
             setzeSteuersaetze();
             $_SESSION['Warenkorb']->gibGesamtsummeWarenLocalized();
         }
@@ -196,7 +211,9 @@ function gibFormularDaten($nCheckout = 0)
     global $smarty, $cKundenattribut_arr, $Kunde, $Einstellungen;
 
     if (count($cKundenattribut_arr) === 0) {
-        $cKundenattribut_arr = (isset($_SESSION['Kunde']->cKundenattribut_arr)) ? $_SESSION['Kunde']->cKundenattribut_arr : array();
+        $cKundenattribut_arr = (isset($_SESSION['Kunde']->cKundenattribut_arr))
+            ? $_SESSION['Kunde']->cKundenattribut_arr
+            : [];
     }
 
     if (isset($Kunde->dGeburtstag) && preg_match('/^\d{4}\-\d{2}\-(\d{2})$/', $Kunde->dGeburtstag)) {
@@ -214,7 +231,7 @@ function gibFormularDaten($nCheckout = 0)
 
     if (intval($nCheckout) === 1) {
         $smarty->assign('checkout', 1)
-               ->assign('bestellschritt', array(1 => 1, 2 => 3, 3 => 3, 4 => 3, 5 => 3)); // Rechnungsadresse ändern
+               ->assign('bestellschritt', [1 => 1, 2 => 3, 3 => 3, 4 => 3, 5 => 3]); // Rechnungsadresse ändern
     }
 }
 

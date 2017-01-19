@@ -59,11 +59,11 @@ if (class_exists('AuswahlAssistent')) {
         private function loadFromDB($kAuswahlAssistentOrt, $kAuswahlAssistentGruppe, $bBackend)
         {
             if ($kAuswahlAssistentGruppe > 0) {
-                $this->oOrt_arr = array();
-                $oOrtTMP_arr    = Shop::DB()->query(
-                    "SELECT *
-                        FROM tauswahlassistentort
-                        WHERE kAuswahlAssistentGruppe = " . (int)$kAuswahlAssistentGruppe, 2
+                $this->oOrt_arr = [];
+                $oOrtTMP_arr    = Shop::DB()->selectAll(
+                    'tauswahlassistentort',
+                    'kAuswahlAssistentGruppe',
+                    (int)$kAuswahlAssistentGruppe
                 );
                 if (is_array($oOrtTMP_arr) && count($oOrtTMP_arr) > 0) {
                     foreach ($oOrtTMP_arr as $oOrtTMP) {
@@ -71,10 +71,10 @@ if (class_exists('AuswahlAssistent')) {
                     }
                 }
             } elseif ($kAuswahlAssistentOrt > 0) {
-                $oOrt = Shop::DB()->query(
-                    "SELECT *
-                        FROM tauswahlassistentort
-                        WHERE kAuswahlAssistentOrt = " . (int)$kAuswahlAssistentOrt, 1
+                $oOrt = Shop::DB()->select(
+                    'tauswahlassistentort',
+                    'kAuswahlAssistentOrt',
+                    (int)$kAuswahlAssistentOrt
                 );
                 if (isset($oOrt->kAuswahlAssistentOrt) && $oOrt->kAuswahlAssistentOrt > 0) {
                     $cMember_arr = array_keys(get_object_vars($oOrt));
@@ -90,23 +90,30 @@ if (class_exists('AuswahlAssistent')) {
                                 unset($_SESSION['oKategorie_arr']);
                                 unset($_SESSION['oKategorie_arr_new']);
                             }
-                            $oKategorie = new Kategorie($this->kKey, AuswahlAssistentGruppe::getLanguage($this->kAuswahlAssistentGruppe));
+                            $oKategorie = new Kategorie(
+                                $this->kKey,
+                                AuswahlAssistentGruppe::getLanguage($this->kAuswahlAssistentGruppe)
+                            );
 
-                            $this->cOrt = $oKategorie->cName . "(Kategorie)";
+                            $this->cOrt = $oKategorie->cName . '(Kategorie)';
                             break;
 
                         case AUSWAHLASSISTENT_ORT_LINK:
-                            $oSprache = Shop::DB()->query(
-                                "SELECT cISO
-                                    FROM tsprache
-                                    WHERE kSprache = " . AuswahlAssistentGruppe::getLanguage($this->kAuswahlAssistentGruppe), 1
+                            $oSprache   = Shop::DB()->select(
+                                'tsprache',
+                                'kSprache',
+                                AuswahlAssistentGruppe::getLanguage($this->kAuswahlAssistentGruppe)
                             );
-
-                            $oLink = Shop::DB()->query(
-                                "SELECT cName
-                                    FROM tlinksprache
-                                    WHERE kLink = " . $this->kKey . "
-                                        AND cISOSprache = '" . $oSprache->cISO . "'", 1
+                            $oLink      = Shop::DB()->select(
+                                'tlinksprache',
+                                'kLink',
+                                $this->kKey,
+                                'cISOSprache',
+                                $oSprache->cISO,
+                                null,
+                                null,
+                                false,
+                                'cName'
                             );
                             $this->cOrt = (isset($oLink->cName)) ? ($oLink->cName . '(CMS)') : null;
                             break;
@@ -145,7 +152,10 @@ if (class_exists('AuswahlAssistent')) {
                     }
                 }
                 // Spezialseite
-                if (isset($cParam_arr['kLink_arr']) && is_array($cParam_arr['kLink_arr']) && count($cParam_arr['kLink_arr']) > 0) {
+                if (isset($cParam_arr['kLink_arr']) &&
+                    is_array($cParam_arr['kLink_arr']) &&
+                    count($cParam_arr['kLink_arr']) > 0
+                ) {
                     foreach ($cParam_arr['kLink_arr'] as $kLink) {
                         if (intval($kLink) > 0) {
                             $oOrt                          = new stdClass();
@@ -180,7 +190,11 @@ if (class_exists('AuswahlAssistent')) {
         {
             $kAuswahlAssistentGruppe = (int)$kAuswahlAssistentGruppe;
             if (is_array($cParam_arr) && count($cParam_arr) > 0 && $kAuswahlAssistentGruppe > 0) {
-                $nRow = Shop::DB()->delete('tauswahlassistentort', 'kAuswahlAssistentGruppe', $kAuswahlAssistentGruppe);
+                $nRow = Shop::DB()->delete(
+                    'tauswahlassistentort',
+                    'kAuswahlAssistentGruppe',
+                    $kAuswahlAssistentGruppe
+                );
 
                 if ($nRow > 0) {
                     if (self::saveLocation($cParam_arr, $kAuswahlAssistentGruppe)) {
@@ -199,11 +213,13 @@ if (class_exists('AuswahlAssistent')) {
          */
         public static function checkLocation($cParam_arr, $bUpdate = false)
         {
-            $cPlausi_arr = array();
+            $cPlausi_arr = [];
             // Ort
-            if ((!isset($cParam_arr['cKategorie']) || strlen($cParam_arr['cKategorie']) === 0)
-                && (!isset($cParam_arr['kLink_arr']) || !is_array($cParam_arr['kLink_arr']) || count($cParam_arr['kLink_arr']) === 0)
-                && $cParam_arr['nStartseite'] == 0
+            if ((!isset($cParam_arr['cKategorie']) || strlen($cParam_arr['cKategorie']) === 0) &&
+                (!isset($cParam_arr['kLink_arr']) ||
+                    !is_array($cParam_arr['kLink_arr']) ||
+                    count($cParam_arr['kLink_arr']) === 0) &&
+                $cParam_arr['nStartseite'] == 0
             ) {
                 $cPlausi_arr['cOrt'] = 1;
             }
@@ -221,7 +237,11 @@ if (class_exists('AuswahlAssistent')) {
                 foreach ($cKategorie_arr as $cKategorie) {
                     if (strlen($cKategorie) > 0 && intval($cKategorie) > 0) {
                         if ($bUpdate) {
-                            if (self::isCategoryTaken($cKategorie, $cParam_arr['kSprache'], $cParam_arr['kAuswahlAssistentGruppe'])) {
+                            if (self::isCategoryTaken(
+                                $cKategorie,
+                                $cParam_arr['kSprache'],
+                                $cParam_arr['kAuswahlAssistentGruppe'])
+                            ) {
                                 $cPlausi_arr['cKategorie'] = 3;
                             }
                         } else {
@@ -233,11 +253,18 @@ if (class_exists('AuswahlAssistent')) {
                 }
             }
             // Ort Spezialseite
-            if (isset($cParam_arr['kLink_arr']) && is_array($cParam_arr['kLink_arr']) && count($cParam_arr['kLink_arr']) > 0) {
+            if (isset($cParam_arr['kLink_arr']) &&
+                is_array($cParam_arr['kLink_arr']) &&
+                count($cParam_arr['kLink_arr']) > 0
+            ) {
                 foreach ($cParam_arr['kLink_arr'] as $kLink) {
                     if (intval($kLink) > 0) {
                         if ($bUpdate) {
-                            if (self::isLinkTaken($kLink, $cParam_arr['kSprache'], $cParam_arr['kAuswahlAssistentGruppe'])) {
+                            if (self::isLinkTaken
+                            ($kLink,
+                                $cParam_arr['kSprache'],
+                                $cParam_arr['kAuswahlAssistentGruppe'])
+                            ) {
                                 $cPlausi_arr['kLink_arr'] = 1;
                             }
                         } else {
@@ -251,7 +278,10 @@ if (class_exists('AuswahlAssistent')) {
             // Ort Startseite
             if (isset($cParam_arr['nStartseite']) && intval($cParam_arr['nStartseite']) === 1) {
                 if ($bUpdate) {
-                    if (self::isStartPageTaken($cParam_arr['kSprache'], $cParam_arr['kAuswahlAssistentGruppe'])) {
+                    if (self::isStartPageTaken(
+                        $cParam_arr['kSprache'],
+                        $cParam_arr['kAuswahlAssistentGruppe'])
+                    ) {
                         $cPlausi_arr['nStartseite'] = 1;
                     }
                 } else {
@@ -282,7 +312,8 @@ if (class_exists('AuswahlAssistent')) {
             $oOrt = Shop::DB()->query(
                 "SELECT kAuswahlAssistentOrt
                     FROM tauswahlassistentort
-                    JOIN tauswahlassistentgruppe ON tauswahlassistentgruppe.kAuswahlAssistentGruppe = tauswahlassistentort.kAuswahlAssistentGruppe
+                    JOIN tauswahlassistentgruppe 
+                        ON tauswahlassistentgruppe.kAuswahlAssistentGruppe = tauswahlassistentort.kAuswahlAssistentGruppe
                         AND tauswahlassistentgruppe.kSprache = " . (int)$kSprache . "
                     WHERE tauswahlassistentort.cKey = '" . AUSWAHLASSISTENT_ORT_KATEGORIE . "'
                         " . $cOrtSQL . "
@@ -310,7 +341,8 @@ if (class_exists('AuswahlAssistent')) {
             $oOrt = Shop::DB()->query(
                 "SELECT kAuswahlAssistentOrt
                     FROM tauswahlassistentort
-                    JOIN tauswahlassistentgruppe ON tauswahlassistentgruppe.kAuswahlAssistentGruppe = tauswahlassistentort.kAuswahlAssistentGruppe
+                    JOIN tauswahlassistentgruppe 
+                        ON tauswahlassistentgruppe.kAuswahlAssistentGruppe = tauswahlassistentort.kAuswahlAssistentGruppe
                         AND tauswahlassistentgruppe.kSprache = " . (int)$kSprache . "
                     WHERE tauswahlassistentort.cKey = '" . AUSWAHLASSISTENT_ORT_LINK . "'
                         " . $cOrtSQL . "
@@ -338,7 +370,8 @@ if (class_exists('AuswahlAssistent')) {
             $oOrt = Shop::DB()->query(
                 "SELECT kAuswahlAssistentOrt
                     FROM tauswahlassistentort
-                    JOIN tauswahlassistentgruppe ON tauswahlassistentgruppe.kAuswahlAssistentGruppe = tauswahlassistentort.kAuswahlAssistentGruppe
+                    JOIN tauswahlassistentgruppe 
+                        ON tauswahlassistentgruppe.kAuswahlAssistentGruppe = tauswahlassistentort.kAuswahlAssistentGruppe
                         AND tauswahlassistentgruppe.kSprache = " . (int)$kSprache . "
                     WHERE tauswahlassistentort.cKey = '" . AUSWAHLASSISTENT_ORT_STARTSEITE . "'
                         " . $cOrtSQL . "
@@ -361,7 +394,8 @@ if (class_exists('AuswahlAssistent')) {
                 $oOrt = Shop::DB()->query(
                     "SELECT kAuswahlAssistentOrt
                         FROM tauswahlassistentort
-                        JOIN tauswahlassistentgruppe ON tauswahlassistentgruppe.kAuswahlAssistentGruppe = tauswahlassistentort.kAuswahlAssistentGruppe
+                        JOIN tauswahlassistentgruppe 
+                            ON tauswahlassistentgruppe.kAuswahlAssistentGruppe = tauswahlassistentort.kAuswahlAssistentGruppe
                             AND tauswahlassistentgruppe.kSprache = " . (int)$kSprache . "
                         WHERE tauswahlassistentort.cKey = '" . Shop::DB()->escape($cKey) . "'
                             AND tauswahlassistentort.kKey = " . (int)$kKey, 1
@@ -372,7 +406,7 @@ if (class_exists('AuswahlAssistent')) {
                 }
             }
 
-            return;
+            return null;
         }
     }
 }

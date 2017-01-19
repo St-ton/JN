@@ -132,7 +132,7 @@ if (isset($_POST['einstellungen_bearbeiten'])) {
             Shop::DB()->insert('teinstellungen', $aktWert);
         }
     }
-    Shop::DB()->query("UPDATE tglobals SET dLetzteAenderung=now()", 4);
+    Shop::DB()->query("UPDATE tglobals SET dLetzteAenderung = now()", 4);
     Shop::Cache()->flushTags(array(CACHING_GROUP_OPTION));
 
     $smarty->assign('saved', true);

@@ -201,7 +201,7 @@
                                            name="dateiname_{$smarty.section.anhaenge.index}_{$kSprache}"
                                            type="text"
                                            value="{if isset($Emailvorlagesprache[$kSprache]->cDateiname_arr[$loopdekr])}{$Emailvorlagesprache[$kSprache]->cDateiname_arr[$loopdekr]}{/if}"
-                                           class="form-control{if isset($cFehlerAnhang_arr[$kSprache][$smarty.section.anhaenge.index]) && $cFehlerAnhang_arr[$kSprache][$smarty.section.anhaenge.index] == 1} fieldfillout{/if}" />
+                                           class="form-control{if count($cFehlerAnhang_arr) > 0}{if isset($cFehlerAnhang_arr[$kSprache][$smarty.section.anhaenge.index]) && $cFehlerAnhang_arr[$kSprache][$smarty.section.anhaenge.index] == 1} fieldfillout{/if}{/if}" />
                                         <input id="pdf_{$smarty.section.anhaenge.index}_{$kSprache}" name="pdf_{$smarty.section.anhaenge.index}_{$kSprache}" type="file" class="form-control" maxlength="2097152" style="margin-top:5px;" />
                                     </div>
                                 </div>
@@ -216,4 +216,7 @@
             </div>
         </div>
     </form>
+    {if isset($Emailvorlage->kEmailvorlage)}
+        {getRevisions type='mail' key=$Emailvorlage->kEmailvorlage show=['cContentText','cContentHtml'] secondary=true data=$Emailvorlagesprache}
+    {/if}
 </div>

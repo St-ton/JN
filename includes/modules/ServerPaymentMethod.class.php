@@ -33,6 +33,7 @@ class ServerPaymentMethod extends PaymentMethod
 
     /**
      * @param int $nAgainCheckout
+     * @return $this
      */
     public function init($nAgainCheckout = 0)
     {
@@ -41,6 +42,8 @@ class ServerPaymentMethod extends PaymentMethod
         $this->hostname = '';
         $this->host     = '';
         $this->path     = '';
+
+        return $this;
     }
 
     /**
@@ -60,7 +63,7 @@ class ServerPaymentMethod extends PaymentMethod
         // Socket Error
         if (!$socket) {
             //echo $errStr;
-            return array('status' => 'error');
+            return ['status' => 'error'];
         }
 
         // Request
@@ -122,10 +125,13 @@ class ServerPaymentMethod extends PaymentMethod
             }
         }
         fclose($socket);
-
         // Workaround: http://bugs.php.net/bug.php?id=39039 (see first line of Method)
         error_reporting($tempErrorLevel);
 
-        return array('status' => 'success', 'header' => $reponseHeader, 'body' => $reponseBody);
+        return [
+            'status' => 'success',
+            'header' => $reponseHeader,
+            'body'   => $reponseBody
+        ];
     }
 }

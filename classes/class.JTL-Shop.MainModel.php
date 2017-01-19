@@ -28,10 +28,9 @@ abstract class MainModel
     }
 
     /**
-     * @param      $kKey
+     * @param int  $kKey
      * @param null $oObj
      * @param null $xOption
-     * @return mixed
      */
     abstract public function load($kKey, $oObj = null, $xOption = null);
 
@@ -71,7 +70,7 @@ abstract class MainModel
             foreach ($cMember_arr as $cMember) {
                 $cMethod = "get" . substr($cMember, 1);
                 if (method_exists($this, $cMethod)) {
-                    $oObj->{$cMember} = call_user_func(array(&$this, $cMethod));
+                    $oObj->{$cMember} = call_user_func([&$this, $cMethod]);
                 }
             }
         }
@@ -95,7 +94,7 @@ abstract class MainModel
                         $cSep = ';';
                     }
 
-                    $cCSV .= $cSep . call_user_func(array(&$this, $cMethod));
+                    $cCSV .= $cSep . call_user_func([&$this, $cMethod]);
                 }
             }
         }
@@ -133,7 +132,7 @@ abstract class MainModel
             foreach ($cMember_arr as $cMember) {
                 $cMethod = 'set' . substr($cMember, 1);
                 if (method_exists($this, $cMethod)) {
-                    call_user_func(array(&$this, $cMethod), $oObj->$cMember);
+                    call_user_func([&$this, $cMethod], $oObj->$cMember);
                 }
             }
         }

@@ -138,9 +138,11 @@
                                                     </div>
                                                 </div>
                                             {else}
-                                                <input type="hidden" id="quantity{$oGruppe->getKonfiggruppe()}"
-                                                       name="quantity[{$oGruppe->getKonfiggruppe()}]"
-                                                       value="{$quantity}" />
+                                                <div class="quantity">
+                                                    <input type="hidden" id="quantity{$oGruppe->getKonfiggruppe()}"
+                                                           name="quantity[{$oGruppe->getKonfiggruppe()}]"
+                                                           value="{$quantity}" />
+                                                </div>
                                             {/if}
                                         {/if}
                                     </div>
@@ -158,7 +160,12 @@
                         <h5 class="panel-title">{lang key="yourConfiguration" section="global"}</h5>
                     </div>
                     <div class="panel-body">
+                        <p class="text-center">
+                            <strong class="price"></strong>
+                        </p>
+                        <hr/>
                         <div class="summary"></div>
+                        <hr/>
                         <p class="text-center">
                             <strong class="price"></strong>
                         </p>
@@ -166,7 +173,7 @@
                             <div id="quantity-grp" class="choose_quantity input-group">
                                 <input type="number"{if $Artikel->fAbnahmeintervall > 0} required step="{$Artikel->fAbnahmeintervall}"{/if} id="quantity"
                                        class="quantity form-control text-right" name="anzahl"
-                                       value="{if $Artikel->fAbnahmeintervall > 0}{if $Artikel->fMindestbestellmenge > $Artikel->fAbnahmeintervall}{$Artikel->fMindestbestellmenge}{else}{$Artikel->fAbnahmeintervall}{/if}{elseif isset($fAnzahl)}{$fAnzahl}}{else}1{/if}" />
+                                       value="{if $Artikel->fAbnahmeintervall > 0}{if $Artikel->fMindestbestellmenge > $Artikel->fAbnahmeintervall}{$Artikel->fMindestbestellmenge}{else}{$Artikel->fAbnahmeintervall}{/if}{elseif isset($fAnzahl)}{$fAnzahl}{else}1{/if}" />
                                 <span class="input-group-btn">
                                     <button name="inWarenkorb" type="submit" value="{lang key="addToCart" section="global"}"
                                             class="submit btn btn-primary">

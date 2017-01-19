@@ -25,8 +25,10 @@
                                     <p>{$PluginFehlerhaft->cDescription}</p>
                                 </td>
                                 <td>
-                                    <span class="badge error">{$PluginFehlerhaft->cFehlercode}</span>
-                                    {$PluginFehlerhaft->cFehlerBeschreibung}
+                                    <p><span class="badge error">{$PluginFehlerhaft->cFehlercode}</span>{$PluginFehlerhaft->cFehlerBeschreibung}</p>
+                                    {if isset($PluginFehlerhaft->shop4compatible) && $PluginFehlerhaft->shop4compatible === false}
+                                        <div class="alert alert-info"><strong>Achtung:</strong> Plugin ist nicht vollst&auml;ndig Shop4-kompatibel! Es k&ouml;nnen daher Probleme beim Betrieb entstehen.</div>
+                                    {/if}
                                 </td>
                                 <td class="tcenter">{$PluginFehlerhaft->cVersion}</td>
                                 <td class="tcenter">{$PluginFehlerhaft->cVerzeichnis}</td>

@@ -14,7 +14,6 @@ $cFehler  = '';
 $step     = 'suchspecialoverlay_uebersicht';
 
 setzeSprache();
-
 if (verifyGPCDataInteger('suchspecialoverlay') === 1) {
     $step = 'suchspecialoverlay_detail';
 
@@ -35,6 +34,9 @@ if (verifyGPCDataInteger('suchspecialoverlay') === 1) {
 }
 $oSuchspecialOverlay_arr = gibAlleSuchspecialOverlays();
 $nMaxFileSize            = getMaxFileSize(ini_get('upload_max_filesize'));
+if ((int)($_SESSION['template']->version) >= 4) {
+    $smarty->assign('isDeprecated', true);
+}
 
 $smarty->assign('Sprachen', gibAlleSprachen())
        ->assign('cRnd', time())

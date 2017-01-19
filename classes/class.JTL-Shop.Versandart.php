@@ -108,8 +108,7 @@ class Versandart
     /**
      * Konstruktor
      *
-     * @param int $kVersandart - Falls angegeben, wird der Rechnungsadresse mit angegebenem kVersandart aus der DB geholt
-     * @return Versandart
+     * @param int $kVersandart
      */
     public function __construct($kVersandart = 0)
     {
@@ -127,7 +126,7 @@ class Versandart
      */
     public function loadFromDB($kVersandart)
     {
-        $obj = Shop::DB()->select('tversandart', 'kVersandart', intval($kVersandart));
+        $obj = Shop::DB()->select('tversandart', 'kVersandart', (int)$kVersandart);
         if (!isset($obj->kVersandart) || !$obj->kVersandart) {
             return 0;
         }
@@ -143,7 +142,11 @@ class Versandart
             }
         }
         // Versandstaffel
-        $this->oVersandartStaffel_arr = Shop::DB()->selectAll('tversandartstaffel', 'kVersandart', (int)$this->kVersandart);
+        $this->oVersandartStaffel_arr = Shop::DB()->selectAll(
+            'tversandartstaffel',
+            'kVersandart',
+            (int)$this->kVersandart
+        );
 
         return 1;
     }
@@ -200,8 +203,10 @@ class Versandart
             Shop::DB()->query(
                 "DELETE tversandzuschlag, tversandzuschlagplz, tversandzuschlagsprache
                     FROM tversandzuschlag
-                    LEFT JOIN tversandzuschlagplz ON tversandzuschlagplz.kVersandzuschlag = tversandzuschlag.kVersandzuschlag
-                    LEFT JOIN tversandzuschlagsprache ON tversandzuschlagsprache.kVersandzuschlag = tversandzuschlag.kVersandzuschlag
+                    LEFT JOIN tversandzuschlagplz 
+                        ON tversandzuschlagplz.kVersandzuschlag = tversandzuschlag.kVersandzuschlag
+                    LEFT JOIN tversandzuschlagsprache 
+                        ON tversandzuschlagsprache.kVersandzuschlag = tversandzuschlag.kVersandzuschlag
                     WHERE tversandzuschlag.kVersandart = {$kVersandart}", 4
             );
 
@@ -218,12 +223,12 @@ class Versandart
     public static function cloneShipping($kVersandart)
     {
         $kVersandart  = (int)$kVersandart;
-        $cSection_arr = array(
+        $cSection_arr = [
             'tversandartsprache'     => 'kVersandart',
             'tversandartstaffel'     => 'kVersandartStaffel',
             'tversandartzahlungsart' => 'kVersandartZahlungsart',
             'tversandzuschlag'       => 'kVersandzuschlag'
-        );
+        ];
 
         $oVersandart = Shop::DB()->select('tversandart', 'kVersandart', $kVersandart);
 
@@ -305,10 +310,10 @@ class Versandart
         $newKey = (int)$newKey;
 
         if ($oldKey > 0 && $newKey > 0) {
-            $cSectionSub_arr = array(
+            $cSectionSub_arr = [
                 'tversandzuschlagplz'     => 'kVersandzuschlagPlz',
                 'tversandzuschlagsprache' => 'kVersandzuschlag'
-            );
+            ];
 
             foreach ($cSectionSub_arr as $cSectionSub => $cSubKey) {
                 $oSubSection_arr = self::getShippingSection($cSectionSub, 'kVersandzuschlag', $oldKey);

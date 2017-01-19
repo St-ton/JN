@@ -38,7 +38,8 @@ class WidgetProductDemand extends WidgetBase
                 WHERE tbesucherarchiv.kBesucherBot > 0
                     AND YEAR(tbesucherarchiv.dZeit) = '" . (int)$nYear . "'
                     AND MONTH(tbesucherarchiv.dZeit) = '" . (int)$nMonth . "'
-                GROUP BY tbesucherbot.kBesucherBot LIMIT 0," . (int)$nLimit, 2
+                GROUP BY tbesucherbot.kBesucherBot 
+                LIMIT 0," . (int)$nLimit, 2
         );
     }
 

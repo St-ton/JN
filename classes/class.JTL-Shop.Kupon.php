@@ -543,7 +543,7 @@ class Kupon
      */
     public function setGanzenWKRabattieren($nGanzenWKRabattieren)
     {
-        $this->nGanzenWKRabattieren = intval($nGanzenWKRabattieren);
+        $this->nGanzenWKRabattieren = (int)$nGanzenWKRabattieren;
 
         return $this;
     }
@@ -791,24 +791,28 @@ class Kupon
     }
 
     /**
-     * @param int $hashLength
-     * @param bool $lowerCase
-     * @param bool $upperCase
-     * @param bool $numberHash
+     * @param int $len
+     * @param bool $lower
+     * @param bool $upper
+     * @param bool $numbers
      * @param string $prefix
      * @param string $suffix
      * @return string
      */
-    public function generateCode($hashLength = 7, $lowerCase = true, $upperCase = true, $numberHash = true, $prefix = '', $suffix = '')
+    public function generateCode($len = 7, $lower = true, $upper = true, $numbers = true, $prefix = '', $suffix = '')
     {
-        $lowerCaseString  = $lowerCase ? 'abcdefghijklmnopqrstuvwxyz' : null;
-        $upperCaseString  = $upperCase ? 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' : null;
-        $numberHashString = $numberHash ? '0123456789' : null;
-
-        $cCode      = '';
-        $allCoupons = Shop::DB()->query("SELECT * FROM tkupon", 2);
-        while (empty($cCode) || ((count($allCoupons) == 0) ? empty($cCode) : Shop::DB()->select('tkupon', 'cCode', $cCode))) {
-            $cCode = $prefix . substr(str_shuffle(str_repeat($lowerCaseString . $upperCaseString . $numberHashString, $hashLength)), 0, $hashLength) . $suffix;
+        $lowerString   = $lower ? 'abcdefghijklmnopqrstuvwxyz' : null;
+        $upperString   = $upper ? 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' : null;
+        $numbersString = $numbers ? '0123456789' : null;
+        $cCode         = '';
+        $allCoupons    = Shop::DB()->query("SELECT * FROM tkupon", 2);
+        while (empty($cCode) || ((count($allCoupons) == 0) 
+                ? empty($cCode) 
+                : Shop::DB()->select('tkupon', 'cCode', $cCode))) {
+            $cCode = $prefix . substr(str_shuffle(str_repeat(
+                $lowerString . $upperString . $numbersString, 
+                    $len
+                )), 0, $len) . $suffix;
         }
 
         return $cCode;

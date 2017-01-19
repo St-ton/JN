@@ -12,7 +12,7 @@ require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.WarenkorbPers.php';
 $cHinweis          = '';
 $cFehler           = '';
 $step              = 'uebersicht';
-$settingsIDs       = array(540);
+$settingsIDs       = [540];
 $cSucheSQL         = new stdClass();
 $cSucheSQL->cJOIN  = '';
 $cSucheSQL->cWHERE = '';
@@ -25,7 +25,9 @@ if (strlen(verifyGPDataString('cSuche')) > 0) {
     $cSuche = StringHandler::filterXSS(verifyGPDataString('cSuche'));
 
     if (strlen($cSuche) > 0) {
-        $cSucheSQL->cWHERE = " WHERE (tkunde.cKundenNr LIKE '%" . $cSuche . "%' OR tkunde.cVorname LIKE '%" . $cSuche . "%' OR tkunde.cMail LIKE '%" . $cSuche . "%')";
+        $cSucheSQL->cWHERE = " WHERE (tkunde.cKundenNr LIKE '%" . $cSuche . "%'
+            OR tkunde.cVorname LIKE '%" . $cSuche . "%' 
+            OR tkunde.cMail LIKE '%" . $cSuche . "%')";
     }
 
     $smarty->assign('cSuche', $cSuche);
@@ -57,8 +59,10 @@ $oKundeAnzahl = Shop::DB()->query(
         (
             SELECT tkunde.kKunde
             FROM tkunde
-            JOIN twarenkorbpers ON tkunde.kKunde = twarenkorbpers.kKunde
-            JOIN twarenkorbperspos ON twarenkorbperspos.kWarenkorbPers = twarenkorbpers.kWarenkorbPers
+            JOIN twarenkorbpers 
+                ON tkunde.kKunde = twarenkorbpers.kKunde
+            JOIN twarenkorbperspos 
+                ON twarenkorbperspos.kWarenkorbPers = twarenkorbpers.kWarenkorbPers
             " . $cSucheSQL->cWHERE . "
             GROUP BY tkunde.kKunde
         ) AS tAnzahl", 1
@@ -71,10 +75,14 @@ $oPagiKunden = (new Pagination('kunden'))
 
 // Gespeicherte Warenkoerbe
 $oKunde_arr = Shop::DB()->query(
-    "SELECT tkunde.kKunde, tkunde.cFirma, tkunde.cVorname, tkunde.cNachname, DATE_FORMAT(twarenkorbpers.dErstellt, '%d.%m.%Y  %H:%i') AS Datum, count(twarenkorbperspos.kWarenkorbPersPos) AS nAnzahl
+    "SELECT tkunde.kKunde, tkunde.cFirma, tkunde.cVorname, tkunde.cNachname, 
+        DATE_FORMAT(twarenkorbpers.dErstellt, '%d.%m.%Y  %H:%i') AS Datum, 
+        count(twarenkorbperspos.kWarenkorbPersPos) AS nAnzahl
         FROM tkunde
-        JOIN twarenkorbpers ON tkunde.kKunde = twarenkorbpers.kKunde
-        JOIN twarenkorbperspos ON twarenkorbperspos.kWarenkorbPers = twarenkorbpers.kWarenkorbPers
+        JOIN twarenkorbpers 
+            ON tkunde.kKunde = twarenkorbpers.kKunde
+        JOIN twarenkorbperspos 
+            ON twarenkorbperspos.kWarenkorbPers = twarenkorbpers.kWarenkorbPers
         " . $cSucheSQL->cWHERE . "
         GROUP BY tkunde.kKunde
         ORDER BY twarenkorbpers.dErstellt DESC
@@ -96,12 +104,13 @@ $smarty->assign('oKunde_arr', $oKunde_arr)
 // Anzeigen
 if (isset($_GET['a']) && intval($_GET['a']) > 0) {
     $step   = 'anzeigen';
-    $kKunde = intval($_GET['a']);
+    $kKunde = (int)$_GET['a'];
 
     $oWarenkorbPers = Shop::DB()->query(
         "SELECT count(*) AS nAnzahl
             FROM twarenkorbperspos
-            JOIN twarenkorbpers ON twarenkorbpers.kWarenkorbPers = twarenkorbperspos.kWarenkorbPers
+            JOIN twarenkorbpers 
+                ON twarenkorbpers.kWarenkorbPers = twarenkorbperspos.kWarenkorbPers
             WHERE twarenkorbpers.kKunde = " . $kKunde, 1
     );
 
@@ -110,11 +119,14 @@ if (isset($_GET['a']) && intval($_GET['a']) > 0) {
         ->assemble();
 
     $oWarenkorbPersPos_arr = Shop::DB()->query(
-        "SELECT tkunde.kKunde AS kKundeTMP, tkunde.cVorname, tkunde.cNachname, twarenkorbperspos.kArtikel, twarenkorbperspos.cArtikelName, twarenkorbpers.kKunde,
-            twarenkorbperspos.fAnzahl, DATE_FORMAT(twarenkorbperspos.dHinzugefuegt, '%d.%m.%Y  %H:%i') AS Datum
+        "SELECT tkunde.kKunde AS kKundeTMP, tkunde.cVorname, tkunde.cNachname, twarenkorbperspos.kArtikel, 
+            twarenkorbperspos.cArtikelName, twarenkorbpers.kKunde, twarenkorbperspos.fAnzahl, 
+            DATE_FORMAT(twarenkorbperspos.dHinzugefuegt, '%d.%m.%Y  %H:%i') AS Datum
             FROM twarenkorbpers
-            JOIN tkunde ON tkunde.kKunde = twarenkorbpers.kKunde
-            JOIN twarenkorbperspos ON twarenkorbpers.kWarenkorbPers = twarenkorbperspos.kWarenkorbPers
+            JOIN tkunde 
+                ON tkunde.kKunde = twarenkorbpers.kKunde
+            JOIN twarenkorbperspos 
+                ON twarenkorbpers.kWarenkorbPers = twarenkorbperspos.kWarenkorbPers
             WHERE twarenkorbpers.kKunde = " . $kKunde . "
             LIMIT " . $oPagiWarenkorb->getLimitSQL(),
         2);
@@ -142,10 +154,24 @@ if (isset($_GET['a']) && intval($_GET['a']) > 0) {
     );
     $configCount = count($oConfig_arr);
     for ($i = 0; $i < $configCount; $i++) {
-        $oConfig_arr[$i]->ConfWerte = Shop::DB()->selectAll('teinstellungenconfwerte', 'kEinstellungenConf', (int)$oConfig_arr[$i]->kEinstellungenConf, '*', 'nSort');
+        $oConfig_arr[$i]->ConfWerte = Shop::DB()->selectAll(
+            'teinstellungenconfwerte',
+            'kEinstellungenConf',
+            (int)$oConfig_arr[$i]->kEinstellungenConf,
+            '*',
+            'nSort'
+        );
 
-        $oSetValue = Shop::DB()->select('teinstellungen', 'kEinstellungenSektion', (int)$oConfig_arr[$i]->kEinstellungenSektion, 'cName', $oConfig_arr[$i]->cWertName);
-        $oConfig_arr[$i]->gesetzterWert = (isset($oSetValue->cWert)) ? $oSetValue->cWert : null;
+        $oSetValue = Shop::DB()->select(
+            'teinstellungen',
+            'kEinstellungenSektion',
+            (int)$oConfig_arr[$i]->kEinstellungenSektion,
+            'cName',
+            $oConfig_arr[$i]->cWertName
+        );
+        $oConfig_arr[$i]->gesetzterWert = (isset($oSetValue->cWert))
+            ? $oSetValue->cWert
+            : null;
     }
 
     $smarty->assign('oConfig_arr', $oConfig_arr);

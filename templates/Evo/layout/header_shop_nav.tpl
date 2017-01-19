@@ -24,7 +24,17 @@
     {/if}
     {if isset($smarty.session.Waehrungen) && $smarty.session.Waehrungen|@count > 1}
         <li class="currency-dropdown dropdown visible-xs">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">{if $smarty.session.Waehrung->cName === 'EUR'}<i class="fa fa-eur" title="{$smarty.session.Waehrung->cName}"></i>{else}{$smarty.session.Waehrung->cName}{/if} <span class="caret"></span></a>
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                {if $smarty.session.Waehrung->cISO === 'EUR'}
+                    <i class="fa fa-eur" title="{$smarty.session.Waehrung->cName}"></i>
+                {elseif $smarty.session.Waehrung->cISO === 'USD'}
+                    <i class="fa fa-usd" title="{$smarty.session.Waehrung->cName}"></i>
+                {elseif $smarty.session.Waehrung->cISO === 'GBP'}
+                    <i class="fa fa-gbp" title="{$smarty.session.Waehrung->cName}"></i>
+                {else}
+                    else{$smarty.session.Waehrung->cName}
+                {/if} <span class="caret"></span>
+            </a>
             <ul id="currency-dropdown-small" class="dropdown-menu dropdown-menu-right">
                 {foreach from=$smarty.session.Waehrungen item=oWaehrung}
                     <li>
@@ -105,11 +115,7 @@
     {*  ACCOUNT END *}
 
     {*  COMPARE LIST *}
-    {if isset($smarty.session.Vergleichsliste) && $smarty.session.Vergleichsliste->oArtikel_arr|count > 1}
-    <li class="hidden-xs compare-list-menu">
-        <a href="{get_static_route id='vergleichsliste.php'}" title="{lang key="compare" sektion="global"}"{if $Einstellungen.vergleichsliste.vergleichsliste_target === 'blank'} target="_blank"{/if} class="link_to_comparelist{if $Einstellungen.vergleichsliste.vergleichsliste_target === 'popup'} popup{/if}"><span class="fa fa-tasks"></span><sup class="badge"><em>{$smarty.session.Vergleichsliste->oArtikel_arr|count}</em></sup></a>
-    </li>
-    {/if}
+    {include file='layout/header_shop_nav_compare.tpl'}
     {*  COMPARE LIST *}
 
     {*  WISH LIST *}

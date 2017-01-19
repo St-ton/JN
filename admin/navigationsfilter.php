@@ -15,6 +15,7 @@ setzeSprache();
 
 if (isset($_POST['speichern']) && validateToken()) {
     $cHinweis .= saveAdminSectionSettings(CONF_NAVIGATIONSFILTER, $_POST);
+    Shop::Cache()->flushTags([CACHING_GROUP_CATEGORY]);
     if (is_array($_POST['nVon']) && count($_POST['nVon']) > 0 && is_array($_POST['nBis']) && count($_POST['nBis']) > 0) {
         // Tabelle leeren
         Shop::DB()->query("TRUNCATE TABLE tpreisspannenfilter", 3);

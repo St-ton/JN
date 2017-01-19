@@ -1,4 +1,5 @@
 {include file='tpl_inc/header.tpl'}
+{config_load file="$lang.conf" section='systemcheck'}
 
 <script>
 {literal}
@@ -288,6 +289,11 @@ $(function() {
                     {else}
                         <div class="alert alert-success">
                             <p>Alle Vorraussetzungen wurden erf&uuml;llt</p>
+                        </div>
+                    {/if}
+                    {if isset($phpLT55) && $phpLT55}
+                        <div class="alert alert-warning">
+                            <p class="small">{#systemcheckPHPLT55#|sprintf:phpversion()}</p>
                         </div>
                     {/if}
                 </div>

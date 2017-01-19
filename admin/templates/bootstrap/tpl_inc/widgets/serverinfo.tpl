@@ -1,24 +1,49 @@
+{config_load file="$lang.conf" section='systemcheck'}
 <div class="widget-custom-data">
-    <ul class="infolist clearall">
-        <li class="first">
-            <p class="key"><strong>Domain:</strong> <span class="value">{$cShopHost}</span></p>
-        </li>
-        <li>
-            <p class="key"><strong>Host:</strong> <span class="value">{$serverHTTPHost} ({$serverAddress})</span></p>
-        </li>
-        <li>
-            <p class="key"><strong>System:</strong> <span class="value">{$phpOS}</span></p>
-        </li>
-        <li>
-            <p class="key"><strong>PHP-Version:</strong> <span class="value">{$phpVersion}</span></p>
-        </li>
-        {if isset($mySQLStats) && $mySQLStats !== '-'}
-            <li>
-                <p class="key"><strong>MySQL-Statistik</strong> <span class="value">{$mySQLStats}</span></p>
-            </li>
-        {/if}
-        <li class="last">
-            <p class="key"><strong>MySQL-Version:</strong> <span class="value{if $mySQLVersion|truncate:1:'' < 5} error{/if}">{$mySQLVersion}</span></p>
-        </li>
-    </ul>
+    <table class="table table-condensed table-hover table-blank">
+        <tbody>
+            <tr>
+                <td>Domain</td>
+                <td>{$cShopHost}</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Host</td>
+                <td>{$serverHTTPHost} ({$serverAddress})</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>System</td>
+                <td>{$phpOS}</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>PHP-Version</td>
+                <td>{$phpVersion}</td>
+                <td></td>
+            </tr>
+            {if isset($phpLT55) && $phpLT55}
+            <tr>
+                <td colspan="2" class="small label-warning">{#systemcheckPHPLT55#|sprintf:$phpVersion}</td>
+            </tr>
+            {/if}
+            {if isset($mySQLStats) && $mySQLStats !== '-'}
+                <tr>
+                    <td class="nowrap">MySQL-Statistik</td>
+                    <td class="small">{$mySQLStats}</td>
+                    <td></td>
+                </tr>
+            {/if}
+            <tr>
+                <td class="nowrap">MySQL-Version:</td>
+                <td>{$mySQLVersion}</td>
+                <td class="text-right">{if $mySQLVersion < 5} 
+                        <a class="label label-warning" href="status.php" title="Mehr Informationen">
+                            <i class="fa fa-exclamation-triangle" aria-hidden="true"></i><span class="sr-only">Warnung</span>
+                        </a>
+                    {/if}
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </div>

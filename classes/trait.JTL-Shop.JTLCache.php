@@ -146,7 +146,7 @@ trait JTLCacheTrait
                     $this->journal[$tags][] = $cacheID;
                 }
             } else {
-                $journalEntry         = array();
+                $journalEntry         = [];
                 $journalEntry[]       = $cacheID;
                 $this->journal[$tags] = $journalEntry;
             }
@@ -157,7 +157,7 @@ trait JTLCacheTrait
                         $this->journal[$tag][] = $cacheID;
                     }
                 } else {
-                    $journalEntry        = array();
+                    $journalEntry        = [];
                     $journalEntry[]      = $cacheID;
                     $this->journal[$tag] = $journalEntry;
                 }
@@ -178,9 +178,11 @@ trait JTLCacheTrait
         //load journal from extra cache
         $this->getJournal();
         if (is_string($tags)) {
-            return (isset($this->journal[$tags])) ? $this->journal[$tags] : array();
+            return (isset($this->journal[$tags]))
+                ? $this->journal[$tags]
+                : [];
         } elseif (is_array($tags)) {
-            $res = array();
+            $res = [];
             foreach ($tags as $tag) {
                 if (isset($this->journal[$tag])) {
                     foreach ($this->journal[$tag] as $cacheID) {
@@ -193,7 +195,7 @@ trait JTLCacheTrait
             return array_unique($res);
         }
 
-        return array();
+        return [];
     }
 
     /**
@@ -234,9 +236,9 @@ trait JTLCacheTrait
             $res = $this->flush($_id);
             $this->clearCacheTags($_id);
             if ($res === true) {
-                $deleted++;
+                ++$deleted;
             } elseif (is_int($res)) {
-                $deleted = $res;
+                $deleted += $res;
             }
         }
 
@@ -246,24 +248,24 @@ trait JTLCacheTrait
     /**
      * clean up journal after deleting cache entries
      *
-     * @param string|array $cacheID
+     * @param string|array $tags
      * @return bool
      */
-    public function clearCacheTags($cacheID)
+    public function clearCacheTags($tags)
     {
-        if (is_array($cacheID)) {
-            foreach ($cacheID as $_cid) {
-                $this->clearCacheTags($_cid);
+        if (is_array($tags)) {
+            foreach ($tags as $tag) {
+                $this->clearCacheTags($tag);
             }
         }
         $this->getJournal();
         //avoid infinite loops
-        if ($cacheID !== $this->journalID) {
+        if ($tags !== $this->journalID) {
             //load meta data
             if ($this->journal !== false) {
                 foreach ($this->journal as $tagName => $value) {
                     //search for key in meta values
-                    if (($index = array_search($cacheID, $value)) !== false) {
+                    if (($index = array_search($tags, $value)) !== false) {
                         unset($this->journal[$tagName][$index]);
                         if (count($this->journal[$tagName]) === 0) {
                             //remove empty tag nodes
@@ -289,7 +291,9 @@ trait JTLCacheTrait
     public function getJournal()
     {
         if ($this->journal === null) {
-            $this->journal = ($journal = $this->load($this->journalID)) !== false ? $journal : array();
+            $this->journal = ($journal = $this->load($this->journalID)) !== false
+                ? $journal
+                : [];
         }
 
         return $this->journal;
@@ -303,7 +307,7 @@ trait JTLCacheTrait
      */
     protected function prefixArray($array)
     {
-        $newKeyArray = array();
+        $newKeyArray = [];
         foreach ($array as $_key => $_val) {
             $newKey               = $this->options['prefix'] . $_key;
             $newKeyArray[$newKey] = $_val;
@@ -321,7 +325,7 @@ trait JTLCacheTrait
      */
     protected function dePrefixArray($array)
     {
-        $newKeyArray = array();
+        $newKeyArray = [];
         foreach ($array as $_key => $_val) {
             $newKey               = str_replace($this->options['prefix'], '', $_key);
             $newKeyArray[$newKey] = $_val;

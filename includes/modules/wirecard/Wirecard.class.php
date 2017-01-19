@@ -11,12 +11,15 @@ class Wirecard extends PaymentMethod
 {
     /**
      * @param int $nAgainCheckout
+     * @return $this
      */
     public function init($nAgainCheckout = 0)
     {
         parent::init($nAgainCheckout);
         $this->name    = 'Wirecard';
         $this->caption = 'Wirecard';
+
+        return $this;
     }
 
     /**
@@ -26,7 +29,9 @@ class Wirecard extends PaymentMethod
     {
         global $Einstellungen;
 
-        return (isset($Einstellungen['zahlungsarten']['zahlungsart_wirecard_customer_id'])) ? $Einstellungen['zahlungsarten']['zahlungsart_wirecard_customer_id'] : null;
+        return (isset($Einstellungen['zahlungsarten']['zahlungsart_wirecard_customer_id']))
+            ? $Einstellungen['zahlungsarten']['zahlungsart_wirecard_customer_id']
+            : null;
     }
 
     /**
@@ -36,7 +41,9 @@ class Wirecard extends PaymentMethod
     {
         global $Einstellungen;
 
-        return (isset($Einstellungen['zahlungsarten']['zahlungsart_wirecard_secret'])) ? $Einstellungen['zahlungsarten']['zahlungsart_wirecard_secret'] : null;
+        return (isset($Einstellungen['zahlungsarten']['zahlungsart_wirecard_secret']))
+            ? $Einstellungen['zahlungsarten']['zahlungsart_wirecard_secret']
+            : null;
     }
 
     /**
@@ -45,7 +52,6 @@ class Wirecard extends PaymentMethod
     public function preparePaymentProcess($order)
     {
         $amount      = number_format($order->fGesamtsummeKundenwaehrung, 2, '.', '');
-        $firstItem   = new Artikel($order->Positionen[0]->kArtikel);
         $paymentHash = $this->generateHash($order);
 
         $cFailureURL = $this->getReturnURL($order);
@@ -58,7 +64,7 @@ class Wirecard extends PaymentMethod
             $cReturnUrl = Shop::getURL() . '/bestellabschluss.php?i=' . $paymentHash;
         }
 
-        $fields = array(
+        $fields = [
             'customerId'              => $this->getCustomerId(),
             'secret'                  => $this->getSecret(),
             'amount'                  => $amount,
@@ -71,8 +77,8 @@ class Wirecard extends PaymentMethod
             'cancelURL'               => $cFailureURL,
             'failureURL'              => $cFailureURL,
             'serviceURL'              => Shop::getURL(),
-            'requestFingerprintOrder' => '');
-
+            'requestFingerprintOrder' => ''
+        ];
         $fields['requestFingerprintOrder'] = implode(',', array_keys($fields));
         $fields['requestFingerprint']      = md5(implode('', $fields));
 
@@ -119,9 +125,10 @@ class Wirecard extends PaymentMethod
     }
 
     /**
-     * @return boolean
      * @param Bestellung $order
+     * @param string     $paymentHash
      * @param array      $args
+     * @return bool
      */
     public function verifyNotification($order, $paymentHash, $args)
     {
@@ -172,7 +179,7 @@ class Wirecard extends PaymentMethod
      * @param array $args_arr
      * @return bool
      */
-    public function isValidIntern($args_arr = array())
+    public function isValidIntern($args_arr = [])
     {
         if (strlen($this->getCustomerId()) == 0) {
             ZahlungsLog::add($this->moduleID, 'Pflichtparameter "Kundennummer" ist nicht gesetzt!', null, LOGLEVEL_ERROR);

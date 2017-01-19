@@ -111,9 +111,16 @@ class Kategorie
     public $cTitleTag;
 
     /**
-     * Konstruktor
-     *
-     * @access public
+     * @var int
+     */
+    public $kSprache;
+
+    /**
+     * @var string
+     */
+    public $cKurzbezeichnung = '';
+
+    /**
      * @param int  $kKategorie Falls angegeben, wird der Kategorie mit angegebenem kKategorie aus der DB geholt
      * @param int  $kSprache
      * @param int  $kKundengruppe
@@ -121,6 +128,7 @@ class Kategorie
      */
     public function __construct($kKategorie = 0, $kSprache = 0, $kKundengruppe = 0, $noCache = false)
     {
+        $this->kSprache = (int)$kSprache;
         if ((int)$kKategorie > 0) {
             $this->loadFromDB((int)$kKategorie, (int)$kSprache, (int)$kKundengruppe, $noCache);
         }
@@ -129,7 +137,6 @@ class Kategorie
     /**
      * Setzt Kategorie mit Daten aus der DB mit spezifiziertem Primary Key
      *
-     * @access public
      * @param int $kKategorie Primary Key
      * @param int $kSprache
      * @param int $kKundengruppe
@@ -139,9 +146,6 @@ class Kategorie
      */
     public function loadFromDB($kKategorie, $kSprache = 0, $kKundengruppe = 0, $recall = false, $noCache = false)
     {
-        if (!$kKundengruppe && isset($_SESSION['Kundengruppe']->kKundengruppe)) {
-            $kKundengruppe = $_SESSION['Kundengruppe']->kKundengruppe;
-        }
         if (!$kKundengruppe) {
             $kKundengruppe = Kundengruppe::getDefaultGroupID();
             if (!isset($_SESSION['Kundengruppe'])) { //auswahlassistent admin fix
@@ -150,22 +154,28 @@ class Kategorie
             $_SESSION['Kundengruppe']->kKundengruppe = $kKundengruppe;
         }
         if (!$kSprache) {
-            $kSprache = Shop::$kSprache;
+            $kSprache = Shop::getLanguage();
             if (!$kSprache) {
                 $oSpracheTmp = gibStandardsprache(true);
                 $kSprache    = $oSpracheTmp->kSprache;
             }
         }
-        $kSprache      = (int)$kSprache;
-        $kKundengruppe = (int)$kKundengruppe;
-        $kKategorie    = (int)$kKategorie;
+        $kSprache       = (int)$kSprache;
+        $kKundengruppe  = (int)$kKundengruppe;
+        $kKategorie     = (int)$kKategorie;
+        $this->kSprache = $kSprache;
         //exculpate session
-        $cacheID = 'cl_l_' . $kSprache . '_cg_' . $kKundengruppe . '_ssl_' . pruefeSSL();
-        if (!$noCache && ($oKategorie_arr = Shop::Cache()->get($cacheID)) !== false && isset($oKategorie_arr[$kKategorie])) {
-            foreach (get_object_vars($oKategorie_arr[$kKategorie]) as $k => $v) {
+        $cacheID = CACHING_GROUP_CATEGORY . '_' . $kKategorie . '_' . $kSprache . '_cg_' . $kKundengruppe . '_ssl_' . pruefeSSL();
+        if (!$noCache && ($category = Shop::Cache()->get($cacheID)) !== false) {
+            foreach (get_object_vars($category) as $k => $v) {
                 $this->$k = $v;
             }
-            executeHook(HOOK_KATEGORIE_CLASS_LOADFROMDB, array('oKategorie' => &$this, 'cacheTags' => array(), 'cached' => true));
+            executeHook(HOOK_KATEGORIE_CLASS_LOADFROMDB, [
+                    'oKategorie' => &$this,
+                    'cacheTags'  => [],
+                    'cached'     => true
+                ]
+            );
 
             return $this;
         }
@@ -175,13 +185,17 @@ class Kategorie
         $oSQLKategorie->cJOIN   = '';
         $oSQLKategorie->cWHERE  = '';
         if (!$recall && $kSprache > 0 && !standardspracheAktiv(false, $kSprache)) {
-            $oSQLKategorie->cSELECT = 'tkategoriesprache.cName AS cName_spr, tkategoriesprache.cBeschreibung AS cBeschreibung_spr, tkategoriesprache.cMetaDescription AS cMetaDescription_spr,
-            tkategoriesprache.cMetaKeywords AS cMetaKeywords_spr, tkategoriesprache.cTitleTag AS cTitleTag_spr, ';
+            $oSQLKategorie->cSELECT = 'tkategoriesprache.cName AS cName_spr, 
+                tkategoriesprache.cBeschreibung AS cBeschreibung_spr, 
+                tkategoriesprache.cMetaDescription AS cMetaDescription_spr,
+                tkategoriesprache.cMetaKeywords AS cMetaKeywords_spr, 
+                tkategoriesprache.cTitleTag AS cTitleTag_spr, ';
             $oSQLKategorie->cJOIN  = ' JOIN tkategoriesprache ON tkategoriesprache.kKategorie = tkategorie.kKategorie';
             $oSQLKategorie->cWHERE = ' AND tkategoriesprache.kSprache = ' . $kSprache;
         }
         $oKategorie = Shop::DB()->query(
-            "SELECT tkategorie.kKategorie, " . $oSQLKategorie->cSELECT . " tkategorie.kOberKategorie, tkategorie.nSort, tkategorie.dLetzteAktualisierung,
+            "SELECT tkategorie.kKategorie, " . $oSQLKategorie->cSELECT . " tkategorie.kOberKategorie, 
+                tkategorie.nSort, tkategorie.dLetzteAktualisierung,
                 tkategorie.cName, tkategorie.cBeschreibung, tseo.cSeo, tkategoriepict.cPfad, tkategoriepict.cType
                 FROM tkategorie
                 " . $oSQLKategorie->cJOIN . "
@@ -191,7 +205,7 @@ class Kategorie
                     AND tseo.kKey = " . $kKategorie . "
                     AND tseo.kSprache = " . $kSprache . "
                 LEFT JOIN tkategoriepict ON tkategoriepict.kKategorie = tkategorie.kKategorie
-                WHERE tkategorie.kKategorie=" . $kKategorie . "
+                WHERE tkategorie.kKategorie = " . $kKategorie . "
                     " . $oSQLKategorie->cWHERE . "
                     AND tkategoriesichtbarkeit.kKategorie IS NULL", 1
         );
@@ -214,10 +228,17 @@ class Kategorie
         }
 
         //EXPERIMENTAL_MULTILANG_SHOP
-        if ((!isset($oKategorie->cSeo) || $oKategorie->cSeo === null || $oKategorie->cSeo === '') && defined('EXPERIMENTAL_MULTILANG_SHOP') && EXPERIMENTAL_MULTILANG_SHOP === true) {
+        if ((!isset($oKategorie->cSeo) || $oKategorie->cSeo === null || $oKategorie->cSeo === '') &&
+            defined('EXPERIMENTAL_MULTILANG_SHOP') && EXPERIMENTAL_MULTILANG_SHOP === true
+        ) {
             $kDefaultLang = isset($oSpracheTmp) ? $oSpracheTmp->kSprache : gibStandardsprache()->kSprache;
             if ($kSprache != $kDefaultLang) {
-                $oSeo = Shop::DB()->select('tseo', 'cKey', 'kKategorie', 'kSprache', (int)$kDefaultLang, 'kKey', (int)$oKategorie->kKategorie);
+                $oSeo = Shop::DB()->select(
+                    'tseo',
+                    'cKey', 'kKategorie',
+                    'kSprache', (int)$kDefaultLang,
+                    'kKey', (int)$oKategorie->kKategorie
+                );
                 if (isset($oSeo->cSeo)) {
                     $oKategorie->cSeo = $oSeo->cSeo;
                 }
@@ -228,6 +249,7 @@ class Kategorie
         if (isset($oKategorie->kKategorie) && $oKategorie->kKategorie > 0) {
             $this->mapData($oKategorie);
         }
+        $shopURL = Shop::getURL() . '/';
         // URL bauen
         $this->cURL     = baueURL($this, URLART_KATEGORIE);
         $this->cURLFull = baueURL($this, URLART_KATEGORIE, 0, false, true);
@@ -235,33 +257,33 @@ class Kategorie
         $this->cKategoriePfad_arr = gibKategoriepfad($this, $kKundengruppe, $kSprache, false);
         $this->cKategoriePfad     = implode(' > ', $this->cKategoriePfad_arr);
         // Bild holen
-
         $this->cBildURL       = BILD_KEIN_KATEGORIEBILD_VORHANDEN;
-        $this->cBild          = Shop::getURL() . '/' . BILD_KEIN_KATEGORIEBILD_VORHANDEN;
+        $this->cBild          = $shopURL . BILD_KEIN_KATEGORIEBILD_VORHANDEN;
         $this->nBildVorhanden = 0;
         if (isset($oKategorie->cPfad) && strlen($oKategorie->cPfad) > 0) {
             $this->cBildURL       = PFAD_KATEGORIEBILDER . $oKategorie->cPfad;
-            $this->cBild          = Shop::getURL() . '/' . PFAD_KATEGORIEBILDER . $oKategorie->cPfad;
+            $this->cBild          = $shopURL . PFAD_KATEGORIEBILDER . $oKategorie->cPfad;
             $this->nBildVorhanden = 1;
         }
         // Attribute holen
-        $this->categoryFunctionAttributes = array();
-        $this->categoryAttributes         = array();
+        $this->categoryFunctionAttributes = [];
+        $this->categoryAttributes         = [];
         if ($this->kKategorie > 0) {
             $oKategorieAttribut_arr = Shop::DB()->query(
                 "SELECT COALESCE(tkategorieattributsprache.cName, tkategorieattribut.cName) cName,
                         COALESCE(tkategorieattributsprache.cWert, tkategorieattribut.cWert) cWert,
                         tkategorieattribut.bIstFunktionsAttribut, tkategorieattribut.nSort
                     FROM tkategorieattribut
-                    LEFT JOIN tkategorieattributsprache ON tkategorieattributsprache.kAttribut = tkategorieattribut.kKategorieAttribut
-                        AND tkategorieattributsprache.kSprache = " . (int)Shop::getLanguage() . "
+                    LEFT JOIN tkategorieattributsprache 
+                        ON tkategorieattributsprache.kAttribut = tkategorieattribut.kKategorieAttribut
+                        AND tkategorieattributsprache.kSprache = " . $kSprache . "
                     WHERE kKategorie = " . (int)$this->kKategorie . "
                     ORDER BY tkategorieattribut.bIstFunktionsAttribut DESC, tkategorieattribut.nSort", 2
             );
         }
         if (isset($oKategorieAttribut_arr) && is_array($oKategorieAttribut_arr) && count($oKategorieAttribut_arr) > 0) {
             foreach ($oKategorieAttribut_arr as $oKategorieAttribut) {
-                // Aus Kompatibilitätsgründen findet hier KEINE Trennung zwischen Funktions- und Lokalisierten Attributen statt
+                // Aus Kompatibilitätsgründen findet hier KEINE Trennung zwischen Funktions- und lokalisierten Attributen statt
                 if ($oKategorieAttribut->cName === 'meta_title') {
                     $this->cTitleTag = $oKategorieAttribut->cWert;
                 } elseif ($oKategorieAttribut->cName === 'meta_description') {
@@ -310,11 +332,18 @@ class Kategorie
         }
         //interne Verlinkung $#k:X:Y#$
         $this->cBeschreibung         = parseNewsText($this->cBeschreibung);
-        $oKategorie_arr[$kKategorie] = $this;
-        $cacheTags                   = array(CACHING_GROUP_CATEGORY . '_' . $kKategorie, CACHING_GROUP_CATEGORY);
-        executeHook(HOOK_KATEGORIE_CLASS_LOADFROMDB, array('oKategorie' => &$this, 'cacheTags' => &$cacheTags, 'cached' => false));
+        // Kurzbezeichnung
+        $this->cKurzbezeichnung      = (isset($this->categoryAttributes[ART_ATTRIBUT_SHORTNAME]))
+            ? $this->categoryAttributes[ART_ATTRIBUT_SHORTNAME]->cWert
+            : $this->cName;
+        $cacheTags                   = [CACHING_GROUP_CATEGORY . '_' . $kKategorie, CACHING_GROUP_CATEGORY];
+        executeHook(HOOK_KATEGORIE_CLASS_LOADFROMDB, [
+            'oKategorie' => &$this,
+            'cacheTags'  => &$cacheTags,
+            'cached'     => false
+        ]);
         if (!$noCache) {
-            Shop::Cache()->set($cacheID, $oKategorie_arr, $cacheTags);
+            Shop::Cache()->set($cacheID, $this, $cacheTags);
         }
 
         return $this;
@@ -323,7 +352,6 @@ class Kategorie
     /**
      * add category into db
      *
-     * @access public
      * @return int
      */
     public function insertInDB()
@@ -343,7 +371,6 @@ class Kategorie
     /**
      * update category in db
      *
-     * @access public
      * @return int
      */
     public function updateInDB()
@@ -363,7 +390,6 @@ class Kategorie
     /**
      * set data from given object to category
      *
-     * @access public
      * @param object $obj
      * @return $this
      */
@@ -386,7 +412,6 @@ class Kategorie
     /**
      * check if child categories exist for current category
      *
-     * @access public
      * @return bool - true, wenn Unterkategorien existieren
      */
     public function existierenUnterkategorien()
@@ -397,23 +422,31 @@ class Kategorie
     /**
      * get category image
      *
-     * @access public
+     * @param bool $full
      * @return string|null
      */
-    public function getKategorieBild()
+    public function getKategorieBild($full = false)
     {
         if ($this->kKategorie > 0) {
-            $cacheID = 'gkb_' . $this->kKategorie;
-            if (($res = Shop::Cache()->get($cacheID)) === false) {
-                $resObj = Shop::DB()->select('tkategoriepict', 'kKategorie', (int)$this->kKategorie);
-                $res    = (isset($resObj->cPfad) && $resObj->cPfad) ? PFAD_KATEGORIEBILDER . $resObj->cPfad : BILD_KEIN_KATEGORIEBILD_VORHANDEN;
-                Shop::Cache()->set($cacheID, $res, array(CACHING_GROUP_CATEGORY . '_' . $this->kKategorie, CACHING_GROUP_CATEGORY));
+            if (!empty($this->cBildURL)) {
+                $res = $this->cBildURL;
+            } else {
+                $cacheID = 'gkb_' . $this->kKategorie;
+                if (($res = Shop::Cache()->get($cacheID)) === false) {
+                    $resObj = Shop::DB()->select('tkategoriepict', 'kKategorie', (int)$this->kKategorie);
+                    $res    = (isset($resObj->cPfad) && $resObj->cPfad)
+                        ? PFAD_KATEGORIEBILDER . $resObj->cPfad
+                        : BILD_KEIN_KATEGORIEBILD_VORHANDEN;
+                    Shop::Cache()->set($cacheID, $res, [CACHING_GROUP_CATEGORY . '_' . $this->kKategorie, CACHING_GROUP_CATEGORY]);
+                }
             }
 
-            return $res;
+            return ($full === false)
+                ? $res
+                : (Shop::getURL() . '/' . $res);
         }
 
-        return;
+        return null;
     }
 
     /**
@@ -424,6 +457,9 @@ class Kategorie
     public function istUnterkategorie()
     {
         if ($this->kKategorie > 0) {
+            if ($this->kOberKategorie !== null && $this->kOberKategorie > 0) {
+                return (int)$this->kOberKategorie;
+            }
             $oObj = Shop::DB()->query(
                 "SELECT kOberKategorie
                     FROM tkategorie
@@ -462,7 +498,11 @@ class Kategorie
      */
     public static function isVisible($categoryId, $customerGroupId)
     {
-        $obj = Shop::DB()->select('tkategoriesichtbarkeit', 'kKategorie', (int)$categoryId, 'kKundengruppe', (int)$customerGroupId);
+        $obj = Shop::DB()->select(
+            'tkategoriesichtbarkeit',
+            'kKategorie', (int)$categoryId,
+            'kKundengruppe', (int)$customerGroupId
+        );
 
         return empty($obj->kKategorie);
     }

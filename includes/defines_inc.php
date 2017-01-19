@@ -48,6 +48,7 @@ define('CONF_RMA', 122);
 define('CONF_OBJECTCACHING', 123);
 define('CONF_CACHING', 124);
 define('CONF_LOGO', 125);
+define('CONF_PLUGINZAHLUNGSARTEN', 126);
 //
 define('C_WARENKORBPOS_TYP_ARTIKEL', '1');
 define('C_WARENKORBPOS_TYP_VERSANDPOS', '2');
@@ -223,6 +224,7 @@ define('ART_ATTRIBUT_GRATISGESCHENKAB', 'gratisgeschenk ab');
 define('ART_ATTRIBUT_AMPELTEXT_GRUEN', 'ampel_text_gruen');
 define('ART_ATTRIBUT_AMPELTEXT_GELB', 'ampel_text_gelb');
 define('ART_ATTRIBUT_AMPELTEXT_ROT', 'ampel_text_rot');
+define('ART_ATTRIBUT_SHORTNAME', 'shortname');
 define('KNDGRP_ATTRIBUT_MINDESTBESTELLWERT', 'mindestbestellwert');
 // Fkt Attribute
 define('FKT_ATTRIBUT_KEINE_PREISSUCHMASCHINEN', 'keine preissuchmaschinen');
@@ -334,6 +336,7 @@ define('LASTJOBS_BEWERTUNGSERINNNERUNG', 1); // Bewertungserinnerungskey
 define('LASTJOBS_SITEMAP', 2); // Sitemapkey
 define('LASTJOBS_RSS', 3); // RSSkey
 define('LASTJOBS_GARBAGECOLLECTOR', 4); // GarbageCollector
+define('LASTJOBS_KATEGORIEUPDATE', 5); // Kategorielevel update, nested set build
 // Seitentypen
 define('PAGE_UNBEKANNT', 0);
 define('PAGE_ARTIKEL', 1); // Artikeldetails

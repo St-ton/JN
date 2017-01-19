@@ -62,11 +62,9 @@ class WarenkorbPosEigenschaft
      * Konstruktor
      *
      * @param int $kWarenkorbPosEigenschaft - Falls angegeben, wird der WarenkorbPosEigenschaft mit angegebenem kWarenkorbPosEigenschaft aus der DB geholt
-     * @return WarenkorbPosEigenschaft
      */
     public function __construct($kWarenkorbPosEigenschaft = 0)
     {
-        $kWarenkorbPosEigenschaft = intval($kWarenkorbPosEigenschaft);
         if ($kWarenkorbPosEigenschaft > 0) {
             $this->loadFromDB($kWarenkorbPosEigenschaft);
         }
@@ -105,7 +103,7 @@ class WarenkorbPosEigenschaft
      */
     public function loadFromDB($kWarenkorbPosEigenschaft)
     {
-        $obj     = Shop::DB()->select('twarenkorbposeigenschaft', 'kWarenkorbPosEigenschaft', $kWarenkorbPosEigenschaft);
+        $obj     = Shop::DB()->select('twarenkorbposeigenschaft', 'kWarenkorbPosEigenschaft', (int)$kWarenkorbPosEigenschaft);
         $members = array_keys(get_object_vars($obj));
         foreach ($members as $member) {
             $this->$member = $obj->$member;

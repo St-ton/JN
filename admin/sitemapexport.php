@@ -15,11 +15,13 @@ if (!file_exists(PFAD_ROOT . PFAD_EXPORT . 'sitemap_index.xml') && is_writable(P
 }
 
 if (!is_writable(PFAD_ROOT . PFAD_EXPORT . 'sitemap_index.xml')) {
-    $cFehler = PFAD_ROOT . PFAD_EXPORT . "sitemap_index.xml' kann nicht geschrieben werden. Bitte achten Sie darauf, dass diese Datei ausreichende Schreibrechte besitzt. Ansonsten kann keine Sitemap erstellt werden.";
+    $cFehler = '<i>' . PFAD_ROOT . PFAD_EXPORT . 'sitemap_index.xml</i>' .
+        ' kann nicht geschrieben werden. Bitte achten Sie darauf, ' .
+        'dass diese Datei ausreichende Schreibrechte besitzt. ' .
+        'Ansonsten kann keine Sitemap erstellt werden.';
 } elseif (isset($_REQUEST['update']) && $_REQUEST['update'] == '1') {
-    $cHinweis = PFAD_ROOT . PFAD_EXPORT . "sitemap_index.xml' wurde aktualisiert!";
+    $cHinweis = '<i>' . PFAD_ROOT . PFAD_EXPORT . 'sitemap_index.xml</i> wurde erfolgreich aktualisiert.';
 }
-
 // Tabs
 if (strlen(verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', verifyGPDataString('tab'));
@@ -55,10 +57,12 @@ if (isset($_POST['einstellungen']) && intval($_POST['einstellungen']) > 0) {
 
 // Sitemap Downloads
 $oSitemapDownload_arr = Shop::DB()->query(
-    "SELECT tsitemaptracker.*, IF(tsitemaptracker.kBesucherBot = 0, '', IF(CHAR_LENGTH(tbesucherbot.cUserAgent) = 0, tbesucherbot.cName, tbesucherbot.cUserAgent)) AS cBot, 
+    "SELECT tsitemaptracker.*, IF(tsitemaptracker.kBesucherBot = 0, '', 
+        IF(CHAR_LENGTH(tbesucherbot.cUserAgent) = 0, tbesucherbot.cName, tbesucherbot.cUserAgent)) AS cBot, 
         DATE_FORMAT(tsitemaptracker.dErstellt, '%d.%m.%Y %H:%i') AS dErstellt_DE
         FROM tsitemaptracker
-        LEFT JOIN tbesucherbot ON tbesucherbot.kBesucherBot = tsitemaptracker.kBesucherBot
+        LEFT JOIN tbesucherbot 
+            ON tbesucherbot.kBesucherBot = tsitemaptracker.kBesucherBot
         ORDER BY tsitemaptracker.dErstellt DESC", 2
 );
 
@@ -72,7 +76,11 @@ $oSitemapReport_arr = Shop::DB()->query(
 if (is_array($oSitemapReport_arr) && count($oSitemapReport_arr) > 0) {
     foreach ($oSitemapReport_arr as $i => $oSitemapReport) {
         if (isset($oSitemapReport->kSitemapReport) && $oSitemapReport->kSitemapReport > 0) {
-            $oSitemapReport_arr[$i]->oSitemapReportFile_arr = Shop::DB()->selectAll('tsitemapreportfile', 'kSitemapReport', (int)$oSitemapReport->kSitemapReport);
+            $oSitemapReport_arr[$i]->oSitemapReportFile_arr = Shop::DB()->selectAll(
+                'tsitemapreportfile',
+                'kSitemapReport',
+                (int)$oSitemapReport->kSitemapReport
+            );
         }
     }
 } else {
@@ -80,15 +88,35 @@ if (is_array($oSitemapReport_arr) && count($oSitemapReport_arr) > 0) {
 }
 
 // Einstellungen
-$oConfig_arr = Shop::DB()->selectAll('teinstellungenconf', 'kEinstellungenSektion', CONF_SITEMAP, '*', 'nSort');
+$oConfig_arr = Shop::DB()->selectAll(
+    'teinstellungenconf',
+    'kEinstellungenSektion',
+    CONF_SITEMAP,
+    '*',
+    'nSort'
+);
 $count = count($oConfig_arr);
 for ($i = 0; $i < $count; ++$i) {
     if ($oConfig_arr[$i]->cInputTyp === 'selectbox') {
-        $oConfig_arr[$i]->ConfWerte = Shop::DB()->selectAll('teinstellungenconfwerte', 'kEinstellungenConf', (int)$oConfig_arr[$i]->kEinstellungenConf, '*', 'nSort');
+        $oConfig_arr[$i]->ConfWerte = Shop::DB()->selectAll(
+            'teinstellungenconfwerte',
+            'kEinstellungenConf',
+            (int)$oConfig_arr[$i]->kEinstellungenConf,
+            '*',
+            'nSort'
+        );
     }
 
-    $oSetValue = Shop::DB()->select('teinstellungen', 'kEinstellungenSektion', CONF_SITEMAP, 'cName', $oConfig_arr[$i]->cWertName);
-    $oConfig_arr[$i]->gesetzterWert = (isset($oSetValue->cWert)) ? $oSetValue->cWert : null;
+    $oSetValue = Shop::DB()->select(
+        'teinstellungen',
+        'kEinstellungenSektion',
+        CONF_SITEMAP,
+        'cName',
+        $oConfig_arr[$i]->cWertName
+    );
+    $oConfig_arr[$i]->gesetzterWert = (isset($oSetValue->cWert))
+        ? $oSetValue->cWert
+        : null;
 }
 
 $smarty->assign('oConfig_arr', $oConfig_arr)

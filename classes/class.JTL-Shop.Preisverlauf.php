@@ -41,7 +41,6 @@ class Preisverlauf
      */
     public function __construct($kPreisverlauf = 0)
     {
-        $kPreisverlauf = intval($kPreisverlauf);
         if ($kPreisverlauf > 0) {
             $this->loadFromDB($kPreisverlauf);
         }
@@ -63,7 +62,8 @@ class Preisverlauf
         if (($obj_arr = Shop::Cache()->get($cacheID)) === false) {
             $obj_arr = Shop::DB()->query(
                 "SELECT tpreisverlauf.fVKNetto, tartikel.fMwst, UNIX_TIMESTAMP(tpreisverlauf.dDate) AS timestamp
-                    FROM tpreisverlauf LEFT JOIN tartikel
+                    FROM tpreisverlauf 
+                    LEFT JOIN tartikel
                         ON tartikel.kArtikel = tpreisverlauf.kArtikel
                     WHERE tpreisverlauf.kArtikel = " . $kArtikel . "
                         AND tpreisverlauf.kKundengruppe = " . $kKundengruppe . "
@@ -73,7 +73,7 @@ class Preisverlauf
             if (isset($_SESSION['Waehrung'])) {
                 $_currency = $_SESSION['Waehrung'];
             }
-            if (!isset($_SESSION['Waehrung']) || (isset($_SESSION['Waehrungen']) && count($_SESSION['Waehrungen']) > 1)) {
+            if (!isset($_SESSION['Waehrung'])) {
                 $_currency = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
             }
             if (is_array($obj_arr)) {
@@ -83,13 +83,13 @@ class Preisverlauf
                         $dt->setTimestamp($_pv->timestamp);
                         $_pv->date   = $dt->format('d.m.');
                         $_pv->fPreis = ($_SESSION['Kundengruppe']->nNettoPreise == 1) ?
-                            round($_pv->fVKNetto, 2) :
-                            round(floatval($_pv->fVKNetto + ($_pv->fVKNetto * ($_pv->fMwst / 100.0))), 2);
+                            round($_pv->fVKNetto * $_currency->fFaktor, 2) :
+                            berechneBrutto($_pv->fVKNetto * $_currency->fFaktor, $_pv->fMwst);
                         $_pv->currency = $_currency->cISO;
                     }
                 }
             }
-            Shop::Cache()->set($cacheID, $obj_arr, array(CACHING_GROUP_ARTICLE, CACHING_GROUP_ARTICLE . '_' . $kArtikel));
+            Shop::Cache()->set($cacheID, $obj_arr, [CACHING_GROUP_ARTICLE, CACHING_GROUP_ARTICLE . '_' . $kArtikel]);
         }
 
         return $obj_arr;
@@ -104,7 +104,7 @@ class Preisverlauf
      */
     public function loadFromDB($kPreisverlauf)
     {
-        $obj     = Shop::DB()->select('tpreisverlauf', 'kPreisverlauf', intval($kPreisverlauf));
+        $obj     = Shop::DB()->select('tpreisverlauf', 'kPreisverlauf', (int)$kPreisverlauf);
         $members = array_keys(get_object_vars($obj));
         foreach ($members as $member) {
             $this->$member = $obj->$member;

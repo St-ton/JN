@@ -1,4 +1,8 @@
 <?php
+/**
+ * @copyright (c) JTL-Software-GmbH
+ * @license http://jtl-url.de/jtlshoplicense
+ */
 
 /**
  * Class SessionHandlerBot
@@ -69,7 +73,7 @@ class SessionHandlerBot extends \JTL\core\SessionHandler implements SessionHandl
     public function write($sessID, $sessData)
     {
         if ($this->doSave === true) {
-            Shop::Cache()->set($this->sessionID, $sessData, array(CACHING_GROUP_CORE));
+            Shop::Cache()->set($this->sessionID, $sessData, [CACHING_GROUP_CORE]);
         }
 
         return true;

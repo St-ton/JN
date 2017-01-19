@@ -3,6 +3,13 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
+
+/**
+ * @param Kunde     $Kunde
+ * @param Warenkorb $Warenkorb
+ * @param array     $Einstellungen
+ * @return string
+ */
 function gib_safetypay_form($Kunde, $Warenkorb, $Einstellungen)
 {
     define('SAFETYPAY_APIKEY', $Einstellungen['zahlungsart_safetypay_apikey']);

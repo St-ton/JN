@@ -17,7 +17,17 @@ class ArtikelHelper
     {
         $kArtikel = (int)$kArtikel;
         if ($kArtikel > 0) {
-            $oArtikel = Shop::DB()->select('tartikel', 'kArtikel', $kArtikel, null, null, null, null, false, 'kEigenschaftKombi');
+            $oArtikel = Shop::DB()->select(
+                'tartikel',
+                'kArtikel',
+                $kArtikel,
+                null,
+                null,
+                null,
+                null,
+                false,
+                'kEigenschaftKombi'
+            );
 
             return isset($oArtikel->kEigenschaftKombi) && (int)$oArtikel->kEigenschaftKombi > 0;
         }
@@ -33,9 +43,21 @@ class ArtikelHelper
     {
         $kArtikel = (int)$kArtikel;
         if ($kArtikel > 0) {
-            $oArtikel = Shop::DB()->select('tartikel', 'kArtikel', $kArtikel, null, null, null, null, false, 'kVaterArtikel');
+            $oArtikel = Shop::DB()->select(
+                'tartikel',
+                'kArtikel',
+                $kArtikel,
+                null,
+                null,
+                null,
+                null,
+                false,
+                'kVaterArtikel'
+            );
 
-            return (isset($oArtikel->kVaterArtikel) && (int)$oArtikel->kVaterArtikel > 0) ? (int)$oArtikel->kVaterArtikel : 0;
+            return (isset($oArtikel->kVaterArtikel) && (int)$oArtikel->kVaterArtikel > 0)
+                ? (int)$oArtikel->kVaterArtikel
+                : 0;
         }
 
         return 0;
@@ -61,7 +83,7 @@ class ArtikelHelper
         $kArtikel            = (int)$kArtikel;
         $kKundengruppe       = (int)$_SESSION['Kundengruppe']->kKundengruppe;
         $properties          = self::getChildPropertiesForParent($kArtikel, $kKundengruppe);
-        $kVariationKombi_arr = array();
+        $kVariationKombi_arr = [];
         $nGueltig            = 1;
         if (count($properties) > 0) {
             foreach ($properties as $i => $kAlleEigenschaftWerteProEigenschaft) {
@@ -110,7 +132,10 @@ class ArtikelHelper
             }
             if (!isset($_SESSION['variBoxAnzahl_arr'])) {
                 //redirekt zum artikel, um variation/en zu waehlen / MBM beachten
-                header('Location: ' . Shop::getURL() . '/index.php?a=' . $kArtikel . '&n=' . $_POST['anzahl'] . '&r=' . R_VARWAEHLEN, true, 302);
+                header('Location: ' . Shop::getURL() .
+                    '/index.php?a=' . $kArtikel .
+                    '&n=' . $_POST['anzahl'] .
+                    '&r=' . R_VARWAEHLEN, true, 302);
                 exit();
             }
         }
@@ -130,13 +155,13 @@ class ArtikelHelper
     public static function getChildPropertiesForParent($kArtikel, $kKundengruppe)
     {
         $varCombinations = self::getPossibleVariationCombinations($kArtikel, $kKundengruppe);
-        $properties      = array();
+        $properties      = [];
         if (is_array($varCombinations) && count($varCombinations) > 0) {
             foreach ($varCombinations as $oAlleVariationKombi) {
                 if (!isset($properties[$oAlleVariationKombi->kEigenschaft]) ||
                     !is_array($properties[$oAlleVariationKombi->kEigenschaft])
                 ) {
-                    $properties[$oAlleVariationKombi->kEigenschaft] = array();
+                    $properties[$oAlleVariationKombi->kEigenschaft] = [];
                 }
                 if (!isset($oAlleVariationKombi->kEigenschaftWert, $properties[$oAlleVariationKombi->kEigenschaft]) ||
                     !in_array($oAlleVariationKombi->kEigenschaftWert, $properties[$oAlleVariationKombi->kEigenschaft])
@@ -172,7 +197,7 @@ class ArtikelHelper
                     ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                     AND tartikelsichtbarkeit.kKundengruppe = " . (int)$kKundengruppe . "
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                " . $cGroupBy . "
+                {$cGroupBy}
                 ORDER BY teigenschaftkombiwert.kEigenschaftWert", 2
         );
     }
@@ -185,8 +210,8 @@ class ArtikelHelper
      */
     public static function getSelectedPropertiesForVarCombiArticle($kArtikel, $nArtikelVariAufbau = 0)
     {
-        $oProperties    = array();
-        $propertyValues = array();
+        $oProperties    = [];
+        $propertyValues = [];
         $nVorhanden     = 1;
         $kArtikel       = (int)$kArtikel;
         if ($kArtikel > 0) {
@@ -230,7 +255,9 @@ class ArtikelHelper
                     $j++;
                 }
             }
-            $kSprache                     = (isset($_SESSION['kSprache'])) ? (int)$_SESSION['kSprache'] : (int)Shop::$kSprache;
+            $kSprache                     = (isset($_SESSION['kSprache']))
+                ? (int)$_SESSION['kSprache']
+                : Shop::getLanguage();
             $oSQLEigenschaft              = new stdClass();
             $oSQLEigenschaft->cSELECT     = '';
             $oSQLEigenschaft->cJOIN       = '';
@@ -239,19 +266,23 @@ class ArtikelHelper
             $oSQLEigenschaftWert->cJOIN   = '';
             if ($kSprache > 0 && !standardspracheAktiv()) {
                 $oSQLEigenschaft->cSELECT = "teigenschaftsprache.cName AS cName_teigenschaftsprache, ";
-                $oSQLEigenschaft->cJOIN   = "LEFT JOIN teigenschaftsprache ON teigenschaftsprache.kEigenschaft = teigenschaft.kEigenschaft
-                                            AND teigenschaftsprache.kSprache=" . $kSprache;
+                $oSQLEigenschaft->cJOIN   = "LEFT JOIN teigenschaftsprache 
+                                            ON teigenschaftsprache.kEigenschaft = teigenschaft.kEigenschaft
+                                            AND teigenschaftsprache.kSprache = " . $kSprache;
 
                 $oSQLEigenschaftWert->cSELECT = "teigenschaftwertsprache.cName AS cName_teigenschaftwertsprache, ";
-                $oSQLEigenschaftWert->cJOIN   = "LEFT JOIN teigenschaftwertsprache ON teigenschaftwertsprache.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
-                                                AND teigenschaftwertsprache.kSprache=" . $kSprache;
+                $oSQLEigenschaftWert->cJOIN   = "LEFT JOIN teigenschaftwertsprache 
+                                                ON teigenschaftwertsprache.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
+                                                AND teigenschaftwertsprache.kSprache = " . $kSprache;
             }
 
-            $oEigenschaft_arr = Shop::DB()->query(
-                "SELECT teigenschaftwert.kEigenschaftWert, teigenschaftwert.cName, " . $oSQLEigenschaftWert->cSELECT . " teigenschaftwertsichtbarkeit.kKundengruppe,
-                teigenschaftwert.kEigenschaft, teigenschaft.cTyp, " . $oSQLEigenschaft->cSELECT . " teigenschaft.cName AS cNameEigenschaft, teigenschaft.kArtikel
+            $oEigenschaft_arr = Shop::DB()->query("
+                SELECT teigenschaftwert.kEigenschaftWert, teigenschaftwert.cName, " . $oSQLEigenschaftWert->cSELECT . " 
+                teigenschaftwertsichtbarkeit.kKundengruppe, teigenschaftwert.kEigenschaft, teigenschaft.cTyp, " .
+                $oSQLEigenschaft->cSELECT . " teigenschaft.cName AS cNameEigenschaft, teigenschaft.kArtikel
                 FROM teigenschaftwert
-                LEFT JOIN teigenschaftwertsichtbarkeit ON teigenschaftwertsichtbarkeit.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
+                LEFT JOIN teigenschaftwertsichtbarkeit 
+                    ON teigenschaftwertsichtbarkeit.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
                     AND teigenschaftwertsichtbarkeit.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
                 JOIN teigenschaft ON teigenschaft.kEigenschaft = teigenschaftwert.kEigenschaft
                 LEFT JOIN teigenschaftsichtbarkeit ON teigenschaft.kEigenschaft = teigenschaftsichtbarkeit.kEigenschaft
@@ -319,7 +350,10 @@ class ArtikelHelper
                         } else {
                             if (!isset($_SESSION['variBoxAnzahl_arr'])) {
                                 //redirekt zum artikel, um variation/en zu waehlen / MBM beachten
-                                header('Location: ' . Shop::getURL() . '/index.php?a=' . $kArtikel . '&n=' . (int)$_POST['anzahl'] . '&r=' . R_VARWAEHLEN, true, 302);
+                                header('Location: ' . Shop::getURL() .
+                                    '/index.php?a=' . $kArtikel .
+                                    '&n=' . (int)$_POST['anzahl'] .
+                                    '&r=' . R_VARWAEHLEN, true, 302);
                                 exit();
                             }
                         }
@@ -328,7 +362,10 @@ class ArtikelHelper
                         if ($oEigenschaft->cTyp === 'PFLICHT-FREIFELD'
                                 && self::hasSelectedVariationValue($oEigenschaft->kEigenschaft)
                                 && strlen(self::getSelectedVariationValue($oEigenschaft->kEigenschaft)) === 0) {
-                            header('Location: ' . Shop::getURL() . '/index.php?a=' . $kArtikel . '&n=' . (int)$_POST['anzahl'] . '&r=' . R_VARWAEHLEN, true, 302);
+                            header('Location: ' . Shop::getURL() .
+                                '/index.php?a=' . $kArtikel .
+                                '&n=' . (int)$_POST['anzahl'] .
+                                '&r=' . R_VARWAEHLEN, true, 302);
                             exit();
                         } else {
                             $oEigenschaftwerte                = new stdClass();
@@ -344,14 +381,17 @@ class ArtikelHelper
             if (!$nVorhanden) {
                 if (!isset($_SESSION['variBoxAnzahl_arr'])) {
                     //redirekt zum artikel, weil variation nicht vorhanden
-                    header('Location: ' . Shop::getURL() . '/index.php?a=' . $kArtikel . '&n=' . (int)$_POST['anzahl'] . '&r=' . R_VARWAEHLEN, true, 301);
+                    header('Location: ' . Shop::getURL() .
+                        '/index.php?a=' . $kArtikel .
+                        '&n=' . (int)$_POST['anzahl'] .
+                        '&r=' . R_VARWAEHLEN, true, 301);
                     exit();
                 }
             }
         }
         // Wie beim Artikel die Variationen aufbauen
         if ($nArtikelVariAufbau > 0) {
-            $variations = array();
+            $variations = [];
             if (is_array($oProperties) && count($oProperties) > 0) {
                 foreach ($oProperties as $i => $oEigenschaftwerte) {
                     $oEigenschaftWert                   = new stdClass();
@@ -365,7 +405,7 @@ class ArtikelHelper
                     $variations[$i]->cWaehlbar    = 'Y';
                     $variations[$i]->cTyp         = $oEigenschaftwerte->cTyp;
                     $variations[$i]->cName        = $oEigenschaftwerte->cEigenschaftName;
-                    $variations[$i]->Werte        = array();
+                    $variations[$i]->Werte        = [];
                     $variations[$i]->Werte[]      = $oEigenschaftWert;
                 }
 
@@ -390,13 +430,14 @@ class ArtikelHelper
         $oEigenschaft_arr = Shop::DB()->query(
             "SELECT teigenschaft.kEigenschaft,teigenschaft.cName,teigenschaft.cTyp
                 FROM teigenschaft
-                LEFT JOIN teigenschaftsichtbarkeit ON teigenschaft.kEigenschaft = teigenschaftsichtbarkeit.kEigenschaft
+                LEFT JOIN teigenschaftsichtbarkeit 
+                    ON teigenschaft.kEigenschaft = teigenschaftsichtbarkeit.kEigenschaft
                     AND teigenschaftsichtbarkeit.kKundengruppe = " . $kKundengruppe . "
                 WHERE teigenschaft.kArtikel = " . $kArtikel . "
                     AND teigenschaftsichtbarkeit.kEigenschaft IS NULL", 2
         );
         // $oProperties anlegen
-        $oProperties = array();
+        $oProperties = [];
         $nVorhanden  = 1;
         if (is_array($oEigenschaft_arr) && count($oEigenschaft_arr) > 0) {
             foreach ($oEigenschaft_arr as $oEigenschaft) {
@@ -404,7 +445,8 @@ class ArtikelHelper
                     // Ist kEigenschaft zu eigenschaftwert vorhanden
                     if (self::hasSelectedVariationValue($oEigenschaft->kEigenschaft)) {
                         $oEigenschaftWertVorhanden = Shop::DB()->query(
-                            "SELECT teigenschaftwert.kEigenschaftWert, teigenschaftwert.cName, teigenschaftwertsichtbarkeit.kKundengruppe
+                            "SELECT teigenschaftwert.kEigenschaftWert, teigenschaftwert.cName, 
+                                teigenschaftwertsichtbarkeit.kKundengruppe
                                 FROM teigenschaftwert
                                 LEFT JOIN teigenschaftwertsichtbarkeit
                                     ON teigenschaftwertsichtbarkeit.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
@@ -429,7 +471,10 @@ class ArtikelHelper
                     } else {
                         if (!isset($_SESSION['variBoxAnzahl_arr']) && $bRedirect) {
                             //redirekt zum artikel, um variation/en zu waehlen  MBM beachten
-                            header('Location: ' . Shop::getURL() . '/index.php?a=' . $kArtikel . '&n=' . (int)$_POST['anzahl'] . '&r=' . R_VARWAEHLEN, true, 302);
+                            header('Location: ' . Shop::getURL() .
+                                '/index.php?a=' . $kArtikel .
+                                '&n=' . (int)$_POST['anzahl'] .
+                                '&r=' . R_VARWAEHLEN, true, 302);
                             exit();
                         }
                     }
@@ -437,7 +482,10 @@ class ArtikelHelper
                     if ($oEigenschaft->cTyp === 'PFLICHT-FREIFELD' && $bRedirect
                             && self::hasSelectedVariationValue($oEigenschaft->kEigenschaft)
                             && strlen(self::getSelectedVariationValue($oEigenschaft->kEigenschaft)) === 0) {
-                        header('Location: ' . Shop::getURL() . '/index.php?a=' . $kArtikel . '&n=' . (int)$_POST['anzahl'] . '&r=' . R_VARWAEHLEN, true, 302);
+                        header('Location: ' . Shop::getURL() .
+                            '/index.php?a=' . $kArtikel .
+                            '&n=' . (int)$_POST['anzahl'] .
+                            '&r=' . R_VARWAEHLEN, true, 302);
                         exit();
                     } else {
                         $oEigenschaftwerte                = new stdClass();
@@ -453,7 +501,10 @@ class ArtikelHelper
         if (!$nVorhanden && $bRedirect) {
             if (!isset($_SESSION['variBoxAnzahl_arr'])) {
                 //redirekt zum artikel, weil variation nicht vorhanden
-                header('Location: ' . Shop::getURL() . '/index.php?a=' . $kArtikel . '&n=' . (int)$_POST['anzahl'] . '&r=' . R_VARWAEHLEN, true, 302);
+                header('Location: ' . Shop::getURL() .
+                    '/index.php?a=' . $kArtikel .
+                    '&n=' . (int)$_POST['anzahl'] .
+                    '&r=' . R_VARWAEHLEN, true, 302);
                 exit();
             }
         }
@@ -470,9 +521,14 @@ class ArtikelHelper
      */
     public static function getChildren($kVaterArtikel)
     {
-        $oVariationsKind_arr = array();
+        $oVariationsKind_arr = [];
         if ($kVaterArtikel > 0) {
-            $oVariationsKind_arr = Shop::DB()->selectAll('tartikel', 'kVaterArtikel', (int)$kVaterArtikel, 'kArtikel, kEigenschaftKombi');
+            $oVariationsKind_arr = Shop::DB()->selectAll(
+                'tartikel',
+                'kVaterArtikel',
+                (int)$kVaterArtikel,
+                'kArtikel, kEigenschaftKombi'
+            );
         }
 
         return $oVariationsKind_arr;
@@ -485,7 +541,17 @@ class ArtikelHelper
      */
     public static function isParent($kArtikel)
     {
-        $oArtikelTMP = Shop::DB()->select('tartikel', 'kArtikel', (int)$kArtikel, null, null, null, null, false, 'nIstVater');
+        $oArtikelTMP = Shop::DB()->select(
+            'tartikel',
+            'kArtikel',
+            (int)$kArtikel,
+            null,
+            null,
+            null,
+            null,
+            false,
+            'nIstVater'
+        );
 
         return isset($oArtikelTMP->nIstVater) && $oArtikelTMP->nIstVater > 0;
     }
@@ -536,5 +602,31 @@ class ArtikelHelper
     protected static function hasSelectedVariationValue($groupId)
     {
         return self::getSelectedVariationValue($groupId) !== false;
+    }
+
+    /**
+     * @param Artikel $artikel
+     * @param object[] $variationPicturesArr
+     * @return void
+     */
+    public static function addVariationPictures(Artikel $artikel, $variationPicturesArr)
+    {
+        if (is_array($variationPicturesArr) && count($variationPicturesArr) > 0) {
+            $artikel->Bilder = array_filter($artikel->Bilder, function ($item) {
+                return !(isset($item->isVariation) && $item->isVariation);
+            });
+            if (count($variationPicturesArr) === 1) {
+                array_unshift($artikel->Bilder, $variationPicturesArr[0]);
+            } else {
+                $artikel->Bilder = array_merge($artikel->Bilder, $variationPicturesArr);
+            }
+
+            $nNr = 1;
+            foreach (array_keys($artikel->Bilder) as $key) {
+                $artikel->Bilder[$key]->nNr = $nNr++;
+            }
+
+            $artikel->cVorschaubild = $artikel->Bilder[0]->cPfadKlein;
+        }
     }
 }

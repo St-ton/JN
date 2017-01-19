@@ -52,7 +52,7 @@ if (isset($_POST['einstellungen']) && intval($_POST['einstellungen']) === 1 && v
     $oGlobaleMetaAngaben->cName                 = 'Meta_Description_Praefix';
     $oGlobaleMetaAngaben->cWertName             = $cMetaDescPraefix;
     Shop::DB()->insert('tglobalemetaangaben', $oGlobaleMetaAngaben);
-    Shop::Cache()->flushTags(array(CACHING_GROUP_OPTION));
+    Shop::Cache()->flushAll();
     $chinweis .= 'Ihre Einstellungen wurden &uuml;bernommen.<br />';
     unset($oConfig_arr);
 }

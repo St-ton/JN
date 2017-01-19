@@ -48,7 +48,12 @@ usort($payments, function ($a, $b) {
     return 0;
 });
 
-$smarty->assign('payments', $payments)
+$pspType = isset($oPlugin->oPluginEinstellungAssoc_arr['jtl_paypal_psp_type']) ?
+    (int)$oPlugin->oPluginEinstellungAssoc_arr['jtl_paypal_psp_type'] : 0;
+
+$smarty
+       ->assign('pspType', $pspType)
+       ->assign('payments', $payments)
        ->assign('saved', isset($_POST['save']))
        ->assign('selectedPayments', $selectedPayments)
        ->assign('selectedPaymentKeys', $selectedPaymentKeys)

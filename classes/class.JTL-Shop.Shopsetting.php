@@ -17,7 +17,7 @@ final class Shopsetting implements ArrayAccess
     /**
      * @var array
      */
-    private $_container = array();
+    private $_container = [];
 
     /**
      *
@@ -50,7 +50,7 @@ final class Shopsetting implements ArrayAccess
      */
     public function reset()
     {
-        $this->_container = array();
+        $this->_container = [];
 
         return $this;
     }
@@ -101,7 +101,7 @@ final class Shopsetting implements ArrayAccess
             $section = $this->mapSettingName(null, $offset);
 
             if ($section === false || $section === null) {
-                return;
+                return null;
             }
             $cacheID = 'setting_' . $section;
 
@@ -110,7 +110,7 @@ final class Shopsetting implements ArrayAccess
                 if (($templateSettings = Shop::Cache()->get($cacheID)) === false) {
                     $template         = Template::getInstance();
                     $templateSettings = $template->getConfig();
-                    Shop::Cache()->set($cacheID, $templateSettings, array(CACHING_GROUP_TEMPLATE, CACHING_GROUP_OPTION));
+                    Shop::Cache()->set($cacheID, $templateSettings, [CACHING_GROUP_TEMPLATE, CACHING_GROUP_OPTION]);
                 }
                 if (is_array($templateSettings)) {
                     foreach ($templateSettings as $templateSection => $templateSetting) {
@@ -129,15 +129,29 @@ final class Shopsetting implements ArrayAccess
                 } catch (Exception $exc) {
                     Jtllog::writeLog("Setting Caching Exception: " . $exc->getMessage(), JTLLOG_LEVEL_ERROR);
                 }
-                $settings = Shop::DB()->selectAll('teinstellungen', 'kEinstellungenSektion', $section, 'kEinstellungenSektion, cName, cWert');
+                if ($section == 126) {
+                    $settings = Shop::DB()->query("
+                         SELECT cName, cWert
+                             FROM tplugineinstellungen
+                             WHERE cName LIKE '%_min%' 
+                              OR cName LIKE '%_max'", 2
+                     );
+                } else {
+                    $settings = Shop::DB()->selectAll(
+                        'teinstellungen',
+                        'kEinstellungenSektion',
+                        $section,
+                        'kEinstellungenSektion, cName, cWert'
+                    );
+                }
                 if (is_array($settings) && count($settings) > 0) {
-                    $this->_container[$offset] = array();
+                    $this->_container[$offset] = [];
 
                     foreach ($settings as $setting) {
                         $this->_container[$offset][$setting->cName] = $setting->cWert;
                     }
 
-                    Shop::Cache()->set($cacheID, $settings, array(CACHING_GROUP_OPTION));
+                    Shop::Cache()->set($cacheID, $settings, [CACHING_GROUP_OPTION]);
                 }
             }
         }
@@ -151,9 +165,9 @@ final class Shopsetting implements ArrayAccess
      */
     public function getSettings($sektionen_arr)
     {
-        $ret = array();
+        $ret = [];
         if (!is_array($sektionen_arr)) {
-            $sektionen_arr = (array) $sektionen_arr;
+            $sektionen_arr = (array)$sektionen_arr;
         }
         foreach ($sektionen_arr as $sektionen) {
             $mapping = self::mapSettingName($sektionen);
@@ -163,6 +177,21 @@ final class Shopsetting implements ArrayAccess
         }
 
         return $ret;
+    }
+
+    /**
+     * @param string $section
+     * @param string $option
+     * @return string|array|int
+     */
+    public function getValue($section, $option)
+    {
+        $settings    = $this->getSettings([$section]);
+        $sectionName = self::mapSettingName($section);
+
+        return (isset($settings[$sectionName][$option]))
+            ? $settings[$sectionName][$option]
+            : null;
     }
 
     /**
@@ -183,7 +212,7 @@ final class Shopsetting implements ArrayAccess
             return $key;
         }
 
-        return;
+        return null;
     }
 
     /**
@@ -202,19 +231,19 @@ final class Shopsetting implements ArrayAccess
                     FROM teinstellungen
                     ORDER BY kEinstellungenSektion", 9
             );
-            $result = array();
+            $result = [];
             foreach ($mappings as $mappingID => $sectionName) {
                 foreach ($settings as $setting) {
-                    $kEinstellungenSektion = (int) $setting['kEinstellungenSektion'];
+                    $kEinstellungenSektion = (int)$setting['kEinstellungenSektion'];
                     if ($kEinstellungenSektion === $mappingID) {
                         if (!isset($result[$sectionName])) {
-                            $result[$sectionName] = array();
+                            $result[$sectionName] = [];
                         }
                         $result[$sectionName][$setting['cName']] = $setting['cWert'];
                     }
                 }
             }
-            Shop::Cache()->set($cacheID, $result, array(CACHING_GROUP_TEMPLATE, CACHING_GROUP_OPTION, CACHING_GROUP_CORE));
+            Shop::Cache()->set($cacheID, $result, [CACHING_GROUP_TEMPLATE, CACHING_GROUP_OPTION, CACHING_GROUP_CORE]);
         }
         $this->_container = $result;
 
@@ -226,43 +255,44 @@ final class Shopsetting implements ArrayAccess
      */
     private static function getMappings()
     {
-        return array(
-            CONF_GLOBAL             => 'global',
-            CONF_STARTSEITE         => 'startseite',
-            CONF_EMAILS             => 'emails',
-            CONF_ARTIKELUEBERSICHT  => 'artikeluebersicht',
-            CONF_ARTIKELDETAILS     => 'artikeldetails',
-            CONF_KUNDEN             => 'kunden',
-            CONF_LOGO               => 'logo',
-            CONF_KAUFABWICKLUNG     => 'kaufabwicklung',
-            CONF_BOXEN              => 'boxen',
-            CONF_BILDER             => 'bilder',
-            CONF_SONSTIGES          => 'sonstiges',
-            CONF_ZAHLUNGSARTEN      => 'zahlungsarten',
-            CONF_KONTAKTFORMULAR    => 'kontakt',
-            CONF_SHOPINFO           => 'shopinfo',
-            CONF_RSS                => 'rss',
-            CONF_VERGLEICHSLISTE    => 'vergleichsliste',
-            CONF_PREISVERLAUF       => 'preisverlauf',
-            CONF_BEWERTUNG          => 'bewertung',
-            CONF_NEWSLETTER         => 'newsletter',
-            CONF_KUNDENFELD         => 'kundenfeld',
-            CONF_NAVIGATIONSFILTER  => 'navigationsfilter',
-            CONF_EMAILBLACKLIST     => 'emailblacklist',
-            CONF_METAANGABEN        => 'metaangaben',
-            CONF_NEWS               => 'news',
-            CONF_SITEMAP            => 'sitemap',
-            CONF_UMFRAGE            => 'umfrage',
-            CONF_KUNDENWERBENKUNDEN => 'kundenwerbenkunden',
-            CONF_TRUSTEDSHOPS       => 'trustedshops',
-            CONF_SUCHSPECIAL        => 'suchspecials',
-            CONF_TEMPLATE           => 'template',
-            CONF_PREISANZEIGE       => 'preisanzeige',
-            CONF_CHECKBOX           => 'checkbox',
-            CONF_AUSWAHLASSISTENT   => 'auswahlassistent',
-            CONF_RMA                => 'rma',
-            CONF_OBJECTCACHING      => 'objectcaching',
-            CONF_CACHING            => 'caching'
-        );
+        return [
+            CONF_GLOBAL              => 'global',
+            CONF_STARTSEITE          => 'startseite',
+            CONF_EMAILS              => 'emails',
+            CONF_ARTIKELUEBERSICHT   => 'artikeluebersicht',
+            CONF_ARTIKELDETAILS      => 'artikeldetails',
+            CONF_KUNDEN              => 'kunden',
+            CONF_LOGO                => 'logo',
+            CONF_KAUFABWICKLUNG      => 'kaufabwicklung',
+            CONF_BOXEN               => 'boxen',
+            CONF_BILDER              => 'bilder',
+            CONF_SONSTIGES           => 'sonstiges',
+            CONF_ZAHLUNGSARTEN       => 'zahlungsarten',
+            CONF_PLUGINZAHLUNGSARTEN => 'pluginzahlungsarten',
+            CONF_KONTAKTFORMULAR     => 'kontakt',
+            CONF_SHOPINFO            => 'shopinfo',
+            CONF_RSS                 => 'rss',
+            CONF_VERGLEICHSLISTE     => 'vergleichsliste',
+            CONF_PREISVERLAUF        => 'preisverlauf',
+            CONF_BEWERTUNG           => 'bewertung',
+            CONF_NEWSLETTER          => 'newsletter',
+            CONF_KUNDENFELD          => 'kundenfeld',
+            CONF_NAVIGATIONSFILTER   => 'navigationsfilter',
+            CONF_EMAILBLACKLIST      => 'emailblacklist',
+            CONF_METAANGABEN         => 'metaangaben',
+            CONF_NEWS                => 'news',
+            CONF_SITEMAP             => 'sitemap',
+            CONF_UMFRAGE             => 'umfrage',
+            CONF_KUNDENWERBENKUNDEN  => 'kundenwerbenkunden',
+            CONF_TRUSTEDSHOPS        => 'trustedshops',
+            CONF_SUCHSPECIAL         => 'suchspecials',
+            CONF_TEMPLATE            => 'template',
+            CONF_PREISANZEIGE        => 'preisanzeige',
+            CONF_CHECKBOX            => 'checkbox',
+            CONF_AUSWAHLASSISTENT    => 'auswahlassistent',
+            CONF_RMA                 => 'rma',
+            CONF_OBJECTCACHING       => 'objectcaching',
+            CONF_CACHING             => 'caching'
+        ];
     }
 }

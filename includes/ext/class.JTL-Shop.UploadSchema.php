@@ -61,13 +61,14 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
         private function loadFromDB($kUploadSchema)
         {
             $oUpload = Shop::DB()->query(
-                "SELECT tuploadschema.kUploadSchema, tuploadschema.kCustomID, tuploadschema.nTyp, tuploadschema.cDateiTyp,
-                    tuploadschema.nPflicht, tuploadschemasprache.cName, tuploadschemasprache.cBeschreibung
+                "SELECT tuploadschema.kUploadSchema, tuploadschema.kCustomID, tuploadschema.nTyp, 
+                    tuploadschema.cDateiTyp, tuploadschema.nPflicht, tuploadschemasprache.cName, 
+                    tuploadschemasprache.cBeschreibung
                     FROM tuploadschema
                     LEFT JOIN tuploadschemasprache
                         ON tuploadschemasprache.kArtikelUpload = tuploadschema.kUploadSchema
-                        AND tuploadschemasprache.kSprache = " . (int) $_SESSION['kSprache'] . "
-                    WHERE kUploadSchema =  " . (int) $kUploadSchema, 1
+                        AND tuploadschemasprache.kSprache = " . (int)$_SESSION['kSprache'] . "
+                    WHERE kUploadSchema =  " . (int)$kUploadSchema, 1
             );
 
             if (isset($oUpload->kUploadSchema) && intval($oUpload->kUploadSchema) > 0) {
@@ -88,7 +89,12 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
          */
         public function update()
         {
-            return Shop::DB()->update('tuploadschema', 'kUploadSchema', (int)$this->kUploadSchema, self::copyMembers($this));
+            return Shop::DB()->update(
+                'tuploadschema',
+                'kUploadSchema',
+                (int)$this->kUploadSchema,
+                self::copyMembers($this)
+            );
         }
 
         /**
@@ -112,19 +118,21 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
             }
 
             return Shop::DB()->query(
-                "SELECT tuploadschema.kUploadSchema, tuploadschema.kCustomID, tuploadschema.nTyp, tuploadschema.cDateiTyp,
-                    tuploadschema.nPflicht, IFNULL(tuploadschemasprache.cName,tuploadschema.cName ) cName,
+                "SELECT tuploadschema.kUploadSchema, tuploadschema.kCustomID, tuploadschema.nTyp, 
+                    tuploadschema.cDateiTyp, tuploadschema.nPflicht, 
+                    IFNULL(tuploadschemasprache.cName,tuploadschema.cName ) cName,
                     IFNULL(tuploadschemasprache.cBeschreibung, tuploadschema.cBeschreibung) cBeschreibung
                     FROM tuploadschema
                     LEFT JOIN tuploadschemasprache
                         ON tuploadschemasprache.kArtikelUpload = tuploadschema.kUploadSchema
-                        AND tuploadschemasprache.kSprache = " . (int) $_SESSION['kSprache'] . "
-                    WHERE nTyp = " . intval($nTyp) . $cSql, 2);
+                        AND tuploadschemasprache.kSprache = " . (int)$_SESSION['kSprache'] . "
+                    WHERE nTyp = " . (int)$nTyp . $cSql, 2
+            );
         }
 
         /**
-         * @param object $objFrom
-         * @param null   $objTo
+         * @param object      $objFrom
+         * @param object|null $objTo
          * @return null|stdClass
          */
         private static function copyMembers($objFrom, &$objTo = null)

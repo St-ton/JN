@@ -44,11 +44,9 @@ class Rechnungsadresse extends Adresse
      * Konstruktor
      *
      * @param int $kRechnungsadresse - Falls angegeben, wird der Rechnungsadresse mit angegebenem kRechnungsadresse aus der DB geholt
-     * @return Rechnungsadresse
      */
     public function __construct($kRechnungsadresse = 0)
     {
-        $kRechnungsadresse = intval($kRechnungsadresse);
         if ($kRechnungsadresse > 0) {
             $this->loadFromDB($kRechnungsadresse);
         }
@@ -59,11 +57,11 @@ class Rechnungsadresse extends Adresse
      *
      * @access public
      * @param int $kRechnungsadresse
-     * @return int
+     * @return int|Rechnungsadresse
      */
     public function loadFromDB($kRechnungsadresse)
     {
-        $obj = Shop::DB()->select('trechnungsadresse', 'kRechnungsadresse', intval($kRechnungsadresse));
+        $obj = Shop::DB()->select('trechnungsadresse', 'kRechnungsadresse', (int)$kRechnungsadresse);
 
         if (!$obj->kRechnungsadresse) {
             return 0;
@@ -140,7 +138,28 @@ class Rechnungsadresse extends Adresse
     public function gibRechnungsadresseAssoc()
     {
         if ($this->kRechnungsadresse > 0) {
-            return $this->toArray();
+            //wawi needs these attributes in exactly this order
+            return [
+                'cAnrede'          => $this->cAnrede,
+                'cTitel'           => $this->cTitel,
+                'cVorname'         => $this->cVorname,
+                'cNachname'        => $this->cNachname,
+                'cFirma'           => $this->cFirma,
+                'cStrasse'         => $this->cStrasse,
+                'cAdressZusatz'    => $this->cAdressZusatz,
+                'cPLZ'             => $this->cPLZ,
+                'cOrt'             => $this->cOrt,
+                'cBundesland'      => $this->cBundesland,
+                'cLand'            => $this->cLand,
+                'cTel'             => $this->cTel,
+                'cMobil'           => $this->cMobil,
+                'cFax'             => $this->cFax,
+                'cUSTID'           => $this->cUSTID,
+                'cWWW'             => $this->cWWW,
+                'cMail'            => $this->cMail,
+                'cZusatz'          => $this->cZusatz,
+                'cAnredeLocalized' => $this->cAnredeLocalized,
+            ];
         }
 
         return [];

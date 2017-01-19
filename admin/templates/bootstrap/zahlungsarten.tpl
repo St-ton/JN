@@ -6,5 +6,7 @@
     {include file='tpl_inc/zahlungsarten_einstellen.tpl'}
 {elseif $step === 'log'}
     {include file='tpl_inc/zahlungsarten_log.tpl'}
+{elseif $step === 'payments'}
+    {include file='tpl_inc/zahlungsarten_payments.tpl'}
 {/if}
 {include file='tpl_inc/footer.tpl'}

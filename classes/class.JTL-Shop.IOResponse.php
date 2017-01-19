@@ -24,8 +24,8 @@ class IOResponse implements JsonSerializable
      */
     public function __constructor()
     {
-        $this->assigns = array();
-        $this->scripts = array();
+        $this->assigns = [];
+        $this->scripts = [];
     }
 
     /**
@@ -35,11 +35,11 @@ class IOResponse implements JsonSerializable
      */
     public function assign($target, $attr, $data)
     {
-        $this->assigns[] = (object) array(
+        $this->assigns[] = (object)[
             'target' => $target,
             'attr'   => $attr,
             'data'   => $data
-        );
+        ];
     }
 
     /**
@@ -116,7 +116,7 @@ class IOResponse implements JsonSerializable
     }
 
     /**
-     * @return string
+     * @return array
      */
     public function generateCallTrace()
     {
@@ -126,7 +126,7 @@ class IOResponse implements JsonSerializable
         $trace = array_reverse($trace);
         array_shift($trace);
         array_pop($trace);
-        $result = array();
+        $result = [];
 
         foreach ($trace as $i => $t) {
             $result[] = '#' . ($i + 1) . substr($t, strpos($t, ' '));
@@ -140,9 +140,9 @@ class IOResponse implements JsonSerializable
      */
     public function jsonSerialize()
     {
-        return array(
+        return [
             'js'  => $this->scripts,
             'css' => $this->assigns,
-        );
+        ];
     }
 }

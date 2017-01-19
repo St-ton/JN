@@ -1666,3 +1666,20 @@ define('HOOK_QUICKSYNC_XML_BEARBEITEINSERT', 225);
  * @param array - manufacturers
  */
 define('HOOK_GET_MANUFACTURERS', 226);
+
+/**
+ * in Navigationsfilter::initBaseStates() after initializing the base filters
+ *
+ * @file class.JTL-Shop.Navigationsfilter.php
+ * @param Navigationsfilter navfilter
+ */
+define('HOOK_NAVIGATIONSFILTER_INIT', 227);
+
+/**
+ * in Navigationsfilter::initStates() after initializing the active filters
+ *
+ * @file class.JTL-Shop.Navigationsfilter.php
+ * @param Navigationsfilter navfilter
+ * @param array params
+ */
+define('HOOK_NAVIGATIONSFILTER_INIT_FILTER', 228);

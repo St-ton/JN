@@ -16,7 +16,7 @@ class UnitsOfMeasure
      *
      * @var array
      */
-    public static $UCUMcodeToPrint = array(
+    public static $UCUMcodeToPrint = [
         'm'      => 'm',
         'mm'     => 'mm',
         'cm'     => 'cm',
@@ -36,7 +36,7 @@ class UnitsOfMeasure
         'cL'     => 'cl',
         'm3'     => 'm<sup>3</sup>',
         'cm3'    => 'cm<sup>3</sup>'
-    );
+    ];
 
     /**
      * @param string $ucumCode
@@ -44,6 +44,8 @@ class UnitsOfMeasure
      */
     public static function getPrintAbbreviation($ucumCode)
     {
-        return ($ucumCode !== null && !empty(self::$UCUMcodeToPrint[$ucumCode])) ? self::$UCUMcodeToPrint[$ucumCode] : '';
+        return ($ucumCode !== null && !empty(self::$UCUMcodeToPrint[$ucumCode]))
+            ? self::$UCUMcodeToPrint[$ucumCode]
+            : '';
     }
 }

@@ -5,7 +5,7 @@ Sehr {if $Kunde->cAnrede == "w"}geehrte{else}geehrter{/if} {$Kunde->cAnredeLocal
 Ihre Bestellung bei {$Einstellungen.global.global_shopname} wurde soeben reaktivert.
 Bestellnummer: {$Bestellung->cBestellNr}
 
-Mit freundlichem GruÃŸ,
+Mit freundlichem Gruß,
 Ihr Team von {$Firma->cName}
 
 {includeMailTemplate template=footer type=plain}

@@ -1210,9 +1210,12 @@ final class Shop
     {
         if ($NaviFilter->nAnzahlFilter > 0) {
             if (empty($NaviFilter->Hersteller->kHersteller) && empty($NaviFilter->Kategorie->kKategorie) &&
-                empty($NaviFilter->Tag->kTag) && empty($NaviFilter->Suchanfrage->kSuchanfrage) && empty($NaviFilter->News->kNews) &&
-                empty($NaviFilter->Newsmonat->kNewsMonatsUebersicht) && empty($NaviFilter->NewsKategorie->kNewsKategorie) &&
-                !isset($NaviFilter->Suche->cSuche) && empty($NaviFilter->MerkmalWert->kMerkmalWert) && empty($NaviFilter->Suchspecial->kKey)) {
+                empty($NaviFilter->Tag->kTag) && empty($NaviFilter->Suchanfrage->kSuchanfrage) &&
+                empty($NaviFilter->News->kNews) && empty($NaviFilter->Newsmonat->kNewsMonatsUebersicht) &&
+                empty($NaviFilter->NewsKategorie->kNewsKategorie) &&
+                !isset($NaviFilter->Suche->cSuche) && empty($NaviFilter->MerkmalWert->kMerkmalWert) &&
+                empty($NaviFilter->Suchspecial->kKey)
+            ) {
                 //we have a manufacturer filter that doesn't filter anything
                 if (!empty($NaviFilter->HerstellerFilter->cSeo[Shop::$kSprache])) {
                     http_response_code(301);
@@ -1305,7 +1308,9 @@ final class Shop
         }
         $cShopURL = URL_SHOP;
         //EXPERIMENTAL_MULTILANG_SHOP
-        if ($bMultilang === true && isset($_SESSION['cISOSprache']) && defined('URL_SHOP_' . strtoupper($_SESSION['cISOSprache']))) {
+        if ($bMultilang === true && isset($_SESSION['cISOSprache']) &&
+            defined('URL_SHOP_' . strtoupper($_SESSION['cISOSprache']))
+        ) {
             $cShopURL = constant('URL_SHOP_' . strtoupper($_SESSION['cISOSprache']));
         }
         $sslStatus = pruefeSSL();

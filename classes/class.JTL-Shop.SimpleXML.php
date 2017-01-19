@@ -135,7 +135,7 @@ class SimpleXML
                     $has_string = true;
                 }
             }
-            if (isset($has_number) and !isset($has_string)) {
+            if (isset($has_number) && !isset($has_string)) {
                 foreach ($arg_array as $key => $value) {
                     $tmp[] = $this->array2object($value);
                 }
@@ -148,7 +148,7 @@ class SimpleXML
             }
         } elseif (is_object($arg_array)) {
             foreach ($arg_array as $key => $value) {
-                if (is_array($value) or is_object($value)) {
+                if (is_array($value) || is_object($value)) {
                     $tmp->$key = $this->array2object($value);
                 } else {
                     $tmp->$key = $value;

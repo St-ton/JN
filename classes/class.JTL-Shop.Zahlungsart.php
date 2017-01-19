@@ -513,7 +513,7 @@ class Zahlungsart extends MainModel
      */
     public static function loadAll($active = true, $iso = null)
     {
-        $payments = array();
+        $payments = [];
         $where    = ($active) ? (' WHERE z.nActive = 1') : '';
 
         if ($iso === null) {
@@ -527,8 +527,9 @@ class Zahlungsart extends MainModel
 
         $objs = Shop::DB()->query(
             "SELECT *
-                FROM tzahlungsart as z
-                LEFT JOIN tzahlungsartsprache as s ON s.kZahlungsart = z.kZahlungsart
+                FROM tzahlungsart AS z
+                LEFT JOIN tzahlungsartsprache AS s 
+                    ON s.kZahlungsart = z.kZahlungsart
                     AND s.cISOSprache = '{$iso}'
                 {$where}", 2
         );

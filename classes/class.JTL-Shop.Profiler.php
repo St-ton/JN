@@ -433,7 +433,12 @@ class Profiler
         $data     = [];
         if (is_array($profiles)) {
             foreach ($profiles as $_profile) {
-                $_profile->data = Shop::DB()->selectAll('tprofiler_runs', 'runID', (int)$_profile->runID, '*', 'runtime DESC');
+                $_profile->data = Shop::DB()->selectAll(
+                    'tprofiler_runs',
+                    'runID',
+                    (int)$_profile->runID,
+                    '*', 'runtime DESC'
+                );
                 $data[] = $_profile;
             }
         }

@@ -120,7 +120,8 @@ class Merkmal
             $oMerkmalWertTMP_arr = Shop::DB()->query(
                 "SELECT tmw.kMerkmalWert
                     FROM tmerkmalwert tmw
-                    JOIN tmerkmalwertsprache tmws ON tmws.kMerkmalWert = tmw.kMerkmalWert
+                    JOIN tmerkmalwertsprache tmws 
+                        ON tmws.kMerkmalWert = tmw.kMerkmalWert
                         AND tmws.kSprache = {$kSprache}
                     WHERE kMerkmal = {$this->kMerkmal}
                     ORDER BY tmw.nSort, tmws.cWert", 2

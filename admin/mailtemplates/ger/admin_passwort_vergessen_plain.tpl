@@ -1,7 +1,7 @@
 Hallo,
 
-fÃ¼r Ihren Account wurde ein neues Passwort angefordert.
-Ã–ffnen Sie zum BestÃ¤tigen bitte den folgenden Link:
+für Ihren Account wurde ein neues Passwort angefordert.
+Öffnen Sie zum Bestätigen bitte den folgenden Link:
 
 {$passwordResetLink}
 

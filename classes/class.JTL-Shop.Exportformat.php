@@ -162,7 +162,8 @@ class Exportformat
         $oObj = Shop::DB()->query(
             "SELECT texportformat.*, tkampagne.cParameter AS campaignParameter, tkampagne.cWert AS campaignValue
                FROM texportformat
-               LEFT JOIN tkampagne ON tkampagne.kKampagne = texportformat.kKampagne
+               LEFT JOIN tkampagne 
+                  ON tkampagne.kKampagne = texportformat.kKampagne
                   AND tkampagne.nAktiv = 1
                WHERE texportformat.kExportformat = " . $kExportformat, 1);
         if (isset($oObj->kExportformat) && $oObj->kExportformat > 0) {
@@ -1115,20 +1116,61 @@ class Exportformat
                 } else {
                     ++$cacheMisses;
                 }
-                $Artikel->cBeschreibungHTML     = StringHandler::removeWhitespace(str_replace($findTwo, $replaceTwo, str_replace('"', '&quot;', $Artikel->cBeschreibung)));
-                $Artikel->cKurzBeschreibungHTML = StringHandler::removeWhitespace(str_replace($findTwo, $replaceTwo, str_replace('"', '&quot;', $Artikel->cKurzBeschreibung)));
-                $Artikel->cName                 = StringHandler::removeWhitespace(str_replace($findTwo, $replaceTwo, StringHandler::unhtmlentities(strip_tags(str_replace($find, $replace, $Artikel->cName)))));
-                $Artikel->cBeschreibung         = StringHandler::removeWhitespace(str_replace($findTwo, $replaceTwo, StringHandler::unhtmlentities(strip_tags(str_replace($find, $replace, $Artikel->cBeschreibung)))));
-                $Artikel->cKurzBeschreibung     = StringHandler::removeWhitespace(str_replace($findTwo, $replaceTwo, StringHandler::unhtmlentities(strip_tags(str_replace($find, $replace, $Artikel->cKurzBeschreibung)))));
+                $Artikel->cBeschreibungHTML = StringHandler::removeWhitespace(
+                    str_replace(
+                        $findTwo,
+                        $replaceTwo,
+                        str_replace('"', '&quot;', $Artikel->cBeschreibung)
+                    )
+                );
+                $Artikel->cKurzBeschreibungHTML = StringHandler::removeWhitespace(
+                    str_replace(
+                        $findTwo,
+                        $replaceTwo,
+                        str_replace('"', '&quot;', $Artikel->cKurzBeschreibung)
+                    )
+                );
+                $Artikel->cName                 = StringHandler::removeWhitespace(
+                    str_replace(
+                        $findTwo,
+                        $replaceTwo,
+                        StringHandler::unhtmlentities(strip_tags(str_replace($find, $replace, $Artikel->cName)))
+                    )
+                );
+                $Artikel->cBeschreibung         = StringHandler::removeWhitespace(
+                    str_replace(
+                        $findTwo,
+                        $replaceTwo,
+                        StringHandler::unhtmlentities(strip_tags(str_replace($find, $replace, $Artikel->cBeschreibung)))
+                    )
+                );
+                $Artikel->cKurzBeschreibung     = StringHandler::removeWhitespace(
+                    str_replace(
+                        $findTwo,
+                        $replaceTwo,
+                        StringHandler::unhtmlentities(strip_tags(str_replace($find, $replace, $Artikel->cKurzBeschreibung)))
+                    )
+                );
                 $Artikel->fUst                  = gibUst($Artikel->kSteuerklasse);
-                $Artikel->Preise->fVKBrutto     = berechneBrutto($Artikel->Preise->fVKNetto * $this->currency->fFaktor, $Artikel->fUst);
+                $Artikel->Preise->fVKBrutto     = berechneBrutto(
+                    $Artikel->Preise->fVKNetto * $this->currency->fFaktor,
+                    $Artikel->fUst
+                );
                 $Artikel->Preise->fVKNetto      = round($Artikel->Preise->fVKNetto, 2);
-                $Artikel->Kategorie             = new Kategorie($Artikel->gibKategorie(), $this->kSprache, $this->kKundengruppe, !$this->useCache());
-                $Artikel->Kategoriepfad         = (isset($Artikel->Kategorie->cKategoriePfad)) ?
-                    $Artikel->Kategorie->cKategoriePfad : // calling gibKategoriepfad() should not be necessary since it has already been called in Kategorie::loadFromDB()
-                    gibKategoriepfad($Artikel->Kategorie, $this->kKundengruppe, $this->kSprache);
+                $Artikel->Kategorie             = new Kategorie(
+                    $Artikel->gibKategorie(),
+                    $this->kSprache,
+                    $this->kKundengruppe,
+                    !$this->useCache()
+                );
+                // calling gibKategoriepfad() should not be necessary since it has already been called in Kategorie::loadFromDB()
+                $Artikel->Kategoriepfad         = (isset($Artikel->Kategorie->cKategoriePfad))
+                    ? $Artikel->Kategorie->cKategoriePfad
+                    : gibKategoriepfad($Artikel->Kategorie, $this->kKundengruppe, $this->kSprache);
                 $Artikel->Versandkosten         = gibGuenstigsteVersandkosten(
-                    (isset($this->config['exportformate_lieferland'])) ? $this->config['exportformate_lieferland'] : '',
+                    (isset($this->config['exportformate_lieferland']))
+                        ? $this->config['exportformate_lieferland']
+                        : '',
                     $Artikel,
                     0,
                     $this->kKundengruppe
@@ -1146,7 +1188,9 @@ class Exportformat
                 }
 
                 $Artikel->cDeeplink             = $shopURL . '/' . $Artikel->cURL;
-                $Artikel->Artikelbild           = ($Artikel->Bilder[0]->cPfadGross) ? $shopURL . '/' . $Artikel->Bilder[0]->cPfadGross : '';
+                $Artikel->Artikelbild           = ($Artikel->Bilder[0]->cPfadGross)
+                    ? $shopURL . '/' . $Artikel->Bilder[0]->cPfadGross
+                    : '';
                 $Artikel->Lieferbar             = ($Artikel->fLagerbestand <= 0) ? 'N' : 'Y';
                 $Artikel->Lieferbar_01          = ($Artikel->fLagerbestand <= 0) ? 0 : 1;
                 $Artikel->Verfuegbarkeit_kelkoo = ($Artikel->fLagerbestand > 0) ? '001' : '003';
@@ -1164,7 +1208,9 @@ class Exportformat
             }
         }
         if (strlen($cOutput) > 0) {
-            fwrite($datei, (($this->cKodierung === 'UTF-8' || $this->cKodierung === 'UTF-8noBOM') ? utf8_encode($cOutput) : $cOutput));
+            fwrite($datei, (($this->cKodierung === 'UTF-8' || $this->cKodierung === 'UTF-8noBOM')
+                ? utf8_encode($cOutput)
+                : $cOutput));
         }
 
         if ($isCron === false) {
@@ -1174,9 +1220,10 @@ class Exportformat
                       SET nLimit_n = nLimit_n + " . $this->queue->nLimitM . " 
                       WHERE kExportqueue = " . (int)$this->queue->kExportqueue, 4
                 );
-                $protocol = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') || function_exists('pruefeSSL') && pruefeSSL() === 2) ?
-                    'https://' :
-                    'http://';
+                $protocol = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ||
+                    function_exists('pruefeSSL') && pruefeSSL() === 2)
+                    ? 'https://'
+                    : 'http://';
                 if ($isAsync) {
                     $oCallback                = new stdClass();
                     $oCallback->kExportformat = $this->getExportformat();
@@ -1190,14 +1237,20 @@ class Exportformat
                     $oCallback->cacheHits     = $cacheHits;
                     echo json_encode($oCallback);
                 } else {
-                    $cURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'] . '?e=' . (int)$this->queue->kExportqueue . '&back=admin&token=' . $_SESSION['jtl_token'] . '&max=' . $max;
+                    $cURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'] .
+                        '?e=' . (int)$this->queue->kExportqueue .
+                        '&back=admin&token=' . $_SESSION['jtl_token'] . '&max=' . $max;
                     header('Location: ' . $cURL);
                 }
             } else {
                 // Versucht (falls so eingestellt) die erstellte Exportdatei in mehrere Dateien zu splitten
                 $this->splitFile();
 
-                Shop::DB()->query("UPDATE texportformat SET dZuletztErstellt = now() WHERE kExportformat = " . $this->getExportformat(), 4);
+                Shop::DB()->query("
+                    UPDATE texportformat 
+                        SET dZuletztErstellt = now() 
+                        WHERE kExportformat = " . $this->getExportformat(), 4
+                );
                 Shop::DB()->delete('texportqueue', 'kExportqueue', (int)$this->queue->kExportqueue);
 
                 $this->writeFooter($datei);
@@ -1214,7 +1267,9 @@ class Exportformat
 
                         echo json_encode($oCallback);
                     } else {
-                        header('Location: exportformate.php?action=exported&token=' . $_SESSION['jtl_token'] . '&kExportformat=' . $this->getExportformat() . '&max=' . $max);
+                        header('Location: exportformate.php?action=exported&token=' .
+                            $_SESSION['jtl_token'] .
+                            '&kExportformat=' . $this->getExportformat() . '&max=' . $max);
                     }
                 }
             }

@@ -79,7 +79,9 @@ trait MigrationTableTrait
             cWert = '{$value}', 
             cStandard = '{$value}', 
             bSystem = '{$system}' 
-            ON DUPLICATE KEY UPDATE cWert=IF(cWert = cStandard, VALUES(cStandard), cWert), cStandard=VALUES(cStandard)");
+            ON DUPLICATE KEY UPDATE 
+                cWert = IF(cWert = cStandard, VALUES(cStandard), cWert), cStandard = VALUES(cStandard)"
+        );
     }
 
     /**
@@ -96,7 +98,12 @@ trait MigrationTableTrait
     private function getAvailableInputTypes()
     {
         $result = [];
-        $items  = $this->fetchAll("SELECT DISTINCT cInputTyp FROM `teinstellungenconf` WHERE cInputTyp IS NOT NULL AND cInputTyp!=''");
+        $items  = $this->fetchAll("
+            SELECT DISTINCT cInputTyp 
+                FROM `teinstellungenconf` 
+                WHERE cInputTyp IS NOT NULL 
+                    AND cInputTyp != ''"
+        );
         foreach ($items as $item) {
             $result[] = $item->cInputTyp;
         }
@@ -140,10 +147,13 @@ trait MigrationTableTrait
         $availableInputTypes = $this->getAvailableInputTypes();
 
         //input types that need $additionalProperties->inputOptions
-        $inputTypeNeedsOptions = array('listbox', 'selectbox');
+        $inputTypeNeedsOptions = ['listbox', 'selectbox'];
 
-        $kEinstellungenConf = (!is_object($additionalProperties) || !isset($additionalProperties->kEinstellungenConf) || !$additionalProperties->kEinstellungenConf) ?
-            $this->getLastId('teinstellungenconf', 'kEinstellungenConf') : $additionalProperties->kEinstellungenConf;
+        $kEinstellungenConf = (!is_object($additionalProperties) ||
+            !isset($additionalProperties->kEinstellungenConf) ||
+            !$additionalProperties->kEinstellungenConf)
+            ? $this->getLastId('teinstellungenconf', 'kEinstellungenConf')
+            : $additionalProperties->kEinstellungenConf;
         if (!$configName) {
             throw new Exception('configName not provided or empty / zero');
         } elseif (!$configSection) {
@@ -152,22 +162,39 @@ trait MigrationTableTrait
             throw new Exception('externalName not provided or empty / zero');
         } elseif (!$sort) {
             throw new Exception('sort not provided or empty / zero');
-        } elseif (!$inputType && (!is_object($additionalProperties) || !isset($additionalProperties->cConf) || $additionalProperties->cConf != 'N')) {
+        } elseif (!$inputType && (!is_object($additionalProperties) ||
+                !isset($additionalProperties->cConf) ||
+                $additionalProperties->cConf != 'N')
+        ) {
             throw new Exception('inputType has to be provided if additionalProperties->cConf is not set to "N"');
         } elseif (in_array($inputType, $inputTypeNeedsOptions) &&
-            (!is_object($additionalProperties) || !isset($additionalProperties->inputOptions) || !is_array($additionalProperties->inputOptions) || count($additionalProperties->inputOptions) == 0)
+            (!is_object($additionalProperties) || !isset($additionalProperties->inputOptions) ||
+                !is_array($additionalProperties->inputOptions) || count($additionalProperties->inputOptions) == 0)
         ) {
             throw new Exception('additionalProperties->inputOptions has to be provided if inputType is "' . $inputType . '"');
         } elseif ($overwrite !== true) {
-            $count = $this->fetchOne("SELECT COUNT(*) AS count FROM teinstellungen WHERE cName='{$configName}'");
+            $count = $this->fetchOne("
+                SELECT COUNT(*) AS count 
+                    FROM teinstellungen 
+                    WHERE cName='{$configName}'"
+            );
             if ($count->count != 0) {
                 throw new Exception('another entry already present in teinstellungen and overwrite is disabled');
             }
-            $count = $this->fetchOne("SELECT COUNT(*) AS count FROM teinstellungenconf WHERE cWertName='{$configName}' OR kEinstellungenConf={$kEinstellungenConf}");
+            $count = $this->fetchOne("
+                SELECT COUNT(*) AS count 
+                    FROM teinstellungenconf 
+                    WHERE cWertName='{$configName}' 
+                        OR kEinstellungenConf={$kEinstellungenConf}"
+            );
             if ($count->count != 0) {
                 throw new Exception('another entry already present in teinstellungenconf and overwrite is disabled');
             }
-            $count = $this->fetchOne("SELECT COUNT(*) AS count FROM teinstellungenconfwerte WHERE kEinstellungenConf={$kEinstellungenConf}");
+            $count = $this->fetchOne("
+                SELECT COUNT(*) AS count 
+                    FROM teinstellungenconfwerte 
+                    WHERE kEinstellungenConf={$kEinstellungenConf}"
+            );
             if ($count->count != 0) {
                 throw new Exception('another entry already present in teinstellungenconfwerte and overwrite is disabled');
             }
@@ -175,20 +202,37 @@ trait MigrationTableTrait
             unset($count);
 
             // $overwrite has to be set to true in order to create a new inputType
-            if (!in_array($inputType,
-                    $availableInputTypes) && (!is_object($additionalProperties) || !isset($additionalProperties->cConf) || $additionalProperties->cConf != 'N')
+            if (!in_array($inputType, $availableInputTypes) &&
+                (!is_object($additionalProperties) ||
+                    !isset($additionalProperties->cConf) ||
+                    $additionalProperties->cConf !== 'N')
             ) {
-                throw new Exception('inputType "' . $inputType . '" not in available types and additionalProperties->cConf is not set to "N"');
+                throw new Exception('inputType "' . $inputType .
+                    '" not in available types and additionalProperties->cConf is not set to "N"');
             }
         }
         $this->removeConfig($configName);
 
-        $cConf             = (!is_object($additionalProperties) || !isset($additionalProperties->cConf) || $additionalProperties->cConf != 'N') ? 'Y' : 'N';
-        $inputType         = $cConf === 'N' ? '' : $inputType;
-        $cModulId          = (!is_object($additionalProperties) || !isset($additionalProperties->cModulId)) ? '_DBNULL_' : $additionalProperties->cModulId;
-        $cBeschreibung     = (!is_object($additionalProperties) || !isset($additionalProperties->cBeschreibung)) ? '' : $additionalProperties->cBeschreibung;
-        $nStandardAnzeigen = (!is_object($additionalProperties) || !isset($additionalProperties->nStandardAnzeigen)) ? 1 : $additionalProperties->nStandardAnzeigen;
-        $nModul            = (!is_object($additionalProperties) || !isset($additionalProperties->nModul)) ? 0 : $additionalProperties->nModul;
+        $cConf             = (!is_object($additionalProperties) ||
+            !isset($additionalProperties->cConf) ||
+            $additionalProperties->cConf != 'N')
+            ? 'Y'
+            : 'N';
+        $inputType         = $cConf === 'N'
+            ? ''
+            : $inputType;
+        $cModulId          = (!is_object($additionalProperties) || !isset($additionalProperties->cModulId))
+            ? '_DBNULL_'
+            : $additionalProperties->cModulId;
+        $cBeschreibung     = (!is_object($additionalProperties) || !isset($additionalProperties->cBeschreibung))
+            ? ''
+            : $additionalProperties->cBeschreibung;
+        $nStandardAnzeigen = (!is_object($additionalProperties) || !isset($additionalProperties->nStandardAnzeigen))
+            ? 1
+            : $additionalProperties->nStandardAnzeigen;
+        $nModul            = (!is_object($additionalProperties) || !isset($additionalProperties->nModul))
+            ? 0
+            : $additionalProperties->nModul;
 
         $einstellungen                        = new stdClass();
         $einstellungen->kEinstellungenSektion = $configSection;
@@ -213,7 +257,10 @@ trait MigrationTableTrait
         Shop::DB()->insertRow('teinstellungenconf', $einstellungenConf, true);
         unset($einstellungenConf);
 
-        if (is_object($additionalProperties) && isset($additionalProperties->inputOptions) && is_array($additionalProperties->inputOptions)) {
+        if (is_object($additionalProperties) &&
+            isset($additionalProperties->inputOptions) &&
+            is_array($additionalProperties->inputOptions)
+        ) {
             $sortIndex              = 1;
             $einstellungenConfWerte = new stdClass();
             foreach ($additionalProperties->inputOptions as $optionKey => $optionValue) {
@@ -233,8 +280,15 @@ trait MigrationTableTrait
      */
     public function removeConfig($key)
     {
-        $this->execute("DELETE FROM teinstellungen WHERE cName='{$key}'");
-        $this->execute("DELETE FROM teinstellungenconfwerte WHERE kEinstellungenConf= (SELECT kEinstellungenConf FROM teinstellungenconf WHERE cWertName='{$key}')");
-        $this->execute("DELETE FROM teinstellungenconf WHERE cWertName='{$key}'");
+        $this->execute("DELETE FROM teinstellungen WHERE cName = '{$key}'");
+        $this->execute("
+            DELETE FROM teinstellungenconfwerte 
+                WHERE kEinstellungenConf = (
+                    SELECT kEinstellungenConf 
+                        FROM teinstellungenconf 
+                        WHERE cWertName = '{$key}'
+                )"
+        );
+        $this->execute("DELETE FROM teinstellungenconf WHERE cWertName = '{$key}'");
     }
 }

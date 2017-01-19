@@ -186,7 +186,6 @@ switch ($cAction) {
 }
 
 $smarty->assign('PFAD_KCFINDER', PFAD_KCFINDER)
-       ->assign('ShopURL', Shop::getURL())
        ->assign('PFAD_MEDIAFILES', PFAD_MEDIAFILES)
        ->assign('cFehler', $cFehler)
        ->assign('cHinweis', $cHinweis)

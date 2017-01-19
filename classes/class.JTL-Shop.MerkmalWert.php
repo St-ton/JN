@@ -61,7 +61,6 @@ class MerkmalWert
      */
     public function __construct($kMerkmalWert = 0)
     {
-        $kMerkmalWert = intval($kMerkmalWert);
         if ($kMerkmalWert > 0) {
             $this->loadFromDB($kMerkmalWert);
         }
@@ -87,13 +86,16 @@ class MerkmalWert
             }
         }
         $kSprache     = (int)$kSprache;
+        $kMerkmalWert = (int)$kMerkmalWert;
         $oMerkmalWert = Shop::DB()->query(
             "SELECT tmerkmalwert.*, tmerkmalwertsprache.kSprache, tmerkmalwertsprache.cWert,
-                tmerkmalwertsprache.cMetaTitle, tmerkmalwertsprache.cMetaKeywords, tmerkmalwertsprache.cMetaDescription,
-                tmerkmalwertsprache.cBeschreibung, tseo.cSeo
+                tmerkmalwertsprache.cMetaTitle, tmerkmalwertsprache.cMetaKeywords, 
+                tmerkmalwertsprache.cMetaDescription, tmerkmalwertsprache.cBeschreibung, tseo.cSeo
                 FROM tmerkmalwert
-                JOIN tmerkmalwertsprache ON tmerkmalwertsprache.kMerkmalWert = tmerkmalwert.kMerkmalWert
-                LEFT JOIN tseo ON tseo.cKey = 'kMerkmalWert'
+                JOIN tmerkmalwertsprache 
+                    ON tmerkmalwertsprache.kMerkmalWert = tmerkmalwert.kMerkmalWert
+                LEFT JOIN tseo 
+                    ON tseo.cKey = 'kMerkmalWert'
                     AND tseo.kKey = tmerkmalwertsprache.kMerkmalWert
                     AND tseo.kSprache = tmerkmalwertsprache.kSprache
                 WHERE tmerkmalwertsprache.kSprache = " . $kSprache . "
@@ -142,12 +144,14 @@ class MerkmalWert
                 }
             }
             $oMerkmalWert_arr = Shop::DB()->query(
-                "SELECT tmerkmalwert.*, tmerkmalwertsprache.kMerkmalWert, tmerkmalwertsprache.kSprache, tmerkmalwertsprache.cWert,
-                    tmerkmalwertsprache.cMetaTitle, tmerkmalwertsprache.cMetaKeywords, tmerkmalwertsprache.cMetaDescription,
-                    tmerkmalwertsprache.cBeschreibung, tseo.cSeo
+                "SELECT tmerkmalwert.*, tmerkmalwertsprache.kMerkmalWert, tmerkmalwertsprache.kSprache, 
+                    tmerkmalwertsprache.cWert, tmerkmalwertsprache.cMetaTitle, tmerkmalwertsprache.cMetaKeywords, 
+                    tmerkmalwertsprache.cMetaDescription, tmerkmalwertsprache.cBeschreibung, tseo.cSeo
                     FROM tmerkmalwert
-                    JOIN tmerkmalwertsprache ON tmerkmalwertsprache.kMerkmalWert = tmerkmalwert.kMerkmalWert
-                    LEFT JOIN tseo ON tseo.cKey = 'kMerkmalWert'
+                    JOIN tmerkmalwertsprache 
+                        ON tmerkmalwertsprache.kMerkmalWert = tmerkmalwert.kMerkmalWert
+                    LEFT JOIN tseo 
+                        ON tseo.cKey = 'kMerkmalWert'
                         AND tseo.kKey = tmerkmalwertsprache.kMerkmalWert
                         AND tseo.kSprache = tmerkmalwertsprache.kSprache
                     WHERE tmerkmalwertsprache.kSprache = " . $kSprache . "

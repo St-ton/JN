@@ -74,6 +74,9 @@
                                                 locale: {
                                                     format: 'DD.MM.YYYY', separator: ' - ', applyLabel: 'Übernehmen',
                                                     cancelLabel: 'Abbrechen', customRangeLabel: 'Benutzerdefiniert',
+                                                    daysOfWeek: ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'],
+                                                    monthNames: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni',
+                                                        'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
                                                     firstDay: 1
                                                 },
                                                 alwaysShowCalendars: true,

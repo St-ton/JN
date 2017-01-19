@@ -44,12 +44,12 @@ class BackendAccountHelper
      */
     private function uploadImage(array $tmpFile, $attribName)
     {
-        $imgType = array_search($tmpFile['type'][$attribName], array(
+        $imgType = array_search($tmpFile['type'][$attribName], [
             IMAGETYPE_JPEG => image_type_to_mime_type(IMAGETYPE_JPEG),
             IMAGETYPE_PNG  => image_type_to_mime_type(IMAGETYPE_PNG),
             IMAGETYPE_BMP  => image_type_to_mime_type(IMAGETYPE_BMP),
             IMAGETYPE_GIF  => image_type_to_mime_type(IMAGETYPE_GIF),
-        ));
+        ]);
 
         if ($imgType !== false) {
             $imagePath = PFAD_MEDIA_IMAGE . 'avatare/';
@@ -82,7 +82,9 @@ class BackendAccountHelper
      */
     public function getConfigParam($paramName, $defaultValue = null)
     {
-        return isset($this->plugin->oPluginEinstellungAssoc_arr[$paramName]) ? $this->plugin->oPluginEinstellungAssoc_arr[$paramName] : $defaultValue;
+        return isset($this->plugin->oPluginEinstellungAssoc_arr[$paramName])
+            ? $this->plugin->oPluginEinstellungAssoc_arr[$paramName]
+            : $defaultValue;
     }
 
     /**
@@ -102,7 +104,9 @@ class BackendAccountHelper
                         if ($author->extAttribs['useAvatar']->cAttribValue === 'G') {
                             $params = ['email' => null, 's' => 80, 'd' => 'mm', 'r' => 'g'];
                             $url    = 'https://www.gravatar.com/avatar/';
-                            $url   .= md5(!empty($author->extAttribs['useGravatarEmail']->cAttribValue) ? strtolower(trim($author->extAttribs['useGravatarEmail']->cAttribValue)) : strtolower(trim($author->cMail)));
+                            $url   .= md5(!empty($author->extAttribs['useGravatarEmail']->cAttribValue)
+                                ? strtolower(trim($author->extAttribs['useGravatarEmail']->cAttribValue))
+                                : strtolower(trim($author->cMail)));
                             $url   .= '?' . http_build_query($params, '', '&');
                             $author->cAvatarImgSrc = $url;
                         }
@@ -142,6 +146,7 @@ class BackendAccountHelper
 
     /**
      * HOOK_BACKEND_ACCOUNT_PREPARE_EDIT
+     *
      * @param stdClass $oAccount
      * @param JTLSmarty $smarty
      * @param array $attribs
@@ -149,9 +154,9 @@ class BackendAccountHelper
      */
     public function getContent(stdClass $oAccount, JTLSmarty $smarty, array $attribs)
     {
-        $showAvatar          = $this->getConfigParam('use_avatar', 'N') === 'Y' ? true : false;
-        $showVita            = $this->getConfigParam('use_vita', 'N') === 'Y' ? true : false;
-        $showGPlus           = $this->getConfigParam('use_gplus', 'N') === 'Y' ? true : false;
+        $showAvatar          = $this->getConfigParam('use_avatar', 'N') === 'Y';
+        $showVita            = $this->getConfigParam('use_vita', 'N') === 'Y';
+        $showGPlus           = $this->getConfigParam('use_gplus', 'N') === 'Y';
         $showSectionPersonal = $showAvatar || $showVita || $showGPlus;
 
         if ($showAvatar) {
@@ -163,7 +168,11 @@ class BackendAccountHelper
                 $gravatarEmail = '';
             }
 
-            $uploadImage   = isset($attribs['useAvatar']->cAttribValue) && $attribs['useAvatar']->cAttribValue === 'U' && !empty($attribs['useAvatarUpload']->cAttribValue) ? $attribs['useAvatarUpload']->cAttribValue : '/' . BILD_UPLOAD_ZUGRIFF_VERWEIGERT;
+            $uploadImage   = isset($attribs['useAvatar']->cAttribValue) &&
+            $attribs['useAvatar']->cAttribValue === 'U' &&
+            !empty($attribs['useAvatarUpload']->cAttribValue)
+                ? $attribs['useAvatarUpload']->cAttribValue
+                : '/' . BILD_UPLOAD_ZUGRIFF_VERWEIGERT;
         } else {
             $gravatarEmail = '';
             $uploadImage   = '';
@@ -201,6 +210,7 @@ class BackendAccountHelper
 
     /**
      * HOOK_BACKEND_ACCOUNT_EDIT - VALIDATE
+     *
      * @param stdClass $oAccount
      * @param array $attribs
      * @param array $messages
@@ -230,12 +240,12 @@ class BackendAccountHelper
 
                         if ($attribs['useAvatarUpload'] === false) {
                             $messages['error'] .= 'Fehler beim Bilupload!';
-                            $result = array('useAvatarUpload' => 1);
+                            $result = ['useAvatarUpload' => 1];
                         }
                     } else {
                         if (empty($attribs['useAvatarUpload'])) {
                             $messages['error'] .= 'Bitte geben Sie ein Bild an!';
-                            $result = array('useAvatarUpload' => 1);
+                            $result = ['useAvatarUpload' => 1];
                         }
                     }
 

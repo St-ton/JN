@@ -73,9 +73,11 @@ class HerstellerHelper
                             thersteller.cBildpfad, therstellersprache.cMetaTitle, therstellersprache.cMetaKeywords, 
                             therstellersprache.cMetaDescription, therstellersprache.cBeschreibung, tseo.cSeo
                         FROM thersteller
-                        LEFT JOIN therstellersprache ON therstellersprache.kHersteller = thersteller.kHersteller
+                        LEFT JOIN therstellersprache 
+                            ON therstellersprache.kHersteller = thersteller.kHersteller
                             AND therstellersprache.kSprache = " . self::$langID . "
-                        LEFT JOIN tseo ON tseo.kKey = thersteller.kHersteller
+                        LEFT JOIN tseo 
+                            ON tseo.kKey = thersteller.kHersteller
                             AND tseo.cKey = 'kHersteller'
                             AND tseo.kSprache = " . self::$langID . "
                         WHERE EXISTS (
@@ -102,7 +104,19 @@ class HerstellerHelper
                         }
                     }
                 }
-                Shop::Cache()->set($this->cacheID, $manufacturers, [CACHING_GROUP_MANUFACTURER, CACHING_GROUP_CORE]);
+                $cacheTags = [CACHING_GROUP_MANUFACTURER, CACHING_GROUP_CORE];
+                executeHook(HOOK_GET_MANUFACTURERS, [
+                    'cached'        => false,
+                    'cacheTags'     => &$cacheTags,
+                    'manufacturers' => &$manufacturers
+                ]);
+                Shop::Cache()->set($this->cacheID, $manufacturers, $cacheTags);
+            } else {
+                executeHook(HOOK_GET_MANUFACTURERS, [
+                    'cached'        => true,
+                    'cacheTags'     => [],
+                    'manufacturers' => &$manufacturers
+                ]);
             }
             $this->manufacturers = $manufacturers;
         }

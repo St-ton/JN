@@ -35,7 +35,7 @@
         <div class=" row">
             {if !empty($oNewsUebersicht->cPreviewImage)}
                 <div class="col-sm-4 col-xs-12">
-                    <a href="{$oNewsUebersicht->cURL}">
+                    <a href="{$oNewsUebersicht->cURLFull}">
                         <img itemprop="image" src="{$oNewsUebersicht->cPreviewImageFull}" alt="" class="img-responsive center-block"/>
                     </a>
                 </div>

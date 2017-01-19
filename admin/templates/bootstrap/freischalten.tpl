@@ -108,7 +108,7 @@
                                         <input type="hidden" name="kArtikel[]" value="{$oBewertung->kArtikel}" />
                                         <input type="hidden" name="kBewertungAll[]" value="{$oBewertung->kBewertung}" />
                                     </td>
-                                    <td><a href="../../index.php?a={$oBewertung->kArtikel}" target="_blank">{$oBewertung->ArtikelName}</a></td>
+                                    <td><a href="{$shopURL}/index.php?a={$oBewertung->kArtikel}" target="_blank">{$oBewertung->ArtikelName}</a></td>
                                     <td>{$oBewertung->cName}.</td>
                                     <td class="tcenter">{$oBewertung->nSterne}</td>
                                     <td class="tcenter">{$oBewertung->Datum}</td>

@@ -40,10 +40,18 @@
     {if $showLoginPanel}
         <div class="col-xs-12 col-md-3">
             <div class="list-group">
-                <a href="{get_static_route id='jtl.php'}" class="list-group-item{if $step === 'mein Konto'} active{/if}">&Uuml;bersicht</a>
-                <a href="{get_static_route id='jtl.php' params=['bestellungen' => 1]}" class="list-group-item{if $step === 'bestellung' || $step === 'bestellungen'} active{/if}">Bestellungen</a>
-                <a href="{get_static_route id='jtl.php' params=['editRechnungsadresse' => 1]}" class="list-group-item{if $step === 'rechnungsdaten'} active{/if}">Adressen</a>
-                <a href="{get_static_route id='jtl.php' params=['wllist' => 1]}" class="list-group-item{if $step|substr:0:11 === 'wunschliste'} active{/if}">Wunschliste</a>
+                <a href="{get_static_route id='jtl.php'}" class="list-group-item{if $step === 'mein Konto'} active{/if}">
+                    {lang key="accountOverview" section="account data"}
+                </a>
+                <a href="{get_static_route id='jtl.php' params=['bestellungen' => 1]}" class="list-group-item{if $step === 'bestellung' || $step === 'bestellungen'} active{/if}">
+                    {lang key="orders" section="account data"}
+                </a>
+                <a href="{get_static_route id='jtl.php' params=['editRechnungsadresse' => 1]}" class="list-group-item{if $step === 'rechnungsdaten'} active{/if}">
+                    {lang key="addresses" section="account data"}
+                </a>
+                <a href="{get_static_route id='jtl.php' params=['wllist' => 1]}" class="list-group-item{if $step|substr:0:11 === 'wunschliste'} active{/if}">
+                    {lang key="wishlists" section="account data"}
+                </a>
             </div>
         </div>
     {/if}

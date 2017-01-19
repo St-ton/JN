@@ -36,7 +36,7 @@
             {if !empty($oNewsUebersicht->cPreviewImage)}
                 <div class="col-sm-4 col-xs-12">
                     <a href="{$oNewsUebersicht->cURL}">
-                        <img itemprop="image" src="{$ShopURL}/{$oNewsUebersicht->cPreviewImage}" alt="" class="img-responsive center-block"/>
+                        <img itemprop="image" src="{$oNewsUebersicht->cPreviewImageFull}" alt="" class="img-responsive center-block"/>
                     </a>
                 </div>
             {/if}
@@ -48,7 +48,7 @@
                         {$oNewsUebersicht->cText|strip_tags|truncate:200:""}
                     {/if}
                     <span class="pull-right top17">
-                        <a class="news-more-link" href="{$oNewsUebersicht->cURL}">{lang key='moreLink' section='news'}</a>
+                        <a class="news-more-link" href="{$oNewsUebersicht->cURLFull}">{lang key='moreLink' section='news'}</a>
                     </span>
                 </div>
             {/if}

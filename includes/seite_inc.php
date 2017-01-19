@@ -145,11 +145,19 @@ function gibNews($Einstellungen)
                 ORDER BY tnews.dGueltigVon DESC" . $cSQL, 2
         );
         // URLs bauen
+        $shopURL = Shop::getURL() . '/';
         if (is_array($oNews_arr) && count($oNews_arr) > 0) {
             foreach ($oNews_arr as $i => $oNews) {
-                $oNews_arr[$i]->cText    = parseNewsText($oNews_arr[$i]->cText);
-                $oNews_arr[$i]->cURL     = baueURL($oNews, URLART_NEWS);
-                $oNews_arr[$i]->cMehrURL = '<a href="' . $oNews_arr[$i]->cURL . '">' .
+                $oNews_arr[$i]->cPreviewImageFull = (empty($oNews_arr[$i]->cPreviewImage))
+                    ? ''
+                    : $shopURL . $oNews_arr[$i]->cPreviewImage;
+                $oNews_arr[$i]->cText             = parseNewsText($oNews_arr[$i]->cText);
+                $oNews_arr[$i]->cURL              = baueURL($oNews, URLART_NEWS);
+                $oNews_arr[$i]->cURLFull          = $shopURL . $oNews_arr[$i]->cURL;
+                $oNews_arr[$i]->cMehrURL          = '<a href="' . $oNews_arr[$i]->cURL . '">' .
+                    Shop::Lang()->get('moreLink', 'news') .
+                    '</a>';
+                $oNews_arr[$i]->cMehrURLFull      = '<a href="' . $oNews_arr[$i]->cURLFull . '">' .
                     Shop::Lang()->get('moreLink', 'news') .
                     '</a>';
             }

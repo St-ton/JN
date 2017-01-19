@@ -175,9 +175,13 @@ class Trennzeichen
             }
 
             return Shop::DB()->query(
-                "INSERT INTO `ttrennzeichen` (`kTrennzeichen`, `kSprache`, `nEinheit`, `nDezimalstellen`, `cDezimalZeichen`, `cTausenderZeichen`)
-                    VALUES (NULL, {$kSprache}, {$nEinheit}, {$xRowAssoc_arr[$kSprache][$nEinheit]['nDezimalstellen']}, '{$xRowAssoc_arr[$kSprache][$nEinheit]['cDezimalZeichen']}',
-                    '{$xRowAssoc_arr[$kSprache][$nEinheit]['cTausenderZeichen']}')", 3);
+                "INSERT INTO `ttrennzeichen` 
+                    (`kTrennzeichen`, `kSprache`, `nEinheit`, `nDezimalstellen`, `cDezimalZeichen`, `cTausenderZeichen`)
+                    VALUES (
+                      NULL, {$kSprache}, {$nEinheit}, {$xRowAssoc_arr[$kSprache][$nEinheit]['nDezimalstellen']}, 
+                      '{$xRowAssoc_arr[$kSprache][$nEinheit]['cDezimalZeichen']}',
+                    '{$xRowAssoc_arr[$kSprache][$nEinheit]['cTausenderZeichen']}')", 3
+            );
         }
 
         return false;
@@ -473,7 +477,8 @@ class Trennzeichen
             return Shop::DB()->query(
                 "DELETE teinstellungen, teinstellungenconf
                     FROM teinstellungenconf
-                    LEFT JOIN teinstellungen ON teinstellungen.cName = teinstellungenconf.cWertName
+                    LEFT JOIN teinstellungen 
+                        ON teinstellungen.cName = teinstellungenconf.cWertName
                     WHERE teinstellungenconf.kEinstellungenConf IN (1458, 1459, 495, 497, 499, 501)", 3);
         }
 

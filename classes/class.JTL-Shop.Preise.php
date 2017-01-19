@@ -349,8 +349,10 @@ class Preise
                         SELECT tsonderpreise.fNettoPreis, tartikelsonderpreis.dEnde AS dEnde_en,
                             DATE_FORMAT(tartikelsonderpreis.dEnde, '%d.%m.%Y') AS dEnde_de
                             FROM tsonderpreise
-                            JOIN tartikel ON tartikel.kArtikel = " . $kArtikel . "
-                            JOIN tartikelsonderpreis ON tartikelsonderpreis.kArtikelSonderpreis = tsonderpreise.kArtikelSonderpreis
+                            JOIN tartikel 
+                                ON tartikel.kArtikel = " . $kArtikel . "
+                            JOIN tartikelsonderpreis 
+                                ON tartikelsonderpreis.kArtikelSonderpreis = tsonderpreise.kArtikelSonderpreis
                                 AND tartikelsonderpreis.kArtikel = " . $kArtikel . "
                                 AND tartikelsonderpreis.cAktiv = 'Y'
                                 AND tartikelsonderpreis.dStart <= date(now())
@@ -442,8 +444,10 @@ class Preise
             $sonderpreis = Shop::DB()->query(
                 "SELECT tsonderpreise.fNettoPreis
                     FROM tsonderpreise
-                    JOIN tartikel ON tartikel.kArtikel = " . $kArtikel . "
-                    JOIN tartikelsonderpreis ON tartikelsonderpreis.kArtikelSonderpreis = tsonderpreise.kArtikelSonderpreis
+                    JOIN tartikel 
+                        ON tartikel.kArtikel = " . $kArtikel . "
+                    JOIN tartikelsonderpreis 
+                        ON tartikelsonderpreis.kArtikelSonderpreis = tsonderpreise.kArtikelSonderpreis
                         AND tartikelsonderpreis.kArtikel = " . $kArtikel . "
                         AND tartikelsonderpreis.cAktiv = 'Y'
                         AND tartikelsonderpreis.dStart <= date(now())

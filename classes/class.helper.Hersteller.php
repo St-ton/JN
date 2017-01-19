@@ -54,7 +54,9 @@ class HerstellerHelper
      */
     public static function getInstance()
     {
-        return (self::$_instance === null || (int)Shop::$kSprache !== self::$langID) ? new self() : self::$_instance;
+        return (self::$_instance === null || (int)Shop::$kSprache !== self::$langID)
+            ? new self()
+            : self::$_instance;
     }
 
     /**
@@ -67,9 +69,9 @@ class HerstellerHelper
                 $lagerfilter = gibLagerfilter();
                 //fixes for admin backend
                 $manufacturers   = Shop::DB()->query(
-                    "SELECT thersteller.kHersteller, thersteller.cName, thersteller.cHomepage, thersteller.nSortNr, thersteller.cBildpfad,
-                            therstellersprache.cMetaTitle, therstellersprache.cMetaKeywords, therstellersprache.cMetaDescription,
-                            therstellersprache.cBeschreibung, tseo.cSeo
+                    "SELECT thersteller.kHersteller, thersteller.cName, thersteller.cHomepage, thersteller.nSortNr, 
+                            thersteller.cBildpfad, therstellersprache.cMetaTitle, therstellersprache.cMetaKeywords, 
+                            therstellersprache.cMetaDescription, therstellersprache.cBeschreibung, tseo.cSeo
                         FROM thersteller
                         LEFT JOIN therstellersprache ON therstellersprache.kHersteller = thersteller.kHersteller
                             AND therstellersprache.kSprache = " . self::$langID . "

@@ -113,7 +113,7 @@ class UstID
                             $this->cAntwortInfo_arr[$oInfo->cName] = $oInfo->cWert;
                         }
 
-                        $nFehlerCode = intval($this->cAntwortInfo_arr['ErrorCode']);
+                        $nFehlerCode = (int)$this->cAntwortInfo_arr['ErrorCode'];
                         $this->mappeFehlerCode($nFehlerCode);
 
                         return $nFehlerCode;

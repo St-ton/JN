@@ -47,7 +47,6 @@ class Rechnungsadresse extends Adresse
      */
     public function __construct($kRechnungsadresse = 0)
     {
-        $kRechnungsadresse = intval($kRechnungsadresse);
         if ($kRechnungsadresse > 0) {
             $this->loadFromDB($kRechnungsadresse);
         }
@@ -62,7 +61,7 @@ class Rechnungsadresse extends Adresse
      */
     public function loadFromDB($kRechnungsadresse)
     {
-        $obj = Shop::DB()->select('trechnungsadresse', 'kRechnungsadresse', intval($kRechnungsadresse));
+        $obj = Shop::DB()->select('trechnungsadresse', 'kRechnungsadresse', (int)$kRechnungsadresse);
 
         if (!$obj->kRechnungsadresse) {
             return 0;

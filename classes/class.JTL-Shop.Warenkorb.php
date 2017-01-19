@@ -526,23 +526,30 @@ class Warenkorb
         }
         $conf = Shop::getSettings([CONF_KAUFABWICKLUNG]);
         if ((!isset($_SESSION['bAnti_spam_already_checked']) || $_SESSION['bAnti_spam_already_checked'] !== true) &&
-            $conf['kaufabwicklung']['bestellabschluss_spamschutz_nutzen'] === 'Y' && $conf['kaufabwicklung']['bestellabschluss_ip_speichern'] === 'Y') {
+            $conf['kaufabwicklung']['bestellabschluss_spamschutz_nutzen'] === 'Y' &&
+            $conf['kaufabwicklung']['bestellabschluss_ip_speichern'] === 'Y'
+        ) {
             $ip = gibIP(true);
             if ($ip) {
-                $cnt = Shop::DB()->query(
+                $cnt = Shop::DB()->executeQueryPrepared(
                     "SELECT count(*) AS anz 
                         FROM tbestellung 
-                        WHERE cIP = '" . Shop::DB()->escape($ip) . "' AND dErstellt>now()-INTERVAL 1 DAY", 1
+                        WHERE cIP = :ip 
+                            AND dErstellt > now()-INTERVAL 1 DAY",
+                    ['ip' => Shop::DB()->escape($ip)],
+                    1
                 );
                 if ($cnt->anz > 0) {
                     $min                = pow(2, $cnt->anz);
                     $min                = min([$min, 1440]);
-                    $bestellungMoeglich = Shop::DB()->query(
-                        "SELECT dErstellt+interval $min minute < now() AS moeglich
+                    $bestellungMoeglich = Shop::DB()->executeQueryPrepared(
+                        "SELECT dErstellt+INTERVAL $min MINUTE < now() AS moeglich
                             FROM tbestellung
-                            WHERE cIP = '" . Shop::DB()->escape($ip) . "'
-                                AND dErstellt>now()-interval 1 day
-                                ORDER BY kBestellung DESC", 1
+                            WHERE cIP = :ip
+                                AND dErstellt>now()-INTERVAL 1 day
+                            ORDER BY kBestellung DESC",
+                        ['ip' => Shop::DB()->escape($ip)],
+                        1
                     );
                     if (!$bestellungMoeglich->moeglich) {
                         return 8;

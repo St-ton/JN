@@ -11,11 +11,11 @@
  * @method int|object|array query(string $stmt, int $return, int|bool $echo = false, bool $bExecuteHook = false)
  * @method int|object|array queryPrepared(string $stmt, array $params, int $return, int|bool $echo = false, bool $bExecuteHook = false)
  * @method PDOStatement|int exQuery(string $stmt)
- * @method null|object select(string $tablename, string|array $keyname, string|int|array $keyvalue, string|null $keyname1 = null, string|int $keyvalue1 = null, string|null $keyname2 = null, string|int $keyvalue2 = null, bool $echo = false, string $select = '*')
- * @method int insert(string $tablename, object $object, int|bool $echo = false, bool $bExecuteHook = false)
- * @method int delete(string $tablename, string|array $keyname, string|int|array $keyvalue, bool|int $echo = false)
- * @method int update(string $tablename, string|array $keyname, string|int|array $keyvalue, object $object, int|bool $echo = false)
- * @method int|array selectAll(string $tablename, string|array $keys, string|int|array $values, string $select = '*', string $orderBy = '', string $limit = '')
+ * @method null|object select(string $tableName, string|array $keyname, string|int|array $keyvalue, string|null $keyname1 = null, string|int $keyvalue1 = null, string|null $keyname2 = null, string|int $keyvalue2 = null, bool $echo = false, string $select = '*')
+ * @method int insert(string $tableName, object $object, int|bool $echo = false, bool $bExecuteHook = false)
+ * @method int delete(string $tableName, string|array $keyname, string|int|array $keyvalue, bool|int $echo = false)
+ * @method int update(string $tableName, string|array $keyname, string|int|array $keyvalue, object $object, int|bool $echo = false)
+ * @method int|array selectAll(string $tableName, string|array $keys, string|int|array $values, string $select = '*', string $orderBy = '', string $limit = '')
  * @method string realEscape($string)
  * @method string pdoEscape($string)
  * @method string info()
@@ -416,13 +416,13 @@ class NiceDB
      * insert row into db
      *
      * @access public
-     * @param string   $tablename - table name
+     * @param string   $tableName - table name
      * @param object   $object - object to insert
      * @param int|bool $echo - true -> print statement
      * @param bool     $bExecuteHook - true -> execute corresponding hook
      * @return int - 0 if fails, PrimaryKeyValue if successful
      */
-    public function insertRow($tablename, $object, $echo = false, $bExecuteHook = false)
+    public function insertRow($tableName, $object, $echo = false, $bExecuteHook = false)
     {
         $start   = ($this->debug === true || $this->collectData === true)
             ? microtime(true)
@@ -434,7 +434,7 @@ class NiceDB
 
         if (!is_array($arr)) {
             if ($this->logErrors && $this->logfileName) {
-                $this->writeLog('insertRow: Objekt enthaelt nichts! - Tablename:' . $tablename);
+                $this->writeLog('insertRow: Objekt enthaelt nichts! - Tablename:' . $tableName);
             }
 
             return 0;
@@ -453,7 +453,7 @@ class NiceDB
                 $assigns[':' . $_key] = $_val;
             }
         }
-        $stmt = "INSERT INTO " . $tablename . " (" . implode(', ', $keys) . ") VALUES (" . implode(', ', $values) . ")";
+        $stmt = "INSERT INTO " . $tableName . " (" . implode(', ', $keys) . ") VALUES (" . implode(', ', $values) . ")";
         if ($echo) {
             echo $stmt;
         }
@@ -493,7 +493,7 @@ class NiceDB
                 $arr = get_object_vars($object);
                 if (!is_array($arr)) {
                     if ($this->logErrors && $this->logfileName) {
-                        $this->writeLog('insertRow: Objekt enthaelt nichts! - Tablename:' . $tablename);
+                        $this->writeLog('insertRow: Objekt enthaelt nichts! - Tablename:' . $tableName);
                     }
 
                     return 0;
@@ -523,14 +523,14 @@ class NiceDB
                         }
                     }
                 }
-                $stmt = "INSERT INTO $tablename $columns $values";
+                $stmt = "INSERT INTO $tableName $columns $values";
                 $this->analyzeQuery('insert', $stmt, ($end - $start), $backtrace);
             }
 
             return 0;
         } else {
             $id = $this->pdo->lastInsertId();
-            if (($this->debug === true || $this->collectData === true) && strpos($tablename, 'tprofiler') !== 0) {
+            if (($this->debug === true || $this->collectData === true) && strpos($tableName, 'tprofiler') !== 0) {
                 $end       = microtime(true);
                 $backtrace = null;
                 if ($this->debugLevel > 2) {
@@ -539,7 +539,7 @@ class NiceDB
                 $arr = get_object_vars($object);
                 if (!is_array($arr)) {
                     if ($this->logErrors && $this->logfileName) {
-                        $this->writeLog('insertRow: Objekt enthaelt nichts! - Tablename:' . $tablename);
+                        $this->writeLog('insertRow: Objekt enthaelt nichts! - Tablename:' . $tableName);
                     }
 
                     return 0;
@@ -570,7 +570,7 @@ class NiceDB
                         }
                     }
                 }
-                $stmt = "INSERT INTO $tablename $columns $values";
+                $stmt = "INSERT INTO $tableName $columns $values";
                 $this->analyzeQuery('insert', $stmt, ($end - $start), $backtrace);
             }
 
@@ -582,14 +582,14 @@ class NiceDB
      * update table row
      *
      * @access public
-     * @param string           $tablename - table name
+     * @param string           $tableName - table name
      * @param string|array     $keyname   - Name of Key which should be compared
      * @param int|string|array $keyvalue  - Value of Key which should be compared
      * @param object           $object    - object to update with
      * @param int|bool         $echo      - true -> print statement
      * @return int - -1 if fails, number of affected rows if successful
      */
-    public function updateRow($tablename, $keyname, $keyvalue, $object, $echo = false)
+    public function updateRow($tableName, $keyname, $keyvalue, $object, $echo = false)
     {
         $start   = ($this->debug === true || $this->collectData === true)
             ? microtime(true)
@@ -599,14 +599,14 @@ class NiceDB
         $assigns = []; //list of values to insert as param for ->prepare()
         if (!is_array($arr)) {
             if ($this->logErrors && $this->logfileName) {
-                $this->writeLog('updateRow: Objekt enthaelt nichts! - Tablename:' . $tablename);
+                $this->writeLog('updateRow: Objekt enthaelt nichts! - Tablename:' . $tableName);
             }
 
             return -1;
         }
         if (!$keyname || !$keyvalue) {
             if ($this->logErrors && $this->logfileName) {
-                $this->writeLog('updateRow: Kein keyname oder keyvalue! - Tablename:' . $tablename . ' Keyname: ' . $keyname . ' - Keyvalue: ' . $keyvalue);
+                $this->writeLog('updateRow: Kein keyname oder keyvalue! - Tablename:' . $tableName . ' Keyname: ' . $keyname . ' - Keyvalue: ' . $keyvalue);
             }
 
             return -1;
@@ -627,7 +627,7 @@ class NiceDB
         if (is_array($keyname) && is_array($keyvalue)) {
             if (count($keyname) !== count($keyvalue)) {
                 if ($this->logErrors && $this->logfileName) {
-                    $this->writeLog('updateRow: Anzahl an Schluesseln passt nicht zu Anzahl an Werten - Tablename:' . $tablename);
+                    $this->writeLog('updateRow: Anzahl an Schluesseln passt nicht zu Anzahl an Werten - Tablename:' . $tableName);
                 }
 
                 return -1;
@@ -643,7 +643,7 @@ class NiceDB
             $assigns[] = $keyvalue;
             $where     = ' WHERE ' . $keyname . '=?';
         }
-        $stmt = 'UPDATE ' . $tablename . ' SET ' . implode(',', $updates) . $where;
+        $stmt = 'UPDATE ' . $tableName . ' SET ' . implode(',', $updates) . $where;
         if ($echo) {
             echo $stmt;
         }
@@ -672,7 +672,7 @@ class NiceDB
             $ret = $s->rowCount();
         }
 
-        if (($this->debug === true || $this->collectData === true) && strpos($tablename, 'tprofiler') !== 0) {
+        if (($this->debug === true || $this->collectData === true) && strpos($tableName, 'tprofiler') !== 0) {
             $end       = microtime(true);
             $backtrace = null;
             if ($this->debugLevel > 2) {
@@ -697,7 +697,7 @@ class NiceDB
             } else {
                 $where = ' WHERE ' . $keyname . '=' . $keyvalue;
             }
-            $stmt = 'UPDATE ' . $tablename . ' SET ' . implode(',', $updates) . $where;
+            $stmt = 'UPDATE ' . $tableName . ' SET ' . implode(',', $updates) . $where;
             $this->analyzeQuery('update', $stmt, ($end - $start), $backtrace);
         }
 
@@ -708,7 +708,7 @@ class NiceDB
      * selects all (*) values in a single row from a table - gives just one row back!
      *
      * @access public
-     * @param string           $tablename - Tabellenname
+     * @param string           $tableName - Tabellenname
      * @param string|array     $keyname - Name of Key which should be compared
      * @param string|int|array $keyvalue - Value of Key which should be compared
      * @param string|null      $keyname1 - Name of Key which should be compared
@@ -719,7 +719,7 @@ class NiceDB
      * @param string           $select - the key to select
      * @return null|object - null if fails, resultObject if successful
      */
-    public function selectSingleRow($tablename, $keyname, $keyvalue, $keyname1 = null, $keyvalue1 = null, $keyname2 = null, $keyvalue2 = null, $echo = false, $select = '*')
+    public function selectSingleRow($tableName, $keyname, $keyvalue, $keyname1 = null, $keyvalue1 = null, $keyname2 = null, $keyvalue2 = null, $echo = false, $select = '*')
     {
         $start   = ($this->debug === true || $this->collectData === true)
             ? microtime(true)
@@ -737,7 +737,7 @@ class NiceDB
             }
             ++$i;
         }
-        $stmt = 'SELECT ' . $select . ' FROM ' . $tablename . ((count($keys) > 0) ? (' WHERE ' . implode(' AND ', $keys)) : '');
+        $stmt = 'SELECT ' . $select . ' FROM ' . $tableName . ((count($keys) > 0) ? (' WHERE ' . implode(' AND ', $keys)) : '');
         if ($echo) {
             echo $stmt;
         }
@@ -789,7 +789,7 @@ class NiceDB
                 }
                 ++$i;
             }
-            $stmt = 'SELECT ' . $select . ' FROM ' . $tablename . ((count($keys) > 0) ? (' WHERE ' . implode(' AND ', $keys)) : '');
+            $stmt = 'SELECT ' . $select . ' FROM ' . $tableName . ((count($keys) > 0) ? (' WHERE ' . implode(' AND ', $keys)) : '');
             $this->analyzeQuery('select', $stmt, ($end - $start), $backtrace);
         }
 
@@ -797,7 +797,7 @@ class NiceDB
     }
 
     /**
-     * @param string       $tablename
+     * @param string       $tableName
      * @param string|array $keys
      * @param string|array $values
      * @param string       $select
@@ -806,7 +806,7 @@ class NiceDB
      * @return array|int|object
      * @throws InvalidArgumentException
      */
-    public function selectArray($tablename, $keys, $values, $select = '*', $orderBy = '', $limit = '')
+    public function selectArray($tableName, $keys, $values, $select = '*', $orderBy = '', $limit = '')
     {
         $keys         = (is_array($keys)) ? $keys : [$keys];
         $values       = (is_array($values)) ? $values : [$values];
@@ -817,7 +817,7 @@ class NiceDB
         foreach ($keys as $_key) {
             $kv[] = $_key . '=:' . $_key;
         }
-        $stmt = 'SELECT ' . $select . ' FROM ' . $tablename .
+        $stmt = 'SELECT ' . $select . ' FROM ' . $tableName .
             ((count($keys) > 0) ?
                 (' WHERE ' . implode(' AND ', $kv)) :
                 ''
@@ -1032,13 +1032,13 @@ class NiceDB
      * delete row from table
      *
      * @access public
-     * @param string           $tablename - table name
+     * @param string           $tableName - table name
      * @param string|array     $keyname - Name of Key which should be compared
      * @param string|int|array $keyvalue - Value of Key which should be compared
      * @param bool|int         $echo - true -> print statement
      * @return int - -1 if fails, #affectedRows if successful
      */
-    public function deleteRow($tablename, $keyname, $keyvalue, $echo = false)
+    public function deleteRow($tableName, $keyname, $keyvalue, $echo = false)
     {
         if ($this->debug === true || $this->collectData === true) {
             $start = microtime(true);
@@ -1047,7 +1047,7 @@ class NiceDB
         if (is_array($keyvalue) && is_array($keyvalue)) {
             if (count($keyname) !== count($keyvalue)) {
                 if ($this->logErrors && $this->logfileName) {
-                    $this->writeLog('deleteRow: Anzahl an Schluesseln passt nicht zu Anzahl an Werten - Tablename:' . $tablename);
+                    $this->writeLog('deleteRow: Anzahl an Schluesseln passt nicht zu Anzahl an Werten - Tablename:' . $tableName);
                 }
 
                 return -1;
@@ -1064,7 +1064,7 @@ class NiceDB
             $where     = $keyname . '=?';
         }
 
-        $stmt = 'DELETE FROM ' . $tablename . ' WHERE ' . $where;
+        $stmt = 'DELETE FROM ' . $tableName . ' WHERE ' . $where;
 
         if ($echo) {
             echo $stmt;
@@ -1100,7 +1100,7 @@ class NiceDB
             if (!is_int($keyvalue)) {
                 $keyvalue = $this->pdoEscape($keyvalue);
             }
-            $stmt = 'DELETE FROM ' . $tablename . ' WHERE ' . $keyname . '=' . $keyvalue;
+            $stmt = 'DELETE FROM ' . $tableName . ' WHERE ' . $keyname . '=' . $keyvalue;
             $this->analyzeQuery('delete', $stmt, ($end - $start), $backtrace);
         }
 

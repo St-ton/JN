@@ -145,7 +145,9 @@ class Boxen
         $oBox_arr         = [];
         $cacheTags        = [CACHING_GROUP_OBJECT, CACHING_GROUP_BOX, 'boxes'];
         $cSQLAktiv        = $bAktiv ? " AND bAktiv = 1 " : "";
-        $cPluginAktiv     = $bAktiv ? " AND (tplugin.nStatus IS NULL OR tplugin.nStatus = 2  OR tboxvorlage.eTyp != 'plugin')" : "";
+        $cPluginAktiv     = $bAktiv
+            ? " AND (tplugin.nStatus IS NULL OR tplugin.nStatus = 2  OR tboxvorlage.eTyp != 'plugin')"
+            : "";
         $oBoxen_arr       = Shop::DB()->query(
             "SELECT tboxen.kBox, tboxen.kBoxvorlage, tboxen.kCustomID, tboxen.kContainer, tboxen.cTitel, tboxen.ePosition,
                     tboxensichtbar.kSeite, tboxensichtbar.nSort, tboxensichtbar.bAktiv, tboxensichtbar.cFilter,
@@ -194,7 +196,9 @@ class Boxen
                         $oBox->cTitel = $oBox->cName;
                     }
                     if ($bAktiv && ($oBox->eTyp === 'text' || $oBox->eTyp === 'catbox')) {
-                        $cISO           = isset($_SESSION['cISOSprache']) && strlen($_SESSION['cISOSprache']) ? $_SESSION['cISOSprache'] : 'ger';
+                        $cISO           = isset($_SESSION['cISOSprache']) && strlen($_SESSION['cISOSprache'])
+                            ? $_SESSION['cISOSprache']
+                            : 'ger';
                         $oBox->cTitel   = '';
                         $oBox->cInhalt  = '';
                         $oSpracheInhalt = $this->gibBoxInhalt($oBox->kBox, $cISO);
@@ -205,7 +209,9 @@ class Boxen
                     } elseif ($bAktiv && $oBox->kBoxvorlage == 0 && !empty($oBox->oContainer_arr)) { //container
                         foreach ($oBox->oContainer_arr as $_box) {
                             if (isset($_box->eTyp) && ($_box->eTyp === 'text' || $_box->eTyp === 'catbox')) {
-                                $cISO           = isset($_SESSION['cISOSprache']) && strlen($_SESSION['cISOSprache']) ? $_SESSION['cISOSprache'] : 'ger';
+                                $cISO           = isset($_SESSION['cISOSprache']) && strlen($_SESSION['cISOSprache'])
+                                    ? $_SESSION['cISOSprache']
+                                    : 'ger';
                                 $_box->cTitel   = '';
                                 $_box->cInhalt  = '';
                                 $oSpracheInhalt = $this->gibBoxInhalt($_box->kBox, $cISO);
@@ -766,11 +772,12 @@ class Boxen
                         $CWunschlistePos->cURL = $cRequestURI . $cDeleteParam . $CWunschlistePos->kWunschlistePos . $cZusatzParams;
                         if (intval($_SESSION['Kundengruppe']->nNettoPreise) > 0) {
                             $fPreis = (isset($CWunschlistePos->Artikel->Preise->fVKNetto))
-                                ? intval($CWunschlistePos->fAnzahl) * $CWunschlistePos->Artikel->Preise->fVKNetto
+                                ? (int)$CWunschlistePos->fAnzahl * $CWunschlistePos->Artikel->Preise->fVKNetto
                                 : 0;
                         } else {
                             $fPreis = (isset($CWunschlistePos->Artikel->Preise->fVKNetto))
-                                ? intval($CWunschlistePos->fAnzahl) * ($CWunschlistePos->Artikel->Preise->fVKNetto * (100 + $_SESSION['Steuersatz'][$CWunschlistePos->Artikel->kSteuerklasse]) / 100)
+                                ? (int)$CWunschlistePos->fAnzahl * ($CWunschlistePos->Artikel->Preise->fVKNetto *
+                                    (100 + $_SESSION['Steuersatz'][$CWunschlistePos->Artikel->kSteuerklasse]) / 100)
                                 : 0;
                         }
                         $CWunschlistePos->cPreis = gibPreisStringLocalized($fPreis, $_SESSION['Waehrung']);

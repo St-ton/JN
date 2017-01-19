@@ -14,7 +14,7 @@ class SimpleCSS
     /**
      * @var array
      */
-    public $cCSS_arr = array();
+    public $cCSS_arr = [];
 
     /**
      * @param $cSelector
@@ -25,9 +25,9 @@ class SimpleCSS
     public function addCSS($cSelector, $cAttribute, $cValue)
     {
         if (isset($this->cCSS_arr[$cSelector])) {
-            $this->cCSS_arr[$cSelector] = array_merge($this->cCSS_arr[$cSelector], array($cAttribute => $cValue));
+            $this->cCSS_arr[$cSelector] = array_merge($this->cCSS_arr[$cSelector], [$cAttribute => $cValue]);
         } else {
-            $this->cCSS_arr[$cSelector] = array($cAttribute => $cValue);
+            $this->cCSS_arr[$cSelector] = [$cAttribute => $cValue];
         }
 
         return $this;
@@ -46,11 +46,11 @@ class SimpleCSS
         $cData            = preg_replace('!/\*.*?\*/!s', '', $cData);
         $cData_arr        = preg_split('/\{|\}/', $cData);
         $dataCount        = count($cData_arr);
-        $cSelector_arr    = array();
-        $cCSSBaseAttr_arr = array();
+        $cSelector_arr    = [];
+        $cCSSBaseAttr_arr = [];
         for ($i = 0; $i < $dataCount; $i++) {
             if ($i % 2 === 0) {
-                $cCSSBaseAttr_arr = array();
+                $cCSSBaseAttr_arr = [];
                 $cSelector_arr    = explode(',', $cData_arr[$i]);
             }
             if ($i % 2 === 1) {
@@ -85,7 +85,7 @@ class SimpleCSS
      */
     public function trimCSSData($cData_arr)
     {
-        $cCSS_arr = array();
+        $cCSS_arr = [];
         foreach ($cData_arr as $cData) {
             $cData = trim($cData);
             if ($cData !== '') {
@@ -139,7 +139,7 @@ class SimpleCSS
             return $this->cCSS_arr;
         }
 
-        return array();
+        return [];
     }
 
     /**
@@ -188,7 +188,7 @@ class SimpleCSS
      */
     public function getAttrAs($cValue, $cType)
     {
-        $cMatch_arr = array();
+        $cMatch_arr = [];
 
         switch ($cType) {
             case 'color': {
@@ -256,12 +256,13 @@ class SimpleCSS
             $color = substr($color, 1);
         }
         if (strlen($color) === 6) {
-            list($r, $g, $b) = array(
+            list($r, $g, $b) = [
                 $color[0] . $color[1],
                 $color[2] . $color[3],
-                $color[4] . $color[5]);
+                $color[4] . $color[5]
+            ];
         } elseif (strlen($color) === 3) {
-            list($r, $g, $b) = array($color[0] . $color[0], $color[1] . $color[1], $color[2] . $color[2]);
+            list($r, $g, $b) = [$color[0] . $color[0], $color[1] . $color[1], $color[2] . $color[2]];
         } else {
             return false;
         }
@@ -269,7 +270,7 @@ class SimpleCSS
         $g = hexdec($g);
         $b = hexdec($b);
 
-        return array($r, $g, $b);
+        return [$r, $g, $b];
     }
 
     /**
@@ -277,6 +278,6 @@ class SimpleCSS
      */
     public function getUnits()
     {
-        return array('em', 'px', '%');
+        return ['em', 'px', '%'];
     }
 }

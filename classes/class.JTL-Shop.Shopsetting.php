@@ -133,10 +133,16 @@ final class Shopsetting implements ArrayAccess
                     $settings = Shop::DB()->query("
                          SELECT cName, cWert
                              FROM tplugineinstellungen
-                             WHERE cName LIKE '%_min%' OR cName LIKE '%_max'", 2
+                             WHERE cName LIKE '%_min%' 
+                              OR cName LIKE '%_max'", 2
                      );
                 } else {
-                    $settings = Shop::DB()->selectAll('teinstellungen', 'kEinstellungenSektion', $section, 'kEinstellungenSektion, cName, cWert');
+                    $settings = Shop::DB()->selectAll(
+                        'teinstellungen',
+                        'kEinstellungenSektion',
+                        $section,
+                        'kEinstellungenSektion, cName, cWert'
+                    );
                 }
                 if (is_array($settings) && count($settings) > 0) {
                     $this->_container[$offset] = [];
@@ -161,7 +167,7 @@ final class Shopsetting implements ArrayAccess
     {
         $ret = [];
         if (!is_array($sektionen_arr)) {
-            $sektionen_arr = (array) $sektionen_arr;
+            $sektionen_arr = (array)$sektionen_arr;
         }
         foreach ($sektionen_arr as $sektionen) {
             $mapping = self::mapSettingName($sektionen);

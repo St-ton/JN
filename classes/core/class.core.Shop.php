@@ -1491,9 +1491,23 @@ final class Shop
                     }
                 }
             }
-            $seo_obj = (isset(self::$kSprache) && self::$kSprache > 0 && !standardspracheAktiv()) ?
-                self::DB()->select('tkategoriesprache', 'kKategorie', $NaviFilter->KategorieFilter->kKategorie, 'kSprache', self::$kSprache, null, null, false, 'cName') :
-                self::DB()->select('tkategorie', 'kKategorie', $NaviFilter->KategorieFilter->kKategorie, null, null, null, null, false, 'cName');
+            $seo_obj = (isset(self::$kSprache) && self::$kSprache > 0 && !standardspracheAktiv())
+                ? self::DB()->select(
+                    'tkategoriesprache',
+                    'kKategorie', $NaviFilter->KategorieFilter->kKategorie,
+                    'kSprache', self::$kSprache,
+                    null, null,
+                    false,
+                    'cName'
+                )
+                : self::DB()->select(
+                    'tkategorie',
+                    'kKategorie', $NaviFilter->KategorieFilter->kKategorie,
+                    null, null,
+                    null, null,
+                    false,
+                    'cName'
+                );
             if (isset($seo_obj->cName) && strlen($seo_obj->cName) > 0) {
                 $NaviFilter->KategorieFilter->cName = $seo_obj->cName;
             }
@@ -1606,7 +1620,14 @@ final class Shop
                 }
                 $NaviFilter->SuchFilter[$i]->kSuchanfrage = (int)$cParameter_arr['SuchFilter_arr'][$i];
                 // Namen holen
-                $oSuchanfrage = self::DB()->select('tsuchanfrage', 'kSuchanfrage', $NaviFilter->SuchFilter[$i]->kSuchanfrage, 'kSprache', self::$kSprache, null, null, false, 'cSuche');
+                $oSuchanfrage = self::DB()->select(
+                    'tsuchanfrage',
+                    'kSuchanfrage', $NaviFilter->SuchFilter[$i]->kSuchanfrage,
+                    'kSprache', self::$kSprache,
+                    null, null,
+                    false,
+                    'cSuche'
+                );
                 if (!empty($oSuchanfrage->cSuche)) {
                     $NaviFilter->SuchFilter[$i]->cName = $oSuchanfrage->cSuche;
                 }
@@ -1730,9 +1751,12 @@ final class Shop
     {
         if ($NaviFilter->nAnzahlFilter > 0) {
             if (empty($NaviFilter->Hersteller->kHersteller) && empty($NaviFilter->Kategorie->kKategorie) &&
-                empty($NaviFilter->Tag->kTag) && empty($NaviFilter->Suchanfrage->kSuchanfrage) && empty($NaviFilter->News->kNews) &&
-                empty($NaviFilter->Newsmonat->kNewsMonatsUebersicht) && empty($NaviFilter->NewsKategorie->kNewsKategorie) &&
-                !isset($NaviFilter->Suche->cSuche) && empty($NaviFilter->MerkmalWert->kMerkmalWert) && empty($NaviFilter->Suchspecial->kKey)) {
+                empty($NaviFilter->Tag->kTag) && empty($NaviFilter->Suchanfrage->kSuchanfrage) &&
+                empty($NaviFilter->News->kNews) && empty($NaviFilter->Newsmonat->kNewsMonatsUebersicht) &&
+                empty($NaviFilter->NewsKategorie->kNewsKategorie) &&
+                !isset($NaviFilter->Suche->cSuche) && empty($NaviFilter->MerkmalWert->kMerkmalWert) &&
+                empty($NaviFilter->Suchspecial->kKey)
+            ) {
                 //we have a manufacturer filter that doesn't filter anything
                 if (!empty($NaviFilter->HerstellerFilter->cSeo[Shop::$kSprache])) {
                     http_response_code(301);
@@ -1821,7 +1845,9 @@ final class Shop
     {
         $cShopURL = URL_SHOP;
         //EXPERIMENTAL_MULTILANG_SHOP
-        if ($bMultilang === true && isset($_SESSION['cISOSprache']) && defined('URL_SHOP_' . strtoupper($_SESSION['cISOSprache']))) {
+        if ($bMultilang === true && isset($_SESSION['cISOSprache']) &&
+            defined('URL_SHOP_' . strtoupper($_SESSION['cISOSprache']))
+        ) {
             $cShopURL = constant('URL_SHOP_' . strtoupper($_SESSION['cISOSprache']));
         }
         $sslStatus = pruefeSSL();

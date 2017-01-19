@@ -17,7 +17,7 @@ class Piechart extends Chartdata
     public function addSerie($name, array $data)
     {
         if ($this->_series == null) {
-            $this->_series = array();
+            $this->_series = [];
         }
         $serie           = new stdClass();
         $serie->type     = 'pie';

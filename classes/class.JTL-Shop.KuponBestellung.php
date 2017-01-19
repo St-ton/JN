@@ -79,14 +79,13 @@ class KuponBestellung
      */
     private function loadFromDB($kKupon = 0, $kBestellung = 0)
     {
-        $oObj = Shop::DB()->query(
-            "SELECT *
-              FROM tkuponbestelllung
-              WHERE kKupon = " . (int)$kKupon ."
-                  AND kBestellung = " . (int)$kBestellung , 1
+        $oObj = Shop::DB()->select(
+            'tkuponbestelllung',
+            'kKupon', (int)$kKupon,
+            'kBestellung', (int)$kBestellung
         );
 
-        if ($oObj->kKupon > 0) {
+        if (isset($oObj->kKupon) && $oObj->kKupon > 0) {
             $cMember_arr = array_keys(get_object_vars($oObj));
             foreach ($cMember_arr as $cMember) {
                 $this->$cMember = $oObj->$cMember;
@@ -140,7 +139,12 @@ class KuponBestellung
         $_upd->cKuponTyp           = $this->cKuponTyp;
         $_upd->dErstellt           = $this->dErstellt;
 
-        return Shop::DB()->update('tkuponbestellung', ['kKupon','kBestellung'], [(int)$this->kKupon,(int)$this->kBestellung], $_upd);
+        return Shop::DB()->update(
+            'tkuponbestellung',
+            ['kKupon','kBestellung'],
+            [(int)$this->kKupon,(int)$this->kBestellung],
+            $_upd
+        );
     }
 
     /**
@@ -365,12 +369,14 @@ class KuponBestellung
     public static function getOrdersWithUsedCoupons($dStart, $dEnd)
     {
         $ordersWithUsedCoupons = Shop::DB()->query(
-            "SELECT
-                kbs.*, wkp.cName, kp.kKupon
+            "SELECT kbs.*, wkp.cName, kp.kKupon
                 FROM tkuponbestellung AS kbs
-                LEFT JOIN tbestellung AS bs ON kbs.kBestellung = bs.kBestellung
-                LEFT JOIN twarenkorbpos AS wkp ON bs.kWarenkorb = wkp.kWarenkorb
-                LEFT JOIN tkupon AS kp ON kbs.kKupon = kp.kKupon
+                LEFT JOIN tbestellung AS bs 
+                   ON kbs.kBestellung = bs.kBestellung
+                LEFT JOIN twarenkorbpos AS wkp 
+                    ON bs.kWarenkorb = wkp.kWarenkorb
+                LEFT JOIN tkupon AS kp 
+                    ON kbs.kKupon = kp.kKupon
                 WHERE kbs.dErstellt BETWEEN '" . $dStart . "'
                     AND '" . $dEnd . "'
                     AND bs.cStatus != " . BESTELLUNG_STATUS_STORNO . "

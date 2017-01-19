@@ -145,63 +145,61 @@
                             gallery.setItems([data], '_' + id);
                             gallery.setItems(items, '__');
                             gallery.render('__');
+
+                            $.evo.article().galleryIndex = gallery.index;
+                            $.evo.article().galleryLastIdent = gallery.ident;
                         } else {
                             gallery.render(value);
                         }
                     }
                 }
-
-                $.evo.article().galleryIndex = gallery.index;
-                $.evo.article().galleryLastIdent = gallery.ident;
             };
 
             $('.variations .bootstrap-select select').change(function() {
                 var tmp_idx = parseInt($('.variations .bootstrap-select li.selected').attr('data-original-index')) + 1;
-                inner($(this).find('option:nth-child(' + tmp_idx + ')'), false, false);
+                var sel     = $(this).find('option:nth-child(' + tmp_idx + ')');
+                var cont    = $(this).closest('.variations');
+                if (cont.hasClass('simple-variations')) {
+                    inner(sel, false, false);
+                } else {
+                    inner(sel, true, false);
+                }
             });
 
             $('.variations .bootstrap-select .dropdown-menu li').hover(function() {
                 var tmp_idx = parseInt($(this).attr('data-original-index')) + 1;
-                var sel = $(this).closest('.bootstrap-select').find('select option:nth-child(' + tmp_idx + ')');
+                var sel     = $(this).closest('.bootstrap-select').find('select option:nth-child(' + tmp_idx + ')');
                 inner(sel);
-
             }, function() {
                 var tmp_idx = parseInt($(this).attr('data-original-index')) + 1,
-                    p = $(this).closest('.bootstrap-select').find('select option:nth-child(' + tmp_idx + ')'),
-                    id = $(p).attr('data-key'),
+                    p     = $(this).closest('.bootstrap-select').find('select option:nth-child(' + tmp_idx + ')'),
+                    id    = $(p).attr('data-key'),
                     data  = $(p).data('list'),
-                    scope,
                     gallery,
                     active;
 
                 if (!!data) {
-                    scope = '_';
                     gallery = $.evo.article().gallery;
                     active = $(p).find('.variation.active');
-
                     gallery.render($.evo.article().galleryLastIdent);
                     gallery.activate($.evo.article().galleryIndex);
                 }
             });
-            
-            $('.variations .variation').click(function() {
+
+            $('.variations.simple-variations .variation').click(function() {
                 inner(this, false);
             });
             
             $('.variations .variation').hover(function() {
                 inner(this);
             }, function() {
-                var p = $(this).closest('.variation'),
-                    id = $(this).attr('data-key'),
+                var p     = $(this).closest('.variation'),
                     data  = $(this).data('list'),
-                    scope,
                     gallery,
                     active;
                 if (!!data) {
-                    scope = '_';
                     gallery = $.evo.article().gallery;
                     active = $(p).find('.variation.active');
-                        
                     gallery.render($.evo.article().galleryLastIdent);
                     gallery.activate($.evo.article().galleryIndex);
                 }

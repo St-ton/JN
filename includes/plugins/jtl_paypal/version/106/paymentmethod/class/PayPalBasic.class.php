@@ -249,10 +249,6 @@ class PayPalBasic extends PaymentMethod
         $paymentDetails->HandlingTotal = new BasicAmountType($helper->getCurrencyISO(), $basket->surcharge[WarenkorbHelper::GROSS]);
         $paymentDetails->ShippingDiscount = new BasicAmountType($helper->getCurrencyISO(), $basket->discount[WarenkorbHelper::GROSS] * -1);
 
-        $paymentDetails->InvoiceID = $helper->getInvoiceID();
-        $paymentDetails->Custom = $helper->getIdentifier();
-        $paymentDetails->NotifyURL = $this->oPlugin->cFrontendPfadURLSSL.'notify.php?type=basic';
-
         $setExpressCheckoutRequestDetails = new \PayPal\EBLBaseComponents\SetExpressCheckoutRequestDetailsType();
 
         if ($this->duringCheckout() === true) {
@@ -365,6 +361,10 @@ class PayPalBasic extends PaymentMethod
         $paymentDetails->OrderTotal = new BasicAmountType($helper->getCurrencyISO(), $basket->total[WarenkorbHelper::GROSS]);
         $paymentDetails->ShippingDiscount = new BasicAmountType($helper->getCurrencyISO(), $basket->discount[WarenkorbHelper::GROSS] * -1);
         $paymentDetails->HandlingTotal = new BasicAmountType($helper->getCurrencyISO(), $basket->surcharge[WarenkorbHelper::GROSS]);
+
+        $paymentDetails->InvoiceID = $helper->getInvoiceID();
+        $paymentDetails->Custom = $helper->getIdentifier();
+        $paymentDetails->NotifyURL = $this->oPlugin->cFrontendPfadURLSSL.'notify.php?type=basic';
 
         $doExpressCheckoutPaymentRequestDetails->PaymentDetails = [$paymentDetails];
         $doExpressCheckoutPaymentRequest = new PayPalAPI\DoExpressCheckoutPaymentRequestType($doExpressCheckoutPaymentRequestDetails);

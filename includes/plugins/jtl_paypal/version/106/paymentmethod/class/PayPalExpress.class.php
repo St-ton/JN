@@ -338,8 +338,9 @@ class PayPalExpress extends PaymentMethod
         $paymentDetails->OrderTotal = new BasicAmountType($basket->currency->cISO, $basket->total[WarenkorbHelper::GROSS]);
         $paymentDetails->ShippingDiscount = new BasicAmountType($basket->currency->cISO, $basket->discount[WarenkorbHelper::GROSS] * -1);
         $paymentDetails->HandlingTotal = new BasicAmountType($basket->currency->cISO, $basket->surcharge[WarenkorbHelper::GROSS]);
-        $paymentDetails->InvoiceID = $order->cBestellNr; // jtlshop/jtl-shop#249
-        $paymentDetails->Custom = $order->kBestellung;
+
+        $paymentDetails->InvoiceID = $helper->getInvoiceID();
+        $paymentDetails->Custom = $helper->getIdentifier();
         $paymentDetails->NotifyURL = $this->oPlugin->cFrontendPfadURLSSL.'notify.php?type=express';
 
         $doExpressCheckoutPaymentRequestDetails->PaymentDetails = [$paymentDetails];

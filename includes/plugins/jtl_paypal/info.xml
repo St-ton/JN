@@ -112,7 +112,7 @@
         <CSS>
             <file>
                 <name>style.css</name>
-                <condition>PAGE_BESTELLVORGANG</condition>
+                <condition>PAGE_BESTELLVORGANG,PAGE_ARTIKEL,PAGE_WARENKORB</condition>
             </file>
         </CSS>
         <Locales>
@@ -223,7 +223,7 @@ Referenznummer: %reference_number%]]></VariableLocalized>
             </Method>
             <Method>
                 <Name>PayPal Finance</Name>
-                <PictureURL>images/paypal_installments_260.png</PictureURL>
+                <PictureURL>images/de-ppcc-logo-175px.png</PictureURL>
                 <Sort>1</Sort>
                 <SendMail>1</SendMail>
                 <Provider>PayPal</Provider>
@@ -237,13 +237,13 @@ Referenznummer: %reference_number%]]></VariableLocalized>
                 <AdditionalTemplateFile>template/paypalfinance.tpl</AdditionalTemplateFile>
                 <ClassName>PayPalFinance</ClassName>
                 <MethodLanguage iso="GER">
-                    <Name>PayPal Ratenkauf</Name>
-                    <ChargeName>PayPal Ratenkauf</ChargeName>
+                    <Name>Ratenzahlung Powered by PayPal</Name>
+                    <ChargeName>Ratenzahlung Powered by PayPal</ChargeName>
                     <InfoText/>
                 </MethodLanguage>
                 <MethodLanguage iso="ENG">
-                    <Name>PayPal Rate Payment</Name>
-                    <ChargeName>PayPal Rate Payment</ChargeName>
+                    <Name>Installments powered by PayPal</Name>
+                    <ChargeName>Installments powered by PayPal</ChargeName>
                     <InfoText/>
                 </MethodLanguage>
                 <Setting type="selectbox" initialValue="sandbox" sort="1" conf="Y">
@@ -325,7 +325,7 @@ Referenznummer: %reference_number%]]></VariableLocalized>
             </Method>
             <Method>
                 <Name>PayPal Express</Name>
-                <PictureURL>images/paypal_76x48.png</PictureURL>
+                <PictureURL>images/de-pp-logo-175px.png</PictureURL>
                 <Sort>1</Sort>
                 <SendMail>1</SendMail>
                 <Provider>PayPal</Provider>
@@ -405,7 +405,7 @@ Referenznummer: %reference_number%]]></VariableLocalized>
             </Method>
             <Method>
                 <Name>PayPal Basic</Name>
-                <PictureURL>images/paypal_76x48.png</PictureURL>
+                <PictureURL>images/de-pp-logo-175px.png</PictureURL>
                 <Sort>1</Sort>
                 <SendMail>0</SendMail>
                 <Provider>PayPal</Provider>
@@ -684,7 +684,7 @@ Ihr Team von {$Firma->cName}]]></ContentText>
             </Settingslink>
             
             <Settingslink sort="4">
-                <Name>PayPal Ratenkauf</Name>
+                <Name>PayPal Ratenzahlung</Name>
                 <Setting type="text" initialValue="Y" sort="1" conf="N">
                     <Name>Einstellungen für Positionierung der Finanzierungs-Box im Warenkorb</Name>
                     <Description />

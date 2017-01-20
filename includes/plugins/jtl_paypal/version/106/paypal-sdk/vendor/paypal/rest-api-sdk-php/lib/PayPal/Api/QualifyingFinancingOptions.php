@@ -12,11 +12,11 @@ use PayPal\Common\PayPalModel;
  * @package PayPal\Api
  *
  * @property \PayPal\Api\CreditFinancing    credit_financing
- * @property \PayPal\Api\Currency           min_amount
+ * @property \PayPal\Api\FinancingCurrency  min_amount
  * @property string                         monthly_percentage_rate
- * @property \PayPal\Api\Currency           monthly_payment
- * @property \PayPal\Api\Currency           total_interest
- * @property \PayPal\Api\Currency           total_cost
+ * @property \PayPal\Api\FinancingCurrency  monthly_payment
+ * @property \PayPal\Api\FinancingCurrency  total_interest
+ * @property \PayPal\Api\FinancingCurrency  total_cost
  * @property bool                           paypal_subsidy
  */
 class QualifyingFinancingOptions extends PayPalModel
@@ -47,7 +47,7 @@ class QualifyingFinancingOptions extends PayPalModel
     /**
      * Minimum Amount details.
      *
-     * @param \PayPal\Api\Currency $min_amount
+     * @param \PayPal\Api\FinancingCurrency $min_amount
      *
      * @return $this
      */
@@ -60,7 +60,7 @@ class QualifyingFinancingOptions extends PayPalModel
     /**
      * Minimum Amount details.
      *
-     * @return \PayPal\Api\Currency
+     * @return \PayPal\Api\FinancingCurrency
      */
     public function getMinAmount()
     {
@@ -93,7 +93,7 @@ class QualifyingFinancingOptions extends PayPalModel
     /**
      * Monthly payment details.
      *
-     * @param \PayPal\Api\Currency $monthly_payment
+     * @param \PayPal\Api\FinancingCurrency $monthly_payment
      *
      * @return $this
      */
@@ -106,7 +106,7 @@ class QualifyingFinancingOptions extends PayPalModel
     /**
      * Monthly payment details.
      *
-     * @return \PayPal\Api\Currency
+     * @return \PayPal\Api\FinancingCurrency
      */
     public function getMonthlyPayment()
     {
@@ -116,7 +116,7 @@ class QualifyingFinancingOptions extends PayPalModel
     /**
      * Total interest details.
      *
-     * @param \PayPal\Api\Currency $total_interest
+     * @param \PayPal\Api\FinancingCurrency $total_interest
      *
      * @return $this
      */
@@ -129,7 +129,7 @@ class QualifyingFinancingOptions extends PayPalModel
     /**
      * Total interest details.
      *
-     * @return \PayPal\Api\Currency
+     * @return \PayPal\Api\FinancingCurrency
      */
     public function getTotalInterest()
     {
@@ -139,7 +139,7 @@ class QualifyingFinancingOptions extends PayPalModel
     /**
      * Total cost details.
      *
-     * @param \PayPal\Api\Currency $total_cost
+     * @param \PayPal\Api\FinancingCurrency $total_cost
      *
      * @return $this
      */
@@ -152,7 +152,7 @@ class QualifyingFinancingOptions extends PayPalModel
     /**
      * Total cost details.
      *
-     * @return \PayPal\Api\Currency
+     * @return \PayPal\Api\FinancingCurrency
      */
     public function getTotalCost()
     {

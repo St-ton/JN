@@ -30,6 +30,9 @@ $buildPresentment = function ($amount, $currency) use (&$oPlugin) {
                 $company = new Firma(true);
                 $bestFinancingOption = end($financingOptions);
                 $transactionAmount = $presentment->getTransactionAmount();
+				
+				$paymentMethod = new Zahlungsart();	
+				$paymentMethod->load($payPalFinance->paymentId);
 
                 $tplData = Shop::Smarty()
                     ->assign('plugin', $oPlugin)
@@ -37,16 +40,10 @@ $buildPresentment = function ($amount, $currency) use (&$oPlugin) {
                     ->assign('financingOptions', $financingOptions)
                     ->assign('transactionAmount', $transactionAmount)
                     ->assign('bestFinancingOption', $bestFinancingOption)
-                    ->fetch($oPlugin->cFrontendPfad.'template/presentment-modal.tpl');
+					->assign('paymentMethod', $paymentMethod)
+                    ->fetch($oPlugin->cFrontendPfad.'template/presentment-article.tpl');
 
                 return $tplData;
-
-                /*
-                $selector = $oPlugin->oPluginEinstellungAssoc_arr['jtl_paypal_finance_article_selector'];
-                $method = $oPlugin->oPluginEinstellungAssoc_arr['jtl_paypal_finance_article_method'];
-
-                pq($selector)->{$method}($tplData);
-                */
             }
         }
     }
@@ -109,7 +106,6 @@ if ($pageType === PAGE_WARENKORB || ($pageType === PAGE_ARTIKEL && $oPlugin->oPl
                     '  <img src="'.$paypal_btn.'" alt="'.$oPlugin->cName.'" />'.
                     '</a>'
                 );
-                pq('head')->append('<link type="text/css" href="'.$oPlugin->cFrontendPfadURLSSL.'css/style.css" rel="stylesheet" media="screen">');
                 $footer_class = $cartClass;
                 $baseURL = 'warenkorb.php?';
             }
@@ -122,7 +118,6 @@ if ($pageType === PAGE_WARENKORB || ($pageType === PAGE_ARTIKEL && $oPlugin->oPl
                 '  <img src="'.$paypal_btn.'" alt="'.$oPlugin->cName.'" />'.
                 '</button>'
             );
-            pq('head')->append('<link type="text/css" href="'.$oPlugin->cFrontendPfadURLSSL.'css/style.css" rel="stylesheet" media="screen">');
         }
     }
 }

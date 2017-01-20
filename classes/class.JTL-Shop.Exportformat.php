@@ -669,7 +669,12 @@ class Exportformat
                 if (in_array($einstellungAssoc_arr['cName'], $cExportEinstellungenToImport_arr)) {
                     $_upd        = new stdClass();
                     $_upd->cWert = $einstellungAssoc_arr['cWert'];
-                    $ok          = $ok && (Shop::DB()->update('tboxensichtbar', ['kExportformat', 'cName'], [$this->getExportformat(), $einstellungAssoc_arr['cName']], $_upd) >= 0);
+                    $ok          = $ok && (Shop::DB()->update(
+                                        'tboxensichtbar',
+                                        ['kExportformat', 'cName'],
+                                        [$this->getExportformat(), $einstellungAssoc_arr['cName']],
+                                        $_upd
+                                    ) >= 0);
                 }
             }
         }
@@ -758,7 +763,8 @@ class Exportformat
         if ($this->config['exportformate_lager_ueber_null'] === 'Y') {
             $where .= " AND (NOT (tartikel.fLagerbestand <= 0 AND tartikel.cLagerBeachten = 'Y'))";
         } elseif ($this->config['exportformate_lager_ueber_null'] === 'O') {
-            $where .= " AND (NOT (tartikel.fLagerbestand <= 0 AND tartikel.cLagerBeachten = 'Y') OR tartikel.cLagerKleinerNull = 'Y')";
+            $where .= " AND (NOT (tartikel.fLagerbestand <= 0 AND tartikel.cLagerBeachten = 'Y') 
+                            OR tartikel.cLagerKleinerNull = 'Y')";
         }
 
         if ($this->config['exportformate_preis_ueber_null'] === 'Y') {
@@ -773,12 +779,15 @@ class Exportformat
 
         $condition = 'AND NOT (DATE(tartikel.dErscheinungsdatum) > DATE(NOW()))';
         $conf      = Shop::getSettings([CONF_GLOBAL]);
-        if (isset($conf['global']['global_erscheinende_kaeuflich']) && $conf['global']['global_erscheinende_kaeuflich'] === 'Y') {
+        if (isset($conf['global']['global_erscheinende_kaeuflich']) &&
+            $conf['global']['global_erscheinende_kaeuflich'] === 'Y'
+        ) {
             $condition = 'AND (
                 NOT (DATE(tartikel.dErscheinungsdatum) > DATE(NOW()))
                 OR  (
                         DATE(tartikel.dErscheinungsdatum) > DATE(NOW())
-                        AND (tartikel.cLagerBeachten = "N" OR tartikel.fLagerbestand > 0 OR tartikel.cLagerKleinerNull = "Y")
+                        AND (tartikel.cLagerBeachten = "N" 
+                            OR tartikel.fLagerbestand > 0 OR tartikel.cLagerKleinerNull = "Y")
                     )
             )';
         }
@@ -1002,7 +1011,8 @@ class Exportformat
         }
         $this->setQueue($queueObject)->initSession()->initSmarty();
         if ($this->getPlugin() > 0 && strpos($this->getContent(), PLUGIN_EXPORTFORMAT_CONTENTFILE) !== false) {
-            Jtllog::cronLog('Starting plugin exportformat "' . $this->getName() . '" for language ' . $this->getSprache() . ' and customer group ' . $this->getKundengruppe() .
+            Jtllog::cronLog('Starting plugin exportformat "' . $this->getName() .
+                '" for language ' . $this->getSprache() . ' and customer group ' . $this->getKundengruppe() .
                 ' with caching ' . ((Shop::Cache()->isActive() && $this->useCache()) ? 'enabled' : 'disabled'));
             $oPlugin = new Plugin($this->getPlugin());
             if ($isCron === true) {
@@ -1032,13 +1042,15 @@ class Exportformat
             $exportformat->dZuletztErstellt = $this->getZuletztErstellt();
             $exportformat->nUseCache        = $this->getCaching();
             $ExportEinstellungen            = $this->getConfig();
-            include $oPlugin->cAdminmenuPfad . PFAD_PLUGIN_EXPORTFORMAT . str_replace(PLUGIN_EXPORTFORMAT_CONTENTFILE, '', $this->getContent());
+            include $oPlugin->cAdminmenuPfad . PFAD_PLUGIN_EXPORTFORMAT .
+                str_replace(PLUGIN_EXPORTFORMAT_CONTENTFILE, '', $this->getContent());
 
             if (isset($queueObject->kExportqueue)) {
                 Shop::DB()->delete('texportqueue', 'kExportqueue', (int)$queueObject->kExportqueue);
             }
             if (isset($_GET['back']) && $_GET['back'] === 'admin') {
-                header('Location: exportformate.php?action=exported&token=' . $_SESSION['jtl_token'] . '&kExportformat=' . (int)$this->queue->kExportformat);
+                header('Location: exportformate.php?action=exported&token=' .
+                    $_SESSION['jtl_token'] . '&kExportformat=' . (int)$this->queue->kExportformat);
                 exit;
             }
             Jtllog::cronLog('Finished export');
@@ -1062,7 +1074,8 @@ class Exportformat
             $max = (int)$max;
         }
 
-        Jtllog::cronLog('Starting exportformat "' . utf8_encode($this->getName()) . '" for language ' . $this->getSprache() . ' and customer group ' . $this->getKundengruppe() .
+        Jtllog::cronLog('Starting exportformat "' . utf8_encode($this->getName()) .
+            '" for language ' . $this->getSprache() . ' and customer group ' . $this->getKundengruppe() .
             ' with caching ' . ((Shop::Cache()->isActive() && $this->useCache()) ? 'enabled' : 'disabled') .
              ' - ' . $queueObject->nLimitN . '/' . $max . ' products exported');
         // Kopfzeile schreiben
@@ -1108,7 +1121,13 @@ class Exportformat
         }
         foreach ($articles as $articleObj) {
             $Artikel = new Artikel();
-            $Artikel->fuelleArtikel($articleObj->kArtikel, $oArtikelOptionen, $this->kKundengruppe, $this->kSprache, !$this->useCache());
+            $Artikel->fuelleArtikel(
+                $articleObj->kArtikel,
+                $oArtikelOptionen,
+                $this->kKundengruppe,
+                $this->kSprache,
+                !$this->useCache()
+            );
 
             if ($Artikel->kArtikel > 0) {
                 if ($Artikel->cacheHit === true) {
@@ -1300,7 +1319,8 @@ class Exportformat
                 $this->splitFile();
                 unset($queueObject);
             }
-            Jtllog::cronLog('Finished after ' . round(microtime(true) - $start, 4) . 's. Article cache hits: ' . $cacheHits . ', misses: ' . $cacheMisses);
+            Jtllog::cronLog('Finished after ' . round(microtime(true) - $start, 4) .
+                's. Article cache hits: ' . $cacheHits . ', misses: ' . $cacheMisses);
         }
         $this->restoreSession();
 

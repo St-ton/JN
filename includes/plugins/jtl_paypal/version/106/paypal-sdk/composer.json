@@ -7,7 +7,7 @@
         "ext-curl": "*",
         "paypal/merchant-sdk-php": "3.9.*",
         "paypal/permissions-sdk-php": "3.9.*",
-        "paypal/rest-api-sdk-php": "1.6.*",
+        "paypal/rest-api-sdk-php": "1.11.*",
         "paypal/sdk-core-php": "3.*"
     }
 }

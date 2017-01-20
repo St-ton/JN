@@ -17,32 +17,32 @@ class PayPalHelper
      */
     public static function test(array $config, $apiCall = true)
     {
-        $error  = false;
+        $error = false;
         $result = [
             'status' => 'success',
-            'code'   => 0,
-            'code'   => 0,
-            'msg'    => '',
-            'mode'   => $config['mode'],
+            'code' => 0,
+            'code' => 0,
+            'msg' => '',
+            'mode' => $config['mode'],
         ];
-        $response      = new stdClass();
+        $response = new stdClass();
         $response->Ack = 'Failure';
         if (!isset($config['acct1.UserName']) || strlen($config['acct1.UserName']) < 1) {
-            $error            = true;
+            $error = true;
             $result['status'] = 'failure';
-            $result['code']   = 1;
+            $result['code'] = 1;
             $result['msg'] .= 'User name not set. ';
         }
         if (!isset($config['acct1.Password']) || strlen($config['acct1.Password']) < 1) {
-            $error            = true;
+            $error = true;
             $result['status'] = 'failure';
-            $result['code']   = 1;
+            $result['code'] = 1;
             $result['msg'] .= 'Password not set. ';
         }
         if (!isset($config['acct1.Signature']) || strlen($config['acct1.Signature']) < 1) {
-            $error            = true;
+            $error = true;
             $result['status'] = 'failure';
-            $result['code']   = 1;
+            $result['code'] = 1;
             $result['msg'] .= 'Signature not set. ';
         }
 
@@ -51,16 +51,16 @@ class PayPalHelper
         }
 
         if ($error === false) {
-            $getBalanceReq                          = new PayPalAPI\GetBalanceReq();
-            $getBalanceRequest                      = new PayPalAPI\GetBalanceRequestType();
+            $getBalanceReq = new PayPalAPI\GetBalanceReq();
+            $getBalanceRequest = new PayPalAPI\GetBalanceRequestType();
             $getBalanceRequest->ReturnAllCurrencies = '1';
-            $getBalanceReq->GetBalanceRequest       = $getBalanceRequest;
-            $service                                = new \PayPal\Service\PayPalAPIInterfaceServiceService($config);
+            $getBalanceReq->GetBalanceRequest = $getBalanceRequest;
+            $service = new \PayPal\Service\PayPalAPIInterfaceServiceService($config);
             try {
                 $response = $service->GetBalance($getBalanceReq);
             } catch (Exception $e) {
                 $result['msg'] .= $e->getMessage();
-                $result['code']   = 2;
+                $result['code'] = 2;
                 $result['status'] = 'failure';
 
                 return $result;
@@ -142,14 +142,14 @@ class PayPalHelper
 
         return (object) [
             'first' => trim($parts[0]),
-            'last'  => trim($parts[1]),
+            'last' => trim($parts[1]),
         ];
     }
 
     // https://gist.github.com/devotis/c574beaf73adcfd74997
     public static function extractStreet($street)
     {
-        $re     = "/^(\\d*[\\wäöüß\\d '\\-\\.]+)[,\\s]+(\\d+)\\s*([\\wäöüß\\d\\-\\/]*)$/i";
+        $re = "/^(\\d*[\\wäöüß\\d '\\-\\.]+)[,\\s]+(\\d+)\\s*([\\wäöüß\\d\\-\\/]*)$/i";
         $number = '';
         if (preg_match($re, $street, $matches)) {
             $offset = strlen($matches[1]);
@@ -158,7 +158,7 @@ class PayPalHelper
         }
 
         return (object) [
-            'name'   => trim($street),
+            'name' => trim($street),
             'number' => trim($number),
         ];
     }
@@ -166,7 +166,7 @@ class PayPalHelper
     public static function getOrderId($invoice)
     {
         $invoice = StringHandler::filterXSS($invoice);
-        $result  = Shop::DB()->query("SELECT kBestellung FROM tbestellung WHERE cBestellNr = '{$invoice}'", 1);
+        $result = Shop::DB()->query("SELECT kBestellung FROM tbestellung WHERE cBestellNr = '{$invoice}'", 1);
         if (isset($result->kBestellung) && intval($result->kBestellung) > 0) {
             return $result->kBestellung;
         }
@@ -231,7 +231,7 @@ class PayPalHelper
             'kZahlungsart', $paymentId);
 
         if ($surcharge !== null && is_object($surcharge)) {
-            $_SESSION['Zahlungsart']->fAufpreis    = $surcharge->fAufpreis;
+            $_SESSION['Zahlungsart']->fAufpreis = $surcharge->fAufpreis;
             $_SESSION['Zahlungsart']->cAufpreisTyp = $surcharge->cAufpreisTyp;
         }
 
@@ -275,48 +275,48 @@ class PayPalHelper
 
         $rounding = function ($prop) {
             return [
-                WarenkorbHelper::NET   => round($prop[WarenkorbHelper::NET], 2),
-                WarenkorbHelper::GROSS => round($prop[WarenkorbHelper::GROSS], 2)
+                WarenkorbHelper::NET => round($prop[WarenkorbHelper::NET], 2),
+                WarenkorbHelper::GROSS => round($prop[WarenkorbHelper::GROSS], 2),
             ];
         };
 
         $article = [
-            WarenkorbHelper::NET   => 0,
+            WarenkorbHelper::NET => 0,
             WarenkorbHelper::GROSS => 0,
         ];
 
         foreach ($basket->items as $i => &$p) {
-            $p->name   = utf8_encode($p->name);
+            $p->name = utf8_encode($p->name);
             $p->amount = $rounding($p->amount);
 
             $article[WarenkorbHelper::NET] += $p->amount[WarenkorbHelper::NET] * $p->quantity;
             $article[WarenkorbHelper::GROSS] += $p->amount[WarenkorbHelper::GROSS] * $p->quantity;
         }
 
-        $basket->article   = $rounding($article);
-        $basket->shipping  = $rounding($basket->shipping);
-        $basket->discount  = $rounding($basket->discount);
+        $basket->article = $rounding($article);
+        $basket->shipping = $rounding($basket->shipping);
+        $basket->discount = $rounding($basket->discount);
         $basket->surcharge = $rounding($basket->surcharge);
-        $basket->total     = $rounding($basket->total);
+        $basket->total = $rounding($basket->total);
 
         $calculated = [
-            WarenkorbHelper::NET   => 0,
+            WarenkorbHelper::NET => 0,
             WarenkorbHelper::GROSS => 0,
         ];
 
-        $calculated[WarenkorbHelper::NET]   = $basket->article[WarenkorbHelper::NET] + $basket->shipping[WarenkorbHelper::NET] - $basket->discount[WarenkorbHelper::NET] + $basket->surcharge[WarenkorbHelper::NET];
+        $calculated[WarenkorbHelper::NET] = $basket->article[WarenkorbHelper::NET] + $basket->shipping[WarenkorbHelper::NET] - $basket->discount[WarenkorbHelper::NET] + $basket->surcharge[WarenkorbHelper::NET];
         $calculated[WarenkorbHelper::GROSS] = $basket->article[WarenkorbHelper::GROSS] + $basket->shipping[WarenkorbHelper::GROSS] - $basket->discount[WarenkorbHelper::GROSS] + $basket->surcharge[WarenkorbHelper::GROSS];
 
         $calculated = $rounding($calculated);
 
         $difference = [
-            WarenkorbHelper::NET   => $basket->total[WarenkorbHelper::NET] - $calculated[WarenkorbHelper::NET],
-            WarenkorbHelper::GROSS => $basket->total[WarenkorbHelper::GROSS] - $calculated[WarenkorbHelper::GROSS]
+            WarenkorbHelper::NET => $basket->total[WarenkorbHelper::NET] - $calculated[WarenkorbHelper::NET],
+            WarenkorbHelper::GROSS => $basket->total[WarenkorbHelper::GROSS] - $calculated[WarenkorbHelper::GROSS],
         ];
 
         $difference = $rounding($difference);
 
-        $addDifference = function($difference, $type) use (&$basket) {
+        $addDifference = function ($difference, $type) use (&$basket) {
             if ($difference[$type] < 0.0) {
                 if ($basket->shipping[$type] >= $difference[$type] * -1) {
                     $basket->shipping[$type] += $difference[$type];

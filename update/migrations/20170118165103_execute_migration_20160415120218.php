@@ -40,14 +40,6 @@ class Migration_20170118165103 extends Migration implements IMigration
 
     public function down()
     {
-        $this->execute("DELETE FROM `tsprachwerte` WHERE cName = 'couponErr5';");
-        $this->execute("DELETE FROM `tsprachwerte` WHERE cName = 'couponErr7';");
-        $this->execute("DELETE FROM `tsprachwerte` WHERE cName = 'couponErr8';");
-        $this->execute("DELETE FROM `tsprachwerte` WHERE cName = 'couponErr9';");
-        $this->execute("DELETE FROM `tsprachwerte` WHERE cName = 'couponErr10';");
-        $this->setLocalization('ger', 'global', 'couponErr2', 'Fehler: Kupon ist nicht mehr gültig (Datum abgelaufen).');
-        $this->setLocalization('ger', 'global', 'couponErr3', 'Fehler: Kupon ist nicht mehr gültig.');
-        $this->setLocalization('ger', 'global', 'couponErr6', 'Fehler: Maximale Verwendungen erreicht.');
-        $this->setLocalization('ger', 'global', 'couponErr99', 'Fehler: Unbekannter Kupon Fehler.');
+        
     }
 }

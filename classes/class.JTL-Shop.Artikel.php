@@ -1364,7 +1364,13 @@ class Artikel
     {
         $this->FunktionsAttribute = [];
         if ($this->kArtikel > 0) {
-            $ArtikelAttribute = Shop::DB()->selectAll('tartikelattribut', 'kArtikel', (int)$this->kArtikel, 'cName, cWert', 'kArtikelAttribut');
+            $ArtikelAttribute = Shop::DB()->selectAll(
+                'tartikelattribut',
+                'kArtikel',
+                (int)$this->kArtikel,
+                'cName, cWert',
+                'kArtikelAttribut'
+            );
             foreach ($ArtikelAttribute as $att) {
                 $this->FunktionsAttribute[strtolower($att->cName)] = $att->cWert;
             }
@@ -3361,7 +3367,9 @@ class Artikel
                     //do not use cached result if a special price started in the mean time
                     $startDate = new DateTime($this->dSonderpreisStart_en);
                     $today     = new DateTime();
-                    $endDate   = ($this->dSonderpreisEnde_en !== null && $this->dSonderpreisEnde_en !== '0000-00-00') ? new DateTime($this->dSonderpreisEnde_en) : $today;
+                    $endDate   = ($this->dSonderpreisEnde_en !== null && $this->dSonderpreisEnde_en !== '0000-00-00')
+                        ? new DateTime($this->dSonderpreisEnde_en)
+                        : $today;
                     $return    = ($startDate > $today || $endDate < $today);
                 }
                 if ($return === true) {
@@ -3415,14 +3423,19 @@ class Artikel
         $oSQLSeo->cJOIN   = "LEFT JOIN tseo ON tseo.cKey = 'kArtikel' AND tseo.kKey = tartikel.kArtikel";
         $oSQLSeo->cJOIN .= " AND tseo.kSprache=" . $kSprache;
         // Work Around um an kStueckliste zu kommen
-        $oStueckliste    = Shop::DB()->query("SELECT kStueckliste, fLagerbestand FROM tartikel WHERE kArtikel = " . $kArtikel, 1);
+        $oStueckliste    = Shop::DB()->query("
+            SELECT kStueckliste, fLagerbestand 
+                FROM tartikel 
+                WHERE kArtikel = " . $kArtikel, 1
+        );
         $cStuecklisteSQL = " tartikel.fLagerbestand, ";
         if (isset($oStueckliste->kStueckliste) && $oStueckliste->kStueckliste > 0) {
             if (!$oStueckliste->fLagerbestand) {
                 $oStueckliste->fLagerbestand = 0;
             }
             $cStuecklisteSQL = "IF(tartikel.kStueckliste > 0,
-                                (SELECT LEAST(IFNULL(FLOOR(MIN(tartikel.fLagerbestand / tstueckliste.fAnzahl)), 9999999), " . $oStueckliste->fLagerbestand . ") AS fMin
+                                (SELECT LEAST(IFNULL(FLOOR(MIN(tartikel.fLagerbestand / tstueckliste.fAnzahl)), 9999999), " .
+                                $oStueckliste->fLagerbestand . ") AS fMin
                                 FROM tartikel
                                 JOIN tstueckliste ON tstueckliste.kArtikel = tartikel.kArtikel
                                     AND tstueckliste.kStueckliste = " . (int)$oStueckliste->kStueckliste . "
@@ -3432,9 +3445,13 @@ class Artikel
         }
         // Work Around Lagerbestand nicht beachten wenn es sich um ein VariKind handelt
         // Da das Kind geladen werden muss. Erst nach dem Laden wird angezeigt, dass der Lagerbestand auf "ausverkauft" steht
-        $cLagerbestandSQL = (isset($oArtikelOptionen->nKeinLagerbestandBeachten) && $oArtikelOptionen->nKeinLagerbestandBeachten == 1) ? '' : gibLagerfilter();
+        $cLagerbestandSQL = (isset($oArtikelOptionen->nKeinLagerbestandBeachten) && $oArtikelOptionen->nKeinLagerbestandBeachten == 1)
+            ? ''
+            : gibLagerfilter();
         // Nicht sichtbare Artikel je nach ArtikelOption trotzdem laden
-        $cSichbarkeitSQL = (isset($oArtikelOptionen->nKeineSichtbarkeitBeachten) && $oArtikelOptionen->nKeineSichtbarkeitBeachten == 1) ? '' : ' AND tartikelsichtbarkeit.kArtikel IS NULL ';
+        $cSichbarkeitSQL = (isset($oArtikelOptionen->nKeineSichtbarkeitBeachten) && $oArtikelOptionen->nKeineSichtbarkeitBeachten == 1)
+            ? ''
+            : ' AND tartikelsichtbarkeit.kArtikel IS NULL ';
 
         // Artikel SQL
         $productSQL = "
@@ -3511,10 +3528,12 @@ class Artikel
                 LEFT JOIN tmasseinheitsprache mes 
                     ON mes.kMassEinheit = me.kMassEinheit
                     AND mes.kSprache = " . $kSprache . "
-                LEFT JOIN tmasseinheit gpme ON gpme.kMassEinheit = tartikel.kGrundpreisEinheit
-                LEFT JOIN tmasseinheitsprache gpmes ON gpmes.kMassEinheit = gpme.kMassEinheit
+                LEFT JOIN tmasseinheit gpme 
+                    ON gpme.kMassEinheit = tartikel.kGrundpreisEinheit
+                LEFT JOIN tmasseinheitsprache gpmes 
+                    ON gpmes.kMassEinheit = gpme.kMassEinheit
                     AND gpmes.kSprache = " . $kSprache . "
-                WHERE tartikel.kArtikel=" . $kArtikel . "
+                WHERE tartikel.kArtikel = " . $kArtikel . "
                     " . $cSichbarkeitSQL . "
                     " . $cLagerbestandSQL;
 
@@ -3721,12 +3740,17 @@ class Artikel
         if (isset($oArtikelOptionen->nMedienDatei) && $oArtikelOptionen->nMedienDatei) {
             $this->holeMedienDatei($kSprache);
         }
-        if (isset($oArtikelOptionen->nVariationKombiKinder) && $oArtikelOptionen->nVariationKombiKinder && $this->nIstVater == 1 &&
-            ($conf['artikeldetails']['artikeldetails_variationskombikind_bildvorschau'] === 'Y' || $conf['artikeluebersicht']['artikeluebersicht_varikombi_anzahl'] > 0)) {
+        if (isset($oArtikelOptionen->nVariationKombiKinder) &&
+            $oArtikelOptionen->nVariationKombiKinder &&
+            $this->nIstVater == 1 &&
+            ($conf['artikeldetails']['artikeldetails_variationskombikind_bildvorschau'] === 'Y' ||
+                $conf['artikeluebersicht']['artikeluebersicht_varikombi_anzahl'] > 0)
+        ) {
             $this->holeVariationKombiKinder($kKundengruppe, $kSprache);
         }
         if ((isset($oArtikelOptionen->nStueckliste) && $oArtikelOptionen->nStueckliste) ||
-            isset($this->FunktionsAttribute[FKT_ATTRIBUT_STUECKLISTENKOMPONENTEN]) && (int)$this->FunktionsAttribute[FKT_ATTRIBUT_STUECKLISTENKOMPONENTEN] === 1
+            isset($this->FunktionsAttribute[FKT_ATTRIBUT_STUECKLISTENKOMPONENTEN]) &&
+            (int)$this->FunktionsAttribute[FKT_ATTRIBUT_STUECKLISTENKOMPONENTEN] === 1
         ) {
             $this->holeStueckliste($kKundengruppe);
         }
@@ -4159,7 +4183,8 @@ class Artikel
         if (!$bZulaufDatum) {
             $this->dZulaufDatum_de = null;
         }
-        $this->cAktivSonderpreis = ($specialPriceStartDate <= $now && ($this->dSonderpreisEnde_en === '0000-00-00' || $specialPriceEndDate >= $now)) ? 'Y' : 'N';
+        $this->cAktivSonderpreis = ($specialPriceStartDate <= $now &&
+            ($this->dSonderpreisEnde_en === '0000-00-00' || $specialPriceEndDate >= $now)) ? 'Y' : 'N';
 
         return $this->baueSuchspecialBildoverlay();
     }
@@ -4382,7 +4407,9 @@ class Artikel
     public function baueStaffelgrundpreis()
     {
         $nGenauigkeit = 2;
-        if (isset($this->FunktionsAttribute[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT]) && (int)$this->FunktionsAttribute[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT] > 0) {
+        if (isset($this->FunktionsAttribute[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT]) &&
+            (int)$this->FunktionsAttribute[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT] > 0
+        ) {
             $nGenauigkeit = (int)$this->FunktionsAttribute[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT];
         }
         $currency = (isset($_SESSION['Waehrung'])) ? $_SESSION['Waehrung'] : null;
@@ -5006,7 +5033,9 @@ class Artikel
         }
 
         if ($this->nBearbeitungszeit > 0 || isset($this->FunktionsAttribute['processingtime']) && $this->FunktionsAttribute['processingtime'] > 0) {
-            $processingTime   = ($this->nBearbeitungszeit > 0) ? $this->nBearbeitungszeit : (int)$this->FunktionsAttribute['processingtime'];
+            $processingTime   = ($this->nBearbeitungszeit > 0)
+                ? $this->nBearbeitungszeit :
+                (int)$this->FunktionsAttribute['processingtime'];
             $minDeliveryDays += $processingTime;
             $maxDeliveryDays += $processingTime;
         }
@@ -5023,7 +5052,9 @@ class Artikel
             } elseif ($this->nAutomatischeLiefertageberechnung == 0 && $this->nLiefertageWennAusverkauft > 0
                 || isset($this->FunktionsAttribute['supplytime']) && $this->FunktionsAttribute['supplytime'] > 0) {
                 //attribute "supplytime" for merchants who do not use JTL-Wawis purchase-system
-                $supplyTime = ($this->nLiefertageWennAusverkauft > 0) ? $this->nLiefertageWennAusverkauft : (int)$this->FunktionsAttribute['supplytime'];
+                $supplyTime = ($this->nLiefertageWennAusverkauft > 0)
+                    ? $this->nLiefertageWennAusverkauft
+                    : (int)$this->FunktionsAttribute['supplytime'];
                 $minDeliveryDays += $supplyTime;
                 $maxDeliveryDays += $supplyTime;
             } elseif (isset($this->fZulauf) && isset($this->dZulaufDatum) && $this->fZulauf > 0 && new DateTime($this->dZulaufDatum) >= new DateTime()) {
@@ -5313,14 +5344,16 @@ class Artikel
                         JOIN tartikel ON tartikel.kArtikel = tartikelmerkmal.kArtikel
                             AND tartikel.kVaterArtikel != {$kArtikel}
                             AND (tartikel.nIstVater = 1 OR tartikel.kEigenschaftKombi = 0)
-                        LEFT JOIN tartikelsichtbarkeit ON tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
+                        LEFT JOIN tartikelsichtbarkeit 
+                            ON tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
                             AND tartikelsichtbarkeit.kKundengruppe = {$kundenGruppe}
                         WHERE tartikelsichtbarkeit.kArtikel IS NULL
                             AND tartikelmerkmal.kArtikel != {$kArtikel}
                             {$lagerFilter}
                             {$cSQLXSeller}
                     ) AS merkmalartikel
-                    JOIN tartikelmerkmal similarMerkmal ON similarMerkmal.kArtikel = {$kArtikel}
+                    JOIN tartikelmerkmal similarMerkmal 
+                        ON similarMerkmal.kArtikel = {$kArtikel}
                         AND similarMerkmal.kMerkmal = merkmalartikel.kMerkmal
                         AND similarMerkmal.kMerkmalWert = merkmalartikel.kMerkmalWert
                     GROUP BY merkmalartikel.kArtikel
@@ -5338,11 +5371,14 @@ class Artikel
                             WHERE kArtikel = {$kArtikel}
                                 AND nSort <= 10
                         ) AS ssSuchCache
-                        JOIN tsuchcachetreffer ON tsuchcachetreffer.kSuchCache = ssSuchCache.kSuchCache
+                        JOIN tsuchcachetreffer 
+                            ON tsuchcachetreffer.kSuchCache = ssSuchCache.kSuchCache
                             AND tsuchcachetreffer.kArtikel != " . $kArtikel . "
-                        LEFT JOIN tartikelsichtbarkeit ON tsuchcachetreffer.kArtikel = tartikelsichtbarkeit.kArtikel
+                        LEFT JOIN tartikelsichtbarkeit 
+                            ON tsuchcachetreffer.kArtikel = tartikelsichtbarkeit.kArtikel
                             AND tartikelsichtbarkeit.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
-                        JOIN tartikel ON tartikel.kArtikel = tsuchcachetreffer.kArtikel
+                        JOIN tartikel 
+                            ON tartikel.kArtikel = tsuchcachetreffer.kArtikel
                             AND tartikel.kVaterArtikel != " . $kArtikel . "
                         WHERE tartikelsichtbarkeit.kArtikel IS NULL
                             " . gibLagerfilter() . "
@@ -5361,11 +5397,14 @@ class Artikel
                             FROM ttagartikel
                             WHERE kArtikel = {$kArtikel}
                         ) AS ssTag
-                        JOIN ttagartikel ON ttagartikel.kTag = ssTag.kTag
+                        JOIN ttagartikel 
+                            ON ttagartikel.kTag = ssTag.kTag
                             AND ttagartikel.kArtikel != " . $kArtikel . "
-                        LEFT JOIN tartikelsichtbarkeit ON ttagartikel.kArtikel = tartikelsichtbarkeit.kArtikel
+                        LEFT JOIN tartikelsichtbarkeit 
+                            ON ttagartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                             AND tartikelsichtbarkeit.kKundengruppe = " . (int)$_SESSION['Kundengruppe']->kKundengruppe . "
-                        JOIN tartikel ON tartikel.kArtikel = ttagartikel.kArtikel
+                        JOIN tartikel 
+                            ON tartikel.kArtikel = ttagartikel.kArtikel
                             AND tartikel.kVaterArtikel != " . $kArtikel . "
                         WHERE tartikelsichtbarkeit.kArtikel IS NULL
                             " . gibLagerfilter() . "
@@ -5400,11 +5439,12 @@ class Artikel
                 "INSERT INTO tartikelmerkmal
                   (
                     SELECT tartikelmerkmal.kMerkmal, tartikelmerkmal.kMerkmalWert, " . $kVaterArtikel . "
-                    FROM tartikelmerkmal
-                    JOIN tartikel ON tartikel.kArtikel = tartikelmerkmal.kArtikel
-                    WHERE tartikel.kVaterArtikel = " . $kVaterArtikel . "
-                        {$cSQL}
-                    GROUP BY tartikelmerkmal.kMerkmalWert
+                        FROM tartikelmerkmal
+                        JOIN tartikel 
+                            ON tartikel.kArtikel = tartikelmerkmal.kArtikel
+                        WHERE tartikel.kVaterArtikel = " . $kVaterArtikel . "
+                            {$cSQL}
+                        GROUP BY tartikelmerkmal.kMerkmalWert
                   )", 3
             );
         }
@@ -5444,12 +5484,20 @@ class Artikel
         $maxRabatt     = 0;
         // Existiert für diese Kundengruppe ein Kategorierabatt?
         if (isset($this->kEigenschaftKombi) && $this->kEigenschaftKombi > 0) {
-            $oArtikelKatRabatt = Shop::DB()->select('tartikelkategorierabatt', 'kArtikel', $this->kVaterArtikel, 'kKundengruppe', $kKundengruppe);
+            $oArtikelKatRabatt = Shop::DB()->select(
+                'tartikelkategorierabatt',
+                'kArtikel', $this->kVaterArtikel,
+                'kKundengruppe', $kKundengruppe
+            );
             if (isset($oArtikelKatRabatt->kArtikel) && $oArtikelKatRabatt->kArtikel > 0) {
                 $Rabatt_arr[] = $oArtikelKatRabatt->fRabatt;
             }
         } else {
-            $oArtikelKatRabatt = Shop::DB()->select('tartikelkategorierabatt', 'kArtikel', $kArtikel, 'kKundengruppe', $kKundengruppe);
+            $oArtikelKatRabatt = Shop::DB()->select(
+                'tartikelkategorierabatt',
+                'kArtikel', $kArtikel,
+                'kKundengruppe', $kKundengruppe
+            );
             if (isset($oArtikelKatRabatt->kArtikel) && $oArtikelKatRabatt->kArtikel > 0) {
                 $Rabatt_arr[] = $oArtikelKatRabatt->fRabatt;
             }
@@ -5457,7 +5505,14 @@ class Artikel
         // Existiert für diese Kundengruppe ein Rabatt?
         $kdgrp = (isset($_SESSION['Kundengruppe']->fRabatt) && $_SESSION['Kundengruppe']->kKundengruppe == $kKundengruppe)
             ? $_SESSION['Kundengruppe']
-            : Shop::DB()->select('tkundengruppe', 'kKundengruppe', $kKundengruppe, null, null, null, null, false, 'fRabatt');
+            : Shop::DB()->select(
+                'tkundengruppe',
+                'kKundengruppe', $kKundengruppe,
+                null, null,
+                null, null,
+                false,
+                'fRabatt'
+            );
         if (isset($kdgrp->fRabatt) && $kdgrp->fRabatt > 0) {
             $Rabatt_arr[] = $kdgrp->fRabatt;
         }
@@ -5532,9 +5587,12 @@ class Artikel
                         }
                     }
 
-                    $versand .= Shop::Lang()->get('noShippingcostsTo', 'global') . ' ' . Shop::Lang()->get('noShippingCostsAtExtended', 'basket', '') .
-                        trim($cLaender) . ', ' . Shop::Lang()->get('else', 'global') . ' ' . Shop::Lang()->get('plus', 'basket') .
-                        ' <a href="' . $_SESSION['Link_Versandseite'][$_SESSION['cISOSprache']] . '" rel="nofollow" class="shipment">' .
+                    $versand .= Shop::Lang()->get('noShippingcostsTo', 'global') . ' ' .
+                        Shop::Lang()->get('noShippingCostsAtExtended', 'basket', '') .
+                        trim($cLaender) . ', ' . Shop::Lang()->get('else', 'global') . ' ' .
+                        Shop::Lang()->get('plus', 'basket') .
+                        ' <a href="' . $_SESSION['Link_Versandseite'][$_SESSION['cISOSprache']] .
+                        '" rel="nofollow" class="shipment">' .
                         Shop::Lang()->get('shipping', 'basket') . '</a>';
                 } else {
                     $versand .= '<a href="' .
@@ -5809,7 +5867,9 @@ class Artikel
         });
 
         if (($excludeWords = Shop::Cache()->get($cacheID)) === false) {
-            $exclude      = Shop::DB()->select('texcludekeywords', 'cISOSprache', isset($_SESSION['cISOSprache']) ? $_SESSION['cISOSprache'] : gibStandardsprache()->cISO);
+            $exclude      = Shop::DB()->select('texcludekeywords', 'cISOSprache', isset($_SESSION['cISOSprache'])
+                ? $_SESSION['cISOSprache']
+                : gibStandardsprache()->cISO);
             $excludeWords = (isset($exclude->cKeywords)) ? explode(' ', $exclude->cKeywords) : [];
             Shop::Cache()->set($cacheID, $excludeWords, [CACHING_GROUP_OPTION]);
         }
@@ -5898,7 +5958,11 @@ class Artikel
         }
 
         if (strlen($cBeschreibung) > 0) {
-            return truncateMetaDescription($prefix . strip_tags(str_replace(['<br>', '<br />', '</p>', '</li>', "\n", "\r", '.'], ' ', $cBeschreibung)));
+            return truncateMetaDescription($prefix . strip_tags(str_replace(
+                ['<br>', '<br />', '</p>', '</li>', "\n", "\r", '.'],
+                ' ',
+                $cBeschreibung
+                )));
         }
 
         return $cBeschreibung;
@@ -5915,7 +5979,8 @@ class Artikel
             return $cDesc;
         }
         $globalMeta = holeGlobaleMetaAngaben();
-        $prefix     = (isset($globalMeta[Shop::$kSprache]->Meta_Description_Praefix) && strlen($globalMeta[Shop::$kSprache]->Meta_Description_Praefix) > 0)
+        $prefix     = (isset($globalMeta[Shop::$kSprache]->Meta_Description_Praefix) &&
+            strlen($globalMeta[Shop::$kSprache]->Meta_Description_Praefix) > 0)
             ? $globalMeta[Shop::$kSprache]->Meta_Description_Praefix . ' '
             : '';
         $cDesc      = (isset($this->cName) && strlen($this->cName) > 0)
@@ -6135,14 +6200,18 @@ class Artikel
             $cSQL = [];
             foreach ($kGesetzteEigeschaftWert_arr as $kGesetzteEigenschaft => $kEigenschaftWert) {
                 if ($kEigenschaft != $kGesetzteEigenschaft) {
-                    $cSQL[] = "INNER JOIN teigenschaftkombiwert e{$i} ON e1.kEigenschaftKombi = e{$i}.kEigenschaftKombi AND e{$i}.kEigenschaftWert ={$kEigenschaftWert}";
+                    $cSQL[] = "INNER JOIN teigenschaftkombiwert e{$i} 
+                                    ON e1.kEigenschaftKombi = e{$i}.kEigenschaftKombi 
+                                    AND e{$i}.kEigenschaftWert ={$kEigenschaftWert}";
                     $i++;
                 }
             }
             $cSQLStr          = implode(' ', $cSQL);
             $oEigenschaft_arr = Shop::DB()->query(
-                "SELECT e1.*, k.cName, k.cLagerBeachten, k.cLagerKleinerNull, k.fLagerbestand FROM teigenschaftkombiwert e1
-                    INNER JOIN tartikel k ON e1.kEigenschaftKombi = k.kEigenschaftKombi
+                "SELECT e1.*, k.cName, k.cLagerBeachten, k.cLagerKleinerNull, k.fLagerbestand 
+                    FROM teigenschaftkombiwert e1
+                    INNER JOIN tartikel k 
+                        ON e1.kEigenschaftKombi = k.kEigenschaftKombi
                     {$cSQLStr}
                     WHERE e1.kEigenschaft = {$kEigenschaft}", 2
             );

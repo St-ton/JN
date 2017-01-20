@@ -63,7 +63,9 @@ class cache_memcache implements ICachingMethod
      */
     public function store($cacheID, $content, $expiration = null)
     {
-        return $this->_memcache->set($this->options['prefix'] . $cacheID, $content, 0, ($expiration === null) ? $this->options['lifetime'] : $expiration);
+        return $this->_memcache->set($this->options['prefix'] . $cacheID, $content, 0, ($expiration === null)
+            ? $this->options['lifetime']
+            : $expiration);
     }
 
     /**
@@ -73,7 +75,9 @@ class cache_memcache implements ICachingMethod
      */
     public function storeMulti($keyValue, $expiration = null)
     {
-        return $this->_memcache->set($this->prefixArray($keyValue), ($expiration === null) ? $this->options['lifetime'] : $expiration);
+        return $this->_memcache->set($this->prefixArray($keyValue), ($expiration === null)
+            ? $this->options['lifetime']
+            : $expiration);
     }
 
     /**

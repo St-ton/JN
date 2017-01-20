@@ -5,7 +5,7 @@
 
 (function($, document, window, viewport){
     'use strict';
-    
+
     var _stock_info = ['out-of-stock', 'in-short-supply', 'in-stock'],
         $v,
         ArticleClass = function () {
@@ -166,25 +166,28 @@
                 }
             });
 
-            $('.variations .bootstrap-select .dropdown-menu li').hover(function() {
-                var tmp_idx = parseInt($(this).attr('data-original-index')) + 1;
-                var sel     = $(this).closest('.bootstrap-select').find('select option:nth-child(' + tmp_idx + ')');
-                inner(sel);
-            }, function() {
-                var tmp_idx = parseInt($(this).attr('data-original-index')) + 1,
-                    p     = $(this).closest('.bootstrap-select').find('select option:nth-child(' + tmp_idx + ')'),
-                    id    = $(p).attr('data-key'),
-                    data  = $(p).data('list'),
-                    gallery,
-                    active;
+            var touchCapable = 'ontouchstart' in window || (window.DocumentTouch && document instanceof window.DocumentTouch);
+            if (!touchCapable) {
+                $('.variations .bootstrap-select .dropdown-menu li').hover(function () {
+                    var tmp_idx = parseInt($(this).attr('data-original-index')) + 1;
+                    var sel = $(this).closest('.bootstrap-select').find('select option:nth-child(' + tmp_idx + ')');
+                    inner(sel);
+                }, function () {
+                    var tmp_idx = parseInt($(this).attr('data-original-index')) + 1,
+                        p = $(this).closest('.bootstrap-select').find('select option:nth-child(' + tmp_idx + ')'),
+                        id = $(p).attr('data-key'),
+                        data = $(p).data('list'),
+                        gallery,
+                        active;
 
-                if (!!data) {
-                    gallery = $.evo.article().gallery;
-                    active = $(p).find('.variation.active');
-                    gallery.render($.evo.article().galleryLastIdent);
-                    gallery.activate($.evo.article().galleryIndex);
-                }
-            });
+                    if (!!data) {
+                        gallery = $.evo.article().gallery;
+                        active = $(p).find('.variation.active');
+                        gallery.render($.evo.article().galleryLastIdent);
+                        gallery.activate($.evo.article().galleryIndex);
+                    }
+                });
+            }
 
             $('.variations.simple-variations .variation').click(function() {
                 inner(this, false);

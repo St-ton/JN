@@ -81,16 +81,16 @@ if ((int) $order->kBestellung === 0) {
     $exit(503);
 }
 
+// validation
+if (!in_array((int) $order->cStatus, [BESTELLUNG_STATUS_OFFEN, BESTELLUNG_STATUS_IN_BEARBEITUNG])) {
+    // order status has already been set
+    $exit();
+}
+
 switch ($paymentStatus)
 {
     case 'Completed':
     {
-        // validation
-        if (!in_array((int) $order->cStatus, [BESTELLUNG_STATUS_OFFEN, BESTELLUNG_STATUS_IN_BEARBEITUNG])) {
-            // order status has already been set
-            $exit();
-        }
-
         $payment->addIncomingPayment($order, [
             'fBetrag' => $result['mc_gross'],
             'fZahlungsgebuehr' => $result['mc_fee'],

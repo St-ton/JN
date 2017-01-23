@@ -500,7 +500,7 @@ Referenznummer: %reference_number%]]></VariableLocalized>
                     <ContentHtml><![CDATA[{includeMailTemplate template=header type=html}
 
 Sehr {if $Kunde->cAnrede === 'w'}geehrte{else}geehrter{/if} {$Kunde->cAnredeLocalized} {$Kunde->cNachname},<br><br>
-
+{if !$Bestellung}{$Bestellung = $oPluginMail->tbestellung}{/if}
 Zu Ihrer Bestellung {$Bestellung->cBestellNr} ({$Bestellung->dErstelldatum_de}) bei {$Einstellungen.global.global_shopname} ist die Zahlung über {$Bestellung->Zahlungsart->cName} leider abgelehnt worden.<br>
 Gern bieten wir Ihnen eine alternative Zahlungsmöglichkeit an, bitte setzen Sie sich dazu mit uns in Verbindung.<br><br>
 
@@ -510,7 +510,7 @@ Ihr Team von {$Firma->cName}
 
 {includeMailTemplate template=footer type=html}]]></ContentHtml>
                     <ContentText><![CDATA[{includeMailTemplate template=header type=plain}
-
+{if !$Bestellung}{$Bestellung = $oPluginMail->tbestellung}{/if}
 Sehr {if $Kunde->cAnrede === 'w'}geehrte{else}geehrter{/if} {$Kunde->cAnredeLocalized} {$Kunde->cNachname},
 
 Zu Ihrer Bestellung {$Bestellung->cBestellNr} ({$Bestellung->dErstelldatum_de}) bei {$Einstellungen.global.global_shopname} ist die Zahlung über {$Bestellung->Zahlungsart->cName} leider abgelehnt worden. 
@@ -525,10 +525,10 @@ Ihr Team von {$Firma->cName}
                 <TemplateLanguage iso="ENG">
                     <Subject>Payment denied</Subject>
                     <ContentHtml><![CDATA[{includeMailTemplate template=header type=html}
-
+{if !$Bestellung}{$Bestellung = $oPluginMail->tbestellung}{/if}
 Dear {$Kunde->cVorname} {$Kunde->cNachname},<br><br>
 
-The Payment for your order {$Bestellung->cBestellNr} ({$Bestellung->dErstelldatum}) at {$Einstellungen.global.global_shopname} has been denied by {$Bestellung->Zahlungsart->cName}.<br>
+The Payment for your order {$Bestellung->cBestellNr} ({$Bestellung->dErstelldatum_en}) at {$Einstellungen.global.global_shopname} has been denied by {$Bestellung->Zahlungsart->cName}.<br>
 Feel free to contact us for a different payment option.<br><br>
 
 Best Regards <br><br>
@@ -537,10 +537,10 @@ Best Regards <br><br>
 
 {includeMailTemplate template=footer type=html}]]></ContentHtml>
                     <ContentText><![CDATA[{includeMailTemplate template=header type=plain}
-
+{if !$Bestellung}{$Bestellung = $oPluginMail->tbestellung}{/if}
 Dear {$Kunde->cVorname} {$Kunde->cNachname},
 
-The Payment for your order {$Bestellung->cBestellNr} ({$Bestellung->dErstelldatum}) at {$Einstellungen.global.global_shopname} has been denied by {$Bestellung->Zahlungsart->cName}. 
+The Payment for your order {$Bestellung->cBestellNr} ({$Bestellung->dErstelldatum_en}) at {$Einstellungen.global.global_shopname} has been denied by {$Bestellung->Zahlungsart->cName}. 
 Feel free to contact us for a different payment option.
 
 Best Regards

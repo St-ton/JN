@@ -487,45 +487,6 @@ Referenznummer: %reference_number%]]></VariableLocalized>
         </PaymentMethod>
         <Emailtemplate>
             <Template>
-                <Name>PayPal Express Kundenkonto Passwort</Name>
-                <Description />
-                <Type>text/html</Type>
-                <ModulId>ppexpresskkpw</ModulId>
-                <Active>Y</Active>
-                <AKZ>0</AKZ>
-                <AGB>0</AGB>
-                <WRB>0</WRB>
-                <TemplateLanguage iso="GER">
-                    <Subject>Ihr Passwort wurde erstellt</Subject>
-                    <ContentHtml><![CDATA[Sehr {if $Kunde->cAnrede === 'w'}geehrte{else}geehrter{/if} {$Kunde->cAnredeLocalized} {$Kunde->cNachname},<br><br>
-
-Sie haben soeben über PayPal Express in unserem Onlineshop eingekauft. In dieser E-Mail erfahren Sie Ihre Logindaten.<br><br>
-
-Ihr Benutzername: {$Kunde->cMail}<br>
-Ihr Kennwort: {$Kunde->cPasswortKlartext}<br><br>
-
-Mit diesen Zugangsdaten können Sie über unseren Onlineshop auf {$ShopURL} jederzeit den Status Ihrer Bestellung einsehen. <br><br>
-
-Mit freundlichen Grüßen <br><br>
-
-Ihr Team von {$Firma->cName}]]></ContentHtml>
-                    <ContentText><![CDATA[Sehr {if $Kunde->cAnrede === 'w'}geehrte{else}geehrter{/if} {$Kunde->cAnredeLocalized} {$Kunde->cNachname},
-
-Sie haben soeben über PayPal Express in unserem Onlineshop eingekauft. In dieser E-Mail erfahren Sie Ihre Logindaten.
-
-Ihr Benutzername: {$Kunde->cMail}
-Ihr Kennwort: {$Kunde->cPasswortKlartext}
-
-Mit diesen Zugangsdaten können Sie über unseren Onlineshop auf {$ShopURL} jederzeit den Status Ihrer Bestellung einsehen.
-
-Mit freundlichen Grüßen
-
-Ihr Team von {$Firma->cName}]]></ContentText>
-                </TemplateLanguage>
-            </Template>
-        </Emailtemplate>
-        <Emailtemplate>
-            <Template>
                 <Name>PayPal Zahlung abgelehnt</Name>
                 <Description />
                 <Type>text/html</Type>
@@ -536,41 +497,57 @@ Ihr Team von {$Firma->cName}]]></ContentText>
                 <WRB>0</WRB>
                 <TemplateLanguage iso="GER">
                     <Subject>Zahlung abgelehnt</Subject>
-                    <ContentHtml><![CDATA[Sehr {if $Kunde->cAnrede === 'w'}geehrte{else}geehrter{/if} {$Kunde->cAnredeLocalized} {$Kunde->cNachname},<br><br>
+                    <ContentHtml><![CDATA[{includeMailTemplate template=header type=html}
 
-Zu Ihrer Bestellung {$Bestellung->cBestellNr} ({$Bestellung->dErstelldatum_de}) in unserem Onlineshop {$ShopURL} ist die Zahlung über {$Bestellung->Zahlungsart->cName} leider abgelehnt worden.<br>
+Sehr {if $Kunde->cAnrede === 'w'}geehrte{else}geehrter{/if} {$Kunde->cAnredeLocalized} {$Kunde->cNachname},<br><br>
+
+Zu Ihrer Bestellung {$Bestellung->cBestellNr} ({$Bestellung->dErstelldatum_de}) bei {$Einstellungen.global.global_shopname} ist die Zahlung über {$Bestellung->Zahlungsart->cName} leider abgelehnt worden.<br>
 Gern bieten wir Ihnen eine alternative Zahlungsmöglichkeit an, bitte setzen Sie sich dazu mit uns in Verbindung.<br><br>
 
 Mit freundlichen Grüßen <br><br>
 
-Ihr Team von {$Firma->cName}]]></ContentHtml>
-                    <ContentText><![CDATA[Sehr {if $Kunde->cAnrede === 'w'}geehrte{else}geehrter{/if} {$Kunde->cAnredeLocalized} {$Kunde->cNachname},
+Ihr Team von {$Firma->cName}
 
-Zu Ihrer Bestellung {$Bestellung->cBestellNr} ({$Bestellung->dErstelldatum_de}) in unserem Onlineshop {$ShopURL} ist die Zahlung über {$Bestellung->Zahlungsart->cName} leider abgelehnt worden. 
+{includeMailTemplate template=footer type=html}]]></ContentHtml>
+                    <ContentText><![CDATA[{includeMailTemplate template=header type=plain}
+
+Sehr {if $Kunde->cAnrede === 'w'}geehrte{else}geehrter{/if} {$Kunde->cAnredeLocalized} {$Kunde->cNachname},
+
+Zu Ihrer Bestellung {$Bestellung->cBestellNr} ({$Bestellung->dErstelldatum_de}) bei {$Einstellungen.global.global_shopname} ist die Zahlung über {$Bestellung->Zahlungsart->cName} leider abgelehnt worden. 
 Gern bieten wir Ihnen eine alternative Zahlungsmöglichkeit an, bitte setzen Sie sich dazu mit uns in Verbindung.
 
 Mit freundlichen Grüßen
 
-Ihr Team von {$Firma->cName}]]></ContentText>
+Ihr Team von {$Firma->cName}
+
+{includeMailTemplate template=footer type=plain}]]></ContentText>
                 </TemplateLanguage>
                 <TemplateLanguage iso="ENG">
                     <Subject>Payment denied</Subject>
-                    <ContentHtml><![CDATA[Dear Customer,<br><br>
+                    <ContentHtml><![CDATA[{includeMailTemplate template=header type=html}
 
-The Payment for your order {$Bestellung->cBestellNr} ({$Bestellung->dErstelldatum}) in our shop {$ShopURL} has been denied by {$Bestellung->Zahlungsart->cName}.<br>
+Dear {$Kunde->cVorname} {$Kunde->cNachname},<br><br>
+
+The Payment for your order {$Bestellung->cBestellNr} ({$Bestellung->dErstelldatum}) at {$Einstellungen.global.global_shopname} has been denied by {$Bestellung->Zahlungsart->cName}.<br>
 Feel free to contact us for a different payment option.<br><br>
 
 Best Regards <br><br>
 
-{$Firma->cName}]]></ContentHtml>
-                    <ContentText><![CDATA[Dear Customer,
+{$Firma->cName}
 
-The Payment for your order {$Bestellung->cBestellNr} ({$Bestellung->dErstelldatum}) in our shop {$ShopURL} has been denied by {$Bestellung->Zahlungsart->cName}. 
+{includeMailTemplate template=footer type=html}]]></ContentHtml>
+                    <ContentText><![CDATA[{includeMailTemplate template=header type=plain}
+
+Dear {$Kunde->cVorname} {$Kunde->cNachname},
+
+The Payment for your order {$Bestellung->cBestellNr} ({$Bestellung->dErstelldatum}) at {$Einstellungen.global.global_shopname} has been denied by {$Bestellung->Zahlungsart->cName}. 
 Feel free to contact us for a different payment option.
 
 Best Regards
 
-{$Firma->cName}]]></ContentText>
+{$Firma->cName}
+
+{includeMailTemplate template=footer type=plain}]]></ContentText>
                 </TemplateLanguage>
             </Template>
         </Emailtemplate>

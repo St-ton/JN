@@ -524,6 +524,56 @@ Ihr Team von {$Firma->cName}]]></ContentText>
                 </TemplateLanguage>
             </Template>
         </Emailtemplate>
+        <Emailtemplate>
+            <Template>
+                <Name>PayPal Zahlung abgelehnt</Name>
+                <Description />
+                <Type>text/html</Type>
+                <ModulId>pppd</ModulId>
+                <Active>Y</Active>
+                <AKZ>0</AKZ>
+                <AGB>0</AGB>
+                <WRB>0</WRB>
+                <TemplateLanguage iso="GER">
+                    <Subject>Zahlung abgelehnt</Subject>
+                    <ContentHtml><![CDATA[Sehr {if $Kunde->cAnrede === 'w'}geehrte{else}geehrter{/if} {$Kunde->cAnredeLocalized} {$Kunde->cNachname},<br><br>
+
+Zu Ihrer Bestellung {$Bestellung->cBestellNr} ({$Bestellung->dErstelldatum_de}) in unserem Onlineshop {$ShopURL} ist die Zahlung über {$Bestellung->Zahlungsart->cName} leider abgelehnt worden.<br>
+Gern bieten wir Ihnen eine alternative Zahlungsmöglichkeit an, bitte setzen Sie sich dazu mit uns in Verbindung.<br><br>
+
+Mit freundlichen Grüßen <br><br>
+
+Ihr Team von {$Firma->cName}]]></ContentHtml>
+                    <ContentText><![CDATA[Sehr {if $Kunde->cAnrede === 'w'}geehrte{else}geehrter{/if} {$Kunde->cAnredeLocalized} {$Kunde->cNachname},
+
+Zu Ihrer Bestellung {$Bestellung->cBestellNr} ({$Bestellung->dErstelldatum_de}) in unserem Onlineshop {$ShopURL} ist die Zahlung über {$Bestellung->Zahlungsart->cName} leider abgelehnt worden. 
+Gern bieten wir Ihnen eine alternative Zahlungsmöglichkeit an, bitte setzen Sie sich dazu mit uns in Verbindung.
+
+Mit freundlichen Grüßen
+
+Ihr Team von {$Firma->cName}]]></ContentText>
+                </TemplateLanguage>
+                <TemplateLanguage iso="ENG">
+                    <Subject>Payment denied</Subject>
+                    <ContentHtml><![CDATA[Dear Customer,<br><br>
+
+The Payment for your order {$Bestellung->cBestellNr} ({$Bestellung->dErstelldatum}) in our shop {$ShopURL} has been denied by {$Bestellung->Zahlungsart->cName}.<br>
+Feel free to contact us for a different payment option.<br><br>
+
+Best Regards <br><br>
+
+{$Firma->cName}]]></ContentHtml>
+                    <ContentText><![CDATA[Dear Customer,
+
+The Payment for your order {$Bestellung->cBestellNr} ({$Bestellung->dErstelldatum}) in our shop {$ShopURL} has been denied by {$Bestellung->Zahlungsart->cName}. 
+Feel free to contact us for a different payment option.
+
+Best Regards
+
+{$Firma->cName}]]></ContentText>
+                </TemplateLanguage>
+            </Template>
+        </Emailtemplate>
         <Adminmenu>
             <Customlink sort="1">
                 <Name>Infos</Name>

@@ -5034,6 +5034,9 @@ function phpLinkCheck($url)
 function gibKategoriepfad($Kategorie, $kKundengruppe, $kSprache, $bString = true)
 {
     if (empty($Kategorie->cKategoriePfad_arr) || empty($Kategorie->kSprache) || ($Kategorie->kSprache != $kSprache)) {
+        if (empty($Kategorie->kKategorie)) {
+            return ($bString) ? '' : [];
+        }
         $h     = KategorieHelper::getInstance($kSprache, $kKundengruppe);
         $tree  = $h->getFlatTree($Kategorie->kKategorie);
         $names = [];

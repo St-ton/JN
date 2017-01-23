@@ -38,7 +38,9 @@ class cache_apc implements ICachingMethod
      */
     public function store($cacheID, $content, $expiration = null)
     {
-        return apc_store($this->options['prefix'] . $cacheID, $content, ($expiration === null) ? $this->options['lifetime'] : $expiration);
+        return apc_store($this->options['prefix'] . $cacheID, $content, ($expiration === null)
+            ? $this->options['lifetime']
+            : $expiration);
     }
 
     /**
@@ -48,7 +50,9 @@ class cache_apc implements ICachingMethod
      */
     public function storeMulti($keyValue, $expiration = null)
     {
-        return apc_store($this->prefixArray($keyValue), null, ($expiration === null) ? $this->options['lifetime'] : $expiration);
+        return apc_store($this->prefixArray($keyValue), null, ($expiration === null)
+            ? $this->options['lifetime']
+            : $expiration);
     }
 
     /**

@@ -118,6 +118,7 @@ $(function() {
                             {render_item title='Template-Version' val=!$status->hasDifferentTemplateVersion()}
                             {render_item title='Profiler aktiv' val=!$status->hasActiveProfiler() more='profiler.php'}
                             {render_item title='Server' val=$status->hasValidEnvironment() more='systemcheck.php'}
+                            {render_item title='Verwaiste Kategorien' val=$status->getOrphanedCategories() more='categorycheck.php'}
                         </tbody>
                     </table>
                 </div>

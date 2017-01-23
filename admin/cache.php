@@ -25,10 +25,16 @@ try {
     $error = 'Ausnahme: ' . $exc->getMessage();
 }
 //get disabled cache types
-$deactivated       = Shop::DB()->select('teinstellungen', ['kEinstellungenSektion', 'cName'], [CONF_CACHING, 'caching_types_disabled']);
+$deactivated       = Shop::DB()->select(
+    'teinstellungen',
+    ['kEinstellungenSektion', 'cName'],
+    [CONF_CACHING, 'caching_types_disabled']
+);
 $currentlyDisabled = [];
 if (is_object($deactivated) && isset($deactivated->cWert)) {
-    $currentlyDisabled = ($deactivated->cWert !== '') ? unserialize($deactivated->cWert) : [];
+    $currentlyDisabled = ($deactivated->cWert !== '')
+        ? unserialize($deactivated->cWert)
+        : [];
 }
 if ($action !== null && isset($_POST['cache-action'])) {
     $cacheAction = $_POST['cache-action'];
@@ -67,7 +73,12 @@ switch ($action) {
                     }
                     $upd        = new stdClass();
                     $upd->cWert = serialize($currentlyDisabled);
-                    $res        = Shop::DB()->update('teinstellungen', ['kEinstellungenSektion', 'cName'], [CONF_CACHING, 'caching_types_disabled'], $upd);
+                    $res        = Shop::DB()->update(
+                        'teinstellungen',
+                        ['kEinstellungenSektion', 'cName'],
+                        [CONF_CACHING, 'caching_types_disabled'],
+                        $upd
+                    );
                     if ($res > 0) {
                         $notice .= 'Ausgew&auml;hlte Typen erfolgreich aktiviert.';
                     }
@@ -84,7 +95,12 @@ switch ($action) {
                     $currentlyDisabled = array_unique($currentlyDisabled);
                     $upd               = new stdClass();
                     $upd->cWert        = serialize($currentlyDisabled);
-                    $res               = Shop::DB()->update('teinstellungen', ['kEinstellungenSektion', 'cName'], [CONF_CACHING, 'caching_types_disabled'], $upd);
+                    $res               = Shop::DB()->update(
+                        'teinstellungen',
+                        ['kEinstellungenSektion', 'cName'],
+                        [CONF_CACHING, 'caching_types_disabled'],
+                        $upd
+                    );
                     if ($res > 0) {
                         $notice .= 'Ausgew&auml;hlte Typen erfolgreich deaktiviert.';
                     }
@@ -108,7 +124,13 @@ switch ($action) {
         }
         break;
     case 'settings' :
-        $settings = Shop::DB()->selectAll('teinstellungenconf', ['kEinstellungenSektion', 'cConf'], [CONF_CACHING, 'Y'], '*', 'nSort');
+        $settings = Shop::DB()->selectAll(
+            'teinstellungenconf',
+            ['kEinstellungenSektion', 'cConf'],
+            [CONF_CACHING, 'Y'],
+            '*',
+            'nSort'
+        );
         $i             = 0;
         $settingsCount = count($settings);
         while ($i < $settingsCount) {
@@ -136,7 +158,9 @@ switch ($action) {
                     $availableMethods = [];
                     $allMethods       = $cache->checkAvailability();
                     foreach ($allMethods as $_name => $_status) {
-                        if (isset($_status['available']) && isset($_status['functional']) && $_status['available'] === true && $_status['functional'] === true) {
+                        if (isset($_status['available']) && isset($_status['functional']) &&
+                            $_status['available'] === true && $_status['functional'] === true
+                        ) {
                             $availableMethods[] = $_name;
                         }
                     }
@@ -167,7 +191,11 @@ switch ($action) {
                         $notice .= 'Konnte keine funktionierende Cache-Methode ausw&auml;hlen.';
                     }
                 }
-                Shop::DB()->delete('teinstellungen', ['kEinstellungenSektion', 'cName'], [CONF_CACHING, $settings[$i]->cWertName]);
+                Shop::DB()->delete(
+                    'teinstellungen',
+                    ['kEinstellungenSektion', 'cName'],
+                    [CONF_CACHING, $settings[$i]->cWertName]
+                );
                 Shop::DB()->insert('teinstellungen', $value);
             }
             ++$i;
@@ -222,11 +250,13 @@ switch ($action) {
                 if (@unlink($pParameters['path'] . $pParameters['filename'])) {
                     $pParameters['count']++;
                 } else {
-                    $pParameters['error'] .= 'Datei <strong>' . $pParameters['path'] . $pParameters['filename'] . '</strong> konnte nicht gel&ouml;scht werden!<br/>';
+                    $pParameters['error'] .= 'Datei <strong>' . $pParameters['path'] . $pParameters['filename'] .
+                        '</strong> konnte nicht gel&ouml;scht werden!<br/>';
                 }
             } else {
                 if (!@rmdir($pParameters['path'] . $pParameters['filename'])) {
-                    $pParameters['error'] .= 'Verzeichnis <strong>' . $pParameters['path'] . $pParameters['filename'] . '</strong> konnte nicht gel&ouml;scht werden!<br/>';
+                    $pParameters['error'] .= 'Verzeichnis <strong>' . $pParameters['path'] . $pParameters['filename'] .
+                        '</strong> konnte nicht gel&ouml;scht werden!<br/>';
                 }
             }
         };
@@ -252,36 +282,88 @@ if ($cache !== null) {
            ->assign('all_methods', $cache->getAllMethods())
            ->assign('stats', $cache->getStats());
 }
-$settings      = Shop::DB()->selectAll('teinstellungenconf', ['nStandardAnzeigen', 'kEinstellungenSektion'], [1, CONF_CACHING], '*', 'nSort');
+$settings      = Shop::DB()->selectAll(
+    'teinstellungenconf',
+    ['nStandardAnzeigen', 'kEinstellungenSektion'],
+    [1, CONF_CACHING],
+    '*',
+    'nSort'
+);
 $settingsCount = count($settings);
 for ($i = 0; $i < $settingsCount; ++$i) {
     if ($settings[$i]->cInputTyp === 'selectbox') {
-        $settings[$i]->ConfWerte = Shop::DB()->selectAll('teinstellungenconfwerte', 'kEinstellungenConf', (int)$settings[$i]->kEinstellungenConf, '*', 'nSort');
+        $settings[$i]->ConfWerte = Shop::DB()->selectAll(
+            'teinstellungenconfwerte',
+            'kEinstellungenConf',
+            (int)$settings[$i]->kEinstellungenConf,
+            '*',
+            'nSort'
+        );
     }
-    $oSetValue = Shop::DB()->select('teinstellungen', ['kEinstellungenSektion', 'cName'], [CONF_CACHING, $settings[$i]->cWertName]);
-    $settings[$i]->gesetzterWert = (isset($oSetValue->cWert)) ? $oSetValue->cWert : null;
+    $oSetValue = Shop::DB()->select(
+        'teinstellungen',
+        ['kEinstellungenSektion', 'cName'],
+        [CONF_CACHING, $settings[$i]->cWertName]
+    );
+    $settings[$i]->gesetzterWert = (isset($oSetValue->cWert))
+        ? $oSetValue->cWert
+        : null;
 }
-$advancedSettings = Shop::DB()->selectAll('teinstellungenconf', ['nStandardAnzeigen', 'kEinstellungenSektion'], [0, CONF_CACHING], '*', 'nSort');
+$advancedSettings = Shop::DB()->selectAll(
+    'teinstellungenconf',
+    ['nStandardAnzeigen', 'kEinstellungenSektion'],
+    [0, CONF_CACHING],
+    '*',
+    'nSort'
+);
 $settingsCount    = count($advancedSettings);
 for ($i = 0; $i < $settingsCount; ++$i) {
     if ($advancedSettings[$i]->cInputTyp === 'selectbox') {
-        $advancedSettings[$i]->ConfWerte = Shop::DB()->selectAll('teinstellungenconfwerte', 'kEinstellungenConf', (int)$advancedSettings[$i]->kEinstellungenConf, '*', 'nSort');
+        $advancedSettings[$i]->ConfWerte = Shop::DB()->selectAll(
+            'teinstellungenconfwerte',
+            'kEinstellungenConf',
+            (int)$advancedSettings[$i]->kEinstellungenConf,
+            '*',
+            'nSort'
+        );
     }
-    $oSetValue = Shop::DB()->select('teinstellungen', ['kEinstellungenSektion', 'cName'], [CONF_CACHING, $advancedSettings[$i]->cWertName]);
-    $advancedSettings[$i]->gesetzterWert = (isset($oSetValue->cWert)) ? $oSetValue->cWert : null;
+    $oSetValue = Shop::DB()->select(
+        'teinstellungen',
+        ['kEinstellungenSektion', 'cName'],
+        [CONF_CACHING, $advancedSettings[$i]->cWertName]
+    );
+    $advancedSettings[$i]->gesetzterWert = (isset($oSetValue->cWert))
+        ? $oSetValue->cWert
+        : null;
 }
 if (function_exists('opcache_get_status')) {
     $_opcacheStatus             = opcache_get_status();
     $opcacheStats               = new stdClass();
     $opcacheStats->enabled      = isset($_opcacheStatus['opcache_enabled']) && $_opcacheStatus['opcache_enabled'] === true;
-    $opcacheStats->memoryFree   = isset($_opcacheStatus['memory_usage']['free_memory']) ? round($_opcacheStatus['memory_usage']['free_memory'] / 1024 / 1024, 2) : -1;
-    $opcacheStats->memoryUsed   = isset($_opcacheStatus['memory_usage']['used_memory']) ? round($_opcacheStatus['memory_usage']['used_memory'] / 1024 / 1024, 2) : -1;
-    $opcacheStats->numberScrips = isset($_opcacheStatus['opcache_statistics']['num_cached_scripts']) ? $_opcacheStatus['opcache_statistics']['num_cached_scripts'] : -1;
-    $opcacheStats->numberKeys   = isset($_opcacheStatus['opcache_statistics']['num_cached_keys']) ? $_opcacheStatus['opcache_statistics']['num_cached_keys'] : -1;
-    $opcacheStats->hits         = isset($_opcacheStatus['opcache_statistics']['hits']) ? $_opcacheStatus['opcache_statistics']['hits'] : -1;
-    $opcacheStats->misses       = isset($_opcacheStatus['opcache_statistics']['misses']) ? $_opcacheStatus['opcache_statistics']['misses'] : -1;
-    $opcacheStats->hitRate      = isset($_opcacheStatus['opcache_statistics']['opcache_hit_rate']) ? round($_opcacheStatus['opcache_statistics']['opcache_hit_rate'], 2) : -1;
-    $opcacheStats->scripts      = (isset($_opcacheStatus['scripts']) && is_array($_opcacheStatus['scripts'])) ? $_opcacheStatus['scripts'] : [];
+    $opcacheStats->memoryFree   = isset($_opcacheStatus['memory_usage']['free_memory'])
+        ? round($_opcacheStatus['memory_usage']['free_memory'] / 1024 / 1024, 2)
+        : -1;
+    $opcacheStats->memoryUsed   = isset($_opcacheStatus['memory_usage']['used_memory'])
+        ? round($_opcacheStatus['memory_usage']['used_memory'] / 1024 / 1024, 2)
+        : -1;
+    $opcacheStats->numberScrips = isset($_opcacheStatus['opcache_statistics']['num_cached_scripts'])
+        ? $_opcacheStatus['opcache_statistics']['num_cached_scripts']
+        : -1;
+    $opcacheStats->numberKeys   = isset($_opcacheStatus['opcache_statistics']['num_cached_keys'])
+        ? $_opcacheStatus['opcache_statistics']['num_cached_keys']
+        : -1;
+    $opcacheStats->hits         = isset($_opcacheStatus['opcache_statistics']['hits'])
+        ? $_opcacheStatus['opcache_statistics']['hits']
+        : -1;
+    $opcacheStats->misses       = isset($_opcacheStatus['opcache_statistics']['misses'])
+        ? $_opcacheStatus['opcache_statistics']['misses']
+        : -1;
+    $opcacheStats->hitRate      = isset($_opcacheStatus['opcache_statistics']['opcache_hit_rate'])
+        ? round($_opcacheStatus['opcache_statistics']['opcache_hit_rate'], 2)
+        : -1;
+    $opcacheStats->scripts      = (isset($_opcacheStatus['scripts']) && is_array($_opcacheStatus['scripts']))
+        ? $_opcacheStatus['scripts']
+        : [];
 }
 
 $tplcacheStats           = new stdClass();
@@ -309,7 +391,9 @@ $allMethods          = $cache->checkAvailability();
 $availableMethods    = [];
 $nonAvailableMethods = [];
 foreach ($allMethods as $_name => $_status) {
-    if (isset($_status['available']) && isset($_status['functional']) && $_status['available'] === true && $_status['functional'] === true) {
+    if (isset($_status['available']) && isset($_status['functional']) &&
+        $_status['available'] === true && $_status['functional'] === true
+    ) {
         $availableMethods[] = $_name;
     } elseif ($_name !== 'null') {
         $nonAvailableMethods[] = $_name;

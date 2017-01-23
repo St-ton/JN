@@ -131,7 +131,8 @@ class Status
                     FROM tpluginhook 
                     INNER JOIN tplugin 
                         ON tpluginhook.kPlugin = tplugin.kPlugin 
-                    WHERE tpluginhook.nHook = " . $hookId . " AND tplugin.nStatus = 2", 2
+                    WHERE tpluginhook.nHook = " . $hookId . " 
+                        AND tplugin.nStatus = 2", 2
             );
             foreach ($plugins as $plugin) {
                 $sharedPlugins[$hookId][$plugin->cPluginID] = $plugin;
@@ -188,11 +189,13 @@ class Status
             if ($oTplData->bResponsive) {
                 $oMobileTpl = Shop::DB()->select('ttemplate', 'eTyp', 'mobil');
                 if ($oMobileTpl !== null) {
-                    $cXMLFile = PFAD_ROOT . PFAD_TEMPLATES . $oMobileTpl->cTemplate . DIRECTORY_SEPARATOR . TEMPLATE_XML;
+                    $cXMLFile = PFAD_ROOT . PFAD_TEMPLATES . $oMobileTpl->cTemplate .
+                        DIRECTORY_SEPARATOR . TEMPLATE_XML;
                     if (file_exists($cXMLFile)) {
                         return true;
                     }
-                    // Wenn ein Template aktiviert aber physisch nicht vorhanden ist, dann ist der DB-Eintrag falsch und wird gelöscht
+                    // Wenn ein Template aktiviert aber physisch nicht vorhanden ist,
+                    // ist der DB-Eintrag falsch und wird gelöscht
                     Shop::DB()->delete('ttemplate', 'eTyp', 'mobil');
                 }
             }
@@ -219,7 +222,10 @@ class Status
         if (!isset($_SESSION['subscription']) || $_SESSION['subscription'] === null) {
             $_SESSION['subscription'] = jtlAPI::getSubscription();
         }
-        if (is_object($_SESSION['subscription']) && isset($_SESSION['subscription']->kShop) && (int)$_SESSION['subscription']->kShop > 0) {
+        if (is_object($_SESSION['subscription']) &&
+            isset($_SESSION['subscription']->kShop) &&
+            (int)$_SESSION['subscription']->kShop > 0
+        ) {
             return $_SESSION['subscription'];
         }
 
@@ -281,7 +287,13 @@ class Status
     protected function getPaymentMethodsWithError()
     {
         $incorrectPaymentMethods = [];
-        $paymentMethods          = Shop::DB()->selectAll('tzahlungsart', 'nActive', 1, '*', 'cAnbieter, cName, nSort, kZahlungsart');
+        $paymentMethods          = Shop::DB()->selectAll(
+            'tzahlungsart',
+            'nActive',
+            1,
+            '*',
+            'cAnbieter, cName, nSort, kZahlungsart'
+        );
 
         if (is_array($paymentMethods)) {
             foreach ($paymentMethods as $i => $method) {
@@ -313,15 +325,43 @@ class Status
         $aPollCoupons        = Shop::DB()->selectAll('tumfrage', 'nAktiv', 1);
         $invalidCouponsFound = false;
 
-        if (count($aPollCoupons > 0)) {
+        if (count($aPollCoupons) > 0) {
             foreach ($aPollCoupons as $Kupon) {
                 if ($Kupon->kKupon > 0){
-                    $kKupon = Shop::DB()->select('tkupon', 'kKupon', $Kupon->kKupon, 'cAktiv', 'Y', null, null, false, 'kKupon');
+                    $kKupon = Shop::DB()->select(
+                        'tkupon',
+                        'kKupon',
+                        $Kupon->kKupon,
+                        'cAktiv',
+                        'Y',
+                        null,
+                        null,
+                        false,
+                        'kKupon'
+                    );
                     $invalidCouponsFound = empty($kKupon);
                 }
             }
         }
 
         return $invalidCouponsFound;
+    }
+
+    /**
+     * @param bool $has
+     * @return array|bool
+     */
+    protected function getOrphanedCategories($has = true)
+    {
+        $categories = Shop::DB()->query("
+            SELECT kKategorie, cName 
+                FROM tkategorie 
+                WHERE kOberkategorie > 0 
+                    AND kOberkategorie NOT IN (SELECT DISTINCT kKategorie FROM tkategorie)", 2
+        );
+
+        return ($has === true)
+            ? count($categories) === 0
+            : $categories;
     }
 }

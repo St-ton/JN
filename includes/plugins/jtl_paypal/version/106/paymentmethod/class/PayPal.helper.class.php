@@ -334,7 +334,7 @@ class PayPalHelper
         return $basket;
     }
 
-    public function sendPaymentDeniedMail($customer, $order)
+    public static function sendPaymentDeniedMail($customer, $order)
     {
         $mail              = new stdClass();
         $mail->tkunde      = $customer;

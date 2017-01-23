@@ -52,6 +52,8 @@ if ($payment === null) {
     $exit(true);
 }
 
+require_once str_replace('frontend', 'paymentmethod', $oPlugin->cFrontendPfad).'/class/PayPal.helper.class.php';
+
 $mode = ucfirst($payment->getMode());
 $notify = $payment->handleNotify();
 $result = $notify->getRawData();
@@ -70,10 +72,6 @@ $invoice = $result['invoice'];
 
 $payment->doLog("PayPal Notify: ({$mode}) Received new status '{$paymentStatus}' for transaction '{$txId}'", LOGLEVEL_NOTICE);
 
-if (strcasecmp($paymentStatus, 'Completed') !== 0) {
-    $exit();
-}
-
 $orderId = $result['custom'];
 $order = new Bestellung((int) $orderId);
 $order->fuelleBestellung(0, 0, false);
@@ -83,28 +81,41 @@ if ((int) $order->kBestellung === 0) {
     $exit(503);
 }
 
-// validation
-if (!in_array((int) $order->cStatus, [BESTELLUNG_STATUS_OFFEN, BESTELLUNG_STATUS_IN_BEARBEITUNG])) {
-    // order status has already been set
-    $exit();
-}
+switch ($paymentStatus)
+{
+    case 'Completed':
+    {
+        // validation
+        if (!in_array((int) $order->cStatus, [BESTELLUNG_STATUS_OFFEN, BESTELLUNG_STATUS_IN_BEARBEITUNG])) {
+            // order status has already been set
+            $exit();
+        }
 
-$payment->addIncomingPayment($order, [
-    'fBetrag' => $result['mc_gross'],
-    'fZahlungsgebuehr' => $result['mc_fee'],
-    'cISO' => $result['mc_currency'],
-    'cEmpfaenger' => $result['receiver_email'],
-    'cZahler' => $result['payer_email'],
-    'cHinweis' => $notify->getTransactionId(),
-]);
+        $payment->addIncomingPayment($order, [
+            'fBetrag' => $result['mc_gross'],
+            'fZahlungsgebuehr' => $result['mc_fee'],
+            'cISO' => $result['mc_currency'],
+            'cEmpfaenger' => $result['receiver_email'],
+            'cZahler' => $result['payer_email'],
+            'cHinweis' => $notify->getTransactionId(),
+        ]);
 
-$diffAmount = abs(floatval($order->fGesamtsummeKundenwaehrung) - floatval($result['mc_gross']));
+        $diffAmount = abs(floatval($order->fGesamtsummeKundenwaehrung) - floatval($result['mc_gross']));
 
-if ($diffAmount <= 1) {
-    $payment->setOrderStatusToPaid($order);
-    $payment->doLog("PayPal Notify: Order status changed to 'paid'", LOGLEVEL_NOTICE);
-} else {
-    $payment->doLog('PayPal Notify: Order payment has been received', LOGLEVEL_NOTICE);
+        if ($diffAmount <= 1) {
+            $payment->setOrderStatusToPaid($order);
+            $payment->doLog("PayPal Notify: Order status changed to 'paid'", LOGLEVEL_NOTICE);
+        } else {
+            $payment->doLog('PayPal Notify: Order payment has been received', LOGLEVEL_NOTICE);
+        }
+        break;
+    }
+
+    case 'Declined':
+    {
+        PayPalHelper::sendPaymentDeniedMail($order->oKunde, $order);
+        break;
+    }
 }
 
 $exit();

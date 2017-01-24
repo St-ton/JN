@@ -38,7 +38,7 @@ if (validateToken()) {
             // Kupons loeschen
             $action = 'loeschen';
         }
-    } elseif (isset($_GET['kKupon']) && verifyGPCDataInteger('kKupon') > 0) {
+    } elseif (isset($_GET['kKupon']) && verifyGPCDataInteger('kKupon') >= 0) {
         // Kupon bearbeiten
         $action = 'bearbeiten';
     }
@@ -48,7 +48,7 @@ if (validateToken()) {
 if ($action === 'bearbeiten') {
     // Kupon bearbeiten
     $kKupon    = isset($_GET['kKupon']) ? (int)$_GET['kKupon'] : (int)$_POST['kKuponBearbeiten'];
-    $cKuponTyp = $_POST['cKuponTyp'];
+    $cKuponTyp = $_REQUEST['cKuponTyp'];
     if ($kKupon > 0) {
         $oKupon = getCoupon($kKupon);
     } else {

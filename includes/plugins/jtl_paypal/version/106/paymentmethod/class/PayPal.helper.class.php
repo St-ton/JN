@@ -333,4 +333,20 @@ class PayPalHelper
 
         return $basket;
     }
+
+    public static function sendPaymentDeniedMail($customer, $order)
+    {
+        if (!function_exists('sendeMail')) {
+            require_once PFAD_ROOT.PFAD_INCLUDES.'mailTools.php';
+        }
+
+        $mail              = new stdClass();
+        $mail->tkunde      = $customer;
+        $mail->tbestellung = $order;
+
+        $plugin = Plugin::getPluginById('jtl_paypal');
+        $moduleId = 'kPlugin_' . $plugin->kPlugin . '_pppd';
+
+        sendeMail($moduleId, $mail);
+    }
 }

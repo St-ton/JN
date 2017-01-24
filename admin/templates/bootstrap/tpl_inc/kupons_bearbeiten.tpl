@@ -1,4 +1,4 @@
-{if $action === 'erstellen'}
+{if $oKupon->kKupon === 0}
     {assign var=cTitel value=#newCoupon#}
 {else}
     {assign var=cTitel value=#modifyCoupon#}

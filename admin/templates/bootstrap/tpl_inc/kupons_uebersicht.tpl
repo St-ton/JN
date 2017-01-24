@@ -98,7 +98,7 @@
                 {/if}
                 <div class="panel-footer">
                     <div class="btn-group">
-                        <a href="kupons.php?kKupon=0&token={$smarty.session.jtl_token}"
+                        <a href="kupons.php?kKupon=0&cKuponTyp={$cKuponTyp}&token={$smarty.session.jtl_token}"
                            class="btn btn-primary" title="{#modify#}">
                             <i class="fa fa-share"></i> {$cKuponTypName} {#create#}
                         </a>

@@ -166,8 +166,8 @@
                 }
             });
 
-            var touchCapable = 'ontouchstart' in window || (window.DocumentTouch && document instanceof window.DocumentTouch);
-            if (!touchCapable) {
+            var touchCapable = 'ontouchstart' in window || (window.DocumentTouch && document instanceof window.DocumentTouch) || "ontouchstart" in document.documentElement;
+            if (!touchCapable || ResponsiveBootstrapToolkit.current() !== 'xs') {
                 $('.variations .bootstrap-select .dropdown-menu li').hover(function () {
                     var tmp_idx = parseInt($(this).attr('data-original-index')) + 1;
                     var sel = $(this).closest('.bootstrap-select').find('select option:nth-child(' + tmp_idx + ')');
@@ -193,20 +193,22 @@
                 inner(this, false);
             });
             
-            $('.variations .variation').hover(function() {
-                inner(this);
-            }, function() {
-                var p     = $(this).closest('.variation'),
-                    data  = $(this).data('list'),
-                    gallery,
-                    active;
-                if (!!data) {
-                    gallery = $.evo.article().gallery;
-                    active = $(p).find('.variation.active');
-                    gallery.render($.evo.article().galleryLastIdent);
-                    gallery.activate($.evo.article().galleryIndex);
-                }
-            });
+            if (!touchCapable || ResponsiveBootstrapToolkit.current() !== 'xs') {
+                $('.variations .variation').hover(function () {
+                    inner(this);
+                }, function () {
+                    var p = $(this).closest('.variation'),
+                        data = $(this).data('list'),
+                        gallery,
+                        active;
+                    if (!!data) {
+                        gallery = $.evo.article().gallery;
+                        active = $(p).find('.variation.active');
+                        gallery.render($.evo.article().galleryLastIdent);
+                        gallery.activate($.evo.article().galleryIndex);
+                    }
+                });
+            }
 
             $('#jump-to-votes-tab').click(function () {
                 $('#content a[href="#tab-votes"]').tab('show');

@@ -166,7 +166,7 @@
                 }
             });
 
-            var touchCapable = 'ontouchstart' in window || (window.DocumentTouch && document instanceof window.DocumentTouch) || "ontouchstart" in document.documentElement;
+            var touchCapable = 'ontouchstart' in window || (window.DocumentTouch && document instanceof window.DocumentTouch);
             if (!touchCapable || ResponsiveBootstrapToolkit.current() !== 'xs') {
                 $('.variations .bootstrap-select .dropdown-menu li').hover(function () {
                     var tmp_idx = parseInt($(this).attr('data-original-index')) + 1;

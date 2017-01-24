@@ -47,12 +47,11 @@ if (validateToken()) {
 // Aktion behandeln
 if ($action === 'bearbeiten') {
     // Kupon bearbeiten
-    $kKupon    = isset($_GET['kKupon']) ? (int)$_GET['kKupon'] : (int)$_POST['kKuponBearbeiten'];
-    $cKuponTyp = $_REQUEST['cKuponTyp'];
+    $kKupon = isset($_GET['kKupon']) ? (int)$_GET['kKupon'] : (int)$_POST['kKuponBearbeiten'];
     if ($kKupon > 0) {
         $oKupon = getCoupon($kKupon);
     } else {
-        $oKupon = createNewCoupon($cKuponTyp);
+        $oKupon = createNewCoupon($_REQUEST['cKuponTyp']);
     }
 } elseif ($action === 'speichern') {
     // Kupon speichern

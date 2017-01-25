@@ -152,23 +152,18 @@ function loadContent(url)
 function navigation()
 {
     var navWrapper = $('#evo-main-nav-wrapper');
-
     if (navWrapper.hasClass('do-affix')) {
+        navWrapper.parent()
+            .height(navWrapper.height());
         navWrapper.affix({
             offset: {
-                top: function() {
-                    return navWrapper.height();
-                }
+                top: navWrapper.offset().top
             }
         });
     }
 }
 
 $(window).load(function(){
-    navigation();
-});
-
-$(window).resize(function(){
     navigation();
 });
 

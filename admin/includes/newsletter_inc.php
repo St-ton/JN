@@ -469,19 +469,17 @@ function speicherVorlageStd($oNewslettervorlageStd, $kNewslettervorlageStd, $cPo
                             if (isset($cPost_arr['cAltTag']) && strlen($cPost_arr['cAltTag']) > 0) {
                                 $nlTplContent->cAltTag = $cPost_arr['cAltTag'];
                             }
-                            Shop::DB()->query(
-                                "UPDATE tnewslettervorlage
-                                    SET cInhaltHTML = '" . mappeVorlageStdVar(
-                                            $oNewslettervorlageStd->cInhaltHTML, 
-                                            $oNewslettervorlageStd->oNewslettervorlageStdVar_arr
-                                        ) . "',
-                                        cInhaltText = '" . mappeVorlageStdVar(
-                                            $oNewslettervorlageStd->cInhaltText, 
-                                            $oNewslettervorlageStd->oNewslettervorlageStdVar_arr, 
-                                            true
-                                            ) . "'
-                                    WHERE kNewsletterVorlage = " . $kNewslettervorlage, 3
+                            $upd = new stdClass();
+                            $upd->cInhaltHTML = mappeVorlageStdVar(
+                                $oNewslettervorlageStd->cInhaltHTML,
+                                $oNewslettervorlageStd->oNewslettervorlageStdVar_arr
                             );
+                            $upd->cInhaltText = mappeVorlageStdVar(
+                                $oNewslettervorlageStd->cInhaltText,
+                                $oNewslettervorlageStd->oNewslettervorlageStdVar_arr,
+                                true
+                            );
+                            Shop::DB()->update('tnewslettervorlage', 'kNewsletterVorlage', $kNewslettervorlage, $upd);
                         } else {
                             $nlTplContent->cInhalt = $nlTplStdVar->cInhalt;
                             // Link URL

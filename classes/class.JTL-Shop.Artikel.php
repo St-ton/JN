@@ -2210,7 +2210,7 @@ class Artikel
                         $this->Variationen[$nZaehler]->Werte[$i]->cPfadNormalFull = $shopURL . PFAD_VARIATIONSBILDER_NORMAL . $oVariationTMP->cPfad;
                         $this->Variationen[$nZaehler]->Werte[$i]->cPfadGrossFull  = $shopURL . PFAD_VARIATIONSBILDER_GROSS . $oVariationTMP->cPfad;
                     }
-                    if (!$_SESSION['Kundengruppe']->darfPreiseSehen) {
+                    if (empty($_SESSION['Kundengruppe']->darfPreiseSehen)) {
                         unset($this->Variationen[$nZaehler]->Werte[$i]->fAufpreisNetto);
                         unset($this->Variationen[$nZaehler]->Werte[$i]->cAufpreisLocalized);
                         unset($this->Variationen[$nZaehler]->Werte[$i]->cPreisInklAufpreis);

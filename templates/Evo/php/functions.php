@@ -662,11 +662,11 @@ function prepare_image_details($params, &$smarty)
  */
 function get_image_size($image)
 {
-    if (strpos($image, PFAD_BILDER) === 0) {
-        $image = PFAD_ROOT . $image;
-    }
-    if (!file_exists($image)) {
-        $req = MediaImage::toRequest($image);
+    $path = (strpos($image, PFAD_BILDER) === 0)
+        ? PFAD_ROOT . $image
+        : $image;
+    if (!file_exists($path)) {
+        $req = MediaImage::toRequest($path);
 
         if (!is_object($req)) {
             return;
@@ -690,7 +690,7 @@ function get_image_size($image)
         $width  = ceil($scale * $old_width);
         $height = ceil($scale * $old_height);
     } else {
-        list($width, $height, $type, $attr) = getimagesize($image);
+        list($width, $height, $type, $attr) = getimagesize($path);
     }
 
     return (object)[

@@ -49,7 +49,9 @@
                                     {/foreach}
                                     {if isset($bewertungSterneSelected) && $bewertungSterneSelected > 0}
                                         <p>
-                                            <a href="{$Artikel->cURLFull}#tab-votes" class="btn btn-default">Alle Bewertungen</a>
+                                            <a href="{$Artikel->cURLFull}#tab-votes" class="btn btn-default">
+                                                {lang key="allReviews" section="product rating"}
+                                            </a>
                                         </p>
                                     {/if}
                                 </div>

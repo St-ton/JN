@@ -1112,15 +1112,16 @@ class Warenkorb
     {
         $bRedirect     = false;
         $positionCount = count($this->PositionenArr);
+
         for ($i = 0; $i < $positionCount; $i++) {
-            if (isset($this->PositionenArr[$i]->WarenkorbPosEigenschaftArr) && count($this->PositionenArr[$i]->WarenkorbPosEigenschaftArr) > 0 &&
-                !$this->PositionenArr[$i]->Artikel->kVaterArtikel && !$this->PositionenArr[$i]->Artikel->nIstVater
+            if ($this->PositionenArr[$i]->kArtikel > 0 && $this->PositionenArr[$i]->Artikel->cLagerBeachten === 'Y' &&
+                $this->PositionenArr[$i]->Artikel->cLagerKleinerNull !== 'Y'
             ) {
-                //Position mit Variationen
-                if ($this->PositionenArr[$i]->Artikel->cLagerBeachten === 'Y' && $this->PositionenArr[$i]->Artikel->cLagerVariation === 'Y' &&
-                    $this->PositionenArr[$i]->Artikel->cLagerKleinerNull !== 'Y'
+                // Lagerbestand beachten und keine Überverkäufe möglich
+                if (isset($this->PositionenArr[$i]->WarenkorbPosEigenschaftArr) && count($this->PositionenArr[$i]->WarenkorbPosEigenschaftArr) > 0 &&
+                    !$this->PositionenArr[$i]->Artikel->kVaterArtikel && !$this->PositionenArr[$i]->Artikel->nIstVater && $this->PositionenArr[$i]->Artikel->cLagerVariation === 'Y'
                 ) {
-                    //Lagerbestand in Variationen wird beachtet
+                    // Position mit Variationen, Lagerbestand in Variationen wird beachtet
                     foreach ($this->PositionenArr[$i]->WarenkorbPosEigenschaftArr as $oWarenkorbPosEigenschaft) {
                         if ($oWarenkorbPosEigenschaft->kEigenschaftWert > 0 && $this->PositionenArr[$i]->nAnzahl > 0) {
                             //schaue in DB, ob Lagerbestand ausreichend
@@ -1140,13 +1141,9 @@ class Warenkorb
                             }
                         }
                     }
-                }
-            } else {
-                //Position ohne Variationen
-                if ($this->PositionenArr[$i]->kArtikel > 0 && $this->PositionenArr[$i]->Artikel->cLagerBeachten === 'Y' &&
-                    $this->PositionenArr[$i]->Artikel->cLagerKleinerNull !== 'Y'
-                ) {
-                    //schaue in DB, ob Lagerbestand ausreichend
+                } else {
+                    // Position ohne Variationen bzw. Variationen ohne eigenen Lagerbestand
+                    // schaue in DB, ob Lagerbestand ausreichend
                     $oArtikelLagerbestand = Shop::DB()->query(
                         "SELECT kArtikel, fLagerbestand >= " . $this->PositionenArr[$i]->nAnzahl . " AS bAusreichend, fLagerbestand
                             FROM tartikel
@@ -1163,6 +1160,7 @@ class Warenkorb
                 }
             }
         }
+
         if ($bRedirect) {
             $this->setzePositionsPreise();
             $linkHelper = LinkHelper::getInstance();

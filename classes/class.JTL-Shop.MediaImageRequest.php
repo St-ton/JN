@@ -196,6 +196,10 @@ class MediaImageRequest
         $ext      = $this->ext ?: $settings['format'];
 
         $thumb = sprintf('%s/%d/%s/%s%s.%s', self::getCachePath($this->getType()), $this->getId(), $size, $this->getName(), $number, $ext);
+        if (!file_exists($thumb)) {
+            $thumb = $this->getFallbackThumb($size);
+        }
+
         return ($absolute === true)
             ? PFAD_ROOT . $thumb
             : $thumb;
@@ -231,8 +235,8 @@ class MediaImageRequest
         $id     = $this->getId();
         $number = $this->getNumber();
         $item   = Shop::DB()->query("
-          SELECT kArtikel AS id, nNr AS number, cPfad AS path 
-            FROM tartikelpict 
+          SELECT kArtikel AS id, nNr AS number, cPfad AS path
+            FROM tartikelpict
             WHERE kArtikel = {$id} AND nNr = {$number} ORDER BY nNr LIMIT 1", 1
         );
 

@@ -270,7 +270,8 @@ $smarty->assign('Navigation', createNavigation($AktuelleSeite, $AufgeklappteKate
        ->assign('KONFIG_ANZEIGE_TYP_RADIO', KONFIG_ANZEIGE_TYP_RADIO)
        ->assign('KONFIG_ANZEIGE_TYP_DROPDOWN', KONFIG_ANZEIGE_TYP_DROPDOWN)
        ->assign('KONFIG_ANZEIGE_TYP_DROPDOWN_MULTI', KONFIG_ANZEIGE_TYP_DROPDOWN_MULTI)
-       ->assign('ratingPagination', $pagination);
+       ->assign('ratingPagination', $pagination)
+       ->assign('bewertungSterneSelected', $bewertung_sterne);
 if ($Einstellungen['artikeldetails']['artikeldetails_navi_blaettern'] === 'Y') {
     $smarty->assign('NavigationBlaettern', gibNaviBlaettern(
         $AktuellerArtikel->kArtikel,

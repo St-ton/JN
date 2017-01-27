@@ -22,16 +22,24 @@
                                         {math equation='a/b*c' a=$nSterne b=$Artikel->Bewertungen->oBewertungGesamt->nAnzahl c=$int2 assign='percent'}
                                         <div class="row">
                                             <div class="col-xs-12 col-sm-6 col-lg-4">
-                                                {if $nSterne > 0}
+                                                {if isset($bewertungSterneSelected) && $bewertungSterneSelected === $schluessel}
+                                                    <strong>
+                                                {/if}
+                                                {if $nSterne > 0 && (!isset($bewertungSterneSelected) || $bewertungSterneSelected !== $schluessel)}
                                                     <a href="{$Artikel->cURLFull}?btgsterne={$schluessel}#tab-votes">{$schluessel} {if $i == 4}{lang key="starSingular" section="product rating"}{else}{lang key="starPlural" section="product rating"}{/if}</a>
                                                 {else}
                                                     {$schluessel} {if $i == 4}{lang key="starSingular" section="product rating"}{else}{lang key="starPlural" section="product rating"}{/if}
+                                                {/if}
+                                                {if isset($bewertungSterneSelected) && $bewertungSterneSelected === $schluessel}
+                                                    </strong>
                                                 {/if}
                                             </div>
                                             <div class="col-xs-12 col-sm-6 col-lg-8">
                                                 <div class="progress">
                                                     {if $nSterne > 0}
-                                                        <div class="progress-bar" role="progressbar" aria-valuenow="{$percent|round}" aria-valuemin="0" aria-valuemax="100" style="width: {$percent|round}%;">
+                                                        <div class="progress-bar" role="progressbar"
+                                                             aria-valuenow="{$percent|round}" aria-valuemin="0"
+                                                             aria-valuemax="100" style="width: {$percent|round}%;">
                                                             {$nSterne}
                                                         </div>
                                                     {/if}
@@ -39,6 +47,11 @@
                                             </div>
                                         </div>
                                     {/foreach}
+                                    {if isset($bewertungSterneSelected) && $bewertungSterneSelected > 0}
+                                        <p>
+                                            <a href="{$Artikel->cURLFull}#tab-votes" class="btn btn-default">Alle Bewertungen</a>
+                                        </p>
+                                    {/if}
                                 </div>
                             {/if}
                             <div class="col-xs-12 {if $Artikel->Bewertungen->oBewertungGesamt->nAnzahl === 0}col-md-10 col-md-push-1 {else}col-md-6 {/if}">

@@ -127,6 +127,30 @@ if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_ed
             $oConfig_arr[$i]->gesetzterWert = (isset($oSetValue->cWert)) ? $oSetValue->cWert : null;
         }
     }
+
+    // Bewertungen Anzahl holen
+    $nBewertungen = (int)Shop::DB()->query(
+        "SELECT count(*) AS nAnzahl
+            FROM tbewertung
+            WHERE kSprache = " . (int)$_SESSION['kSprache'] . "
+                AND nAktiv = 0", 1
+    )->nAnzahl;
+    // Aktive Bewertungen Anzahl holen
+    $nBewertungenAktiv = (int)Shop::DB()->query(
+        "SELECT count(*) AS nAnzahl
+            FROM tbewertung
+            WHERE kSprache = " . (int)$_SESSION['kSprache'] . "
+                AND nAktiv = 1", 1
+    )->nAnzahl;
+
+    // Paginationen
+    $oPagiInaktiv = (new Pagination('inactive'))
+        ->setItemCount($nBewertungen)
+        ->assemble();
+    $oPageAktiv   = (new Pagination('active'))
+        ->setItemCount($nBewertungenAktiv)
+        ->assemble();
+
     // Bewertungen holen
     $oBewertung_arr = Shop::DB()->query(
         "SELECT tbewertung.*, DATE_FORMAT(tbewertung.dDatum, '%d.%m.%Y') AS Datum, tartikel.cName AS ArtikelName
@@ -134,7 +158,8 @@ if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_ed
             LEFT JOIN tartikel ON tbewertung.kArtikel = tartikel.kArtikel
             WHERE tbewertung.kSprache = " . (int)$_SESSION['kSprache'] . "
                 AND tbewertung.nAktiv = 0
-            ORDER BY tbewertung.kArtikel, tbewertung.dDatum DESC", 2
+            ORDER BY tbewertung.kArtikel, tbewertung.dDatum DESC
+            LIMIT " . $oPagiInaktiv->getLimitSQL(), 2
     );
     // Aktive Bewertungen
     $oBewertungLetzten50_arr = Shop::DB()->query(
@@ -143,34 +168,14 @@ if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_ed
             LEFT JOIN tartikel ON tbewertung.kArtikel = tartikel.kArtikel
             WHERE tbewertung.kSprache = " . (int)$_SESSION['kSprache'] . "
                 AND tbewertung.nAktiv = 1
-            ORDER BY tbewertung.dDatum DESC", 2
+            ORDER BY tbewertung.dDatum DESC
+            LIMIT " . $oPageAktiv->getLimitSQL(), 2
     );
-    // Bewertungen Anzahl holen
-    $oBewertung = Shop::DB()->query(
-        "SELECT count(*) AS nAnzahl
-            FROM tbewertung
-            WHERE kSprache = " . (int)$_SESSION['kSprache'] . "
-                AND nAktiv = 0", 1
-    );
-    // Aktive Bewertungen Anzahl holen
-    $oBewertungAktiv = Shop::DB()->query(
-        "SELECT count(*) AS nAnzahl
-            FROM tbewertung
-            WHERE kSprache = " . (int)$_SESSION['kSprache'] . "
-                AND nAktiv = 1", 1
-    );
-
-    $oPagiInaktiv = (new Pagination('inactive'))
-        ->setItemArray($oBewertung_arr)
-        ->assemble();
-    $oPageAktiv   = (new Pagination('active'))
-        ->setItemArray($oBewertungLetzten50_arr)
-        ->assemble();
 
     $smarty->assign('oPagiInaktiv', $oPagiInaktiv)
         ->assign('oPagiAktiv', $oPageAktiv)
-        ->assign('oBewertung_arr', $oPagiInaktiv->getPageItems())
-        ->assign('oBewertungLetzten50_arr', $oPageAktiv->getPageItems())
+        ->assign('oBewertung_arr', $oBewertung_arr)
+        ->assign('oBewertungLetzten50_arr', $oBewertungLetzten50_arr)
         ->assign('oBewertungAktiv_arr', (isset($oBewertungAktiv_arr) ? $oBewertungAktiv_arr : null))
         ->assign('oConfig_arr', $oConfig_arr)
         ->assign('Sprachen', gibAlleSprachen());

@@ -62,6 +62,16 @@
     </div>
 </div>
 
+<div class="modal modal-center fade" id="ppp-modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <h2 id="pp-loading-body"><i class="fa fa-spinner fa-spin fa-fw"></i> {lang key="redirect"}</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script type="application/javascript">
 var submit = 'ppp-submit';
 var thirdPartyPayment = false;
@@ -104,12 +114,10 @@ var ppConfig = {ldelim}
                 {rdelim})
                 .fail(function(res) {ldelim}
                     $('#' + submit).attr('disabled', false);
-                    var error = JSON.parse(res.responseText);
-                    var errorText = 'Unknown error';
-                    if (error && error.message) {
-                        errorText = error.message;
-                    }
-                    alert(errorText);
+                    $('#ppp-modal')
+                        .find('.modal-content')
+                        .replaceWith($(res.responseText));
+                    $('#ppp-modal').modal('handleUpdate');
                 {rdelim});
         {rdelim}
     {rdelim},
@@ -132,6 +140,7 @@ $(document).ready(function() {ldelim}
         if ($(checked).length > 0) {ldelim}
             return true;
         {rdelim}
+        $('#ppp-modal').modal();
         ppp.doContinue();
         return false;
     {rdelim});

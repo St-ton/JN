@@ -20,7 +20,6 @@ $cUploadVerzeichnis = PFAD_ROOT . PFAD_BILDER . PFAD_LINKBILDER;
 $clearCache         = false;
 $continue           = true;
 
-Shop::dbg($_POST, false, 'POST');
 
 if (isset($_POST['addlink']) && (int)($_POST['addlink']) > 0) {
     $step = 'neuer Link';
@@ -64,8 +63,8 @@ if ((isset($_POST['dellinkgruppe']) && (int)($_POST['dellinkgruppe']) > 0 && val
     Shop::DB()->delete('tlinkgruppesprache', 'kLinkgruppe', $kLinkgruppe);
     $links = Shop::DB()->selectAll('tlink', 'kLinkgruppe', $kLinkgruppe);
     foreach ($links as $link) {
-        $oLink = new Link($link->kLink, null, true);
-        $oLink->delete(false);
+        $oLink = new Link(null, $link, true);
+        $oLink->delete(false, $oLink->kLinkgruppe);
     }
     Shop::DB()->delete('tlink', 'kLinkgruppe', $kLinkgruppe);
     $hinweis .= 'Linkgruppe erfolgreich gel&ouml;scht!';
@@ -238,7 +237,7 @@ if (isset($_POST['neu_link']) && (int)($_POST['neu_link']) === 1 && validateToke
 if ($continue && ((isset($_POST['kLink']) && (int)($_POST['kLink']) > 0) ||
         (isset($_GET['kLink']) && (int)($_GET['kLink']) && isset($_GET['delpic']))) && validateToken()) {
     $step = 'neuer Link';
-    $link = Shop::DB()->select('tlink', 'kLink', verifyGPCDataInteger('kLink'));
+    $link = Shop::DB()->select('tlink', ['kLink', 'kLinkgruppe'], [verifyGPCDataInteger('kLink'), verifyGPCDataInteger('kLinkgruppe')]);
     $smarty->assign('Link', $link)
            ->assign('Linkname', getLinkVar($link->kLink, 'cName'))
            ->assign('Linkseo', getLinkVar($link->kLink, 'cSeo'))
@@ -325,26 +324,31 @@ if (isset($_POST['neu_linkgruppe']) && (int)($_POST['neu_linkgruppe']) === 1 && 
 if (isset($_POST['aender_linkgruppe']) && (int)($_POST['aender_linkgruppe']) === 1 && validateToken()) {
     if ((int)($_POST['kLink']) > 0 && (int)($_POST['kLinkgruppe']) > 0 && (int)($_POST['kLinkgruppeAlt']) > 0) {
         $oLink = new Link((int)$_POST['kLink'], null, true, (int)($_POST['kLinkgruppeAlt']));
-        Shop::dbg($oLink, false, 'link zum verschieben');
+        Shop::dbg($oLink);
         if ($oLink->getLink() > 0) {
             $oLinkgruppe = Shop::DB()->select('tlinkgruppe', 'kLinkgruppe', (int)$_POST['kLinkgruppe']);
             if (isset($oLinkgruppe->kLinkgruppe) && $oLinkgruppe->kLinkgruppe > 0) {
                 /*$oLink->setLinkgruppe((int)$_POST['kLinkgruppe'])
                       ->setVaterLink(0)
                       ->update();*/
-                $oLink->setLinkgruppe((int)$_POST['kLinkgruppe'])
-                    ->setVaterLink(0)
-                    ->save();
-                $oLink->setLinkgruppe((int)$_POST['kLinkgruppeAlt'])
-                    ->delete(false,(int)$_POST['kLinkgruppeAlt']);
-                // Kinder auch umziehen
-                if (isset($oLink->oSub_arr) && count($oLink->oSub_arr) > 0) {
-                    aenderLinkgruppeRek($oLink->oSub_arr, (int)$_POST['kLinkgruppe'], (int)$_POST['kLinkgruppeAlt']);
+                $exists = Shop::DB()->select('tlink', ['kLink', 'kLinkgruppe'],[(int)$oLink->kLink,  (int)$_POST['kLinkgruppe']]);
+                if (empty($exists)) {
+                    $oLink->setLinkgruppe((int)$_POST['kLinkgruppe'])
+                        ->setVaterLink(0)
+                        ->save();
+                    $oLink->setLinkgruppe((int)$_POST['kLinkgruppeAlt'])
+                        ->delete(false,(int)$_POST['kLinkgruppeAlt']);
+                    // Kinder auch umziehen
+                    if (isset($oLink->oSub_arr) && count($oLink->oSub_arr) > 0) {
+                        aenderLinkgruppeRek($oLink->oSub_arr, (int)$_POST['kLinkgruppe'], (int)$_POST['kLinkgruppeAlt']);
+                    }
+                    $hinweis .= 'Sie haben den Link "' . $oLink->cName . '" erfolgreich in die Linkgruppe "' .
+                        $oLinkgruppe->cName . '" verschoben.';
+                    $step       = 'uebersicht';
+                    $clearCache = true;
+                } else {
+                    $fehler .= 'Fehler: Der Link konnte nicht verschoben werden. Er existiert bereits in der Zielgruppe.';
                 }
-                $hinweis .= 'Sie haben den Link "' . $oLink->cName . '" erfolgreich in die Linkgruppe "' .
-                    $oLinkgruppe->cName . '" verschoben.';
-                $step       = 'uebersicht';
-                $clearCache = true;
             } else {
                 $fehler .= 'Fehler: Es konnte keine Linkgruppe mit Ihrem Key gefunden werden.';
             }
@@ -352,6 +356,7 @@ if (isset($_POST['aender_linkgruppe']) && (int)($_POST['aender_linkgruppe']) ===
             $fehler .= 'Fehler: Es konnte kein Link mit Ihrem Key gefunden werden.';
         }
     }
+    $step       = 'uebersicht';
 }
 if (isset($_POST['kopiere_in_linkgruppe']) && (int)($_POST['kopiere_in_linkgruppe']) === 1 && validateToken()) {
     if ((int)($_POST['kLink']) > 0 && (int)($_POST['kLinkgruppe']) > 0) {

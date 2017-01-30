@@ -399,7 +399,6 @@ class Link extends MainModel
         } else {
             $oObj = Shop::DB()->select('tlink', 'kLink', (int)$kKey);
         }
-        Shop::dbg($oObj, false, 'Object in load');
         if (!empty($oObj->kLink)) {
             $this->loadObject($oObj);
 
@@ -422,7 +421,6 @@ class Link extends MainModel
         $kVaterLinkgruppe = (int)$kVaterLinkgruppe;
         if ($kVaterLink > 0) {
             if (!empty($kVaterLinkgruppe)) {
-                Shop::dbg('hier');
                 $oLink_arr = Shop::DB()->selectAll('tlink', ['kVaterLink', 'kLinkgruppe'], [$kVaterLink, $kVaterLinkgruppe]);
             } else {
                 $oLink_arr = Shop::DB()->selectAll('tlink', 'kVaterLink', $kVaterLink);
@@ -430,7 +428,7 @@ class Link extends MainModel
 
             if (is_array($oLink_arr) && count($oLink_arr) > 0) {
                 foreach ($oLink_arr as &$oLink) {
-                    $oLink = new self($oLink->kLink, null, true, $kVaterLinkgruppe);
+                    $oLink = new self(null, $oLink, true);
                 }
             }
 

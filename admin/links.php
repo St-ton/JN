@@ -138,7 +138,7 @@ if (isset($_POST['neu_link']) && (int)($_POST['neu_link']) === 1 && validateToke
             $kLinkgruppe = (int)($_POST['kLinkgruppe']);
             $revision = new Revision();
             $revision->addRevision('link', (int)$_POST['kLink'], true);
-            Shop::DB()->update('tlink', ['kLink', 'kLinkgruppe'], [$kLink, $kLinkgruppe], $link, true);
+            Shop::DB()->update('tlink', ['kLink', 'kLinkgruppe'], [$kLink, $kLinkgruppe], $link);
             $hinweis .= "Der Link <strong>$link->cName</strong> wurde erfolgreich ge&auml;ndert.";
             $step     = 'uebersicht';
             $continue = (isset($_POST['continue']) && $_POST['continue'] === '1');
@@ -323,8 +323,8 @@ if (isset($_POST['neu_linkgruppe']) && (int)($_POST['neu_linkgruppe']) === 1 && 
 // Verschiebt einen Link in eine andere Linkgruppe
 if (isset($_POST['aender_linkgruppe']) && (int)($_POST['aender_linkgruppe']) === 1 && validateToken()) {
     if ((int)($_POST['kLink']) > 0 && (int)($_POST['kLinkgruppe']) > 0 && (int)($_POST['kLinkgruppeAlt']) > 0) {
-        $oLink = new Link((int)$_POST['kLink'], null, true, (int)($_POST['kLinkgruppeAlt']));
-        Shop::dbg($oLink);
+        $oLink = new Link();
+        $oLink->load((int)$_POST['kLink'], null, true, (int)($_POST['kLinkgruppeAlt']));
         if ($oLink->getLink() > 0) {
             $oLinkgruppe = Shop::DB()->select('tlinkgruppe', 'kLinkgruppe', (int)$_POST['kLinkgruppe']);
             if (isset($oLinkgruppe->kLinkgruppe) && $oLinkgruppe->kLinkgruppe > 0) {
@@ -365,11 +365,16 @@ if (isset($_POST['kopiere_in_linkgruppe']) && (int)($_POST['kopiere_in_linkgrupp
         if ($oLink->getLink() > 0) {
             $oLinkgruppe = Shop::DB()->select('tlinkgruppe', 'kLinkgruppe', (int)$_POST['kLinkgruppe']);
             if (isset($oLinkgruppe->kLinkgruppe) && $oLinkgruppe->kLinkgruppe > 0) {
-                $oLink->setLinkgruppe($_POST['kLinkgruppe'])
-                      ->setVaterLink(0)
-                      ->save();
-                $hinweis .= 'Sie haben den Link "' . $oLink->cName . '" erfolgreich in die Linkgruppe "' .
-                    $oLinkgruppe->cName . '" kopiert.';
+                $exists = Shop::DB()->select('tlink', ['kLink', 'kLinkgruppe'],[(int)$oLink->kLink,  (int)$_POST['kLinkgruppe']]);
+                if (empty($exists)) {
+                    $oLink->setLinkgruppe($_POST['kLinkgruppe'])
+                        ->setVaterLink(0)
+                        ->save();
+                    $hinweis .= 'Sie haben den Link "' . $oLink->cName . '" erfolgreich in die Linkgruppe "' .
+                        $oLinkgruppe->cName . '" kopiert.';
+                } else {
+                    $fehler .= 'Fehler: Der Link konnte nicht kopiert werden. Er existiert bereits in der Zielgruppe.';
+                }
                 $step       = 'uebersicht';
                 $clearCache = true;
             } else {

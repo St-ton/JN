@@ -260,14 +260,8 @@ function aenderLinkgruppeRek($oSub_arr, $kLinkgruppe, $kLinkgruppeAlt)
             /*$oSub->setLinkgruppe($kLinkgruppe);
             $oSub->update();
             aenderLinkgruppeRek($oSub->oSub_arr, $kLinkgruppe);*/
-            Shop::dbg($oSub, false, 'oSub');
-            $oSub = new Link(null, $oSub, true, $kLinkgruppeAlt);
-            Shop::dbg($oSub, false, 'oSub mit sub');
-            //$oSub->getSub((int)$oSub->kLink, (int)($_POST['kLinkgruppeAlt']));
             $exists = Shop::DB()->select('tlink', ['kLink', 'kLinkgruppe'],[(int)$oSub->kLink,  (int)$kLinkgruppe]);
-            Shop::dbg($exists, false, 'exists');
             if (empty($exists)) {
-                Shop::dbg($oSub, false, 'oSub1');
                 $oSub->setLinkgruppe($kLinkgruppe)
                     ->save();
                 aenderLinkgruppeRek($oSub->oSub_arr, $kLinkgruppe, $kLinkgruppeAlt);
@@ -275,8 +269,6 @@ function aenderLinkgruppeRek($oSub_arr, $kLinkgruppe, $kLinkgruppeAlt)
                     ->delete(false, $kLinkgruppeAlt);
             } else {
                 //$oSub = new Link((int)$oSub->kLink, null, true, (int)($kLinkgruppeAlt));
-                Shop::dbg($oSub, false, 'oSub2');
-                Shop::dbg($kLinkgruppeAlt, false, 'linkgruppealt');
                 $oSub->setVaterLink(0)
                      ->update();
             }

@@ -386,6 +386,21 @@ class Link extends MainModel
     }
 
     /**
+     * @param null $kKey
+     * @param null $oObj
+     * @param null $xOption
+     * @param int  $kLinkgruppe
+     */
+    public function __construct($kKey = null, $oObj = null, $xOption = null, $kLinkgruppe = null)
+    {
+        if (is_object($oObj)) {
+            $this->loadObject($oObj);
+        } elseif ($kKey !== null) {
+            $this->load($kKey, $oObj, $xOption, $kLinkgruppe);
+        }
+    }
+
+    /**
      * @param int         $kKey
      * @param object|null $oObj
      * @param mixed|null  $xOption
@@ -428,7 +443,7 @@ class Link extends MainModel
 
             if (is_array($oLink_arr) && count($oLink_arr) > 0) {
                 foreach ($oLink_arr as &$oLink) {
-                    $oLink = new self(null, $oLink, true);
+                    $oLink = new self($oLink->kLink, null, true, $kVaterLinkgruppe);
                 }
             }
 
@@ -510,7 +525,7 @@ class Link extends MainModel
             }
 
             $cQuery .= implode(', ', $cSet_arr);
-            $cQuery .= " WHERE kLink = {$this->getLink()}";
+            $cQuery .= " WHERE kLink = {$this->getLink()} and klinkgruppe = {$this->getLinkgruppe()}";
 
             return Shop::DB()->query($cQuery, 3);
         } else {

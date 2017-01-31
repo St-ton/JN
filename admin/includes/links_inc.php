@@ -257,9 +257,6 @@ function aenderLinkgruppeRek($oSub_arr, $kLinkgruppe, $kLinkgruppeAlt)
 {
     if (is_array($oSub_arr) && count($oSub_arr) > 0) {
         foreach ($oSub_arr as $oSub) {
-            /*$oSub->setLinkgruppe($kLinkgruppe);
-            $oSub->update();
-            aenderLinkgruppeRek($oSub->oSub_arr, $kLinkgruppe);*/
             $exists = Shop::DB()->select('tlink', ['kLink', 'kLinkgruppe'],[(int)$oSub->kLink,  (int)$kLinkgruppe]);
             if (empty($exists)) {
                 $oSub->setLinkgruppe($kLinkgruppe)

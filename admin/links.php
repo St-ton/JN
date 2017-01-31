@@ -328,9 +328,6 @@ if (isset($_POST['aender_linkgruppe']) && (int)($_POST['aender_linkgruppe']) ===
         if ($oLink->getLink() > 0) {
             $oLinkgruppe = Shop::DB()->select('tlinkgruppe', 'kLinkgruppe', (int)$_POST['kLinkgruppe']);
             if (isset($oLinkgruppe->kLinkgruppe) && $oLinkgruppe->kLinkgruppe > 0) {
-                /*$oLink->setLinkgruppe((int)$_POST['kLinkgruppe'])
-                      ->setVaterLink(0)
-                      ->update();*/
                 $exists = Shop::DB()->select('tlink', ['kLink', 'kLinkgruppe'],[(int)$oLink->kLink,  (int)$_POST['kLinkgruppe']]);
                 if (empty($exists)) {
                     $oLink->setLinkgruppe((int)$_POST['kLinkgruppe'])

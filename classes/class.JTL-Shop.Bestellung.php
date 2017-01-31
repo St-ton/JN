@@ -473,7 +473,7 @@ class Bestellung
             $this->Status                = lang_bestellstatus($this->cStatus);
             if ($this->kWaehrung > 0) {
                 $this->Waehrung = Shop::DB()->select('twaehrung', 'kWaehrung', (int)$this->kWaehrung);
-                if (isset($this->fWaehrungsFaktor) && $this->fWaehrungsFaktor !== 1 && isset($this->Waehrung->fFaktor)) {
+                if (isset($this->fWaehrungsFaktor) && $this->fWaehrungsFaktor != 1 && isset($this->Waehrung->fFaktor)) {
                     $this->Waehrung->fFaktor = $this->fWaehrungsFaktor;
                 }
                 if ($disableFactor === true) {

@@ -3,10 +3,10 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once PFAD_ROOT.PFAD_INCLUDES_MODULES.'PaymentMethod.class.php';
+require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
 
-require_once str_replace('frontend', '', $oPlugin->cFrontendPfad).'paypal-sdk/vendor/autoload.php';
-require_once str_replace('frontend', 'paymentmethod', $oPlugin->cFrontendPfad).'class/PayPal.helper.class.php';
+require_once str_replace('frontend', '', $oPlugin->cFrontendPfad) . 'paypal-sdk/vendor/autoload.php';
+require_once str_replace('frontend', 'paymentmethod', $oPlugin->cFrontendPfad) . 'class/PayPal.helper.class.php';
 
 use PayPal\Api\Amount;
 use PayPal\Api\Details;
@@ -67,10 +67,10 @@ class PayPalFinance extends PaymentMethod
      */
     public function __construct()
     {
-        $this->plugin = $this->getPlugin();
-        $this->settings = $this->getSettings();
-        $this->payment = $this->getPayment();
-        $this->paymentId = $this->getPaymentId();
+        $this->plugin      = $this->getPlugin();
+        $this->settings    = $this->getSettings();
+        $this->payment     = $this->getPayment();
+        $this->paymentId   = $this->getPaymentId();
         $this->languageIso = $this->getLanguage();
         $this->currencyIso = gibStandardWaehrung(true);
         //$this->paymentMethod = $this->getPaymentMethod();
@@ -80,12 +80,12 @@ class PayPalFinance extends PaymentMethod
         $this->config = [
             'mode' => $modus,
 
-            'acct1.UserName' => $this->settings["api_{$modus}_user"],
-            'acct1.Password' => $this->settings["api_{$modus}_pass"],
+            'acct1.UserName'  => $this->settings["api_{$modus}_user"],
+            'acct1.Password'  => $this->settings["api_{$modus}_pass"],
             'acct1.Signature' => $this->settings["api_{$modus}_signatur"],
 
-            'cache.enabled' => true,
-            'cache.FileName' => PFAD_ROOT.PFAD_COMPILEDIR.'paypalfinance.auth.cache',
+            'cache.enabled'  => true,
+            'cache.FileName' => PFAD_ROOT . PFAD_COMPILEDIR . 'paypalfinance.auth.cache',
         ];
 
         parent::__construct($this->getModuleId());
@@ -100,7 +100,7 @@ class PayPalFinance extends PaymentMethod
     {
         parent::init($nAgainCheckout);
 
-        $this->name = 'PayPal Finance';
+        $this->name    = 'PayPal Finance';
         $this->caption = 'PayPal Finance';
 
         return $this;
@@ -126,7 +126,7 @@ class PayPalFinance extends PaymentMethod
             return false;
         }
 
-        $items = PayPalHelper::getProducts();
+        $items      = PayPalHelper::getProducts();
         $shippingId = $_SESSION['Versandart']->kVersandart;
 
         if (!$this->isUseable($items, $shippingId)) {
@@ -146,12 +146,12 @@ class PayPalFinance extends PaymentMethod
         ));
 
         $apiContext->setConfig([
-            'http.Retry' => 1,
-            'http.ConnectionTimeOut' => 30,
+            'http.Retry'                                 => 1,
+            'http.ConnectionTimeOut'                     => 30,
             'http.headers.PayPal-Partner-Attribution-Id' => 'JTL_Cart_REST_Plus',
-            'mode' => $this->getModus(),
-            'cache.enabled' => true,
-            'cache.FileName' => PFAD_ROOT.PFAD_COMPILEDIR.'paypalfinance.auth.cache',
+            'mode'                                       => $this->getModus(),
+            'cache.enabled'                              => true,
+            'cache.FileName'                             => PFAD_ROOT . PFAD_COMPILEDIR . 'paypalfinance.auth.cache',
         ]);
 
         return $apiContext;
@@ -162,7 +162,7 @@ class PayPalFinance extends PaymentMethod
         $sandbox = $this->getModus() === 'sandbox';
 
         $clientId = $this->settings[$sandbox ? 'api_sandbox_client_id' : 'api_live_client_id'];
-        $secret = $this->settings[$sandbox ? 'api_sandbox_secret' : 'api_live_secret'];
+        $secret   = $this->settings[$sandbox ? 'api_sandbox_secret' : 'api_live_secret'];
 
         if (strlen($clientId) == 0 || strlen($secret) == 0) {
             return false;
@@ -192,7 +192,7 @@ class PayPalFinance extends PaymentMethod
 
     public function getModuleId()
     {
-        $crap = 'kPlugin_'.$this->plugin->kPlugin.'_paypalfinance';
+        $crap = 'kPlugin_' . $this->plugin->kPlugin . '_paypalfinance';
 
         return $crap;
     }
@@ -208,7 +208,7 @@ class PayPalFinance extends PaymentMethod
             $shoplogo = $this->settings['shoplogo'];
             if (!empty($shoplogo)) {
                 if (strpos($shoplogo, 'http') !== 0) {
-                    $shoplogo = Shop::getURL().'/'.$shoplogo;
+                    $shoplogo = Shop::getURL() . '/' . $shoplogo;
                 }
                 $presentation->setLogoImage($shoplogo);
             }
@@ -222,7 +222,7 @@ class PayPalFinance extends PaymentMethod
                 ->setAddressOverride(1);
 
             $webProfile = new \PayPal\Api\WebProfile();
-            $webProfile->setName('JTL-PayPalFinance'.uniqid())
+            $webProfile->setName('JTL-PayPalFinance' . uniqid())
                 ->setPresentation($presentation)
                 ->setInputFields($inputFields);
 
@@ -230,7 +230,7 @@ class PayPalFinance extends PaymentMethod
 
             try {
                 $createProfileResponse = $webProfile->create($this->getContext());
-                $webProfileId = $createProfileResponse->getId();
+                $webProfileId          = $createProfileResponse->getId();
                 $this->addCache('webProfileId', $webProfileId);
                 $this->logResult('WebProfile', $request, $createProfileResponse);
             } catch (Exception $ex) {
@@ -244,15 +244,15 @@ class PayPalFinance extends PaymentMethod
     public function getCallbackUrl(array $params = [], $forceSsl = false)
     {
         $plugin = $this->getPlugin();
-        $link = PayPalHelper::getLinkByName($plugin, 'PayPalFinance');
+        $link   = PayPalHelper::getLinkByName($plugin, 'PayPalFinance');
 
         $params = array_merge(
             ['s' => $link->kLink],
             $params
         );
 
-        $paramlist = http_build_query($params, '', '&');
-        $callbackUrl = Shop::getURL($forceSsl).'/index.php?'.$paramlist;
+        $paramlist   = http_build_query($params, '', '&');
+        $callbackUrl = Shop::getURL($forceSsl) . '/index.php?' . $paramlist;
 
         return $callbackUrl;
     }
@@ -260,10 +260,10 @@ class PayPalFinance extends PaymentMethod
     public function getSettings()
     {
         $settings = [];
-        $crap = 'kPlugin_'.$this->plugin->kPlugin.'_paypalfinance_';
+        $crap     = 'kPlugin_' . $this->plugin->kPlugin . '_paypalfinance_';
 
         foreach ($this->plugin->oPluginEinstellungAssoc_arr as $key => $value) {
-            $key = str_replace($crap, '', $key);
+            $key            = str_replace($crap, '', $key);
             $settings[$key] = $value;
         }
 
@@ -272,7 +272,7 @@ class PayPalFinance extends PaymentMethod
 
     public function getPayment()
     {
-        return Shop::DB()->query("SELECT cName, kZahlungsart FROM tzahlungsart WHERE cModulId='kPlugin_".$this->plugin->kPlugin."_paypalfinance'", 1);
+        return Shop::DB()->query("SELECT cName, kZahlungsart FROM tzahlungsart WHERE cModulId='kPlugin_" . $this->plugin->kPlugin . "_paypalfinance'", 1);
     }
 
     public function getPaymentId()
@@ -316,7 +316,7 @@ class PayPalFinance extends PaymentMethod
     public function logResult($type, $request, $response = null, $level = LOGLEVEL_NOTICE)
     {
         if ($request && $response) {
-            $request = $this->formatObject($request);
+            $request  = $this->formatObject($request);
             $response = $this->formatObject($response);
             $this->doLog("{$type}: {$request} - {$response}", $level);
         } else {
@@ -357,7 +357,7 @@ class PayPalFinance extends PaymentMethod
 
     public function getPresentment($amount, $currencyCode)
     {
-        $hash = md5($amount.$currencyCode);
+        $hash = md5($amount . $currencyCode);
 
         if ($array = $this->getCache($hash)) {
             $presentment = new Presentment();
@@ -438,7 +438,7 @@ class PayPalFinance extends PaymentMethod
     public function isUseable($oArtikel_arr = [], $shippingId = 0)
     {
         $versandklassen = VersandartHelper::getShippingClasses($_SESSION['Warenkorb']);
-        $shippingId = intval($shippingId);
+        $shippingId     = intval($shippingId);
 
         foreach ($oArtikel_arr as $oArtikel) {
             if ($oArtikel !== null) {
@@ -454,12 +454,12 @@ class PayPalFinance extends PaymentMethod
                         FROM tversandart
                         LEFT JOIN tversandartzahlungsart
                             ON tversandartzahlungsart.kVersandart = tversandart.kVersandart
-                        WHERE tversandartzahlungsart.kZahlungsart = '.$this->paymentId."
-                AND (cVersandklassen='-1' OR (cVersandklassen LIKE '% ".$versandklassen." %' OR cVersandklassen LIKE '% ".$versandklassen."'))
-                           AND (cKundengruppen='-1' OR cKundengruppen LIKE '%;".$kKundengruppe.";%')";
+                        WHERE tversandartzahlungsart.kZahlungsart = ' . $this->paymentId . "
+                AND (cVersandklassen='-1' OR (cVersandklassen LIKE '% " . $versandklassen . " %' OR cVersandklassen LIKE '% " . $versandklassen . "'))
+                           AND (cKundengruppen='-1' OR cKundengruppen LIKE '%;" . $kKundengruppe . ";%')";
 
                 if ($shippingId > 0) {
-                    $sql .= ' AND tversandart.kVersandart = '.$shippingId;
+                    $sql .= ' AND tversandart.kVersandart = ' . $shippingId;
                 }
 
                 $oVersandart_arr = Shop::DB()->query($sql, 2);
@@ -502,8 +502,8 @@ class PayPalFinance extends PaymentMethod
      */
     public function createPayment()
     {
-        $items = [];
-        $basket = PayPalHelper::getBasket();
+        $items       = [];
+        $basket      = PayPalHelper::getBasket();
         $currencyIso = $basket->currency->cISO;
 
         foreach ($basket->items as $i => $p) {
@@ -546,7 +546,7 @@ class PayPalFinance extends PaymentMethod
             $payment->create($this->getContext());
             $this->logResult('CreatePayment', $request, $payment);
 
-            header('location: '.$payment->getApprovalLink());
+            header('location: ' . $payment->getApprovalLink());
             exit;
         } catch (Exception $ex) {
             $this->handleException('CreatePayment', $payment, $ex);
@@ -574,14 +574,14 @@ class PayPalFinance extends PaymentMethod
     {
         try {
             $paymentId = $this->getCache('paymentId');
-            $payerId = $this->getCache('payerId');
+            $payerId   = $this->getCache('payerId');
 
             $helper = new WarenkorbHelper();
             $basket = PayPalHelper::getBasket($helper);
 
-            $apiContext = $this->getContext();
+            $apiContext  = $this->getContext();
             $orderNumber = baueBestellnummer();
-            $payment = Payment::get($paymentId, $apiContext);
+            $payment     = Payment::get($paymentId, $apiContext);
 
             if ($payment->getState() != 'created') {
                 throw new Exception('Unhandled payment state', $payment->getState());
@@ -615,7 +615,7 @@ class PayPalFinance extends PaymentMethod
             $payment->execute($execution, $apiContext);
             $this->logResult('ExecutePayment', $execution, $payment);
 
-            $order = finalisiereBestellung($orderNumber, false);
+            $order           = finalisiereBestellung($orderNumber, false);
             $order->cSession = $paymentId;
             $order->updateInDB();
 
@@ -638,20 +638,18 @@ class PayPalFinance extends PaymentMethod
 
     public function addSurcharge(PayPal\Api\CreditFinancingOffered $offer)
     {
-        $monthly = $offer->getMonthlyPayment();
-
-        $label = sprintf('%d Raten - %s',
-            $offer->getTerm(),
-            gibPreisStringLocalized($monthly->getValue())
-        );
+        $taxClass = 0;
+        $taxRate  = Shop::DB()->select('tsteuersatz', 'fSteuersatz', 0);
+        if (is_object($taxRate)) {
+            $taxClass = $taxRate->kSteuerklasse;
+        }
 
         $interest = $offer->getTotalInterest();
-        $taxClass = $_SESSION['Warenkorb']->gibVersandkostenSteuerklasse('');
 
         $_SESSION['Warenkorb']->erstelleSpezialPos(
             'Finanzierungskosten', 1, $interest->getValue(), $taxClass,
             C_WARENKORBPOS_TYP_ZINSAUFSCHLAG,
-            true, true, $label
+            true, true, ''
         );
     }
 
@@ -662,11 +660,11 @@ class PayPalFinance extends PaymentMethod
      */
     public function createPaymentSession($kVersandart = false)
     {
-        $_SESSION['Zahlungsart'] = $this->payment;
-        $_SESSION['Zahlungsart']->cModulId = $this->moduleID;
+        $_SESSION['Zahlungsart']                      = $this->payment;
+        $_SESSION['Zahlungsart']->cModulId            = $this->moduleID;
         $_SESSION['Zahlungsart']->nWaehrendBestellung = 1;
 
-        $languages = Shop::DB()->query("SELECT cName, cISOSprache FROM tzahlungsartsprache WHERE kZahlungsart='".$this->paymentId."'", 2);
+        $languages = Shop::DB()->query("SELECT cName, cISOSprache FROM tzahlungsartsprache WHERE kZahlungsart='" . $this->paymentId . "'", 2);
 
         foreach ($languages as $language) {
             $_SESSION['Zahlungsart']->angezeigterName[$language->cISOSprache] = $language->cName;

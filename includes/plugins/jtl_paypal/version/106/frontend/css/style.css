@@ -217,3 +217,27 @@ a.paypalexpress {
 .ppf-star:before {
     content: '\2605';
 }
+
+.modal.modal-center {
+  text-align: center;
+  padding: 0!important;
+}
+
+.modal.modal-center:before {
+  content: '';
+  display: inline-block;
+  height: 100%;
+  vertical-align: middle;
+  margin-right: -4px;
+}
+
+.modal.modal-center .modal-dialog {
+  display: inline-block;
+  text-align: left;
+  vertical-align: middle;
+}
+
+#pp-loading-body {
+    margin: 20px;
+    text-align: center;
+}

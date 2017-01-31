@@ -27,30 +27,30 @@ class Migration_20170116112800 extends Migration implements IMigration
 
     public function up()
     {
-        $this->execute("ALTER TABLE `tkuponbestellung` ADD `kKunde` INT, ADD `cBestellNr` VARCHAR(20) CHARACTER SET latin1 COLLATE latin1_swedish_ci, ADD `fGesamtsummeBrutto` DOUBLE NOT NULL , ADD `fKuponwertBrutto` DOUBLE, ADD `cKuponTyp` ENUM('prozent','festpreis','versand','neukunden') CHARACTER SET latin1 COLLATE latin1_swedish_ci, ADD `dErstellt` DATETIME, ADD INDEX (`cKuponTyp`, `dErstellt`)");
+        $this->execute("ALTER TABLE `tkuponbestellung` ADD `kKunde` INT, ADD `cBestellNr` VARCHAR(20) CHARACTER SET latin1 COLLATE latin1_swedish_ci, ADD `fGesamtsummeBrutto` DOUBLE NOT NULL DEFAULT 0, ADD `fKuponwertBrutto` DOUBLE NOT NULL DEFAULT 0, ADD `cKuponTyp` ENUM('prozent','festpreis','versand','neukunden') CHARACTER SET latin1 COLLATE latin1_swedish_ci, ADD `dErstellt` DATETIME, ADD INDEX (`cKuponTyp`, `dErstellt`)");
         $this->execute("UPDATE `tkuponbestellung` AS `kbg`
                         INNER JOIN (SELECT `bsk`.`kBestellung`, `bsk`.`kKunde`, `bsk`.`cBestellNr`, ROUND(`bsk`.`fGesamtsumme`, 2) AS `fGesamtsummeBrutto`,
                                     IF(
                                         (ROUND(`wkp`.`fPreisEinzelNetto`*(1+`wkp`.`fMwSt`/100), 2)*(-1)) > 0,
                                         (ROUND(`wkp`.`fPreisEinzelNetto`*(1+`wkp`.`fMwSt`/100), 2)*(-1)),
-                                        (SELECT `va`.`fPreis`
+                                        (SELECT IFNULL(min(`va`.`fPreis`), 0) AS `fPreis`
                                             FROM `twarenkorbpos` AS `wpv`
-                                            LEFT JOIN `tversandartsprache` AS `vs` ON `vs`.`cName` = `wpv`.`cName`
-                                            LEFT JOIN `tversandart` AS `va` ON `va`.`kVersandart` = `vs`.`kVersandart` OR `va`.cName = `wpv`.`cName`
-                                            WHERE `wpv`.`kWarenkorb` IN
+                                            INNER JOIN `tversandartsprache` AS `vs` ON `vs`.`cName` = `wpv`.`cName`
+                                            INNER JOIN `tversandart` AS `va` ON `va`.`kVersandart` = `vs`.`kVersandart` OR `va`.cName = `wpv`.`cName`
+                                            WHERE `wpv`.`nPosTyp` = 2
+                                                AND `wkp`.`kWarenkorb` = `wpv`.`kWarenkorb`
+                                                AND `wpv`.`kWarenkorb` IN
                                                 (SELECT `kWarenkorb` 
                                                     FROM `twarenkorbpos` 
                                                     WHERE `nPosTyp` = 3
-                                                    AND `fPreisEinzelNetto` = 0)
-                                                AND `wpv`.`nPosTyp` = 2
-                                                AND `wkp`.`kWarenkorb` = `wpv`.`kWarenkorb` LIMIT 1)
+                                                    AND `fPreisEinzelNetto` = 0))
                                         ) AS `fKuponwertBrutto`,
                                     IF(`kp`.`cKuponTyp` = 'neukundenkupon', 'neukunden', IF(IFNULL(`kp`.`cWertTyp`,'festpreis') != '', IFNULL(`kp`.`cWertTyp`,'festpreis'), 'versand')) AS `cKuponTyp`,
                                     `bsk`.`dErstellt`
                                     FROM `tbestellung` AS `bsk`
-                                    LEFT JOIN `twarenkorbpos` AS `wkp` ON `bsk`.`kWarenkorb` = `wkp`.`kWarenkorb`
-                                    LEFT JOIN `tkuponbestellung` AS `kpb` ON `kpb`.`kBestellung` = `bsk`.`kBestellung`
-                                    LEFT JOIN `tkupon` AS `kp` ON `kpb`.`kKupon` = `kp`.`kKupon`
+                                    INNER JOIN `twarenkorbpos` AS `wkp` ON `bsk`.`kWarenkorb` = `wkp`.`kWarenkorb`
+                                    INNER JOIN `tkuponbestellung` AS `kpb` ON `kpb`.`kBestellung` = `bsk`.`kBestellung`
+                                    INNER JOIN `tkupon` AS `kp` ON `kpb`.`kKupon` = `kp`.`kKupon`
                                     WHERE  `wkp`.`nPosTyp` = 3 OR `wkp`.`nPosTyp` = 7) AS `mergetable` ON `mergetable`.`kBestellung` = `kbg`.`kBestellung`
                         SET
                             `kbg`.`kKunde` = `mergetable`.`kKunde`,

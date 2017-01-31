@@ -43,7 +43,7 @@ class Migration_20170116112800 extends Migration implements IMigration
                                                     WHERE `nPosTyp` = 3
                                                     AND `fPreisEinzelNetto` = 0)
                                                 AND `wpv`.`nPosTyp` = 2
-                                                AND `wkp`.`kWarenkorb` = `wpv`.`kWarenkorb`)
+                                                AND `wkp`.`kWarenkorb` = `wpv`.`kWarenkorb` LIMIT 1)
                                         ) AS `fKuponwertBrutto`,
                                     IF(`kp`.`cKuponTyp` = 'neukundenkupon', 'neukunden', IF(IFNULL(`kp`.`cWertTyp`,'festpreis') != '', IFNULL(`kp`.`cWertTyp`,'festpreis'), 'versand')) AS `cKuponTyp`,
                                     `bsk`.`dErstellt`

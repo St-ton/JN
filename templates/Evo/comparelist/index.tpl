@@ -1,9 +1,5 @@
 {include file='layout/header.tpl'}
-<h1>{lang key="compare" section="global"}
-    <div class="pull-right">
-        <a href="index.php?vla=1&print=1" title="{lang key="comparePrintThisPage" section="comparelist"}"><i class="fa fa-print"></i></a>
-    </div>
-</h1>
+<h1>{lang key="compare" section="global"}</h1>
 
 {if !empty($cHinweis)}
     <p class="alert alert-success">{$cHinweis}</p>

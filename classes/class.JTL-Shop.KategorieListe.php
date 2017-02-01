@@ -393,7 +393,7 @@ class KategorieListe
                     /** @deprecated since version 4.05 - usage of KategorieAttribute is deprecated, use categoryFunctionAttributes instead */
                     $oKategorie->KategorieAttribute = &$oKategorie->categoryFunctionAttributes;
 
-                    $oKategorie->cKurzbezeichnung = isset($oKategorie->categoryAttributes[ART_ATTRIBUT_SHORTNAME])
+                    $oKategorie->cKurzbezeichnung = (!empty($oKategorie->categoryAttributes[ART_ATTRIBUT_SHORTNAME]) && !empty($oKategorie->categoryAttributes[ART_ATTRIBUT_SHORTNAME]->cWert))
                         ? $oKategorie->categoryAttributes[ART_ATTRIBUT_SHORTNAME]->cWert
                         : $oKategorie->cName;
 

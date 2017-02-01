@@ -722,7 +722,9 @@ class Bestellung
                 $this->berechneEstimatedDelivery();
             }
 
-            executeHook(HOOK_BESTELLUNG_CLASS_FUELLEBESTELLUNG);
+            executeHook(HOOK_BESTELLUNG_CLASS_FUELLEBESTELLUNG, [
+                'oBestellung' => $this
+            ]);
         }
 
         return $this;

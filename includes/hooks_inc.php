@@ -812,6 +812,7 @@ define('HOOK_ATTRIBUT_CLASS_LOADFROMDB', 111);
  * at the end of Bestellung::fuelleBestellung()
  *
  * @file class.JTL-Shop.Bestellung.php
+ * @param Bestellung - oBestellung (@since 4.05)
  */
 define('HOOK_BESTELLUNG_CLASS_FUELLEBESTELLUNG', 112);
 

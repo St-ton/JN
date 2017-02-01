@@ -708,7 +708,7 @@ function checkeWarenkorbEingang()
         !isset($_POST['Wunschliste'])
     ) { //warenkorbeingang?
         // VariationsBox ist vorhanden => Prüfen ob Anzahl gesetzt wurde
-        if (isset($_POST['variBox']) && intval($_POST['variBox']) === 1) {
+        if (isset($_POST['variBox']) && (int)($_POST['variBox']) === 1) {
             if (pruefeVariBoxAnzahl($_POST['variBoxAnzahl'])) {
                 fuegeVariBoxInWK(
                     $_POST['variBoxAnzahl'],

@@ -80,9 +80,18 @@ class Preisradar
             }
             $oMaxDiff_arr = [];
             foreach ($xHelperAssoc_arr as $kArtikel => $xHelper_arr) {
-                // Der neue Preis muss kleiner sein als der Alte ... nur dann ist das Produkt günstiger geworden und nur das wollen wir anzeigen
-                if (isset($xHelper_arr[0]->fVKNetto) && isset($xHelper_arr[1]->fVKNetto) && $xHelper_arr[0]->fVKNetto < $xHelper_arr[1]->fVKNetto) {
-                    $fProzentDiff           = round((($xHelper_arr[1]->fVKNetto - $xHelper_arr[0]->fVKNetto) / $xHelper_arr[0]->fVKNetto) * 100, 1);
+                // Der neue Preis muss niedriger sein als der vorige,
+                // nur dann ist das Produkt günstiger geworden und nur das wollen wir anzeigen
+                if (isset($xHelper_arr[0]->fVKNetto) && isset($xHelper_arr[1]->fVKNetto) &&
+                    $xHelper_arr[0]->fVKNetto < $xHelper_arr[1]->fVKNetto
+                ) {
+                    $fProzentDiff           = round(
+                        (
+                            ($xHelper_arr[1]->fVKNetto - $xHelper_arr[0]->fVKNetto) /
+                            $xHelper_arr[0]->fVKNetto
+                        ) * 100,
+                        1
+                    );
                     $fDiff                  = $xHelper_arr[0]->fVKNetto - $xHelper_arr[1]->fVKNetto;
                     $oProduct               = new stdClass();
                     $oProduct->kArtikel     = $kArtikel;

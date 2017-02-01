@@ -217,11 +217,14 @@ class PayPalHelper
             isset($_SESSION['Versandart']->kVersandart)
             ? $_SESSION['Versandart']->kVersandart : 0;
 
-        if ($paymentId <= 0 && isset($_SESSION['Zahlungsart']->kZahlungsart)) {
-            $paymentId = (int) $_SESSION['Zahlungsart']->kZahlungsart;
+        if ($shippingId <= 0 || $paymentId <= 0) {
+            return;
         }
 
-        if ($shippingId <= 0 || $paymentId <= 0) {
+        $paymentMethod = new Zahlungsart();
+        $paymentMethod->load($paymentId);
+
+        if ((int)$paymentMethod->kZahlungsart <= 0) {
             return;
         }
 
@@ -231,25 +234,30 @@ class PayPalHelper
             'kZahlungsart', $paymentId);
 
         if ($surcharge !== null && is_object($surcharge)) {
-            $_SESSION['Zahlungsart']->fAufpreis    = $surcharge->fAufpreis;
-            $_SESSION['Zahlungsart']->cAufpreisTyp = $surcharge->cAufpreisTyp;
-        }
+            if (isset($surcharge->cAufpreisTyp) && $surcharge->cAufpreisTyp === 'prozent') {
+                $amount = ($_SESSION['Warenkorb']->gibGesamtsummeWarenExt(['1'], 1) * $surcharge->fAufpreis) / 100.0;
+            } else {
+                $amount = (isset($surcharge->fAufpreis)) ? $surcharge->fAufpreis : 0;
+            }
 
-        if (isset($_SESSION['Zahlungsart']->cAufpreisTyp) && $_SESSION['Zahlungsart']->cAufpreisTyp === 'prozent') {
-            $amount = ($_SESSION['Warenkorb']->gibGesamtsummeWarenExt(['1'], 1) * $_SESSION['Zahlungsart']->fAufpreis) / 100.0;
-        } else {
-            $amount = (isset($_SESSION['Zahlungsart']->fAufpreis)) ? $_SESSION['Zahlungsart']->fAufpreis : 0;
-        }
+            $name = $paymentMethod->cName;
 
-        if ($amount != 0) {
-            $_SESSION['Warenkorb']->erstelleSpezialPos(
-                $_SESSION['Zahlungsart']->angezeigterName,
-                1,
-                $amount,
-                $_SESSION['Warenkorb']->gibVersandkostenSteuerklasse(),
-                C_WARENKORBPOS_TYP_ZAHLUNGSART,
-                true
-            );
+            if (isset($_SESSION['Zahlungsart'])) {
+                $name                                  = $_SESSION['Zahlungsart']->angezeigterName;
+                $_SESSION['Zahlungsart']->fAufpreis    = $surcharge->fAufpreis;
+                $_SESSION['Zahlungsart']->cAufpreisTyp = $surcharge->cAufpreisTyp;
+            }
+
+            if ($amount != 0) {
+                $_SESSION['Warenkorb']->erstelleSpezialPos(
+                    $name,
+                    1,
+                    $amount,
+                    $_SESSION['Warenkorb']->gibVersandkostenSteuerklasse(),
+                    C_WARENKORBPOS_TYP_ZAHLUNGSART,
+                    true
+                );
+            }
         }
     }
 
@@ -276,7 +284,7 @@ class PayPalHelper
         $rounding = function ($prop) {
             return [
                 WarenkorbHelper::NET   => round($prop[WarenkorbHelper::NET], 2),
-                WarenkorbHelper::GROSS => round($prop[WarenkorbHelper::GROSS], 2)
+                WarenkorbHelper::GROSS => round($prop[WarenkorbHelper::GROSS], 2),
             ];
         };
 
@@ -311,12 +319,12 @@ class PayPalHelper
 
         $difference = [
             WarenkorbHelper::NET   => $basket->total[WarenkorbHelper::NET] - $calculated[WarenkorbHelper::NET],
-            WarenkorbHelper::GROSS => $basket->total[WarenkorbHelper::GROSS] - $calculated[WarenkorbHelper::GROSS]
+            WarenkorbHelper::GROSS => $basket->total[WarenkorbHelper::GROSS] - $calculated[WarenkorbHelper::GROSS],
         ];
 
         $difference = $rounding($difference);
 
-        $addDifference = function($difference, $type) use (&$basket) {
+        $addDifference = function ($difference, $type) use (&$basket) {
             if ($difference[$type] < 0.0) {
                 if ($basket->shipping[$type] >= $difference[$type] * -1) {
                     $basket->shipping[$type] += $difference[$type];
@@ -332,5 +340,21 @@ class PayPalHelper
         $addDifference($difference, WarenkorbHelper::GROSS);
 
         return $basket;
+    }
+
+    public static function sendPaymentDeniedMail($customer, $order)
+    {
+        if (!function_exists('sendeMail')) {
+            require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
+        }
+
+        $mail              = new stdClass();
+        $mail->tkunde      = $customer;
+        $mail->tbestellung = $order;
+
+        $plugin   = Plugin::getPluginById('jtl_paypal');
+        $moduleId = 'kPlugin_' . $plugin->kPlugin . '_pppd';
+
+        sendeMail($moduleId, $mail);
     }
 }

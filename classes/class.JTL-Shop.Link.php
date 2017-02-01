@@ -94,7 +94,7 @@ class Link extends MainModel
     /**
      * @var array
      */
-    public $oSub_arr = array();
+    public $oSub_arr = [];
 
     /**
      * @return int
@@ -473,7 +473,7 @@ class Link extends MainModel
     public function update()
     {
         $cQuery   = "UPDATE tlink SET ";
-        $cSet_arr = array();
+        $cSet_arr = [];
 
         $cMember_arr = array_keys(get_object_vars($this));
         if (is_array($cMember_arr) && count($cMember_arr) > 0) {
@@ -482,17 +482,17 @@ class Link extends MainModel
                 if (method_exists($this, $cMethod)) {
                     $mValue = "'" . Shop::DB()->realEscape(
                             call_user_func(
-                                array(
+                                [
                                     &$this,
                                     $cMethod
-                                )
+                                ]
                             )
                         ) . "'";
                     if (call_user_func(
-                            array(
+                            [
                                 &$this,
                                 $cMethod
-                            )
+                            ]
                         ) === null
                     ) {
                         $mValue = 'NULL';

@@ -1681,11 +1681,11 @@ function setzeSteuersaetze($steuerland = 0)
     if ($steuerland) {
         $deliveryCountryCode = $steuerland;
     }
-    if (isset($_SESSION['Kunde']->cLand)) {
+    if (!empty($_SESSION['Kunde']->cLand)) {
         $deliveryCountryCode = $_SESSION['Kunde']->cLand;
         $billingCountryCode  = $_SESSION['Kunde']->cLand;
     }
-    if (isset($_SESSION['Lieferadresse']->cLand)) {
+    if (!empty($_SESSION['Lieferadresse']->cLand)) {
         $deliveryCountryCode = $_SESSION['Lieferadresse']->cLand;
     }
     if (!isset($billingCountryCode)) {
@@ -3152,7 +3152,7 @@ function checkeDatum($data)
     if (!$data) {
         return 1;
     }
-    if (!preg_match('/^\d{2}\.\d{2}\.(\d{4})$/', $data)) {
+    if (!preg_match('/^\d{1,2}\.\d{1,2}\.(\d{4})$/', $data)) {
         return 2;
     }
     list($tag, $monat, $jahr) = explode('.', $data);
@@ -4987,6 +4987,9 @@ function phpLinkCheck($url)
 function gibKategoriepfad($Kategorie, $kKundengruppe, $kSprache, $bString = true)
 {
     if (empty($Kategorie->cKategoriePfad_arr) || empty($Kategorie->kSprache) || ($Kategorie->kSprache != $kSprache)) {
+        if (empty($Kategorie->kKategorie)) {
+            return ($bString) ? '' : [];
+        }
         $h     = KategorieHelper::getInstance($kSprache, $kKundengruppe);
         $tree  = $h->getFlatTree($Kategorie->kKategorie);
         $names = [];

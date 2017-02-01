@@ -274,7 +274,7 @@ class Sprache
                 "SELECT tsprachwerte.kSprachsektion, tsprachwerte.cWert, 
                     tsprachwerte.cName, tsprachsektion.cName AS sectionName
                     FROM tsprachwerte 
-                        LEFT JOIN tsprachsektion
+                    LEFT JOIN tsprachsektion
                         ON tsprachwerte.kSprachsektion = tsprachsektion.kSprachsektion
                     WHERE tsprachwerte.kSprachISO = " . $this->kSprachISO, 2
             );
@@ -478,7 +478,11 @@ class Sprache
         $oWerte_arr     = [];
         $oSektionen_arr = $this->gibSektionen();
         foreach ($oSektionen_arr as $oSektion) {
-            $oSektion->oWerte_arr = Shop::DB()->selectAll('tsprachwerte', ['kSprachISO', 'kSprachsektion'], [(int)$this->kSprachISO, $oSektion->kSprachsektion]);
+            $oSektion->oWerte_arr = Shop::DB()->selectAll(
+                'tsprachwerte',
+                ['kSprachISO', 'kSprachsektion'],
+                [(int)$this->kSprachISO, $oSektion->kSprachsektion]
+            );
             $oWerte_arr[] = $oSektion;
         }
 
@@ -614,8 +618,8 @@ class Sprache
                 WHERE (
                     tsprachwerte.cWert LIKE '%" . $cSuchwort . "%' 
                     OR tsprachwerte.cName LIKE '%" . $cSuchwort . "%'
-                    )
-                    AND kSprachISO = " . (int)$this->kSprachISO, 2
+                )
+                AND kSprachISO = " . (int)$this->kSprachISO, 2
         );
     }
 
@@ -731,7 +735,7 @@ class Sprache
 
                 $cName   = Shop::DB()->escape($cData_arr[1]);
                 $cWert   = Shop::DB()->escape($cData_arr[2]);
-                $bSystem = intval($cData_arr[3]);
+                $bSystem = (int)$cData_arr[3];
 
                 switch ($nTyp) {
                     case 0: // Neu importieren
@@ -817,7 +821,7 @@ class Sprache
      */
     public static function isShopLanguage($kSprache, $oShopSpracheAssoc_arr = [])
     {
-        $kSprache = intval($kSprache);
+        $kSprache = (int)$kSprache;
         if ($kSprache > 0) {
             if (!is_array($oShopSpracheAssoc_arr) || count($oShopSpracheAssoc_arr) === 0) {
                 $oShopSpracheAssoc_arr = gibAlleSprachen(1);

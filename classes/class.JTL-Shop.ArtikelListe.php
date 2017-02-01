@@ -42,7 +42,10 @@ class ArtikelListe
         $kKundengruppe = (int)$kKundengruppe;
         $kSprache      = (int)$kSprache;
         $anzahl        = (int)$anzahl;
-        $cacheID       = 'jtl_tpnw_' . ((is_string($topneu)) ? $topneu : '') . '_' . $anzahl . '_' . $kSprache . '_' . $kKundengruppe;
+        $cacheID       = 'jtl_tpnw_' . ((is_string($topneu)) ? $topneu : '') .
+            '_' . $anzahl .
+            '_' . $kSprache .
+            '_' . $kKundengruppe;
         $objArr        = Shop::Cache()->get($cacheID);
         if ($objArr === false) {
             $qry = ($topneu === 'neu') ?
@@ -54,7 +57,8 @@ class ArtikelListe
             $objArr = Shop::DB()->query(
                 "SELECT tartikel.kArtikel
                     FROM tartikel
-                    LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
+                    LEFT JOIN tartikelsichtbarkeit 
+                        ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                         AND tartikelsichtbarkeit.kKundengruppe = $kKundengruppe
                     WHERE tartikelsichtbarkeit.kArtikel IS NULL
                         AND $qry
@@ -110,7 +114,7 @@ class ArtikelListe
         } else {
             $hstSQL = '';
             if (isset($GLOBALS['NaviFilter']->Hersteller->kHersteller) && $GLOBALS['NaviFilter']->Hersteller->kHersteller > 0) {
-                $hstSQL = ' AND tartikel.kHersteller = ' . $GLOBALS['NaviFilter']->Hersteller->kHersteller . ' ';
+                $hstSQL = ' AND tartikel.kHersteller = ' . (int)$GLOBALS['NaviFilter']->Hersteller->kHersteller . ' ';
             }
             $lagerfilter = gibLagerfilter();
             $objArr      = Shop::DB()->query(
@@ -136,7 +140,11 @@ class ArtikelListe
                     $artikel->fuelleArtikel($obj->kArtikel, $defaultOptions);
                     $this->elemente[] = $artikel;
                 }
-                Shop::Cache()->set($cacheID, $this->elemente, [CACHING_GROUP_CATEGORY, CACHING_GROUP_CATEGORY . '_' . $kKategorie]);
+                Shop::Cache()->set(
+                    $cacheID,
+                    $this->elemente,
+                    [CACHING_GROUP_CATEGORY, CACHING_GROUP_CATEGORY . '_' . $kKategorie]
+                );
             }
         }
 

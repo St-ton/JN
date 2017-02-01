@@ -322,12 +322,16 @@ class CheckBox
             foreach ($oCheckBox_arr as $oCheckBox) {
                 //@todo: casting to bool does not seem to be a good idea.
                 //$cPost_arr looks like this: array ( [CheckBox_31] => Y, [CheckBox_24] => Y, [abschluss] => 1)
-                $checked                       = (isset($cPost_arr[$oCheckBox->cID])) ? (bool)$cPost_arr[$oCheckBox->cID] : false;
+                $checked                       = (isset($cPost_arr[$oCheckBox->cID]))
+                    ? (bool)$cPost_arr[$oCheckBox->cID]
+                    : false;
                 $checked                       = ($checked === true) ? 1 : 0;
                 $oCheckBoxLogging              = new stdClass();
                 $oCheckBoxLogging->kCheckBox   = $oCheckBox->kCheckBox;
                 $oCheckBoxLogging->kBesucher   = (int)$_SESSION['oBesucher']->kBesucher;
-                $oCheckBoxLogging->kBestellung = (isset($_SESSION['kBestellung'])) ? (int)$_SESSION['kBestellung'] : 0;
+                $oCheckBoxLogging->kBestellung = (isset($_SESSION['kBestellung']))
+                    ? (int)$_SESSION['kBestellung']
+                    : 0;
                 $oCheckBoxLogging->bChecked    = $checked;
                 $oCheckBoxLogging->dErstellt   = 'now()';
 
@@ -351,7 +355,11 @@ class CheckBox
         if ($bAktiv) {
             $cSQL = ' WHERE nAktiv = 1';
         }
-        $oCheckBoxTMP_arr = Shop::DB()->query("SELECT kCheckBox FROM tcheckbox" . $cSQL . " ORDER BY nSort " . $cLimitSQL, 2);
+        $oCheckBoxTMP_arr = Shop::DB()->query("
+            SELECT kCheckBox 
+                FROM tcheckbox" . $cSQL . " 
+                ORDER BY nSort " . $cLimitSQL, 2
+        );
         if (count($oCheckBoxTMP_arr) > 0) {
             foreach ($oCheckBoxTMP_arr as $i => $oCheckBoxTMP) {
                 $oCheckBox_arr[$i] = new self($oCheckBoxTMP->kCheckBox, $bSprache);
@@ -425,7 +433,8 @@ class CheckBox
                 Shop::DB()->query(
                     "DELETE tcheckbox, tcheckboxsprache
                         FROM tcheckbox
-                        LEFT JOIN tcheckboxsprache ON tcheckboxsprache.kCheckBox = tcheckbox.kCheckBox
+                        LEFT JOIN tcheckboxsprache 
+                            ON tcheckboxsprache.kCheckBox = tcheckbox.kCheckBox
                         WHERE tcheckbox.kCheckBox = " . (int)$kCheckBox, 3
                 );
             }
@@ -490,7 +499,10 @@ class CheckBox
                 if (isset($cBeschreibungAssoc_arr[$cISO]) && strlen($cBeschreibungAssoc_arr[$cISO]) > 0) {
                     $this->oCheckBoxSprache_arr[$cISO]->cBeschreibung = $cBeschreibungAssoc_arr[$cISO];
                 }
-                $this->oCheckBoxSprache_arr[$cISO]->kCheckBoxSprache = Shop::DB()->insert('tcheckboxsprache', $this->oCheckBoxSprache_arr[$cISO]);
+                $this->oCheckBoxSprache_arr[$cISO]->kCheckBoxSprache = Shop::DB()->insert(
+                    'tcheckboxsprache',
+                    $this->oCheckBoxSprache_arr[$cISO]
+                );
             }
         }
 
@@ -506,7 +518,7 @@ class CheckBox
         if (strlen($cISO) > 0) {
             $oSprache = Shop::DB()->select('tsprache', 'cISO', StringHandler::filterXSS($cISO));
             if (isset($oSprache->kSprache) && intval($oSprache->kSprache) > 0) {
-                return $oSprache->kSprache;
+                return (int)$oSprache->kSprache;
             }
         }
 

@@ -74,7 +74,10 @@ class AdminSession
             $set    = true;
             $domain = $conf['global']['global_cookie_domain'];
         }
-        if (isset($conf['global']['global_cookie_lifetime']) && is_numeric($conf['global']['global_cookie_lifetime']) && (int)$conf['global']['global_cookie_lifetime'] > 0) {
+        if (isset($conf['global']['global_cookie_lifetime']) &&
+            is_numeric($conf['global']['global_cookie_lifetime']) &&
+            (int)$conf['global']['global_cookie_lifetime'] > 0
+        ) {
             $set      = true;
             $lifetime = (int)$conf['global']['global_cookie_lifetime'];
         }
@@ -128,16 +131,19 @@ class AdminSession
     }
 
     /**
+     * fetch session-data
+     *
      * @param string $sessID
      * @return string
      */
     public function read($sessID)
     {
-        // fetch session-data
-        $res = Shop::DB()->query(
-            "SELECT cSessionData FROM tadminsession
-                WHERE cSessionId = '{$sessID}'
-                AND nSessionExpires > " . time(), 1
+        $res = Shop::DB()->executeQueryPrepared("
+            SELECT cSessionData FROM tadminsession
+                WHERE cSessionId = :sid
+                AND nSessionExpires > :time",
+            ['sid' => $sessID, 'time' => time()],
+            1
         );
 
         return (isset($res->cSessionData)) ? $res->cSessionData : '';

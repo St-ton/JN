@@ -569,6 +569,10 @@ class Kunde
      */
     public function updateInDB()
     {
+        if (preg_match('/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/', $this->dGeburtstag, $matches) === 1) {
+            $this->dGeburtstag = $matches[3] . '-' . $matches[2] . '-' . $matches[1];
+        }
+
         $this->verschluesselKundendaten();
         $obj = kopiereMembers($this);
 

@@ -111,7 +111,9 @@ class SessionStorage
                 }
                 //EXPERIMENTAL_MULTILANG_SHOP END
             }
-            if (isset($conf['global']['global_cookie_lifetime']) && is_numeric($conf['global']['global_cookie_lifetime']) && intval($conf['global']['global_cookie_lifetime']) > 0) {
+            if (isset($conf['global']['global_cookie_lifetime']) && is_numeric($conf['global']['global_cookie_lifetime']) &&
+                intval($conf['global']['global_cookie_lifetime']) > 0
+            ) {
                 $set      = true;
                 $lifetime = (int)$conf['global']['global_cookie_lifetime'];
             }

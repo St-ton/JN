@@ -15,7 +15,7 @@ use PayPal\Transport\PayPalRestCall;
  * @package PayPal\Api
  *
  * @property string                              financing_country_code
- * @property \PayPal\Api\Currency                transaction_amount
+ * @property \PayPal\Api\FinancingCurrency       transaction_amount
  * @property string                              tracking_id
  * @property string                              configuration_owner_account
  * @property bool                                financing_fee_charged_to_separate_account
@@ -49,7 +49,7 @@ class Presentment extends PayPalResourceModel
     /**
      * Transaction Amount details.
      *
-     * @param \PayPal\Api\Currency $transaction_amount
+     * @param \PayPal\Api\FinancingCurrency $transaction_amount
      *
      * @return $this
      */
@@ -62,7 +62,7 @@ class Presentment extends PayPalResourceModel
     /**
      * Transaction Amount details.
      *
-     * @return \PayPal\Api\Currency
+     * @return \PayPal\Api\FinancingCurrency
      */
     public function getTransactionAmount()
     {

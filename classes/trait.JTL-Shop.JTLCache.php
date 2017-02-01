@@ -215,7 +215,6 @@ trait JTLCacheTrait
      *
      * @param string|array $tags
      * @param string       $cacheID
-     *
      * @return bool
      */
     public function setCacheTag($tags, $cacheID)
@@ -224,7 +223,7 @@ trait JTLCacheTrait
     }
 
     /**
-     * removes cache IDs associated with tag from cache
+     * removes cache IDs associated with given tags from cache
      *
      * @param array $tags
      * @return int
@@ -347,5 +346,13 @@ trait JTLCacheTrait
         $dtT = new DateTime("@$seconds");
 
         return $dtF->diff($dtT)->format('%a Tage, %h Stunden, %i Minuten und %s Sekunden');
+    }
+
+    /**
+     * @return bool
+     */
+    public function isInitialized()
+    {
+        return $this->isInitialized;
     }
 }

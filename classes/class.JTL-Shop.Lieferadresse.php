@@ -36,7 +36,6 @@ class Lieferadresse extends Adresse
      */
     public function __construct($kLieferadresse = 0)
     {
-        $kLieferadresse = intval($kLieferadresse);
         if ($kLieferadresse > 0) {
             $this->loadFromDB($kLieferadresse);
         }
@@ -51,7 +50,7 @@ class Lieferadresse extends Adresse
      */
     public function loadFromDB($kLieferadresse)
     {
-        $kLieferadresse = intval($kLieferadresse);
+        $kLieferadresse = (int)$kLieferadresse;
         $obj            = Shop::DB()->select('tlieferadresse', 'kLieferadresse', $kLieferadresse);
 
         if (!isset($obj->kLieferadresse)) {

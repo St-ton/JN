@@ -202,7 +202,6 @@
                     <ul class="jtl-list-group">
 
                         <li class="input-group2">
-                            <!--<div style="padding-left: 490px;">{#gross#} ({#grossValue#})<font style="padding-left: 15px;">{#net#}</font></div><br>-->
                             <table class="list table">
                                 <thead>
                                 <tr>

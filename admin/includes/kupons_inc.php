@@ -363,13 +363,11 @@ function createCouponFromInput()
  */
 function getCouponCount($cKuponTyp = 'standard', $cWhereSQL = '')
 {
-    $oKuponDB = Shop::DB()->query("
-        SELECT count(kKupon) AS count
-            FROM tkupon
-            WHERE cKuponTyp = '" . $cKuponTyp . "'" . ($cWhereSQL !== ''
-                ? " AND " . $cWhereSQL
-                : ""
-            ), 1
+    $oKuponDB = Shop::DB()->query(
+        "SELECT count(kKupon) AS count
+        FROM tkupon
+        WHERE cKuponTyp = '" . $cKuponTyp . "'" . ($cWhereSQL !== '' ? " AND " . $cWhereSQL : ""),
+        1
     );
 
     return (int)$oKuponDB->count;

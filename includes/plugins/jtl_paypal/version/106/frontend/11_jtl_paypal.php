@@ -12,7 +12,10 @@ if (isset($_SESSION['paypalexpress']) && isset($_SESSION['Versandart']->kVersand
     require_once str_replace('frontend', 'paymentmethod', $oPlugin->cFrontendPfad).'class/PayPal.helper.class.php';
 
     $paypalexpress = new PayPalExpress();
-    $paypalexpress->zahlungsartsession($_SESSION['Versandart']->kVersandart);
 
-    PayPalHelper::addSurcharge();
+    if ($paypalexpress->zahlungErlaubt($products)) {
+        $paypalexpress->zahlungsartsession($_SESSION['Versandart']->kVersandart);
+
+        PayPalHelper::addSurcharge();
+    }
 }

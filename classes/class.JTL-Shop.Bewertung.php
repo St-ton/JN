@@ -52,7 +52,16 @@ class Bewertung
         if ($nOption == 1) { // Hilfreich holen
             $this->holeHilfreichsteBewertung($kArtikel, $kSprache);
         } else {
-            $this->holeProduktBewertungen($kArtikel, $kSprache, $nAnzahlSeite, $nSeite, $nSterne, $cFreischalten, $nOption, $bAlleSprachen);
+            $this->holeProduktBewertungen(
+                $kArtikel,
+                $kSprache,
+                $nAnzahlSeite,
+                $nSeite,
+                $nSterne,
+                $cFreischalten,
+                $nOption,
+                $bAlleSprachen
+            );
         }
     }
 

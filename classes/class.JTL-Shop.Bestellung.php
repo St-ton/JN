@@ -389,7 +389,13 @@ class Bestellung
         if ($this->kWarenkorb > 0 || $nZahlungExtern > 0) {
             $warenwert = null;
             if ($this->kWarenkorb > 0) {
-                $this->Positionen = Shop::DB()->selectAll('twarenkorbpos', 'kWarenkorb', (int)$this->kWarenkorb, '*', 'kWarenkorbPos');
+                $this->Positionen = Shop::DB()->selectAll(
+                    'twarenkorbpos',
+                    'kWarenkorb',
+                    (int)$this->kWarenkorb,
+                    '*',
+                    'kWarenkorbPos'
+                );
                 if (isset($this->kLieferadresse) && $this->kLieferadresse > 0) {
                     $this->Lieferadresse = new Lieferadresse($this->kLieferadresse);
                 }
@@ -453,8 +459,10 @@ class Bestellung
                 $oKundengruppeBestellung = Shop::DB()->query(
                     "SELECT tkundengruppe.nNettoPreise
                         FROM tkundengruppe
-                        JOIN tbestellung ON tbestellung.kBestellung = " . (int)$this->kBestellung . "
-                        JOIN tkunde ON tkunde.kKunde = tbestellung.kKunde
+                        JOIN tbestellung 
+                            ON tbestellung.kBestellung = " . (int)$this->kBestellung . "
+                        JOIN tkunde 
+                            ON tkunde.kKunde = tbestellung.kKunde
                         WHERE tkunde.kKundengruppe = tkundengruppe.kKundengruppe", 1
                 );
                 if (isset($oKundengruppeBestellung->nNettoPreise) && $oKundengruppeBestellung->nNettoPreise > 0) {
@@ -465,7 +473,7 @@ class Bestellung
             $this->Status                = lang_bestellstatus($this->cStatus);
             if ($this->kWaehrung > 0) {
                 $this->Waehrung = Shop::DB()->select('twaehrung', 'kWaehrung', (int)$this->kWaehrung);
-                if (isset($this->fWaehrungsFaktor) && $this->fWaehrungsFaktor !== 1 && isset($this->Waehrung->fFaktor)) {
+                if (isset($this->fWaehrungsFaktor) && $this->fWaehrungsFaktor != 1 && isset($this->Waehrung->fFaktor)) {
                     $this->Waehrung->fFaktor = $this->fWaehrungsFaktor;
                 }
                 if ($disableFactor === true) {
@@ -536,7 +544,11 @@ class Bestellung
                         $this->oUpload_arr = Upload::gibBestellungUploads($this->kBestellung);
                     }
                     if ($this->Positionen[$i]->kWarenkorbPos > 0) {
-                        $this->Positionen[$i]->WarenkorbPosEigenschaftArr = Shop::DB()->selectAll('twarenkorbposeigenschaft', 'kWarenkorbPos', (int)$this->Positionen[$i]->kWarenkorbPos);
+                        $this->Positionen[$i]->WarenkorbPosEigenschaftArr = Shop::DB()->selectAll(
+                            'twarenkorbposeigenschaft',
+                            'kWarenkorbPos',
+                            (int)$this->Positionen[$i]->kWarenkorbPos
+                        );
                         $fpositionCount = count($this->Positionen[$i]->WarenkorbPosEigenschaftArr);
                         for ($o = 0; $o < $fpositionCount; $o++) {
                             if ($this->Positionen[$i]->WarenkorbPosEigenschaftArr[$o]->fAufpreis) {
@@ -875,7 +887,17 @@ class Bestellung
     {
         $kBestellung = (int)$kBestellung;
         if ($kBestellung > 0) {
-            $oObj = Shop::DB()->select('tbestellung', 'kBestellung', $kBestellung, null, null, null, null, false, 'cBestellNr');
+            $oObj = Shop::DB()->select(
+                'tbestellung',
+                'kBestellung',
+                $kBestellung,
+                null,
+                null,
+                null,
+                null,
+                false,
+                'cBestellNr'
+            );
             if (isset($oObj->cBestellNr) && strlen($oObj->cBestellNr) > 0) {
                 return $oObj->cBestellNr;
             }

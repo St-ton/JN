@@ -526,23 +526,30 @@ class Warenkorb
         }
         $conf = Shop::getSettings([CONF_KAUFABWICKLUNG]);
         if ((!isset($_SESSION['bAnti_spam_already_checked']) || $_SESSION['bAnti_spam_already_checked'] !== true) &&
-            $conf['kaufabwicklung']['bestellabschluss_spamschutz_nutzen'] === 'Y' && $conf['kaufabwicklung']['bestellabschluss_ip_speichern'] === 'Y') {
+            $conf['kaufabwicklung']['bestellabschluss_spamschutz_nutzen'] === 'Y' &&
+            $conf['kaufabwicklung']['bestellabschluss_ip_speichern'] === 'Y'
+        ) {
             $ip = gibIP(true);
             if ($ip) {
-                $cnt = Shop::DB()->query(
+                $cnt = Shop::DB()->executeQueryPrepared(
                     "SELECT count(*) AS anz 
                         FROM tbestellung 
-                        WHERE cIP = '" . Shop::DB()->escape($ip) . "' AND dErstellt>now()-INTERVAL 1 DAY", 1
+                        WHERE cIP = :ip 
+                            AND dErstellt > now()-INTERVAL 1 DAY",
+                    ['ip' => Shop::DB()->escape($ip)],
+                    1
                 );
                 if ($cnt->anz > 0) {
                     $min                = pow(2, $cnt->anz);
                     $min                = min([$min, 1440]);
-                    $bestellungMoeglich = Shop::DB()->query(
-                        "SELECT dErstellt+interval $min minute < now() AS moeglich
+                    $bestellungMoeglich = Shop::DB()->executeQueryPrepared(
+                        "SELECT dErstellt+INTERVAL $min MINUTE < now() AS moeglich
                             FROM tbestellung
-                            WHERE cIP = '" . Shop::DB()->escape($ip) . "'
-                                AND dErstellt>now()-interval 1 day
-                                ORDER BY kBestellung DESC", 1
+                            WHERE cIP = :ip
+                                AND dErstellt>now()-INTERVAL 1 day
+                            ORDER BY kBestellung DESC",
+                        ['ip' => Shop::DB()->escape($ip)],
+                        1
                     );
                     if (!$bestellungMoeglich->moeglich) {
                         return 8;
@@ -1105,15 +1112,16 @@ class Warenkorb
     {
         $bRedirect     = false;
         $positionCount = count($this->PositionenArr);
+
         for ($i = 0; $i < $positionCount; $i++) {
-            if (isset($this->PositionenArr[$i]->WarenkorbPosEigenschaftArr) && count($this->PositionenArr[$i]->WarenkorbPosEigenschaftArr) > 0 &&
-                !$this->PositionenArr[$i]->Artikel->kVaterArtikel && !$this->PositionenArr[$i]->Artikel->nIstVater
+            if ($this->PositionenArr[$i]->kArtikel > 0 && $this->PositionenArr[$i]->Artikel->cLagerBeachten === 'Y' &&
+                $this->PositionenArr[$i]->Artikel->cLagerKleinerNull !== 'Y'
             ) {
-                //Position mit Variationen
-                if ($this->PositionenArr[$i]->Artikel->cLagerBeachten === 'Y' && $this->PositionenArr[$i]->Artikel->cLagerVariation === 'Y' &&
-                    $this->PositionenArr[$i]->Artikel->cLagerKleinerNull !== 'Y'
+                // Lagerbestand beachten und keine Überverkäufe möglich
+                if (isset($this->PositionenArr[$i]->WarenkorbPosEigenschaftArr) && count($this->PositionenArr[$i]->WarenkorbPosEigenschaftArr) > 0 &&
+                    !$this->PositionenArr[$i]->Artikel->kVaterArtikel && !$this->PositionenArr[$i]->Artikel->nIstVater && $this->PositionenArr[$i]->Artikel->cLagerVariation === 'Y'
                 ) {
-                    //Lagerbestand in Variationen wird beachtet
+                    // Position mit Variationen, Lagerbestand in Variationen wird beachtet
                     foreach ($this->PositionenArr[$i]->WarenkorbPosEigenschaftArr as $oWarenkorbPosEigenschaft) {
                         if ($oWarenkorbPosEigenschaft->kEigenschaftWert > 0 && $this->PositionenArr[$i]->nAnzahl > 0) {
                             //schaue in DB, ob Lagerbestand ausreichend
@@ -1133,13 +1141,9 @@ class Warenkorb
                             }
                         }
                     }
-                }
-            } else {
-                //Position ohne Variationen
-                if ($this->PositionenArr[$i]->kArtikel > 0 && $this->PositionenArr[$i]->Artikel->cLagerBeachten === 'Y' &&
-                    $this->PositionenArr[$i]->Artikel->cLagerKleinerNull !== 'Y'
-                ) {
-                    //schaue in DB, ob Lagerbestand ausreichend
+                } else {
+                    // Position ohne Variationen bzw. Variationen ohne eigenen Lagerbestand
+                    // schaue in DB, ob Lagerbestand ausreichend
                     $oArtikelLagerbestand = Shop::DB()->query(
                         "SELECT kArtikel, fLagerbestand >= " . $this->PositionenArr[$i]->nAnzahl . " AS bAusreichend, fLagerbestand
                             FROM tartikel
@@ -1156,6 +1160,7 @@ class Warenkorb
                 }
             }
         }
+
         if ($bRedirect) {
             $this->setzePositionsPreise();
             $linkHelper = LinkHelper::getInstance();

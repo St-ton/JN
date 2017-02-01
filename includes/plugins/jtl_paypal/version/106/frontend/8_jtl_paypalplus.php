@@ -37,6 +37,7 @@ if ($api->isConfigured(false) && $api->isUseable($items, $shippingId)) {
         $settings = $api->getSettings();
         $embedded = (int) $settings['jtl_paypal_psp_type'] === 0;
 
+		$styles = null;
         $shopUrl = Shop()->getURL(true);
         $link = PayPalHelper::getLinkByName($oPlugin, 'PayPalPLUS');
 

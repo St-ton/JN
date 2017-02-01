@@ -106,7 +106,9 @@ class KategorieListe
         if (is_array($objArr)) {
             foreach ($objArr as $kategorie) {
                 $kategorie->bAktiv = (Shop::$kKategorie > 0 && intval($kategorie->kKategorie) == Shop::$kKategorie);
-                if (isset($conf['navigationsfilter']['unterkategorien_lvl2_anzeigen']) && $conf['navigationsfilter']['unterkategorien_lvl2_anzeigen'] === 'Y') {
+                if (isset($conf['navigationsfilter']['unterkategorien_lvl2_anzeigen']) &&
+                    $conf['navigationsfilter']['unterkategorien_lvl2_anzeigen'] === 'Y'
+                ) {
                     $kategorie->Unterkategorien = $this->holUnterkategorien($kategorie->kKategorie, $kKundengruppe, $kSprache);
                 }
                 $this->elemente[] = $kategorie;
@@ -292,14 +294,18 @@ class KategorieListe
                     tkategorie.nSort, tkategorie.dLetzteAktualisierung, tkategoriesprache.cName AS cName_spr,
                     tkategoriesprache.cBeschreibung AS cBeschreibung_spr, tseo.cSeo, tkategoriepict.cPfad
                     FROM tkategorie
-                    LEFT JOIN tkategoriesprache ON tkategoriesprache.kKategorie = tkategorie.kKategorie
+                    LEFT JOIN tkategoriesprache 
+                        ON tkategoriesprache.kKategorie = tkategorie.kKategorie
                         AND tkategoriesprache.kSprache = " . $kSprache . "
-                    LEFT JOIN tkategoriesichtbarkeit ON tkategorie.kKategorie=tkategoriesichtbarkeit.kKategorie
+                    LEFT JOIN tkategoriesichtbarkeit 
+                        ON tkategorie.kKategorie=tkategoriesichtbarkeit.kKategorie
                     AND tkategoriesichtbarkeit.kKundengruppe = " . $kKundengruppe . "
-                    LEFT JOIN tseo ON tseo.cKey = 'kKategorie'
+                    LEFT JOIN tseo 
+                        ON tseo.cKey = 'kKategorie'
                         AND tseo.kKey = tkategorie.kKategorie
                         AND tseo.kSprache = " . $kSprache . "
-                    LEFT JOIN tkategoriepict ON tkategoriepict.kKategorie = tkategorie.kKategorie
+                    LEFT JOIN tkategoriepict 
+                        ON tkategoriepict.kKategorie = tkategorie.kKategorie
                     WHERE tkategoriesichtbarkeit.kKategorie IS NULL
                         AND tkategorie.kOberKategorie = " . $kKategorie . "
                     GROUP BY tkategorie.kKategorie
@@ -331,7 +337,12 @@ class KategorieListe
                         defined('EXPERIMENTAL_MULTILANG_SHOP') && EXPERIMENTAL_MULTILANG_SHOP === true) {
                         $kDefaultLang = $oSpracheTmp->kSprache;
                         if ($kSprache != $kDefaultLang) {
-                            $oSeo = Shop::DB()->select('tseo', 'cKey', 'kKategorie', 'kSprache', (int)$kDefaultLang, 'kKey', (int)$oKategorie->kKategorie);
+                            $oSeo = Shop::DB()->select(
+                                'tseo',
+                                'cKey', 'kKategorie',
+                                'kSprache', (int)$kDefaultLang,
+                                'kKey', (int)$oKategorie->kKategorie
+                            );
                             if (isset($oSeo->cSeo)) {
                                 $oKategorie->cSeo = $oSeo->cSeo;
                             }
@@ -364,7 +375,8 @@ class KategorieListe
                                 COALESCE(tkategorieattributsprache.cWert, tkategorieattribut.cWert) cWert,
                                 tkategorieattribut.bIstFunktionsAttribut, tkategorieattribut.nSort
                             FROM tkategorieattribut
-                            LEFT JOIN tkategorieattributsprache ON tkategorieattributsprache.kAttribut = tkategorieattribut.kKategorieAttribut
+                            LEFT JOIN tkategorieattributsprache 
+                                ON tkategorieattributsprache.kAttribut = tkategorieattribut.kKategorieAttribut
                                 AND tkategorieattributsprache.kSprache = " . Shop::getLanguage() . "
                             WHERE kKategorie = " . (int)$oKategorie->kKategorie . "
                             ORDER BY tkategorieattribut.bIstFunktionsAttribut DESC, tkategorieattribut.nSort", 2
@@ -447,7 +459,8 @@ class KategorieListe
                     $objArr = Shop::DB()->query(
                         "SELECT tkategorie.kKategorie
                             FROM tkategorie
-                            LEFT JOIN tkategoriesichtbarkeit ON tkategorie.kKategorie=tkategoriesichtbarkeit.kKategorie
+                            LEFT JOIN tkategoriesichtbarkeit 
+                                ON tkategorie.kKategorie=tkategoriesichtbarkeit.kKategorie
                                 AND tkategoriesichtbarkeit.kKundengruppe = $kKundengruppe
                             WHERE tkategoriesichtbarkeit.kKategorie IS NULL
                                 AND tkategorie.kOberKategorie = $kat
@@ -485,7 +498,8 @@ class KategorieListe
         $obj           = Shop::DB()->query(
             "SELECT tartikel.kArtikel
                 FROM tkategorieartikel, tartikel
-                LEFT JOIN tartikelsichtbarkeit ON tartikel.kArtikel=tartikelsichtbarkeit.kArtikel
+                LEFT JOIN tartikelsichtbarkeit 
+                    ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                     AND tartikelsichtbarkeit.kKundengruppe = $kKundengruppe
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
                     AND tartikel.kArtikel = tkategorieartikel.kArtikel

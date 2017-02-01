@@ -162,7 +162,8 @@ class Exportformat
         $oObj = Shop::DB()->query(
             "SELECT texportformat.*, tkampagne.cParameter AS campaignParameter, tkampagne.cWert AS campaignValue
                FROM texportformat
-               LEFT JOIN tkampagne ON tkampagne.kKampagne = texportformat.kKampagne
+               LEFT JOIN tkampagne 
+                  ON tkampagne.kKampagne = texportformat.kKampagne
                   AND tkampagne.nAktiv = 1
                WHERE texportformat.kExportformat = " . $kExportformat, 1);
         if (isset($oObj->kExportformat) && $oObj->kExportformat > 0) {
@@ -668,7 +669,12 @@ class Exportformat
                 if (in_array($einstellungAssoc_arr['cName'], $cExportEinstellungenToImport_arr)) {
                     $_upd        = new stdClass();
                     $_upd->cWert = $einstellungAssoc_arr['cWert'];
-                    $ok          = $ok && (Shop::DB()->update('tboxensichtbar', ['kExportformat', 'cName'], [$this->getExportformat(), $einstellungAssoc_arr['cName']], $_upd) >= 0);
+                    $ok          = $ok && (Shop::DB()->update(
+                                        'tboxensichtbar',
+                                        ['kExportformat', 'cName'],
+                                        [$this->getExportformat(), $einstellungAssoc_arr['cName']],
+                                        $_upd
+                                    ) >= 0);
                 }
             }
         }
@@ -757,7 +763,8 @@ class Exportformat
         if ($this->config['exportformate_lager_ueber_null'] === 'Y') {
             $where .= " AND (NOT (tartikel.fLagerbestand <= 0 AND tartikel.cLagerBeachten = 'Y'))";
         } elseif ($this->config['exportformate_lager_ueber_null'] === 'O') {
-            $where .= " AND (NOT (tartikel.fLagerbestand <= 0 AND tartikel.cLagerBeachten = 'Y') OR tartikel.cLagerKleinerNull = 'Y')";
+            $where .= " AND (NOT (tartikel.fLagerbestand <= 0 AND tartikel.cLagerBeachten = 'Y') 
+                            OR tartikel.cLagerKleinerNull = 'Y')";
         }
 
         if ($this->config['exportformate_preis_ueber_null'] === 'Y') {
@@ -772,12 +779,15 @@ class Exportformat
 
         $condition = 'AND NOT (DATE(tartikel.dErscheinungsdatum) > DATE(NOW()))';
         $conf      = Shop::getSettings([CONF_GLOBAL]);
-        if (isset($conf['global']['global_erscheinende_kaeuflich']) && $conf['global']['global_erscheinende_kaeuflich'] === 'Y') {
+        if (isset($conf['global']['global_erscheinende_kaeuflich']) &&
+            $conf['global']['global_erscheinende_kaeuflich'] === 'Y'
+        ) {
             $condition = 'AND (
                 NOT (DATE(tartikel.dErscheinungsdatum) > DATE(NOW()))
                 OR  (
                         DATE(tartikel.dErscheinungsdatum) > DATE(NOW())
-                        AND (tartikel.cLagerBeachten = "N" OR tartikel.fLagerbestand > 0 OR tartikel.cLagerKleinerNull = "Y")
+                        AND (tartikel.cLagerBeachten = "N" 
+                            OR tartikel.fLagerbestand > 0 OR tartikel.cLagerKleinerNull = "Y")
                     )
             )';
         }
@@ -1001,7 +1011,8 @@ class Exportformat
         }
         $this->setQueue($queueObject)->initSession()->initSmarty();
         if ($this->getPlugin() > 0 && strpos($this->getContent(), PLUGIN_EXPORTFORMAT_CONTENTFILE) !== false) {
-            Jtllog::cronLog('Starting plugin exportformat "' . $this->getName() . '" for language ' . $this->getSprache() . ' and customer group ' . $this->getKundengruppe() .
+            Jtllog::cronLog('Starting plugin exportformat "' . $this->getName() .
+                '" for language ' . $this->getSprache() . ' and customer group ' . $this->getKundengruppe() .
                 ' with caching ' . ((Shop::Cache()->isActive() && $this->useCache()) ? 'enabled' : 'disabled'));
             $oPlugin = new Plugin($this->getPlugin());
             if ($isCron === true) {
@@ -1031,13 +1042,15 @@ class Exportformat
             $exportformat->dZuletztErstellt = $this->getZuletztErstellt();
             $exportformat->nUseCache        = $this->getCaching();
             $ExportEinstellungen            = $this->getConfig();
-            include $oPlugin->cAdminmenuPfad . PFAD_PLUGIN_EXPORTFORMAT . str_replace(PLUGIN_EXPORTFORMAT_CONTENTFILE, '', $this->getContent());
+            include $oPlugin->cAdminmenuPfad . PFAD_PLUGIN_EXPORTFORMAT .
+                str_replace(PLUGIN_EXPORTFORMAT_CONTENTFILE, '', $this->getContent());
 
             if (isset($queueObject->kExportqueue)) {
                 Shop::DB()->delete('texportqueue', 'kExportqueue', (int)$queueObject->kExportqueue);
             }
             if (isset($_GET['back']) && $_GET['back'] === 'admin') {
-                header('Location: exportformate.php?action=exported&token=' . $_SESSION['jtl_token'] . '&kExportformat=' . (int)$this->queue->kExportformat);
+                header('Location: exportformate.php?action=exported&token=' .
+                    $_SESSION['jtl_token'] . '&kExportformat=' . (int)$this->queue->kExportformat);
                 exit;
             }
             Jtllog::cronLog('Finished export');
@@ -1061,7 +1074,8 @@ class Exportformat
             $max = (int)$max;
         }
 
-        Jtllog::cronLog('Starting exportformat "' . utf8_encode($this->getName()) . '" for language ' . $this->getSprache() . ' and customer group ' . $this->getKundengruppe() .
+        Jtllog::cronLog('Starting exportformat "' . utf8_encode($this->getName()) .
+            '" for language ' . $this->getSprache() . ' and customer group ' . $this->getKundengruppe() .
             ' with caching ' . ((Shop::Cache()->isActive() && $this->useCache()) ? 'enabled' : 'disabled') .
              ' - ' . $queueObject->nLimitN . '/' . $max . ' products exported');
         // Kopfzeile schreiben
@@ -1107,7 +1121,13 @@ class Exportformat
         }
         foreach ($articles as $articleObj) {
             $Artikel = new Artikel();
-            $Artikel->fuelleArtikel($articleObj->kArtikel, $oArtikelOptionen, $this->kKundengruppe, $this->kSprache, !$this->useCache());
+            $Artikel->fuelleArtikel(
+                $articleObj->kArtikel,
+                $oArtikelOptionen,
+                $this->kKundengruppe,
+                $this->kSprache,
+                !$this->useCache()
+            );
 
             if ($Artikel->kArtikel > 0) {
                 if ($Artikel->cacheHit === true) {
@@ -1115,20 +1135,61 @@ class Exportformat
                 } else {
                     ++$cacheMisses;
                 }
-                $Artikel->cBeschreibungHTML     = StringHandler::removeWhitespace(str_replace($findTwo, $replaceTwo, str_replace('"', '&quot;', $Artikel->cBeschreibung)));
-                $Artikel->cKurzBeschreibungHTML = StringHandler::removeWhitespace(str_replace($findTwo, $replaceTwo, str_replace('"', '&quot;', $Artikel->cKurzBeschreibung)));
-                $Artikel->cName                 = StringHandler::removeWhitespace(str_replace($findTwo, $replaceTwo, StringHandler::unhtmlentities(strip_tags(str_replace($find, $replace, $Artikel->cName)))));
-                $Artikel->cBeschreibung         = StringHandler::removeWhitespace(str_replace($findTwo, $replaceTwo, StringHandler::unhtmlentities(strip_tags(str_replace($find, $replace, $Artikel->cBeschreibung)))));
-                $Artikel->cKurzBeschreibung     = StringHandler::removeWhitespace(str_replace($findTwo, $replaceTwo, StringHandler::unhtmlentities(strip_tags(str_replace($find, $replace, $Artikel->cKurzBeschreibung)))));
+                $Artikel->cBeschreibungHTML = StringHandler::removeWhitespace(
+                    str_replace(
+                        $findTwo,
+                        $replaceTwo,
+                        str_replace('"', '&quot;', $Artikel->cBeschreibung)
+                    )
+                );
+                $Artikel->cKurzBeschreibungHTML = StringHandler::removeWhitespace(
+                    str_replace(
+                        $findTwo,
+                        $replaceTwo,
+                        str_replace('"', '&quot;', $Artikel->cKurzBeschreibung)
+                    )
+                );
+                $Artikel->cName                 = StringHandler::removeWhitespace(
+                    str_replace(
+                        $findTwo,
+                        $replaceTwo,
+                        StringHandler::unhtmlentities(strip_tags(str_replace($find, $replace, $Artikel->cName)))
+                    )
+                );
+                $Artikel->cBeschreibung         = StringHandler::removeWhitespace(
+                    str_replace(
+                        $findTwo,
+                        $replaceTwo,
+                        StringHandler::unhtmlentities(strip_tags(str_replace($find, $replace, $Artikel->cBeschreibung)))
+                    )
+                );
+                $Artikel->cKurzBeschreibung     = StringHandler::removeWhitespace(
+                    str_replace(
+                        $findTwo,
+                        $replaceTwo,
+                        StringHandler::unhtmlentities(strip_tags(str_replace($find, $replace, $Artikel->cKurzBeschreibung)))
+                    )
+                );
                 $Artikel->fUst                  = gibUst($Artikel->kSteuerklasse);
-                $Artikel->Preise->fVKBrutto     = berechneBrutto($Artikel->Preise->fVKNetto * $this->currency->fFaktor, $Artikel->fUst);
+                $Artikel->Preise->fVKBrutto     = berechneBrutto(
+                    $Artikel->Preise->fVKNetto * $this->currency->fFaktor,
+                    $Artikel->fUst
+                );
                 $Artikel->Preise->fVKNetto      = round($Artikel->Preise->fVKNetto, 2);
-                $Artikel->Kategorie             = new Kategorie($Artikel->gibKategorie(), $this->kSprache, $this->kKundengruppe, !$this->useCache());
-                $Artikel->Kategoriepfad         = (isset($Artikel->Kategorie->cKategoriePfad)) ?
-                    $Artikel->Kategorie->cKategoriePfad : // calling gibKategoriepfad() should not be necessary since it has already been called in Kategorie::loadFromDB()
-                    gibKategoriepfad($Artikel->Kategorie, $this->kKundengruppe, $this->kSprache);
+                $Artikel->Kategorie             = new Kategorie(
+                    $Artikel->gibKategorie(),
+                    $this->kSprache,
+                    $this->kKundengruppe,
+                    !$this->useCache()
+                );
+                // calling gibKategoriepfad() should not be necessary since it has already been called in Kategorie::loadFromDB()
+                $Artikel->Kategoriepfad         = (isset($Artikel->Kategorie->cKategoriePfad))
+                    ? $Artikel->Kategorie->cKategoriePfad
+                    : gibKategoriepfad($Artikel->Kategorie, $this->kKundengruppe, $this->kSprache);
                 $Artikel->Versandkosten         = gibGuenstigsteVersandkosten(
-                    (isset($this->config['exportformate_lieferland'])) ? $this->config['exportformate_lieferland'] : '',
+                    (isset($this->config['exportformate_lieferland']))
+                        ? $this->config['exportformate_lieferland']
+                        : '',
                     $Artikel,
                     0,
                     $this->kKundengruppe
@@ -1146,7 +1207,9 @@ class Exportformat
                 }
 
                 $Artikel->cDeeplink             = $shopURL . '/' . $Artikel->cURL;
-                $Artikel->Artikelbild           = ($Artikel->Bilder[0]->cPfadGross) ? $shopURL . '/' . $Artikel->Bilder[0]->cPfadGross : '';
+                $Artikel->Artikelbild           = ($Artikel->Bilder[0]->cPfadGross)
+                    ? $shopURL . '/' . $Artikel->Bilder[0]->cPfadGross
+                    : '';
                 $Artikel->Lieferbar             = ($Artikel->fLagerbestand <= 0) ? 'N' : 'Y';
                 $Artikel->Lieferbar_01          = ($Artikel->fLagerbestand <= 0) ? 0 : 1;
                 $Artikel->Verfuegbarkeit_kelkoo = ($Artikel->fLagerbestand > 0) ? '001' : '003';
@@ -1164,7 +1227,9 @@ class Exportformat
             }
         }
         if (strlen($cOutput) > 0) {
-            fwrite($datei, (($this->cKodierung === 'UTF-8' || $this->cKodierung === 'UTF-8noBOM') ? utf8_encode($cOutput) : $cOutput));
+            fwrite($datei, (($this->cKodierung === 'UTF-8' || $this->cKodierung === 'UTF-8noBOM')
+                ? utf8_encode($cOutput)
+                : $cOutput));
         }
 
         if ($isCron === false) {
@@ -1174,9 +1239,10 @@ class Exportformat
                       SET nLimit_n = nLimit_n + " . $this->queue->nLimitM . " 
                       WHERE kExportqueue = " . (int)$this->queue->kExportqueue, 4
                 );
-                $protocol = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') || function_exists('pruefeSSL') && pruefeSSL() === 2) ?
-                    'https://' :
-                    'http://';
+                $protocol = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ||
+                    function_exists('pruefeSSL') && pruefeSSL() === 2)
+                    ? 'https://'
+                    : 'http://';
                 if ($isAsync) {
                     $oCallback                = new stdClass();
                     $oCallback->kExportformat = $this->getExportformat();
@@ -1190,14 +1256,20 @@ class Exportformat
                     $oCallback->cacheHits     = $cacheHits;
                     echo json_encode($oCallback);
                 } else {
-                    $cURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'] . '?e=' . (int)$this->queue->kExportqueue . '&back=admin&token=' . $_SESSION['jtl_token'] . '&max=' . $max;
+                    $cURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'] .
+                        '?e=' . (int)$this->queue->kExportqueue .
+                        '&back=admin&token=' . $_SESSION['jtl_token'] . '&max=' . $max;
                     header('Location: ' . $cURL);
                 }
             } else {
                 // Versucht (falls so eingestellt) die erstellte Exportdatei in mehrere Dateien zu splitten
                 $this->splitFile();
 
-                Shop::DB()->query("UPDATE texportformat SET dZuletztErstellt = now() WHERE kExportformat = " . $this->getExportformat(), 4);
+                Shop::DB()->query("
+                    UPDATE texportformat 
+                        SET dZuletztErstellt = now() 
+                        WHERE kExportformat = " . $this->getExportformat(), 4
+                );
                 Shop::DB()->delete('texportqueue', 'kExportqueue', (int)$this->queue->kExportqueue);
 
                 $this->writeFooter($datei);
@@ -1214,7 +1286,9 @@ class Exportformat
 
                         echo json_encode($oCallback);
                     } else {
-                        header('Location: exportformate.php?action=exported&token=' . $_SESSION['jtl_token'] . '&kExportformat=' . $this->getExportformat() . '&max=' . $max);
+                        header('Location: exportformate.php?action=exported&token=' .
+                            $_SESSION['jtl_token'] .
+                            '&kExportformat=' . $this->getExportformat() . '&max=' . $max);
                     }
                 }
             }
@@ -1245,7 +1319,8 @@ class Exportformat
                 $this->splitFile();
                 unset($queueObject);
             }
-            Jtllog::cronLog('Finished after ' . round(microtime(true) - $start, 4) . 's. Article cache hits: ' . $cacheHits . ', misses: ' . $cacheMisses);
+            Jtllog::cronLog('Finished after ' . round(microtime(true) - $start, 4) .
+                's. Article cache hits: ' . $cacheHits . ', misses: ' . $cacheMisses);
         }
         $this->restoreSession();
 

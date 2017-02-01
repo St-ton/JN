@@ -178,6 +178,8 @@
     {/block}
 </form>
 
+<div class="clearfix"></div>
+
 {block name="details-tabs"}
 {include file="productdetails/tabs.tpl"}
 {/block}

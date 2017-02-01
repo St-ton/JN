@@ -22,6 +22,15 @@
         {$jtl_token}
         <input type="hidden" name="pruefekupon" value="1" />
         <fieldset>
+            {if !empty($currentCouponName)}
+                <p class="text-success">
+                    {$currentCoupon}{$currentCouponName|trans}
+                </p>
+            {elseif !empty($currentShippingCouponName)}
+                <p class="text-success">
+                    {$currentCoupon}{$currentShippingCouponName|trans}
+                </p>
+            {/if}
             <div class="input-group">
                 <input type="text" name="Kuponcode"  maxlength="32" value="{if !empty($Kuponcode)}{$Kuponcode}{/if}" id="kupon" class="form-control" placeholder="{lang key="couponCode" section="account data"}" />
                 <div class="input-group-btn">

@@ -105,7 +105,20 @@
                             {/if}
                         </ul>
                     {else}
-                        <p>{$oPosition->cName|trans}</p>
+                        {$oPosition->cName|trans}{if isset($oPosition->discountForArticle)}{$oPosition->discountForArticle|trans}{/if}
+                        {if isset($oPosition->cArticleNameAffix)}
+                            {if is_array($oPosition->cArticleNameAffix)}
+                                <ul class="small text-muted">
+                                    {foreach from=$oPosition->cArticleNameAffix item="cArticleNameAffix"}
+                                        <li>{$cArticleNameAffix|trans}</li>
+                                    {/foreach}
+                                </ul>
+                            {else}
+                                <ul class="small text-muted">
+                                    <li>{$oPosition->cArticleNameAffix|trans}</li>
+                                </ul>
+                            {/if}
+                        {/if}
                         {if !empty($oPosition->cHinweis)}
                             <small class="text-info notice">{$oPosition->cHinweis}</small>
                         {/if}
@@ -189,8 +202,10 @@
                 </td>
                 {if $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'Y'}
                     <td class="price-col text-right hidden-xs">
-                        {if !$oPosition->istKonfigVater()}
-                            {$oPosition->cEinzelpreisLocalized[$NettoPreise][$smarty.session.cWaehrungName]}
+                        {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL}
+                            {if !$oPosition->istKonfigVater()}
+                                {$oPosition->cEinzelpreisLocalized[$NettoPreise][$smarty.session.cWaehrungName]}
+                            {/if}
                         {/if}
                     </td>
                 {/if}

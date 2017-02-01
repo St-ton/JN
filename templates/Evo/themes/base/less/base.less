@@ -2853,6 +2853,10 @@ div#add-to-cart {
 }
 */
 
+.dropdown-menu {
+    font-size: @font-size-small;
+}
+
 #evo-main-nav {
     margin-bottom: 0;
     z-index: 20;
@@ -2863,6 +2867,16 @@ div#add-to-cart {
         overflow: hidden;
         white-space: nowrap;
         vertical-align: middle;
+    }
+
+    .dropdown-cart-items .item-price,
+    .dropdown-cart-items .item-quantity {
+        text-align: right;
+        vertical-align: middle;
+    }
+
+    .dropdown-cart-items {
+        word-break: break-word;
     }
 }
 

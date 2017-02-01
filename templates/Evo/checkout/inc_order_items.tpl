@@ -105,7 +105,7 @@
                             {/if}
 
                             {if isset($oPosition->Artikel->cGewicht) && $Einstellungen.artikeldetails.artikeldetails_gewicht_anzeigen === 'Y' && $oPosition->Artikel->fGewicht > 0}
-                                <li class="attribute">
+                                <li class="weight">
                                     <strong>{lang key="shippingWeight" section="global"}: </strong>
                                     <span class="value">{$oPosition->Artikel->cGewicht} {lang key="weightUnit" section="global"}</span>
                                 </li>

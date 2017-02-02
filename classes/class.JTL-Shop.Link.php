@@ -525,7 +525,7 @@ class Link extends MainModel
             }
 
             $cQuery .= implode(', ', $cSet_arr);
-            $cQuery .= " WHERE kLink = {$this->getLink()} and klinkgruppe = {$this->getLinkgruppe()}";
+            $cQuery .= " WHERE kLink = {$this->getLink()} AND klinkgruppe = {$this->getLinkgruppe()}";
 
             return Shop::DB()->query($cQuery, 3);
         } else {

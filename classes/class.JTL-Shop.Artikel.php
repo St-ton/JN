@@ -3990,7 +3990,7 @@ class Artikel
         if (isset($oArtikelOptionen->nLanguageURLs) && $oArtikelOptionen->nLanguageURLs === 1 && count($_SESSION['Sprachen']) > 0) {
             $this->baueArtikelSprachURL();
         }
-        $this->cKurzbezeichnung = (isset($this->AttributeAssoc[ART_ATTRIBUT_SHORTNAME]))
+        $this->cKurzbezeichnung = (!empty($this->AttributeAssoc[ART_ATTRIBUT_SHORTNAME]))
             ? $this->AttributeAssoc[ART_ATTRIBUT_SHORTNAME]
             : $this->cName;
 

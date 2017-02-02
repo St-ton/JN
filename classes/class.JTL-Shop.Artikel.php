@@ -1013,7 +1013,7 @@ class Artikel
                     }
                 }
 
-                return $this->oKategorie_arr[0];
+                return (int)$this->oKategorie_arr[0];
             }
             $categoryFilter = (isset($_SESSION['LetzteKategorie']))
                 ? " AND tkategorieartikel.kKategorie = " . (int)$_SESSION['LetzteKategorie']

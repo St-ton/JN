@@ -196,9 +196,6 @@ class MediaImageRequest
         $ext      = $this->ext ?: $settings['format'];
 
         $thumb = sprintf('%s/%d/%s/%s%s.%s', self::getCachePath($this->getType()), $this->getId(), $size, $this->getName(), $number, $ext);
-        if (!file_exists($thumb)) {
-            $thumb = $this->getFallbackThumb($size);
-        }
 
         return ($absolute === true)
             ? PFAD_ROOT . $thumb

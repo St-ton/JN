@@ -488,3 +488,5 @@ define('TEMPLATE_XML', 'template.xml');
 define('SHOP_SEO', true);
 // Sessionspeicherung 1 => DB, sonst => Dateien
 define('ES_SESSIONS', 0);
+//Max Anzahl an Variationswerten für Warenkorbmatrix
+define('ART_MATRIX_MAX', 250);

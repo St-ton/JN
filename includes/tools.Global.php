@@ -2822,7 +2822,7 @@ function berechneVersandpreis($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
             if (isset($_SESSION['Warenkorb'])) {
                 $fGesamtsummeWaren = berechneNetto(
                     $_SESSION['Warenkorb']->gibGesamtsummeWarenExt(
-                        [C_WARENKORBPOS_TYP_ARTIKEL, C_WARENKORBPOS_TYP_KUPON, C_WARENKORBPOS_TYP_NEUKUNDENKUPON],
+                        [C_WARENKORBPOS_TYP_ARTIKEL],
                         1
                     ),
                     gibUst($_SESSION['Warenkorb']->gibVersandkostenSteuerklasse())
@@ -2836,7 +2836,7 @@ function berechneVersandpreis($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
             }
             if (isset($_SESSION['Warenkorb'])) {
                 $fGesamtsummeWaren = $_SESSION['Warenkorb']->gibGesamtsummeWarenExt(
-                    [C_WARENKORBPOS_TYP_ARTIKEL, C_WARENKORBPOS_TYP_KUPON, C_WARENKORBPOS_TYP_NEUKUNDENKUPON],
+                    [C_WARENKORBPOS_TYP_ARTIKEL],
                     1
                 );
             }

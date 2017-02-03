@@ -2337,28 +2337,29 @@ function kuponAnnehmen($Kupon)
         && isset($_POST['Kuponcode']) && $_POST['Kuponcode']) {
         $_SESSION['Warenkorb']->loescheSpezialPos(C_WARENKORBPOS_TYP_KUPON);
     }
-    $maxPreisKupon = 0;
+    $couponPrice = 0;
     /** @var array('Warenkorb' => Warenkorb) $_SESSION */
     if ($Kupon->cWertTyp === 'festpreis') {
-        $maxPreisKupon = $Kupon->fWert;
+        $couponPrice = $Kupon->fWert;
         if ($Kupon->fWert > $_SESSION['Warenkorb']->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true)) {
-            $maxPreisKupon = $_SESSION['Warenkorb']->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true);
+            $couponPrice = $_SESSION['Warenkorb']->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true);
         }
     } elseif ($Kupon->cWertTyp === 'prozent') {
         // Alle Positionen prüfen ob der Kupon greift und falls ja, dann Position rabattieren
         if ($Kupon->nGanzenWKRabattieren == 0) {
             $articleName_arr = [];
             if (is_array($_SESSION['Warenkorb']->PositionenArr) && count($_SESSION['Warenkorb']->PositionenArr) > 0) {
+                $articlePrice = 0;
                 foreach ($_SESSION['Warenkorb']->PositionenArr as $i => $oWKPosition) {
-                    $maxPreisKupon += checkSetPercentCouponWKPos($oWKPosition, $Kupon)->fPreis;
+                    $articlePrice += checkSetPercentCouponWKPos($oWKPosition, $Kupon)->fPreis;
                     if (!empty(checkSetPercentCouponWKPos($oWKPosition, $Kupon)->cName)) {
                         $articleName_arr[] = checkSetPercentCouponWKPos($oWKPosition, $Kupon)->cName;
                     }
-                    $maxPreisKupon = ($maxPreisKupon / 100) * $Kupon->fWert;
                 }
+                $couponPrice = ($articlePrice / 100) * (float)$Kupon->fWert;
             }
         } else { //Rabatt ermitteln für den ganzen WK
-            $maxPreisKupon = ($_SESSION['Warenkorb']->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true) / 100.0) * $Kupon->fWert;
+            $couponPrice = ($_SESSION['Warenkorb']->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true) / 100.0) * $Kupon->fWert;
         }
     }
 
@@ -2425,13 +2426,13 @@ function kuponAnnehmen($Kupon)
         //$_SESSION['Warenkorb']->loescheSpezialPos(C_WARENKORBPOS_TYP_VERSANDPOS);
         $_SESSION['Warenkorb']->setzeVersandfreiKupon();
         $_SESSION['VersandKupon'] = $Kupon;
-        $maxPreisKupon            = 0;
+        $couponPrice            = 0;
         $Spezialpos->cName        = $Kupon->translationList;
         unset($_POST['Kuponcode']);
         $_SESSION['Warenkorb']->erstelleSpezialPos(
             $Spezialpos->cName,
             1,
-            $maxPreisKupon * -1,
+            $couponPrice * -1,
             $Kupon->kSteuerklasse,
             $postyp
         );
@@ -2448,14 +2449,14 @@ function kuponAnnehmen($Kupon)
     // Pos erstellen für alle ausser Versandkupon (schon erstellt; hat keinen cWertTyp), $postyp bereits gesetzt
     if ($Kupon->cWertTyp === 'prozent' && $Kupon->nGanzenWKRabattieren != 0) { // %-Kupon + Ganzen WK rabattieren
         unset($_POST['Kuponcode']);
-        $_SESSION['Warenkorb']->erstelleSpezialPos($Spezialpos->cName, 1, $maxPreisKupon * -1, $Kupon->kSteuerklasse, $postyp);
+        $_SESSION['Warenkorb']->erstelleSpezialPos($Spezialpos->cName, 1, $couponPrice * -1, $Kupon->kSteuerklasse, $postyp);
     } elseif ($Kupon->cWertTyp === 'prozent' && $Kupon->nGanzenWKRabattieren == 0 && $Kupon->cKuponTyp !== 'neukundenkupon') {
         // %-Kupon + nicht Ganzen WK rabattieren
         unset($_POST['Kuponcode']);
-        $_SESSION['Warenkorb']->erstelleSpezialPos($Spezialpos, 1, $maxPreisKupon * -1, $Kupon->kSteuerklasse, $postyp);
+        $_SESSION['Warenkorb']->erstelleSpezialPos($Spezialpos, 1, $couponPrice * -1, $Kupon->kSteuerklasse, $postyp);
     } elseif ($Kupon->cWertTyp === 'festpreis') {
         unset($_POST['Kuponcode']);
-        $_SESSION['Warenkorb']->erstelleSpezialPos($Spezialpos->cName, 1, $maxPreisKupon * -1, $Kupon->kSteuerklasse, $postyp);
+        $_SESSION['Warenkorb']->erstelleSpezialPos($Spezialpos->cName, 1, $couponPrice * -1, $Kupon->kSteuerklasse, $postyp);
     }
 }
 

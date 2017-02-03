@@ -64,15 +64,6 @@
                                     {$jtl_token}
                                     {block name="basket-coupon"}
                                         <div class="form-group{if !empty($invalidCouponCode) || !empty($cKuponfehler)} has-error{/if}">
-                                            {if !empty($currentCouponName)}
-                                                <p class="text-success">
-                                                    {$currentCoupon}{$currentCouponName|trans}
-                                                </p>
-                                            {elseif !empty($currentShippingCouponName)}
-                                                <p class="text-success">
-                                                    {$currentCoupon}{$currentShippingCouponName|trans}
-                                                </p>
-                                            {/if}
                                             <p class="input-group">
                                                 <input class="form-control" type="text" name="Kuponcode" id="couponCode" maxlength="32" placeholder="{lang key="couponCode" section="account data"}" />
                                                 <span class="input-group-btn">

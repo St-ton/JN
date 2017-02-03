@@ -86,7 +86,7 @@ class Warenkorb
                     isset($Position->Artikel->cLagerVariation) && $Position->Artikel->fLagerbestand <= 0 && $Position->Artikel->cLagerBeachten === 'Y' &&
                     $Position->Artikel->cLagerKleinerNull !== 'Y' && $Position->Artikel->cLagerVariation !== 'Y') {
                     $delete = true;
-                } elseif (empty($Position->kKonfigitem) && $Position->nPosTyp !== C_WARENKORBPOS_TYP_GRATISGESCHENK &&
+                } elseif (empty($Position->kKonfigitem) && !$Position->Artikel->bHasKonfig && $Position->nPosTyp !== C_WARENKORBPOS_TYP_GRATISGESCHENK &&
                     isset($Position->fPreisEinzelNetto) && $Position->fPreisEinzelNetto == 0 &&
                     isset($conf['global']['global_preis0']) && $conf['global']['global_preis0'] === 'N') {
                     $delete = true;

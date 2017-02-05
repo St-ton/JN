@@ -1125,7 +1125,7 @@ function loescheArtikelPict($kArtikelPict, $nNr = null)
         $oArtikelPict = null;
         if (intval($nNr) > 0) {
             $oArtikelPict = Shop::DB()->select('tartikelpict', 'kArtikel', $kArtikelPict, 'nNr', (int)$nNr);
-            $kArtikelPict = $oArtikelPict->kArtikelPict;
+            $kArtikelPict = isset($oArtikelPict->kArtikelPict) ? $oArtikelPict->kArtikelPict : 0;
         }
         deleteArticleImage(null, 0, $kArtikelPict);
         if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {

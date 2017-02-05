@@ -598,7 +598,7 @@ class PayPalPlus extends PaymentMethod
             $payment->execute($execution, $apiContext);
             $this->logResult('ExecutePayment', $execution, $payment);
 
-            $order = finalisiereBestellung($orderNumber, false);
+            $order = finalisiereBestellung($orderNumber, true);
             $order->cSession = $paymentId;
 
             if ($instruction = $payment->getPaymentInstruction()) {

@@ -1082,6 +1082,8 @@ class Exportformat
         if ($this->queue->nLimitN == 0) {
             $this->writeHeader($datei);
         }
+        $content                                     = $this->getContent();
+        $categoryFallback                            = (strpos($content, '->oKategorie_arr') !== false);
         $articles                                    = Shop::DB()->query($this->getExportSQL(), 2);
         $oArtikelOptionen                            = new stdClass();
         $oArtikelOptionen->nMerkmale                 = 1;
@@ -1128,6 +1130,17 @@ class Exportformat
                 $this->kSprache,
                 !$this->useCache()
             );
+            $articleCategoryID = $Artikel->gibKategorie();
+            if ($categoryFallback === true) {
+                // since 4.05 the article class only stores category IDs in Artikel::oKategorie_arr
+                // but old google base exports rely on category attributes that wouldn't be available anymore
+                // so in that case we replace oKategorie_arr with an array of real Kategorie objects
+                $categories = [];
+                foreach ($Artikel->oKategorie_arr as $categoryID) {
+                    $categories[] = new Kategorie((int)$categoryID, $this->kSprache, $this->kKundengruppe, !$this->useCache());
+                }
+                $Artikel->oKategorie_arr = $categories;
+            }
 
             if ($Artikel->kArtikel > 0) {
                 if ($Artikel->cacheHit === true) {
@@ -1177,7 +1190,7 @@ class Exportformat
                 );
                 $Artikel->Preise->fVKNetto      = round($Artikel->Preise->fVKNetto, 2);
                 $Artikel->Kategorie             = new Kategorie(
-                    $Artikel->gibKategorie(),
+                    $articleCategoryID,
                     $this->kSprache,
                     $this->kKundengruppe,
                     !$this->useCache()

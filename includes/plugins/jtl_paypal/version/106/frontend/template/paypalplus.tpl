@@ -85,13 +85,13 @@ var ppConfig = {ldelim}
     buttonLocation: "outside",
     preselection: "paypal",
     disableContinue: function() {ldelim}
-        if ($('#zahlung input[type="radio"]:checked').length == 0) {ldelim}
-            $('#zahlung input[type="radio"]:first')
+        if ($('#zahlung input[name="Zahlungsart"]:checked').length == 0) {ldelim}
+            $('#zahlung input[name="Zahlungsart"]:first')
                 .prop('checked', true);
         {rdelim}
     {rdelim},
     enableContinue: function() {ldelim}
-        $('#zahlung input[type="radio"]')
+        $('#zahlung input[name="Zahlungsart"]')
             .prop('checked', false);
     {rdelim},
     showLoadingIndicator: true,
@@ -136,7 +136,7 @@ try {
 
 $(document).ready(function() {ldelim}
     $('#' + submit).click(function() {ldelim}
-        var checked = $('#zahlung input[type="radio"]:checked');
+        var checked = $('#zahlung input[name="Zahlungsart"]:checked');
         if ($(checked).length > 0) {ldelim}
             return true;
         {rdelim}
@@ -145,7 +145,7 @@ $(document).ready(function() {ldelim}
         return false;
     {rdelim});
     
-    $('#zahlung input[type="radio"]').change(function() {ldelim}
+    $('#zahlung input[name="Zahlungsart"]').change(function() {ldelim}
         ppp.deselectPaymentMethod();
     {rdelim});
 {rdelim});

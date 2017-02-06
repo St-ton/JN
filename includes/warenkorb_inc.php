@@ -5,62 +5,79 @@
  */
 
 /**
+ * @param array $nPos_arr
+ * @return null|void
+ */
+function loescheWarenkorbPositionen($nPos_arr)
+{
+    $cUnique_arr   = [];
+    foreach ($nPos_arr as $nPos) {
+        //Kupons bearbeiten
+        if (!isset($_SESSION['Warenkorb']->PositionenArr[$nPos])) {
+            return;
+        }
+        if ($_SESSION['Warenkorb']->PositionenArr[$nPos]->nPosTyp != C_WARENKORBPOS_TYP_ARTIKEL &&
+            $_SESSION['Warenkorb']->PositionenArr[$nPos]->nPosTyp != C_WARENKORBPOS_TYP_GRATISGESCHENK
+        ) {
+            return;
+        }
+        $cUnique = $_SESSION['Warenkorb']->PositionenArr[$nPos]->cUnique;
+        // Kindartikel?
+        if (strlen($cUnique) > 0 && $_SESSION['Warenkorb']->PositionenArr[$nPos]->kKonfigitem > 0) {
+            return;
+        }
+        executeHook(HOOK_WARENKORB_LOESCHE_POSITION, [
+            'nPos'     => $nPos,
+            'position' => &$_SESSION['Warenkorb']->PositionenArr[$nPos]
+        ]);
+
+        if (class_exists('Upload')) {
+            Upload::deleteArtikelUploads($_SESSION['Warenkorb']->PositionenArr[$nPos]->kArtikel);
+        }
+
+        $cUnique_arr[] = $cUnique;
+
+        unset($_SESSION['Warenkorb']->PositionenArr[$nPos]);
+    }
+        $_SESSION['Warenkorb']->PositionenArr = array_merge($_SESSION['Warenkorb']->PositionenArr);
+        foreach ($cUnique_arr as $cUnique) {
+            // Kindartikel löschen
+            if (strlen($cUnique) > 0) {
+                $positionCount = count($_SESSION['Warenkorb']->PositionenArr);
+                for ($i = 0; $i < $positionCount; $i++) {
+                    if (isset($_SESSION['Warenkorb']->PositionenArr[$i]->cUnique) &&
+                        $_SESSION['Warenkorb']->PositionenArr[$i]->cUnique == $cUnique
+                    ) {
+                        unset($_SESSION['Warenkorb']->PositionenArr[$i]);
+                        $_SESSION['Warenkorb']->PositionenArr = array_merge($_SESSION['Warenkorb']->PositionenArr);
+                        $i                                    = -1;
+                    }
+                }
+            }
+        }
+        loescheAlleSpezialPos();
+        /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
+        if (!$_SESSION['Warenkorb']->enthaltenSpezialPos(C_WARENKORBPOS_TYP_ARTIKEL)) {
+            unset($_SESSION['Kupon']);
+            $_SESSION['Warenkorb'] = new Warenkorb();
+        }
+        freeGiftStillValid();
+        // Lösche Position aus dem WarenkorbPersPos
+        if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']->kKunde > 0) {
+            $oWarenkorbPers = new WarenkorbPers($_SESSION['Kunde']->kKunde);
+            $oWarenkorbPers->entferneAlles()
+                ->bauePersVonSession();
+        }
+}
+
+
+/**
  * @param int $nPos
  * @return null|void
  */
 function loescheWarenkorbPosition($nPos)
 {
-    //Kupons bearbeiten
-    if (!isset($_SESSION['Warenkorb']->PositionenArr[$nPos])) {
-        return;
-    }
-    if ($_SESSION['Warenkorb']->PositionenArr[$nPos]->nPosTyp != C_WARENKORBPOS_TYP_ARTIKEL &&
-        $_SESSION['Warenkorb']->PositionenArr[$nPos]->nPosTyp != C_WARENKORBPOS_TYP_GRATISGESCHENK
-    ) {
-        return;
-    }
-    $cUnique = $_SESSION['Warenkorb']->PositionenArr[$nPos]->cUnique;
-    // Kindartikel?
-    if (strlen($cUnique) > 0 && $_SESSION['Warenkorb']->PositionenArr[$nPos]->kKonfigitem > 0) {
-        return;
-    }
-    executeHook(HOOK_WARENKORB_LOESCHE_POSITION, [
-        'nPos'     => $nPos,
-        'position' => &$_SESSION['Warenkorb']->PositionenArr[$nPos]
-    ]);
-
-    if (class_exists('Upload')) {
-        Upload::deleteArtikelUploads($_SESSION['Warenkorb']->PositionenArr[$nPos]->kArtikel);
-    }
-
-    unset($_SESSION['Warenkorb']->PositionenArr[$nPos]);
-    $_SESSION['Warenkorb']->PositionenArr = array_merge($_SESSION['Warenkorb']->PositionenArr);
-    // Kindartikel löschen
-    if (strlen($cUnique) > 0) {
-        $positionCount = count($_SESSION['Warenkorb']->PositionenArr);
-        for ($i = 0; $i < $positionCount; $i++) {
-            if (isset($_SESSION['Warenkorb']->PositionenArr[$i]->cUnique) &&
-                $_SESSION['Warenkorb']->PositionenArr[$i]->cUnique == $cUnique
-            ) {
-                unset($_SESSION['Warenkorb']->PositionenArr[$i]);
-                $_SESSION['Warenkorb']->PositionenArr = array_merge($_SESSION['Warenkorb']->PositionenArr);
-                $i                                    = -1;
-            }
-        }
-    }
-    loescheAlleSpezialPos();
-    /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
-    if (!$_SESSION['Warenkorb']->enthaltenSpezialPos(C_WARENKORBPOS_TYP_ARTIKEL)) {
-        unset($_SESSION['Kupon']);
-        $_SESSION['Warenkorb'] = new Warenkorb();
-    }
-    freeGiftStillValid();
-    // Lösche Position aus dem WarenkorbPersPos
-    if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']->kKunde > 0) {
-        $oWarenkorbPers = new WarenkorbPers($_SESSION['Kunde']->kKunde);
-        $oWarenkorbPers->entferneAlles()
-                       ->bauePersVonSession();
-    }
+    loescheWarenkorbPositionen([$nPos]);
 }
 
 /**

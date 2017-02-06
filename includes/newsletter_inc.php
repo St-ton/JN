@@ -148,6 +148,7 @@ function fuegeNewsletterEmpfaengerEin($oKunde, $bPruefeDaten = false)
                 $oNewsletterEmpfaengerHistory->dEingetragen = 'now()';
                 $oNewsletterEmpfaengerHistory->dAusgetragen = '0000-00-00';
                 $oNewsletterEmpfaengerHistory->dOptCode     = '0000-00-00';
+                $oNewsletterEmpfaengerHistory->cRegIp       = $oKunde->cRegIp;
 
                 $kNewsletterEmpfaengerHistory = Shop::DB()->insert(
                     'tnewsletterempfaengerhistory',

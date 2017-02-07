@@ -11,6 +11,7 @@ $io = new IO();
 $io->register('suggestions')
     ->register('pushToBasket')
     ->register('pushToComparelist')
+    ->register('removeFromComparelist')
     ->register('checkDependencies')
     ->register('checkVarkombiDependencies')
     ->register('generateToken')
@@ -203,30 +204,35 @@ function pushToComparelist($kArtikel)
     $_POST['a']               = $kArtikel;
 
     checkeWarenkorbEingang();
-    $error  = Shop::Smarty()->getTemplateVars('fehler');
-    $notice = Shop::Smarty()->getTemplateVars('hinweis');
+    $error             = Shop::Smarty()->getTemplateVars('fehler');
+    $notice            = Shop::Smarty()->getTemplateVars('hinweis');
+    $oResponse->nType  = 2;
+    $oResponse->nCount = count($_SESSION['Vergleichsliste']->oArtikel_arr);
+    $oResponse->cTitle = utf8_encode(Shop::Lang()->get('compare', 'global'));
+    $buttons           = [
+        (object)[
+            'href'    => '#',
+            'fa'      => 'fa fa-arrow-circle-right',
+            'title'   => Shop::Lang()->get('continueShopping', 'checkout'),
+            'primary' => true,
+            'dismiss' => 'modal'
+        ]
+    ];
 
-    $oResponse->nType         = 2;
-    $oResponse->nCount        = count($_SESSION['Vergleichsliste']->oArtikel_arr);
-    $oResponse->cTitle        = utf8_encode(Shop::Lang()->get('compare', 'global'));
+    if ($oResponse->nCount > 1) {
+        array_unshift($buttons, (object)[
+            'href'  => 'vergleichsliste.php',
+            'fa'    => 'fa-tasks',
+            'title' => Shop::Lang()->get('compare', 'global')
+        ]);
+    }
+
     $oResponse->cNotification = utf8_encode(
         Shop::Smarty()
             ->assign('type', empty($error) ? 'info' : 'danger')
             ->assign('body', empty($error) ? $notice : $error)
-            ->assign('buttons', [
-                (object)[
-                    'href'  => 'vergleichsliste.php',
-                    'fa'    => 'fa-tasks',
-                    'title' => Shop::Lang()->get('compare', 'global')
-                ],
-                (object)[
-                    'href'    => '#',
-                    'fa'      => 'fa fa-arrow-circle-right',
-                    'title'   => Shop::Lang()->get('continueShopping', 'checkout'),
-                    'primary' => true,
-                    'dismiss' => 'modal'
-                ],
-            ])->fetch('snippets/notification.tpl')
+            ->assign('buttons', $buttons)
+            ->fetch('snippets/notification.tpl')
     );
 
     if ($oResponse->nCount > 1) {
@@ -235,19 +241,65 @@ function pushToComparelist($kArtikel)
                 ->assign('Einstellungen', $Einstellungen)
                 ->fetch('layout/header_shop_nav_compare.tpl')
         );
+    } else {
+        $oResponse->cNavBadge     = '';
+    }
 
-        $boxes = Boxen::getInstance();
-        $oBox  = $boxes->prepareBox(BOX_VERGLEICHSLISTE, new stdClass());
-        $oResponse->cBoxContainer = utf8_encode(
+    $boxes = Boxen::getInstance();
+    $oBox  = $boxes->prepareBox(BOX_VERGLEICHSLISTE, new stdClass());
+    $oResponse->cBoxContainer = utf8_encode(
+        Shop::Smarty()
+            ->assign('Einstellungen', $Einstellungen)
+            ->assign('oBox', $oBox)
+            ->fetch('boxes/box_comparelist.tpl')
+    );
+
+    $objResponse->script('this.response = ' . json_encode($oResponse) . ';');
+
+    return $objResponse;
+}
+
+function removeFromComparelist($kArtikel)
+{
+    global $Einstellungen;
+
+    if (!isset($Einstellungen['vergleichsliste'])) {
+        if (isset($Einstellungen)) {
+            $Einstellungen = array_merge($Einstellungen, Shop::getSettings([CONF_VERGLEICHSLISTE]));
+        } else {
+            $Einstellungen = Shop::getSettings([CONF_VERGLEICHSLISTE]);
+        }
+    }
+
+    $oResponse   = new stdClass();
+    $objResponse = new IOResponse();
+
+    $_GET['Vergleichsliste'] = 1;
+    $_GET['vlplo']           = $kArtikel;
+
+    Session::getInstance()->setStandardSessionVars();
+    $oResponse->nType  = 2;
+    $oResponse->nCount = count($_SESSION['Vergleichsliste']->oArtikel_arr);
+    $oResponse->cTitle = utf8_encode(Shop::Lang()->get('compare', 'global'));
+
+    if ($oResponse->nCount > 1) {
+        $oResponse->cNavBadge = utf8_encode(
             Shop::Smarty()
                 ->assign('Einstellungen', $Einstellungen)
-                ->assign('oBox', $oBox)
-                ->fetch('boxes/box_comparelist.tpl')
+                ->fetch('layout/header_shop_nav_compare.tpl')
         );
     } else {
         $oResponse->cNavBadge     = '';
-        $oResponse->cBoxContainer = '';
     }
+
+    $boxes = Boxen::getInstance();
+    $oBox  = $boxes->prepareBox(BOX_VERGLEICHSLISTE, new stdClass());
+    $oResponse->cBoxContainer = utf8_encode(
+        Shop::Smarty()
+            ->assign('Einstellungen', $Einstellungen)
+            ->assign('oBox', $oBox)
+            ->fetch('boxes/box_comparelist.tpl')
+    );
 
     $objResponse->script('this.response = ' . json_encode($oResponse) . ';');
 

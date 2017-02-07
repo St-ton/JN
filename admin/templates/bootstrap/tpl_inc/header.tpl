@@ -116,13 +116,13 @@
             });
 
             $(document).on("keydown", function (event) {
-                if (event.keyCode == 71 && event.ctrlKey) {
+                if (event.keyCode === 71 && event.ctrlKey) {
                     event.preventDefault();
                     $search_frame.modal('toggle');
                 }
-                if (event.keyCode == 13) {
+                if (event.keyCode === 13) {
                     szSearchString = $("[name$=cSuche]").val();
-                        if ('' !== szSearchString ) {
+                        if ('' !== szSearchString) {
                             document.location.href = 'einstellungen.php?cSuche=' + szSearchString + '&einstellungen_suchen=1';
                         }
                 }

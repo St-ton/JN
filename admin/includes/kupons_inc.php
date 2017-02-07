@@ -293,7 +293,7 @@ function createCouponFromInput()
     $oKupon->cLieferlaender        = isset($_POST['cLieferlaender']) ? strtoupper($_POST['cLieferlaender']) : '';
     $oKupon->nVerwendungen         = isset($_POST['nVerwendungen']) ? (int)$_POST['nVerwendungen'] : 0;
     $oKupon->nVerwendungenProKunde = isset($_POST['nVerwendungenProKunde']) ? (int)$_POST['nVerwendungenProKunde'] : 0;
-    $oKupon->cArtikel              = trim($_POST['cArtikel']);
+    $oKupon->cArtikel              = isset($_POST['cArtikel']) ? ';' . trim($_POST['cArtikel'], ';\t\n\r') . ';' : '';
     $oKupon->kKundengruppe         = (int)$_POST['kKundengruppe'];
     $oKupon->dGueltigAb            = normalizeDate(isset($_POST['dGueltigAb']) ? $_POST['dGueltigAb'] : null);
     $oKupon->dGueltigBis           = normalizeDate(isset($_POST['dGueltigBis']) ? $_POST['dGueltigBis'] : null);
@@ -320,7 +320,7 @@ function createCouponFromInput()
         $oKupon->cKategorien = StringHandler::createSSK($_POST['kKategorien']);
     }
     if (isset($_POST['cKunden'])) {
-        $oKupon->cKunden = $_POST['cKunden'];
+        $oKupon->cKunden = trim($_POST['cKunden'], ';\t\n\r') . ';';
     }
     if (isset($_POST['couponCreation'])) {
         $massCreationCoupon                  = new stdClass();

@@ -14,7 +14,7 @@
             <table class="table table-striped vtable">
                 {foreach name=vergleich from=$from item=oArtikel}
                     {if $smarty.foreach.vergleich.iteration <= $nAnzahl}
-                        <tr class="item">
+                        <tr class="item" data-id="{$oArtikel->kArtikel}">
                             <td>
                                 <a href="{$oArtikel->cURL}" class="image"><img src="{$oArtikel->Bilder[0]->cPfadMini}" alt="{$oArtikel->cName|strip_tags|truncate:60|escape:"html"}" class="img-xs" /></a><br>
                             </td>
@@ -22,15 +22,17 @@
                                 <a href="{$oArtikel->cURL}" class="name">{$oArtikel->cName|truncate:25:"..."}</a>
                             </td>
                             <td class="text-right">
-                                <a href="{$oArtikel->cURLDEL}" class="remove pull-right"><span class="fa fa-trash-o"></span></a>
+                                <a href="{$oArtikel->cURLDEL}" class="remove pull-right" data-name="Vergleichsliste.remove" data-toggle="product-actions" data-value='{ldelim}"a":{$oArtikel->kArtikel}{rdelim}'><span class="fa fa-trash-o"></span></a>
                             </td>
                         </tr>
                     {/if}
                 {/foreach}
             </table>
-            <div class="panel-body">
+            <div class="panel-body{if count($from) <= 1} hidden{/if}">
                 <a class="btn btn-default btn-sm btn-block{if $Einstellungen.vergleichsliste.vergleichsliste_target === 'popup'} popup{/if}" href="{get_static_route id='vergleichsliste.php'}"{if $Einstellungen.vergleichsliste.vergleichsliste_target === 'blank'} target="_blank"{/if}>{lang key="gotToCompare" section="global"}</a>
             </div>
         </section>
     {/if}
+{elseif isset($oBox->kBox)}
+    <section class="hidden box-compare" id="sidebox{$oBox->kBox}"></section>
 {/if}

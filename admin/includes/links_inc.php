@@ -253,28 +253,21 @@ function holeSpezialseiten()
  * @param array $oSub_arr
  * @param int   $kLinkgruppe
  */
-function aenderLinkgruppeRek($oSub_arr, $kLinkgruppe)
+function aenderLinkgruppeRek($oSub_arr, $kLinkgruppe, $kLinkgruppeAlt)
 {
     if (is_array($oSub_arr) && count($oSub_arr) > 0) {
         foreach ($oSub_arr as $oSub) {
-            $oSub->setLinkgruppe($kLinkgruppe);
-            $oSub->update();
-            aenderLinkgruppeRek($oSub->oSub_arr, $kLinkgruppe);
-        }
-    }
-}
-
-/**
- * @param array $oSub_arr
- * @param int   $kLinkgruppe
- */
-function copyIntoLinkgroupRec($oSub_arr, $kLinkgruppe)
-{
-    if (is_array($oSub_arr) && count($oSub_arr) > 0) {
-        foreach ($oSub_arr as $oSub) {
-            $oSub->setLinkgruppe($kLinkgruppe);
-            $oSub->save();
-            copyIntoLinkgroupRec($oSub->oSub_arr, $kLinkgruppe);
+            $exists = Shop::DB()->select('tlink', ['kLink', 'kLinkgruppe'],[(int)$oSub->kLink,  (int)$kLinkgruppe]);
+            if (empty($exists)) {
+                $oSub->setLinkgruppe($kLinkgruppe)
+                    ->save();
+                aenderLinkgruppeRek($oSub->oSub_arr, $kLinkgruppe, $kLinkgruppeAlt);
+                $oSub->setLinkgruppe($kLinkgruppeAlt)
+                    ->delete(false, $kLinkgruppeAlt);
+            } else {
+                $oSub->setVaterLink(0)
+                     ->update();
+            }
         }
     }
 }

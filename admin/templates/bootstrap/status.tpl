@@ -270,7 +270,7 @@ $(function() {
                                     <td>
                                         <div class="test-name">
                                             {if $test->getDescription()|@count_characters > 0}
-                                                <abbr title="{$test->getDescription()|utf8_decode}">{$test->getName()|utf8_decode}</abbr>
+                                                <abbr title="{$test->getDescription()|utf8_decode|escape:'html'}">{$test->getName()|utf8_decode}</abbr>
                                             {else}
                                                 {$test->getName()|utf8_decode}
                                             {/if}

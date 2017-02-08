@@ -1,4 +1,8 @@
 <?php
+/**
+ * @copyright (c) JTL-Software-GmbH
+ * @license http://jtl-url.de/jtlshoplicense
+ */
 
 /**
  * Class Kupon
@@ -836,8 +840,17 @@ class Kupon
         $translationList = [];
         if(isset($_SESSION['Sprachen'])){
             foreach ($_SESSION['Sprachen'] as $Sprache) {
-                $name_spr = Shop::DB()->select('tkuponsprache', 'kKupon', (int)$kKupon, 'cISOSprache', $Sprache->cISO, null,
-                    null, false, 'cName');
+                $name_spr = Shop::DB()->select(
+                    'tkuponsprache',
+                    'kKupon',
+                    (int)$kKupon,
+                    'cISOSprache',
+                    $Sprache->cISO,
+                    null,
+                    null,
+                    false,
+                    'cName'
+                );
                 $translationList[$Sprache->cISO] = $name_spr->cName;
             }
         }
@@ -876,7 +889,6 @@ class Kupon
         }
 
         return false;
-
     }
 
     /**

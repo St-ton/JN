@@ -401,7 +401,7 @@ class Warenkorb
                 }
             }
             $this->PositionenArr = array_merge($this->PositionenArr);
-            if (isset($_POST['Kuponcode']) && $_POST['Kuponcode']) {
+            if (!empty($_POST['Kuponcode'])) {
                 if ($typ == C_WARENKORBPOS_TYP_KUPON) {
                     if (!empty($_SESSION['Kupon'])) {
                         unset($_SESSION['Kupon']);
@@ -471,7 +471,7 @@ class Warenkorb
             if (is_array($name->cName)) {
                 $NeuePosition->cName = $name->cName;
             } else {
-                $NeuePosition->cName = array($_SESSION['cISOSprache'] => $name->cName);
+                $NeuePosition->cName = [$_SESSION['cISOSprache'] => $name->cName];
             }
             if (isset($name->cArticleNameAffix) && isset($name->discountForArticle)) {
                 $NeuePosition->cArticleNameAffix  = $name->cArticleNameAffix;
@@ -481,7 +481,7 @@ class Warenkorb
             if (is_array($name)) {
                 $NeuePosition->cName = $name;
             } else {
-                $NeuePosition->cName = array($_SESSION['cISOSprache'] => $name);
+                $NeuePosition->cName = [$_SESSION['cISOSprache'] => $name];
             }
         }
         $NeuePosition->nPosTyp  = $typ;

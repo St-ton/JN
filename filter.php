@@ -74,6 +74,7 @@ if ($cParameter_arr['kKategorie'] > 0) {
         if (KategorieHelper::categoryExists($cParameter_arr['kKategorie'])) {
             $AktuelleKategorie->kKategorie = $cParameter_arr['kKategorie'];
         } else {
+            Shop::$is404             = true;
             $is404                   = true;
             $cParameter_arr['is404'] = true;
 

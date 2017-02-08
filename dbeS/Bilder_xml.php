@@ -1461,10 +1461,11 @@ function imageload_container($img, $nWidth, $nHeight, $nContainerWidth, $nContai
     if ($format === 'jpg') {
         $rgb   = html2rgb($GLOBALS['Einstellungen']['bilder']['bilder_hintergrundfarbe']);
         $color = imagecolorallocate($newImg, $rgb[0], $rgb[1], $rgb[2]);
+        imagealphablending($newImg, true);
     } else {
         $color = imagecolorallocatealpha($newImg, 255, 255, 255, 127);
+        imagealphablending($newImg, false);
     }
-    imagealphablending($newImg, false);
     imagesavealpha($newImg, true);
     imagefilledrectangle($newImg, 0, 0, $nContainerWidth, $nContainerHeight, $color);
 
@@ -1518,11 +1519,12 @@ function imageload_alpha($img, $nWidth = 0, $nHeight = 0)
     if ($format === 'jpg') {
         $rgb   = html2rgb($GLOBALS['Einstellungen']['bilder']['bilder_hintergrundfarbe']);
         $color = imagecolorallocate($newImg, $rgb[0], $rgb[1], $rgb[2]);
+        imagealphablending($newImg, true);
     } else {
         $color = imagecolorallocatealpha($newImg, 255, 255, 255, 127);
+        imagealphablending($newImg, false);
     }
 
-    imagealphablending($newImg, false);
     imagesavealpha($newImg, true);
     imagefilledrectangle($newImg, 0, 0, $nWidth, $nHeight, $color);
     //@todo: check. was:

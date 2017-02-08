@@ -488,12 +488,14 @@ function saveCoupon($oKupon, $oSprache_arr)
                         $massCreationCoupon->numbersHash, $massCreationCoupon->prefixHash,
                         $massCreationCoupon->suffixHash);
                 }
+                unset($oKupon->translationList);
                 $oKupon->kKupon[] = (int)$oKupon->save();
             }
         } else {
             if ($oKupon->cKuponTyp !== 'neukundenkupon' && $oKupon->cCode === '') {
                 $oKupon->cCode = $oKupon->generateCode();
             }
+            unset($oKupon->translationList);
             $oKupon->kKupon = (int)$oKupon->save();
         }
         $res = $oKupon->kKupon;

@@ -1431,8 +1431,7 @@ function fuegeEinInWarenkorb($kArtikel, $anzahl, $oEigenschaftwerte_arr = '', $n
         unset($_SESSION['Versandart']);
         unset($_SESSION['Zahlungsart']);
         unset($_SESSION['TrustedShops']);
-        // Wenn Kupon vorhanden und prozentual auf ganzen Warenkorb,
-        // dann verwerfen und neu anlegen
+        // Wenn Kupon vorhanden und der cWertTyp prozentual ist, dann verwerfen und neuanlegen
         altenKuponNeuBerechnen();
         setzeLinks();
         // Persistenter Warenkorb
@@ -1463,10 +1462,7 @@ function altenKuponNeuBerechnen()
 {
     /** @var array('Warenkorb' => Warenkorb) $_SESSION */
     // Wenn Kupon vorhanden und prozentual auf ganzen Warenkorb, dann verwerfen und neu anlegen
-    if (isset($_SESSION['Kupon']) &&
-        $_SESSION['Kupon']->cWertTyp === 'prozent' &&
-        intval($_SESSION['Kupon']->nGanzenWKRabattieren) === 1
-    ) {
+    if (isset($_SESSION['Kupon']) && $_SESSION['Kupon']->cWertTyp === 'prozent') {
         $oKupon = $_SESSION['Kupon'];
         unset($_SESSION['Kupon']);
         $_SESSION['Warenkorb']->setzePositionsPreise();
@@ -1570,6 +1566,74 @@ function checkeKuponWKPos($oWKPosition, $Kupon)
     }
 
     return $oWKPosition;
+}
+
+/**
+ * @param object $oWKPosition
+ * @param object $Kupon
+ * @return mixed
+ */
+function checkSetPercentCouponWKPos($oWKPosition, $Kupon)
+{
+    $wkPos         = new stdClass();
+    $wkPos->fPreis = (float)0;
+    $wkPos->cName  = '';
+    if ($oWKPosition->nPosTyp != C_WARENKORBPOS_TYP_ARTIKEL) {
+        return $wkPos;
+    }
+    $Artikel_qry    = " OR cArtikel LIKE '%" . str_replace('%', '\%', Shop::DB()->escape($oWKPosition->Artikel->cArtNr)) . ";%'";
+    $Kategorie_qry  = '';
+    $Kunden_qry     = '';
+    $kKategorie_arr = array();
+
+    if ($oWKPosition->Artikel->kArtikel > 0) {
+        if ($oWKPosition->nPosTyp == C_WARENKORBPOS_TYP_ARTIKEL) {
+            $kArtikel = (int) $oWKPosition->Artikel->kArtikel;
+            // Kind?
+            if (ArtikelHelper::isVariChild($kArtikel)) {
+                $kArtikel = ArtikelHelper::getParent($kArtikel);
+            }
+            $oKategorie_arr = Shop::DB()->query("SELECT kKategorie FROM tkategorieartikel WHERE kArtikel = " . $kArtikel, 2);
+            foreach ($oKategorie_arr as $oKategorie) {
+                if (!in_array($oKategorie->kKategorie, $kKategorie_arr)) {
+                    $kKategorie_arr[] = (int) $oKategorie->kKategorie;
+                }
+            }
+        }
+    }
+    foreach ($kKategorie_arr as $kKategorie) {
+        $Kategorie_qry .= " OR cKategorien LIKE '%;" . $kKategorie . ";%'";
+    }
+    if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
+        $Kunden_qry = " OR cKunden like '%;" . (int) $_SESSION['Kunde']->kKunde . ";%'";
+    }
+    $kupons_mgl = Shop::DB()->query(
+        "SELECT *
+            FROM tkupon
+            WHERE cAktiv = 'Y'
+                AND dGueltigAb <= now()
+                AND (dGueltigBis > now() OR dGueltigBis = '0000-00-00 00:00:00')
+                AND fMindestbestellwert <= " . $_SESSION['Warenkorb']->gibGesamtsummeWaren(true, false) . "
+                AND (kKundengruppe = -1 OR kKundengruppe = 0 OR kKundengruppe = " . (int) $_SESSION['Kundengruppe']->kKundengruppe . ")
+                AND (nVerwendungen = 0 OR nVerwendungen > nVerwendungenBisher)
+                AND (cArtikel = '' " . $Artikel_qry . ")
+                AND (cKategorien = '' OR cKategorien = '-1' " . $Kategorie_qry . ")
+                AND (cKunden = '' OR cKunden = '-1' " . $Kunden_qry . ")
+                AND kKupon = " . (int) $Kupon->kKupon, 1
+    );
+    $waehrung    = (isset($_SESSION['Waehrung'])) ? $_SESSION['Waehrung'] : null;
+    if (is_null($waehrung) || !isset($waehrung->kWaehrung)) {
+        $waehrung = $this->Waehrung;
+    }
+    if (is_null($waehrung) || !isset($waehrung->kWaehrung)) {
+        $waehrung = Shop::DB()->query("SELECT * FROM twaehrung WHERE cStandard='Y'", 1);
+    }
+    if (isset($kupons_mgl->kKupon) && $kupons_mgl->kKupon > 0 && $kupons_mgl->cWertTyp === 'prozent') {
+        $wkPos->fPreis = $oWKPosition->fPreis * $waehrung->fFaktor * $oWKPosition->nAnzahl * ((100 + gibUst($oWKPosition->kSteuerklasse)) / 100);
+        $wkPos->cName  = $oWKPosition->cName;
+    }
+
+    return $wkPos;
 }
 
 /**
@@ -2758,7 +2822,7 @@ function berechneVersandpreis($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
             if (isset($_SESSION['Warenkorb'])) {
                 $fGesamtsummeWaren = berechneNetto(
                     $_SESSION['Warenkorb']->gibGesamtsummeWarenExt(
-                        [C_WARENKORBPOS_TYP_ARTIKEL, C_WARENKORBPOS_TYP_KUPON, C_WARENKORBPOS_TYP_NEUKUNDENKUPON],
+                        [C_WARENKORBPOS_TYP_ARTIKEL],
                         1
                     ),
                     gibUst($_SESSION['Warenkorb']->gibVersandkostenSteuerklasse())
@@ -2772,7 +2836,7 @@ function berechneVersandpreis($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
             }
             if (isset($_SESSION['Warenkorb'])) {
                 $fGesamtsummeWaren = $_SESSION['Warenkorb']->gibGesamtsummeWarenExt(
-                    [C_WARENKORBPOS_TYP_ARTIKEL, C_WARENKORBPOS_TYP_KUPON, C_WARENKORBPOS_TYP_NEUKUNDENKUPON],
+                    [C_WARENKORBPOS_TYP_ARTIKEL],
                     1
                 );
             }

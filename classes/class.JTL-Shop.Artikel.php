@@ -2727,7 +2727,7 @@ class Artikel
                         AND tartikelsichtbarkeit.kKundengruppe = " . (int)$kKundengruppe . "
                     WHERE tartikel.kVaterArtikel = " . (int)$this->kArtikel . " 
                     AND tartikelsichtbarkeit.kArtikel IS NULL
-                    ORDER BY tartikel.kArtikel ASC, teigenschaft.nSort ASC, 
+                    ORDER BY tartikel.nSort ASC, teigenschaft.nSort ASC, 
                              teigenschaft.cName, teigenschaftwert.nSort ASC, teigenschaftwert.cName", 2
             );
             if (is_array($oVariationsKombiKinder_arr) && count($oVariationsKombiKinder_arr) > 0) {

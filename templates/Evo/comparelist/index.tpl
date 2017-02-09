@@ -36,7 +36,7 @@
                             </p>
                         {/if}
                         <p>
-                            <a href="{$oArtikel->cURLDEL}" class="remove"><span class="fa fa-trash-o"></span></a>
+                            <a href="{$oArtikel->cURLDEL}" data-id="{$oArtikel->kArtikel}" class="remove"><span class="fa fa-trash-o"></span></a>
                         </p>
                     </td>
                 {/foreach}
@@ -229,7 +229,9 @@
 
 {if isset($bAjaxRequest) && $bAjaxRequest}
     <script type="text/javascript">
-        $('a.remove').click(function(e) {
+        $('.modal a.remove').click(function(e) {
+            var kArtikel = $(e.currentTarget).data('id');
+            $('section.box-compare tr[data-id="' + kArtikel + '"]').remove();
             eModal.ajax({
                 'size': 'lg',
                 'url': e.currentTarget.href,
@@ -242,8 +244,14 @@
             var clCount = {if isset($oVergleichsliste->oArtikel_arr)}{$oVergleichsliste->oArtikel_arr|count}{else}0{/if};
             if (clCount > 1) {
                 $('.navbar-nav .compare-list-menu .badge em').html(clCount);
-            }
-            else {
+                $('.navbar-nav .compare-list-menu').removeClass('hidden');
+                $('section.box-compare .panel-body').removeClass('hidden');
+            } else {
+                if (clCount == 1) {
+                    $('section.box-compare .panel-body').addClass('hidden');
+                } else {
+                    $('section.box-compare').html('').addClass('hidden');
+                }
                 $('.navbar-nav .compare-list-menu').addClass('hidden');
                 eModal.close();
             }

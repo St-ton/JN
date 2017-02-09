@@ -677,9 +677,11 @@ class Boxen
                     }
                     $cZusatzParams = StringHandler::filterXSS($cZusatzParams);
                     $oTMP_arr      = [];
-                    $cRequestURI   = (!empty($_SERVER['REQUEST_URI']))
-                        ? (Shop::getURL() . $_SERVER['REQUEST_URI'])
-                        : (Shop::getURL() . $_SERVER['SCRIPT_NAME']);
+                    $cRequestURI   = Shop::getRequestUri();
+                    if ($cRequestURI === 'io.php') {
+                        // Box wird von einem Ajax-Call gerendert
+                        $cRequestURI = LinkHelper::getInstance()->getStaticRoute('vergleichsliste.php');
+                    }
                     foreach ($oArtikel_arr as $oArtikel) {
                         $nPosAnd     = strrpos($cRequestURI, '&');
                         $nPosQuest   = strrpos($cRequestURI, '?');

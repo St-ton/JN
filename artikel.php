@@ -166,7 +166,7 @@ $BewertungsTabAnzeigen = ($bewertung_seite || $bewertung_sterne || $bewertung_an
 if ($bewertung_seite == 0) {
     $bewertung_seite = 1;
 }
-if (!isset($AktuellerArtikel->Bewertungen)) {
+if (!isset($AktuellerArtikel->Bewertungen) || $bewertung_sterne > 0) {
     $AktuellerArtikel->holeBewertung(
         Shop::getLanguage(),
         $Einstellungen['bewertung']['bewertung_anzahlseite'],
@@ -177,7 +177,17 @@ if (!isset($AktuellerArtikel->Bewertungen)) {
     );
     $AktuellerArtikel->holehilfreichsteBewertung(Shop::getLanguage());
 }
-$pagination = (new Pagination('ratings'))->setItemArray($AktuellerArtikel->Bewertungen->oBewertung_arr)
+
+$oBewertung_arr = array_filter($AktuellerArtikel->Bewertungen->oBewertung_arr,
+    function ($oBewertung) use (&$AktuellerArtikel) {
+        return
+            !isset($AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->kBewertung) ||
+            (int)$AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->kBewertung !== (int)$oBewertung->kBewertung;
+    }
+);
+
+$pagination = (new Pagination('ratings'))
+    ->setItemArray($oBewertung_arr)
     ->setItemsPerPageOptions([(int)$Einstellungen['bewertung']['bewertung_anzahlseite']])
     ->setDefaultItemsPerPage($Einstellungen['bewertung']['bewertung_anzahlseite'])
     ->setSortByOptions([
@@ -186,6 +196,7 @@ $pagination = (new Pagination('ratings'))->setItemArray($AktuellerArtikel->Bewer
         ['nHilfreich', Shop::Lang()->get('paginationOrderUsefulness', 'global')]
     ])
     ->assemble();
+
 $AktuellerArtikel->Bewertungen->Sortierung = $nSortierung;
 
 $nAnzahlBewertungen = ($bewertung_sterne == 0)
@@ -259,7 +270,8 @@ $smarty->assign('Navigation', createNavigation($AktuelleSeite, $AufgeklappteKate
        ->assign('KONFIG_ANZEIGE_TYP_RADIO', KONFIG_ANZEIGE_TYP_RADIO)
        ->assign('KONFIG_ANZEIGE_TYP_DROPDOWN', KONFIG_ANZEIGE_TYP_DROPDOWN)
        ->assign('KONFIG_ANZEIGE_TYP_DROPDOWN_MULTI', KONFIG_ANZEIGE_TYP_DROPDOWN_MULTI)
-       ->assign('ratingPagination', $pagination);
+       ->assign('ratingPagination', $pagination)
+       ->assign('bewertungSterneSelected', $bewertung_sterne);
 if ($Einstellungen['artikeldetails']['artikeldetails_navi_blaettern'] === 'Y') {
     $smarty->assign('NavigationBlaettern', gibNaviBlaettern(
         $AktuellerArtikel->kArtikel,

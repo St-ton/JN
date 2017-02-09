@@ -636,14 +636,25 @@ class PayPalFinance extends PaymentMethod
         }
     }
 
-    public function addSurcharge(PayPal\Api\CreditFinancingOffered $offer)
+    public function getTaxClass()
     {
-        $taxClass = 0;
-        $taxRate  = Shop::DB()->select('tsteuersatz', 'fSteuersatz', 0);
-        if (is_object($taxRate)) {
-            $taxClass = $taxRate->kSteuerklasse;
+        foreach ($_SESSION['Steuersatz'] as $taxClass => $taxRate) {
+            if ((float)$taxRate === 0.0) {
+                return $taxClass;
+            }
         }
 
+        $taxRate  = Shop::DB()->select('tsteuersatz', 'fSteuersatz', 0);
+        if (is_object($taxRate)) {
+            return $taxRate->kSteuerklasse;
+        }
+
+        return null;
+    }
+
+    public function addSurcharge(PayPal\Api\CreditFinancingOffered $offer)
+    {
+        $taxClass = $this->getTaxClass();
         $interest = $offer->getTotalInterest();
 
         $_SESSION['Warenkorb']->erstelleSpezialPos(

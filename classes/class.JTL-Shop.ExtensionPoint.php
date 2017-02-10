@@ -66,6 +66,7 @@ class ExtensionPoint
             $oHandle = null;
             $cClass  = ucfirst($oExtension->cClass);
             if (class_exists($cClass)) {
+                /** @var IExtensionPoint $oHandle */
                 $oHandle = new $cClass();
                 $oHandle->init($oExtension->kInitial);
             } else {
@@ -89,32 +90,32 @@ class ExtensionPoint
         switch ($oKey->nPage) {
             case PAGE_ARTIKEL:
                 $oKey->cKey   = 'kArtikel';
-                $oKey->cValue = (isset($this->cParam_arr['kArtikel'])) ? $this->cParam_arr['kArtikel'] : null;
+                $oKey->cValue = (isset($this->cParam_arr['kArtikel'])) ? (int)$this->cParam_arr['kArtikel'] : null;
                 break;
 
             case PAGE_NEWS:
                 if (isset($this->cParam_arr['kNewsKategorie']) && intval($this->cParam_arr['kNewsKategorie']) > 0) {
                     $oKey->cKey   = 'kNewsKategorie';
-                    $oKey->cValue = intval($this->cParam_arr['kNewsKategorie']);
+                    $oKey->cValue = (int)$this->cParam_arr['kNewsKategorie'];
                 } else {
                     $oKey->cKey   = 'kNews';
-                    $oKey->cValue = (isset($this->cParam_arr['kNews'])) ? intval($this->cParam_arr['kNews']) : null;
+                    $oKey->cValue = (isset($this->cParam_arr['kNews'])) ? (int)$this->cParam_arr['kNews'] : null;
                 }
                 break;
 
             case PAGE_BEWERTUNG:
                 $oKey->cKey   = 'kArtikel';
-                $oKey->cValue = intval($this->cParam_arr['kArtikel']);
+                $oKey->cValue = (int)$this->cParam_arr['kArtikel'];
                 break;
 
             case PAGE_EIGENE:
                 $oKey->cKey   = 'kLink';
-                $oKey->cValue = intval($this->cParam_arr['kLink']);
+                $oKey->cValue = (int)$this->cParam_arr['kLink'];
                 break;
 
             case PAGE_UMFRAGE:
                 $oKey->cKey   = 'kUmfrage';
-                $oKey->cValue = intval($this->cParam_arr['kUmfrage']);
+                $oKey->cValue = (int)$this->cParam_arr['kUmfrage'];
                 break;
 
             case PAGE_ARTIKELLISTE:
@@ -122,22 +123,27 @@ class ExtensionPoint
                 // MerkmalWert
                 if (isset($oNaviFilter->MerkmalWert->kMerkmalWert) && $oNaviFilter->MerkmalWert->kMerkmalWert > 0) {
                     $oKey->cKey   = 'kMerkmalWert';
-                    $oKey->cValue = intval($oNaviFilter->MerkmalWert->kMerkmalWert);
-                } elseif (isset($oNaviFilter->Kategorie->kKategorie) && $oNaviFilter->Kategorie->kKategorie > 0) { // Kategorie
+                    $oKey->cValue = (int)$oNaviFilter->MerkmalWert->kMerkmalWert;
+                } elseif (isset($oNaviFilter->Kategorie->kKategorie) && $oNaviFilter->Kategorie->kKategorie > 0) {
+                    // Kategorie
                     $oKey->cKey   = 'kKategorie';
-                    $oKey->cValue = intval($oNaviFilter->Kategorie->kKategorie);
-                } elseif (isset($oNaviFilter->Hersteller->kHersteller) && $oNaviFilter->Hersteller->kHersteller > 0) { // Hersteller
+                    $oKey->cValue = (int)$oNaviFilter->Kategorie->kKategorie;
+                } elseif (isset($oNaviFilter->Hersteller->kHersteller) && $oNaviFilter->Hersteller->kHersteller > 0) {
+                    // Hersteller
                     $oKey->cKey   = 'kHersteller';
-                    $oKey->cValue = intval($oNaviFilter->Hersteller->kHersteller);
-                } elseif (isset($oNaviFilter->Tag->kTag) && $oNaviFilter->Tag->kTag > 0) { // Tag
+                    $oKey->cValue = (int)$oNaviFilter->Hersteller->kHersteller;
+                } elseif (isset($oNaviFilter->Tag->kTag) && $oNaviFilter->Tag->kTag > 0) {
+                    // Tag
                     $oKey->cKey   = 'kTag';
-                    $oKey->cValue = intval($oNaviFilter->Tag->kTag);
-                } elseif (isset($oNaviFilter->Suche->cSuche) && strlen($oNaviFilter->Suche->cSuche) > 0) { // Suchbegriff
+                    $oKey->cValue = (int)$oNaviFilter->Tag->kTag;
+                } elseif (isset($oNaviFilter->Suche->cSuche) && strlen($oNaviFilter->Suche->cSuche) > 0) {
+                    // Suchbegriff
                     $oKey->cKey   = 'cSuche';
                     $oKey->cValue = $oNaviFilter->Suche->cSuche;
-                } elseif (isset($oNaviFilter->Suchspecial->kKey) && $oNaviFilter->Suchspecial->kKey > 0) { // Suchspecial
+                } elseif (isset($oNaviFilter->Suchspecial->kKey) && $oNaviFilter->Suchspecial->kKey > 0) {
+                    // Suchspecial
                     $oKey->cKey   = 'kSuchspecial';
-                    $oKey->cValue = intval($oNaviFilter->Suchspecial->kKey);
+                    $oKey->cValue = (int)$oNaviFilter->Suchspecial->kKey;
                 }
 
                 break;

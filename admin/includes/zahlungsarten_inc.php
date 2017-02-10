@@ -10,7 +10,7 @@
  */
 function getNames($kZahlungsart)
 {
-    $namen = array();
+    $namen = [];
     if (!$kZahlungsart) {
         return $namen;
     }
@@ -29,7 +29,7 @@ function getNames($kZahlungsart)
  */
 function getshippingTimeNames($kZahlungsart)
 {
-    $namen = array();
+    $namen = [];
     if (!$kZahlungsart) {
         return $namen;
     }
@@ -48,7 +48,7 @@ function getshippingTimeNames($kZahlungsart)
  */
 function getHinweisTexte($kZahlungsart)
 {
-    $cHinweisTexte_arr = array();
+    $cHinweisTexte_arr = [];
     if (!$kZahlungsart) {
         return $cHinweisTexte_arr;
     }
@@ -88,7 +88,7 @@ function getHinweisTexteShop($kZahlungsart)
  */
 function getGesetzteKundengruppen($zahlungsart)
 {
-    $ret = array();
+    $ret = [];
     if (!isset($zahlungsart->cKundengruppen) || !$zahlungsart->cKundengruppen) {
         $ret[0] = true;
 
@@ -108,9 +108,9 @@ function getGesetzteKundengruppen($zahlungsart)
  */
 function getPaymentMethodsByName($cSearch)
 {
-    // Einstellungen Kommagetrennt?
+    // Einstellungen kommagetrennt?
     $cSearch_arr             = explode(',', $cSearch);
-    $allPaymentMethodsByName = array();
+    $allPaymentMethodsByName = [];
     foreach ($cSearch_arr as $cSearchPos) {
         // Leerzeichen löschen
         trim($cSearchPos);
@@ -121,7 +121,8 @@ function getPaymentMethodsByName($cSearch)
                     FROM tzahlungsart AS za
                     LEFT JOIN tzahlungsartsprache AS zs ON zs.kZahlungsart = za.kZahlungsart
                         AND zs.cName LIKE '%" . Shop::DB()->escape($cSearchPos) . "%'
-                    WHERE za.cName LIKE '%" . Shop::DB()->escape($cSearchPos) . "%' OR zs.cName LIKE '%" . Shop::DB()->escape($cSearchPos) . "%'", 2
+                    WHERE za.cName LIKE '%" . Shop::DB()->escape($cSearchPos) . "%' 
+                    OR zs.cName LIKE '%" . Shop::DB()->escape($cSearchPos) . "%'", 2
             );
             // Berücksichtige keine fehlerhaften Eingaben
             if (!empty($paymentMethodsByName_arr)) {

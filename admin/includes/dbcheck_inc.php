@@ -94,5 +94,7 @@ function doDBMaintenance($action, array $tables)
             return false;
     }
 
-    return (count($tables) > 0) ? Shop::DB()->query($cmd . $tables, 2) : false;
+    return (count($tables) > 0)
+        ? Shop::DB()->query($cmd . $tables, 2)
+        : false;
 }

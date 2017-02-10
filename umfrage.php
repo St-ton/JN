@@ -62,7 +62,13 @@ if (isset($cParameter_arr['kUmfrage']) && $cParameter_arr['kUmfrage'] > 0) {
                 if ($step === 'umfrage_durchfuehren') {
                     $oNavi_arr = [];
                     // Durchfuehrung
-                    bearbeiteUmfrageDurchfuehrung($cParameter_arr['kUmfrage'], $oUmfrage, $oUmfrageFrageTMP_arr, $oNavi_arr, $cParameter_arr['kSeite']);
+                    bearbeiteUmfrageDurchfuehrung(
+                        $cParameter_arr['kUmfrage'],
+                        $oUmfrage,
+                        $oUmfrageFrageTMP_arr,
+                        $oNavi_arr,
+                        $cParameter_arr['kSeite']
+                    );
                 }
                 // Canonical
                 if (strpos(baueURL($oUmfrage, URLART_UMFRAGE), '.php') === false && !SHOP_SEO) {
@@ -70,8 +76,14 @@ if (isset($cParameter_arr['kUmfrage']) && $cParameter_arr['kUmfrage'] > 0) {
                 }
                 $_SESSION['Umfrage']->kUmfrage = $oUmfrage->kUmfrage;
                 $smarty->assign('oUmfrage', $oUmfrage)
-                       ->assign('Navigation', createNavigation(Shop::getPageType(), 0, 0, Shop::Lang()->get('umfrage', 'breadcrumb') .
-                           ' - ' . $oUmfrage->cName, baueURL($oUmfrage, URLART_UMFRAGE)))
+                       ->assign('Navigation', createNavigation(
+                           Shop::getPageType(),
+                           0,
+                           0,
+                           Shop::Lang()->get('umfrage', 'breadcrumb') .
+                           ' - ' . $oUmfrage->cName, baueURL($oUmfrage, URLART_UMFRAGE)
+                           )
+                       )
                        ->assign('oNavi_arr', baueSeitenNavi($oUmfrageFrageTMP_arr, $oUmfrage->nAnzahlFragen))
                        ->assign('nAktuelleSeite', $cParameter_arr['kSeite'])
                        ->assign('nAnzahlSeiten', bestimmeAnzahlSeiten($oUmfrageFrageTMP_arr));
@@ -101,8 +113,14 @@ if ($step === 'umfrage_uebersicht') {
     // Canonical
     $cCanonicalURL = Shop::getURL() . '/umfrage.php';
 
-    $smarty->assign('Navigation', createNavigation(Shop::$AktuelleSeite, 0, 0, Shop::Lang()->get('umfragen', 'breadcrumb'), 'umfrage.php?'))
-           ->assign('oUmfrage_arr', $oUmfrage_arr);
+    $smarty->assign('Navigation', createNavigation(
+            Shop::$AktuelleSeite,
+            0,
+            0,
+            Shop::Lang()->get('umfragen', 'breadcrumb'),
+            'umfrage.php?'
+        )
+    )->assign('oUmfrage_arr', $oUmfrage_arr);
 
     executeHook(HOOK_UMFRAGE_PAGE_UEBERSICHT);
 }

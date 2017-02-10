@@ -697,7 +697,7 @@ function gibKategoriebildname($Kategoriebild, $Bildformat)
             : $Kategoriebild->cPfad . '.' . $Bildformat;
     }
     $attr = Shop::DB()->select('tkategorieattribut', 'kKategorie', (int)$Kategoriebild->kKategorie, 'cName', KAT_ATTRIBUT_BILDNAME, null, null, false, 'cWert');
-    if (isset($attr->cWert)) {
+    if (!empty($attr->cWert)) {
         return $attr->cWert . '.' . $Bildformat;
     }
     $Kategorie = Shop::DB()->query(
@@ -860,7 +860,7 @@ function erstelleThumbnailBranded($imgFilename, $zielbild, $breite, $hoehe, $qua
         $vergroessern = 1;
     }
     $ret                         = 0;
-    $Bildformat                  = gibBildformat($imgFilename);
+    $Bildformat                  = $GLOBALS['Einstellungen']['bilder']['bilder_dateiformat'];//gibBildformat($imgFilename);
     list($width, $height, $type) = getimagesize($imgFilename);
     if ($width > 0 && $height > 0) {
         if (!$vergroessern && $width < $breite && $height < $hoehe) {
@@ -925,7 +925,7 @@ function erstelleThumbnail($oBranding, $imgFilename, $zielbild, $breite, $hoehe,
         $vergroessern = 1;
     }
     $ret        = 0;
-    $Bildformat = gibBildformat($imgFilename);
+    $Bildformat = $GLOBALS['Einstellungen']['bilder']['bilder_dateiformat'];//gibBildformat($imgFilename);
     $im         = imageload_alpha($imgFilename);
     if ($im) {
         //bild skalieren
@@ -1125,7 +1125,7 @@ function loescheArtikelPict($kArtikelPict, $nNr = null)
         $oArtikelPict = null;
         if (intval($nNr) > 0) {
             $oArtikelPict = Shop::DB()->select('tartikelpict', 'kArtikel', $kArtikelPict, 'nNr', (int)$nNr);
-            $kArtikelPict = $oArtikelPict->kArtikelPict;
+            $kArtikelPict = isset($oArtikelPict->kArtikelPict) ? $oArtikelPict->kArtikelPict : 0;
         }
         deleteArticleImage(null, 0, $kArtikelPict);
         if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
@@ -1458,13 +1458,14 @@ function imageload_container($img, $nWidth, $nHeight, $nContainerWidth, $nContai
     $newImg  = imagecreatetruecolor($nContainerWidth, $nContainerHeight);
     // hintergrundfarbe
     $format = strtolower($GLOBALS['Einstellungen']['bilder']['bilder_dateiformat']);
-    if ($format == 'jpg') {
+    if ($format === 'jpg') {
         $rgb   = html2rgb($GLOBALS['Einstellungen']['bilder']['bilder_hintergrundfarbe']);
         $color = imagecolorallocate($newImg, $rgb[0], $rgb[1], $rgb[2]);
+        imagealphablending($newImg, true);
     } else {
         $color = imagecolorallocatealpha($newImg, 255, 255, 255, 127);
+        imagealphablending($newImg, false);
     }
-    imagealphablending($newImg, false);
     imagesavealpha($newImg, true);
     imagefilledrectangle($newImg, 0, 0, $nContainerWidth, $nContainerHeight, $color);
 
@@ -1515,14 +1516,15 @@ function imageload_alpha($img, $nWidth = 0, $nHeight = 0)
 
     // hintergrundfarbe
     $format = strtolower($GLOBALS['Einstellungen']['bilder']['bilder_dateiformat']);
-    if ($format == 'jpg') {
+    if ($format === 'jpg') {
         $rgb   = html2rgb($GLOBALS['Einstellungen']['bilder']['bilder_hintergrundfarbe']);
         $color = imagecolorallocate($newImg, $rgb[0], $rgb[1], $rgb[2]);
+        imagealphablending($newImg, true);
     } else {
         $color = imagecolorallocatealpha($newImg, 255, 255, 255, 127);
+        imagealphablending($newImg, false);
     }
 
-    imagealphablending($newImg, false);
     imagesavealpha($newImg, true);
     imagefilledrectangle($newImg, 0, 0, $nWidth, $nHeight, $color);
     //@todo: check. was:
@@ -1562,7 +1564,7 @@ function speichereBild($im, $format, $pfad, $quality = 80)
 
     $pfad = neuerDateiname($pfad);
 
-    switch ($format) {
+    switch (strtolower($format)) {
         case 'jpg':
             if (!function_exists('imagejpeg')) {
                 return false;

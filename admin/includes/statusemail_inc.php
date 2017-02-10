@@ -49,7 +49,17 @@ function erstelleStatusemailCron($nAlleXStunden)
                     AND tcron.cJobArt = 'statusemail'", 4
         );
 
-        $oCron = new Cron(0, 1, $nAlleXStunden, 'statusemail', 'statusemail', 'tstatusemail', 'nAktiv', date('Y-m-d', time() + 3600 * 24) . ' 00:00:00', '00:00:00', '0000-00-00 00:00:00');
+        $oCron = new Cron(
+            0, 
+            1, 
+            $nAlleXStunden, 
+            'statusemail', 
+            'statusemail', 
+            'tstatusemail', 
+            'nAktiv', 
+            date('Y-m-d', time() + 3600 * 24) . 
+                ' 00:00:00', '00:00:00', '0000-00-00 00:00:00'
+        );
         $oCron->speicherInDB();
 
         return true;
@@ -69,8 +79,12 @@ function ladeStatusemailEinstellungen()
     }
     $oStatusemailEinstellungen->cIntervallMoeglich_arr = gibIntervallMoeglichkeiten();
     $oStatusemailEinstellungen->cInhaltMoeglich_arr    = gibInhaltMoeglichkeiten();
-    $oStatusemailEinstellungen->nIntervall_arr         = (isset($oStatusemailEinstellungen->cIntervall)) ? gibKeyArrayFuerKeyString($oStatusemailEinstellungen->cIntervall, ';') : array();
-    $oStatusemailEinstellungen->nInhalt_arr            = (isset($oStatusemailEinstellungen->cInhalt)) ? gibKeyArrayFuerKeyString($oStatusemailEinstellungen->cInhalt, ';') : array();
+    $oStatusemailEinstellungen->nIntervall_arr         = (isset($oStatusemailEinstellungen->cIntervall)) 
+        ? gibKeyArrayFuerKeyString($oStatusemailEinstellungen->cIntervall, ';') 
+        : [];
+    $oStatusemailEinstellungen->nInhalt_arr            = (isset($oStatusemailEinstellungen->cInhalt)) 
+        ? gibKeyArrayFuerKeyString($oStatusemailEinstellungen->cInhalt, ';') 
+        : [];
 
     return $oStatusemailEinstellungen;
 }
@@ -80,11 +94,11 @@ function ladeStatusemailEinstellungen()
  */
 function gibIntervallMoeglichkeiten()
 {
-    return array(
+    return [
         'Tagesbericht'  => 1,
         'Wochenbericht' => 7,
         'Monatsbericht' => 30
-    );
+    ];
 }
 
 /**
@@ -92,7 +106,7 @@ function gibIntervallMoeglichkeiten()
  */
 function gibInhaltMoeglichkeiten()
 {
-    return array(
+    return [
         'Anzahl Produkte pro Kundengruppe'             => 1,
         'Anzahl Neukunden'                             => 2,
         'Anzahl Neukunden, die gekauft haben'          => 3,
@@ -120,7 +134,7 @@ function gibInhaltMoeglichkeiten()
         'Letzte Fehlermeldungen im Systemlog'          => 25,
         'Letzte Hinweise im Systemlog'                 => 26,
         'Letzte Debugeintr&auml;ge im Systemlog'       => 27
-    );
+    ];
 }
 
 /**
@@ -128,7 +142,7 @@ function gibInhaltMoeglichkeiten()
  */
 function gibAnzahlArtikelProKundengruppe()
 {
-    $oArtikelProKundengruppe_arr = array();
+    $oArtikelProKundengruppe_arr = [];
     // Hole alle Kundengruppen im Shop
     $oKundengruppe_arr = Shop::DB()->query(
         "SELECT kKundengruppe, cName
@@ -140,7 +154,8 @@ function gibAnzahlArtikelProKundengruppe()
             $oArtikel            = Shop::DB()->query(
                 "SELECT count(*) AS nAnzahl
                     FROM tartikel
-                    LEFT JOIN tartikelsichtbarkeit ON tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
+                    LEFT JOIN tartikelsichtbarkeit 
+                        ON tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
                         AND tartikelsichtbarkeit.kKundengruppe = " . (int)$oKundengruppe->kKundengruppe . "
                     WHERE tartikelsichtbarkeit.kArtikel IS NULL", 1
             );
@@ -197,7 +212,8 @@ function gibAnzahlNeukundenGekauft($dVon, $dBis)
         $oKunde = Shop::DB()->query(
             "SELECT count(DISTINCT(tkunde.kKunde)) AS nAnzahl
                 FROM tkunde
-                JOIN tbestellung ON tbestellung.kKunde = tkunde.kKunde
+                JOIN tbestellung 
+                    ON tbestellung.kKunde = tkunde.kKunde
                 WHERE tbestellung.dErstellt >= '" . $dVon . "'
                     AND tbestellung.dErstellt < '" . $dBis . "'
                     AND tkunde.dErstellt >= '" . $dVon . "'
@@ -257,7 +273,8 @@ function gibAnzahlBestellungenNeukunden($dVon, $dBis)
         $oBestellung = Shop::DB()->query(
             "SELECT count(*) AS nAnzahl
                 FROM tbestellung
-                JOIN tkunde ON tkunde.kKunde = tbestellung.kKunde
+                JOIN tkunde 
+                    ON tkunde.kKunde = tbestellung.kKunde
                 WHERE tbestellung.dErstellt >= '" . $dVon . "'
                     AND tbestellung.dErstellt < '" . $dBis . "'
                     AND tkunde.nRegistriert = 1", 1
@@ -321,9 +338,9 @@ function gibAnzahlVersendeterBestellungen($dVon, $dBis)
                     AND tbestellung.dVersandDatum != '0000-00-00'", 1
         );
 
-        return (isset($oBestellung->nAnzahl) && $oBestellung->nAnzahl > 0) ?
-            (int)$oBestellung->nAnzahl :
-            0;
+        return (isset($oBestellung->nAnzahl) && $oBestellung->nAnzahl > 0)
+            ? (int)$oBestellung->nAnzahl
+            : 0;
     }
 
     return 0;
@@ -349,9 +366,9 @@ function gibAnzahlBesucher($dVon, $dBis)
                     AND dZeit < '" . $dBis . "' AND kBesucherBot = 0", 1
         );
 
-        return (isset($oBesucher->nAnzahl) && $oBesucher->nAnzahl > 0) ?
-            (int)$oBesucher->nAnzahl :
-            0;
+        return (isset($oBesucher->nAnzahl) && $oBesucher->nAnzahl > 0)
+            ? (int)$oBesucher->nAnzahl
+            : 0;
     }
 
     return 0;
@@ -378,9 +395,9 @@ function gibAnzahlBesucherSuchmaschine($dVon, $dBis)
                     AND cReferer != ''", 1
         );
 
-        return (isset($oBesucher->nAnzahl) && $oBesucher->nAnzahl > 0) ?
-            (int)$oBesucher->nAnzahl :
-            0;
+        return (isset($oBesucher->nAnzahl) && $oBesucher->nAnzahl > 0)
+            ? (int)$oBesucher->nAnzahl
+            : 0;
     }
 
     return 0;
@@ -407,9 +424,9 @@ function gibAnzahlBewertungen($dVon, $dBis)
                     AND nAktiv = 1", 1
         );
 
-        return (isset($oBewertung->nAnzahl) && $oBewertung->nAnzahl > 0) ?
-            (int)$oBewertung->nAnzahl :
-            0;
+        return (isset($oBewertung->nAnzahl) && $oBewertung->nAnzahl > 0)
+            ? (int)$oBewertung->nAnzahl
+            : 0;
     }
 
     return 0;
@@ -436,9 +453,9 @@ function gibAnzahlBewertungenNichtFreigeschaltet($dVon, $dBis)
                     AND nAktiv = 0", 1
         );
 
-        return (isset($oBewertung->nAnzahl) && $oBewertung->nAnzahl > 0) ?
-            (int)$oBewertung->nAnzahl :
-            0;
+        return (isset($oBewertung->nAnzahl) && $oBewertung->nAnzahl > 0)
+            ? (int)$oBewertung->nAnzahl
+            : 0;
     }
 
     return 0;
@@ -495,15 +512,16 @@ function gibAnzahlTags($dVon, $dBis)
         $oTag = Shop::DB()->query(
             "SELECT count(*) AS nAnzahl
                 FROM ttagkunde
-                JOIN ttag ON ttag.kTag = ttagkunde.kTag
+                JOIN ttag 
+                    ON ttag.kTag = ttagkunde.kTag
                     AND ttag.nAktiv = 1
                 WHERE ttagkunde.dZeit >= '" . $dVon . "'
                     AND ttagkunde.dZeit < '" . $dBis . "'", 1
         );
 
-        return (isset($oTag->nAnzahl) && $oTag->nAnzahl > 0) ?
-            (int)$oTag->nAnzahl :
-            0;
+        return (isset($oTag->nAnzahl) && $oTag->nAnzahl > 0)
+            ? (int)$oTag->nAnzahl
+            : 0;
     }
 
     return 0;
@@ -531,9 +549,9 @@ function gibAnzahlTagsNichtFreigeschaltet($dVon, $dBis)
                     AND ttagkunde.dZeit < '" . $dBis . "'", 1
         );
 
-        return (isset($oTag->nAnzahl) && $oTag->nAnzahl > 0) ?
-            (int)$oTag->nAnzahl :
-            0;
+        return (isset($oTag->nAnzahl) && $oTag->nAnzahl > 0)
+            ? (int)$oTag->nAnzahl
+            : 0;
     }
 
     return 0;
@@ -559,9 +577,9 @@ function gibAnzahlGeworbenerKunden($dVon, $dBis)
                     AND dErstellt < '" . $dBis . "'", 1
         );
 
-        return (isset($oKwK->nAnzahl) && $oKwK->nAnzahl > 0) ?
-            (int)$oKwK->nAnzahl :
-            0;
+        return (isset($oKwK->nAnzahl) && $oKwK->nAnzahl > 0)
+            ? (int)$oKwK->nAnzahl
+            : 0;
     }
 
     return 0;
@@ -589,9 +607,9 @@ function gibAnzahlErfolgreichGeworbenerKunden($dVon, $dBis)
                     AND nGuthabenVergeben = 1", 1
         );
 
-        return (isset($oKwK->nAnzahl) && $oKwK->nAnzahl > 0) ?
-            (int)$oKwK->nAnzahl :
-            0;
+        return (isset($oKwK->nAnzahl) && $oKwK->nAnzahl > 0)
+            ? (int)$oKwK->nAnzahl
+            : 0;
     }
 
     return 0;
@@ -617,9 +635,9 @@ function gibAnzahlVersendeterWunschlisten($dVon, $dBis)
                     AND dZeit < '" . $dBis . "'", 1
         );
 
-        return (isset($oWunschliste->nAnzahl) && $oWunschliste->nAnzahl > 0) ?
-            (int)$oWunschliste->nAnzahl :
-            0;
+        return (isset($oWunschliste->nAnzahl) && $oWunschliste->nAnzahl > 0)
+            ? (int)$oWunschliste->nAnzahl
+            : 0;
     }
 
     return 0;
@@ -645,9 +663,9 @@ function gibAnzahlDurchgefuehrteUmfragen($dVon, $dBis)
                     AND dDurchgefuehrt < '" . $dBis . "'", 1
         );
 
-        return (isset($oUmfrage->nAnzahl) && $oUmfrage->nAnzahl > 0) ?
-            (int)$oUmfrage->nAnzahl :
-            0;
+        return (isset($oUmfrage->nAnzahl) && $oUmfrage->nAnzahl > 0)
+            ? (int)$oUmfrage->nAnzahl
+            : 0;
     }
 
     return 0;
@@ -674,9 +692,9 @@ function gibAnzahlNewskommentare($dVon, $dBis)
                     AND nAktiv = 1", 1
         );
 
-        return (isset($oNewskommentar->nAnzahl) && $oNewskommentar->nAnzahl > 0) ?
-            $oNewskommentar->nAnzahl :
-            0;
+        return (isset($oNewskommentar->nAnzahl) && $oNewskommentar->nAnzahl > 0)
+            ? (int)$oNewskommentar->nAnzahl
+            : 0;
     }
 
     return 0;
@@ -703,9 +721,9 @@ function gibAnzahlNewskommentareNichtFreigeschaltet($dVon, $dBis)
                     AND nAktiv = 0", 1
         );
 
-        return (isset($oNewskommentar->nAnzahl) && $oNewskommentar->nAnzahl > 0) ?
-            (int)$oNewskommentar->nAnzahl :
-            0;
+        return (isset($oNewskommentar->nAnzahl) && $oNewskommentar->nAnzahl > 0)
+            ? (int)$oNewskommentar->nAnzahl
+            : 0;
     }
 
     return 0;
@@ -731,9 +749,9 @@ function gibAnzahlProduktanfrageVerfuegbarkeit($dVon, $dBis)
                     AND dErstellt < '" . $dBis . "'", 1
         );
 
-        return (isset($oVerfuegbarkeit->nAnzahl) && $oVerfuegbarkeit->nAnzahl > 0) ?
-            (int)$oVerfuegbarkeit->nAnzahl :
-            0;
+        return (isset($oVerfuegbarkeit->nAnzahl) && $oVerfuegbarkeit->nAnzahl > 0)
+            ? (int)$oVerfuegbarkeit->nAnzahl
+            : 0;
     }
 
     return 0;
@@ -759,9 +777,9 @@ function gibAnzahlProduktanfrageArtikel($dVon, $dBis)
                     AND dErstellt < '" . $dBis . "'", 1
         );
 
-        return (isset($oFrageProdukt->nAnzahl) && $oFrageProdukt->nAnzahl > 0) ?
-            (int)$oFrageProdukt->nAnzahl :
-            0;
+        return (isset($oFrageProdukt->nAnzahl) && $oFrageProdukt->nAnzahl > 0)
+            ? (int)$oFrageProdukt->nAnzahl
+            : 0;
     }
 
     return 0;
@@ -787,9 +805,9 @@ function gibAnzahlVergleiche($dVon, $dBis)
                     AND dDate < '" . $dBis . "'", 1
         );
 
-        return (isset($oVergleich->nAnzahl) && $oVergleich->nAnzahl > 0) ?
-            (int)$oVergleich->nAnzahl :
-            0;
+        return (isset($oVergleich->nAnzahl) && $oVergleich->nAnzahl > 0)
+            ? (int)$oVergleich->nAnzahl
+            : 0;
     }
 
     return 0;
@@ -815,9 +833,9 @@ function gibAnzahlGenutzteKupons($dVon, $dBis)
                     AND dErstellt < '" . $dBis . "'", 1
         );
 
-        return (isset($oKupon->nAnzahl) && $oKupon->nAnzahl > 0) ?
-            (int)$oKupon->nAnzahl :
-            0;
+        return (isset($oKupon->nAnzahl) && $oKupon->nAnzahl > 0)
+            ? (int)$oKupon->nAnzahl
+            : 0;
     }
 
     return 0;
@@ -841,8 +859,8 @@ function getLogEntries($dVon, $dBis, $nLogLevel_arr)
                 WHERE dErstellt >= '" . $dVon . "'
                     AND dErstellt < '" . $dBis . "'
                     AND nLevel IN (" . implode(',', $nLogLevel_arr) . ")
-                ORDER BY dErstellt DESC",
-            2);
+                ORDER BY dErstellt DESC", 2
+        );
 
         return $oLog_arr;
     }
@@ -863,8 +881,17 @@ function baueStatusEmail($oStatusemail, $dVon, $dBis)
     if (is_array($oStatusemail->nInhalt_arr) && count($oStatusemail->nInhalt_arr) > 0 &&
         strlen($dVon) > 0 && strlen($dBis) > 0)
     {
-        $cMailTyp                                              = Shop::DB()->select('temailvorlage', 'cModulId',
-            MAILTEMPLATE_STATUSEMAIL, null, null, null, null, false, 'cMailTyp')->cMailTyp;
+        $cMailTyp                                              = Shop::DB()->select(
+            'temailvorlage',
+            'cModulId',
+            MAILTEMPLATE_STATUSEMAIL,
+            null,
+            null,
+            null,
+            null,
+            false,
+            'cMailTyp'
+        )->cMailTyp;
         $oMailObjekt                                           = new stdClass();
         $oMailObjekt->mail                                     = new stdClass();
         $oMailObjekt->oAnzahlArtikelProKundengruppe            = -1;
@@ -1097,7 +1124,7 @@ function isIntervalExceeded($dStart, $cInterval)
         return false;
     }
 
-    return date_create()->format("YmdHis") >= $oEndTime->format("YmdHis");
+    return date_create()->format('YmdHis') >= $oEndTime->format('YmdHis');
 }
 
 /**

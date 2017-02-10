@@ -38,7 +38,7 @@ class SimpleXML
     /**
      * @var array
      */
-    public $result = array();
+    public $result = [];
 
     /**
      * @var int
@@ -87,9 +87,9 @@ class SimpleXML
      */
     public function xml_tags($array)
     {
-        $repeats_temp  = array();
-        $repeats_count = array();
-        $repeats       = array();
+        $repeats_temp  = [];
+        $repeats_count = [];
+        $repeats       = [];
 
         if (is_array($array)) {
             $n = count($array) - 1;
@@ -135,7 +135,7 @@ class SimpleXML
                     $has_string = true;
                 }
             }
-            if (isset($has_number) and !isset($has_string)) {
+            if (isset($has_number) && !isset($has_string)) {
                 foreach ($arg_array as $key => $value) {
                     $tmp[] = $this->array2object($value);
                 }
@@ -148,7 +148,7 @@ class SimpleXML
             }
         } elseif (is_object($arg_array)) {
             foreach ($arg_array as $key => $value) {
-                if (is_array($value) or is_object($value)) {
+                if (is_array($value) || is_object($value)) {
                     $tmp->$key = $this->array2object($value);
                 } else {
                     $tmp->$key = $value;
@@ -176,7 +176,7 @@ class SimpleXML
                         if (is_numeric($keys)) {
                             $array[$keys] = $this->array_reindex($items);
                         } else {
-                            $array[$keys] = $this->array_reindex(array_merge(array(), $items));
+                            $array[$keys] = $this->array_reindex(array_merge([], $items));
                         }
                     }
                 }
@@ -195,7 +195,7 @@ class SimpleXML
         $count       = count($array);
         $repeat      = $this->xml_tags($array);
         $repeatedone = false;
-        $tags        = array();
+        $tags        = [];
         $k           = 0;
         for ($i = 0; $i < $count; $i++) {
             switch ($array[$i]['type']) {

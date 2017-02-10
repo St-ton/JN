@@ -48,7 +48,7 @@
         //#region Public Methods
         function ajax(data, title) {
             /// <summary>
-            /// 
+            ///
             /// </summary>
             /// <param name="data"></param>
             /// <param name="title"></param>
@@ -69,20 +69,20 @@
                 .load(params.url, error)
                 .closest(".modal-dialog");
             */
-            
+
             $modalBody = alert(params, title)
                 .find(".modal-body");
-                
+
             $.get(params.url, function(data) {
                 var content = prepareContent(data);
                 $modalBody.html(content);
-              
+
                 var $modal = $modalBody
                     .closest(".modal-dialog");
-              
+
                 var title = $modal
                     .find('.modal-body h1')
-                
+
                 if (title.length > 0 && title.text().length > 0) {
                     $modal.find('.modal-title').text(title.text());
                     title.remove();
@@ -91,7 +91,7 @@
             .fail(function(responseText, textStatus) {
                 alert("Url [ " + params.url + " ] load fail.", "Loading: " + (params.title || title));
             });
-            
+
             return $modalBody.closest(".modal-dialog");
         }
         function prepareContent(content) {
@@ -103,7 +103,7 @@
         }
         function alert(params, title) {
             /// <summary>
-            /// 
+            ///
             /// </summary>
             /// <param name="params"></param>
             /// <param name="title"></param>
@@ -117,7 +117,7 @@
         }
         function confirm(params, title, callback) {
             /// <summary>
-            /// 
+            ///
             /// </summary>
             /// <param name="params"></param>
             /// <param name="title"></param>
@@ -129,7 +129,16 @@
                 Yes: "No",
                 True: "False"
             };
-            var defaultLable = "OK";
+            var defaultLabel = "OK";
+            var label1 = label[params.label] ? label[params.label] : label[defaultLabel];
+            var label2 = label[params.label] ? params.label : defaultLabel;
+
+            if (params.label1) {
+                label1 = params.label1;
+            }
+            if (params.label2) {
+                label2 = params.label2;
+            }
 
             return alert({
                 message: params.message || params,
@@ -137,15 +146,15 @@
                 onHide: click,
                 size: params.size,
                 buttons: [
-                    { close: true, click: click, text: label[params.label] ? label[params.label] : label[defaultLable], style: "danger" },
-                    { close: true, click: click, text: label[params.label] ? params.label : defaultLable }
+                    { close: true, click: click, text: label1, style: "danger" },
+                    { close: true, click: click, text: label2, success: true }
                 ]
 
             });
 
             function click(ev) {
                 /// <summary>
-                /// 
+                ///
                 /// </summary>
                 /// <param name="ev"></param>
                 /// <returns type=""></returns>
@@ -155,8 +164,10 @@
                 close();
 
                 if (typeof fn === "function") {
-                    var key = $(ev.currentTarget).html();
-                    return fn(label[key] ? true : false);
+                    var target = $(ev.currentTarget);
+                    var key = target.html();
+                    var success = (target.attr('data-success') === 'true') || label[key];
+                    return fn(success);
                 }
 
                 throw new Error("No callback provided to execute confim modal action.");
@@ -164,7 +175,7 @@
         }
         function emptyBin() {
             /// <summary>
-            /// 
+            ///
             /// </summary>
 
             return $("#" + bin + " > *").remove();
@@ -201,7 +212,7 @@
 
             function submit(ev) {
                 /// <summary>
-                /// 
+                ///
                 /// </summary>
                 /// <param name="ev"></param>
                 /// <returns type=""></returns>
@@ -220,7 +231,7 @@
         }
         function setEModalOptions(overrideOptions) {
             /// <summary>
-            /// 
+            ///
             /// </summary>
             /// <param name="overrideOptions"></param>
             /// <returns type=""></returns>
@@ -231,7 +242,7 @@
         }
         function setModalOptions(overrideOptions) {
             /// <summary>
-            /// 
+            ///
             /// </summary>
             /// <param name="overrideOptions"></param>
             /// <returns type=""></returns>
@@ -281,7 +292,7 @@
 
             function createModalElement() {
                 /// <summary>
-                /// 
+                ///
                 /// </summary>
                 /// <returns type="jQuery object"></returns>
 
@@ -293,9 +304,9 @@
                 + " </div>"
                 + "</div>")
                 .on("show.bs.modal", function(ev) {
-                    var modal = $(this);                    
+                    var modal = $(this);
                     //modal.find('.modal-dialog').width(
-                    //    $('body').find('.container').first().outerWidth()                    
+                    //    $('body').find('.container').first().outerWidth()
                     //);
                 })
                 .on("hidden.bs.modal", recycleModal)
@@ -320,7 +331,7 @@
         }
         function getFooter(buttons) {
             /// <summary>
-            /// 
+            ///
             /// </summary>
             /// <returns type=""></returns>
 
@@ -351,6 +362,9 @@
                                 case "text":
                                     btn.html(btnOp[index]);
                                     break;
+                                case 'success':
+                                    btn.attr('data-success', btnOp.success);
+                                    break;
                                 default:
                                     //all other possible html attributes to button element
                                     btn.attr(index, btnOp[index]);
@@ -368,7 +382,7 @@
         }
         function getMessage(params) {
             /// <summary>
-            /// 
+            ///
             /// </summary>
             /// <param name="params"></param>
             /// <returns type=""></returns>
@@ -412,7 +426,7 @@
         }
         function setup(params, title) {
             /// <summary>
-            /// 
+            ///
             /// </summary>
             /// <param name='params'></param>
             /// <param name='title'></param>
@@ -441,7 +455,7 @@
             $ref.on("hide.bs.modal", params.onHide);
             $ref.on("show.bs.modal", params.onShow);
             $ref.on("shown.bs.modal", params.onShown);
-            
+
             return $ref;
         }
         //#endregion

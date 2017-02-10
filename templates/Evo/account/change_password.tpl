@@ -4,10 +4,11 @@
 
 {block name="change-password-form"}
 <div class="panel-wrap">
-    {if !$hinweis}
+    {if empty($hinweis)}
         <p class="alert alert-info">{lang key="changePasswordDesc" section="login"}</p>
-    {else}
-        <p class="alert alert-danger">{$hinweis}</p>
+    {/if}
+    {if !empty($cFehler)}
+        <p class="alert alert-danger">{$cFehler}</p>
     {/if}
     <div class="row">
         <form id="password" action="{get_static_route id='jtl.php'}" method="post" class="col-xs-8 col-md-5 col-lg-4">

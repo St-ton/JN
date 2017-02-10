@@ -90,6 +90,12 @@ class Plugin
 
     /**
      * @var string
+     * @since 4.05
+     */
+    public $cPluginPfad;
+
+    /**
+     * @var string
      */
     public $cFrontendPfad;
 
@@ -295,7 +301,6 @@ class Plugin
      */
     public $cTextLicensePath = '';
 
-
     /**
      * Konstruktor
      *
@@ -327,7 +332,7 @@ class Plugin
     public function loadFromDB($kPlugin, $invalidateCache = false)
     {
         $kPlugin = (int)$kPlugin;
-        $cacheID = CACHING_GROUP_PLUGIN . '_' . $kPlugin . '_' . pruefeSSL() . '_' . (int)Shop::$kSprache;
+        $cacheID = CACHING_GROUP_PLUGIN . '_' . $kPlugin . '_' . pruefeSSL() . '_' . Shop::getLanguage();
         if ($invalidateCache === true) {
             //plugin options were save in admin backend, so invalidate the cache
             Shop::Cache()->flush('hook_list');
@@ -349,22 +354,37 @@ class Plugin
         }
         $_shopURL    = Shop::getURL();
         $_shopURLSSL = Shop::getURL(true);
+
+        $this->kPlugin = (int)$this->kPlugin;
+        $this->nStatus = (int)$this->nStatus;
+        $this->nPrio   = (int)$this->nPrio;
         // Lokalisiere DateTimes nach DE
         $this->dInstalliert_DE         = $this->gibDateTimeLokalisiert($this->dInstalliert);
         $this->dZuletztAktualisiert_DE = $this->gibDateTimeLokalisiert($this->dZuletztAktualisiert);
         $this->dErstellt_DE            = $this->gibDateTimeLokalisiert($this->dErstellt, true);
+        $this->cPluginPfad             = PFAD_ROOT . PFAD_PLUGIN . $this->cVerzeichnis . '/' .
+            PFAD_PLUGIN_VERSION . $this->nVersion . '/';
         // FrontendPfad
-        $this->cFrontendPfad       = PFAD_ROOT . PFAD_PLUGIN . $this->cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $this->nVersion . '/' . PFAD_PLUGIN_FRONTEND;
-        $this->cFrontendPfadURL    = $_shopURL . '/' . PFAD_PLUGIN . $this->cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $this->nVersion . '/' . PFAD_PLUGIN_FRONTEND; // deprecated
-        $this->cFrontendPfadURLSSL = $_shopURLSSL . '/' . PFAD_PLUGIN . $this->cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $this->nVersion . '/' . PFAD_PLUGIN_FRONTEND;
+        $this->cFrontendPfad       = PFAD_ROOT . PFAD_PLUGIN . $this->cVerzeichnis . '/' .
+            PFAD_PLUGIN_VERSION . $this->nVersion . '/' . PFAD_PLUGIN_FRONTEND;
+        $this->cFrontendPfadURL    = $_shopURL . '/' . PFAD_PLUGIN . $this->cVerzeichnis . '/' .
+            PFAD_PLUGIN_VERSION . $this->nVersion . '/' . PFAD_PLUGIN_FRONTEND; // deprecated
+        $this->cFrontendPfadURLSSL = $_shopURLSSL . '/' . PFAD_PLUGIN . $this->cVerzeichnis . '/' .
+            PFAD_PLUGIN_VERSION . $this->nVersion . '/' . PFAD_PLUGIN_FRONTEND;
         // AdminmenuPfad
-        $this->cAdminmenuPfad       = PFAD_ROOT . PFAD_PLUGIN . $this->cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $this->nVersion . '/' . PFAD_PLUGIN_ADMINMENU;
-        $this->cAdminmenuPfadURL    = $_shopURL . '/' . PFAD_PLUGIN . $this->cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $this->nVersion . '/' . PFAD_PLUGIN_ADMINMENU;
-        $this->cAdminmenuPfadURLSSL = $_shopURLSSL . '/' . PFAD_PLUGIN . $this->cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $this->nVersion . '/' . PFAD_PLUGIN_ADMINMENU;
+        $this->cAdminmenuPfad       = PFAD_ROOT . PFAD_PLUGIN . $this->cVerzeichnis . '/' .
+            PFAD_PLUGIN_VERSION . $this->nVersion . '/' . PFAD_PLUGIN_ADMINMENU;
+        $this->cAdminmenuPfadURL    = $_shopURL . '/' . PFAD_PLUGIN . $this->cVerzeichnis . '/' .
+            PFAD_PLUGIN_VERSION . $this->nVersion . '/' . PFAD_PLUGIN_ADMINMENU;
+        $this->cAdminmenuPfadURLSSL = $_shopURLSSL . '/' . PFAD_PLUGIN . $this->cVerzeichnis . '/' .
+            PFAD_PLUGIN_VERSION . $this->nVersion . '/' . PFAD_PLUGIN_ADMINMENU;
         // LicencePfad
-        $this->cLicencePfad       = PFAD_ROOT . PFAD_PLUGIN . $this->cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $this->nVersion . '/' . PFAD_PLUGIN_LICENCE;
-        $this->cLicencePfadURL    = $_shopURL . '/' . PFAD_PLUGIN . $this->cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $this->nVersion . '/' . PFAD_PLUGIN_LICENCE;
-        $this->cLicencePfadURLSSL = $_shopURLSSL . '/' . PFAD_PLUGIN . $this->cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $this->nVersion . '/' . PFAD_PLUGIN_LICENCE;
+        $this->cLicencePfad       = PFAD_ROOT . PFAD_PLUGIN . $this->cVerzeichnis . '/' .
+            PFAD_PLUGIN_VERSION . $this->nVersion . '/' . PFAD_PLUGIN_LICENCE;
+        $this->cLicencePfadURL    = $_shopURL . '/' . PFAD_PLUGIN . $this->cVerzeichnis . '/' .
+            PFAD_PLUGIN_VERSION . $this->nVersion . '/' . PFAD_PLUGIN_LICENCE;
+        $this->cLicencePfadURLSSL = $_shopURLSSL . '/' . PFAD_PLUGIN . $this->cVerzeichnis . '/' .
+            PFAD_PLUGIN_VERSION . $this->nVersion . '/' . PFAD_PLUGIN_LICENCE;
         // Plugin Hooks holen
         $this->oPluginHook_arr = Shop::DB()->selectAll('tpluginhook', 'kPlugin', $kPlugin);
         // Plugin AdminMenu holen
@@ -394,7 +414,8 @@ class Plugin
         $this->oPluginEinstellung_arr = Shop::DB()->query(
             "SELECT tplugineinstellungen.*, tplugineinstellungenconf.cConf
                 FROM tplugineinstellungen
-                LEFT JOIN tplugineinstellungenconf ON tplugineinstellungenconf.kPlugin = tplugineinstellungen.kPlugin
+                LEFT JOIN tplugineinstellungenconf 
+                    ON tplugineinstellungenconf.kPlugin = tplugineinstellungen.kPlugin
                     AND tplugineinstellungen.cName = tplugineinstellungenconf.cWertName
                 WHERE tplugineinstellungen.kPlugin = " . $kPlugin, 2
         );
@@ -413,10 +434,17 @@ class Plugin
                 $oPluginEinstellungConfTMP_arr[$i]->oPluginEinstellungenConfWerte_arr = [];
                 if ($oPluginEinstellungConfTMP->cInputTyp === 'selectbox' || $oPluginEinstellungConfTMP->cInputTyp === 'radio') {
                     if (!empty($oPluginEinstellungConfTMP->cSourceFile)) {
-                        $oPluginEinstellungConfTMP_arr[$i]->oPluginEinstellungenConfWerte_arr = $this->getDynamicOptions($oPluginEinstellungConfTMP);
+                        $oPluginEinstellungConfTMP_arr[$i]->oPluginEinstellungenConfWerte_arr =
+                            $this->getDynamicOptions($oPluginEinstellungConfTMP);
                     } else {
-                        $oPluginEinstellungConfTMP_arr[$i]->oPluginEinstellungenConfWerte_arr = Shop::DB()->selectAll(
-                            'tplugineinstellungenconfwerte', 'kPluginEinstellungenConf', (int)$oPluginEinstellungConfTMP->kPluginEinstellungenConf, '*', 'nSort');
+                        $oPluginEinstellungConfTMP_arr[$i]->oPluginEinstellungenConfWerte_arr =
+                            Shop::DB()->selectAll(
+                                'tplugineinstellungenconfwerte',
+                                'kPluginEinstellungenConf',
+                                (int)$oPluginEinstellungConfTMP->kPluginEinstellungenConf,
+                                '*',
+                                'nSort'
+                            );
                     }
                 }
             }
@@ -443,7 +471,11 @@ class Plugin
         if (is_array($oPluginFrontendLink_arr) && count($oPluginFrontendLink_arr) > 0) {
             // Link Sprache holen
             foreach ($oPluginFrontendLink_arr as $i => $oPluginFrontendLink) {
-                $oPluginFrontendLink_arr[$i]->oPluginFrontendLinkSprache_arr = Shop::DB()->selectAll('tlinksprache', 'kLink', (int)$oPluginFrontendLink->kLink);
+                $oPluginFrontendLink_arr[$i]->oPluginFrontendLinkSprache_arr = Shop::DB()->selectAll(
+                    'tlinksprache',
+                    'kLink',
+                    (int)$oPluginFrontendLink->kLink
+                );
             }
         }
         $this->oPluginFrontendLink_arr = $oPluginFrontendLink_arr;
@@ -466,13 +498,17 @@ class Plugin
                     ? PFAD_ROOT . PFAD_PLUGIN . $this->cVerzeichnis . '/' .
                         PFAD_PLUGIN_VERSION . $this->nVersion . '/' . PFAD_PLUGIN_PAYMENTMETHOD . $oZahlungsmethode->cPluginTemplate
                     : '';
-                $oZahlungsmethode_arr[$i]->oZahlungsmethodeSprache_arr     = Shop::DB()->selectAll('tzahlungsartsprache', 'kZahlungsart', (int)$oZahlungsmethode->kZahlungsart);
+                $oZahlungsmethode_arr[$i]->oZahlungsmethodeSprache_arr     = Shop::DB()->selectAll(
+                    'tzahlungsartsprache',
+                    'kZahlungsart',
+                    (int)$oZahlungsmethode->kZahlungsart
+                );
                 $cModulId                                                  = gibPlugincModulId($kPlugin, $oZahlungsmethode->cName);
                 $oZahlungsmethode_arr[$i]->oZahlungsmethodeEinstellung_arr = Shop::DB()->query(
                     "SELECT *
                         FROM tplugineinstellungenconf
                         WHERE cWertName LIKE '" . $cModulId . "_%'
-                        AND cConf = 'Y'
+                            AND cConf = 'Y'
                         ORDER BY nSort", 2
                 );
                 $oZahlungsmethodeAssoc_arr[$oZahlungsmethode->cModulId] = $oZahlungsmethode_arr[$i];
@@ -496,9 +532,15 @@ class Plugin
         if (is_array($oPluginEmailvorlage_arr) && count($oPluginEmailvorlage_arr) > 0) {
             foreach ($oPluginEmailvorlage_arr as $i => $oPluginEmailvorlage) {
                 $oPluginEmailvorlage_arr[$i]->oPluginEmailvorlageSprache_arr = [];
-                $oPluginEmailvorlage_arr[$i]->oPluginEmailvorlageSprache_arr = Shop::DB()->selectAll('tpluginemailvorlagesprache', 'kEmailvorlage', (int)$oPluginEmailvorlage->kEmailvorlage);
+                $oPluginEmailvorlage_arr[$i]->oPluginEmailvorlageSprache_arr = Shop::DB()->selectAll(
+                    'tpluginemailvorlagesprache',
+                    'kEmailvorlage',
+                    (int)$oPluginEmailvorlage->kEmailvorlage
+                );
 
-                if (is_array($oPluginEmailvorlage_arr[$i]->oPluginEmailvorlageSprache_arr) && count($oPluginEmailvorlage_arr[$i]->oPluginEmailvorlageSprache_arr) > 0) {
+                if (is_array($oPluginEmailvorlage_arr[$i]->oPluginEmailvorlageSprache_arr) &&
+                    count($oPluginEmailvorlage_arr[$i]->oPluginEmailvorlageSprache_arr) > 0
+                ) {
                     $oPluginEmailvorlage_arr[$i]->oPluginEmailvorlageSpracheAssoc_arr = []; // Assoc kSprache
                     foreach ($oPluginEmailvorlage_arr[$i]->oPluginEmailvorlageSprache_arr as $oPluginEmailvorlageSprache) {
                         $oPluginEmailvorlage_arr[$i]->oPluginEmailvorlageSpracheAssoc_arr[$oPluginEmailvorlageSprache->kSprache] = $oPluginEmailvorlageSprache;
@@ -514,15 +556,18 @@ class Plugin
         $this->oPluginAdminWidget_arr = Shop::DB()->selectAll('tadminwidgets', 'kPlugin', (int)$this->kPlugin);
         if (is_array($this->oPluginAdminWidget_arr) && count($this->oPluginAdminWidget_arr) > 0) {
             foreach ($this->oPluginAdminWidget_arr as $i => $oPluginAdminWidget) {
-                $this->oPluginAdminWidget_arr[$i]->cClassAbs                     = $this->cAdminmenuPfad . PFAD_PLUGIN_WIDGET . 'class.Widget' . $oPluginAdminWidget->cClass . '.php';
-                $this->oPluginAdminWidgetAssoc_arr[$oPluginAdminWidget->kWidget] = $this->oPluginAdminWidget_arr[$i];
+                $this->oPluginAdminWidget_arr[$i]->cClassAbs                     =
+                    $this->cAdminmenuPfad . PFAD_PLUGIN_WIDGET . 'class.Widget' . $oPluginAdminWidget->cClass . '.php';
+                $this->oPluginAdminWidgetAssoc_arr[$oPluginAdminWidget->kWidget] =
+                    $this->oPluginAdminWidget_arr[$i];
             }
         }
         // Uninstall
         $this->oPluginUninstall = Shop::DB()->select('tpluginuninstall', 'kPlugin', (int)$this->kPlugin);
         if (is_object($this->oPluginUninstall)) {
             $this->cPluginUninstallPfad = PFAD_ROOT . PFAD_PLUGIN . $this->cVerzeichnis . '/' .
-                PFAD_PLUGIN_VERSION . $this->nVersion . '/' . PFAD_PLUGIN_UNINSTALL . $this->oPluginUninstall->cDateiname;
+                PFAD_PLUGIN_VERSION . $this->nVersion . '/' .
+                PFAD_PLUGIN_UNINSTALL . $this->oPluginUninstall->cDateiname;
         }
         $this->pluginCacheID    = 'plgn_' . $this->kPlugin . '_' . $this->nVersion;
         $this->pluginCacheGroup = CACHING_GROUP_PLUGIN . '_' . $this->kPlugin;
@@ -720,7 +765,8 @@ class Plugin
         $oPluginHook_arr      = Shop::DB()->query(
             "SELECT tpluginhook.nHook, tplugin.kPlugin, tplugin.cVerzeichnis, tplugin.nVersion, tpluginhook.cDateiname
                 FROM tplugin
-                JOIN tpluginhook ON tpluginhook.kPlugin = tplugin.kPlugin
+                JOIN tpluginhook 
+                    ON tpluginhook.kPlugin = tplugin.kPlugin
                 WHERE tplugin.nStatus = 2
                 ORDER BY tpluginhook.nPriority, tplugin.kPlugin", 2
         );
@@ -806,7 +852,8 @@ class Plugin
                 return null;
             }
 
-            $file  = PFAD_ROOT . PFAD_PLUGIN . $plugin->cVerzeichnis . '/' . PFAD_PLUGIN_VERSION . $plugin->nVersion . '/' . PLUGIN_BOOTSTRAPPER;
+            $file  = PFAD_ROOT . PFAD_PLUGIN . $plugin->cVerzeichnis . '/' .
+                PFAD_PLUGIN_VERSION . $plugin->nVersion . '/' . PLUGIN_BOOTSTRAPPER;
             $class = sprintf('%s\\%s', $plugin->cPluginID, 'Bootstrap');
 
             if (!is_file($file)) {

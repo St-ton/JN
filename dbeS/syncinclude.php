@@ -829,10 +829,10 @@ function getSeoFromDB($kKey, $cKey, $kSprache = null, $cAssoc = null)
 {
     $kKey = (int)$kKey;
     if ($kKey > 0 && strlen($cKey) > 0) {
-        if ($kSprache !== null && intval($kSprache) > 0) {
+        if ($kSprache !== null && (int)$kSprache > 0) {
             $kSprache = (int)$kSprache;
             $oSeo     = Shop::DB()->select('tseo', 'kKey', $kKey, 'cKey', $cKey, 'kSprache', $kSprache);
-            if (isset($oSeo->kKey) && intval($oSeo->kKey) > 0) {
+            if (isset($oSeo->kKey) && (int)$oSeo->kKey > 0) {
                 return $oSeo;
             }
         } else {
@@ -871,7 +871,7 @@ function handlePriceFormat($kArtikel, $kKundengruppe, $kKunde = null)
     $o->kArtikel      = (int)$kArtikel;
     $o->kKundengruppe = (int)$kKundengruppe;
 
-    if ($kKunde !== null && intval($kKunde) > 0) {
+    if ($kKunde !== null && (int)$kKunde > 0) {
         $o->kKunde = (int)$kKunde;
         flushCustomerPriceCache($o->kKunde);
     }
@@ -921,7 +921,16 @@ function handleNewPriceFormat($xml)
     if (is_array($xml) && isset($xml['tpreis'])) {
         $preise = mapArray($xml, 'tpreis', $GLOBALS['mPreis']);
         if (is_array($preise) && count($preise) > 0) {
-            $kArtikel = (int)$preise[0]->kArtikel;
+            $kArtikel  = (int)$preise[0]->kArtikel;
+            $Kunde_arr = Shop::DB()->selectAll('tpreis', ['kArtikel', 'kKundengruppe'], [$kArtikel, 0], 'kKunde');
+            if (!empty($Kunde_arr)) {
+                foreach ($Kunde_arr as $Kunde) {
+                    $kKunde = (int)$Kunde->kKunde;
+                    if ($kKunde > 0) {
+                        flushCustomerPriceCache($kKunde);
+                    }
+                }
+            }
             Shop::DB()->query(
                 "DELETE p, d
                     FROM tpreis AS p
@@ -965,7 +974,7 @@ function handleNewPriceFormat($xml)
             foreach ($kKundengruppen_arr as $customergroup) {
                 $kKundengruppe = $customergroup->getKundengruppe();
                 if (!in_array($kKundengruppe, $customerGroupHandled) && isset($xml['fStandardpreisNetto'])) {
-                    $kPreis       = handlePriceFormat($kArtikel, $kKundengruppe, 0);
+                    $kPreis       = handlePriceFormat($kArtikel, $kKundengruppe);
                     $o            = (object)[
                         'kPreis'    => $kPreis,
                         'nAnzahlAb' => 0,
@@ -984,7 +993,16 @@ function handleNewPriceFormat($xml)
 function handleOldPriceFormat($objs)
 {
     if (is_array($objs) && count($objs) > 0) {
-        $kArtikel = (int)$objs[0]->kArtikel;
+        $kArtikel  = (int)$objs[0]->kArtikel;
+        $Kunde_arr = Shop::DB()->selectAll('tpreis', ['kArtikel', 'kKundengruppe'], [$kArtikel, 0], 'kKunde');
+        if (!empty($Kunde_arr)) {
+            foreach ($Kunde_arr as $Kunde) {
+                $kKunde = (int)$Kunde->kKunde;
+                if ($kKunde > 0) {
+                    flushCustomerPriceCache($kKunde);
+                }
+            }
+        }
         Shop::DB()->query(
             "DELETE p, d
                 FROM tpreis AS p
@@ -1012,7 +1030,7 @@ function insertPriceDetail($obj, $index, $priceId)
     $count = "nAnzahl{$index}";
     $price = "fPreis{$index}";
 
-    if ((isset($obj->{$count}) && intval($obj->{$count}) > 0) || $index === 0) {
+    if ((isset($obj->{$count}) && (int)$obj->{$count} > 0) || $index === 0) {
         $o            = new stdClass();
         $o->kPreis    = $priceId;
         $o->nAnzahlAb = ($index === 0) ? 0 : $obj->{$count};

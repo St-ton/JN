@@ -94,7 +94,7 @@ class Link extends MainModel
     /**
      * @var array
      */
-    public $oSub_arr = array();
+    public $oSub_arr = [];
 
     /**
      * @return int
@@ -386,20 +386,39 @@ class Link extends MainModel
     }
 
     /**
+     * @param null $kKey
+     * @param null $oObj
+     * @param null $xOption
+     * @param int  $kLinkgruppe
+     */
+    public function __construct($kKey = null, $oObj = null, $xOption = null, $kLinkgruppe = null)
+    {
+        if (is_object($oObj)) {
+            $this->loadObject($oObj);
+        } elseif ($kKey !== null) {
+            $this->load($kKey, $oObj, $xOption, $kLinkgruppe);
+        }
+    }
+
+    /**
      * @param int         $kKey
      * @param object|null $oObj
      * @param mixed|null  $xOption
+     * @param int         $kLinkgruppe
      * @return $this
      */
-    public function load($kKey, $oObj = null, $xOption = null)
+    public function load($kKey, $oObj = null, $xOption = null, $kLinkgruppe = null)
     {
-        $oObj = Shop::DB()->select('tlink', 'kLink', (int)$kKey);
-
+        if (!empty($kLinkgruppe)) {
+            $oObj = Shop::DB()->select('tlink', ['kLink', 'kLinkgruppe'], [(int)$kKey, (int)$kLinkgruppe]);
+        } else {
+            $oObj = Shop::DB()->select('tlink', 'kLink', (int)$kKey);
+        }
         if (!empty($oObj->kLink)) {
             $this->loadObject($oObj);
 
             if ($xOption) {
-                $this->oSub_arr = self::getSub($this->getLink());
+                $this->oSub_arr = self::getSub($this->getLink(), $this->getLinkgruppe());
             }
         }
 
@@ -408,19 +427,23 @@ class Link extends MainModel
 
     /**
      * @param int $kVaterLink
+     * @param int $kVaterLinkgruppe
      * @return null|array
      */
-    public static function getSub($kVaterLink)
+    public static function getSub($kVaterLink, $kVaterLinkgruppe = null)
     {
-        $kVaterLink = (int)$kVaterLink;
+        $kVaterLink       = (int)$kVaterLink;
+        $kVaterLinkgruppe = (int)$kVaterLinkgruppe;
         if ($kVaterLink > 0) {
-            $oLink_arr = Shop::DB()->selectAll('tlink', 'kVaterLink', $kVaterLink);
+            if (!empty($kVaterLinkgruppe)) {
+                $oLink_arr = Shop::DB()->selectAll('tlink', ['kVaterLink', 'kLinkgruppe'], [$kVaterLink, $kVaterLinkgruppe]);
+            } else {
+                $oLink_arr = Shop::DB()->selectAll('tlink', 'kVaterLink', $kVaterLink);
+            }
 
             if (is_array($oLink_arr) && count($oLink_arr) > 0) {
                 foreach ($oLink_arr as &$oLink) {
-                    $kLinkgruppe        = $oLink->kLinkgruppe;
-                    $oLink              = new self($oLink->kLink, null, true);
-                    $oLink->kLinkgruppe = (int)$kLinkgruppe;
+                    $oLink = new self($oLink->kLink, null, true, $kVaterLinkgruppe);
                 }
             }
 
@@ -473,7 +496,7 @@ class Link extends MainModel
     public function update()
     {
         $cQuery   = "UPDATE tlink SET ";
-        $cSet_arr = array();
+        $cSet_arr = [];
 
         $cMember_arr = array_keys(get_object_vars($this));
         if (is_array($cMember_arr) && count($cMember_arr) > 0) {
@@ -482,17 +505,17 @@ class Link extends MainModel
                 if (method_exists($this, $cMethod)) {
                     $mValue = "'" . Shop::DB()->realEscape(
                             call_user_func(
-                                array(
+                                [
                                     &$this,
                                     $cMethod
-                                )
+                                ]
                             )
                         ) . "'";
                     if (call_user_func(
-                            array(
+                            [
                                 &$this,
                                 $cMethod
-                            )
+                            ]
                         ) === null
                     ) {
                         $mValue = 'NULL';
@@ -502,7 +525,7 @@ class Link extends MainModel
             }
 
             $cQuery .= implode(', ', $cSet_arr);
-            $cQuery .= " WHERE kLink = {$this->getLink()}";
+            $cQuery .= " WHERE kLink = {$this->getLink()} AND klinkgruppe = {$this->getLinkgruppe()}";
 
             return Shop::DB()->query($cQuery, 3);
         } else {

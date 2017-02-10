@@ -52,8 +52,8 @@
         </div>
         <div class="panel-body">
             <p class="well">
-                Für die Synchronisation zwischen JTL Wawi und JTL Shop wird ein Synchronisations-Benutzer benötigt.<br>
-                Diese Daten werden in den Webshop-Einstellungen der JTL Wawi eingetragen (Näheres dazu im nächsten Schritt).
+                Für die Synchronisation zwischen JTL-Wawi und JTL-Shop wird ein Synchronisations-Benutzer benötigt.<br>
+                Diese Daten werden in den Webshop-Einstellungen der JTL-Wawi eingetragen (Näheres dazu im nächsten Schritt).
             </p>
 
             <div class="col-xs-12">
@@ -80,6 +80,6 @@
     </div>
 
     <p class="tcenter">
-        <button type="submit" class="submit btn btn-primary pull-right">Installation abschließen</button>
+        <button type="submit" class="submit btn btn-primary pull-right"><i class="fa fa-share"></i> Installation abschließen</button>
     </p>
 </form>

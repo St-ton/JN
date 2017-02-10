@@ -52,7 +52,7 @@ class Wunschliste
     /**
      * @var array
      */
-    public $CWunschlistePos_arr = array();
+    public $CWunschlistePos_arr = [];
 
     /**
      * @var Kunde
@@ -141,12 +141,13 @@ class Wunschliste
      */
     public function entfernePos($kWunschlistePos)
     {
-        $kWunschlistePos = intval($kWunschlistePos);
+        $kWunschlistePos = (int)$kWunschlistePos;
         $oKunde          = Shop::DB()->query(
             "SELECT twunschliste.kKunde
                 FROM twunschliste
-                JOIN twunschlistepos ON twunschliste.kWunschliste = twunschlistepos.kWunschliste
-                WHERE twunschlistepos.kWunschlistePos = " . (int)$kWunschlistePos, 1
+                JOIN twunschlistepos 
+                    ON twunschliste.kWunschliste = twunschlistepos.kWunschliste
+                WHERE twunschlistepos.kWunschlistePos = " . $kWunschlistePos, 1
         );
 
         // Prüfen ob der eingeloggte Kunde auch der Besitzer der zu löschenden WunschlistenPos ist
@@ -177,8 +178,10 @@ class Wunschliste
     public function entferneAllePos()
     {
         return Shop::DB()->query(
-            "DELETE twunschlistepos, twunschlisteposeigenschaft FROM twunschlistepos
-                LEFT JOIN twunschlisteposeigenschaft ON twunschlisteposeigenschaft.kWunschlistePos = twunschlistepos.kWunschlistePos
+            "DELETE twunschlistepos, twunschlisteposeigenschaft 
+                FROM twunschlistepos
+                LEFT JOIN twunschlisteposeigenschaft 
+                    ON twunschlisteposeigenschaft.kWunschlistePos = twunschlistepos.kWunschlistePos
                 WHERE twunschlistepos.kWunschliste = " . (int)$this->kWunschliste, 3
         );
     }
@@ -193,13 +196,15 @@ class Wunschliste
      */
     public static function pruefeArtikelnachBestellungLoeschen($kWunschliste, $oWarenkorbpositionen_arr)
     {
-        $kWunschliste = intval($kWunschliste);
-        $conf         = Shop::getSettings(array(CONF_GLOBAL));
+        $kWunschliste = (int)$kWunschliste;
+        $conf         = Shop::getSettings([CONF_GLOBAL]);
         if ($conf['global']['global_wunschliste_artikel_loeschen_nach_kauf'] === 'Y' && $kWunschliste > 0) {
             $nCount        = 0;
             $oWunschzettel = new self($kWunschliste);
             if (isset($oWunschzettel->kWunschliste) && $oWunschzettel->kWunschliste > 0) {
-                if (isset($oWunschzettel->CWunschlistePos_arr) && count($oWunschzettel->CWunschlistePos_arr) > 0 && is_array($oWarenkorbpositionen_arr) && count($oWarenkorbpositionen_arr) > 0) {
+                if (isset($oWunschzettel->CWunschlistePos_arr) && count($oWunschzettel->CWunschlistePos_arr) > 0 && 
+                    is_array($oWarenkorbpositionen_arr) && count($oWarenkorbpositionen_arr) > 0
+                ) {
                     foreach ($oWunschzettel->CWunschlistePos_arr as $i => $oWunschlistePos) {
                         foreach ($oWarenkorbpositionen_arr as $oArtikel) {
                             if ($oWunschlistePos->kArtikel == $oArtikel->kArtikel) {
@@ -249,11 +254,12 @@ class Wunschliste
     public function sucheInWunschliste($cSuche)
     {
         if (strlen($cSuche) > 0) {
-            $oWunschlistePosSuche_arr = array();
+            $oWunschlistePosSuche_arr = [];
             $oSuchergebnis_arr        = Shop::DB()->query(
                 "SELECT twunschlistepos.*, date_format(twunschlistepos.dHinzugefuegt, '%d.%m.%Y %H:%i') AS dHinzugefuegt_de
                     FROM twunschliste
-                    JOIN twunschlistepos ON twunschlistepos.kWunschliste = twunschliste.kWunschliste
+                    JOIN twunschlistepos 
+                        ON twunschlistepos.kWunschliste = twunschliste.kWunschliste
                         AND (twunschlistepos.cArtikelName LIKE '%" . addcslashes($cSuche, '%_') . "%'
                         OR twunschlistepos.cKommentar LIKE '%" . addcslashes($cSuche, '%_') . "%')
                     WHERE twunschliste.kWunschliste = " . (int)$this->kWunschliste, 2
@@ -262,8 +268,13 @@ class Wunschliste
             if (is_array($oSuchergebnis_arr) && count($oSuchergebnis_arr) > 0) {
                 foreach ($oSuchergebnis_arr as $i => $oSuchergebnis) {
                     $oWunschlistePosSuche_arr[$i] = new stdClass();
-                    $oWunschlistePosSuche_arr[$i]->CWunschlistePosEigenschaft_arr = array();
-                    $oWunschlistePosSuche_arr[$i]                                 = new WunschlistePos($oSuchergebnis->kArtikel, $oSuchergebnis->cArtikelName, $oSuchergebnis->fAnzahl, $oSuchergebnis->kWunschliste);
+                    $oWunschlistePosSuche_arr[$i]->CWunschlistePosEigenschaft_arr = [];
+                    $oWunschlistePosSuche_arr[$i]                                 = new WunschlistePos(
+                        $oSuchergebnis->kArtikel,
+                        $oSuchergebnis->cArtikelName,
+                        $oSuchergebnis->fAnzahl,
+                        $oSuchergebnis->kWunschliste
+                    );
 
                     $oWunschlistePosSuche_arr[$i]->kWunschlistePos  = $oSuchergebnis->kWunschlistePos;
                     $oWunschlistePosSuche_arr[$i]->cKommentar       = $oSuchergebnis->cKommentar;
@@ -273,7 +284,8 @@ class Wunschliste
                     $WunschlistePosEigenschaft_arr = Shop::DB()->query(
                         "SELECT twunschlisteposeigenschaft.*, teigenschaftsprache.cName
                             FROM twunschlisteposeigenschaft
-                            JOIN teigenschaftsprache ON teigenschaftsprache.kEigenschaft = twunschlisteposeigenschaft.kEigenschaft
+                            JOIN teigenschaftsprache 
+                                ON teigenschaftsprache.kEigenschaft = twunschlisteposeigenschaft.kEigenschaft
                             WHERE twunschlisteposeigenschaft.kWunschlistePos = " . (int)$oSuchergebnis->kWunschlistePos . "
                             GROUP BY twunschlisteposeigenschaft.kWunschlistePosEigenschaft", 2
                     );
@@ -299,7 +311,7 @@ class Wunschliste
                         }
                     }
 
-                    $oWunschlistePosSuche_arr[$i]->Artikel = new Artikel($oSuchergebnis->kArtikel);
+                    $oWunschlistePosSuche_arr[$i]->Artikel = new Artikel();
                     $oWunschlistePosSuche_arr[$i]->Artikel->fuelleArtikel($oSuchergebnis->kArtikel, Artikel::getDefaultOptions());
                     $oWunschlistePosSuche_arr[$i]->cArtikelName = $oWunschlistePosSuche_arr[$i]->Artikel->cName;
 
@@ -367,13 +379,23 @@ class Wunschliste
         }
 
         // Hole alle Positionen für eine Wunschliste
-        $WunschlistePos_arr = Shop::DB()->selectAll('twunschlistepos', 'kWunschliste', (int)$this->kWunschliste, '*, date_format(dHinzugefuegt, \'%d.%m.%Y %H:%i\') AS dHinzugefuegt_de');
+        $WunschlistePos_arr = Shop::DB()->selectAll
+        ('twunschlistepos',
+            'kWunschliste',
+            (int)$this->kWunschliste,
+            '*, date_format(dHinzugefuegt, \'%d.%m.%Y %H:%i\') AS dHinzugefuegt_de'
+        );
         // Wenn Positionen vorhanden sind
         if (count($WunschlistePos_arr) > 0) {
             $defaultOptions = Artikel::getDefaultOptions();
             // Hole alle Eigenschaften für eine Position
             foreach ($WunschlistePos_arr as $WunschlistePos) {
-                $CWunschlistePos = new WunschlistePos($WunschlistePos->kArtikel, $WunschlistePos->cArtikelName, $WunschlistePos->fAnzahl, $WunschlistePos->kWunschliste);
+                $CWunschlistePos = new WunschlistePos(
+                    $WunschlistePos->kArtikel,
+                    $WunschlistePos->cArtikelName,
+                    $WunschlistePos->fAnzahl,
+                    $WunschlistePos->kWunschlist
+                );
 
                 $cArtikelName                      = $CWunschlistePos->cArtikelName;
                 $CWunschlistePos->kWunschlistePos  = $WunschlistePos->kWunschlistePos;
@@ -382,13 +404,16 @@ class Wunschliste
                 $CWunschlistePos->dHinzugefuegt_de = $WunschlistePos->dHinzugefuegt_de;
 
                 $WunschlistePosEigenschaft_arr = Shop::DB()->query(
-                    "SELECT twunschlisteposeigenschaft.*, IF(LENGTH(teigenschaftsprache.cName) > 0, teigenschaftsprache.cName, twunschlisteposeigenschaft.cEigenschaftName) AS cName,
-                            IF(LENGTH(teigenschaftwertsprache.cName) > 0, teigenschaftwertsprache.cName, twunschlisteposeigenschaft.cEigenschaftWertName) AS cWert
+                    "SELECT twunschlisteposeigenschaft.*, 
+                        IF(LENGTH(teigenschaftsprache.cName) > 0, teigenschaftsprache.cName, twunschlisteposeigenschaft.cEigenschaftName) AS cName,
+                        IF(LENGTH(teigenschaftwertsprache.cName) > 0, teigenschaftwertsprache.cName, twunschlisteposeigenschaft.cEigenschaftWertName) AS cWert
                         FROM twunschlisteposeigenschaft
-                        LEFT JOIN teigenschaftsprache ON teigenschaftsprache.kEigenschaft = twunschlisteposeigenschaft.kEigenschaft
+                        LEFT JOIN teigenschaftsprache 
+                            ON teigenschaftsprache.kEigenschaft = twunschlisteposeigenschaft.kEigenschaft
                             AND teigenschaftsprache.kSprache = " . (int)Shop::$kSprache . "
-                        LEFT JOIN teigenschaftwertsprache ON teigenschaftwertsprache.kEigenschaftWert = twunschlisteposeigenschaft.kEigenschaftWert
-                            AND teigenschaftwertsprache.kSprache = " . (int)Shop::$kSprache . "
+                        LEFT JOIN teigenschaftwertsprache 
+                                ON teigenschaftwertsprache.kEigenschaftWert = twunschlisteposeigenschaft.kEigenschaftWert
+                            AND teigenschaftwertsprache.kSprache = " . Shop::getLanguage() . "
                         WHERE twunschlisteposeigenschaft.kWunschlistePos = " . (int)$WunschlistePos->kWunschlistePos . "
                         GROUP BY twunschlisteposeigenschaft.kWunschlistePosEigenschaft", 2
                 );
@@ -399,7 +424,8 @@ class Wunschliste
                                 $_cName = Shop::DB()->query(
                                     "SELECT IF(LENGTH(teigenschaftsprache.cName) > 0, teigenschaftsprache.cName, teigenschaft.cName) AS cName
                                         FROM teigenschaft
-                                        LEFT JOIN teigenschaftsprache ON teigenschaftsprache.kEigenschaft = teigenschaft.kEigenschaft
+                                        LEFT JOIN teigenschaftsprache 
+                                            ON teigenschaftsprache.kEigenschaft = teigenschaft.kEigenschaft
                                             AND teigenschaftsprache.kSprache = " . (int)Shop::$kSprache . "
                                         WHERE teigenschaft.kEigenschaft = " . (int)$WunschlistePosEigenschaft->kEigenschaft, 1);
                                 $WunschlistePosEigenschaft->cName = $_cName->cName;
@@ -436,7 +462,7 @@ class Wunschliste
      */
     public function ueberpruefePositionen()
     {
-        $cArtikel_arr = array();
+        $cArtikel_arr = [];
         $hinweis      = '';
         if (count($this->CWunschlistePos_arr) > 0) {
             foreach ($this->CWunschlistePos_arr as $CWunschlistePos) {
@@ -447,7 +473,11 @@ class Wunschliste
                     // Falls Artikel vorhanden
                     if (isset($oArtikelVorhanden->kArtikel) && (int)$oArtikelVorhanden->kArtikel > 0) {
                         // Sichtbarkeit Prüfen
-                        $oSichtbarkeit = Shop::DB()->select('tartikelsichtbarkeit', 'kArtikel', (int)$CWunschlistePos->kArtikel, 'kKundengruppe', (int)$_SESSION['Kundengruppe']->kKundengruppe);
+                        $oSichtbarkeit = Shop::DB()->select(
+                            'tartikelsichtbarkeit',
+                            'kArtikel', (int)$CWunschlistePos->kArtikel,
+                            'kKundengruppe', (int)$_SESSION['Kundengruppe']->kKundengruppe
+                        );
                         if ($oSichtbarkeit === null || empty($oSichtbarkeit->kArtikel)) {
                             // Prüfe welche kEigenschaft gesetzt ist
                             if (count($CWunschlistePos->CWunschlistePosEigenschaft_arr) > 0) {
@@ -474,7 +504,11 @@ class Wunschliste
                                     }
                                 } else {
                                     // Prüfe welche kEigenschaft gesetzt ist
-                                    $oEigenschaft_arr = Shop::DB()->selectAll('teigenschaft', 'kArtikel', (int)$CWunschlistePos->kArtikel, 'kEigenschaft, cName, cTyp');
+                                    $oEigenschaft_arr = Shop::DB()->selectAll(
+                                        'teigenschaft',
+                                        'kArtikel', (int)$CWunschlistePos->kArtikel,
+                                        'kEigenschaft, cName, cTyp'
+                                    );
                                     if (count($oEigenschaft_arr) > 0) {
                                         foreach ($CWunschlistePos->CWunschlistePosEigenschaft_arr as $CWunschlistePosEigenschaft) {
                                             if (!empty($CWunschlistePosEigenschaft->kEigenschaft)) {
@@ -486,7 +520,11 @@ class Wunschliste
                                                     (int)$CWunschlistePosEigenschaft->kEigenschaft
                                                 );
                                                 if (empty($oEigenschaftWertVorhanden)) {
-                                                    $oEigenschaftWertVorhanden = Shop::DB()->select('twunschlisteposeigenschaft', 'kEigenschaft', $CWunschlistePosEigenschaft->kEigenschaft);
+                                                    $oEigenschaftWertVorhanden = Shop::DB()->select(
+                                                        'twunschlisteposeigenschaft',
+                                                        'kEigenschaft',
+                                                        $CWunschlistePosEigenschaft->kEigenschaft
+                                                    );
                                                 }
                                             }
                                             // Prüfe ob die Eigenschaft vorhanden ist

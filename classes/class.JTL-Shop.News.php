@@ -425,10 +425,12 @@ class News extends MainModel
                 "SELECT tseo.cSeo, tnews.*, DATE_FORMAT(tnews.dGueltigVon, '%Y,%m,%d') AS dGueltigVonJS, 
                     COUNT(DISTINCT(tnewskommentar.kNewsKommentar)) AS nNewsKommentarAnzahl
                     FROM tnews
-                    LEFT JOIN tseo ON tseo.cKey = 'kNews'
+                    LEFT JOIN tseo 
+                        ON tseo.cKey = 'kNews'
                         AND tseo.kKey = tnews.kNews
                         AND tseo.kSprache = {$kSprache}
-                    LEFT JOIN tnewskommentar ON tnewskommentar.kNews = tnews.kNews
+                    LEFT JOIN tnewskommentar 
+                        ON tnewskommentar.kNews = tnews.kNews
                         AND tnewskommentar.nAktiv = 1
                     WHERE tnews.kNews = {$kKey}
                     GROUP BY tnews.kNews
@@ -477,7 +479,6 @@ class News extends MainModel
         } else {
             $kKundengruppe = Kundengruppe::getDefaultGroupID();
         }
-        $kSprache = null;
         if (isset($_SESSION['kSprache'])) {
             $kSprache = (int)$_SESSION['kSprache'];
         } else {
@@ -488,7 +489,8 @@ class News extends MainModel
             "SELECT tseo.cSeo, tnews.*, DATE_FORMAT(tnews.dGueltigVon, '%Y,%m,%d') AS dGueltigVonJS, 
                 COUNT(DISTINCT(tnewskommentar.kNewsKommentar)) AS nNewsKommentarAnzahl
                 FROM tnews
-                LEFT JOIN tseo ON tseo.cKey = 'kNews'
+                LEFT JOIN tseo 
+                    ON tseo.cKey = 'kNews'
                     AND tseo.kKey = tnews.kNews
                     AND tseo.kSprache = {$kSprache}
                 LEFT JOIN tnewskommentar ON tnewskommentar.kNews = tnews.kNews

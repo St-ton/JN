@@ -90,7 +90,7 @@ function getBrowser($cUserAgent = null)
         $oBrowser->cBrowser = 'netscape';
     }
     // version
-    $cKnown   = array('version', 'other', 'mobile', $oBrowser->cBrowser);
+    $cKnown   = ['version', 'other', 'mobile', $oBrowser->cBrowser];
     $cPattern = '/(?<browser>' . implode('|', $cKnown) . ')[\/ ]+(?<version>[0-9.|a-zA-Z.]*)/i';
     preg_match_all($cPattern, $cUserAgent, $aMatches);
     if (count($aMatches['browser']) !== 1) {

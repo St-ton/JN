@@ -30,17 +30,18 @@ class NewsJson
         $this->timeline->type      = 'default';
         $this->timeline->text      = $cText;
         $this->timeline->startDate = $cStartDate;
-        $this->timeline->date      = array();
+        $this->timeline->date      = [];
 
         if (count($oNews_arr) > 0) {
+            $shopURL = Shop::getURL() . '/';
             foreach ($oNews_arr as $oNews) {
-                $oNewsItem = new NewsItem($oNews->cBetreff, $oNews->cText, $oNews->dGueltigVonJS, Shop::getURL() . "/{$oNews->cUrl}");
+                $oNewsItem = new NewsItem($oNews->cBetreff, $oNews->cText, $oNews->dGueltigVonJS, $shopURL . "{$oNews->cUrl}");
 
                 if ($this->checkMedia($oNews->cVorschauText)) {
                     $oNewsItemAsset = new NewsItemAsset($oNews->cVorschauText);
                     $oNewsItem->addAsset($oNewsItemAsset);
                 } else {
-                    $oNewsItem->text = $oNews->cVorschauText . "<br /><a href='{$oNews->cUrl}' class='btn'>Mehr...</a>";
+                    $oNewsItem->text = $oNews->cVorschauText . '<br /><a href="' . $oNews->cUrl . '" class="btn">Mehr...</a>';
                 }
 
                 $this->timeline->date[] = $oNewsItem;
@@ -62,7 +63,7 @@ class NewsJson
      */
     protected function checkMedia($cMediaLink)
     {
-        $cMedia_arr = array(
+        $cMedia_arr = [
             'youtube.com/watch?v=',
             'vimeo.com/',
             'twitter.com/',
@@ -71,7 +72,7 @@ class NewsJson
             'dailymotion.com/video',
             'wikipedia.org/wiki',
             'soundcloud.com/'
-        );
+        ];
 
         if (strlen($cMediaLink) > 3) {
             foreach ($cMedia_arr as $cMedia) {

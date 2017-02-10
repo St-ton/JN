@@ -35,7 +35,7 @@ if (Shop::$isInitialized === true) {
     $kLink = Shop::$kLink;
 }
 if (!isset($link)) {
-    $link = $linkHelper->getPageLink($kLink);
+    $link = $linkHelper->getPageLink(Shop::$kLink);
 }
 if (isset($link->nLinkart) && $link->nLinkart == LINKTYP_EXTERNE_URL) {
     header('Location: ' . $link->cURL, true, 303);
@@ -49,14 +49,13 @@ if (!isset($link->bHideContent) || !$link->bHideContent) {
 $requestURL = baueURL($link, URLART_SEITE);
 $smarty->assign('cmsurl', $requestURL);
 // Canonical
-if (strpos($requestURL, '.php') === false || !SHOP_SEO) {
-    $cCanonicalURL = Shop::getURL() . '/' . $requestURL;
-}
 if ($link->nLinkart == LINKTYP_STARTSEITE) {
     // Work Around für die Startseite
     $cCanonicalURL = Shop::getURL() . '/';
+} elseif (strpos($requestURL, '.php') === false) {
+    $cCanonicalURL = Shop::getURL() . '/' . $requestURL;
 }
-$sprachURL = baueSprachURLS($link, URLART_SEITE);
+$sprachURL = (isset($link->languageURLs)) ? $link->languageURLs : baueSprachURLS($link, URLART_SEITE);
 //hole aktuelle Kategorie, falls eine gesetzt
 $AufgeklappteKategorien = new KategorieListe();
 $startKat               = new Kategorie();
@@ -72,13 +71,17 @@ if ($link->nLinkart == LINKTYP_STARTSEITE) {
     $AktuelleSeite = 'STARTSEITE';
     $Navigation    = createNavigation($AktuelleSeite);
     $smarty->assign('StartseiteBoxen', gibStartBoxen())
-           ->assign('Navigation', $Navigation);
+           ->assign('Navigation', $Navigation)
+           ->assign('oNews_arr', ($Einstellungen['news']['news_benutzen'] === 'Y') ? gibNews($Einstellungen) : []);
     // Auswahlassistent
     if (function_exists('starteAuswahlAssistent')) {
-        starteAuswahlAssistent(AUSWAHLASSISTENT_ORT_STARTSEITE, 1, Shop::getLanguage(), $smarty, $Einstellungen['auswahlassistent']);
-    }
-    if ($Einstellungen['news']['news_benutzen'] === 'Y') {
-        $smarty->assign('oNews_arr', gibNews($Einstellungen));
+        starteAuswahlAssistent(
+            AUSWAHLASSISTENT_ORT_STARTSEITE,
+            1,
+            Shop::getLanguage(),
+            $smarty,
+            $Einstellungen['auswahlassistent']
+        );
     }
 } elseif ($link->nLinkart == LINKTYP_DATENSCHUTZ) {
     Shop::setPageType(PAGE_DATENSCHUTZ);
@@ -129,7 +132,13 @@ if ($link->nLinkart == LINKTYP_STARTSEITE) {
     Shop::setPageType(PAGE_AUSWAHLASSISTENT);
     // Auswahlassistent
     if (function_exists('starteAuswahlAssistent')) {
-        starteAuswahlAssistent(AUSWAHLASSISTENT_ORT_LINK, $link->kLink, Shop::getLanguage(), $smarty, $Einstellungen['auswahlassistent']);
+        starteAuswahlAssistent(
+            AUSWAHLASSISTENT_ORT_LINK,
+            $link->kLink,
+            Shop::getLanguage(),
+            $smarty,
+            $Einstellungen['auswahlassistent']
+        );
     }
 } elseif ($link->nLinkart == LINKTYP_404) {
     Shop::setPageType(PAGE_404);
@@ -138,18 +147,27 @@ if ($link->nLinkart == LINKTYP_STARTSEITE) {
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 executeHook(HOOK_SEITE_PAGE_IF_LINKART);
-
-if (isset($cFehler) && strlen($cFehler) > 0) {
-    $smarty->assign('cFehler', $cFehler);
-}
 // MetaTitle bei bFileNotFound redirect
 if (!isset($bFileNotFound)) {
     $bFileNotFound = false;
 }
 if ($bFileNotFound) {
-    $Navigation = createNavigation($AktuelleSeite, 0, 0, Shop::Lang()->get('pagenotfound', 'breadcrumb'), $requestURL);
+    $Navigation = createNavigation(
+        $AktuelleSeite,
+        0,
+        0,
+        Shop::Lang()->get('pagenotfound', 'breadcrumb'),
+        $requestURL
+    );
 } else {
-    $Navigation = createNavigation($AktuelleSeite, 0, 0, ((isset($link->Sprache->cName)) ? $link->Sprache->cName : ''), $requestURL, $kLink);
+    $Navigation = createNavigation(
+        $AktuelleSeite,
+        0,
+        0,
+        ((isset($link->Sprache->cName)) ? $link->Sprache->cName : ''),
+        $requestURL,
+        Shop::$kLink
+    );
 }
 $smarty->assign('Navigation', $Navigation)
        ->assign('Einstellungen', $Einstellungen)
@@ -157,6 +175,7 @@ $smarty->assign('Navigation', $Navigation)
        ->assign('requestURL', $requestURL)
        ->assign('sprachURL', $sprachURL)
        ->assign('bSeiteNichtGefunden', $bFileNotFound)
+       ->assign('cFehler', !empty($cFehler) ? $cFehler : null)
        ->assign('meta_language', StringHandler::convertISO2ISO639($_SESSION['cISOSprache']));
 
 $cMetaTitle       = (isset($link->Sprache->cMetaTitle)) ? $link->Sprache->cMetaTitle : null;
@@ -164,7 +183,9 @@ $cMetaDescription = (isset($link->Sprache->cMetaDescription)) ? $link->Sprache->
 $cMetaKeywords    = (isset($link->Sprache->cMetaKeywords)) ? $link->Sprache->cMetaKeywords : null;
 if (strlen($cMetaTitle) === 0 || strlen($cMetaDescription) === 0 || strlen($cMetaKeywords) === 0) {
     $kSprache            = Shop::getLanguage();
-    $oGlobaleMetaAngaben = (isset($oGlobaleMetaAngabenAssoc_arr[$kSprache])) ? $oGlobaleMetaAngabenAssoc_arr[$kSprache] : null;
+    $oGlobaleMetaAngaben = (isset($oGlobaleMetaAngabenAssoc_arr[$kSprache]))
+        ? $oGlobaleMetaAngabenAssoc_arr[$kSprache]
+        : null;
 
     if (is_object($oGlobaleMetaAngaben)) {
         if (strlen($cMetaTitle) === 0) {

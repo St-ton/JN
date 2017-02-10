@@ -70,7 +70,8 @@ if (class_exists('AuswahlAssistent')) {
                 $oFrage = Shop::DB()->query(
                     "SELECT *
                         FROM tauswahlassistentfrage
-                        WHERE kAuswahlAssistentFrage = " . $kAuswahlAssistentFrage . $cAktivSQL, 1
+                        WHERE kAuswahlAssistentFrage = " . $kAuswahlAssistentFrage .
+                        $cAktivSQL, 1
                 );
 
                 if (isset($oFrage->kAuswahlAssistentFrage) && $oFrage->kAuswahlAssistentFrage > 0) {
@@ -92,7 +93,7 @@ if (class_exists('AuswahlAssistent')) {
          */
         public static function getQuestions($kAuswahlAssistentGruppe, $bAktiv = true)
         {
-            $oAuswahlAssistentFrage_arr = array();
+            $oAuswahlAssistentFrage_arr = [];
             if (intval($kAuswahlAssistentGruppe) > 0) {
                 $cAktivSQL = '';
                 if ($bAktiv) {
@@ -101,7 +102,8 @@ if (class_exists('AuswahlAssistent')) {
                 $oFrage_arr = Shop::DB()->query(
                     "SELECT *
                         FROM tauswahlassistentfrage
-                        WHERE kAuswahlAssistentGruppe = " . (int)$kAuswahlAssistentGruppe . $cAktivSQL . "
+                        WHERE kAuswahlAssistentGruppe = " . (int)$kAuswahlAssistentGruppe .
+                        $cAktivSQL . "
                         ORDER BY nSort", 2
                 );
                 if (count($oFrage_arr) > 0) {
@@ -149,7 +151,12 @@ if (class_exists('AuswahlAssistent')) {
                 $_upd->nSort                   = $this->nSort;
                 $_upd->nAktiv                  = $this->nAktiv;
 
-                Shop::DB()->update('tauswahlassistentfrage', 'kAuswahlAssistentFrage', (int)$this->kAuswahlAssistentFrage, $_upd);
+                Shop::DB()->update(
+                    'tauswahlassistentfrage',
+                    'kAuswahlAssistentFrage',
+                    (int)$this->kAuswahlAssistentFrage,
+                    $_upd
+                );
 
                 return true;
             }
@@ -163,9 +170,15 @@ if (class_exists('AuswahlAssistent')) {
          */
         public static function deleteQuestion($cParam_arr)
         {
-            if (isset($cParam_arr['kAuswahlAssistentFrage_arr']) && is_array($cParam_arr['kAuswahlAssistentFrage_arr']) && count($cParam_arr['kAuswahlAssistentFrage_arr']) > 0) {
+            if (isset($cParam_arr['kAuswahlAssistentFrage_arr']) &&
+                is_array($cParam_arr['kAuswahlAssistentFrage_arr']) &&
+                count($cParam_arr['kAuswahlAssistentFrage_arr']) > 0) {
                 foreach ($cParam_arr['kAuswahlAssistentFrage_arr'] as $kAuswahlAssistentFrage) {
-                    Shop::DB()->delete('tauswahlassistentfrage', 'kAuswahlAssistentFrage', (int)$kAuswahlAssistentFrage);
+                    Shop::DB()->delete(
+                        'tauswahlassistentfrage',
+                        'kAuswahlAssistentFrage',
+                        (int)$kAuswahlAssistentFrage
+                    );
                 }
 
                 return true;
@@ -180,7 +193,7 @@ if (class_exists('AuswahlAssistent')) {
          */
         public function checkQuestion($bUpdate = false)
         {
-            $cPlausi_arr = array();
+            $cPlausi_arr = [];
             // Frage
             if (strlen($this->cFrage) === 0) {
                 $cPlausi_arr['cFrage'] = 1;
@@ -218,11 +231,12 @@ if (class_exists('AuswahlAssistent')) {
         private function isMerkmalTaken($kMerkmal, $kAuswahlAssistentGruppe)
         {
             if ($kMerkmal > 0 && $kAuswahlAssistentGruppe > 0) {
-                $oFrage = Shop::DB()->query(
-                    "SELECT kAuswahlAssistentFrage
-                        FROM tauswahlassistentfrage
-                        WHERE kMerkmal = " . (int)$kMerkmal . "
-                            AND kAuswahlAssistentGruppe = " . (int)$kAuswahlAssistentGruppe, 1
+                $oFrage = Shop::DB()->select(
+                    'tauswahlassistentfrage',
+                    'kMerkmal',
+                    (int)$kMerkmal,
+                    'kAuswahlAssistentGruppe',
+                    (int)$kAuswahlAssistentGruppe
                 );
                 if (isset($oFrage->kAuswahlAssistentFrage) && $oFrage->kAuswahlAssistentFrage > 0) {
                     return true;

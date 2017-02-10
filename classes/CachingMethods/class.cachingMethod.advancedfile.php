@@ -60,12 +60,12 @@ class cache_advancedfile implements ICachingMethod
         return (file_put_contents(
                 $fileName,
                 serialize(
-                    array(
+                    [
                         'value'    => $content,
                         'lifetime' => ($expiration === null) ?
                             $this->options['lifetime'] :
                             $expiration
-                    )
+                    ]
                 )
             ) !== false) ? true : false;
     }
@@ -108,7 +108,7 @@ class cache_advancedfile implements ICachingMethod
      */
     public function loadMulti($cacheIDs)
     {
-        $res = array();
+        $res = [];
         foreach ($cacheIDs as $_cid) {
             $res[$_cid] = $this->load($cacheIDs);
         }
@@ -158,7 +158,10 @@ class cache_advancedfile implements ICachingMethod
      */
     public function flushAll()
     {
-        $rdi = new RecursiveDirectoryIterator($this->options['cache_dir'], FilesystemIterator::SKIP_DOTS | FilesystemIterator::UNIX_PATHS);
+        $rdi = new RecursiveDirectoryIterator(
+            $this->options['cache_dir'],
+            FilesystemIterator::SKIP_DOTS | FilesystemIterator::UNIX_PATHS
+        );
         foreach (new RecursiveIteratorIterator($rdi, RecursiveIteratorIterator::CHILD_FIRST) as $value) {
             if ($value->isLink() || $value->isFile()) {
                 unlink($value);
@@ -207,13 +210,13 @@ class cache_advancedfile implements ICachingMethod
             closedir($dir);
         }
 
-        return array(
+        return [
             'entries' => $num,
             'hits'    => null,
             'misses'  => null,
             'inserts' => null,
             'mem'     => $total
-        );
+        ];
     }
 
     /**
@@ -274,7 +277,10 @@ class cache_advancedfile implements ICachingMethod
                     $path .= $dir . '/';
                 }
                 if (is_dir($path)) {
-                    $rdi = new RecursiveDirectoryIterator($path, FilesystemIterator::SKIP_DOTS | FilesystemIterator::UNIX_PATHS);
+                    $rdi = new RecursiveDirectoryIterator(
+                        $path,
+                        FilesystemIterator::SKIP_DOTS | FilesystemIterator::UNIX_PATHS
+                    );
                     foreach (new RecursiveIteratorIterator($rdi, RecursiveIteratorIterator::CHILD_FIRST) as $value) {
                         $res = false;
                         if ($value->isLink()) {
@@ -304,10 +310,10 @@ class cache_advancedfile implements ICachingMethod
      * clean up journal after deleting cache entries
      * not needed for this method
      *
-     * @param string|array $cacheID
+     * @param string|array $tags
      * @return bool
      */
-    public function clearCacheTags($cacheID)
+    public function clearCacheTags($tags)
     {
         return true;
     }
@@ -332,7 +338,10 @@ class cache_advancedfile implements ICachingMethod
                     $path .= $dir . '/';
                 }
                 if (is_dir($path)) {
-                    $rdi = new RecursiveDirectoryIterator($path, FilesystemIterator::SKIP_DOTS | FilesystemIterator::UNIX_PATHS);
+                    $rdi = new RecursiveDirectoryIterator(
+                        $path,
+                        FilesystemIterator::SKIP_DOTS | FilesystemIterator::UNIX_PATHS
+                    );
                     foreach (new RecursiveIteratorIterator($rdi, RecursiveIteratorIterator::CHILD_FIRST) as $value) {
                         if ($value->isFile()) {
                             $res[] = $value->getFilename();

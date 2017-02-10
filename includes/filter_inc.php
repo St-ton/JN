@@ -492,7 +492,7 @@ function gibHerstellerFilterOptionen($FilterSQL, $NaviFilter)
                 AND tseo.cKey = 'kHersteller'
                 AND tseo.kSprache = " . Shop::$kSprache . "
             GROUP BY ssMerkmal.kHersteller
-            ORDER BY ssMerkmal.nSortNr, ssMerkmal.cName", 2
+            ORDER BY ssMerkmal.cName", 2
         );
         //baue URL
         $oZusatzFilter = new stdClass();
@@ -562,6 +562,9 @@ function gibKategorieFilterOptionen($FilterSQL, $NaviFilter)
     $oKategorieFilterDB_arr = [];
     $conf                   = Shop::getSettings([CONF_NAVIGATIONSFILTER]);
     if ($conf['navigationsfilter']['allgemein_kategoriefilter_benutzen'] !== 'N') {
+        $limit    = (CATEGORY_FILTER_ITEM_LIMIT > -1)
+            ? ' LIMIT ' . CATEGORY_FILTER_ITEM_LIMIT
+            : '';
         $kSprache = (int)Shop::$kSprache;
         if (!$kSprache) {
             $oSprache = gibStandardsprache(true);
@@ -627,7 +630,7 @@ function gibKategorieFilterOptionen($FilterSQL, $NaviFilter)
                     AND tseo.cKey = 'kKategorie'
                     AND tseo.kSprache = " . Shop::getLanguage(). "
                 GROUP BY ssMerkmal.kKategorie
-                ORDER BY ssMerkmal.nSort, ssMerkmal.cName", 2
+                ORDER BY ssMerkmal.nSort, ssMerkmal.cName" . $limit, 2
         );
         //baue URL
         $count = (is_array($oKategorieFilterDB_arr)) ? count($oKategorieFilterDB_arr) : 0;
@@ -2821,7 +2824,7 @@ function gibNaviURL($NaviFilter, $bSeo, $oZusatzFilter, $kSprache = 0, $bCanonic
                 if (strlen($NaviFilter->KategorieFilter->cSeo[$kSprache]) === 0) {
                     $bSeo = false;
                 }
-                $conf = Shop::getConfig([CONF_NAVIGATIONSFILTER]);
+                $conf = Shop::getSettings([CONF_NAVIGATIONSFILTER]);
                 if ($conf['navigationsfilter']['kategoriefilter_anzeigen_als'] === 'HF' && !empty($oZusatzFilter->KategorieFilter->kKategorie)) {
                     if (!empty($oZusatzFilter->KategorieFilter->cSeo)) {
                         $cSEOURL .= SEP_KAT . $oZusatzFilter->KategorieFilter->cSeo;

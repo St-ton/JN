@@ -53,7 +53,8 @@ function gibBranding($kBranding)
     return Shop::DB()->query(
         "SELECT tbranding.*, tbranding.kBranding AS kBrandingTMP, tbrandingeinstellung.*
             FROM tbranding
-            LEFT JOIN tbrandingeinstellung ON tbrandingeinstellung.kBranding = tbranding.kBranding
+            LEFT JOIN tbrandingeinstellung 
+                ON tbrandingeinstellung.kBranding = tbranding.kBranding
             WHERE tbranding.kBranding = " . (int)$kBranding . "
             GROUP BY tbranding.kBranding", 1
     );
@@ -76,7 +77,8 @@ function speicherEinstellung($kBranding, $cPost_arr, $cFiles_arr)
     $oBrandingEinstellung->dGroesse     = $cPost_arr['dGroesse'];
 
     if (strlen($cFiles_arr['cBrandingBild']['name']) > 0) {
-        $oBrandingEinstellung->cBrandingBild = 'kBranding_' . $kBranding . mappeFileTyp($cFiles_arr['cBrandingBild']['type']);
+        $oBrandingEinstellung->cBrandingBild = 'kBranding_' . $kBranding .
+            mappeFileTyp($cFiles_arr['cBrandingBild']['type']);
     } else {
         $oBrandingEinstellungTMP             = Shop::DB()->select('tbrandingeinstellung', 'kBranding', $kBranding);
         $oBrandingEinstellung->cBrandingBild = (!empty($oBrandingEinstellungTMP->cBrandingBild))
@@ -84,7 +86,9 @@ function speicherEinstellung($kBranding, $cPost_arr, $cFiles_arr)
             : '';
     }
 
-    if ($oBrandingEinstellung->kBranding > 0 && strlen($oBrandingEinstellung->cPosition) > 0 && strlen($oBrandingEinstellung->cBrandingBild) > 0) {
+    if ($oBrandingEinstellung->kBranding > 0 &&
+        strlen($oBrandingEinstellung->cPosition) > 0 &&
+        strlen($oBrandingEinstellung->cBrandingBild) > 0) {
         // Alte Einstellung loeschen
         Shop::DB()->delete('tbrandingeinstellung', 'kBranding', $kBranding);
 
@@ -116,7 +120,8 @@ function speicherBrandingBild($cFiles_arr, $kBranding)
         $cFiles_arr['cBrandingBild']['type'] === 'image/png' ||
         $cFiles_arr['cBrandingBild']['type'] === 'image/bmp') {
         if ($cFiles_arr['cBrandingBild']['size'] <= 2097152) {
-            $cUploadDatei = PFAD_ROOT . PFAD_BRANDINGBILDER . 'kBranding_' . $kBranding . mappeFileTyp($cFiles_arr['cBrandingBild']['type']);
+            $cUploadDatei = PFAD_ROOT . PFAD_BRANDINGBILDER . 'kBranding_' .
+                $kBranding . mappeFileTyp($cFiles_arr['cBrandingBild']['type']);
 
             return move_uploaded_file($cFiles_arr['cBrandingBild']['tmp_name'], $cUploadDatei);
         }

@@ -38,7 +38,11 @@ if ($step === 'plugin_uebersicht') {
                 }
                 if (count($oPluginEinstellungConf_arr) > 0) {
                     foreach ($oPluginEinstellungConf_arr as $oPluginEinstellungConf) {
-                        Shop::DB()->delete('tplugineinstellungen', array('kPlugin', 'cName'), array($kPlugin, $oPluginEinstellungConf->cWertName));
+                        Shop::DB()->delete(
+                            'tplugineinstellungen',
+                            ['kPlugin', 'cName'],
+                            [$kPlugin, $oPluginEinstellungConf->cWertName]
+                        );
                         $oPluginEinstellung          = new stdClass();
                         $oPluginEinstellung->kPlugin = $kPlugin;
                         $oPluginEinstellung->cName   = $oPluginEinstellungConf->cWertName;
@@ -94,7 +98,7 @@ if ($step === 'plugin_uebersicht') {
         $j = 0;
         // check, if we have a README.md in this current plugin and if so, we insert a "DocTab"
         $fAddAsDocTab = false;
-        $szReadmeFile = PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/README.md'; // maybe we make this name configurable in the future
+        $szReadmeFile = PFAD_ROOT . PFAD_PLUGIN . $oPlugin->cVerzeichnis . '/README.md';
         if ('' !== $oPlugin->cTextReadmePath) {
             $szReadmeContent = utf8_decode(file_get_contents($szReadmeFile)); // slurp in the file-content
             // check, if we got a Markdown-parser
@@ -111,7 +115,8 @@ if ($step === 'plugin_uebersicht') {
 
             // create a tab-object (for insert into the admin-menu later)
             $oUnnamedTab                      = new stdClass();
-            $oUnnamedTab->kPluginAdminMenu    = count($oPlugin->oPluginAdminMenu_arr) + 1; // normally the `kPluginAdminMenu` from `tpluginadminmenu`, but we use it as a counter here
+            // normally the `kPluginAdminMenu` from `tpluginadminmenu`, but we use it as a counter here
+            $oUnnamedTab->kPluginAdminMenu    = count($oPlugin->oPluginAdminMenu_arr) + 1;
             $oUnnamedTab->kPlugin             = $oPlugin->kPlugin; // the current plugin-ID
             $oUnnamedTab->cName               = 'Dokumentation';
             $oUnnamedTab->cDateiname          = '';
@@ -124,7 +129,7 @@ if ($step === 'plugin_uebersicht') {
         // check, if there is a LICENSE.md too
         $fAddAsLicenseTab  = false;
         if ('' !== $oPlugin->cTextLicensePath) {
-            $szLicenseContent = utf8_decode(file_get_contents($oPlugin->cTextLicensePath)); // slurp in the file-content
+            $szLicenseContent = utf8_decode(file_get_contents($oPlugin->cTextLicensePath)); // slurp in the file content
             // check, if we got a Markdown-parser
             $fMarkDown     = false;
             if (class_exists('Parsedown')) {
@@ -139,7 +144,8 @@ if ($step === 'plugin_uebersicht') {
 
             // create a tab-object (for insert into the admin-menu later)
             $oUnnamedTab                      = new stdClass();
-            $oUnnamedTab->kPluginAdminMenu    = count($oPlugin->oPluginAdminMenu_arr) + 1; // normally the `kPluginAdminMenu` from `tpluginadminmenu`, but we use it as a counter here
+            // normally the `kPluginAdminMenu` from `tpluginadminmenu`, but we use it as a counter here
+            $oUnnamedTab->kPluginAdminMenu    = count($oPlugin->oPluginAdminMenu_arr) + 1;
             $oUnnamedTab->kPlugin             = $oPlugin->kPlugin; // the current plugin-ID
             $oUnnamedTab->cName               = 'Lizenzvereinbarung';
             $oUnnamedTab->cDateiname          = '';
@@ -151,7 +157,8 @@ if ($step === 'plugin_uebersicht') {
         }
         // build the the tabs
         foreach ($oPlugin->oPluginAdminMenu_arr as $_adminMenu) {
-            if ($_adminMenu->nConf === '0' && $_adminMenu->cDateiname !== '' && file_exists($oPlugin->cAdminmenuPfad . $_adminMenu->cDateiname)) {
+            if ($_adminMenu->nConf === '0' && $_adminMenu->cDateiname !== '' &&
+                file_exists($oPlugin->cAdminmenuPfad . $_adminMenu->cDateiname)) {
                 ob_start();
                 require $oPlugin->cAdminmenuPfad . $_adminMenu->cDateiname;
 

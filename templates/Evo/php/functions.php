@@ -6,24 +6,24 @@
  * @global JTLSmarty $smarty
  */
 $smarty->registerPlugin('function', 'gibPreisStringLocalizedSmarty', 'gibPreisStringLocalizedSmarty')
-    ->registerPlugin('function', 'load_boxes', 'load_boxes')
-    ->registerPlugin('function', 'load_boxes_raw', 'load_boxes_raw')
-    ->registerPlugin('function', 'has_boxes', 'has_boxes')
-    ->registerPlugin('function', 'image', 'get_img_tag')
-    ->registerPlugin('function', 'getCheckBoxForLocation', 'getCheckBoxForLocation')
-    ->registerPlugin('function', 'hasCheckBoxForLocation', 'hasCheckBoxForLocation')
-    ->registerPlugin('function', 'aaURLEncode', 'aaURLEncode')
-    ->registerPlugin('function', 'get_navigation', 'get_navigation')
-    ->registerPlugin('function', 'ts_data', 'get_trustedshops_data')
-    ->registerPlugin('function', 'get_category_array', 'get_category_array')
-    ->registerPlugin('function', 'get_category_parents', 'get_category_parents')
-    ->registerPlugin('function', 'prepare_image_details', 'prepare_image_details')
-    ->registerPlugin('function', 'get_manufacturers', 'get_manufacturers')
-    ->registerPlugin('function', 'get_cms_content', 'get_cms_content')
-    ->registerPlugin('function', 'get_static_route', 'get_static_route')
-    ->registerPlugin('modifier', 'has_trans', 'has_translation')
-    ->registerPlugin('modifier', 'trans', 'get_translation')
-    ->registerPlugin('function', 'get_product_list', 'get_product_list');
+       ->registerPlugin('function', 'load_boxes', 'load_boxes')
+       ->registerPlugin('function', 'load_boxes_raw', 'load_boxes_raw')
+       ->registerPlugin('function', 'has_boxes', 'has_boxes')
+       ->registerPlugin('function', 'image', 'get_img_tag')
+       ->registerPlugin('function', 'getCheckBoxForLocation', 'getCheckBoxForLocation')
+       ->registerPlugin('function', 'hasCheckBoxForLocation', 'hasCheckBoxForLocation')
+       ->registerPlugin('function', 'aaURLEncode', 'aaURLEncode')
+       ->registerPlugin('function', 'get_navigation', 'get_navigation')
+       ->registerPlugin('function', 'ts_data', 'get_trustedshops_data')
+       ->registerPlugin('function', 'get_category_array', 'get_category_array')
+       ->registerPlugin('function', 'get_category_parents', 'get_category_parents')
+       ->registerPlugin('function', 'prepare_image_details', 'prepare_image_details')
+       ->registerPlugin('function', 'get_manufacturers', 'get_manufacturers')
+       ->registerPlugin('function', 'get_cms_content', 'get_cms_content')
+       ->registerPlugin('function', 'get_static_route', 'get_static_route')
+       ->registerPlugin('modifier', 'has_trans', 'has_translation')
+       ->registerPlugin('modifier', 'trans', 'get_translation')
+       ->registerPlugin('function', 'get_product_list', 'get_product_list');
 
 
 /**
@@ -129,8 +129,11 @@ function get_static_route($params, &$smarty)
         if (count($qp) > 0) {
             $url = $url . (parse_url($url, PHP_URL_QUERY) ? '&' : '?') . http_build_query($qp, '', '&');
         }
-
-        return $url;
+        if (isset($params['assign'])) {
+            $smarty->assign($params['assign'], $url);
+        } else {
+            return $url;
+        }
     }
 
     return false;
@@ -187,7 +190,9 @@ function get_category_array($params, &$smarty)
     if (isset($params['categoryBoxNumber']) && (int)$params['categoryBoxNumber'] > 0) {
         $list2 = [];
         foreach ($list as $key => $oList) {
-            if (isset($oList->categoryFunctionAttributes[KAT_ATTRIBUT_KATEGORIEBOX]) && $oList->categoryFunctionAttributes[KAT_ATTRIBUT_KATEGORIEBOX] == $params['categoryBoxNumber']) {
+            if (isset($oList->categoryFunctionAttributes[KAT_ATTRIBUT_KATEGORIEBOX]) &&
+                $oList->categoryFunctionAttributes[KAT_ATTRIBUT_KATEGORIEBOX] == $params['categoryBoxNumber']
+            ) {
                 $list2[$key] = $oList;
             }
         }
@@ -459,7 +464,14 @@ function getCheckBoxForLocation($params, &$smarty)
             $cLinkURL     = '';
             $cLinkURLFull = '';
             if ($oCheckBox->kLink > 0) {
-                $oLinkTMP = Shop::DB()->select('tseo', 'cKey', 'kLink', 'kKey', (int)$oCheckBox->kLink, 'kSprache', (int)$_SESSION['kSprache'], false, 'cSeo');
+                $oLinkTMP = Shop::DB()->select(
+                    'tseo',
+                    'cKey', 'kLink',
+                    'kKey', (int)$oCheckBox->kLink,
+                    'kSprache', (int)$_SESSION['kSprache'],
+                    false,
+                    'cSeo'
+                );
                 if (isset($oLinkTMP->cSeo) && strlen($oLinkTMP->cSeo) > 0) {
                     $oCheckBox->oLink->cLocalizedSeo[$_SESSION['cISOSprache']] = $oLinkTMP->cSeo;
                 }
@@ -650,8 +662,11 @@ function prepare_image_details($params, &$smarty)
  */
 function get_image_size($image)
 {
-    if (!file_exists($image)) {
-        $req = MediaImage::toRequest($image);
+    $path = (strpos($image, PFAD_BILDER) === 0)
+        ? PFAD_ROOT . $image
+        : $image;
+    if (!file_exists($path)) {
+        $req = MediaImage::toRequest($path);
 
         if (!is_object($req)) {
             return;
@@ -675,7 +690,7 @@ function get_image_size($image)
         $width  = ceil($scale * $old_width);
         $height = ceil($scale * $old_height);
     } else {
-        list($width, $height, $type, $attr) = getimagesize($image);
+        list($width, $height, $type, $attr) = getimagesize($path);
     }
 
     return (object)[

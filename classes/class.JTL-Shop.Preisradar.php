@@ -20,7 +20,7 @@ class Preisradar
         $kKundengruppe = (int)$kKundengruppe;
         $nTage         = (int)$nTage;
         $nLimit        = (int)$nLimit;
-        $oProduct_arr  = array();
+        $oProduct_arr  = [];
         // Hole alle Produkte, die mindestens zwei mal den Preis in der angegebenden Zeit geändert haben
         $oObj_arr = Shop::DB()->query(
             "SELECT kArtikel
@@ -71,18 +71,27 @@ class Preisradar
             );
             // Hilfs Array bauen, welches nur die letzten zwei Preisänderungen pro Artikel speichert
             // Um damit hinterher die Differenz zu ermitteln
-            $xHelperAssoc_arr = array();
+            $xHelperAssoc_arr = [];
             foreach ($oObj_arr as $i => $oObj) {
                 if (!isset($xHelperAssoc_arr[$oObj->kArtikel])) {
-                    $xHelperAssoc_arr[$oObj->kArtikel] = array();
+                    $xHelperAssoc_arr[$oObj->kArtikel] = [];
                 }
                 $xHelperAssoc_arr[$oObj->kArtikel][] = $oObj;
             }
-            $oMaxDiff_arr = array();
+            $oMaxDiff_arr = [];
             foreach ($xHelperAssoc_arr as $kArtikel => $xHelper_arr) {
-                // Der neue Preis muss kleiner sein als der Alte ... nur dann ist das Produkt günstiger geworden und nur das wollen wir anzeigen
-                if (isset($xHelper_arr[0]->fVKNetto) && isset($xHelper_arr[1]->fVKNetto) && $xHelper_arr[0]->fVKNetto < $xHelper_arr[1]->fVKNetto) {
-                    $fProzentDiff           = round((($xHelper_arr[1]->fVKNetto - $xHelper_arr[0]->fVKNetto) / $xHelper_arr[0]->fVKNetto) * 100, 1);
+                // Der neue Preis muss niedriger sein als der vorige,
+                // nur dann ist das Produkt günstiger geworden und nur das wollen wir anzeigen
+                if (isset($xHelper_arr[0]->fVKNetto) && isset($xHelper_arr[1]->fVKNetto) &&
+                    $xHelper_arr[0]->fVKNetto < $xHelper_arr[1]->fVKNetto
+                ) {
+                    $fProzentDiff           = round(
+                        (
+                            ($xHelper_arr[1]->fVKNetto - $xHelper_arr[0]->fVKNetto) /
+                            $xHelper_arr[0]->fVKNetto
+                        ) * 100,
+                        1
+                    );
                     $fDiff                  = $xHelper_arr[0]->fVKNetto - $xHelper_arr[1]->fVKNetto;
                     $oProduct               = new stdClass();
                     $oProduct->kArtikel     = $kArtikel;

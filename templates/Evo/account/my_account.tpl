@@ -1,3 +1,8 @@
+{**
+ * @copyright (c) JTL-Software-GmbH
+ * @license http://jtl-url.de/jtlshoplicense
+ *}
+
 <h1 class="menu-title">{lang key="welcome" section="login"} {if $Kunde->cAnrede === 'w'}{$Anrede_w}{elseif $Kunde->cAnrede === 'm'}{$Anrede_m}{/if} {$smarty.session.Kunde->cNachname}</h1>
 
 <div class="row">
@@ -48,8 +53,8 @@
                     </a>
                 </p>
 
-                <p class="text-center">
-                    <a href="{get_static_route id='jtl.php' params=['del' => 1]}">
+                <p>
+                    <a class="btn btn-danger btn-group-justified" href="{get_static_route id='jtl.php' params=['del' => 1]}">
                         <span class="fa fa-chain-broken"></span> {lang key="deleteAccount" section="login"}
                     </a>
                 </p>

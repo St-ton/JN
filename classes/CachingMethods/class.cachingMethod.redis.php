@@ -33,7 +33,13 @@ class cache_redis implements ICachingMethod
         $this->journalID = 'redis_journal';
         $this->options   = $options;
         if ($this->isAvailable()) {
-            $res = $this->setRedis($options['redis_host'], $options['redis_port'], $options['redis_pass'], $options['redis_db'], $options['redis_persistent']);
+            $res = $this->setRedis(
+                $options['redis_host'],
+                $options['redis_port'],
+                $options['redis_pass'],
+                $options['redis_db'],
+                $options['redis_persistent']
+            );
         }
         if ($res === false) {
             $this->_redis        = null;
@@ -100,7 +106,10 @@ class cache_redis implements ICachingMethod
             $res = $this->_redis->set($cacheID, $content);
             if ($cacheID !== $this->journalID) {
                 //the journal should not have an expiration
-                $this->_redis->setTimeout($cacheID, (($expiration === null) ? $this->options['lifetime'] : $expiration));
+                $this->_redis->setTimeout($cacheID, (($expiration === null)
+                    ? $this->options['lifetime']
+                    : $expiration)
+                );
             }
 
             return $res;
@@ -349,12 +358,20 @@ class cache_redis implements ICachingMethod
 
         return [
             'entries'  => $numEntries,
-            'uptime'   => (isset($stats['uptime_in_seconds'])) ? $stats['uptime_in_seconds'] : null, //uptime in seconds
-            'uptime_h' => (isset($stats['uptime_in_seconds'])) ? $this->secondsToTime($stats['uptime_in_seconds']) : null, //human readable
+            'uptime'   => (isset($stats['uptime_in_seconds']))
+                ? $stats['uptime_in_seconds']
+                : null, //uptime in seconds
+            'uptime_h' => (isset($stats['uptime_in_seconds']))
+                ? $this->secondsToTime($stats['uptime_in_seconds'])
+                : null, //human readable
             'hits'     => $stats['keyspace_hits'], //cache hits
             'misses'   => $stats['keyspace_misses'], //cache misses
-            'hps'      => (isset($stats['uptime_in_seconds'])) ? ($stats['keyspace_hits'] / $stats['uptime_in_seconds']) : null, //hits per second
-            'mps'      => (isset($stats['uptime_in_seconds'])) ? ($stats['keyspace_misses'] / $stats['uptime_in_seconds']) : null, //misses per second
+            'hps'      => (isset($stats['uptime_in_seconds']))
+                ? ($stats['keyspace_hits'] / $stats['uptime_in_seconds'])
+                : null, //hits per second
+            'mps'      => (isset($stats['uptime_in_seconds']))
+                ? ($stats['keyspace_misses'] / $stats['uptime_in_seconds'])
+                : null, //misses per second
             'mem'      => $stats['used_memory'], //used memory in bytes
             'slow'     => $slowLogData //redis slow log
         ];

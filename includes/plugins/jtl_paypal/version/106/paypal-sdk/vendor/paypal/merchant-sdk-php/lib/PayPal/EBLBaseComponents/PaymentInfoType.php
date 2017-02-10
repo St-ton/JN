@@ -540,5 +540,38 @@ class PaymentInfoType
 	 */ 
 	public $BinEligibility;
 
-
+	/**
+	 * @access public
+	 * @namespace ebl
+	 * @var PayPal\CoreComponentTypes\BasicAmountType
+	 */ 
+    public $FinancingFeeAmount;
+    
+	/**
+	 * @access public
+	 * @namespace ebl
+	 * @var PayPal\CoreComponentTypes\BasicAmountType
+	 */ 
+    public $FinancingTotalCost;
+    
+	/**
+	 * @access public
+	 * @namespace ebl
+	 * @var PayPal\CoreComponentTypes\BasicAmountType
+	 */ 
+    public $FinancingMonthlyPayment;
+    
+	/**
+	 * @access public
+	 * @namespace ebl
+	 * @var string
+	 */ 
+	public $FinancingTerm;
+    
+	/**
+	 * @access public
+	 * @namespace ebl
+	 * @var string
+	 */ 
+	public $IsFinancing;
 }

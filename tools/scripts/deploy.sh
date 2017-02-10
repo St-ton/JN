@@ -201,7 +201,7 @@ deploy_md5_hashfile()
     local MD5_DB_FILENAME="${BUILD_DIR}/admin/includes/shopmd5files/$1.csv"
 
     cd ${BUILD_DIR}
-    find . -type f ! -name robots.txt ! -name rss.xml ! -name shopinfo.xml ! -name .htaccess ! -samefile includes/defines.php ! -samefile includes/defines_inc.php ! -samefile includes/config.JTL-Shop.ini.initial.php -printf '"%P"\n' | grep -v -E '.git/|/.gitkeep|tools/|admin/gfx|admin/includes/emailpdfs|admin/includes/shopmd5files|admin/templates/gfx|admin/templates_c/|bilder/|downloads/|gfx/|includes/plugins|install/|jtllogs/|mediafiles/|templates/|templates_c/|uploads/|export/|shopinfo.xml|sitemap_index.xml' | xargs md5sum | awk '{ print $2";"$1; }' | sort > ${MD5_DB_FILENAME}
+    find . -type f ! -name robots.txt ! -name rss.xml ! -name shopinfo.xml ! -name .htaccess ! -samefile includes/defines.php ! -samefile includes/defines_inc.php ! -samefile includes/config.JTL-Shop.ini.initial.php -printf '"%P"\n' | grep -v -E '.git/|/.gitkeep|build/|tools/|admin/gfx|admin/includes/emailpdfs|admin/includes/shopmd5files|admin/templates/gfx|admin/templates_c/|bilder/|downloads/|gfx/|includes/plugins|install/|jtllogs/|mediafiles/|templates/|templates_c/|uploads/|export/|shopinfo.xml|sitemap_index.xml' | xargs md5sum | awk '{ print $2";"$1; }' | sort > ${MD5_DB_FILENAME}
 
     cd $OLDPWD
 }
@@ -246,6 +246,7 @@ deploy_create_initial_schema()
 
 deploy_prepare_zip()
 {
+    rm -r ${BUILD_DIR}/build
     rm ${BUILD_DIR}/includes/config.JTL-Shop.ini.php
 }
 

@@ -141,7 +141,7 @@ class Adresse
      */
     public function toArray()
     {
-        return (array) get_object_vars($this);
+        return (array)get_object_vars($this);
     }
 
     /**
@@ -178,18 +178,17 @@ class Adresse
 
     /**
      * @param string $anrede
+     * @return string
      */
     public function mappeAnrede($anrede)
     {
         switch (strtolower($anrede)) {
             case 'm':
-            Shop::Lang()->get('salutationM', 'global');
-                break;
+                return Shop::Lang()->get('salutationM', 'global');
             case 'w':
-                Shop::Lang()->get('salutationW', 'global');
-                break;
+                return Shop::Lang()->get('salutationW', 'global');
             default:
-                return;
+                return '';
         }
     }
 

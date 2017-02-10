@@ -11,6 +11,10 @@ require_once realpath(dirname(__FILE__) . '/../paymentmethod/class') . '/PayPalF
 
 use PayPal\Api\Payment;
 use PayPal\Api\WebhookEvent;
+use PayPal\Api\Order;
+use PayPal\Api\Capture;
+use PayPal\Api\Authorization;
+use PayPal\Api\Amount;
 
 /////////////////////////////////////////////////////////////////////////
 
@@ -93,6 +97,51 @@ switch ($action) {
         } catch (Exception $ex) {
             $api->handleException('Webhook', $bodyReceived, $ex);
         }
+        break;
+    }
+    
+    case 'capture':
+    {
+        try {
+            $o = new Bestellung($_GET['id'], true);
+            $payment = Payment::get($o->cSession, $apiContext);
+            
+            $id = $payment->getTransactions()[0]->getRelatedResources()[0]->getOrder()->getId();
+            
+            $fee = 0.0;
+            foreach ($o->Positionen as $pos) {
+                if ($pos->nPosTyp == 13) {
+                    $fee = $pos->fPreisEinzelNetto;
+                    break;
+                }
+            }
+            
+            $amount = new Amount();
+            $amount->setCurrency('EUR');
+            $amount->setTotal($o->fGesamtsummeKundenwaehrung - $fee);
+            
+            $order = Order::get($id, $apiContext);
+            
+            try {
+                $auth = new Authorization();
+                $auth->setAmount($amount);
+                
+                $authRes = $order->authorize($auth, $apiContext);
+            
+            } catch (Exception $ex) { }
+            
+            $capture = new Capture();
+            $capture->setAmount($amount);
+            $capture->setIsFinalCapture(true);
+            
+            $captureRes = $order->capture($capture, $apiContext);
+            
+            dd($captureRes);
+            
+        } catch (Exception $ex) {
+            dd($ex);
+        }
+        
         break;
     }
 }

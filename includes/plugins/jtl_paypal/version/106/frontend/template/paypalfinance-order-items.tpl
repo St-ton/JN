@@ -35,7 +35,7 @@
         {if $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y'}
             <td class="hidden-xs"></td>
         {/if}
-        <td class="text-right" colspan="2"><strong>Zwischensumme:</strong></td>
+        <td class="text-right" colspan="2"><strong>Summe:</strong></td>
         <td class="text-right" colspan="{if $tplscope === 'cart'}4{else}3{/if}"><strong>{$subtotalAmount}</strong></td>
     </tr>
     

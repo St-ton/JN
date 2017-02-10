@@ -76,6 +76,7 @@ if ($pageType == PAGE_BESTELLVORGANG) {
 
         pq('table.order-items tfoot, table.order-items tr.type-13')->remove();
         pq('table.order-items')->append($tplData);
+        pq('#panel-edit-coupon')->parent()->remove();
     }
 }
 

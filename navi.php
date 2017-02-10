@@ -117,30 +117,33 @@ if ($cParameter_arr['kHersteller'] > 0 ||
     if ($cParameter_arr['kKategorie'] > 0) {
         $_SESSION['LetzteKategorie'] = $cParameter_arr['kKategorie'];
     }
+    $AktuelleKategorie = new Kategorie();
     //hole aktuelle Kategorie + bild, falls eine gesetzt
-    $AktuelleKategorie = new Kategorie($cParameter_arr['kKategorie']);
-    if (!isset($AktuelleKategorie->kKategorie) || $AktuelleKategorie->kKategorie === null) {
-        Shop::$is404             = true;
-        $is404                   = true;
-        $cParameter_arr['is404'] = true;
-        if (!isset($seo)) {
-            $seo = null;
-        }
-        executeHook(HOOK_INDEX_SEO_404, ['seo' => $seo]);
-        if (!Shop::$kLink) {
-            $hookInfos     = urlNotFoundRedirect([
-                'key'   => 'kLink',
-                'value' => $cParameter_arr['kLink']
-            ]);
-            $kLink         = $hookInfos['value'];
-            $bFileNotFound = $hookInfos['isFileNotFound'];
-            if (!$kLink) {
-                $linkHelper  = LinkHelper::getInstance();
-                $kLink       = $linkHelper->getSpecialPageLinkKey(LINKTYP_404);
-                Shop::$kLink = $kLink;
+    if ($cParameter_arr['kKategorie'] > 0) {
+        $AktuelleKategorie->loadFromDB($cParameter_arr['kKategorie']);
+        if (!isset($AktuelleKategorie->kKategorie) || $AktuelleKategorie->kKategorie === null) {
+            Shop::$is404             = true;
+            $is404                   = true;
+            $cParameter_arr['is404'] = true;
+            if (!isset($seo)) {
+                $seo = null;
             }
+            executeHook(HOOK_INDEX_SEO_404, ['seo' => $seo]);
+            if (!Shop::$kLink) {
+                $hookInfos     = urlNotFoundRedirect([
+                    'key'   => 'kLink',
+                    'value' => $cParameter_arr['kLink']
+                ]);
+                $kLink         = $hookInfos['value'];
+                $bFileNotFound = $hookInfos['isFileNotFound'];
+                if (!$kLink) {
+                    $linkHelper  = LinkHelper::getInstance();
+                    $kLink       = $linkHelper->getSpecialPageLinkKey(LINKTYP_404);
+                    Shop::$kLink = $kLink;
+                }
+            }
+            require_once PFAD_ROOT . 'seite.php';
         }
-        require_once PFAD_ROOT . 'seite.php';
     }
     //Artikelanzahl pro Seite
     if ($cParameter_arr['nArtikelProSeite'] == 0) {

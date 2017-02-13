@@ -1089,14 +1089,14 @@ class Navigationsfilter
                     if ($oArtikel->nIstVater == 0) {
                         $_SESSION['nArtikelUebersichtVLKey_arr'][] = $oArtikel->kArtikel;
                     }
-                    $oSuchergebnisse->Artikel->elemente[] = $oArtikel;
+                    $oSuchergebnisse->Artikel->elemente->addItem($oArtikel);
                 }
             }
         } else {
             $oSuchergebnisse                         = new stdClass();
             $oSuchergebnisse->Artikel                = new stdClass();
             $oSuchergebnisse->Artikel->articleKeys   = [];
-            $oSuchergebnisse->Artikel->elemente      = [];
+            $oSuchergebnisse->Artikel->elemente      = new Collection();
             $nArtikelProSeite = ($limit > 0) ? $limit : $this->getArticlesPerPageLimit();
             $nLimitN          = ($this->nSeite - 1) * $nArtikelProSeite;
             // 50 nach links und 50 nach rechts für Artikeldetails blättern rausholen
@@ -1153,7 +1153,7 @@ class Navigationsfilter
                         if ($oArtikel->nIstVater == 0) {
                             $_SESSION['nArtikelUebersichtVLKey_arr'][] = $oArtikel->kArtikel;
                         }
-                        $oSuchergebnisse->Artikel->elemente[] = $oArtikel;
+                        $oSuchergebnisse->Artikel->elemente->addItem($oArtikel);
                     }
                 }
             }

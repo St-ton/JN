@@ -45,7 +45,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
         if (is_array($items)) {
             return $items;
         } elseif ($items instanceof self) {
-            return $items->all();
+            return $items->getItems();
         } elseif ($items instanceof JsonSerializable) {
             return $items->jsonSerialize();
         } elseif ($items instanceof Traversable) {
@@ -94,10 +94,92 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
         if (is_null($callback)) {
             return array_sum($this->items);
         }
+        $callback = $this->valueRetriever($callback);
 
         return $this->reduce(function ($result, $item) use ($callback) {
             return $result + $callback($item);
         }, 0);
+    }
+
+    /**
+     * Get a value retrieving callback.
+     *
+     * @param  string $value
+     * @return callable
+     */
+    protected function valueRetriever($value)
+    {
+        if ($this->useAsCallable($value)) {
+            return $value;
+        }
+
+        return function ($item) use ($value) {
+            return $this->data_get($item, $value);
+        };
+    }
+
+    /**
+     * Get an item from an array or object using "dot" notation.
+     *
+     * @param  mixed   $target
+     * @param  string|array  $key
+     * @param  mixed   $default
+     * @return mixed
+     */
+    protected function data_get($target, $key, $default = null)
+    {
+        if (is_null($key)) {
+            return $target;
+        }
+
+        $key = is_array($key) ? $key : explode('.', $key);
+
+        while (! is_null($segment = array_shift($key))) {
+            if ($segment === '*') {
+                if ($target instanceof Collection) {
+                    $target = $target->getItems();
+                } elseif (!is_array($target)) {
+                    return  $default instanceof Closure ? $default() : $default;
+                }
+
+                $result = Arr::pluck($target, $key);
+
+                return in_array('*', $key) ? Arr::collapse($result) : $result;
+            }
+
+            if (Arr::accessible($target) && Arr::exists($target, $segment)) {
+                $target = $target[$segment];
+            } elseif (is_object($target) && isset($target->{$segment})) {
+                $target = $target->{$segment};
+            } else {
+                return $default instanceof Closure ? $default() : $default;
+            }
+        }
+
+        return $target;
+    }
+
+    /**
+     * Get the values of a given key.
+     *
+     * @param  string|array  $value
+     * @param  string|null  $key
+     * @return static
+     */
+    public function pluck($value, $key = null)
+    {
+        return new static(Arr::pluck($this->items, $value, $key));
+    }
+
+    /**
+     * Determine if the given value is callable, but not a string.
+     *
+     * @param  mixed $value
+     * @return bool
+     */
+    protected function useAsCallable($value)
+    {
+        return !is_string($value) && is_callable($value);
     }
 
     /**
@@ -125,7 +207,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
     }
 
     /**
-     * Transform each item in the collection using a callback.
+     * Transform each item in the collection using a callback
      *
      * @param  callable $callback
      * @return $this

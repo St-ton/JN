@@ -1013,7 +1013,7 @@ class Artikel
                     }
                 }
 
-                return $this->oKategorie_arr[0];
+                return (int)$this->oKategorie_arr[0];
             }
             $categoryFilter = (isset($_SESSION['LetzteKategorie']))
                 ? " AND tkategorieartikel.kKategorie = " . (int)$_SESSION['LetzteKategorie']
@@ -2727,7 +2727,7 @@ class Artikel
                         AND tartikelsichtbarkeit.kKundengruppe = " . (int)$kKundengruppe . "
                     WHERE tartikel.kVaterArtikel = " . (int)$this->kArtikel . " 
                     AND tartikelsichtbarkeit.kArtikel IS NULL
-                    ORDER BY tartikel.kArtikel ASC, teigenschaft.nSort ASC, 
+                    ORDER BY tartikel.nSort ASC, teigenschaft.nSort ASC, 
                              teigenschaft.cName, teigenschaftwert.nSort ASC, teigenschaftwert.cName", 2
             );
             if (is_array($oVariationsKombiKinder_arr) && count($oVariationsKombiKinder_arr) > 0) {
@@ -2944,15 +2944,8 @@ class Artikel
                         $oVariationKombiVorschau->inWarenkorbLegbar = 1;
                     }
                     if ($oVariationKombiVorschau->inWarenkorbLegbar == 1) {
-                        $req = MediaImage::getRequest(
-                            Image::TYPE_PRODUCT,
-                            $oVariationKombiVorschau->kArtikel,
-                            $oVariationKombiVorschau,
-                            Image::SIZE_XS,
-                            0
-                        );
-                        $req->getRaw();
-                        if (!in_array($req->path, $imageHashes)) {
+                        $cPathRelPictMini = MediaImage::getThumb( Image::TYPE_PRODUCT, $oVariationKombiVorschau->kArtikel, $oVariationKombiVorschau, Image::SIZE_XS);
+                        if (!in_array($cPathRelPictMini, $imageHashes)) {
                             $varKombiPreview                           = new stdClass();
                             $varKombiPreview->cURL                     = baueURL($oVariationKombiVorschau, URLART_ARTIKEL);
                             $varKombiPreview->cURLFull                 = baueURL($oVariationKombiVorschau, URLART_ARTIKEL, 0, false, true);
@@ -2965,13 +2958,15 @@ class Artikel
                             $varKombiPreview->fLieferantenlagerbestand = $oVariationKombiVorschau->fLieferantenlagerbestand;
                             $varKombiPreview->Erscheinungsdatum_de     = $oVariationKombiVorschau->Erscheinungsdatum_de;
                             $varKombiPreview->dZulaufDatum_de          = $oVariationKombiVorschau->dZulaufDatum_de;
-                            $varKombiPreview->cBildMini                = $req->getThumb(Image::SIZE_XS);
-                            $varKombiPreview->cBildKlein               = $req->getThumb(Image::SIZE_SM);
-                            $varKombiPreview->cBildNormal              = $req->getThumb(Image::SIZE_MD);
-                            $varKombiPreview->cBildGross               = $req->getThumb(Image::SIZE_LG);
+                            $varKombiPreview->cBildMini                = $cPathRelPictMini; // we got that one yet (so we spare one call)
+                            $varKombiPreview->cBildKlein               = MediaImage::getThumb(Image::TYPE_PRODUCT, $oVariationKombiVorschau->kArtikel, $oVariationKombiVorschau, Image::SIZE_SM);
+                            $varKombiPreview->cBildNormal              = MediaImage::getThumb(Image::TYPE_PRODUCT, $oVariationKombiVorschau->kArtikel, $oVariationKombiVorschau, Image::SIZE_MD);
+                            $varKombiPreview->cBildGross               = MediaImage::getThumb(Image::TYPE_PRODUCT, $oVariationKombiVorschau->kArtikel, $oVariationKombiVorschau, Image::SIZE_LG);
+
                             $this->oVariationKombiVorschau_arr[]       = $varKombiPreview;
-                            $imageHashes[]                             = $req->path;
+                            $imageHashes[]                             = $cPathRelPictMini; // used as "marker-hash" here
                         }
+                        // break the loop, if we got 'nLimit' pre-views
                         if (count($this->oVariationKombiVorschau_arr) == $nLimit) {
                             break;
                         }
@@ -3990,7 +3985,7 @@ class Artikel
         if (isset($oArtikelOptionen->nLanguageURLs) && $oArtikelOptionen->nLanguageURLs === 1 && count($_SESSION['Sprachen']) > 0) {
             $this->baueArtikelSprachURL();
         }
-        $this->cKurzbezeichnung = (isset($this->AttributeAssoc[ART_ATTRIBUT_SHORTNAME]))
+        $this->cKurzbezeichnung = (!empty($this->AttributeAssoc[ART_ATTRIBUT_SHORTNAME]))
             ? $this->AttributeAssoc[ART_ATTRIBUT_SHORTNAME]
             : $this->cName;
 

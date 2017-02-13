@@ -333,7 +333,7 @@ class Kategorie
         //interne Verlinkung $#k:X:Y#$
         $this->cBeschreibung         = parseNewsText($this->cBeschreibung);
         // Kurzbezeichnung
-        $this->cKurzbezeichnung      = (isset($this->categoryAttributes[ART_ATTRIBUT_SHORTNAME]))
+        $this->cKurzbezeichnung      = (!empty($this->categoryAttributes[ART_ATTRIBUT_SHORTNAME]) && !empty($this->categoryAttributes[ART_ATTRIBUT_SHORTNAME]->cWert))
             ? $this->categoryAttributes[ART_ATTRIBUT_SHORTNAME]->cWert
             : $this->cName;
         $cacheTags                   = [CACHING_GROUP_CATEGORY . '_' . $kKategorie, CACHING_GROUP_CATEGORY];

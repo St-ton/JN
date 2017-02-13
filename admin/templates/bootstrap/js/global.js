@@ -39,6 +39,18 @@ jQuery.fn.set_search = function (type, assign) {
                 $('.ajax_list_picker.' + type).fadeOut(500);
                 return false;
             });
+            $('#' + type + '_list_add').click(function () {
+                $('select[name="' + type + '_list_found"] option:selected').each(function (i, e) {
+                    $('select[name="' + type + '_list_selected"]').append($(e));
+                });
+                return false;
+            });
+            $('#' + type + '_list_remove').click(function () {
+                $('select[name="' + type + '_list_selected"] option:selected').each(function (i, e) {
+                    $(e).remove();
+                });
+                return false;
+            });
             // mark as initialized
             $(this).addClass('init');
         }
@@ -181,6 +193,7 @@ function init_simple_search(callback) {
             callback(type, res);
         }
         browser.find('.button.remove').trigger('click');
+        return false;
     });
 }
 

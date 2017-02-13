@@ -11058,6 +11058,9 @@ fieldset[disabled] .twitter-typeahead .tt-input {
     overflow: hidden;
 }
 */
+.dropdown-menu {
+  font-size: 13px;
+}
 #evo-main-nav {
   margin-bottom: 0;
   z-index: 20;
@@ -11068,6 +11071,14 @@ fieldset[disabled] .twitter-typeahead .tt-input {
   overflow: hidden;
   white-space: nowrap;
   vertical-align: middle;
+}
+#evo-main-nav .dropdown-cart-items .item-price,
+#evo-main-nav .dropdown-cart-items .item-quantity {
+  text-align: right;
+  vertical-align: middle;
+}
+#evo-main-nav .dropdown-cart-items {
+  word-break: break-word;
 }
 header.fixed-navbar {
   /*

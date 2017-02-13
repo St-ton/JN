@@ -4966,7 +4966,7 @@ class Artikel
                     ON tstueckliste.kArtikel = tartikel.kArtikel AND tstueckliste.kStueckliste = " . (int)$this->kStueckliste, 3
         );
         // check if this is a set article - if so, calculate the delivery time from the set of articles
-            // we don't have loaded the list of pieces yet, do so!
+        // we don't have loaded the list of pieces yet, do so!
         $tmp_oStueckliste_arr = null;
         if (!empty($this->kStueckliste) && empty($this->oStueckliste_arr) || !empty($this->oStueckliste_arr) && count($this->oStueckliste_arr) !== $nAllPieces) {
             $resetArray           = true;
@@ -4986,15 +4986,10 @@ class Artikel
                     $allMinDeliveryDays = max($allMinDeliveryDays, $piece->nMinDeliveryDays);
                 }
             }
-            $estimatedDelivery      = getDeliverytimeEstimationText($allMinDeliveryDays, $allMaxDeliveryDays);
-            $this->nMinDeliveryDays = $allMinDeliveryDays;
-            $this->nMaxDeliveryDays = $allMaxDeliveryDays;
             if (!empty($resetArray)) {
                 unset($this->oStueckliste_arr);
                 $this->oStueckliste_arr = $tmp_oStueckliste_arr;
             }
-
-            return $estimatedDelivery;
         }
         if ($this->bHasKonfig && !empty($this->oKonfig_arr)) {
             $allMaxDeliveryDays = $maxDeliveryDays;
@@ -5020,13 +5015,7 @@ class Artikel
                     }
                 }
             }
-            $estimatedDelivery      = getDeliverytimeEstimationText($allMinDeliveryDays, $allMaxDeliveryDays);
-            $this->nMinDeliveryDays = $allMinDeliveryDays;
-            $this->nMaxDeliveryDays = $allMaxDeliveryDays;
-
-            return $estimatedDelivery;
         }
-
         if ($this->nBearbeitungszeit > 0 || isset($this->FunktionsAttribute['processingtime']) && $this->FunktionsAttribute['processingtime'] > 0) {
             $processingTime   = ($this->nBearbeitungszeit > 0)
                 ? $this->nBearbeitungszeit :

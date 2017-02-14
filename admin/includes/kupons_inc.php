@@ -414,8 +414,6 @@ function validateCoupon($oKupon)
         }
     } elseif (strlen($oKupon->cCode) > 32) {
         $cFehler_arr[] = 'Bitte geben Sie einen k&uuml;rzeren Code ein. Es sind maximal 32 Zeichen erlaubt.';
-    } elseif (strlen($oKupon->cCode) < 32) {
-        $cFehler_arr[] = 'Bitte geben Sie einen l&auml;ngeren Code ein. Dieser sollte mindestens 2 Zeichen enthalten.';
     }
     if (!isset($oKupon->massCreationCoupon) &&
         ($oKupon->cKuponTyp == 'standard' || $oKupon->cKuponTyp === 'versandkupon')) {

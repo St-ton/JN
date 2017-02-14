@@ -13,6 +13,7 @@
         $fileInput
             .change(function () { $form.submit(); })
             .click();
+        $('body').append($form);
     }
 </script>
 <button type="button" class="btn btn-default" onclick="onClickCsvImport_{$importerId}()">

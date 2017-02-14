@@ -300,12 +300,12 @@ function createCouponFromInput()
     $oKupon->kKundengruppe         = (int)$_POST['kKundengruppe'];
     $oKupon->dGueltigAb            = normalizeDate(!empty($_POST['dGueltigAb']) ? $_POST['dGueltigAb'] : date_create()->format('Y-m-d H:i') . ':00');
     $oKupon->dGueltigBis           = normalizeDate(!empty($_POST['dGueltigBis']) ? $_POST['dGueltigBis'] : '');
-    $oKupon->cAktiv                = !empty($_POST['cAktiv']) && $_POST['cAktiv'] === 'Y' ? 'Y' : 'N';
+    $oKupon->cAktiv                = isset($_POST['cAktiv']) && $_POST['cAktiv'] === 'Y' ? 'Y' : 'N';
     $oKupon->cKategorien           = '-1';
     if ($oKupon->cKuponTyp !== 'neukundenkupon') {
         $oKupon->cKunden = '-1';
     }
-    if (!empty($_POST['bOpenEnd']) && $_POST['bOpenEnd'] === 'Y') {
+    if (isset($_POST['bOpenEnd']) && $_POST['bOpenEnd'] === 'Y') {
         $oKupon->dGueltigBis = '0000-00-00 00:00:00';
     } elseif (!empty($_POST['dDauerTage'])) {
         $oKupon->dGueltigBis     = '';
@@ -322,7 +322,7 @@ function createCouponFromInput()
     if (!empty($_POST['cKunden']) && $_POST['cKunden'] != "-1") {
         $oKupon->cKunden = trim($_POST['cKunden'], ';\t\n\r') . ';';
     }
-    if (!empty($_POST['couponCreation'])) {
+    if (isset($_POST['couponCreation'])) {
         $massCreationCoupon                  = new stdClass();
         $massCreationCoupon->cActiv          = (!empty($_POST['couponCreation']))
             ? (int)$_POST['couponCreation']

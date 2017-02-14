@@ -21,10 +21,16 @@
         {if $oKupon->cKuponTyp == 'standard' || $oKupon->cKuponTyp == 'neukundenkupon'}
             makeCurrencyTooltip('fWert');
         {/if}
+        {if $oKupon->cWertTyp == 'prozent'}
+            $('#fWertTooltip').parent().hide();
+        {else}
+            $('#fWertTooltip').parent().show();
+        {/if}
         makeCurrencyTooltip('fMindestbestellwert');
         $('#bOpenEnd').change(onEternalCheckboxChange);
         onEternalCheckboxChange();
         onApplySelectedCustomers();
+        checkcWertTypChange();
     });
 
     function onEternalCheckboxChange () {

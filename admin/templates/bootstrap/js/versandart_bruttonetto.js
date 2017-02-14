@@ -86,3 +86,14 @@ function changeCurrencyTooltipText (sourceId) {
    var sourceInput = $('#' + sourceId)[0];
    setzePreisTooltipAjax(false, sourceId + 'Tooltip', sourceInput);
 }
+
+function checkcWertTypChange() {
+    $('#cWertTyp').change(function() {
+        if($(this).val() === 'prozent') {
+            $('#fWertTooltip').parent().hide();
+            console.log('option prozent changed.', $(this).val());
+        } else {
+            $('#fWertTooltip').parent().show();
+        }
+    });
+}

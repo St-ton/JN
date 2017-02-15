@@ -39,37 +39,36 @@ function loescheWarenkorbPositionen($nPos_arr)
 
         unset($_SESSION['Warenkorb']->PositionenArr[$nPos]);
     }
-        $_SESSION['Warenkorb']->PositionenArr = array_merge($_SESSION['Warenkorb']->PositionenArr);
-        foreach ($cUnique_arr as $cUnique) {
-            // Kindartikel löschen
-            if (strlen($cUnique) > 0) {
-                $positionCount = count($_SESSION['Warenkorb']->PositionenArr);
-                for ($i = 0; $i < $positionCount; $i++) {
-                    if (isset($_SESSION['Warenkorb']->PositionenArr[$i]->cUnique) &&
-                        $_SESSION['Warenkorb']->PositionenArr[$i]->cUnique == $cUnique
-                    ) {
-                        unset($_SESSION['Warenkorb']->PositionenArr[$i]);
-                        $_SESSION['Warenkorb']->PositionenArr = array_merge($_SESSION['Warenkorb']->PositionenArr);
-                        $i                                    = -1;
-                    }
+    $_SESSION['Warenkorb']->PositionenArr = array_merge($_SESSION['Warenkorb']->PositionenArr);
+    foreach ($cUnique_arr as $cUnique) {
+        // Kindartikel löschen
+        if (strlen($cUnique) > 0) {
+            $positionCount = count($_SESSION['Warenkorb']->PositionenArr);
+            for ($i = 0; $i < $positionCount; $i++) {
+                if (isset($_SESSION['Warenkorb']->PositionenArr[$i]->cUnique) &&
+                    $_SESSION['Warenkorb']->PositionenArr[$i]->cUnique == $cUnique
+                ) {
+                    unset($_SESSION['Warenkorb']->PositionenArr[$i]);
+                    $_SESSION['Warenkorb']->PositionenArr = array_merge($_SESSION['Warenkorb']->PositionenArr);
+                    $i                                    = -1;
                 }
             }
         }
-        loescheAlleSpezialPos();
-        /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
-        if (!$_SESSION['Warenkorb']->enthaltenSpezialPos(C_WARENKORBPOS_TYP_ARTIKEL)) {
-            unset($_SESSION['Kupon']);
-            $_SESSION['Warenkorb'] = new Warenkorb();
-        }
-        freeGiftStillValid();
-        // Lösche Position aus dem WarenkorbPersPos
-        if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']->kKunde > 0) {
-            $oWarenkorbPers = new WarenkorbPers($_SESSION['Kunde']->kKunde);
-            $oWarenkorbPers->entferneAlles()
-                ->bauePersVonSession();
-        }
+    }
+    loescheAlleSpezialPos();
+    /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
+    if (!$_SESSION['Warenkorb']->enthaltenSpezialPos(C_WARENKORBPOS_TYP_ARTIKEL)) {
+        unset($_SESSION['Kupon']);
+        $_SESSION['Warenkorb'] = new Warenkorb();
+    }
+    freeGiftStillValid();
+    // Lösche Position aus dem WarenkorbPersPos
+    if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']->kKunde > 0) {
+        $oWarenkorbPers = new WarenkorbPers($_SESSION['Kunde']->kKunde);
+        $oWarenkorbPers->entferneAlles()
+            ->bauePersVonSession();
+    }
 }
-
 
 /**
  * @param int $nPos
@@ -143,7 +142,7 @@ function uebernehmeWarenkorbAenderungen()
                 if ($Artikel->fAbnahmeintervall > 0) {
                     if (function_exists('bcdiv')) {
                         $dVielfache = round(
-                            $Artikel->fAbnahmeintervall * ceil(bcdiv($_POST['anzahl'][$i],$Artikel->fAbnahmeintervall, 3)),
+                            $Artikel->fAbnahmeintervall * ceil(bcdiv($_POST['anzahl'][$i], $Artikel->fAbnahmeintervall, 3)),
                             2
                         );
                     } else {
@@ -158,12 +157,10 @@ function uebernehmeWarenkorbAenderungen()
                         $_SESSION['Warenkorbhinweise'][] = Shop::Lang()->get('wkPurchaseintervall', 'messages');
                     }
                 }
-                if (floatval($_POST['anzahl'][$i]) +
-                    $_SESSION['Warenkorb']->gibAnzahlEinesArtikels(
-                        $_SESSION['Warenkorb']->PositionenArr[$i]->kArtikel,
-                        $i
-                    ) < $_SESSION['Warenkorb']->PositionenArr[$i]->Artikel->fMindestbestellmenge
-                ) {
+                if (floatval($_POST['anzahl'][$i]) + $_SESSION['Warenkorb']->gibAnzahlEinesArtikels(
+                    $_SESSION['Warenkorb']->PositionenArr[$i]->kArtikel,
+                    $i
+                ) < $_SESSION['Warenkorb']->PositionenArr[$i]->Artikel->fMindestbestellmenge) {
                     //mindestbestellmenge nicht erreicht
                     $gueltig                         = false;
                     $_SESSION['Warenkorbhinweise'][] = lang_mindestbestellmenge(
@@ -174,12 +171,11 @@ function uebernehmeWarenkorbAenderungen()
                 //hole akt. lagerbestand vom artikel
                 if ($Artikel->cLagerBeachten === 'Y' && $Artikel->cLagerVariation !== 'Y' &&
                     $Artikel->cLagerKleinerNull !== 'Y' &&
-                    $Artikel->fPackeinheit * (floatval($_POST['anzahl'][$i]) +
-                        $_SESSION['Warenkorb']->gibAnzahlEinesArtikels(
-                            $_SESSION['Warenkorb']->PositionenArr[$i]->kArtikel,
-                            $i
-                        )) > $Artikel->fLagerbestand
-                ) {
+                    $Artikel->fPackeinheit * (floatval($_POST['anzahl'][$i]) + $_SESSION['Warenkorb']->gibAnzahlEinesArtikels(
+                        $_SESSION['Warenkorb']->PositionenArr[$i]->kArtikel,
+                        $i
+                    )
+                ) > $Artikel->fLagerbestand) {
                     $gueltig                         = false;
                     $_SESSION['Warenkorbhinweise'][] = Shop::Lang()->get('quantityNotAvailable', 'messages');
                 }
@@ -199,13 +195,11 @@ function uebernehmeWarenkorbAenderungen()
                 ) {
                     foreach ($_SESSION['Warenkorb']->PositionenArr[$i]->WarenkorbPosEigenschaftArr as $eWert) {
                         $EigenschaftWert = new EigenschaftWert($eWert->kEigenschaftWert);
-                        if ($EigenschaftWert->fPackeinheit * (floatval($_POST['anzahl'][$i]) +
-                                $_SESSION['Warenkorb']->gibAnzahlEinerVariation(
-                                    $_SESSION['Warenkorb']->PositionenArr[$i]->kArtikel,
-                                    $eWert->kEigenschaftWert,
-                                    $i
-                                )) > $EigenschaftWert->fLagerbestand
-                        ) {
+                        if ($EigenschaftWert->fPackeinheit * (floatval($_POST['anzahl'][$i]) + $_SESSION['Warenkorb']->gibAnzahlEinerVariation(
+                            $_SESSION['Warenkorb']->PositionenArr[$i]->kArtikel,
+                            $eWert->kEigenschaftWert,
+                            $i
+                        )) > $EigenschaftWert->fLagerbestand) {
                             $_SESSION['Warenkorbhinweise'][] = Shop::Lang()->get('quantityNotAvailableVar', 'messages');
                             $gueltig                         = false;
                             break;
@@ -226,8 +220,7 @@ function uebernehmeWarenkorbAenderungen()
                         $_SESSION['Warenkorb']->PositionenArr[$i]->WarenkorbPosEigenschaftArr
                     );
                     $_SESSION['Warenkorb']->PositionenArr[$i]->setzeGesamtpreisLocalized();
-                    $_SESSION['Warenkorb']->PositionenArr[$i]->fGesamtgewicht =
-                        $_SESSION['Warenkorb']->PositionenArr[$i]->gibGesamtgewicht();
+                    $_SESSION['Warenkorb']->PositionenArr[$i]->fGesamtgewicht = $_SESSION['Warenkorb']->PositionenArr[$i]->gibGesamtgewicht();
 
                     $bMindestensEinePosGeaendert = true;
                 }
@@ -241,8 +234,7 @@ function uebernehmeWarenkorbAenderungen()
                     $cStaffel = 'nAnzahl' . $j;
                     if (isset($_SESSION['Warenkorb']->PositionenArr[$i]->Artikel->Preise->$cStaffel) &&
                         $_SESSION['Warenkorb']->PositionenArr[$i]->Artikel->Preise->$cStaffel > 0) {
-                        if ($_SESSION['Warenkorb']->PositionenArr[$i]->Artikel->Preise->$cStaffel <=
-                            $_SESSION['Warenkorb']->PositionenArr[$i]->nAnzahl) {
+                        if ($_SESSION['Warenkorb']->PositionenArr[$i]->Artikel->Preise->$cStaffel <= $_SESSION['Warenkorb']->PositionenArr[$i]->nAnzahl) {
                             $nLast = $j;
                         }
                     }
@@ -270,8 +262,7 @@ function uebernehmeWarenkorbAenderungen()
         if (isset($_SESSION['Kupon']) && $_SESSION['Kupon']->cWertTyp === 'prozent' &&
             $_SESSION['Kupon']->nGanzenWKRabattieren == 0
         ) {
-            if ($_SESSION['Warenkorb']->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true) >=
-                $_SESSION['Kupon']->fMindestbestellwert) {
+            if ($_SESSION['Warenkorb']->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true) >= $_SESSION['Kupon']->fMindestbestellwert) {
                 $oKuponTmp = $_SESSION['Kupon'];
             }
         }
@@ -333,11 +324,14 @@ function checkeSchnellkauf()
             );
         }
         if (isset($artikel->kArtikel) && $artikel->kArtikel > 0) {
-            if (fuegeEinInWarenkorb(
+            $oArtikel = new Artikel();
+            $oArtikel->fuelleArtikel($artikel->kArtikel, Artikel::getDefaultOptions());
+
+            if (isset($oArtikel->kArtikel) && $oArtikel->kArtikel > 0 && fuegeEinInWarenkorb(
                 $artikel->kArtikel,
                 1,
-                ArtikelHelper::getSelectedPropertiesForArticle($artikel->kArtikel))
-            ) {
+                ArtikelHelper::getSelectedPropertiesForArticle($artikel->kArtikel)
+            )) {
                 $hinweis = $artikel->cName . ' ' . Shop::Lang()->get('productAddedToCart', 'global');
             }
         }
@@ -388,40 +382,39 @@ function gibXSelling()
         $oWarenkorbPos_arr = $_SESSION['Warenkorb']->PositionenArr;
 
         if (is_array($oWarenkorbPos_arr) && count($oWarenkorbPos_arr) > 0) {
-            $cSQL1 = 'WHERE kArtikel IN (';
-            $cSQL2 = 'AND kXSellArtikel NOT IN (';
+            $kArtikel_arr = [];
+
             foreach ($oWarenkorbPos_arr as $i => $oWarenkorbPos) {
                 if (isset($oWarenkorbPos->Artikel->kArtikel) && $oWarenkorbPos->Artikel->kArtikel > 0) {
-                    $cSQL1 .= (int)$oWarenkorbPos->Artikel->kArtikel . ', ';
-                    $cSQL2 .= (int)$oWarenkorbPos->Artikel->kArtikel . ', ';
+                    $kArtikel_arr[] = (int)$oWarenkorbPos->Artikel->kArtikel;
                 }
             }
-            $cSQL1 = substr($cSQL1, 0, strlen($cSQL1) - 2);
-            $cSQL1 .= ')';
-            $cSQL2 = substr($cSQL2, 0, strlen($cSQL2) - 2);
-            $cSQL2 .= ')';
-            $oXsellkauf_arr = Shop::DB()->query(
-                "SELECT *
-                    FROM txsellkauf
-                    " . $cSQL1 . "
-                    " . $cSQL2 . "
-                    GROUP BY kXSellArtikel
-                    ORDER BY nAnzahl DESC, rand()
-                    LIMIT " . (int)$conf['kaufabwicklung']['warenkorb_xselling_anzahl'], 2
-            );
 
-            if (is_array($oXsellkauf_arr) && count($oXsellkauf_arr) > 0) {
-                if (!isset($oXselling->Kauf)) {
-                    $oXselling->Kauf = new stdClass();
-                }
-                $oXselling->Kauf->Artikel = [];
-                $defaultOptions           = Artikel::getDefaultOptions();
-                foreach ($oXsellkauf_arr as $oXsellkauf) {
-                    $oArtikel = new Artikel();
-                    $oArtikel->fuelleArtikel($oXsellkauf->kXSellArtikel, $defaultOptions);
+            if (count($kArtikel_arr) > 0) {
+                $cArtikel_str   = implode(', ', $kArtikel_arr);
+                $oXsellkauf_arr = Shop::DB()->query(
+                    "SELECT *
+                        FROM txsellkauf
+                        WHERE kArtikel IN ({$cArtikel_str})
+                            AND kXSellArtikel NOT IN ({$cArtikel_str})
+                        GROUP BY kXSellArtikel
+                        ORDER BY nAnzahl DESC, rand()
+                        LIMIT " . (int)$conf['kaufabwicklung']['warenkorb_xselling_anzahl'], 2
+                );
 
-                    if ($oArtikel->kArtikel > 0 && $oArtikel->aufLagerSichtbarkeit()) {
-                        $oXselling->Kauf->Artikel[] = $oArtikel;
+                if (is_array($oXsellkauf_arr) && count($oXsellkauf_arr) > 0) {
+                    if (!isset($oXselling->Kauf)) {
+                        $oXselling->Kauf = new stdClass();
+                    }
+                    $oXselling->Kauf->Artikel = [];
+                    $defaultOptions           = Artikel::getDefaultOptions();
+                    foreach ($oXsellkauf_arr as $oXsellkauf) {
+                        $oArtikel = new Artikel();
+                        $oArtikel->fuelleArtikel($oXsellkauf->kXSellArtikel, $defaultOptions);
+
+                        if ($oArtikel->kArtikel > 0 && $oArtikel->aufLagerSichtbarkeit()) {
+                            $oXselling->Kauf->Artikel[] = $oArtikel;
+                        }
                     }
                 }
             }
@@ -437,6 +430,7 @@ function gibXSelling()
  */
 function gibGratisGeschenke($Einstellungen)
 {
+    /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
     $oArtikelGeschenke_arr = [];
     if ($Einstellungen['sonstiges']['sonstiges_gratisgeschenk_nutzen'] === 'Y') {
         $cSQLSort = ' ORDER BY CAST(tartikelattribut.cWert AS DECIMAL) DESC';
@@ -505,11 +499,8 @@ function pruefeBestellMengeUndLagerbestand($Einstellungen = [])
                     $Einstellungen['global']['global_lieferverzoegerung_anzeigen'] === 'Y'
                 ) {
                     if ($oPosition->nAnzahl > $oPosition->Artikel->fLagerbestand) {
-                        $bVorhanden  = true;
-                        $cName       = is_array($oPosition->cName)
-                            ? $oPosition->cName[$cISOSprache]
-                            : $oPosition->cName;
-
+                        $bVorhanden    = true;
+                        $cName         = is_array($oPosition->cName) ? $oPosition->cName[$cISOSprache] : $oPosition->cName;
                         $cArtikelName .= '<li>' . $cName . '</li>';
                     }
                 }

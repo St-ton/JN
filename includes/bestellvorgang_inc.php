@@ -1193,11 +1193,15 @@ function zahlungsartKorrekt($kZahlungsart)
             'kZahlungsart',
             (int)$Zahlungsart->kZahlungsart,
             'cISOSprache',
-            $_SESSION['cISOSprache']
+            $_SESSION['cISOSprache'],
+            null,
+            null,
+            false,
+            'cHinweisTextShop'
         );
         $Zahlungsart->cHinweisText = '';
-        if (isset($oObj->cHinweisText)) {
-            $Zahlungsart->cHinweisText = $oObj->cHinweisText;
+        if (isset($oObj->cHinweisTextShop)) {
+            $Zahlungsart->cHinweisText = $oObj->cHinweisTextShop;
         }
         if (isset($_SESSION['VersandKupon']->cZusatzgebuehren) &&
             $_SESSION['VersandKupon']->cZusatzgebuehren === 'Y' &&
@@ -1511,12 +1515,12 @@ function gibZahlungsarten($kVersandart, $kKundengruppe)
                 null,
                 null,
                 false,
-                'cName, cGebuehrname, cHinweisText'
+                'cName, cGebuehrname, cHinweisTextShop'
             );
             if (isset($name_spr->cName)) {
                 $Zahlungsarten[$i]->angezeigterName[$Sprache->cISO] = $name_spr->cName;
                 $Zahlungsarten[$i]->cGebuehrname[$Sprache->cISO]    = $name_spr->cGebuehrname;
-                $Zahlungsarten[$i]->cHinweisText[$Sprache->cISO]    = $name_spr->cHinweisText;
+                $Zahlungsarten[$i]->cHinweisText[$Sprache->cISO]    = $name_spr->cHinweisTextShop;
             }
         }
         $einstellungen = Shop::DB()->selectAll(
@@ -1816,12 +1820,12 @@ function versandartKorrekt($kVersandart, $aFormValues = 0)
                     null,
                     null,
                     false,
-                    'cName, cHinweisText'
+                    'cName, cHinweisTextShop'
                 );
                 if (isset($name_spr->cName)) {
                     $Spezialpos->cName[$Sprache->cISO]                  = $name_spr->cName;
                     $versandart->angezeigterName[$Sprache->cISO]        = $name_spr->cName;
-                    $versandart->angezeigterHinweistext[$Sprache->cISO] = $name_spr->cHinweisText;
+                    $versandart->angezeigterHinweistext[$Sprache->cISO] = $name_spr->cHinweisTextShop;
                 }
             }
             $bSteuerPos = $versandart->eSteuer === 'netto' ? false : true;

@@ -25,6 +25,9 @@ switch ($kSektion) {
         break;
     case 4:
         $oAccount->permission('SETTINGS_ARTICLEOVERVIEW_VIEW', true, true);
+        // Sucheinstellungen haben eigene Logik
+        header('Location: ' . Shop::getURL(true) . '/' . PFAD_ADMIN . 'sucheinstellungen.php');
+        exit;
         break;
     case 5:
         $oAccount->permission('SETTINGS_ARTICLEDETAILS_VIEW', true, true);

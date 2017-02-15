@@ -263,7 +263,7 @@
             </div>
             <div class="panel-body">
                 <div class="well">
-                    <p>Für die Installation des JTL Shops benötigen wir eine Datenbank.</p>
+                    <p>Für die Installation des JTL-Shops benötigen wir eine MySQL-Datenbank.</p>
 
                     <p>Meistens müssen der Benutzer und die Datenbank erst manuell erstellt werden. Bei Problemen wenden Sie sich
                         bitte an Ihren Administrator bzw. Webhoster, da dieser Vorgang von Hoster zu Hoster unterschiedlich ist und von der eingesetzten Software abhängt.</p>
@@ -323,7 +323,7 @@
                 </div>
             </div>
         </div>
-        <button type="submit" class="btn btn-primary pull-right">Installation starten</button>
+        <button type="submit" class="btn btn-primary pull-right"><i class="fa fa-share"></i> Installation starten</button>
     </form>
 {/if} {* bOk *}
 

@@ -6119,17 +6119,21 @@ class Artikel
                 ) {
                     //the cart matrix cannot deal with those different kinds of variations..
                     //so if we got "freifeldvariationen" in combination with normal ones, we have to disable the matrix
+                    $gesamt_anz = 1;
                     foreach ($this->Variationen as $_variation) {
                         if ($_variation->cTyp === 'FREIFELD' || $_variation->cTyp === 'PFLICHT-FREIFELD') {
                             return false;
                         }
+                        $gesamt_anz *= $_variation->nLieferbareVariationswerte;
                     }
                     foreach ($this->oKonfig_arr as $_oKonfig) {
                         if (isset($_oKonfig)) {
                             return false;
                         }
                     }
-
+                    if($conf['artikeldetails']['artikeldetails_warenkorbmatrix_anzeigeformat'] === 'L' && $gesamt_anz > ART_MATRIX_MAX){
+                        return false;
+                    }
                     return true;
                 }
             }

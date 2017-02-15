@@ -85,7 +85,8 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
             break;
 
         case 'WARENKORB':
-            $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('warenkorb.php') . '">' . Shop::Lang()->get('basket', 'breadcrumb') . '</a>';
+            $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('warenkorb.php') . '">' .
+                Shop::Lang()->get('basket', 'breadcrumb') . '</a>';
             $ele        = new stdClass();
             $ele->name  = Shop::Lang()->get('basket', 'breadcrumb');
             $ele->url   = $linkHelper->getStaticRoute('warenkorb.php');
@@ -94,7 +95,8 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
             break;
 
         case 'PASSWORT VERGESSEN':
-            $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('pass.php') . '">' . Shop::Lang()->get('forgotpassword', 'breadcrumb') . '</a>';
+            $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('pass.php') . '">' .
+                Shop::Lang()->get('forgotpassword', 'breadcrumb') . '</a>';
             $ele        = new stdClass();
             $ele->name  = Shop::Lang()->get('forgotpassword', 'breadcrumb');
             $ele->url   = $linkHelper->getStaticRoute('pass.php');
@@ -103,7 +105,9 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
             break;
 
         case 'MEIN KONTO':
-            $cText = (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) ? Shop::Lang()->get('account', 'breadcrumb') : Shop::Lang()->get('login', 'breadcrumb');
+            $cText = (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0)
+                ? Shop::Lang()->get('account', 'breadcrumb')
+                : Shop::Lang()->get('login', 'breadcrumb');
             $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('jtl.php') . '">' . $cText . '</a>';
             $ele        = new stdClass();
             $ele->name  = $cText;
@@ -113,7 +117,8 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
             break;
 
         case 'BESTELLVORGANG':
-            $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('bestellvorgang.php') . '">' . Shop::Lang()->get('checkout', 'breadcrumb') . '</a>';
+            $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('bestellvorgang.php') . '">' .
+                Shop::Lang()->get('checkout', 'breadcrumb') . '</a>';
             $ele        = new stdClass();
             $ele->name  = Shop::Lang()->get('checkout', 'breadcrumb');
             $ele->url   = $linkHelper->getStaticRoute('bestellvorgang.php');
@@ -122,7 +127,8 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
             break;
 
         case 'REGISTRIEREN':
-            $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('registrieren.php') . '">' . Shop::Lang()->get('register', 'breadcrumb') . '</a>';
+            $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('registrieren.php') . '">' .
+                Shop::Lang()->get('register', 'breadcrumb') . '</a>';
             $ele        = new stdClass();
             $ele->name  = Shop::Lang()->get('register', 'breadcrumb');
             $ele->url   = $linkHelper->getStaticRoute('registrieren.php');
@@ -131,7 +137,8 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
             break;
 
         case 'KONTAKT':
-            $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('kontakt.php') . '">' . Shop::Lang()->get('contact', 'breadcrumb') . '</a>';
+            $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('kontakt.php') . '">' .
+                Shop::Lang()->get('contact', 'breadcrumb') . '</a>';
             $ele        = new stdClass();
             $ele->name  = Shop::Lang()->get('contact', 'breadcrumb');
             $ele->url   = $linkHelper->getStaticRoute('kontakt.php');
@@ -140,7 +147,8 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
             break;
 
         case 'WARTUNG':
-            $SieSindHierString .= ' &gt; <a href="wartung.php">' . Shop::Lang()->get('maintainance', 'breadcrumb') . '</a>';
+            $SieSindHierString .= ' &gt; <a href="wartung.php">' .
+                Shop::Lang()->get('maintainance', 'breadcrumb') . '</a>';
             $ele        = new stdClass();
             $ele->name  = Shop::Lang()->get('maintainance', 'breadcrumb');
             $ele->url   = 'wartung.php';
@@ -149,7 +157,8 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
             break;
 
         case 'NEWSLETTER':
-            $SieSindHierString .= ' &gt; <a href="' . $linkURL . '">' . Shop::Lang()->get('newsletter', 'breadcrumb') . '</a>';
+            $SieSindHierString .= ' &gt; <a href="' . $linkURL . '">' .
+                Shop::Lang()->get('newsletter', 'breadcrumb') . '</a>';
             $ele        = new stdClass();
             $ele->name  = $linkname;
             $ele->url   = $linkURL;
@@ -167,7 +176,8 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
             break;
 
         case 'NEWSDETAIL':
-            $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('news.php') . '">' . Shop::Lang()->get('news', 'breadcrumb') . '</a>';
+            $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('news.php') . '">' .
+                Shop::Lang()->get('news', 'breadcrumb') . '</a>';
             $ele        = new stdClass();
             $ele->name  = Shop::Lang()->get('news', 'breadcrumb');
             $ele->url   = $linkHelper->getStaticRoute('news.php');
@@ -182,7 +192,8 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
             break;
 
         case 'NEWSKATEGORIE':
-            $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('news.php') . '">' . Shop::Lang()->get('newskat', 'breadcrumb') . '</a>';
+            $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('news.php') . '">' .
+                Shop::Lang()->get('newskat', 'breadcrumb') . '</a>';
             $ele        = new stdClass();
             $ele->name  = Shop::Lang()->get('newskat', 'breadcrumb');
             $ele->url   = $linkHelper->getStaticRoute('news.php');
@@ -197,7 +208,8 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
             break;
 
         case 'NEWSMONAT':
-            $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('news.php') . '">' . Shop::Lang()->get('newsmonat', 'breadcrumb') . '</a>';
+            $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('news.php') . '">' .
+                Shop::Lang()->get('newsmonat', 'breadcrumb') . '</a>';
             $ele        = new stdClass();
             $ele->name  = Shop::Lang()->get('newsmonat', 'breadcrumb');
             $ele->url   = $linkHelper->getStaticRoute('news.php');
@@ -221,7 +233,8 @@ function createNavigation($seite, $KategorieListe = 0, $Artikel = 0, $linkname =
             break;
 
         case 'VERGLEICHSLISTE':
-            $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('vergleichsliste.php') . '">' . Shop::Lang()->get('compare', 'global') . '</a>';
+            $SieSindHierString .= ' &gt; <a href="' . $linkHelper->getStaticRoute('vergleichsliste.php') . '">' .
+                Shop::Lang()->get('compare', 'global') . '</a>';
             $ele        = new stdClass();
             $ele->name  = Shop::Lang()->get('compare', 'global');
             $ele->url   = $linkHelper->getStaticRoute('vergleichsliste.php');
@@ -290,10 +303,17 @@ function gibPreisStringLocalized($preis, $waehrung = 0, $html = 1, $nNachkommast
     if (!isset($waehrung->kWaehrung) || !$waehrung->kWaehrung) {
         $waehrung = Shop::DB()->select('twaehrung', 'cStandard', 'Y');
     }
-    $preis        = number_format($preis * $waehrung->fFaktor, $nNachkommastellen, $waehrung->cTrennzeichenCent, $waehrung->cTrennzeichenTausend);
+    $preis        = number_format(
+        $preis * $waehrung->fFaktor,
+        $nNachkommastellen,
+        $waehrung->cTrennzeichenCent,
+        $waehrung->cTrennzeichenTausend
+    );
     $waherungname = (!$html) ? $waehrung->cName : $waehrung->cNameHTML;
 
-    return ($waehrung->cVorBetrag === 'Y') ? ($waherungname . ' ' . $preis) : ($preis . ' ' . $waherungname);
+    return ($waehrung->cVorBetrag === 'Y')
+        ? ($waherungname . ' ' . $preis)
+        : ($preis . ' ' . $waherungname);
 }
 
 /**
@@ -2725,7 +2745,7 @@ function berechneVersandpreis($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
         $oZusatzArtikel->fWarenwertNetto = 0;
         $oZusatzArtikel->fGewicht        = 0;
     }
-
+    /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
     $versandberechnung = Shop::DB()->select(
         'tversandberechnung',
         'kVersandberechnung',
@@ -2813,7 +2833,6 @@ function berechneVersandpreis($versandart, $cISO, $oZusatzArtikel, $Artikel = 0)
     //versandkostenfrei?
     $fArtikelPreis     = 0;
     $fGesamtsummeWaren = 0;
-    /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
     switch ($versandart->eSteuer) {
         case 'netto':
             if ($Artikel) {
@@ -3999,7 +4018,7 @@ function parseNewsText($cText)
 /**
  * @param int $kSprache
  * @param int $kKundengruppe
- * @return bool
+ * @return object|bool
  */
 function gibAGBWRB($kSprache, $kKundengruppe)
 {
@@ -4076,17 +4095,30 @@ function holeAlleSuchspecialOverlays($kSprache = 0)
                 foreach ($oSuchspecialOverlayTMP_arr as $oSuchspecialOverlayTMP) {
                     $cSuchSpecial = strtolower(str_replace([' ', '-', '_'], '', $oSuchspecialOverlayTMP->cSuchspecial));
                     $cSuchSpecial = preg_replace(
-                        ['/Ä/', '/Ö/', '/Ü/', '/ä/', '/ö/', '/ü/', '/ß/', utf8_decode('/Ä/'), utf8_decode('/Ö/'), utf8_decode('/Ü/'), utf8_decode('/ä/'), utf8_decode('/ö/'), utf8_decode('/ü/'), utf8_decode('/ß/')],
-                        ['ae', 'oe', 'ue', 'ae', 'oe', 'ue', 'ss', 'ae', 'oe', 'ue', 'ae', 'oe', 'ue', 'ss'],
+                        ['/Ä/', '/Ö/', '/Ü/', '/ä/', '/ö/', '/ü/', '/ß/',
+                         utf8_decode('/Ä/'),
+                         utf8_decode('/Ö/'),
+                         utf8_decode('/Ü/'),
+                         utf8_decode('/ä/'),
+                         utf8_decode('/ö/'),
+                         utf8_decode('/ü/'),
+                         utf8_decode('/ß/')
+                        ],
+                        ['ae', 'oe', 'ue', 'ae', 'oe', 'ue', 'ss',
+                         'ae', 'oe', 'ue', 'ae', 'oe', 'ue', 'ss'
+                        ],
                         $cSuchSpecial
                     );
                     if (!isset($oSuchspecialOverlay_arr[$cSuchSpecial])) {
                         $oSuchspecialOverlay_arr[$cSuchSpecial] = new stdClass();
                     }
                     $oSuchspecialOverlay_arr[$cSuchSpecial]              = $oSuchspecialOverlayTMP;
-                    $oSuchspecialOverlay_arr[$cSuchSpecial]->cPfadKlein  = PFAD_SUCHSPECIALOVERLAY_KLEIN . $oSuchspecialOverlay_arr[$cSuchSpecial]->cBildPfad;
-                    $oSuchspecialOverlay_arr[$cSuchSpecial]->cPfadNormal = PFAD_SUCHSPECIALOVERLAY_NORMAL . $oSuchspecialOverlay_arr[$cSuchSpecial]->cBildPfad;
-                    $oSuchspecialOverlay_arr[$cSuchSpecial]->cPfadGross  = PFAD_SUCHSPECIALOVERLAY_GROSS . $oSuchspecialOverlay_arr[$cSuchSpecial]->cBildPfad;
+                    $oSuchspecialOverlay_arr[$cSuchSpecial]->cPfadKlein  = PFAD_SUCHSPECIALOVERLAY_KLEIN .
+                        $oSuchspecialOverlay_arr[$cSuchSpecial]->cBildPfad;
+                    $oSuchspecialOverlay_arr[$cSuchSpecial]->cPfadNormal = PFAD_SUCHSPECIALOVERLAY_NORMAL .
+                        $oSuchspecialOverlay_arr[$cSuchSpecial]->cBildPfad;
+                    $oSuchspecialOverlay_arr[$cSuchSpecial]->cPfadGross  = PFAD_SUCHSPECIALOVERLAY_GROSS .
+                        $oSuchspecialOverlay_arr[$cSuchSpecial]->cBildPfad;
                 }
             }
             Shop::Cache()->set($cacheID, $oSuchspecialOverlay_arr, [CACHING_GROUP_OPTION]);
@@ -6738,7 +6770,8 @@ function gibURLzuNewsArchiv()
         "SELECT tnewsmonatsuebersicht.kNewsMonatsUebersicht, tnewsmonatsuebersicht.kSprache, tseo.cSeo,
             tnewsmonatsuebersicht.cName, tnewsmonatsuebersicht.nMonat, tnewsmonatsuebersicht.nJahr
             FROM tnewsmonatsuebersicht
-            LEFT JOIN tseo ON tseo.cKey = 'kNewsMonatsUebersicht'
+            LEFT JOIN tseo 
+                ON tseo.cKey = 'kNewsMonatsUebersicht'
                 AND tseo.kKey = tnewsmonatsuebersicht.kNewsMonatsUebersicht
                 AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
             WHERE tnewsmonatsuebersicht.kSprache = " . (int)$_SESSION['kSprache'] . "
@@ -6751,7 +6784,8 @@ function gibURLzuNewsArchiv()
             "SELECT tnewsmonatsuebersicht.kNewsMonatsUebersicht, tnewsmonatsuebersicht.kSprache, tseo.cSeo,
                 tnewsmonatsuebersicht.cName, tnewsmonatsuebersicht.nMonat, tnewsmonatsuebersicht.nJahr
                 FROM tnewsmonatsuebersicht
-                LEFT JOIN tseo ON tseo.cKey = 'kNewsMonatsUebersicht'
+                LEFT JOIN tseo 
+                    ON tseo.cKey = 'kNewsMonatsUebersicht'
                     AND tseo.kKey = tnewsmonatsuebersicht.kNewsMonatsUebersicht
                     AND tseo.kSprache = " . (int)$_SESSION['kSprache'] . "
                 WHERE tnewsmonatsuebersicht.kSprache = " . (int)$_SESSION['kSprache'] . "
@@ -6793,10 +6827,10 @@ function dateAddWeekday($date, $weekdays)
     try {
         if (is_string($date)) {
             $resDate = new DateTime($date);
-        } else if (is_numeric($date)) {
+        } elseif (is_numeric($date)) {
             $resDate = new DateTime();
             $resDate->setTimestamp($date);
-        } else if (is_object($date) && is_a($date, 'DateTime')) {
+        } elseif (is_object($date) && is_a($date, 'DateTime')) {
             /** @var DateTime $date */
             $resDate = new DateTime($date->format(DateTime::ISO8601));
         } else {

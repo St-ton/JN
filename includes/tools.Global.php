@@ -1149,6 +1149,11 @@ function fuegeEinInWarenkorbPers($kArtikel, $fAnzahl, $oEigenschaftwerte_arr, $c
                     );
                 }
             }
+        // Konfigitems ohne Artikelbezug
+        } elseif ($kArtikel === 0 && !empty($kKonfigitem)) {
+            $konfItem = new Konfigitemsprache($kKonfigitem, $_SESSION['kSprache']);
+            $oWarenkorbPers = new WarenkorbPers($_SESSION['Kunde']->kKunde);
+            $oWarenkorbPers->fuegeEin($kArtikel, $konfItem->getName(), $oEigenschaftwerte_arr, $fAnzahl, $cUnique, $kKonfigitem, $nPosTyp);
         }
     }
 }
@@ -1397,7 +1402,7 @@ function fuegeEinInWarenkorb($kArtikel, $anzahl, $oEigenschaftwerte_arr = '', $n
 {
     /** @var array('Warenkorb' => Warenkorb) $_SESSION */
     $kArtikel = (int)$kArtikel;
-    if ($anzahl > 0 && $kArtikel > 0) {
+    if ($anzahl > 0 && ($kArtikel > 0 || $kArtikel === 0 && !empty($kKonfigitem) && !empty($cUnique))) {
         $Artikel = new Artikel();
         if ($oArtikelOptionen === null) {
             $oArtikelOptionen = Artikel::getDefaultOptions();

@@ -703,10 +703,13 @@ class Template
      */
     public function getBoxLayoutXML($cOrdner = null)
     {
-        $cOrdner   = ($cOrdner !== null) ? $cOrdner : self::$cTemplate;
-        $oItem_arr = [];
-        if (self::$parent !== null) {
-            $oXML = self::$helper->getXML(self::$parent);
+        $oItem_arr     = [];
+        $cOrdner_arr   = self::$parent !== null ? [self::$parent] : [];
+        $cOrdner_arr[] = $cOrdner !== null ? $cOrdner : self::$cTemplate;
+
+        foreach ($cOrdner_arr as $cOrdner) {
+            $oXML = self::$helper->getXML($cOrdner);
+
             if ($oXML && isset($oXML->Boxes) && count($oXML->Boxes) === 1) {
                 $oXMLBoxes_arr = $oXML->Boxes[0];
                 /** @var SimpleXMLElement $oXMLContainer */
@@ -717,17 +720,8 @@ class Template
                 }
             }
         }
-        $oXML = self::$helper->getXML($cOrdner);
-        if ($oXML && isset($oXML->Boxes) && count($oXML->Boxes) === 1) {
-            $oXMLBoxes_arr = $oXML->Boxes[0];
-            foreach ($oXMLBoxes_arr as $oXMLContainer) {
-                $cPosition             = (string)$oXMLContainer->attributes()->Position;
-                $bAvailable            = (boolean)intval($oXMLContainer->attributes()->Available);
-                $oItem_arr[$cPosition] = $bAvailable;
-            }
-        }
 
-        return (count($oItem_arr) > 0) ? $oItem_arr : false;
+        return count($oItem_arr) > 0 ? $oItem_arr : false;
     }
 
     /**

@@ -2808,8 +2808,8 @@ function gibNaviURL($NaviFilter, $bSeo, $oZusatzFilter, $kSprache = 0, $bCanonic
     }
     $kSprache = (int)$kSprache;
     $cSEOURL  = Shop::getURL() . '/';
-    // Gibt es zu der Suche bereits eine Suchanfrage?
-    if (isset($NaviFilter->Suche->cSuche) && strlen($NaviFilter->Suche->cSuche) > 0) {
+    // Gibt es zu der Suche bereits eine Suchanfrage und wird nicht ExtendedJTLSearch verwendet?
+    if (!(isset($NaviFilter->Suche->bExtendedJTLSearch) && $NaviFilter->Suche->bExtendedJTLSearch) && isset($NaviFilter->Suche->cSuche) && strlen($NaviFilter->Suche->cSuche) > 0) {
         $oSuchanfrage = Shop::DB()->select('tsuchanfrage', 'cSuche', Shop::DB()->escape($NaviFilter->Suche->cSuche), 'kSprache', $kSprache, 'nAktiv', 1, false, 'kSuchanfrage');
         if (isset($oSuchanfrage->kSuchanfrage) && $oSuchanfrage->kSuchanfrage > 0) {
             // Hole alle aktiven Sprachen

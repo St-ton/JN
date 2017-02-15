@@ -211,6 +211,7 @@ if ($cParameter_arr['kHersteller'] > 0 ||
             $NaviFilter->Suche->cSuche       = $oSuchanfrage->cSuche;
         }
     }
+    $NaviFilter->Suche->bExtendedJTLSearch = $bExtendedJTLSearch;
     //Suche da? Dann bearbeiten
     if (!$bExtendedJTLSearch && isset($NaviFilter->Suche->cSuche) && strlen($NaviFilter->Suche->cSuche) > 0) {
         //XSS abfangen

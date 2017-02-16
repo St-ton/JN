@@ -52,7 +52,7 @@ if (strlen($cParameter_arr['cSuche']) > 0 || (isset($_GET['qs']) && strlen($_GET
             ' ' . $nMindestzeichen . ' ' .
             Shop::Lang()->get('lettersDigits', 'global');
         $oSuchergebnisse->Artikel                     = new stdClass();
-        $oSuchergebnisse->Artikel->elemente           = [];
+        $oSuchergebnisse->Artikel->elemente           = new Collection();
         $oSuchergebnisse->GesamtanzahlArtikel         = 0;
         $oSuchergebnisse->SucheErfolglos              = 1;
         $oSuchergebnisse->Seitenzahlen                = new stdClass();
@@ -95,7 +95,7 @@ if ($doSearch) {
     $oSuchergebnisse = $NaviFilter->getProducts(true, $AktuelleKategorie);
     $NaviFilter->Suche->kSuchanfrage = gibSuchanfrageKey($NaviFilter->Suche->cSuche, Shop::$kSprache);
     // Umleiten falls SEO keine Artikel ergibt
-    doMainwordRedirect($NaviFilter, count($oSuchergebnisse->Artikel->elemente), true);
+    doMainwordRedirect($NaviFilter, $oSuchergebnisse->Artikel->elemente->count(), true);
     // Bestsellers
     if ($Einstellungen['artikeluebersicht']['artikelubersicht_bestseller_gruppieren'] === 'Y') {
         $productsIDs = $oSuchergebnisse->Artikel->elemente->map(function ($article) {

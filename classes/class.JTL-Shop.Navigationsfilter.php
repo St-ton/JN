@@ -2377,7 +2377,9 @@ class Navigationsfilter
             $cMetaTitle .= $this->Suche->cSuche;
             //@todo: does this work?
             //$cMetaTitle .= $this->Suche->getName();
-        } elseif ($this->Suchspecial->isInitialized()) { // Suchspecial
+        } elseif ($this->Suchanfrage->isInitialized()) { // Suchebegriff
+            $cMetaTitle .= $this->Suchanfrage->cSuche;
+        }  elseif ($this->Suchspecial->isInitialized()) { // Suchspecial
             $cMetaTitle .= $this->Suchspecial->getName();
         }
         // Kategoriefilter

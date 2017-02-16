@@ -31,6 +31,7 @@ $kLink = $linkHelper->getSpecialPageLinkKey(LINKTYP_WARENKORB);
 uebernehmeWarenkorbAenderungen();
 //validiere Konfigurationen
 validiereWarenkorbKonfig();
+pruefeGuthabenNutzen();
 //Versandermittlung?
 if (isset($_POST['land']) && isset($_POST['plz']) &&
     !VersandartHelper::getShippingCosts($_POST['land'], $_POST['plz'], $MsgWarning)

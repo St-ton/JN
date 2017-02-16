@@ -1054,7 +1054,10 @@ class Navigationsfilter
         $hash  = [
             'state' => $state->getClassName() . $state->getValue(),
             'page'  => $this->nSeite,
-            'order' => $this->getOrder()
+            'order' => $this->getOrder(),
+            'app'   => $this->nAnzahlProSeite,
+            'lid'   => $this->getLanguageID(),
+            'cgrp'  => $this->getCustomerGroupID()
         ];
         foreach ($this->getActiveFilters() as $filter) {
             $hash[$filter->getClassName()][] = $filter->getValue();

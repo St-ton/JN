@@ -3470,7 +3470,7 @@ function gibErweiterteDarstellung($Einstellungen, $NaviFilter, $nDarstellung = 0
  */
 function setzeUsersortierung($NaviFilter)
 {
-    die('setzeUsersortierung()');
+    Shop::dbg('setzeUsersortierung()', true, 'setzeUsersortierung()', 8);
     global $AktuelleKategorie;
     return Shop::getNaviFilter()->setUserSort($AktuelleKategorie);
 }

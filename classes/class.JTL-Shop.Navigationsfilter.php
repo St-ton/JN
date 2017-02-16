@@ -1051,9 +1051,11 @@ class Navigationsfilter
     private function getHash()
     {
         $state = $this->getActiveState();
-        $hash = [];
-        $hash['state'] = $state->getClassName() . $state->getValue();
-
+        $hash  = [
+            'state' => $state->getClassName() . $state->getValue(),
+            'page'  => $this->nSeite,
+            'order' => $this->getOrder()
+        ];
         foreach ($this->getActiveFilters() as $filter) {
             $hash[$filter->getClassName()][] = $filter->getValue();
         }
@@ -2125,8 +2127,8 @@ class Navigationsfilter
         }
         // Seitenzahl anhaengen ab Seite 2 (Doppelte Titles vermeiden, #5992)
         if ($oSuchergebnisse->Seitenzahlen->AktuelleSeite > 1) {
-            $cMetaTitle .= ', ' . Shop::Lang()->get('page',
-                    'global') . " {$oSuchergebnisse->Seitenzahlen->AktuelleSeite}";
+            $cMetaTitle .= ', ' . Shop::Lang()->get('page', 'global') . ' ' .
+                $oSuchergebnisse->Seitenzahlen->AktuelleSeite;
         }
         // Globalen Meta Title ueberall anhaengen
         if ($append === true && !empty($GlobaleMetaAngaben_arr[$this->getLanguageID()]->Title)) {
@@ -2196,8 +2198,7 @@ class Navigationsfilter
                     : trim($cKatDescription);
                 // Seitenzahl anhaengen ab Seite 2 (Doppelte Meta-Descriptions vermeiden, #5992)
                 if ($oSuchergebnisse->Seitenzahlen->AktuelleSeite > 1 && $oSuchergebnisse->ArtikelVon > 0 && $oSuchergebnisse->ArtikelBis > 0) {
-                    $cMetaDescription .= ', ' .
-                        Shop::Lang()->get('products', 'global') .
+                    $cMetaDescription .= ', ' . Shop::Lang()->get('products', 'global') .
                         " {$oSuchergebnisse->ArtikelVon} - {$oSuchergebnisse->ArtikelBis}";
                 }
 
@@ -2228,10 +2229,13 @@ class Navigationsfilter
                     ' ' . $cArtikelName
                 : $this->getMetaStart($oSuchergebnisse) . ': ' . $cArtikelName;
             // Seitenzahl anhaengen ab Seite 2 (Doppelte Meta-Descriptions vermeiden, #5992)
-            if ($oSuchergebnisse->Seitenzahlen->AktuelleSeite > 1 && $oSuchergebnisse->ArtikelVon > 0 && $oSuchergebnisse->ArtikelBis > 0) {
-                $cMetaDescription .= ', ' .
-                    Shop::Lang()->get('products', 'global') .
-                    " {$oSuchergebnisse->ArtikelVon} - {$oSuchergebnisse->ArtikelBis}";
+            if (
+                $oSuchergebnisse->Seitenzahlen->AktuelleSeite > 1 &&
+                $oSuchergebnisse->ArtikelVon > 0 &&
+                $oSuchergebnisse->ArtikelBis > 0
+            ) {
+                $cMetaDescription .= ', ' . Shop::Lang()->get('products', 'global') . ' ' .
+                    $oSuchergebnisse->ArtikelVon . ' - ' . $oSuchergebnisse->ArtikelBis;
             }
         }
 

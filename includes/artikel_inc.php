@@ -559,23 +559,23 @@ function gibNaviBlaettern($kArtikel, $kKategorie)
         $nArrayPos          = -1;
         $kArtikelVorheriger = 0;
         $kArtikelNaechster  = 0;
-        foreach ($_SESSION['oArtikelUebersichtKey_arr'] as $i => $oArtikelUebersichtKey) {
-            if (isset($oArtikelUebersichtKey->kArtikel) && (int)$oArtikelUebersichtKey->kArtikel === $kArtikel) {
+        foreach ($_SESSION['oArtikelUebersichtKey_arr'] as $i => $articleID) {
+            if ($articleID === $kArtikel) {
                 $nArrayPos = $i;
                 break;
             }
         }
-        if ($nArrayPos == 0) {
+        if ($nArrayPos === 0) {
             // Artikel ist an der ersten Position => es gibt nur einen nächsten Artikel (oder keinen :))
-            $kArtikelNaechster = (isset($_SESSION['oArtikelUebersichtKey_arr'][$nArrayPos + 1]->kArtikel))
-                ? $_SESSION['oArtikelUebersichtKey_arr'][$nArrayPos + 1]->kArtikel
+            $kArtikelNaechster = (isset($_SESSION['oArtikelUebersichtKey_arr'][$nArrayPos + 1]))
+                ? $_SESSION['oArtikelUebersichtKey_arr'][$nArrayPos + 1]
                 : null;
-        } elseif ($nArrayPos == (count($_SESSION['oArtikelUebersichtKey_arr']) - 1)) {
+        } elseif ($nArrayPos === (count($_SESSION['oArtikelUebersichtKey_arr']) - 1)) {
             // Artikel ist an der letzten Position => es gibt nur einen voherigen Artikel
-            $kArtikelVorheriger = $_SESSION['oArtikelUebersichtKey_arr'][$nArrayPos - 1]->kArtikel;
-        } elseif ($nArrayPos != -1) {
-            $kArtikelNaechster  = $_SESSION['oArtikelUebersichtKey_arr'][$nArrayPos + 1]->kArtikel;
-            $kArtikelVorheriger = $_SESSION['oArtikelUebersichtKey_arr'][$nArrayPos - 1]->kArtikel;
+            $kArtikelVorheriger = $_SESSION['oArtikelUebersichtKey_arr'][$nArrayPos - 1];
+        } elseif ($nArrayPos !== -1) {
+            $kArtikelNaechster  = $_SESSION['oArtikelUebersichtKey_arr'][$nArrayPos + 1];
+            $kArtikelVorheriger = $_SESSION['oArtikelUebersichtKey_arr'][$nArrayPos - 1];
         }
         // Nächster Artikel
         if ($kArtikelNaechster > 0) {

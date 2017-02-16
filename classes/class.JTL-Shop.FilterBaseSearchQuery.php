@@ -84,14 +84,14 @@ class FilterBaseSearchQuery extends AbstractFilter implements IFilter
      */
     public function setSeo($languages)
     {
-        $oSeo_obj = Shop::DB()->query("
+        $oSeo_obj = Shop::DB()->executeQueryPrepared("
             SELECT tseo.cSeo, tseo.kSprache, tsuchanfrage.cSuche
                 FROM tseo
                 LEFT JOIN tsuchanfrage
                     ON tsuchanfrage.kSuchanfrage = tseo.kKey
                     AND tsuchanfrage.kSprache = tseo.kSprache
                 WHERE cKey = 'kSuchanfrage' 
-                    AND kKey = " . $this->getValue(), 1
+                    AND kKey = :key", ['key' => $this->getValue()], 1
         );
         foreach ($languages as $language) {
             $this->cSeo[$language->kSprache] = '';
@@ -162,12 +162,13 @@ class FilterBaseSearchQuery extends AbstractFilter implements IFilter
         }
         $join = new FilterJoin();
         $join->setType('JOIN')
-             ->setTable('(
-                            SELECT tsuchcachetreffer.kArtikel, tsuchcachetreffer.kSuchCache, MIN(tsuchcachetreffer.nSort) AS nSort
-                            FROM tsuchcachetreffer
-                                WHERE tsuchcachetreffer.kSuchCache IN (' . implode(',', $kSucheCache_arr) . ') GROUP BY tsuchcachetreffer.kArtikel
-                                HAVING COUNT(*) = ' . $count . '
-                                ) AS jSuche')
+             ->setTable('(SELECT tsuchcachetreffer.kArtikel, tsuchcachetreffer.kSuchCache, 
+                          MIN(tsuchcachetreffer.nSort) AS nSort
+                              FROM tsuchcachetreffer
+                              WHERE tsuchcachetreffer.kSuchCache IN (' . implode(',', $kSucheCache_arr) . ') 
+                              GROUP BY tsuchcachetreffer.kArtikel
+                              HAVING COUNT(*) = ' . $count . '
+                          ) AS jSuche')
              ->setOn('jSuche.kArtikel = tartikel.kArtikel')
              ->setComment('JOIN1 from FilterSearch');
 
@@ -183,7 +184,8 @@ class FilterBaseSearchQuery extends AbstractFilter implements IFilter
         $oSuchFilterDB_arr = [];
         if ($this->getConfig()['navigationsfilter']['suchtrefferfilter_nutzen'] !== 'N') {
             $naviFilter = Shop::getNaviFilter();
-            $nLimit     = (isset($this->getConfig()['navigationsfilter']['suchtrefferfilter_anzahl']) && ($limit = (int)$this->getConfig()['navigationsfilter']['suchtrefferfilter_anzahl']) > 0)
+            $nLimit     = (isset($this->getConfig()['navigationsfilter']['suchtrefferfilter_anzahl']) &&
+                ($limit = (int)$this->getConfig()['navigationsfilter']['suchtrefferfilter_anzahl']) > 0)
                 ? " LIMIT " . $limit
                 : '';
             $order      = $naviFilter->getOrder();
@@ -208,7 +210,8 @@ class FilterBaseSearchQuery extends AbstractFilter implements IFilter
             $join->setComment('join3 from getSearchFilterOptions')
                  ->setType('JOIN')
                  ->setTable('tsuchanfrage')
-                 ->setOn('tsuchanfrage.cSuche = tsuchcache.cSuche AND tsuchanfrage.kSprache = ' . $this->getLanguageID());
+                 ->setOn('tsuchanfrage.cSuche = tsuchcache.cSuche 
+                              AND tsuchanfrage.kSprache = ' . $this->getLanguageID());
             $state->joins[] = $join;
 
             $state->conditions[] = "tsuchanfrage.nAktiv = 1";
@@ -266,7 +269,10 @@ class FilterBaseSearchQuery extends AbstractFilter implements IFilter
             foreach ($oSuchFilterDB_arr as $i => $oSuchFilterDB) {
                 $oSuchFilterDB_arr[$i]->Klasse = rand(1, 10);
                 if (isset($oSuchFilterDB->kSuchCache) && $oSuchFilterDB->kSuchCache > 0 && $nPrioStep >= 0) {
-                    $oSuchFilterDB_arr[$i]->Klasse = round(($oSuchFilterDB->nAnzahl - $oSuchFilterDB_arr[$nCount - 1]->nAnzahl) / $nPrioStep) + 1;
+                    $oSuchFilterDB_arr[$i]->Klasse = round(
+                            ($oSuchFilterDB->nAnzahl - $oSuchFilterDB_arr[$nCount - 1]->nAnzahl) /
+                            $nPrioStep
+                        ) + 1;
                 }
             }
         }

@@ -1,19 +1,29 @@
 <div class="widget-custom-data widget-bots">
     {if is_array($oBots_arr) && count($oBots_arr) > 0}
-        <ul class="infolist clearall">
-            {foreach name="bots" from=$oBots_arr item=oBots}
-                <li {if $smarty.foreach.bots.first}class="first" {elseif $smarty.foreach.bots.last}class="last"{/if}>
-                    {if isset($oBots->cName) && $oBots->cName|strlen > 0}
-                        <strong>{$oBots->cName}:</strong>
-                    {elseif isset($oBots->cUserAgent) && $oBots->cUserAgent|strlen > 0}
-                        <strong>{$oBots->cUserAgent}:</strong>
-                    {else}
-                        <strong>Unbekannt:</strong>
-                    {/if}
-                    <span class="value">{$oBots->nCount}</span>
-                </li>
+        <table class="table table-condensed table-hover table-blank">
+            <thead>
+            <tr>
+                <th>Name / User-Agent</th>
+                <th>Anzahl</th>
+            </tr>
+            </thead>
+            <tbody>
+            {foreach $oBots_arr as $oBots}
+                <tr>
+                    <td>
+                        {if isset($oBots->cName) && $oBots->cName|strlen > 0}
+                            {$oBots->cName}
+                        {elseif isset($oBots->cUserAgent) && $oBots->cUserAgent|strlen > 0}
+                            {$oBots->cUserAgent}
+                        {else}
+                            Unbekannt
+                        {/if}
+                    </td>
+                    <td>{$oBots->nCount}</td>
+                </tr>
             {/foreach}
-        </ul>
+            </tbody>
+        </table>
     {else}
         <div class="alert alert-info">Keine Statistiken gefunden</div>
     {/if}

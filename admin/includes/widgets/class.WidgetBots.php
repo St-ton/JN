@@ -35,8 +35,8 @@ class WidgetBots extends WidgetBase
      */
     public function getBotsOfMonth($nYear, $nMonth, $nLimit = 10)
     {
-        $oStatistik = new Statistik(firstDayOfMonth(), time());
-        $oBots_arr  = $oStatistik->holeBotStats();
+        $oStatistik = new Statistik(firstDayOfMonth($nMonth, $nYear), time());
+        $oBots_arr  = $oStatistik->holeBotStats($nLimit);
 
         return $oBots_arr;
     }

@@ -1163,6 +1163,8 @@ class Navigationsfilter
                 }
             }
         }
+        $_SESSION['oArtikelUebersichtKey_arr']   = $oSuchergebnisse->Artikel->articleKeys;
+        $_SESSION['nArtikelUebersichtVLKey_arr'] = [];
 
         return ($forProductListing === true) ?
             $oSuchergebnisse :

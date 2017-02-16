@@ -343,7 +343,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
 
         /**
          * @param $nFrage
-         * @return mixed
+         * @return array
          */
         public function getSelectedValue($nFrage)
         {
@@ -434,11 +434,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
          */
         public static function getLinks()
         {
-            return Shop::DB()->query(
-                "SELECT *
-                    FROM tlink
-                    WHERE nLinkart = " . LINKTYP_AUSWAHLASSISTENT, 2
-            );
+            return Shop::DB()->selectAll('tlink', 'nLinkart', LINKTYP_AUSWAHLASSISTENT);
         }
 
         /**
@@ -454,7 +450,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
                 $oOrt = Shop::DB()->query(
                     "SELECT tauswahlassistentort.kAuswahlAssistentGruppe
                         FROM tauswahlassistentort
-                        JOIN tauswahlassistentgruppe ON tauswahlassistentgruppe.kAuswahlAssistentGruppe = tauswahlassistentort.kAuswahlAssistentGruppe
+                        JOIN tauswahlassistentgruppe 
+                            ON tauswahlassistentgruppe.kAuswahlAssistentGruppe = tauswahlassistentort.kAuswahlAssistentGruppe
                             AND tauswahlassistentgruppe.kSprache = " . (int)$kSprache . "
                         WHERE tauswahlassistentort.cKey = '" . Shop::DB()->escape($cKey) . "'
                             AND tauswahlassistentort.kKey = " . (int)$kKey, 1

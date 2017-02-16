@@ -79,12 +79,15 @@ class Filter
      *
      * @param $cTitle
      * @param $cColumn
+     * @return FilterDateRangeField
      */
-    public function addDaterangefield($cTitle, $cColumn)
+    public function addDaterangefield($cTitle, $cColumn, $cDefValue = '')
     {
-        $oField                               = new FilterDateRangeField($this, $cTitle, $cColumn);
+        $oField                               = new FilterDateRangeField($this, $cTitle, $cColumn, $cDefValue);
         $this->oField_arr[]                   = $oField;
         $this->cSession_arr[$oField->getId()] = $oField->getValue();
+
+        return $oField;
     }
 
     /**

@@ -40,7 +40,15 @@ class cache_xcache implements ICachingMethod
      */
     public function store($cacheID, $content, $expiration = null)
     {
-        return xcache_set($this->options['prefix'] . $cacheID, (($this->must_be_serialized($content)) ? serialize($content) : $content), ($expiration === null) ? $this->options['lifetime'] : $expiration);
+        return xcache_set(
+            $this->options['prefix'] . $cacheID,
+            (($this->must_be_serialized($content))
+                ? serialize($content)
+                : $content),
+            ($expiration === null)
+                ? $this->options['lifetime']
+                : $expiration
+        );
     }
 
     /**

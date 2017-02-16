@@ -694,6 +694,9 @@ class JTLSmarty extends SmartyBC
     public function getResourceName($resource_name)
     {
         $transform = false;
+        if (strpos($resource_name, 'string:') === 0) {
+            return $resource_name;
+        }
         if (strpos($resource_name, 'file:') === 0) {
             $resource_name = str_replace('file:', '', $resource_name);
             $transform     = true;

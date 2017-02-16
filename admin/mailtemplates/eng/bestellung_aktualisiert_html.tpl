@@ -20,17 +20,17 @@ Your order with the order number {$Bestellung->cBestellNr} consists of the follo
                     {/foreach}
                     
                     {* Seriennummer *}
-                    {if $Position->cSeriennummer|@count_characters > 0}
+                    {if $Position->cSeriennummer|strlen > 0}
                         <br>Serialnumber: {$Position->cSeriennummer}
                     {/if}
 
                     {* MHD *}
-                    {if $Position->dMHD|@count_characters > 0}
+                    {if $Position->dMHD|strlen > 0}
                         <br>Best before: {$Position->dMHD_de}
                     {/if}
 
                     {* Charge *}
-                    {if $Position->cChargeNr|@count_characters > 0}
+                    {if $Position->cChargeNr|strlen > 0}
                         <br>Charge: {$Position->cChargeNr}
                     {/if}
                 {else}
@@ -413,14 +413,14 @@ You have chosen the following shipping option: {$Bestellung->cZahlungsartName}<b
 {elseif $Bestellung->Zahlungsart->cModulId=="za_moneybookers_jtl"}
 {/if}
 
-{if isset($Zahlungsart->cHinweisText) && $Zahlungsart->cHinweisText|count_characters > 0}
+{if isset($Zahlungsart->cHinweisText) && $Zahlungsart->cHinweisText|strlen > 0}
     {$Zahlungsart->cHinweisText}<br>
     <br>
 {/if}
 <br>
 You will be notified of the subsequent status of your order separately.
 
-{if $oTrustedShopsBewertenButton->cURL|count_characters > 0}
+{if $oTrustedShopsBewertenButton->cURL|strlen > 0}
     <br><br>
     Were you satisfied with your order? If so, we hope you'll take a minute to write a recommendation.<br>
     <a href="{$oTrustedShopsBewertenButton->cURL}"><img src="{$oTrustedShopsBewertenButton->cPicURL}" alt="Please rate our Shop!"></a>

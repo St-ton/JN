@@ -11,13 +11,13 @@ The tracking status for order no. {$Bestellung->cBestellNr} has changed.
             {foreach name=variationen from=$Position->WarenkorbPosEigenschaftArr item=WKPosEigenschaft}
                 {$WKPosEigenschaft->cEigenschaftName}: {$WKPosEigenschaft->cEigenschaftWertName}
             {/foreach}
-            {if $Position->cSeriennummer|@count_characters > 0}
+            {if $Position->cSeriennummer|strlen > 0}
                 Serialnumber: {$Position->cSeriennummer}
             {/if}
-            {if $Position->dMHD|@count_characters > 0}
+            {if $Position->dMHD|strlen > 0}
                 Best before: {$Position->dMHD}
             {/if}
-            {if $Position->cChargeNr|@count_characters > 0}
+            {if $Position->cChargeNr|strlen > 0}
                 Charge: {$Position->cChargeNr}
             {/if}
         {else}
@@ -26,7 +26,7 @@ The tracking status for order no. {$Bestellung->cBestellNr} has changed.
         {/foreach}
 
         {foreach from=$oLieferschein->oVersand_arr item=oVersand}
-            {if $oVersand->getIdentCode()|@count_characters > 0}
+            {if $oVersand->getIdentCode()|strlen > 0}
                 Tracking-Url: {$oVersand->getLogistikVarUrl()}
             {/if}
         {/foreach}

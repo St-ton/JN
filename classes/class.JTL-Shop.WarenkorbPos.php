@@ -107,7 +107,7 @@ class WarenkorbPos
     /**
      * @var array
      */
-    public $WarenkorbPosEigenschaftArr = array();
+    public $WarenkorbPosEigenschaftArr = [];
 
     /**
      * @var object[]
@@ -212,8 +212,8 @@ class WarenkorbPos
         $NeueWarenkorbPosEigenschaft->cTyp               = $Eigenschaft->cTyp;
         $NeueWarenkorbPosEigenschaft->cAufpreisLocalized = gibPreisStringLocalized($NeueWarenkorbPosEigenschaft->fAufpreis);
         //posname lokalisiert ablegen
-        $NeueWarenkorbPosEigenschaft->cEigenschaftName     = array();
-        $NeueWarenkorbPosEigenschaft->cEigenschaftWertName = array();
+        $NeueWarenkorbPosEigenschaft->cEigenschaftName     = [];
+        $NeueWarenkorbPosEigenschaft->cEigenschaftWertName = [];
         foreach ($_SESSION['Sprachen'] as $Sprache) {
             $NeueWarenkorbPosEigenschaft->cEigenschaftName[$Sprache->cISO]     = $Eigenschaft->cName;
             $NeueWarenkorbPosEigenschaft->cEigenschaftWertName[$Sprache->cISO] = $EigenschaftWert->cName;

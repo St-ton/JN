@@ -88,14 +88,16 @@ class Statistik
             $oStatTMP_arr = Shop::DB()->query(
                 "SELECT * , sum( t.nCount ) AS nCount
                     FROM (
-                    SELECT dZeit, DATE_FORMAT( dZeit, '%d.%m.%Y' ) AS dTime, DATE_FORMAT( dZeit, '%m' ) AS nMonth, DATE_FORMAT( dZeit, '%H' ) AS nHour,
-                    DATE_FORMAT( dZeit, '%d' ) AS nDay, DATE_FORMAT( dZeit, '%Y' ) AS nYear, COUNT( dZeit ) AS nCount
+                    SELECT dZeit, DATE_FORMAT( dZeit, '%d.%m.%Y' ) AS dTime, 
+                        DATE_FORMAT( dZeit, '%m' ) AS nMonth, DATE_FORMAT( dZeit, '%H' ) AS nHour,
+                        DATE_FORMAT( dZeit, '%d' ) AS nDay, DATE_FORMAT( dZeit, '%Y' ) AS nYear, COUNT( dZeit ) AS nCount
                     FROM tbesucherarchiv
                     " . $oDatumSQL->cWhere . "
                         AND kBesucherBot = 0
                         " . $oDatumSQL->cGroupBy . "
-                        UNION SELECT dZeit, DATE_FORMAT( dZeit, '%d.%m.%Y' ) AS dTime, DATE_FORMAT( dZeit, '%m' ) AS nMonth, DATE_FORMAT( dZeit, '%H' ) AS nHour,
-                        DATE_FORMAT( dZeit, '%d' ) AS nDay, DATE_FORMAT( dZeit, '%Y' ) AS nYear, COUNT( dZeit ) AS nCount
+                        UNION SELECT dZeit, DATE_FORMAT( dZeit, '%d.%m.%Y' ) AS dTime, 
+                            DATE_FORMAT( dZeit, '%m' ) AS nMonth, DATE_FORMAT( dZeit, '%H' ) AS nHour,
+                            DATE_FORMAT( dZeit, '%d' ) AS nDay, DATE_FORMAT( dZeit, '%Y' ) AS nYear, COUNT( dZeit ) AS nCount
                         FROM tbesucher
                         " . $oDatumSQL->cWhere . "
                             AND kBesucherBot = 0
@@ -252,7 +254,10 @@ class Statistik
     private function gibDifferenz()
     {
         if (count($this->cDatumVon_arr) > 0 && count($this->cDatumBis_arr) > 0) {
-            $oDay = Shop::DB()->query("SELECT DATEDIFF('" . $this->cDatumBis_arr['cDatum'] . "', '" . $this->cDatumVon_arr['cDatum'] . "') AS nTage", 1);
+            $oDay = Shop::DB()->query("
+                SELECT DATEDIFF('" . $this->cDatumBis_arr['cDatum'] . "', '" .
+                $this->cDatumVon_arr['cDatum'] . "') AS nTage", 1
+            );
 
             if (isset($oDay->nTage)) {
                 $this->nTage = intval($oDay->nTage) + 1;
@@ -313,9 +318,13 @@ class Statistik
                 $cZeitBis = $this->cDatumBis_arr['cZeit'];
             }
 
-            $oDatum->cWhere = " WHERE " . $cDatumSpalte . " BETWEEN '" . $this->cDatumVon_arr['cDatum'] . " " . $cZeitVon . "' AND '" . $this->cDatumBis_arr['cDatum'] . " " . $cZeitBis . "' ";
+            $oDatum->cWhere = " WHERE " . $cDatumSpalte . " BETWEEN '" .
+                $this->cDatumVon_arr['cDatum'] . " " . $cZeitVon . "' AND '" .
+                $this->cDatumBis_arr['cDatum'] . " " . $cZeitBis . "' ";
         } elseif ($this->nStampVon > 0 && $this->nStampBis > 0) {
-            $oDatum->cWhere = " WHERE " . $cDatumSpalte . " BETWEEN '" . date('Y-m-d H:i:s', $this->nStampVon) . "' AND '" . date('Y-m-d H:i:s', $this->nStampBis) . "' ";
+            $oDatum->cWhere = " WHERE " . $cDatumSpalte . " BETWEEN '" .
+                date('Y-m-d H:i:s', $this->nStampVon) . "' AND '" .
+                date('Y-m-d H:i:s', $this->nStampBis) . "' ";
         }
 
         if ($this->nAnzeigeIntervall > 0) {
@@ -325,7 +334,8 @@ class Statistik
                     break;
 
                 case 2: // Tage
-                    $oDatum->cGroupBy = " GROUP BY DAY(" . $cDatumSpalte . "), YEAR(" . $cDatumSpalte . "), MONTH(" . $cDatumSpalte . ")";
+                    $oDatum->cGroupBy = " GROUP BY DAY(" . $cDatumSpalte . "), YEAR(" .
+                        $cDatumSpalte . "), MONTH(" . $cDatumSpalte . ")";
                     break;
 
                 case 3: // Monate

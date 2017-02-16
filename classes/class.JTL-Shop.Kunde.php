@@ -192,7 +192,7 @@ class Kunde
     public $dVeraendert;
 
     /**
-     * @var string array
+     * @var array
      */
     public $cKundenattribut_arr;
 
@@ -263,7 +263,7 @@ class Kunde
      */
     public function verifyLoginCaptcha($post)
     {
-        $conf          = Shop::getConfig([CONF_KUNDEN]);
+        $conf          = Shop::getSettings([CONF_KUNDEN]);
         $cBenutzername = $post['email'];
         if (isset($conf['kunden']['kundenlogin_max_loginversuche']) && $conf['kunden']['kundenlogin_max_loginversuche'] !== '' &&
             $conf['kunden']['kundenlogin_max_loginversuche'] > 1 && strlen($cBenutzername) > 0
@@ -569,6 +569,10 @@ class Kunde
      */
     public function updateInDB()
     {
+        if (preg_match('/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/', $this->dGeburtstag, $matches) === 1) {
+            $this->dGeburtstag = $matches[3] . '-' . $matches[2] . '-' . $matches[1];
+        }
+
         $this->verschluesselKundendaten();
         $obj = kopiereMembers($this);
 

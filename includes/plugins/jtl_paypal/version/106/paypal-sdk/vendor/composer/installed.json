@@ -1,53 +1,5 @@
 [
     {
-        "name": "paypal/sdk-core-php",
-        "version": "3.3.0",
-        "version_normalized": "3.3.0.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/paypal/sdk-core-php.git",
-            "reference": "e74083dbd0a9375c616b71cf0188dce87e5688ec"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/paypal/sdk-core-php/zipball/e74083dbd0a9375c616b71cf0188dce87e5688ec",
-            "reference": "e74083dbd0a9375c616b71cf0188dce87e5688ec",
-            "shasum": ""
-        },
-        "require": {
-            "ext-curl": "*",
-            "php": ">=5.3.0"
-        },
-        "require-dev": {
-            "phpunit/phpunit": "3.7.*"
-        },
-        "time": "2016-05-16 18:04:26",
-        "type": "library",
-        "installation-source": "dist",
-        "autoload": {
-            "psr-0": {
-                "PayPal": "lib/"
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "Apache2"
-        ],
-        "authors": [
-            {
-                "name": "PayPal",
-                "homepage": "https://github.com/paypal/sdk-core-php/contributors"
-            }
-        ],
-        "description": "PayPal Core SDK for PHP",
-        "homepage": "https://github.com/paypal/sdk-core-php",
-        "keywords": [
-            "paypal",
-            "php",
-            "sdk"
-        ]
-    },
-    {
         "name": "paypal/merchant-sdk-php",
         "version": "v3.9.1",
         "version_normalized": "3.9.1.0",
@@ -145,29 +97,28 @@
         ]
     },
     {
-        "name": "paypal/rest-api-sdk-php",
-        "version": "v1.6.4",
-        "version_normalized": "1.6.4.0",
+        "name": "paypal/sdk-core-php",
+        "version": "3.3.2",
+        "version_normalized": "3.3.2.0",
         "source": {
             "type": "git",
-            "url": "https://github.com/paypal/PayPal-PHP-SDK.git",
-            "reference": "06837d290c4906578cfd92786412dff330a1429c"
+            "url": "https://github.com/paypal/sdk-core-php.git",
+            "reference": "6e4ebde3bc2978f80ddf96441194577f59fe5045"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/paypal/PayPal-PHP-SDK/zipball/06837d290c4906578cfd92786412dff330a1429c",
-            "reference": "06837d290c4906578cfd92786412dff330a1429c",
+            "url": "https://api.github.com/repos/paypal/sdk-core-php/zipball/6e4ebde3bc2978f80ddf96441194577f59fe5045",
+            "reference": "6e4ebde3bc2978f80ddf96441194577f59fe5045",
             "shasum": ""
         },
         "require": {
             "ext-curl": "*",
-            "ext-json": "*",
             "php": ">=5.3.0"
         },
         "require-dev": {
             "phpunit/phpunit": "3.7.*"
         },
-        "time": "2016-01-20 17:45:52",
+        "time": "2016-10-25 17:18:46",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -177,7 +128,106 @@
         },
         "notification-url": "https://packagist.org/downloads/",
         "license": [
-            "Apache2"
+            "Apache-2.0"
+        ],
+        "authors": [
+            {
+                "name": "PayPal",
+                "homepage": "https://github.com/paypal/sdk-core-php/contributors"
+            }
+        ],
+        "description": "PayPal Core SDK for PHP",
+        "homepage": "https://github.com/paypal/sdk-core-php",
+        "keywords": [
+            "paypal",
+            "php",
+            "sdk"
+        ]
+    },
+    {
+        "name": "psr/log",
+        "version": "1.0.2",
+        "version_normalized": "1.0.2.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/php-fig/log.git",
+            "reference": "4ebe3a8bf773a19edfe0a84b6585ba3d401b724d"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/php-fig/log/zipball/4ebe3a8bf773a19edfe0a84b6585ba3d401b724d",
+            "reference": "4ebe3a8bf773a19edfe0a84b6585ba3d401b724d",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.0"
+        },
+        "time": "2016-10-10 12:19:37",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "1.0.x-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Psr\\Log\\": "Psr/Log/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "PHP-FIG",
+                "homepage": "http://www.php-fig.org/"
+            }
+        ],
+        "description": "Common interface for logging libraries",
+        "homepage": "https://github.com/php-fig/log",
+        "keywords": [
+            "log",
+            "psr",
+            "psr-3"
+        ]
+    },
+    {
+        "name": "paypal/rest-api-sdk-php",
+        "version": "1.11.0",
+        "version_normalized": "1.11.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/paypal/PayPal-PHP-SDK.git",
+            "reference": "7e664f12be32b975575371e8ad3bc17b6b318851"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/paypal/PayPal-PHP-SDK/zipball/7e664f12be32b975575371e8ad3bc17b6b318851",
+            "reference": "7e664f12be32b975575371e8ad3bc17b6b318851",
+            "shasum": ""
+        },
+        "require": {
+            "ext-curl": "*",
+            "ext-json": "*",
+            "php": ">=5.3.0",
+            "psr/log": "^1.0.0"
+        },
+        "require-dev": {
+            "phpunit/phpunit": "3.7.*"
+        },
+        "time": "2016-12-14 21:59:21",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-0": {
+                "PayPal": "lib/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "Apache-2.0"
         ],
         "authors": [
             {

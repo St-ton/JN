@@ -26,8 +26,18 @@ $step                 = 'formular';
 $hinweis              = '';
 $cFehler              = '';
 //loginbenutzer?
-if (isset($_POST['passwort_vergessen']) && intval($_POST['passwort_vergessen']) === 1 && isset($_POST['email'])) {
-    $kunde = Shop::DB()->select('tkunde', 'cMail', $_POST['email'], 'nRegistriert', 1, null, null, false, 'kKunde, cSperre');
+if (isset($_POST['passwort_vergessen']) && (int)$_POST['passwort_vergessen'] === 1 && isset($_POST['email'])) {
+    $kunde = Shop::DB()->select(
+        'tkunde',
+        'cMail',
+        $_POST['email'],
+        'nRegistriert',
+        1,
+        null,
+        null,
+        false,
+        'kKunde, cSperre'
+    );
     if (isset($kunde->kKunde) && $kunde->kKunde > 0 && $kunde->cSperre !== 'Y') {
         $step   = 'passwort versenden';
         $oKunde = new Kunde($kunde->kKunde);
@@ -41,7 +51,17 @@ if (isset($_POST['passwort_vergessen']) && intval($_POST['passwort_vergessen']) 
     }
 } elseif (isset($_POST['pw_new']) && isset($_POST['pw_new_confirm']) && isset($_POST['fpm']) && isset($_POST['fpwh'])) {
     if ($_POST['pw_new'] === $_POST['pw_new_confirm']) {
-        $kunde = Shop::DB()->select('tkunde', 'cMail', $_POST['fpm'], 'nRegistriert', 1, null, null, false, 'kKunde, cSperre');
+        $kunde = Shop::DB()->select(
+            'tkunde',
+            'cMail',
+            $_POST['fpm'],
+            'nRegistriert',
+            1,
+            null,
+            null,
+            false,
+            'kKunde, cSperre'
+        );
         if (isset($kunde->kKunde) && $kunde->kKunde > 0 && $kunde->cSperre !== 'Y') {
             $oKunde   = new Kunde($kunde->kKunde);
             $verified = $oKunde->verifyResetPasswordHash($_POST['fpwh'], $_POST['fpm']);
@@ -65,9 +85,7 @@ if (isset($_POST['passwort_vergessen']) && intval($_POST['passwort_vergessen']) 
            ->assign('fpm', $_GET['mail']);
     $step = 'confirm';
 }
-// Canonical
-$cCanonicalURL = $linkHelper->getStaticRoute('pass.php', true);
-// Metaangaben
+$cCanonicalURL    = $linkHelper->getStaticRoute('pass.php', true);
 $oMeta            = $linkHelper->buildSpecialPageMeta(LINKTYP_PASSWORD_VERGESSEN);
 $cMetaTitle       = $oMeta->cTitle;
 $cMetaDescription = $oMeta->cDesc;

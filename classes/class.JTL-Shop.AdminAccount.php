@@ -112,7 +112,17 @@ class AdminAccount
      */
     public function login($cLogin, $cPass)
     {
-        $oAdmin = Shop::DB()->select('tadminlogin', 'cLogin', $cLogin, null, null, null, null, false, '*, UNIX_TIMESTAMP(dGueltigBis) AS dGueltigTS');
+        $oAdmin = Shop::DB()->select(
+            'tadminlogin',
+            'cLogin',
+            $cLogin,
+            null,
+            null,
+            null,
+            null,
+            false,
+            '*, UNIX_TIMESTAMP(dGueltigBis) AS dGueltigTS'
+        );
         if (!is_object($oAdmin)) {
             return -3;
         }
@@ -410,10 +420,10 @@ class AdminAccount
             $_upd->nLoginVersuch = 0;
             Shop::DB()->update('tadminlogin', 'cLogin', $cLogin, $_upd);
         } else {
-            Shop::DB()->query("
+            Shop::DB()->executeQueryPrepared("
                 UPDATE tadminlogin
                     SET nLoginVersuch = nLoginVersuch+1
-                    WHERE cLogin = '" . $cLogin . "'", 3
+                    WHERE cLogin = :login", ['login' => $cLogin], 3
             );
         }
 
@@ -429,7 +439,12 @@ class AdminAccount
         $kAdminlogingruppe = (int)$kAdminlogingruppe;
         $oGroup            = Shop::DB()->select('tadminlogingruppe', 'kAdminlogingruppe', $kAdminlogingruppe);
         if (isset($oGroup->kAdminlogingruppe)) {
-            $oPermission_arr = Shop::DB()->selectAll('tadminrechtegruppe', 'kAdminlogingruppe', $kAdminlogingruppe, 'cRecht');
+            $oPermission_arr = Shop::DB()->selectAll(
+                'tadminrechtegruppe',
+                'kAdminlogingruppe',
+                $kAdminlogingruppe,
+                'cRecht'
+            );
             if (is_array($oPermission_arr)) {
                 $oGroup->oPermission_arr = [];
                 foreach ($oPermission_arr as $oPermission) {
@@ -460,7 +475,8 @@ class AdminAccount
      */
     private function checkAndUpdateHash($password)
     {
-        if (version_compare(Shop::getShopVersion(), 400, '>=') === true && //only update hash if the db update to 4.00+ was already executed
+        //only update hash if the db update to 4.00+ was already executed
+        if (version_compare(Shop::getShopVersion(), 400, '>=') === true &&
             isset($_SESSION['AdminAccount']->cPass) && isset($_SESSION['AdminAccount']->cLogin) &&
             password_needs_rehash($_SESSION['AdminAccount']->cPass, PASSWORD_DEFAULT)) {
             $_upd        = new stdClass();

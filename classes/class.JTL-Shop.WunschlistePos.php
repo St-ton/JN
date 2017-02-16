@@ -52,7 +52,7 @@ class WunschlistePos
     /**
      * @var array
      */
-    public $CWunschlistePosEigenschaft_arr = array();
+    public $CWunschlistePosEigenschaft_arr = [];
 
     /**
      * @var Artikel

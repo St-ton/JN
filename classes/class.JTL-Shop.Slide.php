@@ -88,7 +88,7 @@ class Slide
             $oSlide = Shop::DB()->select('tslide', 'kSlide', (int)$kSlide);
 
             if (is_object($oSlide)) {
-                $cSlide_arr = (array) $oSlide;
+                $cSlide_arr = (array)$oSlide;
                 $this->set($cSlide_arr);
 
                 return true;

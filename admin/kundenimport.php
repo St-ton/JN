@@ -157,7 +157,11 @@ function processImport($fmt, $data)
         if (isset($_SESSION['kundenimport']['cLand']) && strlen($_SESSION['kundenimport']['cLand']) > 0) {
             $kunde->cLand = $_SESSION['kundenimport']['cLand'];
         } else {
-            $oRes = Shop::DB()->query("SELECT cWert AS cLand FROM teinstellungen WHERE cName = 'kundenregistrierung_standardland'", 1);
+            $oRes = Shop::DB()->query("
+                SELECT cWert AS cLand 
+                    FROM teinstellungen 
+                    WHERE cName = 'kundenregistrierung_standardland'", 1
+            );
             if (is_object($oRes) && isset($oRes->cLand) && strlen($oRes->cLand) > 0) {
                 $_SESSION['kundenimport']['cLand'] = $oRes->cLand;
                 $kunde->cLand                      = $oRes->cLand;

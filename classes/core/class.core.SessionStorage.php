@@ -65,7 +65,7 @@ class SessionStorage
         }
 
         if ($res === true) {
-            $conf           = Shop::getConfig([CONF_GLOBAL]);
+            $conf           = Shop::getSettings([CONF_GLOBAL]);
             $cookieDefaults = session_get_cookie_params();
             $set            = false;
             $lifetime       = (isset($cookieDefaults['lifetime'])) ?
@@ -111,7 +111,9 @@ class SessionStorage
                 }
                 //EXPERIMENTAL_MULTILANG_SHOP END
             }
-            if (isset($conf['global']['global_cookie_lifetime']) && is_numeric($conf['global']['global_cookie_lifetime']) && intval($conf['global']['global_cookie_lifetime']) > 0) {
+            if (isset($conf['global']['global_cookie_lifetime']) && is_numeric($conf['global']['global_cookie_lifetime']) &&
+                intval($conf['global']['global_cookie_lifetime']) > 0
+            ) {
                 $set      = true;
                 $lifetime = (int)$conf['global']['global_cookie_lifetime'];
             }

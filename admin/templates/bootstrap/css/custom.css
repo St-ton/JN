@@ -54,16 +54,6 @@ a {
     margin-right: 2px;
 }
 
-.boxCenterDisabled {
-    background-color: #eee;
-    color: #ddd;
-    font-size: 38px;
-    line-height: 80px;
-    margin: 10px 0;
-    text-align: center;
-    width: 100%;
-}
-
 .boxWrapper .panel .list-group {
     margin-bottom: 0;
 }
@@ -279,19 +269,9 @@ table .input-group {
     overflow: hidden;
 }
 
-.list-group-item .boxOptions {
-    float: right;
-}
-
 .list-group-item .left {
     float: left;
     line-height: 34px;
-}
-
-.modify-wrap {
-    float: right;
-    text-align: right;
-    min-width: 105px;
 }
 
 tr.highlight {
@@ -1122,8 +1102,8 @@ table tbody td div.sub {
     width: 100%;
 }
 
-.container-child {
-    margin-left: 20px;
+.boxSubName {
+    padding-left: 40px;
 }
 
 #install-header-image {
@@ -1822,10 +1802,6 @@ body {
     overflow-y: scroll;
 }
 
-.boxOptions input[type=text] {
-    float: left;
-}
-
 .boxRowContainer {
     padding-top: 10px;
 }
@@ -1874,10 +1850,6 @@ select.form-control {
 .box-active-filters {
     margin: 0;
     padding: 0 0 0 15px;
-}
-
-.box-active-filters i {
-    display: none;
 }
 
 .input-group-wrap .file-input .input-group {
@@ -1969,8 +1941,7 @@ tr.text-vtop > td,tr.text-vtop > th {
 }
 
 .tooltip-inner {
-    max-width: 99999px;
-    white-space: nowrap;
+    max-width: 500px;
     padding: 5px 10px;
     font-size: 13px;
 }

@@ -158,7 +158,10 @@ class cache_advancedfile implements ICachingMethod
      */
     public function flushAll()
     {
-        $rdi = new RecursiveDirectoryIterator($this->options['cache_dir'], FilesystemIterator::SKIP_DOTS | FilesystemIterator::UNIX_PATHS);
+        $rdi = new RecursiveDirectoryIterator(
+            $this->options['cache_dir'],
+            FilesystemIterator::SKIP_DOTS | FilesystemIterator::UNIX_PATHS
+        );
         foreach (new RecursiveIteratorIterator($rdi, RecursiveIteratorIterator::CHILD_FIRST) as $value) {
             if ($value->isLink() || $value->isFile()) {
                 unlink($value);
@@ -274,7 +277,10 @@ class cache_advancedfile implements ICachingMethod
                     $path .= $dir . '/';
                 }
                 if (is_dir($path)) {
-                    $rdi = new RecursiveDirectoryIterator($path, FilesystemIterator::SKIP_DOTS | FilesystemIterator::UNIX_PATHS);
+                    $rdi = new RecursiveDirectoryIterator(
+                        $path,
+                        FilesystemIterator::SKIP_DOTS | FilesystemIterator::UNIX_PATHS
+                    );
                     foreach (new RecursiveIteratorIterator($rdi, RecursiveIteratorIterator::CHILD_FIRST) as $value) {
                         $res = false;
                         if ($value->isLink()) {
@@ -332,7 +338,10 @@ class cache_advancedfile implements ICachingMethod
                     $path .= $dir . '/';
                 }
                 if (is_dir($path)) {
-                    $rdi = new RecursiveDirectoryIterator($path, FilesystemIterator::SKIP_DOTS | FilesystemIterator::UNIX_PATHS);
+                    $rdi = new RecursiveDirectoryIterator(
+                        $path,
+                        FilesystemIterator::SKIP_DOTS | FilesystemIterator::UNIX_PATHS
+                    );
                     foreach (new RecursiveIteratorIterator($rdi, RecursiveIteratorIterator::CHILD_FIRST) as $value) {
                         if ($value->isFile()) {
                             $res[] = $value->getFilename();

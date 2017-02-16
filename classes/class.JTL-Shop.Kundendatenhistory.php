@@ -209,14 +209,14 @@ class Kundendatenhistory extends MainModel
     public function update()
     {
         $cQuery      = 'UPDATE tkundendatenhistory SET ';
-        $cSet_arr    = array();
+        $cSet_arr    = [];
         $cMember_arr = array_keys(get_object_vars($this));
         if (is_array($cMember_arr) && count($cMember_arr) > 0) {
             foreach ($cMember_arr as $cMember) {
                 $cMethod = 'get' . substr($cMember, 1);
                 if (method_exists($this, $cMethod)) {
-                    $mValue = "'" . Shop::DB()->escape(call_user_func(array(&$this, $cMethod))) . "'";
-                    if (call_user_func(array(&$this, $cMethod)) === null) {
+                    $mValue = "'" . Shop::DB()->escape(call_user_func([&$this, $cMethod])) . "'";
+                    if (call_user_func([&$this, $cMethod]) === null) {
                         $mValue = 'NULL';
                     }
                     $cSet_arr[] = "{$cMember} = {$mValue}";

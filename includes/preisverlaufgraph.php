@@ -35,7 +35,13 @@ if (intval($_GET['kArtikel']) > 0 && intval($_GET['kKundengruppe']) > 0 && intva
         );
 
         if (isset($oPreisverlauf->kPreisverlauf) && $oPreisverlauf->kPreisverlauf > 0) {
-            $oPreisverlaufGraph                      = new PreisverlaufGraph($kArtikel, $kKundengruppe, $nMonat, $oConfig_arr, $oPreisConfig);
+            $oPreisverlaufGraph                      = new PreisverlaufGraph(
+                $kArtikel,
+                $kKundengruppe,
+                $nMonat,
+                $oConfig_arr,
+                $oPreisConfig
+            );
             $oPreisverlaufGraph->cSchriftverzeichnis = PFAD_ROOT . 'includes/fonts/';
             $oPreisverlaufGraph->zeichneGraphen();
         }

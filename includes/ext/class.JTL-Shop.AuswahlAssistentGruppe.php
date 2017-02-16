@@ -60,15 +60,15 @@ if (class_exists('AuswahlAssistent')) {
         public $cKategorie;
 
         /**
-         * @param int  $kAuswahlAssistentGruppe
+         * @param int  $groupID
          * @param bool $bAktiv
          * @param bool $bAktivFrage
          * @param bool $bBackend
          */
-        public function __construct($kAuswahlAssistentGruppe = 0, $bAktiv = true, $bAktivFrage = true, $bBackend = false)
+        public function __construct($groupID = 0, $bAktiv = true, $bAktivFrage = true, $bBackend = false)
         {
-            if ($kAuswahlAssistentGruppe > 0) {
-                $this->loadFromDB($kAuswahlAssistentGruppe, $bAktiv, $bAktivFrage, $bBackend);
+            if ($groupID > 0) {
+                $this->loadFromDB($groupID, $bAktiv, $bAktivFrage, $bBackend);
             }
         }
 
@@ -88,7 +88,8 @@ if (class_exists('AuswahlAssistent')) {
                 $oGruppe = Shop::DB()->query(
                     "SELECT *
                         FROM tauswahlassistentgruppe
-                        WHERE kAuswahlAssistentGruppe = " . (int)$kAuswahlAssistentGruppe . $cAktivSQL, 1
+                        WHERE kAuswahlAssistentGruppe = " . (int)$kAuswahlAssistentGruppe .
+                        $cAktivSQL, 1
                 );
                 if (isset($oGruppe->kAuswahlAssistentGruppe) && $oGruppe->kAuswahlAssistentGruppe > 0) {
                     $cMember_arr = array_keys(get_object_vars($oGruppe));
@@ -98,8 +99,15 @@ if (class_exists('AuswahlAssistent')) {
                         }
                     }
                     // Fragen
-                    $this->oAuswahlAssistentFrage_arr = AuswahlAssistentFrage::getQuestions($oGruppe->kAuswahlAssistentGruppe, $bAktivFrage);
-                    $oAuswahlAssistentOrt             = new AuswahlAssistentOrt(0, $this->kAuswahlAssistentGruppe, $bBackend);
+                    $this->oAuswahlAssistentFrage_arr = AuswahlAssistentFrage::getQuestions(
+                        $oGruppe->kAuswahlAssistentGruppe,
+                        $bAktivFrage
+                    );
+                    $oAuswahlAssistentOrt             = new AuswahlAssistentOrt(
+                        0,
+                        $this->kAuswahlAssistentGruppe,
+                        $bBackend
+                    );
                     $this->oAuswahlAssistentOrt_arr   = $oAuswahlAssistentOrt->oOrt_arr;
                     if (count($this->oAuswahlAssistentOrt_arr) > 0) {
                         foreach ($this->oAuswahlAssistentOrt_arr as $oAuswahlAssistentOrt) {
@@ -113,7 +121,11 @@ if (class_exists('AuswahlAssistent')) {
                             }
                         }
                     }
-                    $oSprache       = Shop::DB()->query("SELECT cNameDeutsch FROM tsprache WHERE kSprache = " . (int) $this->kSprache, 1);
+                    $oSprache       = Shop::DB()->query("
+                        SELECT cNameDeutsch 
+                            FROM tsprache 
+                            WHERE kSprache = " . (int)$this->kSprache, 1
+                    );
                     $this->cSprache = $oSprache->cNameDeutsch;
                 }
             }
@@ -128,7 +140,7 @@ if (class_exists('AuswahlAssistent')) {
          */
         public static function getGroups($kSprache, $bAktiv = true, $bAktivFrage = true, $bBackend = false)
         {
-            $oGruppe_arr = array();
+            $oGruppe_arr = [];
             $cAktivSQL   = '';
             if ($bAktiv) {
                 $cAktivSQL = " AND nAktiv = 1";
@@ -136,7 +148,8 @@ if (class_exists('AuswahlAssistent')) {
             $oGruppeTMP_arr = Shop::DB()->query(
                 "SELECT kAuswahlAssistentGruppe
                     FROM tauswahlassistentgruppe
-                    WHERE kSprache = " . (int)$kSprache . $cAktivSQL, 2
+                    WHERE kSprache = " . (int)$kSprache .
+                    $cAktivSQL, 2
             );
             if (count($oGruppeTMP_arr) > 0) {
                 foreach ($oGruppeTMP_arr as $oGruppeTMP) {
@@ -189,7 +202,12 @@ if (class_exists('AuswahlAssistent')) {
                 $_upd->cBeschreibung = $this->cBeschreibung;
                 $_upd->nAktiv        = $this->nAktiv;
 
-                Shop::DB()->update('tauswahlassistentgruppe', 'kAuswahlAssistentGruppe', (int)$this->kAuswahlAssistentGruppe, $_upd);
+                Shop::DB()->update(
+                    'tauswahlassistentgruppe',
+                    'kAuswahlAssistentGruppe',
+                    (int)$this->kAuswahlAssistentGruppe,
+                    $_upd
+                );
                 AuswahlAssistentOrt::updateLocation($cParam_arr, $this->kAuswahlAssistentGruppe);
 
                 return true;
@@ -205,7 +223,7 @@ if (class_exists('AuswahlAssistent')) {
          */
         public function checkGroup($cParam_arr, $bUpdate = false)
         {
-            $cPlausi_arr = array();
+            $cPlausi_arr = [];
             // Name
             if (strlen($this->cName) === 0) {
                 $cPlausi_arr['cName'] = 1;
@@ -230,13 +248,17 @@ if (class_exists('AuswahlAssistent')) {
          */
         public static function deleteGroup($cParam_arr)
         {
-            if (isset($cParam_arr['kAuswahlAssistentGruppe_arr']) && is_array($cParam_arr['kAuswahlAssistentGruppe_arr']) && count($cParam_arr['kAuswahlAssistentGruppe_arr']) > 0) {
+            if (isset($cParam_arr['kAuswahlAssistentGruppe_arr']) &&
+                is_array($cParam_arr['kAuswahlAssistentGruppe_arr']) &&
+                count($cParam_arr['kAuswahlAssistentGruppe_arr']) > 0) {
                 foreach ($cParam_arr['kAuswahlAssistentGruppe_arr'] as $kAuswahlAssistentGruppe) {
                     Shop::DB()->query(
                         "DELETE tauswahlassistentgruppe, tauswahlassistentfrage, tauswahlassistentort
                             FROM tauswahlassistentgruppe
-                            LEFT JOIN tauswahlassistentfrage ON tauswahlassistentfrage.kAuswahlAssistentGruppe = tauswahlassistentgruppe.kAuswahlAssistentGruppe
-                            LEFT JOIN tauswahlassistentort ON tauswahlassistentort.kAuswahlAssistentGruppe = tauswahlassistentgruppe.kAuswahlAssistentGruppe
+                            LEFT JOIN tauswahlassistentfrage 
+                                ON tauswahlassistentfrage.kAuswahlAssistentGruppe = tauswahlassistentgruppe.kAuswahlAssistentGruppe
+                            LEFT JOIN tauswahlassistentort 
+                                ON tauswahlassistentort.kAuswahlAssistentGruppe = tauswahlassistentgruppe.kAuswahlAssistentGruppe
                             WHERE tauswahlassistentgruppe.kAuswahlAssistentGruppe = " . (int)$kAuswahlAssistentGruppe, 3
                     );
                 }

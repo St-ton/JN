@@ -79,7 +79,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
          */
         public function update()
         {
-            return Shop::DB()->update('tuploaddatei', 'kUpload', intval($this->kUpload), self::copyMembers($this));
+            return Shop::DB()->update('tuploaddatei', 'kUpload', (int)$this->kUpload, self::copyMembers($this));
         }
 
         /**
@@ -87,7 +87,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
          */
         public function delete()
         {
-            return Shop::DB()->delete('tuploaddatei', 'kUpload', (int) $this->kUpload);
+            return Shop::DB()->delete('tuploaddatei', 'kUpload', (int)$this->kUpload);
         }
 
         /**
@@ -97,14 +97,24 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UPLOADS)) {
          */
         public static function fetchAll($kCustomID, $nTyp)
         {
-            $oUploadDatei_arr = Shop::DB()->selectAll('tuploaddatei', ['kCustomID', 'nTyp'], [(int)$kCustomID, (int)$nTyp]);
+            $oUploadDatei_arr = Shop::DB()->selectAll(
+                'tuploaddatei',
+                ['kCustomID', 'nTyp'],
+                [(int)$kCustomID, (int)$nTyp]
+            );
 
             if (is_array($oUploadDatei_arr)) {
                 foreach ($oUploadDatei_arr as &$oUpload) {
                     $oUpload->cGroesse   = Upload::formatGroesse($oUpload->nBytes);
                     $oUpload->bVorhanden = is_file(PFAD_UPLOADS . $oUpload->cPfad);
                     $oUpload->bVorschau  = Upload::vorschauTyp($oUpload->cName);
-                    $oUpload->cBildpfad  = sprintf('%s/%s?action=preview&secret=%s&sid=%s', Shop::getURL(), PFAD_UPLOAD_CALLBACK, rawurlencode(verschluesselXTEA($oUpload->kUpload)), session_id());
+                    $oUpload->cBildpfad  = sprintf(
+                        '%s/%s?action=preview&secret=%s&sid=%s',
+                        Shop::getURL(),
+                        PFAD_UPLOAD_CALLBACK,
+                        rawurlencode(verschluesselXTEA($oUpload->kUpload)),
+                        session_id()
+                    );
                 }
             }
 

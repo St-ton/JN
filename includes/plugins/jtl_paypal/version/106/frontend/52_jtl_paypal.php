@@ -1,6 +1,6 @@
 <?php
 
-require_once str_replace('frontend', 'paymentmethod', $oPlugin->cFrontendPfad) . 'class/PayPal.helper.class.php';
+require_once str_replace('frontend', 'paymentmethod', $oPlugin->cFrontendPfad).'class/PayPal.helper.class.php';
 
 /*
  * HOOK_WARENKORB_PAGE
@@ -9,9 +9,9 @@ if (isset($_GET['jtl_paypal_redirect'])) {
     $link = PayPalHelper::getLinkByName($oPlugin, 'PayPalExpress');
     if ($link !== null) {
         if (isset($_GET['return'])) {
-            header('Location: ' . URL_SHOP . '/index.php?s=' . $link->kLink . '&return=1&jtl_paypal_redirect=1');
+            header('Location: '.URL_SHOP.'/index.php?s='.$link->kLink.'&return=1&jtl_paypal_redirect=1');
         } else {
-            header('Location: ' . URL_SHOP . '/index.php?s=' . $link->kLink . '&jtl_paypal_redirect=1');
+            header('Location: '.URL_SHOP.'/index.php?s='.$link->kLink.'&jtl_paypal_redirect=1');
         }
     }
     exit;
@@ -21,11 +21,11 @@ if (isset($_GET['fillOut'])) {
     $message = '';
     switch ($_GET['fillOut']) {
         case 'ppexpress_max':
-            $summe   = gibPreisStringLocalized($_GET['max']);
+            $summe = gibPreisStringLocalized($_GET['max']);
             $message = str_replace('%Wert%', $summe, $oPlugin->oPluginSprachvariableAssoc_arr['jtl_paypal_warenkorb_max']);
             break;
         case 'ppexpress_min':
-            $summe   = gibPreisStringLocalized($_GET['min']);
+            $summe = gibPreisStringLocalized($_GET['min']);
             $message = str_replace('%Wert%', $summe, $oPlugin->oPluginSprachvariableAssoc_arr['jtl_paypal_warenkorb_min']);
             break;
         case 'ppexpress_notallowed':

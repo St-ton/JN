@@ -12,23 +12,21 @@
 {if $Schnellkaufhinweis}
     <div class="alert alert-info">{$Schnellkaufhinweis}</div>
 {/if}
+{if count($Warenkorbhinweise)>0}
+    <div class="alert alert-warning">
+        {foreach name=hinweise from=$Warenkorbhinweise item=Warenkorbhinweis}
+            {$Warenkorbhinweis}
+            <br />
+        {/foreach}
+    </div>
+{/if}
+{if !empty($MsgWarning)}
+    <p class="alert alert-danger">{$MsgWarning}</p>
+{/if}
 
 {if ($Warenkorb->PositionenArr|@count > 0)}
-    {if count($Warenkorbhinweise)>0}
-        <div class="alert alert-warning">
-            {foreach name=hinweise from=$Warenkorbhinweise item=Warenkorbhinweis}
-                {$Warenkorbhinweis}
-                <br />
-            {/foreach}
-        </div>
-    {/if}
-
     {if !empty($BestellmengeHinweis)}
         <div class="alert alert-warning">{$BestellmengeHinweis}</div>
-    {/if}
-
-    {if !empty($MsgWarning)}
-        <p class="alert alert-danger">{$MsgWarning}</p>
     {/if}
 
     {if !empty($invalidCouponCode)}
@@ -94,7 +92,7 @@
             {if $oArtikelGeschenk_arr|@count > 0}
                 {block name="basket-freegift"}
                     <div id="freegift" class="panel panel-info">
-                        <div class="panel-heading">{block name="basket-freegift-title"}{lang key="freeGiftFromOrderValueBasket" section="global"}{/block}</div>
+                        <div class="panel-heading"><div class="panel-title">{block name="basket-freegift-title"}{lang key="freeGiftFromOrderValueBasket" section="global"}{/block}</div></div>
                         <div class="panel-body">
                             {block name="basket-freegift-body"}
                                 <form method="post" name="freegift" action="{get_static_route id='warenkorb.php'}">
@@ -104,12 +102,11 @@
                                             <div class="col-sm-6 col-md-4 text-center">
                                                 <label class="thumbnail" for="gift{$oArtikelGeschenk->kArtikel}">
                                                     <img src="{$oArtikelGeschenk->Bilder[0]->cPfadKlein}" class="image" />
-
-                                                    <span class="small text-muted">{lang key="freeGiftFrom1" section="global"} {$oArtikelGeschenk->cBestellwert} {lang key="freeGiftFrom2" section="global"}</span>
-                                                    <br />
-                                                    <span>{$oArtikelGeschenk->cName}</span>
-                                                    <br />
-                                                    <input name="gratisgeschenk" type="radio" value="{$oArtikelGeschenk->kArtikel}" id="gift{$oArtikelGeschenk->kArtikel}" />
+                                                    <div class="caption">
+                                                        <p class="small text-muted">{lang key="freeGiftFrom1" section="global"} {$oArtikelGeschenk->cBestellwert} {lang key="freeGiftFrom2" section="global"}</p>
+                                                        <p>{$oArtikelGeschenk->cName}</p>
+                                                        <input name="gratisgeschenk" type="radio" value="{$oArtikelGeschenk->kArtikel}" id="gift{$oArtikelGeschenk->kArtikel}" />
+                                                    </div>
                                                 </label>
                                             </div>
                                         {/foreach}
@@ -126,8 +123,10 @@
             {/if}
 
             {if !empty($xselling->Kauf) && count($xselling->Kauf->Artikel) > 0}
-                {lang key="basketCustomerWhoBoughtXBoughtAlsoY" section="global" assign="panelTitle"}
-                {include file='snippets/product_slider.tpl' productlist=$xselling->Kauf->Artikel title=$panelTitle}
+                {block name="basket-xsell"}
+                    {lang key="basketCustomerWhoBoughtXBoughtAlsoY" section="global" assign="panelTitle"}
+                    {include file='snippets/product_slider.tpl' productlist=$xselling->Kauf->Artikel title=$panelTitle}
+                {/block}
             {/if}
         </div>
     {/block}

@@ -137,7 +137,18 @@
                                                     {gibPreisStringLocalizedSmarty bAufpreise=true fAufpreisNetto=$fAufpreis fVKNetto=$Artikel->Preise->fVKNetto kSteuerklasse=$Artikel->kSteuerklasse nNettoPreise=$NettoPreise fVPEWert=$Artikel->fVPEWert cVPEEinheit=$Artikel->cVPEEinheit FunktionsAttribute=$Artikel->FunktionsAttribute}
                                                 </span>
                                             {elseif $Einstellungen.artikeldetails.artikel_variationspreisanzeige == 2 && ($oVariationWert0->fAufpreisNetto != 0 || $oVariationWert1->fAufpreisNetto != 0)}
-                                                {math equation='x+y' x=$oVariationWert0->fAufpreis[1] y=$oVariationWert1->fAufpreis[1] assign='fAufpreis'}
+                                                {if !isset($oVariationWert1->fAufpreis[1])}
+                                                    {assign var=ovw1 value=0}
+                                                {else}
+                                                    {assign var=ovw1 value=$oVariationWert1->fAufpreis[1]}
+                                                {/if}
+                                                {if !isset($oVariationWert0->fAufpreis[1])}
+                                                    {assign var=ovw0 value=0}
+                                                {else}
+                                                    {assign var=ovw0 value=$oVariationWert0->fAufpreis[1]}
+                                                {/if}
+
+                                                {math equation='x+y' x=$ovw0 y=$ovw1 assign='fAufpreis'}
                                                 <span class="input-group-addon">
                                                     &times; {gibPreisStringLocalizedSmarty bAufpreise=false fAufpreisNetto=$fAufpreis fVKNetto=$Artikel->Preise->fVKNetto kSteuerklasse=$Artikel->kSteuerklasse nNettoPreise=$NettoPreise fVPEWert=$Artikel->fVPEWert cVPEEinheit=$Artikel->cVPEEinheit FunktionsAttribute=$Artikel->FunktionsAttribute}
                                                 </span>
@@ -413,7 +424,7 @@
                                             &times; {$Artikel->oVariationDetailPreis_arr[$kEigenschaftWert]->Preise->cVKLocalized[$NettoPreise]}{if isset($Artikel->oVariationDetailPreis_arr[$kEigenschaftWert]->Preise->PreisecPreisVPEWertInklAufpreis[$NettoPreise]) && !empty($Artikel->oVariationDetailPreis_arr[$kEigenschaftWert]->Preise->PreisecPreisVPEWertInklAufpreis[$NettoPreise])} <small>({$Artikel->oVariationDetailPreis_arr[$kEigenschaftWert]->Preise->PreisecPreisVPEWertInklAufpreis[$NettoPreise]})</small>{/if}
                                         </span>
                                     {elseif $Einstellungen.artikeldetails.artikel_variationspreisanzeige == 1 && $oVariationWertHead->fAufpreisNetto!=0}
-                                        <span class="input-group-addon"> 
+                                        <span class="input-group-addon">
                                             {$oVariationWertHead->cAufpreisLocalized[$NettoPreise]}{if !empty($oVariationWertHead->cPreisVPEWertAufpreis[$NettoPreise])} <small>({$oVariationWertHead->cPreisVPEWertAufpreis[$NettoPreise]})</small>{/if}
                                         </span>
                                     {elseif $Einstellungen.artikeldetails.artikel_variationspreisanzeige == 2 && $oVariationWertHead->fAufpreisNetto!=0}

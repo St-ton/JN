@@ -55,7 +55,7 @@ if ($link->nLinkart == LINKTYP_STARTSEITE) {
 } elseif (strpos($requestURL, '.php') === false) {
     $cCanonicalURL = Shop::getURL() . '/' . $requestURL;
 }
-$sprachURL = baueSprachURLS($link, URLART_SEITE);
+$sprachURL = (isset($link->languageURLs)) ? $link->languageURLs : baueSprachURLS($link, URLART_SEITE);
 //hole aktuelle Kategorie, falls eine gesetzt
 $AufgeklappteKategorien = new KategorieListe();
 $startKat               = new Kategorie();
@@ -76,7 +76,11 @@ if ($link->nLinkart == LINKTYP_STARTSEITE) {
     // Auswahlassistent
     if (TEMPLATE_COMPATIBILITY === true && function_exists('starteAuswahlAssistent')) {
         starteAuswahlAssistent(
-            AUSWAHLASSISTENT_ORT_STARTSEITE, 1, Shop::$kSprache, $smarty, $Einstellungen['auswahlassistent']
+            AUSWAHLASSISTENT_ORT_STARTSEITE,
+            1,
+            Shop::getLanguage(),
+            $smarty,
+            $Einstellungen['auswahlassistent']
         );
     } elseif (class_exists('AuswahlAssistent')) {
         AuswahlAssistent::startIfRequired(AUSWAHLASSISTENT_ORT_STARTSEITE, 1, Shop::getLanguage(), $smarty);
@@ -134,7 +138,11 @@ if ($link->nLinkart == LINKTYP_STARTSEITE) {
     // Auswahlassistent
     if (TEMPLATE_COMPATIBILITY === true && function_exists('starteAuswahlAssistent')) {
         starteAuswahlAssistent(
-            AUSWAHLASSISTENT_ORT_LINK, $link->kLink, Shop::$kSprache, $smarty, $Einstellungen['auswahlassistent']
+            AUSWAHLASSISTENT_ORT_LINK,
+            $link->kLink,
+            Shop::getLanguage(),
+            $smarty,
+            $Einstellungen['auswahlassistent']
         );
     } elseif (class_exists('AuswahlAssistent')) {
         AuswahlAssistent::startIfRequired(AUSWAHLASSISTENT_ORT_LINK, $link->kLink, Shop::getLanguage(), $smarty);
@@ -151,9 +159,22 @@ if (!isset($bFileNotFound)) {
     $bFileNotFound = false;
 }
 if ($bFileNotFound) {
-    $Navigation = createNavigation($AktuelleSeite, 0, 0, Shop::Lang()->get('pagenotfound', 'breadcrumb'), $requestURL);
+    $Navigation = createNavigation(
+        $AktuelleSeite,
+        0,
+        0,
+        Shop::Lang()->get('pagenotfound', 'breadcrumb'),
+        $requestURL
+    );
 } else {
-    $Navigation = createNavigation($AktuelleSeite, 0, 0, ((isset($link->Sprache->cName)) ? $link->Sprache->cName : ''), $requestURL, Shop::$kLink);
+    $Navigation = createNavigation(
+        $AktuelleSeite,
+        0,
+        0,
+        ((isset($link->Sprache->cName)) ? $link->Sprache->cName : ''),
+        $requestURL,
+        Shop::$kLink
+    );
 }
 $smarty->assign('Navigation', $Navigation)
        ->assign('Einstellungen', $Einstellungen)
@@ -169,7 +190,9 @@ $cMetaDescription = (isset($link->Sprache->cMetaDescription)) ? $link->Sprache->
 $cMetaKeywords    = (isset($link->Sprache->cMetaKeywords)) ? $link->Sprache->cMetaKeywords : null;
 if (strlen($cMetaTitle) === 0 || strlen($cMetaDescription) === 0 || strlen($cMetaKeywords) === 0) {
     $kSprache            = Shop::getLanguage();
-    $oGlobaleMetaAngaben = (isset($oGlobaleMetaAngabenAssoc_arr[$kSprache])) ? $oGlobaleMetaAngabenAssoc_arr[$kSprache] : null;
+    $oGlobaleMetaAngaben = (isset($oGlobaleMetaAngabenAssoc_arr[$kSprache]))
+        ? $oGlobaleMetaAngabenAssoc_arr[$kSprache]
+        : null;
 
     if (is_object($oGlobaleMetaAngaben)) {
         if (strlen($cMetaTitle) === 0) {

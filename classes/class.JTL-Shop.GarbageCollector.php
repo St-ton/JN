@@ -101,9 +101,16 @@ class GarbageCollector
                     $cFrom .= ", {$cSubTable}";
                     $cJoin .= " LEFT JOIN {$cSubTable} ON {$cSubTable}.{$cKey} = {$cTable}.{$cKey}";
                 }
-                Shop::DB()->query("DELETE {$cFrom} FROM {$cTable} {$cJoin} WHERE DATE_SUB(now(), INTERVAL {$cInterval} DAY) >= {$cTable}.{$cDateField}", 3);
+                Shop::DB()->query("
+                    DELETE {$cFrom} 
+                    FROM {$cTable} {$cJoin} 
+                    WHERE DATE_SUB(now(), INTERVAL {$cInterval} DAY) >= {$cTable}.{$cDateField}", 3
+                );
             } else {
-                Shop::DB()->query("DELETE FROM {$cTable} WHERE DATE_SUB(now(), INTERVAL {$cInterval} DAY) >= {$cDateField}", 3);
+                Shop::DB()->query("
+                    DELETE FROM {$cTable} 
+                        WHERE DATE_SUB(now(), INTERVAL {$cInterval} DAY) >= {$cDateField}", 3
+                );
             }
         }
 

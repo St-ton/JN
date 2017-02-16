@@ -55,10 +55,17 @@ class Nice
             if (!empty($oBrocken->cBrocken)) {
                 // Brocken encrypten
                 $cPassA         = substr(base64_decode($oBrocken->cBrocken), 0, 9);
-                $cPassE         = substr(base64_decode($oBrocken->cBrocken), (strlen(base64_decode($oBrocken->cBrocken)) - 11));
+                $cPassE         = substr(
+                    base64_decode($oBrocken->cBrocken),
+                    (strlen(base64_decode($oBrocken->cBrocken)) - 11)
+                );
                 $cBlowfishKey   = $cPassA . $cPassE;
                 $oXTEA          = new XTEA($cBlowfishKey);
-                $this->cBrocken = $oXTEA->decrypt(str_replace([$cPassA, $cPassE], ['', ''], base64_decode($oBrocken->cBrocken)));
+                $this->cBrocken = $oXTEA->decrypt(str_replace(
+                        [$cPassA, $cPassE],
+                        ['', ''],
+                        base64_decode($oBrocken->cBrocken))
+                );
                 Shop::Cache()->set('cbrocken', $this->cBrocken, [CACHING_GROUP_CORE]);
             }
         }
@@ -91,7 +98,10 @@ class Nice
      */
     public function checkErweiterung($kShopModulCheck)
     {
-        return (isset($this->cAPIKey) && strlen($this->cAPIKey) > 0 && !empty($this->cDomain) && count($this->kShopModul_arr) > 0)
+        return (isset($this->cAPIKey) && strlen($this->cAPIKey) > 0 &&
+            !empty($this->cDomain) &&
+            count($this->kShopModul_arr) > 0
+        )
             ? in_array(intval($kShopModulCheck), $this->kShopModul_arr, true)
             : false;
     }

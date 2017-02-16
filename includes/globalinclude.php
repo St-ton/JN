@@ -12,7 +12,8 @@ if (file_exists(dirname(__FILE__) . '/config.JTL-Shop.ini.php')) {
 if (defined('PFAD_ROOT')) {
     require_once PFAD_ROOT . 'includes/defines.php';
 } else {
-    die('Die Konfigurationsdatei des Shops konnte nicht geladen werden! Bei einer Neuinstallation bitte <a href="install/index.php">hier</a> klicken.');
+    die('Die Konfigurationsdatei des Shops konnte nicht geladen werden! ' .
+        'Bei einer Neuinstallation bitte <a href="install/index.php">hier</a> klicken.');
 }
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'error_handler.php';
@@ -56,10 +57,14 @@ $cache->setJtlCacheConfig();
 
 $conf = Shop::getSettings([CONF_GLOBAL]);
 
-if ($conf['global']['kaufabwicklung_ssl_nutzen'] === 'P' && (!isset($_SERVER['HTTPS']) || (strtolower($_SERVER['HTTPS']) !== 'on' && intval($_SERVER['HTTPS'] !== 1))) && PHP_SAPI !== 'cli') {
+if ($conf['global']['kaufabwicklung_ssl_nutzen'] === 'P' &&
+    (!isset($_SERVER['HTTPS']) || (strtolower($_SERVER['HTTPS']) !== 'on' && intval($_SERVER['HTTPS'] !== 1))) &&
+    PHP_SAPI !== 'cli'
+) {
     $https = false;
     if ((isset($_SERVER['HTTP_X_FORWARDED_HOST']) && $_SERVER['HTTP_X_FORWARDED_HOST'] === 'ssl.webpack.de') ||
         (isset($_SERVER['SCRIPT_URI']) && preg_match('/^ssl-id/', $_SERVER['SCRIPT_URI'])) ||
+        (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') ||
         (isset($_SERVER['HTTP_X_FORWARDED_HOST']) && preg_match('/^ssl/', $_SERVER['HTTP_X_FORWARDED_HOST']))) {
         $https = true;
     }
@@ -106,7 +111,13 @@ if (!JTL_INCLUDE_ONLY_DB) {
     $template = Template::getInstance();
     $template->check(true);
     // Globale Einstellungen
-    $GlobaleEinstellungen = Shop::getSettings([CONF_GLOBAL, CONF_RSS, CONF_METAANGABEN, CONF_KUNDENWERBENKUNDEN, CONF_BILDER]);
+    $GlobaleEinstellungen = Shop::getSettings([
+        CONF_GLOBAL,
+        CONF_RSS,
+        CONF_METAANGABEN,
+        CONF_KUNDENWERBENKUNDEN,
+        CONF_BILDER
+    ]);
     // Globale Metaangaben
     $oGlobaleMetaAngabenAssoc_arr = holeGlobaleMetaAngaben();
     executeHook(HOOK_GLOBALINCLUDE_INC);
@@ -118,7 +129,9 @@ if (!JTL_INCLUDE_ONLY_DB) {
         Session::getInstance();
     //Wartungsmodus aktiviert?
     $bAdminWartungsmodus = false;
-    if ($GlobaleEinstellungen['global']['wartungsmodus_aktiviert'] === 'Y' && basename($_SERVER['SCRIPT_FILENAME']) !== 'wartung.php') {
+    if ($GlobaleEinstellungen['global']['wartungsmodus_aktiviert'] === 'Y' &&
+        basename($_SERVER['SCRIPT_FILENAME']) !== 'wartung.php'
+    ) {
         require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'benutzerverwaltung_inc.php';
         if (!Shop::isAdmin()) {
             header('Location: ' . Shop::getURL() . '/wartung.php', true, 307);

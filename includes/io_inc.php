@@ -10,6 +10,8 @@ $io = new IO();
 
 $io->register('suggestions')
     ->register('pushToBasket')
+    ->register('pushToComparelist')
+    ->register('removeFromComparelist')
     ->register('checkDependencies')
     ->register('checkVarkombiDependencies')
     ->register('generateToken')
@@ -33,7 +35,7 @@ function suggestions($keyword)
         : 10;
     if (strlen($keyword) >= 2) {
         $results = Shop::DB()->query("
-          SELECT cSuche AS keyword, nAnzahlTreffer as quantity
+          SELECT cSuche AS keyword, nAnzahlTreffer AS quantity
             FROM tsuchanfrage
             WHERE SOUNDEX(cSuche) LIKE CONCAT(TRIM(TRAILING '0' FROM SOUNDEX('" . $keyword . "')), '%')
                 AND nAktiv = 1
@@ -60,7 +62,7 @@ function suggestions($keyword)
 function pushToBasket($kArtikel, $anzahl, $oEigenschaftwerte_arr = '')
 {
     /** @var array('Warenkorb' => Warenkorb) $_SESSION */
-    global $Einstellungen, $Kunde, $smarty;
+    global $Einstellungen, $smarty;
 
     require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Artikel.php';
     require_once PFAD_ROOT . PFAD_CLASSES . 'class.JTL-Shop.Sprache.php';
@@ -142,8 +144,12 @@ function pushToBasket($kArtikel, $anzahl, $oEigenschaftwerte_arr = '')
             : $_SESSION['Kundengruppe']->kKundengruppe;
         $oXSelling     = gibArtikelXSelling($kArtikel, $Artikel->nIstVater > 0);
 
-        $smarty->assign('WarenkorbVersandkostenfreiHinweis', baueVersandkostenfreiString(gibVersandkostenfreiAb($kKundengruppe),
-            $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL, C_WARENKORBPOS_TYP_KUPON, C_WARENKORBPOS_TYP_NEUKUNDENKUPON], true)))
+        $smarty->assign('WarenkorbVersandkostenfreiHinweis', baueVersandkostenfreiString(
+            gibVersandkostenfreiAb($kKundengruppe),
+            $cart->gibGesamtsummeWarenExt(
+                [C_WARENKORBPOS_TYP_ARTIKEL, C_WARENKORBPOS_TYP_KUPON, C_WARENKORBPOS_TYP_NEUKUNDENKUPON],
+                true
+            )))
                ->assign('zuletztInWarenkorbGelegterArtikel', $Artikel)
                ->assign('fAnzahl', $anzahl)
                ->assign('NettoPreise', $_SESSION['Kundengruppe']->nNettoPreise)
@@ -175,6 +181,127 @@ function pushToBasket($kArtikel, $anzahl, $oEigenschaftwerte_arr = '')
             return $objResponse;
         }
     }
+
+    return $objResponse;
+}
+
+function pushToComparelist($kArtikel)
+{
+    global $Einstellungen;
+
+    if (!isset($Einstellungen['vergleichsliste'])) {
+        if (isset($Einstellungen)) {
+            $Einstellungen = array_merge($Einstellungen, Shop::getSettings([CONF_VERGLEICHSLISTE]));
+        } else {
+            $Einstellungen = Shop::getSettings([CONF_VERGLEICHSLISTE]);
+        }
+    }
+
+    $oResponse   = new stdClass();
+    $objResponse = new IOResponse();
+
+    $_POST['Vergleichsliste'] = 1;
+    $_POST['a']               = $kArtikel;
+
+    checkeWarenkorbEingang();
+    $error             = Shop::Smarty()->getTemplateVars('fehler');
+    $notice            = Shop::Smarty()->getTemplateVars('hinweis');
+    $oResponse->nType  = 2;
+    $oResponse->nCount = count($_SESSION['Vergleichsliste']->oArtikel_arr);
+    $oResponse->cTitle = utf8_encode(Shop::Lang()->get('compare', 'global'));
+    $buttons           = [
+        (object)[
+            'href'    => '#',
+            'fa'      => 'fa fa-arrow-circle-right',
+            'title'   => Shop::Lang()->get('continueShopping', 'checkout'),
+            'primary' => true,
+            'dismiss' => 'modal'
+        ]
+    ];
+
+    if ($oResponse->nCount > 1) {
+        array_unshift($buttons, (object)[
+            'href'  => 'vergleichsliste.php',
+            'fa'    => 'fa-tasks',
+            'title' => Shop::Lang()->get('compare', 'global')
+        ]);
+    }
+
+    $oResponse->cNotification = utf8_encode(
+        Shop::Smarty()
+            ->assign('type', empty($error) ? 'info' : 'danger')
+            ->assign('body', empty($error) ? $notice : $error)
+            ->assign('buttons', $buttons)
+            ->fetch('snippets/notification.tpl')
+    );
+
+    if ($oResponse->nCount > 1) {
+        $oResponse->cNavBadge = utf8_encode(
+            Shop::Smarty()
+                ->assign('Einstellungen', $Einstellungen)
+                ->fetch('layout/header_shop_nav_compare.tpl')
+        );
+    } else {
+        $oResponse->cNavBadge     = '';
+    }
+
+    $boxes = Boxen::getInstance();
+    $oBox  = $boxes->prepareBox(BOX_VERGLEICHSLISTE, new stdClass());
+    $oResponse->cBoxContainer = utf8_encode(
+        Shop::Smarty()
+            ->assign('Einstellungen', $Einstellungen)
+            ->assign('oBox', $oBox)
+            ->fetch('boxes/box_comparelist.tpl')
+    );
+
+    $objResponse->script('this.response = ' . json_encode($oResponse) . ';');
+
+    return $objResponse;
+}
+
+function removeFromComparelist($kArtikel)
+{
+    global $Einstellungen;
+
+    if (!isset($Einstellungen['vergleichsliste'])) {
+        if (isset($Einstellungen)) {
+            $Einstellungen = array_merge($Einstellungen, Shop::getSettings([CONF_VERGLEICHSLISTE]));
+        } else {
+            $Einstellungen = Shop::getSettings([CONF_VERGLEICHSLISTE]);
+        }
+    }
+
+    $oResponse   = new stdClass();
+    $objResponse = new IOResponse();
+
+    $_GET['Vergleichsliste'] = 1;
+    $_GET['vlplo']           = $kArtikel;
+
+    Session::getInstance()->setStandardSessionVars();
+    $oResponse->nType  = 2;
+    $oResponse->nCount = count($_SESSION['Vergleichsliste']->oArtikel_arr);
+    $oResponse->cTitle = utf8_encode(Shop::Lang()->get('compare', 'global'));
+
+    if ($oResponse->nCount > 1) {
+        $oResponse->cNavBadge = utf8_encode(
+            Shop::Smarty()
+                ->assign('Einstellungen', $Einstellungen)
+                ->fetch('layout/header_shop_nav_compare.tpl')
+        );
+    } else {
+        $oResponse->cNavBadge     = '';
+    }
+
+    $boxes = Boxen::getInstance();
+    $oBox  = $boxes->prepareBox(BOX_VERGLEICHSLISTE, new stdClass());
+    $oResponse->cBoxContainer = utf8_encode(
+        Shop::Smarty()
+            ->assign('Einstellungen', $Einstellungen)
+            ->assign('oBox', $oBox)
+            ->fetch('boxes/box_comparelist.tpl')
+    );
+
+    $objResponse->script('this.response = ' . json_encode($oResponse) . ';');
 
     return $objResponse;
 }
@@ -214,18 +341,22 @@ function getBasketItems($nTyp)
             $versandkostenfreiAb = gibVersandkostenfreiAb($kKundengruppe, $cLand);
             /** @var array('Warenkorb') $_SESSION['Warenkorb'] */
             $smarty->assign('WarensummeLocalized', $_SESSION['Warenkorb']->gibGesamtsummeWarenLocalized())
-                ->assign('Warensumme', $_SESSION['Warenkorb']->gibGesamtsummeWaren())
-                ->assign('Steuerpositionen', $_SESSION['Warenkorb']->gibSteuerpositionen())
-                ->assign('Einstellungen', $Einstellungen)
-                ->assign('WarenkorbArtikelPositionenanzahl', $nAnzahl)
-                ->assign('WarenkorbArtikelanzahl', $_SESSION['Warenkorb']->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]))
-                ->assign('zuletztInWarenkorbGelegterArtikel', $_SESSION['Warenkorb']->gibLetztenWKArtikel())
-                ->assign('WarenkorbGesamtgewicht', $_SESSION['Warenkorb']->getWeight())
-                ->assign('Warenkorbtext', lang_warenkorb_warenkorbEnthaeltXArtikel($_SESSION['Warenkorb']))
-                ->assign('NettoPreise', $_SESSION['Kundengruppe']->nNettoPreise)
-                ->assign('WarenkorbVersandkostenfreiHinweis', baueVersandkostenfreiString($versandkostenfreiAb, 
-                    $_SESSION['Warenkorb']->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL, C_WARENKORBPOS_TYP_KUPON, C_WARENKORBPOS_TYP_NEUKUNDENKUPON], true)))
-                ->assign('oSpezialseiten_arr', LinkHelper::getInstance()->getSpecialPages());
+                   ->assign('Warensumme', $_SESSION['Warenkorb']->gibGesamtsummeWaren())
+                   ->assign('Steuerpositionen', $_SESSION['Warenkorb']->gibSteuerpositionen())
+                   ->assign('Einstellungen', $Einstellungen)
+                   ->assign('WarenkorbArtikelPositionenanzahl', $nAnzahl)
+                   ->assign('WarenkorbArtikelanzahl',
+                       $_SESSION['Warenkorb']->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]))
+                   ->assign('zuletztInWarenkorbGelegterArtikel', $_SESSION['Warenkorb']->gibLetztenWKArtikel())
+                   ->assign('WarenkorbGesamtgewicht', $_SESSION['Warenkorb']->getWeight())
+                   ->assign('Warenkorbtext', lang_warenkorb_warenkorbEnthaeltXArtikel($_SESSION['Warenkorb']))
+                   ->assign('NettoPreise', $_SESSION['Kundengruppe']->nNettoPreise)
+                   ->assign('WarenkorbVersandkostenfreiHinweis', baueVersandkostenfreiString($versandkostenfreiAb,
+                       $_SESSION['Warenkorb']->gibGesamtsummeWarenExt(
+                           [C_WARENKORBPOS_TYP_ARTIKEL, C_WARENKORBPOS_TYP_KUPON, C_WARENKORBPOS_TYP_NEUKUNDENKUPON],
+                           true)
+                   ))
+                   ->assign('oSpezialseiten_arr', LinkHelper::getInstance()->getSpecialPages());
 
             VersandartHelper::getShippingCosts($cLand, $cPLZ, $error);
             $oResponse->cTemplate = utf8_encode($smarty->fetch('basket/cart_dropdown_label.tpl'));
@@ -283,7 +414,12 @@ function getArticleStockInfo($kArtikel, $kEigenschaftWert_arr)
         $oArtikelOptionen->nVariationKombi           = 0;
         $oArtikelOptionen->nKeinLagerbestandBeachten = 1;
 
-        $oTestArtikel->fuelleArtikel($oTMPArtikel->kArtikel, $oArtikelOptionen, Kundengruppe::getCurrent(), $_SESSION['kSprache']);
+        $oTestArtikel->fuelleArtikel(
+            $oTMPArtikel->kArtikel,
+            $oArtikelOptionen,
+            Kundengruppe::getCurrent(),
+            $_SESSION['kSprache']
+        );
         $oTestArtikel->Lageranzeige->AmpelText = utf8_encode($oTestArtikel->Lageranzeige->AmpelText);
 
         return (object)[
@@ -330,7 +466,11 @@ function checkDependencies($aValues)
                 ? $currentValue->cArtNr
                 : $oArtikel->cArtNr;
         }
-        $weightTotal      = Trennzeichen::getUnit(JTLSEPARATER_WEIGHT, $_SESSION['kSprache'], $oArtikel->fGewicht + $weightDiff);
+        $weightTotal      = Trennzeichen::getUnit(
+            JTLSEPARATER_WEIGHT,
+            $_SESSION['kSprache'],
+            $oArtikel->fGewicht + $weightDiff
+        );
         $cUnitWeightLabel = Shop::Lang()->get('weightUnit', 'global');
 
         // Alle Variationen ohne Freifeld
@@ -357,10 +497,72 @@ function checkDependencies($aValues)
             1 => gibPreisStringLocalized($fVK[1])
         ];
 
-        $cPriceLabel = $oArtikel->nVariationOhneFreifeldAnzahl === count($valueID_arr) ? Shop::Lang()->get('priceAsConfigured', 'productDetails') : Shop::Lang()->get('priceStarting', 'global');
+        $cPriceLabel = $oArtikel->nVariationOhneFreifeldAnzahl === count($valueID_arr)
+            ? Shop::Lang()->get('priceAsConfigured', 'productDetails')
+            : Shop::Lang()->get('priceStarting', 'global');
 
-        $objResponse->jsfunc('$.evo.article().setPrice', $fVK[$nNettoPreise], $cVKLocalized[$nNettoPreise], $cPriceLabel);
-        $objResponse->jsfunc('$.evo.article().setUnitWeight', $oArtikel->fGewicht, $weightTotal . ' ' . $cUnitWeightLabel);
+        $objResponse->jsfunc(
+            '$.evo.article().setPrice',
+            $fVK[$nNettoPreise],
+            $cVKLocalized[$nNettoPreise],
+            $cPriceLabel
+        );
+        $objResponse->jsfunc(
+            '$.evo.article().setUnitWeight',
+            $oArtikel->fGewicht,
+            $weightTotal . ' ' . $cUnitWeightLabel
+        );
+
+        if (!empty($oArtikel->staffelPreis_arr)) {
+            $fStaffelVK = [0 => [], 1 => []];
+            $cStaffelVK = [0 => [], 1 => []];
+            foreach ($oArtikel->staffelPreis_arr as $staffelPreis) {
+                $nAnzahl                 = &$staffelPreis['nAnzahl'];
+                $fStaffelVKNetto         = $oArtikel->gibPreis($nAnzahl, $valueID_arr, Kundengruppe::getCurrent());
+                $fStaffelVK[0][$nAnzahl] = berechneBrutto(
+                    $fStaffelVKNetto,
+                    $_SESSION['Steuersatz'][$oArtikel->kSteuerklasse]
+                );
+                $fStaffelVK[1][$nAnzahl] = $fStaffelVKNetto;
+                $cStaffelVK[0][$nAnzahl] = gibPreisStringLocalized($fStaffelVK[0][$nAnzahl]);
+                $cStaffelVK[1][$nAnzahl] = gibPreisStringLocalized($fStaffelVK[1][$nAnzahl]);
+            }
+
+            $objResponse->jsfunc(
+                '$.evo.article().setStaffelPrice',
+                $fStaffelVK[$nNettoPreise],
+                $cStaffelVK[$nNettoPreise]
+            );
+        }
+
+        if ($oArtikel->cVPE === 'Y' &&
+            $oArtikel->fVPEWert > 0 &&
+            $oArtikel->cVPEEinheit &&
+            !empty($oArtikel->Preise)
+        ) {
+            $oArtikel->baueVPE($fVKNetto);
+            $fStaffelVPE = [0 => [], 1 => []];
+            $cStaffelVPE = [0 => [], 1 => []];
+            foreach ($oArtikel->staffelPreis_arr as $staffelPreis) {
+                $nAnzahl = &$staffelPreis['nAnzahl'];
+                $fStaffelVPENetto = $oArtikel->gibPreis($nAnzahl, $valueID_arr, Kundengruppe::getCurrent());
+                $fStaffelVPE[0][$nAnzahl] = berechneBrutto(
+                    $fStaffelVPENetto / $oArtikel->fVPEWert,
+                    $_SESSION['Steuersatz'][$oArtikel->kSteuerklasse]
+                );
+                $fStaffelVPE[1][$nAnzahl] = $fStaffelVPENetto / $oArtikel->fVPEWert;
+                $cStaffelVPE[0][$nAnzahl] = gibPreisStringLocalized($fStaffelVPE[0][$nAnzahl]);
+                $cStaffelVPE[1][$nAnzahl] = gibPreisStringLocalized($fStaffelVPE[1][$nAnzahl]);
+            }
+
+            $objResponse->jsfunc(
+                '$.evo.article().setVPEPrice',
+                $oArtikel->cLocalizedVPE[$nNettoPreise],
+                $fStaffelVPE[$nNettoPreise],
+                $cStaffelVPE[$nNettoPreise]
+            );
+        }
+
         if (!empty($newProductNr)) {
             $objResponse->jsfunc('$.evo.article().setProductNumber', $newProductNr);
         }
@@ -433,7 +635,13 @@ function checkVarkombiDependencies($aValues, $kEigenschaft = 0, $kEigenschaftWer
 
                 // Wir befinden uns im Kind-Artikel -> Weiterleitung auf Vater-Artikel
                 if ($kArtikelKind > 0) {
-                    $objResponse->jsfunc('$.evo.article().setArticleContent', $oArtikel->kArtikel, 0, $oArtikel->cURL, []);
+                    $objResponse->jsfunc(
+                        '$.evo.article().setArticleContent',
+                        $oArtikel->kArtikel,
+                        0,
+                        $oArtikel->cURL,
+                        []
+                    );
 
                     return $objResponse;
                 }
@@ -453,7 +661,13 @@ function checkVarkombiDependencies($aValues, $kEigenschaft = 0, $kEigenschaftWer
                     ];
                 }
                 $cUrl = baueURL($oArtikelTMP, URLART_ARTIKEL, 0, empty($oArtikelTMP->kSeoKey) ? true : false, true);
-                $objResponse->jsfunc('$.evo.article().setArticleContent', $kVaterArtikel, $oArtikelTMP->kArtikel, $cUrl, $oGesetzteEigeschaftWerte_arr);
+                $objResponse->jsfunc(
+                    '$.evo.article().setArticleContent',
+                    $kVaterArtikel,
+                    $oArtikelTMP->kArtikel,
+                    $cUrl,
+                    $oGesetzteEigeschaftWerte_arr
+                );
 
                 executeHook(HOOK_TOOLSAJAXSERVER_PAGE_TAUSCHEVARIATIONKOMBI, [
                     'objResponse' => &$objResponse,
@@ -487,8 +701,12 @@ function checkVarkombiDependencies($aValues, $kEigenschaft = 0, $kEigenschaftWer
             }
         }
 
-        $kNichtGesetzteEigenschaft_arr = array_values(array_diff(array_keys($nKeyValueVariation_arr), array_keys($kGesetzteEigeschaftWert_arr)));
-
+        $kNichtGesetzteEigenschaft_arr = array_values(
+            array_diff(
+                array_keys($nKeyValueVariation_arr),
+                array_keys($kGesetzteEigeschaftWert_arr)
+            )
+        );
         if (count($kNichtGesetzteEigenschaft_arr) <= 1) {
             foreach ($nKeyValueVariation_arr as $kEigenschaft => $kEigenschaftWert) {
                 $kVerfuegbareEigenschaftWert_arr = $nKeyValueVariation_arr[$kEigenschaft];
@@ -496,11 +714,19 @@ function checkVarkombiDependencies($aValues, $kEigenschaft = 0, $kEigenschaftWer
 
                 foreach ($kVerfuegbareEigenschaftWert_arr as $kVerfuegbareEigenschaftWert) {
                     $kMoeglicheEigeschaftWert_arr[$kEigenschaft] = $kVerfuegbareEigenschaftWert;
-                    $oKindArtikel                                = getArticleStockInfo($kVaterArtikel, $kMoeglicheEigeschaftWert_arr);
+                    $oKindArtikel                                = getArticleStockInfo(
+                        $kVaterArtikel,
+                        $kMoeglicheEigeschaftWert_arr
+                    );
 
                     if ($oKindArtikel !== null && $oKindArtikel->status == 0) {
                         if (!in_array($kVerfuegbareEigenschaftWert, $kGesetzteEigeschaftWert_arr)) {
-                            $objResponse->jsfunc('$.evo.article().variationInfo', $kVerfuegbareEigenschaftWert, $oKindArtikel->status, $oKindArtikel->text);
+                            $objResponse->jsfunc(
+                                '$.evo.article().variationInfo',
+                                $kVerfuegbareEigenschaftWert,
+                                $oKindArtikel->status,
+                                $oKindArtikel->text
+                            );
                         }
                     }
                 }
@@ -539,11 +765,16 @@ function getArticleByVariations($kArtikel, $kVariationKombi_arr)
 
     $kSprache    = Shop::getLanguage();
     $oArtikelTMP = Shop::DB()->query(
-        "SELECT a.kArtikel, tseo.kKey AS kSeoKey, IF (tseo.cSeo IS NULL, a.cSeo, tseo.cSeo) AS cSeo, a.fLagerbestand, a.cLagerBeachten, a.cLagerKleinerNull
+        "SELECT a.kArtikel, tseo.kKey AS kSeoKey, IF (tseo.cSeo IS NULL, a.cSeo, tseo.cSeo) AS cSeo, 
+            a.fLagerbestand, a.cLagerBeachten, a.cLagerKleinerNull
             FROM teigenschaftkombiwert
             JOIN tartikel a ON a.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi
-            LEFT JOIN tseo ON tseo.cKey = 'kArtikel' AND tseo.kKey = a.kArtikel AND tseo.kSprache = " . $kSprache .  "
-            LEFT JOIN tartikelsichtbarkeit ON a.kArtikel = tartikelsichtbarkeit.kArtikel
+            LEFT JOIN tseo 
+                ON tseo.cKey = 'kArtikel' 
+                AND tseo.kKey = a.kArtikel 
+                AND tseo.kSprache = " . $kSprache .  "
+            LEFT JOIN tartikelsichtbarkeit 
+                ON a.kArtikel = tartikelsichtbarkeit.kArtikel
                 AND tartikelsichtbarkeit.kKundengruppe = " . $_SESSION['Kundengruppe']->kKundengruppe . "
         WHERE teigenschaftkombiwert.kEigenschaft IN (" . $cSQL1 . ")
             AND teigenschaftkombiwert.kEigenschaftWert IN (" . $cSQL2 . ")

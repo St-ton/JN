@@ -20,10 +20,10 @@ if ($cDatei === null) {
 $cIP              = Shop::DB()->escape(getRealIp());
 $nFloodProtection = (int)Shop::DB()->query("
     SELECT * 
-      FROM `tsitemaptracker` 
-      WHERE `cIP` = '{$cIP}' 
-        AND DATE_ADD(`dErstellt`, INTERVAL 2 MINUTE) >= NOW() 
-    ORDER BY `dErstellt` DESC", 3
+        FROM `tsitemaptracker` 
+        WHERE `cIP` = '{$cIP}' 
+          AND DATE_ADD(`dErstellt`, INTERVAL 2 MINUTE) >= NOW() 
+        ORDER BY `dErstellt` DESC", 3
 );
 
 if ($nFloodProtection === 0) {

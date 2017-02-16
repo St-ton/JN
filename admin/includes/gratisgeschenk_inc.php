@@ -10,8 +10,7 @@
  */
 function holeAktiveGeschenke($cSQL)
 {
-    $oAktiveGeschenk_arr = array();
-
+    $oAktiveGeschenk_arr = [];
     if (strlen($cSQL) > 0) {
         $oAktiveGeschenkTMP_arr = Shop::DB()->query(
             "SELECT kArtikel
@@ -92,7 +91,9 @@ function holeLetzten100Geschenke($cSQL)
                 ORDER BY nAnzahl DESC" . $cSQL, 2
         );
     }
-    if (isset($oLetzten100GeschenkTMP_arr) && is_array($oLetzten100GeschenkTMP_arr) && count($oLetzten100GeschenkTMP_arr) > 0) {
+    if (isset($oLetzten100GeschenkTMP_arr) &&
+        is_array($oLetzten100GeschenkTMP_arr) &&
+        count($oLetzten100GeschenkTMP_arr) > 0) {
         $articleOptions = Artikel::getDefaultOptions();
         $articleOptions->nKeinLagerbestandBeachten = 1;
         foreach ($oLetzten100GeschenkTMP_arr as $oLetzten100GeschenkTMP) {
@@ -132,7 +133,7 @@ function gibAnzahlAktiverGeschenke()
 function gibAnzahlHaeufigGekaufteGeschenke()
 {
     $nAnzahlGeschenke = Shop::DB()->query(
-        "SELECT count(distinct(kArtikel)) AS nAnzahl
+        "SELECT count(DISTINCT(kArtikel)) AS nAnzahl
             FROM twarenkorbpos
             WHERE nPosTyp = " . C_WARENKORBPOS_TYP_GRATISGESCHENK, 1
     );

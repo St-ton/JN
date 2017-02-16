@@ -31,7 +31,10 @@ if (pruefeBetreffVorhanden()) {
         $kKundengruppe   = Kundengruppe::getCurrent();
         // CheckBox Plausi
         $oCheckBox       = new CheckBox();
-        $fehlendeAngaben = array_merge($fehlendeAngaben, $oCheckBox->validateCheckBox(CHECKBOX_ORT_KONTAKT, $kKundengruppe, $_POST, true));
+        $fehlendeAngaben = array_merge(
+            $fehlendeAngaben,
+            $oCheckBox->validateCheckBox(CHECKBOX_ORT_KONTAKT, $kKundengruppe, $_POST, true)
+        );
         $nReturnValue    = eingabenKorrekt($fehlendeAngaben);
         $smarty->assign('cPost_arr', StringHandler::filterXSS($_POST));
         executeHook(HOOK_KONTAKT_PAGE_PLAUSI);
@@ -40,9 +43,13 @@ if (pruefeBetreffVorhanden()) {
             if (!floodSchutz($Einstellungen['kontakt']['kontakt_sperre_minuten'])) {
                 $oNachricht = baueKontaktFormularVorgaben();
                 // CheckBox Spezialfunktion ausfuehren
-                $oCheckBox->triggerSpecialFunction(CHECKBOX_ORT_KONTAKT, $kKundengruppe, true, $_POST,
-                    ['oKunde' => $oNachricht, 'oNachricht' => $oNachricht])
-                          ->checkLogging(CHECKBOX_ORT_KONTAKT, $kKundengruppe, $_POST, true);
+                $oCheckBox->triggerSpecialFunction(
+                    CHECKBOX_ORT_KONTAKT,
+                    $kKundengruppe,
+                    true,
+                    $_POST,
+                    ['oKunde' => $oNachricht, 'oNachricht' => $oNachricht]
+                )->checkLogging(CHECKBOX_ORT_KONTAKT, $kKundengruppe, $_POST, true);
                 bearbeiteNachricht();
                 $step = 'nachricht versendet';
             } else {
@@ -53,7 +60,11 @@ if (pruefeBetreffVorhanden()) {
         }
     }
     $lang     = $_SESSION['cISOSprache'];
-    $Contents = Shop::DB()->selectAll('tspezialcontentsprache', ['nSpezialContent', 'cISOSprache'], [(int)SC_KONTAKTFORMULAR, $lang]);
+    $Contents = Shop::DB()->selectAll(
+        'tspezialcontentsprache',
+        ['nSpezialContent', 'cISOSprache'],
+        [(int)SC_KONTAKTFORMULAR, $lang]
+    );
     $SpezialContent = new stdClass();
     foreach ($Contents as $Content) {
         $SpezialContent->{$Content->cTyp} = $Content->cContent;
@@ -62,12 +73,19 @@ if (pruefeBetreffVorhanden()) {
         "SELECT *
             FROM tkontaktbetreff
             WHERE (cKundengruppen = 0
-            OR cKundengruppen LIKE '" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";') ORDER BY nSort", 2
+            OR cKundengruppen LIKE '" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";') 
+            ORDER BY nSort", 2
     );
     $bCount = count($betreffs);
     for ($i = 0; $i < $bCount; $i++) {
         if ($betreffs[$i]->kKontaktBetreff > 0) {
-            $betreffSprache = Shop::DB()->select('tkontaktbetreffsprache', 'kKontaktBetreff', (int)$betreffs[$i]->kKontaktBetreff, 'cISOSprache', $_SESSION['cISOSprache']);
+            $betreffSprache = Shop::DB()->select(
+                'tkontaktbetreffsprache',
+                'kKontaktBetreff',
+                (int)$betreffs[$i]->kKontaktBetreff,
+                'cISOSprache',
+                $_SESSION['cISOSprache']
+            );
             $betreffs[$i]->AngezeigterName = $betreffSprache->cName;
         }
     }
@@ -88,7 +106,8 @@ if (pruefeBetreffVorhanden()) {
            ->assign('fehlendeAngaben', $fehlendeAngaben)
            ->assign('nAnzeigeOrt', CHECKBOX_ORT_KONTAKT);
 } else {
-    Jtllog::writeLog('Kein Kontaktbetreff vorhanden! Bitte im Backend unter Einstellungen -> Kontaktformular -> Betreffs einen Betreff hinzuf&uuml;gen.', JTLLOG_LEVEL_ERROR);
+    Jtllog::writeLog('Kein Kontaktbetreff vorhanden! Bitte im Backend unter ' .
+        'Einstellungen -> Kontaktformular -> Betreffs einen Betreff hinzuf&uuml;gen.', JTLLOG_LEVEL_ERROR);
     $smarty->assign('hinweis', Shop::Lang()->get('noSubjectAvailable', 'contact'));
     $SpezialContent = new stdClass();
 }

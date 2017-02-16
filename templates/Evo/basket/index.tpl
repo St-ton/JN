@@ -12,23 +12,21 @@
 {if $Schnellkaufhinweis}
     <div class="alert alert-info">{$Schnellkaufhinweis}</div>
 {/if}
+{if count($Warenkorbhinweise)>0}
+    <div class="alert alert-warning">
+        {foreach name=hinweise from=$Warenkorbhinweise item=Warenkorbhinweis}
+            {$Warenkorbhinweis}
+            <br />
+        {/foreach}
+    </div>
+{/if}
+{if !empty($MsgWarning)}
+    <p class="alert alert-danger">{$MsgWarning}</p>
+{/if}
 
 {if ($Warenkorb->PositionenArr|@count > 0)}
-    {if count($Warenkorbhinweise)>0}
-        <div class="alert alert-warning">
-            {foreach name=hinweise from=$Warenkorbhinweise item=Warenkorbhinweis}
-                {$Warenkorbhinweis}
-                <br />
-            {/foreach}
-        </div>
-    {/if}
-
     {if !empty($BestellmengeHinweis)}
         <div class="alert alert-warning">{$BestellmengeHinweis}</div>
-    {/if}
-
-    {if !empty($MsgWarning)}
-        <p class="alert alert-danger">{$MsgWarning}</p>
     {/if}
 
     {if !empty($invalidCouponCode)}
@@ -125,8 +123,10 @@
             {/if}
 
             {if !empty($xselling->Kauf) && count($xselling->Kauf->Artikel) > 0}
-                {lang key="basketCustomerWhoBoughtXBoughtAlsoY" section="global" assign="panelTitle"}
-                {include file='snippets/product_slider.tpl' productlist=$xselling->Kauf->Artikel title=$panelTitle}
+                {block name="basket-xsell"}
+                    {lang key="basketCustomerWhoBoughtXBoughtAlsoY" section="global" assign="panelTitle"}
+                    {include file='snippets/product_slider.tpl' productlist=$xselling->Kauf->Artikel title=$panelTitle}
+                {/block}
             {/if}
         </div>
     {/block}

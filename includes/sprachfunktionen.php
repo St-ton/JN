@@ -29,10 +29,12 @@ function lang_warenkorb_warenkorbEnthaeltXArtikel($warenkorb)
             : 0;
         $nArtikel = str_replace('.', ',', $nArtikel);
         if ($nArtikel == 1) {
-            return Shop::Lang()->get('yourbasketcontains', 'checkout') . ' ' . $nArtikel . ' ' . Shop::Lang()->get('product', 'global');
+            return Shop::Lang()->get('yourbasketcontains', 'checkout') . ' ' .
+                $nArtikel . ' ' . Shop::Lang()->get('product', 'global');
         }
         if ($nArtikel > 1) {
-            return Shop::Lang()->get('yourbasketcontains', 'checkout') . ' ' . $nArtikel . ' ' . Shop::Lang()->get('products', 'global');
+            return Shop::Lang()->get('yourbasketcontains', 'checkout') . ' ' .
+                $nArtikel . ' ' . Shop::Lang()->get('products', 'global');
         }
         if ($nArtikel == 0) {
             return Shop::Lang()->get('emptybasket', 'checkout');
@@ -50,7 +52,11 @@ function lang_warenkorb_warenkorbLabel($warenkorb)
 {
     $cLabel = Shop::Lang()->get('basket', 'checkout');
     if ($warenkorb !== null) {
-        $cLabel .= ' (' . gibPreisStringLocalized($warenkorb->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], !$_SESSION['Kundengruppe']->nNettoPreise)) . ')';
+        $cLabel .= ' (' . gibPreisStringLocalized(
+            $warenkorb->gibGesamtsummeWarenExt(
+                [C_WARENKORBPOS_TYP_ARTIKEL],
+                !$_SESSION['Kundengruppe']->nNettoPreise
+            )) . ')';
     }
 
     return $cLabel;
@@ -68,7 +74,11 @@ function lang_warenkorb_bestellungEnthaeltXArtikel($warenkorb)
     } else {
         $ret .= Shop::Lang()->get('positions', 'global');
     }
-    $ret .= ' ' . Shop::Lang()->get('with', 'global') . ' ' . ((isset($_SESSION['Warenkorb']->kWarenkorb)) ? $warenkorb->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]) : 0) . ' ';
+    $ret .= ' ' . Shop::Lang()->get('with', 'global') . ' ' .
+        ((isset($_SESSION['Warenkorb']->kWarenkorb))
+            ? $warenkorb->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL])
+            : 0
+        ) . ' ';
     if (isset($anzahlArtikel) && $anzahlArtikel == 1) {
         $ret .= Shop::Lang()->get('product', 'global');
     } else {
@@ -178,5 +188,6 @@ function lang_mindestbestellmenge($Artikel, $beabsichtigteKaufmenge, $kKonfigite
     return Shop::Lang()->get('product', 'global') . ' &quot;' . $cName . '&quot; ' .
         Shop::Lang()->get('hasMbm', 'messages') . ' (' .
         $Artikel->fMindestbestellmenge . $Artikel->cEinheit . '). ' .
-        Shop::Lang()->get('yourQuantity', 'messages') . ' ' . (float)$beabsichtigteKaufmenge . $Artikel->cEinheit . '.';
+        Shop::Lang()->get('yourQuantity', 'messages') . ' ' .
+        (float)$beabsichtigteKaufmenge . $Artikel->cEinheit . '.';
 }

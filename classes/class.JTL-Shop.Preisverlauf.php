@@ -41,7 +41,6 @@ class Preisverlauf
      */
     public function __construct($kPreisverlauf = 0)
     {
-        $kPreisverlauf = intval($kPreisverlauf);
         if ($kPreisverlauf > 0) {
             $this->loadFromDB($kPreisverlauf);
         }
@@ -63,7 +62,8 @@ class Preisverlauf
         if (($obj_arr = Shop::Cache()->get($cacheID)) === false) {
             $obj_arr = Shop::DB()->query(
                 "SELECT tpreisverlauf.fVKNetto, tartikel.fMwst, UNIX_TIMESTAMP(tpreisverlauf.dDate) AS timestamp
-                    FROM tpreisverlauf LEFT JOIN tartikel
+                    FROM tpreisverlauf 
+                    LEFT JOIN tartikel
                         ON tartikel.kArtikel = tpreisverlauf.kArtikel
                     WHERE tpreisverlauf.kArtikel = " . $kArtikel . "
                         AND tpreisverlauf.kKundengruppe = " . $kKundengruppe . "
@@ -104,7 +104,7 @@ class Preisverlauf
      */
     public function loadFromDB($kPreisverlauf)
     {
-        $obj     = Shop::DB()->select('tpreisverlauf', 'kPreisverlauf', intval($kPreisverlauf));
+        $obj     = Shop::DB()->select('tpreisverlauf', 'kPreisverlauf', (int)$kPreisverlauf);
         $members = array_keys(get_object_vars($obj));
         foreach ($members as $member) {
             $this->$member = $obj->$member;

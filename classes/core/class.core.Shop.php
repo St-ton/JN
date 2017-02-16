@@ -304,11 +304,17 @@ final class Shop
     private static $_logged = null;
 
     /**
+     * @var Shopsetting
+     */
+    private static $_settings;
+
+    /**
      *
      */
     private function __construct()
     {
         self::$_instance = $this;
+        self::$_settings = Shopsetting::getInstance();
     }
 
     /**
@@ -328,9 +334,7 @@ final class Shop
      */
     public function __call($method, $arguments)
     {
-        $mapping = self::map($method);
-
-        return ($mapping !== null)
+        return (($mapping = self::map($method))!== null)
             ? call_user_func_array([$this, $mapping], $arguments)
             : null;
     }
@@ -344,9 +348,7 @@ final class Shop
      */
     public static function __callStatic($method, $arguments)
     {
-        $mapping = self::map($method);
-
-        return ($mapping !== null)
+        return (($mapping = self::map($method)) !== null)
             ? call_user_func_array([self::getInstance(), $mapping], $arguments)
             : null;
     }
@@ -357,7 +359,9 @@ final class Shop
      */
     public function _get($key)
     {
-        return (isset($this->registry[$key]) ? $this->registry[$key] : null);
+        return (isset($this->registry[$key]))
+            ? $this->registry[$key]
+            : null;
     }
 
     /**
@@ -401,7 +405,9 @@ final class Shop
             'get'      => '_get'
         ];
 
-        return (isset($mapping[$method])) ? $mapping[$method] : null;
+        return (isset($mapping[$method]))
+            ? $mapping[$method]
+            : null;
     }
 
     /**
@@ -441,7 +447,7 @@ final class Shop
      */
     public function Config()
     {
-        return Shopsetting::getInstance();
+        return self::$_settings;
     }
 
     /**
@@ -581,9 +587,27 @@ final class Shop
      */
     public static function getSettings($config)
     {
-        $settings = Shopsetting::getInstance();
+        return self::$_settings->getSettings($config);
+    }
 
-        return $settings->getSettings($config);
+    /**
+     * @param string $section
+     * @param string $option
+     * @return string|array|int
+     */
+    public static function getSettingValue($section, $option)
+    {
+        return self::getConfigValue($section, $option);
+    }
+
+    /**
+     * @param string $section
+     * @param string $option
+     * @return string|array|int
+     */
+    public static function getConfigValue($section, $option)
+    {
+        return self::$_settings->getValue($section, $option);
     }
 
     /**
@@ -592,14 +616,14 @@ final class Shop
     public static function bootstrap()
     {
         $cacheID = 'plgnbtsrp';
-        if (($plugins = Shop::Cache()->get($cacheID)) === false) {
+        if (($plugins = self::Cache()->get($cacheID)) === false) {
             $plugins = self::DB()->executeQuery("
                 SELECT kPlugin 
                   FROM tplugin 
                   WHERE nStatus = 2 
                     AND bBootstrap = 1 
                   ORDER BY nPrio ASC", 2) ?: [];
-            Shop::Cache()->set($cacheID, $plugins, [CACHING_GROUP_PLUGIN]);
+            self::Cache()->set($cacheID, $plugins, [CACHING_GROUP_PLUGIN]);
         }
 
         foreach ($plugins as $plugin) {
@@ -1467,9 +1491,23 @@ final class Shop
                     }
                 }
             }
-            $seo_obj = (isset(self::$kSprache) && self::$kSprache > 0 && !standardspracheAktiv()) ?
-                self::DB()->select('tkategoriesprache', 'kKategorie', $NaviFilter->KategorieFilter->kKategorie, 'kSprache', self::$kSprache, null, null, false, 'cName') :
-                self::DB()->select('tkategorie', 'kKategorie', $NaviFilter->KategorieFilter->kKategorie, null, null, null, null, false, 'cName');
+            $seo_obj = (isset(self::$kSprache) && self::$kSprache > 0 && !standardspracheAktiv())
+                ? self::DB()->select(
+                    'tkategoriesprache',
+                    'kKategorie', $NaviFilter->KategorieFilter->kKategorie,
+                    'kSprache', self::$kSprache,
+                    null, null,
+                    false,
+                    'cName'
+                )
+                : self::DB()->select(
+                    'tkategorie',
+                    'kKategorie', $NaviFilter->KategorieFilter->kKategorie,
+                    null, null,
+                    null, null,
+                    false,
+                    'cName'
+                );
             if (isset($seo_obj->cName) && strlen($seo_obj->cName) > 0) {
                 $NaviFilter->KategorieFilter->cName = $seo_obj->cName;
             }
@@ -1582,7 +1620,14 @@ final class Shop
                 }
                 $NaviFilter->SuchFilter[$i]->kSuchanfrage = (int)$cParameter_arr['SuchFilter_arr'][$i];
                 // Namen holen
-                $oSuchanfrage = self::DB()->select('tsuchanfrage', 'kSuchanfrage', $NaviFilter->SuchFilter[$i]->kSuchanfrage, 'kSprache', self::$kSprache, null, null, false, 'cSuche');
+                $oSuchanfrage = self::DB()->select(
+                    'tsuchanfrage',
+                    'kSuchanfrage', $NaviFilter->SuchFilter[$i]->kSuchanfrage,
+                    'kSprache', self::$kSprache,
+                    null, null,
+                    false,
+                    'cSuche'
+                );
                 if (!empty($oSuchanfrage->cSuche)) {
                     $NaviFilter->SuchFilter[$i]->cName = $oSuchanfrage->cSuche;
                 }
@@ -1706,32 +1751,35 @@ final class Shop
     {
         if ($NaviFilter->nAnzahlFilter > 0) {
             if (empty($NaviFilter->Hersteller->kHersteller) && empty($NaviFilter->Kategorie->kKategorie) &&
-                empty($NaviFilter->Tag->kTag) && empty($NaviFilter->Suchanfrage->kSuchanfrage) && empty($NaviFilter->News->kNews) &&
-                empty($NaviFilter->Newsmonat->kNewsMonatsUebersicht) && empty($NaviFilter->NewsKategorie->kNewsKategorie) &&
-                !isset($NaviFilter->Suche->cSuche) && empty($NaviFilter->MerkmalWert->kMerkmalWert) && empty($NaviFilter->Suchspecial->kKey)) {
+                empty($NaviFilter->Tag->kTag) && empty($NaviFilter->Suchanfrage->kSuchanfrage) &&
+                empty($NaviFilter->News->kNews) && empty($NaviFilter->Newsmonat->kNewsMonatsUebersicht) &&
+                empty($NaviFilter->NewsKategorie->kNewsKategorie) &&
+                !isset($NaviFilter->Suche->cSuche) && empty($NaviFilter->MerkmalWert->kMerkmalWert) &&
+                empty($NaviFilter->Suchspecial->kKey)
+            ) {
                 //we have a manufacturer filter that doesn't filter anything
-                if (!empty($NaviFilter->HerstellerFilter->cSeo[Shop::$kSprache])) {
+                if (!empty($NaviFilter->HerstellerFilter->cSeo[self::$kSprache])) {
                     http_response_code(301);
-                    header('Location: ' . Shop::getURL() . '/' . $NaviFilter->HerstellerFilter->cSeo[Shop::$kSprache]);
+                    header('Location: ' . self::getURL() . '/' . $NaviFilter->HerstellerFilter->cSeo[self::$kSprache]);
                     exit();
                 }
                 //we have a category filter that doesn't filter anything
-                if (!empty($NaviFilter->KategorieFilter->cSeo[Shop::$kSprache])) {
+                if (!empty($NaviFilter->KategorieFilter->cSeo[self::$kSprache])) {
                     http_response_code(301);
-                    header('Location: ' . Shop::getURL() . '/' . $NaviFilter->KategorieFilter->cSeo[Shop::$kSprache]);
+                    header('Location: ' . self::getURL() . '/' . $NaviFilter->KategorieFilter->cSeo[self::$kSprache]);
                     exit();
                 }
             } elseif (!empty($NaviFilter->Hersteller->kHersteller) && !empty($NaviFilter->HerstellerFilter->kHersteller) &&
-                !empty($NaviFilter->Hersteller->cSeo[Shop::$kSprache])) {
+                !empty($NaviFilter->Hersteller->cSeo[self::$kSprache])) {
                 //we have a manufacturer page with some manufacturer filter
                 http_response_code(301);
-                header('Location: ' . Shop::getURL() . '/' . $NaviFilter->Hersteller->cSeo[Shop::$kSprache]);
+                header('Location: ' . self::getURL() . '/' . $NaviFilter->Hersteller->cSeo[self::$kSprache]);
                 exit();
             } elseif (!empty($NaviFilter->Kategorie->kKategorie) && !empty($NaviFilter->KategorieFilter->kKategorie) &&
-                !empty($NaviFilter->Kategorie->cSeo[Shop::$kSprache])) {
+                !empty($NaviFilter->Kategorie->cSeo[self::$kSprache])) {
                 //we have a category page with some category filter
                 http_response_code(301);
-                header('Location: ' . Shop::getURL() . '/' . $NaviFilter->Kategorie->cSeo[Shop::$kSprache]);
+                header('Location: ' . self::getURL() . '/' . $NaviFilter->Kategorie->cSeo[self::$kSprache]);
                 exit();
             }
         }
@@ -1797,7 +1845,9 @@ final class Shop
     {
         $cShopURL = URL_SHOP;
         //EXPERIMENTAL_MULTILANG_SHOP
-        if ($bMultilang === true && isset($_SESSION['cISOSprache']) && defined('URL_SHOP_' . strtoupper($_SESSION['cISOSprache']))) {
+        if ($bMultilang === true && isset($_SESSION['cISOSprache']) &&
+            defined('URL_SHOP_' . strtoupper($_SESSION['cISOSprache']))
+        ) {
             $cShopURL = constant('URL_SHOP_' . strtoupper($_SESSION['cISOSprache']));
         }
         $sslStatus = pruefeSSL();

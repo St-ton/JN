@@ -30,7 +30,7 @@
                                 <td class="tcenter">{$oVergleichsliste20->kVergleichsliste}</td>
                                 <td class="">
                                     {foreach name=letzten20pos from=$oVergleichsliste20->oLetzten20VergleichslistePos_arr item=oVergleichslistePos20}
-                                        <a href="../../index.php?a={$oVergleichslistePos20->kArtikel}" target="_blank">{$oVergleichslistePos20->cArtikelName}</a>{if !$smarty.foreach.letzten20pos.last}{/if}
+                                        <a href="{$shopURL}/index.php?a={$oVergleichslistePos20->kArtikel}" target="_blank">{$oVergleichslistePos20->cArtikelName}</a>{if !$smarty.foreach.letzten20pos.last}{/if}
                                         <br />
                                     {/foreach}
                                 </td>
@@ -105,7 +105,7 @@
                         {foreach name=top from=$TopVergleiche item=oVergleichslistePosTop}
                             <tr class="tab_bg{$smarty.foreach.top.iteration%2}">
                                 <td class="TD1">
-                                    <a href="../../index.php?a={$oVergleichslistePosTop->kArtikel}" target="_blank">{$oVergleichslistePosTop->cArtikelName}</a>
+                                    <a href="{$shopURL}/index.php?a={$oVergleichslistePosTop->kArtikel}" target="_blank">{$oVergleichslistePosTop->cArtikelName}</a>
                                 </td>
                                 <td class="tcenter">{$oVergleichslistePosTop->nAnzahl}</td>
                             </tr>

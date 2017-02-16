@@ -17,17 +17,27 @@ if (verifyGPCDataInteger('anmeldung') === 1) {
     $step = 'cab_anmeldung';
 } elseif (verifyGPCDataInteger('register') === 1) { // Registrieren
     // Pruefen ob bereits eine MD5 Passwort gesetzt wurde
-    $oEinstellungTMP = Shop::DB()->query("SELECT * FROM teinstellungen WHERE cName = 'zahlungsart_clickandbuy_md5_key'", 1);
+    $oEinstellungTMP = Shop::DB()->query("
+        SELECT * 
+            FROM teinstellungen 
+            WHERE cName = 'zahlungsart_clickandbuy_md5_key'", 1
+    );
 
     if (isset($oEinstellungTMP->cWert) && strlen($oEinstellungTMP->cWert) > 0) {
         $step    = 'cab_anmeldung';
-        $cFehler = 'Fehler: Sie haben bereits aus einer voherigen Registrierung ein MD5 Verschl&uuml;sselungspasswort gesetzt. Bitte l&ouml;schen Sie Ihr MD5 Passwort unter "Kaufabwicklung->Zahlungsarten->ClickandBuy" oder brechen die Registrierung ab.';
+        $cFehler = 'Fehler: Sie haben bereits aus einer voherigen Registrierung ein ' .
+            'MD5-Verschl&uuml;sselungspasswort gesetzt. Bitte l&ouml;schen Sie Ihr MD5 Passwort unter ' .
+            '"Kaufabwicklung->Zahlungsarten->ClickandBuy" oder brechen die Registrierung ab.';
     } else {
         // Dynkey neu generieren und als Einstellung in die DB speichern
         $cDynKey = gibUID(12, URL_SHOP);
 
         Shop::DB()->delete('teinstellungen', 'cName', 'zahlungsart_clickandbuy_md5_key');
-        Shop::DB()->query("INSERT INTO teinstellungen VALUES('100', 'zahlungsart_clickandbuy_md5_key', '" . $cDynKey . "', 'za_clickandbuy_jtl')", 3);
+        Shop::DB()->query("
+            INSERT 
+                INTO teinstellungen 
+                VALUES('100', 'zahlungsart_clickandbuy_md5_key', '" . $cDynKey . "', 'za_clickandbuy_jtl')", 3
+        );
 
         // Weiterleitung zur Registrierung bei ClickandBuy
         // Parameter

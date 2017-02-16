@@ -44,33 +44,33 @@ class iPayment extends PaymentMethod
                 $cReturnURL = $this->getNotificationURL($paymentHash);
             }
 
-            $cPost = '<form action="https://ipayment.de/merchant/' . $trx_accountid . '/processor/2.0/" method="post">
-                        <input type="hidden" name="trxuser_id" value="' . $trx_userid . '">
-                        <input type="hidden" name="trxpassword" value="' . $trx_password . '">
+            $cPost = '
+            <form action="https://ipayment.de/merchant/' . $trx_accountid . '/processor/2.0/" method="post">
+                <input type="hidden" name="trxuser_id" value="' . $trx_userid . '">
+                <input type="hidden" name="trxpassword" value="' . $trx_password . '">
 
-                        <input type="hidden" name="trx_paymenttyp" value="cc">
-                        <input type="hidden" name="trx_typ" value="auth">
-                        <input type="hidden" name="trx_securityhash" value="' . $trx_securityhash . '">
+                <input type="hidden" name="trx_paymenttyp" value="cc">
+                <input type="hidden" name="trx_typ" value="auth">
+                <input type="hidden" name="trx_securityhash" value="' . $trx_securityhash . '">
 
-                        <input type="hidden" name="addr_name" value="' . ($_SESSION['Kunde']->cVorname . ' ' . $_SESSION['Kunde']->cNachname) . '">
-                        <input type="hidden" name="addr_street" value="' . ($_SESSION['Kunde']->cStrasse . ' ' . $_SESSION['Kunde']->cHausnummer) . '">
-                        <input type="hidden" name="addr_zip" value="' . ($_SESSION['Kunde']->cPLZ) . '">
-                        <input type="hidden" name="addr_city" value="' . ($_SESSION['Kunde']->cOrt) . '">
-                        <input type="hidden" name="addr_country" value="' . ($_SESSION['Kunde']->cLand) . '">
-                        <input type="hidden" name="addr_email" value="' . ($_SESSION['Kunde']->cMail) . '">
-                        <input type="hidden" name="trx_amount" value="' . $trx_amount . '">
-                        <input type="hidden" name="trx_currency" value="' . $trx_currency . '">
-                        <input type="hidden" name="invoice_text" value="' . Shop::Lang()->get('order', 'global') . ':">
-                        <input type="hidden" name="trx_user_comment" value="' . $order->cBestellNr . '">' .
+                <input type="hidden" name="addr_name" value="' . ($_SESSION['Kunde']->cVorname . ' ' . $_SESSION['Kunde']->cNachname) . '">
+                <input type="hidden" name="addr_street" value="' . ($_SESSION['Kunde']->cStrasse . ' ' . $_SESSION['Kunde']->cHausnummer) . '">
+                <input type="hidden" name="addr_zip" value="' . ($_SESSION['Kunde']->cPLZ) . '">
+                <input type="hidden" name="addr_city" value="' . ($_SESSION['Kunde']->cOrt) . '">
+                <input type="hidden" name="addr_country" value="' . ($_SESSION['Kunde']->cLand) . '">
+                <input type="hidden" name="addr_email" value="' . ($_SESSION['Kunde']->cMail) . '">
+                <input type="hidden" name="trx_amount" value="' . $trx_amount . '">
+                <input type="hidden" name="trx_currency" value="' . $trx_currency . '">
+                <input type="hidden" name="invoice_text" value="' . Shop::Lang()->get('order', 'global') . ':">
+                <input type="hidden" name="trx_user_comment" value="' . $order->cBestellNr . '">' .
                 //@todo: $Firma undefined
-//                        <input type="hidden" name="item_name" value="' . $Firma->cName . '">
+                // <input type="hidden" name="item_name" value="' . $Firma->cName . '">
                 '<input type="hidden" name="redirect_url" value="' . $cReturnURL . '">
-                        <input type="hidden" name="hidden_trigger_url" value="' . $this->getNotificationURL($paymentHash) . '&jtls=1">
-                        <input type="hidden" name="silent_error_url" value="' . $cFailureURL . '">
-                        
-                        <input type="hidden" name="redirect_action" value="REDIRECT">
-                        <input type="submit" value="' . Shop::Lang()->get('payWithIpayment', 'global') . '">
-                        </form>';
+                <input type="hidden" name="hidden_trigger_url" value="' . $this->getNotificationURL($paymentHash) . '&jtls=1">
+                <input type="hidden" name="silent_error_url" value="' . $cFailureURL . '">                        
+                <input type="hidden" name="redirect_action" value="REDIRECT">
+                <input type="submit" value="' . Shop::Lang()->get('payWithIpayment', 'global') . '">
+            </form>';
 
             Shop::Smarty()->assign('ipaymentform', $cPost);
         }
@@ -148,11 +148,17 @@ class iPayment extends PaymentMethod
      * @param array $args_arr
      * @return bool
      */
-    public function isValidIntern($args_arr = array())
+    public function isValidIntern($args_arr = [])
     {
-        $trxaccount_id = (isset($GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_ipayment_account_id'])) ? strtolower($GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_ipayment_account_id']) : null;
-        $trxuser_id    = (isset($GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_ipayment_trxuser_id'])) ? $GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_ipayment_trxuser_id'] : null;
-        $trxpassword   = (isset($GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_ipayment_trxpassword'])) ? $GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_ipayment_trxpassword'] : null;
+        $trxaccount_id = (isset($GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_ipayment_account_id']))
+            ? strtolower($GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_ipayment_account_id'])
+            : null;
+        $trxuser_id    = (isset($GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_ipayment_trxuser_id']))
+            ? $GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_ipayment_trxuser_id']
+            : null;
+        $trxpassword   = (isset($GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_ipayment_trxpassword']))
+            ? $GLOBALS['Einstellungen']['zahlungsarten']['zahlungsart_ipayment_trxpassword']
+            : null;
         if (strlen($trxaccount_id) == 0) {
             ZahlungsLog::add($this->moduleID, 'Pflichtparameter "Account-ID" ist nicht gesetzt!', null, LOGLEVEL_ERROR);
 

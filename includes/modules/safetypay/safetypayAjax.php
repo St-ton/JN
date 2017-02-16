@@ -133,13 +133,13 @@ if (empty($GLOBALS['DB'])) {
     require_once '../../../classes/core/class.core.NiceDB.php';
     $DB = new NiceDB(DB_HOST, DB_USER, DB_PASS, DB_NAME);
 
-    $einstellungApiKey       = $DB->executeQuery("select cWert from teinstellungen where cName='zahlungsart_safetypay_apikey'", 1);
-    $einstellungSignatureKey = $DB->executeQuery("select cWert from teinstellungen where cName='zahlungsart_safetypay_signaturekey'", 1);
-    $einstellungUmgebung     = $DB->executeQuery("select cWert from teinstellungen where cName='zahlungsart_safetypay_testumgebung'", 1);
+    $einstellungApiKey       = $DB->executeQuery("SELECT cWert FROM teinstellungen WHERE cName = 'zahlungsart_safetypay_apikey'", 1);
+    $einstellungSignatureKey = $DB->executeQuery("SELECT cWert FROM teinstellungen WHERE cName = 'zahlungsart_safetypay_signaturekey'", 1);
+    $einstellungUmgebung     = $DB->executeQuery("SELECT cWert FROM teinstellungen WHERE cName = 'zahlungsart_safetypay_testumgebung'", 1);
 } else {
-    $einstellungApiKey       = Shop::DB()->query("select cWert from teinstellungen where cName='zahlungsart_safetypay_apikey'", 1);
-    $einstellungSignatureKey = Shop::DB()->query("select cWert from teinstellungen where cName='zahlungsart_safetypay_signaturekey'", 1);
-    $einstellungUmgebung     = Shop::DB()->query("select cWert from teinstellungen where cName='zahlungsart_safetypay_testumgebung'", 1);
+    $einstellungApiKey       = Shop::DB()->query("SELECT cWert FROM teinstellungen WHERE cName = 'zahlungsart_safetypay_apikey'", 1);
+    $einstellungSignatureKey = Shop::DB()->query("SELECT cWert FROM teinstellungen WHERE cName = 'zahlungsart_safetypay_signaturekey'", 1);
+    $einstellungUmgebung     = Shop::DB()->query("SELECT cWert FROM teinstellungen WHERE cName = 'zahlungsart_safetypay_testumgebung'", 1);
 }
 
 if (!empty($einstellungApiKey) && !empty($einstellungApiKey->cWert) && !empty($einstellungSignatureKey) && !empty($einstellungSignatureKey->cWert)) {

@@ -4,7 +4,7 @@
 {$ti = $financingOption->getTotalInterest()}
 {$bcf = $bestFinancingOption->getCreditFinancing()}
 
-<table class="table table-condensed2 table-financing-option">
+<table class="table table-financing-option">
     <thead>
         <tr>
             <th colspan="2">
@@ -19,7 +19,7 @@
     </thead>
     <tbody>
         <tr>
-            <td>in <!--monatlicher--> H&ouml;he von</td>
+            <td>in monatlicher H&ouml;he von je</td>
             <th class="value">{gibPreisStringLocalized($mp->getValue())}</th>
         </tr>
         <tr>

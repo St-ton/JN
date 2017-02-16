@@ -15,7 +15,7 @@ if (!$_SESSION['Kundengruppe']->darfArtikelKategorienSehen) {
     header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true) . '?li=1', true, 303);
     exit;
 }
-// Wurde ein Kindartikel zum Vaterumgeleitet? Falls ja => Redirect POST Daten entpacken und zuweisen
+// Wurde ein Kindartikel zum Vater umgeleitet? Falls ja => Redirect POST Daten entpacken und zuweisen
 if (isset($_GET['cRP']) && strlen($_GET['cRP']) > 0) {
     $cRP_arr = explode('&', base64_decode($_GET['cRP']));
     if (is_array($cRP_arr) && count($cRP_arr) > 0) {
@@ -30,7 +30,6 @@ $cParameter_arr  = Shop::getParameters();
 $NaviFilter      = Shop::buildNaviFilter($cParameter_arr);
 $oSuchergebnisse = new stdClass();
 $cFehler         = '';
-//erstelle $smarty
 require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
 executeHook(HOOK_INDEX_NAVI_HEAD_POSTGET);
 
@@ -66,9 +65,14 @@ if (strlen($cParameter_arr['cSuche']) > 0 || (isset($_GET['qs']) && strlen($_GET
     $nMindestzeichen = ((int)$Einstellungen['artikeluebersicht']['suche_min_zeichen'] > 0) ?
         (int)$Einstellungen['artikeluebersicht']['suche_min_zeichen'] :
         3;
-    preg_match("/[\w" . utf8_decode('äÄüÜöÖß') . "\.\-]{" . $nMindestzeichen . ",}/", str_replace(' ', '', $cParameter_arr['cSuche']), $cTreffer_arr);
+    preg_match(
+        "/[\w" . utf8_decode('äÄüÜöÖß') . "\.\-]{" . $nMindestzeichen . ",}/",
+        str_replace(' ', '', $cParameter_arr['cSuche']),
+        $cTreffer_arr);
     if (count($cTreffer_arr) === 0) {
-        $cFehler                 = Shop::Lang()->get('expressionHasTo', 'global') . ' ' . $nMindestzeichen . ' ' . Shop::Lang()->get('lettersDigits', 'global');
+        $cFehler                 = Shop::Lang()->get('expressionHasTo', 'global') . ' ' .
+            $nMindestzeichen . ' ' .
+            Shop::Lang()->get('lettersDigits', 'global');
         $oSuchergebnisse->Fehler = $cFehler;
         $doSearch                = false;
     }
@@ -83,7 +87,8 @@ if (ArtikelHelper::isVariChild($cParameter_arr['kArtikel'])) {
     $cParameter_arr['kArtikel']         = Shop::$kArtikel;
 }
 if (!$cParameter_arr['kWunschliste'] && strlen(verifyGPDataString('wlid')) > 0) {
-    header('Location: ' . $linkHelper->getStaticRoute('wunschliste.php') . '?wlid=' . verifyGPDataString('wlid') . '&error=1', true, 303);
+    header('Location: ' . $linkHelper->getStaticRoute('wunschliste.php') .
+        '?wlid=' . verifyGPDataString('wlid') . '&error=1', true, 303);
     exit();
 }
 $smarty->assign('NaviFilter', $NaviFilter);
@@ -112,13 +117,40 @@ if ($cParameter_arr['kHersteller'] > 0 ||
     if ($cParameter_arr['kKategorie'] > 0) {
         $_SESSION['LetzteKategorie'] = $cParameter_arr['kKategorie'];
     }
+    $AktuelleKategorie = new Kategorie();
     //hole aktuelle Kategorie + bild, falls eine gesetzt
-    $AktuelleKategorie = new Kategorie($cParameter_arr['kKategorie']);
+    if ($cParameter_arr['kKategorie'] > 0) {
+        $AktuelleKategorie->loadFromDB($cParameter_arr['kKategorie']);
+        if (!isset($AktuelleKategorie->kKategorie) || $AktuelleKategorie->kKategorie === null) {
+            Shop::$is404             = true;
+            $is404                   = true;
+            $cParameter_arr['is404'] = true;
+            if (!isset($seo)) {
+                $seo = null;
+            }
+            executeHook(HOOK_INDEX_SEO_404, ['seo' => $seo]);
+            if (!Shop::$kLink) {
+                $hookInfos     = urlNotFoundRedirect([
+                    'key'   => 'kLink',
+                    'value' => $cParameter_arr['kLink']
+                ]);
+                $kLink         = $hookInfos['value'];
+                $bFileNotFound = $hookInfos['isFileNotFound'];
+                if (!$kLink) {
+                    $linkHelper  = LinkHelper::getInstance();
+                    $kLink       = $linkHelper->getSpecialPageLinkKey(LINKTYP_404);
+                    Shop::$kLink = $kLink;
+                }
+            }
+            require_once PFAD_ROOT . 'seite.php';
+        }
+    }
     //Artikelanzahl pro Seite
     if ($cParameter_arr['nArtikelProSeite'] == 0) {
         $cParameter_arr['nArtikelProSeite'] = 20;
         if ($Einstellungen['artikeluebersicht']['artikeluebersicht_artikelproseite'] > 0) {
-            $cParameter_arr['nArtikelProSeite'] = (int)$Einstellungen['artikeluebersicht']['artikeluebersicht_artikelproseite'];
+            $cParameter_arr['nArtikelProSeite'] =
+                (int)$Einstellungen['artikeluebersicht']['artikeluebersicht_artikelproseite'];
         }
         if (isset($_SESSION['ArtikelProSeite']) && $_SESSION['ArtikelProSeite'] > 0) {
             $cParameter_arr['nArtikelProSeite'] = (int)$_SESSION['ArtikelProSeite'];
@@ -137,7 +169,10 @@ if ($cParameter_arr['kHersteller'] > 0 ||
     $oExtendedJTLSearchResponse = null;
     $bExtendedJTLSearch         = false;
 
-    executeHook(HOOK_NAVI_PRESUCHE, ['cValue' => &$NaviFilter->EchteSuche->cSuche, 'bExtendedJTLSearch' => &$bExtendedJTLSearch]);
+    executeHook(HOOK_NAVI_PRESUCHE, [
+        'cValue'             => &$NaviFilter->EchteSuche->cSuche,
+        'bExtendedJTLSearch' => &$bExtendedJTLSearch
+    ]);
     // Keine Suche sondern vielleicht nur ein Filter?
     if (strlen($cParameter_arr['cSuche']) === 0) {
         $bExtendedJTLSearch = false;
@@ -146,7 +181,11 @@ if ($cParameter_arr['kHersteller'] > 0 ||
     if (is_array($NaviFilter->SuchFilter) && count($NaviFilter->SuchFilter) > 0) {
         $sfCount = count($NaviFilter->SuchFilter);
         for ($i = 0; $i < $sfCount; $i++) {
-            $oSuchanfrage = Shop::DB()->select('tsuchanfrage', 'kSuchanfrage', (int)$NaviFilter->SuchFilter[$i]->kSuchanfrage);
+            $oSuchanfrage = Shop::DB()->select(
+                'tsuchanfrage',
+                'kSuchanfrage',
+                (int)$NaviFilter->SuchFilter[$i]->kSuchanfrage
+            );
             if (strlen($oSuchanfrage->cSuche) > 0) {
                 // Nicht vorhandene Suchcaches werden hierdurch neu generiert
                 if (!isset($NaviFilter->Suche)) {
@@ -172,6 +211,7 @@ if ($cParameter_arr['kHersteller'] > 0 ||
             $NaviFilter->Suche->cSuche       = $oSuchanfrage->cSuche;
         }
     }
+    $NaviFilter->Suche->bExtendedJTLSearch = $bExtendedJTLSearch;
     //Suche da? Dann bearbeiten
     if (!$bExtendedJTLSearch && isset($NaviFilter->Suche->cSuche) && strlen($NaviFilter->Suche->cSuche) > 0) {
         //XSS abfangen
@@ -201,24 +241,32 @@ if ($cParameter_arr['kHersteller'] > 0 ||
             $_SESSION['oErweiterteDarstellung']->nAnzahlArtikel = $_SESSION['ArtikelProSeite'];
         }
     }
-    if (!isset($_SESSION['ArtikelProSeite']) && $Einstellungen['artikeluebersicht']['artikeluebersicht_erw_darstellung'] === 'N') {
-        $_SESSION['ArtikelProSeite'] = min((int)$Einstellungen['artikeluebersicht']['artikeluebersicht_artikelproseite'], ARTICLES_PER_PAGE_HARD_LIMIT);
+    if (!isset($_SESSION['ArtikelProSeite']) &&
+        $Einstellungen['artikeluebersicht']['artikeluebersicht_erw_darstellung'] === 'N'
+    ) {
+        $_SESSION['ArtikelProSeite'] = min(
+            (int)$Einstellungen['artikeluebersicht']['artikeluebersicht_artikelproseite'],
+            ARTICLES_PER_PAGE_HARD_LIMIT
+        );
     }
     // $nArtikelProSeite auf max. ARTICLES_PER_PAGE_HARD_LIMIT beschränken
-    $cParameter_arr['nArtikelProSeite'] = min((int)$cParameter_arr['nArtikelProSeite'], ARTICLES_PER_PAGE_HARD_LIMIT);
-
-    executeHook(
-        HOOK_NAVI_SUCHE,
-        [
-            'bExtendedJTLSearch'         => $bExtendedJTLSearch,
-            'oExtendedJTLSearchResponse' => &$oExtendedJTLSearchResponse,
-            'cValue'                     => &$NaviFilter->EchteSuche->cSuche,
-            'nArtikelProSeite'           => &$cParameter_arr['nArtikelProSeite'],
-            'nSeite'                     => &$NaviFilter->nSeite,
-            'nSortierung'                => (isset($_SESSION['Usersortierung'])) ? $_SESSION['Usersortierung'] : null,
-            'bLagerbeachten'             => $Einstellungen['global']['artikel_artikelanzeigefilter'] == EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL ? true : false
-        ]
+    $cParameter_arr['nArtikelProSeite'] = min(
+        (int)$cParameter_arr['nArtikelProSeite'],
+        ARTICLES_PER_PAGE_HARD_LIMIT
     );
+
+    executeHook(HOOK_NAVI_SUCHE, [
+        'bExtendedJTLSearch'         => $bExtendedJTLSearch,
+        'oExtendedJTLSearchResponse' => &$oExtendedJTLSearchResponse,
+        'cValue'                     => &$NaviFilter->EchteSuche->cSuche,
+        'nArtikelProSeite'           => &$cParameter_arr['nArtikelProSeite'],
+        'nSeite'                     => &$NaviFilter->nSeite,
+        'nSortierung'                => (isset($_SESSION['Usersortierung']))
+            ? $_SESSION['Usersortierung']
+            : null,
+        'bLagerbeachten'             => $Einstellungen['global']['artikel_artikelanzeigefilter'] ==
+            EINSTELLUNGEN_ARTIKELANZEIGEFILTER_LAGERNULL
+    ]);
     //Ab diesen Artikel rausholen
     $nLimitN = ($NaviFilter->nSeite - 1) * $cParameter_arr['nArtikelProSeite'];
     if ($doSearch === false) {
@@ -262,7 +310,13 @@ if ($cParameter_arr['kHersteller'] > 0 ||
                 $Einstellungen['artikeluebersicht']['artikeluebersicht_max_seitenzahl']
             );
         } else {
-            $oSuchergebnisse->Artikel->elemente = gibArtikelKeys($FilterSQL, $cParameter_arr['nArtikelProSeite'], $NaviFilter, false, $oSuchergebnisse);
+            $oSuchergebnisse->Artikel->elemente = gibArtikelKeys(
+                $FilterSQL,
+                $cParameter_arr['nArtikelProSeite'],
+                $NaviFilter,
+                false,
+                $oSuchergebnisse
+            );
         }
     }
     // Umleiten falls SEO keine Artikel ergibt
@@ -275,13 +329,20 @@ if ($cParameter_arr['kHersteller'] > 0 ||
         foreach ($oSuchergebnisse->Artikel->elemente as $product) {
             $products[] = $product->kArtikel;
         }
-        $limit = (isset($Einstellungen['artikeluebersicht']['artikeluebersicht_bestseller_anzahl'])) ?
-            (int)$Einstellungen['artikeluebersicht']['artikeluebersicht_bestseller_anzahl'] :
-            3;
-        $minsells = (isset($Einstellungen['global']['global_bestseller_minanzahl'])) ?
-            (int)$Einstellungen['global']['global_bestseller_minanzahl'] :
-            10;
-        $bestsellers = Bestseller::buildBestsellers($products, $_SESSION['Kundengruppe']->kKundengruppe, $_SESSION['Kundengruppe']->darfArtikelKategorienSehen, false, $limit, $minsells);
+        $limit = (isset($Einstellungen['artikeluebersicht']['artikeluebersicht_bestseller_anzahl']))
+            ? (int)$Einstellungen['artikeluebersicht']['artikeluebersicht_bestseller_anzahl']
+            : 3;
+        $minsells = (isset($Einstellungen['global']['global_bestseller_minanzahl']))
+            ? (int)$Einstellungen['global']['global_bestseller_minanzahl']
+            : 10;
+        $bestsellers = Bestseller::buildBestsellers(
+            $products,
+            $_SESSION['Kundengruppe']->kKundengruppe,
+            $_SESSION['Kundengruppe']->darfArtikelKategorienSehen,
+            false,
+            $limit,
+            $minsells
+        );
         Bestseller::ignoreProducts($oSuchergebnisse->Artikel->elemente, $bestsellers);
         $smarty->assign('oBestseller_arr', $bestsellers);
     }
@@ -314,7 +375,12 @@ if ($cParameter_arr['kHersteller'] > 0 ||
         $oSuchergebnisse->Bewertung         = gibBewertungSterneFilterOptionen($FilterSQL, $NaviFilter);
         $oSuchergebnisse->Tags              = gibTagFilterOptionen($FilterSQL, $NaviFilter);
         $oSuchergebnisse->TagsJSON          = gibTagFilterJSONOptionen($FilterSQL, $NaviFilter);
-        $oSuchergebnisse->MerkmalFilter     = gibMerkmalFilterOptionen($FilterSQL, $NaviFilter, $AktuelleKategorie, function_exists('starteAuswahlAssistent'));
+        $oSuchergebnisse->MerkmalFilter     = gibMerkmalFilterOptionen(
+            $FilterSQL,
+            $NaviFilter,
+            $AktuelleKategorie,
+            function_exists('starteAuswahlAssistent')
+        );
         $oSuchergebnisse->Preisspanne       = gibPreisspannenFilterOptionen($FilterSQL, $NaviFilter, $oSuchergebnisse);
         $oSuchergebnisse->Kategorieauswahl  = gibKategorieFilterOptionen($FilterSQL, $NaviFilter);
         $oSuchergebnisse->SuchFilter        = gibSuchFilterOptionen($FilterSQL, $NaviFilter);
@@ -349,7 +415,10 @@ if ($cParameter_arr['kHersteller'] > 0 ||
             $Einstellungen['artikeldetails']['benachrichtigung_nutzen'] = null;
         }
         foreach ($oSuchergebnisse->Artikel->elemente as $Artikel) {
-            $Artikel->verfuegbarkeitsBenachrichtigung = gibVerfuegbarkeitsformularAnzeigen($Artikel, $Einstellungen['artikeldetails']['benachrichtigung_nutzen']);
+            $Artikel->verfuegbarkeitsBenachrichtigung = gibVerfuegbarkeitsformularAnzeigen(
+                $Artikel,
+                $Einstellungen['artikeldetails']['benachrichtigung_nutzen']
+            );
         }
     }
     if (count($oSuchergebnisse->Artikel->elemente) === 0) {
@@ -359,22 +428,29 @@ if ($cParameter_arr['kHersteller'] > 0 ||
     }
     if (count($oSuchergebnisse->Artikel->elemente) === 0) {
         if (isset($NaviFilter->Kategorie->kKategorie) && $NaviFilter->Kategorie->kKategorie > 0) {
-            //hole alle enthaltenen Kategorien
+            // hole alle enthaltenen Kategorien
             if (!isset($KategorieInhalt)) {
                 $KategorieInhalt = new stdClass();
             }
             $KategorieInhalt->Unterkategorien = new KategorieListe();
             $KategorieInhalt->Unterkategorien->getAllCategoriesOnLevel($NaviFilter->Kategorie->kKategorie);
-
-            //wenn keine eigenen Artikel in dieser Kat, Top Angebote / Bestseller aus unterkats + unterunterkats rausholen und anzeigen?
-            if ($Einstellungen['artikeluebersicht']['topbest_anzeigen'] === 'Top' || $Einstellungen['artikeluebersicht']['topbest_anzeigen'] === 'TopBest') {
+            // wenn keine eigenen Artikel in dieser Kat,
+            // Top Angebote / Bestseller aus unterkats + unterunterkats rausholen und anzeigen?
+            if ($Einstellungen['artikeluebersicht']['topbest_anzeigen'] === 'Top' ||
+                $Einstellungen['artikeluebersicht']['topbest_anzeigen'] === 'TopBest'
+            ) {
                 $KategorieInhalt->TopArtikel = new ArtikelListe();
                 $KategorieInhalt->TopArtikel->holeTopArtikel($KategorieInhalt->Unterkategorien);
             }
-            if ($Einstellungen['artikeluebersicht']['topbest_anzeigen'] === 'Bestseller' || $Einstellungen['artikeluebersicht']['topbest_anzeigen'] === 'TopBest') {
+            if ($Einstellungen['artikeluebersicht']['topbest_anzeigen'] === 'Bestseller' ||
+                $Einstellungen['artikeluebersicht']['topbest_anzeigen'] === 'TopBest'
+            ) {
                 if (isset($KategorieInhalt->TopArtikel)) {
                     $KategorieInhalt->BestsellerArtikel = new ArtikelListe();
-                    $KategorieInhalt->BestsellerArtikel->holeBestsellerArtikel($KategorieInhalt->Unterkategorien, $KategorieInhalt->TopArtikel);
+                    $KategorieInhalt->BestsellerArtikel->holeBestsellerArtikel(
+                        $KategorieInhalt->Unterkategorien,
+                        $KategorieInhalt->TopArtikel
+                    );
                 }
             }
             $smarty->assign('KategorieInhalt', $KategorieInhalt);
@@ -438,14 +514,22 @@ if ($cParameter_arr['kHersteller'] > 0 ||
         $oMeta->cMetaDescription = $oNavigationsinfo->oHersteller->cMetaDescription;
         $oMeta->cMetaKeywords    = $oNavigationsinfo->oHersteller->cMetaKeywords;
 
-        $cBrotNavi = createNavigation('', '', 0, $NaviFilter->cBrotNaviName, gibNaviURL($NaviFilter, true, null));
+        $cBrotNavi = createNavigation(
+            '',
+            '',
+            0,
+            $NaviFilter->cBrotNaviName,
+            gibNaviURL($NaviFilter, true, null)
+        );
     } elseif (isset($NaviFilter->MerkmalWert->kMerkmalWert) && $NaviFilter->MerkmalWert->kMerkmalWert > 0) {
         $oNavigationsinfo->oMerkmalWert = new MerkmalWert($NaviFilter->MerkmalWert->kMerkmalWert);
 
         if ($Einstellungen['navigationsfilter']['merkmalwert_bild_anzeigen'] === 'Y') {
             $oNavigationsinfo->cName = $oNavigationsinfo->oMerkmalWert->cName;
         } elseif ($Einstellungen['navigationsfilter']['merkmalwert_bild_anzeigen'] === 'BT') {
-            $oNavigationsinfo->cName    = (isset($oNavigationsinfo->oMerkmalWert->cName)) ? $oNavigationsinfo->oMerkmalWert->cName : null;
+            $oNavigationsinfo->cName    = (isset($oNavigationsinfo->oMerkmalWert->cName))
+                ? $oNavigationsinfo->oMerkmalWert->cName
+                : null;
             $oNavigationsinfo->cBildURL = $oNavigationsinfo->oMerkmalWert->cBildpfadNormal;
         } elseif ($Einstellungen['navigationsfilter']['merkmalwert_bild_anzeigen'] === 'B') {
             $oNavigationsinfo->cBildURL = $oNavigationsinfo->oMerkmalWert->cBildpfadNormal;
@@ -460,25 +544,57 @@ if ($cParameter_arr['kHersteller'] > 0 ||
             $oMeta->cMetaKeywords = $oNavigationsinfo->oMerkmalWert->cMetaKeywords;
         }
 
-        $cBrotNavi = createNavigation('', '', 0, $NaviFilter->cBrotNaviName, gibNaviURL($NaviFilter, true, null));
+        $cBrotNavi = createNavigation(
+            '',
+            '',
+            0,
+            $NaviFilter->cBrotNaviName,
+            gibNaviURL($NaviFilter, true, null)
+        );
     } elseif (isset($NaviFilter->Tag->kTag) && $NaviFilter->Tag->kTag > 0) {
-        $cBrotNavi = createNavigation('', '', 0, $NaviFilter->cBrotNaviName, gibNaviURL($NaviFilter, true, null));
+        $cBrotNavi = createNavigation(
+            '',
+            '',
+            0,
+            $NaviFilter->cBrotNaviName,
+            gibNaviURL($NaviFilter, true, null)
+        );
     } elseif (isset($NaviFilter->Suchspecial->kKey) && $NaviFilter->Suchspecial->kKey > 0) {
-        $cBrotNavi = createNavigation('', '', 0, $NaviFilter->cBrotNaviName, gibNaviURL($NaviFilter, true, null));
+        $cBrotNavi = createNavigation(
+            '',
+            '',
+            0,
+            $NaviFilter->cBrotNaviName,
+            gibNaviURL($NaviFilter, true, null)
+        );
     } elseif (isset($NaviFilter->Suche->cSuche) && strlen($NaviFilter->Suche->cSuche) > 0) {
-        $cBrotNavi = createNavigation('', '', 0, Shop::Lang()->get('search', 'breadcrumb') . ': ' . $NaviFilter->cBrotNaviName, gibNaviURL($NaviFilter, true, null));
+        $cBrotNavi = createNavigation(
+            '',
+            '',
+            0,
+            Shop::Lang()->get('search', 'breadcrumb') . ': ' . $NaviFilter->cBrotNaviName,
+            gibNaviURL($NaviFilter, true, null)
+        );
     }
     // Canonical
     if (strpos(basename(gibNaviURL($NaviFilter, true, null)), '.php') === false || !SHOP_SEO) {
         $cSeite = '';
-        if (isset($oSuchergebnisse->Seitenzahlen->AktuelleSeite) && $oSuchergebnisse->Seitenzahlen->AktuelleSeite > 1) {
+        if (isset($oSuchergebnisse->Seitenzahlen->AktuelleSeite) &&
+            $oSuchergebnisse->Seitenzahlen->AktuelleSeite > 1
+        ) {
             $cSeite = SEP_SEITE . $oSuchergebnisse->Seitenzahlen->AktuelleSeite;
         }
         $cCanonicalURL = gibNaviURL($NaviFilter, true, null, 0, true) . $cSeite;
     }
     // Auswahlassistent
     if (function_exists('starteAuswahlAssistent')) {
-        starteAuswahlAssistent(AUSWAHLASSISTENT_ORT_KATEGORIE, $cParameter_arr['kKategorie'], Shop::getLanguage(), $smarty, $Einstellungen['auswahlassistent']);
+        starteAuswahlAssistent(
+            AUSWAHLASSISTENT_ORT_KATEGORIE,
+            $cParameter_arr['kKategorie'],
+            Shop::getLanguage(),
+            $smarty,
+            $Einstellungen['auswahlassistent']
+        );
     }
     // Work around fürs Template
     $smarty->assign('SEARCHSPECIALS_TOPREVIEWS', SEARCHSPECIALS_TOPREVIEWS)
@@ -534,7 +650,10 @@ if ($cParameter_arr['kHersteller'] > 0 ||
         require_once PFAD_ROOT . 'wunschliste.php';
     } elseif ($cParameter_arr['vergleichsliste'] > 0) {
         require_once PFAD_ROOT . 'vergleichsliste.php';
-    } elseif ($cParameter_arr['kNews'] > 0 || $cParameter_arr['kNewsMonatsUebersicht'] > 0 || $cParameter_arr['kNewsKategorie'] > 0) {
+    } elseif ($cParameter_arr['kNews'] > 0 ||
+        $cParameter_arr['kNewsMonatsUebersicht'] > 0 ||
+        $cParameter_arr['kNewsKategorie'] > 0
+    ) {
         require_once PFAD_ROOT . 'news.php';
     } elseif ($cParameter_arr['kUmfrage'] > 0) {
         require_once PFAD_ROOT . 'umfrage.php';

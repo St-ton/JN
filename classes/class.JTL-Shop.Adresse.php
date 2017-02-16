@@ -141,7 +141,7 @@ class Adresse
      */
     public function toArray()
     {
-        return (array) get_object_vars($this);
+        return (array)get_object_vars($this);
     }
 
     /**

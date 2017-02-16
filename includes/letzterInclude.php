@@ -27,8 +27,12 @@ $EinstellungenTmp      = Shop::getSettings([
     CONF_KAUFABWICKLUNG
 ]);
 $Einstellungen = (isset($Einstellungen)) ? array_merge($Einstellungen, $EinstellungenTmp) : $EinstellungenTmp;
-$themeDir      = (!empty($Einstellungen['template']['theme']['theme_default'])) ? $Einstellungen['template']['theme']['theme_default'] : 'evo';
-$cShopName     = (!empty($Einstellungen['global']['global_shopname'])) ? $Einstellungen['global']['global_shopname'] : 'JTL-Shop';
+$themeDir      = (!empty($Einstellungen['template']['theme']['theme_default']))
+    ? $Einstellungen['template']['theme']['theme_default']
+    : 'evo';
+$cShopName     = (!empty($Einstellungen['global']['global_shopname']))
+    ? $Einstellungen['global']['global_shopname']
+    : 'JTL-Shop';
 //Wechsel auf Mobil-Template
 if ($oTemplate->hasMobileTemplate() && !$bMobilAktiv && $oBrowser->bMobile && !isset($_SESSION['bAskMobil'])) {
     $_SESSION['bAskMobil'] = true;
@@ -58,7 +62,9 @@ $warensumme[1]         = gibPreisStringLocalized($cart->gibGesamtsummeWarenExt([
 $gesamtsumme[0]        = gibPreisStringLocalized($cart->gibGesamtsummeWaren(true, true));
 $gesamtsumme[1]        = gibPreisStringLocalized($cart->gibGesamtsummeWaren(false, true));
 $oVersandartKostenfrei = gibVersandkostenfreiAb($kKundengruppe, $cKundenherkunft);
-$oGlobaleMetaAngaben   = (isset($oGlobaleMetaAngabenAssoc_arr[$_SESSION['kSprache']])) ? $oGlobaleMetaAngabenAssoc_arr[$_SESSION['kSprache']] : null;
+$oGlobaleMetaAngaben   = (isset($oGlobaleMetaAngabenAssoc_arr[$_SESSION['kSprache']]))
+    ? $oGlobaleMetaAngabenAssoc_arr[$_SESSION['kSprache']]
+    : null;
 $pagetType             = Shop::getPageType();
 
 if (is_object($oGlobaleMetaAngaben)) {
@@ -118,7 +124,10 @@ $smarty->assign('cPluginCss_arr', $cMinify_arr['plugin_css'])
        ->assign('Warenkorbtext', lang_warenkorb_warenkorbEnthaeltXArtikel($cart))
        ->assign('zuletztInWarenkorbGelegterArtikel', $cart->gibLetztenWKArtikel())
        ->assign('WarenkorbVersandkostenfreiHinweis', baueVersandkostenfreiString($oVersandartKostenfrei,
-           ($cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL, C_WARENKORBPOS_TYP_KUPON, C_WARENKORBPOS_TYP_NEUKUNDENKUPON], true))))
+           ($cart->gibGesamtsummeWarenExt(
+               [C_WARENKORBPOS_TYP_ARTIKEL, C_WARENKORBPOS_TYP_KUPON, C_WARENKORBPOS_TYP_NEUKUNDENKUPON],
+               true
+           ))))
        ->assign('meta_title', (isset($cMetaTitle)) ? $cMetaTitle : '')
        ->assign('meta_description', (isset($cMetaDescription)) ? $cMetaDescription : '')
        ->assign('meta_keywords', (isset($cMetaKeywords)) ? $cMetaKeywords : '')

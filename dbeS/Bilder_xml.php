@@ -697,7 +697,7 @@ function gibKategoriebildname($Kategoriebild, $Bildformat)
             : $Kategoriebild->cPfad . '.' . $Bildformat;
     }
     $attr = Shop::DB()->select('tkategorieattribut', 'kKategorie', (int)$Kategoriebild->kKategorie, 'cName', KAT_ATTRIBUT_BILDNAME, null, null, false, 'cWert');
-    if (isset($attr->cWert)) {
+    if (!empty($attr->cWert)) {
         return $attr->cWert . '.' . $Bildformat;
     }
     $Kategorie = Shop::DB()->query(
@@ -1125,7 +1125,7 @@ function loescheArtikelPict($kArtikelPict, $nNr = null)
         $oArtikelPict = null;
         if (intval($nNr) > 0) {
             $oArtikelPict = Shop::DB()->select('tartikelpict', 'kArtikel', $kArtikelPict, 'nNr', (int)$nNr);
-            $kArtikelPict = $oArtikelPict->kArtikelPict;
+            $kArtikelPict = isset($oArtikelPict->kArtikelPict) ? $oArtikelPict->kArtikelPict : 0;
         }
         deleteArticleImage(null, 0, $kArtikelPict);
         if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
@@ -1461,10 +1461,11 @@ function imageload_container($img, $nWidth, $nHeight, $nContainerWidth, $nContai
     if ($format === 'jpg') {
         $rgb   = html2rgb($GLOBALS['Einstellungen']['bilder']['bilder_hintergrundfarbe']);
         $color = imagecolorallocate($newImg, $rgb[0], $rgb[1], $rgb[2]);
+        imagealphablending($newImg, true);
     } else {
         $color = imagecolorallocatealpha($newImg, 255, 255, 255, 127);
+        imagealphablending($newImg, false);
     }
-    imagealphablending($newImg, false);
     imagesavealpha($newImg, true);
     imagefilledrectangle($newImg, 0, 0, $nContainerWidth, $nContainerHeight, $color);
 
@@ -1518,11 +1519,12 @@ function imageload_alpha($img, $nWidth = 0, $nHeight = 0)
     if ($format === 'jpg') {
         $rgb   = html2rgb($GLOBALS['Einstellungen']['bilder']['bilder_hintergrundfarbe']);
         $color = imagecolorallocate($newImg, $rgb[0], $rgb[1], $rgb[2]);
+        imagealphablending($newImg, true);
     } else {
         $color = imagecolorallocatealpha($newImg, 255, 255, 255, 127);
+        imagealphablending($newImg, false);
     }
 
-    imagealphablending($newImg, false);
     imagesavealpha($newImg, true);
     imagefilledrectangle($newImg, 0, 0, $nWidth, $nHeight, $color);
     //@todo: check. was:

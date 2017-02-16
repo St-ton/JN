@@ -17,7 +17,7 @@ class Media
     /**
      * @var MediaImage[]|MediaImageCompatibility[]
      */
-    private $types = array();
+    private $types = [];
 
     /**
      * @return Media

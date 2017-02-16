@@ -256,7 +256,12 @@ function getArticleListFromString($cArray)
             $cSQL .= " cArtNr = '" . $cArticleID . "' ";
         }
 
-        $oArticle_arr = Shop::DB()->query("SELECT kArtikel AS kPrimary, cArtNr AS cBase, kArtikel, cName FROM tartikel WHERE " . $cSQL . " LIMIT 50", 2);
+        $oArticle_arr = Shop::DB()->query("
+            SELECT kArtikel AS kPrimary, cArtNr AS cBase, kArtikel, cName 
+                FROM tartikel 
+                WHERE " . $cSQL . " 
+                LIMIT 50", 2
+        );
         foreach ($oArticle_arr as &$oArticle) {
             $oArticle->cName = utf8_encode($oArticle->cName);
         }
@@ -276,7 +281,9 @@ function getManufacturerList($cSearch, $aParam)
     global $oAccount;
     $cSearch           = Shop::DB()->escape($cSearch);
     $cSearch           = utf8_decode($cSearch);
-    $limit             = ((isset($aParam['cLimit'])) ? "LIMIT " . ((int)$aParam['cLimit']) : 'LIMIT 50');
+    $limit             = ((isset($aParam['cLimit']))
+        ? "LIMIT " . ((int)$aParam['cLimit'])
+        : 'LIMIT 50');
     $oManufacturer_arr = array();
     $shopURL           = Shop::getURL();
     if (strlen($cSearch) >= 2 && $oAccount->logged()) {
@@ -348,7 +355,9 @@ function getCategoryList($cSearch, $aParam)
     global $oAccount;
     $cSearch       = Shop::DB()->escape($cSearch);
     $cSearch       = utf8_decode($cSearch);
-    $limit         = ((isset($aParam['cLimit'])) ? "LIMIT " . ((int)$aParam['cLimit']) : 'LIMIT 50');
+    $limit         = ((isset($aParam['cLimit']))
+        ? "LIMIT " . ((int)$aParam['cLimit'])
+        : 'LIMIT 50');
     $oCategory_arr = array();
     if (strlen($cSearch) >= 2 && $oAccount->logged()) {
         $oCategory_arr = Shop::DB()->query(
@@ -395,7 +404,12 @@ function getCategoryListFromString($cArray)
             $cSQL .= " kKategorie = " . (int)$cArticleID . " ";
         }
 
-        $oArticle_arr = Shop::DB()->query("SELECT kKategorie AS kPrimary, kKategorie AS cBase, cName FROM tkategorie WHERE " . $cSQL . " LIMIT 50", 2);
+        $oArticle_arr = Shop::DB()->query("
+            SELECT kKategorie AS kPrimary, kKategorie AS cBase, cName 
+                FROM tkategorie 
+                WHERE " . $cSQL . " 
+                LIMIT 50", 2
+        );
         foreach ($oArticle_arr as &$oArticle) {
             $oArticle->cName = utf8_encode($oArticle->cName);
         }
@@ -419,7 +433,12 @@ function getTagList($cSearch, $cWrapperID)
     $oArticle_arr = array();
     $oResponse    = new xajaxResponse();
     if (strlen($cSearch) >= 2 && $oAccount->logged()) {
-        $oArticle_arr = Shop::DB()->query("SELECT kTag AS kPrimary, kTag AS cBase, cName FROM ttag WHERE cName LIKE '" . $cSearch . "%' LIMIT 50", 2);
+        $oArticle_arr = Shop::DB()->query("
+            SELECT kTag AS kPrimary, kTag AS cBase, cName 
+                FROM ttag 
+                WHERE cName LIKE '" . $cSearch . "%' 
+                LIMIT 50", 2
+        );
         foreach ($oArticle_arr as &$oArticle) {
             $oArticle->cName = utf8_encode($oArticle->cName);
         }
@@ -444,10 +463,13 @@ function getAttributeList($cSearch, $cWrapperID)
     $oResponse    = new xajaxResponse();
     if (strlen($cSearch) >= 2 && $oAccount->logged()) {
         $oArticle_arr = Shop::DB()->query(
-            "SELECT tmerkmalwert.kMerkmalwert AS kPrimary, tmerkmalwert.kMerkmalwert AS cBase, tmerkmalwertsprache.cWert AS cName
+            "SELECT tmerkmalwert.kMerkmalwert AS kPrimary, tmerkmalwert.kMerkmalwert AS cBase, 
+                tmerkmalwertsprache.cWert AS cName
                 FROM tmerkmal
-                LEFT JOIN tmerkmalwert ON tmerkmal.kMerkmal = tmerkmalwert.kMerkmal
-                LEFT JOIN tmerkmalwertsprache ON tmerkmalwert.kMerkmalwert = tmerkmalwertsprache.kMerkmalwert
+                LEFT JOIN tmerkmalwert 
+                    ON tmerkmal.kMerkmal = tmerkmalwert.kMerkmal
+                LEFT JOIN tmerkmalwertsprache 
+                    ON tmerkmalwert.kMerkmalwert = tmerkmalwertsprache.kMerkmalwert
                 WHERE length(tmerkmalwertsprache.cWert) > 0
                     AND tmerkmalwertsprache.cWert LIKE '" . $cSearch . "%'
                 LIMIT 50", 2
@@ -474,9 +496,10 @@ function getLinkList($cSearch, $aParam)
     $oResponse    = new xajaxResponse();
     if (strlen($cSearch) >= 2) {
         $oArticle_arr = Shop::DB()->query("
-          SELECT kLink AS kPrimary, kLink AS cBase, cName 
-            FROM tlink 
-            WHERE cName LIKE '" . $cSearch . "%' LIMIT 50", 2
+            SELECT kLink AS kPrimary, kLink AS cBase, cName 
+                FROM tlink 
+                WHERE cName LIKE '" . $cSearch . "%' 
+                LIMIT 50", 2
         );
         foreach ($oArticle_arr as &$oArticle) {
             $oArticle->cName = utf8_encode($oArticle->cName);
@@ -502,8 +525,10 @@ function getMerkmalWerteAA($kMM_arr, $kSprache)
         $oMerkmalWert_arr = Shop::DB()->query(
             "SELECT tmerkmalwert.*, tmerkmalwertsprache.cWert, tmerkmal.cName
                 FROM tmerkmalwert
-                JOIN tmerkmal ON tmerkmal.kMerkmal = tmerkmalwert.kMerkmal
-                JOIN tmerkmalwertsprache ON tmerkmalwertsprache.kMerkmalWert = tmerkmalwert.kMerkmalWert
+                JOIN tmerkmal 
+                    ON tmerkmal.kMerkmal = tmerkmalwert.kMerkmal
+                JOIN tmerkmalwertsprache 
+                    ON tmerkmalwertsprache.kMerkmalWert = tmerkmalwert.kMerkmalWert
                     AND tmerkmalwertsprache.kSprache = " . (int)$kSprache . "
                 WHERE tmerkmalwert.kMerkmal IN(" . implode(',', $kMM_arr) . ")
                 ORDER BY tmerkmalwert.nSort", 2
@@ -512,7 +537,8 @@ function getMerkmalWerteAA($kMM_arr, $kSprache)
             $cMMWOption = '';
             foreach ($oMerkmalWert_arr as $oMerkmalWert) {
                 $cMMWOption .= '<option value="' . $oMerkmalWert->kMerkmalWert . '">';
-                $cMMWOption .= utf8_encode($oMerkmalWert->cName) . ': ' . utf8_encode($oMerkmalWert->cWert) . '</option>';
+                $cMMWOption .= utf8_encode($oMerkmalWert->cName) . ': ' .
+                    utf8_encode($oMerkmalWert->cWert) . '</option>';
             }
             $oResponse->assign('MerkmalWert', 'innerHTML', $cMMWOption);
         }
@@ -579,6 +605,64 @@ function truncateJtllog()
     return $oResponse;
 }
 
+/**
+ * @param string $searchString
+ * @param array  $kKundeSelected_arr
+ * @return xajaxResponse
+ */
+function getCustomerList($searchString, $kKundeSelected_arr)
+{
+    global $smarty;
+
+    $searchString = utf8_decode($searchString);
+
+    if ($searchString === '') {
+        if (count($kKundeSelected_arr) === 0) {
+            $oKunde_arr = [];
+            $listTitle  = 'Bisher sind keine Kunden ausgew&auml;hlt. Suchen Sie jetzt nach Kunden!';
+        } else {
+            foreach ($kKundeSelected_arr as &$kKundeSelected) {
+                $kKundeSelected = (int)$kKundeSelected;
+            }
+
+            $oKunde_arr = Shop::DB()->query("
+                SELECT kKunde
+                    FROM tkunde
+                    WHERE kKunde IN (" . implode(',', $kKundeSelected_arr) . ")
+                ", 2);
+            $listTitle  = 'Alle ausgew&auml;hlten Kunden: '. count($oKunde_arr);
+        }
+    } else {
+        $oKunde_arr = Shop::DB()->query("
+            SELECT kKunde
+                FROM tkunde
+                WHERE cVorname LIKE '%" . Shop::DB()->escape($searchString) . "%' 
+                      OR cMail LIKE '%" . Shop::DB()->escape($searchString) . "%' 
+                      OR cOrt LIKE '%" . Shop::DB()->escape($searchString) . "%' 
+                      OR cPLZ LIKE '%" . Shop::DB()->escape($searchString) . "%'
+                LIMIT 100", 2
+        );
+        $listTitle  = 'Gefundene Kunden: ' . (count($oKunde_arr) >= 100 ? '>= ' : '') . count($oKunde_arr);
+    }
+
+    $oKundeFull_arr = [];
+    foreach ($oKunde_arr as $oKunde) {
+        $oKundeFull_arr[] = new Kunde($oKunde->kKunde);
+    }
+
+    $customerListHtml = $smarty->assign('cPart', 'customerlist')
+        ->assign('oKunde_arr', $oKundeFull_arr)
+        ->assign('kKundeSelected_arr', $kKundeSelected_arr)
+        ->fetch('tpl_inc/customer_search.tpl');
+
+    $oResponse = new xajaxResponse();
+    $oResponse->assign('customer-search-result-list', 'innerHTML', $customerListHtml);
+    $oResponse->assign('customer-list-title', 'innerHTML', $listTitle);
+    $oResponse->script('shownCustomers=[' . implode(',', array_map(function ($e) { return $e->kKunde; }, $oKunde_arr)) . ']');
+
+    return $oResponse;
+}
+
 executeHook(HOOK_TOOLSAJAX_SERVER_ADMIN, array('xajax' => &$xajax));
 
 $xajax->registerFunction('reloadAdminLoginCaptcha');
@@ -606,6 +690,7 @@ $xajax->registerFunction('setRMAStatusAjax');
 $xajax->registerFunction('saveBannerAreas');
 $xajax->registerFunction('getContentTemplate');
 $xajax->registerFunction('truncateJtllog');
+$xajax->registerFunction('getCustomerList');
 
 $xajax->processRequest();
 header('Content-Type:text/html;charset=' . JTL_CHARSET . ';');

@@ -17,6 +17,9 @@
 * Optional: ImageMagick and imagick php module
 * Optional: IonCube Loader >= 4.5 for some third-party plug-ins
 
+## Software boundaries
+* See [Software boundaries and limits](http://jtl-url.de/limits) for details
+
 ## License 
 * Proprietary, see [LICENSE.md](LICENSE.md) for further details
 

@@ -78,15 +78,17 @@ class JTLFont
             $cColor = substr($cColor, 1);
         }
         if (strlen($cColor) === 6) {
-            list($r, $g, $b) = array(
+            list($r, $g, $b) = [
                 $cColor[0] . $cColor[1],
                 $cColor[2] . $cColor[3],
-                $cColor[4] . $cColor[5]);
+                $cColor[4] . $cColor[5]
+            ];
         } elseif (strlen($cColor) === 3) {
-            list($r, $g, $b) = array(
+            list($r, $g, $b) = [
                 $cColor[0] . $cColor[0],
                 $cColor[1] . $cColor[1],
-                $cColor[2] . $cColor[2]);
+                $cColor[2] . $cColor[2]
+            ];
         } else {
             return false;
         }
@@ -94,7 +96,7 @@ class JTLFont
         $g = hexdec($g);
         $b = hexdec($b);
 
-        return array($r, $g, $b);
+        return [$r, $g, $b];
     }
 
     /**
@@ -109,7 +111,7 @@ class JTLFont
         $x      = $box[6] * -1;
         $y      = $box[5] * -1;
 
-        return array($width, $height, $x, $y);
+        return [$width, $height, $x, $y];
     }
 
     /**
@@ -156,7 +158,7 @@ class JTLFont
         $wh     = $this->calcRect($calcFor);
         $cColor = $this->html2rgb($this->cColor);
         if (!is_array($cColor)) {
-            $cColor = array(0, 0, 0);
+            $cColor = [0, 0, 0];
         }
         $filePath = $this->getCacheFilePath($char);
         if (!is_file($filePath)) {
@@ -186,7 +188,7 @@ class JTLFont
      */
     public function asArray($cText)
     {
-        $list = array();
+        $list = [];
         $this->calcMax($cText);
 
         for ($i = 0; $i < strlen($cText); $i++) {

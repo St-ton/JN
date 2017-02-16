@@ -21,6 +21,7 @@
                 {/if}
             })
             .click();
+        $('body').append($form);
     }
 
     {if $bCustomType === true}

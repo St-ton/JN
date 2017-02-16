@@ -15,12 +15,15 @@ function holeTagDetailAnzahl($kTag, $kSprache)
         $oTagArtikel = Shop::DB()->query(
             "SELECT count(*) AS nAnzahl
                 FROM ttagartikel
-                JOIN ttag ON ttag.kTag = ttagartikel.kTag
+                JOIN ttag 
+                    ON ttag.kTag = ttagartikel.kTag
                     AND ttag.kSprache = " . (int)$kSprache . "
                 WHERE ttagartikel.kTag = " . (int)$kTag, 1
         );
 
-        return (isset($oTagArtikel->nAnzahl)) ? (int)$oTagArtikel->nAnzahl : 0;
+        return (isset($oTagArtikel->nAnzahl))
+            ? (int)$oTagArtikel->nAnzahl
+            : 0;
     }
 
     return 0;
@@ -41,12 +44,16 @@ function holeTagDetail($kTag, $kSprache, $cLimit)
     $kTag     = (int)$kTag;
     if ($kTag > 0 && $kSprache > 0) {
         $oTagArtikel_arr = Shop::DB()->query(
-            "SELECT ttagartikel.kTag, ttag.cName, tartikel.cName AS acName, tartikel.kArtikel AS kArtikel, tseo.cSeo
+            "SELECT ttagartikel.kTag, ttag.cName, tartikel.cName AS acName, 
+                tartikel.kArtikel AS kArtikel, tseo.cSeo
                 FROM ttagartikel
-                JOIN ttag ON ttag.kTag = ttagartikel.kTag
+                JOIN ttag 
+                    ON ttag.kTag = ttagartikel.kTag
                     AND ttag.kSprache = " . $kSprache . "
-                JOIN tartikel ON tartikel.kArtikel = ttagartikel.kArtikel
-                LEFT JOIN tseo ON tseo.cKey = 'kArtikel'
+                JOIN tartikel 
+                        ON tartikel.kArtikel = ttagartikel.kArtikel
+                LEFT JOIN tseo 
+                    ON tseo.cKey = 'kArtikel'
                     AND tseo.kKey = tartikel.kArtikel
                     AND tseo.kSprache = " . $kSprache . "
                 WHERE ttagartikel.kTag = " . $kTag . "
@@ -79,19 +86,20 @@ function loescheTagsVomArtikel($kArtikel_arr, $kTag)
     if (is_array($kArtikel_arr) && count($kArtikel_arr) > 0 && $kTag > 0) {
         foreach ($kArtikel_arr as $kArtikel) {
             $kArtikel = (int)$kArtikel;
-            Shop::DB()->delete('ttagartikel', array('kArtikel', 'kTag'), array($kArtikel, $kTag));
+            Shop::DB()->delete('ttagartikel', ['kArtikel', 'kTag'], [$kArtikel, $kTag]);
             $oTagArtikel_arr = Shop::DB()->selectAll('ttagartikel', 'kTag', $kTag);
             // Es gibt keine Artikel mehr zu dem Tag => Tag aus ttag / tseo löschen
             if (count($oTagArtikel_arr) === 0) {
                 Shop::DB()->query(
                     "DELETE ttag, tseo
                         FROM ttag
-                        LEFT JOIN tseo ON tseo.cKey = 'kTag'
+                        LEFT JOIN tseo 
+                            ON tseo.cKey = 'kTag'
                             AND tseo.kKey = ttag.kTag
                         WHERE ttag.kTag = " . $kTag, 4
                 );
             }
-            Shop::Cache()->flushTags(array('CACHING_GROUP_ARTICLE_' . $kArtikel));
+            Shop::Cache()->flushTags(['CACHING_GROUP_ARTICLE_' . $kArtikel]);
         }
 
         return true;
@@ -113,7 +121,7 @@ function flushAffectedArticleCache(array $tagIDs)
             WHERE kTag IN (" . implode(', ', $tagIDs) . ")", 2
     );
     if (count($_affectedArticles) > 0) {
-        $articleCacheIDs = array();
+        $articleCacheIDs = [];
         foreach ($_affectedArticles as $_article) {
             $articleCacheIDs[] = CACHING_GROUP_ARTICLE . '_' . $_article->kArtikel;
         }

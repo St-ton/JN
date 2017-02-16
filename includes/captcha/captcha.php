@@ -20,25 +20,75 @@ function erstelleCaptcha($font, $text, $sec)
 
     if ($sec >= 3) {
         for ($i = 0; $i < 8; $i++) {
-            imageline($im, rand(0, 200), rand(0, 60), rand(0, 200), rand(0, 60), imagecolorallocate($im, rand(0, 230), rand(0, 230), rand(0, 230)));
+            imageline(
+                $im,
+                rand(0, 200),
+                rand(0, 60),
+                rand(0, 200),
+                rand(0, 60),
+                imagecolorallocate($im, rand(0, 230), rand(0, 230),rand(0, 230))
+            );
         }
     }
 
-    imagettftext($im, 35, rand(-20, 20), 20, 40, imagecolorallocate($im, rand(0, 215), rand(0, 215), rand(0, 215)), $font, $text{0});
-    imagettftext($im, 35, rand(-20, 20), 70, 40, imagecolorallocate($im, rand(0, 215), rand(0, 215), rand(0, 215)), $font, $text{1});
-    imagettftext($im, 35, rand(-20, 20), 110, 40, imagecolorallocate($im, rand(0, 215), rand(0, 215), rand(0, 215)), $font, $text{2});
-    imagettftext($im, 35, rand(-20, 20), 150, 40, imagecolorallocate($im, rand(0, 215), rand(0, 215), rand(0, 215)), $font, $text{3});
+    imagettftext(
+        $im,
+        35,
+        rand(-20, 20),
+        20,
+        40,
+        imagecolorallocate($im, rand(0, 215), rand(0, 215), rand(0, 215)),
+        $font, 
+        $text{0}
+    );
+    imagettftext(
+        $im,
+        35,
+        rand(-20, 20),
+        70,
+        40,
+        imagecolorallocate($im, rand(0, 215), rand(0, 215), rand(0, 215)),
+        $font, 
+        $text{1}
+    );
+    imagettftext(
+        $im,
+        35,
+        rand(-20, 20),
+        110,
+        40,
+        imagecolorallocate($im, rand(0, 215), rand(0, 215), rand(0, 215)),
+        $font,
+        $text{2}
+    );
+    imagettftext(
+        $im,
+        35,
+        rand(-20, 20),
+        150,
+        40,
+        imagecolorallocate($im, rand(0, 215), rand(0, 215), rand(0, 215)),
+        $font,
+        $text{3}
+    );
 
     if ($sec >= 3) {
         for ($i = 0; $i < 8; $i++) {
-            imageline($im, rand(0, 200), rand(0, 60), rand(0, 200), rand(0, 60), imagecolorallocate($im, rand(0, 250), rand(0, 250), rand(0, 250)));
+            imageline(
+                $im, 
+                rand(0, 200), 
+                rand(0, 60), 
+                rand(0, 200),
+                rand(0, 60), 
+                imagecolorallocate($im, rand(0, 250), rand(0, 250), rand(0, 250))
+            );
         }
     }
 
     return $im;
 }
 
-$fonts  = array();
+$fonts  = [];
 $folder = dir('ttf/');
 while ($font = $folder->read()) {
     if (stristr($font, '.ttf')) {

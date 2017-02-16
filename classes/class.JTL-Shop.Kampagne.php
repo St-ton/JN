@@ -164,7 +164,12 @@ class Kampagne
     {
         $cacheID = 'campaigns';
         if (($oKampagne_arr = Shop::Cache()->get($cacheID)) === false) {
-            $oKampagne_arr = Shop::DB()->selectAll('tkampagne', 'nAktiv', 1, '*, DATE_FORMAT(dErstellt, \'%d.%m.%Y %H:%i:%s\') AS dErstellt_DE');
+            $oKampagne_arr = Shop::DB()->selectAll(
+                'tkampagne',
+                'nAktiv',
+                1,
+                '*, DATE_FORMAT(dErstellt, \'%d.%m.%Y %H:%i:%s\') AS dErstellt_DE'
+            );
             $setRes = Shop::Cache()->set($cacheID, $oKampagne_arr, [CACHING_GROUP_CORE]);
             if ($setRes === false) {
                 //could not save to cache - use session instead

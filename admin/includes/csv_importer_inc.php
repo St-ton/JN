@@ -25,7 +25,14 @@
 function handleCsvImportAction ($importerId, $target, $fields = [], $cDelim = null, $importType = 2)
 {
     if (validateToken() && verifyGPDataString('importcsv') === $importerId) {
-        if (isset($_FILES['csvfile']['type']) && $_FILES['csvfile']['type'] === 'text/csv') {
+        if (isset($_FILES['csvfile']['type']) &&
+            (
+                $_FILES['csvfile']['type'] === 'application/vnd.ms-excel' ||
+                $_FILES['csvfile']['type'] === 'text/csv' ||
+                $_FILES['csvfile']['type'] === 'application/csv' ||
+                $_FILES['csvfile']['type'] === 'application/vnd.msexcel'
+            )
+        ) {
             $csvFilename = $_FILES['csvfile']['tmp_name'];
             $fs          = fopen($_FILES['csvfile']['tmp_name'], 'r');
             $nErrors     = 0;

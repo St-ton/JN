@@ -28,17 +28,17 @@ The tracking status for order no. {$Bestellung->cBestellNr} has changed.<br>
                             {/foreach}
 
                             {* Seriennummer *}
-                            {if $Position->cSeriennummer|@count_characters > 0}
+                            {if $Position->cSeriennummer|strlen > 0}
                                 <br>Serialnumber: {$Position->cSeriennummer}
                             {/if}
 
                             {* MHD *}
-                            {if $Position->dMHD|@count_characters > 0}
+                            {if $Position->dMHD|strlen > 0}
                                 <br>Best before: {$Position->dMHD_de}
                             {/if}
 
                             {* Charge *}
-                            {if $Position->cChargeNr|@count_characters > 0}
+                            {if $Position->cChargeNr|strlen > 0}
                                 <br>Charge: {$Position->cChargeNr}
                             {/if}
                         {else}
@@ -49,7 +49,7 @@ The tracking status for order no. {$Bestellung->cBestellNr} has changed.<br>
             {/foreach}
         </table>
         {foreach from=$oLieferschein->oVersand_arr item=oVersand}
-            {if $oVersand->getIdentCode()|@count_characters > 0}
+            {if $oVersand->getIdentCode()|strlen > 0}
                 <br><strong>Tracking-Url:</strong> <a href="{$oVersand->getLogistikVarUrl()}">{$oVersand->getIdentCode()}</a>
             {/if}
         {/foreach}

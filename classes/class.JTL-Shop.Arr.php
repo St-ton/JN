@@ -1,4 +1,8 @@
 <?php
+/**
+ * @see https://github.com/illuminate/support/blob/master/Arr.php
+ * @license MIT
+ */
 
 /**
  * Class Arr

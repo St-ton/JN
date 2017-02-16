@@ -1,7 +1,7 @@
 <?php
 /**
- * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
+ * @see https://github.com/illuminate/support/blob/master/Collection.php
+ * @license MIT
  */
 
 /**
@@ -15,7 +15,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
     public $items = [];
 
     /**
-     * Collection constructor.
+     * Collection constructor
      * @param mixed $items
      */
     public function __construct($items = [])
@@ -56,7 +56,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
     }
 
     /**
-     * Convert the object into something JSON serializable.
+     * Convert the object into something JSON serializable
      *
      * @return array
      */
@@ -72,7 +72,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
     }
 
     /**
-     * Reduce the collection to a single value.
+     * Reduce the collection to a single value
      *
      * @param  callable $callback
      * @param  mixed    $initial
@@ -84,7 +84,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
     }
 
     /**
-     * Get the sum of the given values.
+     * Get the sum of the given values
      *
      * @param  callable|string|null $callback
      * @return mixed
@@ -102,7 +102,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
     }
 
     /**
-     * Get a value retrieving callback.
+     * Get a value retrieving callback
      *
      * @param  string $value
      * @return callable
@@ -119,7 +119,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
     }
 
     /**
-     * Get an item from an array or object using "dot" notation.
+     * Get an item from an array or object using "dot" notation
      *
      * @param  mixed   $target
      * @param  string|array  $key
@@ -160,7 +160,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
     }
 
     /**
-     * Get the values of a given key.
+     * Get the values of a given key
      *
      * @param  string|array  $value
      * @param  string|null  $key
@@ -172,7 +172,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
     }
 
     /**
-     * Determine if the given value is callable, but not a string.
+     * Determine if the given value is callable, but not a string
      *
      * @param  mixed $value
      * @return bool
@@ -183,16 +183,18 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
     }
 
     /**
-     * Get the average value of a given key.
+     * Get the average value of a given key
      *
      * @param  callable|string|null $callback
-     * @return mixed
+     * @return int|null
      */
     public function avg($callback = null)
     {
         if ($count = $this->count()) {
             return $this->sum($callback) / $count;
         }
+
+        return null;
     }
 
     /**
@@ -315,6 +317,57 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
             ? uasort($items, $callback)
             : asort($items);
 
+        return new static($items);
+    }
+
+    /**
+     * Sort the collection using the given callback.
+     *
+     * @param  callable|string  $callback
+     * @param  int  $options
+     * @param  bool  $descending
+     * @return static
+     */
+    public function sortBy($callback, $options = SORT_REGULAR, $descending = false)
+    {
+        $results = [];
+        $callback = $this->valueRetriever($callback);
+        // First we will loop through the items and get the comparator from a callback
+        // function which we were given. Then, we will sort the returned values and
+        // and grab the corresponding values for the sorted keys from this array.
+        foreach ($this->items as $key => $value) {
+            $results[$key] = $callback($value, $key);
+        }
+        $descending ? arsort($results, $options)
+            : asort($results, $options);
+        // Once we have sorted all of the keys in the array, we will loop through them
+        // and grab the corresponding model so we can set the underlying items list
+        // to the sorted version. Then we'll just return the collection instance.
+        foreach (array_keys($results) as $key) {
+            $results[$key] = $this->items[$key];
+        }
+        return new static($results);
+    }
+    /**
+     * Sort the collection in descending order using the given callback.
+     *
+     * @param  callable|string  $callback
+     * @param  int  $options
+     * @return static
+     */
+    public function sortByDesc($callback, $options = SORT_REGULAR)
+    {
+        return $this->sortBy($callback, $options, true);
+    }
+
+    /**
+     * Create a new collection instance if the value isn't one already
+     *
+     * @param  mixed  $items
+     * @return static
+     */
+    public static function make($items = [])
+    {
         return new static($items);
     }
 

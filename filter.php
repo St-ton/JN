@@ -42,118 +42,111 @@ $oSuchergebnisse        = new stdClass();
 $AufgeklappteKategorien = new stdClass();
 $startKat               = new Kategorie();
 $startKat->kKategorie   = 0;
+$hasError               = false;
+$nMindestzeichen        = ((int)$Einstellungen['artikeluebersicht']['suche_min_zeichen'] > 0)
+    ? (int)$Einstellungen['artikeluebersicht']['suche_min_zeichen']
+    : 3;
 if (strlen($cParameter_arr['cSuche']) > 0 || (isset($_GET['qs']) && strlen($_GET['qs']) === 0)) {
-    $nMindestzeichen = ((int)$Einstellungen['artikeluebersicht']['suche_min_zeichen'] > 0)
-        ? (int)$Einstellungen['artikeluebersicht']['suche_min_zeichen']
-        : 3;
-    preg_match("/[\w" . utf8_decode('äÄüÜöÖß') . "\.\-]{" . $nMindestzeichen . ",}/", str_replace(' ', '', $cParameter_arr['cSuche']), $cTreffer_arr);
-    if (count($cTreffer_arr) === 0) {
-        $cFehler                                      = Shop::Lang()->get('expressionHasTo', 'global') .
-            ' ' . $nMindestzeichen . ' ' .
-            Shop::Lang()->get('lettersDigits', 'global');
-        $oSuchergebnisse->Artikel                     = new stdClass();
-        $oSuchergebnisse->Artikel->elemente           = new Collection();
-        $oSuchergebnisse->GesamtanzahlArtikel         = 0;
-        $oSuchergebnisse->SucheErfolglos              = 1;
-        $oSuchergebnisse->Seitenzahlen                = new stdClass();
-        $oSuchergebnisse->Seitenzahlen->AktuelleSeite = 0;
-        $oSuchergebnisse->Seitenzahlen->MaxSeiten     = 0;
-        $oSuchergebnisse->Seitenzahlen->minSeite      = 0;
-        $oSuchergebnisse->Seitenzahlen->maxSeite      = 0;
-        $oSuchergebnisse->Fehler                      = $cFehler;
-        $oSuchergebnisse->cSuche                      = strip_tags(trim($cParameter_arr['cSuche']));
-        $doSearch                                     = false;
-    }
+    preg_match("/[\w" . utf8_decode('äÄüÜöÖß') . "\.\-]{" . $nMindestzeichen . ",}/",
+        str_replace(' ', '', $cParameter_arr['cSuche']), $cTreffer_arr);
+    $hasError = (count($cTreffer_arr) === 0);
 }
-if ($doSearch) {
-    // setze Kat in Session
-    if (isset($cParameter_arr['kKategorie']) && $cParameter_arr['kKategorie'] > 0) {
-        $_SESSION['LetzteKategorie'] = $cParameter_arr['kKategorie'];
-        $AktuelleSeite               = 'PRODUKTE';
-    }
-    if ($NaviFilter->hasCategory()) {
-        $kKategorie        = $NaviFilter->getActiveState()->getValue();
-        $AktuelleKategorie = new Kategorie($kKategorie);
-        if (!isset($AktuelleKategorie->kKategorie) || $AktuelleKategorie->kKategorie === null) {
-            //temp. workaround: do not return 404 when non-localized existing category is loaded
-            if (KategorieHelper::categoryExists($kKategorie)) {
-                $AktuelleKategorie->kKategorie = $kKategorie;
-            } else {
-                $is404                   = true;
-                $cParameter_arr['is404'] = true;
-
-                return;
-            }
-        }
-        $AufgeklappteKategorien = new KategorieListe();
-        $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
-    }
-    // Usersortierung
-    $NaviFilter->setUserSort($AktuelleKategorie);
-    // Erweiterte Darstellung Artikelübersicht
-    gibErweiterteDarstellung($Einstellungen, $NaviFilter, $cParameter_arr['nDarstellung']);
-    $oSuchergebnisse = $NaviFilter->getProducts(true, $AktuelleKategorie);
-    $NaviFilter->Suche->kSuchanfrage = gibSuchanfrageKey($NaviFilter->Suche->cSuche, Shop::$kSprache);
-    // Umleiten falls SEO keine Artikel ergibt
-    doMainwordRedirect($NaviFilter, $oSuchergebnisse->Artikel->elemente->count(), true);
-    // Bestsellers
-    if ($Einstellungen['artikeluebersicht']['artikelubersicht_bestseller_gruppieren'] === 'Y') {
-        $productsIDs = $oSuchergebnisse->Artikel->elemente->map(function ($article) {
-            return (int)$article->kArtikel;
-        });
-        $limit       = (isset($Einstellungen['artikeluebersicht']['artikeluebersicht_bestseller_anzahl']))
-            ? (int)$Einstellungen['artikeluebersicht']['artikeluebersicht_bestseller_anzahl']
-            : 3;
-        $minsells    = (isset($Einstellungen['global']['global_bestseller_minanzahl']))
-            ? (int)$Einstellungen['global']['global_bestseller_minanzahl']
-            : 10;
-        $bestsellers = Bestseller::buildBestsellers(
-            $productsIDs,
-            $_SESSION['Kundengruppe']->kKundengruppe,
-            $_SESSION['Kundengruppe']->darfArtikelKategorienSehen,
-            false,
-            $limit,
-            $minsells
-        );
-        Bestseller::ignoreProducts($oSuchergebnisse->Artikel->elemente->getItems(), $bestsellers);
-        $smarty->assign('oBestseller_arr', $bestsellers);
-    }
-    if (verifyGPCDataInteger('zahl') > 0) {
-        $_SESSION['ArtikelProSeite'] = verifyGPCDataInteger('zahl');
-        setFsession(0, 0, $_SESSION['ArtikelProSeite']);
-    }
-    if (!isset($_SESSION['ArtikelProSeite']) && $Einstellungen['artikeluebersicht']['artikeluebersicht_erw_darstellung'] === 'N') {
-        $_SESSION['ArtikelProSeite'] = min((int)$Einstellungen['artikeluebersicht']['artikeluebersicht_artikelproseite'], ARTICLES_PER_PAGE_HARD_LIMIT);
-    }
-    // Verfügbarkeitsbenachrichtigung pro Artikel
-    $oSuchergebnisse->Artikel->elemente->transform(function ($article) use ($Einstellungen) {
-        $article->verfuegbarkeitsBenachrichtigung = gibVerfuegbarkeitsformularAnzeigen($article, $Einstellungen['artikeldetails']['benachrichtigung_nutzen']);
-
-        return $article;
-    });
-
-    if ($oSuchergebnisse->Artikel->elemente->count() === 0) {
-        if ($NaviFilter->Kategorie->isInitialized()) {
-            // hole alle enthaltenen Kategorien
-            $KategorieInhalt                  = new stdClass();
-            $KategorieInhalt->Unterkategorien = new KategorieListe();
-            $KategorieInhalt->Unterkategorien->getAllCategoriesOnLevel($NaviFilter->Kategorie->getValue());
-            // wenn keine eigenen Artikel in dieser Kat, Top Angebote / Bestseller
-            // aus unterkats + unterunterkats rausholen und anzeigen?
-            if ($Einstellungen['artikeluebersicht']['topbest_anzeigen'] === 'Top' || $Einstellungen['artikeluebersicht']['topbest_anzeigen'] === 'TopBest') {
-                $KategorieInhalt->TopArtikel = new ArtikelListe();
-                $KategorieInhalt->TopArtikel->holeTopArtikel($KategorieInhalt->Unterkategorien);
-            }
-            if ($Einstellungen['artikeluebersicht']['topbest_anzeigen'] === 'Bestseller' || $Einstellungen['artikeluebersicht']['topbest_anzeigen'] === 'TopBest') {
-                $KategorieInhalt->BestsellerArtikel = new ArtikelListe();
-                $KategorieInhalt->BestsellerArtikel->holeBestsellerArtikel($KategorieInhalt->Unterkategorien,
-                    (isset($KategorieInhalt->TopArtikel)) ? $KategorieInhalt->TopArtikel : 0);
-            }
-            $smarty->assign('KategorieInhalt', $KategorieInhalt);
+// setze Kat in Session
+if (isset($cParameter_arr['kKategorie']) && $cParameter_arr['kKategorie'] > 0) {
+    $_SESSION['LetzteKategorie'] = $cParameter_arr['kKategorie'];
+    $AktuelleSeite               = 'PRODUKTE';
+}
+if ($NaviFilter->hasCategory()) {
+    $kKategorie        = $NaviFilter->getActiveState()->getValue();
+    $AktuelleKategorie = new Kategorie($kKategorie);
+    if (!isset($AktuelleKategorie->kKategorie) || $AktuelleKategorie->kKategorie === null) {
+        //temp. workaround: do not return 404 when non-localized existing category is loaded
+        if (KategorieHelper::categoryExists($kKategorie)) {
+            $AktuelleKategorie->kKategorie = $kKategorie;
         } else {
-            // Suchfeld anzeigen
-            $oSuchergebnisse->SucheErfolglos = 1;
+            $is404                   = true;
+            $cParameter_arr['is404'] = true;
+
+            return;
         }
+    }
+    $AufgeklappteKategorien = new KategorieListe();
+    $AufgeklappteKategorien->getOpenCategories($AktuelleKategorie);
+}
+// Usersortierung
+$NaviFilter->setUserSort($AktuelleKategorie);
+// Erweiterte Darstellung Artikelübersicht
+gibErweiterteDarstellung($Einstellungen, $NaviFilter, $cParameter_arr['nDarstellung']);
+$oSuchergebnisse = $NaviFilter->getProducts(true, $AktuelleKategorie);
+if ($hasError) {
+    $cFehler                              = Shop::Lang()->get('expressionHasTo', 'global') .
+        ' ' . $nMindestzeichen . ' ' .
+        Shop::Lang()->get('lettersDigits', 'global');
+    $oSuchergebnisse->GesamtanzahlArtikel = 0;
+    $oSuchergebnisse->SucheErfolglos      = 1;
+    $oSuchergebnisse->Fehler              = $cFehler;
+    $oSuchergebnisse->cSuche              = strip_tags(trim($cParameter_arr['cSuche']));
+}
+$NaviFilter->Suche->kSuchanfrage = gibSuchanfrageKey($NaviFilter->Suche->cSuche, Shop::$kSprache);
+// Umleiten falls SEO keine Artikel ergibt
+doMainwordRedirect($NaviFilter, $oSuchergebnisse->Artikel->elemente->count(), true);
+// Bestsellers
+if ($Einstellungen['artikeluebersicht']['artikelubersicht_bestseller_gruppieren'] === 'Y') {
+    $productsIDs = $oSuchergebnisse->Artikel->elemente->map(function ($article) {
+        return (int)$article->kArtikel;
+    });
+    $limit       = (isset($Einstellungen['artikeluebersicht']['artikeluebersicht_bestseller_anzahl']))
+        ? (int)$Einstellungen['artikeluebersicht']['artikeluebersicht_bestseller_anzahl']
+        : 3;
+    $minsells    = (isset($Einstellungen['global']['global_bestseller_minanzahl']))
+        ? (int)$Einstellungen['global']['global_bestseller_minanzahl']
+        : 10;
+    $bestsellers = Bestseller::buildBestsellers(
+        $productsIDs,
+        $_SESSION['Kundengruppe']->kKundengruppe,
+        $_SESSION['Kundengruppe']->darfArtikelKategorienSehen,
+        false,
+        $limit,
+        $minsells
+    );
+    Bestseller::ignoreProducts($oSuchergebnisse->Artikel->elemente->getItems(), $bestsellers);
+    $smarty->assign('oBestseller_arr', $bestsellers);
+}
+if (verifyGPCDataInteger('zahl') > 0) {
+    $_SESSION['ArtikelProSeite'] = verifyGPCDataInteger('zahl');
+    setFsession(0, 0, $_SESSION['ArtikelProSeite']);
+}
+if (!isset($_SESSION['ArtikelProSeite']) && $Einstellungen['artikeluebersicht']['artikeluebersicht_erw_darstellung'] === 'N') {
+    $_SESSION['ArtikelProSeite'] = min((int)$Einstellungen['artikeluebersicht']['artikeluebersicht_artikelproseite'], ARTICLES_PER_PAGE_HARD_LIMIT);
+}
+// Verfügbarkeitsbenachrichtigung pro Artikel
+$oSuchergebnisse->Artikel->elemente->transform(function ($article) use ($Einstellungen) {
+    $article->verfuegbarkeitsBenachrichtigung = gibVerfuegbarkeitsformularAnzeigen($article, $Einstellungen['artikeldetails']['benachrichtigung_nutzen']);
+
+    return $article;
+});
+
+if ($oSuchergebnisse->Artikel->elemente->count() === 0) {
+    if ($NaviFilter->Kategorie->isInitialized()) {
+        // hole alle enthaltenen Kategorien
+        $KategorieInhalt                  = new stdClass();
+        $KategorieInhalt->Unterkategorien = new KategorieListe();
+        $KategorieInhalt->Unterkategorien->getAllCategoriesOnLevel($NaviFilter->Kategorie->getValue());
+        // wenn keine eigenen Artikel in dieser Kat, Top Angebote / Bestseller
+        // aus unterkats + unterunterkats rausholen und anzeigen?
+        if ($Einstellungen['artikeluebersicht']['topbest_anzeigen'] === 'Top' || $Einstellungen['artikeluebersicht']['topbest_anzeigen'] === 'TopBest') {
+            $KategorieInhalt->TopArtikel = new ArtikelListe();
+            $KategorieInhalt->TopArtikel->holeTopArtikel($KategorieInhalt->Unterkategorien);
+        }
+        if ($Einstellungen['artikeluebersicht']['topbest_anzeigen'] === 'Bestseller' || $Einstellungen['artikeluebersicht']['topbest_anzeigen'] === 'TopBest') {
+            $KategorieInhalt->BestsellerArtikel = new ArtikelListe();
+            $KategorieInhalt->BestsellerArtikel->holeBestsellerArtikel($KategorieInhalt->Unterkategorien,
+                (isset($KategorieInhalt->TopArtikel)) ? $KategorieInhalt->TopArtikel : 0);
+        }
+        $smarty->assign('KategorieInhalt', $KategorieInhalt);
+    } else {
+        // Suchfeld anzeigen
+        $oSuchergebnisse->SucheErfolglos = 1;
     }
 }
 // Mainword NaviBilder

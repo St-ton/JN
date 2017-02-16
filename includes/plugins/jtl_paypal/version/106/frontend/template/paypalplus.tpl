@@ -52,6 +52,7 @@
                         
                         <!-- trusted shops? -->
                         
+                        <input name="Zahlungsart" value="0" type="radio" id="payment0" class="hidden" checked="checked">
                         <input type="hidden" name="zahlungsartwahl" value="1" />
                     </fieldset>
                     <input id="ppp-submit" type="submit" value="{lang key="continueOrder" section="account data"}" class="btn btn-primary submit btn-lg pull-right" />
@@ -73,8 +74,13 @@
 </div>
 
 <script type="application/javascript">
-var submit = 'ppp-submit';
+var submit = '#ppp-submit';
+var payments = '#zahlung input[name="Zahlungsart"]';
 var thirdPartyPayment = false;
+var ppActive = function() {ldelim}
+    return !parseInt($(payments + ':checked').val())
+{rdelim}
+
 var ppConfig = {ldelim}
     approvalUrl: "{$approvalUrl}",
     placeholder: "ppp-container",
@@ -85,14 +91,14 @@ var ppConfig = {ldelim}
     buttonLocation: "outside",
     preselection: "paypal",
     disableContinue: function() {ldelim}
-        if ($('#zahlung input[type="radio"]:checked').length == 0) {ldelim}
-            $('#zahlung input[type="radio"]:first')
+        if (ppActive()) {ldelim}
+            $(payments + ':first')
                 .prop('checked', true);
         {rdelim}
     {rdelim},
     enableContinue: function() {ldelim}
-        $('#zahlung input[type="radio"]')
-            .prop('checked', false);
+        $('#payment0')
+            .prop('checked', true);
     {rdelim},
     showLoadingIndicator: true,
     language: "{$language}",
@@ -107,13 +113,13 @@ var ppConfig = {ldelim}
         if (thirdPartyPayment) {ldelim}
             PAYPAL.apps.PPP.doCheckout();
         {rdelim} else {ldelim}
-            $('#' + submit).attr('disabled', true);
+            $(submit).attr('disabled', true);
             $.get("index.php", {ldelim} s: "{$linkId}", a: "payment_patch", id: "{$paymentId}" {rdelim})
                 .success(function() {ldelim}
                     PAYPAL.apps.PPP.doCheckout();
                 {rdelim})
                 .fail(function(res) {ldelim}
-                    $('#' + submit).attr('disabled', false);
+                    $(submit).attr('disabled', false);
                     $('#ppp-modal')
                         .find('.modal-content')
                         .replaceWith($(res.responseText));
@@ -135,9 +141,8 @@ try {
 } catch (d) { }
 
 $(document).ready(function() {ldelim}
-    $('#' + submit).click(function() {ldelim}
-        var checked = $('#zahlung input[type="radio"]:checked');
-        if ($(checked).length > 0) {ldelim}
+    $(submit).click(function() {ldelim}
+        if (!ppActive()) {ldelim}
             return true;
         {rdelim}
         $('#ppp-modal').modal();
@@ -145,7 +150,7 @@ $(document).ready(function() {ldelim}
         return false;
     {rdelim});
     
-    $('#zahlung input[type="radio"]').change(function() {ldelim}
+    $(payments).change(function() {ldelim}
         ppp.deselectPaymentMethod();
     {rdelim});
 {rdelim});

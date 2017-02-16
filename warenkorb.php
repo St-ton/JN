@@ -31,6 +31,7 @@ $kLink = $linkHelper->getSpecialPageLinkKey(LINKTYP_WARENKORB);
 uebernehmeWarenkorbAenderungen();
 //validiere Konfigurationen
 validiereWarenkorbKonfig();
+pruefeGuthabenNutzen();
 //Versandermittlung?
 if (isset($_POST['land']) && isset($_POST['plz']) &&
     !VersandartHelper::getShippingCosts($_POST['land'], $_POST['plz'], $MsgWarning)
@@ -38,12 +39,11 @@ if (isset($_POST['land']) && isset($_POST['plz']) &&
     $MsgWarning = Shop::Lang()->get('missingParamShippingDetermination', 'errorMessages');
 }
 //Kupons bearbeiten
-if (isset($_POST['Kuponcode']) && strlen($_POST['Kuponcode']) > 0 &&
-    !$cart->posTypEnthalten(C_WARENKORBPOS_TYP_KUPON)
-) {
+if (isset($_POST['Kuponcode']) && strlen($_POST['Kuponcode']) > 0) {
     // Kupon darf nicht im leeren Warenkorb eingelöst werden
     if ($cart !== null && $cart->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]) > 0) {
-        $Kupon             = Shop::DB()->select('tkupon', 'cCode', $_POST['Kuponcode']);
+        $Kupon             = new Kupon();
+        $Kupon             = $Kupon->getByCode($_POST['Kuponcode']);
         $invalidCouponCode = false;
         if (isset($Kupon->kKupon)) {
             $Kuponfehler  = checkeKupon($Kupon);
@@ -60,6 +60,8 @@ if (isset($_POST['Kuponcode']) && strlen($_POST['Kuponcode']) > 0 &&
                         $MsgWarning = Shop::Lang()->get('freegiftsMinimum', 'errorMessages');
                     }
                 } elseif (!empty($Kupon->kKupon) && $Kupon->cKuponTyp === 'versandkupon') {
+                    // Aktiven Kupon aus der Session löschen und dessen Warenkorbposition
+                    $_SESSION['Warenkorb']->loescheSpezialPos(C_WARENKORBPOS_TYP_KUPON);
                     // Versandfrei Kupon
                     $_SESSION['oVersandfreiKupon'] = $Kupon;
                     $smarty->assign('cVersandfreiKuponLieferlaender_arr', explode(';', $Kupon->cLieferlaender));
@@ -86,7 +88,7 @@ if (isset($_SESSION['checkCouponResult'])) {
 // Gratis Geschenk bearbeiten
 if (isset($_POST['gratis_geschenk']) && intval($_POST['gratis_geschenk']) === 1 && isset($_POST['gratishinzufuegen'])) {
     $kArtikelGeschenk = (int)$_POST['gratisgeschenk'];
-    // Pruefenn ob der Artikel wirklich ein Gratis Geschenk ist
+    // Pruefen ob der Artikel wirklich ein Gratis Geschenk ist
     $oArtikelGeschenk = Shop::DB()->query(
         "SELECT tartikelattribut.kArtikel, tartikel.fLagerbestand, 
             tartikel.cLagerKleinerNull, tartikel.cLagerBeachten
@@ -174,6 +176,13 @@ $smarty->assign('Navigation', createNavigation($AktuelleSeite))
        ->assign('requestURL', (isset($requestURL)) ? $requestURL : null)
        ->assign('laender', gibBelieferbareLaender($kKundengruppe))
        ->assign('KuponMoeglich', kuponMoeglich())
+       ->assign('currentCoupon', Shop::Lang()->get('currentCoupon', 'checkout'))
+       ->assign('currentCouponName', (!empty($_SESSION['Kupon']->translationList)
+           ? $_SESSION['Kupon']->translationList
+           : null))
+       ->assign('currentShippingCouponName', (!empty($_SESSION['oVersandfreiKupon']->translationList)
+           ? $_SESSION['oVersandfreiKupon']->translationList
+           : null))
        ->assign('xselling', gibXSelling())
        ->assign('oArtikelGeschenk_arr', gibGratisGeschenke($Einstellungen))
        ->assign('BestellmengeHinweis', pruefeBestellMengeUndLagerbestand($Einstellungen))

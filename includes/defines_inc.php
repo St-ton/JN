@@ -5,7 +5,7 @@
  */
 
 // Version
-define('JTL_VERSION', 405);
+define('JTL_VERSION', 406);
 define('JTL_MIN_WAWI_VERSION', 99713);
 define('JTL_MINOR_VERSION', '#JTL_MINOR_VERSION#');
 define('JTL_BUILD_TIMESTAMP', '#JTL_BUILD_TIMESTAMP#');
@@ -488,3 +488,5 @@ define('TEMPLATE_XML', 'template.xml');
 define('SHOP_SEO', true);
 // Sessionspeicherung 1 => DB, sonst => Dateien
 define('ES_SESSIONS', 0);
+//Max Anzahl an Variationswerten für Warenkorbmatrix
+define('ART_MATRIX_MAX', 250);

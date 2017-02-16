@@ -70,7 +70,8 @@ class WarenkorbPers
                 }
                 if ($oWarenkorbPersPos->kArtikel == $kArtikel &&
                     count($oWarenkorbPersPos->oWarenkorbPersPosEigenschaft_arr) > 0 &&
-                    (int)$oWarenkorbPersPos->kKonfigitem === (int)$kKonfigitem) {
+                    (int)$oWarenkorbPersPos->kKonfigitem === (int)$kKonfigitem &&
+                    $oWarenkorbPersPos->cUnique === $cUnique) {
                     $nPosition         = $i;
                     $bBereitsEnthalten = true;
                     foreach ($oEigenschaftwerte_arr as $oEigenschaftwerte) {
@@ -377,6 +378,9 @@ class WarenkorbPers
                             $kArtikel_arr[] = $oArtikelVorhanden->kArtikel;
                         }
                     }
+                // Konfigitem ohne Artikelbezug?
+                } elseif ($WarenkorbPersPos->kArtikel === 0 && !empty($WarenkorbPersPos->kKonfigitem)) {
+                    $kArtikel_arr[] = $WarenkorbPersPos->kArtikel;
                 }
             }
             // Artikel aus dem Array Löschen, die nicht mehr Gültig sind

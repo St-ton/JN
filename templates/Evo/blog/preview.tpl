@@ -33,7 +33,7 @@
     </div>
     <div class="panel-body">
         <div class=" row">
-            {if !empty($oNewsUebersicht->cPreviewImage)}
+            {if !empty($oNewsUebersicht->cPreviewImageFull)}
                 <div class="col-sm-4 col-xs-12">
                     <a href="{$oNewsUebersicht->cURLFull}">
                         <img itemprop="image" src="{$oNewsUebersicht->cPreviewImageFull}" alt="" class="img-responsive center-block"/>

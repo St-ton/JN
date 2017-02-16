@@ -148,7 +148,7 @@ class PayPalFinance extends PaymentMethod
         $apiContext->setConfig([
             'http.Retry'                                 => 1,
             'http.ConnectionTimeOut'                     => 30,
-            'http.headers.PayPal-Partner-Attribution-Id' => 'JTL_Cart_REST_Plus',
+            'http.headers.PayPal-Partner-Attribution-Id' => 'JTL4_Cart_Inst',
             'mode'                                       => $this->getModus(),
             'cache.enabled'                              => true,
             'cache.FileName'                             => PFAD_ROOT . PFAD_COMPILEDIR . 'paypalfinance.auth.cache',
@@ -394,9 +394,9 @@ class PayPalFinance extends PaymentMethod
     {
         $details = new Details();
         $details->setShipping($basket->shipping[WarenkorbHelper::GROSS])
-            ->setSubtotal($basket->article[WarenkorbHelper::GROSS])
+            ->setSubtotal($basket->article[WarenkorbHelper::GROSS] - $basket->discount[WarenkorbHelper::GROSS])
             ->setHandlingFee($basket->surcharge[WarenkorbHelper::GROSS])
-            ->setShippingDiscount($basket->discount[WarenkorbHelper::GROSS] * -1)
+            //->setShippingDiscount($basket->discount[WarenkorbHelper::GROSS] * -1)
             ->setTax(0.00);
 
         $amount = new Amount();
@@ -515,6 +515,15 @@ class PayPalFinance extends PaymentMethod
             $items[] = $item;
         }
 
+        if ($basket->discount[WarenkorbHelper::GROSS] > 0) {
+            $discountItem = new Item();
+            $discountItem->setName(Shop::Lang()->get('discount', 'global'))
+                ->setCurrency($currencyIso)
+                ->setQuantity(1)
+                ->setPrice($basket->discount[WarenkorbHelper::GROSS] * -1);
+            $items[] = $discountItem;
+        }
+
         $itemList = new ItemList();
         $itemList->setItems($items);
 
@@ -597,9 +606,9 @@ class PayPalFinance extends PaymentMethod
 
             $details = new Details();
             $details->setShipping($basket->shipping[WarenkorbHelper::GROSS])
-                ->setSubtotal($basket->article[WarenkorbHelper::GROSS])
+                ->setSubtotal($basket->article[WarenkorbHelper::GROSS] - $basket->discount[WarenkorbHelper::GROSS])
                 ->setHandlingFee($basket->surcharge[WarenkorbHelper::GROSS])
-                ->setShippingDiscount($basket->discount[WarenkorbHelper::GROSS] * -1)
+                //->setShippingDiscount($basket->discount[WarenkorbHelper::GROSS] * -1)
                 ->setTax(0.00);
 
             $amount = new Amount();
@@ -636,14 +645,25 @@ class PayPalFinance extends PaymentMethod
         }
     }
 
-    public function addSurcharge(PayPal\Api\CreditFinancingOffered $offer)
+    public function getTaxClass()
     {
-        $taxClass = 0;
-        $taxRate  = Shop::DB()->select('tsteuersatz', 'fSteuersatz', 0);
-        if (is_object($taxRate)) {
-            $taxClass = $taxRate->kSteuerklasse;
+        foreach ($_SESSION['Steuersatz'] as $taxClass => $taxRate) {
+            if ((float)$taxRate === 0.0) {
+                return $taxClass;
+            }
         }
 
+        $taxRate  = Shop::DB()->select('tsteuersatz', 'fSteuersatz', 0);
+        if (is_object($taxRate)) {
+            return $taxRate->kSteuerklasse;
+        }
+
+        return null;
+    }
+
+    public function addSurcharge(PayPal\Api\CreditFinancingOffered $offer)
+    {
+        $taxClass = $this->getTaxClass();
         $interest = $offer->getTotalInterest();
 
         $_SESSION['Warenkorb']->erstelleSpezialPos(

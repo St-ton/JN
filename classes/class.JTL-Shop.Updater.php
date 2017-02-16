@@ -357,7 +357,7 @@ class Updater
             return $targetVersion;
         }
 
-        $id = end($pendingMigrations);
+        $id = reset($pendingMigrations);
 
         $migration = $manager->getMigrationById($id);
         $manager->executeMigration($migration, IMigration::UP);

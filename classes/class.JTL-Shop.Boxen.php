@@ -225,7 +225,7 @@ class Boxen
                     $oBox->bContainer = ($oBox->kBoxvorlage == 0);
                     if ($bVisible) {
                         $oBox->cVisibleOn = '';
-                        $oVisible_arr     = Shop::DB()->selectAll('tboxensichtbar', ['kBox', 'bAktiv'], [(int)$oBox->kBox, 1]);
+                        $oVisible_arr     = Shop::DB()->selectAll('tboxensichtbar', 'kBox', (int)$oBox->kBox);
                         if (count($oVisible_arr) >= PAGE_MAX) {
                             $oBox->cVisibleOn = "\n- Auf allen Seiten";
                         } elseif (count($oVisible_arr) === 0) {
@@ -677,9 +677,11 @@ class Boxen
                     }
                     $cZusatzParams = StringHandler::filterXSS($cZusatzParams);
                     $oTMP_arr      = [];
-                    $cRequestURI   = (!empty($_SERVER['REQUEST_URI']))
-                        ? (Shop::getURL() . $_SERVER['REQUEST_URI'])
-                        : (Shop::getURL() . $_SERVER['SCRIPT_NAME']);
+                    $cRequestURI   = Shop::getRequestUri();
+                    if ($cRequestURI === 'io.php') {
+                        // Box wird von einem Ajax-Call gerendert
+                        $cRequestURI = LinkHelper::getInstance()->getStaticRoute('vergleichsliste.php');
+                    }
                     foreach ($oArtikel_arr as $oArtikel) {
                         $nPosAnd     = strrpos($cRequestURI, '&');
                         $nPosQuest   = strrpos($cRequestURI, '?');
@@ -1484,7 +1486,7 @@ class Boxen
      */
     public function holeContainer($ePosition)
     {
-        return Shop::DB()->selectAll('tboxen', ['kBoxvorlage', 'ePosition'], [0, $ePosition], 'kBox', 'ePosition ASC');
+        return Shop::DB()->selectAll('tboxen', ['kBoxvorlage', 'ePosition'], [0, $ePosition], 'kBox', 'kBox ASC');
     }
 
     /**
@@ -1627,6 +1629,7 @@ class Boxen
     public function filterBoxVisibility($kBox, $kSeite, $cFilter = '')
     {
         if (is_array($cFilter)) {
+            $cFilter = array_unique($cFilter);
             $cFilter = implode(',', $cFilter);
         }
 

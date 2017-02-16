@@ -184,13 +184,24 @@
                             {if isset($oVersandartSpracheAssoc_arr[$cISO])}
                                 <li class="input-group">
                                     <span class="input-group-addon">
-                                        <label for="cHinweistext_{$cISO}">{#shippingNote#} ({$sprache->cNameDeutsch})</label>
+                                        <label for="cHinweistextShop_{$cISO}">{#shippingNoteShop#} ({$sprache->cNameDeutsch})</label>
+                                    </span>
+                                    <textarea id="cHinweistextShop_{$cISO}" class="form-control combo" name="cHinweistextShop_{$cISO}">{if isset($oVersandartSpracheAssoc_arr[$cISO]->cHinweistextShop)}{$oVersandartSpracheAssoc_arr[$cISO]->cHinweistextShop}{/if}</textarea>
+                                </li>
+                            {/if}
+                        {/foreach}
+
+                        {foreach name=sprachen from=$sprachen item=sprache}
+                            {assign var="cISO" value=$sprache->cISO}
+                            {if isset($oVersandartSpracheAssoc_arr[$cISO])}
+                                <li class="input-group">
+                                    <span class="input-group-addon">
+                                        <label for="cHinweistext_{$cISO}">{#shippingNoteEmail#} ({$sprache->cNameDeutsch})</label>
                                     </span>
                                     <textarea id="cHinweistext_{$cISO}" class="form-control combo" name="cHinweistext_{$cISO}">{if isset($oVersandartSpracheAssoc_arr[$cISO]->cHinweistext)}{$oVersandartSpracheAssoc_arr[$cISO]->cHinweistext}{/if}</textarea>
                                 </li>
                             {/if}
                         {/foreach}
-
                     </ul>
                 </div>
             </div>

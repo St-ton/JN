@@ -53,13 +53,12 @@ function fuegeNewsletterEmpfaengerEin($oKunde, $bPruefeDaten = false)
         $oPlausi->nPlausi_arr = newsletterAnmeldungPlausi($oKunde);
         $kKundengruppe        = Kundengruppe::getCurrent();
         // CheckBox Plausi
-        /*
         $oCheckBox            = new CheckBox();
         $oPlausi->nPlausi_arr = array_merge(
             $oPlausi->nPlausi_arr,
             $oCheckBox->validateCheckBox(CHECKBOX_ORT_NEWSLETTERANMELDUNG, $kKundengruppe, $_POST, true)
         );
-        */
+
         $oPlausi->cPost_arr['cAnrede']   = $oKunde->cAnrede;
         $oPlausi->cPost_arr['cVorname']  = $oKunde->cVorname;
         $oPlausi->cPost_arr['cNachname'] = $oKunde->cNachname;
@@ -87,7 +86,6 @@ function fuegeNewsletterEmpfaengerEin($oKunde, $bPruefeDaten = false)
             ) {
                 $cFehler = Shop::Lang()->get('newsletterExists', 'errorMessages');
             } else {
-                /*
                 // CheckBox Spezialfunktion ausführen
                 $oCheckBox->triggerSpecialFunction(
                     CHECKBOX_ORT_NEWSLETTERANMELDUNG,
@@ -97,7 +95,6 @@ function fuegeNewsletterEmpfaengerEin($oKunde, $bPruefeDaten = false)
                     ['oKunde' => $oKunde]
                 );
                 $oCheckBox->checkLogging(CHECKBOX_ORT_NEWSLETTERANMELDUNG, $kKundengruppe, $_POST, true);
-                */
 
                 unset($oNewsletterEmpfaenger);
 
@@ -148,6 +145,7 @@ function fuegeNewsletterEmpfaengerEin($oKunde, $bPruefeDaten = false)
                 $oNewsletterEmpfaengerHistory->dEingetragen = 'now()';
                 $oNewsletterEmpfaengerHistory->dAusgetragen = '0000-00-00';
                 $oNewsletterEmpfaengerHistory->dOptCode     = '0000-00-00';
+                $oNewsletterEmpfaengerHistory->cRegIp       = $oKunde->cRegIp;
 
                 $kNewsletterEmpfaengerHistory = Shop::DB()->insert(
                     'tnewsletterempfaengerhistory',

@@ -246,7 +246,7 @@ Referenznummer: %reference_number%]]></VariableLocalized>
                 </Setting>
             </Method>
             <Method>
-                <Name>PayPal Finance</Name>
+                <Name>PayPal Ratenzahlung</Name>
                 <PictureURL>images/de-ppcc-logo-175px.png</PictureURL>
                 <Sort>1</Sort>
                 <SendMail>1</SendMail>

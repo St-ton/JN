@@ -86,7 +86,7 @@ class Warenkorb
                     isset($Position->Artikel->cLagerVariation) && $Position->Artikel->fLagerbestand <= 0 && $Position->Artikel->cLagerBeachten === 'Y' &&
                     $Position->Artikel->cLagerKleinerNull !== 'Y' && $Position->Artikel->cLagerVariation !== 'Y') {
                     $delete = true;
-                } elseif (empty($Position->kKonfigitem) && $Position->nPosTyp !== C_WARENKORBPOS_TYP_GRATISGESCHENK &&
+                } elseif (empty($Position->kKonfigitem) && !$Position->Artikel->bHasKonfig && $Position->nPosTyp !== C_WARENKORBPOS_TYP_GRATISGESCHENK &&
                     isset($Position->fPreisEinzelNetto) && $Position->fPreisEinzelNetto == 0 &&
                     isset($conf['global']['global_preis0']) && $conf['global']['global_preis0'] === 'N') {
                     $delete = true;
@@ -401,6 +401,18 @@ class Warenkorb
                 }
             }
             $this->PositionenArr = array_merge($this->PositionenArr);
+            if (!empty($_POST['Kuponcode'])) {
+                if ($typ == C_WARENKORBPOS_TYP_KUPON) {
+                    if (!empty($_SESSION['Kupon'])) {
+                        unset($_SESSION['Kupon']);
+                    } elseif (!empty($_SESSION['oVersandfreiKupon'])) {
+                        unset($_SESSION['oVersandfreiKupon']);
+                        if (!empty($_SESSION['VersandKupon'])) {
+                            unset($_SESSION['VersandKupon']);
+                        }
+                    }
+                }
+            }
         }
 
         return $this;
@@ -455,10 +467,22 @@ class Warenkorb
         }
 
         $NeuePosition->fPreisEinzelNetto = $NeuePosition->fPreis;
-        if (is_array($name)) {
-            $NeuePosition->cName = $name;
+        if ($typ == C_WARENKORBPOS_TYP_KUPON && isset($name->cName)) {
+            if (is_array($name->cName)) {
+                $NeuePosition->cName = $name->cName;
+            } else {
+                $NeuePosition->cName = [$_SESSION['cISOSprache'] => $name->cName];
+            }
+            if (isset($name->cArticleNameAffix) && isset($name->discountForArticle)) {
+                $NeuePosition->cArticleNameAffix  = $name->cArticleNameAffix;
+                $NeuePosition->discountForArticle = $name->discountForArticle;
+            }
         } else {
-            $NeuePosition->cName = [$_SESSION['cISOSprache'] => $name];
+            if (is_array($name)) {
+                $NeuePosition->cName = $name;
+            } else {
+                $NeuePosition->cName = [$_SESSION['cISOSprache'] => $name];
+            }
         }
         $NeuePosition->nPosTyp  = $typ;
         $NeuePosition->cHinweis = $hinweis;

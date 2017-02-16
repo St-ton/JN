@@ -3,6 +3,11 @@
 
 ## [4.05]
 
+Die nachfolgende Auflistung informiert Sie über die wichtigsten Änderungen in JTL-Shop Version 4.05. <br>
+Eine vollständige Liste aller in dieser Version gelöster Issues finden Sie [hier](https://gitlab.jtl-software.de/jtlshop/shop4/issues?scope=all&utf8=%E2%9C%93&state=closed&milestone_title=4.05).
+
+Änderungen innerhalb des PayPal-Plugins werden in einer separaten [CHANGELOG.md](https://gitlab.jtl-software.de/jtlshop/shop4/blob/release/4.05/includes/plugins/jtl_paypal/CHANGELOG.md) aufgeführt.    
+
 ### Neue Features
 * SEO-URLs ersetzen warenkorb.php, bestellvorgang.php, bestellabschluss.php, pass.php, newsletter.php, wunschliste.php und jtl.php (#31)
 * Unterstützung kundenindividueller Preise. Setzt Wawi v1.2 oder größer voraus (#344)

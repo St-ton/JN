@@ -120,6 +120,7 @@ if (isset($_GET['fc']) && strlen($_GET['fc']) > 0) {
         $oNewsletterEmpfaengerHistory->dEingetragen = $oNewsletterEmpfaenger->dEingetragen;
         $oNewsletterEmpfaengerHistory->dAusgetragen = 'now()';
         $oNewsletterEmpfaengerHistory->dOptCode     = '0000-00-00';
+        $oNewsletterEmpfaengerHistory->cRegIp       = gibIP(); // IP of the current event-issuer
 
         Shop::DB()->insert('tnewsletterempfaengerhistory', $oNewsletterEmpfaengerHistory);
 
@@ -156,6 +157,7 @@ if (isset($_POST['abonnieren']) && intval($_POST['abonnieren']) === 1) {
     $oKunde->cEmail    = (isset($_POST['cEmail']))
         ? StringHandler::filterXSS(Shop::DB()->escape(strip_tags($_POST['cEmail'])))
         : null;
+    $oKunde->cRegIp    = gibIP(); // IP of the current event-issuer
 
     if (!pruefeEmailblacklist($oKunde->cEmail)) {
         $smarty->assign('oPlausi', fuegeNewsletterEmpfaengerEin($oKunde, true));
@@ -206,6 +208,7 @@ if (isset($_POST['abonnieren']) && intval($_POST['abonnieren']) === 1) {
             $oNewsletterEmpfaengerHistory->dEingetragen = $oNewsletterEmpfaenger->dEingetragen;
             $oNewsletterEmpfaengerHistory->dAusgetragen = 'now()';
             $oNewsletterEmpfaengerHistory->dOptCode     = '0000-00-00';
+            $oNewsletterEmpfaengerHistory->cRegIp       = gibIP(); // IP of the current event-issuer
 
             Shop::DB()->insert('tnewsletterempfaengerhistory', $oNewsletterEmpfaengerHistory);
 

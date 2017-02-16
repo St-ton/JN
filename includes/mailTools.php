@@ -846,12 +846,17 @@ function lokalisiereInhalt($Object)
  */
 function lokalisiereKunde($sprache, $kunde)
 {
+    if (Shop::Lang()->gibISO() !== $sprache->cISO) {
+        Shop::Lang()->setzeSprache($sprache->cISO);
+    }
     // Anrede mappen
     if (isset($kunde->cAnrede)) {
-        if ($kunde->cAnrede === 'm') {
-            $kunde->cAnredeLocalized = Shop::Lang()->get('salutationM', 'global');
-        } elseif ($kunde->cAnrede === 'w') {
+        if ($kunde->cAnrede === 'w') {
             $kunde->cAnredeLocalized = Shop::Lang()->get('salutationW', 'global');
+        } elseif ($kunde->cAnrede === 'm') {
+            $kunde->cAnredeLocalized = Shop::Lang()->get('salutationM', 'global');
+        } else {
+            $kunde->cAnredeLocalized = Shop::Lang()->get('salutationGeneral', 'global');
         }
     }
     $kunde = deepCopy($kunde);

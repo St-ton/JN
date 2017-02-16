@@ -422,6 +422,7 @@ function generateSitemapXML()
                      JOIN tlinksprache 
                         ON tlinksprache.kLink = tlink.kLink
                      WHERE tlink.cSichtbarNachLogin = 'N'
+                        AND tlink.cNoFollow = 'N'
                         AND tlinkgruppe.cName != 'hidden'
                         AND tlinkgruppe.cTemplatename != 'hidden'
                         AND (tlink.cKundengruppen IS NULL

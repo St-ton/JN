@@ -405,6 +405,10 @@ if (isset($_POST['neueVersandart']) && intval($_POST['neueVersandart']) > 0 && v
                 if ($_POST['cHinweistext_' . $sprache->cISO]) {
                     $versandSprache->cHinweistext = htmlspecialchars($_POST['cHinweistext_' . $sprache->cISO]);
                 }
+                $versandSprache->cHinweistextShop = '';
+                if ($_POST['cHinweistextShop_' . $sprache->cISO]) {
+                    $versandSprache->cHinweistextShop = htmlspecialchars($_POST['cHinweistextShop_' . $sprache->cISO]);
+                }
                 Shop::DB()->delete('tversandartsprache', ['kVersandart', 'cISOSprache'], [$kVersandart, $sprache->cISO]);
                 Shop::DB()->insert('tversandartsprache', $versandSprache);
             }

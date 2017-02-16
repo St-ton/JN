@@ -4077,19 +4077,20 @@ class Artikel
                     SEARCHSPECIALS_ONSTOCK          => false,
                     SEARCHSPECIALS_PREORDER         => false
                 ];
-                // Neu im Sortiment
-                $conf        = Shop::getSettings([CONF_BOXEN, CONF_GLOBAL]);
-                $nAlterTage  = (isset($conf['boxen']['box_neuimsortiment_alter_tage']) && (int)$conf['boxen']['box_neuimsortiment_alter_tage'] > 0)
-                    ? (int)$conf['boxen']['box_neuimsortiment_alter_tage']
-                    : 30;
                 $nStampJetzt = time();
-                list($cJahr, $cMonat, $cTag) = explode('-', $this->dErstellt);
-                $nStampErstellt                               = mktime(0, 0, 0, (int)$cMonat, (int)$cTag, (int)$cJahr);
-                $bSuchspecial_arr[SEARCHSPECIALS_NEWPRODUCTS] = (($nStampJetzt - ($nAlterTage * 24 * 60 * 60)) < $nStampErstellt);
+                // Neu im Sortiment
+                if (!empty($this->cNeu) && $this->cNeu === 'Y') {
+                    $conf        = Shop::getSettings([CONF_BOXEN, CONF_GLOBAL]);
+                    $nAlterTage  = (isset($conf['boxen']['box_neuimsortiment_alter_tage']) && (int)$conf['boxen']['box_neuimsortiment_alter_tage'] > 0)
+                        ? (int)$conf['boxen']['box_neuimsortiment_alter_tage']
+                        : 30;
+                    list($cJahr, $cMonat, $cTag) = explode('-', $this->dErstellt);
+                    $nStampErstellt                               = mktime(0, 0, 0, (int)$cMonat, (int)$cTag, (int)$cJahr);
+                    $bSuchspecial_arr[SEARCHSPECIALS_NEWPRODUCTS] = (($nStampJetzt - ($nAlterTage * 24 * 60 * 60)) < $nStampErstellt);
+                }
                 // In kürze Verfügbar
                 list($cJahr, $cMonat, $cTag) = explode('-', $this->dErscheinungsdatum);
                 $nStampErscheinung           = mktime(0, 0, 0, (int)$cMonat, (int)$cTag, (int)$cJahr);
-
                 $bSuchspecial_arr[SEARCHSPECIALS_UPCOMINGPRODUCTS] = ($nStampJetzt < $nStampErscheinung);
                 // Top bewertet
                 //No need to check with custom function.. this value is set in fuelleArtikel()?
@@ -6118,17 +6119,21 @@ class Artikel
                 ) {
                     //the cart matrix cannot deal with those different kinds of variations..
                     //so if we got "freifeldvariationen" in combination with normal ones, we have to disable the matrix
+                    $gesamt_anz = 1;
                     foreach ($this->Variationen as $_variation) {
                         if ($_variation->cTyp === 'FREIFELD' || $_variation->cTyp === 'PFLICHT-FREIFELD') {
                             return false;
                         }
+                        $gesamt_anz *= $_variation->nLieferbareVariationswerte;
                     }
                     foreach ($this->oKonfig_arr as $_oKonfig) {
                         if (isset($_oKonfig)) {
                             return false;
                         }
                     }
-
+                    if($conf['artikeldetails']['artikeldetails_warenkorbmatrix_anzeigeformat'] === 'L' && $gesamt_anz > ART_MATRIX_MAX){
+                        return false;
+                    }
                     return true;
                 }
             }

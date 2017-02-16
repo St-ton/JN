@@ -225,7 +225,7 @@ class Boxen
                     $oBox->bContainer = ($oBox->kBoxvorlage == 0);
                     if ($bVisible) {
                         $oBox->cVisibleOn = '';
-                        $oVisible_arr     = Shop::DB()->selectAll('tboxensichtbar', ['kBox', 'bAktiv'], [(int)$oBox->kBox, 1]);
+                        $oVisible_arr     = Shop::DB()->selectAll('tboxensichtbar', 'kBox', (int)$oBox->kBox);
                         if (count($oVisible_arr) >= PAGE_MAX) {
                             $oBox->cVisibleOn = "\n- Auf allen Seiten";
                         } elseif (count($oVisible_arr) === 0) {
@@ -1486,7 +1486,7 @@ class Boxen
      */
     public function holeContainer($ePosition)
     {
-        return Shop::DB()->selectAll('tboxen', ['kBoxvorlage', 'ePosition'], [0, $ePosition], 'kBox', 'ePosition ASC');
+        return Shop::DB()->selectAll('tboxen', ['kBoxvorlage', 'ePosition'], [0, $ePosition], 'kBox', 'kBox ASC');
     }
 
     /**
@@ -1629,6 +1629,7 @@ class Boxen
     public function filterBoxVisibility($kBox, $kSeite, $cFilter = '')
     {
         if (is_array($cFilter)) {
+            $cFilter = array_unique($cFilter);
             $cFilter = implode(',', $cFilter);
         }
 

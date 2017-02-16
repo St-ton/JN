@@ -94,6 +94,17 @@ You have chosen the following payment option: {$Bestellung->cZahlungsartName}
 {elseif $Bestellung->Zahlungsart->cModulId=="za_barzahlung_jtl"}
 {elseif $Bestellung->Zahlungsart->cModulId=="za_paypal_jtl"}
 {elseif $Bestellung->Zahlungsart->cModulId=="za_moneybookers_jtl"}
+{/if}
+
+{if isset($Zahlungsart->cHinweisText) && $Zahlungsart->cHinweisText|strlen > 0}  {$Zahlungsart->cHinweisText}
+
+
+{/if}
+{if $Bestellung->Zahlungsart->cModulId=="za_rechnung_jtl"}
+{elseif $Bestellung->Zahlungsart->cModulId=="za_lastschrift_jtl"}
+{elseif $Bestellung->Zahlungsart->cModulId=="za_barzahlung_jtl"}
+{elseif $Bestellung->Zahlungsart->cModulId=="za_paypal_jtl"}
+{elseif $Bestellung->Zahlungsart->cModulId=="za_moneybookers_jtl"}
 {elseif $Bestellung->Zahlungsart->cModulId=="za_billpay_invoice_jtl"}
 	Please transfer the total amount to following account:
 	Account Holder: {$Bestellung->Zahlungsinfo->cInhaber}

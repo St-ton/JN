@@ -160,6 +160,23 @@ if (isset($_POST['login']) && intval($_POST['login']) === 1 && isset($_POST['ema
                                                 ->fuegeEin($kArtikelGeschenk, 1, [], C_WARENKORBPOS_TYP_GRATISGESCHENK);
                                         }
                                     }
+                                // Konfigitems ohne Artikelbezug
+                                } elseif ($oWarenkorbPersPos->kArtikel === 0 && !empty($oWarenkorbPersPos->kKonfigitem) ) {
+                                    $oKonfigitem = new Konfigitem($oWarenkorbPersPos->kKonfigitem);
+                                    $_SESSION['Warenkorb']->erstelleSpezialPos(
+                                        $oKonfigitem->getName(),
+                                        $oWarenkorbPersPos->fAnzahl,
+                                        $oKonfigitem->getPreis(),
+                                        $oKonfigitem->getSteuerklasse(),
+                                        C_WARENKORBPOS_TYP_ARTIKEL,
+                                        false,
+                                        !$_SESSION['Kundengruppe']->nNettoPreise,
+                                        '',
+                                        $oWarenkorbPersPos->cUnique,
+                                        $oWarenkorbPersPos->kKonfigitem,
+                                        $oWarenkorbPersPos->kArtikel
+                                    );
+                                //Artikel in den Warenkorb einfügen
                                 } else {
                                     fuegeEinInWarenkorb(
                                         $oWarenkorbPersPos->kArtikel,

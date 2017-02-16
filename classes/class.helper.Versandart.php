@@ -226,7 +226,7 @@ class VersandartHelper
                 );
                 if (isset($name_spr->cName)) {
                     $versandarten[$i]->angezeigterName[$Sprache->cISO]        = $name_spr->cName;
-                    $versandarten[$i]->angezeigterHinweistext[$Sprache->cISO] = $name_spr->cHinweistext;
+                    $versandarten[$i]->angezeigterHinweistext[$Sprache->cISO] = $name_spr->cHinweistextShop;
                     $versandarten[$i]->cLieferdauer[$Sprache->cISO]           = $name_spr->cLieferdauer;
                 }
             }

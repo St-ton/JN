@@ -15,13 +15,13 @@ Your order with the order number {$Bestellung->cBestellNr} consists of the follo
         {foreach name=variationen from=$Position->WarenkorbPosEigenschaftArr item=WKPosEigenschaft}
 
             {$WKPosEigenschaft->cEigenschaftName}: {$WKPosEigenschaft->cEigenschaftWertName}{/foreach}
-        {if $Position->cSeriennummer|@count_characters > 0}
+        {if $Position->cSeriennummer|strlen > 0}
             Serialnumber: {$Position->cSeriennummer}
         {/if}
-        {if $Position->dMHD|@count_characters > 0}
+        {if $Position->dMHD|strlen > 0}
             Best before: {$Position->dMHD}
         {/if}
-        {if $Position->cChargeNr|@count_characters > 0}
+        {if $Position->cChargeNr|strlen > 0}
             Charge: {$Position->cChargeNr}
         {/if}
     {else}
@@ -72,7 +72,7 @@ Email: {$Kunde->cMail}
 
 You have chosen the following shipping option: {$Bestellung->cZahlungsartName}
 
-{if isset($Zahlungsart->cHinweisText) && $Zahlungsart->cHinweisText|count_characters > 0} {$Zahlungsart->cHinweisText}
+{if isset($Zahlungsart->cHinweisText) && $Zahlungsart->cHinweisText|strlen > 0} {$Zahlungsart->cHinweisText}
 
 
 {/if}

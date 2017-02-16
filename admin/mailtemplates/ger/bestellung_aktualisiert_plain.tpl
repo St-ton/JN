@@ -15,13 +15,13 @@ Lieferzeit: {$Position->cLieferstatus}{/if}
 {foreach name=variationen from=$Position->WarenkorbPosEigenschaftArr item=WKPosEigenschaft}
 
 {$WKPosEigenschaft->cEigenschaftName}: {$WKPosEigenschaft->cEigenschaftWertName}{/foreach}
-{if $Position->cSeriennummer|@count_characters > 0}
+{if $Position->cSeriennummer|strlen > 0}
 Seriennummer: {$Position->cSeriennummer}
 {/if}
-{if $Position->dMHD|@count_characters > 0}
+{if $Position->dMHD|strlen > 0}
 Mindesthaltbarkeitsdatum: {$Position->dMHD_de}
 {/if}
-{if $Position->cChargeNr|@count_characters > 0}
+{if $Position->cChargeNr|strlen > 0}
 Charge: {$Position->cChargeNr}
 {/if}
 {else}
@@ -74,7 +74,7 @@ Lieferadresse ist gleich Rechnungsadresse.
 
 Sie haben folgende Zahlungsart gewählt: {$Bestellung->cZahlungsartName}
 
-{if isset($Zahlungsart->cHinweisText) && $Zahlungsart->cHinweisText|count_characters > 0}  {$Zahlungsart->cHinweisText}
+{if isset($Zahlungsart->cHinweisText) && $Zahlungsart->cHinweisText|strlen > 0}  {$Zahlungsart->cHinweisText}
 
 
 {/if}
@@ -96,7 +96,7 @@ Falls Sie Ihre Zahlung per PayPal noch nicht durchgeführt haben, nutzen Sie folg
 
 Über den weiteren Verlauf Ihrer Bestellung werden wir Sie jeweils gesondert informieren.
 
-{if $oTrustedShopsBewertenButton->cURL|count_characters > 0}
+{if !empty($oTrustedShopsBewertenButton->cURL)}
 Waren Sie mit Ihrer Bestellung zufrieden? Dann würden wir uns über eine Empfehlung freuen ... es dauert auch nur eine Minute.
 {$oTrustedShopsBewertenButton->cURL}
 {/if}

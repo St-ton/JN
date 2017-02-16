@@ -62,7 +62,7 @@ class WarenkorbPersPos
     /**
      * @var array
      */
-    public $oWarenkorbPersPosEigenschaft_arr = array();
+    public $oWarenkorbPersPosEigenschaft_arr = [];
 
     /**
      * @var string

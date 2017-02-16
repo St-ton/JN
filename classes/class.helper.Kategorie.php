@@ -412,7 +412,7 @@ class KategorieHelper
             ORDER BY parent.lft";
         $nodes = Shop::DB()->query($qry, 2);
         // Attribute holen
-        $_catAttribut_arr    = Shop::DB()->query(
+        $_catAttribut_arr = Shop::DB()->query(
             "SELECT tkategorieattribut.kKategorie, 
                     COALESCE(tkategorieattributsprache.cName, tkategorieattribut.cName) cName, 
                     COALESCE(tkategorieattributsprache.cWert, tkategorieattribut.cWert) cWert,

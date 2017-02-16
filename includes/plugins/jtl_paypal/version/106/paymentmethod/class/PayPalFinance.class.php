@@ -16,24 +16,11 @@ use PayPal\Api\Payer;
 use PayPal\Api\Payment;
 use PayPal\Api\PaymentExecution;
 use PayPal\Api\RedirectUrls;
-use PayPal\Api\Sale;
 use PayPal\Api\Transaction;
 use PayPal\Api\Presentment;
-use PayPal\Api\Currency;
+use PayPal\Api\FinancingCurrency;
 use PayPal\Rest\ApiContext;
 use PayPal\Auth\OAuthTokenCredential;
-
-use PayPal\CoreComponentTypes\BasicAmountType;
-use PayPal\EBLBaseComponents\PaymentDetailsType;
-use PayPal\EBLBaseComponents\BillingAgreementDetailsType;
-use PayPal\IPN\PPIPNMessage;
-use PayPal\PayPalAPI;
-
-use PayPal\PayPalAPI\DoAuthorizationReq;
-use PayPal\PayPalAPI\DoAuthorizationRequestType;
-
-use PayPal\PayPalAPI\DoCaptureReq;
-use PayPal\PayPalAPI\DoCaptureRequestType;
 
 /**
  * Class PayPalFinance.
@@ -87,27 +74,18 @@ class PayPalFinance extends PaymentMethod
         $this->languageIso = $this->getLanguage();
         $this->currencyIso = gibStandardWaehrung(true);
         //$this->paymentMethod = $this->getPaymentMethod();
-        
-        $modus = $this->getModus();
-        
 
-        if ($modus === 'live') {
-            $this->PayPalURL = 'https://www.paypal.com/checkoutnow?useraction=%s&token=%s';
-            $this->endPoint  = 'https://api-3t.paypal.com/nvp';
-        } else {
-            $this->PayPalURL = 'https://www.sandbox.paypal.com/checkoutnow?useraction=%s&token=%s';
-            $this->endPoint  = 'https://api-3t.sandbox.paypal.com/nvp';
-        }
-        
+        $modus = $this->getModus();
+
         $this->config = [
-            'mode'            => $modus,
+            'mode' => $modus,
 
             'acct1.UserName'  => $this->settings["api_{$modus}_user"],
             'acct1.Password'  => $this->settings["api_{$modus}_pass"],
             'acct1.Signature' => $this->settings["api_{$modus}_signatur"],
 
-            'cache.enabled'   => true,
-            'cache.FileName'  => PFAD_ROOT . PFAD_COMPILEDIR . 'paypalfinance.auth.cache'
+            'cache.enabled'  => true,
+            'cache.FileName' => PFAD_ROOT . PFAD_COMPILEDIR . 'paypalfinance.auth.cache',
         ];
 
         parent::__construct($this->getModuleId());
@@ -144,6 +122,17 @@ class PayPalFinance extends PaymentMethod
      */
     public function isValidIntern($args_arr = [])
     {
+        if (!$this->isConfigured(false)) {
+            return false;
+        }
+
+        $items      = PayPalHelper::getProducts();
+        $shippingId = $_SESSION['Versandart']->kVersandart;
+
+        if (!$this->isUseable($items, $shippingId)) {
+            return false;
+        }
+
         return true;
     }
 
@@ -159,10 +148,10 @@ class PayPalFinance extends PaymentMethod
         $apiContext->setConfig([
             'http.Retry'                                 => 1,
             'http.ConnectionTimeOut'                     => 30,
-            'http.headers.PayPal-Partner-Attribution-Id' => 'JTL_Cart_REST_Plus',
+            'http.headers.PayPal-Partner-Attribution-Id' => 'JTL4_Cart_Inst',
             'mode'                                       => $this->getModus(),
             'cache.enabled'                              => true,
-            'cache.FileName'                             => PFAD_ROOT . PFAD_COMPILEDIR . 'paypalfinance.auth.cache'
+            'cache.FileName'                             => PFAD_ROOT . PFAD_COMPILEDIR . 'paypalfinance.auth.cache',
         ]);
 
         return $apiContext;
@@ -179,7 +168,17 @@ class PayPalFinance extends PaymentMethod
             return false;
         }
 
-        return true;
+        if (!$tryCall) {
+            return true;
+        }
+
+        try {
+            \PayPal\Api\Webhook::getAll($this->getContext());
+
+            return true;
+        } catch (Exception $ex) {
+            return false;
+        }
     }
 
     public function getLanguage()
@@ -196,6 +195,66 @@ class PayPalFinance extends PaymentMethod
         $crap = 'kPlugin_' . $this->plugin->kPlugin . '_paypalfinance';
 
         return $crap;
+    }
+
+    public function getWebProfileId()
+    {
+        $webProfileId = null;
+
+        if (($webProfileId = $this->getCache('webProfileId')) == null) {
+            $presentation = new \PayPal\Api\Presentation();
+            $presentation->setLocaleCode($this->languageIso);
+
+            $shoplogo = $this->settings['shoplogo'];
+            if (!empty($shoplogo)) {
+                if (strpos($shoplogo, 'http') !== 0) {
+                    $shoplogo = Shop::getURL() . '/' . $shoplogo;
+                }
+                $presentation->setLogoImage($shoplogo);
+            }
+            if (!empty($this->settings['brand'])) {
+                $presentation->setBrandName(utf8_encode($this->settings['brand']));
+            }
+
+            $inputFields = new \PayPal\Api\InputFields();
+            $inputFields->setAllowNote(true)
+                ->setNoShipping(1)
+                ->setAddressOverride(1);
+
+            $webProfile = new \PayPal\Api\WebProfile();
+            $webProfile->setName('JTL-PayPalFinance' . uniqid())
+                ->setPresentation($presentation)
+                ->setInputFields($inputFields);
+
+            $request = clone $webProfile;
+
+            try {
+                $createProfileResponse = $webProfile->create($this->getContext());
+                $webProfileId          = $createProfileResponse->getId();
+                $this->addCache('webProfileId', $webProfileId);
+                $this->logResult('WebProfile', $request, $createProfileResponse);
+            } catch (Exception $ex) {
+                $this->handleException('WebProfile', $request, $ex);
+            }
+        }
+
+        return $webProfileId;
+    }
+
+    public function getCallbackUrl(array $params = [], $forceSsl = false)
+    {
+        $plugin = $this->getPlugin();
+        $link   = PayPalHelper::getLinkByName($plugin, 'PayPalFinance');
+
+        $params = array_merge(
+            ['s' => $link->kLink],
+            $params
+        );
+
+        $paramlist   = http_build_query($params, '', '&');
+        $callbackUrl = Shop::getURL($forceSsl) . '/index.php?' . $paramlist;
+
+        return $callbackUrl;
     }
 
     public function getSettings()
@@ -295,7 +354,7 @@ class PayPalFinance extends PaymentMethod
 
         return $object;
     }
-    
+
     public function getPresentment($amount, $currencyCode)
     {
         $hash = md5($amount . $currencyCode);
@@ -303,270 +362,72 @@ class PayPalFinance extends PaymentMethod
         if ($array = $this->getCache($hash)) {
             $presentment = new Presentment();
             $presentment->fromArray($array);
+
             return $presentment;
         }
-        
-        $currency = new Currency();
+
+        $currency = new FinancingCurrency();
         $currency->setCurrencyCode($currencyCode);
         $currency->setValue($amount);
 
         $presentment = new Presentment();
         $presentment->setFinancingCountryCode($this->getLanguage());
         $presentment->setTransactionAmount($currency);
-        
+
         $request = clone $presentment;
-        
+
         try {
             $presentment->create($this->getContext());
             $this->logResult('CreatePresentment', $request, $presentment);
-            
+
             $this->addCache($hash, $presentment->toArray());
 
             return $presentment;
         } catch (Exception $ex) {
             $this->handleException('CreatePresentment', $presentment, $ex);
         }
-        
-        return null;
+
+        return;
     }
 
-    /**
-     * @param Bestellung $order
-     */
-    public function preparePaymentProcess($order)
+    public function prepareAmount($basket)
     {
-        $helper = new BestellungHelper($order);
+        $details = new Details();
+        $details->setShipping($basket->shipping[WarenkorbHelper::GROSS])
+            ->setSubtotal($basket->article[WarenkorbHelper::GROSS] - $basket->discount[WarenkorbHelper::GROSS])
+            ->setHandlingFee($basket->surcharge[WarenkorbHelper::GROSS])
+            //->setShippingDiscount($basket->discount[WarenkorbHelper::GROSS] * -1)
+            ->setTax(0.00);
 
-        if ($this->duringCheckout() === false) {
-            $this->setExpressCheckout($helper);
-        } else {
-            $this->doExpressCheckoutPayment($helper);
-        }
+        $amount = new Amount();
+        $amount->setCurrency($basket->currency->cISO)
+            ->setTotal($basket->total[WarenkorbHelper::GROSS])
+            ->setDetails($details);
 
-        $this->unsetCache();
-    }
-    
-    /**
-     * @param string $token
-     *
-     * @return bool
-     */
-    public function getExpressCheckoutDetails($token)
-    {
-        $getExpressCheckoutDetailsReq                                   = new PayPalAPI\GetExpressCheckoutDetailsReq();
-        $getExpressCheckoutDetailsRequest                               = new PayPalAPI\GetExpressCheckoutDetailsRequestType($token);
-        $getExpressCheckoutDetailsReq->GetExpressCheckoutDetailsRequest = $getExpressCheckoutDetailsRequest;
-        $service                                                        = new \PayPal\Service\PayPalAPIInterfaceServiceService($this->config);
-        try {
-            $r = print_r($getExpressCheckoutDetailsReq, true);
-            $this->doLog("Request: GetExpressCheckoutDetails:\n\n<pre>{$r}</pre>", LOGLEVEL_NOTICE);
-
-            $response = $service->GetExpressCheckoutDetails($getExpressCheckoutDetailsReq);
-
-            $r = print_r($response, true);
-            $this->doLog("Response: GetExpressCheckoutDetails:\n\n<pre>{$r}</pre>", LOGLEVEL_NOTICE);
-        } catch (Exception $e) {
-            ZahlungsLog::add($this->moduleID, $e->getMessage(), '', LOGLEVEL_ERROR);
-        }
-        if ($response->Ack === 'Success') {
-            return $response->GetExpressCheckoutDetailsResponseDetails;
-        } else {
-            ZahlungsLog::add($this->moduleID, $response->Errors[0]->LongMessage, '', LOGLEVEL_ERROR);
-        }
-
-        return false;
-    }
-    
-    public function doCapture($authorizationID, $amount, $completeCode = 'Complete')
-    {
-        $doCaptureRequestType = new DoCaptureRequestType($authorizationID, $amount, $completeCode);
-        
-        $doCaptureRequest = new DoCaptureReq();
-        $doCaptureRequest->DoCaptureRequest = $doCaptureRequestType;
-        
-        $service = new \PayPal\Service\PayPalAPIInterfaceServiceService($this->config);
-        
-        
-        try {
-            $r = print_r($doCaptureRequest, true);
-            $this->doLog("Request: DoCapture:\n\n<pre>{$r}</pre>", LOGLEVEL_NOTICE);
-
-            $response = $service->DoCapture($doCaptureRequest);
-
-            $r = print_r($response, true);
-            $this->doLog("Response: DoCapture:\n\n<pre>{$r}</pre>", LOGLEVEL_NOTICE);
-            
-            
-            dd($response);
-            
-        } catch (Exception $e) {
-            $r = $e->getMessage();
-            $this->doLog("Response: DoCapture:\n\n<pre>{$r}</pre>", LOGLEVEL_NOTICE);
-            
-            dd($e);
-        }
-        
+        return $amount;
     }
 
-    public function doAuthorization($authorizationID, $amount)
+    public function prepareShippingAddress($address)
     {
-        $doAuthorizationRequestType = new DoAuthorizationRequestType($authorizationID, $amount);
-        
-        $doAuthorizationRequest = new DoAuthorizationReq();
-        $doAuthorizationRequest->DoAuthorizationRequest = $doAuthorizationRequestType;
-        
-        $service = new \PayPal\Service\PayPalAPIInterfaceServiceService($this->config);
-        
-        
-        try {
-            $r = print_r($doAuthorizationRequest, true);
-            $this->doLog("Request: DoAuthorization:\n\n<pre>{$r}</pre>", LOGLEVEL_NOTICE);
+        $shippingAddress = clone $address;
+        $shippingAddress = utf8_convert_recursive($shippingAddress);
 
-            $response = $service->DoAuthorization($doAuthorizationRequest);
+        $a = new \PayPal\Api\ShippingAddress();
 
-            $r = print_r($response, true);
-            $this->doLog("Response: DoAuthorization:\n\n<pre>{$r}</pre>", LOGLEVEL_NOTICE);
-            
-            
-            dd($response);
-            
-        } catch (Exception $e) {
-            $r = $e->getMessage();
-            $this->doLog("Response: DoAuthorization:\n\n<pre>{$r}</pre>", LOGLEVEL_NOTICE);
-            
-            dd($e);
-        }
-        
-    }
-    
-    public function addSurcharge(\PayPal\EBLBaseComponents\GetExpressCheckoutDetailsResponseDetailsType $details)
-    {
-        $info = $details->PaymentInfo;
-        
-        $label = sprintf('%d Raten - %s', 
-            $info->FinancingTerm, 
-            gibPreisStringLocalized($info->FinancingMonthlyPayment->value)
-        );
+        $a->setRecipientName("{$shippingAddress->cVorname} {$shippingAddress->cNachname}")
+            ->setLine1("{$shippingAddress->cStrasse} {$shippingAddress->cHausnummer}")
+            ->setCity($shippingAddress->cOrt)
+            ->setPostalCode($shippingAddress->cPLZ)
+            ->setCountryCode($shippingAddress->cLand);
 
-		$feeAmount = $info->FinancingFeeAmount->value;
-		$taxClass = $_SESSION['Warenkorb']->gibVersandkostenSteuerklasse('');
-
-        $_SESSION['Warenkorb']->erstelleSpezialPos(
-            'Finanzierungskosten', 1, $feeAmount, $taxClass,
-            C_WARENKORBPOS_TYP_ZINSAUFSCHLAG,
-            true, true, $label
-        );
-    }
-    
-    public function doExpressCheckoutPayment(BestellungHelper $helper, $args = [])
-    {
-        $order  = $helper->getObject();
-        $basket = PayPalHelper::getBasket($helper);
-
-        $token   = $this->getCache('token');
-        $details = $this->getExpressCheckoutDetails($token);
-
-        if (!is_object($details)) {
-            header('location: ' . Shop::getURL() . '/bestellvorgang.php?editZahlungsart=1');
-            exit;
-        }
-
-        $doExpressCheckoutPaymentReq                          = new PayPalAPI\DoExpressCheckoutPaymentReq();
-        $doExpressCheckoutPaymentRequestDetails               = new \PayPal\EBLBaseComponents\DoExpressCheckoutPaymentRequestDetailsType();
-        $doExpressCheckoutPaymentRequestDetails->Token        = $details->Token;
-        $doExpressCheckoutPaymentRequestDetails->PayerID      = $details->PayerInfo->PayerID;
-        $doExpressCheckoutPaymentRequestDetails->ButtonSource = 'JTL4_Cart_Inst';
-
-        $shippingAddress = $helper->getShippingAddress();
-        $paymentAddress  = new \PayPal\EBLBaseComponents\AddressType();
-
-        $paymentAddress->Name            = "{$shippingAddress->cVorname} {$shippingAddress->cNachname}";
-        $paymentAddress->Street1         = "{$shippingAddress->cStrasse} {$shippingAddress->cHausnummer}";
-        $paymentAddress->Street2         = @$shippingAddress->cAdressZusatz;
-        $paymentAddress->CityName        = $shippingAddress->cOrt;
-        $paymentAddress->StateOrProvince = @$shippingAddress->cBundesland;
-        $paymentAddress->Country         = $shippingAddress->cLand;
-        $paymentAddress->Phone           = $shippingAddress->cTel;
-        $paymentAddress->PostalCode      = $shippingAddress->cPLZ;
-
-        $paymentDetails                   = new PaymentDetailsType();
-        $paymentDetails->PaymentAction    = 'Order';//'Authorization';
-        $paymentDetails->ShipToAddress    = utf8_convert_recursive($paymentAddress);
-        $paymentDetails->ButtonSource     = $doExpressCheckoutPaymentRequestDetails->ButtonSource;
-        $paymentDetails->OrderDescription = Shop::Lang()->get('order', 'global') . ' ' . $helper->getInvoiceID();
-        $paymentDetails->ItemTotal        = new BasicAmountType($helper->getCurrencyISO(), $basket->article[WarenkorbHelper::GROSS]);
-        $paymentDetails->TaxTotal         = new BasicAmountType($helper->getCurrencyISO(), '0.00');
-        $paymentDetails->ShippingTotal    = new BasicAmountType($helper->getCurrencyISO(), $basket->shipping[WarenkorbHelper::GROSS]);
-        
-        $paymentDetails->ShippingDiscount = new BasicAmountType($helper->getCurrencyISO(), $basket->discount[WarenkorbHelper::GROSS]);
-
-		/**********************************************************************/
-		
-		$total = (float) $basket->total[WarenkorbHelper::GROSS];
-		$handling = (float) $basket->surcharge[WarenkorbHelper::GROSS];
-		$fee = (float) $details->PaymentInfo->FinancingFeeAmount->value;
-
-		$handling -= $fee;
-		$total -= $fee;
-		
-		/**********************************************************************/
-
-        $paymentDetails->HandlingTotal    = new BasicAmountType($helper->getCurrencyISO(), $handling);
-		$paymentDetails->OrderTotal       = new BasicAmountType($helper->getCurrencyISO(), $total);
-		
-        $paymentDetails->InvoiceID        = $helper->getInvoiceID();
-        $paymentDetails->Custom           = $helper->getIdentifier();
-
-        $doExpressCheckoutPaymentRequestDetails->PaymentDetails       = [$paymentDetails];
-        $doExpressCheckoutPaymentRequest                              = new PayPalAPI\DoExpressCheckoutPaymentRequestType($doExpressCheckoutPaymentRequestDetails);
-        $doExpressCheckoutPaymentReq->DoExpressCheckoutPaymentRequest = $doExpressCheckoutPaymentRequest;
-
-        $service = new \PayPal\Service\PayPalAPIInterfaceServiceService($this->config);
-
-        try {
-            $r = print_r($doExpressCheckoutPaymentReq, true);
-            $this->doLog("Request: DoExpressCheckoutPayment:\n\n<pre>{$r}</pre>", LOGLEVEL_NOTICE);
-
-            $response = $service->DoExpressCheckoutPayment($doExpressCheckoutPaymentReq);
-
-            $r = print_r($response, true);
-            $this->doLog("Response: DoExpressCheckoutPayment:\n\n<pre>{$r}</pre>", LOGLEVEL_NOTICE);
-        } catch (Exception $e) {
-            $r = $e->getMessage();
-            $this->doLog("Response: DoExpressCheckoutPayment:\n\n<pre>{$r}</pre>", LOGLEVEL_NOTICE);
-        }
-
-        if ($response->Ack === 'Success') {
-            $pseudo      = (object) ['kBestellung' => $helper->getIdentifier()];
-            $paymentInfo = $response->DoExpressCheckoutPaymentResponseDetails->PaymentInfo[0];
-
-            $this->doLog("Payment status: {$paymentInfo->PaymentStatus} (Order: {$order->kBestellung}, Reason: {$paymentInfo->PendingReason})", LOGLEVEL_NOTICE);
-
-            if (strcasecmp($paymentInfo->PaymentStatus, 'Completed') === 0) {
-                $this->addIncomingPayment($pseudo, [
-                    'fBetrag'          => $basket->total[WarenkorbHelper::GROSS],
-                    'fZahlungsgebuehr' => $basket->surcharge[WarenkorbHelper::GROSS],
-                    'cISO'             => $helper->getCurrencyISO(),
-                    'cZahler'          => $details->PayerInfo->Payer,
-                    'cHinweis'         => $paymentInfo->TransactionID,
-                ]);
-                $this->setOrderStatusToPaid($pseudo);
+        if (in_array($shippingAddress->cLand, ['AR', 'BR', 'IN', 'US', 'CA', 'IT', 'JP', 'MX', 'TH'])) {
+            $state = Staat::getRegionByName($address->cBundesland);
+            if ($state !== null) {
+                $a->setState($state->cCode);
             }
-
-            if ($this->duringCheckout() === false) {
-                Session::getInstance()->cleanUp();
-            }
-
-            return true;
-        } else {
-            $r = print_r($response, true);
-            $this->doLog("Response: DoExpressCheckoutPayment:\n\n<pre>{$r}</pre>", LOGLEVEL_NOTICE);
-
-            PayPalHelper::setFlashMessage($response->Errors[0]->LongMessage);
-			dd($response, $response->Errors[0]->LongMessage);
         }
 
-        return false;
+        return $a;
     }
 
     /**
@@ -576,18 +437,53 @@ class PayPalFinance extends PaymentMethod
      */
     public function isUseable($oArtikel_arr = [], $shippingId = 0)
     {
+        $versandklassen = VersandartHelper::getShippingClasses($_SESSION['Warenkorb']);
+        $shippingId     = intval($shippingId);
+
+        foreach ($oArtikel_arr as $oArtikel) {
+            if ($oArtikel !== null) {
+                if (isset($oArtikel->FunktionsAttribute['no_paypalfinance']) && intval($oArtikel->FunktionsAttribute['no_paypalfinance']) === 1) {
+                    return false;
+                }
+
+                $kKundengruppe = (isset($_SESSION['Kunde']->kKundengruppe))
+                    ? $_SESSION['Kunde']->kKundengruppe
+                    : Kundengruppe::getDefaultGroupID();
+
+                $sql = 'SELECT tversandart.kVersandart, tversandartzahlungsart.kZahlungsart
+                        FROM tversandart
+                        LEFT JOIN tversandartzahlungsart
+                            ON tversandartzahlungsart.kVersandart = tversandart.kVersandart
+                        WHERE tversandartzahlungsart.kZahlungsart = ' . $this->paymentId . "
+                AND (cVersandklassen='-1' OR (cVersandklassen LIKE '% " . $versandklassen . " %' OR cVersandklassen LIKE '% " . $versandklassen . "'))
+                           AND (cKundengruppen='-1' OR cKundengruppen LIKE '%;" . $kKundengruppe . ";%')";
+
+                if ($shippingId > 0) {
+                    $sql .= ' AND tversandart.kVersandart = ' . $shippingId;
+                }
+
+                $oVersandart_arr = Shop::DB()->query($sql, 2);
+
+                if (count($oVersandart_arr) <= 0) {
+                    return false;
+                }
+            }
+        }
+
         return true;
     }
-    
+
     /**
      * @param array $aPost_arr
+     *
      * @return bool
      */
     public function handleAdditional($aPost_arr)
     {
         if ($this->duringCheckout() === true) {
-            $helper = new WarenkorbHelper();
-            $this->setExpressCheckout($helper);
+            $this->createPayment();
+
+            return false;
         }
 
         return true;
@@ -598,129 +494,185 @@ class PayPalFinance extends PaymentMethod
      */
     public function validateAdditional()
     {
-        if ($this->duringCheckout() === true) {
-            return $this->getCache('token') !== null;
-        }
-        return true;
+        return $this->isValidIntern() && $this->getCache('token') !== null;
     }
-    
-    public function setExpressCheckout($helper)
+
+    /**
+     * @return bool
+     */
+    public function createPayment()
     {
-        $this->unsetCache('token');
-        
-        $order  = $helper->getObject();
-        $basket = PayPalHelper::getBasket($helper);
+        $items       = [];
+        $basket      = PayPalHelper::getBasket();
+        $currencyIso = $basket->currency->cISO;
 
-        $shippingAddress = $helper->getShippingAddress();
-        $languageISO     = $helper->getLanguageISO();
-        $countryISO      = $helper->getCountryISO();
-        $stateISO        = $helper->getStateISO();
-
-        $paymentDetails                     = new PaymentDetailsType();
-        $paymentDetails->PaymentDetailsItem = [];
-        
-        $paymentAddress = new \PayPal\EBLBaseComponents\AddressType();
-
-        $paymentAddress->Name            = "{$shippingAddress->cVorname} {$shippingAddress->cNachname}";
-        $paymentAddress->Street1         = "{$shippingAddress->cStrasse} {$shippingAddress->cHausnummer}";
-        $paymentAddress->Street2         = @$shippingAddress->cAdressZusatz;
-        $paymentAddress->CityName        = $shippingAddress->cOrt;
-        $paymentAddress->StateOrProvince = $stateISO;
-        $paymentAddress->Country         = $countryISO;
-        $paymentAddress->Phone           = $shippingAddress->cTel;
-        $paymentAddress->PostalCode      = $shippingAddress->cPLZ;
-        
-        $paymentDetails->ShipToAddress   = utf8_convert_recursive($paymentAddress);
-
-        foreach ($basket->items as $item) {
-            $itemPaymentDetails           = new \PayPal\EBLBaseComponents\PaymentDetailsItemType();
-            $itemPaymentDetails->Quantity = $item->quantity;
-            $itemPaymentDetails->Name     = $item->name;
-            $itemPaymentDetails->Amount   = new BasicAmountType($helper->getCurrencyISO(), $item->amount[WarenkorbHelper::GROSS]);
-            $itemPaymentDetails->Tax      = new BasicAmountType($helper->getCurrencyISO(), '0.00');
-
-            $paymentDetails->PaymentDetailsItem[] = $itemPaymentDetails;
+        foreach ($basket->items as $i => $p) {
+            $item = new Item();
+            $item->setName($p->name)
+                ->setCurrency($currencyIso)
+                ->setQuantity($p->quantity)
+                ->setPrice($p->amount[WarenkorbHelper::GROSS]);
+            $items[] = $item;
         }
 
-        $shopLogo = $this->plugin->oPluginEinstellungAssoc_arr[$this->pluginbez . '_shoplogo'];
-        if (strlen($shopLogo) > 0 && strpos($shopLogo, 'http') !== 0) {
-            $shopLogo = Shop::getURL() . '/' . $shopLogo;
-        }
-        $borderColor = str_replace('#', '', $this->plugin->oPluginEinstellungAssoc_arr[$this->pluginbez . '_bordercolor']);
-        $brandName   = utf8_encode($this->plugin->oPluginEinstellungAssoc_arr[$this->pluginbez . '_brand']);
-
-        $paymentDetails->PaymentAction    = 'Order';//'Authorization';
-        $paymentDetails->ButtonSource     = 'JTL4_Cart_Inst';
-        $paymentDetails->ItemTotal        = new BasicAmountType($helper->getCurrencyISO(), $basket->article[WarenkorbHelper::GROSS]);
-        $paymentDetails->TaxTotal         = new BasicAmountType($helper->getCurrencyISO(), '0.00');
-        $paymentDetails->ShippingTotal    = new BasicAmountType($helper->getCurrencyISO(), $basket->shipping[WarenkorbHelper::GROSS]);
-        $paymentDetails->OrderTotal       = new BasicAmountType($helper->getCurrencyISO(), $basket->total[WarenkorbHelper::GROSS]);
-        $paymentDetails->HandlingTotal    = new BasicAmountType($helper->getCurrencyISO(), $basket->surcharge[WarenkorbHelper::GROSS]);
-        $paymentDetails->ShippingDiscount = new BasicAmountType($helper->getCurrencyISO(), $basket->discount[WarenkorbHelper::GROSS]);
-
-        $paymentDetails->InvoiceID = $helper->getInvoiceID();
-        $paymentDetails->Custom    = $helper->getIdentifier();
-        $paymentDetails->NotifyURL = $this->plugin->cFrontendPfadURLSSL . 'notify.php?type=finance';
-
-        $setExpressCheckoutRequestDetails                       = new \PayPal\EBLBaseComponents\SetExpressCheckoutRequestDetailsType();
-        
-        $setExpressCheckoutRequestDetails->LandingPage          = "Billing";
-        $setExpressCheckoutRequestDetails->LocaleCode           = $languageISO;
-        $setExpressCheckoutRequestDetails->AddressOverride      = 1;
-        $setExpressCheckoutRequestDetails->NoShipping           = 1;
-
-        $setExpressCheckoutRequestDetails->FundingSourceDetails = new \PayPal\EBLBaseComponents\FundingSourceDetailsType();
-        $setExpressCheckoutRequestDetails->FundingSourceDetails->UserSelectedFundingSource = "Finance";
-
-        if ($this->duringCheckout() === true) {
-            $setExpressCheckoutRequestDetails->ReturnURL = $this->getCallbackUrl('s', true);
-            $setExpressCheckoutRequestDetails->CancelURL = $this->getCallbackUrl('s', false);
-        } else {
-            $hash                                        = $this->generateHash($order);
-            $setExpressCheckoutRequestDetails->ReturnURL = $this->getNotificationURL($hash);
-            $setExpressCheckoutRequestDetails->CancelURL = $this->getReturnURL($order);
+        if ($basket->discount[WarenkorbHelper::GROSS] > 0) {
+            $discountItem = new Item();
+            $discountItem->setName(Shop::Lang()->get('discount', 'global'))
+                ->setCurrency($currencyIso)
+                ->setQuantity(1)
+                ->setPrice($basket->discount[WarenkorbHelper::GROSS] * -1);
+            $items[] = $discountItem;
         }
 
-        $setExpressCheckoutRequestDetails->BrandName            = $brandName;
-        $setExpressCheckoutRequestDetails->cpplogoimage         = $shopLogo;
-        $setExpressCheckoutRequestDetails->cppheaderimage       = $shopLogo;
-        $setExpressCheckoutRequestDetails->cppheaderbordercolor = $borderColor;
-        $setExpressCheckoutRequestDetails->PaymentDetails       = [$paymentDetails];
+        $itemList = new ItemList();
+        $itemList->setItems($items);
 
-        $setExpressCheckoutRequestType                    = new PayPalAPI\SetExpressCheckoutRequestType($setExpressCheckoutRequestDetails);
-        $setExpressCheckoutReq                            = new PayPalAPI\SetExpressCheckoutReq();
-        $setExpressCheckoutReq->SetExpressCheckoutRequest = $setExpressCheckoutRequestType;
+        $amount = $this->prepareAmount($basket);
 
-        $exception = $response = null;
-        $service   = new \PayPal\Service\PayPalAPIInterfaceServiceService($this->config);
+        $transaction = new Transaction();
+        $transaction->setAmount($amount)
+            ->setItemList($itemList)
+            ->setDescription('Payment');
+
+        $redirectUrls = new RedirectUrls();
+        $redirectUrls->setReturnUrl($this->getCallbackUrl(['a' => 'return', 'r' => 'true']))
+            ->setCancelUrl($this->getCallbackUrl(['a' => 'return', 'r' => 'false']));
+
+        $payer = new Payer();
+        $payer->setPaymentMethod('paypal');
+        $payer->setExternalSelectedFundingInstrumentType('CREDIT');
+
+        $payment = new Payment();
+        $payment->setIntent('order')
+            ->setPayer($payer)
+            ->setRedirectUrls($redirectUrls)
+            ->setTransactions([$transaction])
+            ->setExperienceProfileId($this->getWebProfileId());
+
+        $request = clone $payment;
 
         try {
-            $r = print_r($setExpressCheckoutReq, true);
-            $this->doLog("Request: SetExpressCheckout:\n\n<pre>{$r}</pre>", LOGLEVEL_NOTICE);
+            $payment->create($this->getContext());
+            $this->logResult('CreatePayment', $request, $payment);
 
-            $response = $service->SetExpressCheckout($setExpressCheckoutReq);
-
-            $r = print_r($response, true);
-            $this->doLog("Response: SetExpressCheckout:\n\n<pre>{$r}</pre>", LOGLEVEL_NOTICE);
-        } catch (Exception $e) {
-            $exception = $e;
+            header('location: ' . $payment->getApprovalLink());
+            exit;
+        } catch (Exception $ex) {
+            $this->handleException('CreatePayment', $payment, $ex);
+            Shop::Smarty()->assign('error', $ex->getMessage());
         }
-
-        if (isset($response->Ack) && $response->Ack === 'Success') {
-            $redirect = $this->getApiUrl($response->Token);
-            $this->addCache('token', $response->Token);
-        } else {
-            $r = $exception !== null ? $exception->getMessage() : print_r($response, true);
-            $this->doLog("Error: SetExpressCheckout:\n\n<pre>{$r}</pre>", LOGLEVEL_ERROR);
-
-            PayPalHelper::setFlashMessage($response->Errors[0]->LongMessage);
-            $redirect = 'bestellvorgang.php?editZahlungsart=1';
-        }
-
-        header("location: {$redirect}");
-        exit;
     }
-    
+
+    public function patchInvoiceNumber(PayPal\Api\Payment &$payment, $invoiceNumber)
+    {
+        $patch = new \PayPal\Api\Patch();
+        $patch->setOp('add')
+            ->setPath('/transactions/0/invoice_number')
+            ->setValue($invoiceNumber);
+
+        $patchRequest = new \PayPal\Api\PatchRequest();
+        $patchRequest->setPatches([$patch]);
+
+        $payment->update($patchRequest, $this->getContext());
+    }
+
+    /**
+     * @param Bestellung $order
+     */
+    public function preparePaymentProcess($order)
+    {
+        try {
+            $paymentId = $this->getCache('paymentId');
+            $payerId   = $this->getCache('payerId');
+
+            $helper = new WarenkorbHelper();
+            $basket = PayPalHelper::getBasket($helper);
+
+            $apiContext  = $this->getContext();
+            $orderNumber = baueBestellnummer();
+            $payment     = Payment::get($paymentId, $apiContext);
+
+            if ($payment->getState() != 'created') {
+                throw new Exception('Unhandled payment state', $payment->getState());
+            }
+
+            /*
+             * #437 Update invoice number
+             */
+            $this->patchInvoiceNumber($payment, $orderNumber);
+
+            $execution = new PaymentExecution();
+            $execution->setPayerId($payerId);
+
+            $details = new Details();
+            $details->setShipping($basket->shipping[WarenkorbHelper::GROSS])
+                ->setSubtotal($basket->article[WarenkorbHelper::GROSS] - $basket->discount[WarenkorbHelper::GROSS])
+                ->setHandlingFee($basket->surcharge[WarenkorbHelper::GROSS])
+                //->setShippingDiscount($basket->discount[WarenkorbHelper::GROSS] * -1)
+                ->setTax(0.00);
+
+            $amount = new Amount();
+            $amount->setCurrency($basket->currency->cISO)
+                ->setTotal($basket->total[WarenkorbHelper::GROSS])
+                ->setDetails($details);
+
+            $transaction = new Transaction();
+            $transaction->setAmount($amount);
+
+            $execution->addTransaction($transaction);
+
+            $payment->execute($execution, $apiContext);
+            $this->logResult('ExecutePayment', $execution, $payment);
+
+            $order           = finalisiereBestellung($orderNumber, false);
+            $order->cSession = $paymentId;
+            $order->updateInDB();
+
+            // $payment->getState() === 'approved'
+            $this->sendConfirmationMail($order);
+
+            // smarty
+            Shop::Smarty()->assign('abschlussseite', 1);
+
+            // clean up
+            $session = Session::getInstance();
+            $session->cleanUp();
+
+            $this->unsetCache();
+        } catch (Exception $ex) {
+            $this->handleException('ExecutePayment', $payment, $ex);
+            Shop::Smarty()->assign('error', $ex->getMessage());
+        }
+    }
+
+    public function getTaxClass()
+    {
+        foreach ($_SESSION['Steuersatz'] as $taxClass => $taxRate) {
+            if ((float)$taxRate === 0.0) {
+                return $taxClass;
+            }
+        }
+
+        $taxRate  = Shop::DB()->select('tsteuersatz', 'fSteuersatz', 0);
+        if (is_object($taxRate)) {
+            return $taxRate->kSteuerklasse;
+        }
+
+        return null;
+    }
+
+    public function addSurcharge(PayPal\Api\CreditFinancingOffered $offer)
+    {
+        $taxClass = $this->getTaxClass();
+        $interest = $offer->getTotalInterest();
+
+        $_SESSION['Warenkorb']->erstelleSpezialPos(
+            'Finanzierungskosten', 1, $interest->getValue(), $taxClass,
+            C_WARENKORBPOS_TYP_ZINSAUFSCHLAG,
+            true, true, ''
+        );
+    }
+
     /**
      * @param bool $kVersandart
      *
@@ -728,9 +680,9 @@ class PayPalFinance extends PaymentMethod
      */
     public function createPaymentSession($kVersandart = false)
     {
-        $_SESSION['Zahlungsart']                        = $this->payment;
-        $_SESSION['Zahlungsart']->cModulId              = $this->moduleID;
-        //$_SESSION['Zahlungsart']->nWaehrendBestellung   = 1;
+        $_SESSION['Zahlungsart']                      = $this->payment;
+        $_SESSION['Zahlungsart']->cModulId            = $this->moduleID;
+        $_SESSION['Zahlungsart']->nWaehrendBestellung = 1;
 
         $languages = Shop::DB()->query("SELECT cName, cISOSprache FROM tzahlungsartsprache WHERE kZahlungsart='" . $this->paymentId . "'", 2);
 
@@ -740,24 +692,9 @@ class PayPalFinance extends PaymentMethod
 
         PayPalHelper::addSurcharge();
     }
-    
+
     public function duringCheckout()
     {
         return (int) $this->duringCheckout !== 0;
-    }
-    
-    public function getApiUrl($token)
-    {
-        $useraction = $this->duringCheckout() ? 'continue' : 'commit';
-
-        return sprintf($this->PayPalURL, $useraction, $token);
-    }
-
-    public function getCallbackUrl($type, $success = true)
-    {
-        $link        = PayPalHelper::getLinkByName($this->plugin, 'PayPalFinance');
-        $callbackUrl = sprintf('%s/index.php?s=%d&t=%s&r=%s', Shop::getUrl(true), $link->kLink, $type, $success ? '1' : '0');
-
-        return $callbackUrl;
     }
 }

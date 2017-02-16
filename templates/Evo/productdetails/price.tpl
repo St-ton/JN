@@ -82,7 +82,7 @@
                         <span class="value text-nowrap">{$Artikel->cUVPLocalized}</span>
                     </div>
                     {* Preisersparnis zur UVP anzeigen? *}
-                    {if isset($Artikel->SieSparenX) && $Artikel->SieSparenX->anzeigen == 1 && $Artikel->SieSparenX->nProzent > 0 && !$NettoPreise}
+                    {if isset($Artikel->SieSparenX) && $Artikel->SieSparenX->anzeigen == 1 && $Artikel->SieSparenX->nProzent > 0 && !$NettoPreise && $Artikel->taxData['tax'] > 0}
                         <div class="yousave">({lang key="youSave" section="productDetails"}
                             <span class="percent">{$Artikel->SieSparenX->nProzent}%</span>, {lang key="thatIs" section="productDetails"}
                             <span class="value text-nowrap">{$Artikel->SieSparenX->cLocalizedSparbetrag}</span>)

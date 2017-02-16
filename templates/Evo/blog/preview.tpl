@@ -37,9 +37,9 @@
     </div>
     <div class="panel-body">
         <div class=" row">
-            {if !empty($oNewsUebersicht->cPreviewImage)}
+            {if !empty($oNewsUebersicht->cPreviewImageFull)}
                 <div class="col-sm-4 col-xs-12">
-                    <a href="{$oNewsUebersicht->cURL}" >
+                    <a href="{$oNewsUebersicht->cURLFull}" >
                         <img src="{$ShopURL}/{$oNewsUebersicht->cPreviewImage}" alt="" class="img-responsive center-block"/>
                         <meta itemprop="image" content="{$ShopURL}/{$oNewsUebersicht->cPreviewImage}">
                     </a>
@@ -53,7 +53,7 @@
                         {$oNewsUebersicht->cText|strip_tags|truncate:200:""}
                     {/if}
                     <span class="pull-right top17">
-                        <a class="news-more-link" href="{$oNewsUebersicht->cURL}">{lang key='moreLink' section='news'}</a>
+                        <a class="news-more-link" href="{$oNewsUebersicht->cURLFull}">{lang key='moreLink' section='news'}</a>
                     </span>
                 </div>
             {/if}

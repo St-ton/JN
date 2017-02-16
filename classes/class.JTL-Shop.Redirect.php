@@ -27,7 +27,6 @@ class Redirect
      */
     public function __construct($kRedirect = 0)
     {
-        $kRedirect = intval($kRedirect);
         if ($kRedirect > 0) {
             $this->loadFromDB($kRedirect);
         }
@@ -39,7 +38,7 @@ class Redirect
      */
     public function loadFromDB($kRedirect)
     {
-        $obj = Shop::DB()->select('tredirect', 'kRedirect', intval($kRedirect));
+        $obj = Shop::DB()->select('tredirect', 'kRedirect', (int)$kRedirect);
         if (is_object($obj) && $obj->kRedirect > 0) {
             $members = array_keys(get_object_vars($obj));
             foreach ($members as $member) {
@@ -71,7 +70,8 @@ class Redirect
         return Shop::DB()->query("
             DELETE tredirect, tredirectreferer
                 FROM tredirect
-                LEFT JOIN tredirectreferer ON tredirect.kRedirect = tredirectreferer.kRedirect
+                LEFT JOIN tredirectreferer 
+                    ON tredirect.kRedirect = tredirectreferer.kRedirect
                 WHERE tredirect.cToUrl = ''", 3
         );
     }
@@ -251,8 +251,10 @@ class Redirect
             $oObj = Shop::DB()->query(
                 "SELECT tartikel.kArtikel, tseo.cSeo
                     FROM tartikel
-                    LEFT JOIN tsprache ON tsprache.cISO = '" . Shop::DB()->escape(strtolower($cIso)) . "'
-                    LEFT JOIN tseo ON tseo.kKey = tartikel.kArtikel
+                    LEFT JOIN tsprache 
+                        ON tsprache.cISO = '" . Shop::DB()->escape(strtolower($cIso)) . "'
+                    LEFT JOIN tseo 
+                        ON tseo.kKey = tartikel.kArtikel
                         AND tseo.cKey = 'kArtikel'
                         AND tseo.kSprache = tsprache.kSprache
                     WHERE tartikel.cArtNr = '" . Shop::DB()->escape($cArtNr) . "'
@@ -346,7 +348,7 @@ class Redirect
                 }
                 $oItem = $this->find($cUrl);
                 if (!is_object($oItem)) {
-                    $conf = Shop::getConfig([CONF_GLOBAL]);
+                    $conf = Shop::getSettings([CONF_GLOBAL]);
                     if (!isset($_GET['notrack']) && (!isset($conf['global']['redirect_save_404']) || $conf['global']['redirect_save_404'] === 'Y')) {
                         $oItem           = new self();
                         $oItem->cFromUrl = $cUrl;
@@ -366,14 +368,17 @@ class Redirect
                 $oEntry = Shop::DB()->query(
                     "SELECT *
                         FROM tredirectreferer tr
-                        LEFT JOIN tredirect t ON t.kRedirect = tr.kRedirect
+                        LEFT JOIN tredirect t 
+                            ON t.kRedirect = tr.kRedirect
                         WHERE tr.cIP = '{$cIP}'
                         AND t.cFromUrl = '{$cUrl}' LIMIT 1", 1
                 );
                 if ($oEntry === false || $oEntry === null || (is_object($oEntry) && $oItem->nCount == 0)) {
                     $oReferer               = new stdClass();
                     $oReferer->kRedirect    = (isset($oItem->kRedirect)) ? $oItem->kRedirect : 0;
-                    $oReferer->kBesucherBot = (isset($_SESSION['oBesucher']->kBesucherBot)) ? intval($_SESSION['oBesucher']->kBesucherBot) : 0;
+                    $oReferer->kBesucherBot = (isset($_SESSION['oBesucher']->kBesucherBot))
+                        ? (int)$_SESSION['oBesucher']->kBesucherBot
+                        : 0;
                     $oReferer->cRefererUrl  = (is_string($cReferer)) ? $cReferer : '';
                     $oReferer->cIP          = $cIP;
                     $oReferer->dDate        = time();
@@ -467,7 +472,7 @@ class Redirect
         }
         $oCount = Shop::DB()->query("SELECT COUNT(*) AS nCount FROM tredirect {$where}", 1);
         if (is_object($oCount)) {
-            return intval($oCount->nCount);
+            return (int)$oCount->nCount;
         }
 
         return 0;
@@ -551,7 +556,8 @@ class Redirect
     public static function getReferers($kRedirect, $nLimit = 100)
     {
         return Shop::DB()->query(
-            "SELECT tredirectreferer.*, tbesucherbot.cName AS cBesucherBotName, tbesucherbot.cUserAgent AS cBesucherBotAgent
+            "SELECT tredirectreferer.*, tbesucherbot.cName AS cBesucherBotName, 
+                    tbesucherbot.cUserAgent AS cBesucherBotAgent
                 FROM tredirectreferer
                 LEFT JOIN tbesucherbot
                     ON tredirectreferer.kBesucherBot = tbesucherbot.kBesucherBot
@@ -569,7 +575,7 @@ class Redirect
         return Shop::DB()->query("SELECT count(kRedirect) AS nCount FROM tredirect", 1)->nCount;
     }
 
-    /*
+    /**
      * @param $cUrl - one of
      *   * full URL (must be inside the same shop) e.g. http://www.shop.com/path/to/page
      *   * url path e.g. /path/to/page

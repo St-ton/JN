@@ -17,5 +17,5 @@ $smarty  = $GLOBALS['smarty'];
 $newsArr = $smarty->getVariable('oNewsArchiv');
 
 if (isset($newsArr->value)) {
-    BackendAccountHelper::getInstance($oPlugin)->getFrontend(array($newsArr->value), 'NEWS', 'kNews');
+    BackendAccountHelper::getInstance($oPlugin)->getFrontend([$newsArr->value], 'NEWS', 'kNews');
 }

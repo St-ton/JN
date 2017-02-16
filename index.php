@@ -26,7 +26,10 @@ if ($https === false) {
 }
 executeHook(HOOK_INDEX_NAVI_HEAD_POSTGET);
 //prg
-if (isset($_SESSION['bWarenkorbHinzugefuegt']) && isset($_SESSION['bWarenkorbAnzahl']) && isset($_SESSION['hinweis'])) {
+if (isset($_SESSION['bWarenkorbHinzugefuegt']) &&
+    isset($_SESSION['bWarenkorbAnzahl']) &&
+    isset($_SESSION['hinweis'])
+) {
     $smarty->assign('bWarenkorbHinzugefuegt', $_SESSION['bWarenkorbHinzugefuegt'])
            ->assign('bWarenkorbAnzahl', $_SESSION['bWarenkorbAnzahl'])
            ->assign('hinweis', $_SESSION['hinweis']);
@@ -36,8 +39,16 @@ if (isset($_SESSION['bWarenkorbHinzugefuegt']) && isset($_SESSION['bWarenkorbAnz
 }
 //wurde ein artikel in den Warenkorb gelegt?
 checkeWarenkorbEingang();
-if (!$cParameter_arr['kWunschliste'] && strlen(verifyGPDataString('wlid')) > 0 && verifyGPDataString('error') === '') {
-    header('Location: ' . $linkHelper->getStaticRoute('wunschliste.php', true) . '?wlid=' . verifyGPDataString('wlid') . '&error=1', true, 303);
+if (!$cParameter_arr['kWunschliste'] &&
+    strlen(verifyGPDataString('wlid')) > 0 &&
+    verifyGPDataString('error') === ''
+) {
+    header(
+        'Location: ' . $linkHelper->getStaticRoute('wunschliste.php', true) .
+            '?wlid=' . verifyGPDataString('wlid') . '&error=1',
+        true,
+        303
+    );
     exit();
 }
 //support for artikel_after_cart_add
@@ -47,13 +58,16 @@ if ($smarty->getTemplateVars('bWarenkorbHinzugefuegt')) {
         $smarty->assign('Xselling', gibArtikelXSelling($_POST['a']));
     }
 }
-if (($cParameter_arr['kArtikel'] > 0 || $cParameter_arr['kKategorie'] > 0) && !$_SESSION['Kundengruppe']->darfArtikelKategorienSehen) {
+if (($cParameter_arr['kArtikel'] > 0 || $cParameter_arr['kKategorie'] > 0) &&
+    !$_SESSION['Kundengruppe']->darfArtikelKategorienSehen
+) {
     //falls Artikel/Kategorien nicht gesehen werden duerfen -> login
     header('Location: ' . $linkHelper->getStaticRoute('jtl.php', true) . '?li=1', true, 303);
     exit;
 }
-// Ticket #6498
-if ($cParameter_arr['kKategorie'] > 0 && !Kategorie::isVisible($cParameter_arr['kKategorie'], $_SESSION['Kundengruppe']->kKundengruppe)) {
+if ($cParameter_arr['kKategorie'] > 0 &&
+    !Kategorie::isVisible($cParameter_arr['kKategorie'], $_SESSION['Kundengruppe']->kKundengruppe)
+) {
     $cParameter_arr['kKategorie'] = 0;
     $oLink                        = Shop::DB()->select('tlink', 'nLinkart', LINKTYP_404);
     $kLink                        = $oLink->kLink;

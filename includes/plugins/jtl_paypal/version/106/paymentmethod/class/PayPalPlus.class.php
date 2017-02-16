@@ -3,11 +3,11 @@
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
  */
-require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
-require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellabschluss_inc.php';
+require_once PFAD_ROOT.PFAD_INCLUDES_MODULES.'PaymentMethod.class.php';
+require_once PFAD_ROOT.PFAD_INCLUDES.'bestellabschluss_inc.php';
 
-require_once str_replace('frontend', '', $oPlugin->cFrontendPfad) . 'paypal-sdk/vendor/autoload.php';
-require_once str_replace('frontend', 'paymentmethod', $oPlugin->cFrontendPfad) . 'class/PayPal.helper.class.php';
+require_once str_replace('frontend', '', $oPlugin->cFrontendPfad).'paypal-sdk/vendor/autoload.php';
+require_once str_replace('frontend', 'paymentmethod', $oPlugin->cFrontendPfad).'class/PayPal.helper.class.php';
 
 use PayPal\Api\Amount;
 use PayPal\Api\Details;
@@ -19,7 +19,6 @@ use PayPal\Api\PaymentExecution;
 use PayPal\Api\RedirectUrls;
 use PayPal\Api\Sale;
 use PayPal\Api\Transaction;
-use PayPal\Api\Presentment;
 use PayPal\Api\Currency;
 use PayPal\Rest\ApiContext;
 use PayPal\Auth\OAuthTokenCredential;
@@ -69,10 +68,10 @@ class PayPalPlus extends PaymentMethod
      */
     public function __construct()
     {
-        $this->plugin      = $this->getPlugin();
-        $this->settings    = $this->getSettings();
-        $this->payment     = $this->getPayment();
-        $this->paymentId   = $this->getPaymentId();
+        $this->plugin = $this->getPlugin();
+        $this->settings = $this->getSettings();
+        $this->payment = $this->getPayment();
+        $this->paymentId = $this->getPaymentId();
         $this->languageIso = $this->getLanguage();
         $this->currencyIso = gibStandardWaehrung(true);
         //$this->paymentMethod = $this->getPaymentMethod();
@@ -89,7 +88,7 @@ class PayPalPlus extends PaymentMethod
     {
         parent::init($nAgainCheckout);
 
-        $this->name    = 'PayPal PLUS';
+        $this->name = 'PayPal PLUS';
         $this->caption = 'PayPal PLUS';
 
         return $this;
@@ -105,6 +104,7 @@ class PayPalPlus extends PaymentMethod
         // Overwrite
         return false;
     }
+
     /**
      * @param array $args_arr
      *
@@ -125,12 +125,12 @@ class PayPalPlus extends PaymentMethod
         ));
 
         $apiContext->setConfig([
-            'http.Retry'                                 => 1,
-            'http.ConnectionTimeOut'                     => 30,
+            'http.Retry' => 1,
+            'http.ConnectionTimeOut' => 30,
             'http.headers.PayPal-Partner-Attribution-Id' => 'JTL_Cart_REST_Plus',
-            'mode'                                       => $this->getModus(),
-            'cache.enabled'                              => true,
-            'cache.FileName'                             => PFAD_ROOT . PFAD_COMPILEDIR . 'paypalplus.auth.cache'
+            'mode' => $this->getModus(),
+            'cache.enabled' => true,
+            'cache.FileName' => PFAD_ROOT.PFAD_COMPILEDIR.'paypalplus.auth.cache',
         ]);
 
         return $apiContext;
@@ -141,7 +141,7 @@ class PayPalPlus extends PaymentMethod
         $sandbox = $this->getModus() === 'sandbox';
 
         $clientId = $this->settings[$sandbox ? 'api_sandbox_client_id' : 'api_live_client_id'];
-        $secret   = $this->settings[$sandbox ? 'api_sandbox_secret' : 'api_live_secret'];
+        $secret = $this->settings[$sandbox ? 'api_sandbox_secret' : 'api_live_secret'];
 
         if (strlen($clientId) == 0 || strlen($secret) == 0) {
             return false;
@@ -171,7 +171,7 @@ class PayPalPlus extends PaymentMethod
 
     public function getModuleId()
     {
-        $crap = 'kPlugin_' . $this->plugin->kPlugin . '_paypalplus';
+        $crap = 'kPlugin_'.$this->plugin->kPlugin.'_paypalplus';
 
         return $crap;
     }
@@ -186,7 +186,7 @@ class PayPalPlus extends PaymentMethod
 
             $shoplogo = $this->settings['shoplogo'];
             if (strlen($shoplogo) > 0 && strpos($shoplogo, 'http') !== 0) {
-                $shoplogo = Shop::getURL() . '/' . $shoplogo;
+                $shoplogo = Shop::getURL().'/'.$shoplogo;
             }
 
             $presentation = new \PayPal\Api\Presentation();
@@ -200,7 +200,7 @@ class PayPalPlus extends PaymentMethod
                 ->setAddressOverride(1);
 
             $webProfile = new \PayPal\Api\WebProfile();
-            $webProfile->setName('JTL-PayPalPlus' . uniqid())
+            $webProfile->setName('JTL-PayPalPlus'.uniqid())
                 ->setFlowConfig($flowConfig)
                 ->setPresentation($presentation)
                 ->setInputFields($inputFields);
@@ -209,7 +209,7 @@ class PayPalPlus extends PaymentMethod
 
             try {
                 $createProfileResponse = $webProfile->create($this->getContext());
-                $webProfileId          = $createProfileResponse->getId();
+                $webProfileId = $createProfileResponse->getId();
                 $this->addCache('webProfileId', $webProfileId);
                 $this->logResult('WebProfile', $request, $createProfileResponse);
             } catch (Exception $ex) {
@@ -223,15 +223,15 @@ class PayPalPlus extends PaymentMethod
     public function getCallbackUrl(array $params = [], $forceSsl = false)
     {
         $plugin = $this->getPlugin();
-        $link   = PayPalHelper::getLinkByName($plugin, 'PayPalPLUS');
+        $link = PayPalHelper::getLinkByName($plugin, 'PayPalPLUS');
 
         $params = array_merge(
             ['s' => $link->kLink],
             $params
         );
 
-        $paramlist   = http_build_query($params, '', '&');
-        $callbackUrl = Shop::getURL($forceSsl) . '/index.php?' . $paramlist;
+        $paramlist = http_build_query($params, '', '&');
+        $callbackUrl = Shop::getURL($forceSsl).'/index.php?'.$paramlist;
 
         return $callbackUrl;
     }
@@ -239,10 +239,10 @@ class PayPalPlus extends PaymentMethod
     public function getSettings()
     {
         $settings = [];
-        $crap     = 'kPlugin_' . $this->plugin->kPlugin . '_paypalplus_';
+        $crap = 'kPlugin_'.$this->plugin->kPlugin.'_paypalplus_';
 
         foreach ($this->plugin->oPluginEinstellungAssoc_arr as $key => $value) {
-            $key            = str_replace($crap, '', $key);
+            $key = str_replace($crap, '', $key);
             $settings[$key] = $value;
         }
 
@@ -251,7 +251,7 @@ class PayPalPlus extends PaymentMethod
 
     public function getPayment()
     {
-        return Shop::DB()->query("SELECT cName, kZahlungsart FROM tzahlungsart WHERE cModulId='kPlugin_" . $this->plugin->kPlugin . "_paypalplus'", 1);
+        return Shop::DB()->query("SELECT cName, kZahlungsart FROM tzahlungsart WHERE cModulId='kPlugin_".$this->plugin->kPlugin."_paypalplus'", 1);
     }
 
     public function getPaymentId()
@@ -295,7 +295,7 @@ class PayPalPlus extends PaymentMethod
     public function logResult($type, $request, $response = null, $level = LOGLEVEL_NOTICE)
     {
         if ($request && $response) {
-            $request  = $this->formatObject($request);
+            $request = $this->formatObject($request);
             $response = $this->formatObject($response);
             $this->doLog("{$type}: {$request} - {$response}", $level);
         } else {
@@ -363,11 +363,11 @@ class PayPalPlus extends PaymentMethod
             ->setCity($shippingAddress->cOrt)
             ->setPostalCode($shippingAddress->cPLZ)
             ->setCountryCode($shippingAddress->cLand);
-			
+
         if (in_array($shippingAddress->cLand, ['AR', 'BR', 'IN', 'US', 'CA', 'IT', 'JP', 'MX', 'TH'])) {
             $state = Staat::getRegionByName($address->cBundesland);
             if ($state !== null) {
-				$a->setState($state->cCode);
+                $a->setState($state->cCode);
             }
         }
 
@@ -508,11 +508,11 @@ class PayPalPlus extends PaymentMethod
      */
     public function createPaymentSession()
     {
-        $_SESSION['Zahlungsart']                        = $this->payment;
-        $_SESSION['Zahlungsart']->cModulId              = $this->moduleID;
-        $_SESSION['Zahlungsart']->nWaehrendBestellung   = 1;
+        $_SESSION['Zahlungsart'] = $this->payment;
+        $_SESSION['Zahlungsart']->cModulId = $this->moduleID;
+        $_SESSION['Zahlungsart']->nWaehrendBestellung = 1;
 
-        $languages = Shop::DB()->query("SELECT cName, cISOSprache FROM tzahlungsartsprache WHERE kZahlungsart='" . $this->paymentId . "'", 2);
+        $languages = Shop::DB()->query("SELECT cName, cISOSprache FROM tzahlungsartsprache WHERE kZahlungsart='".$this->paymentId."'", 2);
 
         foreach ($languages as $language) {
             $_SESSION['Zahlungsart']->angezeigterName[$language->cISOSprache] = $language->cName;
@@ -556,20 +556,20 @@ class PayPalPlus extends PaymentMethod
     {
         try {
             $paymentId = $this->getCache('paymentId');
-            $payerId   = $this->getCache('payerId');
+            $payerId = $this->getCache('payerId');
 
             $helper = new WarenkorbHelper();
             $basket = PayPalHelper::getBasket($helper);
 
-            $apiContext      = $this->getContext();
-            $orderNumber     = baueBestellnummer();
-            $payment         = Payment::get($paymentId, $apiContext);
-            
+            $apiContext = $this->getContext();
+            $orderNumber = baueBestellnummer();
+            $payment = Payment::get($paymentId, $apiContext);
+
             if ($payment->getState() != 'created') {
                 throw new Exception('Unhandled payment state', $payment->getState());
             }
 
-            /**
+            /*
              * #437 Update invoice number
              */
             $this->patchInvoiceNumber($payment, $orderNumber);
@@ -597,8 +597,8 @@ class PayPalPlus extends PaymentMethod
 
             $payment->execute($execution, $apiContext);
             $this->logResult('ExecutePayment', $execution, $payment);
-            
-            $order = finalisiereBestellung($orderNumber, false);
+
+            $order = finalisiereBestellung($orderNumber, true);
             $order->cSession = $paymentId;
 
             if ($instruction = $payment->getPaymentInstruction()) {
@@ -606,21 +606,21 @@ class PayPalPlus extends PaymentMethod
 
                 if ($type == 'PAY_UPON_INVOICE') {
                     $banking = $instruction->getRecipientBankingInstruction();
-                    $amount  = $instruction->getAmount();
+                    $amount = $instruction->getAmount();
 
                     $company = new Firma();
-                    $date    = strftime('%d.%m.%Y', strtotime($instruction->getPaymentDueDate()));
+                    $date = strftime('%d.%m.%Y', strtotime($instruction->getPaymentDueDate()));
 
                     $replacement = [
-                        '%reference_number%'                  => $instruction->getReferenceNumber(),
-                        '%bank_name%'                         => $banking->getBankName(),
-                        '%account_holder_name%'               => $banking->getAccountHolderName(),
+                        '%reference_number%' => $instruction->getReferenceNumber(),
+                        '%bank_name%' => $banking->getBankName(),
+                        '%account_holder_name%' => $banking->getAccountHolderName(),
                         '%international_bank_account_number%' => $banking->getInternationalBankAccountNumber(),
-                        '%bank_identifier_code%'              => $banking->getBankIdentifierCode(),
-                        '%value%'                             => $amount->getValue(),
-                        '%currency%'                          => $amount->getCurrency(),
-                        '%payment_due_date%'                  => $date,
-                        '%company%'                           => $company->cName,
+                        '%bank_identifier_code%' => $banking->getBankIdentifierCode(),
+                        '%value%' => $amount->getValue(),
+                        '%currency%' => $amount->getCurrency(),
+                        '%payment_due_date%' => $date,
+                        '%company%' => $company->cName,
                     ];
 
                     $pui = sprintf("%s\r\n\r\n%s",
@@ -648,18 +648,18 @@ class PayPalPlus extends PaymentMethod
                 if ($state === 'completed') {
                     $ip = new stdClass();
 
-                    $ip->cISO    = $basket->currency->cISO;
+                    $ip->cISO = $basket->currency->cISO;
                     $ip->fBetrag = $basket->total[WarenkorbHelper::GROSS];
 
                     $ip->cEmpfaenger = '';
-                    $ip->cZahler     = $payment->getPayer()->getPayerInfo()->getEmail();
+                    $ip->cZahler = $payment->getPayer()->getPayerInfo()->getEmail();
 
-                    $ip->cHinweis         = $this->getSaleId($payment);
+                    $ip->cHinweis = $this->getSaleId($payment);
                     $ip->fZahlungsgebuehr = $basket->surcharge[WarenkorbHelper::GROSS];
 
                     $this->setOrderStatusToPaid($order);
                     $this->addIncomingPayment($order, $ip);
-                    
+
                     // send confirmationMail - except for payment upon invoice (see https://gitlab.jtl-software.de/jtlshop/shop4/issues/618)
                     if (empty($order->cPUIZahlungsdaten)) {
                         $this->sendConfirmationMail($order);
@@ -675,7 +675,6 @@ class PayPalPlus extends PaymentMethod
             $session->cleanUp();
 
             $this->unsetCache();
-
         } catch (Exception $ex) {
             $this->handleException('ExecutePayment', $payment, $ex);
             Shop::Smarty()->assign('error', $ex->getMessage());
@@ -690,7 +689,7 @@ class PayPalPlus extends PaymentMethod
     public function isUseable($oArtikel_arr = [], $shippingId = 0)
     {
         $versandklassen = VersandartHelper::getShippingClasses($_SESSION['Warenkorb']);
-        $shippingId     = intval($shippingId);
+        $shippingId = intval($shippingId);
 
         foreach ($oArtikel_arr as $oArtikel) {
             if ($oArtikel !== null) {
@@ -706,12 +705,12 @@ class PayPalPlus extends PaymentMethod
                         FROM tversandart
                         LEFT JOIN tversandartzahlungsart
                             ON tversandartzahlungsart.kVersandart = tversandart.kVersandart
-                        WHERE tversandartzahlungsart.kZahlungsart = ' . $this->paymentId . "
-                AND (cVersandklassen='-1' OR (cVersandklassen LIKE '% " . $versandklassen . " %' OR cVersandklassen LIKE '% " . $versandklassen . "'))
-                           AND (cKundengruppen='-1' OR cKundengruppen LIKE '%;" . $kKundengruppe . ";%')";
+                        WHERE tversandartzahlungsart.kZahlungsart = '.$this->paymentId."
+                AND (cVersandklassen='-1' OR (cVersandklassen LIKE '% ".$versandklassen." %' OR cVersandklassen LIKE '% ".$versandklassen."'))
+                           AND (cKundengruppen='-1' OR cKundengruppen LIKE '%;".$kKundengruppe.";%')";
 
                 if ($shippingId > 0) {
-                    $sql .= ' AND tversandart.kVersandart = ' . $shippingId;
+                    $sql .= ' AND tversandart.kVersandart = '.$shippingId;
                 }
 
                 $oVersandart_arr = Shop::DB()->query($sql, 2);

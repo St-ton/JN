@@ -70,7 +70,7 @@ class Session
         $bot                = false;
         $saveBotSession     = 0;
         if (defined('SAVE_BOT_SESSION') && isset($_SERVER['HTTP_USER_AGENT'])) {
-            $saveBotSession = intval(SAVE_BOT_SESSION);
+            $saveBotSession = (int)SAVE_BOT_SESSION;
             $bot            = self::getIsCrawler($_SERVER['HTTP_USER_AGENT']);
         }
         session_name(self::$_sessionName);
@@ -160,10 +160,12 @@ class Session
         }
         if (isset($_SESSION['Globals_TS'])) {
             $globalsAktualisieren = false;
-            $ts                   = Shop::DB()->query("
+            $ts                   = Shop::DB()->executeQueryPrepared("
                   SELECT dLetzteAenderung 
                       FROM tglobals 
-                      WHERE dLetzteAenderung > '" . $_SESSION['Globals_TS'] . "'", 1
+                      WHERE dLetzteAenderung > :ts",
+                ['ts' => $_SESSION['Globals_TS']],
+                1
             );
             if (isset($ts->dLetzteAenderung)) {
                 $_SESSION['Globals_TS'] = $ts->dLetzteAenderung;
@@ -183,7 +185,9 @@ class Session
             checkeSpracheWaehrung($lang);
             $checked = true;
         }
-        if ($globalsAktualisieren || !isset($_SESSION['cISOSprache']) || !isset($_SESSION['kSprache']) || !isset($_SESSION['Kundengruppe'])) {
+        if ($globalsAktualisieren || !isset($_SESSION['cISOSprache']) ||
+            !isset($_SESSION['kSprache']) || !isset($_SESSION['Kundengruppe'])
+        ) {
             //Kategorie
             unset($_SESSION['cTemplate']);
             unset($_SESSION['template']);
@@ -294,8 +298,10 @@ class Session
                  * @depcrecated since 4.05
                  */
                 $_SESSION['Lieferlaender'] = Shop::DB()->query(
-                    "SELECT l.* FROM tland AS l
-                        JOIN tversandart AS v ON v.cLaender LIKE CONCAT('%', l.cISO, '%')
+                    "SELECT l.* 
+                        FROM tland AS l
+                        JOIN tversandart AS v 
+                            ON v.cLaender LIKE CONCAT('%', l.cISO, '%')
                         GROUP BY l.cISO", 2
                 );
             }
@@ -357,8 +363,10 @@ class Session
     {
         $kVergleichlistePos = verifyGPCDataInteger('vlplo');
         if ($kVergleichlistePos !== 0) {
-            if (isset($_SESSION['Vergleichsliste']->oArtikel_arr) && is_array($_SESSION['Vergleichsliste']->oArtikel_arr) &&
-                count($_SESSION['Vergleichsliste']->oArtikel_arr) > 0) {
+            if (isset($_SESSION['Vergleichsliste']->oArtikel_arr) &&
+                is_array($_SESSION['Vergleichsliste']->oArtikel_arr) &&
+                count($_SESSION['Vergleichsliste']->oArtikel_arr) > 0
+            ) {
                 // Wunschliste Position aus der Session löschen
                 foreach ($_SESSION['Vergleichsliste']->oArtikel_arr as $i => $oArtikel) {
                     if ($oArtikel->kArtikel == $kVergleichlistePos) {

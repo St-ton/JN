@@ -28,7 +28,7 @@
 </style>
 
 <div id="content" class="container-fluid">
-    {if isset($phpinfo)}
+    {if !empty($phpinfo)}
         <div class="phpinfo">{$phpinfo}</div>
     {/if}
 
@@ -98,7 +98,7 @@
 
         {if !$passed}
             <div class="alert alert-warning">
-                Um einen einwandfreien Betrieb gewährleisten zu können ist es zwingend erforderlich alle <code>markierten</code> Eigeschaften zu überprüfen.
+                Um einen einwandfreien Betrieb gew&auml;hrleisten zu k&ouml;nnen ist es zwingend erforderlich, alle <code>markierten</code> Eigeschaften zu &uuml;berpr&uuml;fen.
             </div>
         {/if}
         

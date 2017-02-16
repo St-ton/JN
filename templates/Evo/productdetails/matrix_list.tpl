@@ -55,5 +55,6 @@
         </table>
     </div>
     <input type="hidden" name="variBox" value="1" />
+    <input type="hidden" name="varimatrix" value="1" />
     <button name="inWarenkorb" type="submit" value="{lang key="addToCart" section="global"}" class="submit btn btn-primary pull-right">{lang key="addToCart" section="global"}</button>
 {/if}

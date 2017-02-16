@@ -24,30 +24,42 @@ class JSONAPI
         $limit   = '';
         $cacheID = 'jsonapi_' . $name;
         if (count($arguments) > 0) {
-            $limit = ' LIMIT ' . intval($arguments[0]);
-            $cacheID .= '_' . intval($arguments[0]);
+            $limit = ' LIMIT ' . (int)$arguments[0];
+            $cacheID .= '_' . (int)$arguments[0];
         }
 
         if (($data = Shop::Cache()->get($cacheID)) !== false) {
             return $data;
         }
 
-        $data      = array();
-        $cacheTags = array(CACHING_GROUP_CORE);
+        $data      = [];
+        $cacheTags = [CACHING_GROUP_CORE];
         switch ($name) {
             case 'getPages':
-                $data = Shop::DB()->query("SELECT kLink AS id, cName AS name FROM tlink" . $limit, 2);
+                $data = Shop::DB()->query("
+                    SELECT kLink AS id, cName AS name 
+                        FROM tlink" . $limit, 2
+                );
                 break;
             case 'getCategories':
-                $data        = Shop::DB()->query("SELECT kKategorie AS id, cName AS name FROM tkategorie" . $limit, 2);
+                $data        = Shop::DB()->query("
+                    SELECT kKategorie AS id, cName AS name 
+                        FROM tkategorie" . $limit, 2
+                );
                 $cacheTags[] = CACHING_GROUP_CATEGORY;
                 break;
             case 'getProducts':
-                $data        = Shop::DB()->query("SELECT kArtikel AS id, cName AS name FROM tartikel" . $limit, 2);
+                $data        = Shop::DB()->query("
+                    SELECT kArtikel AS id, cName AS name 
+                      FROM tartikel" . $limit, 2
+                );
                 $cacheTags[] = CACHING_GROUP_ARTICLE;
                 break;
             case 'getManufacturers':
-                $data        = Shop::DB()->query("SELECT kHersteller AS id, cName AS name FROM thersteller" . $limit, 2);
+                $data        = Shop::DB()->query("
+                    SELECT kHersteller AS id, cName AS name 
+                      FROM thersteller" . $limit, 2
+                );
                 $cacheTags[] = CACHING_GROUP_MANUFACTURER;
                 break;
             default:

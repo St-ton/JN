@@ -11,7 +11,8 @@ $Einstellungen['template'] = $template->getConfig();
 $currentTheme              = isset($Einstellungen['template']['theme_default']) ?: '';
 $shopURL                   = Shop::getURL();
 $currentTemplateDir        = str_replace(PFAD_ROOT . PFAD_ADMIN, '', $templateDir);
-$resourcePaths             = $template->getResources(isset($Einstellungen['template']['general']['use_minify']) && $Einstellungen['template']['general']['use_minify'] === 'Y');
+$resourcePaths             = $template->getResources(isset($Einstellungen['template']['general']['use_minify']) &&
+    $Einstellungen['template']['general']['use_minify'] === 'Y');
 $oAccount                  = new AdminAccount();
 // Account
 if (!isset($oAccount) || get_class_methods($oAccount) === null) {
@@ -42,18 +43,32 @@ if (is_array($oLinkOberGruppe_arr) && count($oLinkOberGruppe_arr) > 0) {
             WHERE cPluginID = 'jtl_search'", 1
     );
     foreach ($oLinkOberGruppe_arr as $i => $oLinkOberGruppe) {
-        $oLinkOberGruppe_arr[$i]->oLinkGruppe_arr = array();
-        $oLinkOberGruppe_arr[$i]->oLink_arr       = array();
+        $oLinkOberGruppe_arr[$i]->oLinkGruppe_arr = [];
+        $oLinkOberGruppe_arr[$i]->oLink_arr       = [];
 
-        $oLinkGruppe_arr = Shop::DB()->selectAll('tadminmenugruppe', 'kAdminmenueOberGruppe', (int)$oLinkOberGruppe->kAdminmenueGruppe, '*', 'cName, nSort');
+        $oLinkGruppe_arr = Shop::DB()->selectAll(
+            'tadminmenugruppe',
+            'kAdminmenueOberGruppe',
+            (int)$oLinkOberGruppe->kAdminmenueGruppe,
+            '*',
+            'cName, nSort'
+        );
         if (is_array($oLinkGruppe_arr) && count($oLinkGruppe_arr) > 0) {
             foreach ($oLinkGruppe_arr as $j => $oLinkGruppe) {
                 if (!isset($oLinkGruppe->oLink_arr)) {
-                    $oLinkGruppe->oLink_arr = array();
+                    $oLinkGruppe->oLink_arr = [];
                 }
-                $oLinkGruppe_arr[$j]->oLink_arr = Shop::DB()->selectAll('tadminmenu', 'kAdminmenueGruppe', (int)$oLinkGruppe->kAdminmenueGruppe, '*', 'cLinkname, nSort');
+                $oLinkGruppe_arr[$j]->oLink_arr = Shop::DB()->selectAll(
+                    'tadminmenu',
+                    'kAdminmenueGruppe',
+                    (int)$oLinkGruppe->kAdminmenueGruppe,
+                    '*',
+                    'cLinkname, nSort'
+                );
                 foreach ($configSections as $_k => $_configSection) {
-                    if (isset($_configSection->kAdminmenueGruppe) && $_configSection->kAdminmenueGruppe == $oLinkGruppe->kAdminmenueGruppe) {
+                    if (isset($_configSection->kAdminmenueGruppe) &&
+                        $_configSection->kAdminmenueGruppe == $oLinkGruppe->kAdminmenueGruppe
+                    ) {
                         $oLinkGruppe->oLink_arr[] = $_configSection;
                         unset($configSections[$_k]);
                     }
@@ -71,18 +86,24 @@ if (is_array($oLinkOberGruppe_arr) && count($oLinkOberGruppe_arr) > 0) {
                     ORDER BY tplugin.nPrio, tplugin.cName", 2
             );
             if (!is_array($oPlugin_arr)) {
-                $oPlugin_arr = array();
+                $oPlugin_arr = [];
             }
             foreach ($oPlugin_arr as $j => $oPlugin) {
                 $oPlugin_arr[$j]->cLinkname = $oPlugin->cName;
                 $oPlugin_arr[$j]->cURL      = $shopURL . '/' . PFAD_ADMIN . 'plugin.php?kPlugin=' . $oPlugin->kPlugin;
                 $oPlugin_arr[$j]->cRecht    = 'PLUGIN_ADMIN_VIEW';
             }
-            $oLinkOberGruppe_arr[$i]->oLinkGruppe_arr   = array();
+            $oLinkOberGruppe_arr[$i]->oLinkGruppe_arr   = [];
             $pluginManager                              = new stdClass();
             $pluginManager->cName                       = '&Uuml;bersicht';
             $pluginManager->break                       = false;
-            $pluginManager->oLink_arr                   = Shop::DB()->selectAll('tadminmenu', 'kAdminmenueGruppe', (int)$oLinkOberGruppe->kAdminmenueGruppe, '*', 'cLinkname');
+            $pluginManager->oLink_arr                   = Shop::DB()->selectAll(
+                'tadminmenu',
+                'kAdminmenueGruppe',
+                (int)$oLinkOberGruppe->kAdminmenueGruppe,
+                '*',
+                'cLinkname'
+            );
             $oLinkOberGruppe_arr[$i]->oLinkGruppe_arr[] = $pluginManager;
             $pluginCount                                = count($oPlugin_arr);
             $maxEntries                                 = ($pluginCount > 24) ? 10 : 6;
@@ -100,7 +121,8 @@ if (is_array($oLinkOberGruppe_arr) && count($oLinkOberGruppe_arr) > 0) {
         } elseif ($oLinkOberGruppe->kAdminmenueGruppe == 17) {
             if (isset($oPluginSearch->kPlugin) && $oPluginSearch->kPlugin > 0) {
                 $oPluginSearch->cLinkname = 'JTL Search';
-                $oPluginSearch->cURL      = $shopURL . '/' . PFAD_ADMIN . 'plugin.php?kPlugin=' . $oPluginSearch->kPlugin;
+                $oPluginSearch->cURL      = $shopURL . '/' . PFAD_ADMIN .
+                    'plugin.php?kPlugin=' . $oPluginSearch->kPlugin;
                 $oPluginSearch->cRecht    = 'PLUGIN_ADMIN_VIEW';
 
                 $nI                                   = count($oLinkOberGruppe_arr[$i]->oLink_arr);
@@ -108,7 +130,13 @@ if (is_array($oLinkOberGruppe_arr) && count($oLinkOberGruppe_arr) > 0) {
                 objectSort($oLinkOberGruppe_arr[$i]->oLink_arr, 'cLinkname');
             }
         } else {
-            $oLinkOberGruppe_arr[$i]->oLink_arr = Shop::DB()->selectAll('tadminmenu', 'kAdminmenueGruppe', (int)$oLinkOberGruppe->kAdminmenueGruppe, '*', 'cLinkname');
+            $oLinkOberGruppe_arr[$i]->oLink_arr = Shop::DB()->selectAll(
+                'tadminmenu',
+                'kAdminmenueGruppe',
+                (int)$oLinkOberGruppe->kAdminmenueGruppe,
+                '*',
+                'cLinkname'
+            );
         }
     }
 }

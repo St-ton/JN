@@ -3,29 +3,39 @@
         <table class="table table-striped dropdown-cart-items hyphens">
             <tbody>
             {foreach from=$smarty.session.Warenkorb->PositionenArr item=oPosition}
-                {if ($oPosition->nPosTyp == 1 || $oPosition->nPosTyp == 3 || $oPosition->nPosTyp == 7) && !$oPosition->istKonfigKind()}
-                    <tr>
-                        <td class="item-image">
-                            {if $oPosition->Artikel->Bilder[0]->cPfadNormal !== $BILD_KEIN_ARTIKELBILD_VORHANDEN}
-                                <img src="{$oPosition->Artikel->Bilder[0]->cPfadMini}" alt="" class="img-sm" />
-                            {/if}
-                        </td>
-                        <td class="item-quantity">
-                            {$oPosition->nAnzahl|replace_delim} {if $oPosition->cEinheit|strlen > 0} {$oPosition->cEinheit}{else} &times; {/if}
-                        </td>
-                        <td class="item-name">
-                            <a href="{$oPosition->Artikel->cURL}" title="{$oPosition->cName|trans|escape:"html"}">
-                                {$oPosition->cName|trans}
-                            </a>
-                        </td>
-                        <td class="item-price">
-                            {if $oPosition->istKonfigVater()}
-                                {$oPosition->cKonfigpreisLocalized[$NettoPreise][$smarty.session.cWaehrungName]}
-                            {else}
+                {if !$oPosition->istKonfigKind()}
+                    {if $oPosition->nPosTyp == 1}
+                        <tr>
+                            <td class="item-image">
+                                {if $oPosition->Artikel->Bilder[0]->cPfadNormal !== $BILD_KEIN_ARTIKELBILD_VORHANDEN}
+                                    <img src="{$oPosition->Artikel->Bilder[0]->cPfadMini}" alt="" class="img-sm" />
+                                {/if}
+                            </td>
+                            <td class="item-name" colspan="2">
+                                {$oPosition->nAnzahl|replace_delim}&nbsp;&times;&nbsp;
+                                <a href="{$oPosition->Artikel->cURL}" title="{$oPosition->cName|trans|escape:"html"}">
+                                    {$oPosition->cName|trans}
+                                </a>
+                            </td>
+                            <td class="item-price">
+                                {if $oPosition->istKonfigVater()}
+                                    {$oPosition->cKonfigpreisLocalized[$NettoPreise][$smarty.session.cWaehrungName]}
+                                {else}
+                                    {$oPosition->cEinzelpreisLocalized[$NettoPreise][$smarty.session.cWaehrungName]}
+                                {/if}
+                            </td>
+                        </tr>
+                    {else}
+                        <tr>
+                            <td></td>
+                            <td class="item-name" colspan="2">
+                                {$oPosition->nAnzahl|replace_delim}&nbsp;&times;&nbsp;{$oPosition->cName|trans}
+                            </td>
+                            <td class="item-price">
                                 {$oPosition->cEinzelpreisLocalized[$NettoPreise][$smarty.session.cWaehrungName]}
-                            {/if}
-                        </td>
-                    </tr>
+                            </td>
+                        </tr>
+                    {/if}
                 {/if}
             {/foreach}
             </tbody>

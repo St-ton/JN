@@ -59,7 +59,7 @@ class Boxen
      */
     public function __construct()
     {
-        $this->boxConfig = Shop::getConfig([
+        $this->boxConfig = Shop::getSettings([
             CONF_GLOBAL,
             CONF_BOXEN,
             CONF_VERGLEICHSLISTE,
@@ -136,7 +136,7 @@ class Boxen
     {
         $nSeite  = (int)$nSeite;
         $cacheID = 'box_' . $nSeite . '_' . (($bAktiv === true) ? '1' : '0') .
-            '_' . (($bVisible === true) ? '1' : '0') . '_' . (int)Shop::$kSprache;
+            '_' . (($bVisible === true) ? '1' : '0') . '_' . Shop::getLanguage();
 
         if (($oBox_arr = Shop::Cache()->get($cacheID)) !== false) {
             return $oBox_arr;
@@ -145,7 +145,9 @@ class Boxen
         $oBox_arr         = [];
         $cacheTags        = [CACHING_GROUP_OBJECT, CACHING_GROUP_BOX, 'boxes'];
         $cSQLAktiv        = $bAktiv ? " AND bAktiv = 1 " : "";
-        $cPluginAktiv     = $bAktiv ? " AND (tplugin.nStatus IS NULL OR tplugin.nStatus = 2  OR tboxvorlage.eTyp != 'plugin')" : "";
+        $cPluginAktiv     = $bAktiv
+            ? " AND (tplugin.nStatus IS NULL OR tplugin.nStatus = 2  OR tboxvorlage.eTyp != 'plugin')"
+            : "";
         $oBoxen_arr       = Shop::DB()->query(
             "SELECT tboxen.kBox, tboxen.kBoxvorlage, tboxen.kCustomID, tboxen.kContainer, tboxen.cTitel, tboxen.ePosition,
                     tboxensichtbar.kSeite, tboxensichtbar.nSort, tboxensichtbar.bAktiv, tboxensichtbar.cFilter,
@@ -194,7 +196,9 @@ class Boxen
                         $oBox->cTitel = $oBox->cName;
                     }
                     if ($bAktiv && ($oBox->eTyp === 'text' || $oBox->eTyp === 'catbox')) {
-                        $cISO           = isset($_SESSION['cISOSprache']) && strlen($_SESSION['cISOSprache']) ? $_SESSION['cISOSprache'] : 'ger';
+                        $cISO           = isset($_SESSION['cISOSprache']) && strlen($_SESSION['cISOSprache'])
+                            ? $_SESSION['cISOSprache']
+                            : 'ger';
                         $oBox->cTitel   = '';
                         $oBox->cInhalt  = '';
                         $oSpracheInhalt = $this->gibBoxInhalt($oBox->kBox, $cISO);
@@ -205,7 +209,9 @@ class Boxen
                     } elseif ($bAktiv && $oBox->kBoxvorlage == 0 && !empty($oBox->oContainer_arr)) { //container
                         foreach ($oBox->oContainer_arr as $_box) {
                             if (isset($_box->eTyp) && ($_box->eTyp === 'text' || $_box->eTyp === 'catbox')) {
-                                $cISO           = isset($_SESSION['cISOSprache']) && strlen($_SESSION['cISOSprache']) ? $_SESSION['cISOSprache'] : 'ger';
+                                $cISO           = isset($_SESSION['cISOSprache']) && strlen($_SESSION['cISOSprache'])
+                                    ? $_SESSION['cISOSprache']
+                                    : 'ger';
                                 $_box->cTitel   = '';
                                 $_box->cInhalt  = '';
                                 $oSpracheInhalt = $this->gibBoxInhalt($_box->kBox, $cISO);
@@ -219,7 +225,7 @@ class Boxen
                     $oBox->bContainer = ($oBox->kBoxvorlage == 0);
                     if ($bVisible) {
                         $oBox->cVisibleOn = '';
-                        $oVisible_arr     = Shop::DB()->selectAll('tboxensichtbar', ['kBox', 'bAktiv'], [(int)$oBox->kBox, 1]);
+                        $oVisible_arr     = Shop::DB()->selectAll('tboxensichtbar', 'kBox', (int)$oBox->kBox);
                         if (count($oVisible_arr) >= PAGE_MAX) {
                             $oBox->cVisibleOn = "\n- Auf allen Seiten";
                         } elseif (count($oVisible_arr) === 0) {
@@ -318,6 +324,7 @@ class Boxen
         $kKundengruppe     = (int)$_SESSION['Kundengruppe']->kKundengruppe;
         $kBoxVorlage       = (int)$kBoxVorlage;
         $currencyCachePart = (isset($_SESSION['Waehrung']->kWaehrung)) ? '_cur_' . $_SESSION['Waehrung']->kWaehrung : '';
+        $kSprache          = Shop::getLanguage();
         switch ($kBoxVorlage) {
             case BOX_BESTSELLER :
                 $oBox->compatName = 'Bestseller';
@@ -332,15 +339,14 @@ class Boxen
                 $kArtikel_arr = [];
                 $limit        = (int)$this->boxConfig['boxen']['box_bestseller_anzahl_basis'];
                 $anzahl       = (int)$this->boxConfig['boxen']['box_bestseller_anzahl_anzeige'];
-                $nAnzahl      = 100;
-                if ((int)$this->boxConfig['global']['global_bestseller_minanzahl'] > 0) {
-                    $nAnzahl = (int)$this->boxConfig['global']['global_bestseller_minanzahl'];
-                }
+                $nAnzahl      = ((int)$this->boxConfig['global']['global_bestseller_minanzahl'] > 0)
+                    ? (int)$this->boxConfig['global']['global_bestseller_minanzahl']
+                    : 100;
                 if ($limit < 1) {
                     $limit = 10;
                 }
                 $cacheID = 'box_bestseller_' . $kKundengruppe . $currencyCachePart . '_' .
-                    Shop::$kSprache . '_' . md5($this->cVaterSQL . $this->lagerFilter);
+                    $kSprache . '_' . md5($this->cVaterSQL . $this->lagerFilter);
                 if (($oBoxCached = Shop::Cache()->get($cacheID)) === false) {
                     $menge = Shop::DB()->query(
                         "SELECT tartikel.kArtikel
@@ -433,7 +439,7 @@ class Boxen
                 if (isset($this->boxConfig['umfrage']['news_anzahl_box']) && (int)$this->boxConfig['umfrage']['news_anzahl_box'] > 0) {
                     $cSQL = ' LIMIT ' . (int)$this->boxConfig['umfrage']['umfrage_box_anzahl'];
                 }
-                $cacheID = 'bu_' . Shop::$kSprache . '_' . $_SESSION['Kundengruppe']->kKundengruppe . md5($cSQL);
+                $cacheID = 'bu_' . $kSprache . '_' . $_SESSION['Kundengruppe']->kKundengruppe . md5($cSQL);
                 if (($oUmfrage_arr = Shop::Cache()->get($cacheID)) === false) {
                     // Umfrage Übersicht
                     $oUmfrage_arr = Shop::DB()->query(
@@ -445,9 +451,9 @@ class Boxen
                             JOIN tumfragefrage ON tumfragefrage.kUmfrage = tumfrage.kUmfrage
                             LEFT JOIN tseo ON tseo.cKey = 'kUmfrage'
                                 AND tseo.kKey = tumfrage.kUmfrage
-                                AND tseo.kSprache = " . (int)Shop::$kSprache . "
+                                AND tseo.kSprache = " . $kSprache . "
                             WHERE tumfrage.nAktiv = 1
-                                AND tumfrage.kSprache = " . (int)Shop::$kSprache . "
+                                AND tumfrage.kSprache = " . $kSprache . "
                                 AND (cKundengruppe LIKE '%;-1;%' OR cKundengruppe LIKE '%;" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";%')
                                 AND ((dGueltigVon <= now() AND dGueltigBis >= now()) || (dGueltigVon <= now() AND dGueltigBis = '0000-00-00 00:00:00'))
                             GROUP BY tumfrage.kUmfrage
@@ -476,7 +482,7 @@ class Boxen
                 $nTage   = (isset($this->boxConfig['boxen']['boxen_preisradar_anzahltage']) && (int)$this->boxConfig['boxen']['boxen_preisradar_anzahltage'] > 0)
                     ? (int)$this->boxConfig['boxen']['boxen_preisradar_anzahltage']
                     : 30;
-                $cacheID = 'box_price_radar_' . $currencyCachePart . $nTage . '_' . $nLimit . '_' . (int)Shop::$kSprache . '_' . $_SESSION['Kundengruppe']->kKundengruppe;
+                $cacheID = 'box_price_radar_' . $currencyCachePart . $nTage . '_' . $nLimit . '_' . $kSprache . '_' . $_SESSION['Kundengruppe']->kKundengruppe;
                 if (($oBoxCached = Shop::Cache()->get($cacheID)) === false) {
                     $oPreisradar_arr         = Preisradar::getProducts($_SESSION['Kundengruppe']->kKundengruppe, $nLimit, $nTage);
                     $oBox->Artikel           = new stdClass();
@@ -512,7 +518,7 @@ class Boxen
                 if ((int)$this->boxConfig['news']['news_anzahl_box'] > 0) {
                     $cSQL = " LIMIT " . (int)$this->boxConfig['news']['news_anzahl_box'];
                 }
-                $cacheID = 'bnk_' . (int)Shop::$kSprache . '_' . (int)$_SESSION['Kundengruppe']->kKundengruppe . '_' . md5($cSQL);
+                $cacheID = 'bnk_' . $kSprache . '_' . (int)$_SESSION['Kundengruppe']->kKundengruppe . '_' . md5($cSQL);
                 if (($oBoxCached = Shop::Cache()->get($cacheID)) === false) {
                     $oNewsKategorie_arr = Shop::DB()->query(
                         "SELECT tnewskategorie.kNewsKategorie, tnewskategorie.kSprache, tnewskategorie.cName,
@@ -525,14 +531,14 @@ class Boxen
                             LEFT JOIN tnews ON tnews.kNews = tnewskategorienews.kNews
                             LEFT JOIN tseo ON tseo.cKey = 'kNewsKategorie'
                                 AND tseo.kKey = tnewskategorie.kNewsKategorie
-                                AND tseo.kSprache = " . (int)Shop::$kSprache . "
-                            WHERE tnewskategorie.kSprache = " . (int)Shop::$kSprache . "
+                                AND tseo.kSprache = " . $kSprache . "
+                            WHERE tnewskategorie.kSprache = " . $kSprache . "
                                 AND tnewskategorie.nAktiv = 1
                                 AND tnews.nAktiv = 1
                                 AND tnews.dGueltigVon <= now()
                                 AND (tnews.cKundengruppe LIKE '%;-1;%' 
                                     OR tnews.cKundengruppe LIKE '%;" . (int)$_SESSION['Kundengruppe']->kKundengruppe . ";%')
-                                AND tnews.kSprache = " . (int)Shop::$kSprache . "
+                                AND tnews.kSprache = " . $kSprache . "
                             GROUP BY tnewskategorienews.kNewsKategorie
                             ORDER BY tnewskategorie.nSort DESC" . $cSQL, 2
                     );
@@ -570,13 +576,13 @@ class Boxen
                         FROM tnews
                         JOIN tnewsmonatsuebersicht ON tnewsmonatsuebersicht.nMonat = month(tnews.dGueltigVon)
                             AND tnewsmonatsuebersicht.nJahr = year(tnews.dGueltigVon)
-                            AND tnewsmonatsuebersicht.kSprache = " . (int)Shop::$kSprache . "
+                            AND tnewsmonatsuebersicht.kSprache = " . $kSprache . "
                         LEFT JOIN tseo ON cKey = 'kNewsMonatsUebersicht'
                             AND kKey = tnewsmonatsuebersicht.kNewsMonatsUebersicht
-                            AND tseo.kSprache = " . (int)Shop::$kSprache . "
+                            AND tseo.kSprache = " . $kSprache . "
                         WHERE tnews.dGueltigVon < now()
                             AND tnews.nAktiv = 1
-                            AND tnews.kSprache = " . (int)Shop::$kSprache . "
+                            AND tnews.kSprache = " . $kSprache . "
                         GROUP BY year(tnews.dGueltigVon) , month(tnews.dGueltigVon)
                         ORDER BY tnews.dGueltigVon DESC" . $cSQL, 2
                 );
@@ -593,8 +599,8 @@ class Boxen
 
             case BOX_TOP_BEWERTET :
                 $oBox->compatName = 'TopBewertet';
-                $cacheID          = 'box_top_rated_' . $currencyCachePart . $this->boxConfig['boxen']['boxen_topbewertet_minsterne'] . '_' . Shop::$kSprache . '_' .
-                    $this->boxConfig['boxen']['boxen_topbewertet_basisanzahl'] . md5($this->cVaterSQL);
+                $cacheID          = 'box_top_rated_' . $currencyCachePart . $this->boxConfig['boxen']['boxen_topbewertet_minsterne'] . '_' .
+                    $kSprache . '_' . $this->boxConfig['boxen']['boxen_topbewertet_basisanzahl'] . md5($this->cVaterSQL);
                 if (($oBoxCached = Shop::Cache()->get($cacheID)) === false) {
                     $oTopBewertet_arr = Shop::DB()->query(
                         "SELECT tartikel.kArtikel, tartikelext.fDurchschnittsBewertung
@@ -671,9 +677,11 @@ class Boxen
                     }
                     $cZusatzParams = StringHandler::filterXSS($cZusatzParams);
                     $oTMP_arr      = [];
-                    $cRequestURI   = (!empty($_SERVER['REQUEST_URI']))
-                        ? (Shop::getURL() . $_SERVER['REQUEST_URI'])
-                        : (Shop::getURL() . $_SERVER['SCRIPT_NAME']);
+                    $cRequestURI   = Shop::getRequestUri();
+                    if ($cRequestURI === 'io.php') {
+                        // Box wird von einem Ajax-Call gerendert
+                        $cRequestURI = LinkHelper::getInstance()->getStaticRoute('vergleichsliste.php');
+                    }
                     foreach ($oArtikel_arr as $oArtikel) {
                         $nPosAnd     = strrpos($cRequestURI, '&');
                         $nPosQuest   = strrpos($cRequestURI, '?');
@@ -766,11 +774,12 @@ class Boxen
                         $CWunschlistePos->cURL = $cRequestURI . $cDeleteParam . $CWunschlistePos->kWunschlistePos . $cZusatzParams;
                         if (intval($_SESSION['Kundengruppe']->nNettoPreise) > 0) {
                             $fPreis = (isset($CWunschlistePos->Artikel->Preise->fVKNetto))
-                                ? intval($CWunschlistePos->fAnzahl) * $CWunschlistePos->Artikel->Preise->fVKNetto
+                                ? (int)$CWunschlistePos->fAnzahl * $CWunschlistePos->Artikel->Preise->fVKNetto
                                 : 0;
                         } else {
                             $fPreis = (isset($CWunschlistePos->Artikel->Preise->fVKNetto))
-                                ? intval($CWunschlistePos->fAnzahl) * ($CWunschlistePos->Artikel->Preise->fVKNetto * (100 + $_SESSION['Steuersatz'][$CWunschlistePos->Artikel->kSteuerklasse]) / 100)
+                                ? (int)$CWunschlistePos->fAnzahl * ($CWunschlistePos->Artikel->Preise->fVKNetto *
+                                    (100 + $_SESSION['Steuersatz'][$CWunschlistePos->Artikel->kSteuerklasse]) / 100)
                                 : 0;
                         }
                         $CWunschlistePos->cPreis = gibPreisStringLocalized($fPreis, $_SESSION['Waehrung']);
@@ -788,7 +797,7 @@ class Boxen
                 $oBox->compatName = 'Tagwolke';
                 $limit            = (int)$this->boxConfig['boxen']['boxen_tagging_count'];
                 $limitSQL         = ($limit > 0) ? ' LIMIT ' . $limit : '';
-                $cacheID          = 'box_tag_cloud_' . $currencyCachePart . (int)Shop::$kSprache . '_' . $limit;
+                $cacheID          = 'box_tag_cloud_' . $currencyCachePart . $kSprache . '_' . $limit;
                 if (($oBoxCached = Shop::Cache()->get($cacheID)) === false) {
                     $Tagwolke_arr  = [];
                     $tagwolke_objs = Shop::DB()->query(
@@ -798,9 +807,9 @@ class Boxen
                             LEFT JOIN tseo 
                                 ON tseo.cKey = 'kTag'
                                 AND tseo.kKey = ttag.kTag
-                                AND tseo.kSprache = " . (int)Shop::$kSprache . "
+                                AND tseo.kSprache = " . $kSprache . "
                             WHERE ttag.nAktiv = 1 
-                                AND ttag.kSprache = " . Shop::getLanguage() . " 
+                                AND ttag.kSprache = " . $kSprache . " 
                             GROUP BY ttag.kTag 
                             ORDER BY Anzahl DESC" . $limitSQL, 2
                     );
@@ -835,7 +844,7 @@ class Boxen
             case BOX_SUCHWOLKE :
                 $oBox->compatName = 'Suchwolke';
                 $nWolkenLimit     = (int)$this->boxConfig['boxen']['boxen_livesuche_count'];
-                $cacheID          = 'box_search_tags_' . $currencyCachePart . Shop::$kSprache . '_' . $nWolkenLimit;
+                $cacheID          = 'box_search_tags_' . $currencyCachePart . $kSprache . '_' . $nWolkenLimit;
                 if (($oBoxCached = Shop::Cache()->get($cacheID)) === false) {
                     $oSuchwolke_arr = Shop::DB()->query(
                         "SELECT tsuchanfrage.kSuchanfrage, tsuchanfrage.kSprache, tsuchanfrage.cSuche, tsuchanfrage.nAktiv, 
@@ -843,8 +852,8 @@ class Boxen
                             FROM tsuchanfrage
                             LEFT JOIN tseo ON tseo.cKey = 'kSuchanfrage'
                                 AND tseo.kKey = tsuchanfrage.kSuchanfrage
-                                AND tseo.kSprache = " . (int)Shop::$kSprache . "
-                            WHERE tsuchanfrage.kSprache = " . (int)Shop::$kSprache . "
+                                AND tseo.kSprache = " . $kSprache . "
+                            WHERE tsuchanfrage.kSprache = " . $kSprache . "
                                 AND tsuchanfrage.nAktiv = 1
                             GROUP BY tsuchanfrage.kSuchanfrage
                             ORDER BY tsuchanfrage.nAnzahlGesuche DESC
@@ -885,7 +894,7 @@ class Boxen
                 $kArtikel_arr = [];
                 $limit        = (int)$this->boxConfig['boxen']['box_erscheinende_anzahl_anzeige'];
                 $cacheID      = 'box_ikv_' . $currencyCachePart . $kKundengruppe . '_' .
-                    (int)Shop::$kSprache . '_' . $limit . md5($this->lagerFilter . $this->cVaterSQL);
+                    $kSprache . '_' . $limit . md5($this->lagerFilter . $this->cVaterSQL);
                 if (($oBoxCached = Shop::Cache()->get($cacheID)) === false) {
                     $menge = Shop::DB()->query(
                         "SELECT tartikel.kArtikel
@@ -956,7 +965,7 @@ class Boxen
                 $kArtikel_arr = [];
                 $limit        = $this->boxConfig['boxen']['box_topangebot_anzahl_anzeige'];
                 $cacheID      = 'box_top_offer_' . $currencyCachePart . $kKundengruppe . '_' .
-                    Shop::$kSprache . '_' . $limit . md5($this->lagerFilter . $this->cVaterSQL);
+                    $kSprache . '_' . $limit . md5($this->lagerFilter . $this->cVaterSQL);
                 if (($oBoxCached = Shop::Cache()->get($cacheID)) === false) {
                     $menge = Shop::DB()->query(
                         "SELECT tartikel.kArtikel
@@ -1007,7 +1016,7 @@ class Boxen
                     $alter_tage = $this->boxConfig['boxen']['box_neuimsortiment_alter_tage'];
                 }
                 $cacheID = 'box_new_' . $currencyCachePart . $kKundengruppe . '_' .
-                    Shop::$kSprache . '_' . $alter_tage . '_' . $limit . md5($this->lagerFilter . $this->cVaterSQL);
+                    $kSprache . '_' . $alter_tage . '_' . $limit . md5($this->lagerFilter . $this->cVaterSQL);
                 if (($oBoxCached = Shop::Cache()->get($cacheID)) === false) {
                     $menge = Shop::DB()->query(
                         "SELECT tartikel.kArtikel
@@ -1055,7 +1064,7 @@ class Boxen
                 $kArtikel_arr = [];
                 $limit        = $this->boxConfig['boxen']['box_sonderangebote_anzahl_anzeige'];
                 $cacheID      = 'box_special_offer_' . $currencyCachePart . $kKundengruppe . '_' .
-                    Shop::$kSprache . '_' . $limit . md5($this->lagerFilter . $this->cVaterSQL);
+                    $kSprache . '_' . $limit . md5($this->lagerFilter . $this->cVaterSQL);
                 if (($oBoxCached = Shop::Cache()->get($cacheID)) === false) {
                     $menge = Shop::DB()->query(
                         "SELECT tartikel.kArtikel, tsonderpreise.fNettoPreis
@@ -1477,7 +1486,7 @@ class Boxen
      */
     public function holeContainer($ePosition)
     {
-        return Shop::DB()->selectAll('tboxen', ['kBoxvorlage', 'ePosition'], [0, $ePosition], 'kBox', 'ePosition ASC');
+        return Shop::DB()->selectAll('tboxen', ['kBoxvorlage', 'ePosition'], [0, $ePosition], 'kBox', 'kBox ASC');
     }
 
     /**
@@ -1487,7 +1496,7 @@ class Boxen
      * @param int    $kContainer
      * @return bool
      */
-    public function setzeBox($kBoxvorlage, $nSeite, $ePosition = 'LINKS', $kContainer = 0)
+    public function setzeBox($kBoxvorlage, $nSeite, $ePosition = 'left', $kContainer = 0)
     {
         $kBoxvorlage  = (int)$kBoxvorlage;
         $nSeite       = (int)$nSeite;
@@ -1592,7 +1601,7 @@ class Boxen
      * @param int    $kContainer
      * @return int
      */
-    public function letzteSortierID($nSeite, $ePosition = 'LINKS', $kContainer = 0)
+    public function letzteSortierID($nSeite, $ePosition = 'left', $kContainer = 0)
     {
         if ($kContainer === null) {
             $kContainer = 0;
@@ -1620,6 +1629,7 @@ class Boxen
     public function filterBoxVisibility($kBox, $kSeite, $cFilter = '')
     {
         if (is_array($cFilter)) {
+            $cFilter = array_unique($cFilter);
             $cFilter = implode(',', $cFilter);
         }
 

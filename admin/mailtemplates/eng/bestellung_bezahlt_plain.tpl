@@ -1,6 +1,6 @@
 {includeMailTemplate template=header type=plain}
 
-Dear {$Kunde->cVorname} {$Kunde->cNachname},
+Dear {$Kunde->cAnredeLocalized} {$Kunde->cNachname},
 
 We have received your payment of {$Bestellung->WarensummeLocalized[0]} for your order of {$Bestellung->dErstelldatum_en}.
 

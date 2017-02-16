@@ -1,6 +1,6 @@
 {includeMailTemplate template=header type=plain}
 
-Dear {$Kunde->cVorname} {$Kunde->cNachname},
+Dear {$Kunde->cAnredeLocalized} {$Kunde->cNachname},
 
 Your order at {$Einstellungen.global.global_shopname} has been updated.
 
@@ -38,7 +38,7 @@ Your order with the order number {$Bestellung->cBestellNr} consists of the follo
 Total: {$Bestellung->WarensummeLocalized[0]}
 
 
-Your billing adress:
+Your billing address:
 
 {$Kunde->cAnredeLocalized} {$Kunde->cVorname} {$Kunde->cNachname}
 {$Kunde->cStrasse} {$Kunde->cHausnummer}
@@ -51,11 +51,11 @@ Your billing adress:
 {/if}{if $Kunde->cFax}Fax: {$Kunde->cFax}
 {/if}
 Email: {$Kunde->cMail}
-{if $Kunde->cUSTID}UstID: {$Kunde->cUSTID}
+{if $Kunde->cUSTID}VAT ID: {$Kunde->cUSTID}
 {/if}
 
 {if $Bestellung->Lieferadresse->kLieferadresse>0}
-    Your shipping adress:
+    Your shipping address:
 
     {$Bestellung->Lieferadresse->cAnrede} {$Bestellung->Lieferadresse->cVorname} {$Bestellung->Lieferadresse->cNachname}
     {$Bestellung->Lieferadresse->cStrasse} {$Bestellung->Lieferadresse->cHausnummer}

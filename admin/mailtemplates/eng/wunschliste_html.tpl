@@ -1,7 +1,7 @@
 {includeMailTemplate template=header type=html}
 
 Hello,<br>
-Take a look at my wishlist at {$Firma->cName}.<br>
+Take a look at my wish list at {$Firma->cName}.<br>
 <br>
 <table cellpadding="5" cellspacing="0" border="0" width="100%">
     <tr>

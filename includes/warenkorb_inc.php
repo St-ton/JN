@@ -54,6 +54,7 @@ function loescheWarenkorbPosition($nPos)
         unset($_SESSION['Kupon']);
         $_SESSION['Warenkorb'] = new Warenkorb();
     }
+    require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
     freeGiftStillValid();
     // Lösche Position aus dem WarenkorbPersPos
     if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']->kKunde > 0) {

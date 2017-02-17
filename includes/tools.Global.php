@@ -4570,6 +4570,20 @@ function loeseHttps()
             $https = true;
         }
         if ($https) {
+            if (Shop::$kLink > 0) {
+                $lh = LinkHelper::getInstance();
+                if (!empty($lh->linkGroups->staticRoutes)) {
+                    foreach ($lh->linkGroups->staticRoutes as $id => $languages) {
+                        foreach ($languages as $link) {
+                            if ((int)$link->kLink === Shop::$kLink) {
+                                if ($id !== 'umfrage.php' && $id !== 'news.php' && $id !== 'vergleichsliste.php')
+                                    return;
+                            }
+                        }
+
+                    }
+                }
+            }
             $lang = '';
             if (!standardspracheAktiv(true)) {
                 if (strpos($_SERVER['REQUEST_URI'], '?')) {
